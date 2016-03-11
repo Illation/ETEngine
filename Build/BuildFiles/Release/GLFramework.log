@@ -1,0 +1,57 @@
+﻿Build started 3/11/2016 1:51:26 AM.
+     1>Project "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\GLFramework.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Release\\" /Fd"C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Release\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Base\Time.cpp Content\ShaderLoader.cpp Content\TextureLoader.cpp Game\Materials\CubeMaterial.cpp Game\Objects\Cube.cpp Graphics\Camera.cpp Graphics\FrameBuffer.cpp Graphics\Material.cpp main.cpp SceneGraph\GameObject.cpp
+         Time.cpp
+     1>Base\Time.cpp(21): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+     1>Base\Time.cpp(27): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+         ShaderLoader.cpp
+         TextureLoader.cpp
+         CubeMaterial.cpp
+         Cube.cpp
+         Camera.cpp
+         FrameBuffer.cpp
+         Material.cpp
+         main.cpp
+         GameObject.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Release\GLFramework.exe" /NOLOGO opengl32.lib SDL2.lib SDL2main.lib DevIL.lib ILU.lib ILUT.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Release\GLFramework.pdb" /OPT:REF /OPT:ICF /LTCG:incremental /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Release\GLFramework.lib" /MACHINE:X86 /SAFESEH "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Release\Time.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Release\ShaderLoader.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Release\TextureLoader.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Release\CubeMaterial.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Release\Cube.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Release\Camera.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Release\FrameBuffer.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Release\Material.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Release\main.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Release\GameObject.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Release\glad.obj"
+         Generating code
+         456 of 493 functions (92.5%) were compiled, the rest were copied from previous compilation.
+           240 functions were new in current compilation
+           2 functions had inline decision re-evaluated but remain unchanged
+         Finished generating code
+         GLFramework.vcxproj -> C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Release\GLFramework.exe
+       PostBuildEvent:
+         xcopy "C:\Development\StaticLibraries\SDL2\lib\x86\SDL2.dll" "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Release\" /y/D
+         xcopy "C:\Development\StaticLibraries\DevIL\lib\ILU.dll" "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Release\" /y/D
+         xcopy "C:\Development\StaticLibraries\DevIL\lib\ILUT.dll" "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Release\" /y/D
+         xcopy "C:\Development\StaticLibraries\DevIL\lib\DevIL.dll" "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Release\" /y/D
+         xcopy "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources" "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Release\\Resources" /s/i/y
+         :VCEnd
+         0 File(s) copied
+         0 File(s) copied
+         0 File(s) copied
+         0 File(s) copied
+         C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\sample.png
+         C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\sample2.png
+         C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\sceneFragmentShader.glsl
+         C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\sceneVertexShader.glsl
+         C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\screenFragmentShader.glsl
+         C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\screenVertexShader.glsl
+         6 File(s) copied
+     1>Done Building Project "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\GLFramework.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:06.87

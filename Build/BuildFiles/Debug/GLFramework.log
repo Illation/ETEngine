@@ -1,0 +1,41 @@
+﻿Build started 3/11/2016 9:55:47 AM.
+     1>Project "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\GLFramework.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Debug\\" /Fd"C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Game\Objects\Cube.cpp
+         Cube.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Debug\GLFramework.exe" /INCREMENTAL /NOLOGO opengl32.lib SDL2.lib SDL2main.lib DevIL.lib ILU.lib ILUT.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Debug\GLFramework.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Debug\GLFramework.lib" /MACHINE:X86 "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Debug\Time.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Debug\ShaderLoader.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Debug\TextureLoader.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Debug\CubeMaterial.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Debug\Cube.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Debug\Camera.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Debug\FrameBuffer.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Debug\Material.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Debug\main.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Debug\GameObject.obj"
+         "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\BuildFiles\Debug\glad.obj"
+         GLFramework.vcxproj -> C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Debug\GLFramework.exe
+       PostBuildEvent:
+         xcopy "C:\Development\StaticLibraries\SDL2\lib\x86\SDL2.dll" "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Debug\" /y/D
+         xcopy "C:\Development\StaticLibraries\DevIL\lib\ILU.dll" "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Debug\" /y/D
+         xcopy "C:\Development\StaticLibraries\DevIL\lib\ILUT.dll" "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Debug\" /y/D
+         xcopy "C:\Development\StaticLibraries\DevIL\lib\DevIL.dll" "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Debug\" /y/D
+         xcopy "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources" "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Debug\\Resources" /s/i/y
+         :VCEnd
+         0 File(s) copied
+         0 File(s) copied
+         0 File(s) copied
+         0 File(s) copied
+         C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\sample.png
+         C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\sample2.png
+         C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\sceneFragmentShader.glsl
+         C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\sceneVertexShader.glsl
+         C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\screenFragmentShader.glsl
+         C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\screenVertexShader.glsl
+         6 File(s) copied
+     1>Done Building Project "C:\Users\Robert\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\GLFramework.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.08

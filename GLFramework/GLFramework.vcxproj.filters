@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="StaticDependancies">
+      <UniqueIdentifier>{f5976f54-628e-4cc4-9bbd-9c4b02a4d539}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="StaticDependancies\glad">
+      <UniqueIdentifier>{0e9c52e9-f27a-42cb-8275-92b7f7d353a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SceneGraph">
+      <UniqueIdentifier>{d59f5d56-84c9-40e9-9ac1-788eae2537bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{13f010e3-5d2e-4f03-8126-cdfb9aae31db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Objects">
+      <UniqueIdentifier>{add7ca31-550a-4183-bf64-bc9ae8020b8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Content">
+      <UniqueIdentifier>{5c3316ba-0d3c-455b-87c6-31492df68995}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{03108a7f-d243-4901-9ba5-af37be9c76c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base">
+      <UniqueIdentifier>{2c31fc0e-b55c-4d1c-acc7-70c595778840}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helper">
+      <UniqueIdentifier>{e2d6b3a0-7e91-40f9-ad1d-cce14f5c21d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Materials">
+      <UniqueIdentifier>{ff67220f-2f72-414e-8fe0-47eb48c84718}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="StaticDependancies\glad\glad.c">
+      <Filter>StaticDependancies\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="SceneGraph\GameObject.cpp">
+      <Filter>SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Objects\Cube.cpp">
+      <Filter>Game\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\ShaderLoader.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\TextureLoader.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\FrameBuffer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Time.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Camera.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Material.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Materials\CubeMaterial.cpp">
+      <Filter>Game\Materials</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="StaticDependancies\glad\glad.h">
+      <Filter>StaticDependancies\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraph\GameObject.hpp">
+      <Filter>SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Objects\Cube.hpp">
+      <Filter>Game\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\ShaderLoader.hpp">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\TextureLoader.hpp">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\FrameBuffer.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Settings.hpp">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\Singleton.h">
+      <Filter>Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Context.hpp">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Time.hpp">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Camera.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Material.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Materials\CubeMaterial.hpp">
+      <Filter>Game\Materials</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

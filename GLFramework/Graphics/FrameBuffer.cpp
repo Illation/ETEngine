@@ -1,0 +1,103 @@
+#include "FrameBuffer.hpp"
+
+#include <iostream>
+#include "../Content/ShaderLoader.hpp"
+
+#include "../Base\Settings.hpp"
+#define SETTINGS Settings::GetInstance()
+
+FrameBuffer::FrameBuffer()
+{
+}
+
+
+FrameBuffer::~FrameBuffer()
+{
+	glDeleteTextures(1, &m_TexColBuffer);
+	glDeleteFramebuffers(1, &m_GlFrameBuffer);
+
+	glDeleteProgram(m_ShaderProgram);
+	glDeleteShader(m_FragmentShader);
+	glDeleteShader(m_VertexShader);
+
+	glDeleteBuffers(1, &m_VertexBufferObject);
+	glDeleteVertexArrays(1, &m_VertexArrayObject);
+}
+
+void FrameBuffer::Initialize()
+{
+	GLfloat quadVertices[] = {
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		1.0f,  1.0f,  1.0f, 1.0f,
+		1.0f, -1.0f,  1.0f, 0.0f,
+
+		1.0f, -1.0f,  1.0f, 0.0f,
+		-1.0f, -1.0f,  0.0f, 0.0f,
+		-1.0f,  1.0f,  0.0f, 1.0f
+	};
+
+	//Vertex Array Object
+	glGenVertexArrays(1, &m_VertexArrayObject);
+	//Vertex Buffer Object
+	glGenBuffers(1, &m_VertexBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+	//Load and compile Shaders
+	ShaderLoader* sL = new ShaderLoader();
+	m_ShaderProgram = sL->CreateShaderProgram("Resources/screenVertexShader.glsl", "Resources/screenFragmentShader.glsl", m_VertexShader, m_FragmentShader);
+	delete sL;
+
+	//Specify Input Layouts
+	glBindVertexArray(m_VertexArrayObject);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferObject);
+	DefAttLayout(m_ShaderProgram);
+
+	//GetAccessTo shader attributes
+	glUseProgram(m_ShaderProgram);
+	glUniform1i(glGetUniformLocation(m_ShaderProgram, "texFramebuffer"), 0);
+
+	//FrameBuffer
+	std::cout << "Initializing Frame Buffer . . .";
+	glGenFramebuffers(1, &m_GlFrameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_GlFrameBuffer);//Bind
+
+	glGenTextures(1, &m_TexColBuffer);
+	glBindTexture(GL_TEXTURE_2D, m_TexColBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SETTINGS->Window.Width, SETTINGS->Window.Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TexColBuffer, 0);//Bind Framebuffe to texture
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) std::cout << "  . . . SUCCESS!" << std::endl;
+	else std::cout << "  . . . FAILED!" << std::endl;
+}
+
+void FrameBuffer::Enable(bool active)
+{
+	if(active) glBindFramebuffer(GL_FRAMEBUFFER, m_GlFrameBuffer);
+	else glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void FrameBuffer::Draw()
+{
+	glBindVertexArray(m_VertexArrayObject);
+	glDisable(GL_DEPTH_TEST);
+	glUseProgram(m_ShaderProgram);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_TexColBuffer);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void FrameBuffer::DefAttLayout(GLuint shaderProgram)
+{
+	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+	glEnableVertexAttribArray(posAttrib);
+	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+
+	GLint texAttrib = glGetAttribLocation(shaderProgram, "texcoord");
+	glEnableVertexAttribArray(texAttrib);
+	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
+}
