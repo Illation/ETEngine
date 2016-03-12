@@ -7,7 +7,7 @@
 
 #include "../Materials/CubeMaterial.hpp"
 
-#include "../../SceneGraph/GameObject.hpp"
+#include "../../SceneGraph/Entity.hpp"
 
 struct VertPosColTex
 {
@@ -16,7 +16,7 @@ struct VertPosColTex
 	glm::vec2 tex;
 };
 
-class Cube : public GameObject
+class Cube : public Entity
 {
 public:
 	Cube();

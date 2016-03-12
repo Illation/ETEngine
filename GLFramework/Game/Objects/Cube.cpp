@@ -128,5 +128,6 @@ void Cube::Draw()
 
 		m_MatModel = glm::scale(glm::translate(m_MatModel, glm::vec3(0, -1, 0)), glm::vec3(1, -1, 1));
 		m_pCubeMat->UpdateReflectionAtt(m_MatModel, glm::vec3(1, 1, 1));
+
 	glDisable(GL_STENCIL_TEST);
 }

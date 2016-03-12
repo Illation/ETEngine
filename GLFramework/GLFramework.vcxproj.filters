@@ -35,15 +35,15 @@
     <Filter Include="Game\Materials">
       <UniqueIdentifier>{ff67220f-2f72-414e-8fe0-47eb48c84718}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Scenes">
+      <UniqueIdentifier>{5de02364-fd3d-40ba-9704-66d17ed38b5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StaticDependancies\glad\glad.c">
       <Filter>StaticDependancies\glad</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="SceneGraph\GameObject.cpp">
-      <Filter>SceneGraph</Filter>
-    </ClCompile>
     <ClCompile Include="Game\Objects\Cube.cpp">
       <Filter>Game\Objects</Filter>
     </ClCompile>
@@ -68,13 +68,28 @@
     <ClCompile Include="Game\Materials\CubeMaterial.cpp">
       <Filter>Game\Materials</Filter>
     </ClCompile>
+    <ClCompile Include="Base\AbstractFramework.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGraph\Entity.cpp">
+      <Filter>SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\MainFramework.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGraph\AbstractScene.cpp">
+      <Filter>SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGraph\SceneManager.cpp">
+      <Filter>SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Scenes\TestScene.cpp">
+      <Filter>Game\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
       <Filter>StaticDependancies\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneGraph\GameObject.hpp">
-      <Filter>SceneGraph</Filter>
     </ClInclude>
     <ClInclude Include="Game\Objects\Cube.hpp">
       <Filter>Game\Objects</Filter>
@@ -108,6 +123,24 @@
     </ClInclude>
     <ClInclude Include="Game\Materials\CubeMaterial.hpp">
       <Filter>Game\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\AbstractFramework.hpp">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraph\Entity.hpp">
+      <Filter>SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\MainFramework.hpp">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraph\AbstractScene.hpp">
+      <Filter>SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraph\SceneManager.hpp">
+      <Filter>SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Scenes\TestScene.hpp">
+      <Filter>Game\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

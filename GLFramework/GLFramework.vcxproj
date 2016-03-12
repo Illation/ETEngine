@@ -145,31 +145,41 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Base\AbstractFramework.cpp" />
     <ClCompile Include="Base\Time.cpp" />
     <ClCompile Include="Content\ShaderLoader.cpp" />
     <ClCompile Include="Content\TextureLoader.cpp" />
+    <ClCompile Include="Game\MainFramework.cpp" />
     <ClCompile Include="Game\Materials\CubeMaterial.cpp" />
     <ClCompile Include="Game\Objects\Cube.cpp" />
+    <ClCompile Include="Game\Scenes\TestScene.cpp" />
     <ClCompile Include="Graphics\Camera.cpp" />
     <ClCompile Include="Graphics\FrameBuffer.cpp" />
     <ClCompile Include="Graphics\Material.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="SceneGraph\GameObject.cpp" />
+    <ClCompile Include="SceneGraph\AbstractScene.cpp" />
+    <ClCompile Include="SceneGraph\Entity.cpp" />
+    <ClCompile Include="SceneGraph\SceneManager.cpp" />
     <ClCompile Include="StaticDependancies\glad\glad.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Context.hpp" />
+    <ClInclude Include="Base\AbstractFramework.hpp" />
     <ClInclude Include="Base\Settings.hpp" />
     <ClInclude Include="Base\Time.hpp" />
     <ClInclude Include="Content\ShaderLoader.hpp" />
     <ClInclude Include="Content\TextureLoader.hpp" />
+    <ClInclude Include="Game\MainFramework.hpp" />
     <ClInclude Include="Game\Materials\CubeMaterial.hpp" />
     <ClInclude Include="Game\Objects\Cube.hpp" />
+    <ClInclude Include="Game\Scenes\TestScene.hpp" />
     <ClInclude Include="Graphics\Camera.hpp" />
     <ClInclude Include="Graphics\FrameBuffer.hpp" />
     <ClInclude Include="Graphics\Material.hpp" />
     <ClInclude Include="Helper\Singleton.h" />
-    <ClInclude Include="SceneGraph\GameObject.hpp" />
+    <ClInclude Include="SceneGraph\AbstractScene.hpp" />
+    <ClInclude Include="SceneGraph\Entity.hpp" />
+    <ClInclude Include="SceneGraph\SceneManager.hpp" />
     <ClInclude Include="StaticDependancies\glad\glad.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

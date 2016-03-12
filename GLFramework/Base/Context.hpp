@@ -3,19 +3,31 @@
 #include "../Base/Time.hpp"
 #include "../Graphics/Camera.hpp"
 
-struct Context : public Singleton<Context>
+class ContextObjects
 {
 public:
-	Context():pTime(new Time())
+	ContextObjects()
+	{}
+	 ~ContextObjects()
 	{
-
-	}
-	~Context() 
-	{ 
-		delete pTime;
-		pTime = nullptr;
 	}
 	Time* pTime;
 	Camera* pCamera;
+};
+
+struct Context : public Singleton<Context>, public ContextObjects
+{
+public:
+	Context():ContextObjects()
+	{
+	}
+	~Context() 
+	{ 
+	}
+	void SetContext(ContextObjects* pContext)
+	{
+		pTime = pContext->pTime;
+		pCamera = pContext->pCamera;
+	}
 };
 

@@ -21,5 +21,6 @@ private:
 
 	GLuint m_GlFrameBuffer;
 	GLuint m_TexColBuffer;
+	GLuint m_RboDepthStencil;
 };
 

@@ -13,6 +13,7 @@ FrameBuffer::FrameBuffer()
 
 FrameBuffer::~FrameBuffer()
 {
+	glDeleteRenderbuffers(1, &m_RboDepthStencil);
 	glDeleteTextures(1, &m_TexColBuffer);
 	glDeleteFramebuffers(1, &m_GlFrameBuffer);
 
@@ -71,6 +72,12 @@ void FrameBuffer::Initialize()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TexColBuffer, 0);//Bind Framebuffe to texture
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) std::cout << "  . . . SUCCESS!" << std::endl;
 	else std::cout << "  . . . FAILED!" << std::endl;
+
+	//Render Buffer for depth and stencil
+	glGenRenderbuffers(1, &m_RboDepthStencil);
+	glBindRenderbuffer(GL_RENDERBUFFER, m_RboDepthStencil);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SETTINGS->Window.Width, SETTINGS->Window.Height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RboDepthStencil);
 }
 
 void FrameBuffer::Enable(bool active)
