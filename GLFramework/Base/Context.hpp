@@ -1,7 +1,7 @@
 #pragma once
 #include "../Helper/Singleton.h"
 #include "../Base/Time.hpp"
-#include "../Graphics/Camera.hpp"
+#include "../Components/CameraComponent.hpp"
 
 class ContextObjects
 {
@@ -12,7 +12,7 @@ public:
 	{
 	}
 	Time* pTime;
-	Camera* pCamera;
+	CameraComponent* pCamera;
 };
 
 struct Context : public Singleton<Context>, public ContextObjects

@@ -1,7 +1,6 @@
 #pragma once
 #include "../../SceneGraph/AbstractScene.hpp"
 
-class Camera;
 class Cube;
 class FrameBuffer;
 
@@ -16,7 +15,6 @@ private:
 	void Draw();
 	void PostDraw();
 private:
-	Camera* m_pMainCam = nullptr;
 	Cube* m_pTestCube = nullptr;
 	FrameBuffer* m_pPostProc = nullptr;
 };

@@ -38,8 +38,5 @@ private:
 	GLuint m_ElementBufferObject;
 
 	CubeMaterial* m_pCubeMat = nullptr;
-
-	//Matrices
-	glm::mat4 m_MatModel;
 };
 

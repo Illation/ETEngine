@@ -18,9 +18,9 @@
 
 #include "Context.hpp"
 #include "Settings.hpp"
+#include "InputManager.hpp"
 #include "../Game\Objects\Cube.hpp"
 #include "../Graphics\FrameBuffer.hpp"
-#include "../Graphics\Camera.hpp"
 #include "../SceneGraph/SceneManager.hpp"
 
 AbstractFramework::AbstractFramework()
@@ -31,16 +31,15 @@ AbstractFramework::~AbstractFramework()
 	Settings* pSet = Settings::GetInstance();
 	Context* pCon = Context::GetInstance();
 	SceneManager* pScMan = SceneManager::GetInstance();
+	InputManager* pInMan = InputManager::GetInstance();
 
 	SDL_GL_DeleteContext(m_GlContext);
 	SDL_Quit();
 
 	pSet->DestroyInstance();
-	pSet = nullptr;
 	pScMan->DestroyInstance();
-	pScMan = nullptr;
+	pInMan->DestroyInstance();
 	pCon->DestroyInstance();
-	pCon = nullptr;
 }
 
 void AbstractFramework::Run()
@@ -80,6 +79,8 @@ void AbstractFramework::InitializeWindow()
 {
 	Settings* pSet = Settings::GetInstance();//Initialize Game Settings
 	SceneManager* pScMan = SceneManager::GetInstance();//Initialize SceneManager
+	InputManager* pInMan = InputManager::GetInstance();//init input manager
+	pInMan->Init();
 
 	//Create Window
 	if (pSet->Window.Fullscreen)
@@ -140,15 +141,10 @@ void AbstractFramework::InitializeGame()
 void AbstractFramework::GameLoop()
 {
 	Settings* pSet = Settings::GetInstance();
-	SDL_Event windowEvent; //Main Loop
 	while (true)
 	{
-		if (SDL_PollEvent(&windowEvent))
-		{
-			if (windowEvent.type == SDL_QUIT) break;
-			if (windowEvent.type == SDL_KEYUP &&
-				windowEvent.key.keysym.sym == SDLK_ESCAPE) break;
-		}
+		InputManager::GetInstance()->UpdateEvents();
+		if (InputManager::GetInstance()->IsExitRequested())return;
 
 		Update();
 		//******

@@ -1,6 +1,8 @@
 #include "AbstractScene.hpp"
 
-#include "../Graphics/Camera.hpp"
+#include "../Components/CameraComponent.hpp"
+#include "../Components/TransformComponent.hpp"
+#include "../Prefabs\FreeCamera.hpp"
 #include "../Base/Time.hpp"
 #include "Entity.hpp"
 
@@ -23,8 +25,6 @@ AbstractScene::~AbstractScene()
 	m_pEntityVec.clear();
 	delete m_pConObj;
 	m_pConObj = nullptr;
-	delete m_pDefaultCam;
-	m_pDefaultCam = nullptr;
 	delete m_pTime;
 	m_pTime = nullptr;
 }
@@ -52,7 +52,11 @@ void AbstractScene::RootInitialize()
 {
 	if (m_IsInitialized)return;
 
-	m_pDefaultCam = new Camera();
+	//Create DefaultCamera
+	FreeCamera* freeCam = new FreeCamera();
+	//freeCam->GetTransform()->Translate(0, 50, -80);
+	AddEntity(freeCam);
+	m_pDefaultCam = freeCam->GetComponent<CameraComponent>();
 	m_pTime = new Time();
 	m_pConObj = new ContextObjects();
 	m_pConObj->pCamera = m_pDefaultCam;
@@ -107,7 +111,7 @@ void AbstractScene::RootOnDeactivated()
 	OnDeactivated();
 }
 
-void AbstractScene::SetActiveCamera(Camera* pCamera)
+void AbstractScene::SetActiveCamera(CameraComponent* pCamera)
 {
 	m_pConObj->pCamera = pCamera;
 }

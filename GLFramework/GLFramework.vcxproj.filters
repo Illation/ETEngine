@@ -38,6 +38,12 @@
     <Filter Include="Game\Scenes">
       <UniqueIdentifier>{5de02364-fd3d-40ba-9704-66d17ed38b5a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{6e29b1d2-ac82-4d9d-82db-227c89d2f91c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Prefabs">
+      <UniqueIdentifier>{6def276e-a4ec-4947-8236-c615c0900710}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StaticDependancies\glad\glad.c">
@@ -58,9 +64,6 @@
     </ClCompile>
     <ClCompile Include="Base\Time.cpp">
       <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphics\Camera.cpp">
-      <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\Material.cpp">
       <Filter>Graphics</Filter>
@@ -85,6 +88,24 @@
     </ClCompile>
     <ClCompile Include="Game\Scenes\TestScene.cpp">
       <Filter>Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\InputManager.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\AbstractComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\TransformComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\CameraComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Prefabs\FixedCamera.cpp">
+      <Filter>Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="Prefabs\FreeCamera.cpp">
+      <Filter>Prefabs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -115,9 +136,6 @@
     <ClInclude Include="Base\Time.hpp">
       <Filter>Base</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\Camera.hpp">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Graphics\Material.hpp">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -141,6 +159,24 @@
     </ClInclude>
     <ClInclude Include="Game\Scenes\TestScene.hpp">
       <Filter>Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\InputManager.hpp">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\AbstractComponent.hpp">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\TransformComponent.hpp">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\CameraComponent.hpp">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs\FixedCamera.hpp">
+      <Filter>Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs\FreeCamera.hpp">
+      <Filter>Prefabs</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

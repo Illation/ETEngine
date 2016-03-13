@@ -2,26 +2,17 @@
 
 #include "../Objects\Cube.hpp"
 #include "../../Graphics\FrameBuffer.hpp"
-#include "../../Graphics\Camera.hpp"
 
 TestScene::TestScene() : AbstractScene("TestScene")
 {
 }
 TestScene::~TestScene()
 {
-	delete m_pMainCam;
 	delete m_pPostProc;
 }
 
 void TestScene::Initialize()
 {
-	m_pMainCam = new Camera();
-	m_pMainCam->SetFieldOfView(45);
-	m_pMainCam->SetNearClippingPlane(1);
-	m_pMainCam->SetFarClippingPlane(10);
-	m_pMainCam->UsePerspectiveProjection();
-	SetActiveCamera(m_pMainCam);
-
 	m_pTestCube = new Cube();
 	AddEntity(m_pTestCube);
 

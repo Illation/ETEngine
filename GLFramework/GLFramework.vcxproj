@@ -146,17 +146,22 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Base\AbstractFramework.cpp" />
+    <ClCompile Include="Base\InputManager.cpp" />
     <ClCompile Include="Base\Time.cpp" />
+    <ClCompile Include="Components\AbstractComponent.cpp" />
+    <ClCompile Include="Components\CameraComponent.cpp" />
+    <ClCompile Include="Components\TransformComponent.cpp" />
     <ClCompile Include="Content\ShaderLoader.cpp" />
     <ClCompile Include="Content\TextureLoader.cpp" />
     <ClCompile Include="Game\MainFramework.cpp" />
     <ClCompile Include="Game\Materials\CubeMaterial.cpp" />
     <ClCompile Include="Game\Objects\Cube.cpp" />
     <ClCompile Include="Game\Scenes\TestScene.cpp" />
-    <ClCompile Include="Graphics\Camera.cpp" />
     <ClCompile Include="Graphics\FrameBuffer.cpp" />
     <ClCompile Include="Graphics\Material.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Prefabs\FixedCamera.cpp" />
+    <ClCompile Include="Prefabs\FreeCamera.cpp" />
     <ClCompile Include="SceneGraph\AbstractScene.cpp" />
     <ClCompile Include="SceneGraph\Entity.cpp" />
     <ClCompile Include="SceneGraph\SceneManager.cpp" />
@@ -165,18 +170,23 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
   <ItemGroup>
     <ClInclude Include="Base\Context.hpp" />
     <ClInclude Include="Base\AbstractFramework.hpp" />
+    <ClInclude Include="Base\InputManager.hpp" />
     <ClInclude Include="Base\Settings.hpp" />
     <ClInclude Include="Base\Time.hpp" />
+    <ClInclude Include="Components\AbstractComponent.hpp" />
+    <ClInclude Include="Components\CameraComponent.hpp" />
+    <ClInclude Include="Components\TransformComponent.hpp" />
     <ClInclude Include="Content\ShaderLoader.hpp" />
     <ClInclude Include="Content\TextureLoader.hpp" />
     <ClInclude Include="Game\MainFramework.hpp" />
     <ClInclude Include="Game\Materials\CubeMaterial.hpp" />
     <ClInclude Include="Game\Objects\Cube.hpp" />
     <ClInclude Include="Game\Scenes\TestScene.hpp" />
-    <ClInclude Include="Graphics\Camera.hpp" />
     <ClInclude Include="Graphics\FrameBuffer.hpp" />
     <ClInclude Include="Graphics\Material.hpp" />
     <ClInclude Include="Helper\Singleton.h" />
+    <ClInclude Include="Prefabs\FixedCamera.hpp" />
+    <ClInclude Include="Prefabs\FreeCamera.hpp" />
     <ClInclude Include="SceneGraph\AbstractScene.hpp" />
     <ClInclude Include="SceneGraph\Entity.hpp" />
     <ClInclude Include="SceneGraph\SceneManager.hpp" />

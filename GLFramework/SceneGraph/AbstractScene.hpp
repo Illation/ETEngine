@@ -4,7 +4,7 @@
 
 //forward declaration
 class Entity;
-class Camera;
+class CameraComponent;
 class Time;
 class ContextObjects;
 class SceneManager;
@@ -17,7 +17,7 @@ public:
 
 	void AddEntity(Entity* pEntity);
 	void RemoveEntity(Entity* pEntity, bool deleteEntity = true);
-	void SetActiveCamera(Camera* pCamera);
+	void SetActiveCamera(CameraComponent* pCamera);
 
 protected:
 
@@ -40,7 +40,7 @@ private:
 	bool m_IsInitialized = false;
 	std::string m_Name;
 	std::vector<Entity*> m_pEntityVec;
-	Camera *m_pDefaultCam = nullptr;
+	CameraComponent *m_pDefaultCam = nullptr;
 	Time *m_pTime = nullptr;
 	ContextObjects* m_pConObj = nullptr;
 };
