@@ -9,7 +9,6 @@ public:
 	CubeMaterial(std::string texKittenPath, std::string texPuppyPath);
 	~CubeMaterial();
 
-	void SpecifyInputLayout();
 	void UpdateReflectionAtt(glm::mat4 model, glm::vec3 col);
 private:
 	void LoadTextures();

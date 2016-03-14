@@ -15,7 +15,7 @@
 	
 	void main()
 	{
-		Color = overrideColor * color;
+		Color = overrideColor * vec3(color.x, color.y, color.z);
 		Texcoord = texcoord;
 		vec4 pos = model*vec4(position, 1.0);
 		gl_Position = worldViewProj*pos;

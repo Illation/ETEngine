@@ -12,7 +12,8 @@ public:
 	virtual ~Material();
 
 	virtual void Initialize();
-	virtual void SpecifyInputLayout() = 0;
+	void SpecifyInputLayout();
+	unsigned GetLayoutFlags() { return m_LayoutFlags; }
 	void UploadVariables(glm::mat4 matModel);
 
 protected:
@@ -22,6 +23,7 @@ protected:
 	virtual void UploadDerivedVariables() = 0;
 
 protected:
+	unsigned m_LayoutFlags = 0;
 	ShaderData* m_Shader;
 	GLint m_UniMatModel;
 	GLint m_UniMatWVP;

@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <string>
+#include "../../Graphics/MeshFilter.hpp"
 
 //Working singleton Set
 #define TIME Context::GetInstance()->pTime
@@ -16,6 +17,7 @@ CubeMaterial::CubeMaterial(std::string texKpath, std::string texPpath)
 	,m_TexKittenPath(texKpath)
 	,m_TexPuppyPath(texPpath)
 {
+	m_LayoutFlags = VertexFlags::POSITION | VertexFlags::COLOR | VertexFlags::TEXCOORD;
 }
 CubeMaterial::~CubeMaterial()
 {
@@ -47,21 +49,6 @@ void CubeMaterial::UploadDerivedVariables()
 	glBindTexture(GL_TEXTURE_2D, m_TexKitten->GetHandle());
 	//Upload time
 	glUniform1f(m_UniTime, TIME->DeltaTime());
-}
-
-void CubeMaterial::SpecifyInputLayout()
-{
-	GLint posAttrib = glGetAttribLocation(m_Shader->GetProgram(), "position");
-	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
-
-	GLint colAttrib = glGetAttribLocation(m_Shader->GetProgram(), "color");
-	glEnableVertexAttribArray(colAttrib);
-	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-
-	GLint texAttrib = glGetAttribLocation(m_Shader->GetProgram(), "texcoord");
-	glEnableVertexAttribArray(texAttrib);
-	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
 }
 
 void CubeMaterial::UpdateReflectionAtt(glm::mat4 model, glm::vec3 col)

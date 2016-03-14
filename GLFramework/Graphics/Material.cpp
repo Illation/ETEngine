@@ -7,6 +7,7 @@
 
 #include "../Content/ContentManager.hpp"
 #include "ShaderData.hpp"
+#include "MeshFilter.hpp"
 
 #define CAMERA Context::GetInstance()->pCamera
 
@@ -40,4 +41,25 @@ void Material::UploadVariables(glm::mat4 matModel)
 	glUniformMatrix4fv(m_UniMatWVP, 1, GL_FALSE, glm::value_ptr(CAMERA->GetViewProj()));
 
 	UploadDerivedVariables();
+}
+
+void Material::SpecifyInputLayout()
+{
+	unsigned stride = 0;
+	for (auto it = MeshFilter::LayoutAttributes.begin(); it != MeshFilter::LayoutAttributes.end(); ++it)
+	{
+		if (m_LayoutFlags & it->first) stride += it->second.dataSize;
+	}
+	unsigned startPos = 0;
+	for (auto it = MeshFilter::LayoutAttributes.begin(); it != MeshFilter::LayoutAttributes.end(); ++it)
+	{
+		if (m_LayoutFlags & it->first)
+		{
+			GLint attrib = glGetAttribLocation(m_Shader->GetProgram(), it->second.name.c_str());
+			glEnableVertexAttribArray(attrib);
+			glVertexAttribPointer(attrib, it->second.dataSize, it->second.dataType, GL_FALSE,
+				stride * sizeof(GLfloat), (void*)(startPos * sizeof(GLfloat)));
+			startPos += it->second.dataSize;
+		}
+	}
 }
