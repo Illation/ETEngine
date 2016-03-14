@@ -1,5 +1,7 @@
 #pragma once
 #include "../../Graphics/Material.hpp"
+
+class TextureData;
 class CubeMaterial :
 	public Material
 {
@@ -16,8 +18,8 @@ private:
 	void UploadDerivedVariables();
 private:
 	//Textures
-	GLuint m_TexKitten;
-	GLuint m_TexPuppy;
+	TextureData* m_TexKitten;
+	TextureData* m_TexPuppy;
 	std::string m_TexKittenPath;
 	std::string m_TexPuppyPath;
 	//Shader uniforms

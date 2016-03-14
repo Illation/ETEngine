@@ -107,6 +107,15 @@
     <ClCompile Include="Prefabs\FreeCamera.cpp">
       <Filter>Prefabs</Filter>
     </ClCompile>
+    <ClCompile Include="Content\ContentManager.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\TextureData.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\ShaderData.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -177,6 +186,18 @@
     </ClInclude>
     <ClInclude Include="Prefabs\FreeCamera.hpp">
       <Filter>Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\ContentLoader.hpp">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\ContentManager.hpp">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\TextureData.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\ShaderData.hpp">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

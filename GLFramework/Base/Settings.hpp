@@ -16,8 +16,8 @@ public:
 	{
 		WindowSettings() :
 			Fullscreen(false),
-			Width(800),
-			Height(600),
+			Width(1280),
+			Height(720),
 			AspectRatio(Width / (float)Height),
 			Title("OpenGl Framework"),
 			pWindow(nullptr)

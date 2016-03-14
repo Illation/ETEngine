@@ -54,7 +54,8 @@ void AbstractScene::RootInitialize()
 
 	//Create DefaultCamera
 	FreeCamera* freeCam = new FreeCamera();
-	//freeCam->GetTransform()->Translate(0, 50, -80);
+	freeCam->GetTransform()->Translate(0, -1, -3.5);
+	freeCam->GetTransform()->RotateEuler(glm::radians(20.f), 0, 0);
 	AddEntity(freeCam);
 	m_pDefaultCam = freeCam->GetComponent<CameraComponent>();
 	m_pTime = new Time();

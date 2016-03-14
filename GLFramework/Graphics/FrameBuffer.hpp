@@ -1,5 +1,7 @@
 #pragma once
 #include "../StaticDependancies/glad/glad.h"
+
+class ShaderData;
 class FrameBuffer
 {
 public:
@@ -16,8 +18,7 @@ private:
 	GLuint m_VertexArrayObject;
 	GLuint m_VertexBufferObject;
 
-	GLuint m_VertexShader, m_FragmentShader;
-	GLuint m_ShaderProgram;
+	ShaderData* m_pShader;
 
 	GLuint m_GlFrameBuffer;
 	GLuint m_TexColBuffer;

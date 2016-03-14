@@ -151,6 +151,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClCompile Include="Components\AbstractComponent.cpp" />
     <ClCompile Include="Components\CameraComponent.cpp" />
     <ClCompile Include="Components\TransformComponent.cpp" />
+    <ClCompile Include="Content\ContentManager.cpp" />
     <ClCompile Include="Content\ShaderLoader.cpp" />
     <ClCompile Include="Content\TextureLoader.cpp" />
     <ClCompile Include="Game\MainFramework.cpp" />
@@ -159,6 +160,8 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClCompile Include="Game\Scenes\TestScene.cpp" />
     <ClCompile Include="Graphics\FrameBuffer.cpp" />
     <ClCompile Include="Graphics\Material.cpp" />
+    <ClCompile Include="Graphics\ShaderData.cpp" />
+    <ClCompile Include="Graphics\TextureData.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Prefabs\FixedCamera.cpp" />
     <ClCompile Include="Prefabs\FreeCamera.cpp" />
@@ -176,6 +179,8 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClInclude Include="Components\AbstractComponent.hpp" />
     <ClInclude Include="Components\CameraComponent.hpp" />
     <ClInclude Include="Components\TransformComponent.hpp" />
+    <ClInclude Include="Content\ContentLoader.hpp" />
+    <ClInclude Include="Content\ContentManager.hpp" />
     <ClInclude Include="Content\ShaderLoader.hpp" />
     <ClInclude Include="Content\TextureLoader.hpp" />
     <ClInclude Include="Game\MainFramework.hpp" />
@@ -184,6 +189,8 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClInclude Include="Game\Scenes\TestScene.hpp" />
     <ClInclude Include="Graphics\FrameBuffer.hpp" />
     <ClInclude Include="Graphics\Material.hpp" />
+    <ClInclude Include="Graphics\ShaderData.hpp" />
+    <ClInclude Include="Graphics\TextureData.hpp" />
     <ClInclude Include="Helper\Singleton.h" />
     <ClInclude Include="Prefabs\FixedCamera.hpp" />
     <ClInclude Include="Prefabs\FreeCamera.hpp" />

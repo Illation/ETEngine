@@ -1,66 +1,65 @@
 #include "CubeMaterial.hpp"
 
 #include "../../Content/TextureLoader.hpp"
+#include "../../Content/ContentManager.hpp"
 #include "../../Base\Context.hpp"
+#include "../../Graphics/ShaderData.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <string>
 
 //Working singleton Set
 #define TIME Context::GetInstance()->pTime
 
 CubeMaterial::CubeMaterial(std::string texKpath, std::string texPpath)
-	:Material("Resources/sceneVertexShader.glsl", "Resources/sceneFragmentShader.glsl", "", false)
+	:Material("Resources/cuteCube.glsl")
 	,m_TexKittenPath(texKpath)
 	,m_TexPuppyPath(texPpath)
 {
 }
 CubeMaterial::~CubeMaterial()
 {
-	glDeleteTextures(1, &m_TexKitten);
-	glDeleteTextures(1, &m_TexPuppy);
 }
 
 void CubeMaterial::LoadTextures()
 {
 	//Load Textures
-	TextureLoader* tL = new TextureLoader();
-	m_TexKitten = tL->LoadImageToTexture("Resources/sample.png");
-	m_TexPuppy = tL->LoadImageToTexture("Resources/sample2.png");
-	delete tL;
+	m_TexKitten = ContentManager::Load<TextureData>("Resources/sample.png");
+	m_TexPuppy = ContentManager::Load<TextureData>("Resources/sample2.png");
 	//Bind Textures to shader
-	glUseProgram(m_ShaderProgram);
-	glUniform1i(glGetUniformLocation(m_ShaderProgram, "texKitten"), 0);
-	glUniform1i(glGetUniformLocation(m_ShaderProgram, "texPuppy"), 1);
+	glUseProgram(m_Shader->GetProgram());
+	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texKitten"), 0);
+	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texPuppy"), 1);
 }
 
 void CubeMaterial::AccessShaderAttributes()
 {
-	m_UniTime = glGetUniformLocation(m_ShaderProgram, "time");
-	m_UniColor = glGetUniformLocation(m_ShaderProgram, "overrideColor");
+	m_UniTime = glGetUniformLocation(m_Shader->GetProgram(), "time");
+	m_UniColor = glGetUniformLocation(m_Shader->GetProgram(), "overrideColor");
 }
 
 void CubeMaterial::UploadDerivedVariables()
 {
 	//Bind active textures
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_TexKitten);
+	glBindTexture(GL_TEXTURE_2D, m_TexKitten->GetHandle());
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_TexPuppy);
+	glBindTexture(GL_TEXTURE_2D, m_TexKitten->GetHandle());
 	//Upload time
 	glUniform1f(m_UniTime, TIME->DeltaTime());
 }
 
 void CubeMaterial::SpecifyInputLayout()
 {
-	GLint posAttrib = glGetAttribLocation(m_ShaderProgram, "position");
+	GLint posAttrib = glGetAttribLocation(m_Shader->GetProgram(), "position");
 	glEnableVertexAttribArray(posAttrib);
 	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
 
-	GLint colAttrib = glGetAttribLocation(m_ShaderProgram, "color");
+	GLint colAttrib = glGetAttribLocation(m_Shader->GetProgram(), "color");
 	glEnableVertexAttribArray(colAttrib);
 	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
 
-	GLint texAttrib = glGetAttribLocation(m_ShaderProgram, "texcoord");
+	GLint texAttrib = glGetAttribLocation(m_Shader->GetProgram(), "texcoord");
 	glEnableVertexAttribArray(texAttrib);
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
 }

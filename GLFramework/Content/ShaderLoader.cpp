@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-
+#include "../Graphics/ShaderData.hpp"
 
 ShaderLoader::ShaderLoader()
 {
@@ -14,31 +14,108 @@ ShaderLoader::~ShaderLoader()
 {
 }
 
-GLuint ShaderLoader::LoadShader(const char* filename, GLenum type)
+ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 {
 	using namespace std;
 
-	cout << "Compiling Shader: " << filename << " . . . ";
+	cout << "Compiling Shader: " << assetFile << " . . . ";
 
-	string shaderSourceStr;
+	string vertSource;
+	string geoSource;
+	string fragSource;
+
+	enum ParseState {
+		INIT,
+		VERT,
+		GEO,
+		FRAG
+	} state = ParseState::INIT;
+	bool useGeo = false;
 
 	string extractedLine;
 	ifstream shaderFile;
-	shaderFile.open(filename);
+	shaderFile.open(assetFile);
 	if (!shaderFile)
 	{
 		cout << "  . . . FAILED!" << endl;
 		cout << "    Opening shader file failed." << endl;
-		return -1;
+		return nullptr;
 	}
 	while (shaderFile.eof() == false)
 	{
+		//Get the line
 		getline(shaderFile, extractedLine);
-		shaderSourceStr += extractedLine;
-		shaderSourceStr += "\n";
+		//Precompile types
+		switch (state)
+		{
+		case INIT:
+			if (extractedLine.find("<VERTEX>") != string::npos)
+			{
+				state = ParseState::VERT;
+			}
+			if (extractedLine.find("<GEOMETRY>") != string::npos)
+			{
+				useGeo = true;
+				state = ParseState::GEO;
+			}
+			if (extractedLine.find("<FRAGMENT>") != string::npos)
+			{
+				state = ParseState::FRAG;
+			}
+			break;
+		case VERT:
+			if (extractedLine.find("</VERTEX>") != string::npos)
+			{
+				state = ParseState::INIT;
+				break;
+			}
+			vertSource += extractedLine;
+			vertSource += "\n";
+			break;
+		case GEO:
+			if (extractedLine.find("</GEOMETRY>") != string::npos)
+			{
+				state = ParseState::INIT;
+				break;
+			}
+			geoSource += extractedLine;
+			geoSource += "\n";
+			break;
+		case FRAG:
+			if (extractedLine.find("</FRAGMENT>") != string::npos)
+			{
+				state = ParseState::INIT;
+				break;
+			}
+			fragSource += extractedLine;
+			fragSource += "\n";
+			break;
+		}
 	}
 	shaderFile.close();
 
+	//Compile
+	GLuint vertexShader = CompileShader(vertSource, GL_VERTEX_SHADER);
+	GLuint geoShader;
+	if(useGeo)geoShader = CompileShader(fragSource, GL_GEOMETRY_SHADER);
+	GLuint fragmentShader = CompileShader(fragSource, GL_FRAGMENT_SHADER);
+
+	//Combine Shaders
+	GLuint shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	if(useGeo)glAttachShader(shaderProgram, geoShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glBindFragDataLocation(shaderProgram, 0, "outColor");
+	glLinkProgram(shaderProgram);
+
+	cout << "  . . . SUCCESS!" << endl;
+	if (useGeo)return new ShaderData(shaderProgram, vertexShader, geoShader, fragmentShader);
+	return new ShaderData(shaderProgram, vertexShader, fragmentShader);
+}
+
+GLuint ShaderLoader::CompileShader(const std::string &shaderSourceStr, GLenum type)
+{
+	using namespace std;
 	const char *shaderSource = shaderSourceStr.c_str();
 	GLuint shader = glCreateShader(type);
 	glShaderSource(shader, 1, &shaderSource, NULL);
@@ -53,39 +130,15 @@ GLuint ShaderLoader::LoadShader(const char* filename, GLenum type)
 		cout << "  . . . FAILED!" << endl;
 		cout << "    Compiling shader failed." << endl;
 	}
-	else
-	{
-		cout << "  . . . SUCCESS!" << endl;
-	}
 
 	return shader;
 }
 
-GLuint ShaderLoader::CreateShaderProgram(std::string vertexPath, std::string fragmentPath, GLuint& vertexShader, GLuint& fragmentShader)
+void ShaderLoader::Destroy(ShaderData* objToDestroy)
 {
-	vertexShader = LoadShader(vertexPath.c_str(), GL_VERTEX_SHADER);
-	fragmentShader = LoadShader(fragmentPath.c_str(), GL_FRAGMENT_SHADER);
-	//Combine Shaders
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glBindFragDataLocation(shaderProgram, 0, "outColor");
-	glLinkProgram(shaderProgram);
-	return shaderProgram;
-}
-
-GLuint ShaderLoader::CreateGSProgram(std::string vertexPath, std::string geoPath, std::string fragmentPath
-	, GLuint& vertexShader, GLuint& geoShader, GLuint& fragmentShader)
-{
-	vertexShader = LoadShader(vertexPath.c_str(), GL_VERTEX_SHADER);
-	geoShader = LoadShader(vertexPath.c_str(), GL_GEOMETRY_SHADER);
-	fragmentShader = LoadShader(fragmentPath.c_str(), GL_FRAGMENT_SHADER);
-	//Combine Shaders
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, geoShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glBindFragDataLocation(shaderProgram, 0, "outColor");
-	glLinkProgram(shaderProgram);
-	return shaderProgram;
+	if (!(objToDestroy == nullptr))
+	{
+		delete objToDestroy;
+		objToDestroy = nullptr;
+	}
 }

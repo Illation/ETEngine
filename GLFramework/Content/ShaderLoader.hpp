@@ -1,16 +1,20 @@
 #pragma once
 #include "../staticDependancies/glad/glad.h"
+#include "ContentLoader.hpp"
 #include <string>
 
-class ShaderLoader
+class ShaderData;
+class ShaderLoader : public ContentLoader<ShaderData>
 {
 public:
 	ShaderLoader();
 	~ShaderLoader();
-	GLuint CreateShaderProgram(std::string vertexPath, std::string fragmentPath, GLuint& vertexShader, GLuint& fragmentShader);
-	GLuint CreateGSProgram(std::string vertexPath, std::string geoPath, std::string fragmentPath
-		, GLuint& vertexShader, GLuint& geoShader, GLuint& fragmentShader);
+protected:
+
+	virtual ShaderData* LoadContent(const std::string& assetFile);
+	virtual void Destroy(ShaderData* objToDestroy);
+
 private:
-	GLuint LoadShader(const char* filename, GLenum type);
+	GLuint CompileShader(const std::string &shaderSourceStr, GLenum type);
 };
 

@@ -3,12 +3,12 @@
 #include <glm\glm.hpp>
 #include <string>
 
+class ShaderData;
+
 class Material
 {
 public:
-	Material(std::string VSfile, std::string FSfile, 
-		std::string GSfile = std::string(""), 
-		bool UseGeometryShader = false);
+	Material(std::string shaderFile);
 	virtual ~Material();
 
 	virtual void Initialize();
@@ -22,16 +22,11 @@ protected:
 	virtual void UploadDerivedVariables() = 0;
 
 protected:
-	GLuint m_ShaderProgram;
-
+	ShaderData* m_Shader;
 	GLint m_UniMatModel;
 	GLint m_UniMatWVP;
-	bool m_UseGS=false;
 private:
-	GLuint m_VertexShader;
-	GLuint m_GeometryShader;
-	GLuint m_FragmentShader;
 
-	std::string m_VSfile, m_GSfile, m_FSfile;
+	std::string m_ShaderFile;
 };
 

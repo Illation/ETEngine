@@ -22,6 +22,7 @@
 #include "../Game\Objects\Cube.hpp"
 #include "../Graphics\FrameBuffer.hpp"
 #include "../SceneGraph/SceneManager.hpp"
+#include "../Content/ContentManager.hpp"
 
 AbstractFramework::AbstractFramework()
 {
@@ -32,6 +33,8 @@ AbstractFramework::~AbstractFramework()
 	Context* pCon = Context::GetInstance();
 	SceneManager* pScMan = SceneManager::GetInstance();
 	InputManager* pInMan = InputManager::GetInstance();
+
+	ContentManager::Release();
 
 	SDL_GL_DeleteContext(m_GlContext);
 	SDL_Quit();
@@ -132,6 +135,8 @@ void AbstractFramework::InitializeDebug()
 void AbstractFramework::InitializeGame()
 {
 	//Initialize Managers
+	ContentManager::Initialize();
+
 	SceneManager::GetInstance()->Initialize();
 
 	//Initialize Game

@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include "../Content/ShaderLoader.hpp"
+#include "../Content/ContentManager.hpp"
+#include "ShaderData.hpp"
 
 #include "../Base\Settings.hpp"
 #define SETTINGS Settings::GetInstance()
@@ -16,10 +18,6 @@ FrameBuffer::~FrameBuffer()
 	glDeleteRenderbuffers(1, &m_RboDepthStencil);
 	glDeleteTextures(1, &m_TexColBuffer);
 	glDeleteFramebuffers(1, &m_GlFrameBuffer);
-
-	glDeleteProgram(m_ShaderProgram);
-	glDeleteShader(m_FragmentShader);
-	glDeleteShader(m_VertexShader);
 
 	glDeleteBuffers(1, &m_VertexBufferObject);
 	glDeleteVertexArrays(1, &m_VertexArrayObject);
@@ -45,18 +43,16 @@ void FrameBuffer::Initialize()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
 
 	//Load and compile Shaders
-	ShaderLoader* sL = new ShaderLoader();
-	m_ShaderProgram = sL->CreateShaderProgram("Resources/screenVertexShader.glsl", "Resources/screenFragmentShader.glsl", m_VertexShader, m_FragmentShader);
-	delete sL;
+	m_pShader = ContentManager::Load<ShaderData>("Resources/outlineEffect.glsl");
 
 	//Specify Input Layouts
 	glBindVertexArray(m_VertexArrayObject);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferObject);
-	DefAttLayout(m_ShaderProgram);
+	DefAttLayout(m_pShader->GetProgram());
 
 	//GetAccessTo shader attributes
-	glUseProgram(m_ShaderProgram);
-	glUniform1i(glGetUniformLocation(m_ShaderProgram, "texFramebuffer"), 0);
+	glUseProgram(m_pShader->GetProgram());
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texFramebuffer"), 0);
 
 	//FrameBuffer
 	std::cout << "Initializing Frame Buffer . . .";
@@ -90,7 +86,7 @@ void FrameBuffer::Draw()
 {
 	glBindVertexArray(m_VertexArrayObject);
 	glDisable(GL_DEPTH_TEST);
-	glUseProgram(m_ShaderProgram);
+	glUseProgram(m_pShader->GetProgram());
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_TexColBuffer);

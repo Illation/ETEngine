@@ -1,12 +1,18 @@
 #pragma once
 #include "../staticDependancies/glad/glad.h"
+#include "ContentLoader.hpp"
+#include "..\Graphics\TextureData.hpp"
 #include <string>
 
-class TextureLoader
+class TextureLoader : public ContentLoader<TextureData>
 {
 public:
 	TextureLoader();
 	~TextureLoader();
-	GLuint LoadImageToTexture(std::string filename);
+
+protected:
+
+	virtual TextureData* LoadContent(const std::string& assetFile);
+	virtual void Destroy(TextureData* objToDestroy);
 };
 
