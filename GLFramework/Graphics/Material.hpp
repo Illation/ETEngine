@@ -29,6 +29,7 @@ protected:
 	GLint m_UniMatWVP;
 private:
 
+	bool m_IsInitialized = false;
 	std::string m_ShaderFile;
 };
 

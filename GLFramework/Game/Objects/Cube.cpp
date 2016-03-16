@@ -8,6 +8,7 @@
 #include "../../Base\InputManager.hpp"
 #include "../../Components/TransformComponent.hpp"
 
+#include "../Materials/DiffuseMaterial.hpp"
 //Working singleton Set
 #define TIME Context::GetInstance()->pTime
 #define CAMERA Context::GetInstance()->pCamera
@@ -33,10 +34,10 @@ Cube::Cube()
 	glm::vec3 g = {  0.5f,  0.5f,  0.5f };
 	glm::vec3 h = { -0.5f,  0.5f,  0.5f };
 
-	glm::vec3 col = { 1,  1,  1 };
-	CreateQuad(f, e, a, b, col); CreateQuad(h, g, c, d, col);
-	CreateQuad(g, f, b, c, col); CreateQuad(h, e, a, d, col);
-	CreateQuad(c, d, a, b, col); CreateQuad(g, h, e, f, col);
+	//glm::vec3 col = { 1,  1,  1 };
+	CreateQuad(f, e, a, b, glm::vec3(0, 0, -1)); CreateQuad(h, g, c, d, glm::vec3(0, 0, 1));
+	CreateQuad(g, f, b, c, glm::vec3(1, 0, 0)); CreateQuad(h, e, a, d, glm::vec3(-1, 0, 0));
+	CreateQuad(c, d, a, b, glm::vec3(0, -1, 0)); CreateQuad(g, h, e, f, glm::vec3(0, 1, 0));
 										 
 	m_Vertices.push_back(VertPosColTex({ {-1.0f, -0.5f, -1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f} }));
 	m_Vertices.push_back(VertPosColTex({ { 1.0f, -0.5f, -1.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f} }));
@@ -52,12 +53,12 @@ Cube::Cube()
 		offset += dO;
 	}
 
-	m_pCubeMat = new CubeMaterial("Resources/sample.png", "Resources/sample2.png");
+	m_pMat = new DiffuseMaterial("Resources/sample.png");
 }
 Cube::~Cube()
 {
-	delete m_pCubeMat;
-	m_pCubeMat = nullptr;
+	delete m_pMat;
+	m_pMat = nullptr;
 	glDeleteBuffers(1, &m_ElementBufferObject);
 	glDeleteBuffers(1, &m_VertexBufferObject);
 	glDeleteVertexArrays(1, &m_VertexArrayObject);
@@ -65,7 +66,7 @@ Cube::~Cube()
 
 void Cube::Initialize()
 {
-	m_pCubeMat->Initialize();
+	m_pMat->Initialize();
 	//Vertex Array Object
 	glGenVertexArrays(1, &m_VertexArrayObject);
 	//Vertex Buffer Object
@@ -75,7 +76,7 @@ void Cube::Initialize()
 	//Specify Input Layout
 	glBindVertexArray(m_VertexArrayObject);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexArrayObject);
-	m_pCubeMat->SpecifyInputLayout();
+	m_pMat->SpecifyInputLayout();
 	//ElementBuffer (index list)
 	GLuint ebo;
 	glGenBuffers(1, &ebo);
@@ -99,7 +100,7 @@ void Cube::Draw()
 {
 	//Prepare data
 	glBindVertexArray(m_VertexArrayObject);
-	m_pCubeMat->UploadVariables(GetTransform()->GetWorld());
+	m_pMat->UploadVariables(GetTransform()->GetWorld());
 	// Draw Cube
 	glEnable(GL_DEPTH_TEST);
 
@@ -121,13 +122,11 @@ void Cube::Draw()
 		glStencilMask(0x00); // Don't write anything to stencil buffer
 		glDepthMask(GL_TRUE); // Write to depth buffer
 		
-		glm::mat4 matModel = glm::scale(glm::translate(GetTransform()->GetWorld(), glm::vec3(0, -1, 0)), glm::vec3(1, -1, 1));
-		m_pCubeMat->UpdateReflectionAtt(matModel, glm::vec3(0.3f, 0.3f, 0.3f));
+		//glm::mat4 matModel = glm::scale(glm::translate(GetTransform()->GetWorld(), glm::vec3(0, -1, 0)), glm::vec3(1, -1, 1));
+		//m_pCubeMat->UpdateReflectionAtt(matModel, glm::vec3(0.3f, 0.3f, 0.3f));
+		
+		//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); // EBO version
+		//m_pCubeMat->UpdateReflectionAtt(GetTransform()->GetWorld(), glm::vec3(1, 1, 1));
 	
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); // EBO version
-
-		matModel = glm::scale(glm::translate(matModel, glm::vec3(0, -1, 0)), glm::vec3(1, -1, 1));
-		m_pCubeMat->UpdateReflectionAtt(matModel, glm::vec3(1, 1, 1));
-
 	glDisable(GL_STENCIL_TEST);
 }

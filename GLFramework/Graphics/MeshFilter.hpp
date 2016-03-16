@@ -49,12 +49,15 @@ public:
 	const VertexObject& GetVertexObject(Material* pMaterial);
 
 	static std::map<VertexFlags, AttributeDescriptor> LayoutAttributes;
+	size_t GetIndexCount() { return m_IndexCount; }
 private:
 	friend class MeshFilterLoader;
+	friend class ModelComponent;
 
 	int GetVertexObjectId(unsigned flags);
 	void BuildVertexBuffer(Material* pMaterial);
 	bool HasElement(unsigned flags){ return (m_SupportedFlags&flags) > 0 ? true : false; }
+	std::string PrintFlags(unsigned flags);
 
 	size_t m_VertexCount = 0, m_IndexCount = 0;
 	unsigned m_SupportedFlags = 0;

@@ -2,8 +2,7 @@
 #include "../../Graphics/Material.hpp"
 
 class TextureData;
-class CubeMaterial :
-	public Material
+class CubeMaterial : public Material
 {
 public:
 	CubeMaterial(std::string texKittenPath, std::string texPuppyPath);

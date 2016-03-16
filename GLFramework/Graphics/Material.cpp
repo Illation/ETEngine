@@ -21,16 +21,21 @@ Material::~Material()
 
 void Material::Initialize()
 {
-	//Load Shader
-	m_Shader = ContentManager::Load<ShaderData>(m_ShaderFile);
+	if (!m_IsInitialized)
+	{
+		//Load Shader
+		m_Shader = ContentManager::Load<ShaderData>(m_ShaderFile);
 
-	//Jup (maybe temporary with texture manager)
-	LoadTextures();
+		//Jup (maybe temporary with texture manager)
+		LoadTextures();
 
-	//Get Access to uniforms
-	m_UniMatModel = glGetUniformLocation(m_Shader->GetProgram(), "model");
-	m_UniMatWVP = glGetUniformLocation(m_Shader->GetProgram(), "worldViewProj");
-	AccessShaderAttributes();
+		//Get Access to uniforms
+		m_UniMatModel = glGetUniformLocation(m_Shader->GetProgram(), "model");
+		m_UniMatWVP = glGetUniformLocation(m_Shader->GetProgram(), "worldViewProj");
+		AccessShaderAttributes();
+
+		m_IsInitialized = true;
+	}
 }
 
 void Material::UploadVariables(glm::mat4 matModel)

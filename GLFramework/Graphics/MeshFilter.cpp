@@ -1,6 +1,7 @@
 #include "MeshFilter.hpp"
 #include "Material.hpp"
 #include <algorithm>
+#include <iostream>
 
 std::map<VertexFlags, AttributeDescriptor> MeshFilter::LayoutAttributes =
 {
@@ -64,7 +65,17 @@ void MeshFilter::BuildVertexBuffer(Material* pMaterial)
 	unsigned stride = 0;
 	for (auto it = LayoutAttributes.begin(); it != LayoutAttributes.end(); ++it)
 	{
-		if (layoutFlags & it->first) stride += it->second.dataSize;
+		if (layoutFlags & it->first)//material requires this data
+		{
+			if (m_SupportedFlags & it->first)stride += it->second.dataSize;//filter can provide this data
+			else
+			{
+				std::cout << "Failed to build vertex buffer, mesh filter cannot provide required data\n";
+				std::cout << "required data: " << PrintFlags(layoutFlags) <<std::endl;
+				std::cout << "provided data: " << PrintFlags(m_SupportedFlags) << std::endl;
+				return;
+			}
+		}
 	}
 	//Initialize datastructure
 	std::vector<float> vertices;
@@ -117,12 +128,44 @@ void MeshFilter::BuildVertexBuffer(Material* pMaterial)
 	glBindBuffer(GL_ARRAY_BUFFER, obj.buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
 	//Specify Input Layout
+	glBindVertexArray(obj.array);
+	glBindBuffer(GL_ARRAY_BUFFER, obj.array);
 	pMaterial->SpecifyInputLayout();
 	//index buffer
 	glGenBuffers(1, &obj.index);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj.index);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*m_Indices.size(), m_Indices.data(), GL_STATIC_DRAW);
-
+	obj.flags = layoutFlags;
 	//Add to VertexObject datastructure
 	m_Objects.push_back(obj);
+}
+
+std::string MeshFilter::PrintFlags(unsigned flags)
+{
+	std::string flagstring;
+	if (flags & VertexFlags::POSITION)//material requires this data
+	{
+		flagstring += "POSITION, ";
+	}
+	if (flags & VertexFlags::NORMAL)//material requires this data
+	{
+		flagstring += "NORMAL, ";
+	}
+	if (flags & VertexFlags::BINORMAL)//material requires this data
+	{
+		flagstring += "BINORMAL, ";
+	}
+	if (flags & VertexFlags::TANGENT)//material requires this data
+	{
+		flagstring += "TANGENT, ";
+	}
+	if (flags & VertexFlags::COLOR)//material requires this data
+	{
+		flagstring += "COLOR, ";
+	}
+	if (flags & VertexFlags::TEXCOORD)//material requires this data
+	{
+		flagstring += "TEXCOORD, ";
+	}
+	return flagstring;
 }

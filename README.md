@@ -3,7 +3,7 @@
 Work in progress framework using opengl to later use for personal projects
 
 ## Acknowledgments
-Currently used libraries: SDL2, GLM, DevIL, GLAD
+Currently used libraries: SDL2, GLM, DevIL, GLAD and Assimp
 
 for library licenses see Library Licenses.md
 

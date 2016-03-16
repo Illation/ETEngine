@@ -1,6 +1,8 @@
 #include "ContentManager.hpp"
+
 #include "ShaderLoader.hpp"
 #include "TextureLoader.hpp"
+#include "MeshFilterLoader.hpp"
 
 std::vector<AbstractLoader*> ContentManager::m_Loaders = std::vector<AbstractLoader*>();
 bool ContentManager::m_IsInitialized = false;
@@ -36,6 +38,7 @@ void ContentManager::Initialize()
 		m_IsInitialized = true;
 		AddLoader(new ShaderLoader());
 		AddLoader(new TextureLoader());
+		AddLoader(new MeshFilterLoader());
 	}
 }
 

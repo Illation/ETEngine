@@ -5,10 +5,10 @@
 
 #include <glm\glm.hpp>
 
-#include "../Materials/CubeMaterial.hpp"
 
 #include "../../SceneGraph/Entity.hpp"
 
+class DiffuseMaterial;
 struct VertPosColTex
 {
 	glm::vec3 pos;
@@ -37,6 +37,6 @@ private:
 	GLuint m_VertexBufferObject;
 	GLuint m_ElementBufferObject;
 
-	CubeMaterial* m_pCubeMat = nullptr;
+	DiffuseMaterial* m_pMat = nullptr;
 };
 

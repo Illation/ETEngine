@@ -119,6 +119,15 @@
     <ClCompile Include="Graphics\MeshFilter.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Content\MeshFilterLoader.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\ModelComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Materials\DiffuseMaterial.cpp">
+      <Filter>Game\Materials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -204,6 +213,15 @@
     </ClInclude>
     <ClInclude Include="Graphics\MeshFilter.hpp">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\MeshFilterLoader.hpp">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\ModelComponent.hpp">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Materials\DiffuseMaterial.hpp">
+      <Filter>Game\Materials</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

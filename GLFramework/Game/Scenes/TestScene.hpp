@@ -3,6 +3,7 @@
 
 class Cube;
 class FrameBuffer;
+class DiffuseMaterial;
 
 class TestScene : public AbstractScene
 {
@@ -15,7 +16,7 @@ private:
 	void Draw();
 	void PostDraw();
 private:
-	Cube* m_pTestCube = nullptr;
+	DiffuseMaterial* m_pDifMat = nullptr;
 	FrameBuffer* m_pPostProc = nullptr;
 };
 

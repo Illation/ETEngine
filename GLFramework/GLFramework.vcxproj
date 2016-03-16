@@ -69,14 +69,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\DevIL\include;$(S_LIBS)\glm;$(IncludePath)</IncludePath>
-    <LibraryPath>$(S_LIBS)\SDL2\lib\x86;$(S_LIBS)\DevIL\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\DevIL\include;$(S_LIBS)\glm;$(S_LIBS)\assimp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(S_LIBS)\SDL2\lib\x86;$(S_LIBS)\DevIL\lib;$(S_LIBS)\assimp\lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\Build\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Build\BuildFiles\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\DevIL\include;$(S_LIBS)\glm;$(IncludePath)</IncludePath>
-    <LibraryPath>$(S_LIBS)\SDL2\lib\x86;$(S_LIBS)\DevIL\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\DevIL\include;$(S_LIBS)\glm;$(S_LIBS)\assimp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(S_LIBS)\SDL2\lib\x86;$(S_LIBS)\DevIL\lib;$(S_LIBS)\assimp\lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\Build\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Build\BuildFiles\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -88,13 +88,14 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;DevIL.lib;ILU.lib;ILUT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;DevIL.lib;ILU.lib;ILUT.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(S_LIBS)\SDL2\lib\x86\SDL2.dll" "$(OutDir)" /y/D
 xcopy "$(S_LIBS)\DevIL\lib\ILU.dll" "$(OutDir)" /y/D
 xcopy "$(S_LIBS)\DevIL\lib\ILUT.dll" "$(OutDir)" /y/D
 xcopy "$(S_LIBS)\DevIL\lib\DevIL.dll" "$(OutDir)" /y/D
+xcopy "$(S_LIBS)\assimp\lib\Assimp32.dll" "$(OutDir)" /y/D
 xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -120,13 +121,14 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;DevIL.lib;ILU.lib;ILUT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;DevIL.lib;ILU.lib;ILUT.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(S_LIBS)\SDL2\lib\x86\SDL2.dll" "$(OutDir)" /y/D
 xcopy "$(S_LIBS)\DevIL\lib\ILU.dll" "$(OutDir)" /y/D
 xcopy "$(S_LIBS)\DevIL\lib\ILUT.dll" "$(OutDir)" /y/D
 xcopy "$(S_LIBS)\DevIL\lib\DevIL.dll" "$(OutDir)" /y/D
+xcopy "$(S_LIBS)\assimp\lib\Assimp32.dll" "$(OutDir)" /y/D
 xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -150,12 +152,15 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClCompile Include="Base\Time.cpp" />
     <ClCompile Include="Components\AbstractComponent.cpp" />
     <ClCompile Include="Components\CameraComponent.cpp" />
+    <ClCompile Include="Components\ModelComponent.cpp" />
     <ClCompile Include="Components\TransformComponent.cpp" />
     <ClCompile Include="Content\ContentManager.cpp" />
+    <ClCompile Include="Content\MeshFilterLoader.cpp" />
     <ClCompile Include="Content\ShaderLoader.cpp" />
     <ClCompile Include="Content\TextureLoader.cpp" />
     <ClCompile Include="Game\MainFramework.cpp" />
     <ClCompile Include="Game\Materials\CubeMaterial.cpp" />
+    <ClCompile Include="Game\Materials\DiffuseMaterial.cpp" />
     <ClCompile Include="Game\Objects\Cube.cpp" />
     <ClCompile Include="Game\Scenes\TestScene.cpp" />
     <ClCompile Include="Graphics\FrameBuffer.cpp" />
@@ -179,13 +184,16 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClInclude Include="Base\Time.hpp" />
     <ClInclude Include="Components\AbstractComponent.hpp" />
     <ClInclude Include="Components\CameraComponent.hpp" />
+    <ClInclude Include="Components\ModelComponent.hpp" />
     <ClInclude Include="Components\TransformComponent.hpp" />
     <ClInclude Include="Content\ContentLoader.hpp" />
     <ClInclude Include="Content\ContentManager.hpp" />
+    <ClInclude Include="Content\MeshFilterLoader.hpp" />
     <ClInclude Include="Content\ShaderLoader.hpp" />
     <ClInclude Include="Content\TextureLoader.hpp" />
     <ClInclude Include="Game\MainFramework.hpp" />
     <ClInclude Include="Game\Materials\CubeMaterial.hpp" />
+    <ClInclude Include="Game\Materials\DiffuseMaterial.hpp" />
     <ClInclude Include="Game\Objects\Cube.hpp" />
     <ClInclude Include="Game\Scenes\TestScene.hpp" />
     <ClInclude Include="Graphics\FrameBuffer.hpp" />

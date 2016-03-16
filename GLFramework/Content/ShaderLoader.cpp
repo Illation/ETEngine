@@ -128,7 +128,24 @@ GLuint ShaderLoader::CompileShader(const std::string &shaderSourceStr, GLenum ty
 		char buffer[512];
 		glGetShaderInfoLog(shader, 512, NULL, buffer);
 		cout << "  . . . FAILED!" << endl;
-		cout << "    Compiling shader failed." << endl;
+		string sName;
+		switch (type)
+		{
+		case GL_VERTEX_SHADER:
+			sName = "vertex";
+			break;
+		case GL_GEOMETRY_SHADER:
+			sName = "geometry";
+			break;
+		case GL_FRAGMENT_SHADER:
+			sName = "fragment";
+			break;
+		default:
+			sName = "invalid type";
+			break;
+		}
+		cout << "    Compiling "<< sName << " shader failed." << endl;
+		cout << "    " << buffer << endl;
 	}
 
 	return shader;
