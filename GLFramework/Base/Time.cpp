@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "Time.hpp"
 
 Time::Time()
@@ -18,13 +19,13 @@ void Time::Start()
 void Time::Update()
 {
 	auto end = std::chrono::high_resolution_clock::now();
-	m_DeltaTime = ((float)(std::chrono::duration_cast<std::chrono::nanoseconds>(end - last).count()))*1e-9;
+	m_DeltaTime = ((float)(std::chrono::duration_cast<std::chrono::nanoseconds>(end - last).count()))*1e-9f;
 	last = end;
 }
 float Time::GetTime()
 {
 	auto end = std::chrono::high_resolution_clock::now();
-	return ((float)(std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()))*1e-9;
+	return ((float)(std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()))*1e-9f;
 }
 float Time::DeltaTime()
 {

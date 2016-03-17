@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "AbstractFramework.hpp"
 
 #include <SDL.h>

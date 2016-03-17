@@ -1,4 +1,4 @@
-#include "../../stdafx.hpp"
+#include "stdafx.hpp"
 
 #include "UberMaterial.hpp"
 
@@ -7,7 +7,7 @@
 #include "../../Graphics/MeshFilter.hpp"
 
 UberMaterial::UberMaterial() :
-	Material("Resources/UberShader.glsl"),
+	Material("Resources/Shaders/UberShader.glsl"),
 	m_UseDifTex(false),
 	m_UseNormTex(false),
 	m_AmbientColor(glm::vec3(0.f, 0.f, 0.f)),

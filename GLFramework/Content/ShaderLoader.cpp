@@ -1,7 +1,5 @@
+#include "stdafx.hpp"
 #include "ShaderLoader.hpp"
-
-#include <iostream>
-#include <fstream>
 
 #include "../Graphics/ShaderData.hpp"
 

@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "ContentManager.hpp"
 
 #include "ShaderLoader.hpp"

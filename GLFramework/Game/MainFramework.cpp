@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "MainFramework.hpp"
 
 #include "../SceneGraph/SceneManager.hpp"

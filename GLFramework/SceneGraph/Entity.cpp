@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "Entity.hpp"
 #include "AbstractScene.hpp"
 

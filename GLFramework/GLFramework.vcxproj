@@ -87,6 +87,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(SolutionDir)..\Build\BuildFiles\$(Configuration)\.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -118,6 +119,9 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(SolutionDir)..\Build\BuildFiles\$(Configuration)\.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -160,6 +164,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClCompile Include="Content\MeshFilterLoader.cpp" />
     <ClCompile Include="Content\ShaderLoader.cpp" />
     <ClCompile Include="Content\TextureLoader.cpp" />
+    <ClCompile Include="Framebuffers\HDRframeBuffer.cpp" />
     <ClCompile Include="Game\MainFramework.cpp" />
     <ClCompile Include="Game\Materials\CubeMaterial.cpp" />
     <ClCompile Include="Game\Materials\DiffuseMaterial.cpp" />
@@ -177,7 +182,14 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClCompile Include="SceneGraph\AbstractScene.cpp" />
     <ClCompile Include="SceneGraph\Entity.cpp" />
     <ClCompile Include="SceneGraph\SceneManager.cpp" />
-    <ClCompile Include="StaticDependancies\glad\glad.c" />
+    <ClCompile Include="StaticDependancies\glad\glad.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Context.hpp" />
@@ -194,6 +206,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClInclude Include="Content\MeshFilterLoader.hpp" />
     <ClInclude Include="Content\ShaderLoader.hpp" />
     <ClInclude Include="Content\TextureLoader.hpp" />
+    <ClInclude Include="Framebuffers\HDRframeBuffer.hpp" />
     <ClInclude Include="Game\MainFramework.hpp" />
     <ClInclude Include="Game\Materials\CubeMaterial.hpp" />
     <ClInclude Include="Game\Materials\DiffuseMaterial.hpp" />

@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "CameraComponent.hpp"
 #include "../Base/Settings.hpp"
 #include "../Base/Context.hpp"

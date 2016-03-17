@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "ModelComponent.hpp"
 
 #include "TransformComponent.hpp"

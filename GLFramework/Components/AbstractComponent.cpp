@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "AbstractComponent.hpp"
 #include <iostream>
 #include "../SceneGraph/Entity.hpp"

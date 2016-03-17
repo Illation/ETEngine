@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "MeshFilterLoader.hpp"
 
 #include "../Graphics/MeshFilter.hpp"
@@ -5,8 +6,6 @@
 #include <assimp\Importer.hpp>
 #include <assimp/scene.h>  
 #include <assimp/postprocess.h>
-
-#include <iostream>
 
 #define ASSIMP_BUILD_BOOST_WORAROUND
 

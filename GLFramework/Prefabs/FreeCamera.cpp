@@ -1,13 +1,7 @@
+#include "stdafx.hpp"
 #include "FreeCamera.hpp"
-#include "../Components/TransformComponent.hpp"
 #include "../Components/CameraComponent.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
-
-#include "../Base\Context.hpp"
-#include "../Base\InputManager.hpp"
-
-#define INPUT InputManager::GetInstance()
-#define TIME Context::GetInstance()->pTime
 
 FreeCamera::FreeCamera()
 {

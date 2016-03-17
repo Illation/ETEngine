@@ -1,12 +1,10 @@
+#include "stdafx.hpp"
 #include "AbstractScene.hpp"
 
 #include "../Components/CameraComponent.hpp"
-#include "../Components/TransformComponent.hpp"
 #include "../Prefabs\FreeCamera.hpp"
 #include "../Base/Time.hpp"
 #include "Entity.hpp"
-
-#include "../Base\Context.hpp"
 
 #define CONTEXT Context::GetInstance()
 

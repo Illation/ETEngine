@@ -3,6 +3,7 @@
 
 class Cube;
 class FrameBuffer;
+class HDRframeBuffer;
 class UberMaterial;
 
 class TestScene : public AbstractScene
@@ -17,6 +18,10 @@ private:
 	void PostDraw();
 private:
 	UberMaterial* m_pMat = nullptr;
-	FrameBuffer* m_pPostProc = nullptr;
+	FrameBuffer* m_pOutlineBuffer = nullptr;
+	HDRframeBuffer* m_pHDRbuffer = nullptr;
+
+	float m_Exposure = 1;
+	glm::vec3 m_ClearColor;
 };
 

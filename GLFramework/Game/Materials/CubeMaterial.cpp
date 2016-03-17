@@ -1,4 +1,4 @@
-#include "../../stdafx.hpp"
+#include "stdafx.hpp"
 
 #include "CubeMaterial.hpp"
 

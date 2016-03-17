@@ -1,6 +1,5 @@
+#include "stdafx.hpp"
 #include "TextureData.hpp"
-
-
 
 TextureData::TextureData(GLuint handle, int width, int height):
 	m_Handle(handle),

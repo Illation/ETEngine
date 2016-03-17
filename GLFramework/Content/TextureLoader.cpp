@@ -1,11 +1,9 @@
+#include "stdafx.hpp"
 #include "TextureLoader.hpp"
 
 #include <IL/il.h>
 #include <IL/ilu.h>
 #include <IL/ilut.h>
-
-#include <iostream>
-#include <fstream>
 
 TextureLoader::TextureLoader()
 {

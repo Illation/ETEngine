@@ -1,6 +1,5 @@
+#include "stdafx.hpp"
 #include "ShaderData.hpp"
-
-
 
 ShaderData::ShaderData(GLuint shaderProg, GLuint vertShader, GLuint fragShader) :
 	m_VertexShader(vertShader),

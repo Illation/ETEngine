@@ -47,6 +47,9 @@
     <Filter Include="StaticDependancies\glad">
       <UniqueIdentifier>{0e9c52e9-f27a-42cb-8275-92b7f7d353a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework\FrameBuffers">
+      <UniqueIdentifier>{6a8abcf2-1080-4bb9-8bea-5262900e4dc4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StaticDependancies\glad\glad.c">
@@ -134,6 +137,10 @@
     <ClCompile Include="Game\Materials\UberMaterial.cpp">
       <Filter>Project\Materials</Filter>
     </ClCompile>
+    <ClCompile Include="Framebuffers\HDRframeBuffer.cpp">
+      <Filter>Framework\FrameBuffers</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -233,5 +240,8 @@
       <Filter>Project\Materials</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.hpp" />
+    <ClInclude Include="Framebuffers\HDRframeBuffer.hpp">
+      <Filter>Framework\FrameBuffers</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

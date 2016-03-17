@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "Game\MainFramework.hpp"
 
 void SetDebuggingOptions();

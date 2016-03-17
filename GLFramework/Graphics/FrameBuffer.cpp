@@ -1,11 +1,13 @@
-#include "../stdafx.hpp"
+#include "stdafx.hpp"
 
 #include "FrameBuffer.hpp"
 
 #include "ShaderData.hpp"
 
 
-FrameBuffer::FrameBuffer()
+FrameBuffer::FrameBuffer(string shaderFile, GLenum format)
+	:m_ShaderFile(shaderFile),
+	m_Format(format)
 {
 }
 FrameBuffer::~FrameBuffer()
@@ -20,6 +22,7 @@ FrameBuffer::~FrameBuffer()
 
 void FrameBuffer::Initialize()
 {
+	std::cout << "Initializing Frame Buffer . . .";
 	GLfloat quadVertices[] = {
 		-1.0f,  1.0f,  0.0f, 1.0f,
 		1.0f,  1.0f,  1.0f, 1.0f,
@@ -38,7 +41,7 @@ void FrameBuffer::Initialize()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
 
 	//Load and compile Shaders
-	m_pShader = ContentManager::Load<ShaderData>("Resources/outlineEffect.glsl");
+	m_pShader = ContentManager::Load<ShaderData>(m_ShaderFile);
 
 	//Specify Input Layouts
 	glBindVertexArray(m_VertexArrayObject);
@@ -48,15 +51,15 @@ void FrameBuffer::Initialize()
 	//GetAccessTo shader attributes
 	glUseProgram(m_pShader->GetProgram());
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texFramebuffer"), 0);
+	AccessShaderAttributes();
 
 	//FrameBuffer
-	std::cout << "Initializing Frame Buffer . . .";
 	glGenFramebuffers(1, &m_GlFrameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_GlFrameBuffer);//Bind
 
 	glGenTextures(1, &m_TexColBuffer);
 	glBindTexture(GL_TEXTURE_2D, m_TexColBuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SETTINGS->Window.Width, SETTINGS->Window.Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SETTINGS->Window.Width, SETTINGS->Window.Height, 0, GL_RGB, m_Format, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -85,6 +88,8 @@ void FrameBuffer::Draw()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_TexColBuffer);
+
+	UploadDerivedVariables();
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
