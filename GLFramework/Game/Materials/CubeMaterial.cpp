@@ -1,16 +1,10 @@
+#include "../../stdafx.hpp"
+
 #include "CubeMaterial.hpp"
 
-#include "../../Content/TextureLoader.hpp"
-#include "../../Content/ContentManager.hpp"
-#include "../../Base\Context.hpp"
+#include "../../Graphics/TextureData.hpp"
 #include "../../Graphics/ShaderData.hpp"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <string>
 #include "../../Graphics/MeshFilter.hpp"
-
-//Working singleton Set
-#define TIME Context::GetInstance()->pTime
 
 CubeMaterial::CubeMaterial(std::string texKpath, std::string texPpath)
 	:Material("Resources/cuteCube.glsl")

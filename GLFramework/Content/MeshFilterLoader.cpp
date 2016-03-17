@@ -29,11 +29,11 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 		aiProcess_CalcTangentSpace |
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices |
-		aiProcess_SortByPType |
+		//aiProcess_SortByPType |
 		aiProcess_GenSmoothNormals |
 		aiProcess_PreTransformVertices |
 		aiProcess_ImproveCacheLocality |
-		aiProcess_GenUVCoords |
+		aiProcess_FlipUVs |
 		aiProcess_OptimizeMeshes |
 		aiProcess_OptimizeGraph |
 		aiProcess_MakeLeftHanded);

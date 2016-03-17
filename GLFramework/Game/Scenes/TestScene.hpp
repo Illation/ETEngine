@@ -3,7 +3,7 @@
 
 class Cube;
 class FrameBuffer;
-class DiffuseMaterial;
+class UberMaterial;
 
 class TestScene : public AbstractScene
 {
@@ -16,7 +16,7 @@ private:
 	void Draw();
 	void PostDraw();
 private:
-	DiffuseMaterial* m_pDifMat = nullptr;
+	UberMaterial* m_pMat = nullptr;
 	FrameBuffer* m_pPostProc = nullptr;
 };
 

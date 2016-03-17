@@ -1,15 +1,9 @@
+#include "../stdafx.hpp"
+
 #include "Material.hpp"
 
-#include "../Content/ShaderLoader.hpp"
-#include "../Base\Context.hpp"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#include "../Content/ContentManager.hpp"
 #include "ShaderData.hpp"
 #include "MeshFilter.hpp"
-
-#define CAMERA Context::GetInstance()->pCamera
 
 Material::Material(std::string shaderFile) :
 	m_ShaderFile(shaderFile)

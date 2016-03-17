@@ -1,21 +1,10 @@
-#include "Cube.hpp"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "../../stdafx.hpp"
 
-#include "../../Base\Context.hpp"
-#include "../../Base\Settings.hpp"
-#include "../../Base\InputManager.hpp"
-#include "../../Components/TransformComponent.hpp"
+#include "Cube.hpp"
 
 #include "../Materials/DiffuseMaterial.hpp"
-//Working singleton Set
-#define TIME Context::GetInstance()->pTime
-#define CAMERA Context::GetInstance()->pCamera
-#define SETTINGS Settings::GetInstance()
-#define INPUT InputManager::GetInstance()
 
-void Cube::CreateQuad(glm::vec3 a, glm::vec3 b, glm::vec3 c, glm::vec3 d, glm::vec3 col)
+void Cube::CreateQuad(vec3 a, vec3 b, vec3 c, vec3 d, vec3 col)
 {
 	m_Vertices.push_back(VertPosColTex({ a, col,{ 0.0f, 0.0f } }));
 	m_Vertices.push_back(VertPosColTex({ b, col,{ 1.0f, 0.0f } }));
@@ -25,19 +14,19 @@ void Cube::CreateQuad(glm::vec3 a, glm::vec3 b, glm::vec3 c, glm::vec3 d, glm::v
 
 Cube::Cube()
 {
-	glm::vec3 a = { -0.5f, -0.5f, -0.5f }; //Y Is Up
-	glm::vec3 b = {  0.5f, -0.5f, -0.5f };
-	glm::vec3 c = {  0.5f, -0.5f,  0.5f };
-	glm::vec3 d = { -0.5f, -0.5f,  0.5f };
-	glm::vec3 e = { -0.5f,  0.5f, -0.5f };
-	glm::vec3 f = {  0.5f,  0.5f, -0.5f };
-	glm::vec3 g = {  0.5f,  0.5f,  0.5f };
-	glm::vec3 h = { -0.5f,  0.5f,  0.5f };
+	vec3 a = { -0.5f, -0.5f, -0.5f }; //Y Is Up
+	vec3 b = {  0.5f, -0.5f, -0.5f };
+	vec3 c = {  0.5f, -0.5f,  0.5f };
+	vec3 d = { -0.5f, -0.5f,  0.5f };
+	vec3 e = { -0.5f,  0.5f, -0.5f };
+	vec3 f = {  0.5f,  0.5f, -0.5f };
+	vec3 g = {  0.5f,  0.5f,  0.5f };
+	vec3 h = { -0.5f,  0.5f,  0.5f };
 
-	//glm::vec3 col = { 1,  1,  1 };
-	CreateQuad(f, e, a, b, glm::vec3(0, 0, -1)); CreateQuad(h, g, c, d, glm::vec3(0, 0, 1));
-	CreateQuad(g, f, b, c, glm::vec3(1, 0, 0)); CreateQuad(h, e, a, d, glm::vec3(-1, 0, 0));
-	CreateQuad(c, d, a, b, glm::vec3(0, -1, 0)); CreateQuad(g, h, e, f, glm::vec3(0, 1, 0));
+	//vec3 col = { 1,  1,  1 };
+	CreateQuad(f, e, a, b, vec3(0, 0, -1)); CreateQuad(h, g, c, d, vec3(0, 0, 1));
+	CreateQuad(g, f, b, c, vec3(1, 0, 0)); CreateQuad(h, e, a, d, vec3(-1, 0, 0));
+	CreateQuad(c, d, a, b, vec3(0, -1, 0)); CreateQuad(g, h, e, f, vec3(0, 1, 0));
 										 
 	m_Vertices.push_back(VertPosColTex({ {-1.0f, -0.5f, -1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f} }));
 	m_Vertices.push_back(VertPosColTex({ { 1.0f, -0.5f, -1.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f} }));
@@ -93,7 +82,7 @@ void Cube::Update()
 	if (!INPUT->IsKeyboardKeyDown(SDL_SCANCODE_SPACE))
 	{
 		GetTransform()->RotateEuler(0,
-			TIME->DeltaTime() * glm::radians(180.0f) *0.4f, 0);
+			TIME->DeltaTime() * radians(180.0f) *0.4f, 0);
 	}
 }
 void Cube::Draw()
@@ -122,11 +111,11 @@ void Cube::Draw()
 		glStencilMask(0x00); // Don't write anything to stencil buffer
 		glDepthMask(GL_TRUE); // Write to depth buffer
 		
-		//glm::mat4 matModel = glm::scale(glm::translate(GetTransform()->GetWorld(), glm::vec3(0, -1, 0)), glm::vec3(1, -1, 1));
-		//m_pCubeMat->UpdateReflectionAtt(matModel, glm::vec3(0.3f, 0.3f, 0.3f));
+		//mat4 matModel = scale(translate(GetTransform()->GetWorld(), vec3(0, -1, 0)), vec3(1, -1, 1));
+		//m_pCubeMat->UpdateReflectionAtt(matModel, vec3(0.3f, 0.3f, 0.3f));
 		
 		//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); // EBO version
-		//m_pCubeMat->UpdateReflectionAtt(GetTransform()->GetWorld(), glm::vec3(1, 1, 1));
+		//m_pCubeMat->UpdateReflectionAtt(GetTransform()->GetWorld(), vec3(1, 1, 1));
 	
 	glDisable(GL_STENCIL_TEST);
 }

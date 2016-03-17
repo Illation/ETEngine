@@ -1,7 +1,7 @@
+#include "../stdafx.hpp"
 #include "MeshFilter.hpp"
 #include "Material.hpp"
 #include <algorithm>
-#include <iostream>
 
 std::map<VertexFlags, AttributeDescriptor> MeshFilter::LayoutAttributes =
 {

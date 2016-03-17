@@ -85,6 +85,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -161,6 +163,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClCompile Include="Game\MainFramework.cpp" />
     <ClCompile Include="Game\Materials\CubeMaterial.cpp" />
     <ClCompile Include="Game\Materials\DiffuseMaterial.cpp" />
+    <ClCompile Include="Game\Materials\UberMaterial.cpp" />
     <ClCompile Include="Game\Objects\Cube.cpp" />
     <ClCompile Include="Game\Scenes\TestScene.cpp" />
     <ClCompile Include="Graphics\FrameBuffer.cpp" />
@@ -194,6 +197,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClInclude Include="Game\MainFramework.hpp" />
     <ClInclude Include="Game\Materials\CubeMaterial.hpp" />
     <ClInclude Include="Game\Materials\DiffuseMaterial.hpp" />
+    <ClInclude Include="Game\Materials\UberMaterial.hpp" />
     <ClInclude Include="Game\Objects\Cube.hpp" />
     <ClInclude Include="Game\Scenes\TestScene.hpp" />
     <ClInclude Include="Graphics\FrameBuffer.hpp" />
@@ -208,6 +212,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClInclude Include="SceneGraph\Entity.hpp" />
     <ClInclude Include="SceneGraph\SceneManager.hpp" />
     <ClInclude Include="StaticDependancies\glad\glad.h" />
+    <ClInclude Include="stdafx.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

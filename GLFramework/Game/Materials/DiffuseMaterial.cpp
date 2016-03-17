@@ -1,13 +1,10 @@
+#include "../../stdafx.hpp"
+
 #include "DiffuseMaterial.hpp"
 
 #include "../../Graphics/MeshFilter.hpp"
 #include "../../Graphics/TextureData.hpp"
 #include "../../Graphics/ShaderData.hpp"
-#include "../../Content/ContentManager.hpp"
-#include "../../Base\Context.hpp"
-#include "../../Components/TransformComponent.hpp"
-
-#define CAMERA Context::GetInstance()->pCamera
 
 DiffuseMaterial::DiffuseMaterial() :
 	Material("Resources/PosNormTex3D.glsl"),

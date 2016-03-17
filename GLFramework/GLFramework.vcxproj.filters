@@ -5,44 +5,47 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{00bb9047-658d-48ed-b38e-f2f59d5dc660}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Base">
+      <UniqueIdentifier>{2c31fc0e-b55c-4d1c-acc7-70c595778840}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Components">
+      <UniqueIdentifier>{6e29b1d2-ac82-4d9d-82db-227c89d2f91c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Content">
+      <UniqueIdentifier>{5c3316ba-0d3c-455b-87c6-31492df68995}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Helper">
+      <UniqueIdentifier>{e2d6b3a0-7e91-40f9-ad1d-cce14f5c21d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Graphics">
+      <UniqueIdentifier>{03108a7f-d243-4901-9ba5-af37be9c76c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Prefabs">
+      <UniqueIdentifier>{6def276e-a4ec-4947-8236-c615c0900710}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\SceneGraph">
+      <UniqueIdentifier>{d59f5d56-84c9-40e9-9ac1-788eae2537bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project">
+      <UniqueIdentifier>{13f010e3-5d2e-4f03-8126-cdfb9aae31db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project\Objects">
+      <UniqueIdentifier>{add7ca31-550a-4183-bf64-bc9ae8020b8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project\Materials">
+      <UniqueIdentifier>{ff67220f-2f72-414e-8fe0-47eb48c84718}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project\Scenes">
+      <UniqueIdentifier>{5de02364-fd3d-40ba-9704-66d17ed38b5a}</UniqueIdentifier>
+    </Filter>
     <Filter Include="StaticDependancies">
       <UniqueIdentifier>{f5976f54-628e-4cc4-9bbd-9c4b02a4d539}</UniqueIdentifier>
     </Filter>
     <Filter Include="StaticDependancies\glad">
       <UniqueIdentifier>{0e9c52e9-f27a-42cb-8275-92b7f7d353a4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SceneGraph">
-      <UniqueIdentifier>{d59f5d56-84c9-40e9-9ac1-788eae2537bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game">
-      <UniqueIdentifier>{13f010e3-5d2e-4f03-8126-cdfb9aae31db}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Objects">
-      <UniqueIdentifier>{add7ca31-550a-4183-bf64-bc9ae8020b8d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Content">
-      <UniqueIdentifier>{5c3316ba-0d3c-455b-87c6-31492df68995}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Graphics">
-      <UniqueIdentifier>{03108a7f-d243-4901-9ba5-af37be9c76c3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Base">
-      <UniqueIdentifier>{2c31fc0e-b55c-4d1c-acc7-70c595778840}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Helper">
-      <UniqueIdentifier>{e2d6b3a0-7e91-40f9-ad1d-cce14f5c21d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Materials">
-      <UniqueIdentifier>{ff67220f-2f72-414e-8fe0-47eb48c84718}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Scenes">
-      <UniqueIdentifier>{5de02364-fd3d-40ba-9704-66d17ed38b5a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Components">
-      <UniqueIdentifier>{6e29b1d2-ac82-4d9d-82db-227c89d2f91c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Prefabs">
-      <UniqueIdentifier>{6def276e-a4ec-4947-8236-c615c0900710}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -51,82 +54,85 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Game\Objects\Cube.cpp">
-      <Filter>Game\Objects</Filter>
+      <Filter>Project\Objects</Filter>
     </ClCompile>
     <ClCompile Include="Content\ShaderLoader.cpp">
-      <Filter>Content</Filter>
+      <Filter>Framework\Content</Filter>
     </ClCompile>
     <ClCompile Include="Content\TextureLoader.cpp">
-      <Filter>Content</Filter>
+      <Filter>Framework\Content</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\FrameBuffer.cpp">
-      <Filter>Graphics</Filter>
+      <Filter>Framework\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Base\Time.cpp">
-      <Filter>Base</Filter>
+      <Filter>Framework\Base</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\Material.cpp">
-      <Filter>Graphics</Filter>
+      <Filter>Framework\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Game\Materials\CubeMaterial.cpp">
-      <Filter>Game\Materials</Filter>
+      <Filter>Project\Materials</Filter>
     </ClCompile>
     <ClCompile Include="Base\AbstractFramework.cpp">
-      <Filter>Base</Filter>
+      <Filter>Framework\Base</Filter>
     </ClCompile>
     <ClCompile Include="SceneGraph\Entity.cpp">
-      <Filter>SceneGraph</Filter>
+      <Filter>Framework\SceneGraph</Filter>
     </ClCompile>
     <ClCompile Include="Game\MainFramework.cpp">
-      <Filter>Game</Filter>
+      <Filter>Project</Filter>
     </ClCompile>
     <ClCompile Include="SceneGraph\AbstractScene.cpp">
-      <Filter>SceneGraph</Filter>
+      <Filter>Framework\SceneGraph</Filter>
     </ClCompile>
     <ClCompile Include="SceneGraph\SceneManager.cpp">
-      <Filter>SceneGraph</Filter>
+      <Filter>Framework\SceneGraph</Filter>
     </ClCompile>
     <ClCompile Include="Game\Scenes\TestScene.cpp">
-      <Filter>Game\Scenes</Filter>
+      <Filter>Project\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="Base\InputManager.cpp">
-      <Filter>Base</Filter>
+      <Filter>Framework\Base</Filter>
     </ClCompile>
     <ClCompile Include="Components\AbstractComponent.cpp">
-      <Filter>Components</Filter>
+      <Filter>Framework\Components</Filter>
     </ClCompile>
     <ClCompile Include="Components\TransformComponent.cpp">
-      <Filter>Components</Filter>
+      <Filter>Framework\Components</Filter>
     </ClCompile>
     <ClCompile Include="Components\CameraComponent.cpp">
-      <Filter>Components</Filter>
+      <Filter>Framework\Components</Filter>
     </ClCompile>
     <ClCompile Include="Prefabs\FixedCamera.cpp">
-      <Filter>Prefabs</Filter>
+      <Filter>Framework\Prefabs</Filter>
     </ClCompile>
     <ClCompile Include="Prefabs\FreeCamera.cpp">
-      <Filter>Prefabs</Filter>
+      <Filter>Framework\Prefabs</Filter>
     </ClCompile>
     <ClCompile Include="Content\ContentManager.cpp">
-      <Filter>Content</Filter>
+      <Filter>Framework\Content</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\TextureData.cpp">
-      <Filter>Graphics</Filter>
+      <Filter>Framework\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\ShaderData.cpp">
-      <Filter>Graphics</Filter>
+      <Filter>Framework\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\MeshFilter.cpp">
-      <Filter>Graphics</Filter>
+      <Filter>Framework\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Content\MeshFilterLoader.cpp">
-      <Filter>Content</Filter>
+      <Filter>Framework\Content</Filter>
     </ClCompile>
     <ClCompile Include="Components\ModelComponent.cpp">
-      <Filter>Components</Filter>
+      <Filter>Framework\Components</Filter>
     </ClCompile>
     <ClCompile Include="Game\Materials\DiffuseMaterial.cpp">
-      <Filter>Game\Materials</Filter>
+      <Filter>Project\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Materials\UberMaterial.cpp">
+      <Filter>Project\Materials</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -134,94 +140,98 @@
       <Filter>StaticDependancies\glad</Filter>
     </ClInclude>
     <ClInclude Include="Game\Objects\Cube.hpp">
-      <Filter>Game\Objects</Filter>
+      <Filter>Project\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Content\ShaderLoader.hpp">
-      <Filter>Content</Filter>
+      <Filter>Framework\Content</Filter>
     </ClInclude>
     <ClInclude Include="Content\TextureLoader.hpp">
-      <Filter>Content</Filter>
+      <Filter>Framework\Content</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\FrameBuffer.hpp">
-      <Filter>Graphics</Filter>
+      <Filter>Framework\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Base\Settings.hpp">
-      <Filter>Base</Filter>
+      <Filter>Framework\Base</Filter>
     </ClInclude>
     <ClInclude Include="Helper\Singleton.h">
-      <Filter>Helper</Filter>
+      <Filter>Framework\Helper</Filter>
     </ClInclude>
     <ClInclude Include="Base\Context.hpp">
-      <Filter>Base</Filter>
+      <Filter>Framework\Base</Filter>
     </ClInclude>
     <ClInclude Include="Base\Time.hpp">
-      <Filter>Base</Filter>
+      <Filter>Framework\Base</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\Material.hpp">
-      <Filter>Graphics</Filter>
+      <Filter>Framework\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Game\Materials\CubeMaterial.hpp">
-      <Filter>Game\Materials</Filter>
+      <Filter>Project\Materials</Filter>
     </ClInclude>
     <ClInclude Include="Base\AbstractFramework.hpp">
-      <Filter>Base</Filter>
+      <Filter>Framework\Base</Filter>
     </ClInclude>
     <ClInclude Include="SceneGraph\Entity.hpp">
-      <Filter>SceneGraph</Filter>
+      <Filter>Framework\SceneGraph</Filter>
     </ClInclude>
     <ClInclude Include="Game\MainFramework.hpp">
-      <Filter>Game</Filter>
+      <Filter>Project</Filter>
     </ClInclude>
     <ClInclude Include="SceneGraph\AbstractScene.hpp">
-      <Filter>SceneGraph</Filter>
+      <Filter>Framework\SceneGraph</Filter>
     </ClInclude>
     <ClInclude Include="SceneGraph\SceneManager.hpp">
-      <Filter>SceneGraph</Filter>
+      <Filter>Framework\SceneGraph</Filter>
     </ClInclude>
     <ClInclude Include="Game\Scenes\TestScene.hpp">
-      <Filter>Game\Scenes</Filter>
+      <Filter>Project\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="Base\InputManager.hpp">
-      <Filter>Base</Filter>
+      <Filter>Framework\Base</Filter>
     </ClInclude>
     <ClInclude Include="Components\AbstractComponent.hpp">
-      <Filter>Components</Filter>
+      <Filter>Framework\Components</Filter>
     </ClInclude>
     <ClInclude Include="Components\TransformComponent.hpp">
-      <Filter>Components</Filter>
+      <Filter>Framework\Components</Filter>
     </ClInclude>
     <ClInclude Include="Components\CameraComponent.hpp">
-      <Filter>Components</Filter>
+      <Filter>Framework\Components</Filter>
     </ClInclude>
     <ClInclude Include="Prefabs\FixedCamera.hpp">
-      <Filter>Prefabs</Filter>
+      <Filter>Framework\Prefabs</Filter>
     </ClInclude>
     <ClInclude Include="Prefabs\FreeCamera.hpp">
-      <Filter>Prefabs</Filter>
+      <Filter>Framework\Prefabs</Filter>
     </ClInclude>
     <ClInclude Include="Content\ContentLoader.hpp">
-      <Filter>Content</Filter>
+      <Filter>Framework\Content</Filter>
     </ClInclude>
     <ClInclude Include="Content\ContentManager.hpp">
-      <Filter>Content</Filter>
+      <Filter>Framework\Content</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\TextureData.hpp">
-      <Filter>Graphics</Filter>
+      <Filter>Framework\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\ShaderData.hpp">
-      <Filter>Graphics</Filter>
+      <Filter>Framework\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\MeshFilter.hpp">
-      <Filter>Graphics</Filter>
+      <Filter>Framework\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Content\MeshFilterLoader.hpp">
-      <Filter>Content</Filter>
+      <Filter>Framework\Content</Filter>
     </ClInclude>
     <ClInclude Include="Components\ModelComponent.hpp">
-      <Filter>Components</Filter>
+      <Filter>Framework\Components</Filter>
     </ClInclude>
     <ClInclude Include="Game\Materials\DiffuseMaterial.hpp">
-      <Filter>Game\Materials</Filter>
+      <Filter>Project\Materials</Filter>
     </ClInclude>
+    <ClInclude Include="Game\Materials\UberMaterial.hpp">
+      <Filter>Project\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.hpp" />
   </ItemGroup>
 </Project>

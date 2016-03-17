@@ -1,18 +1,13 @@
+#include "../stdafx.hpp"
+
 #include "FrameBuffer.hpp"
 
-#include <iostream>
-#include "../Content/ShaderLoader.hpp"
-#include "../Content/ContentManager.hpp"
 #include "ShaderData.hpp"
 
-#include "../Base\Settings.hpp"
-#define SETTINGS Settings::GetInstance()
 
 FrameBuffer::FrameBuffer()
 {
 }
-
-
 FrameBuffer::~FrameBuffer()
 {
 	glDeleteRenderbuffers(1, &m_RboDepthStencil);

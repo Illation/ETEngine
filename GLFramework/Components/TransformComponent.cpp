@@ -1,7 +1,11 @@
+#include "../stdafx.hpp"
+
 #include "TransformComponent.hpp"
-#include <glm/gtx/transform.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
 #include "../SceneGraph/Entity.hpp"
+
+#include <glm/gtx/transform.hpp>
+#include <glm\gtx\quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 TransformComponent::TransformComponent()
 {
