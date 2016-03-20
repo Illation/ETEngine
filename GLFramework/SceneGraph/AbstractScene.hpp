@@ -8,6 +8,8 @@ class CameraComponent;
 class Time;
 class ContextObjects;
 class SceneManager;
+class Gbuffer;
+class HDRframeBuffer;
 
 class AbstractScene
 {
@@ -43,5 +45,12 @@ private:
 	CameraComponent *m_pDefaultCam = nullptr;
 	Time *m_pTime = nullptr;
 	ContextObjects* m_pConObj = nullptr;
+
+	float m_Exposure = 1;
+	glm::vec3 m_ClearColor;
+	Gbuffer* m_pGBuffer = nullptr;
+	Gbuffer* m_pDemoBuffer = nullptr;
+	bool m_DemoMode = false;
+	HDRframeBuffer* m_pHDRbuffer = nullptr;
 };
 

@@ -5,6 +5,8 @@
 #include "../Prefabs\FreeCamera.hpp"
 #include "../Base/Time.hpp"
 #include "Entity.hpp"
+#include "../Framebuffers\Gbuffer.hpp"
+#include "../Framebuffers\HDRframeBuffer.hpp"
 
 #define CONTEXT Context::GetInstance()
 
@@ -17,14 +19,15 @@ AbstractScene::~AbstractScene()
 {
 	for (Entity* pEntity : m_pEntityVec)
 	{
-		delete pEntity;
-		pEntity = nullptr;
+		SafeDelete(pEntity);
 	}
 	m_pEntityVec.clear();
-	delete m_pConObj;
-	m_pConObj = nullptr;
-	delete m_pTime;
-	m_pTime = nullptr;
+
+	SafeDelete(m_pConObj);
+	SafeDelete(m_pTime);
+	SafeDelete(m_pGBuffer);
+	SafeDelete(m_pDemoBuffer);
+	SafeDelete(m_pHDRbuffer);
 }
 
 void AbstractScene::AddEntity(Entity* pEntity)
@@ -63,7 +66,22 @@ void AbstractScene::RootInitialize()
 
 	CONTEXT->SetContext(m_pConObj);
 
+	m_ClearColor = vec3(101.f / 255.f, 114.f / 255.f, 107.f / 255.f)*0.1f;
+
 	Initialize();
+
+	m_pHDRbuffer = new HDRframeBuffer();
+	m_pHDRbuffer->Initialize();
+	m_pHDRbuffer->Enable(false);
+	m_pDemoBuffer = new Gbuffer(true);
+	m_pDemoBuffer->SetAmbCol(glm::vec3(0.05f, 0.1f, 0.08f)*0.01f);
+	m_pDemoBuffer->SetLightDir(glm::normalize(glm::vec3(0.5, 1, 0.5)));
+	m_pDemoBuffer->Initialize();
+	m_pGBuffer = new Gbuffer();
+	m_pGBuffer->SetAmbCol(glm::vec3(0.05f, 0.1f, 0.08f)*0.01f);
+	m_pGBuffer->SetLightDir(glm::normalize(glm::vec3(0.5, 1, 0.5)));
+	m_pGBuffer->Initialize();
+	m_pGBuffer->Enable(true);
 
 	for (Entity* pEntity : m_pEntityVec)
 	{
@@ -81,6 +99,32 @@ void AbstractScene::RootUpdate()
 	m_pConObj->pCamera->Update();
 
 	Update();
+	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_UP))
+	{
+		m_Exposure *= 1.02f;
+		LOGGER::Log("Exposure: " + to_string(m_Exposure));
+		m_pHDRbuffer->SetExposure(m_Exposure);
+	}
+	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_DOWN))
+	{
+		m_Exposure /= 1.02f;
+		LOGGER::Log("Exposure: " + to_string(m_Exposure));
+		m_pHDRbuffer->SetExposure(m_Exposure);
+	}
+	if (INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_RETURN))
+	{
+		m_DemoMode = !m_DemoMode;
+	}
+	if (m_DemoMode)
+	{
+		m_pHDRbuffer->SetExposure(1);
+		m_pHDRbuffer->SetGamma(1);
+	}
+	else
+	{
+		m_pHDRbuffer->SetExposure(m_Exposure);
+		m_pHDRbuffer->SetGamma(1.2f);
+	}
 
 	for (Entity* pEntity : m_pEntityVec)
 	{
@@ -90,12 +134,24 @@ void AbstractScene::RootUpdate()
 
 void AbstractScene::RootDraw()
 {
+	if (m_DemoMode)m_pDemoBuffer->Enable();
+	else m_pGBuffer->Enable();
+	// Clear the screen to white
+	glClearColor(m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	Draw();
 
 	for (Entity* pEntity : m_pEntityVec)
 	{
 		pEntity->RootDraw();
 	}
+
+	m_pHDRbuffer->Enable();
+	if (m_DemoMode)m_pDemoBuffer->Draw();
+	else m_pGBuffer->Draw();
+	m_pHDRbuffer->Enable(false);
+	m_pHDRbuffer->Draw();
 
 	PostDraw();
 }

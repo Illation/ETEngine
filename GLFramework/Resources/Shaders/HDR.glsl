@@ -15,8 +15,8 @@
 	out vec4 outColor;
 	uniform sampler2D texFramebuffer;
 	uniform float exposure;
+    uniform float gamma;
 	
-    const float gamma = 2.2;
 	void main()
 	{
 		vec3 sampledColor = texture(texFramebuffer, Texcoord).rgb;

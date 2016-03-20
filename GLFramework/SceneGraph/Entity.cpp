@@ -16,13 +16,13 @@ Entity::~Entity()
 	//Component Cleanup
 	for (AbstractComponent* pComp : m_pComponentVec)
 	{
-		if (!(pComp == nullptr)) { delete pComp; pComp = nullptr; }
+		SafeDelete(pComp);
 	}
 
 	//Object Cleanup
 	for (Entity* pChild : m_pChildVec)
 	{
-		if (!(pChild == nullptr)) { delete pChild; pChild = nullptr; }
+		SafeDelete(pChild);
 	}
 }
 

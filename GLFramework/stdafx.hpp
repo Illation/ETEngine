@@ -70,9 +70,12 @@ inline void Clamp(T& value, T hi, T lo)
 #include "Base\Context.hpp"
 #include "Base\Settings.hpp"
 #include "Base\InputManager.hpp"
+#include "Helper/Logger.hpp"
 //Working singleton Set
 #define TIME Context::GetInstance()->pTime
 #define CAMERA Context::GetInstance()->pCamera
 #define SETTINGS Settings::GetInstance()
 #define INPUT InputManager::GetInstance()
+#define LOGGER Logger
+#define CONTENT ContentManager
 #pragma endregion Macros

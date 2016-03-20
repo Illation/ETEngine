@@ -24,12 +24,14 @@
 #include "../Graphics\FrameBuffer.hpp"
 #include "../SceneGraph/SceneManager.hpp"
 #include "../Content/ContentManager.hpp"
+#include "../Helper/Logger.hpp"
 
 AbstractFramework::AbstractFramework()
 {
 }
 AbstractFramework::~AbstractFramework()
 {
+	Logger::Release();
 	Settings* pSet = Settings::GetInstance();
 	Context* pCon = Context::GetInstance();
 	SceneManager* pScMan = SceneManager::GetInstance();
@@ -102,7 +104,7 @@ void AbstractFramework::InitializeWindow()
 	if (m_GlContext == NULL)sdl_die("Failed to create OpenGL context");
 
 	// Use v-sync
-	SDL_GL_SetSwapInterval(1);
+	SDL_GL_SetSwapInterval(0);
 }
 
 void AbstractFramework::InitializeDevIL()
@@ -124,13 +126,14 @@ void AbstractFramework::BindOpenGL()
 
 void AbstractFramework::InitializeDebug()
 {
-	// Enable the debug callback
-#ifdef _DEBUG
-	glEnable(GL_DEBUG_OUTPUT);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-	glDebugMessageCallback(openglCallbackFunction, nullptr);
-	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
-#endif
+	Logger::Initialize();
+//	// Enable the debug callback
+//#ifdef _DEBUG
+//	glEnable(GL_DEBUG_OUTPUT);
+//	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+//	glDebugMessageCallback(openglCallbackFunction, nullptr);
+//	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
+//#endif
 }
 
 void AbstractFramework::InitializeGame()

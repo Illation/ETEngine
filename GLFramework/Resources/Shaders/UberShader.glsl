@@ -37,7 +37,7 @@
 	in vec3 Tangent;
 	in vec2 Texcoord;
 	
-	out vec4 outColor;
+	layout (location = 0) out vec4 outColor;
 	
 	uniform vec3 lightDir;
 	uniform vec3 camPos;
@@ -53,7 +53,7 @@
 	uniform float specularPower;
 	
 	const float maxExposure = 5000;
-	const float brightness = 1;
+	const float brightness = 5;
 	
 	void main()
 	{
@@ -89,7 +89,7 @@
 		specS = clamp(pow(specS, specularPower), 0.0, maxExposure);
 		specular = specular * specS;
 		
-		vec3 finalCol = ambient+diffuse*brightness+specular*brightness;
+		vec3 finalCol = ambient+diffuse+specular*brightness;
 		finalCol = clamp(finalCol, 0.0, maxExposure);		
 		
 		outColor = vec4(finalCol, alpha);

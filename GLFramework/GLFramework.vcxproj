@@ -164,10 +164,12 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClCompile Include="Content\MeshFilterLoader.cpp" />
     <ClCompile Include="Content\ShaderLoader.cpp" />
     <ClCompile Include="Content\TextureLoader.cpp" />
+    <ClCompile Include="Framebuffers\Gbuffer.cpp" />
     <ClCompile Include="Framebuffers\HDRframeBuffer.cpp" />
     <ClCompile Include="Game\MainFramework.cpp" />
     <ClCompile Include="Game\Materials\CubeMaterial.cpp" />
     <ClCompile Include="Game\Materials\DiffuseMaterial.cpp" />
+    <ClCompile Include="Game\Materials\GbufferMaterial.cpp" />
     <ClCompile Include="Game\Materials\UberMaterial.cpp" />
     <ClCompile Include="Game\Objects\Cube.cpp" />
     <ClCompile Include="Game\Scenes\TestScene.cpp" />
@@ -176,6 +178,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClCompile Include="Graphics\MeshFilter.cpp" />
     <ClCompile Include="Graphics\ShaderData.cpp" />
     <ClCompile Include="Graphics\TextureData.cpp" />
+    <ClCompile Include="Helper\Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Prefabs\FixedCamera.cpp" />
     <ClCompile Include="Prefabs\FreeCamera.cpp" />
@@ -206,10 +209,12 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClInclude Include="Content\MeshFilterLoader.hpp" />
     <ClInclude Include="Content\ShaderLoader.hpp" />
     <ClInclude Include="Content\TextureLoader.hpp" />
+    <ClInclude Include="Framebuffers\Gbuffer.hpp" />
     <ClInclude Include="Framebuffers\HDRframeBuffer.hpp" />
     <ClInclude Include="Game\MainFramework.hpp" />
     <ClInclude Include="Game\Materials\CubeMaterial.hpp" />
     <ClInclude Include="Game\Materials\DiffuseMaterial.hpp" />
+    <ClInclude Include="Game\Materials\GbufferMaterial.hpp" />
     <ClInclude Include="Game\Materials\UberMaterial.hpp" />
     <ClInclude Include="Game\Objects\Cube.hpp" />
     <ClInclude Include="Game\Scenes\TestScene.hpp" />
@@ -218,6 +223,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClInclude Include="Graphics\MeshFilter.hpp" />
     <ClInclude Include="Graphics\ShaderData.hpp" />
     <ClInclude Include="Graphics\TextureData.hpp" />
+    <ClInclude Include="Helper\Logger.hpp" />
     <ClInclude Include="Helper\Singleton.h" />
     <ClInclude Include="Prefabs\FixedCamera.hpp" />
     <ClInclude Include="Prefabs\FreeCamera.hpp" />

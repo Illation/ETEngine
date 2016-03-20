@@ -2,10 +2,11 @@
 #include "../StaticDependancies/glad/glad.h"
 
 class ShaderData;
+class TextureData;
 class FrameBuffer
 {
 public:
-	FrameBuffer(std::string shaderFile, GLenum format);
+	FrameBuffer(std::string shaderFile, GLenum format, unsigned numTargets = 1);
 	virtual ~FrameBuffer();
 
 	void Initialize();
@@ -14,11 +15,12 @@ public:
 
 protected:
 
-	virtual void AccessShaderAttributes() {}
+	virtual void AccessShaderAttributes();
 
 	virtual void UploadDerivedVariables() {}
 
 	ShaderData* m_pShader;
+	vector<TextureData*> m_pTextureVec;
 private:
 	void DefAttLayout(GLuint shaderProgram);
 	// Quad vertices
@@ -27,9 +29,9 @@ private:
 
 	std::string m_ShaderFile;
 	GLenum m_Format;
+	unsigned m_NumTargets = 1;
 
 	GLuint m_GlFrameBuffer;
-	GLuint m_TexColBuffer;
 	GLuint m_RboDepthStencil;
 };
 

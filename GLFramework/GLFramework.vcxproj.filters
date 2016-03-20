@@ -141,6 +141,15 @@
       <Filter>Framework\FrameBuffers</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Helper\Logger.cpp">
+      <Filter>Framework\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Framebuffers\Gbuffer.cpp">
+      <Filter>Framework\FrameBuffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Materials\GbufferMaterial.cpp">
+      <Filter>Project\Materials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -242,6 +251,15 @@
     <ClInclude Include="stdafx.hpp" />
     <ClInclude Include="Framebuffers\HDRframeBuffer.hpp">
       <Filter>Framework\FrameBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\Logger.hpp">
+      <Filter>Framework\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Framebuffers\Gbuffer.hpp">
+      <Filter>Framework\FrameBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Materials\GbufferMaterial.hpp">
+      <Filter>Project\Materials</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
