@@ -47,7 +47,7 @@ void TestScene::Initialize()
 	{
 		for (size_t j = 0; j < amountPerRow; j++)
 		{
-			auto pModelComp = new ModelComponent("Resources/Models/sphere.dae");
+			auto pModelComp = new ModelComponent("Resources/Models/helmet.dae");
 			pModelComp->SetMaterial(m_pMat);
 			auto pHelmet = new Entity();
 			pHelmet->AddComponent(pModelComp);
@@ -86,9 +86,9 @@ void TestScene::Initialize()
 	auto disY = uniform_real_distribution<float>(1, 3);
 	auto disC = uniform_real_distribution<float>(0.2f, 1);
 	auto disI = uniform_real_distribution<float>(500, 1000);
-	for (size_t i = 0; i < 10; i++)
+	for (size_t i = 0; i < 0; i++)
 	{
-		auto pLigMod = new ModelComponent("Resources/Models/helmet.dae");
+		auto pLigMod = new ModelComponent("Resources/Models/sphere.dae");
 		pLigMod->SetMaterial(m_pLightMat);
 		auto pLigEnt = new Entity();
 		pLigEnt->AddComponent(new LightComponent(new PointLight(

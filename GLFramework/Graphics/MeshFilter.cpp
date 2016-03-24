@@ -126,21 +126,19 @@ void MeshFilter::BuildVertexBuffer(Material* pMaterial)
 
 	VertexObject obj;
 	glGenVertexArrays(1, &obj.array);
+	glBindVertexArray(obj.array);
+	glBindBuffer(GL_ARRAY_BUFFER, obj.array);
 	//Vertex Buffer Object
 	glGenBuffers(1, &obj.buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, obj.buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
 	//Specify Input Layout
-	glBindVertexArray(obj.array);
-	glBindBuffer(GL_ARRAY_BUFFER, obj.array);
 	pMaterial->SpecifyInputLayout();
 	//index buffer
-	//if(pMaterial->IsForwardRendered())
-	//{
-		glGenBuffers(1, &obj.index);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj.index);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(GLuint)*m_Indices.size(),m_Indices.data(),GL_STATIC_DRAW);
-	//}
+	glGenBuffers(1, &obj.index);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj.index);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(GLuint)*m_Indices.size(),m_Indices.data(),GL_STATIC_DRAW);
+	
 	//Add flags for later reference
 	obj.flags = layoutFlags;
 	//Add to VertexObject datastructure

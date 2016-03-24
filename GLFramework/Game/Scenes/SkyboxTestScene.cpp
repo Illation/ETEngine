@@ -39,12 +39,8 @@ void SkyboxTestScene::Initialize()
 	m_pMat->SetSpecCol(glm::vec3(1.0f, 1.0f, 1.0f)*1.0f);
 
 	m_pMat2 = new GbufferMaterial();
-	m_pMat2->SetDiffuseTexture("Resources/Textures/sample.png");
-	m_pMat2->SetSpecularTexture("Resources/Textures/Roughness.png");
-	m_pMat2->SetNormalTexture("Resources/Textures/NormalMap.png");
-	m_pMat2->SetDifCol(glm::vec3(1.0f, 1.0f, 1.0f));
-	m_pMat2->SetSpecCol(glm::vec3(1.0f, 1.0f, 1.0f)*1.0f);
-
+	m_pMat2->SetDifCol(glm::vec3(1.0f, 1.0f, 1.0f)*0.8f);
+	m_pMat2->SetSpecCol(glm::vec3(1.0f, 1.0f, 1.0f)*0.5f);
 	//Skybox
 	//**************************
 	m_pSkybox = new Skybox("Resources/Textures/skybox/sb.jpg");
@@ -70,7 +66,7 @@ void SkyboxTestScene::Initialize()
 			}
 			else
 			{
-				auto pModelComp = new ModelComponent("Resources/Models/bunny.dae");
+				auto pModelComp = new ModelComponent("Resources/Models/monkey.dae");
 				pModelComp->SetMaterial(m_pMat2);
 				auto pHelmet = new Entity();
 				pHelmet->AddComponent(pModelComp);

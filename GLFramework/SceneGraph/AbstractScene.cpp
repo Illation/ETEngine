@@ -81,7 +81,7 @@ void AbstractScene::RootInitialize()
 	m_pDemoBuffer->Initialize();
 
 	m_pGBuffer = new Gbuffer();
-	m_pGBuffer->SetAmbCol(glm::vec3(0.05f, 0.1f, 0.08f)*0.01f);
+	m_pGBuffer->SetAmbCol(glm::vec3(0.05f, 0.1f, 0.08f)*0.0f);
 	m_pGBuffer->Initialize();
 	m_pGBuffer->Enable(true);
 
