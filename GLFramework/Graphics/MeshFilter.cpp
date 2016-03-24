@@ -70,9 +70,12 @@ void MeshFilter::BuildVertexBuffer(Material* pMaterial)
 			if (m_SupportedFlags & it->first)stride += it->second.dataSize;//filter can provide this data
 			else
 			{
-				std::cout << "Failed to build vertex buffer, mesh filter cannot provide required data\n";
-				std::cout << "required data: " << PrintFlags(layoutFlags) <<std::endl;
-				std::cout << "provided data: " << PrintFlags(m_SupportedFlags) << std::endl;
+				string FailString = "Failed to build vertex buffer, mesh filter cannot provide required data\n";
+				FailString += "required data: "; 
+				FailString += PrintFlags(layoutFlags);
+				FailString += "\nprovided data: "; 
+				FailString += PrintFlags(m_SupportedFlags);FailString += "\n";
+				LOGGER::Log(FailString.c_str(), LogLevel::Error);
 				return;
 			}
 		}
@@ -132,9 +135,13 @@ void MeshFilter::BuildVertexBuffer(Material* pMaterial)
 	glBindBuffer(GL_ARRAY_BUFFER, obj.array);
 	pMaterial->SpecifyInputLayout();
 	//index buffer
-	glGenBuffers(1, &obj.index);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj.index);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*m_Indices.size(), m_Indices.data(), GL_STATIC_DRAW);
+	//if(pMaterial->IsForwardRendered())
+	//{
+		glGenBuffers(1, &obj.index);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj.index);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(GLuint)*m_Indices.size(),m_Indices.data(),GL_STATIC_DRAW);
+	//}
+	//Add flags for later reference
 	obj.flags = layoutFlags;
 	//Add to VertexObject datastructure
 	m_Objects.push_back(obj);

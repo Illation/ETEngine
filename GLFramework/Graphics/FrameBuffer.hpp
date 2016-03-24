@@ -3,6 +3,7 @@
 
 class ShaderData;
 class TextureData;
+
 class FrameBuffer
 {
 public:
@@ -13,6 +14,8 @@ public:
 	void Enable(bool active = true);
 	void Draw();
 
+	GLuint Get() { return m_GlFrameBuffer; }
+
 protected:
 
 	virtual void AccessShaderAttributes();
@@ -22,7 +25,6 @@ protected:
 	ShaderData* m_pShader;
 	vector<TextureData*> m_pTextureVec;
 private:
-	void DefAttLayout(GLuint shaderProgram);
 	// Quad vertices
 	GLuint m_VertexArrayObject;
 	GLuint m_VertexBufferObject;

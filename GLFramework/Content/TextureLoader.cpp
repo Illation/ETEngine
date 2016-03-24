@@ -22,7 +22,7 @@ TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	ILuint imgName;;
+	ILuint imgName;
 	ilGenImages(1, &imgName);
 	ilBindImage(imgName);
 	if (ilLoadImage(assetFile.c_str()))
@@ -33,7 +33,7 @@ TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 		int height = ilGetInteger(IL_IMAGE_HEIGHT);
 		ILubyte *pixelData = ilGetData();
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_FLOAT, pixelData);
+		glTexImage2D(GL_TEXTURE_2D, 0, m_UseSrgb?GL_SRGB:GL_RGB, width, height, 0, GL_RGB, GL_FLOAT, pixelData);
 
 		ilBindImage(0);
 		ilDeleteImage(imgName);

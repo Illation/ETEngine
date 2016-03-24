@@ -1,6 +1,7 @@
 #include "stdafx.hpp"
 
 #include "TransformComponent.hpp"
+#include "LightComponent.hpp"
 #include "../SceneGraph/Entity.hpp"
 
 #include <glm/gtx/transform.hpp>
@@ -31,6 +32,18 @@ void TransformComponent::Update()
 
 void TransformComponent::UpdateTransforms()
 {
+	if (m_IsTransformChanged & TransformChanged::NONE)
+		return;
+
+	if (m_IsTransformChanged & TransformChanged::TRANSLATION)
+	{
+		auto ligComp = m_pEntity->GetComponent<LightComponent>();
+		if (!(ligComp == nullptr))
+		{
+			ligComp->m_PositionUpdated = true;
+		}
+	}
+
 	//Calculate World Matrix
 	//**********************
 	m_World = glm::translate(m_Position)*glm::toMat4(m_Rotation)*glm::scale(m_Scale);
@@ -59,6 +72,9 @@ void TransformComponent::UpdateTransforms()
 }
 
 void TransformComponent::Draw()
+{
+}
+void TransformComponent::DrawForward()
 {
 }
 

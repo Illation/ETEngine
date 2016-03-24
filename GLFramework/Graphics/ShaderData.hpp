@@ -12,11 +12,16 @@ public:
 
 	GLuint GetProgram() { return m_ShaderProgram; }
 
+	string GetName() { return m_Name; }
 private:
+	friend class ShaderLoader;
+
 	GLuint m_VertexShader;
 	GLuint m_GeometryShader;
 	GLuint m_FragmentShader;
 	GLuint m_ShaderProgram;
 	bool m_UseGS = false;
+
+	string m_Name;
 };
 

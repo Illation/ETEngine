@@ -1,11 +1,11 @@
 #pragma once
 #include "../../SceneGraph/AbstractScene.hpp"
 
-class Cube;
 class FrameBuffer;
-class Gbuffer;
-class HDRframeBuffer;
 class GbufferMaterial;
+class EmissiveMaterial;
+class PointLight;
+class Entity;
 
 class TestScene : public AbstractScene
 {
@@ -16,9 +16,13 @@ private:
 	void Initialize();
 	void Update();
 	void Draw();
+	void DrawForward();
 	void PostDraw();
 private:
 	GbufferMaterial* m_pMat = nullptr;
-	FrameBuffer* m_pOutlineBuffer = nullptr;
+	EmissiveMaterial* m_pLightMat = nullptr;
+
+	PointLight* m_pLight = nullptr;
+	Entity* m_pLigEnt = nullptr;
 };
 

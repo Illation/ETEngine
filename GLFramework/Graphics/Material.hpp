@@ -15,6 +15,7 @@ public:
 	void SpecifyInputLayout();
 	unsigned GetLayoutFlags() { return m_LayoutFlags; }
 	void UploadVariables(glm::mat4 matModel);
+	bool IsForwardRendered(){ return m_DrawForward; }
 
 protected:
 	virtual void LoadTextures() = 0;
@@ -24,6 +25,7 @@ protected:
 
 protected:
 	unsigned m_LayoutFlags = 0;
+	bool m_DrawForward = false;
 	ShaderData* m_Shader;
 	GLint m_UniMatModel;
 	GLint m_UniMatWVP;

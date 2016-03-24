@@ -1,6 +1,5 @@
 #pragma once
 #include "AbstractComponent.hpp"
-#include <string>
 
 class Material;
 class MeshFilter;
@@ -17,10 +16,12 @@ protected:
 	virtual void Initialize();
 	virtual void Update();
 	virtual void Draw();
+	virtual void DrawForward();
 
 private:
 
 	void UpdateMaterial();
+	void DrawCall();
 
 	std::string m_AssetFile;
 	MeshFilter* m_pMeshFilter = nullptr;

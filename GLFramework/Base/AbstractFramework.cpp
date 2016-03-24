@@ -1,30 +1,11 @@
 #include "stdafx.hpp"
 #include "AbstractFramework.hpp"
 
-#include <SDL.h>
-#include <SDL_opengl.h>
-
 #include <IL/il.h>
 #include <IL/ilu.h>
 #include <IL/ilut.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <chrono>
-
-#include "Context.hpp"
-#include "Settings.hpp"
-#include "InputManager.hpp"
-#include "../Game\Objects\Cube.hpp"
-#include "../Graphics\FrameBuffer.hpp"
 #include "../SceneGraph/SceneManager.hpp"
-#include "../Content/ContentManager.hpp"
-#include "../Helper/Logger.hpp"
 
 AbstractFramework::AbstractFramework()
 {
@@ -78,7 +59,9 @@ void AbstractFramework::InitializeSDL()
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	// Request a debug context.
+#if defined(DEBUG) | defined(_DEBUG)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+#endif
 }
 
 void AbstractFramework::InitializeWindow()
@@ -104,7 +87,7 @@ void AbstractFramework::InitializeWindow()
 	if (m_GlContext == NULL)sdl_die("Failed to create OpenGL context");
 
 	// Use v-sync
-	SDL_GL_SetSwapInterval(0);
+	SDL_GL_SetSwapInterval(1);
 }
 
 void AbstractFramework::InitializeDevIL()

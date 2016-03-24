@@ -108,7 +108,9 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 
 	cout << "  . . . SUCCESS!" << endl;
 	if (useGeo)return new ShaderData(shaderProgram, vertexShader, geoShader, fragmentShader);
-	return new ShaderData(shaderProgram, vertexShader, fragmentShader);
+	ShaderData* pShaderData =  new ShaderData(shaderProgram, vertexShader, fragmentShader);
+	pShaderData->m_Name = assetFile;
+	return pShaderData;
 }
 
 GLuint ShaderLoader::CompileShader(const std::string &shaderSourceStr, GLenum type)

@@ -4,7 +4,7 @@
 #include "../Graphics/ShaderData.hpp"
 
 HDRframeBuffer::HDRframeBuffer():
-	FrameBuffer("Resources/Shaders/HDR.glsl", GL_FLOAT)
+	FrameBuffer("Resources/Shaders/PostHDR.glsl", GL_FLOAT, 2)
 {
 }
 HDRframeBuffer::~HDRframeBuffer()
@@ -13,7 +13,8 @@ HDRframeBuffer::~HDRframeBuffer()
 
 void HDRframeBuffer::AccessShaderAttributes()
 {
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texFramebuffer"), 0);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texColor"), 0);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texBright"), 1);
 	m_uExposure = glGetUniformLocation(m_pShader->GetProgram(), "exposure");
 	m_uGamma = glGetUniformLocation(m_pShader->GetProgram(), "gamma");
 }

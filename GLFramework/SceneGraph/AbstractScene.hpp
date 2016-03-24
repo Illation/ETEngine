@@ -5,6 +5,7 @@
 //forward declaration
 class Entity;
 class CameraComponent;
+class LightComponent;
 class Time;
 class ContextObjects;
 class SceneManager;
@@ -20,12 +21,14 @@ public:
 	void AddEntity(Entity* pEntity);
 	void RemoveEntity(Entity* pEntity, bool deleteEntity = true);
 	void SetActiveCamera(CameraComponent* pCamera);
+	std::vector<LightComponent*> GetLights();
 
 protected:
 
 	virtual void Initialize() = 0;
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
+	virtual void DrawForward() = 0;
 	virtual void PostDraw() = 0;
 	virtual void OnActivated() {}
 	virtual void OnDeactivated() {}

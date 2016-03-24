@@ -50,16 +50,29 @@ void ModelComponent::Draw()
 {
 	if (m_pMaterial == nullptr)
 	{
-		std::cout << "ModelComponent::Draw> material is null\n";
+		LOGGER::Log("ModelComponent::Draw> material is null\n", LogLevel::Warning);
 		return;
 	}
+	if (!(m_pMaterial->IsForwardRendered())) DrawCall();
+}
+void ModelComponent::DrawForward()
+{
+	if (m_pMaterial == nullptr)
+	{
+		LOGGER::Log("ModelComponent::Draw> material is null\n", LogLevel::Warning);
+		return;
+	}
+	if (m_pMaterial->IsForwardRendered()) DrawCall();
+}
+void ModelComponent::DrawCall()
+{
 	//Get Vertex Object
 	auto vO = m_pMeshFilter->GetVertexObject(m_pMaterial);
 	glBindVertexArray(vO.array);
 	m_pMaterial->UploadVariables(m_pEntity->GetTransform()->GetWorld());
 	// Draw 
 	glEnable(GL_DEPTH_TEST);
-	glDrawElements(GL_TRIANGLES, m_pMeshFilter->m_IndexCount, GL_UNSIGNED_INT, 0);
+	glDrawElementsInstanced(GL_TRIANGLES, m_pMeshFilter->m_IndexCount, GL_UNSIGNED_INT, 0, 1);
 }
 
 void ModelComponent::SetMaterial(Material* pMaterial)

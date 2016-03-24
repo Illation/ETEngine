@@ -66,7 +66,7 @@ public:
 		}
 		if (searchChildren)
 		{
-			for (auto *child : m_pChildren)
+			for (auto *child : m_pChildVec)
 			{
 				auto childComponents = child->GetComponents<T>(searchChildren);
 
@@ -107,6 +107,7 @@ protected:
 	virtual void Initialize() {}
 	virtual void Start() {}
 	virtual void Draw() {}
+	virtual void DrawForward() {}
 	virtual void Update() {}
 
 private:
@@ -115,6 +116,7 @@ private:
 	void RootInitialize();
 	void RootStart();
 	void RootDraw();
+	void RootDrawForward();
 	void RootUpdate();
 
 	std::vector<Entity*> m_pChildVec;

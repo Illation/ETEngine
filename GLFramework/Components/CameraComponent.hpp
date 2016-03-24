@@ -30,6 +30,7 @@ protected:
 	virtual void Initialize();
 	virtual void Update();
 	virtual void Draw();
+	virtual void DrawForward();
 
 private:
 	glm::mat4 m_View, m_Projection, m_ViewInverse, 

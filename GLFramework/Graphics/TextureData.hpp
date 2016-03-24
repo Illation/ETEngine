@@ -3,6 +3,9 @@
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
+
+//Todo: Implement texture types with inheritance
+
 class TextureData
 {
 public:
@@ -17,3 +20,17 @@ private:
 	int m_Height;
 };
 
+class CubeMap
+{
+public:
+	CubeMap(GLuint handle, int width, int height) :
+		m_Handle(handle),m_Width(width),m_Height(height){}
+	~CubeMap(){ glDeleteTextures(1, &m_Handle); }
+
+	GLuint GetHandle() { return m_Handle; }
+
+private:
+	GLuint m_Handle;
+	int m_Width;
+	int m_Height;
+};

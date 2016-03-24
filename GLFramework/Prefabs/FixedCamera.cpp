@@ -1,7 +1,6 @@
 #include "stdafx.hpp"
 #include "FixedCamera.hpp"
 #include "../Components/CameraComponent.hpp"
-#include <glm/gtx/matrix_decompose.hpp>
 
 FixedCamera::FixedCamera()
 {

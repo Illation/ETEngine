@@ -2,6 +2,7 @@
 #include "../Helper/Singleton.h"
 #include "../Base/Time.hpp"
 #include "../Components/CameraComponent.hpp"
+#include "../SceneGraph/AbstractScene.hpp"
 
 class ContextObjects
 {
@@ -13,6 +14,7 @@ public:
 	}
 	Time* pTime;
 	CameraComponent* pCamera;
+	AbstractScene* pScene;
 };
 
 struct Context : public Singleton<Context>, public ContextObjects
@@ -28,6 +30,7 @@ public:
 	{
 		pTime = pContext->pTime;
 		pCamera = pContext->pCamera;
+		pScene = pContext->pScene;
 	}
 };
 

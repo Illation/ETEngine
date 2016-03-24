@@ -76,6 +76,20 @@ void Entity::RootDraw()
 		pChild->RootDraw();
 	}
 }
+void Entity::RootDrawForward()
+{
+	DrawForward();
+	//Component Draw
+	for (AbstractComponent* pComp : m_pComponentVec)
+	{
+		pComp->DrawForward();
+	}
+	//Root-Object Draw
+	for (Entity* pChild : m_pChildVec)
+	{
+		pChild->RootDrawForward();
+	}
+}
 
 void Entity::AddChild(Entity* pEntity)
 {

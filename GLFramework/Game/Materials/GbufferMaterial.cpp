@@ -6,8 +6,10 @@
 #include "../../Graphics/ShaderData.hpp"
 #include "../../Graphics/MeshFilter.hpp"
 
+#include "../../Content/TextureLoader.hpp"
+
 GbufferMaterial::GbufferMaterial() :
-	Material("Resources/Shaders/gBufferShader.glsl"),
+	Material("Resources/Shaders/DefUberShader.glsl"),
 	m_DiffuseColor(glm::vec3(0.65f, 0.65f, 0.65f)),
 	m_SpecularColor(glm::vec3(1.0f, 1.0f, 1.0f))
 {
@@ -19,6 +21,7 @@ GbufferMaterial::~GbufferMaterial()
 
 void GbufferMaterial::LoadTextures()
 {
+	TextureLoader* pTL = ContentManager::GetLoader<TextureLoader, TextureData>();
 	glUseProgram(m_Shader->GetProgram());
 	m_uUseDifTex = glGetUniformLocation(m_Shader->GetProgram(), "useDifTex");
 	glUniform1i(m_uUseDifTex, m_UseDifTex);
@@ -27,20 +30,22 @@ void GbufferMaterial::LoadTextures()
 	m_uUseSpecTex = glGetUniformLocation(m_Shader->GetProgram(), "useSpecTex");
 	glUniform1i(m_uUseSpecTex, m_UseSpecTex);
 
+	pTL->UseSrgb(true);
 	if (m_UseDifTex)
 	{
 		m_TexDiffuse = ContentManager::Load<TextureData>(m_TexDiffusePath);
 		glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texDiffuse"), 0);
 	}
-	if (m_UseNormTex)
-	{
-		m_TexNorm = ContentManager::Load<TextureData>(m_TexNormPath);
-		glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texNormal"), 1);
-	}
 	if (m_UseSpecTex)
 	{
 		m_TexSpec = ContentManager::Load<TextureData>(m_TexSpecPath);
 		glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texSpecular"), 2);
+	}
+	pTL->UseSrgb(false);
+	if (m_UseNormTex)
+	{
+		m_TexNorm = ContentManager::Load<TextureData>(m_TexNormPath);
+		glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texNormal"), 1);
 	}
 	m_OutdatedTextureData = false;
 }

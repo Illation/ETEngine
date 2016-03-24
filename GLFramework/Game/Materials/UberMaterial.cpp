@@ -7,7 +7,7 @@
 #include "../../Graphics/MeshFilter.hpp"
 
 UberMaterial::UberMaterial() :
-	Material("Resources/Shaders/UberShader.glsl"),
+	Material("Resources/Shaders/FwdUberShader.glsl"),
 	m_UseDifTex(false),
 	m_UseNormTex(false),
 	m_AmbientColor(glm::vec3(0.f, 0.f, 0.f)),
@@ -15,6 +15,7 @@ UberMaterial::UberMaterial() :
 	m_SpecularColor(glm::vec3(1.0f, 1.0f, 1.0f))
 {
 	m_LayoutFlags = VertexFlags::POSITION | VertexFlags::NORMAL | VertexFlags::TANGENT | VertexFlags::TEXCOORD;
+	m_DrawForward = true;
 }
 UberMaterial::~UberMaterial()
 {

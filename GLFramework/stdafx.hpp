@@ -74,6 +74,7 @@ inline void Clamp(T& value, T hi, T lo)
 //Working singleton Set
 #define TIME Context::GetInstance()->pTime
 #define CAMERA Context::GetInstance()->pCamera
+#define SCENE Context::GetInstance()->pScene
 #define SETTINGS Settings::GetInstance()
 #define INPUT InputManager::GetInstance()
 #define LOGGER Logger

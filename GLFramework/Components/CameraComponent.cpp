@@ -64,6 +64,10 @@ void CameraComponent::Draw()
 {
 	//Nothing to do
 }
+void CameraComponent::DrawForward()
+{
+	//Nothing to do
+}
 
 void CameraComponent::SetActive()
 {

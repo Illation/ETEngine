@@ -54,11 +54,16 @@ void Material::SpecifyInputLayout()
 	{
 		if (m_LayoutFlags & it->first)
 		{
-			GLint attrib = glGetAttribLocation(m_Shader->GetProgram(), it->second.name.c_str());
-			glEnableVertexAttribArray(attrib);
-			glVertexAttribPointer(attrib, it->second.dataSize, it->second.dataType, GL_FALSE,
-				stride * sizeof(GLfloat), (void*)(startPos * sizeof(GLfloat)));
-			startPos += it->second.dataSize;
+			const char* name = it->second.name.c_str();
+			GLint attrib = glGetAttribLocation(m_Shader->GetProgram(), name);
+			if (attrib >= 0)
+			{
+				glEnableVertexAttribArray(attrib);
+				glVertexAttribPointer(attrib, it->second.dataSize, it->second.dataType, GL_FALSE,
+					stride * sizeof(GLfloat), (void*)(startPos * sizeof(GLfloat)));
+				startPos += it->second.dataSize;
+			}
+			else LOGGER::Log("Could not bind attribute '" + string(name) + "' to shader: " + m_Shader->GetName(), LogLevel::Error);
 		}
 	}
 }

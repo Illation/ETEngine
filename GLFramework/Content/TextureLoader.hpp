@@ -10,9 +10,12 @@ public:
 	TextureLoader();
 	~TextureLoader();
 
-protected:
+	void UseSrgb(bool use) { m_UseSrgb = use; }
 
+protected:
 	virtual TextureData* LoadContent(const std::string& assetFile);
 	virtual void Destroy(TextureData* objToDestroy);
+
+	bool m_UseSrgb = false;
 };
 

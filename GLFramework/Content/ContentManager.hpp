@@ -25,6 +25,21 @@ public:
 		return nullptr;
 	}
 
+	template<class T, class DataType>
+	static T* GetLoader()
+	{
+		const std::type_info& ti = typeid(DataType);
+		for (AbstractLoader* loader : m_Loaders)
+		{
+			const std::type_info& loadertype = loader->GetType();
+			if (loadertype == ti)
+			{
+				return (static_cast<T*>(loader));
+			}
+		}
+		return nullptr;
+	}
+
 	static void Release();
 
 private:

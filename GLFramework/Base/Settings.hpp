@@ -23,6 +23,7 @@ public:
 			pWindow(nullptr)
 		{
 		}
+		void VSync(const bool enabled){SDL_GL_SetSwapInterval(enabled);}
 
 		bool Fullscreen;
 		int Width;

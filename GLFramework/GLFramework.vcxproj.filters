@@ -56,9 +56,6 @@
       <Filter>StaticDependancies\glad</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Game\Objects\Cube.cpp">
-      <Filter>Project\Objects</Filter>
-    </ClCompile>
     <ClCompile Include="Content\ShaderLoader.cpp">
       <Filter>Framework\Content</Filter>
     </ClCompile>
@@ -73,9 +70,6 @@
     </ClCompile>
     <ClCompile Include="Graphics\Material.cpp">
       <Filter>Framework\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\Materials\CubeMaterial.cpp">
-      <Filter>Project\Materials</Filter>
     </ClCompile>
     <ClCompile Include="Base\AbstractFramework.cpp">
       <Filter>Framework\Base</Filter>
@@ -131,9 +125,6 @@
     <ClCompile Include="Components\ModelComponent.cpp">
       <Filter>Framework\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Materials\DiffuseMaterial.cpp">
-      <Filter>Project\Materials</Filter>
-    </ClCompile>
     <ClCompile Include="Game\Materials\UberMaterial.cpp">
       <Filter>Project\Materials</Filter>
     </ClCompile>
@@ -150,13 +141,28 @@
     <ClCompile Include="Game\Materials\GbufferMaterial.cpp">
       <Filter>Project\Materials</Filter>
     </ClCompile>
+    <ClCompile Include="Components\LightComponent.cpp">
+      <Filter>Framework\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Materials\EmissiveMaterial.cpp">
+      <Filter>Project\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\CubeMapLoader.cpp">
+      <Filter>Framework\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Materials\SkyboxMaterial.cpp">
+      <Filter>Project\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="Prefabs\Skybox.cpp">
+      <Filter>Framework\Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Scenes\SkyboxTestScene.cpp">
+      <Filter>Project\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
       <Filter>StaticDependancies\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Objects\Cube.hpp">
-      <Filter>Project\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Content\ShaderLoader.hpp">
       <Filter>Framework\Content</Filter>
@@ -181,9 +187,6 @@
     </ClInclude>
     <ClInclude Include="Graphics\Material.hpp">
       <Filter>Framework\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Materials\CubeMaterial.hpp">
-      <Filter>Project\Materials</Filter>
     </ClInclude>
     <ClInclude Include="Base\AbstractFramework.hpp">
       <Filter>Framework\Base</Filter>
@@ -242,9 +245,6 @@
     <ClInclude Include="Components\ModelComponent.hpp">
       <Filter>Framework\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Materials\DiffuseMaterial.hpp">
-      <Filter>Project\Materials</Filter>
-    </ClInclude>
     <ClInclude Include="Game\Materials\UberMaterial.hpp">
       <Filter>Project\Materials</Filter>
     </ClInclude>
@@ -260,6 +260,24 @@
     </ClInclude>
     <ClInclude Include="Game\Materials\GbufferMaterial.hpp">
       <Filter>Project\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\LightComponent.hpp">
+      <Filter>Framework\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Materials\EmissiveMaterial.hpp">
+      <Filter>Project\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\CubeMapLoader.hpp">
+      <Filter>Framework\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Materials\SkyboxMaterial.hpp">
+      <Filter>Project\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs\Skybox.hpp">
+      <Filter>Framework\Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Scenes\SkyboxTestScene.hpp">
+      <Filter>Project\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

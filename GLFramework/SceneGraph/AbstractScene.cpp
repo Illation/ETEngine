@@ -2,6 +2,7 @@
 #include "AbstractScene.hpp"
 
 #include "../Components/CameraComponent.hpp"
+#include "../Components/LightComponent.hpp"
 #include "../Prefabs\FreeCamera.hpp"
 #include "../Base/Time.hpp"
 #include "Entity.hpp"
@@ -53,7 +54,7 @@ void AbstractScene::RootInitialize()
 {
 	if (m_IsInitialized)return;
 
-	//Create DefaultCamera
+	//Create SceneContext
 	FreeCamera* freeCam = new FreeCamera();
 	freeCam->GetTransform()->Translate(0, -1, -3.5);
 	freeCam->GetTransform()->RotateEuler(glm::radians(20.f), 0, 0);
@@ -63,6 +64,7 @@ void AbstractScene::RootInitialize()
 	m_pConObj = new ContextObjects();
 	m_pConObj->pCamera = m_pDefaultCam;
 	m_pConObj->pTime = m_pTime;
+	m_pConObj->pScene = this;
 
 	CONTEXT->SetContext(m_pConObj);
 
@@ -71,17 +73,18 @@ void AbstractScene::RootInitialize()
 	Initialize();
 
 	m_pHDRbuffer = new HDRframeBuffer();
+	m_pHDRbuffer->SetGamma(2.2f);
 	m_pHDRbuffer->Initialize();
-	m_pHDRbuffer->Enable(false);
+
 	m_pDemoBuffer = new Gbuffer(true);
 	m_pDemoBuffer->SetAmbCol(glm::vec3(0.05f, 0.1f, 0.08f)*0.01f);
-	m_pDemoBuffer->SetLightDir(glm::normalize(glm::vec3(0.5, 1, 0.5)));
 	m_pDemoBuffer->Initialize();
+
 	m_pGBuffer = new Gbuffer();
 	m_pGBuffer->SetAmbCol(glm::vec3(0.05f, 0.1f, 0.08f)*0.01f);
-	m_pGBuffer->SetLightDir(glm::normalize(glm::vec3(0.5, 1, 0.5)));
 	m_pGBuffer->Initialize();
 	m_pGBuffer->Enable(true);
+
 
 	for (Entity* pEntity : m_pEntityVec)
 	{
@@ -123,7 +126,7 @@ void AbstractScene::RootUpdate()
 	else
 	{
 		m_pHDRbuffer->SetExposure(m_Exposure);
-		m_pHDRbuffer->SetGamma(1.2f);
+		m_pHDRbuffer->SetGamma(2.2f);
 	}
 
 	for (Entity* pEntity : m_pEntityVec)
@@ -134,22 +137,44 @@ void AbstractScene::RootUpdate()
 
 void AbstractScene::RootDraw()
 {
+	//Deferred Rendering
+	//******************
+	//Step one: Draw the data onto gBuffer
 	if (m_DemoMode)m_pDemoBuffer->Enable();
 	else m_pGBuffer->Enable();
-	// Clear the screen to white
+
 	glClearColor(m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	Draw();
-
 	for (Entity* pEntity : m_pEntityVec)
 	{
 		pEntity->RootDraw();
 	}
-
+	//Step two: blend data and calculate lighting with gbuffer
 	m_pHDRbuffer->Enable();
 	if (m_DemoMode)m_pDemoBuffer->Draw();
-	else m_pGBuffer->Draw();
+	else
+	{
+		m_pGBuffer->Draw();
+
+		//Foreward Rendering
+		//******************
+		//Step one: copy Z-Buffer from gBuffer
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pGBuffer->Get());
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pHDRbuffer->Get());
+		glBlitFramebuffer(
+			0, 0, SETTINGS->Window.Width, SETTINGS->Window.Height, 0, 0,
+			SETTINGS->Window.Width, SETTINGS->Window.Height,
+			GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+		m_pHDRbuffer->Enable();
+		//Step two: render with forward materials
+		DrawForward();
+		for (Entity* pEntity : m_pEntityVec)
+		{
+			pEntity->RootDrawForward();
+		}
+	}
 	m_pHDRbuffer->Enable(false);
 	m_pHDRbuffer->Draw();
 
@@ -169,4 +194,15 @@ void AbstractScene::RootOnDeactivated()
 void AbstractScene::SetActiveCamera(CameraComponent* pCamera)
 {
 	m_pConObj->pCamera = pCamera;
+}
+
+std::vector<LightComponent*> AbstractScene::GetLights()
+{
+	vector<LightComponent*> ret;
+	for (auto *pEntity : m_pEntityVec)
+	{
+		auto entityLights = pEntity->GetComponents<LightComponent>();
+		ret.insert(ret.end(), entityLights.begin(), entityLights.end());
+	}
+	return ret;
 }
