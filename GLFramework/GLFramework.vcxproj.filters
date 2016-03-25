@@ -159,6 +159,9 @@
     <ClCompile Include="Game\Scenes\SkyboxTestScene.cpp">
       <Filter>Project\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Materials\TexPBRMaterial.cpp">
+      <Filter>Project\Materials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -278,6 +281,9 @@
     </ClInclude>
     <ClInclude Include="Game\Scenes\SkyboxTestScene.hpp">
       <Filter>Project\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Materials\TexPBRMaterial.hpp">
+      <Filter>Project\Materials</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

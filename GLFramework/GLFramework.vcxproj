@@ -172,6 +172,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClCompile Include="Game\Materials\EmissiveMaterial.cpp" />
     <ClCompile Include="Game\Materials\GbufferMaterial.cpp" />
     <ClCompile Include="Game\Materials\SkyboxMaterial.cpp" />
+    <ClCompile Include="Game\Materials\TexPBRMaterial.cpp" />
     <ClCompile Include="Game\Materials\UberMaterial.cpp" />
     <ClCompile Include="Game\Scenes\SkyboxTestScene.cpp" />
     <ClCompile Include="Game\Scenes\TestScene.cpp" />
@@ -220,6 +221,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClInclude Include="Game\Materials\EmissiveMaterial.hpp" />
     <ClInclude Include="Game\Materials\GbufferMaterial.hpp" />
     <ClInclude Include="Game\Materials\SkyboxMaterial.hpp" />
+    <ClInclude Include="Game\Materials\TexPBRMaterial.hpp" />
     <ClInclude Include="Game\Materials\UberMaterial.hpp" />
     <ClInclude Include="Game\Scenes\SkyboxTestScene.hpp" />
     <ClInclude Include="Game\Scenes\TestScene.hpp" />

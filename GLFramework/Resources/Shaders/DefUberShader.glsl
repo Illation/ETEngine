@@ -36,9 +36,9 @@
 	in vec3 Tangent;
 	in vec2 Texcoord;
 	
-	layout (location = 0) out vec4 outPosition;
-	layout (location = 1) out vec4 outNormal;
-	layout (location = 2) out vec4 outColor;
+	layout (location = 0) out vec4 outPosition;                  // | Pos.x   Pos.y   Pos.z | AO .x |
+	layout (location = 1) out vec4 outNormal;                    // | Nor.x   Nor.y | Met.x | Spc.x |
+	layout (location = 2) out vec4 outColor;                     // | BCo.r   BCo.g   BCo.b | Rou.x |
 	layout (location = 3) out vec4 outSpecular;
 	
 	uniform bool useDifTex;
@@ -52,39 +52,45 @@
 	uniform vec3 specularColor;
 	uniform float specularPower;
 	
+	vec2 encodeNormal(vec3 norm)
+	{
+		float scale = 1.7777;
+		vec2 enc = norm.xy / (norm.z+1);
+		enc /= scale;
+		return (enc*0.5)+0.5;
+	}
+	
 	void main()
 	{
 		float alpha = 1.0;
 		
-		outNormal.rgb = normalize(Normal);
+		vec3 norm = normalize(Normal);
 		if(useNormTex)
 		{
 			vec3 tang = normalize(Tangent);
-			vec3 binorm = normalize(cross(tang, outNormal.rgb));
-			mat3 localAxis = mat3(tang, binorm, outNormal.rgb);
+			vec3 binorm = normalize(cross(tang, norm));
+			mat3 localAxis = mat3(tang, binorm, norm);
 			
 			vec4 normSample = ((texture(texNormal, Texcoord))*2)-vec4(1, 1, 1, 1);
-			outNormal.rgb = localAxis*normalize(vec3(normSample.x, normSample.y, normSample.z));
-			outNormal.rgb = normalize(outNormal.rgb);
+			norm = localAxis*normalize(vec3(normSample.x, normSample.y, normSample.z));
+			norm = normalize(norm);
 		}
-		outNormal.a = alpha;
-		
-		outColor.rgb = diffuseColor;
+		vec3 dif = diffuseColor;
 		if(useDifTex)
 		{
 			vec4 difSample = texture(texDiffuse, Texcoord);
-			outColor.rgb = outColor.rgb * vec3(difSample.x, difSample.y, difSample.z);
+			dif = dif * difSample.rgb;
 		}
-		outColor.a = alpha;
-		
-		outSpecular.rgb = specularColor;
+		vec3 spec = specularColor;
 		if(useSpecTex)
 		{
 			vec4 specSample = texture(texSpecular, Texcoord);
-			outSpecular.rgb = outSpecular.rgb * vec3(specSample.x, specSample.y, specSample.z);
+			spec = spec * specSample.rgb;
 		}
-		outSpecular.a = specularPower;
 		
+		outColor = vec4(dif, alpha);
+		outNormal = vec4(encodeNormal(norm), 0, alpha);
+		outSpecular = vec4(spec, specularPower);
 		outPosition = vec4(Position, alpha);
 	}
 </FRAGMENT>

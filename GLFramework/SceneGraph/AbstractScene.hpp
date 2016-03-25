@@ -1,7 +1,4 @@
 #pragma once
-#include <string>
-#include <vector>
-
 //forward declaration
 class Entity;
 class CameraComponent;
@@ -11,6 +8,8 @@ class ContextObjects;
 class SceneManager;
 class Gbuffer;
 class HDRframeBuffer;
+class Skybox;
+class CubeMap;
 
 class AbstractScene
 {
@@ -21,6 +20,8 @@ public:
 	void AddEntity(Entity* pEntity);
 	void RemoveEntity(Entity* pEntity, bool deleteEntity = true);
 	void SetActiveCamera(CameraComponent* pCamera);
+	void SetSkybox(string assetFile);
+	CubeMap* GetEnvironmentMap();
 	std::vector<LightComponent*> GetLights();
 
 protected:
@@ -55,5 +56,8 @@ private:
 	Gbuffer* m_pDemoBuffer = nullptr;
 	bool m_DemoMode = false;
 	HDRframeBuffer* m_pHDRbuffer = nullptr;
+
+	bool m_UseSkyBox = false;
+	Skybox* m_pSkybox = nullptr;
 };
 

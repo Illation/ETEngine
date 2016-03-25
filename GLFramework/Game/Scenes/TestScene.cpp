@@ -4,7 +4,7 @@
 
 #include "../../SceneGraph/Entity.hpp"
 
-#include "../Materials/GbufferMaterial.hpp"
+#include "../Materials/TexPBRMaterial.hpp"
 #include "../Materials/EmissiveMaterial.hpp"
 
 #include "../../Graphics\FrameBuffer.hpp"
@@ -29,15 +29,17 @@ void TestScene::Initialize()
 {
 	//Materials
 	//**************************
-	m_pMat = new GbufferMaterial();
-	m_pMat->SetDiffuseTexture("Resources/Textures/BaseColor.png");
-	m_pMat->SetSpecularTexture("Resources/Textures/Roughness.png");
-	m_pMat->SetNormalTexture("Resources/Textures/NormalMap.png");
-	m_pMat->SetDifCol(glm::vec3(1.0f, 1.0f, 1.0f));
-	m_pMat->SetSpecCol(glm::vec3(1.0f, 1.0f, 1.0f)*1.0f);
+	m_pMat = new TexPBRMaterial(
+		"Resources/Textures/BaseColor.png",
+		"Resources/Textures/Roughness.png",
+		"Resources/Textures/Metalness.png",
+		"Resources/Textures/AOMap.png",
+		"Resources/Textures/NormalMap.png");
+	m_pMat->SetSpecular(0.5f);
 
 	m_pLightMat = new EmissiveMaterial();
 
+	SetSkybox("Resources/Textures/skybox/sb.jpg");
 	//Models
 	//*************************
 	unsigned amountPerRow = 15;

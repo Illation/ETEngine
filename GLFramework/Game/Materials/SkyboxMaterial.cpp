@@ -29,10 +29,7 @@ void SkyboxMaterial::AccessShaderAttributes()
 }
 void SkyboxMaterial::UploadDerivedVariables()
 {
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glActiveTexture(GL_TEXTURE0);
 	glUseProgram(m_Shader->GetProgram());
-	GLuint uMapName = glGetUniformLocation(m_Shader->GetProgram(), "skybox");
-	glUniform1i(uMapName, 0);
+	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "skybox"), 0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_pMap->GetHandle());
 }

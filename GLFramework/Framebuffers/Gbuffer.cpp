@@ -4,12 +4,14 @@
 #include "../Graphics/ShaderData.hpp"
 #include "../SceneGraph/AbstractScene.hpp"
 #include "../Components/LightComponent.hpp"
+#include "../Graphics/TextureData.hpp"
+#include "../Prefabs/Skybox.hpp"
 
 Gbuffer::Gbuffer(bool demo):
 	FrameBuffer(demo?
 		"Resources/Shaders/PostBufferDisplay.glsl":
 		"Resources/Shaders/PostDeferredComposite.glsl", 
-		GL_FLOAT, 4)
+		GL_FLOAT, 3)
 {
 }
 Gbuffer::~Gbuffer()
@@ -18,14 +20,11 @@ Gbuffer::~Gbuffer()
 
 void Gbuffer::AccessShaderAttributes()
 {
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texPosition"), 0);
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texNormal"), 1);
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texDiffuse"), 2);
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texSpecular"), 3);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texPosAO"), 0);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texNormMetSpec"), 1);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texBaseColRough"), 2);
 
 	m_uCamPos = glGetUniformLocation(m_pShader->GetProgram(), "camPos");
-
-	m_uAmbCol = glGetUniformLocation(m_pShader->GetProgram(), "ambientColor");
 }
 void Gbuffer::UploadDerivedVariables()
 {
@@ -35,8 +34,10 @@ void Gbuffer::UploadDerivedVariables()
 		lightVec[i]->UploadVariables(m_pShader->GetProgram(), i);
 	}
 
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texEnvironment"), 3);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetHandle());
+
 	glm::vec3 cPos = CAMERA->GetTransform()->GetPosition();
 	glUniform3f(m_uCamPos, cPos.x, cPos.y, cPos.z);
-
-	glUniform3f(m_uAmbCol, m_AmbientColor.x, m_AmbientColor.y, m_AmbientColor.z);
 }

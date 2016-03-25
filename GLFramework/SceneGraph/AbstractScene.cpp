@@ -8,6 +8,7 @@
 #include "Entity.hpp"
 #include "../Framebuffers\Gbuffer.hpp"
 #include "../Framebuffers\HDRframeBuffer.hpp"
+#include "../Prefabs/Skybox.hpp"
 
 #define CONTEXT Context::GetInstance()
 
@@ -68,23 +69,20 @@ void AbstractScene::RootInitialize()
 
 	CONTEXT->SetContext(m_pConObj);
 
-	m_ClearColor = vec3(101.f / 255.f, 114.f / 255.f, 107.f / 255.f)*0.1f;
-
-	Initialize();
-
 	m_pHDRbuffer = new HDRframeBuffer();
 	m_pHDRbuffer->SetGamma(2.2f);
 	m_pHDRbuffer->Initialize();
 
 	m_pDemoBuffer = new Gbuffer(true);
-	m_pDemoBuffer->SetAmbCol(glm::vec3(0.05f, 0.1f, 0.08f)*0.01f);
 	m_pDemoBuffer->Initialize();
 
 	m_pGBuffer = new Gbuffer();
-	m_pGBuffer->SetAmbCol(glm::vec3(0.05f, 0.1f, 0.08f)*0.0f);
 	m_pGBuffer->Initialize();
 	m_pGBuffer->Enable(true);
 
+	m_ClearColor = vec3(101.f / 255.f, 114.f / 255.f, 107.f / 255.f)*0.1f;
+
+	Initialize();
 
 	for (Entity* pEntity : m_pEntityVec)
 	{
@@ -133,6 +131,10 @@ void AbstractScene::RootUpdate()
 	{
 		pEntity->RootUpdate();
 	}
+	if (m_UseSkyBox)
+	{
+		m_pSkybox->RootUpdate();
+	}
 }
 
 void AbstractScene::RootDraw()
@@ -168,11 +170,16 @@ void AbstractScene::RootDraw()
 			SETTINGS->Window.Width, SETTINGS->Window.Height,
 			GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 		m_pHDRbuffer->Enable();
+
 		//Step two: render with forward materials
 		DrawForward();
 		for (Entity* pEntity : m_pEntityVec)
 		{
 			pEntity->RootDrawForward();
+		}
+		if (m_UseSkyBox)
+		{
+			m_pSkybox->RootDrawForward();
 		}
 	}
 	m_pHDRbuffer->Enable(false);
@@ -205,4 +212,21 @@ std::vector<LightComponent*> AbstractScene::GetLights()
 		ret.insert(ret.end(), entityLights.begin(), entityLights.end());
 	}
 	return ret;
+}
+
+void AbstractScene::SetSkybox(string assetFile)
+{
+	m_UseSkyBox = true;
+	SafeDelete(m_pSkybox);
+	m_pSkybox = new Skybox(assetFile);
+	m_pSkybox->RootInitialize();
+}
+
+CubeMap* AbstractScene::GetEnvironmentMap()
+{
+	if (m_UseSkyBox)
+	{
+		return m_pSkybox->GetCubeMap();
+	}
+	return nullptr;
 }

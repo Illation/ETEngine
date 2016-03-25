@@ -2,7 +2,7 @@
 #include "../../SceneGraph/AbstractScene.hpp"
 
 class FrameBuffer;
-class GbufferMaterial;
+class TexPBRMaterial;
 class EmissiveMaterial;
 class PointLight;
 class Entity;
@@ -20,8 +20,6 @@ private:
 	void DrawForward();
 	void PostDraw();
 private:
-	GbufferMaterial* m_pMat = nullptr;
-	GbufferMaterial* m_pMat2 = nullptr;
-	Skybox* m_pSkybox = nullptr;
+	TexPBRMaterial* m_pMat = nullptr;
 };
 

@@ -16,10 +16,20 @@
 	layout (location = 0) out vec4 outColor;
 	layout (location = 1) out vec4 brightColor;
 	
-	uniform sampler2D texPosition;
-	uniform sampler2D texNormal;
-	uniform sampler2D texDiffuse;
-	uniform sampler2D texSpecular;
+	uniform sampler2D texPosAO;                   // | Pos.x   Pos.y   Pos.z | AO .x |
+	uniform sampler2D texNormMetSpec;             // | Nor.x   Nor.y | Met.x | Spc.x |
+	uniform sampler2D texBaseColRough;            // | BCo.r   BCo.g   BCo.b | Rou.x |
+	
+	uniform samplerCube texEnvironment;
+	
+	uniform vec3 camPos;
+	const float maxExposure = 5000;
+	
+	uniform float fresnelPow = 2.5;
+	uniform float fresnelMult = 2.0;
+	uniform float fresnelHard = 1.0;
+	uniform vec3 fresnelCol = vec3(1, 1, 1);
+	uniform vec3 fresnelUp = vec3(0, 1, 0);
 	
 	struct PointLight 
 	{
@@ -34,46 +44,97 @@
 		vec3 Direction;
 		vec3 Color;
 	};
-	const int NR_POINT_LIGHTS = 50;
+	const int NR_POINT_LIGHTS = 1;
 	uniform PointLight pointLights[NR_POINT_LIGHTS];
-	const int NR_DIR_LIGHTS = 8;
+	const int NR_DIR_LIGHTS = 1;
 	uniform DirectionalLight dirLights[NR_DIR_LIGHTS];
 	
-	uniform vec3 camPos;
-	const float maxExposure = 5000;
-	const float brightness = 5;
-		
-	uniform vec3 ambientColor;
+	
+	vec3 decodeNormal(vec2 enc)
+	{
+		float scale = 1.7777;
+		vec3 nn =
+			vec3(enc, 0)*vec3(2*scale,2*scale,0) +
+			vec3(-scale,-scale,1);
+		float g = 2.0 / dot(nn.rgb,nn.rgb);
+		return vec3(g*nn.xy, g-1);
+	}
 	
 	void main()
 	{
-		float alpha = 1.0;
-		vec3 finalCol = vec3(1, 1, 1);
+		int tileRows = 3;
+		int tileX;
+		int tileY;
+		float increment = 1.0 / float(tileRows);
+		for(int i = 0; i < tileRows; i++)
+		{
+			if(((i)*increment < Texcoord.x) && (Texcoord.x < (i+1)*increment))tileX = i;
+			if(((i)*increment < Texcoord.y) && (Texcoord.y < (i+1)*increment))tileY = i;
+		}
+		vec2 tc = fract(vec2(Texcoord.x*tileRows, Texcoord.y*tileRows));
+		vec3 finalCol;// = vec3(tc.x, tc.y, float(tileX)/float(tileRows-1));
 		
-		if(Texcoord.x<0.5)
+		float alpha = 1.0;
+		vec3 vecAlpha = vec3(alpha, alpha, alpha);
+		
+		if(tileX == 0 && tileY == 2)//Position
 		{
-			if(Texcoord.y>0.5)
-			{
-				finalCol = texture(texPosition, vec2(Texcoord.x*2, Texcoord.y*2-1)).rgb;//Position
-			}
-			else
-			{
-				finalCol = texture(texDiffuse, vec2(Texcoord.x*2, Texcoord.y*2)).rgb;//Diffuse
-			}
+			finalCol = texture(texPosAO, tc).rgb;
 		}
-		else
+		else if(tileX == 1 && tileY == 2)//normal
 		{
-			if(Texcoord.y>0.5)
-			{
-				finalCol = texture(texNormal, vec2(Texcoord.x*2-1, Texcoord.y*2-1)).rgb;//Normal
-				finalCol += vec3(1, 1, 1);
-				finalCol *= 0.5;
-			}
-			else
-			{
-				finalCol = texture(texSpecular, vec2(Texcoord.x*2-1, Texcoord.y*2)).rgb;//Specular
-			}
+			finalCol = decodeNormal(texture(texNormMetSpec, tc).rg);
+			finalCol += vecAlpha;
+			finalCol *= 0.5;
 		}
+		else if(tileX == 2 && tileY == 2)//base color
+		{
+			finalCol = texture(texBaseColRough, tc).rgb;
+		}
+		else if(tileX == 0 && tileY == 1)//roughness
+		{
+			finalCol = vecAlpha* texture(texBaseColRough, tc).a;
+			
+		}
+		else if(tileX == 1 && tileY == 1)//metalness
+		{
+			finalCol = vecAlpha* texture(texNormMetSpec, tc).b;
+		}
+		else if(tileX == 2 && tileY == 1)//ao
+		{
+			finalCol = vecAlpha* texture(texPosAO, tc).a;
+		}
+		else if(tileX == 0 && tileY == 0)//specular
+		{
+			finalCol = vecAlpha* texture(texNormMetSpec, tc).a;
+		}
+		else if(tileX == 1 && tileY == 0)//reflection
+		{
+			vec3 pos = texture(texPosAO, tc).rgb;
+			vec3 norm = decodeNormal(texture(texNormMetSpec, tc).rg);
+			vec3 viewDir = normalize(pos - camPos);
+			vec3 refl = reflect(viewDir, norm);
+			vec3 flipRef = refl * vec3(1, -1, 1);
+			finalCol = texture(texEnvironment, flipRef).rgb;
+		}
+		else if(tileX == 2 && tileY == 0)//alpha
+		{
+			vec3 pos = texture(texPosAO, tc).rgb;
+			vec3 norm = decodeNormal(texture(texNormMetSpec, tc).rg);
+			vec3 viewDir = normalize(pos - camPos);
+			
+			float fresnel = abs(dot(norm, viewDir));
+			fresnel = 1 - clamp(fresnel, 0.0, 1.0);
+			fresnel = pow(fresnel,fresnelPow)*fresnelMult;
+		
+			float fresnelMask = dot(fresnelUp,norm);
+			fresnelMask = clamp(fresnelMask, 0.0, 1.0);
+			fresnelMask = pow(1 - fresnelMask,fresnelHard);
+			fresnel *= fresnelMask;
+			
+			finalCol = vecAlpha*fresnel;
+		}
+	
 		outColor = vec4(finalCol, alpha);
 		brightColor = vec4(0, 0, 0, 1.0);
 	}
