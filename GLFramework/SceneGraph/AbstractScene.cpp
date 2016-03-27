@@ -112,6 +112,18 @@ void AbstractScene::RootUpdate()
 		LOGGER::Log("Exposure: " + to_string(m_Exposure));
 		m_pHDRbuffer->SetExposure(m_Exposure);
 	}
+	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LEFT))
+	{
+		float r = min(max(m_pSkybox->GetRoughness() -0.01f, 0.f), 1.f);
+		LOGGER::Log("Roughness: " + to_string(r));
+		m_pSkybox->SetRoughness(r);
+	}
+	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_RIGHT))
+	{
+		float r = min(max(m_pSkybox->GetRoughness() + 0.01f, 0.f), 1.f);
+		LOGGER::Log("Roughness: " + to_string(r));
+		m_pSkybox->SetRoughness(r);
+	}
 	if (INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_RETURN))
 	{
 		m_DemoMode = !m_DemoMode;

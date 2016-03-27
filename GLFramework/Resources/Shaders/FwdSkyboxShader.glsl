@@ -24,9 +24,11 @@
 	layout (location = 1) out vec4 brightColor;
 	
 	uniform samplerCube skybox;
+	uniform int numMipMaps;
+	uniform float roughness;
 	
 	void main()
 	{    
-		outColor = texture(skybox, TexCoords);
+		outColor = textureLod(skybox, TexCoords, clamp(roughness, 0.0, 1.0)*numMipMaps);
 	}
 </FRAGMENT>

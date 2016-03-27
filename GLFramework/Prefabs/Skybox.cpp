@@ -39,3 +39,6 @@ CubeMap* Skybox::GetCubeMap()
 {
 	return m_pMaterial->GetCubeMap();
 }
+
+float Skybox::GetRoughness() { return m_pMaterial->GetRoughness(); }
+void Skybox::SetRoughness(float r) { m_pMaterial->SetRoughness(r); }

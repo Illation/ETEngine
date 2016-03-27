@@ -12,6 +12,8 @@ public:
 	~Skybox();
 
 	CubeMap* GetCubeMap();
+	float GetRoughness();
+	void SetRoughness(float r);
 
 protected:
 

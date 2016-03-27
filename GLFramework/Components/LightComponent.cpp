@@ -25,35 +25,38 @@ void LightComponent::UploadVariables(GLuint shaderProgram, unsigned index)
 {
 	if (m_PositionUpdated || m_Light->m_Update)
 	{
-		vec3 pos = GetTransform()->GetPosition();
-		m_Light->UploadVariables(shaderProgram, pos, index);
+		m_Light->UploadVariables(shaderProgram, GetTransform(), index);
 		m_Light->m_Update = false;
 
 		m_PositionUpdated = false;
 	}
 }
 
-void PointLight::UploadVariables(GLuint program, vec3 pos, unsigned index)
+void PointLight::UploadVariables(GLuint program, TransformComponent* comp, unsigned index)
 {
 	string idxStr = to_string(index);
 	string ligStr = "pointLights[";
 
+	vec3 pos = comp->GetPosition();
+	vec3 col = color*brightness;
+
 	glUniform3f(glGetUniformLocation(program,
 		(ligStr + idxStr + "].Position").c_str()), pos.x, pos.y, pos.z);
 	glUniform3f(glGetUniformLocation(program,
-		(ligStr + idxStr + "].Color").c_str()), color.x, color.y, color.z);
+		(ligStr + idxStr + "].Color").c_str()), col.x, col.y, col.z);
 	glUniform1f(glGetUniformLocation(program, 
-		(ligStr + idxStr + "].Linear").c_str()), linear);
-	glUniform1f(glGetUniformLocation(program,
-		(ligStr + idxStr + "].Quadratic").c_str()), quadratic);
+		(ligStr + idxStr + "].Radius").c_str()), radius);
 }
-void DirectionalLight::UploadVariables(GLuint program, vec3 pos, unsigned index)
+void DirectionalLight::UploadVariables(GLuint program, TransformComponent* comp, unsigned index)
 {
 	string idxStr = to_string(index);
 	string ligStr = "dirLights[";
 
+	vec3 direction = comp->GetForward();
+	vec3 col = color*brightness;
+
 	glUniform3f(glGetUniformLocation(program,
 		(ligStr + idxStr + "].Direction").c_str()), direction.x, direction.y, direction.z);
 	glUniform3f(glGetUniformLocation(program,
-		(ligStr + idxStr + "].Color").c_str()), color.x, color.y, color.z);
+		(ligStr + idxStr + "].Color").c_str()), col.x, col.y, col.z);
 }

@@ -66,13 +66,17 @@ CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 	}
 
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+	int mipNum = 1 + floor(log10((float)max(width, height)) / log10(2.0));
 
 	cout << "  . . . SUCCESS!" << endl;
-	return new CubeMap(texture, width, height);
+	return new CubeMap(texture, width, height, mipNum);
 }
 
 void CubeMapLoader::Destroy(CubeMap* objToDestroy)

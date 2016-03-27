@@ -10,6 +10,8 @@ public:
 	~SkyboxMaterial();
 
 	CubeMap* GetCubeMap() { return m_pMap; }
+	float GetRoughness() { return m_Roughness; }
+	void SetRoughness(float r) { m_Roughness = r; }
 
 private:
 	void LoadTextures();
@@ -20,5 +22,9 @@ private:
 private:
 	CubeMap *m_pMap = nullptr;
 	string m_AssetFile;
+
+	GLuint m_uNumMipMaps;
+	GLuint m_uRoughness;
+	float m_Roughness;
 };
 

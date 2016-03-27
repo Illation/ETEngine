@@ -15,13 +15,13 @@ public:
 	struct WindowSettings
 	{
 		WindowSettings() :
-			Fullscreen(false),
-			Width(1920),
-			Height(1080),
+			Fullscreen(true),
 			AspectRatio(Width / (float)Height),
 			Title("OpenGl Framework"),
 			pWindow(nullptr)
 		{
+			Width = Fullscreen ? 1920 : 1280;
+			Height = Fullscreen ? 1080 : 720;
 		}
 		void VSync(const bool enabled){SDL_GL_SetSwapInterval(enabled);}
 

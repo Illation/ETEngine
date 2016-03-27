@@ -36,8 +36,7 @@
 		vec3 Position;
 		vec3 Color;
 		
-		float Linear;
-		float Quadratic;
+		float Radius;
 	};
 	struct DirectionalLight
 	{
@@ -110,12 +109,13 @@
 		}
 		else if(tileX == 1 && tileY == 0)//reflection
 		{
+			float rough = texture(texBaseColRough, tc).a;
 			vec3 pos = texture(texPosAO, tc).rgb;
 			vec3 norm = decodeNormal(texture(texNormMetSpec, tc).rg);
 			vec3 viewDir = normalize(pos - camPos);
 			vec3 refl = reflect(viewDir, norm);
 			vec3 flipRef = refl * vec3(1, -1, 1);
-			finalCol = texture(texEnvironment, flipRef).rgb;
+			finalCol = textureLod(texEnvironment, flipRef, rough*11.0).rgb;
 		}
 		else if(tileX == 2 && tileY == 0)//alpha
 		{

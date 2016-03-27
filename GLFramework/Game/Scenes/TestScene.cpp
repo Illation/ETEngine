@@ -66,7 +66,7 @@ void TestScene::Initialize()
 	auto pLigEntity = new Entity();
 	pLigEntity->AddComponent(pModelComp1);
 	pLigEntity->AddComponent(new LightComponent(
-		new DirectionalLight(vec3(1, 1, 1)*0.0004f, vec3(0.5, 1, 0.5))));
+		new DirectionalLight(vec3(1, 1, 1), 0.0004f)));
 	pLigEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
 	AddEntity(pLigEntity);
 
@@ -75,7 +75,7 @@ void TestScene::Initialize()
 	pModelComp2->SetMaterial(m_pLightMat);
 	m_pLigEnt = new Entity();
 	m_pLigEnt->AddComponent(pModelComp2);
-	m_pLight = new PointLight(vec3(1, 0.8f, 0.8f)*200.f, 59.f, 568.f);
+	m_pLight = new PointLight(vec3(1, 0.8f, 0.8f), 1.f, 10.f);
 	m_pLigEnt->AddComponent(new LightComponent(m_pLight));
 	m_pLigEnt->GetTransform()->Translate(vec3(1, -2, -1));
 	m_pLigEnt->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
@@ -86,22 +86,22 @@ void TestScene::Initialize()
 	auto gen= mt19937(rd());
 	auto disXZ = uniform_real_distribution<float>(start, -start);
 	auto disY = uniform_real_distribution<float>(1, 3);
-	auto disC = uniform_real_distribution<float>(0.2f, 1);
-	auto disI = uniform_real_distribution<float>(500, 1000);
-	for (size_t i = 0; i < 0; i++)
+	auto disC = uniform_real_distribution<float>(0.2f, 0.1f);
+	auto disI = uniform_real_distribution<float>(0.5f, 1.0f);
+	for (size_t i = 0; i < 49; i++)
 	{
 		auto pLigMod = new ModelComponent("Resources/Models/sphere.dae");
 		pLigMod->SetMaterial(m_pLightMat);
 		auto pLigEnt = new Entity();
 		pLigEnt->AddComponent(new LightComponent(new PointLight(
-			normalize(vec3(disC(gen), disC(gen), disC(gen)))*disI(gen), 59.f, 568.f)));
+			normalize(vec3(disC(gen), disC(gen), disC(gen))), disI(gen), 5.0f)));
 		pLigEnt->AddComponent(pLigMod);
 		pLigEnt->GetTransform()->Translate(vec3(disXZ(gen), -disY(gen), disXZ(gen)));
 		pLigEnt->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
 		AddEntity(pLigEnt);
 	}
 
-	SETTINGS->Window.VSync(true);
+	SETTINGS->Window.VSync(false);
 }
 
 void TestScene::Update()
@@ -144,23 +144,23 @@ void TestScene::Update()
 	//Change light settings
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_1))
 	{
-		m_pLight->SetLinear(m_pLight->GetLinear() / 1.07f);
-		LOGGER::Log("Linear: " + to_string(m_pLight->GetLinear()));
+		m_pLight->SetRadius(m_pLight->GetRadius() / 1.07f);
+		LOGGER::Log("Linear: " + to_string(m_pLight->GetRadius()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_7))
 	{
-		m_pLight->SetLinear(m_pLight->GetLinear() * 1.07f);
-		LOGGER::Log("Linear: " + to_string(m_pLight->GetLinear()));
+		m_pLight->SetRadius(m_pLight->GetRadius() * 1.07f);
+		LOGGER::Log("Linear: " + to_string(m_pLight->GetRadius()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_3))
 	{
-		m_pLight->SetQuadratic(m_pLight->GetQuadratic() / 1.07f);
-		LOGGER::Log("Quadratic: " + to_string(m_pLight->GetQuadratic()));
+		m_pLight->SetBrightness(m_pLight->GetBrightness() / 1.07f);
+		LOGGER::Log("Linear: " + to_string(m_pLight->GetBrightness()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_9))
 	{
-		m_pLight->SetQuadratic(m_pLight->GetQuadratic() * 1.07f);
-		LOGGER::Log("Quadratic: " + to_string(m_pLight->GetQuadratic()));
+		m_pLight->SetBrightness(m_pLight->GetBrightness() * 1.07f);
+		LOGGER::Log("Linear: " + to_string(m_pLight->GetBrightness()));
 	}
 }
 

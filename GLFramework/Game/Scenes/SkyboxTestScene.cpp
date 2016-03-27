@@ -53,11 +53,11 @@ void SkyboxTestScene::Initialize()
 
 	//Lights
 	//**************************
-	auto pLigEntity = new Entity();
-	pLigEntity->AddComponent(new LightComponent(
-		new DirectionalLight(vec3(1, 1, 1)*0.99f, vec3(0.5, 1, 0.5))));
-	pLigEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
-	AddEntity(pLigEntity);
+	m_pLigEntity = new Entity();
+	m_pLigEntity->AddComponent(new LightComponent(
+		new DirectionalLight(vec3(1, 1, 1), 0.99f)));
+	m_pLigEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
+	AddEntity(m_pLigEntity);
 
 	SETTINGS->Window.VSync(false);
 }
@@ -65,7 +65,24 @@ void SkyboxTestScene::Initialize()
 void SkyboxTestScene::Update()
 {
 	//LOGGER::Log("FPS: " + to_string(TIME->FPS()));
-	cout << "FPS: " + to_string(TIME->FPS()) << endl;;
+	//cout << "FPS: " + to_string(TIME->FPS()) << endl;
+
+	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_2))
+	{
+		m_pLigEntity->GetTransform()->RotateEuler(0.1f, 0, 0);
+	}
+	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_8))
+	{
+		m_pLigEntity->GetTransform()->RotateEuler(-0.1f, 0, 0);
+	}
+	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_4))
+	{
+		m_pLigEntity->GetTransform()->RotateEuler(0, -0.1f, 0);
+	}
+	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_6))
+	{
+		m_pLigEntity->GetTransform()->RotateEuler(0, 0.1f, 0);
+	}
 }
 
 void SkyboxTestScene::Draw()

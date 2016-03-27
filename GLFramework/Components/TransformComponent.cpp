@@ -35,7 +35,7 @@ void TransformComponent::UpdateTransforms()
 	if (m_IsTransformChanged & TransformChanged::NONE)
 		return;
 
-	if (m_IsTransformChanged & TransformChanged::TRANSLATION)
+	if (m_IsTransformChanged & TransformChanged::TRANSLATION | TransformChanged::ROTATION)
 	{
 		auto ligComp = m_pEntity->GetComponent<LightComponent>();
 		if (!(ligComp == nullptr))

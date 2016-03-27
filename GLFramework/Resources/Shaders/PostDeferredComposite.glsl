@@ -37,15 +37,14 @@
 		vec3 Position;
 		vec3 Color;
 		
-		float Linear;
-		float Quadratic;
+		float Radius;
 	};
 	struct DirectionalLight
 	{
 		vec3 Direction;
 		vec3 Color;
 	};
-	const int NR_POINT_LIGHTS = 1;
+	const int NR_POINT_LIGHTS = 50;
 	uniform PointLight pointLights[NR_POINT_LIGHTS];
 	const int NR_DIR_LIGHTS = 1;
 	uniform DirectionalLight dirLights[NR_DIR_LIGHTS];
@@ -79,13 +78,21 @@
 	vec3 PointLighting(PointLight light, vec3 dif, vec3 spec, float specPow, vec3 pos, vec3 norm, vec3 viewDir)
 	{
 		vec3 lightDir = -normalize(light.Position - pos);
-		float dist = -length(light.Position - pos);
-		float attenuation = 1.0f / ( 1 + light.Linear * dist + light.Quadratic * (dist * dist));
-	
-		vec3 diffuse = (dif * light.Color) * Lambert(norm, lightDir);
-		vec3 specular = (spec * light.Color) * Blinn(norm, lightDir, viewDir, specPow);
+		float dist = length(light.Position - pos);
 		
-		return (diffuse + specular) * attenuation;
+		if(dist<light.Radius)
+		{
+			float dividend = 1.0 - pow(dist/light.Radius, 4);
+			dividend = clamp(dividend, 0.0, 1.0);
+			
+			float attenuation = (dividend*dividend)/((dist*dist)+1);
+		
+			vec3 diffuse = (dif * light.Color) * Lambert(norm, lightDir);
+			vec3 specular = (spec * light.Color) * Blinn(norm, lightDir, viewDir, specPow);
+			
+			return (diffuse + specular) * attenuation;
+		}
+		return vec3(0);
 	}
 	
 	vec3 Fresnel(vec3 norm, vec3 viewDir)
@@ -120,7 +127,7 @@
 		vec3 flipRef = refl * vec3(1, -1, 1);
 		
 		//ao and environment mapping
-		vec3 env = texture(texEnvironment, flipRef).rgb;
+		vec3 env = textureLod(texEnvironment, flipRef, rough*11.0).rgb;
 		vec3 finalCol = (env * Fresnel(norm, viewDir))*ao;
 		
 		//precalculations

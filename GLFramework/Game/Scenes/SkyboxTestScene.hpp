@@ -21,5 +21,6 @@ private:
 	void PostDraw();
 private:
 	TexPBRMaterial* m_pMat = nullptr;
+	Entity* m_pLigEntity = nullptr;
 };
 
