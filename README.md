@@ -28,6 +28,9 @@ Structure inspired by the OverlordEngine from [Digital Arts and Entertainment](h
 | Normal   .x | Normal   .y | Metalness.x | Specular .x |   
 | BaseColor.r | BaseColor.g | BaseColor.b | Roughness.x |  
 
+### Demo Video
+[![Link](https://img.youtube.com/vi/W6tWtsQlZKo/0.jpg)](https://www.youtube.com/watch?v=W6tWtsQlZKo)
+
 ## Screenshots:
 ### Combined buffer
 ![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/Combined.JPG "")
