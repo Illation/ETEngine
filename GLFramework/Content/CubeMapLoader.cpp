@@ -73,7 +73,7 @@ CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	int mipNum = 1 + floor(log10((float)max(width, height)) / log10(2.0));
+	int mipNum = 1 + (int)floor(log10((float)max(width, height)) / log10(2.0));
 
 	cout << "  . . . SUCCESS!" << endl;
 	return new CubeMap(texture, width, height, mipNum);

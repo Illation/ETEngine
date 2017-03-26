@@ -7,6 +7,7 @@ class EmissiveMaterial;
 class PointLight;
 class Entity;
 class Skybox;
+class DirectionalLight;
 
 class SkyboxTestScene : public AbstractScene
 {
@@ -22,5 +23,6 @@ private:
 private:
 	TexPBRMaterial* m_pMat = nullptr;
 	Entity* m_pLigEntity = nullptr;
+	DirectionalLight* m_pLight = nullptr;
 };
 

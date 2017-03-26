@@ -21,10 +21,12 @@ using namespace std;
 #pragma endregion sdl-opengl
 
 #pragma region
+#ifndef GLM_FORCE_LEFT_HANDED
+	#define GLM_FORCE_LEFT_HANDED
+#endif
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#define GLM_LEFT_HANDED
 using namespace glm;
 #pragma endregion glm
 
@@ -71,6 +73,7 @@ inline void Clamp(T& value, T hi, T lo)
 #include "Base\Settings.hpp"
 #include "Base\InputManager.hpp"
 #include "Helper/Logger.hpp"
+#include "Helper/MathHelper.hpp"
 //Working singleton Set
 #define TIME Context::GetInstance()->pTime
 #define CAMERA Context::GetInstance()->pCamera
@@ -79,4 +82,5 @@ inline void Clamp(T& value, T hi, T lo)
 #define INPUT InputManager::GetInstance()
 #define LOGGER Logger
 #define CONTENT ContentManager
+#define TRANSFORM GetTransform()
 #pragma endregion Macros

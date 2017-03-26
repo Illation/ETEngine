@@ -38,3 +38,27 @@ private:
 	int m_Height;
 	int m_NumMipMaps = 0;
 };
+
+class HDRMap
+{
+public:
+	HDRMap(GLuint handle, GLuint irradiance, int width, int height) 
+		:m_Handle(handle)
+		,m_IrradianceHandle(irradiance)
+		,m_Width(width)
+		,m_Height(height){}
+	~HDRMap()
+	{ 
+		glDeleteTextures(1, &m_Handle); 
+		glDeleteTextures(1, &m_IrradianceHandle);
+	}
+
+	GLuint GetHandle() { return m_Handle; }
+	GLuint GetIrradianceHandle() { return m_IrradianceHandle; }
+
+private:
+	GLuint m_Handle;
+	GLuint m_IrradianceHandle;
+	int m_Width;
+	int m_Height;
+};

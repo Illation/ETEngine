@@ -45,12 +45,6 @@ void AbstractFramework::Run()
 
 void AbstractFramework::InitializeSDL()
 {
-	// Initialize SDL 
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-		sdl_die("Couldn't initialize SDL");
-	atexit(SDL_Quit);
-	SDL_GL_LoadLibrary(NULL);
-
 	// Request an OpenGL 4.5 context (should be core)
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -62,6 +56,12 @@ void AbstractFramework::InitializeSDL()
 #if defined(DEBUG) | defined(_DEBUG)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif
+
+	// Initialize SDL 
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+		sdl_die("Couldn't initialize SDL");
+	atexit(SDL_Quit);
+	SDL_GL_LoadLibrary(NULL);
 }
 
 void AbstractFramework::InitializeWindow()

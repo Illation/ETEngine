@@ -10,6 +10,7 @@ class Gbuffer;
 class HDRframeBuffer;
 class Skybox;
 class CubeMap;
+class HDRMap;
 
 class AbstractScene
 {
@@ -21,8 +22,11 @@ public:
 	void RemoveEntity(Entity* pEntity, bool deleteEntity = true);
 	void SetActiveCamera(CameraComponent* pCamera);
 	void SetSkybox(string assetFile);
-	CubeMap* GetEnvironmentMap();
+	//CubeMap* GetEnvironmentMap();
+	HDRMap* GetEnvironmentMap();
 	std::vector<LightComponent*> GetLights();
+
+	bool SkyboxEnabled() { return m_UseSkyBox; }
 
 protected:
 

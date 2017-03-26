@@ -1,5 +1,9 @@
 #pragma once
 #include "AbstractComponent.hpp"
+//Use lefthanded coordinate system
+#ifndef GLM_LEFT_HANDED
+	#define GLM_LEFT_HANDED
+#endif
 #include <glm\gtc\quaternion.hpp>
 class TransformComponent : public AbstractComponent
 {
@@ -22,6 +26,7 @@ public:
 	const glm::vec3& GetScale() const { return m_Scale; }
 	const glm::vec3& GetWorldScale() const { return m_WorldScale; }
 	const glm::quat& GetRotation() const { return m_Rotation; }
+	const glm::vec3& GetYawPitchRoll() const { return vec3(yaw(m_Rotation), pitch(m_Rotation), roll(m_Rotation)); };
 	const glm::quat& GetWorldRotation() const { return m_WorldRotation; }
 	const glm::mat4& GetWorld() const { return m_World; }
 

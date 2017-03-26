@@ -4,9 +4,14 @@
 #include "LightComponent.hpp"
 #include "../SceneGraph/Entity.hpp"
 
+//Use lefthanded coordinate system
+#ifndef GLM_LEFT_HANDED
+	#define GLM_LEFT_HANDED
+#endif
 #include <glm/gtx/transform.hpp>
 #include <glm\gtx\quaternion.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 
 
@@ -94,7 +99,8 @@ void TransformComponent::RotateEuler(float x, float y, float z)
 {
 	using namespace glm;
 	m_IsTransformChanged |= TransformChanged::ROTATION;
-	m_Rotation = m_Rotation * quat(vec3(x, y, z));
+	
+	m_Rotation = m_Rotation * quat_cast(eulerAngleYXZ(y, x, z));
 }
 void TransformComponent::RotateEuler(const glm::vec3& rotation)
 {

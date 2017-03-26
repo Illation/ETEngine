@@ -69,13 +69,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\DevIL\include;$(S_LIBS)\glm;$(S_LIBS)\assimp\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\DevIL\include;$(S_LIBS)\glm;$(S_LIBS)\assimp\include;$(S_LIBS)\stb;$(IncludePath)</IncludePath>
     <LibraryPath>$(S_LIBS)\SDL2\lib\x86;$(S_LIBS)\DevIL\lib;$(S_LIBS)\assimp\lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\Build\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Build\BuildFiles\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\DevIL\include;$(S_LIBS)\glm;$(S_LIBS)\assimp\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\DevIL\include;$(S_LIBS)\glm;$(S_LIBS)\assimp\include;$(S_LIBS)\stb;$(IncludePath)</IncludePath>
     <LibraryPath>$(S_LIBS)\SDL2\lib\x86;$(S_LIBS)\DevIL\lib;$(S_LIBS)\assimp\lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\Build\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Build\BuildFiles\$(Configuration)\</IntDir>
@@ -163,6 +163,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClCompile Include="Components\TransformComponent.cpp" />
     <ClCompile Include="Content\ContentManager.cpp" />
     <ClCompile Include="Content\CubeMapLoader.cpp" />
+    <ClCompile Include="Content\HdrLoader.cpp" />
     <ClCompile Include="Content\MeshFilterLoader.cpp" />
     <ClCompile Include="Content\ShaderLoader.cpp" />
     <ClCompile Include="Content\TextureLoader.cpp" />
@@ -182,9 +183,11 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClCompile Include="Graphics\ShaderData.cpp" />
     <ClCompile Include="Graphics\TextureData.cpp" />
     <ClCompile Include="Helper\Logger.cpp" />
+    <ClCompile Include="Helper\MathHelper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Prefabs\FixedCamera.cpp" />
     <ClCompile Include="Prefabs\FreeCamera.cpp" />
+    <ClCompile Include="Prefabs\OrbitCamera.cpp" />
     <ClCompile Include="Prefabs\Skybox.cpp" />
     <ClCompile Include="SceneGraph\AbstractScene.cpp" />
     <ClCompile Include="SceneGraph\Entity.cpp" />
@@ -212,6 +215,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClInclude Include="Content\ContentLoader.hpp" />
     <ClInclude Include="Content\ContentManager.hpp" />
     <ClInclude Include="Content\CubeMapLoader.hpp" />
+    <ClInclude Include="Content\HdrLoader.hpp" />
     <ClInclude Include="Content\MeshFilterLoader.hpp" />
     <ClInclude Include="Content\ShaderLoader.hpp" />
     <ClInclude Include="Content\TextureLoader.hpp" />
@@ -231,9 +235,11 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClInclude Include="Graphics\ShaderData.hpp" />
     <ClInclude Include="Graphics\TextureData.hpp" />
     <ClInclude Include="Helper\Logger.hpp" />
+    <ClInclude Include="Helper\MathHelper.hpp" />
     <ClInclude Include="Helper\Singleton.h" />
     <ClInclude Include="Prefabs\FixedCamera.hpp" />
     <ClInclude Include="Prefabs\FreeCamera.hpp" />
+    <ClInclude Include="Prefabs\OrbitCamera.hpp" />
     <ClInclude Include="Prefabs\Skybox.hpp" />
     <ClInclude Include="SceneGraph\AbstractScene.hpp" />
     <ClInclude Include="SceneGraph\Entity.hpp" />

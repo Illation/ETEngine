@@ -1,6 +1,10 @@
 #pragma once
 #include <map>
 #include <SDL.h>
+//Use lefthanded coordinate system
+#ifndef GLM_LEFT_HANDED
+	#define GLM_LEFT_HANDED
+#endif
 #include <glm\glm.hpp>
 #include "../Helper/Singleton.h"
 //----------------------------

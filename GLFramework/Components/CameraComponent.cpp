@@ -5,8 +5,6 @@
 #include "TransformComponent.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
-//Use lefthanded coordinate system
-#define GLM_LEFT_HANDED
 
 #define WINDOW Settings::GetInstance()->Window
 #define CONTEXT Context::GetInstance()
@@ -40,7 +38,7 @@ void CameraComponent::Update()
 {
 	if (m_PerspectiveProjection)
 	{
-		m_Projection=glm::perspective(glm::radians(m_FOV),
+		m_Projection=glm::perspectiveLH(glm::radians(m_FOV),
 			(float)(WINDOW.Width) / (float)WINDOW.Height, m_NearPlane, m_FarPlane);
 	}
 	else
@@ -52,8 +50,8 @@ void CameraComponent::Update()
 
 	glm::vec3 worldPos = GetTransform()->GetWorldPosition();
 	glm::vec3 lookAt = worldPos+GetTransform()->GetForward();
-	glm::vec3 upVec = GetTransform()->GetUp();
-	m_View = glm::lookAt(worldPos, lookAt, upVec);
+	glm::vec3 upVec = GetTransform()->GetUp();// glm::vec3(0, 1, 0);//
+	m_View = glm::lookAtLH(worldPos, lookAt, upVec);
 
 	m_ViewInverse = glm::inverse(m_View);
 	m_ViewProjection = m_Projection*m_View;

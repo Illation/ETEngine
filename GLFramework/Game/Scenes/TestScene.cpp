@@ -39,10 +39,11 @@ void TestScene::Initialize()
 
 	m_pLightMat = new EmissiveMaterial();
 
-	SetSkybox("Resources/Textures/skybox/sb.jpg");
+	//SetSkybox("Resources/Textures/skybox/sb.jpg");
+	SetSkybox("Resources/Textures/TropicalRuins_3k.hdr");
 	//Models
 	//*************************
-	unsigned amountPerRow = 15;
+	unsigned amountPerRow = 2;
 	float distance = 3.5f;
 	float start = (amountPerRow / 2)*(-distance);
 	for (size_t i = 0; i < amountPerRow; i++)
@@ -85,18 +86,18 @@ void TestScene::Initialize()
 	random_device rd;
 	auto gen= mt19937(rd());
 	auto disXZ = uniform_real_distribution<float>(start, -start);
-	auto disY = uniform_real_distribution<float>(1, 3);
-	auto disC = uniform_real_distribution<float>(0.2f, 0.1f);
+	auto disY = uniform_real_distribution<float>(0.33f, 1.f);
+	auto disC = uniform_real_distribution<float>(0.1f, 0.2f);
 	auto disI = uniform_real_distribution<float>(0.5f, 1.0f);
-	for (size_t i = 0; i < 49; i++)
+	for (size_t i = 0; i < 4; i++)
 	{
 		auto pLigMod = new ModelComponent("Resources/Models/sphere.dae");
 		pLigMod->SetMaterial(m_pLightMat);
 		auto pLigEnt = new Entity();
 		pLigEnt->AddComponent(new LightComponent(new PointLight(
-			normalize(vec3(disC(gen), disC(gen), disC(gen))), disI(gen), 5.0f)));
+			normalize(vec3(disC(gen), disC(gen), disC(gen))), disI(gen)*10, 5.0f)));
 		pLigEnt->AddComponent(pLigMod);
-		pLigEnt->GetTransform()->Translate(vec3(disXZ(gen), -disY(gen), disXZ(gen)));
+		pLigEnt->GetTransform()->Translate(vec3(disXZ(gen), -disY(gen)*3, disXZ(gen)));
 		pLigEnt->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
 		AddEntity(pLigEnt);
 	}
@@ -113,53 +114,59 @@ void TestScene::Update()
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_2))
 	{
 		m_pLigEnt->GetTransform()->Translate(
-			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 0, -0.1f));
+			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 0, -1)*TIME->DeltaTime());
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_8))
 	{
 		m_pLigEnt->GetTransform()->Translate(
-			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 0, 0.1f));
+			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 0, 1)*TIME->DeltaTime());
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_4))
 	{
 		m_pLigEnt->GetTransform()->Translate(
-			m_pLigEnt->GetTransform()->GetPosition() + vec3(-0.1f, 0, 0));
+			m_pLigEnt->GetTransform()->GetPosition() + vec3(-1, 0, 0)*TIME->DeltaTime());
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_6))
 	{
 		m_pLigEnt->GetTransform()->Translate(
-			m_pLigEnt->GetTransform()->GetPosition() + vec3(0.1f, 0, 0));
+			m_pLigEnt->GetTransform()->GetPosition() + vec3(1, 0, 0)*TIME->DeltaTime());
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_MINUS))
 	{
 		m_pLigEnt->GetTransform()->Translate(
-			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, -0.1f, 0));
+			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, -1, 0)*TIME->DeltaTime());
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_PLUS))
 	{
 		m_pLigEnt->GetTransform()->Translate(
-			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 0.1f, 0));
+			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 1, 0)*TIME->DeltaTime());
 	}
 
 	//Change light settings
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_1))
 	{
-		m_pLight->SetRadius(m_pLight->GetRadius() / 1.07f);
+		float newRad = m_pLight->GetRadius() * 4;
+		m_pLight->SetRadius(m_pLight->GetRadius()-(newRad-m_pLight->GetRadius())*TIME->DeltaTime());
 		LOGGER::Log("Linear: " + to_string(m_pLight->GetRadius()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_7))
 	{
-		m_pLight->SetRadius(m_pLight->GetRadius() * 1.07f);
+		float newRad = m_pLight->GetRadius() * 4;
+		m_pLight->SetRadius(m_pLight->GetRadius()+(newRad-m_pLight->GetRadius())*TIME->DeltaTime());
 		LOGGER::Log("Linear: " + to_string(m_pLight->GetRadius()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_3))
 	{
-		m_pLight->SetBrightness(m_pLight->GetBrightness() / 1.07f);
+		float b = m_pLight->GetBrightness();
+		float nB = b * 4;
+		m_pLight->SetBrightness(b-(nB-b)*TIME->DeltaTime());
 		LOGGER::Log("Linear: " + to_string(m_pLight->GetBrightness()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_9))
 	{
-		m_pLight->SetBrightness(m_pLight->GetBrightness() * 1.07f);
+		float b = m_pLight->GetBrightness();
+		float nB = b * 4;
+		m_pLight->SetBrightness(b+(nB-b)*TIME->DeltaTime());
 		LOGGER::Log("Linear: " + to_string(m_pLight->GetBrightness()));
 	}
 }

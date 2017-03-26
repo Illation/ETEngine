@@ -33,10 +33,16 @@ void Gbuffer::UploadDerivedVariables()
 	{
 		lightVec[i]->UploadVariables(m_pShader->GetProgram(), i);
 	}
+	if (SCENE->SkyboxEnabled())
+	{
+		glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texEnvironment"), 3);
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetHandle());
 
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texEnvironment"), 3);
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetHandle());
+		glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texIrradiance"), 4);
+		glActiveTexture(GL_TEXTURE4);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetIrradianceHandle());
+	}
 
 	glm::vec3 cPos = CAMERA->GetTransform()->GetPosition();
 	glUniform3f(m_uCamPos, cPos.x, cPos.y, cPos.z);

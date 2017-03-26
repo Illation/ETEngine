@@ -11,7 +11,8 @@ public:
 	Skybox(string assetFile);
 	~Skybox();
 
-	CubeMap* GetCubeMap();
+	//CubeMap* GetCubeMap();
+	HDRMap* GetHDRMap();
 	float GetRoughness();
 	void SetRoughness(float r);
 

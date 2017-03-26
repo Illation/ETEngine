@@ -2,6 +2,7 @@
 #include "../../Graphics/Material.hpp"
 
 class CubeMap;
+class HDRMapas;
 
 class SkyboxMaterial : public Material
 {
@@ -10,6 +11,7 @@ public:
 	~SkyboxMaterial();
 
 	CubeMap* GetCubeMap() { return m_pMap; }
+	HDRMap* GetHDRMap() { return m_pHDRMap; }
 	float GetRoughness() { return m_Roughness; }
 	void SetRoughness(float r) { m_Roughness = r; }
 
@@ -21,6 +23,7 @@ private:
 
 private:
 	CubeMap *m_pMap = nullptr;
+	HDRMap *m_pHDRMap = nullptr;
 	string m_AssetFile;
 
 	GLuint m_uNumMipMaps;

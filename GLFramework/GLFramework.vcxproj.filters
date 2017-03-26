@@ -162,6 +162,9 @@
     <ClCompile Include="Game\Materials\TexPBRMaterial.cpp">
       <Filter>Project\Materials</Filter>
     </ClCompile>
+    <ClCompile Include="Prefabs\OrbitCamera.cpp" />
+    <ClCompile Include="Helper\MathHelper.cpp" />
+    <ClCompile Include="Content\HdrLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -285,5 +288,10 @@
     <ClInclude Include="Game\Materials\TexPBRMaterial.hpp">
       <Filter>Project\Materials</Filter>
     </ClInclude>
+    <ClInclude Include="Helper\MathHelper.hpp">
+      <Filter>Framework\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs\OrbitCamera.hpp" />
+    <ClInclude Include="Content\HdrLoader.hpp" />
   </ItemGroup>
 </Project>

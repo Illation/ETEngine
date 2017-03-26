@@ -9,11 +9,13 @@
 #include "../Framebuffers\Gbuffer.hpp"
 #include "../Framebuffers\HDRframeBuffer.hpp"
 #include "../Prefabs/Skybox.hpp"
+#include "../Prefabs/FreeCamera.hpp"
 
 #define CONTEXT Context::GetInstance()
 
-AbstractScene::AbstractScene(std::string name) : m_Name(name),
-												m_IsInitialized(false)
+AbstractScene::AbstractScene(std::string name) 
+	: m_Name(name)
+	, m_IsInitialized(false)
 {
 }
 
@@ -24,6 +26,7 @@ AbstractScene::~AbstractScene()
 		SafeDelete(pEntity);
 	}
 	m_pEntityVec.clear();
+	if (m_pSkybox)SafeDelete(m_pSkybox);
 
 	SafeDelete(m_pConObj);
 	SafeDelete(m_pTime);
@@ -34,8 +37,8 @@ AbstractScene::~AbstractScene()
 
 void AbstractScene::AddEntity(Entity* pEntity)
 {
-	pEntity->RootInitialize();
 	pEntity->m_pParentScene = this;
+	pEntity->RootInitialize();
 	m_pEntityVec.push_back(pEntity);
 }
 
@@ -102,23 +105,25 @@ void AbstractScene::RootUpdate()
 	Update();
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_UP))
 	{
-		m_Exposure *= 1.02f;
+		float newExp = m_Exposure * 4.f;
+		m_Exposure += (newExp - m_Exposure)*TIME->DeltaTime();
 		LOGGER::Log("Exposure: " + to_string(m_Exposure));
 		m_pHDRbuffer->SetExposure(m_Exposure);
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_DOWN))
 	{
-		m_Exposure /= 1.02f;
+		float newExp = m_Exposure * 4.f;
+		m_Exposure -= (newExp - m_Exposure)*TIME->DeltaTime();
 		LOGGER::Log("Exposure: " + to_string(m_Exposure));
 		m_pHDRbuffer->SetExposure(m_Exposure);
 	}
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LEFT))
+	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LEFT) && m_UseSkyBox)
 	{
 		float r = min(max(m_pSkybox->GetRoughness() -0.01f, 0.f), 1.f);
 		LOGGER::Log("Roughness: " + to_string(r));
 		m_pSkybox->SetRoughness(r);
 	}
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_RIGHT))
+	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_RIGHT) && m_UseSkyBox)
 	{
 		float r = min(max(m_pSkybox->GetRoughness() + 0.01f, 0.f), 1.f);
 		LOGGER::Log("Roughness: " + to_string(r));
@@ -234,11 +239,11 @@ void AbstractScene::SetSkybox(string assetFile)
 	m_pSkybox->RootInitialize();
 }
 
-CubeMap* AbstractScene::GetEnvironmentMap()
+HDRMap* AbstractScene::GetEnvironmentMap()
 {
 	if (m_UseSkyBox)
 	{
-		return m_pSkybox->GetCubeMap();
+		return m_pSkybox->GetHDRMap();
 	}
 	return nullptr;
 }
