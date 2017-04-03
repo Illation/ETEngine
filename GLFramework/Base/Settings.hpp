@@ -2,6 +2,7 @@
 #include "../Helper/Singleton.h"
 #include <string>
 #include <SDL.h>
+#include <vector>
 
 struct Settings : public Singleton<Settings>
 {
@@ -20,8 +21,15 @@ public:
 			Title("OpenGl Framework"),
 			pWindow(nullptr)
 		{
-			Width = Fullscreen ? 1920 : 1280;
-			Height = Fullscreen ? 1080 : 720;
+			std::vector<glm::ivec2> resolutions;
+			resolutions.push_back(glm::ivec2(1280, 720));
+			resolutions.push_back(glm::ivec2(1920, 1080));
+			resolutions.push_back(glm::ivec2(2560, 1440));
+
+			unsigned int baseRes = 2;
+
+			Width = Fullscreen ? resolutions[baseRes].x : resolutions[baseRes-1].y;
+			Height = Fullscreen ? resolutions[baseRes].x : resolutions[baseRes-1].y;
 		}
 		void VSync(const bool enabled){SDL_GL_SetSwapInterval(enabled);}
 

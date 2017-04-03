@@ -70,7 +70,7 @@ void SkyboxTestScene::Initialize()
 void SkyboxTestScene::Update()
 {
 	//LOGGER::Log("FPS: " + to_string(TIME->FPS()));
-	cout << "FPS: " + to_string(TIME->FPS()) << endl;
+	//cout << "FPS: " + to_string(TIME->FPS()) << endl;
 
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_2))
 	{

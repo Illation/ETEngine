@@ -222,13 +222,67 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	//setup radiance
+	//**************
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	GLuint radianceMap;
+	glGenTextures(1, &radianceMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, radianceMap);
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, m_RadianceRes, m_RadianceRes, 0, GL_RGB, GL_FLOAT, nullptr);
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP); 
+
+	//Shader
+	auto radianceShader = ContentManager::Load<ShaderData>("Resources/Shaders/FwdConvRadianceShader.glsl");
+
+	glUseProgram(radianceShader->GetProgram());;
+	glUniform1i(glGetUniformLocation(radianceShader->GetProgram(), "environmentMap"), 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+	glUniformMatrix4fv(glGetUniformLocation(radianceShader->GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(captureProjection));
+	auto roughnessUniformLoc = glGetUniformLocation(radianceShader->GetProgram(), "roughness");
+
+	//render radiance
+	//***************
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	unsigned int maxMipLevels = (unsigned int)std::sqrt(m_RadianceRes)-1;
+	for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
+	{
+		// reisze framebuffer according to mip-level size.
+		unsigned int mipWidth = m_RadianceRes * std::pow(0.5, mip);
+		unsigned int mipHeight = m_RadianceRes * std::pow(0.5, mip);
+		glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+		glViewport(0, 0, mipWidth, mipHeight);
+
+		float roughness = (float)mip / (float)(maxMipLevels - 1);
+		glUniform1f(roughnessUniformLoc, roughness);
+		for (unsigned int i = 0; i < 6; ++i)
+		{
+			glUniformMatrix4fv(glGetUniformLocation(radianceShader->GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(captureViews[i]));
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, radianceMap, mip);
+
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			RenderCube();
+		}
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	//Reset render settings and return generated texture
 	//*************************************************
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);//need to set it back later
 	glViewport(0, 0, SETTINGS->Window.Width, SETTINGS->Window.Height);
 	glDeleteTextures(1, &hdrTexture);
 
-	return new HDRMap(envCubemap, irradianceMap, m_CubemapRes, m_CubemapRes);
+	return new HDRMap(envCubemap, irradianceMap, radianceMap, m_CubemapRes, m_CubemapRes, maxMipLevels);
 }
 
 void HdrLoader::Destroy(HDRMap* objToDestroy)
