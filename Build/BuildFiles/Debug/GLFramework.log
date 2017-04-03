@@ -1,0 +1,91 @@
+﻿  stdafx.cpp
+  main.cpp
+  SceneManager.cpp
+  Entity.cpp
+  AbstractScene.cpp
+  Skybox.cpp
+  OrbitCamera.cpp
+  FreeCamera.cpp
+  FixedCamera.cpp
+  MathHelper.cpp
+  Logger.cpp
+  TextureData.cpp
+  ShaderData.cpp
+  MeshFilter.cpp
+  Material.cpp
+  FrameBuffer.cpp
+  TestScene.cpp
+  SkyboxTestScene.cpp
+  UberMaterial.cpp
+  TexPBRMaterial.cpp
+  SkyboxMaterial.cpp
+  Generating Code...
+  Compiling...
+  GbufferMaterial.cpp
+  EmissiveMaterial.cpp
+  MainFramework.cpp
+  HDRframeBuffer.cpp
+  Gbuffer.cpp
+  TextureLoader.cpp
+  ShaderLoader.cpp
+  MeshFilterLoader.cpp
+  HdrLoader.cpp
+  CubeMapLoader.cpp
+  ContentManager.cpp
+  TransformComponent.cpp
+  ModelComponent.cpp
+  LightComponent.cpp
+  CameraComponent.cpp
+  AbstractComponent.cpp
+  Time.cpp
+  InputManager.cpp
+  AbstractFramework.cpp
+  Generating Code...
+  GLFramework.vcxproj -> C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\..\Build\Debug\GLFramework.exe
+  GLFramework.vcxproj -> C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\..\Build\Debug\GLFramework.pdb (Full PDB)
+  0 File(s) copied
+  0 File(s) copied
+  0 File(s) copied
+  0 File(s) copied
+  File not found - Assimp32.dll
+  0 File(s) copied
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Models\bunny.dae
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Models\cube.dae
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Models\helmet.dae
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Models\monkey.dae
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Models\sphere.dae
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\DefPBRMetShader.glsl
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\DefUberShader.glsl
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdConvIrradianceShader.glsl
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdEmissiveShader.glsl
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdEquiCubeShader.glsl
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdSkyboxShader.glsl
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdUberShader.glsl
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\PostBufferDisplay.glsl
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\PostBufferDisplayLegacy.glsl
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\PostDeferredComposite.glsl
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\PostDeferredCompositeLegacy.glsl
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\PostHDR.glsl
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\AOMap.png
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\BaseColor.png
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\Metalness.png
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\NormalMap.png
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\Roughness.png
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\sample.png
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\sample2.png
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\TropicalRuins_3k.hdr
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\SkyBox.dds
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\skybox.rar
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\skyboxNX.jpg
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\skyboxNY.jpg
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\skyboxNZ.jpg
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\skyboxPX.jpg
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\skyboxPY.jpg
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\skyboxPZ.jpg
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbNX.jpg
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbNY.jpg
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbNZ.jpg
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbPX.jpg
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbPY.jpg
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbPZ.jpg
+  39 File(s) copied

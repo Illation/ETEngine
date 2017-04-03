@@ -23,6 +23,7 @@ private:
 	void RenderCube();
 	int m_CubemapRes = 1024;
 	int m_IrradianceRes = 32;
+	int m_RadianceRes = 1024;
 	GLuint m_CubeVAO = 0;
 	GLuint m_CubeVBO = 0;
 };

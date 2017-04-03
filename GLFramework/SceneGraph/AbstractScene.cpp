@@ -119,13 +119,13 @@ void AbstractScene::RootUpdate()
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LEFT) && m_UseSkyBox)
 	{
-		float r = min(max(m_pSkybox->GetRoughness() -0.01f, 0.f), 1.f);
+		float r = min(max(m_pSkybox->GetRoughness() -TIME->DeltaTime(), 0.f), 1.f);
 		LOGGER::Log("Roughness: " + to_string(r));
 		m_pSkybox->SetRoughness(r);
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_RIGHT) && m_UseSkyBox)
 	{
-		float r = min(max(m_pSkybox->GetRoughness() + 0.01f, 0.f), 1.f);
+		float r = min(max(m_pSkybox->GetRoughness() + TIME->DeltaTime(), 0.f), 1.f);
 		LOGGER::Log("Roughness: " + to_string(r));
 		m_pSkybox->SetRoughness(r);
 	}
