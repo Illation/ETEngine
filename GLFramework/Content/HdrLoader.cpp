@@ -88,6 +88,7 @@ void HdrLoader::RenderCube()
 
 HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 {
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	//load equirectangular texture
 	//****************************
 	stbi_set_flip_vertically_on_load(true);
@@ -137,7 +138,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	//Create matrices for rendering to texture
@@ -175,6 +176,10 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 
 		RenderCube();//Todo::put this in a utility class
 	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 	//setup for convoluted irradiance cubemap
 	//***************************************
@@ -224,7 +229,6 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 
 	//setup radiance
 	//**************
-	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	GLuint radianceMap;
 	glGenTextures(1, &radianceMap);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, radianceMap);
@@ -245,6 +249,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 
 	glUseProgram(radianceShader->GetProgram());;
 	glUniform1i(glGetUniformLocation(radianceShader->GetProgram(), "environmentMap"), 0);
+	glUniform1f(glGetUniformLocation(radianceShader->GetProgram(), "resolution"), m_RadianceRes);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
 	glUniformMatrix4fv(glGetUniformLocation(radianceShader->GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(captureProjection));
@@ -253,7 +258,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//render radiance
 	//***************
 	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-	unsigned int maxMipLevels = (unsigned int)std::sqrt(m_RadianceRes)-1;
+	unsigned int maxMipLevels = (unsigned int)std::log2(m_RadianceRes)-1;//at least 4x4
 	for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
 	{
 		// reisze framebuffer according to mip-level size.

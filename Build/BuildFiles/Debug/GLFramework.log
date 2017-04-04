@@ -1,46 +1,6 @@
-﻿  stdafx.cpp
-  main.cpp
-  SceneManager.cpp
-  Entity.cpp
-  AbstractScene.cpp
-  Skybox.cpp
-  OrbitCamera.cpp
-  FreeCamera.cpp
-  FixedCamera.cpp
-  MathHelper.cpp
-  Logger.cpp
-  TextureData.cpp
-  ShaderData.cpp
-  MeshFilter.cpp
-  Material.cpp
-  FrameBuffer.cpp
-  TestScene.cpp
-  SkyboxTestScene.cpp
-  UberMaterial.cpp
-  TexPBRMaterial.cpp
-  SkyboxMaterial.cpp
-  Generating Code...
-  Compiling...
-  GbufferMaterial.cpp
-  EmissiveMaterial.cpp
-  MainFramework.cpp
-  HDRframeBuffer.cpp
-  Gbuffer.cpp
-  TextureLoader.cpp
-  ShaderLoader.cpp
-  MeshFilterLoader.cpp
-  HdrLoader.cpp
-  CubeMapLoader.cpp
-  ContentManager.cpp
-  TransformComponent.cpp
-  ModelComponent.cpp
-  LightComponent.cpp
-  CameraComponent.cpp
-  AbstractComponent.cpp
-  Time.cpp
-  InputManager.cpp
-  AbstractFramework.cpp
-  Generating Code...
+﻿  HdrLoader.cpp
+c:\users\robert.lindner\desktop\personalprojects\glframework\glframework\content\hdrloader.cpp(261): warning C4244: 'initializing': conversion from 'double' to 'unsigned int', possible loss of data
+c:\users\robert.lindner\desktop\personalprojects\glframework\glframework\content\hdrloader.cpp(262): warning C4244: 'initializing': conversion from 'double' to 'unsigned int', possible loss of data
   GLFramework.vcxproj -> C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\..\Build\Debug\GLFramework.exe
   GLFramework.vcxproj -> C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\..\Build\Debug\GLFramework.pdb (Full PDB)
   0 File(s) copied
@@ -57,6 +17,7 @@
   C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\DefPBRMetShader.glsl
   C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\DefUberShader.glsl
   C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdConvIrradianceShader.glsl
+  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdConvRadianceShader.glsl
   C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdEmissiveShader.glsl
   C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdEquiCubeShader.glsl
   C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdSkyboxShader.glsl
@@ -88,4 +49,4 @@
   C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbPX.jpg
   C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbPY.jpg
   C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbPZ.jpg
-  39 File(s) copied
+  40 File(s) copied

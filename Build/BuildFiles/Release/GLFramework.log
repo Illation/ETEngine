@@ -1,8 +1,11 @@
-﻿  AbstractScene.cpp
+﻿  HdrLoader.cpp
+Content\HdrLoader.cpp(252): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+Content\HdrLoader.cpp(265): warning C4244: 'initializing': conversion from 'double' to 'unsigned int', possible loss of data
+Content\HdrLoader.cpp(266): warning C4244: 'initializing': conversion from 'double' to 'unsigned int', possible loss of data
   Generating code
-  5 of 3526 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
-    2 functions were new in current compilation
-    25 functions had inline decision re-evaluated but remain unchanged
+  1 of 3526 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   GLFramework.vcxproj -> C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\..\Build\Release\GLFramework.exe
   GLFramework.vcxproj -> C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\..\Build\Release\GLFramework.pdb (Full PDB)
@@ -10,8 +13,8 @@
   0 File(s) copied
   0 File(s) copied
   0 File(s) copied
-  File not found - Assimp32.dll
   0 File(s) copied
+  File not found - Assimp32.dll
   C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Models\bunny.dae
   C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Models\cube.dae
   C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Models\helmet.dae
