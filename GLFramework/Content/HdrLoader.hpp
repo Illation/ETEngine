@@ -20,11 +20,17 @@ protected:
 	bool m_UseSrgb = false;
 
 private:
-	void RenderCube();
 	int m_CubemapRes = 1024;
 	int m_IrradianceRes = 32;
 	int m_RadianceRes = 1024;
+	int m_BrdfLutRes = 512;
+
+	//All this stuff should move to global graphics helpers
+	void RenderCube();
+	void RenderQuad();
 	GLuint m_CubeVAO = 0;
 	GLuint m_CubeVBO = 0;
+	GLuint m_QuadVAO = 0;
+	GLuint m_QuadVBO = 0;
 };
 

@@ -13,6 +13,8 @@ HdrLoader::~HdrLoader()
 {
 	glDeleteBuffers(1, &m_CubeVBO);
 	glDeleteVertexArrays(1, &m_CubeVAO);
+	glDeleteBuffers(1, &m_QuadVBO);
+	glDeleteVertexArrays(1, &m_QuadVAO);
 }
 
 void HdrLoader::RenderCube()
@@ -83,6 +85,33 @@ void HdrLoader::RenderCube()
 	// Render Cube
 	glBindVertexArray(m_CubeVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+}
+
+void HdrLoader::RenderQuad()
+{
+	if (m_QuadVAO == 0)
+	{
+		GLfloat quadVertices[] = {
+			// Positions        // Texture Coords
+			-1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+			1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+			1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+		};
+		// Setup plane VAO
+		glGenVertexArrays(1, &m_QuadVAO);
+		glGenBuffers(1, &m_QuadVBO);
+		glBindVertexArray(m_QuadVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, m_QuadVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	}
+	glBindVertexArray(m_QuadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 }
 
@@ -281,13 +310,42 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	//setup BRDF look up table
+	//************************
+	//Should probably be moved to a different place and made global for future support of reflection probes
+
+	GLuint brdfLUTTexture;
+	glGenTextures(1, &brdfLUTTexture);
+	//Shader
+	auto brdfShader = ContentManager::Load<ShaderData>("Resources/Shaders/FwdBrdfLutShader.glsl");
+
+	// pre-allocate enough memory for the LUT texture.
+	glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, m_BrdfLutRes, m_BrdfLutRes, 0, GL_RG, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_BrdfLutRes, m_BrdfLutRes);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0);
+
+	glViewport(0, 0, m_BrdfLutRes, m_BrdfLutRes);
+	glUseProgram(irradianceShader->GetProgram());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	RenderQuad();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	//Reset render settings and return generated texture
 	//*************************************************
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);//need to set it back later
 	glViewport(0, 0, SETTINGS->Window.Width, SETTINGS->Window.Height);
 	glDeleteTextures(1, &hdrTexture);
 
-	return new HDRMap(envCubemap, irradianceMap, radianceMap, m_CubemapRes, m_CubemapRes, maxMipLevels);
+	return new HDRMap(envCubemap, irradianceMap, radianceMap, brdfLUTTexture, m_CubemapRes, m_CubemapRes, maxMipLevels);
 }
 
 void HdrLoader::Destroy(HDRMap* objToDestroy)
