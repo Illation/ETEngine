@@ -35,13 +35,19 @@ void Gbuffer::UploadDerivedVariables()
 	}
 	if (SCENE->SkyboxEnabled())
 	{
-		glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texEnvironment"), 3);
+		glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texIrradiance"), 3);
 		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetHandle());
-
-		glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texIrradiance"), 4);
-		glActiveTexture(GL_TEXTURE4);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetIrradianceHandle());
+
+		glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texEnvRadiance"), 4);
+		glActiveTexture(GL_TEXTURE4);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetRadianceHandle());
+		
+		glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texBRDFLUT"), 5);
+		glActiveTexture(GL_TEXTURE5);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetBrdfLutHandle());
+
+		glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "MAX_REFLECTION_LOD"), SCENE->GetEnvironmentMap()->GetNumMipMaps());
 	}
 
 	glm::vec3 cPos = CAMERA->GetTransform()->GetPosition();

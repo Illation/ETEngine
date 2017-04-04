@@ -42,10 +42,11 @@ private:
 class HDRMap
 {
 public:
-	HDRMap(GLuint handle, GLuint irradiance, GLuint radiance, int width, int height, int numMipMaps) 
+	HDRMap(GLuint handle, GLuint irradiance, GLuint radiance, GLuint brdfLut, int width, int height, int numMipMaps) 
 		:m_Handle(handle)
 		,m_IrradianceHandle(irradiance)
 		,m_RadianceHandle(radiance)
+		,m_BrdfLutHandle(brdfLut)
 		,m_Width(width)
 		,m_Height(height)
 		,m_NumMipMaps(numMipMaps){}
@@ -54,11 +55,13 @@ public:
 		glDeleteTextures(1, &m_Handle); 
 		glDeleteTextures(1, &m_IrradianceHandle);
 		glDeleteTextures(1, &m_RadianceHandle);
+		glDeleteTextures(1, &m_BrdfLutHandle);
 	}
 
 	GLuint GetHandle() { return m_Handle; }
 	GLuint GetIrradianceHandle() { return m_IrradianceHandle; }
 	GLuint GetRadianceHandle() { return m_RadianceHandle; }
+	GLuint GetBrdfLutHandle() { return m_BrdfLutHandle; }
 
 	int GetNumMipMaps() { return m_NumMipMaps; }
 
@@ -66,6 +69,7 @@ private:
 	GLuint m_Handle;
 	GLuint m_IrradianceHandle;
 	GLuint m_RadianceHandle;
+	GLuint m_BrdfLutHandle;
 	int m_Width;
 	int m_Height;
 	int m_NumMipMaps = 0;
