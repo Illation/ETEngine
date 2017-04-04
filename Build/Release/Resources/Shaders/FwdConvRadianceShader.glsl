@@ -20,6 +20,7 @@
 
 	uniform samplerCube environmentMap;
 	uniform float roughness;
+	uniform float resolution = 512.0; // resolution of source cubemap (per face)
 	
 	const uint SAMPLE_COUNT = 4096u;
 	const float PI = 3.14159265359f;
@@ -79,7 +80,15 @@
 			float NdotL = max(dot(normal, L), 0.0);
 			if(NdotL > 0.0)
 			{
-				radiance += texture(environmentMap, L).rgb * NdotL;
+				float D   = D_GGX_TR ( NdotH , _Roughness );
+				float pdf = (D * NdotH / (4. * HdotV)) + 0.0001; 
+
+				float saTexel  = 4.0 * PI / (6.0 * resolution * resolution);
+				float saSample = 1.0 / (float(SAMPLE_COUNT) * pdf + 0.0001);
+
+				float mipLevel = _Roughness == 0.0 ? 0.0 : 0.5 * log2(saSample / saTexel);
+				
+				radiance += textureLod(environmentMap, L, mipLevel).rgb * NdotL;
 				totalWeight += NdotL;
 			}
 		}

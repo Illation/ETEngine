@@ -20,6 +20,7 @@
 
 	uniform samplerCube environmentMap;
 	uniform float roughness;
+	uniform float resolution = 512.0; // resolution of source cubemap (per face)
 	
 	const uint SAMPLE_COUNT = 4096u;
 	const float PI = 3.14159265359f;
@@ -60,6 +61,19 @@
 		vec3 sampleVec = tangent * H.x + bitangent * H.y + N * H.z;
 		return normalize(sampleVec);
 	}  
+	float DistributionGGX(vec3 N, vec3 H, float roughness)
+	{
+		float a = roughness*roughness;
+		float a2 = a*a;
+		float NdotH = max(dot(N, H), 0.0);
+		float NdotH2 = NdotH*NdotH;
+
+		float nom   = a2;
+		float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+		denom = PI * denom * denom;
+
+		return nom / denom;
+	}
 
 	void main()
 	{		
@@ -79,7 +93,19 @@
 			float NdotL = max(dot(normal, L), 0.0);
 			if(NdotL > 0.0)
 			{
-				radiance += texture(environmentMap, L).rgb * NdotL;
+				// sample from the environment's mip level based on roughness/pdf
+				float D   = DistributionGGX(normal, H, roughness);
+				float NdotH = max(dot(normal, H), 0.0);
+				float HdotV = max(dot(H, V), 0.0);
+				float pdf = D * NdotH / (4.0 * HdotV) + 0.0001; 
+
+				float resolution = 512.0; // resolution of source cubemap (per face)
+				float saTexel  = 4.0 * PI / (6.0 * resolution * resolution);
+				float saSample = 1.0 / (float(SAMPLE_COUNT) * pdf + 0.0001);
+
+				float mipLevel = roughness == 0.0 ? 0.0 : 0.5 * log2(saSample / saTexel); 
+				
+				radiance += textureLod(environmentMap, L, mipLevel).rgb * NdotL;
 				totalWeight += NdotL;
 			}
 		}
