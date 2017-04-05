@@ -1,28 +1,25 @@
 <VERTEX>
 	#version 330 core
-	layout (location = 0) in vec3 position;
+	layout (location = 0) in vec3 pos;
+	layout (location = 1) in vec2 texCoords;
 
-	out vec3 localPos;
-
-	uniform mat4 projection;
-	uniform mat4 view;
+	out vec2 TexCoords;
 
 	void main()
 	{
-		localPos = position;  
-		gl_Position =  projection * view * vec4(localPos, 1.0);
-	} 
+		TexCoords = texCoords;
+		gl_Position = vec4(pos, 1.0);
+	}
 </VERTEX>
 <FRAGMENT>
 	#version 330 core
-	layout (location = 0) out vec4 outColor;
-	in vec3 localPos;
+	layout (location = 0) out vec2 outColor;
+	in vec2 TexCoords;
 
 	uniform samplerCube environmentMap;
 	uniform float roughness;
-	uniform float resolution = 512.0; // resolution of source cubemap (per face)
 	
-	const uint SAMPLE_COUNT = 4096u;
+	const uint SAMPLE_COUNT = 1024u;
 	const float PI = 3.14159265359f;
 	
 	float RadicalInverse_VdC(uint bits) 
@@ -71,7 +68,6 @@
 
 		return nom / denom;
 	}
-	// ----------------------------------------------------------------------------
 	float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 	{
 		float NdotV = max(dot(N, V), 0.0);
@@ -94,7 +90,6 @@
 
 		vec3 N = vec3(0.0, 0.0, 1.0);
 
-		const uint SAMPLE_COUNT = 1024u;
 		for(uint i = 0u; i < SAMPLE_COUNT; ++i)
 		{
 			vec2 Xi = Hammersley(i, SAMPLE_COUNT);
@@ -122,7 +117,7 @@
 	// ----------------------------------------------------------------------------
 	void main() 
 	{
-		vec2 integratedBRDF = IntegrateBRDF(TexCoords.y, TexCoords.x);
-		outColor = vec4(radiance, 1.0);
+		vec2 radiance = IntegrateBRDF(TexCoords.y, TexCoords.x);
+		outColor = radiance;
 	}
 </FRAGMENT>

@@ -1,52 +1,102 @@
-﻿  HdrLoader.cpp
-c:\users\robert.lindner\desktop\personalprojects\glframework\glframework\content\hdrloader.cpp(261): warning C4244: 'initializing': conversion from 'double' to 'unsigned int', possible loss of data
-c:\users\robert.lindner\desktop\personalprojects\glframework\glframework\content\hdrloader.cpp(262): warning C4244: 'initializing': conversion from 'double' to 'unsigned int', possible loss of data
-  GLFramework.vcxproj -> C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\..\Build\Debug\GLFramework.exe
-  GLFramework.vcxproj -> C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\..\Build\Debug\GLFramework.pdb (Full PDB)
+﻿  stdafx.cpp
+  SceneManager.cpp
+  Entity.cpp
+  AbstractScene.cpp
+  Skybox.cpp
+  OrbitCamera.cpp
+  FreeCamera.cpp
+  FixedCamera.cpp
+  main.cpp
+  MathHelper.cpp
+  Logger.cpp
+  TextureData.cpp
+  ShaderData.cpp
+  MeshFilter.cpp
+  Material.cpp
+  FrameBuffer.cpp
+  TestScene.cpp
+  SkyboxTestScene.cpp
+  UberMaterial.cpp
+  TexPBRMaterial.cpp
+  SkyboxMaterial.cpp
+  Generating Code...
+  Compiling...
+  GbufferMaterial.cpp
+  EmissiveMaterial.cpp
+  MainFramework.cpp
+  HDRframeBuffer.cpp
+  Gbuffer.cpp
+c:\users\thero\desktop\personal projects\3dengine\raytracer\twopointoh\framework\glframework\framebuffers\gbuffer.cpp(50): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+  TextureLoader.cpp
+  ShaderLoader.cpp
+  MeshFilterLoader.cpp
+  HdrLoader.cpp
+c:\users\thero\desktop\personal projects\3dengine\raytracer\twopointoh\framework\glframework\content\hdrloader.cpp(281): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+c:\users\thero\desktop\personal projects\3dengine\raytracer\twopointoh\framework\glframework\content\hdrloader.cpp(294): warning C4244: 'initializing': conversion from 'double' to 'unsigned int', possible loss of data
+c:\users\thero\desktop\personal projects\3dengine\raytracer\twopointoh\framework\glframework\content\hdrloader.cpp(295): warning C4244: 'initializing': conversion from 'double' to 'unsigned int', possible loss of data
+  CubeMapLoader.cpp
+  ContentManager.cpp
+  TransformComponent.cpp
+  ModelComponent.cpp
+  LightComponent.cpp
+  CameraComponent.cpp
+  AbstractComponent.cpp
+  Time.cpp
+  InputManager.cpp
+  AbstractFramework.cpp
+  Generating Code...
+  GLFramework.vcxproj -> C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Debug\GLFramework.exe
+  GLFramework.vcxproj -> C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\..\Build\Debug\GLFramework.pdb (Full PDB)
   0 File(s) copied
   0 File(s) copied
   0 File(s) copied
   0 File(s) copied
   File not found - Assimp32.dll
   0 File(s) copied
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Models\bunny.dae
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Models\cube.dae
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Models\helmet.dae
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Models\monkey.dae
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Models\sphere.dae
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\DefPBRMetShader.glsl
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\DefUberShader.glsl
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdConvIrradianceShader.glsl
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdConvRadianceShader.glsl
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdEmissiveShader.glsl
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdEquiCubeShader.glsl
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdSkyboxShader.glsl
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\FwdUberShader.glsl
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\PostBufferDisplay.glsl
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\PostBufferDisplayLegacy.glsl
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\PostDeferredComposite.glsl
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\PostDeferredCompositeLegacy.glsl
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Shaders\PostHDR.glsl
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\AOMap.png
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\BaseColor.png
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\Metalness.png
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\NormalMap.png
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\Roughness.png
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\sample.png
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\sample2.png
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\TropicalRuins_3k.hdr
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\SkyBox.dds
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\skybox.rar
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\skyboxNX.jpg
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\skyboxNY.jpg
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\skyboxNZ.jpg
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\skyboxPX.jpg
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\skyboxPY.jpg
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\CubeMap\skyboxPZ.jpg
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbNX.jpg
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbNY.jpg
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbNZ.jpg
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbPX.jpg
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbPY.jpg
-  C:\Users\robert.lindner\Desktop\PersonalProjects\GLFramework\GLFramework\\Resources\Textures\skybox\sbPZ.jpg
-  40 File(s) copied
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Models\bunny.dae
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Models\cube.dae
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Models\helmet.dae
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Models\monkey.dae
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Models\sphere.dae
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\DefPBRMetShader.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\DefUberShader.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\FwdBrdfLutShader.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\FwdConvBRDFShader.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\FwdConvIrradianceShader.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\FwdConvRadianceShader.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\FwdEmissiveShader.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\FwdEquiCubeShader.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\FwdSkyboxShader.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\FwdUberShader.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\PostBufferDisplay.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\PostBufferDisplayLegacy.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\PostDeferredComposite.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\PostDeferredCompositeLegacy.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Shaders\PostHDR.glsl
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\AOMap.png
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\BaseColor.png
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\CharlesRiver_Ref.hdr
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\Harbour_3_Ref.hdr
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\Ice_Lake_Ref.hdr
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\Metalness.png
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\NormalMap.png
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\Roughness.png
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\sample.png
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\sample2.png
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\TropicalRuins_3k.hdr
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\WinterForest_Ref.hdr
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\CubeMap\SkyBox.dds
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\CubeMap\skybox.rar
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\CubeMap\skyboxNX.jpg
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\CubeMap\skyboxNY.jpg
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\CubeMap\skyboxNZ.jpg
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\CubeMap\skyboxPX.jpg
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\CubeMap\skyboxPY.jpg
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\CubeMap\skyboxPZ.jpg
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\skybox\sbNX.jpg
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\skybox\sbNY.jpg
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\skybox\sbNZ.jpg
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\skybox\sbPX.jpg
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\skybox\sbPY.jpg
+  C:\Users\thero\Desktop\Personal Projects\3DEngine\Raytracer\TwoPointOh\Framework\GLFramework\\Resources\Textures\skybox\sbPZ.jpg
+  46 File(s) copied
