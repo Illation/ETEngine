@@ -21,6 +21,7 @@ protected:
 	float brightness;
 	friend class LightComponent;
 	virtual void UploadVariables(GLuint program, TransformComponent* comp, unsigned index) = 0;
+	virtual void DrawVolume(TransformComponent* pTransform) {};
 	bool m_Update = true;
 };
 class PointLight : public Light
@@ -32,6 +33,8 @@ public:
 
 	void SetRadius(float rad) { radius = rad;  m_Update = true;}
 	float GetRadius() { return radius; }
+
+	void DrawVolume(TransformComponent* pTransform);
 
 protected:
 	float radius;
@@ -67,6 +70,8 @@ public:
 
 	glm::vec3 GetColor() { return m_Light->color; }
 	void UploadVariables(GLuint shaderProgram, unsigned index);
+
+	void DrawVolume();
 
 protected:
 

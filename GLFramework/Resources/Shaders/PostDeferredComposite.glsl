@@ -49,7 +49,7 @@
 		vec3 Direction;
 		vec3 Color;
 	};
-	const int NR_POINT_LIGHTS = 5;
+	const int NR_POINT_LIGHTS = 11;
 	uniform PointLight pointLights[NR_POINT_LIGHTS];
 	const int NR_DIR_LIGHTS = 1;
 	uniform DirectionalLight dirLights[NR_DIR_LIGHTS];

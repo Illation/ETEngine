@@ -177,6 +177,13 @@ void AbstractScene::RootDraw()
 	{
 		m_pGBuffer->Draw();
 
+		//Render Light Volumes
+		auto lightVec = SCENE->GetLights(); //Todo: automatically add all light components to an array for faster access
+		for (auto Light : lightVec)
+		{
+			Light->DrawVolume();
+		}
+
 		//Foreward Rendering
 		//******************
 		//Step one: copy Z-Buffer from gBuffer
