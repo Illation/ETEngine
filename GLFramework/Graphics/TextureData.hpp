@@ -61,7 +61,7 @@ public:
 	GLuint GetHandle() { return m_Handle; }
 	GLuint GetIrradianceHandle() { return m_IrradianceHandle; }
 	GLuint GetRadianceHandle() { return m_RadianceHandle; }
-	GLuint GetBrdfLutHandle() { return m_BrdfLutHandle; }
+	GLuint GetBrdfLutHandle();
 
 	int GetNumMipMaps() { return m_NumMipMaps; }
 

@@ -45,7 +45,11 @@ void SkyboxTestScene::Initialize()
 
 	//Skybox
 	//**************************
-	SetSkybox("Resources/Textures/TropicalRuins_3k.hdr");
+	//SetSkybox("Resources/Textures/CharlesRiver_Ref.hdr");
+	//SetSkybox("Resources/Textures/Harbour_3_Ref.hdr");
+	SetSkybox("Resources/Textures/Ice_Lake_Ref.hdr");
+	//SetSkybox("Resources/Textures/TropicalRuins_3k.hdr");
+	//SetSkybox("Resources/Textures/WinterForest_Ref.hdr");
 
 	//Models
 	//*************************

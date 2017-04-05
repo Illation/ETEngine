@@ -45,7 +45,7 @@ void Gbuffer::UploadDerivedVariables()
 		
 		glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texBRDFLUT"), 5);
 		glActiveTexture(GL_TEXTURE5);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetBrdfLutHandle());
+		glBindTexture(GL_TEXTURE_2D, SCENE->GetEnvironmentMap()->GetBrdfLutHandle());
 
 		glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "MAX_REFLECTION_LOD"), SCENE->GetEnvironmentMap()->GetNumMipMaps());
 	}

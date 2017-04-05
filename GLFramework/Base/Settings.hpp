@@ -16,7 +16,7 @@ public:
 	struct WindowSettings
 	{
 		WindowSettings() :
-			Fullscreen(true),
+			Fullscreen(false),
 			AspectRatio(Width / (float)Height),
 			Title("OpenGl Framework"),
 			pWindow(nullptr)
@@ -28,8 +28,8 @@ public:
 
 			unsigned int baseRes = 2;
 
-			Width = Fullscreen ? resolutions[baseRes].x : resolutions[baseRes-1].y;
-			Height = Fullscreen ? resolutions[baseRes].x : resolutions[baseRes-1].y;
+			Width = Fullscreen ? resolutions[baseRes].x : resolutions[baseRes-1].x;
+			Height = Fullscreen ? resolutions[baseRes].y : resolutions[baseRes-1].y;
 		}
 		void VSync(const bool enabled){SDL_GL_SetSwapInterval(enabled);}
 

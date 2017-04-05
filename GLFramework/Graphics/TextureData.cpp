@@ -14,3 +14,8 @@ TextureData::~TextureData()
 {
 	glDeleteTextures(1, &m_Handle);
 }
+
+GLuint HDRMap::GetBrdfLutHandle()
+{
+	return m_BrdfLutHandle;
+}
