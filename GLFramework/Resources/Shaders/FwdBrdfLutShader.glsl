@@ -13,13 +13,13 @@
 </VERTEX>
 <FRAGMENT>
 	#version 330 core
-	layout (location = 0) out vec4 outColor;
+	layout (location = 0) out vec2 outColor;
 	in vec2 TexCoords;
 
 	uniform samplerCube environmentMap;
 	uniform float roughness;
 	
-	const uint SAMPLE_COUNT = 4096u;
+	const uint SAMPLE_COUNT = 1024u;
 	const float PI = 3.14159265359f;
 	
 	float RadicalInverse_VdC(uint bits) 
@@ -68,7 +68,6 @@
 
 		return nom / denom;
 	}
-	// ----------------------------------------------------------------------------
 	float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 	{
 		float NdotV = max(dot(N, V), 0.0);
@@ -91,7 +90,6 @@
 
 		vec3 N = vec3(0.0, 0.0, 1.0);
 
-		const uint SAMPLE_COUNT = 1024u;
 		for(uint i = 0u; i < SAMPLE_COUNT; ++i)
 		{
 			vec2 Xi = Hammersley(i, SAMPLE_COUNT);
@@ -120,6 +118,6 @@
 	void main() 
 	{
 		vec2 radiance = IntegrateBRDF(TexCoords.y, TexCoords.x);
-		outColor = vec4(radiance, 0.0, 1.0);
+		outColor = radiance;
 	}
 </FRAGMENT>

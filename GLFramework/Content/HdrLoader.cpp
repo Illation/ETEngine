@@ -322,6 +322,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	// pre-allocate enough memory for the LUT texture.
 	glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, m_BrdfLutRes, m_BrdfLutRes, 0, GL_RG, GL_FLOAT, 0);
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -333,7 +334,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0);
 
 	glViewport(0, 0, m_BrdfLutRes, m_BrdfLutRes);
-	glUseProgram(irradianceShader->GetProgram());
+	glUseProgram(brdfShader->GetProgram());
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	RenderQuad();
 

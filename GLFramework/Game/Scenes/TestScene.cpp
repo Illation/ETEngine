@@ -40,7 +40,8 @@ void TestScene::Initialize()
 	m_pLightMat = new EmissiveMaterial();
 
 	//SetSkybox("Resources/Textures/skybox/sb.jpg");
-	SetSkybox("Resources/Textures/TropicalRuins_3k.hdr");
+	//SetSkybox("Resources/Textures/TropicalRuins_3k.hdr");
+	SetSkybox("Resources/Textures/Ice_Lake_Ref.hdr");
 	//Models
 	//*************************
 	unsigned amountPerRow = 2;
