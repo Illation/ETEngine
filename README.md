@@ -39,7 +39,7 @@ Structure inspired by the OverlordEngine from [Digital Arts and Entertainment](h
 ![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/PBR3.JPG "")
 
 ### IBL
-![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/IblCombined.JPG "")
+![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/IblCombined.jpg "")
 
 ### Roughness
 ![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/Roughness.JPG "")
