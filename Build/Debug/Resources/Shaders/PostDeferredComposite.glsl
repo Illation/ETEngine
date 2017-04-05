@@ -20,8 +20,11 @@
 	uniform sampler2D texNormMetSpec;             // | Nor.x   Nor.y | Met.x | Spc.x |
 	uniform sampler2D texBaseColRough;            // | BCo.r   BCo.g   BCo.b | Rou.x |
 	
-	uniform samplerCube texEnvironment;
+	//uniform samplerCube texEnvironment;
 	uniform samplerCube texIrradiance;
+	uniform samplerCube texEnvRadiance;
+	uniform sampler2D   texBRDFLUT;  
+	uniform float MAX_REFLECTION_LOD = 4.0;
 	
 	
 	uniform vec3 camPos;
@@ -162,7 +165,7 @@
 		{
 			lightDir = normalize(lightDir);		//L
 			vec3 H = normalize(lightDir+viewDir);
-			
+			 
 			//Calc attenuation with inv square
 			float dividend = 1.0 - pow(dist/light.Radius, 4);
 			dividend = clamp(dividend, 0.0, 1.0);
@@ -212,18 +215,22 @@
 		//View dir and reflection
 		vec3 viewDir = normalize(camPos - pos);
 		vec3 refl = reflect(viewDir, norm);
+		refl.z = -refl.z;
+
+		vec3 radianceColor = textureLod(texEnvRadiance, refl,  rough * MAX_REFLECTION_LOD).rgb;
 		
-		//get the specular component -- physically incorrect, needs to replaced with GGX specular term
-		vec3 envRad = texture(texEnvironment, refl).rgb;
-		vec3 envIRad = texture(texIrradiance, refl).rgb;
-		vec3 specular = mix(envRad, envIRad, rough) * Fresnel(norm, viewDir);
-		//vec3 finalCol = (env * Fresnel(norm, viewDir))*ao;//vec3(0);//
+		vec3 F        = FresnelSchlickRoughness(max(dot(norm, viewDir), 0.0), F0, rough);
 		
-		vec3 kS = FresnelSchlickRoughness(max(dot(norm, viewDir), 0.0), F0, rough);
+		vec3 kS = F;
 		vec3 kD = (1.0 - kS) * (1-metal);
+		
 		vec3 irradiance = texture(texIrradiance, norm).rgb;
 		vec3 diffuse    = irradiance * baseCol;
-		vec3 ambient    = (kD * diffuse + kS*specular) * ao; 
+		
+		vec2 envBRDF  = texture(texBRDFLUT, vec2(max(dot(norm, viewDir), 0.0), rough)).rg;
+		vec3 specular = radianceColor * (F * envBRDF.x + envBRDF.y);
+		
+		vec3 ambient    = (kD * diffuse + specular) * ao; 
 		
 		vec3 finalCol = ambient;
 		
