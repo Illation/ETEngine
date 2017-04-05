@@ -278,7 +278,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 
 	glUseProgram(radianceShader->GetProgram());;
 	glUniform1i(glGetUniformLocation(radianceShader->GetProgram(), "environmentMap"), 0);
-	glUniform1f(glGetUniformLocation(radianceShader->GetProgram(), "resolution"), m_RadianceRes);
+	glUniform1f(glGetUniformLocation(radianceShader->GetProgram(), "resolution"), (GLfloat)m_RadianceRes);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
 	glUniformMatrix4fv(glGetUniformLocation(radianceShader->GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(captureProjection));
@@ -287,17 +287,17 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//render radiance
 	//***************
 	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-	unsigned int maxMipLevels = (unsigned int)std::log2(m_RadianceRes)-1;//at least 4x4
-	for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
+	unsigned int maxMipLevels = (unsigned int)std::log2(m_RadianceRes)-2;//at least 4x4
+	for (unsigned int mip = 0; mip < maxMipLevels+1; ++mip)
 	{
 		// reisze framebuffer according to mip-level size.
-		unsigned int mipWidth = m_RadianceRes * std::pow(0.5, mip);
-		unsigned int mipHeight = m_RadianceRes * std::pow(0.5, mip);
+		unsigned int mipWidth = (unsigned int)(m_RadianceRes * std::pow(0.5, mip));
+		unsigned int mipHeight = (unsigned int)(m_RadianceRes * std::pow(0.5, mip));
 		glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
 		glViewport(0, 0, mipWidth, mipHeight);
 
-		float roughness = (float)mip / (float)(maxMipLevels - 1);
+		float roughness = (float)mip / (float)(maxMipLevels);
 		glUniform1f(roughnessUniformLoc, roughness);
 		for (unsigned int i = 0; i < 6; ++i)
 		{

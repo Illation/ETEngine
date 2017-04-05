@@ -165,6 +165,8 @@
     <ClCompile Include="Prefabs\OrbitCamera.cpp" />
     <ClCompile Include="Helper\MathHelper.cpp" />
     <ClCompile Include="Content\HdrLoader.cpp" />
+    <ClCompile Include="GraphicsHelper\LightVolume.cpp" />
+    <ClCompile Include="Game\Materials\LightMaterial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -293,5 +295,7 @@
     </ClInclude>
     <ClInclude Include="Prefabs\OrbitCamera.hpp" />
     <ClInclude Include="Content\HdrLoader.hpp" />
+    <ClInclude Include="GraphicsHelper\LightVolume.hpp" />
+    <ClInclude Include="Game\Materials\LightMaterial.hpp" />
   </ItemGroup>
 </Project>

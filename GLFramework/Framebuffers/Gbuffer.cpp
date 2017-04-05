@@ -47,7 +47,7 @@ void Gbuffer::UploadDerivedVariables()
 		glActiveTexture(GL_TEXTURE5);
 		glBindTexture(GL_TEXTURE_2D, SCENE->GetEnvironmentMap()->GetBrdfLutHandle());
 
-		glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "MAX_REFLECTION_LOD"), SCENE->GetEnvironmentMap()->GetNumMipMaps());
+		glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "MAX_REFLECTION_LOD"), (GLfloat)SCENE->GetEnvironmentMap()->GetNumMipMaps());
 	}
 
 	glm::vec3 cPos = CAMERA->GetTransform()->GetPosition();

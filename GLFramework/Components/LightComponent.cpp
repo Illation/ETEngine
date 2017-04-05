@@ -2,6 +2,7 @@
 #include "LightComponent.hpp"
 
 #include "../SceneGraph/Entity.hpp"
+#include "../GraphicsHelper/LightVolume.hpp"
 
 LightComponent::LightComponent(Light* light):
 	m_Light(light)
@@ -21,6 +22,10 @@ void LightComponent::Update()
 void LightComponent::Draw(){}
 void LightComponent::DrawForward(){}
 
+void LightComponent::DrawVolume()
+{
+	m_Light->DrawVolume(GetTransform());
+}
 void LightComponent::UploadVariables(GLuint shaderProgram, unsigned index)
 {
 	if (m_PositionUpdated || m_Light->m_Update)
@@ -47,6 +52,11 @@ void PointLight::UploadVariables(GLuint program, TransformComponent* comp, unsig
 	glUniform1f(glGetUniformLocation(program, 
 		(ligStr + idxStr + "].Radius").c_str()), radius);
 }
+void PointLight::DrawVolume(TransformComponent* pTransform)
+{
+	LightVolume::GetInstance()->Draw(pTransform->GetPosition(), radius);
+}
+
 void DirectionalLight::UploadVariables(GLuint program, TransformComponent* comp, unsigned index)
 {
 	string idxStr = to_string(index);
