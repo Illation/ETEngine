@@ -36,7 +36,13 @@ Structure inspired by the OverlordEngine from [Digital Arts and Entertainment](h
 ## Screenshots:
 ### Combined buffer
 ![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/CombinedPBR.JPG "")
-![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/PBR2.JPG "")
+![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/PBR3.JPG "")
+
+### IBL
+![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/IblCombined.JPG "")
+
+### Roughness
+![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/Roughness.JPG "")
 
 ### Buffer display mode
 ![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/Buffers.JPG "")
