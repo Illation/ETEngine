@@ -167,6 +167,7 @@
     <ClCompile Include="Content\HdrLoader.cpp" />
     <ClCompile Include="GraphicsHelper\LightVolume.cpp" />
     <ClCompile Include="Game\Materials\LightMaterial.cpp" />
+    <ClCompile Include="Game\Materials\NullMaterial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -297,5 +298,6 @@
     <ClInclude Include="Content\HdrLoader.hpp" />
     <ClInclude Include="GraphicsHelper\LightVolume.hpp" />
     <ClInclude Include="Game\Materials\LightMaterial.hpp" />
+    <ClInclude Include="Game\Materials\NullMaterial.hpp" />
   </ItemGroup>
 </Project>

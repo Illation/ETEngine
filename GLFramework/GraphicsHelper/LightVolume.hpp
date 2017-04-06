@@ -4,6 +4,7 @@
 class ShaderData;
 class TextureData;
 class LightMaterial;
+class NullMaterial;
 class MeshFilter;
 
 class LightVolume : public Singleton<LightVolume>
@@ -12,7 +13,7 @@ public:
 	LightVolume();
 	virtual ~LightVolume();
 
-	void Draw(glm::vec3 pos, float radius);
+	void Draw(glm::vec3 pos, float radius, glm::vec3 col);
 
 protected:
 	ShaderData* m_pShader;
@@ -23,6 +24,7 @@ private:
 
 	MeshFilter* m_pMeshFilter;
 	LightMaterial* m_pMaterial;
+	NullMaterial* m_pNullMaterial;
 
 	std::string m_ShaderFile;
 };

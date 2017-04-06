@@ -96,7 +96,7 @@ void TestScene::Initialize()
 		pLigMod->SetMaterial(m_pLightMat);
 		auto pLigEnt = new Entity();
 		pLigEnt->AddComponent(new LightComponent(new PointLight(
-			normalize(vec3(disC(gen), disC(gen), disC(gen))), disI(gen)*10, 5.0f)));
+			normalize(vec3(disC(gen), disC(gen), disC(gen))), disI(gen)*50, 2.5f)));
 		pLigEnt->AddComponent(pLigMod);
 		pLigEnt->GetTransform()->Translate(vec3(disXZ(gen), -disY(gen)*3, disXZ(gen)));
 		pLigEnt->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
