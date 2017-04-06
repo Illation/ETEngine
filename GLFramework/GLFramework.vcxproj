@@ -80,6 +80,14 @@
     <OutDir>$(SolutionDir)..\Build\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Build\BuildFiles\$(Configuration)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\DevIL\include;$(S_LIBS)\glm;$(S_LIBS)\assimp\include;$(S_LIBS)\stb;$(IncludePath)</IncludePath>
+    <LibraryPath>$(S_LIBS)\SDL2\lib\x86;$(S_LIBS)\DevIL\lib;$(S_LIBS)\DevIL;$(S_LIBS)\assimp\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\DevIL\include;$(S_LIBS)\glm;$(S_LIBS)\assimp\include;$(S_LIBS)\stb;$(IncludePath)</IncludePath>
+    <LibraryPath>$(S_LIBS)\SDL2\lib\x86;$(S_LIBS)\DevIL\lib;$(S_LIBS)\DevIL;$(S_LIBS)\assimp\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -110,6 +118,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;DevIL.lib;ILU.lib;ILUT.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -150,6 +159,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;DevIL.lib;ILU.lib;ILUT.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -173,6 +183,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClCompile Include="Game\Materials\EmissiveMaterial.cpp" />
     <ClCompile Include="Game\Materials\GbufferMaterial.cpp" />
     <ClCompile Include="Game\Materials\LightMaterial.cpp" />
+    <ClCompile Include="Game\Materials\NullMaterial.cpp" />
     <ClCompile Include="Game\Materials\SkyboxMaterial.cpp" />
     <ClCompile Include="Game\Materials\TexPBRMaterial.cpp" />
     <ClCompile Include="Game\Materials\UberMaterial.cpp" />
@@ -227,6 +238,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClInclude Include="Game\Materials\EmissiveMaterial.hpp" />
     <ClInclude Include="Game\Materials\GbufferMaterial.hpp" />
     <ClInclude Include="Game\Materials\LightMaterial.hpp" />
+    <ClInclude Include="Game\Materials\NullMaterial.hpp" />
     <ClInclude Include="Game\Materials\SkyboxMaterial.hpp" />
     <ClInclude Include="Game\Materials\TexPBRMaterial.hpp" />
     <ClInclude Include="Game\Materials\UberMaterial.hpp" />

@@ -177,24 +177,41 @@ void AbstractScene::RootDraw()
 	{
 		m_pGBuffer->Draw();
 
-		//Render Light Volumes
-		auto lightVec = SCENE->GetLights(); //Todo: automatically add all light components to an array for faster access
-		for (auto Light : lightVec)
-		{
-			Light->DrawVolume();
-		}
-
-		//Foreward Rendering
-		//******************
-		//Step one: copy Z-Buffer from gBuffer
+		//copy Z-Buffer from gBuffer
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pGBuffer->Get());
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pHDRbuffer->Get());
 		glBlitFramebuffer(
 			0, 0, SETTINGS->Window.Width, SETTINGS->Window.Height, 0, 0,
 			SETTINGS->Window.Width, SETTINGS->Window.Height,
 			GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
+		//Render Light Volumes
+		//glEnable(GL_STENCIL_TEST);
+
+		glDisable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendEquation(GL_FUNC_ADD);
+		glBlendFunc(GL_ONE, GL_ONE);
+
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
+		auto lightVec = SCENE->GetLights(); //Todo: automatically add all light components to an array for faster access
+		for (auto Light : lightVec)
+		{
+			Light->DrawVolume();
+		}
+		glCullFace(GL_BACK);
+		glDisable(GL_BLEND);
+
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+
+		//glDisable(GL_STENCIL_TEST);
+
 		m_pHDRbuffer->Enable();
 
+		//Foreward Rendering
+		//******************
 		//Step two: render with forward materials
 		DrawForward();
 		for (Entity* pEntity : m_pEntityVec)

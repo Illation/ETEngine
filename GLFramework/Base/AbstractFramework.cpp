@@ -6,6 +6,7 @@
 #include <IL/ilut.h>
 
 #include "../SceneGraph/SceneManager.hpp"
+#include "../GraphicsHelper/LightVolume.hpp"
 
 AbstractFramework::AbstractFramework()
 {
@@ -17,6 +18,7 @@ AbstractFramework::~AbstractFramework()
 	Context* pCon = Context::GetInstance();
 	SceneManager* pScMan = SceneManager::GetInstance();
 	InputManager* pInMan = InputManager::GetInstance();
+	LightVolume* pVol = LightVolume::GetInstance();
 
 	ContentManager::Release();
 
@@ -27,6 +29,7 @@ AbstractFramework::~AbstractFramework()
 	pScMan->DestroyInstance();
 	pInMan->DestroyInstance();
 	pCon->DestroyInstance();
+	pVol->DestroyInstance();
 }
 
 void AbstractFramework::Run()

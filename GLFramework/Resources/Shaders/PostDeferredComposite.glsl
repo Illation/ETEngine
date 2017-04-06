@@ -16,6 +16,7 @@
 	layout (location = 0) out vec4 outColor;
 	layout (location = 1) out vec4 brightColor;
 	
+	//Gbuffer
 	uniform sampler2D texPosAO;                   // | Pos.x   Pos.y   Pos.z | AO .x |
 	uniform sampler2D texNormMetSpec;             // | Nor.x   Nor.y | Met.x | Spc.x |
 	uniform sampler2D texBaseColRough;            // | BCo.r   BCo.g   BCo.b | Rou.x |
@@ -26,16 +27,9 @@
 	uniform sampler2D   texBRDFLUT;  
 	uniform float MAX_REFLECTION_LOD = 4.0;
 	
-	
 	uniform vec3 camPos;
 	const float maxExposure = 5000;
 	const float PI = 3.14159265359;
-	
-	uniform float fresnelPow = 2.5;
-	uniform float fresnelMult = 2.0;
-	uniform float fresnelHard = 1.0;
-	uniform vec3 fresnelCol = vec3(1, 1, 1);
-	uniform vec3 fresnelUp = vec3(0, 1, 0);
 	
 	struct PointLight 
 	{
@@ -63,31 +57,6 @@
 		float g = 2.0 / dot(nn.rgb,nn.rgb);
 		return vec3(g*nn.xy, g-1);
 	}
-	
-	float Lambert(vec3 norm, vec3 lightDir)
-	{
-		return max(dot(norm, -lightDir), 0);
-	}
-	float Blinn(vec3 norm, vec3 lightDir, vec3 viewDir, float specPow)
-	{
-		vec3 halfVec = -normalize(viewDir + lightDir);
-		return pow(max(dot(halfVec, norm), 0.0), specPow);
-	}
-	
-	//Deprecated
-	vec3 Fresnel(vec3 norm, vec3 viewDir)
-	{
-		float fresnel = abs(dot(norm, viewDir));//Deprecated
-		fresnel = 1 - clamp(fresnel, 0.0, 1.0);//Deprecated
-		fresnel = pow(fresnel,fresnelPow)*fresnelMult;//Deprecated
-	
-		float fresnelMask = dot(fresnelUp,norm);//Deprecated
-		fresnelMask = clamp(fresnelMask, 0.0, 1.0);//Deprecated
-		fresnelMask = pow(1 - fresnelMask,fresnelHard);//Deprecated
-		fresnel *= fresnelMask;//Deprecated
-		
-		return fresnel * fresnelCol;//Deprecated
-	}//Deprecated
 	
 	//PBR functions
 	vec3 FresnelSchlick(float cosTheta, vec3 F0)
