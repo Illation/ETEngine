@@ -37,7 +37,7 @@ void TestScene::Initialize()
 		"Resources/Textures/NormalMap.png");
 	m_pMat->SetSpecular(0.5f);
 
-	m_pLightMat = new EmissiveMaterial();
+	m_pLightMat = new EmissiveMaterial(glm::vec3(500));
 
 	//SetSkybox("Resources/Textures/skybox/sb.jpg");
 	//SetSkybox("Resources/Textures/TropicalRuins_3k.hdr");
@@ -90,13 +90,13 @@ void TestScene::Initialize()
 	auto disY = uniform_real_distribution<float>(0.33f, 1.f);
 	auto disC = uniform_real_distribution<float>(0.1f, 0.2f);
 	auto disI = uniform_real_distribution<float>(0.5f, 1.0f);
-	for (size_t i = 0; i < 10; i++)
+	for (size_t i = 0; i < 30; i++)
 	{
 		auto pLigMod = new ModelComponent("Resources/Models/sphere.dae");
 		pLigMod->SetMaterial(m_pLightMat);
 		auto pLigEnt = new Entity();
 		pLigEnt->AddComponent(new LightComponent(new PointLight(
-			normalize(vec3(disC(gen), disC(gen), disC(gen))), disI(gen)*50, 2.5f)));
+			normalize(vec3(disC(gen), disC(gen), disC(gen))), disI(gen)*500, 3.5f)));
 		pLigEnt->AddComponent(pLigMod);
 		pLigEnt->GetTransform()->Translate(vec3(disXZ(gen), -disY(gen)*3, disXZ(gen)));
 		pLigEnt->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
@@ -109,7 +109,7 @@ void TestScene::Initialize()
 void TestScene::Update()
 {
 	//LOGGER::Log("FPS: " + to_string(TIME->FPS()));
-	//cout << "FPS: " + to_string(TIME->FPS()) << endl;;
+	cout << "FPS: " + to_string(TIME->FPS()) << endl;;
 
 	//Move light
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_2))

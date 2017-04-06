@@ -3,7 +3,7 @@
 	
 	in vec3 position;
 	
-	out vec2 Texcoord;
+	out vec4 Texcoord;
 	
 	uniform mat4 model;
 	uniform mat4 worldViewProj;
@@ -13,13 +13,13 @@
 		vec4 pos = model*vec4(position, 1.0);
 		pos = worldViewProj*pos;
 		gl_Position = pos;
-		Texcoord = pos.xy;
+		Texcoord = pos;//((pos.xy/pos.w)+vec2(1))*0.5f;
 	}
 </VERTEX>
 <FRAGMENT>
 	#version 330 core
 	
-	in vec2 Texcoord;
+	in vec4 Texcoord;
 	
 	//out
 	layout (location = 0) out vec4 outColor;
@@ -128,13 +128,14 @@
 	
 	void main()
 	{
+		vec2 tc = ((Texcoord.xyz/Texcoord.w).xy+vec2(1))*0.5f;
 		//Extract data from G-Buffer
-		vec3 pos = texture(texPosAO, Texcoord).rgb;
-		vec3 norm = decodeNormal(texture(texNormMetSpec, Texcoord).rg);
-		vec3 baseCol = texture(texBaseColRough, Texcoord).rgb;
-		float rough = texture(texBaseColRough, Texcoord).a;
-		float metal = texture(texNormMetSpec, Texcoord).b;
-		//float ao = texture(texPosAO, Texcoord).a; //maybe use it??
+		vec3 pos = texture(texPosAO, tc).rgb;
+		vec3 norm = decodeNormal(texture(texNormMetSpec, tc).rg);
+		vec3 baseCol = texture(texBaseColRough, tc).rgb;
+		float rough = texture(texBaseColRough, tc).a;
+		float metal = texture(texNormMetSpec, tc).b;
+		//float ao = texture(texPosAO, tc).a; //maybe use it??
 		
 		//precalculations	
 		vec3 F0 = vec3(0.04);//for dielectric materials use this simplified constant

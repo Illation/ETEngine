@@ -1,8 +1,10 @@
 #include "stdafx.hpp"
 #include "LightMaterial.hpp"
+#include "../../Graphics/TextureData.hpp"
 #include "../../Graphics/ShaderData.hpp"
 #include "../../Graphics/MeshFilter.hpp"
-
+#include "../../Graphics/FrameBuffer.hpp"
+#include "../../Framebuffers/Gbuffer.hpp"
 
 LightMaterial::LightMaterial(glm::vec3 col):
 	Material("Resources/Shaders/FwdLightShader.glsl"),
@@ -17,9 +19,6 @@ LightMaterial::~LightMaterial()
 
 void LightMaterial::LoadTextures()
 {
-	//glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texPosAO"), 0);
-	//glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texNormMetSpec"), 1);
-	//glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texBaseColRough"), 2);
 }
 void LightMaterial::AccessShaderAttributes()
 {
@@ -32,6 +31,16 @@ void LightMaterial::AccessShaderAttributes()
 void LightMaterial::UploadDerivedVariables()
 {
 	//Assume the Gbuffer textures are bound from Gbuffer drawcall
+	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texPosAO"), 0);
+	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texNormMetSpec"), 1);
+	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texBaseColRough"), 2);
+
+	auto gbufferTex = SCENE->GetGBuffer()->GetTextures();
+	for (size_t i = 0; i < gbufferTex.size(); i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+	}
 
 	glUniform3f(m_uPosition, m_Position.x, m_Position.y, m_Position.z);
 	glUniform3f(m_uCol, m_Color.x, m_Color.y, m_Color.z);
