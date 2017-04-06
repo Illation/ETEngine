@@ -16,6 +16,8 @@ public:
 
 	GLuint Get() { return m_GlFrameBuffer; }
 
+	std::vector<TextureData*> GetTextures() { return m_pTextureVec; }
+
 protected:
 
 	virtual void AccessShaderAttributes();

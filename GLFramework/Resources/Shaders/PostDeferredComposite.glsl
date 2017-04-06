@@ -204,10 +204,10 @@
 		vec3 finalCol = ambient;
 		
 		//calculate lighting
-		for(int i = 0; i < NR_POINT_LIGHTS; i++)
-		{
-			finalCol += PointLighting(pointLights[i], baseCol, rough, metal, F0, pos, norm, viewDir); 
-		}
+		//for(int i = 0; i < NR_POINT_LIGHTS; i++)
+		//{
+		//	finalCol += PointLighting(pointLights[i], baseCol, rough, metal, F0, pos, norm, viewDir); 
+		//}
 		for(int i = 0; i < NR_DIR_LIGHTS; i++)
 		{
 			finalCol += DirLighting(dirLights[i], baseCol, rough, metal, F0, norm, viewDir);

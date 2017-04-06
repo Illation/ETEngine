@@ -25,6 +25,7 @@ public:
 	//CubeMap* GetEnvironmentMap();
 	HDRMap* GetEnvironmentMap();
 	std::vector<LightComponent*> GetLights();
+	Gbuffer* GetGBuffer() { return m_pGBuffer; }
 
 	bool SkyboxEnabled() { return m_UseSkyBox; }
 
