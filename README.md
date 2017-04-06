@@ -44,6 +44,9 @@ Structure inspired by the OverlordEngine from [Digital Arts and Entertainment](h
 ### Roughness
 ![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/Roughness.JPG "")
 
+### Spamming point lights
+![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/PointLightSpam.JPG "")
+
 ### Buffer display mode
 ![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/Buffers.JPG "")
 
