@@ -44,7 +44,7 @@ void TestScene::Initialize()
 	SetSkybox("Resources/Textures/Ice_Lake_Ref.hdr");
 	//Models
 	//*************************
-	unsigned amountPerRow = 10;
+	unsigned amountPerRow = 20;
 	float distance = 3.5f;
 	float start = (amountPerRow / 2)*(-distance);
 	for (size_t i = 0; i < amountPerRow; i++)
@@ -87,10 +87,10 @@ void TestScene::Initialize()
 	random_device rd;
 	auto gen= mt19937(rd());
 	auto disXZ = uniform_real_distribution<float>(start, -start);
-	auto disY = uniform_real_distribution<float>(0.33f, 1.f);
+	auto disY = uniform_real_distribution<float>(-0.33f, 1.f);
 	auto disC = uniform_real_distribution<float>(0.1f, 0.2f);
 	auto disI = uniform_real_distribution<float>(0.5f, 1.0f);
-	for (size_t i = 0; i < 30; i++)
+	for (size_t i = 0; i < 25; i++)
 	{
 		auto pLigMod = new ModelComponent("Resources/Models/sphere.dae");
 		pLigMod->SetMaterial(m_pLightMat);

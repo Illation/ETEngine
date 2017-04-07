@@ -47,6 +47,7 @@ public:
 		, float brightness = 1)
 		:Light(col, brightness){}
 
+	void DrawVolume(TransformComponent* pTransform);
 protected:
 	virtual void UploadVariables(GLuint program, TransformComponent* comp, unsigned index);
 };

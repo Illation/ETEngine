@@ -7,7 +7,7 @@
 #include "../../Framebuffers/Gbuffer.hpp"
 
 LightMaterial::LightMaterial(glm::vec3 col):
-	Material("Resources/Shaders/FwdLightShader.glsl"),
+	Material("Resources/Shaders/FwdLightPointShader.glsl"),
 	m_Color(col)
 {
 	m_LayoutFlags = VertexFlags::POSITION;
@@ -30,11 +30,9 @@ void LightMaterial::AccessShaderAttributes()
 }
 void LightMaterial::UploadDerivedVariables()
 {
-	//Assume the Gbuffer textures are bound from Gbuffer drawcall
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texPosAO"), 0);
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texNormMetSpec"), 1);
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texBaseColRough"), 2);
-
 	auto gbufferTex = SCENE->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{
