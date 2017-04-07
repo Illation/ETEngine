@@ -15,6 +15,7 @@
 #include "../../Components/LightComponent.hpp"
 
 #include <random>
+#include <math.h>
 
 TestScene::TestScene() : AbstractScene("TestScene")
 {
@@ -90,17 +91,27 @@ void TestScene::Initialize()
 	auto disY = uniform_real_distribution<float>(-0.33f, 1.f);
 	auto disC = uniform_real_distribution<float>(0.1f, 0.2f);
 	auto disI = uniform_real_distribution<float>(0.5f, 1.0f);
-	for (size_t i = 0; i < 25; i++)
+	auto disA = uniform_real_distribution<float>(0.f, 6.28318530718f);
+	for (size_t i = 0; i < 900; i++)
 	{
 		auto pLigMod = new ModelComponent("Resources/Models/sphere.dae");
 		pLigMod->SetMaterial(m_pLightMat);
 		auto pLigEnt = new Entity();
-		pLigEnt->AddComponent(new LightComponent(new PointLight(
-			normalize(vec3(disC(gen), disC(gen), disC(gen))), disI(gen)*500, 3.5f)));
+
+		auto swirl = SwirlyLight();
+		swirl.origin = vec3(disXZ(gen), -disY(gen)*3, disXZ(gen));
+
+		auto pPoint = new PointLight(normalize(vec3(disC(gen), disC(gen), disC(gen))), disI(gen) * 500, 3.5f);
+		pLigEnt->AddComponent(new LightComponent(pPoint));
 		pLigEnt->AddComponent(pLigMod);
-		pLigEnt->GetTransform()->Translate(vec3(disXZ(gen), -disY(gen)*3, disXZ(gen)));
+		pLigEnt->GetTransform()->Translate(swirl.origin);
 		pLigEnt->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
 		AddEntity(pLigEnt);
+
+		swirl.light = pLigEnt;
+		swirl.comp = pPoint;
+		swirl.angle = disA(gen);
+		m_Lights.push_back(swirl);
 	}
 
 	SETTINGS->Window.VSync(false);
@@ -109,7 +120,17 @@ void TestScene::Initialize()
 void TestScene::Update()
 {
 	//LOGGER::Log("FPS: " + to_string(TIME->FPS()));
-	cout << "FPS: " + to_string(TIME->FPS()) << endl;;
+	//cout << "FPS: " + to_string(TIME->FPS()) << endl;;
+
+	for (size_t i = 0; i < m_Lights.size(); ++i)
+	{
+		m_Lights[i].angle += TIME->DeltaTime();
+		const float radius = 0.5f;
+		glm::vec3 pos = m_Lights[i].origin + glm::vec3(radius*std::cosf(m_Lights[i].angle), 0, -radius*std::sinf(m_Lights[i].angle));
+		m_Lights[i].light->GetTransform()->Translate(pos);
+		m_Lights[i].comp->SetBrightness(m_Lights[i].comp->GetBrightness()+std::cosf(m_Lights[i].angle) * 0.5f);
+	}
+	std::cout << to_string(m_Lights[0].angle) << std::endl;
 
 	//Move light
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_2))
