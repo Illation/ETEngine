@@ -12,8 +12,9 @@ Structure inspired by the OverlordEngine from [Digital Arts and Entertainment](h
 ## Features:
 * Basic Physically Based Rendering
 * HighDynamicRange Environment maps
-* Diffuse IBL
+* Image Based Lighting
 * Deferred and Forward rendering
+* Lights rendered as Light Volumes
 * Stereoscopic Normal map encoding and decoding for optimal use of G-Buffer
 * Buffer Display mode
 * Scenegraph Entity Hirachy 
@@ -45,7 +46,7 @@ Structure inspired by the OverlordEngine from [Digital Arts and Entertainment](h
 ![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/Roughness.JPG "")
 
 ### Spamming point lights
-![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/PointLightSpam.JPG "")
+![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/LightSpam.gif "")
 
 ### Buffer display mode
 ![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/Buffers.JPG "")
