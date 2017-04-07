@@ -8,17 +8,21 @@
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/euler_angles.hpp>
 #include "../Game/Materials/NullMaterial.hpp"
+#include "../Framebuffers/Gbuffer.hpp"
+#include "../Graphics/ShaderData.hpp"
+#include "../Graphics/TextureData.hpp"
 
-LightVolume::LightVolume()
+PointLightVolume::PointLightVolume()
 {
 
 }
-LightVolume::~LightVolume()
+PointLightVolume::~PointLightVolume()
 {
 	SafeDelete(m_pMaterial);
+	SafeDelete(m_pNullMaterial);
 }
 
-void LightVolume::Initialize()
+void PointLightVolume::Initialize()
 {
 	m_pMeshFilter = ContentManager::Load<MeshFilter>("Resources/Models/Sphere.dae");
 	//Create the material
@@ -32,7 +36,7 @@ void LightVolume::Initialize()
 
 	IsInitialized = true;
 }
-void LightVolume::Draw(glm::vec3 pos, float radius, glm::vec3 col)
+void PointLightVolume::Draw(glm::vec3 pos, float radius, glm::vec3 col)
 {
 	//Make sure everything is set up
 	if (!IsInitialized)
@@ -72,4 +76,64 @@ void LightVolume::Draw(glm::vec3 pos, float radius, glm::vec3 col)
 
 	//glCullFace(GL_BACK);
 	//glDisable(GL_BLEND);
+}
+
+DirectLightVolume::DirectLightVolume(){}
+DirectLightVolume::~DirectLightVolume() 
+{
+	glDeleteBuffers(1, &m_QuadVBO);
+	glDeleteVertexArrays(1, &m_QuadVAO);
+}
+void DirectLightVolume::Initialize()
+{
+	m_pShader = ContentManager::Load<ShaderData>("Resources/Shaders/FwdLightDirectionalShader.glsl");
+
+	m_uCol = glGetUniformLocation(m_pShader->GetProgram(), "Color");
+	m_uDir = glGetUniformLocation(m_pShader->GetProgram(), "Direction");
+	m_uCamPos = glGetUniformLocation(m_pShader->GetProgram(), "camPos");
+
+	GLfloat quadVertices[] = {
+		//Change winding because lights get drawn with backface culling enabled
+		-1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+		1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+	};
+	// Setup plane VAO
+	glGenVertexArrays(1, &m_QuadVAO);
+	glGenBuffers(1, &m_QuadVBO);
+	glBindVertexArray(m_QuadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_QuadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	
+	IsInitialized = true;
+}
+void DirectLightVolume::Draw(glm::vec3 dir, glm::vec3 col)
+{
+	if (!IsInitialized) Initialize();
+
+	glBindVertexArray(m_QuadVAO);
+	glUseProgram(m_pShader->GetProgram());
+
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texPosAO"), 0);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texNormMetSpec"), 1);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texBaseColRough"), 2);
+	auto gbufferTex = SCENE->GetGBuffer()->GetTextures();
+	for (size_t i = 0; i < gbufferTex.size(); i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+	}
+
+	glUniform3f(m_uDir, dir.x, dir.y, dir.z);
+	glUniform3f(m_uCol, col.x, col.y, col.z);
+	glm::vec3 cPos = CAMERA->GetTransform()->GetPosition();
+	glUniform3f(m_uCamPos, cPos.x, cPos.y, cPos.z);
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
 }

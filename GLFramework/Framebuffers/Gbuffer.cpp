@@ -28,11 +28,6 @@ void Gbuffer::AccessShaderAttributes()
 }
 void Gbuffer::UploadDerivedVariables()
 {
-	auto lightVec = SCENE->GetLights();
-	for (size_t i = 0; i < lightVec.size(); i++)
-	{
-		lightVec[i]->UploadVariables(m_pShader->GetProgram(), i);
-	}
 	if (SCENE->SkyboxEnabled())
 	{
 		glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texIrradiance"), 3);

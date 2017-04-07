@@ -125,9 +125,6 @@
     <ClCompile Include="Components\ModelComponent.cpp">
       <Filter>Framework\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Materials\UberMaterial.cpp">
-      <Filter>Project\Materials</Filter>
-    </ClCompile>
     <ClCompile Include="Framebuffers\HDRframeBuffer.cpp">
       <Filter>Framework\FrameBuffers</Filter>
     </ClCompile>
@@ -253,9 +250,6 @@
     </ClInclude>
     <ClInclude Include="Components\ModelComponent.hpp">
       <Filter>Framework\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Materials\UberMaterial.hpp">
-      <Filter>Project\Materials</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.hpp" />
     <ClInclude Include="Framebuffers\HDRframeBuffer.hpp">

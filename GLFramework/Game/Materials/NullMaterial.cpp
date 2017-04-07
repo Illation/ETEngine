@@ -5,7 +5,7 @@
 
 
 NullMaterial::NullMaterial():
-	Material("Resources/Shaders/FwdLightShader.glsl")
+	Material("Resources/Shaders/FwdNullShader.glsl")
 {
 	m_LayoutFlags = VertexFlags::POSITION;
 	m_DrawForward = true;

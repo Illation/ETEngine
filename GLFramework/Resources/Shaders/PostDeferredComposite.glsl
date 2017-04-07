@@ -31,23 +31,6 @@
 	const float maxExposure = 5000;
 	const float PI = 3.14159265359;
 	
-	struct PointLight 
-	{
-		vec3 Position;
-		vec3 Color;
-		
-		float Radius;
-	};
-	struct DirectionalLight
-	{
-		vec3 Direction;
-		vec3 Color;
-	};
-	const int NR_POINT_LIGHTS = 11;
-	uniform PointLight pointLights[NR_POINT_LIGHTS];
-	const int NR_DIR_LIGHTS = 1;
-	uniform DirectionalLight dirLights[NR_DIR_LIGHTS];
-	
 	vec3 decodeNormal(vec2 enc)
 	{
 		float scale = 1.7777;
@@ -59,111 +42,10 @@
 	}
 	
 	//PBR functions
-	vec3 FresnelSchlick(float cosTheta, vec3 F0)
-	{
-		return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
-	}
 	vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 	{
 		return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 	}   
-	float DistributionGGX(vec3 N, vec3 H, float roughness)
-	{
-		float a      = roughness*roughness;
-		float a2     = a*a;
-		float NdotH  = max(dot(N, H), 0.0);
-		float NdotH2 = NdotH*NdotH;
-		
-		float nom   = a2;
-		float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-		denom = PI * denom * denom;
-		
-		return nom / denom;
-	}
-	float GeometrySchlickGGX(float NdotV, float roughness)
-	{
-		float r = (roughness + 1.0);
-		float k = (r*r) / 8.0;
-
-		float nom   = NdotV;
-		float denom = NdotV * (1.0 - k) + k;
-		
-		return nom / denom;
-	}
-	float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
-	{
-		float NdotV = max(dot(N, V), 0.0);
-		float NdotL = max(dot(N, L), 0.0);
-		float ggx2  = GeometrySchlickGGX(NdotV, roughness);
-		float ggx1  = GeometrySchlickGGX(NdotL, roughness);
-		
-		return ggx1 * ggx2;
-	}
-	
-	vec3 DirLighting(DirectionalLight light, vec3 baseCol, float rough, float metal, vec3 F0, vec3 norm, vec3 viewDir)
-	{
-		vec3 lightDir = light.Direction;
-		vec3 H = normalize(lightDir+viewDir);
-		
-		vec3 radiance = light.Color;
-		
-		vec3 F  = FresnelSchlick(max(dot(H, viewDir), 0.0), F0);	//Fresnel
-		float NDF = DistributionGGX(norm, H, rough); 				//Normalized distribution funciton
-		float G   = GeometrySmith(norm, viewDir, lightDir, rough);  //Geometry shadowing
-		
-		//Calculate how much the light contributes
-		vec3 kS = F;
-		vec3 kD = vec3(1.0) - kS;
-		kD *= 1.0 - metal;
-		
-		//Cook torrance BRDF
-		vec3 nominator 	  = NDF * G * F;
-		float denominator = 4 * max(dot(norm, viewDir), 0.0) * max(dot(norm, lightDir), 0.0) + 0.001;
-		vec3 brdf		  = nominator / denominator;
-		
-		// add to outgoing radiance Lo
-		float NdotL = max(dot(norm, lightDir), 0.0);                
-		return (kD * baseCol / PI + brdf) * radiance * NdotL; 
-	}
-	vec3 PointLighting(PointLight light, vec3 baseCol, float rough, float metal, vec3 F0, vec3 pos, vec3 norm, vec3 viewDir)
-	{
-		vec3 lightDir = light.Position - pos;
-		float dist = length(lightDir);			
-		
-		if(dist<light.Radius)
-		{
-			lightDir = normalize(lightDir);		//L
-			vec3 H = normalize(lightDir+viewDir);
-			 
-			//Calc attenuation with inv square
-			float dividend = 1.0 - pow(dist/light.Radius, 4);
-			dividend = clamp(dividend, 0.0, 1.0);
-			float attenuation = (dividend*dividend)/((dist*dist)+1);
-			
-			//radiance
-			vec3 radiance = light.Color * attenuation;
-			
-			vec3 F  = FresnelSchlick(max(dot(H, viewDir), 0.0), F0);	//Fresnel
-			float NDF = DistributionGGX(norm, H, rough); 				//Normalized distribution funciton
-			float G   = GeometrySmith(norm, viewDir, lightDir, rough);  //Geometry shadowing
-			
-			//Calculate how much the light contributes
-			vec3 kS = F;
-			vec3 kD = vec3(1.0) - kS;
-			kD *= 1.0 - metal;
-			
-			//Cook torrance BRDF
-			vec3 nominator 	  = NDF * G * F;
-			float denominator = 4 * max(dot(norm, viewDir), 0.0) * max(dot(norm, lightDir), 0.0) + 0.001;
-			vec3 brdf		  = nominator / denominator;
-			
-			// add to outgoing radiance Lo
-			float NdotL = max(dot(norm, lightDir), 0.0);                
-			return (kD * baseCol / PI + brdf) * radiance * NdotL; 
-		}
-		return vec3(0);
-	}
-	
 	
 	void main()
 	{
@@ -201,20 +83,8 @@
 		
 		vec3 ambient    = (kD * diffuse + specular) * ao; 
 		
-		vec3 finalCol = ambient;
-		
-		//calculate lighting
-		//for(int i = 0; i < NR_POINT_LIGHTS; i++)
-		//{
-		//	finalCol += PointLighting(pointLights[i], baseCol, rough, metal, F0, pos, norm, viewDir); 
-		//}
-		for(int i = 0; i < NR_DIR_LIGHTS; i++)
-		{
-			finalCol += DirLighting(dirLights[i], baseCol, rough, metal, F0, norm, viewDir);
-		}
-		
 		//clean up
-		finalCol = max(finalCol, 0.0);		
+		vec3 finalCol = max(ambient, 0.0);		
 		
 		outColor = vec4(finalCol, alpha);
 		

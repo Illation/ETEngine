@@ -175,6 +175,7 @@ void AbstractScene::RootDraw()
 	if (m_DemoMode)m_pDemoBuffer->Draw();
 	else
 	{
+		//Ambient IBL lighting
 		m_pGBuffer->Draw();
 
 		//copy Z-Buffer from gBuffer

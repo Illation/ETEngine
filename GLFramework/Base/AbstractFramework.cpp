@@ -18,7 +18,8 @@ AbstractFramework::~AbstractFramework()
 	Context* pCon = Context::GetInstance();
 	SceneManager* pScMan = SceneManager::GetInstance();
 	InputManager* pInMan = InputManager::GetInstance();
-	LightVolume* pVol = LightVolume::GetInstance();
+	PointLightVolume* pVol = PointLightVolume::GetInstance();
+	DirectLightVolume* pDirVol = DirectLightVolume::GetInstance();
 
 	ContentManager::Release();
 
@@ -30,6 +31,7 @@ AbstractFramework::~AbstractFramework()
 	pInMan->DestroyInstance();
 	pCon->DestroyInstance();
 	pVol->DestroyInstance();
+	pDirVol->DestroyInstance();
 }
 
 void AbstractFramework::Run()

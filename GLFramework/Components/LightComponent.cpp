@@ -55,7 +55,7 @@ void PointLight::UploadVariables(GLuint program, TransformComponent* comp, unsig
 void PointLight::DrawVolume(TransformComponent* pTransform)
 {
 	vec3 col = color*brightness;
-	LightVolume::GetInstance()->Draw(pTransform->GetPosition(), radius, col);
+	PointLightVolume::GetInstance()->Draw(pTransform->GetPosition(), radius, col);
 }
 
 void DirectionalLight::UploadVariables(GLuint program, TransformComponent* comp, unsigned index)
@@ -70,4 +70,9 @@ void DirectionalLight::UploadVariables(GLuint program, TransformComponent* comp,
 		(ligStr + idxStr + "].Direction").c_str()), direction.x, direction.y, direction.z);
 	glUniform3f(glGetUniformLocation(program,
 		(ligStr + idxStr + "].Color").c_str()), col.x, col.y, col.z);
+}
+void DirectionalLight::DrawVolume(TransformComponent* pTransform)
+{
+	vec3 col = color*brightness;
+	DirectLightVolume::GetInstance()->Draw(pTransform->GetForward(), col);
 }
