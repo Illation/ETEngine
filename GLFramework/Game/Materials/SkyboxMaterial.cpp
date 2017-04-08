@@ -9,7 +9,7 @@
 #include "../../Content/HdrLoader.hpp"
 
 SkyboxMaterial::SkyboxMaterial(string assetFile):
-	Material("Resources/Shaders/FwdSkyboxShader.glsl"),
+	Material("Shaders/FwdSkyboxShader.glsl"),
 	m_AssetFile(assetFile)
 {
 	m_LayoutFlags = VertexFlags::POSITION;

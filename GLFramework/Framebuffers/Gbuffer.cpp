@@ -9,8 +9,8 @@
 
 Gbuffer::Gbuffer(bool demo):
 	FrameBuffer(demo?
-		"Resources/Shaders/PostBufferDisplay.glsl":
-		"Resources/Shaders/PostDeferredComposite.glsl", 
+		"Shaders/PostBufferDisplay.glsl":
+		"Shaders/PostDeferredComposite.glsl", 
 		GL_FLOAT, 3)
 {
 }

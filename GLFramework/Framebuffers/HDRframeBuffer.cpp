@@ -4,7 +4,7 @@
 #include "../Graphics/ShaderData.hpp"
 
 HDRframeBuffer::HDRframeBuffer():
-	FrameBuffer("Resources/Shaders/PostHDR.glsl", GL_FLOAT, 2)
+	FrameBuffer("Shaders/PostHDR.glsl", GL_FLOAT, 2)
 {
 }
 HDRframeBuffer::~HDRframeBuffer()

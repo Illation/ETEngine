@@ -183,7 +183,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	};
 
 	//Get the shader
-	auto equiCubeShader = ContentManager::Load<ShaderData>("Resources/Shaders/FwdEquiCubeShader.glsl");
+	auto equiCubeShader = ContentManager::Load<ShaderData>("Shaders/FwdEquiCubeShader.glsl");
 
 	// convert HDR equirectangular environment map to cubemap equivalent
 	glUseProgram(equiCubeShader->GetProgram());
@@ -233,7 +233,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_IrradianceRes, m_IrradianceRes);
 
 	//shader
-	auto irradianceShader = ContentManager::Load<ShaderData>("Resources/Shaders/FwdConvIrradianceShader.glsl");
+	auto irradianceShader = ContentManager::Load<ShaderData>("Shaders/FwdConvIrradianceShader.glsl");
 
 	glUseProgram(irradianceShader->GetProgram());
 	glUniform1i(glGetUniformLocation(irradianceShader->GetProgram(), "environmentMap"), 0);
@@ -274,7 +274,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP); 
 
 	//Shader
-	auto radianceShader = ContentManager::Load<ShaderData>("Resources/Shaders/FwdConvRadianceShader.glsl");
+	auto radianceShader = ContentManager::Load<ShaderData>("Shaders/FwdConvRadianceShader.glsl");
 
 	glUseProgram(radianceShader->GetProgram());;
 	glUniform1i(glGetUniformLocation(radianceShader->GetProgram(), "environmentMap"), 0);
@@ -317,7 +317,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	GLuint brdfLUTTexture;
 	glGenTextures(1, &brdfLUTTexture);
 	//Shader
-	auto brdfShader = ContentManager::Load<ShaderData>("Resources/Shaders/FwdBrdfLutShader.glsl");
+	auto brdfShader = ContentManager::Load<ShaderData>("Shaders/FwdBrdfLutShader.glsl");
 
 	// pre-allocate enough memory for the LUT texture.
 	glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);

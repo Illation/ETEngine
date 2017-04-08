@@ -86,7 +86,7 @@ DirectLightVolume::~DirectLightVolume()
 }
 void DirectLightVolume::Initialize()
 {
-	m_pShader = ContentManager::Load<ShaderData>("Resources/Shaders/FwdLightDirectionalShader.glsl");
+	m_pShader = ContentManager::Load<ShaderData>("Shaders/FwdLightDirectionalShader.glsl");
 
 	m_uCol = glGetUniformLocation(m_pShader->GetProgram(), "Color");
 	m_uDir = glGetUniformLocation(m_pShader->GetProgram(), "Direction");
