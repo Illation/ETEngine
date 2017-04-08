@@ -10,7 +10,7 @@
 
 TexPBRMaterial::TexPBRMaterial(string bcPath, string roughPath,
 	string metalPath, string aoPath, string normPath) :
-	Material("Resources/Shaders/DefPBRMetShader.glsl"),
+	Material("Shaders/DefPBRMetShader.glsl"),
 	m_TexBCPath(bcPath),
 	m_TexRoughPath(roughPath),
 	m_TexMetalPath(metalPath),

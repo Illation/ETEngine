@@ -7,7 +7,7 @@
 #include "../../Framebuffers/Gbuffer.hpp"
 
 LightMaterial::LightMaterial(glm::vec3 col):
-	Material("Resources/Shaders/FwdLightPointShader.glsl"),
+	Material("Shaders/FwdLightPointShader.glsl"),
 	m_Color(col)
 {
 	m_LayoutFlags = VertexFlags::POSITION;

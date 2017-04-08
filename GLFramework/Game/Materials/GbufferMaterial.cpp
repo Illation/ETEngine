@@ -9,7 +9,7 @@
 #include "../../Content/TextureLoader.hpp"
 
 GbufferMaterial::GbufferMaterial() :
-	Material("Resources/Shaders/DefUberShader.glsl"),
+	Material("Shaders/DefUberShader.glsl"),
 	m_DiffuseColor(glm::vec3(0.65f, 0.65f, 0.65f)),
 	m_SpecularColor(glm::vec3(1.0f, 1.0f, 1.0f))
 {

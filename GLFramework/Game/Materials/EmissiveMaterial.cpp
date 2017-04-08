@@ -5,7 +5,7 @@
 
 
 EmissiveMaterial::EmissiveMaterial(glm::vec3 col):
-	Material("Resources/Shaders/FwdEmissiveShader.glsl"),
+	Material("Shaders/FwdEmissiveShader.glsl"),
 	m_Color(col)
 {
 	m_LayoutFlags = VertexFlags::POSITION | VertexFlags::NORMAL | VertexFlags::TANGENT | VertexFlags::TEXCOORD;
