@@ -17,6 +17,7 @@ public:
 	void RotateEuler(float x, float y, float z);
 	void RotateEuler(const glm::vec3& rotation);
 	void Rotate(const glm::quat& rotation);
+	void SetRotation(const glm::quat& rotation) { m_Rotation = rotation; }
 
 	void Scale(float x, float y, float z);
 	void Scale(const glm::vec3& scale);

@@ -3,6 +3,7 @@
 #include "../Components/CameraComponent.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
 #include "../Helper/MathHelper.hpp"
+#include <algorithm>
 
 FreeCamera::FreeCamera()
 {
@@ -39,34 +40,37 @@ void FreeCamera::Update()
 
 		move.y = INPUT->IsKeyboardKeyDown('Q') ? 1.0f : 0.0f;
 		if (move.y == 0) move.y = -(INPUT->IsKeyboardKeyDown('E') ? 1.0f : 0.0f);
+		move.z = INPUT->IsKeyboardKeyDown('W') ? 1.0f : 0.0f; 
+		if (move.z == 0) move.z = -(INPUT->IsKeyboardKeyDown('S') ? 1.0f : 0.0f);  
+		auto currSpeed = m_MoveSpeed; 
 
-		move.z = INPUT->IsKeyboardKeyDown('W') ? 1.0f : 0.0f;
-		if (move.z == 0) move.z = -(INPUT->IsKeyboardKeyDown('S') ? 1.0f : 0.0f);
+		if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LSHIFT)) currSpeed *= m_SpeedMultiplier;  
+		if (INPUT->IsMouseButtonDown(1)) { look = INPUT->GetMouseMovement(); }  
 
+		//Get state 
+		glm::vec3 forward = GetTransform()->GetForward(); 
+		glm::vec3 right = GetTransform()->GetRight(); 
+		glm::vec3 up = glm::vec3(0, 1, 0); 
+		glm::vec3 currPos = GetTransform()->GetPosition(); 
+		glm::quat rot = TRANSFORM->GetRotation();  
 
-		auto currSpeed = m_MoveSpeed;
-		if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LSHIFT))
-			currSpeed *= m_SpeedMultiplier;
-
-		if (INPUT->IsMouseButtonDown(1))
-		{
-			look = INPUT->GetMouseMovement();
-		}
-
-		//CALCULATE TRANSFORMS
-		glm::vec3 forward = GetTransform()->GetForward();
-		glm::vec3 right = GetTransform()->GetRight();
-		glm::vec3 up = glm::vec3(0, 1, 0);
-		glm::vec3 currPos = GetTransform()->GetPosition();
-
-		currPos += forward * move.z * currSpeed * TIME->DeltaTime();
+		//Translate 
+		currPos += forward * move.z * currSpeed * TIME->DeltaTime(); 
 		currPos += up * move.y * currSpeed * TIME->DeltaTime();
 		currPos += right * move.x * currSpeed * TIME->DeltaTime();
-
-		m_TotalYaw = -look.x * m_RotationSpeed * TIME->DeltaTime()*10;
-		m_TotalPitch = -look.y * m_RotationSpeed * TIME->DeltaTime()*10;
-		
-		TRANSFORM->RotateEuler(m_TotalPitch, m_TotalYaw, 0);
 		TRANSFORM->Translate(currPos);
+
+		//Rotate
+		//linear because its based on the mouse move delta instead of framerate
+		float rotSpeed = m_RotationSpeed*0.016f;
+		m_TotalYaw += -look.x * rotSpeed;
+		m_TotalPitch = std::max(m_TotalPitch, -1.57f);
+		m_TotalPitch = std::min(m_TotalPitch, 1.57f);
+		m_TotalPitch += look.y * rotSpeed;
+		rot = glm::quat(0, 0, 0, 1);
+		rot = glm::rotate(rot, m_TotalYaw, glm::vec3(0, 1, 0));
+		rot = glm::rotate(rot, m_TotalPitch, glm::normalize(glm::vec3(right.x, 0, right.z)));
+		//rot = glm::rotate(rot, 3.1415f, forward);
+		TRANSFORM->SetRotation(rot);
 	}
 }
