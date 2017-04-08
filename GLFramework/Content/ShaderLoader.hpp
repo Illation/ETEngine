@@ -16,5 +16,6 @@ protected:
 
 private:
 	GLuint CompileShader(const std::string &shaderSourceStr, GLenum type);
+	bool ReplaceInclude(std::string &line, const std::string &assetFile);
 };
 
