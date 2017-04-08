@@ -31,6 +31,8 @@
 <FRAGMENT>
 	#version 330 core
 	
+	#include "Common.glsl"
+	
 	in vec3 Position;
 	in vec3 Normal;
 	in vec3 Tangent;
@@ -40,8 +42,6 @@
 	layout (location = 1) out vec4 brightColor;
 	
 	uniform vec3 color;
-	
-	const float maxExposure = 5000;
 	
 	void main()
 	{

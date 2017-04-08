@@ -11,15 +11,17 @@
 </VERTEX>
 <FRAGMENT>
 	#version 330 core
+	
+	#include "Common.glsl"
+	#include "CommonDeferred.glsl"
+	#include "CommonPBR.glsl"
+	
 	in vec2 Texcoord;
 	
 	layout (location = 0) out vec4 outColor;
 	layout (location = 1) out vec4 brightColor;
 	
-	//Gbuffer
-	uniform sampler2D texPosAO;                   // | Pos.x   Pos.y   Pos.z | AO .x |
-	uniform sampler2D texNormMetSpec;             // | Nor.x   Nor.y | Met.x | Spc.x |
-	uniform sampler2D texBaseColRough;            // | BCo.r   BCo.g   BCo.b | Rou.x |
+	GBUFFER_SAMPLER
 	
 	//uniform samplerCube texEnvironment;
 	uniform samplerCube texIrradiance;
@@ -28,36 +30,12 @@
 	uniform float MAX_REFLECTION_LOD = 4.0;
 	
 	uniform vec3 camPos;
-	const float maxExposure = 5000;
-	const float PI = 3.14159265359;
-	
-	vec3 decodeNormal(vec2 enc)
-	{
-		float scale = 1.7777;
-		vec3 nn =
-			vec3(enc, 0)*vec3(2*scale,2*scale,0) +
-			vec3(-scale,-scale,1);
-		float g = 2.0 / dot(nn.rgb,nn.rgb);
-		return vec3(g*nn.xy, g-1);
-	}
-	
-	//PBR functions
-	vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
-	{
-		return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
-	}   
 	
 	void main()
 	{
 		//Extract data from G-Buffer
 		float alpha = 1.0;
-		vec3 pos = texture(texPosAO, Texcoord).rgb;
-		vec3 norm = decodeNormal(texture(texNormMetSpec, Texcoord).rg);
-		vec3 baseCol = texture(texBaseColRough, Texcoord).rgb;
-		float rough = texture(texBaseColRough, Texcoord).a;
-		float metal = texture(texNormMetSpec, Texcoord).b;
-		float ao = texture(texPosAO, Texcoord).a;
-		float spec = texture(texNormMetSpec, Texcoord).a;
+		UNPACK_GBUFFER(Texcoord)
 		
 		//precalculations	
 		vec3 F0 = vec3(0.04);//for dielectric materials use this simplified constant

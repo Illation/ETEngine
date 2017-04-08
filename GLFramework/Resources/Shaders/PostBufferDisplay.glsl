@@ -11,6 +11,9 @@
 </VERTEX>
 <FRAGMENT>
 	#version 330 core
+	
+	#include "Common.glsl"
+	
 	in vec2 Texcoord;
 	
 	layout (location = 0) out vec4 outColor;
@@ -23,7 +26,6 @@
 	uniform samplerCube texEnvironment;
 	
 	uniform vec3 camPos;
-	const float maxExposure = 5000;
 	
 	uniform float fresnelPow = 2.5;
 	uniform float fresnelMult = 2.0;

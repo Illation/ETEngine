@@ -15,12 +15,13 @@
 </VERTEX>
 <FRAGMENT>
 	#version 330 core
+	
+	#include "Common.glsl"
+	
 	layout (location = 0) out vec4 outColor;
 	in vec3 localPos;
 
 	uniform samplerCube environmentMap;
-
-	const float PI = 3.14159265359f;
 
 	void main()
 	{		

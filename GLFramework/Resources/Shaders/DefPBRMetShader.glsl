@@ -31,6 +31,8 @@
 <FRAGMENT>
 	#version 330 core
 	
+	#include "CommonDeferred.glsl"
+	
 	in vec3 Position;
 	in vec3 Normal;
 	in vec3 Tangent;
@@ -59,13 +61,6 @@
 		vec3 normSample = ((texture(texNormal, Texcoord).rgb)*2)-vec3(1, 1, 1);
 		norm = localAxis*normalize(normSample);
 		return normalize(norm);
-	}
-	vec2 encodeNormal(vec3 norm)
-	{
-		float scale = 1.7777;
-		vec2 enc = norm.xy / (norm.z+1);
-		enc /= scale;
-		return (enc*0.5)+0.5;
 	}
 	
 	void main()

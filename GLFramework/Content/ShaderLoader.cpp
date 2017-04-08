@@ -2,6 +2,7 @@
 #include "ShaderLoader.hpp"
 
 #include "../Graphics/ShaderData.hpp"
+#include <algorithm>
 
 ShaderLoader::ShaderLoader()
 {
@@ -43,6 +44,18 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 	{
 		//Get the line
 		getline(shaderFile, extractedLine);
+
+		//Includes
+		if (extractedLine.find("#include") != std::string::npos)
+		{
+			if (!(ReplaceInclude(extractedLine, assetFile)))
+			{
+				cout << "  . . . FAILED!" << endl;
+				cout << "    Opening shader file failed." << endl; 
+				return nullptr;
+			}
+		}
+
 		//Precompile types
 		switch (state)
 		{
@@ -149,6 +162,61 @@ GLuint ShaderLoader::CompileShader(const std::string &shaderSourceStr, GLenum ty
 	}
 
 	return shader;
+}
+
+bool ShaderLoader::ReplaceInclude(std::string &line, const std::string &assetFile)
+{
+	std::string basePath = "";
+	size_t lastFS = assetFile.rfind("/");
+	size_t lastBS = assetFile.rfind("\\");
+	size_t lastS = (size_t)std::max((int)lastFS, (int)lastBS);
+	if(!(lastS == std::string::npos))basePath = assetFile.substr(0, lastS) + "/";
+
+	size_t firstQ = line.find("\"");
+	size_t lastQ = line.rfind("\"");
+	if ((firstQ == std::string::npos) ||
+		(lastQ == std::string::npos) ||
+		lastQ <= firstQ)
+	{
+		cout << "  . . . FAILED!" << endl;
+		cout << "    invalid include syntax." << endl;
+		cout << line << endl;
+		return nullptr;
+	}
+	firstQ++;
+	std::string path = basePath + line.substr(firstQ, lastQ - firstQ);
+
+	ifstream shaderFile;
+	shaderFile.open(path);
+	if (!shaderFile)
+	{
+		cout << "  . . . FAILED!" << endl;
+		cout << "    Opening shader file \"" << path << "\" failed." << endl;
+		return nullptr;
+	}
+	std::string ret;
+	std::string extractedLine;
+	while (shaderFile.eof() == false)
+	{
+		//Get the line
+		getline(shaderFile, extractedLine);
+
+		//Includes
+		if (extractedLine.find("#include") != std::string::npos)
+		{
+			if (!(ReplaceInclude(extractedLine, assetFile)))
+			{
+				cout << "  . . . FAILED!" << endl;
+				cout << "    Opening shader file failed." << endl; 
+				return nullptr;
+			}
+		}
+		
+		ret += extractedLine;
+		ret += "\n";
+	}
+	shaderFile.close();
+	line = ret;
 }
 
 void ShaderLoader::Destroy(ShaderData* objToDestroy)
