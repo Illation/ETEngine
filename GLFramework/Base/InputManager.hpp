@@ -48,6 +48,7 @@ public:
 	//Returns mouse position as vector
 	glm::vec2 GetMousePosition();
 	glm::vec2 GetMouseMovement() { return m_MouseMove; }
+	glm::vec2 GetMouseWheelDelta() { return m_MouseWheelDelta; }
 private:
 	friend class AbstractFramework;
 	//----------------------------
@@ -82,6 +83,8 @@ private:
 	glm::vec2 m_MouseMove = glm::vec2();
 	Uint32 m_MouseMapNew,
 		m_MouseMapOld;
+
+	glm::vec2 m_MouseWheelDelta = glm::vec2();
 	//Application flow
 	bool m_ExitRequested = false;
 };

@@ -6,6 +6,7 @@
 #include <algorithm>
 
 FreeCamera::FreeCamera()
+	:m_Move(glm::vec3(0))
 {
 }
 
@@ -42,9 +43,27 @@ void FreeCamera::Update()
 		if (move.y == 0) move.y = -(INPUT->IsKeyboardKeyDown('E') ? 1.0f : 0.0f);
 		move.z = INPUT->IsKeyboardKeyDown('W') ? 1.0f : 0.0f; 
 		if (move.z == 0) move.z = -(INPUT->IsKeyboardKeyDown('S') ? 1.0f : 0.0f);  
+
+		glm::vec3 delta = move - m_Move;
+		m_Move += delta * m_Acceleration * TIME->DeltaTime();
+
 		auto currSpeed = m_MoveSpeed; 
 
-		if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LSHIFT)) currSpeed *= m_SpeedMultiplier;  
+		if (!(move == glm::vec3(0)) || INPUT->IsMouseButtonDown(1))
+		{
+			//not delta time dependant
+			float scroll = INPUT->GetMouseWheelDelta().y;
+			if (scroll > 0.0f)
+			{
+				m_SpeedMultiplier *= 1.1f;
+			}
+			else if (scroll < -0.01f)
+			{
+				m_SpeedMultiplier *= 0.9f;
+			}
+		}
+		std::cout << m_SpeedMultiplier << std::endl;
+		currSpeed *= m_SpeedMultiplier;  
 		if (INPUT->IsMouseButtonDown(1)) { look = INPUT->GetMouseMovement(); }  
 
 		//Get state 
@@ -55,9 +74,9 @@ void FreeCamera::Update()
 		glm::quat rot = TRANSFORM->GetRotation();  
 
 		//Translate 
-		currPos += forward * move.z * currSpeed * TIME->DeltaTime(); 
-		currPos += up * move.y * currSpeed * TIME->DeltaTime();
-		currPos += right * move.x * currSpeed * TIME->DeltaTime();
+		currPos += forward * m_Move.z * currSpeed * TIME->DeltaTime();
+		currPos += up * m_Move.y * currSpeed * TIME->DeltaTime();
+		currPos += right * m_Move.x * currSpeed * TIME->DeltaTime();
 		TRANSFORM->Translate(currPos);
 
 		//Rotate

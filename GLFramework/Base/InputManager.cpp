@@ -73,6 +73,7 @@ void InputManager::UpdateEvents()
 	m_MouseMapOld = m_MouseMapNew;//Update old Mouse state
 	//Pump SDL events
 	SDL_Event evnt;
+	bool mouseWheel = false;
 	while (SDL_PollEvent(&evnt))
 	{
 		switch (evnt.type)
@@ -88,13 +89,19 @@ void InputManager::UpdateEvents()
 				break;
 			}
 			break;
+		case SDL_MOUSEWHEEL:
+			mouseWheel = true;
+			m_MouseWheelDelta.x = (float)evnt.wheel.x;
+			m_MouseWheelDelta.y = (float)evnt.wheel.y;
+			break;
 		}
 	}
+	if (!mouseWheel)m_MouseWheelDelta = glm::vec2();
 	std::memcpy(m_KeyMapNew, m_KeyMapSdl, m_KeyboardLength);//Update New Keyboard state
 	int mPosOldX = m_MousePosX;
 	int mPosOldY = m_MousePosY;
 	m_MouseMapNew = SDL_GetMouseState(&m_MousePosX, &m_MousePosY);//Update new Mouse state and position
-	m_MouseMove = glm::vec2((float)(m_MousePosX - mPosOldX), (float)(m_MousePosY- mPosOldY));
+	m_MouseMove = glm::vec2((float)(m_MousePosX - mPosOldX), (float)(m_MousePosY- mPosOldY));//maybe divide by screen resolution
 }
 //----------------------------
 //Getters
