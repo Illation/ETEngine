@@ -22,8 +22,11 @@ private:
 		m_TotalYaw = 0;
 	float m_MoveSpeed = 2.5, 
 		m_RotationSpeed = 0.2f, 
-		m_SpeedMultiplier = 3;
+		m_SpeedMultiplier = 1;
 	CameraComponent *m_pCamera = nullptr;
+
+	glm::vec3 m_Move;
+	float m_Acceleration = 5;
 
 private:
 	// -------------------------
