@@ -75,7 +75,7 @@ void AbstractScene::RootInitialize()
 	m_pPostProcessing = new PostProcessingRenderer();
 	m_pPostProcessing->SetGamma(2.2f);
 	m_pPostProcessing->SetExposure(1);
-	m_pPostProcessing->SetBloomMultiplier(0.03f);
+	m_pPostProcessing->SetBloomMultiplier(0.1f);
 	m_pPostProcessing->SetBloomThreshold(10.0f);
 	m_pPostProcessing->Initialize();
 

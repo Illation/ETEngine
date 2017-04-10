@@ -15,7 +15,13 @@
 	out vec4 outColor;
 	
 	uniform sampler2D texColor;
-	uniform sampler2D texBloom;
+	
+	uniform sampler2D texBloom0;
+	uniform sampler2D texBloom1;
+	uniform sampler2D texBloom2;
+	uniform sampler2D texBloom3;
+	uniform sampler2D texBloom4;
+	uniform sampler2D texBloom5;
 	
 	uniform float exposure;
     uniform float gamma;
@@ -25,7 +31,14 @@
 	void main()
 	{
 		vec3 color = texture(texColor, Texcoord).rgb;
-		vec3 bloom = texture(texBloom, Texcoord).rgb;
+		
+		vec3 bloom = 	texture(texBloom0, Texcoord).rgb;
+		bloom += 		texture(texBloom1, Texcoord).rgb;
+		bloom += 		texture(texBloom2, Texcoord).rgb;
+		bloom += 		texture(texBloom3, Texcoord).rgb;
+		bloom += 		texture(texBloom4, Texcoord).rgb;
+		bloom += 		texture(texBloom5, Texcoord).rgb;
+		bloom *= 		0.1667f;
 		
 		color += bloom * bloomMult;
 		

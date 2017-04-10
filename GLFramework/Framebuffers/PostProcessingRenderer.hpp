@@ -4,6 +4,8 @@
 class ShaderData;
 class TextureData;
 
+static const int NUM_BLOOM_DOWNSAMPLES = 5;
+
 class PostProcessingRenderer 
 {
 public:
@@ -44,8 +46,10 @@ private:
 	GLuint m_PingPongFBO[2];
 	GLuint m_PingPongTexture[2];
 
-	GLuint m_DownSampleFBO[5];
-	GLuint m_DownSampleTexture[5];
+	GLuint m_DownSampleFBO[NUM_BLOOM_DOWNSAMPLES];
+	GLuint m_DownSampleTexture[NUM_BLOOM_DOWNSAMPLES];
+	GLuint m_DownPingPongFBO[NUM_BLOOM_DOWNSAMPLES];
+	GLuint m_DownPingPongTexture[NUM_BLOOM_DOWNSAMPLES];
 
 	GLuint m_uHorizontal;
 
