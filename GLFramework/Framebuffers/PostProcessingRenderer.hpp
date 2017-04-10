@@ -44,6 +44,9 @@ private:
 	GLuint m_PingPongFBO[2];
 	GLuint m_PingPongTexture[2];
 
+	GLuint m_DownSampleFBO[5];
+	GLuint m_DownSampleTexture[5];
+
 	GLuint m_uHorizontal;
 
 	GLuint m_uExposure;
