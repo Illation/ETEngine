@@ -133,7 +133,7 @@ void TestScene::Initialize()
 void TestScene::Update()
 {
 	//LOGGER::Log("FPS: " + to_string(TIME->FPS()));
-	//cout << "FPS: " + to_string(TIME->FPS()) << endl;;
+	cout << "FPS: " + to_string(TIME->FPS()) << endl;;
 
 	for (size_t i = 0; i < m_Lights.size(); ++i)
 	{
