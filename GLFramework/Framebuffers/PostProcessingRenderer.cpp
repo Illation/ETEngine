@@ -94,6 +94,22 @@ void PostProcessingRenderer::Initialize()
 	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers(2, attachments);
 
+	//Generate framebuffers for downsampling
+	glGenFramebuffers(5, m_DownSampleFBO);
+	glGenTextures(5, m_DownSampleTexture);
+	for (GLuint i = 0; i < 5; i++)
+	{
+		float resMult = 1.f / (float)std::pow(2, i + 1);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_DownSampleFBO[i]);
+		glBindTexture(GL_TEXTURE_2D, m_DownSampleTexture[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width*resMult, height*resMult, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DownSampleTexture[i], 0);
+	}
+
 	//Generate framebuffers and textures for gaussian ping pong
 	glGenFramebuffers(2, m_PingPongFBO);
 	glGenTextures(2, m_PingPongTexture);
@@ -120,14 +136,40 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 {
 	glBindVertexArray(m_VAO);
 	glDisable(GL_DEPTH_TEST);
-	//downsample
+	//get glow
 	glBindFramebuffer(GL_FRAMEBUFFER, m_HDRoutFBO);
 	glUseProgram(m_pDownsampleShader->GetProgram());
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_CollectTex);
 	glUniform1f(m_uThreshold, m_Threshold);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-	//ping pong gaussian blue
+	//downsample glow
+	int width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
+	for (GLuint i = 0; i < 5; ++i)
+	{
+		float resMult = 1.f / (float)std::pow(2, i + 1);
+		glViewport(0, 0, width*resMult, height*resMult);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_DownSampleFBO[i]);
+		if(i>0)glBindTexture(GL_TEXTURE_2D, m_DownSampleTexture[i-1]);
+		glUniform1f(m_uThreshold, m_Threshold);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		//blur downsampled
+		glUseProgram(m_pGaussianShader->GetProgram());
+		for (GLuint j = 0; j < m_NumSamples * 2; j++)
+		{
+			//TODO needs custom ping pong buffer, buffers textures are wrong size
+			GLboolean horizontal = !(GLboolean)(j % 2);
+			//output is the current framebuffer, or on the last item the framebuffer of the downsample texture
+			glBindFramebuffer(GL_FRAMEBUFFER, (j == (m_NumSamples * 2) - 1) ? m_DownSampleFBO[i] : m_PingPongFBO[horizontal]);
+			//input is previous framebuffers texture, or on first item the result of downsampling
+			glBindTexture(GL_TEXTURE_2D, (j == 0) ? m_DownSampleTexture[i] : m_PingPongTexture[!horizontal]);
+			glUniform1i(m_uHorizontal, horizontal);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+		}
+	}
+	glViewport(0, 0, width, height);
+	//ping pong gaussian blur
 	GLboolean horizontal = true;
 	glUseProgram(m_pGaussianShader->GetProgram());
 	for (GLuint i = 0; i < m_NumSamples * 2; i++)
@@ -142,8 +184,10 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	glUseProgram(m_pPostProcShader->GetProgram());
 	glBindTexture(GL_TEXTURE_2D, m_CollectTex);
+	//glBindTexture(GL_TEXTURE_2D, m_DownSampleTexture[0]);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_PingPongTexture[1]);
+	glBindTexture(GL_TEXTURE_2D, m_PingPongTexture[0]);
+	//glBindTexture(GL_TEXTURE_2D, m_DownSampleTexture[0]);
 	glUniform1f(m_uExposure, m_Exposure);
 	glUniform1f(m_uGamma, m_Gamma);
 	glUniform1f(m_uBloomMult, m_BloomMult);
