@@ -68,16 +68,12 @@ void FrameBuffer::Initialize()
 		GLuint texHandle;
 		glGenTextures(1, &texHandle);
 		glBindTexture(GL_TEXTURE_2D, texHandle);
-		glTexImage2D(
-			GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, m_Format, NULL
-			);
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, m_Format, NULL );
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glFramebufferTexture2D(
-			GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texHandle, 0
-			);
+		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texHandle, 0 );
 		m_pTextureVec.push_back(new TextureData(texHandle, width, height));
 		attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
 	}
@@ -107,7 +103,7 @@ void FrameBuffer::Enable(bool active)
 void FrameBuffer::Draw()
 {
 	glBindVertexArray(m_VertexArrayObject);
-	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);//maybe move this out
 	glUseProgram(m_pShader->GetProgram());
 	for (size_t i = 0; i < m_NumTargets; i++)
 	{

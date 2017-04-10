@@ -27,7 +27,6 @@
 	
 	//out
 	layout (location = 0) out vec4 outColor;
-	layout (location = 1) out vec4 brightColor;//probably going to be done differently
 	
 	GBUFFER_SAMPLER
 	
@@ -90,7 +89,5 @@
 		
 		//output
 		outColor = vec4(clamp(finalCol, 0.0, maxExposure), 1.0);
-		float brightness = dot(outColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-		if(brightness > 1.0) brightColor = vec4(outColor.rgb, 1.0);
 	}
 </FRAGMENT>

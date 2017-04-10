@@ -47,8 +47,5 @@
 	{
 		vec3 finalCol = clamp(color, 0.0, maxExposure+Texcoord.x+Normal.x+Tangent.x);	
 		outColor = vec4(finalCol, 1.0);
-		
-		float brightness = dot(outColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-		if(brightness > 1.0) brightColor = vec4(outColor.rgb, 1.0);
 	}
 </FRAGMENT>

@@ -7,9 +7,9 @@
 #include "../Base/Time.hpp"
 #include "Entity.hpp"
 #include "../Framebuffers\Gbuffer.hpp"
-#include "../Framebuffers\HDRframeBuffer.hpp"
 #include "../Prefabs/Skybox.hpp"
 #include "../Prefabs/FreeCamera.hpp"
+#include "../Framebuffers/PostProcessingRenderer.hpp"
 
 #define CONTEXT Context::GetInstance()
 
@@ -32,7 +32,7 @@ AbstractScene::~AbstractScene()
 	SafeDelete(m_pTime);
 	SafeDelete(m_pGBuffer);
 	SafeDelete(m_pDemoBuffer);
-	SafeDelete(m_pHDRbuffer);
+	SafeDelete(m_pPostProcessing);
 }
 
 void AbstractScene::AddEntity(Entity* pEntity)
@@ -72,9 +72,12 @@ void AbstractScene::RootInitialize()
 
 	CONTEXT->SetContext(m_pConObj);
 
-	m_pHDRbuffer = new HDRframeBuffer();
-	m_pHDRbuffer->SetGamma(2.2f);
-	m_pHDRbuffer->Initialize();
+	m_pPostProcessing = new PostProcessingRenderer();
+	m_pPostProcessing->SetGamma(2.2f);
+	m_pPostProcessing->SetExposure(1);
+	m_pPostProcessing->SetBloomMultiplier(0.03f);
+	m_pPostProcessing->SetBloomThreshold(10.0f);
+	m_pPostProcessing->Initialize();
 
 	m_pDemoBuffer = new Gbuffer(true);
 	m_pDemoBuffer->Initialize();
@@ -108,14 +111,14 @@ void AbstractScene::RootUpdate()
 		float newExp = m_Exposure * 4.f;
 		m_Exposure += (newExp - m_Exposure)*TIME->DeltaTime();
 		LOGGER::Log("Exposure: " + to_string(m_Exposure));
-		m_pHDRbuffer->SetExposure(m_Exposure);
+		m_pPostProcessing->SetExposure(m_Exposure);
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_DOWN))
 	{
 		float newExp = m_Exposure * 4.f;
 		m_Exposure -= (newExp - m_Exposure)*TIME->DeltaTime();
 		LOGGER::Log("Exposure: " + to_string(m_Exposure));
-		m_pHDRbuffer->SetExposure(m_Exposure);
+		m_pPostProcessing->SetExposure(m_Exposure);
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LEFT) && m_UseSkyBox)
 	{
@@ -135,13 +138,13 @@ void AbstractScene::RootUpdate()
 	}
 	if (m_DemoMode)
 	{
-		m_pHDRbuffer->SetExposure(1);
-		m_pHDRbuffer->SetGamma(1);
+		m_pPostProcessing->SetExposure(1);
+		m_pPostProcessing->SetGamma(1);
 	}
 	else
 	{
-		m_pHDRbuffer->SetExposure(m_Exposure);
-		m_pHDRbuffer->SetGamma(2.2f);
+		m_pPostProcessing->SetExposure(m_Exposure);
+		m_pPostProcessing->SetGamma(2.2f);
 	}
 
 	for (Entity* pEntity : m_pEntityVec)
@@ -171,7 +174,7 @@ void AbstractScene::RootDraw()
 		pEntity->RootDraw();
 	}
 	//Step two: blend data and calculate lighting with gbuffer
-	m_pHDRbuffer->Enable();
+	m_pPostProcessing->EnableInput();
 	if (m_DemoMode)m_pDemoBuffer->Draw();
 	else
 	{
@@ -180,14 +183,14 @@ void AbstractScene::RootDraw()
 
 		//copy Z-Buffer from gBuffer
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pGBuffer->Get());
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pHDRbuffer->Get());
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pPostProcessing->GetTargetFBO());
 		glBlitFramebuffer(
-			0, 0, SETTINGS->Window.Width, SETTINGS->Window.Height, 0, 0,
-			SETTINGS->Window.Width, SETTINGS->Window.Height,
+			0, 0, SETTINGS->Window.Width, SETTINGS->Window.Height, 
+			0, 0, SETTINGS->Window.Width, SETTINGS->Window.Height,
 			GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
 		//Render Light Volumes
-		//glEnable(GL_STENCIL_TEST);
+		//glEnable(GL_STENCIL_TEST); //todo: lightvolume stencil test
 
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
@@ -209,7 +212,7 @@ void AbstractScene::RootDraw()
 
 		//glDisable(GL_STENCIL_TEST);
 
-		m_pHDRbuffer->Enable();
+		m_pPostProcessing->EnableInput();
 
 		//Foreward Rendering
 		//******************
@@ -224,8 +227,10 @@ void AbstractScene::RootDraw()
 			m_pSkybox->RootDrawForward();
 		}
 	}
-	m_pHDRbuffer->Enable(false);
-	m_pHDRbuffer->Draw();
+	//m_pHDRbuffer->Draw();
+	//Draw to default buffer
+	m_pPostProcessing->SetNumSamples(5);
+	m_pPostProcessing->Draw(0);
 
 	PostDraw();
 }

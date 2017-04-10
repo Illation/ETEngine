@@ -15,20 +15,22 @@
 	out vec4 outColor;
 	
 	uniform sampler2D texColor;
-	uniform sampler2D texBright;
+	uniform sampler2D texBloom;
 	
 	uniform float exposure;
     uniform float gamma;
 	
-	const float windowW = 1.0 / 1280.0;
-	const float windowH = 1.0 / 720.0;
+	uniform float bloomMult = 1;
+	
 	void main()
 	{
-		//bloom gaussian blur
-		vec3 sampledColor = texture(texColor, Texcoord).rgb;
+		vec3 color = texture(texColor, Texcoord).rgb;
+		vec3 bloom = texture(texBloom, Texcoord).rgb;
+		
+		color += bloom * bloomMult;
 		
 		// Reinhard tone mapping
-		vec3 mapped = vec3(1.0) - exp(-sampledColor * exposure);
+		vec3 mapped = vec3(1.0) - exp(-color * exposure);
 		// Gamma correction 
 		mapped = pow(mapped, vec3(1.0 / gamma));
 		

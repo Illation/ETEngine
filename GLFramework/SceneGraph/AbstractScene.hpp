@@ -7,7 +7,7 @@ class Time;
 class ContextObjects;
 class SceneManager;
 class Gbuffer;
-class HDRframeBuffer;
+class PostProcessingRenderer;
 class Skybox;
 class CubeMap;
 class HDRMap;
@@ -60,7 +60,7 @@ private:
 	Gbuffer* m_pGBuffer = nullptr;
 	Gbuffer* m_pDemoBuffer = nullptr;
 	bool m_DemoMode = false;
-	HDRframeBuffer* m_pHDRbuffer = nullptr;
+	PostProcessingRenderer* m_pPostProcessing = nullptr;
 
 	bool m_UseSkyBox = false;
 	Skybox* m_pSkybox = nullptr;
