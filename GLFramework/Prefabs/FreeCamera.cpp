@@ -38,7 +38,6 @@ void FreeCamera::Update()
 
 		move.x = INPUT->IsKeyboardKeyDown('A') ? -1.0f : 0.0f;
 		if (move.x == 0) move.x = (INPUT->IsKeyboardKeyDown('D') ? 1.0f : 0.0f);
-
 		move.y = INPUT->IsKeyboardKeyDown('Q') ? 1.0f : 0.0f;
 		if (move.y == 0) move.y = -(INPUT->IsKeyboardKeyDown('E') ? 1.0f : 0.0f);
 		move.z = INPUT->IsKeyboardKeyDown('W') ? 1.0f : 0.0f; 
@@ -62,7 +61,6 @@ void FreeCamera::Update()
 				m_SpeedMultiplier *= 0.9f;
 			}
 		}
-		std::cout << m_SpeedMultiplier << std::endl;
 		currSpeed *= m_SpeedMultiplier;  
 		if (INPUT->IsMouseButtonDown(1)) { look = INPUT->GetMouseMovement(); }  
 
@@ -71,7 +69,6 @@ void FreeCamera::Update()
 		glm::vec3 right = GetTransform()->GetRight(); 
 		glm::vec3 up = glm::vec3(0, 1, 0); 
 		glm::vec3 currPos = GetTransform()->GetPosition(); 
-		glm::quat rot = TRANSFORM->GetRotation();  
 
 		//Translate 
 		currPos += forward * m_Move.z * currSpeed * TIME->DeltaTime();
@@ -86,7 +83,7 @@ void FreeCamera::Update()
 		m_TotalPitch = std::max(m_TotalPitch, -1.57f);
 		m_TotalPitch = std::min(m_TotalPitch, 1.57f);
 		m_TotalPitch += look.y * rotSpeed;
-		rot = glm::quat(0, 0, 0, 1);
+		glm::quat rot = glm::quat(0, 0, 0, 1);
 		rot = glm::rotate(rot, m_TotalYaw, glm::vec3(0, 1, 0));
 		rot = glm::rotate(rot, m_TotalPitch, glm::normalize(glm::vec3(right.x, 0, right.z)));
 		//rot = glm::rotate(rot, 3.1415f, forward);

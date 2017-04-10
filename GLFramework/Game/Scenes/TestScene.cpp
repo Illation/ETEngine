@@ -9,7 +9,6 @@
 
 #include "../../Graphics\FrameBuffer.hpp"
 #include "../../Framebuffers\Gbuffer.hpp"
-#include "../../Framebuffers\HDRframeBuffer.hpp"
 
 #include "../../Components/ModelComponent.hpp"
 #include "../../Components/LightComponent.hpp"

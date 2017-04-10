@@ -125,9 +125,6 @@
     <ClCompile Include="Components\ModelComponent.cpp">
       <Filter>Framework\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Framebuffers\HDRframeBuffer.cpp">
-      <Filter>Framework\FrameBuffers</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Helper\Logger.cpp">
       <Filter>Framework\Helper</Filter>
@@ -165,6 +162,7 @@
     <ClCompile Include="GraphicsHelper\LightVolume.cpp" />
     <ClCompile Include="Game\Materials\LightMaterial.cpp" />
     <ClCompile Include="Game\Materials\NullMaterial.cpp" />
+    <ClCompile Include="Framebuffers\PostProcessingRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -252,9 +250,6 @@
       <Filter>Framework\Components</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.hpp" />
-    <ClInclude Include="Framebuffers\HDRframeBuffer.hpp">
-      <Filter>Framework\FrameBuffers</Filter>
-    </ClInclude>
     <ClInclude Include="Helper\Logger.hpp">
       <Filter>Framework\Helper</Filter>
     </ClInclude>
@@ -293,5 +288,6 @@
     <ClInclude Include="GraphicsHelper\LightVolume.hpp" />
     <ClInclude Include="Game\Materials\LightMaterial.hpp" />
     <ClInclude Include="Game\Materials\NullMaterial.hpp" />
+    <ClInclude Include="Framebuffers\PostProcessingRenderer.hpp" />
   </ItemGroup>
 </Project>

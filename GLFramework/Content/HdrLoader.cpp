@@ -276,7 +276,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//Shader
 	auto radianceShader = ContentManager::Load<ShaderData>("Shaders/FwdConvRadianceShader.glsl");
 
-	glUseProgram(radianceShader->GetProgram());;
+	glUseProgram(radianceShader->GetProgram());
 	glUniform1i(glGetUniformLocation(radianceShader->GetProgram(), "environmentMap"), 0);
 	glUniform1f(glGetUniformLocation(radianceShader->GetProgram(), "resolution"), (GLfloat)m_RadianceRes);
 	glActiveTexture(GL_TEXTURE0);
