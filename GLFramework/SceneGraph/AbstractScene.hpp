@@ -29,6 +29,9 @@ public:
 
 	bool SkyboxEnabled() { return m_UseSkyBox; }
 
+	//Invoked by shadow renderer
+	void DrawShadow();
+
 protected:
 
 	virtual void Initialize() = 0;

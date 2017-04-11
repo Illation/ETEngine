@@ -217,6 +217,7 @@ bool ShaderLoader::ReplaceInclude(std::string &line, const std::string &assetFil
 	}
 	shaderFile.close();
 	line = ret;
+	return true;
 }
 
 void ShaderLoader::Destroy(ShaderData* objToDestroy)

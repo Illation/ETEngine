@@ -107,7 +107,8 @@ xcopy "$(S_LIBS)\DevIL\lib\ILU.dll" "$(OutDir)" /y/D
 xcopy "$(S_LIBS)\DevIL\lib\ILUT.dll" "$(OutDir)" /y/D
 xcopy "$(S_LIBS)\DevIL\lib\DevIL.dll" "$(OutDir)" /y/D
 xcopy "$(S_LIBS)\assimp\lib\Assimp32.dll" "$(OutDir)" /y/D
-xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
+xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y
+xcopy "$(SolutionDir)\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -144,7 +145,8 @@ xcopy "$(S_LIBS)\DevIL\lib\ILU.dll" "$(OutDir)" /y/D
 xcopy "$(S_LIBS)\DevIL\lib\ILUT.dll" "$(OutDir)" /y/D
 xcopy "$(S_LIBS)\DevIL\lib\DevIL.dll" "$(OutDir)" /y/D
 xcopy "$(S_LIBS)\assimp\lib\Assimp32.dll" "$(OutDir)" /y/D
-xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
+xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y
+xcopy "$(SolutionDir)\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -11,6 +11,7 @@ public:
 	Light(glm::vec3 col = glm::vec3(1, 1, 1)
 		, float b = 1)
 		:color(col), brightness(b) {}
+	virtual ~Light() {}
 
 	//Basic light
 	void SetColor(glm::vec3 col) { color = col; m_Update = true; }
@@ -53,6 +54,10 @@ public:
 	DirectionalLight(glm::vec3 col = glm::vec3(1, 1, 1)
 		, float brightness = 1)
 		:Light(col, brightness){}
+	virtual ~DirectionalLight()
+	{
+		SetShadowEnabled(false);
+	}
 
 	void DrawVolume(TransformComponent* pTransform);
 

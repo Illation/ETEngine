@@ -157,13 +157,34 @@ void AbstractScene::RootUpdate()
 	}
 }
 
+void AbstractScene::DrawShadow()
+{
+	for (Entity* pEntity : m_pEntityVec)
+	{
+		pEntity->RootDrawShadow();
+	}
+}
+
 void AbstractScene::RootDraw()
 {
+	//Shadow Mapping
+	//**************
+	glEnable(GL_DEPTH_TEST);
+	auto lightVec = SCENE->GetLights(); //Todo: automatically add all light components to an array for faster access
+	for (auto Light : lightVec)
+	{
+		Light->GenerateShadow();
+	}
+
 	//Deferred Rendering
 	//******************
 	//Step one: Draw the data onto gBuffer
 	if (m_DemoMode)m_pDemoBuffer->Enable();
 	else m_pGBuffer->Enable();
+
+	//reset viewport
+	int width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
+	glViewport(0, 0, width, height);
 
 	glClearColor(m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -199,7 +220,6 @@ void AbstractScene::RootDraw()
 
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_FRONT);
-		auto lightVec = SCENE->GetLights(); //Todo: automatically add all light components to an array for faster access
 		for (auto Light : lightVec)
 		{
 			Light->DrawVolume();

@@ -2,6 +2,7 @@
 #include "PostProcessingRenderer.hpp"
 
 #include "../Graphics/ShaderData.hpp"
+#include "../GraphicsHelper/ShadowRenderer.hpp"
 
 PostProcessingRenderer::PostProcessingRenderer()
 {
@@ -162,6 +163,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	int width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
 	for (GLuint i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
+		if(i>0) glUseProgram(m_pDownsampleShader->GetProgram());
 		float resMult = 1.f / (float)std::pow(2, i + 1);
 		glViewport(0, 0, (GLsizei)(width*resMult), (GLsizei)(height*resMult));
 		glBindFramebuffer(GL_FRAMEBUFFER, m_DownSampleFBO[i]);

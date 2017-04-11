@@ -7,6 +7,7 @@
 
 #include "../SceneGraph/SceneManager.hpp"
 #include "../GraphicsHelper/LightVolume.hpp"
+#include "../GraphicsHelper/ShadowRenderer.hpp"
 
 AbstractFramework::AbstractFramework()
 {
@@ -20,6 +21,7 @@ AbstractFramework::~AbstractFramework()
 	InputManager* pInMan = InputManager::GetInstance();
 	PointLightVolume* pVol = PointLightVolume::GetInstance();
 	DirectLightVolume* pDirVol = DirectLightVolume::GetInstance();
+	ShadowRenderer* pShadowRenderer = ShadowRenderer::GetInstance();
 
 	ContentManager::Release();
 
@@ -32,6 +34,7 @@ AbstractFramework::~AbstractFramework()
 	pCon->DestroyInstance();
 	pVol->DestroyInstance();
 	pDirVol->DestroyInstance();
+	pShadowRenderer->DestroyInstance();
 }
 
 void AbstractFramework::Run()
@@ -130,6 +133,7 @@ void AbstractFramework::InitializeGame()
 	ContentManager::Initialize();
 
 	SceneManager::GetInstance()->Initialize();
+	ShadowRenderer::GetInstance()->Initialize();
 
 	//Initialize Game
 	Initialize();
