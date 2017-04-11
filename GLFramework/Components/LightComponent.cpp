@@ -85,15 +85,16 @@ void DirectionalLight::SetShadowEnabled(bool enabled)
 {
 	if (enabled)
 	{
-		m_pShadowData = new DirectionalShadowData(glm::ivec2(512, 512), glm::ivec2(10, 10), -20, 50);
+		if(!IsShadowEnabled())
+			m_pShadowData = new DirectionalShadowData(glm::ivec2(1024, 1024), glm::vec2(10, 10), -20, 50);
 	}
 	else
 	{
-		delete m_pShadowData;
+		SafeDelete(m_pShadowData);
 		m_pShadowData = nullptr;
 	}
 }
 void DirectionalLight::GenerateShadow(TransformComponent* pTransform)
 {
-	ShadowRenderer::GetInstance()->MapDirectional(pTransform, m_pShadowData);
+	if(IsShadowEnabled())ShadowRenderer::GetInstance()->MapDirectional(pTransform, m_pShadowData);
 }

@@ -60,6 +60,6 @@ private:
 
 	GLuint m_uBloomMult;
 	float m_BloomMult = 0.5f;
-	GLuint m_uThreshold;
+	GLint m_uThreshold;
 	float m_Threshold = 1.5f;
 };

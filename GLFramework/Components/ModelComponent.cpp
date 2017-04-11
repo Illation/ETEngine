@@ -80,7 +80,7 @@ void ModelComponent::DrawCall()
 void ModelComponent::DrawShadow()
 {
 	auto nullMat = ShadowRenderer::GetInstance()->GetNullMaterial();
-	glm::mat4 matWVP = ShadowRenderer::GetInstance()->GetLightWVP();
+	glm::mat4 matWVP = ShadowRenderer::GetInstance()->GetLightVP();
 	auto vO = m_pMeshFilter->GetVertexObject(nullMat);
 	glBindVertexArray(vO.array);
 	nullMat->UploadVariables(m_pEntity->GetTransform()->GetWorld(), matWVP);

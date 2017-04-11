@@ -13,6 +13,7 @@ public:
 	~TextureData();
 
 	GLuint GetHandle() { return m_Handle; }
+	glm::ivec2 GetResolution(){return glm::ivec2(m_Width, m_Height);}
 
 private:
 	GLuint m_Handle;
