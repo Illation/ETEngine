@@ -41,6 +41,15 @@ void Material::UploadVariables(glm::mat4 matModel)
 
 	UploadDerivedVariables();
 }
+void Material::UploadVariables(glm::mat4 matModel, const glm::mat4 &matWVP)
+{
+	glUseProgram(m_Shader->GetProgram());
+	//Upload matrices
+	glUniformMatrix4fv(m_UniMatModel, 1, GL_FALSE, glm::value_ptr(matModel));
+	glUniformMatrix4fv(m_UniMatWVP, 1, GL_FALSE, glm::value_ptr(matWVP));
+
+	UploadDerivedVariables();
+}
 
 void Material::SpecifyInputLayout()
 {

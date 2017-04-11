@@ -189,6 +189,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClCompile Include="Game\Scenes\SkyboxTestScene.cpp" />
     <ClCompile Include="Game\Scenes\TestScene.cpp" />
     <ClCompile Include="GraphicsHelper\LightVolume.cpp" />
+    <ClCompile Include="GraphicsHelper\ShadowRenderer.cpp" />
     <ClCompile Include="Graphics\FrameBuffer.cpp" />
     <ClCompile Include="Graphics\Material.cpp" />
     <ClCompile Include="Graphics\MeshFilter.cpp" />
@@ -243,6 +244,7 @@ xcopy "$(SolutionDir)\Resources" "$(OutDir)\Resources" /s/i/y</Command>
     <ClInclude Include="Game\Scenes\SkyboxTestScene.hpp" />
     <ClInclude Include="Game\Scenes\TestScene.hpp" />
     <ClInclude Include="GraphicsHelper\LightVolume.hpp" />
+    <ClInclude Include="GraphicsHelper\ShadowRenderer.hpp" />
     <ClInclude Include="Graphics\FrameBuffer.hpp" />
     <ClInclude Include="Graphics\Material.hpp" />
     <ClInclude Include="Graphics\MeshFilter.hpp" />

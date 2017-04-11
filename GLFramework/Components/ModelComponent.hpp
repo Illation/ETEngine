@@ -17,6 +17,7 @@ protected:
 	virtual void Update();
 	virtual void Draw();
 	virtual void DrawForward();
+	virtual void DrawShadow();
 
 private:
 
