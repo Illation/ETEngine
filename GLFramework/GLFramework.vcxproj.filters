@@ -163,6 +163,7 @@
     <ClCompile Include="Game\Materials\LightMaterial.cpp" />
     <ClCompile Include="Game\Materials\NullMaterial.cpp" />
     <ClCompile Include="Framebuffers\PostProcessingRenderer.cpp" />
+    <ClCompile Include="GraphicsHelper\ShadowRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -289,5 +290,6 @@
     <ClInclude Include="Game\Materials\LightMaterial.hpp" />
     <ClInclude Include="Game\Materials\NullMaterial.hpp" />
     <ClInclude Include="Framebuffers\PostProcessingRenderer.hpp" />
+    <ClInclude Include="GraphicsHelper\ShadowRenderer.hpp" />
   </ItemGroup>
 </Project>

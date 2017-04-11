@@ -108,6 +108,7 @@ protected:
 	virtual void Start() {}
 	virtual void Draw() {}
 	virtual void DrawForward() {}
+	virtual void DrawShadow() {}
 	virtual void Update() {}
 
 private:
@@ -117,6 +118,7 @@ private:
 	void RootStart();
 	void RootDraw();
 	void RootDrawForward();
+	void RootDrawShadow();
 	void RootUpdate();
 
 	std::vector<Entity*> m_pChildVec;

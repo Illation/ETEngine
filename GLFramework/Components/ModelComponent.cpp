@@ -11,6 +11,8 @@
 #include "../SceneGraph/Entity.hpp"
 
 #include <iostream>
+#include "../GraphicsHelper/ShadowRenderer.hpp"
+#include "../Game/Materials/NullMaterial.hpp"
 
 ModelComponent::ModelComponent(std::string assetFile):
 	m_AssetFile(assetFile)
@@ -71,7 +73,17 @@ void ModelComponent::DrawCall()
 	glBindVertexArray(vO.array);
 	m_pMaterial->UploadVariables(m_pEntity->GetTransform()->GetWorld());
 	// Draw 
-	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);//should be done externally
+	glDrawElementsInstanced(GL_TRIANGLES, m_pMeshFilter->m_IndexCount, GL_UNSIGNED_INT, 0, 1);
+}
+
+void ModelComponent::DrawShadow()
+{
+	auto nullMat = ShadowRenderer::GetInstance()->GetNullMaterial();
+	glm::mat4 matWVP = ShadowRenderer::GetInstance()->GetLightWVP();
+	auto vO = m_pMeshFilter->GetVertexObject(nullMat);
+	glBindVertexArray(vO.array);
+	nullMat->UploadVariables(m_pEntity->GetTransform()->GetWorld(), matWVP);
 	glDrawElementsInstanced(GL_TRIANGLES, m_pMeshFilter->m_IndexCount, GL_UNSIGNED_INT, 0, 1);
 }
 

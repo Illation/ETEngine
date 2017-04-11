@@ -3,6 +3,7 @@
 #include <typeinfo>
 
 class TransformComponent;
+class DirectionalShadowData;
 
 class Light
 {
@@ -11,10 +12,16 @@ public:
 		, float b = 1)
 		:color(col), brightness(b) {}
 
+	//Basic light
 	void SetColor(glm::vec3 col) { color = col; m_Update = true; }
 	glm::vec3 GetColor() { return color; }
 	void SetBrightness(float b) { brightness = b; m_Update = true; }
 	float GetBrightness() { return brightness; }
+
+	//Shadow stuff
+	virtual void SetShadowEnabled(bool enabled) {}
+	virtual bool IsShadowEnabled() { return false; }
+	virtual void GenerateShadow(TransformComponent* pTransform) {}
 
 protected:
 	glm::vec3 color;
@@ -48,8 +55,15 @@ public:
 		:Light(col, brightness){}
 
 	void DrawVolume(TransformComponent* pTransform);
+
+	//Shadow stuff
+	virtual void SetShadowEnabled(bool enabled);
+	virtual bool IsShadowEnabled() { return m_pShadowData?true:false; }
+	virtual void GenerateShadow(TransformComponent* pTransform);
 protected:
 	virtual void UploadVariables(GLuint program, TransformComponent* comp, unsigned index);
+
+	DirectionalShadowData* m_pShadowData;
 };
 
 class LightComponent : public AbstractComponent
@@ -73,6 +87,7 @@ public:
 	void UploadVariables(GLuint shaderProgram, unsigned index);
 
 	void DrawVolume();
+	void GenerateShadow();
 
 protected:
 

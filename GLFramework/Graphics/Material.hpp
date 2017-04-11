@@ -19,6 +19,7 @@ public:
 	void SpecifyInputLayout();
 	unsigned GetLayoutFlags() { return m_LayoutFlags; }
 	void UploadVariables(glm::mat4 matModel);
+	void UploadVariables(glm::mat4 matModel, const glm::mat4 &matWVP);
 	bool IsForwardRendered(){ return m_DrawForward; }
 
 protected:

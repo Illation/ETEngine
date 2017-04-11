@@ -3,6 +3,7 @@
 
 #include "../SceneGraph/Entity.hpp"
 #include "../GraphicsHelper/LightVolume.hpp"
+#include "../GraphicsHelper/ShadowRenderer.hpp"
 
 LightComponent::LightComponent(Light* light):
 	m_Light(light)
@@ -25,6 +26,10 @@ void LightComponent::DrawForward(){}
 void LightComponent::DrawVolume()
 {
 	m_Light->DrawVolume(GetTransform());
+}
+void LightComponent::GenerateShadow()
+{
+	m_Light->GenerateShadow(GetTransform());
 }
 void LightComponent::UploadVariables(GLuint shaderProgram, unsigned index)
 {
@@ -75,4 +80,20 @@ void DirectionalLight::DrawVolume(TransformComponent* pTransform)
 {
 	vec3 col = color*brightness;
 	DirectLightVolume::GetInstance()->Draw(pTransform->GetForward(), col);
+}
+void DirectionalLight::SetShadowEnabled(bool enabled)
+{
+	if (enabled)
+	{
+		m_pShadowData = new DirectionalShadowData(glm::ivec2(512, 512), glm::ivec2(10, 10), -20, 50);
+	}
+	else
+	{
+		delete m_pShadowData;
+		m_pShadowData = nullptr;
+	}
+}
+void DirectionalLight::GenerateShadow(TransformComponent* pTransform)
+{
+	ShadowRenderer::GetInstance()->MapDirectional(pTransform, m_pShadowData);
 }
