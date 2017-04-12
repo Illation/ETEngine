@@ -79,7 +79,14 @@ void DirectionalLight::UploadVariables(GLuint program, TransformComponent* comp,
 void DirectionalLight::DrawVolume(TransformComponent* pTransform)
 {
 	vec3 col = color*brightness;
-	DirectLightVolume::GetInstance()->Draw(pTransform->GetForward(), col);
+	if (IsShadowEnabled())
+	{
+		DirectLightVolume::GetInstance()->DrawShadowed(pTransform->GetForward(), col, m_pShadowData);
+	}
+	else
+	{
+		DirectLightVolume::GetInstance()->Draw(pTransform->GetForward(), col);
+	}
 }
 void DirectionalLight::SetShadowEnabled(bool enabled)
 {

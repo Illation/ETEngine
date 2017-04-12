@@ -38,10 +38,13 @@ public:
 
 private:
 	friend class ShadowRenderer;
+	friend class DirectLightVolume;
 
 	GLuint m_FBO;
 	//GLuint m_RBO;
 	TextureData* m_pTexture;
+
+	glm::mat4 m_LightVP;
 
 	glm::vec2 m_Dimensions;
 	float m_NCP;

@@ -40,11 +40,12 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 		pShadowData->m_NCP, pShadowData->m_FCP);
 	//projection
 	glm::vec3 worldPos = pTransform->GetWorldPosition();
-	glm::vec3 lookAt = worldPos + pTransform->GetForward();
+	glm::vec3 lookAt = worldPos - pTransform->GetForward();
 	glm::vec3 upVec = pTransform->GetUp();// glm::vec3(0, 1, 0);//
 	glm::mat4 lightView = glm::lookAtLH(worldPos, lookAt, upVec);
 	//view projection
 	m_LightVP = lightProjection*lightView;
+	pShadowData->m_LightVP = m_LightVP;
 
 	//Draw scene with light matrix and null material
 	SCENE->DrawShadow();
@@ -65,6 +66,8 @@ DirectionalShadowData::DirectionalShadowData(glm::ivec2 Resolution, glm::vec2 Di
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);

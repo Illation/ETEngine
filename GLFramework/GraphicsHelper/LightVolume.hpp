@@ -6,6 +6,7 @@ class TextureData;
 class LightMaterial;
 class NullMaterial;
 class MeshFilter;
+class DirectionalShadowData;
 
 class PointLightVolume : public Singleton<PointLightVolume>
 {
@@ -32,9 +33,11 @@ public:
 	virtual ~DirectLightVolume();
 
 	void Draw(glm::vec3 dir, glm::vec3 col);
+	void DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalShadowData *pShadow);
 
 protected:
 	ShaderData* m_pShader;
+	ShaderData* m_pShaderShadowed;
 private:
 	friend class AbstractFramework; //should init and destroy singleton
 	void Initialize();

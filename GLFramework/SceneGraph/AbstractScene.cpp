@@ -170,6 +170,8 @@ void AbstractScene::RootDraw()
 	//Shadow Mapping
 	//**************
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);//Maybe draw two sided materials in seperate pass
 	auto lightVec = SCENE->GetLights(); //Todo: automatically add all light components to an array for faster access
 	for (auto Light : lightVec)
 	{
@@ -189,11 +191,13 @@ void AbstractScene::RootDraw()
 	glClearColor(m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glCullFace(GL_BACK);
 	Draw();
 	for (Entity* pEntity : m_pEntityVec)
 	{
 		pEntity->RootDraw();
 	}
+	glDisable(GL_CULL_FACE);
 	//Step two: blend data and calculate lighting with gbuffer
 	m_pPostProcessing->EnableInput();
 	if (m_DemoMode)m_pDemoBuffer->Draw();
