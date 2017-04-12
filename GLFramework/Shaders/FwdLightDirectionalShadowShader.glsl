@@ -25,41 +25,41 @@
 	
 	GBUFFER_SAMPLER
 	
+	uniform vec3 camPos;
+	
 	//Light
 	uniform vec3 Direction;
 	uniform vec3 Color;
 	
+	//Shadow
 	uniform mat4 LightVP;
-	uniform sampler2D ShadowMap;
+	uniform sampler2DShadow ShadowMap;
+	uniform int PcfSamples = 2;
+	uniform float Bias = 0; // 0.001; //depending on if front face culling is used
 	
-	uniform vec3 camPos;
 	
 	float ShadowFactor(vec3 pos, vec3 normal)
 	{
-		//Project the position into the light texture
 		vec4 lightSpace = LightVP * vec4(pos, 1.0);
 		vec3 projCoords = lightSpace.xyz / lightSpace.w;
 		projCoords = projCoords * 0.5 + 0.5; 
 		
-		float currentDepth = projCoords.z;
-		float bias = max(0.005 * (1.0 - dot(normal, Direction)), 0.0005);
+		float bias = max(Bias * (1.0 - dot(normal, Direction)), Bias*0.01);
 		
-		float shadow = 0.0;
-		vec2 texelSize = 1.0 / textureSize(ShadowMap, 0);
+		vec3 pcfMult = vec3(1.0 / textureSize(ShadowMap, 0), 0);
 		
-		for(int x = -1; x <= 1; ++x)
+		float shadow = 0;
+		for(int x = -PcfSamples; x <= PcfSamples; ++x)
 		{
-			for(int y = -1; y <= 1; ++y)
+			for(int y = -PcfSamples; y <= PcfSamples; ++y)
 			{
-				float pcfDepth = texture(ShadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
-				shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
+				shadow += texture(ShadowMap, projCoords + vec3(x, y, 0)*pcfMult, bias);        
 			}    
 		}
 		
-		shadow /= 9.0;
-		shadow = 1 - shadow;
+		int samples = PcfSamples*2+1;
+		shadow /= samples*samples;
 		
-		if(currentDepth > 1.0)shadow = 1;
 		return shadow;
 	}
 	
