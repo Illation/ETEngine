@@ -11,6 +11,7 @@
 #include "../Framebuffers/Gbuffer.hpp"
 #include "../Graphics/ShaderData.hpp"
 #include "../Graphics/TextureData.hpp"
+#include "ShadowRenderer.hpp"
 
 PointLightVolume::PointLightVolume()
 {
@@ -87,6 +88,7 @@ DirectLightVolume::~DirectLightVolume()
 void DirectLightVolume::Initialize()
 {
 	m_pShader = ContentManager::Load<ShaderData>("Shaders/FwdLightDirectionalShader.glsl");
+	m_pShaderShadowed = ContentManager::Load<ShaderData>("Shaders/FwdLightDirectionalShadowShader.glsl");
 
 	m_uCol = glGetUniformLocation(m_pShader->GetProgram(), "Color");
 	m_uDir = glGetUniformLocation(m_pShader->GetProgram(), "Direction");
@@ -134,6 +136,41 @@ void DirectLightVolume::Draw(glm::vec3 dir, glm::vec3 col)
 	glm::vec3 cPos = CAMERA->GetTransform()->GetPosition();
 	glUniform3f(m_uCamPos, cPos.x, cPos.y, cPos.z);
 
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
+}
+void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalShadowData *pShadow)
+{
+	if (!IsInitialized) Initialize();
+
+	//bind vao and shader program
+	glBindVertexArray(m_QuadVAO);
+	glUseProgram(m_pShaderShadowed->GetProgram());
+
+	//Upload gbuffer
+	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texPosAO"), 0);
+	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texNormMetSpec"), 1);
+	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texBaseColRough"), 2);
+	auto gbufferTex = SCENE->GetGBuffer()->GetTextures();
+	for (size_t i = 0; i < gbufferTex.size(); i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+	}
+
+	//upload light info
+	glUniform3f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Direction"), dir.x, dir.y, dir.z);
+	glUniform3f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Color"), col.x, col.y, col.z);
+	glm::vec3 cPos = CAMERA->GetTransform()->GetPosition();
+	glUniform3f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "camPos"), cPos.x, cPos.y, cPos.z);
+	//upload shadow info
+	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "ShadowMap"), 3);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, pShadow->m_pTexture->GetHandle());
+	glUniformMatrix4fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "LightVP")
+		, 1, GL_FALSE, glm::value_ptr(pShadow->m_LightVP));
+
+	//draw
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 }

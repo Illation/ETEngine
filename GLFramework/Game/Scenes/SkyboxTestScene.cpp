@@ -66,6 +66,7 @@ void SkyboxTestScene::Initialize()
 	m_pLight->SetShadowEnabled(true);
 	m_pLigEntity->AddComponent(new LightComponent( m_pLight));
 	m_pLigEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
+	//m_pLigEntity->GetTransform()->SetRotation(glm::lookAtLH())
 	AddEntity(m_pLigEntity);
 
 	SETTINGS->Window.VSync(false);
