@@ -170,6 +170,7 @@
     <ClCompile Include="Helper\BinaryReader.cpp" />
     <ClCompile Include="GraphicsHelper\TextRenderer.cpp" />
     <ClCompile Include="Content\FontLoader.cpp" />
+    <ClCompile Include="Graphics\Frustum.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -303,5 +304,6 @@
     <ClInclude Include="Helper\BinaryReader.h" />
     <ClInclude Include="GraphicsHelper\TextRenderer.h" />
     <ClInclude Include="Content\FontLoader.hpp" />
+    <ClInclude Include="Graphics\Frustum.h" />
   </ItemGroup>
 </Project>

@@ -29,6 +29,10 @@ public:
 	glm::mat4 GetViewProj() { return m_ViewProjection; }
 	glm::mat4 GetViewProjInv() { return m_ViewProjectionInverse; }
 
+	float GetNearPlane() { return m_NearPlane; }
+	float GetFarPlane() { return m_FarPlane; }
+	float GetFOV() { return m_FOV; }
+
 protected:
 
 	virtual void Initialize();
