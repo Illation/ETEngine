@@ -6,6 +6,7 @@
 #include "MeshFilterLoader.hpp"
 #include "CubeMapLoader.hpp"
 #include "HdrLoader.hpp"
+#include "FontLoader.hpp"
 
 std::vector<AbstractLoader*> ContentManager::m_Loaders = std::vector<AbstractLoader*>();
 bool ContentManager::m_IsInitialized = false;
@@ -44,6 +45,7 @@ void ContentManager::Initialize()
 		AddLoader(new MeshFilterLoader());
 		AddLoader(new CubeMapLoader());
 		AddLoader(new HdrLoader());
+		AddLoader(new FontLoader());
 	}
 }
 

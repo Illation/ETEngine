@@ -6,6 +6,7 @@ class TexPBRMaterial;
 class EmissiveMaterial;
 class PointLight;
 class Entity;
+class SpriteFont;
 
 struct SwirlyLight
 {
@@ -44,5 +45,7 @@ private:
 
 	PointLight* m_pLight = nullptr;
 	Entity* m_pLigEnt = nullptr;
+
+	SpriteFont* m_pDebugFont = nullptr;
 };
 

@@ -10,6 +10,7 @@
 #include "../Prefabs/Skybox.hpp"
 #include "../Prefabs/FreeCamera.hpp"
 #include "../Framebuffers/PostProcessingRenderer.hpp"
+#include "../GraphicsHelper/TextRenderer.h"
 
 #define CONTEXT Context::GetInstance()
 
@@ -255,6 +256,8 @@ void AbstractScene::RootDraw()
 	//Draw to default buffer
 	m_pPostProcessing->SetNumSamples(5);
 	m_pPostProcessing->Draw(0);
+
+	TextRenderer::GetInstance()->Draw();
 
 	PostDraw();
 }
