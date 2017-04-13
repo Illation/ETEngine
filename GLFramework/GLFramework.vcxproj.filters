@@ -164,6 +164,12 @@
     <ClCompile Include="Game\Materials\NullMaterial.cpp" />
     <ClCompile Include="Framebuffers\PostProcessingRenderer.cpp" />
     <ClCompile Include="GraphicsHelper\ShadowRenderer.cpp" />
+    <ClCompile Include="Game\Scenes\ShadingTestScene.cpp" />
+    <ClCompile Include="Game\Materials\ParamPBRMaterial.cpp" />
+    <ClCompile Include="Graphics\SpriteFont.cpp" />
+    <ClCompile Include="Helper\BinaryReader.cpp" />
+    <ClCompile Include="GraphicsHelper\TextRenderer.cpp" />
+    <ClCompile Include="Content\FontLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -291,5 +297,11 @@
     <ClInclude Include="Game\Materials\NullMaterial.hpp" />
     <ClInclude Include="Framebuffers\PostProcessingRenderer.hpp" />
     <ClInclude Include="GraphicsHelper\ShadowRenderer.hpp" />
+    <ClInclude Include="Game\Scenes\ShadingTestScene.hpp" />
+    <ClInclude Include="Game\Materials\ParamPBRMaterial.hpp" />
+    <ClInclude Include="Graphics\SpriteFont.h" />
+    <ClInclude Include="Helper\BinaryReader.h" />
+    <ClInclude Include="GraphicsHelper\TextRenderer.h" />
+    <ClInclude Include="Content\FontLoader.hpp" />
   </ItemGroup>
 </Project>

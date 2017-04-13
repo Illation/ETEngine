@@ -15,6 +15,8 @@
 
 #include <random>
 #include <math.h>
+#include "../../GraphicsHelper/TextRenderer.h"
+#include "../../Graphics/SpriteFont.h"
 
 TestScene::TestScene() : AbstractScene("TestScene")
 {
@@ -27,6 +29,10 @@ TestScene::~TestScene()
 
 void TestScene::Initialize()
 {
+	//Fonts
+	//**************************
+	m_pDebugFont = ContentManager::Load<SpriteFont>("Resources/Fonts/Consolas_32.fnt");
+
 	//Materials
 	//**************************
 	m_pMat = new TexPBRMaterial(
@@ -132,9 +138,6 @@ void TestScene::Initialize()
 
 void TestScene::Update()
 {
-	//LOGGER::Log("FPS: " + to_string(TIME->FPS()));
-	cout << "FPS: " + to_string(TIME->FPS()) << endl;;
-
 	for (size_t i = 0; i < m_Lights.size(); ++i)
 	{
 		m_Lights[i].time1 += TIME->DeltaTime();
@@ -212,6 +215,11 @@ void TestScene::Update()
 
 void TestScene::Draw()
 {
+	TextRenderer::GetInstance()->SetFont(m_pDebugFont);
+	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 0.3f, 0.3f, 1));
+	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string((int)TIME->FPS()), glm::vec2(20, 20));
+	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 1, 1, 1));
+	TextRenderer::GetInstance()->DrawText("Lights: " + std::to_string((int)m_Lights.size()), glm::vec2(20, 50));
 }
 
 void TestScene::DrawForward()

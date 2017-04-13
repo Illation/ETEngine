@@ -17,7 +17,7 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 {
 	using namespace std;
 
-	cout << "Compiling Shader: " << assetFile << " . . . ";
+	cout << "Building Shader: " << assetFile << " . . . ";
 
 	string vertSource;
 	string geoSource;
@@ -108,7 +108,7 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 	//Compile
 	GLuint vertexShader = CompileShader(vertSource, GL_VERTEX_SHADER);
 	GLuint geoShader;
-	if(useGeo)geoShader = CompileShader(fragSource, GL_GEOMETRY_SHADER);
+	if(useGeo)geoShader = CompileShader(geoSource, GL_GEOMETRY_SHADER);
 	GLuint fragmentShader = CompileShader(fragSource, GL_FRAGMENT_SHADER);
 
 	//Combine Shaders

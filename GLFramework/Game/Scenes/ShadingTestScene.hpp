@@ -3,6 +3,7 @@
 
 class FrameBuffer;
 class TexPBRMaterial;
+class ParamPBRMaterial;
 class EmissiveMaterial;
 class PointLight;
 class Entity;
@@ -10,11 +11,11 @@ class Skybox;
 class DirectionalLight;
 class SpriteFont;
 
-class SkyboxTestScene : public AbstractScene
+class ShadingTestScene : public AbstractScene
 {
 public:
-	SkyboxTestScene();
-	~SkyboxTestScene();
+	ShadingTestScene();
+	~ShadingTestScene();
 private:
 	void Initialize();
 	void Update();
@@ -23,6 +24,8 @@ private:
 	void PostDraw();
 private:
 	TexPBRMaterial* m_pMat = nullptr;
+	ParamPBRMaterial* m_pStandMat = nullptr;
+	ParamPBRMaterial* m_pEnvMat = nullptr;
 	Entity* m_pLigEntity = nullptr;
 	DirectionalLight* m_pLight = nullptr;
 
