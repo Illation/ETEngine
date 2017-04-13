@@ -6,7 +6,6 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#define WINDOW Settings::GetInstance()->Window
 #define CONTEXT Context::GetInstance()
 
 CameraComponent::CameraComponent():

@@ -83,4 +83,5 @@ inline void Clamp(T& value, T hi, T lo)
 #define LOGGER Logger
 #define CONTENT ContentManager
 #define TRANSFORM GetTransform()
+#define WINDOW Settings::GetInstance()->Window
 #pragma endregion Macros
