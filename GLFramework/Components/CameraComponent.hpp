@@ -52,6 +52,9 @@ private:
 
 	Frustum* m_pFrustum = nullptr;
 
+	bool m_IsFrustumFrozen = false;
+	float m_FreezeTimer = 0;
+
 	friend class AbstractScene;
 };
 
