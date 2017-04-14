@@ -17,7 +17,6 @@ public:
 	{
 		WindowSettings() :
 			Fullscreen(false),
-			AspectRatio(Width / (float)Height),
 			Title("OpenGl Framework"),
 			pWindow(nullptr)
 		{
@@ -32,11 +31,11 @@ public:
 			Height = Fullscreen ? resolutions[baseRes].y : resolutions[baseRes-1].y;
 		}
 		void VSync(const bool enabled){SDL_GL_SetSwapInterval(enabled);}
+		float GetAspectRatio() { return (float)Width / (float)Height; }
 
 		bool Fullscreen;
 		int Width;
 		int Height;
-		float AspectRatio;
 		std::string Title;
 		SDL_Window* pWindow;
 	}Window;

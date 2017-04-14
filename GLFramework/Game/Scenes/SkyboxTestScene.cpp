@@ -77,7 +77,7 @@ void SkyboxTestScene::Initialize()
 	//m_pLigEntity->GetTransform()->SetRotation(glm::lookAtLH())
 	AddEntity(m_pLigEntity);
 
-	SETTINGS->Window.VSync(false);
+	SETTINGS->Window.VSync(true);
 }
 
 void SkyboxTestScene::Update()
@@ -123,7 +123,10 @@ void SkyboxTestScene::Draw()
 {
 	TextRenderer::GetInstance()->SetFont(m_pDebugFont);
 	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 0.3f, 0.3f, 1));
-	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string((int)TIME->FPS()), glm::vec2(20, 20));
+	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string(PERFORMANCE->GetRegularFPS()), glm::vec2(20, 20));
+	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 1, 1, 1));
+	TextRenderer::GetInstance()->DrawText("Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS()), glm::vec2(20, 50));
+	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), glm::vec2(20, 80));
 }
 
 void SkyboxTestScene::DrawForward()
