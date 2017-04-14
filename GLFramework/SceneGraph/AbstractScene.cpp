@@ -257,7 +257,6 @@ void AbstractScene::RootDraw()
 	}
 	//m_pHDRbuffer->Draw();
 	//Draw to default buffer
-	m_pPostProcessing->SetNumSamples(5);
 	m_pPostProcessing->Draw(0);
 
 	TextRenderer::GetInstance()->Draw();

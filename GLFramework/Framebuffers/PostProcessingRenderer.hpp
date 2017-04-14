@@ -16,7 +16,6 @@ public:
 	void EnableInput();
 	void Draw(GLuint FBO);
 
-	void SetNumSamples(int numSamples) { m_NumSamples = numSamples; }
 	GLuint GetTargetFBO() { return m_CollectFBO; }
 
 	void SetExposure(float exp) { m_Exposure = exp; }
@@ -26,8 +25,6 @@ public:
 	void SetBloomMultiplier(float value) { m_BloomMult = value; }
 
 private:
-
-	int m_NumSamples = 1;
 
 	ShaderData* m_pDownsampleShader;
 	ShaderData* m_pGaussianShader;

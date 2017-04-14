@@ -4,8 +4,23 @@
 #include "../Components/TransformComponent.hpp"
 #include "../Components/CameraComponent.hpp"
 
+void FrustumCorners::Transform(glm::mat4 space)
+{
+	//move corners of the near plane
+	na = glm::vec3(space*glm::vec4(na, 0));
+	nb = glm::vec3(space*glm::vec4(nb, 0));
+	nc = glm::vec3(space*glm::vec4(nc, 0));
+	nd = glm::vec3(space*glm::vec4(nd, 0));
+	//move corners of the far plane
+	fa = glm::vec3(space*glm::vec4(fa, 0));
+	fb = glm::vec3(space*glm::vec4(fb, 0));
+	fc = glm::vec3(space*glm::vec4(fc, 0));
+	fd = glm::vec3(space*glm::vec4(fd, 0));
+}
+
 Frustum::Frustum()
 {
+	m_Corners = FrustumCorners();
 }
 Frustum::~Frustum()
 {
@@ -46,15 +61,16 @@ void Frustum::Update()
 	auto fCenter = m_Position + m_Forward*m_FarPlane *0.5f;
 
 	//construct corners of the near plane in the culled objects world space
-	auto na = glm::vec3(m_CullInverse*glm::vec4(nCenter + m_Up*nearHH - m_Right*nearHW, 0));
-	auto nb = glm::vec3(m_CullInverse*glm::vec4(nCenter + m_Up*nearHH + m_Right*nearHW, 0));
-	auto nc = glm::vec3(m_CullInverse*glm::vec4(nCenter - m_Up*nearHH - m_Right*nearHW, 0));
-	auto nd = glm::vec3(m_CullInverse*glm::vec4(nCenter - m_Up*nearHH + m_Right*nearHW, 0));
+	m_Corners.na = nCenter + m_Up*nearHH - m_Right*nearHW;
+	m_Corners.nb = nCenter + m_Up*nearHH + m_Right*nearHW;
+	m_Corners.nc = nCenter - m_Up*nearHH - m_Right*nearHW;
+	m_Corners.nd = nCenter - m_Up*nearHH + m_Right*nearHW;
 	//construct corners of the far plane
-	auto fa = glm::vec3(m_CullInverse*glm::vec4(fCenter + m_Up*farHH - m_Right*farHW, 0));
-	auto fb = glm::vec3(m_CullInverse*glm::vec4(fCenter + m_Up*farHH + m_Right*farHW, 0));
-	auto fc = glm::vec3(m_CullInverse*glm::vec4(fCenter - m_Up*farHH - m_Right*farHW, 0));
-	auto fd = glm::vec3(m_CullInverse*glm::vec4(fCenter - m_Up*farHH + m_Right*farHW, 0));
+	m_Corners.fa = fCenter + m_Up*farHH - m_Right*farHW;
+	m_Corners.fb = fCenter + m_Up*farHH + m_Right*farHW;
+	m_Corners.fc = fCenter - m_Up*farHH - m_Right*farHW;
+	m_Corners.fd = fCenter - m_Up*farHH + m_Right*farHW;
+	m_Corners.Transform(m_CullInverse);
 
 	m_PositionObject = glm::vec3(m_CullInverse*glm::vec4(m_Position, 0));
 	m_RadInvFOV = 1 / glm::radians(m_FOV);
@@ -62,12 +78,12 @@ void Frustum::Update()
 	//construct planes
 	m_Planes.clear();
 	//winding in an outside perspective so the cross product creates normals pointing inward
-	m_Planes.push_back(Plane(na, nb, nc));//Near
-	//m_Planes.push_back(Plane(fb, fa, fd));//Far Maybe skip this step? most polys further away should already be low res
-	m_Planes.push_back(Plane(fa, na, fc));//Left
-	m_Planes.push_back(Plane(nb, fb, nd));//Right
-	m_Planes.push_back(Plane(fa, fb, na));//Top
-	m_Planes.push_back(Plane(nc, nd, fc));//Bottom
+	m_Planes.push_back(Plane(m_Corners.na, m_Corners.nb, m_Corners.nc));//Near
+	m_Planes.push_back(Plane(m_Corners.fb, m_Corners.fa, m_Corners.fd));//Far 
+	m_Planes.push_back(Plane(m_Corners.fa, m_Corners.na, m_Corners.fc));//Left
+	m_Planes.push_back(Plane(m_Corners.nb, m_Corners.fb, m_Corners.nd));//Right
+	m_Planes.push_back(Plane(m_Corners.fa, m_Corners.fb, m_Corners.na));//Top
+	m_Planes.push_back(Plane(m_Corners.nc, m_Corners.nd, m_Corners.fc));//Bottom
 }
 
 VolumeCheck Frustum::ContainsPoint(const glm::vec3 &point) const

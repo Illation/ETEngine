@@ -33,20 +33,21 @@ class DirectionalShadowData
 {
 	//later for cascaded shadow mapping we need a bunch of those
 public:
-	DirectionalShadowData(glm::ivec2 Resolution, glm::vec2 Dimensions, float ncp, float fcp);
+	DirectionalShadowData(glm::ivec2 Resolution);
 	virtual ~DirectionalShadowData();
 
 private:
 	friend class ShadowRenderer;
 	friend class DirectLightVolume;
 
-	GLuint m_FBO;
-	//GLuint m_RBO;
-	TextureData* m_pTexture;
+	struct CascadeData
+	{
+		float distance;
+		GLuint fbo;
+		TextureData* pTexture;
+		glm::mat4 lightVP;
+	};
+	std::vector<CascadeData> m_Cascades;
 
-	glm::mat4 m_LightVP;
-
-	glm::vec2 m_Dimensions;
-	float m_NCP;
-	float m_FCP;
+	float m_Bias = 0;
 };

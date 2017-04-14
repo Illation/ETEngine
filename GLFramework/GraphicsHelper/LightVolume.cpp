@@ -168,17 +168,38 @@ void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalSh
 		glBindTexture(GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
 
-	//upload light info
-	glUniform3f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Direction"), dir.x, dir.y, dir.z);
-	glUniform3f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Color"), col.x, col.y, col.z);
+	//Camera info
 	glm::vec3 cPos = CAMERA->GetTransform()->GetPosition();
 	glUniform3f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "camPos"), cPos.x, cPos.y, cPos.z);
-	//upload shadow info
-	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "ShadowMap"), 3);
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, pShadow->m_pTexture->GetHandle());
-	glUniformMatrix4fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "LightVP")
-		, 1, GL_FALSE, glm::value_ptr(pShadow->m_LightVP));
+	glUniformMatrix4fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "CameraView")
+		, 1, GL_FALSE, glm::value_ptr(CAMERA->GetView()));
+
+	//light info
+	glUniform3f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Direction"), dir.x, dir.y, dir.z);
+	glUniform3f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Color"), col.x, col.y, col.z);
+
+	//shadow info
+	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "PcfSamples"), GRAPHICS.NumPCFSamples);
+	glUniform1f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Bias"), pShadow->m_Bias);
+
+	std::string ligStr = "cascades[";
+	for (size_t i = 0; i < pShadow->m_Cascades.size(); i++)
+	{
+		//Light Projection
+		glUniformMatrix4fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(),
+			(ligStr + std::to_string(i) + "].LightVP").c_str()), 
+			1, GL_FALSE, glm::value_ptr(pShadow->m_Cascades[i].lightVP));
+
+		//Shadow map
+		glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(),
+			(ligStr + std::to_string(i) + "].ShadowMap").c_str()), 3+i);
+		glActiveTexture(GL_TEXTURE3+i);
+		glBindTexture(GL_TEXTURE_2D, pShadow->m_Cascades[i].pTexture->GetHandle());
+
+		//cascade distance
+		glUniform1f(glGetUniformLocation(m_pShaderShadowed->GetProgram(),
+			(ligStr + std::to_string(i) + "].Distance").c_str()), pShadow->m_Cascades[i].distance);
+	}
 
 	//draw
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

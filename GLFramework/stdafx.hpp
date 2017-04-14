@@ -85,5 +85,6 @@ inline void Clamp(T& value, T hi, T lo)
 #define CONTENT ContentManager
 #define TRANSFORM GetTransform()
 #define WINDOW Settings::GetInstance()->Window
+#define GRAPHICS Settings::GetInstance()->Graphics
 #define PERFORMANCE PerformanceInfo::GetInstance()
 #pragma endregion Macros
