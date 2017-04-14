@@ -19,6 +19,10 @@
 #include "../Materials/ParamPBRMaterial.hpp"
 #include "../../Graphics/SpriteFont.h"
 #include "../../GraphicsHelper/TextRenderer.h"
+#include <glm/gtx/transform.hpp>
+#include <glm\gtx\quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 ShadingTestScene::ShadingTestScene() : AbstractScene("SkyboxTestScene")
 {
@@ -88,11 +92,21 @@ void ShadingTestScene::Initialize()
 	//Lights
 	//**************************
 	m_pLigEntity = new Entity();
-	m_pLight = new DirectionalLight(vec3(1, 1, 1), 0.99f);
+	m_pLight = new DirectionalLight(vec3(1, 1, 1), 2.99f);
 	m_pLight->SetShadowEnabled(true);
 	m_pLigEntity->AddComponent(new LightComponent( m_pLight));
-	//m_pLigEntity->GetTransform()->SetRotation(glm::lookAtLH())
+	m_pLigEntity->GetTransform()->SetRotation(glm::rotation(glm::vec3(1, -3, -1), glm::vec3(1, 0, 1)));
 	AddEntity(m_pLigEntity);
+
+	auto pLigEntity = new Entity();
+	auto pLight = new DirectionalLight(vec3(1, 1, 1), 4.5f);
+	pLight->SetShadowEnabled(true);
+	pLigEntity->AddComponent(new LightComponent(pLight));
+	pLigEntity->GetTransform()->SetRotation(glm::rotation(glm::vec3(1, -3, -1), glm::vec3(1, 0, 1)));
+	pLigEntity->GetTransform()->RotateEuler(0, 1, 0);
+	AddEntity(pLigEntity);
+
+	CAMERA->GetTransform()->Translate(0, 0, -10);
 
 	SETTINGS->Window.VSync(true);
 }
