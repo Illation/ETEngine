@@ -159,6 +159,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	glBindTexture(GL_TEXTURE_2D, m_CollectTex);
 	glUniform1f(m_uThreshold, m_Threshold);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+	PERFORMANCE->m_DrawCalls++;
 	//downsample glow
 	int width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
 	for (GLuint i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
@@ -170,6 +171,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 		if(i>0)glBindTexture(GL_TEXTURE_2D, m_DownSampleTexture[i-1]);
 		glUniform1f(m_uThreshold, m_Threshold);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+		PERFORMANCE->m_DrawCalls++;
 
 		//blur downsampled
 		//glViewport(0, 0, width, height);
@@ -184,6 +186,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 			glBindTexture(GL_TEXTURE_2D, horizontal ? m_DownSampleTexture[i] : m_DownPingPongTexture[i]);
 			glUniform1i(m_uHorizontal, horizontal);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
+			PERFORMANCE->m_DrawCalls++;
 		}
 	}
 	glViewport(0, 0, width, height);
@@ -196,6 +199,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 		glUniform1i(m_uHorizontal, horizontal);
 		glBindTexture( GL_TEXTURE_2D, (i==0) ? m_ColorBuffers[1] : m_PingPongTexture[!horizontal] );
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+		PERFORMANCE->m_DrawCalls++;
 		horizontal = !horizontal;
 	}
 	//combine with hdr result
@@ -213,4 +217,5 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	glUniform1f(m_uGamma, m_Gamma);
 	glUniform1f(m_uBloomMult, m_BloomMult);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+	PERFORMANCE->m_DrawCalls++;
 }

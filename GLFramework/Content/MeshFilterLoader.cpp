@@ -147,6 +147,8 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 		}
 	}
 
+	pMesh->CalculateBoundingVolumes();
+
 	//cleanup
 	delete pImporter;
 	std::cout << "  . . . SUCCESS!" << std::endl;

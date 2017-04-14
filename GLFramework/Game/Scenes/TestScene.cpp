@@ -220,6 +220,7 @@ void TestScene::Draw()
 	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string((int)TIME->FPS()), glm::vec2(20, 20));
 	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 1, 1, 1));
 	TextRenderer::GetInstance()->DrawText("Lights: " + std::to_string((int)m_Lights.size()), glm::vec2(20, 50));
+	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), glm::vec2(20, 80));
 }
 
 void TestScene::DrawForward()

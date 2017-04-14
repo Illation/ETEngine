@@ -74,6 +74,7 @@ inline void Clamp(T& value, T hi, T lo)
 #include "Base\InputManager.hpp"
 #include "Helper/Logger.hpp"
 #include "Helper/MathHelper.hpp"
+#include "Helper/PerformanceInfo.hpp"
 //Working singleton Set
 #define TIME Context::GetInstance()->pTime
 #define CAMERA Context::GetInstance()->pCamera
@@ -84,4 +85,5 @@ inline void Clamp(T& value, T hi, T lo)
 #define CONTENT ContentManager
 #define TRANSFORM GetTransform()
 #define WINDOW Settings::GetInstance()->Window
+#define PERFORMANCE PerformanceInfo::GetInstance()
 #pragma endregion Macros

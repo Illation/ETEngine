@@ -85,6 +85,7 @@ void HdrLoader::RenderCube()
 	// Render Cube
 	glBindVertexArray(m_CubeVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
+	PERFORMANCE->m_DrawCalls++;
 	glBindVertexArray(0);
 }
 
@@ -112,6 +113,7 @@ void HdrLoader::RenderQuad()
 	}
 	glBindVertexArray(m_QuadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	PERFORMANCE->m_DrawCalls++;
 	glBindVertexArray(0);
 }
 

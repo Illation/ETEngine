@@ -4,7 +4,7 @@
 
 class CameraComponent;
 
-enum class VolumeTri
+enum class VolumeCheck
 {
 	OUTSIDE,
 	INTERSECT,
@@ -22,10 +22,10 @@ public:
 	void SetToCamera(CameraComponent* pCamera);
 	void SetCullTransform(glm::mat4 objectWorld);
 
-	bool ContainsPoint(const glm::vec3 &point) const;
-	bool ContainsSphere(const Sphere &sphere) const;
-	VolumeTri ContainsTriangle(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c);
-	VolumeTri ContainsTriVolume(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, float height);
+	VolumeCheck ContainsPoint(const glm::vec3 &point) const;
+	VolumeCheck ContainsSphere(const Sphere &sphere) const;
+	VolumeCheck ContainsTriangle(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c);
+	VolumeCheck ContainsTriVolume(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, float height);
 
 	const glm::vec3 &GetPositionOS() { return m_PositionObject; }
 	const float GetFOV() { return m_FOV; }

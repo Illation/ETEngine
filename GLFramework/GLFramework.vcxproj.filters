@@ -171,6 +171,7 @@
     <ClCompile Include="GraphicsHelper\TextRenderer.cpp" />
     <ClCompile Include="Content\FontLoader.cpp" />
     <ClCompile Include="Graphics\Frustum.cpp" />
+    <ClCompile Include="Helper\PerformanceInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -305,5 +306,6 @@
     <ClInclude Include="GraphicsHelper\TextRenderer.h" />
     <ClInclude Include="Content\FontLoader.hpp" />
     <ClInclude Include="Graphics\Frustum.h" />
+    <ClInclude Include="Helper\PerformanceInfo.hpp" />
   </ItemGroup>
 </Project>

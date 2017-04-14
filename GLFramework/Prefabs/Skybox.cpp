@@ -17,6 +17,7 @@ void Skybox::Initialize()
 	//Add them componentz
 	m_pMaterial = new SkyboxMaterial(m_AssetFile);
 	auto pModel = new ModelComponent("Resources/Models/cube.dae");
+	pModel->SetCullMode(ModelComponent::CullMode::DISABLED);//Always draw
 	pModel->SetMaterial(m_pMaterial);
 	AddComponent(pModel);
 
