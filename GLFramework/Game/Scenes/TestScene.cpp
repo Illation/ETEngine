@@ -133,7 +133,7 @@ void TestScene::Initialize()
 		m_Lights.push_back(swirl);
 	}
 
-	SETTINGS->Window.VSync(false);
+	SETTINGS->Window.VSync(true);
 }
 
 void TestScene::Update()
@@ -217,10 +217,11 @@ void TestScene::Draw()
 {
 	TextRenderer::GetInstance()->SetFont(m_pDebugFont);
 	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 0.3f, 0.3f, 1));
-	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string((int)TIME->FPS()), glm::vec2(20, 20));
+	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string(PERFORMANCE->GetRegularFPS()), glm::vec2(20, 20));
 	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 1, 1, 1));
-	TextRenderer::GetInstance()->DrawText("Lights: " + std::to_string((int)m_Lights.size()), glm::vec2(20, 50));
+	TextRenderer::GetInstance()->DrawText("Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS()), glm::vec2(20, 50));
 	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), glm::vec2(20, 80));
+	TextRenderer::GetInstance()->DrawText("Lights: " + std::to_string((int)m_Lights.size()), glm::vec2(20, 110));
 }
 
 void TestScene::DrawForward()

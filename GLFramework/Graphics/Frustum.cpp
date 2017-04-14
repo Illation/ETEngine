@@ -33,7 +33,7 @@ void Frustum::Update()
 {
 	//calculate generalized relative width and aspect ratio
 	float normHalfWidth = tan(glm::radians(m_FOV));
-	float aspectRatio = (float)WINDOW.Width / (float)WINDOW.Height;
+	float aspectRatio = WINDOW.GetAspectRatio();
 
 	//calculate width and height for near and far plane
 	float nearHW = normHalfWidth*m_NearPlane;

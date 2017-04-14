@@ -104,6 +104,9 @@ void AbstractScene::RootInitialize()
 void AbstractScene::RootUpdate()
 {
 	m_pConObj->pTime->Update();
+
+	PERFORMANCE->StartFrameTimer();
+
 	m_pConObj->pCamera->Update();
 
 	Update();
@@ -261,8 +264,7 @@ void AbstractScene::RootDraw()
 
 	PostDraw();
 	
-	PERFORMANCE->m_PrevDrawCalls = PERFORMANCE->m_DrawCalls;
-	PERFORMANCE->m_DrawCalls = 0;
+	PERFORMANCE->Update();
 }
 
 void AbstractScene::RootOnActivated()

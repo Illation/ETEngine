@@ -44,7 +44,7 @@ void CameraComponent::Update()
 	}
 	else
 	{
-		float viewWidth = (m_Size>0) ? m_Size * WINDOW.AspectRatio : WINDOW.Width;
+		float viewWidth = (m_Size>0) ? m_Size * WINDOW.GetAspectRatio() : WINDOW.Width;
 		float viewHeight = (m_Size>0) ? m_Size : WINDOW.Height;
 		m_Projection = glm::ortho(0.f, viewWidth, viewHeight, 0.f, m_NearPlane, m_FarPlane);
 	}
