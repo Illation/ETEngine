@@ -127,9 +127,9 @@
 		
 		vec3 finalCol = ShadowFactor(pos, norm, dist) * DirLighting(baseCol, rough, metal, F0, norm, viewDir);
 		
-		//if(dist < cascades[2].Distance) finalCol *= vec3(1, 0, 0);
-		//if(dist < cascades[1].Distance) finalCol *= vec3(0, 1, 0);
-		//if(dist < cascades[0].Distance) finalCol *= vec3(0, 0, 1);
+		if(dist < cascades[2].Distance) finalCol *= vec3(1, 0.35f, 0.35f);
+		if(dist < cascades[1].Distance) finalCol *= vec3(0.35f, 1, 0.35f);
+		if(dist < cascades[0].Distance) finalCol *= vec3(0.35f, 0.35f, 1);
 		
 		//output
 		outColor = vec4(clamp(finalCol, 0.0, maxExposure), 1.0);

@@ -59,8 +59,14 @@ void CameraComponent::Update()
 	m_ViewProjectionInverse = glm::inverse(m_View);
 
 	//Update general frustum
+	if (m_FreezeTimer > 0) m_FreezeTimer -= TIME->DeltaTime();
+	if (m_FreezeTimer <= 0 && INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_SPACE))
+	{
+		m_FreezeTimer = 1;
+		m_IsFrustumFrozen = !m_IsFrustumFrozen;
+	}
 	m_pFrustum->SetCullTransform(glm::mat4());//Frustum will be in world space and objects need to transform themselves
-	m_pFrustum->SetToCamera(this);
+	if(!m_IsFrustumFrozen)m_pFrustum->SetToCamera(this);
 	m_pFrustum->Update();
 }
 

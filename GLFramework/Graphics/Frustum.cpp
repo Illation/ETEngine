@@ -53,7 +53,7 @@ void Frustum::Update()
 	//calculate width and height for near and far plane
 	float nearHW = normHalfWidth*m_NearPlane;
 	float nearHH = nearHW / aspectRatio;
-	float farHW = normHalfWidth*m_FarPlane*0.5f;
+	float farHW = normHalfWidth*m_FarPlane;// *0.5f;
 	float farHH = farHW / aspectRatio;
 
 	//calculate near and far plane centers
