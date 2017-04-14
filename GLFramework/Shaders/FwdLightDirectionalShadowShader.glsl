@@ -26,39 +26,60 @@
 	GBUFFER_SAMPLER
 	
 	uniform vec3 camPos;
+	uniform mat4 CameraView;
 	
 	//Light
 	uniform vec3 Direction;
 	uniform vec3 Color;
 	
 	//Shadow
-	uniform mat4 LightVP;
-	uniform sampler2DShadow ShadowMap;
+	const int NUM_CASCADES = 3;
+	struct Cascade
+	{
+		mat4 LightVP;
+		sampler2DShadow ShadowMap;
+		float Distance;
+	};
+	uniform Cascade cascades[NUM_CASCADES];
+	
 	uniform int PcfSamples = 2;
 	uniform float Bias = 0; // 0.001; //depending on if front face culling is used
 	
 	
-	float ShadowFactor(vec3 pos, vec3 normal)
+	float ShadowFactor(vec3 pos, vec3 normal, float dist)
 	{
-		vec4 lightSpace = LightVP * vec4(pos, 1.0);
-		vec3 projCoords = lightSpace.xyz / lightSpace.w;
-		projCoords = projCoords * 0.5 + 0.5; 
+		if(dist >= cascades[NUM_CASCADES-1].Distance) return 1;
 		
 		float bias = max(Bias * (1.0 - dot(normal, Direction)), Bias*0.01);
 		
-		vec3 pcfMult = vec3(1.0 / textureSize(ShadowMap, 0), 0);
-		
 		float shadow = 0;
-		for(int x = -PcfSamples; x <= PcfSamples; ++x)
+		for(int i = 0; i < NUM_CASCADES; ++i)
 		{
-			for(int y = -PcfSamples; y <= PcfSamples; ++y)
+			float end = cascades[i].Distance;
+			if(dist < end)
 			{
-				shadow += texture(ShadowMap, projCoords + vec3(x, y, 0)*pcfMult, bias);        
-			}    
+				float start = (i == 0) ? 0 : cascades[i - 1].Distance;
+				if(dist >= start)
+				{
+					vec4 lightSpace = cascades[i].LightVP * vec4(pos, 1.0);
+					vec3 projCoords = lightSpace.xyz / lightSpace.w;
+					projCoords = projCoords * 0.5 + 0.5; 
+					
+					vec3 pcfMult = vec3(1.0 / textureSize(cascades[i].ShadowMap, 0), 0);
+					
+					for(int x = -PcfSamples; x <= PcfSamples; ++x)
+					{
+						for(int y = -PcfSamples; y <= PcfSamples; ++y)
+						{
+							shadow += texture(cascades[i].ShadowMap, projCoords + vec3(x, y, 0)*pcfMult, bias);        
+						}    
+					}
+					
+					int samples = PcfSamples*2+1;
+					shadow /= samples*samples;
+				}
+			}
 		}
-		
-		int samples = PcfSamples*2+1;
-		shadow /= samples*samples;
 		
 		return shadow;
 	}
@@ -100,7 +121,15 @@
 		//View dir and reflection
 		vec3 viewDir = normalize(camPos - pos);
 		
-		vec3 finalCol = ShadowFactor(pos, norm) * DirLighting(baseCol, rough, metal, F0, norm, viewDir);
+		vec4 depthPos = vec4(pos, 1.0f);
+		depthPos = CameraView * depthPos;
+		float dist = depthPos.z;
+		
+		vec3 finalCol = ShadowFactor(pos, norm, dist) * DirLighting(baseCol, rough, metal, F0, norm, viewDir);
+		
+		//if(dist < cascades[2].Distance) finalCol *= vec3(1, 0, 0);
+		//if(dist < cascades[1].Distance) finalCol *= vec3(0, 1, 0);
+		//if(dist < cascades[0].Distance) finalCol *= vec3(0, 0, 1);
 		
 		//output
 		outColor = vec4(clamp(finalCol, 0.0, maxExposure), 1.0);

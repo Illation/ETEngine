@@ -39,5 +39,26 @@ public:
 		std::string Title;
 		SDL_Window* pWindow;
 	}Window;
+
+	struct GraphicsSettings
+	{
+		GraphicsSettings() :
+			NumCascades(3),
+			NumPCFSamples(1),
+			CSMDrawDistance(200),
+			NumBlurPasses(5)
+		{
+
+		}
+		void VSync(const bool enabled) { SDL_GL_SetSwapInterval(enabled); }
+
+		//Shadow Quality
+		int NumCascades;
+		float CSMDrawDistance;
+		int NumPCFSamples;
+
+		//Bloom Quality
+		int NumBlurPasses;
+	}Graphics;
 };
 

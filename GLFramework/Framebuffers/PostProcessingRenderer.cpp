@@ -176,7 +176,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 		//blur downsampled
 		//glViewport(0, 0, width, height);
 		glUseProgram(m_pGaussianShader->GetProgram());
-		for (GLuint j = 0; j < (GLuint)m_NumSamples * 2; j++)
+		for (GLuint j = 0; j < (GLuint)GRAPHICS.NumBlurPasses * 2; j++)
 		{
 			//TODO needs custom ping pong buffer, buffers textures are wrong size
 			GLboolean horizontal = !(GLboolean)(j % 2);
@@ -193,7 +193,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	//ping pong gaussian blur
 	GLboolean horizontal = true;
 	glUseProgram(m_pGaussianShader->GetProgram());
-	for (GLuint i = 0; i < (GLuint)m_NumSamples * 2; i++)
+	for (GLuint i = 0; i < (GLuint)GRAPHICS.NumBlurPasses * 2; i++)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_PingPongFBO[horizontal]);
 		glUniform1i(m_uHorizontal, horizontal);
