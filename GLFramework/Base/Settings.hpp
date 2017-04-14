@@ -44,7 +44,7 @@ public:
 	{
 		GraphicsSettings() :
 			NumCascades(3),
-			NumPCFSamples(1),
+			NumPCFSamples(3),
 			CSMDrawDistance(200),
 			NumBlurPasses(5)
 		{

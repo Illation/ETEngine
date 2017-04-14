@@ -298,6 +298,7 @@ void AbstractScene::SetSkybox(string assetFile)
 	SafeDelete(m_pSkybox);
 	m_pSkybox = new Skybox(assetFile);
 	m_pSkybox->RootInitialize();
+	m_pSkybox->SetRoughness(0.15f);
 }
 
 HDRMap* AbstractScene::GetEnvironmentMap()

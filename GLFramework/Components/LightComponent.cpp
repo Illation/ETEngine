@@ -93,7 +93,7 @@ void DirectionalLight::SetShadowEnabled(bool enabled)
 	if (enabled)
 	{
 		if(!IsShadowEnabled())
-			m_pShadowData = new DirectionalShadowData(glm::ivec2(1024, 1024)*16);
+			m_pShadowData = new DirectionalShadowData(glm::ivec2(1024, 1024)*8);
 	}
 	else
 	{
