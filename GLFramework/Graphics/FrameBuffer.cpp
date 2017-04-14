@@ -114,4 +114,5 @@ void FrameBuffer::Draw()
 	UploadDerivedVariables();
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+	PERFORMANCE->m_DrawCalls++;
 }

@@ -6,6 +6,8 @@
 #include <glm\glm.hpp>
 #include "AbstractComponent.hpp"
 
+class Frustum;
+
 class CameraComponent : public AbstractComponent
 {
 public:
@@ -33,6 +35,8 @@ public:
 	float GetFarPlane() { return m_FarPlane; }
 	float GetFOV() { return m_FOV; }
 
+	Frustum* GetFrustum() { return m_pFrustum; }
+
 protected:
 
 	virtual void Initialize();
@@ -45,6 +49,8 @@ private:
 		m_ViewProjection, m_ViewProjectionInverse;
 	float m_FarPlane, m_NearPlane, m_FOV, m_Size;
 	bool m_IsActive, m_PerspectiveProjection;
+
+	Frustum* m_pFrustum = nullptr;
 
 	friend class AbstractScene;
 };

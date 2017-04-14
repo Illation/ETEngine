@@ -13,6 +13,7 @@
 #include <iostream>
 #include "../GraphicsHelper/ShadowRenderer.hpp"
 #include "../Game/Materials/NullMaterial.hpp"
+#include "../Graphics/Frustum.h"
 
 ModelComponent::ModelComponent(std::string assetFile):
 	m_AssetFile(assetFile)
@@ -68,6 +69,21 @@ void ModelComponent::DrawForward()
 }
 void ModelComponent::DrawCall()
 {
+	//Frustum culling
+	switch (m_CullMode)
+	{
+	case CullMode::SPHERE:
+	{
+		auto filterSphere = m_pMeshFilter->GetBoundingSphere();
+		Sphere objSphere = Sphere(GetTransform()->GetPosition() + filterSphere->pos, filterSphere->radius);
+		if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
+			return;
+	}
+	case CullMode::DISABLED:
+		break;
+	default:
+		break;
+	}
 	//Get Vertex Object
 	auto vO = m_pMeshFilter->GetVertexObject(m_pMaterial);
 	glBindVertexArray(vO.array);
@@ -75,6 +91,7 @@ void ModelComponent::DrawCall()
 	// Draw 
 	glEnable(GL_DEPTH_TEST);//should be done externally
 	glDrawElementsInstanced(GL_TRIANGLES, m_pMeshFilter->m_IndexCount, GL_UNSIGNED_INT, 0, 1);
+	PERFORMANCE->m_DrawCalls++;
 }
 
 void ModelComponent::DrawShadow()
@@ -85,6 +102,7 @@ void ModelComponent::DrawShadow()
 	glBindVertexArray(vO.array);
 	nullMat->UploadVariables(m_pEntity->GetTransform()->GetWorld(), matWVP);
 	glDrawElementsInstanced(GL_TRIANGLES, m_pMeshFilter->m_IndexCount, GL_UNSIGNED_INT, 0, 1);
+	PERFORMANCE->m_DrawCalls++;
 }
 
 void ModelComponent::SetMaterial(Material* pMaterial)

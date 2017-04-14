@@ -70,28 +70,31 @@ void Frustum::Update()
 	m_Planes.push_back(Plane(nc, nd, fc));//Bottom
 }
 
-bool Frustum::ContainsPoint(const glm::vec3 &point) const
+VolumeCheck Frustum::ContainsPoint(const glm::vec3 &point) const
 {
 	for (auto plane : m_Planes)
 	{
-		if (glm::dot(plane.n, point - plane.d) < 0)return false;
+		if (glm::dot(plane.n, point - plane.d) < 0)return VolumeCheck::OUTSIDE;
 	}
-	return true;
+	return VolumeCheck::CONTAINS;
 }
-bool Frustum::ContainsSphere(const Sphere &sphere) const
+VolumeCheck Frustum::ContainsSphere(const Sphere &sphere) const
 {
+	VolumeCheck ret = VolumeCheck::CONTAINS;
 	for (auto plane : m_Planes)
 	{
-		if (glm::dot(plane.n, sphere.pos - plane.d) < -sphere.radius)return false;
+		float dist = glm::dot(plane.n, sphere.pos - plane.d);
+		if (dist < -sphere.radius)return VolumeCheck::OUTSIDE;
+		else if (dist < 0) ret = VolumeCheck::INTERSECT;
 	}
-	return true;
+	return ret;
 }
 //this method will treat triangles as intersecting even though they may be outside
 //but it is faster then performing a proper intersection test with every plane
 //and it does not reject triangles that are inside but with all corners outside
-VolumeTri Frustum::ContainsTriangle(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c)
+VolumeCheck Frustum::ContainsTriangle(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c)
 {
-	VolumeTri ret = VolumeTri::CONTAINS;
+	VolumeCheck ret = VolumeCheck::CONTAINS;
 	for (auto plane : m_Planes)
 	{
 		char rejects = 0;
@@ -99,16 +102,16 @@ VolumeTri Frustum::ContainsTriangle(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c)
 		if (glm::dot(plane.n, b - plane.d) < 0)rejects++;
 		if (glm::dot(plane.n, c - plane.d) < 0)rejects++;
 		// if all three are outside a plane the triangle is outside the frustrum
-		if (rejects >= 3)return VolumeTri::OUTSIDE;
+		if (rejects >= 3)return VolumeCheck::OUTSIDE;
 		// if at least one is outside the triangle intersects at least one plane
-		else if (rejects > 0)ret = VolumeTri::INTERSECT;
+		else if (rejects > 0)ret = VolumeCheck::INTERSECT;
 	}
 	return ret;
 }
 //same as above but with a volume generated above the triangle
-VolumeTri Frustum::ContainsTriVolume(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, float height)
+VolumeCheck Frustum::ContainsTriVolume(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, float height)
 {
-	VolumeTri ret = VolumeTri::CONTAINS;
+	VolumeCheck ret = VolumeCheck::CONTAINS;
 	for (auto plane : m_Planes)
 	{
 		char rejects = 0;
@@ -121,11 +124,11 @@ VolumeTri Frustum::ContainsTriVolume(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, f
 			if (glm::dot(plane.n, (a*height) - plane.d) < 0)rejects++;
 			if (glm::dot(plane.n, (b*height) - plane.d) < 0)rejects++;
 			if (glm::dot(plane.n, (c*height) - plane.d) < 0)rejects++;
-			if (rejects >= 6)return VolumeTri::OUTSIDE;
-			else ret = VolumeTri::INTERSECT;
+			if (rejects >= 6)return VolumeCheck::OUTSIDE;
+			else ret = VolumeCheck::INTERSECT;
 		}
 		// if at least one is outside the triangle intersects at least one plane
-		else if (rejects > 0)ret = VolumeTri::INTERSECT;
+		else if (rejects > 0)ret = VolumeCheck::INTERSECT;
 	}
 	return ret;
 }

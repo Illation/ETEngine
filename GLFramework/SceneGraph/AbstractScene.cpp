@@ -260,6 +260,9 @@ void AbstractScene::RootDraw()
 	TextRenderer::GetInstance()->Draw();
 
 	PostDraw();
+	
+	PERFORMANCE->m_PrevDrawCalls = PERFORMANCE->m_DrawCalls;
+	PERFORMANCE->m_DrawCalls = 0;
 }
 
 void AbstractScene::RootOnActivated()

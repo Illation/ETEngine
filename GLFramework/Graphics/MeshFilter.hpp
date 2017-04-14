@@ -8,6 +8,7 @@
 	#define GLM_LEFT_HANDED
 #endif
 #include <glm\glm.hpp>
+#include "../Helper/MathHelper.hpp"
 
 class Material;
 
@@ -54,6 +55,8 @@ public:
 
 	static std::map<VertexFlags, AttributeDescriptor> LayoutAttributes;
 	size_t GetIndexCount() { return m_IndexCount; }
+
+	Sphere* GetBoundingSphere() { return &m_BoundingSphere; }
 private:
 	friend class MeshFilterLoader;
 	friend class ModelComponent;
@@ -61,6 +64,8 @@ private:
 	int GetVertexObjectId(unsigned flags);
 	void BuildVertexBuffer(Material* pMaterial);
 	bool HasElement(unsigned flags){ return (m_SupportedFlags&flags) > 0 ? true : false; }
+
+	void CalculateBoundingVolumes();
 	std::string PrintFlags(unsigned flags);
 
 	size_t m_VertexCount = 0, m_IndexCount = 0;
@@ -78,6 +83,8 @@ private:
 
 	std::string m_Name;
 	glm::vec4 m_DefaultColor;
+
+	Sphere m_BoundingSphere;
 
 private:
 	// -------------------------

@@ -206,6 +206,7 @@ xcopy "$(SolutionDir)\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
     <ClCompile Include="Helper\BinaryReader.cpp" />
     <ClCompile Include="Helper\Logger.cpp" />
     <ClCompile Include="Helper\MathHelper.cpp" />
+    <ClCompile Include="Helper\PerformanceInfo.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Prefabs\FixedCamera.cpp" />
     <ClCompile Include="Prefabs\FreeCamera.cpp" />
@@ -268,6 +269,7 @@ xcopy "$(SolutionDir)\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
     <ClInclude Include="Helper\BinaryReader.h" />
     <ClInclude Include="Helper\Logger.hpp" />
     <ClInclude Include="Helper\MathHelper.hpp" />
+    <ClInclude Include="Helper\PerformanceInfo.hpp" />
     <ClInclude Include="Helper\Singleton.h" />
     <ClInclude Include="Prefabs\FixedCamera.hpp" />
     <ClInclude Include="Prefabs\FreeCamera.hpp" />

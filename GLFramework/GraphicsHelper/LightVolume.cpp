@@ -11,6 +11,7 @@
 #include "../Framebuffers/Gbuffer.hpp"
 #include "../Graphics/ShaderData.hpp"
 #include "../Graphics/TextureData.hpp"
+#include "../Graphics/Frustum.h"
 #include "ShadowRenderer.hpp"
 
 PointLightVolume::PointLightVolume()
@@ -44,6 +45,12 @@ void PointLightVolume::Draw(glm::vec3 pos, float radius, glm::vec3 col)
 	{
 		Initialize();
 	}
+
+	//Frustum culling
+	Sphere objSphere = Sphere(pos, radius);
+	if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
+		return;
+
 	glm::mat4 World = glm::translate(pos)*glm::scale(glm::vec3(radius));
 
 	//Draw the null material in the stencil buffer
@@ -58,6 +65,7 @@ void PointLightVolume::Draw(glm::vec3 pos, float radius, glm::vec3 col)
 	//glBindVertexArray(vO.array);
 	//m_pNullMaterial->UploadVariables(World);
 	//glDrawElementsInstanced(GL_TRIANGLES, m_pMeshFilter->GetIndexCount(), GL_UNSIGNED_INT, 0, 1);
+	//PERFORMANCE->m_DrawCalls++;
 
 	//Draw the Light material on the gbuffer
 	//glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
@@ -74,6 +82,7 @@ void PointLightVolume::Draw(glm::vec3 pos, float radius, glm::vec3 col)
 	m_pMaterial->SetLight(pos, col, radius);
 	m_pMaterial->UploadVariables(World);
 	glDrawElementsInstanced(GL_TRIANGLES, m_pMeshFilter->GetIndexCount(), GL_UNSIGNED_INT, 0, 1);
+	PERFORMANCE->m_DrawCalls++;
 
 	//glCullFace(GL_BACK);
 	//glDisable(GL_BLEND);
@@ -137,6 +146,7 @@ void DirectLightVolume::Draw(glm::vec3 dir, glm::vec3 col)
 	glUniform3f(m_uCamPos, cPos.x, cPos.y, cPos.z);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	PERFORMANCE->m_DrawCalls++;
 	glBindVertexArray(0);
 }
 void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalShadowData *pShadow)
@@ -172,5 +182,6 @@ void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalSh
 
 	//draw
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	PERFORMANCE->m_DrawCalls++;
 	glBindVertexArray(0);
 }

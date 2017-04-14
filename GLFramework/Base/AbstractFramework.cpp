@@ -9,6 +9,7 @@
 #include "../GraphicsHelper/LightVolume.hpp"
 #include "../GraphicsHelper/ShadowRenderer.hpp"
 #include "../GraphicsHelper/TextRenderer.h"
+#include "../Helper/PerformanceInfo.hpp"
 
 AbstractFramework::AbstractFramework()
 {
@@ -24,6 +25,7 @@ AbstractFramework::~AbstractFramework()
 	DirectLightVolume* pDirVol = DirectLightVolume::GetInstance();
 	ShadowRenderer* pShadowRenderer = ShadowRenderer::GetInstance();
 	TextRenderer* pTextRenderer = TextRenderer::GetInstance();
+	PerformanceInfo* pInfo = PerformanceInfo::GetInstance();
 
 	ContentManager::Release();
 
@@ -38,6 +40,7 @@ AbstractFramework::~AbstractFramework()
 	pDirVol->DestroyInstance();
 	pShadowRenderer->DestroyInstance();
 	pTextRenderer->DestroyInstance();
+	pInfo->DestroyInstance();
 }
 
 void AbstractFramework::Run()
@@ -78,6 +81,7 @@ void AbstractFramework::InitializeSDL()
 void AbstractFramework::InitializeWindow()
 {
 	Settings* pSet = Settings::GetInstance();//Initialize Game Settings
+	PerformanceInfo* pPerformance = PerformanceInfo::GetInstance();//Initialize Game Settings
 	SceneManager* pScMan = SceneManager::GetInstance();//Initialize SceneManager
 	InputManager* pInMan = InputManager::GetInstance();//init input manager
 	pInMan->Init();

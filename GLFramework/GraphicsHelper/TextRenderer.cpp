@@ -125,6 +125,7 @@ void TextRenderer::Draw()
 
 			//Draw the object
 			glDrawArrays(GL_POINTS, pFont->m_BufferStart, pFont->m_BufferSize);
+			PERFORMANCE->m_DrawCalls++;
 
 			pFont->m_IsAddedToRenderer = false;
 		}

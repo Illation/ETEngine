@@ -11,6 +11,14 @@ public:
 
 	void SetMaterial(Material* pMat);
 
+	enum class CullMode
+	{
+		SPHERE,
+		DISABLED
+	};
+	void SetCullMode(CullMode mode) { m_CullMode = mode; }
+
+
 protected:
 
 	virtual void Initialize();
@@ -28,6 +36,7 @@ private:
 	MeshFilter* m_pMeshFilter = nullptr;
 	Material* m_pMaterial = nullptr;
 	bool m_MaterialSet = false;
+	CullMode m_CullMode = CullMode::SPHERE;
 
 private:
 	// -------------------------

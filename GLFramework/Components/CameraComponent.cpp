@@ -4,6 +4,8 @@
 #include "../Base/Context.hpp"
 #include "TransformComponent.hpp"
 
+#include "../Graphics/Frustum.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 
 #define CONTEXT Context::GetInstance()
@@ -21,16 +23,16 @@ m_IsActive(true)
 	m_ViewInverse = glm::mat4();
 	m_ViewProjection = glm::mat4();
 	m_ViewProjectionInverse = glm::mat4();
+	m_pFrustum = new Frustum();
 }
 
 CameraComponent::~CameraComponent()
 {
-	//Nothing to do
+	delete m_pFrustum;
 }
 
 void CameraComponent::Initialize()
 {
-	//Nothing to do
 }
 
 void CameraComponent::Update()
@@ -55,6 +57,11 @@ void CameraComponent::Update()
 	m_ViewInverse = glm::inverse(m_View);
 	m_ViewProjection = m_Projection*m_View;
 	m_ViewProjectionInverse = glm::inverse(m_View);
+
+	//Update general frustum
+	m_pFrustum->SetCullTransform(glm::mat4());//Frustum will be in world space and objects need to transform themselves
+	m_pFrustum->SetToCamera(this);
+	m_pFrustum->Update();
 }
 
 void CameraComponent::Draw()
