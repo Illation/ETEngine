@@ -15,8 +15,10 @@ Structure inspired by the OverlordEngine from [Digital Arts and Entertainment](h
 * Image Based Lighting
 * Deferred and Forward rendering
 * Lights rendered as Light Volumes
-* Shadow Mapping
+* Cascaded Shadow Maps
 * Bloom with texture downsampling
+* Frustum Culling
+* Text Rendering
 * Stereoscopic Normal map encoding and decoding for optimal use of G-Buffer
 * Buffer Display mode
 * Scenegraph Entity Hirachy 
@@ -39,7 +41,7 @@ Structure inspired by the OverlordEngine from [Digital Arts and Entertainment](h
 ## Screenshots:
 ### Combined buffer
 ![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/CombinedShadowBloom.JPG "")
-![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/PBR3.JPG "")
+![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/CSM2.JPG "")
 
 ### IBL
 ![alt text](https://github.com/Illation/GLFramework/blob/master/Screenshots/IblCombined.jpg "")
