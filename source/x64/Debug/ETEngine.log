@@ -1,0 +1,70 @@
+﻿  stdafx.cpp
+  SceneManager.cpp
+c:\users\robert.lindner\desktop\personalprojects\etengine\source\scenegraph\scenemanager.cpp(77): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
+  Entity.cpp
+  AbstractScene.cpp
+  Skybox.cpp
+  OrbitCamera.cpp
+  FreeCamera.cpp
+  FixedCamera.cpp
+  main.cpp
+  PerformanceInfo.cpp
+  MathHelper.cpp
+  Logger.cpp
+c:\users\robert.lindner\desktop\personalprojects\etengine\source\helper\logger.cpp(127): error C4235: nonstandard extension used: '__asm' keyword not supported on this architecture
+c:\users\robert.lindner\desktop\personalprojects\etengine\source\helper\logger.cpp(127): warning C4091: '': ignored on left of 'int' when no variable is declared
+c:\users\robert.lindner\desktop\personalprojects\etengine\source\helper\logger.cpp(127): error C2143: syntax error: missing ';' before 'constant'
+c:\users\robert.lindner\desktop\personalprojects\etengine\source\helper\logger.cpp(127): error C2143: syntax error: missing ';' before '}'
+  BinaryReader.cpp
+  TextureData.cpp
+  SpriteFont.cpp
+  ShaderData.cpp
+  MeshFilter.cpp
+  Material.cpp
+  Frustum.cpp
+  FrameBuffer.cpp
+c:\users\robert.lindner\desktop\personalprojects\etengine\source\graphics\framebuffer.cpp(76): warning C4267: 'argument': conversion from 'size_t' to 'GLenum', possible loss of data
+c:\users\robert.lindner\desktop\personalprojects\etengine\source\graphics\framebuffer.cpp(78): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+c:\users\robert.lindner\desktop\personalprojects\etengine\source\graphics\framebuffer.cpp(110): warning C4267: 'argument': conversion from 'size_t' to 'GLenum', possible loss of data
+  Generating Code...
+  Compiling...
+  TextRenderer.cpp
+c:\users\robert.lindner\desktop\personalprojects\etengine\source\graphicshelper\textrenderer.cpp(1): fatal error C1083: Cannot open include file: 'stdafx.hpp': No such file or directory
+  ShadowRenderer.cpp
+c:\users\robert.lindner\desktop\personalprojects\etengine\source\graphicshelper\shadowrenderer.cpp(1): fatal error C1083: Cannot open include file: 'stdafx.hpp': No such file or directory
+  LightVolume.cpp
+c:\users\robert.lindner\desktop\personalprojects\etengine\source\graphicshelper\lightvolume.cpp(1): fatal error C1083: Cannot open include file: 'stdafx.hpp': No such file or directory
+  TestScene.cpp
+  SkyboxTestScene.cpp
+  ShadingTestScene.cpp
+  TexPBRMaterial.cpp
+  SkyboxMaterial.cpp
+  ParamPBRMaterial.cpp
+  NullMaterial.cpp
+  LightMaterial.cpp
+c:\users\robert.lindner\desktop\personalprojects\etengine\source\game\materials\lightmaterial.cpp(39): warning C4267: 'argument': conversion from 'size_t' to 'GLenum', possible loss of data
+  GbufferMaterial.cpp
+  EmissiveMaterial.cpp
+  MainFramework.cpp
+  Gbuffer.cpp
+  PostProcessingRenderer.cpp
+  TextureLoader.cpp
+  ShaderLoader.cpp
+  MeshFilterLoader.cpp
+  HdrLoader.cpp
+  Generating Code...
+  Compiling...
+  FontLoader.cpp
+  CubeMapLoader.cpp
+  ContentManager.cpp
+  TransformComponent.cpp
+  ModelComponent.cpp
+c:\users\robert.lindner\desktop\personalprojects\etengine\source\components\modelcomponent.cpp(93): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+c:\users\robert.lindner\desktop\personalprojects\etengine\source\components\modelcomponent.cpp(104): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+  LightComponent.cpp
+  CameraComponent.cpp
+  AbstractComponent.cpp
+  Time.cpp
+  InputManager.cpp
+  AbstractFramework.cpp
+  Generating Code...

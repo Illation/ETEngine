@@ -94,7 +94,7 @@ DirectionalShadowData::DirectionalShadowData(glm::ivec2 Resolution)
 	//Calculate cascade distances
 	m_Cascades.clear();
 	float sizeL = 1;
-	float distMult = GRAPHICS.CSMDrawDistance / pow(2, GRAPHICS.NumCascades - 1);
+	float distMult = GRAPHICS.CSMDrawDistance / powf(2.f, (float)GRAPHICS.NumCascades - 1);
 	for (int cascade = 0; cascade < GRAPHICS.NumCascades; cascade++)
 	{
 		auto data = CascadeData();

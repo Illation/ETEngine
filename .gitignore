@@ -1,6 +1,6 @@
 *.sdf
 /DemoVideo
-GLFramework.VC.*
-GLFramework.VC.VC.opendb
-GLFramework.VC.db
+ETEngine.VC.*
+ETEngine.VC.VC.opendb
+ETEngine.VC.db
 /Build
