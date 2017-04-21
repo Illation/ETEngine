@@ -70,7 +70,7 @@ void SceneManager::NextScene()
 
 void SceneManager::PreviousScene()
 {
-	for (unsigned i = 0; i < m_pSceneVec.size(); ++i)
+	for (size_t i = 0; i < m_pSceneVec.size(); ++i)
 	{
 		if (m_pSceneVec[i] == m_ActiveScene)
 		{

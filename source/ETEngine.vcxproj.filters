@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{00bb9047-658d-48ed-b38e-f2f59d5dc660}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Base">
+      <UniqueIdentifier>{2c31fc0e-b55c-4d1c-acc7-70c595778840}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Components">
+      <UniqueIdentifier>{6e29b1d2-ac82-4d9d-82db-227c89d2f91c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Content">
+      <UniqueIdentifier>{5c3316ba-0d3c-455b-87c6-31492df68995}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Helper">
+      <UniqueIdentifier>{e2d6b3a0-7e91-40f9-ad1d-cce14f5c21d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Graphics">
+      <UniqueIdentifier>{03108a7f-d243-4901-9ba5-af37be9c76c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Prefabs">
+      <UniqueIdentifier>{6def276e-a4ec-4947-8236-c615c0900710}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\SceneGraph">
+      <UniqueIdentifier>{d59f5d56-84c9-40e9-9ac1-788eae2537bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project">
+      <UniqueIdentifier>{13f010e3-5d2e-4f03-8126-cdfb9aae31db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project\Objects">
+      <UniqueIdentifier>{add7ca31-550a-4183-bf64-bc9ae8020b8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project\Materials">
+      <UniqueIdentifier>{ff67220f-2f72-414e-8fe0-47eb48c84718}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project\Scenes">
+      <UniqueIdentifier>{5de02364-fd3d-40ba-9704-66d17ed38b5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="StaticDependancies">
+      <UniqueIdentifier>{f5976f54-628e-4cc4-9bbd-9c4b02a4d539}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="StaticDependancies\glad">
+      <UniqueIdentifier>{0e9c52e9-f27a-42cb-8275-92b7f7d353a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\FrameBuffers">
+      <UniqueIdentifier>{6a8abcf2-1080-4bb9-8bea-5262900e4dc4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="StaticDependancies\glad\glad.c">
+      <Filter>StaticDependancies\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Content\ShaderLoader.cpp">
+      <Filter>Framework\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\TextureLoader.cpp">
+      <Filter>Framework\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\FrameBuffer.cpp">
+      <Filter>Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Time.cpp">
+      <Filter>Framework\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Material.cpp">
+      <Filter>Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\AbstractFramework.cpp">
+      <Filter>Framework\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGraph\Entity.cpp">
+      <Filter>Framework\SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\MainFramework.cpp">
+      <Filter>Project</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGraph\AbstractScene.cpp">
+      <Filter>Framework\SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGraph\SceneManager.cpp">
+      <Filter>Framework\SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Scenes\TestScene.cpp">
+      <Filter>Project\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\InputManager.cpp">
+      <Filter>Framework\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\AbstractComponent.cpp">
+      <Filter>Framework\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\TransformComponent.cpp">
+      <Filter>Framework\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\CameraComponent.cpp">
+      <Filter>Framework\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Prefabs\FixedCamera.cpp">
+      <Filter>Framework\Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="Prefabs\FreeCamera.cpp">
+      <Filter>Framework\Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\ContentManager.cpp">
+      <Filter>Framework\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\TextureData.cpp">
+      <Filter>Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\ShaderData.cpp">
+      <Filter>Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\MeshFilter.cpp">
+      <Filter>Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\MeshFilterLoader.cpp">
+      <Filter>Framework\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\ModelComponent.cpp">
+      <Filter>Framework\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Helper\Logger.cpp">
+      <Filter>Framework\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Framebuffers\Gbuffer.cpp">
+      <Filter>Framework\FrameBuffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Materials\GbufferMaterial.cpp">
+      <Filter>Project\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\LightComponent.cpp">
+      <Filter>Framework\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Materials\EmissiveMaterial.cpp">
+      <Filter>Project\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\CubeMapLoader.cpp">
+      <Filter>Framework\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Materials\SkyboxMaterial.cpp">
+      <Filter>Project\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="Prefabs\Skybox.cpp">
+      <Filter>Framework\Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Scenes\SkyboxTestScene.cpp">
+      <Filter>Project\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Materials\TexPBRMaterial.cpp">
+      <Filter>Project\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="Prefabs\OrbitCamera.cpp" />
+    <ClCompile Include="Helper\MathHelper.cpp" />
+    <ClCompile Include="Content\HdrLoader.cpp" />
+    <ClCompile Include="GraphicsHelper\LightVolume.cpp" />
+    <ClCompile Include="Game\Materials\LightMaterial.cpp" />
+    <ClCompile Include="Game\Materials\NullMaterial.cpp" />
+    <ClCompile Include="Framebuffers\PostProcessingRenderer.cpp" />
+    <ClCompile Include="GraphicsHelper\ShadowRenderer.cpp" />
+    <ClCompile Include="Game\Scenes\ShadingTestScene.cpp" />
+    <ClCompile Include="Game\Materials\ParamPBRMaterial.cpp" />
+    <ClCompile Include="Graphics\SpriteFont.cpp" />
+    <ClCompile Include="Helper\BinaryReader.cpp" />
+    <ClCompile Include="GraphicsHelper\TextRenderer.cpp" />
+    <ClCompile Include="Content\FontLoader.cpp" />
+    <ClCompile Include="Graphics\Frustum.cpp" />
+    <ClCompile Include="Helper\PerformanceInfo.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="StaticDependancies\glad\glad.h">
+      <Filter>StaticDependancies\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\ShaderLoader.hpp">
+      <Filter>Framework\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\TextureLoader.hpp">
+      <Filter>Framework\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\FrameBuffer.hpp">
+      <Filter>Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Settings.hpp">
+      <Filter>Framework\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\Singleton.h">
+      <Filter>Framework\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Context.hpp">
+      <Filter>Framework\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Time.hpp">
+      <Filter>Framework\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Material.hpp">
+      <Filter>Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\AbstractFramework.hpp">
+      <Filter>Framework\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraph\Entity.hpp">
+      <Filter>Framework\SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\MainFramework.hpp">
+      <Filter>Project</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraph\AbstractScene.hpp">
+      <Filter>Framework\SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraph\SceneManager.hpp">
+      <Filter>Framework\SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Scenes\TestScene.hpp">
+      <Filter>Project\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\InputManager.hpp">
+      <Filter>Framework\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\AbstractComponent.hpp">
+      <Filter>Framework\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\TransformComponent.hpp">
+      <Filter>Framework\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\CameraComponent.hpp">
+      <Filter>Framework\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs\FixedCamera.hpp">
+      <Filter>Framework\Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs\FreeCamera.hpp">
+      <Filter>Framework\Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\ContentLoader.hpp">
+      <Filter>Framework\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\ContentManager.hpp">
+      <Filter>Framework\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\TextureData.hpp">
+      <Filter>Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\ShaderData.hpp">
+      <Filter>Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\MeshFilter.hpp">
+      <Filter>Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\MeshFilterLoader.hpp">
+      <Filter>Framework\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\ModelComponent.hpp">
+      <Filter>Framework\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.hpp" />
+    <ClInclude Include="Helper\Logger.hpp">
+      <Filter>Framework\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Framebuffers\Gbuffer.hpp">
+      <Filter>Framework\FrameBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Materials\GbufferMaterial.hpp">
+      <Filter>Project\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\LightComponent.hpp">
+      <Filter>Framework\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Materials\EmissiveMaterial.hpp">
+      <Filter>Project\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\CubeMapLoader.hpp">
+      <Filter>Framework\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Materials\SkyboxMaterial.hpp">
+      <Filter>Project\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs\Skybox.hpp">
+      <Filter>Framework\Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Scenes\SkyboxTestScene.hpp">
+      <Filter>Project\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Materials\TexPBRMaterial.hpp">
+      <Filter>Project\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\MathHelper.hpp">
+      <Filter>Framework\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs\OrbitCamera.hpp" />
+    <ClInclude Include="Content\HdrLoader.hpp" />
+    <ClInclude Include="GraphicsHelper\LightVolume.hpp" />
+    <ClInclude Include="Game\Materials\LightMaterial.hpp" />
+    <ClInclude Include="Game\Materials\NullMaterial.hpp" />
+    <ClInclude Include="Framebuffers\PostProcessingRenderer.hpp" />
+    <ClInclude Include="GraphicsHelper\ShadowRenderer.hpp" />
+    <ClInclude Include="Game\Scenes\ShadingTestScene.hpp" />
+    <ClInclude Include="Game\Materials\ParamPBRMaterial.hpp" />
+    <ClInclude Include="Graphics\SpriteFont.h" />
+    <ClInclude Include="Helper\BinaryReader.h" />
+    <ClInclude Include="GraphicsHelper\TextRenderer.h" />
+    <ClInclude Include="Content\FontLoader.hpp" />
+    <ClInclude Include="Graphics\Frustum.h" />
+    <ClInclude Include="Helper\PerformanceInfo.hpp" />
+  </ItemGroup>
+</Project>
