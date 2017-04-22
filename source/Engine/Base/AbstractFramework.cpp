@@ -1,9 +1,7 @@
 #include "stdafx.hpp"
 #include "AbstractFramework.hpp"
 
-#include <IL/il.h>
-#include <IL/ilu.h>
-#include <IL/ilut.h>
+#include <FreeImage.h>
 
 #include "../SceneGraph/SceneManager.hpp"
 #include "../GraphicsHelper/LightVolume.hpp"
@@ -11,6 +9,15 @@
 #include "../GraphicsHelper/TextRenderer.h"
 #include "../Helper/PerformanceInfo.hpp"
 
+
+void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
+	printf("\n*** ");
+	if (fif != FIF_UNKNOWN) {
+		printf("%s Format\n", FreeImage_GetFormatFromFIF(fif));
+	}
+	printf(message);
+	printf(" ***\n");
+}
 AbstractFramework::AbstractFramework()
 {
 }
@@ -28,6 +35,8 @@ AbstractFramework::~AbstractFramework()
 	PerformanceInfo* pInfo = PerformanceInfo::GetInstance();
 
 	ContentManager::Release();
+
+	FreeImage_DeInitialise();
 
 	SDL_GL_DeleteContext(m_GlContext);
 	SDL_Quit();
@@ -47,7 +56,7 @@ void AbstractFramework::Run()
 {
 	InitializeSDL();
 	InitializeWindow();
-	InitializeDevIL();
+	InitializeUtilities();
 	BindOpenGL();
 	InitializeDebug();
 	InitializeGame();
@@ -105,11 +114,12 @@ void AbstractFramework::InitializeWindow()
 	SDL_GL_SetSwapInterval(1);
 }
 
-void AbstractFramework::InitializeDevIL()
+void AbstractFramework::InitializeUtilities()
 {
-	//Init DevIL
-	ilInit();
-	iluInit();
+	FreeImage_Initialise();
+	#ifdef _DEBUG
+		FreeImage_SetOutputMessage(FreeImageErrorHandler);
+	#endif
 }
 
 void AbstractFramework::BindOpenGL()
@@ -125,13 +135,7 @@ void AbstractFramework::BindOpenGL()
 void AbstractFramework::InitializeDebug()
 {
 	Logger::Initialize();
-//	// Enable the debug callback
-//#ifdef _DEBUG
-//	glEnable(GL_DEBUG_OUTPUT);
-//	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-//	glDebugMessageCallback(openglCallbackFunction, nullptr);
-//	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
-//#endif
+	// Enable the debug callback -- is now done by logger
 }
 
 void AbstractFramework::InitializeGame()

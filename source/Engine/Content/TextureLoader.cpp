@@ -1,9 +1,7 @@
 #include "stdafx.hpp"
 #include "TextureLoader.hpp"
 
-#include <IL/il.h>
-#include <IL/ilu.h>
-#include <IL/ilut.h>
+#include <FreeImage.h>
 
 TextureLoader::TextureLoader()
 {
@@ -18,26 +16,39 @@ TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 	using namespace std;
 	cout << "Loading Texture: " << assetFile << " . . . ";
 
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
+	fif = FreeImage_GetFileType(assetFile.c_str(), 0);
+	if (fif == FIF_UNKNOWN)
+		fif = FreeImage_GetFIFFromFilename(assetFile.c_str());
+	if (fif == FIF_UNKNOWN)
+		return nullptr;
 
-	ILuint imgName;
-	ilGenImages(1, &imgName);
-	ilBindImage(imgName);
-	if (ilLoadImage(assetFile.c_str()))
+	FIBITMAP *dib(0);
+	if (FreeImage_FIFSupportsReading(fif))
+		dib = FreeImage_Load(fif, assetFile.c_str());
+	if (dib)
 	{
-		ilConvertImage(IL_RGB, IL_FLOAT);
+		FreeImage_FlipVertical(dib);
+		FIBITMAP *pImage = FreeImage_ConvertToType(dib, FIT_RGBF);
 
-		int width = ilGetInteger(IL_IMAGE_WIDTH);
-		int height = ilGetInteger(IL_IMAGE_HEIGHT);
-		ILubyte *pixelData = ilGetData();
+		unsigned int width = FreeImage_GetWidth(pImage);
+		unsigned int height = FreeImage_GetHeight(pImage);
+		BYTE* bits = FreeImage_GetBits(pImage);
+		if ((bits == 0) || (width == 0) || (height == 0))
+		{
+			cout << "  . . . FAILED! " << endl;
+			return nullptr;
+		}
 
-		glTexImage2D(GL_TEXTURE_2D, 0, m_UseSrgb?GL_SRGB:GL_RGB, width, height, 0, GL_RGB, GL_FLOAT, pixelData);
+		GLuint texture;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, m_UseSrgb?GL_SRGB:GL_RGB, width, height, 0, GL_RGB, GL_FLOAT, (void*)bits);
 
-		ilBindImage(0);
-		ilDeleteImage(imgName);
+		FreeImage_Unload(dib);
+		FreeImage_Unload(pImage);
 
+		// #todo this should probably happen somewhere else
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -47,15 +58,8 @@ TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 		cout << "  . . . SUCCESS!" << endl;
 		return new TextureData(texture, width, height);
 	}
-	else
-	{
-		ILenum error = ilGetError();
-		cout << "  . . . FAILED! DevIL error: " << endl << error << " - " << iluErrorString(error) << endl;
-		ilBindImage(0);
-		ilDeleteImage(imgName);
-		return nullptr;
-	}
-
+	cout << "  . . . FAILED! " << endl;
+	return nullptr;
 }
 
 void TextureLoader::Destroy(TextureData* objToDestroy)

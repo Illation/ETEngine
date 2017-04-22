@@ -5,6 +5,6 @@ Space sim focused engine created from a merge of:
  * https://github.com/Illation/PlanetRenderer
 
 ## Acknowledgments
-Currently used libraries: SDL2, GLM, DevIL, stb_image, GLAD and Assimp
+Currently used libraries: SDL2, GLM, FreeImage, GLAD and Assimp
 
 for library licenses see Library Licenses.md

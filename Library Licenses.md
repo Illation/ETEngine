@@ -19,8 +19,8 @@ freely, subject to the following restrictions:
 
 # DevIL
 
-DevIL is licensed under the LGPL License
-full license is available here: http://openil.sourceforge.net/lgpl.txt
+FreeImage is licensed under the GNU General Public License, version 2.0 (GPLv2) or version 3.0 (GPLv3)
+
 
 # GLAD
 
