@@ -1,9 +1,7 @@
 #include "stdafx.hpp"
 #include "CubeMapLoader.hpp"
 
-#include <IL/il.h>
-#include <IL/ilu.h>
-#include <IL/ilut.h>
+#include <FreeImage.h>
 
 CubeMapLoader::CubeMapLoader()
 {
@@ -32,35 +30,44 @@ CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
 
-	int width, height;
+	unsigned int width, height;
 	for (GLuint i = 0; i < textureFaces.size(); i++)
 	{
-		ILuint imgName;
-		ilGenImages(1, &imgName);
-		ilBindImage(imgName);
-		if (ilLoadImage(textureFaces[i].c_str()))
-		{
-			ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
+		FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
+		fif = FreeImage_GetFileType(assetFile.c_str(), 0);
+		if (fif == FIF_UNKNOWN)
+			fif = FreeImage_GetFIFFromFilename(assetFile.c_str());
+		if (fif == FIF_UNKNOWN)
+			return nullptr;
 
-			width = ilGetInteger(IL_IMAGE_WIDTH);
-			height = ilGetInteger(IL_IMAGE_HEIGHT);
-			ILubyte *pixelData = ilGetData();
+		FIBITMAP *dib(0);
+		if (FreeImage_FIFSupportsReading(fif))
+			dib = FreeImage_Load(fif, assetFile.c_str());
+		if (dib)
+		{
+			FreeImage_FlipVertical(dib);
+			FIBITMAP *pImage = FreeImage_ConvertTo24Bits(dib);
+
+			width = FreeImage_GetWidth(pImage);
+			height = FreeImage_GetHeight(pImage);
+			BYTE* bits = FreeImage_GetBits(pImage);
+			if ((bits == 0) || (width == 0) || (height == 0))
+			{
+				cout << "  . . . FAILED! " << endl;
+				return nullptr;
+			}
 
 			glTexImage2D(
 				GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
 				0, m_UseSrgb ? GL_SRGB : GL_RGB, width, height,
-				0, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+				0, GL_RGB, GL_UNSIGNED_BYTE, bits);
 
-			ilBindImage(0);
-			ilDeleteImage(imgName);
-
+			FreeImage_Unload(dib);
+			FreeImage_Unload(pImage);
 		}
 		else
 		{
-			ILenum error = ilGetError();
-			cout << "  . . . FAILED! DevIL error: " << endl << error << " - " << iluErrorString(error) << endl;
-			ilBindImage(0);
-			ilDeleteImage(imgName);
+			cout << "  . . . FAILED! " << endl;
 			return nullptr;
 		}
 	}

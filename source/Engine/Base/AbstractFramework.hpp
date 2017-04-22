@@ -12,19 +12,6 @@ static void sdl_die(const char * message)
 	fprintf(stderr, "%s: %s\n", message, SDL_GetError());
 	exit(2);
 }
-static void APIENTRY openglCallbackFunction(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
-{
-	(void)source; (void)type; (void)id;
-	(void)severity; (void)length; (void)userParam;
-	std::cout << std::endl;
-	fprintf(stderr, "%s\n", message);
-	if (severity == GL_DEBUG_SEVERITY_HIGH)
-	{
-		fprintf(stderr, "Aborting...\n");
-		abort();
-	}
-	std::cout << std::endl;
-}
 
 class AbstractFramework
 {
@@ -42,7 +29,7 @@ protected:
 private:
 	void InitializeSDL();
 	void InitializeWindow();
-	void InitializeDevIL();
+	void InitializeUtilities();
 	void BindOpenGL();
 	void InitializeDebug();
 	void InitializeGame();

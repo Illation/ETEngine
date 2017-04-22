@@ -1,8 +1,8 @@
 #include "stdafx.hpp"
 #include "HdrLoader.hpp"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include <FreeImage.h>
+
 #include "../Graphics/ShaderData.hpp"
 
 HdrLoader::HdrLoader()
@@ -17,6 +17,7 @@ HdrLoader::~HdrLoader()
 	glDeleteVertexArrays(1, &m_QuadVAO);
 }
 
+// #todo move to helpers
 void HdrLoader::RenderCube()
 {
 	// Initialize (if necessary)
@@ -122,26 +123,47 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	//load equirectangular texture
 	//****************************
-	stbi_set_flip_vertically_on_load(true);
-	int width, height, nrComponents;
-	float *data = stbi_loadf(assetFile.c_str(), &width, &height, &nrComponents, 0);
 	GLuint hdrTexture;
-	if (data)
+	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
+	fif = FreeImage_GetFileType(assetFile.c_str(), 0);
+	if (fif == FIF_UNKNOWN)
+		fif = FreeImage_GetFIFFromFilename(assetFile.c_str());
+	if (fif == FIF_UNKNOWN)
+		return nullptr;
+
+	FIBITMAP *dib(0);
+	if (FreeImage_FIFSupportsReading(fif))
+		dib = FreeImage_Load(fif, assetFile.c_str());
+	if (dib)
 	{
+		//not flipping because free image already flips automatically --maybe skybox is wrong way around and also flipped in shaders?
+		FIBITMAP *pImage = FreeImage_ConvertToType(dib, FIT_RGBF);
+
+		unsigned int width = FreeImage_GetWidth(pImage);
+		unsigned int height = FreeImage_GetHeight(pImage);
+		BYTE* data = FreeImage_GetBits(pImage);
+		if ((data == 0) || (width == 0) || (height == 0))
+		{
+			cout << "  . . . FAILED! " << endl;
+			return nullptr;
+		}
+
 		glGenTextures(1, &hdrTexture);
 		glBindTexture(GL_TEXTURE_2D, hdrTexture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data);//might need to use srgb for 3rd param
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data);
+
+		FreeImage_Unload(dib);
+		FreeImage_Unload(pImage);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
 	}
 	else
 	{
 		std::cout << "Failed to load HDR image." << std::endl;
+		return nullptr;
 	}
 
 	//initialize rendering to cubemap

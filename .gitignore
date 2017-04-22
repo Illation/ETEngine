@@ -3,4 +3,8 @@
 ETEngine.VC.*
 ETEngine.VC.VC.opendb
 ETEngine.VC.db
-/Build
+/build
+/bin
+*.ipch
+*.db
+source/.vs
