@@ -5,14 +5,14 @@
 	
 	out vec3 TexCoords;
 	
-	uniform mat4 model;
-	uniform mat4 worldViewProj;
+	uniform mat4 proj;
+	uniform mat4 view;
 	
 	void main()
 	{
 		TexCoords = position;
 		
-		gl_Position = (worldViewProj*(model*vec4(position, 1.0))).xyww;
+		gl_Position = (proj*(view*vec4(position, 1.0))).xyww;
 	}  
 </VERTEX>
 <FRAGMENT>

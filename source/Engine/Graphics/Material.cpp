@@ -24,8 +24,11 @@ void Material::Initialize()
 		LoadTextures();
 
 		//Get Access to uniforms
-		m_UniMatModel = glGetUniformLocation(m_Shader->GetProgram(), "model");
-		m_UniMatWVP = glGetUniformLocation(m_Shader->GetProgram(), "worldViewProj");
+		if(m_StandardTransform)
+		{
+			m_UniMatModel = glGetUniformLocation(m_Shader->GetProgram(), "model");
+			m_UniMatWVP = glGetUniformLocation(m_Shader->GetProgram(), "worldViewProj");
+		}
 		AccessShaderAttributes();
 
 		m_IsInitialized = true;
@@ -36,8 +39,11 @@ void Material::UploadVariables(glm::mat4 matModel)
 {
 	glUseProgram(m_Shader->GetProgram());
 	//Upload matrices
-	glUniformMatrix4fv(m_UniMatModel, 1, GL_FALSE, glm::value_ptr(matModel));
-	glUniformMatrix4fv(m_UniMatWVP, 1, GL_FALSE, glm::value_ptr(CAMERA->GetViewProj()));
+	if (m_StandardTransform)
+	{
+		glUniformMatrix4fv(m_UniMatModel, 1, GL_FALSE, glm::value_ptr(matModel));
+		glUniformMatrix4fv(m_UniMatWVP, 1, GL_FALSE, glm::value_ptr(CAMERA->GetViewProj()));
+	}
 
 	UploadDerivedVariables();
 }
@@ -45,8 +51,11 @@ void Material::UploadVariables(glm::mat4 matModel, const glm::mat4 &matWVP)
 {
 	glUseProgram(m_Shader->GetProgram());
 	//Upload matrices
-	glUniformMatrix4fv(m_UniMatModel, 1, GL_FALSE, glm::value_ptr(matModel));
-	glUniformMatrix4fv(m_UniMatWVP, 1, GL_FALSE, glm::value_ptr(matWVP));
+	if (m_StandardTransform)
+	{
+		glUniformMatrix4fv(m_UniMatModel, 1, GL_FALSE, glm::value_ptr(matModel));
+		glUniformMatrix4fv(m_UniMatWVP, 1, GL_FALSE, glm::value_ptr(matWVP));
+	}
 
 	UploadDerivedVariables();
 }

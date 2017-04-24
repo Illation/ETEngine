@@ -17,7 +17,7 @@ public:
 	{
 		WindowSettings() :
 			Fullscreen(false),
-			Title("OpenGl Framework"),
+			Title("ETEngine"),
 			pWindow(nullptr)
 		{
 			std::vector<glm::ivec2> resolutions;
