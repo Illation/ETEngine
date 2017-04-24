@@ -3,6 +3,9 @@
 class Moon:public Planet
 {
 public:
-  Moon();
-  ~Moon();
+	Moon();
+	~Moon();
+
+protected:
+	void LoadPlanet();
 };

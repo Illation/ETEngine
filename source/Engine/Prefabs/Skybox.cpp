@@ -27,7 +27,7 @@ void Skybox::Initialize()
 void Skybox::Update()
 {
 	//Make sure the model sits ontop of the camera
-	GetTransform()->Translate(CAMERA->GetTransform()->GetPosition());
+	GetTransform()->SetPosition(CAMERA->GetTransform()->GetPosition());
 }
 
 void Skybox::DrawForward()

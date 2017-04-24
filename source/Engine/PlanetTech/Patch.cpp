@@ -1,26 +1,25 @@
-#include "stdafx.h"
+#include "stdafx.hpp"
 #include "Patch.h"
 
-#include "../Shader.h"
-#include "../Transform.h"
-#include "../Camera.h"
-#include "../Texture.h"
+#include "../Graphics/ShaderData.hpp"
+#include "../Graphics/TextureData.hpp"
+#include "../Components/TransformComponent.hpp"
+#include "../Components/CameraComponent.hpp"
 
 #include "Planet.h"
-#include "Frustum.h"
+#include "../Graphics/Frustum.h"
 #include "Triangulator.h"
 
 Patch::Patch(short levels)
 	:m_Levels(levels)
 {
-	m_pPatchShader = new Shader("./Shaders/patch.glsl");
 }
 
 void Patch::Init()
 {
 	//Shader Init
 	//***********
-	m_pPatchShader->Build();
+	m_pPatchShader = CONTENT::Load<ShaderData>("Shaders/PlanetPatch.glsl");
 	glUseProgram(m_pPatchShader->GetProgram());
 	m_uCamPos = glGetUniformLocation(m_pPatchShader->GetProgram(), "camPos");
 	m_uRadius = glGetUniformLocation(m_pPatchShader->GetProgram(), "radius");
@@ -87,7 +86,7 @@ void Patch::GenerateGeometry(short levels)
 	m_Indices.clear();
 	//Generate
 	m_Levels = levels;
-	m_RC = 1 + pow(2, (int)m_Levels);
+	m_RC = 1 + (UINT)pow(2, (int)m_Levels);
 
 	float delta = 1 / (float)(m_RC-1);
 
@@ -163,7 +162,7 @@ void Patch::Draw(bool white)
 	glUseProgram(m_pPatchShader->GetProgram());
 
 	// Pass transformations to the shader
-	glUniformMatrix4fv(m_uModel, 1, GL_FALSE, glm::value_ptr(m_pPlanet->GetTransform()->GetTransform()));
+	glUniformMatrix4fv(m_uModel, 1, GL_FALSE, glm::value_ptr(m_pPlanet->GetTransform()->GetWorld()));
 	glUniformMatrix4fv(m_uViewProj, 1, GL_FALSE, glm::value_ptr(CAMERA->GetViewProj()));
 
 	//Set other uniforms here too!
@@ -171,9 +170,6 @@ void Patch::Draw(bool white)
 	glUniform3f(m_uCamPos, camPos.x, camPos.y, camPos.z);
 	glUniform1f(m_uRadius, m_pPlanet->GetRadius());
 	glUniform1f(m_uMorphRange, m_MorphRange);
-
-	glm::vec3 amb = white ? glm::vec3(10, 10, 10) : m_Ambient;
-	glUniform3f(m_uAmbient, amb.x, amb.y, amb.z);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_pPlanet->GetDiffuseMap()->GetHandle());
@@ -198,9 +194,6 @@ void Patch::Draw(bool white)
 
 Patch::~Patch()
 {
-	glUseProgram(m_pPatchShader->GetProgram());
-	SafeDelete(m_pPatchShader);
-
 	glDeleteVertexArrays(1, &m_EBO);
 	glDeleteVertexArrays(1, &m_VAO);
 	glDeleteBuffers(1, &m_VBO);

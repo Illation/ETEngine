@@ -66,7 +66,7 @@ void ShadingTestScene::Initialize()
 		pModelComp->SetMaterial(m_pMat);
 		auto pHelmet = new Entity();
 		pHelmet->AddComponent(pModelComp);
-		pHelmet->GetTransform()->Translate(vec3(0, 0, 0));
+		pHelmet->GetTransform()->SetPosition(vec3(0, 0, 0));
 		AddEntity(pHelmet);
 	}
 	{
@@ -74,7 +74,7 @@ void ShadingTestScene::Initialize()
 		pModelComp->SetMaterial(m_pStandMat);
 		auto pHelmet = new Entity();
 		pHelmet->AddComponent(pModelComp);
-		pHelmet->GetTransform()->Translate(vec3(0, 0, 0));
+		pHelmet->GetTransform()->SetPosition(vec3(0, 0, 0));
 		AddEntity(pHelmet);
 	}
 	{
@@ -82,7 +82,7 @@ void ShadingTestScene::Initialize()
 		pModelComp->SetMaterial(m_pEnvMat);
 		auto pHelmet = new Entity();
 		pHelmet->AddComponent(pModelComp);
-		pHelmet->GetTransform()->Translate(vec3(0, 0, 0));
+		pHelmet->GetTransform()->SetPosition(vec3(0, 0, 0));
 		AddEntity(pHelmet);
 	}
 
@@ -103,7 +103,7 @@ void ShadingTestScene::Initialize()
 	pLigEntity->GetTransform()->RotateEuler(0, 1, 0);
 	AddEntity(pLigEntity);
 
-	CAMERA->GetTransform()->Translate(0, 0, -10);
+	CAMERA->GetTransform()->SetPosition(0, 0, -10);
 
 	SETTINGS->Window.VSync(true);
 }

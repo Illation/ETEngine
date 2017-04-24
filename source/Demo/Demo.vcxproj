@@ -171,6 +171,7 @@ xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
     <ClCompile Include="Materials\EmissiveMaterial.cpp" />
     <ClCompile Include="Materials\ParamPBRMaterial.cpp" />
     <ClCompile Include="Materials\TexPBRMaterial.cpp" />
+    <ClCompile Include="Scenes\PlanetTestScene.cpp" />
     <ClCompile Include="Scenes\ShadingTestScene.cpp" />
     <ClCompile Include="Scenes\SkyboxTestScene.cpp" />
     <ClCompile Include="Scenes\TestScene.cpp" />
@@ -180,6 +181,7 @@ xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
     <ClInclude Include="Materials\EmissiveMaterial.hpp" />
     <ClInclude Include="Materials\ParamPBRMaterial.hpp" />
     <ClInclude Include="Materials\TexPBRMaterial.hpp" />
+    <ClInclude Include="Scenes\PlanetTestScene.hpp" />
     <ClInclude Include="Scenes\ShadingTestScene.hpp" />
     <ClInclude Include="Scenes\SkyboxTestScene.hpp" />
     <ClInclude Include="Scenes\TestScene.hpp" />

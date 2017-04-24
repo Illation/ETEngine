@@ -1,9 +1,8 @@
 #pragma once
+#include "Patch.h"
 
 class Frustum;
 class Planet;
-class PatchInstance;
-#include "Patch.h"
 
 enum TriNext
 {

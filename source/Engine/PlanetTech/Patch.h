@@ -1,6 +1,6 @@
 #pragma once
 
-class Shader;
+class ShaderData;
 class Planet;
 
 struct PatchVertex
@@ -59,7 +59,7 @@ private:
 	GLuint m_EBO;
 	GLuint m_VBOInstance;
 
-	Shader *m_pPatchShader = nullptr;
+	ShaderData *m_pPatchShader = nullptr;
 
 	GLint m_uModel;
 	GLint m_uViewProj;

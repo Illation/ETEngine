@@ -61,7 +61,7 @@ void SkyboxTestScene::Initialize()
 	pModelComp->SetMaterial(m_pMat);
 	auto pHelmet = new Entity();
 	pHelmet->AddComponent(pModelComp);
-	pHelmet->GetTransform()->Translate(vec3(0, 0, 0));
+	pHelmet->GetTransform()->SetPosition(vec3(0, 0, 0));
 	AddEntity(pHelmet);
 
 	//Lights

@@ -1,34 +1,38 @@
 #pragma once
+#include "../SceneGraph/Entity.hpp"
 
-class Shader;
-class Transform;
+class ShaderData;
 class Frustum;
-class Texture;
+class TextureData;
 class Triangulator;
 class Patch;
 
-class Planet
+class Planet : public Entity
 {
 public:
 	Planet();
 	virtual ~Planet();
 
-	void Init();
-	void Update();
-	void Draw();
-	void DrawWire();
-
 	float GetRadius(){ return m_Radius; }
 	float GetMaxHeight() { return m_MaxHeight; }
 	int GetVertexCount();
-	Transform* GetTransform() { return m_pTransform; }
 	Triangulator* GetTriangulator() { return m_pTriangulator; }
 
-	Texture* GetHeightMap() { return m_pHeight; }
-	Texture* GetDiffuseMap() { return m_pDiffuse; }
-	Texture* GetDetail1Map() { return m_pDetail1; }
-	Texture* GetDetail2Map() { return m_pDetail2; }
-	Texture* GetHeightDetailMap() { return m_pHeightDetail; }
+	TextureData* GetHeightMap() { return m_pHeight; }
+	TextureData* GetDiffuseMap() { return m_pDiffuse; }
+	TextureData* GetDetail1Map() { return m_pDetail1; }
+	TextureData* GetDetail2Map() { return m_pDetail2; }
+	TextureData* GetHeightDetailMap() { return m_pHeightDetail; }
+
+protected:
+	virtual void Initialize();
+	virtual void Update();
+	virtual void Draw();
+
+	virtual void LoadPlanet() = 0;
+	
+	//dunno if I should keep this
+	void DrawWire();
 
 protected:
 
@@ -36,13 +40,11 @@ protected:
 	float m_Radius = 1737.1f;
 	float m_MaxHeight = 10.7f;
 
-	Texture* m_pDiffuse = nullptr;
-	Texture* m_pDetail1 = nullptr;
-	Texture* m_pDetail2 = nullptr;
-	Texture* m_pHeightDetail = nullptr;
-	Texture* m_pHeight = nullptr;
-
-	Transform *m_pTransform = nullptr;
+	TextureData* m_pDiffuse = nullptr;
+	TextureData* m_pDetail1 = nullptr;
+	TextureData* m_pDetail2 = nullptr;
+	TextureData* m_pHeightDetail = nullptr;
+	TextureData* m_pHeight = nullptr;
 
 private:
 	bool m_Rotate = false;

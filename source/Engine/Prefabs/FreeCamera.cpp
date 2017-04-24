@@ -74,7 +74,7 @@ void FreeCamera::Update()
 		currPos += forward * m_Move.z * currSpeed * TIME->DeltaTime();
 		currPos += up * m_Move.y * currSpeed * TIME->DeltaTime();
 		currPos += right * m_Move.x * currSpeed * TIME->DeltaTime();
-		TRANSFORM->Translate(currPos);
+		TRANSFORM->SetPosition(currPos);
 
 		//Rotate
 		//linear because its based on the mouse move delta instead of framerate

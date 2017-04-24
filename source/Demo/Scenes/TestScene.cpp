@@ -62,7 +62,7 @@ void TestScene::Initialize()
 			pModelComp->SetMaterial(m_pMat);
 			auto pHelmet = new Entity();
 			pHelmet->AddComponent(pModelComp);
-			pHelmet->GetTransform()->Translate(vec3(start+i*distance, 0, start+j*distance));
+			pHelmet->GetTransform()->SetPosition(vec3(start+i*distance, 0, start+j*distance));
 			AddEntity(pHelmet);
 		}
 	}
@@ -86,7 +86,7 @@ void TestScene::Initialize()
 	m_pLigEnt->AddComponent(pModelComp2);
 	m_pLight = new PointLight(vec3(1, 0.8f, 0.8f), 1.f, 10.f);
 	m_pLigEnt->AddComponent(new LightComponent(m_pLight));
-	m_pLigEnt->GetTransform()->Translate(vec3(1, -2, -1));
+	m_pLigEnt->GetTransform()->SetPosition(vec3(1, -2, -1));
 	m_pLigEnt->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
 	AddEntity(m_pLigEnt);
 	
@@ -112,7 +112,7 @@ void TestScene::Initialize()
 		auto pPoint = new PointLight(normalize(vec3(disC(gen), disC(gen), disC(gen))), disI(gen) * 500, 3.5f);
 		pLigEnt->AddComponent(new LightComponent(pPoint));
 		pLigEnt->AddComponent(pLigMod);
-		pLigEnt->GetTransform()->Translate(swirl.origin);
+		pLigEnt->GetTransform()->SetPosition(swirl.origin);
 		pLigEnt->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
 		AddEntity(pLigEnt);
 
@@ -149,39 +149,39 @@ void TestScene::Update()
 		m_Lights[i].angle2 += TIME->DeltaTime()*0.5f*timeMult2;
 		glm::vec3 pos = m_Lights[i].origin + glm::vec3(m_Lights[i].radius*std::cosf(m_Lights[i].angle)
 			, -m_Lights[i].radius2*std::sinf(m_Lights[i].angle2), -m_Lights[i].radius*std::sinf(m_Lights[i].angle));
-		m_Lights[i].light->GetTransform()->Translate(pos);
+		m_Lights[i].light->GetTransform()->SetPosition(pos);
 		m_Lights[i].comp->SetBrightness(m_Lights[i].comp->GetBrightness()+std::cosf(m_Lights[i].angle) * 3.5f);
 	}
 
 	//Move light
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_2))
 	{
-		m_pLigEnt->GetTransform()->Translate(
+		m_pLigEnt->GetTransform()->SetPosition(
 			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 0, -1)*TIME->DeltaTime());
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_8))
 	{
-		m_pLigEnt->GetTransform()->Translate(
+		m_pLigEnt->GetTransform()->SetPosition(
 			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 0, 1)*TIME->DeltaTime());
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_4))
 	{
-		m_pLigEnt->GetTransform()->Translate(
+		m_pLigEnt->GetTransform()->SetPosition(
 			m_pLigEnt->GetTransform()->GetPosition() + vec3(-1, 0, 0)*TIME->DeltaTime());
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_6))
 	{
-		m_pLigEnt->GetTransform()->Translate(
+		m_pLigEnt->GetTransform()->SetPosition(
 			m_pLigEnt->GetTransform()->GetPosition() + vec3(1, 0, 0)*TIME->DeltaTime());
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_MINUS))
 	{
-		m_pLigEnt->GetTransform()->Translate(
+		m_pLigEnt->GetTransform()->SetPosition(
 			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, -1, 0)*TIME->DeltaTime());
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_PLUS))
 	{
-		m_pLigEnt->GetTransform()->Translate(
+		m_pLigEnt->GetTransform()->SetPosition(
 			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 1, 0)*TIME->DeltaTime());
 	}
 

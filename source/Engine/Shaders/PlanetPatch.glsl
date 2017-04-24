@@ -65,9 +65,15 @@
 <FRAGMENT>
 	#version 330 core
 	
+	#include "CommonDeferred.glsl"
+	
 	in vec3 Tex3;
 	in vec3 Normal;
 	in vec3 TriPos;
+	
+	layout (location = 0) out vec4 outPosAO;                  	// | Pos.x   Pos.y   Pos.z | AO .x |
+	layout (location = 1) out vec4 outNormal;                   // | Nor.x   Nor.y | Met.x | Spc.x |
+	layout (location = 2) out vec4 outColor;                    // | BCo.r   BCo.g   BCo.b | Rou.x |
 	
 	uniform vec3 camPos;
 	
@@ -77,27 +83,10 @@
 	uniform sampler2D texDetail2;
 	uniform sampler2D texHeightDetail;
 	
-	uniform vec3 lightDir = vec3(-1, -0.3, 1);
-	
-	uniform vec3 diffuse = vec3(1.0f, 0.5f, 0.2f);
-	uniform vec3 ambient = vec3(0.05f, 0.05f, 0.08f);
-	
 	uniform float maxHeight = 10.7f;
 	uniform vec3 texOffset = vec3(1.0f/8192.0f, 1.0f/4096.0f, 0.0f);
 	uniform vec3 texOffsetDetail = vec3(1.0f/800.0f, 1.0f/800.0f, 0.0f);
-
-	out vec4 outColor;
 	
-	float Lambert(vec3 norm, vec3 lightDir)
-	{
-		return max(dot(norm, -lightDir), 0);
-	}
-	vec3 DirLighting(vec3 dif, vec3 norm)
-	{
-		vec3 diffuse = (dif) * Lambert(norm, lightDir);
-		//vec3 specular = (spec * light.Color) * Blinn(norm, light.Direction, viewDir, specPow);
-		return diffuse;// + specular;
-	}
 	float height(vec2 uv, sampler2D tex)
 	{
 		return texture(tex, uv).r*maxHeight;
@@ -105,12 +94,12 @@
 	vec3 CalculateNormal(vec2 uv, sampler2D tex, vec3 texOffset)
 	{
 		// read neightbor heights using an arbitrary small offset
-		float hL = height(uv - texOffset.xz, tex);
-		float hR = height(uv + texOffset.xz, tex);
+		float hL = height(uv + texOffset.xz, tex);
+		float hR = height(uv - texOffset.xz, tex);
 		float hD = height(uv - texOffset.zy, tex);
 		float hU = height(uv + texOffset.zy, tex);
 		// deduce terrain normal
-		vec3 N = normalize(vec3(hL - hR, hD - hU, 2.0));
+		vec3 N = normalize(vec3(hR - hL, hD - hU, 2.0));
 		vec3 norm = normalize(Normal);
 		vec3 up = vec3(0, 1, 0)-norm;
 		vec3 tang = normalize(cross(norm, up));//might need flipping
@@ -144,9 +133,10 @@
 		vec3 norm = CalculateNormal(uv, texHeight, texOffset);
 		vec3 normDetail = CalculateNormal(detailUV, texHeightDetail, texOffsetDetail);
 		norm = normalize(norm+normDetail*detail*2);
-	
-		vec3 lit = DirLighting(dif, norm);
-		lit*=0.8f;
-		outColor = vec4(lit+ambient*dif, 1.0f);
+		
+		//output to gbuffer MRT
+		outPosAO = vec4(TriPos, 1/*ao*/);
+		outNormal = vec4(encodeNormal(norm), 0/*metal*/, 0.5/*specular*/);
+		outColor = vec4(dif, 0.8/*roughness*/);
 	} 
 </FRAGMENT>

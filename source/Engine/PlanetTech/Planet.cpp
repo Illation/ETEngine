@@ -1,40 +1,43 @@
-#include "stdafx.h"
+#include "stdafx.hpp"
 #include "Planet.h"
 
 #include <limits>
 
-#include "../Shader.h"
-#include "../Transform.h"
-#include "../Camera.h"
-#include "../Texture.h"
+#include "../Graphics/ShaderData.hpp"
+#include "../Components/TransformComponent.hpp"
+#include "../Components/CameraComponent.hpp"
+#include "../Graphics/TextureData.hpp"
 
-#include "Frustum.h"
+#include "../Graphics/Frustum.h"
 #include "Triangulator.h"
 #include "Patch.h"
+#include "../Content/TextureLoader.hpp"
 
 Planet::Planet()
 {
-	m_pTransform = new Transform();
-
 	m_pTriangulator = new Triangulator(this);
 	m_pPatch = new Patch(4);
 	m_pPatch->SetPlanet(this);
-
-	m_pDetail1 = new Texture("./Textures/MoonDetail1.jpg");
-	m_pDetail2 = new Texture("./Textures/MoonDetail2.jpg");
-	m_pHeightDetail = new Texture("./Textures/MoonHeightDetail1.jpg");
+}
+Planet::~Planet()
+{
+	SafeDelete(m_pPatch);
+	SafeDelete(m_pTriangulator);
 }
 
-void Planet::Init()
+void Planet::Initialize()
 {
-	m_pTransform->SetRotation(glm::rotate(m_pTransform->GetRotation(), glm::radians(270.f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	GetTransform()->SetRotation(glm::rotate(GetTransform()->GetRotation(), glm::radians(270.f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
 	//LoadTextures
-	m_pDiffuse->Load();
-	m_pHeight->Load();
-	m_pDetail1->Load();
-	m_pDetail2->Load();
-	m_pHeightDetail->Load();
+	TextureLoader* pTL = ContentManager::GetLoader<TextureLoader, TextureData>();
+	pTL->UseSrgb(true);
+	LoadPlanet();
+
+	m_pDetail1 = CONTENT::Load<TextureData>("Resources/Textures/PlanetTextures/MoonDetail1.jpg");
+	m_pDetail2 = CONTENT::Load<TextureData>("Resources/Textures/PlanetTextures/MoonDetail2.jpg");
+	m_pHeightDetail = CONTENT::Load<TextureData>("Resources/Textures/PlanetTextures/MoonHeightDetail1.jpg");
+	pTL->UseSrgb(false);
 
 	m_pTriangulator->Init();
 	m_pPatch->Init();
@@ -42,12 +45,11 @@ void Planet::Init()
 
 void Planet::Update()
 {
-	m_pTransform->SetPosition(0, 0, 0);
-	//m_pTransform->SetPosition(m_Radius*sinf(TIME->GetTime()), 0, 0);
+	GetTransform()->SetPosition(0, 0, 0);
 	if (INPUT->IsKeyboardKeyPressed('r'))m_Rotate = !m_Rotate;
-	if(m_Rotate)m_pTransform->SetRotation(glm::rotate(m_pTransform->GetRotation(), -(GLfloat)TIME->DeltaTime() * 0.01f, glm::vec3(0.0f, 1.0f, 0.0f)));
+	if(m_Rotate)GetTransform()->SetRotation(glm::rotate(GetTransform()->GetRotation(), -(GLfloat)TIME->DeltaTime() * 0.01f, glm::vec3(0.0f, 1.0f, 0.0f)));
 
-	m_pTransform->UpdateTransforms();
+	// #todo should happen after transform update maybe at the beginning of draw
 
 	//Change Planet Geometry
 	//**********************
@@ -63,26 +65,13 @@ void Planet::Update()
 
 void Planet::Draw()
 {
+	glDisable(GL_CULL_FACE);
 	m_pPatch->Draw();
-	if (m_pTriangulator->IsFrustumLocked())m_pTriangulator->GetFrustum()->Draw();
+	glEnable(GL_CULL_FACE);
 }
 void Planet::DrawWire()
 {
 	m_pPatch->Draw(true);
-	if (m_pTriangulator->IsFrustumLocked())m_pTriangulator->GetFrustum()->Draw();
-}
-
-Planet::~Planet()
-{	
-	SafeDelete(m_pTransform);
-	SafeDelete(m_pDiffuse);
-	SafeDelete(m_pDetail1);
-	SafeDelete(m_pDetail2);
-	SafeDelete(m_pHeight);
-	SafeDelete(m_pHeightDetail);
-
-	SafeDelete(m_pPatch);
-	SafeDelete(m_pTriangulator);
 }
 
 int Planet::GetVertexCount()

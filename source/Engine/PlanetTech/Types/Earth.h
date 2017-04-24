@@ -5,4 +5,7 @@ class Earth:public Planet
 public:
 	Earth();
 	~Earth();
+
+protected:
+	void LoadPlanet();
 };

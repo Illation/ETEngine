@@ -17,7 +17,7 @@ void FixedCamera::Initialize()
 	m_pCamera = new CameraComponent();
 	AddComponent(m_pCamera);
 
-	GetTransform()->Translate(2.5, -2, -2.5f);
+	GetTransform()->SetPosition(2.5, -2, -2.5f);
 
 	GetTransform()->RotateEuler(0, glm::radians(45.f), 0);
 	GetTransform()->RotateEuler(glm::radians(20.f), 0, glm::radians(20.f));

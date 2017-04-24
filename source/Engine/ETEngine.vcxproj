@@ -205,6 +205,11 @@
     <ClCompile Include="Materials\LightMaterial.cpp" />
     <ClCompile Include="Materials\NullMaterial.cpp" />
     <ClCompile Include="Materials\SkyboxMaterial.cpp" />
+    <ClCompile Include="PlanetTech\Patch.cpp" />
+    <ClCompile Include="PlanetTech\Planet.cpp" />
+    <ClCompile Include="PlanetTech\Triangulator.cpp" />
+    <ClCompile Include="PlanetTech\Types\Earth.cpp" />
+    <ClCompile Include="PlanetTech\Types\Moon.cpp" />
     <ClCompile Include="Prefabs\FixedCamera.cpp" />
     <ClCompile Include="Prefabs\FreeCamera.cpp" />
     <ClCompile Include="Prefabs\OrbitCamera.cpp" />
@@ -265,6 +270,11 @@
     <ClInclude Include="Materials\LightMaterial.hpp" />
     <ClInclude Include="Materials\NullMaterial.hpp" />
     <ClInclude Include="Materials\SkyboxMaterial.hpp" />
+    <ClInclude Include="PlanetTech\Patch.h" />
+    <ClInclude Include="PlanetTech\Planet.h" />
+    <ClInclude Include="PlanetTech\Triangulator.h" />
+    <ClInclude Include="PlanetTech\Types\Earth.h" />
+    <ClInclude Include="PlanetTech\Types\Moon.h" />
     <ClInclude Include="Prefabs\FixedCamera.hpp" />
     <ClInclude Include="Prefabs\FreeCamera.hpp" />
     <ClInclude Include="Prefabs\OrbitCamera.hpp" />

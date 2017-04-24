@@ -45,12 +45,12 @@ void OrbitCamera::Update()
 	{
 		//TODO
 		//Scrolling changes distance
-		m_pFixCam->TRANSFORM->Translate(0, 0, m_Distance);
+		m_pFixCam->TRANSFORM->SetPosition(0, 0, m_Distance);
 
 		auto camTf = m_pCamParent->TRANSFORM;
 		auto dT = TIME->DeltaTime();
 
-		camTf->Translate(m_RotationCenter);
+		camTf->SetPosition(m_RotationCenter);
 		vec3 move = vec3(0, 0, 0);
 		vec2 look = vec2(0, 0);
 		if (INPUT->IsMouseButtonDown(SDL_BUTTON_MIDDLE))
@@ -79,6 +79,6 @@ void OrbitCamera::Update()
 		currPos += forward*(move.y*currSpeed*dT);
 		currPos += right*(move.x*currSpeed*dT);
 		currPos += up*(move.z*currSpeed*dT);
-		TRANSFORM->Translate(currPos);
+		TRANSFORM->SetPosition(currPos);
 	}
 }
