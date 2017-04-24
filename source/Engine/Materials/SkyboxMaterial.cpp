@@ -7,6 +7,7 @@
 
 #include "../Content/CubeMapLoader.hpp"
 #include "../Content/HdrLoader.hpp"
+#include "../Components/TransformComponent.hpp"
 
 SkyboxMaterial::SkyboxMaterial(string assetFile):
 	Material("Shaders/FwdSkyboxShader.glsl"),
@@ -14,6 +15,7 @@ SkyboxMaterial::SkyboxMaterial(string assetFile):
 {
 	m_LayoutFlags = VertexFlags::POSITION;
 	m_DrawForward = true;
+	m_StandardTransform = false;
 }
 SkyboxMaterial::~SkyboxMaterial()
 {
@@ -39,4 +41,7 @@ void SkyboxMaterial::UploadDerivedVariables()
 
 	glUniform1i(m_uNumMipMaps, m_pHDRMap->GetNumMipMaps());
 	glUniform1f(m_uRoughness, m_Roughness);
+
+	glUniformMatrix4fv(glGetUniformLocation(m_Shader->GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(glm::mat4(glm::mat3(CAMERA->GetView()))));
+	glUniformMatrix4fv(glGetUniformLocation(m_Shader->GetProgram(), "proj"), 1, GL_FALSE, glm::value_ptr(CAMERA->GetProj()));
 }

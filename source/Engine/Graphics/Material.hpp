@@ -31,6 +31,7 @@ protected:
 protected:
 	unsigned m_LayoutFlags = 0;
 	bool m_DrawForward = false;
+	bool m_StandardTransform = true;
 	ShaderData* m_Shader;
 	GLint m_UniMatModel;
 	GLint m_UniMatWVP;
