@@ -13,6 +13,8 @@ public:
 
 	void Translate(float x, float y, float z);
 	void Translate(const glm::vec3& position);
+	void SetPosition(float x, float y, float z);
+	void SetPosition(const glm::vec3& position);
 
 	void RotateEuler(float x, float y, float z);
 	void RotateEuler(const glm::vec3& rotation);

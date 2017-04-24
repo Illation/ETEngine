@@ -39,6 +39,9 @@
     <ClCompile Include="Materials\EmissiveMaterial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Scenes\PlanetTestScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFramework.hpp">
@@ -63,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Materials\EmissiveMaterial.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes\PlanetTestScene.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

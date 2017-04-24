@@ -9,7 +9,7 @@ PostProcessingRenderer::PostProcessingRenderer()
 }
 PostProcessingRenderer::~PostProcessingRenderer()
 {
-	//todo
+	// #todo release post processing resources
 }
 
 void PostProcessingRenderer::Initialize()

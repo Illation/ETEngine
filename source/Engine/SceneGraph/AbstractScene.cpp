@@ -61,7 +61,7 @@ void AbstractScene::RootInitialize()
 
 	//Create SceneContext
 	FreeCamera* freeCam = new FreeCamera();
-	freeCam->GetTransform()->Translate(0, -1, -3.5);
+	freeCam->GetTransform()->SetPosition(0, -1, -3.5);
 	freeCam->GetTransform()->RotateEuler(glm::radians(20.f), 0, 0);
 	AddEntity(freeCam);
 	m_pDefaultCam = freeCam->GetComponent<CameraComponent>();
@@ -219,7 +219,7 @@ void AbstractScene::RootDraw()
 			GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
 		//Render Light Volumes
-		//glEnable(GL_STENCIL_TEST); //todo: lightvolume stencil test
+		//glEnable(GL_STENCIL_TEST); // #todo lightvolume stencil test
 
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);

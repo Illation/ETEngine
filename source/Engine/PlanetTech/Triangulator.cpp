@@ -1,16 +1,20 @@
-#include "stdafx.h"
+#include "stdafx.hpp"
 #include "Triangulator.h"
 
-#include "Frustum.h"
+#include "../Graphics/Frustum.h"
 #include "Planet.h"
 
-#include "../Transform.h"
-#include "../Camera.h"
+#include "../Components/TransformComponent.hpp"
+#include "../Components/CameraComponent.hpp"
 
 Triangulator::Triangulator(Planet* pPlanet)
 	: m_pPlanet(pPlanet)
 {
 	m_pFrustum = new Frustum();
+}
+Triangulator::~Triangulator()
+{
+	SafeDelete(m_pFrustum);
 }
 
 void Triangulator::Init()
@@ -64,9 +68,6 @@ void Triangulator::Init()
 
 	Precalculate();
 	
-	//Create a frustum
-	m_pFrustum->Init();
-
 	//First geometry generation
 	GenerateGeometry();
 }
@@ -74,23 +75,25 @@ void Triangulator::Init()
 bool Triangulator::Update()
 {
 	//Set Max subd level
-	bool levelChanged = false;
-	if (INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_UP))
-	{
-		m_MaxLevel++;
-		levelChanged = true;
-	}
-	if (INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_DOWN) && m_MaxLevel>0)
-	{
-		m_MaxLevel--;
-		levelChanged = true;
-	}
-	if (levelChanged)Precalculate();
+	//bool levelChanged = false;
+	//if (INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_UP))
+	//{
+	//	m_MaxLevel++;
+	//	levelChanged = true;
+	//}
+	//if (INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_DOWN) && m_MaxLevel>0)
+	//{
+	//	m_MaxLevel--;
+	//	levelChanged = true;
+	//}
+	//if (levelChanged)Precalculate();
+	m_MaxLevel = 22;
+	Precalculate();
 
 	//Frustum update
 	if (INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_SPACE))m_LockFrustum = !m_LockFrustum;
 
-	m_pFrustum->SetCullTransform(m_pPlanet->GetTransform()->GetTransform());
+	m_pFrustum->SetCullTransform(m_pPlanet->GetTransform()->GetWorld());
 	if (!m_LockFrustum) m_pFrustum->SetToCamera(CAMERA);
 	m_pFrustum->Update();
 
@@ -169,8 +172,8 @@ TriNext Triangulator::SplitHeuristic(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, s
 	{
 		auto intersect = m_pFrustum->ContainsTriVolume(a, b, c, m_HeightMultLUT[level]);
 		//auto intersect = m_pFrustum->ContainsTriangle(a, b, c);
-		if (intersect == VolumeTri::OUTSIDE) return TriNext::CULL;
-		if (intersect == VolumeTri::CONTAINS)//stop frustum culling -> all children are also inside the frustum
+		if (intersect == VolumeCheck::OUTSIDE) return TriNext::CULL;
+		if (intersect == VolumeCheck::CONTAINS)//stop frustum culling -> all children are also inside the frustum
 		{
 			//check if new splits are allowed
 			if (level >= m_MaxLevel)return TriNext::LEAF;
@@ -216,11 +219,6 @@ void Triangulator::RecursiveTriangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, shor
 	}
 	else //put the triangle in the buffer
 	{
-		m_Positions.push_back(PatchInstance(level, a, b-a, c-a));
+		m_Positions.push_back(PatchInstance((BYTE)level, a, b-a, c-a));
 	}
-}
-
-Triangulator::~Triangulator()
-{
-	SafeDelete(m_pFrustum);
 }
