@@ -71,6 +71,8 @@ private:
 	float m_MorphRange = 0.5f;
 	GLint m_uMorphRange;
 
+	GLint m_uDelta;
+
 	//shading
 	glm::vec3 m_Ambient = glm::vec3(0.05f, 0.05f, 0.08f);
 	GLint m_uAmbient;

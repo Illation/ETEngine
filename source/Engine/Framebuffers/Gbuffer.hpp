@@ -13,5 +13,9 @@ private:
 
 	//CameraPos
 	GLint m_uCamPos;
+
+	GLint m_uProjA;
+	GLint m_uProjB;
+	GLint m_uViewProjInv;
 };
 
