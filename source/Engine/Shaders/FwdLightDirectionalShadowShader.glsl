@@ -4,10 +4,13 @@
 	layout (location = 1) in vec2 texCoords;
 
 	out vec2 TexCoords;
-
+	out vec3 ViewRay;
+	uniform mat4 viewProjInv;
+	
 	void main()
 	{
 		TexCoords = texCoords;
+		ViewRay = (viewProjInv * vec4(pos.xy, 1, 1)).xyz;
 		gl_Position = vec4(pos, 1.0);
 	}
 </VERTEX>
@@ -19,13 +22,13 @@
 	#include "CommonPBR.glsl"
 	
 	in vec2 TexCoords;
+	in vec3 ViewRay;
 	
 	//out
 	layout (location = 0) out vec4 outColor;
 	
 	GBUFFER_SAMPLER
 	
-	uniform vec3 camPos;
 	uniform mat4 CameraView;
 	
 	//Light
@@ -113,19 +116,21 @@
 	
 	void main()
 	{
-		UNPACK_GBUFFER(TexCoords) //maybe use ao??
+	
+		UNPACK_GBUFFER(TexCoords, ViewRay) //maybe use ao??
 		
 		//precalculations	
 		vec3 F0 = vec3(0.04);//for dielectric materials use this simplified constant
 		F0 		= mix(F0, baseCol, metal);//for metal we should use the albedo value
 		//View dir and reflection
-		vec3 viewDir = normalize(camPos - pos);
+		vec3 viewDir = -normalize(ViewRay);
 		
 		vec4 depthPos = vec4(pos, 1.0f);
 		depthPos = CameraView * depthPos;
 		float dist = depthPos.z;
 		
-		vec3 finalCol = ShadowFactor(pos, norm, dist) * DirLighting(baseCol, rough, metal, F0, norm, viewDir);
+		vec3 finalCol = DirLighting(baseCol, rough, metal, F0, norm, viewDir);
+		finalCol *= ShadowFactor(pos, norm, dist);
 		
 		//if(dist < cascades[2].Distance) finalCol *= vec3(1, 0.35f, 0.35f);
 		//if(dist < cascades[1].Distance) finalCol *= vec3(0.35f, 1, 0.35f);

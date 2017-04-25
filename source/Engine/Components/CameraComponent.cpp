@@ -23,6 +23,8 @@ m_IsActive(true)
 	m_ViewInverse = glm::mat4();
 	m_ViewProjection = glm::mat4();
 	m_ViewProjectionInverse = glm::mat4();
+	m_StatViewProj = glm::mat4();
+	m_StatViewProjInv = glm::mat4();
 	m_pFrustum = new Frustum();
 }
 
@@ -37,6 +39,7 @@ void CameraComponent::Initialize()
 
 void CameraComponent::Update()
 {
+	//Calculate projection
 	if (m_PerspectiveProjection)
 	{
 		m_Projection=glm::perspectiveLH(glm::radians(m_FOV),
@@ -48,15 +51,22 @@ void CameraComponent::Update()
 		float viewHeight = (m_Size>0) ? m_Size : WINDOW.Height;
 		m_Projection = glm::ortho(0.f, viewWidth, viewHeight, 0.f, m_NearPlane, m_FarPlane);
 	}
+	//Calculate parameters to linearize depthbuffer values
+	m_DepthProjA = m_FarPlane / (m_FarPlane - m_NearPlane);
+	m_DepthProjB = (-m_FarPlane * m_NearPlane) / (m_FarPlane - m_NearPlane);
 
+	//calculate view
 	glm::vec3 worldPos = GetTransform()->GetWorldPosition();
 	glm::vec3 lookAt = worldPos+GetTransform()->GetForward();
 	glm::vec3 upVec = GetTransform()->GetUp();// glm::vec3(0, 1, 0);//
 	m_View = glm::lookAtLH(worldPos, lookAt, upVec);
 
+	//calculate utility
 	m_ViewInverse = glm::inverse(m_View);
 	m_ViewProjection = m_Projection*m_View;
 	m_ViewProjectionInverse = glm::inverse(m_View);
+	m_StatViewProj = m_Projection*glm::mat4(glm::mat3(m_View));
+	m_StatViewProjInv = glm::inverse(m_StatViewProj);
 
 	//Update general frustum
 	if (m_FreezeTimer > 0) m_FreezeTimer -= TIME->DeltaTime();

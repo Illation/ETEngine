@@ -29,13 +29,12 @@
 	layout (location = 0) out vec4 outColor;
 	
 	GBUFFER_SAMPLER
+	uniform mat4 viewProjInv;
 	
 	//Light
 	uniform vec3 Position;
 	uniform vec3 Color;
 	uniform float Radius;
-	
-	uniform vec3 camPos;
 	
 	//Lighting function
 	vec3 PointLighting(vec3 baseCol, float rough, float metal, vec3 F0, vec3 pos, vec3 norm, vec3 viewDir)
@@ -76,14 +75,17 @@
 	
 	void main()
 	{
-		vec2 tc = ((Texcoord.xyz/Texcoord.w).xy+vec2(1))*0.5f;
-		UNPACK_GBUFFER(tc) //maybe use ao??
+		vec2 tc = (Texcoord.xyz/Texcoord.w).xy;//+vec2(1))*0.5f;
+		vec3 viewRay = (viewProjInv * vec4(tc, 1, 1)).xyz;
+		tc += vec2(1);
+		tc *= 0.5f;
+		UNPACK_GBUFFER(tc, viewRay) //maybe use ao??
 		
 		//precalculations	
 		vec3 F0 = vec3(0.04);//for dielectric materials use this simplified constant
 		F0 		= mix(F0, baseCol, metal);//for metal we should use the albedo value
 		//View dir and reflection
-		vec3 viewDir = normalize(camPos - pos);
+		vec3 viewDir = -normalize(viewRay);
 		
 		vec3 finalCol = PointLighting(baseCol, rough, metal, F0, pos, norm, viewDir);
 		

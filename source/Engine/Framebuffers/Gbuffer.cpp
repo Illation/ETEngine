@@ -35,12 +35,10 @@ void Gbuffer::AccessShaderAttributes()
 void Gbuffer::UploadDerivedVariables()
 {
 	//for position reconstruction
-	float fcp = CAMERA->GetFarPlane();
-	float ncp = CAMERA->GetNearPlane();
-	glUniform1f(m_uProjA, fcp / (fcp - ncp));
-	glUniform1f(m_uProjB, (-fcp * ncp) / (fcp - ncp));
-	glm::mat4 mvpi = glm::inverse(CAMERA->GetProj()*glm::mat4(glm::mat3(CAMERA->GetView())));
-	glUniformMatrix4fv(m_uViewProjInv, 1, GL_FALSE, glm::value_ptr(mvpi));
+	glUniform1f(m_uProjA, CAMERA->GetDepthProjA());
+	glUniform1f(m_uProjB, CAMERA->GetDepthProjB());
+	glUniformMatrix4fv(m_uViewProjInv, 1, GL_FALSE, glm::value_ptr(CAMERA->GetStatViewProjInv()));
+	glUniform3fv(m_uCamPos, 1, glm::value_ptr(CAMERA->GetTransform()->GetPosition()));
 
 	if (SCENE->SkyboxEnabled())
 	{
@@ -58,7 +56,4 @@ void Gbuffer::UploadDerivedVariables()
 
 		glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "MAX_REFLECTION_LOD"), (GLfloat)SCENE->GetEnvironmentMap()->GetNumMipMaps());
 	}
-
-	glm::vec3 cPos = CAMERA->GetTransform()->GetPosition();
-	glUniform3f(m_uCamPos, cPos.x, cPos.y, cPos.z);
 }
