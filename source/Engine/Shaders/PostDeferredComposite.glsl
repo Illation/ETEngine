@@ -29,12 +29,16 @@
 	uniform float MAX_REFLECTION_LOD = 4.0;
 	
 	uniform vec3 camPos;
+	uniform mat4 viewProjInv;
 	
 	void main()
 	{
 		//Extract data from G-Buffer
 		float alpha = 1.0;
 		UNPACK_GBUFFER(Texcoord)
+		vec4 posProj = vec4((Texcoord*2)-vec2(1), 1, 1);
+		vec3 viewRay = (viewProjInv * posProj).xyz;
+		pos = camPos+reconstructPosition(viewRay, depth, projectionA, projectionB);
 		
 		//precalculations	
 		vec3 F0 = vec3(0.04);//for dielectric materials use this simplified constant

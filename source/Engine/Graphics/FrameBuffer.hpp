@@ -26,6 +26,7 @@ protected:
 
 	ShaderData* m_pShader;
 	vector<TextureData*> m_pTextureVec;
+	bool m_CaptureDepth = false;
 private:
 	// Quad vertices
 	GLuint m_VertexArrayObject;

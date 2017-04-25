@@ -21,6 +21,8 @@
 	uniform sampler2D texHeightDetail;
 	uniform sampler2D texDetail2;
 	uniform float maxHeight = 10.7f;
+	//Normal calculation
+	uniform float patchDelta;
 	//outputs
 	out vec3 Tex3;
 	out vec3 Normal;
@@ -34,6 +36,24 @@
 		float detail1 = (texture(texHeightDetail, uv*tileStretch*100).r)*maxHeight*0.1f;
 		float detail2 = (1 - texture(texDetail2, uv*tileStretch*700).r)*0.01f;
 		return texture(texHeight, uv).r*maxHeight+detail1+detail2;
+	}
+	vec3 GetNeighborPos(vec2 offset)
+	{
+		vec2 patchPos = pos + offset;
+		vec3 retPos = a + r*patchPos.x + s*patchPos.y;
+		retPos = normalize(retPos);
+		return retPos * (radius + height(retPos));
+	}
+	vec3 CalculateNormal(mat3 normalMat)
+	{
+		vec3 nbS = GetNeighborPos(vec2(0, -patchDelta));
+		vec3 nbN = GetNeighborPos(vec2(0, patchDelta));
+		vec3 nbW = GetNeighborPos(vec2(-patchDelta, 0));
+		vec3 nbE = GetNeighborPos(vec2(patchDelta, 0));
+		
+		vec3 objNorm = normalize(cross(normalize(nbE - nbW), normalize(nbN - nbS)));
+		
+		return normalize(normalMat * objNorm);
 	}
 	float morphFac(float dist, int lev)
 	{
@@ -58,7 +78,10 @@
 		Tex3 = normalize(TriPos);
 		TriPos = Tex3 * (radius + height(Tex3));
 		
-		Normal = normalize((model*vec4(Tex3, 1.0f)).xyz);
+		mat3 normMat = inverse(mat3(model));
+		normMat = transpose(normMat);
+		Normal = normalize(normMat * Tex3);
+		
 		gl_Position = viewProj * model * vec4(TriPos, 1.0f);
 	}
 </VERTEX>
@@ -84,20 +107,19 @@
 	uniform sampler2D texHeightDetail;
 	
 	uniform float maxHeight = 10.7f;
-	uniform vec3 texOffset = vec3(1.0f/8192.0f, 1.0f/4096.0f, 0.0f);
-	uniform vec3 texOffsetDetail = vec3(1.0f/800.0f, 1.0f/800.0f, 0.0f);
 	
 	float height(vec2 uv, sampler2D tex)
 	{
 		return texture(tex, uv).r*maxHeight;
 	}
-	vec3 CalculateNormal(vec2 uv, sampler2D tex, vec3 texOffset)
+	vec3 CalculateNormal(vec2 uv, sampler2D tex)
 	{
+		vec3 texOffset = vec3(1.0 / textureSize(tex, 0), 0);
 		// read neightbor heights using an arbitrary small offset
-		float hL = height(uv + texOffset.xz, tex);
-		float hR = height(uv - texOffset.xz, tex);
-		float hD = height(uv - texOffset.zy, tex);
-		float hU = height(uv + texOffset.zy, tex);
+		float hL = height(uv - texOffset.xz, tex);
+		float hR = height(uv + texOffset.xz, tex);
+		float hD = height(uv + texOffset.zy, tex);
+		float hU = height(uv - texOffset.zy, tex);
 		// deduce terrain normal
 		vec3 N = normalize(vec3(hR - hL, hD - hU, 2.0));
 		vec3 norm = normalize(Normal);
@@ -130,8 +152,8 @@
 		dif = mix(mix2, dif, clamp((dist-1000)/2000, 0, 1));
 		
 		//Calculate normal
-		vec3 norm = CalculateNormal(uv, texHeight, texOffset);
-		vec3 normDetail = CalculateNormal(detailUV, texHeightDetail, texOffsetDetail);
+		vec3 norm = CalculateNormal(uv, texHeight);
+		vec3 normDetail = CalculateNormal(detailUV, texHeightDetail);
 		norm = normalize(norm+normDetail*detail*2);
 		
 		//output to gbuffer MRT

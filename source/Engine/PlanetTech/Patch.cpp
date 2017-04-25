@@ -31,6 +31,7 @@ void Patch::Init()
 	m_uViewProj = glGetUniformLocation(m_pPatchShader->GetProgram(), "viewProj");
 
 	m_uAmbient = glGetUniformLocation(m_pPatchShader->GetProgram(), "ambient");
+	m_uDelta = glGetUniformLocation(m_pPatchShader->GetProgram(), "patchDelta");
 
 	glUniform1i(glGetUniformLocation(m_pPatchShader->GetProgram(), "texDiffuse"), 0);
 	glUniform1i(glGetUniformLocation(m_pPatchShader->GetProgram(), "texHeight"), 1);
@@ -170,6 +171,8 @@ void Patch::Draw(bool white)
 	glUniform3f(m_uCamPos, camPos.x, camPos.y, camPos.z);
 	glUniform1f(m_uRadius, m_pPlanet->GetRadius());
 	glUniform1f(m_uMorphRange, m_MorphRange);
+
+	glUniform1f(m_uDelta, 1 / (float)(m_RC - 1));
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_pPlanet->GetDiffuseMap()->GetHandle());
