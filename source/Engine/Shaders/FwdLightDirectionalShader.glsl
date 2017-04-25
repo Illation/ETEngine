@@ -4,10 +4,13 @@
 	layout (location = 1) in vec2 texCoords;
 
 	out vec2 TexCoords;
-
+	out vec3 ViewRay;
+	uniform mat4 viewProjInv;
+	
 	void main()
 	{
 		TexCoords = texCoords;
+		ViewRay = (viewProjInv * vec4(pos.xy, 1, 1)).xyz;
 		gl_Position = vec4(pos, 1.0);
 	}
 </VERTEX>
@@ -19,6 +22,7 @@
 	#include "CommonPBR.glsl"
 	
 	in vec2 TexCoords;
+	in vec3 ViewRay;
 	
 	//out
 	layout (location = 0) out vec4 outColor;
@@ -28,8 +32,6 @@
 	//Light
 	uniform vec3 Direction;
 	uniform vec3 Color;
-	
-	uniform vec3 camPos;
 	
 	//Lighting function
 	vec3 DirLighting(vec3 baseCol, float rough, float metal, vec3 F0, vec3 norm, vec3 viewDir)
@@ -60,13 +62,13 @@
 	
 	void main()
 	{
-		UNPACK_GBUFFER(TexCoords) //maybe use ao??
+		UNPACK_GBUFFER(TexCoords, ViewRay) //maybe use ao??
 		
 		//precalculations	
 		vec3 F0 = vec3(0.04);//for dielectric materials use this simplified constant
 		F0 		= mix(F0, baseCol, metal);//for metal we should use the albedo value
 		//View dir and reflection
-		vec3 viewDir = normalize(camPos - pos);
+		vec3 viewDir = -normalize(ViewRay);
 		
 		vec3 finalCol = DirLighting(baseCol, rough, metal, F0, norm, viewDir);
 		

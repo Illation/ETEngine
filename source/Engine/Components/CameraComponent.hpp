@@ -30,6 +30,11 @@ public:
 	glm::mat4 GetViewInv() { return m_ViewInverse; }
 	glm::mat4 GetViewProj() { return m_ViewProjection; }
 	glm::mat4 GetViewProjInv() { return m_ViewProjectionInverse; }
+	glm::mat4 GetStatViewProj() { return m_StatViewProj; }
+	glm::mat4 GetStatViewProjInv() { return m_StatViewProjInv; }
+
+	float GetDepthProjA() { return m_DepthProjA; }
+	float GetDepthProjB() { return m_DepthProjB; }
 
 	float GetNearPlane() { return m_NearPlane; }
 	float GetFarPlane() { return m_FarPlane; }
@@ -46,8 +51,10 @@ protected:
 
 private:
 	glm::mat4 m_View, m_Projection, m_ViewInverse, 
-		m_ViewProjection, m_ViewProjectionInverse;
+		m_ViewProjection, m_ViewProjectionInverse,
+		m_StatViewProj, m_StatViewProjInv;//Ignore camera position for gbuffer reconstruction and skybox
 	float m_FarPlane, m_NearPlane, m_FOV, m_Size;
+	float m_DepthProjA, m_DepthProjB;//parameters to linearize depth values
 	bool m_IsActive, m_PerspectiveProjection;
 
 	Frustum* m_pFrustum = nullptr;

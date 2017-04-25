@@ -127,23 +127,29 @@ void DirectLightVolume::Draw(glm::vec3 dir, glm::vec3 col)
 {
 	if (!IsInitialized) Initialize();
 
+	// #todo: avoid getting all the uniform info again and again
+
 	glBindVertexArray(m_QuadVAO);
 	glUseProgram(m_pShader->GetProgram());
 
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texPosAO"), 0);
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texNormMetSpec"), 1);
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texBaseColRough"), 2);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texDepth"), 0);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texPosAO"), 1);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texNormMetSpec"), 2);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texBaseColRough"), 3);
 	auto gbufferTex = SCENE->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
+	//for position reconstruction
+	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "projectionA"), CAMERA->GetDepthProjA());
+	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "projectionB"), CAMERA->GetDepthProjB());
+	glUniformMatrix4fv(glGetUniformLocation(m_pShader->GetProgram(), "viewProjInv"), 1, GL_FALSE, glm::value_ptr(CAMERA->GetStatViewProjInv()));
+	glUniform3fv(m_uCamPos, 1, glm::value_ptr(CAMERA->GetTransform()->GetPosition()));
 
-	glUniform3f(m_uDir, dir.x, dir.y, dir.z);
-	glUniform3f(m_uCol, col.x, col.y, col.z);
-	glm::vec3 cPos = CAMERA->GetTransform()->GetPosition();
-	glUniform3f(m_uCamPos, cPos.x, cPos.y, cPos.z);
+	glUniform3fv(m_uDir, 1, glm::value_ptr(dir));
+	glUniform3fv(m_uCol, 1, glm::value_ptr(col));
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	PERFORMANCE->m_DrawCalls++;
@@ -158,25 +164,29 @@ void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalSh
 	glUseProgram(m_pShaderShadowed->GetProgram());
 
 	//Upload gbuffer
-	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texPosAO"), 0);
-	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texNormMetSpec"), 1);
-	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texBaseColRough"), 2);
+	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texDepth"), 0);
+	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texPosAO"), 1);
+	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texNormMetSpec"), 2);
+	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texBaseColRough"), 3);
 	auto gbufferTex = SCENE->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
+	//for position reconstruction
+	glUniform1f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "projectionA"), CAMERA->GetDepthProjA());
+	glUniform1f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "projectionB"), CAMERA->GetDepthProjB());
+	glUniformMatrix4fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "viewProjInv"), 1, GL_FALSE, glm::value_ptr(CAMERA->GetStatViewProjInv()));
+	glUniform3fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "camPos"), 1, glm::value_ptr(CAMERA->GetTransform()->GetPosition()));
 
 	//Camera info
-	glm::vec3 cPos = CAMERA->GetTransform()->GetPosition();
-	glUniform3f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "camPos"), cPos.x, cPos.y, cPos.z);
 	glUniformMatrix4fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "CameraView")
 		, 1, GL_FALSE, glm::value_ptr(CAMERA->GetView()));
 
 	//light info
-	glUniform3f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Direction"), dir.x, dir.y, dir.z);
-	glUniform3f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Color"), col.x, col.y, col.z);
+	glUniform3fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Direction"), 1, glm::value_ptr(dir));
+	glUniform3fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Color"), 1, glm::value_ptr(col));
 
 	//shadow info
 	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "PcfSamples"), GRAPHICS.NumPCFSamples);
@@ -192,8 +202,8 @@ void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalSh
 
 		//Shadow map
 		glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(),
-			(ligStr + std::to_string(i) + "].ShadowMap").c_str()), 3+i);
-		glActiveTexture(GL_TEXTURE3+i);
+			(ligStr + std::to_string(i) + "].ShadowMap").c_str()), 4+i);
+		glActiveTexture(GL_TEXTURE4+i);
 		glBindTexture(GL_TEXTURE_2D, pShadow->m_Cascades[i].pTexture->GetHandle());
 
 		//cascade distance
