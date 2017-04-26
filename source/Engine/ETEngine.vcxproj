@@ -205,6 +205,7 @@
     <ClCompile Include="Materials\LightMaterial.cpp" />
     <ClCompile Include="Materials\NullMaterial.cpp" />
     <ClCompile Include="Materials\SkyboxMaterial.cpp" />
+    <ClCompile Include="PlanetTech\Atmosphere.cpp" />
     <ClCompile Include="PlanetTech\Patch.cpp" />
     <ClCompile Include="PlanetTech\Planet.cpp" />
     <ClCompile Include="PlanetTech\Triangulator.cpp" />
@@ -270,6 +271,7 @@
     <ClInclude Include="Materials\LightMaterial.hpp" />
     <ClInclude Include="Materials\NullMaterial.hpp" />
     <ClInclude Include="Materials\SkyboxMaterial.hpp" />
+    <ClInclude Include="PlanetTech\Atmosphere.hpp" />
     <ClInclude Include="PlanetTech\Patch.h" />
     <ClInclude Include="PlanetTech\Planet.h" />
     <ClInclude Include="PlanetTech\Triangulator.h" />
