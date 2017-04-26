@@ -42,6 +42,5 @@ void SkyboxMaterial::UploadDerivedVariables()
 	glUniform1i(m_uNumMipMaps, m_pHDRMap->GetNumMipMaps());
 	glUniform1f(m_uRoughness, m_Roughness);
 
-	glUniformMatrix4fv(glGetUniformLocation(m_Shader->GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(glm::mat4(glm::mat3(CAMERA->GetView()))));
-	glUniformMatrix4fv(glGetUniformLocation(m_Shader->GetProgram(), "proj"), 1, GL_FALSE, glm::value_ptr(CAMERA->GetProj()));
+	glUniformMatrix4fv(glGetUniformLocation(m_Shader->GetProgram(), "viewProj"), 1, GL_FALSE, glm::value_ptr(CAMERA->GetStatViewProj()));
 }

@@ -38,9 +38,8 @@
 	in vec3 Tangent;
 	in vec2 Texcoord;
 	
-	layout (location = 0) out vec4 outPosAO;                  	// | Pos.x   Pos.y   Pos.z | AO .x |
-	layout (location = 1) out vec4 outNormal;                   // | Nor.x   Nor.y | Met.x | Spc.x |
-	layout (location = 2) out vec4 outColor;                    // | BCo.r   BCo.g   BCo.b | Rou.x |
+	layout (location = 0) out vec4 texGBufferB;    
+	layout (location = 1) out vec4 texGBufferC;    
 	
 	uniform sampler2D texBaseColor;
 	uniform sampler2D texRoughness;
@@ -65,8 +64,6 @@
 	
 	void main()
 	{
-		float alpha = 1.0;
-		
 		vec3 norm = mapNormal();
 			
 		vec3 baseCol = texture(texBaseColor, Texcoord).rgb;
@@ -74,8 +71,7 @@
 		float metal = texture(texMetalness, Texcoord).r;
 		float ao = texture(texAO, Texcoord).r;
 		
-		outPosAO = vec4(Position, ao);
-		outNormal = vec4(encodeNormal(norm), metal, specular);
-		outColor = vec4(baseCol, rough);
+		texGBufferB = vec4(encodeNormal(norm), metal, ao);
+		texGBufferC = vec4(baseCol, rough);
 	}
 </FRAGMENT>

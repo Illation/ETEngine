@@ -23,21 +23,19 @@ vec3 reconstructPosition(vec3 viewRay, vec3 camPosition, float depth, float proj
 }
 
 #define GBUFFER_SAMPLER														\
-uniform sampler2D texDepth;		   /*| <----   Depth   ----> | xxxxx |*/	\
-uniform sampler2D texPosAO;        /*| Pos.x   Pos.y   Pos.z | AO .x |*/ 	\
-uniform sampler2D texNormMetSpec;  /*| Nor.x   Nor.y | Met.x | Spc.x |*/ 	\
-uniform sampler2D texBaseColRough; /*| BCo.r   BCo.g   BCo.b | Rou.x |*/ 	\
+uniform sampler2D texGBufferA;		/*| <----   Depth   ----> | xxxxx |*/ 	\
+uniform sampler2D texGBufferB;  	/*| Nor.x   Nor.y | Met.x | AO .x |*/ 	\
+uniform sampler2D texGBufferC; 		/*| BCo.r   BCo.g   BCo.b | Rou.x |*/ 	\
 uniform float projectionA;													\
 uniform float projectionB;													\
 uniform vec3 camPos;														\
 
-
 #define UNPACK_GBUFFER(texCoord, viewRay) 											\
-float depth = texture(texDepth, texCoord).r;										\
+float depth = texture(texGBufferA, texCoord).r;										\
 vec3 pos = reconstructPosition(viewRay, camPos, depth, projectionA, projectionB); 	\
-vec3 norm = decodeNormal(texture(texNormMetSpec, texCoord).rg); 					\
-vec3 baseCol = texture(texBaseColRough, texCoord).rgb; 								\
-float rough = texture(texBaseColRough, texCoord).a; 								\
-float metal = texture(texNormMetSpec, texCoord).b; 									\
-float ao = texture(texPosAO, texCoord).a; 											\
-float spec = texture(texNormMetSpec, texCoord).a; 									\
+vec3 norm = decodeNormal(texture(texGBufferB, texCoord).rg); 						\
+vec3 baseCol = texture(texGBufferC, texCoord).rgb; 									\
+float rough = texture(texGBufferC, texCoord).a; 									\
+float metal = texture(texGBufferB, texCoord).b; 									\
+float ao = texture(texGBufferB, texCoord).a; 										\
+float spec = 0.5f;																	\

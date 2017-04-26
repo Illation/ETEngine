@@ -5,14 +5,13 @@
 	
 	out vec3 TexCoords;
 	
-	uniform mat4 proj;
-	uniform mat4 view;
+	uniform mat4 viewProj;
 	
 	void main()
 	{
 		TexCoords = position;
 		
-		gl_Position = (proj*(view*vec4(position, 1.0))).xyww;
+		gl_Position = (viewProj*-vec4(position, 1.0)).xyww;
 	}  
 </VERTEX>
 <FRAGMENT>
