@@ -18,8 +18,8 @@ MainFramework::~MainFramework()
 
 void MainFramework::Initialize()
 {
-	//SceneManager::GetInstance()->AddGameScene(new PlanetTestScene());
-	//SceneManager::GetInstance()->AddGameScene(new ShadingTestScene());
+	SceneManager::GetInstance()->AddGameScene(new PlanetTestScene());
+	SceneManager::GetInstance()->AddGameScene(new ShadingTestScene());
 	SceneManager::GetInstance()->AddGameScene(new SkyboxTestScene());
 	SceneManager::GetInstance()->AddGameScene(new TestScene());
 }

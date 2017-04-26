@@ -94,9 +94,8 @@
 	in vec3 Normal;
 	in vec3 TriPos;
 	
-	layout (location = 0) out vec4 outPosAO;                  	// | Pos.x   Pos.y   Pos.z | AO .x |
-	layout (location = 1) out vec4 outNormal;                   // | Nor.x   Nor.y | Met.x | Spc.x |
-	layout (location = 2) out vec4 outColor;                    // | BCo.r   BCo.g   BCo.b | Rou.x |
+	layout (location = 0) out vec4 texGBufferB;    
+	layout (location = 1) out vec4 texGBufferC;    
 	
 	uniform vec3 camPos;
 	
@@ -157,8 +156,7 @@
 		norm = normalize(norm+normDetail*detail*2);
 		
 		//output to gbuffer MRT
-		outPosAO = vec4(TriPos, 1/*ao*/);
-		outNormal = vec4(encodeNormal(norm), 0/*metal*/, 0.5/*specular*/);
-		outColor = vec4(dif, 0.8/*roughness*/);
+		texGBufferB = vec4(encodeNormal(norm), 0/*metal*/, 1/*ao*/);
+		texGBufferC = vec4(dif, 0.8/*roughness*/);
 	} 
 </FRAGMENT>

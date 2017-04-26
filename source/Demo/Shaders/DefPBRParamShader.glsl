@@ -29,9 +29,8 @@
 	in vec3 Position;
 	in vec3 Normal;
 	
-	layout (location = 0) out vec4 outPosAO;                  	// | Pos.x   Pos.y   Pos.z | AO .x |
-	layout (location = 1) out vec4 outNormal;                   // | Nor.x   Nor.y | Met.x | Spc.x |
-	layout (location = 2) out vec4 outColor;                    // | BCo.r   BCo.g   BCo.b | Rou.x |
+	layout (location = 0) out vec4 texGBufferB;    
+	layout (location = 1) out vec4 texGBufferC;    
 	
 	uniform vec3 baseColor;
 	uniform float roughness;
@@ -39,12 +38,9 @@
 	
 	void main()
 	{
-		float alpha = 1.0;
-		
 		vec3 norm = normalize(Normal);
 		
-		outPosAO = vec4(Position, 1.0f);
-		outNormal = vec4(encodeNormal(norm), metalness, 0.5f);
-		outColor = vec4(baseColor, roughness);
+		texGBufferB = vec4(encodeNormal(norm), metalness, 1);
+		texGBufferC = vec4(baseColor, roughness);
 	}
 </FRAGMENT>

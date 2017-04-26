@@ -33,10 +33,9 @@ void LightMaterial::AccessShaderAttributes()
 }
 void LightMaterial::UploadDerivedVariables()
 {
-	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texDepth"), 0);
-	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texPosAO"), 1);
-	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texNormMetSpec"), 2);
-	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texBaseColRough"), 3);
+	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texGBufferA"), 0);
+	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texGBufferB"), 1);
+	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texGBufferC"), 2);
 	auto gbufferTex = SCENE->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{

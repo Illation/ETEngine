@@ -132,10 +132,9 @@ void DirectLightVolume::Draw(glm::vec3 dir, glm::vec3 col)
 	glBindVertexArray(m_QuadVAO);
 	glUseProgram(m_pShader->GetProgram());
 
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texDepth"), 0);
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texPosAO"), 1);
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texNormMetSpec"), 2);
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texBaseColRough"), 3);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferA"), 0);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferB"), 1);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferC"), 2);
 	auto gbufferTex = SCENE->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{
@@ -164,10 +163,9 @@ void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalSh
 	glUseProgram(m_pShaderShadowed->GetProgram());
 
 	//Upload gbuffer
-	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texDepth"), 0);
-	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texPosAO"), 1);
-	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texNormMetSpec"), 2);
-	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texBaseColRough"), 3);
+	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texGBufferA"), 0);
+	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texGBufferB"), 1);
+	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texGBufferC"), 2);
 	auto gbufferTex = SCENE->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{
@@ -202,8 +200,8 @@ void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalSh
 
 		//Shadow map
 		glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(),
-			(ligStr + std::to_string(i) + "].ShadowMap").c_str()), 4+i);
-		glActiveTexture(GL_TEXTURE4+i);
+			(ligStr + std::to_string(i) + "].ShadowMap").c_str()), 3+i);
+		glActiveTexture(GL_TEXTURE3+i);
 		glBindTexture(GL_TEXTURE_2D, pShadow->m_Cascades[i].pTexture->GetHandle());
 
 		//cascade distance
