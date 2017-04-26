@@ -18,6 +18,7 @@
 
 #include <random>
 #include "../../Engine/PlanetTech/Types/Moon.h"
+#include "../../Engine/PlanetTech/Types/Earth.h"
 
 PlanetTestScene::PlanetTestScene() : AbstractScene("PlanetTestScene")
 {

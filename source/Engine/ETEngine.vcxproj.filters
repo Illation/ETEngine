@@ -155,6 +155,7 @@
     <ClCompile Include="PlanetTech\Triangulator.cpp" />
     <ClCompile Include="PlanetTech\Types\Moon.cpp" />
     <ClCompile Include="PlanetTech\Types\Earth.cpp" />
+    <ClCompile Include="PlanetTech\Atmosphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -274,5 +275,6 @@
     <ClInclude Include="PlanetTech\Triangulator.h" />
     <ClInclude Include="PlanetTech\Types\Moon.h" />
     <ClInclude Include="PlanetTech\Types\Earth.h" />
+    <ClInclude Include="PlanetTech\Atmosphere.hpp" />
   </ItemGroup>
 </Project>
