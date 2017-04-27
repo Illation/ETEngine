@@ -156,6 +156,7 @@
     <ClCompile Include="PlanetTech\Types\Moon.cpp" />
     <ClCompile Include="PlanetTech\Types\Earth.cpp" />
     <ClCompile Include="PlanetTech\Atmosphere.cpp" />
+    <ClCompile Include="GraphicsHelper\PrimitiveRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -276,5 +277,6 @@
     <ClInclude Include="PlanetTech\Types\Moon.h" />
     <ClInclude Include="PlanetTech\Types\Earth.h" />
     <ClInclude Include="PlanetTech\Atmosphere.hpp" />
+    <ClInclude Include="GraphicsHelper\PrimitiveRenderer.hpp" />
   </ItemGroup>
 </Project>

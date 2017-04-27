@@ -28,10 +28,6 @@ protected:
 	vector<TextureData*> m_pTextureVec;
 	bool m_CaptureDepth = false;
 private:
-	// Quad vertices
-	GLuint m_VertexArrayObject;
-	GLuint m_VertexBufferObject;
-
 	std::string m_ShaderFile;
 	GLenum m_Format;
 	unsigned m_NumTargets = 1;

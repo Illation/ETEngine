@@ -30,9 +30,6 @@ private:
 	ShaderData* m_pGaussianShader;
 	ShaderData* m_pPostProcShader;
 
-	GLuint m_VAO;
-	GLuint m_VBO;
-
 	GLuint m_CollectFBO;
 	GLuint m_CollectTex;
 	GLuint m_CollectRBO;

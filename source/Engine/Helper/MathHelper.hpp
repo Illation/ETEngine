@@ -37,3 +37,7 @@ struct Sphere
 	glm::vec3 pos;
 	float radius;
 };
+
+std::vector<glm::vec3> GetIcosahedronPositions(float size = 1);
+std::vector<unsigned int> GetIcosahedronIndices();//For inverse winding
+std::vector<unsigned int> GetIcosahedronIndicesBFC();//for uniform winding

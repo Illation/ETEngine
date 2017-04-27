@@ -8,6 +8,7 @@
 #include "../GraphicsHelper/ShadowRenderer.hpp"
 #include "../GraphicsHelper/TextRenderer.h"
 #include "../Helper/PerformanceInfo.hpp"
+#include "../GraphicsHelper/PrimitiveRenderer.hpp"
 
 
 void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
@@ -33,6 +34,7 @@ AbstractFramework::~AbstractFramework()
 	ShadowRenderer* pShadowRenderer = ShadowRenderer::GetInstance();
 	TextRenderer* pTextRenderer = TextRenderer::GetInstance();
 	PerformanceInfo* pInfo = PerformanceInfo::GetInstance();
+	auto primRenderer = PrimitiveRenderer::GetInstance();
 
 	ContentManager::Release();
 
@@ -50,6 +52,7 @@ AbstractFramework::~AbstractFramework()
 	pShadowRenderer->DestroyInstance();
 	pTextRenderer->DestroyInstance();
 	pInfo->DestroyInstance();
+	primRenderer->DestroyInstance();
 }
 
 void AbstractFramework::Run()
@@ -91,7 +94,7 @@ void AbstractFramework::InitializeSDL()
 void AbstractFramework::InitializeWindow()
 {
 	Settings* pSet = Settings::GetInstance();//Initialize Game Settings
-	PerformanceInfo* pPerformance = PerformanceInfo::GetInstance();//Initialize Game Settings
+	PerformanceInfo* pPerformance = PerformanceInfo::GetInstance();//Initialize performance measurment #todo: disable for shipped project?
 	SceneManager* pScMan = SceneManager::GetInstance();//Initialize SceneManager
 	InputManager* pInMan = InputManager::GetInstance();//init input manager
 	pInMan->Init();
@@ -147,6 +150,7 @@ void AbstractFramework::InitializeGame()
 	SceneManager::GetInstance()->Initialize();
 	ShadowRenderer::GetInstance()->Initialize();
 	TextRenderer::GetInstance()->Initialize();
+	PrimitiveRenderer::GetInstance();
 
 	//Initialize Game
 	Initialize();
