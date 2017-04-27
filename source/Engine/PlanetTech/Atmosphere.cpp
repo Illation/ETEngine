@@ -10,8 +10,7 @@
 #include "../Graphics/TextureData.hpp"
 
 Atmosphere::Atmosphere(Planet* pPlanet) 
-	: FrameBuffer("Shaders/PostDeferredComposite.glsl", GL_FLOAT, 1)
-	, m_pPanet(pPlanet)
+	: m_pPanet(pPlanet)
 {
 }
 Atmosphere::~Atmosphere()
@@ -23,8 +22,12 @@ void Atmosphere::Precalculate()
 	//Calculate look up textures here
 }
 
-void Atmosphere::AccessShaderAttributes()
+void Atmosphere::Initialize()
 {
+	//Load and compile Shaders
+	m_pShader = ContentManager::Load<ShaderData>("[#todo]");
+	glUseProgram(m_pShader->GetProgram());
+
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferA"), 0);
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferB"), 1);
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferC"), 2);
@@ -34,8 +37,11 @@ void Atmosphere::AccessShaderAttributes()
 	m_uProjB = glGetUniformLocation(m_pShader->GetProgram(), "projectionB");
 	m_uViewProjInv = glGetUniformLocation(m_pShader->GetProgram(), "viewProjInv");
 }
-void Atmosphere::UploadDerivedVariables()
+void Atmosphere::Draw()
 {
+	glDisable(GL_DEPTH_TEST);
+	glUseProgram(m_pShader->GetProgram());
+
 	// #todo: stop repeating this everywhere
 	auto gbufferTex = SCENE->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
@@ -47,4 +53,7 @@ void Atmosphere::UploadDerivedVariables()
 	glUniform1f(m_uProjB, CAMERA->GetDepthProjB());
 	glUniformMatrix4fv(m_uViewProjInv, 1, GL_FALSE, glm::value_ptr(CAMERA->GetStatViewProjInv()));
 	glUniform3fv(m_uCamPos, 1, glm::value_ptr(CAMERA->GetTransform()->GetPosition()));
+
+	// #todo: add appropriate sphere level to primitive renderer
+	PrimitiveRenderer::GetInstance()->Draw<primitives::IcoSphere<3> >();
 }
