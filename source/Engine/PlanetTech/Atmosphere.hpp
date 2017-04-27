@@ -3,18 +3,17 @@
 
 class Planet;
 
-class Atmosphere : public FrameBuffer
+class Atmosphere
 {
 public:
 	Atmosphere(Planet* pPlanet);
 	~Atmosphere();
 
 	void Precalculate();
+	void Initialize();
+	void Draw();
 	
 private:
-	void AccessShaderAttributes();
-	void UploadDerivedVariables();
-
 	//Parameters
 	Planet* m_pPanet;
 
@@ -23,5 +22,7 @@ private:
 	GLint m_uProjA;
 	GLint m_uProjB;
 	GLint m_uViewProjInv;
+
+	ShaderData* m_pShader;
 };
 
