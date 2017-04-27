@@ -257,6 +257,7 @@ void AbstractScene::RootDraw()
 	}
 	//m_pHDRbuffer->Draw();
 	//Draw to default buffer
+	glDisable(GL_DEPTH_TEST);
 	m_pPostProcessing->Draw(0);
 
 	TextRenderer::GetInstance()->Draw();

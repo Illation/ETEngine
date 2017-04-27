@@ -21,7 +21,6 @@ private:
 	void Initialize();
 	bool IsInitialized = false;
 
-	MeshFilter* m_pMeshFilter;
 	LightMaterial* m_pMaterial;
 	NullMaterial* m_pNullMaterial;
 };
@@ -46,7 +45,4 @@ private:
 	GLint m_uCol;
 	GLint m_uDir;
 	GLint m_uCamPos;
-
-	GLuint m_QuadVAO = 0;
-	GLuint m_QuadVBO = 0;
 };

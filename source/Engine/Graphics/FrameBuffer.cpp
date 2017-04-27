@@ -4,6 +4,7 @@
 
 #include "ShaderData.hpp"
 #include "TextureData.hpp"
+#include "../GraphicsHelper/PrimitiveRenderer.hpp"
 
 FrameBuffer::FrameBuffer(string shaderFile, GLenum format, unsigned numTargets)
 	:m_ShaderFile(shaderFile),
@@ -19,37 +20,12 @@ FrameBuffer::~FrameBuffer()
 		SafeDelete(m_pTextureVec[i]);
 	}
 	glDeleteFramebuffers(1, &m_GlFrameBuffer);
-	glDeleteBuffers(1, &m_VertexBufferObject);
-	glDeleteVertexArrays(1, &m_VertexArrayObject);
 }
 
 void FrameBuffer::Initialize()
 {
 	//Load and compile Shaders
 	m_pShader = ContentManager::Load<ShaderData>(m_ShaderFile);
-
-	GLfloat quadVertices[] = {
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		1.0f,  1.0f,  1.0f, 1.0f,
-		1.0f, -1.0f,  1.0f, 0.0f,
-		1.0f, -1.0f,  1.0f, 0.0f,
-		-1.0f, -1.0f,  0.0f, 0.0f,
-		-1.0f,  1.0f,  0.0f, 1.0f};
-	//Vertex Object
-	glGenVertexArrays(1, &m_VertexArrayObject);
-	glGenBuffers(1, &m_VertexBufferObject);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
-	////Specify Input Layouts
-	glBindVertexArray(m_VertexArrayObject);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferObject);
-	GLint posAttrib = glGetAttribLocation(m_pShader->GetProgram(), "position");
-	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
-	GLint texAttrib = glGetAttribLocation(m_pShader->GetProgram(), "texcoord");
-	glEnableVertexAttribArray(texAttrib);
-	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
-
 
 	//GetAccessTo shader attributes
 	glUseProgram(m_pShader->GetProgram());
@@ -124,7 +100,6 @@ void FrameBuffer::Enable(bool active)
 
 void FrameBuffer::Draw()
 {
-	glBindVertexArray(m_VertexArrayObject);
 	glDisable(GL_DEPTH_TEST);//maybe move this out
 	glUseProgram(m_pShader->GetProgram());
 	for (size_t i = 0; i < m_pTextureVec.size(); i++)
@@ -135,6 +110,5 @@ void FrameBuffer::Draw()
 
 	UploadDerivedVariables();
 
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	PERFORMANCE->m_DrawCalls++;
+	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 }

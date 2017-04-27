@@ -100,7 +100,7 @@ void TestScene::Initialize()
 	auto disA = uniform_real_distribution<float>(0.f, 6.28318530718f);
 	auto disR = uniform_real_distribution<float>(0.2f, 1);
 	auto disT = uniform_real_distribution<float>(-1, 1);
-	for (size_t i = 0; i < 0; i++)
+	for (size_t i = 0; i < 2500; i++)
 	{
 		auto pLigMod = new ModelComponent("Resources/Models/sphere.dae");
 		pLigMod->SetMaterial(m_pLightMat);

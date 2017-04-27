@@ -190,6 +190,7 @@ void Patch::Draw(bool white)
 
 	//Draw the object
 	glDrawElementsInstanced(GL_TRIANGLES, m_Indices.size(), GL_UNSIGNED_INT, 0, m_NumInstances);
+	PERFORMANCE->m_DrawCalls++;
 
 	//unbind vertex array
 	glBindVertexArray(0);

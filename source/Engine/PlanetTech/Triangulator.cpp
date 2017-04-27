@@ -19,52 +19,12 @@ Triangulator::~Triangulator()
 
 void Triangulator::Init()
 {
-	//Generate icosahedron
-	float ratio = (1.f + sqrt(5.f)) / 2.f;
-	float scale = m_pPlanet->GetRadius() / glm::length(glm::vec2(ratio, 1.f));
-	ratio *= scale;
-
-	std::vector<glm::vec3> ico;
-	//X plane
-	ico.push_back(glm::vec3(ratio, 0, -scale));		//rf 0
-	ico.push_back(glm::vec3(-ratio, 0, -scale));	//lf 1
-	ico.push_back(glm::vec3(ratio, 0, scale));		//rb 2
-	ico.push_back(glm::vec3(-ratio, 0, scale));		//lb 3
-	//Y plane													 
-	ico.push_back(glm::vec3(0, -scale, ratio));		//db 4
-	ico.push_back(glm::vec3(0, -scale, -ratio));	//df 5
-	ico.push_back(glm::vec3(0, scale, ratio));		//ub 6
-	ico.push_back(glm::vec3(0, scale, -ratio));		//uf 7
-	//Z plane													 
-	ico.push_back(glm::vec3(-scale, ratio, 0));		//lu 8
-	ico.push_back(glm::vec3(-scale, -ratio, 0));	//ld 9
-	ico.push_back(glm::vec3(scale, ratio, 0));		//ru 10
-	ico.push_back(glm::vec3(scale, -ratio, 0));		//rd 11
-	//Triangles on planes
-	m_Icosahedron.push_back(Tri(ico[1], ico[3], ico[8], nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[1], ico[3],ico[9],  nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[0], ico[2],ico[10], nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[0], ico[2],ico[11], nullptr, 0));
-	
-	m_Icosahedron.push_back(Tri(ico[5], ico[7], ico[0], nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[5], ico[7], ico[1], nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[4], ico[6], ico[2], nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[4], ico[6], ico[3], nullptr, 0));
-			  
-	m_Icosahedron.push_back(Tri(ico[9], ico[11], ico[4], nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[9], ico[11], ico[5], nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[8], ico[10], ico[6], nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[8], ico[10], ico[7], nullptr, 0));
-			  
-	m_Icosahedron.push_back(Tri(ico[1], ico[7], ico[8], nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[1], ico[5], ico[9], nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[0], ico[7], ico[10], nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[0], ico[5], ico[11], nullptr, 0));
-			  
-	m_Icosahedron.push_back(Tri(ico[3], ico[6], ico[8], nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[3], ico[4], ico[9], nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[2], ico[6], ico[10], nullptr, 0));
-	m_Icosahedron.push_back(Tri(ico[2], ico[4], ico[11], nullptr, 0));
+	auto ico = GetIcosahedronPositions(m_pPlanet->GetRadius());
+	auto indices = GetIcosahedronIndices();
+	for (size_t i = 0; i < indices.size(); i+=3)
+	{
+		m_Icosahedron.push_back(Tri(ico[indices[i]], ico[indices[i+1]], ico[indices[i+2]], nullptr, 0));
+	}
 
 	Precalculate();
 	
