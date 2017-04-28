@@ -22,7 +22,6 @@ public:
 	void RemoveEntity(Entity* pEntity, bool deleteEntity = true);
 	void SetActiveCamera(CameraComponent* pCamera);
 	void SetSkybox(string assetFile);
-	//CubeMap* GetEnvironmentMap();
 	HDRMap* GetEnvironmentMap();
 	std::vector<LightComponent*> GetLights();
 	Gbuffer* GetGBuffer() { return m_pGBuffer; }
@@ -44,6 +43,7 @@ protected:
 
 private:
 	friend class SceneManager;
+	friend class RenderPipeline;
 
 	void RootInitialize();
 	void RootUpdate();

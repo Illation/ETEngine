@@ -157,6 +157,7 @@
     <ClCompile Include="PlanetTech\Types\Earth.cpp" />
     <ClCompile Include="PlanetTech\Atmosphere.cpp" />
     <ClCompile Include="GraphicsHelper\PrimitiveRenderer.cpp" />
+    <ClCompile Include="GraphicsHelper\RenderPipeline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StaticDependancies\glad\glad.h">
@@ -278,5 +279,6 @@
     <ClInclude Include="PlanetTech\Types\Earth.h" />
     <ClInclude Include="PlanetTech\Atmosphere.hpp" />
     <ClInclude Include="GraphicsHelper\PrimitiveRenderer.hpp" />
+    <ClInclude Include="GraphicsHelper\RenderPipeline.hpp" />
   </ItemGroup>
 </Project>

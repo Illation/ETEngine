@@ -9,6 +9,7 @@
 #include "../Graphics/ShaderData.hpp"
 #include "../Graphics/TextureData.hpp"
 #include "../Graphics/Frustum.h"
+#include "RenderPipeline.hpp"
 
 ShadowRenderer::ShadowRenderer(){}
 ShadowRenderer::~ShadowRenderer()
@@ -85,7 +86,7 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		//Draw scene with light matrix and null material
-		SCENE->DrawShadow();
+		RenderPipeline::GetInstance()->DrawShadow();
 	}
 }
 
