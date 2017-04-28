@@ -11,7 +11,7 @@ public:
 
 	void Precalculate();
 	void Initialize();
-	void Draw();
+	void Draw(glm::vec3 pos, glm::vec3 radius);
 	
 private:
 	//Parameters
@@ -22,6 +22,9 @@ private:
 	GLint m_uProjA;
 	GLint m_uProjB;
 	GLint m_uViewProjInv;
+
+	GLint m_uPosition;
+	GLint m_uRadius;
 
 	ShaderData* m_pShader;
 };
