@@ -144,7 +144,7 @@ void PostProcessingRenderer::EnableInput()
 }
 void PostProcessingRenderer::Draw(GLuint FBO)
 {
-	glDisable(GL_DEPTH_TEST);
+	STATE->SetDepthEnabled(false);
 	//get glow
 	glBindFramebuffer(GL_FRAMEBUFFER, m_HDRoutFBO);
 	glUseProgram(m_pDownsampleShader->GetProgram());
@@ -158,14 +158,14 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	{
 		if(i>0) glUseProgram(m_pDownsampleShader->GetProgram());
 		float resMult = 1.f / (float)std::pow(2, i + 1);
-		RenderPipeline::GetInstance()->GetState()->SetViewport(glm::ivec2(0), glm::ivec2((int)(width*resMult), (int)(height*resMult)));
+		STATE->SetViewport(glm::ivec2(0), glm::ivec2((int)(width*resMult), (int)(height*resMult)));
 		glBindFramebuffer(GL_FRAMEBUFFER, m_DownSampleFBO[i]);
 		if(i>0)glBindTexture(GL_TEXTURE_2D, m_DownSampleTexture[i-1]);
 		glUniform1f(m_uThreshold, m_Threshold);
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
 		//blur downsampled
-		//glViewport(0, 0, width, height);
+		//STATE->SetViewport(glm::ivec2(0), glm::ivec2(width, height));
 		glUseProgram(m_pGaussianShader->GetProgram());
 		for (GLuint j = 0; j < (GLuint)GRAPHICS.NumBlurPasses * 2; j++)
 		{
@@ -179,7 +179,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		}
 	}
-	RenderPipeline::GetInstance()->GetState()->SetViewport(glm::ivec2(0), glm::ivec2(width, height));
+	STATE->SetViewport(glm::ivec2(0), glm::ivec2(width, height));
 	//ping pong gaussian blur
 	GLboolean horizontal = true;
 	glUseProgram(m_pGaussianShader->GetProgram());

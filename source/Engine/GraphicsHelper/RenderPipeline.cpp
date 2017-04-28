@@ -124,7 +124,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
 	//Render Light Volumes
-	//glEnable(GL_STENCIL_TEST); // #todo lightvolume stencil test
+	//STATE->SetStencilEnabled(true); // #todo lightvolume stencil test
 
 	m_pState->SetDepthEnabled(false);
 	m_pState->SetBlendEnabled(true);
@@ -147,7 +147,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 	m_pState->SetDepthEnabled(true);
 	m_pState->SetCullEnabled(false);
 
-	//glDisable(GL_STENCIL_TEST);
+	//STATE->SetStencilEnabled(false);
 
 	//Foreward Rendering
 	//******************

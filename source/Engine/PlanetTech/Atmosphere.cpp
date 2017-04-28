@@ -41,7 +41,7 @@ void Atmosphere::Initialize()
 }
 void Atmosphere::Draw()
 {
-	glDisable(GL_DEPTH_TEST);
+	STATE->SetDepthEnabled(false);
 	glUseProgram(m_pShader->GetProgram());
 
 	// #todo: stop repeating this everywhere
