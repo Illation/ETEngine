@@ -100,7 +100,7 @@ void FrameBuffer::Enable(bool active)
 
 void FrameBuffer::Draw()
 {
-	glDisable(GL_DEPTH_TEST);//maybe move this out
+	STATE->SetDepthEnabled(false);
 	glUseProgram(m_pShader->GetProgram());
 	for (size_t i = 0; i < m_pTextureVec.size(); i++)
 	{

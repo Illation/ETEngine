@@ -51,8 +51,8 @@ void PointLightVolume::Draw(glm::vec3 pos, float radius, glm::vec3 col)
 	glm::mat4 World = glm::translate(pos)*glm::scale(glm::vec3(radius));
 
 	//Draw the null material in the stencil buffer
-	//glEnable(GL_DEPTH_TEST);
-	//glDisable(GL_CULL_FACE);
+	//STATE->SetDepthEnabled(true);
+	//STATE->SetCullEnabled(false);
 	//glClear(GL_STENCIL_BUFFER_BIT);
 	//glStencilFunc(GL_ALWAYS, 0, 0);
 	//glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
@@ -61,20 +61,20 @@ void PointLightVolume::Draw(glm::vec3 pos, float radius, glm::vec3 col)
 	//PrimitiveRenderer::GetInstance()->Draw<primitives::IcoSphere<2> >();
 	//Draw the Light material on the gbuffer
 	//glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
-	//glDisable(GL_DEPTH_TEST);
-	//glEnable(GL_BLEND);
-	//glBlendEquation(GL_FUNC_ADD);
-	//glBlendFunc(GL_ONE, GL_ONE);
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_FRONT);
+	//STATE->SetDepthEnabled(false);
+	//STATE->SetBlendEnabled(true);
+	//STATE->SetBlendEquation(GL_FUNC_ADD);
+	//STATE->SetBlendFunction(GL_ONE, GL_ONE);
+	//STATE->SetCullEnabled(true);
+	//STATE->SetFaceCullingMode(GL_FRONT);
 
 	m_pMaterial->SetLight(pos, col, radius);
 	m_pMaterial->UploadVariables(World);
 
 	PrimitiveRenderer::GetInstance()->Draw<primitives::IcoSphere<2> >();
 
-	//glCullFace(GL_BACK);
-	//glDisable(GL_BLEND);
+	//STATE->SetFaceCullingMode(GL_BACK);
+	//STATE->SetBlendEnabled(false);
 }
 
 DirectLightVolume::DirectLightVolume(){}

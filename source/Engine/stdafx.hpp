@@ -75,6 +75,8 @@ inline void Clamp(T& value, T hi, T lo)
 #include "Helper/Logger.hpp"
 #include "Helper/MathHelper.hpp"
 #include "Helper/PerformanceInfo.hpp"
+#include "GraphicsHelper/RenderPipeline.hpp"
+#include "GraphicsHelper/RenderState.hpp"
 //Working singleton Set
 #define TIME Context::GetInstance()->pTime
 #define CAMERA Context::GetInstance()->pCamera
@@ -87,4 +89,6 @@ inline void Clamp(T& value, T hi, T lo)
 #define WINDOW Settings::GetInstance()->Window
 #define GRAPHICS Settings::GetInstance()->Graphics
 #define PERFORMANCE PerformanceInfo::GetInstance()
+#define PIPELINE RenderPipeline::GetInstance()
+#define STATE RenderPipeline::GetInstance()->GetState()
 #pragma endregion Macros

@@ -67,9 +67,9 @@ void Planet::Update()
 
 void Planet::Draw()
 {
-	RenderPipeline::GetInstance()->GetState()->SetCullEnabled(false);
+	STATE->SetCullEnabled(false);
 	m_pPatch->Draw();
-	RenderPipeline::GetInstance()->GetState()->SetCullEnabled(true);
+	STATE->SetCullEnabled(true);
 }
 void Planet::DrawWire()
 {

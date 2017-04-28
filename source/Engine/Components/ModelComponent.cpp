@@ -91,7 +91,7 @@ void ModelComponent::DrawCall()
 	glBindVertexArray(vO.array);
 	m_pMaterial->UploadVariables(m_pEntity->GetTransform()->GetWorld());
 	// Draw 
-	RenderPipeline::GetInstance()->GetState()->SetDepthEnabled(true);
+	STATE->SetDepthEnabled(true);
 	glDrawElementsInstanced(GL_TRIANGLES, m_pMeshFilter->m_IndexCount, GL_UNSIGNED_INT, 0, 1);
 	PERFORMANCE->m_DrawCalls++;
 }

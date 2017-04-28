@@ -80,7 +80,7 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 
 		//Set viewport
 		glm::ivec2 res = pShadowData->m_Cascades[i].pTexture->GetResolution();
-		RenderPipeline::GetInstance()->GetState()->SetViewport(glm::ivec2(0), res);
+		STATE->SetViewport(glm::ivec2(0), res);
 		//Set Framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, pShadowData->m_Cascades[i].fbo);
 		//Clear Framebuffer
