@@ -9,6 +9,7 @@
 #include "../GraphicsHelper/TextRenderer.h"
 #include "../Helper/PerformanceInfo.hpp"
 #include "../GraphicsHelper/PrimitiveRenderer.hpp"
+#include "../GraphicsHelper/RenderPipeline.hpp"
 
 
 void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
@@ -29,12 +30,8 @@ AbstractFramework::~AbstractFramework()
 	Context* pCon = Context::GetInstance();
 	SceneManager* pScMan = SceneManager::GetInstance();
 	InputManager* pInMan = InputManager::GetInstance();
-	PointLightVolume* pVol = PointLightVolume::GetInstance();
-	DirectLightVolume* pDirVol = DirectLightVolume::GetInstance();
-	ShadowRenderer* pShadowRenderer = ShadowRenderer::GetInstance();
-	TextRenderer* pTextRenderer = TextRenderer::GetInstance();
-	PerformanceInfo* pInfo = PerformanceInfo::GetInstance();
-	auto primRenderer = PrimitiveRenderer::GetInstance();
+
+	RenderPipeline* pRenderPipeline = RenderPipeline::GetInstance();
 
 	ContentManager::Release();
 
@@ -47,12 +44,8 @@ AbstractFramework::~AbstractFramework()
 	pScMan->DestroyInstance();
 	pInMan->DestroyInstance();
 	pCon->DestroyInstance();
-	pVol->DestroyInstance();
-	pDirVol->DestroyInstance();
-	pShadowRenderer->DestroyInstance();
-	pTextRenderer->DestroyInstance();
-	pInfo->DestroyInstance();
-	primRenderer->DestroyInstance();
+	
+	pRenderPipeline->DestroyInstance();
 }
 
 void AbstractFramework::Run()
@@ -148,9 +141,8 @@ void AbstractFramework::InitializeGame()
 	ContentManager::Initialize();
 
 	SceneManager::GetInstance()->Initialize();
-	ShadowRenderer::GetInstance()->Initialize();
-	TextRenderer::GetInstance()->Initialize();
-	PrimitiveRenderer::GetInstance();
+
+	RenderPipeline::GetInstance()->Initialize();
 
 	//Initialize Game
 	Initialize();
@@ -164,6 +156,13 @@ void AbstractFramework::GameLoop()
 		InputManager::GetInstance()->UpdateEvents();
 		if (InputManager::GetInstance()->IsExitRequested())return;
 
+		std::vector<AbstractScene*> activeScenes;
+		if (SceneManager::GetInstance()->GetActiveScene())
+		{
+			activeScenes.push_back(SceneManager::GetInstance()->GetActiveScene());
+		}
+		// #note: currently only one scene but could be expanded for nested scenes
+
 		Update();
 		//******
 		//UPDATE
@@ -171,10 +170,11 @@ void AbstractFramework::GameLoop()
 
 		//****
 		//DRAW
-		SceneManager::GetInstance()->Draw();
+		//SceneManager::GetInstance()->Draw();
 
-		//Swap front and back buffer
-		SDL_GL_SwapWindow(pSet->Window.pWindow);
+		////Swap front and back buffer
+		//SDL_GL_SwapWindow(pSet->Window.pWindow);
+		RenderPipeline::GetInstance()->Draw(activeScenes);
 	}
 }
 

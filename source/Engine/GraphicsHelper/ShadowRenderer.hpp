@@ -19,7 +19,8 @@ public:
 	NullMaterial* GetNullMaterial() { return m_pMaterial; }
 
 private:
-	friend class AbstractFramework; //should init and destroy singleton
+	friend class AbstractFramework;
+	friend class RenderPipeline; //should init and destroy singleton
 
 	void Initialize();
 	bool IsInitialized = false;

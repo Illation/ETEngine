@@ -189,6 +189,7 @@
     <ClCompile Include="Framebuffers\Gbuffer.cpp" />
     <ClCompile Include="GraphicsHelper\LightVolume.cpp" />
     <ClCompile Include="GraphicsHelper\PrimitiveRenderer.cpp" />
+    <ClCompile Include="GraphicsHelper\RenderPipeline.cpp" />
     <ClCompile Include="GraphicsHelper\ShadowRenderer.cpp" />
     <ClCompile Include="GraphicsHelper\TextRenderer.cpp" />
     <ClCompile Include="Graphics\FrameBuffer.cpp" />
@@ -255,6 +256,7 @@
     <ClInclude Include="Framebuffers\Gbuffer.hpp" />
     <ClInclude Include="GraphicsHelper\LightVolume.hpp" />
     <ClInclude Include="GraphicsHelper\PrimitiveRenderer.hpp" />
+    <ClInclude Include="GraphicsHelper\RenderPipeline.hpp" />
     <ClInclude Include="GraphicsHelper\ShadowRenderer.hpp" />
     <ClInclude Include="GraphicsHelper\TextRenderer.h" />
     <ClInclude Include="Graphics\FrameBuffer.hpp" />

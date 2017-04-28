@@ -8,6 +8,7 @@
 #include "../SceneGraph/AbstractScene.hpp"
 #include "../Components/LightComponent.hpp"
 #include "../Graphics/TextureData.hpp"
+#include "../GraphicsHelper/PrimitiveRenderer.hpp"
 
 Atmosphere::Atmosphere(Planet* pPlanet) 
 	: m_pPanet(pPlanet)

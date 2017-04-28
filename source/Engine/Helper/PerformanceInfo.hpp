@@ -15,6 +15,7 @@ public:
 private:
 	friend class AbstractFramework; //should init and destroy singleton
 	friend class AbstractScene;
+	friend class RenderPipeline;
 
 	void Update();
 	void StartFrameTimer();
