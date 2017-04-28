@@ -22,6 +22,7 @@ PrimitiveRenderer::PrimitiveRenderer()
 	AddGeometry(new primitives::IcoSphere<0>());
 	AddGeometry(new primitives::IcoSphere<1>());
 	AddGeometry(new primitives::IcoSphere<2>());
+	AddGeometry(new primitives::IcoSphere<3>());
 }
 PrimitiveRenderer::~PrimitiveRenderer()
 {

@@ -27,7 +27,7 @@ void Atmosphere::Precalculate()
 void Atmosphere::Initialize()
 {
 	//Load and compile Shaders
-	m_pShader = ContentManager::Load<ShaderData>("[#todo]");
+	m_pShader = ContentManager::Load<ShaderData>("Shaders/PostAtmosphere.glsl");
 	glUseProgram(m_pShader->GetProgram());
 
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferA"), 0);
@@ -38,10 +38,18 @@ void Atmosphere::Initialize()
 	m_uProjA = glGetUniformLocation(m_pShader->GetProgram(), "projectionA");
 	m_uProjB = glGetUniformLocation(m_pShader->GetProgram(), "projectionB");
 	m_uViewProjInv = glGetUniformLocation(m_pShader->GetProgram(), "viewProjInv");
+
+	m_uPosition = glGetUniformLocation(m_pShader->GetProgram(), "Position");
+	m_uRadius = glGetUniformLocation(m_pShader->GetProgram(), "Radius");
 }
-void Atmosphere::Draw()
+void Atmosphere::Draw(glm::vec3 pos, glm::vec3 radius)
 {
-	STATE->SetDepthEnabled(false);
+	Sphere objSphere = Sphere(pos, radius);
+	if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
+		return;
+
+	glm::mat4 World = glm::translate(pos)*glm::scale(glm::vec3(radius));
+
 	glUseProgram(m_pShader->GetProgram());
 
 	// #todo: stop repeating this everywhere
@@ -56,6 +64,11 @@ void Atmosphere::Draw()
 	glUniformMatrix4fv(m_uViewProjInv, 1, GL_FALSE, glm::value_ptr(CAMERA->GetStatViewProjInv()));
 	glUniform3fv(m_uCamPos, 1, glm::value_ptr(CAMERA->GetTransform()->GetPosition()));
 
-	// #todo: add appropriate sphere level to primitive renderer
+	glUniform3fv(m_uPosition, 1, glm::value_ptr(pos));
+	glUniform1f(m_uRadius, radius);
+
+	STATE->SetCullEnabled(true);
+	STATE->SetFaceCullingMode(GL_FRONT);
+	STATE->SetDepthEnabled(false);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::IcoSphere<3> >();
 }
