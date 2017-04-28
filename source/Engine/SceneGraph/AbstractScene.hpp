@@ -24,12 +24,8 @@ public:
 	void SetSkybox(string assetFile);
 	HDRMap* GetEnvironmentMap();
 	std::vector<LightComponent*> GetLights();
-	Gbuffer* GetGBuffer() { return m_pGBuffer; }
 
 	bool SkyboxEnabled() { return m_UseSkyBox; }
-
-	//Invoked by shadow renderer
-	void DrawShadow();
 
 protected:
 
@@ -47,7 +43,6 @@ private:
 
 	void RootInitialize();
 	void RootUpdate();
-	void RootDraw();
 	void RootOnActivated();
 	void RootOnDeactivated();
 
@@ -57,13 +52,6 @@ private:
 	CameraComponent *m_pDefaultCam = nullptr;
 	Time *m_pTime = nullptr;
 	ContextObjects* m_pConObj = nullptr;
-
-	float m_Exposure = 1;
-	glm::vec3 m_ClearColor;
-	Gbuffer* m_pGBuffer = nullptr;
-	Gbuffer* m_pDemoBuffer = nullptr;
-	bool m_DemoMode = false;
-	PostProcessingRenderer* m_pPostProcessing = nullptr;
 
 	bool m_UseSkyBox = false;
 	Skybox* m_pSkybox = nullptr;

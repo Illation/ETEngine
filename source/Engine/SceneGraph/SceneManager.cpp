@@ -116,9 +116,3 @@ void SceneManager::Update()
 		m_ActiveScene->RootUpdate();
 	}
 }
-
-void SceneManager::Draw()
-{
-	if (m_ActiveScene != nullptr)
-		m_ActiveScene->RootDraw();
-}

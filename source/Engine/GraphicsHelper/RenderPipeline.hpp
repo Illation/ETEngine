@@ -11,6 +11,9 @@ public:
 
 	void Initialize();
 
+	Gbuffer* GetGBuffer() { return m_pGBuffer; }
+	PostProcessingRenderer* GetPostProcessor() { return m_pPostProcessing; }	
+
 	void DrawShadow();
 	void Draw(std::vector<AbstractScene*> pScenes);
 

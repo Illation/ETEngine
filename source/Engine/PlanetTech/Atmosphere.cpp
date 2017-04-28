@@ -9,6 +9,7 @@
 #include "../Components/LightComponent.hpp"
 #include "../Graphics/TextureData.hpp"
 #include "../GraphicsHelper/PrimitiveRenderer.hpp"
+#include "../GraphicsHelper/RenderPipeline.hpp"
 
 Atmosphere::Atmosphere(Planet* pPlanet) 
 	: m_pPanet(pPlanet)
@@ -44,7 +45,7 @@ void Atmosphere::Draw()
 	glUseProgram(m_pShader->GetProgram());
 
 	// #todo: stop repeating this everywhere
-	auto gbufferTex = SCENE->GetGBuffer()->GetTextures();
+	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
