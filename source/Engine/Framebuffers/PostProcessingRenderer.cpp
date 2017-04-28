@@ -4,6 +4,8 @@
 #include "../Graphics/ShaderData.hpp"
 #include "../GraphicsHelper/ShadowRenderer.hpp"
 #include "../GraphicsHelper/PrimitiveRenderer.hpp"
+#include "../GraphicsHelper/RenderPipeline.hpp"
+#include "../GraphicsHelper/RenderState.hpp"
 
 PostProcessingRenderer::PostProcessingRenderer()
 {
@@ -156,7 +158,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	{
 		if(i>0) glUseProgram(m_pDownsampleShader->GetProgram());
 		float resMult = 1.f / (float)std::pow(2, i + 1);
-		glViewport(0, 0, (GLsizei)(width*resMult), (GLsizei)(height*resMult));
+		RenderPipeline::GetInstance()->GetState()->SetViewport(glm::ivec2(0), glm::ivec2((int)(width*resMult), (int)(height*resMult)));
 		glBindFramebuffer(GL_FRAMEBUFFER, m_DownSampleFBO[i]);
 		if(i>0)glBindTexture(GL_TEXTURE_2D, m_DownSampleTexture[i-1]);
 		glUniform1f(m_uThreshold, m_Threshold);
@@ -177,7 +179,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		}
 	}
-	glViewport(0, 0, width, height);
+	RenderPipeline::GetInstance()->GetState()->SetViewport(glm::ivec2(0), glm::ivec2(width, height));
 	//ping pong gaussian blur
 	GLboolean horizontal = true;
 	glUseProgram(m_pGaussianShader->GetProgram());

@@ -2,6 +2,7 @@
 #include "../StaticDependancies/glad/glad.h"
 
 class AbstractScene;
+class RenderState;
 
 class RenderPipeline : public Singleton<RenderPipeline>
 {
@@ -17,8 +18,12 @@ public:
 	void DrawShadow();
 	void Draw(std::vector<AbstractScene*> pScenes);
 
+	RenderState* GetState() { return m_pState; }
+
 private:
 	std::vector<AbstractScene*> m_pRenderScenes;
+
+	RenderState* m_pState;
 
 	Gbuffer* m_pGBuffer = nullptr;
 	PostProcessingRenderer* m_pPostProcessing = nullptr;

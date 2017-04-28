@@ -5,6 +5,8 @@
 
 #include "../Graphics/ShaderData.hpp"
 #include "../GraphicsHelper/PrimitiveRenderer.hpp"
+#include "../GraphicsHelper/RenderPipeline.hpp"
+#include "../GraphicsHelper/RenderState.hpp"
 
 HdrLoader::HdrLoader()
 {
@@ -115,7 +117,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//render the cube
 	//***************
 
-	glViewport(0, 0, m_CubemapRes, m_CubemapRes); //Reset later
+	RenderPipeline::GetInstance()->GetState()->SetViewport(glm::ivec2(0), glm::ivec2(m_CubemapRes));
 	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
 	for (unsigned int i = 0; i < 6; ++i)
 	{
@@ -164,7 +166,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//render irradiance cubemap
 	//*************************
 
-	glViewport(0, 0, m_IrradianceRes, m_IrradianceRes); // don't forget to configure the viewport to the capture dimensions.
+	RenderPipeline::GetInstance()->GetState()->SetViewport(glm::ivec2(0), glm::ivec2(m_IrradianceRes));
 	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
 	for (unsigned int i = 0; i < 6; ++i)
 	{
@@ -215,7 +217,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 		unsigned int mipHeight = (unsigned int)(m_RadianceRes * std::pow(0.5, mip));
 		glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
-		glViewport(0, 0, mipWidth, mipHeight);
+		RenderPipeline::GetInstance()->GetState()->SetViewport(glm::ivec2(0), glm::ivec2(mipWidth, mipHeight));
 
 		float roughness = (float)mip / (float)(maxMipLevels);
 		glUniform1f(roughnessUniformLoc, roughness);
@@ -253,7 +255,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_BrdfLutRes, m_BrdfLutRes);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0);
 
-	glViewport(0, 0, m_BrdfLutRes, m_BrdfLutRes);
+	RenderPipeline::GetInstance()->GetState()->SetViewport(glm::ivec2(0), glm::ivec2(m_BrdfLutRes));
 	glUseProgram(brdfShader->GetProgram());
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
@@ -263,7 +265,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//Reset render settings and return generated texture
 	//*************************************************
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);//need to set it back later
-	glViewport(0, 0, SETTINGS->Window.Width, SETTINGS->Window.Height);
+	RenderPipeline::GetInstance()->GetState()->SetViewport(glm::ivec2(0), glm::ivec2(SETTINGS->Window.Width, SETTINGS->Window.Height));
 	glDeleteTextures(1, &hdrTexture);
 
 	return new HDRMap(envCubemap, irradianceMap, radianceMap, brdfLUTTexture, m_CubemapRes, m_CubemapRes, maxMipLevels);
