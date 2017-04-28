@@ -12,6 +12,8 @@
 #include "Triangulator.h"
 #include "Patch.h"
 #include "../Content/TextureLoader.hpp"
+#include "../GraphicsHelper/RenderPipeline.hpp"
+#include "../GraphicsHelper/RenderState.hpp"
 
 Planet::Planet()
 {
@@ -65,9 +67,9 @@ void Planet::Update()
 
 void Planet::Draw()
 {
-	glDisable(GL_CULL_FACE);
+	RenderPipeline::GetInstance()->GetState()->SetCullEnabled(false);
 	m_pPatch->Draw();
-	glEnable(GL_CULL_FACE);
+	RenderPipeline::GetInstance()->GetState()->SetCullEnabled(true);
 }
 void Planet::DrawWire()
 {

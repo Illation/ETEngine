@@ -10,6 +10,7 @@
 #include "../Graphics/TextureData.hpp"
 #include "../Graphics/Frustum.h"
 #include "RenderPipeline.hpp"
+#include "RenderState.hpp"
 
 ShadowRenderer::ShadowRenderer(){}
 ShadowRenderer::~ShadowRenderer()
@@ -79,7 +80,7 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 
 		//Set viewport
 		glm::ivec2 res = pShadowData->m_Cascades[i].pTexture->GetResolution();
-		glViewport(0, 0, res.x, res.y);
+		RenderPipeline::GetInstance()->GetState()->SetViewport(glm::ivec2(0), res);
 		//Set Framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, pShadowData->m_Cascades[i].fbo);
 		//Clear Framebuffer

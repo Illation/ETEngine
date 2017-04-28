@@ -4,6 +4,7 @@
 #include "../SceneGraph/AbstractScene.hpp"
 #include "LightVolume.hpp"
 #include "ShadowRenderer.hpp"
+#include "RenderState.hpp"
 #include "TextRenderer.h"
 #include "../Helper/PerformanceInfo.hpp"
 #include "PrimitiveRenderer.hpp"
@@ -12,9 +13,6 @@
 #include "../Components/LightComponent.hpp"
 #include "../SceneGraph/Entity.hpp"
 #include "../Prefabs/Skybox.hpp"
-
-//Abstract
-//*********
 
 RenderPipeline::RenderPipeline()
 {
@@ -30,11 +28,15 @@ RenderPipeline::~RenderPipeline()
 
 	SafeDelete(m_pGBuffer);
 	SafeDelete(m_pPostProcessing);
+	SafeDelete(m_pState);
 }
 
 void RenderPipeline::Initialize()
 {
 	//Init renderers
+	m_pState = new RenderState();
+	m_pState->Initialize();
+
 	PointLightVolume* pVol = PointLightVolume::GetInstance();
 	DirectLightVolume* pDirVol = DirectLightVolume::GetInstance();
 	ShadowRenderer* pShadowRenderer = ShadowRenderer::GetInstance();
@@ -74,9 +76,9 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 	m_pRenderScenes = pScenes;
 	//Shadow Mapping
 	//**************
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);//Maybe draw two sided materials in seperate pass
+	m_pState->SetDepthEnabled(true);
+	m_pState->SetCullEnabled(true);
+	m_pState->SetFaceCullingMode(GL_FRONT);//Maybe draw two sided materials in seperate pass
 	for (auto pScene : pScenes)
 	{
 		auto lightVec = pScene->GetLights(); //Todo: automatically add all light components to an array for faster access
@@ -93,12 +95,12 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 
 	//reset viewport
 	int width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
-	glViewport(0, 0, width, height);
+	m_pState->SetViewport(glm::ivec2(0), glm::ivec2(width, height));
 
-	glClearColor(m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, 1.0f);
+	m_pState->SetClearColor(glm::vec4(m_ClearColor, 1.f));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glCullFace(GL_BACK);
+	m_pState->SetFaceCullingMode(GL_BACK);
 	for (auto pScene : pScenes)
 	{
 		pScene->Draw();
@@ -107,7 +109,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 			pEntity->RootDraw();
 		}
 	}
-	glDisable(GL_CULL_FACE);
+	m_pState->SetCullEnabled(false);
 	//Step two: blend data and calculate lighting with gbuffer
 	m_pPostProcessing->EnableInput();
 	//Ambient IBL lighting
@@ -124,13 +126,13 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 	//Render Light Volumes
 	//glEnable(GL_STENCIL_TEST); // #todo lightvolume stencil test
 
-	glDisable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_ONE, GL_ONE);
+	m_pState->SetDepthEnabled(false);
+	m_pState->SetBlendEnabled(true);
+	m_pState->SetBlendEquation(GL_FUNC_ADD);
+	m_pState->SetBlendFunction(GL_ONE, GL_ONE);
 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);
+	m_pState->SetCullEnabled(true);
+	m_pState->SetFaceCullingMode(GL_FRONT);
 	for (auto pScene : pScenes)
 	{
 		auto lightVec = pScene->GetLights(); 
@@ -139,11 +141,11 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 			Light->DrawVolume();
 		}
 	}
-	glCullFace(GL_BACK);
-	glDisable(GL_BLEND);
+	m_pState->SetFaceCullingMode(GL_BACK);
+	m_pState->SetBlendEnabled(false);
 
-	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
+	m_pState->SetDepthEnabled(true);
+	m_pState->SetCullEnabled(false);
 
 	//glDisable(GL_STENCIL_TEST);
 
@@ -166,7 +168,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 		}
 	}
 	//Draw to default buffer
-	glDisable(GL_DEPTH_TEST);
+	m_pState->SetDepthEnabled(false);
 	m_pPostProcessing->Draw(0);
 
 	TextRenderer::GetInstance()->Draw();
