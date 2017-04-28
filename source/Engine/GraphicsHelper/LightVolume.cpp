@@ -14,6 +14,7 @@
 #include "../Graphics/Frustum.h"
 #include "ShadowRenderer.hpp"
 #include "PrimitiveRenderer.hpp"
+#include "RenderPipeline.hpp"
 
 PointLightVolume::PointLightVolume()
 {
@@ -102,7 +103,7 @@ void DirectLightVolume::Draw(glm::vec3 dir, glm::vec3 col)
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferA"), 0);
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferB"), 1);
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferC"), 2);
-	auto gbufferTex = SCENE->GetGBuffer()->GetTextures();
+	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -130,7 +131,7 @@ void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalSh
 	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texGBufferA"), 0);
 	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texGBufferB"), 1);
 	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texGBufferC"), 2);
-	auto gbufferTex = SCENE->GetGBuffer()->GetTextures();
+	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);

@@ -19,6 +19,7 @@ public:
 	GLuint GetTargetFBO() { return m_CollectFBO; }
 
 	void SetExposure(float exp) { m_Exposure = exp; }
+	float GetExposure() {return m_Exposure; }
 	void SetGamma(float gamma) { m_Gamma = gamma; }
 
 	void SetBloomThreshold(float value) { m_Threshold = value; }

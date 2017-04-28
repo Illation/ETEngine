@@ -28,7 +28,6 @@ private:
 
 	void Initialize();
 	void Update();
-	void Draw();
 
 	std::vector<AbstractScene*> m_pSceneVec;
 	bool m_IsInitialized = false;

@@ -5,6 +5,7 @@
 #include "../Graphics/MeshFilter.hpp"
 #include "../Graphics/FrameBuffer.hpp"
 #include "../Framebuffers/Gbuffer.hpp"
+#include "../GraphicsHelper/RenderPipeline.hpp"
 
 LightMaterial::LightMaterial(glm::vec3 col):
 	Material("Shaders/FwdLightPointShader.glsl"),
@@ -36,7 +37,7 @@ void LightMaterial::UploadDerivedVariables()
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texGBufferA"), 0);
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texGBufferB"), 1);
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texGBufferC"), 2);
-	auto gbufferTex = SCENE->GetGBuffer()->GetTextures();
+	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
