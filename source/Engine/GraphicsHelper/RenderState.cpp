@@ -1,6 +1,7 @@
 #include "stdafx.hpp"
 
 #include "RenderState.hpp"
+#include "../Graphics/ShaderData.hpp"
 
 RenderState::RenderState()
 {
@@ -77,11 +78,38 @@ void RenderState::SetClearColor(glm::vec4 col)
 	}
 }
 
-//void RenderState::BindFramebuffer(GLuint handle)
-//{
-//	if (!(m_BoundFramebuffer == handle))
-//	{
-//		m_BoundFramebuffer = handle;
-//		glBindFramebuffer(handle);
-//	}
-//}
+void RenderState::SetShader(ShaderData* pShader)
+{
+	if (!(m_pBoundShader == pShader))
+	{
+		// #todo: make shaders track uniforms automatically during precompilation and update those here too
+		m_pBoundShader = pShader;
+		glUseProgram(pShader->GetProgram());
+	}
+}
+
+void RenderState::BindFramebuffer(GLuint handle)
+{
+	if (!(m_ReadFramebuffer == handle && m_DrawFramebuffer == handle))
+	{
+		m_ReadFramebuffer = handle;
+		m_DrawFramebuffer = handle;
+		glBindFramebuffer(GL_FRAMEBUFFER, handle);
+	}
+}
+void RenderState::BindReadFramebuffer(GLuint handle)
+{
+	if (!(m_ReadFramebuffer == handle))
+	{
+		m_ReadFramebuffer = handle;
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, handle);
+	}
+}
+void RenderState::BindDrawFramebuffer(GLuint handle)
+{
+	if (!(m_DrawFramebuffer == handle))
+	{
+		m_DrawFramebuffer = handle;
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, handle);
+	}
+}

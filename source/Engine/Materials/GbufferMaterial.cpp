@@ -22,7 +22,7 @@ GbufferMaterial::~GbufferMaterial()
 void GbufferMaterial::LoadTextures()
 {
 	TextureLoader* pTL = ContentManager::GetLoader<TextureLoader, TextureData>();
-	glUseProgram(m_Shader->GetProgram());
+	STATE->SetShader(m_Shader);
 	m_uUseDifTex = glGetUniformLocation(m_Shader->GetProgram(), "useDifTex");
 	glUniform1i(m_uUseDifTex, m_UseDifTex);
 	m_uUseNormTex = glGetUniformLocation(m_Shader->GetProgram(), "useNormTex");

@@ -34,7 +34,7 @@ void Atmosphere::Initialize()
 {
 	//Load and compile Shaders
 	m_pShader = ContentManager::Load<ShaderData>("Shaders/PostAtmosphere.glsl");
-	glUseProgram(m_pShader->GetProgram());
+	STATE->SetShader(m_pShader);
 
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferA"), 0);
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferB"), 1);
@@ -56,7 +56,7 @@ void Atmosphere::Draw(glm::vec3 pos, float radius)
 
 	glm::mat4 World = glm::translate(pos)*glm::scale(glm::vec3(radius));
 
-	glUseProgram(m_pShader->GetProgram());
+	STATE->SetShader(m_pShader);
 
 	// #todo: stop repeating this everywhere
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();

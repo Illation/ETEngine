@@ -140,9 +140,9 @@ void AbstractFramework::InitializeGame()
 	//Initialize Managers
 	ContentManager::Initialize();
 
-	SceneManager::GetInstance()->Initialize();
-
 	RenderPipeline::GetInstance()->Initialize();
+
+	SceneManager::GetInstance()->Initialize();
 
 	//Initialize Game
 	Initialize();

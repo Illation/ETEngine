@@ -28,12 +28,12 @@ void FrameBuffer::Initialize()
 	m_pShader = ContentManager::Load<ShaderData>(m_ShaderFile);
 
 	//GetAccessTo shader attributes
-	glUseProgram(m_pShader->GetProgram());
+	STATE->SetShader(m_pShader);
 	AccessShaderAttributes();
 
 	//FrameBuffer
 	glGenFramebuffers(1, &m_GlFrameBuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_GlFrameBuffer);
+	STATE->BindFramebuffer(m_GlFrameBuffer);
 	//Textures
 	int width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
 	vector<GLuint> attachments;
@@ -94,14 +94,14 @@ void FrameBuffer::AccessShaderAttributes()
 
 void FrameBuffer::Enable(bool active)
 {
-	if(active) glBindFramebuffer(GL_FRAMEBUFFER, m_GlFrameBuffer);
-	else glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	if (active) STATE->BindFramebuffer(m_GlFrameBuffer);
+	else STATE->BindFramebuffer(0);
 }
 
 void FrameBuffer::Draw()
 {
 	STATE->SetDepthEnabled(false);
-	glUseProgram(m_pShader->GetProgram());
+	STATE->SetShader(m_pShader);
 	for (size_t i = 0; i < m_pTextureVec.size(); i++)
 	{
 		glActiveTexture(GL_TEXTURE0+i);

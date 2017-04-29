@@ -70,7 +70,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	glGenFramebuffers(1, &captureFBO);
 	glGenRenderbuffers(1, &captureRBO);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	STATE->BindFramebuffer(captureFBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_CubemapRes, m_CubemapRes);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
@@ -106,7 +106,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	auto equiCubeShader = ContentManager::Load<ShaderData>("Shaders/FwdEquiCubeShader.glsl");
 
 	// convert HDR equirectangular environment map to cubemap equivalent
-	glUseProgram(equiCubeShader->GetProgram());
+	STATE->SetShader(equiCubeShader);
 	glUniform1i(glGetUniformLocation(equiCubeShader->GetProgram(), "equirectangularMap"), 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, hdrTexture);
@@ -116,7 +116,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//***************
 
 	STATE->SetViewport(glm::ivec2(0), glm::ivec2(m_CubemapRes));
-	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	STATE->BindFramebuffer(captureFBO);
 	for (unsigned int i = 0; i < 6; ++i)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(equiCubeShader->GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(captureViews[i]));
@@ -125,7 +125,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
 	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	STATE->BindFramebuffer(0);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
@@ -148,14 +148,14 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	//Framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	STATE->BindFramebuffer(captureFBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_IrradianceRes, m_IrradianceRes);
 
 	//shader
 	auto irradianceShader = ContentManager::Load<ShaderData>("Shaders/FwdConvIrradianceShader.glsl");
 
-	glUseProgram(irradianceShader->GetProgram());
+	STATE->SetShader(irradianceShader);
 	glUniform1i(glGetUniformLocation(irradianceShader->GetProgram(), "environmentMap"), 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
@@ -165,7 +165,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//*************************
 
 	STATE->SetViewport(glm::ivec2(0), glm::ivec2(m_IrradianceRes));
-	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	STATE->BindFramebuffer(captureFBO);
 	for (unsigned int i = 0; i < 6; ++i)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(irradianceShader->GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(captureViews[i]));
@@ -174,7 +174,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
 	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	STATE->BindFramebuffer(0);
 
 	//setup radiance
 	//**************
@@ -196,7 +196,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//Shader
 	auto radianceShader = ContentManager::Load<ShaderData>("Shaders/FwdConvRadianceShader.glsl");
 
-	glUseProgram(radianceShader->GetProgram());
+	STATE->SetShader(radianceShader);
 	glUniform1i(glGetUniformLocation(radianceShader->GetProgram(), "environmentMap"), 0);
 	glUniform1f(glGetUniformLocation(radianceShader->GetProgram(), "resolution"), (GLfloat)m_RadianceRes);
 	glActiveTexture(GL_TEXTURE0);
@@ -206,7 +206,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 
 	//render radiance
 	//***************
-	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	STATE->BindFramebuffer(captureFBO);
 	unsigned int maxMipLevels = (unsigned int)std::log2(m_RadianceRes)-2;//at least 4x4
 	for (unsigned int mip = 0; mip < maxMipLevels+1; ++mip)
 	{
@@ -228,7 +228,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
 		}
 	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	STATE->BindFramebuffer(0);
 
 	//setup BRDF look up table
 	//************************
@@ -248,21 +248,19 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	STATE->BindFramebuffer(captureFBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_BrdfLutRes, m_BrdfLutRes);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0);
 
 	STATE->SetViewport(glm::ivec2(0), glm::ivec2(m_BrdfLutRes));
-	glUseProgram(brdfShader->GetProgram());
+	STATE->SetShader(brdfShader);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	//Reset render settings and return generated texture
 	//*************************************************
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);//need to set it back later
+	STATE->BindFramebuffer(0);
 	STATE->SetViewport(glm::ivec2(0), glm::ivec2(SETTINGS->Window.Width, SETTINGS->Window.Height));
 	glDeleteTextures(1, &hdrTexture);
 

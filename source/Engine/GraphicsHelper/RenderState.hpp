@@ -2,6 +2,7 @@
 #include "../StaticDependancies/glad/glad.h"
 
 class AbstractScene;
+class ShaderData;
 
 class RenderState
 {
@@ -24,7 +25,11 @@ public:
 
 	void SetClearColor(glm::vec4 col);
 
-	//void BindFramebuffer(GLuint handle);
+	void SetShader(ShaderData* pShader);
+
+	void BindFramebuffer(GLuint handle);
+	void BindReadFramebuffer(GLuint handle);
+	void BindDrawFramebuffer(GLuint handle);
 
 private:
 
@@ -48,5 +53,8 @@ private:
 
 	glm::vec4 m_ClearColor = glm::vec4(0);
 
-	GLuint m_BoundFramebuffer = 0;
+	GLuint m_ReadFramebuffer = 0;
+	GLuint m_DrawFramebuffer = 0;
+
+	ShaderData* m_pBoundShader = nullptr;
 };

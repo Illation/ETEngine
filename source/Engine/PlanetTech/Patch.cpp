@@ -20,7 +20,7 @@ void Patch::Init()
 	//Shader Init
 	//***********
 	m_pPatchShader = CONTENT::Load<ShaderData>("Shaders/PlanetPatch.glsl");
-	glUseProgram(m_pPatchShader->GetProgram());
+	STATE->SetShader(m_pPatchShader);
 	m_uCamPos = glGetUniformLocation(m_pPatchShader->GetProgram(), "camPos");
 	m_uRadius = glGetUniformLocation(m_pPatchShader->GetProgram(), "radius");
 	m_uMorphRange = glGetUniformLocation(m_pPatchShader->GetProgram(), "morphRange");
@@ -149,7 +149,7 @@ void Patch::BindInstances(std::vector<PatchInstance> &instances)
 
 void Patch::UploadDistanceLUT(std::vector<float> &distances)
 {
-	glUseProgram(m_pPatchShader->GetProgram());
+	STATE->SetShader(m_pPatchShader);
 	for (size_t i = 0; i < distances.size(); i++)
 	{
 		glUniform1f(glGetUniformLocation(m_pPatchShader->GetProgram(),
@@ -159,8 +159,7 @@ void Patch::UploadDistanceLUT(std::vector<float> &distances)
 
 void Patch::Draw(bool white)
 {
-	//Enable this objects shader
-	glUseProgram(m_pPatchShader->GetProgram());
+	STATE->SetShader(m_pPatchShader);
 
 	// Pass transformations to the shader
 	glUniformMatrix4fv(m_uModel, 1, GL_FALSE, glm::value_ptr(m_pPlanet->GetTransform()->GetWorld()));
