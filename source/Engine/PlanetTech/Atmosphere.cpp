@@ -10,6 +10,12 @@
 #include "../Graphics/TextureData.hpp"
 #include "../GraphicsHelper/PrimitiveRenderer.hpp"
 #include "../GraphicsHelper/RenderPipeline.hpp"
+#include "../Helper/MathHelper.hpp"
+#include <glm/gtx/transform.hpp>
+#include <glm\gtx\quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/euler_angles.hpp>
+#include "../Graphics/Frustum.h"
 
 Atmosphere::Atmosphere(Planet* pPlanet) 
 	: m_pPanet(pPlanet)
@@ -42,7 +48,7 @@ void Atmosphere::Initialize()
 	m_uPosition = glGetUniformLocation(m_pShader->GetProgram(), "Position");
 	m_uRadius = glGetUniformLocation(m_pShader->GetProgram(), "Radius");
 }
-void Atmosphere::Draw(glm::vec3 pos, glm::vec3 radius)
+void Atmosphere::Draw(glm::vec3 pos, float radius)
 {
 	Sphere objSphere = Sphere(pos, radius);
 	if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)

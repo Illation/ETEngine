@@ -11,7 +11,7 @@ public:
 
 	void Precalculate();
 	void Initialize();
-	void Draw(glm::vec3 pos, glm::vec3 radius);
+	void Draw(glm::vec3 pos, float radius);
 	
 private:
 	//Parameters
