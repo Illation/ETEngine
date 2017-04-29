@@ -19,7 +19,7 @@ void TextRenderer::Initialize()
 {
 	m_pTextShader = ContentManager::Load<ShaderData>("Shaders/PostText.glsl");
 
-	glUseProgram(m_pTextShader->GetProgram());
+	STATE->SetShader(m_pTextShader);
 	m_uTransform = glGetUniformLocation(m_pTextShader->GetProgram(), "transform");
 	m_uTexSize = glGetUniformLocation(m_pTextShader->GetProgram(), "texSize");
 
@@ -108,7 +108,7 @@ void TextRenderer::Draw()
 	UpdateBuffer();
 
 	//Enable this objects shader
-	glUseProgram(m_pTextShader->GetProgram());
+	STATE->SetShader(m_pTextShader);
 	glActiveTexture(GL_TEXTURE0);
 	glUniformMatrix4fv(m_uTransform, 1, GL_FALSE, glm::value_ptr(m_Transform));
 

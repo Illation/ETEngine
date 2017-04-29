@@ -98,7 +98,7 @@ void DirectLightVolume::Draw(glm::vec3 dir, glm::vec3 col)
 
 	// #todo: avoid getting all the uniform info again and again
 
-	glUseProgram(m_pShader->GetProgram());
+	STATE->SetShader(m_pShader);
 
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferA"), 0);
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferB"), 1);
@@ -124,8 +124,7 @@ void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalSh
 {
 	if (!IsInitialized) Initialize();
 
-	//bind vao and shader program
-	glUseProgram(m_pShaderShadowed->GetProgram());
+	STATE->SetShader(m_pShaderShadowed);
 
 	//Upload gbuffer
 	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texGBufferA"), 0);

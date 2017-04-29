@@ -34,7 +34,7 @@ void SkyboxMaterial::AccessShaderAttributes()
 }
 void SkyboxMaterial::UploadDerivedVariables()
 {
-	glUseProgram(m_Shader->GetProgram());
+	STATE->SetShader(m_Shader);
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "skybox"), 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_pHDRMap->GetHandle());

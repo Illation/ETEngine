@@ -116,8 +116,8 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 	m_pGBuffer->Draw();
 
 	//copy Z-Buffer from gBuffer
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pGBuffer->Get());
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pPostProcessing->GetTargetFBO());
+	STATE->BindReadFramebuffer(m_pGBuffer->Get());
+	STATE->BindDrawFramebuffer(m_pPostProcessing->GetTargetFBO());
 	glBlitFramebuffer(
 		0, 0, SETTINGS->Window.Width, SETTINGS->Window.Height,
 		0, 0, SETTINGS->Window.Width, SETTINGS->Window.Height,

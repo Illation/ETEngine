@@ -82,7 +82,7 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 		glm::ivec2 res = pShadowData->m_Cascades[i].pTexture->GetResolution();
 		STATE->SetViewport(glm::ivec2(0), res);
 		//Set Framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, pShadowData->m_Cascades[i].fbo);
+		STATE->BindFramebuffer(pShadowData->m_Cascades[i].fbo);
 		//Clear Framebuffer
 		glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -107,7 +107,7 @@ DirectionalShadowData::DirectionalShadowData(glm::ivec2 Resolution)
 		glGenTextures(1, &depthMap);
 		glBindTexture(GL_TEXTURE_2D, depthMap);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Resolution.x, Resolution.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-		glBindFramebuffer(GL_FRAMEBUFFER, data.fbo);
+		STATE->BindFramebuffer(data.fbo);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
 		//only depth components
 		glDrawBuffer(GL_NONE);
@@ -121,7 +121,7 @@ DirectionalShadowData::DirectionalShadowData(glm::ivec2 Resolution)
 		GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);//shadow map comp mode
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		STATE->BindFramebuffer(0);
 
 		data.pTexture = new TextureData(depthMap, Resolution.x, Resolution.y);
 

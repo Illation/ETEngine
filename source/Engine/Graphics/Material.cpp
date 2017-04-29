@@ -37,7 +37,7 @@ void Material::Initialize()
 
 void Material::UploadVariables(glm::mat4 matModel)
 {
-	glUseProgram(m_Shader->GetProgram());
+	STATE->SetShader(m_Shader);
 	//Upload matrices
 	if (m_StandardTransform)
 	{
@@ -49,7 +49,7 @@ void Material::UploadVariables(glm::mat4 matModel)
 }
 void Material::UploadVariables(glm::mat4 matModel, const glm::mat4 &matWVP)
 {
-	glUseProgram(m_Shader->GetProgram());
+	STATE->SetShader(m_Shader);
 	//Upload matrices
 	if (m_StandardTransform)
 	{

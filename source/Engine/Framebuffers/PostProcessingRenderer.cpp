@@ -36,15 +36,15 @@ void PostProcessingRenderer::Initialize()
 	m_pPostProcShader = ContentManager::Load<ShaderData>("Shaders/PostProcessing.glsl");
 
 	//Access shader variables
-	glUseProgram(m_pDownsampleShader->GetProgram());
+	STATE->SetShader(m_pDownsampleShader);
 	glUniform1i(glGetUniformLocation(m_pDownsampleShader->GetProgram(), "texColor"), 0);
 	m_uThreshold = glGetUniformLocation(m_pDownsampleShader->GetProgram(), "threshold");
 
-	glUseProgram(m_pGaussianShader->GetProgram());
+	STATE->SetShader(m_pGaussianShader);
 	glUniform1i(glGetUniformLocation(m_pGaussianShader->GetProgram(), "image"), 0);
 	m_uHorizontal = glGetUniformLocation(m_pGaussianShader->GetProgram(), "horizontal");
 
-	glUseProgram(m_pPostProcShader->GetProgram());
+	STATE->SetShader(m_pPostProcShader);
 	glUniform1i(glGetUniformLocation(m_pPostProcShader->GetProgram(), "texColor"), 0);
 	for (int i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
@@ -59,7 +59,7 @@ void PostProcessingRenderer::Initialize()
 
 	//Generate texture and fbo and rbo as initial postprocessing target
 	glGenFramebuffers(1, &m_CollectFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_CollectFBO);
+	STATE->BindFramebuffer(m_CollectFBO);
 	glGenTextures(1, &m_CollectTex);
 	glBindTexture(GL_TEXTURE_2D, m_CollectTex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
@@ -76,7 +76,7 @@ void PostProcessingRenderer::Initialize()
 
 	//Generate textures for the hdr fbo to output into
 	glGenFramebuffers(1, &m_HDRoutFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_HDRoutFBO);
+	STATE->BindFramebuffer(m_HDRoutFBO);
 	glGenTextures(2, m_ColorBuffers);
 	for (GLuint i = 0; i < 2; i++)
 	{
@@ -101,7 +101,7 @@ void PostProcessingRenderer::Initialize()
 	for (GLuint i = 0; i < NUM_BLOOM_DOWNSAMPLES; i++)
 	{
 		float resMult = 1.f / (float)std::pow(2, i + 1);
-		glBindFramebuffer(GL_FRAMEBUFFER, m_DownSampleFBO[i]);
+		STATE->BindFramebuffer(m_DownSampleFBO[i]);
 		glBindTexture(GL_TEXTURE_2D, m_DownSampleTexture[i]);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, (GLsizei)(width*resMult), (GLsizei)(height*resMult), 0, GL_RGB, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -110,7 +110,7 @@ void PostProcessingRenderer::Initialize()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DownSampleTexture[i], 0);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, m_DownPingPongFBO[i]);
+		STATE->BindFramebuffer(m_DownPingPongFBO[i]);
 		glBindTexture(GL_TEXTURE_2D, m_DownPingPongTexture[i]);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, (GLsizei)(width*resMult), (GLsizei)(height*resMult), 0, GL_RGB, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -125,7 +125,7 @@ void PostProcessingRenderer::Initialize()
 	glGenTextures(2, m_PingPongTexture);
 	for (GLuint i = 0; i < 2; i++)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, m_PingPongFBO[i]);
+		STATE->BindFramebuffer(m_PingPongFBO[i]);
 		glBindTexture(GL_TEXTURE_2D, m_PingPongTexture[i]);
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL );
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -140,14 +140,14 @@ void PostProcessingRenderer::Initialize()
 }
 void PostProcessingRenderer::EnableInput()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, m_CollectFBO);
+	STATE->BindFramebuffer(m_CollectFBO);
 }
 void PostProcessingRenderer::Draw(GLuint FBO)
 {
 	STATE->SetDepthEnabled(false);
 	//get glow
-	glBindFramebuffer(GL_FRAMEBUFFER, m_HDRoutFBO);
-	glUseProgram(m_pDownsampleShader->GetProgram());
+	STATE->BindFramebuffer(m_HDRoutFBO);
+	STATE->SetShader(m_pDownsampleShader);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_CollectTex);
 	glUniform1f(m_uThreshold, m_Threshold);
@@ -156,23 +156,23 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	int width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
 	for (GLuint i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
-		if(i>0) glUseProgram(m_pDownsampleShader->GetProgram());
+		if (i > 0) STATE->SetShader(m_pDownsampleShader);
 		float resMult = 1.f / (float)std::pow(2, i + 1);
 		STATE->SetViewport(glm::ivec2(0), glm::ivec2((int)(width*resMult), (int)(height*resMult)));
-		glBindFramebuffer(GL_FRAMEBUFFER, m_DownSampleFBO[i]);
+		STATE->BindFramebuffer(m_DownSampleFBO[i]);
 		if(i>0)glBindTexture(GL_TEXTURE_2D, m_DownSampleTexture[i-1]);
 		glUniform1f(m_uThreshold, m_Threshold);
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
 		//blur downsampled
 		//STATE->SetViewport(glm::ivec2(0), glm::ivec2(width, height));
-		glUseProgram(m_pGaussianShader->GetProgram());
+		STATE->SetShader(m_pGaussianShader);
 		for (GLuint j = 0; j < (GLuint)GRAPHICS.NumBlurPasses * 2; j++)
 		{
 			//TODO needs custom ping pong buffer, buffers textures are wrong size
 			GLboolean horizontal = !(GLboolean)(j % 2);
 			//output is the current framebuffer, or on the last item the framebuffer of the downsample texture
-			glBindFramebuffer(GL_FRAMEBUFFER, horizontal ? m_DownPingPongFBO[i] : m_DownSampleFBO[i]);
+			STATE->BindFramebuffer(horizontal ? m_DownPingPongFBO[i] : m_DownSampleFBO[i]);
 			//input is previous framebuffers texture, or on first item the result of downsampling
 			glBindTexture(GL_TEXTURE_2D, horizontal ? m_DownSampleTexture[i] : m_DownPingPongTexture[i]);
 			glUniform1i(m_uHorizontal, horizontal);
@@ -182,18 +182,18 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	STATE->SetViewport(glm::ivec2(0), glm::ivec2(width, height));
 	//ping pong gaussian blur
 	GLboolean horizontal = true;
-	glUseProgram(m_pGaussianShader->GetProgram());
+	STATE->SetShader(m_pGaussianShader);
 	for (GLuint i = 0; i < (GLuint)GRAPHICS.NumBlurPasses * 2; i++)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, m_PingPongFBO[horizontal]);
+		STATE->BindFramebuffer(m_PingPongFBO[horizontal]);
 		glUniform1i(m_uHorizontal, horizontal);
 		glBindTexture( GL_TEXTURE_2D, (i==0) ? m_ColorBuffers[1] : m_PingPongTexture[!horizontal] );
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		horizontal = !horizontal;
 	}
 	//combine with hdr result
-	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-	glUseProgram(m_pPostProcShader->GetProgram());
+	STATE->BindFramebuffer(FBO);
+	STATE->SetShader(m_pPostProcShader);
 	glBindTexture(GL_TEXTURE_2D, m_CollectTex);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_PingPongTexture[0]);
