@@ -40,8 +40,7 @@ void LightMaterial::UploadDerivedVariables()
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
 	//for position reconstruction
 	glUniform1f(m_uProjA, CAMERA->GetDepthProjA());

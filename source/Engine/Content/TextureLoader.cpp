@@ -42,7 +42,7 @@ TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 
 		GLuint texture;
 		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		STATE->BindTexture(GL_TEXTURE_2D, texture);
 		glTexImage2D(GL_TEXTURE_2D, 0, m_UseSrgb?GL_SRGB:GL_RGB, width, height, 0, GL_RGB, GL_FLOAT, (void*)bits);
 
 		FreeImage_Unload(dib);

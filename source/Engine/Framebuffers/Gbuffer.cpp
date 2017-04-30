@@ -40,17 +40,15 @@ void Gbuffer::UploadDerivedVariables()
 
 	if (SCENE->SkyboxEnabled())
 	{
+		// #todo: stop setting textures and getting uniforms for the shader all the time
 		glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texIrradiance"), 3);
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetIrradianceHandle());
+		STATE->LazyBindTexture(3, GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetIrradianceHandle());
 
 		glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texEnvRadiance"), 4);
-		glActiveTexture(GL_TEXTURE4);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetRadianceHandle());
+		STATE->LazyBindTexture(4, GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetRadianceHandle());
 		
 		glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texBRDFLUT"), 5);
-		glActiveTexture(GL_TEXTURE5);
-		glBindTexture(GL_TEXTURE_2D, SCENE->GetEnvironmentMap()->GetBrdfLutHandle());
+		STATE->LazyBindTexture(5, GL_TEXTURE_2D, SCENE->GetEnvironmentMap()->GetBrdfLutHandle());
 
 		glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "MAX_REFLECTION_LOD"), (GLfloat)SCENE->GetEnvironmentMap()->GetNumMipMaps());
 	}

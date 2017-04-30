@@ -61,7 +61,7 @@ void PostProcessingRenderer::Initialize()
 	glGenFramebuffers(1, &m_CollectFBO);
 	STATE->BindFramebuffer(m_CollectFBO);
 	glGenTextures(1, &m_CollectTex);
-	glBindTexture(GL_TEXTURE_2D, m_CollectTex);
+	STATE->BindTexture(GL_TEXTURE_2D, m_CollectTex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -80,7 +80,7 @@ void PostProcessingRenderer::Initialize()
 	glGenTextures(2, m_ColorBuffers);
 	for (GLuint i = 0; i < 2; i++)
 	{
-		glBindTexture(GL_TEXTURE_2D, m_ColorBuffers[i]);
+		STATE->BindTexture(GL_TEXTURE_2D, m_ColorBuffers[i]);
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL );
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -102,7 +102,7 @@ void PostProcessingRenderer::Initialize()
 	{
 		float resMult = 1.f / (float)std::pow(2, i + 1);
 		STATE->BindFramebuffer(m_DownSampleFBO[i]);
-		glBindTexture(GL_TEXTURE_2D, m_DownSampleTexture[i]);
+		STATE->BindTexture(GL_TEXTURE_2D, m_DownSampleTexture[i]);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, (GLsizei)(width*resMult), (GLsizei)(height*resMult), 0, GL_RGB, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -111,7 +111,7 @@ void PostProcessingRenderer::Initialize()
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DownSampleTexture[i], 0);
 
 		STATE->BindFramebuffer(m_DownPingPongFBO[i]);
-		glBindTexture(GL_TEXTURE_2D, m_DownPingPongTexture[i]);
+		STATE->BindTexture(GL_TEXTURE_2D, m_DownPingPongTexture[i]);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, (GLsizei)(width*resMult), (GLsizei)(height*resMult), 0, GL_RGB, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -126,7 +126,7 @@ void PostProcessingRenderer::Initialize()
 	for (GLuint i = 0; i < 2; i++)
 	{
 		STATE->BindFramebuffer(m_PingPongFBO[i]);
-		glBindTexture(GL_TEXTURE_2D, m_PingPongTexture[i]);
+		STATE->BindTexture(GL_TEXTURE_2D, m_PingPongTexture[i]);
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL );
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -148,8 +148,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	//get glow
 	STATE->BindFramebuffer(m_HDRoutFBO);
 	STATE->SetShader(m_pDownsampleShader);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_CollectTex);
+	STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_CollectTex);
 	glUniform1f(m_uThreshold, m_Threshold);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 	//downsample glow
@@ -160,7 +159,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 		float resMult = 1.f / (float)std::pow(2, i + 1);
 		STATE->SetViewport(glm::ivec2(0), glm::ivec2((int)(width*resMult), (int)(height*resMult)));
 		STATE->BindFramebuffer(m_DownSampleFBO[i]);
-		if(i>0)glBindTexture(GL_TEXTURE_2D, m_DownSampleTexture[i-1]);
+		if(i>0) STATE->BindTexture(GL_TEXTURE_2D, m_DownSampleTexture[i - 1]);
 		glUniform1f(m_uThreshold, m_Threshold);
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
@@ -174,7 +173,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 			//output is the current framebuffer, or on the last item the framebuffer of the downsample texture
 			STATE->BindFramebuffer(horizontal ? m_DownPingPongFBO[i] : m_DownSampleFBO[i]);
 			//input is previous framebuffers texture, or on first item the result of downsampling
-			glBindTexture(GL_TEXTURE_2D, horizontal ? m_DownSampleTexture[i] : m_DownPingPongTexture[i]);
+			STATE->BindTexture(GL_TEXTURE_2D, horizontal ? m_DownSampleTexture[i] : m_DownPingPongTexture[i]);
 			glUniform1i(m_uHorizontal, horizontal);
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		}
@@ -187,20 +186,18 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	{
 		STATE->BindFramebuffer(m_PingPongFBO[horizontal]);
 		glUniform1i(m_uHorizontal, horizontal);
-		glBindTexture( GL_TEXTURE_2D, (i==0) ? m_ColorBuffers[1] : m_PingPongTexture[!horizontal] );
+		STATE->BindTexture(GL_TEXTURE_2D, (i == 0) ? m_ColorBuffers[1] : m_PingPongTexture[!horizontal]);
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		horizontal = !horizontal;
 	}
 	//combine with hdr result
 	STATE->BindFramebuffer(FBO);
 	STATE->SetShader(m_pPostProcShader);
-	glBindTexture(GL_TEXTURE_2D, m_CollectTex);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_PingPongTexture[0]);
+	STATE->BindTexture(GL_TEXTURE_2D, m_CollectTex);
+	STATE->LazyBindTexture(1, GL_TEXTURE_2D, m_PingPongTexture[0]);
 	for (int i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
-		glActiveTexture(GL_TEXTURE2 + i);
-		glBindTexture(GL_TEXTURE_2D, m_DownSampleTexture[i]);
+		STATE->LazyBindTexture(2+i, GL_TEXTURE_2D, m_DownSampleTexture[i]);
 	}
 	glUniform1f(m_uExposure, m_Exposure);
 	glUniform1f(m_uGamma, m_Gamma);

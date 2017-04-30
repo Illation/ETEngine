@@ -45,7 +45,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 		}
 
 		glGenTextures(1, &hdrTexture);
-		glBindTexture(GL_TEXTURE_2D, hdrTexture);
+		STATE->BindTexture(GL_TEXTURE_2D, hdrTexture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data);
 
 		FreeImage_Unload(dib);
@@ -78,7 +78,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//Preallocate memory for cubemap
 	GLuint envCubemap;
 	glGenTextures(1, &envCubemap);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+	STATE->BindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
 	for (unsigned int i = 0; i < 6; ++i)
 	{
 		// note that we store each face with 16 bit floating point values
@@ -108,8 +108,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	// convert HDR equirectangular environment map to cubemap equivalent
 	STATE->SetShader(equiCubeShader);
 	glUniform1i(glGetUniformLocation(equiCubeShader->GetProgram(), "equirectangularMap"), 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, hdrTexture);
+	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, hdrTexture);
 	glUniformMatrix4fv(glGetUniformLocation(equiCubeShader->GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(captureProjection));
 
 	//render the cube
@@ -127,7 +126,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	}
 	STATE->BindFramebuffer(0);
 
-	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+	STATE->BindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 	//setup for convoluted irradiance cubemap
@@ -136,7 +135,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//texture
 	GLuint irradianceMap;
 	glGenTextures(1, &irradianceMap);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+	STATE->BindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
 	for (unsigned int i = 0; i < 6; ++i)
 	{
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, m_IrradianceRes, m_IrradianceRes, 0, GL_RGB, GL_FLOAT, nullptr);
@@ -157,8 +156,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 
 	STATE->SetShader(irradianceShader);
 	glUniform1i(glGetUniformLocation(irradianceShader->GetProgram(), "environmentMap"), 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, envCubemap);
 	glUniformMatrix4fv(glGetUniformLocation(irradianceShader->GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(captureProjection));
 
 	//render irradiance cubemap
@@ -180,7 +178,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//**************
 	GLuint radianceMap;
 	glGenTextures(1, &radianceMap);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, radianceMap);
+	STATE->BindTexture(GL_TEXTURE_CUBE_MAP, radianceMap);
 	for (unsigned int i = 0; i < 6; ++i)
 	{
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, m_RadianceRes, m_RadianceRes, 0, GL_RGB, GL_FLOAT, nullptr);
@@ -199,8 +197,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	STATE->SetShader(radianceShader);
 	glUniform1i(glGetUniformLocation(radianceShader->GetProgram(), "environmentMap"), 0);
 	glUniform1f(glGetUniformLocation(radianceShader->GetProgram(), "resolution"), (GLfloat)m_RadianceRes);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, envCubemap);
 	glUniformMatrix4fv(glGetUniformLocation(radianceShader->GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(captureProjection));
 	auto roughnessUniformLoc = glGetUniformLocation(radianceShader->GetProgram(), "roughness");
 
@@ -240,7 +237,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	auto brdfShader = ContentManager::Load<ShaderData>("Shaders/FwdBrdfLutShader.glsl");
 
 	// pre-allocate enough memory for the LUT texture.
-	glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
+	STATE->BindTexture(GL_TEXTURE_2D, brdfLUTTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, m_BrdfLutRes, m_BrdfLutRes, 0, GL_RG, GL_FLOAT, 0);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

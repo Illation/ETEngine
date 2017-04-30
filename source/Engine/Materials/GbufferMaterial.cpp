@@ -63,18 +63,15 @@ void GbufferMaterial::UploadDerivedVariables()
 	if (m_OutdatedTextureData)LoadTextures();
 	if (m_UseDifTex)
 	{
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_TexDiffuse->GetHandle());
+		STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_TexDiffuse->GetHandle());
 	}
 	if (m_UseNormTex)
 	{
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, m_TexNorm->GetHandle());
+		STATE->LazyBindTexture(1, GL_TEXTURE_2D, m_TexNorm->GetHandle());
 	}
 	if (m_UseSpecTex)
 	{
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, m_TexSpec->GetHandle());
+		STATE->LazyBindTexture(2, GL_TEXTURE_2D, m_TexSpec->GetHandle());
 	}
 	//Upload uniforms
 	glUniform3f(m_uDifCol, m_DiffuseColor.x, m_DiffuseColor.y, m_DiffuseColor.z);
