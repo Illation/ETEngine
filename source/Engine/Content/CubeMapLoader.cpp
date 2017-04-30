@@ -28,7 +28,7 @@ CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 
 	GLuint texture;
 	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
+	STATE->BindTexture(GL_TEXTURE_CUBE_MAP, texture);
 
 	unsigned int width, height;
 	for (GLuint i = 0; i < textureFaces.size(); i++)

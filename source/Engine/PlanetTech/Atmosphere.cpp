@@ -62,8 +62,7 @@ void Atmosphere::Draw(glm::vec3 pos, float radius)
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
 	glUniform1f(m_uProjA, CAMERA->GetDepthProjA());
 	glUniform1f(m_uProjB, CAMERA->GetDepthProjB());

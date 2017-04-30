@@ -106,8 +106,7 @@ void DirectLightVolume::Draw(glm::vec3 dir, glm::vec3 col)
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
 	//for position reconstruction
 	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "projectionA"), CAMERA->GetDepthProjA());
@@ -133,8 +132,7 @@ void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalSh
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
 	//for position reconstruction
 	glUniform1f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "projectionA"), CAMERA->GetDepthProjA());
@@ -165,8 +163,7 @@ void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalSh
 		//Shadow map
 		glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(),
 			(ligStr + std::to_string(i) + "].ShadowMap").c_str()), 3+i);
-		glActiveTexture(GL_TEXTURE3+i);
-		glBindTexture(GL_TEXTURE_2D, pShadow->m_Cascades[i].pTexture->GetHandle());
+		STATE->LazyBindTexture(3+i, GL_TEXTURE_2D, pShadow->m_Cascades[i].pTexture->GetHandle());
 
 		//cascade distance
 		glUniform1f(glGetUniformLocation(m_pShaderShadowed->GetProgram(),

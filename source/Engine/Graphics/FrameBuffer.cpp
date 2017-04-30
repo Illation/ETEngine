@@ -44,7 +44,7 @@ void FrameBuffer::Initialize()
 	{
 		GLuint depthMap;
 		glGenTextures(1, &depthMap);
-		glBindTexture(GL_TEXTURE_2D, depthMap);
+		STATE->BindTexture(GL_TEXTURE_2D, depthMap);
 		//glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, /*float*/GL_UNSIGNED_INT_24_8, NULL);
 		//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -61,7 +61,7 @@ void FrameBuffer::Initialize()
 	{
 		GLuint texHandle;
 		glGenTextures(1, &texHandle);
-		glBindTexture(GL_TEXTURE_2D, texHandle);
+		STATE->BindTexture(GL_TEXTURE_2D, texHandle);
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, m_Format, NULL );
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texHandle, 0 );
 		m_pTextureVec.push_back(new TextureData(texHandle, width, height));
@@ -104,8 +104,7 @@ void FrameBuffer::Draw()
 	STATE->SetShader(m_pShader);
 	for (size_t i = 0; i < m_pTextureVec.size(); i++)
 	{
-		glActiveTexture(GL_TEXTURE0+i);
-		glBindTexture(GL_TEXTURE_2D, m_pTextureVec[i]->GetHandle());
+		STATE->LazyBindTexture(i, GL_TEXTURE_2D, m_pTextureVec[i]->GetHandle());
 	}
 
 	UploadDerivedVariables();

@@ -2,6 +2,7 @@
 
 #include "RenderState.hpp"
 #include "../Graphics/ShaderData.hpp"
+#include "../Graphics/TextureData.hpp"
 
 RenderState::RenderState()
 {
@@ -13,6 +14,26 @@ RenderState::~RenderState()
 void RenderState::Initialize()
 {
 	m_ViewportSize = glm::ivec2(WINDOW.Width, WINDOW.Height);
+
+	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_NumTextureUnits);
+	for (int i = 0; i < m_NumTextureUnits; i++)
+	{
+		std::map<GLenum, GLuint> targets = 
+		{
+			{ GL_TEXTURE_1D, 0 },
+			{ GL_TEXTURE_2D, 0 },
+			{ GL_TEXTURE_3D, 0 },
+			{ GL_TEXTURE_1D_ARRAY, 0 },
+			{ GL_TEXTURE_2D_ARRAY, 0 },
+			{ GL_TEXTURE_RECTANGLE, 0 },
+			{ GL_TEXTURE_CUBE_MAP, 0 },
+			{ GL_TEXTURE_2D_MULTISAMPLE, 0 },
+			{ GL_TEXTURE_2D_MULTISAMPLE_ARRAY, 0 },
+			{ GL_TEXTURE_BUFFER, 0 },
+			{ GL_TEXTURE_CUBE_MAP_ARRAY, 0 }
+		};
+		m_pTextureUnits.push_back(targets);
+	}
 }
 
 void RenderState::EnOrDisAble(bool &state, bool enabled, GLenum glState)
@@ -111,5 +132,31 @@ void RenderState::BindDrawFramebuffer(GLuint handle)
 	{
 		m_DrawFramebuffer = handle;
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, handle);
+	}
+}
+
+void RenderState::SetActiveTexture(uint unit)
+{
+	if (!(m_ActiveTexture == unit))
+	{
+		m_ActiveTexture = unit;
+		glActiveTexture(GL_TEXTURE0 + unit);
+	}
+}
+void RenderState::BindTexture(GLenum target, GLuint handle)
+{
+	if (!(m_pTextureUnits[m_ActiveTexture][target] == handle))
+	{
+		m_pTextureUnits[m_ActiveTexture][target] = handle;
+		glBindTexture(target, handle);
+	}
+}
+void RenderState::LazyBindTexture(uint unit, GLenum target, GLuint handle)
+{
+	if (!(m_pTextureUnits[unit][target] == handle))
+	{
+		SetActiveTexture(unit);
+		m_pTextureUnits[m_ActiveTexture][target] = handle;
+		glBindTexture(target, handle);
 	}
 }

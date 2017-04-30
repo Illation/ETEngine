@@ -109,7 +109,7 @@ void TextRenderer::Draw()
 
 	//Enable this objects shader
 	STATE->SetShader(m_pTextShader);
-	glActiveTexture(GL_TEXTURE0);
+	STATE->SetActiveTexture(0);
 	glUniformMatrix4fv(m_uTransform, 1, GL_FALSE, glm::value_ptr(m_Transform));
 
 	//Bind Object vertex array
@@ -118,7 +118,7 @@ void TextRenderer::Draw()
 	{
 		if (pFont->m_IsAddedToRenderer)
 		{
-			glBindTexture(GL_TEXTURE_2D, pFont->m_pTexture->GetHandle());
+			STATE->BindTexture(GL_TEXTURE_2D, pFont->m_pTexture->GetHandle());
 
 			auto texSize = pFont->m_pTexture->GetResolution();
 			glUniform2f(m_uTexSize, (float)texSize.x, (float)texSize.y);
