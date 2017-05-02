@@ -17,8 +17,7 @@
 #include <glm/gtx/euler_angles.hpp>
 #include "../Graphics/Frustum.h"
 
-Atmosphere::Atmosphere(Planet* pPlanet) 
-	: m_pPanet(pPlanet)
+Atmosphere::Atmosphere() 
 {
 }
 Atmosphere::~Atmosphere()
@@ -32,13 +31,13 @@ void Atmosphere::Precalculate()
 
 void Atmosphere::Initialize()
 {
+	Precalculate();
 	//Load and compile Shaders
 	m_pShader = ContentManager::Load<ShaderData>("Shaders/PostAtmosphere.glsl");
 	STATE->SetShader(m_pShader);
 
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferA"), 0);
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferB"), 1);
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferC"), 2);
+	m_uMatModel = glGetUniformLocation(m_pShader->GetProgram(), "model");
+	m_uMatWVP = glGetUniformLocation(m_pShader->GetProgram(), "worldViewProj");
 
 	m_uCamPos = glGetUniformLocation(m_pShader->GetProgram(), "camPos");
 	m_uProjA = glGetUniformLocation(m_pShader->GetProgram(), "projectionA");
@@ -48,8 +47,12 @@ void Atmosphere::Initialize()
 	m_uPosition = glGetUniformLocation(m_pShader->GetProgram(), "Position");
 	m_uRadius = glGetUniformLocation(m_pShader->GetProgram(), "Radius");
 }
-void Atmosphere::Draw(glm::vec3 pos, float radius)
+void Atmosphere::Draw(Planet* pPlanet, float radius)
 {
+	glm::vec3 pos = pPlanet->GetTransform()->GetPosition();
+	float surfaceRadius = pPlanet->GetRadius();
+	radius += surfaceRadius;
+
 	Sphere objSphere = Sphere(pos, radius);
 	if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
 		return;
@@ -58,7 +61,13 @@ void Atmosphere::Draw(glm::vec3 pos, float radius)
 
 	STATE->SetShader(m_pShader);
 
+	glUniformMatrix4fv(m_uMatModel, 1, GL_FALSE, glm::value_ptr(World));
+	glUniformMatrix4fv(m_uMatWVP, 1, GL_FALSE, glm::value_ptr(CAMERA->GetViewProj()));
+
 	// #todo: stop repeating this everywhere
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferA"), 0);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferB"), 1);
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferC"), 2);
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (size_t i = 0; i < gbufferTex.size(); i++)
 	{
@@ -75,5 +84,12 @@ void Atmosphere::Draw(glm::vec3 pos, float radius)
 	STATE->SetCullEnabled(true);
 	STATE->SetFaceCullingMode(GL_FRONT);
 	STATE->SetDepthEnabled(false);
+	STATE->SetBlendEnabled(true);
+	STATE->SetBlendEquation(GL_FUNC_ADD);
+	STATE->SetBlendFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::IcoSphere<3> >();
+	STATE->SetFaceCullingMode(GL_BACK);
+	STATE->SetBlendEnabled(false);
+	STATE->SetDepthEnabled(true);
+	STATE->SetCullEnabled(false);
 }

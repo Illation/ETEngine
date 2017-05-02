@@ -154,17 +154,17 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 	//Step two: render with forward materials
 	for (auto pScene : pScenes)
 	{
-		pScene->DrawForward();
-		for (Entity* pEntity : pScene->m_pEntityVec)
+		if (pScene->m_UseSkyBox)
 		{
-			pEntity->RootDrawForward();
+			pScene->m_pSkybox->RootDrawForward();
 		}
 	}
 	for (auto pScene : pScenes)
 	{
-		if (pScene->m_UseSkyBox)
+		pScene->DrawForward();
+		for (Entity* pEntity : pScene->m_pEntityVec)
 		{
-			pScene->m_pSkybox->RootDrawForward();
+			pEntity->RootDrawForward();
 		}
 	}
 	//Draw to default buffer

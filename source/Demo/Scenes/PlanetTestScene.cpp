@@ -101,9 +101,10 @@ void PlanetTestScene::Update()
 	}
 
 	//Calculate far plane based on planet
+	float radius = max(m_pPlanet->GetRadius() + m_pPlanet->GetMaxHeight(), m_pPlanet->GetRadius() + m_pPlanet->GetAtmosphereHeight());
 	float altitude = glm::distance(m_pPlanet->GetTransform()->GetPosition(), CAMERA->GetTransform()->GetPosition()) - m_pPlanet->GetRadius();
 	CAMERA->SetFarClippingPlane((sqrtf(powf(m_pPlanet->GetRadius() + altitude, 2) - powf(m_pPlanet->GetRadius(), 2)) +
-		sqrtf(powf(m_pPlanet->GetRadius() + m_pPlanet->GetMaxHeight(), 2) - powf(m_pPlanet->GetRadius(), 2)))*10);
+		sqrtf(powf(radius, 2) - powf(m_pPlanet->GetRadius(), 2)))*10);
 	CAMERA->SetNearClippingPlane(CAMERA->GetFarPlane()*0.000003f);
 }
 

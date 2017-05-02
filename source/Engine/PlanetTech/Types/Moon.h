@@ -8,4 +8,6 @@ public:
 
 protected:
 	void LoadPlanet();
+
+	Atmosphere* m_pAtmosphere;
 };

@@ -21,6 +21,7 @@
 	
 	#include "Common.glsl"
 	#include "CommonDeferred.glsl"
+	#include "CommonPBR.glsl"
 	
 	in vec4 Texcoord;
 	
@@ -47,6 +48,6 @@
 		vec3 viewDir = -normalize(viewRay);
 		
 		//output
-		outColor = vec4(pos, 1.0);
+		outColor = vec4(pos/Radius, 0.50);
 	}
 </FRAGMENT>

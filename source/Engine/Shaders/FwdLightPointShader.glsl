@@ -33,7 +33,7 @@
 	
 	//Light
 	uniform vec3 Position;
-	uniform vec3 Color;
+	uniform vec3 Color = vec3(10);
 	uniform float Radius;
 	
 	//Lighting function
