@@ -32,8 +32,8 @@ void TextRenderer::Initialize()
 
 
 	//bind
-	glBindVertexArray(m_VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	STATE->BindVertexArray(m_VAO);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
 	//set data and attributes
 	glBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
@@ -58,8 +58,8 @@ void TextRenderer::Initialize()
 	glVertexAttribIPointer(4, (GLint)1, GL_UNSIGNED_INT, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, ChannelId));
 
 	//unbind
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
+	STATE->BindVertexArray(0);
 
 	int width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
 	float scaleX = (width > 0) ? 2.f / width : 0;
@@ -103,7 +103,7 @@ void TextRenderer::Draw()
 	if (m_pSpriteFonts.size() <= 0) return;
 
 	//Bind Object vertex array
-	glBindVertexArray(m_VAO);
+	STATE->BindVertexArray(m_VAO);
 
 	UpdateBuffer();
 
@@ -113,7 +113,7 @@ void TextRenderer::Draw()
 	glUniformMatrix4fv(m_uTransform, 1, GL_FALSE, glm::value_ptr(m_Transform));
 
 	//Bind Object vertex array
-	glBindVertexArray(m_VAO);
+	STATE->BindVertexArray(m_VAO);
 	for (auto pFont : m_pSpriteFonts)
 	{
 		if (pFont->m_IsAddedToRenderer)
@@ -131,7 +131,7 @@ void TextRenderer::Draw()
 		}
 	}
 	//unbind vertex array
-	glBindVertexArray(0);
+	STATE->BindVertexArray(0);
 }
 
 void TextRenderer::UpdateBuffer()
@@ -180,17 +180,17 @@ void TextRenderer::UpdateBuffer()
 	}
 
 	//Bind Object vertex array
-	glBindVertexArray(m_VAO);
+	STATE->BindVertexArray(m_VAO);
 
 	UINT buffersize = tVerts.size() * sizeof(TextVertex);
 
 	//Send the vertex buffer again
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, buffersize, tVerts.data(), GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
 
 	//Done Modifying
-	glBindVertexArray(0);
+	STATE->BindVertexArray(0);
 
 	m_NumCharacters = 0;
 }

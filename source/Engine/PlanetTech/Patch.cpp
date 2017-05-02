@@ -47,8 +47,8 @@ void Patch::Init()
 	glGenBuffers(1, &m_EBO);
 	glGenBuffers(1, &m_VBOInstance);
 	//bind
-	glBindVertexArray(m_VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	STATE->BindVertexArray(m_VAO);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	//input layout
 	//************
 	//geometry
@@ -58,7 +58,7 @@ void Patch::Init()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(PatchVertex), (GLvoid*)offsetof(PatchVertex, morph));
 	//instances
 	//bind
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOInstance);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBOInstance);
 	glEnableVertexAttribArray(2);
 	glEnableVertexAttribArray(3);
 	glEnableVertexAttribArray(4);
@@ -72,10 +72,10 @@ void Patch::Init()
 	glVertexAttribDivisor(4, 1);
 	glVertexAttribDivisor(5, 1);
 	//Indices
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+	STATE->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 	//unbind
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
+	STATE->BindVertexArray(0);
 
 	GenerateGeometry(m_Levels);
 }
@@ -131,20 +131,20 @@ void Patch::GenerateGeometry(short levels)
 		rowIdx = nextIdx;
 	}
 	//Rebind dat shizzle
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, m_Vertices.size() * sizeof(PatchVertex), m_Vertices.data(), GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+	STATE->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*m_Indices.size(), m_Indices.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Patch::BindInstances(std::vector<PatchInstance> &instances)
 {
 	//update buffer
 	m_NumInstances = instances.size();
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOInstance);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBOInstance);
 	glBufferData(GL_ARRAY_BUFFER, instances.size() * sizeof(PatchInstance), instances.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Patch::UploadDistanceLUT(std::vector<float> &distances)
@@ -180,14 +180,14 @@ void Patch::Draw(bool white)
 	STATE->LazyBindTexture(4, GL_TEXTURE_2D, m_pPlanet->GetHeightDetailMap()->GetHandle());
 
 	//Bind Object vertex array
-	glBindVertexArray(m_VAO);
+	STATE->BindVertexArray(m_VAO);
 
 	//Draw the object
 	glDrawElementsInstanced(GL_TRIANGLES, m_Indices.size(), GL_UNSIGNED_INT, 0, m_NumInstances);
 	PERFORMANCE->m_DrawCalls++;
 
 	//unbind vertex array
-	glBindVertexArray(0);
+	STATE->BindVertexArray(0);
 }
 
 Patch::~Patch()

@@ -108,7 +108,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	// convert HDR equirectangular environment map to cubemap equivalent
 	STATE->SetShader(equiCubeShader);
 	glUniform1i(glGetUniformLocation(equiCubeShader->GetProgram(), "equirectangularMap"), 0);
-	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, hdrTexture);
+	STATE->LazyBindTexture(0, GL_TEXTURE_2D, hdrTexture);
 	glUniformMatrix4fv(glGetUniformLocation(equiCubeShader->GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(captureProjection));
 
 	//render the cube
