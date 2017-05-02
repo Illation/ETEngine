@@ -39,6 +39,9 @@ public:
 	//only changes active texture unit if the texture was not bound yet
 	void LazyBindTexture(uint unit, GLenum target, GLuint handle);
 
+	void BindVertexArray(GLuint vertexArray);
+	void BindBuffer(GLenum target, GLuint buffer);
+
 private:
 
 	void EnOrDisAble(bool &state, bool enabled, GLenum glState);
@@ -69,4 +72,7 @@ private:
 	uint m_ActiveTexture = 0;
 	int m_NumTextureUnits; //depends on gpu and drivers
 	std::vector<std::map<GLenum, GLuint> > m_pTextureUnits; // #todo: in the future, abstract texture data here to support all types of textures
+
+	GLuint m_VertexArray = 0;
+	std::map<GLenum, GLuint> m_BufferTargets;
 };

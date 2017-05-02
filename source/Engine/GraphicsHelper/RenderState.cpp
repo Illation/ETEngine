@@ -34,6 +34,24 @@ void RenderState::Initialize()
 		};
 		m_pTextureUnits.push_back(targets);
 	}
+
+	m_BufferTargets =
+	{
+		{ GL_ARRAY_BUFFER, 0 },
+		{ GL_ATOMIC_COUNTER_BUFFER, 0 },
+		{ GL_COPY_READ_BUFFER, 0 },
+		{ GL_COPY_WRITE_BUFFER, 0 },
+		{ GL_DISPATCH_INDIRECT_BUFFER, 0 },
+		{ GL_DRAW_INDIRECT_BUFFER, 0 },
+		{ GL_ELEMENT_ARRAY_BUFFER, 0 },
+		{ GL_PIXEL_PACK_BUFFER, 0 },
+		{ GL_PIXEL_UNPACK_BUFFER, 0 },
+		{ GL_QUERY_BUFFER, 0 },
+		{ GL_SHADER_STORAGE_BUFFER, 0 },
+		{ GL_TEXTURE_BUFFER, 0 },
+		{ GL_TRANSFORM_FEEDBACK_BUFFER, 0 },
+		{ GL_UNIFORM_BUFFER, 0 }
+	};
 }
 
 void RenderState::EnOrDisAble(bool &state, bool enabled, GLenum glState)
@@ -158,5 +176,26 @@ void RenderState::LazyBindTexture(uint unit, GLenum target, GLuint handle)
 		SetActiveTexture(unit);
 		m_pTextureUnits[m_ActiveTexture][target] = handle;
 		glBindTexture(target, handle);
+	}
+}
+
+void RenderState::BindVertexArray(GLuint vertexArray)
+{
+	if (!(m_VertexArray == vertexArray))
+	{
+		m_VertexArray = vertexArray;
+		glBindVertexArray(vertexArray);
+
+		//Aparrently binding a new vertex array unbinds the old element array buffer
+		//Coincedentially it doesn't seem to happen with array buffers
+		m_BufferTargets[GL_ELEMENT_ARRAY_BUFFER] = 0;
+	}
+}
+void RenderState::BindBuffer(GLenum target, GLuint buffer)
+{
+	if (!(m_BufferTargets[target] == buffer))
+	{
+		m_BufferTargets[target] = buffer;
+		glBindBuffer(target, buffer);
 	}
 }

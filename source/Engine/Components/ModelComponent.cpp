@@ -88,7 +88,7 @@ void ModelComponent::DrawCall()
 	}
 	//Get Vertex Object
 	auto vO = m_pMeshFilter->GetVertexObject(m_pMaterial);
-	glBindVertexArray(vO.array);
+	STATE->BindVertexArray(vO.array);
 	m_pMaterial->UploadVariables(m_pEntity->GetTransform()->GetWorld());
 	// Draw 
 	STATE->SetDepthEnabled(true);
@@ -101,7 +101,7 @@ void ModelComponent::DrawShadow()
 	auto nullMat = ShadowRenderer::GetInstance()->GetNullMaterial();
 	glm::mat4 matWVP = ShadowRenderer::GetInstance()->GetLightVP();
 	auto vO = m_pMeshFilter->GetVertexObject(nullMat);
-	glBindVertexArray(vO.array);
+	STATE->BindVertexArray(vO.array);
 	nullMat->UploadVariables(m_pEntity->GetTransform()->GetWorld(), matWVP);
 	glDrawElementsInstanced(GL_TRIANGLES, m_pMeshFilter->m_IndexCount, GL_UNSIGNED_INT, 0, 1);
 	PERFORMANCE->m_DrawCalls++;

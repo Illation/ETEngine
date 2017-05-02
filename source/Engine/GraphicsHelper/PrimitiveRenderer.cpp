@@ -57,10 +57,10 @@ primitives::Quad::~Quad()
 }
 void primitives::Quad::Draw()
 {
-	glBindVertexArray(m_VAO);
+	STATE->BindVertexArray(m_VAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	PERFORMANCE->m_DrawCalls++;
-	glBindVertexArray(0);
+	STATE->BindVertexArray(0);
 }
 void primitives::Quad::Initialize()
 {
@@ -75,8 +75,8 @@ void primitives::Quad::Initialize()
 	// Setup plane VAO
 	glGenVertexArrays(1, &m_VAO);
 	glGenBuffers(1, &m_VBO);
-	glBindVertexArray(m_VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	STATE->BindVertexArray(m_VAO);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
@@ -92,10 +92,10 @@ primitives::Cube::~Cube()
 }
 void primitives::Cube::Draw()
 {
-	glBindVertexArray(m_VAO);
+	STATE->BindVertexArray(m_VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	PERFORMANCE->m_DrawCalls++;
-	glBindVertexArray(0);
+	STATE->BindVertexArray(0);
 }
 void primitives::Cube::Initialize()
 {
@@ -147,18 +147,18 @@ void primitives::Cube::Initialize()
 	glGenVertexArrays(1, &m_VAO);
 	glGenBuffers(1, &m_VBO);
 	// Fill buffer
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	// Link vertex attributes
-	glBindVertexArray(m_VAO);
+	STATE->BindVertexArray(m_VAO);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
+	STATE->BindVertexArray(0);
 }
 
 //Unit sphere with variable detail
@@ -171,10 +171,10 @@ primitives::IcoSphere<level>::~IcoSphere()
 template<int level>
 void primitives::IcoSphere<level>::Draw()
 {
-	glBindVertexArray(m_VAO);
+	STATE->BindVertexArray(m_VAO);
 	glDrawArrays(GL_TRIANGLES, 0, m_NumVerts);
 	PERFORMANCE->m_DrawCalls++;
-	glBindVertexArray(0);
+	STATE->BindVertexArray(0);
 }
 template<int level>
 void primitives::IcoSphere<level>::Initialize()
@@ -195,14 +195,14 @@ void primitives::IcoSphere<level>::Initialize()
 	glGenVertexArrays(1, &m_VAO);
 	glGenBuffers(1, &m_VBO);
 	// Fill buffer
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
 	// Link vertex attributes
-	glBindVertexArray(m_VAO);
+	STATE->BindVertexArray(m_VAO);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
+	STATE->BindVertexArray(0);
 }
 template<int level>
 void primitives::IcoSphere<level>::SubAndPush(std::vector<glm::vec3> &vertices, const int lev, const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c) const
