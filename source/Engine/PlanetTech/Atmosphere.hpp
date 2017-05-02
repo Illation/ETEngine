@@ -25,6 +25,7 @@ private:
 
 	GLint m_uPosition;
 	GLint m_uRadius;
+	GLint m_uSurfaceRadius;
 
 	ShaderData* m_pShader;
 };

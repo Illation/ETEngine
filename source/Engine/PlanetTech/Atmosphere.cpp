@@ -46,18 +46,20 @@ void Atmosphere::Initialize()
 
 	m_uPosition = glGetUniformLocation(m_pShader->GetProgram(), "Position");
 	m_uRadius = glGetUniformLocation(m_pShader->GetProgram(), "Radius");
+	m_uSurfaceRadius = glGetUniformLocation(m_pShader->GetProgram(), "SurfaceRadius");
 }
 void Atmosphere::Draw(Planet* pPlanet, float radius)
 {
 	glm::vec3 pos = pPlanet->GetTransform()->GetPosition();
 	float surfaceRadius = pPlanet->GetRadius();
 	radius += surfaceRadius;
+	float icoRadius = radius / 0.996407747f;//scale up the sphere so the face center reaches the top of the atmosphere
 
 	Sphere objSphere = Sphere(pos, radius);
 	if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
 		return;
-
-	glm::mat4 World = glm::translate(pos)*glm::scale(glm::vec3(radius));
+																		
+	glm::mat4 World = glm::translate(pos)*glm::scale(glm::vec3(icoRadius));
 
 	STATE->SetShader(m_pShader);
 
@@ -80,6 +82,7 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 
 	glUniform3fv(m_uPosition, 1, glm::value_ptr(pos));
 	glUniform1f(m_uRadius, radius);
+	glUniform1f(m_uSurfaceRadius, surfaceRadius);
 
 	STATE->SetCullEnabled(true);
 	STATE->SetFaceCullingMode(GL_FRONT);
