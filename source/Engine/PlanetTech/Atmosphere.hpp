@@ -6,18 +6,18 @@ class Planet;
 class Atmosphere
 {
 public:
-	Atmosphere(Planet* pPlanet);
+	Atmosphere();
 	~Atmosphere();
 
 	void Precalculate();
 	void Initialize();
-	void Draw(glm::vec3 pos, float radius);
-	
-private:
-	//Parameters
-	Planet* m_pPanet;
+	void Draw(Planet* pPlanet, float radius);
 
+private:
 	//Camera and pos reconstruction from gbuffer
+	GLint m_uMatModel;
+	GLint m_uMatWVP;
+
 	GLint m_uCamPos;
 	GLint m_uProjA;
 	GLint m_uProjB;

@@ -11,6 +11,7 @@
 #include "../Graphics/Frustum.h"
 #include "Triangulator.h"
 #include "Patch.h"
+#include "Atmosphere.hpp"
 #include "../Content/TextureLoader.hpp"
 #include "../GraphicsHelper/RenderPipeline.hpp"
 #include "../GraphicsHelper/RenderState.hpp"
@@ -71,9 +72,12 @@ void Planet::Draw()
 	m_pPatch->Draw();
 	STATE->SetCullEnabled(true);
 }
-void Planet::DrawWire()
+void Planet::DrawForward()
 {
-	m_pPatch->Draw(true);
+	if (m_pAtmopshere)
+	{
+		m_pAtmopshere->Draw(this, m_AtmRadius);
+	}
 }
 
 int Planet::GetVertexCount()

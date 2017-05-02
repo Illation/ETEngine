@@ -88,7 +88,6 @@ public:
 		return dynamic_cast<T*>(m_Light);
 	}
 
-	glm::vec3 GetColor() { return m_Light->color; }
 	void UploadVariables(GLuint shaderProgram, unsigned index);
 
 	void DrawVolume();

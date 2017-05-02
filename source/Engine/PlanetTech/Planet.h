@@ -6,6 +6,7 @@ class Frustum;
 class TextureData;
 class Triangulator;
 class Patch;
+class Atmosphere;
 
 class Planet : public Entity
 {
@@ -24,15 +25,20 @@ public:
 	TextureData* GetDetail2Map() { return m_pDetail2; }
 	TextureData* GetHeightDetailMap() { return m_pHeightDetail; }
 
+	void SetAtmosphere(Atmosphere* pAtmosphere, float radius) 
+	{ 
+		m_pAtmopshere = pAtmosphere; 
+		m_AtmRadius = radius;
+	}
+	float GetAtmosphereHeight() { return m_pAtmopshere ? m_AtmRadius : 0; }
+
 protected:
 	virtual void Initialize();
 	virtual void Update();
 	virtual void Draw();
+	virtual void DrawForward();
 
 	virtual void LoadPlanet() = 0;
-	
-	//dunno if I should keep this
-	void DrawWire();
 
 protected:
 
@@ -48,6 +54,9 @@ protected:
 
 private:
 	bool m_Rotate = false;
+
+	Atmosphere* m_pAtmopshere;
+	float m_AtmRadius;
 
 	//Calculations
 	Triangulator* m_pTriangulator = nullptr;
