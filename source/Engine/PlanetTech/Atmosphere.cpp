@@ -89,7 +89,7 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	STATE->SetDepthEnabled(false);
 	STATE->SetBlendEnabled(true);
 	STATE->SetBlendEquation(GL_FUNC_ADD);
-	STATE->SetBlendFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	STATE->SetBlendFunction(GL_ONE, GL_ONE);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::IcoSphere<3> >();
 	STATE->SetFaceCullingMode(GL_BACK);
 	STATE->SetBlendEnabled(false);
