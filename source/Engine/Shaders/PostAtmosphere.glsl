@@ -36,40 +36,31 @@
 	uniform float Radius;
 	uniform float SurfaceRadius;
 	
+	uniform vec3 SunDir;
+	
 	uniform float EPSILON = 0.0001f;
 	
-	bool intersectAtmosphere(in vec3 viewDir, inout float offset, inout float maxPathLength)
+	bool intersectSphere(in vec3 viewDir, in vec3 position, in float radius, inout float ffDist, inout float bfDist)
 	{
-		offset = 0.0f;
-		maxPathLength = 0.0f;
 		// vector from ray origin to center of the sphere
-		vec3 l = Position-camPos;
-		float l2 = dot(l,l);
-		// adjust top atmosphere boundary by small epsilon to prevent artifacts
-		float r = Radius;// - EPSILON;
-		float r2 = r*r;
-		float s = dot(l,viewDir);
-		if(l2 <= r2)
+		vec3 sphereDir = position-camPos;
+		float spDotSp = dot(sphereDir,sphereDir);
+		float radiusSq = radius*radius;
+		float sDotV = dot(sphereDir,viewDir);
+		float innerOffsetSq = radiusSq - (spDotSp - (sDotV * sDotV));
+		float innerOffset = sqrt(innerOffsetSq);
+		if(spDotSp <= radiusSq)
 		{
 			// ray origin inside sphere, hit is ensured
-			float m2 = l2 - (s * s);
-			float q = sqrt(r2 - m2);
-			maxPathLength = s + q;
+			bfDist = sDotV + innerOffset;
 			return true;
 		}
-		else if(s >= 0)
+		else if(sDotV >= 0 && innerOffsetSq >= 0)
 		{
-			// ray starts outside in front of sphere, hit is possible
-			float m2 = l2 - (s * s);
-			float q2 = r2 - m2;
-			if(q2 >= 0)
-			{
-				// ray hits atmosphere definitely
-				float q = sqrt(q2);
-				offset = s - q;
-				maxPathLength = (s + q) - offset;
-				return true;
-			}
+			// ray starts outside in front of sphere but hits
+			ffDist = sDotV - innerOffset;
+			bfDist = sDotV + innerOffset;
+			return true;
 		}
 		return false;
 	}	
@@ -86,27 +77,39 @@
 		vec3 viewDir = normalize(viewRay);
 		
 		//Calculate atmoSPHERE intersections
-		float offset;
-		float maxPathLength;
-		bool hit = intersectAtmosphere(viewDir, offset, maxPathLength);
-		
-		//calculate the position of the back of the atmosphere
-		float bfDistance = offset+maxPathLength;
-		float terrainDistance = length(pos-camPos);
-		if((hit) && (bfDistance < terrainDistance))
+		float ffDist = 0;
+		float bfDist = 0;
+		float pathLength = 0;
+		if(intersectSphere(viewDir, Position, Radius, ffDist, bfDist))
 		{
-			pos = camPos + viewDir * bfDistance;
-		}
-		else
-		{
-			maxPathLength = terrainDistance - offset;
+			pathLength = min(length(pos-camPos), bfDist);
+			if(pathLength >= ffDist)
+			{
+				//intersection is behind front edge of atmosphere
+				vec3 startPos = camPos + viewDir * ffDist;
+				float startPosHeight = length(startPos - Position);
+				
+				// starting position of path is now ensured to be inside atmosphere
+				// was either originally there or has been moved to top boundary
+				float muStartPos = dot(startPos, viewDir) / startPosHeight;
+				float nuStartPos = dot(viewDir, SunDir);
+				float musStartPos = dot(startPos, SunDir) / startPosHeight;
+
+				
+				vec3 endPos = camPos + viewDir * pathLength;
+				float endPosHeight = length(endPos - Position);
+				pathLength -= ffDist;
+				
+				//just for debugging
+				pos = endPos;
+			}
 		}
 		
-		float opacity = maxPathLength/(Radius);
+		float opacity = pathLength/(Radius);
 		opacity = pow(opacity, 1);
-		opacity = opacity*100;
+		opacity = opacity*10;
 		
 		//output
-		outColor = vec4(vec3(0.5, 0.5, 1), hit?opacity:0);
+		outColor = vec4(vec3(0.5, 0.5, 1)*opacity, 1);
 	}
 </FRAGMENT>

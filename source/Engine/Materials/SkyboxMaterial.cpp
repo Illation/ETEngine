@@ -36,7 +36,7 @@ void SkyboxMaterial::UploadDerivedVariables()
 {
 	STATE->SetShader(m_Shader);
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "skybox"), 0);
-	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, m_pHDRMap->GetHandle());
+	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, m_pHDRMap->GetRadianceHandle());
 
 	glUniform1i(m_uNumMipMaps, m_pHDRMap->GetNumMipMaps());
 	glUniform1f(m_uRoughness, m_Roughness);
