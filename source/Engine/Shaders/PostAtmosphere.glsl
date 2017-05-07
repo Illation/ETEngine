@@ -22,6 +22,7 @@
 	#include "Common.glsl"
 	#include "CommonDeferred.glsl"
 	#include "CommonPBR.glsl"
+	#include "CommonAtmosphere.glsl"
 	
 	in vec4 Texcoord;
 	
@@ -31,39 +32,11 @@
 	GBUFFER_SAMPLER
 	uniform mat4 viewProjInv;
 	
-	//Light
 	uniform vec3 Position;
-	uniform float Radius;
-	uniform float SurfaceRadius;
 	
 	uniform vec3 SunDir;
 	
 	uniform float EPSILON = 0.0001f;
-	
-	bool intersectSphere(in vec3 viewDir, in vec3 position, in float radius, inout float ffDist, inout float bfDist)
-	{
-		// vector from ray origin to center of the sphere
-		vec3 sphereDir = position-camPos;
-		float spDotSp = dot(sphereDir,sphereDir);
-		float radiusSq = radius*radius;
-		float sDotV = dot(sphereDir,viewDir);
-		float innerOffsetSq = radiusSq - (spDotSp - (sDotV * sDotV));
-		float innerOffset = sqrt(innerOffsetSq);
-		if(spDotSp <= radiusSq)
-		{
-			// ray origin inside sphere, hit is ensured
-			bfDist = sDotV + innerOffset;
-			return true;
-		}
-		else if(sDotV >= 0 && innerOffsetSq >= 0)
-		{
-			// ray starts outside in front of sphere but hits
-			ffDist = sDotV - innerOffset;
-			bfDist = sDotV + innerOffset;
-			return true;
-		}
-		return false;
-	}	
 	
 	void main()
 	{
@@ -80,7 +53,8 @@
 		float ffDist = 0;
 		float bfDist = 0;
 		float pathLength = 0;
-		if(intersectSphere(viewDir, Position, Radius, ffDist, bfDist))
+		vec3 attenuation = vec3(0);
+		if(intersectSphere(viewDir, Position, camPos, Radius, ffDist, bfDist))
 		{
 			pathLength = min(length(pos-camPos), bfDist);
 			if(pathLength >= ffDist)
@@ -94,11 +68,21 @@
 				float muStartPos = dot(startPos, viewDir) / startPosHeight;
 				float nuStartPos = dot(viewDir, SunDir);
 				float musStartPos = dot(startPos, SunDir) / startPosHeight;
-
 				
 				vec3 endPos = camPos + viewDir * pathLength;
 				float endPosHeight = length(endPos - Position);
+				
 				pathLength -= ffDist;
+				
+				if(pathLength < bfDist-ffDist)
+				{
+					attenuation = analyticTransmittance(startPosHeight, muStartPos, pathLength);
+				}
+				else
+				{
+					// retrieve extinction factor for inifinte ray
+					attenuation = analyticTransmittance(startPosHeight, muStartPos, pathLength);
+				}
 				
 				//just for debugging
 				pos = endPos;
@@ -106,10 +90,9 @@
 		}
 		
 		float opacity = pathLength/(Radius);
-		opacity = pow(opacity, 1);
 		opacity = opacity*10;
 		
 		//output
-		outColor = vec4(vec3(0.5, 0.5, 1)*opacity, 1);
+		outColor = vec4(attenuation*opacity, 1);
 	}
 </FRAGMENT>
