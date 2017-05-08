@@ -1,8 +1,10 @@
 # Extra Terrestial Engine
 
 Space sim focused engine created from a merge of:
- * https://github.com/Illation/GLFramework
- * https://github.com/Illation/PlanetRenderer
+ * my [OpenGL Framework](https://github.com/Illation/GLFramework)
+ * my [Planet Renderer](https://github.com/Illation/PlanetRenderer)
+ 
+Full feature list and backlog here: [LINK](features.md)
 
 ## Acknowledgments
 Currently used libraries: SDL2, GLM, FreeImage, GLAD and Assimp
