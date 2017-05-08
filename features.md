@@ -1,8 +1,8 @@
-#Features
+# Features
 
-##Working
+## Working
 
-###Graphics
+### Graphics
  * Basic Physically Based Rendering
  * HighDynamicRange Environment maps
  * Image Based Lighting
@@ -18,13 +18,12 @@
  * Sprite font rendering
  * Primitive renderer
  
-###Planets
-
+### Planets
  * Custom triangle CDLOD
  * Triangle tree with frustum culling
  * Icosphere generation
  
-###General
+### General
  * Scenegraph Entity Hirachy 
  * Entity Component System 
  * Singleton Pattern for things like WINDOW, INPUT, TIME, CAMERA etc 
@@ -34,24 +33,24 @@
  * GLSL shader preprocessing with includes and vertex / geo / fragment specializations
 
  
-##Work in progress
+## Work in progress
 
-###Planets
+### Planets
  * Atmospheric Scattering
 
  
-##Backlog
+## Backlog
 
-###Graphics
+### Graphics
  * SSAO
  * SSR
  * Render state is pushed right before draw call
  
-###Planets
+### Planets
  * World moves around camera
  * Reference frame system
  * Send back vertices for physicalization
  
-###General
+### General
  * Physics Library (PhysX?)
  * Sounds (FMOD?)
