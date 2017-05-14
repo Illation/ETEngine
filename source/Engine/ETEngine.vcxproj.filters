@@ -282,5 +282,6 @@
     <ClInclude Include="GraphicsHelper\PrimitiveRenderer.hpp" />
     <ClInclude Include="GraphicsHelper\RenderPipeline.hpp" />
     <ClInclude Include="GraphicsHelper\RenderState.hpp" />
+    <ClInclude Include="Helper\AtomicTypes.h" />
   </ItemGroup>
 </Project>

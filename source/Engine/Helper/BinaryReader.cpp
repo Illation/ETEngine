@@ -22,14 +22,14 @@ BinaryReader::~BinaryReader(void)
 std::string BinaryReader::ReadLongString()
 {
 	if (m_pReader == nullptr)
-		std::cout << "BinaryReader doesn't exist!\nUnable to read binary data..." << std:: endl;
+		std::cout << "BinaryReader doesn't exist!\nUnable to read binary data..." << std::endl;
 
-	auto stringLength = Read<UINT>();
+	auto stringLength = Read<uint32>();
 
 	std::stringstream ss;
-	for (UINT i = 0; i<stringLength; ++i)
+	for (uint32 i = 0; i<stringLength; ++i)
 	{
-		ss << Read<char>();
+		ss << Read<uint8>();
 	}
 
 	return (std::string)ss.str();
@@ -55,12 +55,12 @@ std::string BinaryReader::ReadString()
 	if (m_pReader == nullptr)
 		std::cout << "BinaryReader doesn't exist!\nUnable to read binary data..." << std::endl;
 
-	int stringLength = (int)Read<char>();
+	int32 stringLength = (int32)Read<uint8>();
 
 	std::stringstream ss;
-	for (int i = 0; i<stringLength; ++i)
+	for (int32 i = 0; i<stringLength; ++i)
 	{
-		ss << Read<char>();
+		ss << Read<uint8>();
 	}
 
 	return (std::string)ss.str();
@@ -87,11 +87,11 @@ void BinaryReader::Open(std::string binaryFile)
 	}
 }
 
-void BinaryReader::Open(char* s, UINT32 size)
+void BinaryReader::Open(uint8* s, uint32 size)
 {
 	Close();
 
-	std::string data(s, size);
+	std::string data((char)s, size);
 	m_pReader = new std::stringstream(data);
 	m_Exists = true;
 }
@@ -102,18 +102,18 @@ void BinaryReader::Close()
 	m_Exists = false;
 }
 
-int BinaryReader::GetBufferPosition()
+int32 BinaryReader::GetBufferPosition()
 {
 	if (m_pReader)
 	{
-		return static_cast<int>(m_pReader->tellg());
+		return static_cast<int32>(m_pReader->tellg());
 	}
 
 	std::cout << "[WARNING] " << L"BinaryReader::GetBufferPosition> m_pReader doesn't exist"<<std::endl;
 	return -1;
 }
 
-bool BinaryReader::SetBufferPosition(int pos)
+bool BinaryReader::SetBufferPosition(int32 pos)
 {
 	if (m_pReader)
 	{
@@ -125,7 +125,7 @@ bool BinaryReader::SetBufferPosition(int pos)
 	return false;
 }
 
-bool BinaryReader::MoveBufferPosition(int move)
+bool BinaryReader::MoveBufferPosition(int32 move)
 {
 	auto currPos = GetBufferPosition();
 	if (currPos>0)

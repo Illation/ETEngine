@@ -3,12 +3,11 @@
 ## Working
 
 ### Graphics
- * Basic Physically Based Rendering
+ * Physically Based Rendering
  * HighDynamicRange Environment maps
  * Image Based Lighting
  * Deferred and Forward rendering
  * Lights rendered as Light Volumes
- * Shadow Mapping
  * Bloom with texture downsampling
  * Stereoscopic Normal map encoding and decoding for optimal use of G-Buffer
  * Mesh Filter -> Vertex buffer building depending on material needs
@@ -17,6 +16,7 @@
  * Frustum culling
  * Sprite font rendering
  * Primitive renderer
+ * Shader preprocessing (#include)
  
 ### Planets
  * Custom triangle CDLOD
@@ -35,8 +35,14 @@
  
 ## Work in progress
 
+### Graphics
+ * Shadow Mapping
+
 ### Planets
  * Atmospheric Scattering
+ 
+### General
+ * Specific atmoic types
 
  
 ## Backlog
@@ -45,12 +51,48 @@
  * SSAO
  * SSR
  * Render state is pushed right before draw call
+ * AA for deferred rendering (TAA)
+ * Sprite rendering
+ * Debug renderer
+ * Abstract OpenGL for Shader and Framebuffer
+ * Particle Systems
+ * Allow better Graphics debugging support by tagging
+ * Generate some common shaders from code
+     * Basic deferred fragment shader generation
+ * Support resizing window
+ * Vulkan??
+ * Animation support
+ * Motion Blur
+ * Cone Lights/Culling/Primitive
+ * Sorting objects before rendering
+ * batching 
+ * Transparent shadows
  
 ### Planets
  * World moves around camera
  * Reference frame system
  * Send back vertices for physicalization
+ * Clouds / Fog
+ * Trees / grass etc
+ * Near ground Detail / Detail data
+ * Ocean sim
+ * Vectorized streets / fields
+ * Effects such as Lightning, Aurora Borealis, Atmospheric glow
+ * Biome Separation
+ * Star data + low res cubemap instead of detailed cubemap
+ * Weather particles
+ * God rays
+ * occlusion culling
  
 ### General
  * Physics Library (PhysX?)
  * Sounds (FMOD?)
+ * Custom Maths Library
+ * Serialize Levels
+ * Read engine settings from file
+ * Packaging system
+ * Binary file types
+ * Debug Overlay
+     * Debug Overlay as Editor build mode
+ * Linux support
+ * Screenshot manager
