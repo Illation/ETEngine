@@ -27,13 +27,13 @@ public:
 	std::string ReadLongString();
 	std::string ReadNullString();
 
-	int GetBufferPosition();
-	bool SetBufferPosition(int pos);
-	bool MoveBufferPosition(int move);
+	int32 GetBufferPosition();
+	bool SetBufferPosition(int32 pos);
+	bool MoveBufferPosition(int32 move);
 	bool Exists() const { return m_Exists; }
 
 	void Open(std::string binaryFile);
-	void Open(char* s, UINT32 size);
+	void Open(uint8* s, uint32 size);
 	void Close();
 
 private:
