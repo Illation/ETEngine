@@ -57,7 +57,7 @@ void SceneManager::SetActiveGameScene(std::string sceneName)
 
 void SceneManager::NextScene()
 {
-	for (unsigned i = 0; i < m_pSceneVec.size(); ++i)
+	for (uint32 i = 0; i < m_pSceneVec.size(); ++i)
 	{
 		if (m_pSceneVec[i] == m_ActiveScene)
 		{

@@ -16,7 +16,7 @@ void RenderState::Initialize()
 	m_ViewportSize = glm::ivec2(WINDOW.Width, WINDOW.Height);
 
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_NumTextureUnits);
-	for (int i = 0; i < m_NumTextureUnits; i++)
+	for (int32 i = 0; i < m_NumTextureUnits; i++)
 	{
 		std::map<GLenum, GLuint> targets = 
 		{
@@ -153,7 +153,7 @@ void RenderState::BindDrawFramebuffer(GLuint handle)
 	}
 }
 
-void RenderState::SetActiveTexture(uint unit)
+void RenderState::SetActiveTexture(uint32 unit)
 {
 	if (!(m_ActiveTexture == unit))
 	{
@@ -169,7 +169,7 @@ void RenderState::BindTexture(GLenum target, GLuint handle)
 		glBindTexture(target, handle);
 	}
 }
-void RenderState::LazyBindTexture(uint unit, GLenum target, GLuint handle)
+void RenderState::LazyBindTexture(uint32 unit, GLenum target, GLuint handle)
 {
 	if (!(m_pTextureUnits[unit][target] == handle))
 	{

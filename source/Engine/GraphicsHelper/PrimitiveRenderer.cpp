@@ -162,13 +162,13 @@ void primitives::Cube::Initialize()
 }
 
 //Unit sphere with variable detail
-template<int level>
+template<int32 level>
 primitives::IcoSphere<level>::~IcoSphere()
 {
 	glDeleteBuffers(1, &m_VBO);
 	glDeleteVertexArrays(1, &m_VAO);
 }
-template<int level>
+template<int32 level>
 void primitives::IcoSphere<level>::Draw()
 {
 	STATE->BindVertexArray(m_VAO);
@@ -176,7 +176,7 @@ void primitives::IcoSphere<level>::Draw()
 	PERFORMANCE->m_DrawCalls++;
 	STATE->BindVertexArray(0);
 }
-template<int level>
+template<int32 level>
 void primitives::IcoSphere<level>::Initialize()
 {
 	auto ico = GetIcosahedronPositions(1);
@@ -204,8 +204,8 @@ void primitives::IcoSphere<level>::Initialize()
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
 	STATE->BindVertexArray(0);
 }
-template<int level>
-void primitives::IcoSphere<level>::SubAndPush(std::vector<glm::vec3> &vertices, const int lev, const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c) const
+template<int32 level>
+void primitives::IcoSphere<level>::SubAndPush(std::vector<glm::vec3> &vertices, const int32 lev, const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c) const
 {
 	if (lev < level)
 	{
@@ -214,7 +214,7 @@ void primitives::IcoSphere<level>::SubAndPush(std::vector<glm::vec3> &vertices, 
 		glm::vec3 B = glm::normalize(c + ((a - c)*0.5f));
 		glm::vec3 C = glm::normalize(a + ((b - a)*0.5f));
 		//Make 4 new triangles
-		int nLevel = lev + 1;
+		int32 nLevel = lev + 1;
 		SubAndPush(vertices, nLevel, B, A, c);
 		SubAndPush(vertices, nLevel, b, A, C);
 		SubAndPush(vertices, nLevel, B, a, C);

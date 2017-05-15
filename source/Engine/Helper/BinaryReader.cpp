@@ -91,7 +91,7 @@ void BinaryReader::Open(uint8* s, uint32 size)
 {
 	Close();
 
-	std::string data((char)s, size);
+	std::string data((char*)s, size);
 	m_pReader = new std::stringstream(data);
 	m_Exists = true;
 }

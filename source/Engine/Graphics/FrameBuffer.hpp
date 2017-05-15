@@ -7,7 +7,7 @@ class TextureData;
 class FrameBuffer
 {
 public:
-	FrameBuffer(std::string shaderFile, GLenum format, unsigned numTargets = 1);
+	FrameBuffer(std::string shaderFile, GLenum format, uint32 numTargets = 1);
 	virtual ~FrameBuffer();
 
 	void Initialize();
@@ -30,7 +30,7 @@ protected:
 private:
 	std::string m_ShaderFile;
 	GLenum m_Format;
-	unsigned m_NumTargets = 1;
+	uint32 m_NumTargets = 1;
 
 	GLuint m_GlFrameBuffer;
 	GLuint m_RboDepthStencil;

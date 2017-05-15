@@ -68,7 +68,7 @@ void Triangulator::Precalculate()
 	m_TriLevelDotLUT.clear();
 	m_TriLevelDotLUT.push_back(0.5f+sinf(cullingAngle));
 	float angle = acosf(0.5f);
-	for (int i = 1; i <= m_MaxLevel; i++)
+	for (int32 i = 1; i <= m_MaxLevel; i++)
 	{
 		angle *= 0.5f;
 		m_TriLevelDotLUT.push_back(sinf(angle+cullingAngle));
@@ -82,7 +82,7 @@ void Triangulator::Precalculate()
 	center *= m_pPlanet->GetRadius() / glm::length(center);//+maxHeight
 	m_HeightMultLUT.push_back(1 / glm::dot(glm::normalize(a), glm::normalize(center)));
 	float normMaxHeight = m_pPlanet->GetMaxHeight() / m_pPlanet->GetRadius();
-	for (int i = 1; i <= m_MaxLevel; i++)
+	for (int32 i = 1; i <= m_MaxLevel; i++)
 	{
 		glm::vec3 A = b + ((c - b)*0.5f);
 		glm::vec3 B = c + ((a - c)*0.5f);
@@ -102,7 +102,7 @@ void Triangulator::GenerateGeometry()
 	m_DistanceLUT.clear();
 	float sizeL = glm::length(m_Icosahedron[0].a - m_Icosahedron[0].b);
 	float frac = tanf((m_AllowedTriPx * glm::radians(m_pFrustum->GetFOV())) / WINDOW.Width);
-	for (int level = 0; level < m_MaxLevel+5; level++)
+	for (int32 level = 0; level < m_MaxLevel+5; level++)
 	{
 		m_DistanceLUT.push_back(sizeL / frac);
 		sizeL *= 0.5f;
@@ -117,7 +117,7 @@ void Triangulator::GenerateGeometry()
 	}
 }
 
-TriNext Triangulator::SplitHeuristic(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, short level, bool frustumCull)
+TriNext Triangulator::SplitHeuristic(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, int16 level, bool frustumCull)
 {
 	glm::vec3 center = (a + b + c) / 3.f;
 	//Perform backface culling
@@ -155,7 +155,7 @@ TriNext Triangulator::SplitHeuristic(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, s
 	return TriNext::LEAF;
 }
 
-void Triangulator::RecursiveTriangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, short level, bool frustumCull)
+void Triangulator::RecursiveTriangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, int16 level, bool frustumCull)
 {
 	TriNext next = SplitHeuristic(a, b, c, level, frustumCull);
 	if (next == CULL) return;
@@ -171,7 +171,7 @@ void Triangulator::RecursiveTriangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, shor
 		B *= m_pPlanet->GetRadius() / glm::length(B);
 		C *= m_pPlanet->GetRadius() / glm::length(C);
 		//Make 4 new triangles
-		short nLevel = level + 1;
+		int16 nLevel = level + 1;
 		RecursiveTriangle(a, B, C, nLevel, next == SPLITCULL);//Winding is inverted
 		RecursiveTriangle(A, b, C, nLevel, next == SPLITCULL);//Winding is inverted
 		RecursiveTriangle(A, B, c, nLevel, next == SPLITCULL);//Winding is inverted

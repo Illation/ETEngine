@@ -18,7 +18,7 @@ void PerformanceInfo::Update()
 	if (m_RegFPSTimer > 1.f)
 	{
 		m_RegFPSTimer = 0.f;
-		m_RegularFPS = (int)TIME->FPS();
+		m_RegularFPS = (int32)TIME->FPS();
 	}
 
 	m_FrameMS = (TIME->GetTime() - m_FrameMSStart)*1000;

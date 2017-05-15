@@ -45,7 +45,7 @@ public:
 
 		//Does File Exists?
 		//struct _stat buff;
-		//int result = -1;
+		//int32 result = -1;
 		//result = _wstat(assetFile.c_str(), &buff);
 		//if(result != 0)
 		//{
@@ -79,7 +79,7 @@ protected:
 
 private:
 	static std::unordered_map<std::string, T*> m_contentReferences;
-	static int m_loaderReferences;
+	static int32 m_loaderReferences;
 
 private:
 	// -------------------------
@@ -94,5 +94,5 @@ template<class T>
 std::unordered_map<std::string, T*> ContentLoader<T>::m_contentReferences = std::unordered_map<std::string, T*>();
 
 template<class T>
-int ContentLoader<T>::m_loaderReferences = 0;
+int32 ContentLoader<T>::m_loaderReferences = 0;
 

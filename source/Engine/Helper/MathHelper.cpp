@@ -32,9 +32,9 @@ std::vector<glm::vec3> GetIcosahedronPositions(float size)
 
 	return ico;
 }
-std::vector<unsigned int> GetIcosahedronIndices()
+std::vector<uint32> GetIcosahedronIndices()
 {
-	std::vector<unsigned int> ret
+	std::vector<uint32> ret
 	{
 		1, 3, 8,
 		1, 3, 9,
@@ -63,9 +63,9 @@ std::vector<unsigned int> GetIcosahedronIndices()
 	};
 	return ret;
 }
-std::vector<unsigned int> GetIcosahedronIndicesBFC()
+std::vector<uint32> GetIcosahedronIndicesBFC()
 {
-	std::vector<unsigned int> ret
+	std::vector<uint32> ret
 	{
 		1,8,3,
 		1,3,9,

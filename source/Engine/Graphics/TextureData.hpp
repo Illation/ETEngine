@@ -9,7 +9,7 @@
 class TextureData
 {
 public:
-	TextureData(GLuint handle, int width, int height);
+	TextureData(GLuint handle, int32 width, int32 height);
 	~TextureData();
 
 	GLuint GetHandle() { return m_Handle; }
@@ -17,33 +17,33 @@ public:
 
 private:
 	GLuint m_Handle;
-	int m_Width;
-	int m_Height;
+	int32 m_Width;
+	int32 m_Height;
 };
 
 class CubeMap
 {
 public:
-	CubeMap(GLuint handle, int width,
-		int height, int numMipMaps = 0) :
+	CubeMap(GLuint handle, int32 width,
+		int32 height, int32 numMipMaps = 0) :
 		m_Handle(handle),m_Width(width),
 		m_Height(height),m_NumMipMaps(numMipMaps){}
 	~CubeMap(){ glDeleteTextures(1, &m_Handle); }
 
 	GLuint GetHandle() { return m_Handle; }
-	int GetNumMipMaps() { return m_NumMipMaps; }
+	int32 GetNumMipMaps() { return m_NumMipMaps; }
 
 private:
 	GLuint m_Handle;
-	int m_Width;
-	int m_Height;
-	int m_NumMipMaps = 0;
+	int32 m_Width;
+	int32 m_Height;
+	int32 m_NumMipMaps = 0;
 };
 
 class HDRMap
 {
 public:
-	HDRMap(GLuint handle, GLuint irradiance, GLuint radiance, GLuint brdfLut, int width, int height, int numMipMaps) 
+	HDRMap(GLuint handle, GLuint irradiance, GLuint radiance, GLuint brdfLut, int32 width, int32 height, int32 numMipMaps) 
 		:m_Handle(handle)
 		,m_IrradianceHandle(irradiance)
 		,m_RadianceHandle(radiance)
@@ -64,14 +64,14 @@ public:
 	GLuint GetRadianceHandle() { return m_RadianceHandle; }
 	GLuint GetBrdfLutHandle();
 
-	int GetNumMipMaps() { return m_NumMipMaps; }
+	int32 GetNumMipMaps() { return m_NumMipMaps; }
 
 private:
 	GLuint m_Handle;
 	GLuint m_IrradianceHandle;
 	GLuint m_RadianceHandle;
 	GLuint m_BrdfLutHandle;
-	int m_Width;
-	int m_Height;
-	int m_NumMipMaps = 0;
+	int32 m_Width;
+	int32 m_Height;
+	int32 m_NumMipMaps = 0;
 };

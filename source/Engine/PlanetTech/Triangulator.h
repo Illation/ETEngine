@@ -14,7 +14,7 @@ enum TriNext
 
 struct Tri
 {
-	Tri(glm::vec3 A, glm::vec3 B, glm::vec3 C, Tri* Parent, short Level)
+	Tri(glm::vec3 A, glm::vec3 B, glm::vec3 C, Tri* Parent, int16 Level)
 		:a(A), b(B), c(C), parent(Parent), level(Level)
 	{
 	}
@@ -28,7 +28,7 @@ struct Tri
 
 	TriNext state;
 
-	short level;
+	int16 level;
 
 	glm::vec3 a;
 	glm::vec3 b;
@@ -48,18 +48,18 @@ public:
 
 	bool IsFrustumLocked() { return m_LockFrustum; }
 	Frustum* GetFrustum() { return m_pFrustum; }
-	int GetVertexCount() { return m_Positions.size(); }
+	int32 GetVertexCount() { return m_Positions.size(); }
 
 private:
 	friend class Planet;
 
 	void Precalculate();
-	TriNext SplitHeuristic(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, short level, bool frustumCull);
-	void RecursiveTriangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, short level, bool frustumCull);
+	TriNext SplitHeuristic(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, int16 level, bool frustumCull);
+	void RecursiveTriangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, int16 level, bool frustumCull);
 
 	//Triangulation paramenters
 	float m_AllowedTriPx = 300.f;
-	int m_MaxLevel = 15;
+	int32 m_MaxLevel = 15;
 
 	std::vector<Tri> m_Icosahedron;
 	std::vector<float> m_DistanceLUT;

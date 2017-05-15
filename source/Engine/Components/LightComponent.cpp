@@ -31,7 +31,7 @@ void LightComponent::GenerateShadow()
 {
 	m_Light->GenerateShadow(GetTransform());
 }
-void LightComponent::UploadVariables(GLuint shaderProgram, unsigned index)
+void LightComponent::UploadVariables(GLuint shaderProgram, uint32 index)
 {
 	if (m_PositionUpdated || m_Light->m_Update)
 	{
@@ -42,7 +42,7 @@ void LightComponent::UploadVariables(GLuint shaderProgram, unsigned index)
 	}
 }
 
-void PointLight::UploadVariables(GLuint program, TransformComponent* comp, unsigned index)
+void PointLight::UploadVariables(GLuint program, TransformComponent* comp, uint32 index)
 {
 	string idxStr = to_string(index);
 	string ligStr = "pointLights[";
@@ -63,7 +63,7 @@ void PointLight::DrawVolume(TransformComponent* pTransform)
 	PointLightVolume::GetInstance()->Draw(pTransform->GetPosition(), radius, col);
 }
 
-void DirectionalLight::UploadVariables(GLuint program, TransformComponent* comp, unsigned index)
+void DirectionalLight::UploadVariables(GLuint program, TransformComponent* comp, uint32 index)
 {
 	string idxStr = to_string(index);
 	string ligStr = "dirLights[";

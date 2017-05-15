@@ -169,7 +169,7 @@ bool ShaderLoader::ReplaceInclude(std::string &line, const std::string &assetFil
 	std::string basePath = "";
 	size_t lastFS = assetFile.rfind("/");
 	size_t lastBS = assetFile.rfind("\\");
-	size_t lastS = (size_t)std::max((int)lastFS, (int)lastBS);
+	size_t lastS = (size_t)std::max((int32)lastFS, (int32)lastBS);
 	if(!(lastS == std::string::npos))basePath = assetFile.substr(0, lastS) + "/";
 
 	size_t firstQ = line.find("\"");

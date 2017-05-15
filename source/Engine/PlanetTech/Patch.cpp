@@ -10,7 +10,7 @@
 #include "../Graphics/Frustum.h"
 #include "Triangulator.h"
 
-Patch::Patch(short levels)
+Patch::Patch(int16 levels)
 	:m_Levels(levels)
 {
 }
@@ -80,24 +80,24 @@ void Patch::Init()
 	GenerateGeometry(m_Levels);
 }
 
-void Patch::GenerateGeometry(short levels)
+void Patch::GenerateGeometry(int16 levels)
 {
 	//clear
 	m_Vertices.clear();
 	m_Indices.clear();
 	//Generate
 	m_Levels = levels;
-	m_RC = 1 + (UINT)pow(2, (int)m_Levels);
+	m_RC = 1 + (uint32)pow(2, (int32)m_Levels);
 
 	float delta = 1 / (float)(m_RC-1);
 
-	UINT rowIdx = 0;
-	UINT nextIdx = 0;
-	for (UINT row = 0; row < m_RC; row++)
+	uint32 rowIdx = 0;
+	uint32 nextIdx = 0;
+	for (uint32 row = 0; row < m_RC; row++)
 	{
-		UINT numCols = m_RC - row;
+		uint32 numCols = m_RC - row;
 		nextIdx += numCols;
-		for (UINT column = 0; column < numCols; column++)
+		for (uint32 column = 0; column < numCols; column++)
 		{
 			//calc position
 			glm::vec2 pos = glm::vec2(column / (float)(m_RC-1), row / (float)(m_RC - 1));

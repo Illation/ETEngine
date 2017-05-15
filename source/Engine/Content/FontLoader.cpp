@@ -49,9 +49,9 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	// BLOCK 0 *
 	//**********
 	pBinReader->Read<char>();
-	auto Block0Size = pBinReader->Read<int>();
-	int pos = pBinReader->GetBufferPosition();
-	pFont->m_FontSize = pBinReader->Read<short>();
+	auto Block0Size = pBinReader->Read<int32>();
+	int32 pos = pBinReader->GetBufferPosition();
+	pFont->m_FontSize = pBinReader->Read<int16>();
 	pBinReader->SetBufferPosition(pos + 14);
 	std::string fn;
 	char cur = pBinReader->Read<char>();
@@ -66,12 +66,12 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	// BLOCK 1 *
 	//**********
 	pBinReader->Read<char>();
-	auto Block1Size = pBinReader->Read<int>();
+	auto Block1Size = pBinReader->Read<int32>();
 	pos = pBinReader->GetBufferPosition();
 	pBinReader->SetBufferPosition(pos + 4);
-	pFont->m_TextureWidth = pBinReader->Read<unsigned short>();
-	pFont->m_TextureHeight = pBinReader->Read<unsigned short>();
-	auto pagecount = pBinReader->Read<unsigned short>();
+	pFont->m_TextureWidth = pBinReader->Read<uint16>();
+	pFont->m_TextureHeight = pBinReader->Read<uint16>();
+	auto pagecount = pBinReader->Read<uint16>();
 	if (pagecount > 1)std::cout << "[ERROR] " <<
 		"SpriteFont::Load > SpriteFont(.fnt): Only one texture per font allowed" << std::endl;
 	pBinReader->SetBufferPosition(pos + Block1Size);
@@ -79,7 +79,7 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	// BLOCK 2 *
 	//**********
 	pBinReader->Read<char>();
-	auto Block2Size = pBinReader->Read<int>();
+	auto Block2Size = pBinReader->Read<int32>();
 	pos = pBinReader->GetBufferPosition();
 	std::string pn;
 	cur = pBinReader->Read<char>();
@@ -98,14 +98,14 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	// BLOCK 3 *
 	//**********
 	pBinReader->Read<char>();
-	auto Block3Size = pBinReader->Read<int>();
+	auto Block3Size = pBinReader->Read<int32>();
 	pos = pBinReader->GetBufferPosition();
 	auto numChars = Block3Size / 20;
 	pFont->m_CharacterCount = numChars;
-	for (int i = 0; i < numChars; i++)
+	for (int32 i = 0; i < numChars; i++)
 	{
 		auto posChar = pBinReader->GetBufferPosition();
-		auto charId = (wchar_t)(pBinReader->Read<unsigned int>());
+		auto charId = (wchar_t)(pBinReader->Read<uint32>());
 		if (!(pFont->IsCharValid(charId)))
 		{
 			std::cout << "[WARNING] " <<
@@ -117,15 +117,15 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 			auto metric = &(pFont->GetMetric(charId));
 			metric->IsValid = true;
 			metric->Character = charId;
-			auto xPos = pBinReader->Read<unsigned short>();
-			auto yPos = pBinReader->Read<unsigned short>();
-			metric->Width = pBinReader->Read<unsigned short>();
-			metric->Height = pBinReader->Read<unsigned short>();
-			metric->OffsetX = pBinReader->Read<short>();
-			metric->OffsetY = pBinReader->Read<short>();
-			metric->AdvanceX = pBinReader->Read<short>();
-			metric->Page = pBinReader->Read<unsigned char>();
-			auto chan = pBinReader->Read<unsigned char>();
+			auto xPos = pBinReader->Read<uint16>();
+			auto yPos = pBinReader->Read<uint16>();
+			metric->Width = pBinReader->Read<uint16>();
+			metric->Height = pBinReader->Read<uint16>();
+			metric->OffsetX = pBinReader->Read<int16>();
+			metric->OffsetY = pBinReader->Read<int16>();
+			metric->AdvanceX = pBinReader->Read<int16>();
+			metric->Page = pBinReader->Read<uint8>();
+			auto chan = pBinReader->Read<uint8>();
 			switch (chan)
 			{
 			case 1: metric->Channel = 2; break;

@@ -94,7 +94,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 	m_pGBuffer->Enable();
 
 	//reset viewport
-	int width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
+	int32 width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
 	m_pState->SetViewport(glm::ivec2(0), glm::ivec2(width, height));
 
 	m_pState->SetClearColor(glm::vec4(m_ClearColor, 1.f));

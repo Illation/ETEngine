@@ -80,7 +80,7 @@ void Planet::DrawForward()
 	}
 }
 
-int Planet::GetVertexCount()
+int32 Planet::GetVertexCount()
 {
 	return m_pTriangulator->GetVertexCount()*m_pPatch->GetVertexCount();
 }
