@@ -40,11 +40,11 @@ public:
 	//Mouse
 
 	//True if user starts pressing button
-	bool IsMouseButtonPressed(int button);
+	bool IsMouseButtonPressed(int32 button);
 	//True if user is pressing button
-	bool IsMouseButtonDown(int button);
+	bool IsMouseButtonDown(int32 button);
 	//True if user stops pressing button
-	bool IsMouseButtonReleased(int button);
+	bool IsMouseButtonReleased(int32 button);
 	//Returns mouse position as vector
 	glm::vec2 GetMousePosition();
 	glm::vec2 GetMouseMovement() { return m_MouseMove; }
@@ -71,17 +71,17 @@ private:
 	//----------------------------
 
 	//Key Input
-	Uint8 *m_KeyMapNew = nullptr,
+	uint8 *m_KeyMapNew = nullptr,
 		*m_KeyMapOld = nullptr;
 	const Uint8 *m_KeyMapSdl = nullptr;
-	int m_KeyboardLength;
+	int32 m_KeyboardLength;
 	std::map<char, SDL_Scancode> m_CharToSdlMap;
 
 	//Mouse Input
-	int m_MousePosX = 0;
-	int m_MousePosY = 0;
+	int32 m_MousePosX = 0;
+	int32 m_MousePosY = 0;
 	glm::vec2 m_MouseMove = glm::vec2();
-	Uint32 m_MouseMapNew,
+	uint32 m_MouseMapNew,
 		m_MouseMapOld;
 
 	glm::vec2 m_MouseWheelDelta = glm::vec2();

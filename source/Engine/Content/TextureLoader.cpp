@@ -31,8 +31,8 @@ TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 		FreeImage_FlipVertical(dib);
 		FIBITMAP *pImage = FreeImage_ConvertToType(dib, FIT_RGBF);
 
-		unsigned int width = FreeImage_GetWidth(pImage);
-		unsigned int height = FreeImage_GetHeight(pImage);
+		uint32 width = FreeImage_GetWidth(pImage);
+		uint32 height = FreeImage_GetHeight(pImage);
 		BYTE* bits = FreeImage_GetBits(pImage);
 		if ((bits == 0) || (width == 0) || (height == 0))
 		{

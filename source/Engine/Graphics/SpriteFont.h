@@ -19,13 +19,13 @@ struct FontMetric
 	//BMFONT
 	bool IsValid;
 	wchar_t Character;
-	USHORT Width;
-	USHORT Height;
-	short OffsetX;
-	short OffsetY;
-	short AdvanceX;
-	UCHAR Page;
-	UCHAR Channel;
+	uint16 Width;
+	uint16 Height;
+	int16 OffsetX;
+	int16 OffsetY;
+	int16 AdvanceX;
+	uint8 Page;
+	uint8 Channel;
 	glm::vec2 TexCoord;
 };
 
@@ -40,9 +40,9 @@ public:
 
 	static bool IsCharValid(const wchar_t& character);
 
-	static const int MAX_CHAR_ID = 255;
-	static const int MIN_CHAR_ID = 0;
-	static const int CHAR_COUNT = MAX_CHAR_ID - MIN_CHAR_ID + 1;
+	static const int32 MAX_CHAR_ID = 255;
+	static const int32 MIN_CHAR_ID = 0;
+	static const int32 CHAR_COUNT = MAX_CHAR_ID - MIN_CHAR_ID + 1;
 
 private:
 	friend class TextRenderer;
@@ -53,13 +53,13 @@ private:
 	FontMetric m_CharTable[CHAR_COUNT];
 	std::vector<TextCache> m_TextCache;
 
-	short m_FontSize;
+	int16 m_FontSize;
 	std::string m_FontName;
-	int m_CharacterCount;
-	int m_CharacterSpacing;
-	int m_TextureWidth;
-	int m_TextureHeight;
-	int m_BufferStart, m_BufferSize;
+	int32 m_CharacterCount;
+	int32 m_CharacterSpacing;
+	int32 m_TextureWidth;
+	int32 m_TextureHeight;
+	int32 m_BufferStart, m_BufferSize;
 	TextureData *m_pTexture;
 	bool m_IsAddedToRenderer;
 

@@ -6,7 +6,7 @@
 #include "TextureData.hpp"
 #include "../GraphicsHelper/PrimitiveRenderer.hpp"
 
-FrameBuffer::FrameBuffer(string shaderFile, GLenum format, unsigned numTargets)
+FrameBuffer::FrameBuffer(string shaderFile, GLenum format, uint32 numTargets)
 	:m_ShaderFile(shaderFile),
 	m_Format(format),
 	m_NumTargets(numTargets)
@@ -35,7 +35,7 @@ void FrameBuffer::Initialize()
 	glGenFramebuffers(1, &m_GlFrameBuffer);
 	STATE->BindFramebuffer(m_GlFrameBuffer);
 	//Textures
-	int width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
+	int32 width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
 	vector<GLuint> attachments;
 	attachments.reserve(m_NumTargets);
 	m_pTextureVec.reserve(m_NumTargets);

@@ -36,7 +36,7 @@ MeshFilter::~MeshFilter()
 
 const VertexObject& MeshFilter::GetVertexObject(Material* pMaterial)
 {
-	int index = GetVertexObjectId(pMaterial->GetLayoutFlags());
+	int32 index = GetVertexObjectId(pMaterial->GetLayoutFlags());
 	if (index < 0)
 	{
 		BuildVertexBuffer(pMaterial);
@@ -45,9 +45,9 @@ const VertexObject& MeshFilter::GetVertexObject(Material* pMaterial)
 	return m_Objects[index];
 }
 
-int MeshFilter::GetVertexObjectId(unsigned flags)
+int32 MeshFilter::GetVertexObjectId(uint32 flags)
 {
-	for (UINT i = 0; i<m_Objects.size(); ++i)
+	for (uint32 i = 0; i<m_Objects.size(); ++i)
 	{
 		if (m_Objects[i].flags == flags)
 			return i;
@@ -57,12 +57,12 @@ int MeshFilter::GetVertexObjectId(unsigned flags)
 
 void MeshFilter::BuildVertexBuffer(Material* pMaterial)
 {
-	unsigned layoutFlags = pMaterial->GetLayoutFlags();
+	uint32 layoutFlags = pMaterial->GetLayoutFlags();
 	//Check if VertexBufferInfo already exists with requested InputLayout
 	if (GetVertexObjectId(layoutFlags) >= 0)
 		return;
 	//Determine stride of vertex layout
-	unsigned stride = 0;
+	uint32 stride = 0;
 	for (auto it = LayoutAttributes.begin(); it != LayoutAttributes.end(); ++it)
 	{
 		if (layoutFlags & it->first)//material requires this data
@@ -161,7 +161,7 @@ void MeshFilter::CalculateBoundingVolumes()
 	m_BoundingSphere = Sphere(center, maxRadius);
 }
 
-std::string MeshFilter::PrintFlags(unsigned flags)
+std::string MeshFilter::PrintFlags(uint32 flags)
 {
 	std::string flagstring;
 	if (flags & VertexFlags::POSITION)//material requires this data

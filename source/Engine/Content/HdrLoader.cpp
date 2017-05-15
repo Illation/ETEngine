@@ -35,8 +35,8 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 		//not flipping because free image already flips automatically --maybe skybox is wrong way around and also flipped in shaders?
 		FIBITMAP *pImage = FreeImage_ConvertToType(dib, FIT_RGBF);
 
-		unsigned int width = FreeImage_GetWidth(pImage);
-		unsigned int height = FreeImage_GetHeight(pImage);
+		uint32 width = FreeImage_GetWidth(pImage);
+		uint32 height = FreeImage_GetHeight(pImage);
 		BYTE* data = FreeImage_GetBits(pImage);
 		if ((data == 0) || (width == 0) || (height == 0))
 		{
@@ -79,7 +79,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	GLuint envCubemap;
 	glGenTextures(1, &envCubemap);
 	STATE->BindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
-	for (unsigned int i = 0; i < 6; ++i)
+	for (uint32 i = 0; i < 6; ++i)
 	{
 		// note that we store each face with 16 bit floating point values
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, m_CubemapRes, m_CubemapRes, 0, GL_RGB, GL_FLOAT, nullptr);
@@ -116,7 +116,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 
 	STATE->SetViewport(glm::ivec2(0), glm::ivec2(m_CubemapRes));
 	STATE->BindFramebuffer(captureFBO);
-	for (unsigned int i = 0; i < 6; ++i)
+	for (uint32 i = 0; i < 6; ++i)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(equiCubeShader->GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(captureViews[i]));
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemap, 0);
@@ -136,7 +136,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	GLuint irradianceMap;
 	glGenTextures(1, &irradianceMap);
 	STATE->BindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
-	for (unsigned int i = 0; i < 6; ++i)
+	for (uint32 i = 0; i < 6; ++i)
 	{
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, m_IrradianceRes, m_IrradianceRes, 0, GL_RGB, GL_FLOAT, nullptr);
 	}
@@ -164,7 +164,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 
 	STATE->SetViewport(glm::ivec2(0), glm::ivec2(m_IrradianceRes));
 	STATE->BindFramebuffer(captureFBO);
-	for (unsigned int i = 0; i < 6; ++i)
+	for (uint32 i = 0; i < 6; ++i)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(irradianceShader->GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(captureViews[i]));
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMap, 0);
@@ -179,7 +179,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	GLuint radianceMap;
 	glGenTextures(1, &radianceMap);
 	STATE->BindTexture(GL_TEXTURE_CUBE_MAP, radianceMap);
-	for (unsigned int i = 0; i < 6; ++i)
+	for (uint32 i = 0; i < 6; ++i)
 	{
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, m_RadianceRes, m_RadianceRes, 0, GL_RGB, GL_FLOAT, nullptr);
 	}
@@ -204,19 +204,19 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//render radiance
 	//***************
 	STATE->BindFramebuffer(captureFBO);
-	unsigned int maxMipLevels = (unsigned int)std::log2(m_RadianceRes)-2;//at least 4x4
-	for (unsigned int mip = 0; mip < maxMipLevels+1; ++mip)
+	uint32 maxMipLevels = (uint32)std::log2(m_RadianceRes)-2;//at least 4x4
+	for (uint32 mip = 0; mip < maxMipLevels+1; ++mip)
 	{
 		// reisze framebuffer according to mip-level size.
-		unsigned int mipWidth = (unsigned int)(m_RadianceRes * std::pow(0.5, mip));
-		unsigned int mipHeight = (unsigned int)(m_RadianceRes * std::pow(0.5, mip));
+		uint32 mipWidth = (uint32)(m_RadianceRes * std::pow(0.5, mip));
+		uint32 mipHeight = (uint32)(m_RadianceRes * std::pow(0.5, mip));
 		glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
 		STATE->SetViewport(glm::ivec2(0), glm::ivec2(mipWidth, mipHeight));
 
 		float roughness = (float)mip / (float)(maxMipLevels);
 		glUniform1f(roughnessUniformLoc, roughness);
-		for (unsigned int i = 0; i < 6; ++i)
+		for (uint32 i = 0; i < 6; ++i)
 		{
 			glUniformMatrix4fv(glGetUniformLocation(radianceShader->GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(captureViews[i]));
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, radianceMap, mip);

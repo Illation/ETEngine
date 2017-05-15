@@ -4,7 +4,7 @@
 class ShaderData;
 class TextureData;
 
-static const int NUM_BLOOM_DOWNSAMPLES = 5;
+static const int32 NUM_BLOOM_DOWNSAMPLES = 5;
 
 class PostProcessingRenderer 
 {

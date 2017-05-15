@@ -28,7 +28,7 @@ private:
 		glm::vec4 Color;
 		glm::vec2 TexCoord;
 		glm::vec2 CharacterDimension;
-		unsigned int ChannelId;
+		uint32 ChannelId;
 	};
 
 	void Initialize();
@@ -38,7 +38,7 @@ private:
 	ShaderData* m_pTextShader;
 	std::vector<SpriteFont*> m_pSpriteFonts;
 
-	unsigned int m_BufferSize, m_NumCharacters;
+	uint32 m_BufferSize, m_NumCharacters;
 	glm::mat4 m_Transform;
 	glm::vec4 m_Color = glm::vec4(0, 0, 0, 1);
 	size_t m_ActiveFontIdx;

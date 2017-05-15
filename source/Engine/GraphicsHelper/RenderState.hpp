@@ -32,12 +32,12 @@ public:
 	void BindReadFramebuffer(GLuint handle);
 	void BindDrawFramebuffer(GLuint handle);
 
-	void SetActiveTexture(uint unit);
+	void SetActiveTexture(uint32 unit);
 	void BindTexture(GLenum target, GLuint handle);
 
 	//Makes sure that a texture is bound to a units target for shading, 
 	//only changes active texture unit if the texture was not bound yet
-	void LazyBindTexture(uint unit, GLenum target, GLuint handle);
+	void LazyBindTexture(uint32 unit, GLenum target, GLuint handle);
 
 	void BindVertexArray(GLuint vertexArray);
 	void BindBuffer(GLenum target, GLuint buffer);
@@ -69,8 +69,8 @@ private:
 
 	ShaderData* m_pBoundShader = nullptr;
 
-	uint m_ActiveTexture = 0;
-	int m_NumTextureUnits; //depends on gpu and drivers
+	uint32 m_ActiveTexture = 0;
+	int32 m_NumTextureUnits; //depends on gpu and drivers
 	std::vector<std::map<GLenum, GLuint> > m_pTextureUnits; // #todo: in the future, abstract texture data here to support all types of textures
 
 	GLuint m_VertexArray = 0;

@@ -58,7 +58,7 @@ private:
 	static ConsoleLogger* m_ConsoleLogger;
 	static FileLogger* m_FileLogger;
 
-	static unsigned char m_BreakBitField;
+	static uint8 m_BreakBitField;
 public:
 	static void Initialize();
 	static void Release();

@@ -22,7 +22,7 @@ struct PatchInstance
 		r = R;
 		s = S;
 	}
-	int level;
+	int32 level;
 	glm::vec3 a;
 	glm::vec3 r;
 	glm::vec3 s;
@@ -30,28 +30,28 @@ struct PatchInstance
 class Patch
 {
 public:
-	Patch(short levels = 5);
+	Patch(int16 levels = 5);
 	~Patch();
 
 	void SetPlanet(Planet* pPlanet) { m_pPlanet = pPlanet; }
 
-	UINT GetVertexCount() { return m_Vertices.size(); }
+	uint32 GetVertexCount() { return m_Vertices.size(); }
 
 	void Init();
-	void GenerateGeometry(short levels);
+	void GenerateGeometry(int16 levels);
 	void BindInstances(std::vector<PatchInstance> &instances);
 	void UploadDistanceLUT(std::vector<float> &distances);
 	void Draw(bool white = false);
 private:
 	std::vector<PatchVertex>m_Vertices;
-	std::vector<UINT>m_Indices;
+	std::vector<uint32>m_Indices;
 
 	Planet *m_pPlanet = nullptr;
 
-	int m_NumInstances = 0;
+	int32 m_NumInstances = 0;
 
-	short m_Levels;
-	UINT m_RC;
+	int16 m_Levels;
+	uint32 m_RC;
 
 	//OpenGl stuff
 	GLuint m_VAO;

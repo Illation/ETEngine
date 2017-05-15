@@ -46,7 +46,7 @@ void TextRenderer::Initialize()
 	glEnableVertexAttribArray(3);
 	glEnableVertexAttribArray(4);
 
-	int offset = 0;	int stride = 3 * sizeof(GLfloat);
+	int32 offset = 0;	int32 stride = 3 * sizeof(GLfloat);
 	glVertexAttribPointer(0, (GLint)3, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, Position));
 	offset += stride; stride = 4 * sizeof(GLfloat);
 	glVertexAttribPointer(1, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, Color));
@@ -54,14 +54,14 @@ void TextRenderer::Initialize()
 	glVertexAttribPointer(2, (GLint)2, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, TexCoord));
 	offset += stride; stride = 2 * sizeof(GLfloat);			
 	glVertexAttribPointer(3, (GLint)2, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, CharacterDimension));
-	offset += stride; stride = sizeof(unsigned int);
+	offset += stride; stride = sizeof(uint32);
 	glVertexAttribIPointer(4, (GLint)1, GL_UNSIGNED_INT, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, ChannelId));
 
 	//unbind
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
 	STATE->BindVertexArray(0);
 
-	int width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
+	int32 width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
 	float scaleX = (width > 0) ? 2.f / width : 0;
 	float scaleY = (height > 0) ? 2.f / height : 0;
 
@@ -145,7 +145,7 @@ void TextRenderer::UpdateBuffer()
 			pFont->m_BufferSize = 0;
 			for (auto cache : pFont->m_TextCache)
 			{
-				int totalAdvanceX = 0;
+				int32 totalAdvanceX = 0;
 				for (auto charId : cache.Text)
 				{
 					if (SpriteFont::IsCharValid(charId) && pFont->GetMetric(charId).IsValid)
@@ -182,7 +182,7 @@ void TextRenderer::UpdateBuffer()
 	//Bind Object vertex array
 	STATE->BindVertexArray(m_VAO);
 
-	UINT buffersize = tVerts.size() * sizeof(TextVertex);
+	uint32 buffersize = tVerts.size() * sizeof(TextVertex);
 
 	//Send the vertex buffer again
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);

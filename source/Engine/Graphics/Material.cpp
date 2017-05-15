@@ -62,12 +62,12 @@ void Material::UploadVariables(glm::mat4 matModel, const glm::mat4 &matWVP)
 
 void Material::SpecifyInputLayout()
 {
-	unsigned stride = 0;
+	uint32 stride = 0;
 	for (auto it = MeshFilter::LayoutAttributes.begin(); it != MeshFilter::LayoutAttributes.end(); ++it)
 	{
 		if (m_LayoutFlags & it->first) stride += it->second.dataSize;
 	}
-	unsigned startPos = 0;
+	uint32 startPos = 0;
 	for (auto it = MeshFilter::LayoutAttributes.begin(); it != MeshFilter::LayoutAttributes.end(); ++it)
 	{
 		if (m_LayoutFlags & it->first)

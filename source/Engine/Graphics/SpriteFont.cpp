@@ -17,7 +17,7 @@ SpriteFont::SpriteFont() :
 	m_BufferSize(0),
 	m_IsAddedToRenderer(false)
 {
-	for (int i = 0; i < CHAR_COUNT; ++i)
+	for (int32 i = 0; i < CHAR_COUNT; ++i)
 	{
 		ZeroMemory((void*)&m_CharTable[i], sizeof(FontMetric));
 		m_CharTable[i].IsValid = false;

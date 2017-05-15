@@ -46,7 +46,7 @@ void PostProcessingRenderer::Initialize()
 
 	STATE->SetShader(m_pPostProcShader);
 	glUniform1i(glGetUniformLocation(m_pPostProcShader->GetProgram(), "texColor"), 0);
-	for (int i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
+	for (int32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
 		glUniform1i(glGetUniformLocation(m_pPostProcShader->GetProgram(), 
 			(std::string("texBloom") + std::to_string(i)).c_str()), i+1);
@@ -55,7 +55,7 @@ void PostProcessingRenderer::Initialize()
 	m_uGamma = glGetUniformLocation(m_pPostProcShader->GetProgram(), "gamma");
 	m_uBloomMult = glGetUniformLocation(m_pPostProcShader->GetProgram(), "bloomMult");
 
-	int width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
+	int32 width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
 
 	//Generate texture and fbo and rbo as initial postprocessing target
 	glGenFramebuffers(1, &m_CollectFBO);
@@ -152,12 +152,12 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	glUniform1f(m_uThreshold, m_Threshold);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 	//downsample glow
-	int width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
+	int32 width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
 	for (GLuint i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
 		if (i > 0) STATE->SetShader(m_pDownsampleShader);
 		float resMult = 1.f / (float)std::pow(2, i + 1);
-		STATE->SetViewport(glm::ivec2(0), glm::ivec2((int)(width*resMult), (int)(height*resMult)));
+		STATE->SetViewport(glm::ivec2(0), glm::ivec2((int32)(width*resMult), (int32)(height*resMult)));
 		STATE->BindFramebuffer(m_DownSampleFBO[i]);
 		if(i>0) STATE->BindTexture(GL_TEXTURE_2D, m_DownSampleTexture[i - 1]);
 		glUniform1f(m_uThreshold, m_Threshold);
@@ -195,7 +195,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	STATE->SetShader(m_pPostProcShader);
 	STATE->BindTexture(GL_TEXTURE_2D, m_CollectTex);
 	STATE->LazyBindTexture(1, GL_TEXTURE_2D, m_PingPongTexture[0]);
-	for (int i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
+	for (int32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
 		STATE->LazyBindTexture(2+i, GL_TEXTURE_2D, m_DownSampleTexture[i]);
 	}

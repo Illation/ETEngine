@@ -17,7 +17,7 @@ public:
 
 	virtual void Initialize();
 	void SpecifyInputLayout();
-	unsigned GetLayoutFlags() { return m_LayoutFlags; }
+	uint32 GetLayoutFlags() { return m_LayoutFlags; }
 	void UploadVariables(glm::mat4 matModel);
 	void UploadVariables(glm::mat4 matModel, const glm::mat4 &matWVP);
 	bool IsForwardRendered(){ return m_DrawForward; }
@@ -29,7 +29,7 @@ protected:
 	virtual void UploadDerivedVariables() = 0;
 
 protected:
-	unsigned m_LayoutFlags = 0;
+	uint32 m_LayoutFlags = 0;
 	bool m_DrawForward = false;
 	bool m_StandardTransform = true;
 	ShaderData* m_Shader;

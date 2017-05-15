@@ -16,7 +16,7 @@ public:
 
 	float GetRadius(){ return m_Radius; }
 	float GetMaxHeight() { return m_MaxHeight; }
-	int GetVertexCount();
+	int32 GetVertexCount();
 	Triangulator* GetTriangulator() { return m_pTriangulator; }
 
 	TextureData* GetHeightMap() { return m_pHeight; }

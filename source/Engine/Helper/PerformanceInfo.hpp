@@ -6,10 +6,10 @@ public:
 	PerformanceInfo();
 	virtual ~PerformanceInfo();
 
-	unsigned int m_DrawCalls = 0;
-	unsigned int m_PrevDrawCalls = 0;
+	uint32 m_DrawCalls = 0;
+	uint32 m_PrevDrawCalls = 0;
 
-	int GetRegularFPS() { return m_RegularFPS; }
+	int32 GetRegularFPS() { return m_RegularFPS; }
 	float GetFrameMS() { return m_FrameMS; }
 
 private:
@@ -21,7 +21,7 @@ private:
 	void StartFrameTimer();
 
 	float m_RegFPSTimer = 10;
-	int m_RegularFPS = 0;
+	int32 m_RegularFPS = 0;
 
 	float m_FrameMS = 0;
 	float m_FrameMSStart = 0;

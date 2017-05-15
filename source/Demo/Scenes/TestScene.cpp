@@ -51,7 +51,7 @@ void TestScene::Initialize()
 	SetSkybox("Resources/Textures/Ice_Lake_Ref.hdr");
 	//Models
 	//*************************
-	unsigned amountPerRow = 20;
+	uint32 amountPerRow = 20;
 	float distance = 3.5f;
 	float start = (amountPerRow / 2)*(-distance);
 	for (size_t i = 0; i < amountPerRow; i++)
@@ -222,7 +222,7 @@ void TestScene::Draw()
 	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 1, 1, 1));
 	TextRenderer::GetInstance()->DrawText("Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS()), glm::vec2(20, 50));
 	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), glm::vec2(20, 80));
-	TextRenderer::GetInstance()->DrawText("Lights: " + std::to_string((int)m_Lights.size()), glm::vec2(20, 110));
+	TextRenderer::GetInstance()->DrawText("Lights: " + std::to_string((int32)m_Lights.size()), glm::vec2(20, 110));
 }
 
 void TestScene::DrawForward()

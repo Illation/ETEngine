@@ -25,7 +25,7 @@ public:
 			resolutions.push_back(glm::ivec2(1920, 1080));
 			resolutions.push_back(glm::ivec2(2560, 1440));
 
-			unsigned int baseRes = 2;
+			uint32 baseRes = 2;
 
 			Width = Fullscreen ? resolutions[baseRes].x : resolutions[baseRes-1].x;
 			Height = Fullscreen ? resolutions[baseRes].y : resolutions[baseRes-1].y;
@@ -34,8 +34,8 @@ public:
 		float GetAspectRatio() { return (float)Width / (float)Height; }
 
 		bool Fullscreen;
-		int Width;
-		int Height;
+		int32 Width;
+		int32 Height;
 		std::string Title;
 		SDL_Window* pWindow;
 	}Window;
@@ -53,12 +53,12 @@ public:
 		void VSync(const bool enabled) { SDL_GL_SetSwapInterval(enabled); }
 
 		//Shadow Quality
-		int NumCascades;
+		int32 NumCascades;
 		float CSMDrawDistance;
-		int NumPCFSamples;
+		int32 NumPCFSamples;
 
 		//Bloom Quality
-		int NumBlurPasses;
+		int32 NumBlurPasses;
 	}Graphics;
 };
 

@@ -62,8 +62,8 @@ InputManager::~InputManager()
 void InputManager::Init()
 {
 	m_KeyMapSdl = SDL_GetKeyboardState(&m_KeyboardLength);//Set this map to be constantly updated
-	m_KeyMapNew = new Uint8[m_KeyboardLength];
-	m_KeyMapOld = new Uint8[m_KeyboardLength];
+	m_KeyMapNew = new uint8[m_KeyboardLength];
+	m_KeyMapOld = new uint8[m_KeyboardLength];
 	m_MouseMapNew = SDL_GetMouseState(NULL, NULL);
 	m_MouseMapOld = m_MouseMapNew;
 }
@@ -98,8 +98,8 @@ void InputManager::UpdateEvents()
 	}
 	if (!mouseWheel)m_MouseWheelDelta = glm::vec2();
 	std::memcpy(m_KeyMapNew, m_KeyMapSdl, m_KeyboardLength);//Update New Keyboard state
-	int mPosOldX = m_MousePosX;
-	int mPosOldY = m_MousePosY;
+	int32 mPosOldX = m_MousePosX;
+	int32 mPosOldY = m_MousePosY;
 	m_MouseMapNew = SDL_GetMouseState(&m_MousePosX, &m_MousePosY);//Update new Mouse state and position
 	m_MouseMove = glm::vec2((float)(m_MousePosX - mPosOldX), (float)(m_MousePosY- mPosOldY));//maybe divide by screen resolution
 }
@@ -165,17 +165,17 @@ bool InputManager::IsKeyboardKeyReleased(char key)
 //----------------------------
 //Mouse
 //----------------------------
-bool InputManager::IsMouseButtonPressed(int button)
+bool InputManager::IsMouseButtonPressed(int32 button)
 {
 	return (m_MouseMapNew & SDL_BUTTON(button)) && 
 		!(m_MouseMapOld & SDL_BUTTON(button));
 }
-bool InputManager::IsMouseButtonDown(int button)
+bool InputManager::IsMouseButtonDown(int32 button)
 {
 	return (m_MouseMapNew & SDL_BUTTON(button)) &&
 		(m_MouseMapOld & SDL_BUTTON(button));
 }
-bool InputManager::IsMouseButtonReleased(int button)
+bool InputManager::IsMouseButtonReleased(int32 button)
 {
 	return !(m_MouseMapNew & SDL_BUTTON(button)) &&
 		(m_MouseMapOld & SDL_BUTTON(button));

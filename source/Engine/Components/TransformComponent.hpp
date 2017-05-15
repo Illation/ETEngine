@@ -55,7 +55,7 @@ private:
 		SCALE = 0x04,
 	};
 
-	unsigned char m_IsTransformChanged;
+	uint8 m_IsTransformChanged;
 
 	glm::vec3 m_Position = glm::vec3(0, 0, 0),
 		m_WorldPosition = glm::vec3(0, 0, 0),

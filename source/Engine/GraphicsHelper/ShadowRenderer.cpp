@@ -39,7 +39,7 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 	FrustumCorners corners = CAMERA->GetFrustum()->GetCorners();
 	corners.Transform(lightView);
 
-	for (int i = 0; i < GRAPHICS.NumCascades; i++)
+	for (int32 i = 0; i < GRAPHICS.NumCascades; i++)
 	{
 		//calculate orthographic projection matrix based on cascade
 		float cascadeStart = (i == 0) ? 0 : pShadowData->m_Cascades[i - 1].distance / GRAPHICS.CSMDrawDistance;
@@ -97,7 +97,7 @@ DirectionalShadowData::DirectionalShadowData(glm::ivec2 Resolution)
 	m_Cascades.clear();
 	float sizeL = 1;
 	float distMult = GRAPHICS.CSMDrawDistance / powf(2.f, (float)GRAPHICS.NumCascades - 1);
-	for (int cascade = 0; cascade < GRAPHICS.NumCascades; cascade++)
+	for (int32 cascade = 0; cascade < GRAPHICS.NumCascades; cascade++)
 	{
 		auto data = CascadeData();
 

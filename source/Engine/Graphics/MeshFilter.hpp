@@ -26,12 +26,12 @@ struct AttributeDescriptor
 {
 	std::string name;
 	GLenum dataType;
-	unsigned dataSize;
+	uint32 dataSize;
 };
 
 struct VertexObject
 {
-	unsigned flags;
+	uint32 flags;
 	GLuint array;
 	GLuint buffer;
 	GLuint index;
@@ -61,15 +61,15 @@ private:
 	friend class MeshFilterLoader;
 	friend class ModelComponent;
 
-	int GetVertexObjectId(unsigned flags);
+	int32 GetVertexObjectId(uint32 flags);
 	void BuildVertexBuffer(Material* pMaterial);
-	bool HasElement(unsigned flags){ return (m_SupportedFlags&flags) > 0 ? true : false; }
+	bool HasElement(uint32 flags){ return (m_SupportedFlags&flags) > 0 ? true : false; }
 
 	void CalculateBoundingVolumes();
-	std::string PrintFlags(unsigned flags);
+	std::string PrintFlags(uint32 flags);
 
 	size_t m_VertexCount = 0, m_IndexCount = 0;
-	unsigned m_SupportedFlags = 0;
+	uint32 m_SupportedFlags = 0;
 	std::vector<glm::vec3> m_Positions;
 	std::vector<glm::vec3> m_Normals;
 	std::vector<glm::vec3> m_BiNormals;

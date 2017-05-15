@@ -77,7 +77,7 @@ namespace primitives
 		GLuint m_VBO = 0;
 	};
 
-	template<int level>
+	template<int32 level>
 	class IcoSphere : public PrimitiveGeometry
 	{
 	public:
@@ -89,9 +89,9 @@ namespace primitives
 		void Initialize();
 	private:
 		// #todo: generate with index buffer
-		void SubAndPush(std::vector<glm::vec3> &vertices, const int lev, const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c) const;
+		void SubAndPush(std::vector<glm::vec3> &vertices, const int32 lev, const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c) const;
 		GLuint m_VAO = 0;
 		GLuint m_VBO = 0;
-		int m_NumVerts;
+		int32 m_NumVerts;
 	};
 }

@@ -55,6 +55,7 @@
  * Sprite rendering
  * Debug renderer
  * Abstract OpenGL for Shader and Framebuffer
+ * Texture objects handle their own parameters
  * Particle Systems
  * Allow better Graphics debugging support by tagging
  * Generate some common shaders from code
