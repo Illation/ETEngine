@@ -2,6 +2,10 @@
 
 //#include <stdint.h>
 //will need to be updated later, as glm already defines those types and glm is used in global namespace -.-
+#ifndef GLM_FORCE_LEFT_HANDED
+	#define GLM_FORCE_LEFT_HANDED
+#endif
+#include <glm/glm.hpp>
 #include <cassert>
 
 //integers

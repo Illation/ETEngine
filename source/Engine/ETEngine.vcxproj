@@ -278,6 +278,7 @@
     <ClInclude Include="Materials\LightMaterial.hpp" />
     <ClInclude Include="Materials\NullMaterial.hpp" />
     <ClInclude Include="Materials\SkyboxMaterial.hpp" />
+    <ClInclude Include="Math\Vector.h" />
     <ClInclude Include="PlanetTech\Atmosphere.hpp" />
     <ClInclude Include="PlanetTech\Patch.h" />
     <ClInclude Include="PlanetTech\Planet.h" />
