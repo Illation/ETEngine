@@ -283,5 +283,6 @@
     <ClInclude Include="GraphicsHelper\RenderPipeline.hpp" />
     <ClInclude Include="GraphicsHelper\RenderState.hpp" />
     <ClInclude Include="Helper\AtomicTypes.h" />
+    <ClInclude Include="Math\Vector.h" />
   </ItemGroup>
 </Project>

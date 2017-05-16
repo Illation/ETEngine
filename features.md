@@ -43,31 +43,38 @@
  
 ### General
  * Specific atmoic types
+ * Custom Maths Library
 
  
 ## Backlog
 
 ### Graphics
- * SSAO
- * SSR
- * Render state is pushed right before draw call
- * AA for deferred rendering (TAA)
- * Sprite rendering
- * Debug renderer
- * Abstract OpenGL for Shader and Framebuffer
- * Texture objects handle their own parameters
- * Particle Systems
- * Allow better Graphics debugging support by tagging
- * Generate some common shaders from code
+ * Effects
+     * SSAO
+     * SSR
+     * AA for deferred rendering (TAA)
+     * Motion Blur
+ * Api / Pipeline
+     * Render state is pushed right before draw call
+     * Allow better Graphics debugging support by tagging
+     * Abstract OpenGL for Shader and Framebuffer
+     * Texture objects handle their own parameters
+     * Vulkan??
+     * Sorting objects before rendering
+     * batching 
+     * Support resizing window
+ * UI
+     * Sprite rendering
+     * Dynamic font file rasterization (any size)
+     * UI Space definition and pipeline stage
+ * Utility
+     * Generate some common shaders from code
      * Basic deferred fragment shader generation
- * Support resizing window
- * Vulkan??
- * Animation support
- * Motion Blur
- * Cone Lights/Culling/Primitive
- * Sorting objects before rendering
- * batching 
+     * Cone Lights/Culling/Primitive
+     * Debug renderer
  * Transparent shadows
+ * Particle Systems
+ * Animation support
  
 ### Planets
  * World moves around camera
@@ -88,7 +95,6 @@
 ### General
  * Physics Library (PhysX?)
  * Sounds (FMOD?)
- * Custom Maths Library
  * Serialize Levels
  * Read engine settings from file
  * Packaging system
@@ -97,3 +103,6 @@
      * Debug Overlay as Editor build mode
  * Linux support
  * Screenshot manager
+ * SIMD math
+ * Multithreading support
+ * Loading screen / splash screen
