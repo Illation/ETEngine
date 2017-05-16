@@ -15,6 +15,15 @@ namespace etm
 {
 	//Generic vector
 	//**************
+
+	// n = dimensions
+	// T = data type
+
+	// In 3D cartesian coordinate space:
+	// Left handed - Y is up
+
+	// Vectors are treated as columns when multiplied with matrices
+
 	template <uint8 n, class T>
 	struct vector
 	{
@@ -168,7 +177,6 @@ namespace etm
 		vector<3, T> operator-();
 	};
 
-	//Left handed - Y is up
 	template<typename T> vector<3, T> vector<3, T>::UP = vector<3, T>(0.0, 1.0, 0.0);
 	template<typename T> vector<3, T> vector<3, T>::DOWN = vector<3, T>(0.0, -1.0, 0.0);
 	template<typename T> vector<3, T> vector<3, T>::LEFT = vector<3, T>(-1.0, 0.0, 0.0);

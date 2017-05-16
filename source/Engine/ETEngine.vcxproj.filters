@@ -284,5 +284,7 @@
     <ClInclude Include="GraphicsHelper\RenderState.hpp" />
     <ClInclude Include="Helper\AtomicTypes.h" />
     <ClInclude Include="Math\Vector.h" />
+    <ClInclude Include="Math\Math.h" />
+    <ClInclude Include="Math\Matrix.h" />
   </ItemGroup>
 </Project>
