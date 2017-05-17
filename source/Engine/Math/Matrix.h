@@ -3,10 +3,6 @@
 #include "../Helper/AtomicTypes.h"
 #include "Vector.h"
 
-//inspired by JoeyDeVries/Cell , g-truc/glm , Game Engine Architecture
-//implementing a custom math library for the learning experience, completeness, control and easy build setup
-//#todo SIMD support
-
 namespace etm
 {
 	//Generic matrix
@@ -161,13 +157,131 @@ namespace etm
 		return result;
 	}
 
+	//special cases
 
-	template <uint8  m, uint8  n, typename T>
-	inline matrix<m, n, T> inverse(const matrix<m, n, T>& mat)
+	//determinant
+	template <typename T>
+	inline T determinant(const matrix<2, 2, T>& mat)
 	{
-		matrix<m, n, T> result;
-		// #todo: matrix inverse
+		return mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1];
+	}
+	template <typename T>
+	inline T determinant(const matrix<3, 3, T>& mat)
+	{
+		return
+			+ mat[0][0] * (mat[1][1] * mat[2][2] - mat[2][1] * mat[1][2])
+			- mat[1][0] * (mat[0][1] * mat[2][2] - mat[2][1] * mat[0][2])
+			+ mat[2][0] * (mat[0][1] * mat[1][2] - mat[1][1] * mat[0][2]);
+	}
+	template <typename T>
+	inline T determinant(const matrix<4, 4, T>& mat)
+	{
+		T subFactor00 = mat[2][2] * mat[3][3] - mat[3][2] * mat[2][3];
+		T subFactor01 = mat[2][1] * mat[3][3] - mat[3][1] * mat[2][3];
+		T subFactor02 = mat[2][1] * mat[3][2] - mat[3][1] * mat[2][2];
+		T subFactor03 = mat[2][0] * mat[3][3] - mat[3][0] * mat[2][3];
+		T subFactor04 = mat[2][0] * mat[3][2] - mat[3][0] * mat[2][2];
+		T subFactor05 = mat[2][0] * mat[3][1] - mat[3][0] * mat[2][1];
+
+		vector<4, T> detCof(
+			+(mat[1][1] * subFactor00 - mat[1][2] * subFactor01 + mat[1][3] * subFactor02),
+			-(mat[1][0] * subFactor00 - mat[1][2] * subFactor03 + mat[1][3] * subFactor04),
+			+(mat[1][0] * subFactor01 - mat[1][1] * subFactor03 + mat[1][3] * subFactor05),
+			-(mat[1][0] * subFactor02 - mat[1][1] * subFactor04 + mat[1][2] * subFactor05));
+
+		return
+			mat[0][0] * detCof[0] + mat[0][1] * detCof[1] +
+			mat[0][2] * detCof[2] + mat[0][3] * detCof[3];
+	}
+
+	//inverse
+	template <typename T>
+	inline matrix<2, 2, T> inverse(const matrix<2, 2, T>& mat)
+	{
+		T detFrac = static_cast<T>(1) / etm::determinant(mat);
+
+		matrix<2, 2, T> result(
+			+mat[1][1] * detFrac,
+			-mat[0][1] * detFrac,
+			-mat[1][0] * detFrac,
+			+mat[0][0] * detFrac);
+
 		return result;
+	}
+	template <typename T>
+	inline matrix<3, 3, T> inverse(const matrix<3, 3, T>& mat)
+	{
+		T detFrac = static_cast<T>(1) / etm::determinant(mat);
+
+		matrix<3, 3, T> result(
+			+ (mat[1][1] * mat[2][2] - mat[2][1] * mat[1][2]) * detFrac,
+			- (mat[1][0] * mat[2][2] - mat[2][0] * mat[1][2]) * detFrac,
+			+ (mat[1][0] * mat[2][1] - mat[2][0] * mat[1][1]) * detFrac,
+			- (mat[0][1] * mat[2][2] - mat[2][1] * mat[0][2]) * detFrac,
+			+ (mat[0][0] * mat[2][2] - mat[2][0] * mat[0][2]) * detFrac,
+			- (mat[0][0] * mat[2][1] - mat[2][0] * mat[0][1]) * detFrac,
+			+ (mat[0][1] * mat[1][2] - mat[1][1] * mat[0][2]) * detFrac,
+			- (mat[0][0] * mat[1][2] - mat[1][0] * mat[0][2]) * detFrac,
+			+ (mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1]) * detFrac);
+
+		return result;
+	}
+	template <typename T>
+	inline matrix<4, 4, T> inverse(const matrix<4, 4, T>& mat)
+	{
+		T coef00 = mat[2][2] * mat[3][3] - mat[3][2] * mat[2][3];
+		T coef02 = mat[1][2] * mat[3][3] - mat[3][2] * mat[1][3];
+		T coef03 = mat[1][2] * mat[2][3] - mat[2][2] * mat[1][3];
+
+		T coef04 = mat[2][1] * mat[3][3] - mat[3][1] * mat[2][3];
+		T coef06 = mat[1][1] * mat[3][3] - mat[3][1] * mat[1][3];
+		T coef07 = mat[1][1] * mat[2][3] - mat[2][1] * mat[1][3];
+
+		T coef08 = mat[2][1] * mat[3][2] - mat[3][1] * mat[2][2];
+		T coef10 = mat[1][1] * mat[3][2] - mat[3][1] * mat[1][2];
+		T coef11 = mat[1][1] * mat[2][2] - mat[2][1] * mat[1][2];
+
+		T coef12 = mat[2][0] * mat[3][3] - mat[3][0] * mat[2][3];
+		T coef14 = mat[1][0] * mat[3][3] - mat[3][0] * mat[1][3];
+		T coef15 = mat[1][0] * mat[2][3] - mat[2][0] * mat[1][3];
+
+		T coef16 = mat[2][0] * mat[3][2] - mat[3][0] * mat[2][2];
+		T coef18 = mat[1][0] * mat[3][2] - mat[3][0] * mat[1][2];
+		T coef19 = mat[1][0] * mat[2][2] - mat[2][0] * mat[1][2];
+
+		T coef20 = mat[2][0] * mat[3][1] - mat[3][0] * mat[2][1];
+		T coef22 = mat[1][0] * mat[3][1] - mat[3][0] * mat[1][1];
+		T coef23 = mat[1][0] * mat[2][1] - mat[2][0] * mat[1][1];
+
+		vector<4, T> fac0(coef00, coef00, coef02, coef03);
+		vector<4, T> fac1(coef04, coef04, coef06, coef07);
+		vector<4, T> fac2(coef08, coef08, coef10, coef11);
+		vector<4, T> fac3(coef12, coef12, coef14, coef15);
+		vector<4, T> fac4(coef16, coef16, coef18, coef19);
+		vector<4, T> fac5(coef20, coef20, coef22, coef23);
+
+		vector<4, T> vec0(mat[1][0], mat[0][0], mat[0][0], mat[0][0]);
+		vector<4, T> vec1(mat[1][1], mat[0][1], mat[0][1], mat[0][1]);
+		vector<4, T> vec2(mat[1][2], mat[0][2], mat[0][2], mat[0][2]);
+		vector<4, T> vec3(mat[1][3], mat[0][3], mat[0][3], mat[0][3]);
+
+		vector<4, T> inv0(vec1 * fac0 - vec2 * fac1 + vec3 * fac2);
+		vector<4, T> inv1(vec0 * fac0 - vec2 * fac3 + vec3 * fac4);
+		vector<4, T> inv2(vec0 * fac1 - vec1 * fac3 + vec3 * fac5);
+		vector<4, T> inv3(vec0 * fac2 - vec1 * fac4 + vec2 * fac5);
+
+		vector<4, T> signA(+1, -1, +1, -1);
+		vector<4, T> signB(-1, +1, -1, +1);
+		matrix<4, 4, T> result(inv0 * SignA, inv1 * signB, inv2 * signA, inv3 * signB);
+
+		vector<4, T> row0(result[0][0], result[1][0], result[2][0], result[3][0]);
+
+		vector<4, T> dot0(mat[0] * row0);
+		T dot1 = (dot0.x + dot0.y) + (dot0.z + dot0.w);
+
+		T detFrac = static_cast<T>(1) / dot1;
+
+		return result * detFrac;
 	}
 
 }//namespace etm
