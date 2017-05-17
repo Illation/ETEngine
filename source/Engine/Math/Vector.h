@@ -3,12 +3,23 @@
 #include <initializer_list>
 #include <array>
 #include <assert.h>
+#include <stdint.h>
 
-#include "../Helper/AtomicTypes.h"
 
 //ETEngine math
 namespace etm
 {
+	//Temporarily defined here until glm is replaced with custom math
+	typedef std::int8_t		int8;
+	typedef std::int16_t	int16;
+	typedef std::int32_t	int32;
+	typedef std::int64_t	int64;
+
+	typedef std::uint8_t	uint8;
+	typedef std::uint16_t	uint16;
+	typedef std::uint32_t	uint32;
+	typedef std::uint64_t	uint64;
+
 	//Generic vector
 	//**************
 
@@ -23,6 +34,7 @@ namespace etm
 	template <uint8 n, class T>
 	struct vector
 	{
+	public:
 		//members
 		std::array<T, n> data;
 
@@ -43,8 +55,12 @@ namespace etm
 		}
 		vector(const std::initializer_list<T> args)
 		{
-			assert(args.size() < n);
-			data = args;
+			assert(args.size() <= n);
+			int32 index = 0;
+			for (auto begin = args.begin(); begin != args.end(); ++begin)
+			{
+				data.at(index++) = *begin;
+			}
 		}
 
 		//operators
@@ -305,34 +321,34 @@ namespace etm
 	//*********
 
 	//negate
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline vector<n, T> vector<n, T>::operator-()
 	{
 		vector<n, T> result;
-		for (uint8 i = 0; i < n; ++i) 
+		for (uint8 i = 0; i < n; ++i)
 		{
 			result[i] = -data[i];
 		}
 		return result;
 	}
-	template <typename T>
+	template <class T>
 	inline vector<2, T> vector<2, T>::operator-()
 	{
 		return{ -x, -y };
 	}
-	template <typename T>
+	template <class T>
 	inline vector<3, T> vector<3, T>::operator-()
 	{
 		return{ -x, -y, -z };
 	}
-	template <typename T>
+	template <class T>
 	inline vector<4, T> vector<4, T>::operator-()
 	{
 		return{ -x, -y, -z, -w };
 	}
 
 	// addition
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline vector<n, T> operator+(vector<n, T> lhs, T scalar)
 	{
 		vector<n, T> result;
@@ -342,7 +358,7 @@ namespace etm
 		}
 		return result;
 	}
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline vector<n, T> operator+(T scalar, vector<n, T> rhs)
 	{
 		vector<n, T> result;
@@ -350,7 +366,7 @@ namespace etm
 			result[i] = lhs[i] + scalar;
 		return result;
 	}
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline vector<n, T> operator+(vector<n, T> lhs, vector<n, T> rhs)
 	{
 		vector<n, T> result;
@@ -360,7 +376,7 @@ namespace etm
 	}
 
 	// subtraction
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline vector<n, T> operator-(vector<n, T> lhs, T scalar)
 	{
 		vector<n, T> result;
@@ -370,7 +386,7 @@ namespace etm
 		}
 		return result;
 	}
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline vector<n, T> operator-(vector<n, T> lhs, vector<n, T> rhs)
 	{
 		vector<n, T> result;
@@ -382,7 +398,7 @@ namespace etm
 	}
 
 	// multiplication
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline vector<n, T> operator*(vector<n, T> lhs, T scalar)
 	{
 		vector<n, T> result;
@@ -392,7 +408,7 @@ namespace etm
 		}
 		return result;
 	}
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline vector<n, T> operator*(T scalar, vector<n, T> lhs)
 	{
 		vector<n, T> result;
@@ -402,7 +418,7 @@ namespace etm
 		}
 		return result;
 	}
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline vector<n, T> operator*(vector<n, T> lhs, vector<n, T> rhs) // hadamard product
 	{
 		vector<n, T> result;
@@ -414,7 +430,7 @@ namespace etm
 	}
 
 	//division
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline vector<n, T> operator/(vector<n, T> lhs, T scalar)
 	{
 		vector<n, T> result;
@@ -424,7 +440,7 @@ namespace etm
 		}
 		return result;
 	}
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline vector<n, T> operator/(vector<n, T> lhs, vector<n, T> rhs) //hadamard product
 	{
 		vector<n, T> result;
@@ -438,7 +454,7 @@ namespace etm
 	//operations
 	//**********
 
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline T dot(vector<n, T> lhs, vector<n, T> rhs)
 	{
 		T result = {};
@@ -447,29 +463,29 @@ namespace etm
 		return result;
 	}
 
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline T lengthSquared(vector<n, T> vec)
 	{
 		return etm::dot(vec, vec);
 	}
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline T length(vector<n, T> vec)
 	{
 		return sqrt(etm::lengthSquared(vec));
 	}
 
-	template <uint8 n, typename T>
-	inline float distance(vector<n, T> lhs, vector<n, T> rhs)
+	template <uint8 n, class T>
+	inline T distance(vector<n, T> lhs, vector<n, T> rhs)
 	{
 		return length(lhs - rhs);
 	}
-	template <uint8 n, typename T>
-	inline float distanceSquared(vector<n, T> lhs, vector<n, T> rhs)
+	template <uint8 n, class T>
+	inline T distanceSquared(vector<n, T> lhs, vector<n, T> rhs)
 	{
 		return lengthSquared(lhs - rhs);
 	}
 
-	template <uint8 n, typename T>
+	template <uint8 n, class T>
 	inline vector<n, T> normalize(vector<n, T> vec)
 	{
 		T len = length(vec);
@@ -477,7 +493,7 @@ namespace etm
 	}
 
 	//dimension specific operations
-	template<typename T>
+	template<class T>
 	inline vector<2, T> perpendicular(const vector<2, T>& vec)
 	{
 		vector<2, T> result;
@@ -485,7 +501,7 @@ namespace etm
 		result.y = vec.x;
 		return result;
 	}
-	template<typename T>
+	template<class T>
 	inline vector<3, T> cross(const vector<3, T>& lhs, const vector<3, T>& rhs)
 	{
 		vector<3, T> result;
