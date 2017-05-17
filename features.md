@@ -44,6 +44,9 @@
 ### General
  * Specific atmoic types
  * Custom Maths Library
+ 
+### Integration
+ * Unit Testing setup with catch.hpp
 
  
 ## Backlog
@@ -106,3 +109,6 @@
  * SIMD math
  * Multithreading support
  * Loading screen / splash screen
+ 
+### Integration
+ * Continous Integration setup
