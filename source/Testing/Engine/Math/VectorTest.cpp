@@ -2,6 +2,75 @@
 
 #include "../../../Engine/Math/Vector.h"
 
+TEST_CASE("Generic vector functionality", "[vector]")
+{
+	using namespace etm;
+
+	int32 input1 = 1;
+	int32 input2 = 2;
+	int32 input3 = 3;
+	int32 input4 = 4;
+	int32 input5 = 5;
+
+	SECTION("default constructor")
+	{
+		vector<5, int32> vec = vector<5, int32>();
+		REQUIRE(vec[0] == 0);
+		REQUIRE(vec[1] == 0);
+		REQUIRE(vec[2] == 0);
+		REQUIRE(vec[3] == 0);
+		REQUIRE(vec[4] == 0);
+	}
+	SECTION("single input constructor")
+	{
+		vector<5, int32> vec = vector<5, int32>(input1);
+		REQUIRE(vec[0] == input1);
+		REQUIRE(vec[1] == input1);
+		REQUIRE(vec[2] == input1);
+		REQUIRE(vec[3] == input1);
+		REQUIRE(vec[4] == input1);
+	}
+	//SECTION("initializer list constructor")
+	//{
+	//	vector<5, int32> vec = vector<5, int32>({ input1, input2, input3, input4, input5 });
+
+	//	SECTION("verify initializer list")
+	//	{
+	//		REQUIRE(vec[0] == input1);
+	//		REQUIRE(vec[1] == input2);
+	//		REQUIRE(vec[2] == input3);
+	//		REQUIRE(vec[3] == input4);
+	//		REQUIRE(vec[4] == input5);
+	//	}
+	//	SECTION("copy constructor")
+	//	{
+	//		vector<5, int32> vec2 = vector<5, int32>(vec);
+	//		REQUIRE(vec2[0] == input1);
+	//		REQUIRE(vec2[1] == input2);
+	//		REQUIRE(vec2[2] == input3);
+	//		REQUIRE(vec2[3] == input4);
+	//		REQUIRE(vec2[4] == input5);
+	//	}
+	//	SECTION("negate operator")
+	//	{
+	//		vector<5, int32> vec2 = -vec;
+
+	//		//original unharmed
+	//		REQUIRE(vec[0] == input1);
+	//		REQUIRE(vec[1] == input2);
+	//		REQUIRE(vec[2] == input3);
+	//		REQUIRE(vec[3] == input4);
+	//		REQUIRE(vec[4] == input5);
+	//		//new vector inverted
+	//		REQUIRE(vec2[0] == -input1);
+	//		REQUIRE(vec2[1] == -input2);
+	//		REQUIRE(vec2[2] == -input3);
+	//		REQUIRE(vec2[3] == -input4);
+	//		REQUIRE(vec2[4] == -input5);
+	//	}
+	//}
+}
+
 TEST_CASE("Vector<3> is constructed", "[vector]") 
 {
 	using namespace etm;
