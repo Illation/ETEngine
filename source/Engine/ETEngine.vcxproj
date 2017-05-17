@@ -280,6 +280,7 @@
     <ClInclude Include="Materials\SkyboxMaterial.hpp" />
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Math\Matrix.h" />
+    <ClInclude Include="Math\Quaternion.h" />
     <ClInclude Include="Math\Vector.h" />
     <ClInclude Include="PlanetTech\Atmosphere.hpp" />
     <ClInclude Include="PlanetTech\Patch.h" />

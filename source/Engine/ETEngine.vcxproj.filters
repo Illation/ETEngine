@@ -286,5 +286,6 @@
     <ClInclude Include="Math\Vector.h" />
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Math\Matrix.h" />
+    <ClInclude Include="Math\Quaternion.h" />
   </ItemGroup>
 </Project>

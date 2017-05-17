@@ -6,10 +6,6 @@
 
 #include "../Helper/AtomicTypes.h"
 
-//inspired by JoeyDeVries/Cell , g-truc/glm , Game Engine Architecture
-//implementing a custom math library for the learning experience, completeness, control and easy build setup
-//#todo SIMD support
-
 //ETEngine math
 namespace etm
 {
@@ -52,7 +48,7 @@ namespace etm
 		}
 
 		//operators
-		T& operator[] (const std::size_t index)
+		T& operator[] (const uint8 index)
 		{
 			assert(index >= 0 && index < n);
 			return data.at(index);
@@ -97,7 +93,7 @@ namespace etm
 			data = { x, y };
 		}
 		//operators
-		T& operator[] (const std::size_t index)
+		T& operator[] (const uint8 index)
 		{
 			assert(index >= 0 && index < 2);
 			return data.at(index);
@@ -169,7 +165,7 @@ namespace etm
 		}
 
 		//operators
-		T& operator[] (const std::size_t index)
+		T& operator[] (const uint8 index)
 		{
 			assert(index >= 0 && index < 3);
 			return data.at(index);
@@ -286,7 +282,7 @@ namespace etm
 		}
 
 		//operators
-		T& operator[] (const std::size_t index)
+		T& operator[] (const uint8 index)
 		{
 			assert(index >= 0 && index < 4);
 			return data.at(index);
@@ -298,9 +294,9 @@ namespace etm
 	typedef vector<2, float>  vec2;
 	typedef vector<3, float>  vec3;
 	typedef vector<4, float>  vec4;
-	typedef vector<2, int>    ivec2;
-	typedef vector<3, int>    ivec3;
-	typedef vector<4, int>    ivec4;
+	typedef vector<2, int32>  ivec2;
+	typedef vector<3, int32>  ivec3;
+	typedef vector<4, int32>  ivec4;
 	typedef vector<2, double> dvec2;
 	typedef vector<3, double> dvec3;
 	typedef vector<4, double> dvec4;
@@ -313,7 +309,7 @@ namespace etm
 	inline vector<n, T> vector<n, T>::operator-()
 	{
 		vector<n, T> result;
-		for (std::size_t i = 0; i < n; ++i) 
+		for (uint8 i = 0; i < n; ++i) 
 		{
 			result[i] = -data[i];
 		}
@@ -340,7 +336,7 @@ namespace etm
 	inline vector<n, T> operator+(vector<n, T> lhs, T scalar)
 	{
 		vector<n, T> result;
-		for (std::size_t i = 0; i < n; ++i) 
+		for (uint8 i = 0; i < n; ++i) 
 		{
 			result[i] = lhs[i] + scalar;
 		}
@@ -350,7 +346,7 @@ namespace etm
 	inline vector<n, T> operator+(T scalar, vector<n, T> rhs)
 	{
 		vector<n, T> result;
-		for (std::size_t i = 0; i < n; ++i)
+		for (uint8 i = 0; i < n; ++i)
 			result[i] = lhs[i] + scalar;
 		return result;
 	}
@@ -358,7 +354,7 @@ namespace etm
 	inline vector<n, T> operator+(vector<n, T> lhs, vector<n, T> rhs)
 	{
 		vector<n, T> result;
-		for (std::size_t i = 0; i < n; ++i)
+		for (uint8 i = 0; i < n; ++i)
 			result[i] = lhs[i] + rhs[i];
 		return result;
 	}
@@ -368,7 +364,7 @@ namespace etm
 	inline vector<n, T> operator-(vector<n, T> lhs, T scalar)
 	{
 		vector<n, T> result;
-		for (std::size_t i = 0; i < n; ++i) 
+		for (uint8 i = 0; i < n; ++i) 
 		{
 			result[i] = lhs[i] - scalar;
 		}
@@ -378,7 +374,7 @@ namespace etm
 	inline vector<n, T> operator-(vector<n, T> lhs, vector<n, T> rhs)
 	{
 		vector<n, T> result;
-		for (std::size_t i = 0; i < n; ++i) 
+		for (uint8 i = 0; i < n; ++i) 
 		{
 			result[i] = lhs[i] - rhs[i];
 		}
@@ -390,7 +386,7 @@ namespace etm
 	inline vector<n, T> operator*(vector<n, T> lhs, T scalar)
 	{
 		vector<n, T> result;
-		for (std::size_t i = 0; i < n; ++i) 
+		for (uint8 i = 0; i < n; ++i) 
 		{
 			result[i] = lhs[i] * scalar;
 		}
@@ -400,7 +396,7 @@ namespace etm
 	inline vector<n, T> operator*(T scalar, vector<n, T> lhs)
 	{
 		vector<n, T> result;
-		for (std::size_t i = 0; i < n; ++i) 
+		for (uint8 i = 0; i < n; ++i) 
 		{
 			result[i] = lhs[i] * scalar;
 		}
@@ -410,7 +406,7 @@ namespace etm
 	inline vector<n, T> operator*(vector<n, T> lhs, vector<n, T> rhs) // hadamard product
 	{
 		vector<n, T> result;
-		for (std::size_t i = 0; i < n; ++i) 
+		for (uint8 i = 0; i < n; ++i) 
 		{
 			result[i] = lhs[i] * rhs[i];
 		}
@@ -422,7 +418,7 @@ namespace etm
 	inline vector<n, T> operator/(vector<n, T> lhs, T scalar)
 	{
 		vector<n, T> result;
-		for (unsigned int i = 0; i < n; ++i) 
+		for (uint8 i = 0; i < n; ++i) 
 		{
 			result[i] = lhs[i] / scalar;
 		}
@@ -432,7 +428,7 @@ namespace etm
 	inline vector<n, T> operator/(vector<n, T> lhs, vector<n, T> rhs) //hadamard product
 	{
 		vector<n, T> result;
-		for (std::size_t i = 0; i < n; ++i) 
+		for (uint8 i = 0; i < n; ++i) 
 		{
 			result[i] = lhs[i] / rhs[i];
 		}
@@ -446,7 +442,7 @@ namespace etm
 	inline T dot(vector<n, T> lhs, vector<n, T> rhs)
 	{
 		T result = {};
-		for (std::size_t i = 0; i < n; ++i)
+		for (uint8 i = 0; i < n; ++i)
 			result += lhs[i] * rhs[i];
 		return result;
 	}
