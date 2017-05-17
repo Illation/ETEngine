@@ -124,7 +124,7 @@ void Logger::Log(const string& msg, LogLevel level, bool timestamp, bool doBreak
 	}
 
 #if _DEBUG
-	if ((m_BreakBitField&level) == level) __asm { int32 3 };
+	if ((m_BreakBitField&level) == level) __asm { int 3 };
 #else
 	if ((m_BreakBitField&level) == level) exit(-1);
 #endif
