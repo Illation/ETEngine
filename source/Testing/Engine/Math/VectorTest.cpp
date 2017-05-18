@@ -126,6 +126,31 @@ TEST_CASE("specific vec2 functionality", "[vector]")
 			REQUIRE(vec.y == -input2);
 		}
 	}
+	SECTION("perpendicular operation")
+	{
+		vec2 vec;
+		SECTION("with 0")
+		{
+			vec = vec2(0);
+		}
+		SECTION("with pos pos")
+		{
+			vec = vec2(1, 2);
+		}
+		SECTION("with pos neg")
+		{
+			vec = vec2(1, -2);
+		}
+		SECTION("with neg pos")
+		{
+			vec = vec2(-1, 2);
+		}
+		SECTION("with neg neg")
+		{
+			vec = vec2(-1, -2);
+		}
+		REQUIRE(dot(vec, perpendicular(vec)) == 0);
+	}
 }
 
 TEST_CASE("specific vec3 functionality", "[vector]") 

@@ -492,7 +492,21 @@ namespace etm
 		return vec / len;
 	}
 
+	//Vectors need to be prenormalized
+	template <uint8 n, class T>
+	inline T angleFastUnsigned(const vector<n, T>& lhs, const vector<n, T>& rhs)
+	{
+		return acos(dot(lhs, rhs));
+	}
+	template <uint8 n, class T>
+	inline T angleSafeUnsigned(const vector<n, T>& lhs, const vector<n, T>& rhs)
+	{
+		return angleFastUnsigned(normalize(lhs), normalize(rhs));
+	}
+
 	//dimension specific operations
+	//*****************************
+	//vec2
 	template<class T>
 	inline vector<2, T> perpendicular(const vector<2, T>& vec)
 	{
@@ -501,6 +515,19 @@ namespace etm
 		result.y = vec.x;
 		return result;
 	}
+	//Vectors need to be prenormalized
+	template<class T>
+	inline T angleFastSigned(const vector<2, T>& lhs, const vector<2, T>& rhs)
+	{
+		return atan2(rhs.y, rhs.x) - atan2(lhs.y, lhs.x);
+	}
+	template<class T>
+	inline T angleSafeSigned(const vector<2, T>& lhs, const vector<2, T>& rhs)
+	{
+		return angleFastSigned(normalize(lhs), normalize(rhs));
+	}
+
+	//vec3
 	template<class T>
 	inline vector<3, T> cross(const vector<3, T>& lhs, const vector<3, T>& rhs)
 	{
@@ -511,6 +538,22 @@ namespace etm
 		result.z = lhs.x*rhs.y - lhs.y*rhs.x;
 
 		return result;
+	}
+	//inputs vectors must be prenormalized, 
+	//and, for accurate measurments the outAxis should also be normalized after
+	template<class T>
+	inline T angleFastAxis(const vector<3, T>& lhs, const vector<3, T>& rhs, vector<3, T> &outAxis)
+	{
+		outAxis = cross(lhs, rhs);
+		return angleFastUnsigned(lhs, rhs);
+	}
+	template<class T>
+	inline T angleSafeAxis(const vector<3, T>& lhs, const vector<3, T>& rhs, vector<3, T> &outAxis)
+	{
+		vector<3, T>& lhsN = normalize(lhs);
+		vector<3, T>& rhsN = normalize(rhs);
+		outAxis = normalize(cross(lhsN, rhsN));
+		return angleFastUnsigned(lhsN, rhsN);
 	}
 
 } // namespace etm
