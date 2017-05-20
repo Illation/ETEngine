@@ -1,10 +1,10 @@
 #include "stdafx.hpp"
 
 #include "ShadowRenderer.hpp"
-#include <glm/gtx/transform.hpp>
-#include <glm\gtx\quaternion.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
-#include <glm/gtx/euler_angles.hpp>
+#include <gtx/transform.hpp>
+#include <gtx\quaternion.hpp>
+#include <gtx/matrix_decompose.hpp>
+#include <gtx/euler_angles.hpp>
 #include "../Materials/NullMaterial.hpp"
 #include "../Graphics/ShaderData.hpp"
 #include "../Graphics/TextureData.hpp"

@@ -4,7 +4,7 @@
 #ifndef GLM_LEFT_HANDED
 	#define GLM_LEFT_HANDED
 #endif
-#include <glm\glm.hpp>
+#include <glm.hpp>
 #include <string>
 
 class ShaderData;

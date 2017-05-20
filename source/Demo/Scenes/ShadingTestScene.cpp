@@ -3,10 +3,10 @@
 #include "ShadingTestScene.hpp"
 
 #include <random>
-#include <glm/gtx/transform.hpp>
-#include <glm\gtx\quaternion.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
-#include <glm/gtx/euler_angles.hpp>
+#include <gtx/transform.hpp>
+#include <gtx\quaternion.hpp>
+#include <gtx/matrix_decompose.hpp>
+#include <gtx/euler_angles.hpp>
 
 #include "../../Engine/SceneGraph/Entity.hpp"
 #include "../../Engine/Graphics/SpriteFont.h"

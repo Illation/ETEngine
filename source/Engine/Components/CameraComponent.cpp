@@ -6,7 +6,7 @@
 
 #include "../Graphics/Frustum.h"
 
-#include <glm/gtc/matrix_transform.hpp>
+#include <gtc/matrix_transform.hpp>
 
 #define CONTEXT Context::GetInstance()
 

@@ -3,9 +3,9 @@
 
 #include "../Graphics/MeshFilter.hpp"
 
-#include <assimp\Importer.hpp>
-#include <assimp/scene.h>  
-#include <assimp/postprocess.h>
+#include <Importer.hpp>
+#include <scene.h>  
+#include <postprocess.h>
 
 #define ASSIMP_BUILD_BOOST_WORAROUND
 

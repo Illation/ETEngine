@@ -1,7 +1,7 @@
 #include "stdafx.hpp"
 #include "OrbitCamera.hpp"
 #include "../Components/CameraComponent.hpp"
-#include <glm/gtx/matrix_decompose.hpp>
+#include <gtx/matrix_decompose.hpp>
 
 #include "FixedCamera.hpp"
 

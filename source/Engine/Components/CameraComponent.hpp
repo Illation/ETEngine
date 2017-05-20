@@ -3,7 +3,7 @@
 #ifndef GLM_LEFT_HANDED
 	#define GLM_LEFT_HANDED
 #endif
-#include <glm\glm.hpp>
+#include <glm.hpp>
 #include "AbstractComponent.hpp"
 
 class Frustum;

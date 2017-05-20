@@ -7,7 +7,7 @@
 #ifndef GLM_LEFT_HANDED
 	#define GLM_LEFT_HANDED
 #endif
-#include <glm\glm.hpp>
+#include <glm.hpp>
 #include "../Helper/MathHelper.hpp"
 
 class Material;

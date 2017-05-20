@@ -4,7 +4,7 @@
 #ifndef GLM_LEFT_HANDED
 	#define GLM_LEFT_HANDED
 #endif
-#include <glm\gtc\quaternion.hpp>
+#include <gtc\quaternion.hpp>
 class TransformComponent : public AbstractComponent
 {
 public:

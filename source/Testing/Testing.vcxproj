@@ -71,12 +71,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)..\bin\$(Configuration)$(Platform)\Testing\</OutDir>
     <IntDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Testing\</IntDir>
-    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\glm;$(S_LIBS)\assimp\include;$(S_LIBS)\FreeImage\Dist\x32;$(IncludePath)</IncludePath>
-    <LibraryPath>$(S_LIBS)\SDL2\lib\x86;$(S_LIBS)\assimp\lib;$(S_LIBS)\FreeImage\Dist\x32;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\dependancies\include\sdl2;$(SolutionDir)..\dependancies\include\glm;$(SolutionDir)..\dependancies\include\assimp;$(SolutionDir)..\dependancies\include\freeImage;$(SolutionDir)..\dependancies\include\catch;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\dependancies\x32\sdl2;$(SolutionDir)..\dependancies\x32\assimp;$(SolutionDir)..\dependancies\x32\freeImage;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\glm;$(S_LIBS)\assimp\include;$(S_LIBS)\FreeImage\Dist\x32;$(IncludePath)</IncludePath>
-    <LibraryPath>$(S_LIBS)\SDL2\lib\x86;$(S_LIBS)\assimp\lib;$(S_LIBS)\FreeImage\Dist\x32;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\dependancies\include\sdl2;$(SolutionDir)..\dependancies\include\glm;$(SolutionDir)..\dependancies\include\assimp;$(SolutionDir)..\dependancies\include\freeImage;$(SolutionDir)..\dependancies\include\catch;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\dependancies\x32\sdl2;$(SolutionDir)..\dependancies\x32\assimp;$(SolutionDir)..\dependancies\x32\freeImage;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\bin\$(Configuration)$(Platform)\Testing\</OutDir>
     <IntDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Testing\</IntDir>
   </PropertyGroup>
@@ -124,9 +124,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="catch.hpp" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\ETEngine.vcxproj">
       <Project>{b3871acf-3f5d-4489-ab93-952a037c9086}</Project>
