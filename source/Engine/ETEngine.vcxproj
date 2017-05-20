@@ -70,14 +70,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\glm;$(S_LIBS)\assimp\include;$(S_LIBS)\FreeImage\Dist\x32;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\dependancies\include\sdl2;$(SolutionDir)..\dependancies\include\glm;$(SolutionDir)..\dependancies\include\assimp;$(SolutionDir)..\dependancies\include\freeImage;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\</OutDir>
     <IntDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\</IntDir>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\glm;$(S_LIBS)\assimp\include;$(S_LIBS)\FreeImage\Dist\x32;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\dependancies\include\sdl2;$(SolutionDir)..\dependancies\include\glm;$(SolutionDir)..\dependancies\include\assimp;$(SolutionDir)..\dependancies\include\freeImage;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\</OutDir>
     <IntDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\</IntDir>
@@ -281,6 +281,7 @@
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Math\Matrix.h" />
     <ClInclude Include="Math\Quaternion.h" />
+    <ClInclude Include="Math\Transform.h" />
     <ClInclude Include="Math\Vector.h" />
     <ClInclude Include="PlanetTech\Atmosphere.hpp" />
     <ClInclude Include="PlanetTech\Patch.h" />

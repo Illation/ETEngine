@@ -52,9 +52,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="StaticDependancies\glad\glad.c">
-      <Filter>StaticDependancies\glad</Filter>
-    </ClCompile>
     <ClCompile Include="Content\ShaderLoader.cpp">
       <Filter>Framework\Content</Filter>
     </ClCompile>
@@ -159,11 +156,9 @@
     <ClCompile Include="GraphicsHelper\PrimitiveRenderer.cpp" />
     <ClCompile Include="GraphicsHelper\RenderPipeline.cpp" />
     <ClCompile Include="GraphicsHelper\RenderState.cpp" />
+    <ClCompile Include="StaticDependancies\glad\glad.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="StaticDependancies\glad\glad.h">
-      <Filter>StaticDependancies\glad</Filter>
-    </ClInclude>
     <ClInclude Include="Content\ShaderLoader.hpp">
       <Filter>Framework\Content</Filter>
     </ClInclude>
@@ -287,5 +282,7 @@
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Math\Matrix.h" />
     <ClInclude Include="Math\Quaternion.h" />
+    <ClInclude Include="StaticDependancies\glad\glad.h" />
+    <ClInclude Include="Math\Transform.h" />
   </ItemGroup>
 </Project>

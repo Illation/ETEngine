@@ -5,7 +5,7 @@
 #ifndef GLM_FORCE_LEFT_HANDED
 	#define GLM_FORCE_LEFT_HANDED
 #endif
-#include <glm/glm.hpp>
+#include <glm.hpp>
 #include <cassert>
 
 //integers
