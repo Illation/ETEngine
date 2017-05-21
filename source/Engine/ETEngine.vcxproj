@@ -72,14 +72,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir)..\dependancies\include\sdl2;$(SolutionDir)..\dependancies\include\glm;$(SolutionDir)..\dependancies\include\assimp;$(SolutionDir)..\dependancies\include\freeImage;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\</OutDir>
+    <OutDir>$(SolutionDir)..\bin\$(Configuration)$(Platform)\Engine\</OutDir>
     <IntDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\</IntDir>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir)..\dependancies\include\sdl2;$(SolutionDir)..\dependancies\include\glm;$(SolutionDir)..\dependancies\include\assimp;$(SolutionDir)..\dependancies\include\freeImage;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\</OutDir>
+    <OutDir>$(SolutionDir)..\bin\$(Configuration)$(Platform)\Engine\</OutDir>
     <IntDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\</IntDir>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.hpp</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>$(SolutionDir)..\bin\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -138,7 +138,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.hpp</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>$(SolutionDir)..\bin\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -228,8 +228,8 @@
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\bin\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\bin\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
     </ClCompile>

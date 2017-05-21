@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Helper/AtomicTypes.h"
+//#include "../Helper/AtomicTypes.h"
 #include "Vector.h"
 
 namespace etm
@@ -18,7 +18,7 @@ namespace etm
 	// | 8  9  10 11 | Row 2
 	// | 12 13 14 15 | Row 3
 
-	template <uint8 m, uint8 n, typename T>
+	template <uint8 m, uint8 n, class T>
 	struct matrix
 	{
 
@@ -79,9 +79,27 @@ namespace etm
 	typedef matrix<3, 3, double> dmat3;
 	typedef matrix<4, 4, double> dmat4;
 
+	//contruct matrices from other matricies
+	//**************************************
+	template <class T>
+	matrix<3, 3, T>::matrix<3, 3, T>(const matrix<4, 4, T> &mat)
+	{
+		rows[0] = mat.rows[0].xyz;
+		rows[1] = mat.rows[1].xyz;
+		rows[2] = mat.rows[2].xyz;
+	}
+	template <class T>
+	matrix<4, 4, T>::matrix<4, 4, T>(const matrix<3, 3, T> &mat)
+	{
+		rows[0] = vector<4, T>(mat.rows[1], 0);
+		rows[1] = vector<4, T>(mat.rows[2], 0);
+		rows[2] = vector<4, T>(mat.rows[3], 0);
+		rows[3] = vector<4, T>(0, 0, 0, 1);
+	}
+
 	//matrix operators
 	//****************
-	template <uint8 m, uint8 n, typename T>
+	template <uint8 m, uint8 n, class T>
 	matrix<m, n, T> operator+(matrix<m, n, T>& lhs, matrix<m, n, T>& rhs)
 	{
 		matrix<m, n, T> result;
@@ -94,7 +112,7 @@ namespace etm
 		}
 		return result;
 	}
-	template <uint8 m, uint8 n, typename T>
+	template <uint8 m, uint8 n, class T>
 	matrix<m, n, T> operator-(matrix<m, n, T>& lhs, matrix<m, n, T>& rhs)
 	{
 		matrix<m, n, T> result;
@@ -108,7 +126,7 @@ namespace etm
 		return result;
 	}
 	//multiplication: lhs rows * rhs columns
-	template <uint8 m, uint8 n, typename T>
+	template <uint8 m, uint8 n, class T>
 	matrix<m, m, T> operator*(matrix<m, n, T>& lhs, matrix<n, m, T>& rhs)
 	{
 		matrix<m, m, T> result;
@@ -128,7 +146,7 @@ namespace etm
 		return result;
 	}
 	//vector - matrix multiplication - row major convention -> vectors are 3x1 matrices and therefore on the right side
-	template <uint8 m, uint8 n, typename T>
+	template <uint8 m, uint8 n, class T>
 	vector<m, T> operator*(matrix<m, n, T>& lhs, vector<n, T>& rhs)
 	{
 		vector<m, T> result;
@@ -142,7 +160,7 @@ namespace etm
 	//operations
 	//**********
 
-	template <unsigned int m, unsigned int n, typename T>
+	template <unsigned int m, unsigned int n, class T>
 	inline matrix<m, n, T> transpose(matrix<m, n, T>& mat)
 	{
 		matrix<n, m, T> result;
@@ -160,12 +178,12 @@ namespace etm
 	//special cases
 
 	//determinant
-	template <typename T>
+	template <class T>
 	inline T determinant(const matrix<2, 2, T>& mat)
 	{
 		return mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1];
 	}
-	template <typename T>
+	template <class T>
 	inline T determinant(const matrix<3, 3, T>& mat)
 	{
 		return
@@ -173,7 +191,7 @@ namespace etm
 			- mat[1][0] * (mat[0][1] * mat[2][2] - mat[2][1] * mat[0][2])
 			+ mat[2][0] * (mat[0][1] * mat[1][2] - mat[1][1] * mat[0][2]);
 	}
-	template <typename T>
+	template <class T>
 	inline T determinant(const matrix<4, 4, T>& mat)
 	{
 		T subFactor00 = mat[2][2] * mat[3][3] - mat[3][2] * mat[2][3];
@@ -195,7 +213,7 @@ namespace etm
 	}
 
 	//inverse
-	template <typename T>
+	template <class T>
 	inline matrix<2, 2, T> inverse(const matrix<2, 2, T>& mat)
 	{
 		T detFrac = static_cast<T>(1) / etm::determinant(mat);
@@ -208,7 +226,7 @@ namespace etm
 
 		return result;
 	}
-	template <typename T>
+	template <class T>
 	inline matrix<3, 3, T> inverse(const matrix<3, 3, T>& mat)
 	{
 		T detFrac = static_cast<T>(1) / etm::determinant(mat);
@@ -226,7 +244,7 @@ namespace etm
 
 		return result;
 	}
-	template <typename T>
+	template <class T>
 	inline matrix<4, 4, T> inverse(const matrix<4, 4, T>& mat)
 	{
 		T coef00 = mat[2][2] * mat[3][3] - mat[3][2] * mat[2][3];
