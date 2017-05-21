@@ -1,0 +1,12 @@
+version: 1.0.{build}
+platform: x86
+build:
+  project: Source/ETEngine.sln
+  verbosity: normal
+test_script:
+- cmd: >-
+    cd bin\DebugWin32\Testing
+
+    .\Testing.exe
+
+    cd ..\..\..\
