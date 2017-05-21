@@ -16,7 +16,7 @@
  * Frustum culling
  * Sprite font rendering
  * Primitive renderer
- * Shader preprocessing (#include)
+ * GLSL shader preprocessing with includes and vertex / geo / fragment specializations
  
 ### Planets
  * Custom triangle CDLOD
@@ -30,8 +30,10 @@
  * Observer Pattern for input 
  * Factory Pattern for Content Managment 
  * Performance measurment
- * GLSL shader preprocessing with includes and vertex / geo / fragment specializations
 
+### Integration
+ * Continous Integration with AppVeyor
+ * Unit Testing setup with catch.hpp
  
 ## Work in progress
 
@@ -46,8 +48,7 @@
  * Custom Maths Library
  
 ### Integration
- * Unit Testing setup with catch.hpp
-
+ * Write Unit tests for math functions
  
 ## Backlog
 
@@ -105,10 +106,12 @@
  * Debug Overlay
      * Debug Overlay as Editor build mode
  * Linux support
+     * Travis CI Setup
  * Screenshot manager
  * SIMD math
  * Multithreading support
  * Loading screen / splash screen
  
 ### Integration
- * Continous Integration setup
+ * Code coverage measurment
+ * Test more engine code
