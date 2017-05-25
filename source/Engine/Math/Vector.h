@@ -20,6 +20,38 @@ namespace etm
 	typedef std::uint32_t	uint32;
 	typedef std::uint64_t	uint64;
 
+#define ETM_DEFAULT_EPSILON 0.00000001
+
+	static const float PI = 3.1415926535897932384626433832795028841971693993751058209749445f;
+	static const float PI2 = PI * 2;
+	static const float PI_DIV2 = PI * 0.5f;
+
+	template <class T>
+	inline bool nearEquals(T lhs, T rhs, T epsilon = ETM_DEFAULT_EPSILON)
+	{
+		return abs(lhs - rhs) <= epsilon;
+	}
+
+	template<class T>
+	inline T Clamp(const T &value, T hi, T lo)
+	{
+		T result = value;
+
+		if (value > hi)
+			result = hi;
+
+		if (value < lo)
+			result = lo;
+		 
+		return result;
+	}
+	template<class T>
+	inline T Clamp01(T& value)
+	{
+		return Clamp(T, 0, 1);
+	}
+
+
 	//Generic vector
 	//**************
 
@@ -453,6 +485,20 @@ namespace etm
 
 	//operations
 	//**********
+	template <uint8 n, class T>
+	inline bool nearEqualsV(vector<n, T> lhs, vector<n, T> rhs, T epsilon = ETM_DEFAULT_EPSILON)
+	{
+		for (uint8 i = 0; i < n; ++i)
+		{
+			if (!nearEquals(lhs[i], rhs[i], epsilon)) return false;
+		}
+		return true;
+	}
+	template <uint8 n, class T>
+	inline bool isZero(vector<n, T> lhs, T epsilon = static_cast<T>(0))
+	{
+		return nearEqualsV(vec, vector<n, T>(0), epsilon);
+	}
 
 	template <uint8 n, class T>
 	inline T dot(vector<n, T> lhs, vector<n, T> rhs)
@@ -488,6 +534,7 @@ namespace etm
 	template <uint8 n, class T>
 	inline vector<n, T> normalize(vector<n, T> vec)
 	{
+		//assert(!nearEqualsV(vec, vector<n, T>(0), static_cast<T>(0)));
 		T len = length(vec);
 		return vec / len;
 	}

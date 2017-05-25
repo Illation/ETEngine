@@ -80,46 +80,46 @@ TEST_CASE("specific vec2 functionality", "[vector]")
 
 	SECTION("default constructor")
 	{
-		vec2 vec = vec2();
+		etm::vec2 vec = etm::vec2();
 		REQUIRE(vec.x == 0);
 		REQUIRE(vec.y == 0);
 	}
 	SECTION("single input constructor")
 	{
-		vec2 vec = vec2(input1);
+		etm::vec2 vec = etm::vec2(input1);
 		REQUIRE(vec.x == input1);
 		REQUIRE(vec.y == input1);
 	}
 	SECTION("argument list constructor")
 	{
-		vec2 vec = { input1, input2};
+		etm::vec2 vec = { input1, input2};
 		REQUIRE(vec.x == input1);
 		REQUIRE(vec.y == input2);
 	}
 	SECTION("float arguments constructor")
 	{
-		vec2 vec = vec2(input1, input2);
+		etm::vec2 vec = etm::vec2(input1, input2);
 		REQUIRE(vec.x == input1);
 		REQUIRE(vec.y == input2);
 	}
 	SECTION("copy constructor")
 	{
-		vec2 vecOriginal = vec2(input1, input2);
+		etm::vec2 vecOriginal = etm::vec2(input1, input2);
 		SECTION("copy constructor")
 		{
-			vec2 vec = vec2(vecOriginal);
+			etm::vec2 vec = etm::vec2(vecOriginal);
 			REQUIRE(vec.x == input1);
 			REQUIRE(vec.y == input2);
 		}
 		SECTION("[] operator")
 		{
-			vec2 vec = vec2(vecOriginal);
+			etm::vec2 vec = etm::vec2(vecOriginal);
 			REQUIRE(vec[0] == input1);
 			REQUIRE(vec[1] == input2);
 		}
 		SECTION("- operator")
 		{
-			vec2 vec = vec2(-vecOriginal);
+			etm::vec2 vec = etm::vec2(-vecOriginal);
 			REQUIRE(vecOriginal.x == input1);
 			REQUIRE(vecOriginal.y == input2);
 			REQUIRE(vec.x == -input1);
@@ -128,28 +128,81 @@ TEST_CASE("specific vec2 functionality", "[vector]")
 	}
 	SECTION("perpendicular operation")
 	{
-		vec2 vec;
+		etm::vec2 vec;
 		SECTION("with 0")
 		{
-			vec = vec2(0);
+			vec = etm::vec2(0);
+			REQUIRE(nearEqualsV(perpendicular(vec), etm::vec2(0)) == true);
 		}
 		SECTION("with pos pos")
 		{
-			vec = vec2(1, 2);
+			vec = etm::vec2(1, 2);
+			REQUIRE(nearEqualsV(perpendicular(vec), etm::vec2(-2, 1)) == true );
 		}
 		SECTION("with pos neg")
 		{
-			vec = vec2(1, -2);
+			vec = etm::vec2(1, -2);
+			REQUIRE(nearEqualsV(perpendicular(vec), etm::vec2(2, 1)) == true );
 		}
 		SECTION("with neg pos")
 		{
-			vec = vec2(-1, 2);
+			vec = etm::vec2(-1, 2);
+			REQUIRE(nearEqualsV(perpendicular(vec), etm::vec2(-2, -1)) == true );
 		}
 		SECTION("with neg neg")
 		{
-			vec = vec2(-1, -2);
+			vec = etm::vec2(-1, -2);
+			REQUIRE(nearEqualsV(perpendicular(vec), etm::vec2(2, -1)) == true );
 		}
 		REQUIRE(dot(vec, perpendicular(vec)) == 0);
+	}
+	SECTION("signed angle")
+	{
+		etm::vec2 a = etm::vec2(3, -1);
+		etm::vec2 aNorm = normalize(a);
+		SECTION("with 0")
+		{
+			//expected problem because zero vectors don't have deterministic results
+			a = etm::vec2(0);
+			aNorm = normalize(a);
+			REQUIRE(nearEquals(angleSafeSigned(a, a), 0.f) == false);
+			REQUIRE(nearEquals(angleFastSigned(aNorm, aNorm), 0.f) == false);
+		}
+		SECTION("with same")
+		{
+			REQUIRE(nearEquals(angleSafeSigned(a, a), 0.f) == true);
+			REQUIRE(nearEquals(angleFastSigned(aNorm, aNorm), 0.f) == true);
+		}
+		SECTION("with perpendicular")
+		{
+			etm::vec2 b = perpendicular(a);
+			etm::vec2 bNorm = normalize(b);
+			REQUIRE(nearEquals(angleSafeSigned(a, b), etm::PI_DIV2) == true);
+			REQUIRE(nearEquals(angleFastSigned(aNorm, bNorm), etm::PI_DIV2) == true);
+		}
+		SECTION("with negative sign")
+		{
+			etm::vec2 b = -perpendicular(a);
+			etm::vec2 bNorm = normalize(b);
+			REQUIRE(nearEquals(angleSafeSigned(a, b), -etm::PI_DIV2) == true);
+			REQUIRE(nearEquals(angleFastSigned(aNorm, bNorm), -etm::PI_DIV2) == true);
+		}
+		SECTION("with opposite")
+		{
+			etm::vec2 b = -a;
+			etm::vec2 bNorm = normalize(b);
+			REQUIRE(nearEquals(angleSafeSigned(a, b), etm::PI) == true);
+			REQUIRE(nearEquals(angleFastSigned(aNorm, bNorm), etm::PI) == true);
+		}
+		SECTION("45 degrees")
+		{
+			etm::vec2 b = etm::vec2(1, 1);
+			etm::vec2 bNorm = normalize(b);
+			REQUIRE(nearEquals(angleSafeSigned(a, b), etm::PI*0.25f) == true);
+			REQUIRE(nearEquals(angleFastSigned(aNorm, bNorm), etm::PI*0.25f) == true);
+			//fast angle can fail with unnormalized values
+			REQUIRE(nearEquals(angleFastSigned(a, b), etm::PI*0.25f) == false);
+		}
 	}
 }
 
