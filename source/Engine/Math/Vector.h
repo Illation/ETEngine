@@ -564,14 +564,9 @@ namespace etm
 	}
 	//Vectors need to be prenormalized
 	template<class T>
-	inline T angleFastSigned(const vector<2, T>& lhs, const vector<2, T>& rhs)
+	inline T angleSigned(const vector<2, T>& lhs, const vector<2, T>& rhs)
 	{
 		return atan2(rhs.y, rhs.x) - atan2(lhs.y, lhs.x);
-	}
-	template<class T>
-	inline T angleSafeSigned(const vector<2, T>& lhs, const vector<2, T>& rhs)
-	{
-		return angleFastSigned(normalize(lhs), normalize(rhs));
 	}
 
 	//vec3
