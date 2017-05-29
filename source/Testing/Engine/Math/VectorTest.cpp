@@ -159,49 +159,35 @@ TEST_CASE("specific vec2 functionality", "[vector]")
 	SECTION("signed angle")
 	{
 		etm::vec2 a = etm::vec2(3, -1);
-		etm::vec2 aNorm = normalize(a);
 		SECTION("with 0")
 		{
-			//expected problem because zero vectors don't have deterministic results
 			a = etm::vec2(0);
-			aNorm = normalize(a);
-			REQUIRE(nearEquals(angleSafeSigned(a, a), 0.f) == false);
-			REQUIRE(nearEquals(angleFastSigned(aNorm, aNorm), 0.f) == false);
+			REQUIRE(nearEquals(angleSigned(a, a), 0.f) == true);
 		}
 		SECTION("with same")
 		{
-			REQUIRE(nearEquals(angleSafeSigned(a, a), 0.f) == true);
-			REQUIRE(nearEquals(angleFastSigned(aNorm, aNorm), 0.f) == true);
+			REQUIRE(nearEquals(angleSigned(a, a), 0.f) == true);
 		}
 		SECTION("with perpendicular")
 		{
 			etm::vec2 b = perpendicular(a);
-			etm::vec2 bNorm = normalize(b);
-			REQUIRE(nearEquals(angleSafeSigned(a, b), etm::PI_DIV2) == true);
-			REQUIRE(nearEquals(angleFastSigned(aNorm, bNorm), etm::PI_DIV2) == true);
+			REQUIRE(nearEquals(angleSigned(a, b), etm::PI_DIV2, 1.000001f) == true);
 		}
 		SECTION("with negative sign")
 		{
 			etm::vec2 b = -perpendicular(a);
-			etm::vec2 bNorm = normalize(b);
-			REQUIRE(nearEquals(angleSafeSigned(a, b), -etm::PI_DIV2) == true);
-			REQUIRE(nearEquals(angleFastSigned(aNorm, bNorm), -etm::PI_DIV2) == true);
+			REQUIRE(nearEquals(angleSigned(a, b), -etm::PI_DIV2) == true);
 		}
 		SECTION("with opposite")
 		{
 			etm::vec2 b = -a;
-			etm::vec2 bNorm = normalize(b);
-			REQUIRE(nearEquals(angleSafeSigned(a, b), etm::PI) == true);
-			REQUIRE(nearEquals(angleFastSigned(aNorm, bNorm), etm::PI) == true);
+			REQUIRE(nearEquals(angleSigned(a, b), etm::PI) == true);
 		}
 		SECTION("45 degrees")
 		{
-			etm::vec2 b = etm::vec2(1, 1);
-			etm::vec2 bNorm = normalize(b);
-			REQUIRE(nearEquals(angleSafeSigned(a, b), etm::PI*0.25f) == true);
-			REQUIRE(nearEquals(angleFastSigned(aNorm, bNorm), etm::PI*0.25f) == true);
-			//fast angle can fail with unnormalized values
-			REQUIRE(nearEquals(angleFastSigned(a, b), etm::PI*0.25f) == false);
+			a = etm::vec2(1, 0);
+			etm::vec2 b = etm::vec2(10, 10);
+			REQUIRE(nearEquals(angleSigned(a, b), etm::PI*0.25f, 1.000001f) == true);
 		}
 	}
 }
