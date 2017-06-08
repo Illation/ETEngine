@@ -280,6 +280,100 @@ TEST_CASE("specific vec3 functionality", "[vector]")
 		REQUIRE(yz.x == vec.y);
 		REQUIRE(yz.y == vec.z);
 	}
+	SECTION("cross product")
+	{
+		vec3 vec = vec3(input1, input2, input3);
+		vec3 bVec;
+		SECTION("with 0")
+		{
+			bVec = vec3(0);
+			vec3 result = etm::cross(bVec, bVec);
+			REQUIRE(nearEqualsV(result, vec3::ZERO));
+		}
+		SECTION("with up")
+		{
+			bVec = etm::vec3::UP;
+		}
+		SECTION("with down")
+		{
+			bVec = etm::vec3::DOWN;
+		}
+		SECTION("with left")
+		{
+			bVec = etm::vec3::LEFT;
+		}
+		SECTION("with right")
+		{
+			bVec = etm::vec3::RIGHT;
+			vec3 cVec = vec3::UP;
+			vec3 result = etm::cross(bVec, cVec);
+			REQUIRE(nearEqualsV(result, vec3::FORWARD));
+			result = etm::cross(cVec, bVec);
+			REQUIRE(nearEqualsV(result, vec3::BACK));
+		}
+		SECTION("with forward")
+		{
+			bVec = etm::vec3::FORWARD;
+			vec3 cVec = etm::vec3::RIGHT;
+			vec3 result = etm::cross(cVec, bVec);
+			REQUIRE(nearEqualsV(result, vec3::DOWN));
+			result = etm::cross(bVec, cVec);
+			REQUIRE(nearEqualsV(result, vec3::UP));
+			cVec = vec3::RIGHT * 2.f;
+			result = etm::cross(bVec, cVec);
+			REQUIRE(nearEqualsV(result, vec3::UP * 2.f));
+			cVec = vec3::UP;
+			result = etm::cross(bVec, cVec);
+			REQUIRE(nearEqualsV(result, vec3::LEFT));
+			result = etm::cross(cVec, bVec);
+			REQUIRE(nearEqualsV(result, vec3::RIGHT));
+		}
+		SECTION("with back")
+		{
+			bVec = etm::vec3::BACK;
+		}
+		vec3 result = etm::cross(vec, bVec);
+		REQUIRE(dot(vec, result) == 0);
+		REQUIRE(dot(bVec, result) == 0);
+	}
+	SECTION("angle with axis")
+	{
+		//This also implicitly tests generic angle calculations
+		vec3 a = vec3::RIGHT;
+		vec3 b;
+		vec3 axis;
+		float angle;
+		SECTION("with 0")
+		{
+			b = vec3::ZERO;
+			angle = angleSafeAxis(a, b, axis);
+			REQUIRE(std::isnan(angle));
+			REQUIRE(std::isnan(axis.x));
+			REQUIRE(std::isnan(axis.y));
+			REQUIRE(std::isnan(axis.z));
+		}
+		SECTION("positive 90 deg")
+		{
+			b = vec3::UP;
+			angle = angleSafeAxis(a, b, axis);
+			REQUIRE(angle == etm::PI_DIV2);
+			REQUIRE(nearEqualsV(axis, vec3::FORWARD));
+		}
+		SECTION("negative 90 deg")
+		{
+			b = vec3::DOWN;
+			angle = angleSafeAxis(a, b, axis);
+			REQUIRE(angle == etm::PI_DIV2);
+			REQUIRE(nearEqualsV(axis, vec3::BACK));
+		}
+		SECTION("positive 45 deg")
+		{
+			b = vec3(1, 1, 0);
+			angle = angleSafeAxis(a, b, axis);
+			REQUIRE(angle == etm::PI_DIV4);
+			REQUIRE(nearEqualsV(axis, vec3::FORWARD));
+		}
+	}
 }
 
 

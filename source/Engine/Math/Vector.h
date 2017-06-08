@@ -22,9 +22,16 @@ namespace etm
 
 #define ETM_DEFAULT_EPSILON 0.00000001
 
+	//180 degrees
 	static const float PI = 3.1415926535897932384626433832795028841971693993751058209749445f;
+	//360 degrees
 	static const float PI2 = PI * 2;
+	//90 degrees
 	static const float PI_DIV2 = PI * 0.5f;
+	//45 degrees
+	static const float PI_DIV4 = PI * 0.25f;
+	//30 degrees
+	static const float PI_DIV6 = PI / 6.f;
 
 	template <class T>
 	inline bool nearEquals(T lhs, T rhs, T epsilon = ETM_DEFAULT_EPSILON)
@@ -175,6 +182,7 @@ namespace etm
 			};
 		};
 
+		static vector<3, T> ZERO;
 		static vector<3, T> UP;
 		static vector<3, T> DOWN;
 		static vector<3, T> LEFT;
@@ -221,6 +229,7 @@ namespace etm
 		vector<3, T> operator-();
 	};
 
+	template<typename T> vector<3, T> vector<3, T>::ZERO = vector<3, T>(0.0, 0.0, 0.0);
 	template<typename T> vector<3, T> vector<3, T>::UP = vector<3, T>(0.0, 1.0, 0.0);
 	template<typename T> vector<3, T> vector<3, T>::DOWN = vector<3, T>(0.0, -1.0, 0.0);
 	template<typename T> vector<3, T> vector<3, T>::LEFT = vector<3, T>(-1.0, 0.0, 0.0);
@@ -497,7 +506,7 @@ namespace etm
 	template <uint8 n, class T>
 	inline bool isZero(vector<n, T> lhs, T epsilon = static_cast<T>(0))
 	{
-		return nearEqualsV(vec, vector<n, T>(0), epsilon);
+		return nearEqualsV(lhs, vector<n, T>(0), epsilon);
 	}
 
 	template <uint8 n, class T>
@@ -540,6 +549,7 @@ namespace etm
 	}
 
 	//Vectors need to be prenormalized
+	//if input vectors are zero it will generate NaN
 	template <uint8 n, class T>
 	inline T angleFastUnsigned(const vector<n, T>& lhs, const vector<n, T>& rhs)
 	{
@@ -570,6 +580,7 @@ namespace etm
 	}
 
 	//vec3
+	//direction will be left handed (lhs = thumb, rhs = index, result -> middle finger);
 	template<class T>
 	inline vector<3, T> cross(const vector<3, T>& lhs, const vector<3, T>& rhs)
 	{
@@ -583,6 +594,7 @@ namespace etm
 	}
 	//inputs vectors must be prenormalized, 
 	//and, for accurate measurments the outAxis should also be normalized after
+	//if input vectors are zero it will generate NaN
 	template<class T>
 	inline T angleFastAxis(const vector<3, T>& lhs, const vector<3, T>& rhs, vector<3, T> &outAxis)
 	{
@@ -594,8 +606,9 @@ namespace etm
 	{
 		vector<3, T>& lhsN = normalize(lhs);
 		vector<3, T>& rhsN = normalize(rhs);
-		outAxis = normalize(cross(lhsN, rhsN));
-		return angleFastUnsigned(lhsN, rhsN);
+		T result = angleFastAxis(lhsN, rhsN, outAxis);
+		outAxis = normalize(outAxis);
+		return result;
 	}
 
 } // namespace etm
