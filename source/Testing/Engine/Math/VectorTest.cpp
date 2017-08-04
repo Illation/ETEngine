@@ -529,3 +529,62 @@ TEST_CASE("specific vec4 functionality", "[vector]")
 		REQUIRE(rgb.z == vec.b);
 	}
 }
+
+TEST_CASE("vector math", "[vector]")
+{
+	using namespace etm;
+
+	float input1 = 2.5f;
+	float input2 = 3.3f;
+	float input3 = 4.f;
+
+	vec3 vecA = vec3(input1, input2, input3);
+	vec3 vecB = vec3(input3, input2, input1);
+	vec3 vecC = vec3(-input2, input3, -input1);
+
+	SECTION("add")
+	{
+		REQUIRE(nearEqualsV(vecA+vecB), vec3(6.5f, 6.6f, 6.5f));
+		REQUIRE(nearEqualsV(vecA+vecC), vec3(-0.8f, 7.3f, -1.5f));
+		REQUIRE(nearEqualsV(vecB+vecC), vec3(0.7f, 7.3f, 0.f));
+	}
+	SECTION("sub")
+	{
+		REQUIRE(nearEqualsV(vecA-vecB), vec3(-1.5f, 0.f, 1.5f));
+		REQUIRE(nearEqualsV(vecA-vecC), vec3(5.8f, -0.7f, 6.5f));
+		REQUIRE(nearEqualsV(vecB-vecC), vec3(7.3f, -0.7f, 5.f));
+	}
+	SECTION("mul")
+	{
+		REQUIRE(nearEqualsV(vecA*vecB), vec3(10.f, 10.89f, 10.f));
+		REQUIRE(nearEqualsV(vecA*vecC), vec3(-8.25f, 13.2f, -10.f));
+		REQUIRE(nearEqualsV(vecB*vecC), vec3(-13.2f, 13.2f, -6.25f));
+	}
+	SECTION("div")
+	{
+		REQUIRE(nearEqualsV(vecA/vecB), vec3(0.625f, 1.f, 1.6f));
+		REQUIRE(nearEqualsV(vecA/vecC), vec3(-0.7575757575757576f, 0.825f, -1.6f));
+		REQUIRE(nearEqualsV(vecB/vecC), vec3(-1.212121212121212f, 0.825f, -1.f));
+	}
+	SECTION("dot")
+	{
+		REQUIRE(nearEquals(etm::dot(vecA,vecB), 30.89f));
+		REQUIRE(nearEquals(etm::dot(vecA,vecC), -5.05f));
+		REQUIRE(nearEquals(etm::dot(vecB,vecC), -6.25f));
+	}
+	SECTION("dist")//by verifying this works, length and lengthSq must also work
+	{
+		REQUIRE(nearEquals(etm::distance(vecA,vecB), 2.345207879911715f));
+		REQUIRE(nearEquals(etm::distance(vecA,vecC), 8.739565206576355f));
+		REQUIRE(nearEquals(etm::distance(vecB,vecC), 8.875809822207774f));
+	}
+	SECTION("normalize")
+	{
+		REQUIRE(nearEqualsV(etm::normalize(vecA), vec3(0.4342739277195007f, 0.5732415845897409f, 0.6948382843512011f)));
+		REQUIRE(nearEquals(etm::length(etm::normalize(vecA)), 1));
+		REQUIRE(nearEqualsV(etm::normalize(vecB), vec3(0.6948382843512011f, 0.5732415845897409f, 0.4342739277195007f)));
+		REQUIRE(nearEquals(etm::length(etm::normalize(vecB)), 1));
+		REQUIRE(nearEqualsV(etm::normalize(vecC), vec3(-0.5732415845897409f, 0.6948382843512011f, -0.4342739277195007f)));
+		REQUIRE(nearEquals(etm::length(etm::normalize(vecC)), 1));
+	}
+}
