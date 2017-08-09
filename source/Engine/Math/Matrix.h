@@ -3,6 +3,11 @@
 //#include "../Helper/AtomicTypes.h"
 #include "Vector.h"
 
+#include <initializer_list>
+#include <array>
+#include <assert.h>
+#include <stdint.h>
+
 namespace etm
 {
 	//Generic matrix
@@ -21,13 +26,14 @@ namespace etm
 	template <uint8 m, uint8 n, class T>
 	struct matrix
 	{
-
+	public:
+		//members
 		union
 		{
 			T data[m][n];
 			struct
 			{
-				vector<n, T> rows[m];
+				etm::vector<n, T> rows[m];
 			};
 		};
 
@@ -35,11 +41,11 @@ namespace etm
 		//Identity default constructor
 		matrix()
 		{
-			for (uint8 rowIdx; rowIdx < m; ++rowIdx)
+			for (uint8 rowIdx = 0; rowIdx < m; ++rowIdx)
 			{
-				for (uint8 colIdx; colIdx < n; ++colIdx)
+				for (uint8 colIdx = 0; colIdx < n; ++colIdx)
 				{
-					data[rowIdx][colIdx] = (rowIdx == colIdx) ? 1 : 0;
+					data[rowIdx][colIdx] = (rowIdx == colIdx) ? static_cast<T>(1) : static_cast<T>(0);
 				}
 			}
 		}
@@ -58,18 +64,65 @@ namespace etm
 				}
 			}
 		}
-		matrix(const &vector<n, T> rowList[m])
-			: rows(rowList)
+		matrix(const etm::vector<n, T> rowList[m])
 		{
+			for (uint8 rowIdx = 0; rowIdx < m; ++rowIdx)
+			{
+				rows[rowIdx] = rowList[rowIdx];
+			}
 		}
 
 		//operators
-		vector<n, T>& operator[](const uint8 rowIdx)
+		etm::vector<n, T>& operator[](const uint8 rowIdx)
 		{
 			assert(rowIdx >= 0 && rowIdx < m);
 			return rows[rowIdx];
 		}
 	};
+
+	//contruct matrices from other matricies
+	//**************************************
+	//template<typename T>
+	//struct matrix<3, 3, T>
+	//{
+	//	matrix()
+	//	{
+	//		for (uint8 rowIdx; rowIdx < 3; ++rowIdx)
+	//		{
+	//			for (uint8 colIdx; colIdx < 3; ++colIdx)
+	//			{
+	//				data[rowIdx][colIdx] = (rowIdx == colIdx) ? 1 : 0;
+	//			}
+	//		}
+	//	}
+	//	matrix(const matrix<4, 4, T> &mat)
+	//	{
+	//		rows[0] = mat.rows[0].xyz;
+	//		rows[1] = mat.rows[1].xyz;
+	//		rows[2] = mat.rows[2].xyz;
+	//	}
+	//};
+	//template <class T>
+	//struct matrix<4, 4, T>
+	//{
+	//	matrix()
+	//	{
+	//		for (uint8 rowIdx; rowIdx < 4; ++rowIdx)
+	//		{
+	//			for (uint8 colIdx; colIdx < 4; ++colIdx)
+	//			{
+	//				data[rowIdx][colIdx] = (rowIdx == colIdx) ? 1 : 0;
+	//			}
+	//		}
+	//	}
+	//	matrix(const matrix<3, 3, T> &mat)
+	//	{
+	//		rows[0] = vector<4, T>(mat.rows[1], 0);
+	//		rows[1] = vector<4, T>(mat.rows[2], 0);
+	//		rows[2] = vector<4, T>(mat.rows[3], 0);
+	//		rows[3] = vector<4, T>(0, 0, 0, 1);
+	//	}
+	//};
 
 	//shorthands
 	typedef matrix<2, 2, float>  mat2;
@@ -78,24 +131,6 @@ namespace etm
 	typedef matrix<2, 2, double> dmat2;
 	typedef matrix<3, 3, double> dmat3;
 	typedef matrix<4, 4, double> dmat4;
-
-	//contruct matrices from other matricies
-	//**************************************
-	template <class T>
-	matrix<3, 3, T>::matrix<3, 3, T>(const matrix<4, 4, T> &mat)
-	{
-		rows[0] = mat.rows[0].xyz;
-		rows[1] = mat.rows[1].xyz;
-		rows[2] = mat.rows[2].xyz;
-	}
-	template <class T>
-	matrix<4, 4, T>::matrix<4, 4, T>(const matrix<3, 3, T> &mat)
-	{
-		rows[0] = vector<4, T>(mat.rows[1], 0);
-		rows[1] = vector<4, T>(mat.rows[2], 0);
-		rows[2] = vector<4, T>(mat.rows[3], 0);
-		rows[3] = vector<4, T>(0, 0, 0, 1);
-	}
 
 	//matrix operators
 	//****************
