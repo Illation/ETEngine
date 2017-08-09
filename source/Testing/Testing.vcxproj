@@ -130,6 +130,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Math\MatrixTest.cpp" />
     <ClCompile Include="Engine\Math\VectorTest.cpp" />
     <ClCompile Include="mainTesting.cpp" />
   </ItemGroup>
