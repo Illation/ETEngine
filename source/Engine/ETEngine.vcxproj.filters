@@ -1,299 +1,429 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Base">
+      <UniqueIdentifier>{1874859f-3a4e-4844-931c-13c0e07292db}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework">
-      <UniqueIdentifier>{00bb9047-658d-48ed-b38e-f2f59d5dc660}</UniqueIdentifier>
+    <Filter Include="Components">
+      <UniqueIdentifier>{9145e221-4d78-4c6a-805c-c7e726b111bd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework\Base">
-      <UniqueIdentifier>{2c31fc0e-b55c-4d1c-acc7-70c595778840}</UniqueIdentifier>
+    <Filter Include="Content">
+      <UniqueIdentifier>{edcdde7d-5129-4ce1-b142-4b6efd88a846}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework\Components">
-      <UniqueIdentifier>{6e29b1d2-ac82-4d9d-82db-227c89d2f91c}</UniqueIdentifier>
+    <Filter Include="Helper">
+      <UniqueIdentifier>{72722111-9973-48cb-9f3b-1e4c4bf8ed47}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework\Content">
-      <UniqueIdentifier>{5c3316ba-0d3c-455b-87c6-31492df68995}</UniqueIdentifier>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{f2781ec2-aff2-4084-af69-59a1669d46ac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework\Helper">
-      <UniqueIdentifier>{e2d6b3a0-7e91-40f9-ad1d-cce14f5c21d2}</UniqueIdentifier>
+    <Filter Include="Prefabs">
+      <UniqueIdentifier>{463db16d-6cc7-4522-91fa-1c46f80c7cc5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework\Graphics">
-      <UniqueIdentifier>{03108a7f-d243-4901-9ba5-af37be9c76c3}</UniqueIdentifier>
+    <Filter Include="SceneGraph">
+      <UniqueIdentifier>{60853a6a-56df-4baa-b4ef-ba7681f86e0f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework\Prefabs">
-      <UniqueIdentifier>{6def276e-a4ec-4947-8236-c615c0900710}</UniqueIdentifier>
+    <Filter Include="Framebuffers">
+      <UniqueIdentifier>{6b6d5601-0043-4424-9eb5-21ba9da1b536}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework\SceneGraph">
-      <UniqueIdentifier>{d59f5d56-84c9-40e9-9ac1-788eae2537bf}</UniqueIdentifier>
+    <Filter Include="GraphicsHelper">
+      <UniqueIdentifier>{5e8df684-4c01-4ba6-80d6-305e6891d90f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Project">
-      <UniqueIdentifier>{13f010e3-5d2e-4f03-8126-cdfb9aae31db}</UniqueIdentifier>
+    <Filter Include="Materials">
+      <UniqueIdentifier>{75974181-6924-44fc-b1d0-c0ac543aa838}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Project\Objects">
-      <UniqueIdentifier>{add7ca31-550a-4183-bf64-bc9ae8020b8d}</UniqueIdentifier>
+    <Filter Include="PlanetTech">
+      <UniqueIdentifier>{d5fc6b3f-5eac-4c3c-a0bb-6c3577c10cb9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Project\Materials">
-      <UniqueIdentifier>{ff67220f-2f72-414e-8fe0-47eb48c84718}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Project\Scenes">
-      <UniqueIdentifier>{5de02364-fd3d-40ba-9704-66d17ed38b5a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="StaticDependancies">
-      <UniqueIdentifier>{f5976f54-628e-4cc4-9bbd-9c4b02a4d539}</UniqueIdentifier>
+    <Filter Include="PlanetTech\Types">
+      <UniqueIdentifier>{6e8f3f9b-cbca-402f-87cf-4e0ce54a842a}</UniqueIdentifier>
     </Filter>
     <Filter Include="StaticDependancies\glad">
-      <UniqueIdentifier>{0e9c52e9-f27a-42cb-8275-92b7f7d353a4}</UniqueIdentifier>
+      <UniqueIdentifier>{806d03ae-6bc7-45f9-b7c5-9bd79c538a61}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework\FrameBuffers">
-      <UniqueIdentifier>{6a8abcf2-1080-4bb9-8bea-5262900e4dc4}</UniqueIdentifier>
+    <Filter Include="StaticDependancies">
+      <UniqueIdentifier>{948fd7a6-dd6a-4fac-bcc2-0762d9f26a61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{1b342657-45c4-4cdd-94e3-ea1452da5cab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Content\ShaderLoader.cpp">
-      <Filter>Framework\Content</Filter>
-    </ClCompile>
-    <ClCompile Include="Content\TextureLoader.cpp">
-      <Filter>Framework\Content</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphics\FrameBuffer.cpp">
-      <Filter>Framework\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\Time.cpp">
-      <Filter>Framework\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphics\Material.cpp">
-      <Filter>Framework\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Base\AbstractFramework.cpp">
-      <Filter>Framework\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneGraph\Entity.cpp">
-      <Filter>Framework\SceneGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneGraph\AbstractScene.cpp">
-      <Filter>Framework\SceneGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneGraph\SceneManager.cpp">
-      <Filter>Framework\SceneGraph</Filter>
+      <Filter>Base</Filter>
     </ClCompile>
     <ClCompile Include="Base\InputManager.cpp">
-      <Filter>Framework\Base</Filter>
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Time.cpp">
+      <Filter>Base</Filter>
     </ClCompile>
     <ClCompile Include="Components\AbstractComponent.cpp">
-      <Filter>Framework\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Components\TransformComponent.cpp">
-      <Filter>Framework\Components</Filter>
+      <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="Components\CameraComponent.cpp">
-      <Filter>Framework\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Prefabs\FixedCamera.cpp">
-      <Filter>Framework\Prefabs</Filter>
-    </ClCompile>
-    <ClCompile Include="Prefabs\FreeCamera.cpp">
-      <Filter>Framework\Prefabs</Filter>
-    </ClCompile>
-    <ClCompile Include="Content\ContentManager.cpp">
-      <Filter>Framework\Content</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphics\TextureData.cpp">
-      <Filter>Framework\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphics\ShaderData.cpp">
-      <Filter>Framework\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphics\MeshFilter.cpp">
-      <Filter>Framework\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Content\MeshFilterLoader.cpp">
-      <Filter>Framework\Content</Filter>
-    </ClCompile>
-    <ClCompile Include="Components\ModelComponent.cpp">
-      <Filter>Framework\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="Helper\Logger.cpp">
-      <Filter>Framework\Helper</Filter>
-    </ClCompile>
-    <ClCompile Include="Framebuffers\Gbuffer.cpp">
-      <Filter>Framework\FrameBuffers</Filter>
+      <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="Components\LightComponent.cpp">
-      <Filter>Framework\Components</Filter>
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\ModelComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\TransformComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\ContentManager.cpp">
+      <Filter>Content</Filter>
     </ClCompile>
     <ClCompile Include="Content\CubeMapLoader.cpp">
-      <Filter>Framework\Content</Filter>
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\MeshFilterLoader.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\ShaderLoader.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\TextureLoader.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper\Logger.cpp">
+      <Filter>Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\FrameBuffer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Material.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\MeshFilter.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\ShaderData.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\TextureData.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Prefabs\FixedCamera.cpp">
+      <Filter>Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="Prefabs\FreeCamera.cpp">
+      <Filter>Prefabs</Filter>
     </ClCompile>
     <ClCompile Include="Prefabs\Skybox.cpp">
-      <Filter>Framework\Prefabs</Filter>
+      <Filter>Prefabs</Filter>
     </ClCompile>
-    <ClCompile Include="Prefabs\OrbitCamera.cpp" />
-    <ClCompile Include="Helper\MathHelper.cpp" />
-    <ClCompile Include="Content\HdrLoader.cpp" />
-    <ClCompile Include="GraphicsHelper\LightVolume.cpp" />
-    <ClCompile Include="Framebuffers\PostProcessingRenderer.cpp" />
-    <ClCompile Include="GraphicsHelper\ShadowRenderer.cpp" />
-    <ClCompile Include="Graphics\SpriteFont.cpp" />
-    <ClCompile Include="Helper\BinaryReader.cpp" />
-    <ClCompile Include="GraphicsHelper\TextRenderer.cpp" />
-    <ClCompile Include="Content\FontLoader.cpp" />
-    <ClCompile Include="Graphics\Frustum.cpp" />
-    <ClCompile Include="Helper\PerformanceInfo.cpp" />
-    <ClCompile Include="Materials\GbufferMaterial.cpp" />
-    <ClCompile Include="Materials\LightMaterial.cpp" />
-    <ClCompile Include="Materials\NullMaterial.cpp" />
-    <ClCompile Include="Materials\SkyboxMaterial.cpp" />
-    <ClCompile Include="PlanetTech\Patch.cpp" />
-    <ClCompile Include="PlanetTech\Planet.cpp" />
-    <ClCompile Include="PlanetTech\Triangulator.cpp" />
-    <ClCompile Include="PlanetTech\Types\Moon.cpp" />
-    <ClCompile Include="PlanetTech\Types\Earth.cpp" />
-    <ClCompile Include="PlanetTech\Atmosphere.cpp" />
-    <ClCompile Include="GraphicsHelper\PrimitiveRenderer.cpp" />
-    <ClCompile Include="GraphicsHelper\RenderPipeline.cpp" />
-    <ClCompile Include="GraphicsHelper\RenderState.cpp" />
-    <ClCompile Include="StaticDependancies\glad\glad.c" />
-    <ClCompile Include="Graphics\Light.cpp" />
+    <ClCompile Include="SceneGraph\AbstractScene.cpp">
+      <Filter>SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGraph\Entity.cpp">
+      <Filter>SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGraph\SceneManager.cpp">
+      <Filter>SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Framebuffers\Gbuffer.cpp">
+      <Filter>Framebuffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\FontLoader.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\HdrLoader.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Framebuffers\PostProcessingRenderer.cpp">
+      <Filter>Framebuffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsHelper\LightVolume.cpp">
+      <Filter>GraphicsHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsHelper\PrimitiveRenderer.cpp">
+      <Filter>GraphicsHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsHelper\RenderPipeline.cpp">
+      <Filter>GraphicsHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsHelper\RenderState.cpp">
+      <Filter>GraphicsHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsHelper\ShadowRenderer.cpp">
+      <Filter>GraphicsHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsHelper\TextRenderer.cpp">
+      <Filter>GraphicsHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Frustum.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Light.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SpriteFont.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper\BinaryReader.cpp">
+      <Filter>Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper\MathHelper.cpp">
+      <Filter>Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper\PerformanceInfo.cpp">
+      <Filter>Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Materials\GbufferMaterial.cpp">
+      <Filter>Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="Materials\LightMaterial.cpp">
+      <Filter>Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="Materials\NullMaterial.cpp">
+      <Filter>Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="Materials\SkyboxMaterial.cpp">
+      <Filter>Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="PlanetTech\Atmosphere.cpp">
+      <Filter>PlanetTech</Filter>
+    </ClCompile>
+    <ClCompile Include="PlanetTech\Patch.cpp">
+      <Filter>PlanetTech</Filter>
+    </ClCompile>
+    <ClCompile Include="PlanetTech\Planet.cpp">
+      <Filter>PlanetTech</Filter>
+    </ClCompile>
+    <ClCompile Include="PlanetTech\Triangulator.cpp">
+      <Filter>PlanetTech</Filter>
+    </ClCompile>
+    <ClCompile Include="PlanetTech\Types\Earth.cpp">
+      <Filter>PlanetTech\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="PlanetTech\Types\Moon.cpp">
+      <Filter>PlanetTech\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="Prefabs\OrbitCamera.cpp">
+      <Filter>Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticDependancies\glad\glad.c">
+      <Filter>StaticDependancies\glad</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Content\ShaderLoader.hpp">
-      <Filter>Framework\Content</Filter>
-    </ClInclude>
-    <ClInclude Include="Content\TextureLoader.hpp">
-      <Filter>Framework\Content</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphics\FrameBuffer.hpp">
-      <Filter>Framework\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\Settings.hpp">
-      <Filter>Framework\Base</Filter>
-    </ClInclude>
     <ClInclude Include="Base\Context.hpp">
-      <Filter>Framework\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\Time.hpp">
-      <Filter>Framework\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphics\Material.hpp">
-      <Filter>Framework\Graphics</Filter>
+      <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="Base\AbstractFramework.hpp">
-      <Filter>Framework\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneGraph\Entity.hpp">
-      <Filter>Framework\SceneGraph</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneGraph\AbstractScene.hpp">
-      <Filter>Framework\SceneGraph</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneGraph\SceneManager.hpp">
-      <Filter>Framework\SceneGraph</Filter>
+      <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="Base\InputManager.hpp">
-      <Filter>Framework\Base</Filter>
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Settings.hpp">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Time.hpp">
+      <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="Components\AbstractComponent.hpp">
-      <Filter>Framework\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Components\TransformComponent.hpp">
-      <Filter>Framework\Components</Filter>
+      <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="Components\CameraComponent.hpp">
-      <Filter>Framework\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Prefabs\FixedCamera.hpp">
-      <Filter>Framework\Prefabs</Filter>
-    </ClInclude>
-    <ClInclude Include="Prefabs\FreeCamera.hpp">
-      <Filter>Framework\Prefabs</Filter>
-    </ClInclude>
-    <ClInclude Include="Content\ContentLoader.hpp">
-      <Filter>Framework\Content</Filter>
-    </ClInclude>
-    <ClInclude Include="Content\ContentManager.hpp">
-      <Filter>Framework\Content</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphics\TextureData.hpp">
-      <Filter>Framework\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphics\ShaderData.hpp">
-      <Filter>Framework\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphics\MeshFilter.hpp">
-      <Filter>Framework\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Content\MeshFilterLoader.hpp">
-      <Filter>Framework\Content</Filter>
-    </ClInclude>
-    <ClInclude Include="Components\ModelComponent.hpp">
-      <Filter>Framework\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.hpp" />
-    <ClInclude Include="Helper\Logger.hpp">
-      <Filter>Framework\Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="Framebuffers\Gbuffer.hpp">
-      <Filter>Framework\FrameBuffers</Filter>
+      <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="Components\LightComponent.hpp">
-      <Filter>Framework\Components</Filter>
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\ModelComponent.hpp">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\TransformComponent.hpp">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\ContentLoader.hpp">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\ContentManager.hpp">
+      <Filter>Content</Filter>
     </ClInclude>
     <ClInclude Include="Content\CubeMapLoader.hpp">
-      <Filter>Framework\Content</Filter>
+      <Filter>Content</Filter>
     </ClInclude>
-    <ClInclude Include="Prefabs\Skybox.hpp">
-      <Filter>Framework\Prefabs</Filter>
+    <ClInclude Include="Content\MeshFilterLoader.hpp">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\ShaderLoader.hpp">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\TextureLoader.hpp">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\Logger.hpp">
+      <Filter>Helper</Filter>
     </ClInclude>
     <ClInclude Include="Helper\MathHelper.hpp">
-      <Filter>Framework\Helper</Filter>
+      <Filter>Helper</Filter>
     </ClInclude>
-    <ClInclude Include="Prefabs\OrbitCamera.hpp" />
-    <ClInclude Include="Content\HdrLoader.hpp" />
-    <ClInclude Include="GraphicsHelper\LightVolume.hpp" />
-    <ClInclude Include="Framebuffers\PostProcessingRenderer.hpp" />
-    <ClInclude Include="GraphicsHelper\ShadowRenderer.hpp" />
-    <ClInclude Include="Content\FontLoader.hpp" />
-    <ClInclude Include="Helper\PerformanceInfo.hpp" />
-    <ClInclude Include="Materials\GbufferMaterial.hpp" />
-    <ClInclude Include="Materials\LightMaterial.hpp" />
-    <ClInclude Include="Materials\NullMaterial.hpp" />
-    <ClInclude Include="Materials\SkyboxMaterial.hpp" />
-    <ClInclude Include="PlanetTech\Atmosphere.hpp" />
-    <ClInclude Include="GraphicsHelper\PrimitiveRenderer.hpp" />
-    <ClInclude Include="GraphicsHelper\RenderPipeline.hpp" />
-    <ClInclude Include="GraphicsHelper\RenderState.hpp" />
-    <ClInclude Include="StaticDependancies\glad\glad.h" />
-    <ClInclude Include="Components\stdafx.hpp" />
-    <ClInclude Include="Content\stdafx.hpp" />
-    <ClInclude Include="Framebuffers\stdafx.hpp" />
-    <ClInclude Include="Graphics\stdafx.hpp" />
-    <ClInclude Include="Graphics\Frustum.hpp" />
-    <ClInclude Include="Graphics\SpriteFont.hpp" />
-    <ClInclude Include="GraphicsHelper\stdafx.hpp" />
-    <ClInclude Include="GraphicsHelper\TextRenderer.hpp" />
-    <ClInclude Include="Helper\AtomicTypes.hpp" />
-    <ClInclude Include="Helper\BinaryReader.hpp" />
     <ClInclude Include="Helper\Singleton.hpp">
-      <Filter>Framework\Helper</Filter>
+      <Filter>Helper</Filter>
     </ClInclude>
-    <ClInclude Include="Helper\stdafx.hpp" />
-    <ClInclude Include="Materials\stdafx.hpp" />
-    <ClInclude Include="Math\Math.hpp" />
-    <ClInclude Include="Math\Matrix.hpp" />
-    <ClInclude Include="Math\Quaternion.hpp" />
-    <ClInclude Include="Math\Vector.hpp" />
-    <ClInclude Include="Math\stdafx.hpp" />
-    <ClInclude Include="PlanetTech\Types\Earth.hpp" />
-    <ClInclude Include="PlanetTech\Types\Moon.hpp" />
-    <ClInclude Include="PlanetTech\Planet.hpp" />
-    <ClInclude Include="PlanetTech\Patch.hpp" />
-    <ClInclude Include="PlanetTech\stdafx.hpp" />
-    <ClInclude Include="PlanetTech\Triangulator.hpp" />
-    <ClInclude Include="Math\Transform.h" />
-    <ClInclude Include="Graphics\Light.hpp" />
+    <ClInclude Include="Graphics\FrameBuffer.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Material.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\MeshFilter.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\ShaderData.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\TextureData.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs\FixedCamera.hpp">
+      <Filter>Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs\FreeCamera.hpp">
+      <Filter>Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs\Skybox.hpp">
+      <Filter>Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraph\AbstractScene.hpp">
+      <Filter>SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraph\Entity.hpp">
+      <Filter>SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraph\SceneManager.hpp">
+      <Filter>SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Framebuffers\Gbuffer.hpp">
+      <Filter>Framebuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\stdafx.hpp">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\FontLoader.hpp">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\HdrLoader.hpp">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\stdafx.hpp">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Framebuffers\PostProcessingRenderer.hpp">
+      <Filter>Framebuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framebuffers\stdafx.hpp">
+      <Filter>Framebuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsHelper\LightVolume.hpp">
+      <Filter>GraphicsHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsHelper\PrimitiveRenderer.hpp">
+      <Filter>GraphicsHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsHelper\RenderPipeline.hpp">
+      <Filter>GraphicsHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsHelper\RenderState.hpp">
+      <Filter>GraphicsHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsHelper\ShadowRenderer.hpp">
+      <Filter>GraphicsHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsHelper\stdafx.hpp">
+      <Filter>GraphicsHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsHelper\TextRenderer.hpp">
+      <Filter>GraphicsHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Frustum.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Light.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\SpriteFont.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\stdafx.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\AtomicTypes.hpp">
+      <Filter>Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\BinaryReader.hpp">
+      <Filter>Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\PerformanceInfo.hpp">
+      <Filter>Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\stdafx.hpp">
+      <Filter>Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials\GbufferMaterial.hpp">
+      <Filter>Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials\LightMaterial.hpp">
+      <Filter>Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials\NullMaterial.hpp">
+      <Filter>Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials\SkyboxMaterial.hpp">
+      <Filter>Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials\stdafx.hpp">
+      <Filter>Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Math.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Matrix.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Quaternion.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\stdafx.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Transform.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Vector.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanetTech\Atmosphere.hpp">
+      <Filter>PlanetTech</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanetTech\Patch.hpp">
+      <Filter>PlanetTech</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanetTech\Planet.hpp">
+      <Filter>PlanetTech</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanetTech\stdafx.hpp">
+      <Filter>PlanetTech</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanetTech\Triangulator.hpp">
+      <Filter>PlanetTech</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanetTech\Types\Earth.hpp">
+      <Filter>PlanetTech\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanetTech\Types\Moon.hpp">
+      <Filter>PlanetTech\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs\OrbitCamera.hpp">
+      <Filter>Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticDependancies\glad\glad.h">
+      <Filter>StaticDependancies\glad</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
