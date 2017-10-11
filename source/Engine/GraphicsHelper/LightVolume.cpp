@@ -4,7 +4,7 @@
 #include "../Materials/LightMaterial.hpp"
 #include "../Graphics/MeshFilter.hpp"
 #include <gtx/transform.hpp>
-#include <gtx\quaternion.hpp>
+#include <gtx/quaternion.hpp>
 #include <gtx/matrix_decompose.hpp>
 #include <gtx/euler_angles.hpp>
 #include "../Materials/NullMaterial.hpp"

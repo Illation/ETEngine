@@ -3,10 +3,10 @@
 
 #include "TransformComponent.hpp"
 
-#include "..\Content\ContentManager.hpp"
+#include "../Content/ContentManager.hpp"
 
-#include "..\Graphics\MeshFilter.hpp"
-#include "..\Graphics\Material.hpp"
+#include "../Graphics/MeshFilter.hpp"
+#include "../Graphics/Material.hpp"
 
 #include "../SceneGraph/Entity.hpp"
 
@@ -14,8 +14,8 @@
 #include "../GraphicsHelper/ShadowRenderer.hpp"
 #include "../Materials/NullMaterial.hpp"
 #include "../Graphics/Frustum.hpp"
-#include "..\GraphicsHelper\RenderPipeline.hpp"
-#include "..\GraphicsHelper\RenderState.hpp"
+#include "../GraphicsHelper/RenderPipeline.hpp"
+#include "../GraphicsHelper/RenderState.hpp"
 
 ModelComponent::ModelComponent(std::string assetFile):
 	m_AssetFile(assetFile)
