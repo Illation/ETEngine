@@ -19,6 +19,7 @@
 #include <random>
 #include "../../Engine/PlanetTech/Types/Moon.h"
 #include "../../Engine/PlanetTech/Types/Earth.h"
+#include "../../Engine/Graphics/Light.hpp"
 
 PlanetTestScene::PlanetTestScene() : AbstractScene("PlanetTestScene")
 {

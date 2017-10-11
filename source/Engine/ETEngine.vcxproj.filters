@@ -157,6 +157,7 @@
     <ClCompile Include="GraphicsHelper\RenderPipeline.cpp" />
     <ClCompile Include="GraphicsHelper\RenderState.cpp" />
     <ClCompile Include="StaticDependancies\glad\glad.c" />
+    <ClCompile Include="Graphics\Light.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Content\ShaderLoader.hpp">
@@ -284,5 +285,6 @@
     <ClInclude Include="Math\Quaternion.h" />
     <ClInclude Include="StaticDependancies\glad\glad.h" />
     <ClInclude Include="Math\Transform.h" />
+    <ClInclude Include="Graphics\Light.hpp" />
   </ItemGroup>
 </Project>

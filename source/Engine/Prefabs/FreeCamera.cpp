@@ -86,6 +86,7 @@ void FreeCamera::Update()
 		glm::quat rot = glm::quat(0, 0, 0, 1);
 		rot = glm::rotate(rot, m_TotalYaw, glm::vec3(0, 1, 0));
 		rot = glm::rotate(rot, m_TotalPitch, glm::normalize(glm::vec3(right.x, 0, right.z)));
+		//rot = glm::rotate(rot, m_TotalPitch, glm::normalize(glm::vec3(right.x, right.y, 0)));
 		//rot = glm::rotate(rot, 3.1415f, forward);
 		TRANSFORM->SetRotation(rot);
 	}
