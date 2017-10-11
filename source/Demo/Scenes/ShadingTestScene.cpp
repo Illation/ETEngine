@@ -20,6 +20,7 @@
 #include "../Materials/TexPBRMaterial.hpp"
 #include "../Materials/EmissiveMaterial.hpp"
 #include "../Materials/ParamPBRMaterial.hpp"
+#include "../../Engine/Graphics/Light.hpp"
 
 ShadingTestScene::ShadingTestScene() : AbstractScene("SkyboxTestScene")
 {

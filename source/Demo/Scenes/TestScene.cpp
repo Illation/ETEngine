@@ -18,6 +18,7 @@
 
 #include "../../Engine/GraphicsHelper/TextRenderer.h"
 #include "../../Engine/Graphics/SpriteFont.h"
+#include "../../Engine/Graphics/Light.hpp"
 
 TestScene::TestScene() : AbstractScene("TestScene")
 {
