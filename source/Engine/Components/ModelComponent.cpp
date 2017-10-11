@@ -13,7 +13,7 @@
 #include <iostream>
 #include "../GraphicsHelper/ShadowRenderer.hpp"
 #include "../Materials/NullMaterial.hpp"
-#include "../Graphics/Frustum.h"
+#include "../Graphics/Frustum.hpp"
 #include "..\GraphicsHelper\RenderPipeline.hpp"
 #include "..\GraphicsHelper\RenderState.hpp"
 

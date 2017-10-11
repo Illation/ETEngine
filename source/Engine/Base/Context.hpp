@@ -1,5 +1,5 @@
 #pragma once
-#include "../Helper/Singleton.h"
+#include "../Helper/Singleton.hpp"
 #include "../Base/Time.hpp"
 #include "../Components/CameraComponent.hpp"
 #include "../SceneGraph/AbstractScene.hpp"

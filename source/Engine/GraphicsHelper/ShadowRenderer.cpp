@@ -8,7 +8,7 @@
 #include "../Materials/NullMaterial.hpp"
 #include "../Graphics/ShaderData.hpp"
 #include "../Graphics/TextureData.hpp"
-#include "../Graphics/Frustum.h"
+#include "../Graphics/Frustum.hpp"
 #include "RenderPipeline.hpp"
 #include "RenderState.hpp"
 

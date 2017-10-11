@@ -5,7 +5,7 @@
 #include "LightVolume.hpp"
 #include "ShadowRenderer.hpp"
 #include "RenderState.hpp"
-#include "TextRenderer.h"
+#include "TextRenderer.hpp"
 #include "../Helper/PerformanceInfo.hpp"
 #include "PrimitiveRenderer.hpp"
 #include "../Framebuffers/PostProcessingRenderer.hpp"

@@ -9,8 +9,8 @@
 #include <gtx/euler_angles.hpp>
 
 #include "../../Engine/SceneGraph/Entity.hpp"
-#include "../../Engine/Graphics/SpriteFont.h"
-#include "../../Engine/GraphicsHelper/TextRenderer.h"
+#include "../../Engine/Graphics/SpriteFont.hpp"
+#include "../../Engine/GraphicsHelper/TextRenderer.hpp"
 #include "../../Engine/Graphics\FrameBuffer.hpp"
 #include "../../Engine/Framebuffers\Gbuffer.hpp"
 #include "../../Engine/Components/ModelComponent.hpp"

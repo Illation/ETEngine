@@ -1,5 +1,5 @@
 #include "stdafx.hpp"
-#include "Planet.h"
+#include "Planet.hpp"
 
 #include <limits>
 
@@ -8,9 +8,9 @@
 #include "../Components/CameraComponent.hpp"
 #include "../Graphics/TextureData.hpp"
 
-#include "../Graphics/Frustum.h"
-#include "Triangulator.h"
-#include "Patch.h"
+#include "../Graphics/Frustum.hpp"
+#include "Triangulator.hpp"
+#include "Patch.hpp"
 #include "Atmosphere.hpp"
 #include "../Content/TextureLoader.hpp"
 #include "../GraphicsHelper/RenderPipeline.hpp"

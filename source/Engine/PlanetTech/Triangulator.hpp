@@ -1,5 +1,5 @@
 #pragma once
-#include "Patch.h"
+#include "Patch.hpp"
 
 class Frustum;
 class Planet;
