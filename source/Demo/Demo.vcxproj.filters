@@ -1,81 +1,63 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Materials">
+      <UniqueIdentifier>{afb5bb8f-eddd-4cab-9e71-e17f26032c42}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Scenes">
+      <UniqueIdentifier>{2e0140f4-7f29-4766-aa3a-bef282933261}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MainFramework.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Scenes\ShadingTestScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Scenes\SkyboxTestScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Scenes\TestScene.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Materials\EmissiveMaterial.cpp">
+      <Filter>Materials</Filter>
     </ClCompile>
     <ClCompile Include="Materials\ParamPBRMaterial.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Materials</Filter>
     </ClCompile>
     <ClCompile Include="Materials\TexPBRMaterial.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Materials\EmissiveMaterial.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Materials</Filter>
     </ClCompile>
     <ClCompile Include="Scenes\PlanetTestScene.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Scenes\ShadingTestScene.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Scenes\SkyboxTestScene.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Scenes\TestScene.cpp">
+      <Filter>Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MainFramework.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Scenes\TestScene.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Scenes\ShadingTestScene.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Scenes\SkyboxTestScene.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Materials\EmissiveMaterial.hpp">
+      <Filter>Materials</Filter>
     </ClInclude>
     <ClInclude Include="Materials\ParamPBRMaterial.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Materials\TexPBRMaterial.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Materials\EmissiveMaterial.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Scenes\PlanetTestScene.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Materials</Filter>
     </ClInclude>
     <ClInclude Include="Materials\stdafx.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials\TexPBRMaterial.hpp">
+      <Filter>Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes\PlanetTestScene.hpp">
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes\ShadingTestScene.hpp">
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes\SkyboxTestScene.hpp">
+      <Filter>Scenes</Filter>
     </ClInclude>
     <ClInclude Include="Scenes\stdafx.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes\TestScene.hpp">
+      <Filter>Scenes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
