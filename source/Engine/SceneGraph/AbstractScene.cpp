@@ -3,14 +3,14 @@
 
 #include "../Components/CameraComponent.hpp"
 #include "../Components/LightComponent.hpp"
-#include "../Prefabs\FreeCamera.hpp"
+#include "../Prefabs/FreeCamera.hpp"
 #include "../Base/Time.hpp"
 #include "Entity.hpp"
-#include "../Framebuffers\Gbuffer.hpp"
+#include "../Framebuffers/Gbuffer.hpp"
 #include "../Prefabs/Skybox.hpp"
 #include "../Prefabs/FreeCamera.hpp"
 #include "../Framebuffers/PostProcessingRenderer.hpp"
-#include "../GraphicsHelper/TextRenderer.h"
+#include "../GraphicsHelper/TextRenderer.hpp"
 #include "../GraphicsHelper/RenderPipeline.hpp"
 
 #define CONTEXT Context::GetInstance()

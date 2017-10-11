@@ -1,5 +1,7 @@
 #pragma once
-#include "../Planet.h"
+
+#include "../Planet.hpp"
+
 class Moon:public Planet
 {
 public:

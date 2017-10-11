@@ -1,7 +1,7 @@
 #include "stdafx.hpp"
 #include "FontLoader.hpp"
 
-#include "../Helper/BinaryReader.h"
+#include "../Helper/BinaryReader.hpp"
 
 FontLoader::FontLoader()
 {

@@ -1,2 +1,2 @@
 #pragma once
-#include "../stdafx.h"
+#include "../stdafx.hpp"

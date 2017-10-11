@@ -1,7 +1,7 @@
 #include "stdafx.hpp"
-#include "TextRenderer.h"
+#include "TextRenderer.hpp"
 
-#include "../Graphics/SpriteFont.h"
+#include "../Graphics/SpriteFont.hpp"
 #include "../Graphics/ShaderData.hpp"
 #include "../Graphics/TextureData.hpp"
 

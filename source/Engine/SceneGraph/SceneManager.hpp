@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Helper/Singleton.h"
+#include "../Helper/Singleton.hpp"
 #include <string>
 #include <vector>
 

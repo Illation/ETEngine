@@ -1,7 +1,7 @@
 #pragma once
 #include "../staticDependancies/glad/glad.h"
 #include "ContentLoader.hpp"
-#include "..\Graphics\SpriteFont.h"
+#include "../Graphics/SpriteFont.hpp"
 #include <string>
 
 class FontLoader : public ContentLoader<SpriteFont>

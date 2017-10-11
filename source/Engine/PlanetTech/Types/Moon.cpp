@@ -1,5 +1,5 @@
 #include "stdafx.hpp"
-#include "Moon.h"
+#include "Moon.hpp"
 
 #include "../../Graphics/TextureData.hpp"
 

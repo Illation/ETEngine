@@ -1,5 +1,5 @@
 #include "stdafx.hpp"
-#include "Frustum.h"
+#include "Frustum.hpp"
 
 #include "../Components/TransformComponent.hpp"
 #include "../Components/CameraComponent.hpp"

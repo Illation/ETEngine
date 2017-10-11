@@ -66,13 +66,13 @@ inline void Clamp(T& value, T hi, T lo)
 #pragma endregion Templates
 
 #pragma region
-#include "Helper/AtomicTypes.h"
+#include "Helper/AtomicTypes.hpp"
 #include "Components/TransformComponent.hpp"
 #include "Content/ContentManager.hpp"
 
-#include "Base\Context.hpp"
-#include "Base\Settings.hpp"
-#include "Base\InputManager.hpp"
+#include "Base/Context.hpp"
+#include "Base/Settings.hpp"
+#include "Base/InputManager.hpp"
 #include "Helper/Logger.hpp"
 #include "Helper/MathHelper.hpp"
 #include "Helper/PerformanceInfo.hpp"
