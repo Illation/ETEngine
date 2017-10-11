@@ -17,6 +17,7 @@
 #include "../../Engine/Graphics/SpriteFont.hpp"
 
 #include <random>
+#include "../../Engine/Graphics/Light.hpp"
 
 SkyboxTestScene::SkyboxTestScene() : AbstractScene("SkyboxTestScene")
 {

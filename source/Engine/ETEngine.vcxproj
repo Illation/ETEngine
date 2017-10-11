@@ -195,6 +195,7 @@
     <ClCompile Include="GraphicsHelper\TextRenderer.cpp" />
     <ClCompile Include="Graphics\FrameBuffer.cpp" />
     <ClCompile Include="Graphics\Frustum.cpp" />
+    <ClCompile Include="Graphics\Light.cpp" />
     <ClCompile Include="Graphics\Material.cpp" />
     <ClCompile Include="Graphics\MeshFilter.cpp" />
     <ClCompile Include="Graphics\ShaderData.cpp" />
@@ -266,7 +267,8 @@
     <ClInclude Include="GraphicsHelper\stdafx.hpp" />
     <ClInclude Include="GraphicsHelper\TextRenderer.hpp" />
     <ClInclude Include="Graphics\FrameBuffer.hpp" />
-    <ClInclude Include="Graphics\Frustum.hpp" />
+    <ClInclude Include="Graphics\Frustum.h" />
+    <ClInclude Include="Graphics\Light.hpp" />
     <ClInclude Include="Graphics\Material.hpp" />
     <ClInclude Include="Graphics\MeshFilter.hpp" />
     <ClInclude Include="Graphics\ShaderData.hpp" />

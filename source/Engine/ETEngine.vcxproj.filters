@@ -157,6 +157,7 @@
     <ClCompile Include="GraphicsHelper\RenderPipeline.cpp" />
     <ClCompile Include="GraphicsHelper\RenderState.cpp" />
     <ClCompile Include="StaticDependancies\glad\glad.c" />
+    <ClCompile Include="Graphics\Light.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Content\ShaderLoader.hpp">
@@ -284,7 +285,6 @@
     <ClInclude Include="Math\Math.hpp" />
     <ClInclude Include="Math\Matrix.hpp" />
     <ClInclude Include="Math\Quaternion.hpp" />
-    <ClInclude Include="Math\Transform.hpp" />
     <ClInclude Include="Math\Vector.hpp" />
     <ClInclude Include="Math\stdafx.hpp" />
     <ClInclude Include="PlanetTech\Types\Earth.hpp" />
@@ -293,5 +293,7 @@
     <ClInclude Include="PlanetTech\Patch.hpp" />
     <ClInclude Include="PlanetTech\stdafx.hpp" />
     <ClInclude Include="PlanetTech\Triangulator.hpp" />
+    <ClInclude Include="Math\Transform.h" />
+    <ClInclude Include="Graphics\Light.hpp" />
   </ItemGroup>
 </Project>
