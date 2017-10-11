@@ -1,5 +1,5 @@
 #include "stdafx.hpp"
-#include "Earth.h"
+#include "Earth.hpp"
 
 #include "../../Graphics/TextureData.hpp"
 

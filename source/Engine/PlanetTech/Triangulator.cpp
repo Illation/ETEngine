@@ -1,8 +1,8 @@
 #include "stdafx.hpp"
-#include "Triangulator.h"
+#include "Triangulator.hpp"
 
-#include "../Graphics/Frustum.h"
-#include "Planet.h"
+#include "../Graphics/Frustum.hpp"
+#include "Planet.hpp"
 
 #include "../Components/TransformComponent.hpp"
 #include "../Components/CameraComponent.hpp"

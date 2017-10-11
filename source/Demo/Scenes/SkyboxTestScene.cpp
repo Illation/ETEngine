@@ -13,8 +13,8 @@
 #include "../../Engine/Components/LightComponent.hpp"
 #include "../../Engine/Prefabs/Skybox.hpp"
 #include "../../Engine/Prefabs/OrbitCamera.hpp"
-#include "../../Engine/GraphicsHelper/TextRenderer.h"
-#include "../../Engine/Graphics/SpriteFont.h"
+#include "../../Engine/GraphicsHelper/TextRenderer.hpp"
+#include "../../Engine/Graphics/SpriteFont.hpp"
 
 #include <random>
 

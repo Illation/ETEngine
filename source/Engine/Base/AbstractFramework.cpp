@@ -6,7 +6,7 @@
 #include "../SceneGraph/SceneManager.hpp"
 #include "../GraphicsHelper/LightVolume.hpp"
 #include "../GraphicsHelper/ShadowRenderer.hpp"
-#include "../GraphicsHelper/TextRenderer.h"
+#include "../GraphicsHelper/TextRenderer.hpp"
 #include "../Helper/PerformanceInfo.hpp"
 #include "../GraphicsHelper/PrimitiveRenderer.hpp"
 #include "../GraphicsHelper/RenderPipeline.hpp"

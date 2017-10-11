@@ -6,7 +6,7 @@
 	#define GLM_LEFT_HANDED
 #endif
 #include <glm.hpp>
-#include "../Helper/Singleton.h"
+#include "../Helper/Singleton.hpp"
 //----------------------------
 //Event Manager class definintion
 //----------------------------

@@ -1,7 +1,7 @@
 #include "stdafx.hpp"
 #include "Atmosphere.hpp"
 
-#include "Planet.h"
+#include "Planet.hpp"
 #include "../Framebuffers/Gbuffer.hpp"
 
 #include "../Graphics/ShaderData.hpp"
@@ -15,7 +15,7 @@
 #include <gtx\quaternion.hpp>
 #include <gtx/matrix_decompose.hpp>
 #include <gtx/euler_angles.hpp>
-#include "../Graphics/Frustum.h"
+#include "../Graphics/Frustum.hpp"
 
 Atmosphere::Atmosphere() 
 {

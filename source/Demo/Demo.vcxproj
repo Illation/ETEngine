@@ -206,10 +206,12 @@ xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
     <ClInclude Include="MainFramework.hpp" />
     <ClInclude Include="Materials\EmissiveMaterial.hpp" />
     <ClInclude Include="Materials\ParamPBRMaterial.hpp" />
+    <ClInclude Include="Materials\stdafx.hpp" />
     <ClInclude Include="Materials\TexPBRMaterial.hpp" />
     <ClInclude Include="Scenes\PlanetTestScene.hpp" />
     <ClInclude Include="Scenes\ShadingTestScene.hpp" />
     <ClInclude Include="Scenes\SkyboxTestScene.hpp" />
+    <ClInclude Include="Scenes\stdafx.hpp" />
     <ClInclude Include="Scenes\TestScene.hpp" />
     <ClInclude Include="stdafx.hpp" />
   </ItemGroup>

@@ -1,6 +1,6 @@
 #include <catch.hpp>
 
-#include "../../../Engine/Math/Vector.h"
+#include "../../../Engine/Math/Vector.hpp"
 
 TEST_CASE("Generic vector functionality", "[vector]")
 {

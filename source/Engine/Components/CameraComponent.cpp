@@ -4,7 +4,7 @@
 #include "../Base/Context.hpp"
 #include "TransformComponent.hpp"
 
-#include "../Graphics/Frustum.h"
+#include "../Graphics/Frustum.hpp"
 
 #include <gtc/matrix_transform.hpp>
 

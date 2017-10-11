@@ -10,7 +10,7 @@
 #include "../Prefabs/Skybox.hpp"
 #include "../Prefabs/FreeCamera.hpp"
 #include "../Framebuffers/PostProcessingRenderer.hpp"
-#include "../GraphicsHelper/TextRenderer.h"
+#include "../GraphicsHelper/TextRenderer.hpp"
 #include "../GraphicsHelper/RenderPipeline.hpp"
 
 #define CONTEXT Context::GetInstance()

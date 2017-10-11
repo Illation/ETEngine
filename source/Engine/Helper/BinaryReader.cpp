@@ -1,7 +1,7 @@
 //Precompiled Header [ALWAYS ON TOP IN CPP]
 #include "stdafx.hpp"
 
-#include "BinaryReader.h"
+#include "BinaryReader.hpp"
 
 #include <string>       // std::string
 #include <iostream>     // std::cout

@@ -1,6 +1,6 @@
 #include <catch.hpp>
 
-#include "../../../Engine/Math/Matrix.h"
+#include "../../../Engine/Math/Matrix.hpp"
 
 TEST_CASE("Generic matrix functionality", "[matrix]")
 {

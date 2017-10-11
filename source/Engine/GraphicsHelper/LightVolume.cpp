@@ -11,7 +11,7 @@
 #include "../Framebuffers/Gbuffer.hpp"
 #include "../Graphics/ShaderData.hpp"
 #include "../Graphics/TextureData.hpp"
-#include "../Graphics/Frustum.h"
+#include "../Graphics/Frustum.hpp"
 #include "ShadowRenderer.hpp"
 #include "PrimitiveRenderer.hpp"
 #include "RenderPipeline.hpp"

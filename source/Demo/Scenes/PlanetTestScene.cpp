@@ -13,12 +13,12 @@
 #include "../../Engine/Components/LightComponent.hpp"
 #include "../../Engine/Prefabs/Skybox.hpp"
 #include "../../Engine/Prefabs/OrbitCamera.hpp"
-#include "../../Engine/GraphicsHelper/TextRenderer.h"
-#include "../../Engine/Graphics/SpriteFont.h"
+#include "../../Engine/GraphicsHelper/TextRenderer.hpp"
+#include "../../Engine/Graphics/SpriteFont.hpp"
 
 #include <random>
-#include "../../Engine/PlanetTech/Types/Moon.h"
-#include "../../Engine/PlanetTech/Types/Earth.h"
+#include "../../Engine/PlanetTech/Types/Moon.hpp"
+#include "../../Engine/PlanetTech/Types/Earth.hpp"
 
 PlanetTestScene::PlanetTestScene() : AbstractScene("PlanetTestScene")
 {
