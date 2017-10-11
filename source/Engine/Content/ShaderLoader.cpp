@@ -30,6 +30,7 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 		FRAG
 	} state = ParseState::INIT;
 	bool useGeo = false;
+	bool useFrag = false;
 
 	string extractedLine;
 	ifstream shaderFile;
@@ -72,6 +73,7 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 			if (extractedLine.find("<FRAGMENT>") != string::npos)
 			{
 				state = ParseState::FRAG;
+				useFrag = true;
 			}
 			break;
 		case VERT:
@@ -98,6 +100,12 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 				state = ParseState::INIT;
 				break;
 			}
+			else if (extractedLine.find("#disable") != string::npos)
+			{
+				useFrag = false;
+				state = ParseState::INIT;
+				break;
+			}
 			fragSource += extractedLine;
 			fragSource += "\n";
 			break;
@@ -107,22 +115,27 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 
 	//Compile
 	GLuint vertexShader = CompileShader(vertSource, GL_VERTEX_SHADER);
-	GLuint geoShader;
+	GLuint geoShader = 0;
 	if(useGeo)geoShader = CompileShader(geoSource, GL_GEOMETRY_SHADER);
-	GLuint fragmentShader = CompileShader(fragSource, GL_FRAGMENT_SHADER);
+	GLuint fragmentShader = 0;
+	if (useFrag) fragmentShader = CompileShader(fragSource, GL_FRAGMENT_SHADER);
 
 	//Combine Shaders
 	GLuint shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	if(useGeo)glAttachShader(shaderProgram, geoShader);
-	glAttachShader(shaderProgram, fragmentShader);
+	if (useFrag)glAttachShader(shaderProgram, fragmentShader);
 	glBindFragDataLocation(shaderProgram, 0, "outColor");
 	glLinkProgram(shaderProgram);
 
 	cout << "  . . . SUCCESS!" << endl;
-	if (useGeo)return new ShaderData(shaderProgram, vertexShader, geoShader, fragmentShader);
-	ShaderData* pShaderData =  new ShaderData(shaderProgram, vertexShader, fragmentShader);
+
+	ShaderData* pShaderData = nullptr;
+	if (useGeo) pShaderData = new ShaderData(shaderProgram, vertexShader, geoShader, fragmentShader);
+	else if (useFrag) pShaderData =  new ShaderData(shaderProgram, vertexShader, fragmentShader);
+	else pShaderData = new ShaderData(shaderProgram, vertexShader);
 	pShaderData->m_Name = assetFile;
+	
 	return pShaderData;
 }
 

@@ -10,8 +10,9 @@
 class ShaderData
 {
 public:
-	ShaderData(GLuint shaderProg, GLuint vertShader, GLuint fragShader);
 	ShaderData(GLuint shaderProg, GLuint vertShader, GLuint geoShader, GLuint fragShader);
+	ShaderData(GLuint shaderProg, GLuint vertShader, GLuint fragShader);
+	ShaderData(GLuint shaderProg, GLuint vertShader);
 	~ShaderData();
 
 	GLuint GetProgram() { return m_ShaderProgram; }
@@ -25,6 +26,7 @@ private:
 	GLuint m_FragmentShader;
 	GLuint m_ShaderProgram;
 	bool m_UseGS = false;
+	bool m_UseFS = false;
 
 	string m_Name;
 };
