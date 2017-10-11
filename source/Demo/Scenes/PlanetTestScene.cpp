@@ -17,8 +17,8 @@
 #include "../../Engine/Graphics/SpriteFont.hpp"
 
 #include <random>
-#include "../../Engine/PlanetTech/Types/Moon.h"
-#include "../../Engine/PlanetTech/Types/Earth.h"
+#include "../../Engine/PlanetTech/Types/Moon.hpp"
+#include "../../Engine/PlanetTech/Types/Earth.hpp"
 #include "../../Engine/Graphics/Light.hpp"
 
 PlanetTestScene::PlanetTestScene() : AbstractScene("PlanetTestScene")
