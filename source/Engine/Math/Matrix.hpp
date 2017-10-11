@@ -1,7 +1,7 @@
 #pragma once
 
-//#include "../Helper/AtomicTypes.h"
-#include "Vector.h"
+//#include "../Helper/AtomicTypes.hpp"
+#include "Vector.hpp"
 
 #include <initializer_list>
 #include <array>

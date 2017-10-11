@@ -4,14 +4,14 @@
 #include "../Materials/LightMaterial.hpp"
 #include "../Graphics/MeshFilter.hpp"
 #include <gtx/transform.hpp>
-#include <gtx\quaternion.hpp>
+#include <gtx/quaternion.hpp>
 #include <gtx/matrix_decompose.hpp>
 #include <gtx/euler_angles.hpp>
 #include "../Materials/NullMaterial.hpp"
 #include "../Framebuffers/Gbuffer.hpp"
 #include "../Graphics/ShaderData.hpp"
 #include "../Graphics/TextureData.hpp"
-#include "../Graphics/Frustum.h"
+#include "../Graphics/Frustum.hpp"
 #include "ShadowRenderer.hpp"
 #include "PrimitiveRenderer.hpp"
 #include "RenderPipeline.hpp"

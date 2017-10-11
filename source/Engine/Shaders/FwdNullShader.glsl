@@ -14,5 +14,5 @@
 	}
 </VERTEX>
 <FRAGMENT>
-	#version 330 core	
+	#disable
 </FRAGMENT>

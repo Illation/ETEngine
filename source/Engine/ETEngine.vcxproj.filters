@@ -172,9 +172,6 @@
     <ClInclude Include="Base\Settings.hpp">
       <Filter>Framework\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Helper\Singleton.h">
-      <Filter>Framework\Helper</Filter>
-    </ClInclude>
     <ClInclude Include="Base\Context.hpp">
       <Filter>Framework\Base</Filter>
     </ClInclude>
@@ -259,31 +256,43 @@
     <ClInclude Include="GraphicsHelper\LightVolume.hpp" />
     <ClInclude Include="Framebuffers\PostProcessingRenderer.hpp" />
     <ClInclude Include="GraphicsHelper\ShadowRenderer.hpp" />
-    <ClInclude Include="Graphics\SpriteFont.h" />
-    <ClInclude Include="Helper\BinaryReader.h" />
-    <ClInclude Include="GraphicsHelper\TextRenderer.h" />
     <ClInclude Include="Content\FontLoader.hpp" />
-    <ClInclude Include="Graphics\Frustum.h" />
     <ClInclude Include="Helper\PerformanceInfo.hpp" />
     <ClInclude Include="Materials\GbufferMaterial.hpp" />
     <ClInclude Include="Materials\LightMaterial.hpp" />
     <ClInclude Include="Materials\NullMaterial.hpp" />
     <ClInclude Include="Materials\SkyboxMaterial.hpp" />
-    <ClInclude Include="PlanetTech\Patch.h" />
-    <ClInclude Include="PlanetTech\Planet.h" />
-    <ClInclude Include="PlanetTech\Triangulator.h" />
-    <ClInclude Include="PlanetTech\Types\Moon.h" />
-    <ClInclude Include="PlanetTech\Types\Earth.h" />
     <ClInclude Include="PlanetTech\Atmosphere.hpp" />
     <ClInclude Include="GraphicsHelper\PrimitiveRenderer.hpp" />
     <ClInclude Include="GraphicsHelper\RenderPipeline.hpp" />
     <ClInclude Include="GraphicsHelper\RenderState.hpp" />
-    <ClInclude Include="Helper\AtomicTypes.h" />
-    <ClInclude Include="Math\Vector.h" />
-    <ClInclude Include="Math\Math.h" />
-    <ClInclude Include="Math\Matrix.h" />
-    <ClInclude Include="Math\Quaternion.h" />
     <ClInclude Include="StaticDependancies\glad\glad.h" />
+    <ClInclude Include="Components\stdafx.hpp" />
+    <ClInclude Include="Content\stdafx.hpp" />
+    <ClInclude Include="Framebuffers\stdafx.hpp" />
+    <ClInclude Include="Graphics\stdafx.hpp" />
+    <ClInclude Include="Graphics\Frustum.hpp" />
+    <ClInclude Include="Graphics\SpriteFont.hpp" />
+    <ClInclude Include="GraphicsHelper\stdafx.hpp" />
+    <ClInclude Include="GraphicsHelper\TextRenderer.hpp" />
+    <ClInclude Include="Helper\AtomicTypes.hpp" />
+    <ClInclude Include="Helper\BinaryReader.hpp" />
+    <ClInclude Include="Helper\Singleton.hpp">
+      <Filter>Framework\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\stdafx.hpp" />
+    <ClInclude Include="Materials\stdafx.hpp" />
+    <ClInclude Include="Math\Math.hpp" />
+    <ClInclude Include="Math\Matrix.hpp" />
+    <ClInclude Include="Math\Quaternion.hpp" />
+    <ClInclude Include="Math\Vector.hpp" />
+    <ClInclude Include="Math\stdafx.hpp" />
+    <ClInclude Include="PlanetTech\Types\Earth.hpp" />
+    <ClInclude Include="PlanetTech\Types\Moon.hpp" />
+    <ClInclude Include="PlanetTech\Planet.hpp" />
+    <ClInclude Include="PlanetTech\Patch.hpp" />
+    <ClInclude Include="PlanetTech\stdafx.hpp" />
+    <ClInclude Include="PlanetTech\Triangulator.hpp" />
     <ClInclude Include="Math\Transform.h" />
     <ClInclude Include="Graphics\Light.hpp" />
   </ItemGroup>

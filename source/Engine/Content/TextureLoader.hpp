@@ -1,7 +1,7 @@
 #pragma once
 #include "../staticDependancies/glad/glad.h"
 #include "ContentLoader.hpp"
-#include "..\Graphics\TextureData.hpp"
+#include "../Graphics/TextureData.hpp"
 #include <string>
 
 class TextureLoader : public ContentLoader<TextureData>
