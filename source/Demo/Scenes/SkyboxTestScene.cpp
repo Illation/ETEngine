@@ -7,8 +7,8 @@
 #include "../Materials/TexPBRMaterial.hpp"
 #include "../Materials/EmissiveMaterial.hpp"
 
-#include "../../Engine/Graphics\FrameBuffer.hpp"
-#include "../../Engine/Framebuffers\Gbuffer.hpp"
+#include "../../Engine/Graphics/FrameBuffer.hpp"
+#include "../../Engine/Framebuffers/Gbuffer.hpp"
 #include "../../Engine/Components/ModelComponent.hpp"
 #include "../../Engine/Components/LightComponent.hpp"
 #include "../../Engine/Prefabs/Skybox.hpp"
