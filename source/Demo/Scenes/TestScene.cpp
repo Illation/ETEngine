@@ -16,8 +16,9 @@
 #include "../../Engine/Components/ModelComponent.hpp"
 #include "../../Engine/Components/LightComponent.hpp"
 
-#include "../../Engine/GraphicsHelper/TextRenderer.hpp"
-#include "../../Engine/Graphics/SpriteFont.hpp"
+#include "../../Engine/GraphicsHelper/TextRenderer.h"
+#include "../../Engine/Graphics/SpriteFont.h"
+#include "../../Engine/Graphics/Light.hpp"
 
 TestScene::TestScene() : AbstractScene("TestScene")
 {
