@@ -138,7 +138,8 @@ TEST_CASE( "Specialized matrix functionality", "[matrix]" )
 	//	vec3 v3( in7, in8, 1.f );
 	//	mat3 initialMat( new vec3[3]{ v1, v2, v3 } );
 	//	mat3 inverseMat = inverse( initialMat );
-	//	REQUIRE( nearEqualsM( mat3(), initialMat * inverseMat) ); //Matrix * inverse = identity
+	//	mat3 initInvMult = initialMat * inverseMat;
+	//	REQUIRE( nearEqualsM( mat3(), initInvMult) ); //Matrix * inverse = identity
 	//	REQUIRE( nearEqualsM( initialMat, inverse( inverseMat) ) ); //inverse(inverse) = initial
 	//}
 	//SECTION( "mat4 inverse" )
