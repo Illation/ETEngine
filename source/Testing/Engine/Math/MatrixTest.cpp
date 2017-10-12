@@ -66,3 +66,90 @@ TEST_CASE("Generic matrix functionality", "[matrix]")
 		REQUIRE(nearEqualsV(mat[2], v3));
 	}
 }
+TEST_CASE( "Specialized matrix functionality", "[matrix]" )
+{
+	using namespace etm;
+
+	float in1 = 5.3f;
+	float in2 = 1.2f;
+	float in3 = 3.0f;
+	float in4 = 2.3f;
+	float in5 = 5.8f;
+	float in6 = 7.3f;
+	float in7 = 3.2f;
+	float in8 = 4.9f;
+	float in9 = 6.3f;
+
+	SECTION( "mat4 -> mat3" )
+	{
+		vec4 v1( in1, in2, in3, 32.f );
+		vec4 v2( in4, in5, in6, 23.f );
+		vec4 v3( in7, in8, in9, 21.f );
+		vec4 v4( in7, in2, in4, 54.f );
+		mat4 initialMat( new vec4[4]{ v1, v2, v3, v4 } );
+		mat3 mat = CreateFromMat4( initialMat );
+		REQUIRE( nearEqualsV( mat[0], v1.xyz ) );
+		REQUIRE( nearEqualsV( mat[1], v2.xyz ) );
+		REQUIRE( nearEqualsV( mat[2], v3.xyz ) );
+	}
+
+	SECTION( "mat3 -> mat4" )
+	{
+		vec3 v1( in1, in2, in3 );
+		vec3 v2( in4, in5, in6 );
+		vec3 v3( in7, in8, in9 );
+		mat3 initialMat( new vec3[3]{ v1, v2, v3 } );
+		mat4 mat = CreateFromMat3( initialMat );
+		REQUIRE( nearEqualsV( mat[0], vec4( v1, 0)));
+		REQUIRE( nearEqualsV( mat[1], vec4( v2, 0)));
+		REQUIRE( nearEqualsV( mat[2], vec4( v3, 0)));
+		REQUIRE( nearEqualsV( mat[3], vec4( 0, 0, 0, 1)));
+	}
+
+	SECTION( "lose translation" )
+	{
+		vec4 v1( in1, in2, in3, 32.f );
+		vec4 v2( in4, in5, in6, 23.f );
+		vec4 v3( in7, in8, in9, 21.f );
+		vec4 v4( in7, in2, in4, 54.f );
+		mat4 initialMat( new vec4[4]{ v1, v2, v3, v4 } );
+		mat4 mat = DiscardW( initialMat );
+		REQUIRE( nearEqualsV( mat[0], vec4( v1.xyz, 0 ) ) );
+		REQUIRE( nearEqualsV( mat[1], vec4( v2.xyz, 0 ) ) );
+		REQUIRE( nearEqualsV( mat[2], vec4( v3.xyz, 0 ) ) );
+		REQUIRE( nearEqualsV( mat[3], vec4( 0, 0, 0, 1 ) ) );
+
+		REQUIRE( nearEqualsM( mat, CreateFromMat3(CreateFromMat4(initialMat))));
+	}
+
+	SECTION( "mat2 inverse" )
+	{
+		vec2 v1( in1, 0.f );
+		vec2 v2( in4, 1.f );
+		mat2 initialMat( new vec2[2]{ v1, v2 } );
+		mat2 inverseMat = inverse( initialMat );
+		REQUIRE( nearEqualsM( mat2(), initialMat * inverseMat) ); //Matrix * inverse = identity
+		REQUIRE( nearEqualsM( initialMat, inverse( inverseMat) ) ); //inverse(inverse) = initial
+	}
+	//SECTION( "mat3 inverse" )
+	//{
+	//	vec3 v1( in1, in2, 0.f );
+	//	vec3 v2( in4, in5, 0.f );
+	//	vec3 v3( in7, in8, 1.f );
+	//	mat3 initialMat( new vec3[3]{ v1, v2, v3 } );
+	//	mat3 inverseMat = inverse( initialMat );
+	//	REQUIRE( nearEqualsM( mat3(), initialMat * inverseMat) ); //Matrix * inverse = identity
+	//	REQUIRE( nearEqualsM( initialMat, inverse( inverseMat) ) ); //inverse(inverse) = initial
+	//}
+	//SECTION( "mat4 inverse" )
+	//{
+	//	vec4 v1( in1, in2, in3, 0.f );
+	//	vec4 v2( in4, in5, in6, 0.f );
+	//	vec4 v3( in7, in8, in9, 0.f );
+	//	vec4 v4( in7, in2, in4, 1.f );
+	//	mat4 initialMat( new vec4[4]{ v1, v2, v3, v4 } );
+	//	mat4 inverseMat = inverse( initialMat );
+	//	REQUIRE( nearEqualsM( mat4(), initialMat * inverseMat) ); //Matrix * inverse = identity
+	//	REQUIRE( nearEqualsM( initialMat, inverse( inverseMat) ) ); //inverse(inverse) = initial
+	//}
+}
