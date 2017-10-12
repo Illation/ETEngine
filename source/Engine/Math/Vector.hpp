@@ -20,6 +20,8 @@ namespace etm
 	typedef std::uint32_t	uint32;
 	typedef std::uint64_t	uint64;
 
+	enum ctor { uninitialized };
+
 #define ETM_DEFAULT_EPSILON 0.00000001
 
 	//180 degrees
