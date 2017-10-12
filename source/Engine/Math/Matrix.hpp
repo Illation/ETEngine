@@ -200,6 +200,17 @@ namespace etm
 		}
 		return result;
 	}
+	//scalar - matrix multiplication
+	template <uint8 m, uint8 n, class T>
+	matrix<m, n, T> operator*( matrix<m, n, T>& lhs, const T rhs )
+	{
+		matrix<m, n, T> result;
+		for(uint8 rowIdx = 0; rowIdx < m; ++rowIdx)
+		{
+			result[rowIdx] = lhs[rowIdx] * rhs;
+		}
+		return result;
+	}
 
 	//operations
 	//**********
@@ -275,16 +286,16 @@ namespace etm
 	{
 		T detFrac = static_cast<T>(1) / etm::determinant(mat);
 
-		matrix<3, 3, T> result(
-			+ (mat[1][1] * mat[2][2] - mat[2][1] * mat[1][2]) * detFrac,
-			- (mat[1][0] * mat[2][2] - mat[2][0] * mat[1][2]) * detFrac,
-			+ (mat[1][0] * mat[2][1] - mat[2][0] * mat[1][1]) * detFrac,
-			- (mat[0][1] * mat[2][2] - mat[2][1] * mat[0][2]) * detFrac,
-			+ (mat[0][0] * mat[2][2] - mat[2][0] * mat[0][2]) * detFrac,
-			- (mat[0][0] * mat[2][1] - mat[2][0] * mat[0][1]) * detFrac,
-			+ (mat[0][1] * mat[1][2] - mat[1][1] * mat[0][2]) * detFrac,
-			- (mat[0][0] * mat[1][2] - mat[1][0] * mat[0][2]) * detFrac,
-			+ (mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1]) * detFrac);
+		matrix<3, 3, T> result( {
+			+(mat[1][1] * mat[2][2] - mat[2][1] * mat[1][2]) * detFrac,
+			-(mat[1][0] * mat[2][2] - mat[2][0] * mat[1][2]) * detFrac,
+			+(mat[1][0] * mat[2][1] - mat[2][0] * mat[1][1]) * detFrac,
+			-(mat[0][1] * mat[2][2] - mat[2][1] * mat[0][2]) * detFrac,
+			+(mat[0][0] * mat[2][2] - mat[2][0] * mat[0][2]) * detFrac,
+			-(mat[0][0] * mat[2][1] - mat[2][0] * mat[0][1]) * detFrac,
+			+(mat[0][1] * mat[1][2] - mat[1][1] * mat[0][2]) * detFrac,
+			-(mat[0][0] * mat[1][2] - mat[1][0] * mat[0][2]) * detFrac,
+			+(mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1]) * detFrac } );
 
 		return result;
 	}
@@ -334,7 +345,7 @@ namespace etm
 
 		vector<4, T> signA(+1, -1, +1, -1);
 		vector<4, T> signB(-1, +1, -1, +1);
-		matrix<4, 4, T> result( new vec4[4]{ inv0 * SignA, inv1 * signB, inv2 * signA, inv3 * signB } );
+		matrix<4, 4, T> result( new vector<4, T>[4]{ inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB } );
 
 		vector<4, T> row0(result[0][0], result[1][0], result[2][0], result[3][0]);
 
