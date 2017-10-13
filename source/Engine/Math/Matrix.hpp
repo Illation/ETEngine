@@ -182,9 +182,9 @@ namespace etm
 				T value = {};
 				for (uint8 j = 0; j < n; ++j)
 				{
-					value += lhs[j][row] * rhs[col][j];
+					value += lhs[row][j] * rhs[j][col];
 				}
-				result[col][row] = value;
+				result[row][col] = value;
 			}
 		}
 		return result;
@@ -267,7 +267,7 @@ namespace etm
 			mat[0][2] * detCof[2] + mat[0][3] * detCof[3];
 	}
 
-	//inverse
+	//inverse -- not 100% safe as we don't check the determinant if the determinant is zero all values will be +infinity
 	template <class T>
 	inline matrix<2, 2, T> inverse(const matrix<2, 2, T>& mat)
 	{
@@ -287,15 +287,15 @@ namespace etm
 		T detFrac = static_cast<T>(1) / etm::determinant(mat);
 
 		matrix<3, 3, T> result( {
-			+(mat[1][1] * mat[2][2] - mat[2][1] * mat[1][2]) * detFrac,
-			-(mat[1][0] * mat[2][2] - mat[2][0] * mat[1][2]) * detFrac,
-			+(mat[1][0] * mat[2][1] - mat[2][0] * mat[1][1]) * detFrac,
-			-(mat[0][1] * mat[2][2] - mat[2][1] * mat[0][2]) * detFrac,
-			+(mat[0][0] * mat[2][2] - mat[2][0] * mat[0][2]) * detFrac,
-			-(mat[0][0] * mat[2][1] - mat[2][0] * mat[0][1]) * detFrac,
-			+(mat[0][1] * mat[1][2] - mat[1][1] * mat[0][2]) * detFrac,
-			-(mat[0][0] * mat[1][2] - mat[1][0] * mat[0][2]) * detFrac,
-			+(mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1]) * detFrac } );
+			+(mat[1][1] * mat[2][2] - mat[1][2] * mat[2][1]) * detFrac,
+			-(mat[0][1] * mat[2][2] - mat[0][2] * mat[2][1]) * detFrac,
+			+(mat[0][1] * mat[1][2] - mat[0][2] * mat[1][1]) * detFrac,
+			-(mat[1][0] * mat[2][2] - mat[1][2] * mat[2][0]) * detFrac,
+			+(mat[0][0] * mat[2][2] - mat[0][2] * mat[2][0]) * detFrac,
+			-(mat[0][0] * mat[1][2] - mat[0][2] * mat[1][0]) * detFrac,
+			+(mat[1][0] * mat[2][1] - mat[1][1] * mat[2][0]) * detFrac,
+			-(mat[0][0] * mat[2][1] - mat[0][1] * mat[2][0]) * detFrac,
+			+(mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0]) * detFrac } );
 
 		return result;
 	}
