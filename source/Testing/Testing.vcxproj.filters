@@ -15,5 +15,7 @@
     <ClCompile Include="Engine\Math\VectorTest.cpp">
       <Filter>Engine\Math</Filter>
     </ClCompile>
+    <ClCompile Include="mainTesting.cpp" />
+    <ClCompile Include="Engine\Math\QuaternionTest.cpp" />
   </ItemGroup>
 </Project>
