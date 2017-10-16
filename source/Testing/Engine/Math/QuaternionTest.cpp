@@ -54,21 +54,58 @@ TEST_CASE("axis angles", "[quat]")
 		REQUIRE( nearEqualsV( rotated2, vec3( 0, 0, 1 ), 0.0001f ) );
 	}
 }
-TEST_CASE( "quaternion multiplication" )
+TEST_CASE( "quaternion multiplication", "[quat]" )
 {
 	using namespace etm;
 
+	quat R1 = quat( vec3( 0, 0, 1 ), etm::PI_DIV2 );
+	quat R2 = quat( vec3( 0, 1, 0 ), etm::PI_DIV2 );
 
-	//SECTION( "quat mul quat" )
-	//{
-	//	quat R1 = quat( vec3( 0, 0, 1 ), etm::PI_DIV4 );
-	//	//quat R2 = quat( vec3( 0, 1, 0 ), etm::PI_DIV4 );
-	//	quat R3 = quat( vec3( -1, 0, 0 ), etm::PI_DIV4 );
-	//	quat testQuat = normalize(R1 * R3);
+	SECTION( "quat mul quat" )
+	{
+		quat testQuat = R2 * R1;//right quat will be applied first
 
-	//	vec3 initial = vec3( 0, 1, 0 );
-	//	vec3 rotated = testQuat * initial;
+		vec3 initial = vec3( 0, 1, 0 );
+		vec3 rotated = testQuat * initial;
 
-	//	REQUIRE( nearEqualsV( rotated, normalize(vec3( 1, 1, 1 )), 0.0001f ) );
-	//}
+		REQUIRE( nearEqualsV( rotated, vec3( 0, 0, 1 ), 0.0001f ) );
+	}
+	SECTION( "inverse" )
+	{
+		quat testQuat = R1 * inverse(R1) * R2;
+
+		REQUIRE( nearEqualsV( R2.v4, testQuat.v4, 0.0001f ) );
+	}
+	SECTION( "conjugate" )
+	{
+		quat testQuat = R1 * inverse(R1) * R2;
+
+		REQUIRE( nearEqualsV( R2.v4, testQuat.v4, 0.0001f ) );
+	}
+	SECTION( "inverse" )
+	{
+		REQUIRE( nearEqualsV( inverse(R1).v4, inverseSafe(R1).v4, 0.0001f ) );
+	}
+}
+TEST_CASE( "matrix compatibility", "[quat]" )
+{
+	using namespace etm;
+
+	quat R1 = quat( vec3( 0, 0, 1 ), etm::PI_DIV2 );
+	mat3 r1m = R1.ToMatrix();
+
+	SECTION( "to mat 3" )
+	{
+		mat3 transform( { 0, -1, 0,
+						1, 0, 0,
+						0, 0, 1 } );
+		REQUIRE( nearEqualsM( r1m, transform, 0.00001f ) );
+	}
+	SECTION( "equal rotation" )
+	{
+		vec3 initV = vec3( 0, 1, 0 );
+		vec3 qRot = R1 * initV;
+		vec3 mRot = r1m * initV;
+		REQUIRE( nearEqualsV( qRot, mRot, 0.0001f ) );
+	}
 }
