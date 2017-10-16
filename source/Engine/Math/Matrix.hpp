@@ -37,6 +37,10 @@ namespace etm
 			};
 		};
 
+		static uint8 Rows() { return m; }
+		static uint8 Collumns() { return n; }
+		typedef T value_type;
+
 		//Constructors
 		//Identity default constructor
 		matrix()
@@ -48,6 +52,10 @@ namespace etm
 					data[rowIdx][colIdx] = (rowIdx == colIdx) ? static_cast<T>(1) : static_cast<T>(0);
 				}
 			}
+		}
+		explicit matrix( etm::ctor )
+		{
+			//uninitialized constructor
 		}
 		matrix(const std::initializer_list<T> args)
 		{
@@ -73,6 +81,11 @@ namespace etm
 		}
 
 		//operators
+		etm::vector<n, T> operator[]( const uint8 rowIdx )const
+		{
+			assert( rowIdx >= 0 && rowIdx < m );
+			return rows[rowIdx];
+		}
 		etm::vector<n, T>& operator[](const uint8 rowIdx)
 		{
 			assert(rowIdx >= 0 && rowIdx < m);
@@ -80,49 +93,45 @@ namespace etm
 		}
 	};
 
-	//contruct matrices from other matricies
-	//**************************************
-	//template<typename T>
-	//struct matrix<3, 3, T>
-	//{
-	//	matrix()
-	//	{
-	//		for (uint8 rowIdx; rowIdx < 3; ++rowIdx)
-	//		{
-	//			for (uint8 colIdx; colIdx < 3; ++colIdx)
-	//			{
-	//				data[rowIdx][colIdx] = (rowIdx == colIdx) ? 1 : 0;
-	//			}
-	//		}
-	//	}
-	//	matrix(const matrix<4, 4, T> &mat)
-	//	{
-	//		rows[0] = mat.rows[0].xyz;
-	//		rows[1] = mat.rows[1].xyz;
-	//		rows[2] = mat.rows[2].xyz;
-	//	}
-	//};
-	//template <class T>
-	//struct matrix<4, 4, T>
-	//{
-	//	matrix()
-	//	{
-	//		for (uint8 rowIdx; rowIdx < 4; ++rowIdx)
-	//		{
-	//			for (uint8 colIdx; colIdx < 4; ++colIdx)
-	//			{
-	//				data[rowIdx][colIdx] = (rowIdx == colIdx) ? 1 : 0;
-	//			}
-	//		}
-	//	}
-	//	matrix(const matrix<3, 3, T> &mat)
-	//	{
-	//		rows[0] = vector<4, T>(mat.rows[1], 0);
-	//		rows[1] = vector<4, T>(mat.rows[2], 0);
-	//		rows[2] = vector<4, T>(mat.rows[3], 0);
-	//		rows[3] = vector<4, T>(0, 0, 0, 1);
-	//	}
-	//};
+	template <class T>
+	matrix<3, 3, T> CreateFromMat4(const matrix<4, 4, T> &lhs)
+	{
+		matrix<3, 3, T> ret( uninitialized );
+		ret.rows[0] = lhs.rows[0].xyz;
+		ret.rows[1] = lhs.rows[1].xyz;
+		ret.rows[2] = lhs.rows[2].xyz;
+		return ret;
+	}
+	template <class T>
+	matrix<4, 4, T> CreateFromMat3( const matrix<3, 3, T> &lhs )
+	{
+		matrix<4, 4, T> ret( uninitialized );
+		ret.rows[0] = vector<4, T>( lhs.rows[0], 0);
+		ret.rows[1] = vector<4, T>( lhs.rows[1], 0);
+		ret.rows[2] = vector<4, T>( lhs.rows[2], 0);
+		ret.rows[3] = vector<4, T>(0, 0, 0, 1);
+		return ret;
+	}
+	template <class T>
+	matrix<4, 4, T> DiscardW( const matrix<4, 4, T> &lhs )
+	{
+		matrix<4, 4, T> ret( uninitialized );
+		ret.rows[0] = vector<4, T>( lhs.rows[0].xyz, 0 );
+		ret.rows[1] = vector<4, T>( lhs.rows[1].xyz, 0 );
+		ret.rows[2] = vector<4, T>( lhs.rows[2].xyz, 0 );
+		ret.rows[3] = vector<4, T>( 0, 0, 0, 1 );
+		return ret;
+	}
+
+	template <uint8 m, uint8 n, class T>
+	inline bool nearEqualsM( matrix<m, n, T> lhs, matrix<m, n, T> rhs, T epsilon = ETM_DEFAULT_EPSILON )
+	{
+		for(uint8 i = 0; i < m; ++i)
+		{
+			if(!nearEqualsV( lhs[i], rhs[i], epsilon )) return false;
+		}
+		return true;
+	}
 
 	//shorthands
 	typedef matrix<2, 2, float>  mat2;
@@ -173,9 +182,9 @@ namespace etm
 				T value = {};
 				for (uint8 j = 0; j < n; ++j)
 				{
-					value += lhs[j][row] * rhs[col][j];
+					value += lhs[row][j] * rhs[j][col];
 				}
-				result[col][row] = value;
+				result[row][col] = value;
 			}
 		}
 		return result;
@@ -188,6 +197,17 @@ namespace etm
 		for (uint8 rowIdx = 0; rowIdx < m; ++rowIdx)
 		{
 			result[rowIdx] = etm::dot(lhs[rowIdx], rhs);
+		}
+		return result;
+	}
+	//scalar - matrix multiplication
+	template <uint8 m, uint8 n, class T>
+	matrix<m, n, T> operator*( matrix<m, n, T>& lhs, const T rhs )
+	{
+		matrix<m, n, T> result;
+		for(uint8 rowIdx = 0; rowIdx < m; ++rowIdx)
+		{
+			result[rowIdx] = lhs[rowIdx] * rhs;
 		}
 		return result;
 	}
@@ -247,17 +267,17 @@ namespace etm
 			mat[0][2] * detCof[2] + mat[0][3] * detCof[3];
 	}
 
-	//inverse
+	//inverse -- not 100% safe as we don't check the determinant if the determinant is zero all values will be +infinity
 	template <class T>
 	inline matrix<2, 2, T> inverse(const matrix<2, 2, T>& mat)
 	{
 		T detFrac = static_cast<T>(1) / etm::determinant(mat);
 
-		matrix<2, 2, T> result(
+		matrix<2, 2, T> result( {
 			+mat[1][1] * detFrac,
 			-mat[0][1] * detFrac,
 			-mat[1][0] * detFrac,
-			+mat[0][0] * detFrac);
+			+mat[0][0] * detFrac } );
 
 		return result;
 	}
@@ -266,16 +286,16 @@ namespace etm
 	{
 		T detFrac = static_cast<T>(1) / etm::determinant(mat);
 
-		matrix<3, 3, T> result(
-			+ (mat[1][1] * mat[2][2] - mat[2][1] * mat[1][2]) * detFrac,
-			- (mat[1][0] * mat[2][2] - mat[2][0] * mat[1][2]) * detFrac,
-			+ (mat[1][0] * mat[2][1] - mat[2][0] * mat[1][1]) * detFrac,
-			- (mat[0][1] * mat[2][2] - mat[2][1] * mat[0][2]) * detFrac,
-			+ (mat[0][0] * mat[2][2] - mat[2][0] * mat[0][2]) * detFrac,
-			- (mat[0][0] * mat[2][1] - mat[2][0] * mat[0][1]) * detFrac,
-			+ (mat[0][1] * mat[1][2] - mat[1][1] * mat[0][2]) * detFrac,
-			- (mat[0][0] * mat[1][2] - mat[1][0] * mat[0][2]) * detFrac,
-			+ (mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1]) * detFrac);
+		matrix<3, 3, T> result( {
+			+(mat[1][1] * mat[2][2] - mat[1][2] * mat[2][1]) * detFrac,
+			-(mat[0][1] * mat[2][2] - mat[0][2] * mat[2][1]) * detFrac,
+			+(mat[0][1] * mat[1][2] - mat[0][2] * mat[1][1]) * detFrac,
+			-(mat[1][0] * mat[2][2] - mat[1][2] * mat[2][0]) * detFrac,
+			+(mat[0][0] * mat[2][2] - mat[0][2] * mat[2][0]) * detFrac,
+			-(mat[0][0] * mat[1][2] - mat[0][2] * mat[1][0]) * detFrac,
+			+(mat[1][0] * mat[2][1] - mat[1][1] * mat[2][0]) * detFrac,
+			-(mat[0][0] * mat[2][1] - mat[0][1] * mat[2][0]) * detFrac,
+			+(mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0]) * detFrac } );
 
 		return result;
 	}
@@ -325,7 +345,7 @@ namespace etm
 
 		vector<4, T> signA(+1, -1, +1, -1);
 		vector<4, T> signB(-1, +1, -1, +1);
-		matrix<4, 4, T> result(inv0 * SignA, inv1 * signB, inv2 * signA, inv3 * signB);
+		matrix<4, 4, T> result( new vector<4, T>[4]{ inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB } );
 
 		vector<4, T> row0(result[0][0], result[1][0], result[2][0], result[3][0]);
 
