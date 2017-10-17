@@ -1,3 +1,2 @@
-
-dependancies/* linguist-vendored
-source/Engine/StaticDependancies/glad/* linguist-vendored
+dependancies/* linguist-vendored=true
+source/Engine/StaticDependancies/* linguist-vendored=true
