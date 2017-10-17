@@ -1,8 +1,9 @@
 #pragma once
 
 //#include "../Helper/AtomicTypes.h"
-#include "Vector.h"
-#include "Matrix.h"
+#include "Vector.hpp"
+#include "Matrix.hpp"
+#include "Quaternion.hpp"
 
 
 //ETEngine math
@@ -12,30 +13,30 @@ namespace etm
 	//scaling
 	//*******
 	template <uint8 n, class T>
-	inline matrix<n, n, T>& scale(matrix<n, n, T>& result, vector<n, T> scale)
+	void scale(matrix<n, n, T>& result, vector<n, T> scaleVec )
 	{
 		for (uint8 i = 0; i < n; ++i)
 		{
-			result[i][i] *= scale[i];
+			result[i][i] *= scaleVec[i];
 		}
-		return result;
 	}
 	template <uint8 n, class T>
-	inline matrix<n, n, T> scale(vector<n, T>& scale)
+	inline matrix<n, n, T> scale(vector<n, T>& scaleVec)
 	{
 		matrix<n, n, T> mat;
-		return scale(mat, scale);
+		scale(mat, scaleVec );
+		return mat;
 	}
 	//specialization for 3 dimensions
 	template <class T>
-	inline matrix<4, 4, T> scale(vector<3, T> scale)
+	inline matrix<4, 4, T> scale(vector<3, T> scaleVec )
 	{
-		return scale(vector<4, T>(scale, 1));
+		return scale(vector<4, T>( scaleVec, 1));
 	}
 	template <class T>
-	inline matrix<4, 4, T>& scale(matrix<4, 4, T>& result, vector<3, T>& scale)
+	void scale(matrix<4, 4, T>& result, vector<3, T>& scaleVec )
 	{
-		return scale(result, vector<4, T>(scale, 1));
+		scale(result, vector<4, T>( scaleVec, 1));
 	}
 
 	//rotation
@@ -45,8 +46,14 @@ namespace etm
 	template <class T>
 	matrix<4, 4, T> rotate(const quaternion<T>& rotation)
 	{
-		matrix<3, 3, T> result = rotation::ToMatrix();
-		return matrix<4, 4, T>(result);
+		matrix<3, 3, T> result = rotation.ToMatrix();
+		return CreateFromMat3(result);
+	}
+	template <class T>
+	void rotate(matrix<4, 4, T> &result, const quaternion<T>& rotation)
+	{
+		matrix<4, 4, T> rot = rotate(rotation);
+		result = result * rot;
 	}
 	template <class T>
 	matrix<4, 4, T> rotate(const vector<3, T>& axis, const T& angle)
@@ -55,7 +62,7 @@ namespace etm
 
 		const float c = cos(angle);
 		const float s = sin(angle);
-		const float t = 1.0f - c;
+		const float t = static_cast<T>(1) - c;
 
 		result[0][0] = t*axis.x*axis.x + c;
 		result[0][1] = t*axis.x*axis.y - s*axis.z;
@@ -72,11 +79,10 @@ namespace etm
 		return result;
 	}
 	template <class T>
-	matrix<4, 4, T>& rotate(matrix<4, 4, T> &result, const vector<3, T>& axis, const T& angle)
+	void rotate(matrix<4, 4, T> &result, const vector<3, T>& axis, const T& angle)
 	{
 		matrix<4, 4, T> rot = rotate(axis, angle);
 		result = result * rot;
-		return result;
 	}
 
 	//translation
@@ -85,17 +91,22 @@ namespace etm
 	matrix<4, 4, T> translate(const vector<3, T>& translation)
 	{
 		matrix<4, 4, T> mat;
-		mat[3] = vector<4, T>(translation, 1.0);
+		mat[0][3] = translation.x;
+		mat[1][3] = translation.y;
+		mat[2][3] = translation.z;
+		mat[3][3] = static_cast<T>(1);
 		return mat;
 	}
 	template <class T>
-	matrix<4, 4, T>& translate(matrix<4, 4, T> &result, const vector<3, T>& translation)
+	void translate(matrix<4, 4, T> &result, const vector<3, T>& translation)
 	{
 		matrix<4, 4, T> mat;
-		mat[3] = vector<4, T>(translation, 1.0);
+		mat[0][3] = translation.x;
+		mat[1][3] = translation.y;
+		mat[2][3] = translation.z;
+		mat[3][3] = static_cast<T>(1);
 
 		result = result * mat;
-		return result;
 	}
 
 	//look at

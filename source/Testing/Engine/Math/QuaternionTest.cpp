@@ -63,7 +63,7 @@ TEST_CASE( "quaternion multiplication", "[quat]" )
 
 	SECTION( "quat mul quat" )
 	{
-		quat testQuat = R2 * R1;//right quat will be applied first
+		quat testQuat = R2 * R1; // #todo invert multiplication order in implementation
 
 		vec3 initial = vec3( 0, 1, 0 );
 		vec3 rotated = testQuat * initial;
@@ -96,9 +96,9 @@ TEST_CASE( "matrix compatibility", "[quat]" )
 
 	SECTION( "to mat 3" )
 	{
-		mat3 transform( { 0, -1, 0,
-						1, 0, 0,
-						0, 0, 1 } );
+		mat3 transform( {	0, -1, 0,
+							1,  0, 0,
+							0,  0, 1 } );
 		REQUIRE( nearEqualsM( r1m, transform, 0.00001f ) );
 	}
 	SECTION( "equal rotation" )
