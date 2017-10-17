@@ -5,6 +5,7 @@
 //#todo move implementation to .inl files
 //#todo lots of unit testing
 
-#include "Vector.h"
-#include "Matrix.h"
-#include "Quaternion.h"
+#include "Vector.hpp"
+#include "Matrix.hpp"
+#include "Quaternion.hpp"
+#include "Transform.hpp"
