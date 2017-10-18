@@ -114,19 +114,35 @@ namespace etm
 	template <class T>
 	matrix<4, 4, T> lookAt(vector<3, T>& position, vector<3, T>& target, vector<3, T>& worldUp)
 	{
-		matrix<4, 4, T> frame;
-		matrix<4, 4, T> translation = translate(-position);
-
 		vec3 forward = normalize(target - position);
-		vec3 right = normalize(cross(forward, worldUp));
-		vec3 up = cross(right, forward);
+		vec3 right = normalize(cross(worldUp, forward));
+		vec3 up = cross(forward, right);
 
-		frame[0].xyz = right;
-		frame[1].xyz = up;
-		frame[2].xyz = -forward;
-		//frame = transpose(frame);
+		matrix<4, 4, T> frame(uninitialized);
+		//frame[0] = vec4(right, 0);
+		//frame[1] = vec4(up, 0);
+		//frame[2] = vec4(forward, 0);
+		//frame[3] = vec4( -dot( right, position ), -dot( up, position ), -dot( forward, position ), 1 );
 
-		return frame*translation;
+		//transposed version
+		frame[0][0] = right.x;
+		frame[1][0] = right.y;
+		frame[2][0] = right.z;
+		frame[3][0] = static_cast<T>(0);
+		frame[0][1] = up.x;
+		frame[1][1] = up.y;
+		frame[2][1] = up.z;
+		frame[3][1] = static_cast<T>(0);
+		frame[0][2] = forward.x;
+		frame[1][2] = forward.y;
+		frame[2][2] = forward.z;
+		frame[3][2] = static_cast<T>(0);
+		frame[0][3] = -dot( right, position );
+		frame[1][3] = -dot( up, position );
+		frame[2][3] = -dot( forward, position );
+		frame[3][3] = static_cast<T>(1);
+
+		return frame;
 	}
 
 	//projection
@@ -138,11 +154,11 @@ namespace etm
 
 		result[0][0] = static_cast<T>(2) / (right - left);
 		result[1][1] = static_cast<T>(2) / (top - bottom);
-		result[3][0] = -(right + left) / (right - left);
-		result[3][1] = -(top + bottom) / (top - bottom);
+		result[0][3] = -(right + left) / (right - left);
+		result[1][3] = -(top + bottom) / (top - bottom);
 
 		result[2][2] = static_cast<T>(2) / (far - near);
-		result[3][2] = -(far + near) / (far - near);
+		result[2][3] = -(far + near) / (far - near);
 		
 		return result;
 	}
@@ -151,14 +167,14 @@ namespace etm
 	{
 		matrix<4, 4, T> result;
 
-		T const tanHalfFovy = tan(fovy / static_cast<T>(2));
+		T const tanHalfFovy = tan( fov / static_cast<T>(2));
 
 		result[0][0] = static_cast<T>(1) / (aspect * tanHalfFovy);
 		result[1][1] = static_cast<T>(1) / (tanHalfFovy);
-		result[2][3] = static_cast<T>(1);
+		result[3][2] = static_cast<T>(1);
 
-		result[2][2] = (zFar + zNear) / (zFar - zNear);
-		result[3][2] = -(static_cast<T>(2) * zFar * zNear) / (zFar - zNear);
+		result[2][2] = (far + near) / (far - near);
+		result[2][3] = -(static_cast<T>(2) * far * near) / (far - near);
 
 		return result;
 	}
