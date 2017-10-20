@@ -149,15 +149,15 @@ namespace etm
 		matrix<3, 3, T> mat;
 
 		mat[0][0] = static_cast<T>(1)	  - static_cast<T>(2)*y*y - static_cast<T>(2)*z*z;
-		mat[0][1] = static_cast<T>(2)*x*y - static_cast<T>(2)*w*z;
-		mat[0][2] = static_cast<T>(2)*x*z + static_cast<T>(2)*w*y;
+		mat[1][0] = static_cast<T>(2)*x*y - static_cast<T>(2)*w*z;
+		mat[2][0] = static_cast<T>(2)*x*z + static_cast<T>(2)*w*y;
 
-		mat[1][0] = static_cast<T>(2)*x*y + static_cast<T>(2)*w*z;
+		mat[0][1] = static_cast<T>(2)*x*y + static_cast<T>(2)*w*z;
 		mat[1][1] = static_cast<T>(1)	  - static_cast<T>(2)*x*x - static_cast<T>(2)*z*z;
-		mat[1][2] = static_cast<T>(2)*y*z - static_cast<T>(2)*w*x;
+		mat[2][1] = static_cast<T>(2)*y*z - static_cast<T>(2)*w*x;
 
-		mat[2][0] = static_cast<T>(2)*x*z - static_cast<T>(2)*w*y;
-		mat[2][1] = static_cast<T>(2)*y*z + static_cast<T>(2)*w*x;
+		mat[0][2] = static_cast<T>(2)*x*z - static_cast<T>(2)*w*y;
+		mat[1][2] = static_cast<T>(2)*y*z + static_cast<T>(2)*w*x;
 		mat[2][2] = static_cast<T>(1)	  - static_cast<T>(2)*x*x - static_cast<T>(2)*y*y;
 
 		return mat;

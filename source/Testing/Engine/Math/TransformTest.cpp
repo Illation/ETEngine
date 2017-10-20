@@ -115,8 +115,8 @@ TEST_CASE( "complete transform", "[transform]" )
 
 	mat4 scaleMat = etm::scale( vec3( 3 ) );
 	mat4 rotMat = etm::rotate( vec3( 0, 0, 1 ), -etm::PI_DIV2 );
-	mat4 moveMat = etm::translate( vec3( 0, 0, 1 ) ); // #todo matricies should multiply with vectors in column major notation to make memory of transformation matrices aligned - right now we would need to transpose the matrix to achieve the same transformation in opengl
-	mat4 transformMat = moveMat * rotMat * scaleMat; // #todo matrices should do multiplication the other way around to make this readable in the correct order
+	mat4 moveMat = etm::translate( vec3( 0, 0, 1 ) );
+	mat4 transformMat = scaleMat * rotMat * moveMat;
 
 	vec3 resultVec = (transformMat * vec4( testVec, 1 )).xyz;
 

@@ -17,6 +17,7 @@ namespace etm
 	// n = number of collumns
 	// T = data type
 	// Matrices use row vector notation -> access using row index, then column index
+	// Nonetheless matrices are multiplied with vectors using column major convention for opengl compatibility of transformations
 
 	// | 0  1  2  3  | Row 0
 	// | 4  5  6  7  | Row 1
@@ -169,7 +170,7 @@ namespace etm
 		}
 		return result;
 	}
-	//multiplication: lhs rows * rhs columns
+	//multiplication: lhs rows * rhs cols
 	template <uint8 m, uint8 n, class T>
 	matrix<m, m, T> operator*(matrix<m, n, T>& lhs, matrix<n, m, T>& rhs)
 	{
@@ -189,14 +190,15 @@ namespace etm
 		}
 		return result;
 	}
-	//vector - matrix multiplication - row major convention -> vectors are 3x1 matrices and therefore on the right side
+	//vector - matrix multiplication - col major convention -> vectors are 3x1 matrices and therefore on the right side
 	template <uint8 m, uint8 n, class T>
-	vector<m, T> operator*(matrix<m, n, T>& lhs, vector<n, T>& rhs)
+	vector<m, T> operator*(matrix<m, n, T>& lhs, vector<m, T>& rhs)
 	{
-		vector<m, T> result;
+		vector<m, T> result(0);
 		for (uint8 rowIdx = 0; rowIdx < m; ++rowIdx)
 		{
-			result[rowIdx] = etm::dot(lhs[rowIdx], rhs);
+			for(uint8 i = 0; i < m; ++i)
+				result[rowIdx] += lhs[i][rowIdx] * rhs[i];
 		}
 		return result;
 	}
