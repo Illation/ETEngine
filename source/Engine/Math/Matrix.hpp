@@ -216,7 +216,7 @@ namespace etm
 	//**********
 
 	template <unsigned int m, unsigned int n, class T>
-	inline matrix<m, n, T> transpose(matrix<m, n, T>& mat)
+	inline matrix<m, n, T> transpose(const matrix<m, n, T>& mat)
 	{
 		matrix<n, m, T> result;
 
