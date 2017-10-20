@@ -134,14 +134,6 @@ namespace etm
 		return true;
 	}
 
-	//shorthands
-	typedef matrix<2, 2, float>  mat2;
-	typedef matrix<3, 3, float>  mat3;
-	typedef matrix<4, 4, float>  mat4;
-	typedef matrix<2, 2, double> dmat2;
-	typedef matrix<3, 3, double> dmat3;
-	typedef matrix<4, 4, double> dmat4;
-
 	//matrix operators
 	//****************
 	template <uint8 m, uint8 n, class T>
@@ -360,3 +352,11 @@ namespace etm
 	}
 
 }//namespace etm
+
+//shorthands
+typedef etm::matrix<2, 2, float>  mat2;
+typedef etm::matrix<3, 3, float>  mat3;
+typedef etm::matrix<4, 4, float>  mat4;
+typedef etm::matrix<2, 2, double> dmat2;
+typedef etm::matrix<3, 3, double> dmat3;
+typedef etm::matrix<4, 4, double> dmat4;

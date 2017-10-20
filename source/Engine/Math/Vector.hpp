@@ -5,21 +5,20 @@
 #include <assert.h>
 #include <stdint.h>
 
+//Temporarily defined here until glm is replaced with custom math
+typedef std::int8_t		int8;
+typedef std::int16_t	int16;
+typedef std::int32_t	int32;
+typedef std::int64_t	int64;
+
+typedef std::uint8_t	uint8;
+typedef std::uint16_t	uint16;
+typedef std::uint32_t	uint32;
+typedef std::uint64_t	uint64;
 
 //ETEngine math
 namespace etm
 {
-	//Temporarily defined here until glm is replaced with custom math
-	typedef std::int8_t		int8;
-	typedef std::int16_t	int16;
-	typedef std::int32_t	int32;
-	typedef std::int64_t	int64;
-
-	typedef std::uint8_t	uint8;
-	typedef std::uint16_t	uint16;
-	typedef std::uint32_t	uint32;
-	typedef std::uint64_t	uint64;
-
 	enum ctor { uninitialized };
 
 #define ETM_DEFAULT_EPSILON 0.00000001
@@ -349,16 +348,6 @@ namespace etm
 		vector<4, T> operator-();
 	};
 
-	//shorthands
-	typedef vector<2, float>  vec2;
-	typedef vector<3, float>  vec3;
-	typedef vector<4, float>  vec4;
-	typedef vector<2, int32>  ivec2;
-	typedef vector<3, int32>  ivec3;
-	typedef vector<4, int32>  ivec4;
-	typedef vector<2, double> dvec2;
-	typedef vector<3, double> dvec3;
-	typedef vector<4, double> dvec4;
 
 	//operators
 	//*********
@@ -614,3 +603,14 @@ namespace etm
 	}
 
 } // namespace etm
+
+//shorthands
+typedef etm::vector<2, float>  vec2;
+typedef etm::vector<3, float>  vec3;
+typedef etm::vector<4, float>  vec4;
+typedef etm::vector<2, int32>  ivec2;
+typedef etm::vector<3, int32>  ivec3;
+typedef etm::vector<4, int32>  ivec4;
+typedef etm::vector<2, double> dvec2;
+typedef etm::vector<3, double> dvec3;
+typedef etm::vector<4, double> dvec4;

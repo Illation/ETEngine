@@ -68,10 +68,6 @@ namespace etm
 		matrix<3, 3, T> ToMatrix() const;
 	};
 
-	//shorthands
-	typedef quaternion<float>  quat;
-	typedef quaternion<double> quatd; //ultra precise rotations ? maybe someone wants to simulate a clockwork
-
 	//operations 
 	//Grassman product
 	template <typename T>
@@ -164,3 +160,7 @@ namespace etm
 	}
 
 }//namespace etm
+
+//shorthands
+typedef etm::quaternion<float>  quat;
+typedef etm::quaternion<double> quatd; //ultra precise rotations ? maybe someone wants to simulate a clockwork
