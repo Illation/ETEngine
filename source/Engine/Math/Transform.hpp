@@ -65,15 +65,15 @@ namespace etm
 		const float t = static_cast<T>(1) - c;
 
 		result[0][0] = t*axis.x*axis.x + c;
-		result[0][1] = t*axis.x*axis.y - s*axis.z;
-		result[0][2] = t*axis.x*axis.z + s*axis.y;
+		result[1][0] = t*axis.x*axis.y - s*axis.z;
+		result[2][0] = t*axis.x*axis.z + s*axis.y;
 
-		result[1][0] = t*axis.x*axis.y + s*axis.z;
+		result[0][1] = t*axis.x*axis.y + s*axis.z;
 		result[1][1] = t*axis.y*axis.y + c;
-		result[1][2] = t*axis.y*axis.z - s*axis.x;
+		result[2][1] = t*axis.y*axis.z - s*axis.x;
 
-		result[2][0] = t*axis.x*axis.z - s*axis.y;
-		result[2][1] = t*axis.y*axis.z + s*axis.x;
+		result[0][2] = t*axis.x*axis.z - s*axis.y;
+		result[1][2] = t*axis.y*axis.z + s*axis.x;
 		result[2][2] = t*axis.z*axis.z + c;
 
 		return result;
@@ -91,10 +91,7 @@ namespace etm
 	matrix<4, 4, T> translate(const vector<3, T>& translation)
 	{
 		matrix<4, 4, T> mat;
-		mat[0][3] = translation.x;
-		mat[1][3] = translation.y;
-		mat[2][3] = translation.z;
-		mat[3][3] = static_cast<T>(1);
+		mat[3] = vector<4, T>( translation, static_cast<T>(1) );
 		return mat;
 	}
 	template <class T>
@@ -119,28 +116,28 @@ namespace etm
 		vec3 up = cross(forward, right);
 
 		matrix<4, 4, T> frame(uninitialized);
-		//frame[0] = vec4(right, 0);
-		//frame[1] = vec4(up, 0);
-		//frame[2] = vec4(forward, 0);
-		//frame[3] = vec4( -dot( right, position ), -dot( up, position ), -dot( forward, position ), 1 );
+		frame[0] = vec4(right, 0);
+		frame[1] = vec4(up, 0);
+		frame[2] = vec4(forward, 0);
+		frame[3] = vec4( -dot( right, position ), -dot( up, position ), -dot( forward, position ), 1 );
 
 		//transposed version
-		frame[0][0] = right.x;
-		frame[1][0] = right.y;
-		frame[2][0] = right.z;
-		frame[3][0] = static_cast<T>(0);
-		frame[0][1] = up.x;
-		frame[1][1] = up.y;
-		frame[2][1] = up.z;
-		frame[3][1] = static_cast<T>(0);
-		frame[0][2] = forward.x;
-		frame[1][2] = forward.y;
-		frame[2][2] = forward.z;
-		frame[3][2] = static_cast<T>(0);
-		frame[0][3] = -dot( right, position );
-		frame[1][3] = -dot( up, position );
-		frame[2][3] = -dot( forward, position );
-		frame[3][3] = static_cast<T>(1);
+		//frame[0][0] = right.x;
+		//frame[1][0] = right.y;
+		//frame[2][0] = right.z;
+		//frame[3][0] = static_cast<T>(0);
+		//frame[0][1] = up.x;
+		//frame[1][1] = up.y;
+		//frame[2][1] = up.z;
+		//frame[3][1] = static_cast<T>(0);
+		//frame[0][2] = forward.x;
+		//frame[1][2] = forward.y;
+		//frame[2][2] = forward.z;
+		//frame[3][2] = static_cast<T>(0);
+		//frame[0][3] = -dot( right, position );
+		//frame[1][3] = -dot( up, position );
+		//frame[2][3] = -dot( forward, position );
+		//frame[3][3] = static_cast<T>(1);
 
 		return frame;
 	}
@@ -154,11 +151,11 @@ namespace etm
 
 		result[0][0] = static_cast<T>(2) / (right - left);
 		result[1][1] = static_cast<T>(2) / (top - bottom);
-		result[0][3] = -(right + left) / (right - left);
-		result[1][3] = -(top + bottom) / (top - bottom);
+		result[3][0] = -(right + left) / (right - left);
+		result[3][1] = -(top + bottom) / (top - bottom);
 
 		result[2][2] = static_cast<T>(2) / (far - near);
-		result[2][3] = -(far + near) / (far - near);
+		result[3][2] = -(far + near) / (far - near);
 		
 		return result;
 	}
@@ -172,10 +169,10 @@ namespace etm
 
 		result[0][0] = static_cast<T>(1) / (aspect * tanHalfFov);
 		result[1][1] = static_cast<T>(1) / (tanHalfFov);
-		result[3][2] = static_cast<T>(1);
+		result[2][3] = static_cast<T>(1);
 
 		result[2][2] = (far + near) / (far - near);
-		result[2][3] = -(static_cast<T>(2) * far * near) / (far - near);
+		result[3][2] = -(static_cast<T>(2) * far * near) / (far - near);
 		result[3][3] = 0;
 
 		return result;

@@ -113,7 +113,7 @@ TEST_CASE( "Matrix operations", "[matrix]" )
 						   -1, 0, 0,
 							0, 0, 1 } );
 		vec3 initial( 1, 0, 0 );
-		REQUIRE( nearEqualsV( transform * initial, vec3( 0, -1, 0 ) ) );
+		REQUIRE( nearEqualsV( transform * initial, vec3( 0, 1, 0 ) ) );
 	}
 	SECTION( "transpose" )
 	{

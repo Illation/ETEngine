@@ -96,9 +96,9 @@ TEST_CASE( "matrix compatibility", "[quat]" )
 
 	SECTION( "to mat 3" )
 	{
-		mat3 transform( {	0, -1, 0,
-							1,  0, 0,
-							0,  0, 1 } );
+		mat3 transform( {	 0, 1, 0,
+							-1, 0, 0,
+							 0, 0, 1 } );
 		REQUIRE( nearEqualsM( r1m, transform, 0.00001f ) );
 	}
 	SECTION( "equal rotation" )
