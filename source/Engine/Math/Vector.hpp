@@ -22,6 +22,7 @@ namespace etm
 	enum ctor { uninitialized };
 
 #define ETM_DEFAULT_EPSILON 0.00000001
+#define ETM_DEFAULT_EPSILON_T static_cast<T>(ETM_DEFAULT_EPSILON)
 
 	//180 degrees
 	static const float PI = 3.1415926535897932384626433832795028841971693993751058209749445f;
@@ -35,7 +36,7 @@ namespace etm
 	static const float PI_DIV6 = PI / 6.f;
 
 	template <class T>
-	inline bool nearEquals(T lhs, T rhs, T epsilon = ETM_DEFAULT_EPSILON)
+	inline bool nearEquals(T lhs, T rhs, T epsilon = ETM_DEFAULT_EPSILON_T )
 	{
 		return abs(lhs - rhs) <= epsilon;
 	}
@@ -486,7 +487,7 @@ namespace etm
 	//operations
 	//**********
 	template <uint8 n, class T>
-	inline bool nearEqualsV(vector<n, T> lhs, vector<n, T> rhs, T epsilon = ETM_DEFAULT_EPSILON)
+	inline bool nearEqualsV(vector<n, T> lhs, vector<n, T> rhs, T epsilon = ETM_DEFAULT_EPSILON_T )
 	{
 		for (uint8 i = 0; i < n; ++i)
 		{
