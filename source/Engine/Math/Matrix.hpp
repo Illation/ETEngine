@@ -125,7 +125,7 @@ namespace etm
 	}
 
 	template <uint8 m, uint8 n, class T>
-	inline bool nearEqualsM( matrix<m, n, T> lhs, matrix<m, n, T> rhs, T epsilon = ETM_DEFAULT_EPSILON )
+	inline bool nearEqualsM( matrix<m, n, T> lhs, matrix<m, n, T> rhs, T epsilon = ETM_DEFAULT_EPSILON_T )
 	{
 		for(uint8 i = 0; i < m; ++i)
 		{
