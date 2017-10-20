@@ -178,15 +178,6 @@ TEST_CASE( "projection", "[transform]" )
 		vec4 rbrf = projMat * vec4( brf, 1 );
 		vec4 rtrf = projMat * vec4( trf, 1 );
 
-		//vec3 nbln = rbln.xyz / rbln.w;
-		//vec3 ntln = rtln.xyz / rtln.w; 
-		//vec3 nbrn = rbrn.xyz / rbrn.w; 
-		//vec3 ntrn = rtrn.xyz / rtrn.w; 
-		//vec3 nblf = rblf.xyz / rblf.w; 
-		//vec3 ntlf = rtlf.xyz / rtlf.w; 
-		//vec3 nbrf = rbrf.xyz / rbrf.w; 
-		//vec3 ntrf = rtrf.xyz / rtrf.w; 
-
 		REQUIRE( nearEqualsV( rbln.xyz, vec3(-1, -1, -1), 0.0001f ) );
 		REQUIRE( nearEqualsV( rtln.xyz, vec3(-1, 1, -1), 0.0001f ) );
 		REQUIRE( nearEqualsV( rbrn.xyz, vec3(1, -1, -1), 0.0001f ) );
@@ -203,24 +194,27 @@ TEST_CASE( "projection", "[transform]" )
 
 		mat4 projMat = etm::perspective( fov, aspect, near, far );
 
-		//calculate generalized relative width and aspect ratio
-		float normHalfWidth = tan( fov );
+		//Test with frustum corners
+		float yFac = tanf( fov / 2);
+		float xFac = yFac*aspect;
 
-		//calculate width and height for near and far plane
-		float nearHW = normHalfWidth*near;
-		float nearHH = nearHW / aspect;
-		float farHW = normHalfWidth*far;// *0.5f;
-		float farHH = farHW / aspect;
+		vec3 nCenter = vec3::ZERO + vec3::FORWARD*near;
+		vec3 fCenter = vec3::ZERO + vec3::FORWARD*far;
+		vec3 nearHW = vec3::RIGHT*near*xFac;
+		vec3 nearHH = vec3::UP*near*yFac;
+		vec3 farHW = vec3::RIGHT*far*xFac;
+		vec3 farHH = vec3::UP*far*yFac;
 
-		vec3 bln = vec3( -nearHW, -nearHH, near );
-		vec3 tln = vec3( -nearHW, nearHH, near );
-		vec3 brn = vec3( nearHW, -nearHH, near );
-		vec3 trn = vec3( nearHW, nearHH, near );
-		vec3 blf = vec3( -farHW, -farHH, far );
-		vec3 tlf = vec3( -farHW, farHH, far );
-		vec3 brf = vec3( farHW, -farHH, far );
-		vec3 trf = vec3( farHW, farHH, far );
+		vec3 tln = nCenter + nearHH - nearHW;
+		vec3 trn = nCenter + nearHH + nearHW;
+		vec3 bln = nCenter - nearHH - nearHW;
+		vec3 brn = nCenter - nearHH + nearHW;
+		vec3 tlf = fCenter + farHH - farHW;
+		vec3 trf = fCenter + farHH + farHW;
+		vec3 blf = fCenter - farHH - farHW;
+		vec3 brf = fCenter - farHH + farHW;
 
+		//simulate projection
 		vec4 rbln = projMat * vec4( bln, 1 );
 		vec4 rtln = projMat * vec4( tln, 1 );
 		vec4 rbrn = projMat * vec4( brn, 1 );
@@ -239,13 +233,13 @@ TEST_CASE( "projection", "[transform]" )
 		vec3 nbrf = rbrf.xyz / rbrf.w; 
 		vec3 ntrf = rtrf.xyz / rtrf.w; 
 
-		//REQUIRE( nearEqualsV( nbln, vec3( -1, -1, -1 ), 0.0001f ) );
-		//REQUIRE( nearEqualsV( ntln, vec3( -1, 1, -1 ), 0.0001f ) );
-		//REQUIRE( nearEqualsV( nbrn, vec3( 1, -1, -1 ), 0.0001f ) );
-		//REQUIRE( nearEqualsV( ntrn, vec3( 1, 1, -1 ), 0.0001f ) );
-		//REQUIRE( nearEqualsV( nblf, vec3( -1, -1, 1 ), 0.0001f ) );
-		//REQUIRE( nearEqualsV( ntlf, vec3( -1, 1, 1 ), 0.0001f ) );
-		//REQUIRE( nearEqualsV( nbrf, vec3( 1, -1, 1 ), 0.0001f ) );
-		//REQUIRE( nearEqualsV( ntrf, vec3( 1, 1, 1 ), 0.0001f ) );
+		REQUIRE( nearEqualsV( nbln, vec3( -1, -1, -1 ), 0.0001f ) );
+		REQUIRE( nearEqualsV( ntln, vec3( -1, 1, -1 ), 0.0001f ) );
+		REQUIRE( nearEqualsV( nbrn, vec3( 1, -1, -1 ), 0.0001f ) );
+		REQUIRE( nearEqualsV( ntrn, vec3( 1, 1, -1 ), 0.0001f ) );
+		REQUIRE( nearEqualsV( nblf, vec3( -1, -1, 1 ), 0.0001f ) );
+		REQUIRE( nearEqualsV( ntlf, vec3( -1, 1, 1 ), 0.0001f ) );
+		REQUIRE( nearEqualsV( nbrf, vec3( 1, -1, 1 ), 0.0001f ) );
+		REQUIRE( nearEqualsV( ntrf, vec3( 1, 1, 1 ), 0.0001f ) );
 	}
 }

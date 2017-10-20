@@ -165,16 +165,18 @@ namespace etm
 	template <class T>
 	matrix<4, 4, T> perspective(const T& fov, const T& aspect, const T& near, const T& far)
 	{
+		assert( std::abs( aspect - ETM_DEFAULT_EPSILON ) > static_cast<T>(0) );
 		matrix<4, 4, T> result;
 
-		T const tanHalfFovy = tan( fov / static_cast<T>(2));
+		T const tanHalfFov = tan( fov / static_cast<T>(2));
 
-		result[0][0] = static_cast<T>(1) / (aspect * tanHalfFovy);
-		result[1][1] = static_cast<T>(1) / (tanHalfFovy);
+		result[0][0] = static_cast<T>(1) / (aspect * tanHalfFov);
+		result[1][1] = static_cast<T>(1) / (tanHalfFov);
 		result[3][2] = static_cast<T>(1);
 
 		result[2][2] = (far + near) / (far - near);
 		result[2][3] = -(static_cast<T>(2) * far * near) / (far - near);
+		result[3][3] = 0;
 
 		return result;
 	}

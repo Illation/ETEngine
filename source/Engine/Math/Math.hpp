@@ -3,7 +3,6 @@
 //implementing a custom math library for the learning experience, completeness, control and easy build setup
 //#todo SIMD support
 //#todo move implementation to .inl files
-//#todo lots of unit testing
 
 #include "Vector.hpp"
 #include "Matrix.hpp"
