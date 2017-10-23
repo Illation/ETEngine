@@ -100,17 +100,17 @@ void Patch::GenerateGeometry(int16 levels)
 		for (uint32 column = 0; column < numCols; column++)
 		{
 			//calc position
-			glm::vec2 pos = glm::vec2(column / (float)(m_RC-1), row / (float)(m_RC - 1));
+			vec2 pos = vec2(column / (float)(m_RC-1), row / (float)(m_RC - 1));
 			//calc morph
-			glm::vec2 morph = glm::vec2(0, 0);
+			vec2 morph = vec2(0, 0);
 			if (row % 2 == 0)
 			{
-				if (column % 2 == 1) morph = glm::vec2(-delta, 0);
+				if (column % 2 == 1) morph = vec2(-delta, 0);
 			}
 			else
 			{
-				if (column % 2 == 0) morph = glm::vec2(0, delta);
-				else morph = glm::vec2(delta, -delta);
+				if (column % 2 == 0) morph = vec2(0, delta);
+				else morph = vec2(delta, -delta);
 			}
 			//create vertex
 			m_Vertices.push_back(PatchVertex(pos, morph));
@@ -162,8 +162,8 @@ void Patch::Draw(bool white)
 	STATE->SetShader(m_pPatchShader);
 
 	// Pass transformations to the shader
-	glUniformMatrix4fv(m_uModel, 1, GL_FALSE, glm::value_ptr(m_pPlanet->GetTransform()->GetWorld()));
-	glUniformMatrix4fv(m_uViewProj, 1, GL_FALSE, glm::value_ptr(CAMERA->GetViewProj()));
+	glUniformMatrix4fv(m_uModel, 1, GL_FALSE, etm::valuePtr(m_pPlanet->GetTransform()->GetWorld()));
+	glUniformMatrix4fv(m_uViewProj, 1, GL_FALSE, etm::valuePtr(CAMERA->GetViewProj()));
 
 	//Set other uniforms here too!
 	glm::vec3 camPos = m_pPlanet->GetTriangulator()->GetFrustum()->GetPositionOS();

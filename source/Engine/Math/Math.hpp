@@ -8,3 +8,12 @@
 #include "Matrix.hpp"
 #include "Quaternion.hpp"
 #include "Transform.hpp"
+
+namespace etm
+{
+	template<class T>
+	constexpr inline T radians( const T &rhs )
+	{
+		return rhs * static_cast<T>(etm::PI_DIV180);
+	}
+} // namespace etm

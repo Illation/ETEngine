@@ -33,8 +33,8 @@ void FreeCamera::Update()
 	if (m_pCamera->IsActive())
 	{
 		//HANDLE INPUT
-		glm::vec3 move = glm::vec3(0, 0, 0);
-		glm::vec2 look = glm::vec2(0, 0);
+		vec3 move = vec3(0, 0, 0);
+		vec2 look = vec2(0, 0);
 
 		move.x = INPUT->IsKeyboardKeyDown('A') ? -1.0f : 0.0f;
 		if (move.x == 0) move.x = (INPUT->IsKeyboardKeyDown('D') ? 1.0f : 0.0f);
@@ -43,12 +43,12 @@ void FreeCamera::Update()
 		move.z = INPUT->IsKeyboardKeyDown('W') ? 1.0f : 0.0f; 
 		if (move.z == 0) move.z = -(INPUT->IsKeyboardKeyDown('S') ? 1.0f : 0.0f);  
 
-		glm::vec3 delta = move - m_Move;
+		vec3 delta = move - m_Move;
 		m_Move += delta * m_Acceleration * TIME->DeltaTime();
 
 		auto currSpeed = m_MoveSpeed; 
 
-		if (!(move == glm::vec3(0)) || INPUT->IsMouseButtonDown(1))
+		if (!(move == vec3(0)) || INPUT->IsMouseButtonDown(1))
 		{
 			//not delta time dependant
 			float scroll = INPUT->GetMouseWheelDelta().y;
@@ -65,10 +65,10 @@ void FreeCamera::Update()
 		if (INPUT->IsMouseButtonDown(1)) { look = INPUT->GetMouseMovement(); }  
 
 		//Get state 
-		glm::vec3 forward = GetTransform()->GetForward(); 
-		glm::vec3 right = GetTransform()->GetRight(); 
-		glm::vec3 up = glm::vec3(0, 1, 0); 
-		glm::vec3 currPos = GetTransform()->GetPosition(); 
+		vec3 forward = GetTransform()->GetForward(); 
+		vec3 right = GetTransform()->GetRight(); 
+		vec3 up = vec3::UP;
+		vec3 currPos = GetTransform()->GetPosition(); 
 
 		//Translate 
 		currPos += forward * m_Move.z * currSpeed * TIME->DeltaTime();
@@ -83,9 +83,8 @@ void FreeCamera::Update()
 		m_TotalPitch = std::max(m_TotalPitch, -1.57f);
 		m_TotalPitch = std::min(m_TotalPitch, 1.57f);
 		m_TotalPitch += look.y * rotSpeed;
-		glm::quat rot = glm::quat(0, 0, 0, 1);
-		rot = glm::rotate(rot, m_TotalYaw, glm::vec3(0, 1, 0));
-		rot = glm::rotate(rot, m_TotalPitch, glm::normalize(glm::vec3(right.x, 0, right.z)));
+		quat rot = quat( vec3::UP, m_TotalYaw );
+		rot = rot * quat( m_TotalPitch, etm::normalize(vec3(right.x, 0, right.z)) );
 		//rot = glm::rotate(rot, m_TotalPitch, glm::normalize(glm::vec3(right.x, right.y, 0)));
 		//rot = glm::rotate(rot, 3.1415f, forward);
 		TRANSFORM->SetRotation(rot);

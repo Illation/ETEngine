@@ -75,22 +75,22 @@ void Triangulator::Precalculate()
 	}
 	//height multipliers
 	m_HeightMultLUT.clear();
-	glm::vec3 a = m_Icosahedron[0].a;
-	glm::vec3 b = m_Icosahedron[0].b;
-	glm::vec3 c = m_Icosahedron[0].c;
-	glm::vec3 center = (a + b + c) / 3.f;
-	center *= m_pPlanet->GetRadius() / glm::length(center);//+maxHeight
-	m_HeightMultLUT.push_back(1 / glm::dot(glm::normalize(a), glm::normalize(center)));
+	vec3 a = m_Icosahedron[0].a;
+	vec3 b = m_Icosahedron[0].b;
+	vec3 c = m_Icosahedron[0].c;
+	vec3 center = (a + b + c) / 3.f;
+	center *= m_pPlanet->GetRadius() / etm::length(center);//+maxHeight
+	m_HeightMultLUT.push_back(1 / etm::dot( etm::normalize(a), etm::normalize(center)));
 	float normMaxHeight = m_pPlanet->GetMaxHeight() / m_pPlanet->GetRadius();
 	for (int32 i = 1; i <= m_MaxLevel; i++)
 	{
-		glm::vec3 A = b + ((c - b)*0.5f);
-		glm::vec3 B = c + ((a - c)*0.5f);
+		vec3 A = b + ((c - b)*0.5f);
+		vec3 B = c + ((a - c)*0.5f);
 		c = a + ((b - a)*0.5f);
-		a = A*m_pPlanet->GetRadius() / glm::length(A);
-		b = B*m_pPlanet->GetRadius() / glm::length(B);
-		c *= m_pPlanet->GetRadius() / glm::length(c);
-		m_HeightMultLUT.push_back(1 / glm::dot(glm::normalize(a), glm::normalize(center)) + normMaxHeight);
+		a = A * m_pPlanet->GetRadius() / etm::length(A);
+		b = B * m_pPlanet->GetRadius() / etm::length(B);
+		c *= m_pPlanet->GetRadius() / etm::length(c);
+		m_HeightMultLUT.push_back(1 / etm::dot( etm::normalize(a), etm::normalize(center)) + normMaxHeight);
 	}
 }
 
@@ -100,8 +100,8 @@ void Triangulator::GenerateGeometry()
 	//The distances generated should keep the triangles smaller than m_AllowedTriPx at any level
 	//In future only recalculate on FOV or triangle density change
 	m_DistanceLUT.clear();
-	float sizeL = glm::length(m_Icosahedron[0].a - m_Icosahedron[0].b);
-	float frac = tanf((m_AllowedTriPx * glm::radians(m_pFrustum->GetFOV())) / WINDOW.Width);
+	float sizeL = etm::length(m_Icosahedron[0].a - m_Icosahedron[0].b);
+	float frac = tanf((m_AllowedTriPx * etm::radians(m_pFrustum->GetFOV())) / WINDOW.Width);
 	for (int32 level = 0; level < m_MaxLevel+5; level++)
 	{
 		m_DistanceLUT.push_back(sizeL / frac);

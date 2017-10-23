@@ -19,6 +19,6 @@ void FixedCamera::Initialize()
 
 	GetTransform()->SetPosition(2.5, -2, -2.5f);
 
-	GetTransform()->RotateEuler(0, glm::radians(45.f), 0);
-	GetTransform()->RotateEuler(glm::radians(20.f), 0, glm::radians(20.f));
+	GetTransform()->RotateEuler( 0, etm::PI_DIV4, 0 );
+	GetTransform()->RotateEuler( etm::PI_DIV4 * 0.41f, 0, etm::PI_DIV4 * 0.41f );
 }
