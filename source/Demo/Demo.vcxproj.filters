@@ -30,6 +30,8 @@
     <ClCompile Include="Scenes\TestScene.cpp">
       <Filter>Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainFramework.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Materials\EmissiveMaterial.hpp">
@@ -59,5 +61,7 @@
     <ClInclude Include="Scenes\TestScene.hpp">
       <Filter>Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="MainFramework.hpp" />
+    <ClInclude Include="stdafx.hpp" />
   </ItemGroup>
 </Project>

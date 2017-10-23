@@ -207,6 +207,7 @@
     <ClCompile Include="StaticDependancies\glad\glad.c">
       <Filter>StaticDependancies\glad</Filter>
     </ClCompile>
+    <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Context.hpp">
@@ -425,5 +426,6 @@
     <ClInclude Include="StaticDependancies\glad\glad.h">
       <Filter>StaticDependancies\glad</Filter>
     </ClInclude>
+    <ClInclude Include="stdafx.hpp" />
   </ItemGroup>
 </Project>
