@@ -7,14 +7,14 @@ class DirectionalShadowData;
 class Light
 {
 public:
-	Light(glm::vec3 col = glm::vec3(1, 1, 1)
+	Light(vec3 col = vec3(1, 1, 1)
 		, float b = 1)
 		:color(col), brightness(b) {}
 	virtual ~Light() {}
 
 	//Basic light
-	void SetColor(glm::vec3 col) { color = col; m_Update = true; }
-	glm::vec3 GetColor() { return color; }
+	void SetColor(vec3 col) { color = col; m_Update = true; }
+	vec3 GetColor() { return color; }
 	void SetBrightness(float b) { brightness = b; m_Update = true; }
 	float GetBrightness() { return brightness; }
 
@@ -24,18 +24,19 @@ public:
 	virtual void GenerateShadow(TransformComponent* pTransform) {}
 
 protected:
-	glm::vec3 color;
+	vec3 color;
 	float brightness;
 	friend class LightComponent;
 	virtual void UploadVariables(GLuint program, TransformComponent* comp, uint32 index) = 0;
 	virtual void DrawVolume(TransformComponent* pTransform) {};
 	bool m_Update = true;
 };
+
+
 class PointLight : public Light
 {
 public:
-	PointLight(glm::vec3 col = glm::vec3(1, 1, 1),
-		float brightness = 1, float rad = 1)
+	PointLight(vec3 col = vec3(1, 1, 1), float brightness = 1, float rad = 1)
 		:Light(col, brightness), radius(rad){}
 
 	void SetRadius(float rad) { radius = rad;  m_Update = true;}
@@ -47,11 +48,11 @@ protected:
 	float radius;
 	virtual void UploadVariables(GLuint program, TransformComponent* comp, uint32 index);
 };
+
 class DirectionalLight : public Light
 {
 public:
-	DirectionalLight(glm::vec3 col = glm::vec3(1, 1, 1)
-		, float brightness = 1)
+	DirectionalLight(vec3 col = vec3(1, 1, 1), float brightness = 1)
 		:Light(col, brightness){}
 	virtual ~DirectionalLight()
 	{

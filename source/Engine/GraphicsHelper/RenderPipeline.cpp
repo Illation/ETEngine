@@ -95,9 +95,9 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 
 	//reset viewport
 	int32 width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
-	m_pState->SetViewport(glm::ivec2(0), glm::ivec2(width, height));
+	m_pState->SetViewport(ivec2(0), ivec2(width, height));
 
-	m_pState->SetClearColor(glm::vec4(m_ClearColor, 1.f));
+	m_pState->SetClearColor(vec4(m_ClearColor, 1.f));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	m_pState->SetFaceCullingMode(GL_BACK);

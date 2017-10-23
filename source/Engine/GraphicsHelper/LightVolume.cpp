@@ -35,7 +35,7 @@ void PointLightVolume::Initialize()
 
 	IsInitialized = true;
 }
-void PointLightVolume::Draw(glm::vec3 pos, float radius, glm::vec3 col)
+void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 {
 	//Make sure everything is set up
 	if (!IsInitialized)
@@ -48,7 +48,7 @@ void PointLightVolume::Draw(glm::vec3 pos, float radius, glm::vec3 col)
 	if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
 		return;
 
-	glm::mat4 World = glm::translate(pos)*glm::scale(glm::vec3(radius));
+	mat4 World = etm::translate(pos)*etm::scale(vec3(radius));
 
 	//Draw the null material in the stencil buffer
 	//STATE->SetDepthEnabled(true);
@@ -92,7 +92,7 @@ void DirectLightVolume::Initialize()
 
 	IsInitialized = true;
 }
-void DirectLightVolume::Draw(glm::vec3 dir, glm::vec3 col)
+void DirectLightVolume::Draw(vec3 dir, vec3 col)
 {
 	if (!IsInitialized) Initialize();
 
@@ -111,15 +111,15 @@ void DirectLightVolume::Draw(glm::vec3 dir, glm::vec3 col)
 	//for position reconstruction
 	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "projectionA"), CAMERA->GetDepthProjA());
 	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "projectionB"), CAMERA->GetDepthProjB());
-	glUniformMatrix4fv(glGetUniformLocation(m_pShader->GetProgram(), "viewProjInv"), 1, GL_FALSE, glm::value_ptr(CAMERA->GetStatViewProjInv()));
-	glUniform3fv(m_uCamPos, 1, glm::value_ptr(CAMERA->GetTransform()->GetPosition()));
+	glUniformMatrix4fv(glGetUniformLocation(m_pShader->GetProgram(), "viewProjInv"), 1, GL_FALSE, etm::valuePtr(CAMERA->GetStatViewProjInv()));
+	glUniform3fv(m_uCamPos, 1, etm::valuePtr(CAMERA->GetTransform()->GetPosition()));
 
-	glUniform3fv(m_uDir, 1, glm::value_ptr(dir));
-	glUniform3fv(m_uCol, 1, glm::value_ptr(col));
+	glUniform3fv(m_uDir, 1, etm::valuePtr(dir));
+	glUniform3fv(m_uCol, 1, etm::valuePtr(col));
 
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 }
-void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalShadowData *pShadow)
+void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *pShadow)
 {
 	if (!IsInitialized) Initialize();
 
@@ -137,16 +137,16 @@ void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalSh
 	//for position reconstruction
 	glUniform1f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "projectionA"), CAMERA->GetDepthProjA());
 	glUniform1f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "projectionB"), CAMERA->GetDepthProjB());
-	glUniformMatrix4fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "viewProjInv"), 1, GL_FALSE, glm::value_ptr(CAMERA->GetStatViewProjInv()));
-	glUniform3fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "camPos"), 1, glm::value_ptr(CAMERA->GetTransform()->GetPosition()));
+	glUniformMatrix4fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "viewProjInv"), 1, GL_FALSE, etm::valuePtr(CAMERA->GetStatViewProjInv()));
+	glUniform3fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "camPos"), 1, etm::valuePtr(CAMERA->GetTransform()->GetPosition()));
 
 	//Camera info
 	glUniformMatrix4fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "CameraView")
-		, 1, GL_FALSE, glm::value_ptr(CAMERA->GetView()));
+		, 1, GL_FALSE, etm::valuePtr(CAMERA->GetView()));
 
 	//light info
-	glUniform3fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Direction"), 1, glm::value_ptr(dir));
-	glUniform3fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Color"), 1, glm::value_ptr(col));
+	glUniform3fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Direction"), 1, etm::valuePtr(dir));
+	glUniform3fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Color"), 1, etm::valuePtr(col));
 
 	//shadow info
 	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "PcfSamples"), GRAPHICS.NumPCFSamples);
@@ -158,7 +158,7 @@ void DirectLightVolume::DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalSh
 		//Light Projection
 		glUniformMatrix4fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(),
 			(ligStr + std::to_string(i) + "].LightVP").c_str()), 
-			1, GL_FALSE, glm::value_ptr(pShadow->m_Cascades[i].lightVP));
+			1, GL_FALSE, etm::valuePtr(pShadow->m_Cascades[i].lightVP));
 
 		//Shadow map
 		glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(),

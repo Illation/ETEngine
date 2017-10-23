@@ -7,28 +7,28 @@ string to_string(vec3 in)
 	return to_string(in.x) + ", " + to_string(in.y) + ", " + to_string(in.z);
 }
 
-std::vector<glm::vec3> GetIcosahedronPositions(float size)
+std::vector<vec3> GetIcosahedronPositions(float size)
 {
 	float ratio = (1.f + sqrt(5.f)) / 2.f;
-	float scale = size / glm::length(glm::vec2(ratio, 1.f));
+	float scale = size / etm::length(vec2(ratio, 1.f));
 	ratio *= scale;
 
-	std::vector<glm::vec3> ico;
+	std::vector<vec3> ico;
 	//X plane
-	ico.push_back(glm::vec3(ratio, 0, -scale));		//rf 0
-	ico.push_back(glm::vec3(-ratio, 0, -scale));	//lf 1
-	ico.push_back(glm::vec3(ratio, 0, scale));		//rb 2
-	ico.push_back(glm::vec3(-ratio, 0, scale));		//lb 3 
+	ico.push_back(vec3(ratio, 0, -scale));	//rf 0
+	ico.push_back(vec3(-ratio, 0, -scale));	//lf 1
+	ico.push_back(vec3(ratio, 0, scale));	//rb 2
+	ico.push_back(vec3(-ratio, 0, scale));	//lb 3 
 	//Y plane													 
-	ico.push_back(glm::vec3(0, -scale, ratio));		//db 4
-	ico.push_back(glm::vec3(0, -scale, -ratio));	//df 5
-	ico.push_back(glm::vec3(0, scale, ratio));		//ub 6
-	ico.push_back(glm::vec3(0, scale, -ratio));		//uf 7
+	ico.push_back(vec3(0, -scale, ratio));	//db 4
+	ico.push_back(vec3(0, -scale, -ratio));	//df 5
+	ico.push_back(vec3(0, scale, ratio));	//ub 6
+	ico.push_back(vec3(0, scale, -ratio));	//uf 7
 	//Z plane													 
-	ico.push_back(glm::vec3(-scale, ratio, 0));		//lu 8
-	ico.push_back(glm::vec3(-scale, -ratio, 0));	//ld 9
-	ico.push_back(glm::vec3(scale, ratio, 0));		//ru 10
-	ico.push_back(glm::vec3(scale, -ratio, 0));		//rd 11
+	ico.push_back(vec3(-scale, ratio, 0));	//lu 8
+	ico.push_back(vec3(-scale, -ratio, 0));	//ld 9
+	ico.push_back(vec3(scale, ratio, 0));	//ru 10
+	ico.push_back(vec3(scale, -ratio, 0));	//rd 11
 
 	return ico;
 }

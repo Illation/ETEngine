@@ -181,6 +181,6 @@ void AbstractFramework::GameLoop()
 void AbstractFramework::ClearTarget()
 {
 	// Clear the screen to white
-	STATE->SetClearColor(glm::vec4(1));
+	STATE->SetClearColor(vec4(1));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

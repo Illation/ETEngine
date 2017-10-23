@@ -4,10 +4,10 @@
 class EmissiveMaterial : public Material
 {
 public:
-	EmissiveMaterial(glm::vec3 col = glm::vec3(1, 1, 1));
+	EmissiveMaterial(vec3 col = vec3(1, 1, 1));
 	~EmissiveMaterial();
 
-	void SetCol(glm::vec3 col) { m_Color = col; }
+	void SetCol(vec3 col) { m_Color = col; }
 private:
 	void LoadTextures();
 	void AccessShaderAttributes();
@@ -17,6 +17,6 @@ private:
 private:
 	//Parameters
 	GLint m_uCol;
-	glm::vec3 m_Color;
+	vec3 m_Color;
 };
 

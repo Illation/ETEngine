@@ -57,7 +57,7 @@ void PlanetTestScene::Initialize()
 	//m_pLight->SetShadowEnabled(true);
 	m_pLigEntity->AddComponent(new LightComponent( m_pLight));
 	m_pLigEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
-	//m_pLigEntity->GetTransform()->SetRotation(glm::lookAtLH())
+	//m_pLigEntity->GetTransform()->SetRotation(etm::lookAt())
 	AddEntity(m_pLigEntity);
 
 	SETTINGS->Window.VSync(true);
@@ -103,7 +103,7 @@ void PlanetTestScene::Update()
 
 	//Calculate far plane based on planet
 	float radius = max(m_pPlanet->GetRadius() + m_pPlanet->GetMaxHeight(), m_pPlanet->GetRadius() + m_pPlanet->GetAtmosphereHeight());
-	float altitude = glm::distance(m_pPlanet->GetTransform()->GetPosition(), CAMERA->GetTransform()->GetPosition()) - m_pPlanet->GetRadius();
+	float altitude = etm::distance(m_pPlanet->GetTransform()->GetPosition(), CAMERA->GetTransform()->GetPosition()) - m_pPlanet->GetRadius();
 	CAMERA->SetFarClippingPlane((sqrtf(powf(m_pPlanet->GetRadius() + altitude, 2) - powf(m_pPlanet->GetRadius(), 2)) +
 		sqrtf(powf(radius, 2) - powf(m_pPlanet->GetRadius(), 2)))*10);
 	CAMERA->SetNearClippingPlane(CAMERA->GetFarPlane()*0.000003f);
@@ -112,15 +112,15 @@ void PlanetTestScene::Update()
 void PlanetTestScene::Draw()
 {
 	TextRenderer::GetInstance()->SetFont(m_pDebugFont);
-	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 0.3f, 0.3f, 1));
-	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string(PERFORMANCE->GetRegularFPS()), glm::vec2(20, 20));
-	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 1, 1, 1));
-	TextRenderer::GetInstance()->DrawText("Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS()), glm::vec2(20, 50));
-	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), glm::vec2(20, 80));
+	TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
+	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string(PERFORMANCE->GetRegularFPS()), vec2(20, 20));
+	TextRenderer::GetInstance()->SetColor(vec4(1, 1, 1, 1));
+	TextRenderer::GetInstance()->DrawText("Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS()), vec2(20, 50));
+	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), vec2(20, 80));
 
-	float altitude = glm::distance(m_pPlanet->GetTransform()->GetPosition(), CAMERA->GetTransform()->GetPosition()) - m_pPlanet->GetRadius();
-	TextRenderer::GetInstance()->DrawText("Altitude: " + std::to_string(altitude), glm::vec2(20, 110));
-	TextRenderer::GetInstance()->DrawText("Vertices: " + std::to_string(m_pPlanet->GetVertexCount()), glm::vec2(20, 140));
+	float altitude = etm::distance(m_pPlanet->GetTransform()->GetPosition(), CAMERA->GetTransform()->GetPosition()) - m_pPlanet->GetRadius();
+	TextRenderer::GetInstance()->DrawText("Altitude: " + std::to_string(altitude), vec2(20, 110));
+	TextRenderer::GetInstance()->DrawText("Vertices: " + std::to_string(m_pPlanet->GetVertexCount()), vec2(20, 140));
 }
 
 void PlanetTestScene::DrawForward()

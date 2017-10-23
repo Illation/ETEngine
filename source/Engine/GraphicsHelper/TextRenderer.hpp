@@ -8,9 +8,9 @@ class TextRenderer : public Singleton<TextRenderer>
 public:
 
 #undef DrawText
-	void DrawText(std::string &text, glm::vec2 pos);
+	void DrawText(std::string &text, vec2 pos);
 	void SetFont(SpriteFont* pFont);
-	void SetColor(glm::vec4 color) { m_Color = color; }
+	void SetColor(vec4 color) { m_Color = color; }
 
 private:
 
@@ -24,10 +24,10 @@ private:
 
 	struct TextVertex
 	{
-		glm::vec3 Position;
-		glm::vec4 Color;
-		glm::vec2 TexCoord;
-		glm::vec2 CharacterDimension;
+		vec3 Position;
+		vec4 Color;
+		vec2 TexCoord;
+		vec2 CharacterDimension;
 		uint32 ChannelId;
 	};
 
@@ -39,8 +39,8 @@ private:
 	std::vector<SpriteFont*> m_pSpriteFonts;
 
 	uint32 m_BufferSize, m_NumCharacters;
-	glm::mat4 m_Transform;
-	glm::vec4 m_Color = glm::vec4(0, 0, 0, 1);
+	mat4 m_Transform;
+	vec4 m_Color = vec4(0, 0, 0, 1);
 	size_t m_ActiveFontIdx;
 
 	GLint m_uTransform;

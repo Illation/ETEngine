@@ -35,26 +35,26 @@ void Material::Initialize()
 	}
 }
 
-void Material::UploadVariables(glm::mat4 matModel)
+void Material::UploadVariables(mat4 matModel)
 {
 	STATE->SetShader(m_Shader);
 	//Upload matrices
 	if (m_StandardTransform)
 	{
-		glUniformMatrix4fv(m_UniMatModel, 1, GL_FALSE, glm::value_ptr(matModel));
-		glUniformMatrix4fv(m_UniMatWVP, 1, GL_FALSE, glm::value_ptr(CAMERA->GetViewProj()));
+		glUniformMatrix4fv(m_UniMatModel, 1, GL_FALSE, etm::valuePtr(matModel));
+		glUniformMatrix4fv(m_UniMatWVP, 1, GL_FALSE, etm::valuePtr(CAMERA->GetViewProj()));
 	}
 
 	UploadDerivedVariables();
 }
-void Material::UploadVariables(glm::mat4 matModel, const glm::mat4 &matWVP)
+void Material::UploadVariables(mat4 matModel, const mat4 &matWVP)
 {
 	STATE->SetShader(m_Shader);
 	//Upload matrices
 	if (m_StandardTransform)
 	{
-		glUniformMatrix4fv(m_UniMatModel, 1, GL_FALSE, glm::value_ptr(matModel));
-		glUniformMatrix4fv(m_UniMatWVP, 1, GL_FALSE, glm::value_ptr(matWVP));
+		glUniformMatrix4fv(m_UniMatModel, 1, GL_FALSE, etm::valuePtr(matModel));
+		glUniformMatrix4fv(m_UniMatWVP, 1, GL_FALSE, etm::valuePtr(matWVP));
 	}
 
 	UploadDerivedVariables();

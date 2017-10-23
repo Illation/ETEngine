@@ -6,7 +6,7 @@
 #include <algorithm>
 
 FreeCamera::FreeCamera()
-	:m_Move(glm::vec3(0))
+	:m_Move(vec3(0))
 {
 }
 
@@ -85,8 +85,8 @@ void FreeCamera::Update()
 		m_TotalPitch += look.y * rotSpeed;
 		quat rot = quat( vec3::UP, m_TotalYaw );
 		rot = rot * quat( m_TotalPitch, etm::normalize(vec3(right.x, 0, right.z)) );
-		//rot = glm::rotate(rot, m_TotalPitch, glm::normalize(glm::vec3(right.x, right.y, 0)));
-		//rot = glm::rotate(rot, 3.1415f, forward);
+		//rot = etm::rotate(rot, etm::normalize(vec3(right.x, right.y, 0)), m_TotalPitch);
+		//rot = etm::rotate(rot, forward, etm::PI);
 		TRANSFORM->SetRotation(rot);
 	}
 }

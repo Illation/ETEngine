@@ -4,7 +4,7 @@
 #include "../../Engine/Graphics/MeshFilter.hpp"
 
 
-EmissiveMaterial::EmissiveMaterial(glm::vec3 col):
+EmissiveMaterial::EmissiveMaterial(vec3 col):
 	Material("Shaders/FwdEmissiveShader.glsl"),
 	m_Color(col)
 {

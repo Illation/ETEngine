@@ -13,7 +13,7 @@ RenderState::~RenderState()
 
 void RenderState::Initialize()
 {
-	m_ViewportSize = glm::ivec2(WINDOW.Width, WINDOW.Height);
+	m_ViewportSize = ivec2(WINDOW.Width, WINDOW.Height);
 
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_NumTextureUnits);
 	for (int32 i = 0; i < m_NumTextureUnits; i++)
@@ -98,7 +98,7 @@ void RenderState::SetBlendFunction(GLenum sFactor, GLenum dFactor)
 	}
 }
 
-void RenderState::SetViewport(glm::ivec2 pos, glm::ivec2 size)
+void RenderState::SetViewport(ivec2 pos, ivec2 size)
 {
 	if (!(m_ViewportPosition == pos && m_ViewportSize == size))
 	{
@@ -108,9 +108,9 @@ void RenderState::SetViewport(glm::ivec2 pos, glm::ivec2 size)
 	}
 }
 
-void RenderState::SetClearColor(glm::vec4 col)
+void RenderState::SetClearColor(vec4 col)
 {
-	if (!(m_ClearColor == col))
+	if (!(etm::nearEqualsV(m_ClearColor, col)))
 	{
 		m_ClearColor = col;
 		glClearColor(col.r, col.g, col.b, col.a);

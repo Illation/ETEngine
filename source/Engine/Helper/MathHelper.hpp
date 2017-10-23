@@ -1,43 +1,43 @@
 #pragma once
 
-string to_string(vec3 in);
+string to_string(vec3 in); // #todo move to vector implementation, also provide for matrix and quat
 
 struct Plane
 {
 	Plane()
 	{
-		n = glm::vec3(0, 1, 0);
-		d = glm::vec3(0, 0, 0);
+		n = vec3(0, 1, 0);
+		d = vec3(0, 0, 0);
 	}
-	Plane(glm::vec3 normal, glm::vec3 det)
+	Plane(vec3 normal, vec3 det)
 	{
 		n = normal;
 		d = det;
 	}
-	Plane(glm::vec3 a, glm::vec3 b, glm::vec3 c)
+	Plane(vec3 a, vec3 b, vec3 c)
 	{
 		d = a;
-		n = glm::normalize(glm::cross(-b + a, c - a));
+		n = etm::normalize(etm::cross(-b + a, c - a));
 	}
-	glm::vec3 n;
-	glm::vec3 d;
+	vec3 n;
+	vec3 d;
 };
 struct Sphere
 {
 	Sphere()
 	{
 		radius = 1;
-		pos = glm::vec3(0, 0, 0);
+		pos = vec3(0, 0, 0);
 	}
-	Sphere(glm::vec3 position, float size)
+	Sphere(vec3 position, float size)
 	{
 		pos = position;
 		radius = size;
 	}
-	glm::vec3 pos;
+	vec3 pos;
 	float radius;
 };
 
-std::vector<glm::vec3> GetIcosahedronPositions(float size = 1);
+std::vector<vec3> GetIcosahedronPositions(float size = 1);
 std::vector<uint32> GetIcosahedronIndices();//For inverse winding
 std::vector<uint32> GetIcosahedronIndicesBFC();//for uniform winding
