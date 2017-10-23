@@ -60,7 +60,7 @@ void AbstractScene::RootInitialize()
 	//Create SceneContext
 	FreeCamera* freeCam = new FreeCamera();
 	freeCam->GetTransform()->SetPosition(0, -1, -3.5);
-	freeCam->GetTransform()->RotateEuler(glm::radians(20.f), 0, 0);
+	freeCam->GetTransform()->RotateEuler(etm::radians(20.f), 0, 0);
 	AddEntity(freeCam);
 	m_pDefaultCam = freeCam->GetComponent<CameraComponent>();
 	m_pTime = new Time();

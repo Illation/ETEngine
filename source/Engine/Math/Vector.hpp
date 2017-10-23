@@ -555,6 +555,18 @@ namespace etm
 		return angleFastUnsigned(normalize(lhs), normalize(rhs));
 	}
 
+	//access to array for the graphics api
+	template<unsigned int n, typename T>
+	T const* valuePtr( vector<n, T> const& vec )
+	{
+		return &(vec[0]);
+	}
+	template<unsigned int n, typename T>
+	T* valuePtr( vector<n, T>& vec )
+	{
+		return &(vec[0]);
+	}
+
 	//dimension specific operations
 	//*****************************
 	//vec2
@@ -604,7 +616,7 @@ namespace etm
 		outAxis = normalize(outAxis);
 		return result;
 	}
-
+	
 } // namespace etm
 
 //shorthands

@@ -3,11 +3,6 @@
 #include <vector>
 #include <map>
 #include <string>
-//Use lefthanded coordinate system
-#ifndef GLM_LEFT_HANDED
-	#define GLM_LEFT_HANDED
-#endif
-#include <glm.hpp>
 #include "../Helper/MathHelper.hpp"
 
 class Material;
@@ -70,19 +65,19 @@ private:
 
 	size_t m_VertexCount = 0, m_IndexCount = 0;
 	uint32 m_SupportedFlags = 0;
-	std::vector<glm::vec3> m_Positions;
-	std::vector<glm::vec3> m_Normals;
-	std::vector<glm::vec3> m_BiNormals;
-	std::vector<glm::vec3> m_Tangents;
-	std::vector<glm::vec4> m_Colors;
-	std::vector<glm::vec2> m_TexCoords;
+	std::vector<vec3> m_Positions;
+	std::vector<vec3> m_Normals;
+	std::vector<vec3> m_BiNormals;
+	std::vector<vec3> m_Tangents;
+	std::vector<vec4> m_Colors;
+	std::vector<vec2> m_TexCoords;
 
 	std::vector<GLuint> m_Indices;
 
 	std::vector<VertexObject> m_Objects;
 
 	std::string m_Name;
-	glm::vec4 m_DefaultColor;
+	vec4 m_DefaultColor;
 
 	Sphere m_BoundingSphere;
 

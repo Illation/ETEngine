@@ -25,7 +25,7 @@ private:
 		m_SpeedMultiplier = 1;
 	CameraComponent *m_pCamera = nullptr;
 
-	glm::vec3 m_Move;
+	vec3 m_Move;
 	float m_Acceleration = 5;
 
 private:

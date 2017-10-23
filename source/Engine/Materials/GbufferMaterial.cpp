@@ -10,8 +10,8 @@
 
 GbufferMaterial::GbufferMaterial() :
 	Material("Shaders/DefUberShader.glsl"),
-	m_DiffuseColor(glm::vec3(0.65f, 0.65f, 0.65f)),
-	m_SpecularColor(glm::vec3(1.0f, 1.0f, 1.0f))
+	m_DiffuseColor(vec3(0.65f, 0.65f, 0.65f)),
+	m_SpecularColor(vec3(1.0f, 1.0f, 1.0f))
 {
 	m_LayoutFlags = VertexFlags::POSITION | VertexFlags::NORMAL | VertexFlags::TANGENT | VertexFlags::TEXCOORD;
 }

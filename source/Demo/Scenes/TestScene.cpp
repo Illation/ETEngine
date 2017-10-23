@@ -45,7 +45,7 @@ void TestScene::Initialize()
 		"Resources/Textures/NormalMap.png");
 	m_pMat->SetSpecular(0.5f);
 
-	m_pLightMat = new EmissiveMaterial(glm::vec3(500));
+	m_pLightMat = new EmissiveMaterial(vec3(500));
 
 	//SetSkybox("Resources/Textures/skybox/sb.jpg");
 	//SetSkybox("Resources/Textures/TropicalRuins_3k.hdr");
@@ -148,7 +148,7 @@ void TestScene::Update()
 		m_Lights[i].time2 += TIME->DeltaTime();
 		float timeMult2 = m_Lights[i].timeMult2 * (1 + 0.9f*std::cosf(m_Lights[i].time2));
 		m_Lights[i].angle2 += TIME->DeltaTime()*0.5f*timeMult2;
-		glm::vec3 pos = m_Lights[i].origin + glm::vec3(m_Lights[i].radius*std::cosf(m_Lights[i].angle)
+		vec3 pos = m_Lights[i].origin + vec3(m_Lights[i].radius*std::cosf(m_Lights[i].angle)
 			, -m_Lights[i].radius2*std::sinf(m_Lights[i].angle2), -m_Lights[i].radius*std::sinf(m_Lights[i].angle));
 		m_Lights[i].light->GetTransform()->SetPosition(pos);
 		m_Lights[i].comp->SetBrightness(m_Lights[i].comp->GetBrightness()+std::cosf(m_Lights[i].angle) * 3.5f);
@@ -218,12 +218,12 @@ void TestScene::Update()
 void TestScene::Draw()
 {
 	TextRenderer::GetInstance()->SetFont(m_pDebugFont);
-	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 0.3f, 0.3f, 1));
-	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string(PERFORMANCE->GetRegularFPS()), glm::vec2(20, 20));
-	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 1, 1, 1));
-	TextRenderer::GetInstance()->DrawText("Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS()), glm::vec2(20, 50));
-	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), glm::vec2(20, 80));
-	TextRenderer::GetInstance()->DrawText("Lights: " + std::to_string((int32)m_Lights.size()), glm::vec2(20, 110));
+	TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
+	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string(PERFORMANCE->GetRegularFPS()), vec2(20, 20));
+	TextRenderer::GetInstance()->SetColor(vec4(1, 1, 1, 1));
+	TextRenderer::GetInstance()->DrawText("Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS()), vec2(20, 50));
+	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), vec2(20, 80));
+	TextRenderer::GetInstance()->DrawText("Lights: " + std::to_string((int32)m_Lights.size()), vec2(20, 110));
 }
 
 void TestScene::DrawForward()

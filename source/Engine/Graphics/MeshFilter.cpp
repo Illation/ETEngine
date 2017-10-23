@@ -146,7 +146,7 @@ void MeshFilter::BuildVertexBuffer(Material* pMaterial)
 
 void MeshFilter::CalculateBoundingVolumes()
 {
-	glm::vec3 center = glm::vec3(0);
+	vec3 center = vec3(0);
 	for (size_t i = 0; i < m_Positions.size(); i++)
 	{
 		center += m_Positions[i];
@@ -155,10 +155,10 @@ void MeshFilter::CalculateBoundingVolumes()
 	float maxRadius = 0;
 	for (size_t i = 0; i < m_Positions.size(); i++)
 	{
-		float dist = glm::distance(center, m_Positions[i]);
+		float dist = etm::distanceSquared(center, m_Positions[i]);
 		if (dist > maxRadius)maxRadius = dist;
 	}
-	m_BoundingSphere = Sphere(center, maxRadius);
+	m_BoundingSphere = Sphere(center, sqrtf(maxRadius));
 }
 
 std::string MeshFilter::PrintFlags(uint32 flags)

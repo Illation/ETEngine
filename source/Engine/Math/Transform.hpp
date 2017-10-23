@@ -121,24 +121,6 @@ namespace etm
 		frame[2] = vec4(forward, 0);
 		frame[3] = vec4( -dot( right, position ), -dot( up, position ), -dot( forward, position ), 1 );
 
-		//transposed version
-		//frame[0][0] = right.x;
-		//frame[1][0] = right.y;
-		//frame[2][0] = right.z;
-		//frame[3][0] = static_cast<T>(0);
-		//frame[0][1] = up.x;
-		//frame[1][1] = up.y;
-		//frame[2][1] = up.z;
-		//frame[3][1] = static_cast<T>(0);
-		//frame[0][2] = forward.x;
-		//frame[1][2] = forward.y;
-		//frame[2][2] = forward.z;
-		//frame[3][2] = static_cast<T>(0);
-		//frame[0][3] = -dot( right, position );
-		//frame[1][3] = -dot( up, position );
-		//frame[2][3] = -dot( forward, position );
-		//frame[3][3] = static_cast<T>(1);
-
 		return frame;
 	}
 

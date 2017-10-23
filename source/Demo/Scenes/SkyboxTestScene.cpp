@@ -72,7 +72,7 @@ void SkyboxTestScene::Initialize()
 	//m_pLight->SetShadowEnabled(true);
 	m_pLigEntity->AddComponent(new LightComponent( m_pLight));
 	m_pLigEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
-	//m_pLigEntity->GetTransform()->SetRotation(glm::lookAtLH())
+	//m_pLigEntity->GetTransform()->SetRotation(etm::lookAt())
 	AddEntity(m_pLigEntity);
 
 	SETTINGS->Window.VSync(true);
@@ -120,11 +120,11 @@ void SkyboxTestScene::Update()
 void SkyboxTestScene::Draw()
 {
 	TextRenderer::GetInstance()->SetFont(m_pDebugFont);
-	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 0.3f, 0.3f, 1));
-	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string(PERFORMANCE->GetRegularFPS()), glm::vec2(20, 20));
-	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 1, 1, 1));
-	TextRenderer::GetInstance()->DrawText("Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS()), glm::vec2(20, 50));
-	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), glm::vec2(20, 80));
+	TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
+	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string(PERFORMANCE->GetRegularFPS()), vec2(20, 20));
+	TextRenderer::GetInstance()->SetColor(vec4(1, 1, 1, 1));
+	TextRenderer::GetInstance()->DrawText("Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS()), vec2(20, 50));
+	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), vec2(20, 80));
 }
 
 void SkyboxTestScene::DrawForward()

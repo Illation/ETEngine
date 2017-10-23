@@ -9,7 +9,7 @@
 
 TextRenderer::TextRenderer()
 	:m_BufferSize(500)
-	,m_Transform(glm::mat4())
+	,m_Transform(mat4())
 	,m_NumCharacters(0)
 	,m_pSpriteFonts(std::vector<SpriteFont*>())
 {
@@ -65,12 +65,11 @@ void TextRenderer::Initialize()
 	float scaleX = (width > 0) ? 2.f / width : 0;
 	float scaleY = (height > 0) ? 2.f / height : 0;
 
-	float aaa[16]{
+	m_Transform = mat4({
 		scaleX,	0,			0,		0,
 		0,		-scaleY,	0,		0,
 		0,		0,			1,		0,
-		-1,		1,			0,		1 };
-	m_Transform = glm::make_mat4(aaa);
+		-1,		1,			0,		1 });
 }
 
 void TextRenderer::SetFont(SpriteFont* pFont)
@@ -84,7 +83,7 @@ void TextRenderer::SetFont(SpriteFont* pFont)
 	else m_ActiveFontIdx = pos - m_pSpriteFonts.begin();
 }
 
-void TextRenderer::DrawText(std::string &text, glm::vec2 pos)
+void TextRenderer::DrawText(std::string &text, vec2 pos)
 {
 	if (m_pSpriteFonts.size() > 0)
 	{
@@ -110,7 +109,7 @@ void TextRenderer::Draw()
 	//Enable this objects shader
 	STATE->SetShader(m_pTextShader);
 	STATE->SetActiveTexture(0);
-	glUniformMatrix4fv(m_uTransform, 1, GL_FALSE, glm::value_ptr(m_Transform));
+	glUniformMatrix4fv(m_uTransform, 1, GL_FALSE, etm::valuePtr(m_Transform));
 
 	//Bind Object vertex array
 	STATE->BindVertexArray(m_VAO);
@@ -164,7 +163,7 @@ void TextRenderer::UpdateBuffer()
 						vText.Position.z = 0;
 						vText.Color = cache.Color;
 						vText.TexCoord = metric.TexCoord;
-						vText.CharacterDimension = glm::vec2(metric.Width, metric.Height);
+						vText.CharacterDimension = vec2(metric.Width, metric.Height);
 						vText.ChannelId = metric.Channel;
 
 						tVerts.push_back(vText);

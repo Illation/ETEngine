@@ -53,8 +53,8 @@ void ShadingTestScene::Initialize()
 		"Resources/Textures/NormalMap.png");
 	m_pMat->SetSpecular(0.5f);
 
-	m_pStandMat = new ParamPBRMaterial(glm::vec3(0.95, 0.95f, 0.5f), 0.2f, 0);
-	m_pEnvMat = new ParamPBRMaterial(glm::vec3(0.5f), 0.6f, 0);
+	m_pStandMat = new ParamPBRMaterial(vec3(0.95, 0.95f, 0.5f), 0.2f, 0);
+	m_pEnvMat = new ParamPBRMaterial(vec3(0.5f), 0.6f, 0);
 
 	//Skybox
 	//**************************
@@ -93,14 +93,16 @@ void ShadingTestScene::Initialize()
 	m_pLight = new DirectionalLight(vec3(1, 1, 1), 2.99f);
 	m_pLight->SetShadowEnabled(true);
 	m_pLigEntity->AddComponent(new LightComponent( m_pLight));
-	m_pLigEntity->GetTransform()->SetRotation(glm::rotation(glm::vec3(1, -3, -1), glm::vec3(1, 0, 1)));
+	vec3 axis;
+	float angle = etm::angleSafeAxis( vec3( 1, -3, -1 ), vec3( 1, 0, 1 ), axis );
+	m_pLigEntity->GetTransform()->SetRotation(quat(axis, angle));
 	AddEntity(m_pLigEntity);
 
 	auto pLigEntity = new Entity();
 	auto pLight = new DirectionalLight(vec3(1, 1, 1), 4.5f);
 	pLight->SetShadowEnabled(true);
 	pLigEntity->AddComponent(new LightComponent(pLight));
-	pLigEntity->GetTransform()->SetRotation(glm::rotation(glm::vec3(1, -3, -1), glm::vec3(1, 0, 1)));
+	pLigEntity->GetTransform()->SetRotation(quat(axis, angle));
 	pLigEntity->GetTransform()->RotateEuler(0, 1, 0);
 	AddEntity(pLigEntity);
 
@@ -151,11 +153,11 @@ void ShadingTestScene::Update()
 void ShadingTestScene::Draw()
 {
 	TextRenderer::GetInstance()->SetFont(m_pDebugFont);
-	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 0.3f, 0.3f, 1));
-	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string(PERFORMANCE->GetRegularFPS()), glm::vec2(20, 20));
-	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 1, 1, 1));
-	TextRenderer::GetInstance()->DrawText("Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS()), glm::vec2(20, 50));
-	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), glm::vec2(20, 80));
+	TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
+	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string(PERFORMANCE->GetRegularFPS()), vec2(20, 20));
+	TextRenderer::GetInstance()->SetColor(vec4(1, 1, 1, 1));
+	TextRenderer::GetInstance()->DrawText("Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS()), vec2(20, 50));
+	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), vec2(20, 80));
 }
 
 void ShadingTestScene::DrawForward()

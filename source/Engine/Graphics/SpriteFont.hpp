@@ -3,12 +3,12 @@
 struct TextCache
 {
 public:
-	TextCache(const std::string& text, glm::vec2 pos, glm::vec4 col) :
+	TextCache(const std::string& text, vec2 pos, vec4 col) :
 		Text(text), Position(pos), Color(col) {}
 
 	const std::string Text;
-	glm::vec2 Position;
-	glm::vec4 Color;
+	vec2 Position;
+	vec4 Color;
 
 private:
 	TextCache& operator=(const TextCache &tmp);
@@ -26,7 +26,7 @@ struct FontMetric
 	int16 AdvanceX;
 	uint8 Page;
 	uint8 Channel;
-	glm::vec2 TexCoord;
+	vec2 TexCoord;
 };
 
 class TextureData;

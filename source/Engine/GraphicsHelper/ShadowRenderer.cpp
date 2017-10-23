@@ -30,10 +30,10 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 	//Calculate light camera matrix
 	//*****************************
 	//view
-	glm::vec3 worldPos = pTransform->GetWorldPosition();
-	glm::vec3 lookAt = worldPos - pTransform->GetForward();
-	glm::vec3 upVec = pTransform->GetUp();// glm::vec3(0, 1, 0);//
-	glm::mat4 lightView = glm::lookAtLH(worldPos, lookAt, upVec);
+	vec3 worldPos = pTransform->GetWorldPosition();
+	vec3 lookAt = worldPos - pTransform->GetForward();
+	vec3 upVec = pTransform->GetUp();// vec3::UP;//
+	mat4 lightView = etm::lookAt(worldPos, lookAt, upVec);
 
 	//transform frustum into light space
 	FrustumCorners corners = CAMERA->GetFrustum()->GetCorners();
@@ -44,7 +44,7 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 		//calculate orthographic projection matrix based on cascade
 		float cascadeStart = (i == 0) ? 0 : pShadowData->m_Cascades[i - 1].distance / GRAPHICS.CSMDrawDistance;
 		float cascadeEnd = pShadowData->m_Cascades[i].distance / GRAPHICS.CSMDrawDistance;
-		std::vector<glm::vec3> cascade;
+		std::vector<vec3> cascade;
 		cascade.push_back(corners.na + (corners.fa - corners.na)*cascadeStart);
 		cascade.push_back(corners.nb + (corners.fb - corners.nb)*cascadeStart);
 		cascade.push_back(corners.nc + (corners.fc - corners.nc)*cascadeStart);
@@ -72,15 +72,15 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 		}
 
 		float mult = 0.25f;
-		glm::mat4 lightProjection = glm::ortho(left*mult, right*mult, bottom*mult, top*mult, zNear, zFar*mult);
+		mat4 lightProjection = etm::orthographic(left*mult, right*mult, bottom*mult, top*mult, zNear, zFar*mult);
 
 		//view projection
 		m_LightVP = lightProjection*lightView;
 		pShadowData->m_Cascades[i].lightVP = m_LightVP;
 
 		//Set viewport
-		glm::ivec2 res = pShadowData->m_Cascades[i].pTexture->GetResolution();
-		STATE->SetViewport(glm::ivec2(0), res);
+		ivec2 res = pShadowData->m_Cascades[i].pTexture->GetResolution();
+		STATE->SetViewport(ivec2(0), res);
 		//Set Framebuffer
 		STATE->BindFramebuffer(pShadowData->m_Cascades[i].fbo);
 		//Clear Framebuffer
@@ -91,12 +91,12 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 	}
 }
 
-DirectionalShadowData::DirectionalShadowData(glm::ivec2 Resolution)
+DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 {
 	//Calculate cascade distances
 	m_Cascades.clear();
 	float sizeL = 1;
-	float distMult = GRAPHICS.CSMDrawDistance / powf(2.f, (float)GRAPHICS.NumCascades - 1);
+	float distMult = GRAPHICS.CSMDrawDistance / powf(2.f, static_cast<float>(GRAPHICS.NumCascades - 1));
 	for (int32 cascade = 0; cascade < GRAPHICS.NumCascades; cascade++)
 	{
 		auto data = CascadeData();
