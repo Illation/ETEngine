@@ -34,6 +34,8 @@ namespace etm
 	static const float PI_DIV4 = PI * 0.25f;
 	//30 degrees
 	static const float PI_DIV6 = PI / 6.f;
+	//1 degree
+	static const float PI_DIV180 = PI / 180.f;
 
 	template <class T>
 	inline bool nearEquals(T lhs, T rhs, T epsilon = ETM_DEFAULT_EPSILON_T )

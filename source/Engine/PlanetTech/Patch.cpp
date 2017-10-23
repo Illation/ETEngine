@@ -166,7 +166,7 @@ void Patch::Draw(bool white)
 	glUniformMatrix4fv(m_uViewProj, 1, GL_FALSE, etm::valuePtr(CAMERA->GetViewProj()));
 
 	//Set other uniforms here too!
-	glm::vec3 camPos = m_pPlanet->GetTriangulator()->GetFrustum()->GetPositionOS();
+	vec3 camPos = m_pPlanet->GetTriangulator()->GetFrustum()->GetPositionOS();
 	glUniform3f(m_uCamPos, camPos.x, camPos.y, camPos.z);
 	glUniform1f(m_uRadius, m_pPlanet->GetRadius());
 	glUniform1f(m_uMorphRange, m_MorphRange);
