@@ -50,7 +50,7 @@ void Atmosphere::Initialize()
 }
 void Atmosphere::Draw(Planet* pPlanet, float radius)
 {
-	glm::vec3 pos = pPlanet->GetTransform()->GetPosition();
+	vec3 pos = pPlanet->GetTransform()->GetPosition();
 	float surfaceRadius = pPlanet->GetRadius();
 	radius += surfaceRadius;
 	float icoRadius = radius / 0.996407747f;//scale up the sphere so the face center reaches the top of the atmosphere
@@ -59,12 +59,12 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
 		return;
 																		
-	glm::mat4 World = glm::translate(pos)*glm::scale(glm::vec3(icoRadius));
+	mat4 World = etm::translate(pos)*etm::scale(vec3(icoRadius));
 
 	STATE->SetShader(m_pShader);
 
-	glUniformMatrix4fv(m_uMatModel, 1, GL_FALSE, glm::value_ptr(World));
-	glUniformMatrix4fv(m_uMatWVP, 1, GL_FALSE, glm::value_ptr(CAMERA->GetViewProj()));
+	glUniformMatrix4fv(m_uMatModel, 1, GL_FALSE, etm::valuePtr(World));
+	glUniformMatrix4fv(m_uMatWVP, 1, GL_FALSE, etm::valuePtr(CAMERA->GetViewProj()));
 
 	// #todo: stop repeating this everywhere
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferA"), 0);
@@ -77,10 +77,10 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	}
 	glUniform1f(m_uProjA, CAMERA->GetDepthProjA());
 	glUniform1f(m_uProjB, CAMERA->GetDepthProjB());
-	glUniformMatrix4fv(m_uViewProjInv, 1, GL_FALSE, glm::value_ptr(CAMERA->GetStatViewProjInv()));
-	glUniform3fv(m_uCamPos, 1, glm::value_ptr(CAMERA->GetTransform()->GetPosition()));
+	glUniformMatrix4fv(m_uViewProjInv, 1, GL_FALSE, etm::valuePtr(CAMERA->GetStatViewProjInv()));
+	glUniform3fv(m_uCamPos, 1, etm::valuePtr(CAMERA->GetTransform()->GetPosition()));
 
-	glUniform3fv(m_uPosition, 1, glm::value_ptr(pos));
+	glUniform3fv(m_uPosition, 1, etm::valuePtr(pos));
 	glUniform1f(m_uRadius, radius);
 	glUniform1f(m_uSurfaceRadius, surfaceRadius);
 

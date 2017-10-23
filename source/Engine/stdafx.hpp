@@ -21,14 +21,8 @@ using namespace std;
 #pragma endregion sdl-opengl
 
 #pragma region
-#ifndef GLM_FORCE_LEFT_HANDED
-	#define GLM_FORCE_LEFT_HANDED
-#endif
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
-using namespace glm;
-#pragma endregion glm
+#include "Math/Math.hpp"
+#pragma endregion math
 
 #pragma region
 //*****************************************************************************

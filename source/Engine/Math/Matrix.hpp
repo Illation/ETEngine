@@ -351,6 +351,18 @@ namespace etm
 		return result * detFrac;
 	}
 
+	//access to array for the graphics api
+	template<unsigned int m, unsigned int n, typename T>
+	T const* valuePtr( matrix<m, n, T> const& mat )
+	{
+		return &(mat.data[0][0]);
+	}
+	template<unsigned int m, unsigned int n, typename T>
+	T* valuePtr( matrix<m, n, T>& mat )
+	{
+		return &(mat.data[0][0]);
+	}
+
 }//namespace etm
 
 //shorthands
