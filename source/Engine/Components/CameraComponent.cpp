@@ -49,7 +49,7 @@ void CameraComponent::Update()
 	{
 		float viewWidth = (m_Size>0) ? m_Size * WINDOW.GetAspectRatio() : WINDOW.Width;
 		float viewHeight = (m_Size>0) ? m_Size : WINDOW.Height;
-		m_Projection = etm::ortho(0.f, viewWidth, viewHeight, 0.f, m_NearPlane, m_FarPlane);
+		m_Projection = etm::orthographic(0.f, viewWidth, viewHeight, 0.f, m_NearPlane, m_FarPlane);
 	}
 	//Calculate parameters to linearize depthbuffer values
 	m_DepthProjA = m_FarPlane / (m_FarPlane - m_NearPlane);

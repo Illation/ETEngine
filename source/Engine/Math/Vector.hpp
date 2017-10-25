@@ -59,7 +59,7 @@ namespace etm
 	template<class T>
 	inline T Clamp01(T& value)
 	{
-		return Clamp(T, 0, 1);
+		return Clamp(T, static_cast<T>(0), static_cast<T>(1));
 	}
 
 
@@ -559,12 +559,12 @@ namespace etm
 	template<unsigned int n, typename T>
 	T const* valuePtr( vector<n, T> const& vec )
 	{
-		return &(vec[0]);
+		return &(vec.data[0]);
 	}
 	template<unsigned int n, typename T>
 	T* valuePtr( vector<n, T>& vec )
 	{
-		return &(vec[0]);
+		return &(vec.data[0]);
 	}
 
 	//dimension specific operations

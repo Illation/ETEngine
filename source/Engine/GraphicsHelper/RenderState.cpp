@@ -100,7 +100,7 @@ void RenderState::SetBlendFunction(GLenum sFactor, GLenum dFactor)
 
 void RenderState::SetViewport(ivec2 pos, ivec2 size)
 {
-	if (!(m_ViewportPosition == pos && m_ViewportSize == size))
+	if (!(etm::nearEqualsV(m_ViewportPosition, pos) && etm::nearEqualsV(m_ViewportSize, size)))
 	{
 		m_ViewportPosition = pos;
 		m_ViewportSize = size;

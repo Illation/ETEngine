@@ -7,15 +7,15 @@
 void FrustumCorners::Transform(mat4 space)
 {
 	//move corners of the near plane
-	na = vec3(space*vec4(na, 0));
-	nb = vec3(space*vec4(nb, 0));
-	nc = vec3(space*vec4(nc, 0));
-	nd = vec3(space*vec4(nd, 0));
+	na = (space*vec4(na, 0)).xyz;
+	nb = (space*vec4(nb, 0)).xyz;
+	nc = (space*vec4(nc, 0)).xyz;
+	nd = (space*vec4(nd, 0)).xyz;
 	//move corners of the far plane
-	fa = vec3(space*vec4(fa, 0));
-	fb = vec3(space*vec4(fb, 0));
-	fc = vec3(space*vec4(fc, 0));
-	fd = vec3(space*vec4(fd, 0));
+	fa = (space*vec4(fa, 0)).xyz;
+	fb = (space*vec4(fb, 0)).xyz;
+	fc = (space*vec4(fc, 0)).xyz;
+	fd = (space*vec4(fd, 0)).xyz;
 }
 
 Frustum::Frustum()
@@ -72,7 +72,7 @@ void Frustum::Update()
 	m_Corners.fd = fCenter - m_Up*farHH + m_Right*farHW;
 	m_Corners.Transform(m_CullInverse);
 
-	m_PositionObject = vec3(m_CullInverse*vec4(m_Position, 0));
+	m_PositionObject = (m_CullInverse*vec4(m_Position, 0)).xyz;
 	m_RadInvFOV = 1 / etm::radians(m_FOV);
 
 	//construct planes
