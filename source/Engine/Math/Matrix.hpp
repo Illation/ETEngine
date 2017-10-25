@@ -339,7 +339,11 @@ namespace etm
 
 		vector<4, T> signA(+1, -1, +1, -1);
 		vector<4, T> signB(-1, +1, -1, +1);
-		matrix<4, 4, T> result( new vector<4, T>[4]{ inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB } );
+		matrix<4, 4, T> result( uninitialized );
+		result[0] = inv0 * signA;
+		result[1] = inv1 * signB;
+		result[2] = inv2 * signA;
+		result[3] = inv3 * signB;
 
 		vector<4, T> row0(result[0][0], result[1][0], result[2][0], result[3][0]);
 

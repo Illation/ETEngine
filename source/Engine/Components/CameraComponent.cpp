@@ -63,9 +63,9 @@ void CameraComponent::Update()
 
 	//calculate utility
 	m_ViewInverse = etm::inverse(m_View);
-	m_ViewProjection = m_Projection*m_View;
+	m_ViewProjection = m_View * m_Projection;
 	m_ViewProjectionInverse = etm::inverse(m_View);
-	m_StatViewProj = m_Projection*etm::DiscardW(m_View);
+	m_StatViewProj = etm::DiscardW(m_View) * m_Projection;
 	m_StatViewProjInv = inverse(m_StatViewProj);
 
 	//Update general frustum

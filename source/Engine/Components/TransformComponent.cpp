@@ -50,7 +50,7 @@ void TransformComponent::UpdateTransforms()
 		m_World = m_World * parentWorld;
 
 		m_WorldPosition = (parentWorld * vec4(m_Position, 0)).xyz;
-		m_WorldRotation = m_Rotation * parent->GetTransform()->GetWorldRotation(); //maybe flip
+		m_WorldRotation = parent->GetTransform()->GetWorldRotation() * m_WorldRotation; //maybe flip
 		m_WorldScale = m_Scale * parent->GetTransform()->GetWorldScale();
 	}
 	else
@@ -117,7 +117,7 @@ void TransformComponent::RotateEuler(const vec3& eulerAngles)
 }
 void TransformComponent::Rotate(const quat& rotation)
 {
-	m_Rotation = m_Rotation * rotation;
+	m_Rotation = rotation * m_Rotation;
 }
 
 void TransformComponent::Scale(float x, float y, float z)
