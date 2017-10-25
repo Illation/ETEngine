@@ -8,12 +8,12 @@ public:
 	virtual ~TransformComponent();
 
 	void Translate(float x, float y, float z);
-	void Translate(const vec3& position);
+	void Translate(const vec3& translation );
 	void SetPosition(float x, float y, float z);
 	void SetPosition(const vec3& position);
 
-	//void RotateEuler(float x, float y, float z);
-	//void RotateEuler(const vec3& rotation);
+	void RotateEuler(float x, float y, float z);
+	void RotateEuler(const vec3& eulerAngles );
 	void Rotate(const quat& rotation);
 	void SetRotation(const quat& rotation) { m_Rotation = rotation; }
 
@@ -25,7 +25,7 @@ public:
 	const vec3& GetScale() const { return m_Scale; }
 	const vec3& GetWorldScale() const { return m_WorldScale; }
 	const quat& GetRotation() const { return m_Rotation; }
-	//const vec3& GetYawPitchRoll() const { return vec3(yaw(m_Rotation), pitch(m_Rotation), roll(m_Rotation)); };
+	const vec3& GetEuler() const { return m_Rotation.ToEuler(); }
 	const quat& GetWorldRotation() const { return m_WorldRotation; }
 	const mat4& GetWorld() const { return m_World; }
 

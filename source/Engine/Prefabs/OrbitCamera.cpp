@@ -76,9 +76,9 @@ void OrbitCamera::Update()
 		vec3 right = camTf->GetRight();
 		vec3 up = camTf->GetUp();
 		vec3 currPos = TRANSFORM->GetPosition();
-		currPos += forward*(move.y*currSpeed*dT);
-		currPos += right*(move.x*currSpeed*dT);
-		currPos += up*(move.z*currSpeed*dT);
+		currPos = currPos + forward*(move.y*currSpeed*dT);
+		currPos = currPos + right*(move.x*currSpeed*dT);
+		currPos = currPos + up*(move.z*currSpeed*dT);
 		TRANSFORM->SetPosition(currPos);
 	}
 }

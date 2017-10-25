@@ -47,7 +47,7 @@ void TransformComponent::UpdateTransforms()
 	if (parent)
 	{
 		mat4 parentWorld = parent->GetTransform()->m_World;
-		m_World *= parentWorld;
+		m_World = m_World * parentWorld;
 
 		m_WorldPosition = (parentWorld * vec4(m_Position, 0)).xyz;
 		m_WorldRotation = m_Rotation * parent->GetTransform()->GetWorldRotation(); //maybe flip
@@ -88,37 +88,33 @@ void TransformComponent::DrawForward()
 
 void TransformComponent::Translate(float x, float y, float z)
 {
-	m_IsTransformChanged |= TransformChanged::TRANSLATION;
-	m_Position.x += x;
-	m_Position.y += y;
-	m_Position.z += z;
+	Translate( vec3( x, y, z ) );
 }
-void TransformComponent::Translate(const vec3& position)
+void TransformComponent::Translate(const vec3& translation )
 {
-	Translate(position.x, position.y, position.z);
+	m_IsTransformChanged |= TransformChanged::TRANSLATION;
+	m_Position = m_Position + translation;
 }
 void TransformComponent::SetPosition(float x, float y, float z)
 {
-	m_IsTransformChanged |= TransformChanged::TRANSLATION;
-	m_Position.x = x;
-	m_Position.y = y;
-	m_Position.z = z;
+	SetPosition( vec3( x, y, z ) );
 }
 void TransformComponent::SetPosition(const vec3& position)
 {
-	SetPosition(position.x, position.y, position.z);
+	m_IsTransformChanged |= TransformChanged::TRANSLATION;
+	m_Position = position;
 }
 
-//void TransformComponent::RotateEuler(float x, float y, float z)
-//{
-//	m_IsTransformChanged |= TransformChanged::ROTATION;
-//	
-//	m_Rotation = m_Rotation * quat_cast(eulerAngleYXZ(y, x, z));
-//}
-//void TransformComponent::RotateEuler(const vec3& rotation)
-//{
-//	RotateEuler(rotation.x, rotation.y, rotation.z);
-//}
+void TransformComponent::RotateEuler(float x, float y, float z)
+{
+	RotateEuler(vec3(x, y, z));
+}
+void TransformComponent::RotateEuler(const vec3& eulerAngles)
+{
+	m_IsTransformChanged |= TransformChanged::ROTATION;
+
+	m_Rotation = quat( eulerAngles );
+}
 void TransformComponent::Rotate(const quat& rotation)
 {
 	m_Rotation = m_Rotation * rotation;
@@ -126,12 +122,10 @@ void TransformComponent::Rotate(const quat& rotation)
 
 void TransformComponent::Scale(float x, float y, float z)
 {
-	m_IsTransformChanged |= TransformChanged::SCALE;
-	m_Scale.x = x;
-	m_Scale.y = y;
-	m_Scale.z = z;
+	Scale( vec3( x, y, z ) );
 }
 void TransformComponent::Scale(const vec3& scale)
 {
-	Scale(scale.x, scale.y, scale.z);
+	m_IsTransformChanged |= TransformChanged::SCALE;
+	m_Scale = scale;
 }

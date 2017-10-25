@@ -44,11 +44,11 @@ void FreeCamera::Update()
 		if (move.z == 0) move.z = -(INPUT->IsKeyboardKeyDown('S') ? 1.0f : 0.0f);  
 
 		vec3 delta = move - m_Move;
-		m_Move += delta * m_Acceleration * TIME->DeltaTime();
+		m_Move = m_Move + delta * m_Acceleration * TIME->DeltaTime();
 
 		auto currSpeed = m_MoveSpeed; 
 
-		if (!(move == vec3(0)) || INPUT->IsMouseButtonDown(1))
+		if (!etm::nearEqualsV(move, vec3::ZERO) || INPUT->IsMouseButtonDown(1))
 		{
 			//not delta time dependant
 			float scroll = INPUT->GetMouseWheelDelta().y;
@@ -71,9 +71,9 @@ void FreeCamera::Update()
 		vec3 currPos = GetTransform()->GetPosition(); 
 
 		//Translate 
-		currPos += forward * m_Move.z * currSpeed * TIME->DeltaTime();
-		currPos += up * m_Move.y * currSpeed * TIME->DeltaTime();
-		currPos += right * m_Move.x * currSpeed * TIME->DeltaTime();
+		currPos = currPos + forward * m_Move.z * currSpeed * TIME->DeltaTime();
+		currPos = currPos + up * m_Move.y * currSpeed * TIME->DeltaTime();
+		currPos = currPos + right * m_Move.x * currSpeed * TIME->DeltaTime();
 		TRANSFORM->SetPosition(currPos);
 
 		//Rotate
@@ -84,7 +84,7 @@ void FreeCamera::Update()
 		m_TotalPitch = std::min(m_TotalPitch, 1.57f);
 		m_TotalPitch += look.y * rotSpeed;
 		quat rot = quat( vec3::UP, m_TotalYaw );
-		rot = rot * quat( m_TotalPitch, etm::normalize(vec3(right.x, 0, right.z)) );
+		rot = rot * quat( etm::normalize(vec3(right.x, 0, right.z)), m_TotalPitch );
 		//rot = etm::rotate(rot, etm::normalize(vec3(right.x, right.y, 0)), m_TotalPitch);
 		//rot = etm::rotate(rot, forward, etm::PI);
 		TRANSFORM->SetRotation(rot);

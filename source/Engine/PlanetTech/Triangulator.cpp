@@ -79,7 +79,7 @@ void Triangulator::Precalculate()
 	vec3 b = m_Icosahedron[0].b;
 	vec3 c = m_Icosahedron[0].c;
 	vec3 center = (a + b + c) / 3.f;
-	center *= m_pPlanet->GetRadius() / etm::length(center);//+maxHeight
+	center = center * m_pPlanet->GetRadius() / etm::length(center);//+maxHeight
 	m_HeightMultLUT.push_back(1 / etm::dot( etm::normalize(a), etm::normalize(center)));
 	float normMaxHeight = m_pPlanet->GetMaxHeight() / m_pPlanet->GetRadius();
 	for (int32 i = 1; i <= m_MaxLevel; i++)
@@ -89,7 +89,7 @@ void Triangulator::Precalculate()
 		c = a + ((b - a)*0.5f);
 		a = A * m_pPlanet->GetRadius() / etm::length(A);
 		b = B * m_pPlanet->GetRadius() / etm::length(B);
-		c *= m_pPlanet->GetRadius() / etm::length(c);
+		c = c * m_pPlanet->GetRadius() / etm::length(c);
 		m_HeightMultLUT.push_back(1 / etm::dot( etm::normalize(a), etm::normalize(center)) + normMaxHeight);
 	}
 }
@@ -167,9 +167,9 @@ void Triangulator::RecursiveTriangle(vec3 a, vec3 b, vec3 c, int16 level, bool f
 		vec3 B = c + ((a - c)*0.5f);
 		vec3 C = a + ((b - a)*0.5f);
 		//make the distance from center larger according to planet radius
-		A *= m_pPlanet->GetRadius() / etm::length(A);
-		B *= m_pPlanet->GetRadius() / etm::length(B);
-		C *= m_pPlanet->GetRadius() / etm::length(C);
+		A = A * m_pPlanet->GetRadius() / etm::length(A);
+		B = B * m_pPlanet->GetRadius() / etm::length(B);
+		C = C * m_pPlanet->GetRadius() / etm::length(C);
 		//Make 4 new triangles
 		int16 nLevel = level + 1;
 		RecursiveTriangle(a, B, C, nLevel, next == SPLITCULL);//Winding is inverted

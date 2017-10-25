@@ -427,5 +427,6 @@
       <Filter>StaticDependancies\glad</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.hpp" />
+    <ClInclude Include="Graphics\Frustum.hpp" />
   </ItemGroup>
 </Project>

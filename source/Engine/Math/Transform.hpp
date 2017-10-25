@@ -41,7 +41,7 @@ namespace etm
 
 	//rotation
 	//********
-	// #todo support euler rotations
+	// #todo support euler rotations - for now can be done from a quaternion
 	// #todo support 2D rotations
 	template <class T>
 	matrix<4, 4, T> rotate(const quaternion<T>& rotation)
@@ -127,7 +127,7 @@ namespace etm
 	//projection
 	//**********
 	template <class T>
-	matrix<4, 4, T> orthographic(const T& left, const T& right, const T& top, const T& bottom, const T& near, const T& far)
+	matrix<4, 4, T> orthographic(const T& left, const T& right, const T& top, const T& bottom, const T& nearZ, const T& farZ )
 	{
 		matrix<4, 4, T> result;
 
@@ -136,13 +136,13 @@ namespace etm
 		result[3][0] = -(right + left) / (right - left);
 		result[3][1] = -(top + bottom) / (top - bottom);
 
-		result[2][2] = static_cast<T>(2) / (far - near);
-		result[3][2] = -(far + near) / (far - near);
+		result[2][2] = static_cast<T>(2) / (farZ - nearZ);
+		result[3][2] = -(farZ + nearZ) / (farZ - nearZ);
 		
 		return result;
 	}
 	template <class T>
-	matrix<4, 4, T> perspective(const T& fov, const T& aspect, const T& near, const T& far)
+	matrix<4, 4, T> perspective(const T& fov, const T& aspect, const T& nearZ, const T& farZ)
 	{
 		assert( std::abs( aspect - ETM_DEFAULT_EPSILON ) > static_cast<T>(0) );
 		matrix<4, 4, T> result;
@@ -153,8 +153,8 @@ namespace etm
 		result[1][1] = static_cast<T>(1) / (tanHalfFov);
 		result[2][3] = static_cast<T>(1);
 
-		result[2][2] = (far + near) / (far - near);
-		result[3][2] = -(static_cast<T>(2) * far * near) / (far - near);
+		result[2][2] = (farZ + nearZ) / (farZ - nearZ);
+		result[3][2] = (static_cast<T>(-2) * farZ * nearZ) / (farZ - nearZ);
 		result[3][3] = 0;
 
 		return result;
