@@ -70,6 +70,6 @@ private:
 	// assignment operator.
 	// -------------------------
 	TransformComponent(const TransformComponent& obj);
-	TransformComponent& operator=(const TransformComponent& obj) { delete this; }
+	TransformComponent& operator=( const TransformComponent& obj ) { UNUSED( obj );  delete this; }
 };
 

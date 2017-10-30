@@ -5,6 +5,9 @@ void SetDebuggingOptions();
 
 int wmain(int argc, char *argv[])
 {
+	UNUSED( argc );
+	UNUSED( argv );
+
 	SetDebuggingOptions();
 
 	MainFramework* pFW = new MainFramework();

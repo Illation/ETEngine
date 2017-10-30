@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning(disable : 4201) //nameless struct union - used in math library
 
 #include <initializer_list>
 #include <array>

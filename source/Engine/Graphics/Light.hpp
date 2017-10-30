@@ -19,16 +19,16 @@ public:
 	float GetBrightness() { return brightness; }
 
 	//Shadow stuff
-	virtual void SetShadowEnabled(bool enabled) {}
+	virtual void SetShadowEnabled( bool enabled ) { UNUSED( enabled ); }
 	virtual bool IsShadowEnabled() { return false; }
-	virtual void GenerateShadow(TransformComponent* pTransform) {}
+	virtual void GenerateShadow( TransformComponent* pTransform ) { UNUSED( pTransform ); }
 
 protected:
 	vec3 color;
 	float brightness;
 	friend class LightComponent;
 	virtual void UploadVariables(GLuint program, TransformComponent* comp, uint32 index) = 0;
-	virtual void DrawVolume(TransformComponent* pTransform) {};
+	virtual void DrawVolume( TransformComponent* pTransform ) { UNUSED( pTransform ); };
 	bool m_Update = true;
 };
 

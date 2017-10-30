@@ -1,16 +1,13 @@
 #include "stdafx.hpp"
 
 #include "ShadowRenderer.hpp"
-#include <gtx/transform.hpp>
-#include <gtx/quaternion.hpp>
-#include <gtx/matrix_decompose.hpp>
-#include <gtx/euler_angles.hpp>
 #include "../Materials/NullMaterial.hpp"
 #include "../Graphics/ShaderData.hpp"
 #include "../Graphics/TextureData.hpp"
 #include "../Graphics/Frustum.hpp"
 #include "RenderPipeline.hpp"
 #include "RenderState.hpp"
+#include <limits>
 
 ShadowRenderer::ShadowRenderer(){}
 ShadowRenderer::~ShadowRenderer()
@@ -62,13 +59,13 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 
 		float zNear = -GRAPHICS.CSMDrawDistance;//temp, should be calculated differently
 
-		for (size_t i = 0; i < cascade.size(); i++)
+		for (size_t j = 0; j < cascade.size(); j++)
 		{
-			if (cascade[i].x < left) left = cascade[i].x;
-			if (cascade[i].x > right) right = cascade[i].x;
-			if (cascade[i].y < bottom) bottom = cascade[i].y;
-			if (cascade[i].y > top) top = cascade[i].y;
-			if (cascade[i].z > zFar) zFar = cascade[i].z;
+			if (cascade[j].x < left) left = cascade[j].x;
+			if (cascade[j].x > right) right = cascade[j].x;
+			if (cascade[j].y < bottom) bottom = cascade[j].y;
+			if (cascade[j].y > top) top = cascade[j].y;
+			if (cascade[j].z > zFar) zFar = cascade[j].z;
 		}
 
 		float mult = 0.25f;
