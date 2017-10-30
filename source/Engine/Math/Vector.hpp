@@ -113,6 +113,11 @@ namespace etm
 			return data.at(index);
 		}
 		vector<n, T> operator-();
+
+		//string conversion
+		std::string ToString() const;
+		operator std::string() const { return ToString(); }
+
 	};
 	//specializations
 	//***************
@@ -158,6 +163,10 @@ namespace etm
 			return data.at(index);
 		}
 		vector<2, T> operator-();
+
+		//string conversion
+		std::string ToString() const;
+		operator std::string() const { return ToString(); }
 	};
 
 	//vec3
@@ -231,6 +240,10 @@ namespace etm
 			return data.at(index);
 		}
 		vector<3, T> operator-();
+
+		//string conversion
+		std::string ToString() const;
+		operator std::string() const { return ToString(); }
 	};
 
 	template<typename T> vector<3, T> vector<3, T>::ZERO = vector<3, T>(0.0, 0.0, 0.0);
@@ -349,11 +362,62 @@ namespace etm
 			return data.at(index);
 		}
 		vector<4, T> operator-();
+
+		//string conversion
+		std::string ToString() const;
+		operator std::string() const { return ToString(); }
 	};
 
 
 	//operators
 	//*********
+	template <uint8 n, class T>
+	std::string etm::vector<n, T>::ToString() const
+	{
+		std::string ret = "[";
+		for(uint8 i = 0; i < data.size(); ++i)
+			ret += (i == data.size() - 1) ? (data[i]) : (data[i]+", ");
+		return ret + "]";
+	}
+	template <uint8 n, class T>
+	std::ostream& operator<<( std::ostream& os, etm::vector<n, T>& vec)
+	{
+		return os << vec.ToString();
+	}
+
+	template <class T>
+	std::string etm::vector<2, T>::ToString() const
+	{
+		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + "]";
+	}
+	template <class T>
+	std::ostream& operator<<( std::ostream& os, etm::vector<2, T>& vec)
+	{
+		return os << vec.ToString();
+	}
+
+	template <class T>
+	std::string etm::vector<3, T>::ToString() const
+	{
+		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + "]";
+	}
+	template <class T>
+	std::ostream& operator<<( std::ostream& os, etm::vector<3, T>& vec)
+	{
+		return os << vec.ToString();
+	}
+
+	template <class T>
+	std::string etm::vector<4, T>::ToString() const
+	{
+		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) 
+			+ ", " + std::to_string(z) + ", " + std::to_string(w) + "]";
+	}
+	template <class T>
+	std::ostream& operator<<( std::ostream& os, etm::vector<4, T>& vec)
+	{
+		return os << vec.ToString();
+	}
 
 	//negate
 	template <uint8 n, class T>

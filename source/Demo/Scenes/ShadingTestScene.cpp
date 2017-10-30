@@ -53,7 +53,7 @@ void ShadingTestScene::Initialize()
 		"Resources/Textures/NormalMap.png");
 	m_pMat->SetSpecular(0.5f);
 
-	m_pStandMat = new ParamPBRMaterial(vec3(0.95, 0.95f, 0.5f), 0.2f, 0);
+	m_pStandMat = new ParamPBRMaterial(vec3(0.95f, 0.95f, 0.5f), 0.2f, 0);
 	m_pEnvMat = new ParamPBRMaterial(vec3(0.5f), 0.6f, 0);
 
 	//Skybox

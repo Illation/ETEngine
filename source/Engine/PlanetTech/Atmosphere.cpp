@@ -59,7 +59,8 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
 		return;
 																		
-	mat4 World = etm::translate(pos)*etm::scale(vec3(icoRadius));
+	//mat4 World = etm::translate(pos)*etm::scale(vec3(icoRadius));
+	mat4 World = etm::scale(vec3(icoRadius))*etm::translate(pos);
 
 	STATE->SetShader(m_pShader);
 

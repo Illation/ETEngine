@@ -41,7 +41,7 @@ void TransformComponent::UpdateTransforms()
 
 	//Calculate World Matrix
 	//**********************
-	m_World = etm::translate(m_Position)*etm::rotate(m_Rotation)*etm::scale(m_Scale);
+	m_World = etm::scale(m_Scale)*etm::rotate(m_Rotation)*etm::translate(m_Position);
 
 	Entity* parent = m_pEntity->GetParent();
 	if (parent)
@@ -117,7 +117,7 @@ void TransformComponent::RotateEuler(const vec3& eulerAngles)
 }
 void TransformComponent::Rotate(const quat& rotation)
 {
-	m_Rotation = rotation * m_Rotation;
+	m_Rotation = m_Rotation * rotation;
 }
 
 void TransformComponent::Scale(float x, float y, float z)

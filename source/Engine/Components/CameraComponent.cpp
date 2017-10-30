@@ -59,7 +59,14 @@ void CameraComponent::Update()
 	vec3 worldPos = GetTransform()->GetWorldPosition();
 	vec3 lookAt = worldPos+GetTransform()->GetForward();
 	vec3 upVec = GetTransform()->GetUp();// vec3(0, 1, 0);//
+	std::cout << "worldPos" << worldPos << std::endl;
+	std::cout << "lookAt" << lookAt << std::endl;
+	std::cout << "upVec" << upVec << std::endl;
 	m_View = etm::lookAt(worldPos, lookAt, upVec);
+	std::cout << m_View[0] << std::endl;
+	std::cout << m_View[1] << std::endl;
+	std::cout << m_View[2] << std::endl;
+	std::cout << m_View[3] << std::endl << std::endl;
 
 	//calculate utility
 	m_ViewInverse = etm::inverse(m_View);
