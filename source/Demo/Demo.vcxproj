@@ -71,13 +71,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)..\bin\$(Configuration)$(Platform)\Demo\</OutDir>
     <IntDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Demo\</IntDir>
-    <IncludePath>$(SolutionDir)..\dependancies\include\sdl2;$(SolutionDir)..\dependancies\include\glm;$(SolutionDir)..\dependancies\include\assimp;$(SolutionDir)..\dependancies\include\freeImage;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\dependancies\include\sdl2;$(SolutionDir)..\dependancies\include\assimp;$(SolutionDir)..\dependancies\include\freeImage;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\dependancies\x32\sdl2;$(SolutionDir)..\dependancies\x32\assimp;$(SolutionDir)..\dependancies\x32\freeImage;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)..\bin\$(Configuration)$(Platform)\Demo\</OutDir>
     <IntDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Demo\</IntDir>
-    <IncludePath>$(SolutionDir)..\dependancies\include\sdl2;$(SolutionDir)..\dependancies\include\glm;$(SolutionDir)..\dependancies\include\assimp;$(SolutionDir)..\dependancies\include\freeImage;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\dependancies\include\sdl2;$(SolutionDir)..\dependancies\include\assimp;$(SolutionDir)..\dependancies\include\freeImage;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\dependancies\x32\sdl2;$(SolutionDir)..\dependancies\x32\assimp;$(SolutionDir)..\dependancies\x32\freeImage;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

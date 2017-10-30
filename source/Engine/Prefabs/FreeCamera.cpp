@@ -1,7 +1,6 @@
 #include "stdafx.hpp"
 #include "FreeCamera.hpp"
 #include "../Components/CameraComponent.hpp"
-#include <gtx/matrix_decompose.hpp>
 #include "../Helper/MathHelper.hpp"
 #include <algorithm>
 
@@ -80,8 +79,8 @@ void FreeCamera::Update()
 		//linear because its based on the mouse move delta instead of framerate
 		float rotSpeed = m_RotationSpeed*0.016f;
 		m_TotalYaw += -look.x * rotSpeed;
-		m_TotalPitch = std::max(m_TotalPitch, -1.57f);
-		m_TotalPitch = std::min(m_TotalPitch, 1.57f);
+		m_TotalPitch = max(m_TotalPitch, -1.57f);
+		m_TotalPitch = min(m_TotalPitch, 1.57f);
 		m_TotalPitch += look.y * rotSpeed;
 		quat rot = quat( vec3::UP, m_TotalYaw );
 		rot = rot * quat( etm::normalize(vec3(right.x, 0, right.z)), m_TotalPitch );

@@ -157,7 +157,7 @@ void Patch::UploadDistanceLUT(std::vector<float> &distances)
 	}
 }
 
-void Patch::Draw(bool white)
+void Patch::Draw()
 {
 	STATE->SetShader(m_pPatchShader);
 

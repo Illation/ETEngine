@@ -1,5 +1,7 @@
 #pragma once
 
+#define NOMINMAX
+
 #pragma region
 //C RunTime Header Files
 #include <wchar.h>
@@ -58,6 +60,13 @@ inline void Clamp(T& value, T hi, T lo)
 		value = lo;
 }
 #pragma endregion Templates
+
+//platform independant utility to suppress unused parameter warnings from https://stackoverflow.com/questions/4851075
+// use expression as sub-expression,
+// then make type of full expression int, discard result
+#define UNUSED(x) (void)(x)
+
+#pragma warning(disable : 4201) //nameless struct union - used in math library
 
 #pragma region
 #include "Helper/AtomicTypes.hpp"

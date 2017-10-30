@@ -41,7 +41,7 @@ public:
 	void GenerateGeometry(int16 levels);
 	void BindInstances(std::vector<PatchInstance> &instances);
 	void UploadDistanceLUT(std::vector<float> &distances);
-	void Draw(bool white = false);
+	void Draw();
 private:
 	std::vector<PatchVertex>m_Vertices;
 	std::vector<uint32>m_Indices;
