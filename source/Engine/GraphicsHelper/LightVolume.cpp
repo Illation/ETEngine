@@ -48,7 +48,8 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 	if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
 		return;
 
-	mat4 World = etm::translate(pos)*etm::scale(vec3(radius));
+	//mat4 World = etm::translate(pos)*etm::scale(vec3(radius));
+	mat4 World = etm::scale( vec3( radius ) )*etm::translate( pos );
 
 	//Draw the null material in the stencil buffer
 	//STATE->SetDepthEnabled(true);

@@ -74,6 +74,7 @@ namespace etm
 		T Yaw() const;
 		T Roll() const;
 		matrix<3, 3, T> ToMatrix() const;
+		std::string ToString() const;
 	};
 	//operations 
 	//Grassman product
@@ -192,6 +193,18 @@ namespace etm
 		mat[2][2] = static_cast<T>(1)	  - static_cast<T>(2)*x*x - static_cast<T>(2)*y*y;
 
 		return mat;
+	}
+
+	template <class T>
+	std::string etm::quaternion<T>::ToString() const
+	{
+		return std::string("[") + std::to_string(x) + ", " + std::to_string(y)
+			+ ", " + std::to_string(z) + " - " + std::to_string(w) + "]";
+	}
+	template <class T>
+	std::ostream& operator<<( std::ostream& os, etm::quaternion<T>& vec)
+	{
+		return os << vec.ToString();
 	}
 
 }//namespace etm

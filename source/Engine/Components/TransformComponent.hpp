@@ -53,15 +53,15 @@ private:
 
 	uint8 m_IsTransformChanged;
 
-	vec3 m_Position = vec3(0, 0, 0),
-		m_WorldPosition = vec3(0, 0, 0),
-		m_Scale = vec3(1, 1, 1),
-		m_WorldScale = vec3(1, 1, 1),
-		m_Forward = vec3(0, 0, 1),
-		m_Up = vec3(0, 1, 0),
-		m_Right = vec3(1, 0, 0);
-	quat m_Rotation = quat(0, 0, 0, 1),
-		m_WorldRotation = quat(0, 0, 0, 1);
+	vec3 m_Position = vec3(),
+		m_WorldPosition = vec3(),
+		m_Scale = vec3( 1 ),
+		m_WorldScale = vec3( 1 ),
+		m_Forward = vec3::FORWARD,
+		m_Up = vec3::UP,
+		m_Right = vec3::RIGHT;
+	quat m_Rotation = quat(),
+		m_WorldRotation = quat();
 	mat4 m_World;
 
 private:

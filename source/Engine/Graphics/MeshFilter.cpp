@@ -151,7 +151,7 @@ void MeshFilter::CalculateBoundingVolumes()
 	{
 		center = center + m_Positions[i];
 	}
-	float rcp = 1 / m_Positions.size();
+	float rcp = 1.f / static_cast<float>(m_Positions.size());
 	center = center * rcp;
 	float maxRadius = 0;
 	for (size_t i = 0; i < m_Positions.size(); i++)
