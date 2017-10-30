@@ -127,8 +127,8 @@ TEST_CASE( "look at", "[transform]" )
 
 	mat4 lookMat = etm::lookAt( eyePos, targetPos, vec3::UP);
 
-	vec3 resultVec = etm::normalize((lookMat * vec4( testVec, 1 )).xyz);
-	vec3 resultUpVec = (lookMat * vec4( upTestVec, 1 )).xyz;
+	vec3 resultVec = etm::normalize((etm::inverse(lookMat) * vec4( testVec, 1 )).xyz);
+	vec3 resultUpVec = (etm::inverse(lookMat) * vec4( upTestVec, 1 )).xyz;
 
 	REQUIRE( etm::nearEqualsV( resultVec, targetVec, 0.00001f ) );
 	REQUIRE( etm::dot(resultUpVec, vec3::UP) >= 0 );

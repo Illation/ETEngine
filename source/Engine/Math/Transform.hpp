@@ -111,15 +111,15 @@ namespace etm
 	template <class T>
 	matrix<4, 4, T> lookAt(vector<3, T>& position, vector<3, T>& target, vector<3, T>& worldUp)
 	{
-		vec3 forward = normalize(target - position);
-		vec3 right = normalize(cross(worldUp, forward));
-		vec3 up = cross(forward, right);
+		vector<3, T> forward = normalize(target - position);
+		vector<3, T> right = normalize(cross(worldUp, forward));
+		vector<3, T> up = cross(forward, right);
 
 		matrix<4, 4, T> frame(uninitialized);
-		frame[0] = vec4(right, 0);
-		frame[1] = vec4(up, 0);
-		frame[2] = vec4(forward, 0);
-		frame[3] = vec4( -dot( right, position ), -dot( up, position ), -dot( forward, position ), 1 );
+		frame[0] = vector<4, T>(right.x, up.x, forward.x, 0);
+		frame[1] = vector<4, T>(right.y, up.y, forward.y, 0);
+		frame[2] = vector<4, T>(right.z, up.z, forward.z, 0);
+		frame[3] = vector<4, T>( -dot( right, position ), -dot( up, position ), -dot( forward, position ), 1 );
 
 		return frame;
 	}
