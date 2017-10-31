@@ -37,14 +37,14 @@ void RenderPipeline::Initialize()
 	m_pState = new RenderState();
 	m_pState->Initialize();
 
-	PointLightVolume* pVol = PointLightVolume::GetInstance();
-	DirectLightVolume* pDirVol = DirectLightVolume::GetInstance();
-	ShadowRenderer* pShadowRenderer = ShadowRenderer::GetInstance();
-	pShadowRenderer->Initialize();
-	TextRenderer* pTextRenderer = TextRenderer::GetInstance();
-	pTextRenderer->Initialize();
-	PerformanceInfo* pInfo = PerformanceInfo::GetInstance();
-	auto primRenderer = PrimitiveRenderer::GetInstance();
+	PointLightVolume::GetInstance();
+	DirectLightVolume::GetInstance();
+
+	ShadowRenderer::GetInstance()->Initialize();
+	TextRenderer::GetInstance()->Initialize();
+
+	PerformanceInfo::GetInstance();
+	PrimitiveRenderer::GetInstance();
 
 	m_pPostProcessing = new PostProcessingRenderer();
 	m_pPostProcessing->SetGamma(2.2f);

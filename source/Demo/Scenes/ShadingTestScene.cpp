@@ -150,10 +150,13 @@ void ShadingTestScene::Draw()
 {
 	TextRenderer::GetInstance()->SetFont(m_pDebugFont);
 	TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
-	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string(PERFORMANCE->GetRegularFPS()), vec2(20, 20));
+	std::string outString = "FPS: " + std::to_string( PERFORMANCE->GetRegularFPS() );
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20));
 	TextRenderer::GetInstance()->SetColor(vec4(1, 1, 1, 1));
-	TextRenderer::GetInstance()->DrawText("Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS()), vec2(20, 50));
-	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), vec2(20, 80));
+	outString = "Frame ms: " + std::to_string( PERFORMANCE->GetFrameMS() );
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 50));
+	outString = "Draw Calls: " + std::to_string( PERFORMANCE->m_PrevDrawCalls );
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 80));
 }
 
 void ShadingTestScene::DrawForward()

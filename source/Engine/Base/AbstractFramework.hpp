@@ -7,7 +7,7 @@
 #include <iostream>
 
 //Static stuff
-static void sdl_die(const char * message)
+static inline void quit_SDL_error(const char * message)
 {
 	fprintf(stderr, "%s: %s\n", message, SDL_GetError());
 	exit(2);
