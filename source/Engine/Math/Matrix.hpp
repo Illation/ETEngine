@@ -126,7 +126,7 @@ namespace etm
 	}
 
 	template <uint8 m, uint8 n, class T>
-	inline bool nearEqualsM( matrix<m, n, T> lhs, matrix<m, n, T> rhs, T epsilon = ETM_DEFAULT_EPSILON_T )
+	inline bool nearEqualsM( const matrix<m, n, T> &lhs, const matrix<m, n, T> &rhs, const T epsilon = ETM_DEFAULT_EPSILON_T )
 	{
 		for(uint8 i = 0; i < m; ++i)
 		{
@@ -138,7 +138,7 @@ namespace etm
 	//matrix operators
 	//****************
 	template <uint8 m, uint8 n, class T>
-	matrix<m, n, T> operator+(matrix<m, n, T>& lhs, matrix<m, n, T>& rhs)
+	matrix<m, n, T> operator+(const matrix<m, n, T>& lhs, const matrix<m, n, T>& rhs)
 	{
 		matrix<m, n, T> result;
 		for (uint8 col = 0; col < n; ++col)
@@ -151,7 +151,7 @@ namespace etm
 		return result;
 	}
 	template <uint8 m, uint8 n, class T>
-	matrix<m, n, T> operator-(matrix<m, n, T>& lhs, matrix<m, n, T>& rhs)
+	matrix<m, n, T> operator-(const matrix<m, n, T>& lhs, const matrix<m, n, T>& rhs)
 	{
 		matrix<m, n, T> result;
 		for (uint8 col = 0; col < n; ++col)
@@ -165,7 +165,7 @@ namespace etm
 	}
 	//multiplication: lhs rows * rhs cols
 	template <uint8 m, uint8 n, class T>
-	matrix<m, m, T> operator*(matrix<m, n, T>& lhs, matrix<n, m, T>& rhs)
+	matrix<m, m, T> operator*(const matrix<m, n, T>& lhs, const matrix<n, m, T>& rhs)
 	{
 		matrix<m, m, T> result;
 		for (uint8 col = 0; col < m; ++col)
@@ -185,7 +185,7 @@ namespace etm
 	}
 	//vector - matrix multiplication - col major convention -> vectors are 3x1 matrices and therefore on the right side
 	template <uint8 m, uint8 n, class T>
-	vector<m, T> operator*(matrix<m, n, T>& lhs, vector<m, T>& rhs)
+	vector<m, T> operator*(const matrix<m, n, T>& lhs, const vector<m, T>& rhs)
 	{
 		vector<m, T> result(0);
 		for (uint8 rowIdx = 0; rowIdx < m; ++rowIdx)
@@ -197,7 +197,7 @@ namespace etm
 	}
 	//scalar - matrix multiplication
 	template <uint8 m, uint8 n, class T>
-	matrix<m, n, T> operator*( matrix<m, n, T>& lhs, const T rhs )
+	matrix<m, n, T> operator*( const matrix<m, n, T>& lhs, const T rhs )
 	{
 		matrix<m, n, T> result;
 		for(uint8 rowIdx = 0; rowIdx < m; ++rowIdx)

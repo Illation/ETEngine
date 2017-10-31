@@ -13,7 +13,7 @@ namespace etm
 	//scaling
 	//*******
 	template <uint8 n, class T>
-	void scale(matrix<n, n, T>& result, vector<n, T> scaleVec )
+	void scale(matrix<n, n, T>& result, const vector<n, T> &scaleVec )
 	{
 		for (uint8 i = 0; i < n; ++i)
 		{
@@ -21,7 +21,7 @@ namespace etm
 		}
 	}
 	template <uint8 n, class T>
-	inline matrix<n, n, T> scale(vector<n, T>& scaleVec)
+	inline matrix<n, n, T> scale(const vector<n, T>& scaleVec)
 	{
 		matrix<n, n, T> mat;
 		scale(mat, scaleVec );
@@ -29,12 +29,12 @@ namespace etm
 	}
 	//specialization for 3 dimensions
 	template <class T>
-	inline matrix<4, 4, T> scale(vector<3, T> scaleVec )
+	inline matrix<4, 4, T> scale(const vector<3, T> &scaleVec )
 	{
 		return scale(vector<4, T>( scaleVec, 1));
 	}
 	template <class T>
-	void scale(matrix<4, 4, T>& result, vector<3, T>& scaleVec )
+	void scale(matrix<4, 4, T>& result, const vector<3, T>& scaleVec )
 	{
 		scale(result, vector<4, T>( scaleVec, 1));
 	}
@@ -109,7 +109,7 @@ namespace etm
 	//look at
 	//*******
 	template <class T>
-	matrix<4, 4, T> lookAt(vector<3, T>& position, vector<3, T>& target, vector<3, T>& worldUp)
+	matrix<4, 4, T> lookAt(const vector<3, T>& position, const vector<3, T>& target, const vector<3, T>& worldUp)
 	{
 		vector<3, T> forward = normalize(target - position);
 		vector<3, T> right = normalize(cross(worldUp, forward));

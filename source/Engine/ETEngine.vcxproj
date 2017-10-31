@@ -142,6 +142,7 @@
       <PrecompiledHeaderFile>stdafx.hpp</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(SolutionDir)..\bin\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
       <AdditionalIncludeDirectories>$(StlIncludeDirectories);Base;Components;Content;Helper;Graphics;Prefabs;SceneGraph;Framebuffers;GraphicsHelper;Materials;Math;PlanetTech;PlanetTech\Types;StaticDependancies\glad;..\Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
