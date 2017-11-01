@@ -77,7 +77,6 @@ inline void Clamp(T& value, T hi, T lo)
 #include "Base/Settings.hpp"
 #include "Base/InputManager.hpp"
 #include "Helper/Logger.hpp"
-#include "Helper/MathHelper.hpp"
 #include "Helper/PerformanceInfo.hpp"
 #include "GraphicsHelper/RenderPipeline.hpp"
 #include "GraphicsHelper/RenderState.hpp"

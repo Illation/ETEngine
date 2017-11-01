@@ -1,6 +1,5 @@
 #pragma once
 
-//#include "../Helper/AtomicTypes.h"
 #include "Vector.hpp"
 #include "Matrix.hpp"
 #include "Quaternion.hpp"

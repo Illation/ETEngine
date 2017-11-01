@@ -59,18 +59,6 @@ void TransformComponent::UpdateTransforms()
 		m_WorldRotation = m_Rotation;
 		m_WorldScale = m_Scale;
 	}
-	
-	//Get World Transform
-	//#todo there is an issue where glm decomposition does not have a left handed version, 
-	//thus the resulting world rotation is mangled as if its input had been a right handed rotation
-	//this problem has been overlooked for a large part of the engines development, resulting in code that is adapted to work with this bug
-	//the correct solution would be to not use decomposition here at all, but because of the adapted code the correct solution causes incorrect behaviour
-	//therefore we temporarily override the correct result with the faulty decomposited rotation
-	//glm::quat rot;
-	//if (glm::decompose(m_World, glm::vec3(), rot, glm::vec3(), glm::vec3(), glm::vec4()))
-	//{
-	//	m_WorldRotation = rot;
-	//}
 
 	m_Forward = m_WorldRotation*vec3::FORWARD;
 	m_Right = m_WorldRotation*vec3::RIGHT;

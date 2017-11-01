@@ -10,7 +10,6 @@
 #include "../Graphics/TextureData.hpp"
 #include "../GraphicsHelper/PrimitiveRenderer.hpp"
 #include "../GraphicsHelper/RenderPipeline.hpp"
-#include "../Helper/MathHelper.hpp"
 #include "../Graphics/Frustum.hpp"
 
 Atmosphere::Atmosphere() 
