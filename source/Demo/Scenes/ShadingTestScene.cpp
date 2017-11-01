@@ -3,10 +3,6 @@
 #include "ShadingTestScene.hpp"
 
 #include <random>
-#include <gtx/transform.hpp>
-#include <gtx/quaternion.hpp>
-#include <gtx/matrix_decompose.hpp>
-#include <gtx/euler_angles.hpp>
 
 #include "../../Engine/SceneGraph/Entity.hpp"
 #include "../../Engine/Graphics/SpriteFont.hpp"
@@ -53,8 +49,8 @@ void ShadingTestScene::Initialize()
 		"Resources/Textures/NormalMap.png");
 	m_pMat->SetSpecular(0.5f);
 
-	m_pStandMat = new ParamPBRMaterial(glm::vec3(0.95, 0.95f, 0.5f), 0.2f, 0);
-	m_pEnvMat = new ParamPBRMaterial(glm::vec3(0.5f), 0.6f, 0);
+	m_pStandMat = new ParamPBRMaterial(vec3(0.95f, 0.95f, 0.5f), 0.2f, 0);
+	m_pEnvMat = new ParamPBRMaterial(vec3(0.5f), 0.6f, 0);
 
 	//Skybox
 	//**************************
@@ -93,20 +89,22 @@ void ShadingTestScene::Initialize()
 	m_pLight = new DirectionalLight(vec3(1, 1, 1), 2.99f);
 	m_pLight->SetShadowEnabled(true);
 	m_pLigEntity->AddComponent(new LightComponent( m_pLight));
-	m_pLigEntity->GetTransform()->SetRotation(glm::rotation(glm::vec3(1, -3, -1), glm::vec3(1, 0, 1)));
+	vec3 axis;
+	float angle = etm::angleSafeAxis( vec3( 1, -3, -1 ), vec3( 1, 0, 1 ), axis );
+	m_pLigEntity->GetTransform()->SetRotation(quat(axis, angle));
 	AddEntity(m_pLigEntity);
 
 	auto pLigEntity = new Entity();
 	auto pLight = new DirectionalLight(vec3(1, 1, 1), 4.5f);
-	pLight->SetShadowEnabled(true);
+	//pLight->SetShadowEnabled(true);
 	pLigEntity->AddComponent(new LightComponent(pLight));
-	pLigEntity->GetTransform()->SetRotation(glm::rotation(glm::vec3(1, -3, -1), glm::vec3(1, 0, 1)));
+	pLigEntity->GetTransform()->SetRotation(quat(axis, angle));
 	pLigEntity->GetTransform()->RotateEuler(0, 1, 0);
 	AddEntity(pLigEntity);
 
 	CAMERA->GetTransform()->SetPosition(0, 0, -10);
 
-	SETTINGS->Window.VSync(true);
+	SETTINGS->Window.VSync(false);
 }
 
 void ShadingTestScene::Update()
@@ -116,19 +114,19 @@ void ShadingTestScene::Update()
 
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_2))
 	{
-		m_pLigEntity->GetTransform()->RotateEuler(TIME->DeltaTime(), 0, 0);
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), TIME->DeltaTime()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_8))
 	{
-		m_pLigEntity->GetTransform()->RotateEuler(-TIME->DeltaTime(), 0, 0);
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), -TIME->DeltaTime()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_4))
 	{
-		m_pLigEntity->GetTransform()->RotateEuler(0, -TIME->DeltaTime(), 0);
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), TIME->DeltaTime()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_6))
 	{
-		m_pLigEntity->GetTransform()->RotateEuler(0, TIME->DeltaTime(), 0);
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), -TIME->DeltaTime()));
 	}
 
 	//Change light settings
@@ -151,11 +149,14 @@ void ShadingTestScene::Update()
 void ShadingTestScene::Draw()
 {
 	TextRenderer::GetInstance()->SetFont(m_pDebugFont);
-	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 0.3f, 0.3f, 1));
-	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string(PERFORMANCE->GetRegularFPS()), glm::vec2(20, 20));
-	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 1, 1, 1));
-	TextRenderer::GetInstance()->DrawText("Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS()), glm::vec2(20, 50));
-	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), glm::vec2(20, 80));
+	TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
+	std::string outString = "FPS: " + std::to_string( PERFORMANCE->GetRegularFPS() );
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20));
+	TextRenderer::GetInstance()->SetColor(vec4(1, 1, 1, 1));
+	outString = "Frame ms: " + std::to_string( PERFORMANCE->GetFrameMS() );
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 50));
+	outString = "Draw Calls: " + std::to_string( PERFORMANCE->m_PrevDrawCalls );
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 80));
 }
 
 void ShadingTestScene::DrawForward()

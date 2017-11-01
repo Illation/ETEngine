@@ -27,5 +27,5 @@ private:
 
 	Gbuffer* m_pGBuffer = nullptr;
 	PostProcessingRenderer* m_pPostProcessing = nullptr;
-	glm::vec3 m_ClearColor;
+	vec3 m_ClearColor;
 };

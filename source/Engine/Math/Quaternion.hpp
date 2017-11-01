@@ -1,6 +1,6 @@
 #pragma once
+#pragma warning(disable : 4201) //nameless struct union - used in math library
 
-//#include "../Helper/AtomicTypes.h"
 #include "Vector.hpp"
 #include "Matrix.hpp"
 
@@ -55,19 +55,27 @@ namespace etm
 			z = lz;
 			w = lw;
 		}
-		explicit quaternion(const vector<3, T>& axis)//Axis initialization, angle is 0
+		explicit quaternion(const vector<3, T>& euler)//Euler angle initialization
 		{
-			x = axis.x;
-			y = axis.y;
-			z = axis.z;
-			w = 0;
+			vector<3, T> fac = euler * static_cast<T>(0.5);
+			vector<3, T> c( cos( fac.x ), cos( fac.y ), cos( fac.z ) );
+			vector<3, T> s( sin( fac.x ), sin( fac.y ), sin( fac.z ) );
+
+			x = s.x * c.y * c.z - c.x * s.y * s.z;
+			y = c.x * s.y * c.z + s.x * c.y * s.z;
+			z = c.x * c.y * s.z - s.x * s.y * c.z;
+			w = c.x * c.y * c.z + s.x * s.y * s.z;
 		}
 
 		//Conversions
 		vector<4, T> ToAxisAngle() const;
+		vector<3, T> ToEuler() const;
+		T Pitch() const;
+		T Yaw() const;
+		T Roll() const;
 		matrix<3, 3, T> ToMatrix() const;
+		std::string ToString() const;
 	};
-
 	//operations 
 	//Grassman product
 	template <typename T>
@@ -139,6 +147,34 @@ namespace etm
 
 		return result;
 	}
+	template <class T>
+	etm::vector<3, T> etm::quaternion<T>::ToEuler() const
+	{
+		const T qxx( x * x );
+		const T qyy( y * y );
+		const T qzz( z * z );
+		const T qww( w * w );
+
+		T pitch =	atan2( static_cast<T>(2) * ( y*z + w*x ), qww - qxx - qyy + qzz );
+		T roll =	atan2( static_cast<T>(2) * ( x*y + w*z ), qww + qxx - qyy - qzz );
+
+		return vector<3, T>( pitch, Yaw(), roll );
+	}
+	template <class T>
+	T etm::quaternion<T>::Pitch() const
+	{
+		return atan2( static_cast<T>(2) * ( y*z + w*x ), w * w - x * x - y * y + z * z );
+	}
+	template <class T>
+	T etm::quaternion<T>::Yaw() const
+	{
+		return asin( etm::Clamp( static_cast<T>(-2) * ( x*z - w*y ), static_cast<T>(-1), static_cast<T>(1) ) );
+	}
+	template <class T>
+	T etm::quaternion<T>::Roll() const
+	{
+		return atan2( static_cast<T>(2) * ( x*y + w*z ), w * w + x * x - y * y - z * z );
+	}
 	template <typename T>
 	inline matrix<3, 3, T> quaternion<T>::ToMatrix() const //#todo implement the reverse function
 	{
@@ -157,6 +193,18 @@ namespace etm
 		mat[2][2] = static_cast<T>(1)	  - static_cast<T>(2)*x*x - static_cast<T>(2)*y*y;
 
 		return mat;
+	}
+
+	template <class T>
+	std::string etm::quaternion<T>::ToString() const
+	{
+		return std::string("[") + std::to_string(x) + ", " + std::to_string(y)
+			+ ", " + std::to_string(z) + " - " + std::to_string(w) + "]";
+	}
+	template <class T>
+	std::ostream& operator<<( std::ostream& os, etm::quaternion<T>& vec)
+	{
+		return os << vec.ToString();
 	}
 
 }//namespace etm

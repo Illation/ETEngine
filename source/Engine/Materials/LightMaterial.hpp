@@ -4,10 +4,10 @@
 class LightMaterial : public Material
 {
 public:
-	LightMaterial(glm::vec3 col = glm::vec3(1, 1, 1));
+	LightMaterial(vec3 col = vec3(1, 1, 1));
 	~LightMaterial();
 
-	void SetLight(glm::vec3 pos, glm::vec3 color, float radius)
+	void SetLight(vec3 pos, vec3 color, float radius)
 	{
 		m_Position = pos;
 		m_Color = color;
@@ -22,9 +22,9 @@ private:
 private:
 	//Parameters
 	GLint m_uCol;
-	glm::vec3 m_Color;
+	vec3 m_Color;
 	GLint m_uPosition;
-	glm::vec3 m_Position;
+	vec3 m_Position;
 	GLint m_uRadius;
 	float m_Radius;
 

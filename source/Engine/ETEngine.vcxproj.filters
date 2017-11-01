@@ -165,9 +165,6 @@
     <ClCompile Include="Helper\BinaryReader.cpp">
       <Filter>Helper</Filter>
     </ClCompile>
-    <ClCompile Include="Helper\MathHelper.cpp">
-      <Filter>Helper</Filter>
-    </ClCompile>
     <ClCompile Include="Helper\PerformanceInfo.cpp">
       <Filter>Helper</Filter>
     </ClCompile>
@@ -207,6 +204,8 @@
     <ClCompile Include="StaticDependancies\glad\glad.c">
       <Filter>StaticDependancies\glad</Filter>
     </ClCompile>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Math\Geometry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Context.hpp">
@@ -258,9 +257,6 @@
       <Filter>Content</Filter>
     </ClInclude>
     <ClInclude Include="Helper\Logger.hpp">
-      <Filter>Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="Helper\MathHelper.hpp">
       <Filter>Helper</Filter>
     </ClInclude>
     <ClInclude Include="Helper\Singleton.hpp">
@@ -425,5 +421,9 @@
     <ClInclude Include="StaticDependancies\glad\glad.h">
       <Filter>StaticDependancies\glad</Filter>
     </ClInclude>
+    <ClInclude Include="stdafx.hpp" />
+    <ClInclude Include="Graphics\Frustum.hpp" />
+    <ClInclude Include="Math\MathUtil.hpp" />
+    <ClInclude Include="Math\Geometry.hpp" />
   </ItemGroup>
 </Project>

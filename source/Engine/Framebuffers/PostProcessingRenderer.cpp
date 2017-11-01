@@ -157,14 +157,14 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	{
 		if (i > 0) STATE->SetShader(m_pDownsampleShader);
 		float resMult = 1.f / (float)std::pow(2, i + 1);
-		STATE->SetViewport(glm::ivec2(0), glm::ivec2((int32)(width*resMult), (int32)(height*resMult)));
+		STATE->SetViewport(ivec2(0), ivec2((int32)(width*resMult), (int32)(height*resMult)));
 		STATE->BindFramebuffer(m_DownSampleFBO[i]);
 		if(i>0) STATE->BindTexture(GL_TEXTURE_2D, m_DownSampleTexture[i - 1]);
 		glUniform1f(m_uThreshold, m_Threshold);
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
 		//blur downsampled
-		//STATE->SetViewport(glm::ivec2(0), glm::ivec2(width, height));
+		//STATE->SetViewport(ivec2(0), ivec2(width, height));
 		STATE->SetShader(m_pGaussianShader);
 		for (GLuint j = 0; j < (GLuint)GRAPHICS.NumBlurPasses * 2; j++)
 		{
@@ -178,7 +178,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		}
 	}
-	STATE->SetViewport(glm::ivec2(0), glm::ivec2(width, height));
+	STATE->SetViewport(ivec2(0), ivec2(width, height));
 	//ping pong gaussian blur
 	GLboolean horizontal = true;
 	STATE->SetShader(m_pGaussianShader);

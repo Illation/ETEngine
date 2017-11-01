@@ -12,7 +12,7 @@ struct SwirlyLight
 {
 	Entity* light;
 	PointLight* comp;
-	glm::vec3 origin;
+	vec3 origin;
 	float radius = 1;
 	float radius2 = 1;
 

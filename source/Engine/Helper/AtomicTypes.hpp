@@ -1,23 +1,18 @@
 #pragma once
 
-//#include <stdint.h>
-//will need to be updated later, as glm already defines those types and glm is used in global namespace -.-
-#ifndef GLM_FORCE_LEFT_HANDED
-	#define GLM_FORCE_LEFT_HANDED
-#endif
-#include <glm.hpp>
+#include <stdint.h>
 #include <cassert>
 
-//integers
-//typedef glm::int8	int8;
-//typedef glm::int16	int16;
-//typedef glm::int32	int32;
-//typedef glm::int64	int64;
-//
-//typedef glm::uint8	uint8;
-//typedef glm::uint16	uint16;
-//typedef glm::uint32	uint32;
-//typedef glm::uint64	uint64;
+//Integers
+typedef std::int8_t		int8;
+typedef std::int16_t	int16;
+typedef std::int32_t	int32;
+typedef std::int64_t	int64;
+
+typedef std::uint8_t	uint8;
+typedef std::uint16_t	uint16;
+typedef std::uint32_t	uint32;
+typedef std::uint64_t	uint64;
 
 //float
 static_assert (sizeof(float) == 4, "compiler uses unexpected size for single precision floats, 32 bit assumed");

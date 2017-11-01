@@ -30,7 +30,8 @@ CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 	glGenTextures(1, &texture);
 	STATE->BindTexture(GL_TEXTURE_CUBE_MAP, texture);
 
-	uint32 width, height;
+	uint32 width = 0, height = 0;
+	int32 mipNum = 0;
 	for (GLuint i = 0; i < textureFaces.size(); i++)
 	{
 		FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
@@ -72,6 +73,8 @@ CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 		}
 	}
 
+	mipNum = 1 + (int32)floor(log10((float)max(width, height)) / log10(2.0));
+
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -79,8 +82,6 @@ CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-
-	int32 mipNum = 1 + (int32)floor(log10((float)max(width, height)) / log10(2.0));
 
 	cout << "  . . . SUCCESS!" << endl;
 	return new CubeMap(texture, width, height, mipNum);

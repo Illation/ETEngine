@@ -35,8 +35,8 @@ void Gbuffer::UploadDerivedVariables()
 	//for position reconstruction
 	glUniform1f(m_uProjA, CAMERA->GetDepthProjA());
 	glUniform1f(m_uProjB, CAMERA->GetDepthProjB());
-	glUniformMatrix4fv(m_uViewProjInv, 1, GL_FALSE, glm::value_ptr(CAMERA->GetStatViewProjInv()));
-	glUniform3fv(m_uCamPos, 1, glm::value_ptr(CAMERA->GetTransform()->GetPosition()));
+	glUniformMatrix4fv(m_uViewProjInv, 1, GL_FALSE, etm::valuePtr(CAMERA->GetStatViewProjInv()));
+	glUniform3fv(m_uCamPos, 1, etm::valuePtr(CAMERA->GetTransform()->GetPosition()));
 
 	if (SCENE->SkyboxEnabled())
 	{

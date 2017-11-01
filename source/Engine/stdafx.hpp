@@ -1,5 +1,7 @@
 #pragma once
 
+#define NOMINMAX
+
 #pragma region
 //C RunTime Header Files
 #include <wchar.h>
@@ -21,14 +23,8 @@ using namespace std;
 #pragma endregion sdl-opengl
 
 #pragma region
-#ifndef GLM_FORCE_LEFT_HANDED
-	#define GLM_FORCE_LEFT_HANDED
-#endif
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
-using namespace glm;
-#pragma endregion glm
+#include "Math/Math.hpp"
+#pragma endregion math
 
 #pragma region
 //*****************************************************************************
@@ -65,6 +61,13 @@ inline void Clamp(T& value, T hi, T lo)
 }
 #pragma endregion Templates
 
+//platform independant utility to suppress unused parameter warnings from https://stackoverflow.com/questions/4851075
+// use expression as sub-expression,
+// then make type of full expression int, discard result
+#define UNUSED(x) (void)(x)
+
+#pragma warning(disable : 4201) //nameless struct union - used in math library
+
 #pragma region
 #include "Helper/AtomicTypes.hpp"
 #include "Components/TransformComponent.hpp"
@@ -74,7 +77,6 @@ inline void Clamp(T& value, T hi, T lo)
 #include "Base/Settings.hpp"
 #include "Base/InputManager.hpp"
 #include "Helper/Logger.hpp"
-#include "Helper/MathHelper.hpp"
 #include "Helper/PerformanceInfo.hpp"
 #include "GraphicsHelper/RenderPipeline.hpp"
 #include "GraphicsHelper/RenderState.hpp"
