@@ -49,8 +49,11 @@ void Planet::Initialize()
 void Planet::Update()
 {
 	GetTransform()->SetPosition(0, 0, 0);
-	if (INPUT->IsKeyboardKeyPressed('r'))m_Rotate = !m_Rotate;
-	GetTransform()->SetRotation(GetTransform()->GetRotation() * quat(vec3::UP, -(GLfloat)TIME->DeltaTime() * 0.01f ));
+	if (INPUT->IsKeyboardKeyPressed('R'))m_Rotate = !m_Rotate;
+	if(m_Rotate)
+	{
+		GetTransform()->SetRotation(GetTransform()->GetRotation() * quat(vec3::UP, -(GLfloat)TIME->DeltaTime() * 0.01f ));
+	}
 
 	// #todo should happen after transform update maybe at the beginning of draw
 

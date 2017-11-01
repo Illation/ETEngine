@@ -70,6 +70,26 @@ void Frustum::Update()
 	m_Corners.fb = fCenter + m_Up*farHH + m_Right*farHW;
 	m_Corners.fc = fCenter - m_Up*farHH - m_Right*farHW;
 	m_Corners.fd = fCenter - m_Up*farHH + m_Right*farHW;
+
+	//float yFac = tanf( etm::radians(m_FOV) / 2 );
+	//float xFac = yFac*WINDOW.GetAspectRatio();
+	//vec3 nCenter = m_Position + m_Forward*m_NearPlane;
+	//vec3 fCenter = m_Position + m_Forward*m_FarPlane;
+	//vec3 nearHW = m_Right*m_FarPlane*xFac;
+	//vec3 nearHH = m_Up*m_FarPlane*yFac;
+	//vec3 farHW = m_Right*m_FarPlane*xFac;
+	//vec3 farHH = m_Up*m_FarPlane*yFac;
+
+	////construct corners of the near plane in the culled objects world space
+	//m_Corners.na = nCenter + nearHH - nearHW;
+	//m_Corners.nb = nCenter + nearHH + nearHW;
+	//m_Corners.nc = nCenter - nearHH - nearHW;
+	//m_Corners.nd = nCenter - nearHH + nearHW;
+	////construct corners of the far plane
+	//m_Corners.fa = fCenter + farHH - farHW;
+	//m_Corners.fb = fCenter + farHH + farHW;
+	//m_Corners.fc = fCenter - farHH - farHW;
+	//m_Corners.fd = fCenter - farHH + farHW;
 	m_Corners.Transform(m_CullInverse);
 
 	m_PositionObject = (m_CullInverse*vec4(m_Position, 0)).xyz;

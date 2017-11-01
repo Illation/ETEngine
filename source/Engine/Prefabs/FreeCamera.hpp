@@ -21,7 +21,7 @@ private:
 	float m_TotalPitch = 0, 
 		m_TotalYaw = 0;
 	float m_MoveSpeed = 2.5, 
-		m_RotationSpeed = 0.2f, 
+		m_RotationSpeed = 0.0032f, 
 		m_SpeedMultiplier = 1;
 	CameraComponent *m_pCamera = nullptr;
 

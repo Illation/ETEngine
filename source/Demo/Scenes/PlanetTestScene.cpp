@@ -60,7 +60,7 @@ void PlanetTestScene::Initialize()
 	//m_pLigEntity->GetTransform()->SetRotation(etm::lookAt())
 	AddEntity(m_pLigEntity);
 
-	SETTINGS->Window.VSync(true);
+	SETTINGS->Window.VSync(false);
 }
 
 void PlanetTestScene::Update()
@@ -70,19 +70,19 @@ void PlanetTestScene::Update()
 
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_2))
 	{
-		m_pLigEntity->GetTransform()->RotateEuler(TIME->DeltaTime(), 0, 0);
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), TIME->DeltaTime()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_8))
 	{
-		m_pLigEntity->GetTransform()->RotateEuler(-TIME->DeltaTime(), 0, 0);
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), -TIME->DeltaTime()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_4))
 	{
-		m_pLigEntity->GetTransform()->RotateEuler(0, -TIME->DeltaTime(), 0);
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), TIME->DeltaTime()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_6))
 	{
-		m_pLigEntity->GetTransform()->RotateEuler(0, TIME->DeltaTime(), 0);
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), -TIME->DeltaTime()));
 	}
 
 	//Change light settings

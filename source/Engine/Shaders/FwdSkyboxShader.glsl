@@ -11,7 +11,7 @@
 	{
 		TexCoords = position;
 		
-		gl_Position = (viewProj*-vec4(position, 1.0)).xyww;
+		gl_Position = (viewProj*vec4(position, 1.0)).xyww;
 	}  
 </VERTEX>
 <FRAGMENT>
