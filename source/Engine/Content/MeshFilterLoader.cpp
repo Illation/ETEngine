@@ -74,7 +74,7 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 		pMesh->m_SupportedFlags |= VertexFlags::POSITION;
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
 		{
-			pMesh->m_Positions.push_back(glm::vec3(
+			pMesh->m_Positions.push_back(vec3(
 				pAssimpMesh->mVertices[i].x,
 				pAssimpMesh->mVertices[i].y,
 				pAssimpMesh->mVertices[i].z));
@@ -97,7 +97,7 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 		pMesh->m_SupportedFlags |= VertexFlags::NORMAL;
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
 		{
-			pMesh->m_Normals.push_back(glm::vec3(
+			pMesh->m_Normals.push_back(vec3(
 				pAssimpMesh->mNormals[i].x,
 				pAssimpMesh->mNormals[i].y,
 				pAssimpMesh->mNormals[i].z));
@@ -110,11 +110,11 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 		pMesh->m_SupportedFlags |= VertexFlags::BINORMAL;
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
 		{
-			pMesh->m_Tangents.push_back(glm::vec3(
+			pMesh->m_Tangents.push_back(vec3(
 				pAssimpMesh->mTangents[i].x,
 				pAssimpMesh->mTangents[i].y,
 				pAssimpMesh->mTangents[i].z));
-			pMesh->m_BiNormals.push_back(glm::vec3(
+			pMesh->m_BiNormals.push_back(vec3(
 				pAssimpMesh->mBitangents[i].x,
 				pAssimpMesh->mBitangents[i].y,
 				pAssimpMesh->mBitangents[i].z));
@@ -126,7 +126,7 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 		pMesh->m_SupportedFlags |= VertexFlags::COLOR;
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
 		{
-			pMesh->m_Colors.push_back(glm::vec4(
+			pMesh->m_Colors.push_back(vec4(
 				pAssimpMesh->mColors[0][i].r,
 				pAssimpMesh->mColors[0][i].g,
 				pAssimpMesh->mColors[0][i].b,
@@ -141,7 +141,7 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 			std::cout << std::endl << "\t>Warning: UV dimensions don't match internal layout!\n\t\t";
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
 		{
-			pMesh->m_TexCoords.push_back(glm::vec2(
+			pMesh->m_TexCoords.push_back(vec2(
 				pAssimpMesh->mTextureCoords[0][i].x,
 				pAssimpMesh->mTextureCoords[0][i].y));
 		}

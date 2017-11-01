@@ -1,11 +1,6 @@
 #pragma once
 #include <map>
 #include <SDL.h>
-//Use lefthanded coordinate system
-#ifndef GLM_LEFT_HANDED
-	#define GLM_LEFT_HANDED
-#endif
-#include <glm.hpp>
 #include "../Helper/Singleton.hpp"
 //----------------------------
 //Event Manager class definintion
@@ -46,9 +41,9 @@ public:
 	//True if user stops pressing button
 	bool IsMouseButtonReleased(int32 button);
 	//Returns mouse position as vector
-	glm::vec2 GetMousePosition();
-	glm::vec2 GetMouseMovement() { return m_MouseMove; }
-	glm::vec2 GetMouseWheelDelta() { return m_MouseWheelDelta; }
+	vec2 GetMousePosition();
+	vec2 GetMouseMovement() { return m_MouseMove; }
+	vec2 GetMouseWheelDelta() { return m_MouseWheelDelta; }
 private:
 	friend class AbstractFramework;
 	//----------------------------
@@ -80,11 +75,11 @@ private:
 	//Mouse Input
 	int32 m_MousePosX = 0;
 	int32 m_MousePosY = 0;
-	glm::vec2 m_MouseMove = glm::vec2();
+	vec2 m_MouseMove = vec2();
 	uint32 m_MouseMapNew,
 		m_MouseMapOld;
 
-	glm::vec2 m_MouseWheelDelta = glm::vec2();
+	vec2 m_MouseWheelDelta = vec2();
 	//Application flow
 	bool m_ExitRequested = false;
 };

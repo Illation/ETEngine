@@ -30,7 +30,7 @@ Planet::~Planet()
 
 void Planet::Initialize()
 {
-	GetTransform()->SetRotation(glm::rotate(GetTransform()->GetRotation(), glm::radians(270.f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	GetTransform()->SetRotation(GetTransform()->GetRotation() * quat(vec3(0.0f, 1.0f, 0.0f), etm::radians(270.f)));
 
 	//LoadTextures
 	TextureLoader* pTL = ContentManager::GetLoader<TextureLoader, TextureData>();
@@ -49,8 +49,11 @@ void Planet::Initialize()
 void Planet::Update()
 {
 	GetTransform()->SetPosition(0, 0, 0);
-	if (INPUT->IsKeyboardKeyPressed('r'))m_Rotate = !m_Rotate;
-	if(m_Rotate)GetTransform()->SetRotation(glm::rotate(GetTransform()->GetRotation(), -(GLfloat)TIME->DeltaTime() * 0.01f, glm::vec3(0.0f, 1.0f, 0.0f)));
+	if (INPUT->IsKeyboardKeyPressed('R'))m_Rotate = !m_Rotate;
+	if(m_Rotate)
+	{
+		GetTransform()->SetRotation(GetTransform()->GetRotation() * quat(vec3::UP, -(GLfloat)TIME->DeltaTime() * 0.01f ));
+	}
 
 	// #todo should happen after transform update maybe at the beginning of draw
 

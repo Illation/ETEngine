@@ -14,7 +14,7 @@ public:
 	PointLightVolume();
 	virtual ~PointLightVolume();
 
-	void Draw(glm::vec3 pos, float radius, glm::vec3 col);
+	void Draw(vec3 pos, float radius, vec3 col);
 
 private:
 	friend class AbstractFramework; //should init and destroy singleton
@@ -31,8 +31,8 @@ public:
 	DirectLightVolume();
 	virtual ~DirectLightVolume();
 
-	void Draw(glm::vec3 dir, glm::vec3 col);
-	void DrawShadowed(glm::vec3 dir, glm::vec3 col, DirectionalShadowData *pShadow);
+	void Draw(vec3 dir, vec3 col);
+	void DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *pShadow);
 
 protected:
 	ShaderData* m_pShader;

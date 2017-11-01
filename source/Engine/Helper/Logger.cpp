@@ -82,6 +82,8 @@ void Logger::LogFormat(GLenum source, GLenum type, GLuint id, GLenum severity,
 
 void Logger::Log(const string& msg, LogLevel level, bool timestamp, bool doBreak)
 {
+	UNUSED( doBreak );
+
 	stringstream stream;
 
 	if (timestamp)

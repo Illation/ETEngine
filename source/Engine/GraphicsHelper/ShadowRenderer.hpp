@@ -15,7 +15,7 @@ public:
 	virtual ~ShadowRenderer();
 
 	void MapDirectional(TransformComponent *pTransform, DirectionalShadowData *pShadowData);
-	glm::mat4 GetLightVP() { return m_LightVP; }
+	mat4 GetLightVP() { return m_LightVP; }
 	NullMaterial* GetNullMaterial() { return m_pMaterial; }
 
 private:
@@ -27,14 +27,14 @@ private:
 
 
 	NullMaterial* m_pMaterial;
-	glm::mat4 m_LightVP;
+	mat4 m_LightVP;
 };
 
 class DirectionalShadowData
 {
 	//later for cascaded shadow mapping we need a bunch of those
 public:
-	DirectionalShadowData(glm::ivec2 Resolution);
+	DirectionalShadowData(ivec2 Resolution);
 	virtual ~DirectionalShadowData();
 
 private:
@@ -46,7 +46,7 @@ private:
 		float distance;
 		GLuint fbo;
 		TextureData* pTexture;
-		glm::mat4 lightVP;
+		mat4 lightVP;
 	};
 	std::vector<CascadeData> m_Cascades;
 

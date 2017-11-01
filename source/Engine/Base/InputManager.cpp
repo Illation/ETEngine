@@ -96,12 +96,12 @@ void InputManager::UpdateEvents()
 			break;
 		}
 	}
-	if (!mouseWheel)m_MouseWheelDelta = glm::vec2();
+	if (!mouseWheel)m_MouseWheelDelta = vec2();
 	std::memcpy(m_KeyMapNew, m_KeyMapSdl, m_KeyboardLength);//Update New Keyboard state
 	int32 mPosOldX = m_MousePosX;
 	int32 mPosOldY = m_MousePosY;
 	m_MouseMapNew = SDL_GetMouseState(&m_MousePosX, &m_MousePosY);//Update new Mouse state and position
-	m_MouseMove = glm::vec2((float)(m_MousePosX - mPosOldX), (float)(m_MousePosY- mPosOldY));//maybe divide by screen resolution
+	m_MouseMove = vec2((float)(m_MousePosX - mPosOldX), (float)(m_MousePosY- mPosOldY));//maybe divide by screen resolution
 }
 //----------------------------
 //Getters
@@ -180,7 +180,7 @@ bool InputManager::IsMouseButtonReleased(int32 button)
 	return !(m_MouseMapNew & SDL_BUTTON(button)) &&
 		(m_MouseMapOld & SDL_BUTTON(button));
 }
-glm::vec2 InputManager::GetMousePosition()
+vec2 InputManager::GetMousePosition()
 {
-	return glm::vec2((float)m_MousePosX, (float)m_MousePosY);
+	return vec2((float)m_MousePosX, (float)m_MousePosY);
 }
