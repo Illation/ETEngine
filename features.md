@@ -30,10 +30,13 @@
  * Observer Pattern for input 
  * Factory Pattern for Content Managment 
  * Performance measurment
+ * Custom Maths Library: Vectors, Matrices, Quaternions, Transform and utility functions, Geometry
+ * Specific atmoic types
 
 ### Integration
  * Continous Integration with AppVeyor
  * Unit Testing setup with catch.hpp
+ * Unit tests for math functions
  
 ## Work in progress
 
@@ -42,13 +45,6 @@
 
 ### Planets
  * Atmospheric Scattering
- 
-### General
- * Specific atmoic types
- * Custom Maths Library
- 
-### Integration
- * Write Unit tests for math functions
  
 ## Backlog
 
