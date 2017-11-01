@@ -72,7 +72,7 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 		mat4 lightProjection = etm::orthographic(left*mult, right*mult, bottom*mult, top*mult, zNear, zFar*mult);
 
 		//view projection
-		m_LightVP = lightProjection*lightView;
+		m_LightVP = lightView * lightProjection;
 		pShadowData->m_Cascades[i].lightVP = m_LightVP;
 
 		//Set viewport

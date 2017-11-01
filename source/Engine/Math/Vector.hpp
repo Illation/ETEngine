@@ -47,6 +47,7 @@ namespace etm
 	template<class T>
 	inline T Clamp(const T &value, T hi, T lo)
 	{
+		assert( hi >= lo );
 		T result = value;
 
 		if (value > hi)

@@ -46,8 +46,8 @@
 		
 		//View dir and reflection
 		vec3 viewDir = -normalize(ViewRay);
-		vec3 refl = reflect(viewDir, norm);
-		refl.x = -refl.x;
+		vec3 refl = reflect(-viewDir, norm);
+		//refl.x = -refl.x;
 
 		vec3 radianceColor = textureLod(texEnvRadiance, refl,  rough * MAX_REFLECTION_LOD).rgb;
 		
