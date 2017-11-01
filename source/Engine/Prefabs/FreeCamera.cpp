@@ -1,7 +1,6 @@
 #include "stdafx.hpp"
 #include "FreeCamera.hpp"
 #include "../Components/CameraComponent.hpp"
-#include "../Helper/MathHelper.hpp"
 #include <algorithm>
 
 FreeCamera::FreeCamera()

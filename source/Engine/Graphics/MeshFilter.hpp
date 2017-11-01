@@ -3,7 +3,6 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "../Helper/MathHelper.hpp"
 
 class Material;
 

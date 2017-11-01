@@ -208,12 +208,12 @@
     <ClCompile Include="Graphics\TextureData.cpp" />
     <ClCompile Include="Helper\BinaryReader.cpp" />
     <ClCompile Include="Helper\Logger.cpp" />
-    <ClCompile Include="Helper\MathHelper.cpp" />
     <ClCompile Include="Helper\PerformanceInfo.cpp" />
     <ClCompile Include="Materials\GbufferMaterial.cpp" />
     <ClCompile Include="Materials\LightMaterial.cpp" />
     <ClCompile Include="Materials\NullMaterial.cpp" />
     <ClCompile Include="Materials\SkyboxMaterial.cpp" />
+    <ClCompile Include="Math\Geometry.cpp" />
     <ClCompile Include="PlanetTech\Atmosphere.cpp" />
     <ClCompile Include="PlanetTech\Patch.cpp" />
     <ClCompile Include="PlanetTech\Planet.cpp" />
@@ -284,7 +284,6 @@
     <ClInclude Include="Helper\AtomicTypes.hpp" />
     <ClInclude Include="Helper\BinaryReader.hpp" />
     <ClInclude Include="Helper\Logger.hpp" />
-    <ClInclude Include="Helper\MathHelper.hpp" />
     <ClInclude Include="Helper\PerformanceInfo.hpp" />
     <ClInclude Include="Helper\Singleton.hpp" />
     <ClInclude Include="Helper\stdafx.hpp" />
@@ -293,7 +292,9 @@
     <ClInclude Include="Materials\NullMaterial.hpp" />
     <ClInclude Include="Materials\SkyboxMaterial.hpp" />
     <ClInclude Include="Materials\stdafx.hpp" />
+    <ClInclude Include="Math\Geometry.hpp" />
     <ClInclude Include="Math\Math.hpp" />
+    <ClInclude Include="Math\MathUtil.hpp" />
     <ClInclude Include="Math\Matrix.hpp" />
     <ClInclude Include="Math\Quaternion.hpp" />
     <ClInclude Include="Math\stdafx.hpp" />

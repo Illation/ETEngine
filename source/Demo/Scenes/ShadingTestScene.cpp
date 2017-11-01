@@ -96,7 +96,7 @@ void ShadingTestScene::Initialize()
 
 	auto pLigEntity = new Entity();
 	auto pLight = new DirectionalLight(vec3(1, 1, 1), 4.5f);
-	pLight->SetShadowEnabled(true);
+	//pLight->SetShadowEnabled(true);
 	pLigEntity->AddComponent(new LightComponent(pLight));
 	pLigEntity->GetTransform()->SetRotation(quat(axis, angle));
 	pLigEntity->GetTransform()->RotateEuler(0, 1, 0);

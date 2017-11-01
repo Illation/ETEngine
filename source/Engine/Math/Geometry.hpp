@@ -1,7 +1,5 @@
 #pragma once
 
-string to_string(vec3 in); // #todo move to vector implementation, also provide for matrix and quat
-
 struct Plane
 {
 	Plane()

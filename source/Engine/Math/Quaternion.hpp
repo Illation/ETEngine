@@ -1,7 +1,6 @@
 #pragma once
 #pragma warning(disable : 4201) //nameless struct union - used in math library
 
-//#include "../Helper/AtomicTypes.h"
 #include "Vector.hpp"
 #include "Matrix.hpp"
 

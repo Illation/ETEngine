@@ -1,13 +1,7 @@
 #pragma once
 #pragma warning(disable : 4201) //nameless struct union - used in math library
 
-//#include "../Helper/AtomicTypes.hpp"
 #include "Vector.hpp"
-
-#include <initializer_list>
-#include <array>
-#include <assert.h>
-#include <stdint.h>
 
 namespace etm
 {
