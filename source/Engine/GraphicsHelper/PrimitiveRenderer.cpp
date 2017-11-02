@@ -181,12 +181,12 @@ void primitives::IcoSphere<level>::Initialize()
 {
 	auto ico = GetIcosahedronPositions(1);
 	auto indices = GetIcosahedronIndicesBFC();
-	std::vector<glm::vec3> vertices;
+	std::vector<vec3> vertices;
 	for (size_t i = 0; i < indices.size(); i += 3)
 	{
-		glm::vec3 a = ico[indices[i]];
-		glm::vec3 b = ico[indices[i+1]];
-		glm::vec3 c = ico[indices[i+2]];
+		vec3 a = ico[indices[i]];
+		vec3 b = ico[indices[i+1]];
+		vec3 c = ico[indices[i+2]];
 
 		SubAndPush(vertices, 0, a, b, c);
 	}
@@ -196,7 +196,7 @@ void primitives::IcoSphere<level>::Initialize()
 	glGenBuffers(1, &m_VBO);
 	// Fill buffer
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
 	// Link vertex attributes
 	STATE->BindVertexArray(m_VAO);
 	glEnableVertexAttribArray(0);
@@ -205,14 +205,14 @@ void primitives::IcoSphere<level>::Initialize()
 	STATE->BindVertexArray(0);
 }
 template<int32 level>
-void primitives::IcoSphere<level>::SubAndPush(std::vector<glm::vec3> &vertices, const int32 lev, const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c) const
+void primitives::IcoSphere<level>::SubAndPush(std::vector<vec3> &vertices, const int32 lev, const vec3 &a, const vec3 &b, const vec3 &c) const
 {
 	if (lev < level)
 	{
 		//find midpoints
-		glm::vec3 A = glm::normalize(b + ((c - b)*0.5f));
-		glm::vec3 B = glm::normalize(c + ((a - c)*0.5f));
-		glm::vec3 C = glm::normalize(a + ((b - a)*0.5f));
+		vec3 A = etm::normalize(b + ((c - b)*0.5f));
+		vec3 B = etm::normalize(c + ((a - c)*0.5f));
+		vec3 C = etm::normalize(a + ((b - a)*0.5f));
 		//Make 4 new triangles
 		int32 nLevel = lev + 1;
 		SubAndPush(vertices, nLevel, B, A, c);

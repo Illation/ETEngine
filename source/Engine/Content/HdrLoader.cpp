@@ -91,15 +91,15 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	//Create matrices for rendering to texture
-	glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
-	glm::mat4 captureViews[] =
+	mat4 captureProjection = etm::perspective( etm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+	mat4 captureViews[] =
 	{
-		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
-		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
-		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+		etm::lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(-1.0f,  0.0f, 0.0f), vec3(0.0f, -1.0f,  0.0f)),
+		etm::lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
+		etm::lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)),
+		etm::lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)),
+		etm::lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)),
+		etm::lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f))
 	};
 
 	//Get the shader
@@ -109,16 +109,16 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	STATE->SetShader(equiCubeShader);
 	glUniform1i(glGetUniformLocation(equiCubeShader->GetProgram(), "equirectangularMap"), 0);
 	STATE->LazyBindTexture(0, GL_TEXTURE_2D, hdrTexture);
-	glUniformMatrix4fv(glGetUniformLocation(equiCubeShader->GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(captureProjection));
+	glUniformMatrix4fv(glGetUniformLocation(equiCubeShader->GetProgram(), "projection"), 1, GL_FALSE, etm::valuePtr(captureProjection));
 
 	//render the cube
 	//***************
 
-	STATE->SetViewport(glm::ivec2(0), glm::ivec2(m_CubemapRes));
+	STATE->SetViewport(ivec2(0), ivec2(m_CubemapRes));
 	STATE->BindFramebuffer(captureFBO);
 	for (uint32 i = 0; i < 6; ++i)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(equiCubeShader->GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(captureViews[i]));
+		glUniformMatrix4fv(glGetUniformLocation(equiCubeShader->GetProgram(), "view"), 1, GL_FALSE, etm::valuePtr(captureViews[i]));
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemap, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -157,16 +157,16 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	STATE->SetShader(irradianceShader);
 	glUniform1i(glGetUniformLocation(irradianceShader->GetProgram(), "environmentMap"), 0);
 	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, envCubemap);
-	glUniformMatrix4fv(glGetUniformLocation(irradianceShader->GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(captureProjection));
+	glUniformMatrix4fv(glGetUniformLocation(irradianceShader->GetProgram(), "projection"), 1, GL_FALSE, etm::valuePtr(captureProjection));
 
 	//render irradiance cubemap
 	//*************************
 
-	STATE->SetViewport(glm::ivec2(0), glm::ivec2(m_IrradianceRes));
+	STATE->SetViewport(ivec2(0), ivec2(m_IrradianceRes));
 	STATE->BindFramebuffer(captureFBO);
 	for (uint32 i = 0; i < 6; ++i)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(irradianceShader->GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(captureViews[i]));
+		glUniformMatrix4fv(glGetUniformLocation(irradianceShader->GetProgram(), "view"), 1, GL_FALSE, etm::valuePtr(captureViews[i]));
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMap, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -198,7 +198,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	glUniform1i(glGetUniformLocation(radianceShader->GetProgram(), "environmentMap"), 0);
 	glUniform1f(glGetUniformLocation(radianceShader->GetProgram(), "resolution"), (GLfloat)m_RadianceRes);
 	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, envCubemap);
-	glUniformMatrix4fv(glGetUniformLocation(radianceShader->GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(captureProjection));
+	glUniformMatrix4fv(glGetUniformLocation(radianceShader->GetProgram(), "projection"), 1, GL_FALSE, etm::valuePtr(captureProjection));
 	auto roughnessUniformLoc = glGetUniformLocation(radianceShader->GetProgram(), "roughness");
 
 	//render radiance
@@ -212,13 +212,13 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 		uint32 mipHeight = (uint32)(m_RadianceRes * std::pow(0.5, mip));
 		glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
-		STATE->SetViewport(glm::ivec2(0), glm::ivec2(mipWidth, mipHeight));
+		STATE->SetViewport(ivec2(0), ivec2(mipWidth, mipHeight));
 
 		float roughness = (float)mip / (float)(maxMipLevels);
 		glUniform1f(roughnessUniformLoc, roughness);
 		for (uint32 i = 0; i < 6; ++i)
 		{
-			glUniformMatrix4fv(glGetUniformLocation(radianceShader->GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(captureViews[i]));
+			glUniformMatrix4fv(glGetUniformLocation(radianceShader->GetProgram(), "view"), 1, GL_FALSE, etm::valuePtr(captureViews[i]));
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, radianceMap, mip);
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -250,7 +250,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_BrdfLutRes, m_BrdfLutRes);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0);
 
-	STATE->SetViewport(glm::ivec2(0), glm::ivec2(m_BrdfLutRes));
+	STATE->SetViewport(ivec2(0), ivec2(m_BrdfLutRes));
 	STATE->SetShader(brdfShader);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
@@ -258,7 +258,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//Reset render settings and return generated texture
 	//*************************************************
 	STATE->BindFramebuffer(0);
-	STATE->SetViewport(glm::ivec2(0), glm::ivec2(SETTINGS->Window.Width, SETTINGS->Window.Height));
+	STATE->SetViewport(ivec2(0), ivec2(SETTINGS->Window.Width, SETTINGS->Window.Height));
 	glDeleteTextures(1, &hdrTexture);
 
 	return new HDRMap(envCubemap, irradianceMap, radianceMap, brdfLUTTexture, m_CubemapRes, m_CubemapRes, maxMipLevels);

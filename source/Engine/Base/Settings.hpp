@@ -20,10 +20,10 @@ public:
 			Title("ETEngine"),
 			pWindow(nullptr)
 		{
-			std::vector<glm::ivec2> resolutions;
-			resolutions.push_back(glm::ivec2(1280, 720));
-			resolutions.push_back(glm::ivec2(1920, 1080));
-			resolutions.push_back(glm::ivec2(2560, 1440));
+			std::vector<ivec2> resolutions;
+			resolutions.push_back(ivec2(1280, 720));
+			resolutions.push_back(ivec2(1920, 1080));
+			resolutions.push_back(ivec2(2560, 1440));
 
 			uint32 baseRes = 2;
 

@@ -165,9 +165,6 @@
     <ClCompile Include="Helper\BinaryReader.cpp">
       <Filter>Helper</Filter>
     </ClCompile>
-    <ClCompile Include="Helper\MathHelper.cpp">
-      <Filter>Helper</Filter>
-    </ClCompile>
     <ClCompile Include="Helper\PerformanceInfo.cpp">
       <Filter>Helper</Filter>
     </ClCompile>
@@ -207,6 +204,11 @@
     <ClCompile Include="StaticDependancies\glad\glad.c">
       <Filter>StaticDependancies\glad</Filter>
     </ClCompile>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Math\Geometry.cpp" />
+    <ClCompile Include="FileSystem\Entry.cpp" />
+    <ClCompile Include="FileSystem\Facade\FileBase.cpp" />
+    <ClCompile Include="FileSystem\Directory\DirectoryBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Context.hpp">
@@ -258,9 +260,6 @@
       <Filter>Content</Filter>
     </ClInclude>
     <ClInclude Include="Helper\Logger.hpp">
-      <Filter>Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="Helper\MathHelper.hpp">
       <Filter>Helper</Filter>
     </ClInclude>
     <ClInclude Include="Helper\Singleton.hpp">
@@ -425,5 +424,22 @@
     <ClInclude Include="StaticDependancies\glad\glad.h">
       <Filter>StaticDependancies\glad</Filter>
     </ClInclude>
+    <ClInclude Include="stdafx.hpp" />
+    <ClInclude Include="Graphics\Frustum.hpp" />
+    <ClInclude Include="Math\MathUtil.hpp" />
+    <ClInclude Include="Math\Geometry.hpp" />
+    <ClInclude Include="FileSystem\Entry.h" />
+    <ClInclude Include="FileSystem\Facade\FileAccessFlags.h" />
+    <ClInclude Include="FileSystem\Facade\FileAccessMode.h" />
+    <ClInclude Include="FileSystem\Facade\FileBase.h" />
+    <ClInclude Include="FileSystem\Facade\FileBaseLinux.hpp" />
+    <ClInclude Include="FileSystem\Facade\FileBaseLinuxMembers.h" />
+    <ClInclude Include="FileSystem\Facade\FileBaseLinuxReferences.h" />
+    <ClInclude Include="FileSystem\Facade\FileBaseStub.hpp" />
+    <ClInclude Include="FileSystem\Facade\FileBaseWin.hpp" />
+    <ClInclude Include="FileSystem\Facade\FileBaseWinReferences.h" />
+    <ClInclude Include="FileSystem\Facade\FileHandle.h" />
+    <ClInclude Include="FileSystem\Directory\DirectoryBaseLinux.hpp" />
+    <ClInclude Include="FileSystem\Directory\DirectoryBaseWindows.hpp" />
   </ItemGroup>
 </Project>

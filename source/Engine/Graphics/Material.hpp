@@ -1,10 +1,5 @@
 #pragma once
 #include "../StaticDependancies/glad/glad.h"
-//Use lefthanded coordinate system
-#ifndef GLM_LEFT_HANDED
-	#define GLM_LEFT_HANDED
-#endif
-#include <glm.hpp>
 #include <string>
 
 class ShaderData;
@@ -18,8 +13,8 @@ public:
 	virtual void Initialize();
 	void SpecifyInputLayout();
 	uint32 GetLayoutFlags() { return m_LayoutFlags; }
-	void UploadVariables(glm::mat4 matModel);
-	void UploadVariables(glm::mat4 matModel, const glm::mat4 &matWVP);
+	void UploadVariables(mat4 matModel);
+	void UploadVariables(mat4 matModel, const mat4 &matWVP);
 	bool IsForwardRendered(){ return m_DrawForward; }
 
 protected:

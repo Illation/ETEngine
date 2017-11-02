@@ -14,7 +14,7 @@ enum TriNext
 
 struct Tri
 {
-	Tri(glm::vec3 A, glm::vec3 B, glm::vec3 C, Tri* Parent, int16 Level)
+	Tri(vec3 A, vec3 B, vec3 C, Tri* Parent, int16 Level)
 		:a(A), b(B), c(C), parent(Parent), level(Level)
 	{
 	}
@@ -30,9 +30,9 @@ struct Tri
 
 	int16 level;
 
-	glm::vec3 a;
-	glm::vec3 b;
-	glm::vec3 c;
+	vec3 a;
+	vec3 b;
+	vec3 c;
 };
 
 class Triangulator
@@ -54,8 +54,8 @@ private:
 	friend class Planet;
 
 	void Precalculate();
-	TriNext SplitHeuristic(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, int16 level, bool frustumCull);
-	void RecursiveTriangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, int16 level, bool frustumCull);
+	TriNext SplitHeuristic(vec3 &a, vec3 &b, vec3 &c, int16 level, bool frustumCull);
+	void RecursiveTriangle(vec3 a, vec3 b, vec3 c, int16 level, bool frustumCull);
 
 	//Triangulation paramenters
 	float m_AllowedTriPx = 300.f;

@@ -72,10 +72,10 @@ void SkyboxTestScene::Initialize()
 	//m_pLight->SetShadowEnabled(true);
 	m_pLigEntity->AddComponent(new LightComponent( m_pLight));
 	m_pLigEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
-	//m_pLigEntity->GetTransform()->SetRotation(glm::lookAtLH())
+	//m_pLigEntity->GetTransform()->SetRotation(etm::lookAt())
 	AddEntity(m_pLigEntity);
 
-	SETTINGS->Window.VSync(true);
+	SETTINGS->Window.VSync(false);
 }
 
 void SkyboxTestScene::Update()
@@ -85,19 +85,19 @@ void SkyboxTestScene::Update()
 
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_2))
 	{
-		m_pLigEntity->GetTransform()->RotateEuler(TIME->DeltaTime(), 0, 0);
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), TIME->DeltaTime()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_8))
 	{
-		m_pLigEntity->GetTransform()->RotateEuler(-TIME->DeltaTime(), 0, 0);
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), -TIME->DeltaTime()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_4))
 	{
-		m_pLigEntity->GetTransform()->RotateEuler(0, -TIME->DeltaTime(), 0);
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), TIME->DeltaTime()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_6))
 	{
-		m_pLigEntity->GetTransform()->RotateEuler(0, TIME->DeltaTime(), 0);
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), -TIME->DeltaTime()));
 	}
 
 	//Change light settings
@@ -120,11 +120,14 @@ void SkyboxTestScene::Update()
 void SkyboxTestScene::Draw()
 {
 	TextRenderer::GetInstance()->SetFont(m_pDebugFont);
-	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 0.3f, 0.3f, 1));
-	TextRenderer::GetInstance()->DrawText("FPS: " + std::to_string(PERFORMANCE->GetRegularFPS()), glm::vec2(20, 20));
-	TextRenderer::GetInstance()->SetColor(glm::vec4(1, 1, 1, 1));
-	TextRenderer::GetInstance()->DrawText("Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS()), glm::vec2(20, 50));
-	TextRenderer::GetInstance()->DrawText("Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls), glm::vec2(20, 80));
+	TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
+	std::string outString = "FPS: " + std::to_string( PERFORMANCE->GetRegularFPS() );
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20));
+	TextRenderer::GetInstance()->SetColor(vec4(1, 1, 1, 1));
+	outString = "Frame ms: " + std::to_string( PERFORMANCE->GetFrameMS() );
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 50));
+	outString = "Draw Calls: " + std::to_string( PERFORMANCE->m_PrevDrawCalls );
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 80));
 }
 
 void SkyboxTestScene::DrawForward()

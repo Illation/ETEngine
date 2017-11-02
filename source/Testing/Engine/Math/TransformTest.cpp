@@ -127,8 +127,8 @@ TEST_CASE( "look at", "[transform]" )
 
 	mat4 lookMat = etm::lookAt( eyePos, targetPos, vec3::UP);
 
-	vec3 resultVec = etm::normalize((lookMat * vec4( testVec, 1 )).xyz);
-	vec3 resultUpVec = (lookMat * vec4( upTestVec, 1 )).xyz;
+	vec3 resultVec = etm::normalize((etm::inverse(lookMat) * vec4( testVec, 1 )).xyz);
+	vec3 resultUpVec = (etm::inverse(lookMat) * vec4( upTestVec, 1 )).xyz;
 
 	REQUIRE( etm::nearEqualsV( resultVec, targetVec, 0.00001f ) );
 	REQUIRE( etm::dot(resultUpVec, vec3::UP) >= 0 );
@@ -139,23 +139,23 @@ TEST_CASE( "projection", "[transform]" )
 {
 	float width = 16.f;
 	float height = 9.f;
-	float near = 1.f;
-	float far = 10.f;
+	float zNear = 1.f;
+	float zFar = 10.f;
 
 	SECTION( "ortho" )
 	{
 		float hw = width / 2;
 		float hh = height / 2;
-		mat4 projMat = etm::orthographic( -hw, hw, hh, -hh, near, far );
+		mat4 projMat = etm::orthographic( -hw, hw, hh, -hh, zNear, zFar );
 
-		vec3 bln = vec3( -hw, -hh, near );
-		vec3 tln = vec3( -hw, hh, near );
-		vec3 brn = vec3( hw, -hh, near );
-		vec3 trn = vec3( hw, hh, near );
-		vec3 blf = vec3( -hw, -hh, far );
-		vec3 tlf = vec3( -hw, hh, far );
-		vec3 brf = vec3( hw, -hh, far );
-		vec3 trf = vec3( hw, hh, far );
+		vec3 bln = vec3( -hw, -hh, zNear );
+		vec3 tln = vec3( -hw, hh, zNear );
+		vec3 brn = vec3( hw, -hh, zNear );
+		vec3 trn = vec3( hw, hh, zNear );
+		vec3 blf = vec3( -hw, -hh, zFar );
+		vec3 tlf = vec3( -hw, hh, zFar );
+		vec3 brf = vec3( hw, -hh, zFar );
+		vec3 trf = vec3( hw, hh, zFar );
 
 		vec4 rbln = projMat * vec4( bln, 1 );
 		vec4 rtln = projMat * vec4( tln, 1 );
@@ -180,18 +180,18 @@ TEST_CASE( "projection", "[transform]" )
 		float aspect = width / height;
 		float fov = etm::PI_DIV4;
 
-		mat4 projMat = etm::perspective( fov, aspect, near, far );
+		mat4 projMat = etm::perspective( fov, aspect, zNear, zFar );
 
 		//Test with frustum corners
 		float yFac = tanf( fov / 2);
 		float xFac = yFac*aspect;
 
-		vec3 nCenter = vec3::ZERO + vec3::FORWARD*near;
-		vec3 fCenter = vec3::ZERO + vec3::FORWARD*far;
-		vec3 nearHW = vec3::RIGHT*near*xFac;
-		vec3 nearHH = vec3::UP*near*yFac;
-		vec3 farHW = vec3::RIGHT*far*xFac;
-		vec3 farHH = vec3::UP*far*yFac;
+		vec3 nCenter = vec3::ZERO + vec3::FORWARD*zNear;
+		vec3 fCenter = vec3::ZERO + vec3::FORWARD*zFar;
+		vec3 nearHW = vec3::RIGHT*zNear*xFac;
+		vec3 nearHH = vec3::UP*zNear*yFac;
+		vec3 farHW = vec3::RIGHT*zFar*xFac;
+		vec3 farHH = vec3::UP*zFar*yFac;
 
 		vec3 tln = nCenter + nearHH - nearHW;
 		vec3 trn = nCenter + nearHH + nearHW;
