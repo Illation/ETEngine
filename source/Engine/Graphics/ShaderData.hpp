@@ -1,10 +1,5 @@
 #pragma once
 #include "../staticDependancies/glad/glad.h"
-//Use lefthanded coordinate system
-#ifndef GLM_LEFT_HANDED
-	#define GLM_LEFT_HANDED
-#endif
-#include <glm.hpp>
 #include <string>
 #include <vector>
 class ShaderData

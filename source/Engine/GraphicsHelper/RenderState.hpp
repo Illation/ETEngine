@@ -22,9 +22,9 @@ public:
 	void SetBlendEquation(GLenum equation);
 	void SetBlendFunction(GLenum sFactor, GLenum dFactor);
 
-	void SetViewport(glm::ivec2 pos, glm::ivec2 size);
+	void SetViewport(ivec2 pos, ivec2 size);
 
-	void SetClearColor(glm::vec4 col);
+	void SetClearColor(vec4 col);
 
 	void SetShader(ShaderData* pShader);
 
@@ -59,10 +59,10 @@ private:
 	GLenum m_BlendFuncSFactor = GL_ONE;
 	GLenum m_BlendFuncDFactor = GL_ZERO;
 
-	glm::ivec2 m_ViewportPosition = glm::ivec2(0);
-	glm::ivec2 m_ViewportSize; //initialize with values used during context creation
+	ivec2 m_ViewportPosition = ivec2(0);
+	ivec2 m_ViewportSize; //initialize with values used during context creation
 
-	glm::vec4 m_ClearColor = glm::vec4(0);
+	vec4 m_ClearColor = vec4(0);
 
 	GLuint m_ReadFramebuffer = 0;
 	GLuint m_DrawFramebuffer = 0;

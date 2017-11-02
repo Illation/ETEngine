@@ -5,7 +5,7 @@ class TextureData;
 class ParamPBRMaterial : public Material
 {
 public:
-	ParamPBRMaterial(glm::vec3 baseCol, float roughness, float metal);
+	ParamPBRMaterial(vec3 baseCol, float roughness, float metal);
 	~ParamPBRMaterial();
 
 private:
@@ -17,7 +17,7 @@ private:
 private:
 
 	GLint m_uBaseColor;
-	glm::vec3 m_BaseColor = glm::vec3(0.8f);
+	vec3 m_BaseColor = vec3(0.8f);
 	GLint m_uRoughness;
 	float m_Roughness = 0.5f;
 	GLint m_uMetal;

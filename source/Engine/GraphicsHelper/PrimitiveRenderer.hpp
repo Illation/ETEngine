@@ -89,7 +89,7 @@ namespace primitives
 		void Initialize();
 	private:
 		// #todo: generate with index buffer
-		void SubAndPush(std::vector<glm::vec3> &vertices, const int32 lev, const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c) const;
+		void SubAndPush(std::vector<vec3> &vertices, const int32 lev, const vec3 &a, const vec3 &b, const vec3 &c) const;
 		GLuint m_VAO = 0;
 		GLuint m_VBO = 0;
 		int32 m_NumVerts;

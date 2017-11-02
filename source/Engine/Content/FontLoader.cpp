@@ -134,7 +134,7 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 			case 8: metric->Channel = 3; break;
 			default: metric->Channel = 4; break;
 			}
-			metric->TexCoord = glm::vec2((float)xPos / (float)pFont->m_TextureWidth
+			metric->TexCoord = vec2((float)xPos / (float)pFont->m_TextureWidth
 				, (float)yPos / (float)pFont->m_TextureHeight);
 			pBinReader->SetBufferPosition(posChar + 20);
 		}

@@ -75,22 +75,22 @@ void Triangulator::Precalculate()
 	}
 	//height multipliers
 	m_HeightMultLUT.clear();
-	glm::vec3 a = m_Icosahedron[0].a;
-	glm::vec3 b = m_Icosahedron[0].b;
-	glm::vec3 c = m_Icosahedron[0].c;
-	glm::vec3 center = (a + b + c) / 3.f;
-	center *= m_pPlanet->GetRadius() / glm::length(center);//+maxHeight
-	m_HeightMultLUT.push_back(1 / glm::dot(glm::normalize(a), glm::normalize(center)));
+	vec3 a = m_Icosahedron[0].a;
+	vec3 b = m_Icosahedron[0].b;
+	vec3 c = m_Icosahedron[0].c;
+	vec3 center = (a + b + c) / 3.f;
+	center = center * m_pPlanet->GetRadius() / etm::length(center);//+maxHeight
+	m_HeightMultLUT.push_back(1 / etm::dot( etm::normalize(a), etm::normalize(center)));
 	float normMaxHeight = m_pPlanet->GetMaxHeight() / m_pPlanet->GetRadius();
 	for (int32 i = 1; i <= m_MaxLevel; i++)
 	{
-		glm::vec3 A = b + ((c - b)*0.5f);
-		glm::vec3 B = c + ((a - c)*0.5f);
+		vec3 A = b + ((c - b)*0.5f);
+		vec3 B = c + ((a - c)*0.5f);
 		c = a + ((b - a)*0.5f);
-		a = A*m_pPlanet->GetRadius() / glm::length(A);
-		b = B*m_pPlanet->GetRadius() / glm::length(B);
-		c *= m_pPlanet->GetRadius() / glm::length(c);
-		m_HeightMultLUT.push_back(1 / glm::dot(glm::normalize(a), glm::normalize(center)) + normMaxHeight);
+		a = A * m_pPlanet->GetRadius() / etm::length(A);
+		b = B * m_pPlanet->GetRadius() / etm::length(B);
+		c = c * m_pPlanet->GetRadius() / etm::length(c);
+		m_HeightMultLUT.push_back(1 / etm::dot( etm::normalize(a), etm::normalize(center)) + normMaxHeight);
 	}
 }
 
@@ -100,8 +100,8 @@ void Triangulator::GenerateGeometry()
 	//The distances generated should keep the triangles smaller than m_AllowedTriPx at any level
 	//In future only recalculate on FOV or triangle density change
 	m_DistanceLUT.clear();
-	float sizeL = glm::length(m_Icosahedron[0].a - m_Icosahedron[0].b);
-	float frac = tanf((m_AllowedTriPx * glm::radians(m_pFrustum->GetFOV())) / WINDOW.Width);
+	float sizeL = etm::length(m_Icosahedron[0].a - m_Icosahedron[0].b);
+	float frac = tanf((m_AllowedTriPx * etm::radians(m_pFrustum->GetFOV())) / WINDOW.Width);
 	for (int32 level = 0; level < m_MaxLevel+5; level++)
 	{
 		m_DistanceLUT.push_back(sizeL / frac);
@@ -117,11 +117,11 @@ void Triangulator::GenerateGeometry()
 	}
 }
 
-TriNext Triangulator::SplitHeuristic(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, int16 level, bool frustumCull)
+TriNext Triangulator::SplitHeuristic(vec3 &a, vec3 &b, vec3 &c, int16 level, bool frustumCull)
 {
-	glm::vec3 center = (a + b + c) / 3.f;
+	vec3 center = (a + b + c) / 3.f;
 	//Perform backface culling
-	float dotNV = glm::dot(glm::normalize(center), glm::normalize(center - m_pFrustum->GetPositionOS()));
+	float dotNV = etm::dot( etm::normalize(center), etm::normalize(center - m_pFrustum->GetPositionOS()));
 	if (dotNV >= m_TriLevelDotLUT[level])
 	{
 		return TriNext::CULL;
@@ -138,9 +138,9 @@ TriNext Triangulator::SplitHeuristic(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, i
 			//check if new splits are allowed
 			if (level >= m_MaxLevel)return TriNext::LEAF;
 			//split according to distance
-			float aDist = glm::length(a - m_pFrustum->GetPositionOS());
-			float bDist = glm::length(b - m_pFrustum->GetPositionOS());
-			float cDist = glm::length(c - m_pFrustum->GetPositionOS());
+			float aDist = etm::length(a - m_pFrustum->GetPositionOS());
+			float bDist = etm::length(b - m_pFrustum->GetPositionOS());
+			float cDist = etm::length(c - m_pFrustum->GetPositionOS());
 			if (std::fminf(aDist, std::fminf(bDist, cDist)) < m_DistanceLUT[level])return TriNext::SPLIT;
 			return TriNext::LEAF;
 		}
@@ -148,14 +148,14 @@ TriNext Triangulator::SplitHeuristic(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, i
 	//check if new splits are allowed
 	if (level >= m_MaxLevel)return TriNext::LEAF;
 	//split according to distance
-	float aDist = glm::length(a - m_pFrustum->GetPositionOS());
-	float bDist = glm::length(b - m_pFrustum->GetPositionOS());
-	float cDist = glm::length(c - m_pFrustum->GetPositionOS());
+	float aDist = etm::length(a - m_pFrustum->GetPositionOS());
+	float bDist = etm::length(b - m_pFrustum->GetPositionOS());
+	float cDist = etm::length(c - m_pFrustum->GetPositionOS());
 	if (std::fminf(aDist, std::fminf(bDist, cDist)) < m_DistanceLUT[level])return TriNext::SPLITCULL;
 	return TriNext::LEAF;
 }
 
-void Triangulator::RecursiveTriangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, int16 level, bool frustumCull)
+void Triangulator::RecursiveTriangle(vec3 a, vec3 b, vec3 c, int16 level, bool frustumCull)
 {
 	TriNext next = SplitHeuristic(a, b, c, level, frustumCull);
 	if (next == CULL) return;
@@ -163,13 +163,13 @@ void Triangulator::RecursiveTriangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, int1
 	else if (next == SPLIT || next == SPLITCULL)
 	{
 		//find midpoints
-		glm::vec3 A = b + ((c - b)*0.5f);
-		glm::vec3 B = c + ((a - c)*0.5f);
-		glm::vec3 C = a + ((b - a)*0.5f);
+		vec3 A = b + ((c - b)*0.5f);
+		vec3 B = c + ((a - c)*0.5f);
+		vec3 C = a + ((b - a)*0.5f);
 		//make the distance from center larger according to planet radius
-		A *= m_pPlanet->GetRadius() / glm::length(A);
-		B *= m_pPlanet->GetRadius() / glm::length(B);
-		C *= m_pPlanet->GetRadius() / glm::length(C);
+		A = A * m_pPlanet->GetRadius() / etm::length(A);
+		B = B * m_pPlanet->GetRadius() / etm::length(B);
+		C = C * m_pPlanet->GetRadius() / etm::length(C);
 		//Make 4 new triangles
 		int16 nLevel = level + 1;
 		RecursiveTriangle(a, B, C, nLevel, next == SPLITCULL);//Winding is inverted

@@ -18,5 +18,6 @@
     <ClCompile Include="mainTesting.cpp" />
     <ClCompile Include="Engine\Math\QuaternionTest.cpp" />
     <ClCompile Include="Engine\Math\TransformTest.cpp" />
+    <ClCompile Include="Engine\FileSystem\FileSystemTest.cpp" />
   </ItemGroup>
 </Project>

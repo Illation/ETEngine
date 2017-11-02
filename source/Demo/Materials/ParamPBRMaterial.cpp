@@ -7,7 +7,7 @@
 
 #include "../../Engine/Content/TextureLoader.hpp"
 
-ParamPBRMaterial::ParamPBRMaterial(glm::vec3 baseCol, float roughness, float metal) :
+ParamPBRMaterial::ParamPBRMaterial(vec3 baseCol, float roughness, float metal) :
 	Material("Shaders/DefPBRParamShader.glsl"),
 	m_BaseColor(baseCol),
 	m_Roughness(roughness),

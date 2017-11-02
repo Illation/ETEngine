@@ -27,8 +27,8 @@ public:
 		m_OutdatedTextureData = true;
 	}
 
-	void SetDifCol(glm::vec3 col) { m_DiffuseColor = col; }
-	void SetSpecCol(glm::vec3 col) { m_SpecularColor = col; }
+	void SetDifCol(vec3 col) { m_DiffuseColor = col; }
+	void SetSpecCol(vec3 col) { m_SpecularColor = col; }
 	void SetSpecPow(float pow) { m_SpecularPower = pow; }
 private:
 	void LoadTextures();
@@ -57,9 +57,9 @@ private:
 
 	//Phong parameters
 	GLint m_uDifCol;
-	glm::vec3 m_DiffuseColor;
+	vec3 m_DiffuseColor;
 	GLint m_uSpecCol;
-	glm::vec3 m_SpecularColor;
+	vec3 m_SpecularColor;
 	GLint m_uSpecPow;
 	float m_SpecularPower = 50;
 };

@@ -25,6 +25,7 @@ void PointLight::DrawVolume(TransformComponent* pTransform)
 	PointLightVolume::GetInstance()->Draw(pTransform->GetPosition(), radius, col);
 }
 
+
 void DirectionalLight::UploadVariables(GLuint program, TransformComponent* comp, uint32 index)
 {
 	string idxStr = to_string(index);
@@ -55,7 +56,7 @@ void DirectionalLight::SetShadowEnabled(bool enabled)
 	if (enabled)
 	{
 		if(!IsShadowEnabled())
-			m_pShadowData = new DirectionalShadowData(glm::ivec2(1024, 1024)*8);
+			m_pShadowData = new DirectionalShadowData(ivec2(1024, 1024)*8);
 	}
 	else
 	{

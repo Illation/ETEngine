@@ -1,9 +1,4 @@
 #pragma once
-//Use lefthanded coordinate system
-#ifndef GLM_LEFT_HANDED
-	#define GLM_LEFT_HANDED
-#endif
-#include <glm.hpp>
 #include "AbstractComponent.hpp"
 
 class Frustum;
@@ -25,13 +20,13 @@ public:
 	void SetActive();
 	bool IsActive() const { return m_IsActive; }
 
-	glm::mat4 GetView() { return m_View; }
-	glm::mat4 GetProj() { return m_Projection; }
-	glm::mat4 GetViewInv() { return m_ViewInverse; }
-	glm::mat4 GetViewProj() { return m_ViewProjection; }
-	glm::mat4 GetViewProjInv() { return m_ViewProjectionInverse; }
-	glm::mat4 GetStatViewProj() { return m_StatViewProj; }
-	glm::mat4 GetStatViewProjInv() { return m_StatViewProjInv; }
+	mat4 GetView() { return m_View; }
+	mat4 GetProj() { return m_Projection; }
+	mat4 GetViewInv() { return m_ViewInverse; }
+	mat4 GetViewProj() { return m_ViewProjection; }
+	mat4 GetViewProjInv() { return m_ViewProjectionInverse; }
+	mat4 GetStatViewProj() { return m_StatViewProj; }
+	mat4 GetStatViewProjInv() { return m_StatViewProjInv; }
 
 	float GetDepthProjA() { return m_DepthProjA; }
 	float GetDepthProjB() { return m_DepthProjB; }
@@ -50,7 +45,7 @@ protected:
 	virtual void DrawForward();
 
 private:
-	glm::mat4 m_View, m_Projection, m_ViewInverse, 
+	mat4 m_View, m_Projection, m_ViewInverse, 
 		m_ViewProjection, m_ViewProjectionInverse,
 		m_StatViewProj, m_StatViewProjInv;//Ignore camera position for gbuffer reconstruction and skybox
 	float m_FarPlane, m_NearPlane, m_FOV, m_Size;

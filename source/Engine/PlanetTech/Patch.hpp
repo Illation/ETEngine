@@ -5,17 +5,17 @@ class Planet;
 
 struct PatchVertex
 {
-	PatchVertex(glm::vec2 position, glm::vec2 morphVec)
+	PatchVertex(vec2 position, vec2 morphVec)
 	{
 		pos = position;
 		morph = morphVec;
 	}
-	glm::vec2 pos;
-	glm::vec2 morph;
+	vec2 pos;
+	vec2 morph;
 };
 struct PatchInstance
 {
-	PatchInstance(BYTE Level, glm::vec3 A, glm::vec3 R, glm::vec3 S)
+	PatchInstance(BYTE Level, vec3 A, vec3 R, vec3 S)
 	{
 		level = Level;
 		a = A;
@@ -23,9 +23,9 @@ struct PatchInstance
 		s = S;
 	}
 	int32 level;
-	glm::vec3 a;
-	glm::vec3 r;
-	glm::vec3 s;
+	vec3 a;
+	vec3 r;
+	vec3 s;
 };
 class Patch
 {
@@ -41,7 +41,7 @@ public:
 	void GenerateGeometry(int16 levels);
 	void BindInstances(std::vector<PatchInstance> &instances);
 	void UploadDistanceLUT(std::vector<float> &distances);
-	void Draw(bool white = false);
+	void Draw();
 private:
 	std::vector<PatchVertex>m_Vertices;
 	std::vector<uint32>m_Indices;
@@ -74,6 +74,6 @@ private:
 	GLint m_uDelta;
 
 	//shading
-	glm::vec3 m_Ambient = glm::vec3(0.05f, 0.05f, 0.08f);
+	vec3 m_Ambient = vec3(0.05f, 0.05f, 0.08f);
 	GLint m_uAmbient;
 };

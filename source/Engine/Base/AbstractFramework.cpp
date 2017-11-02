@@ -26,12 +26,6 @@ AbstractFramework::AbstractFramework()
 AbstractFramework::~AbstractFramework()
 {
 	Logger::Release();
-	Settings* pSet = Settings::GetInstance();
-	Context* pCon = Context::GetInstance();
-	SceneManager* pScMan = SceneManager::GetInstance();
-	InputManager* pInMan = InputManager::GetInstance();
-
-	RenderPipeline* pRenderPipeline = RenderPipeline::GetInstance();
 
 	ContentManager::Release();
 
@@ -40,12 +34,12 @@ AbstractFramework::~AbstractFramework()
 	SDL_GL_DeleteContext(m_GlContext);
 	SDL_Quit();
 
-	pSet->DestroyInstance();
-	pScMan->DestroyInstance();
-	pInMan->DestroyInstance();
-	pCon->DestroyInstance();
+	Settings::GetInstance()->DestroyInstance();
+	SceneManager::GetInstance()->DestroyInstance();
+	InputManager::GetInstance()->DestroyInstance();
+	Context::GetInstance()->DestroyInstance();
 	
-	pRenderPipeline->DestroyInstance();
+	RenderPipeline::GetInstance()->DestroyInstance();
 }
 
 void AbstractFramework::Run()
@@ -79,7 +73,7 @@ void AbstractFramework::InitializeSDL()
 
 	// Initialize SDL 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-		sdl_die("Couldn't initialize SDL");
+		quit_SDL_error("Couldn't initialize SDL");
 	atexit(SDL_Quit);
 	SDL_GL_LoadLibrary(NULL);
 }
@@ -87,10 +81,9 @@ void AbstractFramework::InitializeSDL()
 void AbstractFramework::InitializeWindow()
 {
 	Settings* pSet = Settings::GetInstance();//Initialize Game Settings
-	PerformanceInfo* pPerformance = PerformanceInfo::GetInstance();//Initialize performance measurment #todo: disable for shipped project?
-	SceneManager* pScMan = SceneManager::GetInstance();//Initialize SceneManager
-	InputManager* pInMan = InputManager::GetInstance();//init input manager
-	pInMan->Init();
+	PerformanceInfo::GetInstance();//Initialize performance measurment #todo: disable for shipped project?
+	SceneManager::GetInstance();//Initialize SceneManager
+	InputManager::GetInstance()->Init();//init input manager
 
 	//Create Window
 	if (pSet->Window.Fullscreen)
@@ -101,11 +94,11 @@ void AbstractFramework::InitializeWindow()
 	{
 		pSet->Window.pWindow = SDL_CreateWindow(pSet->Window.Title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, pSet->Window.Width, pSet->Window.Height, SDL_WINDOW_OPENGL);
 	}
-	if (pSet->Window.pWindow == NULL)sdl_die("Couldn't set video mode");
+	if (pSet->Window.pWindow == NULL)quit_SDL_error("Couldn't set video mode");
 
 	//OpenGl context creation
 	m_GlContext = SDL_GL_CreateContext(pSet->Window.pWindow);
-	if (m_GlContext == NULL)sdl_die("Failed to create OpenGL context");
+	if (m_GlContext == NULL)quit_SDL_error("Failed to create OpenGL context");
 
 	// Use v-sync
 	SDL_GL_SetSwapInterval(1);
@@ -150,7 +143,6 @@ void AbstractFramework::InitializeGame()
 
 void AbstractFramework::GameLoop()
 {
-	Settings* pSet = Settings::GetInstance();
 	while (true)
 	{
 		InputManager::GetInstance()->UpdateEvents();
@@ -170,10 +162,6 @@ void AbstractFramework::GameLoop()
 
 		//****
 		//DRAW
-		//SceneManager::GetInstance()->Draw();
-
-		////Swap front and back buffer
-		//SDL_GL_SwapWindow(pSet->Window.pWindow);
 		RenderPipeline::GetInstance()->Draw(activeScenes);
 	}
 }
@@ -181,6 +169,6 @@ void AbstractFramework::GameLoop()
 void AbstractFramework::ClearTarget()
 {
 	// Clear the screen to white
-	STATE->SetClearColor(glm::vec4(1));
+	STATE->SetClearColor(vec4(1));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

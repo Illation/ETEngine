@@ -8,3 +8,5 @@
 #include "Matrix.hpp"
 #include "Quaternion.hpp"
 #include "Transform.hpp"
+#include "MathUtil.hpp"
+#include "Geometry.hpp"

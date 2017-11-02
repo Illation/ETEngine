@@ -12,13 +12,11 @@ TEST_CASE("constructors", "[quat]")
 		REQUIRE( testQuat.z == 0 );
 		REQUIRE( testQuat.w == 1 );
 	}
-	SECTION( "axis constructor" )
+	SECTION( "eulerian constructor" )
 	{
-		quat testQuat = quat(vec3(1, 0, 0));
-		REQUIRE( testQuat.x == 1 );
-		REQUIRE( testQuat.y == 0 );
-		REQUIRE( testQuat.z == 0 );
-		REQUIRE( testQuat.w == 0 );
+		vec3 euler = vec3(etm::PI, 0, 0);
+		quat testQuat = quat(euler);
+		REQUIRE( etm::nearEqualsV(testQuat.v4, vec4( 1, 0, 0, 0 ), 0.0001f));
 	}
 	SECTION( "value constructor" )
 	{

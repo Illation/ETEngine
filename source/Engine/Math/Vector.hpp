@@ -1,65 +1,15 @@
 #pragma once
+#pragma warning(disable : 4201) //nameless struct union - used in math library
+
+#include "MathUtil.hpp"
 
 #include <initializer_list>
 #include <array>
-#include <assert.h>
-#include <stdint.h>
-
-//Temporarily defined here until glm is replaced with custom math
-typedef std::int8_t		int8;
-typedef std::int16_t	int16;
-typedef std::int32_t	int32;
-typedef std::int64_t	int64;
-
-typedef std::uint8_t	uint8;
-typedef std::uint16_t	uint16;
-typedef std::uint32_t	uint32;
-typedef std::uint64_t	uint64;
 
 //ETEngine math
 namespace etm
 {
 	enum ctor { uninitialized };
-
-#define ETM_DEFAULT_EPSILON 0.00000001
-#define ETM_DEFAULT_EPSILON_T static_cast<T>(ETM_DEFAULT_EPSILON)
-
-	//180 degrees
-	static const float PI = 3.1415926535897932384626433832795028841971693993751058209749445f;
-	//360 degrees
-	static const float PI2 = PI * 2;
-	//90 degrees
-	static const float PI_DIV2 = PI * 0.5f;
-	//45 degrees
-	static const float PI_DIV4 = PI * 0.25f;
-	//30 degrees
-	static const float PI_DIV6 = PI / 6.f;
-
-	template <class T>
-	inline bool nearEquals(T lhs, T rhs, T epsilon = ETM_DEFAULT_EPSILON_T )
-	{
-		return abs(lhs - rhs) <= epsilon;
-	}
-
-	template<class T>
-	inline T Clamp(const T &value, T hi, T lo)
-	{
-		T result = value;
-
-		if (value > hi)
-			result = hi;
-
-		if (value < lo)
-			result = lo;
-		 
-		return result;
-	}
-	template<class T>
-	inline T Clamp01(T& value)
-	{
-		return Clamp(T, 0, 1);
-	}
-
 
 	//Generic vector
 	//**************
@@ -105,12 +55,22 @@ namespace etm
 		}
 
 		//operators
+		T operator[] (const uint8 index) const
+		{
+			assert(index >= 0 && index < n);
+			return data.at(index);
+		}
 		T& operator[] (const uint8 index)
 		{
 			assert(index >= 0 && index < n);
 			return data.at(index);
 		}
-		vector<n, T> operator-();
+		vector<n, T> operator-() const;
+
+		//string conversion
+		std::string ToString() const;
+		operator std::string() const { return ToString(); }
+
 	};
 	//specializations
 	//***************
@@ -150,12 +110,21 @@ namespace etm
 			data = { x, y };
 		}
 		//operators
+		T operator[] (const uint8 index) const
+		{
+			assert(index >= 0 && index < 2);
+			return data.at(index);
+		}
 		T& operator[] (const uint8 index)
 		{
 			assert(index >= 0 && index < 2);
 			return data.at(index);
 		}
-		vector<2, T> operator-();
+		vector<2, T> operator-() const;
+
+		//string conversion
+		std::string ToString() const;
+		operator std::string() const { return ToString(); }
 	};
 
 	//vec3
@@ -223,12 +192,21 @@ namespace etm
 		}
 
 		//operators
+		T operator[] (const uint8 index) const
+		{
+			assert(index >= 0 && index < 3);
+			return data.at(index);
+		}
 		T& operator[] (const uint8 index)
 		{
 			assert(index >= 0 && index < 3);
 			return data.at(index);
 		}
-		vector<3, T> operator-();
+		vector<3, T> operator-() const;
+
+		//string conversion
+		std::string ToString() const;
+		operator std::string() const { return ToString(); }
 	};
 
 	template<typename T> vector<3, T> vector<3, T>::ZERO = vector<3, T>(0.0, 0.0, 0.0);
@@ -341,21 +319,77 @@ namespace etm
 		}
 
 		//operators
+		T operator[] (const uint8 index) const
+		{
+			assert(index >= 0 && index < 4);
+			return data.at(index);
+		}
 		T& operator[] (const uint8 index)
 		{
 			assert(index >= 0 && index < 4);
 			return data.at(index);
 		}
-		vector<4, T> operator-();
+		vector<4, T> operator-() const;
+
+		//string conversion
+		std::string ToString() const;
+		operator std::string() const { return ToString(); }
 	};
 
 
 	//operators
 	//*********
+	template <uint8 n, class T>
+	std::string etm::vector<n, T>::ToString() const
+	{
+		std::string ret = "[";
+		for(uint8 i = 0; i < data.size(); ++i)
+			ret += (i == data.size() - 1) ? (data[i]) : (data[i]+", ");
+		return ret + "]";
+	}
+	template <uint8 n, class T>
+	std::ostream& operator<<( std::ostream& os, const etm::vector<n, T>& vec)
+	{
+		return os << vec.ToString();
+	}
+
+	template <class T>
+	std::string etm::vector<2, T>::ToString() const
+	{
+		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + "]";
+	}
+	template <class T>
+	std::ostream& operator<<( std::ostream& os, const etm::vector<2, T>& vec)
+	{
+		return os << vec.ToString();
+	}
+
+	template <class T>
+	std::string etm::vector<3, T>::ToString() const
+	{
+		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + "]";
+	}
+	template <class T>
+	std::ostream& operator<<( std::ostream& os, const etm::vector<3, T>& vec)
+	{
+		return os << vec.ToString();
+	}
+
+	template <class T>
+	std::string etm::vector<4, T>::ToString() const
+	{
+		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) 
+			+ ", " + std::to_string(z) + ", " + std::to_string(w) + "]";
+	}
+	template <class T>
+	std::ostream& operator<<( std::ostream& os, const etm::vector<4, T>& vec)
+	{
+		return os << vec.ToString();
+	}
 
 	//negate
 	template <uint8 n, class T>
-	inline vector<n, T> vector<n, T>::operator-()
+	inline vector<n, T> vector<n, T>::operator-() const
 	{
 		vector<n, T> result;
 		for (uint8 i = 0; i < n; ++i)
@@ -365,24 +399,24 @@ namespace etm
 		return result;
 	}
 	template <class T>
-	inline vector<2, T> vector<2, T>::operator-()
+	inline vector<2, T> vector<2, T>::operator-() const
 	{
 		return{ -x, -y };
 	}
 	template <class T>
-	inline vector<3, T> vector<3, T>::operator-()
+	inline vector<3, T> vector<3, T>::operator-() const
 	{
 		return{ -x, -y, -z };
 	}
 	template <class T>
-	inline vector<4, T> vector<4, T>::operator-()
+	inline vector<4, T> vector<4, T>::operator-() const
 	{
 		return{ -x, -y, -z, -w };
 	}
 
 	// addition
 	template <uint8 n, class T>
-	inline vector<n, T> operator+(vector<n, T> lhs, T scalar)
+	inline vector<n, T> operator+(const vector<n, T> &lhs, const T scalar)
 	{
 		vector<n, T> result;
 		for (uint8 i = 0; i < n; ++i) 
@@ -392,7 +426,7 @@ namespace etm
 		return result;
 	}
 	template <uint8 n, class T>
-	inline vector<n, T> operator+(T scalar, vector<n, T> rhs)
+	inline vector<n, T> operator+(const T scalar, const vector<n, T> &rhs)
 	{
 		vector<n, T> result;
 		for (uint8 i = 0; i < n; ++i)
@@ -400,7 +434,7 @@ namespace etm
 		return result;
 	}
 	template <uint8 n, class T>
-	inline vector<n, T> operator+(vector<n, T> lhs, vector<n, T> rhs)
+	inline vector<n, T> operator+(const vector<n, T> &lhs, const vector<n, T> &rhs)
 	{
 		vector<n, T> result;
 		for (uint8 i = 0; i < n; ++i)
@@ -410,7 +444,7 @@ namespace etm
 
 	// subtraction
 	template <uint8 n, class T>
-	inline vector<n, T> operator-(vector<n, T> lhs, T scalar)
+	inline vector<n, T> operator-(const vector<n, T> &lhs, const T scalar)
 	{
 		vector<n, T> result;
 		for (uint8 i = 0; i < n; ++i) 
@@ -420,7 +454,7 @@ namespace etm
 		return result;
 	}
 	template <uint8 n, class T>
-	inline vector<n, T> operator-(vector<n, T> lhs, vector<n, T> rhs)
+	inline vector<n, T> operator-(const vector<n, T> &lhs, const vector<n, T> &rhs)
 	{
 		vector<n, T> result;
 		for (uint8 i = 0; i < n; ++i) 
@@ -432,7 +466,7 @@ namespace etm
 
 	// multiplication
 	template <uint8 n, class T>
-	inline vector<n, T> operator*(vector<n, T> lhs, T scalar)
+	inline vector<n, T> operator*(const vector<n, T> lhs, const T &scalar)
 	{
 		vector<n, T> result;
 		for (uint8 i = 0; i < n; ++i) 
@@ -442,7 +476,7 @@ namespace etm
 		return result;
 	}
 	template <uint8 n, class T>
-	inline vector<n, T> operator*(T scalar, vector<n, T> lhs)
+	inline vector<n, T> operator*(const T scalar, const vector<n, T> &lhs)
 	{
 		vector<n, T> result;
 		for (uint8 i = 0; i < n; ++i) 
@@ -452,7 +486,7 @@ namespace etm
 		return result;
 	}
 	template <uint8 n, class T>
-	inline vector<n, T> operator*(vector<n, T> lhs, vector<n, T> rhs) // hadamard product
+	inline vector<n, T> operator*(const vector<n, T> &lhs, const vector<n, T> &rhs) // hadamard product
 	{
 		vector<n, T> result;
 		for (uint8 i = 0; i < n; ++i) 
@@ -464,7 +498,7 @@ namespace etm
 
 	//division
 	template <uint8 n, class T>
-	inline vector<n, T> operator/(vector<n, T> lhs, T scalar)
+	inline vector<n, T> operator/(const vector<n, T> &lhs, const T scalar)
 	{
 		vector<n, T> result;
 		for (uint8 i = 0; i < n; ++i) 
@@ -474,7 +508,7 @@ namespace etm
 		return result;
 	}
 	template <uint8 n, class T>
-	inline vector<n, T> operator/(vector<n, T> lhs, vector<n, T> rhs) //hadamard product
+	inline vector<n, T> operator/(const vector<n, T> &lhs, const vector<n, T> &rhs) //hadamard product
 	{
 		vector<n, T> result;
 		for (uint8 i = 0; i < n; ++i) 
@@ -487,7 +521,7 @@ namespace etm
 	//operations
 	//**********
 	template <uint8 n, class T>
-	inline bool nearEqualsV(vector<n, T> lhs, vector<n, T> rhs, T epsilon = ETM_DEFAULT_EPSILON_T )
+	inline bool nearEqualsV(const vector<n, T> &lhs, const vector<n, T> &rhs, const T epsilon = ETM_DEFAULT_EPSILON_T )
 	{
 		for (uint8 i = 0; i < n; ++i)
 		{
@@ -496,13 +530,13 @@ namespace etm
 		return true;
 	}
 	template <uint8 n, class T>
-	inline bool isZero(vector<n, T> lhs, T epsilon = static_cast<T>(0))
+	inline bool isZero(const vector<n, T> &lhs, const T epsilon = static_cast<T>(0))
 	{
 		return nearEqualsV(lhs, vector<n, T>(0), epsilon);
 	}
 
 	template <uint8 n, class T>
-	inline T dot(vector<n, T> lhs, vector<n, T> rhs)
+	inline T dot(const vector<n, T> &lhs, const vector<n, T> &rhs)
 	{
 		T result = {};
 		for (uint8 i = 0; i < n; ++i)
@@ -510,30 +544,49 @@ namespace etm
 		return result;
 	}
 
+	//this is important so we do template specaializations
+	template <class T>
+	inline T dot(const vector<2, T> &lhs, const vector<2, T> &rhs)
+	{
+		return lhs.x * rhs.x + lhs.y * rhs.y;
+	}
+
+	template <class T>
+	inline T dot(const vector<3, T> &lhs, const vector<3, T> &rhs)
+	{
+		return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
+	}
+
+	template <class T>
+	inline T dot(const vector<4, T> &lhs, const vector<4, T> &rhs)
+	{
+		return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z + lhs.w * rhs.w;
+	}
+
 	template <uint8 n, class T>
-	inline T lengthSquared(vector<n, T> vec)
+	inline T lengthSquared(const vector<n, T> &vec)
 	{
 		return etm::dot(vec, vec);
 	}
 	template <uint8 n, class T>
-	inline T length(vector<n, T> vec)
+	inline T length(const vector<n, T> &vec)
 	{
 		return sqrt(etm::lengthSquared(vec));
 	}
 
 	template <uint8 n, class T>
-	inline T distance(vector<n, T> lhs, vector<n, T> rhs)
+	inline T distance(const vector<n, T> &lhs, const vector<n, T> &rhs)
 	{
 		return length(lhs - rhs);
 	}
 	template <uint8 n, class T>
-	inline T distanceSquared(vector<n, T> lhs, vector<n, T> rhs)
+	inline T distanceSquared(const vector<n, T> &lhs, const vector<n, T> &rhs)
 	{
 		return lengthSquared(lhs - rhs);
 	}
 
 	template <uint8 n, class T>
-	inline vector<n, T> normalize(vector<n, T> vec)
+	inline vector<n, T> normalize(const vector<n, T> &vec)
 	{
 		//assert(!nearEqualsV(vec, vector<n, T>(0), static_cast<T>(0)));
 		T len = length(vec);
@@ -551,6 +604,18 @@ namespace etm
 	inline T angleSafeUnsigned(const vector<n, T>& lhs, const vector<n, T>& rhs)
 	{
 		return angleFastUnsigned(normalize(lhs), normalize(rhs));
+	}
+
+	//access to array for the graphics api
+	template<unsigned int n, typename T>
+	T const* valuePtr( vector<n, T> const& vec )
+	{
+		return &(vec.data[0]);
+	}
+	template<unsigned int n, typename T>
+	T* valuePtr( vector<n, T>& vec )
+	{
+		return &(vec.data[0]);
 	}
 
 	//dimension specific operations
@@ -596,13 +661,13 @@ namespace etm
 	template<class T>
 	inline T angleSafeAxis(const vector<3, T>& lhs, const vector<3, T>& rhs, vector<3, T> &outAxis)
 	{
-		vector<3, T>& lhsN = normalize(lhs);
-		vector<3, T>& rhsN = normalize(rhs);
+		vector<3, T> lhsN = normalize(lhs);
+		vector<3, T> rhsN = normalize(rhs);
 		T result = angleFastAxis(lhsN, rhsN, outAxis);
 		outAxis = normalize(outAxis);
 		return result;
 	}
-
+	
 } // namespace etm
 
 //shorthands
