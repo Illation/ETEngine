@@ -106,6 +106,7 @@
       <PrecompiledHeaderFile>stdafx.hpp</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(SolutionDir)..\bin\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
       <AdditionalIncludeDirectories>$(StlIncludeDirectories);Base;Components;Content;Helper;Graphics;Prefabs;SceneGraph;Framebuffers;GraphicsHelper;Materials;Math;PlanetTech;PlanetTech\Types;StaticDependancies\glad;..\Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PLATFORM_Win;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -143,6 +144,7 @@
       <PrecompiledHeaderOutputFile>$(SolutionDir)..\bin\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
       <AdditionalIncludeDirectories>$(StlIncludeDirectories);Base;Components;Content;Helper;Graphics;Prefabs;SceneGraph;Framebuffers;GraphicsHelper;Materials;Math;PlanetTech;PlanetTech\Types;StaticDependancies\glad;..\Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PreprocessorDefinitions>PLATFORM_Win;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -190,6 +192,9 @@
     <ClCompile Include="Content\MeshFilterLoader.cpp" />
     <ClCompile Include="Content\ShaderLoader.cpp" />
     <ClCompile Include="Content\TextureLoader.cpp" />
+    <ClCompile Include="FileSystem\Directory\DirectoryBase.cpp" />
+    <ClCompile Include="FileSystem\Entry.cpp" />
+    <ClCompile Include="FileSystem\Facade\FileBase.cpp" />
     <ClCompile Include="Framebuffers\PostProcessingRenderer.cpp" />
     <ClCompile Include="Framebuffers\Gbuffer.cpp" />
     <ClCompile Include="GraphicsHelper\LightVolume.cpp" />
@@ -261,6 +266,19 @@
     <ClInclude Include="Content\ShaderLoader.hpp" />
     <ClInclude Include="Content\stdafx.hpp" />
     <ClInclude Include="Content\TextureLoader.hpp" />
+    <ClInclude Include="FileSystem\Directory\DirectoryBaseLinux.hpp" />
+    <ClInclude Include="FileSystem\Directory\DirectoryBaseWindows.hpp" />
+    <ClInclude Include="FileSystem\Entry.h" />
+    <ClInclude Include="FileSystem\Facade\FileAccessFlags.h" />
+    <ClInclude Include="FileSystem\Facade\FileAccessMode.h" />
+    <ClInclude Include="FileSystem\Facade\FileBase.h" />
+    <ClInclude Include="FileSystem\Facade\FileBaseLinux.hpp" />
+    <ClInclude Include="FileSystem\Facade\FileBaseLinuxMembers.h" />
+    <ClInclude Include="FileSystem\Facade\FileBaseLinuxReferences.h" />
+    <ClInclude Include="FileSystem\Facade\FileBaseStub.hpp" />
+    <ClInclude Include="FileSystem\Facade\FileBaseWin.hpp" />
+    <ClInclude Include="FileSystem\Facade\FileBaseWinReferences.h" />
+    <ClInclude Include="FileSystem\Facade\FileHandle.h" />
     <ClInclude Include="Framebuffers\PostProcessingRenderer.hpp" />
     <ClInclude Include="Framebuffers\Gbuffer.hpp" />
     <ClInclude Include="Framebuffers\stdafx.hpp" />

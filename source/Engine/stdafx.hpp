@@ -2,6 +2,9 @@
 
 #define NOMINMAX
 
+// #temp until crossplatform support is fully implemented
+//#define PLATFORM_Win
+
 #pragma region
 //C RunTime Header Files
 #include <wchar.h>
