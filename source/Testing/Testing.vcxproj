@@ -132,6 +132,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\FileSystem\FileSystemTest.cpp" />
     <ClCompile Include="Engine\Math\MatrixTest.cpp" />
     <ClCompile Include="Engine\Math\QuaternionTest.cpp" />
     <ClCompile Include="Engine\Math\TransformTest.cpp" />

@@ -1,4 +1,5 @@
 #pragma once
+#include "stdafx.hpp"
 
 struct FILE_ACCESS_FLAGS 
 {
