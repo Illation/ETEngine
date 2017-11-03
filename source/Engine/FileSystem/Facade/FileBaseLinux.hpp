@@ -5,7 +5,8 @@ FILE_HANDLE FILE_BASE::Open( const char * pathName, FILE_ACCESS_FLAGS accessFlag
 
 bool FILE_BASE::Close( FILE_HANDLE handle )
 {
-    return close( handle );
+    int32 result = close( handle );
+	return result != -1;
 }
 
 bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::string & content )
@@ -22,6 +23,12 @@ bool FILE_BASE::WriteFile( FILE_HANDLE handle, const std::string & content )
     int32 result;
     result = write( handle, content.c_str(), content.length() );
     return result != -1;
+}
+
+bool FILE_BASE::DeleteFile( const char * pathName )
+{
+	int32 result = remove( pathName );
+	return result != -1;
 }
 
 int32 FILE_BASE::GetLinuxFileFlags( FILE_ACCESS_FLAGS flags, FILE_ACCESS_MODE mode )

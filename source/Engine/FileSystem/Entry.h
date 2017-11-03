@@ -20,6 +20,8 @@ public:
     Directory* GetParent(){ return m_pParent; }
     virtual std::string GetPath();
 
+	virtual bool Delete() = 0;
+
     enum EntryType
     {
         ENTRY_FILE,
@@ -54,7 +56,8 @@ public:
 
 	bool IsOpen(){ return m_IsOpen; }
 
-    
+	bool Delete() override;
+
 private:
 	bool m_IsOpen;
 
@@ -78,8 +81,16 @@ public:
 	std::vector<Entry*> GetChildrenByExt(std::string ext);
 
     bool IsMounted(){ return m_IsMounted; }
+
+	bool Delete() override;
+
 private:
+	friend class File;
+	void RemoveChild( Entry* child );
+
+	bool DeleteDir();
     void RecursiveMount();
+
     std::vector<Entry*> m_pChildren;
     bool m_IsMounted = false;
 };

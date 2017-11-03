@@ -41,3 +41,9 @@ bool Directory::Mount(bool recursive)
     m_IsMounted = true;
     return true;
 }
+
+bool Directory::DeleteDir()
+{
+	std::string path = GetPath()+m_Filename;
+	return ::RemoveDirectory( path.c_str() ) == TRUE;
+}

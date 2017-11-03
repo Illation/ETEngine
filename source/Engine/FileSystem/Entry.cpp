@@ -41,13 +41,22 @@ File::~File()
 }
 bool File::Open(FILE_ACCESS_MODE mode, FILE_ACCESS_FLAGS flags)
 {
-	m_Handle = FILE_BASE::Open(m_Filename.c_str(), flags, mode);
+	std::string path = GetPath()+m_Filename;
+	m_Handle = FILE_BASE::Open( path.c_str(), flags, mode);
 	if (m_Handle == FILE_HANDLE_INVALID) 
 	{
 		std::cerr << "open";
 		return false;
 	}
 	m_IsOpen = true;
+	//If we created this file new and have a parent that doesn't know about it, add to parent
+	if(m_pParent)
+	{
+		if(!(std::find( m_pParent->m_pChildren.begin(), m_pParent->m_pChildren.end(), this ) != m_pParent->m_pChildren.end()))
+		{
+			m_pParent->m_pChildren.push_back( this );
+		}
+	}
 	return true;
 }
 std::string File::Read()
@@ -70,8 +79,33 @@ bool File::Write(const std::string &lhs)
 }
 void File::Close()
 {
-	FILE_BASE::Close(m_Handle);
-	m_IsOpen = false;
+	if(FILE_BASE::Close( m_Handle ))
+	{
+		m_IsOpen = false;
+	}
+}
+bool File::Delete()
+{
+	if(m_IsOpen)
+		Close();
+
+	if(m_IsOpen)
+	{
+        std::cerr << "couldn't delete file because it failed to close";
+		return false;
+	}
+
+	std::string path = GetPath()+m_Filename;
+	if(FILE_BASE::DeleteFile( path.c_str() ))
+	{
+		if(m_pParent)
+		{
+			m_pParent->RemoveChild( this );
+		}
+		delete this;
+		return true;
+	}
+	return false;
 }
 
 Directory::Directory(std::string name, Directory* pParent)
@@ -82,6 +116,14 @@ Directory::~Directory()
 {
     if(m_IsMounted)Unmount();
 }
+
+void Directory::RemoveChild( Entry* child )
+{
+	m_pChildren.erase( 
+		std::remove( m_pChildren.begin(), m_pChildren.end(), child )
+		, m_pChildren.end() );
+}
+
 void Directory::RecursiveMount()
 {
     for(auto c : m_pChildren)
@@ -115,4 +157,34 @@ std::vector<Entry*> Directory::GetChildrenByExt(std::string ext)
 		if(e->GetExtension()==ext || e->GetType() == Entry::EntryType::ENTRY_DIRECTORY)
 			ret.push_back(e);
 	return ret;
+}
+
+bool Directory::Delete()
+{
+    for(auto c : m_pChildren)
+    {
+        if(c->GetType() == Entry::EntryType::ENTRY_DIRECTORY)
+        {
+			if(c->GetName() != "../" && c->GetName() != "./")
+			{
+				if(!(c->Delete()))return false;
+			}
+        }
+		else
+		{
+			if(!(c->Delete()))return false;
+		}
+		c = nullptr;
+    }
+	m_pChildren.clear();
+	if(DeleteDir())
+	{
+		if(m_pParent)
+		{
+			m_pParent->RemoveChild( this );
+		}
+		delete this;
+		return true;
+	}
+	return false;
 }
