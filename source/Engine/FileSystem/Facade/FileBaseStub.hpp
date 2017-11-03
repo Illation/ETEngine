@@ -17,3 +17,8 @@ bool FILE_SYSTEM::WriteFile( FILE_HANDLE handle, const std::string & content )
 {
 
 }
+
+bool FILE_SYSTEM::DeleteFile( const char * pathName )
+{
+
+}

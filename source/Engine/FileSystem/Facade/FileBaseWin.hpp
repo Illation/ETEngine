@@ -45,9 +45,6 @@ void DisplayError(LPTSTR lpszFunction)
 }
 FILE_HANDLE FILE_BASE::Open( const char * pathName, FILE_ACCESS_FLAGS accessFlags, FILE_ACCESS_MODE accessMode )
 {
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	std::wstring wFilename = converter.from_bytes(std::string(pathName));
-
 	uint32 mode = 0;
 	uint32 share = 0;
 	switch (accessMode)
@@ -101,7 +98,13 @@ FILE_HANDLE FILE_BASE::Open( const char * pathName, FILE_ACCESS_FLAGS accessFlag
 
 bool FILE_BASE::Close( FILE_HANDLE handle )
 {
-	return CloseHandle(handle) != 0;
+	BOOL result = CloseHandle(handle);
+	if(result == FALSE)
+	{
+		DisplayError(TEXT("DeleteFile"));
+		return false;
+	}
+	return true;
 }
 
 bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::string & content )
@@ -111,6 +114,7 @@ bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::string & content )
 	DWORD bytes_read = 0;
 	if (FALSE == ::ReadFile(handle, buffer_read, bufferSize - 1, &bytes_read, NULL))
 	{
+		DisplayError(TEXT("ReadFile"));
 		delete[] buffer_read;
 		return false;
 	}
@@ -130,8 +134,26 @@ bool FILE_BASE::WriteFile( FILE_HANDLE handle, const std::string & content)
 	DWORD bytesWritten = 0;
 	if (FALSE == ::WriteFile(handle, content.c_str(), content.size(), &bytesWritten, NULL))
 	{
+		DisplayError(TEXT("WriteFile"));
 		return false;
 	}
 	else if (bytesWritten != content.size()) return false;
+
+	if (FALSE == ::FlushFileBuffers(handle))
+	{
+		DisplayError(TEXT("WriteFile->FlushFileBuffers"));
+		return false;
+	}
+	return true;
+}
+
+bool FILE_BASE::DeleteFile( const char * pathName )
+{
+	BOOL result = ::DeleteFile( pathName );
+	if(result == FALSE)
+	{
+		DisplayError(TEXT("DeleteFile"));
+		return false;
+	}
 	return true;
 }

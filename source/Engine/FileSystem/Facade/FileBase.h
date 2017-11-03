@@ -21,6 +21,8 @@ public:
 
     static bool WriteFile( FILE_HANDLE handle, const std::string & content );
 
+	static bool DeleteFile( const char * pathName );
+
 private:
 #if defined(PLATFORM_Linux)
     #include "FileBaseLinuxMembers.h"
