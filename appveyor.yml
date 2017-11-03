@@ -5,8 +5,4 @@ build:
   verbosity: normal
 test_script:
 - cmd: >-
-    cd bin\DebugWin32\Testing
-
-    .\Testing.exe
-
-    cd ..\..\..\
+    .\bin\DebugWin32\Testing\Testing.exe
