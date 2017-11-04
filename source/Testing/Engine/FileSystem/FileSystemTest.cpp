@@ -1,6 +1,7 @@
 #include <catch.hpp>
 
 #include "../../../Engine/FileSystem/Entry.h"
+#include "../../../Engine/FileSystem/FileUtil.h"
 #include <thread>
 #include <chrono>
 
@@ -50,6 +51,7 @@ TEST_CASE( "mount", "[filesystem]" )
 TEST_CASE( "copy file", "[filesystem]" )
 {
 	std::string expectedContent = "Hello I am a test file!\r\nwith 2 lines\r\n";
+	auto expectedContentLines = FileUtil::ParseLines(expectedContent);
 
 	std::string dirName = "./source/Testing/Engine/FileSystem/TestDir/";
 	Directory* pDir = new Directory( dirName, nullptr );
@@ -86,7 +88,7 @@ TEST_CASE( "copy file", "[filesystem]" )
 
 	/* Copy process */
 	std::string content = inputFile->Read();
-	REQUIRE( content == expectedContent );
+	REQUIRE( FileUtil::ParseLines(content) == expectedContentLines );
 
 	bool writeResult = outputFile->Write( content );
 	REQUIRE( writeResult == true );
@@ -100,7 +102,7 @@ TEST_CASE( "copy file", "[filesystem]" )
 
 	/* Copy process */
 	std::string contentOut = outputFile->Read();
-	REQUIRE( contentOut == expectedContent );
+	REQUIRE( FileUtil::ParseLines(contentOut) == expectedContentLines );
 	//outputFile->Close();
 
 	/* Close file descriptors */
@@ -133,7 +135,7 @@ TEST_CASE( "copy file", "[filesystem]" )
 	bool openResult4 = outputFile->Open( FILE_ACCESS_MODE::Read );
 	REQUIRE( openResult4 == true );
 	std::string contentOut2 = outputFile->Read();
-	REQUIRE( contentOut2 == expectedContent );
+	REQUIRE( FileUtil::ParseLines(contentOut2) == expectedContentLines );
 
 	outputFile->Close();
 
