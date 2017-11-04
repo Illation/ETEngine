@@ -195,6 +195,7 @@
     <ClCompile Include="FileSystem\Directory\DirectoryBase.cpp" />
     <ClCompile Include="FileSystem\Entry.cpp" />
     <ClCompile Include="FileSystem\Facade\FileBase.cpp" />
+    <ClCompile Include="FileSystem\FileUtil.cpp" />
     <ClCompile Include="Framebuffers\PostProcessingRenderer.cpp" />
     <ClCompile Include="Framebuffers\Gbuffer.cpp" />
     <ClCompile Include="GraphicsHelper\LightVolume.cpp" />
@@ -279,6 +280,7 @@
     <ClInclude Include="FileSystem\Facade\FileBaseWin.hpp" />
     <ClInclude Include="FileSystem\Facade\FileBaseWinReferences.h" />
     <ClInclude Include="FileSystem\Facade\FileHandle.h" />
+    <ClInclude Include="FileSystem\FileUtil.h" />
     <ClInclude Include="Framebuffers\PostProcessingRenderer.hpp" />
     <ClInclude Include="Framebuffers\Gbuffer.hpp" />
     <ClInclude Include="Framebuffers\stdafx.hpp" />

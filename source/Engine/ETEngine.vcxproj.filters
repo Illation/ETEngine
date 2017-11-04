@@ -209,6 +209,7 @@
     <ClCompile Include="FileSystem\Entry.cpp" />
     <ClCompile Include="FileSystem\Facade\FileBase.cpp" />
     <ClCompile Include="FileSystem\Directory\DirectoryBase.cpp" />
+    <ClCompile Include="FileSystem\FileUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Context.hpp">
@@ -441,5 +442,6 @@
     <ClInclude Include="FileSystem\Facade\FileHandle.h" />
     <ClInclude Include="FileSystem\Directory\DirectoryBaseLinux.hpp" />
     <ClInclude Include="FileSystem\Directory\DirectoryBaseWindows.hpp" />
+    <ClInclude Include="FileSystem\FileUtil.h" />
   </ItemGroup>
 </Project>
