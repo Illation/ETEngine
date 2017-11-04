@@ -16,6 +16,10 @@ protected:
 
 private:
 	GLuint CompileShader(const std::string &shaderSourceStr, GLenum type);
+
+	bool Precompile( std::string &shaderContent, const std::string &assetFile, 
+					 bool &useGeo, bool &useFrag,
+					 std::string &vertSource, std::string &geoSource, std::string &fragSource );
 	bool ReplaceInclude(std::string &line, const std::string &assetFile);
 };
 
