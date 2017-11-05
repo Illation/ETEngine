@@ -9,7 +9,7 @@ bool FILE_BASE::Close( FILE_HANDLE handle )
 	return result != -1;
 }
 
-bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::string & content )
+bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::vector<uint8> & content )
 {
     char buffer[LINUX_FILE_BUFFER_SIZE];
     int32 ret_in = 0;
@@ -18,10 +18,10 @@ bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::string & content )
     return true;;
 }
 
-bool FILE_BASE::WriteFile( FILE_HANDLE handle, const std::string & content )
+bool FILE_BASE::WriteFile( FILE_HANDLE handle, const std::vector<uint8> & content )
 {
     int32 result;
-    result = write( handle, content.c_str(), content.length() );
+    result = write( handle, content.data(), content.length() );
     return result != -1;
 }
 

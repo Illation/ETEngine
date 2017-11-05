@@ -5,6 +5,16 @@
 
 static std::vector<std::string> newLineTokens{ "\r\n", "\n\r", "\n", "\r" };
 
+std::string FileUtil::AsText( const std::vector<uint8> &data )
+{
+	return std::string( data.begin(), data.end() );
+}
+
+std::vector<uint8> FileUtil::FromText( const std::string &data )
+{
+	return std::vector<uint8>( data.begin(), data.end() );
+}
+
 bool FileUtil::ParseLine( std::string &input, std::string &extractedLine )
 {
 	if(input.size() == 0)return false;

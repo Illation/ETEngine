@@ -47,8 +47,8 @@ public:
 		FILE_ACCESS_FLAGS flags = FILE_ACCESS_FLAGS());
 	void Close();
 
-	std::string Read();
-	bool Write(const std::string &lhs);
+	std::vector<uint8> Read();
+	bool Write(const std::vector<uint8> &lhs);
 	Entry::EntryType GetType()
     	{
             return Entry::EntryType::ENTRY_FILE;

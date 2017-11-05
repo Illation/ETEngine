@@ -59,16 +59,16 @@ bool File::Open(FILE_ACCESS_MODE mode, FILE_ACCESS_FLAGS flags)
 	}
 	return true;
 }
-std::string File::Read()
+std::vector<uint8> File::Read()
 {
-	std::string content;
+	std::vector<uint8> content;
 	if(!FILE_BASE::ReadFile(m_Handle, content))
 	{
-		return "";
+		//error handling here...
 	}
 	return content;
 }
-bool File::Write(const std::string &lhs)
+bool File::Write(const std::vector<uint8> &lhs)
 {
 	if ( !FILE_BASE::WriteFile(m_Handle, lhs) )
     {

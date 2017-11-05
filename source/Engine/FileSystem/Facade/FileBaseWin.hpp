@@ -107,7 +107,7 @@ bool FILE_BASE::Close( FILE_HANDLE handle )
 	return true;
 }
 
-bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::string & content )
+bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::vector<uint8> & content )
 {
 	const DWORD bufferSize = GetFileSize(handle, NULL) + 1;
 	char* buffer_read = new char[bufferSize];
@@ -121,7 +121,7 @@ bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::string & content )
 	if (bytes_read >= 0 && bytes_read <= bufferSize - 1) //move buffer to string
 	{
 		buffer_read[bytes_read] = '\0'; // NULL character
-		content = buffer_read;
+		content = std::vector<uint8>(buffer_read, buffer_read + bytes_read);
 		delete[] buffer_read;
 		return true;
 	}
@@ -129,10 +129,10 @@ bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::string & content )
 	return false;
 }
 
-bool FILE_BASE::WriteFile( FILE_HANDLE handle, const std::string & content)
+bool FILE_BASE::WriteFile( FILE_HANDLE handle, const std::vector<uint8> & content)
 {
 	DWORD bytesWritten = 0;
-	if (FALSE == ::WriteFile(handle, content.c_str(), content.size(), &bytesWritten, NULL))
+	if (FALSE == ::WriteFile(handle, content.data(), content.size(), &bytesWritten, NULL))
 	{
 		DisplayError(TEXT("WriteFile"));
 		return false;

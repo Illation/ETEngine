@@ -32,14 +32,13 @@ public:
 	bool MoveBufferPosition(int32 move);
 	bool Exists() const { return m_Exists; }
 
-	void Open(std::string binaryFile);
-	void Open(uint8* s, uint32 size);
+	void Open(const std::vector<uint8> &binaryContent);
 	void Close();
 
 private:
 
 	bool m_Exists;
-	std::istream* m_pReader;
+	std::stringstream* m_pReader;
 
 private:
 	// -------------------------

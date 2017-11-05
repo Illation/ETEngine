@@ -1,7 +1,8 @@
 #include "stdafx.hpp"
 #include "FontLoader.hpp"
 
-#include "../Helper/BinaryReader.hpp"
+#include "FileSystem/Entry.h"
+#include "FileSystem/BinaryReader.hpp"
 
 FontLoader::FontLoader()
 {
@@ -16,8 +17,25 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	using namespace std;
 	cout << "Loading Texture: " << assetFile << " . . . ";
 
+	File* input = new File( assetFile, nullptr );
+	if(!input->Open( FILE_ACCESS_MODE::Read ))
+	{
+		cout << "  . . . FAILED!" << endl;
+		cout << "    Opening font descriptor file failed." << endl;
+		return nullptr;
+	}
+	std::vector<uint8> binaryContent = input->Read();
+	delete input; 
+	input = nullptr;
+	if(binaryContent.size() == 0)
+	{
+		cout << "  . . . FAILED!" << endl;
+		cout << "    Font descriptor is empty." << endl;
+		return nullptr;
+	}
+
 	auto pBinReader = new BinaryReader(); //Prevent memory leaks
-	pBinReader->Open(assetFile);
+	pBinReader->Open(binaryContent);
 
 	if (!pBinReader->Exists())
 	{

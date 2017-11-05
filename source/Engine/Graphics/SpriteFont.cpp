@@ -1,7 +1,6 @@
 #include "stdafx.hpp"
 #include "SpriteFont.hpp"
 
-#include "../Helper/BinaryReader.hpp"
 #include "TextureData.hpp"
 
 SpriteFont::SpriteFont() :
