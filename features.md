@@ -32,6 +32,7 @@
  * Performance measurment
  * Custom Maths Library: Vectors, Matrices, Quaternions, Transform and utility functions, Geometry
  * Specific atmoic types
+ * Platform agnostic file system
 
 ### Integration
  * Continous Integration with AppVeyor
@@ -98,7 +99,7 @@
  * Serialize Levels
  * Read engine settings from file
  * Packaging system
- * Binary file types
+ * Binary asset file types
  * Debug Overlay
      * Debug Overlay as Editor build mode
  * Linux support
