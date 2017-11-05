@@ -212,7 +212,7 @@
     <ClCompile Include="Graphics\ShaderData.cpp" />
     <ClCompile Include="Graphics\SpriteFont.cpp" />
     <ClCompile Include="Graphics\TextureData.cpp" />
-    <ClCompile Include="Helper\BinaryReader.cpp" />
+    <ClCompile Include="FileSystem\BinaryReader.cpp" />
     <ClCompile Include="Helper\Logger.cpp" />
     <ClCompile Include="Helper\PerformanceInfo.cpp" />
     <ClCompile Include="Materials\GbufferMaterial.cpp" />
@@ -302,7 +302,7 @@
     <ClInclude Include="Graphics\stdafx.hpp" />
     <ClInclude Include="Graphics\TextureData.hpp" />
     <ClInclude Include="Helper\AtomicTypes.hpp" />
-    <ClInclude Include="Helper\BinaryReader.hpp" />
+    <ClInclude Include="FileSystem\BinaryReader.hpp" />
     <ClInclude Include="Helper\Logger.hpp" />
     <ClInclude Include="Helper\PerformanceInfo.hpp" />
     <ClInclude Include="Helper\Singleton.hpp" />

@@ -162,9 +162,6 @@
     <ClCompile Include="Graphics\SpriteFont.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Helper\BinaryReader.cpp">
-      <Filter>Helper</Filter>
-    </ClCompile>
     <ClCompile Include="Helper\PerformanceInfo.cpp">
       <Filter>Helper</Filter>
     </ClCompile>
@@ -210,6 +207,9 @@
     <ClCompile Include="FileSystem\Facade\FileBase.cpp" />
     <ClCompile Include="FileSystem\Directory\DirectoryBase.cpp" />
     <ClCompile Include="FileSystem\FileUtil.cpp" />
+    <ClCompile Include="FileSystem\BinaryReader.cpp">
+      <Filter>Helper</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Context.hpp">
@@ -356,9 +356,6 @@
     <ClInclude Include="Helper\AtomicTypes.hpp">
       <Filter>Helper</Filter>
     </ClInclude>
-    <ClInclude Include="Helper\BinaryReader.hpp">
-      <Filter>Helper</Filter>
-    </ClInclude>
     <ClInclude Include="Helper\PerformanceInfo.hpp">
       <Filter>Helper</Filter>
     </ClInclude>
@@ -443,5 +440,8 @@
     <ClInclude Include="FileSystem\Directory\DirectoryBaseLinux.hpp" />
     <ClInclude Include="FileSystem\Directory\DirectoryBaseWindows.hpp" />
     <ClInclude Include="FileSystem\FileUtil.h" />
+    <ClInclude Include="FileSystem\BinaryReader.hpp">
+      <Filter>Helper</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

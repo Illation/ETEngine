@@ -17,8 +17,6 @@ ShaderLoader::~ShaderLoader()
 
 ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 {
-	using namespace std;
-
 	cout << "Building Shader: " << assetFile << " . . . ";
 
 	File* input = new File( assetFile, nullptr );
@@ -28,7 +26,7 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 		cout << "    Opening shader file failed." << endl;
 		return nullptr;
 	}
-	std::string shaderContent = input->Read();
+	std::string shaderContent = FileUtil::AsText(input->Read());
 	delete input; 
 	input = nullptr;
 	if(shaderContent.size() == 0)
@@ -224,7 +222,7 @@ bool ShaderLoader::ReplaceInclude(std::string &line, const std::string &assetFil
 		cout << "    Opening shader file failed." << endl;
 		return false;
 	}
-	std::string shaderContent = input->Read();
+	std::string shaderContent = FileUtil::AsText(input->Read());
 	delete input;
 	input = nullptr;
 	if(shaderContent.size() == 0)

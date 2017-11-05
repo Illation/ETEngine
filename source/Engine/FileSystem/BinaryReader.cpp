@@ -66,33 +66,12 @@ std::string BinaryReader::ReadString()
 	return (std::string)ss.str();
 }
 
-void BinaryReader::Open(std::string binaryFile)
+void BinaryReader::Open( const std::vector<uint8> &binaryContent )
 {
 	Close();
 
-	auto temp = new std::ifstream();
-	temp->open(binaryFile, std::ios::in | std::ios::binary);
-	if (temp->is_open())
-	{
-		m_pReader = temp;
-		m_Exists = true;
-	}
-	else
-	{
-		std::stringstream ss;
-		ss << L"BinaryReader::Open> Failed to open the file!\nBinaryFile: ";
-		ss << binaryFile;
-		std::cout << "[WARNING] " << ss.str() << std::endl;
-		Close();
-	}
-}
-
-void BinaryReader::Open(uint8* s, uint32 size)
-{
-	Close();
-
-	std::string data((char*)s, size);
-	m_pReader = new std::stringstream(data);
+	std::string data((char*)binaryContent.data(), binaryContent.size() );
+	m_pReader = new std::stringstream( data );
 	m_Exists = true;
 }
 

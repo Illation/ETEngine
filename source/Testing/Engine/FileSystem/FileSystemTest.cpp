@@ -87,10 +87,10 @@ TEST_CASE( "copy file", "[filesystem]" )
 	REQUIRE( openResult2 == true );
 
 	/* Copy process */
-	std::string content = inputFile->Read();
+	std::string content = FileUtil::AsText(inputFile->Read());
 	REQUIRE( FileUtil::ParseLines(content) == expectedContentLines );
 
-	bool writeResult = outputFile->Write( content );
+	bool writeResult = outputFile->Write( FileUtil::FromText(content) );
 	REQUIRE( writeResult == true );
 
 	//for some reason need to close and reopen
@@ -101,7 +101,7 @@ TEST_CASE( "copy file", "[filesystem]" )
 	//std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
 
 	/* Copy process */
-	std::string contentOut = outputFile->Read();
+	std::string contentOut = FileUtil::AsText(outputFile->Read());
 	REQUIRE( FileUtil::ParseLines(contentOut) == expectedContentLines );
 	//outputFile->Close();
 
@@ -134,7 +134,7 @@ TEST_CASE( "copy file", "[filesystem]" )
 	REQUIRE_FALSE( outputFile == nullptr );
 	bool openResult4 = outputFile->Open( FILE_ACCESS_MODE::Read );
 	REQUIRE( openResult4 == true );
-	std::string contentOut2 = outputFile->Read();
+	std::string contentOut2 = FileUtil::AsText(outputFile->Read());
 	REQUIRE( FileUtil::ParseLines(contentOut2) == expectedContentLines );
 
 	outputFile->Close();

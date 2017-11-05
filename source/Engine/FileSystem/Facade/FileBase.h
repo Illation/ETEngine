@@ -3,7 +3,6 @@
 #include "FileHandle.h"
 #include "FileAccessFlags.h"
 #include "FileAccessMode.h"
-#include <string>
 
 #if defined(PLATFORM_Linux)
 #include "FileBaseLinuxReferences.h"
@@ -17,9 +16,9 @@ public:
 
     static bool Close( FILE_HANDLE handle );
 
-    static bool ReadFile( FILE_HANDLE handle, std::string & content );
+    static bool ReadFile( FILE_HANDLE handle, std::vector<uint8> & content );
 
-    static bool WriteFile( FILE_HANDLE handle, const std::string & content );
+    static bool WriteFile( FILE_HANDLE handle, const std::vector<uint8> & content );
 
 	static bool DeleteFile( const char * pathName );
 
