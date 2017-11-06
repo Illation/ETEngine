@@ -210,6 +210,8 @@
     <ClCompile Include="FileSystem\BinaryReader.cpp">
       <Filter>Helper</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicsHelper\SpriteRenderer.cpp" />
+    <ClCompile Include="Components\SpriteComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Context.hpp">
@@ -443,5 +445,7 @@
     <ClInclude Include="FileSystem\BinaryReader.hpp">
       <Filter>Helper</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsHelper\SpriteRenderer.hpp" />
+    <ClInclude Include="Components\SpriteComponent.hpp" />
   </ItemGroup>
 </Project>

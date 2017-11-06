@@ -13,6 +13,7 @@
 #include "../Components/LightComponent.hpp"
 #include "../SceneGraph/Entity.hpp"
 #include "../Prefabs/Skybox.hpp"
+#include "SpriteRenderer.hpp"
 
 RenderPipeline::RenderPipeline()
 {
@@ -25,6 +26,7 @@ RenderPipeline::~RenderPipeline()
 	TextRenderer::GetInstance()->DestroyInstance();
 	PerformanceInfo::GetInstance()->DestroyInstance();
 	PrimitiveRenderer::GetInstance()->DestroyInstance();
+	SpriteRenderer::GetInstance()->DestroyInstance();
 
 	SafeDelete(m_pGBuffer);
 	SafeDelete(m_pPostProcessing);
@@ -42,6 +44,7 @@ void RenderPipeline::Initialize()
 
 	ShadowRenderer::GetInstance()->Initialize();
 	TextRenderer::GetInstance()->Initialize();
+	SpriteRenderer::GetInstance()->Initialize();
 
 	PerformanceInfo::GetInstance();
 	PrimitiveRenderer::GetInstance();
@@ -171,6 +174,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 	m_pState->SetDepthEnabled(false);
 	m_pPostProcessing->Draw(0);
 
+	SpriteRenderer::GetInstance()->Draw();
 	TextRenderer::GetInstance()->Draw();
 
 	for (auto pScene : pScenes)

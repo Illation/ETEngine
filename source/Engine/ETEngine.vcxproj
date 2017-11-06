@@ -184,6 +184,7 @@
     <ClCompile Include="Components\CameraComponent.cpp" />
     <ClCompile Include="Components\LightComponent.cpp" />
     <ClCompile Include="Components\ModelComponent.cpp" />
+    <ClCompile Include="Components\SpriteComponent.cpp" />
     <ClCompile Include="Components\TransformComponent.cpp" />
     <ClCompile Include="Content\ContentManager.cpp" />
     <ClCompile Include="Content\CubeMapLoader.cpp" />
@@ -203,6 +204,7 @@
     <ClCompile Include="GraphicsHelper\RenderPipeline.cpp" />
     <ClCompile Include="GraphicsHelper\RenderState.cpp" />
     <ClCompile Include="GraphicsHelper\ShadowRenderer.cpp" />
+    <ClCompile Include="GraphicsHelper\SpriteRenderer.cpp" />
     <ClCompile Include="GraphicsHelper\TextRenderer.cpp" />
     <ClCompile Include="Graphics\FrameBuffer.cpp" />
     <ClCompile Include="Graphics\Frustum.cpp" />
@@ -256,6 +258,7 @@
     <ClInclude Include="Components\CameraComponent.hpp" />
     <ClInclude Include="Components\LightComponent.hpp" />
     <ClInclude Include="Components\ModelComponent.hpp" />
+    <ClInclude Include="Components\SpriteComponent.hpp" />
     <ClInclude Include="Components\stdafx.hpp" />
     <ClInclude Include="Components\TransformComponent.hpp" />
     <ClInclude Include="Content\ContentLoader.hpp" />
@@ -289,6 +292,7 @@
     <ClInclude Include="GraphicsHelper\RenderPipeline.hpp" />
     <ClInclude Include="GraphicsHelper\RenderState.hpp" />
     <ClInclude Include="GraphicsHelper\ShadowRenderer.hpp" />
+    <ClInclude Include="GraphicsHelper\SpriteRenderer.hpp" />
     <ClInclude Include="GraphicsHelper\stdafx.hpp" />
     <ClInclude Include="GraphicsHelper\TextRenderer.hpp" />
     <ClInclude Include="Graphics\FrameBuffer.hpp" />
