@@ -66,9 +66,9 @@ void PlanetTestScene::Initialize()
 	auto pSpriteEntity = new Entity();
 	auto pSpriteComponent = new SpriteComponent( "Resources/Textures/sample.png", vec2( 0 ), vec4( 1 ) );
 	pSpriteEntity->AddComponent( pSpriteComponent );
-	pSpriteEntity->GetTransform()->SetPosition( vec3( 0.5f, 0.5f, 0 ) );
-	pSpriteEntity->GetTransform()->SetRotation( quat(vec3(0, 0, 1), 0) );
-	pSpriteEntity->GetTransform()->Scale( vec3(1) );
+	pSpriteEntity->GetTransform()->SetPosition( vec3( 1250.5f, 50.5f, 1 ) );
+	pSpriteEntity->GetTransform()->SetRotation( quat(vec3(0, 0, 1), etm::PI_DIV4 ) );
+	pSpriteEntity->GetTransform()->Scale( vec3( 1, 0.85f, 1 ) );
 	AddEntity( pSpriteEntity );
 
 	SETTINGS->Window.VSync(false);

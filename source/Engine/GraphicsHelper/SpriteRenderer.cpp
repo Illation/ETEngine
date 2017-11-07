@@ -35,7 +35,7 @@ void SpriteRenderer::Initialize()
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
 	//set data and attributes
-	//glBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
 
 	//input layout
 	glEnableVertexAttribArray(0);
@@ -80,7 +80,7 @@ void SpriteRenderer::UpdateBuffer()
 	{
 		if (bufferResize)
 		{
-			m_BufferSize += m_Sprites.size() * sizeof( SpriteVertex );
+			m_BufferSize = m_Sprites.size() * sizeof( SpriteVertex );
 		}
 
 		glBufferData(GL_ARRAY_BUFFER, m_BufferSize, m_Sprites.data(), GL_DYNAMIC_DRAW);
@@ -130,7 +130,7 @@ void SpriteRenderer::Draw()
 		glUniform2f( m_uTextureSize, (float)texSize.x, (float)texSize.y );
 
 		//Draw
-		glDrawArrays( GL_TRIANGLES, batchOffset, batchSize );
+		glDrawArrays( GL_POINTS, batchOffset, batchSize );
 		PERFORMANCE->m_DrawCalls++;
 
 		batchOffset += batchSize;
@@ -138,6 +138,9 @@ void SpriteRenderer::Draw()
 	}
 
 	STATE->BindVertexArray( 0 );
+
+	m_Sprites.clear();
+	m_Textures.clear();
 }
 
 void SpriteRenderer::Draw( TextureData* pTexture, vec2 position, vec4 color /*= vec4(1)*/, vec2 pivot /*= vec2( 0 )*/, vec2 scale /*= vec2( 1 )*/, float rotation /*= 0.f*/, float depth /*= 0.f */ )
