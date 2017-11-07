@@ -40,23 +40,18 @@ TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 			return nullptr;
 		}
 
-		GLuint texture;
-		glGenTextures(1, &texture);
-		STATE->BindTexture(GL_TEXTURE_2D, texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, m_UseSrgb?GL_SRGB:GL_RGB, width, height, 0, GL_RGB, GL_FLOAT, (void*)bits);
+		TextureData* ret = new TextureData( width, height, m_UseSrgb ? GL_SRGB : GL_RGB, GL_RGB, GL_FLOAT );
+		ret->Build( (void*)bits );
 
 		FreeImage_Unload(dib);
 		FreeImage_Unload(pImage);
 
-		// #todo this should probably happen somewhere else
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		TextureParameters params( true );
+		ret->SetParameters( params );
 
 		cout << "  . . . SUCCESS!" << endl;
-		return new TextureData(texture, width, height);
+
+		return ret;
 	}
 	cout << "  . . . FAILED! " << endl;
 	return nullptr;
