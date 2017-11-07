@@ -2,9 +2,10 @@
 	#version 400 core
 	
 	//in
-	layout (location = 0) in vec4 transformData;
-	layout (location = 1) in vec4 transformData2; 
-	layout (location = 2) in vec4 color;
+	layout (location = 0) in uint textureId;
+	layout (location = 1) in vec4 transformData;
+	layout (location = 2) in vec4 transformData2; 
+	layout (location = 3) in vec4 color;
 	//out
 	out VSO
 	{
