@@ -3,24 +3,60 @@
 #include <string>
 #include <vector>
 
-//Todo: Implement texture types with inheritance
+// #todo: Implement texture types with inheritance
+
+struct TextureParameters
+{
+	TextureParameters( bool useMipMaps = false, bool depthTex = false )
+	{
+		if(useMipMaps)
+		{
+			minFilter = GL_LINEAR_MIPMAP_LINEAR;
+			genMipMaps = true;
+		}
+		isDepthTex = depthTex;
+	}
+
+	//Parameters
+	int32 minFilter = GL_LINEAR;
+	int32 magFilter = GL_LINEAR;
+	int32 wrapS = GL_REPEAT;
+	int32 wrapT = GL_REPEAT;
+	vec4 borderColor = vec4(1);
+
+	bool genMipMaps = false;
+
+	bool isDepthTex = false;
+	int32 compareMode = GL_COMPARE_REF_TO_TEXTURE;
+};
 
 class TextureData
 {
 public:
 	TextureData(GLuint handle, int32 width, int32 height);
+	TextureData(int32 width, int32 height, int32 internalFormat, GLenum format, GLenum type);
 	~TextureData();
 
 	GLuint GetHandle() { return m_Handle; }
 	ivec2 GetResolution(){return ivec2(m_Width, m_Height);}
 
-	//Careful -- should eventually handle the actual opengl side of this operation, once we have all the creation info stored in the object
-	void Resize( ivec2 newSize ) { m_Width = newSize.x; m_Height = newSize.y; }
+	void Build(void* data = NULL);
+	void SetParameters( TextureParameters params );
+
+	void Resize( ivec2 newSize );
 
 private:
 	GLuint m_Handle;
+
 	int32 m_Width;
 	int32 m_Height;
+
+	//Setup
+	int32 m_InternalFormat = GL_RGB;
+	GLenum m_Format = GL_RGB;
+	GLenum m_Type = GL_FLOAT;
+
+	TextureParameters m_Parameters;
 };
 
 class CubeMap
