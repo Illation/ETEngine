@@ -87,6 +87,12 @@ void InputManager::UpdateEvents()
 			case SDL_WINDOWEVENT_CLOSE:
 				m_ExitRequested = true;
 				break;
+			case SDL_WINDOWEVENT_RESIZED:
+				WINDOW.Resize( evnt.window.data1, evnt.window.data2 );
+				break;
+			case SDL_WINDOWEVENT_SIZE_CHANGED:
+				WINDOW.Resize( evnt.window.data1, evnt.window.data2 );
+				break;
 			}
 			break;
 		case SDL_MOUSEWHEEL:

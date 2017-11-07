@@ -28,6 +28,10 @@ protected:
 	vector<TextureData*> m_pTextureVec;
 	bool m_CaptureDepth = false;
 private:
+
+	void GenerateFramebufferTextures();
+	void ResizeFramebufferTextures();
+
 	std::string m_ShaderFile;
 	GLenum m_Format;
 	uint32 m_NumTargets = 1;

@@ -56,15 +56,9 @@ void SpriteRenderer::Initialize()
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
 	STATE->BindVertexArray(0);
 
-	int32 width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
-	float scaleX = (width > 0) ? 2.f / width : 0;
-	float scaleY = (height > 0) ? 2.f / height : 0;
+	CalculateTransform();
 
-	m_Transform = mat4({
-		scaleX,	0,			0,		0,
-		0,		-scaleY,	0,		0,
-		0,		0,			1,		0,
-		-1,		1,			0,		1 });
+	WINDOW.WindowResizeEvent.AddListener( std::bind( &SpriteRenderer::OnWindowResize, this ) );
 }
 
 void SpriteRenderer::UpdateBuffer()
@@ -164,4 +158,22 @@ void SpriteRenderer::Draw( TextureData* pTexture, vec2 position, vec4 color /*= 
 	vertex.Color = color;
 
 	m_Sprites.push_back( vertex );
+}
+
+void SpriteRenderer::CalculateTransform()
+{
+	int32 width = WINDOW.Width, height = WINDOW.Height;
+	float scaleX = (width > 0) ? 2.f / width : 0;
+	float scaleY = (height > 0) ? 2.f / height : 0;
+
+	m_Transform = mat4({
+		scaleX,	0,			0,		0,
+		0,		-scaleY,	0,		0,
+		0,		0,			1,		0,
+		-1,		1,			0,		1 });
+}
+
+void SpriteRenderer::OnWindowResize()
+{
+	CalculateTransform();
 }

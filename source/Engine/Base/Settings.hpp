@@ -1,5 +1,7 @@
 #pragma once
+#pragma warning(disable : 4201) //nameless struct union
 #include "../Helper/Singleton.hpp"
+#include "../Helper/MulticastDelegate.hpp"
 #include <string>
 #include <SDL.h>
 #include <vector>
@@ -15,6 +17,8 @@ public:
 
 	struct WindowSettings
 	{
+		MulticastDelegate WindowResizeEvent;
+
 		WindowSettings() :
 			Fullscreen(false),
 			Title("ETEngine"),
@@ -33,9 +37,23 @@ public:
 		void VSync(const bool enabled){SDL_GL_SetSwapInterval(enabled);}
 		float GetAspectRatio() { return (float)Width / (float)Height; }
 
+		void Resize( int32 width, int32 height )
+		{
+			Width = width;
+			Height = height;
+			WindowResizeEvent.Broadcast();
+		}
+
 		bool Fullscreen;
-		int32 Width;
-		int32 Height;
+		union
+		{
+			struct
+			{
+				int32 Width;
+				int32 Height;
+			};
+			ivec2 Dimensions;
+		};
 		std::string Title;
 		SDL_Window* pWindow;
 	}Window;

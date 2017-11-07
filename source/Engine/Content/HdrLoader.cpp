@@ -258,7 +258,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	//Reset render settings and return generated texture
 	//*************************************************
 	STATE->BindFramebuffer(0);
-	STATE->SetViewport(ivec2(0), ivec2(SETTINGS->Window.Width, SETTINGS->Window.Height));
+	STATE->SetViewport(ivec2(0), WINDOW.Dimensions);
 	glDeleteTextures(1, &hdrTexture);
 
 	return new HDRMap(envCubemap, irradianceMap, radianceMap, brdfLUTTexture, m_CubemapRes, m_CubemapRes, maxMipLevels);
