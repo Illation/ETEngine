@@ -8,6 +8,8 @@ public:
 			   vec2 pivot = vec2( 0 ), vec2 scale = vec2( 1 ), 
 			   float rotation = 0.f, float depth = 0.f );
 
+	void OnWindowResize();
+
 private:
 	friend class Singleton<SpriteRenderer>;
 	friend class RenderPipeline;
@@ -24,6 +26,8 @@ private:
 	void UpdateBuffer();
 
 	void Draw();
+
+	void CalculateTransform();
 
 	//Vertices
 	vector<SpriteVertex> m_Sprites;

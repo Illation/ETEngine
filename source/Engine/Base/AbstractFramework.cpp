@@ -86,15 +86,23 @@ void AbstractFramework::InitializeWindow()
 	InputManager::GetInstance()->Init();//init input manager
 
 	//Create Window
-	if (pSet->Window.Fullscreen)
+	uint32 WindowFlags = SDL_WINDOW_OPENGL;
+	if(pSet->Window.Fullscreen)
 	{
-		pSet->Window.pWindow = SDL_CreateWindow(pSet->Window.Title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, pSet->Window.Width, pSet->Window.Height, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
+		WindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 	}
 	else
 	{
-		pSet->Window.pWindow = SDL_CreateWindow(pSet->Window.Title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, pSet->Window.Width, pSet->Window.Height, SDL_WINDOW_OPENGL);
+		WindowFlags |= SDL_WINDOW_RESIZABLE;
 	}
-	if (pSet->Window.pWindow == NULL)quit_SDL_error("Couldn't set video mode");
+	pSet->Window.pWindow = SDL_CreateWindow(pSet->Window.Title.c_str(), 
+											 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
+											 pSet->Window.Width, pSet->Window.Height, 
+											 WindowFlags);
+	if(pSet->Window.pWindow == NULL)
+	{
+		quit_SDL_error("Couldn't set video mode");
+	}
 
 	//OpenGl context creation
 	m_GlContext = SDL_GL_CreateContext(pSet->Window.pWindow);

@@ -14,6 +14,9 @@ public:
 	GLuint GetHandle() { return m_Handle; }
 	ivec2 GetResolution(){return ivec2(m_Width, m_Height);}
 
+	//Careful -- should eventually handle the actual opengl side of this operation, once we have all the creation info stored in the object
+	void Resize( ivec2 newSize ) { m_Width = newSize.x; m_Height = newSize.y; }
+
 private:
 	GLuint m_Handle;
 	int32 m_Width;

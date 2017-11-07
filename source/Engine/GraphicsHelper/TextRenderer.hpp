@@ -12,6 +12,7 @@ public:
 	void SetFont(SpriteFont* pFont);
 	void SetColor(vec4 color) { m_Color = color; }
 
+	void OnWindowResize();
 private:
 
 	friend class Singleton<TextRenderer>;
@@ -34,6 +35,8 @@ private:
 	void Initialize();
 	void Draw();
 	void UpdateBuffer();
+
+	void CalculateTransform();
 
 	ShaderData* m_pTextShader;
 	std::vector<SpriteFont*> m_pSpriteFonts;

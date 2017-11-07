@@ -308,6 +308,7 @@
     <ClInclude Include="Helper\AtomicTypes.hpp" />
     <ClInclude Include="FileSystem\BinaryReader.hpp" />
     <ClInclude Include="Helper\Logger.hpp" />
+    <ClInclude Include="Helper\MulticastDelegate.hpp" />
     <ClInclude Include="Helper\PerformanceInfo.hpp" />
     <ClInclude Include="Helper\Singleton.hpp" />
     <ClInclude Include="Helper\stdafx.hpp" />

@@ -27,6 +27,8 @@ public:
 
 private:
 
+	void ResizeFBTextures();
+
 	ShaderData* m_pDownsampleShader;
 	ShaderData* m_pGaussianShader;
 	ShaderData* m_pPostProcShader;

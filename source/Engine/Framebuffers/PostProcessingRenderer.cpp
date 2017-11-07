@@ -55,7 +55,7 @@ void PostProcessingRenderer::Initialize()
 	m_uGamma = glGetUniformLocation(m_pPostProcShader->GetProgram(), "gamma");
 	m_uBloomMult = glGetUniformLocation(m_pPostProcShader->GetProgram(), "bloomMult");
 
-	int32 width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
+	int32 width = WINDOW.Width, height = WINDOW.Height;
 
 	//Generate texture and fbo and rbo as initial postprocessing target
 	glGenFramebuffers(1, &m_CollectFBO);
@@ -71,7 +71,7 @@ void PostProcessingRenderer::Initialize()
 	//Render Buffer for depth and stencil
 	glGenRenderbuffers(1, &m_CollectRBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, m_CollectRBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SETTINGS->Window.Width, SETTINGS->Window.Height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_CollectRBO);
 
 	//Generate textures for the hdr fbo to output into
@@ -137,6 +137,9 @@ void PostProcessingRenderer::Initialize()
 
 	if (!(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE))
 		LOGGER::Log("Framebuffer>Initialize() FAILED!", LogLevel::Error);
+
+
+	WINDOW.WindowResizeEvent.AddListener( std::bind( &PostProcessingRenderer::ResizeFBTextures, this ) );
 }
 void PostProcessingRenderer::EnableInput()
 {
@@ -203,4 +206,33 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	glUniform1f(m_uGamma, m_Gamma);
 	glUniform1f(m_uBloomMult, m_BloomMult);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+}
+
+void PostProcessingRenderer::ResizeFBTextures()
+{
+	int32 width = WINDOW.Width, height = WINDOW.Height;
+
+	STATE->BindTexture( GL_TEXTURE_2D, m_CollectTex );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL );
+	for(GLuint i = 0; i < 2; i++)
+	{
+		STATE->BindTexture( GL_TEXTURE_2D, m_ColorBuffers[i] );
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL );
+	}
+	for(GLuint i = 0; i < NUM_BLOOM_DOWNSAMPLES; i++)
+	{
+		STATE->BindFramebuffer( m_DownSampleFBO[i] );
+		float resMult = 1.f / (float)std::pow( 2, i + 1 );
+
+		STATE->BindTexture( GL_TEXTURE_2D, m_DownSampleTexture[i] );
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, (GLsizei)(width*resMult), (GLsizei)(height*resMult), 0, GL_RGB, GL_FLOAT, NULL );
+
+		STATE->BindTexture( GL_TEXTURE_2D, m_DownPingPongTexture[i] );
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, (GLsizei)(width*resMult), (GLsizei)(height*resMult), 0, GL_RGB, GL_FLOAT, NULL );
+	}
+	for(GLuint i = 0; i < 2; i++)
+	{
+		STATE->BindTexture( GL_TEXTURE_2D, m_PingPongTexture[i] );
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL );
+	}
 }

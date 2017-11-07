@@ -97,8 +97,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 	m_pGBuffer->Enable();
 
 	//reset viewport
-	int32 width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
-	m_pState->SetViewport(ivec2(0), ivec2(width, height));
+	m_pState->SetViewport(ivec2(0), WINDOW.Dimensions);
 
 	m_pState->SetClearColor(vec4(m_ClearColor, 1.f));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -115,15 +114,17 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 	m_pState->SetCullEnabled(false);
 	//Step two: blend data and calculate lighting with gbuffer
 	m_pPostProcessing->EnableInput();
+	//STATE->BindFramebuffer( 0 );
 	//Ambient IBL lighting
 	m_pGBuffer->Draw();
 
 	//copy Z-Buffer from gBuffer
 	STATE->BindReadFramebuffer(m_pGBuffer->Get());
 	STATE->BindDrawFramebuffer(m_pPostProcessing->GetTargetFBO());
+	//STATE->BindDrawFramebuffer( 0 );
 	glBlitFramebuffer(
-		0, 0, SETTINGS->Window.Width, SETTINGS->Window.Height,
-		0, 0, SETTINGS->Window.Width, SETTINGS->Window.Height,
+		0, 0, WINDOW.Width, WINDOW.Height,
+		0, 0, WINDOW.Width, WINDOW.Height,
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
 	//Render Light Volumes
