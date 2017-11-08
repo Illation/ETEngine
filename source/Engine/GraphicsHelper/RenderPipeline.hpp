@@ -20,6 +20,7 @@ public:
 
 	RenderState* GetState() { return m_pState; }
 
+	void OnResize();
 private:
 	std::vector<AbstractScene*> m_pRenderScenes;
 

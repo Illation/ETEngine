@@ -61,6 +61,8 @@ void RenderPipeline::Initialize()
 	m_pGBuffer->Enable(true);
 
 	m_ClearColor = vec3(101.f / 255.f, 114.f / 255.f, 107.f / 255.f)*0.1f;
+
+	//WINDOW.WindowResizeEvent.AddListener( std::bind( &RenderPipeline::OnResize, this ) );
 }
 
 void RenderPipeline::DrawShadow()
@@ -187,4 +189,15 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 	SDL_GL_SwapWindow(SETTINGS->Window.pWindow);
 
 	PERFORMANCE->Update();
+}
+
+void RenderPipeline::OnResize()
+{
+	delete m_pPostProcessing;
+	m_pPostProcessing = new PostProcessingRenderer();
+	m_pPostProcessing->SetGamma( 2.2f );
+	m_pPostProcessing->SetExposure( 1 );
+	m_pPostProcessing->SetBloomMultiplier( 0.1f );
+	m_pPostProcessing->SetBloomThreshold( 10.0f );
+	m_pPostProcessing->Initialize();
 }

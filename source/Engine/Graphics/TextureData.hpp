@@ -43,7 +43,10 @@ public:
 	void Build(void* data = NULL);
 	void SetParameters( TextureParameters params );
 
-	void Resize( ivec2 newSize );
+	// returns true if regenerated 
+	// if its a framebuffer texture upscaling won't work properly 
+	// unless it is reatached to the framebuffer object
+	bool Resize( ivec2 newSize );
 
 private:
 	GLuint m_Handle;

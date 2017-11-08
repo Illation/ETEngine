@@ -13,6 +13,7 @@ public:
 	~PostProcessingRenderer();
 
 	void Initialize();
+
 	void EnableInput();
 	void Draw(GLuint FBO);
 
@@ -27,6 +28,8 @@ public:
 
 private:
 
+	void DeleteFramebuffers();
+	void GenerateFramebuffers();
 	void ResizeFBTextures();
 
 	ShaderData* m_pDownsampleShader;
@@ -34,19 +37,19 @@ private:
 	ShaderData* m_pPostProcShader;
 
 	GLuint m_CollectFBO;
-	GLuint m_CollectTex;
+	TextureData* m_CollectTex = nullptr;
 	GLuint m_CollectRBO;
 
 	GLuint m_HDRoutFBO;
-	GLuint m_ColorBuffers[2];
+	TextureData* m_ColorBuffers[2];
 
 	GLuint m_PingPongFBO[2];
-	GLuint m_PingPongTexture[2];
+	TextureData* m_PingPongTexture[2];
 
 	GLuint m_DownSampleFBO[NUM_BLOOM_DOWNSAMPLES];
-	GLuint m_DownSampleTexture[NUM_BLOOM_DOWNSAMPLES];
+	TextureData* m_DownSampleTexture[NUM_BLOOM_DOWNSAMPLES];
 	GLuint m_DownPingPongFBO[NUM_BLOOM_DOWNSAMPLES];
-	GLuint m_DownPingPongTexture[NUM_BLOOM_DOWNSAMPLES];
+	TextureData* m_DownPingPongTexture[NUM_BLOOM_DOWNSAMPLES];
 
 	GLuint m_uHorizontal;
 
