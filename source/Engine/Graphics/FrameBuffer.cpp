@@ -77,39 +77,30 @@ void FrameBuffer::GenerateFramebufferTextures()
 	attachments.reserve(m_NumTargets);
 	m_pTextureVec.reserve(m_NumTargets);
 
+	TextureParameters params = TextureParameters();
+	params.minFilter = GL_NEAREST;
+	params.magFilter = GL_NEAREST;
+	params.wrapS = GL_CLAMP_TO_EDGE;
+	params.wrapT = GL_CLAMP_TO_EDGE;
 	//Depth buffer
 	if (m_CaptureDepth)
 	{
-		GLuint depthMap;
-		glGenTextures(1, &depthMap);
-		STATE->BindTexture(GL_TEXTURE_2D, depthMap);
-		//glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, /*float*/GL_UNSIGNED_INT_24_8, NULL);
-		//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-		m_pTextureVec.push_back(new TextureData(depthMap, width, height));
-		//texture parameters
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		TextureData* depthMap = new TextureData( width, height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT );
+		depthMap->Build();
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap->GetHandle(), 0);
+		depthMap->SetParameters( params );
+		m_pTextureVec.push_back( depthMap );
 	}
 
 	//Color buffers
 	for (size_t i = 0; i < m_NumTargets; i++)
 	{
-		GLuint texHandle;
-		glGenTextures(1, &texHandle);
-		STATE->BindTexture(GL_TEXTURE_2D, texHandle);
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, m_Format, NULL );
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texHandle, 0 );
-		m_pTextureVec.push_back(new TextureData(texHandle, width, height));
+		TextureData* colorBuffer = new TextureData( width, height, GL_RGBA16F, GL_RGBA, m_Format );
+		colorBuffer->Build();
+		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffer->GetHandle(), 0 );
+		colorBuffer->SetParameters( params );
+		m_pTextureVec.push_back( colorBuffer );
 		attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
-		//texture parameters
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	}
 
 	//Render Buffer for depth and stencil
@@ -127,17 +118,26 @@ void FrameBuffer::GenerateFramebufferTextures()
 void FrameBuffer::ResizeFramebufferTextures()
 {
 	int32 width = WINDOW.Width, height = WINDOW.Height;
+	assert( m_pTextureVec.size() > 0 );
+	bool upscale = WINDOW.Width > m_pTextureVec[0]->GetResolution().x || WINDOW.Height > m_pTextureVec[0]->GetResolution().y;
+	if(upscale)
+	{
+		glDeleteRenderbuffers( 1, &m_RboDepthStencil );
+		for(uint32 i = 0; i < m_pTextureVec.size(); i++)
+		{
+			SafeDelete( m_pTextureVec[i] );
+		}
+		m_pTextureVec.clear();
+		glDeleteFramebuffers( 1, &m_GlFrameBuffer );
+		glGenFramebuffers( 1, &m_GlFrameBuffer );
+		GenerateFramebufferTextures();
+		return;
+	}
 
 	uint32 offset = 0;
 	if(m_CaptureDepth)
 	{
-		assert( m_pTextureVec.size() > 0 );
-		auto texture = m_pTextureVec[0];
-
-		STATE->BindTexture(GL_TEXTURE_2D, texture->GetHandle() );
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-		texture->Resize( WINDOW.Dimensions );
-
+		m_pTextureVec[0]->Resize( WINDOW.Dimensions );
 		++offset;
 	}
 	else 
@@ -153,9 +153,6 @@ void FrameBuffer::ResizeFramebufferTextures()
 	assert( m_pTextureVec.size() >= offset + m_NumTargets );
 	for(uint32 i = offset; i < offset + m_NumTargets; ++i)
 	{
-		auto texture = m_pTextureVec[i];
-		STATE->BindTexture( GL_TEXTURE_2D, texture->GetHandle() );
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, m_Format, NULL );
-		texture->Resize( WINDOW.Dimensions );
+		m_pTextureVec[i]->Resize( WINDOW.Dimensions );
 	}
 }

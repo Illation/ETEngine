@@ -100,27 +100,22 @@ DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 
 		glGenFramebuffers(1, &(data.fbo));
 
-		GLuint depthMap;
-		glGenTextures(1, &depthMap);
-		STATE->BindTexture(GL_TEXTURE_2D, depthMap);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Resolution.x, Resolution.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		data.pTexture = new TextureData( Resolution.x, Resolution.y, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT );
+		data.pTexture->Build();
 		STATE->BindFramebuffer(data.fbo);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, data.pTexture->GetHandle(), 0);
 		//only depth components
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
-		
-		//Texture parameters
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
-		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);//shadow map comp mode
-		STATE->BindFramebuffer(0);
 
-		data.pTexture = new TextureData(depthMap, Resolution.x, Resolution.y);
+		TextureParameters params( false, true );
+		params.minFilter = GL_NEAREST;
+		params.magFilter = GL_NEAREST;
+		params.wrapS = GL_CLAMP_TO_EDGE;
+		params.wrapT = GL_CLAMP_TO_EDGE;
+		data.pTexture->SetParameters( params );
+
+		STATE->BindFramebuffer(0);
 
 		data.distance = sizeL*distMult;
 		sizeL *= 2;

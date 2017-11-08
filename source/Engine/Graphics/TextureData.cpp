@@ -64,7 +64,7 @@ void TextureData::SetParameters( TextureParameters params )
 	m_Parameters = params;
 }
 
-void TextureData::Resize( ivec2 newSize )
+bool TextureData::Resize( ivec2 newSize )
 {
 	if(newSize.x > m_Width || newSize.y > m_Height)
 	{
@@ -75,12 +75,11 @@ void TextureData::Resize( ivec2 newSize )
 		auto tempParams = m_Parameters;
 		ZeroMemory( &m_Parameters, sizeof( TextureParameters ) ); //ensure setting them when its called
 		SetParameters( tempParams );
+		return true;
 	}
-	else
-	{
-		m_Width = newSize.x; m_Height = newSize.y;
-		Build();
-	}
+	m_Width = newSize.x; m_Height = newSize.y;
+	Build();
+	return false;
 }
 
 
