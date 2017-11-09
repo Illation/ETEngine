@@ -1,4 +1,5 @@
 #pragma once
+#include "../Graphics/PostProcessingSettings.hpp"
 //forward declaration
 class Entity;
 class CameraComponent;
@@ -24,6 +25,7 @@ public:
 	void SetSkybox(string assetFile);
 	HDRMap* GetEnvironmentMap();
 	std::vector<LightComponent*> GetLights();
+	const PostProcessingSettings& GetPostProcessingSettings() const;
 
 	bool SkyboxEnabled() { return m_UseSkyBox; }
 
@@ -36,6 +38,8 @@ protected:
 	virtual void PostDraw() = 0;
 	virtual void OnActivated() {}
 	virtual void OnDeactivated() {}
+
+	PostProcessingSettings m_PostProcessingSettings;
 
 private:
 	friend class SceneManager;
