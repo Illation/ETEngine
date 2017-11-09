@@ -71,6 +71,8 @@ void AbstractScene::RootInitialize()
 
 	CONTEXT->SetContext(m_pConObj);
 
+	m_PostProcessingSettings = PostProcessingSettings();
+
 	Initialize();
 
 	for (Entity* pEntity : m_pEntityVec)
@@ -94,19 +96,19 @@ void AbstractScene::RootUpdate()
 	Update();
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_UP))
 	{
-		float exposure = RenderPipeline::GetInstance()->GetPostProcessor()->GetExposure();
+		float exposure = m_PostProcessingSettings.exposure;
 		float newExp = exposure * 4.f;
 		exposure += (newExp - exposure)*TIME->DeltaTime();
 		LOGGER::Log("Exposure: " + to_string(exposure));
-		RenderPipeline::GetInstance()->GetPostProcessor()->SetExposure(exposure);
+		m_PostProcessingSettings.exposure = exposure;
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_DOWN))
 	{
-		float exposure = RenderPipeline::GetInstance()->GetPostProcessor()->GetExposure();
+		float exposure = m_PostProcessingSettings.exposure;
 		float newExp = exposure * 4.f;
 		exposure -= (newExp - exposure)*TIME->DeltaTime();
 		LOGGER::Log("Exposure: " + to_string(exposure));
-		RenderPipeline::GetInstance()->GetPostProcessor()->SetExposure(exposure);
+		m_PostProcessingSettings.exposure = exposure;
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LEFT) && m_UseSkyBox)
 	{
@@ -155,6 +157,12 @@ std::vector<LightComponent*> AbstractScene::GetLights()
 		ret.insert(ret.end(), entityLights.begin(), entityLights.end());
 	}
 	return ret;
+}
+
+const PostProcessingSettings& AbstractScene::GetPostProcessingSettings() const
+{
+	//Any settings blending should be done here
+	return m_PostProcessingSettings;
 }
 
 void AbstractScene::SetSkybox(string assetFile)

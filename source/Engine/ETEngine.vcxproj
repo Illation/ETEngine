@@ -301,6 +301,7 @@
     <ClInclude Include="Graphics\Light.hpp" />
     <ClInclude Include="Graphics\Material.hpp" />
     <ClInclude Include="Graphics\MeshFilter.hpp" />
+    <ClInclude Include="Graphics\PostProcessingSettings.hpp" />
     <ClInclude Include="Graphics\ShaderData.hpp" />
     <ClInclude Include="Graphics\SpriteFont.hpp" />
     <ClInclude Include="Graphics\stdafx.hpp" />

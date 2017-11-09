@@ -68,7 +68,7 @@ void PostProcessingRenderer::Initialize()
 
 	GenerateFramebuffers();
 
-	WINDOW.WindowResizeEvent.AddListener( std::bind( &PostProcessingRenderer::ResizeFBTextures, this ) );
+	//WINDOW.WindowResizeEvent.AddListener( std::bind( &PostProcessingRenderer::ResizeFBTextures, this ) );
 }
 
 void PostProcessingRenderer::GenerateFramebuffers()
@@ -147,14 +147,14 @@ void PostProcessingRenderer::EnableInput()
 {
 	STATE->BindFramebuffer(m_CollectFBO);
 }
-void PostProcessingRenderer::Draw(GLuint FBO)
+void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &settings)
 {
 	STATE->SetDepthEnabled(false);
 	//get glow
 	STATE->BindFramebuffer(m_HDRoutFBO);
 	STATE->SetShader(m_pDownsampleShader);
 	STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_CollectTex->GetHandle());
-	glUniform1f(m_uThreshold, m_Threshold);
+	glUniform1f(m_uThreshold, settings.bloomThreshold);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 	//downsample glow
 	int32 width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
@@ -165,7 +165,7 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 		STATE->SetViewport(ivec2(0), ivec2((int32)(width*resMult), (int32)(height*resMult)));
 		STATE->BindFramebuffer(m_DownSampleFBO[i]);
 		if(i>0) STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_DownSampleTexture[i - 1]->GetHandle());
-		glUniform1f(m_uThreshold, m_Threshold);
+		glUniform1f(m_uThreshold, settings.bloomThreshold);
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
 		//blur downsampled
@@ -205,9 +205,9 @@ void PostProcessingRenderer::Draw(GLuint FBO)
 	{
 		STATE->LazyBindTexture(2+i, GL_TEXTURE_2D, m_DownSampleTexture[i]->GetHandle());
 	}
-	glUniform1f(m_uExposure, m_Exposure);
-	glUniform1f(m_uGamma, m_Gamma);
-	glUniform1f(m_uBloomMult, m_BloomMult);
+	glUniform1f(m_uExposure, settings.exposure);
+	glUniform1f(m_uGamma, settings.gamma);
+	glUniform1f(m_uBloomMult, settings.bloomMult);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 }
 

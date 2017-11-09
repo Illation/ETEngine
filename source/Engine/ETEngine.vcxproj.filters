@@ -448,5 +448,6 @@
     <ClInclude Include="GraphicsHelper\SpriteRenderer.hpp" />
     <ClInclude Include="Components\SpriteComponent.hpp" />
     <ClInclude Include="Helper\MulticastDelegate.hpp" />
+    <ClInclude Include="Graphics\PostProcessingSettings.hpp" />
   </ItemGroup>
 </Project>

@@ -50,10 +50,6 @@ void RenderPipeline::Initialize()
 	PrimitiveRenderer::GetInstance();
 
 	m_pPostProcessing = new PostProcessingRenderer();
-	m_pPostProcessing->SetGamma(2.2f);
-	m_pPostProcessing->SetExposure(1);
-	m_pPostProcessing->SetBloomMultiplier(0.1f);
-	m_pPostProcessing->SetBloomThreshold(10.0f);
 	m_pPostProcessing->Initialize();
 
 	m_pGBuffer = new Gbuffer();
@@ -62,7 +58,7 @@ void RenderPipeline::Initialize()
 
 	m_ClearColor = vec3(101.f / 255.f, 114.f / 255.f, 107.f / 255.f)*0.1f;
 
-	//WINDOW.WindowResizeEvent.AddListener( std::bind( &RenderPipeline::OnResize, this ) );
+	WINDOW.WindowResizeEvent.AddListener( std::bind( &RenderPipeline::OnResize, this ) );
 }
 
 void RenderPipeline::DrawShadow()
@@ -175,7 +171,8 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 	}
 	//Draw to default buffer
 	m_pState->SetDepthEnabled(false);
-	m_pPostProcessing->Draw(0);
+	if(pScenes.size() > 0)
+		m_pPostProcessing->Draw(0, pScenes[0]->GetPostProcessingSettings());
 
 	SpriteRenderer::GetInstance()->Draw();
 	TextRenderer::GetInstance()->Draw();
@@ -193,11 +190,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 
 void RenderPipeline::OnResize()
 {
-	delete m_pPostProcessing;
-	m_pPostProcessing = new PostProcessingRenderer();
-	m_pPostProcessing->SetGamma( 2.2f );
-	m_pPostProcessing->SetExposure( 1 );
-	m_pPostProcessing->SetBloomMultiplier( 0.1f );
-	m_pPostProcessing->SetBloomThreshold( 10.0f );
+	m_pPostProcessing->~PostProcessingRenderer();
+	m_pPostProcessing = new(m_pPostProcessing) PostProcessingRenderer();
 	m_pPostProcessing->Initialize();
 }
