@@ -212,6 +212,8 @@
     </ClCompile>
     <ClCompile Include="GraphicsHelper\SpriteRenderer.cpp" />
     <ClCompile Include="Components\SpriteComponent.cpp" />
+    <ClCompile Include="Editor\Editor.cpp" />
+    <ClCompile Include="Editor\EditorRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Context.hpp">
@@ -449,5 +451,8 @@
     <ClInclude Include="Components\SpriteComponent.hpp" />
     <ClInclude Include="Helper\MulticastDelegate.hpp" />
     <ClInclude Include="Graphics\PostProcessingSettings.hpp" />
+    <ClInclude Include="Editor\Editor.hpp" />
+    <ClInclude Include="Editor\EditorRenderer.hpp" />
+    <ClInclude Include="UI\UIUtil.hpp" />
   </ItemGroup>
 </Project>

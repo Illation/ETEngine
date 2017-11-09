@@ -72,7 +72,7 @@ void RenderPipeline::DrawShadow()
 	}
 }
 
-void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
+void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 {
 	m_pRenderScenes = pScenes;
 	//Shadow Mapping
@@ -172,7 +172,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 	//Draw to default buffer
 	m_pState->SetDepthEnabled(false);
 	if(pScenes.size() > 0)
-		m_pPostProcessing->Draw(0, pScenes[0]->GetPostProcessingSettings());
+		m_pPostProcessing->Draw(outFBO, pScenes[0]->GetPostProcessingSettings());
 
 	SpriteRenderer::GetInstance()->Draw();
 	TextRenderer::GetInstance()->Draw();
@@ -181,11 +181,13 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes)
 	{
 		pScene->PostDraw();
 	}
-	
-	//Swap front and back buffer
-	SDL_GL_SwapWindow(SETTINGS->Window.pWindow);
 
 	PERFORMANCE->Update();
+}
+
+void RenderPipeline::SwapBuffers()
+{
+	SDL_GL_SwapWindow(SETTINGS->Window.pWindow);
 }
 
 void RenderPipeline::OnResize()
