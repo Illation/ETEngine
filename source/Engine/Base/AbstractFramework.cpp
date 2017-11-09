@@ -12,6 +12,11 @@
 #include "../GraphicsHelper/RenderPipeline.hpp"
 
 
+#ifdef EDITOR
+#include "../Editor/Editor.hpp"
+#endif
+
+
 void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
 	printf("\n*** ");
 	if (fif != FIF_UNKNOWN) {
@@ -145,6 +150,10 @@ void AbstractFramework::InitializeGame()
 
 	SceneManager::GetInstance()->Initialize();
 
+#ifdef EDITOR
+	Editor::GetInstance()->Initialize();
+#endif
+
 	//Initialize Game
 	Initialize();
 }
@@ -161,16 +170,29 @@ void AbstractFramework::GameLoop()
 		{
 			activeScenes.push_back(SceneManager::GetInstance()->GetActiveScene());
 		}
-		// #note: currently only one scene but could be expanded for nested scenes
 
 		Update();
 		//******
 		//UPDATE
-		SceneManager::GetInstance()->Update();
 
+	#ifdef EDITOR
+		Editor::GetInstance()->Update();
+	#endif
+
+		SceneManager::GetInstance()->Update();
 		//****
 		//DRAW
-		RenderPipeline::GetInstance()->Draw(activeScenes);
+
+	#ifdef EDITOR
+		RenderPipeline::GetInstance()->Draw(activeScenes, Editor::GetInstance()->GetSceneTarget());
+		Editor::GetInstance()->Draw();
+	#else
+
+		// #note: currently only one scene but could be expanded for nested scenes
+		RenderPipeline::GetInstance()->Draw(activeScenes, 0);
+
+	#endif
+		RenderPipeline::GetInstance()->SwapBuffers();
 	}
 }
 

@@ -1,6 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug Editor|Win32">
+      <Configuration>Debug Editor</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug Editor|x64">
+      <Configuration>Debug Editor</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -31,6 +39,12 @@
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Editor|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -39,6 +53,12 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Editor|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
@@ -59,10 +79,16 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug Editor|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug Editor|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -83,7 +109,21 @@
     <IntDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\</IntDir>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Editor|Win32'">
+    <IncludePath>$(SolutionDir)..\dependancies\include\sdl2;$(SolutionDir)..\dependancies\include\assimp;$(SolutionDir)..\dependancies\include\freeImage;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)..\bin\$(Configuration)$(Platform)\Engine\</OutDir>
+    <IntDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\</IntDir>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\DevIL\include;$(S_LIBS)\glm;$(S_LIBS)\assimp\include;$(S_LIBS)\stb;$(IncludePath)</IncludePath>
+    <LibraryPath>$(S_LIBS)\SDL2\lib\x86;$(S_LIBS)\DevIL\lib;$(S_LIBS)\DevIL;$(S_LIBS)\assimp\lib;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\</OutDir>
+    <IntDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\</IntDir>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Editor|x64'">
     <IncludePath>$(S_LIBS)\SDL2\include;$(S_LIBS)\DevIL\include;$(S_LIBS)\glm;$(S_LIBS)\assimp\include;$(S_LIBS)\stb;$(IncludePath)</IncludePath>
     <LibraryPath>$(S_LIBS)\SDL2\lib\x86;$(S_LIBS)\DevIL\lib;$(S_LIBS)\DevIL;$(S_LIBS)\assimp\lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\</OutDir>
@@ -117,7 +157,42 @@
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Editor|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(SolutionDir)..\bin\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
+      <AdditionalIncludeDirectories>$(StlIncludeDirectories);Base;Components;Content;Helper;Graphics;Prefabs;SceneGraph;Framebuffers;GraphicsHelper;Materials;Math;PlanetTech;PlanetTech\Types;StaticDependancies\glad;..\Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PLATFORM_Win;EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;DevIL.lib;ILU.lib;ILUT.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
+      <AdditionalIncludeDirectories>$(StlIncludeDirectories);Base;Components;Content;Helper;Graphics;Prefabs;SceneGraph;Framebuffers;GraphicsHelper;Materials;Math;PlanetTech;PlanetTech\Types;StaticDependancies\glad;..\Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;DevIL.lib;ILU.lib;ILUT.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Editor|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
@@ -193,6 +268,8 @@
     <ClCompile Include="Content\MeshFilterLoader.cpp" />
     <ClCompile Include="Content\ShaderLoader.cpp" />
     <ClCompile Include="Content\TextureLoader.cpp" />
+    <ClCompile Include="Editor\Editor.cpp" />
+    <ClCompile Include="Editor\EditorRenderer.cpp" />
     <ClCompile Include="FileSystem\Directory\DirectoryBase.cpp" />
     <ClCompile Include="FileSystem\Entry.cpp" />
     <ClCompile Include="FileSystem\Facade\FileBase.cpp" />
@@ -237,14 +314,18 @@
     <ClCompile Include="SceneGraph\SceneManager.cpp" />
     <ClCompile Include="StaticDependancies\glad\glad.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Editor|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Editor|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\bin\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug Editor|Win32'">$(SolutionDir)..\bin\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\bin\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug Editor|x64'">$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
   </ItemGroup>
@@ -270,6 +351,8 @@
     <ClInclude Include="Content\ShaderLoader.hpp" />
     <ClInclude Include="Content\stdafx.hpp" />
     <ClInclude Include="Content\TextureLoader.hpp" />
+    <ClInclude Include="Editor\Editor.hpp" />
+    <ClInclude Include="Editor\EditorRenderer.hpp" />
     <ClInclude Include="FileSystem\Directory\DirectoryBaseLinux.hpp" />
     <ClInclude Include="FileSystem\Directory\DirectoryBaseWindows.hpp" />
     <ClInclude Include="FileSystem\Entry.h" />
@@ -342,6 +425,7 @@
     <ClInclude Include="SceneGraph\SceneManager.hpp" />
     <ClInclude Include="StaticDependancies\glad\glad.h" />
     <ClInclude Include="stdafx.hpp" />
+    <ClInclude Include="UI\UIUtil.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

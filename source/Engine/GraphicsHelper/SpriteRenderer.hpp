@@ -13,6 +13,9 @@ public:
 private:
 	friend class Singleton<SpriteRenderer>;
 	friend class RenderPipeline;
+#ifdef EDITOR
+	friend class EditorRenderer;
+#endif
 
 	struct SpriteVertex
 	{

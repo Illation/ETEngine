@@ -19,6 +19,9 @@ private:
 	friend class AbstractScene;
 	friend class AbstractFramework;
 	friend class RenderPipeline;
+#ifdef EDITOR
+	friend class EditorRenderer;
+#endif
 
 	TextRenderer();
 	~TextRenderer();
