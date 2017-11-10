@@ -22,6 +22,12 @@ void Editor::Initialize()
 	m_Viewport.size = ivec2( WINDOW.Width - (int32)m_ToolbarSeparator, WINDOW.Height );
 
 	m_pRenderer->Initialize();
+
+	UISprite testSprite = UISprite();
+	testSprite.rect = iRect( ivec2( 0, 0 ), ivec2( 1, 1 ) );
+	testSprite.color = vec4( 1 );
+	testSprite.texture = ContentManager::Load<TextureData>( "Resources/Textures/sample.png" );
+	m_UISprites.push_back( testSprite );
 }
 
 void Editor::Update()

@@ -8,7 +8,7 @@
 	uniform vec2 uOffset;
 	void main()
 	{
-		vec2 position = uSize * pos.xy + uOffset;
+		vec2 position = (uSize * pos.xy) + uOffset;
 		Texcoord = texCoords;
 		gl_Position = vec4(position, pos.z, 1.0);
 	}
