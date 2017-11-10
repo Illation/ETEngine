@@ -45,6 +45,10 @@ AbstractFramework::~AbstractFramework()
 	Context::GetInstance()->DestroyInstance();
 	
 	RenderPipeline::GetInstance()->DestroyInstance();
+
+#ifdef EDITOR
+	Editor::GetInstance()->DestroyInstance();
+#endif
 }
 
 void AbstractFramework::Run()

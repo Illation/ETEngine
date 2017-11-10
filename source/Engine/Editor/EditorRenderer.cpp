@@ -50,12 +50,12 @@ void EditorRenderer::Draw(bool redrawUI)
 	STATE->LazyBindTexture( 0, GL_TEXTURE_2D, m_UITex->GetHandle() );
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
-	ivec2 windowDim = WINDOW.Dimensions;
+	vec2 windowDim = vec2((float)WINDOW.Width, (float)WINDOW.Height);
 	iRect viewport = Editor::GetInstance()->GetViewport();
-	ivec2 offset = viewport.pos / windowDim;
-	ivec2 size = viewport.size / windowDim;
-	glUniform2f( m_uSize, (float)offset.x, (float)offset.y );
-	glUniform2f( m_uOffset, (float)offset.x, (float)offset.y );
+	vec2 offset = vec2((float)viewport.pos.x, (float)viewport.pos.y) / windowDim;
+	vec2 size = vec2((float)viewport.size.x, (float)viewport.size.y) / windowDim;
+	glUniform2f( m_uSize, size.x, size.y );
+	glUniform2f( m_uOffset, offset.x, offset.y );
 	STATE->LazyBindTexture( 0, GL_TEXTURE_2D, m_SceneTex->GetHandle() );
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 }
