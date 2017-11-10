@@ -10,6 +10,7 @@
 static inline void quit_SDL_error(const char * message)
 {
 	fprintf(stderr, "%s: %s\n", message, SDL_GetError());
+	std::cin.get();
 	exit(2);
 }
 

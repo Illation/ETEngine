@@ -36,19 +36,19 @@ AbstractFramework::~AbstractFramework()
 
 	FreeImage_DeInitialise();
 
+#ifdef EDITOR
+	Editor::GetInstance()->DestroyInstance();
+#endif
+
 	SDL_GL_DeleteContext(m_GlContext);
 	SDL_Quit();
 
-	Settings::GetInstance()->DestroyInstance();
 	SceneManager::GetInstance()->DestroyInstance();
 	InputManager::GetInstance()->DestroyInstance();
 	Context::GetInstance()->DestroyInstance();
 	
 	RenderPipeline::GetInstance()->DestroyInstance();
-
-#ifdef EDITOR
-	Editor::GetInstance()->DestroyInstance();
-#endif
+	Settings::GetInstance()->DestroyInstance();
 }
 
 void AbstractFramework::Run()
@@ -76,7 +76,7 @@ void AbstractFramework::InitializeSDL()
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	// Request a debug context.
-#if defined(DEBUG) | defined(_DEBUG)
+#if defined(GRAPHICS_API_DEBUG)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif
 
@@ -104,10 +104,17 @@ void AbstractFramework::InitializeWindow()
 	{
 		WindowFlags |= SDL_WINDOW_RESIZABLE;
 	}
+
+#ifdef EDITOR
+	ivec2 dim = pSet->Window.EditorDimensions;
+#else
+	ivec2 dim = pSet->Window.Dimensions;
+#endif
 	pSet->Window.pWindow = SDL_CreateWindow(pSet->Window.Title.c_str(), 
 											 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
-											 pSet->Window.Width, pSet->Window.Height, 
+											 dim.x, dim.y, 
 											 WindowFlags);
+	
 	if(pSet->Window.pWindow == NULL)
 	{
 		quit_SDL_error("Couldn't set video mode");
@@ -160,6 +167,10 @@ void AbstractFramework::InitializeGame()
 
 	//Initialize Game
 	Initialize();
+
+#ifdef EDITOR
+	WINDOW.Resize(WINDOW.Width, WINDOW.Height);
+#endif
 }
 
 void AbstractFramework::GameLoop()

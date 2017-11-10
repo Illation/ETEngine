@@ -17,8 +17,11 @@ public:
 
 	static void DestroyInstance()
 	{
-		delete m_Instance;
-		m_Instance = nullptr;
+		if(m_Instance != 0)
+		{
+			delete(m_Instance);
+			m_Instance = 0;
+		}
 	}
 
 private:

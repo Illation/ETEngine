@@ -16,10 +16,12 @@ Logger::~Logger()
 void Logger::Initialize()
 {
 #if defined(DEBUG) | defined(_DEBUG)
+#if defined(GRAPHICS_API_VERBOSE)
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(LogFormat, nullptr);
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
+#endif
 	//if (AllocConsole())
 	//{
 		// Redirect the CRT standard input, output, and error handles to the console

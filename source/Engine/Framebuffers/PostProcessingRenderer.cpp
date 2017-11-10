@@ -171,10 +171,14 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 		//blur downsampled
 		//STATE->SetViewport(ivec2(0), ivec2(width, height));
 		STATE->SetShader(m_pGaussianShader);
-		for (GLuint j = 0; j < (GLuint)GRAPHICS.NumBlurPasses * 2; j++)
+	#ifdef EDITOR
+		for (uint32 sample = 0; sample < 10; sample++)
+	#else
+		for (uint32 sample = 0; sample < static_cast<uint32>(GRAPHICS.NumBlurPasses * 2); sample++)
+	#endif
 		{
 			//TODO needs custom ping pong buffer, buffers textures are wrong size
-			GLboolean horizontal = !(GLboolean)(j % 2);
+			bool horizontal = sample % 2 == 0;
 			//output is the current framebuffer, or on the last item the framebuffer of the downsample texture
 			STATE->BindFramebuffer(horizontal ? m_DownPingPongFBO[i] : m_DownSampleFBO[i]);
 			//input is previous framebuffers texture, or on first item the result of downsampling
@@ -188,7 +192,11 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	//ping pong gaussian blur
 	GLboolean horizontal = true;
 	STATE->SetShader(m_pGaussianShader);
+#ifdef EDITOR
+	for (GLuint i = 0; i < 10; i++)
+#else
 	for (GLuint i = 0; i < (GLuint)GRAPHICS.NumBlurPasses * 2; i++)
+#endif
 	{
 		STATE->BindFramebuffer(m_PingPongFBO[horizontal]);
 		glUniform1i(m_uHorizontal, horizontal);

@@ -25,6 +25,9 @@ public:
 	std::vector<UISprite> GetSprites() { return m_UISprites; }
 
 private:
+
+	void CalculateViewportSize();
+
 	EditorRenderer* m_pRenderer = nullptr;
 
 	bool m_RedrawUI = true;
