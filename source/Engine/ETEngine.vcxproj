@@ -254,6 +254,7 @@
   <ItemGroup>
     <ClCompile Include="Base\AbstractFramework.cpp" />
     <ClCompile Include="Base\InputManager.cpp" />
+    <ClCompile Include="Base\Settings.cpp" />
     <ClCompile Include="Base\Time.cpp" />
     <ClCompile Include="Components\AbstractComponent.cpp" />
     <ClCompile Include="Components\CameraComponent.cpp" />

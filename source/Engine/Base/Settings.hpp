@@ -9,41 +9,39 @@
 struct Settings : public Singleton<Settings>
 {
 public:
-	Settings():Window(WindowSettings())
-	{
+	Settings();
+	~Settings();
 
-	}
-	~Settings() {}
+	struct GraphicsSettings
+	{
+		GraphicsSettings();
+		~GraphicsSettings();
+
+		void VSync( const bool enabled ) { SDL_GL_SetSwapInterval( enabled ); }
+
+		//Shadow Quality
+		int32 NumCascades;
+		float CSMDrawDistance;
+		int32 NumPCFSamples;
+
+		//Bloom Quality
+		int32 NumBlurPasses;
+	}Graphics;
 
 	struct WindowSettings
 	{
 		MulticastDelegate WindowResizeEvent;
 
-		WindowSettings() :
-			Fullscreen(false),
-			Title("ETEngine"),
-			pWindow(nullptr)
-		{
-			std::vector<ivec2> resolutions;
-			resolutions.push_back(ivec2(1280, 720));
-			resolutions.push_back(ivec2(1920, 1080));
-			resolutions.push_back(ivec2(2560, 1440));
+		WindowSettings();
+		virtual ~WindowSettings();
 
-			uint32 baseRes = 2;
+		void VSync( const bool enabled ) { SDL_GL_SetSwapInterval( enabled ); }
+		float GetAspectRatio();
 
-			Width = Fullscreen ? resolutions[baseRes].x : resolutions[baseRes-1].x;
-			Height = Fullscreen ? resolutions[baseRes].y : resolutions[baseRes-1].y;
-		}
-		void VSync(const bool enabled){SDL_GL_SetSwapInterval(enabled);}
-		float GetAspectRatio() { return (float)Width / (float)Height; }
+		void Resize( int32 width, int32 height );
 
-		void Resize( int32 width, int32 height )
-		{
-			Width = width;
-			Height = height;
-			WindowResizeEvent.Broadcast();
-		}
-
+		std::string Title;
+		SDL_Window* pWindow;
 		bool Fullscreen;
 		union
 		{
@@ -54,29 +52,17 @@ public:
 			};
 			ivec2 Dimensions;
 		};
-		std::string Title;
-		SDL_Window* pWindow;
-	}Window;
-
-	struct GraphicsSettings
-	{
-		GraphicsSettings() :
-			NumCascades(3),
-			NumPCFSamples(3),
-			CSMDrawDistance(200),
-			NumBlurPasses(5)
+	#ifdef EDITOR
+		union
 		{
-
-		}
-		void VSync(const bool enabled) { SDL_GL_SetSwapInterval(enabled); }
-
-		//Shadow Quality
-		int32 NumCascades;
-		float CSMDrawDistance;
-		int32 NumPCFSamples;
-
-		//Bloom Quality
-		int32 NumBlurPasses;
-	}Graphics;
+			struct
+			{
+				int32 EditorWidth;
+				int32 EditorHeight;
+			};
+			ivec2 EditorDimensions;
+		};
+	#endif
+	}Window;
 };
 

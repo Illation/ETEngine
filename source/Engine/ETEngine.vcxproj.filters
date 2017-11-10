@@ -214,6 +214,7 @@
     <ClCompile Include="Components\SpriteComponent.cpp" />
     <ClCompile Include="Editor\Editor.cpp" />
     <ClCompile Include="Editor\EditorRenderer.cpp" />
+    <ClCompile Include="Base\Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Context.hpp">

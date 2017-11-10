@@ -98,7 +98,7 @@ void EditorRenderer::CreateFramebuffers()
 
 	glGenFramebuffers( 1, &m_UIFBO );
 	STATE->BindFramebuffer( m_UIFBO );
-	m_UITex = new TextureData( WINDOW.Width, WINDOW.Height, GL_RGB16F, GL_RGB, GL_FLOAT );
+	m_UITex = new TextureData( WINDOW.EditorWidth, WINDOW.EditorHeight, GL_RGB16F, GL_RGB, GL_FLOAT );
 	m_UITex->Build();
 	m_UITex->SetParameters( params );
 	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_UITex->GetHandle(), 0 );
