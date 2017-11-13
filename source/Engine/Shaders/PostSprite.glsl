@@ -40,7 +40,6 @@
 	} outputs;
 	
 	uniform mat4 uTransform;
-	uniform vec2 uTexSize;
 
 	void CreateVertex(vec3 pos, vec4 col, vec2 texCoord, float rotation, vec2 rotCosSin, vec2 offset, vec2 pivotOffset)
 	{
@@ -71,12 +70,11 @@
 		float rotation = inputs[0].transformData.w; 
 		vec2 pivot = vec2(inputs[0].transformData2.x,inputs[0].transformData2.y); 
 		vec2 scale = vec2(inputs[0].transformData2.z,inputs[0].transformData2.w); 
-		vec2 texCoord = vec2(0, 0); 
+		vec2 texCoord = vec2(0); 
 		
 		vec2 rotCosSin = vec2(cos(rotation), sin(rotation));
 
-		vec2 sc = scale*uTexSize;
-		vec2 pivOf = pivot*sc;//*offset;
+		vec2 pivOf = pivot*scale;//*offset;
 		
 		// LT----------RT //TringleStrip (LT > RT > LB, LB > RB > RT)
 		// |          / |
@@ -87,20 +85,20 @@
 
 		//VERTEX 1 [LT]
 		vec3 pos = position;
-		vec2 tc = texCoord+vec2(0, 0);
-		CreateVertex(pos, inputs[0].color, tc, rotation, rotCosSin, offset, pivOf); //Change the color data too!
+		vec2 tc = texCoord;
+		CreateVertex(pos, inputs[0].color, tc, rotation, rotCosSin, offset, pivOf); 
 		//VERTEX 2 [RT]                                             
-		pos = position+vec3(sc.x,0, 0);                           
+		pos = position+vec3(scale.x,0, 0);                           
 		tc = texCoord+vec2(1, 0);                                 
-		CreateVertex(pos, inputs[0].color, tc, rotation, rotCosSin, offset, pivOf); //Change the color data too!
+		CreateVertex(pos, inputs[0].color, tc, rotation, rotCosSin, offset, pivOf);
 		//VERTEX 3 [LB]                                             
-		pos = position+vec3(0,sc.y, 0);                           
+		pos = position+vec3(0,scale.y, 0);                           
 		tc = texCoord+vec2(0, 1);                                 
-		CreateVertex(pos, inputs[0].color, tc, rotation, rotCosSin, offset, pivOf); //Change the color data too!
+		CreateVertex(pos, inputs[0].color, tc, rotation, rotCosSin, offset, pivOf); 
 		//VERTEX 4 [RB]                                             
-		pos =position+vec3(sc.x,sc.y, 0);                         
+		pos =position+vec3(scale, 0);                         
 		tc = texCoord+vec2(1, 1);                                 
-		CreateVertex(pos, inputs[0].color, tc, rotation, rotCosSin, offset, pivOf); //Change the color data too!
+		CreateVertex(pos, inputs[0].color, tc, rotation, rotCosSin, offset, pivOf); 
 		
 		EndPrimitive();
 	}	

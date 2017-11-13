@@ -23,9 +23,9 @@ void Editor::Initialize()
 	m_pRenderer->Initialize();
 
 	UISprite testSprite = UISprite();
-	testSprite.rect = iRect( ivec2( 0, 0 ), ivec2( 1, 1 ) );
-	testSprite.color = vec4( 1 );
-	testSprite.texture = ContentManager::Load<TextureData>( "Resources/Textures/sample.png" );
+	testSprite.rect = iRect( ivec2( 0, 0 ), ivec2( 200, 200 ) );
+	testSprite.color = vec4( 0.2f );
+	testSprite.texture = nullptr;//ContentManager::Load<TextureData>( "Resources/Textures/sample.png" );
 	m_UISprites.push_back( testSprite );
 }
 
@@ -53,6 +53,8 @@ void Editor::CalculateViewportSize()
 
 void Editor::OnWindowResize()
 {
+	CalculateViewportSize();
+
 	m_pRenderer->~EditorRenderer();
 	m_pRenderer = new(m_pRenderer) EditorRenderer();
 	m_pRenderer->Initialize();
