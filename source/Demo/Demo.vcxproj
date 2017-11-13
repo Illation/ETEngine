@@ -169,7 +169,7 @@ xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(StlIncludeDirectories);..\Demo;Materials;Scenes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>PLATFORM_Win;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PLATFORM_Win;EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
       <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D

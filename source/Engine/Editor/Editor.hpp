@@ -38,11 +38,14 @@ private:
 	std::vector<UISprite> m_UISprites;
 
 private:
+	//Disable constructors
 	friend class Singleton<Editor>;
 
 	Editor();
 	virtual ~Editor();
 
+	Editor( const Editor& t );
+	Editor& operator=( const Editor& t );
 };
 
 #endif
