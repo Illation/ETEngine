@@ -20,7 +20,6 @@
 #include "../../Engine/PlanetTech/Types/Moon.hpp"
 #include "../../Engine/PlanetTech/Types/Earth.hpp"
 #include "../../Engine/Graphics/Light.hpp"
-#include "../Engine/Components/SpriteComponent.hpp"
 
 PlanetTestScene::PlanetTestScene() : AbstractScene("PlanetTestScene")
 {
@@ -60,16 +59,6 @@ void PlanetTestScene::Initialize()
 	m_pLigEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
 	//m_pLigEntity->GetTransform()->SetRotation(etm::lookAt())
 	AddEntity(m_pLigEntity);
-
-	//UI
-	//************************
-	//auto pSpriteEntity = new Entity();
-	//auto pSpriteComponent = new SpriteComponent( "Resources/Textures/sample.png", vec2( 0 ), vec4( 1 ) );
-	//pSpriteEntity->AddComponent( pSpriteComponent );
-	//pSpriteEntity->GetTransform()->SetPosition( vec3( 1250.5f, 50.5f, 1 ) );
-	//pSpriteEntity->GetTransform()->SetRotation( quat(vec3(0, 0, 1), etm::PI_DIV4 ) );
-	//pSpriteEntity->GetTransform()->Scale( vec3( 1, 0.85f, 1 ) );
-	//AddEntity( pSpriteEntity );
 
 	SETTINGS->Window.VSync(false);
 }

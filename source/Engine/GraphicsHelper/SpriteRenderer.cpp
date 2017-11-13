@@ -13,6 +13,7 @@ SpriteRenderer::~SpriteRenderer()
 	glDeleteBuffers( 1, &m_VBO );
 	m_Sprites.clear();
 	m_Textures.clear();
+	delete m_EmptyTex; m_EmptyTex = nullptr;
 }
 
 void SpriteRenderer::Initialize()
@@ -21,7 +22,6 @@ void SpriteRenderer::Initialize()
 
 	STATE->SetShader( m_pShader );
 	m_uTransform = glGetUniformLocation( m_pShader->GetProgram(), "uTransform" );
-	m_uTextureSize = glGetUniformLocation( m_pShader->GetProgram(), "uTexSize" );
 	m_uTexture = glGetUniformLocation( m_pShader->GetProgram(), "uTexture" );
 
 	glUniform1i(m_uTexture, 0);
@@ -57,6 +57,16 @@ void SpriteRenderer::Initialize()
 	STATE->BindVertexArray(0);
 
 	CalculateTransform();
+
+	//Create empty dummy texture
+	m_EmptyTex = new TextureData( 1, 1, GL_RGB, GL_RGB, GL_FLOAT );
+
+	m_EmptyTex->Build( (void*)(vec4(1).data.data()) );
+
+	TextureParameters params( true );
+	params.minFilter = GL_NEAREST;
+	params.magFilter = GL_NEAREST;
+	m_EmptyTex->SetParameters( params );
 
 	WINDOW.WindowResizeEvent.AddListener( std::bind( &SpriteRenderer::OnWindowResize, this ) );
 }
@@ -120,9 +130,6 @@ void SpriteRenderer::Draw()
 		TextureData* texData = m_Textures[m_Sprites[i].TextureId];
 		STATE->BindTexture(GL_TEXTURE_2D, texData->GetHandle());//maybe use lazybind instead
 
-		ivec2 texSize = texData->GetResolution();
-		glUniform2f( m_uTextureSize, (float)texSize.x, (float)texSize.y );
-
 		//Draw
 		glDrawArrays( GL_POINTS, batchOffset, batchSize );
 		PERFORMANCE->m_DrawCalls++;
@@ -137,9 +144,14 @@ void SpriteRenderer::Draw()
 	m_Textures.clear();
 }
 
-void SpriteRenderer::Draw( TextureData* pTexture, vec2 position, vec4 color /*= vec4(1)*/, vec2 pivot /*= vec2( 0 )*/, vec2 scale /*= vec2( 1 )*/, float rotation /*= 0.f*/, float depth /*= 0.f */ )
+void SpriteRenderer::Draw( TextureData* pTexture, vec2 position, vec4 color /*= vec4(1)*/, vec2 pivot /*= vec2( 0 )*/, vec2 scale /*= vec2( 1 )*/, float rotation /*= 0.f*/, float depth /*= 0.f */, SpriteScalingMode mode /*= SCREEN */)
 {
 	SpriteVertex vertex;
+
+	if(pTexture == nullptr)
+	{
+		pTexture = m_EmptyTex;
+	}
 
 	auto it = find( m_Textures.begin(), m_Textures.end(), pTexture );
 
@@ -154,6 +166,18 @@ void SpriteRenderer::Draw( TextureData* pTexture, vec2 position, vec4 color /*= 
 	}
 
 	vertex.TransformData = vec4( position, depth, rotation );
+	switch(mode)
+	{
+	case SpriteScalingMode::PIXEL :
+		//no modification required
+		break;
+	case SpriteScalingMode::SCREEN :
+		scale = scale * vec2( (float)WINDOW.Width, (float)WINDOW.Height );
+		break;
+	case SpriteScalingMode::TEXTURE :
+		scale = scale * vec2( (float)pTexture->GetResolution().x, (float)pTexture->GetResolution().y );
+		break;
+	}
 	vertex.TransformData2 = vec4( pivot, scale );
 	vertex.Color = color;
 

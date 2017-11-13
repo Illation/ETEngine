@@ -1,12 +1,19 @@
 #pragma once
 
+enum class SpriteScalingMode : uint8
+{
+	SCREEN,
+	PIXEL,
+	TEXTURE
+};
+
 class SpriteRenderer : public Singleton<SpriteRenderer>
 {
 public:
 
 	void Draw( TextureData* pTexture, vec2 position, vec4 color = vec4(1), 
 			   vec2 pivot = vec2( 0 ), vec2 scale = vec2( 1 ), 
-			   float rotation = 0.f, float depth = 0.f );
+			   float rotation = 0.f, float depth = 0.f, SpriteScalingMode mode = SpriteScalingMode::SCREEN );
 
 	void OnWindowResize();
 
@@ -39,6 +46,7 @@ private:
 	GLuint m_VBO = 0;
 
 	//Textures
+	TextureData* m_EmptyTex = nullptr;
 	vector<TextureData*> m_Textures;
 
 	//Shader and its uniforms
@@ -47,7 +55,6 @@ private:
 	GLint m_uTransform = 0;
 	mat4 m_Transform;
 
-	GLint m_uTextureSize = 0;
 	GLint m_uTexture;
 
 	//Direct drawing

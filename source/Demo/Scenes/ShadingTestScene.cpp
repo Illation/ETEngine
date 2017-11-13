@@ -17,6 +17,7 @@
 #include "../Materials/EmissiveMaterial.hpp"
 #include "../Materials/ParamPBRMaterial.hpp"
 #include "../../Engine/Graphics/Light.hpp"
+#include "../Engine/Components/SpriteComponent.hpp"
 
 ShadingTestScene::ShadingTestScene() : AbstractScene("SkyboxTestScene")
 {
@@ -101,6 +102,16 @@ void ShadingTestScene::Initialize()
 	pLigEntity->GetTransform()->SetRotation(quat(axis, angle));
 	pLigEntity->GetTransform()->RotateEuler(0, 1, 0);
 	AddEntity(pLigEntity);
+
+	//UI
+	//************************
+	auto pSpriteEntity = new Entity();
+	auto pSpriteComponent = new SpriteComponent( "Resources/Textures/sample.png", vec2( 0 ), vec4( 1 ) );
+	pSpriteEntity->AddComponent( pSpriteComponent );
+	pSpriteEntity->GetTransform()->SetPosition( vec3( 1250.5f, 50.5f, 1 ) );
+	pSpriteEntity->GetTransform()->SetRotation( quat(vec3(0, 0, 1), etm::PI_DIV4 ) );
+	pSpriteEntity->GetTransform()->Scale( vec3( 1, 0.85f, 1 ) );
+	AddEntity( pSpriteEntity );
 
 	CAMERA->GetTransform()->SetPosition(0, 0, -10);
 
