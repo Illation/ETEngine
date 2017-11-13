@@ -59,7 +59,7 @@ private:
 private:
 	//Private constructor and destructor for singleton
 	SpriteRenderer();
-	~SpriteRenderer();
+	virtual ~SpriteRenderer();
 	// -------------------------
 	// Disabling default copy constructor and default 
 	// assignment operator.

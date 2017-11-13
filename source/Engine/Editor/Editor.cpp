@@ -13,6 +13,7 @@ Editor::Editor()
 Editor::~Editor()
 {
 	delete m_pRenderer;
+	m_pRenderer = nullptr;
 }
 
 void Editor::Initialize()
@@ -30,7 +31,7 @@ void Editor::Initialize()
 
 void Editor::Update()
 {
-
+//process input here
 }
 
 void Editor::Draw()

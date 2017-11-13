@@ -9,13 +9,10 @@
 struct Settings : public Singleton<Settings>
 {
 public:
-	Settings();
-	~Settings();
-
 	struct GraphicsSettings
 	{
 		GraphicsSettings();
-		~GraphicsSettings();
+		virtual ~GraphicsSettings();
 
 		void VSync( const bool enabled ) { SDL_GL_SetSwapInterval( enabled ); }
 
@@ -49,20 +46,24 @@ public:
 			{
 				int32 Width;
 				int32 Height;
-			};
-			ivec2 Dimensions;
-		};
-	#ifdef EDITOR
-		union
-		{
-			struct
-			{
+	#if EDITOR
 				int32 EditorWidth;
 				int32 EditorHeight;
-			};
-			ivec2 EditorDimensions;
-		};
 	#endif
+			};
+			ivec2 Dimensions;
+	#if EDITOR
+			ivec2 EditorDimensions;
+	#endif
+		};
 	}Window;
+private:
+	friend class Singleton<Settings>;
+
+	Settings();
+	virtual ~Settings();
+
+	Settings( const Settings& t );
+	Settings& operator=( const Settings& t );
 };
 
