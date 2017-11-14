@@ -4,6 +4,10 @@
 class MulticastDelegate
 {
 public:
+	MulticastDelegate()
+	{
+		m_Listeners = std::vector<std::function<void()> >();
+	}
 	void AddListener( std::function<void()> callback )
 	{
 		m_Listeners.push_back( callback );

@@ -45,17 +45,20 @@ void EditorRenderer::Draw(bool redrawUI)
 	STATE->BindFramebuffer( 0 );
 	STATE->SetShader( m_EditorUIShader );
 
+	STATE->SetViewport( ivec2( 00, 0 ), WINDOW.EditorDimensions );
+
 	glUniform2f( m_uSize, 1.f, 1.f );
 	glUniform2f( m_uOffset, 0.f, 0.f );
 	STATE->LazyBindTexture( 0, GL_TEXTURE_2D, m_UITex->GetHandle() );
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
-	vec2 windowDim = vec2((float)WINDOW.Width, (float)WINDOW.Height);
+	//vec2 windowDim = vec2((float)WINDOW.EditorWidth, (float)WINDOW.EditorHeight);
 	iRect viewport = Editor::GetInstance()->GetViewport();
-	vec2 offset = vec2((float)viewport.pos.x, (float)viewport.pos.y) / windowDim;
-	vec2 size = vec2((float)viewport.size.x, (float)viewport.size.y) / windowDim;
-	glUniform2f( m_uSize, size.x, size.y );
-	glUniform2f( m_uOffset, offset.x, offset.y );
+	//vec2 offset = (vec2( (float)viewport.pos.x, (float)viewport.pos.y ) / windowDim);
+	//vec2 size = vec2((float)viewport.size.x, (float)viewport.size.y) / windowDim;
+	STATE->SetViewport( viewport.pos, viewport.size );
+	//glUniform2f( m_uSize, size.x, size.y );
+	//glUniform2f( m_uOffset, offset.x, offset.y );
 	STATE->LazyBindTexture( 0, GL_TEXTURE_2D, m_SceneTex->GetHandle() );
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 }
@@ -81,17 +84,17 @@ void EditorRenderer::DrawUI()
 
 void EditorRenderer::CreateFramebuffers()
 {
-	ivec2 size = Editor::GetInstance()->GetViewport().size;
+	ivec2 dimensions = Editor::GetInstance()->GetViewport().size;
 
 	TextureParameters params = TextureParameters();
 	params.minFilter = GL_NEAREST;
 	params.magFilter = GL_NEAREST;
-	params.wrapS = GL_CLAMP_TO_EDGE;
-	params.wrapT = GL_CLAMP_TO_EDGE;
+	//params.wrapS = GL_CLAMP_TO_EDGE;
+	//params.wrapT = GL_CLAMP_TO_EDGE;
 
 	glGenFramebuffers( 1, &m_SceneFBO );
 	STATE->BindFramebuffer( m_SceneFBO );
-	m_SceneTex = new TextureData( size.x, size.y, GL_RGB16F, GL_RGB, GL_FLOAT );
+	m_SceneTex = new TextureData( dimensions.x, dimensions.y, GL_RGB16F, GL_RGB, GL_FLOAT );
 	m_SceneTex->Build();
 	m_SceneTex->SetParameters( params );
 	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_SceneTex->GetHandle(), 0 );

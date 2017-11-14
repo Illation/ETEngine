@@ -43,6 +43,8 @@ Settings::WindowSettings::WindowSettings() :
 #ifdef EDITOR
 	EditorWidth = Width;
 	EditorHeight = Height;
+	Editor::GetInstance()->CalculateViewportSize(EditorDimensions);
+	Dimensions = Editor::GetInstance()->GetViewport().size;
 #endif
 }
 Settings::WindowSettings::~WindowSettings()
@@ -60,8 +62,9 @@ void Settings::WindowSettings::Resize( int32 width, int32 height )
 #ifdef EDITOR
 	EditorWidth = width;
 	EditorHeight = height;
-	Editor::GetInstance()->OnWindowResize();
+	Editor::GetInstance()->CalculateViewportSize( ivec2( width, height ) );
 	Dimensions = Editor::GetInstance()->GetViewport().size;
+	Editor::GetInstance()->OnWindowResize(EditorDimensions);
 #else
 	Width = width;
 	Height = height;

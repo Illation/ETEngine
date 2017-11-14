@@ -18,15 +18,14 @@ public:
 
 	GLuint GetSceneTarget();
 
-	void OnWindowResize();
+	void OnWindowResize(ivec2 EditorDimensions);
+	void CalculateViewportSize(ivec2 FullWindowDimensions);
 
 	const iRect& GetViewport() const { return m_Viewport; }
 
 	std::vector<UISprite> GetSprites() { return m_UISprites; }
 
 private:
-
-	void CalculateViewportSize();
 
 	EditorRenderer* m_pRenderer = nullptr;
 

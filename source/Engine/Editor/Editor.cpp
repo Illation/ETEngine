@@ -18,7 +18,7 @@ Editor::~Editor()
 
 void Editor::Initialize()
 {
-	CalculateViewportSize();
+	CalculateViewportSize(WINDOW.EditorDimensions);
 
 	m_pRenderer->Initialize();
 
@@ -44,16 +44,16 @@ GLuint Editor::GetSceneTarget()
 	return m_pRenderer->GetSceneTarget();
 }
 
-void Editor::CalculateViewportSize()
+void Editor::CalculateViewportSize(ivec2 FullWindowDimensions)
 {
 	m_Viewport = iRect();
 	m_Viewport.pos = ivec2( (int32)m_ToolbarSeparator, 0 );
-	m_Viewport.size = ivec2( WINDOW.EditorWidth - (int32)m_ToolbarSeparator, WINDOW.EditorHeight );
+	m_Viewport.size = ivec2( FullWindowDimensions.x - (int32)m_ToolbarSeparator, FullWindowDimensions.y );
 }
 
-void Editor::OnWindowResize()
+void Editor::OnWindowResize(ivec2 EditorDimensions)
 {
-	CalculateViewportSize();
+	CalculateViewportSize(EditorDimensions);
 
 	m_pRenderer->~EditorRenderer();
 	m_pRenderer = new(m_pRenderer) EditorRenderer();
