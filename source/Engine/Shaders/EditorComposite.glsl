@@ -4,13 +4,10 @@
 	layout (location = 1) in vec2 texCoords;
 	out vec2 Texcoord;
 
-	uniform vec2 uSize;
-	uniform vec2 uOffset;
 	void main()
 	{
-		vec2 position = (uSize * pos.xy) + uOffset;
 		Texcoord = texCoords;
-		gl_Position = vec4(position, pos.z, 1.0);
+		gl_Position = vec4(pos, 1.0);
 	}
 </VERTEX>
 <FRAGMENT>

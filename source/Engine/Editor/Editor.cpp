@@ -22,11 +22,11 @@ void Editor::Initialize()
 
 	m_pRenderer->Initialize();
 
-	UISprite testSprite = UISprite();
-	testSprite.rect = iRect( ivec2( 0, 0 ), ivec2( 200, 200 ) );
-	testSprite.color = vec4( 0.2f );
-	testSprite.texture = nullptr;//ContentManager::Load<TextureData>( "Resources/Textures/sample.png" );
-	m_UISprites.push_back( testSprite );
+	//UISprite testSprite = UISprite();
+	//testSprite.rect = iRect( ivec2( 0, 0 ), ivec2( 200, 200 ) );
+	//testSprite.color = vec4( 0.2f );
+	//testSprite.texture = nullptr;//ContentManager::Load<TextureData>( "Resources/Textures/sample.png" );
+	//m_UISprites.push_back( testSprite );
 }
 
 void Editor::Update()

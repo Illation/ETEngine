@@ -19,8 +19,6 @@ private:
 	void CreateFramebuffers();
 
 	ShaderData* m_EditorUIShader = nullptr;
-	GLint m_uSize;
-	GLint m_uOffset;
 
 	GLuint m_SceneFBO;
 	TextureData* m_SceneTex = nullptr;
