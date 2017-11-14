@@ -51,9 +51,14 @@ public:
 				int32 EditorHeight;
 	#endif
 			};
-			ivec2 Dimensions;
 	#if EDITOR
-			ivec2 EditorDimensions;
+			struct
+			{
+				ivec2 Dimensions;
+				ivec2 EditorDimensions;
+			};
+	#else
+			ivec2 Dimensions;
 	#endif
 		};
 	}Window;

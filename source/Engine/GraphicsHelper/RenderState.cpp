@@ -102,6 +102,7 @@ void RenderState::SetViewport(ivec2 pos, ivec2 size)
 {
 	if (!(etm::nearEqualsV(m_ViewportPosition, pos) && etm::nearEqualsV(m_ViewportSize, size)))
 	{
+		std::cout << pos << size << std::endl;
 		m_ViewportPosition = pos;
 		m_ViewportSize = size;
 		glViewport(pos.x, pos.y, size.x, size.y);

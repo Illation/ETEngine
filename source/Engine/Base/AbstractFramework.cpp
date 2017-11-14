@@ -167,10 +167,6 @@ void AbstractFramework::InitializeGame()
 
 	//Initialize Game
 	Initialize();
-
-#ifdef EDITOR
-	WINDOW.Resize(WINDOW.Width, WINDOW.Height);
-#endif
 }
 
 void AbstractFramework::GameLoop()
