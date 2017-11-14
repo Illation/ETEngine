@@ -29,8 +29,6 @@ void EditorRenderer::Initialize()
 
 	STATE->SetShader( m_EditorUIShader );
 	glUniform1i( glGetUniformLocation( m_EditorUIShader->GetProgram(), "uTex" ), 0 );
-	m_uSize = glGetUniformLocation( m_EditorUIShader->GetProgram(), "uSize" );
-	m_uOffset = glGetUniformLocation( m_EditorUIShader->GetProgram(), "uOffset" );
 
 	CreateFramebuffers();
 }
@@ -45,20 +43,14 @@ void EditorRenderer::Draw(bool redrawUI)
 	STATE->BindFramebuffer( 0 );
 	STATE->SetShader( m_EditorUIShader );
 
-	STATE->SetViewport( ivec2( 00, 0 ), WINDOW.EditorDimensions );
+	STATE->SetViewport( ivec2( 0 ), WINDOW.EditorDimensions );
 
-	glUniform2f( m_uSize, 1.f, 1.f );
-	glUniform2f( m_uOffset, 0.f, 0.f );
 	STATE->LazyBindTexture( 0, GL_TEXTURE_2D, m_UITex->GetHandle() );
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
-	//vec2 windowDim = vec2((float)WINDOW.EditorWidth, (float)WINDOW.EditorHeight);
 	iRect viewport = Editor::GetInstance()->GetViewport();
-	//vec2 offset = (vec2( (float)viewport.pos.x, (float)viewport.pos.y ) / windowDim);
-	//vec2 size = vec2((float)viewport.size.x, (float)viewport.size.y) / windowDim;
 	STATE->SetViewport( viewport.pos, viewport.size );
-	//glUniform2f( m_uSize, size.x, size.y );
-	//glUniform2f( m_uOffset, offset.x, offset.y );
+
 	STATE->LazyBindTexture( 0, GL_TEXTURE_2D, m_SceneTex->GetHandle() );
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 }
@@ -72,11 +64,8 @@ void EditorRenderer::DrawUI()
 {
 	STATE->BindFramebuffer( m_UIFBO );
 
-	for(auto sprite : Editor::GetInstance()->GetSprites())
-	{
-		SpriteRenderer::GetInstance()->Draw( sprite.texture, vec2( (float)sprite.rect.pos.x, (float)sprite.rect.pos.y ), sprite.color,
-											 vec2(0), vec2( (float)sprite.rect.size.x, (float)sprite.rect.size.y ), 0, 1 );
-	}
+	//temporary until ui system is in place
+	SpriteRenderer::GetInstance()->Draw( nullptr, vec2( 0 ), vec4(0.2f), vec2(0), vec2( 200 ), 0, 1, SpriteScalingMode::TEXTURE );
 
 	SpriteRenderer::GetInstance()->Draw();
 	TextRenderer::GetInstance()->Draw();
@@ -89,8 +78,6 @@ void EditorRenderer::CreateFramebuffers()
 	TextureParameters params = TextureParameters();
 	params.minFilter = GL_NEAREST;
 	params.magFilter = GL_NEAREST;
-	//params.wrapS = GL_CLAMP_TO_EDGE;
-	//params.wrapT = GL_CLAMP_TO_EDGE;
 
 	glGenFramebuffers( 1, &m_SceneFBO );
 	STATE->BindFramebuffer( m_SceneFBO );

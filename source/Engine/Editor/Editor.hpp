@@ -23,7 +23,7 @@ public:
 
 	const iRect& GetViewport() const { return m_Viewport; }
 
-	std::vector<UISprite> GetSprites() { return m_UISprites; }
+	//std::vector<UISprite> GetSprites() { return m_UISprites; }
 
 private:
 
@@ -34,7 +34,7 @@ private:
 	float m_ToolbarSeparator = 200;
 	iRect m_Viewport;
 	
-	std::vector<UISprite> m_UISprites;
+	//std::vector<UISprite> m_UISprites;
 
 private:
 	//Disable constructors
