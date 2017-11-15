@@ -329,6 +329,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug Editor|x64'">$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\build\Intermediate\$(Configuration)$(Platform)\Engine\precompiled.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClCompile Include="UI\UIContainer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Context.hpp" />
