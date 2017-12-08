@@ -427,7 +427,6 @@
     <ClInclude Include="SceneGraph\SceneManager.hpp" />
     <ClInclude Include="StaticDependancies\glad\glad.h" />
     <ClInclude Include="stdafx.hpp" />
-    <ClInclude Include="UI\UIComponent.hpp" />
     <ClInclude Include="UI\UIContainer.h" />
     <ClInclude Include="UI\UIUtil.hpp" />
   </ItemGroup>

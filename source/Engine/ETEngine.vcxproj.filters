@@ -456,7 +456,6 @@
     <ClInclude Include="Editor\Editor.hpp" />
     <ClInclude Include="Editor\EditorRenderer.hpp" />
     <ClInclude Include="UI\UIUtil.hpp" />
-    <ClInclude Include="UI\UIComponent.hpp" />
     <ClInclude Include="UI\UIContainer.h" />
   </ItemGroup>
 </Project>
