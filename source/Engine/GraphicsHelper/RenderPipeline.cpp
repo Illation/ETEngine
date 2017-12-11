@@ -14,6 +14,7 @@
 #include "../SceneGraph/Entity.hpp"
 #include "../Prefabs/Skybox.hpp"
 #include "SpriteRenderer.hpp"
+#include "Atmosphere.hpp"
 
 RenderPipeline::RenderPipeline()
 {
@@ -27,6 +28,7 @@ RenderPipeline::~RenderPipeline()
 	PerformanceInfo::GetInstance()->DestroyInstance();
 	PrimitiveRenderer::GetInstance()->DestroyInstance();
 	SpriteRenderer::GetInstance()->DestroyInstance();
+	AtmoPreComputer::GetInstance()->DestroyInstance();
 
 	SafeDelete(m_pGBuffer);
 	SafeDelete(m_pPostProcessing);

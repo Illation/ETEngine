@@ -41,6 +41,8 @@
 
 	//precomputed textures
 	uniform sampler3D uTexInscatter;
+	uniform sampler2D uTexIrridiance;
+	uniform sampler2D uTexTransmittance;
 
 	vec3 GetInscatteredLight(in vec3 pos, in vec3 camPos, in vec3 viewDir, inout vec3 attenuation, inout float irradianceFactor)
 	{
@@ -115,20 +117,31 @@
 				float phaseR = phaseFunctionR(nuStartPos);
 				float phaseM = phaseFunctionM(nuStartPos);
 				inscatteredLight = max(inscatter.rgb * phaseR + getMie(inscatter)* phaseM, 0.0f) * SunIntensity;
-				
-				//just for debugging
-				//pos = endPos;
 			}
 		}
-		
-		//Debugging
-		float opacity = pathLength/(Radius);
-		opacity = opacity*10;
-		attenuation *= opacity;
+		////Debugging
+		//attenuation *= pathLength/(Radius)*10;
 
 		return inscatteredLight;
 	}
-	
+
+	vec3 GetReflectedLight(in vec3 norm, in float reflectance, in vec3 col, in vec3 surfacePos, in vec3 attenuation, in float irradianceFactor)
+	{
+		float lightIntensity = SunIntensity * reflectance;
+		float lightScale = max(dot(norm, SunDir), 0.0f);
+		// irradiance at surface position due to sky light
+		float surfacePosHeight = length(surfacePos);
+		float musSurfacePos = dot(surfacePos, SunDir) / surfacePosHeight;
+		vec3 irradianceSurface = irradiance(uTexIrridiance, surfacePosHeight, musSurfacePos) * irradianceFactor;
+		// attenuate direct sun light on its path from top of atmosphere to
+		// surface position
+		vec3 attenuationSunLight = transmittance(uTexTransmittance, surfacePosHeight,musSurfacePos);
+		vec3 reflectedLight = col * (lightScale * attenuationSunLight + irradianceSurface) * lightIntensity;
+		// attenuate again on path from surface position to camera
+		reflectedLight *= attenuation;
+
+		return reflectedLight;
+	}	
 	void main()
 	{
 		vec2 tc = (Texcoord.xyz/Texcoord.w).xy;//+vec2(1))*0.5f;
@@ -143,9 +156,12 @@
 		vec3 attenuation = vec3(1);
 		float irradianceFactor = 0;	
 
+		float reflectance = 1 - rough;
+
 		vec3 inscatteredLight = GetInscatteredLight(pos, camPos, viewDir, attenuation, irradianceFactor);
+		vec3 reflectedLight = GetReflectedLight(norm, reflectance, baseCol, pos, attenuation, irradianceFactor);
 		
 		//output
-		outColor = vec4(inscatteredLight, 1);
+		outColor = vec4(reflectedLight+inscatteredLight, 1);
 	}
 </FRAGMENT>
