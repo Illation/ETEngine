@@ -35,25 +35,20 @@
 	uniform vec3 Position;
 	
 	uniform vec3 SunDir;
+	uniform float SunIntensity = 1;
 	
 	uniform float EPSILON = 0.0001f;
-	
-	void main()
+
+	//precomputed textures
+	uniform sampler3D uTexInscatter;
+
+	vec3 GetInscatteredLight(in vec3 pos, in vec3 camPos, in vec3 viewDir, inout vec3 attenuation, inout float irradianceFactor)
 	{
-		vec2 tc = (Texcoord.xyz/Texcoord.w).xy;//+vec2(1))*0.5f;
-		vec3 viewRay = (viewProjInv * vec4(tc, 1, 1)).xyz;
-		tc += vec2(1);
-		tc *= 0.5f;
-		UNPACK_GBUFFER(tc, viewRay) //maybe use ao??
-		
-		//View dir and reflection
-		vec3 viewDir = normalize(viewRay);
-		
+		vec3 inscatteredLight = vec3(0);
 		//Calculate atmoSPHERE intersections
 		float ffDist = 0;
 		float bfDist = 0;
 		float pathLength = 0;
-		vec3 attenuation = vec3(0);
 		if(intersectSphere(viewDir, Position, camPos, Radius, ffDist, bfDist))
 		{
 			pathLength = min(length(pos-camPos), bfDist);
@@ -68,31 +63,89 @@
 				float muStartPos = dot(startPos, viewDir) / startPosHeight;
 				float nuStartPos = dot(viewDir, SunDir);
 				float musStartPos = dot(startPos, SunDir) / startPosHeight;
+
+				// in-scattering for infinite ray (light in-scattered when
+				// no surface hit or object behind atmosphere)
+				vec4 inscatter = max(texture4D(uTexInscatter, startPosHeight, muStartPos, musStartPos, nuStartPos), 0.0f);
 				
 				vec3 endPos = camPos + viewDir * pathLength;
 				float endPosHeight = length(endPos - Position);
+				float musEndPos = dot(pos, SunDir) / endPosHeight;
 				
 				pathLength -= ffDist;
 				
+				attenuation = analyticTransmittance(startPosHeight, muStartPos, pathLength);
 				if(pathLength < bfDist-ffDist)
 				{
-					attenuation = analyticTransmittance(startPosHeight, muStartPos, pathLength);
+					float muEndPos = dot(pos, viewDir) / endPosHeight;
+					vec4 inscatterSurface = texture4D(uTexInscatter, endPosHeight, muEndPos, musEndPos, nuStartPos);
+					inscatter = max(inscatter-attenuation.rgbr*inscatterSurface, 0.0f);
+					irradianceFactor = 1.0f;
 				}
-				else
+
+				float muHorizon = -sqrt(1.0 - (SurfaceRadius / startPosHeight) * (SurfaceRadius / startPosHeight));
+				// avoids imprecision problems near horizon by interpolating between
+				// two points above and below horizon
+				// fíx described in chapter 5.1.2
+				if (abs(muStartPos - muHorizon) < EPSILON_INSCATTER)
 				{
-					// retrieve extinction factor for inifinte ray
-					attenuation = analyticTransmittance(startPosHeight, muStartPos, pathLength);
+					float mu = muHorizon - EPSILON_INSCATTER;
+					float samplePosHeight = sqrt(startPosHeight*startPosHeight +pathLength*pathLength+2.0f*startPosHeight* pathLength*mu);
+					float muSamplePos = (startPosHeight * mu + pathLength)/ samplePosHeight;
+					vec4 inScatter0 = texture4D(uTexInscatter, startPosHeight, mu, musStartPos, nuStartPos);
+					vec4 inScatter1 = texture4D(uTexInscatter, samplePosHeight, muSamplePos, musEndPos, nuStartPos);
+					vec4 inScatterA = max(inScatter0-attenuation.rgbr*inScatter1,0.0);
+
+					mu = muHorizon + EPSILON_INSCATTER;
+					samplePosHeight = sqrt(startPosHeight*startPosHeight +pathLength*pathLength+2.0f* startPosHeight*pathLength*mu);
+					muSamplePos = (startPosHeight * mu + pathLength) / samplePosHeight;
+					inScatter0 = texture4D(uTexInscatter, startPosHeight, mu, musStartPos, nuStartPos);
+					inScatter1 = texture4D(uTexInscatter, samplePosHeight, muSamplePos, musEndPos, nuStartPos);
+
+					vec4 inScatterB = max(inScatter0 - attenuation.rgbr * inScatter1, 0.0f);
+					float t = ((muStartPos - muHorizon) + EPSILON_INSCATTER) / (2.0 * EPSILON_INSCATTER);
+
+					inscatter = mix(inScatterA, inScatterB, t);
 				}
+
+				// avoids imprecision problems in Mie scattering when sun is below
+				//horizon
+				// fíx described in chapter 5.1.3
+				inscatter.w *= smoothstep(0.00, 0.02, musStartPos);
+				float phaseR = phaseFunctionR(nuStartPos);
+				float phaseM = phaseFunctionM(nuStartPos);
+				inscatteredLight = max(inscatter.rgb * phaseR + getMie(inscatter)* phaseM, 0.0f) * SunIntensity;
 				
 				//just for debugging
-				pos = endPos;
+				//pos = endPos;
 			}
 		}
 		
+		//Debugging
 		float opacity = pathLength/(Radius);
 		opacity = opacity*10;
+		attenuation *= opacity;
+
+		return inscatteredLight;
+	}
+	
+	void main()
+	{
+		vec2 tc = (Texcoord.xyz/Texcoord.w).xy;//+vec2(1))*0.5f;
+		vec3 viewRay = (viewProjInv * vec4(tc, 1, 1)).xyz;
+		tc += vec2(1);
+		tc *= 0.5f;
+		UNPACK_GBUFFER(tc, viewRay) //maybe use ao??
+		
+		//View dir and reflection
+		vec3 viewDir = normalize(viewRay);
+		
+		vec3 attenuation = vec3(1);
+		float irradianceFactor = 0;	
+
+		vec3 inscatteredLight = GetInscatteredLight(pos, camPos, viewDir, attenuation, irradianceFactor);
 		
 		//output
-		outColor = vec4(attenuation*opacity, 1);
+		outColor = vec4(inscatteredLight, 1);
 	}
 </FRAGMENT>
