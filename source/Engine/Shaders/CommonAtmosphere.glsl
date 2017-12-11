@@ -1,29 +1,3 @@
-//vec4 texture4D(sampler3D table, float r, float mu, float muS, float nu)
-//{
-//	float H = sqrt(Rt * Rt - Rg * Rg);
-//	float rho = sqrt(r * r - Rg * Rg);
-//#ifdef INSCATTER_NON_LINEAR
-//	float rmu = r * mu;
-//	float delta = rmu * rmu - r * r + Rg * Rg;
-//	vec4 cst = rmu < 0.0 && delta > 0.0 ? vec4(1.0, 0.0, 0.0, 0.5 - 0.5 / float(RES_MU)) : vec4(-1.0, H * H, H, 0.5 + 0.5 / float(RES_MU));
-//	float uR = 0.5 / float(RES_R) + rho / H * (1.0 - 1.0 / float(RES_R));
-//	float uMu = cst.w + (rmu * cst.x + sqrt(delta + cst.y)) / (rho + cst.z) * (0.5 - 1.0 / float(RES_MU));
-//	// paper formula
-//	//float uMuS = 0.5 / float(RES_MU_S) + max((1.0 - exp(-3.0 * muS - 0.6)) / (1.0 - exp(-3.6)), 0.0) * (1.0 - 1.0 / float(RES_MU_S));
-//	// better formula
-//	float uMuS = 0.5 / float(RES_MU_S) + (atan(max(muS, -0.1975) * tan(1.26 * 1.1)) / 1.1 + (1.0 - 0.26)) * 0.5 * (1.0 - 1.0 / float(RES_MU_S));
-//#else
-//	float uR = 0.5 / float(RES_R) + rho / H * (1.0 - 1.0 / float(RES_R));
-//	float uMu = 0.5 / float(RES_MU) + (mu + 1.0) / 2.0 * (1.0 - 1.0 / float(RES_MU));
-//	float uMuS = 0.5 / float(RES_MU_S) + max(muS + 0.2, 0.0) / 1.2 * (1.0 - 1.0 / float(RES_MU_S));
-//#endif
-//	float lerp = (nu + 1.0) / 2.0 * (float(RES_NU) - 1.0);
-//	float uNu = floor(lerp);
-//	lerp = lerp - uNu;
-//	return texture3D(table, vec3((uNu + uMuS) / float(RES_NU), uMu, uR)) * (1.0 - lerp) +
-//		   texture3D(table, vec3((uNu + uMuS + 1.0) / float(RES_NU), uMu, uR)) * lerp;
-//}
-
 uniform float SurfaceRadius;
 uniform float Radius;
 uniform int TRANSMITTANCE_INTEGRAL_SAMPLES = 5;
@@ -36,6 +10,12 @@ const float HM = 1.2;
 const vec3 betaMSca = vec3(4e-3);
 const vec3 betaMEx = betaMSca / 0.9;
 const float mieG = 0.8;
+
+const float EPSILON_INSCATTER = 0.004f;
+#define RES_R 32.0
+#define RES_MU 128.0
+#define RES_MU_S 32.0
+#define RES_NU 8.0
 	
 bool intersectSphere(in vec3 viewDir, in vec3 position, in vec3 camPos, in float radius, inout float ffDist, inout float bfDist)
 {
@@ -115,6 +95,69 @@ vec3 analyticTransmittance(float r, float mu, float d)
     return exp(- betaR * opticalDepth(HR, r, mu, d) - betaMEx * opticalDepth(HM, r, mu, d));
 }
 
+//vec4 texture4D(sampler3D table, float r, float mu, float muS, float nu)
+//{
+//	float H = sqrt(Rt * Rt - Rg * Rg);
+//	float rho = sqrt(r * r - Rg * Rg);
+//#ifdef INSCATTER_NON_LINEAR
+//	float rmu = r * mu;
+//	float delta = rmu * rmu - r * r + Rg * Rg;
+//	vec4 cst = rmu < 0.0 && delta > 0.0 ? vec4(1.0, 0.0, 0.0, 0.5 - 0.5 / float(RES_MU)) : vec4(-1.0, H * H, H, 0.5 + 0.5 / float(RES_MU));
+//	float uR = 0.5 / float(RES_R) + rho / H * (1.0 - 1.0 / float(RES_R));
+//	float uMu = cst.w + (rmu * cst.x + sqrt(delta + cst.y)) / (rho + cst.z) * (0.5 - 1.0 / float(RES_MU));
+//	// paper formula
+//	//float uMuS = 0.5 / float(RES_MU_S) + max((1.0 - exp(-3.0 * muS - 0.6)) / (1.0 - exp(-3.6)), 0.0) * (1.0 - 1.0 / float(RES_MU_S));
+//	// better formula
+//	float uMuS = 0.5 / float(RES_MU_S) + (atan(max(muS, -0.1975) * tan(1.26 * 1.1)) / 1.1 + (1.0 - 0.26)) * 0.5 * (1.0 - 1.0 / float(RES_MU_S));
+//#else
+//	float uR = 0.5 / float(RES_R) + rho / H * (1.0 - 1.0 / float(RES_R));
+//	float uMu = 0.5 / float(RES_MU) + (mu + 1.0) / 2.0 * (1.0 - 1.0 / float(RES_MU));
+//	float uMuS = 0.5 / float(RES_MU_S) + max(muS + 0.2, 0.0) / 1.2 * (1.0 - 1.0 / float(RES_MU_S));
+//#endif
+//	float lerp = (nu + 1.0) / 2.0 * (float(RES_NU) - 1.0);
+//	float uNu = floor(lerp);
+//	lerp = lerp - uNu;
+//	return texture3D(table, vec3((uNu + uMuS) / float(RES_NU), uMu, uR)) * (1.0 - lerp) +
+//		   texture3D(table, vec3((uNu + uMuS + 1.0) / float(RES_NU), uMu, uR)) * lerp;
+//}
+vec4 texture4D(sampler3D table, float r, float mu, float muS, float nu)
+{
+   	float H = sqrt(Radius * Radius - SurfaceRadius * SurfaceRadius);
+   	float rho = sqrt(r * r - SurfaceRadius * SurfaceRadius);
 
+    float rmu = r * mu;
+    float delta = rmu * rmu - r * r + SurfaceRadius * SurfaceRadius;
+    vec4 cst = (rmu < 0.0 && delta > 0.0) ? vec4(1.0, 0.0, 0.0, 0.5 - 0.5 / RES_MU) : vec4(-1.0, H * H, H, 0.5 + 0.5 / RES_MU);
+    float uR = 0.5 / RES_R + rho / H * (1.0 - 1.0 / RES_R);
+    float uMu = cst.w + (rmu * cst.x + sqrt(delta + cst.y)) / (rho + cst.z) * (0.5 - 1.0 / float(RES_MU));
+    // paper formula
+    //float uMuS = 0.5 / RES_MU_S + max((1.0 - exp(-3.0 * muS - 0.6)) / (1.0 - exp(-3.6)), 0.0) * (1.0 - 1.0 / RES_MU_S);
+    // better formula
+    float uMuS = 0.5 / RES_MU_S + (atan(max(muS, -0.1975) * tan(1.26 * 1.1)) / 1.1 + (1.0 - 0.26)) * 0.5 * (1.0 - 1.0 / RES_MU_S);
 
+    float lep = (nu + 1.0) / 2.0 * (RES_NU - 1.0);
+    float uNu = floor(lep);
+    lep = lep - uNu;
 
+    return texture(table, vec3((uNu + uMuS) / RES_NU, uMu, uR)) * (1.0 - lep) 
+	+ texture(table, vec3((uNu + uMuS + 1.0) / RES_NU, uMu, uR)) * lep;
+}
+
+vec3 getMie(vec4 rayMie) 
+{	
+	// approximated single Mie scattering (cf. approximate Cm in paragraph "Angular precision")
+	// rayMie.rgb=C*, rayMie.w=Cm,r
+   	return rayMie.rgb * rayMie.w / max(rayMie.r, 1e-4) * (betaR.r / betaR);
+}
+
+float phaseFunctionR(float mu) 
+{
+	// Rayleigh phase function
+    return (3.0 / (16.0 * PI)) * (1.0 + mu * mu);
+}
+
+float phaseFunctionM(float mu) 
+{
+	// Mie phase function
+   	 return 1.5 * 1.0 / (4.0 * PI) * (1.0 - mieG*mieG) * pow(1.0 + (mieG*mieG) - 2.0*mieG*mu, -3.0/2.0) * (1.0 + mu * mu) / (2.0 + mieG*mieG);
+}
