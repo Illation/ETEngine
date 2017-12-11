@@ -22,6 +22,7 @@ Atmosphere::~Atmosphere()
 void Atmosphere::Precalculate()
 {
 	//Calculate look up textures here
+	AtmoPreComputer::GetInstance()->Precalculate( this );
 }
 
 void Atmosphere::Initialize()
@@ -91,4 +92,20 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	STATE->SetBlendEnabled(false);
 	STATE->SetDepthEnabled(true);
 	STATE->SetCullEnabled(false);
+}
+
+
+AtmoPreComputer::AtmoPreComputer()
+{
+
+}
+
+AtmoPreComputer::~AtmoPreComputer()
+{
+
+}
+
+void AtmoPreComputer::Precalculate( Atmosphere* atmo )
+{
+
 }

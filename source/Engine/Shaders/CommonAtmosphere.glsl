@@ -11,7 +11,8 @@ const vec3 betaMSca = vec3(4e-3);
 const vec3 betaMEx = betaMSca / 0.9;
 const float mieG = 0.8;
 
-const float EPSILON_INSCATTER = 0.004f;
+const float EPSILON_INSCATTER = 0.004f;
+
 #define RES_R 32.0
 #define RES_MU 128.0
 #define RES_MU_S 32.0
@@ -160,4 +161,23 @@ float phaseFunctionM(float mu)
 {
 	// Mie phase function
    	 return 1.5 * 1.0 / (4.0 * PI) * (1.0 - mieG*mieG) * pow(1.0 + (mieG*mieG) - 2.0*mieG*mu, -3.0/2.0) * (1.0 + mu * mu) / (2.0 + mieG*mieG);
+}
+
+vec3 transmittance(sampler2D texTransmittance, float r, float mu) 
+{
+	// transmittance(=transparency) of atmosphere for infinite ray (r,mu)
+	// (mu=cos(view zenith angle)), intersections with ground ignored
+   	float uR, uMu;
+    uR = sqrt((r - SurfaceRadius) / (Radius - SurfaceRadius));
+    uMu = atan((mu + 0.15) / (1.0 + 0.15) * tan(1.5)) / 1.5;
+    
+    return texture(texTransmittance, vec2(uMu, uR)).rgb;
+}
+
+vec3 irradiance(sampler2D texIrradiance, float r, float muS)
+{
+	float uR = (r - SurfaceRadius) / (Radius - SurfaceRadius);
+	float uMuS = (muS + 0.2) / (1.0 + 0.2);
+
+	return texture(texIrradiance, vec2(uMuS, uR)).rgb;
 }
