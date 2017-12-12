@@ -7,6 +7,10 @@ class Atmosphere;
 class AtmoPreComputer : public Singleton<AtmoPreComputer>
 {
 public:
+	//Separate from constructor so we can unload the resources if we don't need them anymore
+	void Init();
+	void Unload();
+
 	void Precalculate( Atmosphere* atmo );
 
 private:
@@ -22,24 +26,18 @@ private:
 	std::vector<TextureData*> m_InscatterT;
 
 	//Precomputation Shaders
-	ShaderData* m_CopyInscatter1;
-	ShaderData* m_CopyInscatterN;
-	ShaderData* m_CopyIrradiance;
-
-	ShaderData* m_Inscatter1;
-	ShaderData* m_InscatterN;
-	ShaderData* m_InscatterS;
-
-	ShaderData* m_Irradiance1;
-	ShaderData* m_IrradianceN;
-	ShaderData* m_Transmittance;
-
-	ShaderData* m_ReadData;
+	ShaderData* m_pComputeTransmittance;
+	ShaderData* m_pComputeDirectIrradiance;
+	ShaderData* m_pComputeSingleScattering;
+	ShaderData* m_pComputeScatteringDensity;
+	ShaderData* m_pComputeIndirectIrradiance;
+	ShaderData* m_pComputeMultipleScattering;
 
 	//other
 	int32 m_Step = 0;
 	int32 m_Order = 0;
 
+	bool m_IsInitialized = false;
 	bool m_Finished = false;
 
 private:

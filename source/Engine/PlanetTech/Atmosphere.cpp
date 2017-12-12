@@ -97,15 +97,34 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 
 AtmoPreComputer::AtmoPreComputer()
 {
-
+	Init();
 }
-
 AtmoPreComputer::~AtmoPreComputer()
 {
+	Unload();
+}
 
+void AtmoPreComputer::Init()
+{
+	m_pComputeTransmittance = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeTransmittance.glsl");
+	m_pComputeDirectIrradiance = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeDirectIrradiance.glsl");
+	m_pComputeSingleScattering = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeSingleScattering.glsl");
+	m_pComputeScatteringDensity = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeScatteringDensity.glsl");
+	m_pComputeIndirectIrradiance = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeIndirectIrradiance.glsl");
+	m_pComputeMultipleScattering = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeMultipleScattering.glsl");
+
+	m_IsInitialized = true;
+}
+
+void AtmoPreComputer::Unload()
+{
+	m_IsInitialized = false;
 }
 
 void AtmoPreComputer::Precalculate( Atmosphere* atmo )
 {
-
+	if (!m_IsInitialized)
+	{
+		Init();
+	}
 }

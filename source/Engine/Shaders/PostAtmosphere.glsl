@@ -141,7 +141,8 @@
 		reflectedLight *= attenuation;
 
 		return reflectedLight;
-	}	
+	}
+	
 	void main()
 	{
 		vec2 tc = (Texcoord.xyz/Texcoord.w).xy;//+vec2(1))*0.5f;
