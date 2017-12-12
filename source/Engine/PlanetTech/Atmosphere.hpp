@@ -1,5 +1,6 @@
 #pragma once
 #include "../Graphics/FrameBuffer.hpp"
+#include "../Graphics/TextureData.hpp"
 
 class Planet;
 class Atmosphere;
@@ -15,15 +16,13 @@ public:
 
 private:
 	//Textures - probably also need fbos
-	TextureData* m_TransmittanceT;
+	TextureData* m_TexDeltaIrradiance;
+	TextureData* m_TexDeltaRayleigh;
+	TextureData* m_TexDeltaMie;
+	TextureData* m_TexDeltaScattering;
 
-	TextureData* m_deltaET;
-	TextureData* m_deltaSRT;
-	TextureData* m_deltaSMT;
-	TextureData* m_deltaJT;
-
-	std::vector<TextureData*> m_IrradianceT;
-	std::vector<TextureData*> m_InscatterT;
+	ivec3 m_ScatteringTexDim;
+	TextureParameters m_TexParams;
 
 	//Precomputation Shaders
 	ShaderData* m_pComputeTransmittance;
@@ -76,17 +75,17 @@ private:
 	//textures for precomputed data
 	static const int TRANSMITTANCE_W = 256;
 	static const int TRANSMITTANCE_H = 64;
-	TextureData* m_Transmittance;
+	TextureData* m_TexTransmittance;
 
 	static const int IRRADIANCE_W = 64;
 	static const int IRRADIANCE_H = 16;
-	TextureData* m_Irradiance;
+	TextureData* m_TexIrradiance;
 
 	static const int INSCATTER_R = 32;
 	static const int INSCATTER_MU = 128;
 	static const int INSCATTER_MU_S = 32;
 	static const int INSCATTER_NU = 8;
-	GLuint m_uTexInscatter;
+	TextureData* m_TexInscatter;
 
 	ShaderData* m_pShader;
 };
