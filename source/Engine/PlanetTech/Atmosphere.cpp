@@ -17,6 +17,12 @@ Atmosphere::Atmosphere()
 }
 Atmosphere::~Atmosphere()
 {
+	delete m_TexTransmittance;
+	m_TexTransmittance = nullptr;
+	delete m_TexIrradiance;
+	m_TexIrradiance = nullptr;
+	delete m_TexInscatter;
+	m_TexInscatter = nullptr;
 }
 
 void Atmosphere::Precalculate()
@@ -106,12 +112,25 @@ AtmoPreComputer::~AtmoPreComputer()
 
 void AtmoPreComputer::Init()
 {
+	//General texture format for atmosphere
+	m_TexParams = TextureParameters();
+	m_TexParams.wrapS = GL_CLAMP_TO_EDGE;
+	m_TexParams.wrapT = GL_CLAMP_TO_EDGE;
+	m_TexParams.wrapR = GL_CLAMP_TO_EDGE;
+
+	m_ScatteringTexDim = ivec3(
+		Atmosphere::INSCATTER_NU * Atmosphere::INSCATTER_MU_S,
+		Atmosphere::INSCATTER_MU,
+		Atmosphere::INSCATTER_R);
+
 	m_pComputeTransmittance = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeTransmittance.glsl");
 	m_pComputeDirectIrradiance = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeDirectIrradiance.glsl");
 	m_pComputeSingleScattering = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeSingleScattering.glsl");
 	m_pComputeScatteringDensity = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeScatteringDensity.glsl");
 	m_pComputeIndirectIrradiance = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeIndirectIrradiance.glsl");
 	m_pComputeMultipleScattering = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeMultipleScattering.glsl");
+
+
 
 	m_IsInitialized = true;
 }
@@ -127,4 +146,23 @@ void AtmoPreComputer::Precalculate( Atmosphere* atmo )
 	{
 		Init();
 	}
+
+	GLenum format = GL_RGBA;
+	GLenum internalFormat2D = GL_RGBA32F;
+	GLenum internalFormat3D = GL_RGBA16F;//half precision
+
+	//Specific texture initialization
+	atmo->m_TexTransmittance = new TextureData(Atmosphere::TRANSMITTANCE_W, Atmosphere::TRANSMITTANCE_H, 
+		internalFormat2D, format, GL_FLOAT);
+	atmo->m_TexTransmittance->Build();
+	atmo->m_TexTransmittance->SetParameters(m_TexParams);
+	atmo->m_TexIrradiance = new TextureData(Atmosphere::IRRADIANCE_W, Atmosphere::IRRADIANCE_H, 
+		internalFormat2D, format, GL_FLOAT);
+	atmo->m_TexIrradiance->Build();
+	atmo->m_TexIrradiance->SetParameters(m_TexParams);
+
+	atmo->m_TexInscatter = new TextureData(m_ScatteringTexDim.x, m_ScatteringTexDim.y,
+		internalFormat3D, format, GL_FLOAT, m_ScatteringTexDim.z);
+	atmo->m_TexInscatter->Build();
+	atmo->m_TexInscatter->SetParameters(m_TexParams);
 }
