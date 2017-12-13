@@ -412,6 +412,7 @@
     <ClInclude Include="Math\Transform.hpp" />
     <ClInclude Include="Math\Vector.hpp" />
     <ClInclude Include="PlanetTech\Atmosphere.hpp" />
+    <ClInclude Include="PlanetTech\AtmosphereSettings.h" />
     <ClInclude Include="PlanetTech\Patch.hpp" />
     <ClInclude Include="PlanetTech\Planet.hpp" />
     <ClInclude Include="PlanetTech\stdafx.hpp" />
