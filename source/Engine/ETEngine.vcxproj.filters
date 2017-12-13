@@ -457,5 +457,6 @@
     <ClInclude Include="Editor\EditorRenderer.hpp" />
     <ClInclude Include="UI\UIUtil.hpp" />
     <ClInclude Include="UI\UIContainer.h" />
+    <ClInclude Include="PlanetTech\AtmosphereSettings.h" />
   </ItemGroup>
 </Project>

@@ -2,6 +2,8 @@
 #include "../Graphics/FrameBuffer.hpp"
 #include "../Graphics/TextureData.hpp"
 
+#include "AtmosphereSettings.h"
+
 class Planet;
 class Atmosphere;
 
@@ -13,16 +15,22 @@ public:
 	void Unload();
 
 	void Precalculate( Atmosphere* atmo );
+	void SetUniforms(ShaderData* shader, TextureData* transmittance, 
+		TextureData* scattering, TextureData* irradiance, TextureData* mie);
 
+	void ComputeSpectralRadianceToLuminanceFactors(const std::vector<double>& wavelengths, const std::vector<double>& solar_irradiance, double lambda_power, double* k_r, double* k_g, double* k_b);
+	void ConvertSpectrumToLinearSrgb(const std::vector<double>& wavelengths, const std::vector<double>& spectrum, double* r, double* g, double* b);
 private:
 	//Textures - probably also need fbos
 	TextureData* m_TexDeltaIrradiance;
 	TextureData* m_TexDeltaRayleigh;
+	TextureData* m_TexDeltaMultipleScattering;
 	TextureData* m_TexDeltaMie;
 	TextureData* m_TexDeltaScattering;
 
-	ivec3 m_ScatteringTexDim;
-	TextureParameters m_TexParams;
+	GLuint m_FBO;
+
+	AtmosphereSettings m_Settings;
 
 	//Precomputation Shaders
 	ShaderData* m_pComputeTransmittance;
@@ -73,18 +81,8 @@ private:
 	GLint m_uSurfaceRadius;
 
 	//textures for precomputed data
-	static const int TRANSMITTANCE_W = 256;
-	static const int TRANSMITTANCE_H = 64;
 	TextureData* m_TexTransmittance;
-
-	static const int IRRADIANCE_W = 64;
-	static const int IRRADIANCE_H = 16;
 	TextureData* m_TexIrradiance;
-
-	static const int INSCATTER_R = 32;
-	static const int INSCATTER_MU = 128;
-	static const int INSCATTER_MU_S = 32;
-	static const int INSCATTER_NU = 8;
 	TextureData* m_TexInscatter;
 
 	ShaderData* m_pShader;
