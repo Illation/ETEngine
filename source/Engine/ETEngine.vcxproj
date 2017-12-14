@@ -301,6 +301,7 @@
     <ClCompile Include="Materials\SkyboxMaterial.cpp" />
     <ClCompile Include="Math\Geometry.cpp" />
     <ClCompile Include="PlanetTech\Atmosphere.cpp" />
+    <ClCompile Include="PlanetTech\AtmospherePrecompute.cpp" />
     <ClCompile Include="PlanetTech\Patch.cpp" />
     <ClCompile Include="PlanetTech\Planet.cpp" />
     <ClCompile Include="PlanetTech\Triangulator.cpp" />
@@ -412,6 +413,7 @@
     <ClInclude Include="Math\Transform.hpp" />
     <ClInclude Include="Math\Vector.hpp" />
     <ClInclude Include="PlanetTech\Atmosphere.hpp" />
+    <ClInclude Include="PlanetTech\AtmospherePrecompute.h" />
     <ClInclude Include="PlanetTech\AtmosphereSettings.h" />
     <ClInclude Include="PlanetTech\Patch.hpp" />
     <ClInclude Include="PlanetTech\Planet.hpp" />

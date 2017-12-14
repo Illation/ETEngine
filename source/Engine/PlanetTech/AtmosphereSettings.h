@@ -1,4 +1,5 @@
 #pragma once
+#include "TextureData.hpp"
 //Values copied from https://ebruneton.github.io/precomputed_atmospheric_scattering/atmosphere/constants.h.html
 
 struct AtmosphereSettings
@@ -137,7 +138,8 @@ constexpr double CIE_2_DEG_COLOR_MATCHING_FUNCTIONS[380] = {
 
 // The conversion matrix from XYZ to linear sRGB color spaces.
 // Values from https://en.wikipedia.org/wiki/SRGB.
-constexpr double XYZ_TO_SRGB[9] = {
+constexpr double XYZ_TO_SRGB[9] = 
+{
 	+3.2406, -1.5372, -0.4986,
 	-0.9689, +1.8758, +0.0415,
 	+0.0557, -0.2040, +1.0570
