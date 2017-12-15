@@ -35,6 +35,8 @@ void RenderState::Initialize()
 		m_pTextureUnits.push_back(targets);
 	}
 
+	glGetIntegerv(GL_MAX_DRAW_BUFFERS, &m_MaxDrawBuffers);
+
 	m_BufferTargets =
 	{
 		{ GL_ARRAY_BUFFER, 0 },
@@ -68,6 +70,51 @@ void RenderState::EnOrDisAble(bool &state, bool enabled, GLenum glState)
 			glDisable(glState);
 		}
 	}
+}
+//Note the index should be validated before calling this function
+void RenderState::EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLenum glState, uint32 index)
+{
+	if (!(state[index] == enabled))
+	{
+		state[index] = enabled;
+		if (enabled)
+		{
+			glEnablei(glState, index);
+		}
+		else
+		{
+			glDisablei(glState, index);
+		}
+	}
+}
+
+void RenderState::SetBlendEnabled(const std::vector<bool> &blendBuffers)
+{
+	for (uint32 i = 0; i < blendBuffers.size(); i++)
+	{
+		SetBlendEnabled(blendBuffers[i], i);
+	}
+}
+void RenderState::SetBlendEnabled(bool enabled, uint32 index)
+{
+	assert((int32)index < m_MaxDrawBuffers);
+	m_IndividualBlend = true;
+	if (index >= m_BlendEnabledIndexed.size())
+		m_BlendEnabledIndexed.push_back(m_BlendEnabled);
+	EnOrDisAbleIndexed(m_BlendEnabledIndexed, enabled, GL_BLEND, index);
+}
+void RenderState::SetBlendEnabled(bool enabled)
+{
+	if (m_IndividualBlend)
+	{
+		m_BlendEnabled = !enabled;
+		for (auto &en : m_BlendEnabledIndexed)
+		{
+			en = enabled;
+		}
+		m_IndividualBlend = false;
+	}
+	EnOrDisAble(m_BlendEnabled, enabled, GL_BLEND);
 }
 
 void RenderState::SetFaceCullingMode(GLenum cullMode)

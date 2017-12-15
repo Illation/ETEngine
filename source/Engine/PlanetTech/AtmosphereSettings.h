@@ -28,12 +28,15 @@ public:
 	static constexpr double kLambdaG = 550.0;
 	static constexpr double kLambdaB = 440.0;
 
+	static constexpr int32 kLambdaMin = 360;
+	static constexpr int32 kLambdaMax = 830;
+
+	// The conversion factor between watts and lumens.
+	static constexpr double MAX_LUMINOUS_EFFICACY = 683.0;
+
 	//Other
 	uint32 NUM_PRECOMPUTED_WAVELENGTHS = 3; //we approximate luminance but dont precompute it
 };
-
-// The conversion factor between watts and lumens.
-constexpr double MAX_LUMINOUS_EFFICACY = 683.0;
 
 // Values from "CIE (1931) 2-deg color matching functions", see
 // "http://web.archive.org/web/20081228084047/

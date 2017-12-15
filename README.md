@@ -14,5 +14,6 @@ Full feature list and backlog here: [LINK](features.md)
  
 ## Acknowledgments
 Currently used libraries: SDL2, catch, FreeImage, GLAD and Assimp
+Also a bunch of (modified) code from Eric Brunetons [atmospheric scattering implementation](https://github.com/ebruneton/precomputed_atmospheric_scattering).
 
 for library licenses see Library Licenses.md

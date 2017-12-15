@@ -181,3 +181,58 @@ vec3 irradiance(sampler2D texIrradiance, float r, float muS)
 
 	return texture(texIrradiance, vec2(uMuS, uR)).rgb;
 }
+
+//Transmittance precalculation
+float GetTextureCoordFromUnitRange(float x, int texture_size) 
+{
+	return 0.5 / float(texture_size) + x * (1.0 - 1.0 / float(texture_size));
+}
+float GetUnitRangeFromTextureCoord(float u, int texture_size) 
+{
+	return (u - 0.5 / float(texture_size)) / (1.0 - 1.0 / float(texture_size));
+}
+vec2 GetTransmittanceTextureUvFromRMu(IN(AtmosphereParameters) atmosphere, float r, float mu) 
+{
+	//assert(r >= atmosphere.bottom_radius && r <= atmosphere.top_radius);
+	//assert(mu >= -1.0 && mu <= 1.0);
+	// Distance to top atmosphere boundary for a horizontal ray at ground level.
+	float H = sqrt(atmosphere.top_radius * atmosphere.top_radius - atmosphere.bottom_radius * atmosphere.bottom_radius);
+	// Distance to the horizon.
+	float rho = SafeSqrt(r * r - atmosphere.bottom_radius * atmosphere.bottom_radius);
+	// Distance to the top atmosphere boundary for the ray (r,mu), and its minimum
+	// and maximum values over all mu - obtained for (r,1) and (r,mu_horizon).
+	float d = DistanceToTopAtmosphereBoundary(atmosphere, r, mu);
+	float d_min = atmosphere.top_radius - r;
+	float d_max = rho + H;
+	float x_mu = (d - d_min) / (d_max - d_min);
+	float x_r = rho / H;
+	return vec2(GetTextureCoordFromUnitRange(x_mu, TRANSMITTANCE_TEXTURE_WIDTH), GetTextureCoordFromUnitRange(x_r, TRANSMITTANCE_TEXTURE_HEIGHT));
+}
+void GetRMuFromTransmittanceTextureUv(IN(AtmosphereParameters) atmosphere, IN(vec2) uv, OUT(float) r, OUT(float) mu) 
+{
+	//assert(uv.x >= 0.0 && uv.x <= 1.0);
+	//assert(uv.y >= 0.0 && uv.y <= 1.0);
+	float x_mu = GetUnitRangeFromTextureCoord(uv.x, TRANSMITTANCE_TEXTURE_WIDTH);
+	float x_r = GetUnitRangeFromTextureCoord(uv.y, TRANSMITTANCE_TEXTURE_HEIGHT);
+	// Distance to top atmosphere boundary for a horizontal ray at ground level.
+	float H = sqrt(atmosphere.top_radius * atmosphere.top_radius - atmosphere.bottom_radius * atmosphere.bottom_radius);
+	// Distance to the horizon, from which we can compute r:
+	float rho = H * x_r;
+	r = sqrt(rho * rho + atmosphere.bottom_radius * atmosphere.bottom_radius);
+	// Distance to the top atmosphere boundary for the ray (r,mu), and its minimum
+	// and maximum values over all mu - obtained for (r,1) and (r,mu_horizon) -
+	// from which we can recover mu:
+	float d_min = atmosphere.top_radius - r;
+	float d_max = rho + H;
+	float d = d_min + x_mu * (d_max - d_min);
+	mu = d == 0.0 * m ? float(1.0) : (H * H - rho * rho - d * d) / (2.0 * r * d);
+	mu = ClampCosine(mu);
+}
+vec3 ComputeTransmittanceToTopAtmosphereBoundaryTexture( IN(AtmosphereParameters) atmosphere, IN(vec2) gl_frag_coord) 
+{
+	const vec2 TRANSMITTANCE_TEXTURE_SIZE = vec2(TRANSMITTANCE_TEXTURE_WIDTH, TRANSMITTANCE_TEXTURE_HEIGHT);
+	float r;
+	float mu;
+	GetRMuFromTransmittanceTextureUv( atmosphere, gl_frag_coord / TRANSMITTANCE_TEXTURE_SIZE, r, mu);
+	return ComputeTransmittanceToTopAtmosphereBoundary(atmosphere, r, mu);
+}

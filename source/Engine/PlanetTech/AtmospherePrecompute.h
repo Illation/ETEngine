@@ -15,9 +15,14 @@ public:
 	void SetUniforms(ShaderData* shader, TextureData* transmittance,
 		TextureData* scattering, TextureData* irradiance, TextureData* mie);
 
+	double Interpolate(const std::vector<double>& wavelengths, const std::vector<double>& wavelength_function, double wavelength);
+
+private:
+	double CieColorMatchingFunctionTableValue(double wavelength, int column);
 	void ComputeSpectralRadianceToLuminanceFactors(const std::vector<double>& wavelengths, const std::vector<double>& solar_irradiance, double lambda_power, double* k_r, double* k_g, double* k_b);
 	void ConvertSpectrumToLinearSrgb(const std::vector<double>& wavelengths, const std::vector<double>& spectrum, double* r, double* g, double* b);
-private:
+
+
 	//Textures - probably also need fbos
 	TextureData* m_TexDeltaIrradiance;
 	TextureData* m_TexDeltaRayleigh;
