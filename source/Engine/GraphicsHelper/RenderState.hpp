@@ -14,7 +14,9 @@ public:
 	void Initialize();
 
 	void SetDepthEnabled(bool enabled) { EnOrDisAble(m_DepthTestEnabled, enabled, GL_DEPTH_TEST); }
-	void SetBlendEnabled(bool enabled) { EnOrDisAble(m_BlendEnabled, enabled, GL_BLEND); }
+	void SetBlendEnabled(bool enabled);
+	void SetBlendEnabled(bool enabled, uint32 index);
+	void SetBlendEnabled(const std::vector<bool> &blendBuffers);
 	void SetStencilEnabled(bool enabled) { EnOrDisAble(m_StencilTestEnabled, enabled, GL_STENCIL_TEST); }
 	void SetCullEnabled(bool enabled) { EnOrDisAble(m_CullFaceEnabled, enabled, GL_CULL_FACE); }
 
@@ -46,6 +48,15 @@ private:
 
 	void EnOrDisAble(bool &state, bool enabled, GLenum glState);
 
+	//The index should be validated before calling this function, only blend and scissor test can be larger than 0
+	//the index for blending must be smaller than max draw buffers too
+	void EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLenum glState, uint32 index);
+
+	GLuint m_ReadFramebuffer = 0;
+	GLuint m_DrawFramebuffer = 0;
+
+	int32 m_MaxDrawBuffers; //Depends on gpu and drivers
+
 	bool m_DepthTestEnabled = false;
 
 	bool m_CullFaceEnabled = false;
@@ -54,6 +65,8 @@ private:
 	bool m_StencilTestEnabled = false;
 
 	bool m_BlendEnabled = false;
+	bool m_IndividualBlend = false;
+	std::vector<bool> m_BlendEnabledIndexed;
 	GLenum m_BlendEquationRGB = GL_FUNC_ADD;
 	GLenum m_BlendEquationAlpha = GL_FUNC_ADD;
 	GLenum m_BlendFuncSFactor = GL_ONE;
@@ -63,9 +76,6 @@ private:
 	ivec2 m_ViewportSize; //initialize with values used during context creation
 
 	vec4 m_ClearColor = vec4(0);
-
-	GLuint m_ReadFramebuffer = 0;
-	GLuint m_DrawFramebuffer = 0;
 
 	ShaderData* m_pBoundShader = nullptr;
 

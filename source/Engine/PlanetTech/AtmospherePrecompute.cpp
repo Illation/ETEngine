@@ -18,6 +18,22 @@ void AtmospherePrecompute::Init()
 {
 	m_Settings = AtmosphereSettings();
 
+	//Radiance api enabled
+	//std::vector<double> wavelengths;
+	//std::vector<double> solarIrradiance;
+	//dvec3 lambdas = dvec3(m_Settings.kLambdaR, m_Settings.kLambdaG, m_Settings.kLambdaB);
+
+	//auto intVec = [&wavelengths, this](const std::vector<double> &v, const dvec3 &lambdas, double scale)
+	//{
+	//	double r = Interpolate(wavelengths, v, lambdas[0]) * scale;
+	//	double g = Interpolate(wavelengths, v, lambdas[1]) * scale;
+	//	double b = Interpolate(wavelengths, v, lambdas[2]) * scale;
+	//	return dvec3(r, g, b);
+	//};
+
+	//dvec3 solar_irradiance = intVec(solarIrradiance, lambdas, 1.0);
+
+
 	m_pComputeTransmittance = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeTransmittance.glsl");
 	m_pComputeDirectIrradiance = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeDirectIrradiance.glsl");
 	m_pComputeSingleScattering = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeSingleScattering.glsl");
@@ -45,13 +61,6 @@ void AtmospherePrecompute::Init()
 	m_TexDeltaScattering->SetParameters(m_Settings.m_TexParams);
 
 	glGenFramebuffers(1, &m_FBO);
-	STATE->BindFramebuffer(m_FBO);
-
-	//Precompute(fbo, delta_irradiance_texture, delta_rayleigh_scattering_texture,
-	//	delta_mie_scattering_texture, delta_scattering_density_texture,
-	//	delta_multiple_scattering_texture, lambdas, luminance_from_radiance,
-	//	false /* blend */, num_scattering_orders);
-
 
 	m_IsInitialized = true;
 }
@@ -81,10 +90,12 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	{
 		Init();
 	}
-	dvec3 lambdas = dvec3(m_Settings.kLambdaR, m_Settings.kLambdaG, m_Settings.kLambdaB);
-	mat3 luminance_from_radiance = mat3();
+	STATE->BindFramebuffer(m_FBO);
 
-	int32 num_scattering_orders = 4;
+	dvec3 lambdas = dvec3(m_Settings.kLambdaR, m_Settings.kLambdaG, m_Settings.kLambdaB);
+	int32 numScatteringOrders = 4;
+	mat3 luminanceFromRadiance = mat3(); //Might not be needed as we dont precompute luminance
+	bool blend = false; //Same here
 
 	//Specific texture initialization
 	atmo->m_TexTransmittance = new TextureData(m_Settings.TRANSMITTANCE_W, m_Settings.TRANSMITTANCE_H,
@@ -101,6 +112,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	atmo->m_TexInscatter->Build();
 	atmo->m_TexInscatter->SetParameters(m_Settings.m_TexParams);
 
+	//Buffers for blending
 	const GLuint kDrawBuffers[4] =
 	{
 		GL_COLOR_ATTACHMENT0,
@@ -108,10 +120,9 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		GL_COLOR_ATTACHMENT2,
 		GL_COLOR_ATTACHMENT3
 	};
-	//glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
 	STATE->SetBlendEquation(GL_FUNC_ADD);
-	//glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ONE, GL_ONE);
 	STATE->SetBlendFunction(GL_ONE, GL_ONE);
+	STATE->SetBlendEnabled(false);
 
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, atmo->m_TexTransmittance->GetHandle(), 0);
 	glDrawBuffer(GL_COLOR_ATTACHMENT0);
@@ -130,8 +141,9 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	STATE->SetShader(m_pComputeDirectIrradiance);
 	STATE->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTarget(), atmo->m_TexTransmittance->GetHandle());
 	glUniform1i(glGetUniformLocation(m_pComputeDirectIrradiance->GetProgram(), "uTexTransmittance"), atmo->m_TexTransmittance->GetHandle());
-	//DrawQuad({false, blend}, full_screen_quad_vao_);
+	STATE->SetBlendEnabled({ false, blend });
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	STATE->SetBlendEnabled(false);
 
 	// Compute the rayleigh and mie single scattering, store them in
 	// delta_rayleigh_scattering_texture and delta_mie_scattering_texture, and
@@ -152,18 +164,19 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 	STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 	STATE->SetShader(m_pComputeSingleScattering);
-	glUniformMatrix3fv(glGetUniformLocation(m_pComputeSingleScattering->GetProgram(), "luminance_from_radiance"), 1, GL_FALSE, etm::valuePtr(luminance_from_radiance));
+	glUniformMatrix3fv(glGetUniformLocation(m_pComputeSingleScattering->GetProgram(), "luminance_from_radiance"), 1, GL_FALSE, etm::valuePtr(luminanceFromRadiance));
 	STATE->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTarget(), atmo->m_TexTransmittance->GetHandle());
 	glUniform1i(glGetUniformLocation(m_pComputeSingleScattering->GetProgram(), "uTexTransmittance"), atmo->m_TexTransmittance->GetHandle());
 	for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 	{
 		glUniform1i(glGetUniformLocation(m_pComputeSingleScattering->GetProgram(), "layer"), layer);
-		//DrawQuad({false, false, blend, blend}, full_screen_quad_vao_);
+		STATE->SetBlendEnabled({ false, false, blend, blend });
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+		STATE->SetBlendEnabled(false);
 	}
 
 	// Compute the 2nd, 3rd and 4th order of scattering, in sequence.
-	for (int32 scattering_order = 2; scattering_order <= num_scattering_orders; ++scattering_order)
+	for (int32 scatteringOrder = 2; scatteringOrder <= numScatteringOrders; ++scatteringOrder)
 	{
 		// Compute the scattering density, and store it in
 		// delta_scattering_density_texture.
@@ -184,7 +197,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		glUniform1i(glGetUniformLocation(m_pComputeScatteringDensity->GetProgram(), "uTexMultipleScattering"), m_TexDeltaMultipleScattering->GetHandle());
 		STATE->LazyBindTexture(m_TexDeltaIrradiance->GetHandle(), m_TexDeltaIrradiance->GetTarget(), m_TexDeltaIrradiance->GetHandle());
 		glUniform1i(glGetUniformLocation(m_pComputeScatteringDensity->GetProgram(), "uTexDeltaIrradiance"), m_TexDeltaIrradiance->GetHandle());
-		glUniform1i(glGetUniformLocation(m_pComputeScatteringDensity->GetProgram(), "scattering_order"), scattering_order);
+		glUniform1i(glGetUniformLocation(m_pComputeScatteringDensity->GetProgram(), "scattering_order"), scatteringOrder);
 		for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 		{
 			glUniform1i(glGetUniformLocation(m_pComputeScatteringDensity->GetProgram(), "layer"), layer);
@@ -198,16 +211,17 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		glDrawBuffers(2, kDrawBuffers);
 		STATE->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
 		STATE->SetShader(m_pComputeIndirectIrradiance);
-		glUniformMatrix3fv(glGetUniformLocation(m_pComputeIndirectIrradiance->GetProgram(), "luminance_from_radiance"), 1, GL_FALSE, etm::valuePtr(luminance_from_radiance));
+		glUniformMatrix3fv(glGetUniformLocation(m_pComputeIndirectIrradiance->GetProgram(), "luminance_from_radiance"), 1, GL_FALSE, etm::valuePtr(luminanceFromRadiance));
 		STATE->LazyBindTexture(m_TexDeltaRayleigh->GetHandle(), m_TexDeltaRayleigh->GetTarget(), m_TexDeltaRayleigh->GetHandle());
 		glUniform1i(glGetUniformLocation(m_pComputeIndirectIrradiance->GetProgram(), "uTexRayleigh"), m_TexDeltaRayleigh->GetHandle());
 		STATE->LazyBindTexture(m_TexDeltaMie->GetHandle(), m_TexDeltaMie->GetTarget(), m_TexDeltaMie->GetHandle());
 		glUniform1i(glGetUniformLocation(m_pComputeIndirectIrradiance->GetProgram(), "uTexDeltaMie"), m_TexDeltaMie->GetHandle());
 		STATE->LazyBindTexture(m_TexDeltaMultipleScattering->GetHandle(), m_TexDeltaMultipleScattering->GetTarget(), m_TexDeltaMultipleScattering->GetHandle());
 		glUniform1i(glGetUniformLocation(m_pComputeIndirectIrradiance->GetProgram(), "uTexMultipleScattering"), m_TexDeltaMultipleScattering->GetHandle());
-		glUniform1i(glGetUniformLocation(m_pComputeIndirectIrradiance->GetProgram(), "scattering_order"), scattering_order);
-		//#todo GLenablei blend array {false, true}
+		glUniform1i(glGetUniformLocation(m_pComputeIndirectIrradiance->GetProgram(), "scattering_order"), scatteringOrder);
+		STATE->SetBlendEnabled({ false, true });
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+		STATE->SetBlendEnabled(false);
 
 		// Compute the multiple scattering, store it in
 		// delta_multiple_scattering_texture, and accumulate it in
@@ -217,7 +231,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		glDrawBuffers(2, kDrawBuffers);
 		STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 		STATE->SetShader(m_pComputeMultipleScattering);
-		glUniformMatrix3fv(glGetUniformLocation(m_pComputeMultipleScattering->GetProgram(), "luminance_from_radiance"), 1, GL_FALSE, etm::valuePtr(luminance_from_radiance));
+		glUniformMatrix3fv(glGetUniformLocation(m_pComputeMultipleScattering->GetProgram(), "luminance_from_radiance"), 1, GL_FALSE, etm::valuePtr(luminanceFromRadiance));
 		STATE->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTarget(), atmo->m_TexTransmittance->GetHandle());
 		glUniform1i(glGetUniformLocation(m_pComputeMultipleScattering->GetProgram(), "uTexTransmittance"), atmo->m_TexTransmittance->GetHandle());
 		STATE->LazyBindTexture(m_TexDeltaScattering->GetHandle(), m_TexDeltaScattering->GetTarget(), m_TexDeltaScattering->GetHandle());
@@ -225,8 +239,9 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 		{
 			glUniform1i(glGetUniformLocation(m_pComputeMultipleScattering->GetProgram(), "layer"), layer);
-			//#todo GLenablei blend array {false, true}
+			STATE->SetBlendEnabled({ false, true });
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+			STATE->SetBlendEnabled(false);
 		}
 	}
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0);
@@ -249,16 +264,13 @@ void AtmospherePrecompute::SetUniforms(ShaderData* shader, TextureData* transmit
 	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexMie"), mie->GetHandle());
 }
 
-constexpr int kLambdaMin = 360;
-constexpr int kLambdaMax = 830;
-
-double CieColorMatchingFunctionTableValue(double wavelength, int column)
+double AtmospherePrecompute::CieColorMatchingFunctionTableValue(double wavelength, int column)
 {
-	if (wavelength <= kLambdaMin || wavelength >= kLambdaMax)
+	if (wavelength <= m_Settings.kLambdaMin || wavelength >= m_Settings.kLambdaMax)
 	{
 		return 0.0;
 	}
-	double u = (wavelength - kLambdaMin) / 5.0;
+	double u = (wavelength - m_Settings.kLambdaMin) / 5.0;
 	int row = static_cast<int>(std::floor(u));
 	assert(row >= 0 && row + 1 < 95);
 	assert(CIE_2_DEG_COLOR_MATCHING_FUNCTIONS[4 * row] <= wavelength && CIE_2_DEG_COLOR_MATCHING_FUNCTIONS[4 * (row + 1)] >= wavelength);
@@ -266,7 +278,7 @@ double CieColorMatchingFunctionTableValue(double wavelength, int column)
 	return CIE_2_DEG_COLOR_MATCHING_FUNCTIONS[4 * row + column] * (1.0 - u) + CIE_2_DEG_COLOR_MATCHING_FUNCTIONS[4 * (row + 1) + column] * u;
 }
 
-double Interpolate(const std::vector<double>& wavelengths, const std::vector<double>& wavelength_function, double wavelength)
+double AtmospherePrecompute::Interpolate(const std::vector<double>& wavelengths, const std::vector<double>& wavelength_function, double wavelength)
 {
 	assert(wavelength_function.size() == wavelengths.size());
 	if (wavelength < wavelengths[0])
@@ -294,7 +306,7 @@ void AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(const std::
 	double solar_g = Interpolate(wavelengths, solar_irradiance, m_Settings.kLambdaG);
 	double solar_b = Interpolate(wavelengths, solar_irradiance, m_Settings.kLambdaB);
 	int32 dlambda = 1;
-	for (int lambda = kLambdaMin; lambda < kLambdaMax; lambda += dlambda)
+	for (int lambda = m_Settings.kLambdaMin; lambda < m_Settings.kLambdaMax; lambda += dlambda)
 	{
 		double x_bar = CieColorMatchingFunctionTableValue(lambda, 1);
 		double y_bar = CieColorMatchingFunctionTableValue(lambda, 2);
@@ -309,9 +321,9 @@ void AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(const std::
 		*k_g += g_bar * irradiance / solar_g * pow(lambda / m_Settings.kLambdaG, lambda_power);
 		*k_b += b_bar * irradiance / solar_b * pow(lambda / m_Settings.kLambdaB, lambda_power);
 	}
-	*k_r *= MAX_LUMINOUS_EFFICACY * dlambda;
-	*k_g *= MAX_LUMINOUS_EFFICACY * dlambda;
-	*k_b *= MAX_LUMINOUS_EFFICACY * dlambda;
+	*k_r *= m_Settings.MAX_LUMINOUS_EFFICACY * dlambda;
+	*k_g *= m_Settings.MAX_LUMINOUS_EFFICACY * dlambda;
+	*k_b *= m_Settings.MAX_LUMINOUS_EFFICACY * dlambda;
 }
 
 void AtmospherePrecompute::ConvertSpectrumToLinearSrgb( const std::vector<double>& wavelengths,
@@ -321,14 +333,14 @@ void AtmospherePrecompute::ConvertSpectrumToLinearSrgb( const std::vector<double
 	double y = 0.0;
 	double z = 0.0;
 	const int32 dlambda = 1;
-	for (int lambda = kLambdaMin; lambda < kLambdaMax; lambda += dlambda) 
+	for (int lambda = m_Settings.kLambdaMin; lambda < m_Settings.kLambdaMax; lambda += dlambda) 
 	{
 		double value = Interpolate(wavelengths, spectrum, lambda);
 		x += CieColorMatchingFunctionTableValue(lambda, 1) * value;
 		y += CieColorMatchingFunctionTableValue(lambda, 2) * value;
 		z += CieColorMatchingFunctionTableValue(lambda, 3) * value;
 	}
-	*r = MAX_LUMINOUS_EFFICACY * (XYZ_TO_SRGB[0] * x + XYZ_TO_SRGB[1] * y + XYZ_TO_SRGB[2] * z) * dlambda;
-	*g = MAX_LUMINOUS_EFFICACY * (XYZ_TO_SRGB[3] * x + XYZ_TO_SRGB[4] * y + XYZ_TO_SRGB[5] * z) * dlambda;
-	*b = MAX_LUMINOUS_EFFICACY * (XYZ_TO_SRGB[6] * x + XYZ_TO_SRGB[7] * y + XYZ_TO_SRGB[8] * z) * dlambda;
+	*r = m_Settings.MAX_LUMINOUS_EFFICACY * (XYZ_TO_SRGB[0] * x + XYZ_TO_SRGB[1] * y + XYZ_TO_SRGB[2] * z) * dlambda;
+	*g = m_Settings.MAX_LUMINOUS_EFFICACY * (XYZ_TO_SRGB[3] * x + XYZ_TO_SRGB[4] * y + XYZ_TO_SRGB[5] * z) * dlambda;
+	*b = m_Settings.MAX_LUMINOUS_EFFICACY * (XYZ_TO_SRGB[6] * x + XYZ_TO_SRGB[7] * y + XYZ_TO_SRGB[8] * z) * dlambda;
 }
