@@ -19,10 +19,12 @@
     uniform sampler3D multiple_scattering_texture;
     uniform int scattering_order;
 
+	uniform AtmosphereParameters uAtmosphere;
+
     void main() 
 	{
 		delta_irradiance = ComputeIndirectIrradianceTexture(
-			ATMOSPHERE, 
+			uAtmosphere, 
 			single_rayleigh_scattering_texture,
 			single_mie_scattering_texture, 
 			multiple_scattering_texture,

@@ -19,11 +19,13 @@
     uniform sampler2D irradiance_texture;
     uniform int scattering_order;
     uniform int layer;
+
+	uniform AtmosphereParameters uAtmosphere;
 	
     void main() 
 	{
 		scattering_density = ComputeScatteringDensityTexture(
-			ATMOSPHERE, 
+			uAtmosphere, 
 			transmittance_texture, 
 			single_rayleigh_scattering_texture,
 			single_mie_scattering_texture, 
