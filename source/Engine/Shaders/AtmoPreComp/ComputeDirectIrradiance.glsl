@@ -15,9 +15,11 @@
 
     uniform sampler2D transmittance_texture;
 
+	uniform AtmosphereParameters uAtmosphere;
+
     void main() 
 	{
-		delta_irradiance = ComputeDirectIrradianceTexture( ATMOSPHERE, transmittance_texture, gl_FragCoord.xy);
+		delta_irradiance = ComputeDirectIrradianceTexture( uAtmosphere, transmittance_texture, gl_FragCoord.xy);
 		irradiance = vec3(0.0);
     }
 </FRAGMENT>

@@ -18,11 +18,13 @@
     uniform sampler3D scattering_density_texture;
     uniform int layer;
 
+	uniform AtmosphereParameters uAtmosphere;
+
     void main() 
 	{
 		float nu;
 		delta_multiple_scattering = ComputeMultipleScatteringTexture(
-			ATMOSPHERE, 
+			uAtmosphere, 
 			transmittance_texture, 
 			scattering_density_texture,
 			vec3(gl_FragCoord.xy, layer + 0.5), 
