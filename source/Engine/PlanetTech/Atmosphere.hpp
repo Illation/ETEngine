@@ -34,6 +34,8 @@ private:
 	GLint m_uRadius;
 	GLint m_uSurfaceRadius;
 
+	AtmosphereParameters m_Params;
+
 	//textures for precomputed data
 	TextureData* m_TexTransmittance;
 	TextureData* m_TexIrradiance;

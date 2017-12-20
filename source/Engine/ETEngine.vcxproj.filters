@@ -217,6 +217,7 @@
     <ClCompile Include="Base\Settings.cpp" />
     <ClCompile Include="UI\UIContainer.cpp" />
     <ClCompile Include="PlanetTech\AtmospherePrecompute.cpp" />
+    <ClCompile Include="PlanetTech\AtmosphereSettings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\Context.hpp">
