@@ -302,6 +302,7 @@
     <ClCompile Include="Math\Geometry.cpp" />
     <ClCompile Include="PlanetTech\Atmosphere.cpp" />
     <ClCompile Include="PlanetTech\AtmospherePrecompute.cpp" />
+    <ClCompile Include="PlanetTech\AtmosphereSettings.cpp" />
     <ClCompile Include="PlanetTech\Patch.cpp" />
     <ClCompile Include="PlanetTech\Planet.cpp" />
     <ClCompile Include="PlanetTech\Triangulator.cpp" />

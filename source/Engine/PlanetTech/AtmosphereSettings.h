@@ -1,6 +1,46 @@
 #pragma once
 #include "TextureData.hpp"
+#include "ShaderData.hpp"
 //Values copied from https://ebruneton.github.io/precomputed_atmospheric_scattering/atmosphere/constants.h.html
+
+struct DensityProfileLayer
+{
+	DensityProfileLayer();
+	DensityProfileLayer(double width, double exp_term, double exp_scale, double linear_term, double constant_term);
+	float width;
+	float exp_term;
+	float exp_scale;
+	float linear_term;
+	float constant_term;
+};
+struct DensityProfile
+{
+	DensityProfile();
+	DensityProfileLayer layers[2];
+};
+struct AtmosphereParameters
+{
+	AtmosphereParameters();
+	void Upload(ShaderData* shader, const std::string &varName);
+
+	vec3 solar_irradiance;
+	float sun_angular_radius;
+	float bottom_radius;
+	float top_radius;
+	DensityProfile rayleigh_density;
+	vec3 rayleigh_scattering;
+	DensityProfile mie_density;
+	vec3 mie_scattering;
+	vec3 mie_extinction;
+	float mie_phase_function_g;
+	DensityProfile absorption_density;
+	vec3 absorption_extinction;
+	vec3 ground_albedo;
+	float mu_s_min;
+
+private:
+	void UploadDensityProfile(ShaderData* shader, const std::string &varName, const DensityProfile &profile);
+};
 
 struct AtmosphereSettings
 {
