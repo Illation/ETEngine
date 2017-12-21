@@ -16,6 +16,7 @@ struct DensityProfileLayer
 struct DensityProfile
 {
 	DensityProfile();
+	DensityProfile(std::vector<DensityProfileLayer> layers, float lengthUnitInMeters);
 	DensityProfileLayer layers[2];
 };
 struct AtmosphereParameters
@@ -53,6 +54,7 @@ public:
 	static const GLenum INTERNAL2D = GL_RGBA32F;
 	static const GLenum INTERNAL3D = GL_RGBA16F;//half precision
 
+	void UploadTextureSize(ShaderData* shader);
 	int32 TRANSMITTANCE_W = 256;
 	int32 TRANSMITTANCE_H = 64;
 

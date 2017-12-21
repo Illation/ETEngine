@@ -61,3 +61,35 @@ DensityProfile::DensityProfile()
 {
 
 }
+
+DensityProfile::DensityProfile(std::vector<DensityProfileLayer> inLayers, float lengthUnitInMeters)
+{
+	constexpr int kLayerCount = 2;
+	while (inLayers.size() < kLayerCount)
+	{
+		inLayers.insert(inLayers.begin(), DensityProfileLayer());
+	}
+	for (auto &layer : inLayers)
+	{
+		layer.width /= lengthUnitInMeters;
+		layer.exp_scale *= lengthUnitInMeters;
+		layer.linear_term *= lengthUnitInMeters;
+	}
+	layers[0] = inLayers[0];
+	layers[1] = inLayers[1];
+}
+
+void AtmosphereSettings::UploadTextureSize(ShaderData* shader)
+{
+	STATE->SetShader(shader);
+	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexTransmittanceW"), TRANSMITTANCE_W);
+	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexTransmittanceH"), TRANSMITTANCE_H);
+
+	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexScatteringNuSize"), INSCATTER_NU);
+	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexScatteringMuSize"), INSCATTER_MU);
+	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexScatteringMuSSize"), INSCATTER_MU_S);
+	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexScatteringRSize"), INSCATTER_R);
+
+	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexIrradianceW"), IRRADIANCE_W);
+	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexIrradianceH"), IRRADIANCE_H);
+}

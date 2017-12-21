@@ -35,6 +35,8 @@ private:
 	GLint m_uSurfaceRadius;
 
 	AtmosphereParameters m_Params;
+	dvec3 m_SkyColor;
+	dvec3 m_SunColor;
 
 	//textures for precomputed data
 	TextureData* m_TexTransmittance;

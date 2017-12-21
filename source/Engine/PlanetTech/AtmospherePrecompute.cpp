@@ -18,22 +18,6 @@ void AtmospherePrecompute::Init()
 {
 	m_Settings = AtmosphereSettings();
 
-	//Radiance api enabled
-	//std::vector<double> wavelengths;
-	//std::vector<double> solarIrradiance;
-	//dvec3 lambdas = dvec3(m_Settings.kLambdaR, m_Settings.kLambdaG, m_Settings.kLambdaB);
-
-	//auto intVec = [&wavelengths, this](const std::vector<double> &v, const dvec3 &lambdas, double scale)
-	//{
-	//	double r = Interpolate(wavelengths, v, lambdas[0]) * scale;
-	//	double g = Interpolate(wavelengths, v, lambdas[1]) * scale;
-	//	double b = Interpolate(wavelengths, v, lambdas[2]) * scale;
-	//	return dvec3(r, g, b);
-	//};
-
-	//dvec3 solar_irradiance = intVec(solarIrradiance, lambdas, 1.0);
-
-
 	m_pComputeTransmittance = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeTransmittance.glsl");
 	m_pComputeDirectIrradiance = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeDirectIrradiance.glsl");
 	m_pComputeSingleScattering = ContentManager::Load<ShaderData>("Shaders/AtmoPreComp/ComputeSingleScattering.glsl");
@@ -90,9 +74,23 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	{
 		Init();
 	}
+
+	//Precomputation variables
+	atmo->m_Params.Upload(m_pComputeTransmittance, "uAtmosphere");
+	m_Settings.UploadTextureSize(m_pComputeTransmittance);
+	atmo->m_Params.Upload(m_pComputeDirectIrradiance, "uAtmosphere");
+	m_Settings.UploadTextureSize(m_pComputeDirectIrradiance);
+	atmo->m_Params.Upload(m_pComputeSingleScattering, "uAtmosphere");
+	m_Settings.UploadTextureSize(m_pComputeSingleScattering);
+	atmo->m_Params.Upload(m_pComputeScatteringDensity, "uAtmosphere");
+	m_Settings.UploadTextureSize(m_pComputeScatteringDensity);
+	atmo->m_Params.Upload(m_pComputeIndirectIrradiance, "uAtmosphere");
+	m_Settings.UploadTextureSize(m_pComputeIndirectIrradiance);
+	atmo->m_Params.Upload(m_pComputeMultipleScattering, "uAtmosphere");
+	m_Settings.UploadTextureSize(m_pComputeMultipleScattering);
+
 	STATE->BindFramebuffer(m_FBO);
 
-	dvec3 lambdas = dvec3(m_Settings.kLambdaR, m_Settings.kLambdaG, m_Settings.kLambdaB);
 	int32 numScatteringOrders = 4;
 	mat3 luminanceFromRadiance = mat3(); //Might not be needed as we dont precompute luminance
 	bool blend = false; //Same here
@@ -247,6 +245,8 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0);
+
+	STATE->SetBlendEnabled(false);
 }
 
 void AtmospherePrecompute::SetUniforms(ShaderData* shader, TextureData* transmittance, TextureData* scattering, TextureData* irradiance, TextureData* mie)
@@ -264,13 +264,13 @@ void AtmospherePrecompute::SetUniforms(ShaderData* shader, TextureData* transmit
 	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexMie"), mie->GetHandle());
 }
 
-double AtmospherePrecompute::CieColorMatchingFunctionTableValue(double wavelength, int column)
+double AtmospherePrecompute::CieColorMatchingFunctionTableValue(const AtmosphereSettings &settings, double wavelength, int column)
 {
-	if (wavelength <= m_Settings.kLambdaMin || wavelength >= m_Settings.kLambdaMax)
+	if (wavelength <= settings.kLambdaMin || wavelength >= settings.kLambdaMax)
 	{
 		return 0.0;
 	}
-	double u = (wavelength - m_Settings.kLambdaMin) / 5.0;
+	double u = (wavelength - settings.kLambdaMin) / 5.0;
 	int row = static_cast<int>(std::floor(u));
 	assert(row >= 0 && row + 1 < 95);
 	assert(CIE_2_DEG_COLOR_MATCHING_FUNCTIONS[4 * row] <= wavelength && CIE_2_DEG_COLOR_MATCHING_FUNCTIONS[4 * (row + 1)] >= wavelength);
@@ -296,34 +296,30 @@ double AtmospherePrecompute::Interpolate(const std::vector<double>& wavelengths,
 	return wavelength_function[wavelength_function.size() - 1];
 }
 
-void AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(const std::vector<double>& wavelengths,
-	const std::vector<double>& solar_irradiance, double lambda_power, double* k_r, double* k_g, double* k_b)
+void AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(const AtmosphereSettings &settings, const std::vector<double>& wavelengths,
+	const std::vector<double>& solar_irradiance, double lambda_power, dvec3 &color)
 {
-	*k_r = 0.0;
-	*k_g = 0.0;
-	*k_b = 0.0;
-	double solar_r = Interpolate(wavelengths, solar_irradiance, m_Settings.kLambdaR);
-	double solar_g = Interpolate(wavelengths, solar_irradiance, m_Settings.kLambdaG);
-	double solar_b = Interpolate(wavelengths, solar_irradiance, m_Settings.kLambdaB);
+	color = dvec3(0);
+	double solar_r = Interpolate(wavelengths, solar_irradiance, settings.kLambdaR);
+	double solar_g = Interpolate(wavelengths, solar_irradiance, settings.kLambdaG);
+	double solar_b = Interpolate(wavelengths, solar_irradiance, settings.kLambdaB);
 	int32 dlambda = 1;
-	for (int lambda = m_Settings.kLambdaMin; lambda < m_Settings.kLambdaMax; lambda += dlambda)
+	for (int lambda = settings.kLambdaMin; lambda < settings.kLambdaMax; lambda += dlambda)
 	{
-		double x_bar = CieColorMatchingFunctionTableValue(lambda, 1);
-		double y_bar = CieColorMatchingFunctionTableValue(lambda, 2);
-		double z_bar = CieColorMatchingFunctionTableValue(lambda, 3);
+		double x_bar = CieColorMatchingFunctionTableValue(settings, lambda, 1);
+		double y_bar = CieColorMatchingFunctionTableValue(settings, lambda, 2);
+		double z_bar = CieColorMatchingFunctionTableValue(settings, lambda, 3);
 		const double* xyz2srgb = XYZ_TO_SRGB;
 		double r_bar = xyz2srgb[0] * x_bar + xyz2srgb[1] * y_bar + xyz2srgb[2] * z_bar;
 		double g_bar = xyz2srgb[3] * x_bar + xyz2srgb[4] * y_bar + xyz2srgb[5] * z_bar;
 		double b_bar = xyz2srgb[6] * x_bar + xyz2srgb[7] * y_bar + xyz2srgb[8] * z_bar;
 		double irradiance = Interpolate(wavelengths, solar_irradiance, lambda);
 
-		*k_r += r_bar * irradiance / solar_r * pow(lambda / m_Settings.kLambdaR, lambda_power);
-		*k_g += g_bar * irradiance / solar_g * pow(lambda / m_Settings.kLambdaG, lambda_power);
-		*k_b += b_bar * irradiance / solar_b * pow(lambda / m_Settings.kLambdaB, lambda_power);
+		color.x += r_bar * irradiance / solar_r * pow(lambda / settings.kLambdaR, lambda_power);
+		color.y += g_bar * irradiance / solar_g * pow(lambda / settings.kLambdaG, lambda_power);
+		color.z += b_bar * irradiance / solar_b * pow(lambda / settings.kLambdaB, lambda_power);
 	}
-	*k_r *= m_Settings.MAX_LUMINOUS_EFFICACY * dlambda;
-	*k_g *= m_Settings.MAX_LUMINOUS_EFFICACY * dlambda;
-	*k_b *= m_Settings.MAX_LUMINOUS_EFFICACY * dlambda;
+	color = color * (settings.MAX_LUMINOUS_EFFICACY * dlambda);
 }
 
 void AtmospherePrecompute::ConvertSpectrumToLinearSrgb( const std::vector<double>& wavelengths,
@@ -336,9 +332,9 @@ void AtmospherePrecompute::ConvertSpectrumToLinearSrgb( const std::vector<double
 	for (int lambda = m_Settings.kLambdaMin; lambda < m_Settings.kLambdaMax; lambda += dlambda) 
 	{
 		double value = Interpolate(wavelengths, spectrum, lambda);
-		x += CieColorMatchingFunctionTableValue(lambda, 1) * value;
-		y += CieColorMatchingFunctionTableValue(lambda, 2) * value;
-		z += CieColorMatchingFunctionTableValue(lambda, 3) * value;
+		x += CieColorMatchingFunctionTableValue(m_Settings, lambda, 1) * value;
+		y += CieColorMatchingFunctionTableValue(m_Settings, lambda, 2) * value;
+		z += CieColorMatchingFunctionTableValue(m_Settings, lambda, 3) * value;
 	}
 	*r = m_Settings.MAX_LUMINOUS_EFFICACY * (XYZ_TO_SRGB[0] * x + XYZ_TO_SRGB[1] * y + XYZ_TO_SRGB[2] * z) * dlambda;
 	*g = m_Settings.MAX_LUMINOUS_EFFICACY * (XYZ_TO_SRGB[3] * x + XYZ_TO_SRGB[4] * y + XYZ_TO_SRGB[5] * z) * dlambda;
