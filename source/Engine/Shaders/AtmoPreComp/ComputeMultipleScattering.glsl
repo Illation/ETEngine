@@ -14,8 +14,8 @@
     layout(location = 1) out vec4 scattering;
 
     uniform mat3 luminance_from_radiance;
-    uniform sampler2D transmittance_texture;
-    uniform sampler3D scattering_density_texture;
+    uniform sampler2D uTexTransmittance;
+    uniform sampler3D uTexDeltaScatteringDensity;
     uniform int layer;
 
 	uniform AtmosphereParameters uAtmosphere;
@@ -23,13 +23,8 @@
     void main() 
 	{
 		float nu;
-		delta_multiple_scattering = ComputeMultipleScatteringTexture(
-			uAtmosphere, 
-			transmittance_texture, 
-			scattering_density_texture,
-			vec3(gl_FragCoord.xy, layer + 0.5), 
-			nu
-		);
+		delta_multiple_scattering = ComputeMultipleScatteringTexture( uAtmosphere, uTexTransmittance, 
+			uTexDeltaScatteringDensity, vec3(gl_FragCoord.xy, layer + 0.5), nu );
 		scattering = vec4( luminance_from_radiance * delta_multiple_scattering.rgb / RayleighPhaseFunction(nu), 0.0 );
 	}
 </FRAGMENT>

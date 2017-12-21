@@ -12,11 +12,21 @@
 #include "../GraphicsHelper/PrimitiveRenderer.hpp"
 #include "../GraphicsHelper/RenderPipeline.hpp"
 #include "../Graphics/Frustum.hpp"
+#include "SpriteRenderer.hpp"
+
+vec3 InterpolatedSpectrum(const std::vector<double_t> &wavelengths, const std::vector<double_t> &v, const dvec3 &lambdas, float scale)
+{
+	return vec3((float)AtmospherePrecompute::Interpolate(wavelengths, v, lambdas.x),
+				(float)AtmospherePrecompute::Interpolate(wavelengths, v, lambdas.y),
+				(float)AtmospherePrecompute::Interpolate(wavelengths, v, lambdas.z)) * scale;
+}
 
 Atmosphere::Atmosphere()
 {
-	constexpr int kLambdaMin = 360; // min wavelength
-	constexpr int kLambdaMax = 830; // max wavelength
+	// CALCULATE ATMOSPHERE PARAMETERS
+	// *******************************
+	constexpr int32 kLambdaMin = 360; // min wavelength
+	constexpr int32 kLambdaMax = 830; // max wavelength
 	constexpr double kSolarIrradiance[48] = 
 	{
 		1.11776, 1.14259, 1.01249, 1.14716, 1.72765, 1.73054, 1.6887, 1.61253,
@@ -48,18 +58,13 @@ Atmosphere::Atmosphere()
 	constexpr double kMaxOzoneNumberDensity = 300.0 * kDobsonUnit / 15000.0;
 	// Wavelength independent solar irradiance "spectrum" (not physically
 	// realistic, but was used in the original implementation).
-	constexpr double kConstantSolarIrradiance = 1.5;
-	constexpr double kBottomRadius = 6360000.0;
-	constexpr double kTopRadius = 6420000.0;
 	constexpr double kRayleigh = 1.24062e-6;
 	constexpr double kRayleighScaleHeight = 8000.0;
 	constexpr double kMieScaleHeight = 1200.0;
 	constexpr double kMieAngstromAlpha = 0.0;
 	constexpr double kMieAngstromBeta = 5.328e-3;
 	constexpr double kMieSingleScatteringAlbedo = 0.9;
-	constexpr double kMiePhaseFunctionG = 0.8;
 	constexpr double kGroundAlbedo = 0.1;
-	const double max_sun_zenith_angle = etm::radians(102.0);
 
 	DensityProfileLayer rayleigh_layer(0.0, 1.0, -1.0 / kRayleighScaleHeight, 0.0, 0.0);
 	DensityProfileLayer mie_layer(0.0, 1.0, -1.0 / kMieScaleHeight, 0.0, 0.0);
@@ -78,7 +83,7 @@ Atmosphere::Atmosphere()
 	std::vector<double> mie_extinction;
 	std::vector<double> absorption_extinction;
 	std::vector<double> ground_albedo;
-	for (int l = kLambdaMin; l <= kLambdaMax; l += 10) 
+	for (int32 l = kLambdaMin; l <= kLambdaMax; l += 10)
 	{
 		double lambda = static_cast<double>(l) * 1e-3;  // micro-meters
 		double mie = kMieAngstromBeta / kMieScaleHeight * pow(lambda, -kMieAngstromAlpha);
@@ -90,6 +95,32 @@ Atmosphere::Atmosphere()
 		absorption_extinction.push_back( kMaxOzoneNumberDensity * kOzoneCrossSection[(l - kLambdaMin) / 10] );
 		ground_albedo.push_back(kGroundAlbedo);
 	}
+
+	//constexpr double kSunSolidAngle = etm::PI * kSunAngularRadius * kSunAngularRadius;
+
+	AtmosphereSettings settings = AtmosphereSettings();
+	dvec3 lambdas = dvec3(settings.kLambdaR, settings.kLambdaG, settings.kLambdaB);
+	constexpr double kLengthUnitInMeters = 1000.0;
+
+	m_Params = AtmosphereParameters();
+
+	m_Params.solar_irradiance = InterpolatedSpectrum(wavelengths, solar_irradiance, lambdas, 1.f);
+	m_Params.sun_angular_radius = (float)(0.00935 / 2.0);
+	m_Params.bottom_radius = (float)(6360000.0 / kLengthUnitInMeters);
+	m_Params.top_radius = (float)(6420000.0 / kLengthUnitInMeters);
+	m_Params.rayleigh_density = DensityProfile({ rayleigh_layer }, (float)kLengthUnitInMeters);
+	m_Params.rayleigh_scattering = InterpolatedSpectrum(wavelengths, rayleigh_scattering, lambdas, (float)kLengthUnitInMeters);
+	m_Params.mie_density = DensityProfile({ mie_layer }, (float)kLengthUnitInMeters);
+	m_Params.mie_scattering = InterpolatedSpectrum(wavelengths, mie_scattering, lambdas, (float)kLengthUnitInMeters);
+	m_Params.mie_extinction = InterpolatedSpectrum(wavelengths, mie_extinction, lambdas, (float)kLengthUnitInMeters);
+	m_Params.mie_phase_function_g = (float)0.8f;
+	m_Params.absorption_density = DensityProfile(ozone_density, (float)kLengthUnitInMeters);
+	m_Params.absorption_extinction = InterpolatedSpectrum(wavelengths, absorption_extinction, lambdas, (float)kLengthUnitInMeters);
+	m_Params.ground_albedo = InterpolatedSpectrum(wavelengths, ground_albedo, lambdas, 1.f);
+	m_Params.mu_s_min = cosf(etm::radians(102.f));
+
+	AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(settings, wavelengths, solar_irradiance, -3, m_SkyColor);
+	AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(settings, wavelengths, solar_irradiance, 0, m_SunColor);
 }
 Atmosphere::~Atmosphere()
 {
@@ -174,6 +205,10 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	STATE->SetBlendEnabled(false);
 	STATE->SetDepthEnabled(true);
 	STATE->SetCullEnabled(false);
+
+	vec4 brightness = vec4(SCENE->GetPostProcessingSettings().exposure);
+	SpriteRenderer::GetInstance()->Draw(m_TexTransmittance, vec2(0), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE);
+	SpriteRenderer::GetInstance()->Draw(m_TexIrradiance, vec2((float)(WINDOW.Width/2), 0), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE);
 }
 
 AtmosphereSettings::AtmosphereSettings()
