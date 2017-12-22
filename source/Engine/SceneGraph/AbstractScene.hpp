@@ -24,6 +24,7 @@ public:
 	void SetActiveCamera(CameraComponent* pCamera);
 	void SetSkybox(string assetFile);
 	HDRMap* GetEnvironmentMap();
+	Skybox* GetSkybox() { return m_pSkybox; }
 	std::vector<LightComponent*> GetLights();
 	const PostProcessingSettings& GetPostProcessingSettings() const;
 

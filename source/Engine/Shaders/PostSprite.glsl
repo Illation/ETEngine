@@ -112,11 +112,23 @@
 	    vec2 texCoord;
 	} inputs;
 	uniform sampler2D uTexture;
+	uniform sampler3D u3DTexture;
+
+	uniform bool uDraw3D = false;
+	uniform float uLayer = 0;
 
 	out vec4 outColor;
 	
+	
 	void main()
 	{
-		outColor = texture( uTexture, inputs.texCoord ) * inputs.color;
+		if(uDraw3D)
+		{
+			outColor = texture( u3DTexture, vec3(inputs.texCoord, uLayer) ) * inputs.color;
+		}
+		else
+		{
+			outColor = texture( uTexture, inputs.texCoord ) * inputs.color;
+		}
 	} 
 </FRAGMENT>

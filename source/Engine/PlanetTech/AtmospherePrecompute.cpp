@@ -149,7 +149,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	// optional_single_mie_scattering_texture_.
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_TexDeltaRayleigh->GetHandle(), 0);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, m_TexDeltaMie->GetHandle(), 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, m_TexDeltaScattering->GetHandle(), 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, atmo->m_TexInscatter->GetHandle(), 0);
 	//if (optional_single_mie_scattering_texture_ != 0)
 	//{
 	//	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, optional_single_mie_scattering_texture_, 0);
@@ -225,7 +225,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		// delta_multiple_scattering_texture, and accumulate it in
 		// scattering_texture_.
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_TexDeltaMultipleScattering->GetHandle(), 0);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, m_TexDeltaScattering->GetHandle(), 0);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, atmo->m_TexInscatter->GetHandle(), 0);
 		glDrawBuffers(2, kDrawBuffers);
 		STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 		STATE->SetShader(m_pComputeMultipleScattering);
