@@ -22,6 +22,7 @@ private:
 	static double CieColorMatchingFunctionTableValue(const AtmosphereSettings &settings, double wavelength, int column);
 	void ConvertSpectrumToLinearSrgb(const std::vector<double>& wavelengths, const std::vector<double>& spectrum, double* r, double* g, double* b);
 
+	friend class Atmosphere;// #temp
 
 	//Textures - probably also need fbos
 	TextureData* m_TexDeltaIrradiance;

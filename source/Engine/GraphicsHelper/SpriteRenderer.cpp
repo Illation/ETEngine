@@ -22,9 +22,14 @@ void SpriteRenderer::Initialize()
 
 	STATE->SetShader( m_pShader );
 	m_uTransform = glGetUniformLocation( m_pShader->GetProgram(), "uTransform" );
-	m_uTexture = glGetUniformLocation( m_pShader->GetProgram(), "uTexture" );
 
+	m_uTexture = glGetUniformLocation( m_pShader->GetProgram(), "uTexture" );
 	glUniform1i(m_uTexture, 0);
+	m_u3DTexture = glGetUniformLocation( m_pShader->GetProgram(), "u3DTexture" );
+	glUniform1i(m_u3DTexture, 1);
+
+	m_uDraw3D = glGetUniformLocation( m_pShader->GetProgram(), "uDraw3D" );
+	m_uLayer = glGetUniformLocation( m_pShader->GetProgram(), "uLayer" );
 
 	//Generate buffers and arrays
 	glGenVertexArrays(1, &m_VAO);
@@ -128,7 +133,18 @@ void SpriteRenderer::Draw()
 		}
 
 		TextureData* texData = m_Textures[m_Sprites[i].TextureId];
-		STATE->BindTexture(GL_TEXTURE_2D, texData->GetHandle());//maybe use lazybind instead
+		if (texData->GetTarget() == GL_TEXTURE_2D)
+		{
+			STATE->SetActiveTexture(0);
+			glUniform1i(m_uDraw3D, false);
+		}
+		else
+		{
+			STATE->SetActiveTexture(1);
+			glUniform1i(m_uDraw3D, true);
+			glUniform1f(m_uLayer, m_Layer);
+		}
+		STATE->BindTexture(texData->GetTarget(), texData->GetHandle());
 
 		//Draw
 		glDrawArrays( GL_POINTS, batchOffset, batchSize );
@@ -144,7 +160,8 @@ void SpriteRenderer::Draw()
 	m_Textures.clear();
 }
 
-void SpriteRenderer::Draw( TextureData* pTexture, vec2 position, vec4 color /*= vec4(1)*/, vec2 pivot /*= vec2( 0 )*/, vec2 scale /*= vec2( 1 )*/, float rotation /*= 0.f*/, float depth /*= 0.f */, SpriteScalingMode mode /*= SCREEN */)
+void SpriteRenderer::Draw( TextureData* pTexture, vec2 position, vec4 color /*= vec4(1)*/, vec2 pivot /*= vec2( 0 )*/, 
+	vec2 scale /*= vec2( 1 )*/, float rotation /*= 0.f*/, float depth /*= 0.f */, SpriteScalingMode mode /*= SCREEN */, float layer /*= 0.f*/)
 {
 	SpriteVertex vertex;
 
@@ -180,6 +197,8 @@ void SpriteRenderer::Draw( TextureData* pTexture, vec2 position, vec4 color /*= 
 	}
 	vertex.TransformData2 = vec4( pivot, scale );
 	vertex.Color = color;
+
+	if(pTexture->GetTarget() == GL_TEXTURE_3D)m_Layer = layer;
 
 	m_Sprites.push_back( vertex );
 }

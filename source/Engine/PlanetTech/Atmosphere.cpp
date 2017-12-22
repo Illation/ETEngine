@@ -13,6 +13,7 @@
 #include "../GraphicsHelper/RenderPipeline.hpp"
 #include "../Graphics/Frustum.hpp"
 #include "SpriteRenderer.hpp"
+#include "Skybox.hpp"
 
 vec3 InterpolatedSpectrum(const std::vector<double_t> &wavelengths, const std::vector<double_t> &v, const dvec3 &lambdas, float scale)
 {
@@ -206,9 +207,12 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	STATE->SetDepthEnabled(true);
 	STATE->SetCullEnabled(false);
 
+	// #temp , hacking that visualization
 	vec4 brightness = vec4(SCENE->GetPostProcessingSettings().exposure);
+	float layer = SCENE->GetSkybox()->GetRoughness();
+	SpriteRenderer::GetInstance()->Draw(m_TexInscatter, vec2(0, (float)(WINDOW.Height/2)), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE, layer);
+	SpriteRenderer::GetInstance()->Draw(m_TexIrradiance, vec2(((float)WINDOW.Width)*0.6f, 0), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE);
 	SpriteRenderer::GetInstance()->Draw(m_TexTransmittance, vec2(0), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE);
-	SpriteRenderer::GetInstance()->Draw(m_TexIrradiance, vec2((float)(WINDOW.Width/2), 0), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE);
 }
 
 AtmosphereSettings::AtmosphereSettings()

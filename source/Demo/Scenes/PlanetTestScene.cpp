@@ -59,8 +59,6 @@ void PlanetTestScene::Initialize()
 	m_pLigEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
 	//m_pLigEntity->GetTransform()->SetRotation(etm::lookAt())
 	AddEntity(m_pLigEntity);
-
-	SETTINGS->Window.VSync(false);
 }
 
 void PlanetTestScene::Update()
@@ -107,6 +105,8 @@ void PlanetTestScene::Update()
 	CAMERA->SetFarClippingPlane((sqrtf(powf(m_pPlanet->GetRadius() + altitude, 2) - powf(m_pPlanet->GetRadius(), 2)) +
 		sqrtf(powf(radius, 2) - powf(m_pPlanet->GetRadius(), 2)))*10);
 	CAMERA->SetNearClippingPlane(CAMERA->GetFarPlane()*0.000003f);
+
+	SETTINGS->Window.VSync(true);
 }
 
 void PlanetTestScene::Draw()
