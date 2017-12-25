@@ -3,6 +3,7 @@
 
 #include "FileSystem/Entry.h"
 #include "FileSystem/BinaryReader.hpp"
+#include "TextureLoader.hpp"
 
 FontLoader::FontLoader()
 {
@@ -110,7 +111,11 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 		"SpriteFont::Load > SpriteFont(.fnt): Invalid Font Sprite [Empty]" << std::endl;
 	auto filepath = assetFile.substr(0, assetFile.rfind('/') + 1);
 	std::cout << std::endl << "\t";
+
+	TextureLoader* pTL = ContentManager::GetLoader<TextureLoader, TextureData>();
+	pTL->ForceResolution(true);
 	pFont->m_pTexture = ContentManager::Load<TextureData>(filepath + pn);
+	pTL->ForceResolution(false);
 	pBinReader->SetBufferPosition(pos + Block2Size);
 	//**********
 	// BLOCK 3 *
