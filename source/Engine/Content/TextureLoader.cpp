@@ -23,28 +23,42 @@ TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 	if (fif == FIF_UNKNOWN)
 		return nullptr;
 
-	FIBITMAP *dib(0);
+	FIBITMAP *pImage(0);
 	if (FreeImage_FIFSupportsReading(fif))
-		dib = FreeImage_Load(fif, assetFile.c_str());
-	if (dib)
+		pImage = FreeImage_Load(fif, assetFile.c_str());
+	if (pImage)
 	{
-		FreeImage_FlipVertical(dib);
-		FIBITMAP *pImage = FreeImage_ConvertToType(dib, FIT_RGBF);
-
+		//Get dimensions and downscale if necessary
 		uint32 width = FreeImage_GetWidth(pImage);
 		uint32 height = FreeImage_GetHeight(pImage);
-		BYTE* bits = FreeImage_GetBits(pImage);
+		if ((!etm::nearEquals(GRAPHICS.TextureScaleFactor, 1.f)) && (m_ForceRes));
+		{
+			FIBITMAP* oldImage = pImage;
+			pImage = FreeImage_Rescale(pImage, width*GRAPHICS.TextureScaleFactor, height*GRAPHICS.TextureScaleFactor);
+			FreeImage_Unload(oldImage);
+			width = FreeImage_GetWidth(pImage);
+			height = FreeImage_GetHeight(pImage);
+		}
+
+		//Convert into opengl compatible format
+		FreeImage_FlipVertical(pImage);
+		FIBITMAP* oldImage = pImage;
+		pImage = FreeImage_ConvertToType(pImage, FIT_RGBF);
+		FreeImage_Unload(oldImage);
+
+		//Get and validate data pointer
+		uint8* bits = FreeImage_GetBits(pImage);
 		if ((bits == 0) || (width == 0) || (height == 0))
 		{
 			cout << "  . . . FAILED! " << endl;
 			return nullptr;
 		}
 
+		//Upload to GPU
 		TextureData* ret = new TextureData( width, height, m_UseSrgb ? GL_SRGB : GL_RGB, GL_RGB, GL_FLOAT );
 		ret->Build( (void*)bits );
 
-		FreeImage_Unload(dib);
-		FreeImage_Unload(pImage);
+		FreeImage_Unload(pImage);//Destroy CPU side data
 
 		TextureParameters params( true );
 		ret->SetParameters( params );

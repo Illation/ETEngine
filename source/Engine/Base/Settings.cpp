@@ -19,6 +19,7 @@ Settings::GraphicsSettings::GraphicsSettings() :
 	NumCascades( 3 ),
 	NumPCFSamples( 3 ),
 	CSMDrawDistance( 200 ),
+	TextureScaleFactor( 0.25f ),
 	NumBlurPasses( 5 )
 {
 }
@@ -36,7 +37,7 @@ Settings::WindowSettings::WindowSettings() :
 	resolutions.push_back( ivec2( 1920, 1080 ) );
 	resolutions.push_back( ivec2( 2560, 1440 ) );
 
-	uint32 baseRes = 2;
+	uint32 baseRes = 1;
 
 	Width = Fullscreen ? resolutions[baseRes].x : resolutions[baseRes - 1].x;
 	Height = Fullscreen ? resolutions[baseRes].y : resolutions[baseRes - 1].y;

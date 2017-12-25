@@ -175,7 +175,8 @@ void SpriteRenderer::Draw( TextureData* pTexture, vec2 position, vec4 color /*= 
 		scale = scale * vec2( (float)WINDOW.Width, (float)WINDOW.Height );
 		break;
 	case SpriteScalingMode::TEXTURE :
-		scale = scale * vec2( (float)pTexture->GetResolution().x, (float)pTexture->GetResolution().y );
+		scale = scale * vec2( (float)pTexture->GetResolution().x, (float)pTexture->GetResolution().y ) 
+			/ GRAPHICS.TextureScaleFactor;
 		break;
 	}
 	vertex.TransformData2 = vec4( pivot, scale );
