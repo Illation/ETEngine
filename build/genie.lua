@@ -1,4 +1,4 @@
-solution "ETEngine"
+solution "ETEngineGenerated"
     configurations {
         "Release",
         "Debug",
@@ -13,7 +13,7 @@ solution "ETEngine"
 
     language "C++"
 
-    location "../"
+    location "../source/"
     objdir "../build/"
 
 PROJECT_DIR = "../"
@@ -47,8 +47,10 @@ configuration { "linux", "gmake"}
 configuration {}
 
 
-project "Demo"
+project "DemoGenerated"
 	kind "ConsoleApp"
+
+	location "../source/Demo"
 
     defines { "_CONSOLE" }
 
@@ -69,7 +71,11 @@ project "Demo"
 		}
     configuration {}
 
-    files { path.join(SOURCE_DIR, "Demo/**.cpp"), }
+    files { 
+		path.join(SOURCE_DIR, "Demo/**.cpp"), 
+		path.join(SOURCE_DIR, "Demo/**.hpp"), 
+		path.join(SOURCE_DIR, "Demo/**.h"), 
+	}
 
     links{
 		"Engine",
@@ -77,10 +83,16 @@ project "Demo"
 		"ILU"
     }
 
-project "Engine"
+project "EngineGenerated"
     kind "StaticLib"
 
-    files { path.join(SOURCE_DIR, "Engine/**.cpp"), }
+	location "../source/Engine"
+
+    files { 
+		path.join(SOURCE_DIR, "Engine/**.cpp"), 
+		path.join(SOURCE_DIR, "Engine/**.hpp"), 
+		path.join(SOURCE_DIR, "Engine/**.h"), 
+	}
 
     --excludes { path.join(SOURCE_DIR, "Screenshot.cpp") }
 
