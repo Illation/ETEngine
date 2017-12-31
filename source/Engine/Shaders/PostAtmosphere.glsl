@@ -36,113 +36,163 @@
 	
 	uniform vec3 SunDir;
 	uniform float SunIntensity = 1;
+	uniform vec2 uSunSize;
 	
 	uniform float EPSILON = 0.0001f;
 
 	//precomputed textures
 	uniform sampler3D uTexInscatter;
+	uniform sampler3D uTexSingleMie;//unused
 	uniform sampler2D uTexIrridiance;
 	uniform sampler2D uTexTransmittance;
 
-	vec3 GetInscatteredLight(in vec3 pos, in vec3 camPos, in vec3 viewDir, inout vec3 attenuation, inout float irradianceFactor)
+	uniform AtmosphereParameters uAtmosphere;
+	uniform vec3 uSkySpectralRadToLum;
+	uniform vec3 uSunSpectralRadToLum;
+
+	const vec3 kSphereCenter = vec3(0.0, 0.0, 1.0);
+	const float kSphereRadius = 1.0;
+	const vec3 kSphereAlbedo = vec3(0.8);
+	const vec3 kGroundAlbedo = vec3(0.0, 0.0, 0.04);
+
+	//vec3 GetInscatteredLight(in vec3 pos, in vec3 camPos, in vec3 viewDir, inout vec3 attenuation, inout float irradianceFactor)
+	//{
+	//	vec3 inscatteredLight = vec3(0);
+	//	//Calculate atmoSPHERE intersections
+	//	float ffDist = 0;
+	//	float bfDist = 0;
+	//	float pathLength = 0;
+	//	if(intersectSphere(viewDir, Position, camPos, Radius, ffDist, bfDist))
+	//	{
+	//		pathLength = min(length(pos-camPos), bfDist);
+	//		if(pathLength >= ffDist)
+	//		{
+	//			//intersection is behind front edge of atmosphere
+	//			vec3 startPos = camPos + viewDir * ffDist;
+	//			float startPosHeight = length(startPos - Position);
+				
+	//			// starting position of path is now ensured to be inside atmosphere
+	//			// was either originally there or has been moved to top boundary
+	//			float muStartPos = dot(startPos, viewDir) / startPosHeight;
+	//			float nuStartPos = dot(viewDir, SunDir);
+	//			float musStartPos = dot(startPos, SunDir) / startPosHeight;
+
+	//			// in-scattering for infinite ray (light in-scattered when
+	//			// no surface hit or object behind atmosphere)
+	//			vec4 inscatter = max(texture4D(uTexInscatter, startPosHeight, muStartPos, musStartPos, nuStartPos), 0.0f);
+				
+	//			vec3 endPos = camPos + viewDir * pathLength;
+	//			float endPosHeight = length(endPos - Position);
+	//			float musEndPos = dot(pos, SunDir) / endPosHeight;
+				
+	//			pathLength -= ffDist;
+				
+	//			attenuation = analyticTransmittance(startPosHeight, muStartPos, pathLength);
+	//			if(pathLength < bfDist-ffDist)
+	//			{
+	//				float muEndPos = dot(pos, viewDir) / endPosHeight;
+	//				vec4 inscatterSurface = texture4D(uTexInscatter, endPosHeight, muEndPos, musEndPos, nuStartPos);
+	//				inscatter = max(inscatter-attenuation.rgbr*inscatterSurface, 0.0f);
+	//				irradianceFactor = 1.0f;
+	//			}
+
+	//			float muHorizon = -sqrt(1.0 - (SurfaceRadius / startPosHeight) * (SurfaceRadius / startPosHeight));
+	//			// avoids imprecision problems near horizon by interpolating between
+	//			// two points above and below horizon
+	//			// fíx described in chapter 5.1.2
+	//			if (abs(muStartPos - muHorizon) < EPSILON_INSCATTER)
+	//			{
+	//				float mu = muHorizon - EPSILON_INSCATTER;
+	//				float samplePosHeight = sqrt(startPosHeight*startPosHeight +pathLength*pathLength+2.0f*startPosHeight* pathLength*mu);
+	//				float muSamplePos = (startPosHeight * mu + pathLength)/ samplePosHeight;
+	//				vec4 inScatter0 = texture4D(uTexInscatter, startPosHeight, mu, musStartPos, nuStartPos);
+	//				vec4 inScatter1 = texture4D(uTexInscatter, samplePosHeight, muSamplePos, musEndPos, nuStartPos);
+	//				vec4 inScatterA = max(inScatter0-attenuation.rgbr*inScatter1,0.0);
+
+	//				mu = muHorizon + EPSILON_INSCATTER;
+	//				samplePosHeight = sqrt(startPosHeight*startPosHeight +pathLength*pathLength+2.0f* startPosHeight*pathLength*mu);
+	//				muSamplePos = (startPosHeight * mu + pathLength) / samplePosHeight;
+	//				inScatter0 = texture4D(uTexInscatter, startPosHeight, mu, musStartPos, nuStartPos);
+	//				inScatter1 = texture4D(uTexInscatter, samplePosHeight, muSamplePos, musEndPos, nuStartPos);
+
+	//				vec4 inScatterB = max(inScatter0 - attenuation.rgbr * inScatter1, 0.0f);
+	//				float t = ((muStartPos - muHorizon) + EPSILON_INSCATTER) / (2.0 * EPSILON_INSCATTER);
+
+	//				inscatter = mix(inScatterA, inScatterB, t);
+	//			}
+
+	//			// avoids imprecision problems in Mie scattering when sun is below
+	//			//horizon
+	//			inscatter.w *= smoothstep(0.00, 0.02, musStartPos);
+	//			float phaseR = phaseFunctionR(nuStartPos);
+	//			float phaseM = phaseFunctionM(nuStartPos);
+	//			inscatteredLight = max(inscatter.rgb * phaseR + getMie(inscatter)* phaseM, 0.0f) * SunIntensity;
+	//		}
+	//	}
+	//	////Debugging
+	//	//attenuation *= pathLength/(Radius)*10;
+
+	//	return inscatteredLight;
+	//}
+
+	//vec3 GetReflectedLight(in vec3 norm, in float reflectance, in vec3 col, in vec3 surfacePos, in vec3 attenuation, in float irradianceFactor)
+	//{
+	//	float lightIntensity = SunIntensity * reflectance;
+	//	float lightScale = max(dot(norm, SunDir), 0.0f);
+	//	// irradiance at surface position due to sky light
+	//	float surfacePosHeight = length(surfacePos);
+	//	float musSurfacePos = dot(surfacePos, SunDir) / surfacePosHeight;
+	//	vec3 irradianceSurface = irradiance(uTexIrridiance, surfacePosHeight, musSurfacePos) * irradianceFactor;
+	//	// attenuate direct sun light on its path from top of atmosphere to
+	//	// surface position
+	//	vec3 attenuationSunLight = transmittance(uTexTransmittance, surfacePosHeight,musSurfacePos);
+	//	vec3 reflectedLight = col * (lightScale * attenuationSunLight + irradianceSurface) * lightIntensity;
+	//	// attenuate again on path from surface position to camera
+	//	reflectedLight *= attenuation;
+
+	//	return reflectedLight;
+	//}
+
+    vec3 GetSolarRadiance() 
 	{
-		vec3 inscatteredLight = vec3(0);
-		//Calculate atmoSPHERE intersections
-		float ffDist = 0;
-		float bfDist = 0;
-		float pathLength = 0;
-		if(intersectSphere(viewDir, Position, camPos, Radius, ffDist, bfDist))
-		{
-			pathLength = min(length(pos-camPos), bfDist);
-			if(pathLength >= ffDist)
-			{
-				//intersection is behind front edge of atmosphere
-				vec3 startPos = camPos + viewDir * ffDist;
-				float startPosHeight = length(startPos - Position);
-				
-				// starting position of path is now ensured to be inside atmosphere
-				// was either originally there or has been moved to top boundary
-				float muStartPos = dot(startPos, viewDir) / startPosHeight;
-				float nuStartPos = dot(viewDir, SunDir);
-				float musStartPos = dot(startPos, SunDir) / startPosHeight;
-
-				// in-scattering for infinite ray (light in-scattered when
-				// no surface hit or object behind atmosphere)
-				vec4 inscatter = max(texture4D(uTexInscatter, startPosHeight, muStartPos, musStartPos, nuStartPos), 0.0f);
-				
-				vec3 endPos = camPos + viewDir * pathLength;
-				float endPosHeight = length(endPos - Position);
-				float musEndPos = dot(pos, SunDir) / endPosHeight;
-				
-				pathLength -= ffDist;
-				
-				attenuation = analyticTransmittance(startPosHeight, muStartPos, pathLength);
-				if(pathLength < bfDist-ffDist)
-				{
-					float muEndPos = dot(pos, viewDir) / endPosHeight;
-					vec4 inscatterSurface = texture4D(uTexInscatter, endPosHeight, muEndPos, musEndPos, nuStartPos);
-					inscatter = max(inscatter-attenuation.rgbr*inscatterSurface, 0.0f);
-					irradianceFactor = 1.0f;
-				}
-
-				float muHorizon = -sqrt(1.0 - (SurfaceRadius / startPosHeight) * (SurfaceRadius / startPosHeight));
-				// avoids imprecision problems near horizon by interpolating between
-				// two points above and below horizon
-				// fíx described in chapter 5.1.2
-				if (abs(muStartPos - muHorizon) < EPSILON_INSCATTER)
-				{
-					float mu = muHorizon - EPSILON_INSCATTER;
-					float samplePosHeight = sqrt(startPosHeight*startPosHeight +pathLength*pathLength+2.0f*startPosHeight* pathLength*mu);
-					float muSamplePos = (startPosHeight * mu + pathLength)/ samplePosHeight;
-					vec4 inScatter0 = texture4D(uTexInscatter, startPosHeight, mu, musStartPos, nuStartPos);
-					vec4 inScatter1 = texture4D(uTexInscatter, samplePosHeight, muSamplePos, musEndPos, nuStartPos);
-					vec4 inScatterA = max(inScatter0-attenuation.rgbr*inScatter1,0.0);
-
-					mu = muHorizon + EPSILON_INSCATTER;
-					samplePosHeight = sqrt(startPosHeight*startPosHeight +pathLength*pathLength+2.0f* startPosHeight*pathLength*mu);
-					muSamplePos = (startPosHeight * mu + pathLength) / samplePosHeight;
-					inScatter0 = texture4D(uTexInscatter, startPosHeight, mu, musStartPos, nuStartPos);
-					inScatter1 = texture4D(uTexInscatter, samplePosHeight, muSamplePos, musEndPos, nuStartPos);
-
-					vec4 inScatterB = max(inScatter0 - attenuation.rgbr * inScatter1, 0.0f);
-					float t = ((muStartPos - muHorizon) + EPSILON_INSCATTER) / (2.0 * EPSILON_INSCATTER);
-
-					inscatter = mix(inScatterA, inScatterB, t);
-				}
-
-				// avoids imprecision problems in Mie scattering when sun is below
-				//horizon
-				// fíx described in chapter 5.1.3
-				inscatter.w *= smoothstep(0.00, 0.02, musStartPos);
-				float phaseR = phaseFunctionR(nuStartPos);
-				float phaseM = phaseFunctionM(nuStartPos);
-				inscatteredLight = max(inscatter.rgb * phaseR + getMie(inscatter)* phaseM, 0.0f) * SunIntensity;
-			}
-		}
-		////Debugging
-		//attenuation *= pathLength/(Radius)*10;
-
-		return inscatteredLight;
-	}
-
-	vec3 GetReflectedLight(in vec3 norm, in float reflectance, in vec3 col, in vec3 surfacePos, in vec3 attenuation, in float irradianceFactor)
+		return uAtmosphere.solar_irradiance / (PI * uAtmosphere.sun_angular_radius * uAtmosphere.sun_angular_radius);
+    }
+    vec3 GetSkyRadiance( vec3 camera, vec3 view_ray, float shadow_length, vec3 sun_direction, out vec3 transmittance) 
 	{
-		float lightIntensity = SunIntensity * reflectance;
-		float lightScale = max(dot(norm, SunDir), 0.0f);
-		// irradiance at surface position due to sky light
-		float surfacePosHeight = length(surfacePos);
-		float musSurfacePos = dot(surfacePos, SunDir) / surfacePosHeight;
-		vec3 irradianceSurface = irradiance(uTexIrridiance, surfacePosHeight, musSurfacePos) * irradianceFactor;
-		// attenuate direct sun light on its path from top of atmosphere to
-		// surface position
-		vec3 attenuationSunLight = transmittance(uTexTransmittance, surfacePosHeight,musSurfacePos);
-		vec3 reflectedLight = col * (lightScale * attenuationSunLight + irradianceSurface) * lightIntensity;
-		// attenuate again on path from surface position to camera
-		reflectedLight *= attenuation;
+		return GetSkyRadiance(uAtmosphere, uTexTransmittance, uTexInscatter, uTexSingleMie,
+			camera, view_ray, shadow_length, sun_direction, transmittance);
+    }
+    vec3 GetSkyRadianceToPoint( vec3 camera, vec3 point, float shadow_length, vec3 sun_direction, out vec3 transmittance) 
+	{
+		return GetSkyRadianceToPoint(uAtmosphere, uTexTransmittance, uTexInscatter, uTexSingleMie,
+			camera, point, shadow_length, sun_direction, transmittance);
+    }
+    vec3 GetSunAndSkyIrradiance( vec3 p, vec3 normal, vec3 sun_direction, out vec3 sky_irradiance) 
+	{
+		return GetSunAndSkyIrradiance(uAtmosphere, uTexTransmittance, uTexIrridiance, p, normal, sun_direction, sky_irradiance);
+    }
+    vec3 GetSolarLuminance() 
+	{
+		return uAtmosphere.solar_irradiance / (PI * uAtmosphere.sun_angular_radius * uAtmosphere.sun_angular_radius) * uSunSpectralRadToLum;
+    }
+    vec3 GetSkyLuminance( vec3 camera, vec3 view_ray, float shadow_length, vec3 sun_direction, out vec3 transmittance) 
+	{
+		return GetSkyRadiance(uAtmosphere, uTexTransmittance, uTexInscatter, uTexSingleMie,
+			camera, view_ray, shadow_length, sun_direction, transmittance) * uSkySpectralRadToLum;
+    }
+    vec3 GetSkyLuminanceToPoint( vec3 camera, vec3 point, float shadow_length, vec3 sun_direction, out vec3 transmittance) 
+	{
+		return GetSkyRadianceToPoint(uAtmosphere, uTexTransmittance, uTexInscatter, uTexSingleMie,
+			camera, point, shadow_length, sun_direction, transmittance) * uSkySpectralRadToLum;
+    }
+    vec3 GetSunAndSkyIlluminance( vec3 p, vec3 normal, vec3 sun_direction, out vec3 sky_irradiance) 
+	{
+		vec3 sun_irradiance = GetSunAndSkyIrradiance( uAtmosphere, uTexTransmittance, uTexIrridiance, 
+			p, normal, sun_direction, sky_irradiance);
+		sky_irradiance *= uSkySpectralRadToLum;
+		return sun_irradiance * uSunSpectralRadToLum;
+    }
 
-		return reflectedLight;
-	}
-	
 	void main()
 	{
 		vec2 tc = (Texcoord.xyz/Texcoord.w).xy;//+vec2(1))*0.5f;
@@ -159,10 +209,99 @@
 
 		float reflectance = 1 - rough;
 
-		vec3 inscatteredLight = GetInscatteredLight(pos, camPos, viewDir, attenuation, irradianceFactor);
-		vec3 reflectedLight = GetReflectedLight(norm, reflectance, baseCol, pos, attenuation, irradianceFactor);
+		//vec3 inscatteredLight = GetInscatteredLight(pos, camPos, viewDir, attenuation, irradianceFactor);
+		//vec3 reflectedLight = GetReflectedLight(norm, reflectance, baseCol, pos, attenuation, irradianceFactor);
 		
 		//output
-		outColor = vec4(reflectedLight+inscatteredLight, 1);
+		//outColor = vec4(reflectedLight+inscatteredLight, 1);
+
+
+
+
+		// Tangent of the angle subtended by this fragment.
+		//float fragment_angular_size = length(dFdx(view_ray) + dFdy(view_ray)) / length(view_ray);
+		float fragment_angular_size = length(dFdx(viewRay) + dFdy(viewRay)) / length(viewRay);
+
+		//float shadow_in;
+		//float shadow_out;
+
+		// Hack to fade out light shafts when the Sun is very close to the horizon.
+		float lightshaft_fadein_hack = smoothstep( 0.02, 0.04, dot(normalize(camPos - Position), SunDir));
+
+		//Raytraced sphere
+		//// Compute the distance between the view ray line and the sphere center,
+		//// and the distance between the camera and the intersection of the view
+		//// ray with the sphere (or NaN if there is no intersection).
+		//vec3 p = camera - kSphereCenter;
+		//float p_dot_v = dot(p, viewDir);
+		//float p_dot_p = dot(p, p);
+		//float ray_sphere_center_squared_distance = p_dot_p - p_dot_v * p_dot_v;
+		//float distance_to_intersection = -p_dot_v - sqrt( kSphereRadius * kSphereRadius - ray_sphere_center_squared_distance);
+		//// Compute the radiance reflected by the sphere, if the ray intersects it.
+		//float sphere_alpha = 0.0;
+		//vec3 sphere_radiance = vec3(0.0);
+		//if (distance_to_intersection > 0.0) 
+		//{
+		//	// Compute the distance between the view ray and the sphere, and the
+		//	// corresponding (tangent of the) subtended angle. Finally, use this to
+		//	// compute the approximate analytic antialiasing factor sphere_alpha.
+		//	float ray_sphere_distance = kSphereRadius - sqrt(ray_sphere_center_squared_distance);
+		//	float ray_sphere_angular_distance = -ray_sphere_distance / p_dot_v;
+		//	sphere_alpha = min(ray_sphere_angular_distance / fragment_angular_size, 1.0);
+		//	vec3 point = camera + viewDir * distance_to_intersection;
+		//	vec3 normal = normalize(point - kSphereCenter);
+		//	// Compute the radiance reflected by the sphere.
+		//	vec3 sky_irradiance;
+		//	vec3 sun_irradiance = GetSunAndSkyIrradiance( point - earth_center, normal, SunDir, sky_irradiance);
+		//	sphere_radiance = kSphereAlbedo * (1.0 / PI) * (sun_irradiance + sky_irradiance);
+		//	float shadow_length = 0;//max(0.0, min(shadow_out, distance_to_intersection) - shadow_in) * lightshaft_fadein_hack;
+		//	vec3 transmittance;
+		//	vec3 in_scatter = GetSkyRadianceToPoint(camera - earth_center, point - earth_center, shadow_length, SunDir, transmittance);
+		//	sphere_radiance = sphere_radiance * transmittance + in_scatter;
+		//}
+
+		// Compute the distance between the view ray line and the Earth center,
+		// and the distance between the camera and the intersection of the view
+		// ray with the ground (or NaN if there is no intersection).
+		vec3 p = camPos - Position;
+		float p_dot_v = dot(p, viewDir);
+		float p_dot_p = dot(p, p);
+		float ray_earth_center_squared_distance = p_dot_p - p_dot_v * p_dot_v;
+		float distance_to_intersection = -p_dot_v - sqrt( Position.z * Position.z - ray_earth_center_squared_distance);
+
+		// Compute the radiance reflected by the ground, if the ray intersects it.
+		float ground_alpha = 0.0;
+		vec3 ground_radiance = vec3(0.0);
+		if (distance_to_intersection > 0.0) 
+		{
+			vec3 point = camPos + viewDir * distance_to_intersection;
+			vec3 normal = normalize(point - Position);
+
+			// Compute the radiance reflected by the ground.
+			vec3 sky_irradiance;
+			vec3 sun_irradiance = GetSunAndSkyIrradiance( point - Position, normal, SunDir, sky_irradiance);
+			//ground_radiance = kGroundAlbedo * (1.0 / PI) * ( sun_irradiance /* * GetSunVisibility(point, SunDir) */ + sky_irradiance /** GetSkyVisibility(point)*/);
+			ground_radiance = kGroundAlbedo * (1.0 / PI) * ( sun_irradiance + sky_irradiance );
+
+			float shadow_length = 0;//max(0.0, min(shadow_out, distance_to_intersection) - shadow_in) * lightshaft_fadein_hack;
+			vec3 transmittance;
+			vec3 in_scatter = GetSkyRadianceToPoint(camPos - Position, point - Position, shadow_length, SunDir, transmittance);
+			ground_radiance = ground_radiance * transmittance + in_scatter;
+			ground_alpha = 1.0;
+		}
+		// Compute the radiance of the sky.
+		float shadow_length = 0;//max(0.0, shadow_out - shadow_in) * lightshaft_fadein_hack;
+		vec3 transmittance;
+		vec3 radiance = GetSkyRadiance( camPos - Position, viewDir, shadow_length, SunDir, transmittance);
+
+		// If the view ray intersects the Sun, add the Sun radiance.
+		if (dot(viewDir, SunDir) > uSunSize.y) 
+		{
+			radiance = radiance + transmittance * GetSolarRadiance();
+		}
+		radiance = mix(radiance, ground_radiance, ground_alpha);
+
+		radiance = vec3(p);
+		outColor = vec4(radiance, 1);
 	}
 </FRAGMENT>

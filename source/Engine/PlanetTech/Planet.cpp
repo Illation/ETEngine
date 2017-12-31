@@ -87,3 +87,8 @@ int32 Planet::GetVertexCount()
 {
 	return m_pTriangulator->GetVertexCount()*m_pPatch->GetVertexCount();
 }
+
+void Planet::SetSunlight(LightComponent* pLight)
+{
+	if (m_pAtmopshere)m_pAtmopshere->SetSunlight(pLight);
+}

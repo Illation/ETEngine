@@ -54,7 +54,7 @@ public:
 	static const GLenum INTERNAL2D = GL_RGBA32F;
 	static const GLenum INTERNAL3D = GL_RGBA16F;//half precision
 
-	void UploadTextureSize(ShaderData* shader);
+	void UploadTextureSize(ShaderData* shader) const;
 	int32 TRANSMITTANCE_W = 256;
 	int32 TRANSMITTANCE_H = 64;
 

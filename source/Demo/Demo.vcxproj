@@ -133,31 +133,27 @@
       <PreprocessorDefinitions>PLATFORM_Win;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D
-xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D
-xcopy "$(SolutionDir)..\dependancies\x32\assimp\Assimp32.dll" "$(OutDir)" /y/D
+      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D/d
+xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D/d
+xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D/d
 
-xcopy "$(SolutionDir)Engine\Resources" "$(OutDir)\Resources" /s/i/y
-xcopy "$(SolutionDir)Engine\Shaders" "$(OutDir)\Shaders" /s/i/y
-xcopy "$(SolutionDir)Demo\Resources" "$(OutDir)\Resources" /s/i/y
-xcopy "$(SolutionDir)Demo\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
+xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y/d
+xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y/d
+xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y/d
+xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y/d</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;assimp.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>xcopy "$(S_LIBS)\SDL2\lib\x86\SDL2.dll" "$(OutDir)" /y/D
-xcopy "$(S_LIBS)\DevIL\lib\ILU.dll" "$(OutDir)" /y/D
-xcopy "$(S_LIBS)\DevIL\lib\ILUT.dll" "$(OutDir)" /y/D
-xcopy "$(S_LIBS)\DevIL\lib\DevIL.dll" "$(OutDir)" /y/D
-xcopy "$(S_LIBS)\FreeImage\Dist\x32\FreeImage.dll" "$(OutDir)" /y/D
+      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D/d
+xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D/d
+xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D/d
 
-xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D
-
-xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y
-xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y
-xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y
-xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
+xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y/d
+xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y/d
+xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y/d
+xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y/d</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>randomBullshit.svg</Outputs>
@@ -172,31 +168,27 @@ xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
       <PreprocessorDefinitions>PLATFORM_Win;EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D
-xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D
-xcopy "$(SolutionDir)..\dependancies\x32\assimp\Assimp32.dll" "$(OutDir)" /y/D
+      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D/d
+xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D/d
+xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D/d
 
-xcopy "$(SolutionDir)Engine\Resources" "$(OutDir)\Resources" /s/i/y
-xcopy "$(SolutionDir)Engine\Shaders" "$(OutDir)\Shaders" /s/i/y
-xcopy "$(SolutionDir)Demo\Resources" "$(OutDir)\Resources" /s/i/y
-xcopy "$(SolutionDir)Demo\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
+xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y/d
+xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y/d
+xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y/d
+xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y/d</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;assimp.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>xcopy "$(S_LIBS)\SDL2\lib\x86\SDL2.dll" "$(OutDir)" /y/D
-xcopy "$(S_LIBS)\DevIL\lib\ILU.dll" "$(OutDir)" /y/D
-xcopy "$(S_LIBS)\DevIL\lib\ILUT.dll" "$(OutDir)" /y/D
-xcopy "$(S_LIBS)\DevIL\lib\DevIL.dll" "$(OutDir)" /y/D
-xcopy "$(S_LIBS)\FreeImage\Dist\x32\FreeImage.dll" "$(OutDir)" /y/D
+      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D/d
+xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D/d
+xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D/d
 
-xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D
-
-xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y
-xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y
-xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y
-xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
+xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y/d
+xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y/d
+xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y/d
+xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y/d</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>randomBullshit.svg</Outputs>
@@ -234,28 +226,24 @@ xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
       <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;assimp.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D
-xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D
-xcopy "$(SolutionDir)..\dependancies\x32\assimp\Assimp32.dll" "$(OutDir)" /y/D
+      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D/d
+xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D/d
+xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D/d
 
-xcopy "$(SolutionDir)Engine\Resources" "$(OutDir)\Resources" /s/i/y
-xcopy "$(SolutionDir)Engine\Shaders" "$(OutDir)\Shaders" /s/i/y
-xcopy "$(SolutionDir)Demo\Resources" "$(OutDir)\Resources" /s/i/y
-xcopy "$(SolutionDir)Demo\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
+xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y/d
+xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y/d
+xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y/d
+xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y/d</Command>
     </PostBuildEvent>
     <CustomBuildStep>
-      <Command>xcopy "$(S_LIBS)\SDL2\lib\x86\SDL2.dll" "$(OutDir)" /y/D
-xcopy "$(S_LIBS)\DevIL\lib\ILU.dll" "$(OutDir)" /y/D
-xcopy "$(S_LIBS)\DevIL\lib\ILUT.dll" "$(OutDir)" /y/D
-xcopy "$(S_LIBS)\DevIL\lib\DevIL.dll" "$(OutDir)" /y/D
-xcopy "$(S_LIBS)\FreeImage\Dist\x32\FreeImage.dll" "$(OutDir)" /y/D
+      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D/d
+xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D/d
+xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D/d
 
-xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D
-
-xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y
-xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y
-xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y
-xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y</Command>
+xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y/d
+xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y/d
+xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y/d
+xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y/d</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>randomBullshit.svg</Outputs>

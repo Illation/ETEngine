@@ -7,6 +7,7 @@
 class Planet;
 class Atmosphere;
 class AtmoPreCompute;
+class LightComponent;
 
 class Atmosphere
 {
@@ -17,6 +18,8 @@ public:
 	void Precalculate();
 	void Initialize();
 	void Draw(Planet* pPlanet, float radius);
+
+	void SetSunlight(LightComponent* pLight) { m_pSun = pLight; }
 
 private:
 	friend class AtmospherePrecompute;
@@ -33,6 +36,14 @@ private:
 	GLint m_uPosition;
 	GLint m_uRadius;
 	GLint m_uSurfaceRadius;
+
+	GLint m_uSunDir;
+	GLint m_uSunIntensity;
+	GLint m_uSunSize;
+	LightComponent* m_pSun;
+
+	GLint m_uSkySpectralRadToLum;
+	GLint m_uSunSpectralRadToLum;
 
 	AtmosphereParameters m_Params;
 	dvec3 m_SkyColor;

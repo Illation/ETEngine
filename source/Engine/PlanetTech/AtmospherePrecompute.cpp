@@ -49,9 +49,10 @@ void AtmospherePrecompute::Init()
 	m_IsInitialized = true;
 }
 
-void AtmospherePrecompute::Unload()
+void AtmospherePrecompute::Unload()//unload textures and fbos needed for precomputation without deleting parameters
 {
-	glDeleteFramebuffers(m_FBO, 0);
+	if (!m_IsInitialized)
+		return;
 
 	delete m_TexDeltaIrradiance;
 	m_TexDeltaIrradiance = nullptr;
@@ -62,6 +63,9 @@ void AtmospherePrecompute::Unload()
 	m_TexDeltaMie = nullptr;
 	delete m_TexDeltaScattering;
 	m_TexDeltaScattering = nullptr;
+
+	glDeleteFramebuffers(1, &m_FBO);
+	// #todo also unload shaders, extra functionality for content manager
 
 	//assert(glGetError == 0);
 
@@ -247,6 +251,8 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0);
 
 	STATE->SetBlendEnabled(false);
+
+	Unload();
 }
 
 void AtmospherePrecompute::SetUniforms(ShaderData* shader, TextureData* transmittance, TextureData* scattering, TextureData* irradiance, TextureData* mie)

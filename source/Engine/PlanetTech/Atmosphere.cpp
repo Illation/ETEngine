@@ -14,6 +14,7 @@
 #include "../Graphics/Frustum.hpp"
 #include "SpriteRenderer.hpp"
 #include "Skybox.hpp"
+#include "Light.hpp"
 
 vec3 InterpolatedSpectrum(const std::vector<double_t> &wavelengths, const std::vector<double_t> &v, const dvec3 &lambdas, float scale)
 {
@@ -157,6 +158,13 @@ void Atmosphere::Initialize()
 	m_uPosition = glGetUniformLocation(m_pShader->GetProgram(), "Position");
 	m_uRadius = glGetUniformLocation(m_pShader->GetProgram(), "Radius");
 	m_uSurfaceRadius = glGetUniformLocation(m_pShader->GetProgram(), "SurfaceRadius");
+
+	m_uSunDir = glGetUniformLocation(m_pShader->GetProgram(), "SunDir");
+	m_uSunIntensity = glGetUniformLocation(m_pShader->GetProgram(), "SunIntensity");
+	m_uSunSize = glGetUniformLocation(m_pShader->GetProgram(), "uSunSize");
+
+	m_uSkySpectralRadToLum = glGetUniformLocation(m_pShader->GetProgram(), "uSkySpectralRadToLum");
+	m_uSunSpectralRadToLum = glGetUniformLocation(m_pShader->GetProgram(), "uSunSpectralRadToLum");
 }
 void Atmosphere::Draw(Planet* pPlanet, float radius)
 {
@@ -195,6 +203,27 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	glUniform1f(m_uRadius, radius);
 	glUniform1f(m_uSurfaceRadius, surfaceRadius);
 
+	m_Params.Upload(m_pShader, "uAtmosphere");
+	AtmospherePrecompute::GetInstance()->GetSettings().UploadTextureSize(m_pShader);
+
+	vec3 skySpectralRadToLum = vec3((float)m_SkyColor.x, (float)m_SkyColor.y, (float)m_SkyColor.z);
+	glUniform3fv(m_uSkySpectralRadToLum, 1, etm::valuePtr(skySpectralRadToLum));
+	vec3 sunSpectralRadToLum = vec3((float)m_SunColor.x, (float)m_SunColor.y, (float)m_SunColor.z);
+	glUniform3fv(m_uSunSpectralRadToLum, 1, etm::valuePtr(sunSpectralRadToLum));
+
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexInscatter"), 3);
+	STATE->LazyBindTexture(3, GL_TEXTURE_2D, m_TexInscatter->GetHandle());
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexIrridiance"), 4);
+	STATE->LazyBindTexture(3, GL_TEXTURE_2D, m_TexIrradiance->GetHandle());
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexTransmittance"), 5);
+	STATE->LazyBindTexture(3, GL_TEXTURE_2D, m_TexTransmittance->GetHandle());
+
+	glUniform3fv(m_uSunDir, 1, etm::valuePtr(m_pSun->GetTransform()->GetForward()));
+	DirectionalLight* pDirLight = m_pSun->GetLight<DirectionalLight>();
+	if (pDirLight) glUniform1f(m_uSunIntensity, pDirLight->GetBrightness());
+	vec2 sunSize = vec2(tan(m_Params.sun_angular_radius), cos(m_Params.sun_angular_radius));
+	glUniform2fv(m_uSunSize, 1, etm::valuePtr(sunSize));
+
 	STATE->SetCullEnabled(true);
 	STATE->SetFaceCullingMode(GL_FRONT);
 	STATE->SetDepthEnabled(false);
@@ -208,11 +237,11 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	STATE->SetCullEnabled(false);
 
 	// #temp , hacking that visualization
-	vec4 brightness = vec4(SCENE->GetPostProcessingSettings().exposure);
-	float layer = SCENE->GetSkybox()->GetRoughness();
-	SpriteRenderer::GetInstance()->Draw(m_TexInscatter, vec2(0, (float)(WINDOW.Height/2)), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE, layer);
-	SpriteRenderer::GetInstance()->Draw(m_TexIrradiance, vec2(((float)WINDOW.Width)*0.6f, 0), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE);
-	SpriteRenderer::GetInstance()->Draw(m_TexTransmittance, vec2(0), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE);
+	//vec4 brightness = vec4(SCENE->GetPostProcessingSettings().exposure);
+	//float layer = SCENE->GetSkybox()->GetRoughness();
+	//SpriteRenderer::GetInstance()->Draw(m_TexInscatter, vec2(0, (float)(WINDOW.Height/2)), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE, layer);
+	//SpriteRenderer::GetInstance()->Draw(m_TexIrradiance, vec2(((float)WINDOW.Width)*0.6f, 0), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE);
+	//SpriteRenderer::GetInstance()->Draw(m_TexTransmittance, vec2(0), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE);
 }
 
 AtmosphereSettings::AtmosphereSettings()
