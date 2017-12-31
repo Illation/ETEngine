@@ -18,6 +18,8 @@ public:
 	static double Interpolate(const std::vector<double>& wavelengths, const std::vector<double>& wavelength_function, double wavelength);
 	static void ComputeSpectralRadianceToLuminanceFactors(const AtmosphereSettings &settings, const std::vector<double>& wavelengths, const std::vector<double>& solar_irradiance, double lambda_power, dvec3 &color);
 
+	const AtmosphereSettings& GetSettings() { return m_Settings; }
+
 private:
 	static double CieColorMatchingFunctionTableValue(const AtmosphereSettings &settings, double wavelength, int column);
 	void ConvertSpectrumToLinearSrgb(const std::vector<double>& wavelengths, const std::vector<double>& spectrum, double* r, double* g, double* b);

@@ -7,6 +7,7 @@ class TextureData;
 class Triangulator;
 class Patch;
 class Atmosphere;
+class LightComponent;
 
 class Planet : public Entity
 {
@@ -32,6 +33,8 @@ public:
 	}
 	float GetAtmosphereHeight() { return m_pAtmopshere ? m_AtmRadius : 0; }
 
+	void SetSunlight(LightComponent* pLight);;
+
 protected:
 	virtual void Initialize();
 	virtual void Update();
@@ -55,7 +58,7 @@ protected:
 private:
 	bool m_Rotate = false;
 
-	Atmosphere* m_pAtmopshere;
+	Atmosphere* m_pAtmopshere = nullptr;
 	float m_AtmRadius;
 
 	//Calculations

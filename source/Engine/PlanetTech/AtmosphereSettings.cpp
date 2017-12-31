@@ -40,11 +40,11 @@ void AtmosphereParameters::UploadDensityProfile(ShaderData* shader, const std::s
 }
 
 DensityProfileLayer::DensityProfileLayer(double width, double exp_term, double exp_scale, double linear_term, double constant_term) 
-	: width(width)
-	, exp_term(exp_term)
-	, exp_scale(exp_scale)
-	, linear_term(linear_term)
-	, constant_term(constant_term)
+	: width((float)width)
+	, exp_term((float)exp_term)
+	, exp_scale((float)exp_scale)
+	, linear_term((float)linear_term)
+	, constant_term((float)constant_term)
 {
 }
 
@@ -79,7 +79,7 @@ DensityProfile::DensityProfile(std::vector<DensityProfileLayer> inLayers, float 
 	layers[1] = inLayers[1];
 }
 
-void AtmosphereSettings::UploadTextureSize(ShaderData* shader)
+void AtmosphereSettings::UploadTextureSize(ShaderData* shader) const
 {
 	STATE->SetShader(shader);
 	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexTransmittanceW"), TRANSMITTANCE_W);

@@ -47,7 +47,7 @@ void PlanetTestScene::Initialize()
 	//Models
 	//*************************
 	m_pPlanet = new Moon();
-	AddEntity(m_pPlanet);
+	AddEntity(m_pPlanet);//Planet is initialized
 	CAMERA->GetTransform()->SetPosition(0, 0, -(m_pPlanet->GetRadius() + 10));
 
 	//Lights
@@ -55,7 +55,9 @@ void PlanetTestScene::Initialize()
 	m_pLigEntity = new Entity();
 	m_pLight = new DirectionalLight(vec3(1, 1, 1), 0.99f);
 	//m_pLight->SetShadowEnabled(true);
-	m_pLigEntity->AddComponent(new LightComponent( m_pLight));
+	auto pLightComp = new LightComponent(m_pLight);
+	m_pPlanet->SetSunlight(pLightComp);//Associate this light with the sun for the atmosphere
+	m_pLigEntity->AddComponent(pLightComp);
 	m_pLigEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
 	//m_pLigEntity->GetTransform()->SetRotation(etm::lookAt())
 	AddEntity(m_pLigEntity);
