@@ -228,9 +228,9 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	// #temp , hacking that visualization
 	vec4 brightness = vec4(SCENE->GetPostProcessingSettings().exposure);
 	float layer = SCENE->GetSkybox()->GetRoughness();
-	SpriteRenderer::GetInstance()->Draw(m_TexInscatter, vec2(0, (float)(WINDOW.Height/2)), brightness, vec2(0), vec2(2), 0, pos.z, SpriteScalingMode::TEXTURE, layer);
-	SpriteRenderer::GetInstance()->Draw(m_TexIrradiance, vec2(0, ((float)WINDOW.Height)*0.8f), brightness, vec2(0), vec2(8), 0, pos.z, SpriteScalingMode::TEXTURE);
-	SpriteRenderer::GetInstance()->Draw(m_TexTransmittance, vec2(0, ((float)WINDOW.Height)*0.3f), brightness, vec2(0), vec2(2), 0, pos.z, SpriteScalingMode::TEXTURE);
+	SpriteRenderer::GetInstance()->Draw(m_TexInscatter, vec2(0, (float)(WINDOW.Height/2)), brightness, vec2(0), vec2(2), 0, pos.z, SpriteScalingMode::TEXTURE_ABS, layer);
+	SpriteRenderer::GetInstance()->Draw(m_TexIrradiance, vec2(0, ((float)WINDOW.Height)*0.8f), brightness, vec2(0), vec2(8), 0, pos.z, SpriteScalingMode::TEXTURE_ABS);
+	SpriteRenderer::GetInstance()->Draw(m_TexTransmittance, vec2(0, ((float)WINDOW.Height)*0.3f), brightness, vec2(0), vec2(2), 0, pos.z, SpriteScalingMode::TEXTURE_ABS);
 }
 
 void Atmosphere::GetUniforms()
