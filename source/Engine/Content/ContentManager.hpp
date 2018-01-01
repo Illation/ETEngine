@@ -25,6 +25,22 @@ public:
 		return nullptr;
 	}
 
+	template<class T>
+	static T* Reload(const std::string& assetFile)
+	{
+		const std::type_info& ti = typeid(T);
+		for (AbstractLoader* loader : m_Loaders)
+		{
+			const std::type_info& loadertype = loader->GetType();
+			if (loadertype == ti)
+			{
+				return (static_cast<ContentLoader<T>*>(loader))->ReloadContent(assetFile);
+			}
+		}
+
+		return nullptr;
+	}
+
 	template<class T, class DataType>
 	static T* GetLoader()
 	{

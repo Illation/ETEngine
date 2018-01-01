@@ -24,6 +24,8 @@ public:
 private:
 	friend class AtmospherePrecompute;
 
+	void GetUniforms();
+
 	//Camera and pos reconstruction from gbuffer
 	GLint m_uMatModel;
 	GLint m_uMatWVP;

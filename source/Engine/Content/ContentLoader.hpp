@@ -35,6 +35,22 @@ public:
 
 	virtual const std::type_info& GetType() const { return typeid(T); }
 
+	T* ReloadContent(const std::string &assetFile)
+	{
+		for(auto &kvp:m_contentReferences)
+		{
+			if (kvp.first.compare(assetFile) == 0)
+			{
+				Destroy(kvp.second);
+				kvp.second = LoadContent(assetFile);
+				return kvp.second;
+			}
+		}
+		T* content = LoadContent(assetFile);
+		if(content!=nullptr)m_contentReferences.insert(std::pair<std::string,T*>(assetFile, content));
+		return content;
+	}
+
 	T* GetContent(const std::string& assetFile)
 	{
 		for(std::pair<std::string, T*> kvp:m_contentReferences)
@@ -42,15 +58,6 @@ public:
 			if(kvp.first.compare(assetFile)==0)
 				return kvp.second;
 		}
-
-		//Does File Exists?
-		//struct _stat buff;
-		//int32 result = -1;
-		//result = _wstat(assetFile.c_str(), &buff);
-		//if(result != 0)
-		//{
-		//	std::cout<<"ContentManager> File not found!\nPath: " << assetFile << std::endl;
-		//}
 
 		T* content = LoadContent(assetFile);
 		if(content!=nullptr)m_contentReferences.insert(std::pair<std::string,T*>(assetFile, content));
