@@ -3,7 +3,7 @@
 ETEngine.VC.*
 ETEngine.VC.VC.opendb
 ETEngine.VC.db
-/build
+/build/Intermediate
 /bin
 *.ipch
 *.db

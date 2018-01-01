@@ -133,27 +133,13 @@
       <PreprocessorDefinitions>PLATFORM_Win;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D/d
-xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D/d
-xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D/d
-
-xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y/d
-xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y/d
-xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y/d
-xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y/d</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir)</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;assimp.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D/d
-xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D/d
-xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D/d
-
-xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y/d
-xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y/d
-xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y/d
-xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y/d</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir)</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>randomBullshit.svg</Outputs>
@@ -168,27 +154,13 @@ xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y/d</Command>
       <PreprocessorDefinitions>PLATFORM_Win;EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D/d
-xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D/d
-xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D/d
-
-xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y/d
-xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y/d
-xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y/d
-xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y/d</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir)</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;assimp.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D/d
-xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D/d
-xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D/d
-
-xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y/d
-xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y/d
-xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y/d
-xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y/d</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir)</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>randomBullshit.svg</Outputs>
@@ -226,24 +198,10 @@ xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y/d</Command>
       <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;assimp.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D/d
-xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D/d
-xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D/d
-
-xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y/d
-xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y/d
-xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y/d
-xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y/d</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir)</Command>
     </PostBuildEvent>
     <CustomBuildStep>
-      <Command>xcopy "$(SolutionDir)..\dependancies\x32\sdl2\SDL2.dll" "$(OutDir)" /y/D/d
-xcopy "$(SolutionDir)..\dependancies\x32\freeImage\FreeImage.dll" "$(OutDir)" /y/D/d
-xcopy "$(SolutionDir)\Engine\StaticDependancies\Assimp32.dll" "$(OutDir)" /y/D/d
-
-xcopy "$(SolutionDir)\Engine\Resources" "$(OutDir)\Resources" /s/i/y/d
-xcopy "$(SolutionDir)\Engine\Shaders" "$(OutDir)\Shaders" /s/i/y/d
-xcopy "$(SolutionDir)\Demo\Resources" "$(OutDir)\Resources" /s/i/y/d
-xcopy "$(SolutionDir)\Demo\Shaders" "$(OutDir)\Shaders" /s/i/y/d</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir)</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>randomBullshit.svg</Outputs>
