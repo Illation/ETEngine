@@ -4,7 +4,8 @@ enum class SpriteScalingMode : uint8
 {
 	SCREEN,
 	PIXEL,
-	TEXTURE
+	TEXTURE,
+	TEXTURE_ABS//Uses true pixels size, unrelated to global texture scaling
 };
 
 class SpriteRenderer : public Singleton<SpriteRenderer>
