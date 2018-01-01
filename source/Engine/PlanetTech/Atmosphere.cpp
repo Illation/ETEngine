@@ -110,6 +110,8 @@ Atmosphere::Atmosphere()
 	m_Params.sun_angular_radius = (float)(0.00935 / 2.0);
 	m_Params.bottom_radius = (float)(6360000.0 / kLengthUnitInMeters);
 	m_Params.top_radius = (float)(6420000.0 / kLengthUnitInMeters);
+	m_Params.bottom_radius = 1737.1f;// #temp , moon specific
+	m_Params.top_radius = 1837.1f;// #temp , moon specific
 	m_Params.rayleigh_density = DensityProfile({ rayleigh_layer }, (float)kLengthUnitInMeters);
 	m_Params.rayleigh_scattering = InterpolatedSpectrum(wavelengths, rayleigh_scattering, lambdas, (float)kLengthUnitInMeters);
 	m_Params.mie_density = DensityProfile({ mie_layer }, (float)kLengthUnitInMeters);
@@ -145,26 +147,7 @@ void Atmosphere::Initialize()
 	Precalculate();
 	//Load and compile Shaders
 	m_pShader = ContentManager::Load<ShaderData>("Shaders/PostAtmosphere.glsl");
-	STATE->SetShader(m_pShader);
-
-	m_uMatModel = glGetUniformLocation(m_pShader->GetProgram(), "model");
-	m_uMatWVP = glGetUniformLocation(m_pShader->GetProgram(), "worldViewProj");
-
-	m_uCamPos = glGetUniformLocation(m_pShader->GetProgram(), "camPos");
-	m_uProjA = glGetUniformLocation(m_pShader->GetProgram(), "projectionA");
-	m_uProjB = glGetUniformLocation(m_pShader->GetProgram(), "projectionB");
-	m_uViewProjInv = glGetUniformLocation(m_pShader->GetProgram(), "viewProjInv");
-
-	m_uPosition = glGetUniformLocation(m_pShader->GetProgram(), "Position");
-	m_uRadius = glGetUniformLocation(m_pShader->GetProgram(), "Radius");
-	m_uSurfaceRadius = glGetUniformLocation(m_pShader->GetProgram(), "SurfaceRadius");
-
-	m_uSunDir = glGetUniformLocation(m_pShader->GetProgram(), "SunDir");
-	m_uSunIntensity = glGetUniformLocation(m_pShader->GetProgram(), "SunIntensity");
-	m_uSunSize = glGetUniformLocation(m_pShader->GetProgram(), "uSunSize");
-
-	m_uSkySpectralRadToLum = glGetUniformLocation(m_pShader->GetProgram(), "uSkySpectralRadToLum");
-	m_uSunSpectralRadToLum = glGetUniformLocation(m_pShader->GetProgram(), "uSunSpectralRadToLum");
+	GetUniforms();
 }
 void Atmosphere::Draw(Planet* pPlanet, float radius)
 {
@@ -180,6 +163,12 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	//mat4 World = etm::translate(pos)*etm::scale(vec3(icoRadius));
 	mat4 World = etm::scale(vec3(icoRadius))*etm::translate(pos);
 
+	//Hotreload shader
+	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LALT) && INPUT->IsKeyboardKeyPressed('R'))
+	{
+		m_pShader = ContentManager::Reload<ShaderData>("Shaders/PostAtmosphere.glsl");
+		GetUniforms();
+	}
 	STATE->SetShader(m_pShader);
 
 	glUniformMatrix4fv(m_uMatModel, 1, GL_FALSE, etm::valuePtr(World));
@@ -237,11 +226,38 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	STATE->SetCullEnabled(false);
 
 	// #temp , hacking that visualization
-	//vec4 brightness = vec4(SCENE->GetPostProcessingSettings().exposure);
-	//float layer = SCENE->GetSkybox()->GetRoughness();
-	//SpriteRenderer::GetInstance()->Draw(m_TexInscatter, vec2(0, (float)(WINDOW.Height/2)), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE, layer);
-	//SpriteRenderer::GetInstance()->Draw(m_TexIrradiance, vec2(((float)WINDOW.Width)*0.6f, 0), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE);
-	//SpriteRenderer::GetInstance()->Draw(m_TexTransmittance, vec2(0), brightness, vec2(0), vec2(4), 0, pos.z, SpriteScalingMode::TEXTURE);
+	vec4 brightness = vec4(SCENE->GetPostProcessingSettings().exposure);
+	float layer = SCENE->GetSkybox()->GetRoughness();
+	SpriteRenderer::GetInstance()->Draw(m_TexInscatter, vec2(0, (float)(WINDOW.Height/2)), brightness, vec2(0), vec2(2), 0, pos.z, SpriteScalingMode::TEXTURE, layer);
+	SpriteRenderer::GetInstance()->Draw(m_TexIrradiance, vec2(0, ((float)WINDOW.Height)*0.8f), brightness, vec2(0), vec2(8), 0, pos.z, SpriteScalingMode::TEXTURE);
+	SpriteRenderer::GetInstance()->Draw(m_TexTransmittance, vec2(0, ((float)WINDOW.Height)*0.3f), brightness, vec2(0), vec2(2), 0, pos.z, SpriteScalingMode::TEXTURE);
+}
+
+void Atmosphere::GetUniforms()
+{
+	if (!m_pShader)
+		return;
+
+	STATE->SetShader(m_pShader);
+
+	m_uMatModel = glGetUniformLocation(m_pShader->GetProgram(), "model");
+	m_uMatWVP = glGetUniformLocation(m_pShader->GetProgram(), "worldViewProj");
+
+	m_uCamPos = glGetUniformLocation(m_pShader->GetProgram(), "camPos");
+	m_uProjA = glGetUniformLocation(m_pShader->GetProgram(), "projectionA");
+	m_uProjB = glGetUniformLocation(m_pShader->GetProgram(), "projectionB");
+	m_uViewProjInv = glGetUniformLocation(m_pShader->GetProgram(), "viewProjInv");
+
+	m_uPosition = glGetUniformLocation(m_pShader->GetProgram(), "Position");
+	m_uRadius = glGetUniformLocation(m_pShader->GetProgram(), "Radius");
+	m_uSurfaceRadius = glGetUniformLocation(m_pShader->GetProgram(), "SurfaceRadius");
+
+	m_uSunDir = glGetUniformLocation(m_pShader->GetProgram(), "SunDir");
+	m_uSunIntensity = glGetUniformLocation(m_pShader->GetProgram(), "SunIntensity");
+	m_uSunSize = glGetUniformLocation(m_pShader->GetProgram(), "uSunSize");
+
+	m_uSkySpectralRadToLum = glGetUniformLocation(m_pShader->GetProgram(), "uSkySpectralRadToLum");
+	m_uSunSpectralRadToLum = glGetUniformLocation(m_pShader->GetProgram(), "uSunSpectralRadToLum");
 }
 
 AtmosphereSettings::AtmosphereSettings()
