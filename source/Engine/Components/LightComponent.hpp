@@ -17,7 +17,7 @@ public:
 		return GetLight<T>() != nullptr;
 	}
 	template<class T>
-	T* GetLight(bool searchChildren = false)
+	T* GetLight()
 	{
 		return dynamic_cast<T*>(m_Light);
 	}

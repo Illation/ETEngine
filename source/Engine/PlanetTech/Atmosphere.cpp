@@ -123,8 +123,8 @@ Atmosphere::Atmosphere()
 	m_Params.ground_albedo = InterpolatedSpectrum(wavelengths, ground_albedo, lambdas, 1.f);
 	m_Params.mu_s_min = cosf(etm::radians(102.f));
 
-	AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(settings, wavelengths, solar_irradiance, -3, m_SkyColor);
-	AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(settings, wavelengths, solar_irradiance, 0, m_SunColor);
+	AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(wavelengths, solar_irradiance, -3, m_SkyColor);
+	AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(wavelengths, solar_irradiance, 0, m_SunColor);
 }
 Atmosphere::~Atmosphere()
 {

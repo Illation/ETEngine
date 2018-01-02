@@ -108,9 +108,9 @@ void RenderState::SetBlendEnabled(bool enabled)
 	if (m_IndividualBlend)
 	{
 		m_BlendEnabled = !enabled;
-		for (auto &en : m_BlendEnabledIndexed)
+		for (uint32 i = 0; i<m_BlendEnabledIndexed.size(); ++i)
 		{
-			en = enabled;
+			m_BlendEnabledIndexed[i] = enabled;
 		}
 		m_IndividualBlend = false;
 	}
