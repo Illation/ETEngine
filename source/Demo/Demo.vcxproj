@@ -133,13 +133,13 @@
       <PreprocessorDefinitions>PLATFORM_Win;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
-      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir)</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat "$(SolutionDir)" "$(OutDir)"</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;assimp.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir)</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat "$(SolutionDir)" "$(OutDir)"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>randomBullshit.svg</Outputs>
@@ -154,13 +154,13 @@
       <PreprocessorDefinitions>PLATFORM_Win;EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
-      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir)</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat "$(SolutionDir)" "$(OutDir)"</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;assimp.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir)</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat "$(SolutionDir)" "$(OutDir)"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>randomBullshit.svg</Outputs>
@@ -198,10 +198,10 @@
       <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;assimp.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir)</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat "$(SolutionDir)" "$(OutDir)"</Command>
     </PostBuildEvent>
     <CustomBuildStep>
-      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir)</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat "$(SolutionDir)" "$(OutDir)"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>randomBullshit.svg</Outputs>

@@ -31,12 +31,12 @@ TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 		//Get dimensions and downscale if necessary
 		uint32 width = FreeImage_GetWidth(pImage);
 		uint32 height = FreeImage_GetHeight(pImage);
-		if (!etm::nearEquals(GRAPHICS.TextureScaleFactor, 1.f));
+		if (!etm::nearEquals(GRAPHICS.TextureScaleFactor, 1.f))
 		{
 			if (!m_ForceRes)
 			{
 				FIBITMAP* oldImage = pImage;
-				pImage = FreeImage_Rescale(pImage, width*GRAPHICS.TextureScaleFactor, height*GRAPHICS.TextureScaleFactor);
+				pImage = FreeImage_Rescale(pImage, (int32)(width*GRAPHICS.TextureScaleFactor), (int32)(height*GRAPHICS.TextureScaleFactor));
 				FreeImage_Unload(oldImage);
 				width = FreeImage_GetWidth(pImage);
 				height = FreeImage_GetHeight(pImage);
