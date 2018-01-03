@@ -17,15 +17,59 @@ solution "ETEngineGenerated"
     location "../source/"
     objdir "../build/"
 	
-
 PROJECT_DIR = "../"
 SOURCE_DIR = path.join(PROJECT_DIR, "source/")
 DEP_DIR = path.join(PROJECT_DIR, "dependancies/")
 DEP_INCLUDE = path.join(DEP_DIR, "include/")
-DEP_X32 = path.join(DEP_DIR, "x32/")
-DEP_X64 = path.join(DEP_DIR, "x64/")
-INTERMEDIATE = "Intermediate/"
-OUT_DIR = path.join(PROJECT_DIR, "bin/") 
+
+--setting output directories
+INTERMEDIATE = path.join(PROJECT_DIR, "build/Intermediate/")	--intermediate files go in		build/Intermediate/config_platform/project
+OUT_DIR = path.join(PROJECT_DIR, "bin/")						--binaries go in				bin/config_platform/project
+function outputDirectories(_project)
+	local cfgs = configurations()
+	local p = platforms()
+	for i = 1, #cfgs do
+		for j = 1, #p do
+			local outDir = cfgs[i] .. "_" .. p[j] .. "/" .. _project
+			configuration { cfgs[i], p[j] }
+				targetdir = path.join(OUT_DIR, outDir)
+				objdir = path.join(INTERMEDIATE, outDir)  
+		end
+	end
+	configuration {}
+end
+
+--platform specific library paths
+function platformLibraries()
+	local p = platforms()
+	for j = 1, #p do
+		local depPf = path.join(DEP_DIR, p[j] .. "/") 
+
+		configuration { "vs*", p[j] }
+			libdirs { path.join(depPf, "sdl2"),path.join(depPf, "freeImage"), path.join(depPf, "assimp") }
+	end
+	configuration {}
+end
+
+--copy files that are specific for the platform being built for
+function windowsPlatformPostBuild()
+	local p = platforms()
+	for j = 1, #p do
+		local copyCmd = "$(SolutionDir)..\\build\\copyResources_windows.bat \"$(SolutionDir)\" \"$(OutDir)\" \"" .. p[j] .. "\""
+
+		configuration { "vs*", p[j] }
+			--copy dlls and resources after build
+			postbuildcommands { copyCmd }
+			--copy dlls and resources when running in debugger -> restarting game will copy any changed shaders over
+			custombuildtask { {
+				"",						--input file
+				"randomBullshit.svg",	--output file
+				{},						--additional dependencies 
+				{copyCmd }				--commands
+			} }
+	end
+	configuration {}
+end
 
 files { 
 	path.join(PROJECT_DIR, "build/copyResources_windows.bat"), 
@@ -49,15 +93,15 @@ configuration "Shipping"
 configuration "vs*"
 	flags { "Unicode" }
 	defines { "WIN32", "PLATFORM_Win" }
+	includedirs { path.join(DEP_INCLUDE, "sdl2"),path.join(DEP_INCLUDE, "freeImage"), path.join(DEP_INCLUDE, "assimp") }
 	debugdir "$(OutDir)"
-	links { "DevIL", "ILUT" }
 configuration { "linux", "gmake"}
 	defines { "PLATFORM_Linux", "__linux__" }
 	includedirs { "/usr/include" }
 	buildoptions_cpp { "-std=c++14" }
-	links { "IL" }
 configuration {}
 
+startproject "DemoGenerated"
 
 project "DemoGenerated"
 	kind "ConsoleApp"
@@ -66,56 +110,26 @@ project "DemoGenerated"
 
     defines { "_CONSOLE" }
 
-	configuration { "Debug", "x32" }
-		targetdir path.join(OUT_DIR, "Debug_x32/Demo")
-		objdir path.join(INTERMEDIATE, "Debug_x32/Demo")  
-	configuration { "Debug", "x64" }
-		targetdir path.join(OUT_DIR, "Debug_x64/Demo")
-		objdir path.join(INTERMEDIATE, "Debug_x64/Demo")
-	configuration { "DebugEditor", "x32" }
-		targetdir path.join(OUT_DIR, "DebugEditor_x32/Demo")
-		objdir path.join(INTERMEDIATE, "DebugEditor_x32/Demo")  
-	configuration { "DebugEditor", "x64" }
-		targetdir path.join(OUT_DIR, "DebugEditor_x64/Demo")
-		objdir path.join(INTERMEDIATE, "DebugEditor_x64/Demo")    
-	configuration { "Development", "x32" }
-		targetdir path.join(OUT_DIR, "Development_x32/Demo")
-		objdir path.join(INTERMEDIATE, "Development_x32/Demo")  
-	configuration { "Development", "x64" }
-		targetdir path.join(OUT_DIR, "Development_x64/Demo")
-		objdir path.join(INTERMEDIATE, "Development_x64/Demo") 
-	configuration { "DevelopmentEditor", "x32" }
-		targetdir path.join(OUT_DIR, "DevelopmentEditor_x32/Demo")
-		objdir path.join(INTERMEDIATE, "DevelopmentEditor_x32/Demo")  
-	configuration { "DevelopmentEditor", "x64" }
-		targetdir path.join(OUT_DIR, "DevelopmentEditor_x64/Demo")
-		objdir path.join(INTERMEDIATE, "DevelopmentEditor_x64/Demo")       
-	configuration { "Shipping", "x32" }
-		targetdir path.join(OUT_DIR, "Shipping_x32/Demo")
-		objdir path.join(INTERMEDIATE, "Shipping_x32/Demo")  
-	configuration { "Shipping", "x64" }
-		targetdir path.join(OUT_DIR, "Shipping_x64/Demo")
-		objdir path.join(INTERMEDIATE, "Shipping_x64/Demo")   
+	--Set output folders
+	outputDirectories("Demo")
 
+	--WINDOWS
 	configuration "vs*"
 		flags { "Winmain"}
 
-		includedirs { path.join(DEP_INCLUDE, "sdl2"),path.join(DEP_INCLUDE, "freeImage"), path.join(DEP_INCLUDE, "assimp") }
 		links { "opengl32", "SDL2main" } 
-		postbuildcommands { "$(SolutionDir)..\\build\\copyResources_windows.bat \"$(SolutionDir)\" \"$(OutDir)\"" }
 
-		custombuildtask { {
-			"",																							--input file
-			"randomBullshit.svg",																		--output file
-			{},																							--additional dependencies 
-			{"$(SolutionDir)..\\build\\copyResources_windows.bat \"$(SolutionDir)\" \"$(OutDir)\"" }	--commands
-		} }
-	configuration { "vs*", "x32" }
-		libdirs { path.join(DEP_X32, "sdl2"),path.join(DEP_X32, "freeImage"), path.join(DEP_X32, "assimp") }
-	configuration { "vs*", "x64" }
-		libdirs { path.join(DEP_X64, "sdl2"),path.join(DEP_X64, "freeImage"), path.join(DEP_X64, "assimp") }
-    configuration {}
+	platformLibraries()
+	windowsPlatformPostBuild()
 
+	--Linked libraries
+    links{ "EngineGenerated", "SDL2", "FreeImage", "assimp" }
+
+	--additional includedirs
+	local ProjBase = path.join(SOURCE_DIR, "Demo") 
+	includedirs { path.join(ProjBase, "../Demo"), path.join(ProjBase, "Materials"), path.join(ProjBase, "Scenes") }
+
+	--Source files
     files { 
 		path.join(SOURCE_DIR, "Demo/**.cpp"), 
 		path.join(SOURCE_DIR, "Demo/**.hpp"), 
@@ -123,47 +137,12 @@ project "DemoGenerated"
 		path.join(SOURCE_DIR, "Demo/**.glsl"), 
 	}
 
-    links{ "Engine", "SDL2", "FreeImage", "assimp" }
-
 project "EngineGenerated"
     kind "StaticLib"
 
 	location "../source/Engine"
 	
-	configuration { "Debug", "x32" }
-		targetdir path.join(OUT_DIR, "Debug_x32/Engine")
-		objdir path.join(INTERMEDIATE, "Debug_x32/Engine")  
-	configuration { "Debug", "x64" }
-		targetdir path.join(OUT_DIR, "Debug_x64/Engine")
-		objdir path.join(INTERMEDIATE, "Debug_x64/Engine")  
-	configuration { "DebugEditor", "x32" }
-		targetdir path.join(OUT_DIR, "DebugEditor_x32/Engine")
-		objdir path.join(INTERMEDIATE, "DebugEditor_x32/Engine")  
-	configuration { "DebugEditor", "x64" }
-		targetdir path.join(OUT_DIR, "DebugEditor_x64/Engine")
-		objdir path.join(INTERMEDIATE, "DebugEditor_x64/Engine")    
-	configuration { "Development", "x32" }
-		targetdir path.join(OUT_DIR, "Development_x32/Engine")
-		objdir path.join(INTERMEDIATE, "Development_x32/Engine")  
-	configuration { "Development", "x64" }
-		targetdir path.join(OUT_DIR, "Development_x64/Engine")
-		objdir path.join(INTERMEDIATE, "Development_x64/Engine") 
-	configuration { "DevelopmentEditor", "x32" }
-		targetdir path.join(OUT_DIR, "DevelopmentEditor_x32/Engine")
-		objdir path.join(INTERMEDIATE, "DevelopmentEditor_x32/Engine")  
-	configuration { "DevelopmentEditor", "x64" }
-		targetdir path.join(OUT_DIR, "DevelopmentEditor_x64/Engine")
-		objdir path.join(INTERMEDIATE, "DevelopmentEditor_x64/Engine")   
-	configuration { "Shipping", "x32" }
-		targetdir path.join(OUT_DIR, "Shipping_x32/Engine")
-		objdir path.join(INTERMEDIATE, "Shipping_x32/Engine")  
-	configuration { "Shipping", "x64" }
-		targetdir path.join(OUT_DIR, "Shipping_x64/Engine")
-		objdir path.join(INTERMEDIATE, "Shipping_x64/Engine")   
-
-	configuration "vs*"
-		includedirs { path.join(DEP_INCLUDE, "sdl2"),path.join(DEP_INCLUDE, "freeImage"), path.join(DEP_INCLUDE, "assimp") }
-    configuration {}
+	outputDirectories("Engine")
 
     files { 
 		path.join(SOURCE_DIR, "Engine/**.cpp"), 
@@ -172,9 +151,15 @@ project "EngineGenerated"
 		path.join(SOURCE_DIR, "Engine/**.glsl"), 
 	}
 
-	pchheader "stdafx.hpp"
-	pchsource "stdafx.cpp"
+	--additional includedirs
+	local ProjBase = path.join(SOURCE_DIR, "Engine") 
+	includedirs { path.join(ProjBase, "Base"), path.join(ProjBase, "Components"), path.join(ProjBase, "Content"), path.join(ProjBase, "Helper"), 
+		path.join(ProjBase, "Graphics"), path.join(ProjBase, "Prefabs"), path.join(ProjBase, "SceneGraph"), path.join(ProjBase, "Framebuffers"), 
+		path.join(ProjBase, "GraphicsHelper"), path.join(ProjBase, "Materials"), path.join(ProjBase, "Math"), path.join(ProjBase, "PlanetTech"), 
+		path.join(ProjBase, "PlanetTech/Types"), path.join(ProjBase, "StaticDependancies/glad"), path.join(ProjBase, "../Engine")}
 
+	pchheader "stdafx.hpp"
+	pchsource "../source/Engine/stdafx.cpp"
 
 project "TestingGenerated"
 	kind "ConsoleApp"
@@ -183,30 +168,16 @@ project "TestingGenerated"
 
     defines { "_CONSOLE" }
 
-	configuration { "Debug", "x32" }
-		targetdir path.join(OUT_DIR, "Debug_x32/Testing")
-		objdir path.join(INTERMEDIATE, "Debug_x32/Testing")  
-	configuration { "Debug", "x64" }
-		targetdir path.join(OUT_DIR, "Shipping_x64/Testing")
-		objdir path.join(INTERMEDIATE, "Shipping_x64/Testing")  
-	configuration { "Development", "x32" }
-		targetdir path.join(OUT_DIR, "Development_x32/Testing")
-		objdir path.join(INTERMEDIATE, "Development_x32/Testing")  
-	configuration { "Development", "x64" }
-		targetdir path.join(OUT_DIR, "Development_x64/Testing")
-		objdir path.join(INTERMEDIATE, "Development_x64/Testing")    
+	outputDirectories("Testing")
 
 	configuration "vs*"
 		flags { "Winmain"}
 		debugdir "$(SolutionDir)"
-		includedirs { path.join(DEP_INCLUDE, "sdl2"),path.join(DEP_INCLUDE, "freeImage"), path.join(DEP_INCLUDE, "assimp"), path.join(DEP_INCLUDE, "catch") }
+		includedirs { path.join(DEP_INCLUDE, "catch") }
 		links { "opengl32", "SDL2main" } 
-	configuration { "vs*", "x32" }
-		libdirs { path.join(DEP_X32, "sdl2"),path.join(DEP_X32, "freeImage"), path.join(DEP_X32, "assimp") }
-	configuration { "vs*", "x64" }
-		libdirs { path.join(DEP_X64, "sdl2"),path.join(DEP_X64, "freeImage"), path.join(DEP_X64, "assimp") }
-    configuration {}
+
+	platformLibraries()
 
     files { path.join(SOURCE_DIR, "Testing/**.cpp") }
 
-    links{ "Engine", "SDL2", "FreeImage", "assimp" }
+    links{ "EngineGenerated", "SDL2", "FreeImage", "assimp" }
