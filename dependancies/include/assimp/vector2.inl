@@ -48,8 +48,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef __cplusplus
 #include "vector2.h"
 
-#include <cmath>
-
 // ------------------------------------------------------------------------------------------------
 template <typename TReal>
 template <typename TOther>
@@ -131,14 +129,6 @@ bool aiVector2t<TReal>::operator== (const aiVector2t& other) const {
 template <typename TReal>
 bool aiVector2t<TReal>::operator!= (const aiVector2t& other) const {
 	return x != other.x || y != other.y;
-}
-
-// ---------------------------------------------------------------------------
-template<typename TReal>
-bool aiVector2t<TReal>::Equal(const aiVector2t& other, TReal epsilon) const {
-	return
-		std::abs(x - other.x) <= epsilon &&
-		std::abs(y - other.y) <= epsilon;
 }
 
 // ------------------------------------------------------------------------------------------------

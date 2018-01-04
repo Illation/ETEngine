@@ -74,7 +74,6 @@ public:
 	// comparison
 	bool operator == (const aiColor4t& other) const;
 	bool operator != (const aiColor4t& other) const;
-	bool operator <  (const aiColor4t& other) const;
 
 	// color tuple access, rgba order
 	inline TReal operator[](unsigned int i) const;

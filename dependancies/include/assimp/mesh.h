@@ -135,9 +135,8 @@ struct aiFace
 
 	//! Default constructor
 	aiFace()
-      : mNumIndices( 0 )
-      , mIndices( NULL )
 	{
+		mNumIndices = 0; mIndices = NULL;
 	}
 
 	//! Default destructor. Delete the index array
@@ -148,26 +147,21 @@ struct aiFace
 
 	//! Copy constructor. Copy the index array
 	aiFace( const aiFace& o)
-      : mIndices( NULL )
 	{
+		mIndices = NULL;
 		*this = o;
 	}
 
 	//! Assignment operator. Copy the index array
-	aiFace& operator = ( const aiFace& o)
+	const aiFace& operator = ( const aiFace& o)
 	{
 		if (&o == this)
 			return *this;
 
 		delete[] mIndices;
 		mNumIndices = o.mNumIndices;
-		if (mNumIndices) {
-			mIndices = new unsigned int[mNumIndices];
-			::memcpy( mIndices, o.mIndices, mNumIndices * sizeof( unsigned int));
-		}
-		else {
-			mIndices = NULL;
-		}
+		mIndices = new unsigned int[mNumIndices];
+		::memcpy( mIndices, o.mIndices, mNumIndices * sizeof( unsigned int));
 		return *this;
 	}
 
@@ -249,17 +243,17 @@ struct aiBone
 
 	//! Default constructor
 	aiBone()
-      : mNumWeights( 0 )
-      , mWeights( NULL )
 	{
+		mNumWeights = 0; mWeights = NULL;
 	}
 
 	//! Copy constructor
 	aiBone(const aiBone& other)
-      : mName( other.mName )
-      , mNumWeights( other.mNumWeights )
-      , mOffsetMatrix( other.mOffsetMatrix )
 	{
+		mNumWeights = other.mNumWeights;
+		mOffsetMatrix = other.mOffsetMatrix;
+		mName = other.mName;
+
 		if (other.mWeights && other.mNumWeights)
 		{
 			mWeights = new aiVertexWeight[mNumWeights];
@@ -320,7 +314,7 @@ enum aiPrimitiveType
 	 *  compiler to map this enum to a 32 Bit integer.
 	 */
 #ifndef SWIG
-	_aiPrimitiveType_Force32Bit = INT_MAX
+	_aiPrimitiveType_Force32Bit = 0x9fffffff
 #endif
 }; //! enum aiPrimitiveType
 
@@ -379,11 +373,10 @@ struct aiAnimMesh
 #ifdef __cplusplus
 
 	aiAnimMesh()
-		: mVertices( NULL )
-		, mNormals( NULL )
-		, mTangents( NULL )
-		, mBitangents( NULL )
-		, mNumVertices( 0 )
+		: mVertices()
+		, mNormals()
+		, mTangents()
+		, mBitangents()
 	{
 		// fixme consider moving this to the ctor initializer list as well
 		for( unsigned int a = 0; a < AI_MAX_NUMBER_OF_TEXTURECOORDS; a++){
@@ -611,28 +604,29 @@ struct aiMesh
 
 	//! Default constructor. Initializes all members to 0
 	aiMesh()
-		: mPrimitiveTypes( 0 )
-		, mNumVertices( 0 )
-		, mNumFaces( 0 )
-		, mVertices( NULL )
-		, mNormals( NULL )
-		, mTangents( NULL )
-		, mBitangents( NULL )
-		, mFaces( NULL )
-		, mNumBones( 0 )
-		, mBones( NULL )
-		, mMaterialIndex( 0 )
-		, mNumAnimMeshes( 0 )
-		, mAnimMeshes( NULL )
 	{
+		mNumVertices    = 0; 
+		mNumFaces       = 0;
+
+		mNumAnimMeshes = 0;
+
+		mPrimitiveTypes = 0;
+		mVertices = NULL; mFaces    = NULL;
+		mNormals  = NULL; mTangents = NULL;
+		mBitangents = NULL;
+		mAnimMeshes = NULL;
+
 		for( unsigned int a = 0; a < AI_MAX_NUMBER_OF_TEXTURECOORDS; a++)
 		{
 			mNumUVComponents[a] = 0;
 			mTextureCoords[a] = NULL;
 		}
-      
 		for( unsigned int a = 0; a < AI_MAX_NUMBER_OF_COLOR_SETS; a++)
 			mColors[a] = NULL;
+		mNumBones = 0; mBones = NULL;
+		mMaterialIndex = 0;
+		mNumAnimMeshes = 0;
+		mAnimMeshes = NULL;
 	}
 
 	//! Deletes all storage allocated for the mesh

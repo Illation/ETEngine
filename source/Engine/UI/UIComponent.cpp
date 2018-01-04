@@ -1,5 +1,6 @@
 #include "stdafx.hpp"
 #include "UIComponent.hpp"
+#include "SpriteRenderer.hpp"
 
 UIComponent::UIComponent( ivec2 size, ivec2 localPos ) 
 {
@@ -17,6 +18,9 @@ iRect UIComponent::CalculateDimensions( const ivec2 &worldPos )
 
 bool UISprite::Draw( uint16 level ) const
 {
-	SpriteRenderer::GetInstance()->Draw( m_Texture, m_WorldPos, m_Color, vec2( 0 ), m_Rect.size, 0, 1, SpriteScalingMode::TEXTURE );
+	UNUSED(level);
+	SpriteRenderer::GetInstance()->Draw( m_Texture, etm::vecCast<float>(m_WorldPos), m_Color, vec2( 0 ), 
+		etm::vecCast<float>(m_Rect.size), 0, 1, SpriteScalingMode::TEXTURE );
 
+	return false;
 }

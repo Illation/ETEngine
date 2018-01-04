@@ -23,17 +23,16 @@ DEP_DIR = path.join(PROJECT_DIR, "dependancies/")
 DEP_INCLUDE = path.join(DEP_DIR, "include/")
 
 --setting output directories
-INTERMEDIATE = path.join(PROJECT_DIR, "build/Intermediate/")	--intermediate files go in		build/Intermediate/config_platform/project
-OUT_DIR = path.join(PROJECT_DIR, "bin/")						--binaries go in				bin/config_platform/project
+--intermediate files go in		build/Intermediate/config_platform/project
+--binaries go in				bin/config/project/platform
 function outputDirectories(_project)
 	local cfgs = configurations()
 	local p = platforms()
 	for i = 1, #cfgs do
 		for j = 1, #p do
-			local outDir = cfgs[i] .. "_" .. p[j] .. "/" .. _project
 			configuration { cfgs[i], p[j] }
-				targetdir = path.join(OUT_DIR, outDir)
-				objdir = path.join(INTERMEDIATE, outDir)  
+				targetdir("../bin/" .. cfgs[i] .. "_" .. p[j] .. "/" .. _project)
+				objdir("../build/Intermediate/" .. cfgs[i]  .. "/" .. _project)		--seems like the platformm will automatically be added
 		end
 	end
 	configuration {}
@@ -55,7 +54,7 @@ end
 function windowsPlatformPostBuild()
 	local p = platforms()
 	for j = 1, #p do
-		local copyCmd = "$(SolutionDir)..\\build\\copyResources_windows.bat \"$(SolutionDir)\" \"$(OutDir)\" \"" .. p[j] .. "\""
+		local copyCmd = "$(SolutionDir)..\\build\\copyResources_windows.bat $(SolutionDir) $(OutDir) " .. p[j]
 
 		configuration { "vs*", p[j] }
 			--copy dlls and resources after build
@@ -83,15 +82,15 @@ configuration "DebugEditor"
 	defines { "_DEBUG", "EDITOR" }
 	flags { "Symbols", "ExtraWarnings" }
 configuration "Development"
-	flags {"OptimizeSpeed", "Symbols" }
+	flags {"OptimizeSpeed", "Symbols", "ExtraWarnings" }
 configuration "DevelopmentEditor"
 	defines { "EDITOR" }
-	flags {"OptimizeSpeed", "Symbols" }
+	flags {"OptimizeSpeed", "Symbols", "ExtraWarnings" }
 configuration "Shipping"
 	flags {"OptimizeSpeed", "No64BitChecks" }
 
 configuration "vs*"
-	flags { "Unicode" }
+	flags { "EnableSSE","EnableSSE2","EnableAVX","EnableAVX2" }
 	defines { "WIN32", "PLATFORM_Win" }
 	includedirs { path.join(DEP_INCLUDE, "sdl2"),path.join(DEP_INCLUDE, "freeImage"), path.join(DEP_INCLUDE, "assimp") }
 	debugdir "$(OutDir)"
@@ -149,7 +148,10 @@ project "EngineGenerated"
 		path.join(SOURCE_DIR, "Engine/**.hpp"), 
 		path.join(SOURCE_DIR, "Engine/**.h"), 
 		path.join(SOURCE_DIR, "Engine/**.glsl"), 
+
+		path.join(SOURCE_DIR, "Engine/**.c"),									--for glad
 	}
+	nopch { path.join(SOURCE_DIR, "Engine/StaticDependancies/glad/glad.c") }	--precompiled c code shouldn't use precompiled headers
 
 	--additional includedirs
 	local ProjBase = path.join(SOURCE_DIR, "Engine") 
