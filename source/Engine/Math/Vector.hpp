@@ -607,15 +607,26 @@ namespace etm
 	}
 
 	//access to array for the graphics api
-	template<unsigned int n, typename T>
+	template<uint8 n, typename T>
 	T const* valuePtr( vector<n, T> const& vec )
 	{
 		return &(vec.data[0]);
 	}
-	template<unsigned int n, typename T>
+	template<uint8 n, typename T>
 	T* valuePtr( vector<n, T>& vec )
 	{
 		return &(vec.data[0]);
+	}
+
+	template<typename T, uint8 n,typename T2>
+	inline vector<n, T> vecCast(const vector<n, T2> &vec)
+	{
+		vector<n, T> ret;
+		for (uint8 i = 0; i < n; ++i)
+		{
+			ret[i] = static_cast<T>(vec[i]);
+		}
+		return ret;
 	}
 
 	//dimension specific operations

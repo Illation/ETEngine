@@ -54,10 +54,7 @@ extern "C" {
 /** @enum  aiPostProcessSteps
  *  @brief Defines the flags for all possible post processing steps.
  *
- *  @note Some steps are influenced by properties set on the Assimp::Importer itself
- *
- *  @see Assimp::Importer::ReadFile()
- *  @see Assimp::Importer::SetPropertyInteger()
+ *  @see Importer::ReadFile
  *  @see aiImportFile
  *  @see aiImportFileEx
  */
@@ -70,7 +67,7 @@ enum aiPostProcessSteps
 	 *
 	 * Does nothing if a mesh does not have normals. You might want this post 
 	 * processing step to be executed if you plan to use tangent space calculations 
-	 * such as normal mapping  applied to the meshes. There's an importer property,
+	 * such as normal mapping  applied to the meshes. There's a config setting,
 	 * <tt>#AI_CONFIG_PP_CT_MAX_SMOOTHING_ANGLE</tt>, which allows you to specify
 	 * a maximum smoothing angle for the algorithm. However, usually you'll
 	 * want to leave it at the default value.
@@ -117,7 +114,7 @@ enum aiPostProcessSteps
 	 * solution:
 	 * <ul>
 	 * <li>Specify both #aiProcess_Triangulate and #aiProcess_SortByPType </li>
-	 * <li>Ignore all point and line meshes when you process assimp's output</li>
+	 * </li>Ignore all point and line meshes when you process assimp's output</li>
 	 * </ul>
 	 */
 	aiProcess_Triangulate = 0x8,
@@ -127,7 +124,7 @@ enum aiPostProcessSteps
 	 *  light sources, cameras, textures, vertex components).
 	 *
 	 * The  components to be removed are specified in a separate
-	 * importer property, <tt>#AI_CONFIG_PP_RVC_FLAGS</tt>. This is quite useful
+	 * configuration option, <tt>#AI_CONFIG_PP_RVC_FLAGS</tt>. This is quite useful
 	 * if you don't need all parts of the output structure. Vertex colors
 	 * are rarely used today for example... Calling this step to remove unneeded
 	 * data from the pipeline as early as possible results in increased 
@@ -170,7 +167,7 @@ enum aiPostProcessSteps
 	* they're usually already there. 
 	*
 	* This flag may not be specified together with 
-	* #aiProcess_GenNormals. There's a importer property, 
+	* #aiProcess_GenNormals. There's a configuration option, 
 	* <tt>#AI_CONFIG_PP_GSN_MAX_SMOOTHING_ANGLE</tt> which allows you to specify
 	* an angle maximum for the normal smoothing algorithm. Normals exceeding
 	* this limit are not smoothed, resulting in a 'hard' seam between two faces.
@@ -190,7 +187,7 @@ enum aiPostProcessSteps
 	*
 	* The split limits can (and should!) be set through the 
 	* <tt>#AI_CONFIG_PP_SLM_VERTEX_LIMIT</tt> and <tt>#AI_CONFIG_PP_SLM_TRIANGLE_LIMIT</tt> 
-	* importer properties. The default values are <tt>#AI_SLM_DEFAULT_MAX_VERTICES</tt> and 
+	* settings. The default values are <tt>#AI_SLM_DEFAULT_MAX_VERTICES</tt> and 
 	* <tt>#AI_SLM_DEFAULT_MAX_TRIANGLES</tt>. 
 	*
 	* Note that splitting is generally a time-consuming task, but only if there's
@@ -227,8 +224,8 @@ enum aiPostProcessSteps
 	* important vertex weights are removed and the remaining vertex weights are
 	* renormalized so that the weights still sum up to 1.
 	* The default bone weight limit is 4 (defined as <tt>#AI_LMW_MAX_WEIGHTS</tt> in
-	* config.h), but you can use the <tt>#AI_CONFIG_PP_LBW_MAX_WEIGHTS</tt> importer
-	* property to supply your own limit to the post processing step.
+	* config.h), but you can use the <tt>#AI_CONFIG_PP_LBW_MAX_WEIGHTS</tt> setting to
+	* supply your own limit to the post processing step.
 	*
 	* If you intend to perform the skinning in hardware, this post processing 
 	* step might be of interest to you.
@@ -273,8 +270,8 @@ enum aiPostProcessSteps
 	 * paper</a>).
 	 *
 	 * If you intend to render huge models in hardware, this step might
-	 * be of interest to you. The <tt>#AI_CONFIG_PP_ICL_PTCACHE_SIZE</tt>
-	 * importer property can be used to fine-tune the cache optimization.
+	 * be of interest to you. The <tt>#AI_CONFIG_PP_ICL_PTCACHE_SIZE</tt>config
+	 * setting can be used to fine-tune the cache optimization.
 	 */
 	aiProcess_ImproveCacheLocality = 0x800,
 
@@ -295,7 +292,7 @@ enum aiPostProcessSteps
 	 * So, if you're passing additional information through the
 	 * content pipeline (probably using *magic* material names), don't 
 	 * specify this flag. Alternatively take a look at the
-	 * <tt>#AI_CONFIG_PP_RRM_EXCLUDE_LIST</tt> importer property.
+	 * <tt>#AI_CONFIG_PP_RRM_EXCLUDE_LIST</tt> setting.
 	 */ 
 	aiProcess_RemoveRedundantMaterials = 0x1000,
 
@@ -321,9 +318,9 @@ enum aiPostProcessSteps
 	 *  returns, just one bit is set in aiMesh::mPrimitiveTypes. This is 
 	 *  especially useful for real-time rendering where point and line
 	 *  primitives are often ignored or rendered separately.
-	 *  You can use the <tt>#AI_CONFIG_PP_SBP_REMOVE</tt> importer property to
-	 *  specify which primitive types you need. This can be used to easily
-	 *  exclude lines and points, which are rarely used, from the import.
+	 *  You can use the <tt>#AI_CONFIG_PP_SBP_REMOVE</tt> option to specify which
+	 *  primitive types you need. This can be used to easily exclude
+	 *  lines and points, which are rarely used, from the import.
 	*/
 	aiProcess_SortByPType = 0x8000,
 
@@ -339,9 +336,9 @@ enum aiPostProcessSteps
 	 * <ul>
 	 *   <li>Specify the #aiProcess_FindDegenerates flag.
 	 *   </li>
-	 *   <li>Set the <tt>#AI_CONFIG_PP_FD_REMOVE</tt> importer property to
-	 *       1. This will cause the step to remove degenerate triangles from the
-	 *       import as soon as they're detected. They won't pass any further
+	 *   <li>Set the <tt>AI_CONFIG_PP_FD_REMOVE</tt> option to 1. This will 
+	 *       cause the step to remove degenerate triangles from the import
+	 *       as soon as they're detected. They won't pass any further
 	 *       pipeline steps.
 	 *   </li>
 	 * </ul>
@@ -352,7 +349,7 @@ enum aiPostProcessSteps
 	 *   <li>Specify the #aiProcess_SortByPType flag. This moves line and
 	 *     point primitives to separate meshes.
 	 *   </li>
-	 *   <li>Set the <tt>#AI_CONFIG_PP_SBP_REMOVE</tt> importer property to 
+	 *   <li>Set the <tt>AI_CONFIG_PP_SBP_REMOVE</tt> option to 
 	 *       @code aiPrimitiveType_POINTS | aiPrimitiveType_LINES
 	 *       @endcode to cause SortByPType to reject point
 	 *       and line meshes from the scene.
@@ -449,9 +446,9 @@ enum aiPostProcessSteps
 	 *
 	 *  Node names can be lost during this step. If you use special 'tag nodes'
 	 *  to pass additional information through your content pipeline, use the
-	 *  <tt>#AI_CONFIG_PP_OG_EXCLUDE_LIST</tt> importer property to specify a
-	 *  list of node names you want to be kept. Nodes matching one of the names
-	 *  in this list won't be touched or modified.
+	 *  <tt>#AI_CONFIG_PP_OG_EXCLUDE_LIST</tt> setting to specify a list of node 
+	 *  names you want to be kept. Nodes matching one of the names in this list won't
+	 *  be touched or modified.
 	 *
 	 *  Use this flag with caution. Most simple files will be collapsed to a 
 	 *  single node, so complex hierarchies are usually completely lost. This is not
@@ -623,6 +620,7 @@ enum aiPostProcessSteps
 	aiProcess_FindInstances                  |  \
 	aiProcess_ValidateDataStructure          |  \
 	aiProcess_OptimizeMeshes                 |  \
+	aiProcess_Debone						 |  \
 	0 )
 
 

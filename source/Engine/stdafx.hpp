@@ -2,11 +2,8 @@
 
 #define NOMINMAX
 
-// #temp until crossplatform support is fully implemented
-//#define PLATFORM_Win
-
-//#define GRAPHICS_API_DEBUG
-//#define GRAPHICS_API_VERBOSE
+#define GRAPHICS_API_DEBUG
+#define GRAPHICS_API_VERBOSE
 
 #pragma region
 //C RunTime Header Files
