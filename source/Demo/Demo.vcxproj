@@ -133,7 +133,7 @@
       <PreprocessorDefinitions>PLATFORM_Win;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
-      <Command>$(SolutionDir)..\build\copyResources_windows.bat "$(SolutionDir)" "$(OutDir)"</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir) x32 true</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;assimp.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -154,7 +154,7 @@
       <PreprocessorDefinitions>PLATFORM_Win;EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
-      <Command>$(SolutionDir)..\build\copyResources_windows.bat "$(SolutionDir)" "$(OutDir)"</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir) x32 true</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;assimp.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -173,6 +173,9 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(StlIncludeDirectories);..\Demo;Materials;Scenes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <PostBuildEvent>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir) x64 true </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Editor|x64'">
     <ClCompile>
@@ -181,6 +184,9 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(StlIncludeDirectories);..\Demo;Materials;Scenes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <PostBuildEvent>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir) x64 true </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -198,13 +204,15 @@
       <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;assimp.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>$(SolutionDir)..\build\copyResources_windows.bat "$(SolutionDir)" "$(OutDir)"</Command>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir) x32 true</Command>
     </PostBuildEvent>
     <CustomBuildStep>
-      <Command>$(SolutionDir)..\build\copyResources_windows.bat "$(SolutionDir)" "$(OutDir)"</Command>
+      <Command>
+      </Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>randomBullshit.svg</Outputs>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -220,6 +228,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <PostBuildEvent>
+      <Command>$(SolutionDir)..\build\copyResources_windows.bat $(SolutionDir) $(OutDir) x64 true </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\ETEngine.vcxproj">

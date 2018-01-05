@@ -8,3 +8,4 @@ ETEngine.VC.db
 *.ipch
 *.db
 source/.vs
+build/.vs

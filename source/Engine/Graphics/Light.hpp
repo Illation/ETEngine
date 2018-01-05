@@ -68,5 +68,5 @@ public:
 protected:
 	virtual void UploadVariables(GLuint program, TransformComponent* comp, uint32 index);
 
-	DirectionalShadowData* m_pShadowData;
+	DirectionalShadowData* m_pShadowData = nullptr;
 };
