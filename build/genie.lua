@@ -14,7 +14,7 @@ solution "ETEngineGenerated"
 
     language "C++"
 
-    location "../source/"
+    location "../build/"
     objdir "../build/"
 	
 PROJECT_DIR = "../"
@@ -54,26 +54,13 @@ end
 function windowsPlatformPostBuild()
 	local p = platforms()
 	for j = 1, #p do
-		local copyCmd = "$(SolutionDir)..\\build\\copyResources_windows.bat $(SolutionDir) $(OutDir) " .. p[j]
+		local copyCmd = "$(SolutionDir)..\\build\\copyResources_windows.bat " .. path.getabsolute(SOURCE_DIR) .. " $(OutDir) " .. p[j] .. " true"
 
 		configuration { "vs*", p[j] }
-			--copy dlls and resources after build
-			postbuildcommands { copyCmd }
-			--copy dlls and resources when running in debugger -> restarting game will copy any changed shaders over
-			custombuildtask { {
-				"",						--input file
-				"randomBullshit.svg",	--output file
-				{},						--additional dependencies 
-				{copyCmd }				--commands
-			} }
+			postbuildcommands { copyCmd } --copy dlls and resources after build
 	end
 	configuration {}
 end
-
-files { 
-	path.join(PROJECT_DIR, "build/copyResources_windows.bat"), 
-	path.join(PROJECT_DIR, "build/genie.lua"), 
-}
 
 configuration "Debug"
 	defines { "_DEBUG" }
@@ -87,13 +74,16 @@ configuration "DevelopmentEditor"
 	defines { "EDITOR" }
 	flags {"OptimizeSpeed", "Symbols", "ExtraWarnings" }
 configuration "Shipping"
+	defines { "SHIPPING" }
 	flags {"OptimizeSpeed", "No64BitChecks" }
 
 configuration "vs*"
-	flags { "EnableSSE","EnableSSE2","EnableAVX","EnableAVX2" }
+	flags { "NoIncrementalLink" }
 	defines { "WIN32", "PLATFORM_Win" }
 	includedirs { path.join(DEP_INCLUDE, "sdl2"),path.join(DEP_INCLUDE, "freeImage"), path.join(DEP_INCLUDE, "assimp") }
 	debugdir "$(OutDir)"
+configuration { "vs*", "x32" }
+	flags { "EnableSSE2" }
 configuration { "linux", "gmake"}
 	defines { "PLATFORM_Linux", "__linux__" }
 	includedirs { "/usr/include" }
@@ -102,6 +92,20 @@ configuration {}
 
 startproject "DemoGenerated"
 
+--project that has the build files, easy way to make sure we can see the build files in the IDE, shouldn't actually be built
+project "General"
+	kind "StaticLib" --required
+	location "."
+	--specific files to avoid showing vs projects and solutions in build folder
+	files { 
+		path.join(PROJECT_DIR, "build/*.bat"), 
+		path.join(PROJECT_DIR, "build/*.lua"), 
+		path.join(PROJECT_DIR, "*.*"), 
+		path.join(PROJECT_DIR, ".gitignore"), 
+		path.join(PROJECT_DIR, ".gitattributes") 
+	}
+
+--in future this should be generated for any application running on the engine
 project "DemoGenerated"
 	kind "ConsoleApp"
 
@@ -112,7 +116,6 @@ project "DemoGenerated"
 	--Set output folders
 	outputDirectories("Demo")
 
-	--WINDOWS
 	configuration "vs*"
 		flags { "Winmain"}
 
@@ -151,7 +154,7 @@ project "EngineGenerated"
 
 		path.join(SOURCE_DIR, "Engine/**.c"),									--for glad
 	}
-	nopch { path.join(SOURCE_DIR, "Engine/StaticDependancies/glad/glad.c") }	--precompiled c code shouldn't use precompiled headers
+	nopch { path.join(SOURCE_DIR, "Engine/StaticDependancies/glad/glad.c") }	--c code shouldn't use precompiled headers
 
 	--additional includedirs
 	local ProjBase = path.join(SOURCE_DIR, "Engine") 
