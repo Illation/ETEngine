@@ -190,7 +190,7 @@ void primitives::IcoSphere<level>::Initialize()
 
 		SubAndPush(vertices, 0, a, b, c);
 	}
-	m_NumVerts = vertices.size();
+	m_NumVerts = (int32)vertices.size();
 
 	glGenVertexArrays(1, &m_VAO);
 	glGenBuffers(1, &m_VBO);

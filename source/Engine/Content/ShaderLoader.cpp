@@ -196,13 +196,13 @@ bool ShaderLoader::Precompile(std::string &shaderContent, const std::string &ass
 bool ShaderLoader::ReplaceInclude(std::string &line, const std::string &assetFile)
 {
 	std::string basePath = "";
-	uint32 lastFS = assetFile.rfind("/");
-	uint32 lastBS = assetFile.rfind("\\");
+	uint32 lastFS = (uint32)assetFile.rfind("/");
+	uint32 lastBS = (uint32)assetFile.rfind("\\");
 	uint32 lastS = static_cast<uint32>(max((int32)lastFS, (int32)lastBS));
 	if(!(lastS == std::string::npos))basePath = assetFile.substr(0, lastS) + "/";
 
-	uint32 firstQ = line.find("\"");
-	uint32 lastQ = line.rfind("\"");
+	uint32 firstQ = (uint32)line.find("\"");
+	uint32 lastQ = (uint32)line.rfind("\"");
 	if ((firstQ == std::string::npos) ||
 		(lastQ == std::string::npos) ||
 		lastQ <= firstQ)

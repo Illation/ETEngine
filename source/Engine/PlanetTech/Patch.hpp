@@ -35,7 +35,7 @@ public:
 
 	void SetPlanet(Planet* pPlanet) { m_pPlanet = pPlanet; }
 
-	uint32 GetVertexCount() { return m_Vertices.size(); }
+	uint32 GetVertexCount() { return (uint32)m_Vertices.size(); }
 
 	void Init();
 	void GenerateGeometry(int16 levels);

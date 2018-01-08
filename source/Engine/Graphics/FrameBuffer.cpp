@@ -57,7 +57,7 @@ void FrameBuffer::Draw()
 {
 	STATE->SetDepthEnabled(false);
 	STATE->SetShader(m_pShader);
-	for (size_t i = 0; i < m_pTextureVec.size(); i++)
+	for (uint32 i = 0; i < (uint32)m_pTextureVec.size(); i++)
 	{
 		STATE->LazyBindTexture(i, GL_TEXTURE_2D, m_pTextureVec[i]->GetHandle());
 	}
@@ -93,7 +93,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 	}
 
 	//Color buffers
-	for (size_t i = 0; i < m_NumTargets; i++)
+	for (uint32 i = 0; i < m_NumTargets; i++)
 	{
 		TextureData* colorBuffer = new TextureData( width, height, GL_RGBA16F, GL_RGBA, m_Format );
 		colorBuffer->Build();

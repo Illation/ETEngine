@@ -179,7 +179,7 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferB"), 1);
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferC"), 2);
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
-	for (size_t i = 0; i < gbufferTex.size(); i++)
+	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
