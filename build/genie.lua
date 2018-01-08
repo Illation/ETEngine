@@ -1,4 +1,4 @@
-solution "ETEngineGenerated"
+solution "ETEngine"
     configurations {
         "Debug",
         "DebugEditor",
@@ -90,7 +90,7 @@ configuration { "linux", "gmake"}
 	buildoptions_cpp { "-std=c++14" }
 configuration {}
 
-startproject "DemoGenerated"
+startproject "Demo"
 
 --project that has the build files, easy way to make sure we can see the build files in the IDE, shouldn't actually be built
 project "General"
@@ -106,7 +106,7 @@ project "General"
 	}
 
 --in future this should be generated for any application running on the engine
-project "DemoGenerated"
+project "Demo"
 	kind "ConsoleApp"
 
 	location "../source/Demo"
@@ -125,7 +125,7 @@ project "DemoGenerated"
 	windowsPlatformPostBuild()
 
 	--Linked libraries
-    links{ "EngineGenerated", "SDL2", "FreeImage", "assimp" }
+    links{ "ETEngine", "SDL2", "FreeImage", "assimp" }
 
 	--additional includedirs
 	local ProjBase = path.join(SOURCE_DIR, "Demo") 
@@ -139,7 +139,7 @@ project "DemoGenerated"
 		path.join(SOURCE_DIR, "Demo/**.glsl"), 
 	}
 
-project "EngineGenerated"
+project "ETEngine"
     kind "StaticLib"
 
 	location "../source/Engine"
@@ -166,7 +166,7 @@ project "EngineGenerated"
 	pchheader "stdafx.hpp"
 	pchsource "../source/Engine/stdafx.cpp"
 
-project "TestingGenerated"
+project "Testing"
 	kind "ConsoleApp"
 
 	location "../source/Testing"
@@ -185,4 +185,4 @@ project "TestingGenerated"
 
     files { path.join(SOURCE_DIR, "Testing/**.cpp") }
 
-    links{ "EngineGenerated", "SDL2", "FreeImage", "assimp" }
+    links{ "ETEngine", "SDL2", "FreeImage", "assimp" }
