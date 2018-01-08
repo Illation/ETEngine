@@ -9,4 +9,4 @@ build:
   verbosity: normal
 test_script:
 - cmd: >-
-    .\bin\DebugWin32\Testing\Testing.exe
+    .\bin\Debug_x64\Testing\Testing.exe
