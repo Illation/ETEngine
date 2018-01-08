@@ -35,9 +35,11 @@
  * Platform agnostic file system
 
 ### Integration
+ * Project Generation with GENie
  * Continous Integration with AppVeyor
  * Unit Testing setup with catch.hpp
  * Unit tests for math functions
+ * Unit tests for the file system
  
 ## Work in progress
 

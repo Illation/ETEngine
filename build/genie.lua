@@ -177,7 +177,7 @@ project "Testing"
 
 	configuration "vs*"
 		flags { "Winmain"}
-		debugdir "$(SolutionDir)"
+		debugdir(PROJECT_DIR)
 		includedirs { path.join(DEP_INCLUDE, "catch") }
 		links { "opengl32", "SDL2main" } 
 
