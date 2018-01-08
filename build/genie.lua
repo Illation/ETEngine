@@ -32,7 +32,7 @@ function outputDirectories(_project)
 		for j = 1, #p do
 			configuration { cfgs[i], p[j] }
 				targetdir("../bin/" .. cfgs[i] .. "_" .. p[j] .. "/" .. _project)
-				objdir("../build/Intermediate/" .. cfgs[i]  .. "/" .. _project)		--seems like the platformm will automatically be added
+				objdir("../build/Intermediate/" .. cfgs[i]  .. "/" .. _project)		--seems like the platform will automatically be added
 		end
 	end
 	configuration {}
@@ -78,12 +78,20 @@ configuration "Shipping"
 	flags {"OptimizeSpeed", "No64BitChecks" }
 
 configuration "vs*"
-	flags { "NoIncrementalLink" }
-	defines { "WIN32", "PLATFORM_Win" }
+	flags { "NoIncrementalLink", "NoEditAndContinue" }
+	linkoptions { "/ignore:4221" }
+	defines { "PLATFORM_Win" }
 	includedirs { path.join(DEP_INCLUDE, "sdl2"),path.join(DEP_INCLUDE, "freeImage"), path.join(DEP_INCLUDE, "assimp") }
 	debugdir "$(OutDir)"
 configuration { "vs*", "x32" }
 	flags { "EnableSSE2" }
+	defines { "WIN32" }
+configuration { "x32" }
+	defines { "PLATFORM_x32" }
+configuration { "vs*", "x64" }
+	defines { "WIN64" }
+configuration { "x64" }
+	defines { "PLATFORM_x64" }
 configuration { "linux", "gmake"}
 	defines { "PLATFORM_Linux", "__linux__" }
 	includedirs { "/usr/include" }

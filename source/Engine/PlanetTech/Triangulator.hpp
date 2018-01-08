@@ -48,7 +48,7 @@ public:
 
 	bool IsFrustumLocked() { return m_LockFrustum; }
 	Frustum* GetFrustum() { return m_pFrustum; }
-	int32 GetVertexCount() { return m_Positions.size(); }
+	int32 GetVertexCount() { return (int32)m_Positions.size(); }
 
 private:
 	friend class Planet;

@@ -25,7 +25,7 @@ If you didn't install GENie in your path it would look more like
 
     .\relative\path\to\your\genie.exe --file=build/genie.lua [preferred visual studio version]
 
-Next open the solution that was generated at **build/ETEngine.sln** in visual studio, select the desired configuration (_Development_ is good for most purposes, _64 bit_ works but still causes some warnings so best to stick with _32 bit_), and build as usual.
+Next open the solution that was generated at **build/ETEngine.sln** in visual studio, select the desired configuration (_Development_ is good for most purposes), and build as usual.
 
 The final executable will appear in **bin/[configuration]_[platform]/Demo/Demo.exe**
 

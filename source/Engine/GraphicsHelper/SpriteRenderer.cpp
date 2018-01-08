@@ -89,7 +89,7 @@ void SpriteRenderer::UpdateBuffer()
 	{
 		if (bufferResize)
 		{
-			m_BufferSize = m_Sprites.size() * sizeof( SpriteVertex );
+			m_BufferSize = (uint32)m_Sprites.size() * sizeof( SpriteVertex );
 		}
 
 		glBufferData(GL_ARRAY_BUFFER, m_BufferSize, m_Sprites.data(), GL_DYNAMIC_DRAW);
@@ -123,7 +123,7 @@ void SpriteRenderer::Draw()
 
 	uint32 batchSize = 1;
 	uint32 batchOffset = 0;
-	uint32 spriteCount = m_Sprites.size();
+	uint32 spriteCount = (uint32)m_Sprites.size();
 	for(uint32 i = 0; i < spriteCount; ++i)
 	{
 		if(i < (spriteCount - 1) && m_Sprites[i].TextureId == m_Sprites[i + 1].TextureId)
@@ -175,11 +175,11 @@ void SpriteRenderer::Draw( TextureData* pTexture, vec2 position, vec4 color /*= 
 	if(it == m_Textures.end())
 	{
 		m_Textures.push_back( pTexture );
-		vertex.TextureId = m_Textures.size() - 1;
+		vertex.TextureId = (uint32)m_Textures.size() - 1;
 	}
 	else
 	{
-		vertex.TextureId = it - m_Textures.begin();
+		vertex.TextureId = (uint32)(it - m_Textures.begin());
 	}
 
 	vertex.TransformData = vec4( position, depth, rotation );

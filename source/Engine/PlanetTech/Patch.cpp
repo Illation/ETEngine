@@ -141,7 +141,7 @@ void Patch::GenerateGeometry(int16 levels)
 void Patch::BindInstances(std::vector<PatchInstance> &instances)
 {
 	//update buffer
-	m_NumInstances = instances.size();
+	m_NumInstances = (int32)instances.size();
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBOInstance);
 	glBufferData(GL_ARRAY_BUFFER, instances.size() * sizeof(PatchInstance), instances.data(), GL_STATIC_DRAW);
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
@@ -183,7 +183,7 @@ void Patch::Draw()
 	STATE->BindVertexArray(m_VAO);
 
 	//Draw the object
-	glDrawElementsInstanced(GL_TRIANGLES, m_Indices.size(), GL_UNSIGNED_INT, 0, m_NumInstances);
+	glDrawElementsInstanced(GL_TRIANGLES, (uint32)m_Indices.size(), GL_UNSIGNED_INT, 0, m_NumInstances);
 	PERFORMANCE->m_DrawCalls++;
 
 	//unbind vertex array

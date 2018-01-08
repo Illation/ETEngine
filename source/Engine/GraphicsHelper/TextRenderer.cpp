@@ -86,7 +86,7 @@ void TextRenderer::DrawText(std::string &text, vec2 pos)
 {
 	if (m_pSpriteFonts.size() > 0)
 	{
-		m_NumCharacters += text.size();
+		m_NumCharacters += (uint32)text.size();
 		m_pSpriteFonts[m_ActiveFontIdx]->m_TextCache.push_back(TextCache(text, pos, m_Color));
 		if (!m_pSpriteFonts[m_ActiveFontIdx]->m_IsAddedToRenderer)
 		{
@@ -139,7 +139,7 @@ void TextRenderer::UpdateBuffer()
 	{
 		if (pFont->m_IsAddedToRenderer)
 		{
-			pFont->m_BufferStart = tVerts.size()* (sizeof(TextVertex) / sizeof(float));
+			pFont->m_BufferStart = (int32)tVerts.size() * (sizeof(TextVertex) / sizeof(float));
 			pFont->m_BufferSize = 0;
 			for (auto cache : pFont->m_TextCache)
 			{
@@ -172,7 +172,7 @@ void TextRenderer::UpdateBuffer()
 					else std::cout << "[WARNING] TextRenderer::CreateTextVertices>char not suppported for current font" << std::endl;
 				}
 			}
-			pFont->m_BufferSize = tVerts.size() - pFont->m_BufferStart+1;
+			pFont->m_BufferSize = (int32)tVerts.size() - pFont->m_BufferStart+1;
 			pFont->m_TextCache.clear();
 		}
 	}
@@ -180,7 +180,7 @@ void TextRenderer::UpdateBuffer()
 	//Bind Object vertex array
 	STATE->BindVertexArray(m_VAO);
 
-	uint32 buffersize = tVerts.size() * sizeof(TextVertex);
+	uint32 buffersize = (uint32)tVerts.size() * sizeof(TextVertex);
 
 	//Send the vertex buffer again
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);

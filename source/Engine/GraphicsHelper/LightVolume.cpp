@@ -101,7 +101,7 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferB"), 1);
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferC"), 2);
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
-	for (size_t i = 0; i < gbufferTex.size(); i++)
+	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
@@ -127,7 +127,7 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *
 	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texGBufferB"), 1);
 	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texGBufferC"), 2);
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
-	for (size_t i = 0; i < gbufferTex.size(); i++)
+	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
@@ -150,7 +150,7 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *
 	glUniform1f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Bias"), pShadow->m_Bias);
 
 	std::string ligStr = "cascades[";
-	for (size_t i = 0; i < pShadow->m_Cascades.size(); i++)
+	for (uint32 i = 0; i < (uint32)pShadow->m_Cascades.size(); i++)
 	{
 		//Light Projection
 		glUniformMatrix4fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(),

@@ -132,7 +132,7 @@ bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::vector<uint8> & content )
 bool FILE_BASE::WriteFile( FILE_HANDLE handle, const std::vector<uint8> & content)
 {
 	DWORD bytesWritten = 0;
-	if (FALSE == ::WriteFile(handle, content.data(), content.size(), &bytesWritten, NULL))
+	if (FALSE == ::WriteFile(handle, content.data(), (DWORD)content.size(), &bytesWritten, NULL))
 	{
 		DisplayError(TEXT("WriteFile"));
 		return false;

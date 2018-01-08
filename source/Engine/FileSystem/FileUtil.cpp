@@ -23,11 +23,11 @@ bool FileUtil::ParseLine( std::string &input, std::string &extractedLine )
 	uint32 tokenSize = 0;
 	for(auto token : newLineTokens)
 	{
-		int32 index = input.find( token );
+		int32 index = (int32)input.find( token );
 		if(index != std::string::npos && index < closestIdx)
 		{
 			closestIdx = index;
-			tokenSize = token.size();
+			tokenSize = (uint32)token.size();
 		}
 	}
 
