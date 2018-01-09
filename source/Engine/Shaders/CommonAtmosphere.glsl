@@ -835,7 +835,6 @@ vec3 GetCombinedScattering( in AtmosphereParameters atmosphere, in sampler3D sca
 	vec3 uvw1 = vec3((tex_x + 1.0 + uvwz.y) / float(uTexScatteringNuSize), uvwz.z, uvwz.w);
 //#ifdef COMBINED_SCATTERING_TEXTURES
 	vec4 combined_scattering = texture(scattering_texture, uvw0) * (1.0 - lerp) + texture(scattering_texture, uvw1) * lerp;
-	vec3 scattering = vec3(combined_scattering);
 	single_mie_scattering = GetExtrapolatedSingleMieScattering(atmosphere, combined_scattering);
 //#else
 //	vec3 scattering = vec3( texture(scattering_texture, uvw0) * (1.0 - lerp) + 
@@ -843,7 +842,7 @@ vec3 GetCombinedScattering( in AtmosphereParameters atmosphere, in sampler3D sca
 //	single_mie_scattering = vec3( texture(single_mie_scattering_texture, uvw0) * (1.0 - lerp) +
 //		texture(single_mie_scattering_texture, uvw1) * lerp);
 //#endif
-	return scattering;
+	return combined_scattering.xyz;
 }
 
 // SKY
@@ -901,7 +900,7 @@ vec3 GetSkyRadiance( in AtmosphereParameters atmosphere, in sampler2D transmitta
 		scattering = scattering * shadow_transmittance;
 		single_mie_scattering = single_mie_scattering * shadow_transmittance;
 	}
-	return scattering * RayleighPhaseFunction(nu) + single_mie_scattering * MiePhaseFunction(atmosphere.mie_phase_function_g, nu);
+	return scattering; //scattering * RayleighPhaseFunction(nu) + single_mie_scattering * MiePhaseFunction(atmosphere.mie_phase_function_g, nu);
 }
 
 // AERIAL PERSPECTIVE

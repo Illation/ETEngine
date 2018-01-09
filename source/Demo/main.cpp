@@ -1,9 +1,8 @@
 #include "stdafx.hpp"
 #include "MainFramework.hpp"
-#include "..\Engine\Helper\Command.h"
+#include "..\Engine\Helper\Commands.h"
 
 void SetDebuggingOptions();
-void DebugCopyResourceFiles();
 
 int wmain(int argc, char *argv[])
 {
@@ -19,16 +18,6 @@ int wmain(int argc, char *argv[])
 	pFW->Run();
 	delete pFW;
 	return 0;
-}
-
-void DebugCopyResourceFiles()
-{
-#ifdef PLATFORM_Win
-	if(IsDebuggerPresent())
-	{
-		std::cout << execConsoleCommand("..\\..\\..\\build\\copyResources_windows.bat ..\\..\\..\\source . x32") << std::endl;
-	}
-#endif
 }
 
 void SetDebuggingOptions()
