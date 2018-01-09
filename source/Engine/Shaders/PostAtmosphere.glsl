@@ -50,9 +50,6 @@
 	uniform vec3 uSkySpectralRadToLum;
 	uniform vec3 uSunSpectralRadToLum;
 
-	const vec3 kSphereCenter = vec3(0.0, 0.0, 1.0);
-	const float kSphereRadius = 1.0;
-	const vec3 kSphereAlbedo = vec3(0.8);
 	const vec3 kGroundAlbedo = vec3(0.0, 0.0, 0.04);
 
 	//vec3 GetInscatteredLight(in vec3 pos, in vec3 camPos, in vec3 viewDir, inout vec3 attenuation, inout float irradianceFactor)

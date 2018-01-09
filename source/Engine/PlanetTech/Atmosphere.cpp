@@ -15,6 +15,7 @@
 #include "SpriteRenderer.hpp"
 #include "Skybox.hpp"
 #include "Light.hpp"
+#include "Commands.h"
 
 vec3 InterpolatedSpectrum(const std::vector<double_t> &wavelengths, const std::vector<double_t> &v, const dvec3 &lambdas, float scale)
 {
@@ -166,6 +167,9 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	//Hotreload shader
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LALT) && INPUT->IsKeyboardKeyPressed('R'))
 	{
+		//if there is a debugger attached copy over the resource files 
+		DebugCopyResourceFiles();
+		//reload the shader
 		m_pShader = ContentManager::Reload<ShaderData>("Shaders/PostAtmosphere.glsl");
 		GetUniforms();
 	}
@@ -203,9 +207,9 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexInscatter"), 3);
 	STATE->LazyBindTexture(3, GL_TEXTURE_2D, m_TexInscatter->GetHandle());
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexIrridiance"), 4);
-	STATE->LazyBindTexture(3, GL_TEXTURE_2D, m_TexIrradiance->GetHandle());
+	STATE->LazyBindTexture(4, GL_TEXTURE_2D, m_TexIrradiance->GetHandle());
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexTransmittance"), 5);
-	STATE->LazyBindTexture(3, GL_TEXTURE_2D, m_TexTransmittance->GetHandle());
+	STATE->LazyBindTexture(5, GL_TEXTURE_2D, m_TexTransmittance->GetHandle());
 
 	glUniform3fv(m_uSunDir, 1, etm::valuePtr(m_pSun->GetTransform()->GetForward()));
 	DirectionalLight* pDirLight = m_pSun->GetLight<DirectionalLight>();

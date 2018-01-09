@@ -18,6 +18,8 @@ PointLightVolume::PointLightVolume()
 }
 PointLightVolume::~PointLightVolume()
 {
+	if (!IsInitialized)
+		return;
 	SafeDelete(m_pMaterial);
 	SafeDelete(m_pNullMaterial);
 }
