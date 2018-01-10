@@ -1,5 +1,5 @@
 //Some constants
-const float maxExposure = 50000;
+const float maxExposure = 200000;
 
 const float PI = 3.14159265359;
 const float RAD = 1.0;
