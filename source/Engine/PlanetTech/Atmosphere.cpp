@@ -204,10 +204,10 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	vec3 sunSpectralRadToLum = vec3((float)m_SunColor.x, (float)m_SunColor.y, (float)m_SunColor.z);
 	glUniform3fv(m_uSunSpectralRadToLum, 1, etm::valuePtr(sunSpectralRadToLum));
 
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexInscatter"), 3);
-	STATE->LazyBindTexture(3, GL_TEXTURE_2D, m_TexInscatter->GetHandle());
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexIrridiance"), 4);
-	STATE->LazyBindTexture(4, GL_TEXTURE_2D, m_TexIrradiance->GetHandle());
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexIrridiance"), 3);
+	STATE->LazyBindTexture(3, GL_TEXTURE_2D, m_TexIrradiance->GetHandle());
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexInscatter"), 4);
+	STATE->LazyBindTexture(4, GL_TEXTURE_3D, m_TexInscatter->GetHandle());
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexTransmittance"), 5);
 	STATE->LazyBindTexture(5, GL_TEXTURE_2D, m_TexTransmittance->GetHandle());
 
@@ -228,13 +228,6 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	STATE->SetBlendEnabled(false);
 	STATE->SetDepthEnabled(true);
 	STATE->SetCullEnabled(false);
-
-	// #temp , hacking that visualization
-	vec4 brightness = vec4(SCENE->GetPostProcessingSettings().exposure);
-	float layer = SCENE->GetSkybox()->GetRoughness();
-	SpriteRenderer::GetInstance()->Draw(m_TexInscatter, vec2(0, (float)(WINDOW.Height/2)), brightness, vec2(0), vec2(2), 0, pos.z, SpriteScalingMode::TEXTURE_ABS, layer);
-	SpriteRenderer::GetInstance()->Draw(m_TexIrradiance, vec2(0, ((float)WINDOW.Height)*0.8f), brightness, vec2(0), vec2(8), 0, pos.z, SpriteScalingMode::TEXTURE_ABS);
-	SpriteRenderer::GetInstance()->Draw(m_TexTransmittance, vec2(0, ((float)WINDOW.Height)*0.3f), brightness, vec2(0), vec2(2), 0, pos.z, SpriteScalingMode::TEXTURE_ABS);
 }
 
 void Atmosphere::GetUniforms()
