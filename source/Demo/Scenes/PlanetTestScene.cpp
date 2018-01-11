@@ -70,27 +70,27 @@ void PlanetTestScene::Update()
 
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_2))
 	{
-		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), TIME->DeltaTime()*0.01f));
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), TIME->DeltaTime()*0.1f));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_8))
 	{
-		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), -TIME->DeltaTime()*0.01f));
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), -TIME->DeltaTime()*0.1f));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_4))
 	{
-		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), TIME->DeltaTime()*0.01f));
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), TIME->DeltaTime()*0.1f));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_6))
 	{
-		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), -TIME->DeltaTime()*0.01f));
+		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), -TIME->DeltaTime()*0.1f));
 	}
 	if (INPUT->IsKeyboardKeyDown('J'))
 	{
-		CAMERA->SetFieldOfView(CAMERA->GetFOV() - TIME->DeltaTime());
+		CAMERA->SetFieldOfView(CAMERA->GetFOV() + TIME->DeltaTime()*10);
 	}
 	if (INPUT->IsKeyboardKeyDown('K'))
 	{
-		CAMERA->SetFieldOfView(CAMERA->GetFOV() + TIME->DeltaTime());
+		CAMERA->SetFieldOfView(CAMERA->GetFOV() - TIME->DeltaTime()*10);
 	}
 
 	//Change light settings
