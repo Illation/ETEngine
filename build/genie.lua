@@ -108,6 +108,7 @@ project "General"
 	files { 
 		path.join(PROJECT_DIR, "build/*.bat"), 
 		path.join(PROJECT_DIR, "build/*.lua"), 
+		path.join(PROJECT_DIR, "build/.vahashtags"), --for visual assist
 		path.join(PROJECT_DIR, "*.*"), 
 		path.join(PROJECT_DIR, ".gitignore"), 
 		path.join(PROJECT_DIR, ".gitattributes") 
