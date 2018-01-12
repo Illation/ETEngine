@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "Helper/AtomicTypes.hpp"
+#include "../Helper/AtomicTypes.hpp"
 
 enum JSONvalueType : uint8
 {
