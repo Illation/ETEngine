@@ -32,7 +32,7 @@ void JSONparser::MoveToNonWhitespace(const std::string &textFile)
 		m_ReadIdx = 0;
 		return;
 	}
-	m_ReadIdx = it - textFile.begin();
+	m_ReadIdx = (uint32)(it - textFile.begin());
 }
 
 JSONparser::JSONtoken JSONparser::ReadToken(const std::string &textFile)
@@ -49,21 +49,21 @@ JSONparser::JSONtoken JSONparser::ReadToken(const std::string &textFile)
 	case 't': if (m_ReadIdx + 4 > (uint32)textFile.size()) { m_Completed = true; return JT_Undefined; }
 		if (textFile.substr(m_ReadIdx, 3) == "rue")
 		{
-			m_ReadIdx += 4;
+			m_ReadIdx += 3;
 			return JT_True;
 		}
 		return JT_Undefined;
 	case 'f': if (m_ReadIdx + 5 > (uint32)textFile.size()) { m_Completed = true; return JT_Undefined; }
 		if (textFile.substr(m_ReadIdx, 4) == "alse")
 		{
-			m_ReadIdx += 5;
+			m_ReadIdx += 4;
 			return JT_False;
 		}
 		return JT_Undefined;
 	case 'n': if (m_ReadIdx + 4 > (uint32)textFile.size()) { m_Completed = true; return JT_Undefined; }
 		if (textFile.substr(m_ReadIdx, 3) == "ull")
 		{
-			m_ReadIdx += 4;
+			m_ReadIdx += 3;
 			return JT_Null;
 		}
 		return JT_Undefined;
@@ -210,26 +210,26 @@ bool JSONparser::ParseString(const std::string & textFile, std::string &parsed)
 		}
 		else if (next == '\\')
 		{
-			m_ReadIdx++;
 			if (CheckEOF(textFile))return false;
 			next = textFile[m_ReadIdx++];
 			switch (next)
 			{
-			case '"': parsed += '"';
-			case '\\': parsed += '\\';
-			case '/': parsed += '/';
-			case 'b': parsed += '\b';
-			case 'f': parsed += '\f';
-			case 'n': parsed += '\n';
-			case 'r': parsed += '\r';
-			case 't': parsed += '\t';
+			case '\"': parsed += '\"'; break;
+			case '\\': parsed += '\\'; break;
+			case '/': parsed += '/'; break;
+			case 'b': parsed += '\b'; break;
+			case 'f': parsed += '\f'; break;
+			case 'n': parsed += '\n'; break;
+			case 'r': parsed += '\r'; break;
+			case 't': parsed += '\t'; break;
 			case 'u': 
 			{
 				if (m_ReadIdx + 4 > (uint32)textFile.size()) return false;
 				std::string hexString = "0x" + textFile.substr(m_ReadIdx, 4);
 				parsed += static_cast<char>(std::stoul(hexString, nullptr, 16));
 				m_ReadIdx += 4;
-			}
+			} 
+			break;
 			default:
 				std::cout << "unexpected symbol after escape character while parsing string" << std::endl;
 				return false;
@@ -320,7 +320,7 @@ JSONnumber* JSONparser::ParseNumber(const std::string & textFile)
 	while (!m_Completed && !endFound)
 	{
 		if (CheckEOF(textFile))return false;
-		char next = textFile[endNumberIdx++];
+		char next = textFile[endNumberIdx];
 		switch (stage)
 		{
 		case NumStage::SIGN:
@@ -337,12 +337,10 @@ JSONnumber* JSONparser::ParseNumber(const std::string & textFile)
 			endNumberIdx++;
 			if (next == '.') 
 			{
-				endNumberIdx++;
 				stage = NumStage::FRACTION;
 			}
 			if (next == 'e' || next == 'E') 
 			{
-				endNumberIdx++;
 				stage = NumStage::EXPSIGN;
 			}
 			break;
@@ -355,7 +353,6 @@ JSONnumber* JSONparser::ParseNumber(const std::string & textFile)
 			endNumberIdx++;
 			if (next == 'e' || next == 'E') 
 			{
-				endNumberIdx++;
 				stage = NumStage::EXPSIGN;
 			}
 			break;
@@ -376,7 +373,7 @@ JSONnumber* JSONparser::ParseNumber(const std::string & textFile)
 	}
 	std::string numString = textFile.substr(m_ReadIdx, endNumberIdx - m_ReadIdx);
 	double num = std::atof(numString.c_str());
-	m_ReadIdx = endNumberIdx + 1;
+	m_ReadIdx = endNumberIdx;
 	JSONnumber* ret = new JSONnumber();
 	ret->value = num;
 	return ret;
