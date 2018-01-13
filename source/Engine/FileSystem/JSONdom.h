@@ -15,10 +15,21 @@ enum JSONvalueType : uint8
 struct JSONvalue;
 typedef std::pair<std::string, JSONvalue*> JSONpair;
 
+struct JSONstring;
+struct JSONnumber;
+struct JSONobject;
+struct JSONarray;
+struct JSONbool;
 //ValueTypes
 struct JSONvalue
 {
 	virtual JSONvalueType GetType() { return JSON_Null; }
+
+	JSONstring* str();
+	JSONnumber* num();
+	JSONobject* obj();
+	JSONarray* arr();
+	JSONbool* b();
 };
 struct JSONstring : public JSONvalue
 {
@@ -36,8 +47,10 @@ struct JSONobject : public JSONvalue
 	~JSONobject() { for (auto el : value)delete el.second; }
 	JSONvalue* operator[] (const std::string &key)
 	{
-		//auto it = std::find(value.begin(), value.end(), [key](const JSONpair& keyVal) { return keyVal.first == key; });
-		//if (it != value.end()) return it->second;
+		for (const JSONpair &keyVal : value)
+		{
+			if (keyVal.first == key)return keyVal.second;
+		}
 		return nullptr;
 	}
 
@@ -52,6 +65,8 @@ struct JSONarray : public JSONvalue
 		if(i>(uint32)value.size()) return nullptr;
 		return value[i];
 	}
+	std::vector<std::string> StrArr();
+	std::vector<double> NumArr();
 
 	std::vector<JSONvalue*> value;
 };
