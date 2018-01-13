@@ -17,7 +17,7 @@
                 }
             ]
         },
-        "num \"array": [ 10, 3.345, 2e4, 4.53e-2, 0.4e12, -12.43e+3 ]
+        "num \"array": [ 10, 3.345, 2e4, 4.53E-2, 0.4e12, -12.43e+3 ]
     },
     "boolvalue": true,
     "falsevalue": false,
