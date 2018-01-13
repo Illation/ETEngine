@@ -1,11 +1,25 @@
-{"menu": {
-  "id": "file",
-  "value": "File",
-  "popup": {
-    "menuitem": [
-      {"value": "New", "onclick": "CreateNewDoc()"},
-      {"value": "Open", "onclick": "OpenDoc()"},
-      {"value": "Close", "onclick": "CloseDoc()"}
-    ]
-  }
-}}
+{
+    "menu": {
+        "id": "\u0046ile",
+        "popup": {
+            "menuitem": [
+                {
+                    "value": "New",
+                    "onclick": "CreateNewDoc()"
+                },
+                {
+                    "value": "Open",
+                    "onclick": "OpenDoc()"
+                },
+                {
+                    "value": "Close",
+                    "onclick": "CloseDoc()"
+                }
+            ]
+        },
+        "num \"array": [ 10, 3.345, 2e4, 4.53e-2, 0.4e12, -12.43e+3 ]
+    },
+    "boolvalue": true,
+    "falsevalue": false,
+    "nullvalue": null
+}

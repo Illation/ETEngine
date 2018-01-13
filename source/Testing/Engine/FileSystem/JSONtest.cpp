@@ -10,6 +10,8 @@ TEST_CASE("Parse", "[json]")
 	bool openResult = jsonFile->Open( FILE_ACCESS_MODE::Read );
 	REQUIRE( openResult == true );
 	JSONparser parser = JSONparser(FileUtil::AsText(jsonFile->Read()));
+	delete jsonFile;
+	jsonFile = nullptr;
 	JSONobject* root = parser.GetRoot();
 	REQUIRE_FALSE(root == nullptr);
 }
