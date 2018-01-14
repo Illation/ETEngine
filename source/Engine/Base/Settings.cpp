@@ -19,6 +19,7 @@ Settings::GraphicsSettings::GraphicsSettings() :
 	NumCascades( 3 ),
 	NumPCFSamples( 3 ),
 	CSMDrawDistance( 200 ),
+	PbrBrdfLutSize( 512 ),
 	TextureScaleFactor( 0.25f ),
 	NumBlurPasses( 5 )
 {

@@ -117,6 +117,7 @@ void AbstractFramework::LoadConfig()
 		JSON::ApplyNumValue(graphics, pSet->Graphics.NumCascades, "CSM Cascade Count");
 		JSON::ApplyNumValue(graphics, pSet->Graphics.NumPCFSamples, "PCF Sample Count");
 		JSON::ApplyNumValue(graphics, pSet->Graphics.CSMDrawDistance, "CSM Draw Distance");
+		JSON::ApplyNumValue(graphics, pSet->Graphics.PbrBrdfLutSize, "PBR BRDF LUT Resolution");
 		JSON::ApplyNumValue(graphics, pSet->Graphics.TextureScaleFactor, "Texture Scale Factor");
 		JSON::ApplyNumValue(graphics, pSet->Graphics.NumBlurPasses, "Bloom Blur Passes");
 	}

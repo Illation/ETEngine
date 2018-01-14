@@ -23,6 +23,5 @@ private:
 	int32 m_CubemapRes = 1024;
 	int32 m_IrradianceRes = 32;
 	int32 m_RadianceRes = 1024;
-	int32 m_BrdfLutRes = 512;
 };
 
