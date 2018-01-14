@@ -21,6 +21,8 @@ public:
 		float CSMDrawDistance;
 		int32 NumPCFSamples;
 
+		int32 PbrBrdfLutSize;
+
 		float TextureScaleFactor;
 
 		//Bloom Quality

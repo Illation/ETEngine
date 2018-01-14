@@ -3,6 +3,7 @@
         "CSM Cascade Count": 3,
         "PCF Sample Count": 3,
         "CSM Draw Distance": 200,
+        "PBR BRDF LUT Resolution": 512,
         "Texture Scale Factor": 0.25,
         "Bloom Blur Passes": 5
     },
@@ -17,5 +18,5 @@
         "Fullscreen Resolution": 2,
         "Windowed Resolution": 1
     },
-    "start scene": "PlanetTestScene"
+    "start scene": "ShadingTestScene"
 }

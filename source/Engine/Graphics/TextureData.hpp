@@ -86,37 +86,37 @@ private:
 	int32 m_NumMipMaps = 0;
 };
 
+CubeMap* EquirectangularToCubeMap(TextureData* pEqui, int32 resolution);
+mat4 CubeCaptureProjection();
+std::vector<mat4> CubeCaptureViews();
+
 class HDRMap
 {
 public:
-	HDRMap(GLuint handle, GLuint irradiance, GLuint radiance, GLuint brdfLut, int32 width, int32 height, int32 numMipMaps) 
-		:m_Handle(handle)
-		,m_IrradianceHandle(irradiance)
-		,m_RadianceHandle(radiance)
-		,m_BrdfLutHandle(brdfLut)
+	HDRMap(CubeMap* map, CubeMap* irradiance, CubeMap* radiance, int32 width, int32 height, int32 numMipMaps)
+		:m_Map(map)
+		, m_Irradiance(irradiance)
+		, m_Radiance(radiance)
 		,m_Width(width)
 		,m_Height(height)
 		,m_NumMipMaps(numMipMaps){}
 	~HDRMap()
 	{ 
-		glDeleteTextures(1, &m_Handle); 
-		glDeleteTextures(1, &m_IrradianceHandle);
-		glDeleteTextures(1, &m_RadianceHandle);
-		glDeleteTextures(1, &m_BrdfLutHandle);
+		delete m_Map;
+		delete m_Irradiance;
+		delete m_Radiance;
 	}
 
-	GLuint GetHandle() { return m_Handle; }
-	GLuint GetIrradianceHandle() { return m_IrradianceHandle; }
-	GLuint GetRadianceHandle() { return m_RadianceHandle; }
-	GLuint GetBrdfLutHandle();
+	GLuint GetHandle() { return m_Map->GetHandle(); }
+	GLuint GetIrradianceHandle() { return m_Irradiance->GetHandle(); }
+	GLuint GetRadianceHandle() { return m_Radiance->GetHandle(); }
 
 	int32 GetNumMipMaps() { return m_NumMipMaps; }
 
 private:
-	GLuint m_Handle;
-	GLuint m_IrradianceHandle;
-	GLuint m_RadianceHandle;
-	GLuint m_BrdfLutHandle;
+	CubeMap* m_Map = nullptr;
+	CubeMap* m_Irradiance;
+	CubeMap* m_Radiance;
 	int32 m_Width;
 	int32 m_Height;
 	int32 m_NumMipMaps = 0;

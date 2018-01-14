@@ -15,6 +15,7 @@
 #include "../Prefabs/Skybox.hpp"
 #include "SpriteRenderer.hpp"
 #include "AtmospherePrecompute.h"
+#include "PbrPrefilter.h"
 
 RenderPipeline::RenderPipeline()
 {
@@ -29,6 +30,7 @@ RenderPipeline::~RenderPipeline()
 	PrimitiveRenderer::GetInstance()->DestroyInstance();
 	SpriteRenderer::GetInstance()->DestroyInstance();
 	AtmospherePrecompute::GetInstance()->DestroyInstance();
+	PbrPrefilter::GetInstance()->DestroyInstance();
 
 	SafeDelete(m_pGBuffer);
 	SafeDelete(m_pPostProcessing);
@@ -57,6 +59,8 @@ void RenderPipeline::Initialize()
 	m_pGBuffer = new Gbuffer();
 	m_pGBuffer->Initialize();
 	m_pGBuffer->Enable(true);
+
+	PbrPrefilter::GetInstance()->Precompute(GRAPHICS.PbrBrdfLutSize);
 
 	m_ClearColor = vec3(101.f / 255.f, 114.f / 255.f, 107.f / 255.f)*0.1f;
 

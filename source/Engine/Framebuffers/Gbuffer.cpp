@@ -6,6 +6,7 @@
 #include "../Components/LightComponent.hpp"
 #include "../Graphics/TextureData.hpp"
 #include "../Prefabs/Skybox.hpp"
+#include "PbrPrefilter.h"
 
 Gbuffer::Gbuffer(bool demo):
 	FrameBuffer(demo?
@@ -47,9 +48,10 @@ void Gbuffer::UploadDerivedVariables()
 		glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texEnvRadiance"), 4);
 		STATE->LazyBindTexture(4, GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetRadianceHandle());
 		
-		glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texBRDFLUT"), 5);
-		STATE->LazyBindTexture(5, GL_TEXTURE_2D, SCENE->GetEnvironmentMap()->GetBrdfLutHandle());
-
 		glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "MAX_REFLECTION_LOD"), (GLfloat)SCENE->GetEnvironmentMap()->GetNumMipMaps());
 	}
+
+	TextureData* pLUT = PbrPrefilter::GetInstance()->GetLUT();
+	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texBRDFLUT"), 5);
+	STATE->LazyBindTexture(5, pLUT->GetTarget(), pLUT->GetHandle());
 }
