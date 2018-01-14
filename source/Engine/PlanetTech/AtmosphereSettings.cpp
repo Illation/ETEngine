@@ -93,3 +93,14 @@ void AtmosphereSettings::UploadTextureSize(ShaderData* shader) const
 	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexIrradianceW"), IRRADIANCE_W);
 	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexIrradianceH"), IRRADIANCE_H);
 }
+
+AtmosphereSettings::AtmosphereSettings()
+{
+	//General texture format for atmosphere
+	m_TexParams = TextureParameters();
+	m_TexParams.wrapS = GL_CLAMP_TO_EDGE;
+	m_TexParams.wrapT = GL_CLAMP_TO_EDGE;
+	m_TexParams.wrapR = GL_CLAMP_TO_EDGE;
+
+	m_ScatteringTexDim = ivec3(INSCATTER_NU * INSCATTER_MU_S, INSCATTER_MU, INSCATTER_R);
+}

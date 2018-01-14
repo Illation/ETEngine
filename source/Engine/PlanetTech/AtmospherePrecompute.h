@@ -15,14 +15,12 @@ public:
 	void SetUniforms(ShaderData* shader, TextureData* transmittance,
 		TextureData* scattering, TextureData* irradiance, TextureData* mie);
 
-	static double Interpolate(const std::vector<double>& wavelengths, const std::vector<double>& wavelength_function, double wavelength);
 	static void ComputeSpectralRadianceToLuminanceFactors(const std::vector<double>& wavelengths, const std::vector<double>& solar_irradiance, double lambda_power, dvec3 &color);
 
 	const AtmosphereSettings& GetSettings() { return m_Settings; }
 
 private:
-	static double CieColorMatchingFunctionTableValue(double wavelength, int column);
-	void ConvertSpectrumToLinearSrgb(const std::vector<double>& wavelengths, const std::vector<double>& spectrum, double* r, double* g, double* b);
+	void ConvertSpectrumToLinearSrgb(const std::vector<double>& wavelengths, const std::vector<double>& spectrum, dvec3 &rgb);
 
 	friend class Atmosphere;// #temp
 

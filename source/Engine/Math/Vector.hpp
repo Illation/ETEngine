@@ -508,6 +508,16 @@ namespace etm
 		return result;
 	}
 	template <uint8 n, class T>
+	inline vector<n, T> operator/(const T scalar, const vector<n, T> &rhs)
+	{
+		vector<n, T> result;
+		for (uint8 i = 0; i < n; ++i)
+		{
+			result[i] = scalar / rhs[i];
+		}
+		return result;
+	}
+	template <uint8 n, class T>
 	inline vector<n, T> operator/(const vector<n, T> &lhs, const vector<n, T> &rhs) //hadamard product
 	{
 		vector<n, T> result;
@@ -591,6 +601,15 @@ namespace etm
 		//assert(!nearEqualsV(vec, vector<n, T>(0), static_cast<T>(0)));
 		T len = length(vec);
 		return vec / len;
+	}
+
+	template <uint8 n, class T>
+	inline vector<n, T> pow(const vector<n, T> &vec, T exponent)
+	{
+		vector<n, T> result = vector<n, T>();
+		for (uint8 i = 0; i < n; ++i)
+			result[i] = std::pow(vec[i], exponent);
+		return result;
 	}
 
 	//Vectors need to be prenormalized

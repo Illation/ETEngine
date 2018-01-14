@@ -3,6 +3,7 @@
 #include "Atmosphere.hpp"
 #include "PrimitiveRenderer.hpp"
 #include "../Graphics/ShaderData.hpp"
+#include "CIE.h"
 
 
 AtmospherePrecompute::AtmospherePrecompute()
@@ -270,79 +271,36 @@ void AtmospherePrecompute::SetUniforms(ShaderData* shader, TextureData* transmit
 	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexMie"), mie->GetHandle());
 }
 
-double AtmospherePrecompute::CieColorMatchingFunctionTableValue( double wavelength, int column)
-{
-	if (wavelength <= AtmosphereSettings::kLambdaMin || wavelength >= AtmosphereSettings::kLambdaMax)
-	{
-		return 0.0;
-	}
-	double u = (wavelength - AtmosphereSettings::kLambdaMin) / 5.0;
-	int row = static_cast<int>(std::floor(u));
-	assert(row >= 0 && row + 1 < 95);
-	assert(CIE_2_DEG_COLOR_MATCHING_FUNCTIONS[4 * row] <= wavelength && CIE_2_DEG_COLOR_MATCHING_FUNCTIONS[4 * (row + 1)] >= wavelength);
-	u -= row;
-	return CIE_2_DEG_COLOR_MATCHING_FUNCTIONS[4 * row + column] * (1.0 - u) + CIE_2_DEG_COLOR_MATCHING_FUNCTIONS[4 * (row + 1) + column] * u;
-}
-
-double AtmospherePrecompute::Interpolate(const std::vector<double>& wavelengths, const std::vector<double>& wavelength_function, double wavelength)
-{
-	assert(wavelength_function.size() == wavelengths.size());
-	if (wavelength < wavelengths[0])
-	{
-		return wavelength_function[0];
-	}
-	for (unsigned int i = 0; i < wavelengths.size() - 1; ++i)
-	{
-		if (wavelength < wavelengths[i + 1])
-		{
-			double u = (wavelength - wavelengths[i]) / (wavelengths[i + 1] - wavelengths[i]);
-			return wavelength_function[i] * (1.0 - u) + wavelength_function[i + 1] * u;
-		}
-	}
-	return wavelength_function[wavelength_function.size() - 1];
-}
-
 void AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(const std::vector<double>& wavelengths,
 	const std::vector<double>& solar_irradiance, double lambda_power, dvec3 &color)
 {
 	color = dvec3(0);
-	double solar_r = Interpolate(wavelengths, solar_irradiance, AtmosphereSettings::kLambdaR);
-	double solar_g = Interpolate(wavelengths, solar_irradiance, AtmosphereSettings::kLambdaG);
-	double solar_b = Interpolate(wavelengths, solar_irradiance, AtmosphereSettings::kLambdaB);
+	auto pCIE = CIE::GetInstance();
 	int32 dlambda = 1;
+	dvec3 lambdaVec = dvec3(AtmosphereSettings::kLambdaR, AtmosphereSettings::kLambdaG, AtmosphereSettings::kLambdaB);
+	dvec3 solarRGB = pCIE->Interpolate(wavelengths, solar_irradiance, lambdaVec);
 	for (int lambda = AtmosphereSettings::kLambdaMin; lambda < AtmosphereSettings::kLambdaMax; lambda += dlambda)
 	{
-		double x_bar = CieColorMatchingFunctionTableValue(lambda, 1);
-		double y_bar = CieColorMatchingFunctionTableValue(lambda, 2);
-		double z_bar = CieColorMatchingFunctionTableValue(lambda, 3);
-		const double* xyz2srgb = XYZ_TO_SRGB;
-		double r_bar = xyz2srgb[0] * x_bar + xyz2srgb[1] * y_bar + xyz2srgb[2] * z_bar;
-		double g_bar = xyz2srgb[3] * x_bar + xyz2srgb[4] * y_bar + xyz2srgb[5] * z_bar;
-		double b_bar = xyz2srgb[6] * x_bar + xyz2srgb[7] * y_bar + xyz2srgb[8] * z_bar;
-		double irradiance = Interpolate(wavelengths, solar_irradiance, lambda);
+		double irradiance = pCIE->Interpolate(wavelengths, solar_irradiance, lambda);
 
-		color.x += r_bar * irradiance / solar_r * pow(lambda / AtmosphereSettings::kLambdaR, lambda_power);
-		color.y += g_bar * irradiance / solar_g * pow(lambda / AtmosphereSettings::kLambdaG, lambda_power);
-		color.z += b_bar * irradiance / solar_b * pow(lambda / AtmosphereSettings::kLambdaB, lambda_power);
+		dvec3 xyz = pCIE->GetValue(lambda, AtmosphereSettings::kLambdaMin, AtmosphereSettings::kLambdaMax);
+		dvec3 rgb = pCIE->GetRGB(xyz);
+
+		color = color + (rgb*irradiance / solarRGB * etm::pow((double)lambda / lambdaVec, lambda_power));
 	}
 	color = color * (AtmosphereSettings::MAX_LUMINOUS_EFFICACY * dlambda);
 }
 
 void AtmospherePrecompute::ConvertSpectrumToLinearSrgb( const std::vector<double>& wavelengths,
-	const std::vector<double>& spectrum, double* r, double* g, double* b) 
+	const std::vector<double>& spectrum, dvec3 &rgb) 
 {
-	double x = 0.0;
-	double y = 0.0;
-	double z = 0.0;
+	dvec3 xyz = dvec3(0);
+	auto pCIE = CIE::GetInstance();
 	const int32 dlambda = 1;
 	for (int lambda = m_Settings.kLambdaMin; lambda < m_Settings.kLambdaMax; lambda += dlambda) 
 	{
-		double value = Interpolate(wavelengths, spectrum, lambda);
-		x += CieColorMatchingFunctionTableValue(lambda, 1) * value;
-		y += CieColorMatchingFunctionTableValue(lambda, 2) * value;
-		z += CieColorMatchingFunctionTableValue(lambda, 3) * value;
+		double value = pCIE->Interpolate(wavelengths, spectrum, lambda);
+		xyz = xyz + pCIE->GetValue(lambda, AtmosphereSettings::kLambdaMin, AtmosphereSettings::kLambdaMax) * value;
 	}
-	*r = m_Settings.MAX_LUMINOUS_EFFICACY * (XYZ_TO_SRGB[0] * x + XYZ_TO_SRGB[1] * y + XYZ_TO_SRGB[2] * z) * dlambda;
-	*g = m_Settings.MAX_LUMINOUS_EFFICACY * (XYZ_TO_SRGB[3] * x + XYZ_TO_SRGB[4] * y + XYZ_TO_SRGB[5] * z) * dlambda;
-	*b = m_Settings.MAX_LUMINOUS_EFFICACY * (XYZ_TO_SRGB[6] * x + XYZ_TO_SRGB[7] * y + XYZ_TO_SRGB[8] * z) * dlambda;
+	rgb = pCIE->GetRGB(xyz);
 }

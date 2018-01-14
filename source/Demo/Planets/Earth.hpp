@@ -1,6 +1,5 @@
 #pragma once
-
-#include "../Planet.hpp"
+#include "..\Engine\PlanetTech\Planet.hpp"
 
 class Earth:public Planet
 {
