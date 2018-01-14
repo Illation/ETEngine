@@ -142,13 +142,19 @@ void AbstractFramework::LoadConfig()
 				pSet->Window.Resize(resolutions[resIdx].x, resolutions[resIdx].y, false);
 		}
 	}
+	SceneManager::GetInstance();//Initialize SceneManager
+	AddScenes();
+	JSONstring* initialScene = (*root)["start scene"]->str();
+	if (initialScene)
+	{
+		SceneManager::GetInstance()->SetActiveGameScene(initialScene->value);
+	}
 }
 
 void AbstractFramework::InitializeWindow()
 {
 	Settings* pSet = Settings::GetInstance();
 	PerformanceInfo::GetInstance();//Initialize performance measurment #todo: disable for shipped project?
-	SceneManager::GetInstance();//Initialize SceneManager
 	InputManager::GetInstance()->Init();//init input manager
 
 	//Create Window
@@ -216,14 +222,10 @@ void AbstractFramework::InitializeGame()
 
 	RenderPipeline::GetInstance()->Initialize();
 
-	SceneManager::GetInstance()->Initialize();
-
 #ifdef EDITOR
 	Editor::GetInstance()->Initialize();
 #endif
 
-	//Initialize Game
-	Initialize();
 }
 
 void AbstractFramework::GameLoop()

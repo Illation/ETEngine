@@ -26,7 +26,6 @@ private:
 
 	SceneManager();
 
-	void Initialize();
 	void Update();
 
 	std::vector<AbstractScene*> m_pSceneVec;

@@ -8,7 +8,7 @@ public:
 	~MainFramework();
 
 private:
-	void Initialize();
+	void AddScenes();
 	void Update();
 };
 

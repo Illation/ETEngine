@@ -24,9 +24,6 @@ void SceneManager::AddGameScene(AbstractScene* scene)
 	{
 		m_pSceneVec.push_back(scene);
 
-		if (m_IsInitialized)
-			scene->RootInitialize();
-
 		if (m_ActiveScene == nullptr && m_NewActiveScene == nullptr)
 			m_NewActiveScene = scene;
 	}
@@ -82,19 +79,6 @@ void SceneManager::PreviousScene()
 	}
 }
 
-void SceneManager::Initialize()
-{
-	if (m_IsInitialized)
-		return;
-	
-	for (AbstractScene* scene : m_pSceneVec)
-	{
-		scene->RootInitialize();
-	}
-
-	m_IsInitialized = true;
-}
-
 void SceneManager::Update()
 {
 	if (m_NewActiveScene != nullptr)
@@ -107,6 +91,7 @@ void SceneManager::Update()
 		m_ActiveScene = m_NewActiveScene;
 		m_NewActiveScene = nullptr;
 
+		std::cout << "Switching to scene: " << m_ActiveScene->m_Name << std::endl;
 		//Active the new scene and reset SceneTimer
 		m_ActiveScene->RootOnActivated();
 	}

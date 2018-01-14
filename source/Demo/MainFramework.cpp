@@ -16,12 +16,12 @@ MainFramework::~MainFramework()
 {
 }
 
-void MainFramework::Initialize()
+void MainFramework::AddScenes()
 {
 	SceneManager::GetInstance()->AddGameScene(new PlanetTestScene());
-	//SceneManager::GetInstance()->AddGameScene(new ShadingTestScene());
-	//SceneManager::GetInstance()->AddGameScene(new SkyboxTestScene());
-	//SceneManager::GetInstance()->AddGameScene(new TestScene());
+	SceneManager::GetInstance()->AddGameScene(new ShadingTestScene());
+	SceneManager::GetInstance()->AddGameScene(new SkyboxTestScene());
+	SceneManager::GetInstance()->AddGameScene(new TestScene());
 }
 
 void MainFramework::Update()
