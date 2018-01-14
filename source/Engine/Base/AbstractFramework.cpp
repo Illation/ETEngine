@@ -15,6 +15,10 @@
 #ifdef EDITOR
 #include "../Editor/Editor.hpp"
 #endif
+#include "FileSystem/Entry.h"
+#include "FileSystem/JSONparser.h"
+#include "FileSystem/FileUtil.h"
+#include "FileSystem/JSONdom.h"
 
 
 void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
@@ -54,6 +58,7 @@ AbstractFramework::~AbstractFramework()
 void AbstractFramework::Run()
 {
 	InitializeSDL();
+	LoadConfig();
 	InitializeWindow();
 	InitializeUtilities();
 	BindOpenGL();
@@ -87,9 +92,61 @@ void AbstractFramework::InitializeSDL()
 	SDL_GL_LoadLibrary(NULL);
 }
 
-void AbstractFramework::InitializeWindow()
+void AbstractFramework::LoadConfig()
 {
 	Settings* pSet = Settings::GetInstance();//Initialize Game Settings
+
+	File* jsonFile = new File("./config.json", nullptr);
+	if (!jsonFile->Open(FILE_ACCESS_MODE::Read))
+		return;
+
+	JSONparser parser = JSONparser(FileUtil::AsText(jsonFile->Read()));
+	delete jsonFile;
+	jsonFile = nullptr;
+
+	JSONobject* root = parser.GetRoot();
+	if (!root)
+	{
+		std::cout << "unable to read config.json" << std::endl;
+		return;
+	}
+
+	JSONobject* graphics = (*root)["graphics"]->obj();
+	if (graphics)
+	{
+		JSONApplyNumValue(graphics, pSet->Graphics.NumCascades, "CSM Cascade Count");
+		JSONApplyNumValue(graphics, pSet->Graphics.NumPCFSamples, "PCF Sample Count");
+		JSONApplyNumValue(graphics, pSet->Graphics.CSMDrawDistance, "CSM Draw Distance");
+		JSONApplyNumValue(graphics, pSet->Graphics.TextureScaleFactor, "Texture Scale Factor");
+		JSONApplyNumValue(graphics, pSet->Graphics.NumBlurPasses, "Bloom Blur Passes");
+	}
+	JSONobject* window = (*root)["window"]->obj();
+	if (window)
+	{
+		JSONApplyBoolValue(window, pSet->Window.Fullscreen, "Fullscreen");
+		JSONApplyStrValue(window, pSet->Window.Title, "Title");
+		std::vector<ivec2> resolutions;
+		JSONvalue* jval = (*window)["Resolutions"];
+		if (jval)
+		{
+			for (JSONvalue* res : jval->arr()->value)
+			{
+				ivec2 vec;
+				if (JSONArrayVector(res, vec))resolutions.push_back(vec);
+			}
+		}
+		uint32 resIdx;
+		if (JSONApplyNumValue(window, resIdx, pSet->Window.Fullscreen ? "Fullscreen Resolution" : "Windowed Resolution"))
+		{
+			if (resIdx < (uint32)resolutions.size()) 
+				pSet->Window.Resize(resolutions[resIdx].x, resolutions[resIdx].y, false);
+		}
+	}
+}
+
+void AbstractFramework::InitializeWindow()
+{
+	Settings* pSet = Settings::GetInstance();
 	PerformanceInfo::GetInstance();//Initialize performance measurment #todo: disable for shipped project?
 	SceneManager::GetInstance();//Initialize SceneManager
 	InputManager::GetInstance()->Init();//init input manager
