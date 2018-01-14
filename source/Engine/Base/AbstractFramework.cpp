@@ -100,43 +100,43 @@ void AbstractFramework::LoadConfig()
 	if (!jsonFile->Open(FILE_ACCESS_MODE::Read))
 		return;
 
-	JSONparser parser = JSONparser(FileUtil::AsText(jsonFile->Read()));
+	JSON::Parser parser = JSON::Parser(FileUtil::AsText(jsonFile->Read()));
 	delete jsonFile;
 	jsonFile = nullptr;
 
-	JSONobject* root = parser.GetRoot();
+	JSON::Object* root = parser.GetRoot();
 	if (!root)
 	{
 		std::cout << "unable to read config.json" << std::endl;
 		return;
 	}
 
-	JSONobject* graphics = (*root)["graphics"]->obj();
+	JSON::Object* graphics = (*root)["graphics"]->obj();
 	if (graphics)
 	{
-		JSONApplyNumValue(graphics, pSet->Graphics.NumCascades, "CSM Cascade Count");
-		JSONApplyNumValue(graphics, pSet->Graphics.NumPCFSamples, "PCF Sample Count");
-		JSONApplyNumValue(graphics, pSet->Graphics.CSMDrawDistance, "CSM Draw Distance");
-		JSONApplyNumValue(graphics, pSet->Graphics.TextureScaleFactor, "Texture Scale Factor");
-		JSONApplyNumValue(graphics, pSet->Graphics.NumBlurPasses, "Bloom Blur Passes");
+		JSON::ApplyNumValue(graphics, pSet->Graphics.NumCascades, "CSM Cascade Count");
+		JSON::ApplyNumValue(graphics, pSet->Graphics.NumPCFSamples, "PCF Sample Count");
+		JSON::ApplyNumValue(graphics, pSet->Graphics.CSMDrawDistance, "CSM Draw Distance");
+		JSON::ApplyNumValue(graphics, pSet->Graphics.TextureScaleFactor, "Texture Scale Factor");
+		JSON::ApplyNumValue(graphics, pSet->Graphics.NumBlurPasses, "Bloom Blur Passes");
 	}
-	JSONobject* window = (*root)["window"]->obj();
+	JSON::Object* window = (*root)["window"]->obj();
 	if (window)
 	{
-		JSONApplyBoolValue(window, pSet->Window.Fullscreen, "Fullscreen");
-		JSONApplyStrValue(window, pSet->Window.Title, "Title");
+		JSON::ApplyBoolValue(window, pSet->Window.Fullscreen, "Fullscreen");
+		JSON::ApplyStrValue(window, pSet->Window.Title, "Title");
 		std::vector<ivec2> resolutions;
-		JSONvalue* jval = (*window)["Resolutions"];
+		JSON::Value* jval = (*window)["Resolutions"];
 		if (jval)
 		{
-			for (JSONvalue* res : jval->arr()->value)
+			for (JSON::Value* res : jval->arr()->value)
 			{
 				ivec2 vec;
-				if (JSONArrayVector(res, vec))resolutions.push_back(vec);
+				if (JSON::ArrayVector(res, vec))resolutions.push_back(vec);
 			}
 		}
 		uint32 resIdx;
-		if (JSONApplyNumValue(window, resIdx, pSet->Window.Fullscreen ? "Fullscreen Resolution" : "Windowed Resolution"))
+		if (JSON::ApplyNumValue(window, resIdx, pSet->Window.Fullscreen ? "Fullscreen Resolution" : "Windowed Resolution"))
 		{
 			if (resIdx < (uint32)resolutions.size()) 
 				pSet->Window.Resize(resolutions[resIdx].x, resolutions[resIdx].y, false);
@@ -144,7 +144,7 @@ void AbstractFramework::LoadConfig()
 	}
 	SceneManager::GetInstance();//Initialize SceneManager
 	AddScenes();
-	JSONstring* initialScene = (*root)["start scene"]->str();
+	JSON::String* initialScene = (*root)["start scene"]->str();
 	if (initialScene)
 	{
 		SceneManager::GetInstance()->SetActiveGameScene(initialScene->value);
