@@ -5,7 +5,7 @@
 #include <cctype>
 #include <locale>
 
-JSONparser::JSONparser(const std::string &textFile)
+JSON::Parser::Parser(const std::string &textFile)
 {
 	MoveToNonWhitespace(textFile);
 	if (!m_Completed && ReadToken(textFile) == JT_BeginObject)
@@ -16,13 +16,13 @@ JSONparser::JSONparser(const std::string &textFile)
 	std::cout << "Expected '{' token, parsing JSON failed" << std::endl;
 }
 
-JSONparser::~JSONparser()
+JSON::Parser::~Parser()
 {
 	delete m_Root;
 	m_Root = nullptr;
 }
 
-void JSONparser::MoveToNonWhitespace(const std::string &textFile)
+void JSON::Parser::MoveToNonWhitespace(const std::string &textFile)
 {
 	if (!std::isspace(textFile[m_ReadIdx]))return;
 	auto it = std::find_if(textFile.begin()+m_ReadIdx, textFile.end(), [](const uint8 c) { return !std::isspace(c); });
@@ -35,7 +35,7 @@ void JSONparser::MoveToNonWhitespace(const std::string &textFile)
 	m_ReadIdx = (uint32)(it - textFile.begin());
 }
 
-JSONparser::JSONtoken JSONparser::ReadToken(const std::string &textFile)
+JSON::Parser::Token JSON::Parser::ReadToken(const std::string &textFile)
 {
 	switch (textFile[m_ReadIdx++])
 	{
@@ -74,9 +74,9 @@ JSONparser::JSONtoken JSONparser::ReadToken(const std::string &textFile)
 	}
 }
 
-JSONobject* JSONparser::ParseObject(const std::string & textFile)
+JSON::Object* JSON::Parser::ParseObject(const std::string & textFile)
 {
-	JSONobject* ret = new JSONobject;
+	JSON::Object* ret = new JSON::Object;
 	bool parseSuccess = false;
 	bool parseFail = false;
 	bool prevPair = false;
@@ -85,7 +85,7 @@ JSONobject* JSONparser::ParseObject(const std::string & textFile)
 	{
 		MoveToNonWhitespace(textFile);
 		if(CheckEOF(textFile))continue;
-		JSONtoken token = ReadToken(textFile);
+		Token token = ReadToken(textFile);
 		if(!(token == JT_EndObject) && CheckEOF(textFile))continue;
 		switch (token)
 		{
@@ -107,7 +107,7 @@ JSONobject* JSONparser::ParseObject(const std::string & textFile)
 				continue;
 			}
 			prevDelim = false;
-			JSONpair keyVal = ParsePair(textFile);
+			JSON::Pair keyVal = ParsePair(textFile);
 			if (keyVal.second)
 			{
 				ret->value.push_back(keyVal);
@@ -141,9 +141,9 @@ JSONobject* JSONparser::ParseObject(const std::string & textFile)
 	return ret;
 }
 
-JSONpair JSONparser::ParsePair(const std::string & textFile)
+JSON::Pair JSON::Parser::ParsePair(const std::string & textFile)
 {
-	JSONpair ret;
+	JSON::Pair ret;
 	ret.second = nullptr;
 	if (ParseString(textFile, ret.first))
 	{
@@ -157,18 +157,18 @@ JSONpair JSONparser::ParsePair(const std::string & textFile)
 	return ret;
 }
 
-JSONvalue* JSONparser::ParseValue(const std::string & textFile)
+JSON::Value* JSON::Parser::ParseValue(const std::string & textFile)
 {
 	MoveToNonWhitespace(textFile);
 	if(CheckEOF(textFile))return nullptr;
-	JSONtoken token = ReadToken(textFile);
+	Token token = ReadToken(textFile);
 	if(CheckEOF(textFile))return nullptr;
 
 	switch (token)
 	{
 	case JT_String:
 	{
-		JSONstring* ret = new JSONstring();
+		JSON::String* ret = new JSON::String();
 		if (!ParseString(textFile, ret->value))
 		{
 			delete ret;
@@ -185,19 +185,19 @@ JSONvalue* JSONparser::ParseValue(const std::string & textFile)
 	case JT_True:
 	case JT_False:
 	{
-		JSONbool* ret = new JSONbool();
+		JSON::Bool* ret = new JSON::Bool();
 		ret->value = token == JT_True;
 		return ret;
 	}
 	case JT_Null:
-		return new JSONvalue();
+		return new JSON::Value();
 	}
 
 	std::cout << "Couldn't successfully parse value, unexpected token" << std::endl;
 	return nullptr;
 }
 
-bool JSONparser::ParseString(const std::string & textFile, std::string &parsed)
+bool JSON::Parser::ParseString(const std::string & textFile, std::string &parsed)
 {
 	while (!m_Completed)
 	{
@@ -243,9 +243,9 @@ bool JSONparser::ParseString(const std::string & textFile, std::string &parsed)
 	return false;
 }
 
-JSONarray* JSONparser::ParseArray(const std::string & textFile)
+JSON::Array* JSON::Parser::ParseArray(const std::string & textFile)
 {
-	JSONarray* ret = new JSONarray;
+	JSON::Array* ret = new JSON::Array;
 	bool parseSuccess = false;
 	bool parseFail = false;
 	bool prevVal = false;
@@ -254,7 +254,7 @@ JSONarray* JSONparser::ParseArray(const std::string & textFile)
 	{
 		MoveToNonWhitespace(textFile);
 		if(CheckEOF(textFile))continue;
-		JSONtoken token = ReadToken(textFile);
+		Token token = ReadToken(textFile);
 		if(!(token == JT_Delim) && !(token == JT_EndArray))m_ReadIdx--;
 		if(CheckEOF(textFile))continue;
 		switch (token)
@@ -281,7 +281,7 @@ JSONarray* JSONparser::ParseArray(const std::string & textFile)
 		default:
 			if (!prevVal)
 			{
-				JSONvalue* val = ParseValue(textFile);
+				JSON::Value* val = ParseValue(textFile);
 				prevDelim = false;
 				if (val)
 				{
@@ -305,7 +305,7 @@ JSONarray* JSONparser::ParseArray(const std::string & textFile)
 	return ret;
 }
 
-JSONnumber* JSONparser::ParseNumber(const std::string & textFile)
+JSON::Number* JSON::Parser::ParseNumber(const std::string & textFile)
 {
 	uint32 endNumberIdx = m_ReadIdx;
 	enum class NumStage
@@ -374,12 +374,12 @@ JSONnumber* JSONparser::ParseNumber(const std::string & textFile)
 	std::string numString = textFile.substr(m_ReadIdx, endNumberIdx - m_ReadIdx);
 	double num = std::atof(numString.c_str());
 	m_ReadIdx = endNumberIdx;
-	JSONnumber* ret = new JSONnumber();
+	JSON::Number* ret = new JSON::Number();
 	ret->value = num;
 	return ret;
 }
 
-bool JSONparser::CheckEOF(const std::string &textFile)
+bool JSON::Parser::CheckEOF(const std::string &textFile)
 {
 	if (m_Completed || m_ReadIdx >= (uint32)textFile.size())
 	{
