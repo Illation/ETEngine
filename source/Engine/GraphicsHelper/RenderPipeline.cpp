@@ -16,6 +16,7 @@
 #include "SpriteRenderer.hpp"
 #include "AtmospherePrecompute.h"
 #include "PbrPrefilter.h"
+#include "CIE.h"
 
 RenderPipeline::RenderPipeline()
 {
@@ -31,6 +32,7 @@ RenderPipeline::~RenderPipeline()
 	SpriteRenderer::GetInstance()->DestroyInstance();
 	AtmospherePrecompute::GetInstance()->DestroyInstance();
 	PbrPrefilter::GetInstance()->DestroyInstance();
+	CIE::GetInstance()->DestroyInstance();
 
 	SafeDelete(m_pGBuffer);
 	SafeDelete(m_pPostProcessing);
@@ -52,6 +54,8 @@ void RenderPipeline::Initialize()
 
 	PerformanceInfo::GetInstance();
 	PrimitiveRenderer::GetInstance();
+
+	CIE::GetInstance()->LoadData();
 
 	m_pPostProcessing = new PostProcessingRenderer();
 	m_pPostProcessing->Initialize();

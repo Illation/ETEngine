@@ -3,6 +3,7 @@
 #include <vector>
 #include "../Helper/AtomicTypes.hpp"
 #include "../Math/Vector.hpp"
+#include "../Math/Matrix.hpp"
 
 namespace JSON
 {
@@ -103,11 +104,30 @@ namespace JSON
 		if (jvec && jvec->value.size() >= n)
 		{
 			vec = etm::vector<n, T>();
-			for(uint8 i = 0; i < 2; ++i)
+			for(uint8 i = 0; i < n; ++i)
 			{
 				JSON::Number* jnum = (*jvec)[(uint32)i]->num();
 				if (!jnum) return false;
 				vec[i] = static_cast<T>(jnum->value);
+			}
+			return true;
+		}
+		return false;
+	}
+	template<uint8 n, uint8 m, class T>
+	bool ArrayMatrix(JSON::Value* val, etm::matrix<n, m, T> &mat) {
+		JSON::Array* jvec = val->arr();
+		if (jvec && jvec->value.size() >= n*m)
+		{
+			mat = etm::matrix<n, m, T>(etm::uninitialized);
+			for (uint8 i = 0; i < m; ++i)
+			{
+				for (uint8 j = 0; j < n; ++j)
+				{
+					JSON::Number* jnum = (*jvec)[(uint32)i*m+j]->num();
+					if (!jnum) return false;
+					mat[i][j] = static_cast<T>(jnum->value);
+				}
 			}
 			return true;
 		}

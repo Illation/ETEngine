@@ -18,5 +18,5 @@
         "Fullscreen Resolution": 2,
         "Windowed Resolution": 1
     },
-    "start scene": "ShadingTestScene"
+    "start scene": "PlanetTestScene"
 }

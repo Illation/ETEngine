@@ -16,12 +16,12 @@
 #include "Skybox.hpp"
 #include "Light.hpp"
 #include "Commands.h"
+#include "CIE.h"
 
 vec3 InterpolatedSpectrum(const std::vector<double_t> &wavelengths, const std::vector<double_t> &v, const dvec3 &lambdas, float scale)
 {
-	return vec3((float)AtmospherePrecompute::Interpolate(wavelengths, v, lambdas.x),
-				(float)AtmospherePrecompute::Interpolate(wavelengths, v, lambdas.y),
-				(float)AtmospherePrecompute::Interpolate(wavelengths, v, lambdas.z)) * scale;
+	dvec3 ret = CIE::GetInstance()->Interpolate(wavelengths, v, lambdas);
+	return vec3((float)ret.x, (float)ret.y, (float)ret.z) * scale;
 }
 
 Atmosphere::Atmosphere()
@@ -255,15 +255,4 @@ void Atmosphere::GetUniforms()
 
 	m_uSkySpectralRadToLum = glGetUniformLocation(m_pShader->GetProgram(), "uSkySpectralRadToLum");
 	m_uSunSpectralRadToLum = glGetUniformLocation(m_pShader->GetProgram(), "uSunSpectralRadToLum");
-}
-
-AtmosphereSettings::AtmosphereSettings()
-{
-	//General texture format for atmosphere
-	m_TexParams = TextureParameters();
-	m_TexParams.wrapS = GL_CLAMP_TO_EDGE;
-	m_TexParams.wrapT = GL_CLAMP_TO_EDGE;
-	m_TexParams.wrapR = GL_CLAMP_TO_EDGE;
-
-	m_ScatteringTexDim = ivec3( INSCATTER_NU * INSCATTER_MU_S, INSCATTER_MU, INSCATTER_R);
 }
