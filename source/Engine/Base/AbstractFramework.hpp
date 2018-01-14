@@ -23,7 +23,7 @@ public:
 	void Run();
 
 protected:
-	virtual void Initialize() = 0;
+	virtual void AddScenes() = 0;
 	virtual void Update() = 0;
 	void ClearTarget();
 

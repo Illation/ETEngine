@@ -19,7 +19,7 @@
 #include "../../Engine/Graphics/Light.hpp"
 #include "../Engine/Components/SpriteComponent.hpp"
 
-ShadingTestScene::ShadingTestScene() : AbstractScene("SkyboxTestScene")
+ShadingTestScene::ShadingTestScene() : AbstractScene("ShadingTestScene")
 {
 }
 ShadingTestScene::~ShadingTestScene()

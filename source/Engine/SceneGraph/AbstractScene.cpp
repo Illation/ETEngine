@@ -135,6 +135,7 @@ void AbstractScene::RootUpdate()
 
 void AbstractScene::RootOnActivated()
 {
+	RootInitialize();
 	CONTEXT->SetContext(m_pConObj);
 	OnActivated();
 }
