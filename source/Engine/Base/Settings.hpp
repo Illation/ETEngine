@@ -37,7 +37,7 @@ public:
 		void VSync( const bool enabled ) { SDL_GL_SetSwapInterval( enabled ); }
 		float GetAspectRatio();
 
-		void Resize( int32 width, int32 height );
+		void Resize( int32 width, int32 height, bool broadcast = true );
 
 		std::string Title;
 		SDL_Window* pWindow;

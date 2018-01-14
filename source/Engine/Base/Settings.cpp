@@ -30,17 +30,9 @@ Settings::GraphicsSettings::~GraphicsSettings()
 Settings::WindowSettings::WindowSettings() :
 	Fullscreen( false ),
 	Title( "ETEngine" ),
-	pWindow( nullptr )
+	pWindow( nullptr ),
+	Dimensions(ivec2(1920, 1080))
 {
-	std::vector<ivec2> resolutions;
-	resolutions.push_back( ivec2( 1280, 720 ) );
-	resolutions.push_back( ivec2( 1920, 1080 ) );
-	resolutions.push_back( ivec2( 2560, 1440 ) );
-
-	uint32 baseRes = 2;
-
-	Width = Fullscreen ? resolutions[baseRes].x : resolutions[baseRes - 1].x;
-	Height = Fullscreen ? resolutions[baseRes].y : resolutions[baseRes - 1].y;
 #ifdef EDITOR
 	EditorWidth = Width;
 	EditorHeight = Height;
@@ -58,7 +50,7 @@ float Settings::WindowSettings::GetAspectRatio()
 	return (float)Width / (float)Height;
 }
 
-void Settings::WindowSettings::Resize( int32 width, int32 height )
+void Settings::WindowSettings::Resize( int32 width, int32 height, bool broadcast )
 {
 #ifdef EDITOR
 	EditorWidth = width;
@@ -70,5 +62,5 @@ void Settings::WindowSettings::Resize( int32 width, int32 height )
 	Width = width;
 	Height = height;
 #endif
-	WindowResizeEvent.Broadcast();
+	if(broadcast) WindowResizeEvent.Broadcast();
 }

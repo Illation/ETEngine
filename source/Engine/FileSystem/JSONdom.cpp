@@ -26,6 +26,14 @@ JSONbool* JSONvalue::b()
 	if (GetType() == JSON_Bool)return static_cast<JSONbool*>(this); return nullptr;
 }
 
+JSONarray::~JSONarray()
+{
+	for (uint32 i = 0; i < (uint32)value.size(); ++i)
+	{
+		delete value[i];
+	}
+}
+
 std::vector<std::string> JSONarray::StrArr()
 {
 	std::vector<std::string>ret;
@@ -46,4 +54,42 @@ std::vector<double> JSONarray::NumArr()
 		if (jnum)ret.push_back(jnum->value);
 	}
 	return ret;
+}
+
+bool JSONApplyStrValue(JSONobject* obj, std::string &val, const std::string &name)
+{
+	JSONvalue* jval = (*obj)[name];
+	if (jval)
+	{
+		JSONstring* jstr = jval->str();
+		if (jstr)
+		{
+			val = jstr->value;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool JSONApplyBoolValue(JSONobject* obj, bool &val, const std::string &name)
+{
+	JSONvalue* jval = (*obj)[name];
+	if (jval)
+	{
+		JSONbool* jbool = jval->b();
+		if (jbool)
+		{
+			val = jbool->value;
+			return true;
+		}
+	}
+	return false;
+}
+
+JSONobject::~JSONobject()
+{
+	for (uint32 i = 0; i<(uint32)value.size(); ++i)
+	{
+		delete value[i].second;
+	}
 }
