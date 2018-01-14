@@ -19,7 +19,7 @@ void Moon::LoadPlanet()
 	m_pDiffuse = CONTENT::Load<TextureData>("Resources/Textures/PlanetTextures/moon8k.jpg");
 	m_pHeight = CONTENT::Load<TextureData>("Resources/Textures/PlanetTextures/MoonHeight.jpg");
 
-	m_pAtmosphere = new Atmosphere();
+	m_pAtmosphere = new Atmosphere("Resources/atmo_earth.json");
 	m_pAtmosphere->Initialize();
 	SetAtmosphere(m_pAtmosphere, 100);
 }

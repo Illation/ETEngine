@@ -12,7 +12,8 @@ class LightComponent;
 class Atmosphere
 {
 public:
-	Atmosphere();
+	Atmosphere() {}
+	Atmosphere(const std::string &paramFileName);
 	~Atmosphere();
 
 	void Precalculate();

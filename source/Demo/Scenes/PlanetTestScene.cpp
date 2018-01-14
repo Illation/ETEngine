@@ -53,7 +53,7 @@ void PlanetTestScene::Initialize()
 	//Lights
 	//**************************
 	m_pLigEntity = new Entity();
-	m_pLight = new DirectionalLight(vec3(1, 1, 1), 0.99f);
+	m_pLight = new DirectionalLight(vec3(1, 1, 1), 283.f);
 	//m_pLight->SetShadowEnabled(true);
 	auto pLightComp = new LightComponent(m_pLight);
 	m_pPlanet->SetSunlight(pLightComp);//Associate this light with the sun for the atmosphere
@@ -61,6 +61,8 @@ void PlanetTestScene::Initialize()
 	m_pLigEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
 	//m_pLigEntity->GetTransform()->SetRotation(etm::lookAt())
 	AddEntity(m_pLigEntity);
+
+	m_PostProcessingSettings.exposure = 0.01f;
 }
 
 void PlanetTestScene::Update()

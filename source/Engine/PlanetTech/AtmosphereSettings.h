@@ -21,22 +21,23 @@ struct DensityProfile
 };
 struct AtmosphereParameters
 {
-	AtmosphereParameters();
+	AtmosphereParameters() {}
+	AtmosphereParameters(std::string paramFileName, dvec3 &skyColor, dvec3 &sunColor);
 	void Upload(ShaderData* shader, const std::string &varName);
 
-	vec3 solar_irradiance;
+	vec3 solarIrradiance;
 	float sun_angular_radius;
 	float bottom_radius;
 	float top_radius;
 	DensityProfile rayleigh_density;
-	vec3 rayleigh_scattering;
+	vec3 rayleighScattering;
 	DensityProfile mie_density;
-	vec3 mie_scattering;
-	vec3 mie_extinction;
+	vec3 mieScattering;
+	vec3 mieExtinction;
 	float mie_phase_function_g;
 	DensityProfile absorption_density;
-	vec3 absorption_extinction;
-	vec3 ground_albedo;
+	vec3 absorptionExtinction;
+	vec3 groundAlbedo;
 	float mu_s_min;
 
 private:
