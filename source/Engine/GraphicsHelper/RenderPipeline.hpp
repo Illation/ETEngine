@@ -3,6 +3,7 @@
 
 class AbstractScene;
 class RenderState;
+class ScreenSpaceReflections;
 
 class RenderPipeline : public Singleton<RenderPipeline>
 {
@@ -30,5 +31,6 @@ private:
 
 	Gbuffer* m_pGBuffer = nullptr;
 	PostProcessingRenderer* m_pPostProcessing = nullptr;
+	ScreenSpaceReflections* m_pSSR = nullptr;
 	vec3 m_ClearColor;
 };

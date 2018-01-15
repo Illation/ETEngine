@@ -19,6 +19,7 @@ public:
 	void Draw(GLuint FBO, const PostProcessingSettings &settings);
 
 	GLuint GetTargetFBO() { return m_CollectFBO; }
+	TextureData* GetTargetTexture() { return m_CollectTex; }
 
 private:
 

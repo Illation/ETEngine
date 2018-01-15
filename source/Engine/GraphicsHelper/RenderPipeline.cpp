@@ -17,6 +17,7 @@
 #include "AtmospherePrecompute.h"
 #include "PbrPrefilter.h"
 #include "CIE.h"
+#include "ScreenSpaceReflections.h"
 
 RenderPipeline::RenderPipeline()
 {
@@ -34,6 +35,7 @@ RenderPipeline::~RenderPipeline()
 	PbrPrefilter::GetInstance()->DestroyInstance();
 	CIE::GetInstance()->DestroyInstance();
 
+	SafeDelete(m_pSSR);
 	SafeDelete(m_pGBuffer);
 	SafeDelete(m_pPostProcessing);
 	SafeDelete(m_pState);
@@ -63,6 +65,9 @@ void RenderPipeline::Initialize()
 	m_pGBuffer = new Gbuffer();
 	m_pGBuffer->Initialize();
 	m_pGBuffer->Enable(true);
+
+	m_pSSR = new ScreenSpaceReflections();
+	m_pSSR->Initialize();
 
 	PbrPrefilter::GetInstance()->Precompute(GRAPHICS.PbrBrdfLutSize);
 
@@ -121,9 +126,9 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	}
 	m_pState->SetCullEnabled(false);
 	//Step two: blend data and calculate lighting with gbuffer
-	m_pPostProcessing->EnableInput();
 	//STATE->BindFramebuffer( 0 );
-	//Ambient IBL lighting
+	m_pSSR->EnableInput();
+	//Ambient IBL
 	m_pGBuffer->Draw();
 
 	//copy Z-Buffer from gBuffer
@@ -153,6 +158,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 			Light->DrawVolume();
 		}
 	}
+
 	m_pState->SetFaceCullingMode(GL_BACK);
 	m_pState->SetBlendEnabled(false);
 
@@ -160,6 +166,8 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	m_pState->SetCullEnabled(false);
 
 	//STATE->SetStencilEnabled(false);
+	m_pPostProcessing->EnableInput();
+	m_pSSR->Draw();
 
 	//Foreward Rendering
 	//******************
