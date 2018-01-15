@@ -127,13 +127,14 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	m_pState->SetCullEnabled(false);
 	//Step two: blend data and calculate lighting with gbuffer
 	//STATE->BindFramebuffer( 0 );
+	//m_pPostProcessing->EnableInput();
 	m_pSSR->EnableInput();
 	//Ambient IBL
 	m_pGBuffer->Draw();
 
 	//copy Z-Buffer from gBuffer
 	STATE->BindReadFramebuffer(m_pGBuffer->Get());
-	STATE->BindDrawFramebuffer(m_pPostProcessing->GetTargetFBO());
+	STATE->BindDrawFramebuffer(m_pSSR->GetTargetFBO());
 	//STATE->BindDrawFramebuffer( 0 );
 	glBlitFramebuffer(
 		0, 0, WINDOW.Width, WINDOW.Height,
@@ -150,6 +151,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 
 	m_pState->SetCullEnabled(true);
 	m_pState->SetFaceCullingMode(GL_FRONT);
+
 	for (auto pScene : pScenes)
 	{
 		auto lightVec = pScene->GetLights(); 
@@ -162,12 +164,19 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	m_pState->SetFaceCullingMode(GL_BACK);
 	m_pState->SetBlendEnabled(false);
 
-	m_pState->SetDepthEnabled(true);
 	m_pState->SetCullEnabled(false);
 
 	//STATE->SetStencilEnabled(false);
 	m_pPostProcessing->EnableInput();
 	m_pSSR->Draw();
+	STATE->BindReadFramebuffer(m_pSSR->GetTargetFBO());
+	STATE->BindDrawFramebuffer(m_pPostProcessing->GetTargetFBO());
+	glBlitFramebuffer(
+		0, 0, WINDOW.Width, WINDOW.Height,
+		0, 0, WINDOW.Width, WINDOW.Height,
+		GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
+	m_pState->SetDepthEnabled(true);
 
 	//Foreward Rendering
 	//******************
@@ -213,4 +222,7 @@ void RenderPipeline::OnResize()
 	m_pPostProcessing->~PostProcessingRenderer();
 	m_pPostProcessing = new(m_pPostProcessing) PostProcessingRenderer();
 	m_pPostProcessing->Initialize();
+	m_pSSR->~ScreenSpaceReflections();
+	m_pSSR = new(m_pSSR) ScreenSpaceReflections();
+	m_pSSR->Initialize();
 }
