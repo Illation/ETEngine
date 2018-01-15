@@ -76,6 +76,7 @@ void ScreenSpaceReflections::Draw()
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uFinalImage"), 3);
 	STATE->LazyBindTexture(3, GL_TEXTURE_2D, m_CollectTex->GetHandle());
 	//for position reconstruction
+	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "K"), sin(TIME->GetTime())*20+25);
 	glUniform1f(m_uProjA, CAMERA->GetDepthProjA());
 	glUniform1f(m_uProjB, CAMERA->GetDepthProjB());
 	glUniformMatrix4fv(m_uViewProjInv, 1, GL_FALSE, etm::valuePtr(CAMERA->GetStatViewProjInv()));

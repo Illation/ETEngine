@@ -10,6 +10,7 @@ public:
 	void Initialize();
 
 	void EnableInput();
+	GLuint GetTargetFBO() { return m_CollectFBO; }
 
 	void Draw();
 private:

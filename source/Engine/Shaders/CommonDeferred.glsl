@@ -33,6 +33,9 @@ uniform vec3 camPos;														\
 #define UNPACK_DEPTH(texCoord)		\
 texture(texGBufferA, texCoord).r	\
 
+#define LINEAR_DEPTH(inDepth)			\
+projectionB / (inDepth - projectionA)	\
+
 #define UNPACK_GBUFFER(texCoord, viewRay) 											\
 float depth = texture(texGBufferA, texCoord).r;										\
 vec3 pos = reconstructPosition(viewRay, camPos, depth, projectionA, projectionB); 	\

@@ -44,8 +44,8 @@
 	//const float maxDDepthInv = 1.0;
 	const float reflectionSpecularFalloffExponent = 3.0;
 
-	#define Scale vec3(.8, .8, .8)
-	#define K 19.19
+	#define Scale vec3(.8)
+	uniform float K = 19.19;
 
 	vec3 BinarySearch(inout vec3 dir, inout vec3 hitCoord, inout float dDepth);
 	 
@@ -78,8 +78,7 @@
 		//vec3 wp = vec3(vec4(pos, 1.0) * viewInv);
 		vec3 wp = pos;
 		vec3 hitPos = wp;
-		vec3 jitt = mix(vec3(0.0), vec3(hash(wp)), rough);//probably use roughness here instead
-		//jitt = vec3(0);
+		vec3 jitt = mix(vec3(0.0), vec3(hash(wp)-vec3(0.5))*1, 1-rough);//probably use roughness here instead
 		vec3 ray = vec3(jitt) + refl * max(minRayStep, -pos.y);
 		vec4 coords = RayCast(ray, hitPos, dDepth);
 	 
@@ -92,10 +91,11 @@
 		vec3 SSR = textureLod(uFinalImage, coords.xy, 0).rgb * clamp(ReflectionMultiplier, 0.0, 0.9) * Fresnel;  
 
 		outColor = vec4(SSR, 1);
-		outColor = vec4(vec3(ray), 1);
+		outColor = vec4(vec3(coords), 1);
 
 		vec3 simpleSSR = vec3(textureLod(uFinalImage, coords.xy, 0).rgb);
-		simpleSSR*=Fresnel*screenEdgefactor;
+		simpleSSR*=Fresnel*screenEdgefactor*pow(rough, reflectionSpecularFalloffExponent);
+		if(depth > 0.999999)simpleSSR*=0;
 		vec3 comb = texture(uFinalImage, Texcoord).rgb + simpleSSR;
 		outColor = vec4(comb, 1);
 	}
@@ -116,6 +116,7 @@
 			depth = UNPACK_DEPTH(projectedCoord.xy);
 
 			dDepth = hitCoord.z - depth;
+			//dDepth = vec3(viewInv * vec4(hitCoord, 1)).z - depth;
 
 			dir *= 0.5;
 			if(dDepth > 0.0) hitCoord += dir;
@@ -149,9 +150,10 @@
 			if(depth > 1000.0)
 				continue;
 	 
-			dDepth = hitCoord.z - depth;
+			//dDepth = vec3(viewInv * vec4(hitCoord, 1)).z - depth;
+			dDepth = depth;//hitCoord.z - depth;
 
-			if((dir.z - dDepth) < 1.2)
+			if((vec3(projection * vec4(dir, 1)).z - dDepth) < 1.2)
 			if(dDepth <= 0.0)
 			{   
 				return vec4(BinarySearch(dir, hitCoord, dDepth), 1.0);
