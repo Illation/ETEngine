@@ -20,6 +20,7 @@
 #include "../Planets/Moon.hpp"
 #include "../Planets/Earth.hpp"
 #include "../../Engine/Graphics/Light.hpp"
+#include "../Engine/PlanetTech/StarField.h"
 
 PlanetTestScene::PlanetTestScene() : AbstractScene("PlanetTestScene")
 {
@@ -43,6 +44,9 @@ void PlanetTestScene::Initialize()
 	//Skybox
 	//**************************
 	SetSkybox("Resources/Textures/Milkyway_small.hdr");
+
+	StarField* pStarField = new StarField("Resources/HYGmxyz.json");
+	AddEntity(pStarField);
 
 	//Models
 	//*************************
