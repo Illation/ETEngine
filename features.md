@@ -58,7 +58,7 @@
  * Effects
      * SSAO
      * SSR
-     * AA for deferred rendering (TAA)
+     * AA for deferred rendering (TAA, FXAA)
      * Motion Blur
  * Api / Pipeline
      * Render state is pushed right before draw call
