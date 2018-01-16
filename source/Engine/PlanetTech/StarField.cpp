@@ -35,7 +35,10 @@ void StarField::Initialize()
 		vec4 star;
 		if (JSON::ArrayVector(jStar, star) && m_MaxStars == 0 ? true : starCount < m_MaxStars)
 		{
-			m_Stars.push_back(star);
+			//HYG coordinates are in a different coordinate system Z up Y forward 
+			//first component is magnitude
+			//output [X, Z, Y, mag]
+			m_Stars.push_back(vec4(star[1], star[3], star[2], star[0]));
 			starCount++;
 		}
 	}
@@ -76,8 +79,11 @@ void StarField::DrawForward()
 	STATE->SetActiveTexture(0);
 	STATE->BindTexture(m_pSprite->GetTarget(), m_pSprite->GetHandle());
 	glUniformMatrix4fv(glGetUniformLocation(m_pShader->GetProgram(), "viewProj"), 1, GL_FALSE, etm::valuePtr(CAMERA->GetStatViewProj()));
+	glUniformMatrix4fv(glGetUniformLocation(m_pShader->GetProgram(), "viewInv"), 1, GL_FALSE, etm::valuePtr(CAMERA->GetViewInv()));
 	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "uRadius"), m_Radius);
-	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "uBrightnessMult"), m_BrightnessMult);
+	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "uBaseFlux"), m_BaseFlux);
+	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "uBaseMag"), m_BaseMag);
+	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "uAspecRation"), WINDOW.GetAspectRatio());
 	glDrawArrays(GL_POINTS, 0, m_DrawnStars);
 	PERFORMANCE->m_DrawCalls++;
 	STATE->BindVertexArray(0);
