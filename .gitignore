@@ -5,6 +5,8 @@ ETEngine.VC.VC.opendb
 ETEngine.VC.db
 /build/Intermediate
 /bin
+/build/x32
+/build/x64
 *.ipch
 *.db
 build/.vs
