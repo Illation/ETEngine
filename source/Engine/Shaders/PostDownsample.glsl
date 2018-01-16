@@ -11,6 +11,7 @@
 </VERTEX>
 <FRAGMENT>
 	#version 330 core
+	#include "Common.glsl"
 	in vec2 Texcoord;
 	layout (location = 0) out vec4 brightColor;
 	uniform sampler2D texColor;
@@ -21,5 +22,6 @@
 		brightColor = sampledColor;
 		float brightness = dot(sampledColor.rgb/threshold, vec3(0.2126, 0.7152, 0.0722));
 		if(brightness < 1.0f) brightColor = vec4(vec3(0), 1);
+		brightColor = clamp(brightColor, 0, maxExposure);
 	}
 </FRAGMENT>

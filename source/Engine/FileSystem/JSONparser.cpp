@@ -255,7 +255,7 @@ JSON::Array* JSON::Parser::ParseArray(const std::string & textFile)
 		MoveToNonWhitespace(textFile);
 		if(CheckEOF(textFile))continue;
 		Token token = ReadToken(textFile);
-		if(!(token == JT_Delim) && !(token == JT_EndArray))m_ReadIdx--;
+		if(!(token == JT_Delim) && !(token == JT_EndArray) && !(token == JT_Numeric))m_ReadIdx--;
 		if(CheckEOF(textFile))continue;
 		switch (token)
 		{
