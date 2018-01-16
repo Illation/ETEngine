@@ -48,13 +48,9 @@ void SpriteRenderer::Initialize()
 	glEnableVertexAttribArray(2);
 	glEnableVertexAttribArray(3);
 
-	int32 offset = 0;	int32 stride = sizeof( uint32 );
 	glVertexAttribIPointer(0, (GLint)1, GL_UNSIGNED_INT, (GLsizei)sizeof( SpriteVertex ), (GLvoid*)offsetof( SpriteVertex, TextureId ));
-	offset += stride; stride = 4 * sizeof(GLfloat);
 	glVertexAttribPointer(1, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof( SpriteVertex ), (GLvoid*)offsetof( SpriteVertex, TransformData ));
-	offset += stride; stride = 4 * sizeof(GLfloat);
 	glVertexAttribPointer(2, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof( SpriteVertex ), (GLvoid*)offsetof( SpriteVertex, TransformData2 ));
-	offset += stride; stride = 4 * sizeof(GLfloat);
 	glVertexAttribPointer(3, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof( SpriteVertex ), (GLvoid*)offsetof( SpriteVertex, Color ));
 
 	//unbind
