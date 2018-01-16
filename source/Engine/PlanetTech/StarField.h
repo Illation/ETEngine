@@ -10,7 +10,8 @@ public:
 	void SetRadius(float radius) { m_Radius = radius; }
 	void SetMaxStars(uint32 maxStars) { m_MaxStars = maxStars; }
 	void SetDrawnStars(uint32 drawnStars) { m_DrawnStars = drawnStars; }
-	void SetBrightnessMultiplier(float mult) { m_BrightnessMult = mult; }
+	void SetBaseFlux(float mult) { m_BaseFlux = mult; }
+	void SetBaseMag(float mag) { m_BaseMag = mag; }
 
 protected:
 	virtual void Initialize();
@@ -29,8 +30,10 @@ private:
 	GLuint m_VBO = 0;
 
 	uint32 m_MaxStars = 0;
-	uint32 m_DrawnStars = 1000;
+	uint32 m_DrawnStars = 32000;
 
-	float m_Radius = 0.005f;
-	float m_BrightnessMult = 100;
+	float m_Radius = 0.001f;
+
+	float m_BaseFlux = 0.000001f;
+	float m_BaseMag = 11.f;
 };

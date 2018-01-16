@@ -10,12 +10,10 @@
 		vec4 coord;
 	} outputs;
 	
-	uniform mat4 viewProj;
-	
 	void main()
 	{
-		outputs.magnitude = star.x;
-		outputs.coord = (viewProj*vec4(normalize(star.yzw), 1.0));
+		outputs.magnitude = star.w;
+		outputs.coord = vec4(normalize(star.xyz), 1.0);
 	}
 </VERTEX>
 <GEOMETRY>
@@ -35,10 +33,15 @@
 	    vec2 texCoord;
 	} outputs;
 	uniform float uRadius;
+	uniform float uAspectRatio = 1;
+	uniform mat4 viewProj;
+	uniform mat4 viewInv;
 
-	void CreateVertex(vec2 pos, float mag, vec2 texCoord)
+	void CreateVertex(vec3 pos, float mag, vec2 texCoord)
 	{
-		gl_Position = vec4(pos, 1.0f, 1.0f);
+		vec4 pos4 = (viewProj * vec4(pos, 1.0f)).xyzw;
+		pos4.z = pos4.w*0.999999;
+		gl_Position = pos4; 
 		outputs.magnitude = mag;
 		outputs.texCoord = texCoord;
 		EmitVertex();
@@ -47,40 +50,39 @@
 	void main()
 	{
 		//Given Data (Vertex Data)
-		vec2 position = inputs[0].coord.xy;
+		vec3 pos = inputs[0].coord.xyz;
 		
+		float radius = uRadius;
+
+		float rady = radius/uAspectRatio;
+
 		// LT----------RT //TringleStrip (LT > RT > LB, LB > RB > RT)
 		// |          / |
 		// |       /    |
 		// |    /       |
 		// | /          |
 		// LB----------RB
-		float radius = uRadius * (1-((inputs[0].magnitude+1.44f)/8));//*1000;
+		vec3 LT = vec3(-radius, -rady, 0);
+		vec3 RT = vec3(radius, -rady, 0);
+		vec3 LB = vec3(-radius, rady, 0);
+		vec3 RB = vec3(radius, rady, 0);
 
-		if(inputs[0].coord.z>0)
-		{
-			//VERTEX 1 [LT]
-			vec2 pos = position+vec2(-radius, -radius);
-			vec2 tc = vec2(0);
-			CreateVertex(pos, inputs[0].magnitude, tc); 
-			//VERTEX 2 [RT]                                             
-			pos = position+vec2(radius,-radius);                           
-			tc = vec2(1, 0);                                 
-			CreateVertex(pos, inputs[0].magnitude, tc);
-			//VERTEX 3 [LB]                                             
-			pos = position+vec2(-radius,radius);                           
-			tc = vec2(0, 1);                                 
-			CreateVertex(pos, inputs[0].magnitude, tc); 
-			//VERTEX 4 [RB]                                             
-			pos =position+vec2(radius, radius);                         
-			tc = vec2(1, 1);                                 
-			CreateVertex(pos, inputs[0].magnitude, tc); 
-		}
+		LT = mat3(viewInv)*LT;
+		RT = mat3(viewInv)*RT;
+		LB = mat3(viewInv)*LB;
+		RB = mat3(viewInv)*RB;
+
+		CreateVertex(pos+LT, inputs[0].magnitude, vec2(0)); 
+		CreateVertex(pos+RT, inputs[0].magnitude, vec2(1, 0));
+		CreateVertex(pos+LB, inputs[0].magnitude, vec2(0, 1)); 
+		CreateVertex(pos+RB, inputs[0].magnitude, vec2(1, 1)); 
+
 		EndPrimitive();
 	}	
 </GEOMETRY>
 <FRAGMENT>
 	#version 400 core
+	#include "Common.glsl"
 	
 	in GSO 
 	{
@@ -88,14 +90,30 @@
 	    vec2 texCoord;
 	} inputs;
 	uniform sampler2D uTexture;
-	uniform float uBrightnessMult;
+
+	//inverse magnitude equation
+	//mag - baseMag = -2.512*log10(flux/baseFlux)
+	//-2.512*(mag-baseMag) = log10(flux/baseFlux)
+	//10^(-2.512*(mag-baseMag)) = flux/baseFlux
+	//flux = baseFlux*10^(-2.512*(mag-baseMag))
+	uniform float uBaseFlux;//Brightness of a star at base magnitude
+	uniform float uBaseMag = 0.03; //0.03 is relative to vega
+	//Calculate stars brightness relative to the base magnitude
+	float CalculateFlux(float mag)
+	{
+		//return 10000000;
+		//return (1-((mag+1.44)/8))*10000;
+		return pow(3, (-2.512f*(mag-uBaseMag)));
+	}
 
 	out vec4 outColor;
+
 	
 	void main()
 	{
-		float brightness = (1-((inputs.magnitude+1.44f)/8)) * uBrightnessMult; 
+		float brightness = clamp(CalculateFlux(inputs.magnitude) * uBaseFlux, 0, maxExposure); 
 		outColor = texture( uTexture, inputs.texCoord );
 		outColor *= brightness;
+		outColor.a = clamp(outColor.a, 0, 1);
 	} 
 </FRAGMENT>
