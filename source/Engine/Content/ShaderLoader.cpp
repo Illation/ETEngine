@@ -5,6 +5,10 @@
 #include "FileSystem/Entry.h"
 #include <algorithm>
 #include "FileSystem/FileUtil.h"
+#include "Hash.h"
+#include <functional>
+#include <cctype>
+#include <locale>
 
 ShaderLoader::ShaderLoader()
 {
@@ -47,12 +51,24 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 		return nullptr;
 	}
 
+	std::map<uint32, AbstractUniform*> uniforms;
 	//Compile
 	GLuint vertexShader = CompileShader(vertSource, GL_VERTEX_SHADER);
+	ParseUniforms(vertSource, uniforms);
+
 	GLuint geoShader = 0;
-	if(useGeo)geoShader = CompileShader(geoSource, GL_GEOMETRY_SHADER);
+	if (useGeo)
+	{
+		geoShader = CompileShader(geoSource, GL_GEOMETRY_SHADER);
+		ParseUniforms(geoSource, uniforms);
+	}
+
 	GLuint fragmentShader = 0;
-	if (useFrag) fragmentShader = CompileShader(fragSource, GL_FRAGMENT_SHADER);
+	if (useFrag)
+	{
+		fragmentShader = CompileShader(fragSource, GL_FRAGMENT_SHADER);
+		ParseUniforms(fragSource, uniforms);
+	}
 
 	//Combine Shaders
 	GLuint shaderProgram = glCreateProgram();
@@ -60,16 +76,20 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 	if(useGeo)glAttachShader(shaderProgram, geoShader);
 	if (useFrag)glAttachShader(shaderProgram, fragmentShader);
 	glBindFragDataLocation(shaderProgram, 0, "outColor");
+
 	glLinkProgram(shaderProgram);
 
-	cout << "  . . . SUCCESS!" << endl;
+	glDeleteShader(vertexShader);
+	if (useGeo)glDeleteShader(geoShader);
+	if (useFrag)glDeleteShader(fragmentShader);
 
-	ShaderData* pShaderData = nullptr;
-	if (useGeo) pShaderData = new ShaderData(shaderProgram, vertexShader, geoShader, fragmentShader);
-	else if (useFrag) pShaderData =  new ShaderData(shaderProgram, vertexShader, fragmentShader);
-	else pShaderData = new ShaderData(shaderProgram, vertexShader);
+	GetUniformLocations(shaderProgram, uniforms);
+
+	ShaderData* pShaderData = new ShaderData(shaderProgram);
 	pShaderData->m_Name = assetFile;
+	pShaderData->m_Uniforms = uniforms;
 	
+	cout << "  . . . SUCCESS!" << endl;
 	return pShaderData;
 }
 
@@ -249,6 +269,80 @@ bool ShaderLoader::ReplaceInclude(std::string &line, const std::string &assetFil
 		line += extractedLine + "\n";
 	}
 	return true;
+}
+
+void ShaderLoader::ParseUniforms(const std::string &source, std::map<uint32, AbstractUniform*> &uniforms)
+{
+	size_t readPos = 0;
+	while (readPos < source.size())
+	{
+		readPos = source.find("uniform", readPos);
+		if (readPos != std::string::npos)
+		{
+			NextCharNextWS(source, readPos);
+
+			std::string typeName = ReadUniformName(source, readPos);
+
+			std::vector<std::string> uniNames;
+			do uniNames.push_back(ReadUniformName(source, readPos));
+			while (source[readPos++] == ',');
+
+			for (auto uniName : uniNames)
+			{
+				if (typeName == "bool") uniforms[FnvHash(uniName)] = new Uniform<bool>();
+				else if (typeName == "int") uniforms[FnvHash(uniName)] = new Uniform<int32>();
+				else if (typeName == "float") uniforms[FnvHash(uniName)] = new Uniform<float>();
+				else if (typeName == "vec2") uniforms[FnvHash(uniName)] = new Uniform<vec2>();
+				else if (typeName == "vec3") uniforms[FnvHash(uniName)] = new Uniform<vec3>();
+				else if (typeName == "vec4") uniforms[FnvHash(uniName)] = new Uniform<vec4>();
+				else if (typeName == "mat3") uniforms[FnvHash(uniName)] = new Uniform<mat3>();
+				else if (typeName == "mat4") uniforms[FnvHash(uniName)] = new Uniform<mat4>();
+				else
+				{
+					std::cout << "unrecognized uniform typename: " << uniName << std::endl;
+					return;
+				}
+			}
+
+			continue;
+		}
+		readPos = source.size();
+	}
+}
+
+void ShaderLoader::NextCharNextWS(const std::string &source, size_t &readPos)
+{
+	while (readPos < source.size() && !std::isspace(source[readPos]))readPos++;
+	while (readPos < source.size() && std::isspace(source[readPos]))readPos++;
+}
+
+std::string ShaderLoader::ReadUniformName(const std::string &source, size_t &readPos)
+{
+	std::string ret;
+	size_t origin = readPos;
+	while (readPos < source.size()
+		&& !std::isspace(source[readPos])
+		&& !(source[readPos] == ';')
+		&& !(source[readPos] == ',')
+		&& !(source[readPos] == '=')
+	)
+		readPos++;
+	ret = source.substr(origin, readPos - origin);
+	if (std::isspace(source[readPos]))NextCharNextWS(source, --readPos);
+	if (source[readPos] == '=')
+	{
+		readPos = min(source.find(",", readPos), source.find(";", readPos));
+	}
+	if (source[readPos] == ',')
+	{
+		if (std::isspace(source[++readPos]))NextCharNextWS(source, --readPos);
+	}
+	return ret;
+}
+
+void ShaderLoader::GetUniformLocations(GLuint shaderProgram, std::map<uint32, AbstractUniform*> &uniforms)
+{
+
 }
 
 void ShaderLoader::Destroy(ShaderData* objToDestroy)
