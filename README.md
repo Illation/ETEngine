@@ -46,3 +46,29 @@ Currently used libraries: SDL2, catch, FreeImage, GLAD and Assimp
 Also a bunch of (modified) code from Eric Brunetons [atmospheric scattering implementation](https://github.com/ebruneton/precomputed_atmospheric_scattering).
 
 for library licenses see Library Licenses.md
+
+## Screenshots
+
+#### Atmosphere
+Atmospheric Perspective
+![](./screenshots/GroundAtmosphere.jpg)
+Upper Atmosphere
+![](./screenshots/UpperAtmosphere.jpg)
+#### Planets
+From Space
+![](./screenshots/FamiliarView.jpg)
+Surface view
+![](./screenshots/Surface.jpg)
+#### Render Pipeline
+PBR and IBL
+![](./screenshots/PBR.jpg)
+Experimental CSM and SSR
+![](./screenshots/Lighting.jpg)
+2500 Lights with deferred rendering and Bloom
+![](./screenshots/DeferredBloom.jpg)
+#### Star fields
+![](./screenshots/MoarStars.jpg)
+![](./screenshots/Stars.jpg)
+#### Moar Screenshots
+![](./screenshots/Crescent.jpg)
+![](./screenshots/FromSpace.jpg)
