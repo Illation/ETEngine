@@ -8,7 +8,8 @@ class AbstractUniform
 public:
 	virtual const std::type_info& GetType() const = 0;
 
-	GLint location;
+	GLint location = -1;
+	std::string name;
 };
 template<typename T>
 class Uniform;
