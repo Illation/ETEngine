@@ -4,7 +4,7 @@
         "PCF Sample Count": 3,
         "CSM Draw Distance": 200,
         "PBR BRDF LUT Resolution": 512,
-        "Texture Scale Factor": 0.25,
+        "Texture Scale Factor": 1,
         "Bloom Blur Passes": 5
     },
     "window": {
