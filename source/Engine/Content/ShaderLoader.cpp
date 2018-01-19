@@ -54,20 +54,17 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 	std::map<uint32, AbstractUniform*> uniforms;
 	//Compile
 	GLuint vertexShader = CompileShader(vertSource, GL_VERTEX_SHADER);
-	ParseUniforms(vertSource, uniforms);
 
 	GLuint geoShader = 0;
 	if (useGeo)
 	{
 		geoShader = CompileShader(geoSource, GL_GEOMETRY_SHADER);
-		ParseUniforms(geoSource, uniforms);
 	}
 
 	GLuint fragmentShader = 0;
 	if (useFrag)
 	{
 		fragmentShader = CompileShader(fragSource, GL_FRAGMENT_SHADER);
-		ParseUniforms(fragSource, uniforms);
 	}
 
 	//Combine Shaders
@@ -271,78 +268,73 @@ bool ShaderLoader::ReplaceInclude(std::string &line, const std::string &assetFil
 	return true;
 }
 
-void ShaderLoader::ParseUniforms(const std::string &source, std::map<uint32, AbstractUniform*> &uniforms)
+bool ShaderLoader::GetUniformLocations(GLuint shaderProgram, std::map<uint32, AbstractUniform*> &uniforms)
 {
-	size_t readPos = 0;
-	while (readPos < source.size())
+	GLint count;
+
+	glGetProgramiv(shaderProgram, GL_ACTIVE_UNIFORMS, &count);
+	printf("Active Uniforms: %d\n", count);
+
+	for (GLint i = 0; i < count; i++)
 	{
-		readPos = source.find("uniform", readPos);
-		if (readPos != std::string::npos)
+		GLint size; 
+		GLenum type; 
+
+		const GLsizei bufSize = 256; 
+		GLchar name[bufSize]; 
+		GLsizei length; 
+
+		glGetActiveUniform(shaderProgram, (GLuint)i, bufSize, &length, &size, &type, name);
+		std::string uniName = std::string(name, length);
+		AbstractUniform* pUni;
+		switch (type)
 		{
-			NextCharNextWS(source, readPos);
-
-			std::string typeName = ReadUniformName(source, readPos);
-
-			std::vector<std::string> uniNames;
-			do uniNames.push_back(ReadUniformName(source, readPos));
-			while (source[readPos++] == ',');
-
-			for (auto uniName : uniNames)
-			{
-				if (typeName == "bool") uniforms[FnvHash(uniName)] = new Uniform<bool>();
-				else if (typeName == "int") uniforms[FnvHash(uniName)] = new Uniform<int32>();
-				else if (typeName == "float") uniforms[FnvHash(uniName)] = new Uniform<float>();
-				else if (typeName == "vec2") uniforms[FnvHash(uniName)] = new Uniform<vec2>();
-				else if (typeName == "vec3") uniforms[FnvHash(uniName)] = new Uniform<vec3>();
-				else if (typeName == "vec4") uniforms[FnvHash(uniName)] = new Uniform<vec4>();
-				else if (typeName == "mat3") uniforms[FnvHash(uniName)] = new Uniform<mat3>();
-				else if (typeName == "mat4") uniforms[FnvHash(uniName)] = new Uniform<mat4>();
-				else
-				{
-					std::cout << "unrecognized uniform typename: " << uniName << std::endl;
-					return;
-				}
-			}
-
-			continue;
+		case GL_BOOL:
+			pUni = new Uniform<bool>();
+			break;
+		case GL_INT:
+			pUni = new Uniform<int32>();
+			break;
+		case GL_UNSIGNED_INT:
+			pUni = new Uniform<uint32>();
+			break;
+		case GL_FLOAT:
+			pUni = new Uniform<float>();
+			break;
+		case GL_FLOAT_VEC2:
+			pUni = new Uniform<vec2>();
+			break;
+		case GL_FLOAT_VEC3:
+			pUni = new Uniform<vec3>();
+			break;
+		case GL_FLOAT_VEC4:
+			pUni = new Uniform<vec4>();
+			break;
+		case GL_FLOAT_MAT3:
+			pUni = new Uniform<mat3>();
+			break;
+		case GL_FLOAT_MAT4:
+			pUni = new Uniform<mat4>();
+			break;
+		case GL_SAMPLER_2D:
+			pUni = new Uniform<int32>();
+			break;
+		case GL_SAMPLER_3D:
+			pUni = new Uniform<int32>();
+			break;
+		case GL_SAMPLER_CUBE:
+			pUni = new Uniform<int32>();
+			break;
+		default:
+			std::cout << "unknown uniform type" << std::to_string(type) << std::endl;
+			return false;
+			break;
 		}
-		readPos = source.size();
+		pUni->name = uniName;
+		pUni->location = i;
+		uniforms[FnvHash(uniName)] = pUni;
 	}
-}
-
-void ShaderLoader::NextCharNextWS(const std::string &source, size_t &readPos)
-{
-	while (readPos < source.size() && !std::isspace(source[readPos]))readPos++;
-	while (readPos < source.size() && std::isspace(source[readPos]))readPos++;
-}
-
-std::string ShaderLoader::ReadUniformName(const std::string &source, size_t &readPos)
-{
-	std::string ret;
-	size_t origin = readPos;
-	while (readPos < source.size()
-		&& !std::isspace(source[readPos])
-		&& !(source[readPos] == ';')
-		&& !(source[readPos] == ',')
-		&& !(source[readPos] == '=')
-	)
-		readPos++;
-	ret = source.substr(origin, readPos - origin);
-	if (std::isspace(source[readPos]))NextCharNextWS(source, --readPos);
-	if (source[readPos] == '=')
-	{
-		readPos = min(source.find(",", readPos), source.find(";", readPos));
-	}
-	if (source[readPos] == ',')
-	{
-		if (std::isspace(source[++readPos]))NextCharNextWS(source, --readPos);
-	}
-	return ret;
-}
-
-void ShaderLoader::GetUniformLocations(GLuint shaderProgram, std::map<uint32, AbstractUniform*> &uniforms)
-{
-
+	return true;
 }
 
 void ShaderLoader::Destroy(ShaderData* objToDestroy)
