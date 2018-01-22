@@ -271,10 +271,7 @@ bool ShaderLoader::ReplaceInclude(std::string &line, const std::string &assetFil
 bool ShaderLoader::GetUniformLocations(GLuint shaderProgram, std::map<uint32, AbstractUniform*> &uniforms)
 {
 	GLint count;
-
 	glGetProgramiv(shaderProgram, GL_ACTIVE_UNIFORMS, &count);
-	printf("Active Uniforms: %d\n", count);
-
 	for (GLint i = 0; i < count; i++)
 	{
 		GLint size; 
@@ -286,53 +283,68 @@ bool ShaderLoader::GetUniformLocations(GLuint shaderProgram, std::map<uint32, Ab
 
 		glGetActiveUniform(shaderProgram, (GLuint)i, bufSize, &length, &size, &type, name);
 		std::string uniName = std::string(name, length);
-		AbstractUniform* pUni;
-		switch (type)
+		std::string endName;
+		if (size > 1)
 		{
-		case GL_BOOL:
-			pUni = new Uniform<bool>();
-			break;
-		case GL_INT:
-			pUni = new Uniform<int32>();
-			break;
-		case GL_UNSIGNED_INT:
-			pUni = new Uniform<uint32>();
-			break;
-		case GL_FLOAT:
-			pUni = new Uniform<float>();
-			break;
-		case GL_FLOAT_VEC2:
-			pUni = new Uniform<vec2>();
-			break;
-		case GL_FLOAT_VEC3:
-			pUni = new Uniform<vec3>();
-			break;
-		case GL_FLOAT_VEC4:
-			pUni = new Uniform<vec4>();
-			break;
-		case GL_FLOAT_MAT3:
-			pUni = new Uniform<mat3>();
-			break;
-		case GL_FLOAT_MAT4:
-			pUni = new Uniform<mat4>();
-			break;
-		case GL_SAMPLER_2D:
-			pUni = new Uniform<int32>();
-			break;
-		case GL_SAMPLER_3D:
-			pUni = new Uniform<int32>();
-			break;
-		case GL_SAMPLER_CUBE:
-			pUni = new Uniform<int32>();
-			break;
-		default:
-			std::cout << "unknown uniform type" << std::to_string(type) << std::endl;
-			return false;
-			break;
+			auto found = uniName.find(']');
+			if(found < uniName.size()-1) endName = uniName.substr(uniName.find(']') + 1);
+			uniName = uniName.substr(0, uniName.find('['));
 		}
-		pUni->name = uniName;
-		pUni->location = i;
-		uniforms[FnvHash(uniName)] = pUni;
+		for (uint32 j = 0; j < (uint32)size; ++j)
+		{
+			std::string fullName = uniName;
+			if (size > 1)fullName += "[" + std::to_string(j) + "]" + endName;
+
+			AbstractUniform* pUni;
+			switch (type)
+			{
+			case GL_BOOL:
+				pUni = new Uniform<bool>();
+				break;
+			case GL_INT:
+				pUni = new Uniform<int32>();
+				break;
+			case GL_UNSIGNED_INT:
+				pUni = new Uniform<uint32>();
+				break;
+			case GL_FLOAT:
+				pUni = new Uniform<float>();
+				break;
+			case GL_FLOAT_VEC2:
+				pUni = new Uniform<vec2>();
+				break;
+			case GL_FLOAT_VEC3:
+				pUni = new Uniform<vec3>();
+				break;
+			case GL_FLOAT_VEC4:
+				pUni = new Uniform<vec4>();
+				break;
+			case GL_FLOAT_MAT3:
+				pUni = new Uniform<mat3>();
+				break;
+			case GL_FLOAT_MAT4:
+				pUni = new Uniform<mat4>();
+				break;
+			case GL_SAMPLER_2D:
+				pUni = new Uniform<int32>();
+				break;
+			case GL_SAMPLER_3D:
+				pUni = new Uniform<int32>();
+				break;
+			case GL_SAMPLER_CUBE:
+				pUni = new Uniform<int32>();
+				break;
+			default:
+				std::cout << "unknown uniform type" << std::to_string(type) << std::endl;
+				return false;
+				break;
+			}
+			pUni->name = fullName;
+			pUni->location = i;
+			uint32 hash = FnvHash(fullName);
+			assert(uniforms.find(hash) == uniforms.end());
+			uniforms[hash] = pUni;
+		}
 	}
 	return true;
 }

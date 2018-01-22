@@ -19,7 +19,4 @@ inline constexpr uint32 operator"" _hash(char const* s, std::size_t count)
 	return detail::fnv1a_32(s, count);
 }
 
-uint32 FnvHash(const std::string &str)
-{
-	return detail::fnv1a_32(str.c_str(), str.size());
-}
+uint32 FnvHash(const std::string &str);

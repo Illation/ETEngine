@@ -1,5 +1,6 @@
 #pragma once
 #include "../staticDependancies/glad/glad.h"
+#include "../Helper/Hash.h"//Everything using shaders needs hash functionality
 #include <string>
 #include <vector>
 
@@ -15,12 +16,6 @@ template<typename T>
 class Uniform;
 namespace detail
 {
-	template<typename T>
-	void UploadUniform(const Uniform<T> &uniform)
-	{
-		//Template specialization for uploading
-		std::cout << "attempted to upload unspecialized uniform to shader" << std::endl;
-	}
 	void UploadUniform(const Uniform<bool> &uniform);
 	void UploadUniform(const Uniform<int32> &uniform);
 	void UploadUniform(const Uniform<float> &uniform);
@@ -37,10 +32,10 @@ public:
 	virtual const std::type_info& GetType() const { return typeid(T); }
 	void Upload(const T &rhs)
 	{
-		if (rhs != data)
+		if (!(rhs == data))
 		{
 			data = rhs;
-			detail::UploadUniform(this);
+			detail::UploadUniform(*this);
 		}
 	}
 	T data;
@@ -56,6 +51,21 @@ public:
 	GLuint GetProgram() { return m_ShaderProgram; }
 
 	string GetName() { return m_Name; }
+
+	template<typename T>
+	bool Upload(uint32 uniform, const T &data)const
+	{
+		auto it = m_Uniforms.find(uniform);
+		if (!(it == m_Uniforms.end()))
+		{
+			AbstractUniform* uni = it->second;
+			assert(uni->GetType() == typeid(T));
+			static_cast<Uniform<T>*>(uni)->Upload(data);
+			return true;
+		}
+		assert(false);
+		return false;
+	}
 private:
 	friend class ShaderLoader;
 
@@ -65,4 +75,3 @@ private:
 
 	std::map<uint32, AbstractUniform*> m_Uniforms;
 };
-

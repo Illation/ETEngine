@@ -129,6 +129,12 @@ namespace etm
 		return true;
 	}
 
+	template <uint8 m, uint8 n, class T>
+	inline bool operator==(const matrix<m, n, T>& lhs, const matrix<m, n, T>& rhs)
+	{
+		return nearEqualsM(lhs, rhs);
+	}
+
 	//matrix operators
 	//****************
 	template <uint8 m, uint8 n, class T>
