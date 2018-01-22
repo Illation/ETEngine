@@ -78,12 +78,12 @@ void StarField::DrawForward()
 	STATE->SetShader(m_pShader);
 	STATE->SetActiveTexture(0);
 	STATE->BindTexture(m_pSprite->GetTarget(), m_pSprite->GetHandle());
-	glUniformMatrix4fv(glGetUniformLocation(m_pShader->GetProgram(), "viewProj"), 1, GL_FALSE, etm::valuePtr(CAMERA->GetStatViewProj()));
-	glUniformMatrix4fv(glGetUniformLocation(m_pShader->GetProgram(), "viewInv"), 1, GL_FALSE, etm::valuePtr(CAMERA->GetViewInv()));
-	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "uRadius"), m_Radius);
-	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "uBaseFlux"), m_BaseFlux);
-	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "uBaseMag"), m_BaseMag);
-	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "uAspecRation"), WINDOW.GetAspectRatio());
+	m_pShader->Upload("viewProj"_hash, CAMERA->GetStatViewProj());
+	m_pShader->Upload("viewInv"_hash, CAMERA->GetViewInv());
+	m_pShader->Upload("uRadius"_hash, m_Radius);
+	m_pShader->Upload("uBaseFlux"_hash, m_BaseFlux);
+	m_pShader->Upload("uBaseMag"_hash, m_BaseMag);
+	m_pShader->Upload("uAspectRatio"_hash, WINDOW.GetAspectRatio());
 	glDrawArrays(GL_POINTS, 0, m_DrawnStars);
 	PERFORMANCE->m_DrawCalls++;
 	STATE->BindVertexArray(0);

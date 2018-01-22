@@ -544,6 +544,11 @@ namespace etm
 	{
 		return nearEqualsV(lhs, vector<n, T>(0), epsilon);
 	}
+	template <uint8 n, class T>
+	inline bool operator==(const vector<n, T> &lhs, const vector<n, T> &rhs)
+	{
+		return nearEqualsV(lhs, rhs);
+	}
 
 	template <uint8 n, class T>
 	inline T dot(const vector<n, T> &lhs, const vector<n, T> &rhs)
