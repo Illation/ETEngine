@@ -8,6 +8,8 @@
 #include "Scenes/ShadingTestScene.hpp"
 #include "Scenes/PlanetTestScene.hpp"
 
+#include <btBulletCollisionCommon.h>
+
 MainFramework::MainFramework() :
 	AbstractFramework()
 {

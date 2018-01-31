@@ -1,0 +1,35 @@
+﻿  Building Custom Rule C:/Users/robert.lindner/Desktop/PersonalProjects/bullet3/src/Bullet3OpenCL/CMakeLists.txt
+  CMake does not need to re-run because C:/Users/robert.lindner/Desktop/PersonalProjects/bullet3/src/Bullet3OpenCL/CMakeFiles/generate.stamp is up-to-date.
+  clew.c
+  b3GpuGridBroadphase.cpp
+  b3GpuSapBroadphase.cpp
+  b3GpuParallelLinearBvhBroadphase.cpp
+  b3GpuParallelLinearBvh.cpp
+  b3OpenCLUtils.cpp
+  b3ContactCache.cpp
+  b3ConvexHullContact.cpp
+  b3GjkEpa.cpp
+  b3OptimizedBvh.cpp
+  b3QuantizedBvh.cpp
+  b3StridingMeshInterface.cpp
+  b3TriangleCallback.cpp
+  b3TriangleIndexVertexArray.cpp
+  b3VoronoiSimplexSolver.cpp
+  b3BoundSearchCL.cpp
+  b3FillCL.cpp
+  b3LauncherCL.cpp
+  b3PrefixScanCL.cpp
+  b3PrefixScanFloat4CL.cpp
+  b3RadixSort32CL.cpp
+  Generating Code...
+  Compiling...
+  b3GpuRaycast.cpp
+  b3GpuGenericConstraint.cpp
+  b3GpuJacobiContactSolver.cpp
+  b3GpuNarrowPhase.cpp
+  b3GpuPgsConstraintSolver.cpp
+  b3GpuPgsContactSolver.cpp
+  b3GpuRigidBodyPipeline.cpp
+  b3Solver.cpp
+  Generating Code...
+  Bullet3OpenCL_clew.vcxproj -> C:\Users\robert.lindner\Desktop\PersonalProjects\bullet3\lib\Debug\Bullet3OpenCL_clew_Debug.lib

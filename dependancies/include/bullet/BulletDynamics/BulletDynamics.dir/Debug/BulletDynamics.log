@@ -1,0 +1,43 @@
+﻿  Building Custom Rule C:/Users/robert.lindner/Desktop/PersonalProjects/bullet3/src/BulletDynamics/CMakeLists.txt
+  CMake does not need to re-run because C:/Users/robert.lindner/Desktop/PersonalProjects/bullet3/src/BulletDynamics/CMakeFiles/generate.stamp is up-to-date.
+  btKinematicCharacterController.cpp
+  btConeTwistConstraint.cpp
+  btContactConstraint.cpp
+  btFixedConstraint.cpp
+  btGearConstraint.cpp
+  btGeneric6DofConstraint.cpp
+  btGeneric6DofSpringConstraint.cpp
+  btGeneric6DofSpring2Constraint.cpp
+  btHinge2Constraint.cpp
+  btHingeConstraint.cpp
+  btPoint2PointConstraint.cpp
+  btSequentialImpulseConstraintSolver.cpp
+  btNNCGConstraintSolver.cpp
+  btSliderConstraint.cpp
+  btSolve2LinearConstraint.cpp
+  btTypedConstraint.cpp
+  btUniversalConstraint.cpp
+  btDiscreteDynamicsWorld.cpp
+  btDiscreteDynamicsWorldMt.cpp
+  btSimulationIslandManagerMt.cpp
+  Generating Code...
+  Compiling...
+  btRigidBody.cpp
+  btSimpleDynamicsWorld.cpp
+  btRaycastVehicle.cpp
+  btWheelInfo.cpp
+  btMultiBody.cpp
+  btMultiBodyConstraintSolver.cpp
+  btMultiBodyDynamicsWorld.cpp
+  btMultiBodyJointLimitConstraint.cpp
+  btMultiBodyConstraint.cpp
+  btMultiBodyPoint2Point.cpp
+  btMultiBodyFixedConstraint.cpp
+  btMultiBodySliderConstraint.cpp
+  btMultiBodyJointMotor.cpp
+  btMultiBodyGearConstraint.cpp
+  btDantzigLCP.cpp
+  btMLCPSolver.cpp
+  btLemkeAlgorithm.cpp
+  Generating Code...
+  BulletDynamics.vcxproj -> C:\Users\robert.lindner\Desktop\PersonalProjects\bullet3\lib\Debug\BulletDynamics_Debug.lib
