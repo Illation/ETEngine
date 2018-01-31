@@ -45,7 +45,7 @@ function platformLibraries()
 		local depPf = path.join(DEP_DIR, p[j] .. "/") 
 
 		configuration { "vs*", p[j] }
-			libdirs { path.join(depPf, "sdl2"),path.join(depPf, "freeImage"), path.join(depPf, "assimp") }
+			libdirs { path.join(depPf, "sdl2"),path.join(depPf, "freeImage"), path.join(depPf, "assimp"), path.join(depPf, "bullet") }
 	end
 	configuration {}
 end
@@ -81,7 +81,7 @@ configuration "vs*"
 	flags { "NoIncrementalLink", "NoEditAndContinue" }
 	linkoptions { "/ignore:4221" }
 	defines { "PLATFORM_Win" }
-	includedirs { path.join(DEP_INCLUDE, "sdl2"),path.join(DEP_INCLUDE, "freeImage"), path.join(DEP_INCLUDE, "assimp") }
+	includedirs { path.join(DEP_INCLUDE, "sdl2"),path.join(DEP_INCLUDE, "freeImage"), path.join(DEP_INCLUDE, "assimp"), path.join(DEP_INCLUDE, "bullet") }
 	debugdir "$(OutDir)"
 configuration { "vs*", "x32" }
 	flags { "EnableSSE2" }
@@ -134,7 +134,7 @@ project "Demo"
 	windowsPlatformPostBuild()
 
 	--Linked libraries
-    links{ "ETEngine", "SDL2", "FreeImage", "assimp" }
+    links{ "ETEngine", "SDL2", "FreeImage", "assimp", "BulletDynamics", "BulletCollision", "LinearMath" }
 
 	--additional includedirs
 	local ProjBase = path.join(SOURCE_DIR, "Demo") 

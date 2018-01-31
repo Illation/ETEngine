@@ -19,6 +19,7 @@
 #include "FileSystem/JSONparser.h"
 #include "FileSystem/FileUtil.h"
 #include "FileSystem/JSONdom.h"
+#include "Physics/PhysicsManager.h"
 
 
 void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
@@ -46,6 +47,8 @@ AbstractFramework::~AbstractFramework()
 
 	SDL_GL_DeleteContext(m_GlContext);
 	SDL_Quit();
+
+	PhysicsManager::GetInstance()->Destroy();
 
 	SceneManager::GetInstance()->DestroyInstance();
 	InputManager::GetInstance()->DestroyInstance();
@@ -143,6 +146,7 @@ void AbstractFramework::LoadConfig()
 				pSet->Window.Resize(resolutions[resIdx].x, resolutions[resIdx].y, false);
 		}
 	}
+	PhysicsManager::GetInstance()->Initialize();//Initialize Physics
 	SceneManager::GetInstance();//Initialize SceneManager
 	AddScenes();
 	JSON::String* initialScene = (*root)["start scene"]->str();

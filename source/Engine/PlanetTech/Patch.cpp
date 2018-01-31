@@ -33,11 +33,16 @@ void Patch::Init()
 	m_uAmbient = glGetUniformLocation(m_pPatchShader->GetProgram(), "ambient");
 	m_uDelta = glGetUniformLocation(m_pPatchShader->GetProgram(), "patchDelta");
 
-	m_pPatchShader->Upload("texDiffuse"_hash, 0);
-	m_pPatchShader->Upload("texHeight"_hash, 1);
-	m_pPatchShader->Upload("texDetail1"_hash, 2);
-	m_pPatchShader->Upload("texDetail2"_hash, 3);
-	m_pPatchShader->Upload("texHeightDetail"_hash, 4);
+	//glUniform1i(glGetUniformLocation(m_pPatchShader->GetProgram(), "texDiffuse"), 0);
+	//glUniform1i(glGetUniformLocation(m_pPatchShader->GetProgram(), "texHeight"), 1);
+	//glUniform1i(glGetUniformLocation(m_pPatchShader->GetProgram(), "texDetail1"), 2);
+	//glUniform1i(glGetUniformLocation(m_pPatchShader->GetProgram(), "texDetail2"), 3);
+	//glUniform1i(glGetUniformLocation(m_pPatchShader->GetProgram(), "texHeightDetail"), 4);
+	m_pPatchShader->Upload("texDiffuse"_hash, (int32)0);
+	m_pPatchShader->Upload("texHeight"_hash, (int32)1);
+	m_pPatchShader->Upload("texDetail1"_hash, (int32)2);
+	m_pPatchShader->Upload("texDetail2"_hash, (int32)3);
+	m_pPatchShader->Upload("texHeightDetail"_hash, (int32)4);
 	
 	//Buffer Initialisation
 	//*********************
