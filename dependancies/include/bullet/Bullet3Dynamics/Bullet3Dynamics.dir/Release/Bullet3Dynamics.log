@@ -1,0 +1,10 @@
+﻿  Building Custom Rule C:/Users/robert.lindner/Desktop/PersonalProjects/bullet3/src/Bullet3Dynamics/CMakeLists.txt
+  CMake does not need to re-run because C:/Users/robert.lindner/Desktop/PersonalProjects/bullet3/src/Bullet3Dynamics/CMakeFiles/generate.stamp is up-to-date.
+  b3CpuRigidBodyPipeline.cpp
+  b3FixedConstraint.cpp
+  b3Generic6DofConstraint.cpp
+  b3PgsJacobiSolver.cpp
+  b3Point2PointConstraint.cpp
+  b3TypedConstraint.cpp
+  Generating Code...
+  Bullet3Dynamics.vcxproj -> C:\Users\robert.lindner\Desktop\PersonalProjects\bullet3\lib\Release\Bullet3Dynamics.lib

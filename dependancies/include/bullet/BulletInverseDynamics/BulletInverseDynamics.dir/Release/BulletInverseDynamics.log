@@ -1,0 +1,8 @@
+﻿  Building Custom Rule C:/Users/robert.lindner/Desktop/PersonalProjects/bullet3/src/BulletInverseDynamics/CMakeLists.txt
+  CMake does not need to re-run because C:/Users/robert.lindner/Desktop/PersonalProjects/bullet3/src/BulletInverseDynamics/CMakeFiles/generate.stamp is up-to-date.
+  IDMath.cpp
+  MultiBodyTree.cpp
+  MultiBodyTreeInitCache.cpp
+  MultiBodyTreeImpl.cpp
+  Generating Code...
+  BulletInverseDynamics.vcxproj -> C:\Users\robert.lindner\Desktop\PersonalProjects\bullet3\lib\Release\BulletInverseDynamics.lib

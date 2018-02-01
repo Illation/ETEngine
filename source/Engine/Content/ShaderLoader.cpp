@@ -5,7 +5,7 @@
 #include "FileSystem/Entry.h"
 #include <algorithm>
 #include "FileSystem/FileUtil.h"
-#include "Hash.h"
+#include "Helper/Hash.h"
 #include <functional>
 #include <cctype>
 #include <locale>

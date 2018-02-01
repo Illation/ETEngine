@@ -12,6 +12,7 @@
 #include "../Framebuffers/PostProcessingRenderer.hpp"
 #include "../GraphicsHelper/TextRenderer.hpp"
 #include "../GraphicsHelper/RenderPipeline.hpp"
+#include "Physics/PhysicsWorld.h"
 
 #define CONTEXT Context::GetInstance()
 
@@ -30,6 +31,7 @@ AbstractScene::~AbstractScene()
 	m_pEntityVec.clear();
 	if (m_pSkybox)SafeDelete(m_pSkybox);
 
+	SafeDelete(m_pPhysicsWorld);
 	SafeDelete(m_pConObj);
 	SafeDelete(m_pTime);
 }
@@ -72,6 +74,9 @@ void AbstractScene::RootInitialize()
 	CONTEXT->SetContext(m_pConObj);
 
 	m_PostProcessingSettings = PostProcessingSettings();
+
+	m_pPhysicsWorld = new PhysicsWorld();
+	m_pPhysicsWorld->Initialize();
 
 	Initialize();
 
@@ -131,6 +136,8 @@ void AbstractScene::RootUpdate()
 	{
 		m_pSkybox->RootUpdate();
 	}
+
+	m_pPhysicsWorld->Update();
 }
 
 void AbstractScene::RootOnActivated()

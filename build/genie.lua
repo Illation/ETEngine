@@ -49,6 +49,24 @@ function platformLibraries()
 	end
 	configuration {}
 end
+function staticPlatformLibraries()--libraries built specifically for debug or release
+	local cfgs = configurations()
+	local p = platforms()
+	for i = 1, #cfgs do
+		for j = 1, #p do
+			local depPf = path.join(DEP_DIR, p[j] .. "/") 
+			local suffix = ""
+			if(string.startswith(cfgs[i], "Debug"))
+				then suffix = "/Debug"
+				else suffix = "/Release"
+			end
+
+			configuration { "vs*", p[j], cfgs[i] }
+				libdirs { path.join(depPf, "bullet" .. suffix) }
+		end
+	end
+	configuration {}
+end
 
 --copy files that are specific for the platform being built for
 function windowsPlatformPostBuild()
@@ -81,7 +99,7 @@ configuration "vs*"
 	flags { "NoIncrementalLink", "NoEditAndContinue" }
 	linkoptions { "/ignore:4221" }
 	defines { "PLATFORM_Win" }
-	includedirs { path.join(DEP_INCLUDE, "sdl2"),path.join(DEP_INCLUDE, "freeImage"), path.join(DEP_INCLUDE, "assimp") }
+	includedirs { path.join(DEP_INCLUDE, "sdl2"),path.join(DEP_INCLUDE, "freeImage"), path.join(DEP_INCLUDE, "assimp"), path.join(DEP_INCLUDE, "bullet") }
 	debugdir "$(OutDir)"
 configuration { "vs*", "x32" }
 	flags { "EnableSSE2" }
@@ -131,10 +149,11 @@ project "Demo"
 		links { "opengl32", "SDL2main" } 
 
 	platformLibraries()
+	staticPlatformLibraries()
 	windowsPlatformPostBuild()
 
 	--Linked libraries
-    links{ "ETEngine", "SDL2", "FreeImage", "assimp" }
+    links{ "ETEngine", "SDL2", "FreeImage", "assimp", "BulletDynamics", "BulletCollision", "LinearMath" }
 
 	--additional includedirs
 	local ProjBase = path.join(SOURCE_DIR, "Demo") 
@@ -191,6 +210,7 @@ project "Testing"
 		links { "opengl32", "SDL2main" } 
 
 	platformLibraries()
+	staticPlatformLibraries()
 
     files { path.join(SOURCE_DIR, "Testing/**.cpp") }
 
