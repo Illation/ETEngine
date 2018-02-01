@@ -13,6 +13,11 @@ std::map<VertexFlags, AttributeDescriptor> MeshFilter::LayoutAttributes =
 	{ TEXCOORD,	{ "texcoord",	GL_FLOAT, 2 } }
 };
 
+Sphere* MeshFilter::GetBoundingSphere()
+{
+	return &m_BoundingSphere;
+}
+
 MeshFilter::MeshFilter()
 {
 }

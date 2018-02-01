@@ -1,5 +1,5 @@
 #pragma once
-#include "Singleton.hpp"
+#include "../Helper/Singleton.hpp"
 
 class btDefaultCollisionConfiguration;
 class btCollisionDispatcher;
@@ -9,6 +9,7 @@ class btSequentialImpulseConstraintSolver;
 class btDiscreteDynamicsWorld;
 
 class btBoxShape;
+class btSphereShape;
 
 class PhysicsManager : public Singleton<PhysicsManager>
 {
@@ -19,6 +20,7 @@ public:
 	btDiscreteDynamicsWorld* CreateWorld();
 
 	btBoxShape* CreateBoxShape(const vec3 &halfExtents);
+	btSphereShape* CreateSphereShape(float radius);
 
 private:
 	bool m_IsInitialized = false;

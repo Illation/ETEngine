@@ -50,7 +50,7 @@ public:
 	static std::map<VertexFlags, AttributeDescriptor> LayoutAttributes;
 	size_t GetIndexCount() { return m_IndexCount; }
 
-	Sphere* GetBoundingSphere() { return &m_BoundingSphere; }
+	Sphere* GetBoundingSphere();
 private:
 	friend class MeshFilterLoader;
 	friend class ModelComponent;
