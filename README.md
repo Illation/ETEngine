@@ -14,6 +14,21 @@ Full feature list and backlog here: [LINK](features.md)
 
 ## How to build
 
+#### Building Bullet Physics
+The Engine uses Bullet Physics and has prebuilt libfiles for Visual Studio 2015. If you want to use a different compiler, you need to build bullet for it, otherwise you can skip this section.
+
+Clone bullet from https://github.com/bulletphysics/bullet3/ and download [CMake](https://cmake.org/).
+You will need .lib files for Debug_x32, Release_x32, Debug_x64 and Release_x64, and they need to go in the respective folders in dependancies.
+
+When you generate the project files with cmake, make sure to check the option "USE_MSVC_RUNTIME_LIBRARY_DLL".
+Build ALL_BUILD and check the /lib/ directory where you cloned bullet. The files you should copy are:
+ * BulletCollsion.lib
+ * BulletDynamics.lib
+ * LinearMath.lib
+
+Make sure to remove any "_Debug" suffixes from the filenames.
+
+#### Building the Engine
 ETEngine uses a project generation tool called [GENie](https://github.com/bkaradzic/GENie) to generate project files. Currently only project generation for Visual Studio 2015 has been tested, but support for Linux makefiles should soon be added.
 
 In order to build the project, first download the GENie executable. The easiest thing for later use would be installing it in your PATH, but you can also use the executable anywhere else.
@@ -42,7 +57,7 @@ If you want more details on tests that fail, run the generated executable from a
  
 ## Acknowledgments
 
-Currently used libraries: SDL2, catch, FreeImage, GLAD and Assimp
+Currently used libraries: SDL2, catch, FreeImage, Bullet Physics, GLAD and Assimp
 Also a bunch of (modified) code from Eric Brunetons [atmospheric scattering implementation](https://github.com/ebruneton/precomputed_atmospheric_scattering).
 
 for library licenses see Library Licenses.md

@@ -59,7 +59,7 @@ void PhysicsTestScene::Initialize()
 
 	m_pLightMat = new EmissiveMaterial(vec3(500));
 
-	GetPhysicsWorld()->GetWorld()->setGravity(ToBtVec3(vec3(0, -9.81, 0)*0.1f));
+	GetPhysicsWorld()->GetWorld()->setGravity(ToBtVec3(vec3(0, -9.81f, 0)*0.1f));
 	m_pSphereShape = PhysicsManager::GetInstance()->CreateSphereShape(m_SphereSize);
 
 	SetSkybox("Resources/Textures/Ice_Lake_Ref.hdr");

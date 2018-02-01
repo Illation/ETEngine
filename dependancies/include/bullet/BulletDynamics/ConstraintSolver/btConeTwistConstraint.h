@@ -1,3 +1,7 @@
+//Manual Changes
+#pragma warning(push, 0)  
+//End manual changes
+
 /*
 Bullet Continuous Collision Detection and Physics Library
 btConeTwistConstraint is Copyright (c) 2007 Starbreeze Studios
@@ -433,3 +437,7 @@ SIMD_FORCE_INLINE const char*	btConeTwistConstraint::serialize(void* dataBuffer,
 
 
 #endif //BT_CONETWISTCONSTRAINT_H
+
+//Manual Changes
+#pragma warning(pop)  
+//End manual changes
