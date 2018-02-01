@@ -8,6 +8,9 @@
 #include "Scenes/ShadingTestScene.hpp"
 #include "Scenes/PlanetTestScene.hpp"
 
+#include <btBulletCollisionCommon.h>
+#include "PhysicsTestScene.h"
+
 MainFramework::MainFramework() :
 	AbstractFramework()
 {
@@ -19,6 +22,7 @@ MainFramework::~MainFramework()
 void MainFramework::AddScenes()
 {
 	SceneManager::GetInstance()->AddGameScene(new PlanetTestScene());
+	SceneManager::GetInstance()->AddGameScene(new PhysicsTestScene());
 	SceneManager::GetInstance()->AddGameScene(new ShadingTestScene());
 	SceneManager::GetInstance()->AddGameScene(new SkyboxTestScene());
 	SceneManager::GetInstance()->AddGameScene(new TestScene());

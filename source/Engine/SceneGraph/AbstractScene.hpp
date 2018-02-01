@@ -12,6 +12,7 @@ class PostProcessingRenderer;
 class Skybox;
 class CubeMap;
 class HDRMap;
+class PhysicsWorld;
 
 class AbstractScene
 {
@@ -29,6 +30,8 @@ public:
 	const PostProcessingSettings& GetPostProcessingSettings() const;
 
 	bool SkyboxEnabled() { return m_UseSkyBox; }
+
+	PhysicsWorld* GetPhysicsWorld() const { return m_pPhysicsWorld; }
 
 protected:
 
@@ -57,6 +60,8 @@ private:
 	CameraComponent *m_pDefaultCam = nullptr;
 	Time *m_pTime = nullptr;
 	ContextObjects* m_pConObj = nullptr;
+
+	PhysicsWorld* m_pPhysicsWorld = nullptr;
 
 	bool m_UseSkyBox = false;
 	Skybox* m_pSkybox = nullptr;

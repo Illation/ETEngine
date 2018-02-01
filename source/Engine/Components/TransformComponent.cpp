@@ -3,6 +3,7 @@
 #include "TransformComponent.hpp"
 #include "LightComponent.hpp"
 #include "../SceneGraph/Entity.hpp"
+#include "RigidBodyComponent.h"
 
 
 TransformComponent::TransformComponent()
@@ -27,9 +28,24 @@ void TransformComponent::Update()
 
 void TransformComponent::UpdateTransforms()
 {
-	if (m_IsTransformChanged & TransformChanged::NONE)
+	//Rigid body handling
+	auto rigidbody = m_pEntity->GetComponent<RigidBodyComponent>();
+	if (rigidbody)
+	{
+		if (m_IsTransformChanged & TransformChanged::TRANSLATION)
+			rigidbody->SetPosition(m_Position);
+		else
+			m_Position = rigidbody->GetPosition();
+
+		if (m_IsTransformChanged & TransformChanged::ROTATION)
+			rigidbody->SetRotation(m_Rotation);
+		else
+			m_Rotation = rigidbody->GetRotation();
+	}
+	else if (m_IsTransformChanged & TransformChanged::NONE)
 		return;
 
+	//Light handling
 	if (m_IsTransformChanged & TransformChanged::TRANSLATION | TransformChanged::ROTATION)
 	{
 		auto ligComp = m_pEntity->GetComponent<LightComponent>();
@@ -105,6 +121,8 @@ void TransformComponent::RotateEuler(const vec3& eulerAngles)
 }
 void TransformComponent::Rotate(const quat& rotation)
 {
+	m_IsTransformChanged |= TransformChanged::ROTATION;
+
 	m_Rotation = m_Rotation * rotation;
 }
 

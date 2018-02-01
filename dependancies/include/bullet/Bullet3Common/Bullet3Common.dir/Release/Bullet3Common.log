@@ -1,0 +1,7 @@
+﻿  Building Custom Rule C:/Users/robert.lindner/Desktop/PersonalProjects/bullet3/src/Bullet3Common/CMakeLists.txt
+  CMake does not need to re-run because C:/Users/robert.lindner/Desktop/PersonalProjects/bullet3/src/Bullet3Common/CMakeFiles/generate.stamp is up-to-date.
+  b3AlignedAllocator.cpp
+  b3Vector3.cpp
+  b3Logging.cpp
+  Generating Code...
+  Bullet3Common.vcxproj -> C:\Users\robert.lindner\Desktop\PersonalProjects\bullet3\lib\Release\Bullet3Common.lib
