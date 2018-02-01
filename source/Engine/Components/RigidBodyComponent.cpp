@@ -13,10 +13,10 @@ RigidBodyComponent::RigidBodyComponent(bool isStatic)
 
 RigidBodyComponent::~RigidBodyComponent() 
 {
-	GetEntity()->GetScene()->GetPhysicsWorld()->GetWorld()->removeRigidBody(m_pBody);
-	btMotionState* ms = m_pBody->getMotionState();
-	delete m_pBody;
-	delete ms;
+	//GetEntity()->GetScene()->GetPhysicsWorld()->GetWorld()->removeRigidBody(m_pBody);
+	//btMotionState* ms = m_pBody->getMotionState();
+	//delete m_pBody;
+	//delete ms;
 }
 
 void RigidBodyComponent::Initialize()
@@ -87,4 +87,34 @@ quat RigidBodyComponent::GetRotation()
 		return ToEtmQuat(trans.getRotation());
 	}
 	return quat();
+}
+
+void RigidBodyComponent::ApplyImpulse(const vec3 &force, const vec3 &offset)
+{
+	if (m_pBody)
+	{
+		if (etm::nearEqualsV(offset, vec3::ZERO))
+		{
+			m_pBody->applyCentralImpulse(ToBtVec3(force));
+		}
+		else
+		{
+			m_pBody->applyImpulse(ToBtVec3(force), ToBtVec3(offset));
+		}
+	}
+}
+
+void RigidBodyComponent::ApplyForce(const vec3 &force, const vec3 &offset /*= vec3(0)*/)
+{
+	if (m_pBody)
+	{
+		if (etm::nearEqualsV(offset, vec3::ZERO))
+		{
+			m_pBody->applyCentralForce(ToBtVec3(force));
+		}
+		else
+		{
+			m_pBody->applyForce(ToBtVec3(force), ToBtVec3(offset));
+		}
+	}
 }

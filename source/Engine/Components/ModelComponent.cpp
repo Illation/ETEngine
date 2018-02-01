@@ -77,7 +77,9 @@ void ModelComponent::DrawCall()
 	case CullMode::SPHERE:
 	{
 		auto filterSphere = m_pMeshFilter->GetBoundingSphere();
-		Sphere objSphere = Sphere(GetTransform()->GetPosition() + filterSphere->pos, filterSphere->radius);
+		vec3 scale = TRANSFORM->GetScale();
+		float maxScale = max(scale.x, max(scale.y, scale.z));
+		Sphere objSphere = Sphere(GetTransform()->GetPosition() + filterSphere->pos, filterSphere->radius*maxScale);
 		if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
 			return;
 	}

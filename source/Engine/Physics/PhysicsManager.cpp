@@ -41,3 +41,8 @@ btBoxShape* PhysicsManager::CreateBoxShape(const vec3 &halfExtents)
 	btBoxShape* box = new btBoxShape(ToBtVec3(halfExtents));
 	return box;
 }
+
+btSphereShape* PhysicsManager::CreateSphereShape(float radius)
+{
+	return new btSphereShape(btScalar(radius));
+}

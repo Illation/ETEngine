@@ -25,6 +25,9 @@ public:
 	void SetRotation(const quat &rot);
 	quat GetRotation();
 
+	void ApplyImpulse(const vec3 &force, const vec3 &offset = vec3(0));
+	void ApplyForce(const vec3 &force, const vec3 &offset = vec3(0));
+
 private:
 	btRigidBody* m_pBody = nullptr;
 

@@ -19,10 +19,10 @@ PhysicsWorld::~PhysicsWorld()
 		{
 			delete pBody->getMotionState();
 		}
-		m_pWorld->removeCollisionObject(pObj);
+		//m_pWorld->removeCollisionObject(pObj);
 		delete pObj;
 	}
-	delete m_pWorld;
+	//delete m_pWorld;
 }
 
 void PhysicsWorld::Initialize()
@@ -35,21 +35,4 @@ void PhysicsWorld::Update()
 	if (!m_pWorld) return;
 
 	m_pWorld->stepSimulation(TIME->DeltaTime(), m_MaxSubsteps);
-
-	//Print all object positions
-	for (int32 i = m_pWorld->getNumCollisionObjects() - 1; i >= 0; i--)
-	{
-		btCollisionObject* pObj = m_pWorld->getCollisionObjectArray()[i];
-		btRigidBody* pBody = btRigidBody::upcast(pObj);
-		btTransform trans;
-		if (pBody && pBody->getMotionState())
-		{
-			pBody->getMotionState()->getWorldTransform(trans);
-		}
-		else
-		{
-			trans = pObj->getWorldTransform();
-		}
-		std::cout << ToEtmVec3(trans.getOrigin()) << std::endl;
-	}
 }
