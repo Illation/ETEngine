@@ -16,7 +16,7 @@ iRect UIComponent::CalculateDimensions( const ivec2 &worldPos )
 	return ret;
 }
 
-bool UISprite::Draw( uint16 level ) const
+bool UISprite::Draw( uint16 level ) 
 {
 	UNUSED(level);
 	SpriteRenderer::GetInstance()->Draw( m_Texture, etm::vecCast<float>(m_WorldPos), m_Color, vec2( 0 ), 

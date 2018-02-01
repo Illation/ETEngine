@@ -2,6 +2,8 @@
 #include "UIContainer.h"
 
 #include <limits>
+#include "SpriteRenderer.hpp"
+#include "TextRenderer.hpp"
 
 iRect UIDynamicBox::CalculateDimensions( const ivec2 &worldPos )
 {
@@ -61,24 +63,24 @@ iRect UIDynamicBox::CalculateDimensions( const ivec2 &worldPos )
 	return ret;
 }
 
-bool UIDynamicBox::Draw( uint16 level ) const
+bool UIDynamicBox::Draw( uint16 level ) 
 {
-	level --;
-	if(level > 0)
+	if (level <= m_Level)
 	{
-		bool ret = false;
-		for(auto child : m_RelativeChildren)
-		{
-			ret |= child->Draw( level );
-		}
-		for(auto child : m_DynamicChildren)
-		{
-			ret |= child->Draw( level );
-		}
-		return ret;
+		m_Level = level;
+		return true;//has children, gotta go deeper
 	}
-	//Draw this box -> nothing to do	
-	return false;
+	m_Level = level;
+	bool ret = false;
+	for(auto child : m_RelativeChildren)
+	{
+		ret |= child->Draw( level );
+	}
+	for(auto child : m_DynamicChildren)
+	{
+		ret |= child->Draw( level );
+	}
+	return ret;
 }
 
 void UIDynamicBox::AddChild( UIContainer* child, Positioning positioning )
@@ -92,4 +94,28 @@ void UIDynamicBox::AddChild( UIContainer* child, Positioning positioning )
 		m_RelativeChildren.push_back( child );
 		break;
 	}
+}
+
+iRect UIPortal::CalculateDimensions(const ivec2 &worldPos)
+{
+	m_WorldPos = worldPos;
+	iRect ret = m_Rect;
+	ret.pos = ret.pos + m_WorldPos;
+	return ret;
+}
+
+bool UIPortal::Draw(uint16 level)
+{
+	vec2 size = vec2((float)m_Rect.size.x, (float)m_Rect.size.y);
+	vec2 pos = vec2((float)m_Rect.pos.x, (float)m_Rect.pos.y) + vec2((float)m_WorldPos.x, (float)m_WorldPos.y);
+	SpriteRenderer::GetInstance()->Draw(nullptr, pos, m_Color, vec2(0), size, 0, 1, SpriteScalingMode::TEXTURE);
+	if (!m_Child)
+		return false;
+	while (m_Child->Draw(level))
+	{
+		level++;
+		SpriteRenderer::GetInstance()->Draw();
+		TextRenderer::GetInstance()->Draw();
+	}
+	return false;
 }

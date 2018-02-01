@@ -2,12 +2,14 @@
 #include "Editor.hpp"
 
 #include "EditorRenderer.hpp"
+#include "UI\UIViewport.h"
 
 #ifdef EDITOR
 
 Editor::Editor()
 {
 	m_pRenderer = new EditorRenderer();
+	m_Viewport = new UIViewport();
 }
 
 Editor::~Editor()
@@ -20,6 +22,7 @@ void Editor::Initialize()
 {
 	CalculateViewportSize(WINDOW.EditorDimensions);
 
+	m_Viewport->Initialize();
 	m_pRenderer->Initialize();
 
 	//UISprite testSprite = UISprite();
@@ -36,24 +39,26 @@ void Editor::Update()
 
 void Editor::Draw()
 {
-	m_pRenderer->Draw(m_RedrawUI);
+	m_pRenderer->Draw();
 }
 
 GLuint Editor::GetSceneTarget()
 {
-	return m_pRenderer->GetSceneTarget();
+	return m_Viewport->GetTarget();
 }
 
 void Editor::CalculateViewportSize(ivec2 FullWindowDimensions)
 {
-	m_Viewport = iRect();
-	m_Viewport.pos = ivec2( (int32)m_ToolbarSeparator, 0 );
-	m_Viewport.size = ivec2( FullWindowDimensions.x - (int32)m_ToolbarSeparator, FullWindowDimensions.y );
+	m_Viewport->SetLocalPos(ivec2( (int32)m_ToolbarSeparator, 0 ));
+	m_Viewport->SetSize(ivec2( FullWindowDimensions.x - (int32)m_ToolbarSeparator, FullWindowDimensions.y ));
 }
 
 void Editor::OnWindowResize(ivec2 EditorDimensions)
 {
+	m_Viewport->~UIViewport();
+	m_Viewport = new(m_Viewport) UIViewport();
 	CalculateViewportSize(EditorDimensions);
+	m_Viewport->Initialize();
 
 	m_pRenderer->~EditorRenderer();
 	m_pRenderer = new(m_pRenderer) EditorRenderer();

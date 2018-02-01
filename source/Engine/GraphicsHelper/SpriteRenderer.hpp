@@ -21,6 +21,7 @@ public:
 private:
 	friend class Singleton<SpriteRenderer>;
 	friend class RenderPipeline;
+	friend class UIPortal;
 #ifdef EDITOR
 	friend class EditorRenderer;
 #endif

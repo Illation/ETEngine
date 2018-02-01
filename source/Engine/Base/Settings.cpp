@@ -3,6 +3,7 @@
 
 #ifdef EDITOR
 #include "../Editor/Editor.hpp"
+#include "UI/UIViewport.h"
 #endif
 
 Settings::Settings() :Window( WindowSettings() ), Graphics( GraphicsSettings() )
@@ -37,8 +38,8 @@ Settings::WindowSettings::WindowSettings() :
 #ifdef EDITOR
 	EditorWidth = Width;
 	EditorHeight = Height;
-	Editor::GetInstance()->CalculateViewportSize(EditorDimensions);
-	Dimensions = Editor::GetInstance()->GetViewport().size;
+	//Editor::GetInstance()->CalculateViewportSize(EditorDimensions);
+	//Dimensions = Editor::GetInstance()->GetViewport()->GetSize();
 #endif
 }
 Settings::WindowSettings::~WindowSettings()
@@ -57,8 +58,8 @@ void Settings::WindowSettings::Resize( int32 width, int32 height, bool broadcast
 	EditorWidth = width;
 	EditorHeight = height;
 	Editor::GetInstance()->CalculateViewportSize( ivec2( width, height ) );
-	Dimensions = Editor::GetInstance()->GetViewport().size;
-	Editor::GetInstance()->OnWindowResize(EditorDimensions);
+	Dimensions = Editor::GetInstance()->GetViewport()->GetSize();
+	if (broadcast) Editor::GetInstance()->OnWindowResize(EditorDimensions);
 #else
 	Width = width;
 	Height = height;

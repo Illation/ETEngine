@@ -6,6 +6,7 @@
 
 class TextureData;
 class EditorRenderer;
+class UIViewport;
 
 class Editor : public Singleton<Editor>
 {
@@ -21,18 +22,18 @@ public:
 	void OnWindowResize(ivec2 EditorDimensions);
 	void CalculateViewportSize(ivec2 FullWindowDimensions);
 
-	const iRect& GetViewport() const { return m_Viewport; }
+	UIViewport* GetViewport() { return m_Viewport; }
 
+	EditorRenderer* Renderer() const { return m_pRenderer; }
 	//std::vector<UISprite> GetSprites() { return m_UISprites; }
 
 private:
 
 	EditorRenderer* m_pRenderer = nullptr;
 
-	bool m_RedrawUI = true;
-
 	float m_ToolbarSeparator = 200;
-	iRect m_Viewport;
+	//iRect m_Viewport;
+	UIViewport* m_Viewport = nullptr;
 	
 	//std::vector<UISprite> m_UISprites;
 
