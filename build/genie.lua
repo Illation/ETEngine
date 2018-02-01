@@ -45,7 +45,25 @@ function platformLibraries()
 		local depPf = path.join(DEP_DIR, p[j] .. "/") 
 
 		configuration { "vs*", p[j] }
-			libdirs { path.join(depPf, "sdl2"),path.join(depPf, "freeImage"), path.join(depPf, "assimp"), path.join(depPf, "bullet") }
+			libdirs { path.join(depPf, "sdl2"),path.join(depPf, "freeImage"), path.join(depPf, "assimp") }
+	end
+	configuration {}
+end
+function staticPlatformLibraries()--libraries built specifically for debug or release
+	local cfgs = configurations()
+	local p = platforms()
+	for i = 1, #cfgs do
+		for j = 1, #p do
+			local depPf = path.join(DEP_DIR, p[j] .. "/") 
+			local suffix = ""
+			if(string.startswith(cfgs[i], "Debug"))
+				then suffix = "/Debug"
+				else suffix = "/Release"
+			end
+
+			configuration { "vs*", p[j], cfgs[i] }
+				libdirs { path.join(depPf, "bullet" .. suffix) }
+		end
 	end
 	configuration {}
 end
@@ -131,6 +149,7 @@ project "Demo"
 		links { "opengl32", "SDL2main" } 
 
 	platformLibraries()
+	staticPlatformLibraries()
 	windowsPlatformPostBuild()
 
 	--Linked libraries
@@ -191,6 +210,7 @@ project "Testing"
 		links { "opengl32", "SDL2main" } 
 
 	platformLibraries()
+	staticPlatformLibraries()
 
     files { path.join(SOURCE_DIR, "Testing/**.cpp") }
 
