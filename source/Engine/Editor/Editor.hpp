@@ -7,6 +7,7 @@
 class TextureData;
 class EditorRenderer;
 class UIViewport;
+class UIFixedContainer;
 
 class Editor : public Singleton<Editor>
 {
@@ -20,22 +21,13 @@ public:
 	GLuint GetSceneTarget();
 
 	void OnWindowResize(ivec2 EditorDimensions);
-	void CalculateViewportSize(ivec2 FullWindowDimensions);
+	void CalculateViewportSize(ivec2 FullWindowDimensions, bool resizeBuffer = false);
 
 	UIViewport* GetViewport() { return m_Viewport; }
 
-	EditorRenderer* Renderer() const { return m_pRenderer; }
-	//std::vector<UISprite> GetSprites() { return m_UISprites; }
-
 private:
-
-	EditorRenderer* m_pRenderer = nullptr;
-
-	float m_ToolbarSeparator = 200;
-	//iRect m_Viewport;
 	UIViewport* m_Viewport = nullptr;
-	
-	//std::vector<UISprite> m_UISprites;
+	UIFixedContainer* m_Root = nullptr;
 
 private:
 	//Disable constructors

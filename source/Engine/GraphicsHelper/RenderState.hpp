@@ -25,6 +25,7 @@ public:
 	void SetBlendFunction(GLenum sFactor, GLenum dFactor);
 
 	void SetViewport(ivec2 pos, ivec2 size);
+	void GetViewport(ivec2 &pos, ivec2 &size);
 
 	void SetClearColor(vec4 col);
 

@@ -9,7 +9,7 @@ enum class UIComponentType : uint8
 	FONT
 };
 
-class UIComponent : public UIContainer
+class UIComponent : public UIFixedContainer
 {
 public:
 	UIComponent(ivec2 size, ivec2 localPos);
@@ -21,17 +21,13 @@ public:
 
 	virtual vec4 GetColor() { return m_Color; }
 
-	iRect CalculateDimensions( const ivec2 &worldPos);
-
-	void SetSize( ivec2 size ) { m_Rect.size = size; }
-
 protected:
 	friend class UIContainer;
 
 	vec4 m_Color = vec4( 1 );
 };
 
-struct UISprite : UIComponent
+struct UISprite : public UIComponent
 {
 public:
 	virtual UIComponentType GetType() { return UIComponentType::SPRITE; }

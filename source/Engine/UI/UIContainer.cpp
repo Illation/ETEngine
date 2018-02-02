@@ -5,6 +5,12 @@
 #include "SpriteRenderer.hpp"
 #include "TextRenderer.hpp"
 
+UIDynamicBox::~UIDynamicBox()
+{
+	for (auto child : m_RelativeChildren)delete child;
+	for (auto child : m_DynamicChildren)delete child;
+}
+
 iRect UIDynamicBox::CalculateDimensions( const ivec2 &worldPos )
 {
 	m_WorldPos = worldPos;
@@ -96,7 +102,34 @@ void UIDynamicBox::AddChild( UIContainer* child, Positioning positioning )
 	}
 }
 
-iRect UIPortal::CalculateDimensions(const ivec2 &worldPos)
+bool UIPortal::Draw(uint16 level)
+{
+	//Limit dimensions
+	vec2 size = vec2((float)m_Rect.size.x, (float)m_Rect.size.y);
+	vec2 pos = vec2((float)m_Rect.pos.x, (float)m_Rect.pos.y) + vec2((float)m_WorldPos.x, (float)m_WorldPos.y);
+
+	ivec2 prevPos, prevSize;
+	STATE->GetViewport(prevPos, prevSize);
+	STATE->SetViewport(m_Rect.pos + m_WorldPos, m_Rect.size);
+
+	//Render Background
+	SpriteRenderer::GetInstance()->Draw(nullptr, pos, m_Color, vec2(0), size, 0, 1, SpriteScalingMode::SCREEN);
+	SpriteRenderer::GetInstance()->Draw();
+
+	//Render subcomponents
+	if (m_Child)
+	while (m_Child->Draw(level))
+	{
+		level++;
+		SpriteRenderer::GetInstance()->Draw();
+		TextRenderer::GetInstance()->Draw();
+	}
+	//Restore viewport size
+	STATE->SetViewport(prevPos, prevSize);
+	return false;
+}
+
+iRect UIFixedContainer::CalculateDimensions(const ivec2 &worldPos)
 {
 	m_WorldPos = worldPos;
 	iRect ret = m_Rect;
@@ -104,18 +137,65 @@ iRect UIPortal::CalculateDimensions(const ivec2 &worldPos)
 	return ret;
 }
 
-bool UIPortal::Draw(uint16 level)
+UISplitter::~UISplitter()
 {
-	vec2 size = vec2((float)m_Rect.size.x, (float)m_Rect.size.y);
-	vec2 pos = vec2((float)m_Rect.pos.x, (float)m_Rect.pos.y) + vec2((float)m_WorldPos.x, (float)m_WorldPos.y);
-	SpriteRenderer::GetInstance()->Draw(nullptr, pos, m_Color, vec2(0), size, 0, 1, SpriteScalingMode::TEXTURE);
-	if (!m_Child)
-		return false;
-	while (m_Child->Draw(level))
+	delete m_First;
+	delete m_Second;
+}
+
+bool UISplitter::Draw(uint16 level)
+{
+	bool ret = false;
+	ret |= m_First->Draw(level);
+	ret |= m_Second->Draw(level);
+	return ret;
+}
+
+void UISplitter::SetSize(ivec2 size)
+{
+	m_Rect.size = size;
+	RecalculateSplit();
+}
+
+void UISplitter::SetSizeOnly(ivec2 size)
+{
+	m_Rect.size = size;
+	RecalculateSplit(true);
+}
+
+void UISplitter::SetSplitPercentage(float perc)
+{
+	m_SplitPercentage = perc;
+	RecalculateSplit();
+}
+
+void UISplitter::RecalculateSplit(bool sizeOnly)
+{
+	ivec2 firstSize;
+	ivec2 secondSize;
+	switch (m_Mode)
 	{
-		level++;
-		SpriteRenderer::GetInstance()->Draw();
-		TextRenderer::GetInstance()->Draw();
+	case UISplitter::Mode::HORIZONTAL:
+		firstSize = ivec2((int32)(m_Rect.size.x*m_SplitPercentage), m_Rect.size.y);
+		m_First->SetLocalPos(ivec2(0));
+		secondSize = ivec2((int32)(m_Rect.size.x*(1 - m_SplitPercentage)), m_Rect.size.y);
+		m_Second->SetLocalPos(ivec2((int32)(m_Rect.size.x*m_SplitPercentage), 0));
+		break;
+	case UISplitter::Mode::VERTICAL:
+		firstSize = ivec2(m_Rect.size.x, (int32)(m_Rect.size.y*m_SplitPercentage));
+		m_First->SetLocalPos(ivec2(0));
+		secondSize = ivec2(m_Rect.size.x, (int32)(m_Rect.size.y*(1 - m_SplitPercentage)));
+		m_Second->SetLocalPos(ivec2(0, (int32)(m_Rect.size.y*m_SplitPercentage)));
+		break;
 	}
-	return false;
+	if (sizeOnly)
+	{
+		m_First->SetSizeOnly(firstSize);
+		m_Second->SetSizeOnly(secondSize);
+	}
+	else
+	{
+		m_First->SetSize(firstSize);
+		m_Second->SetSize(secondSize);
+	}
 }

@@ -2,18 +2,10 @@
 #include "UIComponent.hpp"
 #include "SpriteRenderer.hpp"
 
-UIComponent::UIComponent( ivec2 size, ivec2 localPos ) 
+UIComponent::UIComponent( ivec2 size, ivec2 localPos ) :UIFixedContainer()
 {
 	m_Rect.size = size; 
 	m_Rect.pos = localPos;
-}
-
-iRect UIComponent::CalculateDimensions( const ivec2 &worldPos )
-{
-	m_WorldPos = worldPos;
-	iRect ret = m_Rect;
-	ret.pos = ret.pos + m_WorldPos;
-	return ret;
 }
 
 bool UISprite::Draw( uint16 level ) 

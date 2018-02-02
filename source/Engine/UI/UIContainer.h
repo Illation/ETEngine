@@ -23,6 +23,18 @@ protected:
 	uint16 m_Level = std::numeric_limits<uint16>::max();
 };
 
+class UIFixedContainer : public UIContainer
+{
+public:
+	UIFixedContainer() :UIContainer() {}
+	iRect CalculateDimensions(const ivec2 &worldPos);
+	//overridable for containers that need to resize buffers etc
+	virtual void SetSize(ivec2 size) { m_Rect.size = size; }
+	//Guaranteed to only set the size
+	virtual void SetSizeOnly(ivec2 size) { m_Rect.size = size; }
+	ivec2 GetSize() const { return m_Rect.size; }
+};
+
 class UIDynamicBox : public UIContainer
 {
 public:
@@ -39,6 +51,7 @@ public:
 	};
 
 	UIDynamicBox( UIDynamicBox::Mode mode ) :m_Mode( mode ) {}
+	virtual ~UIDynamicBox();
 
 	iRect CalculateDimensions( const ivec2 &worldPos);
 	virtual bool Draw( uint16 level );
@@ -51,9 +64,12 @@ private:
 	std::vector<UIContainer*> m_DynamicChildren;
 };
 
-class UIPortal : public UIContainer
+class UIPortal : public UIFixedContainer
 {
-	iRect CalculateDimensions(const ivec2 &worldPos);
+public:
+	UIPortal() :UIFixedContainer() {}
+	virtual ~UIPortal() { delete m_Child; }
+
 	virtual bool Draw(uint16 level);
 
 	void SetChild(UIContainer* child) { m_Child = child; }
@@ -63,4 +79,33 @@ private:
 	UIContainer* m_Child = nullptr;
 
 	vec4 m_Color = vec4(1);
+};
+
+class UISplitter : public UIFixedContainer
+{
+public:
+	enum class Mode : uint8
+	{
+		HORIZONTAL,
+		VERTICAL
+	}; 
+
+	UISplitter(UISplitter::Mode mode) :UIFixedContainer(), m_Mode(mode) {}
+	virtual ~UISplitter();
+	virtual bool Draw(uint16 level);
+
+	void SetSize(ivec2 size)override;
+	void SetSizeOnly(ivec2 size)override;
+	void SetSplitPercentage(float perc);
+
+	void SetFirst(UIFixedContainer* child) { m_First = child; }
+	void SetSecond(UIFixedContainer* child) { m_Second = child; }
+private:
+	void RecalculateSplit(bool sizeOnly = false);
+
+	UIFixedContainer* m_First = nullptr;
+	UIFixedContainer* m_Second = nullptr;
+
+	float m_SplitPercentage = 0.2f;
+	UISplitter::Mode m_Mode;
 };

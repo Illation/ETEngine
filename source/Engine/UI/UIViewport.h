@@ -1,27 +1,39 @@
 #pragma once
 #include "UIContainer.h"
 
-class UIViewport : public UIContainer
+//Renderering part in own class so that it can be deleted and reconstructed for resizing
+class UIViewportRenderer
+{
+public:
+	UIViewportRenderer() {}
+	virtual ~UIViewportRenderer();
+
+	GLuint GetTarget() const { return m_FBO; }
+	void Draw(ivec2 pos, ivec2 size);
+	void Initialize(ivec2 size);
+private:
+	ShaderData* m_pShader = nullptr;
+
+	bool m_Initialized = false;
+
+	GLuint m_FBO;
+	TextureData* m_pTex = nullptr;
+};
+
+class UIViewport : public UIFixedContainer
 {
 public:
 	UIViewport();
 	virtual ~UIViewport();
 
-	GLuint GetTarget() const;
+	GLuint GetTarget() const { return m_Renderer->GetTarget(); }
 	void Initialize();
 
-	virtual bool Draw(uint16 level);
-	iRect CalculateDimensions(const ivec2 &worldPos);
+	void SetSize(ivec2 size)override;
 
-	void SetSize(ivec2 size);
-	ivec2 GetSize() const { return m_Rect.size; }
+	virtual bool Draw(uint16 level);
 
 private:
-	ShaderData* m_pShader = nullptr;
-
-	bool m_HasFBO = false;
-
-	GLuint m_FBO;
-	TextureData* m_pTex = nullptr;
-	void CreateFramebuffers();
+	UIViewportRenderer* m_Renderer;
+	bool m_RendererInitialized = false;
 };

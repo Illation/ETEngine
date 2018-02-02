@@ -155,6 +155,12 @@ void RenderState::SetViewport(ivec2 pos, ivec2 size)
 	}
 }
 
+void RenderState::GetViewport(ivec2 &pos, ivec2 &size)
+{
+	pos = m_ViewportPosition;
+	size = m_ViewportSize;
+}
+
 void RenderState::SetClearColor(vec4 col)
 {
 	if (!(etm::nearEqualsV(m_ClearColor, col)))
