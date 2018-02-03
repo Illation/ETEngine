@@ -113,6 +113,7 @@ void SpriteRenderer::Draw()
 
 	STATE->BindVertexArray( m_VAO );
 
+	CalculateTransform();
 	STATE->SetShader(m_pShader);
 	STATE->SetActiveTexture(0);
 	glUniformMatrix4fv(m_uTransform, 1, GL_FALSE, etm::valuePtr(m_Transform));
@@ -185,7 +186,11 @@ void SpriteRenderer::Draw( TextureData* pTexture, vec2 position, vec4 color /*= 
 		//no modification required
 		break;
 	case SpriteScalingMode::SCREEN :
-		scale = scale * vec2( (float)WINDOW.Width, (float)WINDOW.Height );
+		{
+			ivec2 viewPos, viewSize;
+			STATE->GetViewport(viewPos, viewSize);
+			scale = scale * etm::vecCast<float>(viewSize);
+		}
 		break;
 	case SpriteScalingMode::TEXTURE :
 		scale = scale * vec2( (float)pTexture->GetResolution().x, (float)pTexture->GetResolution().y ) / GRAPHICS.TextureScaleFactor;
@@ -204,7 +209,9 @@ void SpriteRenderer::Draw( TextureData* pTexture, vec2 position, vec4 color /*= 
 
 void SpriteRenderer::CalculateTransform()
 {
-	int32 width = WINDOW.Width, height = WINDOW.Height;
+	ivec2 viewPos, viewSize;
+	STATE->GetViewport(viewPos, viewSize);
+	int32 width = viewSize.x, height = viewSize.y;
 	float scaleX = (width > 0) ? 2.f / width : 0;
 	float scaleY = (height > 0) ? 2.f / height : 0;
 

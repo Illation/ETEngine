@@ -3,6 +3,7 @@
 
 #include "UI\UIViewport.h"
 #include "UI\UIContainer.h"
+#include "UI\UIComponent.hpp"
 
 #ifdef EDITOR
 
@@ -10,9 +11,8 @@ Editor::Editor()
 {
 	UISplitter* pSplitter = new UISplitter(UISplitter::Mode::HORIZONTAL);
 
-		UIPortal* pPortal = new UIPortal();
-		pPortal->SetColor(vec4(vec3(0.5f), 1));
-	pSplitter->SetFirst(pPortal);
+		m_pToolbar = new UIPortal();
+	pSplitter->SetFirst(m_pToolbar);
 
 		m_Viewport = new UIViewport();
 	pSplitter->SetSecond(m_Viewport);
@@ -28,6 +28,21 @@ Editor::~Editor()
 
 void Editor::Initialize()
 {
+	m_pEditorFont = ContentManager::Load<SpriteFont>("Resources/Fonts/Consolas_32.fnt");
+
+	//Create toolbar
+	m_pToolbar->SetColor(vec4(vec3(0.2f), 1));
+		UIDynamicBox* pDynBox = new UIDynamicBox(UIDynamicBox::Mode::VERTICAL);
+			pDynBox->AddChild(new UIText("Test Text", m_pEditorFont), UIDynamicBox::Positioning::DYNAMIC);
+			pDynBox->AddChild(new UIText("Another text line", m_pEditorFont), UIDynamicBox::Positioning::DYNAMIC);
+			pDynBox->AddChild(new UIText("and another", m_pEditorFont), UIDynamicBox::Positioning::DYNAMIC);
+			pDynBox->AddChild(new UISprite(
+				ContentManager::Load<TextureData>("Resources/Textures/starSprite.png")), UIDynamicBox::Positioning::DYNAMIC);
+			pDynBox->AddChild(new UIText("and another", m_pEditorFont), UIDynamicBox::Positioning::DYNAMIC);
+			pDynBox->AddChild(new UISprite(
+				ContentManager::Load<TextureData>("Resources/Textures/sample.png")), UIDynamicBox::Positioning::DYNAMIC);
+	m_pToolbar->SetChild(pDynBox);
+
 	CalculateViewportSize(WINDOW.EditorDimensions);
 
 	m_Viewport->Initialize();
@@ -35,7 +50,8 @@ void Editor::Initialize()
 
 void Editor::Update()
 {
-//process input here
+	//process input here
+	m_Root->Update();
 }
 
 void Editor::Draw()

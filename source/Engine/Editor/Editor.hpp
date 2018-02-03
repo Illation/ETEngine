@@ -8,6 +8,8 @@ class TextureData;
 class EditorRenderer;
 class UIViewport;
 class UIFixedContainer;
+class UIPortal;
+class SpriteFont;
 
 class Editor : public Singleton<Editor>
 {
@@ -25,9 +27,14 @@ public:
 
 	UIViewport* GetViewport() { return m_Viewport; }
 
+	SpriteFont* EditorFont() const { return m_pEditorFont; }
+
 private:
 	UIViewport* m_Viewport = nullptr;
 	UIFixedContainer* m_Root = nullptr;
+	UIPortal* m_pToolbar = nullptr;
+
+	SpriteFont* m_pEditorFont = nullptr;
 
 private:
 	//Disable constructors

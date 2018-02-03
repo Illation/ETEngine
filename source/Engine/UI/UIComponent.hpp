@@ -2,6 +2,8 @@
 #include "UIUtil.hpp"
 #include "UIContainer.h"
 
+class SpriteFont;
+
 enum class UIComponentType : uint8
 {
 	INVALID,
@@ -30,12 +32,28 @@ protected:
 struct UISprite : public UIComponent
 {
 public:
+	UISprite(TextureData* tex);
+
 	virtual UIComponentType GetType() { return UIComponentType::SPRITE; }
 
 	virtual void* GetResource() { return m_Texture; }
 
 	bool Draw( uint16 level ) override;
-
 private:
 	TextureData* m_Texture = nullptr;
+};
+
+struct UIText : public UIComponent
+{
+public:
+	UIText(std::string text, SpriteFont* pFont);
+
+	virtual UIComponentType GetType() { return UIComponentType::FONT; }
+
+	virtual void* GetResource() { return m_Font; }
+
+	bool Draw( uint16 level ) override;
+private:
+	SpriteFont* m_Font = nullptr;
+	std::string m_Text;
 };

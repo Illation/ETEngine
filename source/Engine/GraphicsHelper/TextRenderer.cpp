@@ -77,6 +77,27 @@ void TextRenderer::SetFont(SpriteFont* pFont)
 	else m_ActiveFontIdx = pos - m_pSpriteFonts.begin();
 }
 
+ivec2 TextRenderer::GetTextSize(const std::string &text, SpriteFont* pFont)
+{
+	ivec2 ret = ivec2(0);
+	for (auto charId : text)
+	{
+		if (SpriteFont::IsCharValid(charId) && pFont->GetMetric(charId).IsValid)
+		{
+			auto metric = pFont->GetMetric(charId);
+			if (charId == ' ')
+			{
+				ret.x += metric.AdvanceX;
+				continue;
+			}
+			ret.x += metric.AdvanceX;
+			ret.y = max(ret.y, (int32)(metric.Height + metric.OffsetY));
+		}
+		else std::cout << "[WARNING] TextRenderer::GetTextSize>char not suppported for current font" << std::endl;
+	}
+	return ret;
+}
+
 void TextRenderer::OnWindowResize()
 {
 	CalculateTransform();
@@ -106,6 +127,7 @@ void TextRenderer::Draw()
 	UpdateBuffer();
 
 	//Enable this objects shader
+	CalculateTransform();
 	STATE->SetShader(m_pTextShader);
 	STATE->SetActiveTexture(0);
 	glUniformMatrix4fv(m_uTransform, 1, GL_FALSE, etm::valuePtr(m_Transform));
@@ -195,7 +217,9 @@ void TextRenderer::UpdateBuffer()
 
 void TextRenderer::CalculateTransform()
 {
-	int32 width = WINDOW.Width, height = WINDOW.Height;
+	ivec2 viewPos, viewSize;
+	STATE->GetViewport(viewPos, viewSize);
+	int32 width = viewSize.x, height = viewSize.y;
 	float scaleX = (width > 0) ? 2.f / width : 0;
 	float scaleY = (height > 0) ? 2.f / height : 0;
 

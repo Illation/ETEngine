@@ -9,6 +9,8 @@ public:
 	//Should set the world position and return a rectangle in world position and its local scale
 	virtual iRect CalculateDimensions(const ivec2 &worldPos) = 0;
 
+	virtual void Update() {}
+
 	//offset to world position
 	void SetLocalPos( ivec2 pos ) { m_Rect.pos = pos; }
 
@@ -56,6 +58,8 @@ public:
 	iRect CalculateDimensions( const ivec2 &worldPos);
 	virtual bool Draw( uint16 level );
 
+	virtual void Update()override;
+
 	void AddChild( UIContainer* child, Positioning positioning );
 private:
 	UIDynamicBox::Mode m_Mode;
@@ -71,6 +75,8 @@ public:
 	virtual ~UIPortal() { delete m_Child; }
 
 	virtual bool Draw(uint16 level);
+
+	virtual void Update()override { if (m_Child)m_Child->Update(); }
 
 	void SetChild(UIContainer* child) { m_Child = child; }
 	void SetColor(vec4 val) { m_Color = val; }
@@ -94,6 +100,8 @@ public:
 	virtual ~UISplitter();
 	virtual bool Draw(uint16 level);
 
+	void Update() override;
+
 	void SetSize(ivec2 size)override;
 	void SetSizeOnly(ivec2 size)override;
 	void SetSplitPercentage(float perc);
@@ -105,6 +113,9 @@ private:
 
 	UIFixedContainer* m_First = nullptr;
 	UIFixedContainer* m_Second = nullptr;
+
+	float m_SplitRegionPix = 5;
+	bool m_DragActive = false;
 
 	float m_SplitPercentage = 0.2f;
 	UISplitter::Mode m_Mode;

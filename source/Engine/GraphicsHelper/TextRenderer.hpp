@@ -12,6 +12,8 @@ public:
 	void SetFont(SpriteFont* pFont);
 	void SetColor(vec4 color) { m_Color = color; }
 
+	ivec2 GetTextSize(const std::string &text, SpriteFont* pFont);
+
 	void OnWindowResize();
 private:
 
