@@ -23,7 +23,7 @@ private:
 	friend class RenderPipeline;
 	friend class UIPortal;
 #ifdef EDITOR
-	friend class EditorRenderer;
+	friend class Editor;
 #endif
 
 	TextRenderer();

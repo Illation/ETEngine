@@ -55,7 +55,13 @@ InputManager::~InputManager()
 		delete m_KeyMapSdl;
 		m_KeyMapSdl = nullptr;
 	}
+
+	for (auto it = m_CursorMap.begin(); it != m_CursorMap.end(); ++it)
+	{
+		SDL_FreeCursor(it->second);
+	}
 }
+
 //----------------------------
 //MemberFunctions
 //----------------------------
@@ -66,6 +72,19 @@ void InputManager::Init()
 	m_KeyMapOld = new uint8[m_KeyboardLength];
 	m_MouseMapNew = SDL_GetMouseState(NULL, NULL);
 	m_MouseMapOld = m_MouseMapNew;
+
+	m_CursorMap[SDL_SYSTEM_CURSOR_ARROW] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+	m_CursorMap[SDL_SYSTEM_CURSOR_IBEAM] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_IBEAM);
+	m_CursorMap[SDL_SYSTEM_CURSOR_WAIT] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_WAIT);
+	m_CursorMap[SDL_SYSTEM_CURSOR_CROSSHAIR] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
+	m_CursorMap[SDL_SYSTEM_CURSOR_WAITARROW] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_WAITARROW);
+	m_CursorMap[SDL_SYSTEM_CURSOR_SIZENWSE] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENWSE);
+	m_CursorMap[SDL_SYSTEM_CURSOR_SIZENESW] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENESW);
+	m_CursorMap[SDL_SYSTEM_CURSOR_SIZEWE] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE);
+	m_CursorMap[SDL_SYSTEM_CURSOR_SIZENS] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENS);
+	m_CursorMap[SDL_SYSTEM_CURSOR_SIZEALL] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL);
+	m_CursorMap[SDL_SYSTEM_CURSOR_NO] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_NO);
+	m_CursorMap[SDL_SYSTEM_CURSOR_HAND] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
 }
 void InputManager::UpdateEvents()
 {
@@ -108,6 +127,8 @@ void InputManager::UpdateEvents()
 	int32 mPosOldY = m_MousePosY;
 	m_MouseMapNew = SDL_GetMouseState(&m_MousePosX, &m_MousePosY);//Update new Mouse state and position
 	m_MouseMove = vec2((float)(m_MousePosX - mPosOldX), (float)(m_MousePosY- mPosOldY));//maybe divide by screen resolution
+
+	m_MouseConsumed = false;
 }
 //----------------------------
 //Getters
@@ -173,20 +194,41 @@ bool InputManager::IsKeyboardKeyReleased(char key)
 //----------------------------
 bool InputManager::IsMouseButtonPressed(int32 button)
 {
+	if (m_MouseConsumed)return false;
 	return (m_MouseMapNew & SDL_BUTTON(button)) && 
 		!(m_MouseMapOld & SDL_BUTTON(button));
 }
 bool InputManager::IsMouseButtonDown(int32 button)
 {
+	if (m_MouseConsumed)return false;
 	return (m_MouseMapNew & SDL_BUTTON(button)) &&
 		(m_MouseMapOld & SDL_BUTTON(button));
 }
 bool InputManager::IsMouseButtonReleased(int32 button)
 {
+	if (m_MouseConsumed)return false;
 	return !(m_MouseMapNew & SDL_BUTTON(button)) &&
 		(m_MouseMapOld & SDL_BUTTON(button));
 }
 vec2 InputManager::GetMousePosition()
 {
 	return vec2((float)m_MousePosX, (float)m_MousePosY);
+}
+
+void InputManager::SetSystemCursor(SDL_SystemCursor cursor)
+{
+	auto it = m_CursorMap.find(cursor);
+	if(it != m_CursorMap.end())
+	{
+		SDL_SetCursor(it->second);
+	}
+	else
+	{
+		std::cout << "[WARNING] INPUT::SetSystemCursor > cursor not found" << std::endl;
+	}
+}
+
+void InputManager::ConsumeMouse()
+{
+	m_MouseConsumed = true;
 }

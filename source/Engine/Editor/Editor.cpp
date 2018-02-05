@@ -4,6 +4,10 @@
 #include "UI\UIViewport.h"
 #include "UI\UIContainer.h"
 #include "UI\UIComponent.hpp"
+#include "UI\UISplitter.h"
+#include "UI\UIPadding.h"
+#include "SpriteRenderer.hpp"
+#include "TextRenderer.hpp"
 
 #ifdef EDITOR
 
@@ -12,10 +16,10 @@ Editor::Editor()
 	UISplitter* pSplitter = new UISplitter(UISplitter::Mode::HORIZONTAL);
 
 		m_pToolbar = new UIPortal();
-	pSplitter->SetFirst(m_pToolbar);
+	pSplitter->SetFirst(new UIFixedPadding(m_pToolbar, ivec4(5), vec4(vec3(0.15f), 1)));
 
 		m_Viewport = new UIViewport();
-	pSplitter->SetSecond(m_Viewport);
+	pSplitter->SetSecond(new UIFixedPadding(m_Viewport, ivec4(5), vec4(vec3(0.15f), 1)));
 
 	m_Root = pSplitter;
 }
@@ -35,7 +39,11 @@ void Editor::Initialize()
 		UIDynamicBox* pDynBox = new UIDynamicBox(UIDynamicBox::Mode::VERTICAL);
 			pDynBox->AddChild(new UIText("Test Text", m_pEditorFont), UIDynamicBox::Positioning::DYNAMIC);
 			pDynBox->AddChild(new UIText("Another text line", m_pEditorFont), UIDynamicBox::Positioning::DYNAMIC);
-			pDynBox->AddChild(new UIText("and another", m_pEditorFont), UIDynamicBox::Positioning::DYNAMIC);
+			pDynBox->AddChild(
+				//new UIDynamicPadding(
+					new UIText("and another", m_pEditorFont)
+					//, ivec4(5), vec4(vec3(0.35f), 1))
+				, UIDynamicBox::Positioning::DYNAMIC);
 			pDynBox->AddChild(new UISprite(
 				ContentManager::Load<TextureData>("Resources/Textures/starSprite.png")), UIDynamicBox::Positioning::DYNAMIC);
 			pDynBox->AddChild(new UIText("and another", m_pEditorFont), UIDynamicBox::Positioning::DYNAMIC);
@@ -58,7 +66,15 @@ void Editor::Draw()
 {
 	STATE->BindFramebuffer(0);
 	STATE->SetViewport(ivec2(0), WINDOW.EditorDimensions);
-	m_Root->Draw(0);
+	uint16 level = 0;
+	bool draw = true;
+	while (draw)
+	{
+		draw = m_Root->Draw(level);
+		level++;
+		SpriteRenderer::GetInstance()->Draw();
+		TextRenderer::GetInstance()->Draw();
+	}
 }
 
 GLuint Editor::GetSceneTarget()

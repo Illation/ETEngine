@@ -44,6 +44,11 @@ public:
 	vec2 GetMousePosition();
 	vec2 GetMouseMovement() { return m_MouseMove; }
 	vec2 GetMouseWheelDelta() { return m_MouseWheelDelta; }
+
+	void SetSystemCursor(SDL_SystemCursor cursor);
+
+	//For this frame no other user can see mouse events
+	void ConsumeMouse();
 private:
 	friend class AbstractFramework;
 	//----------------------------
@@ -79,7 +84,12 @@ private:
 	uint32 m_MouseMapNew,
 		m_MouseMapOld;
 
+	bool m_MouseConsumed = false;
+
 	vec2 m_MouseWheelDelta = vec2();
+
+	std::map<SDL_SystemCursor, SDL_Cursor*> m_CursorMap;
+
 	//Application flow
 	bool m_ExitRequested = false;
 };
