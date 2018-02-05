@@ -81,6 +81,8 @@ Experimental CSM and SSR
 ![](./screenshots/Lighting.jpg)
 2500 Lights with deferred rendering and Bloom
 ![](./screenshots/DeferredBloom.jpg)
+#### Physics
+![](./screenshots/BulletPhysics.jpg)
 #### Star fields
 ![](./screenshots/MoarStars.jpg)
 ![](./screenshots/Stars.jpg)
