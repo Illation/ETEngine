@@ -9,6 +9,7 @@ class ContextObjects;
 class SceneManager;
 class Gbuffer;
 class PostProcessingRenderer;
+class AudioListenerComponent;
 class Skybox;
 class CubeMap;
 class HDRMap;
@@ -33,6 +34,8 @@ public:
 
 	PhysicsWorld* GetPhysicsWorld() const { return m_pPhysicsWorld; }
 
+	AudioListenerComponent* GetAudioListener() const { return m_AudioListener; }
+	void SetAudioListener(AudioListenerComponent* val) { m_AudioListener = val; }
 protected:
 
 	virtual void Initialize() = 0;
@@ -60,6 +63,8 @@ private:
 	CameraComponent *m_pDefaultCam = nullptr;
 	Time *m_pTime = nullptr;
 	ContextObjects* m_pConObj = nullptr;
+
+	AudioListenerComponent* m_AudioListener = nullptr;
 
 	PhysicsWorld* m_pPhysicsWorld = nullptr;
 

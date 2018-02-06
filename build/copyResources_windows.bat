@@ -18,12 +18,11 @@ ECHO Source Directory: %SOURCE_DIR% ; Output Directory: %OUT_DIR% ; Platform: %P
 IF "%COPY_DLLS%" == "true" (
 	copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\sdl2\SDL2.dll" "%OUT_DIR%\SDL2.dll" /y /D
 	copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\freeImage\FreeImage.dll" "%OUT_DIR%\FreeImage.dll" /y /D
+	copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\openAL\OpenAL32.dll" "%OUT_DIR%\OpenAL32.dll" /y /D
 	IF "%PLATFORM%" == "x32" (
 		copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\assimp\Assimp32.dll" "%OUT_DIR%\Assimp32.dll" /y /D
-		copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\soloud\soloud_x86.dll" "%OUT_DIR%\soloud_x86.dll" /y /D
 	) ELSE (
 		copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\assimp\Assimp64.dll" "%OUT_DIR%\Assimp64.dll" /y /D
-		copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\soloud\soloud_x64.dll" "%OUT_DIR%\soloud_x64.dll" /y /D
 	)
 )
 

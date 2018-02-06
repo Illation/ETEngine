@@ -45,7 +45,7 @@ function platformLibraries()
 		local depPf = path.join(DEP_DIR, p[j] .. "/") 
 
 		configuration { "vs*", p[j] }
-			libdirs { path.join(depPf, "sdl2"),path.join(depPf, "freeImage"), path.join(depPf, "assimp"), path.join(depPf, "soloud") }
+			libdirs { path.join(depPf, "sdl2"),path.join(depPf, "freeImage"), path.join(depPf, "assimp"), path.join(depPf, "openAL") }
 	end
 	configuration {}
 end
@@ -99,7 +99,13 @@ configuration "vs*"
 	flags { "NoIncrementalLink", "NoEditAndContinue" }
 	linkoptions { "/ignore:4221" }
 	defines { "PLATFORM_Win" }
-	includedirs { path.join(DEP_INCLUDE, "sdl2"),path.join(DEP_INCLUDE, "freeImage"), path.join(DEP_INCLUDE, "assimp"), path.join(DEP_INCLUDE, "bullet"), path.join(DEP_INCLUDE, "soloud") }
+	includedirs { 
+		path.join(DEP_INCLUDE, "sdl2"),
+		path.join(DEP_INCLUDE, "freeImage"), 
+		path.join(DEP_INCLUDE, "assimp"), 
+		path.join(DEP_INCLUDE, "bullet"), 
+		path.join(DEP_INCLUDE, "openAL") 
+	}
 	debugdir "$(OutDir)"
 configuration { "vs*", "x32" }
 	flags { "EnableSSE2" }
@@ -153,7 +159,7 @@ project "Demo"
 	windowsPlatformPostBuild()
 
 	--Linked libraries
-    links{ "ETEngine", "SDL2", "FreeImage", "assimp", "BulletDynamics", "BulletCollision", "LinearMath", "soloud" }
+    links{ "ETEngine", "SDL2", "FreeImage", "assimp", "BulletDynamics", "BulletCollision", "LinearMath", "openAL" }
 
 	--additional includedirs
 	local ProjBase = path.join(SOURCE_DIR, "Demo") 

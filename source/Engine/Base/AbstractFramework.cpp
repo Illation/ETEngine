@@ -20,6 +20,7 @@
 #include "FileSystem/FileUtil.h"
 #include "FileSystem/JSONdom.h"
 #include "Physics/PhysicsManager.h"
+#include "Audio/AudioManager.h"
 
 
 void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
@@ -49,6 +50,7 @@ AbstractFramework::~AbstractFramework()
 	SDL_Quit();
 
 	PhysicsManager::GetInstance()->Destroy();
+	AudioManager::GetInstance()->Destroy();
 
 	SceneManager::GetInstance()->DestroyInstance();
 	InputManager::GetInstance()->DestroyInstance();
@@ -146,6 +148,7 @@ void AbstractFramework::LoadConfig()
 				pSet->Window.Resize(resolutions[resIdx].x, resolutions[resIdx].y, false);
 		}
 	}
+	AudioManager::GetInstance()->Initialize();//Initialize Audio
 	PhysicsManager::GetInstance()->Initialize();//Initialize Physics
 	SceneManager::GetInstance();//Initialize SceneManager
 	AddScenes();

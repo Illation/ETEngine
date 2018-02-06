@@ -57,7 +57,8 @@ If you want more details on tests that fail, run the generated executable from a
  
 ## Acknowledgments
 
-Currently used libraries: SDL2, catch, FreeImage, Bullet Physics, GLAD and Assimp
+Currently used libraries: SDL2, catch, FreeImage, Bullet Physics, OpenAL-soft, GLAD and Assimp.
+
 Also a bunch of (modified) code from Eric Brunetons [atmospheric scattering implementation](https://github.com/ebruneton/precomputed_atmospheric_scattering).
 
 for library licenses see Library Licenses.md
