@@ -144,7 +144,11 @@ void PhysicsTestScene::Initialize()
 	CAMERA->GetEntity()->AddComponent(pListener);
 	auto pSource = new AudioSourceComponent();
 	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/testmusic.ogg"));
-	pSource->SetLooping(true);
+	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm0844m.wav"));
+	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm0844s.wav"));
+	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm1644m.wav"));
+	pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm1644s.wav"));
+	//pSource->SetLooping(true);
 	pSource->Play();
 	CAMERA->GetEntity()->AddComponent(pSource);
 

@@ -168,8 +168,11 @@ void Entity::AddComponent(AbstractComponent* pComp)
 	}
 #endif
 
-	m_pComponentVec.push_back(pComp);
 	pComp->m_pEntity = this;
+	if (m_IsInitialized)
+		pComp->RootInitialize();
+
+	m_pComponentVec.push_back(pComp);
 }
 
 void Entity::RemoveComponent(AbstractComponent* pComp)

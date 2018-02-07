@@ -1,5 +1,6 @@
 //Manual Changes
 #pragma warning(push, 0)  
+#pragma warning(disable, 4701)
 //End manual changes
 
 // Ogg Vorbis audio decoder - v1.13b - public domain
@@ -5467,5 +5468,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 //Manual Changes
+#pragma warning(default, 4701)
 #pragma warning(pop)  
 //End manual changes

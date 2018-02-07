@@ -59,7 +59,18 @@ bool AudioManager::TestALError(std::string error)
 	ALCenum alerr = alGetError();				
 	if (alerr != AL_NO_ERROR)
 	{
-		fprintf(stderr, (error + "\n").c_str());		
+		fprintf(stderr, (error + " : ").c_str());
+		switch (alerr) 
+		{
+		case AL_NO_ERROR: fprintf(stderr, "AL_NO_ERROR\n"); break;
+		case AL_INVALID_NAME:  fprintf(stderr, "AL_INVALID_NAME\n");break;
+		case AL_INVALID_ENUM:  fprintf(stderr, "AL_INVALID_ENUM\n");break;
+		case AL_INVALID_VALUE:  fprintf(stderr, "AL_INVALID_VALUE\n");break;
+		case AL_INVALID_OPERATION:  fprintf(stderr, "AL_INVALID_OPERATION\n");break;
+		case AL_OUT_OF_MEMORY:  fprintf(stderr, "AL_OUT_OF_MEMORY\n");break;
+		default:
+			fprintf(stderr, "Unknown error code\n");break;
+		}
 		return true;							
 	}
 	return false;
