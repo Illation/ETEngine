@@ -15,6 +15,7 @@
  * Render Pipeline Object
  * Frustum culling
  * Sprite font rendering
+ * Sprite rendering
  * Primitive renderer
  * GLSL shader preprocessing with includes and vertex / geo / fragment specializations
  
@@ -22,6 +23,7 @@
  * Custom triangle CDLOD
  * Triangle tree with frustum culling
  * Icosphere generation
+ * Star data 
  
 ### General
  * Scenegraph Entity Hirachy 
@@ -33,6 +35,9 @@
  * Custom Maths Library: Vectors, Matrices, Quaternions, Transform and utility functions, Geometry
  * Specific atmoic types
  * Platform agnostic file system
+ * JSON parser
+ * Read engine settings from file
+ * Rigid body Physics with BULLET
 
 ### Integration
  * Project Generation with GENie
@@ -45,32 +50,30 @@
 
 ### Graphics
  * Shadow Mapping
+ * SSR
 
 ### Planets
  * Atmospheric Scattering
  
 ### General
  * UI System
+ * Audio System with OpenAL and audio file loading
  
 ## Backlog
 
 ### Graphics
  * Effects
      * SSAO
-     * SSR
      * AA for deferred rendering (TAA, FXAA)
      * Motion Blur
  * Api / Pipeline
      * Render state is pushed right before draw call
      * Allow better Graphics debugging support by tagging
      * Abstract OpenGL for Shader and Framebuffer
-     * Texture objects handle their own parameters
      * Vulkan??
      * Sorting objects before rendering
      * batching 
-     * Support resizing window
  * UI
-     * Sprite rendering
      * Dynamic font file rasterization (any size)
      * UI Space definition and pipeline stage
  * Utility
@@ -93,16 +96,12 @@
  * Vectorized streets / fields
  * Effects such as Lightning, Aurora Borealis, Atmospheric glow
  * Biome Separation
- * Star data + low res cubemap instead of detailed cubemap
  * Weather particles
  * God rays
  * occlusion culling
  
 ### General
- * Physics Library (PhysX?)
- * Sounds (FMOD?)
  * Serialize Levels
- * Read engine settings from file
  * Packaging system
  * Binary asset file types
  * Debug Overlay

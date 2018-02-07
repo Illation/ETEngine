@@ -4,7 +4,7 @@ Space sim focused engine created from a merge of:
  * my [OpenGL Framework](https://github.com/Illation/GLFramework)
  * my [Planet Renderer](https://github.com/Illation/PlanetRenderer)
  
-Full feature list and backlog here: [LINK](features.md)
+__Full feature list and backlog here: [LINK](features.md)__
 
 ## Build Status
 
@@ -57,7 +57,7 @@ If you want more details on tests that fail, run the generated executable from a
  
 ## Acknowledgments
 
-Currently used libraries: SDL2, catch, FreeImage, Bullet Physics, OpenAL-soft, GLAD and Assimp.
+Currently used libraries: SDL2, catch, FreeImage, Bullet Physics, OpenAL-soft, libogg, libvorbis, GLAD and Assimp.
 
 Also a bunch of (modified) code from Eric Brunetons [atmospheric scattering implementation](https://github.com/ebruneton/precomputed_atmospheric_scattering).
 
