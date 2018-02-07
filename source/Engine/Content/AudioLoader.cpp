@@ -44,6 +44,8 @@ AudioData* AudioLoader::LoadContent(const std::string& assetFile)
 		return nullptr;
 	}
 
+	if (m_ForceMono)ConvertToMono(data);
+
 	ALuint buffer;
 	alGenBuffers(1, &buffer);
 	alBufferData(buffer, data.format, data.data, data.size, data.frequency);
@@ -202,4 +204,20 @@ bool AudioLoader::LoadOggFile(AudioBufferData &bufferData, const std::vector<uin
 
 	return true;
 }
+
+void AudioLoader::ConvertToMono(AudioBufferData &bufferData)
+{
+	switch (bufferData.format)
+	{
+	case AL_FORMAT_STEREO8:
+		ConvertToMono<int8>(bufferData);
+		bufferData.format = AL_FORMAT_MONO8;
+		break;
+	case AL_FORMAT_STEREO16:
+		ConvertToMono<int16>(bufferData);
+		bufferData.format = AL_FORMAT_MONO16;
+		break;
+	}
+}
+
 #pragma warning(default:4996)

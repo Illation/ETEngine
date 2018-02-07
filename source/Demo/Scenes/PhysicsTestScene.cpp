@@ -17,6 +17,8 @@
 #include "..\Engine\Physics\PhysicsWorld.h"
 #include "..\Engine\Components\AudioListenerComponent.h"
 #include "..\Engine\Components\AudioSourceComponent.h"
+#include "..\Engine\Audio\AudioManager.h"
+#include "..\Engine\Content\AudioLoader.h"
 
 PhysicsTestScene::PhysicsTestScene() : AbstractScene("PhysicsTestScene")
 {
@@ -124,40 +126,49 @@ void PhysicsTestScene::Initialize()
 	//Directional
 	auto pModelComp1 = new ModelComponent("Resources/Models/sphere.dae");
 	pModelComp1->SetMaterial(m_pLightMat);
-	auto pLigEntity = new Entity();
-	pLigEntity->AddComponent(pModelComp1);
+	m_pLightEntity = new Entity();
+	m_pLightEntity->AddComponent(pModelComp1);
 	auto pLight = new DirectionalLight(vec3(1, 1, 1), 10.f);
 	pLight->SetShadowEnabled(true);
-	pLigEntity->AddComponent(new LightComponent(pLight));
-	pLigEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
-	pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 1), -etm::PI_DIV4));
-	pLigEntity->GetTransform()->SetPosition(vec3(0, 50, 0));
-	AddEntity(pLigEntity);
+	m_pLightEntity->AddComponent(new LightComponent(pLight));
+	m_pLightEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
+	m_pLightEntity->GetTransform()->Rotate(quat(vec3(1, 0, 1), -etm::PI_DIV4));
+	m_pLightEntity->GetTransform()->SetPosition(vec3(0, 50, 0));
+	AddEntity(m_pLightEntity);
 
 	//Camera
 	//**************************
 	CAMERA->GetTransform()->Translate(vec3(0, 2, 0));
+	m_LightCentralPos = CAMERA->GetTransform()->GetPosition();
 
 	//Audio
 	//**************************
+	AudioManager::GetInstance()->SetDistanceModel(AL_INVERSE_DISTANCE);
+
 	auto pListener = new AudioListenerComponent();
 	CAMERA->GetEntity()->AddComponent(pListener);
+
 	auto pSource = new AudioSourceComponent();
+
+	AudioLoader* pLoader = CONTENT::GetLoader<AudioLoader, AudioData>();
+	pLoader->ForceMono(true);
 	pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/Disfigure-Blank.ogg"));
 	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/testmusic.ogg"));
 	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm0844m.wav"));
 	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm0844s.wav"));
 	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm1644m.wav"));
 	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm1644s.wav"));
+	pLoader->ForceMono(false);
 	pSource->SetLooping(true);
 	pSource->Play();
-	CAMERA->GetEntity()->AddComponent(pSource);
+	m_pLightEntity->AddComponent(pSource);
 
 	SETTINGS->Window.VSync(false);
 }
 
 void PhysicsTestScene::Update()
 {
+	m_pLightEntity->GetTransform()->SetPosition(m_LightCentralPos+vec3(sin(TIME->GetTime()), 0.f, cos(TIME->GetTime()))*m_LightRotDistance);
 	if (INPUT->IsMouseButtonPressed(SDL_BUTTON_RIGHT))
 	{
 		auto pModelComp = new ModelComponent("Resources/Models/sphere.dae");

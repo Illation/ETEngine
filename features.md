@@ -33,11 +33,15 @@
  * Factory Pattern for Content Managment 
  * Performance measurment
  * Custom Maths Library: Vectors, Matrices, Quaternions, Transform and utility functions, Geometry
- * Specific atmoic types
+ * Specific atomic types ( int32, uint16 ... )
  * Platform agnostic file system
  * JSON parser
  * Read engine settings from file
  * Rigid body Physics with BULLET
+ * Audio System with OpenAL
+     * AudioListenerComponent
+     * AudioSourceComponent
+     * Loading .ogg(vorbis) and .wav(pcm) files
 
 ### Integration
  * Project Generation with GENie
@@ -57,7 +61,6 @@
  
 ### General
  * UI System
- * Audio System with OpenAL and audio file loading
  
 ## Backlog
 
@@ -88,7 +91,7 @@
 ### Planets
  * World moves around camera
  * Reference frame system
- * Send back vertices for physicalization
+ * Generate local physics heightfield
  * Clouds / Fog
  * Trees / grass etc
  * Near ground Detail / Detail data

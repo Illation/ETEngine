@@ -5,6 +5,7 @@
 #include "Audio/AudioData.h"
 
 #include "Audio/AudioManager.h"
+#include "Audio/OpenAL_ETM.h"
 
 AudioSourceComponent::~AudioSourceComponent()
 {
@@ -204,7 +205,7 @@ void AudioSourceComponent::SetMaxDistance(float val)
 
 void AudioSourceComponent::Update()
 {
-	vec3 pos = TRANSFORM->GetPosition();
+	vec3 pos = ALvec3(TRANSFORM->GetPosition());
 	alSource3f(m_Source, AL_POSITION, pos.x, pos.y, pos.z);
 	if (AudioManager::GetInstance()->TestALError("AudioSourceComponent set position error"))return;
 
@@ -215,7 +216,7 @@ void AudioSourceComponent::Update()
 
 	if (m_IsDirectional)
 	{
-		vec3 fwd = TRANSFORM->GetForward();
+		vec3 fwd = ALvec3(TRANSFORM->GetForward());
 		alSource3f(m_Source, AL_DIRECTION, fwd.x, fwd.y, fwd.z);
 		if (AudioManager::GetInstance()->TestALError("AudioSourceComponent set direction error"))return;
 	}

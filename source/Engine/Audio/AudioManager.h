@@ -1,5 +1,5 @@
 #pragma once
-#include "Singleton.hpp"
+#include "../Helper/Singleton.hpp"
 
 #include <AL/al.h>
 #include <AL/alc.h>

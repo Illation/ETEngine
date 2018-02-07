@@ -31,5 +31,9 @@ private:
 
 	float m_BlockMass = 0.2f;
 
+	Entity* m_pLightEntity = nullptr;
+	vec3 m_LightCentralPos = vec3(0);
+	float m_LightRotDistance = 1.f;
+
 	SpriteFont* m_pDebugFont = nullptr;
 };

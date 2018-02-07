@@ -4,6 +4,7 @@
 
 #include <AL/al.h>
 #include "Audio/AudioManager.h"
+#include "Audio/OpenAL_ETM.h"
 
 void AudioListenerComponent::SetGain(float val)
 {
@@ -27,7 +28,7 @@ void AudioListenerComponent::Initialize()
 
 void AudioListenerComponent::Update()
 {
-	vec3 pos = TRANSFORM->GetPosition();
+	vec3 pos = ALvec3(TRANSFORM->GetPosition());
 	vec3 vel = pos - m_PrevPos;
 	m_PrevPos = pos;
 
@@ -39,8 +40,8 @@ void AudioListenerComponent::Update()
 	alListener3f(AL_VELOCITY, vel.x, vel.y, vel.z);
 	if (AudioManager::GetInstance()->TestALError("AudioListenerComponent set velocity error"))return;
 
-	vec3 fwd = TRANSFORM->GetForward();
-	vec3 up = TRANSFORM->GetUp();
+	vec3 fwd = ALvec3(TRANSFORM->GetForward());
+	vec3 up = ALvec3(TRANSFORM->GetUp());
 	ALfloat listenerOri[] = { fwd.x, fwd.y, fwd.z, up.x, up.y, up.z };
 
 	alListenerfv(AL_ORIENTATION, listenerOri);
