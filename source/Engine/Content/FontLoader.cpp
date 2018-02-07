@@ -16,7 +16,7 @@ FontLoader::~FontLoader()
 SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 {
 	using namespace std;
-	cout << "Loading Texture: " << assetFile << " . . . ";
+	cout << "Loading Font: " << assetFile << " . . . ";
 
 	File* input = new File( assetFile, nullptr );
 	if(!input->Open( FILE_ACCESS_MODE::Read ))

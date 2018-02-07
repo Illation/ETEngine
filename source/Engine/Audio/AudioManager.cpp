@@ -17,7 +17,7 @@ void AudioManager::Initialize()
 		return;
 	}
 	ALboolean enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
-	if (enumeration = AL_FALSE)
+	if (enumeration == AL_FALSE)
 	{
 		std::cout << "openAL enumeration not supported" << std::endl;
 	}

@@ -15,6 +15,8 @@
 #include "..\Engine\Physics\BulletETM.h"
 #include "..\Engine\SceneGraph\AbstractScene.hpp"
 #include "..\Engine\Physics\PhysicsWorld.h"
+#include "..\Engine\Components\AudioListenerComponent.h"
+#include "..\Engine\Components\AudioSourceComponent.h"
 
 PhysicsTestScene::PhysicsTestScene() : AbstractScene("PhysicsTestScene")
 {
@@ -135,6 +137,16 @@ void PhysicsTestScene::Initialize()
 	//Camera
 	//**************************
 	CAMERA->GetTransform()->Translate(vec3(0, 2, 0));
+
+	//Audio
+	//**************************
+	auto pListener = new AudioListenerComponent();
+	CAMERA->GetEntity()->AddComponent(pListener);
+	auto pSource = new AudioSourceComponent();
+	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/testmusic.ogg"));
+	pSource->SetLooping(true);
+	pSource->Play();
+	CAMERA->GetEntity()->AddComponent(pSource);
 
 	SETTINGS->Window.VSync(false);
 }

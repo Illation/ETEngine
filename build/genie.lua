@@ -186,9 +186,10 @@ project "ETEngine"
 		path.join(SOURCE_DIR, "Engine/**.h"), 
 		path.join(SOURCE_DIR, "Engine/**.glsl"), 
 
-		path.join(SOURCE_DIR, "Engine/**.c"),									--for glad
+		path.join(SOURCE_DIR, "Engine/**.c"),									--for glad and stb vorbis
 	}
-	nopch { path.join(SOURCE_DIR, "Engine/StaticDependancies/glad/glad.c") }	--c code shouldn't use precompiled headers
+	nopch { path.join (SOURCE_DIR, "Engine/StaticDependancies/glad/glad.c"),
+			path.join (SOURCE_DIR, "Engine/StaticDependancies/stb/stb_vorbis.c")	}	--c code shouldn't use precompiled headers
 
 	--additional includedirs
 	local ProjBase = path.join(SOURCE_DIR, "Engine") 

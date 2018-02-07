@@ -7,6 +7,7 @@
 #include "CubeMapLoader.hpp"
 #include "HdrLoader.hpp"
 #include "FontLoader.hpp"
+#include "AudioLoader.h"
 
 std::vector<AbstractLoader*> ContentManager::m_Loaders = std::vector<AbstractLoader*>();
 bool ContentManager::m_IsInitialized = false;
@@ -40,6 +41,7 @@ void ContentManager::Initialize()
 	if(!m_IsInitialized)
 	{
 		m_IsInitialized = true;
+		AddLoader(new AudioLoader());
 		AddLoader(new ShaderLoader());
 		AddLoader(new TextureLoader());
 		AddLoader(new MeshFilterLoader());
