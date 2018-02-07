@@ -49,10 +49,11 @@ AbstractFramework::~AbstractFramework()
 	SDL_GL_DeleteContext(m_GlContext);
 	SDL_Quit();
 
-	PhysicsManager::GetInstance()->Destroy();
-	AudioManager::GetInstance()->Destroy();
-
 	SceneManager::GetInstance()->DestroyInstance();
+
+	PhysicsManager::GetInstance()->DestroyInstance();
+	AudioManager::GetInstance()->DestroyInstance();
+
 	InputManager::GetInstance()->DestroyInstance();
 	Context::GetInstance()->DestroyInstance();
 	

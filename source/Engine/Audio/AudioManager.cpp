@@ -46,14 +46,6 @@ void AudioManager::Initialize()
 	TEST_ERROR("make default context");
 }
 
-void AudioManager::Destroy()
-{
-	m_Device = alcGetContextsDevice(m_Context);
-	alcMakeContextCurrent(NULL);
-	alcDestroyContext(m_Context);
-	alcCloseDevice(m_Device);
-}
-
 bool AudioManager::TestALError(std::string error)
 {
 	ALCenum alerr = alGetError();				
@@ -84,6 +76,10 @@ void AudioManager::SetDistanceModel(ALenum model)
 
 AudioManager::~AudioManager()
 {
+	m_Device = alcGetContextsDevice(m_Context);
+	alcMakeContextCurrent(NULL);
+	alcDestroyContext(m_Context);
+	alcCloseDevice(m_Device);
 }
 
 void AudioManager::ListAudioDevices(const ALCchar *devices)

@@ -4602,9 +4602,12 @@ static int go_to_page_before(stb_vorbis *f, unsigned int limit_offset)
 static int seek_to_sample_coarse(stb_vorbis *f, uint32 sample_number)
 {
    ProbedPage left, right, mid;
+   //Manual Changes to get rid of uninitialized variable warnings
+   mid.last_decoded_sample = 0; mid.page_start = 0; mid.page_end = 0;
    int i, start_seg_with_known_loc, end_pos, page_start;
    uint32 delta, stream_length, padding;
-   double offset, bytes_per_sample;
+   double offset = 0, bytes_per_sample = 0;
+   //End of Manual Changes
    int probe = 0;
 
    // find the last page and validate the target sample

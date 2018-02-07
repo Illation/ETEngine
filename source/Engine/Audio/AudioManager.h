@@ -8,7 +8,6 @@ class AudioManager : public Singleton<AudioManager>
 {
 public:
 	void Initialize();
-	void Destroy();
 
 	bool TestALError(std::string error);
 

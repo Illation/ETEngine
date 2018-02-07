@@ -24,6 +24,9 @@ void PhysicsManager::Destroy()
 	if (!m_IsInitialized)return;
 	m_IsInitialized = false;
 
+	for (auto shape : m_pShapes)delete shape;
+	m_pShapes.clear();
+
 	delete m_pSolver;
 	delete m_pOverlappingPairCache;
 	delete m_pDispatcher;
@@ -39,10 +42,13 @@ btDiscreteDynamicsWorld* PhysicsManager::CreateWorld()
 btBoxShape* PhysicsManager::CreateBoxShape(const vec3 &halfExtents)
 {
 	btBoxShape* box = new btBoxShape(ToBtVec3(halfExtents));
+	m_pShapes.push_back(box);
 	return box;
 }
 
 btSphereShape* PhysicsManager::CreateSphereShape(float radius)
 {
-	return new btSphereShape(btScalar(radius));
+	btSphereShape* sphere = new btSphereShape(btScalar(radius));
+	m_pShapes.push_back(sphere);
+	return sphere;
 }

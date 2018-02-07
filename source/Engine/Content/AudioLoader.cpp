@@ -107,10 +107,21 @@ bool AudioLoader::LoadWavFile(AudioBufferData &bufferData, const std::vector<uin
 	for (uint8 i = 0; i < 4; i++)subChunk2ID += pBinReader->Read<char>();
 	if (subChunk2ID != "data") EXIT_FALSE;
 	uint32 subChunk2Size = pBinReader->Read<uint32>();
-	int32 bufferPos = pBinReader->GetBufferPosition();
+	uint32 bufferPos = (uint32)pBinReader->GetBufferPosition();
 
 	delete pBinReader;
 	pBinReader = nullptr;
+
+	uint8* data = new uint8[subChunk2Size];
+	for (uint32 i = 0; i < subChunk2Size; ++i)
+	{
+		if (i+bufferPos >= (uint32)binaryContent.size())
+		{
+			std::cout << "Unexpected end of wav files binary content" << std::endl; 
+			return false;
+		}
+		data[i] = binaryContent[i+bufferPos];
+	}
 
 	//Format into openAL buffer
 	switch (numChannels)
@@ -133,8 +144,6 @@ bool AudioLoader::LoadWavFile(AudioBufferData &bufferData, const std::vector<uin
 		std::cout << "Only mono and stereo supported by openAL, numChannels: " << numChannels << std::endl; 
 		EXIT_FALSE;
 	}
-	uint8* data = new uint8[subChunk2Size];
-	std::copy(binaryContent.begin() + bufferPos, binaryContent.begin() + bufferPos + subChunk2Size, data);
 	bufferData.data = data;
 	bufferData.size = subChunk2Size;
 	bufferData.frequency = sampleRate;
@@ -156,19 +165,26 @@ bool AudioLoader::LoadOggFile(AudioBufferData &bufferData, const std::vector<uin
 
 	stb_vorbis_info info = stb_vorbis_get_info(vorbis);
 
-	if (info.channels == 2)bufferData.format = AL_FORMAT_STEREO16;
-	else bufferData.format = AL_FORMAT_MONO16;
+	switch (info.channels)
+	{
+	case 1:bufferData.format = AL_FORMAT_MONO16; break;
+	case 2:bufferData.format = AL_FORMAT_STEREO16; break;
+	default:
+		std::cout << "Only mono and stereo supported by openAL, numChannels: " << info.channels << std::endl;
+		stb_vorbis_close(vorbis);
+		return false;
+	}
 	
 	int32 samples = stb_vorbis_stream_length_in_samples(vorbis);
 	const int32 bufferSize = samples * info.channels;
 
-	std::vector<ALshort> pcm(bufferSize);
+	ALshort* pcm = new ALshort[bufferSize];
 	int32  size = 0;
 	int32  result = 0;
 
 	while (size < bufferSize)
 	{
-		result = stb_vorbis_get_samples_short_interleaved(vorbis, info.channels, pcm.data() + size, bufferSize - size);
+		result = stb_vorbis_get_samples_short_interleaved(vorbis, info.channels, pcm + size, bufferSize - size);
 		if (result > 0) size += result*info.channels;
 		else break;
 	}
@@ -178,7 +194,7 @@ bool AudioLoader::LoadOggFile(AudioBufferData &bufferData, const std::vector<uin
 		return false;
 	}
 
-	bufferData.data = pcm.data();
+	bufferData.data = pcm;
 	bufferData.size = size * sizeof(ALshort);
 	bufferData.frequency = info.sample_rate;
 

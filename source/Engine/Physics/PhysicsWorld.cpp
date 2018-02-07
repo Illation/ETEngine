@@ -19,10 +19,10 @@ PhysicsWorld::~PhysicsWorld()
 		{
 			delete pBody->getMotionState();
 		}
-		//m_pWorld->removeCollisionObject(pObj);
+		m_pWorld->removeCollisionObject(pObj);
 		delete pObj;
 	}
-	//delete m_pWorld;
+	delete m_pWorld;
 }
 
 void PhysicsWorld::Initialize()

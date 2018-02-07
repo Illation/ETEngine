@@ -13,10 +13,9 @@ RigidBodyComponent::RigidBodyComponent(bool isStatic)
 
 RigidBodyComponent::~RigidBodyComponent() 
 {
-	//GetEntity()->GetScene()->GetPhysicsWorld()->GetWorld()->removeRigidBody(m_pBody);
-	//btMotionState* ms = m_pBody->getMotionState();
-	//delete m_pBody;
-	//delete ms;
+	GetEntity()->GetScene()->GetPhysicsWorld()->GetWorld()->removeRigidBody(m_pBody);
+	delete m_pBody->getMotionState();
+	delete m_pBody;
 }
 
 void RigidBodyComponent::Initialize()

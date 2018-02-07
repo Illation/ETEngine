@@ -10,6 +10,7 @@ class btDiscreteDynamicsWorld;
 
 class btBoxShape;
 class btSphereShape;
+class btCollisionShape;
 
 class PhysicsManager : public Singleton<PhysicsManager>
 {
@@ -31,6 +32,8 @@ private:
 	btSequentialImpulseConstraintSolver* m_pSolver = nullptr;
 
 	btDiscreteDynamicsWorld* m_pPhysicsWorld = nullptr;
+
+	std::vector<btCollisionShape*> m_pShapes;
 
 private:
 	friend class Singleton<PhysicsManager>;
