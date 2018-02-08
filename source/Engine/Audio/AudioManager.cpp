@@ -1,25 +1,18 @@
 #include "stdafx.hpp"
 #include "AudioManager.h"
 
-#define TEST_ERROR(_msg)				\
-	error = alGetError();				\
-	if (error != AL_NO_ERROR) {			\
-		fprintf(stderr, _msg "\n");		\
-		return;							\
-	}
-
 void AudioManager::Initialize()
 {
 	m_Device = alcOpenDevice(NULL);
 	if (!m_Device)
 	{
-		std::cout << "Error creating openAL device" << std::endl;
+		Logger::Log("Unable to create openAL device", Error);
 		return;
 	}
 	ALboolean enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
 	if (enumeration == AL_FALSE)
 	{
-		std::cout << "openAL enumeration not supported" << std::endl;
+		Logger::Log("OpenAL enumeration not supported", Warning);
 	}
 
 	ListAudioDevices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
@@ -29,21 +22,27 @@ void AudioManager::Initialize()
 	m_Device = alcOpenDevice(defaultDeviceName);
 	if (!m_Device) 
 	{
-		std::cout << "Error unable to open default openAL device" << std::endl;
+		Logger::Log("Unable to open default openAL device", Error);
 		return;
 	}
 	ALCenum error;
 
-	fprintf(stdout, "Device: %s\n", alcGetString(m_Device, ALC_DEVICE_SPECIFIER));
+	Logger::Log(std::string("Chosen device: ") + alcGetString(m_Device, ALC_DEVICE_SPECIFIER));
 	alGetError();
 
 	m_Context = alcCreateContext(m_Device, NULL);
 	if (!alcMakeContextCurrent(m_Context))
 	{
-		std::cout << "Error openAL failed to make default context" << std::endl;
+		Logger::Log("OpenAL failed to make default context", Error);
 		return;
 	}
-	TEST_ERROR("make default context");
+	error = alGetError();				
+	if (error != AL_NO_ERROR) 
+	{
+		Logger::Log("OpenAL failed to make default context", Error);
+		return;
+	}
+	Logger::Log("OpenAL loaded\n");
 }
 
 bool AudioManager::TestALError(std::string error)
@@ -51,18 +50,19 @@ bool AudioManager::TestALError(std::string error)
 	ALCenum alerr = alGetError();				
 	if (alerr != AL_NO_ERROR)
 	{
-		fprintf(stderr, (error + " : ").c_str());
+		std::string alErrorString;
 		switch (alerr) 
 		{
-		case AL_NO_ERROR: fprintf(stderr, "AL_NO_ERROR\n"); break;
-		case AL_INVALID_NAME:  fprintf(stderr, "AL_INVALID_NAME\n");break;
-		case AL_INVALID_ENUM:  fprintf(stderr, "AL_INVALID_ENUM\n");break;
-		case AL_INVALID_VALUE:  fprintf(stderr, "AL_INVALID_VALUE\n");break;
-		case AL_INVALID_OPERATION:  fprintf(stderr, "AL_INVALID_OPERATION\n");break;
-		case AL_OUT_OF_MEMORY:  fprintf(stderr, "AL_OUT_OF_MEMORY\n");break;
+		case AL_NO_ERROR: alErrorString = "AL_NO_ERROR"; break;
+		case AL_INVALID_NAME: alErrorString = "AL_INVALID_NAME";break;
+		case AL_INVALID_ENUM: alErrorString = "AL_INVALID_ENUM";break;
+		case AL_INVALID_VALUE: alErrorString = "AL_INVALID_VALUE";break;
+		case AL_INVALID_OPERATION: alErrorString = "AL_INVALID_OPERATION";break;
+		case AL_OUT_OF_MEMORY: alErrorString = "AL_OUT_OF_MEMORY";break;
 		default:
-			fprintf(stderr, "Unknown error code\n");break;
+			alErrorString = "Unknown error code";break;
 		}
+		Logger::Log(error + " : " + alErrorString, Error);
 		return true;							
 	}
 	return false;
@@ -87,13 +87,12 @@ void AudioManager::ListAudioDevices(const ALCchar *devices)
 	const ALCchar *device = devices, *next = devices + 1;
 	size_t len = 0;
 
-	fprintf(stdout, "Devices list:\n");
-	fprintf(stdout, "----------\n");
-	while (device && *device != '\0' && next && *next != '\0') {
-		fprintf(stdout, "%s\n", device);
+	Logger::Log("OpenAL device list:");
+	while (device && *device != '\0' && next && *next != '\0') 
+	{
+		Logger::Log(std::string("\t")+device);
 		len = strlen(device);
 		device += (len + 1);
 		next += (len + 2);
 	}
-	fprintf(stdout, "----------\n");
 }

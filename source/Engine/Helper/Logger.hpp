@@ -5,7 +5,8 @@ enum LogLevel
 	Info = 0x1,
 	Warning = 0x2,
 	Error = 0x4,
-	FixMe = 0x8
+	FixMe = 0x8, 
+	Verbose = 0x10
 };
 
 class Logger
@@ -49,10 +50,20 @@ private:
 	class ConsoleLogger : public AbstractLogger
 	{
 	public:
-		ConsoleLogger()
+		ConsoleLogger();
+		enum class Color
 		{
-			m_os = &std::cout;
-		}
+			WHITE,
+			RED,
+			GREEN,
+			YELLOW,
+			MAGENTA
+		};
+		void SetColor(ConsoleLogger::Color color);
+	private:
+#ifdef PLATFORM_Win
+		HANDLE m_ConsoleHandle;
+#endif
 	};
 
 	static ConsoleLogger* m_ConsoleLogger;
@@ -61,6 +72,7 @@ private:
 	static uint8 m_BreakBitField;
 public:
 	static void Initialize();
+	static void InitializeDebugOutput();
 	static void Release();
 
 	static void Log(const string& msg, LogLevel level = LogLevel::Info,

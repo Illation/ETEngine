@@ -100,6 +100,7 @@ void AbstractFramework::InitializeSDL()
 
 void AbstractFramework::LoadConfig()
 {
+	Logger::Initialize();
 	Settings* pSet = Settings::GetInstance();//Initialize Game Settings
 
 	File* jsonFile = new File("./config.json", nullptr);
@@ -113,7 +114,7 @@ void AbstractFramework::LoadConfig()
 	JSON::Object* root = parser.GetRoot();
 	if (!root)
 	{
-		std::cout << "unable to read config.json" << std::endl;
+		Logger::Log("unable to read config json", Warning);
 		return;
 	}
 
@@ -211,17 +212,18 @@ void AbstractFramework::InitializeUtilities()
 void AbstractFramework::BindOpenGL()
 {
 	// Check OpenGL properties and create open gl function pointers
-	std::cout << "OpenGL loaded" << std::endl << std::endl;
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
-	std::cout << "Vendor: \t" << glGetString(GL_VENDOR) << std::endl;
-	std::cout << "Renderer:\t" << glGetString(GL_RENDERER) << std::endl;
-	std::cout << "Version:\t" << glGetString(GL_VERSION) << std::endl << std::endl;
+	Logger::Log("OpenGL loaded");
+	Logger::Log("");
+	Logger::Log(std::string("Vendor: \t") + std::string((char*)glGetString(GL_VENDOR)));
+	Logger::Log(std::string("Renderer: \t") + std::string((char*)glGetString(GL_RENDERER)));
+	Logger::Log(std::string("Version: \t") + std::string((char*)glGetString(GL_VERSION)));
+	Logger::Log("");
 }
 
 void AbstractFramework::InitializeDebug()
 {
-	Logger::Initialize();
-	// Enable the debug callback -- is now done by logger
+	Logger::InitializeDebugOutput();
 }
 
 void AbstractFramework::InitializeGame()
