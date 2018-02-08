@@ -38,7 +38,7 @@ void ModelComponent::UpdateMaterial()
 		m_MaterialSet = false;
 		if (m_pMaterial == nullptr)
 		{
-			std::cout << "ModelComponent::UpdateMaterial> material is null\n";
+			LOG("ModelComponent::UpdateMaterial> material is null", Warning);
 			return;
 		}
 		m_pMaterial->Initialize();
@@ -55,7 +55,7 @@ void ModelComponent::Draw()
 {
 	if (m_pMaterial == nullptr)
 	{
-		LOGGER::Log("ModelComponent::Draw> material is null\n", LogLevel::Warning);
+		LOG("ModelComponent::Draw> material is null\n", LogLevel::Warning);
 		return;
 	}
 	if (!(m_pMaterial->IsForwardRendered())) DrawCall();
@@ -64,7 +64,7 @@ void ModelComponent::DrawForward()
 {
 	if (m_pMaterial == nullptr)
 	{
-		LOGGER::Log("ModelComponent::Draw> material is null\n", LogLevel::Warning);
+		LOG("ModelComponent::Draw> material is null\n", LogLevel::Warning);
 		return;
 	}
 	if (m_pMaterial->IsForwardRendered()) DrawCall();

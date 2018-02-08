@@ -17,7 +17,8 @@ PbrPrefilter::~PbrPrefilter()
 
 void PbrPrefilter::Precompute(int32 resolution)
 {
-	std::cout << "Precalculating PBR BRDF LUT . . .";
+	ivec2 logPos = Logger::GetCursorPosition();
+	LOG("Precalculating PBR BRDF LUT . . .");
 	//setup BRDF look up table
 	//************************
 	//Create framebuffer
@@ -55,7 +56,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 
 	glDeleteRenderbuffers(1, &captureRBO);
 	glDeleteFramebuffers(1, &captureFBO);
-	std::cout << " . . . DONE" << std::endl;
+	LOG("Precalculating PBR BRDF LUT . . . . . . DONE", Info, false, logPos);
 }
 
 void PbrPrefilter::PrefilterCube(CubeMap* source, CubeMap* &irradiance, CubeMap* &radiance, int32 resolution, int32 irradianceRes, int32 radianceRes)

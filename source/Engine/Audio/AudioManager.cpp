@@ -6,13 +6,13 @@ void AudioManager::Initialize()
 	m_Device = alcOpenDevice(NULL);
 	if (!m_Device)
 	{
-		Logger::Log("Unable to create openAL device", Error);
+		LOG("Unable to create openAL device", Error);
 		return;
 	}
 	ALboolean enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
 	if (enumeration == AL_FALSE)
 	{
-		Logger::Log("OpenAL enumeration not supported", Warning);
+		LOG("OpenAL enumeration not supported", Warning);
 	}
 
 	ListAudioDevices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
@@ -22,27 +22,27 @@ void AudioManager::Initialize()
 	m_Device = alcOpenDevice(defaultDeviceName);
 	if (!m_Device) 
 	{
-		Logger::Log("Unable to open default openAL device", Error);
+		LOG("Unable to open default openAL device", Error);
 		return;
 	}
 	ALCenum error;
 
-	Logger::Log(std::string("Chosen device: ") + alcGetString(m_Device, ALC_DEVICE_SPECIFIER));
+	LOG(std::string("Chosen device: ") + alcGetString(m_Device, ALC_DEVICE_SPECIFIER));
 	alGetError();
 
 	m_Context = alcCreateContext(m_Device, NULL);
 	if (!alcMakeContextCurrent(m_Context))
 	{
-		Logger::Log("OpenAL failed to make default context", Error);
+		LOG("OpenAL failed to make default context", Error);
 		return;
 	}
 	error = alGetError();				
 	if (error != AL_NO_ERROR) 
 	{
-		Logger::Log("OpenAL failed to make default context", Error);
+		LOG("OpenAL failed to make default context", Error);
 		return;
 	}
-	Logger::Log("OpenAL loaded\n");
+	LOG("OpenAL loaded\n");
 }
 
 bool AudioManager::TestALError(std::string error)
@@ -62,7 +62,7 @@ bool AudioManager::TestALError(std::string error)
 		default:
 			alErrorString = "Unknown error code";break;
 		}
-		Logger::Log(error + " : " + alErrorString, Error);
+		LOG(error + " : " + alErrorString, Error);
 		return true;							
 	}
 	return false;
@@ -87,10 +87,10 @@ void AudioManager::ListAudioDevices(const ALCchar *devices)
 	const ALCchar *device = devices, *next = devices + 1;
 	size_t len = 0;
 
-	Logger::Log("OpenAL device list:");
+	LOG("OpenAL device list:");
 	while (device && *device != '\0' && next && *next != '\0') 
 	{
-		Logger::Log(std::string("\t")+device);
+		LOG(std::string("\t")+device);
 		len = strlen(device);
 		device += (len + 1);
 		next += (len + 2);

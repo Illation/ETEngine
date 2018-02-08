@@ -140,7 +140,7 @@ project "General"
 
 --in future this should be generated for any application running on the engine
 project "Demo"
-	kind "ConsoleApp"
+	kind "WindowedApp"
 
 	location "../source/Demo"
 

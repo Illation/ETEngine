@@ -21,13 +21,16 @@ ShaderLoader::~ShaderLoader()
 
 ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 {
-	cout << "Building Shader: " << assetFile << " . . . ";
+	logPos = Logger::GetCursorPosition();
+	loadingString = std::string("Loading Shader: ") + assetFile + " . . .";
+
+	LOG(loadingString + " . . . reading file          ", Info, false, logPos);
 
 	File* input = new File( assetFile, nullptr );
 	if(!input->Open( FILE_ACCESS_MODE::Read ))
 	{
-		cout << "  . . . FAILED!" << endl;
-		cout << "    Opening shader file failed." << endl;
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG( "    Opening shader file failed." , Warning);
 		return nullptr;
 	}
 	std::string shaderContent = FileUtil::AsText(input->Read());
@@ -35,8 +38,8 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 	input = nullptr;
 	if(shaderContent.size() == 0)
 	{
-		cout << "  . . . FAILED!" << endl;
-		cout << "    Shader file is empty." << endl;
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG( "    Shader file is empty." , Warning);
 		return nullptr;
 	}
 
@@ -85,8 +88,8 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 	ShaderData* pShaderData = new ShaderData(shaderProgram);
 	pShaderData->m_Name = assetFile;
 	pShaderData->m_Uniforms = uniforms;
-	
-	cout << "  . . . SUCCESS!" << endl;
+
+	LOG(loadingString + " . . . SUCCESS!          ", Info, false, logPos);
 	return pShaderData;
 }
 
@@ -105,7 +108,7 @@ GLuint ShaderLoader::CompileShader(const std::string &shaderSourceStr, GLenum ty
 	{
 		char buffer[512];
 		glGetShaderInfoLog(shader, 512, NULL, buffer);
-		cout << "  . . . FAILED!" << endl;
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
 		string sName;
 		switch (type)
 		{
@@ -122,8 +125,8 @@ GLuint ShaderLoader::CompileShader(const std::string &shaderSourceStr, GLenum ty
 			sName = "invalid type";
 			break;
 		}
-		cout << "    Compiling "<< sName << " shader failed." << endl;
-		cout << "    " << buffer << endl;
+		LOG(std::string("    Compiling ") + sName + " shader failed", Warning);
+		LOG(buffer, Warning);
 	}
 
 	return shader;
@@ -146,8 +149,8 @@ bool ShaderLoader::Precompile(std::string &shaderContent, const std::string &ass
 		{
 			if (!(ReplaceInclude(extractedLine, assetFile)))
 			{
-				cout << "  . . . FAILED!" << endl;
-				cout << "    Opening shader file failed." << endl; 
+				LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+				LOG( "    Opening shader file failed." , Warning);
 				return false;
 			}
 		}
@@ -224,9 +227,9 @@ bool ShaderLoader::ReplaceInclude(std::string &line, const std::string &assetFil
 		(lastQ == std::string::npos) ||
 		lastQ <= firstQ)
 	{
-		cout << "  . . . FAILED!" << endl;
-		cout << "    invalid include syntax." << endl;
-		cout << line << endl;
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG( "    invalid include syntax." , Warning);
+		LOG(line, Warning);
 		return false;
 	}
 	firstQ++;
@@ -235,8 +238,8 @@ bool ShaderLoader::ReplaceInclude(std::string &line, const std::string &assetFil
 	File* input = new File( path, nullptr );
 	if(!input->Open( FILE_ACCESS_MODE::Read ))
 	{
-		cout << "  . . . FAILED!" << endl;
-		cout << "    Opening shader file failed." << endl;
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG( "    Opening shader file failed." , Warning);
 		return false;
 	}
 	std::string shaderContent = FileUtil::AsText(input->Read());
@@ -244,8 +247,8 @@ bool ShaderLoader::ReplaceInclude(std::string &line, const std::string &assetFil
 	input = nullptr;
 	if(shaderContent.size() == 0)
 	{
-		cout << "  . . . FAILED!" << endl;
-		cout << "    Shader file is empty." << endl;
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG( "    Shader file is empty." , Warning);
 		return false;
 	}
 	line = "";
@@ -257,8 +260,8 @@ bool ShaderLoader::ReplaceInclude(std::string &line, const std::string &assetFil
 		{
 			if (!(ReplaceInclude(extractedLine, assetFile)))
 			{
-				cout << "  . . . FAILED!" << endl;
-				cout << "    Opening shader file failed." << endl; 
+				LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+				LOG( "    Opening shader file failed." , Warning);
 				return false;
 			}
 		}
@@ -335,7 +338,7 @@ bool ShaderLoader::GetUniformLocations(GLuint shaderProgram, std::map<uint32, Ab
 				pUni = new Uniform<int32>();
 				break;
 			default:
-				std::cout << "unknown uniform type" << std::to_string(type) << std::endl;
+				LOG(std::string("unknown uniform type ") + std::to_string(type), Warning);
 				return false;
 				break;
 			}

@@ -24,5 +24,8 @@ private:
 	bool ReplaceInclude(std::string &line, const std::string &assetFile);
 
 	bool GetUniformLocations(GLuint shaderProgram, std::map<uint32, AbstractUniform*> &uniforms);
+
+	ivec2 logPos;
+	std::string loadingString;
 };
 

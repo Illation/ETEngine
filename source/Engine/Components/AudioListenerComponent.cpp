@@ -21,7 +21,7 @@ void AudioListenerComponent::Initialize()
 	AbstractScene* pScene = GetEntity()->GetScene();
 	if (pScene->GetAudioListener() && pScene->GetAudioListener() != this)
 	{
-		std::cout << "[Warning] Scene already has an audio listener!" << std::endl;
+		LOG("Scene already has an audio listener!", Warning);
 	}
 	GetEntity()->GetScene()->SetAudioListener(this);
 }

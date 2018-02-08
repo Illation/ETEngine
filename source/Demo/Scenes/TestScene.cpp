@@ -191,27 +191,27 @@ void TestScene::Update()
 	{
 		float newRad = m_pLight->GetRadius() * 4;
 		m_pLight->SetRadius(m_pLight->GetRadius()-(newRad-m_pLight->GetRadius())*TIME->DeltaTime());
-		LOGGER::Log("Linear: " + to_string(m_pLight->GetRadius()));
+		LOG("Linear: " + to_string(m_pLight->GetRadius()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_7))
 	{
 		float newRad = m_pLight->GetRadius() * 4;
 		m_pLight->SetRadius(m_pLight->GetRadius()+(newRad-m_pLight->GetRadius())*TIME->DeltaTime());
-		LOGGER::Log("Linear: " + to_string(m_pLight->GetRadius()));
+		LOG("Linear: " + to_string(m_pLight->GetRadius()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_3))
 	{
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;
 		m_pLight->SetBrightness(b-(nB-b)*TIME->DeltaTime());
-		LOGGER::Log("Linear: " + to_string(m_pLight->GetBrightness()));
+		LOG("Linear: " + to_string(m_pLight->GetBrightness()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_9))
 	{
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;
 		m_pLight->SetBrightness(b+(nB-b)*TIME->DeltaTime());
-		LOGGER::Log("Linear: " + to_string(m_pLight->GetBrightness()));
+		LOG("Linear: " + to_string(m_pLight->GetBrightness()));
 	}
 }
 

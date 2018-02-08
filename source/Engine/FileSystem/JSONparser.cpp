@@ -13,7 +13,7 @@ JSON::Parser::Parser(const std::string &textFile)
 		m_Root = ParseObject(textFile);
 		return;
 	}
-	std::cout << "Expected '{' token, parsing JSON failed" << std::endl;
+	LOG("Expected '{' token, parsing JSON failed", Warning);
 }
 
 JSON::Parser::~Parser()
@@ -92,7 +92,7 @@ JSON::Object* JSON::Parser::ParseObject(const std::string & textFile)
 		case JT_EndObject:
 			if(prevDelim)
 			{
-				std::cout << "Expected a new Key Value pair after delimiter" << std::endl;
+				LOG("Expected a new Key Value pair after delimiter", Warning);
 				parseFail = true;
 				continue;
 			}
@@ -102,7 +102,7 @@ JSON::Object* JSON::Parser::ParseObject(const std::string & textFile)
 		{
 			if (prevPair)
 			{
-				std::cout << "Expected a delimiter before new key value pair" << std::endl;
+				LOG("Expected a delimiter before new key value pair", Warning);
 				parseFail = true;
 				continue;
 			}
@@ -120,7 +120,7 @@ JSON::Object* JSON::Parser::ParseObject(const std::string & textFile)
 		case JT_Delim:
 			if (!prevPair)
 			{
-				std::cout << "Expected a new Key Value pair before delimiter" << std::endl;
+				LOG("Expected a new Key Value pair before delimiter", Warning);
 				parseFail = true;
 				continue;
 			}
@@ -135,7 +135,7 @@ JSON::Object* JSON::Parser::ParseObject(const std::string & textFile)
 	if (!parseSuccess)
 	{
 		delete ret;
-		std::cout << "Couldn't successfully parse object" << std::endl;
+		LOG("Couldn't successfully parse object", Warning);
 		return nullptr;
 	}
 	return ret;
@@ -193,7 +193,7 @@ JSON::Value* JSON::Parser::ParseValue(const std::string & textFile)
 		return new JSON::Value();
 	}
 
-	std::cout << "Couldn't successfully parse value, unexpected token" << std::endl;
+	LOG("Couldn't successfully parse value, unexpected token", Warning);
 	return nullptr;
 }
 
@@ -231,7 +231,7 @@ bool JSON::Parser::ParseString(const std::string & textFile, std::string &parsed
 			} 
 			break;
 			default:
-				std::cout << "unexpected symbol after escape character while parsing string" << std::endl;
+				LOG("unexpected symbol after escape character while parsing string", Warning);
 				return false;
 			}
 		}
@@ -262,7 +262,7 @@ JSON::Array* JSON::Parser::ParseArray(const std::string & textFile)
 		case JT_EndArray:
 			if(prevDelim)
 			{
-				std::cout << "Expected a new Key Value pair after delimiter" << std::endl;
+				LOG("Expected a new Key Value pair after delimiter", Warning);
 				parseFail = true;
 				continue;
 			}
@@ -271,7 +271,7 @@ JSON::Array* JSON::Parser::ParseArray(const std::string & textFile)
 		case JT_Delim:
 			if (!prevVal)
 			{
-				std::cout << "Expected a new Key Value pair before delimiter" << std::endl;
+				LOG("Expected a new Key Value pair before delimiter", Warning);
 				parseFail = true;
 				continue;
 			}
@@ -291,7 +291,7 @@ JSON::Array* JSON::Parser::ParseArray(const std::string & textFile)
 				}
 			}
 			else 
-				std::cout << "Expected a delimiter before new Key Value pair" << std::endl;
+				LOG("Expected a delimiter before new Key Value pair", Warning);
 			parseFail = true;
 			continue;
 		}
@@ -299,7 +299,7 @@ JSON::Array* JSON::Parser::ParseArray(const std::string & textFile)
 	if (!parseSuccess)
 	{
 		delete ret;
-		std::cout << "Couldn't successfully parse array" << std::endl;
+		LOG("Couldn't successfully parse array", Warning);
 		return nullptr;
 	}
 	return ret;
@@ -384,7 +384,7 @@ bool JSON::Parser::CheckEOF(const std::string &textFile)
 	if (m_Completed || m_ReadIdx >= (uint32)textFile.size())
 	{
 		m_Completed = true;
-		std::cout << "Reached end of file unexpected" << std::endl;
+		LOG("Reached end of file unexpected", Warning);
 		return true;
 	}
 	return false;

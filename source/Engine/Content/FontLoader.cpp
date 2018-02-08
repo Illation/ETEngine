@@ -15,14 +15,16 @@ FontLoader::~FontLoader()
 
 SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 {
-	using namespace std;
-	cout << "Loading Font: " << assetFile << " . . . ";
+	ivec2 logPos = Logger::GetCursorPosition();
+	std::string loadingString = std::string("Loading Font: ") + assetFile + " . . .";
+
+	LOG(loadingString + " . . . opening file          ", Info, false, logPos);
 
 	File* input = new File( assetFile, nullptr );
 	if(!input->Open( FILE_ACCESS_MODE::Read ))
 	{
-		cout << "  . . . FAILED!" << endl;
-		cout << "    Opening font descriptor file failed." << endl;
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG("    Opening font descriptor file failed.", Warning);
 		return nullptr;
 	}
 	std::vector<uint8> binaryContent = input->Read();
@@ -30,8 +32,8 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	input = nullptr;
 	if(binaryContent.size() == 0)
 	{
-		cout << "  . . . FAILED!" << endl;
-		cout << "    Font descriptor is empty." << endl;
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG("    Font descriptor is empty.", Warning);
 		return nullptr;
 	}
 
@@ -41,7 +43,8 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	if (!pBinReader->Exists())
 	{
 		delete pBinReader;
-		std::cout << " . . . FAILED!\n[ERROR] " << "SpriteFont::Load > Failed to read the assetFile!\nPath: " << assetFile << std::endl;
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG("SpriteFont::Load > Failed to read the assetFile!", Warning);
 
 		return nullptr;
 	}
@@ -56,10 +59,17 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 			}
 		}
 	}
-	if (!valid) { std::cout << " . . . FAILED!\n[ERROR] " << "Font file header invalid!" << std::endl; return nullptr; }
+	if (!valid) 
+	{
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG("Font file header invalid!", Warning);
+		return nullptr;
+	}
 	if (pBinReader->Read<char>() < 3)
 	{
-		std::cout << " . . . FAILED!\n[ERROR] " << "Font version invalid!" << std::endl; return nullptr;
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG("Font version invalid!", Warning);
+		return nullptr;
 	}
 
 	SpriteFont* pFont = new SpriteFont();
@@ -67,6 +77,7 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	//**********
 	// BLOCK 0 *
 	//**********
+	LOG(loadingString + " . . . loading block 0          ", Info, false, logPos);
 	pBinReader->Read<char>();
 	auto Block0Size = pBinReader->Read<int32>();
 	int32 pos = pBinReader->GetBufferPosition();
@@ -84,6 +95,7 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	//**********
 	// BLOCK 1 *
 	//**********
+	LOG(loadingString + " . . . loading block 1          ", Info, false, logPos);
 	pBinReader->Read<char>();
 	auto Block1Size = pBinReader->Read<int32>();
 	pos = pBinReader->GetBufferPosition();
@@ -91,12 +103,12 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	pFont->m_TextureWidth = pBinReader->Read<uint16>();
 	pFont->m_TextureHeight = pBinReader->Read<uint16>();
 	auto pagecount = pBinReader->Read<uint16>();
-	if (pagecount > 1)std::cout << "[ERROR] " <<
-		"SpriteFont::Load > SpriteFont(.fnt): Only one texture per font allowed" << std::endl;
+	if (pagecount > 1) LOG("SpriteFont::Load > SpriteFont(.fnt): Only one texture per font allowed", Warning);
 	pBinReader->SetBufferPosition(pos + Block1Size);
 	//**********
 	// BLOCK 2 *
 	//**********
+	LOG(loadingString + " . . . loading block 2          ", Info, false, logPos);
 	pBinReader->Read<char>();
 	auto Block2Size = pBinReader->Read<int32>();
 	pos = pBinReader->GetBufferPosition();
@@ -107,10 +119,8 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 		pn += cur;
 		cur = pBinReader->Read<char>();
 	}
-	if (pn.size() == 0)std::cout << "[ERROR] " <<
-		"SpriteFont::Load > SpriteFont(.fnt): Invalid Font Sprite [Empty]" << std::endl;
+	if (pn.size() == 0) LOG("SpriteFont::Load > SpriteFont(.fnt): Invalid Font Sprite [Empty]", Warning);
 	auto filepath = assetFile.substr(0, assetFile.rfind('/') + 1);
-	std::cout << std::endl << "\t";
 
 	TextureLoader* pTL = ContentManager::GetLoader<TextureLoader, TextureData>();
 	pTL->ForceResolution(true);
@@ -120,6 +130,7 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	//**********
 	// BLOCK 3 *
 	//**********
+	LOG(loadingString + " . . . loading block 3          ", Info, false, logPos);
 	pBinReader->Read<char>();
 	auto Block3Size = pBinReader->Read<int32>();
 	pos = pBinReader->GetBufferPosition();
@@ -131,12 +142,12 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 		auto charId = (wchar_t)(pBinReader->Read<uint32>());
 		if (!(pFont->IsCharValid(charId)))
 		{
-			std::cout << "[WARNING] " <<
-				"SpriteFont::Load > SpriteFont(.fnt): Invalid Character" << std::endl;
+			LOG("SpriteFont::Load > SpriteFont(.fnt): Invalid Character", Warning);
 			pBinReader->SetBufferPosition(posChar + 20);
 		}
 		else
 		{
+			LOG(loadingString + " . . . loading character: " + (char)charId + "          ", Info, false, logPos);
 			auto metric = &(pFont->GetMetric(charId));
 			metric->IsValid = true;
 			metric->Character = charId;
@@ -164,7 +175,7 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	}
 	delete pBinReader;
 
-	cout << "  . . . SUCCESS!" << endl;
+	LOG(loadingString + " . . . SUCCESS!          ", Info, false, logPos);
 
 	return pFont;
 }

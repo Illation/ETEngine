@@ -45,7 +45,7 @@ bool File::Open(FILE_ACCESS_MODE mode, FILE_ACCESS_FLAGS flags)
 	m_Handle = FILE_BASE::Open( path.c_str(), flags, mode);
 	if (m_Handle == FILE_HANDLE_INVALID) 
 	{
-		std::cerr << "open";
+		LOG("Opening File failed", Error);
 		return false;
 	}
 	m_IsOpen = true;
@@ -64,15 +64,15 @@ std::vector<uint8> File::Read()
 	std::vector<uint8> content;
 	if(!FILE_BASE::ReadFile(m_Handle, content))
 	{
-		//error handling here...
+		LOG("Reading File failed", Error);
 	}
 	return content;
 }
 bool File::Write(const std::vector<uint8> &lhs)
 {
 	if ( !FILE_BASE::WriteFile(m_Handle, lhs) )
-    {
-        std::cerr << "write";
+	{
+		LOG("Writing File failed", Error);
         return false;
     }
 	return true;
@@ -91,7 +91,7 @@ bool File::Delete()
 
 	if(m_IsOpen)
 	{
-        std::cerr << "couldn't delete file because it failed to close";
+		LOG("Couldn't delete file because it failed to close", Error);
 		return false;
 	}
 

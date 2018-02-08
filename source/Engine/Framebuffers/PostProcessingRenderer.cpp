@@ -140,7 +140,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	}
 
 	if(!(glCheckFramebufferStatus( GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE))
-		LOGGER::Log( "Framebuffer>Initialize() FAILED!", LogLevel::Error );
+		LOG( "Framebuffer>Initialize() FAILED!", LogLevel::Error );
 }
 
 void PostProcessingRenderer::EnableInput()
@@ -177,14 +177,13 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 		for (uint32 sample = 0; sample < static_cast<uint32>(GRAPHICS.NumBlurPasses * 2); sample++)
 	#endif
 		{
-			//TODO needs custom ping pong buffer, buffers textures are wrong size
+			// #todo: needs custom ping pong buffer, buffers textures are wrong size
 			bool horizontal = sample % 2 == 0;
 			//output is the current framebuffer, or on the last item the framebuffer of the downsample texture
 			STATE->BindFramebuffer(horizontal ? m_DownPingPongFBO[i] : m_DownSampleFBO[i]);
 			//input is previous framebuffers texture, or on first item the result of downsampling
 			STATE->LazyBindTexture(0, GL_TEXTURE_2D, (horizontal ? m_DownSampleTexture[i] : m_DownPingPongTexture[i])->GetHandle());
 			glUniform1i(m_uHorizontal, horizontal);
-			//std::cout << "horizontal: " << (horizontal ? "true" : "false") << std::endl;
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		}
 	}

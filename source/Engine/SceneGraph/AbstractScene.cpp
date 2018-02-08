@@ -104,7 +104,7 @@ void AbstractScene::RootUpdate()
 		float exposure = m_PostProcessingSettings.exposure;
 		float newExp = exposure * 4.f;
 		exposure += (newExp - exposure)*TIME->DeltaTime();
-		LOGGER::Log("Exposure: " + to_string(exposure));
+		LOG("Exposure: " + to_string(exposure));
 		m_PostProcessingSettings.exposure = exposure;
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_DOWN))
@@ -112,19 +112,19 @@ void AbstractScene::RootUpdate()
 		float exposure = m_PostProcessingSettings.exposure;
 		float newExp = exposure * 4.f;
 		exposure -= (newExp - exposure)*TIME->DeltaTime();
-		LOGGER::Log("Exposure: " + to_string(exposure));
+		LOG("Exposure: " + to_string(exposure));
 		m_PostProcessingSettings.exposure = exposure;
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LEFT) && m_UseSkyBox)
 	{
 		float r = min(max(m_pSkybox->GetRoughness() -TIME->DeltaTime(), 0.f), 1.f);
-		LOGGER::Log("Roughness: " + to_string(r));
+		LOG("Roughness: " + to_string(r));
 		m_pSkybox->SetRoughness(r);
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_RIGHT) && m_UseSkyBox)
 	{
 		float r = min(max(m_pSkybox->GetRoughness() + TIME->DeltaTime(), 0.f), 1.f);
-		LOGGER::Log("Roughness: " + to_string(r));
+		LOG("Roughness: " + to_string(r));
 		m_pSkybox->SetRoughness(r);
 	}
 

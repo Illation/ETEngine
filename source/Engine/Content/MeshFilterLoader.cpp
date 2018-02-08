@@ -20,7 +20,10 @@ MeshFilterLoader::~MeshFilterLoader()
 
 MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 {
-	std::cout << "Loading Mesh: " << assetFile << " . . . ";
+	ivec2 logPos = Logger::GetCursorPosition();
+	std::string loadingString = std::string("Loading Mesh: ") + assetFile + " . . .";
+
+	LOG(loadingString + " . . . assimp reading file          ", Info, false, logPos);
 
 	//Get the assimp mesh
 	auto pImporter = new Assimp::Importer();
@@ -38,22 +41,22 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 		aiProcess_MakeLeftHanded);
 	if (!pAssimpScene)
 	{
-		std::cout << "  . . . FAILED!" << std::endl;
-		std::cout << "	loading scene with assimp failed: " << std::endl;
-		std::cout << pImporter->GetErrorString() << std::endl;
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG("	loading scene with assimp failed: ", Warning);
+		LOG(pImporter->GetErrorString(), Warning);
 		return nullptr;
 	}
 	if (!(pAssimpScene->HasMeshes()))
 	{
-		std::cout << "  . . . FAILED!" << std::endl;
-		std::cout << "	scene found empty" << std::endl;
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG("	scene found empty", Warning);
 		return nullptr;
 	}
 	const aiMesh *pAssimpMesh = pAssimpScene->mMeshes[0];
 	if (!(pAssimpMesh->HasPositions()))
 	{
-		std::cout << "  . . . FAILED!" << std::endl;
-		std::cout << "	mesh found empty" << std::endl;
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG("	mesh found empty", Warning);
 		return nullptr;
 	}
 
@@ -71,6 +74,7 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 	//Get positions
 	if (pAssimpMesh->mNumVertices > 0)
 	{
+		LOG(loadingString + " . . . adding positions          ", Info, false, logPos);
 		pMesh->m_SupportedFlags |= VertexFlags::POSITION;
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
 		{
@@ -83,6 +87,7 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 	//Get indices
 	if (pAssimpMesh->mNumFaces > 0)
 	{
+		LOG(loadingString + " . . . adding indices          ", Info, false, logPos);
 		for (size_t i = 0; i < pAssimpMesh->mNumFaces; i++)
 		{
 			pMesh->m_Indices.push_back((GLuint)(pAssimpMesh->mFaces[i].mIndices[0]));
@@ -90,10 +95,11 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 			pMesh->m_Indices.push_back((GLuint)(pAssimpMesh->mFaces[i].mIndices[2]));
 		}
 	}
-	else std::cout << std::endl << "\t>Warning: No indices found!\n\t\t";
+	else LOG("No indices found!", Warning);
 	//Get normals
 	if (pAssimpMesh->HasNormals())
 	{
+		LOG(loadingString + " . . . adding normals          ", Info, false, logPos);
 		pMesh->m_SupportedFlags |= VertexFlags::NORMAL;
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
 		{
@@ -106,6 +112,7 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 	//Get tangents and bitangents
 	if (pAssimpMesh->HasTangentsAndBitangents())
 	{
+		LOG(loadingString + " . . . adding (bi)tangents          ", Info, false, logPos);
 		pMesh->m_SupportedFlags |= VertexFlags::TANGENT;
 		pMesh->m_SupportedFlags |= VertexFlags::BINORMAL;
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
@@ -123,6 +130,7 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 	//Get vertex colors
 	if (pAssimpMesh->HasVertexColors(0))
 	{
+		LOG(loadingString + " . . . adding vertex colors          ", Info, false, logPos);
 		pMesh->m_SupportedFlags |= VertexFlags::COLOR;
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
 		{
@@ -136,9 +144,9 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 	//Get texture coordinates
 	if (pAssimpMesh->HasTextureCoords(0))
 	{
+		LOG(loadingString + " . . . adding texCoords          ", Info, false, logPos);
 		pMesh->m_SupportedFlags |= VertexFlags::TEXCOORD;
-		if(!(pAssimpMesh->mNumUVComponents[0] == 2))
-			std::cout << std::endl << "\t>Warning: UV dimensions don't match internal layout!\n\t\t";
+		if(!(pAssimpMesh->mNumUVComponents[0] == 2)) LOG("UV dimensions don't match internal layout!", Warning);
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
 		{
 			pMesh->m_TexCoords.push_back(vec2(
@@ -151,7 +159,7 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 
 	//cleanup
 	delete pImporter;
-	std::cout << "  . . . SUCCESS!" << std::endl;
+	LOG(loadingString + " . . . SUCCESS!          ", Info, false, logPos);
 	return pMesh;
 }
 

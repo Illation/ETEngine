@@ -11,8 +11,8 @@ bool Directory::Mount(bool recursive)
 
         if((dp = opendir((GetPath()+m_Filename).c_str())) == NULL)
         {
-			std::cerr << "linux dir '" + GetPath()+m_Filename + "' failed opening" << std::endl;
-				return false;
+			LOG(std::string("linux dir '" + GetPath() + m_Filename + "' failed opening", Error);
+			return false;
         }
 
         while ((dirp = readdir(dp)) != NULL)

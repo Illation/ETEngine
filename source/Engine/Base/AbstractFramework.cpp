@@ -21,6 +21,7 @@
 #include "FileSystem/JSONdom.h"
 #include "Physics/PhysicsManager.h"
 #include "Audio/AudioManager.h"
+#include "Commands.h"
 
 
 void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
@@ -101,6 +102,9 @@ void AbstractFramework::InitializeSDL()
 void AbstractFramework::LoadConfig()
 {
 	Logger::Initialize();
+#ifndef SHIPPING
+	DebugCopyResourceFiles();
+#endif
 	Settings* pSet = Settings::GetInstance();//Initialize Game Settings
 
 	File* jsonFile = new File("./config.json", nullptr);
@@ -114,7 +118,7 @@ void AbstractFramework::LoadConfig()
 	JSON::Object* root = parser.GetRoot();
 	if (!root)
 	{
-		Logger::Log("unable to read config json", Warning);
+		LOG("unable to read config json", Warning);
 		return;
 	}
 
@@ -213,12 +217,12 @@ void AbstractFramework::BindOpenGL()
 {
 	// Check OpenGL properties and create open gl function pointers
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
-	Logger::Log("OpenGL loaded");
-	Logger::Log("");
-	Logger::Log(std::string("Vendor: \t") + std::string((char*)glGetString(GL_VENDOR)));
-	Logger::Log(std::string("Renderer: \t") + std::string((char*)glGetString(GL_RENDERER)));
-	Logger::Log(std::string("Version: \t") + std::string((char*)glGetString(GL_VERSION)));
-	Logger::Log("");
+	LOG("OpenGL loaded");
+	LOG("");
+	LOG(std::string("Vendor: \t") + std::string((char*)glGetString(GL_VENDOR)));
+	LOG(std::string("Renderer: \t") + std::string((char*)glGetString(GL_RENDERER)));
+	LOG(std::string("Version: \t") + std::string((char*)glGetString(GL_VERSION)));
+	LOG("");
 }
 
 void AbstractFramework::InitializeDebug()

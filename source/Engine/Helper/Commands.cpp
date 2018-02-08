@@ -7,7 +7,7 @@ void DebugCopyResourceFiles()
 #ifdef PLATFORM_Win
 	if (IsDebuggerPresent())
 	{
-		std::cout << execConsoleCommand("..\\..\\..\\build\\copyResources_windows.bat ..\\..\\..\\source . x32") << std::endl;
+		LOG(execConsoleCommand("..\\..\\..\\build\\copyResources_windows.bat ..\\..\\..\\source . x32"));
 	}
 #endif
 }

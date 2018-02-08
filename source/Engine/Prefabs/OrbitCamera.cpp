@@ -69,7 +69,6 @@ void OrbitCamera::Update()
 		//auto camRot = camTf->GetRotation();
 		//camTf->Rotate(-camRot);
 
-		//cout << to_string(move) << endl;
 		auto currSpeed = 50;
 		vec3 forward = camTf->GetForward();
 		vec3 right = camTf->GetRight();

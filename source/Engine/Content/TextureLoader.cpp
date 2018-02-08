@@ -13,16 +13,22 @@ TextureLoader::~TextureLoader()
 
 TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 {
-	using namespace std;
-	cout << "Loading Texture: " << assetFile << " . . . ";
+	ivec2 logPos = Logger::GetCursorPosition();
+	std::string loadingString = std::string("Loading Texture: ") + assetFile + " . . .";
+
+	LOG(loadingString + " . . . reading file          ", Info, false, logPos);
 
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 	fif = FreeImage_GetFileType(assetFile.c_str(), 0);
 	if (fif == FIF_UNKNOWN)
 		fif = FreeImage_GetFIFFromFilename(assetFile.c_str());
 	if (fif == FIF_UNKNOWN)
+	{
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
 		return nullptr;
+	}
 
+	LOG(loadingString + " . . . loading file          ", Info, false, logPos);
 	FIBITMAP *pImage(0);
 	if (FreeImage_FIFSupportsReading(fif))
 		pImage = FreeImage_Load(fif, assetFile.c_str());
@@ -35,6 +41,7 @@ TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 		{
 			if (!m_ForceRes)
 			{
+				LOG(loadingString + " . . . rescaling texture          ", Info, false, logPos);
 				FIBITMAP* oldImage = pImage;
 				pImage = FreeImage_Rescale(pImage, (int32)(width*GRAPHICS.TextureScaleFactor), (int32)(height*GRAPHICS.TextureScaleFactor));
 				FreeImage_Unload(oldImage);
@@ -44,16 +51,18 @@ TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 		}
 
 		//Convert into opengl compatible format
+		LOG(loadingString + " . . . formatting texture          ", Info, false, logPos);
 		FreeImage_FlipVertical(pImage);
 		FIBITMAP* oldImage = pImage;
 		pImage = FreeImage_ConvertToType(pImage, FIT_RGBF);
 		FreeImage_Unload(oldImage);
 
+		LOG(loadingString + " . . . uploading texture          ", Info, false, logPos);
 		//Get and validate data pointer
 		uint8* bits = FreeImage_GetBits(pImage);
 		if ((bits == 0) || (width == 0) || (height == 0))
 		{
-			cout << "  . . . FAILED! " << endl;
+			LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
 			return nullptr;
 		}
 
@@ -66,11 +75,11 @@ TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 		TextureParameters params( true );
 		ret->SetParameters( params );
 
-		cout << "  . . . SUCCESS!" << endl;
+		LOG(loadingString + " . . . SUCCESS!          ", Info, false, logPos);
 
 		return ret;
 	}
-	cout << "  . . . FAILED! " << endl;
+	LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
 	return nullptr;
 }
 

@@ -12,9 +12,7 @@ public:
 	{
 		if (m_pReader == nullptr)
 		{
-			std::cout << 
-				"[ERROR] BinaryReader doesn't exist!\nUnable to read binary data..."
-				<< std::endl;
+			LOG("BinaryReader doesn't exist! Unable to read binary data...", Warning);
 			return T();
 		}
 

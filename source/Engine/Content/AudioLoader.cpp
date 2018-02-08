@@ -10,13 +10,15 @@
 
 AudioData* AudioLoader::LoadContent(const std::string& assetFile)
 {
-	cout << "Loading Audio: " << assetFile << " . . . ";
+	ivec2 logPos = Logger::GetCursorPosition();
+	std::string loadingString = std::string("Loading Audio: ") + assetFile + " . . .";
 
+	LOG(loadingString + " . . . reading file!          ", Info, false, logPos);
 	File* input = new File(assetFile, nullptr);
 	if (!input->Open(FILE_ACCESS_MODE::Read))
 	{
-		cout << "  . . . FAILED!" << endl;
-		cout << "    Opening font descriptor file failed." << endl;
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG( "    Opening font descriptor file failed." , Warning);
 		return nullptr;
 	}
 	std::vector<uint8> binaryContent = input->Read();
@@ -26,37 +28,43 @@ AudioData* AudioLoader::LoadContent(const std::string& assetFile)
 
 	bool dataLoaded = false;
 	AudioBufferData data;
-	
+
+	LOG(loadingString + " . . . getting buffer data!   ", Info, false, logPos);
 	if		(extension == "wav") dataLoaded = LoadWavFile(data, binaryContent);
 	else if (extension == "ogg") dataLoaded = LoadOggFile(data, binaryContent);
 	else
 	{
-		cout << "  . . . FAILED!" << endl;
-		cout << "    Cannot load audio data with this extension. Supported exensions:" << endl;
-		cout << "        wav" << endl;
-		cout << "        ogg" << endl;
+		LOG(loadingString + " . . . FAILED!         ", Warning, false, logPos);
+		LOG( "    Cannot load audio data with this extension. Supported exensions:" , Warning);
+		LOG( "        wav" , Warning);
+		LOG( "        ogg" , Warning);
 		return nullptr;
 	}
 	if (!dataLoaded)
 	{
-		cout << "  . . . FAILED!" << endl;
-		cout << "    Failed to load audio buffer data." << endl;
+		LOG(loadingString + " . . . FAILED!         ", Warning, false, logPos);
+		LOG( "    Failed to load audio buffer data." , Warning);
 		return nullptr;
 	}
 
-	if (m_ForceMono)ConvertToMono(data);
+	if (m_ForceMono)
+	{
+		LOG(loadingString + " . . . converting to mono!", Info, false, logPos);
+		ConvertToMono(data);
+	}
 
+	LOG(loadingString + " . . . uploading to buffer!   ", Info, false, logPos);
 	ALuint buffer;
 	alGenBuffers(1, &buffer);
 	alBufferData(buffer, data.format, data.data, data.size, data.frequency);
 	if (AudioManager::GetInstance()->TestALError("Audio Loader alBufferData error"))
 	{
-		cout << "  . . . FAILED!" << endl;
+		LOG(loadingString + " . . . FAILED!         ", Warning, false, logPos);
 		return nullptr;
 	}
 	delete[] data.data;
 
-	cout << "  . . . SUCCESS!" << endl;
+	LOG(loadingString + " . . . SUCCESS!               ", Info, false, logPos);
 	return new AudioData(buffer);
 }
 
@@ -95,7 +103,7 @@ bool AudioLoader::LoadWavFile(AudioBufferData &bufferData, const std::vector<uin
 	uint16 audioFormat = pBinReader->Read<uint16>();
 	if (audioFormat != 1)
 	{
-		std::cout << "Only uncompressed wave files are supported, audio format is: " << audioFormat << std::endl;
+		LOG(std::string("Only uncompressed wave files are supported, audio format is: ") + std::to_string(audioFormat) , Warning);
 		EXIT_FALSE;
 	}
 	uint16 numChannels = pBinReader->Read<uint16>();
@@ -119,7 +127,7 @@ bool AudioLoader::LoadWavFile(AudioBufferData &bufferData, const std::vector<uin
 	{
 		if (i+bufferPos >= (uint32)binaryContent.size())
 		{
-			std::cout << "Unexpected end of wav files binary content" << std::endl; 
+			LOG( "Unexpected end of wav files binary content" , Warning);
 			return false;
 		}
 		data[i] = binaryContent[i+bufferPos];
@@ -133,17 +141,17 @@ bool AudioLoader::LoadWavFile(AudioBufferData &bufferData, const std::vector<uin
 		{
 		case 8:bufferData.format = AL_FORMAT_MONO8; break;
 		case 16:bufferData.format = AL_FORMAT_MONO16; break;
-		default: std::cout << "only 8 and 16 bit formats are supported by openAL, bitSize: " << bitsPerSample << std::endl; EXIT_FALSE;
+		default: LOG(std::string("only 8 and 16 bit formats are supported by openAL, bitSize: ") + std::to_string(bitsPerSample) , Warning); EXIT_FALSE;
 		} break;
 	case 2:
 		switch (bitsPerSample)
 		{
 		case 8:bufferData.format = AL_FORMAT_STEREO8; break;
 		case 16:bufferData.format = AL_FORMAT_STEREO16; break;
-		default: std::cout << "only 8 and 16 bit formats are supported by openAL, bitSize: " << bitsPerSample << std::endl; EXIT_FALSE;
+		default: LOG(std::string("only 8 and 16 bit formats are supported by openAL, bitSize: ") + std::to_string(bitsPerSample) , Warning); EXIT_FALSE;
 		} break;
 	default: 
-		std::cout << "Only mono and stereo supported by openAL, numChannels: " << numChannels << std::endl; 
+		LOG(std::string("Only mono and stereo supported by openAL, numChannels: ") + std::to_string(numChannels) , Warning);
 		EXIT_FALSE;
 	}
 	bufferData.data = data;
@@ -172,7 +180,7 @@ bool AudioLoader::LoadOggFile(AudioBufferData &bufferData, const std::vector<uin
 	case 1:bufferData.format = AL_FORMAT_MONO16; break;
 	case 2:bufferData.format = AL_FORMAT_STEREO16; break;
 	default:
-		std::cout << "Only mono and stereo supported by openAL, numChannels: " << info.channels << std::endl;
+		LOG(std::string("Only mono and stereo supported by openAL, numChannels: ") + std::to_string(info.channels) , Warning);
 		stb_vorbis_close(vorbis);
 		return false;
 	}

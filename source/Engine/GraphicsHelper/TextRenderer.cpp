@@ -93,7 +93,7 @@ ivec2 TextRenderer::GetTextSize(const std::string &text, SpriteFont* pFont)
 			ret.x += metric.AdvanceX;
 			ret.y = max(ret.y, (int32)(metric.Height + metric.OffsetY));
 		}
-		else std::cout << "[WARNING] TextRenderer::GetTextSize>char not suppported for current font" << std::endl;
+		else LOG("TextRenderer::GetTextSize>char not supported for current font", Warning);
 	}
 	return ret;
 }
@@ -114,7 +114,7 @@ void TextRenderer::DrawText(std::string &text, vec2 pos)
 			m_pSpriteFonts[m_ActiveFontIdx]->m_IsAddedToRenderer = true;
 		}
 	}
-	else std::cout << "[WARNING] TextRenderer>DrawText: No active font found!" << std::endl;
+	else LOG("TextRenderer>DrawText: No active font found!", Warning);
 }
 
 void TextRenderer::Draw()
@@ -191,7 +191,7 @@ void TextRenderer::UpdateBuffer()
 
 						totalAdvanceX += metric.AdvanceX;
 					}
-					else std::cout << "[WARNING] TextRenderer::CreateTextVertices>char not suppported for current font" << std::endl;
+					else LOG("TextRenderer::CreateTextVertices>char not supported for current font", Warning);
 				}
 			}
 			pFont->m_BufferSize = (int32)tVerts.size() - pFont->m_BufferStart+1;

@@ -13,7 +13,10 @@ CubeMapLoader::~CubeMapLoader()
 
 CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 {
-	cout << "Loading Cube map: " << assetFile << " . . . " << endl;
+	ivec2 logPos = Logger::GetCursorPosition();
+	std::string loadingString = std::string("Loading Cube map: ") + assetFile + " . . .";
+
+	LOG(loadingString + " . . . generating texture          ", Info, false, logPos);
 	//Get the filenames
 	size_t dotPos = assetFile.find_last_of('.');
 	string filestringBegin = assetFile.substr(0, dotPos);
@@ -34,6 +37,7 @@ CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 	int32 mipNum = 0;
 	for (GLuint i = 0; i < textureFaces.size(); i++)
 	{
+		LOG(loadingString + " . . . loading file          ", Info, false, logPos);
 		FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 		fif = FreeImage_GetFileType(assetFile.c_str(), 0);
 		if (fif == FIF_UNKNOWN)
@@ -46,6 +50,7 @@ CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 			dib = FreeImage_Load(fif, assetFile.c_str());
 		if (dib)
 		{
+			LOG(loadingString + " . . . converting format          ", Info, false, logPos);
 			FreeImage_FlipVertical(dib);
 			FIBITMAP *pImage = FreeImage_ConvertTo24Bits(dib);
 
@@ -54,10 +59,11 @@ CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 			BYTE* bits = FreeImage_GetBits(pImage);
 			if ((bits == 0) || (width == 0) || (height == 0))
 			{
-				cout << "  . . . FAILED! " << endl;
+				LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
 				return nullptr;
 			}
 
+			LOG(loadingString + " . . . uploading to GPU          ", Info, false, logPos);
 			glTexImage2D(
 				GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
 				0, m_UseSrgb ? GL_SRGB : GL_RGB, width, height,
@@ -68,7 +74,7 @@ CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 		}
 		else
 		{
-			cout << "  . . . FAILED! " << endl;
+			LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
 			return nullptr;
 		}
 	}
@@ -83,7 +89,7 @@ CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	cout << "  . . . SUCCESS!" << endl;
+	LOG(loadingString + " . . . SUCCESS!          ", Info, false, logPos);
 	return new CubeMap(texture, width, height, mipNum);
 }
 

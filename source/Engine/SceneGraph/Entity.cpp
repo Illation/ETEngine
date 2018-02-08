@@ -111,16 +111,17 @@ void Entity::AddChild(Entity* pEntity)
 	if (pEntity->m_pParentEntity)
 	{
 		if (pEntity->m_pParentEntity == this)
-			std::cout << "Entity::AddChild > Entity to add is already attached to this parent" << std::endl;
-		else
-			std::cout << "Entity::AddChild > Entity to add is already attached to another GameObject. Detach it from it's current parent before attaching it to another one." << std::endl;
-
+		{
+			LOG("Entity::AddChild > Entity to add is already attached to this parent", Warning);
+			return;
+		}
+		LOG("Entity::AddChild > Entity to add is already attached to another GameObject. Detach it from it's current parent before attaching it to another one.", Warning);
 		return;
 	}
 
 	if (pEntity->m_pParentScene)
 	{
-		std::cout << "Entity::AddChild > Entity is currently attached to a Scene. Detach it from it's current parent before attaching it to another one." << std::endl;
+		LOG("Entity::AddChild > Entity is currently attached to a Scene. Detach it from it's current parent before attaching it to another one.", Warning);
 		return;
 	}
 #endif
@@ -140,7 +141,7 @@ void Entity::RemoveChild(Entity* pEntity)
 #if _DEBUG
 	if (it == m_pChildVec.end())
 	{
-		std::cout<<"GameObject::RemoveChild > GameObject to remove is not attached to this GameObject!"<<std::endl;
+		LOG("GameObject::RemoveChild > GameObject to remove is not attached to this GameObject!", Warning);
 		return;
 	}
 #endif
@@ -154,7 +155,7 @@ void Entity::AddComponent(AbstractComponent* pComp)
 #if _DEBUG
 	if (typeid(*pComp) == typeid(TransformComponent) && HasComponent<TransformComponent>())
 	{
-		std::cout << "GameObject::AddComponent > GameObject can contain only one TransformComponent!"<<std::endl;
+		LOG("GameObject::AddComponent > GameObject can contain only one TransformComponent!", Warning);
 		return;
 	}
 
@@ -162,7 +163,7 @@ void Entity::AddComponent(AbstractComponent* pComp)
 	{
 		if (component == pComp)
 		{
-			std::cout << "GameObject::AddComponent > GameObject already contains this component!" << std::endl;
+			LOG("GameObject::AddComponent > GameObject already contains this component!", Warning);
 			return;
 		}
 	}
@@ -182,13 +183,13 @@ void Entity::RemoveComponent(AbstractComponent* pComp)
 #if _DEBUG
 	if (it == m_pComponentVec.end())
 	{
-		std::cout<<"GameObject::RemoveComponent > Component is not attached to this GameObject!"<<std::endl;
+		LOG("GameObject::RemoveComponent > Component is not attached to this GameObject!", Warning);
 		return;
 	}
 
 	if (typeid(*pComp) == typeid(TransformComponent))
 	{
-		std::cout << "GameObject::RemoveComponent > TransformComponent can't be removed!"<<std::endl;
+		LOG( "GameObject::RemoveComponent > TransformComponent can't be removed!", Warning);
 		return;
 	}
 #endif

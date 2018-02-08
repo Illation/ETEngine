@@ -3,8 +3,6 @@
 
 #include "BinaryReader.hpp"
 
-#include <string>       // std::string
-#include <iostream>     // std::cout
 #include <sstream> 
 
 
@@ -22,7 +20,10 @@ BinaryReader::~BinaryReader(void)
 std::string BinaryReader::ReadLongString()
 {
 	if (m_pReader == nullptr)
-		std::cout << "BinaryReader doesn't exist!\nUnable to read binary data..." << std::endl;
+	{
+		LOG("BinaryReader doesn't exist! Unable to read binary data...", Warning);
+		return "";
+	}
 
 	auto stringLength = Read<uint32>();
 
@@ -39,7 +40,7 @@ std::string BinaryReader::ReadNullString()
 {
 	if (m_pReader == nullptr)
 	{
-		std::cout << "BinaryReader doesn't exist!\nUnable to read binary data..." << std::endl;
+		LOG("BinaryReader doesn't exist! Unable to read binary data...", Warning);
 		return "";
 	}
 
@@ -53,7 +54,10 @@ std::string BinaryReader::ReadNullString()
 std::string BinaryReader::ReadString()
 {
 	if (m_pReader == nullptr)
-		std::cout << "BinaryReader doesn't exist!\nUnable to read binary data..." << std::endl;
+	{
+		LOG("BinaryReader doesn't exist! Unable to read binary data...", Warning);
+		return "";
+	}
 
 	int32 stringLength = (int32)Read<uint8>();
 
@@ -88,7 +92,7 @@ int32 BinaryReader::GetBufferPosition()
 		return static_cast<int32>(m_pReader->tellg());
 	}
 
-	std::cout << "[WARNING] " << L"BinaryReader::GetBufferPosition> m_pReader doesn't exist"<<std::endl;
+	LOG("BinaryReader::GetBufferPosition> m_pReader doesn't exist", Warning);
 	return -1;
 }
 
@@ -100,7 +104,7 @@ bool BinaryReader::SetBufferPosition(int32 pos)
 		return true;
 	}
 
-	std::cout << "[WARNING] " << L"BinaryReader::SetBufferPosition> m_pReader doesn't exist" << std::endl;
+	LOG("BinaryReader::SetBufferPosition> m_pReader doesn't exist", Warning);
 	return false;
 }
 

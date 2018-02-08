@@ -37,7 +37,7 @@ void FrameBuffer::Initialize()
 	GenerateFramebufferTextures();
 
 	if (!(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE))
-		LOGGER::Log("Framebuffer>Initialize() FAILED!", LogLevel::Error);
+		LOG("Framebuffer>Initialize() FAILED!", LogLevel::Error);
 
 	WINDOW.WindowResizeEvent.AddListener( std::bind( &FrameBuffer::ResizeFramebufferTextures, this ) );
 }

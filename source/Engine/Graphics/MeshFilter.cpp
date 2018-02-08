@@ -80,7 +80,7 @@ void MeshFilter::BuildVertexBuffer(Material* pMaterial)
 				FailString += PrintFlags(layoutFlags);
 				FailString += "\nprovided data: "; 
 				FailString += PrintFlags(m_SupportedFlags);FailString += "\n";
-				LOGGER::Log(FailString.c_str(), LogLevel::Error);
+				LOG(FailString.c_str(), LogLevel::Error);
 				return;
 			}
 		}

@@ -89,7 +89,7 @@ inline void Clamp(T& value, T hi, T lo)
 #define SCENE Context::GetInstance()->pScene
 #define SETTINGS Settings::GetInstance()
 #define INPUT InputManager::GetInstance()
-#define LOGGER Logger
+#define LOG(fmt, ...) Logger::Log(fmt, __VA_ARGS__);
 #define CONTENT ContentManager
 #define TRANSFORM GetTransform()
 #define WINDOW Settings::GetInstance()->Window

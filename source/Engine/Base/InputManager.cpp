@@ -224,7 +224,7 @@ void InputManager::SetSystemCursor(SDL_SystemCursor cursor)
 	}
 	else
 	{
-		std::cout << "[WARNING] INPUT::SetSystemCursor > cursor not found" << std::endl;
+		LOG("INPUT::SetSystemCursor > cursor not found", Warning);
 	}
 }
 

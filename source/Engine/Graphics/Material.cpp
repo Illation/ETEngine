@@ -81,7 +81,7 @@ void Material::SpecifyInputLayout()
 					stride * sizeof(GLfloat), (void*)(startPos * sizeof(GLfloat)));
 				startPos += it->second.dataSize;
 			}
-			else LOGGER::Log("Could not bind attribute '" + string(name) + "' to shader: " + m_Shader->GetName(), LogLevel::Error);
+			else LOG("Could not bind attribute '" + string(name) + "' to shader: " + m_Shader->GetName(), LogLevel::Error);
 		}
 	}
 }

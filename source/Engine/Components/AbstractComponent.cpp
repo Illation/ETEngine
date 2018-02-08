@@ -29,7 +29,7 @@ TransformComponent* AbstractComponent::GetTransform() const
 #if _DEBUG
 	if (!m_pEntity)
 	{
-		std::cout << "AbstractComponent::GetTransform() > Failed to retrieve the TransformComponent. GameObject is NULL." << std::endl;
+		LOG("AbstractComponent::GetTransform() > Failed to retrieve the TransformComponent. GameObject is NULL.", Warning);
 		return nullptr;
 	}
 #endif

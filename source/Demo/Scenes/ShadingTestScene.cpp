@@ -120,8 +120,7 @@ void ShadingTestScene::Initialize()
 
 void ShadingTestScene::Update()
 {
-	//LOGGER::Log("FPS: " + to_string(TIME->FPS()));
-	//cout << "FPS: " + to_string(TIME->FPS()) << endl;
+	//LOG("FPS: " + to_string(TIME->FPS()));
 
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_2))
 	{
@@ -146,14 +145,14 @@ void ShadingTestScene::Update()
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;
 		m_pLight->SetBrightness(b - (nB - b)*TIME->DeltaTime());
-		LOGGER::Log("Linear: " + to_string(m_pLight->GetBrightness()));
+		LOG("Linear: " + to_string(m_pLight->GetBrightness()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_9))
 	{
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;
 		m_pLight->SetBrightness(b + (nB - b)*TIME->DeltaTime());
-		LOGGER::Log("Linear: " + to_string(m_pLight->GetBrightness()));
+		LOG("Linear: " + to_string(m_pLight->GetBrightness()));
 	}
 
 	SETTINGS->Window.VSync(true);

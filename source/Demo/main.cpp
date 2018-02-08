@@ -1,17 +1,13 @@
 #include "stdafx.hpp"
 #include "MainFramework.hpp"
-#include "..\Engine\Helper\Commands.h"
 
 void SetDebuggingOptions();
 
-int wmain(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	UNUSED( argc );
 	UNUSED( argv );
 
-#ifndef SHIPPING
-	DebugCopyResourceFiles();
-#endif
 	SetDebuggingOptions();
 
 	MainFramework* pFW = new MainFramework();
