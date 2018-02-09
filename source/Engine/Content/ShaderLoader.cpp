@@ -44,6 +44,7 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 	}
 
 	//Precompile
+	LOG(loadingString + " . . . precompiling          ", Info, false, logPos);
 	bool useGeo = false;
 	bool useFrag = false;
 	std::string vertSource;
@@ -56,21 +57,25 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 
 	std::map<uint32, AbstractUniform*> uniforms;
 	//Compile
+	LOG(loadingString + " . . . compiling vertex          ", Info, false, logPos);
 	GLuint vertexShader = CompileShader(vertSource, GL_VERTEX_SHADER);
 
 	GLuint geoShader = 0;
 	if (useGeo)
 	{
+		LOG(loadingString + " . . . compiling geometry          ", Info, false, logPos);
 		geoShader = CompileShader(geoSource, GL_GEOMETRY_SHADER);
 	}
 
 	GLuint fragmentShader = 0;
 	if (useFrag)
 	{
+		LOG(loadingString + " . . . compiling fragment          ", Info, false, logPos);
 		fragmentShader = CompileShader(fragSource, GL_FRAGMENT_SHADER);
 	}
 
 	//Combine Shaders
+	LOG(loadingString + " . . . linking program         ", Info, false, logPos);
 	GLuint shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	if(useGeo)glAttachShader(shaderProgram, geoShader);
@@ -83,6 +88,7 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 	if (useGeo)glDeleteShader(geoShader);
 	if (useFrag)glDeleteShader(fragmentShader);
 
+	LOG(loadingString + " . . . getting uniforms          ", Info, false, logPos);
 	GetUniformLocations(shaderProgram, uniforms);
 
 	ShaderData* pShaderData = new ShaderData(shaderProgram);
@@ -147,12 +153,14 @@ bool ShaderLoader::Precompile(std::string &shaderContent, const std::string &ass
 		//Includes
 		if (extractedLine.find("#include") != std::string::npos)
 		{
+			LOG(loadingString + " . . . replacing include          ", Info, false, logPos);
 			if (!(ReplaceInclude(extractedLine, assetFile)))
 			{
 				LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
 				LOG( "    Opening shader file failed." , Warning);
 				return false;
 			}
+			LOG(loadingString + " . . . precompiling          ", Info, false, logPos);
 		}
 
 		//Precompile types

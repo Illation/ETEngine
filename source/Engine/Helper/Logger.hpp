@@ -25,6 +25,7 @@ public:
 
 	static void UseTimestampDate(bool val) { m_TimestampDate = val; }
 
+	static bool IsInitialized() { return m_IsInitialized; }
 private:
 	friend class AbstractFramework;
 
@@ -106,6 +107,7 @@ private:
 
 	static uint8 m_BreakBitField;
 	static bool m_TimestampDate;
+	static bool m_IsInitialized;
 
 private:
 	//Disable default constructor and destructor

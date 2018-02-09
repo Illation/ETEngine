@@ -10,6 +10,7 @@ Logger::FileLogger* Logger::m_FileLogger = nullptr;
 Logger::DebugLogger* Logger::m_DebugLogger = nullptr;
 uint8 Logger::m_BreakBitField = LogLevel::Error;
 bool Logger::m_TimestampDate = true;
+bool Logger::m_IsInitialized = false;
 
 Logger::Logger()
 {
@@ -27,6 +28,7 @@ void Logger::Initialize()
 		m_DebugLogger = new DebugLogger();
 	}
 #endif
+	m_IsInitialized = true;
 }
 
 void Logger::InitializeDebugOutput()
@@ -45,6 +47,7 @@ void Logger::Release()
 {
 	SafeDelete(m_ConsoleLogger);
 	SafeDelete(m_FileLogger);
+	SafeDelete(m_DebugLogger);
 }
 
 void Logger::StartFileLogging(const string& fileName)

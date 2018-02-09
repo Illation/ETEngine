@@ -24,14 +24,28 @@
 #include "Commands.h"
 
 
-void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
-	printf("\n*** ");
-	if (fif != FIF_UNKNOWN) {
-		printf("%s Format\n", FreeImage_GetFormatFromFIF(fif));
+void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) 
+{
+	LOG("", Warning)
+	LOG("***", Warning)
+	if (fif != FIF_UNKNOWN) 
+	{
+		LOG(std::string(FreeImage_GetFormatFromFIF(fif)) + " Format", Warning)
 	}
-	printf(message);
-	printf(" ***\n");
+	LOG(message, Warning);
+	LOG("***", Warning)
 }
+
+void quit_SDL_error(const char * message)
+{
+	if (Logger::IsInitialized())
+	{
+		LOG(std::string(message) + ": " + SDL_GetError(), Error);
+	}
+	std::cin.get();
+	exit(2);
+}
+
 AbstractFramework::AbstractFramework()
 {
 }
@@ -64,6 +78,10 @@ AbstractFramework::~AbstractFramework()
 
 void AbstractFramework::Run()
 {
+	Logger::Initialize();//Init logger first because all output depends on it from the start
+#ifndef SHIPPING
+	DebugCopyResourceFiles();
+#endif
 	InitializeSDL();
 	LoadConfig();
 	InitializeWindow();
@@ -101,10 +119,6 @@ void AbstractFramework::InitializeSDL()
 
 void AbstractFramework::LoadConfig()
 {
-	Logger::Initialize();
-#ifndef SHIPPING
-	DebugCopyResourceFiles();
-#endif
 	Settings* pSet = Settings::GetInstance();//Initialize Game Settings
 
 	File* jsonFile = new File("./config.json", nullptr);
