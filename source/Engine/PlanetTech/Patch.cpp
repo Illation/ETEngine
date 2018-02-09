@@ -195,8 +195,7 @@ void Patch::Draw()
 	STATE->BindVertexArray(m_VAO);
 
 	//Draw the object
-	glDrawElementsInstanced(GL_TRIANGLES, (uint32)m_Indices.size(), GL_UNSIGNED_INT, 0, m_NumInstances);
-	PERFORMANCE->m_DrawCalls++;
+	STATE->DrawElementsInstanced(GL_TRIANGLES, (uint32)m_Indices.size(), GL_UNSIGNED_INT, 0, m_NumInstances);
 
 	//unbind vertex array
 	STATE->BindVertexArray(0);

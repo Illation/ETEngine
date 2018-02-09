@@ -45,6 +45,11 @@ public:
 	void BindVertexArray(GLuint vertexArray);
 	void BindBuffer(GLenum target, GLuint buffer);
 
+	//Draw Calls
+	void DrawArrays(GLenum mode, uint32 first, uint32 count);
+	void DrawElements(GLenum mode, uint32 count, GLenum type, const void * indices);
+	void DrawElementsInstanced(GLenum mode, uint32 count, GLenum type, const void * indices, uint32 primcount);
+
 private:
 
 	void EnOrDisAble(bool &state, bool enabled, GLenum glState);

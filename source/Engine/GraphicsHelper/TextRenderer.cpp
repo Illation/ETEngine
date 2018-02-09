@@ -144,8 +144,7 @@ void TextRenderer::Draw()
 			glUniform2f(m_uTexSize, (float)texSize.x, (float)texSize.y);
 
 			//Draw the object
-			glDrawArrays(GL_POINTS, pFont->m_BufferStart, pFont->m_BufferSize);
-			PERFORMANCE->m_DrawCalls++;
+			STATE->DrawArrays(GL_POINTS, pFont->m_BufferStart, pFont->m_BufferSize);
 
 			pFont->m_IsAddedToRenderer = false;
 		}

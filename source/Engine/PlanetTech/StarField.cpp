@@ -84,8 +84,7 @@ void StarField::DrawForward()
 	m_pShader->Upload("uBaseFlux"_hash, m_BaseFlux);
 	m_pShader->Upload("uBaseMag"_hash, m_BaseMag);
 	m_pShader->Upload("uAspectRatio"_hash, WINDOW.GetAspectRatio());
-	glDrawArrays(GL_POINTS, 0, m_DrawnStars);
-	PERFORMANCE->m_DrawCalls++;
+	STATE->DrawArrays(GL_POINTS, 0, m_DrawnStars);
 	STATE->BindVertexArray(0);
 	STATE->SetBlendEnabled(false);
 }

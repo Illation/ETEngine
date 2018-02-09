@@ -58,8 +58,7 @@ primitives::Quad::~Quad()
 void primitives::Quad::Draw()
 {
 	STATE->BindVertexArray(m_VAO);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	PERFORMANCE->m_DrawCalls++;
+	STATE->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	STATE->BindVertexArray(0);
 }
 void primitives::Quad::Initialize()
@@ -93,8 +92,7 @@ primitives::Cube::~Cube()
 void primitives::Cube::Draw()
 {
 	STATE->BindVertexArray(m_VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	PERFORMANCE->m_DrawCalls++;
+	STATE->DrawArrays(GL_TRIANGLES, 0, 36);
 	STATE->BindVertexArray(0);
 }
 void primitives::Cube::Initialize()
@@ -172,8 +170,7 @@ template<int32 level>
 void primitives::IcoSphere<level>::Draw()
 {
 	STATE->BindVertexArray(m_VAO);
-	glDrawArrays(GL_TRIANGLES, 0, m_NumVerts);
-	PERFORMANCE->m_DrawCalls++;
+	STATE->DrawArrays(GL_TRIANGLES, 0, m_NumVerts);
 	STATE->BindVertexArray(0);
 }
 template<int32 level>

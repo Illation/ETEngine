@@ -252,3 +252,21 @@ void RenderState::BindBuffer(GLenum target, GLuint buffer)
 		glBindBuffer(target, buffer);
 	}
 }
+
+void RenderState::DrawArrays(GLenum mode, uint32 first, uint32 count)
+{
+	glDrawArrays(mode, first, count);
+	PERFORMANCE->m_DrawCalls++;
+}
+
+void RenderState::DrawElements(GLenum mode, uint32 count, GLenum type, const void * indices)
+{
+	glDrawElements(mode, count, type, indices);
+	PERFORMANCE->m_DrawCalls++;
+}
+
+void RenderState::DrawElementsInstanced(GLenum mode, uint32 count, GLenum type, const void * indices, uint32 primcount)
+{
+	glDrawElementsInstanced(mode, count, type, indices, primcount);
+	PERFORMANCE->m_DrawCalls++;
+}

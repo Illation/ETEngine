@@ -144,8 +144,7 @@ void SpriteRenderer::Draw()
 		STATE->BindTexture(texData->GetTarget(), texData->GetHandle());
 
 		//Draw
-		glDrawArrays( GL_POINTS, batchOffset, batchSize );
-		PERFORMANCE->m_DrawCalls++;
+		STATE->DrawArrays( GL_POINTS, batchOffset, batchSize );
 
 		batchOffset += batchSize;
 		batchSize = 1;
