@@ -8,8 +8,8 @@
 
 #include "../../Engine/Content/TextureLoader.hpp"
 
-TexPBRMaterial::TexPBRMaterial(string bcPath, string roughPath,
-	string metalPath, string aoPath, string normPath) :
+TexPBRMaterial::TexPBRMaterial(std::string bcPath, std::string roughPath,
+	std::string metalPath, std::string aoPath, std::string normPath) :
 	Material("Shaders/DefPBRMetShader.glsl"),
 	m_TexBCPath(bcPath),
 	m_TexRoughPath(roughPath),

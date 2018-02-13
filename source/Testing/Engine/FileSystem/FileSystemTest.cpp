@@ -1,3 +1,4 @@
+#include "../../../Engine/stdafx.hpp"
 #include <catch.hpp>
 
 #include "../../../Engine/FileSystem/Entry.h"

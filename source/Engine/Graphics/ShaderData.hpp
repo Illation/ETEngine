@@ -50,7 +50,7 @@ public:
 
 	GLuint GetProgram() { return m_ShaderProgram; }
 
-	string GetName() { return m_Name; }
+	std::string GetName() { return m_Name; }
 
 	template<typename T>
 	bool Upload(uint32 uniform, const T &data)const
@@ -71,7 +71,7 @@ private:
 
 	GLuint m_ShaderProgram;
 
-	string m_Name;
+	std::string m_Name;
 
 	std::map<uint32, AbstractUniform*> m_Uniforms;
 };

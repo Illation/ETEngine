@@ -50,7 +50,7 @@ void Logger::Release()
 	SafeDelete(m_DebugLogger);
 }
 
-void Logger::StartFileLogging(const string& fileName)
+void Logger::StartFileLogging(const std::string& fileName)
 {
 	SafeDelete(m_FileLogger);
 
@@ -68,15 +68,15 @@ ivec2 Logger::GetCursorPosition()
 	else return ivec2(-1);
 }
 
-void Logger::Log(const string& msg, LogLevel level, bool timestamp, ivec2 cursorPos)
+void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, ivec2 cursorPos)
 {
 #ifndef _DEBUG
 	if (level&Verbose)return;
 #endif
 
-	stringstream stream;
+	std::stringstream stream;
 
-	stringstream timestampStream;
+	std::stringstream timestampStream;
 	bool genTimestamp = timestamp || m_FileLogger;
 #ifndef SHIPPING
 #ifdef PLATFORM_Win
@@ -271,7 +271,7 @@ ivec2 Logger::ConsoleLogger::GetCursorPosition()
 	return ivec2(-1);
 }
 
-void Logger::DebugLogger::Log(const string& message)
+void Logger::DebugLogger::Log(const std::string& message)
 {
 #ifdef PLATFORM_Win
 	OutputDebugString(message.c_str());

@@ -42,14 +42,14 @@ private:
 	void CalculateTransform();
 
 	//Vertices
-	vector<SpriteVertex> m_Sprites;
+	std::vector<SpriteVertex> m_Sprites;
 	uint32 m_BufferSize = 50;
 	GLuint m_VAO = 0;
 	GLuint m_VBO = 0;
 
 	//Textures
 	TextureData* m_EmptyTex = nullptr;
-	vector<TextureData*> m_Textures;
+	std::vector<TextureData*> m_Textures;
 
 	//Shader and its uniforms
 	ShaderData* m_pShader = nullptr;

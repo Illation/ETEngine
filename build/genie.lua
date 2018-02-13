@@ -216,10 +216,11 @@ project "Testing"
 		debugdir(PROJECT_DIR)
 		includedirs { path.join(DEP_INCLUDE, "catch") }
 		links { "opengl32", "SDL2main" } 
-
+		
 	platformLibraries()
 	staticPlatformLibraries()
+	windowsPlatformPostBuild()
+
+    links{ "ETEngine", "SDL2", "FreeImage", "assimp", "rttr_core" }
 
     files { path.join(SOURCE_DIR, "Testing/**.cpp") }
-
-    links{ "ETEngine", "SDL2", "FreeImage", "assimp" }

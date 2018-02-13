@@ -5,8 +5,8 @@ class TextureData;
 class TexPBRMaterial : public Material
 {
 public:
-	TexPBRMaterial(string bcPath, string roughPath,
-		string metalPath, string aoPath, string normPath);
+	TexPBRMaterial(std::string bcPath, std::string roughPath,
+		std::string metalPath, std::string aoPath, std::string normPath);
 	~TexPBRMaterial();
 
 	void SetSpecular(float spec) { m_Specular = spec; }

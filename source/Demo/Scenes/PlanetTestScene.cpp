@@ -104,18 +104,18 @@ void PlanetTestScene::Update()
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;
 		m_pLight->SetBrightness(b - (nB - b)*TIME->DeltaTime());
-		LOG("Linear: " + to_string(m_pLight->GetBrightness()));
+		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_9))
 	{
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;
 		m_pLight->SetBrightness(b + (nB - b)*TIME->DeltaTime());
-		LOG("Linear: " + to_string(m_pLight->GetBrightness()));
+		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
 	}
 
 	//Calculate far plane based on planet
-	float radius = max(m_pPlanet->GetRadius() + m_pPlanet->GetMaxHeight(), m_pPlanet->GetRadius() + m_pPlanet->GetAtmosphereHeight());
+	float radius = std::max(m_pPlanet->GetRadius() + m_pPlanet->GetMaxHeight(), m_pPlanet->GetRadius() + m_pPlanet->GetAtmosphereHeight());
 	float altitude = etm::distance(m_pPlanet->GetTransform()->GetPosition(), CAMERA->GetTransform()->GetPosition()) - m_pPlanet->GetRadius();
 	CAMERA->SetFarClippingPlane((sqrtf(powf(m_pPlanet->GetRadius() + altitude, 2) - powf(m_pPlanet->GetRadius(), 2)) +
 		sqrtf(powf(radius, 2) - powf(m_pPlanet->GetRadius(), 2)))*10);

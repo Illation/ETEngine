@@ -22,10 +22,10 @@ iRect UIDynamicBox::CalculateDimensions( const ivec2 &worldPos )
 	for(auto child : m_RelativeChildren)
 	{
 		iRect childDim = child->CalculateDimensions( ret.pos );
-		minCorner.x = min( minCorner.x, childDim.pos.x );
-		minCorner.y = min( minCorner.y, childDim.pos.y );
-		maxCorner.x = max( maxCorner.x, childDim.pos.x + childDim.size.x );
-		maxCorner.y = max( maxCorner.y, childDim.pos.y + childDim.size.y );
+		minCorner.x = std::min( minCorner.x, childDim.pos.x );
+		minCorner.y = std::min( minCorner.y, childDim.pos.y );
+		maxCorner.x = std::max( maxCorner.x, childDim.pos.x + childDim.size.x );
+		maxCorner.y = std::max( maxCorner.y, childDim.pos.y + childDim.size.y );
 	}
 
 	ivec2 posOffset = ret.pos;
@@ -37,11 +37,11 @@ iRect UIDynamicBox::CalculateDimensions( const ivec2 &worldPos )
 		{
 		case Mode::HORIZONTAL:
 			posOffset.x += childSize.x;
-			m_Rect.size.y = max(m_Rect.size.y, childSize.y);
+			m_Rect.size.y = std::max(m_Rect.size.y, childSize.y);
 			break;
 		case Mode::VERTICAL:
 			posOffset.y += childSize.y;
-			m_Rect.size.x = max(m_Rect.size.x, childSize.x);
+			m_Rect.size.x = std::max(m_Rect.size.x, childSize.x);
 			break;
 		}
 	}
@@ -57,10 +57,10 @@ iRect UIDynamicBox::CalculateDimensions( const ivec2 &worldPos )
 	}
 
 	//Combine relative and dynamic for final size calculation
-	minCorner.x = min( minCorner.x, m_Rect.pos.x );
-	minCorner.y = min( minCorner.y, m_Rect.pos.y );
-	maxCorner.x = max( maxCorner.x, m_Rect.pos.x + m_Rect.size.x );
-	maxCorner.y = max( maxCorner.y, m_Rect.pos.y + m_Rect.size.y );
+	minCorner.x = std::min( minCorner.x, m_Rect.pos.x );
+	minCorner.y = std::min( minCorner.y, m_Rect.pos.y );
+	maxCorner.x = std::max( maxCorner.x, m_Rect.pos.x + m_Rect.size.x );
+	maxCorner.y = std::max( maxCorner.y, m_Rect.pos.y + m_Rect.size.y );
 	m_Rect.pos = minCorner;
 	m_Rect.size = maxCorner - minCorner;
 	ret.pos = m_Rect.pos + m_WorldPos;

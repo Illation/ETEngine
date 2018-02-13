@@ -9,7 +9,7 @@
 #include "../Content/HdrLoader.hpp"
 #include "../Components/TransformComponent.hpp"
 
-SkyboxMaterial::SkyboxMaterial(string assetFile):
+SkyboxMaterial::SkyboxMaterial(std::string assetFile):
 	Material("Shaders/FwdSkyboxShader.glsl"),
 	m_AssetFile(assetFile)
 {

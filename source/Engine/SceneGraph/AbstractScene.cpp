@@ -104,7 +104,7 @@ void AbstractScene::RootUpdate()
 		float exposure = m_PostProcessingSettings.exposure;
 		float newExp = exposure * 4.f;
 		exposure += (newExp - exposure)*TIME->DeltaTime();
-		LOG("Exposure: " + to_string(exposure));
+		LOG("Exposure: " + std::to_string(exposure));
 		m_PostProcessingSettings.exposure = exposure;
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_DOWN))
@@ -112,19 +112,19 @@ void AbstractScene::RootUpdate()
 		float exposure = m_PostProcessingSettings.exposure;
 		float newExp = exposure * 4.f;
 		exposure -= (newExp - exposure)*TIME->DeltaTime();
-		LOG("Exposure: " + to_string(exposure));
+		LOG("Exposure: " + std::to_string(exposure));
 		m_PostProcessingSettings.exposure = exposure;
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LEFT) && m_UseSkyBox)
 	{
-		float r = min(max(m_pSkybox->GetRoughness() -TIME->DeltaTime(), 0.f), 1.f);
-		LOG("Roughness: " + to_string(r));
+		float r = std::min(std::max(m_pSkybox->GetRoughness() -TIME->DeltaTime(), 0.f), 1.f);
+		LOG("Roughness: " + std::to_string(r));
 		m_pSkybox->SetRoughness(r);
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_RIGHT) && m_UseSkyBox)
 	{
-		float r = min(max(m_pSkybox->GetRoughness() + TIME->DeltaTime(), 0.f), 1.f);
-		LOG("Roughness: " + to_string(r));
+		float r = std::min(std::max(m_pSkybox->GetRoughness() + TIME->DeltaTime(), 0.f), 1.f);
+		LOG("Roughness: " + std::to_string(r));
 		m_pSkybox->SetRoughness(r);
 	}
 
@@ -158,7 +158,7 @@ void AbstractScene::SetActiveCamera(CameraComponent* pCamera)
 
 std::vector<LightComponent*> AbstractScene::GetLights()
 {
-	vector<LightComponent*> ret;
+	std::vector<LightComponent*> ret;
 	for (auto *pEntity : m_pEntityVec)
 	{
 		auto entityLights = pEntity->GetComponents<LightComponent>();
@@ -173,7 +173,7 @@ const PostProcessingSettings& AbstractScene::GetPostProcessingSettings() const
 	return m_PostProcessingSettings;
 }
 
-void AbstractScene::SetSkybox(string assetFile)
+void AbstractScene::SetSkybox(std::string assetFile)
 {
 	m_UseSkyBox = true;
 	SafeDelete(m_pSkybox);

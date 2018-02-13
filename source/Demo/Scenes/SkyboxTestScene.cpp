@@ -105,14 +105,14 @@ void SkyboxTestScene::Update()
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;
 		m_pLight->SetBrightness(b - (nB - b)*TIME->DeltaTime());
-		LOG("Linear: " + to_string(m_pLight->GetBrightness()));
+		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_9))
 	{
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;
 		m_pLight->SetBrightness(b + (nB - b)*TIME->DeltaTime());
-		LOG("Linear: " + to_string(m_pLight->GetBrightness()));
+		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
 	}
 }
 

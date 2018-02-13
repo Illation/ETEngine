@@ -75,7 +75,7 @@ void MeshFilter::BuildVertexBuffer(Material* pMaterial)
 			if (m_SupportedFlags & it->first)stride += it->second.dataSize;//filter can provide this data
 			else
 			{
-				string FailString = "Failed to build vertex buffer, mesh filter cannot provide required data\n";
+				std::string FailString = "Failed to build vertex buffer, mesh filter cannot provide required data\n";
 				FailString += "required data: "; 
 				FailString += PrintFlags(layoutFlags);
 				FailString += "\nprovided data: "; 
