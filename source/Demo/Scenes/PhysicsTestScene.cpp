@@ -163,13 +163,13 @@ void PhysicsTestScene::Initialize()
 	pSource->Play();
 	m_pLightEntity->AddComponent(pSource);
 
-	vec3 testVec = vec3(1, 2, 3);
-	LOG(testVec);
-	rttr::property prop = rttr::type::get(testVec).get_property("x");
-	rttr::variant vec_value = prop.get_value(testVec);
-	LOG(std::to_string(vec_value.get_value<float>()));
-	prop.set_value(testVec, 3);
-	LOG(testVec);
+	//vec3 testVec = vec3(1, 2, 3);
+	//LOG(testVec);
+	//rttr::property prop = rttr::type::get(testVec).get_property("x");
+	//rttr::variant vec_value = prop.get_value(testVec);
+	//LOG(std::to_string(vec_value.get_value<float>()));
+	//prop.set_value(testVec, 3);
+	//LOG(testVec);
 
 	SETTINGS->Window.VSync(false);
 }
