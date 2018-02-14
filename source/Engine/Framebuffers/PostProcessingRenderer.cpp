@@ -45,6 +45,7 @@ void PostProcessingRenderer::Initialize()
 	m_pDownsampleShader = ContentManager::Load<ShaderData>("Shaders/PostDownsample.glsl");
 	m_pGaussianShader = ContentManager::Load<ShaderData>("Shaders/PostGaussian.glsl");
 	m_pPostProcShader = ContentManager::Load<ShaderData>("Shaders/PostProcessing.glsl");
+	m_pFXAAShader = ContentManager::Load<ShaderData>("Shaders/PostFXAA.glsl");
 
 	//Access shader variables
 	STATE->SetShader(m_pDownsampleShader);
@@ -65,6 +66,10 @@ void PostProcessingRenderer::Initialize()
 	m_uExposure = glGetUniformLocation(m_pPostProcShader->GetProgram(), "exposure");
 	m_uGamma = glGetUniformLocation(m_pPostProcShader->GetProgram(), "gamma");
 	m_uBloomMult = glGetUniformLocation(m_pPostProcShader->GetProgram(), "bloomMult");
+
+	STATE->SetShader(m_pFXAAShader);
+	glUniform1i(glGetUniformLocation(m_pFXAAShader->GetProgram(), "texColor"), 0);
+	m_uInverseScreen = glGetUniformLocation(m_pFXAAShader->GetProgram(), "uInverseScreen");
 
 	GenerateFramebuffers();
 
@@ -204,7 +209,16 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 		horizontal = !horizontal;
 	}
 	//combine with hdr result
-	STATE->BindFramebuffer(FBO);
+	bool useFXAA = false;
+	if (useFXAA)
+	{
+		// use the second pingpong fbo to store FXAA
+		STATE->BindFramebuffer(m_PingPongFBO[2]);
+	}
+	else
+	{
+		STATE->BindFramebuffer(FBO);
+	}
 	STATE->SetShader(m_pPostProcShader);
 	STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_CollectTex->GetHandle());
 	STATE->LazyBindTexture(1, GL_TEXTURE_2D, m_PingPongTexture[0]->GetHandle());
@@ -216,6 +230,14 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	glUniform1f(m_uGamma, settings.gamma);
 	glUniform1f(m_uBloomMult, settings.bloomMult);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	if (useFXAA)
+	{
+		STATE->BindFramebuffer(FBO);
+		STATE->SetShader(m_pFXAAShader);
+		glUniform2f(m_uInverseScreen, 1.f/(float)WINDOW.Width, 1.f/(float)WINDOW.Height);
+		STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_PingPongTexture[1]->GetHandle());
+		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	}
 }
 
 void PostProcessingRenderer::ResizeFBTextures()

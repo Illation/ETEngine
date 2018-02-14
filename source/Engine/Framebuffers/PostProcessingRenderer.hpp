@@ -30,6 +30,7 @@ private:
 	ShaderData* m_pDownsampleShader;
 	ShaderData* m_pGaussianShader;
 	ShaderData* m_pPostProcShader;
+	ShaderData* m_pFXAAShader;
 
 	GLuint m_CollectFBO;
 	TextureData* m_CollectTex = nullptr;
@@ -52,4 +53,6 @@ private:
 	GLuint m_uGamma;
 	GLuint m_uBloomMult;
 	GLint m_uThreshold;
+
+	GLint m_uInverseScreen;
 };
