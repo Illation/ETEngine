@@ -198,6 +198,11 @@ void PhysicsTestScene::Update()
 
 		pRBComp->ApplyImpulse(bDir*m_SphereForce);
 	}
+
+	if (INPUT->IsKeyboardKeyPressed('X'))
+	{
+		GRAPHICS.UseFXAA = !(GRAPHICS.UseFXAA);
+	}
 }
 
 void PhysicsTestScene::Draw()

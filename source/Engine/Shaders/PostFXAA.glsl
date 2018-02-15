@@ -22,6 +22,10 @@
 	#define EDGE_THRESHOLD_MIN 0.0312
 	#define EDGE_THRESHOLD_MAX 0.125
 
+	const int ITERATIONS = 12;
+	const float QUALITY[ITERATIONS] = float[](1.0, 1.0, 1.0, 1.0, 1.0, 1.5, 2.0, 2.0, 2.0, 2.0, 4.0, 8.0);
+	const float SUBPIXEL_QUALITY = 0.75;
+
 	float rgb2luma(vec3 rgb)
 	{
 		return sqrt(dot(rgb, vec3(0.299, 0.587, 0.114)));
@@ -153,13 +157,13 @@
 				// If needed, read luma in 1st direction, compute delta.
 				if(!reached1)
 				{
-					lumaEnd1 = rgb2luma(texture(screenTexture, uv1).rgb);
+					lumaEnd1 = rgb2luma(texture(texColor, uv1).rgb);
 					lumaEnd1 = lumaEnd1 - lumaLocalAverage;
 				}
 				// If needed, read luma in opposite direction, compute delta.
 				if(!reached2)
 				{
-					lumaEnd2 = rgb2luma(texture(screenTexture, uv2).rgb);
+					lumaEnd2 = rgb2luma(texture(texColor, uv2).rgb);
 					lumaEnd2 = lumaEnd2 - lumaLocalAverage;
 				}
 				// If the luma deltas at the current extremities is larger than the local gradient, we have reached the side of the edge.
@@ -170,11 +174,11 @@
 				// If the side is not reached, we continue to explore in this direction, with a variable quality.
 				if(!reached1)
 				{
-					uv1 -= offset * QUALITY(i);
+					uv1 -= offset * QUALITY[i];
 				}
 				if(!reached2)
 				{
-					uv2 += offset * QUALITY(i);
+					uv2 += offset * QUALITY[i];
 				}
 
 				// If both sides have been reached, stop the exploration.
@@ -229,7 +233,7 @@
 		}
 
 		// Read the color at the new UV coordinates, and use it.
-		vec3 finalColor = texture(screenTexture,finalUv).rgb;
+		vec3 finalColor = texture(texColor,finalUv).rgb;
 
 		outColor = vec4(finalColor, 1);
 	}

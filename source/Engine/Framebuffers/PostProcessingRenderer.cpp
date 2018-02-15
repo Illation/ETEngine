@@ -209,11 +209,10 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 		horizontal = !horizontal;
 	}
 	//combine with hdr result
-	bool useFXAA = false;
-	if (useFXAA)
+	if (GRAPHICS.UseFXAA)
 	{
 		// use the second pingpong fbo to store FXAA
-		STATE->BindFramebuffer(m_PingPongFBO[2]);
+		STATE->BindFramebuffer(m_PingPongFBO[1]);
 	}
 	else
 	{
@@ -230,7 +229,8 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	glUniform1f(m_uGamma, settings.gamma);
 	glUniform1f(m_uBloomMult, settings.bloomMult);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
-	if (useFXAA)
+	//FXAA
+	if (GRAPHICS.UseFXAA)
 	{
 		STATE->BindFramebuffer(FBO);
 		STATE->SetShader(m_pFXAAShader);
