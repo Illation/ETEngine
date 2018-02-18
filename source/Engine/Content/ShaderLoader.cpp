@@ -167,23 +167,23 @@ bool ShaderLoader::Precompile(std::string &shaderContent, const std::string &ass
 		switch (state)
 		{
 		case INIT:
-			if (extractedLine.find("<VERTEX>") != string::npos)
+			if (extractedLine.find("<VERTEX>") != std::string::npos)
 			{
 				state = ParseState::VERT;
 			}
-			if (extractedLine.find("<GEOMETRY>") != string::npos)
+			if (extractedLine.find("<GEOMETRY>") != std::string::npos)
 			{
 				useGeo = true;
 				state = ParseState::GEO;
 			}
-			if (extractedLine.find("<FRAGMENT>") != string::npos)
+			if (extractedLine.find("<FRAGMENT>") != std::string::npos)
 			{
 				state = ParseState::FRAG;
 				useFrag = true;
 			}
 			break;
 		case VERT:
-			if (extractedLine.find("</VERTEX>") != string::npos)
+			if (extractedLine.find("</VERTEX>") != std::string::npos)
 			{
 				state = ParseState::INIT;
 				break;
@@ -192,7 +192,7 @@ bool ShaderLoader::Precompile(std::string &shaderContent, const std::string &ass
 			vertSource += "\n";
 			break;
 		case GEO:
-			if (extractedLine.find("</GEOMETRY>") != string::npos)
+			if (extractedLine.find("</GEOMETRY>") != std::string::npos)
 			{
 				state = ParseState::INIT;
 				break;
@@ -201,12 +201,12 @@ bool ShaderLoader::Precompile(std::string &shaderContent, const std::string &ass
 			geoSource += "\n";
 			break;
 		case FRAG:
-			if (extractedLine.find("</FRAGMENT>") != string::npos)
+			if (extractedLine.find("</FRAGMENT>") != std::string::npos)
 			{
 				state = ParseState::INIT;
 				break;
 			}
-			else if (extractedLine.find("#disable") != string::npos)
+			else if (extractedLine.find("#disable") != std::string::npos)
 			{
 				useFrag = false;
 				state = ParseState::INIT;
@@ -226,7 +226,7 @@ bool ShaderLoader::ReplaceInclude(std::string &line, const std::string &assetFil
 	std::string basePath = "";
 	uint32 lastFS = (uint32)assetFile.rfind("/");
 	uint32 lastBS = (uint32)assetFile.rfind("\\");
-	uint32 lastS = static_cast<uint32>(max((int32)lastFS, (int32)lastBS));
+	uint32 lastS = static_cast<uint32>(std::max((int32)lastFS, (int32)lastBS));
 	if(!(lastS == std::string::npos))basePath = assetFile.substr(0, lastS) + "/";
 
 	uint32 firstQ = (uint32)line.find("\"");

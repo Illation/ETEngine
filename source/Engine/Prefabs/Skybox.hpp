@@ -8,7 +8,7 @@ class CubeMap;
 class Skybox : public Entity
 {
 public:
-	Skybox(string assetFile);
+	Skybox(std::string assetFile);
 	~Skybox();
 
 	//CubeMap* GetCubeMap();
@@ -25,7 +25,7 @@ protected:
 private:
 
 	SkyboxMaterial* m_pMaterial = nullptr;
-	string m_AssetFile;
+	std::string m_AssetFile;
 private:
 	// -------------------------
 	// Disabling default copy constructor and default 

@@ -25,7 +25,7 @@ protected:
 	virtual void UploadDerivedVariables() {}
 
 	ShaderData* m_pShader;
-	vector<TextureData*> m_pTextureVec;
+	std::vector<TextureData*> m_pTextureVec;
 	bool m_CaptureDepth = false;
 private:
 

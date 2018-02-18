@@ -12,7 +12,7 @@ enum LogLevel
 class Logger
 {
 public:
-	static void Log(const string& msg, LogLevel level = LogLevel::Info,
+	static void Log(const std::string& msg, LogLevel level = LogLevel::Info,
 		bool timestamp = false, ivec2 cursorPos = ivec2(-1));
 	static void APIENTRY LogFormat(GLenum source, GLenum type, GLuint id,
 		GLenum severity, GLsizei length, const GLchar* message, 
@@ -20,7 +20,7 @@ public:
 
 	static ivec2 GetCursorPosition();
 
-	static void StartFileLogging(const string& filename);
+	static void StartFileLogging(const std::string& filename);
 	static void StopFileLogging();
 
 	static void UseTimestampDate(bool val) { m_TimestampDate = val; }
@@ -39,12 +39,12 @@ private:
 	class AbstractLogger
 	{
 	protected:
-		ostream* m_os;
+		std::ostream* m_os;
 	public:
 		AbstractLogger() {}
 		virtual ~AbstractLogger() {}
 
-		virtual void Log(const string& message)
+		virtual void Log(const std::string& message)
 		{
 			(*m_os) << message;
 			m_os->flush();
@@ -54,18 +54,18 @@ private:
 
 	class FileLogger : public AbstractLogger
 	{
-		string m_filename;
+		std::string m_filename;
 	public:
-		explicit FileLogger(const string& fileName)
+		explicit FileLogger(const std::string& fileName)
 			: m_filename(fileName)
 		{
-			m_os = new ofstream(m_filename.c_str());
+			m_os = new std::ofstream(m_filename.c_str());
 		}
 		~FileLogger()
 		{
 			if (m_os)
 			{
-				ofstream* of = static_cast<ofstream*>(m_os);
+				std::ofstream* of = static_cast<std::ofstream*>(m_os);
 				of->close();
 				delete m_os;
 			}
@@ -98,7 +98,7 @@ private:
 	public:
 		DebugLogger() {}
 		virtual ~DebugLogger() {}
-		void Log(const string& message)override;
+		void Log(const std::string& message)override;
 	};
 
 	static ConsoleLogger* m_ConsoleLogger;

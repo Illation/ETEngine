@@ -18,6 +18,7 @@
  * Sprite rendering
  * Primitive renderer
  * GLSL shader preprocessing with includes and vertex / geo / fragment specializations
+ * FXAA (Fast approximate Antialiasing)
  
 ### Planets
  * Custom triangle CDLOD
@@ -56,20 +57,23 @@
 ### Graphics
  * Shadow Mapping
  * SSR
+ * Debug renderer
 
 ### Planets
  * Atmospheric Scattering
  
 ### General
  * UI System
+ * Debug Overlay
+     * Debug Overlay as Editor build mode
  
 ## Backlog
 
 ### Graphics
  * Effects
      * SSAO
-     * AA for deferred rendering (TAA, FXAA)
      * Motion Blur
+     * TAA
  * Api / Pipeline
      * Render state is pushed right before draw call
      * Allow better Graphics debugging support by tagging
@@ -84,7 +88,6 @@
      * Generate some common shaders from code
      * Basic deferred fragment shader generation
      * Cone Lights/Culling/Primitive
-     * Debug renderer
  * Transparent shadows
  * Particle Systems
  * Animation support
@@ -108,8 +111,6 @@
  * Serialize Levels
  * Packaging system
  * Binary asset file types
- * Debug Overlay
-     * Debug Overlay as Editor build mode
  * Linux support
      * Travis CI Setup
  * Screenshot manager

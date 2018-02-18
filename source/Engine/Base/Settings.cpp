@@ -22,7 +22,8 @@ Settings::GraphicsSettings::GraphicsSettings() :
 	CSMDrawDistance( 200 ),
 	PbrBrdfLutSize( 512 ),
 	TextureScaleFactor( 0.25f ),
-	NumBlurPasses( 5 )
+	NumBlurPasses( 5 ),
+	UseFXAA(true)
 {
 }
 Settings::GraphicsSettings::~GraphicsSettings()

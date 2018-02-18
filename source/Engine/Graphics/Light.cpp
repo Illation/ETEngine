@@ -6,8 +6,8 @@
 
 void PointLight::UploadVariables(GLuint program, TransformComponent* comp, uint32 index)
 {
-	string idxStr = to_string(index);
-	string ligStr = "pointLights[";
+	std::string idxStr = std::to_string(index);
+	std::string ligStr = "pointLights[";
 
 	vec3 pos = comp->GetPosition();
 	vec3 col = color*brightness;
@@ -28,8 +28,8 @@ void PointLight::DrawVolume(TransformComponent* pTransform)
 
 void DirectionalLight::UploadVariables(GLuint program, TransformComponent* comp, uint32 index)
 {
-	string idxStr = to_string(index);
-	string ligStr = "dirLights[";
+	std::string idxStr = std::to_string(index);
+	std::string ligStr = "dirLights[";
 
 	vec3 direction = comp->GetForward();
 	vec3 col = color*brightness;

@@ -5,6 +5,7 @@
 
 #include <initializer_list>
 #include <array>
+#include <rttr/registration>
 
 //ETEngine math
 namespace etm
@@ -715,3 +716,15 @@ typedef etm::vector<4, int32>  ivec4;
 typedef etm::vector<2, double> dvec2;
 typedef etm::vector<3, double> dvec3;
 typedef etm::vector<4, double> dvec4;
+
+//RTTR_REGISTRATION
+//{
+//	using namespace rttr;
+//	registration::class_<vec3>("vec3")
+//		.constructor<>()
+//		.constructor<const float&>()
+//		.constructor<const std::initializer_list<float>>()
+//		.property("x", &vec3::x)
+//		.property("y", &vec3::y)
+//		.property("z", &vec3::z);
+//}

@@ -145,6 +145,7 @@ void AbstractFramework::LoadConfig()
 		JSON::ApplyNumValue(graphics, pSet->Graphics.PbrBrdfLutSize, "PBR BRDF LUT Resolution");
 		JSON::ApplyNumValue(graphics, pSet->Graphics.TextureScaleFactor, "Texture Scale Factor");
 		JSON::ApplyNumValue(graphics, pSet->Graphics.NumBlurPasses, "Bloom Blur Passes");
+		JSON::ApplyBoolValue(graphics, pSet->Graphics.UseFXAA, "Use FXAA");
 	}
 	JSON::Object* window = (*root)["window"]->obj();
 	if (window)

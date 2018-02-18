@@ -19,6 +19,7 @@ IF "%COPY_DLLS%" == "true" (
 	copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\sdl2\SDL2.dll" "%OUT_DIR%\SDL2.dll" /y /D
 	copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\freeImage\FreeImage.dll" "%OUT_DIR%\FreeImage.dll" /y /D
 	copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\openAL\OpenAL32.dll" "%OUT_DIR%\OpenAL32.dll" /y /D
+	copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\rttr\rttr_core.dll" "%OUT_DIR%\rttr_core.dll" /y /D
 	IF "%PLATFORM%" == "x32" (
 		copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\assimp\Assimp32.dll" "%OUT_DIR%\Assimp32.dll" /y /D
 	) ELSE (

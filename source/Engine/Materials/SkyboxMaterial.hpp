@@ -7,7 +7,7 @@ class HDRMapas;
 class SkyboxMaterial : public Material
 {
 public:
-	SkyboxMaterial(string assetFile);
+	SkyboxMaterial(std::string assetFile);
 	~SkyboxMaterial();
 
 	CubeMap* GetCubeMap() { return m_pMap; }
@@ -24,7 +24,7 @@ private:
 private:
 	CubeMap *m_pMap = nullptr;
 	HDRMap *m_pHDRMap = nullptr;
-	string m_AssetFile;
+	std::string m_AssetFile;
 
 	GLuint m_uNumMipMaps;
 	GLuint m_uRoughness;

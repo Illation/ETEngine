@@ -16,6 +16,8 @@ public:
 
 		void VSync( const bool enabled ) { SDL_GL_SetSwapInterval( enabled ); }
 
+		bool UseFXAA;
+
 		//Shadow Quality
 		int32 NumCascades;
 		float CSMDrawDistance;

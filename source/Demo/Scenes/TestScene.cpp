@@ -92,15 +92,15 @@ void TestScene::Initialize()
 	AddEntity(m_pLigEnt);
 	
 	//Random point light field
-	random_device rd;
-	auto gen= mt19937(rd());
-	auto disXZ = uniform_real_distribution<float>(start, -start);
-	auto disY = uniform_real_distribution<float>(-0.33f, 1.f);
-	auto disC = uniform_real_distribution<float>(0.1f, 0.2f);
-	auto disI = uniform_real_distribution<float>(0.5f, 1.0f);
-	auto disA = uniform_real_distribution<float>(0.f, 6.28318530718f);
-	auto disR = uniform_real_distribution<float>(0.2f, 1);
-	auto disT = uniform_real_distribution<float>(-1, 1);
+	std::random_device rd;
+	auto gen= std::mt19937(rd());
+	auto disXZ = std::uniform_real_distribution<float>(start, -start);
+	auto disY = std::uniform_real_distribution<float>(-0.33f, 1.f);
+	auto disC = std::uniform_real_distribution<float>(0.1f, 0.2f);
+	auto disI = std::uniform_real_distribution<float>(0.5f, 1.0f);
+	auto disA = std::uniform_real_distribution<float>(0.f, 6.28318530718f);
+	auto disR = std::uniform_real_distribution<float>(0.2f, 1);
+	auto disT = std::uniform_real_distribution<float>(-1, 1);
 	for (size_t i = 0; i < 2500; i++)
 	{
 		auto pLigMod = new ModelComponent("Resources/Models/sphere.dae");
@@ -191,27 +191,27 @@ void TestScene::Update()
 	{
 		float newRad = m_pLight->GetRadius() * 4;
 		m_pLight->SetRadius(m_pLight->GetRadius()-(newRad-m_pLight->GetRadius())*TIME->DeltaTime());
-		LOG("Linear: " + to_string(m_pLight->GetRadius()));
+		LOG("Linear: " + std::to_string(m_pLight->GetRadius()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_7))
 	{
 		float newRad = m_pLight->GetRadius() * 4;
 		m_pLight->SetRadius(m_pLight->GetRadius()+(newRad-m_pLight->GetRadius())*TIME->DeltaTime());
-		LOG("Linear: " + to_string(m_pLight->GetRadius()));
+		LOG("Linear: " + std::to_string(m_pLight->GetRadius()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_3))
 	{
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;
 		m_pLight->SetBrightness(b-(nB-b)*TIME->DeltaTime());
-		LOG("Linear: " + to_string(m_pLight->GetBrightness()));
+		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
 	}
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_9))
 	{
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;
 		m_pLight->SetBrightness(b+(nB-b)*TIME->DeltaTime());
-		LOG("Linear: " + to_string(m_pLight->GetBrightness()));
+		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
 	}
 }
 

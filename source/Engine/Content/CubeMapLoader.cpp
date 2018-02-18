@@ -19,9 +19,9 @@ CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 	LOG(loadingString + " . . . generating texture          ", Info, false, logPos);
 	//Get the filenames
 	size_t dotPos = assetFile.find_last_of('.');
-	string filestringBegin = assetFile.substr(0, dotPos);
-	string filestringEnd = assetFile.substr(dotPos);
-	vector<string> textureFaces;
+	std::string filestringBegin = assetFile.substr(0, dotPos);
+	std::string filestringEnd = assetFile.substr(dotPos);
+	std::vector<std::string> textureFaces;
 	textureFaces.push_back(filestringBegin + "PX" + filestringEnd);
 	textureFaces.push_back(filestringBegin + "NX" + filestringEnd);
 	textureFaces.push_back(filestringBegin + "PY" + filestringEnd);
@@ -79,7 +79,7 @@ CubeMap* CubeMapLoader::LoadContent(const std::string& assetFile)
 		}
 	}
 
-	mipNum = 1 + (int32)floor(log10((float)max(width, height)) / log10(2.0));
+	mipNum = 1 + (int32)floor(log10((float)std::max(width, height)) / log10(2.0));
 
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);

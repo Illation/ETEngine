@@ -6,7 +6,7 @@
 #include "TextureData.hpp"
 #include "../GraphicsHelper/PrimitiveRenderer.hpp"
 
-FrameBuffer::FrameBuffer(string shaderFile, GLenum format, uint32 numTargets)
+FrameBuffer::FrameBuffer(std::string shaderFile, GLenum format, uint32 numTargets)
 	:m_ShaderFile(shaderFile),
 	m_Format(format),
 	m_NumTargets(numTargets)
@@ -73,7 +73,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 	STATE->BindFramebuffer(m_GlFrameBuffer);
 	//Textures
 	int32 width = WINDOW.Width, height = WINDOW.Height;
-	vector<GLuint> attachments;
+	std::vector<GLuint> attachments;
 	attachments.reserve(m_NumTargets);
 	m_pTextureVec.reserve(m_NumTargets);
 

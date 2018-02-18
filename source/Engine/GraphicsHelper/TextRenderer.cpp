@@ -91,7 +91,7 @@ ivec2 TextRenderer::GetTextSize(const std::string &text, SpriteFont* pFont)
 				continue;
 			}
 			ret.x += metric.AdvanceX;
-			ret.y = max(ret.y, (int32)(metric.Height + metric.OffsetY));
+			ret.y = std::max(ret.y, (int32)(metric.Height + metric.OffsetY));
 		}
 		else LOG("TextRenderer::GetTextSize>char not supported for current font", Warning);
 	}

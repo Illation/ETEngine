@@ -4,7 +4,7 @@
 #include "../Components/ModelComponent.hpp"
 #include "../Materials/SkyboxMaterial.hpp"
 
-Skybox::Skybox(string assetFile):m_AssetFile(assetFile)
+Skybox::Skybox(std::string assetFile):m_AssetFile(assetFile)
 {
 }
 Skybox::~Skybox()
