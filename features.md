@@ -42,6 +42,7 @@
      * AudioListenerComponent
      * AudioSourceComponent
      * Loading .ogg(vorbis) and .wav(pcm) files
+ * Logging system for console, file and debug
 
 ### Integration
  * Project Generation with GENie
