@@ -93,7 +93,7 @@ void SpriteRenderer::UpdateBuffer()
 	else
 	{
 		GLvoid* p = glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
-		memcpy( p, m_Sprites.data(), sizeof( SpriteVertex ) );
+		memcpy( p, m_Sprites.data(), m_Sprites.size() * sizeof( SpriteVertex ) );
 		glUnmapBuffer( GL_ARRAY_BUFFER );
 	}
 

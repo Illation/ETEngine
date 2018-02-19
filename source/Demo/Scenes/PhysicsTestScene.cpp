@@ -19,6 +19,7 @@
 #include "..\Engine\Components\AudioSourceComponent.h"
 #include "..\Engine\Audio\AudioManager.h"
 #include "..\Engine\Content\AudioLoader.h"
+#include "..\Engine\GraphicsHelper\DebugRenderer.h"
 
 PhysicsTestScene::PhysicsTestScene() : AbstractScene("PhysicsTestScene")
 {
@@ -176,7 +177,9 @@ void PhysicsTestScene::Initialize()
 
 void PhysicsTestScene::Update()
 {
-	m_pLightEntity->GetTransform()->SetPosition(m_LightCentralPos+vec3(sin(TIME->GetTime()), 0.f, cos(TIME->GetTime()))*m_LightRotDistance);
+	vec3 lightPos = m_LightCentralPos + vec3(sin(TIME->GetTime()), 0.f, cos(TIME->GetTime()))*m_LightRotDistance;
+	m_pLightEntity->GetTransform()->SetPosition(lightPos);
+
 	if (INPUT->IsMouseButtonPressed(SDL_BUTTON_RIGHT))
 	{
 		auto pModelComp = new ModelComponent("Resources/Models/sphere.dae");
@@ -216,4 +219,9 @@ void PhysicsTestScene::Draw()
 	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 50));
 	outString = "Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls);
 	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 80));
+
+	vec3 lightPos = m_pLightEntity->GetTransform()->GetPosition();
+	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(5, 0, 0), vec4(1, 0, 0, 1), 2);
+	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(0, 5, 0), vec4(0, 1, 0, 1), 2);
+	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(0, 0, 5), vec4(0, 0, 1, 1), 2);
 }

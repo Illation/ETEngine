@@ -67,15 +67,12 @@ void DebugRenderer::UpdateBuffer()
 	else
 	{
 		GLvoid* p = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-		memcpy(p, m_Lines.data(), sizeof(LineVertex));
+		memcpy(p, m_Lines.data(), sizeof(LineVertex)*m_Lines.size());
 		glUnmapBuffer(GL_ARRAY_BUFFER);
 	}
 
 
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
-
-	//Done Modifying
-	STATE->BindVertexArray(0);
 }
 
 void DebugRenderer::Draw()
@@ -83,11 +80,10 @@ void DebugRenderer::Draw()
 	if (m_Lines.size() <= 0)
 		return;
 
-	UpdateBuffer();
-
-	STATE->BindVertexArray(m_VAO);
 	STATE->SetShader(m_pShader);
 	glUniformMatrix4fv(m_uWVP, 1, GL_FALSE, etm::valuePtr(CAMERA->GetViewProj()));
+
+	UpdateBuffer();
 
 	for (const auto& meta : m_MetaData)
 	{
@@ -117,14 +113,18 @@ void DebugRenderer::CheckMetaData(float thickness)
 
 void DebugRenderer::DrawLine(vec3 start, vec3 end, vec4 col /*= vec4(1)*/, float thickness /*= 1*/)
 {
+#ifdef EDITOR
 	CheckMetaData(thickness);
 	m_Lines.push_back(LineVertex(start, col));
 	m_Lines.push_back(LineVertex(end, col));
+#endif
 }
 
 void DebugRenderer::DrawLine(vec3 start, vec4 startCol, vec3 end, vec4 endCol, float thickness /*= 1*/)
 {
+#ifdef EDITOR
 	CheckMetaData(thickness);
 	m_Lines.push_back(LineVertex(start, startCol));
 	m_Lines.push_back(LineVertex(end, endCol));
+#endif
 }

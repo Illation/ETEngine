@@ -18,6 +18,7 @@
 #include "PbrPrefilter.h"
 #include "CIE.h"
 #include "ScreenSpaceReflections.h"
+#include "DebugRenderer.h"
 
 RenderPipeline::RenderPipeline()
 {
@@ -34,6 +35,7 @@ RenderPipeline::~RenderPipeline()
 	AtmospherePrecompute::GetInstance()->DestroyInstance();
 	PbrPrefilter::GetInstance()->DestroyInstance();
 	CIE::GetInstance()->DestroyInstance();
+	DebugRenderer::GetInstance()->DestroyInstance();
 
 	SafeDelete(m_pSSR);
 	SafeDelete(m_pGBuffer);
@@ -50,6 +52,7 @@ void RenderPipeline::Initialize()
 	PointLightVolume::GetInstance();
 	DirectLightVolume::GetInstance();
 
+	DebugRenderer::GetInstance()->Initialize();
 	ShadowRenderer::GetInstance()->Initialize();
 	TextRenderer::GetInstance()->Initialize();
 	SpriteRenderer::GetInstance()->Initialize();
@@ -196,6 +199,11 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 			pEntity->RootDrawForward();
 		}
 	}
+
+#ifdef EDITOR
+	DebugRenderer::GetInstance()->Draw();
+#endif
+
 	//Draw to default buffer
 	m_pState->SetDepthEnabled(false);
 	if(pScenes.size() > 0)
