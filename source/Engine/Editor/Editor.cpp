@@ -8,6 +8,7 @@
 #include "UI\UIPadding.h"
 #include "SpriteRenderer.hpp"
 #include "TextRenderer.hpp"
+#include "DebugRenderer.h"
 
 #ifdef EDITOR
 
@@ -60,6 +61,11 @@ void Editor::Update()
 {
 	//process input here
 	m_Root->Update();
+}
+
+void Editor::DrawSceneVisualizers()
+{
+	DebugRenderer::GetInstance()->DrawGrid(100.f);
 }
 
 void Editor::Draw()

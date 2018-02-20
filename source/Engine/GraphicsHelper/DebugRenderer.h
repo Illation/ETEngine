@@ -6,6 +6,8 @@ public:
 	void DrawLine(vec3 start, vec3 end, vec4 col = vec4(1), float thickness = 1);
 	void DrawLine(vec3 start, vec4 startCol, vec3 end, vec4 endCol, float thickness = 1);
 
+	void DrawGrid(float pixelSpacingRad = etm::radians(75));
+
 private:
 	friend class RenderPipeline;
 

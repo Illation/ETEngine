@@ -18,6 +18,7 @@ public:
 	void Initialize();
 
 	void Update();
+	void DrawSceneVisualizers();
 	void Draw();
 
 	GLuint GetSceneTarget();

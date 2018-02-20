@@ -9,7 +9,7 @@
 	void main()
 	{
 		Color = color;
-		gl_Position = worldViewProj*vec4(pos, 1.0);
+		gl_Position = uViewProj*vec4(pos, 1.0);
 	}
 </VERTEX>
 <FRAGMENT>

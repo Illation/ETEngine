@@ -200,7 +200,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 		}
 	}
 
-#ifdef EDITOR
+#if defined(EDITOR) || defined(_DEBUG)
 	DebugRenderer::GetInstance()->Draw();
 #endif
 

@@ -221,7 +221,7 @@ void PhysicsTestScene::Draw()
 	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 80));
 
 	vec3 lightPos = m_pLightEntity->GetTransform()->GetPosition();
-	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(5, 0, 0), vec4(1, 0, 0, 1), 2);
-	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(0, 5, 0), vec4(0, 1, 0, 1), 2);
-	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(0, 0, 5), vec4(0, 0, 1, 1), 2);
+	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(2, 0, 0), vec4(1, 0, 0, 1), 2);
+	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(0, 2, 0), vec4(0, 1, 0, 1), 2);
+	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(0, 0, 2), vec4(0, 0, 1, 1), 2);
 }
