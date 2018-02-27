@@ -22,6 +22,7 @@
 #include "Physics/PhysicsManager.h"
 #include "Audio/AudioManager.h"
 #include "Commands.h"
+#include "ScreenshotCapture.h"
 
 
 void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) 
@@ -177,6 +178,16 @@ void AbstractFramework::LoadConfig()
 	if (initialScene)
 	{
 		SceneManager::GetInstance()->SetActiveGameScene(initialScene->value);
+	}
+	//Screenshot manager
+	JSON::String* screenshotDir = (*root)["screenshot dir"]->str();
+	if (screenshotDir)
+	{
+		ScreenshotCapture::GetInstance()->Initialize(screenshotDir->value);
+	}
+	else
+	{
+		ScreenshotCapture::GetInstance()->Initialize("./");
 	}
 }
 

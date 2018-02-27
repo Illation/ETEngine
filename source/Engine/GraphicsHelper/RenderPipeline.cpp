@@ -19,6 +19,7 @@
 #include "CIE.h"
 #include "ScreenSpaceReflections.h"
 #include "DebugRenderer.h"
+#include "ScreenshotCapture.h"
 
 RenderPipeline::RenderPipeline()
 {
@@ -36,6 +37,7 @@ RenderPipeline::~RenderPipeline()
 	PbrPrefilter::GetInstance()->DestroyInstance();
 	CIE::GetInstance()->DestroyInstance();
 	DebugRenderer::GetInstance()->DestroyInstance();
+	ScreenshotCapture::GetInstance()->DestroyInstance();
 
 	SafeDelete(m_pSSR);
 	SafeDelete(m_pGBuffer);
@@ -216,6 +218,8 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	{
 		pScene->PostDraw();
 	}
+
+	ScreenshotCapture::GetInstance()->HandleCapture();
 
 	PERFORMANCE->Update();
 }

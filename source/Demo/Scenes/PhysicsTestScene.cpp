@@ -20,6 +20,7 @@
 #include "..\Engine\Audio\AudioManager.h"
 #include "..\Engine\Content\AudioLoader.h"
 #include "..\Engine\GraphicsHelper\DebugRenderer.h"
+#include "..\Engine\Helper\ScreenshotCapture.h"
 
 PhysicsTestScene::PhysicsTestScene() : AbstractScene("PhysicsTestScene")
 {
@@ -179,6 +180,11 @@ void PhysicsTestScene::Update()
 {
 	vec3 lightPos = m_LightCentralPos + vec3(sin(TIME->GetTime()), 0.f, cos(TIME->GetTime()))*m_LightRotDistance;
 	m_pLightEntity->GetTransform()->SetPosition(lightPos);
+
+	if (INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_0))
+	{
+		ScreenshotCapture::GetInstance()->Take();
+	}
 
 	if (INPUT->IsMouseButtonPressed(SDL_BUTTON_RIGHT))
 	{

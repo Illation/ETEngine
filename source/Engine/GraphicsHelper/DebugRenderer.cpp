@@ -265,10 +265,10 @@ void DebugRenderer::DrawGrid(float pixelSpacingRad)
 			colA = vec4(greyCol, 0);
 			lines = &normalLines;
 		}
-		lines->push_back(LineVertex(p0, vec4(0)));
+		lines->push_back(LineVertex(p0, colA));
 		lines->push_back(LineVertex(p1, col));
 		lines->push_back(LineVertex(p1, col));
-		lines->push_back(LineVertex(p2, vec4(0)));
+		lines->push_back(LineVertex(p2, colA));
 	}
 	//Append line data
 	LineMetaData meta;
