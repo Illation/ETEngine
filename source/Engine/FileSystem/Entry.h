@@ -67,7 +67,7 @@ private:
 class Directory : public Entry
 {
 public:
-    Directory(std::string name, Directory* pParent);
+    Directory(std::string name, Directory* pParent, bool ensureExists = false);
     virtual ~Directory();
     //Inherited Methods
     Entry::EntryType GetType()
@@ -79,6 +79,9 @@ public:
     void Unmount();
     std::vector<Entry*> GetChildren(){return m_pChildren;}
 	std::vector<Entry*> GetChildrenByExt(std::string ext);
+
+	bool Exists();
+	bool Create();
 
     bool IsMounted(){ return m_IsMounted; }
 

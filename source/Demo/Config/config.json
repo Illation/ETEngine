@@ -20,5 +20,5 @@
         "Windowed Resolution": 1
     },
     "start scene": "PhysicsTestScene",
-	"screenshot dir": "./Screenshots"
+	"screenshot dir": "./Screenshots/"
 }

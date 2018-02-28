@@ -108,9 +108,10 @@ bool File::Delete()
 	return false;
 }
 
-Directory::Directory(std::string name, Directory* pParent)
+Directory::Directory(std::string name, Directory* pParent, bool ensureExists)
 	:Entry(name, pParent)
 {
+	if (ensureExists) Create();
 }
 Directory::~Directory()
 {

@@ -19,7 +19,7 @@ private:
 	ScreenshotCapture() = default;
 	virtual ~ScreenshotCapture();
 
-	void Initialize(std::string m_BasePath);
+	void Initialize(std::string basePath);
 
 	std::string GetFileName();
 	void HandleCapture();//To be called by Render pipeline

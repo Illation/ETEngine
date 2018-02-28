@@ -1,6 +1,33 @@
 #include <sys/types.h>
 #include <windows.h>
 
+#include "../../Helper/WindowsUtil.h"
+
+bool Directory::Exists()
+{
+	std::string path = GetPath() + m_Filename;
+
+	DWORD dwAttrib = GetFileAttributes(path.c_str());
+
+	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+		(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}
+
+bool Directory::Create()
+{
+	if (Exists())
+	{
+		return true;
+	}
+	std::string path = GetPath() + m_Filename;
+	if (!CreateDirectory(path.c_str(), NULL))
+	{
+		DisplayError(TEXT("CreateDirectory"));
+		return false;
+	}
+	return true;
+}
+
 bool Directory::Mount(bool recursive)
 {
     if(!m_IsMounted)
