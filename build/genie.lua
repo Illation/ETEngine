@@ -45,7 +45,7 @@ function platformLibraries()
 		local depPf = path.join(DEP_DIR, p[j] .. "/") 
 
 		configuration { "vs*", p[j] }
-			libdirs { path.join(depPf, "sdl2"),path.join(depPf, "freeImage"), path.join(depPf, "assimp"), path.join(depPf, "openAL"), path.join(depPf, "rttr") }
+			libdirs { path.join(depPf, "sdl2"),path.join(depPf, "freeImage"), path.join(depPf, "freetype"), path.join(depPf, "assimp"), path.join(depPf, "openAL"), path.join(depPf, "rttr") }
 	end
 	configuration {}
 end
@@ -102,6 +102,7 @@ configuration "vs*"
 	includedirs { 
 		path.join(DEP_INCLUDE, "sdl2"),
 		path.join(DEP_INCLUDE, "freeImage"), 
+		path.join(DEP_INCLUDE, "freetype"), 
 		path.join(DEP_INCLUDE, "assimp"), 
 		path.join(DEP_INCLUDE, "bullet"),
 		path.join(DEP_INCLUDE, "openAL"),  
@@ -160,7 +161,7 @@ project "Demo"
 	windowsPlatformPostBuild()
 
 	--Linked libraries
-    links{ "ETEngine", "SDL2", "FreeImage", "assimp", "BulletDynamics", "BulletCollision", "LinearMath", "openAL", "rttr_core" }
+    links{ "ETEngine", "SDL2", "FreeImage", "freetype", "assimp", "BulletDynamics", "BulletCollision", "LinearMath", "openAL", "rttr_core" }
 
 	--additional includedirs
 	local ProjBase = path.join(SOURCE_DIR, "Demo") 

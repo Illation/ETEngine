@@ -1,5 +1,8 @@
 #pragma once
 
+class TextureData;
+class TextRenderer;
+
 struct TextCache
 {
 public:
@@ -28,9 +31,6 @@ struct FontMetric
 	uint8 Channel;
 	vec2 TexCoord;
 };
-
-class TextureData;
-class TextRenderer;
 
 class SpriteFont
 {

@@ -5,6 +5,10 @@
 #include "FileSystem/BinaryReader.hpp"
 #include "TextureLoader.hpp"
 
+#include <ft2build.h>
+#include <freetype/freetype.h>
+//#include FT_FREETYPE_H  
+
 FontLoader::FontLoader()
 {
 }
@@ -24,26 +28,111 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	if(!input->Open( FILE_ACCESS_MODE::Read ))
 	{
 		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
-		LOG("    Opening font descriptor file failed.", Warning);
+		LOG("    Opening font file failed.", Warning);
 		return nullptr;
 	}
 	std::vector<uint8> binaryContent = input->Read();
+	std::string extension = input->GetExtension();
 	delete input; 
 	input = nullptr;
 	if(binaryContent.size() == 0)
 	{
 		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
-		LOG("    Font descriptor is empty.", Warning);
+		LOG("    Font file is empty.", Warning);
 		return nullptr;
 	}
 
+	SpriteFont* ret = nullptr;
+
+	if (extension == "ttf")
+	{
+		LOG(loadingString + " . . . loading ttf          ", Info, false, logPos);
+		ret = LoadTtf(binaryContent);
+	}
+	else if (extension == "fnt")
+	{
+		LOG(loadingString + " . . . loading fnt data          ", Info, false, logPos);
+		ret = LoadFnt(binaryContent, assetFile);
+	}
+	else
+	{
+		LOG(loadingString + " . . . FAILED!         ", Warning, false, logPos);
+		LOG("    Cannot load font with this extension. Supported exensions:", Warning);
+		LOG("        ttf", Warning);
+		LOG("        fnt", Warning);
+		return nullptr;
+	}
+
+	if (!ret)
+	{
+		LOG(loadingString + " . . . FAILED!         ", Warning, false, logPos);
+	}
+	else
+	{
+		LOG(loadingString + " . . . SUCCESS!          ", Info, false, logPos);
+	}
+	return ret;
+}
+
+void FontLoader::Destroy(SpriteFont* objToDestroy)
+{
+	if (!(objToDestroy == nullptr))
+	{
+		delete objToDestroy;
+		objToDestroy = nullptr;
+	}
+}
+
+SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
+{
+	FT_Library ft;
+	if (FT_Init_FreeType(&ft))
+		LOG("FREETYPE: Could not init FreeType Library", Warning);
+
+	FT_Face face;
+	if (FT_New_Memory_Face(ft, binaryContent.data(), (FT_Long)binaryContent.size(), 0, &face))
+		LOG("FREETYPE: Failed to load font", Warning);
+
+	FT_Set_Pixel_Sizes(face, 0, m_FontSize);
+
+	SpriteFont* pFont = new SpriteFont();
+	pFont->m_FontSize = (int16)m_FontSize;
+	pFont->m_FontName = std::string(face->family_name) + " - " + face->style_name;
+	pFont->m_CharacterCount = face->num_glyphs;
+
+	std::map<char, FontMetric> characters;
+	for (char c = 0; c < SpriteFont::CHAR_COUNT; c++)
+	{
+		if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+		{
+			LOG("FREETYPE: Failed to load glyph", Warning);
+			continue;
+		}
+	}
+
+	//#todo to be filled out
+	//pFont->m_TextureWidth;
+	//pFont->m_TextureHeight;
+	//pFont->m_pTexture;
+
+	// Disable byte-alignment restriction
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	FT_Done_Face(face);
+	FT_Done_FreeType(ft);
+
+	LOG("Loading ttf files is not implemented yet", Warning);
+	return nullptr;
+}
+
+SpriteFont* FontLoader::LoadFnt(const std::vector<uint8>& binaryContent, const std::string& assetFile)
+{
 	auto pBinReader = new BinaryReader(); //Prevent memory leaks
 	pBinReader->Open(binaryContent);
 
 	if (!pBinReader->Exists())
 	{
 		delete pBinReader;
-		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
 		LOG("SpriteFont::Load > Failed to read the assetFile!", Warning);
 
 		return nullptr;
@@ -61,13 +150,11 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	}
 	if (!valid) 
 	{
-		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
 		LOG("Font file header invalid!", Warning);
 		return nullptr;
 	}
 	if (pBinReader->Read<char>() < 3)
 	{
-		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
 		LOG("Font version invalid!", Warning);
 		return nullptr;
 	}
@@ -77,7 +164,6 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	//**********
 	// BLOCK 0 *
 	//**********
-	LOG(loadingString + " . . . loading block 0          ", Info, false, logPos);
 	pBinReader->Read<char>();
 	auto Block0Size = pBinReader->Read<int32>();
 	int32 pos = pBinReader->GetBufferPosition();
@@ -95,7 +181,6 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	//**********
 	// BLOCK 1 *
 	//**********
-	LOG(loadingString + " . . . loading block 1          ", Info, false, logPos);
 	pBinReader->Read<char>();
 	auto Block1Size = pBinReader->Read<int32>();
 	pos = pBinReader->GetBufferPosition();
@@ -108,7 +193,6 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	//**********
 	// BLOCK 2 *
 	//**********
-	LOG(loadingString + " . . . loading block 2          ", Info, false, logPos);
 	pBinReader->Read<char>();
 	auto Block2Size = pBinReader->Read<int32>();
 	pos = pBinReader->GetBufferPosition();
@@ -130,7 +214,6 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	//**********
 	// BLOCK 3 *
 	//**********
-	LOG(loadingString + " . . . loading block 3          ", Info, false, logPos);
 	pBinReader->Read<char>();
 	auto Block3Size = pBinReader->Read<int32>();
 	pos = pBinReader->GetBufferPosition();
@@ -147,7 +230,6 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 		}
 		else
 		{
-			LOG(loadingString + " . . . loading character: " + (char)charId + "          ", Info, false, logPos);
 			auto metric = &(pFont->GetMetric(charId));
 			metric->IsValid = true;
 			metric->Character = charId;
@@ -175,16 +257,5 @@ SpriteFont* FontLoader::LoadContent(const std::string& assetFile)
 	}
 	delete pBinReader;
 
-	LOG(loadingString + " . . . SUCCESS!          ", Info, false, logPos);
-
 	return pFont;
-}
-
-void FontLoader::Destroy(SpriteFont* objToDestroy)
-{
-	if (!(objToDestroy == nullptr))
-	{
-		delete objToDestroy;
-		objToDestroy = nullptr;
-	}
 }
