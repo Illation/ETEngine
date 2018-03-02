@@ -7,6 +7,7 @@
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
+#include "TextureData.hpp"
 //#include FT_FREETYPE_H  
 
 FontLoader::FontLoader()
@@ -100,7 +101,13 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	pFont->m_FontName = std::string(face->family_name) + " - " + face->style_name;
 	pFont->m_CharacterCount = face->num_glyphs;
 
-	std::map<char, FontMetric> characters;
+	struct TempChar
+	{
+		FontMetric metric;
+		TextureData* texture;
+	};
+
+	std::map<char, TempChar> characters;
 	for (char c = 0; c < SpriteFont::CHAR_COUNT; c++)
 	{
 		if (FT_Load_Char(face, c, FT_LOAD_RENDER))
@@ -108,6 +115,23 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 			LOG("FREETYPE: Failed to load glyph", Warning);
 			continue;
 		}
+
+		TempChar character;
+
+		character.texture = new TextureData(face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_RED, GL_UNSIGNED_BYTE);
+		character.texture->Build(face->glyph->bitmap.buffer);
+
+		TextureParameters params;
+		params.wrapS = GL_CLAMP_TO_EDGE;
+		params.wrapT = GL_CLAMP_TO_EDGE;
+		character.texture->SetParameters(params);
+
+		character.metric.IsValid = true;
+		character.metric.Character = c;
+		character.metric.Width = (uint16)face->glyph->bitmap.width;
+		character.metric.Height = (uint16)face->glyph->bitmap.rows;
+		character.metric.OffsetX = (int16)face->glyph->bitmap_left;
+		character.metric.OffsetY = (int16)face->glyph->bitmap_top;
 	}
 
 	//#todo to be filled out
