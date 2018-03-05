@@ -44,6 +44,8 @@ public:
 	static const int32 MIN_CHAR_ID = 0;
 	static const int32 CHAR_COUNT = MAX_CHAR_ID - MIN_CHAR_ID + 1;
 
+	TextureData* GetAtlas() { return m_pTexture; }
+
 private:
 	friend class TextRenderer;
 	friend class FontLoader;

@@ -21,6 +21,7 @@
 #include "..\Engine\Content\AudioLoader.h"
 #include "..\Engine\GraphicsHelper\DebugRenderer.h"
 #include "..\Engine\Helper\ScreenshotCapture.h"
+#include "..\Engine\GraphicsHelper\SpriteRenderer.hpp"
 
 PhysicsTestScene::PhysicsTestScene() : AbstractScene("PhysicsTestScene")
 {
@@ -37,7 +38,7 @@ void PhysicsTestScene::Initialize()
 {
 	//Fonts
 	//**************************
-	m_pDebugFont = ContentManager::Load<SpriteFont>("Resources/Fonts/Consolas_32.fnt");
+	m_pDebugFont = ContentManager::Load<SpriteFont>("Resources/Fonts/Ubuntu-Regular.ttf");
 
 	//Materials
 	//**************************
@@ -212,6 +213,8 @@ void PhysicsTestScene::Update()
 	{
 		GRAPHICS.UseFXAA = !(GRAPHICS.UseFXAA);
 	}
+
+	SpriteRenderer::GetInstance()->Draw(m_pDebugFont->GetAtlas(), vec2(500, 500));
 }
 
 void PhysicsTestScene::Draw()

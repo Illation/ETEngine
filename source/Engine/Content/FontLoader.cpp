@@ -108,7 +108,7 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	};
 
 	std::map<char, TempChar> characters;
-	for (char c = 0; c < SpriteFont::CHAR_COUNT; c++)
+	for (char c = 0; c < 128; c++)
 	{
 		if (FT_Load_Char(face, c, FT_LOAD_RENDER))
 		{
