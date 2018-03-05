@@ -51,6 +51,7 @@ private:
 	friend class FontLoader;
 
 	FontMetric& GetMetric(const wchar_t& character) { return m_CharTable[character - MIN_CHAR_ID]; };
+	void SetMetric(const FontMetric& metric, const wchar_t& character) { m_CharTable[character - MIN_CHAR_ID] = metric; }
 
 	FontMetric m_CharTable[CHAR_COUNT];
 	std::vector<TextCache> m_TextCache;
