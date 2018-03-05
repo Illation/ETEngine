@@ -19,12 +19,17 @@ public:
 	void OnWindowResize();
 
 private:
-	friend class Singleton<SpriteRenderer>;
+	//Classes that need to call the Draw function
 	friend class RenderPipeline;
 	friend class UIPortal;
+	friend class FontLoader;
 #ifdef EDITOR
 	friend class Editor;
 #endif
+
+	void Draw();
+
+private:
 
 	struct SpriteVertex
 	{
@@ -36,8 +41,6 @@ private:
 
 	void Initialize();
 	void UpdateBuffer();
-
-	void Draw();
 
 	void CalculateTransform();
 
@@ -71,6 +74,8 @@ private:
 	//SpriteVertex m_ImmediateVertex;
 
 private:
+	friend class Singleton<SpriteRenderer>;
+
 	//Private constructor and destructor for singleton
 	SpriteRenderer();
 	virtual ~SpriteRenderer();

@@ -8,6 +8,7 @@
 #include <ft2build.h>
 #include <freetype/freetype.h>
 #include "TextureData.hpp"
+#include "SpriteRenderer.hpp"
 //#include FT_FREETYPE_H  
 
 FontLoader::FontLoader()
@@ -107,6 +108,9 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 		TextureData* texture;
 	};
 
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	//Load individual characters
 	std::map<char, TempChar> characters;
 	for (char c = 0; c < SpriteFont::CHAR_COUNT; c++)
 	{
@@ -132,21 +136,120 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 		character.metric.Height = (uint16)face->glyph->bitmap.rows;
 		character.metric.OffsetX = (int16)face->glyph->bitmap_left;
 		character.metric.OffsetY = (int16)face->glyph->bitmap_top;
+
+		characters[c] = character;
 	}
-
-	//#todo to be filled out
-	//pFont->m_TextureWidth;
-	//pFont->m_TextureHeight;
-	//pFont->m_pTexture;
-
-	// Disable byte-alignment restriction
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	FT_Done_Face(face);
 	FT_Done_FreeType(ft);
 
-	LOG("Loading ttf files is not implemented yet", Warning);
-	return nullptr;
+	//Generate atlas coordinates
+	ivec2 startPos[4] = { ivec2(0), ivec2(0), ivec2(0), ivec2(0) };
+	ivec2 maxPos[4] = { ivec2(0), ivec2(0), ivec2(0), ivec2(0) };
+	bool horizontal = false;//Direction this pass expands the map in (internal moves are !horizontal)
+	uint32 posCount = 1;//internal move count in this pass
+	uint32 curPos = 0;//internal move count
+	uint32 channel = 0;//channel to add to
+	for (auto& character : characters)
+	{
+		character.second.metric.Page = 0;
+		character.second.metric.Channel = (uint8)channel;
+		character.second.metric.TexCoord = etm::vecCast<float>(startPos[channel]);
+		if (horizontal)
+		{
+			startPos[channel].y += character.second.metric.Height;
+			maxPos[channel].x = std::max(maxPos[channel].x, startPos[channel].x + character.second.metric.Width);
+		}
+		else
+		{
+			startPos[channel].x += character.second.metric.Width;
+			maxPos[channel].y = std::max(maxPos[channel].y, startPos[channel].y + character.second.metric.Height);
+		}
+		channel++;
+		if (channel == 4)
+		{
+			channel = 0;
+			curPos++;
+			if(curPos == posCount)
+			{
+				curPos = 0;
+				horizontal = !horizontal;
+				if (horizontal)
+				{
+					for(uint8 cha = 0; cha < 4; ++cha)startPos[cha] = ivec2(maxPos[cha].x, 0);
+				}
+				else
+				{
+					for (uint8 cha = 0; cha < 4; ++cha)startPos[cha] = ivec2(0, maxPos[cha].y);
+					posCount++;
+				}
+			}
+		}
+	}
+
+	//Setup rendering
+	pFont->m_TextureWidth = std::max(std::max(maxPos[0].x, maxPos[1].x), std::max(maxPos[2].x, maxPos[3].x));
+	pFont->m_TextureHeight = std::max(std::max(maxPos[0].y, maxPos[1].y), std::max(maxPos[2].y, maxPos[3].y));
+	
+	pFont->m_pTexture = new TextureData(pFont->m_TextureWidth, pFont->m_TextureHeight, GL_RGBA, GL_RGBA, GL_FLOAT);
+	pFont->m_pTexture->Build();
+	TextureParameters params(false);
+	params.wrapS = GL_CLAMP_TO_EDGE;
+	params.wrapT = GL_CLAMP_TO_EDGE;
+	pFont->m_pTexture->SetParameters(params);
+	GLuint captureFBO, captureRBO;
+
+	glGenFramebuffers(1, &captureFBO);
+	glGenRenderbuffers(1, &captureRBO);
+
+	STATE->BindFramebuffer(captureFBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, pFont->m_TextureWidth, pFont->m_TextureHeight);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pFont->m_pTexture->GetHandle(), 0);
+
+	STATE->SetViewport(ivec2(0), ivec2(pFont->m_TextureWidth, pFont->m_TextureHeight));
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//Render to atlas
+	for (auto& character : characters)
+	{
+		vec4 color;
+		switch (character.second.metric.Channel)
+		{
+		case 0: color = vec4(1, 0, 0, 0); break;
+		case 1: color = vec4(0, 1, 0, 0); break;
+		case 2: color = vec4(0, 0, 1, 0); break;
+		case 3: color = vec4(0, 0, 0, 1); break;
+		}
+		SpriteRenderer::GetInstance()->Draw(character.second.texture, character.second.metric.TexCoord, color, 
+			vec2(0), vec2(1), 0, 0, SpriteScalingMode::TEXTURE_ABS);
+	}
+
+	STATE->SetBlendEnabled(true);
+	STATE->SetBlendEquation(GL_FUNC_ADD);
+	STATE->SetBlendFunction(GL_ONE, GL_ONE);
+	SpriteRenderer::GetInstance()->Draw();
+
+	//Cleanup
+	STATE->SetBlendEnabled(false);
+
+	for (auto& character : characters)
+	{
+		pFont->SetMetric(character.second.metric, character.first);
+		delete character.second.texture;
+		character.second.texture = nullptr;
+	}
+
+	STATE->BindFramebuffer(0);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	STATE->SetViewport(ivec2(0), WINDOW.Dimensions);
+
+	glDeleteRenderbuffers(1, &captureRBO);
+	glDeleteFramebuffers(1, &captureFBO);
+
+	return pFont;
 }
 
 SpriteFont* FontLoader::LoadFnt(const std::vector<uint8>& binaryContent, const std::string& assetFile)
