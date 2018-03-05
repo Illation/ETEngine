@@ -112,7 +112,7 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	//Load individual characters
 	std::map<char, TempChar> characters;
-	for (char c = 0; c < 128; c++)
+	for (int32 c = 0; c < SpriteFont::CHAR_COUNT-1; c++)
 	{
 		if (FT_Load_Char(face, c, FT_LOAD_RENDER))
 		{
@@ -131,13 +131,13 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 		character.texture->SetParameters(params);
 
 		character.metric.IsValid = true;
-		character.metric.Character = c;
+		character.metric.Character = static_cast<wchar_t>(c);
 		character.metric.Width = (uint16)face->glyph->bitmap.width;
 		character.metric.Height = (uint16)face->glyph->bitmap.rows;
 		character.metric.OffsetX = (int16)face->glyph->bitmap_left;
 		character.metric.OffsetY = (int16)face->glyph->bitmap_top;
 
-		characters[c] = character;
+		characters[(char)c] = character;
 	}
 
 	FT_Done_Face(face);
