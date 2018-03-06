@@ -38,8 +38,8 @@ void PhysicsTestScene::Initialize()
 {
 	//Fonts
 	//**************************
-	//m_pDebugFont = ContentManager::Load<SpriteFont>("Resources/Fonts/Ubuntu-Regular.ttf");
-	m_pDebugFont = ContentManager::Load<SpriteFont>("Resources/Fonts/Consolas_32.fnt");
+	m_pDebugFont = ContentManager::Load<SpriteFont>("Resources/Fonts/Ubuntu-Regular.ttf");
+	//m_pDebugFont = ContentManager::Load<SpriteFont>("Resources/Fonts/Consolas_32.fnt");
 
 	//Materials
 	//**************************

@@ -102,32 +102,62 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	pFont->m_FontName = std::string(face->family_name) + " - " + face->style_name;
 	pFont->m_CharacterCount = face->num_glyphs;
 
+	TextureParameters params(false);
+	params.wrapS = GL_CLAMP_TO_EDGE;
+	params.wrapT = GL_CLAMP_TO_EDGE;
+
+	//Atlasing helper variables
+	ivec2 startPos[4] = { ivec2(0), ivec2(0), ivec2(0), ivec2(0) };
+	ivec2 maxPos[4] = { ivec2(0), ivec2(0), ivec2(0), ivec2(0) };
+	bool horizontal = false;//Direction this pass expands the map in (internal moves are !horizontal)
+	uint32 posCount = 1;//internal move count in this pass
+	uint32 curPos = 0;//internal move count
+	uint32 channel = 0;//channel to add to
+
+	//Load individual characters
 	struct TempChar
 	{
 		FontMetric metric;
 		TextureData* texture;
 	};
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	//Load individual characters
-	std::map<char, TempChar> characters;
+	std::map<int32, TempChar> characters;
 	for (int32 c = 0; c < SpriteFont::CHAR_COUNT-1; c++)
 	{
-		if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+		uint32 glyphIdx = FT_Get_Char_Index(face, c);
+
+		if (FT_Load_Glyph(face, glyphIdx, FT_LOAD_RENDER))
 		{
 			LOG("FREETYPE: Failed to load glyph", Warning);
 			continue;
 		}
+		if (!(face->glyph->format == FT_GLYPH_FORMAT_BITMAP))
+		{
+			if (FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL))
+			{
+				LOG("FREETYPE: Failed to render glyph", Warning);
+				continue;
+			}
+		}
 
 		TempChar character;
 
-		character.texture = new TextureData(face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_RED, GL_UNSIGNED_BYTE);
-		character.texture->Build(face->glyph->bitmap.buffer);
-
-		TextureParameters params;
-		params.wrapS = GL_CLAMP_TO_EDGE;
-		params.wrapT = GL_CLAMP_TO_EDGE;
+		//Expand bitmap into multiple channels for rgba masking
+		const uint32 width = face->glyph->bitmap.width;
+		const uint32 height = face->glyph->bitmap.rows;
+		std::vector<uint8> extended(width*height * 4);
+		for (uint32 y = 0; y < height; y++)
+		{
+			for (uint32 x = 0; x < width; x++)
+			{
+				extended[(y*width + x) * 4 + 0] = face->glyph->bitmap.buffer[y*width + x];
+				extended[(y*width + x) * 4 + 1] = face->glyph->bitmap.buffer[y*width + x];
+				extended[(y*width + x) * 4 + 2] = face->glyph->bitmap.buffer[y*width + x];
+				extended[(y*width + x) * 4 + 3] = face->glyph->bitmap.buffer[y*width + x];
+			}
+		}
+		//setup temporary texture
+		character.texture = new TextureData(face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
+		character.texture->Build(extended.data());
 		character.texture->SetParameters(params);
 
 		character.metric.IsValid = true;
@@ -136,47 +166,34 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 		character.metric.Height = (uint16)face->glyph->bitmap.rows;
 		character.metric.OffsetX = (int16)face->glyph->bitmap_left;
 		character.metric.OffsetY = (int16)face->glyph->bitmap_top;
+		character.metric.AdvanceX = (int16)face->glyph->advance.x;
 
-		characters[(char)c] = character;
-	}
-
-	FT_Done_Face(face);
-	FT_Done_FreeType(ft);
-
-	//Generate atlas coordinates
-	ivec2 startPos[4] = { ivec2(0), ivec2(0), ivec2(0), ivec2(0) };
-	ivec2 maxPos[4] = { ivec2(0), ivec2(0), ivec2(0), ivec2(0) };
-	bool horizontal = false;//Direction this pass expands the map in (internal moves are !horizontal)
-	uint32 posCount = 1;//internal move count in this pass
-	uint32 curPos = 0;//internal move count
-	uint32 channel = 0;//channel to add to
-	for (auto& character : characters)
-	{
-		character.second.metric.Page = 0;
-		character.second.metric.Channel = (uint8)channel;
-		character.second.metric.TexCoord = etm::vecCast<float>(startPos[channel]);
+		//Generate atlas coordinates
+		character.metric.Page = 0;
+		character.metric.Channel = (uint8)channel;
+		character.metric.TexCoord = etm::vecCast<float>(startPos[channel]);
 		if (horizontal)
 		{
-			startPos[channel].y += character.second.metric.Height;
-			maxPos[channel].x = std::max(maxPos[channel].x, startPos[channel].x + character.second.metric.Width);
+			startPos[channel].y += character.metric.Height;
+			maxPos[channel].x = std::max(maxPos[channel].x, startPos[channel].x + character.metric.Width);
 		}
 		else
 		{
-			startPos[channel].x += character.second.metric.Width;
-			maxPos[channel].y = std::max(maxPos[channel].y, startPos[channel].y + character.second.metric.Height);
+			startPos[channel].x += character.metric.Width;
+			maxPos[channel].y = std::max(maxPos[channel].y, startPos[channel].y + character.metric.Height);
 		}
 		channel++;
 		if (channel == 4)
 		{
 			channel = 0;
 			curPos++;
-			if(curPos == posCount)
+			if (curPos == posCount)
 			{
 				curPos = 0;
 				horizontal = !horizontal;
 				if (horizontal)
 				{
-					for(uint8 cha = 0; cha < 4; ++cha)startPos[cha] = ivec2(maxPos[cha].x, 0);
+					for (uint8 cha = 0; cha < 4; ++cha)startPos[cha] = ivec2(maxPos[cha].x, 0);
 				}
 				else
 				{
@@ -185,7 +202,12 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 				}
 			}
 		}
+
+		characters[c] = character;
 	}
+
+	FT_Done_Face(face);
+	FT_Done_FreeType(ft);
 
 	//Setup rendering
 	pFont->m_TextureWidth = std::max(std::max(maxPos[0].x, maxPos[1].x), std::max(maxPos[2].x, maxPos[3].x));
@@ -193,9 +215,6 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	
 	pFont->m_pTexture = new TextureData(pFont->m_TextureWidth, pFont->m_TextureHeight, GL_RGBA, GL_RGBA, GL_FLOAT);
 	pFont->m_pTexture->Build();
-	TextureParameters params(false);
-	params.wrapS = GL_CLAMP_TO_EDGE;
-	params.wrapT = GL_CLAMP_TO_EDGE;
 	pFont->m_pTexture->SetParameters(params);
 	GLuint captureFBO, captureRBO;
 
@@ -224,7 +243,9 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 		case 3: color = vec4(0, 0, 0, 1); break;
 		}
 		SpriteRenderer::GetInstance()->Draw(character.second.texture, character.second.metric.TexCoord, color, 
-			vec2(0), vec2(1), 0, 0, SpriteScalingMode::TEXTURE_ABS);
+			vec2(0, 1), vec2(1, -1), 0, 0, SpriteScalingMode::TEXTURE_ABS);//Also flips character
+
+		character.second.metric.TexCoord = character.second.metric.TexCoord / etm::vecCast<float>(character.second.texture->GetResolution());
 	}
 
 	STATE->SetBlendEnabled(true);
@@ -237,7 +258,7 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	for (auto& character : characters)
 	{
-		pFont->SetMetric(character.second.metric, character.first);
+		pFont->SetMetric(character.second.metric, (wchar_t)character.first);
 		delete character.second.texture;
 		character.second.texture = nullptr;
 	}
