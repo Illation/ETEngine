@@ -216,7 +216,7 @@ void PhysicsTestScene::Update()
 	}
 
 	SpriteRenderer::GetInstance()->Draw(m_pDebugFont->GetAtlas(), vec2(200, 200), 
-		vec4(1), vec2(0), vec2(2), 0, 0, SpriteScalingMode::TEXTURE_ABS);
+		vec4(1), vec2(0), vec2(4), 0, 0, SpriteScalingMode::TEXTURE_ABS);
 }
 
 void PhysicsTestScene::Draw()
@@ -224,12 +224,12 @@ void PhysicsTestScene::Draw()
 	TextRenderer::GetInstance()->SetFont(m_pDebugFont);
 	TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
 	std::string outString = "FPS: " + std::to_string(PERFORMANCE->GetRegularFPS());
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20));
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 40));
 	TextRenderer::GetInstance()->SetColor(vec4(1, 1, 1, 1));
 	outString = "Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS());
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 50));
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 72));
 	outString = "Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls);
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 80));
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 104));
 
 	vec3 lightPos = m_pLightEntity->GetTransform()->GetPosition();
 	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(2, 0, 0), vec4(1, 0, 0, 1), 2);

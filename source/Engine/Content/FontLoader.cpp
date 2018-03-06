@@ -165,7 +165,7 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 		character.metric.Width = (uint16)face->glyph->bitmap.width;
 		character.metric.Height = (uint16)face->glyph->bitmap.rows;
 		character.metric.OffsetX = (int16)face->glyph->bitmap_left;
-		character.metric.OffsetY = (int16)face->glyph->bitmap_top;
+		character.metric.OffsetY = -(int16)face->glyph->bitmap_top;
 		character.metric.AdvanceX = ((int16)face->glyph->advance.x) >> 6;
 
 		//Generate atlas coordinates
@@ -234,18 +234,14 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	//Render to atlas
 	for (auto& character : characters)
 	{
-		vec4 color;
-		switch (character.second.metric.Channel)
-		{
-		case 0: color = vec4(1, 0, 0, 0); break;
-		case 1: color = vec4(0, 1, 0, 0); break;
-		case 2: color = vec4(0, 0, 1, 0); break;
-		case 3: color = vec4(0, 0, 0, 1); break;
-		}
-		SpriteRenderer::GetInstance()->Draw(character.second.texture, character.second.metric.TexCoord, color, 
+		auto& metric = character.second.metric;
+		vec4 color(0);
+		color[metric.Channel] = 1.f;
+		SpriteRenderer::GetInstance()->Draw(character.second.texture, metric.TexCoord, color, 
 			vec2(0, 1), vec2(1, -1), 0, 0, SpriteScalingMode::TEXTURE_ABS);//Also flips character
 
-		character.second.metric.TexCoord = character.second.metric.TexCoord / vec2((float)pFont->m_TextureWidth, (float)pFont->m_TextureHeight);
+		metric.TexCoord = (metric.TexCoord+vec2(0, metric.Height)) / vec2((float)pFont->m_TextureWidth, (float)pFont->m_TextureHeight);
+		metric.TexCoord.y = 1 - metric.TexCoord.y;
 	}
 
 	STATE->SetBlendEnabled(true);

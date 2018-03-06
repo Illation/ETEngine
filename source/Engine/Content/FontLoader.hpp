@@ -19,6 +19,6 @@ private:
 	SpriteFont* LoadTtf(const std::vector<uint8>& binaryContent);
 	SpriteFont* LoadFnt(const std::vector<uint8>& binaryContent, const std::string& assetFile);
 
-	uint32 m_FontSize = 42;
+	uint32 m_FontSize = 32;
 };
 
