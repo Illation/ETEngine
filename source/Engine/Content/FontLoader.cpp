@@ -166,7 +166,7 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 		character.metric.Height = (uint16)face->glyph->bitmap.rows;
 		character.metric.OffsetX = (int16)face->glyph->bitmap_left;
 		character.metric.OffsetY = (int16)face->glyph->bitmap_top;
-		character.metric.AdvanceX = (int16)face->glyph->advance.x;
+		character.metric.AdvanceX = ((int16)face->glyph->advance.x) >> 6;
 
 		//Generate atlas coordinates
 		character.metric.Page = 0;
@@ -245,7 +245,7 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 		SpriteRenderer::GetInstance()->Draw(character.second.texture, character.second.metric.TexCoord, color, 
 			vec2(0, 1), vec2(1, -1), 0, 0, SpriteScalingMode::TEXTURE_ABS);//Also flips character
 
-		character.second.metric.TexCoord = character.second.metric.TexCoord / etm::vecCast<float>(character.second.texture->GetResolution());
+		character.second.metric.TexCoord = character.second.metric.TexCoord / vec2((float)pFont->m_TextureWidth, (float)pFont->m_TextureHeight);
 	}
 
 	STATE->SetBlendEnabled(true);
