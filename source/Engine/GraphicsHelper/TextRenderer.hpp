@@ -8,7 +8,7 @@ class TextRenderer : public Singleton<TextRenderer>
 public:
 
 #undef DrawText
-	void DrawText(std::string &text, vec2 pos);
+	void DrawText(std::string &text, vec2 pos, int16 fontSize = 0);//fontSize 0 means using the fonts default size
 	void SetFont(SpriteFont* pFont);
 	void SetColor(vec4 color) { m_Color = color; }
 
@@ -35,6 +35,7 @@ private:
 		vec4 Color;
 		vec2 TexCoord;
 		vec2 CharacterDimension;
+		float SizeMult;
 		uint32 ChannelId;
 	};
 

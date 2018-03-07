@@ -45,17 +45,14 @@ void TextRenderer::Initialize()
 	glEnableVertexAttribArray(2);
 	glEnableVertexAttribArray(3);
 	glEnableVertexAttribArray(4);
+	glEnableVertexAttribArray(5);
 
-	int32 offset = 0;	int32 stride = 3 * sizeof(GLfloat);
 	glVertexAttribPointer(0, (GLint)3, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, Position));
-	offset += stride; stride = 4 * sizeof(GLfloat);
 	glVertexAttribPointer(1, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, Color));
-	offset += stride; stride = 2 * sizeof(GLfloat);			
 	glVertexAttribPointer(2, (GLint)2, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, TexCoord));
-	offset += stride; stride = 2 * sizeof(GLfloat);			
 	glVertexAttribPointer(3, (GLint)2, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, CharacterDimension));
-	offset += stride; stride = sizeof(uint32);
-	glVertexAttribIPointer(4, (GLint)1, GL_UNSIGNED_INT, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, ChannelId));
+	glVertexAttribPointer(4, (GLint)1, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, SizeMult));
+	glVertexAttribIPointer(5, (GLint)1, GL_UNSIGNED_INT, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, ChannelId));
 
 	//unbind
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
@@ -103,12 +100,13 @@ void TextRenderer::OnWindowResize()
 	CalculateTransform();
 }
 
-void TextRenderer::DrawText(std::string &text, vec2 pos)
+void TextRenderer::DrawText(std::string &text, vec2 pos, int16 fontSize)
 {
 	if (m_pSpriteFonts.size() > 0)
 	{
+		if (fontSize <= 0)fontSize = m_pSpriteFonts[m_ActiveFontIdx]->GetFontSize();
 		m_NumCharacters += (uint32)text.size();
-		m_pSpriteFonts[m_ActiveFontIdx]->m_TextCache.push_back(TextCache(text, pos, m_Color));
+		m_pSpriteFonts[m_ActiveFontIdx]->m_TextCache.push_back(TextCache(text, pos, m_Color, fontSize));
 		if (!m_pSpriteFonts[m_ActiveFontIdx]->m_IsAddedToRenderer)
 		{
 			m_pSpriteFonts[m_ActiveFontIdx]->m_IsAddedToRenderer = true;
@@ -164,6 +162,7 @@ void TextRenderer::UpdateBuffer()
 			pFont->m_BufferSize = 0;
 			for (auto cache : pFont->m_TextCache)
 			{
+				float sizeMult = (float)cache.Size / (float)pFont->GetFontSize();
 				int32 totalAdvanceX = 0;
 				for (auto charId : cache.Text)
 				{
@@ -178,12 +177,13 @@ void TextRenderer::UpdateBuffer()
 						}
 
 						TextVertex vText;
-						vText.Position.x = cache.Position.x + totalAdvanceX + metric.OffsetX;
-						vText.Position.y = cache.Position.y + metric.OffsetY;
+						vText.Position.x = cache.Position.x + (totalAdvanceX + metric.OffsetX)*sizeMult;
+						vText.Position.y = cache.Position.y + metric.OffsetY*sizeMult;
 						vText.Position.z = 0;
 						vText.Color = cache.Color;
 						vText.TexCoord = metric.TexCoord;
 						vText.CharacterDimension = vec2(metric.Width, metric.Height);
+						vText.SizeMult = sizeMult;
 						vText.ChannelId = metric.Channel;
 
 						tVerts.push_back(vText);

@@ -6,12 +6,13 @@ class TextRenderer;
 struct TextCache
 {
 public:
-	TextCache(const std::string& text, vec2 pos, vec4 col) :
-		Text(text), Position(pos), Color(col) {}
+	TextCache(const std::string& text, vec2 pos, vec4 col, int16 size) :
+		Text(text), Position(pos), Color(col), Size(size) {}
 
 	const std::string Text;
 	vec2 Position;
 	vec4 Color;
+	int16 Size;
 
 private:
 	TextCache& operator=(const TextCache &tmp);

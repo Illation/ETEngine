@@ -229,7 +229,7 @@ void PhysicsTestScene::Draw()
 	outString = "Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS());
 	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20 + (m_pDebugFont->GetFontSize()*1.1f) * 2));
 	outString = "Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls);
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20 + (m_pDebugFont->GetFontSize()*1.1f) * 3));
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20 + (m_pDebugFont->GetFontSize()*1.1f*5) * 3), 128);
 
 	vec3 lightPos = m_pLightEntity->GetTransform()->GetPosition();
 	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(2, 0, 0), vec4(1, 0, 0, 1), 2);
