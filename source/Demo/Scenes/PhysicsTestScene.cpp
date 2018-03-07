@@ -22,6 +22,7 @@
 #include "..\Engine\GraphicsHelper\DebugRenderer.h"
 #include "..\Engine\Helper\ScreenshotCapture.h"
 #include "..\Engine\GraphicsHelper\SpriteRenderer.hpp"
+#include "..\Engine\Graphics\TextureData.hpp"
 
 PhysicsTestScene::PhysicsTestScene() : AbstractScene("PhysicsTestScene")
 {
@@ -39,7 +40,6 @@ void PhysicsTestScene::Initialize()
 	//Fonts
 	//**************************
 	m_pDebugFont = ContentManager::Load<SpriteFont>("Resources/Fonts/Ubuntu-Regular.ttf");
-	//m_pDebugFont = ContentManager::Load<SpriteFont>("Resources/Fonts/Consolas_32.fnt");
 
 	//Materials
 	//**************************
@@ -215,8 +215,8 @@ void PhysicsTestScene::Update()
 		GRAPHICS.UseFXAA = !(GRAPHICS.UseFXAA);
 	}
 
-	SpriteRenderer::GetInstance()->Draw(m_pDebugFont->GetAtlas(), vec2(200, 200), 
-		vec4(1), vec2(0), vec2(4), 0, 0, SpriteScalingMode::TEXTURE_ABS);
+	SpriteRenderer::GetInstance()->Draw(m_pDebugFont->GetAtlas(), vec2(1000, 0), 
+		vec4(1), vec2(0), vec2(1), 0, 0, SpriteScalingMode::TEXTURE_ABS);
 }
 
 void PhysicsTestScene::Draw()
@@ -224,12 +224,12 @@ void PhysicsTestScene::Draw()
 	TextRenderer::GetInstance()->SetFont(m_pDebugFont);
 	TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
 	std::string outString = "FPS: " + std::to_string(PERFORMANCE->GetRegularFPS());
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 40));
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20 + (m_pDebugFont->GetFontSize()*1.1f) * 1));
 	TextRenderer::GetInstance()->SetColor(vec4(1, 1, 1, 1));
 	outString = "Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS());
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 72));
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20 + (m_pDebugFont->GetFontSize()*1.1f) * 2));
 	outString = "Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls);
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 104));
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20 + (m_pDebugFont->GetFontSize()*1.1f) * 3));
 
 	vec3 lightPos = m_pLightEntity->GetTransform()->GetPosition();
 	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(2, 0, 0), vec4(1, 0, 0, 1), 2);

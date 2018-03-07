@@ -46,6 +46,8 @@ public:
 
 	TextureData* GetAtlas() { return m_pTexture; }
 
+	int16 GetFontSize() { return m_FontSize; }
+
 private:
 	friend class TextRenderer;
 	friend class FontLoader;
@@ -65,6 +67,8 @@ private:
 	int32 m_BufferStart, m_BufferSize;
 	TextureData *m_pTexture;
 	bool m_IsAddedToRenderer;
+
+	bool m_IsCachedFont = false;
 
 private:
 	// -------------------------

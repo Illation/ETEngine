@@ -26,6 +26,11 @@ SpriteFont::SpriteFont() :
 
 SpriteFont::~SpriteFont()
 {
+	//Cached fonts have their textures loaded through the content manager, so don't need to manage their memory
+	if (!m_IsCachedFont)
+	{
+		SafeDelete(m_pTexture);
+	}
 }
 
 bool SpriteFont::IsCharValid(const wchar_t& character)

@@ -36,4 +36,5 @@ private:
 	float m_LightRotDistance = 1.f;
 
 	SpriteFont* m_pDebugFont = nullptr;
+	SpriteFont* m_pDebugFont2 = nullptr;
 };

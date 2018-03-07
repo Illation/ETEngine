@@ -10,6 +10,8 @@ public:
 	FontLoader();
 	~FontLoader();
 
+	void SetFontSize(uint32 size) { m_FontSize = size; }
+	void SetPadding(uint32 value) { m_Padding = value; }
 
 protected:
 	virtual SpriteFont* LoadContent(const std::string& assetFile);
@@ -19,6 +21,7 @@ private:
 	SpriteFont* LoadTtf(const std::vector<uint8>& binaryContent);
 	SpriteFont* LoadFnt(const std::vector<uint8>& binaryContent, const std::string& assetFile);
 
-	uint32 m_FontSize = 32;
+	uint32 m_FontSize = 64;
+	uint32 m_Padding = 1;
 };
 

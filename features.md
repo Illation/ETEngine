@@ -15,6 +15,7 @@
  * Render Pipeline Object
  * Frustum culling
  * Sprite font rendering
+     * Dynamic font file rasterization (any size)
  * Sprite rendering
  * Primitive renderer
  * GLSL shader preprocessing with includes and vertex / geo / fragment specializations
@@ -82,7 +83,6 @@
      * Sorting objects before rendering
      * batching 
  * UI
-     * Dynamic font file rasterization (any size)
      * UI Space definition and pipeline stage
  * Utility
      * Generate some common shaders from code
