@@ -76,23 +76,31 @@ void TextRenderer::SetFont(SpriteFont* pFont)
 
 ivec2 TextRenderer::GetTextSize(const std::string &text, SpriteFont* pFont)
 {
-	ivec2 ret = ivec2(0);
+	vec2 ret = vec2(0);
 	for (auto charId : text)
 	{
+		char previous = 0;
 		if (SpriteFont::IsCharValid(charId) && pFont->GetMetric(charId).IsValid)
 		{
 			auto metric = pFont->GetMetric(charId);
+
+			vec2 kerningVec = 0;
+			if (pFont->m_UseKerning)kerningVec = metric.GetKerningVec(static_cast<wchar_t>(previous));
+			previous = charId;
+			ret.x += (int32)kerningVec.x;
+
 			if (charId == ' ')
 			{
 				ret.x += metric.AdvanceX;
 				continue;
 			}
+
 			ret.x += metric.AdvanceX;
-			ret.y = std::max(ret.y, (int32)(metric.Height + metric.OffsetY));
+			ret.y = std::max(ret.y, (float)metric.Height + (float)metric.OffsetY + kerningVec.y);
 		}
 		else LOG("TextRenderer::GetTextSize>char not supported for current font", Warning);
 	}
-	return ret;
+	return etm::vecCast<int32>(ret);
 }
 
 void TextRenderer::OnWindowResize()
@@ -123,6 +131,8 @@ void TextRenderer::Draw()
 	STATE->BindVertexArray(m_VAO);
 
 	UpdateBuffer();
+
+	if (INPUT->IsKeyboardKeyPressed('K'))m_bUseKerning = !m_bUseKerning;
 
 	//Enable this objects shader
 	CalculateTransform();
@@ -163,12 +173,18 @@ void TextRenderer::UpdateBuffer()
 			for (auto cache : pFont->m_TextCache)
 			{
 				float sizeMult = (float)cache.Size / (float)pFont->GetFontSize();
-				int32 totalAdvanceX = 0;
+				float totalAdvanceX = 0;
+				char previous = 0;
 				for (auto charId : cache.Text)
 				{
 					if (SpriteFont::IsCharValid(charId) && pFont->GetMetric(charId).IsValid)
 					{
 						auto metric = pFont->GetMetric(charId);
+
+						vec2 kerningVec = 0;
+						if (pFont->m_UseKerning && m_bUseKerning)kerningVec = metric.GetKerningVec(static_cast<wchar_t>(previous)) * sizeMult;
+						previous = charId;
+						totalAdvanceX += kerningVec.x;
 
 						if (charId == ' ')
 						{
@@ -178,7 +194,7 @@ void TextRenderer::UpdateBuffer()
 
 						TextVertex vText;
 						vText.Position.x = cache.Position.x + (totalAdvanceX + metric.OffsetX)*sizeMult;
-						vText.Position.y = cache.Position.y + metric.OffsetY*sizeMult;
+						vText.Position.y = cache.Position.y + (kerningVec.y + metric.OffsetY)*sizeMult;
 						vText.Position.z = 0;
 						vText.Color = cache.Color;
 						vText.TexCoord = metric.TexCoord;

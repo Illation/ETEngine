@@ -18,8 +18,7 @@ SpriteFont::SpriteFont() :
 {
 	for (int32 i = 0; i < CHAR_COUNT; ++i)
 	{
-		ZeroMemory((void*)&m_CharTable[i], sizeof(FontMetric));
-		m_CharTable[i].IsValid = false;
+		m_CharTable[i].Kerning = std::map<wchar_t, vec2>();
 	}
 }
 
@@ -39,4 +38,15 @@ bool SpriteFont::IsCharValid(const wchar_t& character)
 		return true;
 
 	return false;
+}
+
+vec2 FontMetric::GetKerningVec(wchar_t previous)
+{
+	vec2 kerningVec = vec2(0);
+	auto kerningIt = Kerning.find(previous);
+	if (kerningIt != Kerning.end())
+	{
+		kerningVec = kerningIt->second;
+	}
+	return kerningVec;
 }

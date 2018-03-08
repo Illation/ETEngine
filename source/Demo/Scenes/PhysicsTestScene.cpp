@@ -229,7 +229,18 @@ void PhysicsTestScene::Draw()
 	outString = "Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS());
 	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20 + (m_pDebugFont->GetFontSize()*1.1f) * 2));
 	outString = "Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls);
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20 + (m_pDebugFont->GetFontSize()*1.1f*5) * 3), 128);
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 100 + (m_pDebugFont->GetFontSize()*1.1f) * 3), 128);
+	outString = "VAWAVMVoV.";
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 100 + (m_pDebugFont->GetFontSize()*1.1f) * 5), 128);
+
+	outString = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do ";
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 100 + (m_pDebugFont->GetFontSize()*2.5f) * 5), 64);
+	outString = "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut ";
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 100 + (m_pDebugFont->GetFontSize()*2.5f) * 6), 64);
+	outString = "enim ad minim veniam, quis nostrud exercitation ullamco ";
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 100 + (m_pDebugFont->GetFontSize()*2.5f) * 7), 64);
+	outString = "laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure ";
+	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 100 + (m_pDebugFont->GetFontSize()*2.5f) * 8), 64);
 
 	vec3 lightPos = m_pLightEntity->GetTransform()->GetPosition();
 	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(2, 0, 0), vec4(1, 0, 0, 1), 2);

@@ -20,17 +20,22 @@ private:
 
 struct FontMetric
 {
-	//BMFONT
-	bool IsValid;
-	wchar_t Character;
-	uint16 Width;
-	uint16 Height;
-	int16 OffsetX;
-	int16 OffsetY;
-	int16 AdvanceX;
-	uint8 Page;
-	uint8 Channel;
-	vec2 TexCoord;
+	vec2 GetKerningVec(wchar_t previous);
+
+	bool IsValid = false;
+	wchar_t Character = 0;
+
+	uint16 Width = 0;
+	uint16 Height = 0;
+	int16 OffsetX = 0;
+	int16 OffsetY = 0;
+
+	float AdvanceX = 0;
+	std::map<wchar_t, vec2> Kerning;
+
+	uint8 Page = 0;
+	uint8 Channel = 0;
+	vec2 TexCoord = 0;
 };
 
 class SpriteFont
@@ -63,6 +68,7 @@ private:
 	std::string m_FontName;
 	int32 m_CharacterCount;
 	int32 m_CharacterSpacing;
+	bool m_UseKerning = false;
 	int32 m_TextureWidth;
 	int32 m_TextureHeight;
 	int32 m_BufferStart, m_BufferSize;

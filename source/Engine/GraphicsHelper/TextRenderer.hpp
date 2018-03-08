@@ -45,6 +45,8 @@ private:
 
 	void CalculateTransform();
 
+	bool m_bUseKerning = true;
+
 	ShaderData* m_pTextShader;
 	std::vector<SpriteFont*> m_pSpriteFonts;
 
