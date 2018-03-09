@@ -22,7 +22,6 @@ private:
 	//Classes that need to call the Draw function
 	friend class RenderPipeline;
 	friend class UIPortal;
-	friend class FontLoader;
 #ifdef EDITOR
 	friend class Editor;
 #endif

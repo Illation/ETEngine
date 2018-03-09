@@ -23,5 +23,7 @@ private:
 
 	uint32 m_FontSize = 42;
 	uint32 m_Padding = 1;
+	//uint32 m_Spread = 5;
+	//uint32 m_HighRes = 16;
 };
 

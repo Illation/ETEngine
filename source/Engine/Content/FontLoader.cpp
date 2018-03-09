@@ -8,8 +8,8 @@
 #include <ft2build.h>
 #include <freetype/freetype.h>
 #include "TextureData.hpp"
-#include "SpriteRenderer.hpp"
-//#include FT_FREETYPE_H  
+#include "PrimitiveRenderer.hpp"
+#include "ShaderData.hpp"
 
 FontLoader::FontLoader()
 {
@@ -104,10 +104,6 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	pFont->m_UseKerning = FT_HAS_KERNING(face) != 0;
 
-	TextureParameters params(false);
-	params.wrapS = GL_CLAMP_TO_EDGE;
-	params.wrapT = GL_CLAMP_TO_EDGE;
-
 	//Atlasing helper variables
 	ivec2 startPos[4] = { ivec2(0), ivec2(0), ivec2(0), ivec2(0) };
 	ivec2 maxPos[4] = { ivec2(0), ivec2(0), ivec2(0), ivec2(0) };
@@ -116,13 +112,8 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	uint32 curPos = 0;//internal move count
 	uint32 channel = 0;//channel to add to
 
-	//Load individual characters
-	struct TempChar
-	{
-		FontMetric* metric;
-		TextureData* texture;
-	};
-	std::map<int32, TempChar> characters;
+	//Load individual character metrics
+	std::map<int32, FontMetric*> characters;
 	for (int32 c = 0; c < SpriteFont::CHAR_COUNT-1; c++)
 	{
 		FontMetric* metric = &(pFont->GetMetric(static_cast<wchar_t>(c)));
@@ -151,37 +142,9 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 			LOG("FREETYPE: Failed to load glyph", Warning);
 			continue;
 		}
-		if (!(face->glyph->format == FT_GLYPH_FORMAT_BITMAP))
-		{
-			if (FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL))
-			{
-				LOG("FREETYPE: Failed to render glyph", Warning);
-				continue;
-			}
-		}
 
-		//setup temporary texture
-		//Expand bitmap into multiple channels for rgba masking
-		uint32 width = face->glyph->bitmap.width;
-		uint32 height = face->glyph->bitmap.rows;
-		std::vector<uint8> extended(width*height * 4);
-		for (uint32 y = 0; y < height; y++)
-		{
-			for (uint32 x = 0; x < width; x++)
-			{
-				extended[(y*width + x) * 4 + 0] = face->glyph->bitmap.buffer[y*width + x];
-				extended[(y*width + x) * 4 + 1] = face->glyph->bitmap.buffer[y*width + x];
-				extended[(y*width + x) * 4 + 2] = face->glyph->bitmap.buffer[y*width + x];
-				extended[(y*width + x) * 4 + 3] = face->glyph->bitmap.buffer[y*width + x];
-			}
-		}
-		TempChar character;
-		character.texture = new TextureData(width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
-		character.texture->Build(extended.data());
-		character.texture->SetParameters(params);
-
-		width += m_Padding * 2;
-		height += m_Padding * 2;
+		uint32 width = face->glyph->bitmap.width + m_Padding * 2;
+		uint32 height = face->glyph->bitmap.rows + m_Padding * 2;
 
 		metric->Width = (uint16)width;
 		metric->Height = (uint16)height;
@@ -227,16 +190,17 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 		}
 
 		metric->IsValid = true;
-		character.metric = metric;
-		characters[c] = character;
+
+		characters[c] = metric;
 	}
 
-	FT_Done_Face(face);
-	FT_Done_FreeType(ft);
-
-	//Setup rendering
 	pFont->m_TextureWidth = std::max(std::max(maxPos[0].x, maxPos[1].x), std::max(maxPos[2].x, maxPos[3].x));
 	pFont->m_TextureHeight = std::max(std::max(maxPos[0].y, maxPos[1].y), std::max(maxPos[2].y, maxPos[3].y));
+
+	//Setup rendering
+	TextureParameters params(false);
+	params.wrapS = GL_CLAMP_TO_EDGE;
+	params.wrapT = GL_CLAMP_TO_EDGE;
 	
 	pFont->m_pTexture = new TextureData(pFont->m_TextureWidth, pFont->m_TextureHeight, GL_RGBA16F, GL_RGBA, GL_FLOAT);
 	pFont->m_pTexture->Build();
@@ -256,32 +220,58 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	STATE->SetViewport(ivec2(0), ivec2(pFont->m_TextureWidth, pFont->m_TextureHeight));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//Render to atlas
-	for (auto& character : characters)
-	{
-		auto metric = character.second.metric;
-		vec4 color(0);
-		color[metric->Channel] = 1.f;
-		SpriteRenderer::GetInstance()->Draw(character.second.texture, metric->TexCoord+vec2((float)m_Padding), color, 
-			vec2(0, 1), vec2(1, -1), 0, 0, SpriteScalingMode::TEXTURE_ABS);//Also flips character
-
-		metric->TexCoord = (metric->TexCoord+vec2(0, metric->Height)) / vec2((float)pFont->m_TextureWidth, (float)pFont->m_TextureHeight);
-		metric->TexCoord.y = 1 - metric->TexCoord.y;
-	}
+	ShaderData* pComputeSDF = ContentManager::Load<ShaderData>("Shaders/ComputeGlyphSDF.glsl");
+	STATE->SetShader(pComputeSDF);
+	glUniform1i(glGetUniformLocation(pComputeSDF->GetProgram(), "uTex"), 0);
+	auto uChannel = glGetUniformLocation(pComputeSDF->GetProgram(), "uChannel");
 
 	STATE->SetBlendEnabled(true);
 	STATE->SetBlendEquation(GL_FUNC_ADD);
 	STATE->SetBlendFunction(GL_ONE, GL_ONE);
-	SpriteRenderer::GetInstance()->Draw();
+
+	//Render to Glyphs atlas
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	for (auto& character : characters)
+	{
+		auto metric = character.second;
+
+		uint32 glyphIdx = FT_Get_Char_Index(face, metric->Character);
+		if (FT_Load_Glyph(face, glyphIdx, FT_LOAD_DEFAULT))
+		{
+			LOG("FREETYPE: Failed to load glyph", Warning);
+			continue;
+		}
+		if (!(face->glyph->format == FT_GLYPH_FORMAT_BITMAP))
+		{
+			if (FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL))
+			{
+				LOG("FREETYPE: Failed to render glyph", Warning);
+				continue;
+			}
+		}
+
+		uint32 width = face->glyph->bitmap.width;
+		uint32 height = face->glyph->bitmap.rows;
+		auto pTexture = new TextureData(width, height, GL_RED, GL_RED, GL_UNSIGNED_BYTE);
+		pTexture->Build(face->glyph->bitmap.buffer);
+		pTexture->SetParameters(params);
+
+		STATE->SetViewport(etm::vecCast<int32>(metric->TexCoord)+ivec2(m_Padding), pTexture->GetResolution());
+		STATE->LazyBindTexture(0, GL_TEXTURE_2D, pTexture->GetHandle());
+		glUniform1i(uChannel, metric->Channel);
+		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+
+		delete pTexture;
+
+		//modify texture coordinates after rendering sprites
+		metric->TexCoord = metric->TexCoord / vec2((float)pFont->m_TextureWidth, (float)pFont->m_TextureHeight);
+	}
 
 	//Cleanup
 	STATE->SetBlendEnabled(false);
 
-	for (auto& character : characters)
-	{
-		delete character.second.texture;
-		character.second.texture = nullptr;
-	}
+	FT_Done_Face(face);
+	FT_Done_FreeType(ft);
 
 	STATE->BindFramebuffer(0);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
