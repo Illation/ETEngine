@@ -112,6 +112,8 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	uint32 curPos = 0;//internal move count
 	uint32 channel = 0;//channel to add to
 
+	uint32 totPadding = m_Padding + m_Spread;
+
 	//Load individual character metrics
 	std::map<int32, FontMetric*> characters;
 	for (int32 c = 0; c < SpriteFont::CHAR_COUNT-1; c++)
@@ -143,13 +145,13 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 			continue;
 		}
 
-		uint32 width = face->glyph->bitmap.width + m_Padding * 2;
-		uint32 height = face->glyph->bitmap.rows + m_Padding * 2;
+		uint32 width = face->glyph->bitmap.width + totPadding * 2;
+		uint32 height = face->glyph->bitmap.rows + totPadding * 2;
 
 		metric->Width = (uint16)width;
 		metric->Height = (uint16)height;
-		metric->OffsetX = (int16)face->glyph->bitmap_left + (int16)m_Padding;
-		metric->OffsetY = -(int16)(face->glyph->bitmap_top + (int16)m_Padding);
+		metric->OffsetX = (int16)face->glyph->bitmap_left + (int16)totPadding;
+		metric->OffsetY = -(int16)(face->glyph->bitmap_top + (int16)totPadding);
 		metric->AdvanceX = (float)face->glyph->advance.x / 64.f;
 
 		//Generate atlas coordinates
@@ -224,12 +226,16 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	STATE->SetShader(pComputeSDF);
 	glUniform1i(glGetUniformLocation(pComputeSDF->GetProgram(), "uTex"), 0);
 	auto uChannel = glGetUniformLocation(pComputeSDF->GetProgram(), "uChannel");
+	auto uResolution = glGetUniformLocation(pComputeSDF->GetProgram(), "uResolution");
+	glUniform1f(glGetUniformLocation(pComputeSDF->GetProgram(), "uSpread"), (float)m_Spread);
+	glUniform1f(glGetUniformLocation(pComputeSDF->GetProgram(), "uHighRes"), (float)m_HighRes);
 
 	STATE->SetBlendEnabled(true);
 	STATE->SetBlendEquation(GL_FUNC_ADD);
 	STATE->SetBlendFunction(GL_ONE, GL_ONE);
 
 	//Render to Glyphs atlas
+	FT_Set_Pixel_Sizes(face, 0, m_FontSize * m_HighRes);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	for (auto& character : characters)
 	{
@@ -256,9 +262,11 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 		pTexture->Build(face->glyph->bitmap.buffer);
 		pTexture->SetParameters(params);
 
-		STATE->SetViewport(etm::vecCast<int32>(metric->TexCoord)+ivec2(m_Padding), pTexture->GetResolution());
+		ivec2 res = ivec2(metric->Width - totPadding * 2, metric->Height - totPadding * 2);
+		STATE->SetViewport(etm::vecCast<int32>(metric->TexCoord)+ivec2(totPadding), res);
 		STATE->LazyBindTexture(0, GL_TEXTURE_2D, pTexture->GetHandle());
 		glUniform1i(uChannel, metric->Channel);
+		glUniform2f(uResolution, (float)res.x, (float)res.y);
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
 		delete pTexture;

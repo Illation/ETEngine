@@ -229,6 +229,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	glUniform1f(m_uGamma, settings.gamma);
 	glUniform1f(m_uBloomMult, settings.bloomMult);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	RenderPipeline::GetInstance()->DrawOverlays();//Make sure text and sprites get antialiased
 	//FXAA
 	if (GRAPHICS.UseFXAA)
 	{

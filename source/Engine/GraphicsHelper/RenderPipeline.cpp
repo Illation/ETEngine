@@ -211,9 +211,6 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	if(pScenes.size() > 0)
 		m_pPostProcessing->Draw(outFBO, pScenes[0]->GetPostProcessingSettings());
 
-	SpriteRenderer::GetInstance()->Draw();
-	TextRenderer::GetInstance()->Draw();
-
 	for (auto pScene : pScenes)
 	{
 		pScene->PostDraw();
@@ -222,6 +219,12 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	ScreenshotCapture::GetInstance()->HandleCapture();
 
 	PERFORMANCE->Update();
+}
+
+void RenderPipeline::DrawOverlays()//Called from within postprocessing draw method
+{
+	SpriteRenderer::GetInstance()->Draw();
+	TextRenderer::GetInstance()->Draw();
 }
 
 void RenderPipeline::SwapBuffers()

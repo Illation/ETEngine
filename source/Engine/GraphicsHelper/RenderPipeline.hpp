@@ -18,6 +18,7 @@ public:
 
 	void DrawShadow();
 	void Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO);
+	void DrawOverlays();
 
 	void SwapBuffers();
 
