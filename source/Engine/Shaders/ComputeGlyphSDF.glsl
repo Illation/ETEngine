@@ -3,10 +3,16 @@
 	layout (location = 0) in vec3 pos;
 	layout (location = 1) in vec2 texCoords;
 	out vec2 Texcoord;
-
+	
+	uniform vec2 uResolution;
+	uniform float uSpread;
 	void main()
 	{
 		Texcoord = texCoords;
+		vec2 adjustment = vec2(uSpread*2)/uResolution;
+		Texcoord -= vec2(0.5);
+		Texcoord *= vec2(1)+adjustment;
+		Texcoord += vec2(0.5);
 		gl_Position = vec4(pos, 1.0);
 	}
 </VERTEX>
@@ -27,15 +33,17 @@
 		bool local = texture(uTex, Texcoord).r > 0.5; //local value
 
 		//get closest opposite
-		vec2 startPos = Texcoord - vec2(uSpread) / uResolution;
-		vec2 delta = vec2(1 / (uSpread * uHighRes * 2)) / uResolution;
+		vec2 startPos = Texcoord - (vec2(uSpread) / uResolution);
+		vec2 delta = vec2(1 / (uSpread * uHighRes * 2));
 		float closest = uSpread;
 		for(int y = 0; y < int(uSpread * uHighRes * 2); ++y)
 		{
 			for(int x = 0; x < int(uSpread * uHighRes * 2); ++x)
 			{
 				vec2 samplePos = startPos + vec2(x, y) * delta;
-				float dist = distance(Texcoord*uResolution, samplePos*uResolution);
+				vec2 diff = (Texcoord-samplePos)*uResolution;
+				diff.x *= uResolution.x/uResolution.y;
+				float dist = length(diff);
 				if(dist < closest)
 				{
 					bool sampled = texture(uTex, samplePos).r > 0.5;

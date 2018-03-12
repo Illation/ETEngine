@@ -101,18 +101,27 @@
 	} inputs;
 	uniform sampler2D fontTex;
 
-	uniform float uThreshold = 0.5f;
+	uniform float uThreshold = 0.45;
+	uniform float uOutline = 0.15f;
 
 	out vec4 outColor;
 	
 	void main()
 	{
 		float tValue = texture( fontTex, inputs.texCoord )[inputs.channel];
-		if( tValue < uThreshold ) 
+		if( tValue < uThreshold) 
 		{
 			discard;
 		}
-		vec4 textureColor = inputs.color;// * tValue;
+		vec4 textureColor;
+		if(tValue < uThreshold + uOutline)
+		{
+			textureColor = vec4(0);
+		}
+		else
+		{
+			textureColor = inputs.color;// * tValue;
+		}
 		outColor = textureColor;
 	} 
 </FRAGMENT>

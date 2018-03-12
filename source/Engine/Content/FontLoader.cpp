@@ -230,6 +230,10 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	glUniform1f(glGetUniformLocation(pComputeSDF->GetProgram(), "uSpread"), (float)m_Spread);
 	glUniform1f(glGetUniformLocation(pComputeSDF->GetProgram(), "uHighRes"), (float)m_HighRes);
 
+	params.wrapS = GL_CLAMP_TO_BORDER;
+	params.wrapT = GL_CLAMP_TO_BORDER;
+	params.borderColor = vec4(0);
+
 	STATE->SetBlendEnabled(true);
 	STATE->SetBlendEquation(GL_FUNC_ADD);
 	STATE->SetBlendFunction(GL_ONE, GL_ONE);
@@ -262,8 +266,8 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 		pTexture->Build(face->glyph->bitmap.buffer);
 		pTexture->SetParameters(params);
 
-		ivec2 res = ivec2(metric->Width - totPadding * 2, metric->Height - totPadding * 2);
-		STATE->SetViewport(etm::vecCast<int32>(metric->TexCoord)+ivec2(totPadding), res);
+		ivec2 res = ivec2(metric->Width - m_Padding * 2, metric->Height - m_Padding * 2);
+		STATE->SetViewport(etm::vecCast<int32>(metric->TexCoord)+ivec2(m_Padding), res);
 		STATE->LazyBindTexture(0, GL_TEXTURE_2D, pTexture->GetHandle());
 		glUniform1i(uChannel, metric->Channel);
 		glUniform2f(uResolution, (float)res.x, (float)res.y);

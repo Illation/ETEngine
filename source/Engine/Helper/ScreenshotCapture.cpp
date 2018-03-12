@@ -71,7 +71,7 @@ void ScreenshotCapture::HandleCapture()
 
 	// Convert to FreeImage format & save to file
 	FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, WINDOW.Width, WINDOW.Height, 3 * WINDOW.Width, 24, 0xFF0000, 0x00FF00, 0x0000FF, false);
-	if (FreeImage_Save(m_Format, image, filename.c_str(), 0))
+	if (FreeImage_Save(m_Format, image, filename.c_str(), JPEG_QUALITYSUPERB))
 	{
 		LOG("Screenshot saved to: " + filename);
 	}
