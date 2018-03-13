@@ -88,11 +88,13 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 	if (useGeo)glDeleteShader(geoShader);
 	if (useFrag)glDeleteShader(fragmentShader);
 
-	LOG(loadingString + " . . . getting uniforms          ", Info, false, logPos);
-	GetUniformLocations(shaderProgram, uniforms);
-
 	ShaderData* pShaderData = new ShaderData(shaderProgram);
 	pShaderData->m_Name = assetFile;
+
+	LOG(loadingString + " . . . getting uniforms          ", Info, false, logPos);
+	STATE->SetShader(pShaderData);
+	GetUniformLocations(shaderProgram, uniforms);
+
 	pShaderData->m_Uniforms = uniforms;
 
 	LOG(loadingString + " . . . SUCCESS!          ", Info, false, logPos);

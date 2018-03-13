@@ -9,7 +9,7 @@
 		"Use FXAA": true
     },
     "window": {
-        "Fullscreen": false,
+        "Fullscreen": true,
         "Title": "ETEngine Demo",
         "Resolutions": [
             [ 1280, 720 ],
@@ -19,6 +19,6 @@
         "Fullscreen Resolution": 2,
         "Windowed Resolution": 1
     },
-    "start scene": "PhysicsTestScene",
+    "start scene": "PlanetTestScene",
 	"screenshot dir": "./Screenshots/"
 }

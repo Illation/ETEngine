@@ -120,7 +120,7 @@
 		float hD = height(uv + texOffset.zy, tex);
 		float hU = height(uv - texOffset.zy, tex);
 		// deduce terrain normal
-		vec3 N = normalize(vec3(hR - hL, hD - hU, 2.0));
+		vec3 N = normalize(vec3(hL - hR, hU - hD, 2.0));
 		vec3 norm = normalize(Normal);
 		vec3 up = vec3(0, 1, 0)-norm;
 		vec3 tang = normalize(cross(norm, up));//might need flipping
