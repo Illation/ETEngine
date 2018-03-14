@@ -25,7 +25,11 @@ public:
 	RenderState* GetState() { return m_pState; }
 
 	void OnResize();
+
 private:
+	void ShowSplashScreen();
+
+
 	std::vector<AbstractScene*> m_pRenderScenes;
 
 	RenderState* m_pState;

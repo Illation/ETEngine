@@ -79,6 +79,8 @@ void RenderPipeline::Initialize()
 	m_ClearColor = vec3(101.f / 255.f, 114.f / 255.f, 107.f / 255.f)*0.1f;
 
 	WINDOW.WindowResizeEvent.AddListener( std::bind( &RenderPipeline::OnResize, this ) );
+
+	ShowSplashScreen();
 }
 
 void RenderPipeline::DrawShadow()
@@ -240,4 +242,31 @@ void RenderPipeline::OnResize()
 	m_pSSR->~ScreenSpaceReflections();
 	m_pSSR = new(m_pSSR) ScreenSpaceReflections();
 	m_pSSR->Initialize();
+}
+
+void RenderPipeline::ShowSplashScreen()
+{
+	TextureData* pBGTex = ContentManager::Load<TextureData>("Resources/Textures/Splashscreen.jpg");
+	SpriteFont* pTitleFont = ContentManager::Load<SpriteFont>("Resources/Fonts/roboto2014/Roboto-Bold.ttf");
+	SpriteFont* pRegFont = ContentManager::Load<SpriteFont>("Resources/Fonts/roboto2014/RobotoCondensed-Regular.ttf");
+
+	SpriteRenderer::GetInstance()->Draw(pBGTex, vec2(0));
+
+	std::string title = "E   T   E N G I N E";
+	int16 titleFontSize = (int16)(150 * ((float)WINDOW.Height / (float)1440));
+	ivec2 titleSize = TextRenderer::GetInstance()->GetTextSize(title, pTitleFont, titleFontSize);
+	TextRenderer::GetInstance()->SetColor(vec4(1));
+	TextRenderer::GetInstance()->SetFont(pTitleFont);
+	TextRenderer::GetInstance()->DrawText(title, etm::vecCast<float>(WINDOW.Dimensions/2-titleSize/2), titleFontSize);
+
+	std::string loading = "LOADING";
+	int16 loadingFontSize = (int16)(50 * ((float)WINDOW.Height / (float)1440));
+	ivec2 loadingSize = TextRenderer::GetInstance()->GetTextSize(loading, pTitleFont, loadingFontSize);
+	//TextRenderer::GetInstance()->SetFont(pRegFont);
+	TextRenderer::GetInstance()->DrawText(loading, etm::vecCast<float>(WINDOW.Dimensions - ivec2(loadingSize.x + 20, 20)), loadingFontSize);
+
+	SpriteRenderer::GetInstance()->Draw();
+	TextRenderer::GetInstance()->Draw();
+
+	SwapBuffers();
 }

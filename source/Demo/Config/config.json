@@ -9,7 +9,7 @@
 		"Use FXAA": true
     },
     "window": {
-        "Fullscreen": true,
+        "Fullscreen": false,
         "Title": "ETEngine Demo",
         "Resolutions": [
             [ 1280, 720 ],

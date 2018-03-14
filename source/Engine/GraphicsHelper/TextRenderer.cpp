@@ -74,8 +74,10 @@ void TextRenderer::SetFont(SpriteFont* pFont)
 	else m_ActiveFontIdx = pos - m_pSpriteFonts.begin();
 }
 
-ivec2 TextRenderer::GetTextSize(const std::string &text, SpriteFont* pFont)
+ivec2 TextRenderer::GetTextSize(const std::string &text, SpriteFont* pFont, int16 fontSize /*= 0*/)
 {
+	if (fontSize <= 0) fontSize = pFont->GetFontSize();
+	float sizeMult = (float)fontSize / (float)pFont->GetFontSize();
 	vec2 ret = vec2(0);
 	for (auto charId : text)
 	{
@@ -87,16 +89,11 @@ ivec2 TextRenderer::GetTextSize(const std::string &text, SpriteFont* pFont)
 			vec2 kerningVec = 0;
 			if (pFont->m_UseKerning)kerningVec = metric.GetKerningVec(static_cast<wchar_t>(previous));
 			previous = charId;
-			ret.x += (int32)kerningVec.x;
 
-			if (charId == ' ')
-			{
-				ret.x += metric.AdvanceX;
-				continue;
-			}
+			ret.x += (metric.AdvanceX +(int32)kerningVec.x) * sizeMult;
 
-			ret.x += metric.AdvanceX;
-			ret.y = std::max(ret.y, (float)metric.Height + (float)metric.OffsetY + kerningVec.y);
+			if (charId == ' ') continue;
+			ret.y = std::max(ret.y, ((float)metric.Height + (float)metric.OffsetY + kerningVec.y)*sizeMult);
 		}
 		else LOG("TextRenderer::GetTextSize>char not supported for current font", Warning);
 	}
