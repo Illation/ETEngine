@@ -91,6 +91,8 @@ void SceneManager::Update()
 		m_ActiveScene = m_NewActiveScene;
 		m_NewActiveScene = nullptr;
 
+		RenderPipeline::GetInstance()->ShowSplashScreen();
+
 		LOG(std::string("Switching to scene: ") + m_ActiveScene->m_Name);
 		//Active the new scene and reset SceneTimer
 		m_ActiveScene->RootOnActivated();

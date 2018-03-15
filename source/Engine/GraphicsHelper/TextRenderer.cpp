@@ -165,7 +165,7 @@ void TextRenderer::UpdateBuffer()
 	{
 		if (pFont->m_IsAddedToRenderer)
 		{
-			pFont->m_BufferStart = (int32)tVerts.size() * (sizeof(TextVertex) / sizeof(float));
+			pFont->m_BufferStart = (int32)tVerts.size() *(sizeof(TextVertex) / sizeof(float));
 			pFont->m_BufferSize = 0;
 			for (auto cache : pFont->m_TextCache)
 			{
@@ -206,7 +206,7 @@ void TextRenderer::UpdateBuffer()
 					else LOG("TextRenderer::CreateTextVertices>char not supported for current font", Warning);
 				}
 			}
-			pFont->m_BufferSize = (int32)tVerts.size() - pFont->m_BufferStart+1;
+			pFont->m_BufferSize = (int32)(tVerts.size()) * (sizeof(TextVertex) / sizeof(float)) - pFont->m_BufferStart;
 			pFont->m_TextCache.clear();
 		}
 	}

@@ -50,14 +50,16 @@ void RenderPipeline::Initialize()
 	//Init renderers
 	m_pState = new RenderState();
 	m_pState->Initialize();
+	TextRenderer::GetInstance()->Initialize();
+	SpriteRenderer::GetInstance()->Initialize();
+
+	ShowSplashScreen();
 
 	PointLightVolume::GetInstance();
 	DirectLightVolume::GetInstance();
 
 	DebugRenderer::GetInstance()->Initialize();
 	ShadowRenderer::GetInstance()->Initialize();
-	TextRenderer::GetInstance()->Initialize();
-	SpriteRenderer::GetInstance()->Initialize();
 
 	PerformanceInfo::GetInstance();
 	PrimitiveRenderer::GetInstance();
@@ -79,8 +81,6 @@ void RenderPipeline::Initialize()
 	m_ClearColor = vec3(101.f / 255.f, 114.f / 255.f, 107.f / 255.f)*0.1f;
 
 	WINDOW.WindowResizeEvent.AddListener( std::bind( &RenderPipeline::OnResize, this ) );
-
-	ShowSplashScreen();
 }
 
 void RenderPipeline::DrawShadow()
@@ -259,10 +259,10 @@ void RenderPipeline::ShowSplashScreen()
 	TextRenderer::GetInstance()->SetFont(pTitleFont);
 	TextRenderer::GetInstance()->DrawText(title, etm::vecCast<float>(WINDOW.Dimensions/2-titleSize/2), titleFontSize);
 
+	TextRenderer::GetInstance()->SetFont(pRegFont);
 	std::string loading = "LOADING";
 	int16 loadingFontSize = (int16)(50 * ((float)WINDOW.Height / (float)1440));
-	ivec2 loadingSize = TextRenderer::GetInstance()->GetTextSize(loading, pTitleFont, loadingFontSize);
-	//TextRenderer::GetInstance()->SetFont(pRegFont);
+	ivec2 loadingSize = TextRenderer::GetInstance()->GetTextSize(loading, pRegFont, loadingFontSize);
 	TextRenderer::GetInstance()->DrawText(loading, etm::vecCast<float>(WINDOW.Dimensions - ivec2(loadingSize.x + 20, 20)), loadingFontSize);
 
 	SpriteRenderer::GetInstance()->Draw();

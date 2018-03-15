@@ -26,10 +26,9 @@ public:
 
 	void OnResize();
 
-private:
 	void ShowSplashScreen();
 
-
+private:
 	std::vector<AbstractScene*> m_pRenderScenes;
 
 	RenderState* m_pState;
