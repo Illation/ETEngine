@@ -19,6 +19,6 @@
         "Fullscreen Resolution": 2,
         "Windowed Resolution": 1
     },
-    "start scene": "PhysicsTestScene",
+    "start scene": "ShadingTestScene",
 	"screenshot dir": "./Screenshots/"
 }

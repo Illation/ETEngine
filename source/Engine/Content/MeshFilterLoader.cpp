@@ -6,6 +6,9 @@
 #include <Importer.hpp>
 #include <scene.h>  
 #include <postprocess.h>
+#include "FileSystem/Entry.h"
+#include "FileSystem/JSONparser.h"
+#include "FileSystem/JSONdom.h"
 
 #define ASSIMP_BUILD_BOOST_WORAROUND
 
@@ -20,58 +23,105 @@ MeshFilterLoader::~MeshFilterLoader()
 
 MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 {
-	ivec2 logPos = Logger::GetCursorPosition();
-	std::string loadingString = std::string("Loading Mesh: ") + assetFile + " . . .";
+	logPos = Logger::GetCursorPosition();
+	loadingString = std::string("Loading Mesh: ") + assetFile + " . . .";
 
-	LOG(loadingString + " . . . assimp reading file          ", Info, false, logPos);
+	LOG(loadingString + " . . . opening file          ", Info, false, logPos);
 
+	File* input = new File(assetFile, nullptr);
+	if (!input->Open(FILE_ACCESS_MODE::Read))
+	{
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG("    Opening font file failed.", Warning);
+		return nullptr;
+	}
+	std::vector<uint8> binaryContent = input->Read();
+	std::string extension = input->GetExtension();
+	std::string filename = input->GetName();
+	delete input;
+	input = nullptr;
+	if (binaryContent.size() == 0)
+	{
+		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
+		LOG("    Font file is empty.", Warning);
+		return nullptr;
+	}
+
+	MeshFilter* pMesh = nullptr;
+
+	if (extension == "gltf")
+	{
+		LOG(loadingString + " . . . loading gltf          ", Info, false, logPos);
+		pMesh = LoadGLTF(binaryContent);
+	}
+	else
+	{
+		LOG(loadingString + " . . . loading assimp          ", Info, false, logPos);
+		pMesh = LoadAssimp(binaryContent, extension);
+	}
+
+	if (!pMesh)
+	{
+		LOG(loadingString + " . . . FAILED!         ", Warning, false, logPos);
+		return nullptr;
+	}
+
+	if (pMesh->m_Name == "") pMesh->m_Name = filename;
+
+	LOG(loadingString + " . . . SUCCESS!          ", Info, false, logPos);
+	return pMesh;
+}
+
+void MeshFilterLoader::Destroy(MeshFilter* objToDestroy)
+{
+	if (!(objToDestroy == nullptr))
+	{
+		delete objToDestroy;
+		objToDestroy = nullptr;
+	}
+}
+
+MeshFilter* MeshFilterLoader::LoadAssimp(const std::vector<uint8>& binaryContent, const std::string &ext)
+{
 	//Get the assimp mesh
 	auto pImporter = new Assimp::Importer();
-	const aiScene* pAssimpScene = pImporter->ReadFile(assetFile,
+
+	uint32 importFlags = 
 		aiProcess_CalcTangentSpace |
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices |
-		//aiProcess_SortByPType |
 		aiProcess_GenSmoothNormals |
 		aiProcess_PreTransformVertices |
 		aiProcess_ImproveCacheLocality |
 		aiProcess_FlipUVs |
 		aiProcess_OptimizeMeshes |
 		aiProcess_OptimizeGraph |
-		aiProcess_MakeLeftHanded);
+		aiProcess_MakeLeftHanded;
+
+	const aiScene* pAssimpScene = pImporter->ReadFileFromMemory(binaryContent.data(), binaryContent.size(), importFlags, ext.c_str());
 	if (!pAssimpScene)
 	{
-		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
 		LOG("	loading scene with assimp failed: ", Warning);
 		LOG(pImporter->GetErrorString(), Warning);
 		return nullptr;
 	}
 	if (!(pAssimpScene->HasMeshes()))
 	{
-		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
 		LOG("	scene found empty", Warning);
 		return nullptr;
 	}
 	const aiMesh *pAssimpMesh = pAssimpScene->mMeshes[0];
 	if (!(pAssimpMesh->HasPositions()))
 	{
-		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
 		LOG("	mesh found empty", Warning);
 		return nullptr;
 	}
 
-	//Create mesh and get header info
 	MeshFilter* pMesh = new MeshFilter();
 	pMesh->m_Name = pAssimpMesh->mName.C_Str();
-	if (pMesh->m_Name == "")
-	{
-		size_t pointPos = assetFile.find_last_of('.');
-		size_t slashPos = assetFile.find_last_of('/');
-		pMesh->m_Name = assetFile.substr(slashPos+1, pointPos-(slashPos+1));
-	}
 	pMesh->m_VertexCount = pAssimpMesh->mNumVertices;
 	pMesh->m_IndexCount = pAssimpMesh->mNumFaces * 3;
-	//Get positions
+
 	if (pAssimpMesh->mNumVertices > 0)
 	{
 		LOG(loadingString + " . . . adding positions          ", Info, false, logPos);
@@ -84,7 +134,6 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 				pAssimpMesh->mVertices[i].z));
 		}
 	}
-	//Get indices
 	if (pAssimpMesh->mNumFaces > 0)
 	{
 		LOG(loadingString + " . . . adding indices          ", Info, false, logPos);
@@ -96,7 +145,6 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 		}
 	}
 	else LOG("No indices found!", Warning);
-	//Get normals
 	if (pAssimpMesh->HasNormals())
 	{
 		LOG(loadingString + " . . . adding normals          ", Info, false, logPos);
@@ -109,7 +157,6 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 				pAssimpMesh->mNormals[i].z));
 		}
 	}
-	//Get tangents and bitangents
 	if (pAssimpMesh->HasTangentsAndBitangents())
 	{
 		LOG(loadingString + " . . . adding (bi)tangents          ", Info, false, logPos);
@@ -127,7 +174,6 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 				pAssimpMesh->mBitangents[i].z));
 		}
 	}
-	//Get vertex colors
 	if (pAssimpMesh->HasVertexColors(0))
 	{
 		LOG(loadingString + " . . . adding vertex colors          ", Info, false, logPos);
@@ -141,7 +187,6 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 				pAssimpMesh->mColors[0][i].a));
 		}
 	}
-	//Get texture coordinates
 	if (pAssimpMesh->HasTextureCoords(0))
 	{
 		LOG(loadingString + " . . . adding texCoords          ", Info, false, logPos);
@@ -157,17 +202,20 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 
 	pMesh->CalculateBoundingVolumes();
 
-	//cleanup
 	delete pImporter;
-	LOG(loadingString + " . . . SUCCESS!          ", Info, false, logPos);
 	return pMesh;
 }
 
-void MeshFilterLoader::Destroy(MeshFilter* objToDestroy)
+MeshFilter* MeshFilterLoader::LoadGLTF(const std::vector<uint8>& binaryContent)
 {
-	if (!(objToDestroy == nullptr))
+	JSON::Parser parser = JSON::Parser(FileUtil::AsText(binaryContent));
+	JSON::Object* root = parser.GetRoot();
+	if (!root)
 	{
-		delete objToDestroy;
-		objToDestroy = nullptr;
+		LOG("unable to read config json", Warning);
+		return nullptr;
 	}
+
+	LOG("GLTF loading not supported yet", Warning);
+	return nullptr;
 }

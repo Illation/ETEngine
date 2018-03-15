@@ -8,8 +8,16 @@ class MeshFilterLoader : public ContentLoader<MeshFilter>
 public:
 	MeshFilterLoader();
 	~MeshFilterLoader();
+
 protected:
 	virtual MeshFilter* LoadContent(const std::string& assetFile);
 	virtual void Destroy(MeshFilter* objToDestroy);
+
+private:
+	MeshFilter* LoadAssimp(const std::vector<uint8>& binaryContent, const std::string &ext);
+	MeshFilter* LoadGLTF(const std::vector<uint8>& binaryContent);
+
+	ivec2 logPos;
+	std::string loadingString;
 };
 
