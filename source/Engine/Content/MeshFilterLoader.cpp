@@ -9,6 +9,7 @@
 #include "FileSystem/Entry.h"
 #include "FileSystem/JSONparser.h"
 #include "FileSystem/JSONdom.h"
+#include "FileSystem/FileUtil.h"
 
 #define ASSIMP_BUILD_BOOST_WORAROUND
 
