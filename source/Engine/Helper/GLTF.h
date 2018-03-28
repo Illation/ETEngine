@@ -1,4 +1,9 @@
 #pragma once
+#include "AtomicTypes.hpp"
+#include <vector>
+#include "../Math/Vector.hpp"
+#include "../Math/Quaternion.hpp"
+#include "../Math/Matrix.hpp"
 
 namespace glTF
 {
@@ -83,21 +88,21 @@ namespace glTF
 
 	enum class ComponentType : uint32
 	{
-		BYTE			= 5120,
-		UNSIGNED_BYTE	= 5121,
-		SHORT			= 5122,
-		UNSIGNED_SHORT	= 5123,
-		UNSIGNED_INT	= 5125,
-		FLOAT			= 5126
+		BYTE = 5120,
+		UNSIGNED_BYTE = 5121,
+		SHORT = 5122,
+		UNSIGNED_SHORT = 5123,
+		UNSIGNED_INT = 5125,
+		FLOAT = 5126
 	};
 	static std::map<ComponentType, uint8> ComponentTypeSizes
 	{
-		{ComponentType::BYTE,			1},
-		{ComponentType::UNSIGNED_BYTE,	1},
-		{ComponentType::SHORT,			2},
-		{ComponentType::UNSIGNED_SHORT, 2},
-		{ComponentType::UNSIGNED_INT,	4},
-		{ComponentType::FLOAT,			4}
+		{ ComponentType::BYTE,			1 },
+		{ ComponentType::UNSIGNED_BYTE,	1 },
+		{ ComponentType::SHORT,			2 },
+		{ ComponentType::UNSIGNED_SHORT, 2 },
+		{ ComponentType::UNSIGNED_INT,	4 },
+		{ ComponentType::FLOAT,			4 }
 	};
 
 	enum class Type
@@ -114,7 +119,21 @@ namespace glTF
 		{ Type::MAT3,	9 },
 		{ Type::MAT4,	16 }
 	};
-
+	struct Sparse
+	{
+		uint64 count = 0;
+		struct Indices
+		{
+			uint32 bufferView = 0;
+			uint32 byteOffset = 0;
+			ComponentType componentType = ComponentType::BYTE;
+		}indices;
+		struct Values
+		{
+			uint32 bufferView = 0;
+			uint32 byteOffset = 0;
+		}values;
+	};
 	struct Accessor
 	{
 		uint32 bufferView = 0;
@@ -123,21 +142,7 @@ namespace glTF
 		uint64 count = 0;
 		Type type = Type::VEC3;
 
-		struct Sparse
-		{
-			uint64 count = 0;
-			struct Indices
-			{
-				uint32 bufferView = 0;
-				uint32 byteOffset = 0;
-				ComponentType componentType = ComponentType::BYTE;
-			}indices;
-			struct Values
-			{
-				uint32 bufferView = 0;
-				uint32 byteOffset = 0;
-			}values;
-		}*sparse = nullptr;
+		Sparse *sparse = nullptr;
 
 		std::vector<float> max;
 		std::vector<float> min;
@@ -173,13 +178,27 @@ namespace glTF
 		uint32 wrapS = 0;
 		uint32 wrapT = 0;
 	};
-
+	
 	struct Material
 	{
+		enum class AlphaMode : uint8
+		{
+			GLTF_OPAQUE,
+			GLTF_MASK,
+			GLTF_BLEND
+		};
 		struct TextureInfo
 		{
 			uint32 index = 0;
 			uint32 texCoord = 0;
+		};
+		struct NormalTextureInfo : TextureInfo
+		{
+			float scale = 1;
+		};
+		struct OcclusionTextureInfo : TextureInfo
+		{
+			float strength = 1;
 		};
 
 		std::string name;
@@ -192,24 +211,14 @@ namespace glTF
 			TextureInfo* metallicRoughnessTexture = nullptr;
 
 			~PbrMetallicRoughness() { delete baseColorTexture; delete metallicRoughnessTexture; }
-		} pbrMetallicRoughness = nullptr;
+		};
+		PbrMetallicRoughness *pbrMetallicRoughness = nullptr;
 
-		struct NormalTextureInfo : TextureInfo
-		{
-			float scale = 1;
-		}*normalTexture = nullptr;
-		struct OcclusionTextureInfo : TextureInfo
-		{
-			float strength = 1;
-		}*occlusionTexture = nullptr;
+		NormalTextureInfo *normalTexture = nullptr;
+		OcclusionTextureInfo *occlusionTexture = nullptr;
 		TextureInfo* emissiveTexture = nullptr;
 		vec3 emissiveFactor = vec3(0);
-		enum class AlphaMode : uint8 
-		{
-			OPAQUE,
-			MASK,
-			BLEND
-		} alphaMode = AlphaMode::OPAQUE;
+		AlphaMode alphaMode = AlphaMode::GLTF_OPAQUE;
 		float alphaCutoff = 0.5f;
 		bool doubleSided = false;
 
@@ -230,14 +239,14 @@ namespace glTF
 			float yfov = 0;
 			float zfar = 0;
 			float znear = 0;
-		} perspective = nullptr;
+		}* perspective = nullptr;
 		struct Orthographic
 		{
 			float xmag = 0;
 			float yamg = 0;
 			float zfar = 0;
 			float znear = 0;
-		} orthographic = nullptr;
+		}* orthographic = nullptr;
 	};
 
 	struct Animation
@@ -277,7 +286,7 @@ namespace glTF
 	{
 		Asset asset;
 
-		uint32 scene = -1;
+		int32 scene = -1;
 
 		std::vector<std::string> extensionsUsed;
 		std::vector<std::string> extensionsRequired;
@@ -315,4 +324,13 @@ namespace glTF
 		} chunkType;
 		std::vector<uint8> chunkData;
 	};
+
+	static const std::string Base64Mime = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	static inline bool IsBase64(unsigned char c) 
+	{
+		return (isalnum(c) || (c == '+') || (c == '/'));
+	}
+
+	bool EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std::string& ext);
+	bool DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded);
 }
