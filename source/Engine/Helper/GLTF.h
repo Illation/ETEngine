@@ -331,6 +331,6 @@ namespace glTF
 		return (isalnum(c) || (c == '+') || (c == '/'));
 	}
 
-	bool EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std::string& ext);
+	bool EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std::string& ext, const std::string& basePath);
 	bool DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded);
 }

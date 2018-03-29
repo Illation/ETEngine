@@ -1,7 +1,8 @@
 #include "stdafx.hpp"
 #include "GLTF.h"
+#include "FileSystem/Entry.h"
 
-bool glTF::EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std::string& ext)
+bool glTF::EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std::string& ext, const std::string& basePath)
 {
 	if (uri.substr(0, 5) == "data:")
 	{
@@ -19,7 +20,7 @@ bool glTF::EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std:
 			LOG("couldn't find data uri mediatype parameter", Warning);
 			return false;
 		}
-		std::string parameter = mediatype.substr(paramPos);
+		std::string parameter = mediatype.substr(paramPos + 1);
 		mediatype = mediatype.substr(0, paramPos);
 
 		auto subtypePos = mediatype.find('/');
@@ -28,10 +29,10 @@ bool glTF::EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std:
 			LOG("couldn't find data uri mediatype subtype", Warning);
 			return false;
 		}
-		ext = mediatype.substr(subtypePos);
+		ext = mediatype.substr(subtypePos + 1);
 		mediatype = mediatype.substr(0, subtypePos);
 
-		std::string dataString = uri.substr(dataPos);
+		std::string dataString = uri.substr(dataPos + 1);
 
 		if (parameter == "base64")
 		{
@@ -43,8 +44,27 @@ bool glTF::EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std:
 
 		return false;
 	}
-	LOG("Loading uris from external files not implemented", Warning);
-	return false;
+	else
+	{
+		Directory* pDir = new Directory(basePath, nullptr);
+		File* input = new File(uri, pDir);
+		if (!input->Open(FILE_ACCESS_MODE::Read))
+		{
+			LOG(std::string("Unable to open external glTF asset") + uri, Warning);
+			return false;
+		}
+		binData = input->Read();
+		ext = input->GetExtension();
+		delete input;
+		input = nullptr;
+		delete pDir;
+		pDir = nullptr;
+		if (binData.size() == 0)
+		{
+			LOG(std::string("external glTF asset is empty") + uri, Warning);
+		}
+		return true;
+	}
 }
 
 bool glTF::DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded)
