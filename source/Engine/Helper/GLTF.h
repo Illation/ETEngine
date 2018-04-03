@@ -4,9 +4,16 @@
 #include "../Math/Vector.hpp"
 #include "../Math/Quaternion.hpp"
 #include "../Math/Matrix.hpp"
+#include "../FileSystem/JSONdom.h"
 
 namespace glTF
 {
+	static const float minVersion = 2.0;
+	static const float maxVersion = 2.0;
+	static const std::vector<std::string> supportedExtensions
+	{
+	};
+
 	struct Asset
 	{
 		std::string version;
@@ -95,7 +102,7 @@ namespace glTF
 		UNSIGNED_INT = 5125,
 		FLOAT = 5126
 	};
-	static std::map<ComponentType, uint8> ComponentTypeSizes
+	static const std::map<ComponentType, uint8> ComponentTypeSizes
 	{
 		{ ComponentType::BYTE,			1 },
 		{ ComponentType::UNSIGNED_BYTE,	1 },
@@ -109,7 +116,7 @@ namespace glTF
 	{
 		SCALAR, VEC2, VEC3, VEC4, MAT2, MAT3, MAT4
 	};
-	static std::map<Type, uint8> TypeComponentCount
+	static const std::map<Type, uint8> TypeComponentCount
 	{
 		{ Type::SCALAR,	1 },
 		{ Type::VEC2,	2 },
@@ -333,4 +340,9 @@ namespace glTF
 
 	bool EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std::string& ext, const std::string& basePath);
 	bool DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded);
+
+	bool ParseGlTFJson(JSON::Object* json, Dom& dom);
+	bool ParseAssetJson(JSON::Object* root, Asset& asset);
+	bool ParseExtensionsJson(JSON::Object* root, Dom& dom);
+	void LogGLTFVersionSupport();
 }

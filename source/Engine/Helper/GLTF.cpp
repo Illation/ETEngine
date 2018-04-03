@@ -1,6 +1,8 @@
 #include "stdafx.hpp"
 #include "GLTF.h"
 #include "FileSystem/Entry.h"
+#include "FileSystem/JSONparser.h"
+#include "FileSystem/JSONdom.h"
 
 bool glTF::EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std::string& ext, const std::string& basePath)
 {
@@ -101,4 +103,126 @@ bool glTF::DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded)
 	}
 
 	return true;
+}
+
+bool glTF::ParseGlTFJson(JSON::Object* json, Dom& dom)
+{
+	//Minimum requirement: asset and version
+	if (!ParseAssetJson(json, dom.asset))
+	{
+		LOG("Failed to parse assset from JSON, invalid glTF file", Warning);
+		return false;
+	}
+	//Also parse extensions and make sure we support them
+	if (!ParseExtensionsJson(json, dom))
+	{
+		LOG("Failed to parse extensions from JSON, invalid glTF file", Warning);
+		return false;
+	}
+
+	return true;
+}
+
+bool glTF::ParseAssetJson(JSON::Object* root, Asset& asset)
+{
+	JSON::Value* assetVal = (*root)["asset"];
+	if (!assetVal)return false;
+	if (!(assetVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+	JSON::Object* assetObj = assetVal->obj();
+	
+	JSON::Value* versionVal = (*assetObj)["version"];
+	if (!versionVal)return false;
+	if (!(versionVal->GetType() == JSON::ValueType::JSON_String)) return false;
+	asset.version = versionVal->str()->value;
+
+	JSON::Value* minVersionVal = (*assetObj)["minVersion"];
+	if (minVersionVal)
+	{
+		if (!(minVersionVal->GetType() == JSON::ValueType::JSON_String)) return false;
+		asset.minVersion = minVersionVal->str()->value;
+	}
+
+	JSON::Value* generatorVal = (*assetObj)["generator"];
+	if (generatorVal)
+	{
+		if (!(generatorVal->GetType() == JSON::ValueType::JSON_String)) return false;
+		asset.generator = generatorVal->str()->value;
+	}
+
+	JSON::Value* copyrightVal = (*assetObj)["copyright"];
+	if (copyrightVal)
+	{
+		if (!(copyrightVal->GetType() == JSON::ValueType::JSON_String)) return false;
+		asset.copyright = copyrightVal->str()->value;
+	}
+
+	//Check version support
+	bool hasMinVersion = false;
+	if (asset.minVersion.size())
+	{
+		hasMinVersion = true;
+		float minAssetVersion = std::stof(asset.minVersion);
+		if (minAssetVersion < glTF::minVersion || minAssetVersion > glTF::maxVersion)
+		{
+			LOG("glTF minVersion is not supported by ETEngine", Warning);
+			LogGLTFVersionSupport();
+			return false;
+		}
+	}
+	float version = std::stof(asset.version);
+	if (version < glTF::minVersion)
+	{
+		LOG("glTF version is too low not supported by ETEngine", Warning);
+		LogGLTFVersionSupport();
+		return false;
+	}
+	if (!hasMinVersion)
+	{
+		if (version > glTF::maxVersion)
+		{
+			LOG("glTF version is too high not supported by ETEngine", Warning);
+			LogGLTFVersionSupport();
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool glTF::ParseExtensionsJson(JSON::Object* root, Dom& dom)
+{
+	JSON::Value* extUsedVal = (*root)["extensionsRequired"];
+	if (extUsedVal)
+	{
+		if (!(extUsedVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+		dom.extensionsUsed = extUsedVal->arr()->StrArr();
+	}
+
+	JSON::Value* extRequVal = (*root)["extensionsRequired"];
+	if (extRequVal)
+	{
+		if (!(extRequVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+		dom.extensionsRequired = extRequVal->arr()->StrArr();
+	}
+
+	//Check extension support
+	for (auto requ : dom.extensionsRequired)
+	{
+		if (std::find(dom.extensionsUsed.begin(), dom.extensionsUsed.end(), requ) == dom.extensionsUsed.end())
+		{
+			LOG(std::string("Required glTF extension '") + requ + "' not found in used extensions", Warning);
+			return false;
+		}
+		if (std::find(supportedExtensions.begin(), supportedExtensions.end(), requ) == supportedExtensions.end())
+		{
+			LOG(std::string("Required glTF extension '") + requ + "' is not supported by ETEngine", Warning);
+			return false;
+		}
+	}
+	return true;
+}
+
+void glTF::LogGLTFVersionSupport()
+{
+	LOG(std::string("glTF minVersion ") + std::to_string(glTF::minVersion) + " maxVersion " + std::to_string(glTF::maxVersion));
 }

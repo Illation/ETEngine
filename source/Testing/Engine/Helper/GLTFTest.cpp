@@ -34,3 +34,8 @@ TEST_CASE("Evaluate URI", "[gltf]")
 	REQUIRE(is_equal == true);
 	REQUIRE(decEmbedded.size() == decBin.size());
 }
+
+TEST_CASE("Parse GLTF", "[gltf]")
+{
+
+}
