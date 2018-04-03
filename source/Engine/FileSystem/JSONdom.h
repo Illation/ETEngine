@@ -45,6 +45,8 @@ namespace JSON
 	{
 		JSON::ValueType GetType() { return JSON_Number; }
 		double value;
+		int64 valueInt;
+		bool isInt = false;
 	};
 	struct Object : public Value
 	{
@@ -72,6 +74,7 @@ namespace JSON
 		}
 		std::vector<std::string> StrArr();
 		std::vector<double> NumArr();
+		std::vector<int64> IntArr();
 	
 		std::vector<JSON::Value*> value;
 	};
@@ -99,7 +102,9 @@ namespace JSON
 	bool ApplyStrValue(JSON::Object* obj, std::string &val, const std::string &name);
 	bool ApplyBoolValue(JSON::Object* obj, bool &val, const std::string &name);
 	template<uint8 n, class T>
-	bool ArrayVector(JSON::Value* val, etm::vector<n, T> &vec) {
+	bool ArrayVector(JSON::Value* val, etm::vector<n, T> &vec) 
+	{
+		if (!(val->GetType() == ValueType::JSON_Array)) return false;
 		JSON::Array* jvec = val->arr();
 		if (jvec && jvec->value.size() >= n)
 		{
@@ -115,7 +120,9 @@ namespace JSON
 		return false;
 	}
 	template<uint8 n, uint8 m, class T>
-	bool ArrayMatrix(JSON::Value* val, etm::matrix<n, m, T> &mat) {
+	bool ArrayMatrix(JSON::Value* val, etm::matrix<n, m, T> &mat) 
+	{
+		if (!(val->GetType() == ValueType::JSON_Array)) return false;
 		JSON::Array* jvec = val->arr();
 		if (jvec && jvec->value.size() >= n*m)
 		{

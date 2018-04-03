@@ -317,6 +317,7 @@ JSON::Number* JSON::Parser::ParseNumber(const std::string & textFile)
 		EXPONENT
 	}stage = NumStage::SIGN;
 	bool endFound = false;
+	bool isInt = true;
 	while (!m_Completed && !endFound)
 	{
 		if (CheckEOF(textFile))return false;
@@ -345,6 +346,7 @@ JSON::Number* JSON::Parser::ParseNumber(const std::string & textFile)
 			}
 			break;
 		case NumStage::FRACTION:
+			isInt = false;
 			if (!(std::isdigit(next) || next == 'e' || next == 'E'))
 			{
 				endFound = true;
@@ -373,9 +375,12 @@ JSON::Number* JSON::Parser::ParseNumber(const std::string & textFile)
 	}
 	std::string numString = textFile.substr(m_ReadIdx, endNumberIdx - m_ReadIdx);
 	double num = std::atof(numString.c_str());
+	int64 numInt = std::stol(numString);
 	m_ReadIdx = endNumberIdx;
 	JSON::Number* ret = new JSON::Number();
 	ret->value = num;
+	ret->valueInt = numInt;
+	ret->isInt = isInt;
 	return ret;
 }
 

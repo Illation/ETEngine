@@ -1,6 +1,8 @@
 #include <catch.hpp>
 #include "../../../Engine/Helper/GLTF.h"
 #include "../../../Engine/FileSystem/FileUtil.h"
+#include "../../../Engine/FileSystem/Entry.h"
+#include "../../../Engine/FileSystem/JSONparser.h"
 
 TEST_CASE("Decode Base64", "[gltf]")
 {
@@ -12,6 +14,7 @@ TEST_CASE("Decode Base64", "[gltf]")
 }
 
 std::string baseDir = "./source/Testing/Engine/Helper/";
+std::string fileName = "Box.gltf";
 
 TEST_CASE("Evaluate URI", "[gltf]")
 {
@@ -37,5 +40,17 @@ TEST_CASE("Evaluate URI", "[gltf]")
 
 TEST_CASE("Parse GLTF", "[gltf]")
 {
+	File* input = new File(baseDir+fileName, nullptr);
+	REQUIRE(input->Open(FILE_ACCESS_MODE::Read) == true);
+	std::vector<uint8> binaryContent = input->Read();
+	std::string extension = input->GetExtension();
+	delete input;
+	input = nullptr;
+	REQUIRE(binaryContent.size() > 0);
+	JSON::Parser parser = JSON::Parser(FileUtil::AsText(binaryContent));
+	JSON::Object* root = parser.GetRoot();
+	REQUIRE(root != nullptr);
 
+	glTF::Dom dom;
+	REQUIRE(glTF::ParseGlTFJson(root, dom) == true);
 }

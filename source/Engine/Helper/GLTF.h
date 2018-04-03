@@ -29,16 +29,14 @@ namespace glTF
 	{
 		std::string name;
 		std::vector<uint32> children;
-		vec3* translation = nullptr;
-		quat* rotation = nullptr;
-		vec3* scale = nullptr;
-		mat4* matrix = nullptr;
+		vec3 translation = vec3();
+		quat rotation = quat();
+		vec3 scale = vec3(1);
+		mat4 matrix = mat4();
 		int32 camera = -1;
 		int32 mesh = -1;
 		int32 skin = -1;
 		std::vector<float> weights;
-
-		~Node() { delete translation; delete rotation; delete scale; delete matrix; }
 	};
 
 	struct Scene
@@ -342,7 +340,12 @@ namespace glTF
 	bool DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded);
 
 	bool ParseGlTFJson(JSON::Object* json, Dom& dom);
+
 	bool ParseAssetJson(JSON::Object* root, Asset& asset);
 	bool ParseExtensionsJson(JSON::Object* root, Dom& dom);
+	bool ParseSceneJson(JSON::Object* root, Dom& dom);
+	bool ParseScenesJson(JSON::Object* root, std::vector<Scene>& scenes);
+	bool ParseNodesJson(JSON::Object* root, std::vector<Node>& nodes);
+
 	void LogGLTFVersionSupport();
 }

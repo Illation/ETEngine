@@ -47,6 +47,7 @@ std::vector<std::string> JSON::Array::StrArr()
 	std::vector<std::string>ret;
 	for (auto el : value)
 	{
+		if (!(el->GetType() == JSON::ValueType::JSON_String)) continue;
 		JSON::String* jstr = el->str();
 		if (jstr)ret.push_back(jstr->value);
 	}
@@ -58,8 +59,21 @@ std::vector<double> JSON::Array::NumArr()
 	std::vector<double>ret;
 	for (auto el : value)
 	{
+		if (!(el->GetType() == JSON::ValueType::JSON_Number)) continue;
 		JSON::Number* jnum = el->num();
 		if (jnum)ret.push_back(jnum->value);
+	}
+	return ret;
+}
+
+std::vector<int64> JSON::Array::IntArr()
+{
+	std::vector<int64>ret;
+	for (auto el : value)
+	{
+		if (!(el->GetType() == JSON::ValueType::JSON_Number)) continue;
+		JSON::Number* jnum = el->num();
+		if (jnum)ret.push_back(jnum->valueInt);
 	}
 	return ret;
 }

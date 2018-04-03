@@ -120,6 +120,23 @@ bool glTF::ParseGlTFJson(JSON::Object* json, Dom& dom)
 		return false;
 	}
 
+	//Rest of the data we are interested in
+	if (!ParseSceneJson(json, dom))
+	{
+		LOG("Failed to parse scene from JSON", Warning);
+		return false;
+	}
+	if (!ParseScenesJson(json, dom.scenes))
+	{
+		LOG("Failed to parse scenes from JSON", Warning);
+		return false;
+	}
+	if (!ParseNodesJson(json, dom.nodes))
+	{
+		LOG("Failed to parse nodes from JSON", Warning);
+		return false;
+	}
+
 	return true;
 }
 
@@ -219,6 +236,165 @@ bool glTF::ParseExtensionsJson(JSON::Object* root, Dom& dom)
 			return false;
 		}
 	}
+	return true;
+}
+
+bool glTF::ParseSceneJson(JSON::Object* root, Dom& dom)
+{
+	JSON::Value* sceneVal = (*root)["scene"];
+	if (sceneVal)
+	{
+		if (!(sceneVal->GetType() == JSON::ValueType::JSON_Number)) return false;
+		JSON::Number* sceneNum = sceneVal->num();
+		if (!(sceneNum->isInt))return false;
+		dom.scene = static_cast<int32>(sceneNum->valueInt);
+		return true;
+	}
+	return true;
+}
+
+bool glTF::ParseScenesJson(JSON::Object* root, std::vector<Scene>& scenes)
+{
+	JSON::Value* scenesVal = (*root)["scenes"];
+	if (!scenesVal)return true;
+
+	if (!(scenesVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+	JSON::Array* scenesArr = scenesVal->arr();
+
+	for (JSON::Value* sceneVal : scenesArr->value)
+	{
+		if (!(sceneVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		JSON::Object* sceneObj = sceneVal->obj();
+
+		Scene scene;
+
+		JSON::Value* nameVal = (*sceneObj)["name"];
+		if (nameVal)
+		{
+			if (!(nameVal->GetType() == JSON::ValueType::JSON_String)) return false;
+			scene.name = nameVal->str()->value;
+		}
+
+		JSON::Value* nodesVal = (*sceneObj)["nodes"];
+		if (nodesVal)
+		{
+			if (!(nodesVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+			JSON::Array* nodesArr = nodesVal->arr();
+			std::vector<int64> intArr = nodesArr->IntArr();
+			for (auto el : intArr) scene.nodes.push_back(static_cast<uint32>(el));
+		}
+
+		scenes.push_back(scene);
+	}
+
+	return true;
+}
+
+bool glTF::ParseNodesJson(JSON::Object* root, std::vector<Node>& nodes)
+{
+	JSON::Value* nodesVal = (*root)["nodes"];
+	if (!nodesVal)return true;
+
+	if (!(nodesVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+	JSON::Array* nodesArr = nodesVal->arr();
+
+	for (JSON::Value* nodeVal : nodesArr->value)
+	{
+		if (!(nodeVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		JSON::Object* nodeObj = nodeVal->obj();
+
+		Node node;
+
+		JSON::Value* nameVal = (*nodeObj)["name"];
+		if (nameVal)
+		{
+			if (!(nameVal->GetType() == JSON::ValueType::JSON_String)) return false;
+			node.name = nameVal->str()->value;
+		}
+
+		JSON::Value* childrenVal = (*nodeObj)["children"];
+		if (childrenVal)
+		{
+			if (!(childrenVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+			JSON::Array* childrenArr = childrenVal->arr();
+			std::vector<int64> intArr = childrenArr->IntArr();
+			for (auto el : intArr) node.children.push_back(static_cast<uint32>(el));
+		}
+
+		JSON::Value* translationVal = (*nodeObj)["translation"];
+		if (translationVal)
+		{
+			if (!JSON::ArrayVector(translationVal, node.translation))return false;
+		}
+
+		JSON::Value* rotationVal = (*nodeObj)["rotation"];
+		if (rotationVal)
+		{
+			if (!JSON::ArrayVector(rotationVal, node.rotation.v4))return false;
+		}
+
+		JSON::Value* scaleVal = (*nodeObj)["scale"];
+		if (scaleVal)
+		{
+			if (!JSON::ArrayVector(scaleVal, node.scale))return false;
+		}
+
+		bool hasMatrix = false;
+		JSON::Value* matrixVal = (*nodeObj)["matrix"];
+		if (matrixVal)
+		{
+			hasMatrix = true;
+			if(!JSON::ArrayMatrix(matrixVal, node.matrix))return false;
+		}
+
+		if (hasMatrix)
+		{
+			// #todo: decompose matrix into TRS
+		}
+		else
+		{
+			node.matrix = etm::scale(node.scale) * etm::rotate(node.rotation) * etm::translate(node.translation);
+		}
+
+		JSON::Value* cameraVal = (*nodeObj)["camera"];
+		if (cameraVal)
+		{
+			if (!(cameraVal->GetType() == JSON::ValueType::JSON_Number)) return false;
+			JSON::Number* num = cameraVal->num();
+			if (!(num->isInt))return false;
+			node.camera = static_cast<int32>(num->valueInt);
+		}
+
+		JSON::Value* meshVal = (*nodeObj)["mesh"];
+		if (meshVal)
+		{
+			if (!(meshVal->GetType() == JSON::ValueType::JSON_Number)) return false;
+			JSON::Number* num = meshVal->num();
+			if (!(num->isInt))return false;
+			node.mesh = static_cast<int32>(num->valueInt);
+		}
+
+		JSON::Value* skinVal = (*nodeObj)["skin"];
+		if (skinVal)
+		{
+			if (!(skinVal->GetType() == JSON::ValueType::JSON_Number)) return false;
+			JSON::Number* num = skinVal->num();
+			if (!(num->isInt))return false;
+			node.skin = static_cast<int32>(num->valueInt);
+		}
+
+		JSON::Value* weightsVal = (*nodeObj)["weights"];
+		if (weightsVal)
+		{
+			if (!(weightsVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+			JSON::Array* weightsArr = weightsVal->arr();
+			std::vector<double> arr = weightsArr->NumArr();
+			for (auto el : arr) node.weights.push_back(static_cast<float>(el));
+		}
+
+		nodes.push_back(node);
+	}
+
 	return true;
 }
 
