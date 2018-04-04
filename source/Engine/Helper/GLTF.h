@@ -47,7 +47,7 @@ namespace glTF
 
 	struct Primitive
 	{
-		uint32 mode = 0;
+		uint32 mode = 4;
 		int32 indices = -1;
 		struct Attributes
 		{
@@ -72,6 +72,7 @@ namespace glTF
 
 	struct Mesh
 	{
+		std::string name;
 		std::vector<Primitive> primitives;
 		std::vector<float> weights;
 	};
@@ -100,57 +101,59 @@ namespace glTF
 		UNSIGNED_INT = 5125,
 		FLOAT = 5126
 	};
-	static const std::map<ComponentType, uint8> ComponentTypeSizes
+	static const std::map<ComponentType, uint8> ComponentTypes
 	{
-		{ ComponentType::BYTE,			1 },
-		{ ComponentType::UNSIGNED_BYTE,	1 },
-		{ ComponentType::SHORT,			2 },
+		{ ComponentType::BYTE,			 1 },
+		{ ComponentType::UNSIGNED_BYTE,	 1 },
+		{ ComponentType::SHORT,			 2 },
 		{ ComponentType::UNSIGNED_SHORT, 2 },
-		{ ComponentType::UNSIGNED_INT,	4 },
-		{ ComponentType::FLOAT,			4 }
+		{ ComponentType::UNSIGNED_INT,	 4 },
+		{ ComponentType::FLOAT,			 4 }
 	};
 
 	enum class Type
 	{
 		SCALAR, VEC2, VEC3, VEC4, MAT2, MAT3, MAT4
 	};
-	static const std::map<Type, uint8> TypeComponentCount
+	static const std::map<Type, std::pair<uint8, std::string>> AccessorTypes
 	{
-		{ Type::SCALAR,	1 },
-		{ Type::VEC2,	2 },
-		{ Type::VEC3,	3 },
-		{ Type::VEC4,	4 },
-		{ Type::MAT2,	4 },
-		{ Type::MAT3,	9 },
-		{ Type::MAT4,	16 }
-	};
-	struct Sparse
-	{
-		uint64 count = 0;
-		struct Indices
-		{
-			uint32 bufferView = 0;
-			uint32 byteOffset = 0;
-			ComponentType componentType = ComponentType::BYTE;
-		}indices;
-		struct Values
-		{
-			uint32 bufferView = 0;
-			uint32 byteOffset = 0;
-		}values;
+		{ Type::SCALAR,	{ 1, "SCALAR" } },
+		{ Type::VEC2,	{ 2, "VEC2" } },
+		{ Type::VEC3,	{ 3, "VEC3" } },
+		{ Type::VEC4,	{ 4, "VEC4" } },
+		{ Type::MAT2,	{ 4, "MAT2" } },
+		{ Type::MAT3,	{ 9, "MAT3" } },
+		{ Type::MAT4,	{ 16, "MAT4" } }
 	};
 	struct Accessor
 	{
-		uint32 bufferView = 0;
+		int32 bufferView = -1;
 		uint32 byteOffset = 0;
 		ComponentType componentType = ComponentType::BYTE;
+		bool normalized = false;
 		uint64 count = 0;
 		Type type = Type::VEC3;
 
-		Sparse *sparse = nullptr;
+		struct Sparse
+		{
+			uint64 count = 0;
+			struct Indices
+			{
+				uint32 bufferView = 0;
+				uint32 byteOffset = 0;
+				ComponentType componentType = ComponentType::BYTE;
+			}indices;
+			struct Values
+			{
+				uint32 bufferView = 0;
+				uint32 byteOffset = 0;
+			}values;
+		} *sparse = nullptr;
 
 		std::vector<float> max;
 		std::vector<float> min;
+
+		std::string name;
 
 		~Accessor() { delete sparse; }
 	};
@@ -346,6 +349,9 @@ namespace glTF
 	bool ParseSceneJson(JSON::Object* root, Dom& dom);
 	bool ParseScenesJson(JSON::Object* root, std::vector<Scene>& scenes);
 	bool ParseNodesJson(JSON::Object* root, std::vector<Node>& nodes);
+	bool ParseMeshesJson(JSON::Object* root, std::vector<Mesh>& meshes);
+	bool ParsePrimitiveJson(JSON::Object* primitiveObj, Primitive& primitive);
+	bool ParseAccessorsJson(JSON::Object* root, std::vector<Accessor>& accessors);
 
 	void LogGLTFVersionSupport();
 }

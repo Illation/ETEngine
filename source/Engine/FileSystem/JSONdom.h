@@ -99,6 +99,22 @@ namespace JSON
 		}
 		return false;
 	}
+	template<typename T>
+	bool ApplyIntValue(JSON::Object* obj, T &val, const std::string &name)
+	{
+		JSON::Value* jval = (*obj)[name];
+		if (jval)
+		{
+			JSON::Number* jnum = jval->num();
+			if (jnum)
+			{
+				if (!(jnum->isInt))return false;
+				val = static_cast<T>(jnum->valueInt);
+				return true;
+			}
+		}
+		return false;
+	}
 	bool ApplyStrValue(JSON::Object* obj, std::string &val, const std::string &name);
 	bool ApplyBoolValue(JSON::Object* obj, bool &val, const std::string &name);
 	template<uint8 n, class T>

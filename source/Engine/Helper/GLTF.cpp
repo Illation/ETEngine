@@ -123,17 +123,27 @@ bool glTF::ParseGlTFJson(JSON::Object* json, Dom& dom)
 	//Rest of the data we are interested in
 	if (!ParseSceneJson(json, dom))
 	{
-		LOG("Failed to parse scene from JSON", Warning);
+		LOG("Failed to parse glTF scene from JSON", Warning);
 		return false;
 	}
 	if (!ParseScenesJson(json, dom.scenes))
 	{
-		LOG("Failed to parse scenes from JSON", Warning);
+		LOG("Failed to parse glTF scenes from JSON", Warning);
 		return false;
 	}
 	if (!ParseNodesJson(json, dom.nodes))
 	{
-		LOG("Failed to parse nodes from JSON", Warning);
+		LOG("Failed to parse glTF nodes from JSON", Warning);
+		return false;
+	}
+	if (!ParseMeshesJson(json, dom.meshes))
+	{
+		LOG("Failed to parse glTF meshes from JSON", Warning);
+		return false;
+	}
+	if (!ParseAccessorsJson(json, dom.accessors))
+	{
+		LOG("Failed to parse glTF accessors from JSON", Warning);
 		return false;
 	}
 
@@ -147,31 +157,10 @@ bool glTF::ParseAssetJson(JSON::Object* root, Asset& asset)
 	if (!(assetVal->GetType() == JSON::ValueType::JSON_Object)) return false;
 	JSON::Object* assetObj = assetVal->obj();
 	
-	JSON::Value* versionVal = (*assetObj)["version"];
-	if (!versionVal)return false;
-	if (!(versionVal->GetType() == JSON::ValueType::JSON_String)) return false;
-	asset.version = versionVal->str()->value;
-
-	JSON::Value* minVersionVal = (*assetObj)["minVersion"];
-	if (minVersionVal)
-	{
-		if (!(minVersionVal->GetType() == JSON::ValueType::JSON_String)) return false;
-		asset.minVersion = minVersionVal->str()->value;
-	}
-
-	JSON::Value* generatorVal = (*assetObj)["generator"];
-	if (generatorVal)
-	{
-		if (!(generatorVal->GetType() == JSON::ValueType::JSON_String)) return false;
-		asset.generator = generatorVal->str()->value;
-	}
-
-	JSON::Value* copyrightVal = (*assetObj)["copyright"];
-	if (copyrightVal)
-	{
-		if (!(copyrightVal->GetType() == JSON::ValueType::JSON_String)) return false;
-		asset.copyright = copyrightVal->str()->value;
-	}
+	if(!JSON::ApplyStrValue(assetObj, asset.version, "version")) return false;
+	JSON::ApplyStrValue(assetObj, asset.minVersion, "minVersion");
+	JSON::ApplyStrValue(assetObj, asset.generator, "generator");
+	JSON::ApplyStrValue(assetObj, asset.copyright, "copyright");
 
 	//Check version support
 	bool hasMinVersion = false;
@@ -241,15 +230,7 @@ bool glTF::ParseExtensionsJson(JSON::Object* root, Dom& dom)
 
 bool glTF::ParseSceneJson(JSON::Object* root, Dom& dom)
 {
-	JSON::Value* sceneVal = (*root)["scene"];
-	if (sceneVal)
-	{
-		if (!(sceneVal->GetType() == JSON::ValueType::JSON_Number)) return false;
-		JSON::Number* sceneNum = sceneVal->num();
-		if (!(sceneNum->isInt))return false;
-		dom.scene = static_cast<int32>(sceneNum->valueInt);
-		return true;
-	}
+	JSON::ApplyIntValue(root, dom.scene, "scene");
 	return true;
 }
 
@@ -268,12 +249,7 @@ bool glTF::ParseScenesJson(JSON::Object* root, std::vector<Scene>& scenes)
 
 		Scene scene;
 
-		JSON::Value* nameVal = (*sceneObj)["name"];
-		if (nameVal)
-		{
-			if (!(nameVal->GetType() == JSON::ValueType::JSON_String)) return false;
-			scene.name = nameVal->str()->value;
-		}
+		JSON::ApplyStrValue(sceneObj, scene.name, "name");
 
 		JSON::Value* nodesVal = (*sceneObj)["nodes"];
 		if (nodesVal)
@@ -305,12 +281,7 @@ bool glTF::ParseNodesJson(JSON::Object* root, std::vector<Node>& nodes)
 
 		Node node;
 
-		JSON::Value* nameVal = (*nodeObj)["name"];
-		if (nameVal)
-		{
-			if (!(nameVal->GetType() == JSON::ValueType::JSON_String)) return false;
-			node.name = nameVal->str()->value;
-		}
+		JSON::ApplyStrValue(nodeObj, node.name, "name");
 
 		JSON::Value* childrenVal = (*nodeObj)["children"];
 		if (childrenVal)
@@ -356,32 +327,9 @@ bool glTF::ParseNodesJson(JSON::Object* root, std::vector<Node>& nodes)
 			node.matrix = etm::scale(node.scale) * etm::rotate(node.rotation) * etm::translate(node.translation);
 		}
 
-		JSON::Value* cameraVal = (*nodeObj)["camera"];
-		if (cameraVal)
-		{
-			if (!(cameraVal->GetType() == JSON::ValueType::JSON_Number)) return false;
-			JSON::Number* num = cameraVal->num();
-			if (!(num->isInt))return false;
-			node.camera = static_cast<int32>(num->valueInt);
-		}
-
-		JSON::Value* meshVal = (*nodeObj)["mesh"];
-		if (meshVal)
-		{
-			if (!(meshVal->GetType() == JSON::ValueType::JSON_Number)) return false;
-			JSON::Number* num = meshVal->num();
-			if (!(num->isInt))return false;
-			node.mesh = static_cast<int32>(num->valueInt);
-		}
-
-		JSON::Value* skinVal = (*nodeObj)["skin"];
-		if (skinVal)
-		{
-			if (!(skinVal->GetType() == JSON::ValueType::JSON_Number)) return false;
-			JSON::Number* num = skinVal->num();
-			if (!(num->isInt))return false;
-			node.skin = static_cast<int32>(num->valueInt);
-		}
+		JSON::ApplyIntValue(nodeObj, node.camera, "camera");
+		JSON::ApplyIntValue(nodeObj, node.mesh, "mesh");
+		JSON::ApplyIntValue(nodeObj, node.skin, "skin");
 
 		JSON::Value* weightsVal = (*nodeObj)["weights"];
 		if (weightsVal)
@@ -395,6 +343,185 @@ bool glTF::ParseNodesJson(JSON::Object* root, std::vector<Node>& nodes)
 		nodes.push_back(node);
 	}
 
+	return true;
+}
+
+bool glTF::ParseMeshesJson(JSON::Object* root, std::vector<Mesh>& meshes)
+{
+	JSON::Value* meshesVal = (*root)["meshes"];
+	if (!meshesVal)return true;
+
+	if (!(meshesVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+	JSON::Array* meshesArr = meshesVal->arr();
+
+	for (JSON::Value* meshVal : meshesArr->value)
+	{
+		if (!(meshVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		JSON::Object* meshObj = meshVal->obj();
+
+		Mesh mesh;
+
+		JSON::ApplyStrValue(meshObj, mesh.name, "name");
+
+		JSON::Value* primitivesVal = (*meshObj)["primitives"];
+		if (primitivesVal)
+		{
+			if (!(primitivesVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+			JSON::Array* primitivesArr = primitivesVal->arr();
+			for (JSON::Value* primitiveVal : primitivesArr->value)
+			{
+				if (!(primitiveVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+				JSON::Object* primitiveObj = primitiveVal->obj();
+				Primitive prim;
+				if (ParsePrimitiveJson(primitiveObj, prim))
+				{
+					mesh.primitives.push_back(prim);
+				}
+				else return false;
+			}
+		}
+
+		JSON::Value* weightsVal = (*meshObj)["weights"];
+		if (weightsVal)
+		{
+			if (!(weightsVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+			JSON::Array* nodesArr = weightsVal->arr();
+			std::vector<double> weightArr = nodesArr->NumArr();
+			for (auto el : weightArr) mesh.weights.push_back(static_cast<float>(el));
+		}
+
+		meshes.push_back(mesh);
+	}
+
+	return true;
+}
+
+bool glTF::ParsePrimitiveJson(JSON::Object* primitiveObj, Primitive& primitive)
+{
+	JSON::Value* attributesVal = (*primitiveObj)["attributes"];
+	if (!attributesVal)return false;
+	if (!(attributesVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+	JSON::Object* attributeObj = attributesVal->obj();
+	JSON::ApplyIntValue(attributeObj, primitive.attributes.position, "POSITION");
+	JSON::ApplyIntValue(attributeObj, primitive.attributes.normal, "NORMAL");
+	JSON::ApplyIntValue(attributeObj, primitive.attributes.tangent, "TANGENT");
+	JSON::ApplyIntValue(attributeObj, primitive.attributes.texcoord0, "TEXCOORD_0");
+	JSON::ApplyIntValue(attributeObj, primitive.attributes.texcoord1, "TEXCOORD_1");
+	JSON::ApplyIntValue(attributeObj, primitive.attributes.color0, "COLOR_0");
+	JSON::ApplyIntValue(attributeObj, primitive.attributes.joints0, "JOINTS_0");
+	JSON::ApplyIntValue(attributeObj, primitive.attributes.weights0, "WEIGHTS_0");
+
+	JSON::ApplyIntValue(primitiveObj, primitive.indices, "indices");
+	JSON::ApplyIntValue(primitiveObj, primitive.material, "material");
+	JSON::ApplyIntValue(primitiveObj, primitive.mode, "mode");
+
+	JSON::Value* targetsVal = (*primitiveObj)["targets"];
+	if (targetsVal)
+	{
+		if (!(targetsVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+		JSON::Array* targetsArr = targetsVal->arr();
+		for (JSON::Value* targetVal : targetsArr->value)
+		{
+			if (!(targetVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+			JSON::Object* targetObj = targetVal->obj();
+
+			Primitive::Targets target;
+
+			JSON::ApplyIntValue(targetObj, target.position, "POSITION");
+			JSON::ApplyIntValue(targetObj, target.normal, "NORMAL");
+			JSON::ApplyIntValue(targetObj, target.tangent, "TANGENT");
+
+			primitive.targets.push_back(target);
+		}
+	}
+
+	return true;
+}
+
+bool glTF::ParseAccessorsJson(JSON::Object* root, std::vector<Accessor>& accessors)
+{
+	JSON::Value* accessorsVal = (*root)["accessors"];
+	if (!accessorsVal)return true;
+
+	if (!(accessorsVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+	JSON::Array* accessorsArr = accessorsVal->arr();
+
+	for (JSON::Value* accessorVal : accessorsArr->value)
+	{
+		if (!(accessorVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		JSON::Object* accessorObj = accessorVal->obj();
+
+		Accessor accessor;
+
+		//Required components
+		if (!JSON::ApplyIntValue(accessorObj, accessor.componentType, "componentType"))return false;
+		if (!JSON::ApplyIntValue(accessorObj, accessor.count, "count"))return false;
+		std::string typeStr;
+		if (!JSON::ApplyStrValue(accessorObj, typeStr, "type"))return false;
+		bool typeFound = false;
+		for (auto const& type : AccessorTypes)
+		{
+			if (type.second.second == typeStr)
+			{
+				accessor.type = type.first;
+				typeFound = true;
+				break;
+			}
+		}
+		if (!typeFound)return false;
+
+		//Rest
+		JSON::ApplyIntValue(accessorObj, accessor.bufferView, "bufferView");
+		JSON::ApplyIntValue(accessorObj, accessor.byteOffset, "byteOffset");
+		JSON::ApplyBoolValue(accessorObj, accessor.normalized, "normalized");
+		JSON::ApplyStrValue(accessorObj, accessor.name, "name");
+
+		JSON::Value* maxVal = (*accessorObj)["max"];
+		if (maxVal)
+		{
+			if (!(maxVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+			JSON::Array* jArr = maxVal->arr();
+			std::vector<double> arr = jArr->NumArr();
+			for (auto el : arr) accessor.max.push_back(static_cast<float>(el));
+		}
+		JSON::Value* minVal = (*accessorObj)["min"];
+		if (minVal)
+		{
+			if (!(minVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+			JSON::Array* jArr = minVal->arr();
+			std::vector<double> arr = jArr->NumArr();
+			for (auto el : arr) accessor.min.push_back(static_cast<float>(el));
+		}
+
+		accessors.push_back(accessor);
+
+		JSON::Value* sparseVal = (*accessorObj)["sparse"];
+		if (sparseVal)
+		{
+			if (!(sparseVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+			JSON::Object* sparseObj = sparseVal->obj();
+
+			accessors[accessors.size()-1].sparse = new Accessor::Sparse();
+			Accessor::Sparse* sparse = accessors[accessors.size() - 1].sparse;
+
+			if(!JSON::ApplyIntValue(sparseObj, sparse->count, "count"))return false;
+
+			JSON::Value* indicesVal = (*sparseObj)["indices"];
+			if (!indicesVal)return false;
+			if (!(indicesVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+			JSON::Object* indicesObj = indicesVal->obj();
+			if(!JSON::ApplyIntValue(indicesObj, sparse->indices.bufferView, "bufferView"))return false;
+			JSON::ApplyIntValue(indicesObj, sparse->indices.byteOffset, "byteOffset");
+			if (!JSON::ApplyIntValue(indicesObj, sparse->indices.componentType, "componentType"))return false;
+
+			JSON::Value* valuesVal = (*sparseObj)["values"];
+			if (!valuesVal)return false;
+			if (!(valuesVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+			JSON::Object* valuesObj = valuesVal->obj();
+			if (!JSON::ApplyIntValue(valuesObj, sparse->values.bufferView, "bufferView"))return false;
+			JSON::ApplyIntValue(valuesObj, sparse->values.byteOffset, "byteOffset");
+		}
+	}
 	return true;
 }
 
