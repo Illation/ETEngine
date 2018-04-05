@@ -292,35 +292,54 @@ bool glTF::ParseNodesJson(JSON::Object* root, std::vector<Node>& nodes)
 			for (auto el : intArr) node.children.push_back(static_cast<uint32>(el));
 		}
 
+		bool hasTranslation = false;
 		JSON::Value* translationVal = (*nodeObj)["translation"];
 		if (translationVal)
 		{
 			if (!JSON::ArrayVector(translationVal, node.translation))return false;
+			hasTranslation = true;
 		}
 
+		bool hasRotation = false;
 		JSON::Value* rotationVal = (*nodeObj)["rotation"];
 		if (rotationVal)
 		{
 			if (!JSON::ArrayVector(rotationVal, node.rotation.v4))return false;
+			hasRotation = true;
 		}
 
+		bool hasScale = false;
 		JSON::Value* scaleVal = (*nodeObj)["scale"];
 		if (scaleVal)
 		{
 			if (!JSON::ArrayVector(scaleVal, node.scale))return false;
+			hasScale = true;
 		}
 
 		bool hasMatrix = false;
 		JSON::Value* matrixVal = (*nodeObj)["matrix"];
 		if (matrixVal)
 		{
-			hasMatrix = true;
 			if(!JSON::ArrayMatrix(matrixVal, node.matrix))return false;
+			hasMatrix = true;
 		}
 
 		if (hasMatrix)
 		{
-			// #todo: decompose matrix into TRS
+			vec3 trans, scale;
+			quat rot;
+			etm::decomposeTRS(node.matrix, trans, rot, scale);
+			if (!hasTranslation)node.translation = trans;
+			else if (!etm::nearEqualsV(node.translation, trans, 0.0001f))LOG("inconsistent translation values for node", Warning);
+			if (!hasRotation)node.rotation = rot;
+			else
+			{
+				//different quaternions can express the same rotation
+				vec3 testVec = vec3(0, 0, 1);
+				if (!etm::nearEqualsV(node.rotation * testVec, rot * testVec, 0.0001f))LOG("inconsistent rotation values for node", Warning);
+			}
+			if (!hasScale)node.scale = scale;
+			else if (!etm::nearEqualsV(node.scale, scale, 0.0001f))LOG("inconsistent scale values for node", Warning);
 		}
 		else
 		{

@@ -306,6 +306,7 @@ namespace glTF
 		std::vector<BufferView> bufferViews;
 		std::vector<Accessor> accessors;
 		std::vector<Skin> skins;
+		std::vector<Animation> animations;
 		std::vector<Texture> textures;
 		std::vector<Image> images;
 		std::vector<Sampler> samplers;

@@ -66,6 +66,55 @@ namespace etm
 			z = c.x * c.y * s.z - s.x * s.y * c.z;
 			w = c.x * c.y * c.z + s.x * s.y * s.z;
 		}
+		quaternion(const matrix<3, 3, T>& rot)//Rotation matrix initialization
+		{
+			uint8 biggestIndex = 0;
+			T r012 = rot[0][0] - rot[1][1] - rot[2][2];
+			T r102 = rot[1][1] - rot[0][0] - rot[2][2];
+			T r201 = rot[2][2] - rot[0][0] - rot[1][1];
+			T biggestVal = rot[0][0] + rot[1][1] + rot[2][2];
+			if (r012 > biggestVal)
+			{
+				biggestVal = r012;
+				biggestIndex = 1;
+			}
+			if (r102 > biggestVal)
+			{
+				biggestVal = r102;
+				biggestIndex = 2;
+			}
+			if (r201 > biggestVal)
+			{
+				biggestVal = r201;
+				biggestIndex = 3;
+			}
+			biggestVal = sqrt(biggestVal + static_cast<T>(1)) * static_cast<T>(0.5);
+			T mult = static_cast<T>(0.25) / biggestVal;
+
+			switch (biggestIndex)
+			{
+			case 0:
+				x = (rot[2][1] - rot[1][2]) * mult;
+				y = (rot[0][2] - rot[2][0]) * mult;
+				z = (rot[1][0] - rot[0][1]) * mult;
+				w = -biggestVal;
+			case 1:
+				x = biggestVal;
+				y = (rot[1][0] - rot[0][1]) * mult;
+				z = (rot[0][2] - rot[2][0]) * mult;
+				w = -(rot[2][1] - rot[1][2]) * mult;
+			case 2:
+				x = (rot[1][0] - rot[0][1]) * mult;
+				y = biggestVal;
+				z = (rot[2][1] - rot[1][2]) * mult;
+				w = -(rot[0][2] - rot[2][0]) * mult;
+			case 3:
+				x = (rot[0][2] - rot[2][0]) * mult;
+				y = (rot[2][1] - rot[1][2]) * mult;
+				z = biggestVal;
+				w = -(rot[1][0] - rot[0][1]) * mult;
+			}
+		}
 
 		//Conversions
 		vector<4, T> ToAxisAngle() const;

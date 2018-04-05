@@ -96,13 +96,7 @@ namespace etm
 	template <class T>
 	void translate(matrix<4, 4, T> &result, const vector<3, T>& translation)
 	{
-		matrix<4, 4, T> mat;
-		mat[0][3] = translation.x;
-		mat[1][3] = translation.y;
-		mat[2][3] = translation.z;
-		mat[3][3] = static_cast<T>(1);
-
-		result = result * mat;
+		result =  result * translate(translation);
 	}
 
 	//look at
@@ -157,6 +151,27 @@ namespace etm
 		result[3][3] = 0;
 
 		return result;
+	}
+
+	//decompose
+	//*********
+	template <class T>
+	void decomposeTRS(const matrix<4, 4, T>& mat, vector<3, T>& translation, quaternion<T>& rotation, vector<3, T>& scaleVec)
+	{
+		//Translation
+		translation = mat[3].xyz;
+
+		//Scale
+		scaleVec.x = length(mat[0].xyz);
+		scaleVec.y = length(mat[1].xyz);
+		scaleVec.z = length(mat[2].xyz);
+
+		//Rotation
+		matrix<3, 3, T> rotMat(uninitialized);
+		rotMat[0] = mat[0].xyz / scaleVec.x;
+		rotMat[1] = mat[1].xyz / scaleVec.y;
+		rotMat[2] = mat[2].xyz / scaleVec.z;
+		rotation = quat(rotMat);
 	}
 
 } // namespace etm

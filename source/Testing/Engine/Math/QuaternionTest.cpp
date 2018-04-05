@@ -83,13 +83,13 @@ TEST_CASE( "matrix compatibility", "[quat]" )
 {
 	quat R1 = quat( vec3( 0, 0, 1 ), etm::PI_DIV2 );
 	mat3 r1m = R1.ToMatrix();
+	mat3 tMat( {	 0, 1, 0,
+					-1, 0, 0,
+					 0, 0, 1 } );
 
 	SECTION( "to mat 3" )
 	{
-		mat3 transform( {	 0, 1, 0,
-							-1, 0, 0,
-							 0, 0, 1 } );
-		REQUIRE( etm::nearEqualsM( r1m, transform, 0.00001f ) );
+		REQUIRE( etm::nearEqualsM( r1m, tMat, 0.00001f ) );
 	}
 	SECTION( "equal rotation" )
 	{
@@ -97,5 +97,13 @@ TEST_CASE( "matrix compatibility", "[quat]" )
 		vec3 qRot = R1 * initV;
 		vec3 mRot = r1m * initV;
 		REQUIRE( etm::nearEqualsV( qRot, mRot, 0.0001f ) );
+	}
+	SECTION("from mat 3")
+	{
+		quat m2q(tMat);
+		vec3 initV = vec3(0, 1, 0);
+		vec3 qRot = m2q * initV;
+		vec3 mRot = tMat * initV;
+		REQUIRE(etm::nearEqualsV(qRot, mRot, 0.0001f));
 	}
 }
