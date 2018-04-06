@@ -81,6 +81,7 @@ namespace glTF
 	{
 		uint64 byteLength = 0;
 		std::string uri;
+		std::string name;
 	};
 
 	struct BufferView
@@ -90,6 +91,7 @@ namespace glTF
 		uint64 byteOffset = 0;
 		int32 byteStride = -1;
 		int32 target = -1;
+		std::string name;
 	};
 
 	enum class ComponentType : uint32
@@ -161,15 +163,16 @@ namespace glTF
 	struct Skin
 	{
 		std::string name;
-		uint32 inverseBindMatrices = 0;
+		int32 inverseBindMatrices = -1;
 		std::vector<uint32> joints;
-		uint32 skeleton = 0;
+		int32 skeleton = -1;
 	};
 
 	struct Texture
 	{
 		uint32 sampler = 0;
 		uint32 source = 0;
+		std::string name;
 	};
 
 	struct Image
@@ -177,24 +180,43 @@ namespace glTF
 		std::string uri;
 		int32 bufferView = -1;
 		std::string mimeType;
+		std::string name;
 	};
 
+	enum class Filter : int32
+	{
+		UNDEFINED				= -1,
+		NEAREST					= 9728,
+		LINEAR					= 9729,
+		NEAREST_MIPMAP_NEAREST	= 9984,
+		LINEAR_MIPMAP_NEAREST	= 9985,
+		NEAREST_MIPMAP_LINEAR	= 9986,
+		LINEAR_MIPMAP_LINEAR	= 9987
+	};
+	enum class WrappingMode : uint32
+	{
+		CLAMP_TO_EDGE	= 33071,
+		MIRRORED_REPEAT = 33648,
+		REPEAT			= 10497
+	};
 	struct Sampler
 	{
-		uint32 magFilter = 0;
-		uint32 minFilter = 0;
-		uint32 wrapS = 0;
-		uint32 wrapT = 0;
+		Filter magFilter = Filter::UNDEFINED;
+		Filter minFilter = Filter::UNDEFINED;
+		WrappingMode wrapS = WrappingMode::REPEAT;
+		WrappingMode wrapT = WrappingMode::REPEAT;
+		std::string name;
 	};
-	
+
+	enum class AlphaMode : uint8 { GLTF_OPAQUE, GLTF_MASK, GLTF_BLEND };
+	static const std::map<AlphaMode, std::string> AlphaModes
+	{
+		{ AlphaMode::GLTF_OPAQUE, "OPAQUE" },
+		{ AlphaMode::GLTF_MASK, "MASK" },
+		{ AlphaMode::GLTF_BLEND, "BLEND" }
+	};
 	struct Material
 	{
-		enum class AlphaMode : uint8
-		{
-			GLTF_OPAQUE,
-			GLTF_MASK,
-			GLTF_BLEND
-		};
 		struct TextureInfo
 		{
 			uint32 index = 0;
@@ -213,8 +235,8 @@ namespace glTF
 		struct PbrMetallicRoughness
 		{
 			vec4 baseColorFactor = vec4(1);
-			float metallicFactor = 0;
-			float roughnessFactor = 0;
+			float metallicFactor = 1;
+			float roughnessFactor = 1;
 			TextureInfo* baseColorTexture = nullptr;
 			TextureInfo* metallicRoughnessTexture = nullptr;
 
@@ -241,11 +263,11 @@ namespace glTF
 			PERSPECTIVE,
 			ORTHOGRAPHIC
 		} type;
-		struct Perpective
+		struct Perspective
 		{
-			float aspectRatio = 0;
+			float aspectRatio = -1;
 			float yfov = 0;
-			float zfar = 0;
+			float zfar = -1;
 			float znear = 0;
 		}* perspective = nullptr;
 		struct Orthographic
@@ -256,6 +278,11 @@ namespace glTF
 			float znear = 0;
 		}* orthographic = nullptr;
 	};
+	static const std::map<Camera::Type, std::string> CameraTypes
+	{
+		{ Camera::Type::PERSPECTIVE, "perspective" },
+		{ Camera::Type::ORTHOGRAPHIC, "orthographic" }
+	};
 
 	struct Animation
 	{
@@ -265,7 +292,7 @@ namespace glTF
 			uint32 sampler = 0;
 			struct Target
 			{
-				uint32 node = 0;
+				int32 node = -1;
 				enum class Path : uint8 
 				{
 					TRANSLATION,
@@ -288,6 +315,19 @@ namespace glTF
 			uint32 output = 0;
 		};
 		std::vector<Sampler> samplers;
+	};
+	static const std::map<Animation::Channel::Target::Path, std::string> ChannelTargetPaths
+	{
+		{ Animation::Channel::Target::Path::TRANSLATION, "translation" },
+		{ Animation::Channel::Target::Path::ROTATION, "rotation" },
+		{ Animation::Channel::Target::Path::SCALE, "scale" },
+		{ Animation::Channel::Target::Path::WEIGHTS, "weights" }
+	};
+	static const std::map<Animation::Sampler::Interpolation, std::string> SamplerInterpolations
+	{
+		{ Animation::Sampler::Interpolation::LINEAR, "LINEAR" },
+		{ Animation::Sampler::Interpolation::STEP, "STEP" },
+		{ Animation::Sampler::Interpolation::CUBISPLINE, "CUBISPLINE" }
 	};
 
 	struct Dom
@@ -353,6 +393,17 @@ namespace glTF
 	bool ParseMeshesJson(JSON::Object* root, std::vector<Mesh>& meshes);
 	bool ParsePrimitiveJson(JSON::Object* primitiveObj, Primitive& primitive);
 	bool ParseAccessorsJson(JSON::Object* root, std::vector<Accessor>& accessors);
+	bool ParseBufferViewsJson(JSON::Object* root, std::vector<BufferView>& bufferViews);
+	bool ParseBuffersJson(JSON::Object* root, std::vector<Buffer>& buffers);
+	bool ParseTexturesJson(JSON::Object* root, std::vector<Texture>& textures);
+	bool ParseImagesJson(JSON::Object* root, std::vector<Image>& images);
+	bool ParseSamplersJson(JSON::Object* root, std::vector<Sampler>& samplers);
+	bool ParseMaterialsJson(JSON::Object* root, std::vector<Material>& materials);
+	bool ParsePbrMetallicRoughnessJson(JSON::Object* pbrObj, Material::PbrMetallicRoughness* pbr);
+	bool ParseTextureInfoJson(JSON::Object* textureInfo, Material::TextureInfo* info);
+	bool ParseCamerasJson(JSON::Object* root, std::vector<Camera>& cameras);
+	bool ParseSkinsJson(JSON::Object* root, std::vector<Skin>& skins);
+	bool ParseAnimationsJson(JSON::Object* root, std::vector<Animation>& animations);
 
 	void LogGLTFVersionSupport();
 }

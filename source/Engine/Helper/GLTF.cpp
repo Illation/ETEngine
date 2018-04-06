@@ -146,6 +146,51 @@ bool glTF::ParseGlTFJson(JSON::Object* json, Dom& dom)
 		LOG("Failed to parse glTF accessors from JSON", Warning);
 		return false;
 	}
+	if (!ParseBufferViewsJson(json, dom.bufferViews))
+	{
+		LOG("Failed to parse glTF bufferViews from JSON", Warning);
+		return false;
+	}
+	if (!ParseBuffersJson(json, dom.buffers))
+	{
+		LOG("Failed to parse glTF buffers from JSON", Warning);
+		return false;
+	}
+	if (!ParseImagesJson(json, dom.images))
+	{
+		LOG("Failed to parse glTF images from JSON", Warning);
+		return false;
+	}
+	if (!ParseTexturesJson(json, dom.textures))
+	{
+		LOG("Failed to parse glTF textures from JSON", Warning);
+		return false;
+	}
+	if (!ParseSamplersJson(json, dom.samplers))
+	{
+		LOG("Failed to parse glTF samplers from JSON", Warning);
+		return false;
+	}
+	if (!ParseMaterialsJson(json, dom.materials))
+	{
+		LOG("Failed to parse glTF materials from JSON", Warning);
+		return false;
+	}
+	if (!ParseCamerasJson(json, dom.cameras))
+	{
+		LOG("Failed to parse glTF cameras from JSON", Warning);
+		return false;
+	}
+	if (!ParseSkinsJson(json, dom.skins))
+	{
+		LOG("Failed to parse glTF skins from JSON", Warning);
+		return false;
+	}
+	if (!ParseAnimationsJson(json, dom.animations))
+	{
+		LOG("Failed to parse glTF animations from JSON", Warning);
+		return false;
+	}
 
 	return true;
 }
@@ -541,6 +586,466 @@ bool glTF::ParseAccessorsJson(JSON::Object* root, std::vector<Accessor>& accesso
 			JSON::ApplyIntValue(valuesObj, sparse->values.byteOffset, "byteOffset");
 		}
 	}
+	return true;
+}
+
+bool glTF::ParseBufferViewsJson(JSON::Object* root, std::vector<BufferView>& bufferViews)
+{
+	JSON::Value* bufferViewsVal = (*root)["bufferViews"];
+	if (!bufferViewsVal)return true;
+
+	if (!(bufferViewsVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+	JSON::Array* bufferViewsArr = bufferViewsVal->arr();
+
+	for (JSON::Value* bufferViewVal : bufferViewsArr->value)
+	{
+		if (!(bufferViewVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		JSON::Object* bufferViewObj = bufferViewVal->obj();
+
+		BufferView view;
+
+		if(!JSON::ApplyIntValue(bufferViewObj, view.buffer, "buffer"))return false;
+		if(!JSON::ApplyIntValue(bufferViewObj, view.byteLength, "byteLength"))return false;
+		JSON::ApplyIntValue(bufferViewObj, view.byteOffset, "byteOffset");
+		JSON::ApplyIntValue(bufferViewObj, view.byteStride, "byteStride");
+		JSON::ApplyIntValue(bufferViewObj, view.target, "target");
+		JSON::ApplyStrValue(bufferViewObj, view.name, "name");
+
+		bufferViews.push_back(view);
+	}
+
+	return true;
+}
+
+bool glTF::ParseBuffersJson(JSON::Object* root, std::vector<Buffer>& buffers)
+{
+	JSON::Value* buffersVal = (*root)["buffers"];
+	if (!buffersVal)return true;
+
+	if (!(buffersVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+	JSON::Array* buffersArr = buffersVal->arr();
+
+	for (JSON::Value* bufferVal : buffersArr->value)
+	{
+		if (!(bufferVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		JSON::Object* bufferObj = bufferVal->obj();
+
+		Buffer buffer;
+
+		JSON::ApplyStrValue(bufferObj, buffer.uri, "uri");
+		if (!JSON::ApplyIntValue(bufferObj, buffer.byteLength, "byteLength"))return false;
+		JSON::ApplyStrValue(bufferObj, buffer.name, "name");
+
+		buffers.push_back(buffer);
+	}
+
+	return true;
+}
+
+bool glTF::ParseTexturesJson(JSON::Object* root, std::vector<Texture>& textures)
+{
+	JSON::Value* texturesVal = (*root)["textures"];
+	if (!texturesVal)return true;
+
+	if (!(texturesVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+	JSON::Array* texturesArr = texturesVal->arr();
+
+	for (JSON::Value* textureVal : texturesArr->value)
+	{
+		if (!(textureVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		JSON::Object* textureObj = textureVal->obj();
+
+		Texture texture;
+
+		JSON::ApplyIntValue(textureObj, texture.sampler, "sampler");
+		JSON::ApplyIntValue(textureObj, texture.source, "source");
+		JSON::ApplyStrValue(textureObj, texture.name, "name");
+
+		textures.push_back(texture);
+	}
+
+	return true;
+}
+
+bool glTF::ParseImagesJson(JSON::Object* root, std::vector<Image>& images)
+{
+	JSON::Value* imagesVal = (*root)["images"];
+	if (!imagesVal)return true;
+
+	if (!(imagesVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+	JSON::Array* imagesArr = imagesVal->arr();
+
+	for (JSON::Value* imageVal : imagesArr->value)
+	{
+		if (!(imageVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		JSON::Object* imageObj = imageVal->obj();
+
+		Image image;
+
+		JSON::ApplyStrValue(imageObj, image.uri, "uri");
+		JSON::ApplyIntValue(imageObj, image.bufferView, "bufferView");
+		JSON::ApplyStrValue(imageObj, image.mimeType, "mimeType");
+		JSON::ApplyStrValue(imageObj, image.name, "name");
+
+		images.push_back(image);
+	}
+
+	return true;
+}
+
+bool glTF::ParseSamplersJson(JSON::Object* root, std::vector<Sampler>& samplers)
+{
+	JSON::Value* samplersVal = (*root)["samplers"];
+	if (!samplersVal)return true;
+
+	if (!(samplersVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+	JSON::Array* samplersArr = samplersVal->arr();
+
+	for (JSON::Value* samplerVal : samplersArr->value)
+	{
+		if (!(samplerVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		JSON::Object* samplerObj = samplerVal->obj();
+
+		Sampler sampler;
+
+		JSON::ApplyIntValue(samplerObj, sampler.magFilter, "magFilter");
+		JSON::ApplyIntValue(samplerObj, sampler.minFilter, "minFilter");
+		JSON::ApplyIntValue(samplerObj, sampler.wrapS, "wrapS");
+		JSON::ApplyIntValue(samplerObj, sampler.wrapT, "wrapT");
+		JSON::ApplyStrValue(samplerObj, sampler.name, "name");
+
+		samplers.push_back(sampler);
+	}
+
+	return true;
+}
+
+bool glTF::ParseMaterialsJson(JSON::Object* root, std::vector<Material>& materials)
+{
+	JSON::Value* materialsVal = (*root)["materials"];
+	if (!materialsVal)return true;
+
+	if (!(materialsVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+	JSON::Array* materialsArr = materialsVal->arr();
+
+	for (JSON::Value* materialVal : materialsArr->value)
+	{
+		if (!(materialVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		JSON::Object* materialObj = materialVal->obj();
+
+		materials.push_back(Material());
+		Material* material = &materials[materials.size()-1];
+
+		JSON::ApplyStrValue(materialObj, material->name, "name");
+
+		if (material->pbrMetallicRoughness)return false;
+		material->pbrMetallicRoughness = new Material::PbrMetallicRoughness();
+		JSON::Value* pbrMetallicRoughnessVal = (*materialObj)["pbrMetallicRoughness"];
+		if (pbrMetallicRoughnessVal)
+		{
+			if (!(pbrMetallicRoughnessVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+			if (!ParsePbrMetallicRoughnessJson(pbrMetallicRoughnessVal->obj(), material->pbrMetallicRoughness))return false;
+		}
+
+		JSON::Value* normalTextureVal = (*materialObj)["normalTexture"];
+		if (normalTextureVal)
+		{
+			if (!(normalTextureVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+			JSON::Object* normalTextureObj = normalTextureVal->obj();
+			if (material->normalTexture)return false;
+			material->normalTexture = new Material::NormalTextureInfo();
+			if (!ParseTextureInfoJson(normalTextureObj, material->normalTexture))return false;
+			if (material->normalTexture)
+			{
+				JSON::ApplyNumValue(normalTextureObj, material->normalTexture->scale, "scale");
+			}
+		}
+
+		JSON::Value* occlusionTextureVal = (*materialObj)["occlusionTexture"];
+		if (occlusionTextureVal)
+		{
+			if (!(occlusionTextureVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+			JSON::Object* occlusionTextureObj = occlusionTextureVal->obj();
+			if (material->occlusionTexture)return false;
+			material->occlusionTexture = new Material::OcclusionTextureInfo();
+			if (!ParseTextureInfoJson(occlusionTextureObj, material->occlusionTexture))return false;
+			if (material->occlusionTexture)
+			{
+				JSON::ApplyNumValue(occlusionTextureObj, material->occlusionTexture->strength, "strength");
+			}
+		}
+
+		JSON::Value* emissiveTextureVal = (*materialObj)["emissiveTexture"];
+		if (emissiveTextureVal)
+		{
+			if (!(emissiveTextureVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+			if (material->emissiveTexture)return false;
+			material->emissiveTexture = new Material::TextureInfo();
+			if (!ParseTextureInfoJson(emissiveTextureVal->obj(), material->emissiveTexture))return false;
+		}
+
+		JSON::Value* emissiveFactorVal = (*materialObj)["emissiveFactor"];
+		if (emissiveFactorVal)
+		{
+			if (!JSON::ArrayVector(emissiveFactorVal, material->emissiveFactor))return false;
+		}
+
+		std::string alphaModeStr;
+		if (JSON::ApplyStrValue(materialObj, alphaModeStr, "alphaMode"))
+		{
+			bool alphaModeFound = false;
+			for (auto const& alphaMode : AlphaModes)
+			{
+				if (alphaMode.second == alphaModeStr)
+				{
+					material->alphaMode = alphaMode.first;
+					alphaModeFound = true;
+					break;
+				}
+			}
+			if (!alphaModeFound)return false;
+		}
+
+		JSON::ApplyNumValue(materialObj, material->alphaCutoff, "alphaCutoff");
+		JSON::ApplyBoolValue(materialObj, material->doubleSided, "doubleSided");
+	}
+
+	return true;
+}
+
+bool glTF::ParsePbrMetallicRoughnessJson(JSON::Object* pbrObj, Material::PbrMetallicRoughness* pbr)
+{
+	if (!pbr) return false;
+
+	JSON::Value* baseColorFactorVal = (*pbrObj)["baseColorFactor"];
+	if (baseColorFactorVal)
+	{
+		if (!JSON::ArrayVector(baseColorFactorVal, pbr->baseColorFactor))return false;
+	}
+
+	JSON::Value* baseColorTextureVal = (*pbrObj)["baseColorTexture"];
+	if (baseColorTextureVal)
+	{
+		if (!(baseColorTextureVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		if (pbr->baseColorTexture)return false;
+		pbr->baseColorTexture = new Material::TextureInfo();
+		if (!ParseTextureInfoJson(baseColorTextureVal->obj(), pbr->baseColorTexture))return false;
+	}
+
+	JSON::ApplyNumValue(pbrObj, pbr->metallicFactor, "metallicFactor");
+	
+	JSON::ApplyNumValue(pbrObj, pbr->roughnessFactor, "roughnessFactor");
+
+	JSON::Value* metallicRoughnessTextureVal = (*pbrObj)["metallicRoughnessTexture"];
+	if (metallicRoughnessTextureVal)
+	{
+		if (!(metallicRoughnessTextureVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		if (pbr->metallicRoughnessTexture)return false;
+		pbr->metallicRoughnessTexture = new Material::TextureInfo();
+		if (!ParseTextureInfoJson(metallicRoughnessTextureVal->obj(), pbr->metallicRoughnessTexture))return false;
+	}
+
+	return true;
+}
+
+bool glTF::ParseTextureInfoJson(JSON::Object* textureInfo, Material::TextureInfo* info)
+{
+	if (!info)return false;
+
+	if (!JSON::ApplyIntValue(textureInfo, info->index, "index"))return false;
+	JSON::ApplyIntValue(textureInfo, info->texCoord, "texCoord");
+
+	return true;
+}
+
+bool glTF::ParseCamerasJson(JSON::Object* root, std::vector<Camera>& cameras)
+{
+	JSON::Value* camerasVal = (*root)["cameras"];
+	if (!camerasVal)return true;
+
+	if (!(camerasVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+	JSON::Array* camerasArr = camerasVal->arr();
+
+	for (JSON::Value* cameraVal : camerasArr->value)
+	{
+		if (!(cameraVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		JSON::Object* cameraObj = cameraVal->obj();
+
+		cameras.push_back(Camera());
+		Camera* camera = &cameras[cameras.size() - 1];
+
+		std::string cameraTypeStr;
+		if (!(JSON::ApplyStrValue(cameraObj, cameraTypeStr, "type")))return false;
+		bool cameraTypeFound = false;
+		for (auto const& cameraType : CameraTypes)
+		{
+			if (cameraType.second == cameraTypeStr)
+			{
+				camera->type = cameraType.first;
+				cameraTypeFound = true;
+				break;
+			}
+		}
+		if (!cameraTypeFound)return false;
+		JSON::ApplyStrValue(cameraObj, camera->name, "name");
+
+		JSON::Value* orthographicVal = (*cameraObj)["orthographic"];
+		if (orthographicVal)
+		{
+			if (!(orthographicVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+			JSON::Object* orthographicObj = orthographicVal->obj();
+
+			if (camera->orthographic)return false;
+			camera->orthographic = new Camera::Orthographic();
+
+			if (!JSON::ApplyNumValue(orthographicObj, camera->orthographic->xmag, "xmag"))return false;
+			if (!JSON::ApplyNumValue(orthographicObj, camera->orthographic->yamg, "yamg"))return false;
+			if (!JSON::ApplyNumValue(orthographicObj, camera->orthographic->zfar, "zfar"))return false;
+			if (!JSON::ApplyNumValue(orthographicObj, camera->orthographic->znear, "znear"))return false;
+		}
+
+		JSON::Value* perspectiveVal = (*cameraObj)["perspective"];
+		if (perspectiveVal)
+		{
+			if (!(perspectiveVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+			JSON::Object* perspectiveObj = perspectiveVal->obj();
+
+			if (camera->perspective)return false;
+			camera->perspective = new Camera::Perspective();
+
+			JSON::ApplyNumValue(perspectiveObj, camera->perspective->aspectRatio, "aspectRatio");
+			if (!JSON::ApplyNumValue(perspectiveObj, camera->perspective->yfov, "yfov"))return false;
+			JSON::ApplyNumValue(perspectiveObj, camera->perspective->zfar, "zfar");
+			if (!JSON::ApplyNumValue(perspectiveObj, camera->perspective->znear, "znear"))return false;
+		}
+	}
+
+	return true;
+}
+
+bool glTF::ParseSkinsJson(JSON::Object* root, std::vector<Skin>& skins)
+{
+	JSON::Value* skinsVal = (*root)["skins"];
+	if (!skinsVal)return true;
+
+	if (!(skinsVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+	JSON::Array* skinsArr = skinsVal->arr();
+
+	for (JSON::Value* skinVal : skinsArr->value)
+	{
+		if (!(skinVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		JSON::Object* skinObj = skinVal->obj();
+
+		Skin skin;
+
+		JSON::Value* jointsVal = (*skinObj)["skins"];
+		if (!jointsVal)return false;
+		if (!(jointsVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+		JSON::Array* jointsArr = jointsVal->arr();
+		std::vector<int64> intArr = jointsArr->IntArr();
+		for (auto el : intArr) skin.joints.push_back(static_cast<uint32>(el));
+
+		JSON::ApplyStrValue(skinObj, skin.name, "name");
+
+		JSON::ApplyIntValue(skinObj, skin.inverseBindMatrices, "inverseBindMatrices");
+		JSON::ApplyIntValue(skinObj, skin.skeleton, "skeleton");
+
+		skins.push_back(skin);
+	}
+
+	return true;
+}
+
+bool glTF::ParseAnimationsJson(JSON::Object* root, std::vector<Animation>& animations)
+{
+	JSON::Value* animationsVal = (*root)["animations"];
+	if (!animationsVal)return true;
+
+	if (!(animationsVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+	JSON::Array* animationsArr = animationsVal->arr();
+
+	for (JSON::Value* animationVal : animationsArr->value)
+	{
+		if (!(animationVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+		JSON::Object* animationObj = animationVal->obj();
+
+		Animation animation;
+
+		JSON::ApplyStrValue(animationObj, animation.name, "name");
+
+		JSON::Value* channelsVal = (*animationObj)["channels"];
+		if (!channelsVal)return false;
+		if (!(channelsVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+		JSON::Array* channelsArr = channelsVal->arr();
+		for (JSON::Value* channelVal : channelsArr->value)
+		{
+			if (!(channelVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+			JSON::Object* channelObj = channelVal->obj();
+
+			Animation::Channel channel;
+
+			if (!JSON::ApplyIntValue(channelObj, channel.sampler, "sampler"))return false;
+
+			JSON::Value* targetVal = (*channelObj)["target"];
+			if (!targetVal)return false;
+			if (!(targetVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+			JSON::Object* targetObj = targetVal->obj();
+
+			JSON::ApplyIntValue(targetObj, channel.target.node, "node");
+
+			std::string targetPathStr;
+			if (!(JSON::ApplyStrValue(targetObj, targetPathStr, "path")))return false;
+			bool targetPathFound = false;
+			for (auto const& targetPath : ChannelTargetPaths)
+			{
+				if (targetPath.second == targetPathStr)
+				{
+					channel.target.path = targetPath.first;
+					targetPathFound = true;
+					break;
+				}
+			}
+			if (!targetPathFound)return false;
+
+			animation.channels.push_back(channel);
+		}
+
+		JSON::Value* samplersVal = (*animationObj)["samplers"];
+		if (!samplersVal)return false;
+		if (!(samplersVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+		JSON::Array* samplersArr = samplersVal->arr();
+		for (JSON::Value* samplerVal : samplersArr->value)
+		{
+			if (!(samplerVal->GetType() == JSON::ValueType::JSON_Object)) return false;
+			JSON::Object* samplerObj = samplerVal->obj();
+
+			Animation::Sampler sampler;
+
+			if (!JSON::ApplyIntValue(samplerObj, sampler.input, "input"))return false;
+			if (!JSON::ApplyIntValue(samplerObj, sampler.output, "output"))return false;
+
+			std::string samplerInterpolationStr;
+			if (JSON::ApplyStrValue(samplerObj, samplerInterpolationStr, "interpolation"))
+			{
+				bool samplerInterpolationFound = false;
+				for (auto const& samplerInterpolation : SamplerInterpolations)
+				{
+					if (samplerInterpolation.second == samplerInterpolationStr)
+					{
+						sampler.interpolation = samplerInterpolation.first;
+						samplerInterpolationFound = true;
+						break;
+					}
+				}
+				if (!samplerInterpolationFound)return false;
+			}
+
+			animation.samplers.push_back(sampler);
+		}
+
+		animations.push_back(animation);
+	}
+
 	return true;
 }
 

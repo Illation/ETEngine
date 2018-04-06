@@ -14,7 +14,7 @@ TEST_CASE("Decode Base64", "[gltf]")
 }
 
 std::string baseDir = "./source/Testing/Engine/Helper/";
-std::string fileName = "Box.gltf";
+std::string fileName = "Corset.gltf";
 
 TEST_CASE("Evaluate URI", "[gltf]")
 {
