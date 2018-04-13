@@ -5,6 +5,7 @@
 #include "../Math/Quaternion.hpp"
 #include "../Math/Matrix.hpp"
 #include "../FileSystem/JSONdom.h"
+#include "../FileSystem/BinaryReader.hpp"
 
 namespace glTF
 {
@@ -358,9 +359,9 @@ namespace glTF
 
 	struct Header
 	{
-		uint32 magic;	// should be "glTF"
-		uint32 version; // should be 2
-		uint32 length;
+		uint32 magic = *reinterpret_cast<uint32*>("glTF");	// should be "glTF"
+		uint32 version = 2; // should be 2
+		uint32 length = 0;
 	};
 
 	struct Chunk
@@ -374,6 +375,13 @@ namespace glTF
 		std::vector<uint8> chunkData;
 	};
 
+	struct glTFAsset
+	{
+		Header header;
+		Dom dom;
+		std::vector<Chunk> dataChunks;
+	};
+
 	static const std::string Base64Mime = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	static inline bool IsBase64(unsigned char c) 
 	{
@@ -382,6 +390,11 @@ namespace glTF
 
 	bool EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std::string& ext, const std::string& basePath);
 	bool DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded);
+
+	bool ParseGLTFData(const std::vector<uint8>& binaryContent, const std::string& extension, glTFAsset& asset);
+
+	bool ParseGLBHeader(BinaryReader* pBinReader, Header &header);
+	bool ParseGLBChunk(BinaryReader* pBinReader, Chunk &header);
 
 	bool ParseGlTFJson(JSON::Object* json, Dom& dom);
 

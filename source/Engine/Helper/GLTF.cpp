@@ -3,6 +3,7 @@
 #include "FileSystem/Entry.h"
 #include "FileSystem/JSONparser.h"
 #include "FileSystem/JSONdom.h"
+#include "FileSystem/FileUtil.h"
 
 bool glTF::EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std::string& ext, const std::string& basePath)
 {
@@ -103,6 +104,75 @@ bool glTF::DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded)
 	}
 
 	return true;
+}
+
+bool glTF::ParseGLTFData(const std::vector<uint8>& binaryContent, const std::string& extension, glTFAsset& asset)
+{
+	asset = glTFAsset();
+
+	std::string lowerExt;
+	std::transform(extension.begin(), extension.end(), lowerExt.begin(), ::tolower);
+	if (lowerExt == "glb")
+	{
+		auto pBinReader = new BinaryReader(); 
+		pBinReader->Open(binaryContent);
+		if (!pBinReader->Exists())
+		{
+			delete pBinReader;
+			LOG("glTF Failed to read the assetFile!", Warning);
+			return false;
+		}
+		if (!ParseGLBHeader(pBinReader, asset.header))
+		{
+			delete pBinReader;
+			return false;
+		}
+		Chunk jsonChunk;
+		if (!ParseGLBChunk(pBinReader, jsonChunk))
+		{
+			delete pBinReader;
+			LOG("glTF failed to read json chunk from glb!", Warning);
+			return false;
+		}
+		while ((uint32)pBinReader->GetBufferPosition() < asset.header.length)
+		{
+			
+		}
+		return true;
+	}
+	else if (lowerExt == "gltf")
+	{
+		JSON::Parser parser = JSON::Parser(FileUtil::AsText(binaryContent));
+		JSON::Object* root = parser.GetRoot();
+		if(root == nullptr)return false;
+		if(!glTF::ParseGlTFJson(root, asset.dom))return false;
+		return true;
+	}
+	LOG("Unrecognized glTF extension", Warning);
+	return false;
+}
+
+bool glTF::ParseGLBHeader(BinaryReader* pBinReader, Header &header)
+{
+	header.magic = pBinReader->Read<uint32>();
+	if (!(header.magic == *reinterpret_cast<uint32*>("glTF")))
+	{
+		LOG("invalid glb file header!", Warning);
+		return false;
+	}
+	header.version = pBinReader->Read<uint32>();
+	if (!(header.magic == 2))
+	{
+		LOG("invalid glb file header version!", Warning);
+		return false;
+	}
+	header.length = pBinReader->Read<uint32>();
+	return true;
+}
+
+bool glTF::ParseGLBChunk(BinaryReader* pBinReader, Chunk &header)
+{
+	return false;
 }
 
 bool glTF::ParseGlTFJson(JSON::Object* json, Dom& dom)
