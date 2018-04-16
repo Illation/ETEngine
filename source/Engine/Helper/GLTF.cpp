@@ -4,6 +4,7 @@
 #include "FileSystem/JSONparser.h"
 #include "FileSystem/JSONdom.h"
 #include "FileSystem/FileUtil.h"
+#include "Graphics/MeshFilter.hpp"
 
 bool glTF::EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std::string& ext, const std::string& basePath)
 {
@@ -111,7 +112,12 @@ bool glTF::ParseGLTFData(const std::vector<uint8>& binaryContent, const std::str
 	asset = glTFAsset();
 
 	std::string lowerExt;
-	std::transform(extension.begin(), extension.end(), lowerExt.begin(), ::tolower);
+	for(char val : extension)
+	{
+		if (val >= 'A' && val <= 'Z')
+			lowerExt.push_back(val - ('A' - 'a'));
+		else lowerExt.push_back(val);
+	}
 	if (lowerExt == "glb")
 	{
 		auto pBinReader = new BinaryReader(); 
@@ -122,22 +128,51 @@ bool glTF::ParseGLTFData(const std::vector<uint8>& binaryContent, const std::str
 			LOG("glTF Failed to read the assetFile!", Warning);
 			return false;
 		}
+
+		//Parse Header
 		if (!ParseGLBHeader(pBinReader, asset.header))
 		{
 			delete pBinReader;
 			return false;
 		}
-		Chunk jsonChunk;
+
+		//Parse structured Json
+		Chunk jsonChunk = Chunk();
 		if (!ParseGLBChunk(pBinReader, jsonChunk))
 		{
 			delete pBinReader;
 			LOG("glTF failed to read json chunk from glb!", Warning);
 			return false;
 		}
+		if (!(jsonChunk.chunkType == Chunk::ChunkType::JSON))
+		{
+			delete pBinReader;
+			LOG("expected chunk type to be JSON", Warning);
+			return false;
+		}
+		JSON::Parser parser = JSON::Parser(FileUtil::AsText(jsonChunk.chunkData));
+		JSON::Object* root = parser.GetRoot();
+		if (root == nullptr)return false;
+		if (!glTF::ParseGlTFJson(root, asset.dom))return false;
+
+		//Parse binary chunks
 		while ((uint32)pBinReader->GetBufferPosition() < asset.header.length)
 		{
-			
+			asset.dataChunks.push_back(Chunk());
+			if (!ParseGLBChunk(pBinReader, asset.dataChunks[asset.dataChunks.size()-1]))
+			{
+				delete pBinReader;
+				LOG("glTF failed to read binary chunk from glb!", Warning);
+				return false;
+			}
+			if (!(asset.dataChunks[asset.dataChunks.size() - 1].chunkType == Chunk::ChunkType::BIN))
+			{
+				delete pBinReader;
+				LOG("expected chunk type to be BIN", Warning);
+				return false;
+			}
 		}
+		delete pBinReader;
 		return true;
 	}
 	else if (lowerExt == "gltf")
@@ -161,7 +196,7 @@ bool glTF::ParseGLBHeader(BinaryReader* pBinReader, Header &header)
 		return false;
 	}
 	header.version = pBinReader->Read<uint32>();
-	if (!(header.magic == 2))
+	if (!(header.version == 2))
 	{
 		LOG("invalid glb file header version!", Warning);
 		return false;
@@ -170,9 +205,22 @@ bool glTF::ParseGLBHeader(BinaryReader* pBinReader, Header &header)
 	return true;
 }
 
-bool glTF::ParseGLBChunk(BinaryReader* pBinReader, Chunk &header)
+bool glTF::ParseGLBChunk(BinaryReader* pBinReader, Chunk &chunk)
 {
-	return false;
+	if (!(pBinReader->GetBufferPosition() % 4 == 0))//Make sure 4 byte alignement is respected
+	{
+		LOG("Expected binary buffer position for glb to be 4 byte aligned", Warning);
+		pBinReader->SetBufferPosition(((pBinReader->GetBufferPosition() / 4) + 1) * 4);
+	}
+	chunk.chunkLength = pBinReader->Read<uint32>();
+	chunk.chunkType = static_cast<Chunk::ChunkType>(pBinReader->Read<uint32>());
+	chunk.chunkData.reserve(chunk.chunkLength);
+	for (uint32 i = 0; i < chunk.chunkLength; i++) chunk.chunkData.push_back(pBinReader->Read<uint8>());
+	if (!(pBinReader->GetBufferPosition() % 4 == 0))//Make sure 4 byte alignement is respected
+	{
+		pBinReader->SetBufferPosition(((pBinReader->GetBufferPosition() / 4) + 1) * 4);
+	}
+	return true;
 }
 
 bool glTF::ParseGlTFJson(JSON::Object* json, Dom& dom)
@@ -1122,4 +1170,9 @@ bool glTF::ParseAnimationsJson(JSON::Object* root, std::vector<Animation>& anima
 void glTF::LogGLTFVersionSupport()
 {
 	LOG(std::string("glTF minVersion ") + std::to_string(glTF::minVersion) + " maxVersion " + std::to_string(glTF::maxVersion));
+}
+
+bool glTF::GetMeshFilters(const glTFAsset& asset, std::vector<MeshFilter*>& meshFilters)
+{
+	return false;
 }

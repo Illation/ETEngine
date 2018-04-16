@@ -7,6 +7,8 @@
 #include "../FileSystem/JSONdom.h"
 #include "../FileSystem/BinaryReader.hpp"
 
+class MeshFilter;
+
 namespace glTF
 {
 	static const float minVersion = 2.0;
@@ -238,16 +240,16 @@ namespace glTF
 			vec4 baseColorFactor = vec4(1);
 			float metallicFactor = 1;
 			float roughnessFactor = 1;
-			TextureInfo* baseColorTexture = nullptr;
-			TextureInfo* metallicRoughnessTexture = nullptr;
+			TextureInfo* baseColorTexture = nullptr;//sRGB
+			TextureInfo* metallicRoughnessTexture = nullptr;//linear
 
 			~PbrMetallicRoughness() { delete baseColorTexture; delete metallicRoughnessTexture; }
 		};
 		PbrMetallicRoughness *pbrMetallicRoughness = nullptr;
 
-		NormalTextureInfo *normalTexture = nullptr;
-		OcclusionTextureInfo *occlusionTexture = nullptr;
-		TextureInfo* emissiveTexture = nullptr;
+		NormalTextureInfo *normalTexture = nullptr;//linear
+		OcclusionTextureInfo *occlusionTexture = nullptr;//linear
+		TextureInfo* emissiveTexture = nullptr;//sRGB
 		vec3 emissiveFactor = vec3(0);
 		AlphaMode alphaMode = AlphaMode::GLTF_OPAQUE;
 		float alphaCutoff = 0.5f;
@@ -367,10 +369,10 @@ namespace glTF
 	struct Chunk
 	{
 		uint32 chunkLength = 0;
-		enum class ChunkType : uint8 
+		enum class ChunkType : uint32 
 		{
-			JSON,
-			BIN
+			JSON	= 0x4E4F534A,
+			BIN		= 0x004E4942
 		} chunkType;
 		std::vector<uint8> chunkData;
 	};
@@ -391,6 +393,7 @@ namespace glTF
 	bool EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std::string& ext, const std::string& basePath);
 	bool DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded);
 
+	//Unify GLTF and GLB
 	bool ParseGLTFData(const std::vector<uint8>& binaryContent, const std::string& extension, glTFAsset& asset);
 
 	bool ParseGLBHeader(BinaryReader* pBinReader, Header &header);
@@ -419,4 +422,6 @@ namespace glTF
 	bool ParseAnimationsJson(JSON::Object* root, std::vector<Animation>& animations);
 
 	void LogGLTFVersionSupport();
+
+	bool GetMeshFilters(const glTFAsset& asset, std::vector<MeshFilter*>& meshFilters);
 }

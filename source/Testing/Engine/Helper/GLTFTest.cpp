@@ -14,7 +14,8 @@ TEST_CASE("Decode Base64", "[gltf]")
 }
 
 std::string baseDir = "./source/Testing/Engine/Helper/";
-std::string fileName = "Corset.gltf";
+std::string fileName = "Box.gltf";
+std::string glbFileName = "Corset.glb";
 
 TEST_CASE("Evaluate URI", "[gltf]")
 {
@@ -38,7 +39,7 @@ TEST_CASE("Evaluate URI", "[gltf]")
 	REQUIRE(decEmbedded.size() == decBin.size());
 }
 
-TEST_CASE("Parse GLTF", "[gltf]")
+TEST_CASE("Parse GLTF json", "[gltf]")
 {
 	File* input = new File(baseDir+fileName, nullptr);
 	REQUIRE(input->Open(FILE_ACCESS_MODE::Read) == true);
@@ -53,4 +54,18 @@ TEST_CASE("Parse GLTF", "[gltf]")
 
 	glTF::Dom dom;
 	REQUIRE(glTF::ParseGlTFJson(root, dom) == true);
+}
+
+TEST_CASE("Parse GLB asset", "[gltf]")
+{
+	File* input = new File(baseDir + glbFileName, nullptr);
+	REQUIRE(input->Open(FILE_ACCESS_MODE::Read) == true);
+	std::vector<uint8> binaryContent = input->Read();
+	std::string extension = input->GetExtension();
+	delete input;
+	input = nullptr;
+	REQUIRE(binaryContent.size() > 0);
+
+	glTF::glTFAsset asset;
+	REQUIRE(glTF::ParseGLTFData(binaryContent, extension, asset) == true);
 }
