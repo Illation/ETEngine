@@ -80,10 +80,24 @@ namespace glTF
 		std::vector<float> weights;
 	};
 
+	struct URI
+	{
+		std::string path;
+		std::vector<uint8> binData;
+		std::string ext;
+		enum Type : uint8
+		{
+			URI_UNEVALUATED,
+			URI_FILE,
+			URI_DATA,
+			URI_NONE
+		} type = URI_UNEVALUATED;
+	};
+
 	struct Buffer
 	{
 		uint64 byteLength = 0;
-		std::string uri;
+		URI uri;
 		std::string name;
 	};
 
@@ -106,7 +120,7 @@ namespace glTF
 		UNSIGNED_INT = 5125,
 		FLOAT = 5126
 	};
-	static const std::map<ComponentType, uint8> ComponentTypes
+	static std::map<ComponentType, uint8> ComponentTypes
 	{
 		{ ComponentType::BYTE,			 1 },
 		{ ComponentType::UNSIGNED_BYTE,	 1 },
@@ -120,7 +134,7 @@ namespace glTF
 	{
 		SCALAR, VEC2, VEC3, VEC4, MAT2, MAT3, MAT4
 	};
-	static const std::map<Type, std::pair<uint8, std::string>> AccessorTypes
+	static std::map<Type, std::pair<uint8, std::string>> AccessorTypes
 	{
 		{ Type::SCALAR,	{ 1, "SCALAR" } },
 		{ Type::VEC2,	{ 2, "VEC2" } },
@@ -180,7 +194,7 @@ namespace glTF
 
 	struct Image
 	{
-		std::string uri;
+		URI uri;
 		int32 bufferView = -1;
 		std::string mimeType;
 		std::string name;
@@ -382,6 +396,7 @@ namespace glTF
 		Header header;
 		Dom dom;
 		std::vector<Chunk> dataChunks;
+		std::string basePath;
 	};
 
 	static const std::string Base64Mime = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -390,7 +405,7 @@ namespace glTF
 		return (isalnum(c) || (c == '+') || (c == '/'));
 	}
 
-	bool EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std::string& ext, const std::string& basePath);
+	bool EvaluateURI(URI& uri, const std::string& basePath);
 	bool DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded);
 
 	//Unify GLTF and GLB
@@ -423,5 +438,10 @@ namespace glTF
 
 	void LogGLTFVersionSupport();
 
-	bool GetMeshFilters(const glTFAsset& asset, std::vector<MeshFilter*>& meshFilters);
+	bool GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& data);
+	class MeshFilterConstructor //Allows inner access to mesh filters through friend class
+	{
+	public:
+		static bool GetMeshFilters(const glTFAsset& asset, std::vector<MeshFilter*>& meshFilters);
+	};
 }

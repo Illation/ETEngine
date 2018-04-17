@@ -54,6 +54,7 @@ public:
 private:
 	friend class MeshFilterLoader;
 	friend class ModelComponent;
+	//friend class glTF::MeshFilterConstructor;
 
 	int32 GetVertexObjectId(uint32 flags);
 	void BuildVertexBuffer(Material* pMaterial);

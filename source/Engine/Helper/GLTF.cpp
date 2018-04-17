@@ -6,18 +6,25 @@
 #include "FileSystem/FileUtil.h"
 #include "Graphics/MeshFilter.hpp"
 
-bool glTF::EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std::string& ext, const std::string& basePath)
+bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
 {
-	if (uri.substr(0, 5) == "data:")
+	if (uri.path.size() == 0)
 	{
-		auto dataPos = uri.find(',');
+		uri.type = URI::URI_NONE;
+		return true;
+	}
+	if (uri.path.substr(0, 5) == "data:")
+	{
+		uri.type = URI::URI_DATA;
+
+		auto dataPos = uri.path.find(',');
 		if (dataPos == std::string::npos)
 		{
 			LOG("couldn't find data uri data", Warning);
 			return false;
 		}
 
-		std::string mediatype = uri.substr(5, dataPos - 5);
+		std::string mediatype = uri.path.substr(5, dataPos - 5);
 		auto paramPos = mediatype.find(';');
 		if (paramPos == std::string::npos)
 		{
@@ -33,15 +40,17 @@ bool glTF::EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std:
 			LOG("couldn't find data uri mediatype subtype", Warning);
 			return false;
 		}
-		ext = mediatype.substr(subtypePos + 1);
+		uri.ext = mediatype.substr(subtypePos + 1);
 		mediatype = mediatype.substr(0, subtypePos);
 
-		std::string dataString = uri.substr(dataPos + 1);
+		std::string dataString = uri.path.substr(dataPos + 1);
 
 		if (parameter == "base64")
 		{
-			if (DecodeBase64(dataString, binData))
+			if (DecodeBase64(dataString, uri.binData))
 			{
+				uri.path = uri.path.substr(0, dataPos); 
+				std::string(uri.path).swap(uri.path);//free that memory
 				return true;
 			}
 		}
@@ -51,22 +60,23 @@ bool glTF::EvaluateURI(const std::string& uri, std::vector<uint8>& binData, std:
 	else
 	{
 		Directory* pDir = new Directory(basePath, nullptr);
-		File* input = new File(uri, pDir);
+		File* input = new File(uri.path, pDir);
 		if (!input->Open(FILE_ACCESS_MODE::Read))
 		{
-			LOG(std::string("Unable to open external glTF asset") + uri, Warning);
+			LOG(std::string("Unable to open external glTF asset") + uri.path, Warning);
 			return false;
 		}
-		binData = input->Read();
-		ext = input->GetExtension();
+		uri.binData = input->Read();
+		uri.ext = input->GetExtension();
 		delete input;
 		input = nullptr;
 		delete pDir;
 		pDir = nullptr;
-		if (binData.size() == 0)
+		if (uri.binData.size() == 0)
 		{
-			LOG(std::string("external glTF asset is empty") + uri, Warning);
+			LOG(std::string("external glTF asset is empty") + uri.path, Warning);
 		}
+		uri.type = URI::URI_FILE;
 		return true;
 	}
 }
@@ -750,7 +760,7 @@ bool glTF::ParseBuffersJson(JSON::Object* root, std::vector<Buffer>& buffers)
 
 		Buffer buffer;
 
-		JSON::ApplyStrValue(bufferObj, buffer.uri, "uri");
+		JSON::ApplyStrValue(bufferObj, buffer.uri.path, "uri");
 		if (!JSON::ApplyIntValue(bufferObj, buffer.byteLength, "byteLength"))return false;
 		JSON::ApplyStrValue(bufferObj, buffer.name, "name");
 
@@ -800,7 +810,7 @@ bool glTF::ParseImagesJson(JSON::Object* root, std::vector<Image>& images)
 
 		Image image;
 
-		JSON::ApplyStrValue(imageObj, image.uri, "uri");
+		JSON::ApplyStrValue(imageObj, image.uri.path, "uri");
 		JSON::ApplyIntValue(imageObj, image.bufferView, "bufferView");
 		JSON::ApplyStrValue(imageObj, image.mimeType, "mimeType");
 		JSON::ApplyStrValue(imageObj, image.name, "name");
@@ -1172,7 +1182,75 @@ void glTF::LogGLTFVersionSupport()
 	LOG(std::string("glTF minVersion ") + std::to_string(glTF::minVersion) + " maxVersion " + std::to_string(glTF::maxVersion));
 }
 
-bool glTF::GetMeshFilters(const glTFAsset& asset, std::vector<MeshFilter*>& meshFilters)
+bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& data)
 {
+	if (idx >= (uint32)asset.dom.accessors.size())
+	{
+		LOG("Accessor index out of range", Warning);
+		return false;
+	}
+	Accessor& accessor = asset.dom.accessors[idx];
+	if (accessor.sparse || accessor.bufferView == -1)
+	{
+		LOG("Unsupported accessor type, sparse accessors are not yet implemented", Warning);
+		return false;
+	}
+	if (accessor.bufferView >= (int32)asset.dom.bufferViews.size())
+	{
+		LOG("BufferView index out of range", Warning);
+		return false;
+	}
+	BufferView& view = asset.dom.bufferViews[accessor.bufferView];
+	if (view.buffer >= (uint32)asset.dom.buffers.size())
+	{
+		LOG("Buffer index out of range", Warning);
+		return false;
+	}
+	Buffer& buffer = asset.dom.buffers[view.buffer];
+	if (buffer.uri.type == URI::URI_UNEVALUATED)
+	{
+		if (!EvaluateURI(buffer.uri, asset.basePath))
+		{
+			LOG("Failed to evaluate buffer URI", Warning);
+			return false;
+		}
+	}
+
+	uint8 compSize = ComponentTypes[accessor.componentType];
+	uint8 compsPerEl = AccessorTypes[accessor.type].first;
+
+	//Validation
+	if (!(accessor.byteOffset % compSize == 0)) LOG("Accessors byte offset needs to be a multiple of the component size", Warning);
+	if (accessor.min.size())
+	{
+		if (!((uint32)accessor.min.size() == (uint32)compsPerEl)) LOG("Accessors min array size must equal components per element", Warning);
+	}
+	if (accessor.max.size())
+	{
+		if (!((uint32)accessor.max.size() == (uint32)compsPerEl)) LOG("Accessors max array size must equal components per element", Warning);
+	}
+
+	return false;
+}
+
+bool glTF::MeshFilterConstructor::GetMeshFilters(const glTFAsset& asset, std::vector<MeshFilter*>& meshFilters)
+{
+	for (const Mesh& mesh : asset.dom.meshes)
+	{
+		if (mesh.primitives.size() > 1)LOG("Currently ETEngine meshes only support one primitive", Warning);
+		for (const Primitive& primitive : mesh.primitives)
+		{
+			//MeshFilter* pMesh = new MeshFilter();
+			//pMesh->m_Name = mesh.name;
+			//pMesh->m_VertexCount = ;
+			//pMesh->m_IndexCount = ;
+
+			if (primitive.indices == -1)
+			{
+				LOG("ETEngine only supports indexed draw for meshes", Warning);
+				continue;
+			}
+		}
+	}
 	return false;
 }
