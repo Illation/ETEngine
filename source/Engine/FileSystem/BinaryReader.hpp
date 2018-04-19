@@ -30,7 +30,7 @@ public:
 	bool MoveBufferPosition(int32 move);
 	bool Exists() const { return m_Exists; }
 
-	void Open(const std::vector<uint8> &binaryContent);
+	void Open(const std::vector<uint8> &binaryContent, uint32 start = 0, uint32 count = 0);
 	void Close();
 
 private:

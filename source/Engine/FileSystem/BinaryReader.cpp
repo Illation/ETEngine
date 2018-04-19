@@ -70,11 +70,24 @@ std::string BinaryReader::ReadString()
 	return (std::string)ss.str();
 }
 
-void BinaryReader::Open( const std::vector<uint8> &binaryContent )
+void BinaryReader::Open( const std::vector<uint8> &binaryContent, uint32 start, uint32 count )
 {
 	Close();
 
-	std::string data((char*)binaryContent.data(), binaryContent.size() );
+	if (start >= (uint32)binaryContent.size())
+	{
+		LOG("Start element of binary content for binary reader must be smaller than content element size", Error);
+	}
+	if (count == 0)
+	{
+		count = (uint32)binaryContent.size() - start;
+	}
+	if (start+count > (uint32)binaryContent.size())
+	{
+		LOG("Count outside of array bounds for binary reader", Error);
+	}
+
+	std::string data(&((char*)binaryContent.data())[start], count);
 	m_pReader = new std::stringstream( data );
 	m_Exists = true;
 }

@@ -1182,6 +1182,49 @@ void glTF::LogGLTFVersionSupport()
 	LOG(std::string("glTF minVersion ") + std::to_string(glTF::minVersion) + " maxVersion " + std::to_string(glTF::maxVersion));
 }
 
+bool glTF::OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, BinaryReader* pViewReader)
+{
+	if (viewIdx >= (int32)asset.dom.bufferViews.size())
+	{
+		LOG("BufferView index out of range", Warning);
+		return false;
+	}
+	BufferView& view = asset.dom.bufferViews[viewIdx];
+	if (view.buffer >= (uint32)asset.dom.buffers.size())
+	{
+		LOG("Buffer index out of range", Warning);
+		return false;
+	}
+	Buffer& buffer = asset.dom.buffers[view.buffer];
+	if (buffer.uri.type == URI::URI_UNEVALUATED)
+	{
+		if (!EvaluateURI(buffer.uri, asset.basePath))
+		{
+			LOG("Failed to evaluate buffer URI", Warning);
+			return false;
+		}
+	}
+	if (buffer.uri.type == URI::URI_NONE)
+	{
+		if (view.buffer >= (uint32)asset.dataChunks.size())
+		{
+			LOG("No data chunk loaded for glb buffer", Warning);
+			return false;
+		}
+		pViewReader->Open(asset.dataChunks[view.buffer].chunkData, (uint32)view.byteOffset, (uint32)view.byteLength);
+	}
+	else
+	{
+		pViewReader->Open(buffer.uri.binData, (uint32)view.byteOffset, (uint32)view.byteLength);
+	}
+	if (!pViewReader->Exists())
+	{
+		LOG("glTF Failed to read the buffer view!", Warning);
+		return false;
+	}
+	return true;
+}
+
 bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& data)
 {
 	if (idx >= (uint32)asset.dom.accessors.size())
@@ -1206,18 +1249,10 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 		LOG("Buffer index out of range", Warning);
 		return false;
 	}
-	Buffer& buffer = asset.dom.buffers[view.buffer];
-	if (buffer.uri.type == URI::URI_UNEVALUATED)
-	{
-		if (!EvaluateURI(buffer.uri, asset.basePath))
-		{
-			LOG("Failed to evaluate buffer URI", Warning);
-			return false;
-		}
-	}
 
 	uint8 compSize = ComponentTypes[accessor.componentType];
 	uint8 compsPerEl = AccessorTypes[accessor.type].first;
+	uint8 elSize = compSize*compsPerEl;
 
 	//Validation
 	if (!(accessor.byteOffset % compSize == 0)) LOG("Accessors byte offset needs to be a multiple of the component size", Warning);
@@ -1230,10 +1265,32 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 		if (!((uint32)accessor.max.size() == (uint32)compsPerEl)) LOG("Accessors max array size must equal components per element", Warning);
 	}
 
-	return false;
+	uint32 stride = (view.byteStride == -1) ? (uint32)elSize : view.byteStride;
+	if (!(stride % compSize == 0)) LOG("Accessors byte stride needs to be a multiple of the component size", Warning);
+	if(accessor.byteOffset+stride*(accessor.count-1)+elSize > view.byteLength)LOG("Accessors doesn't fit buffer view", Warning);
+
+	BinaryReader* pViewReader = new BinaryReader();
+	if (!OpenBufferViewReader(asset, accessor.bufferView, pViewReader))
+	{
+		delete pViewReader;
+		LOG("Unable to read buffer view", Warning);
+		return false;
+	}
+
+	for (uint32 i = accessor.byteOffset; i < accessor.count; ++i)
+	{
+		pViewReader->SetBufferPosition(i*stride);
+		for (uint32 j = 0; j < elSize; ++j)
+		{
+			data.push_back(pViewReader->Read<uint8>());
+		}
+	}
+
+	delete pViewReader;
+	return true;
 }
 
-bool glTF::MeshFilterConstructor::GetMeshFilters(const glTFAsset& asset, std::vector<MeshFilter*>& meshFilters)
+bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<MeshFilter*>& meshFilters)
 {
 	for (const Mesh& mesh : asset.dom.meshes)
 	{
@@ -1250,6 +1307,26 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(const glTFAsset& asset, std::ve
 				LOG("ETEngine only supports indexed draw for meshes", Warning);
 				continue;
 			}
+			else
+			{
+				if (primitive.indices >= (int32)asset.dom.accessors.size())
+				{
+					LOG("Accessor index out of range", Warning);
+					return false;
+				}
+				Accessor& accessor = asset.dom.accessors[primitive.indices];
+				if (accessor.type != Type::SCALAR)
+				{
+					LOG("Index accessor must be SCALAR", Warning);
+					return false;
+				}
+				//GetAccessorScalarArray(asset, primitive.indices, pMesh->m_Indices);
+			}
+			if (primitive.attributes.position != -1)
+			{
+				//GetAccessorVectorArray(asset, primitive.attributes.position, pMesh->m_Positions, true);
+			}
+
 		}
 	}
 	return false;

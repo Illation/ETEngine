@@ -438,10 +438,105 @@ namespace glTF
 
 	void LogGLTFVersionSupport();
 
+	bool OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, BinaryReader* pViewReader);
 	bool GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& data);
+	template<typename T>
+	bool GetAccessorScalarArray(glTFAsset& asset, uint32 idx, std::vector<T>& data)
+	{
+		if (idx >= (uint32)asset.dom.accessors.size())
+		{
+			LOG("Accessor index out of range", Warning);
+			return false;
+		}
+		Accessor& accessor = asset.dom.accessors[idx];
+		uint8 compsPerEl = AccessorTypes[accessor.type].first;
+		std::vector<uint8> data;
+		if (!GetAccessorData(asset, idx, data))
+		{
+			LOG("Unable to get accessor data", Warning);
+		}
+		BinaryReader* pBinReader = new BinaryReader();
+		pBinReader->Open(data);
+		if (!pBinReader()->Exists())
+		{
+			LOG("Unable to convert accessor data", Warning);
+			delete pBinReader;
+			return false;
+		}
+		for (uint32 i = 0; i < accessor.count * compsPerEl; ++i)
+		{
+			if (pBinReader->GetBufferPosition() >= (uint32)data.size())
+			{
+				LOG("Binary reader out of range", Warning);
+				delete pBinReader;
+				return false;
+			}
+			switch (accessor.componentType)
+			{
+			case ComponentType::BYTE:
+				data.push_back(static_cast<T>(pBinReader->Read<int8>()));
+				break;
+			case ComponentType::UNSIGNED_BYTE:
+				data.push_back(static_cast<T>(pBinReader->Read<uint8>()));
+				break;
+			case ComponentType::SHORT:
+				data.push_back(static_cast<T>(pBinReader->Read<int16>()));
+				break;
+			case ComponentType::UNSIGNED_SHORT:
+				data.push_back(static_cast<T>(pBinReader->Read<uint16>()));
+				break;
+			case ComponentType::UNSIGNED_INT:
+				data.push_back(static_cast<T>(pBinReader->Read<uint32>()));
+				break;
+			case ComponentType::FLOAT:
+				data.push_back(static_cast<T>(pBinReader->Read<float>()));
+				break;
+			}
+		}
+		delete pBinReader;
+		return true;
+	}
+	template <uint8 n, class T>
+	bool GetAccessorVectorArray(glTFAsset& asset, uint32 idx, std::vector<etm::vector<n, T>>& data, bool convertCoords = false)
+	{
+		if (idx >= (uint32)asset.dom.accessors.size())
+		{
+			LOG("Accessor index out of range", Warning);
+			return false;
+		}
+		Accessor& accessor = asset.dom.accessors[idx];
+		uint8 compsPerEl = AccessorTypes[accessor.type].first;
+		if (compsPerEl != n)
+		{
+			LOG("Accessor type mismatch with vector size", Warning);
+			return false;
+		}
+		std::vector<T> scalars;
+		if(!GetAccessorScalarArray(asset, idx, scalars))
+		{
+			LOG("Unable to get accessor scalar array for vector array", Warning);
+			return false;
+		}
+		if (convertCoords && n != 3)
+		{
+			LOG("Converting coordinates of a non-3D vector", Warning);
+		}
+		if (n < 2)convertCoords = false;
+		for (uint32 i = 0; i < scalars.size() / n; ++i)
+		{
+			etm::vector<n, T> vec;
+			for (uint32 j = 0; j < n; ++j)
+			{
+				vec[j] = scalars[i*n + j];
+			}
+			if (convertCoords)vec[1] = -vec[1];
+			data.push_back(vec);
+		}
+		return true;
+	}
 	class MeshFilterConstructor //Allows inner access to mesh filters through friend class
 	{
 	public:
-		static bool GetMeshFilters(const glTFAsset& asset, std::vector<MeshFilter*>& meshFilters);
+		static bool GetMeshFilters(glTFAsset& asset, std::vector<MeshFilter*>& meshFilters);
 	};
 }
