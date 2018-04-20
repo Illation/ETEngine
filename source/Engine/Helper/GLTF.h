@@ -1,13 +1,9 @@
 #pragma once
-#include "AtomicTypes.hpp"
-#include <vector>
-#include "../Math/Vector.hpp"
 #include "../Math/Quaternion.hpp"
-#include "../Math/Matrix.hpp"
 #include "../FileSystem/JSONdom.h"
-#include "../FileSystem/BinaryReader.hpp"
 
 class MeshFilter;
+class BinaryReader;
 
 namespace glTF
 {
@@ -450,14 +446,14 @@ namespace glTF
 		}
 		Accessor& accessor = asset.dom.accessors[idx];
 		uint8 compsPerEl = AccessorTypes[accessor.type].first;
-		std::vector<uint8> data;
-		if (!GetAccessorData(asset, idx, data))
+		std::vector<uint8> accessorData;
+		if (!GetAccessorData(asset, idx, accessorData))
 		{
 			LOG("Unable to get accessor data", Warning);
 		}
 		BinaryReader* pBinReader = new BinaryReader();
-		pBinReader->Open(data);
-		if (!pBinReader()->Exists())
+		pBinReader->Open(accessorData);
+		if (!(pBinReader->Exists()))
 		{
 			LOG("Unable to convert accessor data", Warning);
 			delete pBinReader;
@@ -465,7 +461,7 @@ namespace glTF
 		}
 		for (uint32 i = 0; i < accessor.count * compsPerEl; ++i)
 		{
-			if (pBinReader->GetBufferPosition() >= (uint32)data.size())
+			if (pBinReader->GetBufferPosition() >= (int32)data.size())
 			{
 				LOG("Binary reader out of range", Warning);
 				delete pBinReader;
@@ -521,13 +517,13 @@ namespace glTF
 		{
 			LOG("Converting coordinates of a non-3D vector", Warning);
 		}
-		if (n < 2)convertCoords = false;
+		convertCoords &= n > 1;
 		for (uint32 i = 0; i < scalars.size() / n; ++i)
 		{
 			etm::vector<n, T> vec;
 			for (uint32 j = 0; j < n; ++j)
 			{
-				vec[j] = scalars[i*n + j];
+				vec[(uint8)j] = scalars[i*(uint32)n + j];
 			}
 			if (convertCoords)vec[1] = -vec[1];
 			data.push_back(vec);

@@ -18,6 +18,28 @@ Sphere* MeshFilter::GetBoundingSphere()
 	return &m_BoundingSphere;
 }
 
+void MeshFilter::Preprocess()
+{
+	if (m_Normals.size() && !m_BiNormals.size())
+	{
+		ConstructBiNormals();
+	}
+	if (!m_VertexCount)
+	{
+		m_VertexCount = m_Positions.size();
+	}
+	if (!m_IndexCount)
+	{
+		m_IndexCount = m_Indices.size();
+	}
+	if (m_Positions.size())m_SupportedFlags |= POSITION;
+	if (m_Normals.size())m_SupportedFlags |= NORMAL;
+	if (m_BiNormals.size())m_SupportedFlags |= BINORMAL;
+	if (m_Tangents.size())m_SupportedFlags |= TANGENT;
+	if (m_Colors.size())m_SupportedFlags |= COLOR;
+	if (m_TexCoords.size())m_SupportedFlags |= TEXCOORD;
+}
+
 MeshFilter::MeshFilter()
 {
 }
@@ -165,6 +187,11 @@ void MeshFilter::CalculateBoundingVolumes()
 		if (dist > maxRadius)maxRadius = dist;
 	}
 	m_BoundingSphere = Sphere(center, sqrtf(maxRadius));
+}
+
+void MeshFilter::ConstructBiNormals()
+{
+	m_SupportedFlags |= VertexFlags::BINORMAL;
 }
 
 std::string MeshFilter::PrintFlags(uint32 flags)

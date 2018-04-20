@@ -1,8 +1,4 @@
 #pragma once
-#include "../StaticDependancies/glad/glad.h"
-#include <vector>
-#include <map>
-#include <string>
 
 class Material;
 
@@ -51,16 +47,30 @@ public:
 	size_t GetIndexCount() { return m_IndexCount; }
 
 	Sphere* GetBoundingSphere();
+
+public://for construction purposes
+	std::vector<uint32>& GetIndices() { return m_Indices; }
+	std::vector<vec3>& GetPositions() { return m_Positions; }
+	std::vector<vec3>& GetNormals() { return m_Normals; }
+	std::vector<vec3>& GetTangents() { return m_Tangents; }
+	std::vector<vec4>& GetColors() { return m_Colors; }
+	std::vector<vec2>& GetTexCoords() { return m_TexCoords; }
+
+	std::string GetName() const { return m_Name; }
+	void SetName(std::string val) { m_Name = val; }
+
+	void Preprocess();
+	
 private:
 	friend class MeshFilterLoader;
 	friend class ModelComponent;
-	//friend class glTF::MeshFilterConstructor;
 
 	int32 GetVertexObjectId(uint32 flags);
 	void BuildVertexBuffer(Material* pMaterial);
 	bool HasElement(uint32 flags){ return (m_SupportedFlags&flags) > 0 ? true : false; }
 
 	void CalculateBoundingVolumes();
+	void ConstructBiNormals();
 	std::string PrintFlags(uint32 flags);
 
 	size_t m_VertexCount = 0, m_IndexCount = 0;
@@ -77,7 +87,6 @@ private:
 	std::vector<VertexObject> m_Objects;
 
 	std::string m_Name;
-	vec4 m_DefaultColor;
 
 	Sphere m_BoundingSphere;
 

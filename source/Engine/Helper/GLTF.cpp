@@ -4,7 +4,8 @@
 #include "FileSystem/JSONparser.h"
 #include "FileSystem/JSONdom.h"
 #include "FileSystem/FileUtil.h"
-#include "Graphics/MeshFilter.hpp"
+#include "../Graphics/MeshFilter.hpp"
+#include "../FileSystem/BinaryReader.hpp"
 
 bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
 {
@@ -1298,9 +1299,7 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 		for (const Primitive& primitive : mesh.primitives)
 		{
 			//MeshFilter* pMesh = new MeshFilter();
-			//pMesh->m_Name = mesh.name;
-			//pMesh->m_VertexCount = ;
-			//pMesh->m_IndexCount = ;
+			//pMesh->SetName(mesh.name);
 
 			if (primitive.indices == -1)
 			{
@@ -1320,12 +1319,14 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 					LOG("Index accessor must be SCALAR", Warning);
 					return false;
 				}
-				//GetAccessorScalarArray(asset, primitive.indices, pMesh->m_Indices);
+				//GetAccessorScalarArray(asset, primitive.indices, pMesh->GetIndices());
 			}
 			if (primitive.attributes.position != -1)
 			{
-				//GetAccessorVectorArray(asset, primitive.attributes.position, pMesh->m_Positions, true);
+				//GetAccessorVectorArray(asset, primitive.attributes.position, pMesh->GetPositions(), true);
 			}
+
+			//pMesh->Preprocess();
 
 		}
 	}
