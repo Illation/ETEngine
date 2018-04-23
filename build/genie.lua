@@ -222,6 +222,6 @@ project "Testing"
 	staticPlatformLibraries()
 	windowsPlatformPostBuild()
 
-    links{ "ETEngine", "SDL2", "FreeImage", "assimp", "rttr_core" }
+    links{ "ETEngine", "SDL2", "FreeImage", "freetype", "assimp", "BulletDynamics", "BulletCollision", "LinearMath", "rttr_core", "openAL" }
 
     files { path.join(SOURCE_DIR, "Testing/**.cpp") }

@@ -2,6 +2,8 @@
 
 class Material;
 
+namespace glTF { class MeshFilterConstructor; };
+
 enum VertexFlags
 {
 	POSITION = 1 << 0,
@@ -48,7 +50,10 @@ public:
 
 	Sphere* GetBoundingSphere();
 
-public://for construction purposes
+	std::string GetName() const { return m_Name; }
+
+private://for construction purposes
+	friend class glTF::MeshFilterConstructor;
 	std::vector<uint32>& GetIndices() { return m_Indices; }
 	std::vector<vec3>& GetPositions() { return m_Positions; }
 	std::vector<vec3>& GetNormals() { return m_Normals; }
@@ -56,10 +61,10 @@ public://for construction purposes
 	std::vector<vec4>& GetColors() { return m_Colors; }
 	std::vector<vec2>& GetTexCoords() { return m_TexCoords; }
 
-	std::string GetName() const { return m_Name; }
 	void SetName(std::string val) { m_Name = val; }
 
-	void Preprocess();
+	void ConstructBiNormals();
+	void CalculateBoundingVolumes();
 	
 private:
 	friend class MeshFilterLoader;
@@ -69,8 +74,6 @@ private:
 	void BuildVertexBuffer(Material* pMaterial);
 	bool HasElement(uint32 flags){ return (m_SupportedFlags&flags) > 0 ? true : false; }
 
-	void CalculateBoundingVolumes();
-	void ConstructBiNormals();
 	std::string PrintFlags(uint32 flags);
 
 	size_t m_VertexCount = 0, m_IndexCount = 0;

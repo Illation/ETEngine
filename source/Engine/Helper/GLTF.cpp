@@ -1,11 +1,13 @@
 #include "stdafx.hpp"
 #include "GLTF.h"
-#include "FileSystem/Entry.h"
-#include "FileSystem/JSONparser.h"
-#include "FileSystem/JSONdom.h"
-#include "FileSystem/FileUtil.h"
-#include "../Graphics/MeshFilter.hpp"
+
+#include "../FileSystem/Entry.h"
+#include "../FileSystem/FileUtil.h"
 #include "../FileSystem/BinaryReader.hpp"
+#include "../FileSystem/JSONparser.h"
+#include "../FileSystem/JSONdom.h"
+
+#include "../Graphics/MeshFilter.hpp"
 
 bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
 {
@@ -1298,9 +1300,10 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 		if (mesh.primitives.size() > 1)LOG("Currently ETEngine meshes only support one primitive", Warning);
 		for (const Primitive& primitive : mesh.primitives)
 		{
-			//MeshFilter* pMesh = new MeshFilter();
-			//pMesh->SetName(mesh.name);
+			MeshFilter* pMesh = new MeshFilter();
+			pMesh->SetName(mesh.name);
 
+			//Basic positions
 			if (primitive.indices == -1)
 			{
 				LOG("ETEngine only supports indexed draw for meshes", Warning);
@@ -1319,15 +1322,73 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 					LOG("Index accessor must be SCALAR", Warning);
 					return false;
 				}
-				//GetAccessorScalarArray(asset, primitive.indices, pMesh->GetIndices());
+				GetAccessorScalarArray(asset, primitive.indices, pMesh->GetIndices());
+				pMesh->m_IndexCount = pMesh->GetIndices().size();
 			}
 			if (primitive.attributes.position != -1)
 			{
-				//GetAccessorVectorArray(asset, primitive.attributes.position, pMesh->GetPositions(), true);
+				GetAccessorVectorArray(asset, primitive.attributes.position, pMesh->GetPositions(), true);
+				pMesh->m_SupportedFlags |= VertexFlags::POSITION;
+				pMesh->m_VertexCount = pMesh->GetPositions().size();
 			}
 
-			//pMesh->Preprocess();
+			//Normal and tangent info
+			if (primitive.attributes.normal != -1)
+			{
+				GetAccessorVectorArray(asset, primitive.attributes.normal, pMesh->GetNormals(), true);
+				pMesh->m_SupportedFlags |= VertexFlags::NORMAL;
+			}
+			if (primitive.attributes.tangent != -1)
+			{
+				GetAccessorVectorArray(asset, primitive.attributes.tangent, pMesh->GetTangents(), true);
+				pMesh->m_SupportedFlags |= VertexFlags::NORMAL;
+			}
+			if (pMesh->m_SupportedFlags & VertexFlags::NORMAL)
+			{
+				if (pMesh->m_SupportedFlags & VertexFlags::TANGENT)
+				{
+					pMesh->ConstructBiNormals();
+				}
+				else
+				{
+					LOG("Can't construct mesh binormals because there are no tangents", Warning);
+				}
+			}
 
+			//Shading
+			if (primitive.attributes.texcoord0 != -1)
+			{
+				GetAccessorVectorArray(asset, primitive.attributes.texcoord0, pMesh->GetTexCoords());
+				pMesh->m_SupportedFlags |= VertexFlags::TEXCOORD;
+				if (primitive.attributes.texcoord1 != -1)
+				{
+					LOG("ETEngine currently supports only one set of texture coordinates for meshes", Warning);
+				}
+			}
+			else if (primitive.attributes.texcoord1 != -1)
+			{
+				GetAccessorVectorArray(asset, primitive.attributes.texcoord1, pMesh->GetTexCoords());
+				pMesh->m_SupportedFlags |= VertexFlags::TEXCOORD;
+			}
+			if (primitive.attributes.color0 != -1)
+			{
+				GetAccessorVectorArray(asset, primitive.attributes.color0, pMesh->GetNormals(), true);
+				pMesh->m_SupportedFlags |= VertexFlags::COLOR;
+			}
+
+			//Animation
+			if (primitive.attributes.joints0 != -1)
+			{
+				LOG("ETEngine currently doesn't support joints for meshes", Warning);
+			}
+			if (primitive.attributes.weights0 != -1)
+			{
+				LOG("ETEngine currently doesn't support weights for meshes", Warning);
+			}
+
+			pMesh->CalculateBoundingVolumes();
+
+			meshFilters.push_back(pMesh);
 		}
 	}
 	return false;

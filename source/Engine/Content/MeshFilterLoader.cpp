@@ -2,14 +2,11 @@
 #include "MeshFilterLoader.hpp"
 
 #include "../Graphics/MeshFilter.hpp"
+#include "../FileSystem/Entry.h"
 
 #include <Importer.hpp>
 #include <scene.h>  
 #include <postprocess.h>
-#include "FileSystem/Entry.h"
-#include "FileSystem/JSONparser.h"
-#include "FileSystem/JSONdom.h"
-#include "FileSystem/FileUtil.h"
 
 #define ASSIMP_BUILD_BOOST_WORAROUND
 
@@ -209,13 +206,13 @@ MeshFilter* MeshFilterLoader::LoadAssimp(const std::vector<uint8>& binaryContent
 
 MeshFilter* MeshFilterLoader::LoadGLTF(const std::vector<uint8>& binaryContent)
 {
-	JSON::Parser parser = JSON::Parser(FileUtil::AsText(binaryContent));
-	JSON::Object* root = parser.GetRoot();
-	if (!root)
-	{
-		LOG("unable to read config json", Warning);
-		return nullptr;
-	}
+	//JSON::Parser parser = JSON::Parser(FileUtil::AsText(binaryContent));
+	//JSON::Object* root = parser.GetRoot();
+	//if (!root)
+	//{
+	//	LOG("unable to read config json", Warning);
+	//	return nullptr;
+	//}
 
 	LOG("GLTF loading not supported yet", Warning);
 	return nullptr;
