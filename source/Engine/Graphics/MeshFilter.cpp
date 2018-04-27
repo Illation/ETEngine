@@ -167,9 +167,31 @@ void MeshFilter::CalculateBoundingVolumes()
 	m_BoundingSphere = Sphere(center, sqrtf(maxRadius));
 }
 
-void MeshFilter::ConstructBiNormals()
+bool MeshFilter::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 {
+	if (tangentInfo.size() == 0)
+	{
+		LOG("ETEngine currently cannot construct tangent space without tangent info", Warning);
+		return false;
+	}
+
+	if (tangentInfo.size() < m_Positions.size())
+	{
+		LOG("Mesh Tangent info size doesn't cover all vertices", Warning);
+	}
+	if (!(tangentInfo.size() == m_Normals.size()))
+	{
+		LOG("Mesh Tangent info size doesn't match the number of normals", Warning);
+		return false;
+	}
+	for (uint32 i = 0; i < tangentInfo.size(); ++i)
+	{
+		m_Tangents.push_back(tangentInfo[i].xyz);
+		m_BiNormals.push_back(etm::cross(m_Normals[i], tangentInfo[i].xyz) * tangentInfo[i].w);
+	}
+	m_SupportedFlags |= VertexFlags::TANGENT;
 	m_SupportedFlags |= VertexFlags::BINORMAL;
+	return true;
 }
 
 std::string MeshFilter::PrintFlags(uint32 flags)

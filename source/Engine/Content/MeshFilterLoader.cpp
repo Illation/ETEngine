@@ -7,6 +7,7 @@
 #include <Importer.hpp>
 #include <scene.h>  
 #include <postprocess.h>
+#include "GLTF.h"
 
 #define ASSIMP_BUILD_BOOST_WORAROUND
 
@@ -47,10 +48,10 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 
 	MeshFilter* pMesh = nullptr;
 
-	if (extension == "gltf")
+	if ((extension == "gltf") || (extension == "glb"))
 	{
 		LOG(loadingString + " . . . loading gltf          ", Info, false, logPos);
-		pMesh = LoadGLTF(binaryContent);
+		pMesh = LoadGLTF(binaryContent, extension);
 	}
 	else
 	{
@@ -204,16 +205,34 @@ MeshFilter* MeshFilterLoader::LoadAssimp(const std::vector<uint8>& binaryContent
 	return pMesh;
 }
 
-MeshFilter* MeshFilterLoader::LoadGLTF(const std::vector<uint8>& binaryContent)
+MeshFilter* MeshFilterLoader::LoadGLTF(const std::vector<uint8>& binaryContent, const std::string &ext)
 {
-	//JSON::Parser parser = JSON::Parser(FileUtil::AsText(binaryContent));
-	//JSON::Object* root = parser.GetRoot();
-	//if (!root)
-	//{
-	//	LOG("unable to read config json", Warning);
-	//	return nullptr;
-	//}
+	glTF::glTFAsset asset;
+	if (!glTF::ParseGLTFData(binaryContent, ext, asset))
+	{
+		LOG("failed to load the glTF asset", Warning);
+		return nullptr;
+	}
 
-	LOG("GLTF loading not supported yet", Warning);
-	return nullptr;
+	std::vector<MeshFilter*> filters;
+	if (!glTF::MeshFilterConstructor::GetMeshFilters(asset, filters))
+	{
+		LOG("failed to construct mesh filters from glTF", Warning);
+		return nullptr;
+	}
+	
+	if (filters.size() == 0)
+	{
+		LOG("no mesh filters found in glTF asset", Warning);
+		return nullptr;
+	}
+
+	MeshFilter* ret = filters[0];
+
+	if (filters.size() > 1)
+	{
+		for (uint32 i = 1; i < (uint32)filters.size(); ++i) delete filters[i];
+	}
+
+	return ret;
 }

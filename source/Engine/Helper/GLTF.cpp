@@ -1314,20 +1314,38 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 				if (primitive.indices >= (int32)asset.dom.accessors.size())
 				{
 					LOG("Accessor index out of range", Warning);
+					delete pMesh;
+					for (auto pEl : meshFilters)delete pEl;
+					meshFilters.clear();
 					return false;
 				}
 				Accessor& accessor = asset.dom.accessors[primitive.indices];
 				if (accessor.type != Type::SCALAR)
 				{
 					LOG("Index accessor must be SCALAR", Warning);
+					delete pMesh;
+					for (auto pEl : meshFilters)delete pEl;
+					meshFilters.clear();
 					return false;
 				}
-				GetAccessorScalarArray(asset, primitive.indices, pMesh->GetIndices());
+				if (!GetAccessorScalarArray(asset, primitive.indices, pMesh->GetIndices()))
+				{
+					delete pMesh;
+					for (auto pEl : meshFilters)delete pEl;
+					meshFilters.clear();
+					return false;
+				}
 				pMesh->m_IndexCount = pMesh->GetIndices().size();
 			}
 			if (primitive.attributes.position != -1)
 			{
-				GetAccessorVectorArray(asset, primitive.attributes.position, pMesh->GetPositions(), true);
+				if(!GetAccessorVectorArray(asset, primitive.attributes.position, pMesh->GetPositions(), true))
+				{
+					delete pMesh;
+					for (auto pEl : meshFilters)delete pEl;
+					meshFilters.clear();
+					return false;
+				}
 				pMesh->m_SupportedFlags |= VertexFlags::POSITION;
 				pMesh->m_VertexCount = pMesh->GetPositions().size();
 			}
@@ -1335,30 +1353,39 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 			//Normal and tangent info
 			if (primitive.attributes.normal != -1)
 			{
-				GetAccessorVectorArray(asset, primitive.attributes.normal, pMesh->GetNormals(), true);
-				pMesh->m_SupportedFlags |= VertexFlags::NORMAL;
-			}
-			if (primitive.attributes.tangent != -1)
-			{
-				GetAccessorVectorArray(asset, primitive.attributes.tangent, pMesh->GetTangents(), true);
-				pMesh->m_SupportedFlags |= VertexFlags::NORMAL;
-			}
-			if (pMesh->m_SupportedFlags & VertexFlags::NORMAL)
-			{
-				if (pMesh->m_SupportedFlags & VertexFlags::TANGENT)
+				if(!GetAccessorVectorArray(asset, primitive.attributes.normal, pMesh->GetNormals(), true))
 				{
-					pMesh->ConstructBiNormals();
+					delete pMesh;
+					for (auto pEl : meshFilters)delete pEl;
+					meshFilters.clear();
+					return false;
 				}
-				else
+				pMesh->m_SupportedFlags |= VertexFlags::NORMAL;
+
+				std::vector<vec4> tangentInfo;
+				if (primitive.attributes.tangent != -1)
 				{
-					LOG("Can't construct mesh binormals because there are no tangents", Warning);
+					if (!GetAccessorVectorArray(asset, primitive.attributes.tangent, tangentInfo, true))
+					{
+						delete pMesh;
+						for (auto pEl : meshFilters)delete pEl;
+						meshFilters.clear();
+						return false;
+					}
 				}
+				pMesh->ConstructTangentSpace(tangentInfo);
 			}
 
 			//Shading
 			if (primitive.attributes.texcoord0 != -1)
 			{
-				GetAccessorVectorArray(asset, primitive.attributes.texcoord0, pMesh->GetTexCoords());
+				if(!GetAccessorVectorArray(asset, primitive.attributes.texcoord0, pMesh->GetTexCoords()))
+				{
+					delete pMesh;
+					for (auto pEl : meshFilters)delete pEl;
+					meshFilters.clear();
+					return false;
+				}
 				pMesh->m_SupportedFlags |= VertexFlags::TEXCOORD;
 				if (primitive.attributes.texcoord1 != -1)
 				{
@@ -1367,12 +1394,24 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 			}
 			else if (primitive.attributes.texcoord1 != -1)
 			{
-				GetAccessorVectorArray(asset, primitive.attributes.texcoord1, pMesh->GetTexCoords());
+				if(!GetAccessorVectorArray(asset, primitive.attributes.texcoord1, pMesh->GetTexCoords()))
+				{
+					delete pMesh;
+					for (auto pEl : meshFilters)delete pEl;
+					meshFilters.clear();
+					return false;
+				}
 				pMesh->m_SupportedFlags |= VertexFlags::TEXCOORD;
 			}
 			if (primitive.attributes.color0 != -1)
 			{
-				GetAccessorVectorArray(asset, primitive.attributes.color0, pMesh->GetNormals(), true);
+				if(!GetAccessorVectorArray(asset, primitive.attributes.color0, pMesh->GetNormals(), true))
+				{
+					delete pMesh;
+					for (auto pEl : meshFilters)delete pEl;
+					meshFilters.clear();
+					return false;
+				}
 				pMesh->m_SupportedFlags |= VertexFlags::COLOR;
 			}
 
@@ -1391,5 +1430,5 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 			meshFilters.push_back(pMesh);
 		}
 	}
-	return false;
+	return true;
 }

@@ -83,6 +83,14 @@ void ShadingTestScene::Initialize()
 		pHelmet->GetTransform()->SetPosition(vec3(0, 0, 0));
 		AddEntity(pHelmet);
 	}
+	{
+		auto pModelComp = new ModelComponent("Resources/Assets/Corset.glb");
+		pModelComp->SetMaterial(m_pEnvMat);
+		auto pCorset = new Entity();
+		pCorset->AddComponent(pModelComp);
+		pCorset->GetTransform()->SetPosition(vec3(0, 0, 0));
+		AddEntity(pCorset);
+	}
 
 	//Lights
 	//**************************

@@ -63,7 +63,8 @@ private://for construction purposes
 
 	void SetName(std::string val) { m_Name = val; }
 
-	void ConstructBiNormals();
+	//if tangentInfo array is empty, generate tangent space using mikkTSpace algorithm
+	bool ConstructTangentSpace(std::vector<vec4>& tangentInfo);
 	void CalculateBoundingVolumes();
 	
 private:

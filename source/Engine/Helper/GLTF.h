@@ -461,7 +461,7 @@ namespace glTF
 		}
 		for (uint32 i = 0; i < accessor.count * compsPerEl; ++i)
 		{
-			if (pBinReader->GetBufferPosition() >= (int32)data.size())
+			if (pBinReader->GetBufferPosition() >= (int32)accessorData.size())
 			{
 				LOG("Binary reader out of range", Warning);
 				delete pBinReader;

@@ -15,7 +15,7 @@ protected:
 
 private:
 	MeshFilter* LoadAssimp(const std::vector<uint8>& binaryContent, const std::string &ext);
-	MeshFilter* LoadGLTF(const std::vector<uint8>& binaryContent);
+	MeshFilter* LoadGLTF(const std::vector<uint8>& binaryContent, const std::string &ext);
 
 	ivec2 logPos;
 	std::string loadingString;
