@@ -84,11 +84,14 @@ void ShadingTestScene::Initialize()
 		AddEntity(pHelmet);
 	}
 	{
+		//auto pModelComp = new ModelComponent("Resources/Assets/Box.gltf");
 		auto pModelComp = new ModelComponent("Resources/Assets/Corset.glb");
 		pModelComp->SetMaterial(m_pEnvMat);
 		auto pCorset = new Entity();
 		pCorset->AddComponent(pModelComp);
-		pCorset->GetTransform()->SetPosition(vec3(0, 0, 0));
+		pCorset->GetTransform()->SetPosition(vec3(5, 0, 0));
+		pCorset->GetTransform()->Scale(vec3(100, 100, 100));
+		pCorset->GetTransform()->Rotate(quat(vec3(1, 0, 0), etm::PI));
 		AddEntity(pCorset);
 	}
 

@@ -15,7 +15,8 @@ public:
 	Entry(std::string name, Directory* pParent);
     virtual ~Entry(){}
 
-    std::string GetName(){ return m_Filename; }
+    std::string GetName();
+	std::string GetNameOnly();
 	std::string GetExtension();
     Directory* GetParent(){ return m_pParent; }
     virtual std::string GetPath();
@@ -35,6 +36,7 @@ public:
 protected:
 	std::string m_Filename;
     Directory* m_pParent;
+	std::string m_Path; //only used if there is no parent
 };
 
 class File : public Entry

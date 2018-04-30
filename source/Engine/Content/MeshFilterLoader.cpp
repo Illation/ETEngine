@@ -37,6 +37,7 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 	std::vector<uint8> binaryContent = input->Read();
 	std::string extension = input->GetExtension();
 	std::string filename = input->GetName();
+	std::string path = input->GetPath();
 	delete input;
 	input = nullptr;
 	if (binaryContent.size() == 0)
@@ -51,7 +52,7 @@ MeshFilter* MeshFilterLoader::LoadContent(const std::string& assetFile)
 	if ((extension == "gltf") || (extension == "glb"))
 	{
 		LOG(loadingString + " . . . loading gltf          ", Info, false, logPos);
-		pMesh = LoadGLTF(binaryContent, extension);
+		pMesh = LoadGLTF(binaryContent, path, extension);
 	}
 	else
 	{
@@ -205,10 +206,10 @@ MeshFilter* MeshFilterLoader::LoadAssimp(const std::vector<uint8>& binaryContent
 	return pMesh;
 }
 
-MeshFilter* MeshFilterLoader::LoadGLTF(const std::vector<uint8>& binaryContent, const std::string &ext)
+MeshFilter* MeshFilterLoader::LoadGLTF(const std::vector<uint8>& binaryContent, const std::string path, const std::string &ext)
 {
 	glTF::glTFAsset asset;
-	if (!glTF::ParseGLTFData(binaryContent, ext, asset))
+	if (!glTF::ParseGLTFData(binaryContent, path, ext, asset))
 	{
 		LOG("failed to load the glTF asset", Warning);
 		return nullptr;

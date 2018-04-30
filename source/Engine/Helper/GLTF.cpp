@@ -120,9 +120,10 @@ bool glTF::DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded)
 	return true;
 }
 
-bool glTF::ParseGLTFData(const std::vector<uint8>& binaryContent, const std::string& extension, glTFAsset& asset)
+bool glTF::ParseGLTFData(const std::vector<uint8>& binaryContent, const std::string path, const std::string& extension, glTFAsset& asset)
 {
 	asset = glTFAsset();
+	asset.basePath = path;
 
 	std::string lowerExt;
 	for(char val : extension)
@@ -1280,9 +1281,9 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 		return false;
 	}
 
-	for (uint32 i = accessor.byteOffset; i < accessor.count; ++i)
+	for (uint32 i = accessor.byteOffset; i < accessor.byteOffset + stride * accessor.count; i+=stride)
 	{
-		pViewReader->SetBufferPosition(i*stride);
+		pViewReader->SetBufferPosition(i);
 		for (uint32 j = 0; j < elSize; ++j)
 		{
 			data.push_back(pViewReader->Read<uint8>());

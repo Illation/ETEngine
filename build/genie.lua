@@ -191,6 +191,7 @@ project "ETEngine"
 		path.join(SOURCE_DIR, "Engine/**.c"),									--for glad and stb vorbis
 	}
 	nopch { path.join (SOURCE_DIR, "Engine/StaticDependancies/glad/glad.c"),
+			path.join (SOURCE_DIR, "Engine/StaticDependancies/MikkTSpace/mikktspace.c"),
 			path.join (SOURCE_DIR, "Engine/StaticDependancies/stb/stb_vorbis.c")	}	--c code shouldn't use precompiled headers
 
 	--additional includedirs

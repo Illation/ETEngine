@@ -7,17 +7,35 @@
 #include "./Facade/FileBase.h"
 #include "./Facade/FileAccessMode.h"
 #include "./Facade/FileAccessFlags.h"
+#include "FileUtil.h"
 
 Entry::Entry(std::string name, Directory* pParent)
 	:m_Filename(name)
 	,m_pParent(pParent)
 {
+	if (!m_pParent)
+	{
+		m_Path = FileUtil::ExtractPath(m_Filename);
+		m_Filename = FileUtil::ExtractName(m_Filename);
+	}
+	else m_Path = "./";
 }
 std::string Entry::GetPath()
 {
-	if(m_pParent)return std::string(m_pParent->GetPath()+m_pParent->GetName());
-	else return "./";
+	if(m_pParent)return std::string(m_pParent->GetPath()+m_pParent->GetNameOnly());
+	else return m_Path;
 }
+
+std::string Entry::GetName()
+{
+	return m_Path + m_Filename;
+}
+
+std::string Entry::GetNameOnly()
+{
+	return m_Filename;
+}
+
 std::string Entry::GetExtension()
 {
 	if(GetType() == EntryType::ENTRY_FILE)

@@ -405,7 +405,7 @@ namespace glTF
 	bool DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded);
 
 	//Unify GLTF and GLB
-	bool ParseGLTFData(const std::vector<uint8>& binaryContent, const std::string& extension, glTFAsset& asset);
+	bool ParseGLTFData(const std::vector<uint8>& binaryContent, const std::string path, const std::string& extension, glTFAsset& asset);
 
 	bool ParseGLBHeader(BinaryReader* pBinReader, Header &header);
 	bool ParseGLBChunk(BinaryReader* pBinReader, Chunk &header);

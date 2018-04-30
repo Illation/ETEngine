@@ -4,6 +4,7 @@
 #include <limits>
 
 static std::vector<std::string> newLineTokens{ "\r\n", "\n\r", "\n", "\r" };
+static std::vector<std::string> pathDelims{ "\\", "/" };
 
 std::string FileUtil::AsText( const std::vector<uint8> &data )
 {
@@ -52,4 +53,34 @@ std::vector<std::string> FileUtil::ParseLines( std::string raw )
 		ret.push_back( extractedLine );
 	}
 	return ret;
+}
+
+std::string FileUtil::ExtractPath(const std::string& fileName)
+{
+	int32 closestIdx = std::string::npos;
+	for (auto delim : pathDelims)
+	{
+		int32 index = (int32)fileName.rfind(delim);
+		if (index != std::string::npos && index > closestIdx)
+		{
+			closestIdx = index;
+		}
+	}
+	if (closestIdx == std::string::npos)return "";
+	else return fileName.substr(0, closestIdx+1);
+}
+
+std::string FileUtil::ExtractName(const std::string& fileName)
+{
+	int32 closestIdx = std::string::npos;
+	for (auto delim : pathDelims)
+	{
+		int32 index = (int32)fileName.rfind(delim);
+		if (index != std::string::npos && index > closestIdx)
+		{
+			closestIdx = index;
+		}
+	}
+	if (closestIdx == std::string::npos)return fileName;
+	else return fileName.substr(closestIdx + 1);
 }

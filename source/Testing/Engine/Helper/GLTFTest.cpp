@@ -63,11 +63,10 @@ TEST_CASE("Parse GLB asset", "[gltf]")
 	File* input = new File(baseDir + glbFileName, nullptr);
 	REQUIRE(input->Open(FILE_ACCESS_MODE::Read) == true);
 	std::vector<uint8> binaryContent = input->Read();
-	std::string extension = input->GetExtension();
-	delete input;
-	input = nullptr;
 	REQUIRE(binaryContent.size() > 0);
 
 	glTF::glTFAsset asset;
-	REQUIRE(glTF::ParseGLTFData(binaryContent, extension, asset) == true);
+	REQUIRE(glTF::ParseGLTFData(binaryContent, input->GetPath(), input->GetExtension(), asset) == true);
+	delete input;
+	input = nullptr;
 }

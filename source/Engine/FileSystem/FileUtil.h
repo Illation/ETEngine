@@ -8,4 +8,7 @@ public:
 
 	static bool ParseLine( std::string &input, std::string &extractedLine );
 	static std::vector<std::string> ParseLines( std::string raw );
+
+	static std::string ExtractPath(const std::string& fileName);
+	static std::string ExtractName(const std::string& fileName);
 };
