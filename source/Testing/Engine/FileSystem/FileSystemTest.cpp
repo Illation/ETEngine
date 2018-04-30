@@ -23,7 +23,7 @@ TEST_CASE( "mount", "[filesystem]" )
 	{
 		if(cExt->GetType() == Entry::EntryType::ENTRY_FILE)
 		{
-			REQUIRE( cExt->GetName() == "test_file3.someFileExt" );
+			REQUIRE( cExt->GetName() == "./test_file3.someFileExt" );
 			found = true;
 		}
 	}
@@ -63,7 +63,7 @@ TEST_CASE( "copy file", "[filesystem]" )
 	Directory* subDir = nullptr;
 	for(auto c : pDir->GetChildren())
 	{
-		if(c->GetName() == "test_file.txt")
+		if(c->GetName() == "./test_file.txt")
 		{
 			inputFile = static_cast<File*>(c);
 		}
@@ -126,7 +126,7 @@ TEST_CASE( "copy file", "[filesystem]" )
 	REQUIRE_FALSE( subDir == nullptr );
 	for(auto c : subDir->GetChildren())
 	{
-		if(c->GetName() == "copy_file.txt")
+		if(c->GetName() == "./copy_file.txt")
 		{
 			outputFile = static_cast<File*>(c);
 			break;
@@ -149,7 +149,7 @@ TEST_CASE( "copy file", "[filesystem]" )
 	bool found = false;
 	for(auto c : subDir->GetChildren())
 	{
-		if(c->GetName() == "copy_file.txt")
+		if(c->GetNameOnly() == "copy_file.txt")
 			found = true;
 	}
 	REQUIRE( found == false );
@@ -161,7 +161,7 @@ TEST_CASE( "copy file", "[filesystem]" )
 	bool found2 = false;
 	for(auto c : subDir->GetChildren())
 	{
-		if(c->GetName() == "copy_file.txt")
+		if(c->GetNameOnly() == "copy_file.txt")
 			found2 = true;
 	}
 	REQUIRE( found == false );
