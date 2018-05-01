@@ -173,7 +173,7 @@ bool MeshFilter::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 {
 	if (tangentInfo.size() == 0)
 	{
-		if (!(m_TexCoords.size() == m_Normals.size() == m_Positions.size()))
+		if (!(m_TexCoords.size() == m_Normals.size() && m_Normals.size() == m_Positions.size()))
 		{
 			LOG("Number of texcoords, normals and positions of vertices should match to create tangent space", Warning);
 			return false;
@@ -191,7 +191,7 @@ bool MeshFilter::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 		{
 			MeshFilter *userData = static_cast<MikkTSpaceData*>(context->m_pUserData)->pFilter;
 			vec3 &vertexNormal = userData->GetNormals()[faceIdx * 3 + vertIdx];
-			std::copy(vertexNormal.data.begin(), vertexNormal.data.end(), &normal[0]);
+			for (uint8 i = 0; i < 3; ++i) normal[i] = vertexNormal[i];
 		};
 		mikkTInterface.m_getNumFaces = [](const SMikkTSpaceContext* context)
 		{
@@ -203,13 +203,14 @@ bool MeshFilter::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 		{
 			MeshFilter *userData = static_cast<MikkTSpaceData*>(context->m_pUserData)->pFilter;
 			vec3 &vertexPosition = userData->GetPositions()[userData->GetIndices()[faceIdx * 3 + vertIdx]];
-			std::copy(vertexPosition.data.begin(), vertexPosition.data.end(), &position[0]);
+			for (uint8 i = 0; i < 3; ++i) position[i] = vertexPosition[i];
 		};
 		mikkTInterface.m_getTexCoord = [](const SMikkTSpaceContext* context, float uv[2], const int faceIdx, const int vertIdx)
 		{
 			MeshFilter *userData = static_cast<MikkTSpaceData*>(context->m_pUserData)->pFilter;
 			vec2 &texCoord = userData->GetTexCoords()[faceIdx * 3 + vertIdx];
-			std::copy(texCoord.data.begin(), texCoord.data.end(), &uv[0]);
+			uv[0] = texCoord[0];
+			uv[1] = texCoord[1];
 		};
 		mikkTInterface.m_setTSpaceBasic = [](const SMikkTSpaceContext* context, const float tangent[3], const float bitangentSign, const int faceIdx, const int vertIdx)
 		{

@@ -84,8 +84,8 @@ void ShadingTestScene::Initialize()
 		AddEntity(pHelmet);
 	}
 	{
-		auto pModelComp = new ModelComponent("Resources/Assets/Box.gltf");
-		//auto pModelComp = new ModelComponent("Resources/Assets/Corset.glb");
+		//auto pModelComp = new ModelComponent("Resources/Assets/Box.gltf");
+		auto pModelComp = new ModelComponent("Resources/Assets/Corset.glb");
 		pModelComp->SetMaterial(m_pEnvMat);
 		auto pCorset = new Entity();
 		pCorset->AddComponent(pModelComp);
