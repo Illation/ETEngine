@@ -1,3 +1,7 @@
+//Manual Changes
+#pragma warning(push, 0)  
+//End manual changes
+
 /** \file mikktspace/mikktspace.c
  *  \ingroup mikktspace
  */
@@ -1888,3 +1892,7 @@ static void DegenEpilogue(STSpace psTspace[], STriInfo pTriInfos[], int piTriLis
 		}
 	}
 }
+
+//Manual Changes
+#pragma warning(pop)  
+//End manual changes

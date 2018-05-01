@@ -1351,6 +1351,34 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 				pMesh->m_VertexCount = pMesh->GetPositions().size();
 			}
 
+			//Texcoords before normals in case tangents need to be generated
+			if (primitive.attributes.texcoord0 != -1)
+			{
+				if (!GetAccessorVectorArray(asset, primitive.attributes.texcoord0, pMesh->GetTexCoords()))
+				{
+					delete pMesh;
+					for (auto pEl : meshFilters)delete pEl;
+					meshFilters.clear();
+					return false;
+				}
+				pMesh->m_SupportedFlags |= VertexFlags::TEXCOORD;
+				if (primitive.attributes.texcoord1 != -1)
+				{
+					LOG("ETEngine currently supports only one set of texture coordinates for meshes", Warning);
+				}
+			}
+			else if (primitive.attributes.texcoord1 != -1)
+			{
+				if (!GetAccessorVectorArray(asset, primitive.attributes.texcoord1, pMesh->GetTexCoords()))
+				{
+					delete pMesh;
+					for (auto pEl : meshFilters)delete pEl;
+					meshFilters.clear();
+					return false;
+				}
+				pMesh->m_SupportedFlags |= VertexFlags::TEXCOORD;
+			}
+
 			//Normal and tangent info
 			if (primitive.attributes.normal != -1)
 			{
@@ -1374,36 +1402,13 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 						return false;
 					}
 				}
-				pMesh->ConstructTangentSpace(tangentInfo);
+				if (!pMesh->ConstructTangentSpace(tangentInfo))
+				{
+					LOG("ETEngine failed to construct the tangent space for this mesh", Warning);
+				}
 			}
 
 			//Shading
-			if (primitive.attributes.texcoord0 != -1)
-			{
-				if(!GetAccessorVectorArray(asset, primitive.attributes.texcoord0, pMesh->GetTexCoords()))
-				{
-					delete pMesh;
-					for (auto pEl : meshFilters)delete pEl;
-					meshFilters.clear();
-					return false;
-				}
-				pMesh->m_SupportedFlags |= VertexFlags::TEXCOORD;
-				if (primitive.attributes.texcoord1 != -1)
-				{
-					LOG("ETEngine currently supports only one set of texture coordinates for meshes", Warning);
-				}
-			}
-			else if (primitive.attributes.texcoord1 != -1)
-			{
-				if(!GetAccessorVectorArray(asset, primitive.attributes.texcoord1, pMesh->GetTexCoords()))
-				{
-					delete pMesh;
-					for (auto pEl : meshFilters)delete pEl;
-					meshFilters.clear();
-					return false;
-				}
-				pMesh->m_SupportedFlags |= VertexFlags::TEXCOORD;
-			}
 			if (primitive.attributes.color0 != -1)
 			{
 				if(!GetAccessorVectorArray(asset, primitive.attributes.color0, pMesh->GetNormals(), true))
