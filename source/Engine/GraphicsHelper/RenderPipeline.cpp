@@ -20,6 +20,7 @@
 #include "ScreenSpaceReflections.h"
 #include "DebugRenderer.h"
 #include "ScreenshotCapture.h"
+#include "SpriteFont.hpp"
 
 RenderPipeline::RenderPipeline()
 {

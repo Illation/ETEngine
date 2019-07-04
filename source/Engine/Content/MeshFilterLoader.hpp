@@ -1,8 +1,7 @@
 #pragma once
 #include "ContentLoader.hpp"
-#include <string>
+#include "MeshFilter.hpp"
 
-class MeshFilter;
 class MeshFilterLoader : public ContentLoader<MeshFilter>
 {
 public:

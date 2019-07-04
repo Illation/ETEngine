@@ -1,7 +1,6 @@
 #include "stdafx.hpp"
 #include "ShaderLoader.hpp"
 
-#include "../Graphics/ShaderData.hpp"
 #include "FileSystem/Entry.h"
 #include <algorithm>
 #include "FileSystem/FileUtil.h"

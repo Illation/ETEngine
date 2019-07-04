@@ -1,9 +1,8 @@
 #pragma once
 #include "../staticDependancies/glad/glad.h"
 #include "ContentLoader.hpp"
-#include <string>
+#include "../Graphics/ShaderData.hpp"
 
-class ShaderData;
 class AbstractUniform;
 class ShaderLoader : public ContentLoader<ShaderData>
 {
