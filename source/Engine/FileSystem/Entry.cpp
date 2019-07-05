@@ -11,19 +11,33 @@
 
 Entry::Entry(std::string name, Directory* pParent)
 	:m_Filename(name)
-	,m_pParent(pParent)
+	, m_Parent(pParent)
 {
-	if (!m_pParent)
+	if (m_Parent == nullptr)
 	{
 		m_Path = FileUtil::ExtractPath(m_Filename);
+		if (!FileUtil::IsAbsolutePath(m_Path))
+		{
+			m_Path = FileUtil::GetAbsolutePath(m_Path);
+		}
+
 		m_Filename = FileUtil::ExtractName(m_Filename);
 	}
-	else m_Path = "./";
+	else
+	{
+		m_Path = "./";
+	}
 }
 std::string Entry::GetPath()
 {
-	if(m_pParent)return std::string(m_pParent->GetPath()+m_pParent->GetNameOnly());
-	else return m_Path;
+	if (m_Parent)
+	{
+		return std::string(m_Parent->GetPath() + m_Parent->GetNameOnly());
+	}
+	else
+	{
+		return m_Path;
+	}
 }
 
 std::string Entry::GetName()
@@ -68,11 +82,11 @@ bool File::Open(FILE_ACCESS_MODE mode, FILE_ACCESS_FLAGS flags)
 	}
 	m_IsOpen = true;
 	//If we created this file new and have a parent that doesn't know about it, add to parent
-	if(m_pParent)
+	if(m_Parent)
 	{
-		if(!(std::find( m_pParent->m_pChildren.begin(), m_pParent->m_pChildren.end(), this ) != m_pParent->m_pChildren.end()))
+		if(!(std::find(m_Parent->m_pChildren.begin(), m_Parent->m_pChildren.end(), this ) != m_Parent->m_pChildren.end()))
 		{
-			m_pParent->m_pChildren.push_back( this );
+			m_Parent->m_pChildren.push_back( this );
 		}
 	}
 	return true;
@@ -116,9 +130,9 @@ bool File::Delete()
 	std::string path = GetPath()+m_Filename;
 	if(FILE_BASE::DeleteFile( path.c_str() ))
 	{
-		if(m_pParent)
+		if(m_Parent)
 		{
-			m_pParent->RemoveChild( this );
+			m_Parent->RemoveChild( this );
 		}
 		delete this;
 		return true;
@@ -198,9 +212,9 @@ bool Directory::Delete()
 	m_pChildren.clear();
 	if(DeleteDir())
 	{
-		if(m_pParent)
+		if(m_Parent)
 		{
-			m_pParent->RemoveChild( this );
+			m_Parent->RemoveChild( this );
 		}
 		delete this;
 		return true;

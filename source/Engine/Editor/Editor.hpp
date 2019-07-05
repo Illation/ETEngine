@@ -1,6 +1,6 @@
 #pragma once
 #include "UI/UIUtil.hpp"
-#include "Singleton.hpp"
+#include <Engine/Helper/Singleton.hpp>
 
 #ifdef EDITOR
 

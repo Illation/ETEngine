@@ -1,6 +1,6 @@
 #pragma once
 #include "ContentLoader.hpp"
-#include "MeshFilter.hpp"
+#include <Engine/Graphics/MeshFilter.hpp>
 
 class MeshFilterLoader : public ContentLoader<MeshFilter>
 {

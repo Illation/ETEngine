@@ -14,13 +14,13 @@
 #include "../SceneGraph/Entity.hpp"
 #include "../Prefabs/Skybox.hpp"
 #include "SpriteRenderer.hpp"
-#include "AtmospherePrecompute.h"
+#include <Engine/PlanetTech/AtmospherePrecompute.h>
 #include "PbrPrefilter.h"
-#include "CIE.h"
+#include <Engine/Graphics/CIE.h>
 #include "ScreenSpaceReflections.h"
 #include "DebugRenderer.h"
-#include "ScreenshotCapture.h"
-#include "SpriteFont.hpp"
+#include <Engine/Helper/ScreenshotCapture.h>
+#include <Engine/Graphics/SpriteFont.hpp>
 
 RenderPipeline::RenderPipeline()
 {

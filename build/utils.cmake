@@ -7,14 +7,14 @@
 
 # custom configuration types
 ############################
-function(setupConfigurations)
+macro(setupConfigurations)
 
 	# set our configuration types
 	set(CMAKE_CONFIGURATION_TYPES "Debug;DebugEditor;Develop;DevelopEditor;Shipping" 
 		CACHE STRING "Available build-types: Debug, DebugEditor, Develop, DevelopEditor and Shipping" FORCE)
 
 	# copy settings from existing build types
-	set(CMAKE_CXX_FLAGS_DEBUGEDITOR "${CMAKE_CXX_FLAGS_DEBUG} -DEDITOR")
+	set(CMAKE_CXX_FLAGS_DEBUGEDITOR "${CMAKE_CXX_FLAGS_DEBUG} -DEDITOR" )
 	set(CMAKE_C_FLAGS_DEBUGEDITOR "${CMAKE_C_FLAGS_DEBUG} -DEDITOR")
 	set(CMAKE_EXE_LINKER_FLAGS_DEBUGEDITOR "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -DEDITOR")
 
@@ -27,10 +27,10 @@ function(setupConfigurations)
 	set(CMAKE_EXE_LINKER_FLAGS_DEVELOPEDITOR "${CMAKE_EXE_LINKER_FLAGS_DEVELOP} -DEDITOR")
 
 	set(CMAKE_CXX_FLAGS_SHIPPING "${CMAKE_CXX_FLAGS_RELEASE}")
-	set(CMAKE_C_FLAGS_SHIPPING "${CMAKE_C_FLAGS_RELEASE}")
+	set(CMAKE_C_FLAGS_SHIPPING "${CMAKE_C_FLAGS_RELEASE}" )
 	set(CMAKE_EXE_LINKER_FLAGS_SHIPPING "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
 
-endfunction(setupConfigurations)
+endmacro(setupConfigurations)
 
 
 # output dir for executables
@@ -44,7 +44,9 @@ function(outputDirectories TARGET)
 	endif()
 
 	foreach(_c ${CMAKE_CONFIGURATION_TYPES})
-		set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${_c} ${PROJECT_BINARY_DIR}/../bin/${_c}_${_p}/${TARGET})
+		string(TOUPPER ${_c} _C)
+
+		set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${_C} ${PROJECT_BINARY_DIR}/../bin/${_c}_${_p}/${TARGET})
 	endforeach()
 
 endfunction(outputDirectories)
@@ -61,8 +63,10 @@ function(libOutputDirectories TARGET)
 	endif()
 
 	foreach(_c ${CMAKE_CONFIGURATION_TYPES})
-		set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${_c} ${PROJECT_BINARY_DIR}/../lib/${_c}_${_p}/${TARGET})
-		set_target_properties(${TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_${_c} ${PROJECT_BINARY_DIR}/../lib/${_c}_${_p}/${TARGET})
+		string(TOUPPER ${_c} _C)
+
+		set_target_properties(${TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_${_C} ${PROJECT_BINARY_DIR}/../lib/${_c}_${_p}/${TARGET})
+		set_target_properties(${TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_${_C} ${PROJECT_BINARY_DIR}/../lib/${_c}_${_p}/${TARGET})
 	endforeach()
 
 endfunction(libOutputDirectories)

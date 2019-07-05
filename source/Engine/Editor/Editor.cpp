@@ -6,9 +6,9 @@
 #include "UI\UIComponent.hpp"
 #include "UI\UISplitter.h"
 #include "UI\UIPadding.h"
-#include "SpriteRenderer.hpp"
-#include "TextRenderer.hpp"
-#include "DebugRenderer.h"
+#include <Engine/GraphicsHelper/SpriteRenderer.hpp>
+#include <Engine/GraphicsHelper/TextRenderer.hpp>
+#include <Engine/GraphicsHelper/DebugRenderer.h>
 
 #ifdef EDITOR
 

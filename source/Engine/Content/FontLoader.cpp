@@ -7,9 +7,9 @@
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
-#include "TextureData.hpp"
-#include "PrimitiveRenderer.hpp"
-#include "ShaderData.hpp"
+#include <Engine/Graphics/TextureData.hpp>
+#include <Engine/GraphicsHelper/PrimitiveRenderer.hpp>
+#include <Engine/Graphics/ShaderData.hpp>
 
 FontLoader::FontLoader()
 {

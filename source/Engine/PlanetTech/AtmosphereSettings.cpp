@@ -1,7 +1,7 @@
 #include "stdafx.hpp"
 #include "AtmosphereSettings.h"
 #include "AtmospherePrecompute.h"
-#include "CIE.h"
+#include <Engine/Graphics/CIE.h>
 #include "FileSystem\Entry.h"
 #include "FileSystem\JSONparser.h"
 #include "FileSystem\FileUtil.h"

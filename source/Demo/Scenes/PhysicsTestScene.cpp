@@ -6,8 +6,8 @@
 #include "../../Engine/Components/LightComponent.hpp"
 #include "../../Engine/Graphics/SpriteFont.hpp"
 #include "../../Engine/Graphics/Light.hpp"
-#include "TexPBRMaterial.hpp"
-#include "EmissiveMaterial.hpp"
+#include <Demo/Materials/TexPBRMaterial.hpp>
+#include <Demo/Materials/EmissiveMaterial.hpp>
 #include "..\Engine\Physics\PhysicsManager.h"
 #include "..\Engine\Components\RigidBodyComponent.h"
 

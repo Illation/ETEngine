@@ -21,8 +21,8 @@
 #include "FileSystem/JSONdom.h"
 #include "Physics/PhysicsManager.h"
 #include "Audio/AudioManager.h"
-#include "Commands.h"
-#include "ScreenshotCapture.h"
+#include <Engine/Helper/Commands.h>
+#include <Engine/Helper/ScreenshotCapture.h>
 
 
 void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) 

@@ -1,9 +1,9 @@
 #include "stdafx.hpp"
 #include "AtmospherePrecompute.h"
 #include "Atmosphere.hpp"
-#include "PrimitiveRenderer.hpp"
+#include <Engine/GraphicsHelper/PrimitiveRenderer.hpp>
 #include "../Graphics/ShaderData.hpp"
-#include "CIE.h"
+#include <Engine/Graphics/CIE.h>
 
 
 AtmospherePrecompute::AtmospherePrecompute()

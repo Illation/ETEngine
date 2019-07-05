@@ -2,8 +2,8 @@
 #include "UIContainer.h"
 
 #include <limits>
-#include "SpriteRenderer.hpp"
-#include "TextRenderer.hpp"
+#include <Engine/GraphicsHelper/SpriteRenderer.hpp>
+#include <Engine/GraphicsHelper/TextRenderer.hpp>
 
 UIDynamicBox::~UIDynamicBox()
 {

@@ -3,8 +3,8 @@
 #include "FileSystem\Entry.h"
 #include "FileSystem\JSONparser.h"
 #include "FileSystem\FileUtil.h"
-#include "ShaderData.hpp"
-#include "TextureData.hpp"
+#include <Engine/Graphics/ShaderData.hpp>
+#include <Engine/Graphics/TextureData.hpp>
 
 StarField::StarField(const std::string &dataFile) :
 	m_DataFile(dataFile)

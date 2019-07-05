@@ -1,6 +1,6 @@
 #include "stdafx.hpp"
 #include "AudioSourceComponent.h"
-#include "Entity.hpp"
+#include <Engine/SceneGraph/Entity.hpp>
 
 #include "Audio/AudioData.h"
 

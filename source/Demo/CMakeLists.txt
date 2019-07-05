@@ -22,7 +22,7 @@ if (MSVC)
 endif(MSVC)
 
 # executable and dependancies
-add_executable(Demo ${projectFiles})
+add_executable(Demo WIN32 ${projectFiles})
 
 # directory stuff
 assign_source_group(${projectFiles})

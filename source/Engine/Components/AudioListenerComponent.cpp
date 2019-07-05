@@ -1,6 +1,6 @@
 #include "stdafx.hpp"
 #include "AudioListenerComponent.h"
-#include "Entity.hpp"
+#include <Engine/SceneGraph/Entity.hpp>
 
 #include <AL/al.h>
 #include "Audio/AudioManager.h"

@@ -2,6 +2,7 @@
 #include "TextureLoader.hpp"
 
 #include <FreeImage.h>
+#include <Engine/FileSystem/FileUtil.h>
 
 TextureLoader::TextureLoader()
 {
@@ -31,7 +32,7 @@ TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 	LOG(loadingString + " . . . loading file          ", Info, false, logPos);
 	FIBITMAP *pImage(0);
 	if (FreeImage_FIFSupportsReading(fif))
-		pImage = FreeImage_Load(fif, assetFile.c_str());
+		pImage = FreeImage_Load(fif, FileUtil::GetAbsolutePath(assetFile).c_str());
 	if (pImage)
 	{
 		//Get dimensions and downscale if necessary

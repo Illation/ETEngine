@@ -1,12 +1,12 @@
 #include "stdafx.hpp"
 #include "ScreenSpaceReflections.h"
-#include "ShaderData.hpp"
+#include <Engine/Graphics/TextureData.hpp>
+#include <Engine/Graphics/ShaderData.hpp>
 #include "RenderPipeline.hpp"
 #include "PrimitiveRenderer.hpp"
 #include "../Framebuffers/Gbuffer.hpp"
 #include "../Framebuffers/PostProcessingRenderer.hpp"
-#include "TextureData.hpp"
-#include "Commands.h"
+#include <Engine/Helper/Commands.h>
 
 ScreenSpaceReflections::ScreenSpaceReflections()
 {
