@@ -1,0 +1,43 @@
+
+
+##############
+# Unit Tests
+##############
+
+
+# files
+###########
+file(GLOB_RECURSE headers ${CMAKE_CURRENT_SOURCE_DIR}/*.h ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp ${CMAKE_CURRENT_SOURCE_DIR}/*.glsl)
+file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+
+list (APPEND projectFiles ${headers} ${sources} ${c_sources})
+
+# setup
+#########
+target_definitions()
+
+add_definitions(-D_CONSOLE)
+if (MSVC)
+#	add_definitions(-DWinmain)
+endif(MSVC)
+
+# executable and dependancies
+add_executable(Testing ${projectFiles})
+
+# directory stuff
+assign_source_group(${projectFiles})
+outputDirectories(Testing)
+
+# linking
+target_link_libraries (Testing EtEngine)
+dependancyLinks(Testing FALSE)
+
+# library includes
+libIncludeDirs()
+include_directories("${PROJECT_BINARY_DIR}/../dependancies/include/catch/")	
+
+# general include dirs
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/..")
+target_include_directories (Testing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+installResources(Testing)
