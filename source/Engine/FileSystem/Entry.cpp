@@ -25,7 +25,7 @@ Entry::Entry(std::string name, Directory* pParent)
 	}
 	else
 	{
-		m_Path = "./";
+		m_Path = "/";
 	}
 }
 std::string Entry::GetPath()

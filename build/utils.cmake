@@ -122,7 +122,7 @@ endfunction(target_definitions)
 
 # link to all dependancies
 ###########################
-function(dependancyLinks TARGET)
+function(dependancyLinks TARGET _useSdlMain)
 
 	set(dep_dir "${PROJECT_BINARY_DIR}/../dependancies")
 
@@ -147,7 +147,12 @@ function(dependancyLinks TARGET)
 		${dep_pf}/rttr/rttr_core.lib)
 
 	if (MSVC)
-		target_link_libraries (${TARGET} opengl32.lib ${dep_pf}/sdl2/SDL2main.lib)
+		target_link_libraries(${TARGET} opengl32.lib)
+
+		if (_useSdlMain)
+			target_link_libraries(${TARGET} ${dep_pf}/sdl2/SDL2main.lib)
+		endif(_useSdlMain)
+
 	endif(MSVC)
 
 endfunction(dependancyLinks)

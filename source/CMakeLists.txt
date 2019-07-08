@@ -4,3 +4,4 @@
 
 add_subdirectory (Engine)
 add_subdirectory (Demo)
+add_subdirectory (Testing)

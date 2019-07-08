@@ -30,7 +30,7 @@ outputDirectories(Demo)
 
 # linking
 target_link_libraries (Demo EtEngine)
-dependancyLinks(Demo)
+dependancyLinks(Demo TRUE)
 
 # library includes
 libIncludeDirs()

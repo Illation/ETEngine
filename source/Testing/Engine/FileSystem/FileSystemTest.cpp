@@ -8,7 +8,7 @@
 
 TEST_CASE( "mount", "[filesystem]" )
 {
-	std::string dirName = "./source/Testing/Engine/FileSystem/TestDir/";
+	std::string dirName = "../../../source/Testing/Engine/FileSystem/TestDir/";
 	Directory* pDir = new Directory( dirName, nullptr );
 
 	REQUIRE( pDir->IsMounted() == false );
@@ -23,7 +23,7 @@ TEST_CASE( "mount", "[filesystem]" )
 	{
 		if(cExt->GetType() == Entry::EntryType::ENTRY_FILE)
 		{
-			REQUIRE( cExt->GetName() == "./test_file3.someFileExt" );
+			REQUIRE( cExt->GetNameOnly() == "test_file3.someFileExt" );
 			found = true;
 		}
 	}
@@ -54,7 +54,7 @@ TEST_CASE( "copy file", "[filesystem]" )
 	std::string expectedContent = "Hello I am a test file!\r\nwith 2 lines\r\n";
 	auto expectedContentLines = FileUtil::ParseLines(expectedContent);
 
-	std::string dirName = "./source/Testing/Engine/FileSystem/TestDir/";
+	std::string dirName = "../../../source/Testing/Engine/FileSystem/TestDir/";
 	Directory* pDir = new Directory( dirName, nullptr );
 	bool mountResult = pDir->Mount( true );
 	REQUIRE( mountResult == true );
@@ -63,7 +63,7 @@ TEST_CASE( "copy file", "[filesystem]" )
 	Directory* subDir = nullptr;
 	for(auto c : pDir->GetChildren())
 	{
-		if(c->GetName() == "./test_file.txt")
+		if(c->GetNameOnly() == "test_file.txt")
 		{
 			inputFile = static_cast<File*>(c);
 		}
@@ -126,7 +126,7 @@ TEST_CASE( "copy file", "[filesystem]" )
 	REQUIRE_FALSE( subDir == nullptr );
 	for(auto c : subDir->GetChildren())
 	{
-		if(c->GetName() == "./copy_file.txt")
+		if(c->GetNameOnly() == "copy_file.txt")
 		{
 			outputFile = static_cast<File*>(c);
 			break;
@@ -149,8 +149,10 @@ TEST_CASE( "copy file", "[filesystem]" )
 	bool found = false;
 	for(auto c : subDir->GetChildren())
 	{
-		if(c->GetNameOnly() == "copy_file.txt")
+		if (c->GetNameOnly() == "copy_file.txt")
+		{
 			found = true;
+		}
 	}
 	REQUIRE( found == false );
 
