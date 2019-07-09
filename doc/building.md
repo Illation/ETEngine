@@ -16,7 +16,7 @@ Build ALL_BUILD and check the /lib/ directory where you cloned bullet. The files
 Make sure to remove any "_Debug" suffixes from the filenames.
 
 ### The Engine
-Synthesizer uses CMake to generate project files. 
+EtEngine uses CMake to generate project files. 
 Currently the project is being developed with Visual Studio 2017, but it is done in a way that should make it easy to transfer to other platforms by using project generation and crossplatform libraries
 
 The project comes with packaged lib, dll and include files for all dependancies, compiled with vs2017. If you want to build with a different visual studio version, you need to build GTKmm and its dependancies for that compiler.
@@ -32,9 +32,9 @@ The -H and -B options specify an out of source build in the build folder, which 
     cd build
 	cmake -G "Your preferred generator [and architecture]" ..
 
-Next open the solution that was generated at **build/Synthesizer.sln** in visual studio, select the desired configuration (_Development_ is good for most purposes), and build as usual.
+Next open the solution that was generated at **build/EtEngine.sln** in visual studio, select the desired configuration (_Development_ is good for most purposes), and build as usual.
 
-The final executable will appear in **bin/[configuration]_[platform]/bin/Synthesizer.exe**
+The final executable will appear in **bin/[configuration]_[platform]/bin/EtEngine.exe**
 
 In order to run the built program, you also need to assemble its dependancies - such as dlls and resource files - relative to the executable in the inner 'bin/' folder. To do this, build the 'INSTALL' project in visual studio.
 
