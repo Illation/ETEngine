@@ -19,7 +19,7 @@ Make sure to remove any "_Debug" suffixes from the filenames.
 EtEngine uses CMake to generate project files. 
 Currently the project is being developed with Visual Studio 2017, but it is done in a way that should make it easy to transfer to other platforms by using project generation and crossplatform libraries
 
-The project comes with packaged lib, dll and include files for all dependancies, compiled with vs2017. If you want to build with a different visual studio version, you need to build GTKmm and its dependancies for that compiler.
+The project comes with packaged lib, dll and include files for all dependancies, compiled with vs2017. If you want to build with a different visual studio version, you need to build Bullet Physics and its dependancies for that compiler.
 
 In order to build the project, you need to generate the project files with CMake. You should have CMake 3.10 or later installed on your computer.
 
