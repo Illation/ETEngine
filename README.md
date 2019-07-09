@@ -18,7 +18,7 @@ For visual studio 2017:
 
     cmake -G "Visual Studio 15 2017 Win64" -H. -Bbuild
 
-Next build the solution that appears in build/synthesizer.sln
+Next build the solution that appears in build/EtEngine.sln
 
 Finally, build the "INSTALL" project in said solution.
 
