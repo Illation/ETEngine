@@ -18,7 +18,7 @@ public:
     std::string GetName();
 	std::string GetNameOnly();
 	std::string GetExtension();
-    Directory* GetParent(){ return m_pParent; }
+    Directory* GetParent(){ return m_Parent; }
     virtual std::string GetPath();
 
 	virtual bool Delete() = 0;
@@ -35,7 +35,7 @@ public:
     }
 protected:
 	std::string m_Filename;
-    Directory* m_pParent;
+    Directory* m_Parent;
 	std::string m_Path; //only used if there is no parent
 };
 

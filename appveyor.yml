@@ -1,12 +1,13 @@
 version: 1.0.{build}
-os:
-  - Visual Studio 2015
+image: Visual Studio 2017
+configuration: Debug
+platform: x64
 install:
-  - git clone --depth 1 https://github.com/bkaradzic/bx .\build\tools
-  - .\build\tools\tools\bin\windows\genie --file=build/genie.lua vs2015
+- cmd: cmake -G "Visual Studio 15 2017 Win64" -H. -Bbuild
 build:
-  project: ./build/ETEngine.sln
+  project: ./build/ALL_BUILD.vcxproj
   verbosity: normal
+after_build:
+- cmd: cmake --build build --target install
 test_script:
-- cmd: >-
-    .\bin\Debug_x64\Testing\Testing.exe
+- cmd: .\bin\Debug_x64\Testing\Testing.exe

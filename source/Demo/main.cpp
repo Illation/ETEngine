@@ -1,5 +1,7 @@
 #include "stdafx.hpp"
 #include "MainFramework.hpp"
+#include <Engine/FileSystem/FileUtil.h>
+#include <iostream>
 
 void SetDebuggingOptions();
 
@@ -9,6 +11,17 @@ int main(int argc, char *argv[])
 	UNUSED( argv );
 
 	SetDebuggingOptions();
+
+	// working dir
+	if (argc > 0)
+	{
+		FileUtil::SetExecutablePath(argv[0]);
+	}
+	else
+	{
+		std::cerr << "main > Couldn't get extract working directory from arguments, exiting!" << std::endl;
+		return 1;
+	}
 
 	MainFramework* pFW = new MainFramework();
 	pFW->Run();

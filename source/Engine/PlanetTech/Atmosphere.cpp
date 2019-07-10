@@ -12,10 +12,10 @@
 #include "../GraphicsHelper/PrimitiveRenderer.hpp"
 #include "../GraphicsHelper/RenderPipeline.hpp"
 #include "../Graphics/Frustum.hpp"
-#include "SpriteRenderer.hpp"
-#include "Skybox.hpp"
-#include "Light.hpp"
-#include "Commands.h"
+#include <Engine/GraphicsHelper/SpriteRenderer.hpp>
+#include <Engine/Prefabs/Skybox.hpp>
+#include <Engine/Graphics/Light.hpp>
+#include <Engine/Helper/Commands.h>
 
 
 Atmosphere::Atmosphere(const std::string &paramFileName)

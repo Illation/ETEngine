@@ -1,7 +1,7 @@
 #include "stdafx.hpp"
 #include "DebugRenderer.h"
-#include "CameraComponent.hpp"
-#include "ShaderData.hpp"
+#include <Engine/Components/CameraComponent.hpp>
+#include <Engine/Graphics/ShaderData.hpp>
 #include "Editor/Editor.hpp"
 
 DebugRenderer::DebugRenderer()

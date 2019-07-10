@@ -1,5 +1,5 @@
 #pragma once
-#include "Singleton.hpp"
+#include <Engine/Helper/Singleton.hpp>
 
 class CIE : public Singleton<CIE>
 {

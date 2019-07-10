@@ -7,9 +7,11 @@
 #include <Importer.hpp>
 #include <scene.h>  
 #include <postprocess.h>
-#include "GLTF.h"
+#include <Engine/Helper/GLTF.h>
+
 
 #define ASSIMP_BUILD_BOOST_WORAROUND
+
 
 MeshFilterLoader::MeshFilterLoader()
 {

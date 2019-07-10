@@ -6,7 +6,7 @@
 #include "../Components/LightComponent.hpp"
 #include "../Graphics/TextureData.hpp"
 #include "../Prefabs/Skybox.hpp"
-#include "PbrPrefilter.h"
+#include <Engine/GraphicsHelper/PbrPrefilter.h>
 
 Gbuffer::Gbuffer(bool demo):
 	FrameBuffer(demo?

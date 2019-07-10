@@ -6,7 +6,7 @@
 #include "../GraphicsHelper/PrimitiveRenderer.hpp"
 #include "../GraphicsHelper/RenderPipeline.hpp"
 #include "../GraphicsHelper/RenderState.hpp"
-#include "TextureData.hpp"
+#include <Engine/Graphics/TextureData.hpp>
 
 PostProcessingRenderer::PostProcessingRenderer()
 {

@@ -36,7 +36,7 @@
 #include <string.h>
 //Manual changes
 //#include <glad/glad.h>
-#include <glad.h>
+#include "glad.h"
 
 #define _CRT_SECURE_NO_WARNINGS
 //End of manual changes

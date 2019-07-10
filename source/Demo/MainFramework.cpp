@@ -9,7 +9,7 @@
 #include "Scenes/PlanetTestScene.hpp"
 
 #include <btBulletCollisionCommon.h>
-#include "PhysicsTestScene.h"
+#include <Demo/Scenes/PhysicsTestScene.h>
 
 MainFramework::MainFramework() :
 	AbstractFramework()

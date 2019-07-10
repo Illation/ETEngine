@@ -1,4 +1,11 @@
-# Precomputed Atmospheric scattering
+# Third Party Licenses
+
+Currently used libraries: SDL2, catch, FreeImage, freetype, Bullet Physics, OpenAL-soft, stb_vorbis, RTTR, GLAD, MikkTSpace and Assimp.
+
+Also a bunch of (modified) code from Eric Brunetons [atmospheric scattering implementation](https://github.com/ebruneton/precomputed_atmospheric_scattering).
+
+
+## Precomputed Atmospheric scattering
 
 Copyright (c) 2017 Eric Bruneton
 All rights reserved.
@@ -28,7 +35,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# SDL2
+## SDL2
 
 SDL 2.0 and newer are available under the zlib license :
 This software is provided 'as-is', without any express or implied
@@ -48,7 +55,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 
 
-# FreeImage
+## FreeImage
 
 FreeImage Public License - Version 1.0
 ---------------------------------------------
@@ -193,7 +200,7 @@ EXHIBIT A.
 
 Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the specific language governing rights and limitations under the License. 
 
-# Freetype
+## Freetype
 
    The FreeType Project LICENSE
                     ----------------------------
@@ -205,7 +212,7 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 
 
 
-## Introduction
+### Introduction
 
   The FreeType  Project is distributed in  several archive packages;
   some of them may contain, in addition to the FreeType font engine,
@@ -252,7 +259,7 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
   actually use.
 
 
-## Legal Terms
+### Legal Terms
 
 0. Definitions
 --------------
@@ -361,7 +368,7 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
     https://www.freetype.org
 
 
-# Bullet Physics
+## Bullet Physics
 
 Bullet Continuous Collision Detection and Physics Library
 http://bulletphysics.org
@@ -376,7 +383,7 @@ subject to the following restrictions:
 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
 
-# OpenAL-soft
+## OpenAL-soft
 
                   GNU LIBRARY GENERAL PUBLIC LICENSE
                        Version 2, June 1991
@@ -860,7 +867,7 @@ necessary.  Here is a sample; alter the names:
 
 That's all there is to it!
 
-# MikkTSpace
+## MikkTSpace
 
 Copyright (C) 2011 by Morten S. Mikkelsen
 
@@ -880,7 +887,7 @@ freely, subject to the following restrictions:
    misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
 
-# stb_vorbis
+## stb_vorbis
 
 This software is available under 2 licenses -- choose whichever you prefer.
 ALTERNATIVE A - MIT License
@@ -919,7 +926,7 @@ AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
 ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# GLAD
+## GLAD
 
 The MIT License (MIT)
 
@@ -942,7 +949,7 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# Catch
+## Catch
 
 Boost Software License - Version 1.0 - August 17th, 2003
 
@@ -968,7 +975,7 @@ FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
-# Assimp
+## Assimp
 
 Assimp is released as Open Source under the terms of a 3-clause BSD license.
 
@@ -986,7 +993,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 An exception applies to all test models in Assimp's repository. They're generally free for testing and private use, but not necessarily for commercial use. There's usually an accompanying info file containing detailed license information.
 
 
-# RTTR
+## RTTR
 
 MIT License
 

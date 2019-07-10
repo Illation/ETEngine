@@ -3,8 +3,8 @@
 ETEngine.VC.*
 ETEngine.VC.VC.opendb
 ETEngine.VC.db
-/build/Intermediate
 /bin
+/lib
 /build/x32
 /build/x64
 *.ipch
@@ -14,3 +14,14 @@ build/.vs
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+
+CMakeLists.txt.user
+/build/CMakeCache.txt
+build/**/
+CMakeScripts
+Makefile
+/build/cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps

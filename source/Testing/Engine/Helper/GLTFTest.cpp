@@ -13,7 +13,7 @@ TEST_CASE("Decode Base64", "[gltf]")
 	REQUIRE(expected == FileUtil::AsText(decoded));
 }
 
-std::string baseDir = "./source/Testing/Engine/Helper/";
+std::string baseDir = "../../../source/Testing/Engine/Helper/";
 std::string fileName = "Box.gltf";
 std::string glbFileName = "Corset.glb";
 

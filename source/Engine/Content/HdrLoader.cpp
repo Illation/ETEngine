@@ -5,7 +5,8 @@
 
 #include "../Graphics/ShaderData.hpp"
 #include "../GraphicsHelper/PrimitiveRenderer.hpp"
-#include "PbrPrefilter.h"
+#include <Engine/GraphicsHelper/PbrPrefilter.h>
+#include <Engine/FileSystem/FileUtil.h>
 
 HdrLoader::HdrLoader()
 {
@@ -39,7 +40,7 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	LOG(loadingString + " . . . loading file          ", Info, false, logPos);
 	FIBITMAP *dib(0);
 	if (FreeImage_FIFSupportsReading(fif))
-		dib = FreeImage_Load(fif, assetFile.c_str());
+		dib = FreeImage_Load(fif, FileUtil::GetAbsolutePath(assetFile).c_str());
 	if (!dib)
 	{
 		LOG(loadingString + " . . . FAILED!          ", Warning, false, logPos);
