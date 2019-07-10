@@ -11,7 +11,7 @@
  * Bloom with texture downsampling
  * Stereoscopic Normal map encoding and decoding for optimal use of G-Buffer
  * Mesh Filter -> Vertex buffer building depending on material needs
- * Basic Statet Managment
+ * Basic State Managment
  * Render Pipeline Object
  * Frustum culling
  * Sprite font rendering
@@ -47,11 +47,10 @@
  * Logging system for console, file and debug
 
 ### Integration
- * Project Generation with GENie
+ * Project Generation with CMake
  * Continous Integration with AppVeyor
  * Unit Testing setup with catch.hpp
- * Unit tests for math functions
- * Unit tests for the file system
+     * Unit tests for math functions, file system, json parser, gltf, string hash
  
 ## Work in progress
 
