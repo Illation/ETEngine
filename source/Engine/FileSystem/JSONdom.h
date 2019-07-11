@@ -2,8 +2,6 @@
 #include <string>
 #include <vector>
 #include "../Helper/AtomicTypes.hpp"
-#include "../Math/Vector.hpp"
-#include "../Math/Matrix.hpp"
 
 namespace JSON
 {

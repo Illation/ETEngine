@@ -1,3 +1,3 @@
 #pragma once
 
-#include "../Engine/stdafx.hpp"
+#include <Engine/stdafx.hpp>

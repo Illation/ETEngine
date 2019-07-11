@@ -1,5 +1,4 @@
 #pragma once
-#include "../Math/Vector.hpp"
 
 inline vec3 ALvec3(const vec3 &rhs)
 {

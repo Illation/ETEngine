@@ -1,6 +1,6 @@
 #include <catch.hpp>
 
-#include "../../../Engine/Math/Quaternion.hpp"
+#include <EtMath/Quaternion.h>
 
 TEST_CASE("constructors", "[quat]")
 {

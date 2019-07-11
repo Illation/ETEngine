@@ -1,5 +1,4 @@
 #pragma once
-#include "../Math/Quaternion.hpp"
 #include "../FileSystem/JSONdom.h"
 
 class MeshFilter;

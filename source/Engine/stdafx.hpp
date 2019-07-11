@@ -27,7 +27,7 @@
 #pragma endregion sdl-opengl
 
 #pragma region
-#include "Math/Math.hpp"
+#include <EtMath/MathInc.h>
 #pragma endregion math
 
 #pragma region

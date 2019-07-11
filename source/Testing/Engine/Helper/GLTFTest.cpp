@@ -1,8 +1,11 @@
 #include <catch.hpp>
-#include "../../../Engine/Helper/GLTF.h"
-#include "../../../Engine/FileSystem/FileUtil.h"
-#include "../../../Engine/FileSystem/Entry.h"
-#include "../../../Engine/FileSystem/JSONparser.h"
+
+#include <Engine/stdafx.hpp>
+#include <Engine/Helper/GLTF.h>
+#include <Engine/FileSystem/FileUtil.h>
+#include <Engine/FileSystem/Entry.h>
+#include <Engine/FileSystem/JSONparser.h>
+
 
 TEST_CASE("Decode Base64", "[gltf]")
 {

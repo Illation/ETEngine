@@ -1,7 +1,11 @@
 #pragma once
-#include "stdafx.hpp"
-#include "Geometry.hpp"
+#include "Geometry.h"
 
+//------------------------
+// GetIcosahedronPositions
+//
+// Vertices for an icosahedron
+//
 std::vector<vec3> GetIcosahedronPositions(float size)
 {
 	float ratio = (1.f + sqrt(5.f)) / 2.f;
@@ -27,9 +31,15 @@ std::vector<vec3> GetIcosahedronPositions(float size)
 
 	return ico;
 }
-std::vector<uint32> GetIcosahedronIndices()
+
+//------------------------
+// GetIcosahedronIndices
+//
+// Indices of the vertices from GetIcosahedronPositions with the front face
+//
+std::vector<etm::uint32> GetIcosahedronIndices()
 {
-	std::vector<uint32> ret
+	std::vector<etm::uint32> ret
 	{
 		1, 3, 8,
 		1, 3, 9,
@@ -56,11 +66,18 @@ std::vector<uint32> GetIcosahedronIndices()
 		2, 6, 10,
 		2, 4, 11
 	};
+
 	return ret;
 }
-std::vector<uint32> GetIcosahedronIndicesBFC()
+
+//------------------------
+// GetIcosahedronIndices
+//
+// Indices of the vertices from GetIcosahedronPositions with the back face
+//
+std::vector<etm::uint32> GetIcosahedronIndicesBFC()
 {
-	std::vector<uint32> ret
+	std::vector<etm::uint32> ret
 	{
 		1,8,3,
 		1,3,9,
@@ -87,5 +104,6 @@ std::vector<uint32> GetIcosahedronIndicesBFC()
 		2,6 ,10,
 		2,11,4
 	};
+
 	return ret;
 }

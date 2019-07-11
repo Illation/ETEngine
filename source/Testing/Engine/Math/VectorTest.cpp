@@ -1,6 +1,7 @@
 #include <catch.hpp>
 
-#include "../../../Engine/Math/Vector.hpp"
+#include <EtMath/Vector.h>
+#include <Engine/Helper/AtomicTypes.hpp>
 
 TEST_CASE("Generic vector functionality", "[vector]")
 {

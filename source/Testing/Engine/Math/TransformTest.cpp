@@ -1,6 +1,6 @@
 #include <catch.hpp>
 
-#include "../../../Engine/Math/Transform.hpp"
+#include <EtMath/Transform.h>
 
 TEST_CASE("scale", "[transform]")
 {

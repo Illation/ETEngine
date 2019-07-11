@@ -4,7 +4,7 @@
 #include "../../../Engine/FileSystem/Entry.h"
 #include "../../../Engine/FileSystem/FileUtil.h"
 #include "../../../Engine/FileSystem/JSONparser.h"
-#include "../../../Engine/Math/MathUtil.hpp"
+#include <EtMath/MathUtil.h>
 
 TEST_CASE("Parse", "[json]")
 {

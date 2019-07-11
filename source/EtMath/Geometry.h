@@ -1,5 +1,15 @@
 #pragma once
 
+#include "Vector.h"
+#include "MathUtil.h"
+
+#include <vector>
+
+//------------------------
+// Plane
+//
+// Mathematical definition for a plane
+//
 struct Plane
 {
 	Plane()
@@ -20,6 +30,12 @@ struct Plane
 	vec3 n;
 	vec3 d;
 };
+
+//------------------------
+// Sphere
+//
+// Mathematical definition for a sphere
+//
 struct Sphere
 {
 	Sphere()
@@ -37,5 +53,5 @@ struct Sphere
 };
 
 std::vector<vec3> GetIcosahedronPositions(float size = 1);
-std::vector<uint32> GetIcosahedronIndices();//For inverse winding
-std::vector<uint32> GetIcosahedronIndicesBFC();//for uniform winding
+std::vector<etm::uint32> GetIcosahedronIndices();//For inverse winding
+std::vector<etm::uint32> GetIcosahedronIndicesBFC();//for uniform winding
