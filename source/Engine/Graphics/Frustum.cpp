@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "Frustum.hpp"
 
 #include "../Components/TransformComponent.hpp"

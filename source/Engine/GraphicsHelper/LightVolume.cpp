@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 
 #include "LightVolume.hpp"
 #include "../Materials/LightMaterial.hpp"

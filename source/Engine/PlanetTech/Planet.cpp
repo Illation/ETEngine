@@ -1,20 +1,25 @@
-#include "stdafx.hpp"
-#include "Planet.hpp"
+#include "stdafx.h"
+
+#include "Planet.h"
+
+#include "Patch.h"
+#include "Atmosphere.h"
+#include "Triangulator.h"
 
 #include <limits>
 
-#include "../Graphics/ShaderData.hpp"
-#include "../Components/TransformComponent.hpp"
-#include "../Components/CameraComponent.hpp"
-#include "../Graphics/TextureData.hpp"
+#include <Engine/Content/TextureLoader.hpp>
 
-#include "../Graphics/Frustum.hpp"
-#include "Triangulator.hpp"
-#include "Patch.hpp"
-#include "Atmosphere.hpp"
-#include "../Content/TextureLoader.hpp"
-#include "../GraphicsHelper/RenderPipeline.hpp"
-#include "../GraphicsHelper/RenderState.hpp"
+#include <Engine/Graphics/ShaderData.hpp>
+#include <Engine/Graphics/TextureData.hpp>
+#include <Engine/Graphics/Frustum.hpp>
+
+#include <Engine/GraphicsHelper/RenderPipeline.hpp>
+#include <Engine/GraphicsHelper/RenderState.hpp>
+
+#include <Engine/Components/TransformComponent.hpp>
+#include <Engine/Components/CameraComponent.hpp>
+
 
 Planet::Planet()
 {

@@ -1,23 +1,28 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 
-#include "SkyboxTestScene.hpp"
-
-#include "../../Engine/SceneGraph/Entity.hpp"
-
-#include "../Materials/TexPBRMaterial.hpp"
-#include "../Materials/EmissiveMaterial.hpp"
-
-#include "../../Engine/Graphics/FrameBuffer.hpp"
-#include "../../Engine/Framebuffers/Gbuffer.hpp"
-#include "../../Engine/Components/ModelComponent.hpp"
-#include "../../Engine/Components/LightComponent.hpp"
-#include "../../Engine/Prefabs/Skybox.hpp"
-#include "../../Engine/Prefabs/OrbitCamera.hpp"
-#include "../../Engine/GraphicsHelper/TextRenderer.hpp"
-#include "../../Engine/Graphics/SpriteFont.hpp"
+#include "SkyboxTestScene.h"
 
 #include <random>
-#include "../../Engine/Graphics/Light.hpp"
+
+#include <Demo/Materials/TexPBRMaterial.h>
+#include <Demo/Materials/EmissiveMaterial.h>
+
+#include <Engine/SceneGraph/Entity.h>
+
+#include <Engine/Framebuffers/Gbuffer.hpp>
+
+#include <Engine/Components/ModelComponent.hpp>
+#include <Engine/Components/LightComponent.hpp>
+
+#include <Engine/Prefabs/Skybox.h>
+#include <Engine/Prefabs/OrbitCamera.h>
+
+#include <Engine/GraphicsHelper/TextRenderer.hpp>
+
+#include <Engine/Graphics/SpriteFont.hpp>
+#include <Engine/Graphics/FrameBuffer.hpp>
+#include <Engine/Graphics/Light.hpp>
+
 
 SkyboxTestScene::SkyboxTestScene() : AbstractScene("SkyboxTestScene")
 {

@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "AudioManager.h"
 
 void AudioManager::Initialize()

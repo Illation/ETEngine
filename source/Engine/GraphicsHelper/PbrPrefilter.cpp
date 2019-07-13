@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "PbrPrefilter.h"
 #include "PrimitiveRenderer.hpp"
 #include <Engine/Graphics/TextureData.hpp>

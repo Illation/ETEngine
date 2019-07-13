@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 
 #include "ShadowRenderer.hpp"
 #include "../Materials/NullMaterial.hpp"

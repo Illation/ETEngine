@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "TextRenderer.hpp"
 
 #include "../Graphics/SpriteFont.hpp"

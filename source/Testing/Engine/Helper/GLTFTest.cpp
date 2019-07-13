@@ -1,6 +1,6 @@
 #include <catch.hpp>
 
-#include <Engine/stdafx.hpp>
+#include <Engine/stdafx.h>
 #include <Engine/Helper/GLTF.h>
 #include <Engine/FileSystem/FileUtil.h>
 #include <Engine/FileSystem/Entry.h>

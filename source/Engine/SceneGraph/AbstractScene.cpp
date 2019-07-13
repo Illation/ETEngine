@@ -1,18 +1,25 @@
-#include "stdafx.hpp"
-#include "AbstractScene.hpp"
+#include "stdafx.h"
 
-#include "../Components/CameraComponent.hpp"
-#include "../Components/LightComponent.hpp"
-#include "../Prefabs/FreeCamera.hpp"
-#include "../Base/Time.hpp"
-#include "Entity.hpp"
-#include "../Framebuffers/Gbuffer.hpp"
-#include "../Prefabs/Skybox.hpp"
-#include "../Prefabs/FreeCamera.hpp"
-#include "../Framebuffers/PostProcessingRenderer.hpp"
-#include "../GraphicsHelper/TextRenderer.hpp"
-#include "../GraphicsHelper/RenderPipeline.hpp"
-#include "Physics/PhysicsWorld.h"
+#include "AbstractScene.h"
+#include "Entity.h"
+
+#include <Engine/Base/Time.hpp>
+
+#include <Engine/Components/CameraComponent.hpp>
+#include <Engine/Components/LightComponent.hpp>
+
+#include <Engine/Prefabs/FreeCamera.h>
+#include <Engine/Prefabs/Skybox.h>
+#include <Engine/Prefabs/FreeCamera.h>
+
+#include <Engine/Framebuffers/Gbuffer.hpp>
+#include <Engine/Framebuffers/PostProcessingRenderer.hpp>
+
+#include <Engine/GraphicsHelper/TextRenderer.hpp>
+#include <Engine/GraphicsHelper/RenderPipeline.hpp>
+
+#include <Engine/Physics/PhysicsWorld.h>
+
 
 #define CONTEXT Context::GetInstance()
 

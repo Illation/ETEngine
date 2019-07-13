@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "JSONdom.h"
 
 JSON::String* JSON::Value::str()

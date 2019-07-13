@@ -1,11 +1,11 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "ScreenshotCapture.h"
 
 #include <functional>
 #include <cctype>
 #include <locale>
 
-#include "FileSystem/Entry.h"
+#include <Engine/FileSystem/Entry.h>
 
 ScreenshotCapture::~ScreenshotCapture()
 {

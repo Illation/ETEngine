@@ -1,24 +1,26 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 
-#include "TestScene.hpp"
+#include "TestScene.h"
 
 #include <random>
 #include <math.h>
 
-#include "../../Engine/SceneGraph/Entity.hpp"
+#include <Demo/Materials/TexPBRMaterial.h>
+#include <Demo/Materials/EmissiveMaterial.h>
 
-#include "../Materials/TexPBRMaterial.hpp"
-#include "../Materials/EmissiveMaterial.hpp"
+#include <Engine/SceneGraph/Entity.h>
 
-#include "../../Engine/Graphics/FrameBuffer.hpp"
-#include "../../Engine/Framebuffers/Gbuffer.hpp"
+#include <Engine/Graphics/FrameBuffer.hpp>
+#include <Engine/Framebuffers/Gbuffer.hpp>
 
-#include "../../Engine/Components/ModelComponent.hpp"
-#include "../../Engine/Components/LightComponent.hpp"
+#include <Engine/Components/ModelComponent.hpp>
+#include <Engine/Components/LightComponent.hpp>
 
-#include "../../Engine/GraphicsHelper/TextRenderer.hpp"
-#include "../../Engine/Graphics/SpriteFont.hpp"
-#include "../../Engine/Graphics/Light.hpp"
+#include <Engine/GraphicsHelper/TextRenderer.hpp>
+
+#include <Engine/Graphics/SpriteFont.hpp>
+#include <Engine/Graphics/Light.hpp>
+
 
 TestScene::TestScene() : AbstractScene("TestScene")
 {

@@ -1,11 +1,11 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "Gbuffer.hpp"
 
 #include "../Graphics/ShaderData.hpp"
-#include "../SceneGraph/AbstractScene.hpp"
+#include <Engine/SceneGraph/AbstractScene.h>
 #include "../Components/LightComponent.hpp"
 #include "../Graphics/TextureData.hpp"
-#include "../Prefabs/Skybox.hpp"
+#include <Engine/Prefabs/Skybox.h>
 #include <Engine/GraphicsHelper/PbrPrefilter.h>
 
 Gbuffer::Gbuffer(bool demo):

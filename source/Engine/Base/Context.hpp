@@ -2,7 +2,7 @@
 #include "../Helper/Singleton.hpp"
 #include "../Base/Time.hpp"
 #include "../Components/CameraComponent.hpp"
-#include "../SceneGraph/AbstractScene.hpp"
+#include <Engine/SceneGraph/AbstractScene.h>
 
 class ContextObjects
 {

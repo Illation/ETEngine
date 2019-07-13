@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "Light.hpp"
 
 #include "../GraphicsHelper/LightVolume.hpp"

@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "TextureData.hpp"
 #include "ShaderData.hpp"
 #include <Engine/GraphicsHelper/PrimitiveRenderer.hpp>

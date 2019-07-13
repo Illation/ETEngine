@@ -1,28 +1,38 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
+
 #include "PhysicsTestScene.h"
-#include "..\Engine\GraphicsHelper\TextRenderer.hpp"
-#include "..\Engine\SceneGraph\Entity.hpp"
-#include "..\Engine\Components\ModelComponent.hpp"
-#include "../../Engine/Components/LightComponent.hpp"
-#include "../../Engine/Graphics/SpriteFont.hpp"
-#include "../../Engine/Graphics/Light.hpp"
-#include <Demo/Materials/TexPBRMaterial.hpp>
-#include <Demo/Materials/EmissiveMaterial.hpp>
-#include "..\Engine\Physics\PhysicsManager.h"
-#include "..\Engine\Components\RigidBodyComponent.h"
 
 #include <btBulletDynamicsCommon.h>
-#include "..\Engine\Physics\BulletETM.h"
-#include "..\Engine\SceneGraph\AbstractScene.hpp"
-#include "..\Engine\Physics\PhysicsWorld.h"
-#include "..\Engine\Components\AudioListenerComponent.h"
-#include "..\Engine\Components\AudioSourceComponent.h"
-#include "..\Engine\Audio\AudioManager.h"
-#include "..\Engine\Content\AudioLoader.h"
-#include "..\Engine\GraphicsHelper\DebugRenderer.h"
-#include "..\Engine\Helper\ScreenshotCapture.h"
-#include "..\Engine\GraphicsHelper\SpriteRenderer.hpp"
-#include "..\Engine\Graphics\TextureData.hpp"
+
+#include <Demo/Materials/TexPBRMaterial.h>
+#include <Demo/Materials/EmissiveMaterial.h>
+
+#include <Engine/SceneGraph/Entity.h>
+
+#include <Engine/Graphics/SpriteFont.hpp>
+#include <Engine/Graphics/Light.hpp>
+#include <Engine/Graphics/TextureData.hpp>
+
+#include <Engine/GraphicsHelper/SpriteRenderer.hpp>
+#include <Engine/GraphicsHelper/TextRenderer.hpp>
+#include <Engine/GraphicsHelper/DebugRenderer.h>
+
+#include <Engine/Helper/ScreenshotCapture.h>
+
+#include <Engine/Components/ModelComponent.hpp>
+#include <Engine/Components/LightComponent.hpp>
+#include <Engine/Components/RigidBodyComponent.h>
+#include <Engine/Components/AudioListenerComponent.h>
+#include <Engine/Components/AudioSourceComponent.h>
+
+#include <Engine/Physics/PhysicsManager.h>
+#include <Engine/Physics/BulletETM.h>
+#include <Engine/Physics/PhysicsWorld.h>
+
+#include <Engine/Audio/AudioManager.h>
+
+#include <Engine/Content/AudioLoader.h>
+
 
 PhysicsTestScene::PhysicsTestScene() : AbstractScene("PhysicsTestScene")
 {

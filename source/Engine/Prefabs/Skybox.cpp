@@ -1,8 +1,10 @@
-#include "stdafx.hpp"
-#include "Skybox.hpp"
+#include "stdafx.h"
 
-#include "../Components/ModelComponent.hpp"
-#include "../Materials/SkyboxMaterial.hpp"
+#include "Skybox.h"
+
+#include <Engine/Components/ModelComponent.hpp>
+#include <Engine/Materials/SkyboxMaterial.hpp>
+
 
 Skybox::Skybox(std::string assetFile):m_AssetFile(assetFile)
 {

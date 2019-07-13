@@ -1,5 +1,5 @@
 #pragma once
-#include "../SceneGraph/Entity.hpp"
+#include <Engine/SceneGraph/Entity.h>
 
 class ModelComponent;
 class SkyboxMaterial;

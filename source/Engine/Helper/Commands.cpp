@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "Commands.h"
 #include "Command.h"
 #include <Engine/FileSystem/FileUtil.h>

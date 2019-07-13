@@ -1,6 +1,8 @@
-#include "stdafx.hpp"
-#include "FixedCamera.hpp"
-#include "../Components/CameraComponent.hpp"
+#include "stdafx.h"
+#include "FixedCamera.h"
+
+#include <Engine/Components/CameraComponent.hpp>
+
 
 FixedCamera::FixedCamera()
 {

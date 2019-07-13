@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "SpriteRenderer.hpp"
 #include <Engine/Graphics/TextureData.hpp>
 #include <Engine/Graphics/ShaderData.hpp>

@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "MeshFilter.hpp"
 #include "Material.hpp"
 #include <algorithm>

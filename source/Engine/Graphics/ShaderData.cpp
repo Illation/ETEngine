@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "ShaderData.hpp"
 
 ShaderData::ShaderData(GLuint shaderProg) : m_ShaderProgram(shaderProg) { }

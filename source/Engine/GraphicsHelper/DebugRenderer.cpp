@@ -1,8 +1,8 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "DebugRenderer.h"
 #include <Engine/Components/CameraComponent.hpp>
 #include <Engine/Graphics/ShaderData.hpp>
-#include "Editor/Editor.hpp"
+#include <Engine/Editor/Editor.h>
 
 DebugRenderer::DebugRenderer()
 {

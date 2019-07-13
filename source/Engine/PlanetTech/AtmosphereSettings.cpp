@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "AtmosphereSettings.h"
 #include "AtmospherePrecompute.h"
 #include <Engine/Graphics/CIE.h>

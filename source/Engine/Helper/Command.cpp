@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "Command.h"
 
 std::string execConsoleCommand(std::string cmd)

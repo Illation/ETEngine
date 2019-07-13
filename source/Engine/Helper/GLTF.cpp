@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "GLTF.h"
 
 #include "../FileSystem/Entry.h"

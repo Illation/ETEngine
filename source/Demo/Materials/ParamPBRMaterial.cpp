@@ -1,11 +1,12 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 
-#include "ParamPBRMaterial.hpp"
+#include "ParamPBRMaterial.h"
 
-#include "../../Engine/Graphics/ShaderData.hpp"
-#include "../../Engine/Graphics/MeshFilter.hpp"
+#include <Engine/Graphics/ShaderData.hpp>
+#include <Engine/Graphics/MeshFilter.hpp>
 
-#include "../../Engine/Content/TextureLoader.hpp"
+#include <Engine/Content/TextureLoader.hpp>
+
 
 ParamPBRMaterial::ParamPBRMaterial(vec3 baseCol, float roughness, float metal) :
 	Material("Shaders/DefPBRParamShader.glsl"),

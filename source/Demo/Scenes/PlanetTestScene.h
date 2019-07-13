@@ -1,20 +1,19 @@
 #pragma once
-#include "../../Engine/SceneGraph/AbstractScene.hpp"
 
-class FrameBuffer;
-class TexPBRMaterial;
-class EmissiveMaterial;
-class PointLight;
+#include <Engine/SceneGraph/AbstractScene.h>
+
+
+class Planet;
 class Entity;
-class Skybox;
 class DirectionalLight;
 class SpriteFont;
 
-class SkyboxTestScene : public AbstractScene
+
+class PlanetTestScene : public AbstractScene
 {
 public:
-	SkyboxTestScene();
-	~SkyboxTestScene();
+	PlanetTestScene();
+	~PlanetTestScene();
 private:
 	void Initialize();
 	void Update();
@@ -22,9 +21,10 @@ private:
 	void DrawForward();
 	void PostDraw();
 private:
-	TexPBRMaterial* m_pMat = nullptr;
 	Entity* m_pLigEntity = nullptr;
 	DirectionalLight* m_pLight = nullptr;
+
+	Planet* m_pPlanet = nullptr;
 
 	SpriteFont* m_pDebugFont = nullptr;
 };

@@ -1,7 +1,11 @@
-#include "stdafx.hpp"
-#include "MainFramework.hpp"
-#include <Engine/FileSystem/FileUtil.h>
+#include "stdafx.h"
+
+#include "MainFramework.h"
+
 #include <iostream>
+
+#include <Engine/FileSystem/FileUtil.h>
+
 
 void SetDebuggingOptions();
 

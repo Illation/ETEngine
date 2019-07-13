@@ -1,7 +1,7 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "NullMaterial.hpp"
-#include "../Graphics/ShaderData.hpp"
-#include "../Graphics/MeshFilter.hpp"
+#include <Engine/Graphics/ShaderData.hpp>
+#include <Engine/Graphics/MeshFilter.hpp>
 
 
 NullMaterial::NullMaterial():

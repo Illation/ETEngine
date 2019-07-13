@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "StarField.h"
 #include "FileSystem\Entry.h"
 #include "FileSystem\JSONparser.h"

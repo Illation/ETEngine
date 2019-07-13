@@ -1,10 +1,13 @@
 #pragma once
-#include "..\Engine\SceneGraph\AbstractScene.hpp"
+
+#include <Engine/SceneGraph/AbstractScene.h>
+
 
 class TexPBRMaterial;
 class EmissiveMaterial;
 class SpriteFont;
 class btCollisionShape;
+
 
 class PhysicsTestScene : public AbstractScene
 {

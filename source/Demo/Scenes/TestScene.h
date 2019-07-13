@@ -1,5 +1,7 @@
 #pragma once
-#include "../../Engine/SceneGraph/AbstractScene.hpp"
+
+#include <Engine/SceneGraph/AbstractScene.h>
+
 
 class FrameBuffer;
 class TexPBRMaterial;
@@ -7,6 +9,7 @@ class EmissiveMaterial;
 class PointLight;
 class Entity;
 class SpriteFont;
+
 
 struct SwirlyLight
 {

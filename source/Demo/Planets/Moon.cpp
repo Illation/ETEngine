@@ -1,7 +1,9 @@
-#include "stdafx.hpp"
-#include "Moon.hpp"
-#include "..\Engine\Graphics\TextureData.hpp"
-#include "..\Engine\PlanetTech\Atmosphere.hpp"
+#include "stdafx.h"
+
+#include "Moon.h"
+
+#include <Engine/Graphics/TextureData.hpp>
+#include <Engine/PlanetTech/Atmosphere.h>
 
 Moon::Moon():Planet()
 {

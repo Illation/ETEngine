@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "Logger.hpp"
 
 #ifdef PLATFORM_Win

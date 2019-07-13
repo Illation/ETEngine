@@ -1,10 +1,14 @@
-#include "stdafx.hpp"
-#include "Entity.hpp"
-#include "AbstractScene.hpp"
+#include "stdafx.h"
+
+#include "Entity.h"
+#include "AbstractScene.h"
+
+#include <Engine/Components/AbstractComponent.hpp>
+#include <Engine/Components/TransformComponent.hpp>
 
 #include <iostream>
-#include "../Components/AbstractComponent.hpp"
-#include "../Components/TransformComponent.hpp"
+
+
 Entity::Entity():m_Tag(std::string(""))
 {
 	m_pTransform = new TransformComponent();

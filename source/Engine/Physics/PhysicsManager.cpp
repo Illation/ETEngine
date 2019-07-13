@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "PhysicsManager.h"
 
 #include <btBulletDynamicsCommon.h>

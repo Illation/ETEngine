@@ -95,10 +95,10 @@ function(precompiled_headers SOURCELIST)
 	if (MSVC)
 		# run this first to set all files to use pch
 		foreach( src_file ${SOURCELIST} )
-			set_source_files_properties( ${src_file} PROPERTIES COMPILE_FLAGS "/Yustdafx.hpp" )
+			set_source_files_properties( ${src_file} PROPERTIES COMPILE_FLAGS "/Yustdafx.h" )
 		endforeach( src_file ${SOURCELIST} )
 		# run this second to overwrite the pch setting for the stdafx.cpp file
-		set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.hpp" )
+		set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h" )
 	endif(MSVC)
 endfunction(precompiled_headers)
 

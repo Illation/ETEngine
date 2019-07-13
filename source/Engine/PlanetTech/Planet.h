@@ -1,5 +1,7 @@
 #pragma once
-#include "../SceneGraph/Entity.hpp"
+
+#include <Engine/SceneGraph/Entity.h>
+
 
 class ShaderData;
 class Frustum;
@@ -8,6 +10,7 @@ class Triangulator;
 class Patch;
 class Atmosphere;
 class LightComponent;
+
 
 class Planet : public Entity
 {

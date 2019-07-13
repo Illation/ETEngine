@@ -1,15 +1,18 @@
-#include "stdafx.hpp"
-#include "MainFramework.hpp"
+#include "stdafx.h"
 
-#include "../Engine/SceneGraph/SceneManager.hpp"
+#include "MainFramework.h"
 
-#include "Scenes/TestScene.hpp"
-#include "Scenes/SkyboxTestScene.hpp"
-#include "Scenes/ShadingTestScene.hpp"
-#include "Scenes/PlanetTestScene.hpp"
+#include <Engine/SceneGraph/SceneManager.h>
+
+#include <Demo/Scenes/TestScene.h>
+#include <Demo/Scenes/SkyboxTestScene.h>
+#include <Demo/Scenes/ShadingTestScene.h>
+#include <Demo/Scenes/PlanetTestScene.h>
+
+#include <Demo/Scenes/PhysicsTestScene.h>
 
 #include <btBulletCollisionCommon.h>
-#include <Demo/Scenes/PhysicsTestScene.h>
+
 
 MainFramework::MainFramework() :
 	AbstractFramework()

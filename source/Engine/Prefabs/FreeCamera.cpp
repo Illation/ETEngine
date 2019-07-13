@@ -1,7 +1,10 @@
-#include "stdafx.hpp"
-#include "FreeCamera.hpp"
-#include "../Components/CameraComponent.hpp"
+#include "stdafx.h"
+#include "FreeCamera.h"
+
+#include <Engine/Components/CameraComponent.hpp>
+
 #include <algorithm>
+
 
 FreeCamera::FreeCamera()
 	:m_Move(vec3(0))

@@ -1,5 +1,7 @@
 #pragma once
-#include "..\Engine\PlanetTech\Planet.hpp"
+
+#include <Engine/PlanetTech/Planet.h>
+
 
 class Moon:public Planet
 {

@@ -1,4 +1,5 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
+
 #include "UISplitter.h"
 
 

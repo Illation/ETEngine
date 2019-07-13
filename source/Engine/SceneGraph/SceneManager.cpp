@@ -1,8 +1,10 @@
-#include "stdafx.hpp"
-#include "SceneManager.hpp"
+#include "stdafx.h"
 
-#include "AbstractScene.hpp"
+#include "SceneManager.h"
+#include "AbstractScene.h"
+
 #include <algorithm>
+
 
 SceneManager::SceneManager()
 {

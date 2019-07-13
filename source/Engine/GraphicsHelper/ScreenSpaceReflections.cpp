@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "ScreenSpaceReflections.h"
 #include <Engine/Graphics/TextureData.hpp>
 #include <Engine/Graphics/ShaderData.hpp>

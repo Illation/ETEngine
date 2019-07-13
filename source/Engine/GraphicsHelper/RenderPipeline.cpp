@@ -1,26 +1,34 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 
 #include "RenderPipeline.hpp"
-#include "../SceneGraph/AbstractScene.hpp"
 #include "LightVolume.hpp"
 #include "ShadowRenderer.hpp"
 #include "RenderState.hpp"
 #include "TextRenderer.hpp"
-#include "../Helper/PerformanceInfo.hpp"
 #include "PrimitiveRenderer.hpp"
-#include "../Framebuffers/PostProcessingRenderer.hpp"
-#include "../Framebuffers/Gbuffer.hpp"
-#include "../Components/LightComponent.hpp"
-#include "../SceneGraph/Entity.hpp"
-#include "../Prefabs/Skybox.hpp"
 #include "SpriteRenderer.hpp"
-#include <Engine/PlanetTech/AtmospherePrecompute.h>
-#include "PbrPrefilter.h"
-#include <Engine/Graphics/CIE.h>
 #include "ScreenSpaceReflections.h"
 #include "DebugRenderer.h"
+#include "PbrPrefilter.h"
+
+#include <Engine/Helper/PerformanceInfo.hpp>
 #include <Engine/Helper/ScreenshotCapture.h>
+
+#include <Engine/PlanetTech/AtmospherePrecompute.h>
+
+#include <Engine/Framebuffers/PostProcessingRenderer.hpp>
+#include <Engine/Framebuffers/Gbuffer.hpp>
+
+#include <Engine/Components/LightComponent.hpp>
+
+#include <Engine/Prefabs/Skybox.h>
+
+#include <Engine/SceneGraph/AbstractScene.h>
+#include <Engine/SceneGraph/Entity.h>
+
+#include <Engine/Graphics/CIE.h>
 #include <Engine/Graphics/SpriteFont.hpp>
+
 
 RenderPipeline::RenderPipeline()
 {

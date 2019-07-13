@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "Hash.h"
 
 uint32 FnvHash(const std::string &str)

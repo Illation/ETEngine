@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "PostProcessingRenderer.hpp"
 
 #include "../Graphics/ShaderData.hpp"

@@ -1,5 +1,7 @@
 #pragma once
-#include "../SceneGraph/Entity.hpp"
+
+#include <Engine/SceneGraph/Entity.h>
+
 
 class FixedCamera;
 class CameraComponent;

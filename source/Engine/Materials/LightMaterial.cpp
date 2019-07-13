@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "LightMaterial.hpp"
 #include "../Graphics/TextureData.hpp"
 #include "../Graphics/ShaderData.hpp"

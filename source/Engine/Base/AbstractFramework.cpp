@@ -1,9 +1,9 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "AbstractFramework.hpp"
 
 #include <FreeImage.h>
 
-#include "../SceneGraph/SceneManager.hpp"
+#include <Engine/SceneGraph/SceneManager.h>
 #include "../GraphicsHelper/LightVolume.hpp"
 #include "../GraphicsHelper/ShadowRenderer.hpp"
 #include "../GraphicsHelper/TextRenderer.hpp"

@@ -1,23 +1,29 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 
-#include "ShadingTestScene.hpp"
+#include "ShadingTestScene.h"
 
 #include <random>
 
-#include "../../Engine/SceneGraph/Entity.hpp"
-#include "../../Engine/Graphics/SpriteFont.hpp"
-#include "../../Engine/GraphicsHelper/TextRenderer.hpp"
-#include "../../Engine/Graphics/FrameBuffer.hpp"
-#include "../../Engine/Framebuffers/Gbuffer.hpp"
-#include "../../Engine/Components/ModelComponent.hpp"
-#include "../../Engine/Components/LightComponent.hpp"
-#include "../../Engine/Prefabs/Skybox.hpp"
+#include <Demo/Materials/TexPBRMaterial.h>
+#include <Demo/Materials/EmissiveMaterial.h>
+#include <Demo/Materials/ParamPBRMaterial.h>
 
-#include "../Materials/TexPBRMaterial.hpp"
-#include "../Materials/EmissiveMaterial.hpp"
-#include "../Materials/ParamPBRMaterial.hpp"
-#include "../../Engine/Graphics/Light.hpp"
-#include "../Engine/Components/SpriteComponent.hpp"
+#include <Engine/SceneGraph/Entity.h>
+
+#include <Engine/Graphics/SpriteFont.hpp>
+#include <Engine/Graphics/FrameBuffer.hpp>
+#include <Engine/Graphics/Light.hpp>
+
+#include <Engine/GraphicsHelper/TextRenderer.hpp>
+
+#include <Engine/Framebuffers/Gbuffer.hpp>
+
+#include <Engine/Components/ModelComponent.hpp>
+#include <Engine/Components/LightComponent.hpp>
+#include <Engine/Components/SpriteComponent.hpp>
+
+#include <Engine/Prefabs/Skybox.h>
+
 
 ShadingTestScene::ShadingTestScene() : AbstractScene("ShadingTestScene")
 {

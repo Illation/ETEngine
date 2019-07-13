@@ -1,5 +1,7 @@
 #pragma once
-#include "../../Engine/SceneGraph/AbstractScene.hpp"
+
+#include <Engine/SceneGraph/AbstractScene.h>
+
 
 class FrameBuffer;
 class TexPBRMaterial;
@@ -10,6 +12,7 @@ class Entity;
 class Skybox;
 class DirectionalLight;
 class SpriteFont;
+
 
 class ShadingTestScene : public AbstractScene
 {

@@ -1,9 +1,9 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "Settings.hpp"
 
 #ifdef EDITOR
-#include "../Editor/Editor.hpp"
-#include "UI/UIViewport.h"
+#include <Engine/Editor/Editor.h>
+#include <Engine/UI/UIViewport.h>
 #endif
 
 Settings::Settings() :Window( WindowSettings() ), Graphics( GraphicsSettings() )

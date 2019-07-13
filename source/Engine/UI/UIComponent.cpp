@@ -1,8 +1,12 @@
-#include "stdafx.hpp"
-#include "UIComponent.hpp"
+#include "stdafx.h"
+
+#include "UIComponent.h"
+
 #include <Engine/GraphicsHelper/SpriteRenderer.hpp>
 #include <Engine/GraphicsHelper/TextRenderer.hpp>
+
 #include <Engine/Graphics/TextureData.hpp>
+
 
 UIComponent::UIComponent( ivec2 size, ivec2 localPos ) :UIFixedContainer()
 {

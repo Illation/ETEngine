@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "CIE.h"
 #include "FileSystem\JSONparser.h"
 #include "FileSystem\Entry.h"

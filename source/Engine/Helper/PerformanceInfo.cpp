@@ -1,5 +1,4 @@
-#pragma once
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "PerformanceInfo.hpp"
 
 PerformanceInfo::PerformanceInfo()

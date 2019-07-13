@@ -1,21 +1,28 @@
-#include "stdafx.hpp"
-#include "Atmosphere.hpp"
+#include "stdafx.h"
 
-#include "Planet.hpp"
+#include "Atmosphere.h"
+
+#include "Planet.h"
 #include "AtmospherePrecompute.h"
-#include "../Framebuffers/Gbuffer.hpp"
 
-#include "../Graphics/ShaderData.hpp"
-#include "../SceneGraph/AbstractScene.hpp"
-#include "../Components/LightComponent.hpp"
-#include "../Graphics/TextureData.hpp"
-#include "../GraphicsHelper/PrimitiveRenderer.hpp"
-#include "../GraphicsHelper/RenderPipeline.hpp"
-#include "../Graphics/Frustum.hpp"
-#include <Engine/GraphicsHelper/SpriteRenderer.hpp>
-#include <Engine/Prefabs/Skybox.hpp>
+#include <Engine/Framebuffers/Gbuffer.hpp>
+
+#include <Engine/Components/LightComponent.hpp>
+
+#include <Engine/Graphics/ShaderData.hpp>
+#include <Engine/Graphics/TextureData.hpp>
+#include <Engine/Graphics/Frustum.hpp>
 #include <Engine/Graphics/Light.hpp>
+
+#include <Engine/GraphicsHelper/SpriteRenderer.hpp>
+#include <Engine/GraphicsHelper/PrimitiveRenderer.hpp>
+#include <Engine/GraphicsHelper/RenderPipeline.hpp>
+
+#include <Engine/Prefabs/Skybox.h>
+
 #include <Engine/Helper/Commands.h>
+
+#include <Engine/SceneGraph/AbstractScene.h>
 
 
 Atmosphere::Atmosphere(const std::string &paramFileName)

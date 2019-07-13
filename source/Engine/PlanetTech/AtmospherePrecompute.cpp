@@ -1,8 +1,10 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
+
 #include "AtmospherePrecompute.h"
-#include "Atmosphere.hpp"
+#include "Atmosphere.h"
+
 #include <Engine/GraphicsHelper/PrimitiveRenderer.hpp>
-#include "../Graphics/ShaderData.hpp"
+#include <Engine/Graphics/ShaderData.hpp>
 #include <Engine/Graphics/CIE.h>
 
 
