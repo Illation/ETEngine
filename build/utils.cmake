@@ -134,6 +134,8 @@ function(dependancyLinks TARGET _useSdlMain)
 
 	# separate debug and release libs
 	target_link_libraries (${TARGET} 		
+		debug ${dep_pf}/rttr/Debug/rttr_core_d.lib			optimized ${dep_pf}/rttr/Release/rttr_core.lib
+	
 		debug ${dep_pf}/bullet/Debug/BulletDynamics.lib		optimized ${dep_pf}/bullet/Release/BulletDynamics.lib
 		debug ${dep_pf}/bullet/Debug/BulletCollision.lib	optimized ${dep_pf}/bullet/Release/BulletCollision.lib
 		debug ${dep_pf}/bullet/Debug/LinearMath.lib			optimized ${dep_pf}/bullet/Release/LinearMath.lib )
@@ -143,8 +145,7 @@ function(dependancyLinks TARGET _useSdlMain)
 		${dep_pf}/freeImage/FreeImage.lib
 		${dep_pf}/freetype/freetype.lib
 		${dep_pf}/assimp/assimp.lib
-		${dep_pf}/openAL/openAL.lib
-		${dep_pf}/rttr/rttr_core.lib)
+		${dep_pf}/openAL/openAL.lib )
 
 	if (MSVC)
 		target_link_libraries(${TARGET} opengl32.lib)
@@ -185,8 +186,8 @@ function(installResources TARGET)
 		set(platform "x32")
 	endif()
 
-	list (APPEND uni_libs "sdl2" "freeImage" "freetype" "assimp" "openAL" "rttr")
-	list (APPEND sep_libs "bullet")
+	list (APPEND uni_libs "sdl2" "freeImage" "freetype" "assimp" "openAL")
+	list (APPEND sep_libs "bullet" "rttr")
 
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
 
