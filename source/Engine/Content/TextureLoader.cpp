@@ -1,7 +1,8 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "TextureLoader.hpp"
 
 #include <FreeImage.h>
+
 #include <Engine/FileSystem/FileUtil.h>
 
 TextureLoader::TextureLoader()

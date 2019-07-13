@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "SpriteComponent.hpp"
 
 #include <Engine/GraphicsHelper/SpriteRenderer.hpp>

@@ -1,12 +1,13 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "HdrLoader.hpp"
 
 #include <FreeImage.h>
 
-#include "../Graphics/ShaderData.hpp"
-#include "../GraphicsHelper/PrimitiveRenderer.hpp"
+#include <Engine/Graphics/ShaderData.hpp>
+#include <Engine/GraphicsHelper/PrimitiveRenderer.hpp>
 #include <Engine/GraphicsHelper/PbrPrefilter.h>
 #include <Engine/FileSystem/FileUtil.h>
+
 
 HdrLoader::HdrLoader()
 {

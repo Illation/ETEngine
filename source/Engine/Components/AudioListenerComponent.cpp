@@ -1,10 +1,14 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
+
 #include "AudioListenerComponent.h"
-#include <Engine/SceneGraph/Entity.hpp>
 
 #include <AL/al.h>
-#include "Audio/AudioManager.h"
-#include "Audio/OpenAL_ETM.h"
+
+#include <Engine/SceneGraph/Entity.h>
+
+#include <Engine/Audio/AudioManager.h>
+#include <Engine/Audio/OpenAL_ETM.h>
+
 
 void AudioListenerComponent::SetGain(float val)
 {

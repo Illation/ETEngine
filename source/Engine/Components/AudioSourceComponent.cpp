@@ -1,11 +1,13 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
+
 #include "AudioSourceComponent.h"
-#include <Engine/SceneGraph/Entity.hpp>
 
-#include "Audio/AudioData.h"
+#include <Engine/SceneGraph/Entity.h>
 
-#include "Audio/AudioManager.h"
-#include "Audio/OpenAL_ETM.h"
+#include <Engine/Audio/AudioData.h>
+#include <Engine/Audio/AudioManager.h>
+#include <Engine/Audio/OpenAL_ETM.h>
+
 
 AudioSourceComponent::~AudioSourceComponent()
 {

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "AudioManager.h"
 
+
 void AudioManager::Initialize()
 {
 	m_Device = alcOpenDevice(NULL);

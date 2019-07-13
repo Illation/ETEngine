@@ -1,8 +1,11 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
+
 #include "LightComponent.hpp"
 
-#include "../SceneGraph/Entity.hpp"
-#include "../Graphics/Light.hpp"
+#include <Engine/SceneGraph/Entity.h>
+
+#include <Engine/Graphics/Light.hpp>
+
 
 LightComponent::LightComponent(Light* light):
 	m_Light(light)

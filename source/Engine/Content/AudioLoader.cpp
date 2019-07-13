@@ -1,12 +1,16 @@
 #pragma warning(disable:4996)
-#include "stdafx.hpp"
+
+#include "stdafx.h"
 #include "AudioLoader.h"
-#include "FileSystem\Entry.h"
-#include "Audio\AudioManager.h"
-#include <ThirdParty/stb/stb_vorbis.h>
 
 #include <array>
-#include "FileSystem\BinaryReader.hpp"
+
+#include <ThirdParty/stb/stb_vorbis.h>
+
+#include <Engine/FileSystem/Entry.h>
+#include <Engine/FileSystem/BinaryReader.hpp>
+#include <Engine/Audio/AudioManager.h>
+
 
 AudioData* AudioLoader::LoadContent(const std::string& assetFile)
 {

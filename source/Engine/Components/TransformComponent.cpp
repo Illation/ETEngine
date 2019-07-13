@@ -1,9 +1,10 @@
-#include "stdafx.hpp"
-
+#include "stdafx.h"
 #include "TransformComponent.hpp"
+
 #include "LightComponent.hpp"
-#include "../SceneGraph/Entity.hpp"
 #include "RigidBodyComponent.h"
+
+#include <Engine/SceneGraph/Entity.h>
 
 
 TransformComponent::TransformComponent()

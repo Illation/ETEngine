@@ -1,10 +1,14 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
+
 #include "CameraComponent.hpp"
-#include "../Base/Settings.hpp"
-#include "../Base/Context.hpp"
+
 #include "TransformComponent.hpp"
 
-#include "../Graphics/Frustum.hpp"
+#include <Engine/Base/Settings.hpp>
+#include <Engine/Base/Context.hpp>
+
+#include <Engine/Graphics/Frustum.hpp>
+
 
 #define CONTEXT Context::GetInstance()
 

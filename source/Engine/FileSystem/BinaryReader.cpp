@@ -1,6 +1,4 @@
-//Precompiled Header [ALWAYS ON TOP IN CPP]
-#include "stdafx.hpp"
-
+#include "stdafx.h"
 #include "BinaryReader.hpp"
 
 #include <sstream> 

@@ -1,13 +1,15 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "ShaderLoader.hpp"
 
-#include "FileSystem/Entry.h"
 #include <algorithm>
-#include "FileSystem/FileUtil.h"
-#include "Helper/Hash.h"
 #include <functional>
 #include <cctype>
 #include <locale>
+
+#include <Engine/FileSystem/Entry.h>
+#include <Engine/FileSystem/FileUtil.h>
+#include <Engine/Helper/Hash.h>
+
 
 ShaderLoader::ShaderLoader()
 {

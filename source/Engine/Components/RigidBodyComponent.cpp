@@ -1,11 +1,14 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "RigidBodyComponent.h"
 
 #include <btBulletDynamicsCommon.h>
-#include "Physics\BulletETM.h"
+
 #include "AbstractComponent.hpp"
-#include "../SceneGraph/Entity.hpp"
-#include "../Physics/PhysicsWorld.h"
+
+#include <Engine/Physics/BulletETM.h>
+#include <Engine/SceneGraph/Entity.h>
+#include <Engine/Physics/PhysicsWorld.h>
+
 
 RigidBodyComponent::RigidBodyComponent(bool isStatic) 
 	:m_IsDynamic(!isStatic)

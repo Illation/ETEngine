@@ -1,14 +1,15 @@
-#include "stdafx.hpp"
-#include "Editor.hpp"
+#include "stdafx.h"
+#include "Editor.h"
 
-#include "UI\UIViewport.h"
-#include "UI\UIContainer.h"
-#include "UI\UIComponent.hpp"
-#include "UI\UISplitter.h"
-#include "UI\UIPadding.h"
+#include <Engine/UI/UIViewport.h>
+#include <Engine/UI/UIContainer.h>
+#include <Engine/UI/UIComponent.h>
+#include <Engine/UI/UISplitter.h>
+#include <Engine/UI/UIPadding.h>
 #include <Engine/GraphicsHelper/SpriteRenderer.hpp>
 #include <Engine/GraphicsHelper/TextRenderer.hpp>
 #include <Engine/GraphicsHelper/DebugRenderer.h>
+
 
 #ifdef EDITOR
 

@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "ContentManager.hpp"
 
 #include "ShaderLoader.hpp"
@@ -8,6 +8,7 @@
 #include "HdrLoader.hpp"
 #include "FontLoader.hpp"
 #include "AudioLoader.h"
+
 
 std::vector<AbstractLoader*> ContentManager::m_Loaders = std::vector<AbstractLoader*>();
 bool ContentManager::m_IsInitialized = false;

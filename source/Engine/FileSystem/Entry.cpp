@@ -1,13 +1,14 @@
-#include "stdafx.hpp"
-
+#include "stdafx.h"
 #include "Entry.h"
 
 #include <iostream>
 
-#include "./Facade/FileBase.h"
-#include "./Facade/FileAccessMode.h"
-#include "./Facade/FileAccessFlags.h"
 #include "FileUtil.h"
+
+#include <Engine/FileSystem/Facade/FileBase.h>
+#include <Engine/FileSystem/Facade/FileAccessMode.h>
+#include <Engine/FileSystem/Facade/FileAccessFlags.h>
+
 
 Entry::Entry(std::string name, Directory* pParent)
 	:m_Filename(name)
