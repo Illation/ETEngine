@@ -1,7 +1,8 @@
 #include "stdafx.h"
-#include "SpriteFont.hpp"
+#include "SpriteFont.h"
 
-#include "TextureData.hpp"
+#include "TextureData.h"
+
 
 SpriteFont::SpriteFont() :
 	m_pTexture(nullptr),

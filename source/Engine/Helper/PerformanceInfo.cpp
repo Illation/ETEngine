@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "PerformanceInfo.hpp"
+#include "PerformanceInfo.h"
+
 
 PerformanceInfo::PerformanceInfo()
 {

@@ -1,8 +1,10 @@
 #pragma once
 
-#include "../Helper/Singleton.hpp"
+#include <Engine/Helper/Singleton.h>
+
 #include <string>
 #include <vector>
+
 
 //Forward Declaration
 class AbstractScene;

@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "GLTF.h"
 
-#include "../FileSystem/Entry.h"
-#include "../FileSystem/FileUtil.h"
-#include "../FileSystem/BinaryReader.hpp"
-#include "../FileSystem/JSONparser.h"
-#include "../FileSystem/JSONdom.h"
+#include <Engine/FileSystem/Entry.h>
+#include <Engine/FileSystem/FileUtil.h>
+#include <Engine/FileSystem/BinaryReader.h>
+#include <Engine/FileSystem/JSONparser.h>
+#include <Engine/FileSystem/JSONdom.h>
+#include <Engine/Graphics/MeshFilter.h>
 
-#include "../Graphics/MeshFilter.hpp"
 
 bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
 {

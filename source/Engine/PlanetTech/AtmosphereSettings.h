@@ -1,6 +1,8 @@
 #pragma once
-#include "../Graphics/ShaderData.hpp"
-#include "../Graphics/TextureData.hpp"
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/TextureData.h>
+
+
 //Values copied from https://ebruneton.github.io/precomputed_atmospheric_scattering/atmosphere/constants.h.html
 
 struct DensityProfileLayer

@@ -1,5 +1,6 @@
 #pragma once
-#include "../Graphics/FrameBuffer.hpp"
+#include <Engine/Graphics/FrameBuffer.h>
+
 
 class Gbuffer : public FrameBuffer
 {

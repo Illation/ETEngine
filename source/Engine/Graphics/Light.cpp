@@ -1,8 +1,9 @@
 #include "stdafx.h"
-#include "Light.hpp"
+#include "Light.h"
 
-#include "../GraphicsHelper/LightVolume.hpp"
-#include "../GraphicsHelper/ShadowRenderer.hpp"
+#include <Engine/GraphicsHelper/LightVolume.h>
+#include <Engine/GraphicsHelper/ShadowRenderer.h>
+
 
 void PointLight::UploadVariables(GLuint program, TransformComponent* comp, uint32 index)
 {

@@ -1,6 +1,8 @@
 #pragma once
-#include "ContentLoader.hpp"
-#include "../Graphics/ShaderData.hpp"
+#include "ContentLoader.h"
+
+#include <Engine/Graphics/ShaderData.h>
+
 
 class AbstractUniform;
 class ShaderLoader : public ContentLoader<ShaderData>

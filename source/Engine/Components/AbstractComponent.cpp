@@ -1,7 +1,10 @@
 #include "stdafx.h"
-#include "AbstractComponent.hpp"
+#include "AbstractComponent.h"
+
 #include <iostream>
+
 #include <Engine/SceneGraph/Entity.h>
+
 
 AbstractComponent::AbstractComponent(void)
 {

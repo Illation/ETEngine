@@ -1,26 +1,25 @@
 #include "stdafx.h"
-#include "AbstractFramework.hpp"
+#include "AbstractFramework.h"
 
 #include <FreeImage.h>
 
 #include <Engine/SceneGraph/SceneManager.h>
-#include "../GraphicsHelper/LightVolume.hpp"
-#include "../GraphicsHelper/ShadowRenderer.hpp"
-#include "../GraphicsHelper/TextRenderer.hpp"
-#include "../Helper/PerformanceInfo.hpp"
-#include "../GraphicsHelper/PrimitiveRenderer.hpp"
-#include "../GraphicsHelper/RenderPipeline.hpp"
-
+#include <Engine/GraphicsHelper/LightVolume.h>
+#include <Engine/GraphicsHelper/ShadowRenderer.h>
+#include <Engine/GraphicsHelper/TextRenderer.h>
+#include <Engine/Helper/PerformanceInfo.h>
+#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
+#include <Engine/GraphicsHelper/RenderPipeline.h>
 
 #ifdef EDITOR
-#include "../Editor/Editor.hpp"
+#include <Engine/Editor/Editor.h>
 #endif
-#include "FileSystem/Entry.h"
-#include "FileSystem/JSONparser.h"
-#include "FileSystem/FileUtil.h"
-#include "FileSystem/JSONdom.h"
-#include "Physics/PhysicsManager.h"
-#include "Audio/AudioManager.h"
+#include <Engine/FileSystem/Entry.h>
+#include <Engine/FileSystem/JSONparser.h>
+#include <Engine/FileSystem/FileUtil.h>
+#include <Engine/FileSystem/JSONdom.h>
+#include <Engine/Physics/PhysicsManager.h>
+#include <Engine/Audio/AudioManager.h>
 #include <Engine/Helper/Commands.h>
 #include <Engine/Helper/ScreenshotCapture.h>
 

@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "FreeCamera.h"
 
-#include <Engine/Components/CameraComponent.hpp>
-
 #include <algorithm>
+
+#include <Engine/Components/CameraComponent.h>
 
 
 FreeCamera::FreeCamera()

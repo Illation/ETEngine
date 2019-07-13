@@ -1,12 +1,11 @@
 #include "stdafx.h"
-
 #include "Triangulator.h"
+
 #include "Planet.h"
 
-#include <Engine/Graphics/Frustum.hpp>
-
-#include <Engine/Components/TransformComponent.hpp>
-#include <Engine/Components/CameraComponent.hpp>
+#include <Engine/Graphics/Frustum.h>
+#include <Engine/Components/TransformComponent.h>
+#include <Engine/Components/CameraComponent.h>
 
 
 Triangulator::Triangulator(Planet* pPlanet)

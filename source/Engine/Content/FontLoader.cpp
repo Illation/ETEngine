@@ -1,16 +1,16 @@
 #include "stdafx.h"
-#include "FontLoader.hpp"
+#include "FontLoader.h"
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
 
-#include "TextureLoader.hpp"
+#include "TextureLoader.h"
 
 #include <Engine/FileSystem/Entry.h>
-#include <Engine/FileSystem/BinaryReader.hpp>
-#include <Engine/Graphics/TextureData.hpp>
-#include <Engine/Graphics/ShaderData.hpp>
-#include <Engine/GraphicsHelper/PrimitiveRenderer.hpp>
+#include <Engine/FileSystem/BinaryReader.h>
+#include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 
 
 FontLoader::FontLoader()

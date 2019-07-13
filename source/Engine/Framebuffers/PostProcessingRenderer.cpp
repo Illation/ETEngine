@@ -1,12 +1,13 @@
 #include "stdafx.h"
-#include "PostProcessingRenderer.hpp"
+#include "PostProcessingRenderer.h"
 
-#include "../Graphics/ShaderData.hpp"
-#include "../GraphicsHelper/ShadowRenderer.hpp"
-#include "../GraphicsHelper/PrimitiveRenderer.hpp"
-#include "../GraphicsHelper/RenderPipeline.hpp"
-#include "../GraphicsHelper/RenderState.hpp"
-#include <Engine/Graphics/TextureData.hpp>
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/GraphicsHelper/ShadowRenderer.h>
+#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
+#include <Engine/GraphicsHelper/RenderPipeline.h>
+#include <Engine/GraphicsHelper/RenderState.h>
+#include <Engine/Graphics/TextureData.h>
+
 
 PostProcessingRenderer::PostProcessingRenderer()
 {

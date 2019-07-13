@@ -1,7 +1,11 @@
 #pragma once
+
 #include <map>
 #include <SDL.h>
-#include "../Helper/Singleton.hpp"
+
+#include <Engine/Helper/Singleton.h>
+
+
 //----------------------------
 //Event Manager class definintion
 //----------------------------

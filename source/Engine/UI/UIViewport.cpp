@@ -1,11 +1,9 @@
 #include "stdafx.h"
-
 #include "UIViewport.h"
 
-#include <Engine/GraphicsHelper/PrimitiveRenderer.hpp>
-
-#include <Engine/Graphics/TextureData.hpp>
-#include <Engine/Graphics/ShaderData.hpp>
+#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
+#include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/ShaderData.h>
 
 
 UIViewport::UIViewport():UIFixedContainer()

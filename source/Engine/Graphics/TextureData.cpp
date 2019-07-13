@@ -1,7 +1,10 @@
 #include "stdafx.h"
-#include "TextureData.hpp"
-#include "ShaderData.hpp"
-#include <Engine/GraphicsHelper/PrimitiveRenderer.hpp>
+#include "TextureData.h"
+
+#include "ShaderData.h"
+
+#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
+
 
 TextureData::TextureData(GLuint handle, int32 width, int32 height, int32 depth):
 	m_Handle(handle),

@@ -1,8 +1,9 @@
 #include "stdafx.h"
+#include "RenderState.h"
 
-#include "RenderState.hpp"
-#include "../Graphics/ShaderData.hpp"
-#include "../Graphics/TextureData.hpp"
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/TextureData.h>
+
 
 RenderState::RenderState()
 {

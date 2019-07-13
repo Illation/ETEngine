@@ -1,6 +1,8 @@
 #pragma once
-#include "AbstractComponent.hpp"
+#include "AbstractComponent.h"
+
 #include <typeinfo>
+
 
 class TransformComponent;
 class Light;

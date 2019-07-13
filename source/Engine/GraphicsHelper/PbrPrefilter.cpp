@@ -1,8 +1,11 @@
 #include "stdafx.h"
 #include "PbrPrefilter.h"
-#include "PrimitiveRenderer.hpp"
-#include <Engine/Graphics/TextureData.hpp>
-#include <Engine/Graphics/ShaderData.hpp>
+
+#include "PrimitiveRenderer.h"
+
+#include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/ShaderData.h>
+
 
 PbrPrefilter::PbrPrefilter()
 {

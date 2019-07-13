@@ -1,5 +1,5 @@
 #pragma once
-#include "AbstractComponent.hpp"
+#include "AbstractComponent.h"
 
 class Frustum;
 

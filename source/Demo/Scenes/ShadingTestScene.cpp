@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "ShadingTestScene.h"
 
 #include <random>
@@ -9,19 +8,14 @@
 #include <Demo/Materials/ParamPBRMaterial.h>
 
 #include <Engine/SceneGraph/Entity.h>
-
-#include <Engine/Graphics/SpriteFont.hpp>
-#include <Engine/Graphics/FrameBuffer.hpp>
-#include <Engine/Graphics/Light.hpp>
-
-#include <Engine/GraphicsHelper/TextRenderer.hpp>
-
-#include <Engine/Framebuffers/Gbuffer.hpp>
-
-#include <Engine/Components/ModelComponent.hpp>
-#include <Engine/Components/LightComponent.hpp>
-#include <Engine/Components/SpriteComponent.hpp>
-
+#include <Engine/Graphics/SpriteFont.h>
+#include <Engine/Graphics/FrameBuffer.h>
+#include <Engine/Graphics/Light.h>
+#include <Engine/GraphicsHelper/TextRenderer.h>
+#include <Engine/Framebuffers/Gbuffer.h>
+#include <Engine/Components/ModelComponent.h>
+#include <Engine/Components/LightComponent.h>
+#include <Engine/Components/SpriteComponent.h>
 #include <Engine/Prefabs/Skybox.h>
 
 

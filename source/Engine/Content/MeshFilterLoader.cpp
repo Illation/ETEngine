@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "MeshFilterLoader.hpp"
+#include "MeshFilterLoader.h"
 
 #include <Importer.hpp>
 #include <scene.h>  
 #include <postprocess.h>
 
-#include <Engine/Graphics/MeshFilter.hpp>
+#include <Engine/Graphics/MeshFilter.h>
 #include <Engine/FileSystem/Entry.h>
 #include <Engine/Helper/GLTF.h>
 

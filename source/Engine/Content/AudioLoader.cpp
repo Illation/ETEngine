@@ -8,7 +8,7 @@
 #include <ThirdParty/stb/stb_vorbis.h>
 
 #include <Engine/FileSystem/Entry.h>
-#include <Engine/FileSystem/BinaryReader.hpp>
+#include <Engine/FileSystem/BinaryReader.h>
 #include <Engine/Audio/AudioManager.h>
 
 

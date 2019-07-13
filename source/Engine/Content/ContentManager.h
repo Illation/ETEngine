@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <typeinfo>
-#include "ContentLoader.hpp"
+#include "ContentLoader.h"
 
 class ContentManager
 {

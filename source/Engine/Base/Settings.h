@@ -1,10 +1,13 @@
 #pragma once
 #pragma warning(disable : 4201) //nameless struct union
-#include "../Helper/Singleton.hpp"
-#include "../Helper/MulticastDelegate.hpp"
+
 #include <string>
 #include <SDL.h>
 #include <vector>
+
+#include <Engine/Helper/Singleton.h>
+#include <Engine/Helper/MulticastDelegate.h>
+
 
 struct Settings : public Singleton<Settings>
 {

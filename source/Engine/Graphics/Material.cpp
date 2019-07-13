@@ -1,9 +1,9 @@
 #include "stdafx.h"
+#include "Material.h"
 
-#include "Material.hpp"
+#include "ShaderData.h"
+#include "MeshFilter.h"
 
-#include "ShaderData.hpp"
-#include "MeshFilter.hpp"
 
 Material::Material(std::string shaderFile) :
 	m_ShaderFile(shaderFile)

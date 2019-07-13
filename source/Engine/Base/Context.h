@@ -1,8 +1,9 @@
 #pragma once
-#include "../Helper/Singleton.hpp"
-#include "../Base/Time.hpp"
-#include "../Components/CameraComponent.hpp"
+#include <Engine/Helper/Singleton.h>
+#include <Engine/Base/Time.h>
+#include <Engine/Components/CameraComponent.h>
 #include <Engine/SceneGraph/AbstractScene.h>
+
 
 class ContextObjects
 {

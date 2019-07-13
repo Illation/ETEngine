@@ -1,33 +1,24 @@
 #include "stdafx.h"
-
 #include "PlanetTestScene.h"
 
 #include <random>
 
 #include <Demo/Planets/Moon.h>
 #include <Demo/Planets/Earth.h>
-
 #include <Demo/Materials/TexPBRMaterial.h>
 #include <Demo/Materials/EmissiveMaterial.h>
 
-#include <Engine/Graphics/FrameBuffer.hpp>
-#include <Engine/Graphics/SpriteFont.hpp>
-#include <Engine/Graphics/Light.hpp>
-
-#include <Engine/GraphicsHelper/TextRenderer.hpp>
-
-#include <Engine/Framebuffers/Gbuffer.hpp>
-
-#include <Engine/Components/ModelComponent.hpp>
-#include <Engine/Components/LightComponent.hpp>
-
+#include <Engine/Graphics/FrameBuffer.h>
+#include <Engine/Graphics/SpriteFont.h>
+#include <Engine/Graphics/Light.h>
+#include <Engine/GraphicsHelper/TextRenderer.h>
+#include <Engine/Framebuffers/Gbuffer.h>
+#include <Engine/Components/ModelComponent.h>
+#include <Engine/Components/LightComponent.h>
 #include <Engine/Prefabs/Skybox.h>
 #include <Engine/Prefabs/OrbitCamera.h>
-
 #include <Engine/SceneGraph/Entity.h>
-
 #include <Engine/PlanetTech/StarField.h>
-
 #include <Engine/Helper/ScreenshotCapture.h>
 
 

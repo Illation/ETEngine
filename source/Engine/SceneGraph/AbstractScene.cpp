@@ -1,23 +1,18 @@
 #include "stdafx.h"
-
 #include "AbstractScene.h"
+
 #include "Entity.h"
 
-#include <Engine/Base/Time.hpp>
-
-#include <Engine/Components/CameraComponent.hpp>
-#include <Engine/Components/LightComponent.hpp>
-
+#include <Engine/Base/Time.h>
+#include <Engine/Components/CameraComponent.h>
+#include <Engine/Components/LightComponent.h>
 #include <Engine/Prefabs/FreeCamera.h>
 #include <Engine/Prefabs/Skybox.h>
 #include <Engine/Prefabs/FreeCamera.h>
-
-#include <Engine/Framebuffers/Gbuffer.hpp>
-#include <Engine/Framebuffers/PostProcessingRenderer.hpp>
-
-#include <Engine/GraphicsHelper/TextRenderer.hpp>
-#include <Engine/GraphicsHelper/RenderPipeline.hpp>
-
+#include <Engine/Framebuffers/Gbuffer.h>
+#include <Engine/Framebuffers/PostProcessingRenderer.h>
+#include <Engine/GraphicsHelper/TextRenderer.h>
+#include <Engine/GraphicsHelper/RenderPipeline.h>
 #include <Engine/Physics/PhysicsWorld.h>
 
 

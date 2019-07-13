@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "Time.hpp"
+#include "Time.h"
+
 
 Time::Time()
 {

@@ -1,12 +1,10 @@
 #include "stdafx.h"
-
 #include "TexPBRMaterial.h"
 
-#include <Engine/Graphics/TextureData.hpp>
-#include <Engine/Graphics/ShaderData.hpp>
-#include <Engine/Graphics/MeshFilter.hpp>
-
-#include <Engine/Content/TextureLoader.hpp>
+#include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/MeshFilter.h>
+#include <Engine/Content/TextureLoader.h>
 
 
 TexPBRMaterial::TexPBRMaterial(std::string bcPath, std::string roughPath,

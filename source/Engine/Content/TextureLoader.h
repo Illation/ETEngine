@@ -1,7 +1,8 @@
 #pragma once
-#include "ContentLoader.hpp"
-#include "../Graphics/TextureData.hpp"
-#include <string>
+#include "ContentLoader.h"
+
+#include <Engine/Graphics/TextureData.h>
+
 
 class TextureLoader : public ContentLoader<TextureData>
 {

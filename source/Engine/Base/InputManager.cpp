@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "InputManager.hpp"
+#include "InputManager.h"
+
 
 //----------------------------
 //Constructor and Destructor

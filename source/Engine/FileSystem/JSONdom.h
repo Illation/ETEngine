@@ -1,7 +1,10 @@
 #pragma once
+
 #include <string>
 #include <vector>
-#include "../Helper/AtomicTypes.hpp"
+
+#include <Engine/Helper/AtomicTypes.h>
+
 
 namespace JSON
 {

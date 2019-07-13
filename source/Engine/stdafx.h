@@ -73,17 +73,18 @@ inline void Clamp(T& value, T hi, T lo)
 #pragma warning(disable : 4201) //nameless struct union - used in math library
 
 #pragma region
-#include "Helper/AtomicTypes.hpp"
-#include "Components/TransformComponent.hpp"
-#include "Content/ContentManager.hpp"
+#include <Engine/Helper/AtomicTypes.h>
+#include <Engine/Components/TransformComponent.h>
+#include <Engine/Content/ContentManager.h>
 
-#include "Base/Context.hpp"
-#include "Base/Settings.hpp"
-#include "Base/InputManager.hpp"
-#include "Helper/Logger.hpp"
-#include "Helper/PerformanceInfo.hpp"
-#include "GraphicsHelper/RenderPipeline.hpp"
-#include "GraphicsHelper/RenderState.hpp"
+#include <Engine/Base/Context.h>
+#include <Engine/Base/Settings.h>
+#include <Engine/Base/InputManager.h>
+#include <Engine/Helper/Logger.h>
+#include <Engine/Helper/PerformanceInfo.h>
+#include <Engine/GraphicsHelper/RenderPipeline.h>
+#include <Engine/GraphicsHelper/RenderState.h>
+
 //Working singleton Set
 #define TIME Context::GetInstance()->pTime
 #define CAMERA Context::GetInstance()->pCamera

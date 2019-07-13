@@ -1,8 +1,9 @@
 #include "stdafx.h"
-#include "Frustum.hpp"
+#include "Frustum.h"
 
-#include "../Components/TransformComponent.hpp"
-#include "../Components/CameraComponent.hpp"
+#include <Engine/Components/TransformComponent.h>
+#include <Engine/Components/CameraComponent.h>
+
 
 void FrustumCorners::Transform(mat4 space)
 {

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "ShaderLoader.hpp"
+#include "ShaderLoader.h"
 
 #include <algorithm>
 #include <functional>

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
-#include "PrimitiveRenderer.hpp"
+#include "PrimitiveRenderer.h"
+
 
 //Abstract
 //*********

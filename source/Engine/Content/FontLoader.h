@@ -1,7 +1,10 @@
 #pragma once
-#include "ContentLoader.hpp"
-#include "../Graphics/SpriteFont.hpp"
+#include "ContentLoader.h"
+
 #include <string>
+
+#include <Engine/Graphics/SpriteFont.h>
+
 
 class FontLoader : public ContentLoader<SpriteFont>
 {

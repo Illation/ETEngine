@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
 #include <vector>
-#include <Engine/Helper/AtomicTypes.hpp>
+#include <Engine/Helper/AtomicTypes.h>
 #include <Engine/FileSystem/FileUtil.h>
 
 int main(int argc, char* argv[]) 

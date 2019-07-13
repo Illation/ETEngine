@@ -1,5 +1,6 @@
 #pragma once
-#include "../Engine/Base/AbstractFramework.hpp"
+#include <Engine/Base/AbstractFramework.h>
+
 
 class MainFramework : public AbstractFramework
 {

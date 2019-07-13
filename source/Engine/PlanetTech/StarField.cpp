@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include "StarField.h"
-#include "FileSystem\Entry.h"
-#include "FileSystem\JSONparser.h"
-#include "FileSystem\FileUtil.h"
-#include <Engine/Graphics/ShaderData.hpp>
-#include <Engine/Graphics/TextureData.hpp>
+
+#include <Engine/FileSystem/Entry.h>
+#include <Engine/FileSystem/JSONparser.h>
+#include <Engine/FileSystem/FileUtil.h>
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/TextureData.h>
+
 
 StarField::StarField(const std::string &dataFile) :
 	m_DataFile(dataFile)

@@ -1,13 +1,13 @@
 #include "stdafx.h"
-#include "SkyboxMaterial.hpp"
+#include "SkyboxMaterial.h"
 
-#include "../Graphics/ShaderData.hpp"
-#include "../Graphics/MeshFilter.hpp"
-#include "../Graphics/TextureData.hpp"
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/MeshFilter.h>
+#include <Engine/Graphics/TextureData.h>
+#include <Engine/Content/CubeMapLoader.h>
+#include <Engine/Content/HdrLoader.h>
+#include <Engine/Components/TransformComponent.h>
 
-#include "../Content/CubeMapLoader.hpp"
-#include "../Content/HdrLoader.hpp"
-#include "../Components/TransformComponent.hpp"
 
 SkyboxMaterial::SkyboxMaterial(std::string assetFile):
 	Material("Shaders/FwdSkyboxShader.glsl"),

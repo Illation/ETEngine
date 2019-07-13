@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "CubeMapLoader.hpp"
+#include "CubeMapLoader.h"
 
 #include <FreeImage.h>
 

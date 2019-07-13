@@ -1,5 +1,5 @@
 #pragma once
-#include "AtomicTypes.hpp"
+#include "AtomicTypes.h"
 #include <cstring>
 #include <string>
 

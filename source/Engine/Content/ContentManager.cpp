@@ -1,12 +1,12 @@
 #include "stdafx.h"
-#include "ContentManager.hpp"
+#include "ContentManager.h"
 
-#include "ShaderLoader.hpp"
-#include "TextureLoader.hpp"
-#include "MeshFilterLoader.hpp"
-#include "CubeMapLoader.hpp"
-#include "HdrLoader.hpp"
-#include "FontLoader.hpp"
+#include "ShaderLoader.h"
+#include "TextureLoader.h"
+#include "MeshFilterLoader.h"
+#include "CubeMapLoader.h"
+#include "HdrLoader.h"
+#include "FontLoader.h"
 #include "AudioLoader.h"
 
 

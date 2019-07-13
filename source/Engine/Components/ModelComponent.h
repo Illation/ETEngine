@@ -1,5 +1,6 @@
 #pragma once
-#include "AbstractComponent.hpp"
+#include "AbstractComponent.h"
+
 
 class Material;
 class MeshFilter;

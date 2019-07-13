@@ -1,6 +1,8 @@
 #pragma once
-#include "Singleton.hpp"
+#include "Singleton.h"
+
 #include <FreeImage.h>
+
 
 class Directory;
 

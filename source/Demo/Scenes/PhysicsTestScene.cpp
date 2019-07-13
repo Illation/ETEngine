@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "PhysicsTestScene.h"
 
 #include <btBulletDynamicsCommon.h>
@@ -8,29 +7,22 @@
 #include <Demo/Materials/EmissiveMaterial.h>
 
 #include <Engine/SceneGraph/Entity.h>
-
-#include <Engine/Graphics/SpriteFont.hpp>
-#include <Engine/Graphics/Light.hpp>
-#include <Engine/Graphics/TextureData.hpp>
-
-#include <Engine/GraphicsHelper/SpriteRenderer.hpp>
-#include <Engine/GraphicsHelper/TextRenderer.hpp>
+#include <Engine/Graphics/SpriteFont.h>
+#include <Engine/Graphics/Light.h>
+#include <Engine/Graphics/TextureData.h>
+#include <Engine/GraphicsHelper/SpriteRenderer.h>
+#include <Engine/GraphicsHelper/TextRenderer.h>
 #include <Engine/GraphicsHelper/DebugRenderer.h>
-
 #include <Engine/Helper/ScreenshotCapture.h>
-
-#include <Engine/Components/ModelComponent.hpp>
-#include <Engine/Components/LightComponent.hpp>
+#include <Engine/Components/ModelComponent.h>
+#include <Engine/Components/LightComponent.h>
 #include <Engine/Components/RigidBodyComponent.h>
 #include <Engine/Components/AudioListenerComponent.h>
 #include <Engine/Components/AudioSourceComponent.h>
-
 #include <Engine/Physics/PhysicsManager.h>
 #include <Engine/Physics/BulletETM.h>
 #include <Engine/Physics/PhysicsWorld.h>
-
 #include <Engine/Audio/AudioManager.h>
-
 #include <Engine/Content/AudioLoader.h>
 
 

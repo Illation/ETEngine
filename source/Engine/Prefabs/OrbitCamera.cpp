@@ -1,9 +1,9 @@
 #include "stdafx.h"
-
-#include "FixedCamera.h"
 #include "OrbitCamera.h"
 
-#include <Engine/Components/CameraComponent.hpp>
+#include "FixedCamera.h"
+
+#include <Engine/Components/CameraComponent.h>
 
 
 OrbitCamera::OrbitCamera()

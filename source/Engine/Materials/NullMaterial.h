@@ -1,5 +1,6 @@
 #pragma once
-#include "../Graphics/Material.hpp"
+#include <Engine/Graphics/Material.h>
+
 
 class NullMaterial : public Material
 {

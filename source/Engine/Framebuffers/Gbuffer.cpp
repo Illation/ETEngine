@@ -1,12 +1,13 @@
 #include "stdafx.h"
-#include "Gbuffer.hpp"
+#include "Gbuffer.h"
 
-#include "../Graphics/ShaderData.hpp"
-#include <Engine/SceneGraph/AbstractScene.h>
-#include "../Components/LightComponent.hpp"
-#include "../Graphics/TextureData.hpp"
-#include <Engine/Prefabs/Skybox.h>
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/TextureData.h>
 #include <Engine/GraphicsHelper/PbrPrefilter.h>
+#include <Engine/SceneGraph/AbstractScene.h>
+#include <Engine/Components/LightComponent.h>
+#include <Engine/Prefabs/Skybox.h>
+
 
 Gbuffer::Gbuffer(bool demo):
 	FrameBuffer(demo?

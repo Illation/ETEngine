@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "TransformComponent.hpp"
+#include "TransformComponent.h"
 
-#include "LightComponent.hpp"
+#include "LightComponent.h"
 #include "RigidBodyComponent.h"
 
 #include <Engine/SceneGraph/Entity.h>

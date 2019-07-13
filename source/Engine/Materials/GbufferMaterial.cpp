@@ -1,12 +1,11 @@
 #include "stdafx.h"
+#include "GbufferMaterial.h"
 
-#include "GbufferMaterial.hpp"
+#include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/MeshFilter.h>
+#include <Engine/Content/TextureLoader.h>
 
-#include "../Graphics/TextureData.hpp"
-#include "../Graphics/ShaderData.hpp"
-#include "../Graphics/MeshFilter.hpp"
-
-#include "../Content/TextureLoader.hpp"
 
 GbufferMaterial::GbufferMaterial() :
 	Material("Shaders/DefUberShader.glsl"),

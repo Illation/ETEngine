@@ -1,6 +1,7 @@
 #pragma once
-#include "../Graphics/FrameBuffer.hpp"
-#include "../Graphics/PostProcessingSettings.hpp"
+#include <Engine/Graphics/FrameBuffer.h>
+#include <Engine/Graphics/PostProcessingSettings.h>
+
 
 class ShaderData;
 class TextureData;

@@ -1,8 +1,7 @@
 #include "stdafx.h"
-
 #include "Earth.h"
 
-#include <Engine/Graphics/TextureData.hpp>
+#include <Engine/Graphics/TextureData.h>
 
 
 Earth::Earth():Planet()

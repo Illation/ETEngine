@@ -1,8 +1,9 @@
 #pragma once
-#include "../Graphics/FrameBuffer.hpp"
-#include "../Graphics/TextureData.hpp"
-
 #include "AtmosphereSettings.h"
+
+#include <Engine/Graphics/FrameBuffer.h>
+#include <Engine/Graphics/TextureData.h>
+
 
 class Planet;
 class Atmosphere;

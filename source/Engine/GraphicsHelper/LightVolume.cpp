@@ -1,16 +1,18 @@
 #include "stdafx.h"
+#include "LightVolume.h"
 
-#include "LightVolume.hpp"
-#include "../Materials/LightMaterial.hpp"
-#include "../Graphics/MeshFilter.hpp"
-#include "../Materials/NullMaterial.hpp"
-#include "../Framebuffers/Gbuffer.hpp"
-#include "../Graphics/ShaderData.hpp"
-#include "../Graphics/TextureData.hpp"
-#include "../Graphics/Frustum.hpp"
-#include "ShadowRenderer.hpp"
-#include "PrimitiveRenderer.hpp"
-#include "RenderPipeline.hpp"
+#include "ShadowRenderer.h"
+#include "PrimitiveRenderer.h"
+#include "RenderPipeline.h"
+
+#include <Engine/Materials/LightMaterial.h>
+#include <Engine/Graphics/MeshFilter.h>
+#include <Engine/Materials/NullMaterial.h>
+#include <Engine/Framebuffers/Gbuffer.h>
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/Frustum.h>
+
 
 PointLightVolume::PointLightVolume()
 {

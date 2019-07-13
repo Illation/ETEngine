@@ -1,8 +1,7 @@
 #include "stdafx.h"
-
 #include "UIPadding.h"
 
-#include <Engine/GraphicsHelper/SpriteRenderer.hpp>
+#include <Engine/GraphicsHelper/SpriteRenderer.h>
 
 
 UIFixedPadding::UIFixedPadding(UIFixedContainer* child, ivec4 padding, vec4 color) 

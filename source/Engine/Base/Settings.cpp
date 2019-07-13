@@ -1,10 +1,11 @@
 #include "stdafx.h"
-#include "Settings.hpp"
+#include "Settings.h"
 
 #ifdef EDITOR
 #include <Engine/Editor/Editor.h>
 #include <Engine/UI/UIViewport.h>
 #endif
+
 
 Settings::Settings() :Window( WindowSettings() ), Graphics( GraphicsSettings() )
 {

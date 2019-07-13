@@ -1,7 +1,9 @@
 #include "stdafx.h"
-#include "SpriteRenderer.hpp"
-#include <Engine/Graphics/TextureData.hpp>
-#include <Engine/Graphics/ShaderData.hpp>
+#include "SpriteRenderer.h"
+
+#include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/ShaderData.h>
+
 
 SpriteRenderer::SpriteRenderer()
 {

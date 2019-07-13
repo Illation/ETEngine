@@ -1,9 +1,8 @@
 #include "stdafx.h"
-
 #include "EmissiveMaterial.h"
 
-#include <Engine/Graphics/ShaderData.hpp>
-#include <Engine/Graphics/MeshFilter.hpp>
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/MeshFilter.h>
 
 
 EmissiveMaterial::EmissiveMaterial(vec3 col):

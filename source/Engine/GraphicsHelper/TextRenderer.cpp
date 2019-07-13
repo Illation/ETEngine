@@ -1,11 +1,10 @@
 #include "stdafx.h"
-#include "TextRenderer.hpp"
+#include "TextRenderer.h"
 
-#include "../Graphics/SpriteFont.hpp"
-#include "../Graphics/ShaderData.hpp"
-#include "../Graphics/TextureData.hpp"
+#include <Engine/Graphics/SpriteFont.h>
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/TextureData.h>
 
-#include <algorithm>
 
 TextRenderer::TextRenderer()
 	:m_BufferSize(500)

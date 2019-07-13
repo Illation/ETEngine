@@ -1,5 +1,6 @@
 #pragma once
-#include <Engine/Helper/Singleton.hpp>
+#include <Engine/Helper/Singleton.h>
+
 
 class PbrPrefilter : public Singleton<PbrPrefilter>
 {

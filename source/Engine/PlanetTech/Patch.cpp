@@ -1,16 +1,14 @@
 #include "stdafx.h"
-
 #include "Patch.h"
 
 #include "Triangulator.h"
 #include "Planet.h"
 
-#include <Engine/Graphics/ShaderData.hpp>
-#include <Engine/Graphics/TextureData.hpp>
-#include <Engine/Graphics/Frustum.hpp>
-
-#include <Engine/Components/TransformComponent.hpp>
-#include <Engine/Components/CameraComponent.hpp>
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/Frustum.h>
+#include <Engine/Components/TransformComponent.h>
+#include <Engine/Components/CameraComponent.h>
 
 
 Patch::Patch(int16 levels)

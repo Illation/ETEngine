@@ -6,8 +6,8 @@
 #include <Engine/UI/UIComponent.h>
 #include <Engine/UI/UISplitter.h>
 #include <Engine/UI/UIPadding.h>
-#include <Engine/GraphicsHelper/SpriteRenderer.hpp>
-#include <Engine/GraphicsHelper/TextRenderer.hpp>
+#include <Engine/GraphicsHelper/SpriteRenderer.h>
+#include <Engine/GraphicsHelper/TextRenderer.h>
 #include <Engine/GraphicsHelper/DebugRenderer.h>
 
 

@@ -1,11 +1,10 @@
 #include "stdafx.h"
-
 #include "UIContainer.h"
 
-#include <Engine/GraphicsHelper/SpriteRenderer.hpp>
-#include <Engine/GraphicsHelper/TextRenderer.hpp>
-
 #include <limits>
+
+#include <Engine/GraphicsHelper/SpriteRenderer.h>
+#include <Engine/GraphicsHelper/TextRenderer.h>
 
 
 UIDynamicBox::~UIDynamicBox()

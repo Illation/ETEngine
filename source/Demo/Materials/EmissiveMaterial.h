@@ -1,5 +1,6 @@
 #pragma once
-#include "../../Engine/Graphics/Material.hpp"
+#include <Engine/Graphics/Material.h>
+
 
 class EmissiveMaterial : public Material
 {

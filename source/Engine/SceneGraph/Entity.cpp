@@ -1,12 +1,12 @@
 #include "stdafx.h"
-
 #include "Entity.h"
-#include "AbstractScene.h"
-
-#include <Engine/Components/AbstractComponent.hpp>
-#include <Engine/Components/TransformComponent.hpp>
 
 #include <iostream>
+
+#include "AbstractScene.h"
+
+#include <Engine/Components/AbstractComponent.h>
+#include <Engine/Components/TransformComponent.h>
 
 
 Entity::Entity():m_Tag(std::string(""))

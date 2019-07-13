@@ -1,13 +1,16 @@
 #include "stdafx.h"
+#include "ShadowRenderer.h"
 
-#include "ShadowRenderer.hpp"
-#include "../Materials/NullMaterial.hpp"
-#include "../Graphics/ShaderData.hpp"
-#include "../Graphics/TextureData.hpp"
-#include "../Graphics/Frustum.hpp"
-#include "RenderPipeline.hpp"
-#include "RenderState.hpp"
 #include <limits>
+
+#include "RenderPipeline.h"
+#include "RenderState.h"
+
+#include <Engine/Materials/NullMaterial.h>
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/Frustum.h>
+
 
 ShadowRenderer::ShadowRenderer(){}
 ShadowRenderer::~ShadowRenderer()

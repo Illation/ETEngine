@@ -1,33 +1,27 @@
 #include "stdafx.h"
+#include "RenderPipeline.h"
 
-#include "RenderPipeline.hpp"
-#include "LightVolume.hpp"
-#include "ShadowRenderer.hpp"
-#include "RenderState.hpp"
-#include "TextRenderer.hpp"
-#include "PrimitiveRenderer.hpp"
-#include "SpriteRenderer.hpp"
+#include "LightVolume.h"
+#include "ShadowRenderer.h"
+#include "RenderState.h"
+#include "TextRenderer.h"
+#include "PrimitiveRenderer.h"
+#include "SpriteRenderer.h"
 #include "ScreenSpaceReflections.h"
 #include "DebugRenderer.h"
 #include "PbrPrefilter.h"
 
-#include <Engine/Helper/PerformanceInfo.hpp>
+#include <Engine/Helper/PerformanceInfo.h>
 #include <Engine/Helper/ScreenshotCapture.h>
-
 #include <Engine/PlanetTech/AtmospherePrecompute.h>
-
-#include <Engine/Framebuffers/PostProcessingRenderer.hpp>
-#include <Engine/Framebuffers/Gbuffer.hpp>
-
-#include <Engine/Components/LightComponent.hpp>
-
+#include <Engine/Framebuffers/PostProcessingRenderer.h>
+#include <Engine/Framebuffers/Gbuffer.h>
+#include <Engine/Components/LightComponent.h>
 #include <Engine/Prefabs/Skybox.h>
-
 #include <Engine/SceneGraph/AbstractScene.h>
 #include <Engine/SceneGraph/Entity.h>
-
 #include <Engine/Graphics/CIE.h>
-#include <Engine/Graphics/SpriteFont.hpp>
+#include <Engine/Graphics/SpriteFont.h>
 
 
 RenderPipeline::RenderPipeline()

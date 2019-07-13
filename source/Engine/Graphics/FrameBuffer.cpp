@@ -1,10 +1,11 @@
 #include "stdafx.h"
+#include "FrameBuffer.h"
 
-#include "FrameBuffer.hpp"
+#include "ShaderData.h"
+#include "TextureData.h"
 
-#include "ShaderData.hpp"
-#include "TextureData.hpp"
-#include "../GraphicsHelper/PrimitiveRenderer.hpp"
+#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
+
 
 FrameBuffer::FrameBuffer(std::string shaderFile, GLenum format, uint32 numTargets)
 	:m_ShaderFile(shaderFile),

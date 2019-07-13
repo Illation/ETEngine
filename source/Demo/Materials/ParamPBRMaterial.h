@@ -1,5 +1,6 @@
 #pragma once
-#include "../../Engine/Graphics/Material.hpp"
+#include <Engine/Graphics/Material.h>
+
 
 class TextureData;
 class ParamPBRMaterial : public Material

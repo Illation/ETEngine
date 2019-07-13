@@ -1,24 +1,19 @@
 #include "stdafx.h"
-
-#include "ModelComponent.hpp"
+#include "ModelComponent.h"
 
 #include <iostream>
 
-#include "TransformComponent.hpp"
+#include "TransformComponent.h"
 
-#include <Engine/Content/ContentManager.hpp>
-
-#include <Engine/Graphics/MeshFilter.hpp>
-#include <Engine/Graphics/Material.hpp>
-#include <Engine/Graphics/Frustum.hpp>
-
+#include <Engine/Content/ContentManager.h>
+#include <Engine/Graphics/MeshFilter.h>
+#include <Engine/Graphics/Material.h>
+#include <Engine/Graphics/Frustum.h>
 #include <Engine/SceneGraph/Entity.h>
-
-#include <Engine/GraphicsHelper/RenderPipeline.hpp>
-#include <Engine/GraphicsHelper/RenderState.hpp>
-#include <Engine/GraphicsHelper/ShadowRenderer.hpp>
-
-#include <Engine/Materials/NullMaterial.hpp>
+#include <Engine/GraphicsHelper/RenderPipeline.h>
+#include <Engine/GraphicsHelper/RenderState.h>
+#include <Engine/GraphicsHelper/ShadowRenderer.h>
+#include <Engine/Materials/NullMaterial.h>
 
 
 ModelComponent::ModelComponent(std::string assetFile):

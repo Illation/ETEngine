@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "TestScene.h"
 
 #include <random>
@@ -9,17 +8,13 @@
 #include <Demo/Materials/EmissiveMaterial.h>
 
 #include <Engine/SceneGraph/Entity.h>
-
-#include <Engine/Graphics/FrameBuffer.hpp>
-#include <Engine/Framebuffers/Gbuffer.hpp>
-
-#include <Engine/Components/ModelComponent.hpp>
-#include <Engine/Components/LightComponent.hpp>
-
-#include <Engine/GraphicsHelper/TextRenderer.hpp>
-
-#include <Engine/Graphics/SpriteFont.hpp>
-#include <Engine/Graphics/Light.hpp>
+#include <Engine/Graphics/FrameBuffer.h>
+#include <Engine/Framebuffers/Gbuffer.h>
+#include <Engine/Components/ModelComponent.h>
+#include <Engine/Components/LightComponent.h>
+#include <Engine/GraphicsHelper/TextRenderer.h>
+#include <Engine/Graphics/SpriteFont.h>
+#include <Engine/Graphics/Light.h>
 
 
 TestScene::TestScene() : AbstractScene("TestScene")

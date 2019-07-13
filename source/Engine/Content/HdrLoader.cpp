@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "HdrLoader.hpp"
+#include "HdrLoader.h"
 
 #include <FreeImage.h>
 
-#include <Engine/Graphics/ShaderData.hpp>
-#include <Engine/GraphicsHelper/PrimitiveRenderer.hpp>
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 #include <Engine/GraphicsHelper/PbrPrefilter.h>
 #include <Engine/FileSystem/FileUtil.h>
 

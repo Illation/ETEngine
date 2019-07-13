@@ -1,7 +1,10 @@
 #pragma once
-#include "ContentLoader.hpp"
-#include "../Graphics/TextureData.hpp"
+#include "ContentLoader.h"
+
 #include <string>
+
+#include <Engine/Graphics/TextureData.h>
+
 
 class HdrLoader : public ContentLoader<HDRMap>
 {

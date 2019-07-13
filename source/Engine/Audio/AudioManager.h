@@ -1,8 +1,9 @@
 #pragma once
-#include "../Helper/Singleton.hpp"
+#include <Engine/Helper/Singleton.h>
 
 #include <AL/al.h>
 #include <AL/alc.h>
+
 
 class AudioManager : public Singleton<AudioManager>
 {

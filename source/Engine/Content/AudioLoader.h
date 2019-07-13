@@ -1,6 +1,8 @@
 #pragma once
-#include "ContentLoader.hpp"
-#include "../Audio/AudioData.h"
+#include "ContentLoader.h"
+
+#include <Engine/Audio/AudioData.h>
+
 
 class AudioLoader : public ContentLoader<AudioData>
 {

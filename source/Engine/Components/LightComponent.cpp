@@ -1,10 +1,8 @@
 #include "stdafx.h"
-
-#include "LightComponent.hpp"
+#include "LightComponent.h"
 
 #include <Engine/SceneGraph/Entity.h>
-
-#include <Engine/Graphics/Light.hpp>
+#include <Engine/Graphics/Light.h>
 
 
 LightComponent::LightComponent(Light* light):

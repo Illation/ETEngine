@@ -3,7 +3,7 @@
 
 #include <btBulletDynamicsCommon.h>
 
-#include "AbstractComponent.hpp"
+#include "AbstractComponent.h"
 
 #include <Engine/Physics/BulletETM.h>
 #include <Engine/SceneGraph/Entity.h>

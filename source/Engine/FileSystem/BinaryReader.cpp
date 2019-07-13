@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "BinaryReader.hpp"
+#include "BinaryReader.h"
 
 #include <sstream> 
 

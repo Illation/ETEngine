@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "SpriteComponent.hpp"
+#include "SpriteComponent.h"
 
-#include <Engine/GraphicsHelper/SpriteRenderer.hpp>
-#include <Engine/Graphics/TextureData.hpp>
+#include <Engine/GraphicsHelper/SpriteRenderer.h>
+#include <Engine/Graphics/TextureData.h>
 
 
 SpriteComponent::SpriteComponent( const std::string& spriteAsset, vec2 pivot, vec4 color ) :

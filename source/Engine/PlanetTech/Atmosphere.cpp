@@ -1,27 +1,20 @@
 #include "stdafx.h"
-
 #include "Atmosphere.h"
 
 #include "Planet.h"
 #include "AtmospherePrecompute.h"
 
-#include <Engine/Framebuffers/Gbuffer.hpp>
-
-#include <Engine/Components/LightComponent.hpp>
-
-#include <Engine/Graphics/ShaderData.hpp>
-#include <Engine/Graphics/TextureData.hpp>
-#include <Engine/Graphics/Frustum.hpp>
-#include <Engine/Graphics/Light.hpp>
-
-#include <Engine/GraphicsHelper/SpriteRenderer.hpp>
-#include <Engine/GraphicsHelper/PrimitiveRenderer.hpp>
-#include <Engine/GraphicsHelper/RenderPipeline.hpp>
-
+#include <Engine/Framebuffers/Gbuffer.h>
+#include <Engine/Components/LightComponent.h>
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/Frustum.h>
+#include <Engine/Graphics/Light.h>
+#include <Engine/GraphicsHelper/SpriteRenderer.h>
+#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
+#include <Engine/GraphicsHelper/RenderPipeline.h>
 #include <Engine/Prefabs/Skybox.h>
-
 #include <Engine/Helper/Commands.h>
-
 #include <Engine/SceneGraph/AbstractScene.h>
 
 

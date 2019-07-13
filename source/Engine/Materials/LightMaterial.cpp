@@ -1,11 +1,13 @@
 #include "stdafx.h"
-#include "LightMaterial.hpp"
-#include "../Graphics/TextureData.hpp"
-#include "../Graphics/ShaderData.hpp"
-#include "../Graphics/MeshFilter.hpp"
-#include "../Graphics/FrameBuffer.hpp"
-#include "../Framebuffers/Gbuffer.hpp"
-#include "../GraphicsHelper/RenderPipeline.hpp"
+#include "LightMaterial.h"
+
+#include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/MeshFilter.h>
+#include <Engine/Graphics/FrameBuffer.h>
+#include <Engine/Framebuffers/Gbuffer.h>
+#include <Engine/GraphicsHelper/RenderPipeline.h>
+
 
 LightMaterial::LightMaterial(vec3 col):
 	Material("Shaders/FwdLightPointShader.glsl"),

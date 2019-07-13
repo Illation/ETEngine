@@ -1,9 +1,13 @@
 #include "stdafx.h"
-#include "MeshFilter.hpp"
-#include "Material.hpp"
+#include "MeshFilter.h"
+
 #include <algorithm>
-#include <ThirdParty/MikkTSpace/mikktspace.h>
 #include <initializer_list>
+
+#include <ThirdParty/MikkTSpace/mikktspace.h>
+
+#include "Material.h"
+
 
 std::map<VertexFlags, AttributeDescriptor> MeshFilter::LayoutAttributes =
 {
