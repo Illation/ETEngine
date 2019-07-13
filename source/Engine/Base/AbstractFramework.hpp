@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../staticDependancies/glad/glad.h"
 #include <SDL.h>
 #include <SDL_opengl.h>
 

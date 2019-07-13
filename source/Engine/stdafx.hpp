@@ -21,7 +21,7 @@
 
 #pragma region
 //SDL and opengl Header files
-#include "staticDependancies/glad/glad.h"
+#include <ThirdParty/glad/glad.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
 #pragma endregion sdl-opengl

@@ -1,5 +1,4 @@
 #pragma once
-#include "../staticDependancies/glad/glad.h"
 #include "ContentLoader.hpp"
 #include "../Graphics/ShaderData.hpp"
 

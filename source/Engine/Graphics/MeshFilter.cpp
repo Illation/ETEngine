@@ -2,7 +2,7 @@
 #include "MeshFilter.hpp"
 #include "Material.hpp"
 #include <algorithm>
-#include "../StaticDependancies/MikkTSpace/mikktspace.h"
+#include <ThirdParty/MikkTSpace/mikktspace.h>
 #include <initializer_list>
 
 std::map<VertexFlags, AttributeDescriptor> MeshFilter::LayoutAttributes =

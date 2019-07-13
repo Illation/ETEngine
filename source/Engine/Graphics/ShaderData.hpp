@@ -1,5 +1,4 @@
 #pragma once
-#include "../staticDependancies/glad/glad.h"
 #include "../Helper/Hash.h"//Everything using shaders needs hash functionality
 #include <string>
 #include <vector>

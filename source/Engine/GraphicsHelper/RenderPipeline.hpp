@@ -1,5 +1,5 @@
 #pragma once
-#include "../StaticDependancies/glad/glad.h"
+
 
 class AbstractScene;
 class RenderState;

@@ -1,5 +1,4 @@
 #pragma once
-#include "../staticDependancies/glad/glad.h"
 #include <string>
 #include <vector>
 

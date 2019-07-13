@@ -1,5 +1,4 @@
 #pragma once
-#include "../StaticDependancies/glad/glad.h"
 
 class ShaderData;
 class TextureData;

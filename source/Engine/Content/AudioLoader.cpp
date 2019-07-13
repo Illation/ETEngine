@@ -3,8 +3,8 @@
 #include "AudioLoader.h"
 #include "FileSystem\Entry.h"
 #include "Audio\AudioManager.h"
+#include <ThirdParty/stb/stb_vorbis.h>
 
-#include "staticDependancies/stb/stb_vorbis.h"
 #include <array>
 #include "FileSystem\BinaryReader.hpp"
 
