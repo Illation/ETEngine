@@ -80,7 +80,9 @@ void ModelComponent::DrawCall()
 		float maxScale = std::max(scale.x, std::max(scale.y, scale.z));
 		Sphere objSphere = Sphere(GetTransform()->GetPosition() + filterSphere->pos, filterSphere->radius*maxScale);
 		if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
+		{
 			return;
+		}
 	}
 	case CullMode::DISABLED:
 		break;

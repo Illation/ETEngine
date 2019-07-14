@@ -1,4 +1,5 @@
 #pragma once
+#include "Singleton.h"
 
 class PerformanceInfo : public Singleton<PerformanceInfo>
 {
@@ -13,12 +14,13 @@ public:
 	float GetFrameMS() { return m_FrameMS; }
 
 private:
-	friend class AbstractFramework; //should init and destroy singleton
-	friend class AbstractScene;
-	friend class RenderPipeline;
+	friend class TickManager;
 
+	// These two functions should only be called once per cycle
 	void Update();
 	void StartFrameTimer();
+
+private:
 
 	float m_RegFPSTimer = 10;
 	int32 m_RegularFPS = 0;

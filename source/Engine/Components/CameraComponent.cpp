@@ -4,7 +4,6 @@
 #include "TransformComponent.h"
 
 #include <Engine/Base/Settings.h>
-#include <Engine/Base/Context.h>
 #include <Engine/Graphics/Frustum.h>
 
 
@@ -70,7 +69,7 @@ void CameraComponent::Update()
 
 	//Update general frustum
 	if (m_FreezeTimer > 0) m_FreezeTimer -= TIME->DeltaTime();
-	if (m_FreezeTimer <= 0 && INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_SPACE))
+	if (m_FreezeTimer <= 0 && INPUT->GetKeyState(static_cast<uint32>(SDLK_SPACE)) == E_KeyState::Pressed)
 	{
 		m_FreezeTimer = 1;
 		m_IsFrustumFrozen = !m_IsFrustumFrozen;
@@ -91,5 +90,5 @@ void CameraComponent::DrawForward()
 
 void CameraComponent::SetActive()
 {
-	CONTEXT->pCamera = this;
+	CAMERA = this;
 }

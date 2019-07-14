@@ -5,10 +5,18 @@ JSON::String* JSON::Value::str()
 {
 	if (GetType() == JSON_String)return static_cast<JSON::String*>(this); return nullptr;
 }
+JSON::String const* const JSON::Value::str() const
+{
+	if (GetType() == JSON_String)return static_cast<JSON::String const*>(this); return nullptr;
+}
 
 JSON::Number* JSON::Value::num()
 {
 	if (GetType() == JSON_Number)return static_cast<JSON::Number*>(this); return nullptr;
+}
+JSON::Number const* const JSON::Value::num() const
+{
+	if (GetType() == JSON_Number)return static_cast<JSON::Number const*>(this); return nullptr;
 }
 
 JSON::Object::~Object()
@@ -23,6 +31,10 @@ JSON::Object* JSON::Value::obj()
 {
 	if (GetType() == JSON_Object)return static_cast<JSON::Object*>(this); return nullptr;
 }
+JSON::Object const* const JSON::Value::obj() const
+{
+	if (GetType() == JSON_Object)return static_cast<JSON::Object const*>(this); return nullptr;
+}
 
 JSON::Array::~Array()
 {
@@ -36,10 +48,18 @@ JSON::Array* JSON::Value::arr()
 {
 	if (GetType() == JSON_Array)return static_cast<JSON::Array*>(this); return nullptr;
 }
+JSON::Array const* const JSON::Value::arr() const
+{
+	if (GetType() == JSON_Array)return static_cast<JSON::Array const*>(this); return nullptr;
+}
 
 JSON::Bool* JSON::Value::b()
 {
 	if (GetType() == JSON_Bool)return static_cast<JSON::Bool*>(this); return nullptr;
+}
+JSON::Bool const* const JSON::Value::b() const
+{
+	if (GetType() == JSON_Bool)return static_cast<JSON::Bool const*>(this); return nullptr;
 }
 
 std::vector<std::string> JSON::Array::StrArr()

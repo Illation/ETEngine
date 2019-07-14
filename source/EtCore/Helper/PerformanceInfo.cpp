@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "PerformanceInfo.h"
 
-
 PerformanceInfo::PerformanceInfo()
 {
 }

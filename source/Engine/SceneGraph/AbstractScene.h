@@ -7,7 +7,7 @@ class Entity;
 class CameraComponent;
 class LightComponent;
 class Time;
-class ContextObjects;
+struct SceneContext;
 class SceneManager;
 class Gbuffer;
 class PostProcessingRenderer;
@@ -62,9 +62,8 @@ private:
 	bool m_IsInitialized = false;
 	std::string m_Name;
 	std::vector<Entity*> m_pEntityVec;
-	CameraComponent *m_pDefaultCam = nullptr;
-	Time *m_pTime = nullptr;
-	ContextObjects* m_pConObj = nullptr;
+
+	SceneContext* m_SceneContext = nullptr;
 
 	AudioListenerComponent* m_AudioListener = nullptr;
 

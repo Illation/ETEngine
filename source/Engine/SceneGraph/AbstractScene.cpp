@@ -34,8 +34,7 @@ AbstractScene::~AbstractScene()
 	if (m_pSkybox)SafeDelete(m_pSkybox);
 
 	SafeDelete(m_pPhysicsWorld);
-	SafeDelete(m_pConObj);
-	SafeDelete(m_pTime);
+	SafeDelete(m_SceneContext);
 }
 
 void AbstractScene::AddEntity(Entity* pEntity)
@@ -66,14 +65,13 @@ void AbstractScene::RootInitialize()
 	freeCam->GetTransform()->SetPosition(0, -1, -3.5);
 	freeCam->GetTransform()->RotateEuler(etm::radians(20.f), 0, 0);
 	AddEntity(freeCam);
-	m_pDefaultCam = freeCam->GetComponent<CameraComponent>();
-	m_pTime = new Time();
-	m_pConObj = new ContextObjects();
-	m_pConObj->pCamera = m_pDefaultCam;
-	m_pConObj->pTime = m_pTime;
-	m_pConObj->pScene = this;
 
-	CONTEXT->SetContext(m_pConObj);
+	m_SceneContext = new SceneContext();
+	m_SceneContext->camera = freeCam->GetComponent<CameraComponent>();
+	m_SceneContext->time = new Time();
+	m_SceneContext->scene = this;
+
+	CONTEXT->SetContext(m_SceneContext);
 
 	m_PostProcessingSettings = PostProcessingSettings();
 
@@ -89,16 +87,16 @@ void AbstractScene::RootInitialize()
 
 	m_IsInitialized = true;
 
-	m_pConObj->pTime->Start();
+	m_SceneContext->time->Start();
 }
 
 void AbstractScene::RootUpdate()
 {
-	m_pConObj->pTime->Update();
+	m_SceneContext->time->Update();
 
 	PERFORMANCE->StartFrameTimer();
 
-	m_pConObj->pCamera->Update();
+	m_SceneContext->camera->Update();
 
 	Update();
 	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_UP))
@@ -145,7 +143,7 @@ void AbstractScene::RootUpdate()
 void AbstractScene::RootOnActivated()
 {
 	RootInitialize();
-	CONTEXT->SetContext(m_pConObj);
+	CONTEXT->SetContext(m_SceneContext);
 	OnActivated();
 }
 void AbstractScene::RootOnDeactivated()
@@ -155,7 +153,7 @@ void AbstractScene::RootOnDeactivated()
 
 void AbstractScene::SetActiveCamera(CameraComponent* pCamera)
 {
-	m_pConObj->pCamera = pCamera;
+	m_SceneContext->camera = pCamera;
 }
 
 std::vector<LightComponent*> AbstractScene::GetLights()

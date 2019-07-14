@@ -3,25 +3,27 @@
 
 #include <FreeImage.h>
 
+#include <EtCore/Helper/PerformanceInfo.h>
+
 #include <Engine/SceneGraph/SceneManager.h>
 #include <Engine/GraphicsHelper/LightVolume.h>
 #include <Engine/GraphicsHelper/ShadowRenderer.h>
 #include <Engine/GraphicsHelper/TextRenderer.h>
-#include <Engine/Helper/PerformanceInfo.h>
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>
-
-#ifdef EDITOR
-#include <Engine/Editor/Editor.h>
-#endif
-#include <Engine/FileSystem/Entry.h>
-#include <Engine/FileSystem/JSONparser.h>
-#include <Engine/FileSystem/FileUtil.h>
-#include <Engine/FileSystem/JSONdom.h>
 #include <Engine/Physics/PhysicsManager.h>
 #include <Engine/Audio/AudioManager.h>
-#include <Engine/Helper/Commands.h>
 #include <Engine/Helper/ScreenshotCapture.h>
+
+#include <EtCore/FileSystem/Entry.h>
+#include <EtCore/FileSystem/JSONparser.h>
+#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/FileSystem/JSONdom.h>
+#include <EtCore/Helper/Commands.h>
+
+#ifdef EDITOR
+#	include <Engine/Editor/Editor.h>
+#endif
 
 
 void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) 

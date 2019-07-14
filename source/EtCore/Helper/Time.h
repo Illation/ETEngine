@@ -1,4 +1,5 @@
 #pragma once
+#include "Singleton.h"
 
 #ifdef PLATFORM_Linux
 	#include <time.h>
@@ -10,7 +11,7 @@
 	typedef std::chrono::duration<int64, std::nano> HighResDuration;
 #endif
 
-class Time
+class Time : public Singleton<Time>
 {
 public:
 	Time();

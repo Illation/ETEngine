@@ -5,9 +5,9 @@
 
 #include "FileUtil.h"
 
-#include <Engine/FileSystem/Facade/FileBase.h>
-#include <Engine/FileSystem/Facade/FileAccessMode.h>
-#include <Engine/FileSystem/Facade/FileAccessFlags.h>
+#include <EtCore/FileSystem/Facade/FileBase.h>
+#include <EtCore/FileSystem/Facade/FileAccessMode.h>
+#include <EtCore/FileSystem/Facade/FileAccessFlags.h>
 
 
 Entry::Entry(std::string name, Directory* pParent)

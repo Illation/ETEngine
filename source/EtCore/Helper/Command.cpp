@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Command.h"
 
-std::string execConsoleCommand(std::string cmd)
+std::string execConsoleCommand(std::string const& cmd)
 {
 	//modified version of https://stackoverflow.com/a/35935443/4414168
 #ifdef PLATFORM_Win

@@ -1,8 +1,8 @@
 #include <Engine/stdafx.h>
 #include <catch.hpp>
 
-#include "../../../Engine/FileSystem/Entry.h"
-#include "../../../Engine/FileSystem/FileUtil.h"
+#include <EtCore/FileSystem/Entry.h>
+#include <EtCore/FileSystem/FileUtil.h>
 #include <thread>
 #include <chrono>
 
