@@ -8,9 +8,9 @@
 //
 enum class E_TickOrder : uint32
 {
-	TICK_SdlEventManager,
-	TICK_Framework,
-	TICK_Editor,
 	TICK_SceneManager,
+	TICK_Editor,
+	TICK_Framework,
+	TICK_SdlEventManager,
 };
 

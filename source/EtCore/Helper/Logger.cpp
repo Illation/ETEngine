@@ -196,13 +196,13 @@ void Logger::CheckBreak(LogLevel level)
 //***************
 Logger::ConsoleLogger::ConsoleLogger()
 {
-	// not necessary, this is already a console application
-	//if (!AttachConsole())
-	//{
-	//	std::cout << "Warning: Could not attach to console" << std::endl;
-	//	CheckBreak(Error);
-	//	return;
-	//}
+	if (!AllocConsole())
+	{
+		std::cout << "Warning: Could not attach to console" << std::endl;
+		CheckBreak(Error);
+		return;
+	}
+
 	// Redirect the CRT standard input, output, and error handles to the console
 	FILE* pCout;
 	freopen_s(&pCout, "CONIN$", "r", stdin);

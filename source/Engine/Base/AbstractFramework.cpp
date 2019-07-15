@@ -310,6 +310,7 @@ void AbstractFramework::InitializeGame()
 	Editor::GetInstance()->Initialize();
 #endif
 
+	RegisterAsTriggerer();
 }
 
 void AbstractFramework::GameLoop()

@@ -78,7 +78,7 @@ void SceneManager::PreviousScene()
 	}
 }
 
-void SceneManager::Update()
+void SceneManager::OnTick()
 {
 	if (m_NewActiveScene != nullptr)
 	{

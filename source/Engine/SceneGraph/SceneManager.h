@@ -24,6 +24,9 @@ public:
 	void NextScene();
 	void PreviousScene();
 	AbstractScene* GetActiveScene() const { return m_ActiveScene; }
+
+protected:
+	void OnTick() override;
 	
 private:
 	friend class AbstractFramework;
@@ -31,7 +34,6 @@ private:
 
 	SceneManager() : I_Tickable(static_cast<uint32>(E_TickOrder::TICK_SceneManager)) {}
 
-	void Update();
 
 	std::vector<AbstractScene*> m_pSceneVec;
 	bool m_IsInitialized = false;
