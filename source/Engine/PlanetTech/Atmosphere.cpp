@@ -4,6 +4,8 @@
 #include "Planet.h"
 #include "AtmospherePrecompute.h"
 
+#include <EtCore/Helper/Commands.h>
+
 #include <Engine/Framebuffers/Gbuffer.h>
 #include <Engine/Components/LightComponent.h>
 #include <Engine/Graphics/ShaderData.h>
@@ -14,7 +16,6 @@
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>
 #include <Engine/Prefabs/Skybox.h>
-#include <Engine/Helper/Commands.h>
 #include <Engine/SceneGraph/AbstractScene.h>
 
 
@@ -60,7 +61,8 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	mat4 World = etm::scale(vec3(icoRadius))*etm::translate(pos);
 
 	//Hotreload shader
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LALT) && INPUT->IsKeyboardKeyPressed('R'))
+	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_LALT)) == E_KeyState::Down &&
+		INPUT->GetKeyState(static_cast<uint32>(SDLK_r)) == E_KeyState::Pressed)
 	{
 		//if there is a debugger attached copy over the resource files 
 		DebugCopyResourceFiles();

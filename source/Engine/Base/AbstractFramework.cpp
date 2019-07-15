@@ -3,7 +3,13 @@
 
 #include <FreeImage.h>
 
+#include <EtCore/FileSystem/Entry.h>
+#include <EtCore/FileSystem/JSONparser.h>
+#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/FileSystem/JSONdom.h>
+#include <EtCore/Helper/Commands.h>
 #include <EtCore/Helper/PerformanceInfo.h>
+#include <EtCore/UpdateCycle/TickManager.h>
 
 #include <Engine/SceneGraph/SceneManager.h>
 #include <Engine/GraphicsHelper/LightVolume.h>
@@ -13,13 +19,8 @@
 #include <Engine/GraphicsHelper/RenderPipeline.h>
 #include <Engine/Physics/PhysicsManager.h>
 #include <Engine/Audio/AudioManager.h>
+#include <Engine/Helper/SdlEventManager.h>
 #include <Engine/Helper/ScreenshotCapture.h>
-
-#include <EtCore/FileSystem/Entry.h>
-#include <EtCore/FileSystem/JSONparser.h>
-#include <EtCore/FileSystem/FileUtil.h>
-#include <EtCore/FileSystem/JSONdom.h>
-#include <EtCore/Helper/Commands.h>
 
 #ifdef EDITOR
 #	include <Engine/Editor/Editor.h>
@@ -48,9 +49,6 @@ void quit_SDL_error(const char * message)
 	exit(2);
 }
 
-AbstractFramework::AbstractFramework()
-{
-}
 AbstractFramework::~AbstractFramework()
 {
 	Logger::Release();
@@ -71,11 +69,14 @@ AbstractFramework::~AbstractFramework()
 	PhysicsManager::GetInstance()->DestroyInstance();
 	AudioManager::GetInstance()->DestroyInstance();
 
+	SdlEventManager::GetInstance()->DestroyInstance();
 	InputManager::GetInstance()->DestroyInstance();
-	Context::GetInstance()->DestroyInstance();
+	ContextManager::GetInstance()->DestroyInstance();
 	
 	RenderPipeline::GetInstance()->DestroyInstance();
 	Settings::GetInstance()->DestroyInstance();
+
+	TickManager::GetInstance()->DestroyInstance();
 }
 
 void AbstractFramework::Run()
@@ -195,8 +196,10 @@ void AbstractFramework::LoadConfig()
 void AbstractFramework::InitializeWindow()
 {
 	Settings* pSet = Settings::GetInstance();
-	PerformanceInfo::GetInstance();//Initialize performance measurment #todo: disable for shipped project?
-	InputManager::GetInstance()->Init();//init input manager
+	PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
+
+	InputManager::GetInstance();	// init input manager
+	SdlEventManager::GetInstance()->Init();
 
 	//Create Window
 	uint32 WindowFlags = SDL_WINDOW_OPENGL;
@@ -254,7 +257,46 @@ void AbstractFramework::BindOpenGL()
 
 void AbstractFramework::InitializeDebug()
 {
-	Logger::InitializeDebugOutput();
+#if defined(DEBUG) | defined(_DEBUG)
+#if defined(GRAPHICS_API_VERBOSE)
+
+	auto glLogCallback = [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+	{
+		UNUSED(source);
+		UNUSED(id);
+		UNUSED(length);
+		UNUSED(userParam);
+
+		LogLevel level = LogLevel::Info;
+		switch (type)
+		{
+			case GL_DEBUG_TYPE_ERROR: 
+				level = LogLevel::Error; 
+				break;
+			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: 
+				level = LogLevel::Warning; 
+				break;
+			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: 
+				level = LogLevel::Warning; 
+				break;
+		}
+
+		if (severity == GL_DEBUG_SEVERITY_HIGH)
+		{
+			level = LogLevel::Error;
+		}
+
+		LOG(message, level);
+		LOG("");
+	}
+	
+	glEnable(GL_DEBUG_OUTPUT);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glDebugMessageCallback(glLogCallback, nullptr);
+	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
+
+#endif
+#endif
 }
 
 void AbstractFramework::InitializeGame()
@@ -274,26 +316,22 @@ void AbstractFramework::GameLoop()
 {
 	while (true)
 	{
-		InputManager::GetInstance()->UpdateEvents();
-		if (InputManager::GetInstance()->IsExitRequested())return;
+		if (!(InputManager::GetInstance()->IsRunning()))
+		{
+			return;
+		}
+		TriggerTick(); // this will probably tick the scene manager, editor, framework etc
+
+		//****
+		//DRAW
+
+		// this should be moved into viewport functionality
 
 		std::vector<AbstractScene*> activeScenes;
 		if (SceneManager::GetInstance()->GetActiveScene())
 		{
 			activeScenes.push_back(SceneManager::GetInstance()->GetActiveScene());
 		}
-
-		Update();
-		//******
-		//UPDATE
-
-	#ifdef EDITOR
-		Editor::GetInstance()->Update();
-	#endif
-
-		SceneManager::GetInstance()->Update();
-		//****
-		//DRAW
 
 	#ifdef EDITOR
 		RenderPipeline::GetInstance()->Draw(activeScenes, Editor::GetInstance()->GetSceneTarget());

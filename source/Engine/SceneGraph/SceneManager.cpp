@@ -6,9 +6,6 @@
 #include <algorithm>
 
 
-SceneManager::SceneManager()
-{
-}
 SceneManager::~SceneManager()
 {
 	for (AbstractScene* scene : m_pSceneVec)

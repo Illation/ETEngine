@@ -1,11 +1,12 @@
 #include "stdafx.h"
 #include "GLTF.h"
 
-#include <Engine/FileSystem/Entry.h>
-#include <Engine/FileSystem/FileUtil.h>
-#include <Engine/FileSystem/BinaryReader.h>
-#include <Engine/FileSystem/JSONparser.h>
-#include <Engine/FileSystem/JSONdom.h>
+#include <EtCore/FileSystem/Entry.h>
+#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/FileSystem/BinaryReader.h>
+#include <EtCore/FileSystem/JSONparser.h>
+#include <EtCore/FileSystem/JSONdom.h>
+
 #include <Engine/Graphics/MeshFilter.h>
 
 

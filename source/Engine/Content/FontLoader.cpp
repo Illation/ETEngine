@@ -6,8 +6,9 @@
 
 #include "TextureLoader.h"
 
-#include <Engine/FileSystem/Entry.h>
-#include <Engine/FileSystem/BinaryReader.h>
+#include <EtCore/FileSystem/Entry.h>
+#include <EtCore/FileSystem/BinaryReader.h>
+
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/ShaderData.h>
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>

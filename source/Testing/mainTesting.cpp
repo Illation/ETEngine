@@ -1,8 +1,10 @@
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
 #include <vector>
-#include <Engine/Helper/AtomicTypes.h>
-#include <Engine/FileSystem/FileUtil.h>
+
+#include <EtCore/Helper/AtomicTypes.h>
+#include <EtCore/FileSystem/FileUtil.h>
+
 
 int main(int argc, char* argv[]) 
 {

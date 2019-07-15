@@ -3,7 +3,7 @@
 
 #include <FreeImage.h>
 
-#include <Engine/FileSystem/FileUtil.h>
+#include <EtCore/FileSystem/FileUtil.h>
 
 
 TextureLoader::TextureLoader()

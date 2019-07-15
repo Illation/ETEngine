@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "StarField.h"
 
-#include <Engine/FileSystem/Entry.h>
-#include <Engine/FileSystem/JSONparser.h>
-#include <Engine/FileSystem/FileUtil.h>
+#include <EtCore/FileSystem/Entry.h>
+#include <EtCore/FileSystem/JSONparser.h>
+#include <EtCore/FileSystem/FileUtil.h>
 #include <Engine/Graphics/ShaderData.h>
 #include <Engine/Graphics/TextureData.h>
 

@@ -3,7 +3,10 @@
 #include <map>
 #include <SDL.h>
 
-#include <Engine/Helper/Singleton.h>
+#include <EtCore/UpdateCycle/Tickable.h>
+#include <EtCore/Helper/Singleton.h>
+
+#include <Engine/Base/TickOrder.h>
 
 
 //----------------------------
@@ -11,7 +14,7 @@
 //
 // Responsible for funelling SDL events into the input manager
 //
-class SdlEventManager : public Singleton<SdlEventManager>
+class SdlEventManager : public Singleton<SdlEventManager>, public I_Tickable
 {
 private:
 	// definitions
@@ -20,7 +23,7 @@ private:
 public:
 	// ctor dtor
 	//---------------
-	SdlEventManager() = default;
+	SdlEventManager() : I_Tickable(static_cast<uint32>(E_TickOrder::TICK_SdlEventManager)) {}
 	virtual ~SdlEventManager();
 
 	// modify state
@@ -28,7 +31,7 @@ public:
 	void SetSystemCursor(SDL_SystemCursor cursor);
 private:
 	void Init(); // call after SDL init
-	void UpdateEvents(); // call before all GUI ticks
+	void OnTick() override; // call before all GUI ticks
 
 	// utility
 	//--------------

@@ -1,5 +1,7 @@
 #include "stdafx.h"
-#include "InputManager.h"
+#include "SdlEventManager.h"
+
+#include <EtCore/Helper/InputManager.h>
 
 
 //======================
@@ -60,11 +62,11 @@ void SdlEventManager::Init()
 }
 
 //----------------------------
-// SdlEventManager::UpdateEvents
+// SdlEventManager::OnTick
 //
 // Pump the SDL message loop into the input manager
 //
-void SdlEventManager::UpdateEvents()
+void SdlEventManager::OnTick()
 {
 	//Pump SDL events
 	SDL_Event evnt;

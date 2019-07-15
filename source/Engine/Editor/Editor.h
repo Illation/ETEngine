@@ -1,6 +1,8 @@
 #pragma once
+#include <EtCore/Helper/Singleton.h>
+#include <EtCore/UpdateCycle/Tickable.h>
+
 #include <Engine/UI/UIUtil.h>
-#include <Engine/Helper/Singleton.h>
 
 
 #ifdef EDITOR
@@ -12,13 +14,14 @@ class UIFixedContainer;
 class UIPortal;
 class SpriteFont;
 
-class Editor : public Singleton<Editor>
+
+class Editor : public Singleton<Editor>, public I_Tickable
 {
 public:
 
 	void Initialize();
 
-	void Update();
+	void OnTick() override;
 	void DrawSceneVisualizers();
 	void Draw();
 
@@ -48,5 +51,6 @@ private:
 	Editor( const Editor& t );
 	Editor& operator=( const Editor& t );
 };
+
 
 #endif

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Editor.h"
 
+#include <Engine/Base/TickOrder.h>
 #include <Engine/UI/UIViewport.h>
 #include <Engine/UI/UIContainer.h>
 #include <Engine/UI/UIComponent.h>
@@ -14,6 +15,7 @@
 #ifdef EDITOR
 
 Editor::Editor()
+	: I_Tickable(static_cast<uint32>(E_TickOrder::TICK_Editor))
 {
 	UISplitter* pSplitter = new UISplitter(UISplitter::Mode::HORIZONTAL);
 

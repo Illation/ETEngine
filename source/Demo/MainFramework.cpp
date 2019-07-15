@@ -31,14 +31,15 @@ void MainFramework::AddScenes()
 	SceneManager::GetInstance()->AddGameScene(new TestScene());
 }
 
-void MainFramework::Update()
+void MainFramework::OnTick()
 {	
 	//This is where scenes can be switched conditionally
-	if (INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_F3))
+	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_F3)) == E_KeyState::Pressed)
 	{
 		SceneManager::GetInstance()->PreviousScene();
 	}
-	if (INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_F4))
+
+	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_F4)) == E_KeyState::Pressed)
 	{
 		SceneManager::GetInstance()->NextScene();
 	}

@@ -1,10 +1,12 @@
 #include <Engine/stdafx.h>
 #include <catch.hpp>
 
-#include "../../../Engine/FileSystem/Entry.h"
-#include "../../../Engine/FileSystem/FileUtil.h"
-#include "../../../Engine/FileSystem/JSONparser.h"
 #include <EtMath/MathUtil.h>
+
+#include <EtCore/FileSystem/Entry.h>
+#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/FileSystem/JSONparser.h>
+
 
 TEST_CASE("Parse", "[json]")
 {

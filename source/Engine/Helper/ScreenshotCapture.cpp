@@ -5,7 +5,8 @@
 #include <cctype>
 #include <locale>
 
-#include <Engine/FileSystem/Entry.h>
+#include <EtCore/FileSystem/Entry.h>
+
 
 ScreenshotCapture::~ScreenshotCapture()
 {

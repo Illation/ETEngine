@@ -52,7 +52,11 @@ bool Triangulator::Update()
 	Precalculate();
 
 	//Frustum update
-	if (INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_SPACE))m_LockFrustum = !m_LockFrustum;
+
+	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_SPACE)) == E_KeyState::Pressed)
+	{
+		m_LockFrustum = !m_LockFrustum;
+	}
 
 	m_pFrustum->SetCullTransform(m_pPlanet->GetTransform()->GetWorld());
 	if (!m_LockFrustum) m_pFrustum->SetToCamera(CAMERA);

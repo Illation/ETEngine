@@ -43,13 +43,17 @@ void Logger::StopFileLogging()
 	SafeDelete(m_FileLogger);
 }
 
-Logger::T_CursorPos Logger::GetCursorPosition()
+ivec2 Logger::GetCursorPosition()
 {
-	if (m_ConsoleLogger)return m_ConsoleLogger->GetCursorPosition();
-	else return std::make_pair(-1, -1);
+	if (m_ConsoleLogger)
+	{
+		return m_ConsoleLogger->GetCursorPosition();
+	}
+
+	return ivec2(-1);
 }
 
-void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, T_CursorPos cursorPos)
+void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, ivec2 cursorPos)
 {
 #ifndef _DEBUG
 	if (level&Verbose)return;
@@ -111,7 +115,7 @@ void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, T_Curso
 		}
 #endif // SHIPPING
 
-		if (!(cursorPos.first == -1 && cursorPos.second == -1))
+		if (!(cursorPos == ivec2(-1)))
 		{
 			m_ConsoleLogger->SetCursorPosition(cursorPos);
 		}
@@ -128,7 +132,7 @@ void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, T_Curso
 
 	if (m_FileLogger)
 	{
-		if (!(cursorPos.first == -1 && cursorPos.second == -1))
+		if (!(cursorPos == ivec2(-1)))
 		{
 			m_FileLogger->SetCursorPosition(cursorPos);
 		}
@@ -139,7 +143,7 @@ void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, T_Curso
 #ifndef SHIPPING
 	if (m_DebugLogger) // on non shipping builds we also log to the vis
 	{
-		if (!(cursorPos.first == -1 && cursorPos.second == -1))
+		if (!(cursorPos == ivec2(-1)))
 		{
 			m_DebugLogger->SetCursorPosition(cursorPos);
 		}
@@ -248,26 +252,26 @@ void Logger::ConsoleLogger::SetColor(ConsoleLogger::Color color)
 #endif
 }
 
-void Logger::ConsoleLogger::SetCursorPosition(Logger::T_CursorPos cursorPos)
+void Logger::ConsoleLogger::SetCursorPosition(ivec2 cursorPos)
 {
 #ifdef PLATFORM_Win
 	COORD pos;
-	pos.X = (int16)cursorPos.first;
-	pos.Y = (int16)cursorPos.second;
+	pos.X = static_cast<int16>(cursorPos.x);
+	pos.Y = static_cast<int16>(cursorPos.y);
 
 	SetConsoleCursorPosition(m_ConsoleHandle, pos);
 #endif
 }
 
-Logger::T_CursorPos Logger::ConsoleLogger::GetCursorPosition()
+ivec2 Logger::ConsoleLogger::GetCursorPosition()
 {
 #ifdef PLATFORM_Win
 	CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
 	if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &bufferInfo))
 	{
-		T_CursorPos ret;
-		ret.first = (int32)bufferInfo.dwCursorPosition.X;
-		ret.second = (int32)bufferInfo.dwCursorPosition.Y;
+		ivec2 ret;
+		ret.x = static_cast<int32>(bufferInfo.dwCursorPosition.X);
+		ret.y = static_cast<int32>(bufferInfo.dwCursorPosition.Y);
 
 		return ret;
 	}
@@ -276,7 +280,7 @@ Logger::T_CursorPos Logger::ConsoleLogger::GetCursorPosition()
 		DisplayError(TEXT("GetConsoleScreenBufferInfo"));
 	}
 #endif
-	return std::make_pair(-1, -1);
+	return ivec2(-1);
 }
 
 void Logger::DebugLogger::Log(const std::string& message)

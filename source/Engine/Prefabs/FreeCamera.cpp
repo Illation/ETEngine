@@ -37,19 +37,29 @@ void FreeCamera::Update()
 		//*******
 		vec3 move = vec3(0, 0, 0);
 
-		move.x = INPUT->IsKeyboardKeyDown('A') ? -1.0f : 0.0f;
-		if (move.x == 0) move.x = (INPUT->IsKeyboardKeyDown('D') ? 1.0f : 0.0f);
-		move.y = INPUT->IsKeyboardKeyDown('Q') ? 1.0f : 0.0f;
-		if (move.y == 0) move.y = -(INPUT->IsKeyboardKeyDown('E') ? 1.0f : 0.0f);
-		move.z = INPUT->IsKeyboardKeyDown('W') ? 1.0f : 0.0f; 
-		if (move.z == 0) move.z = -(INPUT->IsKeyboardKeyDown('S') ? 1.0f : 0.0f);  
+
+		move.x = (INPUT->GetKeyState(static_cast<uint32>(SDLK_a)) == E_KeyState::Down) ? -1.0f : 0.0f;
+		if (move.x == 0)
+		{
+			move.x = (INPUT->GetKeyState(static_cast<uint32>(SDLK_d)) == E_KeyState::Down) ? 1.0f : 0.0f;
+		}
+		move.y = (INPUT->GetKeyState(static_cast<uint32>(SDLK_q)) == E_KeyState::Down) ? -1.0f : 0.0f;
+		if (move.y == 0)
+		{
+			move.y = (INPUT->GetKeyState(static_cast<uint32>(SDLK_e)) == E_KeyState::Down) ? 1.0f : 0.0f;
+		}
+		move.z = (INPUT->GetKeyState(static_cast<uint32>(SDLK_w)) == E_KeyState::Down) ? -1.0f : 0.0f;
+		if (move.z == 0)
+		{
+			move.z = (INPUT->GetKeyState(static_cast<uint32>(SDLK_s)) == E_KeyState::Down) ? 1.0f : 0.0f;
+		}
 
 		//Acceleration
 		vec3 delta = move - m_Move;
 		m_Move = m_Move + delta * m_Acceleration * TIME->DeltaTime();
 
 		//handle scrolling to change camera speed
-		if (!etm::nearEqualsV(move, vec3::ZERO) || INPUT->IsMouseButtonDown(1))
+		if (!etm::nearEqualsV(move, vec3::ZERO) || INPUT->GetMouseButton(E_MouseButton::Left) == E_KeyState::Down)
 		{
 			float scroll = INPUT->GetMouseWheelDelta().y;
 			if (scroll > 0.0f)
@@ -61,6 +71,7 @@ void FreeCamera::Update()
 				m_SpeedMultiplier *= 0.9f;
 			}
 		}
+
 		float currSpeed = m_MoveSpeed * m_SpeedMultiplier;  
 
 		//move relative to cameras view space - luckily the camera already has those inverted matrices calculated
@@ -70,7 +81,10 @@ void FreeCamera::Update()
 		//Rotate
 		//******
 		vec2 look = vec2(0, 0);
-		if (INPUT->IsMouseButtonDown(1)) { look = INPUT->GetMouseMovement(); }  
+		if (INPUT->GetMouseButton(E_MouseButton::Left) == E_KeyState::Down) 
+		{ 
+			look = INPUT->GetMouseMove();
+		}
 
 		m_TotalYaw += -look.x * m_RotationSpeed;
 		m_TotalPitch = etm::Clamp(m_TotalPitch, etm::PI_DIV2, -etm::PI_DIV2);//Make sure we can't do a backflip
