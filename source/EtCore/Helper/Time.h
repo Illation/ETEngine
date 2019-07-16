@@ -11,7 +11,7 @@
 	typedef std::chrono::duration<int64, std::nano> HighResDuration;
 #endif
 
-class Time : public Singleton<Time>
+class Time 
 {
 public:
 	Time();

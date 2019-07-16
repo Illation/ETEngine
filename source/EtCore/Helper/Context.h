@@ -10,6 +10,7 @@
 //
 struct BaseContext
 {
+	BaseContext() : time(new Time()) {}
 	virtual ~BaseContext()
 	{
 		SafeDelete(time);

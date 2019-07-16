@@ -13,14 +13,21 @@ void PerformanceInfo::Update()
 	m_PrevDrawCalls = m_DrawCalls;
 	m_DrawCalls = 0;
 
-	m_RegFPSTimer += TIME->DeltaTime();
-	if (m_RegFPSTimer > 1.f)
+	// on the first frame there may be no scene, and therefore no context
+	// #todo: find a better way than this workaround (init default scene before first tick)
+	BaseContext const* const context = ContextManager::GetInstance()->GetActiveContext();
+	if (context != nullptr)
 	{
-		m_RegFPSTimer = 0.f;
-		m_RegularFPS = (int32)TIME->FPS();
-	}
+		m_RegFPSTimer += context->time->DeltaTime();
 
-	m_FrameMS = (TIME->GetTime() - m_FrameMSStart)*1000;
+		if (m_RegFPSTimer > 1.f)
+		{
+			m_RegFPSTimer = 0.f;
+			m_RegularFPS = (int32)context->time->FPS();
+		}
+
+		m_FrameMS = (context->time->GetTime() - m_FrameMSStart)*1000;
+	}
 }
 void PerformanceInfo::StartFrameTimer()
 {

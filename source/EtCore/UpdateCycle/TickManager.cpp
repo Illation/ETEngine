@@ -245,9 +245,13 @@ void TickManager::UnregisterTickable(I_Tickable* const tickableObject)
 //
 void TickManager::Tick()
 {
-	// start new frame timer and performance
-	TIME->Update();
-	PERFORMANCE->StartFrameTimer();
+	BaseContext const* const context = ContextManager::GetInstance()->GetActiveContext();
+	if (context != nullptr)
+	{
+		// start new frame timer and performance
+		context->time->Update();
+		PERFORMANCE->StartFrameTimer();
+	}
 
 	// tick all objects
 	for (Tickable& tickableObject : m_Tickables)

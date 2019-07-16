@@ -44,6 +44,6 @@ void SetDebuggingOptions()
 
 	typedef HRESULT(__stdcall *fPtr)(const IID&, void**);
 
-	//_CrtSetBreakAlloc( 26783 );
+	//_CrtSetBreakAlloc(189783);
 #endif
 }

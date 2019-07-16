@@ -42,11 +42,12 @@ inline void SafeDelete(T &pObjectToDelete)
 
 #pragma region
 #include <EtCore/Helper/AtomicTypes.h>
+#include <EtCore/Helper/Context.h>
 #include <EtCore/Helper/Time.h>
 #include <EtCore/Helper/Logger.h>
 #include <EtCore/Helper/PerformanceInfo.h>
 //Working singleton Set
-#define TIME Time::GetInstance()
+#define TIME ContextManager::GetInstance()->GetActiveContext()->time
 #define LOG(fmt, ...) Logger::Log(fmt, __VA_ARGS__);
 #define PERFORMANCE PerformanceInfo::GetInstance()
 #pragma endregion Macros

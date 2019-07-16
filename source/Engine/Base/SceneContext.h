@@ -8,11 +8,7 @@
 struct SceneContext : public BaseContext
 {
 	SceneContext() : BaseContext() {}
-	virtual ~SceneContext()
-	{
-		SafeDelete(camera);
-		SafeDelete(scene);
-	}
+	virtual ~SceneContext() = default;
 
 	CameraComponent* camera = nullptr;
 	AbstractScene* scene = nullptr;

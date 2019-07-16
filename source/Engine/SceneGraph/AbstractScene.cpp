@@ -67,7 +67,6 @@ void AbstractScene::RootInitialize()
 
 	m_SceneContext = new SceneContext();
 	m_SceneContext->camera = freeCam->GetComponent<CameraComponent>();
-	m_SceneContext->time = new Time();
 	m_SceneContext->scene = this;
 
 	ContextManager::GetInstance()->SetActiveContext(m_SceneContext);
