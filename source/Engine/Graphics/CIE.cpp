@@ -1,8 +1,11 @@
 #include "stdafx.h"
+
 #include "CIE.h"
-#include "FileSystem\JSONparser.h"
-#include "FileSystem\Entry.h"
-#include "FileSystem\FileUtil.h"
+
+#include <EtCore/FileSystem/Json/JsonParser.h>
+#include <EtCore/FileSystem/Entry.h>
+#include <EtCore/FileSystem/FileUtil.h>
+
 
 void CIE::LoadData()
 {

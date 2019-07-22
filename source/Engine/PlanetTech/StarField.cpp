@@ -2,8 +2,9 @@
 #include "StarField.h"
 
 #include <EtCore/FileSystem/Entry.h>
-#include <EtCore/FileSystem/JSONparser.h>
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/FileSystem/Json/JsonParser.h>
+
 #include <Engine/Graphics/ShaderData.h>
 #include <Engine/Graphics/TextureData.h>
 

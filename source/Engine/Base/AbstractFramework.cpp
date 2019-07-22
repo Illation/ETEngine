@@ -4,9 +4,9 @@
 #include <FreeImage.h>
 
 #include <EtCore/FileSystem/Entry.h>
-#include <EtCore/FileSystem/JSONparser.h>
 #include <EtCore/FileSystem/FileUtil.h>
-#include <EtCore/FileSystem/JSONdom.h>
+#include <EtCore/FileSystem/Json/JsonParser.h>
+#include <EtCore/FileSystem/Json/JsonDom.h>
 #include <EtCore/Helper/Commands.h>
 #include <EtCore/Helper/PerformanceInfo.h>
 #include <EtCore/UpdateCycle/TickManager.h>

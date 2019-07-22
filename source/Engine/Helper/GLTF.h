@@ -1,5 +1,5 @@
 #pragma once
-#include <EtCore/FileSystem/JSONdom.h>
+#include <EtCore/FileSystem/Json/JsonDom.h>
 
 class MeshFilter;
 class BinaryReader;

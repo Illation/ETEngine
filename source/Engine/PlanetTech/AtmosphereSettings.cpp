@@ -1,10 +1,14 @@
 #include "stdafx.h"
+
 #include "AtmosphereSettings.h"
 #include "AtmospherePrecompute.h"
+
+#include <EtCore/FileSystem/Entry.h>
+#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/FileSystem/Json/JsonParser.h>
+
 #include <Engine/Graphics/CIE.h>
-#include "FileSystem\Entry.h"
-#include "FileSystem\JSONparser.h"
-#include "FileSystem\FileUtil.h"
+
 
 vec3 InterpolatedSpectrum(const std::vector<double_t> &wavelengths, const std::vector<double_t> &v, const dvec3 &lambdas, float scale)
 {

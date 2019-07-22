@@ -4,8 +4,8 @@
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/BinaryReader.h>
-#include <EtCore/FileSystem/JSONparser.h>
-#include <EtCore/FileSystem/JSONdom.h>
+#include <EtCore/FileSystem/Json/JsonParser.h>
+#include <EtCore/FileSystem/Json/JsonDom.h>
 
 #include <Engine/Graphics/MeshFilter.h>
 

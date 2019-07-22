@@ -5,7 +5,7 @@
 
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Entry.h>
-#include <EtCore/FileSystem/JSONparser.h>
+#include <EtCore/FileSystem/Json/JsonParser.h>
 
 
 TEST_CASE("Decode Base64", "[gltf]")
