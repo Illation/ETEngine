@@ -25,6 +25,8 @@ enum class E_CompressionType : uint8
 class Package
 {
 public:
+	// definitions
+	//--------------
 
 	//---------------------------------
 	// Package::PackageFile
@@ -34,19 +36,28 @@ public:
 	struct PackageFile
 	{
 		std::string fileName;
+		std::string path;
 
 		E_CompressionType compressionType;
 
 		uint64 size;
 		uint8 const* content;
 	};
-	
+
+	// ctor dtor
+	//--------------
 	Package(uint8 const* const data);
 	virtual ~Package() = default;
 
+	// utility
+	//--------------
 	PackageFile const* GetFile(T_Hash const id) const;
 
 private:
+	void InitFileListFromData();
+
+	// Data
+	///////
 	std::map<T_Hash, PackageFile> m_Entries;
 	uint8 const* m_Data = nullptr;
 };
