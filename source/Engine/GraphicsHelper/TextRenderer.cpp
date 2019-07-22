@@ -128,7 +128,10 @@ void TextRenderer::Draw()
 
 	UpdateBuffer();
 
-	if (INPUT->IsKeyboardKeyPressed('K'))m_bUseKerning = !m_bUseKerning;
+	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_k)) == E_KeyState::Pressed)
+	{
+		m_bUseKerning = !m_bUseKerning;
+	}
 
 	//Enable this objects shader
 	CalculateTransform();

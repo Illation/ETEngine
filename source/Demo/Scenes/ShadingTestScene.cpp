@@ -133,32 +133,36 @@ void ShadingTestScene::Update()
 {
 	//LOG("FPS: " + to_string(TIME->FPS()));
 
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_2))
+	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_2)) == E_KeyState::Down)
 	{
 		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), TIME->DeltaTime()));
 	}
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_8))
+
+	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_8)) == E_KeyState::Down)
 	{
 		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), -TIME->DeltaTime()));
 	}
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_4))
+
+	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_4)) == E_KeyState::Down)
 	{
 		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), TIME->DeltaTime()));
 	}
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_6))
+
+	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_6)) == E_KeyState::Down)
 	{
 		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), -TIME->DeltaTime()));
 	}
 
 	//Change light settings
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_3))
+	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_3)) == E_KeyState::Down)
 	{
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;
 		m_pLight->SetBrightness(b - (nB - b)*TIME->DeltaTime());
 		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
 	}
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_9))
+
+	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_9)) == E_KeyState::Down)
 	{
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;

@@ -11,7 +11,8 @@
 #include "DebugRenderer.h"
 #include "PbrPrefilter.h"
 
-#include <Engine/Helper/PerformanceInfo.h>
+#include <EtCore/Helper/PerformanceInfo.h>
+
 #include <Engine/Helper/ScreenshotCapture.h>
 #include <Engine/PlanetTech/AtmospherePrecompute.h>
 #include <Engine/Framebuffers/PostProcessingRenderer.h>
@@ -222,8 +223,6 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	}
 
 	ScreenshotCapture::GetInstance()->HandleCapture();
-
-	PERFORMANCE->Update();
 }
 
 void RenderPipeline::DrawOverlays()//Called from within postprocessing draw method

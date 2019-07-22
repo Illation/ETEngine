@@ -1,5 +1,5 @@
 #pragma once
-#include "../Helper/Hash.h"//Everything using shaders needs hash functionality
+#include <EtCore/Helper/Hash.h> // Everything using shaders needs hash functionality
 #include <string>
 #include <vector>
 

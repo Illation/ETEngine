@@ -21,7 +21,7 @@ add_library(EtEngine ${projectFiles})
 assign_source_group(${projectFiles})
 libOutputDirectories(EtEngine)
 
-target_link_libraries (EtEngine ThirdParty EtMath)
+target_link_libraries (EtEngine ThirdParty EtMath EtCore)
 
 # library includes
 libIncludeDirs()

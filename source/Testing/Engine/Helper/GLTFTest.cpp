@@ -2,9 +2,10 @@
 
 #include <Engine/stdafx.h>
 #include <Engine/Helper/GLTF.h>
-#include <Engine/FileSystem/FileUtil.h>
-#include <Engine/FileSystem/Entry.h>
-#include <Engine/FileSystem/JSONparser.h>
+
+#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/FileSystem/Entry.h>
+#include <EtCore/FileSystem/JSONparser.h>
 
 
 TEST_CASE("Decode Base64", "[gltf]")

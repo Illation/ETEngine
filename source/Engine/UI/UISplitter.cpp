@@ -2,6 +2,8 @@
 
 #include "UISplitter.h"
 
+#include <Engine/Helper/SdlEventManager.h>
+
 
 UISplitter::~UISplitter()
 {
@@ -19,7 +21,7 @@ bool UISplitter::Draw(uint16 level)
 
 void UISplitter::Update()
 {
-	vec2 mousePos = INPUT->GetMousePosition();
+	vec2 mousePos = INPUT->GetMousePos();
 	iRect overlapRegion;
 	switch (m_Mode)
 	{
@@ -36,18 +38,31 @@ void UISplitter::Update()
 	}
 	if (overlapRegion.Contains(mousePos))
 	{
-		if (INPUT->IsMouseButtonPressed(SDL_BUTTON_LEFT))m_DragActive = true;
+		if (INPUT->GetMouseButton(E_MouseButton::Left) == E_KeyState::Pressed)
+		{
+			m_DragActive = true;
+		}
+
 		if (!m_IsHovering)
 		{
 			m_IsHovering = true;
-			INPUT->SetSystemCursor(m_Mode == UISplitter::Mode::HORIZONTAL ? SDL_SYSTEM_CURSOR_SIZEWE : SDL_SYSTEM_CURSOR_SIZENS);
+
+			if (m_Mode == UISplitter::Mode::HORIZONTAL)
+			{
+				SdlEventManager::GetInstance()->SetSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE);
+			}
+			else
+			{
+				SdlEventManager::GetInstance()->SetSystemCursor(SDL_SYSTEM_CURSOR_SIZENS);
+			}
 		}
 	}
 	else if (m_IsHovering)
 	{
 		m_IsHovering = false;
-		INPUT->SetSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+		SdlEventManager::GetInstance()->SetSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
 	}
+
 	if (m_DragActive)
 	{
 		switch (m_Mode)
@@ -59,7 +74,7 @@ void UISplitter::Update()
 			SetSplitPercentage((mousePos.y - (float)m_Rect.pos.y) / (float)m_Rect.size.y);
 			break;
 		}
-		if (INPUT->IsMouseButtonReleased(SDL_BUTTON_LEFT))
+		if (INPUT->GetMouseButton(E_MouseButton::Left) == E_KeyState::Released)
 		{
 			m_DragActive = false;
 		}

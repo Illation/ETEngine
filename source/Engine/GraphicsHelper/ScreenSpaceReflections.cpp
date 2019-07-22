@@ -8,7 +8,8 @@
 #include <Engine/Graphics/ShaderData.h>
 #include <Engine/Framebuffers/Gbuffer.h>
 #include <Engine/Framebuffers/PostProcessingRenderer.h>
-#include <Engine/Helper/Commands.h>
+
+#include <EtCore/Helper/Commands.h>
 
 
 ScreenSpaceReflections::ScreenSpaceReflections()
@@ -58,7 +59,8 @@ void ScreenSpaceReflections::EnableInput()
 void ScreenSpaceReflections::Draw()
 {
 	//Hotreload shader
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LALT) && INPUT->IsKeyboardKeyPressed('R'))
+	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_LALT)) == E_KeyState::Down && 
+		INPUT->GetKeyState(static_cast<uint32>(SDLK_r)) == E_KeyState::Pressed)
 	{
 		//if there is a debugger attached copy over the resource files 
 		DebugCopyResourceFiles();

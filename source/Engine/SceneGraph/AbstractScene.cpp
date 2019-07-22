@@ -3,7 +3,8 @@
 
 #include "Entity.h"
 
-#include <Engine/Base/Time.h>
+#include <EtCore/Helper/Time.h>
+
 #include <Engine/Components/CameraComponent.h>
 #include <Engine/Components/LightComponent.h>
 #include <Engine/Prefabs/FreeCamera.h>
@@ -15,8 +16,6 @@
 #include <Engine/GraphicsHelper/RenderPipeline.h>
 #include <Engine/Physics/PhysicsWorld.h>
 
-
-#define CONTEXT Context::GetInstance()
 
 AbstractScene::AbstractScene(std::string name) 
 	: m_Name(name)
@@ -34,8 +33,7 @@ AbstractScene::~AbstractScene()
 	if (m_pSkybox)SafeDelete(m_pSkybox);
 
 	SafeDelete(m_pPhysicsWorld);
-	SafeDelete(m_pConObj);
-	SafeDelete(m_pTime);
+	SafeDelete(m_SceneContext);
 }
 
 void AbstractScene::AddEntity(Entity* pEntity)
@@ -66,14 +64,12 @@ void AbstractScene::RootInitialize()
 	freeCam->GetTransform()->SetPosition(0, -1, -3.5);
 	freeCam->GetTransform()->RotateEuler(etm::radians(20.f), 0, 0);
 	AddEntity(freeCam);
-	m_pDefaultCam = freeCam->GetComponent<CameraComponent>();
-	m_pTime = new Time();
-	m_pConObj = new ContextObjects();
-	m_pConObj->pCamera = m_pDefaultCam;
-	m_pConObj->pTime = m_pTime;
-	m_pConObj->pScene = this;
 
-	CONTEXT->SetContext(m_pConObj);
+	m_SceneContext = new SceneContext();
+	m_SceneContext->camera = freeCam->GetComponent<CameraComponent>();
+	m_SceneContext->scene = this;
+
+	ContextManager::GetInstance()->SetActiveContext(m_SceneContext);
 
 	m_PostProcessingSettings = PostProcessingSettings();
 
@@ -89,19 +85,20 @@ void AbstractScene::RootInitialize()
 
 	m_IsInitialized = true;
 
-	m_pConObj->pTime->Start();
+	m_SceneContext->time->Start();
 }
 
 void AbstractScene::RootUpdate()
 {
-	m_pConObj->pTime->Update();
+	// active time and performance are updated by tick manager
+	//m_SceneContext->time->Update();
 
-	PERFORMANCE->StartFrameTimer();
+	//PERFORMANCE->StartFrameTimer();
 
-	m_pConObj->pCamera->Update();
+	m_SceneContext->camera->Update();
 
 	Update();
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_UP))
+	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_UP)) == E_KeyState::Down)
 	{
 		float exposure = m_PostProcessingSettings.exposure;
 		float newExp = exposure * 4.f;
@@ -109,7 +106,7 @@ void AbstractScene::RootUpdate()
 		LOG("Exposure: " + std::to_string(exposure));
 		m_PostProcessingSettings.exposure = exposure;
 	}
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_DOWN))
+	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_DOWN)) == E_KeyState::Down)
 	{
 		float exposure = m_PostProcessingSettings.exposure;
 		float newExp = exposure * 4.f;
@@ -117,13 +114,13 @@ void AbstractScene::RootUpdate()
 		LOG("Exposure: " + std::to_string(exposure));
 		m_PostProcessingSettings.exposure = exposure;
 	}
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_LEFT) && m_UseSkyBox)
+	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_LEFT)) == E_KeyState::Down && m_UseSkyBox)
 	{
 		float r = std::min(std::max(m_pSkybox->GetRoughness() -TIME->DeltaTime(), 0.f), 1.f);
 		LOG("Roughness: " + std::to_string(r));
 		m_pSkybox->SetRoughness(r);
 	}
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_RIGHT) && m_UseSkyBox)
+	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_RIGHT)) == E_KeyState::Down && m_UseSkyBox)
 	{
 		float r = std::min(std::max(m_pSkybox->GetRoughness() + TIME->DeltaTime(), 0.f), 1.f);
 		LOG("Roughness: " + std::to_string(r));
@@ -145,7 +142,7 @@ void AbstractScene::RootUpdate()
 void AbstractScene::RootOnActivated()
 {
 	RootInitialize();
-	CONTEXT->SetContext(m_pConObj);
+	ContextManager::GetInstance()->SetActiveContext(m_SceneContext);
 	OnActivated();
 }
 void AbstractScene::RootOnDeactivated()
@@ -155,7 +152,7 @@ void AbstractScene::RootOnDeactivated()
 
 void AbstractScene::SetActiveCamera(CameraComponent* pCamera)
 {
-	m_pConObj->pCamera = pCamera;
+	m_SceneContext->camera = pCamera;
 }
 
 std::vector<LightComponent*> AbstractScene::GetLights()

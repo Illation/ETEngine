@@ -1,5 +1,5 @@
 #pragma once
-#include "Singleton.h"
+#include <EtCore/Helper/Singleton.h>
 
 #include <FreeImage.h>
 

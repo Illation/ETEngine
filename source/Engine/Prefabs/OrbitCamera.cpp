@@ -54,17 +54,17 @@ void OrbitCamera::Update()
 		camTf->SetPosition(m_RotationCenter);
 		vec3 move = vec3(0, 0, 0);
 		vec2 look = vec2(0, 0);
-		if (INPUT->IsMouseButtonDown(SDL_BUTTON_MIDDLE))
+		if (INPUT->GetMouseButton(E_MouseButton::Center) == E_KeyState::Down)
 		{
-			auto mouseMove = INPUT->GetMouseMovement();
+			auto mouseMove = INPUT->GetMouseMove();
 			move.z = mouseMove.y;
 			move.x = -mouseMove.x;
 		}
-		else if (INPUT->IsMouseButtonDown(SDL_BUTTON_LEFT))
+		else if (INPUT->GetMouseButton(E_MouseButton::Left) == E_KeyState::Down)
 		{
-			look.x = INPUT->GetMouseMovement().x;
-			look.y = INPUT->GetMouseMovement().y;
+			look = INPUT->GetMouseMove();
 		}
+
 		m_TotalYaw = look.x*m_RotationSpeed*dT;
 		m_TotalPitch = look.y*m_RotationSpeed*dT;
 		TRANSFORM->RotateEuler(m_TotalPitch, m_TotalYaw, 0);

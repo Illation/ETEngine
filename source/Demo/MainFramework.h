@@ -10,6 +10,6 @@ public:
 
 private:
 	void AddScenes();
-	void Update();
+	void OnTick() override;
 };
 

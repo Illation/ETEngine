@@ -185,12 +185,12 @@ void PhysicsTestScene::Update()
 	vec3 lightPos = m_LightCentralPos + vec3(sin(TIME->GetTime()), 0.f, cos(TIME->GetTime()))*m_LightRotDistance;
 	m_pLightEntity->GetTransform()->SetPosition(lightPos);
 
-	if (INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_0))
+	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_0)) == E_KeyState::Pressed)
 	{
 		ScreenshotCapture::GetInstance()->Take();
 	}
 
-	if (INPUT->IsMouseButtonPressed(SDL_BUTTON_RIGHT))
+	if(INPUT->GetMouseButton(E_MouseButton::Right) == E_KeyState::Pressed)
 	{
 		auto pModelComp = new ModelComponent("Resources/Models/sphere.dae");
 		pModelComp->SetMaterial(m_pBallMat);
@@ -212,7 +212,7 @@ void PhysicsTestScene::Update()
 		pRBComp->ApplyImpulse(bDir*m_SphereForce);
 	}
 
-	if (INPUT->IsKeyboardKeyPressed('X'))
+	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_x)) == E_KeyState::Pressed)
 	{
 		GRAPHICS.UseFXAA = !(GRAPHICS.UseFXAA);
 	}

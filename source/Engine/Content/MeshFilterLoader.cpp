@@ -5,8 +5,9 @@
 #include <scene.h>  
 #include <postprocess.h>
 
+#include <EtCore/FileSystem/Entry.h>
+
 #include <Engine/Graphics/MeshFilter.h>
-#include <Engine/FileSystem/Entry.h>
 #include <Engine/Helper/GLTF.h>
 
 

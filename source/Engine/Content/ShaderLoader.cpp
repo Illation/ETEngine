@@ -6,9 +6,9 @@
 #include <cctype>
 #include <locale>
 
-#include <Engine/FileSystem/Entry.h>
-#include <Engine/FileSystem/FileUtil.h>
-#include <Engine/Helper/Hash.h>
+#include <EtCore/FileSystem/Entry.h>
+#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/Helper/Hash.h>
 
 
 ShaderLoader::ShaderLoader()
@@ -355,7 +355,7 @@ bool ShaderLoader::GetUniformLocations(GLuint shaderProgram, std::map<uint32, Ab
 			}
 			pUni->name = fullName;
 			pUni->location = i;
-			uint32 hash = FnvHash(fullName);
+			T_Hash hash = GetHash(fullName);
 			assert(uniforms.find(hash) == uniforms.end());
 			uniforms[hash] = pUni;
 		}

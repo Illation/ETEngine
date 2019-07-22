@@ -5,7 +5,7 @@
 #include <SDL.h>
 #include <vector>
 
-#include <Engine/Helper/Singleton.h>
+#include <EtCore/Helper/Singleton.h>
 #include <Engine/Helper/MulticastDelegate.h>
 
 

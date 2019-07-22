@@ -6,9 +6,6 @@
 #include <algorithm>
 
 
-SceneManager::SceneManager()
-{
-}
 SceneManager::~SceneManager()
 {
 	for (AbstractScene* scene : m_pSceneVec)
@@ -81,7 +78,7 @@ void SceneManager::PreviousScene()
 	}
 }
 
-void SceneManager::Update()
+void SceneManager::OnTick()
 {
 	if (m_NewActiveScene != nullptr)
 	{
