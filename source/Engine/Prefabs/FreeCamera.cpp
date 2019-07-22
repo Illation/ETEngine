@@ -48,10 +48,10 @@ void FreeCamera::Update()
 		{
 			move.y = (INPUT->GetKeyState(static_cast<uint32>(SDLK_e)) == E_KeyState::Down) ? 1.0f : 0.0f;
 		}
-		move.z = (INPUT->GetKeyState(static_cast<uint32>(SDLK_w)) == E_KeyState::Down) ? -1.0f : 0.0f;
+		move.z = (INPUT->GetKeyState(static_cast<uint32>(SDLK_w)) == E_KeyState::Down) ? 1.0f : 0.0f;
 		if (move.z == 0)
 		{
-			move.z = (INPUT->GetKeyState(static_cast<uint32>(SDLK_s)) == E_KeyState::Down) ? 1.0f : 0.0f;
+			move.z = (INPUT->GetKeyState(static_cast<uint32>(SDLK_s)) == E_KeyState::Down) ? -1.0f : 0.0f;
 		}
 
 		//Acceleration
