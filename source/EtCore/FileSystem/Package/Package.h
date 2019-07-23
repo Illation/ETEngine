@@ -1,20 +1,8 @@
+#pragma once
+
 #include <map>
 
-#include <EtCore/Helper/Hash.h>
-
-
-//---------------------------------
-// E_CompressionType
-//
-// List of supported compression types
-//
-enum class E_CompressionType : uint8
-{
-	Store,
-	//Brotli, - will be implemented
-
-	COUNT
-};
+#include "PackageDataStructure.h"
 
 
 //---------------------------------

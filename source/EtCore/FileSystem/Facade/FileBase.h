@@ -16,6 +16,8 @@ public:
 
     static bool Close( FILE_HANDLE handle );
 
+	static bool GetEntrySize(FILE_HANDLE handle, int64& size);
+
     static bool ReadFile( FILE_HANDLE handle, std::vector<uint8> & content );
 
     static bool WriteFile( FILE_HANDLE handle, const std::vector<uint8> & content );

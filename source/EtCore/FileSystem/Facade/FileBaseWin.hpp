@@ -61,6 +61,24 @@ bool FILE_BASE::Close( FILE_HANDLE handle )
 	return true;
 }
 
+bool FILE_BASE::GetEntrySize(FILE_HANDLE handle, int64& size)
+{
+	LARGE_INTEGER largeSize;
+	BOOL result = GetFileSizeEx(handle, &largeSize);
+
+	size = -1;
+
+	if (result == FALSE)
+	{
+		DisplayError(TEXT("GetFileSizeEx"));
+		return false;
+	}
+
+	size = largeSize.QuadPart;
+
+	return true;
+}
+
 bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::vector<uint8> & content )
 {
 	const DWORD bufferSize = GetFileSize(handle, NULL) + 1;

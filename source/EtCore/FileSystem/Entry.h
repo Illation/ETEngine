@@ -9,6 +9,11 @@
 
 class Directory;
 
+//---------------------------------
+// Entry
+//
+// Content of any kind that lives in a directory
+//
 class Entry
 {
 public:
@@ -39,6 +44,11 @@ protected:
 	std::string m_Path; //only used if there is no parent
 };
 
+//---------------------------------
+// File
+//
+// Entry that contains data
+//
 class File : public Entry
 {
 public:
@@ -58,6 +68,8 @@ public:
 
 	bool IsOpen(){ return m_IsOpen; }
 
+	uint64 GetSize();
+
 	bool Delete() override;
 
 private:
@@ -66,6 +78,11 @@ private:
 	FILE_HANDLE m_Handle;
 };
 
+//---------------------------------
+// Directory
+//
+// Entry that contains more entries
+//
 class Directory : public Entry
 {
 public:
@@ -79,8 +96,9 @@ public:
     
     bool Mount(bool recursive = false);
     void Unmount();
-    std::vector<Entry*> GetChildren(){return m_pChildren;}
+    std::vector<Entry*> GetChildren() { return m_pChildren; }
 	std::vector<Entry*> GetChildrenByExt(std::string ext);
+	void GetChildrenRecursive(std::vector<File*>& children);
 
 	bool Exists();
 	bool Create();

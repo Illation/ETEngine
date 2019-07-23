@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "Package.h"
+
 #include <EtCore/FileSystem/FileUtil.h>
 
 
@@ -44,28 +45,13 @@ Package::PackageFile const* Package::GetFile(T_Hash const id) const
 //
 void Package::InitFileListFromData()
 {
-	// Helper structures
-	struct PkgFileInfo
-	{
-		T_Hash fileId;
-		uint64 offset;
-	};
-
-	struct PkgEntry
-	{
-		T_Hash fileId;
-		E_CompressionType compressionType;
-		uint16 nameLength;
-		uint64 size;
-	};
-
 	// read the package header 
-	uint64 const numEntries = reinterpret_cast<uint64>(m_Data);
-	size_t offset = sizeof(uint64);
+	PkgHeader const* pkgHeader = reinterpret_cast<PkgHeader const*>(m_Data);
+	size_t offset = sizeof(PkgHeader);
 
 	// read the central directory
 	std::vector<std::pair<T_Hash, uint64>> centralDirectory;
-	for (size_t infoIdx = 0u; infoIdx < numEntries; ++infoIdx)
+	for (size_t infoIdx = 0u; infoIdx < pkgHeader->numEntries; ++infoIdx)
 	{
 		PkgFileInfo const* info = reinterpret_cast<PkgFileInfo const*>(m_Data + offset);
 		offset += sizeof(PkgFileInfo);
