@@ -196,6 +196,17 @@ void Logger::CheckBreak(LogLevel level)
 //***************
 Logger::ConsoleLogger::ConsoleLogger()
 {
+	// Check if we already have a console
+	HWND consoleWnd = GetConsoleWindow();
+	DWORD dwProcessId;
+	GetWindowThreadProcessId(consoleWnd, &dwProcessId);
+
+	// if so, free the current console before allocating it
+	if (GetCurrentProcessId() == dwProcessId)
+	{
+		FreeConsole();
+	}
+
 	if (!AllocConsole())
 	{
 		std::cout << "Warning: Could not attach to console" << std::endl;

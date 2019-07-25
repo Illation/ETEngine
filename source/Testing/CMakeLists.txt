@@ -17,10 +17,6 @@ list (APPEND projectFiles ${headers} ${sources} ${c_sources})
 target_definitions()
 
 add_definitions(-D_CONSOLE)
-if (MSVC)
-#	add_definitions(-DWinmain)
-endif(MSVC)
-
 # executable and dependancies
 add_executable(Testing ${projectFiles})
 
@@ -40,4 +36,5 @@ include_directories("${PROJECT_BINARY_DIR}/../dependancies/include/catch/")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_include_directories (Testing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+installDlls(Testing)
 installResources(Testing)

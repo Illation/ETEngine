@@ -1,0 +1,22 @@
+{
+  "asset database": {
+    "caches": [
+      {
+        "cache": [
+          {
+            "shader asset": {
+              "name": "OscillatorRenderer.glsl",
+              "path": "assets/"
+            }
+          },
+          {
+            "shader asset": {
+              "name": "SomeOtherShader.glsl",
+              "path": "assets/"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

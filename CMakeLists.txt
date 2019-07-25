@@ -23,7 +23,9 @@ set(CMAKE_CXX_STANDARD 14)  # C++ 14
 # general library that has the build files, easy way to make sure we can see the build files in the IDE, shouldn't actually be built
 #####################################
 
-file(GLOB_RECURSE generalFiles 
+file(GLOB_RECURSE generalFiles
+	${CMAKE_CURRENT_SOURCE_DIR}/resources/*.json 
+	${CMAKE_CURRENT_SOURCE_DIR}/resources/*.glsl  
 	${CMAKE_CURRENT_SOURCE_DIR}/build/*.bat
 	${CMAKE_CURRENT_SOURCE_DIR}/build/*.lua
 	${CMAKE_CURRENT_SOURCE_DIR}/build/*.cmake

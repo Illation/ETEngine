@@ -90,8 +90,61 @@ void PackageWriter::Write(std::vector<uint8>& data)
 	// now we know the total size of the package file will be our offset, so we can initialize our data vector starting with the right size
 	//---------------------------
 	data = std::vector<uint8>(static_cast<size_t>(offset), 0u);
+	uint8* raw = data.data();
 
 	// finally we can write our data to the vector
 	//---------------------------
+
+	// header
+	memcpy(raw, &header, sizeof(PkgHeader));
+	offset = sizeof(PkgHeader);	// we can reuse it now that our vector has bin initialized
+
+	// central dir
+	for (std::pair<uint64, PkgEntry> const& entryOffset : entryOffsets)
+	{
+		PkgFileInfo info;
+		info.fileId = entryOffset.second.fileId;
+		info.offset = entryOffset.first;
+
+		memcpy(raw + offset, &info, sizeof(PkgFileInfo));
+		offset += sizeof(PkgFileInfo);
+	}
+
+	// files
+	for (size_t entryIndex = 0u; entryIndex < m_Files.size(); ++entryIndex)
+	{
+		PkgEntry const& entry = entryOffsets[entryIndex].second;
+		File* file = m_Files[entryIndex];
+		std::string fullName = file->GetName();
+
+		if (offset != entryOffsets[entryIndex].first)
+		{
+			LOG("PackageWriter::Write > Entry offset doesn't match expected offset - " + fullName, LogLevel::Error);
+		}
+
+		// copy the entry
+		memcpy(raw + offset, &entry, sizeof(PkgEntry));
+		offset += sizeof(PkgEntry);
+
+		// copy the file name string
+		if (entry.nameLength != fullName.size())
+		{
+			LOG("PackageWriter::Write > Entry name length doesn't match file name length - " + fullName, LogLevel::Error);
+		}
+
+		memcpy(raw + offset, fullName.c_str(), entry.nameLength);
+		offset += entry.nameLength;
+
+		// copy the file content
+		std::vector<uint8> fileContent = file->Read();
+
+		if (entry.size != static_cast<uint64>(fileContent.size()))
+		{
+			LOG("PackageWriter::Write > Entry size doesn't match read file contents size - " + fullName, LogLevel::Error);
+		}
+
+		memcpy(raw + offset, fileContent.data(), entry.size);
+		offset += entry.size;
+	}
 }
 

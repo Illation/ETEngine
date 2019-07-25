@@ -39,4 +39,5 @@ libIncludeDirs()
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_include_directories (Demo PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+installDlls(Demo)
 installResources(Demo)

@@ -174,7 +174,7 @@ endfunction(libIncludeDirs)
 
 # install everything in the appropriate directory according to configuration
 ###########################
-function(installResources TARGET)
+function(installDlls TARGET)
 
 	set(projectBase "${PROJECT_BINARY_DIR}/..")
 	set(baseBinDir "${projectBase}/bin")
@@ -226,6 +226,28 @@ function(installResources TARGET)
 				DESTINATION ${binDir}/
 				FILES_MATCHING PATTERN "*.dll")
 		endforeach()
+	endforeach()
+
+endfunction(installDlls)
+
+
+# install everything in the appropriate directory according to configuration
+###########################
+function(installResources TARGET)
+
+	set(projectBase "${PROJECT_BINARY_DIR}/..")
+	set(baseBinDir "${projectBase}/bin")
+
+	# paths for our libraries depend on the architecture we compile fo
+	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+		set(platform "x64")
+	 else() 
+		set(platform "x32")
+	endif()
+
+	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
+
+		set(binDir "${baseBinDir}/${configType}_${platform}/${TARGET}")
 
 		# copy packaged resources
 		install(DIRECTORY ${projectBase}/source/Engine/Resources/
