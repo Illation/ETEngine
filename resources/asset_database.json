@@ -4,14 +4,14 @@
       {
         "cache": [
           {
-            "shader asset": {
+            "stub asset": {
               "name": "OscillatorRenderer.glsl",
               "path": "assets/"
             }
           },
           {
-            "shader asset": {
-              "name": "SomeOtherShader.glsl",
+            "stub asset": {
+              "name": "lorem_ipsum.txt",
               "path": "assets/"
             }
           }

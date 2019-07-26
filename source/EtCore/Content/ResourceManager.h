@@ -60,12 +60,16 @@ private:
 	ResourceManager& operator=(const ResourceManager& t);
 
 public:
-	// Managing assets
+	// Init Deinit
 	//---------------------
 	void Init();
 	void InitFromFile(std::string const& path);
 
 	void Deinit();
+
+	// Managing assets
+	//---------------------
+	AssetDatabase& GetDatabase() { return m_Database; }
 
 	I_Asset* GetAsset(T_Hash const assetId, std::type_info const& type);
 
