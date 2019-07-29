@@ -15,6 +15,8 @@ build/.vs
 *.vcxproj.filters
 *.vcxproj.user
 
+/source/Demo/_generated/
+
 CMakeLists.txt.user
 /build/CMakeCache.txt
 build/**/

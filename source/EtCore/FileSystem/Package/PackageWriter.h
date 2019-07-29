@@ -1,7 +1,7 @@
 #pragma once
+#include "PackageDataStructure.h"
 
 class File;
-class Directory;
 
 
 //---------------------------------
@@ -12,13 +12,15 @@ class Directory;
 class PackageWriter final
 {
 public:
+	typedef std::pair<PkgEntry, File*> T_EntryFilePair;
+
 	~PackageWriter();
 
-	void AddDirectory(Directory* const directory);
+	void AddFile(File* const file, E_CompressionType const compression);
 
 	void Write(std::vector<uint8>& data);
 
 private:
-	std::vector<File*> m_Files;
+	std::vector<T_EntryFilePair> m_Files;
 };
 

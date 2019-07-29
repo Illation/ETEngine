@@ -28,6 +28,8 @@ add_executable(Demo WIN32 ${projectFiles})
 assign_source_group(${projectFiles})
 outputDirectories(Demo)
 
+#add_dependencies(Synthesizer run-cooker)
+
 # linking
 target_link_libraries (Demo EtEngine)
 dependancyLinks(Demo TRUE)

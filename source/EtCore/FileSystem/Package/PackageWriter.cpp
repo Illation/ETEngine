@@ -2,8 +2,6 @@
 
 #include "PackageWriter.h"
 
-#include "PackageDataStructure.h"
-
 #include <EtCore/FileSystem/Entry.h>
 
 
@@ -19,24 +17,45 @@
 //
 PackageWriter::~PackageWriter()
 {
-	for (File* file : m_Files)
+	for (T_EntryFilePair& entryFile : m_Files)
 	{
-		if (file->IsOpen())
+		if (entryFile.second->IsOpen())
 		{
-			file->Close();
+			entryFile.second->Close();
+
+			// delete the file
+			delete entryFile.second;
+			entryFile.second = nullptr;
 		}
 	}
 }
 
 //---------------------------------
-// PackageWriter::AddDirectory
+// PackageWriter::AddFile
 //
-// Add all files in a directory to the file list
+// Add a file to the writer and create a package entry for it - takes ownership
 //
-void PackageWriter::AddDirectory(Directory* const directory)
+void PackageWriter::AddFile(File* const file, E_CompressionType const compression)
 {
-	directory->Mount();
-	directory->GetChildrenRecursive(m_Files);
+	m_Files.emplace_back(PkgEntry(), file);
+	PkgEntry& entry = m_Files[m_Files.size() - 1].first;
+
+	// get the name
+	std::string fullName = file->GetName();
+
+	entry.fileId = GetHash(fullName);
+	entry.compressionType = compression; 
+	entry.nameLength = static_cast<uint16>(fullName.size());
+
+	// try opening the file for now, so that we can get the size, keep it open for copying content later
+	if (!file->Open(FILE_ACCESS_MODE::Read))
+	{
+		LOG("PackageWriter::AddFile > unable to open file '" + fullName + std::string("'!"), Warning);
+		return;
+	}
+
+	// get the file size
+	entry.size = file->GetSize();
 }
 
 //---------------------------------
@@ -59,31 +78,18 @@ void PackageWriter::Write(std::vector<uint8>& data)
 	offset += static_cast<uint64>(sizeof(PkgFileInfo)) * header.numEntries;
 
 	// as we go we can fill in the entry information
-	std::vector<std::pair<uint64, PkgEntry>> entryOffsets;
-	for (File* file : m_Files)
+	std::vector<PkgFileInfo> fileInfos;
+	for (T_EntryFilePair& entryFile : m_Files)
 	{
+		PkgFileInfo info;
+		info.fileId = entryFile.first.fileId;
+		info.offset = offset;
+
 		// we already know the offset so we can add the file entry
-		entryOffsets.emplace_back(offset, PkgEntry());
-		PkgEntry& entry = entryOffsets[entryOffsets.size() - 1].second;
-
-		// get the name
-		std::string fullName = file->GetName();
-
-		entry.fileId = GetHash(fullName);
-		entry.compressionType = E_CompressionType::Store; // for now we just store all files
-		entry.nameLength = static_cast<uint16>(fullName.size());
-
-		// try opening the file for now, so that we can get the size, keep it open for copying content later
-		if (!file->Open(FILE_ACCESS_MODE::Read))
-		{
-			LOG("PackageWriter::Write > unable to open file '" + fullName + std::string("'!"), Warning);
-			continue;
-		}
-
-		// get the file size
-		entry.size = file->GetSize();
+		fileInfos.emplace_back(info);
 
 		// accumulate our offset
+		PkgEntry& entry = entryFile.first;
 		offset += sizeof(PkgEntry) + static_cast<uint64>(entry.nameLength) + entry.size;
 	}
 
@@ -100,12 +106,8 @@ void PackageWriter::Write(std::vector<uint8>& data)
 	offset = sizeof(PkgHeader);	// we can reuse it now that our vector has bin initialized
 
 	// central dir
-	for (std::pair<uint64, PkgEntry> const& entryOffset : entryOffsets)
+	for (PkgFileInfo const& info : fileInfos)
 	{
-		PkgFileInfo info;
-		info.fileId = entryOffset.second.fileId;
-		info.offset = entryOffset.first;
-
 		memcpy(raw + offset, &info, sizeof(PkgFileInfo));
 		offset += sizeof(PkgFileInfo);
 	}
@@ -113,11 +115,11 @@ void PackageWriter::Write(std::vector<uint8>& data)
 	// files
 	for (size_t entryIndex = 0u; entryIndex < m_Files.size(); ++entryIndex)
 	{
-		PkgEntry const& entry = entryOffsets[entryIndex].second;
-		File* file = m_Files[entryIndex];
+		PkgEntry const& entry = m_Files[entryIndex].first;
+		File* file = m_Files[entryIndex].second;
 		std::string fullName = file->GetName();
 
-		if (offset != entryOffsets[entryIndex].first)
+		if (offset != fileInfos[entryIndex].offset)
 		{
 			LOG("PackageWriter::Write > Entry offset doesn't match expected offset - " + fullName, LogLevel::Error);
 		}

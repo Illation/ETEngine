@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Logger.h"
 
+#include <io.h>
+
 #ifdef PLATFORM_Win
 #include "WindowsUtil.h"
 #endif
@@ -196,22 +198,16 @@ void Logger::CheckBreak(LogLevel level)
 //***************
 Logger::ConsoleLogger::ConsoleLogger()
 {
-	// Check if we already have a console
-	//HWND consoleWnd = GetConsoleWindow();
-	//DWORD dwProcessId;
-	//GetWindowThreadProcessId(consoleWnd, &dwProcessId);
-
-	//// if so, free the current console before allocating it
-	//if (GetCurrentProcessId() == dwProcessId)
-	//{
-		FreeConsole();
-	//}
-
-	if (!AllocConsole())
+	// Check if we already have a console attached
+	if (!_isatty(_fileno(stdout)))
 	{
-		std::cout << "Warning: Could not attach to console" << std::endl;
-		CheckBreak(Error);
-		return;
+		// if not, create one
+		if (!AllocConsole())
+		{
+			std::cout << "Warning: Could not attach to console" << std::endl;
+			CheckBreak(Error);
+			return;
+		}
 	}
 
 	// Redirect the CRT standard input, output, and error handles to the console
