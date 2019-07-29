@@ -6,6 +6,8 @@
 
 #include <EtCore/FileSystem/FileUtil.h>
 
+#include <Demo/_generated/compiled_package.h>
+
 
 void SetDebuggingOptions();
 
@@ -15,6 +17,8 @@ int main(int argc, char *argv[])
 	UNUSED( argv );
 
 	SetDebuggingOptions();
+
+	unsigned char const* resourcePackage = GetCompiledData_compiled_package();
 
 	// working dir
 	if (argc > 0)

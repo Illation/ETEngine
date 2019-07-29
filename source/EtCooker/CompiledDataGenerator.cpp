@@ -68,13 +68,16 @@ std::string GetHeaderString(std::string const& name, std::string const& compiled
 	return std::string(
 		"#pragma once\n"
 		"\n"
-		"unsigned char const* GetCompiledData_") + name + std::string("() { return generated::") + compiledDataName + std::string("; }\n"
-		"\n"
 		"namespace generated {\n"
 		"\n"
-		"	static unsigned char* ") + compiledDataName + std::string(";\n"
+		"struct wrapper\n"
+		"{\n"
+		"\tstatic unsigned char const ") + compiledDataName + std::string("[];\n"
+		"};\n"
 		"\n"
 		"} // namespace generated\n"
+		"\n"
+		"unsigned char const* GetCompiledData_") + name + std::string("();\n"
 		);
 }
 
@@ -91,13 +94,19 @@ std::string GetSourceString(std::vector<uint8> const& data, std::string const& n
 
 	// begin of array
 	ret += 
+		"\n"
+		"unsigned char const* GetCompiledData_" + name + std::string("()\n"
+		"{\n"
+		"\treturn generated::wrapper::") + compiledDataName + std::string(";\n"
+		"}\n"
+		"\n"
 		"namespace generated { \n"
 		"\n"
-		+ compiledDataName + std::string(" = static unsigned char[]({");
+		"unsigned char const wrapper::") + compiledDataName + std::string("[] = {");
 
 	// end of file
 	std::string eof(
-		" });\n"
+		" };\n"
 		"\n"
 		"} // namespace generated\n");
 
@@ -107,7 +116,7 @@ std::string GetSourceString(std::vector<uint8> const& data, std::string const& n
 	ret.reserve(ret.size() + data.size() * s_NumHexChars + eof.size() + s_StringSizeBuffer);
 
 	// add the bytes
-	static size_t const s_BytesPerLine = 8u;
+	static size_t const s_BytesPerLine = 16u;
 	static unsigned char s_HexChars[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
 	for (size_t dataIdx = 0u; dataIdx < data.size(); ++dataIdx)
@@ -116,6 +125,10 @@ std::string GetSourceString(std::vector<uint8> const& data, std::string const& n
 		if (dataIdx % s_BytesPerLine == 0u)
 		{
 			ret += "\n\t";
+		}
+		else if (dataIdx % (s_BytesPerLine / 2) == 0u)
+		{
+			ret += "    ";
 		}
 		else
 		{

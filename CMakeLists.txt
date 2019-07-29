@@ -43,6 +43,7 @@ assign_source_group(${generalFiles})
 # all other targets are under source and resources
 ##################################################
 
+add_subdirectory (resources)
 add_subdirectory (source)
 
 # make the Synth the startup project
