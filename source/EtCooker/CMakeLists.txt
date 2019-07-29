@@ -37,4 +37,4 @@ libIncludeDirs()
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_include_directories (EtCooker PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-installDlls(EtCooker)
+copyDllCommand(EtCooker)

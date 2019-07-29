@@ -43,6 +43,10 @@ int main(int argc, char *argv[])
 	// Create a package writer
 	PackageWriter packageWriter;
 
+	// add the asset database to the compiled package
+	File* dbFile = new File(databasePath, nullptr);
+	packageWriter.AddFile(dbFile, E_CompressionType::Store);
+
 	// Loop over files - add them to the writer
 	ResourceManager::AssetDatabase& db = ResourceManager::GetInstance()->GetDatabase();
 	for (ResourceManager::AssetDatabase::AssetCache& cache : db.caches)

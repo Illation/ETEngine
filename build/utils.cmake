@@ -159,11 +159,29 @@ function(dependancyLinks TARGET _useSdlMain)
 endfunction(dependancyLinks)
 
 
+# place a list of unified libraries in the out list
+####################################################
+function(getUniLibs out_list)
+	set (${out_list} "sdl2" "freeImage" "freetype" "assimp" "openAL" PARENT_SCOPE)
+endfunction(getUniLibs)
+
+
+# place a list of separated libraries in the out list
+######################################################
+function(getSepLibs out_list)
+	set (${out_list} "bullet" "rttr" PARENT_SCOPE)
+endfunction(getSepLibs)
+
+
 # link to all dependancies
 ###########################
 function(libIncludeDirs)
 
-	list (APPEND libs "sdl2" "freeImage" "freetype" "assimp" "openAL" "rttr" "bullet")
+	set(libs )
+	getUniLibs(libs)
+	set(sep_libs )
+	getSepLibs(sep_libs)
+	list (APPEND libs ${sep_libs})
 
 	foreach(_lib ${libs})
 		include_directories("${PROJECT_BINARY_DIR}/../dependancies/include/${_lib}/")	
@@ -172,22 +190,92 @@ function(libIncludeDirs)
 endfunction(libIncludeDirs)
 
 
-# install everything in the appropriate directory according to configuration
-###########################
+# copy dll (and pdb) files in the appropriate directory according to configuration - post build command version
+################################################################################################################
+function(copyDllCommand _target)
+
+	# paths for our libraries depend on the architecture we compile for
+	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+		set(_p "x64")
+	 else() 
+		set(_p "x32")
+	endif()
+
+	set(uni_libs )
+	getUniLibs(uni_libs)
+	set(sep_libs )
+	getSepLibs(sep_libs)
+
+	# where the lib files live
+	set(_cfg "Release") 
+	if(("$<CONFIG>" STREQUAL "Debug") OR ("$<CONFIG>" STREQUAL "DebugEditor"))
+		set(_cfg "Debug")
+	
+		# for debug applications we also copy pdbs	
+		foreach(_lib ${uni_libs})
+			file(GLOB pdbs ${PROJECT_SOURCE_DIR}/dependancies/${_p}/${_lib}/*.pdb)
+			foreach(_pdb ${pdbs})
+				add_custom_command(TARGET ${_target} 
+					POST_BUILD
+					COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_pdb}" $<TARGET_FILE_DIR:${_target}>
+					COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_pdb}" 
+				)
+			endforeach()
+		endforeach()
+		foreach(_lib ${sep_libs})
+			file(GLOB pdbs ${PROJECT_SOURCE_DIR}/dependancies/${_p}/${_lib}/${_cfg}/*.pdb)
+			foreach(_pdb ${pdbs})
+				add_custom_command(TARGET ${_target} 
+					POST_BUILD
+					COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_pdb}" $<TARGET_FILE_DIR:${_target}>
+					COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_pdb}" 
+				)
+			endforeach()
+		endforeach()
+	endif()
+
+	foreach(_lib ${uni_libs})
+		file(GLOB dlls ${PROJECT_SOURCE_DIR}/dependancies/${_p}/${_lib}/*.dll)
+		foreach(_dll ${dlls})
+			add_custom_command(TARGET ${_target} 
+				POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_dll}" $<TARGET_FILE_DIR:${_target}> 
+				COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_dll}" 
+			)
+		endforeach()
+	endforeach()
+	foreach(_lib ${sep_libs})
+		file(GLOB dlls ${PROJECT_SOURCE_DIR}/dependancies/${_p}/${_lib}/${_cfg}/*.dll)
+		foreach(_dll ${dlls})
+			add_custom_command(TARGET ${_target} 
+				POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_dll}" $<TARGET_FILE_DIR:${_target}> 
+				COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_dll}" 
+			)
+		endforeach()
+	endforeach()
+
+endfunction(copyDllCommand)
+
+
+# install dll (and pdb) files in the appropriate directory according to configuration
+######################################################################################
 function(installDlls TARGET)
 
 	set(projectBase "${PROJECT_BINARY_DIR}/..")
 	set(baseBinDir "${projectBase}/bin")
 
-	# paths for our libraries depend on the architecture we compile fo
+	# paths for our libraries depend on the architecture we compile for
 	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
 		set(platform "x64")
 	 else() 
 		set(platform "x32")
 	endif()
 
-	list (APPEND uni_libs "sdl2" "freeImage" "freetype" "assimp" "openAL")
-	list (APPEND sep_libs "bullet" "rttr")
+	set(uni_libs )
+	getUniLibs(uni_libs)
+	set(sep_libs )
+	getSepLibs(sep_libs)
 
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
 
@@ -232,7 +320,7 @@ endfunction(installDlls)
 
 
 # install everything in the appropriate directory according to configuration
-###########################
+#############################################################################
 function(installResources TARGET)
 
 	set(projectBase "${PROJECT_BINARY_DIR}/..")
