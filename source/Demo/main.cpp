@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/FileSystem/Package/Package.h>
 
 #include <Demo/_generated/compiled_package.h>
 
@@ -18,7 +19,7 @@ int main(int argc, char *argv[])
 
 	SetDebuggingOptions();
 
-	unsigned char const* resourcePackage = GetCompiledData_compiled_package();
+	Package pkg(GetCompiledData_compiled_package());
 
 	// working dir
 	if (argc > 0)
