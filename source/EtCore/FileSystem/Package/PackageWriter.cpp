@@ -3,6 +3,24 @@
 #include "PackageWriter.h"
 
 #include <EtCore/FileSystem/Entry.h>
+#include <EtCore/FileSystem/FileUtil.h>
+
+
+//===================================
+// Package Writer :: File Entry Info
+//===================================
+
+
+//---------------------------------------------
+// PackageWriter::FileEntryInfo::FileEntryInfo
+//
+// File entry info constructor that assigns all members
+//
+PackageWriter::FileEntryInfo::FileEntryInfo(PkgEntry const& lEntry, File* const lFile, std::string const& lRelName) 
+	: entry(lEntry)
+	, file(lFile)
+	, relName(lRelName)
+{ }
 
 
 //======================
@@ -11,21 +29,30 @@
 
 
 //---------------------------------
+// PackageWriter::PackageWriter
+//
+// Construct a package writer while specifying the root directory - this will be used to resolve relative file paths
+//
+PackageWriter::PackageWriter(std::string const& rootDir)
+	: m_RootDir(rootDir)
+{ }
+
+//---------------------------------
 // PackageWriter::~PackageWriter
 //
 // Close all files in destructor
 //
 PackageWriter::~PackageWriter()
 {
-	for (T_EntryFilePair& entryFile : m_Files)
+	for (FileEntryInfo& entryFile : m_Files)
 	{
-		if (entryFile.second->IsOpen())
+		if (entryFile.file->IsOpen())
 		{
-			entryFile.second->Close();
+			entryFile.file->Close();
 
 			// delete the file
-			delete entryFile.second;
-			entryFile.second = nullptr;
+			delete entryFile.file;
+			entryFile.file = nullptr;
 		}
 	}
 }
@@ -37,20 +64,21 @@ PackageWriter::~PackageWriter()
 //
 void PackageWriter::AddFile(File* const file, E_CompressionType const compression)
 {
-	m_Files.emplace_back(PkgEntry(), file);
-	PkgEntry& entry = m_Files[m_Files.size() - 1].first;
+	m_Files.emplace_back(PkgEntry(), file, std::string());
+	PkgEntry& entry = m_Files[m_Files.size() - 1].entry;
+	std::string& relName = m_Files[m_Files.size() - 1].relName;
 
-	// get the name
-	std::string fullName = file->GetName();
+	// assign the name the relative path of the file compared to the root directory of the package writer
+	relName = FileUtil::GetRelativePath(file->GetName(), m_RootDir);
 
-	entry.fileId = GetHash(fullName);
+	entry.fileId = GetHash(relName);
 	entry.compressionType = compression; 
-	entry.nameLength = static_cast<uint16>(fullName.size());
+	entry.nameLength = static_cast<uint16>(relName.size());
 
 	// try opening the file for now, so that we can get the size, keep it open for copying content later
 	if (!file->Open(FILE_ACCESS_MODE::Read))
 	{
-		LOG("PackageWriter::AddFile > unable to open file '" + fullName + std::string("'!"), Warning);
+		LOG("PackageWriter::AddFile > unable to open file '" + relName + std::string("'!"), Warning);
 		return;
 	}
 
@@ -79,17 +107,17 @@ void PackageWriter::Write(std::vector<uint8>& data)
 
 	// as we go we can fill in the entry information
 	std::vector<PkgFileInfo> fileInfos;
-	for (T_EntryFilePair& entryFile : m_Files)
+	for (FileEntryInfo& entryFile : m_Files)
 	{
 		PkgFileInfo info;
-		info.fileId = entryFile.first.fileId;
+		info.fileId = entryFile.entry.fileId;
 		info.offset = offset;
 
 		// we already know the offset so we can add the file entry
 		fileInfos.emplace_back(info);
 
 		// accumulate our offset
-		PkgEntry& entry = entryFile.first;
+		PkgEntry& entry = entryFile.entry;
 		offset += sizeof(PkgEntry) + static_cast<uint64>(entry.nameLength) + entry.size;
 	}
 
@@ -115,38 +143,35 @@ void PackageWriter::Write(std::vector<uint8>& data)
 	// files
 	for (size_t entryIndex = 0u; entryIndex < m_Files.size(); ++entryIndex)
 	{
-		PkgEntry const& entry = m_Files[entryIndex].first;
-		File* file = m_Files[entryIndex].second;
-		std::string fullName = file->GetName();
+		FileEntryInfo& entryFile = m_Files[entryIndex];
 
 		if (offset != fileInfos[entryIndex].offset)
 		{
-			LOG("PackageWriter::Write > Entry offset doesn't match expected offset - " + fullName, LogLevel::Error);
+			LOG("PackageWriter::Write > Entry offset doesn't match expected offset - " + entryFile.relName, LogLevel::Error);
 		}
 
 		// copy the entry
-		memcpy(raw + offset, &entry, sizeof(PkgEntry));
+		memcpy(raw + offset, &entryFile.entry, sizeof(PkgEntry));
 		offset += sizeof(PkgEntry);
 
 		// copy the file name string
-		if (entry.nameLength != fullName.size())
+		if (entryFile.entry.nameLength != entryFile.relName.size())
 		{
-			LOG("PackageWriter::Write > Entry name length doesn't match file name length - " + fullName, LogLevel::Error);
+			LOG("PackageWriter::Write > Entry name length doesn't match file name length - " + entryFile.relName, LogLevel::Error);
 		}
 
-		memcpy(raw + offset, fullName.c_str(), entry.nameLength);
-		offset += entry.nameLength;
+		memcpy(raw + offset, entryFile.relName.c_str(), entryFile.entry.nameLength);
+		offset += entryFile.entry.nameLength;
 
 		// copy the file content
-		std::vector<uint8> fileContent = file->Read();
+		std::vector<uint8> fileContent = entryFile.file->Read();
 
-		if (entry.size != static_cast<uint64>(fileContent.size()))
+		if (entryFile.entry.size != static_cast<uint64>(fileContent.size()))
 		{
-			LOG("PackageWriter::Write > Entry size doesn't match read file contents size - " + fullName, LogLevel::Error);
+			LOG("PackageWriter::Write > Entry size doesn't match read file contents size - " + entryFile.relName, LogLevel::Error);
 		}
 
-		memcpy(raw + offset, fileContent.data(), entry.size);
-		offset += entry.size;
+		memcpy(raw + offset, fileContent.data(), entryFile.entry.size);
+		offset += entryFile.entry.size;
 	}
 }
-

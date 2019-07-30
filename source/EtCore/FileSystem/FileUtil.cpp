@@ -12,6 +12,7 @@
 // static variables
 static std::vector<std::string> newLineTokens{ "\r\n", "\n\r", "\n", "\r" };
 static std::vector<char> pathDelimiters{ '\\', '/' };
+static char const s_PathDelimiter = '/';
 std::string FileUtil::s_ExePath = std::string();
 
 
@@ -136,7 +137,8 @@ std::string FileUtil::ExtractPath(std::string const& fileName)
 		}
 	}
 
-	if (closestIdx == std::string::npos)
+	// if the closest "delimiter is not an actual delimiter", the file has no path attached
+	if (std::find(pathDelimiters.cbegin(), pathDelimiters.cend(), fileName[closestIdx]) == pathDelimiters.cend())
 	{
 		return "";
 	}
@@ -162,7 +164,8 @@ std::string FileUtil::ExtractName(std::string const& fileName)
 		}
 	}
 
-	if (closestIdx == std::string::npos)
+	// if the closest "delimiter is not an actual delimiter", the file has no path attached
+	if (std::find(pathDelimiters.cbegin(), pathDelimiters.cend(), fileName[closestIdx]) == pathDelimiters.cend())
 	{
 		return fileName;
 	}
@@ -179,6 +182,25 @@ void FileUtil::SetExecutablePath(std::string const& path)
 {
 	// set the executable path to the part without the exe name
 	s_ExePath = ExtractPath(path);
+	UnifyPathDelimiters(s_ExePath);
+}
+
+//---------------------------------
+// FileUtil::RemoveExcessPathDelimiters
+//
+// Makes all path delimiters forward slashes
+//
+void FileUtil::UnifyPathDelimiters(std::string& path)
+{
+	// loop from the back so that our index stays valid as we remove elements
+	for (size_t idx = path.size() - 1; idx > 0; --idx)
+	{
+		// check if the current character is a delimiter
+		if (std::find(pathDelimiters.cbegin(), pathDelimiters.cend(), path[idx]) != pathDelimiters.cend())
+		{
+			path[idx] = s_PathDelimiter;
+		}
+	}
 }
 
 //---------------------------------
@@ -292,7 +314,74 @@ std::string FileUtil::GetAbsolutePath(std::string const& path)
 		isRelative = RemoveRelativePath(combinedPath);
 	}
 
+	UnifyPathDelimiters(combinedPath);
 	return combinedPath;
+}
+
+//---------------------------------
+// FileUtil::GetRelativePath
+//
+// Converts inPath to a path relative to rootPath - assumes both arguments paths are relative to the executable directory
+//
+std::string FileUtil::GetRelativePath(std::string const& inPath, std::string const& rootPath)
+{
+	// Make sure both paths have the same format
+	std::string absIn = GetAbsolutePath(inPath);
+	std::string absRoot = GetAbsolutePath(rootPath);
+
+	// Find the first letter that is different
+	size_t idx = 0u;
+	for (;idx < std::min(absIn.size(), absRoot.size()); ++idx)
+	{
+		if (absIn[idx] != absRoot[idx])
+		{
+			break;
+		}
+	}
+
+	// trace backwards to the last path delimiter - delimiters should be all the same character (s_PathDelimiter) now due to GetAbsolutePath()
+	while (idx > 0u)
+	{
+		--idx;
+		if (absIn[idx] == s_PathDelimiter)
+		{
+			break;
+		}
+	}
+
+	// figure out how many times we need to go to the parent directory
+	size_t searchStart = idx; 
+	size_t numParentDirs = 0u;
+	for (;;)
+	{
+		searchStart = rootPath.find(s_PathDelimiter, ++searchStart); // idx is on a path delimiter right now, so we start from the next character
+		if (searchStart != std::string::npos) // if we found another delimiter we have more parent directories
+		{
+			++numParentDirs;
+		}
+		else
+		{
+			break; // if we can't find any more we have reached the end of the string
+		}
+	}
+
+	// build our output path
+
+	// first escape the root directory into the first common directory
+	std::string retVal;
+	while (numParentDirs > 0u)
+	{
+		retVal += "../";
+		--numParentDirs;
+	}
+	
+	// append the rest of our input path
+	// if the current common index is a delimiter we skip that
+	if (absIn[idx] == s_PathDelimiter)
+	{
+		++idx;
+	}
+	return retVal + absIn.substr(idx);
 }
 
 //---------------------------------

@@ -22,9 +22,11 @@ public:
 	static void SetExecutablePath(std::string const& path);
 	static std::string const& GetExecutableDir() { return s_ExePath; }
 
+	static void UnifyPathDelimiters(std::string& path);
 	static void RemoveExcessPathDelimiters(std::string& path);
 	static bool RemoveRelativePath(std::string& path);
 	static std::string GetAbsolutePath(std::string const& path);
+	static std::string GetRelativePath(std::string const& inPath, std::string const& rootPath);
 
 	static bool IsAbsolutePath(std::string const& path);
 

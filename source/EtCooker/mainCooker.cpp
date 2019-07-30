@@ -40,8 +40,8 @@ int main(int argc, char *argv[])
 	ResourceManager::GetInstance()->InitFromFile(databasePath);
 	std::string dbBase = FileUtil::ExtractPath(databasePath);
 
-	// Create a package writer
-	PackageWriter packageWriter;
+	// Create a package writer - all file paths will be written relative to our database directory
+	PackageWriter packageWriter(dbBase);
 
 	// add the asset database to the compiled package
 	File* dbFile = new File(databasePath, nullptr);
