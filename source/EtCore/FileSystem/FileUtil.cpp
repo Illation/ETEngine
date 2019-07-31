@@ -14,16 +14,27 @@ static std::vector<std::string> newLineTokens{ "\r\n", "\n\r", "\n", "\r" };
 static std::vector<char> pathDelimiters{ '\\', '/' };
 static char const s_PathDelimiter = '/';
 std::string FileUtil::s_ExePath = std::string();
+uint8 const* FileUtil::s_CompiledData = nullptr;
 
+
+//---------------------------------
+// FileUtil::AsText
+//
+// Converts a byte vector to an std::string
+//
+std::string FileUtil::AsText(const std::vector<uint8> &data)
+{
+	return std::string(data.begin(), data.end());
+}
 
 //---------------------------------
 // FileUtil::AsText
 //
 // Converts a byte array to an std::string
 //
-std::string FileUtil::AsText(const std::vector<uint8> &data)
+void FileUtil::AsText(uint8 const* const data, uint64 const size, std::string& outText)
 {
-	return std::string(data.begin(), data.end());
+	outText.append(reinterpret_cast<char const*>(data), static_cast<size_t>(size));
 }
 
 //---------------------------------
@@ -183,6 +194,16 @@ void FileUtil::SetExecutablePath(std::string const& path)
 	// set the executable path to the part without the exe name
 	s_ExePath = ExtractPath(path);
 	UnifyPathDelimiters(s_ExePath);
+}
+
+//---------------------------------
+// FileUtil::SetCompiledData
+//
+// Sets the compiled data, should only be called once at startup
+//
+void FileUtil::SetCompiledData(uint8 const* const data)
+{
+	s_CompiledData = data;
 }
 
 //---------------------------------

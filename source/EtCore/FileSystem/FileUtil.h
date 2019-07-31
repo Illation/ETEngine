@@ -9,6 +9,7 @@ class FileUtil
 {
 public:
 	static std::string AsText(const std::vector<uint8> &data);
+	static void AsText(uint8 const* const data, uint64 const size, std::string& outText);
 	static std::vector<uint8> FromText(const std::string &data);
 
 	static bool ParseLine(std::string &input, std::string &extractedLine);
@@ -22,6 +23,9 @@ public:
 	static void SetExecutablePath(std::string const& path);
 	static std::string const& GetExecutableDir() { return s_ExePath; }
 
+	static void SetCompiledData(uint8 const* const data);
+	static uint8 const* GetCompiledData() { return s_CompiledData; }
+
 	static void UnifyPathDelimiters(std::string& path);
 	static void RemoveExcessPathDelimiters(std::string& path);
 	static bool RemoveRelativePath(std::string& path);
@@ -32,4 +36,5 @@ public:
 
 private:
 	static std::string s_ExePath;
+	static uint8 const* s_CompiledData;
 };

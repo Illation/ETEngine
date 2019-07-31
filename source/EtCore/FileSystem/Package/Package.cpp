@@ -6,7 +6,7 @@
 
 
 //=====================
-// Package
+// Memory Package
 //=====================
 
 
@@ -14,11 +14,11 @@
 //////////////
 
 //---------------------------------
-// Package::Package
+// MemoryPackage::MemoryPackage
 //
-// Construct a package with a pointer to its data, initialize the entry map
+// Construct a memory package with a pointer to its data, initialize the entry map
 //
-Package::Package(uint8 const* const data)
+MemoryPackage::MemoryPackage(uint8 const* const data)
 	: m_Data(data)
 {
 	InitFileListFromData();
@@ -29,21 +29,50 @@ Package::Package(uint8 const* const data)
 ////////////
 
 //---------------------------------
-// Package::GetFile
+// MemoryPackage::GetEntry
 //
-// Get a package file from a package using its hashed ID
+// Get a package entry from a package using its hashed ID
 //
-Package::PackageFile const* Package::GetFile(T_Hash const id) const
+MemoryPackage::PackageEntry const* MemoryPackage::GetEntry(T_Hash const id) const
 {
-	return nullptr;
+	auto findResult = m_Entries.find(id);
+
+	// nullptr indicates we didn't find an entry with the ID
+	if (findResult == m_Entries.cend())
+	{
+		return nullptr;
+	}
+
+	// pointer to value
+	return &(findResult->second);
 }
 
 //---------------------------------
-// Package::InitFileListFromData
+// MemoryPackage::GetEntryData
+//
+// Get the data from a package entry, with size being an out parameter. 
+// If no entry was found for the ID, we return nullptr and size is undefined.
+//
+uint8 const* MemoryPackage::GetEntryData(T_Hash const id, uint64& size)
+{
+	// try getting the file
+	PackageEntry const* pkgEntry = GetEntry(id);
+	if (pkgEntry == nullptr)
+	{
+		return nullptr;
+	}
+
+	// return the content of the file
+	size = pkgEntry->size;
+	return pkgEntry->content;
+}
+
+//---------------------------------
+// MemoryPackage::InitFileListFromData
 //
 // Initializes the entry map
 //
-void Package::InitFileListFromData()
+void MemoryPackage::InitFileListFromData()
 {
 	// read the package header 
 	PkgHeader const* pkgHeader = reinterpret_cast<PkgHeader const*>(m_Data);
@@ -78,7 +107,7 @@ void Package::InitFileListFromData()
 		}
 
 		// Create our package file in the map and edit it after to avoid unnecessary file copying
-		auto emplaceIt = m_Entries.try_emplace(entry->fileId, PackageFile());
+		auto emplaceIt = m_Entries.try_emplace(entry->fileId, PackageEntry());
 
 		if (!emplaceIt.second)
 		{
@@ -87,11 +116,11 @@ void Package::InitFileListFromData()
 			continue;
 		}
 
-		PackageFile& pkgFile = emplaceIt.first->second;
+		PackageEntry& pkgEntry = emplaceIt.first->second;
 
 		// read the const size variables from the package file
-		pkgFile.compressionType = entry->compressionType;
-		pkgFile.size = entry->size;
+		pkgEntry.compressionType = entry->compressionType;
+		pkgEntry.size = entry->size;
 
 		// read the file name and split 
 		std::string fullName;
@@ -100,10 +129,10 @@ void Package::InitFileListFromData()
 			fullName += static_cast<char>(m_Data[offset++]);
 		}
 
-		pkgFile.fileName = FileUtil::ExtractName(fullName);
-		pkgFile.path = FileUtil::ExtractPath(fullName);
+		pkgEntry.fileName = FileUtil::ExtractName(fullName);
+		pkgEntry.path = FileUtil::ExtractPath(fullName);
 
 		// set the pointer to the content
-		pkgFile.content = m_Data + offset;
+		pkgEntry.content = m_Data + offset;
 	}
 }

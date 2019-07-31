@@ -1,11 +1,11 @@
 #pragma once
 #include <EtCore/Helper/Singleton.h>
 
-#include <EtCore/Helper/Hash.h>
+#include "AssetDatabase.h"
 
-#include "Asset.h"
 
-#include <rttr/type>
+// forward decl
+class I_Package;
 
 
 //---------------------------------
@@ -23,33 +23,6 @@ public:
 
 	static constexpr char s_DatabasePath[] = "asset_database.json";
 
-	//---------------------------------
-	// AssetDatabase
-	//
-	// Container for all assets
-	//
-	struct AssetDatabase final
-	{
-	public:
-		// Definitions
-		//---------------------
-		typedef std::vector<I_Asset*> T_AssetList;
-		struct AssetCache final
-		{
-			std::type_info const& GetType() const;
-
-			T_AssetList cache;
-
-			RTTR_ENABLE()
-		};
-
-		// Data
-		////////
-		std::vector<AssetCache> caches;
-
-		RTTR_ENABLE()
-	};
-
 private:
 	// Construct destruct
 	//---------------------
@@ -62,7 +35,7 @@ private:
 public:
 	// Init Deinit
 	//---------------------
-	void Init();
+	void InitFromCompiledData();
 	void InitFromFile(std::string const& path);
 
 	void Deinit();
@@ -84,6 +57,8 @@ private:
 	///////
 
 	AssetDatabase m_Database;
+	std::vector<std::pair<T_Hash, I_Package*>> m_Packages;
 };
+
 
 #include "ResourceManager.inl"

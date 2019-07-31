@@ -1,18 +1,26 @@
 {
   "asset database": {
+    "packages": [
+      {
+        "name": "content1",
+        "path": "content/"
+      }
+    ],
     "caches": [
       {
         "cache": [
           {
             "stub asset": {
               "name": "OscillatorRenderer.glsl",
-              "path": "assets/"
+              "path": "assets/",
+              "package": ""
             }
           },
           {
             "stub asset": {
               "name": "lorem_ipsum.txt",
-              "path": "assets/"
+              "path": "assets/",
+              "package": "content1"
             }
           }
         ]

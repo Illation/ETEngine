@@ -130,19 +130,8 @@ bool DeserializeFromFile(std::string const& filePath, T& outObject)
 
 	// for now json is the only supported format
 	if (ext == "json")
-	{
-		// Read the file into a json parser
-		JSON::Parser parser = JSON::Parser(content);
-
-		// if we don't have a root object parsing json was unsuccesful
-		JSON::Object* root = parser.GetRoot();
-		if (!root)
-		{
-			LOG("DeserializeFromFile > unable to parse '" + filePath + std::string("' to JSON!"), Warning);
-			return false;
-		}
-
-		return DeserializeFromJson(root, outObject);
+	{		
+		return DeserializeFromJsonString(content, outObject);
 	}
 
 	LOG("DeserializeFromFile > File type '" + ext + std::string("' not supported!"), Warning);
@@ -169,14 +158,26 @@ bool DeserializeFromJsonResource(std::string const& resourcePath, T& outObject)
 	// read binary resource into a string
 	std::string const content(FileUtil::AsText(data));
 
+	return DeserializeFromJsonString(content, outObject);
+}
+
+//---------------------------------
+// DeserializeFromJsonString
+//
+// Create the reflected type from a json string
+// Returns nullptr if deserialization is unsuccsesful. 
+//
+template<typename T>
+bool DeserializeFromJsonString(std::string const& jsonString, T& outObject)
+{
 	// Read the string into a json parser
-	JSON::Parser parser = JSON::Parser(content);
+	JSON::Parser parser = JSON::Parser(jsonString);
 
 	// if we don't have a root object parsing json was unsuccesful
 	JSON::Object* root = parser.GetRoot();
 	if (!root)
 	{
-		LOG("DeserializeFromJsonResource > unable to parse '" + resourcePath + std::string("' to JSON!"), Warning);
+		LOG("DeserializeFromJsonString > unable to parse string to JSON!", Warning);
 		return false;
 	}
 

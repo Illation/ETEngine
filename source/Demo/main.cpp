@@ -5,25 +5,34 @@
 #include <iostream>
 
 #include <EtCore/FileSystem/FileUtil.h>
-#include <EtCore/FileSystem/Package/Package.h>
+
+#include <Engine/linkerHelper.h>
 
 #include <Demo/_generated/compiled_package.h>
 
 
 void SetDebuggingOptions();
 
+//---------------------------------
+// main
+//
+// Entry point into the framework. SDL does some sneaky magic that calls this function, so it's not the first function to run
+//
 int main(int argc, char *argv[])
 {
-	UNUSED( argc );
-	UNUSED( argv );
-
+	// set up environment
+	//-------------------------
 	SetDebuggingOptions();
 
-	Package pkg(GetCompiledData_compiled_package());
+	ForceLinking(); // makes sure the linker doesn't ignore reflection only data
+
+	// pass compiled data into core libraries so that core systems have access to it
+	FileUtil::SetCompiledData(GetCompiledData_compiled_package());
 
 	// working dir
 	if (argc > 0)
 	{
+		// all engine files are seen as relative to the executable path by default, so it needs to be set
 		FileUtil::SetExecutablePath(argv[0]);
 	}
 	else
@@ -32,12 +41,20 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
+	// run the actual framework
+	//--------------------------
 	MainFramework* pFW = new MainFramework();
 	pFW->Run();
+
 	delete pFW;
 	return 0;
 }
 
+//---------------------------------
+// SetDebuggingOptions
+//
+// On debug builds this will tell us about memory leaks
+//
 void SetDebuggingOptions()
 {
 	//notify user if heap is corrupt

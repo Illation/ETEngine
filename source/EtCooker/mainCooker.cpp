@@ -1,6 +1,5 @@
 #include <EtCore/stdafx.h>
 
-#include "linkerHelper.h"
 #include "CompiledDataGenerator.h"
 
 #include <EtCore/Helper/Logger.h>
@@ -8,6 +7,8 @@
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/Package/PackageWriter.h>
 #include <EtCore/Content/ResourceManager.h>
+
+#include <Engine/linkerHelper.h>
 
 
 //---------------------------------
@@ -48,8 +49,8 @@ int main(int argc, char *argv[])
 	packageWriter.AddFile(dbFile, E_CompressionType::Store);
 
 	// Loop over files - add them to the writer
-	ResourceManager::AssetDatabase& db = ResourceManager::GetInstance()->GetDatabase();
-	for (ResourceManager::AssetDatabase::AssetCache& cache : db.caches)
+	AssetDatabase& db = ResourceManager::GetInstance()->GetDatabase();
+	for (AssetDatabase::AssetCache& cache : db.caches)
 	{
 		for (I_Asset* asset : cache.cache)
 		{

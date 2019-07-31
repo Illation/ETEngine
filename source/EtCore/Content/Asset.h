@@ -32,9 +32,14 @@ public:
 	void SetName(std::string const& val);
 
 	std::string const& GetPath() const { return m_Path; }
-	void SetPath(std::string const& val) { m_Path = val; }
+	void SetPath(std::string const& val);
+
+	std::string const& GetPackageName() const { return m_PackageName; }
+	void SetPackageName(std::string const& val);
 
 	T_Hash GetId() const { return m_Id; }
+	T_Hash GetPackageId() const { return m_PackageId; }
+	T_Hash GetPackageEntryId() const { return m_PackageEntryId; }
 
 	void Load();
 
@@ -45,9 +50,12 @@ protected:
 	// reflected
 	std::string m_Name;
 	std::string m_Path;
+	std::string m_PackageName; // an empty package implies that this is a compiled asset
 
 	// derived
 	T_Hash m_Id;
+	T_Hash m_PackageId;
+	T_Hash m_PackageEntryId;
 
 	RTTR_ENABLE()
 };

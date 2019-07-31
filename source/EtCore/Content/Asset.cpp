@@ -18,6 +18,7 @@ RTTR_REGISTRATION
 	registration::class_<I_Asset>("asset")
 		.property("name", &I_Asset::GetName, &I_Asset::SetName)
 		.property("path", &I_Asset::GetPath, &I_Asset::SetPath)
+		.property("package", &I_Asset::GetPackageName, &I_Asset::SetPackageName)
 		;
 }
 
@@ -42,12 +43,35 @@ I_Asset::~I_Asset()
 //---------------------------------
 // I_Asset::SetName
 //
-// Sets the name of an asset and generates its ID
+// Sets the name of an asset and generates its ID and package entry ID
 //
 void I_Asset::SetName(std::string const& val)
 {
 	m_Name = val;
 	m_Id = GetHash(m_Name);
+	m_PackageEntryId = GetHash(m_Path + m_Name);
+}
+
+//---------------------------------
+// I_Asset::SetPath
+//
+// Sets the path of an asset and regenerates the package entry ID
+//
+void I_Asset::SetPath(std::string const& val)
+{
+	m_Path = val;
+	m_PackageEntryId = GetHash(m_Path + m_Name);
+}
+
+//---------------------------------
+// I_Asset::SetPackageName
+//
+// Sets the name of the package the asset lives in and generates its package ID
+//
+void I_Asset::SetPackageName(std::string const& val)
+{
+	m_PackageName = val;
+	m_PackageId = GetHash(m_PackageName);
 }
 
 //---------------------------------

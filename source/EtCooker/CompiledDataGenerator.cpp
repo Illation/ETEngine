@@ -106,10 +106,12 @@ std::string GetSourceString(std::vector<uint8> const& data, std::string const& n
 		"unsigned char const wrapper::") + compiledDataName + std::string("[] = {");
 
 	// end of file
-	std::string eof(
+	std::string eof;
+	eof += 
 		" };\n"
 		"\n"
-		"} // namespace generated\n");
+		"} // namespace generated\n"
+		"\n";
 
 	// make sure our string is allocated enough space in one go
 	static size_t const s_NumHexChars = 6u;// number of characters per byte

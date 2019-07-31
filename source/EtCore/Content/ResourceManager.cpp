@@ -1,13 +1,10 @@
 #include "stdafx.h"
 #include "ResourceManager.h"
 
-#include "Asset.h"
-
 #include <EtCore/Reflection/Serialization.h>
 
-#include <rttr/registration>
-
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/FileSystem/Package/Package.h>
 
 
 //===================
@@ -15,52 +12,37 @@
 //===================
 
 
-// reflection
-RTTR_REGISTRATION
-{
-	using namespace rttr;
-
-	registration::class_<ResourceManager::AssetDatabase::AssetCache>("asset cache")
-		.property("cache", &ResourceManager::AssetDatabase::AssetCache::cache);
-
-	registration::class_<ResourceManager::AssetDatabase>("asset database")
-		.property("caches", &ResourceManager::AssetDatabase::caches) ;
-}
-
-
-//---------------------------------
-// ResourceManager::AssetDatabase::AssetCache::GetType
-//
-// Get the type of an asset cache
-//
-std::type_info const& ResourceManager::AssetDatabase::AssetCache::GetType() const
-{
-	if (cache.size() > 0)
-	{
-		return cache[0]->GetType();
-	}
-	return typeid(nullptr);
-}
-
-
-// Managing assets
-////////////////////////
-
 ResourceManager::~ResourceManager()
 {
 	Deinit();
 }
 
 //---------------------------------
-// ResourceManager::Init
+// ResourceManager::InitFromCompiledData
 //
-// Load the asset database
+// Load the asset database from raw package data, assuming the raw package contains an entry with an id from s_DatabasePath
 //
-void ResourceManager::Init()
+void ResourceManager::InitFromCompiledData()
 {
-	if (!serialization::DeserializeFromJsonResource(s_DatabasePath, m_Database))
+	// Create a new memory package from the data
+	MemoryPackage* const memPkg = new MemoryPackage(FileUtil::GetCompiledData());
+	m_Packages.emplace_back(0u, memPkg);
+
+	// get the raw json string for the asset database from that package
+	uint64 dataSize = 0u;
+	uint8 const* rawJsonDbBytes = memPkg->GetEntryData(GetHash(s_DatabasePath), dataSize);
+	if (rawJsonDbBytes == nullptr)
 	{
-		LOG("ResourceManager::Init > unable to deserialize asset database at '" + std::string(s_DatabasePath) + std::string("'"), LogLevel::Error);
+		LOG("ResourceManager::InitFromPackageData > unable to retrieve database from memory package at '" + std::string(s_DatabasePath) + 
+			std::string("'", LogLevel::Error));
+	}
+	std::string jsonDbString;
+	FileUtil::AsText(rawJsonDbBytes, dataSize, jsonDbString);
+
+	if (!serialization::DeserializeFromJsonString(jsonDbString, m_Database))
+	{
+		LOG("ResourceManager::InitFromPackageData > unable to deserialize asset database at '" + std::string(s_DatabasePath) + std::string("'"), 
+			LogLevel::Error);
 	}
 }
 
@@ -84,6 +66,7 @@ void ResourceManager::InitFromFile(std::string const& path)
 //
 void ResourceManager::Deinit()
 {
+	// clear the database
 	for (AssetDatabase::AssetCache& cache : m_Database.caches)
 	{
 		for (I_Asset* asset : cache.cache)
@@ -93,6 +76,14 @@ void ResourceManager::Deinit()
 		}
 	}
 	m_Database.caches.clear();
+
+	// clear the package list
+	for (std::pair<T_Hash, I_Package* >& package : m_Packages)
+	{
+		delete package.second;
+		package.second = nullptr;
+	}
+	m_Packages.clear();
 }
 
 //---------------------------------

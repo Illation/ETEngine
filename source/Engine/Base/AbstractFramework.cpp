@@ -10,6 +10,7 @@
 #include <EtCore/Helper/Commands.h>
 #include <EtCore/Helper/PerformanceInfo.h>
 #include <EtCore/UpdateCycle/TickManager.h>
+#include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/SceneGraph/SceneManager.h>
 #include <Engine/GraphicsHelper/LightVolume.h>
@@ -303,6 +304,7 @@ void AbstractFramework::InitializeGame()
 {
 	//Initialize Managers
 	ContentManager::Initialize();
+	ResourceManager::GetInstance()->InitFromCompiledData();
 
 	RenderPipeline::GetInstance()->Initialize();
 
