@@ -1,5 +1,5 @@
 #pragma once
-#include "PackageDataStructure.h"
+#include <EtCore/FileSystem/Package/PackageDataStructure.h>
 
 class File;
 

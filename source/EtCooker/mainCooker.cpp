@@ -1,11 +1,11 @@
 #include <EtCore/stdafx.h>
 
+#include "PackageWriter.h"
 #include "CompiledDataGenerator.h"
 
 #include <EtCore/Helper/Logger.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Entry.h>
-#include <EtCore/FileSystem/Package/PackageWriter.h>
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/linkerHelper.h>

@@ -167,29 +167,52 @@ void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, ivec2 c
 	CheckBreak(level);
 }
 
+#ifndef SHIPPING
+
+//-----------------------
+// Logger::ProcessAssert
+//
+// break on non shipping builds
+//
+void Logger::ProcessAssert(bool const condition, std::string const& caller, std::string const& msg)
+{
+	if (!condition)
+	{
+		Log("[ASSERT] " + caller + std::string(" > ") + msg, LogLevel::Warning, true);
+
+		// break but don't exit
+#ifdef PLATFORM_x32
+		__asm { int 3 };
+#else // PLATFORM_x64
+		__debugbreak();
+#endif 
+	}
+}
+
+#endif // SHIPPING
+
+
+//-----------------------
+// Logger::CheckBreak
+//
+// Breaks on debug builds, exits otherwise
+//
 void Logger::CheckBreak(LogLevel level)
 {
+	if ((m_BreakBitField&level) == level)
+	{
 #if _DEBUG
 
 #ifdef PLATFORM_x32
-	if ((m_BreakBitField&level) == level)
-	{
 		__asm { int 3 };
-	}
 #else // PLATFORM_x64
-	if ((m_BreakBitField&level) == level)
-	{
 		__debugbreak();
-	}
 #endif // PLATFORM_x32
 
 #else // not debug
-	if ((m_BreakBitField&level) == level) 
-	{
 		exit(-1);
-	}
-
 #endif // _DEBUG
+	}
 }
 
 

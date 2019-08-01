@@ -159,11 +159,33 @@ bool File::Open(FILE_ACCESS_MODE mode, FILE_ACCESS_FLAGS flags)
 //
 std::vector<uint8> File::Read()
 {
+	ET_ASSERT(m_IsOpen);
+
 	std::vector<uint8> content;
-	if(!FILE_BASE::ReadFile(m_Handle, content))
+	if(!FILE_BASE::ReadFile(m_Handle, content, GetSize()))
 	{
-		LOG("Reading File failed", Error);
+		LOG("File::Read > Reading File failed", Error);
 	}
+
+	return content;
+}
+
+//---------------------------------
+// File::Read
+//
+// Read from the file
+//
+std::vector<uint8> File::ReadChunk(uint64 const offset, uint64 const numBytes)
+{
+	ET_ASSERT(m_IsOpen);
+	ET_ASSERT(offset + numBytes < GetSize(), "Range of bytes requested exceeds file size!");
+
+	std::vector<uint8> content;
+	if (!FILE_BASE::ReadFile(m_Handle, content, numBytes, offset))
+	{
+		LOG("File::ReadChunk > Reading file failed", Error);
+	}
+
 	return content;
 }
 

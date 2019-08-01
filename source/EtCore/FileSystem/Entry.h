@@ -60,6 +60,7 @@ public:
 	void Close();
 
 	std::vector<uint8> Read();
+	std::vector<uint8> ReadChunk(uint64 const offset, uint64 const numBytes);
 	bool Write(const std::vector<uint8> &lhs);
 	Entry::EntryType GetType()
     	{

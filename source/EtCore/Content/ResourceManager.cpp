@@ -4,7 +4,7 @@
 #include <EtCore/Reflection/Serialization.h>
 
 #include <EtCore/FileSystem/FileUtil.h>
-#include <EtCore/FileSystem/Package/Package.h>
+#include <EtCore/FileSystem/Package/MemoryPackage.h>
 
 
 //===================
@@ -12,6 +12,9 @@
 //===================
 
 
+//---------------------------------
+// ResourceManager::d-tor
+//
 ResourceManager::~ResourceManager()
 {
 	Deinit();
@@ -30,12 +33,9 @@ void ResourceManager::InitFromCompiledData()
 
 	// get the raw json string for the asset database from that package
 	uint64 dataSize = 0u;
-	uint8 const* rawJsonDbBytes = memPkg->GetEntryData(GetHash(s_DatabasePath), dataSize);
-	if (rawJsonDbBytes == nullptr)
-	{
-		LOG("ResourceManager::InitFromPackageData > unable to retrieve database from memory package at '" + std::string(s_DatabasePath) + 
-			std::string("'", LogLevel::Error));
-	}
+	uint8 const* const rawJsonDbBytes = memPkg->GetEntryData(GetHash(s_DatabasePath), dataSize);
+	ET_ASSERT(rawJsonDbBytes != nullptr, "Unable to retrieve database from memory package at '" + std::string(s_DatabasePath) + std::string("'"));
+
 	std::string jsonDbString;
 	FileUtil::AsText(rawJsonDbBytes, dataSize, jsonDbString);
 

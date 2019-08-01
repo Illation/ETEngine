@@ -50,4 +50,16 @@ inline void SafeDelete(T &pObjectToDelete)
 #define TIME ContextManager::GetInstance()->GetActiveContext()->time
 #define LOG(fmt, ...) Logger::Log(fmt, __VA_ARGS__);
 #define PERFORMANCE PerformanceInfo::GetInstance()
+
+// assertions
+#ifdef SHIPPING
+	#define ET_ASSERT(condition, ...)
+#else
+#ifdef PLATFORM_Win
+	#define ET_ASSERT(condition, ...) Logger::ProcessAssert(condition, __FUNCSIG__, __VA_ARGS__);
+#else
+	#define ET_ASSERT(condition, ...) Logger::ProcessAssert(condition, __PRETTY_FUNCTION__, __VA_ARGS__);
+#endif // PLATFORM_Win
+#endif // SHIPPING
+
 #pragma endregion Macros

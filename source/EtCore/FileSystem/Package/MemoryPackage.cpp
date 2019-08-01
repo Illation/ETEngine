@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Package.h"
+#include "MemoryPackage.h"
 
 #include <EtCore/FileSystem/FileUtil.h>
 

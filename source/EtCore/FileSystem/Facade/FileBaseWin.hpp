@@ -79,24 +79,29 @@ bool FILE_BASE::GetEntrySize(FILE_HANDLE handle, int64& size)
 	return true;
 }
 
-bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::vector<uint8> & content )
+bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::vector<uint8> & content, uint64 const numBytes, uint64 const offset)
 {
-	const DWORD bufferSize = GetFileSize(handle, NULL) + 1;
-	char* buffer_read = new char[bufferSize];
+	char* buffer_read = new char[static_cast<DWORD>(numBytes) + 1];
 	DWORD bytes_read = 0;
-	if (FALSE == ::ReadFile(handle, buffer_read, bufferSize - 1, &bytes_read, NULL))
+
+	OVERLAPPED ov = {};
+	ov.Offset = static_cast<DWORD>(offset);
+
+	if (FALSE == ::ReadFile(handle, buffer_read, static_cast<DWORD>(numBytes), &bytes_read, &ov))
 	{
 		DisplayError(TEXT("ReadFile"));
 		delete[] buffer_read;
 		return false;
 	}
-	if (bytes_read >= 0 && bytes_read <= bufferSize - 1) //move buffer to string
+
+	if (bytes_read >= 0 && bytes_read <= static_cast<DWORD>(numBytes)) //move buffer to string
 	{
 		buffer_read[bytes_read] = '\0'; // NULL character
 		content = std::vector<uint8>(buffer_read, buffer_read + bytes_read);
 		delete[] buffer_read;
 		return true;
 	}
+
 	delete[] buffer_read;
 	return false;
 }
