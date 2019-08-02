@@ -32,14 +32,16 @@ void ResourceManager::InitFromCompiledData()
 	m_Packages.emplace_back(0u, memPkg);
 
 	// get the raw json string for the asset database from that package
-	uint64 dataSize = 0u;
-	uint8 const* const rawJsonDbBytes = memPkg->GetEntryData(GetHash(s_DatabasePath), dataSize);
-	ET_ASSERT(rawJsonDbBytes != nullptr, "Unable to retrieve database from memory package at '" + std::string(s_DatabasePath) + std::string("'"));
+	std::vector<uint8> rawData;
+	if (!memPkg->GetEntryData(GetHash(s_DatabasePath), rawData))
+	{
+		LOG("ResourceManager::InitFromPackageData > Unable to retrieve database from memory package at '" + std::string(s_DatabasePath) + 
+			std::string("'"), LogLevel::Error);
+		return;
+	}
 
-	std::string jsonDbString;
-	FileUtil::AsText(rawJsonDbBytes, dataSize, jsonDbString);
-
-	if (!serialization::DeserializeFromJsonString(jsonDbString, m_Database))
+	// convert that data to a string and deserialize it as json
+	if (!serialization::DeserializeFromJsonString(FileUtil::AsText(rawData), m_Database))
 	{
 		LOG("ResourceManager::InitFromPackageData > unable to deserialize asset database at '" + std::string(s_DatabasePath) + std::string("'"), 
 			LogLevel::Error);

@@ -49,20 +49,17 @@ int main(int argc, char *argv[])
 	packageWriter.AddFile(dbFile, E_CompressionType::Store);
 
 	// Loop over files - add them to the writer
-	AssetDatabase& db = ResourceManager::GetInstance()->GetDatabase();
-	for (AssetDatabase::AssetCache& cache : db.caches)
+	AssetDatabase::T_AssetList assets = ResourceManager::GetInstance()->GetDatabase().GetAssetsInPackage(0u);
+	for (I_Asset const* const asset : assets)
 	{
-		for (I_Asset* asset : cache.cache)
-		{
-			std::string const filePath = dbBase + asset->GetPath();
-			std::string const assetName = asset->GetName();
-			T_Hash const id = asset->GetId();
+		std::string const filePath = dbBase + asset->GetPath();
+		std::string const assetName = asset->GetName();
+		T_Hash const id = asset->GetId();
 
-			LOG(assetName + std::string(" [") + std::to_string(id) + std::string("] @: ") + FileUtil::GetAbsolutePath(filePath));
+		LOG(assetName + std::string(" [") + std::to_string(id) + std::string("] @: ") + FileUtil::GetAbsolutePath(filePath));
 
-			File* assetFile = new File(filePath + assetName, nullptr);
-			packageWriter.AddFile(assetFile, E_CompressionType::Store);
-		}
+		File* assetFile = new File(filePath + assetName, nullptr);
+		packageWriter.AddFile(assetFile, E_CompressionType::Store);
 	}
 
 	// write our package

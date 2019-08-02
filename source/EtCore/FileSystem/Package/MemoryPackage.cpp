@@ -50,21 +50,20 @@ MemoryPackage::PackageEntry const* MemoryPackage::GetEntry(T_Hash const id) cons
 //---------------------------------
 // MemoryPackage::GetEntryData
 //
-// Get the data from a package entry, with size being an out parameter. 
-// If no entry was found for the ID, we return nullptr and size is undefined.
+// This makes a copy of the data stored in the entry pointer
 //
-uint8 const* MemoryPackage::GetEntryData(T_Hash const id, uint64& size)
+bool MemoryPackage::GetEntryData(T_Hash const id, std::vector<uint8>& outData)
 {
 	// try getting the file
 	PackageEntry const* pkgEntry = GetEntry(id);
 	if (pkgEntry == nullptr)
 	{
-		return nullptr;
+		return false;
 	}
 
 	// return the content of the file
-	size = pkgEntry->size;
-	return pkgEntry->content;
+	outData = std::move(std::vector<uint8>(pkgEntry->content, pkgEntry->content + pkgEntry->size));
+	return true;
 }
 
 //---------------------------------
@@ -98,20 +97,17 @@ void MemoryPackage::InitFileListFromData()
 		offset += sizeof(PkgEntry);
 
 		// get and validate the fileId
-		if (entry->fileId != fileInfo.first)
-		{
-			LOG("Package::InitFileListFromData > File ID didn't match file info from central directory! Expected [" 
-				+ std::to_string(fileInfo.first) + std::string("] - found [") + std::to_string(entry->fileId) + std::string("]"), 
-				LogLevel::Warning);
-			continue;
-		}
+		ET_ASSERT(entry->fileId == fileInfo.first,
+			"MemoryPackage::InitFileListFromData > File ID didn't match file info from central directory! Expected ["
+			+ std::to_string(fileInfo.first) + std::string("] - found [") + std::to_string(entry->fileId) + std::string("]"));
 
 		// Create our package file in the map and edit it after to avoid unnecessary file copying
 		auto emplaceIt = m_Entries.try_emplace(entry->fileId, PackageEntry());
 
 		if (!emplaceIt.second)
 		{
-			LOG("Package::InitFileListFromData > Entry list already contains a file with ID [" + std::to_string(entry->fileId) + std::string("] !"),
+			LOG("MemoryPackage::InitFileListFromData > Entry list already contains a file with ID [" + std::to_string(entry->fileId)
+				+ std::string("] !"),
 				LogLevel::Warning);
 			continue;
 		}

@@ -14,6 +14,8 @@ class I_Package
 public:
 	virtual ~I_Package() = default;
 
-	virtual uint8 const* GetEntryData(T_Hash const id, uint64& size) = 0;
+	// Read the package entry data into 'outData'
+	// If no entry was found for the ID, we return false and out data is undefined.
+	virtual bool GetEntryData(T_Hash const id, std::vector<uint8>& outData) = 0;
 };
 

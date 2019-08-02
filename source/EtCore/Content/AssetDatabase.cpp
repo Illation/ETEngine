@@ -38,7 +38,7 @@ void AssetDatabase::PackageDescriptor::SetName(std::string const& val)
 }
 
 //---------------------------------
-// ResourceManager::AssetDatabase::AssetCache::GetType
+// AssetDatabase::AssetCache::GetType
 //
 // Get the type of an asset cache
 //
@@ -49,4 +49,29 @@ std::type_info const& AssetDatabase::AssetCache::GetType() const
 		return cache[0]->GetType();
 	}
 	return typeid(nullptr);
+}
+
+//---------------------------------
+// AssetDatabase::GetAssetsInPackage
+//
+// finds all assets that belong to a certain package
+//
+AssetDatabase::T_AssetList AssetDatabase::GetAssetsInPackage(T_Hash const packageId)
+{
+	T_AssetList outAssets;
+
+	// caches for every asset type 
+	for (AssetDatabase::AssetCache& cache : caches)
+	{
+		// every asset per cache
+		for (I_Asset* asset : cache.cache)
+		{
+			if (asset->GetPackageId() == packageId)
+			{
+				outAssets.emplace_back(asset);
+			}
+		}
+	}
+
+	return outAssets;
 }

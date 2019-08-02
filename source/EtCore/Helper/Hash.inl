@@ -19,6 +19,15 @@ constexpr T_Hash detail::fnv1a_32(char const* s, size_t count)
 	return ((count ? fnv1a_32(s, count - 1) : 2166136261u) ^ s[count]) * 16777619u;
 }
 
+//-------------------------------
+// hash_gen
+//
+// Wraps around FNV-1a 32 in order to ensure an empty string generates a hash of 0
+//
+constexpr T_Hash hash_gen(char const* s, size_t count)
+{
+	return (count > 0) ? fnv1a_32(s, count) : 0u;
+}
 
 } // namespace detail
 
@@ -30,7 +39,7 @@ constexpr T_Hash detail::fnv1a_32(char const* s, size_t count)
 //
 constexpr T_Hash GetHash(const std::string &str)
 {
-	return detail::fnv1a_32(str.c_str(), str.size());
+	return detail::hash_gen(str.c_str(), str.size());
 }
 
 //-------------------------------
@@ -42,5 +51,5 @@ constexpr T_Hash GetHash(const std::string &str)
 //
 inline constexpr T_Hash operator"" _hash(char const* s, size_t count)
 {
-	return detail::fnv1a_32(s, count);
+	return detail::hash_gen(s, count);
 }

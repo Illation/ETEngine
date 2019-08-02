@@ -52,6 +52,8 @@ public:
 		RTTR_ENABLE()
 	};
 
+	T_AssetList GetAssetsInPackage(T_Hash const packageId);
+
 	// Data
 	////////
 	std::vector<PackageDescriptor> packages;

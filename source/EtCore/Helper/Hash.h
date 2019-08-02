@@ -15,6 +15,7 @@ namespace detail
 {
 
 	constexpr T_Hash fnv1a_32(char const* s, size_t count);
+	constexpr T_Hash hash_gen(char const* s, size_t count);
 
 } // namespace detail
 

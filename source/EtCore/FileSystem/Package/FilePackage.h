@@ -5,19 +5,23 @@
 #include "Package.h"
 
 
+// forward decl
+class File;
+
+
 //---------------------------------
-// MemoryPackage
+// FilePackage
 //
-// Package that acts as a view into preloaded memory
+// Package that lives in a file and is loaded in individual chunks
 //
-class MemoryPackage final : public I_Package
+class FilePackage final : public I_Package
 {
 public:
 	// definitions
 	//--------------
 
 	//---------------------------------
-	// MemoryPackage::PackageEntry
+	// FilePackage::PackageEntry
 	//
 	// Data and meta info for a single entry within a package
 	//
@@ -29,13 +33,13 @@ public:
 		E_CompressionType compressionType;
 
 		uint64 size;
-		uint8 const* content;
+		uint64 offset;
 	};
 
 	// ctor dtor
 	//--------------
-	MemoryPackage(uint8 const* const data);
-	virtual ~MemoryPackage() = default;
+	FilePackage(std::string const& path);
+	virtual ~FilePackage();
 
 	// utility
 	//--------------
@@ -43,11 +47,11 @@ public:
 	bool GetEntryData(T_Hash const id, std::vector<uint8>& outData) override;
 
 private:
-	void InitFileListFromData();
+	void LoadFileList();
 
 	// Data
 	///////
 	std::map<T_Hash, PackageEntry> m_Entries;
-	uint8 const* m_Data = nullptr;
+	File* m_File = nullptr;
 };
 
