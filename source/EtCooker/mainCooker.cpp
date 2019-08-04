@@ -137,6 +137,7 @@ void CookCompiledPackage(std::string const& dbBase, std::string const& databaseP
 //
 void CookFilePackages(std::string const& dbBase, std::string const& outPath)
 {
+	// each package can have a separate asset list
 	for (AssetDatabase::PackageDescriptor const& desc : ResourceManager::GetInstance()->GetDatabase().packages)
 	{
 		PackageWriter packageWriter(dbBase);
@@ -147,6 +148,7 @@ void CookFilePackages(std::string const& dbBase, std::string const& outPath)
 		// Ensure the generated file directory exists
 		Directory* dir = new Directory(outPath + desc.GetPath(), nullptr, true);
 
+		// Create the output package file
 		File* outFile = new File(desc.GetName() + FilePackage::s_PackageFileExtension, dir);
 		FILE_ACCESS_FLAGS outFlags;
 		outFlags.SetFlags(FILE_ACCESS_FLAGS::FLAGS::Create | FILE_ACCESS_FLAGS::FLAGS::Exists);
@@ -155,8 +157,11 @@ void CookFilePackages(std::string const& dbBase, std::string const& outPath)
 			LOG("CookFilePackages > Failed to open file " + outFile->GetName(), LogLevel::Warning);
 			continue;
 		}
+
+		// Write the package data
 		outFile->Write(packageData);
 
+		// cleanup
 		SafeDelete(outFile);
 		SafeDelete(dir);
 	}

@@ -2,6 +2,9 @@
 
 #include "MainFramework.h"
 
+#include <EtCore/Content/ResourceManager.h>
+#include <EtCore/Content/AssetStub.h>
+
 #include <Engine/SceneGraph/SceneManager.h>
 
 #include <Demo/Scenes/TestScene.h>
@@ -33,6 +36,9 @@ void MainFramework::AddScenes()
 
 void MainFramework::OnTick()
 {	
+	StubData const* oscTxt = ResourceManager::GetInstance()->GetAssetData<StubData>("OscillatorRenderer.glsl"_hash);
+	StubData const* loremTxt = ResourceManager::GetInstance()->GetAssetData<StubData>("lorem_ipsum.txt"_hash);
+
 	//This is where scenes can be switched conditionally
 	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_F3)) == E_KeyState::Pressed)
 	{

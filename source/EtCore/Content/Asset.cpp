@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "Asset.h"
 
+#include "ResourceManager.h"
+
 #include <rttr/registration>
-#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/FileSystem/Package/Package.h>
 
 
 //===================
@@ -81,15 +83,21 @@ void I_Asset::SetPackageName(std::string const& val)
 //
 void I_Asset::Load()
 {
-	std::string fullPath = m_Path + m_Name;
-	// get binary data from compiled resource
+	// Get the package the asset lives in
+	I_Package* const container = ResourceManager::GetInstance()->GetPackage(m_PackageId);
+	ET_ASSERT(container != nullptr,
+		"No package (name:'" + m_PackageName + std::string("', id:'") + std::to_string(m_PackageId) + std::string("') found for asset ") + m_Name);
+
+	// get binary data from the package
 	std::vector<uint8> data;
-	if (!FileUtil::GetCompiledResource(fullPath, data))
+	if (!(container->GetEntryData(m_PackageEntryId, data)))
 	{
-		LOG("I_Asset::Load > couldn't get data from resource '" + fullPath + std::string("'"), LogLevel::Warning);
+		LOG("I_Asset::Load > couldn't get data for '" + m_Path + m_Name + std::string("' (") + std::to_string(m_PackageEntryId) 
+			+ std::string(") in package '") + m_PackageName + std::string("'"), LogLevel::Warning);
 		return;
 	}
 
+	// let the asset load from binary data
 	if (!LoadFromMemory(data))
 	{
 		LOG("I_Asset::Load > Failed loading asset from memory, name: '" + m_Name + std::string("'"), LogLevel::Warning);

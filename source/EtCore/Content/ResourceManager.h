@@ -23,6 +23,8 @@ public:
 
 	static constexpr char s_DatabasePath[] = "asset_database.json";
 
+	typedef std::pair<T_Hash, I_Package*> T_IndexedPackage;
+
 private:
 	// Construct destruct
 	//---------------------
@@ -44,6 +46,8 @@ public:
 	//---------------------
 	AssetDatabase& GetDatabase() { return m_Database; }
 
+	I_Package* GetPackage(T_Hash const id);
+
 	I_Asset* GetAsset(T_Hash const assetId, std::type_info const& type);
 
 	template <class T>
@@ -57,7 +61,7 @@ private:
 	///////
 
 	AssetDatabase m_Database;
-	std::vector<std::pair<T_Hash, I_Package*>> m_Packages;
+	std::vector<T_IndexedPackage> m_Packages;
 };
 
 

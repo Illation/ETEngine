@@ -97,6 +97,28 @@ void ResourceManager::Deinit()
 }
 
 //---------------------------------
+// ResourceManager::GetPackage
+//
+// Get an abstract package by its ID - if none is found returns nullptr
+//
+I_Package* ResourceManager::GetPackage(T_Hash const id)
+{
+	// find the package iterator
+	auto const foundPackageIt = std::find_if(m_Packages.begin(), m_Packages.end(), [&id](T_IndexedPackage const& indexedPackage)
+	{
+		return indexedPackage.first == id;
+	});
+
+	// check the iterator is valid
+	if (foundPackageIt == m_Packages.cend())
+	{
+		return nullptr;
+	}
+
+	return foundPackageIt->second;
+}
+
+//---------------------------------
 // ResourceManager::GetAsset
 //
 // Get an asset by its ID and type

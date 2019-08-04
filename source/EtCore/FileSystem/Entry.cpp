@@ -178,7 +178,7 @@ std::vector<uint8> File::Read()
 std::vector<uint8> File::ReadChunk(uint64 const offset, uint64 const numBytes)
 {
 	ET_ASSERT(m_IsOpen);
-	ET_ASSERT(offset + numBytes < GetSize(), 
+	ET_ASSERT(offset + numBytes <= GetSize(), 
 		"Range of bytes requested exceeds file size! Offset:'" + std::to_string(offset) + 
 		std::string("'; Bytes:'") + std::to_string(numBytes) +
 		std::string("'; Total'") + std::to_string(offset + numBytes) +
