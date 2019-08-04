@@ -24,7 +24,8 @@ set(target_files "${gen_dir}${resource_name}.h" "${gen_dir}${resource_name}.cpp"
 set(res_file "${cmp_dir}asset_database.json")
 
 # any files that can trigger the resources to be rebuilt
-file(GLOB_RECURSE deps ${cmp_dir}/*.*)
+file(GLOB_RECURSE deps ${cmp_dir}/assets/*.*)
+list (APPEND deps ${cmp_dir}/asset_database.json)
 
 # the command list that will run - create dir, set env var, run compile source, log stuff
 add_custom_command(
@@ -33,7 +34,7 @@ add_custom_command(
 
 	COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source Directory: ${cmp_dir} ; Generated Directory: ${gen_dir}"
 	COMMAND ${CMAKE_COMMAND} -E echo ""
-    COMMAND ${cooker_dir}EtCooker.exe ${res_file} ${gen_dir} ${resource_name}
+    COMMAND ${cooker_dir}EtCooker.exe ${res_file} ${gen_dir} y ${resource_name}
 	COMMAND ${CMAKE_COMMAND} -E echo ""
 	COMMAND ${CMAKE_COMMAND} -E echo ""
 	

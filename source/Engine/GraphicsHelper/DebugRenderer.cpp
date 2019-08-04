@@ -126,7 +126,7 @@ void DebugRenderer::CheckMetaData(float thickness)
 
 void DebugRenderer::DrawLine(vec3 start, vec3 end, vec4 col /*= vec4(1)*/, float thickness /*= 1*/)
 {
-#if defined(EDITOR) || defined(_DEBUG)
+#if defined(EDITOR) || defined(ET_DEBUG)
 	CheckMetaData(thickness);
 	m_Lines.push_back(LineVertex(start, col));
 	m_Lines.push_back(LineVertex(end, col));
@@ -135,7 +135,7 @@ void DebugRenderer::DrawLine(vec3 start, vec3 end, vec4 col /*= vec4(1)*/, float
 
 void DebugRenderer::DrawLine(vec3 start, vec4 startCol, vec3 end, vec4 endCol, float thickness /*= 1*/)
 {
-#if defined(EDITOR) || defined(_DEBUG)
+#if defined(EDITOR) || defined(ET_DEBUG)
 	CheckMetaData(thickness);
 	m_Lines.push_back(LineVertex(start, startCol));
 	m_Lines.push_back(LineVertex(end, endCol));
@@ -144,7 +144,7 @@ void DebugRenderer::DrawLine(vec3 start, vec4 startCol, vec3 end, vec4 endCol, f
 
 void DebugRenderer::DrawGrid(float pixelSpacingRad)
 {
-#if defined(EDITOR) || defined(_DEBUG)
+#if defined(EDITOR) || defined(ET_DEBUG)
 	vec3 camPos = CAMERA->GetTransform()->GetPosition();
 		
 	//max draw distance of the grid

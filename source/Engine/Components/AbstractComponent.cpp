@@ -29,7 +29,7 @@ void AbstractComponent::PostDraw()
 
 TransformComponent* AbstractComponent::GetTransform() const
 {
-#if _DEBUG
+#if ET_DEBUG
 	if (!m_pEntity)
 	{
 		LOG("AbstractComponent::GetTransform() > Failed to retrieve the TransformComponent. GameObject is NULL.", Warning);

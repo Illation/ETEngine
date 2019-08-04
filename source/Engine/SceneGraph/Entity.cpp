@@ -111,7 +111,7 @@ void Entity::RootDrawShadow()
 
 void Entity::AddChild(Entity* pEntity)
 {
-#if _DEBUG
+#if ET_DEBUG
 	if (pEntity->m_pParentEntity)
 	{
 		if (pEntity->m_pParentEntity == this)
@@ -142,7 +142,7 @@ void Entity::RemoveChild(Entity* pEntity)
 {
 	auto it = find(m_pChildVec.begin(), m_pChildVec.end(), pEntity);
 
-#if _DEBUG
+#if ET_DEBUG
 	if (it == m_pChildVec.end())
 	{
 		LOG("GameObject::RemoveChild > GameObject to remove is not attached to this GameObject!", Warning);
@@ -156,7 +156,7 @@ void Entity::RemoveChild(Entity* pEntity)
 
 void Entity::AddComponent(AbstractComponent* pComp)
 {
-#if _DEBUG
+#if ET_DEBUG
 	if (typeid(*pComp) == typeid(TransformComponent) && HasComponent<TransformComponent>())
 	{
 		LOG("GameObject::AddComponent > GameObject can contain only one TransformComponent!", Warning);
@@ -184,7 +184,7 @@ void Entity::RemoveComponent(AbstractComponent* pComp)
 {
 	auto it = find(m_pComponentVec.begin(), m_pComponentVec.end(), pComp);
 
-#if _DEBUG
+#if ET_DEBUG
 	if (it == m_pComponentVec.end())
 	{
 		LOG("GameObject::RemoveComponent > Component is not attached to this GameObject!", Warning);

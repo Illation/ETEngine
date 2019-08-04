@@ -52,7 +52,7 @@ inline void SafeDelete(T &pObjectToDelete)
 #define PERFORMANCE PerformanceInfo::GetInstance()
 
 // assertions
-#ifdef SHIPPING
+#ifdef ET_SHIPPING
 	#define ET_ASSERT(condition, ...)
 #else
 #ifdef PLATFORM_Win
@@ -60,6 +60,6 @@ inline void SafeDelete(T &pObjectToDelete)
 #else
 	#define ET_ASSERT(condition, ...) Logger::ProcessAssert(condition, __PRETTY_FUNCTION__, __VA_ARGS__);
 #endif // PLATFORM_Win
-#endif // SHIPPING
+#endif // ET_SHIPPING
 
 #pragma endregion Macros

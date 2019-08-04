@@ -83,7 +83,7 @@ AbstractFramework::~AbstractFramework()
 void AbstractFramework::Run()
 {
 	Logger::Initialize();//Init logger first because all output depends on it from the start
-#ifndef SHIPPING
+#ifndef ET_SHIPPING
 	DebugCopyResourceFiles();
 #endif
 	InitializeSDL();
@@ -239,7 +239,7 @@ void AbstractFramework::InitializeWindow()
 void AbstractFramework::InitializeUtilities()
 {
 	FreeImage_Initialise();
-	#ifdef _DEBUG
+	#ifdef ET_DEBUG
 		FreeImage_SetOutputMessage(FreeImageErrorHandler);
 	#endif
 }
@@ -258,7 +258,7 @@ void AbstractFramework::BindOpenGL()
 
 void AbstractFramework::InitializeDebug()
 {
-#if defined(DEBUG) | defined(_DEBUG)
+#if defined(ET_DEBUG)
 #if defined(GRAPHICS_API_VERBOSE)
 
 	auto glLogCallback = [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)

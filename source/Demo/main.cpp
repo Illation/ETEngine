@@ -61,7 +61,7 @@ void SetDebuggingOptions()
 	HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 
 	// Enable run-time memory leak check for debug builds.
-#if defined(DEBUG) | defined(_DEBUG)
+#if defined(ET_DEBUG)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	typedef HRESULT(__stdcall *fPtr)(const IID&, void**);

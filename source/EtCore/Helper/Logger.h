@@ -17,7 +17,7 @@ public:
 	static void Log(const std::string& msg, LogLevel level = LogLevel::Info,
 		bool timestamp = false, ivec2 cursorPos = ivec2(-1));
 
-#ifndef SHIPPING
+#ifndef ET_SHIPPING
 	static void ProcessAssert(bool const condition, std::string const& caller, std::string const& msg = std::string());
 #endif
 

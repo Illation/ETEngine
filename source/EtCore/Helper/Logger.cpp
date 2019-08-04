@@ -17,7 +17,7 @@ bool Logger::m_IsInitialized = false;
 void Logger::Initialize()
 {
 	m_ConsoleLogger = new ConsoleLogger();
-#ifndef SHIPPING
+#ifndef ET_SHIPPING
 	if (IsDebuggerPresent())
 	{
 		m_DebugLogger = new DebugLogger();
@@ -57,7 +57,7 @@ ivec2 Logger::GetCursorPosition()
 
 void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, ivec2 cursorPos)
 {
-#ifndef _DEBUG
+#ifndef ET_DEBUG
 	if (level&Verbose)return;
 #endif
 
@@ -65,7 +65,7 @@ void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, ivec2 c
 
 	std::stringstream timestampStream;
 	bool genTimestamp = timestamp || m_FileLogger;
-#ifndef SHIPPING
+#ifndef ET_SHIPPING
 #ifdef PLATFORM_Win
 	if (IsDebuggerPresent())genTimestamp = true;
 #endif
@@ -107,7 +107,7 @@ void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, ivec2 c
 	if (m_ConsoleLogger)
 	{
 		// on non shipping builds we set the color in the console
-#ifndef SHIPPING
+#ifndef ET_SHIPPING
 		switch (level)
 		{
 		case LogLevel::Info: m_ConsoleLogger->SetColor(ConsoleLogger::Color::WHITE); break;
@@ -115,7 +115,7 @@ void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, ivec2 c
 		case LogLevel::Error: m_ConsoleLogger->SetColor(ConsoleLogger::Color::RED); break;
 		case LogLevel::FixMe: m_ConsoleLogger->SetColor(ConsoleLogger::Color::MAGENTA); break;
 		}
-#endif // SHIPPING
+#endif // ET_SHIPPING
 
 		if (!(cursorPos == ivec2(-1)))
 		{
@@ -142,7 +142,7 @@ void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, ivec2 c
 		m_FileLogger->Log(timestampStream.str());
 	}
 
-#ifndef SHIPPING
+#ifndef ET_SHIPPING
 	if (m_DebugLogger) // on non shipping builds we also log to the vis
 	{
 		if (!(cursorPos == ivec2(-1)))
@@ -162,12 +162,12 @@ void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, ivec2 c
 	}
 #endif // PLATFORM_Win
 
-#endif // ndef SHIPPING 
+#endif // ndef ET_SHIPPING 
 
 	CheckBreak(level);
 }
 
-#ifndef SHIPPING
+#ifndef ET_SHIPPING
 
 //-----------------------
 // Logger::ProcessAssert
@@ -189,7 +189,7 @@ void Logger::ProcessAssert(bool const condition, std::string const& caller, std:
 	}
 }
 
-#endif // SHIPPING
+#endif // ET_SHIPPING
 
 
 //-----------------------
@@ -201,7 +201,7 @@ void Logger::CheckBreak(LogLevel level)
 {
 	if ((m_BreakBitField&level) == level)
 	{
-#if _DEBUG
+#if ET_DEBUG
 
 #ifdef PLATFORM_x32
 		__asm { int 3 };
@@ -211,7 +211,7 @@ void Logger::CheckBreak(LogLevel level)
 
 #else // not debug
 		exit(-1);
-#endif // _DEBUG
+#endif // ET_DEBUG
 	}
 }
 
