@@ -11,6 +11,10 @@
 //=====================
 
 
+// statics
+std::string const FilePackage::s_PackageFileExtension(".etpak");
+
+
 // ctor dtor
 //////////////
 
@@ -24,7 +28,9 @@ FilePackage::FilePackage(std::string const& path)
 	m_File = new File(path, nullptr);
 
 	// we just keep package files open for the runtime of the engine, nobody should be writing to them while it's running
-	if (!m_File->Open(FILE_ACCESS_MODE::Read))
+	FILE_ACCESS_FLAGS openFlags;
+	openFlags.SetFlags(FILE_ACCESS_FLAGS::FLAGS::Exists);
+	if (!m_File->Open(FILE_ACCESS_MODE::Read, openFlags))
 	{
 		LOG("FilePackage::FilePackage > unable to open file '" + path + std::string("'!"), LogLevel::Error);
 		return;

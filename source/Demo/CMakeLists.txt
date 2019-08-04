@@ -10,6 +10,8 @@
 file(GLOB_RECURSE headers ${CMAKE_CURRENT_SOURCE_DIR}/*.h ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp ${CMAKE_CURRENT_SOURCE_DIR}/*.glsl)
 file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
+list (APPEND sources ${CMAKE_CURRENT_SOURCE_DIR}/_generated/compiled_package.cpp)
+
 list (APPEND projectFiles ${headers} ${sources} ${c_sources})
 
 # setup
@@ -28,7 +30,7 @@ add_executable(Demo WIN32 ${projectFiles})
 assign_source_group(${projectFiles})
 outputDirectories(Demo)
 
-add_dependencies(Demo run-cooker)
+add_dependencies(Demo cook-compiled-resources)
 
 # linking
 target_link_libraries (Demo EtEngine)
@@ -43,3 +45,4 @@ target_include_directories (Demo PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 installDlls(Demo)
 installResources(Demo)
+installCookResources(Demo)

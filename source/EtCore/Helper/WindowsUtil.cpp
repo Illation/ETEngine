@@ -7,7 +7,14 @@
 #include <strsafe.h>
 #include <minwindef.h>
 #include <comutil.h>
+#include <windows.h>
 
+
+//---------------------
+// DisplayError
+//
+// Displays the last error in the winApi. lpszFunction is just an argument that enhances the debug output
+//
 void DisplayError(LPTSTR lpszFunction)
 {
 	LPVOID lpMsgBuf;
@@ -46,4 +53,23 @@ void DisplayError(LPTSTR lpszFunction)
 
 	LocalFree(lpMsgBuf);
 	LocalFree(lpDisplayBuf);
+}
+
+//---------------------
+// GetExecutablePathName
+//
+// Gets the name and path the executable lives in
+//
+void GetExecutablePathName(std::string& outPath)
+{
+	char ownPth[MAX_PATH];
+
+	// When NULL is passed to GetModuleHandle, the handle of the exe itself is returned
+	HMODULE hModule = GetModuleHandle(NULL);
+	ET_ASSERT(hModule != NULL);
+
+	// Use GetModuleFileName() with module handle to get the path
+	GetModuleFileName(hModule, ownPth, (sizeof(ownPth)));
+
+	outPath = std::string(ownPth);
 }

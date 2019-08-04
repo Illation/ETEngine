@@ -6,6 +6,7 @@
 #include <EtCore/Helper/Logger.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Entry.h>
+#include <EtCore/FileSystem/Package/FilePackage.h>
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/linkerHelper.h>
@@ -19,7 +20,7 @@
 // forward declarations
 void WritePackageToData(T_Hash const packageId, std::string const& dbBase, PackageWriter &packageWriter, std::vector<uint8>& packageData);
 void CookCompiledPackage(std::string const& dbBase, std::string const& databasePath, std::string const& outPath, std::string const& resName);
-void CookFilePackages(std::string const& dbBase, std::string const& databasePath, std::string const& outPath);
+void CookFilePackages(std::string const& dbBase, std::string const& outPath);
 
 
 //---------------------------------
@@ -64,7 +65,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		CookFilePackages(dbBase, databasePath, outPath);
+		CookFilePackages(dbBase, outPath);
 	}
 
 	// Clean up
@@ -134,7 +135,7 @@ void CookCompiledPackage(std::string const& dbBase, std::string const& databaseP
 // Writes the package with compiled data that ends up as a generated source file.
 //  - this includes the file for the asset database
 //
-void CookFilePackages(std::string const& dbBase, std::string const& databasePath, std::string const& outPath)
+void CookFilePackages(std::string const& dbBase, std::string const& outPath)
 {
 	for (AssetDatabase::PackageDescriptor const& desc : ResourceManager::GetInstance()->GetDatabase().packages)
 	{
@@ -143,8 +144,10 @@ void CookFilePackages(std::string const& dbBase, std::string const& databasePath
 
 		WritePackageToData(desc.GetId(), dbBase, packageWriter, packageData);
 
-		static std::string const s_PackageFileExtension(".etpak");
-		File* outFile = new File(desc.GetPath() + desc.GetName() + s_PackageFileExtension, nullptr);
+		// Ensure the generated file directory exists
+		Directory* dir = new Directory(outPath + desc.GetPath(), nullptr, true);
+
+		File* outFile = new File(desc.GetName() + FilePackage::s_PackageFileExtension, dir);
 		FILE_ACCESS_FLAGS outFlags;
 		outFlags.SetFlags(FILE_ACCESS_FLAGS::FLAGS::Create | FILE_ACCESS_FLAGS::FLAGS::Exists);
 		if (!outFile->Open(FILE_ACCESS_MODE::Write, outFlags))
@@ -154,8 +157,8 @@ void CookFilePackages(std::string const& dbBase, std::string const& databasePath
 		}
 		outFile->Write(packageData);
 
-		delete outFile;
-		outFile = nullptr;
+		SafeDelete(outFile);
+		SafeDelete(dir);
 	}
 }
 

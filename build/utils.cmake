@@ -363,3 +363,49 @@ function(installResources TARGET)
 	endforeach()
 
 endfunction(installResources)
+
+
+# cook package files and install them in the binary output directory
+#####################################################################
+function(installCookResources TARGET)
+
+	set(projectBase "${PROJECT_BINARY_DIR}/..")
+	set(cmp_dir "${projectBase}/resources/")
+
+	# figure out the directory the cooker binary lives in
+	#-----------------------------------------------------------
+	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+		set(_p "x64")
+	 else() 
+		set(_p "x32")
+	endif()
+	set(bin_base_dir "${projectBase}/bin/$<CONFIG>_${_p}/")
+	set(cooker_dir "${bin_base_dir}EtCooker/")
+	set(pak_file_dir "${bin_base_dir}${TARGET}/")
+
+	set(resource_name "compiledPackage")
+	set(res_file "${cmp_dir}asset_database.json")
+
+	# any files that can trigger the resources to be rebuilt
+	file(GLOB_RECURSE deps ${cmp_dir}/assets/*.*)
+	list (APPEND deps ${cmp_dir}/asset_database.json)
+
+	set(target_name "cook-installed-resources-${TARGET}")
+
+	# the command list that will run - for installing resources
+	#-----------------------------------------------------------
+	add_custom_target(${target_name} 
+		DEPENDS ${deps} EtCooker 
+		
+		COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file} ; Out directory Directory: ${pak_file_dir}"
+		COMMAND ${CMAKE_COMMAND} -E echo ""
+		COMMAND ${cooker_dir}EtCooker.exe ${res_file} ${pak_file_dir} n
+		COMMAND ${CMAKE_COMMAND} -E echo ""
+		COMMAND ${CMAKE_COMMAND} -E echo ""
+		
+		COMMENT "Cooking installed resource files"
+
+		VERBATIM
+	)
+
+endfunction(installCookResources)

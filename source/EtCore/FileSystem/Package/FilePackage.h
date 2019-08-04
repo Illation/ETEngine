@@ -20,6 +20,8 @@ public:
 	// definitions
 	//--------------
 
+	static std::string const s_PackageFileExtension; 
+
 	//---------------------------------
 	// FilePackage::PackageEntry
 	//

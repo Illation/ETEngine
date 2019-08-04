@@ -5,6 +5,7 @@
 
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Package/MemoryPackage.h>
+#include <EtCore/FileSystem/Package/FilePackage.h>
 
 
 //===================
@@ -45,6 +46,13 @@ void ResourceManager::InitFromCompiledData()
 	{
 		LOG("ResourceManager::InitFromPackageData > unable to deserialize asset database at '" + std::string(s_DatabasePath) + std::string("'"), 
 			LogLevel::Error);
+	}
+
+	// Create the file packages for all indexed packages
+	for (AssetDatabase::PackageDescriptor const& desc : ResourceManager::GetInstance()->GetDatabase().packages)
+	{
+		FilePackage* const filePkg = new FilePackage(desc.GetPath() + desc.GetName() + FilePackage::s_PackageFileExtension);
+		m_Packages.emplace_back(desc.GetId(), filePkg);
 	}
 }
 

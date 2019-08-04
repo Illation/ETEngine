@@ -3,6 +3,10 @@
 
 #include <limits>
 
+#ifdef PLATFORM_Win
+#	include "Helper/WindowsUtil.h"
+#endif
+
 
 //==============================
 // File Util
@@ -189,8 +193,17 @@ std::string FileUtil::ExtractName(std::string const& fileName)
 //
 // Sets the base path the executable lives in 
 //
-void FileUtil::SetExecutablePath(std::string const& path)
+void FileUtil::SetExecutablePath(std::string const& inPath)
 {
+	std::string path;
+#ifdef PLATFORM_Win
+	GetExecutablePathName(path);
+#else
+	path = inPath;
+#endif
+
+	ET_ASSERT(IsAbsolutePath(path));
+
 	// set the executable path to the part without the exe name
 	s_ExePath = ExtractPath(path);
 	UnifyPathDelimiters(s_ExePath);
@@ -375,7 +388,7 @@ std::string FileUtil::GetRelativePath(std::string const& inPath, std::string con
 	size_t numParentDirs = 0u;
 	for (;;)
 	{
-		searchStart = rootPath.find(s_PathDelimiter, ++searchStart); // idx is on a path delimiter right now, so we start from the next character
+		searchStart = absRoot.find(s_PathDelimiter, ++searchStart); // idx is on a path delimiter right now, so we start from the next character
 		if (searchStart != std::string::npos) // if we found another delimiter we have more parent directories
 		{
 			++numParentDirs;
