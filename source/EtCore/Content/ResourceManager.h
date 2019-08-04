@@ -48,13 +48,14 @@ public:
 
 	I_Package* GetPackage(T_Hash const id);
 
+	I_Asset* GetAsset(T_Hash const assetId);
 	I_Asset* GetAsset(T_Hash const assetId, std::type_info const& type);
 
-	template <class T>
-	Asset<T>* GetAsset(T_Hash const assetId);
+	template <class T_DataType>
+	RawAsset<T_DataType>* GetAsset(T_Hash const assetId);
 
-	template <class T>
-	T const* GetAssetData(T_Hash const assetId);
+	template <class T_DataType>
+	T_DataType const* GetAssetData(T_Hash const assetId);
 
 private:
 	// Data

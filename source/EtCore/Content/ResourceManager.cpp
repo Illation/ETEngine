@@ -49,10 +49,23 @@ void ResourceManager::InitFromCompiledData()
 	}
 
 	// Create the file packages for all indexed packages
-	for (AssetDatabase::PackageDescriptor const& desc : ResourceManager::GetInstance()->GetDatabase().packages)
+	for (AssetDatabase::PackageDescriptor const& desc : m_Database.packages)
 	{
 		FilePackage* const filePkg = new FilePackage(desc.GetPath() + desc.GetName() + FilePackage::s_PackageFileExtension);
 		m_Packages.emplace_back(desc.GetId(), filePkg);
+	}
+
+	// Link asset references together
+	for (AssetDatabase::AssetCache& cache : m_Database.caches)
+	{
+		// every asset per cache
+		for (I_Asset* asset : cache.cache)
+		{
+			for (I_Asset::Reference& ref : asset->m_References)
+			{
+				ref.Init();
+			}
+		}
 	}
 }
 
@@ -116,6 +129,33 @@ I_Package* ResourceManager::GetPackage(T_Hash const id)
 	}
 
 	return foundPackageIt->second;
+}
+
+//---------------------------------
+// ResourceManager::GetAsset
+//
+// Get an asset by its ID
+//
+I_Asset* ResourceManager::GetAsset(T_Hash const assetId)
+{
+	// in this version we loop over all caches
+	for (AssetDatabase::AssetCache& cache : m_Database.caches)
+	{
+		// try finding our asset by its ID in the cache
+		auto foundAssetIt = std::find_if(cache.cache.begin(), cache.cache.end(), [assetId](I_Asset* asset)
+		{
+			return asset->GetId() == assetId;
+		});
+
+		if (foundAssetIt != cache.cache.cend())
+		{
+			return *foundAssetIt;
+		}
+	}
+
+	// didn't find an asset in any cache, return null
+	LOG("ResourceManager::GetAsset > Couldn't find asset with ID '" + std::to_string(assetId) + std::string("'!"), LogLevel::Warning);
+	return nullptr;
 }
 
 //---------------------------------

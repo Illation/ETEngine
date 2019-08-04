@@ -11,11 +11,11 @@
 //
 // Get an asset by it's template type
 //
-template <class T>
-Asset<T>* ResourceManager::GetAsset(T_Hash const assetId)
+template <class T_DataType>
+RawAsset<T_DataType>* ResourceManager::GetAsset(T_Hash const assetId)
 {
-	I_Asset* abstractAsset = GetAsset(assetId, typeid(T));
-	return static_cast<Asset<T>*>(abstractAsset);
+	I_Asset* abstractAsset = GetAsset(assetId, typeid(T_DataType));
+	return static_cast<RawAsset<T_DataType>*>(abstractAsset);
 }
 
 
@@ -24,11 +24,11 @@ Asset<T>* ResourceManager::GetAsset(T_Hash const assetId)
 //
 // Get the data of an asset. Loads the asset if it's not loaded yet
 //
-template <class T>
-T const* ResourceManager::GetAssetData(T_Hash const assetId)
+template <class T_DataType>
+T_DataType const* ResourceManager::GetAssetData(T_Hash const assetId)
 {
 	// Get the asset
-	Asset<T>* asset = GetAsset<T>(assetId);
+	RawAsset<T_DataType>* asset = GetAsset<T_DataType>(assetId);
 
 	// Check we actually found the asset
 	if (asset == nullptr)

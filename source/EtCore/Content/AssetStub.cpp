@@ -36,18 +36,10 @@ DEFINE_FORCED_LINKING(StubAsset) // force the asset class to be linked as it is 
 //
 bool StubAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
-	// Extract the shader text from binary data
-	//------------------------
-	std::string text = FileUtil::AsText(data);
-	if (text.size() == 0)
-	{
-		LOG("StubAsset::LoadFromMemory > Empty stub text file!", Warning);
-		return false;
-	}
-
-	// Create shader data
+	// Create data as a view of loaded memory
 	m_Data = new StubData();
-	m_Data->m_Text = std::move(text);
+	m_Data->m_Text = reinterpret_cast<char const*>(data.data());
+	m_Data->m_Length = data.size();
 
 	// all done
 	return true;

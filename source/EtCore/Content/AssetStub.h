@@ -9,7 +9,7 @@
 //---------------------------------
 // StubData
 //
-// Data to demonstrate the use of assets
+// Data to demonstrate the use of assets - acts as a string view into loaded data
 //
 class StubData final
 {
@@ -17,27 +17,28 @@ public:
 	StubData() = default;
 	~StubData() = default;
 
-	std::string const& GetText() const { return m_Text; }
+	char const* GetText() const { return m_Text; }
 
 private:
 	friend class StubAsset;
 
-	std::string m_Text;
+	char const* m_Text;
+	size_t m_Length = 0u;
 };
 
 
 //---------------------------------
 // StubAsset
 //
-// simple asset to test the use of the resource manager
+// simple asset to test the use of the resource manager - loaded data here is persistent
 //
-class StubAsset final : public Asset<StubData>
+class StubAsset final : public Asset<StubData, true>
 {
 	DECLARE_FORCED_LINKING()
 public:
 	// Construct destruct
 	//---------------------
-	StubAsset() = default;
+	StubAsset() : Asset<StubData, true>() {}
 	virtual ~StubAsset() = default;
 
 	// Asset overrides
@@ -48,6 +49,6 @@ public:
 	//---------------------
 private:
 
-	RTTR_ENABLE(Asset<StubData>)
+	RTTR_ENABLE(Asset<StubData, true>)
 };
 

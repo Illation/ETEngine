@@ -7,22 +7,44 @@
 #include <EtCore/FileSystem/Package/Package.h>
 
 
-//===================
-// Asset
-//===================
-
-
 // reflection
 RTTR_REGISTRATION
 {
 	using namespace rttr;
 
+	registration::class_<I_Asset::Reference>("reference")
+		.property("name", &I_Asset::Reference::GetName, &I_Asset::Reference::SetName)
+		.property("is persistent", &I_Asset::Reference::IsPersistent, &I_Asset::Reference::SetPersistent);
+
 	registration::class_<I_Asset>("asset")
 		.property("name", &I_Asset::GetName, &I_Asset::SetName)
 		.property("path", &I_Asset::GetPath, &I_Asset::SetPath)
 		.property("package", &I_Asset::GetPackageName, &I_Asset::SetPackageName)
+		.property("references", &I_Asset::GetReferences, &I_Asset::SetReferences)
 		;
 }
+
+
+//===================
+// Asset Reference
+//===================
+
+
+//---------------------------------
+// I_Asset::Reference::Init
+//
+// Links the asset pointer
+//
+void I_Asset::Reference::Init()
+{
+	m_Asset = ResourceManager::GetInstance()->GetAsset(GetHash(m_Name));
+	ET_ASSERT(m_Asset != nullptr, "Couldn't link to asset reference because it wasn't found - '" + m_Name + std::string("'"));
+}
+
+
+//===================
+// Asset
+//===================
 
 
 // Construct destruct
@@ -89,8 +111,7 @@ void I_Asset::Load()
 		"No package (name:'" + m_PackageName + std::string("', id:'") + std::to_string(m_PackageId) + std::string("') found for asset ") + m_Name);
 
 	// get binary data from the package
-	std::vector<uint8> data;
-	if (!(container->GetEntryData(m_PackageEntryId, data)))
+	if (!(container->GetEntryData(m_PackageEntryId, m_LoadData)))
 	{
 		LOG("I_Asset::Load > couldn't get data for '" + m_Path + m_Name + std::string("' (") + std::to_string(m_PackageEntryId) 
 			+ std::string(") in package '") + m_PackageName + std::string("'"), LogLevel::Warning);
@@ -98,8 +119,13 @@ void I_Asset::Load()
 	}
 
 	// let the asset load from binary data
-	if (!LoadFromMemory(data))
+	if (!LoadFromMemory(m_LoadData))
 	{
 		LOG("I_Asset::Load > Failed loading asset from memory, name: '" + m_Name + std::string("'"), LogLevel::Warning);
+	}
+
+	if (!m_IsPersistent)
+	{
+		m_LoadData.clear();
 	}
 }

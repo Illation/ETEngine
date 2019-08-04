@@ -17,7 +17,7 @@ RTTR_REGISTRATION
 	registration::class_<AssetDatabase::AssetCache>("asset cache")
 		.property("cache", &AssetDatabase::AssetCache::cache);
 
-	registration::class_<AssetDatabase::PackageDescriptor>("asset")
+	registration::class_<AssetDatabase::PackageDescriptor>("package")
 		.property("name", &AssetDatabase::PackageDescriptor::GetName, &AssetDatabase::PackageDescriptor::SetName)
 		.property("path", &AssetDatabase::PackageDescriptor::GetPath, &AssetDatabase::PackageDescriptor::SetPath);
 

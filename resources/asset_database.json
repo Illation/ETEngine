@@ -11,16 +11,55 @@
         "cache": [
           {
             "stub asset": {
-              "name": "OscillatorRenderer.glsl",
+              "name": "lorem_ipsum.txt",
               "path": "assets/",
-              "package": ""
+              "package": "content1",
+              "references": []
             }
           },
           {
             "stub asset": {
-              "name": "lorem_ipsum.txt",
-              "path": "assets/",
-              "package": "content1"
+              "name": "Common.glsl",
+              "path": "assets/Engine/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "stub asset": {
+              "name": "CommonDeferred.glsl",
+              "path": "assets/Engine/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "stub asset": {
+              "name": "CommonPBR.glsl",
+              "path": "assets/Engine/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "stub asset": {
+              "name": "PostDeferredComposite.glsl",
+              "path": "assets/Engine/Shaders/",
+              "package": "",
+              "references": [
+                {
+                  "name": "Common.glsl",
+                  "is persistent": false
+                },
+                {
+                  "name": "CommonDeferred.glsl",
+                  "is persistent": false
+                },
+                {
+                  "name": "CommonPBR.glsl",
+                  "is persistent": false
+                }
+              ]
             }
           }
         ]

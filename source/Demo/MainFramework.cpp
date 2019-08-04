@@ -36,7 +36,7 @@ void MainFramework::AddScenes()
 
 void MainFramework::OnTick()
 {	
-	StubData const* oscTxt = ResourceManager::GetInstance()->GetAssetData<StubData>("OscillatorRenderer.glsl"_hash);
+	StubData const* postDefTxt = ResourceManager::GetInstance()->GetAssetData<StubData>("PostDeferredComposite.glsl"_hash);
 	StubData const* loremTxt = ResourceManager::GetInstance()->GetAssetData<StubData>("lorem_ipsum.txt"_hash);
 
 	//This is where scenes can be switched conditionally
