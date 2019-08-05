@@ -38,7 +38,7 @@ RTTR_REGISTRATION
 void I_Asset::Reference::Init()
 {
 	m_Asset = ResourceManager::GetInstance()->GetAsset(GetHash(m_Name));
-	ET_ASSERT(m_Asset != nullptr, "Couldn't link to asset reference because it wasn't found - '" + m_Name + std::string("'"));
+	ET_ASSERT(m_Asset != nullptr, "Couldn't link to asset reference because it wasn't found - '%s'", m_Name.c_str());
 }
 
 
@@ -107,8 +107,7 @@ void I_Asset::Load()
 {
 	// Get the package the asset lives in
 	I_Package* const container = ResourceManager::GetInstance()->GetPackage(m_PackageId);
-	ET_ASSERT(container != nullptr,
-		"No package (name:'" + m_PackageName + std::string("', id:'") + std::to_string(m_PackageId) + std::string("') found for asset ") + m_Name);
+	ET_ASSERT(container != nullptr, "No package (name:'%s', id:'%x') found for asset '%s'", m_PackageName.c_str(), m_PackageId, m_Name.c_str());
 
 	// get binary data from the package
 	if (!(container->GetEntryData(m_PackageEntryId, m_LoadData)))

@@ -46,6 +46,7 @@ inline void SafeDelete(T &pObjectToDelete)
 #include <EtCore/Helper/Time.h>
 #include <EtCore/Helper/Logger.h>
 #include <EtCore/Helper/PerformanceInfo.h>
+#include <EtCore/Helper/StringUtil.h>
 //Working singleton Set
 #define TIME ContextManager::GetInstance()->GetActiveContext()->time
 #define LOG(fmt, ...) Logger::Log(fmt, __VA_ARGS__);
@@ -56,9 +57,9 @@ inline void SafeDelete(T &pObjectToDelete)
 	#define ET_ASSERT(condition, ...)
 #else
 #ifdef PLATFORM_Win
-	#define ET_ASSERT(condition, ...) Logger::ProcessAssert(condition, __FUNCSIG__, __VA_ARGS__);
+	#define ET_ASSERT(condition, ...) Logger::ProcessAssert(condition, __FUNCSIG__, FS(__VA_ARGS__))
 #else
-	#define ET_ASSERT(condition, ...) Logger::ProcessAssert(condition, __PRETTY_FUNCTION__, __VA_ARGS__);
+	#define ET_ASSERT(condition, ...) Logger::ProcessAssert(condition, __PRETTY_FUNCTION__, FS(__VA_ARGS__))
 #endif // PLATFORM_Win
 #endif // ET_SHIPPING
 

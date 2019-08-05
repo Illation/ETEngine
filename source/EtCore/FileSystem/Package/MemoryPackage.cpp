@@ -97,9 +97,9 @@ void MemoryPackage::InitFileListFromData()
 		offset += sizeof(PkgEntry);
 
 		// get and validate the fileId
-		ET_ASSERT(entry->fileId == fileInfo.first,
-			"MemoryPackage::InitFileListFromData > File ID didn't match file info from central directory! Expected ["
-			+ std::to_string(fileInfo.first) + std::string("] - found [") + std::to_string(entry->fileId) + std::string("]"));
+		ET_ASSERT(entry->fileId == fileInfo.first, 
+			"File ID didn't match file info from central directory! Expected [%x] - found [%x]", 
+			fileInfo.first, entry->fileId);
 
 		// Create our package file in the map and edit it after to avoid unnecessary file copying
 		auto emplaceIt = m_Entries.try_emplace(entry->fileId, PackageEntry());

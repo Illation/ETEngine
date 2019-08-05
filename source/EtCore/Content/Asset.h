@@ -18,6 +18,7 @@ public:
 	//---------------------
 
 	friend class ResourceManager; 
+	friend class I_AssetPtr;
 
 	struct Reference final
 	{
@@ -78,6 +79,8 @@ public:
 	T_Hash GetPackageId() const { return m_PackageId; }
 	T_Hash GetPackageEntryId() const { return m_PackageEntryId; }
 
+	uint32 GetRefCount() const { return m_RefCount; }
+
 	void Load();
 
 protected:
@@ -94,6 +97,8 @@ protected:
 	T_Hash m_Id;
 	T_Hash m_PackageId;
 	T_Hash m_PackageEntryId;
+
+	uint32 m_RefCount;
 
 	bool m_IsPersistent = false; // can the load data be unloaded after the asset was loaded
 	std::vector<uint8> m_LoadData;

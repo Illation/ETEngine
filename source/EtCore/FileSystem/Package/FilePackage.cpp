@@ -138,9 +138,10 @@ void FilePackage::LoadFileList()
 		PkgEntry const* entry = reinterpret_cast<PkgEntry const*>(readBinData.data());
 
 		// get and validate the fileId
+
 		ET_ASSERT(entry->fileId == fileInfo.fileId,
-			"FilePackage::LoadFileList > File ID didn't match file info from central directory! Expected ["
-			+ std::to_string(fileInfo.fileId) + std::string("] - found [") + std::to_string(entry->fileId) + std::string("]"));
+			"File ID didn't match file info from central directory! Expected [%x] - found [%x]",
+			fileInfo.fileId, entry->fileId);
 
 		// Create our package file in the map and edit it after to avoid unnecessary file copying
 		auto emplaceIt = m_Entries.try_emplace(entry->fileId, PackageEntry());
