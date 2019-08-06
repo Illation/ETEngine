@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Asset.h"
 
+#include "AssetPointer.h"
 #include "ResourceManager.h"
 
 #include <rttr/registration>
@@ -39,6 +40,29 @@ void I_Asset::Reference::Init()
 {
 	m_Asset = ResourceManager::GetInstance()->GetAsset(GetHash(m_Name));
 	ET_ASSERT(m_Asset != nullptr, "Couldn't link to asset reference because it wasn't found - '%s'", m_Name.c_str());
+}
+
+//---------------------------------
+// I_Asset::Reference::Ref
+//
+// Makes sure the reference is loaded (by creating a smart asset pointer)
+//
+void I_Asset::Reference::Ref()
+{
+	ET_ASSERT(m_AssetPtr = nullptr);
+	m_AssetPtr = new I_AssetPtr(m_Asset);
+}
+
+//---------------------------------
+// I_Asset::Reference::Deref
+//
+// Allows the reference to be unloaded if needed (by deleting the smart asset pointer)
+//
+void I_Asset::Reference::Deref()
+{
+	ET_ASSERT(m_AssetPtr != nullptr);
+	delete m_AssetPtr;
+	m_AssetPtr = nullptr;
 }
 
 
@@ -105,6 +129,12 @@ void I_Asset::SetPackageName(std::string const& val)
 //
 void I_Asset::Load()
 {
+	// Make sure all references are loaded
+	for (Reference& ref : m_References)
+	{
+		ref.Ref();
+	}
+
 	// Get the package the asset lives in
 	I_Package* const container = ResourceManager::GetInstance()->GetPackage(m_PackageId);
 	ET_ASSERT(container != nullptr, "No package (name:'%s', id:'%x') found for asset '%s'", m_PackageName.c_str(), m_PackageId, m_Name.c_str());
@@ -126,5 +156,30 @@ void I_Asset::Load()
 	if (!m_IsPersistent)
 	{
 		m_LoadData.clear();
+	}
+
+	// dereference non persistent references 
+	for (Reference& ref : m_References)
+	{
+		if (!ref.IsPersistent())
+		{
+			ref.Deref();
+		}
+	}
+}
+
+//---------------------------------
+// I_Asset::DereferencePersistent
+//
+// dereference persistent references 
+//
+void I_Asset::DereferencePersistent()
+{
+	for (Reference& ref : m_References)
+	{
+		if (ref.IsPersistent())
+		{
+			ref.Deref();
+		}
 	}
 }

@@ -2,6 +2,7 @@
 #include <EtCore/Helper/Singleton.h>
 
 #include "AssetDatabase.h"
+#include "AssetPointer.h"
 
 
 // forward decl
@@ -44,6 +45,8 @@ public:
 
 	// Managing assets
 	//---------------------
+
+	// NOT INTENDED FOR DATA ACCESS
 	AssetDatabase& GetDatabase() { return m_Database; }
 
 	I_Package* GetPackage(T_Hash const id);
@@ -51,11 +54,14 @@ public:
 	I_Asset* GetAsset(T_Hash const assetId);
 	I_Asset* GetAsset(T_Hash const assetId, std::type_info const& type);
 
+private:
 	template <class T_DataType>
 	RawAsset<T_DataType>* GetAsset(T_Hash const assetId);
 
+public:
+	// ACCESS DATA HERE
 	template <class T_DataType>
-	T_DataType const* GetAssetData(T_Hash const assetId);
+	AssetPtr<T_DataType> GetAssetData(T_Hash const assetId);
 
 private:
 	// Data

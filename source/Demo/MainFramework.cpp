@@ -36,9 +36,18 @@ void MainFramework::AddScenes()
 
 void MainFramework::OnTick()
 {	
-	StubData const* postDefTxt = ResourceManager::GetInstance()->GetAssetData<StubData>("PostDeferredComposite.glsl"_hash);
-	StubData const* loremTxt = ResourceManager::GetInstance()->GetAssetData<StubData>("lorem_ipsum.txt"_hash);
+	if (m_PostDefTxt == nullptr)
+	{
+		m_PostDefTxt = ResourceManager::GetInstance()->GetAssetData<StubData>("PostDeferredComposite.glsl"_hash);
+	}
+	AssetPtr<StubData> temp = m_PostDefTxt;
+	AssetPtr<StubData> temp2(temp);
 
+	if (m_LoremTxt == nullptr)
+	{
+		m_LoremTxt = ResourceManager::GetInstance()->GetAssetData<StubData>("lorem_ipsum.txt"_hash);
+	}
+	
 	//This is where scenes can be switched conditionally
 	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_F3)) == E_KeyState::Pressed)
 	{

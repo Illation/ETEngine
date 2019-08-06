@@ -14,4 +14,7 @@ void RawAsset<T_DataType>::Unload()
 		delete m_Data;
 		m_Data = nullptr;
 	}
+	m_LoadData.clear();
+
+	DereferencePersistent();
 }

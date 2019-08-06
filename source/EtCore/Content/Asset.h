@@ -5,6 +5,9 @@
 #include <rttr/type>
 
 
+class I_AssetPtr;
+
+
 //---------------------------------
 // I_Asset
 //
@@ -31,9 +34,14 @@ public:
 		bool IsPersistent() const { return m_IsPersistent; }
 		void SetPersistent(bool const val) { m_IsPersistent = val; }
 
-		I_Asset* GetAsset() { return m_Asset; }
+		I_AssetPtr* GetAsset() { return m_AssetPtr; }
 
 	private:
+		friend class I_Asset;
+
+		void Ref();
+		void Deref();
+
 		// Data
 		///////
 
@@ -42,7 +50,8 @@ public:
 		bool m_IsPersistent; // can the reference be unloaded after the asset was loaded
 
 		// derived
-		I_Asset* m_Asset;
+		I_Asset* m_Asset = nullptr; // pointer to the raw asset, shouldn't be directly used
+		I_AssetPtr* m_AssetPtr = nullptr;
 
 		RTTR_ENABLE()
 	};
@@ -84,6 +93,8 @@ public:
 	void Load();
 
 protected:
+	void DereferencePersistent();
+
 	// Data
 	///////
 
@@ -98,7 +109,7 @@ protected:
 	T_Hash m_PackageId;
 	T_Hash m_PackageEntryId;
 
-	uint32 m_RefCount;
+	uint32 m_RefCount = 0u;
 
 	bool m_IsPersistent = false; // can the load data be unloaded after the asset was loaded
 	std::vector<uint8> m_LoadData;

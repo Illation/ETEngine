@@ -25,7 +25,7 @@ RawAsset<T_DataType>* ResourceManager::GetAsset(T_Hash const assetId)
 // Get the data of an asset. Loads the asset if it's not loaded yet
 //
 template <class T_DataType>
-T_DataType const* ResourceManager::GetAssetData(T_Hash const assetId)
+AssetPtr<T_DataType> ResourceManager::GetAssetData(T_Hash const assetId)
 {
 	// Get the asset
 	RawAsset<T_DataType>* asset = GetAsset<T_DataType>(assetId);
@@ -37,12 +37,6 @@ T_DataType const* ResourceManager::GetAssetData(T_Hash const assetId)
 		return nullptr;
 	}
 
-	// Check if it needs to be loaded
-	if (!(asset->IsLoaded()))
-	{
-		asset->Load();
-	}
-
-	return asset->GetData();
+	return AssetPtr<T_DataType>(asset); // this should load the data if it is accessed the first time
 }
 
