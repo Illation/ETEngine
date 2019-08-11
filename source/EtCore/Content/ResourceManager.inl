@@ -14,7 +14,7 @@
 template <class T_DataType>
 RawAsset<T_DataType>* ResourceManager::GetAsset(T_Hash const assetId)
 {
-	I_Asset* abstractAsset = GetAsset(assetId, typeid(T_DataType));
+	I_Asset* abstractAsset = m_Database.GetAsset(assetId, typeid(T_DataType));
 	return static_cast<RawAsset<T_DataType>*>(abstractAsset);
 }
 

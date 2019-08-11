@@ -4,10 +4,6 @@
 #include <rttr/registration>
 
 
-//===================
-// Asset Database
-//===================
-
 
 // reflection
 RTTR_REGISTRATION
@@ -25,6 +21,12 @@ RTTR_REGISTRATION
 		.property("packages", &AssetDatabase::packages)
 		.property("caches", &AssetDatabase::caches);
 }
+
+
+//====================
+// Package Descriptor
+//====================
+
 
 //---------------------------------
 // AssetDatabase::PackageDescriptor::SetName
@@ -51,6 +53,30 @@ std::type_info const& AssetDatabase::AssetCache::GetType() const
 	return typeid(nullptr);
 }
 
+
+//===================
+// Asset Database
+//===================
+
+
+//---------------------------------
+// AssetDatabase::d-tor
+//
+// Delete all asset pointers
+//
+AssetDatabase::~AssetDatabase()
+{
+	for (AssetCache& cache : caches)
+	{
+		for (I_Asset* asset : cache.cache)
+		{
+			delete asset;
+			asset = nullptr;
+		}
+	}
+	caches.clear();
+}
+
 //---------------------------------
 // AssetDatabase::GetAssetsInPackage
 //
@@ -74,4 +100,65 @@ AssetDatabase::T_AssetList AssetDatabase::GetAssetsInPackage(T_Hash const packag
 	}
 
 	return outAssets;
+}
+
+//---------------------------------
+// AssetDatabase::GetAsset
+//
+// Get an asset by its ID
+//
+I_Asset* AssetDatabase::GetAsset(T_Hash const assetId)
+{
+	// in this version we loop over all caches
+	for (AssetCache& cache : caches)
+	{
+		// try finding our asset by its ID in the cache
+		auto foundAssetIt = std::find_if(cache.cache.begin(), cache.cache.end(), [assetId](I_Asset* asset)
+		{
+			return asset->GetId() == assetId;
+		});
+
+		if (foundAssetIt != cache.cache.cend())
+		{
+			return *foundAssetIt;
+		}
+	}
+
+	// didn't find an asset in any cache, return null
+	LOG("AssetDatabase::GetAsset > Couldn't find asset with ID '" + std::to_string(assetId) + std::string("'!"), LogLevel::Warning);
+	return nullptr;
+}
+
+//---------------------------------
+// AssetDatabase::GetAsset
+//
+// Get an asset by its ID and type
+//
+I_Asset* AssetDatabase::GetAsset(T_Hash const assetId, std::type_info const& type)
+{
+	// Try finding a cache containing our type
+	auto foundCacheIt = std::find_if(caches.begin(), caches.end(), [&type](AssetCache& cache)
+	{
+		return cache.GetType() == type;
+	});
+
+	if (foundCacheIt == caches.cend())
+	{
+		LOG("AssetDatabase::GetAsset > Couldn't find asset cache of type '" + std::string(type.name()) + std::string("'!"), LogLevel::Warning);
+		return nullptr;
+	}
+
+	// try finding our asset by its ID in the cache
+	auto foundAssetIt = std::find_if(foundCacheIt->cache.begin(), foundCacheIt->cache.end(), [assetId](I_Asset* asset)
+	{
+		return asset->GetId() == assetId;
+	});
+
+	if (foundAssetIt == foundCacheIt->cache.cend())
+	{
+		LOG("ResourceManager::GetAsset > Couldn't find asset with ID '" + std::to_string(assetId) + std::string("'!"), LogLevel::Warning);
+		return nullptr;
+	}
+
+	return *foundAssetIt;
 }

@@ -7,7 +7,8 @@
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/Package/FilePackage.h>
-#include <EtCore/Content/ResourceManager.h>
+#include <EtCore/Reflection/Serialization.h>
+#include <EtCore/Content/AssetDatabase.h>
 
 #include <Engine/linkerHelper.h>
 
@@ -18,9 +19,9 @@
 
 
 // forward declarations
-void WritePackageToData(T_Hash const packageId, std::string const& dbBase, PackageWriter &packageWriter, std::vector<uint8>& packageData);
-void CookCompiledPackage(std::string const& dbBase, std::string const& databasePath, std::string const& outPath, std::string const& resName);
-void CookFilePackages(std::string const& dbBase, std::string const& outPath);
+void WritePackageToData(T_Hash const packageId, std::string const& dbBase, PackageWriter &writer, std::vector<uint8>& packageData, AssetDatabase& db);
+void CookCompiledPackage(std::string const& dbBase, std::string const& dbPath, std::string const& outPath, std::string const& resName, AssetDatabase& db);
+void CookFilePackages(std::string const& dbBase, std::string const& outPath, AssetDatabase& db);
 
 
 //---------------------------------
@@ -49,7 +50,11 @@ int main(int argc, char *argv[])
 	//------------
 	Logger::Initialize();
 
-	ResourceManager::GetInstance()->InitFromFile(databasePath);
+	AssetDatabase database;
+	if (!serialization::DeserializeFromFile(databasePath, database))
+	{
+		LOG("main > unable to deserialize asset database at '" + std::string(databasePath) + std::string("'"), LogLevel::Error);
+	}
 	std::string dbBase = FileUtil::ExtractPath(databasePath);
 
 	if (genCompiledResource)
@@ -61,17 +66,15 @@ int main(int argc, char *argv[])
 		}
 		std::string resName(argv[4]);
 
-		CookCompiledPackage(dbBase, databasePath, outPath, resName);
+		CookCompiledPackage(dbBase, databasePath, outPath, resName, database);
 	}
 	else
 	{
-		CookFilePackages(dbBase, outPath);
+		CookFilePackages(dbBase, outPath, database);
 	}
 
 	// Clean up
 	//----------
-	ResourceManager::GetInstance()->DestroyInstance();
-
 	Logger::Release();
 
 	return 0;
@@ -86,10 +89,10 @@ int main(int argc, char *argv[])
 //
 // Gets all assets in a package and creates a binary data blob for it
 //
-void WritePackageToData(T_Hash const packageId, std::string const& dbBase, PackageWriter &packageWriter, std::vector<uint8>& packageData)
+void WritePackageToData(T_Hash const packageId, std::string const& dbBase, PackageWriter &writer, std::vector<uint8>& packageData, AssetDatabase& db)
 {
 	// Loop over files - add them to the writer
-	AssetDatabase::T_AssetList assets = ResourceManager::GetInstance()->GetDatabase().GetAssetsInPackage(packageId);
+	AssetDatabase::T_AssetList assets = db.GetAssetsInPackage(packageId);
 	for (I_Asset const* const asset : assets)
 	{
 		std::string const filePath = dbBase + asset->GetPath();
@@ -99,11 +102,11 @@ void WritePackageToData(T_Hash const packageId, std::string const& dbBase, Packa
 		LOG(assetName + std::string(" [") + std::to_string(id) + std::string("] @: ") + FileUtil::GetAbsolutePath(filePath));
 
 		File* assetFile = new File(filePath + assetName, nullptr);
-		packageWriter.AddFile(assetFile, E_CompressionType::Store);
+		writer.AddFile(assetFile, E_CompressionType::Store);
 	}
 
 	// write our package
-	packageWriter.Write(packageData);
+	writer.Write(packageData);
 }
 
 //---------------------
@@ -112,18 +115,18 @@ void WritePackageToData(T_Hash const packageId, std::string const& dbBase, Packa
 // Writes the package with compiled data that ends up as a generated source file.
 //  - this includes the file for the asset database
 //
-void CookCompiledPackage(std::string const& dbBase, std::string const& databasePath, std::string const& outPath, std::string const& resName)
+void CookCompiledPackage(std::string const& dbBase, std::string const& dbPath, std::string const& outPath, std::string const& resName, AssetDatabase& db)
 {
 	// Create a package writer - all file paths will be written relative to our database directory
 	PackageWriter packageWriter(dbBase);
 	std::vector<uint8> packageData;
 
 	// add the asset database to the compiled package
-	File* dbFile = new File(databasePath, nullptr);
+	File* dbFile = new File(dbPath, nullptr);
 	packageWriter.AddFile(dbFile, E_CompressionType::Store);
 
 	static T_Hash const s_CompiledPackageId = 0u;
-	WritePackageToData(s_CompiledPackageId, dbBase, packageWriter, packageData);
+	WritePackageToData(s_CompiledPackageId, dbBase, packageWriter, packageData, db);
 
 	// Generate source file
 	GenerateCompilableResource(packageData, resName, outPath);
@@ -135,15 +138,15 @@ void CookCompiledPackage(std::string const& dbBase, std::string const& databaseP
 // Writes the package with compiled data that ends up as a generated source file.
 //  - this includes the file for the asset database
 //
-void CookFilePackages(std::string const& dbBase, std::string const& outPath)
+void CookFilePackages(std::string const& dbBase, std::string const& outPath, AssetDatabase& db)
 {
 	// each package can have a separate asset list
-	for (AssetDatabase::PackageDescriptor const& desc : ResourceManager::GetInstance()->GetDatabase().packages)
+	for (AssetDatabase::PackageDescriptor const& desc : db.packages)
 	{
 		PackageWriter packageWriter(dbBase);
 		std::vector<uint8> packageData;
 
-		WritePackageToData(desc.GetId(), dbBase, packageWriter, packageData);
+		WritePackageToData(desc.GetId(), dbBase, packageWriter, packageData, db);
 
 		// Ensure the generated file directory exists
 		Directory* dir = new Directory(outPath + desc.GetPath(), nullptr, true);

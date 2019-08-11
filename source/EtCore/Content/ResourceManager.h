@@ -39,20 +39,13 @@ public:
 	// Init Deinit
 	//---------------------
 	void InitFromCompiledData();
-	void InitFromFile(std::string const& path);
 
 	void Deinit();
 
 	// Managing assets
 	//---------------------
 
-	// NOT INTENDED FOR DATA ACCESS
-	AssetDatabase& GetDatabase() { return m_Database; }
-
 	I_Package* GetPackage(T_Hash const id);
-
-	I_Asset* GetAsset(T_Hash const assetId);
-	I_Asset* GetAsset(T_Hash const assetId, std::type_info const& type);
 
 private:
 	template <class T_DataType>

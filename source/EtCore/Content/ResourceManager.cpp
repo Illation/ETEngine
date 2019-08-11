@@ -61,45 +61,21 @@ void ResourceManager::InitFromCompiledData()
 		// every asset per cache
 		for (I_Asset* asset : cache.cache)
 		{
-			for (I_Asset::Reference& ref : asset->m_References)
+			for (I_Asset::Reference& reference : asset->m_References)
 			{
-				ref.Init();
+				reference.m_Asset = m_Database.GetAsset(GetHash(reference.m_Name));
 			}
 		}
 	}
 }
 
 //---------------------------------
-// ResourceManager::InitFromFile
-//
-// Load the asset database from a physical JSON file in case it hasn't been embedded into cooked resources yet
-//
-void ResourceManager::InitFromFile(std::string const& path)
-{
-	if (!serialization::DeserializeFromFile(path, m_Database))
-	{
-		LOG("ResourceManager::InitFromFile > unable to deserialize asset database at '" + std::string(path) + std::string("'"), LogLevel::Error);
-	}
-}
-
-//---------------------------------
 // ResourceManager::Deinit
 //
-// Delete all remaining open assets
+// Cleans up packages
 //
 void ResourceManager::Deinit()
 {
-	// clear the database
-	for (AssetDatabase::AssetCache& cache : m_Database.caches)
-	{
-		for (I_Asset* asset : cache.cache)
-		{
-			delete asset;
-			asset = nullptr;
-		}
-	}
-	m_Database.caches.clear();
-
 	// clear the package list
 	for (std::pair<T_Hash, I_Package* >& package : m_Packages)
 	{
@@ -129,65 +105,4 @@ I_Package* ResourceManager::GetPackage(T_Hash const id)
 	}
 
 	return foundPackageIt->second;
-}
-
-//---------------------------------
-// ResourceManager::GetAsset
-//
-// Get an asset by its ID
-//
-I_Asset* ResourceManager::GetAsset(T_Hash const assetId)
-{
-	// in this version we loop over all caches
-	for (AssetDatabase::AssetCache& cache : m_Database.caches)
-	{
-		// try finding our asset by its ID in the cache
-		auto foundAssetIt = std::find_if(cache.cache.begin(), cache.cache.end(), [assetId](I_Asset* asset)
-		{
-			return asset->GetId() == assetId;
-		});
-
-		if (foundAssetIt != cache.cache.cend())
-		{
-			return *foundAssetIt;
-		}
-	}
-
-	// didn't find an asset in any cache, return null
-	LOG("ResourceManager::GetAsset > Couldn't find asset with ID '" + std::to_string(assetId) + std::string("'!"), LogLevel::Warning);
-	return nullptr;
-}
-
-//---------------------------------
-// ResourceManager::GetAsset
-//
-// Get an asset by its ID and type
-//
-I_Asset* ResourceManager::GetAsset(T_Hash const assetId, std::type_info const& type)
-{
-	// Try finding a cache containing our type
-	auto foundCacheIt = std::find_if(m_Database.caches.begin(), m_Database.caches.end(), [&type](AssetDatabase::AssetCache& cache)
-	{
-		return cache.GetType() == type;
-	});
-
-	if (foundCacheIt == m_Database.caches.cend())
-	{
-		LOG("ResourceManager::GetAsset > Couldn't find asset cache of type '" + std::string(type.name()) + std::string("'!"), LogLevel::Warning);
-		return nullptr;
-	}
-
-	// try finding our asset by its ID in the cache
-	auto foundAssetIt = std::find_if(foundCacheIt->cache.begin(), foundCacheIt->cache.end(), [assetId](I_Asset* asset)
-	{
-		return asset->GetId() == assetId;
-	});
-
-	if (foundAssetIt == foundCacheIt->cache.cend())
-	{
-		LOG("ResourceManager::GetAsset > Couldn't find asset with ID '" + std::to_string(assetId) + std::string("'!"), LogLevel::Warning);
-		return nullptr;
-	}
-
-	return *foundAssetIt;
 }

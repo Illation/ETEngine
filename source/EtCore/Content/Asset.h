@@ -26,8 +26,6 @@ public:
 	struct Reference final
 	{
 	public:
-		void Init();
-
 		std::string const& GetName() const { return m_Name; }
 		void SetName(std::string const& val) { m_Name = val; }
 
@@ -38,6 +36,7 @@ public:
 
 	private:
 		friend class I_Asset;
+		friend class ResourceManager;
 
 		void Ref();
 		void Deref();

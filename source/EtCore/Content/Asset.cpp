@@ -32,17 +32,6 @@ RTTR_REGISTRATION
 
 
 //---------------------------------
-// I_Asset::Reference::Init
-//
-// Links the asset pointer
-//
-void I_Asset::Reference::Init()
-{
-	m_Asset = ResourceManager::GetInstance()->GetAsset(GetHash(m_Name));
-	ET_ASSERT(m_Asset != nullptr, "Couldn't link to asset reference because it wasn't found - '%s'", m_Name.c_str());
-}
-
-//---------------------------------
 // I_Asset::Reference::Ref
 //
 // Makes sure the reference is loaded (by creating a smart asset pointer)

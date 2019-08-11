@@ -52,7 +52,12 @@ public:
 		RTTR_ENABLE()
 	};
 
+	~AssetDatabase();
+
 	T_AssetList GetAssetsInPackage(T_Hash const packageId);
+
+	I_Asset* GetAsset(T_Hash const assetId);
+	I_Asset* GetAsset(T_Hash const assetId, std::type_info const& type);
 
 	// Data
 	////////
