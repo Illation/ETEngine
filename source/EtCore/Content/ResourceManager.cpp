@@ -106,3 +106,22 @@ I_Package* ResourceManager::GetPackage(T_Hash const id)
 
 	return foundPackageIt->second;
 }
+
+//---------------------------------
+// ResourceManager::Flush
+//
+// Force unloading all assets with no references
+//
+void ResourceManager::Flush()
+{
+	for (AssetDatabase::AssetCache& cache : m_Database.caches)
+	{
+		for (I_Asset* asset : cache.cache)
+		{
+			if (asset->GetRefCount() <= 0u && asset->IsLoaded())
+			{
+				asset->Unload(true);
+			}
+		}
+	}
+}

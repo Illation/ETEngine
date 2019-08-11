@@ -2,7 +2,7 @@
 
 
 //=========================
-// Asset Pointer Interface
+// Abstract asset pointer
 //=========================
 
 
@@ -29,6 +29,24 @@ inline bool I_AssetPtr::DecrementRefCount()
 	return (m_Asset->m_RefCount == 0u);
 }
 
+//---------------------------------
+// I_AssetPtr::Invalidate
+//
+// If this was a valid pointer, decrement the ref count and make sure the asset is null
+//
+inline void I_AssetPtr::Invalidate()
+{
+	if (m_Asset != nullptr)
+	{
+		if (DecrementRefCount())
+		{
+			ET_ASSERT(m_Asset->IsLoaded());
+			m_Asset->Unload(); // Maybe we want to defer this to the resource manager
+		}
+		m_Asset = nullptr;
+	}
+}
+
 
 //=========================
 // Asset Pointer Template
@@ -41,22 +59,12 @@ inline bool I_AssetPtr::DecrementRefCount()
 //---------------------------------
 // AssetPtr::AssetPtr
 //
-// Creates a new pointer to this asset. If the first reference was created, the asset is loaded
+// Creates a new pointer to this asset using the underlying I_AssetPtr implementation
 //
 template <class T_DataType>
 AssetPtr<T_DataType>::AssetPtr(RawAsset<T_DataType>* rawAsset)
 	: I_AssetPtr(static_cast<I_Asset*>(rawAsset))
-{
-	if (m_Asset != nullptr) // having asset pointers point to null is valid
-	{
-		ET_ASSERT(rawAsset->GetType() == typeid(T_DataType));
-		if (IncrementRefCount())
-		{
-			ET_ASSERT(!(m_Asset->IsLoaded()));
-			m_Asset->Load();
-		}
-	}
-}
+{}
 
 //---------------------------------
 // AssetPtr::operator=
@@ -133,22 +141,6 @@ AssetPtr<T_DataType>& AssetPtr<T_DataType>::operator=(AssetPtr<T_DataType>&& mov
 	return *this;
 }
 
-
-// Destructor
-/////////////////////////
-
-//---------------------------------
-// AssetPtr::~AssetPtr
-//
-// Deletes the pointer. If this was the last reference the asset is unloaded
-//
-template <class T_DataType>
-AssetPtr<T_DataType>::~AssetPtr()
-{
-	Invalidate();
-}
-
-
 // Utility
 /////////////
 
@@ -172,25 +164,6 @@ template <class T_DataType>
 bool AssetPtr<T_DataType>::is_null() const
 {
 	return (m_Asset == nullptr);
-}
-
-//---------------------------------
-// AssetPtr::Invalidate
-//
-// If this was a valid pointer, decrement the ref count and make sure the asset is null
-//
-template <class T_DataType>
-void AssetPtr<T_DataType>::Invalidate()
-{
-	if (m_Asset != nullptr)
-	{
-		if (DecrementRefCount())
-		{
-			ET_ASSERT(m_Asset->IsLoaded());
-			m_Asset->Unload(); // Maybe we want to defer this to the resource manager
-		}
-		m_Asset = nullptr;
-	}
 }
 
 

@@ -47,18 +47,9 @@
               "path": "assets/Engine/Shaders/",
               "package": "",
               "references": [
-                {
-                  "name": "Common.glsl",
-                  "is persistent": false
-                },
-                {
-                  "name": "CommonDeferred.glsl",
-                  "is persistent": false
-                },
-                {
-                  "name": "CommonPBR.glsl",
-                  "is persistent": false
-                }
+                "Common.glsl",
+                "CommonDeferred.glsl",
+                "CommonPBR.glsl"
               ]
             }
           }

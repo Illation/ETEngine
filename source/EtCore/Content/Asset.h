@@ -26,11 +26,11 @@ public:
 	struct Reference final
 	{
 	public:
+		Reference(std::string const& name);
+		~Reference();
+
 		std::string const& GetName() const { return m_Name; }
 		void SetName(std::string const& val) { m_Name = val; }
-
-		bool IsPersistent() const { return m_IsPersistent; }
-		void SetPersistent(bool const val) { m_IsPersistent = val; }
 
 		I_AssetPtr* GetAsset() { return m_AssetPtr; }
 
@@ -46,7 +46,6 @@ public:
 
 		// reflected
 		std::string m_Name;
-		bool m_IsPersistent; // can the reference be unloaded after the asset was loaded
 
 		// derived
 		I_Asset* m_Asset = nullptr; // pointer to the raw asset, shouldn't be directly used
@@ -67,7 +66,10 @@ public:
 	virtual std::type_info const& GetType() const = 0;
 	virtual bool IsLoaded() const = 0;
 	virtual bool LoadFromMemory(std::vector<uint8> const& data) = 0;
-	virtual void Unload() {}
+protected:
+	virtual void UnloadInternal() {}
+
+public:
 
 	// Utility
 	//---------------------	
@@ -80,8 +82,10 @@ public:
 	std::string const& GetPackageName() const { return m_PackageName; }
 	void SetPackageName(std::string const& val);
 
+	std::vector<std::string> GetReferenceNames() const;
+	void SetReferenceNames(std::vector<std::string> val);
+
 	std::vector<Reference> const& GetReferences() const { return m_References; }
-	void SetReferences(std::vector<Reference> const& val) { m_References = val; }
 
 	T_Hash GetId() const { return m_Id; }
 	T_Hash GetPackageId() const { return m_PackageId; }
@@ -90,9 +94,9 @@ public:
 	uint32 GetRefCount() const { return m_RefCount; }
 
 	void Load();
+	void Unload(bool const force = false);
 
 protected:
-	void DereferencePersistent();
 
 	// Data
 	///////
@@ -139,8 +143,11 @@ public:
 	//---------------------
 	std::type_info const& GetType() const override { return typeid(T_DataType); }
 	bool IsLoaded() const override { return m_Data != nullptr; }
-	void Unload() override;
 
+protected:
+	void UnloadInternal() override;
+
+public:
 	T_DataType const* GetData() const { return m_Data; }
 
 protected:

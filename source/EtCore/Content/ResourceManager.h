@@ -42,26 +42,32 @@ public:
 
 	void Deinit();
 
-	// Managing assets
+	// Accessors
 	//---------------------
-
+	bool IsUnloadDeferred() const { return m_DeferUnloadToFlush; }
 	I_Package* GetPackage(T_Hash const id);
 
+	// Managing assets
+	//---------------------
+	template <class T_DataType>
+	AssetPtr<T_DataType> GetAssetData(T_Hash const assetId);
+
+	void Flush(); 
+
+	// Utility
+	//---------------------
 private:
 	template <class T_DataType>
 	RawAsset<T_DataType>* GetAsset(T_Hash const assetId);
 
-public:
-	// ACCESS DATA HERE
-	template <class T_DataType>
-	AssetPtr<T_DataType> GetAssetData(T_Hash const assetId);
 
-private:
 	// Data
 	///////
 
 	AssetDatabase m_Database;
 	std::vector<T_IndexedPackage> m_Packages;
+
+	bool m_DeferUnloadToFlush = false;
 };
 
 

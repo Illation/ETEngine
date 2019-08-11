@@ -39,6 +39,12 @@ void AssetDatabase::PackageDescriptor::SetName(std::string const& val)
 	m_Id = GetHash(m_Name);
 }
 
+
+//====================
+// Asset Cache
+//====================
+
+
 //---------------------------------
 // AssetDatabase::AssetCache::GetType
 //

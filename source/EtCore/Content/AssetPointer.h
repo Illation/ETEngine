@@ -14,12 +14,15 @@ protected:
 	I_AssetPtr() = default;
 	
 public:
-	I_AssetPtr(I_Asset* asset) : m_Asset(asset) {}
+	I_AssetPtr(I_Asset* asset);
+	virtual ~I_AssetPtr();
 
 protected:
 	// functions
 	inline bool IncrementRefCount();
 	inline bool DecrementRefCount();
+
+	inline void Invalidate();
 
 	// Data
 	///////
@@ -54,14 +57,12 @@ public:
 	AssetPtr& operator=(AssetPtr&& moving);
 
 	// deleting the pointer may cause unloading the asset if this was the last instance
-	~AssetPtr(); // not virtual because we handle destroying the base class
+	virtual ~AssetPtr() {}
 
 	// utility
 	void swap(AssetPtr& other) noexcept;
 
 	bool is_null() const;
-private:
-	void Invalidate();
 
 public:
 	// accessors

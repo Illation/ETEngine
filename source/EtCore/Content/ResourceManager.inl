@@ -6,18 +6,6 @@
 //===================
 
 
-//---------------------------------
-// ResourceManager::GetAsset
-//
-// Get an asset by it's template type
-//
-template <class T_DataType>
-RawAsset<T_DataType>* ResourceManager::GetAsset(T_Hash const assetId)
-{
-	I_Asset* abstractAsset = m_Database.GetAsset(assetId, typeid(T_DataType));
-	return static_cast<RawAsset<T_DataType>*>(abstractAsset);
-}
-
 
 //---------------------------------
 // ResourceManager::GetAssetData
@@ -37,6 +25,28 @@ AssetPtr<T_DataType> ResourceManager::GetAssetData(T_Hash const assetId)
 		return nullptr;
 	}
 
-	return AssetPtr<T_DataType>(asset); // this should load the data if it is accessed the first time
+	// Make sure to not unload non persistent references immediately in case they appear multiple times in the hierachy
+	m_DeferUnloadToFlush = true;
+
+	AssetPtr<T_DataType> retPtr(asset); // this should load the data if it is accessed the first time
+
+	m_DeferUnloadToFlush = false;
+
+	// later if we load levels in batches we should also defer flushing to the end of the batch load
+	Flush(); // as far as we know there won't be any more accesses to references during load so we should make sure to free the memory we won't need
+
+	return retPtr;
 }
 
+
+//---------------------------------
+// ResourceManager::GetAsset
+//
+// Get an asset by it's template type
+//
+template <class T_DataType>
+RawAsset<T_DataType>* ResourceManager::GetAsset(T_Hash const assetId)
+{
+	I_Asset* abstractAsset = m_Database.GetAsset(assetId, typeid(T_DataType));
+	return static_cast<RawAsset<T_DataType>*>(abstractAsset);
+}

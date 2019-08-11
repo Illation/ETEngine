@@ -13,15 +13,11 @@ RTTR_REGISTRATION
 {
 	using namespace rttr;
 
-	registration::class_<I_Asset::Reference>("reference")
-		.property("name", &I_Asset::Reference::GetName, &I_Asset::Reference::SetName)
-		.property("is persistent", &I_Asset::Reference::IsPersistent, &I_Asset::Reference::SetPersistent);
-
 	registration::class_<I_Asset>("asset")
 		.property("name", &I_Asset::GetName, &I_Asset::SetName)
 		.property("path", &I_Asset::GetPath, &I_Asset::SetPath)
 		.property("package", &I_Asset::GetPackageName, &I_Asset::SetPackageName)
-		.property("references", &I_Asset::GetReferences, &I_Asset::SetReferences)
+		.property("references", &I_Asset::GetReferenceNames, &I_Asset::SetReferenceNames)
 		;
 }
 
@@ -32,13 +28,32 @@ RTTR_REGISTRATION
 
 
 //---------------------------------
+// I_Asset::Reference::c-tor
+//
+// Init a reference from a name - don't link the asset yet
+//
+I_Asset::Reference::Reference(std::string const& name) 
+	: m_Name(name)
+{ }
+
+//---------------------------------
+// I_Asset::Reference::d-tor
+//
+// Make sure to remove the asset pointer so the assets ref count goes down
+//
+I_Asset::Reference::~Reference()
+{
+	SafeDelete(m_AssetPtr);
+}
+
+//---------------------------------
 // I_Asset::Reference::Ref
 //
 // Makes sure the reference is loaded (by creating a smart asset pointer)
 //
 void I_Asset::Reference::Ref()
 {
-	ET_ASSERT(m_AssetPtr = nullptr);
+	ET_ASSERT(m_AssetPtr == nullptr);
 	m_AssetPtr = new I_AssetPtr(m_Asset);
 }
 
@@ -112,6 +127,35 @@ void I_Asset::SetPackageName(std::string const& val)
 }
 
 //---------------------------------
+// I_Asset::GetReferenceNames
+//
+// Extract a vector of strings from the reference list
+//
+std::vector<std::string> I_Asset::GetReferenceNames() const
+{
+	std::vector<std::string> referenceNames;
+	for (Reference const& reference : m_References)
+	{
+		referenceNames.emplace_back(reference.GetName());
+	}
+	return referenceNames;
+}
+
+//---------------------------------
+// I_Asset::SetReferenceNames
+//
+// Create the reference list from a vector of strings
+//
+void I_Asset::SetReferenceNames(std::vector<std::string> val)
+{
+	m_References.clear();
+	for (std::string const& refName : val)
+	{
+		m_References.emplace_back(refName);
+	}
+}
+
+//---------------------------------
 // I_Asset::Load
 //
 // Sets the name of an asset and generates its ID
@@ -119,9 +163,9 @@ void I_Asset::SetPackageName(std::string const& val)
 void I_Asset::Load()
 {
 	// Make sure all references are loaded
-	for (Reference& ref : m_References)
+	for (Reference& reference : m_References)
 	{
-		ref.Ref();
+		reference.Ref();
 	}
 
 	// Get the package the asset lives in
@@ -148,27 +192,22 @@ void I_Asset::Load()
 	}
 
 	// dereference non persistent references 
-	for (Reference& ref : m_References)
+	for (Reference& reference : m_References)
 	{
-		if (!ref.IsPersistent())
-		{
-			ref.Deref();
-		}
+		reference.Deref();
 	}
 }
 
 //---------------------------------
-// I_Asset::DereferencePersistent
+// I_Asset::Unload
 //
-// dereference persistent references 
+// Either unload an asset now or wait for the asset manager to flush
+//  - waiting allows us to keep common non persistent assets around during batched load processes until everything is done
 //
-void I_Asset::DereferencePersistent()
+void I_Asset::Unload(bool const force)
 {
-	for (Reference& ref : m_References)
+	if (force || !(ResourceManager::GetInstance()->IsUnloadDeferred()))
 	{
-		if (ref.IsPersistent())
-		{
-			ref.Deref();
-		}
+		UnloadInternal();
 	}
 }

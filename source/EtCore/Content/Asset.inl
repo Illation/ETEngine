@@ -2,12 +2,12 @@
 
 
 //---------------------------------
-// RawAsset::Unload
+// RawAsset::UnloadInternal
 //
 // Unload an asset by calling delete on its data
 //
 template <class T_DataType>
-void RawAsset<T_DataType>::Unload()
+void RawAsset<T_DataType>::UnloadInternal()
 {
 	if (m_Data != nullptr)
 	{
@@ -15,6 +15,4 @@ void RawAsset<T_DataType>::Unload()
 		m_Data = nullptr;
 	}
 	m_LoadData.clear();
-
-	DereferencePersistent();
 }
