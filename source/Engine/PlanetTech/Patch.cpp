@@ -4,7 +4,7 @@
 #include "Triangulator.h"
 #include "Planet.h"
 
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/Components/TransformComponent.h>

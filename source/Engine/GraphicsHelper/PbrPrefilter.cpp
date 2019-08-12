@@ -4,7 +4,7 @@
 #include "PrimitiveRenderer.h"
 
 #include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 
 
 PbrPrefilter::PbrPrefilter()

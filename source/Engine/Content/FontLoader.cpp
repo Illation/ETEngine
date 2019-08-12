@@ -10,7 +10,7 @@
 #include <EtCore/FileSystem/BinaryReader.h>
 
 #include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 
 

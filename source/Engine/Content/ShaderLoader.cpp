@@ -56,7 +56,7 @@ ShaderData* ShaderLoader::LoadContent(const std::string& assetFile)
 		return nullptr;
 	}
 
-	std::map<uint32, AbstractUniform*> uniforms;
+	std::map<uint32, I_Uniform*> uniforms;
 	//Compile
 	LOG(loadingString + " . . . compiling vertex          ", Info, false, logPos);
 	GLuint vertexShader = CompileShader(vertSource, GL_VERTEX_SHADER);
@@ -282,7 +282,7 @@ bool ShaderLoader::ReplaceInclude(std::string &line, const std::string &assetFil
 	return true;
 }
 
-bool ShaderLoader::GetUniformLocations(GLuint shaderProgram, std::map<uint32, AbstractUniform*> &uniforms)
+bool ShaderLoader::GetUniformLocations(GLuint shaderProgram, std::map<uint32, I_Uniform*> &uniforms)
 {
 	GLint count;
 	glGetProgramiv(shaderProgram, GL_ACTIVE_UNIFORMS, &count);
@@ -309,7 +309,7 @@ bool ShaderLoader::GetUniformLocations(GLuint shaderProgram, std::map<uint32, Ab
 			std::string fullName = uniName;
 			if (size > 1)fullName += "[" + std::to_string(j) + "]" + endName;
 
-			AbstractUniform* pUni;
+			I_Uniform* pUni;
 			switch (type)
 			{
 			case GL_BOOL:

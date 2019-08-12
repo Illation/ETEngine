@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Material.h"
 
-#include "ShaderData.h"
+#include "Shader.h"
 #include "MeshFilter.h"
 
 

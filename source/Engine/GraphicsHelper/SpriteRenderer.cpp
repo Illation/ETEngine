@@ -2,7 +2,7 @@
 #include "SpriteRenderer.h"
 
 #include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 
 
 SpriteRenderer::SpriteRenderer()

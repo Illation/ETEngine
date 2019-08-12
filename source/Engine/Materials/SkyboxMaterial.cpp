@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SkyboxMaterial.h"
 
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/MeshFilter.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Content/CubeMapLoader.h>

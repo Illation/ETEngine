@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "PostProcessingRenderer.h"
 
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 #include <Engine/GraphicsHelper/ShadowRenderer.h>
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>

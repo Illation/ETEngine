@@ -2,7 +2,7 @@
 #include "TexPBRMaterial.h"
 
 #include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/MeshFilter.h>
 #include <Engine/Content/TextureLoader.h>
 

@@ -57,7 +57,7 @@ public:
 	AssetPtr& operator=(AssetPtr&& moving);
 
 	// deleting the pointer may cause unloading the asset if this was the last instance
-	virtual ~AssetPtr() {}
+	virtual ~AssetPtr() = default;
 
 	// utility
 	void swap(AssetPtr& other) noexcept;

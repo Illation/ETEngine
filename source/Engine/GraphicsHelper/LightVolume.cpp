@@ -9,7 +9,7 @@
 #include <Engine/Graphics/MeshFilter.h>
 #include <Engine/Materials/NullMaterial.h>
 #include <Engine/Framebuffers/Gbuffer.h>
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Frustum.h>
 

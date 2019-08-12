@@ -1,17 +1,29 @@
 #pragma once
 
-class AbstractScene;
+#include <map>
+
+// forward declarations
 class ShaderData;
 class TextureData;
 
+
+//---------------------------------
+// RenderState
+//
+// CPU representation of the OpenGL state - helps avoiding sending too many calls to the GPU
+//
 class RenderState
 {
 public:
-	RenderState();
-	~RenderState();
+
+	// init deinit
+	//--------------
+	RenderState() = default;
 
 	void Initialize();
 
+	// State changes
+	//--------------
 	void SetDepthEnabled(bool enabled) { EnOrDisAble(m_DepthTestEnabled, enabled, GL_DEPTH_TEST); }
 	void SetBlendEnabled(bool enabled);
 	void SetBlendEnabled(bool enabled, uint32 index);
@@ -28,7 +40,7 @@ public:
 
 	void SetClearColor(vec4 col);
 
-	void SetShader(ShaderData* pShader);
+	void SetShader(ShaderData const* pShader);
 
 	void BindFramebuffer(GLuint handle);
 	void BindReadFramebuffer(GLuint handle);
@@ -44,10 +56,49 @@ public:
 	void BindVertexArray(GLuint vertexArray);
 	void BindBuffer(GLenum target, GLuint buffer);
 
+	void SetLineWidth(float const lineWidth);
+
 	//Draw Calls
+	//--------------
 	void DrawArrays(GLenum mode, uint32 first, uint32 count);
 	void DrawElements(GLenum mode, uint32 count, GLenum type, const void * indices);
 	void DrawElementsInstanced(GLenum mode, uint32 count, GLenum type, const void * indices, uint32 primcount);
+
+	// other commands
+	//--------------
+	void Flush() const;
+	void Clear(GLbitfield mask) const;
+
+	void GenerateVertexArrays(GLsizei n, GLuint *arrays) const;
+	void GenerateBuffers(GLsizei n, GLuint *buffers) const;
+
+	void DeleteVertexArrays(GLsizei n, GLuint *arrays) const;
+	void DeleteBuffers(GLsizei n, GLuint *buffers) const;
+
+	void SetBufferData(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage) const;
+	void SetVertexAttributeArrayEnabled(GLuint index, bool enabled) const; // could at some point be a member on VertexArray data object
+
+	void DefineVertexAttributePointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid const* pointer) const;
+
+	void* MapBuffer(GLenum target, GLenum access) const;
+	void UnmapBuffer(GLenum target) const;
+
+	GLuint CreateShader(GLenum shaderType) const;
+	GLuint CreateProgram() const;
+	void DeleteShader(GLuint shader);
+	void DeleteProgram(GLuint program);
+
+	void SetShaderSource(GLuint shader, GLsizei count, GLchar const **string, int32* length) const;
+	void CompileShader(GLuint shader) const;
+	void BindFragmentDataLocation(GLuint program, GLuint colorNumber, std::string const& name) const;
+	void AttachShader(GLuint program, GLuint shader) const;
+	void LinkProgram(GLuint program) const;
+
+	void GetShaderIV(GLuint shader, GLenum pname, GLint *params) const;
+	void GetShaderInfoLog(GLuint shader, GLsizei maxLength, GLsizei *length, GLchar *infoLog) const;
+
+	void GetProgramIV(GLuint program, GLenum pname, GLint *params) const;
+	void GetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const;
 
 private:
 
@@ -82,7 +133,7 @@ private:
 
 	vec4 m_ClearColor = vec4(0);
 
-	ShaderData* m_pBoundShader = nullptr;
+	ShaderData const* m_pBoundShader = nullptr;
 
 	uint32 m_ActiveTexture = 0;
 	int32 m_NumTextureUnits; //depends on gpu and drivers
@@ -90,4 +141,6 @@ private:
 
 	GLuint m_VertexArray = 0;
 	std::map<GLenum, GLuint> m_BufferTargets;
+
+	float m_LineWidth = 1.f;
 };

@@ -91,13 +91,7 @@ AssetPtr<T_DataType>& AssetPtr<T_DataType>::operator=(RawAsset<T_DataType>* rawA
 template <class T_DataType>
 AssetPtr<T_DataType>::AssetPtr(AssetPtr<T_DataType> const& copy) 
 	: I_AssetPtr(copy.m_Asset)
-{
-	if (m_Asset != nullptr)
-	{
-		ET_ASSERT(m_Asset->GetRefCount() > 0u);
-		IncrementRefCount();
-	}
-}
+{ }
 
 //---------------------------------
 // AssetPtr::operator=

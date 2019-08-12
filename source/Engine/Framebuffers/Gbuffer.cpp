@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Gbuffer.h"
 
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/GraphicsHelper/PbrPrefilter.h>
 #include <Engine/SceneGraph/AbstractScene.h>

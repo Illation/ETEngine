@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FrameBuffer.h"
 
-#include "ShaderData.h"
+#include "Shader.h"
 #include "TextureData.h"
 
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>

@@ -4,7 +4,7 @@
 #include "Atmosphere.h"
 
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/CIE.h>
 
 

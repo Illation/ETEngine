@@ -8,7 +8,7 @@
 
 #include <Engine/Framebuffers/Gbuffer.h>
 #include <Engine/Components/LightComponent.h>
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/Graphics/Light.h>

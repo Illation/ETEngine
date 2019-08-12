@@ -1,10 +1,10 @@
 #pragma once
 #include "ContentLoader.h"
 
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 
 
-class AbstractUniform;
+class I_Uniform;
 class ShaderLoader : public ContentLoader<ShaderData>
 {
 public:
@@ -23,7 +23,7 @@ private:
 					 std::string &vertSource, std::string &geoSource, std::string &fragSource );
 	bool ReplaceInclude(std::string &line, const std::string &assetFile);
 
-	bool GetUniformLocations(GLuint shaderProgram, std::map<uint32, AbstractUniform*> &uniforms);
+	bool GetUniformLocations(GLuint shaderProgram, std::map<uint32, I_Uniform*> &uniforms);
 
 	ivec2 logPos;
 	std::string loadingString;

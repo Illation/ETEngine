@@ -2,7 +2,7 @@
 #include "DebugRenderer.h"
 
 #include <Engine/Components/CameraComponent.h>
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 #include <Engine/Editor/Editor.h>
 
 

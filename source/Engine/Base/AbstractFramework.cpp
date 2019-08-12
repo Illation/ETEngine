@@ -55,6 +55,8 @@ AbstractFramework::~AbstractFramework()
 	Logger::Release();
 
 	ContentManager::Release();
+	ResourceManager::GetInstance()->Deinit();
+	ResourceManager::DestroyInstance();
 
 	FreeImage_DeInitialise();
 

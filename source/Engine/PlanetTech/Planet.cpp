@@ -8,7 +8,7 @@
 #include "Triangulator.h"
 
 #include <Engine/Content/TextureLoader.h>
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>

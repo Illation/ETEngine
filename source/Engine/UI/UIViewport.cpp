@@ -3,7 +3,7 @@
 
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 #include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/ShaderData.h>
+#include <Engine/Graphics/Shader.h>
 
 
 UIViewport::UIViewport():UIFixedContainer()
