@@ -17,6 +17,9 @@ public:
 	I_AssetPtr(I_Asset* asset);
 	virtual ~I_AssetPtr();
 
+	I_Asset const* GetAsset() const { return m_Asset; }
+	inline std::type_info const& GetType() const;
+
 protected:
 	// functions
 	inline bool IncrementRefCount();

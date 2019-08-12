@@ -1,6 +1,7 @@
 #pragma once
 
 #include <EtCore/Content/AssetStub.h>
+#include <Engine/Graphics/Shader.h>
 
 //---------------------------------
 // ForceLinking
@@ -10,6 +11,7 @@
 void ForceLinking()
 {
 	FORCE_LINKING(StubAsset)
+	FORCE_LINKING(ShaderAsset)
 }
 
 

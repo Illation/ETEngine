@@ -18,6 +18,7 @@ public:
 	~StubData() = default;
 
 	char const* GetText() const { return m_Text; }
+	size_t GetLength() const { return m_Length; }
 
 private:
 	friend class StubAsset;

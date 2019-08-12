@@ -4,6 +4,8 @@
 #include "Uniform.h"
 
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/Content/AssetPointer.h>
+#include <EtCore/Content/AssetStub.h>
 
 #include <rttr/registration>
 #include <rttr/detail/policies/ctor_policies.h>
@@ -189,7 +191,7 @@ GLuint ShaderAsset::CompileShader(std::string const&shaderSourceStr, GLenum type
 			sName = "invalid type";
 			break;
 		}
-		LOG(std::string("ShaderAsset::CompileShader > Compiling ") + sName + " shader failed", Warning);
+		LOG(std::string("ShaderAsset::CompileShader > Compiling ") + sName + " shader failed", LogLevel::Warning);
 		LOG(buffer, Warning);
 	}
 
@@ -218,6 +220,16 @@ bool ShaderAsset::Precompile(std::string &shaderContent,
 	std::string extractedLine;
 	while (FileUtil::ParseLine(shaderContent, extractedLine))
 	{
+		//Includes
+		if (extractedLine.find("#include") != std::string::npos)
+		{
+			if (!(ReplaceInclude(extractedLine)))
+			{
+				LOG(std::string("ShaderAsset::Precompile > Replacing include at '") + extractedLine + "' failed!", LogLevel::Warning);
+				return false;
+			}
+		}
+
 		//Precompile types
 		switch (state)
 		{
@@ -273,6 +285,73 @@ bool ShaderAsset::Precompile(std::string &shaderContent,
 		}
 	}
 
+	return true;
+}
+
+//---------------------------------
+// ShaderAsset::ReplaceInclude
+//
+// Include another shader asset inline
+//
+bool ShaderAsset::ReplaceInclude(std::string &line)
+{
+	// Get the asset ID
+	uint32 firstQ = (uint32)line.find("\"");
+	uint32 lastQ = (uint32)line.rfind("\"");
+	if ((firstQ == std::string::npos) ||
+		(lastQ == std::string::npos) ||
+		lastQ <= firstQ)
+	{
+		LOG(std::string("ShaderAsset::ReplaceInclude > Replacing include line '") + line + "' failed", LogLevel::Warning);
+		return false;
+	}
+	firstQ++;
+	std::string path = line.substr(firstQ, lastQ - firstQ);
+	T_Hash const assetId(GetHash(FileUtil::ExtractName(path)));
+
+	// Get the stub asset data
+	auto const foundRefIt = std::find_if(GetReferences().cbegin(), GetReferences().cend(), [assetId](Reference const& reference)
+	{
+		ET_ASSERT(reference.GetAsset() != nullptr);
+		return reference.GetAsset()->GetAsset()->GetId() == assetId;
+	});
+
+	if (foundRefIt == GetReferences().cend())
+	{
+		LOG(std::string("ShaderAsset::ReplaceInclude > Asset at path '") + path + "' not found in references!", LogLevel::Warning);
+		return false;
+	}
+	I_AssetPtr const* const rawAssetPtr = foundRefIt->GetAsset();
+	ET_ASSERT(rawAssetPtr->GetType() == typeid(StubData), "Asset reference found at path %s is not of type StubData", path);
+	AssetPtr<StubData> stubPtr = *static_cast<AssetPtr<StubData> const*>(rawAssetPtr);
+
+	// extract the shader string
+	std::string shaderContent(stubPtr->GetText(), stubPtr->GetLength());
+	if (shaderContent.size() == 0)
+	{
+		LOG(std::string("ShaderAsset::ReplaceInclude > Shader string extracted from stub data at'") + path + "' was empty!", LogLevel::Warning);
+		return false;
+	}
+
+	// replace the original line with the included shader
+	line = "";
+	std::string extractedLine;
+	while (FileUtil::ParseLine(shaderContent, extractedLine))
+	{
+		//Includes
+		if (extractedLine.find("#include") != std::string::npos)
+		{
+			if (!(ReplaceInclude(extractedLine)))
+			{
+				LOG(std::string("ShaderAsset::ReplaceInclude > Replacing include at '") + extractedLine + "' failed!", LogLevel::Warning);
+				return false;
+			}
+		}
+
+		line += extractedLine + "\n";
+	}
+
+	// we're done
 	return true;
 }
 

@@ -9,5 +9,5 @@
 
 #define DEFINE_FORCED_LINKING(typeName) void typeName::ForceLink() {}
 
-#define FORCE_LINKING(typeName) typeName forceLinkObject; \
-	forceLinkObject.ForceLink();
+#define FORCE_LINKING(typeName) typeName forceLinkObject_##typeName; \
+	forceLinkObject_##typeName.ForceLink();

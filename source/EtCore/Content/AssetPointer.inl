@@ -7,6 +7,21 @@
 
 
 //---------------------------------
+// I_AssetPtr::GetType
+//
+// Underlying type
+//
+inline std::type_info const& I_AssetPtr::GetType() const
+{
+	if (m_Asset == nullptr)
+	{
+		return typeid(std::nullptr_t);
+	}
+
+	return m_Asset->GetType();
+}
+
+//---------------------------------
 // I_AssetPtr::IncrementRefCount
 //
 // Increments the ref count and returns true if this is the first reference

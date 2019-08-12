@@ -40,9 +40,13 @@
               "package": "",
               "references": []
             }
-          },
+          }
+        ]
+      },
+      {
+        "cache": [
           {
-            "stub asset": {
+            "shader asset": {
               "name": "PostDeferredComposite.glsl",
               "path": "assets/Engine/Shaders/",
               "package": "",

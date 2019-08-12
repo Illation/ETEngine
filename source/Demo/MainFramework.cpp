@@ -5,6 +5,7 @@
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Content/AssetStub.h>
 
+#include <Engine/Graphics/Shader.h>
 #include <Engine/SceneGraph/SceneManager.h>
 
 #include <Demo/Scenes/TestScene.h>
@@ -36,17 +37,17 @@ void MainFramework::AddScenes()
 
 void MainFramework::OnTick()
 {	
-	if (m_PostDefTxt == nullptr)
+	if (m_PostDefShader == nullptr)
 	{
-		m_PostDefTxt = ResourceManager::GetInstance()->GetAssetData<StubData>("PostDeferredComposite.glsl"_hash);
+		m_PostDefShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostDeferredComposite.glsl"_hash);
 	}
-	AssetPtr<StubData> temp = m_PostDefTxt;
-	AssetPtr<StubData> temp2(temp);
 
 	if (m_LoremTxt == nullptr)
 	{
 		m_LoremTxt = ResourceManager::GetInstance()->GetAssetData<StubData>("lorem_ipsum.txt"_hash);
 	}
+	AssetPtr<StubData> temp = m_LoremTxt;
+	AssetPtr<StubData> temp2(temp);
 	
 	//This is where scenes can be switched conditionally
 	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_F3)) == E_KeyState::Pressed)

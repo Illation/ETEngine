@@ -33,6 +33,7 @@ public:
 		void SetName(std::string const& val) { m_Name = val; }
 
 		I_AssetPtr* GetAsset() { return m_AssetPtr; }
+		I_AssetPtr const* GetAsset() const { return m_AssetPtr; }
 
 	private:
 		friend class I_Asset;

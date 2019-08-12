@@ -59,7 +59,14 @@ public:
 private:
 	GLuint CompileShader(const std::string &shaderSourceStr, GLenum type);
 
-	bool Precompile(std::string &shaderContent, bool &useGeo, bool &useFrag, std::string &vertSource, std::string &geoSource, std::string &fragSource);
+	bool Precompile(std::string &shaderContent, 
+		bool &useGeo, 
+		bool &useFrag, 
+		std::string &vertSource, 
+		std::string &geoSource, 
+		std::string &fragSource);
+
+	bool ReplaceInclude(std::string &line);
 
 	bool GetUniformLocations(GLuint shaderProgram, std::map<uint32, I_Uniform*> &uniforms);
 

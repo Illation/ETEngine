@@ -4,6 +4,7 @@
 #include <Engine/Base/AbstractFramework.h>
 
 
+class ShaderData;
 class StubData;
 
 
@@ -20,7 +21,7 @@ private:
 	// Data
 	///////
 
-	AssetPtr<StubData> m_PostDefTxt;
+	AssetPtr<ShaderData> m_PostDefShader;
 	AssetPtr<StubData> m_LoremTxt;
 };
 
