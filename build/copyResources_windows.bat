@@ -29,9 +29,7 @@ IF "%COPY_DLLS%" == "true" (
 )
 
 xcopy "%SOURCE_DIR%\Engine\Resources" "%OUT_DIR%\Resources" /s/i/y/d
-xcopy "%SOURCE_DIR%\Engine\Shaders" "%OUT_DIR%\Shaders" /s/i/y/d
 xcopy "%SOURCE_DIR%\Demo\Resources" "%OUT_DIR%\Resources" /s/i/y/d
-xcopy "%SOURCE_DIR%\Demo\Shaders" "%OUT_DIR%\Shaders" /s/i/y/d
 xcopy "%SOURCE_DIR%\Demo\Config" "%OUT_DIR%" /s/i/y/d
 
 exit

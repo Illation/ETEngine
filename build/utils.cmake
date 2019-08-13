@@ -349,13 +349,6 @@ function(installResources TARGET)
 			CONFIGURATIONS ${configType}
 			DESTINATION ${binDir}/Resources/)
 
-		install(DIRECTORY ${projectBase}/source/Engine/Shaders/
-			CONFIGURATIONS ${configType}
-			DESTINATION ${binDir}/Shaders/)
-		install(DIRECTORY ${projectBase}/source/Demo/Shaders/
-			CONFIGURATIONS ${configType}
-			DESTINATION ${binDir}/Shaders/)
-
 		install(DIRECTORY ${projectBase}/source/Demo/Config/
 			CONFIGURATIONS ${configType}
 			DESTINATION ${binDir}/)
