@@ -2,6 +2,8 @@
 
 #include "AtmosphereSettings.h"
 
+#include <EtCore/Content/AssetPointer.h>
+
 class Atmosphere;
 
 class AtmospherePrecompute : public Singleton<AtmospherePrecompute>
@@ -36,12 +38,12 @@ private:
 	AtmosphereSettings m_Settings;
 
 	//Precomputation Shaders
-	ShaderData* m_pComputeTransmittance;
-	ShaderData* m_pComputeDirectIrradiance;
-	ShaderData* m_pComputeSingleScattering;
-	ShaderData* m_pComputeScatteringDensity;
-	ShaderData* m_pComputeIndirectIrradiance;
-	ShaderData* m_pComputeMultipleScattering;
+	AssetPtr<ShaderData> m_pComputeTransmittance;
+	AssetPtr<ShaderData> m_pComputeDirectIrradiance;
+	AssetPtr<ShaderData> m_pComputeSingleScattering;
+	AssetPtr<ShaderData> m_pComputeScatteringDensity;
+	AssetPtr<ShaderData> m_pComputeIndirectIrradiance;
+	AssetPtr<ShaderData> m_pComputeMultipleScattering;
 
 	//other
 	int32 m_Step = 0;

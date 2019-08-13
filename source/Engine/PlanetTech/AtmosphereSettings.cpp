@@ -120,7 +120,7 @@ AtmosphereParameters::AtmosphereParameters(std::string paramFileName, dvec3 &sky
 	AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(wavelengths, solar_irradiance, 0, sunColor);
 }
 
-void AtmosphereParameters::Upload(ShaderData* shader, const std::string &varName)
+void AtmosphereParameters::Upload(ShaderData const* const shader, const std::string &varName)
 {
 	STATE->SetShader(shader);
 
@@ -140,7 +140,7 @@ void AtmosphereParameters::Upload(ShaderData* shader, const std::string &varName
 	glUniform1f(glGetUniformLocation(shader->GetProgram(), (varName + ".mu_s_min").c_str()), mu_s_min);
 }
 
-void AtmosphereParameters::UploadDensityProfile(ShaderData* shader, const std::string &varName, const DensityProfile &profile)
+void AtmosphereParameters::UploadDensityProfile(ShaderData const* const shader, const std::string &varName, const DensityProfile &profile)
 {
 	for (uint32 i = 0; i < 2; ++i)
 	{
@@ -193,7 +193,7 @@ DensityProfile::DensityProfile(std::vector<DensityProfileLayer> inLayers, float 
 	layers[1] = inLayers[1];
 }
 
-void AtmosphereSettings::UploadTextureSize(ShaderData* shader) const
+void AtmosphereSettings::UploadTextureSize(ShaderData const* const shader) const
 {
 	STATE->SetShader(shader);
 	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexTransmittanceW"), TRANSMITTANCE_W);

@@ -25,7 +25,7 @@ struct AtmosphereParameters
 {
 	AtmosphereParameters() {}
 	AtmosphereParameters(std::string paramFileName, dvec3 &skyColor, dvec3 &sunColor);
-	void Upload(ShaderData* shader, const std::string &varName);
+	void Upload(ShaderData const* const shader, const std::string &varName);
 
 	vec3 solarIrradiance;
 	float sun_angular_radius;
@@ -43,7 +43,7 @@ struct AtmosphereParameters
 	float mu_s_min;
 
 private:
-	void UploadDensityProfile(ShaderData* shader, const std::string &varName, const DensityProfile &profile);
+	void UploadDensityProfile(ShaderData const* const shader, const std::string &varName, const DensityProfile &profile);
 };
 
 struct AtmosphereSettings
@@ -57,7 +57,7 @@ public:
 	static const GLenum INTERNAL2D = GL_RGBA32F;
 	static const GLenum INTERNAL3D = GL_RGBA16F;//half precision
 
-	void UploadTextureSize(ShaderData* shader) const;
+	void UploadTextureSize(ShaderData const* const shader) const;
 	int32 TRANSMITTANCE_W = 256;
 	int32 TRANSMITTANCE_H = 64;
 

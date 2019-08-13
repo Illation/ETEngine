@@ -52,11 +52,7 @@ void quit_SDL_error(const char * message)
 
 AbstractFramework::~AbstractFramework()
 {
-	Logger::Release();
-
 	ContentManager::Release();
-	ResourceManager::GetInstance()->Deinit();
-	ResourceManager::DestroyInstance();
 
 	FreeImage_DeInitialise();
 
@@ -79,7 +75,12 @@ AbstractFramework::~AbstractFramework()
 	RenderPipeline::GetInstance()->DestroyInstance();
 	Settings::GetInstance()->DestroyInstance();
 
+	ResourceManager::GetInstance()->Deinit();
+	ResourceManager::DestroyInstance();
+
 	TickManager::GetInstance()->DestroyInstance();
+
+	Logger::Release();
 }
 
 void AbstractFramework::Run()
