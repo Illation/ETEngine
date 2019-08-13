@@ -4,7 +4,6 @@
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/MeshFilter.h>
 #include <Engine/Graphics/TextureData.h>
-#include <Engine/Content/CubeMapLoader.h>
 #include <Engine/Content/HdrLoader.h>
 #include <Engine/Components/TransformComponent.h>
 
@@ -34,7 +33,7 @@ void SkyboxMaterial::AccessShaderAttributes()
 }
 void SkyboxMaterial::UploadDerivedVariables()
 {
-	STATE->SetShader(m_Shader);
+	STATE->SetShader(m_Shader.get());
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "skybox"), 0);
 	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, m_pHDRMap->GetRadianceHandle());
 

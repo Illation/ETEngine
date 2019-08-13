@@ -4,6 +4,7 @@
 #include "Planet.h"
 #include "AtmospherePrecompute.h"
 
+#include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Helper/Commands.h>
 
 #include <Engine/Framebuffers/Gbuffer.h>
@@ -43,7 +44,7 @@ void Atmosphere::Initialize()
 {
 	Precalculate();
 	//Load and compile Shaders
-	m_pShader = ContentManager::Load<ShaderData>("Shaders/PostAtmosphere.glsl");
+	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostAtmosphere.glsl"_hash);
 	GetUniforms();
 }
 void Atmosphere::Draw(Planet* pPlanet, float radius)
@@ -61,16 +62,16 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	mat4 World = etm::scale(vec3(icoRadius))*etm::translate(pos);
 
 	//Hotreload shader
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_LALT)) == E_KeyState::Down &&
-		INPUT->GetKeyState(static_cast<uint32>(SDLK_r)) == E_KeyState::Pressed)
-	{
-		//if there is a debugger attached copy over the resource files 
-		DebugCopyResourceFiles();
-		//reload the shader
-		m_pShader = ContentManager::Reload<ShaderData>("Shaders/PostAtmosphere.glsl");
-		GetUniforms();
-	}
-	STATE->SetShader(m_pShader);
+	//if (INPUT->GetKeyState(static_cast<uint32>(SDLK_LALT)) == E_KeyState::Down &&
+	//	INPUT->GetKeyState(static_cast<uint32>(SDLK_r)) == E_KeyState::Pressed)
+	//{
+	//	//if there is a debugger attached copy over the resource files 
+	//	DebugCopyResourceFiles();
+	//	//reload the shader
+	//	m_pShader = ContentManager::Reload<ShaderData>("Shaders/PostAtmosphere.glsl");
+	//	GetUniforms();
+	//}
+	STATE->SetShader(m_pShader.get());
 
 	glUniformMatrix4fv(m_uMatModel, 1, GL_FALSE, etm::valuePtr(World));
 	glUniformMatrix4fv(m_uMatWVP, 1, GL_FALSE, etm::valuePtr(CAMERA->GetViewProj()));
@@ -93,8 +94,8 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	glUniform1f(m_uRadius, radius);
 	glUniform1f(m_uSurfaceRadius, surfaceRadius);
 
-	m_Params.Upload(m_pShader, "uAtmosphere");
-	AtmospherePrecompute::GetInstance()->GetSettings().UploadTextureSize(m_pShader);
+	m_Params.Upload(m_pShader.get(), "uAtmosphere");
+	AtmospherePrecompute::GetInstance()->GetSettings().UploadTextureSize(m_pShader.get());
 
 	vec3 skySpectralRadToLum = vec3((float)m_SkyColor.x, (float)m_SkyColor.y, (float)m_SkyColor.z);
 	glUniform3fv(m_uSkySpectralRadToLum, 1, etm::valuePtr(skySpectralRadToLum));
@@ -129,10 +130,12 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 
 void Atmosphere::GetUniforms()
 {
-	if (!m_pShader)
+	if (m_pShader == nullptr)
+	{
 		return;
+	}
 
-	STATE->SetShader(m_pShader);
+	STATE->SetShader(m_pShader.get());
 
 	m_uMatModel = glGetUniformLocation(m_pShader->GetProgram(), "model");
 	m_uMatWVP = glGetUniformLocation(m_pShader->GetProgram(), "worldViewProj");

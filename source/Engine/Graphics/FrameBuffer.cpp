@@ -4,6 +4,9 @@
 #include "Shader.h"
 #include "TextureData.h"
 
+#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 
 
@@ -26,10 +29,10 @@ FrameBuffer::~FrameBuffer()
 void FrameBuffer::Initialize()
 {
 	//Load and compile Shaders
-	m_pShader = ContentManager::Load<ShaderData>(m_ShaderFile);
+	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>(GetHash(FileUtil::ExtractName(m_ShaderFile)));
 
 	//GetAccessTo shader attributes
-	STATE->SetShader(m_pShader);
+	STATE->SetShader(m_pShader.get());
 	AccessShaderAttributes();
 
 	//FrameBuffer
@@ -57,7 +60,7 @@ void FrameBuffer::Enable(bool active)
 void FrameBuffer::Draw()
 {
 	STATE->SetDepthEnabled(false);
-	STATE->SetShader(m_pShader);
+	STATE->SetShader(m_pShader.get());
 	for (uint32 i = 0; i < (uint32)m_pTextureVec.size(); i++)
 	{
 		STATE->LazyBindTexture(i, GL_TEXTURE_2D, m_pTextureVec[i]->GetHandle());

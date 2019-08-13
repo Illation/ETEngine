@@ -1,4 +1,6 @@
 #pragma once
+#include <EtCore/Content/AssetPointer.h>
+
 #include <Engine/SceneGraph/Entity.h>
 
 
@@ -24,7 +26,7 @@ private:
 	std::vector<vec4> m_Stars;
 	std::string m_DataFile;
 
-	ShaderData* m_pShader  = nullptr;
+	AssetPtr<ShaderData> m_pShader;
 	TextureData* m_pSprite = nullptr;
 
 	GLuint m_VAO = 0;

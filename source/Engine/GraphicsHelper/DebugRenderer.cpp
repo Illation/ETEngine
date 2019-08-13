@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "DebugRenderer.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Components/CameraComponent.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Editor/Editor.h>
@@ -21,9 +23,9 @@ DebugRenderer::~DebugRenderer()
 
 void DebugRenderer::Initialize()
 {
-	m_pShader = ContentManager::Load<ShaderData>("Shaders/DebugRenderer.glsl");
+	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("DebugRenderer.glsl"_hash);
 
-	STATE->SetShader(m_pShader);
+	STATE->SetShader(m_pShader.get());
 	m_uWVP = glGetUniformLocation(m_pShader->GetProgram(), "uViewProj");
 
 	//Generate buffers and arrays
@@ -87,7 +89,7 @@ void DebugRenderer::Draw()
 	Editor::GetInstance()->DrawSceneVisualizers();
 #endif
 
-	STATE->SetShader(m_pShader);
+	STATE->SetShader(m_pShader.get());
 	glUniformMatrix4fv(m_uWVP, 1, GL_FALSE, etm::valuePtr(CAMERA->GetViewProj()));
 
 	UpdateBuffer();

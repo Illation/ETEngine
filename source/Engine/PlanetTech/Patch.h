@@ -1,4 +1,5 @@
 #pragma once
+#include <EtCore/Content/AssetPointer.h>
 
 class ShaderData;
 class Planet;
@@ -59,7 +60,7 @@ private:
 	GLuint m_EBO;
 	GLuint m_VBOInstance;
 
-	ShaderData *m_pPatchShader = nullptr;
+	AssetPtr<ShaderData> m_pPatchShader;
 
 	GLint m_uModel;
 	GLint m_uViewProj;

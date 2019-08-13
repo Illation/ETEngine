@@ -1,4 +1,5 @@
 #pragma once
+#include <EtCore/Content/AssetPointer.h>
 
 class DebugRenderer : public Singleton<DebugRenderer>
 {
@@ -41,7 +42,7 @@ private:
 	std::vector<LineMetaData> m_MetaData;
 
 	//Shader and its uniforms
-	ShaderData* m_pShader = nullptr;
+	AssetPtr<ShaderData> m_pShader;
 	GLint m_uWVP = 0;
 
 private:

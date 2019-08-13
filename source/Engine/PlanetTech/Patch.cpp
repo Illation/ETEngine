@@ -4,6 +4,8 @@
 #include "Triangulator.h"
 #include "Planet.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Frustum.h>
@@ -20,8 +22,8 @@ void Patch::Init()
 {
 	//Shader Init
 	//***********
-	m_pPatchShader = CONTENT::Load<ShaderData>("Shaders/PlanetPatch.glsl");
-	STATE->SetShader(m_pPatchShader);
+	m_pPatchShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PlanetPatch.glsl"_hash);
+	STATE->SetShader(m_pPatchShader.get());
 	m_uCamPos = glGetUniformLocation(m_pPatchShader->GetProgram(), "camPos");
 	m_uRadius = glGetUniformLocation(m_pPatchShader->GetProgram(), "radius");
 	m_uMorphRange = glGetUniformLocation(m_pPatchShader->GetProgram(), "morphRange");
@@ -155,7 +157,7 @@ void Patch::BindInstances(std::vector<PatchInstance> &instances)
 
 void Patch::UploadDistanceLUT(std::vector<float> &distances)
 {
-	STATE->SetShader(m_pPatchShader);
+	STATE->SetShader(m_pPatchShader.get());
 	for (size_t i = 0; i < distances.size(); i++)
 	{
 		glUniform1f(glGetUniformLocation(m_pPatchShader->GetProgram(),
@@ -166,7 +168,7 @@ void Patch::UploadDistanceLUT(std::vector<float> &distances)
 
 void Patch::Draw()
 {
-	STATE->SetShader(m_pPatchShader);
+	STATE->SetShader(m_pPatchShader.get());
 
 	// Pass transformations to the shader
 	glUniformMatrix4fv(m_uModel, 1, GL_FALSE, etm::valuePtr(m_pPlanet->GetTransform()->GetWorld()));

@@ -1,4 +1,5 @@
 #pragma once
+#include <EtCore/Content/AssetPointer.h>
 
 class ShaderData;
 
@@ -16,7 +17,7 @@ public:
 private:
 	void GetUniforms();
 
-	ShaderData* m_pShader = nullptr;
+	AssetPtr<ShaderData> m_pShader;
 
 	GLuint m_CollectFBO;
 	TextureData* m_CollectTex = nullptr;

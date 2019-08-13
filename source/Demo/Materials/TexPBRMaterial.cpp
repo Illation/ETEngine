@@ -25,7 +25,7 @@ TexPBRMaterial::~TexPBRMaterial()
 void TexPBRMaterial::LoadTextures()
 {
 	TextureLoader* pTL = ContentManager::GetLoader<TextureLoader, TextureData>();
-	STATE->SetShader(m_Shader);
+	STATE->SetShader(m_Shader.get());
 	
 	pTL->UseSrgb(true);
 	m_TexBaseColor = ContentManager::Load<TextureData>(m_TexBCPath);

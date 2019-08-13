@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "TextRenderer.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Graphics/SpriteFont.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
@@ -16,9 +18,9 @@ TextRenderer::TextRenderer()
 
 void TextRenderer::Initialize()
 {
-	m_pTextShader = ContentManager::Load<ShaderData>("Shaders/PostText.glsl");
+	m_pTextShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostText.glsl"_hash);
 
-	STATE->SetShader(m_pTextShader);
+	STATE->SetShader(m_pTextShader.get());
 	m_uTransform = glGetUniformLocation(m_pTextShader->GetProgram(), "transform");
 	m_uTexSize = glGetUniformLocation(m_pTextShader->GetProgram(), "texSize");
 
@@ -135,7 +137,7 @@ void TextRenderer::Draw()
 
 	//Enable this objects shader
 	CalculateTransform();
-	STATE->SetShader(m_pTextShader);
+	STATE->SetShader(m_pTextShader.get());
 	STATE->SetActiveTexture(0);
 	glUniformMatrix4fv(m_uTransform, 1, GL_FALSE, etm::valuePtr(m_Transform));
 

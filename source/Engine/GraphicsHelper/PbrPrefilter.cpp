@@ -3,6 +3,8 @@
 
 #include "PrimitiveRenderer.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
 
@@ -34,7 +36,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, resolution, resolution);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO); 
 	//Shader
-	STATE->SetShader(ContentManager::Load<ShaderData>("Shaders/FwdBrdfLutShader.glsl"));
+	STATE->SetShader(ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdBrdfLutShader.glsl"_hash).get());
 
 	m_LUT = new TextureData(resolution, resolution, GL_RG16F, GL_RG, GL_FLOAT);
 	m_LUT->Build();
@@ -99,9 +101,9 @@ void PbrPrefilter::PrefilterCube(CubeMap* source, CubeMap* &irradiance, CubeMap*
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, irradianceRes, irradianceRes);
 
 	//shader
-	auto irradianceShader = ContentManager::Load<ShaderData>("Shaders/FwdConvIrradianceShader.glsl");
+	AssetPtr<ShaderData> irradianceShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdConvIrradianceShader.glsl"_hash);
 
-	STATE->SetShader(irradianceShader);
+	STATE->SetShader(irradianceShader.get());
 	glUniform1i(glGetUniformLocation(irradianceShader->GetProgram(), "environmentMap"), 0);
 	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, source->GetHandle());
 	glUniformMatrix4fv(glGetUniformLocation(irradianceShader->GetProgram(), "projection"), 1, GL_FALSE, etm::valuePtr(captureProjection));
@@ -139,9 +141,9 @@ void PbrPrefilter::PrefilterCube(CubeMap* source, CubeMap* &irradiance, CubeMap*
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 	//Shader
-	auto radianceShader = ContentManager::Load<ShaderData>("Shaders/FwdConvRadianceShader.glsl");
+	AssetPtr<ShaderData> radianceShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdConvRadianceShader.glsl"_hash);
 
-	STATE->SetShader(radianceShader);
+	STATE->SetShader(radianceShader.get());
 	glUniform1i(glGetUniformLocation(radianceShader->GetProgram(), "environmentMap"), 0);
 	glUniform1f(glGetUniformLocation(radianceShader->GetProgram(), "resolution"), (GLfloat)radianceRes);
 	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, source->GetHandle());

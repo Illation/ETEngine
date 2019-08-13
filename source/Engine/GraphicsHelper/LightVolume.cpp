@@ -5,6 +5,8 @@
 #include "PrimitiveRenderer.h"
 #include "RenderPipeline.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Materials/LightMaterial.h>
 #include <Engine/Graphics/MeshFilter.h>
 #include <Engine/Materials/NullMaterial.h>
@@ -84,8 +86,8 @@ DirectLightVolume::~DirectLightVolume()
 }
 void DirectLightVolume::Initialize()
 {
-	m_pShader = ContentManager::Load<ShaderData>("Shaders/FwdLightDirectionalShader.glsl");
-	m_pShaderShadowed = ContentManager::Load<ShaderData>("Shaders/FwdLightDirectionalShadowShader.glsl");
+	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdLightDirectionalShader.glsl"_hash);
+	m_pShaderShadowed = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdLightDirectionalShadowShader.glsl"_hash);
 
 	m_uCol = glGetUniformLocation(m_pShader->GetProgram(), "Color");
 	m_uDir = glGetUniformLocation(m_pShader->GetProgram(), "Direction");
@@ -99,7 +101,7 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 
 	// #todo: avoid getting all the uniform info again and again
 
-	STATE->SetShader(m_pShader);
+	STATE->SetShader(m_pShader.get());
 
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferA"), 0);
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferB"), 1);
@@ -124,7 +126,7 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *
 {
 	if (!IsInitialized) Initialize();
 
-	STATE->SetShader(m_pShaderShadowed);
+	STATE->SetShader(m_pShaderShadowed.get());
 
 	//Upload gbuffer
 	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texGBufferA"), 0);

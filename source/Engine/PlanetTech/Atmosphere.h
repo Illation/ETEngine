@@ -1,6 +1,8 @@
 #pragma once
 #include "AtmosphereSettings.h"
 
+#include <EtCore/Content/AssetPointer.h>
+
 #include <Engine/Graphics/FrameBuffer.h>
 #include <Engine/Graphics/TextureData.h>
 
@@ -58,6 +60,6 @@ private:
 	TextureData* m_TexIrradiance;
 	TextureData* m_TexInscatter;
 
-	ShaderData* m_pShader;
+	AssetPtr<ShaderData> m_pShader;
 };
 

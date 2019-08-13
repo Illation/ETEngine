@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "PostProcessingRenderer.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Graphics/Shader.h>
 #include <Engine/GraphicsHelper/ShadowRenderer.h>
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
@@ -43,21 +45,21 @@ void PostProcessingRenderer::DeleteFramebuffers()
 void PostProcessingRenderer::Initialize()
 {
 	//Load and compile Shaders
-	m_pDownsampleShader = ContentManager::Load<ShaderData>("Shaders/PostDownsample.glsl");
-	m_pGaussianShader = ContentManager::Load<ShaderData>("Shaders/PostGaussian.glsl");
-	m_pPostProcShader = ContentManager::Load<ShaderData>("Shaders/PostProcessing.glsl");
-	m_pFXAAShader = ContentManager::Load<ShaderData>("Shaders/PostFXAA.glsl");
+	m_pDownsampleShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostDownsample.glsl"_hash);
+	m_pGaussianShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostGaussian.glsl"_hash);
+	m_pPostProcShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostProcessing.glsl"_hash);
+	m_pFXAAShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostFXAA.glsl"_hash);
 
 	//Access shader variables
-	STATE->SetShader(m_pDownsampleShader);
+	STATE->SetShader(m_pDownsampleShader.get());
 	glUniform1i(glGetUniformLocation(m_pDownsampleShader->GetProgram(), "texColor"), 0);
 	m_uThreshold = glGetUniformLocation(m_pDownsampleShader->GetProgram(), "threshold");
 
-	STATE->SetShader(m_pGaussianShader);
+	STATE->SetShader(m_pGaussianShader.get());
 	glUniform1i(glGetUniformLocation(m_pGaussianShader->GetProgram(), "image"), 0);
 	m_uHorizontal = glGetUniformLocation(m_pGaussianShader->GetProgram(), "horizontal");
 
-	STATE->SetShader(m_pPostProcShader);
+	STATE->SetShader(m_pPostProcShader.get());
 	glUniform1i(glGetUniformLocation(m_pPostProcShader->GetProgram(), "texColor"), 0);
 	for (int32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
@@ -68,7 +70,7 @@ void PostProcessingRenderer::Initialize()
 	m_uGamma = glGetUniformLocation(m_pPostProcShader->GetProgram(), "gamma");
 	m_uBloomMult = glGetUniformLocation(m_pPostProcShader->GetProgram(), "bloomMult");
 
-	STATE->SetShader(m_pFXAAShader);
+	STATE->SetShader(m_pFXAAShader.get());
 	glUniform1i(glGetUniformLocation(m_pFXAAShader->GetProgram(), "texColor"), 0);
 	m_uInverseScreen = glGetUniformLocation(m_pFXAAShader->GetProgram(), "uInverseScreen");
 
@@ -158,7 +160,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	STATE->SetDepthEnabled(false);
 	//get glow
 	STATE->BindFramebuffer(m_HDRoutFBO);
-	STATE->SetShader(m_pDownsampleShader);
+	STATE->SetShader(m_pDownsampleShader.get());
 	STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_CollectTex->GetHandle());
 	glUniform1f(m_uThreshold, settings.bloomThreshold);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
@@ -166,7 +168,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	int32 width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
 	for (GLuint i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
-		if (i > 0) STATE->SetShader(m_pDownsampleShader);
+		if (i > 0) STATE->SetShader(m_pDownsampleShader.get());
 		float resMult = 1.f / (float)std::pow(2, i + 1);
 		STATE->SetViewport(ivec2(0), ivec2((int32)(width*resMult), (int32)(height*resMult)));
 		STATE->BindFramebuffer(m_DownSampleFBO[i]);
@@ -176,7 +178,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 
 		//blur downsampled
 		//STATE->SetViewport(ivec2(0), ivec2(width, height));
-		STATE->SetShader(m_pGaussianShader);
+		STATE->SetShader(m_pGaussianShader.get());
 	#ifdef EDITOR
 		for (uint32 sample = 0; sample < 10; sample++)
 	#else
@@ -196,7 +198,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	STATE->SetViewport(ivec2(0), ivec2(width, height));
 	//ping pong gaussian blur
 	GLboolean horizontal = true;
-	STATE->SetShader(m_pGaussianShader);
+	STATE->SetShader(m_pGaussianShader.get());
 #ifdef EDITOR
 	for (GLuint i = 0; i < 10; i++)
 #else
@@ -219,7 +221,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	{
 		STATE->BindFramebuffer(FBO);
 	}
-	STATE->SetShader(m_pPostProcShader);
+	STATE->SetShader(m_pPostProcShader.get());
 	STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_CollectTex->GetHandle());
 	STATE->LazyBindTexture(1, GL_TEXTURE_2D, m_PingPongTexture[0]->GetHandle());
 	for (int32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
@@ -235,7 +237,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	if (GRAPHICS.UseFXAA)
 	{
 		STATE->BindFramebuffer(FBO);
-		STATE->SetShader(m_pFXAAShader);
+		STATE->SetShader(m_pFXAAShader.get());
 		glUniform2f(m_uInverseScreen, 1.f/(float)WINDOW.Width, 1.f/(float)WINDOW.Height);
 		STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_PingPongTexture[1]->GetHandle());
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
@@ -259,15 +261,15 @@ void PostProcessingRenderer::ResizeFBTextures()
 		STATE->LazyBindTexture( 5, GL_TEXTURE_2D, 0 );
 		STATE->LazyBindTexture( 6, GL_TEXTURE_2D, 0 );
 		//Access shader variables
-		STATE->SetShader( m_pDownsampleShader );
+		STATE->SetShader(m_pDownsampleShader.get());
 		glUniform1i( glGetUniformLocation( m_pDownsampleShader->GetProgram(), "texColor" ), 0 );
 		m_uThreshold = glGetUniformLocation( m_pDownsampleShader->GetProgram(), "threshold" );
 
-		STATE->SetShader( m_pGaussianShader );
+		STATE->SetShader(m_pGaussianShader.get());
 		glUniform1i( glGetUniformLocation( m_pGaussianShader->GetProgram(), "image" ), 0 );
 		m_uHorizontal = glGetUniformLocation( m_pGaussianShader->GetProgram(), "horizontal" );
 
-		STATE->SetShader( m_pPostProcShader );
+		STATE->SetShader(m_pPostProcShader.get());
 		glUniform1i( glGetUniformLocation( m_pPostProcShader->GetProgram(), "texColor" ), 0 );
 		for(int32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 		{

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "StarField.h"
 
+#include <EtCore/Content/ResourceManager.h>
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Json/JsonParser.h>
@@ -46,10 +47,10 @@ void StarField::Initialize()
 		}
 	}
 	
-	m_pShader = ContentManager::Load<ShaderData>("Shaders/FwdStarField.glsl");
+	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdStarField.glsl"_hash);
 	m_pSprite = ContentManager::Load<TextureData>("Resources/Textures/starSprite.png");
 
-	STATE->SetShader(m_pShader);
+	STATE->SetShader(m_pShader.get());
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexture"), 0);
 
 	//Generate buffers and arrays
@@ -78,7 +79,7 @@ void StarField::DrawForward()
 	STATE->SetBlendFunction(GL_ONE, GL_ZERO);
 
 	STATE->BindVertexArray(m_VAO);
-	STATE->SetShader(m_pShader);
+	STATE->SetShader(m_pShader.get());
 	STATE->SetActiveTexture(0);
 	STATE->BindTexture(m_pSprite->GetTarget(), m_pSprite->GetHandle());
 	m_pShader->Upload("viewProj"_hash, CAMERA->GetStatViewProj());

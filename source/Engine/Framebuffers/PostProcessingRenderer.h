@@ -1,4 +1,6 @@
 #pragma once
+#include <EtCore/Content/AssetPointer.h>
+
 #include <Engine/Graphics/FrameBuffer.h>
 #include <Engine/Graphics/PostProcessingSettings.h>
 
@@ -28,10 +30,10 @@ private:
 	void GenerateFramebuffers();
 	void ResizeFBTextures();
 
-	ShaderData* m_pDownsampleShader;
-	ShaderData* m_pGaussianShader;
-	ShaderData* m_pPostProcShader;
-	ShaderData* m_pFXAAShader;
+	AssetPtr<ShaderData> m_pDownsampleShader;
+	AssetPtr<ShaderData> m_pGaussianShader;
+	AssetPtr<ShaderData> m_pPostProcShader;
+	AssetPtr<ShaderData> m_pFXAAShader;
 
 	GLuint m_CollectFBO;
 	TextureData* m_CollectTex = nullptr;

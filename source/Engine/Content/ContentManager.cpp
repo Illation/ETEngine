@@ -1,10 +1,8 @@
 #include "stdafx.h"
 #include "ContentManager.h"
 
-#include "ShaderLoader.h"
 #include "TextureLoader.h"
 #include "MeshFilterLoader.h"
-#include "CubeMapLoader.h"
 #include "HdrLoader.h"
 #include "FontLoader.h"
 #include "AudioLoader.h"
@@ -43,10 +41,8 @@ void ContentManager::Initialize()
 	{
 		m_IsInitialized = true;
 		AddLoader(new AudioLoader());
-		AddLoader(new ShaderLoader());
 		AddLoader(new TextureLoader());
 		AddLoader(new MeshFilterLoader());
-		AddLoader(new CubeMapLoader());
 		AddLoader(new HdrLoader());
 		AddLoader(new FontLoader());
 	}

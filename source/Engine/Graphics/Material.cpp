@@ -4,6 +4,9 @@
 #include "Shader.h"
 #include "MeshFilter.h"
 
+#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/Content/ResourceManager.h>
+
 
 Material::Material(std::string shaderFile) :
 	m_ShaderFile(shaderFile)
@@ -18,7 +21,7 @@ void Material::Initialize()
 	if (!m_IsInitialized)
 	{
 		//Load Shader
-		m_Shader = ContentManager::Load<ShaderData>(m_ShaderFile);
+		m_Shader = ResourceManager::GetInstance()->GetAssetData<ShaderData>(GetHash(FileUtil::ExtractName(m_ShaderFile)));
 
 		//Jup (maybe temporary with texture manager)
 		LoadTextures();
@@ -37,7 +40,7 @@ void Material::Initialize()
 
 void Material::UploadVariables(mat4 matModel)
 {
-	STATE->SetShader(m_Shader);
+	STATE->SetShader(m_Shader.get());
 	//Upload matrices
 	if (m_StandardTransform)
 	{
@@ -49,7 +52,7 @@ void Material::UploadVariables(mat4 matModel)
 }
 void Material::UploadVariables(mat4 matModel, const mat4 &matWVP)
 {
-	STATE->SetShader(m_Shader);
+	STATE->SetShader(m_Shader.get());
 	//Upload matrices
 	if (m_StandardTransform)
 	{

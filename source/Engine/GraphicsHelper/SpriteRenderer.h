@@ -1,4 +1,5 @@
 #pragma once
+#include <EtCore/Content/AssetPointer.h>
 
 enum class SpriteScalingMode : uint8
 {
@@ -54,7 +55,7 @@ private:
 	std::vector<TextureData*> m_Textures;
 
 	//Shader and its uniforms
-	ShaderData* m_pShader = nullptr;
+	AssetPtr<ShaderData> m_pShader;
 
 	GLint m_uTransform = 0;
 	mat4 m_Transform;

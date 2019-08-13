@@ -1,6 +1,8 @@
 #pragma once
 #include "UIContainer.h"
 
+#include <EtCore/Content/AssetPointer.h>
+
 //Renderering part in own class so that it can be deleted and reconstructed for resizing
 class UIViewportRenderer
 {
@@ -12,7 +14,7 @@ public:
 	void Draw(ivec2 pos, ivec2 size);
 	void Initialize(ivec2 size);
 private:
-	ShaderData* m_pShader = nullptr;
+	AssetPtr<ShaderData> m_pShader;
 
 	bool m_Initialized = false;
 

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "UIViewport.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
@@ -54,7 +56,7 @@ UIViewportRenderer::~UIViewportRenderer()
 void UIViewportRenderer::Draw(ivec2 pos, ivec2 size)
 {
 	if (!m_Initialized)return;
-	STATE->SetShader(m_pShader);
+	STATE->SetShader(m_pShader.get());
 	STATE->SetViewport(pos, size);
 
 	STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_pTex->GetHandle());
@@ -63,9 +65,9 @@ void UIViewportRenderer::Draw(ivec2 pos, ivec2 size)
 
 void UIViewportRenderer::Initialize(ivec2 size)
 {
-	m_pShader = ContentManager::Load<ShaderData>("Shaders/EditorComposite.glsl");
+	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("EditorComposite.glsl"_hash);
 
-	STATE->SetShader(m_pShader);
+	STATE->SetShader(m_pShader.get());
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTex"), 0);
 
 	TextureParameters params = TextureParameters();

@@ -4,12 +4,13 @@
 #include "RenderPipeline.h"
 #include "PrimitiveRenderer.h"
 
+#include <EtCore/Content/ResourceManager.h>
+#include <EtCore/Helper/Commands.h>
+
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Framebuffers/Gbuffer.h>
 #include <Engine/Framebuffers/PostProcessingRenderer.h>
-
-#include <EtCore/Helper/Commands.h>
 
 
 ScreenSpaceReflections::ScreenSpaceReflections()
@@ -26,7 +27,7 @@ ScreenSpaceReflections::~ScreenSpaceReflections()
 
 void ScreenSpaceReflections::Initialize()
 {
-	m_pShader = CONTENT::Load<ShaderData>("Shaders/PostScreenSpaceReflections.glsl");
+	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostScreenSpaceReflections.glsl"_hash);
 	GetUniforms();
 
 	int32 width = WINDOW.Width, height = WINDOW.Height;
@@ -59,16 +60,16 @@ void ScreenSpaceReflections::EnableInput()
 void ScreenSpaceReflections::Draw()
 {
 	//Hotreload shader
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_LALT)) == E_KeyState::Down && 
-		INPUT->GetKeyState(static_cast<uint32>(SDLK_r)) == E_KeyState::Pressed)
-	{
-		//if there is a debugger attached copy over the resource files 
-		DebugCopyResourceFiles();
-		//reload the shader
-		m_pShader = CONTENT::Reload<ShaderData>("Shaders/PostScreenSpaceReflections.glsl");
-		GetUniforms();
-	}
-	STATE->SetShader(m_pShader);
+	//if (INPUT->GetKeyState(static_cast<uint32>(SDLK_LALT)) == E_KeyState::Down && 
+	//	INPUT->GetKeyState(static_cast<uint32>(SDLK_r)) == E_KeyState::Pressed)
+	//{
+	//	//if there is a debugger attached copy over the resource files 
+	//	DebugCopyResourceFiles();
+	//	//reload the shader
+	//	m_pShader = CONTENT::Reload<ShaderData>("Shaders/PostScreenSpaceReflections.glsl");
+	//	GetUniforms();
+	//}
+	STATE->SetShader(m_pShader.get());
 
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferA"), 0);
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferB"), 1);

@@ -1,4 +1,5 @@
 #pragma once
+#include <EtCore/Content/AssetPointer.h>
 
 class ShaderData;
 class TextureData;
@@ -34,8 +35,8 @@ public:
 	void DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *pShadow);
 
 protected:
-	ShaderData* m_pShader;
-	ShaderData* m_pShaderShadowed;
+	AssetPtr<ShaderData> m_pShader;
+	AssetPtr<ShaderData> m_pShaderShadowed;
 private:
 	friend class AbstractFramework; //should init and destroy singleton
 	void Initialize();

@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+#include <EtCore/Content/AssetPointer.h>
+
 class ShaderData;
 
 class Material
@@ -26,7 +28,7 @@ protected:
 	uint32 m_LayoutFlags = 0;
 	bool m_DrawForward = false;
 	bool m_StandardTransform = true;
-	ShaderData* m_Shader;
+	AssetPtr<ShaderData> m_Shader;
 	GLint m_UniMatModel;
 	GLint m_UniMatWVP;
 private:

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SpriteRenderer.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
 
@@ -20,9 +22,9 @@ SpriteRenderer::~SpriteRenderer()
 
 void SpriteRenderer::Initialize()
 {
-	m_pShader = ContentManager::Load<ShaderData>("Shaders/PostSprite.glsl");
+	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostSprite.glsl"_hash);
 
-	STATE->SetShader( m_pShader );
+	STATE->SetShader(m_pShader.get());
 	m_uTransform = glGetUniformLocation( m_pShader->GetProgram(), "uTransform" );
 
 	m_uTexture = glGetUniformLocation( m_pShader->GetProgram(), "uTexture" );
@@ -116,7 +118,7 @@ void SpriteRenderer::Draw()
 	STATE->BindVertexArray( m_VAO );
 
 	CalculateTransform();
-	STATE->SetShader(m_pShader);
+	STATE->SetShader(m_pShader.get());
 	STATE->SetActiveTexture(0);
 	glUniformMatrix4fv(m_uTransform, 1, GL_FALSE, etm::valuePtr(m_Transform));
 

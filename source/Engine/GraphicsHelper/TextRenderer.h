@@ -1,4 +1,5 @@
 #pragma once
+#include <EtCore/Content/AssetPointer.h>
 
 class SpriteFont;
 class ShaderData;
@@ -47,7 +48,7 @@ private:
 
 	bool m_bUseKerning = true;
 
-	ShaderData* m_pTextShader;
+	AssetPtr<ShaderData> m_pTextShader;
 	std::vector<SpriteFont*> m_pSpriteFonts;
 
 	uint32 m_BufferSize, m_NumCharacters;

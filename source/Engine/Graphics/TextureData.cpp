@@ -3,6 +3,8 @@
 
 #include "Shader.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 
 
@@ -135,10 +137,10 @@ CubeMap* EquirectangularToCubeMap(TextureData* pEqui, int32 resolution)
 	std::vector<mat4> captureViews = CubeCaptureViews();
 
 	//Get the shader
-	auto equiCubeShader = ContentManager::Load<ShaderData>("Shaders/FwdEquiCubeShader.glsl");
+	AssetPtr<ShaderData> equiCubeShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdEquiCubeShader.glsl"_hash);
 
 	// convert HDR equirectangular environment map to cubemap equivalent
-	STATE->SetShader(equiCubeShader);
+	STATE->SetShader(equiCubeShader.get());
 	glUniform1i(glGetUniformLocation(equiCubeShader->GetProgram(), "equirectangularMap"), 0);
 	STATE->LazyBindTexture(0, GL_TEXTURE_2D, pEqui->GetHandle());
 	glUniformMatrix4fv(glGetUniformLocation(equiCubeShader->GetProgram(), "projection"), 1, GL_FALSE, etm::valuePtr(CubeCaptureProjection()));

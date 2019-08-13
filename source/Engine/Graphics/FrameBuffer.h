@@ -1,4 +1,5 @@
 #pragma once
+#include <EtCore/Content/AssetPointer.h>
 
 class ShaderData;
 class TextureData;
@@ -23,7 +24,7 @@ protected:
 
 	virtual void UploadDerivedVariables() {}
 
-	ShaderData* m_pShader;
+	AssetPtr<ShaderData> m_pShader;
 	std::vector<TextureData*> m_pTextureVec;
 	bool m_CaptureDepth = false;
 private:

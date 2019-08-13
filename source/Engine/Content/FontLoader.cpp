@@ -8,6 +8,7 @@
 
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/BinaryReader.h>
+#include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
@@ -225,13 +226,13 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	STATE->SetViewport(ivec2(0), ivec2(pFont->m_TextureWidth, pFont->m_TextureHeight));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	ShaderData* pComputeSDF = ContentManager::Load<ShaderData>("Shaders/ComputeGlyphSDF.glsl");
-	STATE->SetShader(pComputeSDF);
-	glUniform1i(glGetUniformLocation(pComputeSDF->GetProgram(), "uTex"), 0);
-	auto uChannel = glGetUniformLocation(pComputeSDF->GetProgram(), "uChannel");
-	auto uResolution = glGetUniformLocation(pComputeSDF->GetProgram(), "uResolution");
-	glUniform1f(glGetUniformLocation(pComputeSDF->GetProgram(), "uSpread"), (float)m_Spread);
-	glUniform1f(glGetUniformLocation(pComputeSDF->GetProgram(), "uHighRes"), (float)m_HighRes);
+	AssetPtr<ShaderData> computeSdf = ResourceManager::GetInstance()->GetAssetData<ShaderData>("ComputeGlyphSDF.glsl"_hash);
+	STATE->SetShader(computeSdf.get());
+	glUniform1i(glGetUniformLocation(computeSdf->GetProgram(), "uTex"), 0);
+	auto uChannel = glGetUniformLocation(computeSdf->GetProgram(), "uChannel");
+	auto uResolution = glGetUniformLocation(computeSdf->GetProgram(), "uResolution");
+	glUniform1f(glGetUniformLocation(computeSdf->GetProgram(), "uSpread"), (float)m_Spread);
+	glUniform1f(glGetUniformLocation(computeSdf->GetProgram(), "uHighRes"), (float)m_HighRes);
 
 	params.wrapS = GL_CLAMP_TO_BORDER;
 	params.wrapT = GL_CLAMP_TO_BORDER;
