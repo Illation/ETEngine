@@ -112,7 +112,7 @@ endfunction(precompiled_headers)
 function(parallelBuild _target)
 	# only windows
 	if(MSVC)
-		target_compile_options(_target PRIVATE "/MP")
+		target_compile_options(${_target} PRIVATE "/MP")
 	endif()
 endfunction(parallelBuild)
 

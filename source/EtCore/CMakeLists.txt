@@ -18,6 +18,7 @@ target_definitions()
 
 # library and dependancies
 add_library(EtCore ${sources} ${headers})
+parallelBuild(EtCore)
 
 assign_source_group(${projectFiles})
 
@@ -27,7 +28,6 @@ target_link_libraries (EtCore EtMath)
 
 # library includes
 libIncludeDirs()
-#include_directories("../../dependancies/include/gtkmm/")
 
 # general include dirs
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/..")

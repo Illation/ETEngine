@@ -25,6 +25,7 @@ endif(MSVC)
 
 # executable and dependancies
 add_executable(Demo WIN32 ${projectFiles})
+parallelBuild(Demo)
 
 # directory stuff
 assign_source_group(${projectFiles})

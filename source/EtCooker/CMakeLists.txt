@@ -21,6 +21,7 @@ add_definitions(-DUNCOOKED_RESOURCES)
 add_definitions(-D_CONSOLE)
 # executable and dependancies
 add_executable(EtCooker WIN32 ${projectFiles})
+parallelBuild(EtCooker)
 
 # directory stuff
 assign_source_group(${projectFiles})

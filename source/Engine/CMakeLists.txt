@@ -17,6 +17,7 @@ target_definitions()
 
 # library and dependancies
 add_library(EtEngine ${projectFiles})
+parallelBuild(EtEngine)
 
 assign_source_group(${projectFiles})
 libOutputDirectories(EtEngine)
