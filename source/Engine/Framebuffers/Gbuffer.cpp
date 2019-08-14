@@ -3,6 +3,7 @@
 
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/EnvironmentMap.h>
 #include <Engine/GraphicsHelper/PbrPrefilter.h>
 #include <Engine/SceneGraph/AbstractScene.h>
 #include <Engine/Components/LightComponent.h>

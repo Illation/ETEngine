@@ -6,6 +6,7 @@
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/EnvironmentMap.h>
 #include <Engine/Graphics/Shader.h>
 
 

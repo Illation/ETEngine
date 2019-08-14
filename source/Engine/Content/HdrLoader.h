@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/EnvironmentMap.h>
 
 
 class HdrLoader : public ContentLoader<HDRMap>

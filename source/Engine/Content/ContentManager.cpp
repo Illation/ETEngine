@@ -5,7 +5,6 @@
 #include "MeshFilterLoader.h"
 #include "HdrLoader.h"
 #include "FontLoader.h"
-#include "AudioLoader.h"
 
 
 std::vector<AbstractLoader*> ContentManager::m_Loaders = std::vector<AbstractLoader*>();
@@ -40,7 +39,6 @@ void ContentManager::Initialize()
 	if(!m_IsInitialized)
 	{
 		m_IsInitialized = true;
-		AddLoader(new AudioLoader());
 		AddLoader(new TextureLoader());
 		AddLoader(new MeshFilterLoader());
 		AddLoader(new HdrLoader());

@@ -12,7 +12,7 @@ macro(setupConfigurations)
 	# set our configuration types
 	set(CMAKE_CONFIGURATION_TYPES "Debug;DebugEditor;Develop;DevelopEditor;Shipping" 
 		CACHE STRING "Available build-types: Debug, DebugEditor, Develop, DevelopEditor and Shipping" FORCE)
-
+		
 	# copy settings from existing build types
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DET_DEBUG" )
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DET_DEBUG")
@@ -104,6 +104,16 @@ function(precompiled_headers SOURCELIST)
 		# run this second to overwrite the pch setting for the stdafx.cpp file
 		set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h" )
 	endif(MSVC)
+endfunction(precompiled_headers)
+
+
+# Parallel build
+#################
+function(parallelBuild _target)
+	# only windows
+	if(MSVC)
+		target_compile_options(_target PRIVATE "/MP")
+	endif()
 endfunction(precompiled_headers)
 
 

@@ -5,6 +5,7 @@
 
 #include <EtCore/FileSystem/FileUtil.h>
 
+#include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 #include <Engine/GraphicsHelper/PbrPrefilter.h>

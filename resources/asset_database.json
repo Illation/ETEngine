@@ -441,20 +441,47 @@
           },
           {
             "audio asset": {
-              "name": "pcm1644s.wav",
-              "path": "assets/Demo/Sounds/",
-              "package": "content1",
-              "references": [],
-              "force mono": true
-            }
-          },
-          {
-            "audio asset": {
               "name": "testmusic.ogg",
               "path": "assets/Demo/Sounds/",
               "package": "content1",
               "references": [],
               "force mono": false
+            }
+          },
+          {
+            "audio asset": {
+              "name": "pcm0844m.wav",
+              "path": "assets/Demo/Sounds/",
+              "package": "content1",
+              "references": [],
+              "force mono": false
+            }
+          },
+          {
+            "audio asset": {
+              "name": "pcm0844s.wav",
+              "path": "assets/Demo/Sounds/",
+              "package": "content1",
+              "references": [],
+              "force mono": false
+            }
+          },
+          {
+            "audio asset": {
+              "name": "pcm1644m.wav",
+              "path": "assets/Demo/Sounds/",
+              "package": "content1",
+              "references": [],
+              "force mono": false
+            }
+          },
+          {
+            "audio asset": {
+              "name": "pcm1644s.wav",
+              "path": "assets/Demo/Sounds/",
+              "package": "content1",
+              "references": [],
+              "force mono": true
             }
           }
         ]

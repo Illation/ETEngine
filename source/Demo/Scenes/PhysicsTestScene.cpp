@@ -151,30 +151,24 @@ void PhysicsTestScene::Initialize()
 
 	//Audio
 	//**************************
+	m_AudioIdPlaylist = { "Disfigure-Blank.ogg"_hash,
+		"testmusic.ogg"_hash,
+		"pcm0844m.wav"_hash,
+		"pcm0844s.wav"_hash,
+		"pcm1644m.wav"_hash,
+		"pcm1644s.wav"_hash };
+
 	AudioManager::GetInstance()->SetDistanceModel(AL_INVERSE_DISTANCE);
 
 	auto pListener = new AudioListenerComponent();
 	CAMERA->GetEntity()->AddComponent(pListener);
 
-	auto pSource = new AudioSourceComponent();
+	m_Source = new AudioSourceComponent();
 
-	pSource->SetAudioData(ResourceManager::GetInstance()->GetAssetData<AudioData>("Disfigure-Blank.ogg"_hash));
-	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/testmusic.ogg"));
-	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm0844m.wav"));
-	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm0844s.wav"));
-	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm1644m.wav"));
-	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm1644s.wav"));
-	pSource->SetLooping(true);
-	pSource->Play();
-	m_pLightEntity->AddComponent(pSource);
-
-	//vec3 testVec = vec3(1, 2, 3);
-	//LOG(testVec);
-	//rttr::property prop = rttr::type::get(testVec).get_property("x");
-	//rttr::variant vec_value = prop.get_value(testVec);
-	//LOG(std::to_string(vec_value.get_value<float>()));
-	//prop.set_value(testVec, 3);
-	//LOG(testVec);
+	m_Source->SetAudioData(ResourceManager::GetInstance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
+	m_Source->SetLooping(true);
+	m_Source->Play();
+	m_pLightEntity->AddComponent(m_Source);
 
 	SETTINGS->Window.VSync(false);
 }
@@ -187,6 +181,33 @@ void PhysicsTestScene::Update()
 	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_0)) == E_KeyState::Pressed)
 	{
 		ScreenshotCapture::GetInstance()->Take();
+	}
+
+	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_LEFTBRACKET)) == E_KeyState::Pressed)
+	{
+		ET_ASSERT(m_AudioIdPlaylist.size() > 0u);
+		if (m_CurrentTrack == 0u)
+		{
+			m_CurrentTrack = m_AudioIdPlaylist.size() - 1;
+		}
+		else
+		{
+			m_CurrentTrack--;
+		}
+		m_Source->SetAudioData(ResourceManager::GetInstance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
+	}
+	else if (INPUT->GetKeyState(static_cast<uint32>(SDLK_RIGHTBRACKET)) == E_KeyState::Pressed)
+	{
+		ET_ASSERT(m_AudioIdPlaylist.size() > 0u);
+		if (m_CurrentTrack == m_AudioIdPlaylist.size() - 1)
+		{
+			m_CurrentTrack = 0u;
+		}
+		else
+		{
+			m_CurrentTrack++;
+		}
+		m_Source->SetAudioData(ResourceManager::GetInstance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
 	}
 
 	if(INPUT->GetMouseButton(E_MouseButton::Right) == E_KeyState::Pressed)

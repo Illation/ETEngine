@@ -1,4 +1,6 @@
 #pragma once
+#include <EtCore/Helper/Hash.h>
+
 #include <Engine/SceneGraph/AbstractScene.h>
 
 
@@ -6,6 +8,7 @@ class TexPBRMaterial;
 class EmissiveMaterial;
 class SpriteFont;
 class btCollisionShape;
+class AudioSourceComponent;
 
 
 class PhysicsTestScene : public AbstractScene
@@ -33,6 +36,9 @@ private:
 
 	float m_BlockMass = 0.2f;
 
+	std::vector<T_Hash> m_AudioIdPlaylist;
+	size_t m_CurrentTrack = 0u;
+	AudioSourceComponent* m_Source;
 	Entity* m_pLightEntity = nullptr;
 	vec3 m_LightCentralPos = vec3(0);
 	float m_LightRotDistance = 1.f;

@@ -75,6 +75,14 @@ void AudioManager::SetDistanceModel(ALenum model)
 	TestALError("Error setting openAL distance model");
 }
 
+void AudioManager::MakeContextCurrent()
+{
+	if (!alcMakeContextCurrent(m_Context))
+	{
+		LOG("OpenAL failed to make default context", Error);
+	}
+}
+
 AudioManager::~AudioManager()
 {
 	m_Device = alcGetContextsDevice(m_Context);

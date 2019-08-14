@@ -98,11 +98,22 @@ void AudioSourceComponent::SetLooping(bool val)
 
 void AudioSourceComponent::SetAudioData(AssetPtr<AudioData> const& data)
 {
+	if (m_IsInitialized && (m_pAudioData != nullptr))
+	{
+		AudioManager::GetInstance()->TestALError("AudioSourceComponent::SetAudioData > pre");
+		if (m_IsPlaying)
+		{
+			alSourceStop(m_Source);
+		}
+		alSourcei(m_Source, AL_BUFFER, 0);
+		AudioManager::GetInstance()->TestALError("AudioSourceComponent::SetAudioData > unset");
+	}
+
 	m_pAudioData = data;
 	if (m_IsInitialized)
 	{
 		alSourcei(m_Source, AL_BUFFER, m_pAudioData->GetHandle());
-		AudioManager::GetInstance()->TestALError("AudioSourceComponent bind audioData buffer error");
+		AudioManager::GetInstance()->TestALError("AudioSourceComponent::SetAudioData > set");
 
 		if (m_IsPlaying && !m_IsPaused)
 		{

@@ -14,6 +14,8 @@ public:
 
 	void SetDistanceModel(ALenum model);
 
+	void MakeContextCurrent();
+
 private:
 	void ListAudioDevices(const ALCchar *devices);
 
