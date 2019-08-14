@@ -6,6 +6,8 @@
 #include <Demo/Materials/TexPBRMaterial.h>
 #include <Demo/Materials/EmissiveMaterial.h>
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/SceneGraph/Entity.h>
 #include <Engine/Graphics/SpriteFont.h>
 #include <Engine/Graphics/Light.h>
@@ -23,7 +25,7 @@
 #include <Engine/Physics/BulletETM.h>
 #include <Engine/Physics/PhysicsWorld.h>
 #include <Engine/Audio/AudioManager.h>
-#include <Engine/Content/AudioLoader.h>
+#include <Engine/Audio/AudioData.h>
 
 
 PhysicsTestScene::PhysicsTestScene() : AbstractScene("PhysicsTestScene")
@@ -156,15 +158,12 @@ void PhysicsTestScene::Initialize()
 
 	auto pSource = new AudioSourceComponent();
 
-	AudioLoader* pLoader = CONTENT::GetLoader<AudioLoader, AudioData>();
-	pLoader->ForceMono(true);
-	pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/Disfigure-Blank.ogg"));
+	pSource->SetAudioData(ResourceManager::GetInstance()->GetAssetData<AudioData>("Disfigure-Blank.ogg"_hash));
 	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/testmusic.ogg"));
 	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm0844m.wav"));
 	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm0844s.wav"));
 	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm1644m.wav"));
 	//pSource->SetAudioData(CONTENT::Load<AudioData>("Resources/Sounds/pcm1644s.wav"));
-	pLoader->ForceMono(false);
 	pSource->SetLooping(true);
 	pSource->Play();
 	m_pLightEntity->AddComponent(pSource);

@@ -3,6 +3,8 @@
 
 #include <AL/al.h>
 
+#include <EtCore/Content/AssetPointer.h>
+
 
 class AudioData;
 
@@ -14,7 +16,7 @@ public:
 	AudioSourceComponent() {}
 	virtual ~AudioSourceComponent();
 
-	void SetAudioData(AudioData* val);
+	void SetAudioData(AssetPtr<AudioData> const& data);
 
 	float GetGain() const { return m_Gain; }
 	void SetGain(float val);
@@ -52,7 +54,7 @@ private:
 	vec3 m_PrevPos = vec3(0);
 
 	//Data
-	AudioData* m_pAudioData = nullptr;
+	AssetPtr<AudioData> m_pAudioData;
 
 	//Sound
 	float m_Gain = 1;

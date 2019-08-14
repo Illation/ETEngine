@@ -65,9 +65,9 @@ RTTR_REGISTRATION
 DEFINE_FORCED_LINKING(ShaderAsset) // force the shader asset class to be linked as it is only used in reflection
 
 //---------------------------------
-// ShaderAsset::Load
+// ShaderAsset::LoadFromMemory
 //
-// Load shader data from a file
+// Load shader data from binary asset content
 //
 bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 {

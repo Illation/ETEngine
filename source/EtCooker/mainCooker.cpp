@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
 	// Init stuff
 	//------------
 	Logger::Initialize();
+	Logger::StartFileLogging("cooker.log");
 
 	AssetDatabase database;
 	if (!serialization::DeserializeFromFile(databasePath, database))

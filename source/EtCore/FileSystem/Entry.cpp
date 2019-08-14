@@ -87,11 +87,7 @@ std::string Entry::GetExtension()
 {
 	if(GetType() == EntryType::ENTRY_FILE)
 	{
-		std::size_t found = m_Filename.rfind(".");
-		if (found != std::string::npos)
-		{
-			return m_Filename.substr(found+1);
-		}
+		return FileUtil::ExtractExtension(m_Filename);
 	}
 
 	return std::string("");

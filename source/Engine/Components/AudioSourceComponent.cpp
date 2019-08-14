@@ -34,7 +34,7 @@ void AudioSourceComponent::Initialize()
 	SetRolloffFactor(m_RolloffFactor);
 	SetMaxDistance(m_MaxDistance);
 
-	if (m_pAudioData)
+	if (m_pAudioData != nullptr)
 	{
 		alSourcei(m_Source, AL_BUFFER, m_pAudioData->GetHandle());
 		AudioManager::GetInstance()->TestALError("AudioSourceComponent bind audioData buffer error");
@@ -96,9 +96,9 @@ void AudioSourceComponent::SetLooping(bool val)
 	AudioManager::GetInstance()->TestALError("AudioSourceComponent set IsLooping error");
 }
 
-void AudioSourceComponent::SetAudioData(AudioData* val)
+void AudioSourceComponent::SetAudioData(AssetPtr<AudioData> const& data)
 {
-	m_pAudioData = val;
+	m_pAudioData = data;
 	if (m_IsInitialized)
 	{
 		alSourcei(m_Source, AL_BUFFER, m_pAudioData->GetHandle());
@@ -115,7 +115,7 @@ void AudioSourceComponent::Play()
 {
 	m_IsPlaying = true;
 	m_IsPaused = false;
-	if (m_pAudioData && m_IsInitialized)
+	if ((m_pAudioData != nullptr) && m_IsInitialized)
 	{
 		alSourcePlay(m_Source);
 	}
@@ -235,7 +235,7 @@ void AudioSourceComponent::Update()
 		m_IsPlaying = false;
 		m_IsPaused = true;
 	default:
-		if (m_pAudioData && m_IsInitialized)
+		if ((m_pAudioData != nullptr) && m_IsInitialized)
 		{
 			m_IsPlaying = false;
 			m_IsPaused = false;

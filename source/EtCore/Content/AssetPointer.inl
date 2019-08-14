@@ -118,7 +118,7 @@ template <class T_DataType>
 AssetPtr<T_DataType>& AssetPtr<T_DataType>::operator=(AssetPtr<T_DataType> const& rhs)
 {
 	AssetPtr tmp(rhs);
-	rhs.swap(*this);
+	tmp.swap(*this);
 	return *this;
 }
 

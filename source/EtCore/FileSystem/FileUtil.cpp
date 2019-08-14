@@ -189,6 +189,23 @@ std::string FileUtil::ExtractName(std::string const& fileName)
 }
 
 //---------------------------------
+// FileUtil::ExtractName
+//
+// Extract the extension from a filename
+//
+std::string FileUtil::ExtractExtension(std::string const& fileName)
+{
+	std::size_t found = fileName.rfind(".");
+
+	if (found != std::string::npos)
+	{
+		return fileName.substr(found + 1);
+	}
+
+	return std::string("");
+}
+
+//---------------------------------
 // FileUtil::SetExecutablePath
 //
 // Sets the base path the executable lives in 

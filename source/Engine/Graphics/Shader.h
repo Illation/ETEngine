@@ -14,7 +14,7 @@ class I_Uniform;
 //
 // Shader that can be used to draw things on the GPU - contains information about it's uniforms
 //
-class ShaderData
+class ShaderData final
 {
 public:
 	ShaderData() = default;

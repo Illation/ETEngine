@@ -2,6 +2,7 @@
 
 #include <EtCore/Content/AssetStub.h>
 #include <Engine/Graphics/Shader.h>
+#include <Engine/Audio/AudioData.h>
 
 //---------------------------------
 // ForceLinking
@@ -12,6 +13,7 @@ void ForceLinking()
 {
 	FORCE_LINKING(StubAsset)
 	FORCE_LINKING(ShaderAsset)
+	FORCE_LINKING(AudioAsset)
 }
 
 
