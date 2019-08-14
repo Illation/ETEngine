@@ -114,7 +114,7 @@ function(parallelBuild _target)
 	if(MSVC)
 		target_compile_options(_target PRIVATE "/MP")
 	endif()
-endfunction(precompiled_headers)
+endfunction(parallelBuild)
 
 
 # Config defines
