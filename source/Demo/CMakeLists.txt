@@ -10,7 +10,9 @@
 file(GLOB_RECURSE headers ${CMAKE_CURRENT_SOURCE_DIR}/*.h ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp ${CMAKE_CURRENT_SOURCE_DIR}/*.glsl)
 file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
-list (APPEND sources ${CMAKE_CURRENT_SOURCE_DIR}/_generated/compiled_package.cpp)
+set(_genFile "${CMAKE_CURRENT_SOURCE_DIR}/_generated/compiled_package.cpp")
+set_source_files_properties(${_genFile} PROPERTIES GENERATED TRUE )
+list (APPEND sources ${_genFile})
 
 list (APPEND projectFiles ${headers} ${sources} ${c_sources})
 

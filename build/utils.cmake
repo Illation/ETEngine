@@ -259,12 +259,21 @@ function(copyDllCommand _target)
 		endforeach()
 	endforeach()
 	foreach(_lib ${sep_libs})
-		file(GLOB dlls ${PROJECT_SOURCE_DIR}/dependancies/${_p}/${_lib}/${_cfg}/*.dll)
-		foreach(_dll ${dlls})
+		file(GLOB debugDlls ${PROJECT_SOURCE_DIR}/dependancies/${_p}/${_lib}/Debug/*.dll)
+		foreach(_dll ${debugDlls})
 			add_custom_command(TARGET ${_target} 
 				POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_dll}" $<TARGET_FILE_DIR:${_target}> 
-				COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_dll}" 
+				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,copy_if_different\ "${_dll}"\ $<TARGET_FILE_DIR:${_target}>,echo\ "">
+				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "Copying ${_dll}",echo\ "">
+			)
+		endforeach()
+
+		file(GLOB releaseDlls ${PROJECT_SOURCE_DIR}/dependancies/${_p}/${_lib}/Release/*.dll)
+		foreach(_dll ${releaseDlls})
+			add_custom_command(TARGET ${_target} 
+				POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",copy_if_different\ "${_dll}"\ $<TARGET_FILE_DIR:${_target}>>
+				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",echo\ "Copying ${_dll}">
 			)
 		endforeach()
 	endforeach()

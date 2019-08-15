@@ -38,6 +38,7 @@ add_custom_command(
 
 	COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file} ; Generated Directory: ${gen_dir}"
 	COMMAND ${CMAKE_COMMAND} -E echo ""
+	COMMAND ${CMAKE_COMMAND} -E echo "${cooker_dir}EtCooker.exe ${res_file} ${gen_dir} y ${resource_name}"
     COMMAND ${cooker_dir}EtCooker.exe ${res_file} ${gen_dir} y ${resource_name}
 	COMMAND ${CMAKE_COMMAND} -E echo ""
 	COMMAND ${CMAKE_COMMAND} -E echo ""
@@ -50,5 +51,6 @@ add_custom_command(
 add_custom_target( cook-compiled-resources DEPENDS ${target_files} )
 
 foreach(_target_file ${target_files})
-	set_source_files_properties(${_target_file} PROPERTIES GENERATED TRUE )
+	get_filename_component(_abs_target "${_target_file}" ABSOLUTE)
+	set_source_files_properties(${_abs_target} PROPERTIES GENERATED TRUE )
 endforeach()
