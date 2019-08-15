@@ -1,0 +1,3 @@
+[submodule "dependancies/submodules/bullet/bullet3"]
+	path = dependancies/submodules/bullet/bullet3
+	url = https://github.com/bulletphysics/bullet3
