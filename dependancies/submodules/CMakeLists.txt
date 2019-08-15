@@ -26,3 +26,9 @@ endif()
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bullet/bullet3/CMakeLists.txt")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
+
+
+# Add them
+#---------------
+
+add_subdirectory (bullet)

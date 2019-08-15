@@ -5,8 +5,6 @@ ETEngine.VC.VC.opendb
 ETEngine.VC.db
 /bin
 /lib
-/build/x32
-/build/x64
 *.ipch
 *.db
 build/.vs
@@ -14,6 +12,14 @@ build/.vs
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+
+/dependancies/submodules/bullet/build/
+/dependancies/include/bullet/
+/dependancies/x32/bullet/
+/dependancies/x64/bullet/
+
+/build/x32
+/build/x64
 
 /source/Demo/_generated/
 

@@ -148,11 +148,11 @@ function(dependancyLinks TARGET _useSdlMain)
 
 	# separate debug and release libs
 	target_link_libraries (${TARGET} 		
-		debug ${dep_pf}/rttr/Debug/rttr_core_d.lib			optimized ${dep_pf}/rttr/Release/rttr_core.lib
+		debug ${dep_pf}/rttr/Debug/rttr_core_d.lib				optimized ${dep_pf}/rttr/Release/rttr_core.lib
 	
-		debug ${dep_pf}/bullet/Debug/BulletDynamics.lib		optimized ${dep_pf}/bullet/Release/BulletDynamics.lib
-		debug ${dep_pf}/bullet/Debug/BulletCollision.lib	optimized ${dep_pf}/bullet/Release/BulletCollision.lib
-		debug ${dep_pf}/bullet/Debug/LinearMath.lib			optimized ${dep_pf}/bullet/Release/LinearMath.lib )
+		debug ${dep_pf}/bullet/Debug/BulletDynamics_Debug.lib	optimized ${dep_pf}/bullet/Release/BulletDynamics.lib
+		debug ${dep_pf}/bullet/Debug/BulletCollision_Debug.lib	optimized ${dep_pf}/bullet/Release/BulletCollision.lib
+		debug ${dep_pf}/bullet/Debug/LinearMath_Debug.lib		optimized ${dep_pf}/bullet/Release/LinearMath.lib )
 
 	target_link_libraries (${TARGET} 
 		${dep_pf}/sdl2/SDL2.lib
