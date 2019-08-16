@@ -4,9 +4,8 @@ configuration: Debug
 platform: x64
 install:
 - cmd: cmake -G "Visual Studio 15 2017 Win64" -H. -Bbuild
-build:
-  project: ./build/ALL_BUILD.vcxproj
-  verbosity: normal
+build_script:
+- cmd: cmake --build build --target all --config Debug
 after_build:
 - cmd: cmake --build build --target install
 test_script:
