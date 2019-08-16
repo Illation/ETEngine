@@ -15,8 +15,6 @@
 #include <vector>
 #include <memory>
 
-#include <rttr/registration>
-
 #pragma endregion stl
 
 #pragma region

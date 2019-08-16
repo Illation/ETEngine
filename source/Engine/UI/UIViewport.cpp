@@ -71,8 +71,6 @@ void UIViewportRenderer::Initialize(ivec2 size)
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTex"), 0);
 
 	TextureParameters params = TextureParameters();
-	params.minFilter = GL_NEAREST;
-	params.magFilter = GL_NEAREST;
 
 	glGenFramebuffers(1, &m_FBO);
 	STATE->BindFramebuffer(m_FBO);

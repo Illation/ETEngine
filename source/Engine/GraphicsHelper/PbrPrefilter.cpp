@@ -42,8 +42,8 @@ void PbrPrefilter::Precompute(int32 resolution)
 	m_LUT = new TextureData(resolution, resolution, GL_RG16F, GL_RG, GL_FLOAT);
 	m_LUT->Build();
 	TextureParameters params(false);
-	params.wrapS = GL_CLAMP_TO_EDGE;
-	params.wrapT = GL_CLAMP_TO_EDGE;
+	params.wrapS = E_TextureWrapMode::ClampToEdge;
+	params.wrapT = E_TextureWrapMode::ClampToEdge;
 	m_LUT->SetParameters(params);
 
 	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);

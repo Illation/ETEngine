@@ -33,10 +33,10 @@ void ScreenSpaceReflections::Initialize()
 	int32 width = WINDOW.Width, height = WINDOW.Height;
 
 	TextureParameters params = TextureParameters();
-	params.minFilter = GL_LINEAR;
-	params.magFilter = GL_LINEAR;
-	params.wrapS = GL_CLAMP_TO_EDGE;
-	params.wrapT = GL_CLAMP_TO_EDGE;
+	params.minFilter = E_TextureFilterMode::Linear;
+	params.magFilter = E_TextureFilterMode::Linear;
+	params.wrapS = E_TextureWrapMode::ClampToEdge;
+	params.wrapT = E_TextureWrapMode::ClampToEdge;
 
 	//Generate texture and fbo and rbo as initial postprocessing target
 	glGenFramebuffers(1, &m_CollectFBO);

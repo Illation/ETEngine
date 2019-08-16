@@ -17,6 +17,8 @@
 #include <cstdint>
 #pragma endregion stl
 
+#include <rttr/registration>
+
 #pragma region
 #include <EtMath/MathInc.h>
 #pragma endregion math

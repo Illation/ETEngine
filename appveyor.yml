@@ -1,12 +1,13 @@
 version: 1.0.{build}
 image: Visual Studio 2017
-configuration: Debug
+configuration: Release
 platform: x64
 install:
 - cmd: cmake -G "Visual Studio 15 2017 Win64" -H. -Bbuild
 build_script:
-- cmd: cmake --build build --target all --config Debug
+- cmd: cmake --build build --target all --config Develop
 after_build:
 - cmd: cmake --build build --target install
+- cmd: cmake --build build --target cook-installed-resources-Demo
 test_script:
 - cmd: .\bin\Debug_x64\Testing\Testing.exe

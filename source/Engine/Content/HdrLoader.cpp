@@ -72,8 +72,8 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	FreeImage_Unload(pImage);
 
 	TextureParameters params(false);
-	params.wrapS = GL_CLAMP_TO_EDGE;
-	params.wrapT = GL_CLAMP_TO_EDGE;
+	params.wrapS = E_TextureWrapMode::ClampToEdge;
+	params.wrapT = E_TextureWrapMode::ClampToEdge;
 	hdrTexture->SetParameters(params);
 
 	LOG(loadingString + " . . . converting to cube          ", Info, false, logPos);

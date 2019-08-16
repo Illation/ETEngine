@@ -111,11 +111,9 @@ DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
 
-		TextureParameters params( false, true );
-		params.minFilter = GL_NEAREST;
-		params.magFilter = GL_NEAREST;
-		params.wrapS = GL_CLAMP_TO_EDGE;
-		params.wrapT = GL_CLAMP_TO_EDGE;
+		TextureParameters params(false, true);
+		params.wrapS = E_TextureWrapMode::ClampToEdge;
+		params.wrapT = E_TextureWrapMode::ClampToEdge;
 		data.pTexture->SetParameters( params );
 
 		STATE->BindFramebuffer(0);

@@ -45,25 +45,41 @@ void TextureData::SetParameters( TextureParameters params )
 {
 	GLenum target = GetTarget();
 	STATE->BindTexture(target, m_Handle );
-	if(m_Parameters.minFilter != params.minFilter)
+
+	if((m_Parameters.minFilter != params.minFilter) || 
+		(m_Parameters.mipFilter != params.mipFilter) || 
+		(m_Parameters.genMipMaps != params.genMipMaps))
 	{
-		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, params.minFilter );
+		int32 minFilter = GetMinFilter(params.minFilter, params.mipFilter, params.genMipMaps);
+		ET_ASSERT(minFilter != 0);
+
+		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilter);
 	}
+
 	if(m_Parameters.magFilter != params.magFilter)
 	{
-		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, params.magFilter );
+		int32 filter = GetFilter(params.magFilter);
+		ET_ASSERT(filter != 0);
+
+		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filter);
 	}
+
 	if(m_Parameters.wrapS != params.wrapS)
 	{
-		glTexParameteri(target, GL_TEXTURE_WRAP_S, params.wrapS );
+		glTexParameteri(target, GL_TEXTURE_WRAP_S, GetWrapMode(params.wrapS));
 	}
 	if(m_Parameters.wrapT != params.wrapT)
 	{
-		glTexParameteri(target, GL_TEXTURE_WRAP_T, params.wrapT );
+		glTexParameteri(target, GL_TEXTURE_WRAP_T, GetWrapMode(params.wrapT));
 	}
+	if (m_Depth > 1 && m_Parameters.wrapR != params.wrapR)
+	{
+		glTexParameteri(target, GL_TEXTURE_WRAP_R, GetWrapMode(params.wrapR));
+	}
+
 	if(!etm::nearEqualsV(m_Parameters.borderColor, params.borderColor ))
 	{
-		glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, params.borderColor.data.data() );
+		glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, params.borderColor.data.data());
 	}
 	if(m_Parameters.genMipMaps == false && params.genMipMaps == true)
 	{
@@ -71,15 +87,9 @@ void TextureData::SetParameters( TextureParameters params )
 	}
 	if(params.isDepthTex && m_Parameters.compareMode != params.compareMode)
 	{
-		glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, params.compareMode );//shadow map comp mode
+		glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, GetCompareMode(params.compareMode));//shadow map comp mode
 	}
-	if (m_Depth > 1)
-	{
-		if (m_Parameters.wrapR != params.wrapR)
-		{
-			glTexParameteri(target, GL_TEXTURE_WRAP_R, params.wrapR);
-		}
-	}
+
 	m_Parameters = params;
 }
 

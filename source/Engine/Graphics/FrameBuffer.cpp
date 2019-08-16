@@ -82,10 +82,8 @@ void FrameBuffer::GenerateFramebufferTextures()
 	m_pTextureVec.reserve(m_NumTargets);
 
 	TextureParameters params = TextureParameters();
-	params.minFilter = GL_NEAREST;
-	params.magFilter = GL_NEAREST;
-	params.wrapS = GL_CLAMP_TO_EDGE;
-	params.wrapT = GL_CLAMP_TO_EDGE;
+	params.wrapS = E_TextureWrapMode::ClampToEdge;
+	params.wrapT = E_TextureWrapMode::ClampToEdge;
 	//Depth buffer
 	if (m_CaptureDepth)
 	{

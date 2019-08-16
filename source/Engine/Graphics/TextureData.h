@@ -2,34 +2,14 @@
 #include <string>
 #include <vector>
 
-// #todo: Implement texture types with inheritance
+#include "TextureParameters.h"
 
-struct TextureParameters
-{
-	TextureParameters( bool useMipMaps = false, bool depthTex = false )
-	{
-		if(useMipMaps)
-		{
-			minFilter = GL_LINEAR_MIPMAP_LINEAR;
-			genMipMaps = true;
-		}
-		isDepthTex = depthTex;
-	}
 
-	//Parameters
-	int32 minFilter = GL_LINEAR;
-	int32 magFilter = GL_LINEAR;
-	int32 wrapS = GL_REPEAT;
-	int32 wrapT = GL_REPEAT;
-	int32 wrapR = GL_REPEAT;
-	vec4 borderColor = vec4(1);
-
-	bool genMipMaps = false;
-
-	bool isDepthTex = false;
-	int32 compareMode = GL_COMPARE_REF_TO_TEXTURE;
-};
-
+//---------------------------------
+// TextureData
+//
+// Handle to a texture object on the GPU
+//
 class TextureData
 {
 public:

@@ -205,8 +205,8 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	//Setup rendering
 	TextureParameters params(false);
-	params.wrapS = GL_CLAMP_TO_EDGE;
-	params.wrapT = GL_CLAMP_TO_EDGE;
+	params.wrapS = E_TextureWrapMode::ClampToEdge;
+	params.wrapT = E_TextureWrapMode::ClampToEdge;
 	
 	pFont->m_pTexture = new TextureData(pFont->m_TextureWidth, pFont->m_TextureHeight, GL_RGBA16F, GL_RGBA, GL_FLOAT);
 	pFont->m_pTexture->Build();
@@ -234,8 +234,8 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	glUniform1f(glGetUniformLocation(computeSdf->GetProgram(), "uSpread"), (float)m_Spread);
 	glUniform1f(glGetUniformLocation(computeSdf->GetProgram(), "uHighRes"), (float)m_HighRes);
 
-	params.wrapS = GL_CLAMP_TO_BORDER;
-	params.wrapT = GL_CLAMP_TO_BORDER;
+	params.wrapS = E_TextureWrapMode::ClampToBorder;
+	params.wrapT = E_TextureWrapMode::ClampToBorder;
 	params.borderColor = vec4(0);
 
 	STATE->SetBlendEnabled(true);
