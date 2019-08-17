@@ -205,6 +205,8 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	//Setup rendering
 	TextureParameters params(false);
+	params.minFilter = E_TextureFilterMode::Linear;
+	params.magFilter = E_TextureFilterMode::Linear;
 	params.wrapS = E_TextureWrapMode::ClampToEdge;
 	params.wrapT = E_TextureWrapMode::ClampToEdge;
 	

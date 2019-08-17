@@ -16,6 +16,7 @@ target_definitions()
 
 # header only library builds with one source file that includes all headers
 add_library(EtMath ${projectFiles})
+targetCompileOptions(EtMath)
 
 assign_source_group(${projectFiles})
 

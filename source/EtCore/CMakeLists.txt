@@ -18,7 +18,7 @@ target_definitions()
 
 # library and dependancies
 add_library(EtCore ${sources} ${headers})
-parallelBuild(EtCore)
+targetCompileOptions(EtCore)
 
 assign_source_group(${projectFiles})
 

@@ -75,8 +75,10 @@ TextureData* TextureLoader::LoadContent(const std::string& assetFile)
 
 		FreeImage_Unload(pImage);//Destroy CPU side data
 
-		TextureParameters params( true );
-		ret->SetParameters( params );
+		TextureParameters params;
+		params.minFilter = E_TextureFilterMode::Linear;
+		params.magFilter = E_TextureFilterMode::Linear;
+		ret->SetParameters(params);
 
 		LOG(loadingString + " . . . SUCCESS!          ", Info, false, logPos);
 

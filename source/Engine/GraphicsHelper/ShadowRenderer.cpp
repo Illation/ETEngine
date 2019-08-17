@@ -114,7 +114,7 @@ DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 		TextureParameters params(false, true);
 		params.wrapS = E_TextureWrapMode::ClampToEdge;
 		params.wrapT = E_TextureWrapMode::ClampToEdge;
-		data.pTexture->SetParameters( params );
+		data.pTexture->SetParameters(params);
 
 		STATE->BindFramebuffer(0);
 

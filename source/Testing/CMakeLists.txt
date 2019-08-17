@@ -19,7 +19,7 @@ target_definitions()
 add_definitions(-D_CONSOLE)
 # executable and dependancies
 add_executable(Testing ${projectFiles})
-parallelBuild(Testing)
+targetCompileOptions(Testing)
 
 # directory stuff
 assign_source_group(${projectFiles})

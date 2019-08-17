@@ -68,8 +68,8 @@ void SpriteRenderer::Initialize()
 
 	m_EmptyTex->Build( (void*)(vec4(1).data.data()) );
 
-	TextureParameters params( true );
-	m_EmptyTex->SetParameters( params );
+	TextureParameters params;
+	m_EmptyTex->SetParameters(params);
 
 	WINDOW.WindowResizeEvent.AddListener( std::bind( &SpriteRenderer::OnWindowResize, this ) );
 }

@@ -83,7 +83,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 {
 	int32 width = WINDOW.Width, height = WINDOW.Height;
 
-	TextureParameters params = TextureParameters();
+	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Linear;
 	params.magFilter = E_TextureFilterMode::Linear;
 	params.wrapS = E_TextureWrapMode::ClampToEdge;
@@ -94,7 +94,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	STATE->BindFramebuffer( m_CollectFBO );
 	m_CollectTex = new TextureData( width, height, GL_RGB16F, GL_RGB, GL_FLOAT );
 	m_CollectTex->Build();
-	m_CollectTex->SetParameters( params );
+	m_CollectTex->SetParameters(params);
 	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_CollectTex->GetHandle(), 0 );
 	//Render Buffer for depth and stencil
 	glGenRenderbuffers( 1, &m_CollectRBO );
@@ -109,7 +109,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	{
 		m_ColorBuffers[i] = new TextureData( width, height, GL_RGB16F, GL_RGB, GL_FLOAT );
 		m_ColorBuffers[i]->Build();
-		m_ColorBuffers[i]->SetParameters( params );
+		m_ColorBuffers[i]->SetParameters(params, true);
 		// attach texture to framebuffer
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_ColorBuffers[i]->GetHandle(), 0 );
 	}
@@ -126,13 +126,13 @@ void PostProcessingRenderer::GenerateFramebuffers()
 		STATE->BindFramebuffer( m_DownSampleFBO[i] );
 		m_DownSampleTexture[i] = new TextureData( (GLsizei)(width*resMult), (GLsizei)(height*resMult), GL_RGB16F, GL_RGB, GL_FLOAT );
 		m_DownSampleTexture[i]->Build();
-		m_DownSampleTexture[i]->SetParameters( params );
+		m_DownSampleTexture[i]->SetParameters(params, true);
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DownSampleTexture[i]->GetHandle(), 0 );
 
 		STATE->BindFramebuffer( m_DownPingPongFBO[i] );
 		m_DownPingPongTexture[i] = new TextureData( (GLsizei)(width*resMult), (GLsizei)(height*resMult), GL_RGB16F, GL_RGB, GL_FLOAT );
 		m_DownPingPongTexture[i]->Build();
-		m_DownPingPongTexture[i]->SetParameters( params );
+		m_DownPingPongTexture[i]->SetParameters(params, true);
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DownPingPongTexture[i]->GetHandle(), 0 );
 	}
 
@@ -143,7 +143,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 		STATE->BindFramebuffer( m_PingPongFBO[i] );
 		m_PingPongTexture[i] = new TextureData( width, height, GL_RGB16F, GL_RGB, GL_FLOAT );
 		m_PingPongTexture[i]->Build();
-		m_PingPongTexture[i]->SetParameters( params );
+		m_PingPongTexture[i]->SetParameters(params, true);
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_PingPongTexture[i]->GetHandle(), 0 );
 	}
 

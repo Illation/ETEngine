@@ -46,7 +46,7 @@ enum class E_TextureCompareMode
 //
 struct TextureParameters final
 {
-	TextureParameters(bool useMipMaps = false, bool depthTex = false);
+	TextureParameters(bool useMipMaps = true, bool depthTex = false);
 
 	// Data
 	///////
@@ -65,7 +65,7 @@ struct TextureParameters final
 	vec4 borderColor;
 
 	// downsampled pixels
-	bool genMipMaps = false;
+	bool genMipMaps = true;
 
 	// depth textures (e.g for shadow mapping)
 	bool isDepthTex = false;

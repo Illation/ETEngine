@@ -211,7 +211,7 @@ void AtmosphereSettings::UploadTextureSize(ShaderData const* const shader) const
 AtmosphereSettings::AtmosphereSettings()
 {
 	//General texture format for atmosphere
-	m_TexParams = TextureParameters();
+	m_TexParams = TextureParameters(false);
 	m_TexParams.wrapS = E_TextureWrapMode::ClampToEdge;
 	m_TexParams.wrapT = E_TextureWrapMode::ClampToEdge;
 	m_TexParams.wrapR = E_TextureWrapMode::ClampToEdge;

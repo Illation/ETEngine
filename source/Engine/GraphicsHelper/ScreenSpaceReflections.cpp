@@ -32,7 +32,7 @@ void ScreenSpaceReflections::Initialize()
 
 	int32 width = WINDOW.Width, height = WINDOW.Height;
 
-	TextureParameters params = TextureParameters();
+	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Linear;
 	params.magFilter = E_TextureFilterMode::Linear;
 	params.wrapS = E_TextureWrapMode::ClampToEdge;

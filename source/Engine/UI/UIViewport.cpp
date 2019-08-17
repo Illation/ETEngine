@@ -70,7 +70,7 @@ void UIViewportRenderer::Initialize(ivec2 size)
 	STATE->SetShader(m_pShader.get());
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTex"), 0);
 
-	TextureParameters params = TextureParameters();
+	TextureParameters params(false);
 
 	glGenFramebuffers(1, &m_FBO);
 	STATE->BindFramebuffer(m_FBO);

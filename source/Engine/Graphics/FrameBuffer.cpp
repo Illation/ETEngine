@@ -81,7 +81,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 	attachments.reserve(m_NumTargets);
 	m_pTextureVec.reserve(m_NumTargets);
 
-	TextureParameters params = TextureParameters();
+	TextureParameters params(false);
 	params.wrapS = E_TextureWrapMode::ClampToEdge;
 	params.wrapT = E_TextureWrapMode::ClampToEdge;
 	//Depth buffer
@@ -90,8 +90,8 @@ void FrameBuffer::GenerateFramebufferTextures()
 		TextureData* depthMap = new TextureData( width, height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT );
 		depthMap->Build();
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap->GetHandle(), 0);
-		depthMap->SetParameters( params );
-		m_pTextureVec.push_back( depthMap );
+		depthMap->SetParameters(params);
+		m_pTextureVec.emplace_back(depthMap);
 	}
 
 	//Color buffers
@@ -100,9 +100,9 @@ void FrameBuffer::GenerateFramebufferTextures()
 		TextureData* colorBuffer = new TextureData( width, height, GL_RGBA16F, GL_RGBA, m_Format );
 		colorBuffer->Build();
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffer->GetHandle(), 0 );
-		colorBuffer->SetParameters( params );
-		m_pTextureVec.push_back( colorBuffer );
-		attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
+		colorBuffer->SetParameters(params, true);
+		m_pTextureVec.emplace_back(colorBuffer);
+		attachments.emplace_back(GL_COLOR_ATTACHMENT0 + i);
 	}
 
 	//Render Buffer for depth and stencil
