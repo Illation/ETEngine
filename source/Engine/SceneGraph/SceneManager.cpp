@@ -82,6 +82,8 @@ void SceneManager::OnTick()
 {
 	if (m_NewActiveScene != nullptr)
 	{
+		RenderPipeline::GetInstance()->ShowSplashScreen();
+
 		//Deactivate the current active scene
 		if (m_ActiveScene != nullptr)
 			m_ActiveScene->RootOnDeactivated();
@@ -90,11 +92,13 @@ void SceneManager::OnTick()
 		m_ActiveScene = m_NewActiveScene;
 		m_NewActiveScene = nullptr;
 
-		RenderPipeline::GetInstance()->ShowSplashScreen();
-
 		LOG(std::string("Switching to scene: ") + m_ActiveScene->m_Name);
 		//Active the new scene and reset SceneTimer
 		m_ActiveScene->RootOnActivated();
+	}
+	else
+	{
+		RenderPipeline::GetInstance()->HideSplashScreen();
 	}
 
 	if (m_ActiveScene != nullptr)

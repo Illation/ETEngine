@@ -28,7 +28,6 @@ RTTR_REGISTRATION
 		.property("mipmap filter",		&TextureParameters::mipFilter)
 		.property("wrap S",				&TextureParameters::wrapS)
 		.property("wrap	T",				&TextureParameters::wrapT)
-		.property("wrap R",				&TextureParameters::wrapR)
 		.property("border color",		&TextureParameters::borderColor)
 		.property("generate mipmaps",	&TextureParameters::genMipMaps);
 }

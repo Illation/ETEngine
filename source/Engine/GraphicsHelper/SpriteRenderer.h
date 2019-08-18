@@ -1,36 +1,29 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-enum class SpriteScalingMode : uint8
-{
-	SCREEN,
-	PIXEL,
-	TEXTURE,
-	TEXTURE_ABS//Uses true pixels size, unrelated to global texture scaling
-};
 
+//---------------------------------
+// SpriteRenderer
+//
+// Rendering class that can draw 2D images to the current framebuffer
+//
 class SpriteRenderer : public Singleton<SpriteRenderer>
 {
-public:
-
-	void Draw( TextureData* pTexture, vec2 position, vec4 color = vec4(1), 
-			   vec2 pivot = vec2( 0 ), vec2 scale = vec2( 1 ), 
-			   float rotation = 0.f, float depth = 0.f, SpriteScalingMode mode = SpriteScalingMode::SCREEN, float layer = 0.f );
-
-	void OnWindowResize();
-
 private:
-	//Classes that need to call the Draw function
+	// Definitions
+	//--------------------------
 	friend class RenderPipeline;
 	friend class UIPortal;
 #ifdef EDITOR
 	friend class Editor;
 #endif
+	friend class Singleton<SpriteRenderer>;
 
-	void Draw();
-
-private:
-
+	//---------------------------------
+	// SpriteRenderer::SpriteVertex
+	//
+	// Vertex data for the GPU
+	//
 	struct SpriteVertex
 	{
 		uint32 TextureId = 0;
@@ -39,10 +32,57 @@ private:
 		vec4 Color;
 	};
 
+public:
+	//-------------------------------------
+	// SpriteRenderer::E_ScalingMode
+	//
+	// How to relatively scale the sprites
+	//
+	enum class E_ScalingMode : uint8
+	{
+		Screen,
+		Pixel,
+		Texture,
+		TextureAbs // Uses true pixels size, unrelated to global texture scaling
+	};
+
+private:
+	// construct destruct
+	//--------------------
+	SpriteRenderer() = default;
+	virtual ~SpriteRenderer();
+	SpriteRenderer(const SpriteRenderer& t);
+	SpriteRenderer& operator=(const SpriteRenderer& t);
+
+public:
+
 	void Initialize();
+
+	// Functionality
+	//---------------
+	void Draw(TextureData const* tex, 
+		vec2 const& position, 
+		vec4 const& color = vec4(1), 
+		vec2 const& pivot = vec2(0), 
+		vec2 const& scale = vec2(1), 
+		float const rotation = 0.f, 
+		float const depth = 0.f, 
+		E_ScalingMode const mode = E_ScalingMode::Screen,
+		float const layer = 0.f);
+
+	void OnWindowResize();
+
+private:
+	void Draw();
+
+	// Utility
+	//---------
 	void UpdateBuffer();
 
 	void CalculateTransform();
+
+	// Data
+	///////
 
 	//Vertices
 	std::vector<SpriteVertex> m_Sprites;
@@ -52,10 +92,10 @@ private:
 
 	//Textures
 	TextureData* m_EmptyTex = nullptr;
-	std::vector<TextureData*> m_Textures;
+	std::vector<TextureData const*> m_Textures;
 
 	//Shader and its uniforms
-	AssetPtr<ShaderData> m_pShader;
+	AssetPtr<ShaderData> m_Shader;
 
 	GLint m_uTransform = 0;
 	mat4 m_Transform;
@@ -66,23 +106,4 @@ private:
 	GLint m_uDraw3D;
 	GLint m_uLayer;
 	float m_Layer;
-
-	//Direct drawing
-	//void DrawImmediate( TextureData* pSrv, vec2 position, vec4 color, vec2 pivot, vec2 scale, float rotation );
-	//GLuint m_ImmediateVAO = 0;
-	//GLuint m_ImmediateVBO = 0;
-	//SpriteVertex m_ImmediateVertex;
-
-private:
-	friend class Singleton<SpriteRenderer>;
-
-	//Private constructor and destructor for singleton
-	SpriteRenderer();
-	virtual ~SpriteRenderer();
-	// -------------------------
-	// Disabling default copy constructor and default 
-	// assignment operator.
-	// -------------------------
-	SpriteRenderer( const SpriteRenderer& t );
-	SpriteRenderer& operator=( const SpriteRenderer& t );
 };

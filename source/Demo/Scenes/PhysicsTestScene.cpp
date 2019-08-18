@@ -237,8 +237,8 @@ void PhysicsTestScene::Update()
 		GRAPHICS.UseFXAA = !(GRAPHICS.UseFXAA);
 	}
 
-	SpriteRenderer::GetInstance()->Draw(m_pDebugFont->GetAtlas(), vec2(1000, 0), 
-		vec4(1), vec2(0), vec2(1), 0, 0, SpriteScalingMode::TEXTURE_ABS);
+	SpriteRenderer::GetInstance()->Draw(m_pDebugFont->GetAtlas(), vec2(1000, 0),
+		vec4(1), vec2(0), vec2(1), 0, 0, SpriteRenderer::E_ScalingMode::TextureAbs);
 }
 
 void PhysicsTestScene::Draw()

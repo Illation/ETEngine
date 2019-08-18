@@ -37,5 +37,5 @@ void SpriteComponent::Draw()
 	vec3 scale = TRANSFORM->GetScale();
 	SpriteRenderer::GetInstance()->Draw( m_pTexture, vec2( TRANSFORM->GetPosition().xy ),
 										 m_Color, m_Pivot, vec2( TRANSFORM->GetScale().xy ),
-										 TRANSFORM->GetRotation().Roll(), pos.z, SpriteScalingMode::TEXTURE );
+										 TRANSFORM->GetRotation().Roll(), pos.z, SpriteRenderer::E_ScalingMode::Texture );
 }

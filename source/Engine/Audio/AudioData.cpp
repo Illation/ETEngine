@@ -58,7 +58,7 @@ RTTR_REGISTRATION
 		return new AudioAsset(asset);
 	});
 }
-DEFINE_FORCED_LINKING(AudioAsset) // force the shader asset class to be linked as it is only used in reflection
+DEFINE_FORCED_LINKING(AudioAsset) // force the asset class to be linked as it is only used in reflection
 
 
 //---------------------------------
@@ -90,7 +90,7 @@ bool AudioAsset::LoadFromMemory(std::vector<uint8> const& data)
 	if (!dataLoaded)
 	{
 		LOG("AudioAsset::LoadFromMemory > Failed to load audio buffer data!", LogLevel::Warning);
-		return nullptr;
+		return false;
 	}
 
 	if (m_IsMonoForced)
@@ -105,7 +105,7 @@ bool AudioAsset::LoadFromMemory(std::vector<uint8> const& data)
 	if (AudioManager::GetInstance()->TestALError("Audio Loader alBufferData error"))
 	{
 		LOG("AudioAsset::LoadFromMemory > Failed - open AL error!", LogLevel::Warning);
-		return nullptr;
+		return false;
 	}
 
 	delete[] bufferData.data;

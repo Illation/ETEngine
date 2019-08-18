@@ -21,7 +21,7 @@ bool UISprite::Draw( uint16 level )
 {
 	UNUSED(level);
 	SpriteRenderer::GetInstance()->Draw( m_Texture, etm::vecCast<float>(m_WorldPos+m_Rect.pos), m_Color, vec2( 0 ),
-		etm::vecCast<float>(m_Rect.size), 0, 1, SpriteScalingMode::PIXEL );
+		etm::vecCast<float>(m_Rect.size), 0, 1, SpriteRenderer::E_ScalingMode::Pixel );
 
 	return false;
 }

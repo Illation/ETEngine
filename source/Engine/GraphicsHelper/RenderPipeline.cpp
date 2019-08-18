@@ -11,6 +11,7 @@
 #include "DebugRenderer.h"
 #include "PbrPrefilter.h"
 
+#include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Helper/PerformanceInfo.h>
 
 #include <Engine/Helper/ScreenshotCapture.h>
@@ -248,11 +249,12 @@ void RenderPipeline::OnResize()
 
 void RenderPipeline::ShowSplashScreen()
 {
-	TextureData* pBGTex = ContentManager::Load<TextureData>("Resources/Textures/Splashscreen.jpg");
+	m_SplashBackgroundTex = ResourceManager::GetInstance()->GetAssetData<TextureData>("Splashscreen.jpg"_hash);
+	//TextureData* pBGTex = ContentManager::Load<TextureData>("Resources/Textures/Splashscreen.jpg");
 	SpriteFont* pTitleFont = ContentManager::Load<SpriteFont>("Resources/Fonts/roboto2014/Roboto-Bold.ttf");
 	SpriteFont* pRegFont = ContentManager::Load<SpriteFont>("Resources/Fonts/roboto2014/RobotoCondensed-Regular.ttf");
 
-	SpriteRenderer::GetInstance()->Draw(pBGTex, vec2(0));
+	SpriteRenderer::GetInstance()->Draw(m_SplashBackgroundTex.get(), vec2(0));
 
 	std::string title = "E   T   E N G I N E";
 	int16 titleFontSize = (int16)(150 * ((float)WINDOW.Height / (float)1440));
@@ -271,4 +273,9 @@ void RenderPipeline::ShowSplashScreen()
 	TextRenderer::GetInstance()->Draw();
 
 	SwapBuffers();
+}
+
+void RenderPipeline::HideSplashScreen()
+{
+	m_SplashBackgroundTex = nullptr;
 }

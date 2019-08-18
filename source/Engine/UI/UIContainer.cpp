@@ -123,7 +123,7 @@ bool UIPortal::Draw(uint16 level)
 	STATE->SetViewport(m_Rect.pos + m_WorldPos, m_Rect.size);
 
 	//Render Background
-	SpriteRenderer::GetInstance()->Draw(nullptr, pos, m_Color, vec2(0), size, 0, 1, SpriteScalingMode::SCREEN);
+	SpriteRenderer::GetInstance()->Draw(nullptr, pos, m_Color, vec2(0), size, 0, 1);
 	SpriteRenderer::GetInstance()->Draw();
 
 	//Render subcomponents

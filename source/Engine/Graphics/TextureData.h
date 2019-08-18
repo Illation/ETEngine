@@ -1,8 +1,8 @@
 #pragma once
-#include <string>
-#include <vector>
-
 #include "TextureParameters.h"
+
+#include <EtCore/Content/Asset.h>
+#include <EtCore/Helper/LinkerUtils.h>
 
 
 //---------------------------------
@@ -50,4 +50,32 @@ private:
 	GLenum m_Type = GL_FLOAT;
 
 	TextureParameters m_Parameters;
+};
+
+//---------------------------------
+// TextureAsset
+//
+// Loadable Texture Data
+//
+class TextureAsset final : public Asset<TextureData, false>
+{
+	DECLARE_FORCED_LINKING()
+public:
+	// Construct destruct
+	//---------------------
+	TextureAsset() : Asset<TextureData, false>() {}
+	virtual ~TextureAsset() = default;
+
+	// Asset overrides
+	//---------------------
+	bool LoadFromMemory(std::vector<uint8> const& data) override;
+
+	// Data
+	///////
+public:
+	bool m_UseSrgb = false;
+	bool m_ForceResolution = false;
+	TextureParameters m_Parameters;
+
+	RTTR_ENABLE(Asset<TextureData, false>)
 };
