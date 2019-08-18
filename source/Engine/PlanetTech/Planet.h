@@ -1,11 +1,12 @@
 #pragma once
+#include <EtCore/Content/AssetPointer.h>
 
+#include <Engine/Graphics/TextureData.h>
 #include <Engine/SceneGraph/Entity.h>
 
 
 class ShaderData;
 class Frustum;
-class TextureData;
 class Triangulator;
 class Patch;
 class Atmosphere;
@@ -23,11 +24,11 @@ public:
 	int32 GetVertexCount();
 	Triangulator* GetTriangulator() { return m_pTriangulator; }
 
-	TextureData* GetHeightMap() { return m_pHeight; }
-	TextureData* GetDiffuseMap() { return m_pDiffuse; }
-	TextureData* GetDetail1Map() { return m_pDetail1; }
-	TextureData* GetDetail2Map() { return m_pDetail2; }
-	TextureData* GetHeightDetailMap() { return m_pHeightDetail; }
+	TextureData const* GetHeightMap() const { return m_pHeight.get(); }
+	TextureData const* GetDiffuseMap() const { return m_pDiffuse.get(); }
+	TextureData const* GetDetail1Map() const { return m_pDetail1.get(); }
+	TextureData const* GetDetail2Map() const { return m_pDetail2.get(); }
+	TextureData const* GetHeightDetailMap() const { return m_pHeightDetail.get(); }
 
 	void SetAtmosphere(Atmosphere* pAtmosphere, float radius) 
 	{ 
@@ -52,11 +53,11 @@ protected:
 	float m_Radius = 1737.1f;
 	float m_MaxHeight = 10.7f;
 
-	TextureData* m_pDiffuse = nullptr;
-	TextureData* m_pDetail1 = nullptr;
-	TextureData* m_pDetail2 = nullptr;
-	TextureData* m_pHeightDetail = nullptr;
-	TextureData* m_pHeight = nullptr;
+	AssetPtr<TextureData> m_pDiffuse;
+	AssetPtr<TextureData> m_pDetail1;
+	AssetPtr<TextureData> m_pDetail2;
+	AssetPtr<TextureData> m_pHeightDetail;
+	AssetPtr<TextureData> m_pHeight;
 
 private:
 	bool m_Rotate = false;

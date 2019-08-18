@@ -1,7 +1,10 @@
 #pragma once
 #include "UIUtil.h"
-
 #include "UIContainer.h"
+
+#include <EtCore/Content/AssetPointer.h>
+
+#include <Engine/Graphics/TextureData.h>
 
 
 class SpriteFont;
@@ -20,7 +23,7 @@ public:
 
 	virtual UIComponentType GetType() { return UIComponentType::INVALID; }
 
-	virtual void* GetResource() = 0;
+	virtual void const* GetResource() = 0;
 	virtual bool Draw( uint16 level ) = 0;
 
 	virtual vec4 GetColor() { return m_Color; }
@@ -34,15 +37,15 @@ protected:
 struct UISprite : public UIComponent
 {
 public:
-	UISprite(TextureData* tex);
+	UISprite(AssetPtr<TextureData> tex);
 
 	virtual UIComponentType GetType() { return UIComponentType::SPRITE; }
 
-	virtual void* GetResource() { return m_Texture; }
+	void const* GetResource() override { return m_Texture.get(); }
 
 	bool Draw( uint16 level ) override;
 private:
-	TextureData* m_Texture = nullptr;
+	AssetPtr<TextureData> m_Texture;
 };
 
 struct UIText : public UIComponent
@@ -52,7 +55,7 @@ public:
 
 	virtual UIComponentType GetType() { return UIComponentType::FONT; }
 
-	virtual void* GetResource() { return m_Font; }
+	void const* GetResource() override { return m_Font; }
 
 	bool Draw( uint16 level ) override;
 private:

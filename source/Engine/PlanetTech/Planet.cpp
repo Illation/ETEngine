@@ -7,9 +7,9 @@
 #include "Atmosphere.h"
 #include "Triangulator.h"
 
-#include <Engine/Content/TextureLoader.h>
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>
 #include <Engine/GraphicsHelper/RenderState.h>
@@ -34,14 +34,11 @@ void Planet::Initialize()
 	GetTransform()->SetRotation(GetTransform()->GetRotation() * quat(vec3(0.0f, 1.0f, 0.0f), etm::radians(270.f)));
 
 	//LoadTextures
-	TextureLoader* pTL = ContentManager::GetLoader<TextureLoader, TextureData>();
-	pTL->UseSrgb(true);
 	LoadPlanet();
 
-	m_pDetail1 = CONTENT::Load<TextureData>("Resources/Textures/PlanetTextures/MoonDetail1.jpg");
-	m_pDetail2 = CONTENT::Load<TextureData>("Resources/Textures/PlanetTextures/MoonDetail2.jpg");
-	m_pHeightDetail = CONTENT::Load<TextureData>("Resources/Textures/PlanetTextures/MoonHeightDetail1.jpg");
-	pTL->UseSrgb(false);
+	m_pDetail1 = ResourceManager::GetInstance()->GetAssetData<TextureData>("MoonDetail1.jpg"_hash);
+	m_pDetail2 = ResourceManager::GetInstance()->GetAssetData<TextureData>("MoonDetail2.jpg"_hash);
+	m_pHeightDetail = ResourceManager::GetInstance()->GetAssetData<TextureData>("MoonHeightDetail1.jpg"_hash);
 
 	m_pTriangulator->Init();
 	m_pPatch->Init();

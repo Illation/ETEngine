@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Moon.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/PlanetTech/Atmosphere.h>
 
@@ -18,8 +20,8 @@ Moon::~Moon()
 
 void Moon::LoadPlanet()
 {
-	m_pDiffuse = CONTENT::Load<TextureData>("Resources/Textures/PlanetTextures/moon8k.jpg");
-	m_pHeight = CONTENT::Load<TextureData>("Resources/Textures/PlanetTextures/MoonHeight.jpg");
+	m_pDiffuse = ResourceManager::GetInstance()->GetAssetData<TextureData>("moon8k.jpg"_hash);
+	m_pHeight = ResourceManager::GetInstance()->GetAssetData<TextureData>("MoonHeight.jpg"_hash);
 
 	m_pAtmosphere = new Atmosphere("Resources/atmo_earth.json");
 	m_pAtmosphere->Initialize();

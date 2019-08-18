@@ -48,25 +48,25 @@ void PhysicsTestScene::Initialize()
 	//Materials
 	//**************************
 	m_pFloorMat = new TexPBRMaterial(
-		"Resources/Textures/Mahogany/baseCol.png",
-		"Resources/Textures/Mahogany/rough.png",
-		"Resources/Textures/Bamboo/metal.png",
-		"Resources/Textures/Mahogany/ao.png",
-		"Resources/Textures/Mahogany/norm.png");
+		"mahogany_baseCol.png"_hash,
+		"mahogany_rough.png"_hash,
+		"bamboo_metal.png"_hash,
+		"mahogany_ao.png"_hash,
+		"mahogany_norm.png"_hash);
 	m_pFloorMat->SetSpecular(0.5f);
 	m_pBallMat = new TexPBRMaterial(
-		"Resources/Textures/GreasyMetal/baseCol.png",
-		"Resources/Textures/GreasyMetal/rough.png",
-		"Resources/Textures/GreasyMetal/metal.png",
-		"Resources/Textures/Mahogany/ao.png",
-		"Resources/Textures/GreasyMetal/norm.png");
+		"greasyMetal_baseCol.png"_hash,
+		"greasyMetal_rough.png"_hash,
+		"greasyMetal_metal.png"_hash,
+		"mahogany_ao.png"_hash,
+		"greasyMetal_norm.png"_hash);
 	m_pBallMat->SetSpecular(0.5f);
 	m_pBlockMat = new TexPBRMaterial(
-		"Resources/Textures/Bamboo/baseCol.png",
-		"Resources/Textures/Bamboo/rough.png",
-		"Resources/Textures/Bamboo/metal.png",
-		"Resources/Textures/Bamboo/ao.png",
-		"Resources/Textures/Bamboo/norm.png");
+		"bamboo_baseCol.png"_hash,
+		"bamboo_rough.png"_hash,
+		"bamboo_metal.png"_hash,
+		"bamboo_ao.png"_hash,
+		"bamboo_norm.png"_hash);
 	m_pBlockMat->SetSpecular(0.5f);
 
 	m_pLightMat = new EmissiveMaterial(vec3(500));

@@ -48,7 +48,7 @@ void StarField::Initialize()
 	}
 	
 	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdStarField.glsl"_hash);
-	m_pSprite = ContentManager::Load<TextureData>("Resources/Textures/starSprite.png");
+	m_pSprite = ResourceManager::GetInstance()->GetAssetData<TextureData>("starSprite.png"_hash);
 
 	STATE->SetShader(m_pShader.get());
 	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexture"), 0);

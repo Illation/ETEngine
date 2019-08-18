@@ -1,6 +1,9 @@
 #pragma once
 
-class TextureData;
+#include "TextureData.h"
+
+#include <EtCore/Content/AssetPointer.h>
+
 class TextRenderer;
 
 struct TextCache
@@ -50,7 +53,7 @@ public:
 	static const int32 MIN_CHAR_ID = 0;
 	static const int32 CHAR_COUNT = MAX_CHAR_ID - MIN_CHAR_ID + 1;
 
-	TextureData* GetAtlas() { return m_pTexture; }
+	TextureData const* GetAtlas() const { return m_pTexture; }
 
 	int16 GetFontSize() { return m_FontSize; }
 
@@ -72,10 +75,9 @@ private:
 	int32 m_TextureWidth;
 	int32 m_TextureHeight;
 	int32 m_BufferStart, m_BufferSize;
-	TextureData *m_pTexture;
+	TextureData const* m_pTexture;
+	AssetPtr<TextureData> m_TextureAsset;
 	bool m_IsAddedToRenderer;
-
-	bool m_IsCachedFont = false;
 
 private:
 	// -------------------------

@@ -27,7 +27,7 @@ private:
 	std::string m_DataFile;
 
 	AssetPtr<ShaderData> m_pShader;
-	TextureData* m_pSprite = nullptr;
+	AssetPtr<TextureData> m_pSprite;
 
 	GLuint m_VAO = 0;
 	GLuint m_VBO = 0;

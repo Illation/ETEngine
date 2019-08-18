@@ -5,7 +5,6 @@
 
 #include <Demo/Planets/Moon.h>
 #include <Demo/Planets/Earth.h>
-#include <Demo/Materials/TexPBRMaterial.h>
 #include <Demo/Materials/EmissiveMaterial.h>
 
 #include <Engine/Graphics/FrameBuffer.h>

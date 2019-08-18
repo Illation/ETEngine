@@ -1,48 +1,41 @@
 #include "stdafx.h"
 #include "TexPBRMaterial.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/MeshFilter.h>
-#include <Engine/Content/TextureLoader.h>
 
 
-TexPBRMaterial::TexPBRMaterial(std::string bcPath, std::string roughPath,
-	std::string metalPath, std::string aoPath, std::string normPath) :
-	Material("Shaders/DefPBRMetShader.glsl"),
-	m_TexBCPath(bcPath),
-	m_TexRoughPath(roughPath),
-	m_TexMetalPath(metalPath),
-	m_TexAOPath(aoPath),
-	m_TexNormPath(normPath)
+TexPBRMaterial::TexPBRMaterial(T_Hash const bcId, T_Hash const roughId, T_Hash const metalId, T_Hash const aoId, T_Hash const normId) 
+	: Material("Shaders/DefPBRMetShader.glsl")
+	, m_BaseColorId(bcId)
+	, m_RoughnessId(roughId)
+	, m_MetalnessId(metalId)
+	, m_AoId(aoId)
+	, m_NormalId(normId)
 {
 	m_LayoutFlags = VertexFlags::POSITION | VertexFlags::NORMAL | VertexFlags::TANGENT | VertexFlags::TEXCOORD;
-}
-TexPBRMaterial::~TexPBRMaterial()
-{
 }
 
 void TexPBRMaterial::LoadTextures()
 {
-	TextureLoader* pTL = ContentManager::GetLoader<TextureLoader, TextureData>();
 	STATE->SetShader(m_Shader.get());
 	
-	pTL->UseSrgb(true);
-	m_TexBaseColor = ContentManager::Load<TextureData>(m_TexBCPath);
+	m_TexBaseColor = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_BaseColorId);
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texBaseColor"), 0);
 
-	m_TexRoughness = ContentManager::Load<TextureData>(m_TexRoughPath);
+	m_TexRoughness = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_RoughnessId);
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texRoughness"), 1);
 
-	pTL->UseSrgb(false);
-
-	m_TexMetalness = ContentManager::Load<TextureData>(m_TexMetalPath);
+	m_TexMetalness = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_MetalnessId);
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texMetalness"), 2);
 
-	m_TexAO = ContentManager::Load<TextureData>(m_TexAOPath);
+	m_TexAO = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_AoId);
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texAO"), 3);
 
-	m_TexNorm = ContentManager::Load<TextureData>(m_TexNormPath);
+	m_TexNorm = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_NormalId);
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texNormal"), 4);
 
 	m_OutdatedTextureData = false;
@@ -56,7 +49,10 @@ void TexPBRMaterial::AccessShaderAttributes()
 void TexPBRMaterial::UploadDerivedVariables()
 {
 	//Bind active textures
-	if (m_OutdatedTextureData)LoadTextures();
+	if (m_OutdatedTextureData)
+	{
+		LoadTextures();
+	}
 
 	STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_TexBaseColor->GetHandle());
 	STATE->LazyBindTexture(1, GL_TEXTURE_2D, m_TexRoughness->GetHandle());

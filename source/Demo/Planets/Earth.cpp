@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Earth.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Graphics/TextureData.h>
 
 
@@ -14,6 +16,6 @@ Earth::~Earth()
 }
 void Earth::LoadPlanet()
 {
-	m_pDiffuse = CONTENT::Load<TextureData>("Resources/Textures/PlanetTextures/Earth8k.jpg");
-	m_pHeight = CONTENT::Load<TextureData>("Resources/Textures/PlanetTextures/EarthHeight8k.jpg");
+	m_pDiffuse = ResourceManager::GetInstance()->GetAssetData<TextureData>("Earth8k.jpg"_hash);
+	m_pHeight = ResourceManager::GetInstance()->GetAssetData<TextureData>("EarthHeight8k.jpg"_hash);
 }

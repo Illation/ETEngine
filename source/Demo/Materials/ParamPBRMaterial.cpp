@@ -3,7 +3,6 @@
 
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/MeshFilter.h>
-#include <Engine/Content/TextureLoader.h>
 
 
 ParamPBRMaterial::ParamPBRMaterial(vec3 baseCol, float roughness, float metal) :

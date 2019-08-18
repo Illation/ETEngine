@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Editor.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Base/TickOrder.h>
 #include <Engine/UI/UIViewport.h>
 #include <Engine/UI/UIContainer.h>
@@ -48,11 +50,11 @@ void Editor::Initialize()
 					new UIText("and another", m_pEditorFont)
 					//, ivec4(5), vec4(vec3(0.35f), 1))
 				, UIDynamicBox::Positioning::DYNAMIC);
-			pDynBox->AddChild(new UISprite(
-				ContentManager::Load<TextureData>("Resources/Textures/starSprite.png")), UIDynamicBox::Positioning::DYNAMIC);
+			pDynBox->AddChild(new UISprite(ResourceManager::GetInstance()->GetAssetData<TextureData>("starSprite.png"_hash)), 
+				UIDynamicBox::Positioning::DYNAMIC);
 			pDynBox->AddChild(new UIText("and another", m_pEditorFont), UIDynamicBox::Positioning::DYNAMIC);
-			pDynBox->AddChild(new UISprite(
-				ContentManager::Load<TextureData>("Resources/Textures/sample.png")), UIDynamicBox::Positioning::DYNAMIC);
+			pDynBox->AddChild(new UISprite( ResourceManager::GetInstance()->GetAssetData<TextureData>("sample_texture.png"_hash)), 
+				UIDynamicBox::Positioning::DYNAMIC);
 	m_pToolbar->SetChild(pDynBox);
 
 	CalculateViewportSize(WINDOW.EditorDimensions);

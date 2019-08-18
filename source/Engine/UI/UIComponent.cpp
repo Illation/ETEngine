@@ -3,33 +3,33 @@
 
 #include <Engine/GraphicsHelper/SpriteRenderer.h>
 #include <Engine/GraphicsHelper/TextRenderer.h>
-#include <Engine/Graphics/TextureData.h>
 
 
-UIComponent::UIComponent( ivec2 size, ivec2 localPos ) :UIFixedContainer()
+UIComponent::UIComponent( ivec2 size, ivec2 localPos ) 
+	: UIFixedContainer()
 {
 	m_Rect.size = size; 
 	m_Rect.pos = localPos;
 }
 
-UISprite::UISprite(TextureData* tex) 
-	:m_Texture(tex), 
-	UIComponent(tex->GetResolution(), ivec2(0))
+UISprite::UISprite(AssetPtr<TextureData> tex)
+	: UIComponent(tex->GetResolution(), ivec2(0))
+	, m_Texture(tex)
 { }
 
 bool UISprite::Draw( uint16 level ) 
 {
 	UNUSED(level);
-	SpriteRenderer::GetInstance()->Draw( m_Texture, etm::vecCast<float>(m_WorldPos+m_Rect.pos), m_Color, vec2( 0 ),
+	SpriteRenderer::GetInstance()->Draw(m_Texture.get(), etm::vecCast<float>(m_WorldPos+m_Rect.pos), m_Color, vec2( 0 ),
 		etm::vecCast<float>(m_Rect.size), 0, 1, SpriteRenderer::E_ScalingMode::Pixel );
 
 	return false;
 }
 
 UIText::UIText(std::string text, SpriteFont* pFont)
-	:m_Font(pFont),
-	m_Text(text),
-	UIComponent(TextRenderer::GetInstance()->GetTextSize(text, pFont), ivec2(0))
+	: UIComponent(TextRenderer::GetInstance()->GetTextSize(text, pFont), ivec2(0))
+	, m_Font(pFont)
+	, m_Text(text)
 {
 }
 

@@ -1,41 +1,42 @@
 #include "stdafx.h"
 #include "SpriteComponent.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/GraphicsHelper/SpriteRenderer.h>
 #include <Engine/Graphics/TextureData.h>
 
 
-SpriteComponent::SpriteComponent( const std::string& spriteAsset, vec2 pivot, vec4 color ) :
-	m_SpriteAsset( spriteAsset ),
-	m_Pivot( pivot ),
-	m_Color( color ),
-	m_pTexture( nullptr )
-{
-
-}
-
-SpriteComponent::~SpriteComponent()
+SpriteComponent::SpriteComponent(T_Hash const spriteAsset, vec2 const& pivot, vec4 const& color) 
+	: m_SpriteAsset(spriteAsset)
+	, m_Pivot(pivot)
+	, m_Color(color)
 {}
 
 void SpriteComponent::Initialize()
 {
-	m_pTexture = ContentManager::Load<TextureData>( m_SpriteAsset );
+	m_Texture = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_SpriteAsset);
 }
 
-void SpriteComponent::SetTexture( const std::string& spriteAsset )
+void SpriteComponent::SetTexture(T_Hash const spriteAsset)
 {
 	m_SpriteAsset = spriteAsset;
-	m_pTexture = ContentManager::Load<TextureData>( m_SpriteAsset );
+	m_Texture = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_SpriteAsset);
 }
 
 void SpriteComponent::Draw()
 {
-	if(!m_pTexture)
+	if (m_Texture == nullptr)
+	{
 		return;
+	}
 
-	vec3 pos = TRANSFORM->GetPosition();
-	vec3 scale = TRANSFORM->GetScale();
-	SpriteRenderer::GetInstance()->Draw( m_pTexture, vec2( TRANSFORM->GetPosition().xy ),
-										 m_Color, m_Pivot, vec2( TRANSFORM->GetScale().xy ),
-										 TRANSFORM->GetRotation().Roll(), pos.z, SpriteRenderer::E_ScalingMode::Texture );
+	SpriteRenderer::GetInstance()->Draw(m_Texture.get(), 
+		TRANSFORM->GetPosition().xy, 
+		m_Color, 
+		m_Pivot, 
+		TRANSFORM->GetScale().xy, 
+		TRANSFORM->GetRotation().Roll(), 
+		TRANSFORM->GetPosition().z, 
+		SpriteRenderer::E_ScalingMode::Texture);
 }

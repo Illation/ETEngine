@@ -250,7 +250,6 @@ void RenderPipeline::OnResize()
 void RenderPipeline::ShowSplashScreen()
 {
 	m_SplashBackgroundTex = ResourceManager::GetInstance()->GetAssetData<TextureData>("Splashscreen.jpg"_hash);
-	//TextureData* pBGTex = ContentManager::Load<TextureData>("Resources/Textures/Splashscreen.jpg");
 	SpriteFont* pTitleFont = ContentManager::Load<SpriteFont>("Resources/Fonts/roboto2014/Roboto-Bold.ttf");
 	SpriteFont* pRegFont = ContentManager::Load<SpriteFont>("Resources/Fonts/roboto2014/RobotoCondensed-Regular.ttf");
 

@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "SpriteFont.h"
 
-#include "TextureData.h"
-
 
 SpriteFont::SpriteFont() :
 	m_pTexture(nullptr),
@@ -27,7 +25,7 @@ SpriteFont::SpriteFont() :
 SpriteFont::~SpriteFont()
 {
 	//Cached fonts have their textures loaded through the content manager, so don't need to manage their memory
-	if (!m_IsCachedFont)
+	if (m_TextureAsset == nullptr)
 	{
 		SafeDelete(m_pTexture);
 	}

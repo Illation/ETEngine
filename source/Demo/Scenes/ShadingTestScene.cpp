@@ -43,11 +43,11 @@ void ShadingTestScene::Initialize()
 	//Materials
 	//**************************
 	m_pMat = new TexPBRMaterial(
-		"Resources/Textures/BaseColor.png",
-		"Resources/Textures/Roughness.png",
-		"Resources/Textures/Metalness.png",
-		"Resources/Textures/AOMap.png",
-		"Resources/Textures/NormalMap.png");
+		"kabuto_baseColor.png"_hash,
+		"kabuto_roughness.png"_hash,
+		"kabuto_metal.png"_hash,
+		"kabuto_ao.png"_hash,
+		"kabuto_normal.png"_hash);
 	m_pMat->SetSpecular(0.5f);
 
 	m_pStandMat = new ParamPBRMaterial(vec3(0.95f, 0.95f, 0.5f), 0.2f, 0);

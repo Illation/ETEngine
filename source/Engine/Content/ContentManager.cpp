@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "ContentManager.h"
 
-#include "TextureLoader.h"
 #include "MeshFilterLoader.h"
 #include "HdrLoader.h"
 #include "FontLoader.h"
@@ -39,7 +38,6 @@ void ContentManager::Initialize()
 	if(!m_IsInitialized)
 	{
 		m_IsInitialized = true;
-		AddLoader(new TextureLoader());
 		AddLoader(new MeshFilterLoader());
 		AddLoader(new HdrLoader());
 		AddLoader(new FontLoader());

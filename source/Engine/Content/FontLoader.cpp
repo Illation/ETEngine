@@ -4,10 +4,9 @@
 #include <ft2build.h>
 #include <freetype/freetype.h>
 
-#include "TextureLoader.h"
-
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/BinaryReader.h>
+#include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Graphics/TextureData.h>
@@ -210,9 +209,11 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	params.wrapS = E_TextureWrapMode::ClampToEdge;
 	params.wrapT = E_TextureWrapMode::ClampToEdge;
 	
-	pFont->m_pTexture = new TextureData(pFont->m_TextureWidth, pFont->m_TextureHeight, GL_RGBA16F, GL_RGBA, GL_FLOAT);
-	pFont->m_pTexture->Build();
-	pFont->m_pTexture->SetParameters(params);
+	TextureData* const texture = new TextureData(pFont->m_TextureWidth, pFont->m_TextureHeight, GL_RGBA16F, GL_RGBA, GL_FLOAT);
+	texture->Build();
+	texture->SetParameters(params);
+	pFont->m_pTexture = texture;
+
 	GLuint captureFBO, captureRBO;
 
 	glGenFramebuffers(1, &captureFBO);
@@ -382,10 +383,8 @@ SpriteFont* FontLoader::LoadFnt(const std::vector<uint8>& binaryContent, const s
 	if (pn.size() == 0) LOG("SpriteFont::Load > SpriteFont(.fnt): Invalid Font Sprite [Empty]", Warning);
 	auto filepath = assetFile.substr(0, assetFile.rfind('/') + 1);
 
-	TextureLoader* pTL = ContentManager::GetLoader<TextureLoader, TextureData>();
-	pTL->ForceResolution(true);
-	pFont->m_pTexture = ContentManager::Load<TextureData>(filepath + pn);
-	pTL->ForceResolution(false);
+	pFont->m_TextureAsset = ResourceManager::GetInstance()->GetAssetData<TextureData>(GetHash(FileUtil::ExtractName(filepath + pn)));
+	pFont->m_pTexture = pFont->m_TextureAsset.get();
 	pBinReader->SetBufferPosition(pos + Block2Size);
 	//**********
 	// BLOCK 3 *
@@ -432,8 +431,6 @@ SpriteFont* FontLoader::LoadFnt(const std::vector<uint8>& binaryContent, const s
 		}
 	}
 	delete pBinReader;
-
-	pFont->m_IsCachedFont = true;
 
 	return pFont;
 }

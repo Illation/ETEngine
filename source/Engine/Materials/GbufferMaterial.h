@@ -7,26 +7,11 @@ class GbufferMaterial : public Material
 {
 public:
 	GbufferMaterial();
-	~GbufferMaterial();
+	virtual ~GbufferMaterial() = default;
 
-	void SetDiffuseTexture(std::string path) 
-	{ 
-		m_TexDiffusePath = path; 
-		m_UseDifTex = true;
-		m_OutdatedTextureData = true;
-	}
-	void SetNormalTexture(std::string path) 
-	{
-		m_TexNormPath = path; 
-		m_UseNormTex = true;
-		m_OutdatedTextureData = true;
-	}
-	void SetSpecularTexture(std::string path)
-	{
-		m_TexSpecPath = path;
-		m_UseSpecTex = true;
-		m_OutdatedTextureData = true;
-	}
+	void SetDiffuseTexture(T_Hash const id);
+	void SetNormalTexture(T_Hash const id);
+	void SetSpecularTexture(T_Hash const id);
 
 	void SetDifCol(vec3 col) { m_DiffuseColor = col; }
 	void SetSpecCol(vec3 col) { m_SpecularColor = col; }
@@ -40,19 +25,16 @@ private:
 private:
 	//Texture
 	GLint m_uUseDifTex;
-	bool m_UseDifTex = false;
-	TextureData* m_TexDiffuse = nullptr;
-	std::string m_TexDiffusePath;
+	AssetPtr<TextureData> m_TexDiffuse;
+	T_Hash m_TexDiffuseAsset = 0u;
 
 	GLint m_uUseNormTex;
-	bool m_UseNormTex = false;
-	TextureData* m_TexNorm = nullptr;
-	std::string m_TexNormPath;
+	AssetPtr<TextureData> m_TexNorm;
+	T_Hash m_TexNormAsset = 0u;
 
 	GLint m_uUseSpecTex;
-	bool m_UseSpecTex = false;
-	TextureData* m_TexSpec = nullptr;
-	std::string m_TexSpecPath;
+	AssetPtr<TextureData> m_TexSpec;
+	T_Hash m_TexSpecAsset = 0u;
 
 	bool m_OutdatedTextureData = false;
 
