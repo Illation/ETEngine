@@ -14,10 +14,6 @@ macro(setupConfigurations)
 		CACHE STRING "Available build-types: Debug, DebugEditor, Develop, DevelopEditor and Shipping" FORCE)
 		
 	# copy settings from existing build types
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}" )
-	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
-	set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG}")
-
 	set(CMAKE_CXX_FLAGS_DEBUGEDITOR "${CMAKE_CXX_FLAGS_DEBUG}" )
 	set(CMAKE_C_FLAGS_DEBUGEDITOR "${CMAKE_C_FLAGS_DEBUG}")
 	set(CMAKE_EXE_LINKER_FLAGS_DEBUGEDITOR "${CMAKE_EXE_LINKER_FLAGS_DEBUG}")
@@ -117,8 +113,8 @@ function(targetCompileOptions _target)
 
 	target_compile_options(
 		${_target} PRIVATE 
-		"$<$<CONFIG:Debug>:/DET_DEBUG>"
-		"$<$<CONFIG:DebugEditor>:/DET_DEBUG /DEDITOR>"
+		"$<$<CONFIG:Debug>:/D_DEBUG /DET_DEBUG>"
+		"$<$<CONFIG:DebugEditor>:/D_DEBUG /DET_DEBUG /DEDITOR>"
 		"$<$<CONFIG:Develop>:/DET_DEVELOP>"
 		"$<$<CONFIG:DevelopEditor>:/DET_DEVELOP /DEDITOR>"
 		"$<$<CONFIG:Shipping>:/DET_SHIPPING>"

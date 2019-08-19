@@ -9,8 +9,8 @@ public:
 		m_Height(height),m_NumMipMaps(numMipMaps){}
 	~CubeMap(){ glDeleteTextures(1, &m_Handle); }
 
-	GLuint GetHandle() { return m_Handle; }
-	int32 GetNumMipMaps() { return m_NumMipMaps; }
+	GLuint GetHandle() const { return m_Handle; }
+	int32 GetNumMipMaps() const { return m_NumMipMaps; }
 
 private:
 	GLuint m_Handle;
