@@ -199,8 +199,8 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 		characters[c] = metric;
 	}
 
-	pFont->m_TextureWidth = std::max(std::max(maxPos[0].x, maxPos[1].x), std::max(maxPos[2].x, maxPos[3].x));
-	pFont->m_TextureHeight = std::max(std::max(maxPos[0].y, maxPos[1].y), std::max(maxPos[2].y, maxPos[3].y));
+	int32 const texWidth = std::max(std::max(maxPos[0].x, maxPos[1].x), std::max(maxPos[2].x, maxPos[3].x));
+	int32 const texHeight = std::max(std::max(maxPos[0].y, maxPos[1].y), std::max(maxPos[2].y, maxPos[3].y));
 
 	//Setup rendering
 	TextureParameters params(false);
@@ -209,7 +209,7 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	params.wrapS = E_TextureWrapMode::ClampToEdge;
 	params.wrapT = E_TextureWrapMode::ClampToEdge;
 	
-	TextureData* const texture = new TextureData(pFont->m_TextureWidth, pFont->m_TextureHeight, GL_RGBA16F, GL_RGBA, GL_FLOAT);
+	TextureData* const texture = new TextureData(texWidth, texHeight, GL_RGBA16F, GL_RGBA, GL_FLOAT);
 	texture->Build();
 	texture->SetParameters(params);
 	pFont->m_pTexture = texture;
@@ -222,11 +222,11 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 	STATE->BindFramebuffer(captureFBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
 
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, pFont->m_TextureWidth, pFont->m_TextureHeight);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, texWidth, texHeight);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pFont->m_pTexture->GetHandle(), 0);
 
-	STATE->SetViewport(ivec2(0), ivec2(pFont->m_TextureWidth, pFont->m_TextureHeight));
+	STATE->SetViewport(ivec2(0), ivec2(texWidth, texHeight));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	AssetPtr<ShaderData> computeSdf = ResourceManager::GetInstance()->GetAssetData<ShaderData>("ComputeGlyphSDF.glsl"_hash);
@@ -283,7 +283,7 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 		delete pTexture;
 
 		//modify texture coordinates after rendering sprites
-		metric->TexCoord = metric->TexCoord / vec2((float)pFont->m_TextureWidth, (float)pFont->m_TextureHeight);
+		metric->TexCoord = metric->TexCoord / vec2(static_cast<float>(texWidth), static_cast<float>(texHeight));
 	}
 
 	//Cleanup
@@ -362,8 +362,8 @@ SpriteFont* FontLoader::LoadFnt(const std::vector<uint8>& binaryContent, const s
 	auto Block1Size = pBinReader->Read<int32>();
 	pos = pBinReader->GetBufferPosition();
 	pBinReader->SetBufferPosition(pos + 4);
-	pFont->m_TextureWidth = pBinReader->Read<uint16>();
-	pFont->m_TextureHeight = pBinReader->Read<uint16>();
+	uint16 const texWidth = pBinReader->Read<uint16>();
+	uint16 const texHeight = pBinReader->Read<uint16>();
 	auto pagecount = pBinReader->Read<uint16>();
 	if (pagecount > 1) LOG("SpriteFont::Load > SpriteFont(.fnt): Only one texture per font allowed", Warning);
 	pBinReader->SetBufferPosition(pos + Block1Size);
@@ -425,8 +425,7 @@ SpriteFont* FontLoader::LoadFnt(const std::vector<uint8>& binaryContent, const s
 			case 8: metric->Channel = 3; break;
 			default: metric->Channel = 4; break;
 			}
-			metric->TexCoord = vec2((float)xPos / (float)pFont->m_TextureWidth
-				, (float)yPos / (float)pFont->m_TextureHeight);
+			metric->TexCoord = vec2(static_cast<float>(xPos) / static_cast<float>(texWidth), static_cast<float>(yPos) / static_cast<float>(texHeight));
 			pBinReader->SetBufferPosition(posChar + 20);
 		}
 	}
