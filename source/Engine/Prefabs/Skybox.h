@@ -8,12 +8,12 @@ class CubeMap;
 class Skybox : public Entity
 {
 public:
-	Skybox(std::string assetFile);
-	~Skybox();
+	Skybox(T_Hash const assetId);
+	virtual ~Skybox();
 
-	//CubeMap* GetCubeMap();
-	HDRMap* GetHDRMap();
-	float GetRoughness();
+	EnvironmentMap const* GetHDRMap() const;
+	float GetRoughness() const;
+
 	void SetRoughness(float r);
 
 protected:
@@ -25,7 +25,7 @@ protected:
 private:
 
 	SkyboxMaterial* m_pMaterial = nullptr;
-	std::string m_AssetFile;
+	T_Hash m_AssetId;
 private:
 	// -------------------------
 	// Disabling default copy constructor and default 

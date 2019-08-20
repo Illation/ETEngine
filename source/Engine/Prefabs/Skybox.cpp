@@ -5,9 +5,10 @@
 #include <Engine/Materials/SkyboxMaterial.h>
 
 
-Skybox::Skybox(std::string assetFile):m_AssetFile(assetFile)
-{
-}
+Skybox::Skybox(T_Hash const assetId)
+	: m_AssetId(assetId)
+{}
+
 Skybox::~Skybox()
 {
 	SafeDelete(m_pMaterial);
@@ -16,7 +17,8 @@ Skybox::~Skybox()
 void Skybox::Initialize()
 {
 	//Add them componentz
-	m_pMaterial = new SkyboxMaterial(m_AssetFile);
+	m_pMaterial = new SkyboxMaterial(m_AssetId);
+
 	auto pModel = new ModelComponent("Resources/Models/cube.dae");
 	pModel->SetCullMode(ModelComponent::CullMode::DISABLED);//Always draw
 	pModel->SetMaterial(m_pMaterial);
@@ -37,10 +39,17 @@ void Skybox::DrawForward()
 	glDepthFunc(GL_LEQUAL);
 }
 
-HDRMap* Skybox::GetHDRMap()
+EnvironmentMap const* Skybox::GetHDRMap() const
 {
 	return m_pMaterial->GetHDRMap();
 }
 
-float Skybox::GetRoughness() { return m_pMaterial->GetRoughness(); }
-void Skybox::SetRoughness(float r) { m_pMaterial->SetRoughness(r); }
+float Skybox::GetRoughness() const
+{ 
+	return m_pMaterial->GetRoughness(); 
+}
+
+void Skybox::SetRoughness(float r) 
+{ 
+	m_pMaterial->SetRoughness(r); 
+}

@@ -55,7 +55,7 @@ void ShadingTestScene::Initialize()
 
 	//Skybox
 	//**************************
-	SetSkybox("Resources/Textures/Ice_Lake_Ref.hdr");
+	SetSkybox("Ice_Lake_Ref.hdr"_hash);
 
 	//Models
 	//*************************

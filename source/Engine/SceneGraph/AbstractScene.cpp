@@ -172,16 +172,16 @@ const PostProcessingSettings& AbstractScene::GetPostProcessingSettings() const
 	return m_PostProcessingSettings;
 }
 
-void AbstractScene::SetSkybox(std::string assetFile)
+void AbstractScene::SetSkybox(T_Hash const assetId)
 {
 	m_UseSkyBox = true;
 	SafeDelete(m_pSkybox);
-	m_pSkybox = new Skybox(assetFile);
+	m_pSkybox = new Skybox(assetId);
 	m_pSkybox->RootInitialize();
 	m_pSkybox->SetRoughness(0.15f);
 }
 
-HDRMap* AbstractScene::GetEnvironmentMap()
+EnvironmentMap const* AbstractScene::GetEnvironmentMap() const
 {
 	if (m_UseSkyBox)
 	{

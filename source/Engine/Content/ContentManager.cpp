@@ -2,7 +2,6 @@
 #include "ContentManager.h"
 
 #include "MeshFilterLoader.h"
-#include "HdrLoader.h"
 #include "FontLoader.h"
 
 
@@ -39,7 +38,6 @@ void ContentManager::Initialize()
 	{
 		m_IsInitialized = true;
 		AddLoader(new MeshFilterLoader());
-		AddLoader(new HdrLoader());
 		AddLoader(new FontLoader());
 	}
 }

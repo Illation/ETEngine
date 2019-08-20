@@ -8,11 +8,10 @@ class HDRMapas;
 class SkyboxMaterial : public Material
 {
 public:
-	SkyboxMaterial(std::string assetFile);
-	~SkyboxMaterial();
+	SkyboxMaterial(T_Hash const assetId);
+	virtual ~SkyboxMaterial();
 
-	CubeMap* GetCubeMap() { return m_pMap; }
-	HDRMap* GetHDRMap() { return m_pHDRMap; }
+	EnvironmentMap const* GetHDRMap() const { return m_EnvironmentMap.get(); }
 	float GetRoughness() { return m_Roughness; }
 	void SetRoughness(float r) { m_Roughness = r; }
 
@@ -23,9 +22,8 @@ private:
 	void UploadDerivedVariables();
 
 private:
-	CubeMap *m_pMap = nullptr;
-	HDRMap *m_pHDRMap = nullptr;
-	std::string m_AssetFile;
+	AssetPtr<EnvironmentMap> m_EnvironmentMap;
+	T_Hash m_AssetId;
 
 	GLuint m_uNumMipMaps;
 	GLuint m_uRoughness;

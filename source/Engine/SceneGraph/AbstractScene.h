@@ -1,4 +1,7 @@
 #pragma once
+#include <EtCore/Helper/Hash.h>
+
+#include <Engine/Graphics/EnvironmentMap.h>
 #include <Engine/Graphics/PostProcessingSettings.h>
 
 
@@ -13,9 +16,8 @@ class Gbuffer;
 class PostProcessingRenderer;
 class AudioListenerComponent;
 class Skybox;
-class CubeMap;
-class HDRMap;
 class PhysicsWorld;
+
 
 class AbstractScene
 {
@@ -26,18 +28,17 @@ public:
 	void AddEntity(Entity* pEntity);
 	void RemoveEntity(Entity* pEntity, bool deleteEntity = true);
 	void SetActiveCamera(CameraComponent* pCamera);
-	void SetSkybox(std::string assetFile);
-	HDRMap* GetEnvironmentMap();
+	void SetSkybox(T_Hash const assetId);
+	void SetAudioListener(AudioListenerComponent* val) { m_AudioListener = val; }
+
+	EnvironmentMap const* GetEnvironmentMap() const;
 	Skybox* GetSkybox() { return m_pSkybox; }
 	std::vector<LightComponent*> GetLights();
 	const PostProcessingSettings& GetPostProcessingSettings() const;
-
 	bool SkyboxEnabled() { return m_UseSkyBox; }
-
 	PhysicsWorld* GetPhysicsWorld() const { return m_pPhysicsWorld; }
-
 	AudioListenerComponent* GetAudioListener() const { return m_AudioListener; }
-	void SetAudioListener(AudioListenerComponent* val) { m_AudioListener = val; }
+
 protected:
 
 	virtual void Initialize() = 0;

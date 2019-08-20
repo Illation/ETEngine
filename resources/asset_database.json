@@ -1185,6 +1185,32 @@
             }
           }
         ]
+      },
+      {
+        "cache": [
+          {
+            "environment map asset": {
+              "name": "Ice_Lake_Ref.hdr",
+              "path": "assets/Demo/Textures/EnvironmentMaps/",
+              "package": "content1",
+              "references": [],
+              "Cubemap Resolution": 1024,
+              "Irradiance Resolution": 32,
+              "Radiance Resolution": 1024
+            }
+          },
+          {
+            "environment map asset": {
+              "name": "Milkyway_small.hdr",
+              "path": "assets/Demo/Textures/EnvironmentMaps/",
+              "package": "content1",
+              "references": [],
+              "Cubemap Resolution": 1024,
+              "Irradiance Resolution": 32,
+              "Radiance Resolution": 1024
+            }
+          }
+        ]
       }
     ]
   }

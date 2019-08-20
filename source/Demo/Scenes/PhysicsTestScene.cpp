@@ -74,7 +74,8 @@ void PhysicsTestScene::Initialize()
 	GetPhysicsWorld()->GetWorld()->setGravity(ToBtVec3(vec3(0, -9.81f, 0)*0.1f));
 	m_pSphereShape = PhysicsManager::GetInstance()->CreateSphereShape(m_SphereSize);
 
-	SetSkybox("Resources/Textures/Ice_Lake_Ref.hdr");
+	SetSkybox("Ice_Lake_Ref.hdr"_hash);
+
 	//Models
 	//*************************
 	//Floor
