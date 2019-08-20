@@ -37,10 +37,6 @@ void Skybox::DrawForward()
 	glDepthFunc(GL_LEQUAL);
 }
 
-//CubeMap* Skybox::GetCubeMap()
-//{
-//	return m_pMaterial->GetCubeMap();
-//}
 HDRMap* Skybox::GetHDRMap()
 {
 	return m_pMaterial->GetHDRMap();

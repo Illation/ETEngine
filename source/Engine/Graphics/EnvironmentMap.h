@@ -1,44 +1,15 @@
 #pragma once
+#include "TextureData.h"
 
-class CubeMap
-{
-public:
-	CubeMap(GLuint handle, int32 width,
-		int32 height, int32 numMipMaps = 0) :
-		m_Handle(handle),m_Width(width),
-		m_Height(height),m_NumMipMaps(numMipMaps){}
-	~CubeMap(){ glDeleteTextures(1, &m_Handle); }
-
-	GLuint GetHandle() const { return m_Handle; }
-	int32 GetNumMipMaps() const { return m_NumMipMaps; }
-
-private:
-	GLuint m_Handle;
-	int32 m_Width;
-	int32 m_Height;
-	int32 m_NumMipMaps = 0;
-};
-
-CubeMap* EquirectangularToCubeMap(TextureData* pEqui, int32 resolution);
+TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 const resolution);
 mat4 CubeCaptureProjection();
 std::vector<mat4> CubeCaptureViews();
 
-class HDRMap
+class HDRMap final
 {
 public:
-	HDRMap(CubeMap* map, CubeMap* irradiance, CubeMap* radiance, int32 width, int32 height, int32 numMipMaps)
-		:m_Map(map)
-		, m_Irradiance(irradiance)
-		, m_Radiance(radiance)
-		,m_Width(width)
-		,m_Height(height)
-		,m_NumMipMaps(numMipMaps){}
-	~HDRMap()
-	{ 
-		delete m_Map;
-		delete m_Irradiance;
-		delete m_Radiance;
-	}
+	HDRMap(TextureData* map, TextureData* irradiance, TextureData* radiance, int32 width, int32 height, int32 numMipMaps);
+	~HDRMap();
 
 	GLuint GetHandle() { return m_Map->GetHandle(); }
 	GLuint GetIrradianceHandle() { return m_Irradiance->GetHandle(); }
@@ -47,9 +18,9 @@ public:
 	int32 GetNumMipMaps() { return m_NumMipMaps; }
 
 private:
-	CubeMap* m_Map = nullptr;
-	CubeMap* m_Irradiance;
-	CubeMap* m_Radiance;
+	TextureData* m_Map = nullptr;
+	TextureData* m_Irradiance = nullptr;
+	TextureData* m_Radiance = nullptr;
 	int32 m_Width;
 	int32 m_Height;
 	int32 m_NumMipMaps = 0;

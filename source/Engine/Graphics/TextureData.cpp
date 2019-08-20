@@ -12,27 +12,29 @@
 //---------------------------------
 // TextureData::c-tor
 //
-// Create the texture object from an existing GPU resource
-//
-TextureData::TextureData(GLuint handle, int32 width, int32 height, int32 depth):
-	m_Handle(handle),
-	m_Width(width),
-	m_Height(height),
-	m_Depth( depth )
-{ }
-
-//---------------------------------
-// TextureData::c-tor
-//
 // Create the texture and generate a new GPU texture resource
 //
-TextureData::TextureData( int32 width, int32 height, int32 internalFormat, GLenum format, GLenum type, int32 depth ) :
-	m_Width( width ),
-	m_Height( height ),
-	m_InternalFormat( internalFormat ),
-	m_Format( format ),
-	m_Type( type ), 
-	m_Depth( depth )
+TextureData::TextureData(int32 const width, int32 const height, int32 const internalFormat, uint32 const format, uint32 const type, int32 const depth)
+	: m_Width(width)
+	, m_Height(height)
+	, m_InternalFormat(internalFormat)
+	, m_Format(format)
+	, m_Type(type)
+	, m_Depth(depth)
+	, m_TargetType((depth > 1) ? E_TextureType::Texture3D : E_TextureType::Texture2D)
+{
+	glGenTextures(1, &m_Handle);
+}
+
+//---------------------------------
+// TextureData::TextureData
+//
+// Create a texture of a specific type with a preexisting handle
+//
+TextureData::TextureData(E_TextureType const targetType, int32 const height, int32 const width)
+	: m_TargetType(targetType)
+	, m_Height(height)
+	, m_Width(width)
 {
 	glGenTextures(1, &m_Handle);
 }
@@ -48,21 +50,55 @@ TextureData::~TextureData()
 }
 
 //---------------------------------
+// TextureData::GetTarget
+//
+// returns a textures target type
+//
+uint32 TextureData::GetTarget() const
+{
+	switch (m_TargetType)
+	{
+	case E_TextureType::Texture2D:
+		return GL_TEXTURE_2D;
+
+	case E_TextureType::Texture3D:
+		return GL_TEXTURE_3D;
+
+	case E_TextureType::CubeMap:
+		return GL_TEXTURE_CUBE_MAP;
+	}
+
+	ET_ASSERT(true, "Unhandled texture type!");
+	return GL_NONE;
+}
+
+//---------------------------------
 // TextureData::Build
 //
 // send the data to the GPU location. Can be initialized without any image data
 //
 void TextureData::Build(void* data)
 {
-	if (m_Depth == 1)
+	uint32 const target = GetTarget();
+	STATE->BindTexture(target, m_Handle);
+
+	switch (m_TargetType)
 	{
-		STATE->BindTexture( GL_TEXTURE_2D, m_Handle );
-		glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, m_Width, m_Height, 0, m_Format, m_Type, data );
-	}
-	else
-	{
-		STATE->BindTexture( GL_TEXTURE_3D, m_Handle );
-		glTexImage3D(GL_TEXTURE_3D, 0, m_InternalFormat, m_Width, m_Height, m_Depth, 0, m_Format, m_Type, data );
+	case E_TextureType::Texture2D:
+		glTexImage2D(target, 0, m_InternalFormat, m_Width, m_Height, 0, m_Format, m_Type, data);
+		break;
+
+	case E_TextureType::Texture3D:
+		glTexImage3D(target, 0, m_InternalFormat, m_Width, m_Height, m_Depth, 0, m_Format, m_Type, data);
+		break;
+
+	case E_TextureType::CubeMap:
+		ET_ASSERT(m_Width == m_Height);
+		for (uint8 face = 0u; face < s_NumCubeFaces; ++face)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, GL_RGB16F, m_Width, m_Height, 0, GL_RGB, GL_FLOAT, nullptr);
+		}
+		break;
 	}
 }
 
@@ -75,8 +111,8 @@ void TextureData::Build(void* data)
 //
 void TextureData::SetParameters(TextureParameters const& params, bool const force)
 {
-	GLenum target = GetTarget();
-	STATE->BindTexture(target, m_Handle );
+	uint32 const target = GetTarget();
+	STATE->BindTexture(target, m_Handle);
 
 	// filter options
 	//---------------
@@ -132,10 +168,11 @@ void TextureData::SetParameters(TextureParameters const& params, bool const forc
 
 	// generate mip maps if we must
 	//-----------------------------
-	if ((!m_Parameters.genMipMaps && params.genMipMaps) || (params.genMipMaps && force) || (params.genMipMaps && !m_HasMipData))
+	if ((!m_Parameters.genMipMaps && params.genMipMaps) || (params.genMipMaps && force) || (params.genMipMaps && (m_MipLevels == 0u)))
 	{
 		glGenerateMipmap(target);
-		m_HasMipData = true;
+		float const largerRes = static_cast<float>(std::max(m_Width, m_Height));
+		m_MipLevels = 1u + static_cast<uint8>(floor(log10(largerRes) / log10(2.f)));
 	}
 
 	m_Parameters = params;

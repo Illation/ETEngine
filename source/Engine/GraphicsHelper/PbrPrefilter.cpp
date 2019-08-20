@@ -65,7 +65,12 @@ void PbrPrefilter::Precompute(int32 resolution)
 	LOG("Precalculating PBR BRDF LUT . . . . . . DONE", Info, false, logPos);
 }
 
-void PbrPrefilter::PrefilterCube(CubeMap* source, CubeMap* &irradiance, CubeMap* &radiance, int32 resolution, int32 irradianceRes, int32 radianceRes)
+void PbrPrefilter::PrefilterCube(TextureData const* const source, 
+	TextureData*& irradiance, 
+	TextureData*& radiance, 
+	int32 const resolution, 
+	int32 const irradianceRes, 
+	int32 const radianceRes)
 {
 	//setup for convoluted irradiance cubemap
 	//***************************************
@@ -83,18 +88,17 @@ void PbrPrefilter::PrefilterCube(CubeMap* source, CubeMap* &irradiance, CubeMap*
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
 	//texture
-	GLuint irradianceMap;
-	glGenTextures(1, &irradianceMap);
-	STATE->BindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
-	for (uint32 i = 0; i < 6; ++i)
-	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, irradianceRes, irradianceRes, 0, GL_RGB, GL_FLOAT, nullptr);
-	}
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	irradiance = new TextureData(E_TextureType::CubeMap, irradianceRes, irradianceRes);
+	irradiance->Build();
+
+	TextureParameters params(false);
+	params.minFilter = E_TextureFilterMode::Linear;
+	params.magFilter = E_TextureFilterMode::Linear;
+	params.wrapS = E_TextureWrapMode::ClampToEdge;
+	params.wrapT = E_TextureWrapMode::ClampToEdge;
+	params.wrapR = E_TextureWrapMode::ClampToEdge;
+
+	irradiance->SetParameters(params);
 
 	//Framebuffer
 	STATE->BindFramebuffer(captureFBO);
@@ -117,7 +121,7 @@ void PbrPrefilter::PrefilterCube(CubeMap* source, CubeMap* &irradiance, CubeMap*
 	for (uint32 i = 0; i < 6; ++i)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(irradianceShader->GetProgram(), "view"), 1, GL_FALSE, etm::valuePtr(captureViews[i]));
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMap, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradiance->GetHandle(), 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
@@ -126,20 +130,10 @@ void PbrPrefilter::PrefilterCube(CubeMap* source, CubeMap* &irradiance, CubeMap*
 
 	//setup radiance
 	//**************
-	GLuint radianceMap;
-	glGenTextures(1, &radianceMap);
-	STATE->BindTexture(GL_TEXTURE_CUBE_MAP, radianceMap);
-	for (uint32 i = 0; i < 6; ++i)
-	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, radianceRes, radianceRes, 0, GL_RGB, GL_FLOAT, nullptr);
-	}
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+	radiance = new TextureData(E_TextureType::CubeMap, radianceRes, radianceRes);
+	radiance->Build();
+	params.genMipMaps = true;
+	radiance->SetParameters(params);
 
 	//Shader
 	AssetPtr<ShaderData> radianceShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdConvRadianceShader.glsl"_hash);
@@ -170,7 +164,7 @@ void PbrPrefilter::PrefilterCube(CubeMap* source, CubeMap* &irradiance, CubeMap*
 		for (uint32 i = 0; i < 6; ++i)
 		{
 			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, etm::valuePtr(captureViews[i]));
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, radianceMap, mip);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, radiance->GetHandle(), mip);
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
@@ -185,9 +179,6 @@ void PbrPrefilter::PrefilterCube(CubeMap* source, CubeMap* &irradiance, CubeMap*
 
 	glDeleteRenderbuffers(1, &captureRBO);
 	glDeleteFramebuffers(1, &captureFBO);
-
-	radiance = new CubeMap(radianceMap, radianceRes, radianceRes, (int32)maxMipLevels);
-	irradiance = new CubeMap(irradianceMap, irradianceRes, irradianceRes, (int32)maxMipLevels);
 }
 
 TextureData* PbrPrefilter::GetLUT()

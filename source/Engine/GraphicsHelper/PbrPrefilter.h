@@ -7,7 +7,12 @@ class PbrPrefilter : public Singleton<PbrPrefilter>
 public:
 	void Precompute(int32 resolution);
 
-	static void PrefilterCube(CubeMap* source, CubeMap* &irradiance, CubeMap* &radiance, int32 resolution, int32 irradianceRes, int32 radianceRes);
+	static void PrefilterCube(TextureData const* const source, 
+		TextureData*& irradiance, 
+		TextureData*& radiance, 
+		int32 const resolution, 
+		int32 const irradianceRes, 
+		int32 const radianceRes);
 
 	TextureData* GetLUT();
 protected:

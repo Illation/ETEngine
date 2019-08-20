@@ -6,24 +6,41 @@
 
 
 //---------------------------------
+// E_TextureType
+//
+// Denotes the type a texture can be
+//
+enum class E_TextureType : uint8
+{
+	Texture2D,
+	Texture3D,
+	CubeMap
+};
+
+
+//---------------------------------
 // TextureData
 //
 // Handle to a texture object on the GPU
 //
-class TextureData
+class TextureData final
 {
 public:
+	// definitions
+	static constexpr uint8 s_NumCubeFaces = 6u;
+
 	// c-tor d-tor
 	//------------
-	TextureData(GLuint handle, int32 width, int32 height, int32 depth = 1);
-	TextureData(int32 width, int32 height, int32 internalFormat, GLenum format, GLenum type, int32 depth = 1);
+	TextureData(int32 const width, int32 const height, int32 const internalFormat, uint32 const format, uint32 const type, int32 const depth = 1);
+	TextureData(E_TextureType const targetType, int32 const height, int32 const width);
 	~TextureData();
 
 	// Accessors
 	//----------
-	GLuint GetHandle() const { return m_Handle; }
+	uint32 GetHandle() const { return m_Handle; }
 	ivec2 GetResolution() const { return ivec2(m_Width, m_Height); }
-	GLenum GetTarget() const { return m_Depth == 1 ? GL_TEXTURE_2D : GL_TEXTURE_3D; }
+	int32 GetNumMipLevels() const { return m_MipLevels; }
+	uint32 GetTarget() const;
 
 	// Functionality
 	//--------------
@@ -36,21 +53,23 @@ private:
 	///////
 
 	// GPU data
-	GLuint m_Handle;
-	bool m_HasMipData = false;
+	uint32 m_Handle;
 
 	// Resolution
 	int32 m_Width;
 	int32 m_Height;
 	int32 m_Depth = 1; // a (default) value of 1 implies a 2D texture
+	uint8 m_MipLevels = 0u;
+	E_TextureType m_TargetType = E_TextureType::Texture2D;
 
 	// Format
 	int32 m_InternalFormat = GL_RGB;
-	GLenum m_Format = GL_RGB;
-	GLenum m_Type = GL_FLOAT;
+	uint32 m_Format = GL_RGB;
+	uint32 m_Type = GL_FLOAT;
 
 	TextureParameters m_Parameters;
 };
+
 
 //---------------------------------
 // TextureAsset

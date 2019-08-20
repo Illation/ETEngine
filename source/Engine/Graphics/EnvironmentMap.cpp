@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "EnvironmentMap.h"
 
-#include "TextureData.h"
 #include "Shader.h"
 
 #include <EtCore/Content/ResourceManager.h>
@@ -9,10 +8,10 @@
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 
 
-CubeMap* EquirectangularToCubeMap(TextureData* pEqui, int32 resolution)
+TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 const resolution)
 {
 	//Create framebuffer
-	GLuint captureFBO, captureRBO;
+	uint32 captureFBO, captureRBO;
 	glGenFramebuffers(1, &captureFBO);
 	glGenRenderbuffers(1, &captureRBO);
 
@@ -22,19 +21,17 @@ CubeMap* EquirectangularToCubeMap(TextureData* pEqui, int32 resolution)
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
 	//Preallocate memory for cubemap
-	GLuint envCubemap;
-	glGenTextures(1, &envCubemap);
-	STATE->BindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
-	for (uint32 i = 0; i < 6; ++i)
-	{
-		// note that we store each face with 16 bit floating point values
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, resolution, resolution, 0, GL_RGB, GL_FLOAT, nullptr);
-	}
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	TextureData* const envCubeMap = new TextureData(E_TextureType::CubeMap, resolution, resolution);
+	envCubeMap->Build();
+
+	TextureParameters params(false);
+	params.minFilter = E_TextureFilterMode::Linear;
+	params.magFilter = E_TextureFilterMode::Linear;
+	params.wrapS = E_TextureWrapMode::ClampToEdge;
+	params.wrapT = E_TextureWrapMode::ClampToEdge;
+	params.wrapR = E_TextureWrapMode::ClampToEdge;
+
+	envCubeMap->SetParameters(params);
 
 	std::vector<mat4> captureViews = CubeCaptureViews();
 
@@ -55,17 +52,15 @@ CubeMap* EquirectangularToCubeMap(TextureData* pEqui, int32 resolution)
 	for (uint32 i = 0; i < 6; ++i)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(equiCubeShader->GetProgram(), "view"), 1, GL_FALSE, etm::valuePtr(captureViews[i]));
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemap, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap->GetHandle(), 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
 	}
 	STATE->BindFramebuffer(0);
 
-	STATE->BindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);// #note might need to be rebound later
-	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-
-	int32 mipNum = 1 + (int32)floor(log10((float)resolution) / log10(2.0));
+	params.genMipMaps = true;
+	envCubeMap->SetParameters(params);
 
 	STATE->BindTexture(GL_TEXTURE_2D, 0);
 	STATE->SetViewport(ivec2(0), WINDOW.Dimensions);
@@ -73,7 +68,7 @@ CubeMap* EquirectangularToCubeMap(TextureData* pEqui, int32 resolution)
 	glDeleteRenderbuffers(1, &captureRBO);
 	glDeleteFramebuffers(1, &captureFBO);
 
-	return new CubeMap(envCubemap, resolution, resolution, mipNum);
+	return envCubeMap;
 }
 
 mat4 CubeCaptureProjection()
@@ -93,3 +88,18 @@ std::vector<mat4> CubeCaptureViews()
 	return ret;
 }
 
+HDRMap::HDRMap(TextureData* map, TextureData* irradiance, TextureData* radiance, int32 width, int32 height, int32 numMipMaps) 
+	: m_Map(map)
+	, m_Irradiance(irradiance)
+	, m_Radiance(radiance)
+	, m_Width(width)
+	, m_Height(height)
+	, m_NumMipMaps(numMipMaps)
+{ }
+
+HDRMap::~HDRMap()
+{
+	delete m_Map;
+	delete m_Irradiance;
+	delete m_Radiance;
+}

@@ -65,8 +65,8 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	}
 
 	LOG(loadingString + " . . . uploading texture          ", Info, false, logPos);
-	TextureData* hdrTexture = new TextureData(width, height, GL_RGB32F, GL_RGB, GL_FLOAT);
-	hdrTexture->Build((void*)data);
+	TextureData hdrTexture(width, height, GL_RGB32F, GL_RGB, GL_FLOAT);
+	hdrTexture.Build((void*)data);
 
 	FreeImage_Unload(dib);
 	FreeImage_Unload(pImage);
@@ -74,20 +74,20 @@ HDRMap* HdrLoader::LoadContent(const std::string& assetFile)
 	TextureParameters params(false);
 	params.wrapS = E_TextureWrapMode::ClampToEdge;
 	params.wrapT = E_TextureWrapMode::ClampToEdge;
-	hdrTexture->SetParameters(params);
+	hdrTexture.SetParameters(params);
 
 	LOG(loadingString + " . . . converting to cube          ", Info, false, logPos);
-	CubeMap* envCubemap = EquirectangularToCubeMap(hdrTexture, m_CubemapRes);
-	delete hdrTexture;
-	hdrTexture = nullptr;
+	TextureData* const envCubemap = EquirectangularToCubeMap(&hdrTexture, m_CubemapRes);
 
 	LOG(loadingString + " . . . prefiltering cubemap          ", Info, false, logPos);
-	CubeMap* irradianceMap;
-	CubeMap* radianceMap;
+	TextureData* irradianceMap;
+	TextureData* radianceMap;
 	PbrPrefilter::PrefilterCube(envCubemap, irradianceMap, radianceMap, m_CubemapRes, m_IrradianceRes, m_RadianceRes);
 
 	LOG(loadingString + " . . . SUCCESS!              ", Info, false, logPos);
-	return new HDRMap(envCubemap, irradianceMap, radianceMap, m_CubemapRes, m_CubemapRes, irradianceMap->GetNumMipMaps());
+
+	uint32 const maxMipLevels = (uint32)std::log2(m_RadianceRes) - 2;//at least 4x4
+	return new HDRMap(envCubemap, irradianceMap, radianceMap, m_CubemapRes, m_CubemapRes, maxMipLevels);
 }
 
 void HdrLoader::Destroy(HDRMap* objToDestroy)
