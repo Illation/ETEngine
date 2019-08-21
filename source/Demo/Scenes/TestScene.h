@@ -1,4 +1,5 @@
 #pragma once
+#include <EtCore/Content/AssetPointer.h>
 
 #include <Engine/SceneGraph/AbstractScene.h>
 
@@ -49,6 +50,6 @@ private:
 	PointLight* m_pLight = nullptr;
 	Entity* m_pLigEnt = nullptr;
 
-	SpriteFont* m_pDebugFont = nullptr;
+	AssetPtr<SpriteFont> m_pDebugFont;
 };
 

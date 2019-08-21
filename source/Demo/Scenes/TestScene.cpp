@@ -7,6 +7,8 @@
 #include <Demo/Materials/TexPBRMaterial.h>
 #include <Demo/Materials/EmissiveMaterial.h>
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/SceneGraph/Entity.h>
 #include <Engine/Graphics/FrameBuffer.h>
 #include <Engine/Framebuffers/Gbuffer.h>
@@ -30,7 +32,7 @@ void TestScene::Initialize()
 {
 	//Fonts
 	//**************************
-	m_pDebugFont = ContentManager::Load<SpriteFont>("Resources/Fonts/Consolas_32.fnt");
+	m_pDebugFont = ResourceManager::GetInstance()->GetAssetData<SpriteFont>("Consolas_32.fnt"_hash);
 
 	//Materials
 	//**************************
@@ -221,7 +223,7 @@ void TestScene::Update()
 
 void TestScene::Draw()
 {
-	TextRenderer::GetInstance()->SetFont(m_pDebugFont);
+	TextRenderer::GetInstance()->SetFont(m_pDebugFont.get());
 	TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
 	std::string outString = "FPS: " + std::to_string( PERFORMANCE->GetRegularFPS() );
 	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20));

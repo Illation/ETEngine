@@ -7,6 +7,8 @@
 #include <Demo/Planets/Earth.h>
 #include <Demo/Materials/EmissiveMaterial.h>
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Graphics/FrameBuffer.h>
 #include <Engine/Graphics/SpriteFont.h>
 #include <Engine/Graphics/Light.h>
@@ -32,7 +34,7 @@ void PlanetTestScene::Initialize()
 {
 	//Fonts
 	//**************************
-	m_pDebugFont = ContentManager::Load<SpriteFont>("Resources/Fonts/Consolas_32.fnt");
+	m_pDebugFont = ResourceManager::GetInstance()->GetAssetData<SpriteFont>("Consolas_32.fnt"_hash);
 
 	//Camera
 	//**************************
@@ -136,7 +138,7 @@ void PlanetTestScene::Update()
 
 void PlanetTestScene::Draw()
 {
-	//TextRenderer::GetInstance()->SetFont(m_pDebugFont);
+	//TextRenderer::GetInstance()->SetFont(m_pDebugFont.get());
 	//TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
 	//std::string textOutput = "FPS: " + std::to_string( PERFORMANCE->GetRegularFPS() );
 	//TextRenderer::GetInstance()->DrawText( textOutput, vec2(20, 20));

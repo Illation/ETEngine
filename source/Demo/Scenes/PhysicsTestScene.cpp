@@ -43,7 +43,7 @@ void PhysicsTestScene::Initialize()
 {
 	//Fonts
 	//**************************
-	m_pDebugFont = ContentManager::Load<SpriteFont>("Resources/Fonts/Ubuntu-Regular.ttf");
+	m_pDebugFont = ResourceManager::GetInstance()->GetAssetData<SpriteFont>("Ubuntu-Regular.ttf"_hash);
 
 	//Materials
 	//**************************
@@ -244,7 +244,7 @@ void PhysicsTestScene::Update()
 
 void PhysicsTestScene::Draw()
 {
-	TextRenderer::GetInstance()->SetFont(m_pDebugFont);
+	TextRenderer::GetInstance()->SetFont(m_pDebugFont.get());
 	TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
 	std::string outString = "FPS: " + std::to_string(PERFORMANCE->GetRegularFPS());
 	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20 + (m_pDebugFont->GetFontSize()*1.1f) * 1));

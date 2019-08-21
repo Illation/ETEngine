@@ -1,4 +1,5 @@
 #pragma once
+#include <EtCore/Content/AssetPointer.h>
 
 #include <Engine/SceneGraph/AbstractScene.h>
 
@@ -26,6 +27,6 @@ private:
 
 	Planet* m_pPlanet = nullptr;
 
-	SpriteFont* m_pDebugFont = nullptr;
+	AssetPtr<SpriteFont> m_pDebugFont;
 };
 

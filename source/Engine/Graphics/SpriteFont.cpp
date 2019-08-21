@@ -69,6 +69,16 @@ SpriteFont::~SpriteFont()
 //
 // Access the metrics for a particular character
 //
+FontMetric const& SpriteFont::GetMetric(wchar_t const& character) const 
+{
+	return m_CharTable[character - s_MinCharId];
+}
+
+//---------------------------------
+// SpriteFont::GetMetric
+//
+// non const access to the metrics for a particular character
+//
 FontMetric& SpriteFont::GetMetric(wchar_t const& character)
 {
 	return m_CharTable[character - s_MinCharId];

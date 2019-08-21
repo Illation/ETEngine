@@ -75,6 +75,7 @@ private:
 public:
 	TextureData const* GetAtlas() const { return m_pTexture; }
 	int16 GetFontSize() const { return m_FontSize; }
+	FontMetric const& GetMetric(wchar_t const& character) const;
 
 	// utility
 	//---------
