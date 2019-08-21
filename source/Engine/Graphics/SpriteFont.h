@@ -8,31 +8,6 @@ class TextRenderer;
 
 
 //---------------------------------
-// TextCache
-//
-// Cached text that will be rendered by the TextRenderer
-//
-struct TextCache
-{
-	// construct 
-	//-----------
-public:
-	TextCache(std::string const& text, vec2 const pos, vec4 const& col, int16 const size);
-
-private:
-	TextCache& operator=(const TextCache &tmp); // disable assignment
-
-	// Data
-	///////
-
-public:
-	std::string const Text;
-	vec2 Position;
-	vec4 Color;
-	int16 Size;
-};
-
-//---------------------------------
 // FontMetric
 //
 // Information about positioning of individual characters in a font
@@ -77,13 +52,14 @@ class SpriteFont final
 private:
 	friend class TextRenderer;
 	friend class FontLoader;
+	friend class FontAsset;
 
 public:
 	static bool IsCharValid(const wchar_t& character);
 
-	static const int32 MAX_CHAR_ID = 255;
-	static const int32 MIN_CHAR_ID = 0;
-	static const int32 CHAR_COUNT = MAX_CHAR_ID - MIN_CHAR_ID + 1;
+	static int32 const s_MinCharId = 0;
+	static int32 const s_MaxCharId = 255;
+	static int32 const s_CharCount = s_MaxCharId - s_MinCharId + 1;
 
 	// construct destruct
 	//--------------------
@@ -114,7 +90,7 @@ private:
 	int16 m_FontSize = 0;
 
 	// character info
-	FontMetric m_CharTable[CHAR_COUNT];
+	FontMetric m_CharTable[s_CharCount];
 	int32 m_CharacterCount = 0;
 	int32 m_CharacterSpacing = 1;
 	bool m_UseKerning = false;
@@ -122,11 +98,38 @@ private:
 	// sprite info
 	TextureData const* m_pTexture = nullptr;
 	AssetPtr<TextureData> m_TextureAsset;
+};
 
-	// used for rendering #todo: move this into TextRenderer
-	int32 m_BufferStart = 0;
-	int32 m_BufferSize = 0;
-	std::vector<TextCache> m_TextCache;
-	bool m_IsAddedToRenderer = false;
+//---------------------------------
+// FontAsset
+//
+// Loadable Font Data
+//
+class FontAsset final : public Asset<SpriteFont, false>
+{
+	DECLARE_FORCED_LINKING()
+public:
+	// Construct destruct
+	//---------------------
+	FontAsset() : Asset<SpriteFont, false>() {}
+	virtual ~FontAsset() = default;
+
+	// Asset overrides
+	//---------------------
+	bool LoadFromMemory(std::vector<uint8> const& data) override;
+
+private:
+	SpriteFont* LoadTtf(const std::vector<uint8>& binaryContent);
+	SpriteFont* LoadFnt(const std::vector<uint8>& binaryContent);
+
+	// Data
+	///////
+public:
+	uint32 m_FontSize = 42u;
+	uint32 m_Padding = 1u;
+	uint32 m_Spread = 5u;
+	uint32 m_HighRes = 32u;
+
+	RTTR_ENABLE(Asset<SpriteFont, false>)
 };
 

@@ -8,6 +8,29 @@
 #include <Engine/Graphics/TextureData.h>
 
 
+//============
+// Text Cache
+//============
+
+
+//---------------------------------
+// TextCache::c-tor
+//
+// Initialize a text cache
+//
+TextCache::TextCache(std::string const& text, vec2 const pos, vec4 const& col, int16 const size)
+	: Text(text)
+	, Position(pos)
+	, Color(col)
+	, Size(size)
+{ }
+
+
+//===============
+// Text Renderer
+//===============
+
+
 TextRenderer::TextRenderer()
 	:m_BufferSize(500)
 	,m_Transform(mat4())
@@ -64,15 +87,20 @@ void TextRenderer::Initialize()
 	WINDOW.WindowResizeEvent.AddListener( std::bind( &TextRenderer::OnWindowResize, this ) );
 }
 
-void TextRenderer::SetFont(SpriteFont* pFont)
+void TextRenderer::SetFont(SpriteFont const* font)
 {
-	auto pos = std::find(m_pSpriteFonts.begin(), m_pSpriteFonts.end(), pFont);
-	if (pos == m_pSpriteFonts.end())
+	auto foundIt = std::find_if(m_QueuedFonts.begin(), m_QueuedFonts.end(), [font](QueuedFont const& queued)
+		{
+			return queued.m_Font == font;
+		});
+
+	if (foundIt == m_QueuedFonts.cend())
 	{
-		m_ActiveFontIdx = m_pSpriteFonts.size();
-		m_pSpriteFonts.push_back(pFont);
+		m_ActiveFontIdx = m_QueuedFonts.size();
+		m_QueuedFonts.push_back(font);
+		m_QueuedFonts[m_ActiveFontIdx].m_Font = font;
 	}
-	else m_ActiveFontIdx = pos - m_pSpriteFonts.begin();
+	else m_ActiveFontIdx = pos - m_QueuedFonts.begin();
 }
 
 ivec2 TextRenderer::GetTextSize(const std::string &text, SpriteFont* pFont, int16 fontSize /*= 0*/)

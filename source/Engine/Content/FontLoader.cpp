@@ -119,7 +119,7 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	//Load individual character metrics
 	std::map<int32, FontMetric*> characters;
-	for (int32 c = 0; c < SpriteFont::CHAR_COUNT-1; c++)
+	for (int32 c = 0; c < SpriteFont::s_CharCount-1; c++)
 	{
 		FontMetric* metric = &(pFont->GetMetric(static_cast<wchar_t>(c)));
 		metric->Character = static_cast<wchar_t>(c);
@@ -128,7 +128,7 @@ SpriteFont* FontLoader::LoadTtf(const std::vector<uint8>& binaryContent)
 
 		if (pFont->m_UseKerning && glyphIdx)
 		{
-			for (int32 previous = 0; previous < SpriteFont::CHAR_COUNT - 1; previous++)
+			for (int32 previous = 0; previous < SpriteFont::s_CharCount - 1; previous++)
 			{
 				FT_Vector  delta;
 

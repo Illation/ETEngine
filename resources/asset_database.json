@@ -1211,6 +1211,70 @@
             }
           }
         ]
+      },
+      {
+        "cache": [
+          {
+            "font asset": {
+              "name": "Consolas_32.fnt",
+              "path": "assets/Engine/Fonts/",
+              "package": "content1",
+              "references": [],
+              "size": 42,
+              "padding": 1,
+              "spread": 5,
+              "highres": 32
+            }
+          },
+          {
+            "font asset": {
+              "name": "papyrus.ttf",
+              "path": "assets/Engine/Fonts/",
+              "package": "content1",
+              "references": [],
+              "size": 42,
+              "padding": 1,
+              "spread": 5,
+              "highres": 32
+            }
+          },
+          {
+            "font asset": {
+              "name": "Ubuntu-Regular.ttf",
+              "path": "assets/Engine/Fonts/",
+              "package": "content1",
+              "references": [],
+              "size": 42,
+              "padding": 1,
+              "spread": 5,
+              "highres": 32
+            }
+          },
+          {
+            "font asset": {
+              "name": "Roboto-Bold.ttf",
+              "path": "assets/Engine/Fonts/roboto2014/",
+              "package": "content1",
+              "references": [],
+              "size": 42,
+              "padding": 1,
+              "spread": 5,
+              "highres": 32
+            }
+          },
+          {
+            "font asset": {
+              "name": "RobotoCondensed-Regular.ttf",
+              "path": "assets/Engine/Fonts/roboto2014/",
+              "package": "content1",
+              "references": [],
+              "size": 42,
+              "padding": 1,
+              "spread": 5,
+              "highres": 32
+            }
+          }
+        ]
       }
     ]
   }
