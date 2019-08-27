@@ -154,6 +154,11 @@ bool FontAsset::LoadFromMemory(std::vector<uint8> const& data)
 	return true;
 }
 
+//---------------------------------
+// TextureAsset::LoadTtf
+//
+// Rasterizes a ttf font into a SDF texture and generates SpriteFont data from it
+//
 SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 {
 	FT_Library ft;
@@ -368,6 +373,11 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 	return pFont;
 }
 
+//---------------------------------
+// TextureAsset::LoadFnt
+//
+// Loads a Sprite font from an FNT file
+//
 SpriteFont* FontAsset::LoadFnt(const std::vector<uint8>& binaryContent)
 {
 	auto pBinReader = new BinaryReader(); //Prevent memory leaks
@@ -430,9 +440,9 @@ SpriteFont* FontAsset::LoadFnt(const std::vector<uint8>& binaryContent)
 	pBinReader->SetBufferPosition(pos + 4);
 	uint16 const texWidth = pBinReader->Read<uint16>();
 	uint16 const texHeight = pBinReader->Read<uint16>();
-	auto pagecount = pBinReader->Read<uint16>();
+	uint16 const pagecount = pBinReader->Read<uint16>();
 
-	ET_ASSERT(pagecount > 1, "SpriteFont(.fnt): Only one texture per font allowed");
+	ET_ASSERT(pagecount == 1u, "SpriteFont(.fnt): Only one texture per font allowed");
 
 	pBinReader->SetBufferPosition(pos + Block1Size);
 	//**********

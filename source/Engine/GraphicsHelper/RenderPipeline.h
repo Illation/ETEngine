@@ -6,6 +6,7 @@ class AbstractScene;
 class RenderState;
 class ScreenSpaceReflections;
 class TextureData;
+class SpriteFont;
 
 
 class RenderPipeline : public Singleton<RenderPipeline>
@@ -43,4 +44,6 @@ private:
 	vec3 m_ClearColor;
 
 	AssetPtr<TextureData> m_SplashBackgroundTex;
+	AssetPtr<SpriteFont> m_SplashTitleFont;
+	AssetPtr<SpriteFont> m_SplashRegFont;
 };

@@ -5,9 +5,8 @@
 #include <EtCore/Content/AssetPointer.h>
 
 #include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/SpriteFont.h>
 
-
-class SpriteFont;
 
 enum class UIComponentType : uint8
 {
@@ -51,14 +50,14 @@ private:
 struct UIText : public UIComponent
 {
 public:
-	UIText(std::string text, SpriteFont* pFont);
+	UIText(std::string text, AssetPtr<SpriteFont> font);
 
 	virtual UIComponentType GetType() { return UIComponentType::FONT; }
 
-	void const* GetResource() override { return m_Font; }
+	void const* GetResource() override { return m_Font.get(); }
 
 	bool Draw( uint16 level ) override;
 private:
-	SpriteFont* m_Font = nullptr;
+	AssetPtr<SpriteFont> m_Font;
 	std::string m_Text;
 };

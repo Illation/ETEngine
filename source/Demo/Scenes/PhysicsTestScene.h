@@ -44,5 +44,5 @@ private:
 	vec3 m_LightCentralPos = vec3(0);
 	float m_LightRotDistance = 1.f;
 
-	AssetPtr<SpriteFont> m_pDebugFont;
+	AssetPtr<SpriteFont> m_DebugFont;
 };
