@@ -26,17 +26,16 @@ bool UISprite::Draw( uint16 level )
 	return false;
 }
 
-UIText::UIText(std::string text, SpriteFont* pFont)
-	: UIComponent(TextRenderer::GetInstance()->GetTextSize(text, pFont), ivec2(0))
-	, m_Font(pFont)
+UIText::UIText(std::string text, AssetPtr<SpriteFont> font)
+	: UIComponent(TextRenderer::GetInstance()->GetTextSize(text, font.get()), ivec2(0))
+	, m_Font(font)
 	, m_Text(text)
-{
-}
+{ }
 
 bool UIText::Draw(uint16 level)
 {
 	UNUSED(level);
-	TextRenderer::GetInstance()->SetFont(m_Font);
+	TextRenderer::GetInstance()->SetFont(m_Font.get());
 	TextRenderer::GetInstance()->SetColor(m_Color);
 	TextRenderer::GetInstance()->DrawText(m_Text, etm::vecCast<float>(m_WorldPos + m_Rect.pos));
 	return false;

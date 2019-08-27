@@ -1,5 +1,6 @@
 #pragma once
 #include <EtCore/Helper/Hash.h>
+#include <EtCore/Content/AssetPointer.h>
 
 #include <Engine/SceneGraph/AbstractScene.h>
 
@@ -43,5 +44,5 @@ private:
 	vec3 m_LightCentralPos = vec3(0);
 	float m_LightRotDistance = 1.f;
 
-	SpriteFont* m_pDebugFont = nullptr;
+	AssetPtr<SpriteFont> m_DebugFont;
 };

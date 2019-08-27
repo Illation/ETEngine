@@ -2,7 +2,6 @@
 #include "ContentManager.h"
 
 #include "MeshFilterLoader.h"
-#include "FontLoader.h"
 
 
 std::vector<AbstractLoader*> ContentManager::m_Loaders = std::vector<AbstractLoader*>();
@@ -38,7 +37,6 @@ void ContentManager::Initialize()
 	{
 		m_IsInitialized = true;
 		AddLoader(new MeshFilterLoader());
-		AddLoader(new FontLoader());
 	}
 }
 

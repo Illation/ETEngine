@@ -1,6 +1,7 @@
 #pragma once
 #include <EtCore/Helper/Singleton.h>
 #include <EtCore/UpdateCycle/Tickable.h>
+#include <EtCore/Content/AssetPointer.h>
 
 #include <Engine/UI/UIUtil.h>
 
@@ -39,7 +40,7 @@ private:
 	UIFixedContainer* m_Root = nullptr;
 	UIPortal* m_pToolbar = nullptr;
 
-	SpriteFont* m_pEditorFont = nullptr;
+	AssetPtr<SpriteFont> m_EditorFont;
 
 private:
 	//Disable constructors

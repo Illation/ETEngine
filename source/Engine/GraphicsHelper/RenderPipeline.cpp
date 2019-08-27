@@ -250,22 +250,22 @@ void RenderPipeline::OnResize()
 void RenderPipeline::ShowSplashScreen()
 {
 	m_SplashBackgroundTex = ResourceManager::GetInstance()->GetAssetData<TextureData>("Splashscreen.jpg"_hash);
-	SpriteFont* pTitleFont = ContentManager::Load<SpriteFont>("Resources/Fonts/roboto2014/Roboto-Bold.ttf");
-	SpriteFont* pRegFont = ContentManager::Load<SpriteFont>("Resources/Fonts/roboto2014/RobotoCondensed-Regular.ttf");
+	m_SplashTitleFont = ResourceManager::GetInstance()->GetAssetData<SpriteFont>("Roboto-Bold.ttf"_hash);
+	m_SplashRegFont = ResourceManager::GetInstance()->GetAssetData<SpriteFont>("RobotoCondensed-Regular.ttf"_hash);
 
 	SpriteRenderer::GetInstance()->Draw(m_SplashBackgroundTex.get(), vec2(0));
 
 	std::string title = "E   T   E N G I N E";
 	int16 titleFontSize = (int16)(150 * ((float)WINDOW.Height / (float)1440));
-	ivec2 titleSize = TextRenderer::GetInstance()->GetTextSize(title, pTitleFont, titleFontSize);
+	ivec2 titleSize = TextRenderer::GetInstance()->GetTextSize(title, m_SplashTitleFont.get(), titleFontSize);
 	TextRenderer::GetInstance()->SetColor(vec4(1));
-	TextRenderer::GetInstance()->SetFont(pTitleFont);
+	TextRenderer::GetInstance()->SetFont(m_SplashTitleFont.get());
 	TextRenderer::GetInstance()->DrawText(title, etm::vecCast<float>(WINDOW.Dimensions/2-titleSize/2), titleFontSize);
 
-	TextRenderer::GetInstance()->SetFont(pRegFont);
+	TextRenderer::GetInstance()->SetFont(m_SplashRegFont.get());
 	std::string loading = "LOADING";
 	int16 loadingFontSize = (int16)(50 * ((float)WINDOW.Height / (float)1440));
-	ivec2 loadingSize = TextRenderer::GetInstance()->GetTextSize(loading, pRegFont, loadingFontSize);
+	ivec2 loadingSize = TextRenderer::GetInstance()->GetTextSize(loading, m_SplashRegFont.get(), loadingFontSize);
 	TextRenderer::GetInstance()->DrawText(loading, etm::vecCast<float>(WINDOW.Dimensions - ivec2(loadingSize.x + 20, 20)), loadingFontSize);
 
 	SpriteRenderer::GetInstance()->Draw();
@@ -277,4 +277,6 @@ void RenderPipeline::ShowSplashScreen()
 void RenderPipeline::HideSplashScreen()
 {
 	m_SplashBackgroundTex = nullptr;
+	m_SplashTitleFont = nullptr;
+	m_SplashRegFont = nullptr;
 }

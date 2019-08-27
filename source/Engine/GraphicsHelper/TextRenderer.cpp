@@ -8,14 +8,45 @@
 #include <Engine/Graphics/TextureData.h>
 
 
-TextRenderer::TextRenderer()
-	:m_BufferSize(500)
-	,m_Transform(mat4())
-	,m_NumCharacters(0)
-	,m_pSpriteFonts(std::vector<SpriteFont*>())
+//=============================
+// Text Renderer :: Text Cache
+//=============================
+
+
+//---------------------------------
+// TextRenderer::TextCache::c-tor
+//
+// Initialize a text cache
+//
+TextRenderer::TextCache::TextCache(std::string const& text, vec2 const pos, vec4 const& col, int16 const size)
+	: Text(text)
+	, Position(pos)
+	, Color(col)
+	, Size(size)
+{ }
+
+
+//===============
+// Text Renderer
+//===============
+
+
+//---------------------------------
+// TextRenderer::d-tor
+//
+// Delete GPU objects
+//
+TextRenderer::~TextRenderer()
 {
+	glDeleteVertexArrays(1, &m_VAO);
+	glDeleteBuffers(1, &m_VBO);
 }
 
+//---------------------------------
+// TextRenderer::Initialize
+//
+// Create handles to GPU objects
+//
 void TextRenderer::Initialize()
 {
 	m_pTextShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostText.glsl"_hash);
@@ -64,66 +95,117 @@ void TextRenderer::Initialize()
 	WINDOW.WindowResizeEvent.AddListener( std::bind( &TextRenderer::OnWindowResize, this ) );
 }
 
-void TextRenderer::SetFont(SpriteFont* pFont)
+//---------------------------------
+// TextRenderer::SetFont
+//
+// Sets the active font and adds it to the queue if it's not there yet
+//
+void TextRenderer::SetFont(SpriteFont const* const font)
 {
-	auto pos = std::find(m_pSpriteFonts.begin(), m_pSpriteFonts.end(), pFont);
-	if (pos == m_pSpriteFonts.end())
-	{
-		m_ActiveFontIdx = m_pSpriteFonts.size();
-		m_pSpriteFonts.push_back(pFont);
-	}
-	else m_ActiveFontIdx = pos - m_pSpriteFonts.begin();
-}
-
-ivec2 TextRenderer::GetTextSize(const std::string &text, SpriteFont* pFont, int16 fontSize /*= 0*/)
-{
-	if (fontSize <= 0) fontSize = pFont->GetFontSize();
-	float sizeMult = (float)fontSize / (float)pFont->GetFontSize();
-	vec2 ret = vec2(0);
-	for (auto charId : text)
-	{
-		char previous = 0;
-		if (SpriteFont::IsCharValid(charId) && pFont->GetMetric(charId).IsValid)
+	auto foundIt = std::find_if(m_QueuedFonts.begin(), m_QueuedFonts.end(), [font](QueuedFont const& queued)
 		{
-			auto metric = pFont->GetMetric(charId);
+			return queued.m_Font == font;
+		});
 
-			vec2 kerningVec = 0;
-			if (pFont->m_UseKerning)kerningVec = metric.GetKerningVec(static_cast<wchar_t>(previous));
-			previous = charId;
-
-			ret.x += (metric.AdvanceX +(int32)kerningVec.x) * sizeMult;
-
-			if (charId == ' ') continue;
-			ret.y = std::max(ret.y, ((float)metric.Height + (float)metric.OffsetY + kerningVec.y)*sizeMult);
-		}
-		else LOG("TextRenderer::GetTextSize>char not supported for current font", Warning);
+	if (foundIt == m_QueuedFonts.cend())
+	{
+		m_ActiveFontIdx = m_QueuedFonts.size();
+		m_QueuedFonts.emplace_back(QueuedFont());
+		m_QueuedFonts[m_ActiveFontIdx].m_Font = font;
 	}
-	return etm::vecCast<int32>(ret);
+	else
+	{
+		m_ActiveFontIdx = foundIt - m_QueuedFonts.begin();
+	}
 }
 
+//---------------------------------
+// TextRenderer::DrawText
+//
+// Creates a text cache and adds it to the active font
+//
+void TextRenderer::DrawText(std::string const& text, vec2 const pos, int16 fontSize)
+{
+	ET_ASSERT(m_QueuedFonts.size() > 0u, "No active font set!");
+
+	if (fontSize <= 0)
+	{
+		fontSize = m_QueuedFonts[m_ActiveFontIdx].m_Font->GetFontSize();
+	}
+
+	m_NumCharacters += static_cast<uint32>(text.size());
+	m_QueuedFonts[m_ActiveFontIdx].m_TextCache.emplace_back(TextCache(text, pos, m_Color, fontSize));
+	m_QueuedFonts[m_ActiveFontIdx].m_IsAddedToRenderer = true;
+}
+
+//---------------------------------
+// TextRenderer::OnWindowResize
+//
+// Makes sure text size stays consistent when the window size changes
+//
 void TextRenderer::OnWindowResize()
 {
 	CalculateTransform();
 }
 
-void TextRenderer::DrawText(std::string &text, vec2 pos, int16 fontSize)
+//---------------------------------
+// TextRenderer::GetTextSize
+//
+// Returns the theoretical dimensions of a text that would be drawn
+//
+ivec2 TextRenderer::GetTextSize(std::string const& text, SpriteFont const* const font, int16 fontSize) const
 {
-	if (m_pSpriteFonts.size() > 0)
+	if (fontSize <= 0)
 	{
-		if (fontSize <= 0)fontSize = m_pSpriteFonts[m_ActiveFontIdx]->GetFontSize();
-		m_NumCharacters += (uint32)text.size();
-		m_pSpriteFonts[m_ActiveFontIdx]->m_TextCache.push_back(TextCache(text, pos, m_Color, fontSize));
-		if (!m_pSpriteFonts[m_ActiveFontIdx]->m_IsAddedToRenderer)
+		fontSize = font->GetFontSize();
+	}
+
+	float sizeMult = (float)fontSize / (float)font->GetFontSize();
+	vec2 ret(0.f);
+
+	for (auto charId : text)
+	{
+		char previous = 0;
+		if (SpriteFont::IsCharValid(charId) && font->GetMetric(charId).IsValid)
 		{
-			m_pSpriteFonts[m_ActiveFontIdx]->m_IsAddedToRenderer = true;
+			FontMetric const& metric = font->GetMetric(charId);
+
+			vec2 kerningVec = 0;
+			if (font->m_UseKerning)
+			{
+				kerningVec = metric.GetKerningVec(static_cast<wchar_t>(previous));
+			}
+			previous = charId;
+
+			ret.x += (metric.AdvanceX + kerningVec.x) * sizeMult;
+
+			if (charId == ' ')
+			{
+				continue;
+			}
+
+			ret.y = std::max(ret.y, (static_cast<float>(metric.Height) + static_cast<float>(metric.OffsetY) + kerningVec.y) * sizeMult);
+		}
+		else
+		{
+			LOG("TextRenderer::GetTextSize>char not supported for current font", Warning);
 		}
 	}
-	else LOG("TextRenderer>DrawText: No active font found!", Warning);
+
+	return etm::vecCast<int32>(ret);
 }
 
+//---------------------------------
+// TextRenderer::Draw
+//
+// Draws all currently queued fonts to the active render target
+//
 void TextRenderer::Draw()
 {
-	if (m_pSpriteFonts.size() <= 0) return;
+	if (m_QueuedFonts.size() <= 0)
+	{
+		return;
+	}
 
 	//Bind Object vertex array
 	STATE->BindVertexArray(m_VAO);
@@ -143,86 +225,106 @@ void TextRenderer::Draw()
 
 	//Bind Object vertex array
 	STATE->BindVertexArray(m_VAO);
-	for (auto pFont : m_pSpriteFonts)
-	{
-		if (pFont->m_IsAddedToRenderer)
-		{
-			STATE->BindTexture(GL_TEXTURE_2D, pFont->m_pTexture->GetHandle());
 
-			auto texSize = pFont->m_pTexture->GetResolution();
-			glUniform2f(m_uTexSize, (float)texSize.x, (float)texSize.y);
+	for (QueuedFont& queued : m_QueuedFonts)
+	{
+		if (queued.m_IsAddedToRenderer)
+		{
+			STATE->BindTexture(GL_TEXTURE_2D, queued.m_Font->GetAtlas()->GetHandle());
+
+			vec2 const texSize = etm::vecCast<float>(queued.m_Font->GetAtlas()->GetResolution());
+			glUniform2f(m_uTexSize, texSize.x, texSize.y);
 
 			//Draw the object
-			STATE->DrawArrays(GL_POINTS, pFont->m_BufferStart, pFont->m_BufferSize);
+			STATE->DrawArrays(GL_POINTS, queued.m_BufferStart, queued.m_BufferSize);
 
-			pFont->m_IsAddedToRenderer = false;
+			queued.m_IsAddedToRenderer = false;
 		}
 	}
+
 	//unbind vertex array
 	STATE->BindVertexArray(0);
 }
 
+//---------------------------------
+// TextRenderer::UpdateBuffer
+//
+// Updates the vertex buffer containing font vertices
+//
 void TextRenderer::UpdateBuffer()
 {
 	std::vector<TextVertex> tVerts;
-	for (auto pFont : m_pSpriteFonts)
+
+	for (QueuedFont& queued : m_QueuedFonts)
 	{
-		if (pFont->m_IsAddedToRenderer)
+		if (queued.m_IsAddedToRenderer)
 		{
-			pFont->m_BufferStart = (int32)tVerts.size() *(sizeof(TextVertex) / sizeof(float));
-			pFont->m_BufferSize = 0;
-			for (auto cache : pFont->m_TextCache)
+			queued.m_BufferStart = static_cast<int32>(tVerts.size() * (sizeof(TextVertex) / sizeof(float)));
+			queued.m_BufferSize = 0;
+
+			for (TextCache const& cache : queued.m_TextCache)
 			{
-				float sizeMult = (float)cache.Size / (float)pFont->GetFontSize();
-				float totalAdvanceX = 0;
+				float const sizeMult = static_cast<float>(cache.Size) / static_cast<float>(queued.m_Font->GetFontSize());
+
+				float totalAdvanceX = 0.f;
 				char previous = 0;
-				for (auto charId : cache.Text)
+				for (char const charId : cache.Text)
 				{
-					if (SpriteFont::IsCharValid(charId) && pFont->GetMetric(charId).IsValid)
+					if (!SpriteFont::IsCharValid(charId))
 					{
-						auto metric = pFont->GetMetric(charId);
-
-						vec2 kerningVec = 0;
-						if (pFont->m_UseKerning && m_bUseKerning)kerningVec = metric.GetKerningVec(static_cast<wchar_t>(previous)) * sizeMult;
-						previous = charId;
-						totalAdvanceX += kerningVec.x;
-
-						if (charId == ' ')
-						{
-							totalAdvanceX += metric.AdvanceX;
-							continue;
-						}
-
-						TextVertex vText;
-						vText.Position.x = cache.Position.x + (totalAdvanceX + metric.OffsetX)*sizeMult;
-						vText.Position.y = cache.Position.y + (kerningVec.y + metric.OffsetY)*sizeMult;
-						vText.Position.z = 0;
-						vText.Color = cache.Color;
-						vText.TexCoord = metric.TexCoord;
-						vText.CharacterDimension = vec2(metric.Width, metric.Height);
-						vText.SizeMult = sizeMult;
-						vText.ChannelId = metric.Channel;
-
-						tVerts.push_back(vText);
-
-						totalAdvanceX += metric.AdvanceX;
+						LOG(FS("TextRenderer::UpdateBuffer > char '%c' not supported for current font", charId), Warning);
+						continue;
 					}
-					else LOG("TextRenderer::CreateTextVertices>char not supported for current font", Warning);
+
+					FontMetric const& metric = queued.m_Font->GetMetric(charId);
+					if (!metric.IsValid)
+					{
+						LOG(FS("TextRenderer::UpdateBuffer > char '%c' doesn't have a valid metric", charId), Warning);
+						continue;
+					}
+
+					vec2 kerningVec = 0;
+					if (queued.m_Font->m_UseKerning && m_bUseKerning)
+					{
+						kerningVec = metric.GetKerningVec(static_cast<wchar_t>(previous)) * sizeMult;
+					}
+					previous = charId;
+
+					totalAdvanceX += kerningVec.x;
+
+					if (charId == ' ')
+					{
+						totalAdvanceX += metric.AdvanceX;
+						continue;
+					}
+
+					tVerts.push_back(TextVertex());
+					TextVertex& vText = tVerts[tVerts.size()-1];
+
+					vText.Position.x = cache.Position.x + (totalAdvanceX + metric.OffsetX)*sizeMult;
+					vText.Position.y = cache.Position.y + (kerningVec.y + metric.OffsetY)*sizeMult;
+					vText.Position.z = 0;
+					vText.Color = cache.Color;
+					vText.TexCoord = metric.TexCoord;
+					vText.CharacterDimension = vec2(metric.Width, metric.Height);
+					vText.SizeMult = sizeMult;
+					vText.ChannelId = metric.Channel;
+
+					totalAdvanceX += metric.AdvanceX;
 				}
 			}
-			pFont->m_BufferSize = (int32)(tVerts.size()) * (sizeof(TextVertex) / sizeof(float)) - pFont->m_BufferStart;
-			pFont->m_TextCache.clear();
+
+			queued.m_BufferSize = static_cast<int32>(tVerts.size()) * (sizeof(TextVertex) / sizeof(float)) - queued.m_BufferStart;
+			queued.m_TextCache.clear();
 		}
 	}
 
 	//Bind Object vertex array
 	STATE->BindVertexArray(m_VAO);
 
-	uint32 buffersize = (uint32)tVerts.size() * sizeof(TextVertex);
-
 	//Send the vertex buffer again
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, buffersize, tVerts.data(), GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, static_cast<uint32>(tVerts.size() * sizeof(TextVertex)), tVerts.data(), GL_DYNAMIC_DRAW);
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
 
 	//Done Modifying
@@ -231,6 +333,11 @@ void TextRenderer::UpdateBuffer()
 	m_NumCharacters = 0;
 }
 
+//---------------------------------
+// TextRenderer::CalculateTransform
+//
+// Calculates the transformation matrix to be used by the GPU to position sprites
+//
 void TextRenderer::CalculateTransform()
 {
 	ivec2 viewPos, viewSize;
@@ -244,10 +351,4 @@ void TextRenderer::CalculateTransform()
 		0,		-scaleY,	0,		0,
 		0,		0,			1,		0,
 		-1,		1,			0,		1 });
-}
-
-TextRenderer::~TextRenderer()
-{
-	glDeleteVertexArrays(1, &m_VAO);
-	glDeleteBuffers(1, &m_VBO);
 }
