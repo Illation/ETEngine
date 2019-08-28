@@ -16,11 +16,11 @@ public:
 	void SetDifCol(vec3 col) { m_DiffuseColor = col; }
 	void SetSpecCol(vec3 col) { m_SpecularColor = col; }
 	void SetSpecPow(float pow) { m_SpecularPower = pow; }
-private:
-	void LoadTextures();
-	void AccessShaderAttributes();
 
-	void UploadDerivedVariables();
+private:
+	void LoadTextures() override;
+	void AccessShaderAttributes() override;
+	void UploadDerivedVariables() override;
 
 private:
 	//Texture

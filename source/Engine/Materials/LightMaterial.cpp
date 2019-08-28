@@ -9,20 +9,13 @@
 #include <Engine/GraphicsHelper/RenderPipeline.h>
 
 
-LightMaterial::LightMaterial(vec3 col):
-	Material("Shaders/FwdLightPointShader.glsl"),
-	m_Color(col)
+LightMaterial::LightMaterial(vec3 col)
+	: Material("Shaders/FwdLightPointShader.glsl")
+	, m_Color(col)
 {
-	m_LayoutFlags = E_VertexFlag::POSITION;
 	m_DrawForward = true;
 }
-LightMaterial::~LightMaterial()
-{
-}
 
-void LightMaterial::LoadTextures()
-{
-}
 void LightMaterial::AccessShaderAttributes()
 {
 	m_uCol = glGetUniformLocation(m_Shader->GetProgram(), "Color");
@@ -34,6 +27,7 @@ void LightMaterial::AccessShaderAttributes()
 	m_uProjB = glGetUniformLocation(m_Shader->GetProgram(), "projectionB");
 	m_uViewProjInv = glGetUniformLocation(m_Shader->GetProgram(), "viewProjInv");
 }
+
 void LightMaterial::UploadDerivedVariables()
 {
 	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texGBufferA"), 0);

@@ -9,17 +9,16 @@ class SkyboxMaterial : public Material
 {
 public:
 	SkyboxMaterial(T_Hash const assetId);
-	virtual ~SkyboxMaterial();
+	virtual ~SkyboxMaterial() = default;
 
 	EnvironmentMap const* GetHDRMap() const { return m_EnvironmentMap.get(); }
 	float GetRoughness() { return m_Roughness; }
 	void SetRoughness(float r) { m_Roughness = r; }
 
 private:
-	void LoadTextures();
-	void AccessShaderAttributes();
-
-	void UploadDerivedVariables();
+	void LoadTextures() override;
+	void AccessShaderAttributes() override;
+	void UploadDerivedVariables() override;
 
 private:
 	AssetPtr<EnvironmentMap> m_EnvironmentMap;

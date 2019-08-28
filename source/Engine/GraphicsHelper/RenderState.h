@@ -99,6 +99,7 @@ public:
 
 	void GetProgramIV(GLuint program, GLenum pname, GLint *params) const;
 	void GetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const;
+	void GetActiveAttribute(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const;
 
 private:
 

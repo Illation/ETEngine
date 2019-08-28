@@ -10,11 +10,7 @@
 
 Material::Material(std::string shaderFile) :
 	m_ShaderFile(shaderFile)
-{
-}
-Material::~Material()
-{
-}
+{ }
 
 void Material::Initialize()
 {
@@ -22,6 +18,23 @@ void Material::Initialize()
 	{
 		//Load Shader
 		m_Shader = ResourceManager::GetInstance()->GetAssetData<ShaderData>(GetHash(FileUtil::ExtractName(m_ShaderFile)));
+
+		// determine layout flags and locations
+		std::vector<ShaderData::T_AttributeLocation> const& attributes = m_Shader->GetAttributes();
+
+		for (auto it = AttributeDescriptor::s_VertexAttributes.begin(); it != AttributeDescriptor::s_VertexAttributes.end(); ++it)
+		{
+			auto const attribIt = std::find_if(attributes.cbegin(), attributes.cend(), [it](ShaderData::T_AttributeLocation const& loc)
+				{
+					return it->second.name == loc.second.name;
+				});
+
+			if (attribIt != attributes.cend())
+			{
+				m_AttributeLocations.emplace_back(attribIt->first);
+				m_LayoutFlags |= it->first;
+			}
+		}
 
 		//Jup (maybe temporary with texture manager)
 		LoadTextures();
@@ -44,45 +57,26 @@ void Material::UploadVariables(mat4 matModel)
 	//Upload matrices
 	if (m_StandardTransform)
 	{
+		//m_Shader->Upload("model"_hash, matModel);
+		//m_Shader->Upload("worldViewProj"_hash, CAMERA->GetViewProj());
 		glUniformMatrix4fv(m_UniMatModel, 1, GL_FALSE, etm::valuePtr(matModel));
 		glUniformMatrix4fv(m_UniMatWVP, 1, GL_FALSE, etm::valuePtr(CAMERA->GetViewProj()));
 	}
 
 	UploadDerivedVariables();
 }
+
 void Material::UploadVariables(mat4 matModel, const mat4 &matWVP)
 {
 	STATE->SetShader(m_Shader.get());
 	//Upload matrices
 	if (m_StandardTransform)
 	{
+		//m_Shader->Upload("model"_hash, matModel);
+		//m_Shader->Upload("worldViewProj"_hash, matWVP);
 		glUniformMatrix4fv(m_UniMatModel, 1, GL_FALSE, etm::valuePtr(matModel));
 		glUniformMatrix4fv(m_UniMatWVP, 1, GL_FALSE, etm::valuePtr(matWVP));
 	}
 
 	UploadDerivedVariables();
-}
-
-bool Material::GetAttributeLocations(std::vector<int32>& locations) const
-{
-	for (auto it = AttributeDescriptor::s_VertexAttributes.begin(); it != AttributeDescriptor::s_VertexAttributes.end(); ++it)
-	{
-		if (m_LayoutFlags & it->first)
-		{
-			char const* attribName = it->second.name.c_str();
-			GLint attrib = glGetAttribLocation(m_Shader->GetProgram(), attribName);
-
-			if (attrib >= 0)
-			{
-				locations.emplace_back(attrib);
-			}
-			else
-			{
-				LOG(FS("Could not find attribute '%s' in shader '%s'!", attribName, m_Shader->GetName().c_str()), LogLevel::Error);
-				return false;
-			}
-		}
-	}
-
-	return true;
 }

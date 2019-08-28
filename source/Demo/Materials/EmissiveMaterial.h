@@ -2,18 +2,18 @@
 #include <Engine/Graphics/Material.h>
 
 
-class EmissiveMaterial : public Material
+class EmissiveMaterial final : public Material
 {
 public:
 	EmissiveMaterial(vec3 col = vec3(1, 1, 1));
-	~EmissiveMaterial();
+	virtual ~EmissiveMaterial() = default;
 
 	void SetCol(vec3 col) { m_Color = col; }
 private:
-	void LoadTextures();
-	void AccessShaderAttributes();
+	void LoadTextures() override {}
+	void AccessShaderAttributes() override;
 
-	void UploadDerivedVariables();
+	void UploadDerivedVariables() override;
 
 private:
 	//Parameters

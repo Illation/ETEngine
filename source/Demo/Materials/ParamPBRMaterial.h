@@ -7,13 +7,12 @@ class ParamPBRMaterial : public Material
 {
 public:
 	ParamPBRMaterial(vec3 baseCol, float roughness, float metal);
-	~ParamPBRMaterial();
+	virtual ~ParamPBRMaterial() = default;
 
 private:
-	void LoadTextures();
-	void AccessShaderAttributes();
-
-	void UploadDerivedVariables();
+	void LoadTextures() override {}
+	void AccessShaderAttributes() override;
+	void UploadDerivedVariables() override;
 
 private:
 

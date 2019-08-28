@@ -6,7 +6,7 @@ class LightMaterial : public Material
 {
 public:
 	LightMaterial(vec3 col = vec3(1, 1, 1));
-	~LightMaterial();
+	virtual ~LightMaterial() = default;
 
 	void SetLight(vec3 pos, vec3 color, float radius)
 	{
@@ -15,10 +15,9 @@ public:
 		m_Radius = radius;
 	}
 private:
-	void LoadTextures();
-	void AccessShaderAttributes();
-
-	void UploadDerivedVariables();
+	void LoadTextures() override {}
+	void AccessShaderAttributes() override;
+	void UploadDerivedVariables() override;
 
 private:
 	//Parameters

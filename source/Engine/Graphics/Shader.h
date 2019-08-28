@@ -1,5 +1,5 @@
 #pragma once
-#include <rttr/type>
+#include "VertexInfo.h"
 
 #include <EtCore/Content/Asset.h>
 #include <EtCore/Helper/LinkerUtils.h>
@@ -21,13 +21,7 @@ class ShaderData final
 	friend class ShaderAsset;
 
 public:
-	struct VertexAttribute
-	{
-		int32 location = -1;
-		std::string name;
-		int32 size;
-		GLenum type;
-	};
+	typedef std::pair<int32, AttributeDescriptor> T_AttributeLocation;
 
 	// Construct destruct
 	//---------------------
@@ -39,6 +33,7 @@ public:
 	//---------------------
 	GLuint const GetProgram() const { return m_ShaderProgram; }
 	std::string const& GetName() const { return m_Name; }
+	std::vector<T_AttributeLocation> const& GetAttributes() const { return m_Attributes; }
 
 	// accessors
 	//---------------------
@@ -53,7 +48,7 @@ private:
 	std::string m_Name;
 
 	std::map<T_Hash, I_Uniform*> m_Uniforms;
-	std::vector<VertexAttribute> m_Attributes;
+	std::vector<T_AttributeLocation> m_Attributes;
 };
 
 //---------------------------------
@@ -88,7 +83,8 @@ private:
 
 	bool ReplaceInclude(std::string &line);
 
-	bool GetUniformLocations(GLuint shaderProgram, std::map<uint32, I_Uniform*> &uniforms);
+	void GetUniformLocations(GLuint const shaderProgram, std::map<uint32, I_Uniform*>& uniforms);
+	void GetAttributes(GLuint const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes);
 
 	RTTR_ENABLE(Asset<ShaderData, false>)
 };

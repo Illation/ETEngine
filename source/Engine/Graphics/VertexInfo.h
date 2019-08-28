@@ -44,10 +44,25 @@ struct AttributeDescriptor
 
 		Half,
 		Float,
-		Double
+		Double,
+
+		Invalid
+	};
+
+	//---------------------------------
+	// DataTypeInfo
+	//
+	// Per DataType information
+	//
+	struct DataTypeInfo
+	{
+		E_DataType type;
+		uint32 typeId;
+		uint16 size;
 	};
 
 	static std::map<E_VertexFlag, AttributeDescriptor const> const s_VertexAttributes;
+	static std::vector<DataTypeInfo> const s_DataTypes;
 
 	// static functionality
 	//----------------------
@@ -55,11 +70,10 @@ struct AttributeDescriptor
 	static uint16 GetVertexSize(T_VertexFlags const flags);
 	static bool ValidateFlags(T_VertexFlags const supportedFlags, T_VertexFlags const requiredFlags);
 	static void DefineAttributeArray(T_VertexFlags const flags, std::vector<int32> const& locations);
-
-	// accessors
-	//-----------
-	uint32 GetDataType() const;
-	uint16 GetDataSize() const;
+	static uint32 GetTypeId(E_DataType const dataType);
+	static uint16 GetTypeSize(E_DataType const dataType);
+	static E_DataType GetDataType(uint32 const typeId);
+	static bool GetVertexFlag(AttributeDescriptor const& desc, E_VertexFlag& flag);
 
 	// Data
 	///////

@@ -13,14 +13,9 @@
 SkyboxMaterial::SkyboxMaterial(T_Hash const assetId) 
 	: Material("Shaders/FwdSkyboxShader.glsl")
 	, m_AssetId(assetId)
-{
-	m_LayoutFlags = E_VertexFlag::POSITION;
+{ 
 	m_DrawForward = true;
-	m_StandardTransform = false;
-}
-
-SkyboxMaterial::~SkyboxMaterial()
-{
+	m_StandardTransform = true;
 }
 
 void SkyboxMaterial::LoadTextures()

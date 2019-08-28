@@ -146,11 +146,8 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 	// Extract uniform info
 	//------------------
 	STATE->SetShader(m_Data);
-
-	std::map<uint32, I_Uniform*> uniforms;
-	GetUniformLocations(shaderProgram, uniforms);
-
-	m_Data->m_Uniforms = uniforms;
+	GetUniformLocations(shaderProgram, m_Data->m_Uniforms);
+	GetAttributes(shaderProgram, m_Data->m_Attributes);
 
 	// all done
 	return true;
@@ -360,7 +357,7 @@ bool ShaderAsset::ReplaceInclude(std::string &line)
 //
 // Extract shader uniforms from a program
 //
-bool ShaderAsset::GetUniformLocations(GLuint shaderProgram, std::map<uint32, I_Uniform*> &uniforms)
+void ShaderAsset::GetUniformLocations(GLuint const shaderProgram, std::map<uint32, I_Uniform*> &uniforms)
 {
 	GLint count;
 	STATE->GetProgramIV(shaderProgram, GL_ACTIVE_UNIFORMS, &count);
@@ -429,19 +426,193 @@ bool ShaderAsset::GetUniformLocations(GLuint shaderProgram, std::map<uint32, I_U
 			case GL_SAMPLER_CUBE:
 				pUni = new Uniform<int32>();
 				break;
-			default:
-				LOG(std::string("unknown uniform type ") + std::to_string(type), Warning);
-				return false;
+			case GL_SAMPLER_2D_SHADOW:
+				pUni = new Uniform<int32>();
 				break;
+			default:
+				LOG(std::string("unknown uniform type ") + std::to_string(type), LogLevel::Warning);
+				return;
 			}
 
 			pUni->name = fullName;
-			pUni->location = i;
+			pUni->location = glGetUniformLocation(shaderProgram, pUni->name.c_str());
+
 			T_Hash const hash = GetHash(fullName);
-			assert(uniforms.find(hash) == uniforms.end());
+			ET_ASSERT(uniforms.find(hash) == uniforms.end());
 			uniforms[hash] = pUni;
 		}
 	}
+}
 
-	return true;
+//---------------------------------
+// ShaderAsset::GetUniformLocations
+//
+// Extract the vertex attributes from a program, provided it has a vertex shader
+//
+void ShaderAsset::GetAttributes(GLuint const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes)
+{
+	GLint count;
+	STATE->GetProgramIV(shaderProgram, GL_ACTIVE_ATTRIBUTES, &count);
+
+	for (GLint i = 0; i < count; i++)
+	{
+		GLint size = 0;
+		GLenum type = 0;
+
+		const GLsizei bufSize = 256;
+		GLchar name[bufSize];
+		GLsizei length = 0;
+
+		STATE->GetActiveAttribute(shaderProgram, (GLuint)i, bufSize, &length, &size, &type, name);
+
+		AttributeDescriptor info;
+		info.name = std::string(name, length);
+
+		switch (type)
+		{
+		case GL_FLOAT:
+			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataCount = 1u;
+			break;
+		case GL_FLOAT_VEC2:
+			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataCount = 2u;
+			break;
+		case GL_FLOAT_VEC3:
+			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataCount = 3u;
+			break;
+		case GL_FLOAT_VEC4:
+			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataCount = 4u;
+			break;
+		case GL_FLOAT_MAT2:
+			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataCount = 4u;
+			break;
+		case GL_FLOAT_MAT3:
+			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataCount = 9u;
+			break;
+		case GL_FLOAT_MAT4:
+			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataCount = 16u;
+			break;
+		case GL_FLOAT_MAT2x3:
+			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataCount = 6u;
+			break;
+		case GL_FLOAT_MAT2x4:
+			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataCount = 8u;
+			break;
+		case GL_FLOAT_MAT3x2:
+			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataCount = 6u;
+			break;
+		case GL_FLOAT_MAT3x4:
+			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataCount = 12u;
+			break;
+		case GL_FLOAT_MAT4x2:
+			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataCount = 8u;
+			break;
+		case GL_FLOAT_MAT4x3:
+			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataCount = 12u;
+			break;
+		case GL_INT:
+			info.dataType = AttributeDescriptor::E_DataType::Int;
+			info.dataCount = 1u;
+			break;
+		case GL_INT_VEC2:
+			info.dataType = AttributeDescriptor::E_DataType::Int;
+			info.dataCount = 2u;
+			break;
+		case GL_INT_VEC3:
+			info.dataType = AttributeDescriptor::E_DataType::Int;
+			info.dataCount = 3u;
+			break;
+		case GL_INT_VEC4:
+			info.dataType = AttributeDescriptor::E_DataType::Int;
+			info.dataCount = 4u;
+			break;
+		case GL_UNSIGNED_INT:
+			info.dataType = AttributeDescriptor::E_DataType::UInt;
+			info.dataCount = 1u;
+			break;
+		case GL_UNSIGNED_INT_VEC2:
+			info.dataType = AttributeDescriptor::E_DataType::UInt;
+			info.dataCount = 2u;
+			break;
+		case GL_UNSIGNED_INT_VEC3:
+			info.dataType = AttributeDescriptor::E_DataType::UInt;
+			info.dataCount = 3u;
+			break;
+		case GL_UNSIGNED_INT_VEC4:
+			info.dataType = AttributeDescriptor::E_DataType::UInt;
+			info.dataCount = 4u;
+			break;
+		case GL_DOUBLE:
+			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataCount = 1u;
+			break;
+		case GL_DOUBLE_VEC2:
+			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataCount = 2u;
+			break;
+		case GL_DOUBLE_VEC3:
+			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataCount = 3u;
+			break;
+		case GL_DOUBLE_VEC4:
+			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataCount = 4u;
+			break;
+		case GL_DOUBLE_MAT2:
+			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataCount = 4u;
+			break;
+		case GL_DOUBLE_MAT3:
+			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataCount = 9u;
+			break;
+		case GL_DOUBLE_MAT4:
+			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataCount = 16u;
+			break;
+		case GL_DOUBLE_MAT2x3:
+			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataCount = 6u;
+			break;
+		case GL_DOUBLE_MAT2x4:
+			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataCount = 8u;
+			break;
+		case GL_DOUBLE_MAT3x2:
+			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataCount = 6u;
+			break;
+		case GL_DOUBLE_MAT3x4:
+			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataCount = 12u;
+			break;
+		case GL_DOUBLE_MAT4x2:
+			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataCount = 8u;
+			break;
+		case GL_DOUBLE_MAT4x3:
+			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataCount = 12u;
+			break;
+		default:
+			LOG(std::string("unknown attribute type ") + std::to_string(type), LogLevel::Warning);
+			return;
+		}
+
+		GLint location = glGetAttribLocation(shaderProgram, info.name.c_str());
+
+		attributes.emplace_back(location, info);
+	}
 }

@@ -660,3 +660,13 @@ void RenderState::GetActiveUniform(GLuint program, GLuint index, GLsizei bufSize
 {
 	glGetActiveUniform(program, index, bufSize, length, size, type, name);
 }
+
+//---------------------------------
+// RenderState::GetActiveAttribute
+//
+// Get information about an attribute in a program at a given index
+//
+void RenderState::GetActiveAttribute(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const
+{
+	glGetActiveAttrib(program, index, bufSize, length, size, type, name);
+}

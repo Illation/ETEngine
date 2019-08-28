@@ -6,13 +6,11 @@ class NullMaterial : public Material
 {
 public:
 	NullMaterial();
-	~NullMaterial();
-private:
-	void LoadTextures();
-	void AccessShaderAttributes();
-
-	void UploadDerivedVariables();
+	virtual ~NullMaterial() = default;
 
 private:
+	void LoadTextures() override {}
+	void AccessShaderAttributes() override {}
+	void UploadDerivedVariables() override {}
 };
 

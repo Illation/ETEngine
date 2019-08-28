@@ -5,21 +5,12 @@
 #include <Engine/Graphics/MeshFilter.h>
 
 
-ParamPBRMaterial::ParamPBRMaterial(vec3 baseCol, float roughness, float metal) :
-	Material("Shaders/DefPBRParamShader.glsl"),
-	m_BaseColor(baseCol),
-	m_Roughness(roughness),
-	m_Metal(metal)
-{
-	m_LayoutFlags = E_VertexFlag::POSITION | E_VertexFlag::NORMAL;
-}
-ParamPBRMaterial::~ParamPBRMaterial()
-{
-}
-
-void ParamPBRMaterial::LoadTextures()
-{
-}
+ParamPBRMaterial::ParamPBRMaterial(vec3 baseCol, float roughness, float metal) 
+	: Material("Shaders/DefPBRParamShader.glsl")
+	, m_BaseColor(baseCol)
+	, m_Roughness(roughness)
+	, m_Metal(metal)
+{}
 
 void ParamPBRMaterial::AccessShaderAttributes()
 {

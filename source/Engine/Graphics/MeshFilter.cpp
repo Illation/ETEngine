@@ -129,11 +129,7 @@ void MeshFilter::BuildVertexBuffer(Material* pMaterial)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
 
 	//Specify Input Layout
-	std::vector<int32> attributeLocations;
-	if (pMaterial->GetAttributeLocations(attributeLocations))
-	{
-		AttributeDescriptor::DefineAttributeArray(layoutFlags, attributeLocations);
-	}
+	AttributeDescriptor::DefineAttributeArray(layoutFlags, pMaterial->GetAttributeLocations());
 
 	//index buffer
 	glGenBuffers(1, &obj.index);

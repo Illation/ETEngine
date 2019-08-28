@@ -12,11 +12,11 @@ public:
 	virtual ~TexPBRMaterial() = default;
 
 	void SetSpecular(float spec) { m_Specular = spec; }
-private:
-	void LoadTextures();
-	void AccessShaderAttributes();
 
-	void UploadDerivedVariables();
+private:
+	void LoadTextures() override;
+	void AccessShaderAttributes() override;
+	void UploadDerivedVariables() override;
 
 private:
 	//Texture

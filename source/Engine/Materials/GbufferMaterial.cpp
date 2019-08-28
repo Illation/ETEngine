@@ -12,9 +12,7 @@ GbufferMaterial::GbufferMaterial() :
 	Material("Shaders/DefUberShader.glsl"),
 	m_DiffuseColor(vec3(0.65f, 0.65f, 0.65f)),
 	m_SpecularColor(vec3(1.0f, 1.0f, 1.0f))
-{
-	m_LayoutFlags = E_VertexFlag::POSITION | E_VertexFlag::NORMAL | E_VertexFlag::TANGENT | E_VertexFlag::TEXCOORD;
-}
+{ }
 
 void GbufferMaterial::SetDiffuseTexture(T_Hash const id)
 {
