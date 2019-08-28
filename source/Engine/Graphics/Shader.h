@@ -16,24 +16,44 @@ class I_Uniform;
 //
 class ShaderData final
 {
+	// definitions
+	//---------------------
+	friend class ShaderAsset;
+
 public:
+	struct VertexAttribute
+	{
+		int32 location = -1;
+		std::string name;
+		int32 size;
+		GLenum type;
+	};
+
+	// Construct destruct
+	//---------------------
 	ShaderData() = default;
 	ShaderData(GLuint shaderProg);
 	~ShaderData();
 
+	// accessors
+	//---------------------
 	GLuint const GetProgram() const { return m_ShaderProgram; }
 	std::string const& GetName() const { return m_Name; }
 
+	// accessors
+	//---------------------
 	template<typename T>
-	bool Upload(uint32 uniform, const T &data)const;
+	bool Upload(T_Hash const uniform, const T &data) const;
+
+	// Data
+	///////
 private:
-	friend class ShaderAsset;
-	friend class ShaderLoader;
 
 	GLuint m_ShaderProgram;
 	std::string m_Name;
 
-	std::map<uint32, I_Uniform*> m_Uniforms;
+	std::map<T_Hash, I_Uniform*> m_Uniforms;
+	std::vector<VertexAttribute> m_Attributes;
 };
 
 //---------------------------------

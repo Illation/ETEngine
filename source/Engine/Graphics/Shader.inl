@@ -13,10 +13,10 @@
 // Upload a uniform in the shader the GPU
 //
 template<typename T>
-bool ShaderData::Upload(uint32 uniform, const T &data) const
+bool ShaderData::Upload(T_Hash const uniform, const T &data) const
 {
 	// Try finding the uniform
-	auto it = m_Uniforms.find(uniform);
+	auto const it = m_Uniforms.find(uniform);
 
 	// If we find it, cast to uniform template specialization and upload
 	if (it != m_Uniforms.cend())

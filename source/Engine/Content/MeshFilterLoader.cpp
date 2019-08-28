@@ -128,7 +128,7 @@ MeshFilter* MeshFilterLoader::LoadAssimp(const std::vector<uint8>& binaryContent
 	if (pAssimpMesh->mNumVertices > 0)
 	{
 		LOG(loadingString + " . . . adding positions          ", Info, false, logPos);
-		pMesh->m_SupportedFlags |= VertexFlags::POSITION;
+		pMesh->m_SupportedFlags |= E_VertexFlag::POSITION;
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
 		{
 			pMesh->m_Positions.push_back(vec3(
@@ -151,7 +151,7 @@ MeshFilter* MeshFilterLoader::LoadAssimp(const std::vector<uint8>& binaryContent
 	if (pAssimpMesh->HasNormals())
 	{
 		LOG(loadingString + " . . . adding normals          ", Info, false, logPos);
-		pMesh->m_SupportedFlags |= VertexFlags::NORMAL;
+		pMesh->m_SupportedFlags |= E_VertexFlag::NORMAL;
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
 		{
 			pMesh->m_Normals.push_back(vec3(
@@ -163,8 +163,8 @@ MeshFilter* MeshFilterLoader::LoadAssimp(const std::vector<uint8>& binaryContent
 	if (pAssimpMesh->HasTangentsAndBitangents())
 	{
 		LOG(loadingString + " . . . adding (bi)tangents          ", Info, false, logPos);
-		pMesh->m_SupportedFlags |= VertexFlags::TANGENT;
-		pMesh->m_SupportedFlags |= VertexFlags::BINORMAL;
+		pMesh->m_SupportedFlags |= E_VertexFlag::TANGENT;
+		pMesh->m_SupportedFlags |= E_VertexFlag::BINORMAL;
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
 		{
 			pMesh->m_Tangents.push_back(vec3(
@@ -180,7 +180,7 @@ MeshFilter* MeshFilterLoader::LoadAssimp(const std::vector<uint8>& binaryContent
 	if (pAssimpMesh->HasVertexColors(0))
 	{
 		LOG(loadingString + " . . . adding vertex colors          ", Info, false, logPos);
-		pMesh->m_SupportedFlags |= VertexFlags::COLOR;
+		pMesh->m_SupportedFlags |= E_VertexFlag::COLOR;
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
 		{
 			pMesh->m_Colors.push_back(vec4(
@@ -193,7 +193,7 @@ MeshFilter* MeshFilterLoader::LoadAssimp(const std::vector<uint8>& binaryContent
 	if (pAssimpMesh->HasTextureCoords(0))
 	{
 		LOG(loadingString + " . . . adding texCoords          ", Info, false, logPos);
-		pMesh->m_SupportedFlags |= VertexFlags::TEXCOORD;
+		pMesh->m_SupportedFlags |= E_VertexFlag::TEXCOORD;
 		if(!(pAssimpMesh->mNumUVComponents[0] == 2)) LOG("UV dimensions don't match internal layout!", Warning);
 		for (size_t i = 0; i < pAssimpMesh->mNumVertices; i++)
 		{

@@ -11,7 +11,7 @@ ParamPBRMaterial::ParamPBRMaterial(vec3 baseCol, float roughness, float metal) :
 	m_Roughness(roughness),
 	m_Metal(metal)
 {
-	m_LayoutFlags = VertexFlags::POSITION | VertexFlags::NORMAL;
+	m_LayoutFlags = E_VertexFlag::POSITION | E_VertexFlag::NORMAL;
 }
 ParamPBRMaterial::~ParamPBRMaterial()
 {

@@ -1348,7 +1348,7 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 					meshFilters.clear();
 					return false;
 				}
-				pMesh->m_SupportedFlags |= VertexFlags::POSITION;
+				pMesh->m_SupportedFlags |= E_VertexFlag::POSITION;
 				pMesh->m_VertexCount = pMesh->GetPositions().size();
 			}
 
@@ -1362,7 +1362,7 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 					meshFilters.clear();
 					return false;
 				}
-				pMesh->m_SupportedFlags |= VertexFlags::TEXCOORD;
+				pMesh->m_SupportedFlags |= E_VertexFlag::TEXCOORD;
 				if (primitive.attributes.texcoord1 != -1)
 				{
 					LOG("ETEngine currently supports only one set of texture coordinates for meshes", Warning);
@@ -1377,7 +1377,7 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 					meshFilters.clear();
 					return false;
 				}
-				pMesh->m_SupportedFlags |= VertexFlags::TEXCOORD;
+				pMesh->m_SupportedFlags |= E_VertexFlag::TEXCOORD;
 			}
 
 			//Normal and tangent info
@@ -1390,7 +1390,7 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 					meshFilters.clear();
 					return false;
 				}
-				pMesh->m_SupportedFlags |= VertexFlags::NORMAL;
+				pMesh->m_SupportedFlags |= E_VertexFlag::NORMAL;
 
 				std::vector<vec4> tangentInfo;
 				if (primitive.attributes.tangent != -1)
@@ -1419,7 +1419,7 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 					meshFilters.clear();
 					return false;
 				}
-				pMesh->m_SupportedFlags |= VertexFlags::COLOR;
+				pMesh->m_SupportedFlags |= E_VertexFlag::COLOR;
 			}
 
 			//Animation

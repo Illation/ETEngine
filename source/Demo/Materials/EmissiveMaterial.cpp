@@ -9,7 +9,7 @@ EmissiveMaterial::EmissiveMaterial(vec3 col):
 	Material("Shaders/FwdEmissiveShader.glsl"),
 	m_Color(col)
 {
-	m_LayoutFlags = VertexFlags::POSITION | VertexFlags::NORMAL | VertexFlags::TANGENT | VertexFlags::TEXCOORD;
+	m_LayoutFlags = E_VertexFlag::POSITION | E_VertexFlag::NORMAL | E_VertexFlag::TANGENT | E_VertexFlag::TEXCOORD;
 	m_DrawForward = true;
 }
 EmissiveMaterial::~EmissiveMaterial()

@@ -1,29 +1,13 @@
 #pragma once
+#include "VertexInfo.h"
 
 class Material;
 
 namespace glTF { class MeshFilterConstructor; };
 
-enum VertexFlags
-{
-	POSITION = 1 << 0,
-	NORMAL   = 1 << 1,
-	BINORMAL = 1 << 2,
-	TANGENT  = 1 << 3,
-	COLOR    = 1 << 4,
-	TEXCOORD = 1 << 5
-};
-
-struct AttributeDescriptor
-{
-	std::string name;
-	GLenum dataType;
-	uint32 dataSize;
-};
-
 struct VertexObject
 {
-	uint32 flags;
+	T_VertexFlags flags;
 	GLuint array;
 	GLuint buffer;
 	GLuint index;
@@ -45,7 +29,6 @@ public:
 
 	const VertexObject& GetVertexObject(Material* pMaterial);
 
-	static std::map<VertexFlags, AttributeDescriptor> LayoutAttributes;
 	size_t GetIndexCount() { return m_IndexCount; }
 
 	Sphere* GetBoundingSphere();
@@ -71,14 +54,12 @@ private:
 	friend class MeshFilterLoader;
 	friend class ModelComponent;
 
-	int32 GetVertexObjectId(uint32 flags);
+	int32 GetVertexObjectId(T_VertexFlags const flags);
 	void BuildVertexBuffer(Material* pMaterial);
 	bool HasElement(uint32 flags){ return (m_SupportedFlags&flags) > 0 ? true : false; }
 
-	std::string PrintFlags(uint32 flags);
-
 	size_t m_VertexCount = 0, m_IndexCount = 0;
-	uint32 m_SupportedFlags = 0;
+	T_VertexFlags m_SupportedFlags = 0;
 	std::vector<vec3> m_Positions;
 	std::vector<vec3> m_Normals;
 	std::vector<vec3> m_BiNormals;

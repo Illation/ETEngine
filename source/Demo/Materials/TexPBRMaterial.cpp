@@ -16,7 +16,7 @@ TexPBRMaterial::TexPBRMaterial(T_Hash const bcId, T_Hash const roughId, T_Hash c
 	, m_AoId(aoId)
 	, m_NormalId(normId)
 {
-	m_LayoutFlags = VertexFlags::POSITION | VertexFlags::NORMAL | VertexFlags::TANGENT | VertexFlags::TEXCOORD;
+	m_LayoutFlags = E_VertexFlag::POSITION | E_VertexFlag::NORMAL | E_VertexFlag::TANGENT | E_VertexFlag::TEXCOORD;
 }
 
 void TexPBRMaterial::LoadTextures()

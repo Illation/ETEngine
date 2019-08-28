@@ -364,6 +364,7 @@ bool ShaderAsset::GetUniformLocations(GLuint shaderProgram, std::map<uint32, I_U
 {
 	GLint count;
 	STATE->GetProgramIV(shaderProgram, GL_ACTIVE_UNIFORMS, &count);
+
 	for (GLint i = 0; i < count; i++)
 	{
 		GLint size;
@@ -433,12 +434,14 @@ bool ShaderAsset::GetUniformLocations(GLuint shaderProgram, std::map<uint32, I_U
 				return false;
 				break;
 			}
+
 			pUni->name = fullName;
 			pUni->location = i;
-			T_Hash hash = GetHash(fullName);
+			T_Hash const hash = GetHash(fullName);
 			assert(uniforms.find(hash) == uniforms.end());
 			uniforms[hash] = pUni;
 		}
 	}
+
 	return true;
 }

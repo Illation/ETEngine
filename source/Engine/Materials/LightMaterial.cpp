@@ -13,7 +13,7 @@ LightMaterial::LightMaterial(vec3 col):
 	Material("Shaders/FwdLightPointShader.glsl"),
 	m_Color(col)
 {
-	m_LayoutFlags = VertexFlags::POSITION;
+	m_LayoutFlags = E_VertexFlag::POSITION;
 	m_DrawForward = true;
 }
 LightMaterial::~LightMaterial()

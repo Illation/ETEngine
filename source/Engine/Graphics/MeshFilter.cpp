@@ -9,16 +9,6 @@
 #include "Material.h"
 
 
-std::map<VertexFlags, AttributeDescriptor> MeshFilter::LayoutAttributes =
-{
-	{ POSITION,	{ "position",	GL_FLOAT, 3 } },
-	{ NORMAL,	{ "normal",		GL_FLOAT, 3 } },
-	{ BINORMAL,	{ "binormal",	GL_FLOAT, 3 } },
-	{ TANGENT,	{ "tangent",	GL_FLOAT, 3 } },
-	{ COLOR,	{ "color",		GL_FLOAT, 3 } },
-	{ TEXCOORD,	{ "texcoord",	GL_FLOAT, 2 } }
-};
-
 Sphere* MeshFilter::GetBoundingSphere()
 {
 	return &m_BoundingSphere;
@@ -56,7 +46,7 @@ const VertexObject& MeshFilter::GetVertexObject(Material* pMaterial)
 	return m_Objects[index];
 }
 
-int32 MeshFilter::GetVertexObjectId(uint32 flags)
+int32 MeshFilter::GetVertexObjectId(T_VertexFlags const flags)
 {
 	for (uint32 i = 0; i<m_Objects.size(); ++i)
 	{
@@ -69,66 +59,60 @@ int32 MeshFilter::GetVertexObjectId(uint32 flags)
 void MeshFilter::BuildVertexBuffer(Material* pMaterial)
 {
 	uint32 layoutFlags = pMaterial->GetLayoutFlags();
+
 	//Check if VertexBufferInfo already exists with requested InputLayout
 	if (GetVertexObjectId(layoutFlags) >= 0)
-		return;
-	//Determine stride of vertex layout
-	uint32 stride = 0;
-	for (auto it = LayoutAttributes.begin(); it != LayoutAttributes.end(); ++it)
 	{
-		if (layoutFlags & it->first)//material requires this data
-		{
-			if (m_SupportedFlags & it->first)stride += it->second.dataSize;//filter can provide this data
-			else
-			{
-				std::string FailString = "Failed to build vertex buffer, mesh filter cannot provide required data\n";
-				FailString += "required data: "; 
-				FailString += PrintFlags(layoutFlags);
-				FailString += "\nprovided data: "; 
-				FailString += PrintFlags(m_SupportedFlags);FailString += "\n";
-				LOG(FailString.c_str(), LogLevel::Error);
-				return;
-			}
-		}
+		return;
 	}
+
+	//Determine stride of vertex layout
+	ET_ASSERT(AttributeDescriptor::ValidateFlags(m_SupportedFlags, layoutFlags),
+		"Failed to build vertex buffer, mesh filter cannot provide required data\n"
+		"required data: %s\n"
+		"provided data: %s\n",
+		AttributeDescriptor::PrintFlags(layoutFlags),
+		AttributeDescriptor::PrintFlags(m_SupportedFlags));
+	
 	//Initialize datastructure
 	std::vector<float> vertices;
-	vertices.reserve(m_VertexCount*stride);
+	vertices.reserve(m_VertexCount * (AttributeDescriptor::GetVertexSize(layoutFlags) / sizeof(float)));
+
 	//Add data if material uses attribute
 	for (size_t i = 0; i < m_VertexCount; i++)
 	{
-		if (layoutFlags & VertexFlags::POSITION)
+		if (layoutFlags & E_VertexFlag::POSITION)
 		{
 			vertices.push_back(m_Positions[i].x);
 			vertices.push_back(m_Positions[i].y);
 			vertices.push_back(m_Positions[i].z);
 		}
-		if (layoutFlags & VertexFlags::NORMAL)
+		if (layoutFlags & E_VertexFlag::NORMAL)
 		{
 			vertices.push_back(m_Normals[i].x);
 			vertices.push_back(m_Normals[i].y);
 			vertices.push_back(m_Normals[i].z);
 		}
-		if (layoutFlags & VertexFlags::BINORMAL)
+		if (layoutFlags & E_VertexFlag::BINORMAL)
 		{
 			vertices.push_back(m_BiNormals[i].x);
 			vertices.push_back(m_BiNormals[i].y);
 			vertices.push_back(m_BiNormals[i].z);
 		}
-		if (layoutFlags & VertexFlags::TANGENT)
+		if (layoutFlags & E_VertexFlag::TANGENT)
 		{
 			vertices.push_back(m_Tangents[i].x);
 			vertices.push_back(m_Tangents[i].y);
 			vertices.push_back(m_Tangents[i].z);
 		}
-		if (layoutFlags & VertexFlags::COLOR)
+		if (layoutFlags & E_VertexFlag::COLOR)
 		{
 			vertices.push_back(m_Colors[i].x);
 			vertices.push_back(m_Colors[i].y);
 			vertices.push_back(m_Colors[i].z);
 			//vertices.push_back(m_Colors[i][3]);//not sure which variable to choose
 		}
-		if (layoutFlags & VertexFlags::TEXCOORD)
+		if (layoutFlags & E_VertexFlag::TEXCOORD)
 		{
 			vertices.push_back(m_TexCoords[i].x);
 			vertices.push_back(m_TexCoords[i].y);
@@ -138,12 +122,19 @@ void MeshFilter::BuildVertexBuffer(Material* pMaterial)
 	VertexObject obj;
 	glGenVertexArrays(1, &obj.array);
 	STATE->BindVertexArray(obj.array);
+
 	//Vertex Buffer Object
 	glGenBuffers(1, &obj.buffer);
 	STATE->BindBuffer(GL_ARRAY_BUFFER, obj.buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
+
 	//Specify Input Layout
-	pMaterial->SpecifyInputLayout();
+	std::vector<int32> attributeLocations;
+	if (pMaterial->GetAttributeLocations(attributeLocations))
+	{
+		AttributeDescriptor::DefineAttributeArray(layoutFlags, attributeLocations);
+	}
+
 	//index buffer
 	glGenBuffers(1, &obj.index);
 	STATE->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj.index);
@@ -251,37 +242,7 @@ bool MeshFilter::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 		m_Tangents.push_back(tangentInfo[i].xyz);
 		m_BiNormals.push_back(etm::cross(m_Normals[i], tangentInfo[i].xyz) * tangentInfo[i].w);
 	}
-	m_SupportedFlags |= VertexFlags::TANGENT;
-	m_SupportedFlags |= VertexFlags::BINORMAL;
+	m_SupportedFlags |= E_VertexFlag::TANGENT;
+	m_SupportedFlags |= E_VertexFlag::BINORMAL;
 	return true;
-}
-
-std::string MeshFilter::PrintFlags(uint32 flags)
-{
-	std::string flagstring;
-	if (flags & VertexFlags::POSITION)//material requires this data
-	{
-		flagstring += "POSITION, ";
-	}
-	if (flags & VertexFlags::NORMAL)//material requires this data
-	{
-		flagstring += "NORMAL, ";
-	}
-	if (flags & VertexFlags::BINORMAL)//material requires this data
-	{
-		flagstring += "BINORMAL, ";
-	}
-	if (flags & VertexFlags::TANGENT)//material requires this data
-	{
-		flagstring += "TANGENT, ";
-	}
-	if (flags & VertexFlags::COLOR)//material requires this data
-	{
-		flagstring += "COLOR, ";
-	}
-	if (flags & VertexFlags::TEXCOORD)//material requires this data
-	{
-		flagstring += "TEXCOORD, ";
-	}
-	return flagstring;
 }

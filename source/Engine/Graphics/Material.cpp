@@ -63,28 +63,26 @@ void Material::UploadVariables(mat4 matModel, const mat4 &matWVP)
 	UploadDerivedVariables();
 }
 
-void Material::SpecifyInputLayout()
+bool Material::GetAttributeLocations(std::vector<int32>& locations) const
 {
-	uint32 stride = 0;
-	for (auto it = MeshFilter::LayoutAttributes.begin(); it != MeshFilter::LayoutAttributes.end(); ++it)
-	{
-		if (m_LayoutFlags & it->first) stride += it->second.dataSize;
-	}
-	uint32 startPos = 0;
-	for (auto it = MeshFilter::LayoutAttributes.begin(); it != MeshFilter::LayoutAttributes.end(); ++it)
+	for (auto it = AttributeDescriptor::s_VertexAttributes.begin(); it != AttributeDescriptor::s_VertexAttributes.end(); ++it)
 	{
 		if (m_LayoutFlags & it->first)
 		{
-			const char* name = it->second.name.c_str();
-			GLint attrib = glGetAttribLocation(m_Shader->GetProgram(), name);
+			char const* attribName = it->second.name.c_str();
+			GLint attrib = glGetAttribLocation(m_Shader->GetProgram(), attribName);
+
 			if (attrib >= 0)
 			{
-				glEnableVertexAttribArray(attrib);
-				glVertexAttribPointer(attrib, it->second.dataSize, it->second.dataType, GL_FALSE,
-					stride * sizeof(GLfloat), (void*)(startPos * sizeof(GLfloat)));
-				startPos += it->second.dataSize;
+				locations.emplace_back(attrib);
 			}
-			else LOG("Could not bind attribute '" + std::string(name) + "' to shader: " + m_Shader->GetName(), LogLevel::Error);
+			else
+			{
+				LOG(FS("Could not find attribute '%s' in shader '%s'!", attribName, m_Shader->GetName().c_str()), LogLevel::Error);
+				return false;
+			}
 		}
 	}
+
+	return true;
 }
