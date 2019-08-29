@@ -38,13 +38,6 @@ void Material::Initialize()
 
 		//Jup (maybe temporary with texture manager)
 		LoadTextures();
-
-		//Get Access to uniforms
-		if(m_StandardTransform)
-		{
-			m_UniMatModel = glGetUniformLocation(m_Shader->GetProgram(), "model");
-			m_UniMatWVP = glGetUniformLocation(m_Shader->GetProgram(), "worldViewProj");
-		}
 		AccessShaderAttributes();
 
 		m_IsInitialized = true;
@@ -57,10 +50,8 @@ void Material::UploadVariables(mat4 matModel)
 	//Upload matrices
 	if (m_StandardTransform)
 	{
-		//m_Shader->Upload("model"_hash, matModel);
-		//m_Shader->Upload("worldViewProj"_hash, CAMERA->GetViewProj());
-		glUniformMatrix4fv(m_UniMatModel, 1, GL_FALSE, etm::valuePtr(matModel));
-		glUniformMatrix4fv(m_UniMatWVP, 1, GL_FALSE, etm::valuePtr(CAMERA->GetViewProj()));
+		m_Shader->Upload("model"_hash, matModel);
+		m_Shader->Upload("worldViewProj"_hash, CAMERA->GetViewProj());
 	}
 
 	UploadDerivedVariables();
@@ -72,10 +63,8 @@ void Material::UploadVariables(mat4 matModel, const mat4 &matWVP)
 	//Upload matrices
 	if (m_StandardTransform)
 	{
-		//m_Shader->Upload("model"_hash, matModel);
-		//m_Shader->Upload("worldViewProj"_hash, matWVP);
-		glUniformMatrix4fv(m_UniMatModel, 1, GL_FALSE, etm::valuePtr(matModel));
-		glUniformMatrix4fv(m_UniMatWVP, 1, GL_FALSE, etm::valuePtr(matWVP));
+		m_Shader->Upload("model"_hash, matModel);
+		m_Shader->Upload("worldViewProj"_hash, matWVP);
 	}
 
 	UploadDerivedVariables();

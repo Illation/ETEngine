@@ -436,6 +436,7 @@ void ShaderAsset::GetUniformLocations(GLuint const shaderProgram, std::map<uint3
 
 			pUni->name = fullName;
 			pUni->location = glGetUniformLocation(shaderProgram, pUni->name.c_str());
+			pUni->Init(shaderProgram);
 
 			T_Hash const hash = GetHash(fullName);
 			ET_ASSERT(uniforms.find(hash) == uniforms.end());

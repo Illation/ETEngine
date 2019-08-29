@@ -32,9 +32,6 @@ protected:
 
 	AssetPtr<ShaderData> m_Shader;
 
-	GLint m_UniMatModel;
-	GLint m_UniMatWVP;
-
 private:
 	T_VertexFlags m_LayoutFlags = 0u;
 	std::vector<int32> m_AttributeLocations;
