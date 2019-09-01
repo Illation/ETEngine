@@ -80,7 +80,7 @@ void PhysicsTestScene::Initialize()
 	//*************************
 	//Floor
 	{
-		auto pModelComp = new ModelComponent("Resources/Models/cube.dae");
+		auto pModelComp = new ModelComponent("cube.dae"_hash);
 		pModelComp->SetMaterial(m_pFloorMat);
 		auto pFloor = new Entity();
 		pFloor->AddComponent(pModelComp);
@@ -106,7 +106,7 @@ void PhysicsTestScene::Initialize()
 	{
 		for (size_t i = 0; i < amountPerRow; i++)
 		{
-			auto pModelComp = new ModelComponent("Resources/Models/cube.dae");
+			auto pModelComp = new ModelComponent("cube.dae"_hash);
 			pModelComp->SetMaterial(m_pBlockMat);
 			auto pBlock = new Entity();
 			pBlock->AddComponent(pModelComp);
@@ -133,7 +133,7 @@ void PhysicsTestScene::Initialize()
 	//**************************
 
 	//Directional
-	auto pModelComp1 = new ModelComponent("Resources/Models/sphere.dae");
+	auto pModelComp1 = new ModelComponent("sphere.dae"_hash);
 	pModelComp1->SetMaterial(m_pLightMat);
 	m_pLightEntity = new Entity();
 	m_pLightEntity->AddComponent(pModelComp1);
@@ -213,7 +213,7 @@ void PhysicsTestScene::Update()
 
 	if(INPUT->GetMouseButton(E_MouseButton::Right) == E_KeyState::Pressed)
 	{
-		auto pModelComp = new ModelComponent("Resources/Models/sphere.dae");
+		auto pModelComp = new ModelComponent("sphere.dae"_hash);
 		pModelComp->SetMaterial(m_pBallMat);
 		auto pBall = new Entity();
 		pBall->AddComponent(pModelComp);

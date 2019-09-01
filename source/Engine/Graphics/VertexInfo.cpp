@@ -2,36 +2,104 @@
 #include "VertexInfo.h"
 
 
+//================
+// Data Type Info
+//================
+
+
+// static definition for vertex data types
+std::vector<DataTypeInfo> const DataTypeInfo::s_DataTypes =
+{
+	{ E_DataType::Byte,		GL_BYTE,			1 },
+	{ E_DataType::UByte,	GL_UNSIGNED_BYTE,	1 },
+	{ E_DataType::Short,	GL_SHORT,			2 },
+	{ E_DataType::UShort,	GL_UNSIGNED_SHORT,	2 },
+	{ E_DataType::Int,		GL_INT,				4 },
+	{ E_DataType::UInt,		GL_UNSIGNED_INT,	4 },
+	{ E_DataType::Half,		GL_HALF_FLOAT,		2 },
+	{ E_DataType::Float,	GL_FLOAT,			4 },
+	{ E_DataType::Double,	GL_DOUBLE,			8 }
+};
+
+
+//-------------------------------------------
+// AttributeDescriptor::GetTypeId
+//
+// Converts an attribute data type into the OpenGL equivalent
+//
+uint32 DataTypeInfo::GetTypeId(E_DataType const dataType)
+{
+	auto const typeIt = std::find_if(s_DataTypes.cbegin(), s_DataTypes.cend(), [dataType](DataTypeInfo const& typeInfo)
+	{
+		return typeInfo.type == dataType;
+	});
+
+	if (typeIt == s_DataTypes.cend())
+	{
+		ET_ASSERT(false, "Data type not implemented!");
+		return 0u;
+	}
+
+	return typeIt->typeId;
+}
+
+//-------------------------------------------
+// AttributeDescriptor::GetTypeSize
+//
+// Gets the size in bytes of an attribute data type
+//
+uint16 DataTypeInfo::GetTypeSize(E_DataType const dataType)
+{
+	auto const typeIt = std::find_if(s_DataTypes.cbegin(), s_DataTypes.cend(), [dataType](DataTypeInfo const& typeInfo)
+	{
+		return typeInfo.type == dataType;
+	});
+
+	if (typeIt == s_DataTypes.cend())
+	{
+		ET_ASSERT(false, "Data type not implemented!");
+		return 0u;
+	}
+
+	return typeIt->size;
+}
+
+//-------------------------------------------
+// DataTypeInfo::GetDataType
+//
+// Gets a data type from its ID
+//
+E_DataType DataTypeInfo::GetDataType(uint32 const typeId)
+{
+	auto const typeIt = std::find_if(s_DataTypes.cbegin(), s_DataTypes.cend(), [typeId](DataTypeInfo const& typeInfo)
+	{
+		return typeInfo.typeId == typeId;
+	});
+
+	if (typeIt == s_DataTypes.cend())
+	{
+		ET_ASSERT(false, "Data type not implemented!");
+		return E_DataType::Invalid;
+	}
+
+	return typeIt->type;
+}
+
+
 //======================
 // Attribute Descriptor
 //======================
 
 
-// statics
-
-// definition for how vertex data should be laid out in a shader and mesh
+// static definition for how vertex data should be laid out in a shader and mesh
 std::map<E_VertexFlag, AttributeDescriptor const> const AttributeDescriptor::s_VertexAttributes =
 {
-	{ E_VertexFlag::POSITION,	{ "position",	AttributeDescriptor::E_DataType::Float, 3 } },
-	{ E_VertexFlag::NORMAL,		{ "normal",		AttributeDescriptor::E_DataType::Float, 3 } },
-	{ E_VertexFlag::BINORMAL,	{ "binormal",	AttributeDescriptor::E_DataType::Float, 3 } },
-	{ E_VertexFlag::TANGENT,	{ "tangent",	AttributeDescriptor::E_DataType::Float, 3 } },
-	{ E_VertexFlag::COLOR,		{ "color",		AttributeDescriptor::E_DataType::Float, 3 } },
-	{ E_VertexFlag::TEXCOORD,	{ "texcoord",	AttributeDescriptor::E_DataType::Float, 2 } }
-};
-
-// definition for vertex data types
-std::vector<AttributeDescriptor::DataTypeInfo> const AttributeDescriptor::s_DataTypes =
-{
-	{ AttributeDescriptor::E_DataType::Byte,	GL_BYTE,			1 },
-	{ AttributeDescriptor::E_DataType::UByte,	GL_UNSIGNED_BYTE,	1 },
-	{ AttributeDescriptor::E_DataType::Short,	GL_SHORT,			2 },
-	{ AttributeDescriptor::E_DataType::UShort,	GL_UNSIGNED_SHORT,	2 },
-	{ AttributeDescriptor::E_DataType::Int,		GL_INT,				4 },
-	{ AttributeDescriptor::E_DataType::UInt,	GL_UNSIGNED_INT,	4 },
-	{ AttributeDescriptor::E_DataType::Half,	GL_HALF_FLOAT,		2 },
-	{ AttributeDescriptor::E_DataType::Float,	GL_FLOAT,			4 },
-	{ AttributeDescriptor::E_DataType::Double,	GL_DOUBLE,			8 }
+	{ E_VertexFlag::POSITION,	{ "position",	E_DataType::Float, 3 } },
+	{ E_VertexFlag::NORMAL,		{ "normal",		E_DataType::Float, 3 } },
+	{ E_VertexFlag::BINORMAL,	{ "binormal",	E_DataType::Float, 3 } },
+	{ E_VertexFlag::TANGENT,	{ "tangent",	E_DataType::Float, 3 } },
+	{ E_VertexFlag::COLOR,		{ "color",		E_DataType::Float, 3 } },
+	{ E_VertexFlag::TEXCOORD,	{ "texcoord",	E_DataType::Float, 2 } }
 };
 
 
@@ -68,7 +136,7 @@ uint16 AttributeDescriptor::GetVertexSize(T_VertexFlags const flags)
 	{
 		if (flags & attributeIt.first)
 		{
-			size += attributeIt.second.dataCount * GetTypeSize(attributeIt.second.dataType);
+			size += attributeIt.second.dataCount * DataTypeInfo::GetTypeSize(attributeIt.second.dataType);
 		}
 	}
 
@@ -113,12 +181,12 @@ void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const flags, std::v
 			glEnableVertexAttribArray(locations[locationIdx]);
 			glVertexAttribPointer(locations[locationIdx],
 				it->second.dataCount,
-				GetTypeId(it->second.dataType),
+				DataTypeInfo::GetTypeId(it->second.dataType),
 				GL_FALSE,
 				stride,
 				static_cast<char const*>(0) + startPos);
 
-			startPos += it->second.dataCount * GetTypeSize(it->second.dataType); // the next attribute starts after this one
+			startPos += it->second.dataCount * DataTypeInfo::GetTypeSize(it->second.dataType); // the next attribute starts after this one
 			++locationIdx;
 		}
 	}
@@ -128,66 +196,46 @@ void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const flags, std::v
 }
 
 //-------------------------------------------
-// AttributeDescriptor::GetTypeId
+// AttributeDescriptor::DefineAttributeArray
 //
-// Converts an attribute data type into the OpenGL equivalent
+// Enables vertex attributes for flags, given a list of locations matching the number of on flags in order of E_VertexFlag
+//  - the locations are defined as a subset of supported vertex types, assuming all supported types are in a buffer on the GPU
 //
-uint32 AttributeDescriptor::GetTypeId(E_DataType const dataType)
+void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const supportedFlags, T_VertexFlags const targetFlags, std::vector<int32> const& locations)
 {
-	auto const typeIt = std::find_if(s_DataTypes.cbegin(), s_DataTypes.cend(), [dataType](DataTypeInfo const& typeInfo)
-		{
-			return typeInfo.type == dataType;
-		});
+	uint16 const stride = AttributeDescriptor::GetVertexSize(supportedFlags);
 
-	if (typeIt == s_DataTypes.cend())
+	uint32 startPos = 0u;
+	size_t locationIdx = 0u;
+	for (auto it = AttributeDescriptor::s_VertexAttributes.begin(); it != AttributeDescriptor::s_VertexAttributes.end(); ++it)
 	{
-		ET_ASSERT(false, "Data type not implemented!");
-		return 0u;
+		if (supportedFlags & it->first) // if the flag is supported we need to at least increment the pointer offset
+		{
+			if (targetFlags & it->first) 
+			{
+				ET_ASSERT(locationIdx < locations.size());
+
+				glEnableVertexAttribArray(locations[locationIdx]);
+				glVertexAttribPointer(locations[locationIdx],
+					it->second.dataCount,
+					DataTypeInfo::GetTypeId(it->second.dataType),
+					GL_FALSE,
+					stride,
+					static_cast<char const*>(0) + startPos);
+
+				++locationIdx;
+			}
+
+			startPos += it->second.dataCount * DataTypeInfo::GetTypeSize(it->second.dataType); // the next attribute starts after this one
+		}
+		else
+		{
+			ET_ASSERT(!(targetFlags & it->first), "Supported flags don't include '%s' - input layout will be invalid", it->second.name.c_str());
+		}
 	}
 
-	return typeIt->typeId;
-}
-
-//-------------------------------------------
-// AttributeDescriptor::GetTypeSize
-//
-// Gets the size in bytes of an attribute data type
-//
-uint16 AttributeDescriptor::GetTypeSize(E_DataType const dataType)
-{
-	auto const typeIt = std::find_if(s_DataTypes.cbegin(), s_DataTypes.cend(), [dataType](DataTypeInfo const& typeInfo)
-		{
-			return typeInfo.type == dataType;
-		});
-
-	if (typeIt == s_DataTypes.cend())
-	{
-		ET_ASSERT(false, "Data type not implemented!");
-		return 0u;
-	}
-
-	return typeIt->size;
-}
-
-//-------------------------------------------
-// AttributeDescriptor::GetDataType
-//
-// Gets a data type from its ID
-//
-AttributeDescriptor::E_DataType AttributeDescriptor::GetDataType(uint32 const typeId)
-{
-	auto const typeIt = std::find_if(s_DataTypes.cbegin(), s_DataTypes.cend(), [typeId](DataTypeInfo const& typeInfo)
-		{
-			return typeInfo.typeId == typeId;
-		});
-
-	if (typeIt == s_DataTypes.cend())
-	{
-		ET_ASSERT(false, "Data type not implemented!");
-		return E_DataType::Invalid;
-	}
-
-	return typeIt->type;
+	// make sure all flags had locations and vice versa
+	ET_ASSERT(locationIdx == locations.size());
 }
 
 //-------------------------------------------

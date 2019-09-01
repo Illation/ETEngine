@@ -19,7 +19,7 @@ void Skybox::Initialize()
 	//Add them componentz
 	m_pMaterial = new SkyboxMaterial(m_AssetId);
 
-	auto pModel = new ModelComponent("Resources/Models/cube.dae");
+	auto pModel = new ModelComponent("cube.dae"_hash);
 	pModel->SetCullMode(ModelComponent::CullMode::DISABLED);//Always draw
 	pModel->SetMaterial(m_pMaterial);
 	AddComponent(pModel);

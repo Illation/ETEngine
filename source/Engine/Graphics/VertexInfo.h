@@ -1,6 +1,52 @@
 #pragma once
 
 
+//---------------------------------
+// E_DataType
+//
+// Per attribute data type
+//
+enum class E_DataType
+{
+	Byte,
+	UByte,
+	Short,
+	UShort,
+	Int,
+	UInt,
+
+	Half,
+	Float,
+	Double,
+
+	Invalid
+};
+
+//---------------------------------
+// DataTypeInfo
+//
+// Per DataType information
+//
+struct DataTypeInfo
+{
+	// Definitions
+	//-------------
+	static std::vector<DataTypeInfo> const s_DataTypes;
+
+	// static functionality
+	//----------------------
+	static uint32 GetTypeId(E_DataType const dataType);
+	static uint16 GetTypeSize(E_DataType const dataType);
+	static E_DataType GetDataType(uint32 const typeId);
+
+	// Data
+	///////
+
+	E_DataType type;
+	uint32 typeId;
+	uint16 size;
+};
+
 typedef uint8 T_VertexFlags;
 
 //---------------------------------
@@ -27,42 +73,7 @@ struct AttributeDescriptor
 {
 	// Definitions
 	//-------------
-
-	//---------------------------------
-	// E_DataType
-	//
-	// Per attribute data type
-	//
-	enum class E_DataType
-	{
-		Byte,
-		UByte,
-		Short,
-		UShort,
-		Int,
-		UInt,
-
-		Half,
-		Float,
-		Double,
-
-		Invalid
-	};
-
-	//---------------------------------
-	// DataTypeInfo
-	//
-	// Per DataType information
-	//
-	struct DataTypeInfo
-	{
-		E_DataType type;
-		uint32 typeId;
-		uint16 size;
-	};
-
 	static std::map<E_VertexFlag, AttributeDescriptor const> const s_VertexAttributes;
-	static std::vector<DataTypeInfo> const s_DataTypes;
 
 	// static functionality
 	//----------------------
@@ -70,9 +81,7 @@ struct AttributeDescriptor
 	static uint16 GetVertexSize(T_VertexFlags const flags);
 	static bool ValidateFlags(T_VertexFlags const supportedFlags, T_VertexFlags const requiredFlags);
 	static void DefineAttributeArray(T_VertexFlags const flags, std::vector<int32> const& locations);
-	static uint32 GetTypeId(E_DataType const dataType);
-	static uint16 GetTypeSize(E_DataType const dataType);
-	static E_DataType GetDataType(uint32 const typeId);
+	static void DefineAttributeArray(T_VertexFlags const supportedFlags, T_VertexFlags const targetFlags, std::vector<int32> const& locations);
 	static bool GetVertexFlag(AttributeDescriptor const& desc, E_VertexFlag& flag);
 
 	// Data

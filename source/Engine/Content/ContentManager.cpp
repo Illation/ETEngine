@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "ContentManager.h"
 
-#include "MeshFilterLoader.h"
-
 
 std::vector<AbstractLoader*> ContentManager::m_Loaders = std::vector<AbstractLoader*>();
 bool ContentManager::m_IsInitialized = false;
@@ -36,7 +34,6 @@ void ContentManager::Initialize()
 	if(!m_IsInitialized)
 	{
 		m_IsInitialized = true;
-		AddLoader(new MeshFilterLoader());
 	}
 }
 

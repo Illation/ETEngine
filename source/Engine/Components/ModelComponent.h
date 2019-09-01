@@ -1,50 +1,68 @@
 #pragma once
 #include "AbstractComponent.h"
 
+#include <EtCore/Content/AssetPointer.h>
+
 
 class Material;
-class MeshFilter;
+class MeshData;
+
+
+//---------------------------------
+// ModelComponent
+//
+// Component that can draw mesh material combinations
+//
 class ModelComponent : public AbstractComponent
 {
+	// definitions
+	//-------------
 public:
-	ModelComponent(std::string assetFile);
-	~ModelComponent();
-
-	void SetMaterial(Material* pMat);
-
 	enum class CullMode
 	{
 		SPHERE,
 		DISABLED
 	};
+
+	// construct destruct
+	//--------------------
+	ModelComponent(T_Hash const assetId);
+	virtual ~ModelComponent() = default;
+
+private:
+	ModelComponent(const ModelComponent& yRef);
+	ModelComponent& operator=(const ModelComponent& yRef);
+
+	// functionality
+	//---------------
+public:
+	void SetMaterial(Material* pMat);
 	void SetCullMode(CullMode mode) { m_CullMode = mode; }
 
-
+	// component interface
+	//---------------------
 protected:
-
 	virtual void Initialize();
 	virtual void Update();
 	virtual void Draw();
 	virtual void DrawForward();
 	virtual void DrawShadow();
 
+	// utility
+	//---------
 private:
-
 	void UpdateMaterial();
 	void DrawCall();
 
-	std::string m_AssetFile;
-	MeshFilter* m_pMeshFilter = nullptr;
-	Material* m_pMaterial = nullptr;
-	bool m_MaterialSet = false;
-	CullMode m_CullMode = CullMode::SPHERE;
+	// Data
+	///////
 
-private:
-	// -------------------------
-	// Disabling default copy constructor and default 
-	// assignment operator.
-	// -------------------------
-	ModelComponent(const ModelComponent& yRef);
-	ModelComponent& operator=(const ModelComponent& yRef);
+	T_Hash m_AssetId;
+	AssetPtr<MeshData> m_Mesh;
+
+	Material* m_Material = nullptr;
+	bool m_MaterialSet = false;
+
+	CullMode m_CullMode = CullMode::SPHERE;
 };
 

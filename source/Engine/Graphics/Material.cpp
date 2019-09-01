@@ -2,7 +2,7 @@
 #include "Material.h"
 
 #include "Shader.h"
-#include "MeshFilter.h"
+#include "VertexInfo.h"
 
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/ResourceManager.h>
