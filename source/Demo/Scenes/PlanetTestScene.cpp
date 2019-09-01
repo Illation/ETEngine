@@ -46,7 +46,7 @@ void PlanetTestScene::Initialize()
 	//**************************
 	SetSkybox("Milkyway_small.hdr"_hash);
 
-	StarField* pStarField = new StarField("Resources/HYGmxyz.json");
+	StarField* pStarField = new StarField("HYGmxyz.json"_hash);
 	AddEntity(pStarField);
 
 	//Models

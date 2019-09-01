@@ -7,7 +7,6 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Content/ContentManager.h>
 #include <Engine/Graphics/Mesh.h>
 #include <Engine/Graphics/Material.h>
 #include <Engine/Graphics/Frustum.h>

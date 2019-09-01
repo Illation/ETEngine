@@ -20,9 +20,9 @@
 #include <Engine/SceneGraph/AbstractScene.h>
 
 
-Atmosphere::Atmosphere(const std::string &paramFileName)
+Atmosphere::Atmosphere(T_Hash const parameterAssetId)
 {
-	m_Params = AtmosphereParameters(paramFileName, m_SkyColor, m_SunColor);
+	m_Params = AtmosphereParameters(parameterAssetId, m_SkyColor, m_SunColor);
 }
 Atmosphere::~Atmosphere()
 {

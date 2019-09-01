@@ -7,7 +7,7 @@
 class StarField : public Entity
 {
 public:
-	StarField(const std::string &dataFile);
+	StarField(T_Hash const assetId);
 	virtual ~StarField();
 
 	void SetRadius(float radius) { m_Radius = radius; }
@@ -24,7 +24,7 @@ protected:
 
 private:
 	std::vector<vec4> m_Stars;
-	std::string m_DataFile;
+	T_Hash m_AssetId;
 
 	AssetPtr<ShaderData> m_pShader;
 	AssetPtr<TextureData> m_pSprite;

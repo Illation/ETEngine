@@ -52,8 +52,6 @@ void quit_SDL_error(const char * message)
 
 AbstractFramework::~AbstractFramework()
 {
-	ContentManager::Release();
-
 	FreeImage_DeInitialise();
 
 #ifdef EDITOR
@@ -305,8 +303,6 @@ void AbstractFramework::InitializeDebug()
 
 void AbstractFramework::InitializeGame()
 {
-	//Initialize Managers
-	ContentManager::Initialize();
 	ResourceManager::GetInstance()->InitFromCompiledData();
 
 	RenderPipeline::GetInstance()->Initialize();

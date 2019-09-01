@@ -16,7 +16,7 @@ class Atmosphere
 {
 public:
 	Atmosphere() {}
-	Atmosphere(const std::string &paramFileName);
+	Atmosphere(T_Hash const parameterAssetId);
 	~Atmosphere();
 
 	void Precalculate();

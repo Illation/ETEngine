@@ -2,16 +2,15 @@
 #include "StarField.h"
 
 #include <EtCore/Content/ResourceManager.h>
-#include <EtCore/FileSystem/Entry.h>
-#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/Content/AssetStub.h>
 #include <EtCore/FileSystem/Json/JsonParser.h>
 
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
 
 
-StarField::StarField(const std::string &dataFile) :
-	m_DataFile(dataFile)
+StarField::StarField(T_Hash const assetId) 
+	: m_AssetId(assetId)
 { }
 
 StarField::~StarField()
@@ -22,15 +21,11 @@ StarField::~StarField()
 
 void StarField::Initialize()
 {
-	File* jsonFile = new File(m_DataFile, nullptr);
-	if (!jsonFile->Open(FILE_ACCESS_MODE::Read))
-		return;
+	AssetPtr<StubData> jsonDbText = ResourceManager::GetInstance()->GetAssetData<StubData>(m_AssetId);
 
-	JSON::Parser parser = JSON::Parser(FileUtil::AsText(jsonFile->Read()));
-	delete jsonFile;
-	jsonFile = nullptr;
-
+	JSON::Parser parser = JSON::Parser(std::string(jsonDbText->GetText(), jsonDbText->GetLength()));
 	JSON::Object* root = parser.GetRoot();
+
 	uint32 starCount = 0;
 
 	JSON::Array* jstarArray = (*root)["stars"]->arr();

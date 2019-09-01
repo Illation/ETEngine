@@ -354,7 +354,7 @@ function(installResources TARGET)
 	set(projectBase "${PROJECT_BINARY_DIR}/..")
 	set(baseBinDir "${projectBase}/bin")
 
-	# paths for our libraries depend on the architecture we compile fo
+	# paths for our libraries depend on the architecture we compile for
 	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
 		set(platform "x64")
 	 else() 
@@ -365,11 +365,7 @@ function(installResources TARGET)
 
 		set(binDir "${baseBinDir}/${configType}_${platform}/${TARGET}")
 
-		# copy packaged resources
-		install(DIRECTORY ${projectBase}/source/Demo/Resources/
-			CONFIGURATIONS ${configType}
-			DESTINATION ${binDir}/Resources/)
-
+		# copy config files
 		install(DIRECTORY ${projectBase}/source/Demo/Config/
 			CONFIGURATIONS ${configType}
 			DESTINATION ${binDir}/)

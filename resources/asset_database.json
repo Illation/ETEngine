@@ -11,14 +11,6 @@
         "cache": [
           {
             "stub asset": {
-              "name": "lorem_ipsum.txt",
-              "path": "assets/",
-              "package": "content1",
-              "references": []
-            }
-          },
-          {
-            "stub asset": {
               "name": "AtmoPrecompGeo.glsl",
               "path": "assets/Engine/Shaders/AtmoPreComp/",
               "package": "",
@@ -62,6 +54,22 @@
               "name": "CommonPBR.glsl",
               "path": "assets/Engine/Shaders/",
               "package": "",
+              "references": []
+            }
+          },
+          {
+            "stub asset": {
+              "name": "atmo_earth.json",
+              "path": "assets/Demo/",
+              "package": "content1",
+              "references": []
+            }
+          },
+          {
+            "stub asset": {
+              "name": "HYGmxyz.json",
+              "path": "assets/Demo/",
+              "package": "content1",
               "references": []
             }
           }

@@ -3,8 +3,8 @@
 #include "AtmosphereSettings.h"
 #include "AtmospherePrecompute.h"
 
-#include <EtCore/FileSystem/Entry.h>
-#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/Content/ResourceManager.h>
+#include <EtCore/Content/AssetStub.h>
 #include <EtCore/FileSystem/Json/JsonParser.h>
 
 #include <Engine/Graphics/CIE.h>
@@ -27,16 +27,11 @@ DensityProfileLayer JSONDensityProfile(JSON::Object* jlayer)
 	return ret;
 }
 
-AtmosphereParameters::AtmosphereParameters(std::string paramFileName, dvec3 &skyColor, dvec3 &sunColor)
+AtmosphereParameters::AtmosphereParameters(T_Hash const assetId, dvec3 &skyColor, dvec3 &sunColor)
 {
-	File* jsonFile = new File(paramFileName, nullptr);
-	if (!jsonFile->Open(FILE_ACCESS_MODE::Read))
-		return;
+	AssetPtr<StubData> jsonText = ResourceManager::GetInstance()->GetAssetData<StubData>(assetId);
 
-	JSON::Parser parser = JSON::Parser(FileUtil::AsText(jsonFile->Read()));
-	delete jsonFile;
-	jsonFile = nullptr;
-
+	JSON::Parser parser = JSON::Parser(std::string(jsonText->GetText(), jsonText->GetLength()));
 	JSON::Object* root = parser.GetRoot();
 
 	// CALCULATE ATMOSPHERE PARAMETERS

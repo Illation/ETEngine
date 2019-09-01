@@ -15,21 +15,6 @@ IF [%4] == [] (
 
 ECHO Source Directory: %SOURCE_DIR% ; Output Directory: %OUT_DIR% ; Platform: %PLATFORM% ; copy_dlls? %COPY_DLLS%
 
-IF "%COPY_DLLS%" == "true" (
-	copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\sdl2\SDL2.dll" "%OUT_DIR%\SDL2.dll" /y /D
-	copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\freeImage\FreeImage.dll" "%OUT_DIR%\FreeImage.dll" /y /D
-	copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\freetype\freetype.dll" "%OUT_DIR%\freetype.dll" /y /D
-	copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\openAL\OpenAL32.dll" "%OUT_DIR%\OpenAL32.dll" /y /D
-	copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\rttr\rttr_core.dll" "%OUT_DIR%\rttr_core.dll" /y /D
-	IF "%PLATFORM%" == "x32" (
-		copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\assimp\Assimp32.dll" "%OUT_DIR%\Assimp32.dll" /y /D
-	) ELSE (
-		copy "%SOURCE_DIR%\..\dependancies\%PLATFORM%\assimp\Assimp64.dll" "%OUT_DIR%\Assimp64.dll" /y /D
-	)
-)
-
-xcopy "%SOURCE_DIR%\Engine\Resources" "%OUT_DIR%\Resources" /s/i/y/d
-xcopy "%SOURCE_DIR%\Demo\Resources" "%OUT_DIR%\Resources" /s/i/y/d
 xcopy "%SOURCE_DIR%\Demo\Config" "%OUT_DIR%" /s/i/y/d
 
 exit

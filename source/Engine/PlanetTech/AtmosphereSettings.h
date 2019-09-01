@@ -24,7 +24,7 @@ struct DensityProfile
 struct AtmosphereParameters
 {
 	AtmosphereParameters() {}
-	AtmosphereParameters(std::string paramFileName, dvec3 &skyColor, dvec3 &sunColor);
+	AtmosphereParameters(T_Hash const assetId, dvec3 &skyColor, dvec3 &sunColor);
 	void Upload(ShaderData const* const shader, const std::string &varName);
 
 	vec3 solarIrradiance;
