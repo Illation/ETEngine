@@ -5,8 +5,10 @@
 
 #include "TransformComponent.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Content/ContentManager.h>
-#include <Engine/Graphics/MeshFilter.h>
+#include <Engine/Graphics/Mesh.h>
 #include <Engine/Graphics/Material.h>
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/SceneGraph/Entity.h>
@@ -16,58 +18,136 @@
 #include <Engine/Materials/NullMaterial.h>
 
 
-ModelComponent::ModelComponent(std::string assetFile):
-	m_AssetFile(assetFile)
+//=================
+// Model Component
+//=================
+
+
+//---------------------------------
+// ModelComponent::c-tor
+//
+// default constructor sets the asset ID
+//
+ModelComponent::ModelComponent(T_Hash const assetId)
+	: m_AssetId(assetId)
+{ }
+
+//---------------------------------
+// ModelComponent::SetMaterial
+//
+// Updates the material and marks it as dirty
+//
+void ModelComponent::SetMaterial(Material* pMaterial)
 {
-}
-ModelComponent::~ModelComponent()
-{
+	m_MaterialSet = true;
+	m_Material = pMaterial;
 }
 
+//---------------------------------
+// ModelComponent::Initialize
+//
+// Loads the mesh data
+//
 void ModelComponent::Initialize()
 {
-	m_pMeshFilter = ContentManager::Load<MeshFilter>(m_AssetFile);
+	m_Mesh = ResourceManager::GetInstance()->GetAssetData<MeshData>(m_AssetId);
 	UpdateMaterial();
 }
 
+//---------------------------------
+// ModelComponent::UpdateMaterial
+//
+// Links the mesh to the material
+//
 void ModelComponent::UpdateMaterial()
 {
 	if (m_MaterialSet)
 	{
 		m_MaterialSet = false;
-		if (m_pMaterial == nullptr)
+		if (m_Material == nullptr)
 		{
 			LOG("ModelComponent::UpdateMaterial> material is null", Warning);
 			return;
 		}
-		m_pMaterial->Initialize();
-		m_pMeshFilter->BuildVertexBuffer(m_pMaterial);
+
+		m_Material->Initialize();
+		m_Mesh->GetSurface(m_Material); // make sure we have a mesh surface cached for our material
 	}
 }
 
+//---------------------------------
+// ModelComponent::Update
+//
+// Update the material if it changed
+//
 void ModelComponent::Update()
 {
 	UpdateMaterial();
 }
 
+//---------------------------------
+// ModelComponent::Draw
+//
+// If the material is rendered deferred we do our draw call here
+//
 void ModelComponent::Draw()
 {
-	if (m_pMaterial == nullptr)
+	if (m_Material == nullptr)
 	{
-		LOG("ModelComponent::Draw> material is null\n", LogLevel::Warning);
+		LOG("ModelComponent::Draw > material is null!", LogLevel::Warning);
 		return;
 	}
-	if (!(m_pMaterial->IsForwardRendered())) DrawCall();
+
+	if (!(m_Material->IsForwardRendered()))
+	{
+		DrawCall();
+	}
 }
+
+//---------------------------------
+// ModelComponent::DrawForward
+//
+// If the material is rendered forward we do our draw call here
+//
 void ModelComponent::DrawForward()
 {
-	if (m_pMaterial == nullptr)
+	if (m_Material == nullptr)
 	{
-		LOG("ModelComponent::Draw> material is null\n", LogLevel::Warning);
+		LOG("ModelComponent::Draw > material is null", LogLevel::Warning);
 		return;
 	}
-	if (m_pMaterial->IsForwardRendered()) DrawCall();
+
+	if (m_Material->IsForwardRendered())
+	{
+		DrawCall();
+	}
 }
+
+//---------------------------------
+// ModelComponent::DrawShadow
+//
+// Render our mesh with a null material from the perspective of a light source
+//
+void ModelComponent::DrawShadow()
+{
+	// #todo: implement culling
+
+	NullMaterial* const nullMat = ShadowRenderer::GetInstance()->GetNullMaterial();
+	mat4 matWVP = ShadowRenderer::GetInstance()->GetLightVP();
+
+	MeshSurface const* surface = m_Mesh->GetSurface(nullMat);
+	STATE->BindVertexArray(surface->GetVertexArray());
+
+	nullMat->UploadVariables(m_pEntity->GetTransform()->GetWorld(), matWVP);
+
+	STATE->DrawElements(GL_TRIANGLES, static_cast<uint32>(m_Mesh->GetIndexCount()), DataTypeInfo::GetTypeId(m_Mesh->GetIndexDataType()), 0);
+}
+
+//---------------------------------
+// ModelComponent::DrawCall
+//
+// Performs the draw call, assuming we can't cull our mesh
+//
 void ModelComponent::DrawCall()
 {
 	//Frustum culling
@@ -75,10 +155,11 @@ void ModelComponent::DrawCall()
 	{
 	case CullMode::SPHERE:
 	{
-		auto filterSphere = m_pMeshFilter->GetBoundingSphere();
+		Sphere const& filterSphere = m_Mesh->GetBoundingSphere();
+		//auto filterSphere = m_pMeshFilter->GetBoundingSphere();
 		vec3 scale = TRANSFORM->GetScale();
 		float maxScale = std::max(scale.x, std::max(scale.y, scale.z));
-		Sphere objSphere = Sphere(GetTransform()->GetPosition() + filterSphere->pos, filterSphere->radius*maxScale);
+		Sphere objSphere = Sphere(GetTransform()->GetPosition() + filterSphere.pos, filterSphere.radius*maxScale);
 		if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
 		{
 			return;
@@ -89,27 +170,14 @@ void ModelComponent::DrawCall()
 	default:
 		break;
 	}
+
 	//Get Vertex Object
-	auto vO = m_pMeshFilter->GetVertexObject(m_pMaterial);
-	STATE->BindVertexArray(vO.array);
-	m_pMaterial->UploadVariables(m_pEntity->GetTransform()->GetWorld());
+	MeshSurface const* surface = m_Mesh->GetSurface(m_Material);
+	STATE->BindVertexArray(surface->GetVertexArray());
+	
+	m_Material->UploadVariables(m_pEntity->GetTransform()->GetWorld());
+
 	// Draw 
 	STATE->SetDepthEnabled(true);
-	STATE->DrawElements(GL_TRIANGLES, (uint32)m_pMeshFilter->m_IndexCount, GL_UNSIGNED_INT, 0);
-}
-
-void ModelComponent::DrawShadow()
-{
-	auto nullMat = ShadowRenderer::GetInstance()->GetNullMaterial();
-	mat4 matWVP = ShadowRenderer::GetInstance()->GetLightVP();
-	auto vO = m_pMeshFilter->GetVertexObject(nullMat);
-	STATE->BindVertexArray(vO.array);
-	nullMat->UploadVariables(m_pEntity->GetTransform()->GetWorld(), matWVP);
-	STATE->DrawElements(GL_TRIANGLES, (uint32)m_pMeshFilter->m_IndexCount, GL_UNSIGNED_INT, 0);
-}
-
-void ModelComponent::SetMaterial(Material* pMaterial)
-{
-	m_MaterialSet = true;
-	m_pMaterial = pMaterial;
+	STATE->DrawElements(GL_TRIANGLES, static_cast<uint32>(m_Mesh->GetIndexCount()), DataTypeInfo::GetTypeId(m_Mesh->GetIndexDataType()), 0);
 }

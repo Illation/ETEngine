@@ -2,7 +2,6 @@
 #include "EmissiveMaterial.h"
 
 #include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/MeshFilter.h>
 
 
 EmissiveMaterial::EmissiveMaterial(vec3 col)

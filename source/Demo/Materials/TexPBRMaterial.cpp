@@ -5,7 +5,6 @@
 
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/MeshFilter.h>
 
 
 TexPBRMaterial::TexPBRMaterial(T_Hash const bcId, T_Hash const roughId, T_Hash const metalId, T_Hash const aoId, T_Hash const normId) 

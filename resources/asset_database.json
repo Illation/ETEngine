@@ -1275,6 +1275,90 @@
             }
           }
         ]
+      },
+      {
+        "cache": [
+          {
+            "mesh asset": {
+              "name": "bunny.dae",
+              "path": "assets/Engine/Models/",
+              "package": "content1",
+              "references": []
+            }
+          },
+          {
+            "mesh asset": {
+              "name": "cube.dae",
+              "path": "assets/Engine/Models/",
+              "package": "content1",
+              "references": []
+            }
+          },
+          {
+            "mesh asset": {
+              "name": "monkey.dae",
+              "path": "assets/Engine/Models/",
+              "package": "content1",
+              "references": []
+            }
+          },
+          {
+            "mesh asset": {
+              "name": "sphere.dae",
+              "path": "assets/Engine/Models/",
+              "package": "content1",
+              "references": []
+            }
+          },
+          {
+            "mesh asset": {
+              "name": "Env.dae",
+              "path": "assets/Demo/Models/",
+              "package": "content1",
+              "references": []
+            }
+          },
+          {
+            "mesh asset": {
+              "name": "helmet.dae",
+              "path": "assets/Demo/Models/",
+              "package": "content1",
+              "references": []
+            }
+          },
+          {
+            "mesh asset": {
+              "name": "HelmetSettled.dae",
+              "path": "assets/Demo/Models/",
+              "package": "content1",
+              "references": []
+            }
+          },
+          {
+            "mesh asset": {
+              "name": "HelmetStand.dae",
+              "path": "assets/Demo/Models/",
+              "package": "content1",
+              "references": []
+            }
+          },
+          {
+            "mesh asset": {
+              "name": "Box.gltf",
+              "path": "assets/Demo/Models/gltf/",
+              "package": "content1",
+              "references": []
+            }
+          },
+          {
+            "mesh asset": {
+              "name": "Corset.glb",
+              "path": "assets/Demo/Models/gltf/",
+              "package": "content1",
+              "references": []
+            }
+          }
+        ]
       }
     ]
   }

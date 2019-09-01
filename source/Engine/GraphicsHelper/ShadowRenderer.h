@@ -1,9 +1,7 @@
 #pragma once
 
-class ShaderData;
 class TextureData;
 class NullMaterial;
-class MeshFilter;
 class DirectionalShadowData;
 class TransformComponent;
 

@@ -7,7 +7,7 @@
 #include <EtCore/FileSystem/Json/JsonParser.h>
 #include <EtCore/FileSystem/Json/JsonDom.h>
 
-#include <Engine/Graphics/MeshFilter.h>
+#include <Engine/Graphics/Mesh.h>
 
 
 bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
@@ -1295,15 +1295,15 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 	return true;
 }
 
-bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<MeshFilter*>& meshFilters)
+bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& meshContainers)
 {
 	for (const Mesh& mesh : asset.dom.meshes)
 	{
 		if (mesh.primitives.size() > 1)LOG("Currently ETEngine meshes only support one primitive", Warning);
 		for (const Primitive& primitive : mesh.primitives)
 		{
-			MeshFilter* pMesh = new MeshFilter();
-			pMesh->SetName(mesh.name);
+			MeshDataContainer* pMesh = new MeshDataContainer();
+			pMesh->m_Name = mesh.name;
 
 			//Basic positions
 			if (primitive.indices == -1)
@@ -1317,8 +1317,8 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 				{
 					LOG("Accessor index out of range", Warning);
 					delete pMesh;
-					for (auto pEl : meshFilters)delete pEl;
-					meshFilters.clear();
+					for (auto pEl : meshContainers)delete pEl;
+					meshContainers.clear();
 					return false;
 				}
 				Accessor& accessor = asset.dom.accessors[primitive.indices];
@@ -1326,43 +1326,40 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 				{
 					LOG("Index accessor must be SCALAR", Warning);
 					delete pMesh;
-					for (auto pEl : meshFilters)delete pEl;
-					meshFilters.clear();
+					for (auto pEl : meshContainers)delete pEl;
+					meshContainers.clear();
 					return false;
 				}
-				if (!GetAccessorScalarArray(asset, primitive.indices, pMesh->GetIndices()))
+				if (!GetAccessorScalarArray(asset, primitive.indices, pMesh->m_Indices))
 				{
 					delete pMesh;
-					for (auto pEl : meshFilters)delete pEl;
-					meshFilters.clear();
+					for (auto pEl : meshContainers)delete pEl;
+					meshContainers.clear();
 					return false;
 				}
-				pMesh->m_IndexCount = pMesh->GetIndices().size();
 			}
 			if (primitive.attributes.position != -1)
 			{
-				if(!GetAccessorVectorArray(asset, primitive.attributes.position, pMesh->GetPositions(), true))
+				if(!GetAccessorVectorArray(asset, primitive.attributes.position, pMesh->m_Positions, true))
 				{
 					delete pMesh;
-					for (auto pEl : meshFilters)delete pEl;
-					meshFilters.clear();
+					for (auto pEl : meshContainers)delete pEl;
+					meshContainers.clear();
 					return false;
 				}
-				pMesh->m_SupportedFlags |= E_VertexFlag::POSITION;
-				pMesh->m_VertexCount = pMesh->GetPositions().size();
+				pMesh->m_VertexCount = pMesh->m_Positions.size();
 			}
 
 			//Texcoords before normals in case tangents need to be generated
 			if (primitive.attributes.texcoord0 != -1)
 			{
-				if (!GetAccessorVectorArray(asset, primitive.attributes.texcoord0, pMesh->GetTexCoords()))
+				if (!GetAccessorVectorArray(asset, primitive.attributes.texcoord0, pMesh->m_TexCoords))
 				{
 					delete pMesh;
-					for (auto pEl : meshFilters)delete pEl;
-					meshFilters.clear();
+					for (auto pEl : meshContainers)delete pEl;
+					meshContainers.clear();
 					return false;
 				}
-				pMesh->m_SupportedFlags |= E_VertexFlag::TEXCOORD;
 				if (primitive.attributes.texcoord1 != -1)
 				{
 					LOG("ETEngine currently supports only one set of texture coordinates for meshes", Warning);
@@ -1370,27 +1367,25 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 			}
 			else if (primitive.attributes.texcoord1 != -1)
 			{
-				if (!GetAccessorVectorArray(asset, primitive.attributes.texcoord1, pMesh->GetTexCoords()))
+				if (!GetAccessorVectorArray(asset, primitive.attributes.texcoord1, pMesh->m_TexCoords))
 				{
 					delete pMesh;
-					for (auto pEl : meshFilters)delete pEl;
-					meshFilters.clear();
+					for (auto pEl : meshContainers)delete pEl;
+					meshContainers.clear();
 					return false;
 				}
-				pMesh->m_SupportedFlags |= E_VertexFlag::TEXCOORD;
 			}
 
 			//Normal and tangent info
 			if (primitive.attributes.normal != -1)
 			{
-				if(!GetAccessorVectorArray(asset, primitive.attributes.normal, pMesh->GetNormals(), true))
+				if(!GetAccessorVectorArray(asset, primitive.attributes.normal, pMesh->m_Normals, true))
 				{
 					delete pMesh;
-					for (auto pEl : meshFilters)delete pEl;
-					meshFilters.clear();
+					for (auto pEl : meshContainers)delete pEl;
+					meshContainers.clear();
 					return false;
 				}
-				pMesh->m_SupportedFlags |= E_VertexFlag::NORMAL;
 
 				std::vector<vec4> tangentInfo;
 				if (primitive.attributes.tangent != -1)
@@ -1398,8 +1393,8 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 					if (!GetAccessorVectorArray(asset, primitive.attributes.tangent, tangentInfo, true))
 					{
 						delete pMesh;
-						for (auto pEl : meshFilters)delete pEl;
-						meshFilters.clear();
+						for (auto pEl : meshContainers)delete pEl;
+						meshContainers.clear();
 						return false;
 					}
 				}
@@ -1412,14 +1407,13 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 			//Shading
 			if (primitive.attributes.color0 != -1)
 			{
-				if(!GetAccessorVectorArray(asset, primitive.attributes.color0, pMesh->GetNormals(), true))
+				if(!GetAccessorVectorArray(asset, primitive.attributes.color0, pMesh->m_Colors, true))
 				{
 					delete pMesh;
-					for (auto pEl : meshFilters)delete pEl;
-					meshFilters.clear();
+					for (auto pEl : meshContainers)delete pEl;
+					meshContainers.clear();
 					return false;
 				}
-				pMesh->m_SupportedFlags |= E_VertexFlag::COLOR;
 			}
 
 			//Animation
@@ -1432,9 +1426,7 @@ bool glTF::MeshFilterConstructor::GetMeshFilters(glTFAsset& asset, std::vector<M
 				LOG("ETEngine currently doesn't support weights for meshes", Warning);
 			}
 
-			pMesh->CalculateBoundingVolumes();
-
-			meshFilters.push_back(pMesh);
+			meshContainers.push_back(pMesh);
 		}
 	}
 	return true;

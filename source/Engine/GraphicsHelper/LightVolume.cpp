@@ -8,7 +8,6 @@
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Materials/LightMaterial.h>
-#include <Engine/Graphics/MeshFilter.h>
 #include <Engine/Materials/NullMaterial.h>
 #include <Engine/Framebuffers/Gbuffer.h>
 #include <Engine/Graphics/Shader.h>

@@ -2,10 +2,8 @@
 #include <EtCore/Content/AssetPointer.h>
 
 class ShaderData;
-class TextureData;
 class LightMaterial;
 class NullMaterial;
-class MeshFilter;
 class DirectionalShadowData;
 
 class PointLightVolume : public Singleton<PointLightVolume>

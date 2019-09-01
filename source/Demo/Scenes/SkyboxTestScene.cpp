@@ -55,7 +55,7 @@ void SkyboxTestScene::Initialize()
 
 	//Models
 	//*************************
-	auto pModelComp = new ModelComponent("Resources/Models/helmet.dae");
+	auto pModelComp = new ModelComponent("helmet.dae"_hash);
 	pModelComp->SetMaterial(m_pMat);
 	auto pHelmet = new Entity();
 	pHelmet->AddComponent(pModelComp);

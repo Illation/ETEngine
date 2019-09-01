@@ -57,7 +57,7 @@ void TestScene::Initialize()
 	{
 		for (size_t j = 0; j < amountPerRow; j++)
 		{
-			auto pModelComp = new ModelComponent("Resources/Models/helmet.dae");
+			auto pModelComp = new ModelComponent("helmet.dae"_hash);
 			pModelComp->SetMaterial(m_pMat);
 			auto pHelmet = new Entity();
 			pHelmet->AddComponent(pModelComp);
@@ -69,7 +69,7 @@ void TestScene::Initialize()
 	//**************************
 
 	//Directional
-	auto pModelComp1 = new ModelComponent("Resources/Models/sphere.dae");
+	auto pModelComp1 = new ModelComponent("sphere.dae"_hash);
 	pModelComp1->SetMaterial(m_pLightMat);
 	auto pLigEntity = new Entity();
 	pLigEntity->AddComponent(pModelComp1);
@@ -79,7 +79,7 @@ void TestScene::Initialize()
 	AddEntity(pLigEntity);
 
 	//Moveable point light
-	auto pModelComp2 = new ModelComponent("Resources/Models/sphere.dae");
+	auto pModelComp2 = new ModelComponent("sphere.dae"_hash);
 	pModelComp2->SetMaterial(m_pLightMat);
 	m_pLigEnt = new Entity();
 	m_pLigEnt->AddComponent(pModelComp2);
@@ -101,7 +101,7 @@ void TestScene::Initialize()
 	auto disT = std::uniform_real_distribution<float>(-1, 1);
 	for (size_t i = 0; i < 2500; i++)
 	{
-		auto pLigMod = new ModelComponent("Resources/Models/sphere.dae");
+		auto pLigMod = new ModelComponent("sphere.dae"_hash);
 		pLigMod->SetMaterial(m_pLightMat);
 		auto pLigEnt = new Entity();
 

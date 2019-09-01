@@ -472,139 +472,139 @@ void ShaderAsset::GetAttributes(GLuint const shaderProgram, std::vector<ShaderDa
 		switch (type)
 		{
 		case GL_FLOAT:
-			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataType = E_DataType::Float;
 			info.dataCount = 1u;
 			break;
 		case GL_FLOAT_VEC2:
-			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataType = E_DataType::Float;
 			info.dataCount = 2u;
 			break;
 		case GL_FLOAT_VEC3:
-			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataType = E_DataType::Float;
 			info.dataCount = 3u;
 			break;
 		case GL_FLOAT_VEC4:
-			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataType = E_DataType::Float;
 			info.dataCount = 4u;
 			break;
 		case GL_FLOAT_MAT2:
-			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataType = E_DataType::Float;
 			info.dataCount = 4u;
 			break;
 		case GL_FLOAT_MAT3:
-			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataType = E_DataType::Float;
 			info.dataCount = 9u;
 			break;
 		case GL_FLOAT_MAT4:
-			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataType = E_DataType::Float;
 			info.dataCount = 16u;
 			break;
 		case GL_FLOAT_MAT2x3:
-			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataType = E_DataType::Float;
 			info.dataCount = 6u;
 			break;
 		case GL_FLOAT_MAT2x4:
-			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataType = E_DataType::Float;
 			info.dataCount = 8u;
 			break;
 		case GL_FLOAT_MAT3x2:
-			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataType = E_DataType::Float;
 			info.dataCount = 6u;
 			break;
 		case GL_FLOAT_MAT3x4:
-			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataType = E_DataType::Float;
 			info.dataCount = 12u;
 			break;
 		case GL_FLOAT_MAT4x2:
-			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataType = E_DataType::Float;
 			info.dataCount = 8u;
 			break;
 		case GL_FLOAT_MAT4x3:
-			info.dataType = AttributeDescriptor::E_DataType::Float;
+			info.dataType = E_DataType::Float;
 			info.dataCount = 12u;
 			break;
 		case GL_INT:
-			info.dataType = AttributeDescriptor::E_DataType::Int;
+			info.dataType = E_DataType::Int;
 			info.dataCount = 1u;
 			break;
 		case GL_INT_VEC2:
-			info.dataType = AttributeDescriptor::E_DataType::Int;
+			info.dataType = E_DataType::Int;
 			info.dataCount = 2u;
 			break;
 		case GL_INT_VEC3:
-			info.dataType = AttributeDescriptor::E_DataType::Int;
+			info.dataType = E_DataType::Int;
 			info.dataCount = 3u;
 			break;
 		case GL_INT_VEC4:
-			info.dataType = AttributeDescriptor::E_DataType::Int;
+			info.dataType = E_DataType::Int;
 			info.dataCount = 4u;
 			break;
 		case GL_UNSIGNED_INT:
-			info.dataType = AttributeDescriptor::E_DataType::UInt;
+			info.dataType = E_DataType::UInt;
 			info.dataCount = 1u;
 			break;
 		case GL_UNSIGNED_INT_VEC2:
-			info.dataType = AttributeDescriptor::E_DataType::UInt;
+			info.dataType = E_DataType::UInt;
 			info.dataCount = 2u;
 			break;
 		case GL_UNSIGNED_INT_VEC3:
-			info.dataType = AttributeDescriptor::E_DataType::UInt;
+			info.dataType = E_DataType::UInt;
 			info.dataCount = 3u;
 			break;
 		case GL_UNSIGNED_INT_VEC4:
-			info.dataType = AttributeDescriptor::E_DataType::UInt;
+			info.dataType = E_DataType::UInt;
 			info.dataCount = 4u;
 			break;
 		case GL_DOUBLE:
-			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataType = E_DataType::Double;
 			info.dataCount = 1u;
 			break;
 		case GL_DOUBLE_VEC2:
-			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataType = E_DataType::Double;
 			info.dataCount = 2u;
 			break;
 		case GL_DOUBLE_VEC3:
-			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataType = E_DataType::Double;
 			info.dataCount = 3u;
 			break;
 		case GL_DOUBLE_VEC4:
-			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataType = E_DataType::Double;
 			info.dataCount = 4u;
 			break;
 		case GL_DOUBLE_MAT2:
-			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataType = E_DataType::Double;
 			info.dataCount = 4u;
 			break;
 		case GL_DOUBLE_MAT3:
-			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataType = E_DataType::Double;
 			info.dataCount = 9u;
 			break;
 		case GL_DOUBLE_MAT4:
-			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataType = E_DataType::Double;
 			info.dataCount = 16u;
 			break;
 		case GL_DOUBLE_MAT2x3:
-			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataType = E_DataType::Double;
 			info.dataCount = 6u;
 			break;
 		case GL_DOUBLE_MAT2x4:
-			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataType = E_DataType::Double;
 			info.dataCount = 8u;
 			break;
 		case GL_DOUBLE_MAT3x2:
-			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataType = E_DataType::Double;
 			info.dataCount = 6u;
 			break;
 		case GL_DOUBLE_MAT3x4:
-			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataType = E_DataType::Double;
 			info.dataCount = 12u;
 			break;
 		case GL_DOUBLE_MAT4x2:
-			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataType = E_DataType::Double;
 			info.dataCount = 8u;
 			break;
 		case GL_DOUBLE_MAT4x3:
-			info.dataType = AttributeDescriptor::E_DataType::Double;
+			info.dataType = E_DataType::Double;
 			info.dataCount = 12u;
 			break;
 		default:

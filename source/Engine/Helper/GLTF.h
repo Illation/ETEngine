@@ -1,7 +1,7 @@
 #pragma once
 #include <EtCore/FileSystem/Json/JsonDom.h>
 
-class MeshFilter;
+struct MeshDataContainer;
 class BinaryReader;
 
 namespace glTF
@@ -529,9 +529,6 @@ namespace glTF
 		}
 		return true;
 	}
-	class MeshFilterConstructor //Allows inner access to mesh filters through friend class
-	{
-	public:
-		static bool GetMeshFilters(glTFAsset& asset, std::vector<MeshFilter*>& meshFilters);
-	};
+	
+	bool GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& meshContainers);
 }

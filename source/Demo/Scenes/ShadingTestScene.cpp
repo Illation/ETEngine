@@ -62,7 +62,7 @@ void ShadingTestScene::Initialize()
 	//Models
 	//*************************
 	{
-		auto pModelComp = new ModelComponent("Resources/Models/HelmetSettled.dae");
+		auto pModelComp = new ModelComponent("HelmetSettled.dae"_hash);
 		pModelComp->SetMaterial(m_pMat);
 		auto pHelmet = new Entity();
 		pHelmet->AddComponent(pModelComp);
@@ -70,7 +70,7 @@ void ShadingTestScene::Initialize()
 		AddEntity(pHelmet);
 	}
 	{
-		auto pModelComp = new ModelComponent("Resources/Models/HelmetStand.dae");
+		auto pModelComp = new ModelComponent("HelmetStand.dae"_hash);
 		pModelComp->SetMaterial(m_pStandMat);
 		auto pHelmet = new Entity();
 		pHelmet->AddComponent(pModelComp);
@@ -78,7 +78,7 @@ void ShadingTestScene::Initialize()
 		AddEntity(pHelmet);
 	}
 	{
-		auto pModelComp = new ModelComponent("Resources/Models/Env.dae");
+		auto pModelComp = new ModelComponent("Env.dae"_hash);
 		pModelComp->SetMaterial(m_pEnvMat);
 		auto pHelmet = new Entity();
 		pHelmet->AddComponent(pModelComp);
@@ -86,15 +86,15 @@ void ShadingTestScene::Initialize()
 		AddEntity(pHelmet);
 	}
 	{
-		//auto pModelComp = new ModelComponent("Resources/Assets/Box.gltf");
-		auto pModelComp = new ModelComponent("Resources/Assets/Corset.glb");
-		pModelComp->SetMaterial(m_pEnvMat);
-		auto pCorset = new Entity();
-		pCorset->AddComponent(pModelComp);
-		pCorset->GetTransform()->SetPosition(vec3(5, 0, 0));
-		pCorset->GetTransform()->Scale(vec3(100, 100, 100));
-		pCorset->GetTransform()->Rotate(quat(vec3(1, 0, 0), etm::PI));
-		AddEntity(pCorset);
+		//auto pModelComp = new ModelComponent("Box.gltf"_hash);
+		//auto pModelComp = new ModelComponent("Corset.glb"_hash);
+		//pModelComp->SetMaterial(m_pEnvMat);
+		//auto pCorset = new Entity();
+		//pCorset->AddComponent(pModelComp);
+		//pCorset->GetTransform()->SetPosition(vec3(5, 0, 0));
+		//pCorset->GetTransform()->Scale(vec3(100, 100, 100));
+		//pCorset->GetTransform()->Rotate(quat(vec3(1, 0, 0), etm::PI));
+		//AddEntity(pCorset);
 	}
 
 	//Lights

@@ -4,7 +4,6 @@
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/MeshFilter.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/EnvironmentMap.h>
 #include <Engine/Components/TransformComponent.h>
@@ -15,7 +14,7 @@ SkyboxMaterial::SkyboxMaterial(T_Hash const assetId)
 	, m_AssetId(assetId)
 { 
 	m_DrawForward = true;
-	m_StandardTransform = true;
+	m_StandardTransform = false;
 }
 
 void SkyboxMaterial::LoadTextures()
