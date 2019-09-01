@@ -11,12 +11,7 @@ EmissiveMaterial::EmissiveMaterial(vec3 col)
 	m_DrawForward = true;
 }
 
-void EmissiveMaterial::AccessShaderAttributes()
-{
-	m_uCol = glGetUniformLocation(m_Shader->GetProgram(), "color");
-}
-
 void EmissiveMaterial::UploadDerivedVariables()
 {
-	glUniform3f(m_uCol, m_Color.x, m_Color.y, m_Color.z);
+	m_Shader->Upload("color"_hash, m_Color);
 }

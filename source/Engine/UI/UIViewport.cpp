@@ -68,7 +68,7 @@ void UIViewportRenderer::Initialize(ivec2 size)
 	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("EditorComposite.glsl"_hash);
 
 	STATE->SetShader(m_pShader.get());
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTex"), 0);
+	m_pShader->Upload("uTex"_hash, 0);
 
 	TextureParameters params(false);
 

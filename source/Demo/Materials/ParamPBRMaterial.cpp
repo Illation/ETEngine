@@ -11,16 +11,9 @@ ParamPBRMaterial::ParamPBRMaterial(vec3 baseCol, float roughness, float metal)
 	, m_Metal(metal)
 {}
 
-void ParamPBRMaterial::AccessShaderAttributes()
-{
-	m_uBaseColor = glGetUniformLocation(m_Shader->GetProgram(), "baseColor");
-	m_uRoughness = glGetUniformLocation(m_Shader->GetProgram(), "roughness");
-	m_uMetal = glGetUniformLocation(m_Shader->GetProgram(), "metalness");
-}
-
 void ParamPBRMaterial::UploadDerivedVariables()
 {
-	glUniform3f(m_uBaseColor, m_BaseColor.x, m_BaseColor.y, m_BaseColor.z);
-	glUniform1f(m_uRoughness, m_Roughness);
-	glUniform1f(m_uMetal, m_Metal);
+	m_Shader->Upload("baseColor"_hash, m_BaseColor);
+	m_Shader->Upload("roughness"_hash, m_Roughness);
+	m_Shader->Upload("metalness"_hash, m_Metal);
 }

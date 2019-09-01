@@ -30,26 +30,7 @@ private:
 
 	void GetUniforms();
 
-	//Camera and pos reconstruction from gbuffer
-	GLint m_uMatModel;
-	GLint m_uMatWVP;
-
-	GLint m_uCamPos;
-	GLint m_uProjA;
-	GLint m_uProjB;
-	GLint m_uViewProjInv;
-
-	GLint m_uPosition;
-	GLint m_uRadius;
-	GLint m_uSurfaceRadius;
-
-	GLint m_uSunDir;
-	GLint m_uSunIntensity;
-	GLint m_uSunSize;
 	LightComponent* m_pSun;
-
-	GLint m_uSkySpectralRadToLum;
-	GLint m_uSunSpectralRadToLum;
 
 	AtmosphereParameters m_Params;
 	dvec3 m_SkyColor;

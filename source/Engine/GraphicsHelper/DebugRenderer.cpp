@@ -90,7 +90,7 @@ void DebugRenderer::Draw()
 #endif
 
 	STATE->SetShader(m_pShader.get());
-	glUniformMatrix4fv(m_uWVP, 1, GL_FALSE, etm::valuePtr(CAMERA->GetViewProj()));
+	m_pShader->Upload("uViewProj"_hash, CAMERA->GetViewProj());
 
 	UpdateBuffer();
 	

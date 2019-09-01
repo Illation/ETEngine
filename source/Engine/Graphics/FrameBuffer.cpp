@@ -48,7 +48,7 @@ void FrameBuffer::Initialize()
 
 void FrameBuffer::AccessShaderAttributes()
 {
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texFramebuffer"), 0);
+	m_pShader->Upload("texFramebuffer"_hash, 0);
 }
 
 void FrameBuffer::Enable(bool active)

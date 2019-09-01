@@ -24,23 +24,7 @@ void Patch::Init()
 	//***********
 	m_pPatchShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PlanetPatch.glsl"_hash);
 	STATE->SetShader(m_pPatchShader.get());
-	m_uCamPos = glGetUniformLocation(m_pPatchShader->GetProgram(), "camPos");
-	m_uRadius = glGetUniformLocation(m_pPatchShader->GetProgram(), "radius");
-	m_uMorphRange = glGetUniformLocation(m_pPatchShader->GetProgram(), "morphRange");
 
-	m_uMaxHeight = glGetUniformLocation(m_pPatchShader->GetProgram(), "maxHeight");
-
-	m_uModel = glGetUniformLocation(m_pPatchShader->GetProgram(), "model");
-	m_uViewProj = glGetUniformLocation(m_pPatchShader->GetProgram(), "viewProj");
-
-	m_uAmbient = glGetUniformLocation(m_pPatchShader->GetProgram(), "ambient");
-	m_uDelta = glGetUniformLocation(m_pPatchShader->GetProgram(), "patchDelta");
-
-	//glUniform1i(glGetUniformLocation(m_pPatchShader->GetProgram(), "texDiffuse"), 0);
-	//glUniform1i(glGetUniformLocation(m_pPatchShader->GetProgram(), "texHeight"), 1);
-	//glUniform1i(glGetUniformLocation(m_pPatchShader->GetProgram(), "texDetail1"), 2);
-	//glUniform1i(glGetUniformLocation(m_pPatchShader->GetProgram(), "texDetail2"), 3);
-	//glUniform1i(glGetUniformLocation(m_pPatchShader->GetProgram(), "texHeightDetail"), 4);
 	m_pPatchShader->Upload("texDiffuse"_hash, (int32)0);
 	m_pPatchShader->Upload("texHeight"_hash, (int32)1);
 	m_pPatchShader->Upload("texDetail1"_hash, (int32)2);
@@ -160,9 +144,7 @@ void Patch::UploadDistanceLUT(std::vector<float> &distances)
 	STATE->SetShader(m_pPatchShader.get());
 	for (size_t i = 0; i < distances.size(); i++)
 	{
-		glUniform1f(glGetUniformLocation(m_pPatchShader->GetProgram(),
-			("distanceLUT[" + std::to_string(i) + "]").c_str()), distances[i]);
-		//m_pPatchShader->Upload(FnvHash("distanceLUT[" + std::to_string(i) + "]"), distances[i]);
+		m_pPatchShader->Upload(GetHash("distanceLUT[" + std::to_string(i) + "]"), distances[i]);
 	}
 }
 
@@ -171,21 +153,15 @@ void Patch::Draw()
 	STATE->SetShader(m_pPatchShader.get());
 
 	// Pass transformations to the shader
-	glUniformMatrix4fv(m_uModel, 1, GL_FALSE, etm::valuePtr(m_pPlanet->GetTransform()->GetWorld()));
-	//m_pPatchShader->Upload("model"_hash, m_pPlanet->GetTransform()->GetWorld());
-	//m_pPatchShader->Upload("viewProj"_hash, CAMERA->GetViewProj());
-	glUniformMatrix4fv(m_uViewProj, 1, GL_FALSE, etm::valuePtr(CAMERA->GetViewProj()));
+	m_pPatchShader->Upload("model"_hash, m_pPlanet->GetTransform()->GetWorld());
+	m_pPatchShader->Upload("viewProj"_hash, CAMERA->GetViewProj());
 
 	//Set other uniforms here too!
 	vec3 camPos = m_pPlanet->GetTriangulator()->GetFrustum()->GetPositionOS();
-	glUniform3f(m_uCamPos, camPos.x, camPos.y, camPos.z);
-	//m_pPatchShader->Upload("camPos"_hash, camPos);
-	//m_pPatchShader->Upload("radius"_hash, m_pPlanet->GetRadius());
-	//m_pPatchShader->Upload("morphRange"_hash, m_MorphRange);
-	glUniform1f(m_uRadius, m_pPlanet->GetRadius());
-	glUniform1f(m_uMorphRange, m_MorphRange);
+	m_pPatchShader->Upload("camPos"_hash, camPos);
+	m_pPatchShader->Upload("radius"_hash, m_pPlanet->GetRadius());
+	m_pPatchShader->Upload("morphRange"_hash, m_MorphRange);
 
-	glUniform1f(m_uDelta, 1 / (float)(m_RC - 1));
 	//m_pPatchShader->Upload("patchDelta"_hash, 1 / (float)(m_RC - 1));
 
 	STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_pPlanet->GetDiffuseMap()->GetHandle());

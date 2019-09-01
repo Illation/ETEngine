@@ -45,7 +45,6 @@ void Atmosphere::Initialize()
 	Precalculate();
 	//Load and compile Shaders
 	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostAtmosphere.glsl"_hash);
-	GetUniforms();
 }
 void Atmosphere::Draw(Planet* pPlanet, float radius)
 {
@@ -69,51 +68,50 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	//	DebugCopyResourceFiles();
 	//	//reload the shader
 	//	m_pShader = ContentManager::Reload<ShaderData>("Shaders/PostAtmosphere.glsl");
-	//	GetUniforms();
 	//}
 	STATE->SetShader(m_pShader.get());
 
-	glUniformMatrix4fv(m_uMatModel, 1, GL_FALSE, etm::valuePtr(World));
-	glUniformMatrix4fv(m_uMatWVP, 1, GL_FALSE, etm::valuePtr(CAMERA->GetViewProj()));
+	m_pShader->Upload("model"_hash, World);
+	m_pShader->Upload("worldViewProj"_hash, CAMERA->GetViewProj());
 
 	// #todo: stop repeating this everywhere
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferA"), 0);
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferB"), 1);
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferC"), 2);
+	m_pShader->Upload("texGBufferA"_hash, 0);
+	//m_pShader->Upload("texGBufferB"_hash, 1);
+	//m_pShader->Upload("texGBufferC"_hash, 2);
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
-	glUniform1f(m_uProjA, CAMERA->GetDepthProjA());
-	glUniform1f(m_uProjB, CAMERA->GetDepthProjB());
-	glUniformMatrix4fv(m_uViewProjInv, 1, GL_FALSE, etm::valuePtr(CAMERA->GetStatViewProjInv()));
-	glUniform3fv(m_uCamPos, 1, etm::valuePtr(CAMERA->GetTransform()->GetPosition()));
+	m_pShader->Upload("projectionA"_hash, CAMERA->GetDepthProjA());
+	m_pShader->Upload("projectionB"_hash, CAMERA->GetDepthProjB());
+	m_pShader->Upload("viewProjInv"_hash, CAMERA->GetStatViewProjInv());
+	m_pShader->Upload("camPos"_hash, CAMERA->GetTransform()->GetPosition());
 
-	glUniform3fv(m_uPosition, 1, etm::valuePtr(pos));
-	glUniform1f(m_uRadius, radius);
-	glUniform1f(m_uSurfaceRadius, surfaceRadius);
+	m_pShader->Upload("Position"_hash, pos);
+	m_pShader->Upload("Radius"_hash, radius);
+	//m_pShader->Upload("SurfaceRadius"_hash, surfaceRadius);
 
 	m_Params.Upload(m_pShader.get(), "uAtmosphere");
 	AtmospherePrecompute::GetInstance()->GetSettings().UploadTextureSize(m_pShader.get());
 
-	vec3 skySpectralRadToLum = vec3((float)m_SkyColor.x, (float)m_SkyColor.y, (float)m_SkyColor.z);
-	glUniform3fv(m_uSkySpectralRadToLum, 1, etm::valuePtr(skySpectralRadToLum));
-	vec3 sunSpectralRadToLum = vec3((float)m_SunColor.x, (float)m_SunColor.y, (float)m_SunColor.z);
-	glUniform3fv(m_uSunSpectralRadToLum, 1, etm::valuePtr(sunSpectralRadToLum));
+	//m_pShader->Upload("uSkySpectralRadToLum"_hash, etm::vecCast<float>(m_SkyColor));
+	//m_pShader->Upload("uSunSpectralRadToLum"_hash, etm::vecCast<float>(m_SunColor));
 
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexIrridiance"), 3);
+	m_pShader->Upload("uTexIrridiance"_hash, 3);
 	STATE->LazyBindTexture(3, GL_TEXTURE_2D, m_TexIrradiance->GetHandle());
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexInscatter"), 4);
+	m_pShader->Upload("uTexInscatter"_hash, 4);
 	STATE->LazyBindTexture(4, GL_TEXTURE_3D, m_TexInscatter->GetHandle());
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexTransmittance"), 5);
+	m_pShader->Upload("uTexTransmittance"_hash, 5);
 	STATE->LazyBindTexture(5, GL_TEXTURE_2D, m_TexTransmittance->GetHandle());
 
-	glUniform3fv(m_uSunDir, 1, etm::valuePtr(m_pSun->GetTransform()->GetForward()));
-	DirectionalLight* pDirLight = m_pSun->GetLight<DirectionalLight>();
-	if (pDirLight) glUniform1f(m_uSunIntensity, pDirLight->GetBrightness());
-	vec2 sunSize = vec2(tan(m_Params.sun_angular_radius), cos(m_Params.sun_angular_radius));
-	glUniform2fv(m_uSunSize, 1, etm::valuePtr(sunSize));
+	m_pShader->Upload("SunDir"_hash, m_pSun->GetTransform()->GetForward());
+	m_pShader->Upload("uSunSize"_hash, vec2(tan(m_Params.sun_angular_radius), cos(m_Params.sun_angular_radius)));
+	//DirectionalLight* pDirLight = m_pSun->GetLight<DirectionalLight>();
+	//if (pDirLight)
+	//{
+	//	m_pShader->Upload("SunIntensity"_hash, pDirLight->GetBrightness());
+	//}
 
 	STATE->SetCullEnabled(true);
 	STATE->SetFaceCullingMode(GL_FRONT);
@@ -126,33 +124,4 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	STATE->SetBlendEnabled(false);
 	STATE->SetDepthEnabled(true);
 	STATE->SetCullEnabled(false);
-}
-
-void Atmosphere::GetUniforms()
-{
-	if (m_pShader == nullptr)
-	{
-		return;
-	}
-
-	STATE->SetShader(m_pShader.get());
-
-	m_uMatModel = glGetUniformLocation(m_pShader->GetProgram(), "model");
-	m_uMatWVP = glGetUniformLocation(m_pShader->GetProgram(), "worldViewProj");
-
-	m_uCamPos = glGetUniformLocation(m_pShader->GetProgram(), "camPos");
-	m_uProjA = glGetUniformLocation(m_pShader->GetProgram(), "projectionA");
-	m_uProjB = glGetUniformLocation(m_pShader->GetProgram(), "projectionB");
-	m_uViewProjInv = glGetUniformLocation(m_pShader->GetProgram(), "viewProjInv");
-
-	m_uPosition = glGetUniformLocation(m_pShader->GetProgram(), "Position");
-	m_uRadius = glGetUniformLocation(m_pShader->GetProgram(), "Radius");
-	m_uSurfaceRadius = glGetUniformLocation(m_pShader->GetProgram(), "SurfaceRadius");
-
-	m_uSunDir = glGetUniformLocation(m_pShader->GetProgram(), "SunDir");
-	m_uSunIntensity = glGetUniformLocation(m_pShader->GetProgram(), "SunIntensity");
-	m_uSunSize = glGetUniformLocation(m_pShader->GetProgram(), "uSunSize");
-
-	m_uSkySpectralRadToLum = glGetUniformLocation(m_pShader->GetProgram(), "uSkySpectralRadToLum");
-	m_uSunSpectralRadToLum = glGetUniformLocation(m_pShader->GetProgram(), "uSunSpectralRadToLum");
 }

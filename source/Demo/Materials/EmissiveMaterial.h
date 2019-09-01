@@ -11,13 +11,12 @@ public:
 	void SetCol(vec3 col) { m_Color = col; }
 private:
 	void LoadTextures() override {}
-	void AccessShaderAttributes() override;
+	void AccessShaderAttributes() override {}
 
 	void UploadDerivedVariables() override;
 
 private:
 	//Parameters
-	GLint m_uCol;
 	vec3 m_Color;
 };
 

@@ -34,17 +34,14 @@ void GbufferMaterial::SetSpecularTexture(T_Hash const id)
 void GbufferMaterial::LoadTextures()
 {
 	STATE->SetShader(m_Shader.get());
-	m_uUseDifTex = glGetUniformLocation(m_Shader->GetProgram(), "useDifTex");
-	glUniform1i(m_uUseDifTex, m_TexDiffuseAsset != 0u);
-	m_uUseNormTex = glGetUniformLocation(m_Shader->GetProgram(), "useNormTex");
-	glUniform1i(m_uUseNormTex, m_TexNormAsset != 0u);
-	m_uUseSpecTex = glGetUniformLocation(m_Shader->GetProgram(), "useSpecTex");
-	glUniform1i(m_uUseSpecTex, m_TexSpecAsset != 0u);
+	m_Shader->Upload("useDifTex"_hash, (m_TexDiffuseAsset != 0u));
+	m_Shader->Upload("useNormTex"_hash, (m_TexNormAsset != 0u));
+	m_Shader->Upload("useSpecTex"_hash, (m_TexSpecAsset != 0u));
 
 	if (m_TexDiffuseAsset != 0u)
 	{
 		m_TexDiffuse = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_TexDiffuseAsset);
-		glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texDiffuse"), 0);
+		m_Shader->Upload("texDiffuse"_hash, 0);
 	}
 	else
 	{
@@ -54,7 +51,7 @@ void GbufferMaterial::LoadTextures()
 	if (m_TexSpecAsset != 0u)
 	{
 		m_TexSpec = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_TexSpecAsset);
-		glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texSpecular"), 2);
+		m_Shader->Upload("texSpecular"_hash, 2);
 	}
 	else
 	{
@@ -64,7 +61,7 @@ void GbufferMaterial::LoadTextures()
 	if (m_TexNormAsset != 0u)
 	{
 		m_TexNorm = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_TexNormAsset);
-		glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texNormal"), 1);
+		m_Shader->Upload("texNormal"_hash, 1);
 	}
 	else
 	{
@@ -72,13 +69,6 @@ void GbufferMaterial::LoadTextures()
 	}
 
 	m_OutdatedTextureData = false;
-}
-
-void GbufferMaterial::AccessShaderAttributes()
-{
-	m_uDifCol = glGetUniformLocation(m_Shader->GetProgram(), "diffuseColor");
-	m_uSpecCol = glGetUniformLocation(m_Shader->GetProgram(), "specularColor");
-	m_uSpecPow = glGetUniformLocation(m_Shader->GetProgram(), "specularPower");
 }
 
 void GbufferMaterial::UploadDerivedVariables()
@@ -97,8 +87,9 @@ void GbufferMaterial::UploadDerivedVariables()
 	{
 		STATE->LazyBindTexture(2, GL_TEXTURE_2D, m_TexSpec->GetHandle());
 	}
+
 	//Upload uniforms
-	glUniform3f(m_uDifCol, m_DiffuseColor.x, m_DiffuseColor.y, m_DiffuseColor.z);
-	glUniform3f(m_uSpecCol, m_SpecularColor.x, m_SpecularColor.y, m_SpecularColor.z);
-	glUniform1f(m_uSpecPow, m_SpecularPower);
+	m_Shader->Upload("diffuseColor"_hash, m_DiffuseColor);
+	m_Shader->Upload("specularColor"_hash, m_SpecularColor);
+	m_Shader->Upload("specularPower"_hash, m_SpecularPower);
 }

@@ -27,11 +27,9 @@ protected:
 	vec3 color;
 	float brightness;
 	friend class LightComponent;
-	virtual void UploadVariables(GLuint program, TransformComponent* comp, uint32 index) = 0;
 	virtual void DrawVolume( TransformComponent* pTransform ) { UNUSED( pTransform ); };
 	bool m_Update = true;
 };
-
 
 class PointLight : public Light
 {
@@ -46,7 +44,6 @@ public:
 
 protected:
 	float radius;
-	virtual void UploadVariables(GLuint program, TransformComponent* comp, uint32 index);
 };
 
 class DirectionalLight : public Light
@@ -66,7 +63,6 @@ public:
 	virtual bool IsShadowEnabled() { return m_pShadowData?true:false; }
 	virtual void GenerateShadow(TransformComponent* pTransform);
 protected:
-	virtual void UploadVariables(GLuint program, TransformComponent* comp, uint32 index);
 
 	DirectionalShadowData* m_pShadowData = nullptr;
 };

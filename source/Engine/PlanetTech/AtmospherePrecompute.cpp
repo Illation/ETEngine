@@ -147,7 +147,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	STATE->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
 	STATE->SetShader(m_pComputeDirectIrradiance.get());
 	STATE->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTarget(), atmo->m_TexTransmittance->GetHandle());
-	glUniform1i(glGetUniformLocation(m_pComputeDirectIrradiance->GetProgram(), "uTexTransmittance"), atmo->m_TexTransmittance->GetHandle());
+	m_pComputeDirectIrradiance->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetHandle()));
 	STATE->SetBlendEnabled({ false, blend });
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 	STATE->SetBlendEnabled(false);
@@ -171,12 +171,12 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 	STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 	STATE->SetShader(m_pComputeSingleScattering.get());
-	glUniformMatrix3fv(glGetUniformLocation(m_pComputeSingleScattering->GetProgram(), "luminance_from_radiance"), 1, GL_FALSE, etm::valuePtr(luminanceFromRadiance));
+	m_pComputeSingleScattering->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
 	STATE->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTarget(), atmo->m_TexTransmittance->GetHandle());
-	glUniform1i(glGetUniformLocation(m_pComputeSingleScattering->GetProgram(), "uTexTransmittance"), atmo->m_TexTransmittance->GetHandle());
+	m_pComputeSingleScattering->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetHandle()));
 	for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 	{
-		glUniform1i(glGetUniformLocation(m_pComputeSingleScattering->GetProgram(), "layer"), layer);
+		m_pComputeSingleScattering->Upload("layer"_hash, layer);
 		STATE->SetBlendEnabled({ false, false, blend, blend });
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		STATE->SetBlendEnabled(false);
@@ -195,19 +195,19 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 		STATE->SetShader(m_pComputeScatteringDensity.get());
 		STATE->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTarget(), atmo->m_TexTransmittance->GetHandle());
-		glUniform1i(glGetUniformLocation(m_pComputeScatteringDensity->GetProgram(), "uTexTransmittance"), atmo->m_TexTransmittance->GetHandle());
+		m_pComputeScatteringDensity->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetHandle()));
 		STATE->LazyBindTexture(m_TexDeltaRayleigh->GetHandle(), m_TexDeltaRayleigh->GetTarget(), m_TexDeltaRayleigh->GetHandle());
-		glUniform1i(glGetUniformLocation(m_pComputeScatteringDensity->GetProgram(), "uTexRayleigh"), m_TexDeltaRayleigh->GetHandle());
+		m_pComputeScatteringDensity->Upload("uTexRayleigh"_hash, static_cast<int32>(m_TexDeltaRayleigh->GetHandle()));
 		STATE->LazyBindTexture(m_TexDeltaMie->GetHandle(), m_TexDeltaMie->GetTarget(), m_TexDeltaMie->GetHandle());
-		glUniform1i(glGetUniformLocation(m_pComputeScatteringDensity->GetProgram(), "uTexDeltaMie"), m_TexDeltaMie->GetHandle());
+		m_pComputeScatteringDensity->Upload("uTexDeltaMie"_hash, static_cast<int32>(m_TexDeltaMie->GetHandle()));
 		STATE->LazyBindTexture(m_TexDeltaMultipleScattering->GetHandle(), m_TexDeltaMultipleScattering->GetTarget(), m_TexDeltaMultipleScattering->GetHandle());
-		glUniform1i(glGetUniformLocation(m_pComputeScatteringDensity->GetProgram(), "uTexMultipleScattering"), m_TexDeltaMultipleScattering->GetHandle());
+		m_pComputeScatteringDensity->Upload("uTexMultipleScattering"_hash, static_cast<int32>(m_TexDeltaMultipleScattering->GetHandle()));
 		STATE->LazyBindTexture(m_TexDeltaIrradiance->GetHandle(), m_TexDeltaIrradiance->GetTarget(), m_TexDeltaIrradiance->GetHandle());
-		glUniform1i(glGetUniformLocation(m_pComputeScatteringDensity->GetProgram(), "uTexDeltaIrradiance"), m_TexDeltaIrradiance->GetHandle());
-		glUniform1i(glGetUniformLocation(m_pComputeScatteringDensity->GetProgram(), "scattering_order"), scatteringOrder);
+		m_pComputeScatteringDensity->Upload("uTexDeltaIrradiance"_hash, static_cast<int32>(m_TexDeltaIrradiance->GetHandle()));
+		m_pComputeScatteringDensity->Upload("scattering_order"_hash, scatteringOrder);
 		for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 		{
-			glUniform1i(glGetUniformLocation(m_pComputeScatteringDensity->GetProgram(), "layer"), layer);
+			m_pComputeScatteringDensity->Upload("layer"_hash, layer);
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		}
 
@@ -218,14 +218,14 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		glDrawBuffers(2, kDrawBuffers);
 		STATE->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
 		STATE->SetShader(m_pComputeIndirectIrradiance.get());
-		glUniformMatrix3fv(glGetUniformLocation(m_pComputeIndirectIrradiance->GetProgram(), "luminance_from_radiance"), 1, GL_FALSE, etm::valuePtr(luminanceFromRadiance));
+		m_pComputeIndirectIrradiance->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
 		STATE->LazyBindTexture(m_TexDeltaRayleigh->GetHandle(), m_TexDeltaRayleigh->GetTarget(), m_TexDeltaRayleigh->GetHandle());
-		glUniform1i(glGetUniformLocation(m_pComputeIndirectIrradiance->GetProgram(), "uTexRayleigh"), m_TexDeltaRayleigh->GetHandle());
+		m_pComputeIndirectIrradiance->Upload("uTexRayleigh"_hash, static_cast<int32>(m_TexDeltaRayleigh->GetHandle()));
 		STATE->LazyBindTexture(m_TexDeltaMie->GetHandle(), m_TexDeltaMie->GetTarget(), m_TexDeltaMie->GetHandle());
-		glUniform1i(glGetUniformLocation(m_pComputeIndirectIrradiance->GetProgram(), "uTexDeltaMie"), m_TexDeltaMie->GetHandle());
+		m_pComputeIndirectIrradiance->Upload("uTexDeltaMie"_hash, static_cast<int32>(m_TexDeltaMie->GetHandle()));
 		STATE->LazyBindTexture(m_TexDeltaMultipleScattering->GetHandle(), m_TexDeltaMultipleScattering->GetTarget(), m_TexDeltaMultipleScattering->GetHandle());
-		glUniform1i(glGetUniformLocation(m_pComputeIndirectIrradiance->GetProgram(), "uTexMultipleScattering"), m_TexDeltaMultipleScattering->GetHandle());
-		glUniform1i(glGetUniformLocation(m_pComputeIndirectIrradiance->GetProgram(), "scattering_order"), scatteringOrder);
+		//m_pComputeIndirectIrradiance->Upload("uTexDeltaIrradiance"_hash, static_cast<int32>(m_TexDeltaMultipleScattering->GetHandle()));
+		m_pComputeIndirectIrradiance->Upload("scattering_order"_hash, scatteringOrder);
 		STATE->SetBlendEnabled({ false, true });
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		STATE->SetBlendEnabled(false);
@@ -238,14 +238,14 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		glDrawBuffers(2, kDrawBuffers);
 		STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 		STATE->SetShader(m_pComputeMultipleScattering.get());
-		glUniformMatrix3fv(glGetUniformLocation(m_pComputeMultipleScattering->GetProgram(), "luminance_from_radiance"), 1, GL_FALSE, etm::valuePtr(luminanceFromRadiance));
+		m_pComputeMultipleScattering->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
 		STATE->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTarget(), atmo->m_TexTransmittance->GetHandle());
-		glUniform1i(glGetUniformLocation(m_pComputeMultipleScattering->GetProgram(), "uTexTransmittance"), atmo->m_TexTransmittance->GetHandle());
+		m_pComputeMultipleScattering->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetHandle()));
 		STATE->LazyBindTexture(m_TexDeltaScattering->GetHandle(), m_TexDeltaScattering->GetTarget(), m_TexDeltaScattering->GetHandle());
-		glUniform1i(glGetUniformLocation(m_pComputeMultipleScattering->GetProgram(), "uTexDeltaScatteringDensity"), m_TexDeltaScattering->GetHandle());
+		m_pComputeMultipleScattering->Upload("uTexDeltaScatteringDensity"_hash, static_cast<int32>(m_TexDeltaScattering->GetHandle()));
 		for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 		{
-			glUniform1i(glGetUniformLocation(m_pComputeMultipleScattering->GetProgram(), "layer"), layer);
+			m_pComputeMultipleScattering->Upload("layer"_hash, layer);
 			STATE->SetBlendEnabled({ false, true });
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 			STATE->SetBlendEnabled(false);
@@ -263,16 +263,16 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 void AtmospherePrecompute::SetUniforms(ShaderData* shader, TextureData* transmittance, TextureData* scattering, TextureData* irradiance, TextureData* mie)
 {
 	STATE->LazyBindTexture(transmittance->GetHandle(), transmittance->GetTarget(), transmittance->GetHandle());
-	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexTransmittance"), transmittance->GetHandle());
+	shader->Upload("uTexTransmittance"_hash, static_cast<int32>(transmittance->GetHandle()));
 
 	STATE->LazyBindTexture(scattering->GetHandle(), scattering->GetTarget(), scattering->GetHandle());
-	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexScattering"), scattering->GetHandle());
+	shader->Upload("uTexScattering"_hash, static_cast<int32>(scattering->GetHandle()));
 
 	STATE->LazyBindTexture(irradiance->GetHandle(), irradiance->GetTarget(), irradiance->GetHandle());
-	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexIrradiance"), irradiance->GetHandle());
+	shader->Upload("uTexIrradiance"_hash, static_cast<int32>(irradiance->GetHandle()));
 
 	STATE->LazyBindTexture(mie->GetHandle(), mie->GetTarget(), mie->GetHandle());
-	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexMie"), mie->GetHandle());
+	shader->Upload("uTexMie"_hash, static_cast<int32>(mie->GetHandle()));
 }
 
 void AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(const std::vector<double>& wavelengths,

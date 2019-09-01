@@ -15,35 +15,30 @@ LightMaterial::LightMaterial(vec3 col)
 	m_DrawForward = true;
 }
 
-void LightMaterial::AccessShaderAttributes()
+void LightMaterial::SetLight(vec3 pos, vec3 color, float radius)
 {
-	m_uCol = glGetUniformLocation(m_Shader->GetProgram(), "Color");
-	m_uPosition = glGetUniformLocation(m_Shader->GetProgram(), "Position");
-	m_uRadius = glGetUniformLocation(m_Shader->GetProgram(), "Radius");
-
-	m_uCamPos = glGetUniformLocation(m_Shader->GetProgram(), "camPos");
-	m_uProjA = glGetUniformLocation(m_Shader->GetProgram(), "projectionA");
-	m_uProjB = glGetUniformLocation(m_Shader->GetProgram(), "projectionB");
-	m_uViewProjInv = glGetUniformLocation(m_Shader->GetProgram(), "viewProjInv");
+	m_Position = pos;
+	m_Color = color;
+	m_Radius = radius;
 }
 
 void LightMaterial::UploadDerivedVariables()
 {
-	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texGBufferA"), 0);
-	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texGBufferB"), 1);
-	glUniform1i(glGetUniformLocation(m_Shader->GetProgram(), "texGBufferC"), 2);
+	m_Shader->Upload("texGBufferA"_hash, 0);
+	m_Shader->Upload("texGBufferB"_hash, 1);
+	m_Shader->Upload("texGBufferC"_hash, 2);
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
 	//for position reconstruction
-	glUniform1f(m_uProjA, CAMERA->GetDepthProjA());
-	glUniform1f(m_uProjB, CAMERA->GetDepthProjB());
-	glUniformMatrix4fv(m_uViewProjInv, 1, GL_FALSE, etm::valuePtr(CAMERA->GetStatViewProjInv()));
-	glUniform3fv(m_uCamPos, 1, etm::valuePtr(CAMERA->GetTransform()->GetPosition()));
+	m_Shader->Upload("projectionA"_hash, CAMERA->GetDepthProjA());
+	m_Shader->Upload("projectionB"_hash, CAMERA->GetDepthProjB());
+	m_Shader->Upload("viewProjInv"_hash, CAMERA->GetStatViewProjInv());
+	m_Shader->Upload("camPos"_hash, CAMERA->GetTransform()->GetPosition());
 
-	glUniform3f(m_uPosition, m_Position.x, m_Position.y, m_Position.z);
-	glUniform3f(m_uCol, m_Color.x, m_Color.y, m_Color.z);
-	glUniform1f(m_uRadius, m_Radius);
+	m_Shader->Upload("Position"_hash, m_Position);
+	m_Shader->Upload("Color"_hash, m_Color);
+	m_Shader->Upload("Radius"_hash, m_Radius);
 }

@@ -52,31 +52,10 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 	//mat4 World = etm::translate(pos)*etm::scale(vec3(radius));
 	mat4 World = etm::scale( vec3( radius ) )*etm::translate( pos );
 
-	//Draw the null material in the stencil buffer
-	//STATE->SetDepthEnabled(true);
-	//STATE->SetCullEnabled(false);
-	//glClear(GL_STENCIL_BUFFER_BIT);
-	//glStencilFunc(GL_ALWAYS, 0, 0);
-	//glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
-	//glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-	//m_pNullMaterial->UploadVariables(World);
-	//PrimitiveRenderer::GetInstance()->Draw<primitives::IcoSphere<2> >();
-	//Draw the Light material on the gbuffer
-	//glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
-	//STATE->SetDepthEnabled(false);
-	//STATE->SetBlendEnabled(true);
-	//STATE->SetBlendEquation(GL_FUNC_ADD);
-	//STATE->SetBlendFunction(GL_ONE, GL_ONE);
-	//STATE->SetCullEnabled(true);
-	//STATE->SetFaceCullingMode(GL_FRONT);
-
 	m_pMaterial->SetLight(pos, col, radius);
 	m_pMaterial->UploadVariables(World);
 
 	PrimitiveRenderer::GetInstance()->Draw<primitives::IcoSphere<2> >();
-
-	//STATE->SetFaceCullingMode(GL_BACK);
-	//STATE->SetBlendEnabled(false);
 }
 
 DirectLightVolume::DirectLightVolume(){}
@@ -88,88 +67,71 @@ void DirectLightVolume::Initialize()
 	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdLightDirectionalShader.glsl"_hash);
 	m_pShaderShadowed = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdLightDirectionalShadowShader.glsl"_hash);
 
-	m_uCol = glGetUniformLocation(m_pShader->GetProgram(), "Color");
-	m_uDir = glGetUniformLocation(m_pShader->GetProgram(), "Direction");
-	m_uCamPos = glGetUniformLocation(m_pShader->GetProgram(), "camPos");
-
-	IsInitialized = true;
+	m_IsInitialized = true;
 }
 void DirectLightVolume::Draw(vec3 dir, vec3 col)
 {
-	if (!IsInitialized) Initialize();
+	if (!m_IsInitialized) Initialize();
 
 	// #todo: avoid getting all the uniform info again and again
 
 	STATE->SetShader(m_pShader.get());
 
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferA"), 0);
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferB"), 1);
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "texGBufferC"), 2);
+	//m_pShader->Upload("texGBufferA"_hash, 0);
+	m_pShader->Upload("texGBufferB"_hash, 1);
+	m_pShader->Upload("texGBufferC"_hash, 2);
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
 	//for position reconstruction
-	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "projectionA"), CAMERA->GetDepthProjA());
-	glUniform1f(glGetUniformLocation(m_pShader->GetProgram(), "projectionB"), CAMERA->GetDepthProjB());
-	glUniformMatrix4fv(glGetUniformLocation(m_pShader->GetProgram(), "viewProjInv"), 1, GL_FALSE, etm::valuePtr(CAMERA->GetStatViewProjInv()));
-	glUniform3fv(m_uCamPos, 1, etm::valuePtr(CAMERA->GetTransform()->GetPosition()));
+	m_pShader->Upload("viewProjInv"_hash, CAMERA->GetStatViewProjInv());
 
-	glUniform3fv(m_uDir, 1, etm::valuePtr(dir));
-	glUniform3fv(m_uCol, 1, etm::valuePtr(col));
+	m_pShader->Upload("Direction"_hash, dir);
+	m_pShader->Upload("Color"_hash, col);
 
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 }
 void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *pShadow)
 {
-	if (!IsInitialized) Initialize();
+	if (!m_IsInitialized) Initialize();
 
 	STATE->SetShader(m_pShaderShadowed.get());
 
-	//Upload gbuffer
-	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texGBufferA"), 0);
-	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texGBufferB"), 1);
-	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "texGBufferC"), 2);
+	m_pShaderShadowed->Upload("texGBufferA"_hash, 0);
+	m_pShaderShadowed->Upload("texGBufferB"_hash, 1);
+	m_pShaderShadowed->Upload("texGBufferC"_hash, 2);
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
 	//for position reconstruction
-	glUniform1f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "projectionA"), CAMERA->GetDepthProjA());
-	glUniform1f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "projectionB"), CAMERA->GetDepthProjB());
-	glUniformMatrix4fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "viewProjInv"), 1, GL_FALSE, etm::valuePtr(CAMERA->GetStatViewProjInv()));
-	glUniform3fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "camPos"), 1, etm::valuePtr(CAMERA->GetTransform()->GetPosition()));
+	m_pShaderShadowed->Upload("projectionA"_hash, CAMERA->GetDepthProjA());
+	m_pShaderShadowed->Upload("projectionB"_hash, CAMERA->GetDepthProjB());
+	m_pShaderShadowed->Upload("viewProjInv"_hash, CAMERA->GetStatViewProjInv());
+	m_pShaderShadowed->Upload("camPos"_hash, CAMERA->GetTransform()->GetPosition());
 
-	//Camera info
-	glUniformMatrix4fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "CameraView")
-		, 1, GL_FALSE, etm::valuePtr(CAMERA->GetView()));
-
-	//light info
-	glUniform3fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Direction"), 1, etm::valuePtr(dir));
-	glUniform3fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Color"), 1, etm::valuePtr(col));
+	m_pShaderShadowed->Upload("Direction"_hash, dir);
+	m_pShaderShadowed->Upload("Color"_hash, col);
 
 	//shadow info
-	glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "PcfSamples"), GRAPHICS.NumPCFSamples);
-	glUniform1f(glGetUniformLocation(m_pShaderShadowed->GetProgram(), "Bias"), pShadow->m_Bias);
+	m_pShaderShadowed->Upload("PcfSamples"_hash, GRAPHICS.NumPCFSamples);
+	m_pShaderShadowed->Upload("Bias"_hash, pShadow->m_Bias);
 
 	std::string ligStr = "cascades[";
 	for (uint32 i = 0; i < (uint32)pShadow->m_Cascades.size(); i++)
 	{
 		//Light Projection
-		glUniformMatrix4fv(glGetUniformLocation(m_pShaderShadowed->GetProgram(),
-			(ligStr + std::to_string(i) + "].LightVP").c_str()), 
-			1, GL_FALSE, etm::valuePtr(pShadow->m_Cascades[i].lightVP));
+		m_pShaderShadowed->Upload(GetHash(ligStr + std::to_string(i) + "].LightVP"), pShadow->m_Cascades[i].lightVP);
 
 		//Shadow map
-		glUniform1i(glGetUniformLocation(m_pShaderShadowed->GetProgram(),
-			(ligStr + std::to_string(i) + "].ShadowMap").c_str()), 3+i);
-		STATE->LazyBindTexture(3+i, GL_TEXTURE_2D, pShadow->m_Cascades[i].pTexture->GetHandle());
+		m_pShaderShadowed->Upload(GetHash(ligStr + std::to_string(i) + "].ShadowMap"), static_cast<int32>(3 + i));
+		STATE->LazyBindTexture(3 + i, GL_TEXTURE_2D, pShadow->m_Cascades[i].pTexture->GetHandle());
 
 		//cascade distance
-		glUniform1f(glGetUniformLocation(m_pShaderShadowed->GetProgram(),
-			(ligStr + std::to_string(i) + "].Distance").c_str()), pShadow->m_Cascades[i].distance);
+		m_pShaderShadowed->Upload(GetHash(ligStr + std::to_string(i) + "].Distance"), pShadow->m_Cascades[i].distance);
 	}
 
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();

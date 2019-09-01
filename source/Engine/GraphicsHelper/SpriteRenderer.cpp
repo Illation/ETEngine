@@ -40,15 +40,9 @@ void SpriteRenderer::Initialize()
 	m_Shader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostSprite.glsl"_hash);
 
 	STATE->SetShader(m_Shader.get());
-	m_uTransform = glGetUniformLocation(m_Shader->GetProgram(), "uTransform");
 
-	m_uTexture = glGetUniformLocation(m_Shader->GetProgram(), "uTexture");
-	glUniform1i(m_uTexture, 0);
-	m_u3DTexture = glGetUniformLocation(m_Shader->GetProgram(), "u3DTexture");
-	glUniform1i(m_u3DTexture, 1);
-
-	m_uDraw3D = glGetUniformLocation(m_Shader->GetProgram(), "uDraw3D");
-	m_uLayer = glGetUniformLocation(m_Shader->GetProgram(), "uLayer");
+	m_Shader->Upload("uTexture"_hash, 0);
+	m_Shader->Upload("u3DTexture"_hash, 1);
 
 	//Generate buffers and arrays
 	glGenVertexArrays(1, &m_VAO);
@@ -195,7 +189,7 @@ void SpriteRenderer::Draw()
 	CalculateTransform();
 	STATE->SetShader(m_Shader.get());
 	STATE->SetActiveTexture(0);
-	glUniformMatrix4fv(m_uTransform, 1, GL_FALSE, etm::valuePtr(m_Transform));
+	m_Shader->Upload("uTransform"_hash, m_Transform);
 
 	uint32 batchSize = 1;
 	uint32 batchOffset = 0;
@@ -212,13 +206,13 @@ void SpriteRenderer::Draw()
 		if (texData->GetTarget() == GL_TEXTURE_2D)
 		{
 			STATE->SetActiveTexture(0);
-			glUniform1i(m_uDraw3D, false);
+			m_Shader->Upload("uDraw3D"_hash, false);
 		}
 		else
 		{
 			STATE->SetActiveTexture(1);
-			glUniform1i(m_uDraw3D, true);
-			glUniform1f(m_uLayer, m_Layer);
+			m_Shader->Upload("uDraw3D"_hash, true);
+			m_Shader->Upload("uLayer"_hash, m_Layer);
 		}
 		STATE->BindTexture(texData->GetTarget(), texData->GetHandle());
 

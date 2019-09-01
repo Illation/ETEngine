@@ -31,13 +31,3 @@ void LightComponent::GenerateShadow()
 {
 	m_Light->GenerateShadow(GetTransform());
 }
-void LightComponent::UploadVariables(GLuint shaderProgram, uint32 index)
-{
-	if (m_PositionUpdated || m_Light->m_Update)
-	{
-		m_Light->UploadVariables(shaderProgram, GetTransform(), index);
-		m_Light->m_Update = false;
-
-		m_PositionUpdated = false;
-	}
-}

@@ -109,9 +109,9 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	AssetPtr<ShaderData> irradianceShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdConvIrradianceShader.glsl"_hash);
 
 	STATE->SetShader(irradianceShader.get());
-	glUniform1i(glGetUniformLocation(irradianceShader->GetProgram(), "environmentMap"), 0);
+	irradianceShader->Upload("environmentMap"_hash, 0);
 	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, source->GetHandle());
-	glUniformMatrix4fv(glGetUniformLocation(irradianceShader->GetProgram(), "projection"), 1, GL_FALSE, etm::valuePtr(captureProjection));
+	irradianceShader->Upload("projection"_hash, captureProjection);
 
 	//render irradiance cubemap
 	//*************************
@@ -120,7 +120,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	STATE->BindFramebuffer(captureFBO);
 	for (uint32 i = 0; i < 6; ++i)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(irradianceShader->GetProgram(), "view"), 1, GL_FALSE, etm::valuePtr(captureViews[i]));
+		irradianceShader->Upload("view"_hash, captureViews[i]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradiance->GetHandle(), 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -139,12 +139,10 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	AssetPtr<ShaderData> radianceShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdConvRadianceShader.glsl"_hash);
 
 	STATE->SetShader(radianceShader.get());
-	glUniform1i(glGetUniformLocation(radianceShader->GetProgram(), "environmentMap"), 0);
-	glUniform1f(glGetUniformLocation(radianceShader->GetProgram(), "resolution"), (GLfloat)radianceRes);
+	radianceShader->Upload("environmentMap"_hash, 0);
+	radianceShader->Upload("resolution"_hash, static_cast<float>(radianceRes));
 	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, source->GetHandle());
-	glUniformMatrix4fv(glGetUniformLocation(radianceShader->GetProgram(), "projection"), 1, GL_FALSE, etm::valuePtr(captureProjection));
-	auto roughnessUniformLoc = glGetUniformLocation(radianceShader->GetProgram(), "roughness");
-	auto viewLoc = glGetUniformLocation(radianceShader->GetProgram(), "view");
+	radianceShader->Upload("projection"_hash, captureProjection);
 
 	//render radiance
 	//***************
@@ -160,10 +158,10 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 		STATE->SetViewport(ivec2(0), ivec2(mipWidth, mipHeight));
 
 		float roughness = (float)mip / (float)(maxMipLevels);
-		glUniform1f(roughnessUniformLoc, roughness);
+		radianceShader->Upload("roughness"_hash, roughness);
 		for (uint32 i = 0; i < 6; ++i)
 		{
-			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, etm::valuePtr(captureViews[i]));
+			radianceShader->Upload("view"_hash, captureViews[i]);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, radiance->GetHandle(), mip);
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

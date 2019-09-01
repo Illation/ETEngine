@@ -198,9 +198,9 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 
 	// convert HDR equirectangular environment map to cubemap equivalent
 	STATE->SetShader(equiCubeShader.get());
-	glUniform1i(glGetUniformLocation(equiCubeShader->GetProgram(), "equirectangularMap"), 0);
+	equiCubeShader->Upload("equirectangularMap"_hash, 0);
 	STATE->LazyBindTexture(0, GL_TEXTURE_2D, pEqui->GetHandle());
-	glUniformMatrix4fv(glGetUniformLocation(equiCubeShader->GetProgram(), "projection"), 1, GL_FALSE, etm::valuePtr(CubeCaptureProjection()));
+	equiCubeShader->Upload("projection"_hash, CubeCaptureProjection());
 
 	//render the cube
 	//***************
@@ -209,7 +209,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	STATE->BindFramebuffer(captureFBO);
 	for (uint32 i = 0; i < 6; ++i)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(equiCubeShader->GetProgram(), "view"), 1, GL_FALSE, etm::valuePtr(captureViews[i]));
+		equiCubeShader->Upload("view"_hash, captureViews[i]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap->GetHandle(), 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

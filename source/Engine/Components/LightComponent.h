@@ -24,8 +24,6 @@ public:
 		return dynamic_cast<T*>(m_Light);
 	}
 
-	void UploadVariables(GLuint shaderProgram, uint32 index);
-
 	void DrawVolume();
 	void GenerateShadow();
 

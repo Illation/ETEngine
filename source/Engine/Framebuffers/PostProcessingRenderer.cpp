@@ -52,27 +52,20 @@ void PostProcessingRenderer::Initialize()
 
 	//Access shader variables
 	STATE->SetShader(m_pDownsampleShader.get());
-	glUniform1i(glGetUniformLocation(m_pDownsampleShader->GetProgram(), "texColor"), 0);
-	m_uThreshold = glGetUniformLocation(m_pDownsampleShader->GetProgram(), "threshold");
+	m_pDownsampleShader->Upload("texColor"_hash, 0);
 
 	STATE->SetShader(m_pGaussianShader.get());
-	glUniform1i(glGetUniformLocation(m_pGaussianShader->GetProgram(), "image"), 0);
-	m_uHorizontal = glGetUniformLocation(m_pGaussianShader->GetProgram(), "horizontal");
+	m_pGaussianShader->Upload("image"_hash, 0);
 
 	STATE->SetShader(m_pPostProcShader.get());
-	glUniform1i(glGetUniformLocation(m_pPostProcShader->GetProgram(), "texColor"), 0);
+	m_pPostProcShader->Upload("texColor"_hash, 0);
 	for (int32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
-		glUniform1i(glGetUniformLocation(m_pPostProcShader->GetProgram(), 
-			(std::string("texBloom") + std::to_string(i)).c_str()), i+1);
+		m_pPostProcShader->Upload(GetHash(std::string("texBloom") + std::to_string(i)), i + 1);
 	}
-	m_uExposure = glGetUniformLocation(m_pPostProcShader->GetProgram(), "exposure");
-	m_uGamma = glGetUniformLocation(m_pPostProcShader->GetProgram(), "gamma");
-	m_uBloomMult = glGetUniformLocation(m_pPostProcShader->GetProgram(), "bloomMult");
 
 	STATE->SetShader(m_pFXAAShader.get());
-	glUniform1i(glGetUniformLocation(m_pFXAAShader->GetProgram(), "texColor"), 0);
-	m_uInverseScreen = glGetUniformLocation(m_pFXAAShader->GetProgram(), "uInverseScreen");
+	m_pFXAAShader->Upload("texColor"_hash, 0);
 
 	GenerateFramebuffers();
 
@@ -162,7 +155,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	STATE->BindFramebuffer(m_HDRoutFBO);
 	STATE->SetShader(m_pDownsampleShader.get());
 	STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_CollectTex->GetHandle());
-	glUniform1f(m_uThreshold, settings.bloomThreshold);
+	m_pDownsampleShader->Upload("threshold"_hash, settings.bloomThreshold);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 	//downsample glow
 	int32 width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
@@ -172,8 +165,11 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 		float resMult = 1.f / (float)std::pow(2, i + 1);
 		STATE->SetViewport(ivec2(0), ivec2((int32)(width*resMult), (int32)(height*resMult)));
 		STATE->BindFramebuffer(m_DownSampleFBO[i]);
-		if(i>0) STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_DownSampleTexture[i - 1]->GetHandle());
-		glUniform1f(m_uThreshold, settings.bloomThreshold);
+		if (i > 0)
+		{
+			STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_DownSampleTexture[i - 1]->GetHandle());
+		}
+		m_pDownsampleShader->Upload("threshold"_hash, settings.bloomThreshold);
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
 		//blur downsampled
@@ -191,13 +187,13 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 			STATE->BindFramebuffer(horizontal ? m_DownPingPongFBO[i] : m_DownSampleFBO[i]);
 			//input is previous framebuffers texture, or on first item the result of downsampling
 			STATE->LazyBindTexture(0, GL_TEXTURE_2D, (horizontal ? m_DownSampleTexture[i] : m_DownPingPongTexture[i])->GetHandle());
-			glUniform1i(m_uHorizontal, horizontal);
+			m_pGaussianShader->Upload("horizontal"_hash, horizontal);
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		}
 	}
 	STATE->SetViewport(ivec2(0), ivec2(width, height));
 	//ping pong gaussian blur
-	GLboolean horizontal = true;
+	bool horizontal = true;
 	STATE->SetShader(m_pGaussianShader.get());
 #ifdef EDITOR
 	for (GLuint i = 0; i < 10; i++)
@@ -206,7 +202,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 #endif
 	{
 		STATE->BindFramebuffer(m_PingPongFBO[horizontal]);
-		glUniform1i(m_uHorizontal, horizontal);
+		m_pGaussianShader->Upload("horizontal"_hash, horizontal);
 		STATE->LazyBindTexture(0, GL_TEXTURE_2D, ((i == 0) ? m_ColorBuffers[1] : m_PingPongTexture[!horizontal])->GetHandle());
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		horizontal = !horizontal;
@@ -228,17 +224,18 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	{
 		STATE->LazyBindTexture(2+i, GL_TEXTURE_2D, m_DownSampleTexture[i]->GetHandle());
 	}
-	glUniform1f(m_uExposure, settings.exposure);
-	glUniform1f(m_uGamma, settings.gamma);
-	glUniform1f(m_uBloomMult, settings.bloomMult);
+	m_pPostProcShader->Upload("exposure"_hash, settings.exposure);
+	m_pPostProcShader->Upload("gamma"_hash, settings.gamma);
+	m_pPostProcShader->Upload("bloomMult"_hash, settings.bloomMult);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 	RenderPipeline::GetInstance()->DrawOverlays();//Make sure text and sprites get antialiased
+
 	//FXAA
 	if (GRAPHICS.UseFXAA)
 	{
 		STATE->BindFramebuffer(FBO);
 		STATE->SetShader(m_pFXAAShader.get());
-		glUniform2f(m_uInverseScreen, 1.f/(float)WINDOW.Width, 1.f/(float)WINDOW.Height);
+		m_pFXAAShader->Upload("uInverseScreen"_hash, 1.f / etm::vecCast<float>(WINDOW.Dimensions));
 		STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_PingPongTexture[1]->GetHandle());
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 	}
@@ -260,25 +257,24 @@ void PostProcessingRenderer::ResizeFBTextures()
 		STATE->LazyBindTexture( 4, GL_TEXTURE_2D, 0 );
 		STATE->LazyBindTexture( 5, GL_TEXTURE_2D, 0 );
 		STATE->LazyBindTexture( 6, GL_TEXTURE_2D, 0 );
+
 		//Access shader variables
 		STATE->SetShader(m_pDownsampleShader.get());
-		glUniform1i( glGetUniformLocation( m_pDownsampleShader->GetProgram(), "texColor" ), 0 );
-		m_uThreshold = glGetUniformLocation( m_pDownsampleShader->GetProgram(), "threshold" );
+		m_pDownsampleShader->Upload("texColor"_hash, 0);
 
 		STATE->SetShader(m_pGaussianShader.get());
-		glUniform1i( glGetUniformLocation( m_pGaussianShader->GetProgram(), "image" ), 0 );
-		m_uHorizontal = glGetUniformLocation( m_pGaussianShader->GetProgram(), "horizontal" );
+		m_pGaussianShader->Upload("image"_hash, 0);
 
 		STATE->SetShader(m_pPostProcShader.get());
-		glUniform1i( glGetUniformLocation( m_pPostProcShader->GetProgram(), "texColor" ), 0 );
-		for(int32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
+		m_pPostProcShader->Upload("texColor"_hash, 0);
+		for (int32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 		{
-			glUniform1i( glGetUniformLocation( m_pPostProcShader->GetProgram(),
-				(std::string( "texBloom" ) + std::to_string( i )).c_str() ), i + 1 );
+			m_pPostProcShader->Upload(GetHash(std::string("texBloom") + std::to_string(i)), i + 1);
 		}
-		m_uExposure = glGetUniformLocation( m_pPostProcShader->GetProgram(), "exposure" );
-		m_uGamma = glGetUniformLocation( m_pPostProcShader->GetProgram(), "gamma" );
-		m_uBloomMult = glGetUniformLocation( m_pPostProcShader->GetProgram(), "bloomMult" );
+
+		STATE->SetShader(m_pFXAAShader.get());
+		m_pFXAAShader->Upload("texColor"_hash, 0);
+
 		GenerateFramebuffers();
 		return;
 	}

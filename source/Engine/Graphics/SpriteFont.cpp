@@ -302,11 +302,9 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	AssetPtr<ShaderData> computeSdf = ResourceManager::GetInstance()->GetAssetData<ShaderData>("ComputeGlyphSDF.glsl"_hash);
 	STATE->SetShader(computeSdf.get());
-	glUniform1i(glGetUniformLocation(computeSdf->GetProgram(), "uTex"), 0);
-	auto uChannel = glGetUniformLocation(computeSdf->GetProgram(), "uChannel");
-	auto uResolution = glGetUniformLocation(computeSdf->GetProgram(), "uResolution");
-	glUniform1f(glGetUniformLocation(computeSdf->GetProgram(), "uSpread"), (float)m_Spread);
-	glUniform1f(glGetUniformLocation(computeSdf->GetProgram(), "uHighRes"), (float)m_HighRes);
+	computeSdf->Upload("uTex"_hash, 0);
+	computeSdf->Upload("uSpread"_hash, static_cast<float>(m_Spread));
+	computeSdf->Upload("uHighRes"_hash, static_cast<float>(m_HighRes));
 
 	params.wrapS = E_TextureWrapMode::ClampToBorder;
 	params.wrapT = E_TextureWrapMode::ClampToBorder;
@@ -347,8 +345,8 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 		ivec2 res = ivec2(metric->Width - m_Padding * 2, metric->Height - m_Padding * 2);
 		STATE->SetViewport(etm::vecCast<int32>(metric->TexCoord) + ivec2(m_Padding), res);
 		STATE->LazyBindTexture(0, GL_TEXTURE_2D, pTexture->GetHandle());
-		glUniform1i(uChannel, metric->Channel);
-		glUniform2f(uResolution, (float)res.x, (float)res.y);
+		computeSdf->Upload("uChannel"_hash, static_cast<int32>(metric->Channel));
+		computeSdf->Upload("uResolution"_hash, etm::vecCast<float>(res));
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
 		delete pTexture;

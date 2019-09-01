@@ -124,20 +124,20 @@ void AtmosphereParameters::Upload(ShaderData const* const shader, const std::str
 {
 	STATE->SetShader(shader);
 
-	glUniform3fv(glGetUniformLocation(shader->GetProgram(), (varName + ".solar_irradiance").c_str()), 1, etm::valuePtr(solarIrradiance));
-	glUniform1f(glGetUniformLocation(shader->GetProgram(), (varName + ".sun_angular_radius").c_str()), sun_angular_radius);
-	glUniform1f(glGetUniformLocation(shader->GetProgram(), (varName + ".bottom_radius").c_str()), bottom_radius);
-	glUniform1f(glGetUniformLocation(shader->GetProgram(), (varName + ".top_radius").c_str()), top_radius);
+	shader->Upload(GetHash(varName + ".solar_irradiance"), solarIrradiance, false);
+	shader->Upload(GetHash(varName + ".sun_angular_radius"), sun_angular_radius, false);
+	shader->Upload(GetHash(varName + ".bottom_radius"), bottom_radius, false);
+	shader->Upload(GetHash(varName + ".top_radius"), top_radius, false);
 	UploadDensityProfile(shader, varName + ".rayleigh_density", rayleigh_density);
-	glUniform3fv(glGetUniformLocation(shader->GetProgram(), (varName + ".rayleigh_scattering").c_str()), 1, etm::valuePtr(rayleighScattering));
+	shader->Upload(GetHash(varName + ".rayleigh_scattering"), rayleighScattering, false);
 	UploadDensityProfile(shader, varName + ".mie_density", mie_density);
-	glUniform3fv(glGetUniformLocation(shader->GetProgram(), (varName + ".mie_scattering").c_str()), 1, etm::valuePtr(mieScattering));
-	glUniform3fv(glGetUniformLocation(shader->GetProgram(), (varName + ".mie_extinction").c_str()), 1, etm::valuePtr(mieExtinction));
-	glUniform1f(glGetUniformLocation(shader->GetProgram(), (varName + ".mie_phase_function_g").c_str()), mie_phase_function_g);
+	shader->Upload(GetHash(varName + ".mie_scattering"), mieScattering, false);
+	shader->Upload(GetHash(varName + ".mie_extinction"), mieExtinction, false);
+	shader->Upload(GetHash(varName + ".mie_phase_function_g"), mie_phase_function_g, false);
 	UploadDensityProfile(shader, varName + ".absorption_density", absorption_density);
-	glUniform3fv(glGetUniformLocation(shader->GetProgram(), (varName + ".absorption_extinction").c_str()), 1, etm::valuePtr(absorptionExtinction));
-	glUniform3fv(glGetUniformLocation(shader->GetProgram(), (varName + ".ground_albedo").c_str()), 1, etm::valuePtr(groundAlbedo));
-	glUniform1f(glGetUniformLocation(shader->GetProgram(), (varName + ".mu_s_min").c_str()), mu_s_min);
+	shader->Upload(GetHash(varName + ".absorption_extinction"), absorptionExtinction, false);
+	shader->Upload(GetHash(varName + ".ground_albedo"), groundAlbedo, false);
+	shader->Upload(GetHash(varName + ".mu_s_min"), mu_s_min, false);
 }
 
 void AtmosphereParameters::UploadDensityProfile(ShaderData const* const shader, const std::string &varName, const DensityProfile &profile)
@@ -145,11 +145,11 @@ void AtmosphereParameters::UploadDensityProfile(ShaderData const* const shader, 
 	for (uint32 i = 0; i < 2; ++i)
 	{
 		std::string idxVar = varName + ".layers[" + std::to_string(i) + "].";
-		glUniform1f(glGetUniformLocation(shader->GetProgram(), (idxVar + "width").c_str()), profile.layers[i].width);
-		glUniform1f(glGetUniformLocation(shader->GetProgram(), (idxVar + "exp_term").c_str()), profile.layers[i].exp_term);
-		glUniform1f(glGetUniformLocation(shader->GetProgram(), (idxVar + "exp_scale").c_str()), profile.layers[i].exp_scale);
-		glUniform1f(glGetUniformLocation(shader->GetProgram(), (idxVar + "linear_term").c_str()), profile.layers[i].linear_term);
-		glUniform1f(glGetUniformLocation(shader->GetProgram(), (idxVar + "constant_term").c_str()), profile.layers[i].constant_term);
+		shader->Upload(GetHash(idxVar + "width"), profile.layers[i].width, false);
+		shader->Upload(GetHash(idxVar + "exp_term"), profile.layers[i].exp_term, false);
+		shader->Upload(GetHash(idxVar + "exp_scale"), profile.layers[i].exp_scale, false);
+		shader->Upload(GetHash(idxVar + "linear_term"), profile.layers[i].linear_term, false);
+		shader->Upload(GetHash(idxVar + "constant_term"), profile.layers[i].constant_term, false);
 	}
 }
 
@@ -196,16 +196,16 @@ DensityProfile::DensityProfile(std::vector<DensityProfileLayer> inLayers, float 
 void AtmosphereSettings::UploadTextureSize(ShaderData const* const shader) const
 {
 	STATE->SetShader(shader);
-	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexTransmittanceW"), TRANSMITTANCE_W);
-	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexTransmittanceH"), TRANSMITTANCE_H);
+	shader->Upload("uTexTransmittanceW"_hash, TRANSMITTANCE_W, false);
+	shader->Upload("uTexTransmittanceH"_hash, TRANSMITTANCE_H, false);
 
-	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexScatteringNuSize"), INSCATTER_NU);
-	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexScatteringMuSize"), INSCATTER_MU);
-	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexScatteringMuSSize"), INSCATTER_MU_S);
-	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexScatteringRSize"), INSCATTER_R);
+	shader->Upload("uTexScatteringNuSize"_hash, INSCATTER_NU, false);
+	shader->Upload("uTexScatteringMuSize"_hash, INSCATTER_MU, false);
+	shader->Upload("uTexScatteringMuSSize"_hash, INSCATTER_MU_S, false);
+	shader->Upload("uTexScatteringRSize"_hash, INSCATTER_R, false);
 
-	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexIrradianceW"), IRRADIANCE_W);
-	glUniform1i(glGetUniformLocation(shader->GetProgram(), "uTexIrradianceH"), IRRADIANCE_H);
+	shader->Upload("uTexIrradianceW"_hash, IRRADIANCE_W, false);
+	shader->Upload("uTexIrradianceH"_hash, IRRADIANCE_H, false);
 }
 
 AtmosphereSettings::AtmosphereSettings()

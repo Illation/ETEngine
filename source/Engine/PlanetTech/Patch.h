@@ -62,19 +62,8 @@ private:
 
 	AssetPtr<ShaderData> m_pPatchShader;
 
-	GLint m_uModel;
-	GLint m_uViewProj;
-
-	GLint m_uMaxHeight;
-
-	GLint m_uCamPos;
-	GLint m_uRadius;
 	float m_MorphRange = 0.5f;
-	GLint m_uMorphRange;
-
-	GLint m_uDelta;
 
 	//shading
 	vec3 m_Ambient = vec3(0.05f, 0.05f, 0.08f);
-	GLint m_uAmbient;
 };

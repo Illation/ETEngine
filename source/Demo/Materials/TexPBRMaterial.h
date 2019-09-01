@@ -15,7 +15,7 @@ public:
 
 private:
 	void LoadTextures() override;
-	void AccessShaderAttributes() override;
+	void AccessShaderAttributes() override {}
 	void UploadDerivedVariables() override;
 
 private:
@@ -38,7 +38,6 @@ private:
 	bool m_OutdatedTextureData = false;
 
 	//Phong parameters
-	GLint m_uSpecular;
 	float m_Specular = 0.5;
 };
 

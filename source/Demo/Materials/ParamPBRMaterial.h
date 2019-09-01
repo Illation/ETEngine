@@ -11,16 +11,13 @@ public:
 
 private:
 	void LoadTextures() override {}
-	void AccessShaderAttributes() override;
+	void AccessShaderAttributes() override {}
 	void UploadDerivedVariables() override;
 
 private:
 
-	GLint m_uBaseColor;
 	vec3 m_BaseColor = vec3(0.8f);
-	GLint m_uRoughness;
 	float m_Roughness = 0.5f;
-	GLint m_uMetal;
 	float m_Metal = 0;
 };
 

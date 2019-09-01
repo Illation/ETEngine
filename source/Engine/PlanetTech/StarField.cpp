@@ -51,7 +51,7 @@ void StarField::Initialize()
 	m_pSprite = ResourceManager::GetInstance()->GetAssetData<TextureData>("starSprite.png"_hash);
 
 	STATE->SetShader(m_pShader.get());
-	glUniform1i(glGetUniformLocation(m_pShader->GetProgram(), "uTexture"), 0);
+	m_pShader->Upload("uTexture"_hash, 0);
 
 	//Generate buffers and arrays
 	glGenVertexArrays(1, &m_VAO);

@@ -97,13 +97,7 @@ private:
 	//Shader and its uniforms
 	AssetPtr<ShaderData> m_Shader;
 
-	GLint m_uTransform = 0;
 	mat4 m_Transform;
 
-	GLint m_uTexture;
-	GLint m_u3DTexture;
-
-	GLint m_uDraw3D;
-	GLint m_uLayer;
 	float m_Layer;
 };

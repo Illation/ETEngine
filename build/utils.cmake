@@ -366,9 +366,6 @@ function(installResources TARGET)
 		set(binDir "${baseBinDir}/${configType}_${platform}/${TARGET}")
 
 		# copy packaged resources
-		install(DIRECTORY ${projectBase}/source/Engine/Resources/
-			CONFIGURATIONS ${configType}
-			DESTINATION ${binDir}/Resources/)
 		install(DIRECTORY ${projectBase}/source/Demo/Resources/
 			CONFIGURATIONS ${configType}
 			DESTINATION ${binDir}/Resources/)

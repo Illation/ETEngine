@@ -47,8 +47,6 @@
 	uniform sampler2D texAO;
 	uniform sampler2D texNormal;
 	
-	uniform float specular;
-	
 	vec3 mapNormal()
 	{
 		vec3 norm = normalize(Normal);

@@ -52,11 +52,8 @@ void TextRenderer::Initialize()
 	m_pTextShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostText.glsl"_hash);
 
 	STATE->SetShader(m_pTextShader.get());
-	m_uTransform = glGetUniformLocation(m_pTextShader->GetProgram(), "transform");
-	m_uTexSize = glGetUniformLocation(m_pTextShader->GetProgram(), "texSize");
 
-	m_uTexture = glGetUniformLocation(m_pTextShader->GetProgram(), "fontTex");
-	glUniform1i(m_uTexture, 0);
+	m_pTextShader->Upload("fontTex"_hash, 0);
 
 	//Generate buffers and arrays
 	glGenVertexArrays(1, &m_VAO);
@@ -221,7 +218,7 @@ void TextRenderer::Draw()
 	CalculateTransform();
 	STATE->SetShader(m_pTextShader.get());
 	STATE->SetActiveTexture(0);
-	glUniformMatrix4fv(m_uTransform, 1, GL_FALSE, etm::valuePtr(m_Transform));
+	m_pTextShader->Upload("transform"_hash, m_Transform);
 
 	//Bind Object vertex array
 	STATE->BindVertexArray(m_VAO);
@@ -233,7 +230,7 @@ void TextRenderer::Draw()
 			STATE->BindTexture(GL_TEXTURE_2D, queued.m_Font->GetAtlas()->GetHandle());
 
 			vec2 const texSize = etm::vecCast<float>(queued.m_Font->GetAtlas()->GetResolution());
-			glUniform2f(m_uTexSize, texSize.x, texSize.y);
+			m_pTextShader->Upload("texSize"_hash, texSize);
 
 			//Draw the object
 			STATE->DrawArrays(GL_POINTS, queued.m_BufferStart, queued.m_BufferSize);

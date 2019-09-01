@@ -122,10 +122,6 @@ private:
 	vec4 m_Color = vec4(0, 0, 0, 1);
 	size_t m_ActiveFontIdx;
 
-	GLint m_uTransform;
-	GLint m_uTexSize;
-	GLint m_uTexture;
-
 	GLuint m_VAO;
 	GLuint m_VBO;
 };

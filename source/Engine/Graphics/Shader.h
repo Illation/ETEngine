@@ -38,7 +38,7 @@ public:
 	// accessors
 	//---------------------
 	template<typename T>
-	bool Upload(T_Hash const uniform, const T &data) const;
+	bool Upload(T_Hash const uniform, const T &data, bool const reportWarnings = true) const;
 
 	// Data
 	///////

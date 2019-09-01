@@ -49,13 +49,4 @@ private:
 	TextureData* m_DownSampleTexture[NUM_BLOOM_DOWNSAMPLES];
 	GLuint m_DownPingPongFBO[NUM_BLOOM_DOWNSAMPLES];
 	TextureData* m_DownPingPongTexture[NUM_BLOOM_DOWNSAMPLES];
-
-	GLuint m_uHorizontal;
-
-	GLuint m_uExposure;
-	GLuint m_uGamma;
-	GLuint m_uBloomMult;
-	GLint m_uThreshold;
-
-	GLint m_uInverseScreen;
 };

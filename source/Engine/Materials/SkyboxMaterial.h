@@ -17,15 +17,13 @@ public:
 
 private:
 	void LoadTextures() override;
-	void AccessShaderAttributes() override;
+	void AccessShaderAttributes() override {}
 	void UploadDerivedVariables() override;
 
 private:
 	AssetPtr<EnvironmentMap> m_EnvironmentMap;
 	T_Hash m_AssetId;
 
-	GLuint m_uNumMipMaps;
-	GLuint m_uRoughness;
 	float m_Roughness;
 };
 

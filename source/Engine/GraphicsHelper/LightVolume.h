@@ -38,9 +38,5 @@ protected:
 private:
 	friend class AbstractFramework; //should init and destroy singleton
 	void Initialize();
-	bool IsInitialized = false;
-
-	GLint m_uCol;
-	GLint m_uDir;
-	GLint m_uCamPos;
+	bool m_IsInitialized = false;
 };

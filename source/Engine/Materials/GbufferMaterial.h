@@ -19,31 +19,25 @@ public:
 
 private:
 	void LoadTextures() override;
-	void AccessShaderAttributes() override;
+	void AccessShaderAttributes() override {}
 	void UploadDerivedVariables() override;
 
 private:
 	//Texture
-	GLint m_uUseDifTex;
 	AssetPtr<TextureData> m_TexDiffuse;
 	T_Hash m_TexDiffuseAsset = 0u;
 
-	GLint m_uUseNormTex;
 	AssetPtr<TextureData> m_TexNorm;
 	T_Hash m_TexNormAsset = 0u;
 
-	GLint m_uUseSpecTex;
 	AssetPtr<TextureData> m_TexSpec;
 	T_Hash m_TexSpecAsset = 0u;
 
 	bool m_OutdatedTextureData = false;
 
 	//Phong parameters
-	GLint m_uDifCol;
 	vec3 m_DiffuseColor;
-	GLint m_uSpecCol;
 	vec3 m_SpecularColor;
-	GLint m_uSpecPow;
 	float m_SpecularPower = 50;
 };
 
