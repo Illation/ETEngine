@@ -1,3 +1,6 @@
 [submodule "dependancies/submodules/bullet/bullet3"]
 	path = dependancies/submodules/bullet/bullet3
 	url = https://github.com/bulletphysics/bullet3
+[submodule "dependancies/submodules/vcpkg/vcpkg"]
+	path = dependancies/submodules/vcpkg/vcpkg
+	url = https://github.com/Microsoft/vcpkg

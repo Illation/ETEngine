@@ -20,6 +20,7 @@ setupConfigurations()
 project (EtEngine C CXX) # C++
 set(CMAKE_CXX_STANDARD 14)  # C++ 14
 
+
 # general library that has the build files, easy way to make sure we can see the build files in the IDE, shouldn't actually be built
 #####################################
 

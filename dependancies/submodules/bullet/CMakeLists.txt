@@ -8,7 +8,7 @@
 # set up vars
 #############
 
-if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8") # 64 bit
+if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
 	set(_p "x64")	
 	set(_generator "Visual Studio 15 2017 Win64")	
 else() # 32 bit
