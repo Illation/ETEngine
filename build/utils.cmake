@@ -139,11 +139,60 @@ function(target_definitions)
 endfunction(target_definitions)
 
 
+# get vcpkg install directory
+####################################################
+function(getVcpkgTarget vcpkg_target)
+
+	if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
+		if(MSVC)
+			set(${vcpkg_target} "x64-windows" PARENT_SCOPE)
+		else()
+			set(${vcpkg_target} "x64-linux" PARENT_SCOPE)
+		endif()
+	else() # 32 bit
+		set(${vcpkg_target} "x86-windows" PARENT_SCOPE)
+	endif()
+
+endfunction(getVcpkgTarget)
+
+
+# get vcpkg toolset triplet
+####################################################
+function(getToolsetTriplet out_triplet)
+
+	set(_vcpkgTarget )
+	getVcpkgTarget(_vcpkgTarget)
+
+	if(DEFINED MSVC_TOOLSET_VERSION)
+		set(_toolset "v${MSVC_TOOLSET_VERSION}")
+	elseif(DEFINED CMAKE_VS_PLATFORM_TOOLSET)
+		set(_toolset "${CMAKE_VS_PLATFORM_TOOLSET}")
+	else()
+		message(FATAL_ERROR "Visual studio toolset couldn't be deduced from cmake")
+	endif()
+
+	set(${out_triplet} "${_vcpkgTarget}-${_toolset}" PARENT_SCOPE)
+endfunction(getToolsetTriplet)
+
+
+# get vcpkg install directory
+####################################################
+function(getVcpkgInstallDir vcpkg_install)
+	set(_vcpkgTargetToolset )
+	getToolsetTriplet(_vcpkgTargetToolset)
+
+	set(${vcpkg_install} "${PROJECT_BINARY_DIR}/../dependancies/submodules/vcpkg/vcpkg/installed/${_vcpkgTargetToolset}" PARENT_SCOPE)
+endfunction(getVcpkgInstallDir)
+
+
 # link to all dependancies
 ###########################
 function(dependancyLinks TARGET _useSdlMain)
 
 	set(dep_dir "${PROJECT_BINARY_DIR}/../dependancies")
+	
+	set(_vcpkgInstall )
+	getVcpkgInstallDir(_vcpkgInstall)
 
 	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
 		set(dep_pf "${dep_dir}/x64")
@@ -157,12 +206,13 @@ function(dependancyLinks TARGET _useSdlMain)
 	
 		debug ${dep_pf}/bullet/Debug/BulletDynamics_Debug.lib	optimized ${dep_pf}/bullet/Release/BulletDynamics.lib
 		debug ${dep_pf}/bullet/Debug/BulletCollision_Debug.lib	optimized ${dep_pf}/bullet/Release/BulletCollision.lib
-		debug ${dep_pf}/bullet/Debug/LinearMath_Debug.lib		optimized ${dep_pf}/bullet/Release/LinearMath.lib )
+		debug ${dep_pf}/bullet/Debug/LinearMath_Debug.lib		optimized ${dep_pf}/bullet/Release/LinearMath.lib 
+
+		debug ${_vcpkgInstall}/debug/lib/freetyped.lib			optimized ${_vcpkgInstall}/lib/freetype.lib	)
 
 	target_link_libraries (${TARGET} 
 		${dep_pf}/sdl2/SDL2.lib
 		${dep_pf}/freeImage/FreeImage.lib
-		${dep_pf}/freetype/freetype.lib
 		${dep_pf}/assimp/assimp.lib
 		${dep_pf}/openAL/openAL.lib )
 
@@ -178,10 +228,17 @@ function(dependancyLinks TARGET _useSdlMain)
 endfunction(dependancyLinks)
 
 
+# place a list of all libraries built by vcpkg
+####################################################
+function(getVcpkgLibs out_list)
+	set (${out_list} "freetype" "bz2" "libpng16" PARENT_SCOPE)
+endfunction(getVcpkgLibs)
+
+
 # place a list of unified libraries in the out list
 ####################################################
 function(getUniLibs out_list)
-	set (${out_list} "sdl2" "freeImage" "freetype" "assimp" "openAL" PARENT_SCOPE)
+	set (${out_list} "sdl2" "freeImage" "assimp" "openAL" PARENT_SCOPE)
 endfunction(getUniLibs)
 
 
@@ -195,6 +252,10 @@ endfunction(getSepLibs)
 # link to all dependancies
 ###########################
 function(libIncludeDirs)
+
+	set(_vcpkgInstall )
+	getVcpkgInstallDir(_vcpkgInstall)
+	include_directories("${_vcpkgInstall}/include/")	
 
 	set(libs )
 	getUniLibs(libs)
@@ -224,11 +285,18 @@ function(copyDllCommand _target)
 	getUniLibs(uni_libs)
 	set(sep_libs )
 	getSepLibs(sep_libs)
+	
+	set(_vcpkgInstall )
+	getVcpkgInstallDir(_vcpkgInstall)
+	set(vcpkg_libs )
+	getVcpkgLibs(vcpkg_libs)
 
 	# where the lib files live
 	set(_cfg "Release") 
+	set(_vcCfg "")
 	if(("$<CONFIG>" STREQUAL "Debug") OR ("$<CONFIG>" STREQUAL "DebugEditor"))
 		set(_cfg "Debug")
+		set(_vcCfg "/debug")
 	
 		# for debug applications we also copy pdbs	
 		foreach(_lib ${uni_libs})
@@ -250,6 +318,18 @@ function(copyDllCommand _target)
 					COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_pdb}" 
 				)
 			endforeach()
+		endforeach()
+
+		file(GLOB pdbs ${_vcpkgInstall}${_vcCfg}/bin/*.pdb)
+		foreach(_pdb ${pdbs})
+			get_filename_component(_pdbName ${_pdb} NAME_WE)
+			if ("${_pdbName}" IN_LIST vcpkg_libs)
+				add_custom_command(TARGET ${_target} 
+					POST_BUILD
+					COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_pdb}" $<TARGET_FILE_DIR:${_target}>
+					COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_pdb}" 
+				)
+			endif()
 		endforeach()
 	endif()
 
@@ -282,6 +362,30 @@ function(copyDllCommand _target)
 			)
 		endforeach()
 	endforeach()
+	
+	file(GLOB debugDlls ${_vcpkgInstall}/debug/bin/*.dll)
+	foreach(_dll ${debugDlls})
+		get_filename_component(_dllName ${_dll} NAME_WE)
+		if ("${_dllName}" IN_LIST vcpkg_libs)
+			add_custom_command(TARGET ${_target} 
+				POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,copy_if_different\ "${_dll}"\ $<TARGET_FILE_DIR:${_target}>,echo\ "">
+				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "Copying ${_dll}",echo\ "">
+			)
+		endif()
+	endforeach()
+
+	file(GLOB releaseDlls ${_vcpkgInstall}/bin/*.dll)
+	foreach(_dll ${releaseDlls})
+		get_filename_component(_dllName ${_dll} NAME_WE)
+		if ("${_dllName}" IN_LIST vcpkg_libs)
+			add_custom_command(TARGET ${_target} 
+				POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",copy_if_different\ "${_dll}"\ $<TARGET_FILE_DIR:${_target}>>
+				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",echo\ "Copying ${_dll}">
+			)
+		endif()
+	endforeach()
 
 endfunction(copyDllCommand)
 
@@ -304,6 +408,11 @@ function(installDlls TARGET)
 	getUniLibs(uni_libs)
 	set(sep_libs )
 	getSepLibs(sep_libs)
+	
+	set(_vcpkgInstall )
+	getVcpkgInstallDir(_vcpkgInstall)
+	set(vcpkg_libs )
+	getVcpkgLibs(vcpkg_libs)
 
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
 
@@ -311,8 +420,10 @@ function(installDlls TARGET)
 
 		# where the lib files live
 		set(libcfg "Release") 
+		set(_vcCfg "")
 		if(("${configType}" STREQUAL "Debug") OR ("${configType}" STREQUAL "DebugEditor"))
 			set(libcfg "Debug")
+			set(_vcCfg "/debug")
 
 			# for debug applications we also copy pdbs
 			foreach(_lib ${uni_libs})
@@ -326,6 +437,13 @@ function(installDlls TARGET)
 					CONFIGURATIONS ${configType}
 					DESTINATION ${binDir}/
 					FILES_MATCHING PATTERN "*.pdb")
+			endforeach()
+			file(GLOB pdbs ${_vcpkgInstall}${_vcCfg}/bin/*.pdb)
+			foreach(_pdb ${pdbs})
+				get_filename_component(_pdbName ${_pdb} NAME_WE)
+				if ("${_pdbName}" IN_LIST vcpkg_libs)
+					install(FILES ${_pdb} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
+				endif()
 			endforeach()
 		endif()
 
@@ -341,6 +459,13 @@ function(installDlls TARGET)
 				CONFIGURATIONS ${configType}
 				DESTINATION ${binDir}/
 				FILES_MATCHING PATTERN "*.dll")
+		endforeach()
+		file(GLOB dlls ${_vcpkgInstall}${_vcCfg}/bin/*.dll)
+		foreach(_dll ${dlls})
+			get_filename_component(_dllName ${_dll} NAME_WE)
+			if ("${_dllName}" IN_LIST vcpkg_libs)
+				install(FILES ${_dll} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
+			endif()
 		endforeach()
 	endforeach()
 
