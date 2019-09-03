@@ -30,7 +30,6 @@ private:
 	void InitializeSDL();
 	void LoadConfig();
 	void InitializeWindow();
-	void InitializeUtilities();
 	void BindOpenGL();
 	void InitializeDebug();
 	void InitializeGame();

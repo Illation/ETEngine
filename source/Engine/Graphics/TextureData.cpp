@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "TextureData.h"
 
-#include <FreeImage.h>
+#include <stb/stb_image.h>
+#include <stb/stb_image_resize.h>
 
 
 //==============
@@ -240,76 +241,59 @@ DEFINE_FORCED_LINKING(TextureAsset) // force the shader class to be linked as it
 //
 bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
-	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
-	fif = FreeImage_GetFileType(GetName().c_str(), 0);
-	if (fif == FIF_UNKNOWN)
-	{
-		fif = FreeImage_GetFIFFromFilename(GetName().c_str());
-	}
+	// check image format
 
-	if (fif == FIF_UNKNOWN)
+	stbi_set_flip_vertically_on_load(false);
+	int32 width = 0;
+	int32 height = 0;
+	int32 channels = 0;
+
+	static int32 const s_TargetNumChannels = 3; // for now we only support opaque textures
+
+	// option to load 16 bit texture
+	uint8* bits = stbi_load_from_memory(data.data(), static_cast<int32>(data.size()), &width, &height, &channels, s_TargetNumChannels);
+
+	if (bits == nullptr)
 	{
-		LOG("TextureAsset::LoadFromMemory > Cannot extract texture format from asset name!", LogLevel::Warning);
+		LOG("TextureAsset::LoadFromMemory > Failed to load texture bytes from data!", LogLevel::Warning);
 		return false;
 	}
 
-	FIBITMAP* pImage = nullptr;
-	if (FreeImage_FIFSupportsReading(fif))
+	if ((width == 0) || (height == 0))
 	{
-		// Create a FreeImage datastream from load data. 
-		// Since FreeImage requires this to be non const, we need to copy the entire load data into a temporary non const array
-		BYTE* tempData = (BYTE*)malloc(data.size());
-		std::copy(data.begin(), data.end(), tempData);
-		FIMEMORY* stream = FreeImage_OpenMemory(tempData, static_cast<DWORD>(data.size()));
-		ET_ASSERT(stream != nullptr);
-
-		pImage = FreeImage_LoadFromMemory(fif, stream);
-		FreeImage_CloseMemory(stream);
-		free(tempData);
-	}
-
-	if (pImage == nullptr)
-	{
-		LOG("TextureAsset::LoadFromMemory > Failed to load FIBITMAP from data!", LogLevel::Warning);
+		LOG("TextureAsset::LoadFromMemory > Image is too small to display!", LogLevel::Warning);
+		stbi_image_free(bits);
 		return false;
 	}
 
-	//Get dimensions and downscale if necessary
-	uint32 width = FreeImage_GetWidth(pImage);
-	uint32 height = FreeImage_GetHeight(pImage);
 	if (!etm::nearEquals(GRAPHICS.TextureScaleFactor, 1.f))
 	{
 		if (!m_ForceResolution)
 		{
-			FIBITMAP* oldImage = pImage;
-			pImage = FreeImage_Rescale(pImage, (int32)(width*GRAPHICS.TextureScaleFactor), (int32)(height*GRAPHICS.TextureScaleFactor));
-			FreeImage_Unload(oldImage);
-			width = FreeImage_GetWidth(pImage);
-			height = FreeImage_GetHeight(pImage);
+			// resize
+			int32 const outWidth = static_cast<int32>(static_cast<float>(width) * GRAPHICS.TextureScaleFactor);
+			int32 const outHeight = static_cast<int32>(static_cast<float>(height) * GRAPHICS.TextureScaleFactor);
+			uint8* outBits = new uint8[outWidth * outHeight * channels];
+
+			stbir_resize_uint8(bits, width, height, 0, outBits, outWidth, outHeight, 0, channels);
+
+			stbi_image_free(bits);
+			bits = outBits;
+			width = outWidth;
+			height = outHeight;
 		}
 	}
 
-	//Convert into opengl compatible format
-	FreeImage_FlipVertical(pImage);
-	FIBITMAP* oldImage = pImage;
-	pImage = FreeImage_ConvertToType(pImage, FIT_RGBF);
-	FreeImage_Unload(oldImage);
-
-	//Get and validate data pointer
-	uint8* bits = FreeImage_GetBits(pImage);
-	if ((bits == 0) || (width == 0) || (height == 0))
-	{
-		LOG("TextureAsset::LoadFromMemory > Failed to get image bits from FIBITMAP!", LogLevel::Warning);
-		FreeImage_Unload(pImage);
-		return false;
-	}
+	// convert data type
+	// check number of channels
 
 	//Upload to GPU
-	m_Data = new TextureData(width, height, m_UseSrgb ? GL_SRGB : GL_RGB, GL_RGB, GL_FLOAT);
+	m_Data = new TextureData(width, height, m_UseSrgb ? GL_SRGB : GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
 	m_Data->Build((void*)bits);
 	m_Data->SetParameters(m_Parameters);
 
-	FreeImage_Unload(pImage);//Destroy CPU side data
+	stbi_image_free(bits);
+	bits = nullptr;
 
 	return true;
 }

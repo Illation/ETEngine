@@ -3,9 +3,10 @@
 
 #include "Shader.h"
 
-#include <FreeImage.h>
+#include <stb/stb_image.h>
 
 #include <EtCore/Content/ResourceManager.h>
+#include <EtCore/FileSystem/FileUtil.h>
 
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 #include <Engine/GraphicsHelper/PbrPrefilter.h>
@@ -81,63 +82,34 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	//load equirectangular texture
 	//****************************
-	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
-	fif = FreeImage_GetFileType(GetName().c_str(), 0);
-	if (fif == FIF_UNKNOWN)
+	std::string extension = FileUtil::ExtractExtension(GetName());
+	ET_ASSERT(extension == "hdr", "Expected HDR file format!");
+
+	stbi_set_flip_vertically_on_load(true);
+	int32 width = 0;
+	int32 height = 0;
+	int32 channels = 0;
+	float* hdrFloats = stbi_loadf_from_memory(data.data(), static_cast<int32>(data.size()), &width, &height, &channels, 0);
+
+	if (hdrFloats == nullptr)
 	{
-		fif = FreeImage_GetFIFFromFilename(GetName().c_str());
-	}
-
-	if (fif == FIF_UNKNOWN)
-	{
-		LOG("EnvironmentMapAsset::LoadFromMemory > Cannot extract texture format from asset name!", LogLevel::Warning);
-		return false;
-	}
-	
-	ET_ASSERT(fif == FREE_IMAGE_FORMAT::FIF_HDR, "Expected HDR file format!");
-
-	FIBITMAP* dib = nullptr;
-	if (FreeImage_FIFSupportsReading(fif))
-	{
-		// Create a FreeImage datastream from load data. 
-		// Since FreeImage requires this to be non const, we need to copy the entire load data into a temporary non const array
-		BYTE* tempData = (BYTE*)malloc(data.size());
-		std::copy(data.begin(), data.end(), tempData);
-		FIMEMORY* stream = FreeImage_OpenMemory(tempData, static_cast<DWORD>(data.size()));
-		ET_ASSERT(stream != nullptr);
-
-		dib = FreeImage_LoadFromMemory(fif, stream);
-		FreeImage_CloseMemory(stream);
-		free(tempData);
-	}
-
-	if (dib == nullptr)
-	{
-		LOG("EnvironmentMapAsset::LoadFromMemory > Failed to load FIBITMAP from data!", LogLevel::Warning);
-		return false;
-	}
-	
-	//not flipping because freeimage already flips automatically --maybe skybox is wrong way around and also flipped in shaders?
-	FIBITMAP *pImage = FreeImage_ConvertToType(dib, FIT_RGBF);
-	FreeImage_Unload(dib);
-
-	uint32 const width = FreeImage_GetWidth(pImage);
-	uint32 const height = FreeImage_GetHeight(pImage);
-
-	uint8* bits = FreeImage_GetBits(pImage);
-	if ((bits == 0) || (width == 0) || (height == 0))
-	{
-		LOG("EnvironmentMapAsset::LoadFromMemory > Failed to get image bits from FIBITMAP!", LogLevel::Warning);
-		FreeImage_Unload(pImage);
+		LOG("EnvironmentMapAsset::LoadFromMemory > Failed to load hdr floats from data!", LogLevel::Warning);
 		return false;
 	}
 
-	TextureData hdrTexture(width, height, GL_RGB32F, GL_RGB, GL_FLOAT);
-	hdrTexture.Build((void*)bits);
+	if ((width == 0) || (height == 0))
+	{
+		LOG("EnvironmentMapAsset::LoadFromMemory > Image is too small to display!", LogLevel::Warning);
+		stbi_image_free(hdrFloats);
+		return false;
+	}
+
+	TextureData hdrTexture(width, height, GL_RGB16F, GL_RGB, GL_FLOAT);
+	hdrTexture.Build((void*)hdrFloats);
 
 	// we have our equirectangular texture on the GPU so we can clean up the load data on the CPU
-	FreeImage_Unload(pImage);
-	bits = nullptr;
+	stbi_image_free(hdrFloats);
+	hdrFloats = nullptr;
 
 	TextureParameters params(false);
 	params.wrapS = E_TextureWrapMode::ClampToEdge;

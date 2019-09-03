@@ -1170,7 +1170,7 @@
           },
           {
             "texture asset": {
-              "name": "Consolas_32_0.dds",
+              "name": "Consolas_32_0.tga",
               "path": "assets/Engine/Fonts/",
               "package": "content1",
               "references": [],

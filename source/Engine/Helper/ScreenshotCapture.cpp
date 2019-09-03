@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "ScreenshotCapture.h"
 
-#include <functional>
 #include <cctype>
 #include <locale>
+
+#include <stb/stb_image_write.h>
 
 #include <EtCore/FileSystem/Entry.h>
 
@@ -34,8 +35,7 @@ std::string ScreenshotCapture::GetFileName()
 		return "";
 	}
 
-	std::string extensions = FreeImage_GetFIFExtensionList(m_Format);
-	std::string extension = extensions.substr(0, extensions.find(','));
+	std::string extension("jpg");
 
 	auto entries = m_BaseDir->GetChildrenByExt(extension);
 
@@ -46,14 +46,20 @@ std::string ScreenshotCapture::GetFileName()
 	}
 	uint32 number = 0;
 
-	std::function<std::string()> constructFileName = [&]() { return baseName + "_" + std::to_string(number) + "." + extension; };
+	auto constructFileName = [&]() 
+	{ 
+		return baseName + "_" + std::to_string(number) + "." + extension; 
+	};
 
-	while (!(std::find_if(entries.begin(), entries.end(), [&](Entry* entry) { return entry->GetName() == constructFileName(); } ) == entries.end()))
+	while (!(std::find_if(entries.begin(), entries.end(), [&](Entry* entry) 
+		{ 
+			return entry->GetNameOnly() == constructFileName(); 
+		} ) == entries.end()))
 	{
 		number++;
 	}
 
-	std::string basePath = m_BaseDir->GetPath() + m_BaseDir->GetName();
+	std::string basePath = m_BaseDir->GetPath();
 	m_BaseDir->Unmount();
 
 	return basePath + constructFileName();
@@ -61,19 +67,21 @@ std::string ScreenshotCapture::GetFileName()
 
 void ScreenshotCapture::HandleCapture()
 {
-	if (!m_Take)return;
+	if (!m_Take)
+	{
+		return;
+	}
 
 	std::string filename = GetFileName();
 
 	// Make the BYTE array, factor of 3 because it's RBG.
 	uint8* pixels = new uint8[3 * WINDOW.Width * WINDOW.Height];
 
-	glReadPixels(0, 0, WINDOW.Width, WINDOW.Height, GL_BGR, GL_UNSIGNED_BYTE, pixels);
+	glReadPixels(0, 0, WINDOW.Width, WINDOW.Height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 
-	// Convert to FreeImage format & save to file
-	FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, WINDOW.Width, WINDOW.Height, 3 * WINDOW.Width, 24, 0xFF0000, 0x00FF00, 0x0000FF, false);
-	if (FreeImage_Save(m_Format, image, filename.c_str(), JPEG_QUALITYSUPERB))
-	{
+	stbi_flip_vertically_on_write(true);
+	if (stbi_write_jpg(filename.c_str(), WINDOW.Width, WINDOW.Height, 3, pixels, 90) != 0)
+	{	
 		LOG("Screenshot saved to: " + filename);
 	}
 	else
@@ -82,7 +90,6 @@ void ScreenshotCapture::HandleCapture()
 	}
 
 	// Free resources
-	FreeImage_Unload(image);
 	delete[] pixels;
 
 	m_Take = false;

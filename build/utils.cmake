@@ -212,7 +212,6 @@ function(dependancyLinks TARGET _useSdlMain)
 
 	target_link_libraries (${TARGET} 
 		${dep_pf}/sdl2/SDL2.lib
-		${dep_pf}/freeImage/FreeImage.lib
 		${dep_pf}/assimp/assimp.lib
 		${dep_pf}/openAL/openAL.lib )
 
@@ -238,7 +237,7 @@ endfunction(getVcpkgLibs)
 # place a list of unified libraries in the out list
 ####################################################
 function(getUniLibs out_list)
-	set (${out_list} "sdl2" "freeImage" "assimp" "openAL" PARENT_SCOPE)
+	set (${out_list} "sdl2" "assimp" "openAL" PARENT_SCOPE)
 endfunction(getUniLibs)
 
 
@@ -461,12 +460,11 @@ function(installDlls TARGET)
 					DESTINATION ${binDir}/
 					FILES_MATCHING PATTERN "*.pdb")
 			endforeach()
+
 			file(GLOB pdbs ${_vcpkgInstall}${_vcCfg}/bin/*.pdb)
+			getMatchingFiles("${vcpkg_libs}" "${pdbs}" pdbs)
 			foreach(_pdb ${pdbs})
-				get_filename_component(_pdbName ${_pdb} NAME_WE)
-				if ("${_pdbName}" MATCHES "${vcpkg_libs}")
-					install(FILES ${_pdb} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
-				endif()
+				install(FILES ${_pdb} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
 			endforeach()
 		endif()
 
@@ -483,13 +481,13 @@ function(installDlls TARGET)
 				DESTINATION ${binDir}/
 				FILES_MATCHING PATTERN "*.dll")
 		endforeach()
+
 		file(GLOB dlls ${_vcpkgInstall}${_vcCfg}/bin/*.dll)
+		getMatchingFiles("${vcpkg_libs}" "${dlls}" dlls)
 		foreach(_dll ${dlls})
-			get_filename_component(_dllName ${_dll} NAME_WE)
-			if ("${_dllName}" MATCHES "${vcpkg_libs}")
-				install(FILES ${_dll} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
-			endif()
+			install(FILES ${_dll} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
 		endforeach()
+
 	endforeach()
 
 endfunction(installDlls)

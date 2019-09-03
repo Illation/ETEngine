@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "AbstractFramework.h"
 
-#include <FreeImage.h>
-
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Json/JsonParser.h>
@@ -27,19 +25,6 @@
 #	include <Engine/Editor/Editor.h>
 #endif
 
-
-void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) 
-{
-	LOG("", Warning)
-	LOG("***", Warning)
-	if (fif != FIF_UNKNOWN) 
-	{
-		LOG(std::string(FreeImage_GetFormatFromFIF(fif)) + " Format", Warning)
-	}
-	LOG(message, Warning);
-	LOG("***", Warning)
-}
-
 void quit_SDL_error(const char * message)
 {
 	if (Logger::IsInitialized())
@@ -52,8 +37,6 @@ void quit_SDL_error(const char * message)
 
 AbstractFramework::~AbstractFramework()
 {
-	FreeImage_DeInitialise();
-
 #ifdef EDITOR
 	Editor::GetInstance()->DestroyInstance();
 #endif
@@ -90,7 +73,6 @@ void AbstractFramework::Run()
 	InitializeSDL();
 	LoadConfig();
 	InitializeWindow();
-	InitializeUtilities();
 	BindOpenGL();
 	InitializeDebug();
 	InitializeGame();
@@ -235,14 +217,6 @@ void AbstractFramework::InitializeWindow()
 
 	// Use v-sync
 	SDL_GL_SetSwapInterval(1);
-}
-
-void AbstractFramework::InitializeUtilities()
-{
-	FreeImage_Initialise();
-	#ifdef ET_DEBUG
-		FreeImage_SetOutputMessage(FreeImageErrorHandler);
-	#endif
 }
 
 void AbstractFramework::BindOpenGL()
