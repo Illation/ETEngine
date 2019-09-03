@@ -4,3 +4,6 @@
 [submodule "dependancies/submodules/vcpkg/vcpkg"]
 	path = dependancies/submodules/vcpkg/vcpkg
 	url = https://github.com/Microsoft/vcpkg
+[submodule "dependancies/submodules/stb/stb"]
+	path = dependancies/submodules/stb/stb
+	url = https://github.com/nothings/stb

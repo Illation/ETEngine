@@ -33,3 +33,4 @@ endif()
 
 add_subdirectory (bullet)
 add_subdirectory (vcpkg)
+add_subdirectory (stb)

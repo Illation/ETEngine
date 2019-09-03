@@ -4,7 +4,7 @@
 #include <rttr/registration>
 #include <rttr/detail/policies/ctor_policies.h>
 
-#include <ThirdParty/stb/stb_vorbis.h>
+#include <stb_vorbis.h>
 
 #include <EtCore/FileSystem/BinaryReader.h>
 #include <EtCore/FileSystem/FileUtil.h>

@@ -1,3 +1,3 @@
 #pragma once
 #define STB_VORBIS_HEADER_ONLY
-#include "stb_vorbis.c"
+#include "stb/stb_vorbis.c"

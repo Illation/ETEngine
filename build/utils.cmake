@@ -231,7 +231,7 @@ endfunction(dependancyLinks)
 # place a list of all libraries built by vcpkg
 ####################################################
 function(getVcpkgLibs out_list)
-	set (${out_list} "freetype" "bz2" "libpng16" PARENT_SCOPE)
+	set (${out_list} "freetype" "bz2" "libpng16" "zlib" PARENT_SCOPE)
 endfunction(getVcpkgLibs)
 
 
@@ -256,6 +256,8 @@ function(libIncludeDirs)
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
 	include_directories("${_vcpkgInstall}/include/")	
+	
+	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/stb")
 
 	set(libs )
 	getUniLibs(libs)
@@ -268,6 +270,34 @@ function(libIncludeDirs)
 	endforeach(_lib)
 
 endfunction(libIncludeDirs)
+
+
+# check if filenames loosely match
+###################################
+function(getMatchingFiles _searchList _fileList out_list)
+
+	foreach(_searchFile ${_searchList})
+
+		set(_index -1)
+		set(_currentIndex -1)
+		foreach(_filePath ${_fileList})
+			MATH(EXPR _currentIndex "${_currentIndex}+1")
+			get_filename_component(_fileName ${_filePath} NAME_WE)
+			if ("${_searchFile}" MATCHES "${_fileName}*")
+				set(_index ${_currentIndex})
+			endif()
+		endforeach()
+
+		if(${_index} GREATER -1)
+			list(GET _fileList ${_index} _filePath)
+			list(APPEND ret_list ${_filePath})
+		endif()
+
+	endforeach()
+	
+	set (${out_list} "${ret_list}" PARENT_SCOPE)
+
+endfunction(getMatchingFiles)
 
 
 # copy dll (and pdb) files in the appropriate directory according to configuration - post build command version
@@ -321,15 +351,13 @@ function(copyDllCommand _target)
 		endforeach()
 
 		file(GLOB pdbs ${_vcpkgInstall}${_vcCfg}/bin/*.pdb)
+		getMatchingFiles("${vcpkg_libs}" "${pdbs}" pdbs)
 		foreach(_pdb ${pdbs})
-			get_filename_component(_pdbName ${_pdb} NAME_WE)
-			if ("${_pdbName}" IN_LIST vcpkg_libs)
-				add_custom_command(TARGET ${_target} 
-					POST_BUILD
-					COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_pdb}" $<TARGET_FILE_DIR:${_target}>
-					COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_pdb}" 
-				)
-			endif()
+			add_custom_command(TARGET ${_target} 
+				POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_pdb}" $<TARGET_FILE_DIR:${_target}>
+				COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_pdb}" 
+			)
 		endforeach()
 	endif()
 
@@ -364,27 +392,22 @@ function(copyDllCommand _target)
 	endforeach()
 	
 	file(GLOB debugDlls ${_vcpkgInstall}/debug/bin/*.dll)
+	getMatchingFiles("${vcpkg_libs}" "${debugDlls}" debugDlls)
 	foreach(_dll ${debugDlls})
-		get_filename_component(_dllName ${_dll} NAME_WE)
-		if ("${_dllName}" IN_LIST vcpkg_libs)
-			add_custom_command(TARGET ${_target} 
-				POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,copy_if_different\ "${_dll}"\ $<TARGET_FILE_DIR:${_target}>,echo\ "">
-				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "Copying ${_dll}",echo\ "">
-			)
-		endif()
+		add_custom_command(TARGET ${_target} 
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,copy_if_different\ "${_dll}"\ $<TARGET_FILE_DIR:${_target}>,echo\ "">
+			COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "Copying ${_dll}",echo\ "">
+		)
 	endforeach()
-
 	file(GLOB releaseDlls ${_vcpkgInstall}/bin/*.dll)
+	getMatchingFiles("${vcpkg_libs}" "${releaseDlls}" releaseDlls)
 	foreach(_dll ${releaseDlls})
-		get_filename_component(_dllName ${_dll} NAME_WE)
-		if ("${_dllName}" IN_LIST vcpkg_libs)
-			add_custom_command(TARGET ${_target} 
-				POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",copy_if_different\ "${_dll}"\ $<TARGET_FILE_DIR:${_target}>>
-				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",echo\ "Copying ${_dll}">
-			)
-		endif()
+		add_custom_command(TARGET ${_target} 
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",copy_if_different\ "${_dll}"\ $<TARGET_FILE_DIR:${_target}>>
+			COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",echo\ "Copying ${_dll}">
+		)
 	endforeach()
 
 endfunction(copyDllCommand)
@@ -441,7 +464,7 @@ function(installDlls TARGET)
 			file(GLOB pdbs ${_vcpkgInstall}${_vcCfg}/bin/*.pdb)
 			foreach(_pdb ${pdbs})
 				get_filename_component(_pdbName ${_pdb} NAME_WE)
-				if ("${_pdbName}" IN_LIST vcpkg_libs)
+				if ("${_pdbName}" MATCHES "${vcpkg_libs}")
 					install(FILES ${_pdb} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
 				endif()
 			endforeach()
@@ -463,7 +486,7 @@ function(installDlls TARGET)
 		file(GLOB dlls ${_vcpkgInstall}${_vcCfg}/bin/*.dll)
 		foreach(_dll ${dlls})
 			get_filename_component(_dllName ${_dll} NAME_WE)
-			if ("${_dllName}" IN_LIST vcpkg_libs)
+			if ("${_dllName}" MATCHES "${vcpkg_libs}")
 				install(FILES ${_dll} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
 			endif()
 		endforeach()
