@@ -257,6 +257,7 @@ function(libIncludeDirs)
 	include_directories("${_vcpkgInstall}/include/")	
 	
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/stb")
+	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/mikkt")
 
 	set(libs )
 	getUniLibs(libs)

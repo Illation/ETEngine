@@ -7,3 +7,9 @@
 [submodule "dependancies/submodules/stb/stb"]
 	path = dependancies/submodules/stb/stb
 	url = https://github.com/nothings/stb
+[submodule "dependancies/submodules/mikkt/ext-mikktspace"]
+	path = dependancies/submodules/mikkt/ext-mikktspace
+	url = https://github.com/tcoppex/ext-mikktspace
+[submodule "dependancies/submodules/glad/glad"]
+	path = dependancies/submodules/glad/glad
+	url = https://github.com/Dav1dde/glad

@@ -13,6 +13,7 @@ build/.vs
 *.vcxproj.filters
 *.vcxproj.user
 
+/dependancies/submodules/glad/gl-bindings/
 /dependancies/submodules/bullet/build/
 /dependancies/include/bullet/
 /dependancies/x32/bullet/

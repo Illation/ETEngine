@@ -7,7 +7,7 @@
 #include <scene.h>  
 #include <postprocess.h>
 
-#include <ThirdParty/MikkTSpace/mikktspace.h>
+#include <ext-mikktspace/mikktspace.h>
 
 #include <EtCore/FileSystem/FileUtil.h>
 
