@@ -1,6 +1,8 @@
 #pragma once
 #include "TextureParameters.h"
 
+#include <glad/glad.h>
+
 #include <EtCore/Content/Asset.h>
 #include <EtCore/Helper/LinkerUtils.h>
 

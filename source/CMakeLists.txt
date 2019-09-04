@@ -2,7 +2,6 @@
 # Targets built from source
 ############################
 
-add_subdirectory (ThirdParty)
 add_subdirectory (EtMath)
 add_subdirectory (EtCooker)
 add_subdirectory (EtCore)

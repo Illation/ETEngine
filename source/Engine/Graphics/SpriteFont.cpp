@@ -4,6 +4,8 @@
 #include <ft2build.h>
 #include <freetype/freetype.h>
 
+#include <glad/glad.h>
+
 #include <EtCore/FileSystem/BinaryReader.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/ResourceManager.h>

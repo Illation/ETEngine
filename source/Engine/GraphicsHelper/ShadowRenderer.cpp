@@ -3,6 +3,8 @@
 
 #include <limits>
 
+#include <glad/glad.h>
+
 #include "RenderPipeline.h"
 #include "RenderState.h"
 

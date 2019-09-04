@@ -2,6 +2,8 @@
 
 #include "RenderState.h"
 
+#include <glad/glad.h>
+
 #include <Engine/Graphics/Shader.h>
 
 

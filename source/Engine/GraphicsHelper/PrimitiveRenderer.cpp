@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include <glad/glad.h>
+
 #include "PrimitiveRenderer.h"
 
 

@@ -22,7 +22,7 @@ targetCompileOptions(EtEngine)
 assign_source_group(${projectFiles})
 libOutputDirectories(EtEngine)
 
-target_link_libraries (EtEngine ThirdParty NothingsStb MikkTSpace EtMath EtCore)
+target_link_libraries (EtEngine glad NothingsStb MikkTSpace EtMath EtCore)
 
 # library includes
 libIncludeDirs()

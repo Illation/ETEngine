@@ -258,6 +258,7 @@ function(libIncludeDirs)
 	
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/stb")
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/mikkt")
+	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/glad/gl-bindings/include")
 
 	set(libs )
 	getUniLibs(libs)

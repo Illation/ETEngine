@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "StarField.h"
 
+#include <glad/glad.h>
+
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Content/AssetStub.h>
 #include <EtCore/FileSystem/Json/JsonParser.h>

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <map>
+#include <glad/glad.h>
+
 
 // forward declarations
 class ShaderData;

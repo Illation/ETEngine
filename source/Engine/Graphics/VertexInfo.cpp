@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "VertexInfo.h"
 
+#include <glad/glad.h>
+
 
 //================
 // Data Type Info

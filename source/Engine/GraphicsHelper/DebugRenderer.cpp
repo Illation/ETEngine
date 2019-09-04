@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "DebugRenderer.h"
 
+#include <glad/glad.h>
+
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Components/CameraComponent.h>

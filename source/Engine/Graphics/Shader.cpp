@@ -3,6 +3,8 @@
 #include "Shader.h"
 #include "Uniform.h"
 
+#include <glad/glad.h>
+
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Content/AssetStub.h>

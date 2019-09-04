@@ -3,6 +3,8 @@
 
 #include "Atmosphere.h"
 
+#include <glad/glad.h>
+
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>

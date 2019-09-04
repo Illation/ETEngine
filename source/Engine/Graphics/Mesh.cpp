@@ -3,6 +3,8 @@
 
 #include "Material.h"
 
+#include <glad/glad.h>
+
 #include <Importer.hpp>
 #include <scene.h>  
 #include <postprocess.h>

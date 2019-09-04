@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "FrameBuffer.h"
 
+#include <glad/glad.h>
+
 #include "Shader.h"
 #include "TextureData.h"
 

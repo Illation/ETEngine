@@ -3,6 +3,8 @@
 
 #include "PrimitiveRenderer.h"
 
+#include <glad/glad.h>
+
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Graphics/TextureData.h>

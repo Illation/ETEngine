@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SpriteRenderer.h"
 
+#include <glad/glad.h>
+
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Graphics/TextureData.h>

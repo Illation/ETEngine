@@ -33,7 +33,7 @@ if((NOT EXISTS "${_header}") OR (NOT EXISTS "${_source}"))
 	message(STATUS "=================================")
 
 	# generate project files
-	execute_process(COMMAND ${_pythonExe} -m glad --profile=core --out-path=../gl-bindings/ --api=gl=4.5 --generator=c --spec=gl --no-loader --extensions=../gl-extensions.txt --omit-khrplatform
+	execute_process(COMMAND ${_pythonExe} -m glad --profile=core --out-path=../gl-bindings/ --api=gl=4.5 --generator=c --spec=gl --no-loader --extensions=../gl-extensions.txt
 					WORKING_DIRECTORY ${_modDir}/
 					RESULT_VARIABLE _genBindings)
 	if(NOT _genBindings EQUAL "0")
@@ -45,3 +45,18 @@ if((NOT EXISTS "${_header}") OR (NOT EXISTS "${_source}"))
 	message(STATUS "=================================")
 
 endif()
+
+# create a library from the generated files
+###########################################
+
+list (APPEND projectFiles ${_header})
+list (APPEND projectFiles ${_source})
+
+add_library(glad ${projectFiles})
+
+assign_source_group(${projectFiles})
+set_target_properties(glad PROPERTIES LINKER_LANGUAGE C)
+
+target_include_directories (glad PRIVATE ${_incDir})
+
+libOutputDirectories(glad)

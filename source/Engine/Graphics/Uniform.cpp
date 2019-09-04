@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Uniform.h"
 
+#include <glad/glad.h>
+
 
 //===================
 // Uniform

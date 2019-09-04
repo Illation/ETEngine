@@ -31,18 +31,18 @@ RenderPipeline::RenderPipeline()
 }
 RenderPipeline::~RenderPipeline()
 {
-	PointLightVolume::GetInstance()->DestroyInstance();
-	DirectLightVolume::GetInstance()->DestroyInstance();
-	ShadowRenderer::GetInstance()->DestroyInstance();
-	TextRenderer::GetInstance()->DestroyInstance();
-	PerformanceInfo::GetInstance()->DestroyInstance();
-	PrimitiveRenderer::GetInstance()->DestroyInstance();
-	SpriteRenderer::GetInstance()->DestroyInstance();
-	AtmospherePrecompute::GetInstance()->DestroyInstance();
-	PbrPrefilter::GetInstance()->DestroyInstance();
-	CIE::GetInstance()->DestroyInstance();
-	DebugRenderer::GetInstance()->DestroyInstance();
-	ScreenshotCapture::GetInstance()->DestroyInstance();
+	PointLightVolume::DestroyInstance();
+	DirectLightVolume::DestroyInstance();
+	ShadowRenderer::DestroyInstance();
+	TextRenderer::DestroyInstance();
+	PerformanceInfo::DestroyInstance();
+	PrimitiveRenderer::DestroyInstance();
+	SpriteRenderer::DestroyInstance();
+	AtmospherePrecompute::DestroyInstance();
+	PbrPrefilter::DestroyInstance();
+	CIE::DestroyInstance();
+	DebugRenderer::DestroyInstance();
+	ScreenshotCapture::DestroyInstance();
 
 	SafeDelete(m_pSSR);
 	SafeDelete(m_pGBuffer);
