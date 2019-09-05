@@ -13,3 +13,9 @@
 [submodule "dependancies/submodules/glad/glad"]
 	path = dependancies/submodules/glad/glad
 	url = https://github.com/Dav1dde/glad
+[submodule "dependancies/submodules/Catch2"]
+	path = dependancies/submodules/Catch2
+	url = https://github.com/catchorg/Catch2
+[submodule "dependancies/submodules/rttr/rttr"]
+	path = dependancies/submodules/rttr/rttr
+	url = https://github.com/rttrorg/rttr

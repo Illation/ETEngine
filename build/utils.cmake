@@ -185,6 +185,32 @@ function(getVcpkgInstallDir vcpkg_install)
 endfunction(getVcpkgInstallDir)
 
 
+# bullet output directory
+##########################
+function(getBulletBuildDir bullet_build)
+	if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
+		set(_p "x64")
+	else() # 32 bit
+		set(_p "x32")
+	endif()
+
+	set(${bullet_build} "${PROJECT_BINARY_DIR}/../dependancies/submodules/bullet/build/${_p}" PARENT_SCOPE)
+endfunction(getBulletBuildDir)
+
+
+# rttr output directory
+##########################
+function(getRttrBuildDir rttr_build)
+	if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
+		set(_p "x64")
+	else() # 32 bit
+		set(_p "x32")
+	endif()
+
+	set(${rttr_build} "${PROJECT_BINARY_DIR}/../dependancies/submodules/rttr/build/${_p}" PARENT_SCOPE)
+endfunction(getRttrBuildDir)
+
+
 # link to all dependancies
 ###########################
 function(dependancyLinks TARGET _useSdlMain)
@@ -193,6 +219,12 @@ function(dependancyLinks TARGET _useSdlMain)
 	
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
+	
+	set(_bulletBuild )
+	getBulletBuildDir(_bulletBuild)
+	
+	set(_rttrBuild )
+	getRttrBuildDir(_rttrBuild)
 
 	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
 		set(dep_pf "${dep_dir}/x64")
@@ -202,13 +234,13 @@ function(dependancyLinks TARGET _useSdlMain)
 
 	# separate debug and release libs
 	target_link_libraries (${TARGET} 		
-		debug ${dep_pf}/rttr/Debug/rttr_core_d.lib				optimized ${dep_pf}/rttr/Release/rttr_core.lib
+		debug ${_rttrBuild}/install/lib/librttr_core_d.lib			optimized ${_rttrBuild}/install/lib/librttr_core.lib
 	
-		debug ${dep_pf}/bullet/Debug/BulletDynamics_Debug.lib	optimized ${dep_pf}/bullet/Release/BulletDynamics.lib
-		debug ${dep_pf}/bullet/Debug/BulletCollision_Debug.lib	optimized ${dep_pf}/bullet/Release/BulletCollision.lib
-		debug ${dep_pf}/bullet/Debug/LinearMath_Debug.lib		optimized ${dep_pf}/bullet/Release/LinearMath.lib 
+		debug ${_bulletBuild}/lib/Debug/BulletDynamics_Debug.lib	optimized ${_bulletBuild}/lib/Release/BulletDynamics.lib
+		debug ${_bulletBuild}/lib/Debug/BulletCollision_Debug.lib	optimized ${_bulletBuild}/lib/Release/BulletCollision.lib
+		debug ${_bulletBuild}/lib/Debug/LinearMath_Debug.lib		optimized ${_bulletBuild}/lib/Release/LinearMath.lib 
 
-		debug ${_vcpkgInstall}/debug/lib/freetyped.lib			optimized ${_vcpkgInstall}/lib/freetype.lib	)
+		debug ${_vcpkgInstall}/debug/lib/freetyped.lib				optimized ${_vcpkgInstall}/lib/freetype.lib	)
 
 	target_link_libraries (${TARGET} 
 		${dep_pf}/sdl2/SDL2.lib
@@ -241,13 +273,6 @@ function(getUniLibs out_list)
 endfunction(getUniLibs)
 
 
-# place a list of separated libraries in the out list
-######################################################
-function(getSepLibs out_list)
-	set (${out_list} "bullet" "rttr" PARENT_SCOPE)
-endfunction(getSepLibs)
-
-
 # link to all dependancies
 ###########################
 function(libIncludeDirs)
@@ -256,15 +281,17 @@ function(libIncludeDirs)
 	getVcpkgInstallDir(_vcpkgInstall)
 	include_directories("${_vcpkgInstall}/include/")	
 	
+	set(_rttrBuild )
+	getRttrBuildDir(_rttrBuild)
+	include_directories("${_rttrBuild}/install/include/")	
+	
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/stb")
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/mikkt")
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/glad/gl-bindings/include")
+	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/bullet/bullet3/src")
 
 	set(libs )
 	getUniLibs(libs)
-	set(sep_libs )
-	getSepLibs(sep_libs)
-	list (APPEND libs ${sep_libs})
 
 	foreach(_lib ${libs})
 		include_directories("${PROJECT_BINARY_DIR}/../dependancies/include/${_lib}/")	
@@ -314,8 +341,6 @@ function(copyDllCommand _target)
 
 	set(uni_libs )
 	getUniLibs(uni_libs)
-	set(sep_libs )
-	getSepLibs(sep_libs)
 	
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
@@ -332,16 +357,6 @@ function(copyDllCommand _target)
 		# for debug applications we also copy pdbs	
 		foreach(_lib ${uni_libs})
 			file(GLOB pdbs ${PROJECT_SOURCE_DIR}/dependancies/${_p}/${_lib}/*.pdb)
-			foreach(_pdb ${pdbs})
-				add_custom_command(TARGET ${_target} 
-					POST_BUILD
-					COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_pdb}" $<TARGET_FILE_DIR:${_target}>
-					COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_pdb}" 
-				)
-			endforeach()
-		endforeach()
-		foreach(_lib ${sep_libs})
-			file(GLOB pdbs ${PROJECT_SOURCE_DIR}/dependancies/${_p}/${_lib}/${_cfg}/*.pdb)
 			foreach(_pdb ${pdbs})
 				add_custom_command(TARGET ${_target} 
 					POST_BUILD
@@ -369,25 +384,6 @@ function(copyDllCommand _target)
 				POST_BUILD
 				COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_dll}" $<TARGET_FILE_DIR:${_target}> 
 				COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_dll}" 
-			)
-		endforeach()
-	endforeach()
-	foreach(_lib ${sep_libs})
-		file(GLOB debugDlls ${PROJECT_SOURCE_DIR}/dependancies/${_p}/${_lib}/Debug/*.dll)
-		foreach(_dll ${debugDlls})
-			add_custom_command(TARGET ${_target} 
-				POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,copy_if_different\ "${_dll}"\ $<TARGET_FILE_DIR:${_target}>,echo\ "">
-				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "Copying ${_dll}",echo\ "">
-			)
-		endforeach()
-
-		file(GLOB releaseDlls ${PROJECT_SOURCE_DIR}/dependancies/${_p}/${_lib}/Release/*.dll)
-		foreach(_dll ${releaseDlls})
-			add_custom_command(TARGET ${_target} 
-				POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",copy_if_different\ "${_dll}"\ $<TARGET_FILE_DIR:${_target}>>
-				COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",echo\ "Copying ${_dll}">
 			)
 		endforeach()
 	endforeach()
@@ -430,8 +426,6 @@ function(installDlls TARGET)
 
 	set(uni_libs )
 	getUniLibs(uni_libs)
-	set(sep_libs )
-	getSepLibs(sep_libs)
 	
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
@@ -456,13 +450,7 @@ function(installDlls TARGET)
 					DESTINATION ${binDir}/
 					FILES_MATCHING PATTERN "*.pdb")
 			endforeach()
-			foreach(_lib ${sep_libs})
-				install(DIRECTORY ${projectBase}/dependancies/${platform}/${_lib}/${libcfg}/
-					CONFIGURATIONS ${configType}
-					DESTINATION ${binDir}/
-					FILES_MATCHING PATTERN "*.pdb")
-			endforeach()
-
+			
 			file(GLOB pdbs ${_vcpkgInstall}${_vcCfg}/bin/*.pdb)
 			getMatchingFiles("${vcpkg_libs}" "${pdbs}" pdbs)
 			foreach(_pdb ${pdbs})
@@ -477,13 +465,7 @@ function(installDlls TARGET)
 				DESTINATION ${binDir}/
 				FILES_MATCHING PATTERN "*.dll")
 		endforeach()
-		foreach(_lib ${sep_libs})
-			install(DIRECTORY ${projectBase}/dependancies/${platform}/${_lib}/${libcfg}/
-				CONFIGURATIONS ${configType}
-				DESTINATION ${binDir}/
-				FILES_MATCHING PATTERN "*.dll")
-		endforeach()
-
+		
 		file(GLOB dlls ${_vcpkgInstall}${_vcCfg}/bin/*.dll)
 		getMatchingFiles("${vcpkg_libs}" "${dlls}" dlls)
 		foreach(_dll ${dlls})

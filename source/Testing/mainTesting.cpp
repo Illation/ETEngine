@@ -1,6 +1,8 @@
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
+
 #include <vector>
+#include <iostream>
 
 #include <EtCore/Helper/AtomicTypes.h>
 #include <EtCore/FileSystem/FileUtil.h>

@@ -32,6 +32,7 @@ endif()
 #---------------
 
 add_subdirectory (bullet)
+add_subdirectory (rttr)
 add_subdirectory (vcpkg)
 add_subdirectory (stb)
 add_subdirectory (mikkt)

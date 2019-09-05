@@ -31,7 +31,7 @@ dependancyLinks(Testing FALSE)
 
 # library includes
 libIncludeDirs()
-include_directories("${PROJECT_BINARY_DIR}/../dependancies/include/catch/")	
+include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/Catch2/single_include/catch2/")	
 
 # general include dirs
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/..")
