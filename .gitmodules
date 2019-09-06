@@ -19,3 +19,6 @@
 [submodule "dependancies/submodules/rttr/rttr"]
 	path = dependancies/submodules/rttr/rttr
 	url = https://github.com/rttrorg/rttr
+[submodule "dependancies/submodules/assimp/assimp"]
+	path = dependancies/submodules/assimp/assimp
+	url = https://github.com/assimp/assimp

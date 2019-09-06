@@ -211,6 +211,19 @@ function(getRttrBuildDir rttr_build)
 endfunction(getRttrBuildDir)
 
 
+# rttr output directory
+##########################
+function(getAssimpBuildDir assimp_build)
+	if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
+		set(_p "x64")
+	else() # 32 bit
+		set(_p "x32")
+	endif()
+
+	set(${assimp_build} "${PROJECT_BINARY_DIR}/../dependancies/submodules/assimp/build/${_p}" PARENT_SCOPE)
+endfunction(getAssimpBuildDir)
+
+
 # link to all dependancies
 ###########################
 function(dependancyLinks TARGET _useSdlMain)
@@ -226,6 +239,11 @@ function(dependancyLinks TARGET _useSdlMain)
 	set(_rttrBuild )
 	getRttrBuildDir(_rttrBuild)
 
+	set(_assimpBuild )
+	getAssimpBuildDir(_assimpBuild)
+	file(GLOB _assimpDebugLib ${_assimpBuild}/code/Debug/*.lib)
+	file(GLOB _assimpReleaseLib ${_assimpBuild}/code/Release/*.lib)
+
 	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
 		set(dep_pf "${dep_dir}/x64")
 	 else() 
@@ -240,11 +258,12 @@ function(dependancyLinks TARGET _useSdlMain)
 		debug ${_bulletBuild}/lib/Debug/BulletCollision_Debug.lib	optimized ${_bulletBuild}/lib/Release/BulletCollision.lib
 		debug ${_bulletBuild}/lib/Debug/LinearMath_Debug.lib		optimized ${_bulletBuild}/lib/Release/LinearMath.lib 
 
+		debug ${_assimpDebugLib}									optimized ${_assimpReleaseLib} 
+
 		debug ${_vcpkgInstall}/debug/lib/freetyped.lib				optimized ${_vcpkgInstall}/lib/freetype.lib	)
 
 	target_link_libraries (${TARGET} 
 		${dep_pf}/sdl2/SDL2.lib
-		${dep_pf}/assimp/assimp.lib
 		${dep_pf}/openAL/openAL.lib )
 
 	if (MSVC)
@@ -269,7 +288,7 @@ endfunction(getVcpkgLibs)
 # place a list of unified libraries in the out list
 ####################################################
 function(getUniLibs out_list)
-	set (${out_list} "sdl2" "assimp" "openAL" PARENT_SCOPE)
+	set (${out_list} "sdl2" "openAL" PARENT_SCOPE)
 endfunction(getUniLibs)
 
 
@@ -289,6 +308,7 @@ function(libIncludeDirs)
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/mikkt")
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/glad/gl-bindings/include")
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/bullet/bullet3/src")
+	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/assimp/assimp/include")
 
 	set(libs )
 	getUniLibs(libs)
