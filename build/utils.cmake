@@ -259,7 +259,9 @@ function(dependancyLinks TARGET _useSdlMain)
 		debug ${_bulletBuild}/lib/Debug/LinearMath_Debug.lib		optimized ${_bulletBuild}/lib/Release/LinearMath.lib 
 
 		debug ${_assimpDebugLib}									optimized ${_assimpReleaseLib} 
+		debug ${_assimpBuild}/contrib/irrXML/Debug/IrrXMLd.lib		optimized ${_assimpBuild}/contrib/irrXML/Release/IrrXML.lib
 
+		debug ${_vcpkgInstall}/debug/lib/zlibd.lib					optimized ${_vcpkgInstall}/lib/zlib.lib
 		debug ${_vcpkgInstall}/debug/lib/freetyped.lib				optimized ${_vcpkgInstall}/lib/freetype.lib	)
 
 	target_link_libraries (${TARGET} 
@@ -303,6 +305,10 @@ function(libIncludeDirs)
 	set(_rttrBuild )
 	getRttrBuildDir(_rttrBuild)
 	include_directories("${_rttrBuild}/install/include/")	
+	
+	set(_assimpBuild )
+	getAssimpBuildDir(_assimpBuild)
+	include_directories("${_assimpBuild}/include/")	
 	
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/stb")
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/mikkt")
