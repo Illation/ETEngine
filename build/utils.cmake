@@ -224,6 +224,19 @@ function(getAssimpBuildDir assimp_build)
 endfunction(getAssimpBuildDir)
 
 
+# rttr output directory
+##########################
+function(getOpenAlBuildDir openal_build)
+	if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
+		set(_p "x64")
+	else() # 32 bit
+		set(_p "x32")
+	endif()
+
+	set(${openal_build} "${PROJECT_BINARY_DIR}/../dependancies/submodules/openal/build/${_p}" PARENT_SCOPE)
+endfunction(getOpenAlBuildDir)
+
+
 # link to all dependancies
 ###########################
 function(dependancyLinks TARGET _useSdlMain)
@@ -241,8 +254,11 @@ function(dependancyLinks TARGET _useSdlMain)
 
 	set(_assimpBuild )
 	getAssimpBuildDir(_assimpBuild)
-	file(GLOB _assimpDebugLib ${_assimpBuild}/code/Debug/*.lib)
+	file(GLOB _assimpDebugLib ${_assimpBuild}/code/Debug/*.lib)		# assimp defines the toolset in the lib name, so we just glob it
 	file(GLOB _assimpReleaseLib ${_assimpBuild}/code/Release/*.lib)
+
+	set(_alBuild )
+	getOpenAlBuildDir(_alBuild)
 
 	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
 		set(dep_pf "${dep_dir}/x64")
@@ -261,12 +277,12 @@ function(dependancyLinks TARGET _useSdlMain)
 		debug ${_assimpDebugLib}									optimized ${_assimpReleaseLib} 
 		debug ${_assimpBuild}/contrib/irrXML/Debug/IrrXMLd.lib		optimized ${_assimpBuild}/contrib/irrXML/Release/IrrXML.lib
 
+		debug ${_alBuild}/Debug/OpenAL32.lib						optimized ${_alBuild}/Release/OpenAL32.lib
+
 		debug ${_vcpkgInstall}/debug/lib/zlibd.lib					optimized ${_vcpkgInstall}/lib/zlib.lib
 		debug ${_vcpkgInstall}/debug/lib/freetyped.lib				optimized ${_vcpkgInstall}/lib/freetype.lib	)
 
-	target_link_libraries (${TARGET} 
-		${dep_pf}/sdl2/SDL2.lib
-		${dep_pf}/openAL/openAL.lib )
+	target_link_libraries (${TARGET} ${dep_pf}/sdl2/SDL2.lib )
 
 	if (MSVC)
 		target_link_libraries(${TARGET} opengl32.lib)
@@ -283,14 +299,14 @@ endfunction(dependancyLinks)
 # place a list of all libraries built by vcpkg
 ####################################################
 function(getVcpkgLibs out_list)
-	set (${out_list} "freetype" "bz2" "libpng16" "zlib" PARENT_SCOPE)
+	set (${out_list} "freetype" "bz2" "libpng16" "zlib" "zlibd" PARENT_SCOPE)
 endfunction(getVcpkgLibs)
 
 
 # place a list of unified libraries in the out list
 ####################################################
 function(getUniLibs out_list)
-	set (${out_list} "sdl2" "openAL" PARENT_SCOPE)
+	set (${out_list} "sdl2" PARENT_SCOPE)
 endfunction(getUniLibs)
 
 
@@ -314,6 +330,7 @@ function(libIncludeDirs)
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/mikkt")
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/glad/gl-bindings/include")
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/bullet/bullet3/src")
+	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/openal/openal-soft/include")
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/assimp/assimp/include")
 
 	set(libs )
@@ -373,6 +390,9 @@ function(copyDllCommand _target)
 	set(vcpkg_libs )
 	getVcpkgLibs(vcpkg_libs)
 
+	set(_alBuild )
+	getOpenAlBuildDir(_alBuild)
+
 	# where the lib files live
 	set(_cfg "Release") 
 	set(_vcCfg "")
@@ -401,6 +421,12 @@ function(copyDllCommand _target)
 				COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_pdb}" 
 			)
 		endforeach()
+
+		add_custom_command(TARGET ${_target} 
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_alBuild}/Debug/OpenAL32.pdb" $<TARGET_FILE_DIR:${_target}>
+			COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_alBuild}/Debug/OpenAL32.pdb" 
+		)
 	endif()
 
 	foreach(_lib ${uni_libs})
@@ -432,6 +458,17 @@ function(copyDllCommand _target)
 			COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",echo\ "Copying ${_dll}">
 		)
 	endforeach()
+	
+	add_custom_command(TARGET ${_target} 
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,copy_if_different\ "${_alBuild}/Debug/OpenAL32.dll"\ $<TARGET_FILE_DIR:${_target}>,echo\ "">
+		COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "Copying ${_alBuild}/Debug/OpenAL32.dll",echo\ "">
+	)
+	add_custom_command(TARGET ${_target} 
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",copy_if_different\ "${_alBuild}/Release/OpenAL32.dll"\ $<TARGET_FILE_DIR:${_target}>>
+		COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",echo\ "Copying ${_alBuild}/Release/OpenAL32.dll">
+	)
 
 endfunction(copyDllCommand)
 
@@ -458,6 +495,9 @@ function(installDlls TARGET)
 	set(vcpkg_libs )
 	getVcpkgLibs(vcpkg_libs)
 
+	set(_alBuild )
+	getOpenAlBuildDir(_alBuild)
+
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
 
 		set(binDir "${baseBinDir}/${configType}_${platform}/${TARGET}")
@@ -482,6 +522,8 @@ function(installDlls TARGET)
 			foreach(_pdb ${pdbs})
 				install(FILES ${_pdb} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
 			endforeach()
+			
+			install(FILES ${_alBuild}/Debug/OpenAL32.pdb CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
 		endif()
 
 		# copy dlls for all libraries
@@ -497,6 +539,8 @@ function(installDlls TARGET)
 		foreach(_dll ${dlls})
 			install(FILES ${_dll} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
 		endforeach()
+		
+		install(FILES ${_alBuild}/${libcfg}/OpenAL32.dll CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
 
 	endforeach()
 

@@ -22,3 +22,6 @@
 [submodule "dependancies/submodules/assimp/assimp"]
 	path = dependancies/submodules/assimp/assimp
 	url = https://github.com/assimp/assimp
+[submodule "dependancies/submodules/openal/openal-soft"]
+	path = dependancies/submodules/openal/openal-soft
+	url = https://github.com/kcat/openal-soft

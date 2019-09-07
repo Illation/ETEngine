@@ -14,6 +14,7 @@ build/.vs
 *.vcxproj.user
 
 /dependancies/submodules/glad/gl-bindings/
+/dependancies/submodules/openal/build/
 /dependancies/submodules/bullet/build/
 /dependancies/submodules/rttr/build/
 /dependancies/submodules/assimp/build/

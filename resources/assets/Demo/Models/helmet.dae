@@ -7,7 +7,7 @@
     </contributor>
     <created>2016-03-16T17:14:23</created>
     <modified>2016-03-16T17:14:23</modified>
-    <unit name="centimeter" meter="0.01"/>
+    <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
   <library_images/>

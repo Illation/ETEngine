@@ -26,7 +26,7 @@ limitations under the License.
         </contributor>
         <created>2006-06-23T18:26:06Z</created>
         <modified>2006-06-23T18:26:06Z</modified>
-        <unit meter="0.01" name="centimeter"/>
+		<unit name="meter" meter="1"/>
         <up_axis>Y_UP</up_axis>
     </asset>
     <library_materials>

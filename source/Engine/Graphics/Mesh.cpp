@@ -486,7 +486,6 @@ MeshDataContainer* MeshAsset::LoadAssimp(std::vector<uint8> const& data, std::st
 		aiProcess_ImproveCacheLocality |
 		aiProcess_FlipUVs |
 		aiProcess_OptimizeMeshes |
-		aiProcess_OptimizeGraph |
 		aiProcess_MakeLeftHanded;
 
 	aiScene const* const assimpScene = assimpImporter.ReadFileFromMemory(data.data(), data.size(), importFlags, extension.c_str());
