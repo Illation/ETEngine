@@ -74,43 +74,43 @@ void PlanetTestScene::Update()
 {
 	//LOG("FPS: " + to_string(TIME->FPS()));
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_2)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_2) == E_KeyState::Down)
 	{
 		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), TIME->DeltaTime()*0.1f));
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_8)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_8) == E_KeyState::Down)
 	{
 		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), -TIME->DeltaTime()*0.1f));
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_4)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_4) == E_KeyState::Down)
 	{
 		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), TIME->DeltaTime()*0.1f));
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_6)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_6) == E_KeyState::Down)
 	{
 		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), -TIME->DeltaTime()*0.1f));
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_j)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::J) == E_KeyState::Down)
 	{
 		CAMERA->SetFieldOfView(CAMERA->GetFOV() + TIME->DeltaTime()*10);
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_k)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::K) == E_KeyState::Down)
 	{
 		CAMERA->SetFieldOfView(CAMERA->GetFOV() - TIME->DeltaTime()*10);
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_0)) == E_KeyState::Pressed)
+	if (INPUT->GetKeyState(E_KbdKey::Num_0) == E_KeyState::Pressed)
 	{
 		ScreenshotCapture::GetInstance()->Take();
 	}
 
 	//Change light settings
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_3)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_3) == E_KeyState::Down)
 	{
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;
@@ -118,7 +118,7 @@ void PlanetTestScene::Update()
 		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_9)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_9) == E_KeyState::Down)
 	{
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;

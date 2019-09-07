@@ -69,7 +69,7 @@ void CameraComponent::Update()
 
 	//Update general frustum
 	if (m_FreezeTimer > 0) m_FreezeTimer -= TIME->DeltaTime();
-	if (m_FreezeTimer <= 0 && INPUT->GetKeyState(static_cast<uint32>(SDLK_SPACE)) == E_KeyState::Pressed)
+	if (m_FreezeTimer <= 0 && INPUT->GetKeyState(E_KbdKey::Space) == E_KeyState::Pressed)
 	{
 		m_FreezeTimer = 1;
 		m_IsFrustumFrozen = !m_IsFrustumFrozen;

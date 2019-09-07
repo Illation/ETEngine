@@ -2,8 +2,6 @@
 
 #include "UISplitter.h"
 
-#include <Engine/Helper/SdlEventManager.h>
-
 
 UISplitter::~UISplitter()
 {
@@ -49,18 +47,18 @@ void UISplitter::Update()
 
 			if (m_Mode == UISplitter::Mode::HORIZONTAL)
 			{
-				SdlEventManager::GetInstance()->SetSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE);
+				INPUT->SetCursorShape(E_CursorShape::SizeWE);
 			}
 			else
 			{
-				SdlEventManager::GetInstance()->SetSystemCursor(SDL_SYSTEM_CURSOR_SIZENS);
+				INPUT->SetCursorShape(E_CursorShape::SizeNS);
 			}
 		}
 	}
 	else if (m_IsHovering)
 	{
 		m_IsHovering = false;
-		SdlEventManager::GetInstance()->SetSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+		INPUT->SetCursorShape(E_CursorShape::Arrow);
 	}
 
 	if (m_DragActive)

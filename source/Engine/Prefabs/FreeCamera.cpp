@@ -38,20 +38,20 @@ void FreeCamera::Update()
 		vec3 move = vec3(0, 0, 0);
 
 
-		move.x = (INPUT->GetKeyState(static_cast<uint32>(SDLK_a)) == E_KeyState::Down) ? -1.0f : 0.0f;
+		move.x = (INPUT->GetKeyState(E_KbdKey::A) == E_KeyState::Down) ? -1.0f : 0.0f;
 		if (move.x == 0)
 		{
-			move.x = (INPUT->GetKeyState(static_cast<uint32>(SDLK_d)) == E_KeyState::Down) ? 1.0f : 0.0f;
+			move.x = (INPUT->GetKeyState(E_KbdKey::D) == E_KeyState::Down) ? 1.0f : 0.0f;
 		}
-		move.y = (INPUT->GetKeyState(static_cast<uint32>(SDLK_q)) == E_KeyState::Down) ? -1.0f : 0.0f;
+		move.y = (INPUT->GetKeyState(E_KbdKey::Q) == E_KeyState::Down) ? -1.0f : 0.0f;
 		if (move.y == 0)
 		{
-			move.y = (INPUT->GetKeyState(static_cast<uint32>(SDLK_e)) == E_KeyState::Down) ? 1.0f : 0.0f;
+			move.y = (INPUT->GetKeyState(E_KbdKey::E) == E_KeyState::Down) ? 1.0f : 0.0f;
 		}
-		move.z = (INPUT->GetKeyState(static_cast<uint32>(SDLK_w)) == E_KeyState::Down) ? 1.0f : 0.0f;
+		move.z = (INPUT->GetKeyState(E_KbdKey::W) == E_KeyState::Down) ? 1.0f : 0.0f;
 		if (move.z == 0)
 		{
-			move.z = (INPUT->GetKeyState(static_cast<uint32>(SDLK_s)) == E_KeyState::Down) ? -1.0f : 0.0f;
+			move.z = (INPUT->GetKeyState(E_KbdKey::S) == E_KeyState::Down) ? -1.0f : 0.0f;
 		}
 
 		//Acceleration

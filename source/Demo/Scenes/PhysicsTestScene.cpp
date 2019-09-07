@@ -179,12 +179,12 @@ void PhysicsTestScene::Update()
 	vec3 lightPos = m_LightCentralPos + vec3(sin(TIME->GetTime()), 0.f, cos(TIME->GetTime()))*m_LightRotDistance;
 	m_pLightEntity->GetTransform()->SetPosition(lightPos);
 
-	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_0)) == E_KeyState::Pressed)
+	if(INPUT->GetKeyState(E_KbdKey::Num_0) == E_KeyState::Pressed)
 	{
 		ScreenshotCapture::GetInstance()->Take();
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_LEFTBRACKET)) == E_KeyState::Pressed)
+	if (INPUT->GetKeyState(E_KbdKey::LeftBracket) == E_KeyState::Pressed)
 	{
 		ET_ASSERT(m_AudioIdPlaylist.size() > 0u);
 		if (m_CurrentTrack == 0u)
@@ -197,7 +197,7 @@ void PhysicsTestScene::Update()
 		}
 		m_Source->SetAudioData(ResourceManager::GetInstance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
 	}
-	else if (INPUT->GetKeyState(static_cast<uint32>(SDLK_RIGHTBRACKET)) == E_KeyState::Pressed)
+	else if (INPUT->GetKeyState(E_KbdKey::RightBracket) == E_KeyState::Pressed)
 	{
 		ET_ASSERT(m_AudioIdPlaylist.size() > 0u);
 		if (m_CurrentTrack == m_AudioIdPlaylist.size() - 1)
@@ -233,7 +233,7 @@ void PhysicsTestScene::Update()
 		pRBComp->ApplyImpulse(bDir*m_SphereForce);
 	}
 
-	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_x)) == E_KeyState::Pressed)
+	if(INPUT->GetKeyState(E_KbdKey::X) == E_KeyState::Pressed)
 	{
 		GRAPHICS.UseFXAA = !(GRAPHICS.UseFXAA);
 	}

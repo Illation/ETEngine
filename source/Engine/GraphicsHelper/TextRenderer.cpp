@@ -211,7 +211,7 @@ void TextRenderer::Draw()
 
 	UpdateBuffer();
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_k)) == E_KeyState::Pressed)
+	if (INPUT->GetKeyState(E_KbdKey::K) == E_KeyState::Pressed)
 	{
 		m_bUseKerning = !m_bUseKerning;
 	}

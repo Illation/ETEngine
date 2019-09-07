@@ -14,7 +14,7 @@
 //
 // Responsible for funelling SDL events into the input manager
 //
-class SdlEventManager : public Singleton<SdlEventManager>, public I_Tickable
+class SdlEventManager : public Singleton<SdlEventManager>, public I_Tickable, public I_CursorShapeManager
 {
 private:
 	// definitions
@@ -28,7 +28,8 @@ public:
 
 	// modify state
 	//--------------
-	void SetSystemCursor(SDL_SystemCursor cursor);
+protected:
+	bool OnCursorResize(E_CursorShape const shape) override;
 private:
 	void Init(); // call after SDL init
 	void OnTick() override; // call before all GUI ticks
@@ -36,11 +37,12 @@ private:
 	// utility
 	//--------------
 	E_MouseButton GetButtonFromSdl(SDL_Event &evnt);
+	static E_KbdKey ConvertSdlKeyCode(SDL_Keycode const code);
 
 	// Data 
 	/////////
 
 	// Cursors
-	std::map<SDL_SystemCursor, SDL_Cursor*> m_CursorMap;
+	std::map<E_CursorShape, SDL_Cursor*> m_CursorMap;
 };
 

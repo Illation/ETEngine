@@ -37,12 +37,12 @@ bool Triangulator::Update()
 {
 	//Set Max subd level
 	//bool levelChanged = false;
-	//if (INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_UP))
+	//if (INPUT->IsKeyboardKeyPressed(E_KbdKey::Up))
 	//{
 	//	m_MaxLevel++;
 	//	levelChanged = true;
 	//}
-	//if (INPUT->IsKeyboardKeyPressed(SDL_SCANCODE_DOWN) && m_MaxLevel>0)
+	//if (INPUT->IsKeyboardKeyPressed(E_KbdKey::Down) && m_MaxLevel>0)
 	//{
 	//	m_MaxLevel--;
 	//	levelChanged = true;
@@ -53,7 +53,7 @@ bool Triangulator::Update()
 
 	//Frustum update
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_SPACE)) == E_KeyState::Pressed)
+	if (INPUT->GetKeyState(E_KbdKey::Space) == E_KeyState::Pressed)
 	{
 		m_LockFrustum = !m_LockFrustum;
 	}

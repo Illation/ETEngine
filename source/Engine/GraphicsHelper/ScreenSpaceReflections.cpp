@@ -61,8 +61,8 @@ void ScreenSpaceReflections::EnableInput()
 void ScreenSpaceReflections::Draw()
 {
 	//Hotreload shader
-	//if (INPUT->GetKeyState(static_cast<uint32>(SDLK_LALT)) == E_KeyState::Down && 
-	//	INPUT->GetKeyState(static_cast<uint32>(SDLK_r)) == E_KeyState::Pressed)
+	//if (INPUT->GetKeyState(E_KbdKey::LeftAlt) == E_KeyState::Down && 
+	//	INPUT->GetKeyState(E_KbdKey::R) == E_KeyState::Pressed)
 	//{
 	//	//if there is a debugger attached copy over the resource files 
 	//	DebugCopyResourceFiles();

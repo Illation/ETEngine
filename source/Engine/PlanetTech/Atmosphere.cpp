@@ -61,8 +61,8 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	mat4 World = etm::scale(vec3(icoRadius))*etm::translate(pos);
 
 	//Hotreload shader
-	//if (INPUT->GetKeyState(static_cast<uint32>(SDLK_LALT)) == E_KeyState::Down &&
-	//	INPUT->GetKeyState(static_cast<uint32>(SDLK_r)) == E_KeyState::Pressed)
+	//if (INPUT->GetKeyState(E_KbdKey::LeftAlt) == E_KeyState::Down &&
+	//	INPUT->GetKeyState(E_KbdKey::R) == E_KeyState::Pressed)
 	//{
 	//	//if there is a debugger attached copy over the resource files 
 	//	DebugCopyResourceFiles();

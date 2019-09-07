@@ -48,7 +48,7 @@ void Planet::Update()
 {
 	GetTransform()->SetPosition(0, 0, 0);
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_r)) == E_KeyState::Pressed)
+	if (INPUT->GetKeyState(E_KbdKey::R) == E_KeyState::Pressed)
 	{
 		m_Rotate = !m_Rotate;
 	}

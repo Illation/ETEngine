@@ -98,7 +98,7 @@ void AbstractScene::RootUpdate()
 	m_SceneContext->camera->Update();
 
 	Update();
-	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_UP)) == E_KeyState::Down)
+	if(INPUT->GetKeyState(E_KbdKey::Up) == E_KeyState::Down)
 	{
 		float exposure = m_PostProcessingSettings.exposure;
 		float newExp = exposure * 4.f;
@@ -106,7 +106,7 @@ void AbstractScene::RootUpdate()
 		LOG("Exposure: " + std::to_string(exposure));
 		m_PostProcessingSettings.exposure = exposure;
 	}
-	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_DOWN)) == E_KeyState::Down)
+	if(INPUT->GetKeyState(E_KbdKey::Down) == E_KeyState::Down)
 	{
 		float exposure = m_PostProcessingSettings.exposure;
 		float newExp = exposure * 4.f;
@@ -114,13 +114,13 @@ void AbstractScene::RootUpdate()
 		LOG("Exposure: " + std::to_string(exposure));
 		m_PostProcessingSettings.exposure = exposure;
 	}
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_LEFT)) == E_KeyState::Down && m_UseSkyBox)
+	if (INPUT->GetKeyState(E_KbdKey::Left) == E_KeyState::Down && m_UseSkyBox)
 	{
 		float r = std::min(std::max(m_pSkybox->GetRoughness() -TIME->DeltaTime(), 0.f), 1.f);
 		LOG("Roughness: " + std::to_string(r));
 		m_pSkybox->SetRoughness(r);
 	}
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_RIGHT)) == E_KeyState::Down && m_UseSkyBox)
+	if (INPUT->GetKeyState(E_KbdKey::Right) == E_KeyState::Down && m_UseSkyBox)
 	{
 		float r = std::min(std::max(m_pSkybox->GetRoughness() + TIME->DeltaTime(), 0.f), 1.f);
 		LOG("Roughness: " + std::to_string(r));

@@ -153,58 +153,58 @@ void TestScene::Update()
 	}
 
 	//Move light
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_2)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_2) == E_KeyState::Down)
 	{
 		m_pLigEnt->GetTransform()->SetPosition(
 			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 0, -1)*TIME->DeltaTime());
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_8)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_8) == E_KeyState::Down)
 	{
 		m_pLigEnt->GetTransform()->SetPosition(
 			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 0, 1)*TIME->DeltaTime());
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_4)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_4) == E_KeyState::Down)
 	{
 		m_pLigEnt->GetTransform()->SetPosition(
 			m_pLigEnt->GetTransform()->GetPosition() + vec3(-1, 0, 0)*TIME->DeltaTime());
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_6)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_6) == E_KeyState::Down)
 	{
 		m_pLigEnt->GetTransform()->SetPosition(
 			m_pLigEnt->GetTransform()->GetPosition() + vec3(1, 0, 0)*TIME->DeltaTime());
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_MINUS)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_Minus) == E_KeyState::Down)
 	{
 		m_pLigEnt->GetTransform()->SetPosition(
 			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, -1, 0)*TIME->DeltaTime());
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_PLUS)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_Plus) == E_KeyState::Down)
 	{
 		m_pLigEnt->GetTransform()->SetPosition(
 			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 1, 0)*TIME->DeltaTime());
 	}
 
 	//Change light settings
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_1)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_1) == E_KeyState::Down)
 	{
 		float newRad = m_pLight->GetRadius() * 4;
 		m_pLight->SetRadius(m_pLight->GetRadius()-(newRad-m_pLight->GetRadius())*TIME->DeltaTime());
 		LOG("Linear: " + std::to_string(m_pLight->GetRadius()));
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_7)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_7) == E_KeyState::Down)
 	{
 		float newRad = m_pLight->GetRadius() * 4;
 		m_pLight->SetRadius(m_pLight->GetRadius()+(newRad-m_pLight->GetRadius())*TIME->DeltaTime());
 		LOG("Linear: " + std::to_string(m_pLight->GetRadius()));
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_3)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_3) == E_KeyState::Down)
 	{
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;
@@ -212,7 +212,7 @@ void TestScene::Update()
 		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
 	}
 
-	if (INPUT->GetKeyState(static_cast<uint32>(SDLK_KP_9)) == E_KeyState::Down)
+	if (INPUT->GetKeyState(E_KbdKey::KP_9) == E_KeyState::Down)
 	{
 		float b = m_pLight->GetBrightness();
 		float nB = b * 4;

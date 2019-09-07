@@ -35,12 +35,12 @@ void MainFramework::AddScenes()
 void MainFramework::OnTick()
 {	
 	//This is where scenes can be switched conditionally
-	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_F3)) == E_KeyState::Pressed)
+	if(INPUT->GetKeyState(E_KbdKey::F3) == E_KeyState::Pressed)
 	{
 		SceneManager::GetInstance()->PreviousScene();
 	}
 
-	if(INPUT->GetKeyState(static_cast<uint32>(SDLK_F4)) == E_KeyState::Pressed)
+	if(INPUT->GetKeyState(E_KbdKey::F4) == E_KeyState::Pressed)
 	{
 		SceneManager::GetInstance()->NextScene();
 	}
