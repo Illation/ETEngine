@@ -71,8 +71,6 @@ void SkyboxTestScene::Initialize()
 	m_pLigEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
 	//m_pLigEntity->GetTransform()->SetRotation(etm::lookAt())
 	AddEntity(m_pLigEntity);
-
-	SETTINGS->Window.VSync(false);
 }
 
 void SkyboxTestScene::Update()

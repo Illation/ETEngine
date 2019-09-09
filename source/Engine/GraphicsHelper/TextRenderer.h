@@ -20,6 +20,7 @@ private:
 	friend class AbstractScene;
 	friend class AbstractFramework;
 	friend class RenderPipeline;
+	friend class SceneRenderer;
 	friend class UIPortal;
 #ifdef EDITOR
 	friend class Editor;

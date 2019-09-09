@@ -10,6 +10,7 @@
 #include "ScreenSpaceReflections.h"
 #include "DebugRenderer.h"
 #include "PbrPrefilter.h"
+#include "SceneRenderer.h"
 
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Helper/PerformanceInfo.h>
@@ -47,18 +48,12 @@ RenderPipeline::~RenderPipeline()
 	SafeDelete(m_pSSR);
 	SafeDelete(m_pGBuffer);
 	SafeDelete(m_pPostProcessing);
-	SafeDelete(m_pState);
 }
 
 void RenderPipeline::Initialize()
 {
 	//Init renderers
-	m_pState = new RenderState();
-	m_pState->Initialize();
-	TextRenderer::GetInstance()->Initialize();
-	SpriteRenderer::GetInstance()->Initialize();
-
-	ShowSplashScreen();
+	SceneRenderer::GetInstance()->ShowSplashScreen();
 
 	PointLightVolume::GetInstance();
 	DirectLightVolume::GetInstance();
@@ -104,9 +99,9 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	m_pRenderScenes = pScenes;
 	//Shadow Mapping
 	//**************
-	m_pState->SetDepthEnabled(true);
-	m_pState->SetCullEnabled(true);
-	m_pState->SetFaceCullingMode(GL_FRONT);//Maybe draw two sided materials in seperate pass
+	STATE->SetDepthEnabled(true);
+	STATE->SetCullEnabled(true);
+	STATE->SetFaceCullingMode(GL_FRONT);//Maybe draw two sided materials in seperate pass
 	for (auto pScene : pScenes)
 	{
 		auto lightVec = pScene->GetLights(); //Todo: automatically add all light components to an array for faster access
@@ -122,12 +117,12 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	m_pGBuffer->Enable();
 
 	//reset viewport
-	m_pState->SetViewport(ivec2(0), WINDOW.Dimensions);
+	STATE->SetViewport(ivec2(0), WINDOW.Dimensions);
 
-	m_pState->SetClearColor(vec4(m_ClearColor, 1.f));
+	STATE->SetClearColor(vec4(m_ClearColor, 1.f));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	m_pState->SetFaceCullingMode(GL_BACK);
+	STATE->SetFaceCullingMode(GL_BACK);
 	for (auto pScene : pScenes)
 	{
 		pScene->Draw();
@@ -136,7 +131,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 			pEntity->RootDraw();
 		}
 	}
-	m_pState->SetCullEnabled(false);
+	STATE->SetCullEnabled(false);
 	//Step two: blend data and calculate lighting with gbuffer
 	//STATE->BindFramebuffer( 0 );
 	//m_pPostProcessing->EnableInput();
@@ -156,13 +151,13 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	//Render Light Volumes
 	//STATE->SetStencilEnabled(true); // #todo lightvolume stencil test
 
-	m_pState->SetDepthEnabled(false);
-	m_pState->SetBlendEnabled(true);
-	m_pState->SetBlendEquation(GL_FUNC_ADD);
-	m_pState->SetBlendFunction(GL_ONE, GL_ONE);
+	STATE->SetDepthEnabled(false);
+	STATE->SetBlendEnabled(true);
+	STATE->SetBlendEquation(GL_FUNC_ADD);
+	STATE->SetBlendFunction(GL_ONE, GL_ONE);
 
-	m_pState->SetCullEnabled(true);
-	m_pState->SetFaceCullingMode(GL_FRONT);
+	STATE->SetCullEnabled(true);
+	STATE->SetFaceCullingMode(GL_FRONT);
 
 	for (auto pScene : pScenes)
 	{
@@ -173,10 +168,10 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 		}
 	}
 
-	m_pState->SetFaceCullingMode(GL_BACK);
-	m_pState->SetBlendEnabled(false);
+	STATE->SetFaceCullingMode(GL_BACK);
+	STATE->SetBlendEnabled(false);
 
-	m_pState->SetCullEnabled(false);
+	STATE->SetCullEnabled(false);
 
 	//STATE->SetStencilEnabled(false);
 	m_pPostProcessing->EnableInput();
@@ -188,7 +183,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 		0, 0, WINDOW.Width, WINDOW.Height,
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
-	m_pState->SetDepthEnabled(true);
+	STATE->SetDepthEnabled(true);
 
 	//Foreward Rendering
 	//******************
@@ -214,7 +209,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 #endif
 
 	//Draw to default buffer
-	m_pState->SetDepthEnabled(false);
+	STATE->SetDepthEnabled(false);
 	if(pScenes.size() > 0)
 		m_pPostProcessing->Draw(outFBO, pScenes[0]->GetPostProcessingSettings());
 
@@ -232,11 +227,6 @@ void RenderPipeline::DrawOverlays()//Called from within postprocessing draw meth
 	TextRenderer::GetInstance()->Draw();
 }
 
-void RenderPipeline::SwapBuffers()
-{
-	SDL_GL_SwapWindow(SETTINGS->Window.pWindow);
-}
-
 void RenderPipeline::OnResize()
 {
 	m_pPostProcessing->~PostProcessingRenderer();
@@ -245,38 +235,4 @@ void RenderPipeline::OnResize()
 	m_pSSR->~ScreenSpaceReflections();
 	m_pSSR = new(m_pSSR) ScreenSpaceReflections();
 	m_pSSR->Initialize();
-}
-
-void RenderPipeline::ShowSplashScreen()
-{
-	m_SplashBackgroundTex = ResourceManager::GetInstance()->GetAssetData<TextureData>("Splashscreen.jpg"_hash);
-	m_SplashTitleFont = ResourceManager::GetInstance()->GetAssetData<SpriteFont>("Roboto-Bold.ttf"_hash);
-	m_SplashRegFont = ResourceManager::GetInstance()->GetAssetData<SpriteFont>("RobotoCondensed-Regular.ttf"_hash);
-
-	SpriteRenderer::GetInstance()->Draw(m_SplashBackgroundTex.get(), vec2(0));
-
-	std::string title = "E   T   E N G I N E";
-	int16 titleFontSize = (int16)(150 * ((float)WINDOW.Height / (float)1440));
-	ivec2 titleSize = TextRenderer::GetInstance()->GetTextSize(title, m_SplashTitleFont.get(), titleFontSize);
-	TextRenderer::GetInstance()->SetColor(vec4(1));
-	TextRenderer::GetInstance()->SetFont(m_SplashTitleFont.get());
-	TextRenderer::GetInstance()->DrawText(title, etm::vecCast<float>(WINDOW.Dimensions/2-titleSize/2), titleFontSize);
-
-	TextRenderer::GetInstance()->SetFont(m_SplashRegFont.get());
-	std::string loading = "LOADING";
-	int16 loadingFontSize = (int16)(50 * ((float)WINDOW.Height / (float)1440));
-	ivec2 loadingSize = TextRenderer::GetInstance()->GetTextSize(loading, m_SplashRegFont.get(), loadingFontSize);
-	TextRenderer::GetInstance()->DrawText(loading, etm::vecCast<float>(WINDOW.Dimensions - ivec2(loadingSize.x + 20, 20)), loadingFontSize);
-
-	SpriteRenderer::GetInstance()->Draw();
-	TextRenderer::GetInstance()->Draw();
-
-	SwapBuffers();
-}
-
-void RenderPipeline::HideSplashScreen()
-{
-	m_SplashBackgroundTex = nullptr;
-	m_SplashTitleFont = nullptr;
-	m_SplashRegFont = nullptr;
 }

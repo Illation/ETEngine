@@ -14,7 +14,6 @@ Settings::Settings() :Window( WindowSettings() ), Graphics( GraphicsSettings() )
 
 Settings::~Settings()
 {
-	SDL_DestroyWindow( Window.pWindow );
 }
 
 Settings::GraphicsSettings::GraphicsSettings() :
@@ -34,7 +33,6 @@ Settings::GraphicsSettings::~GraphicsSettings()
 Settings::WindowSettings::WindowSettings() :
 	Fullscreen( false ),
 	Title( "ETEngine" ),
-	pWindow( nullptr ),
 	Dimensions(ivec2(1920, 1080))
 {
 #ifdef EDITOR
@@ -60,11 +58,21 @@ void Settings::WindowSettings::Resize( int32 width, int32 height, bool broadcast
 	EditorWidth = width;
 	EditorHeight = height;
 	Editor::GetInstance()->CalculateViewportSize( ivec2( width, height ) );
+
 	Dimensions = Editor::GetInstance()->GetViewport()->GetSize();
-	if (broadcast) Editor::GetInstance()->OnWindowResize(EditorDimensions);
+
+	if (broadcast)
+	{
+		Editor::GetInstance()->OnWindowResize(EditorDimensions);
+	}
+
 #else
 	Width = width;
 	Height = height;
 #endif
-	if(broadcast) WindowResizeEvent.Broadcast();
+
+	if (broadcast)
+	{
+		WindowResizeEvent.Broadcast();
+	}
 }

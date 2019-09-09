@@ -4,6 +4,9 @@
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/Mesh.h>
 #include <Engine/Audio/AudioData.h>
+#include <Engine/Graphics/EnvironmentMap.h>
+#include <Engine/Graphics/SpriteFont.h>
+#include <Engine/Graphics/TextureData.h>
 
 //---------------------------------
 // ForceLinking
@@ -16,6 +19,9 @@ void ForceLinking()
 	FORCE_LINKING(ShaderAsset)
 	FORCE_LINKING(MeshAsset)
 	FORCE_LINKING(AudioAsset)
+	FORCE_LINKING(EnvironmentMapAsset)
+	FORCE_LINKING(FontAsset)
+	FORCE_LINKING(TextureAsset)
 }
 
 

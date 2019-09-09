@@ -22,20 +22,13 @@
 #include <Engine/Audio/AudioManager.h>
 #include <Engine/Helper/SdlEventManager.h>
 #include <Engine/Helper/ScreenshotCapture.h>
+#include <Engine/GraphicsHelper/Viewport.h>
+#include <Engine/GraphicsHelper/SceneRenderer.h>
 
 #ifdef EDITOR
 #	include <Engine/Editor/Editor.h>
 #endif
 
-void quit_SDL_error(const char * message)
-{
-	if (Logger::IsInitialized())
-	{
-		LOG(std::string(message) + ": " + SDL_GetError(), Error);
-	}
-	std::cin.get();
-	exit(2);
-}
 
 AbstractFramework::~AbstractFramework()
 {
@@ -43,15 +36,16 @@ AbstractFramework::~AbstractFramework()
 	Editor::GetInstance()->DestroyInstance();
 #endif
 
-	SDL_GL_DeleteContext(m_GlContext);
-	SDL_Quit();
+	SdlEventManager::DestroyInstance();
+	m_RenderArea.Uninitialize();
+	SafeDelete(m_Viewport);
+	SceneRenderer::DestroyInstance();
 
 	SceneManager::GetInstance()->DestroyInstance();
 
 	PhysicsManager::GetInstance()->DestroyInstance();
 	AudioManager::GetInstance()->DestroyInstance();
 
-	SdlEventManager::GetInstance()->DestroyInstance();
 	InputManager::GetInstance()->DestroyInstance();
 	ContextManager::GetInstance()->DestroyInstance();
 	
@@ -72,38 +66,23 @@ void AbstractFramework::Run()
 #ifndef ET_SHIPPING
 	DebugCopyResourceFiles();
 #endif
-	InitializeSDL();
+
 	LoadConfig();
-	InitializeWindow();
-	BindOpenGL();
-	InitializeDebug();
+	PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
+
+	m_Viewport = new Viewport(&m_RenderArea);
+	m_Viewport->SetRenderer(SceneRenderer::GetInstance());
+	m_RenderArea.Initialize(); // also initializes the viewport and its renderer
+	m_Viewport->Redraw();
+
+	ResourceManager::GetInstance()->InitFromCompiledData();
+
+	SceneRenderer::GetInstance()->InitWithSplashScreen();
+	m_RenderArea.Update();
+
 	InitializeGame();
 
 	GameLoop();
-}
-
-
-
-void AbstractFramework::InitializeSDL()
-{
-	// Request an OpenGL 4.5 context (should be core)
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
-	// Also request a depth buffer
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-	// Request a debug context.
-#if defined(GRAPHICS_API_DEBUG)
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-#endif
-
-	// Initialize SDL 
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-		quit_SDL_error("Couldn't initialize SDL");
-	atexit(SDL_Quit);
-	SDL_GL_LoadLibrary(NULL);
 }
 
 void AbstractFramework::LoadConfig()
@@ -179,107 +158,10 @@ void AbstractFramework::LoadConfig()
 	}
 }
 
-void AbstractFramework::InitializeWindow()
-{
-	Settings* pSet = Settings::GetInstance();
-	PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
-
-	InputManager::GetInstance();	// init input manager
-	SdlEventManager::GetInstance()->Init();
-
-	//Create Window
-	uint32 WindowFlags = SDL_WINDOW_OPENGL;
-	if(pSet->Window.Fullscreen)
-	{
-		WindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-	}
-	else
-	{
-		WindowFlags |= SDL_WINDOW_RESIZABLE;
-	}
-
-#ifdef EDITOR
-	ivec2 dim = pSet->Window.EditorDimensions;
-#else
-	ivec2 dim = pSet->Window.Dimensions;
-#endif
-	pSet->Window.pWindow = SDL_CreateWindow(pSet->Window.Title.c_str(), 
-											 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
-											 dim.x, dim.y, 
-											 WindowFlags);
-	
-	if(pSet->Window.pWindow == NULL)
-	{
-		quit_SDL_error("Couldn't set video mode");
-	}
-
-	//OpenGl context creation
-	m_GlContext = SDL_GL_CreateContext(pSet->Window.pWindow);
-	if (m_GlContext == NULL)quit_SDL_error("Failed to create OpenGL context");
-
-	// Use v-sync
-	SDL_GL_SetSwapInterval(1);
-}
-
-void AbstractFramework::BindOpenGL()
-{
-	// Check OpenGL properties and create open gl function pointers
-	gladLoadGLLoader(SDL_GL_GetProcAddress);
-	LOG("OpenGL loaded");
-	LOG("");
-	LOG(std::string("Vendor: \t") + std::string((char*)glGetString(GL_VENDOR)));
-	LOG(std::string("Renderer: \t") + std::string((char*)glGetString(GL_RENDERER)));
-	LOG(std::string("Version: \t") + std::string((char*)glGetString(GL_VERSION)));
-	LOG("");
-}
-
-void AbstractFramework::InitializeDebug()
-{
-#if defined(ET_DEBUG)
-#if defined(GRAPHICS_API_VERBOSE)
-
-	auto glLogCallback = [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
-	{
-		UNUSED(source);
-		UNUSED(id);
-		UNUSED(length);
-		UNUSED(userParam);
-
-		LogLevel level = LogLevel::Info;
-		switch (type)
-		{
-			case GL_DEBUG_TYPE_ERROR: 
-				level = LogLevel::Error; 
-				break;
-			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: 
-				level = LogLevel::Warning; 
-				break;
-			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: 
-				level = LogLevel::Warning; 
-				break;
-		}
-
-		if (severity == GL_DEBUG_SEVERITY_HIGH)
-		{
-			level = LogLevel::Error;
-		}
-
-		LOG(message, level);
-		LOG("");
-	}
-	
-	glEnable(GL_DEBUG_OUTPUT);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-	glDebugMessageCallback(glLogCallback, nullptr);
-	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
-
-#endif
-#endif
-}
-
 void AbstractFramework::InitializeGame()
 {
-	ResourceManager::GetInstance()->InitFromCompiledData();
+	InputManager::GetInstance();	// init input manager
+	SdlEventManager::GetInstance()->Init();
 
 	RenderPipeline::GetInstance()->Initialize();
 
@@ -303,30 +185,6 @@ void AbstractFramework::GameLoop()
 		//****
 		//DRAW
 
-		// this should be moved into viewport functionality
-
-		std::vector<AbstractScene*> activeScenes;
-		if (SceneManager::GetInstance()->GetActiveScene())
-		{
-			activeScenes.push_back(SceneManager::GetInstance()->GetActiveScene());
-		}
-
-	#ifdef EDITOR
-		RenderPipeline::GetInstance()->Draw(activeScenes, Editor::GetInstance()->GetSceneTarget());
-		Editor::GetInstance()->Draw();
-	#else
-
-		// #note: currently only one scene but could be expanded for nested scenes
-		RenderPipeline::GetInstance()->Draw(activeScenes, 0);
-
-	#endif
-		RenderPipeline::GetInstance()->SwapBuffers();
+		m_RenderArea.Update();
 	}
-}
-
-void AbstractFramework::ClearTarget()
-{
-	// Clear the screen to white
-	STATE->SetClearColor(vec4(1));
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

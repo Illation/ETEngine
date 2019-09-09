@@ -37,7 +37,8 @@ private:
 
 	std::vector<AbstractScene*> m_pSceneVec;
 	bool m_IsInitialized = false;
-	AbstractScene* m_ActiveScene = nullptr
-		, *m_NewActiveScene = nullptr;
+	AbstractScene* m_ActiveScene = nullptr, *m_NewActiveScene = nullptr;
+
+	bool m_SplashFrame = false;
 };
 

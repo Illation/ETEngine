@@ -127,8 +127,6 @@ void ShadingTestScene::Initialize()
 	//AddEntity( pSpriteEntity );
 
 	CAMERA->GetTransform()->SetPosition(0, 0, -10);
-
-	SETTINGS->Window.VSync(false);
 }
 
 void ShadingTestScene::Update()
@@ -171,8 +169,6 @@ void ShadingTestScene::Update()
 		m_pLight->SetBrightness(b + (nB - b)*TIME->DeltaTime());
 		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
 	}
-
-	SETTINGS->Window.VSync(true);
 }
 
 void ShadingTestScene::Draw()

@@ -132,8 +132,6 @@ void PlanetTestScene::Update()
 	CAMERA->SetFarClippingPlane((sqrtf(powf(m_pPlanet->GetRadius() + altitude, 2) - powf(m_pPlanet->GetRadius(), 2)) +
 		sqrtf(powf(radius, 2) - powf(m_pPlanet->GetRadius(), 2)))*10);
 	CAMERA->SetNearClippingPlane(CAMERA->GetFarPlane()*0.000003f);
-
-	SETTINGS->Window.VSync(true);
 }
 
 void PlanetTestScene::Draw()

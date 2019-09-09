@@ -13,6 +13,7 @@ private:
 	// Definitions
 	//--------------------------
 	friend class RenderPipeline;
+	friend class SceneRenderer;
 	friend class UIPortal;
 #ifdef EDITOR
 	friend class Editor;

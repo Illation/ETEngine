@@ -18,11 +18,6 @@
 #pragma endregion stl
 
 #pragma region
-//SDL and opengl Header files
-#include <SDL.h>
-#pragma endregion sdl-opengl
-
-#pragma region
 //*****************************************************************************
 //Declare templates for releasing interfaces and deleting objects 
 //*****************************************************************************
@@ -47,6 +42,7 @@ inline void SafeRelease(Interface &pInterfaceToRelease)
 #include <Engine/Base/SceneContext.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>
 #include <Engine/GraphicsHelper/RenderState.h>
+#include <Engine/GraphicsHelper/Viewport.h>
 
 //Working singleton Set
 #define CAMERA static_cast<SceneContext*>(ContextManager::GetInstance()->GetActiveContext())->camera
@@ -57,5 +53,5 @@ inline void SafeRelease(Interface &pInterfaceToRelease)
 #define WINDOW Settings::GetInstance()->Window
 #define GRAPHICS Settings::GetInstance()->Graphics
 #define PIPELINE RenderPipeline::GetInstance()
-#define STATE RenderPipeline::GetInstance()->GetState()
+#define STATE Viewport::GetGlobalRenderState()
 #pragma endregion Macros

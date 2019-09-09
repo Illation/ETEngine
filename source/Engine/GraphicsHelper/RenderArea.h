@@ -11,14 +11,12 @@
 class I_RenderArea
 {
 public:
-	I_RenderArea() = default;
 	virtual ~I_RenderArea() = default;
-	I_RenderArea& operator=(const I_RenderArea&) { return *this; }
 
-	virtual void SetOnInit(std::function<void()>& lambda) = 0;
-	virtual void SetOnDeinit(std::function<void()>& lambda) = 0;
-	virtual void SetOnResize(std::function<void(vec2 const)>& lambda) = 0;
-	virtual void SetOnRender(std::function<void()>& lambda) = 0;
+	virtual void SetOnInit(std::function<void()>& callback) = 0;
+	virtual void SetOnDeinit(std::function<void()>& callback) = 0;
+	virtual void SetOnResize(std::function<void(vec2 const)>& callback) = 0;
+	virtual void SetOnRender(std::function<void()>& callback) = 0;
 
 	virtual void QueueDraw() = 0;
 	virtual bool MakeCurrent() = 0;

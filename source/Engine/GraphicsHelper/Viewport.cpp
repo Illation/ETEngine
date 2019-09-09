@@ -16,7 +16,7 @@ Viewport* Viewport::g_CurrentViewport = nullptr;
 
 
 //---------------------------------
-// Viewport::Viewport
+// Viewport::c-tor
 //
 // Construct a viewport from a glArea
 //
@@ -26,25 +26,18 @@ Viewport::Viewport(I_RenderArea* const area)
 {
 	RegisterAsTriggerer();
 
-	m_Area->SetOnInit(std::function<void()>([this]() -> void { OnRealize(); }));
-	m_Area->SetOnDeinit(std::function<void()>([this]() -> void { OnUnrealize(); }));
-	m_Area->SetOnResize(std::function<void(vec2 const)>([this](vec2 const resolution) -> void { OnResize(resolution); }));
-	m_Area->SetOnRender(std::function<void()>([this]() -> void { OnRender(); }));
+	m_Area->SetOnInit(std::function<void()>(std::bind(&Viewport::OnRealize, this)));
+	m_Area->SetOnDeinit(std::function<void()>(std::bind(&Viewport::OnUnrealize, this)));
+	m_Area->SetOnResize(std::function<void(vec2 const)>(std::bind(&Viewport::OnResize, this, std::placeholders::_1)));
+	m_Area->SetOnRender(std::function<void()>(std::bind(&Viewport::OnRender, this)));
 }
 
-
 //---------------------------------
-// Viewport::Viewport
-//
-// Construct a viewport from a glArea
+// Viewport::d-tor
 //
 Viewport::~Viewport()
 {
-	if (m_Renderer != nullptr)
-	{
-		delete m_Renderer;
-		m_Renderer = nullptr;
-	}
+	SafeDelete(m_RenderState);
 }
 
 //---------------------------------
@@ -155,10 +148,7 @@ void Viewport::OnRender()
 
 	TriggerTick(); // if this is the first real time thing we will start the update process here
 
-	if (!Render())
-	{
-		LOG("Something went wrong rendering!", LogLevel::Warning);
-	}
+	Render();
 
 	m_Area->QueueDraw(); // request drawing again
 }
@@ -168,7 +158,7 @@ void Viewport::OnRender()
 //
 // Draws the GL Area
 //
-bool Viewport::Render()
+void Viewport::Render()
 {
 	if (m_Renderer != nullptr)
 	{
@@ -182,8 +172,6 @@ bool Viewport::Render()
 	}
 
 	STATE->Flush();
-
-	return true;
 }
 
 //---------------------------------

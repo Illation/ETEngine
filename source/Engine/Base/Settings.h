@@ -2,7 +2,6 @@
 #pragma warning(disable : 4201) //nameless struct union
 
 #include <string>
-#include <SDL.h>
 #include <vector>
 
 #include <EtCore/Helper/Singleton.h>
@@ -16,8 +15,6 @@ public:
 	{
 		GraphicsSettings();
 		virtual ~GraphicsSettings();
-
-		void VSync( const bool enabled ) { SDL_GL_SetSwapInterval( enabled ); }
 
 		bool UseFXAA;
 
@@ -41,13 +38,11 @@ public:
 		WindowSettings();
 		virtual ~WindowSettings();
 
-		void VSync( const bool enabled ) { SDL_GL_SetSwapInterval( enabled ); }
 		float GetAspectRatio();
 
 		void Resize( int32 width, int32 height, bool broadcast = true );
 
 		std::string Title;
-		SDL_Window* pWindow;
 		bool Fullscreen;
 		union
 		{

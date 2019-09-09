@@ -132,8 +132,6 @@ void TestScene::Initialize()
 
 		m_Lights.push_back(swirl);
 	}
-
-	SETTINGS->Window.VSync(false);
 }
 
 void TestScene::Update()

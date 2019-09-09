@@ -170,8 +170,6 @@ void PhysicsTestScene::Initialize()
 	m_Source->SetLooping(true);
 	m_Source->Play();
 	m_pLightEntity->AddComponent(m_Source);
-
-	SETTINGS->Window.VSync(false);
 }
 
 void PhysicsTestScene::Update()

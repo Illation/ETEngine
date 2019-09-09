@@ -3,6 +3,8 @@
 #include "SceneManager.h"
 #include "AbstractScene.h"
 
+#include <Engine/GraphicsHelper/SceneRenderer.h>
+
 #include <algorithm>
 
 
@@ -82,7 +84,8 @@ void SceneManager::OnTick()
 {
 	if (m_NewActiveScene != nullptr)
 	{
-		RenderPipeline::GetInstance()->ShowSplashScreen();
+		SceneRenderer::GetInstance()->ShowSplashScreen();
+		m_SplashFrame = true;
 
 		//Deactivate the current active scene
 		if (m_ActiveScene != nullptr)
@@ -91,17 +94,20 @@ void SceneManager::OnTick()
 		//Set New Scene
 		m_ActiveScene = m_NewActiveScene;
 		m_NewActiveScene = nullptr;
-
+	}
+	else if (m_SplashFrame)
+	{
+		m_SplashFrame = false;
 		LOG(std::string("Switching to scene: ") + m_ActiveScene->m_Name);
 		//Active the new scene and reset SceneTimer
 		m_ActiveScene->RootOnActivated();
 	}
 	else
 	{
-		RenderPipeline::GetInstance()->HideSplashScreen();
+		SceneRenderer::GetInstance()->HideSplashScreen();
 	}
 
-	if (m_ActiveScene != nullptr)
+	if ((m_ActiveScene != nullptr) && (!m_SplashFrame))
 	{
 		m_ActiveScene->RootUpdate();
 	}
