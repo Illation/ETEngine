@@ -13,12 +13,12 @@ build/.vs
 *.vcxproj.filters
 *.vcxproj.user
 
-/dependancies/submodules/glad/gl-bindings/
-/dependancies/submodules/openal/build/
-/dependancies/submodules/bullet/build/
-/dependancies/submodules/rttr/build/
-/dependancies/submodules/assimp/build/
-/dependancies/submodules/glfw/build/
+/third_party/glad/gl-bindings/
+/third_party/openal/build/
+/third_party/bullet/build/
+/third_party/rttr/build/
+/third_party/assimp/build/
+/third_party/glfw/build/
 
 /build/x32
 /build/x64

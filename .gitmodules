@@ -1,30 +1,30 @@
-[submodule "dependancies/submodules/bullet/bullet3"]
-	path = dependancies/submodules/bullet/bullet3
-	url = https://github.com/bulletphysics/bullet3
-[submodule "dependancies/submodules/vcpkg/vcpkg"]
-	path = dependancies/submodules/vcpkg/vcpkg
-	url = https://github.com/Microsoft/vcpkg
-[submodule "dependancies/submodules/stb/stb"]
-	path = dependancies/submodules/stb/stb
-	url = https://github.com/nothings/stb
-[submodule "dependancies/submodules/mikkt/ext-mikktspace"]
-	path = dependancies/submodules/mikkt/ext-mikktspace
-	url = https://github.com/tcoppex/ext-mikktspace
-[submodule "dependancies/submodules/glad/glad"]
-	path = dependancies/submodules/glad/glad
-	url = https://github.com/Dav1dde/glad
-[submodule "dependancies/submodules/Catch2"]
-	path = dependancies/submodules/Catch2
-	url = https://github.com/catchorg/Catch2
-[submodule "dependancies/submodules/rttr/rttr"]
-	path = dependancies/submodules/rttr/rttr
-	url = https://github.com/rttrorg/rttr
-[submodule "dependancies/submodules/assimp/assimp"]
-	path = dependancies/submodules/assimp/assimp
+[submodule "third_party/assimp/assimp"]
+	path = third_party/assimp/assimp
 	url = https://github.com/assimp/assimp
-[submodule "dependancies/submodules/openal/openal-soft"]
-	path = dependancies/submodules/openal/openal-soft
-	url = https://github.com/kcat/openal-soft
-[submodule "dependancies/submodules/glfw/glfw"]
-	path = dependancies/submodules/glfw/glfw
+[submodule "third_party/bullet/bullet3"]
+	path = third_party/bullet/bullet3
+	url = https://github.com/bulletphysics/bullet3
+[submodule "third_party/Catch2"]
+	path = third_party/Catch2
+	url = https://github.com/catchorg/Catch2
+[submodule "third_party/glad/glad"]
+	path = third_party/glad/glad
+	url = https://github.com/Dav1dde/glad
+[submodule "third_party/glfw/glfw"]
+	path = third_party/glfw/glfw
 	url = https://github.com/glfw/glfw
+[submodule "third_party/mikkt/ext-mikktspace"]
+	path = third_party/mikkt/ext-mikktspace
+	url = https://github.com/tcoppex/ext-mikktspace
+[submodule "third_party/openal/openal-soft"]
+	path = third_party/openal/openal-soft
+	url = https://github.com/kcat/openal-soft
+[submodule "third_party/rttr/rttr"]
+	path = third_party/rttr/rttr
+	url = https://github.com/rttrorg/rttr
+[submodule "third_party/stb/stb"]
+	path = third_party/stb/stb
+	url = https://github.com/nothings/stb
+[submodule "third_party/vcpkg/vcpkg"]
+	path = third_party/vcpkg/vcpkg
+	url = https://github.com/Microsoft/vcpkg

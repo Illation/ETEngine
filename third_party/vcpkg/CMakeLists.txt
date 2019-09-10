@@ -67,13 +67,13 @@ endif()
 # if we don't have the libaries files in the place we expect, build the library
 ###############################################################################
 
-# build the dependancy through vcpkg - if it is already built vcpkg will skip
-message(STATUS "Fetching dependancy ${_dep} through VCPKG")
+# build the dependency through vcpkg - if it is already built vcpkg will skip
+message(STATUS "Fetching dependency ${_dep} through VCPKG")
 message(STATUS "-------------------------------------------")
 
 execute_process(COMMAND ${_vcpkgExe} install ${_dep}:${_vcpkgTargetToolset}
 				WORKING_DIRECTORY ${_modDir}/
 				RESULT_VARIABLE _buildDepResult)
 if(NOT _buildDepResult EQUAL "0")
-	message(FATAL_ERROR "Failed to acquire dependancy ${_dep} through VCPKG")
+	message(FATAL_ERROR "Failed to acquire dependency ${_dep} through VCPKG")
 endif()

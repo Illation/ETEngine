@@ -44,9 +44,9 @@ assign_source_group(${generalFiles})
 # all other targets are under source and resources
 ##################################################
 
-add_subdirectory (dependancies/submodules)
+add_subdirectory (third_party)
 add_subdirectory (resources)
 add_subdirectory (source)
 
-# make the Synth the startup project
+# make the Demo the startup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Demo)

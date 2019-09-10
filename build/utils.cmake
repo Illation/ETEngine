@@ -181,7 +181,7 @@ function(getVcpkgInstallDir vcpkg_install)
 	set(_vcpkgTargetToolset )
 	getToolsetTriplet(_vcpkgTargetToolset)
 
-	set(${vcpkg_install} "${PROJECT_BINARY_DIR}/../dependancies/submodules/vcpkg/vcpkg/installed/${_vcpkgTargetToolset}" PARENT_SCOPE)
+	set(${vcpkg_install} "${PROJECT_BINARY_DIR}/../third_party/vcpkg/vcpkg/installed/${_vcpkgTargetToolset}" PARENT_SCOPE)
 endfunction(getVcpkgInstallDir)
 
 
@@ -194,7 +194,7 @@ function(getBulletBuildDir bullet_build)
 		set(_p "x32")
 	endif()
 
-	set(${bullet_build} "${PROJECT_BINARY_DIR}/../dependancies/submodules/bullet/build/${_p}" PARENT_SCOPE)
+	set(${bullet_build} "${PROJECT_BINARY_DIR}/../third_party/bullet/build/${_p}" PARENT_SCOPE)
 endfunction(getBulletBuildDir)
 
 
@@ -207,7 +207,7 @@ function(getRttrBuildDir rttr_build)
 		set(_p "x32")
 	endif()
 
-	set(${rttr_build} "${PROJECT_BINARY_DIR}/../dependancies/submodules/rttr/build/${_p}" PARENT_SCOPE)
+	set(${rttr_build} "${PROJECT_BINARY_DIR}/../third_party/rttr/build/${_p}" PARENT_SCOPE)
 endfunction(getRttrBuildDir)
 
 
@@ -220,7 +220,7 @@ function(getAssimpBuildDir assimp_build)
 		set(_p "x32")
 	endif()
 
-	set(${assimp_build} "${PROJECT_BINARY_DIR}/../dependancies/submodules/assimp/build/${_p}" PARENT_SCOPE)
+	set(${assimp_build} "${PROJECT_BINARY_DIR}/../third_party/assimp/build/${_p}" PARENT_SCOPE)
 endfunction(getAssimpBuildDir)
 
 
@@ -233,7 +233,7 @@ function(getOpenAlBuildDir openal_build)
 		set(_p "x32")
 	endif()
 
-	set(${openal_build} "${PROJECT_BINARY_DIR}/../dependancies/submodules/openal/build/${_p}" PARENT_SCOPE)
+	set(${openal_build} "${PROJECT_BINARY_DIR}/../third_party/openal/build/${_p}" PARENT_SCOPE)
 endfunction(getOpenAlBuildDir)
 
 
@@ -246,7 +246,7 @@ function(getGlfwBuildDir glfw_build)
 		set(_p "x32")
 	endif()
 
-	set(${glfw_build} "${PROJECT_BINARY_DIR}/../dependancies/submodules/glfw/build/${_p}" PARENT_SCOPE)
+	set(${glfw_build} "${PROJECT_BINARY_DIR}/../third_party/glfw/build/${_p}" PARENT_SCOPE)
 endfunction(getGlfwBuildDir)
 
 
@@ -254,8 +254,6 @@ endfunction(getGlfwBuildDir)
 ###########################
 function(dependancyLinks TARGET)
 
-	set(dep_dir "${PROJECT_BINARY_DIR}/../dependancies")
-	
 	set(_glfwBuild )
 	getGlfwBuildDir(_glfwBuild)
 	
@@ -308,7 +306,7 @@ function(getVcpkgLibs out_list)
 endfunction(getVcpkgLibs)
 
 
-# link to all dependancies
+# third party includes
 ###########################
 function(libIncludeDirs)
 
@@ -324,13 +322,13 @@ function(libIncludeDirs)
 	getAssimpBuildDir(_assimpBuild)
 	include_directories("${_assimpBuild}/include/")	
 	
-	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/stb")
-	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/mikkt")
-	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/glad/gl-bindings/include")
-	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/bullet/bullet3/src")
-	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/openal/openal-soft/include")
-	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/assimp/assimp/include")
-	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/glfw/glfw/include")
+	include_directories("${PROJECT_BINARY_DIR}/../third_party/stb")
+	include_directories("${PROJECT_BINARY_DIR}/../third_party/mikkt")
+	include_directories("${PROJECT_BINARY_DIR}/../third_party/glad/gl-bindings/include")
+	include_directories("${PROJECT_BINARY_DIR}/../third_party/bullet/bullet3/src")
+	include_directories("${PROJECT_BINARY_DIR}/../third_party/openal/openal-soft/include")
+	include_directories("${PROJECT_BINARY_DIR}/../third_party/assimp/assimp/include")
+	include_directories("${PROJECT_BINARY_DIR}/../third_party/glfw/glfw/include")
 
 endfunction(libIncludeDirs)
 
