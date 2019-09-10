@@ -1,7 +1,8 @@
 #pragma once
 
 #include <map>
-#include <SDL.h>
+
+#include <GLFW/glfw3.h>
 
 #include <EtCore/UpdateCycle/Tickable.h>
 #include <EtCore/Helper/Singleton.h>
@@ -10,11 +11,11 @@
 
 
 //----------------------------
-// SdlEventManager
+// GlfwEventManager
 //
-// Responsible for funelling SDL events into the input manager
+// Responsible for passing GLFW events to the input manager
 //
-class SdlEventManager : public Singleton<SdlEventManager>, public I_Tickable, public I_CursorShapeManager
+class GlfwEventManager : public Singleton<GlfwEventManager>, public I_Tickable, public I_CursorShapeManager
 {
 private:
 	// definitions
@@ -23,26 +24,27 @@ private:
 public:
 	// ctor dtor
 	//---------------
-	SdlEventManager() : I_Tickable(static_cast<uint32>(E_TickOrder::TICK_SdlEventManager)) {}
-	virtual ~SdlEventManager();
+	GlfwEventManager() : I_Tickable(static_cast<uint32>(E_TickOrder::TICK_GlfwEventManager)) {}
+	virtual ~GlfwEventManager();
+
+	void Init(GLFWwindow* const window);
 
 	// modify state
 	//--------------
 protected:
 	bool OnCursorResize(E_CursorShape const shape) override;
 private:
-	void Init(); // call after SDL init
 	void OnTick() override; // call before all GUI ticks
 
 	// utility
 	//--------------
-	E_MouseButton GetButtonFromSdl(SDL_Event &evnt);
-	static E_KbdKey ConvertSdlKeyCode(SDL_Keycode const code);
+	static E_MouseButton GetButtonFromGlfw(int32 const bottonCode);
 
 	// Data 
 	/////////
 
 	// Cursors
-	std::map<E_CursorShape, SDL_Cursor*> m_CursorMap;
+	std::map<E_CursorShape, GLFWcursor*> m_CursorMap;
+	GLFWwindow* m_Window = nullptr;
 };
 

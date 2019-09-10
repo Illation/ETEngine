@@ -222,16 +222,16 @@ void Logger::CheckBreak(LogLevel level)
 Logger::ConsoleLogger::ConsoleLogger()
 {
 	// Check if we already have a console attached
-	if (!_isatty(_fileno(stdout)))
-	{
-		// if not, create one
-		if (!AllocConsole())
-		{
-			std::cout << "Warning: Could not attach to console" << std::endl;
-			CheckBreak(Error);
-			return;
-		}
-	}
+	//if (!_isatty(_fileno(stdout)))
+	//{
+	//	// if not, create one
+	//	if (!AllocConsole())
+	//	{
+	//		std::cout << "Warning: Could not attach to console" << std::endl;
+	//		CheckBreak(Error);
+	//		return;
+	//	}
+	//}
 
 	// Redirect the CRT standard input, output, and error handles to the console
 	FILE* pCout;
@@ -296,19 +296,20 @@ void Logger::ConsoleLogger::SetCursorPosition(ivec2 cursorPos)
 ivec2 Logger::ConsoleLogger::GetCursorPosition()
 {
 #ifdef PLATFORM_Win
-	CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
-	if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &bufferInfo))
-	{
-		ivec2 ret;
-		ret.x = static_cast<int32>(bufferInfo.dwCursorPosition.X);
-		ret.y = static_cast<int32>(bufferInfo.dwCursorPosition.Y);
+	//CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
+	//if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &bufferInfo))
+	//{
+	//	ivec2 ret;
+	//	ret.x = static_cast<int32>(bufferInfo.dwCursorPosition.X);
+	//	ret.y = static_cast<int32>(bufferInfo.dwCursorPosition.Y);
 
-		return ret;
-	}
-	else
-	{
-		DisplayError(TEXT("GetConsoleScreenBufferInfo"));
-	}
+	//	return ret;
+	//}
+	//else
+	//{
+	//	DisplayError(TEXT("GetConsoleScreenBufferInfo"));
+	//}
+	return ivec2(-1);
 #endif
 	return ivec2(-1);
 }

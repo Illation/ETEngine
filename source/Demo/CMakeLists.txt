@@ -26,7 +26,7 @@ if (MSVC)
 endif(MSVC)
 
 # executable and dependancies
-add_executable(Demo WIN32 ${projectFiles})
+add_executable(Demo ${projectFiles})
 targetCompileOptions(Demo)
 
 # directory stuff
@@ -37,7 +37,7 @@ add_dependencies(Demo cook-compiled-resources)
 
 # linking
 target_link_libraries (Demo EtEngine)
-dependancyLinks(Demo TRUE)
+dependancyLinks(Demo)
 
 # library includes
 libIncludeDirs()

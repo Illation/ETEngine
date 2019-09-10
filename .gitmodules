@@ -25,3 +25,6 @@
 [submodule "dependancies/submodules/openal/openal-soft"]
 	path = dependancies/submodules/openal/openal-soft
 	url = https://github.com/kcat/openal-soft
+[submodule "dependancies/submodules/glfw/glfw"]
+	path = dependancies/submodules/glfw/glfw
+	url = https://github.com/glfw/glfw

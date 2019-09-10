@@ -1,7 +1,5 @@
 #include <EtCore/stdafx.h>
 
-#include <SDL.h>
-
 #include "PackageWriter.h"
 #include "CompiledDataGenerator.h"
 

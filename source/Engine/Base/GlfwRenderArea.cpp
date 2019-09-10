@@ -1,52 +1,59 @@
 #include "stdafx.h"
-#include "SdlRenderArea.h"
+#include "GlfwRenderArea.h"
 
 #include <glad/glad.h>
 
 
+//=====================
+// GLFW Render Area
+//=====================
+
+
 //---------------------------------
-// SdlRenderArea::Initialize
+// GlfwRenderArea::Initialize
 //
 // Create a Window and an openGL context to draw to the window
 //
-void SdlRenderArea::Initialize()
+void GlfwRenderArea::Initialize()
 {
-	// Initialize SDL 
-	//----------------
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	// Initialize GLFW 
+	//-----------------
+	if (!glfwInit())
 	{
-		LOG(FS("Couldn't initialize SDL: %s", SDL_GetError()), LogLevel::Error);
+		LOG("Couldn't initialize GLFW!", LogLevel::Error);
 	}
 
-	SDL_GL_LoadLibrary(nullptr);
+	// error callback
+	glfwSetErrorCallback([](int32 const code, char const* const description)
+		{
+			LOG(FS("GLFW error [%i]: %s", code, description), LogLevel::Warning);
+		});
 
-	// Create Window
-	//---------------
+	// Create Window and openGL context in one place
+	//-----------------------------------------------
 
 	// Set the OopenGL context attributes before creating the window
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+	// enable double buffering
+	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 	// Also request a depth buffer
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	glfwWindowHint(GLFW_DEPTH_BITS, 24);
 
 #if defined(GRAPHICS_API_DEBUG)
 	// Request a debug context.
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #endif
 
 	Settings* const settings = Settings::GetInstance();
 
-	uint32 WindowFlags = SDL_WINDOW_OPENGL;
+	GLFWmonitor* const primaryMonitor = glfwGetPrimaryMonitor();
+	GLFWmonitor* fullscreenMonitor = nullptr;
 	if (settings->Window.Fullscreen)
 	{
-		WindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-	}
-	else
-	{
-		WindowFlags |= SDL_WINDOW_RESIZABLE;
+		fullscreenMonitor = primaryMonitor;
 	}
 
 #ifdef EDITOR
@@ -55,28 +62,18 @@ void SdlRenderArea::Initialize()
 	ivec2 const dim = settings->Window.Dimensions;
 #endif
 
-	m_Window = SDL_CreateWindow(settings->Window.Title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, dim.x, dim.y, WindowFlags);
-
+	m_Window = glfwCreateWindow(dim.x, dim.y, settings->Window.Title.c_str(), fullscreenMonitor, nullptr);
 	if (m_Window == nullptr)
 	{
-		LOG(FS("Couldn't set video mode: %s", SDL_GetError()), LogLevel::Error);
+		glfwTerminate();
+		LOG("Failed to create window with GLFW!", LogLevel::Error);
 	}
-
-	// OpenGl context creation
-	//-------------------------
-
-	m_Context = SDL_GL_CreateContext(m_Window);
-	if (m_Context == nullptr)
-	{
-		LOG(FS("Failed to create OpenGL context: %s", SDL_GetError()), LogLevel::Error);
-	}
-
-	// Use v-sync
-	SDL_GL_SetSwapInterval(1);
 
 	// Check OpenGL properties and create open gl function pointers
 	//--------------------------------------------------------------
-	gladLoadGLLoader(SDL_GL_GetProcAddress);
+	MakeCurrent();
+	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+	SetVSyncEnabled(true);
 
 	LOG("OpenGL loaded");
 	LOG("");
@@ -128,7 +125,7 @@ void SdlRenderArea::Initialize()
 #endif
 #endif
 
-	WINDOW.WindowResizeEvent.AddListener(std::bind(&SdlRenderArea::OnResize, this));
+	WINDOW.WindowResizeEvent.AddListener(std::bind(&GlfwRenderArea::OnResize, this));
 
 	if (m_OnInit)
 	{
@@ -137,53 +134,50 @@ void SdlRenderArea::Initialize()
 }
 
 //---------------------------------
-// SdlRenderArea::Initialize
+// GlfwRenderArea::Initialize
 //
 // Destroy the context and OpenGl window
 //
-void SdlRenderArea::Uninitialize()
+void GlfwRenderArea::Uninitialize()
 {
 	if (m_OnDeinit)
 	{
 		m_OnDeinit();
 	}
 
-	SDL_GL_DeleteContext(m_Context);
-	m_Context = nullptr;
-
-	SDL_DestroyWindow(m_Window);
+	glfwDestroyWindow(m_Window);
 	m_Window = nullptr;
 
-	atexit(SDL_Quit);
+	glfwTerminate();
 }
 
 //---------------------------------
-// SdlRenderArea::Update
+// GlfwRenderArea::Update
 //
-void SdlRenderArea::Update()
+void GlfwRenderArea::Update()
 {
 	if (m_ShouldDraw)
 	{
 		if (m_OnRender)
 		{
 			m_OnRender();
-			SDL_GL_SwapWindow(m_Window); // swap render buffers
+			glfwSwapBuffers(m_Window); // swap render buffers
 		}
 	}
 }
 
 //---------------------------------
-// SdlRenderArea::SetVSyncEnabled
+// GlfwRenderArea::SetVSyncEnabled
 //
-void SdlRenderArea::SetVSyncEnabled(bool const val)
+void GlfwRenderArea::SetVSyncEnabled(bool const val)
 {
-	SDL_GL_SetSwapInterval(val);
+	glfwSwapInterval(val);
 }
 
 //---------------------------------
-// SdlRenderArea::SetVSyncEnabled
+// GlfwRenderArea::SetVSyncEnabled
 //
-void SdlRenderArea::OnResize()
+void GlfwRenderArea::OnResize()
 {
 	if (m_OnResize)
 	{
@@ -192,29 +186,22 @@ void SdlRenderArea::OnResize()
 }
 
 //---------------------------------
-// SdlRenderArea::QueueDraw
+// GlfwRenderArea::QueueDraw
 //
 // Make sure we draw on the next update
 //
-void SdlRenderArea::QueueDraw()
+void GlfwRenderArea::QueueDraw()
 {
 	m_ShouldDraw = true;
 }
 
 //---------------------------------
-// SdlRenderArea::QueueDraw
+// GlfwRenderArea::QueueDraw
 //
 // Make the graphics APIs context current
 //
-bool SdlRenderArea::MakeCurrent()
+bool GlfwRenderArea::MakeCurrent()
 {
-	int32 result = SDL_GL_MakeCurrent(m_Window, m_Context);
-
-	if (result != 0)
-	{
-		LOG(FS("Setting current context with SDL failed (%i) > '%s'", result, SDL_GetError()), LogLevel::Error);
-		return false;
-	}
-
+	glfwMakeContextCurrent(m_Window);
 	return true;
 }

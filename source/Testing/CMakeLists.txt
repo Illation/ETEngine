@@ -27,7 +27,7 @@ outputDirectories(Testing)
 
 # linking
 target_link_libraries (Testing EtEngine)
-dependancyLinks(Testing FALSE)
+dependancyLinks(Testing)
 
 # library includes
 libIncludeDirs()

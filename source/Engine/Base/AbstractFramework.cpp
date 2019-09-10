@@ -20,7 +20,7 @@
 #include <Engine/GraphicsHelper/RenderPipeline.h>
 #include <Engine/Physics/PhysicsManager.h>
 #include <Engine/Audio/AudioManager.h>
-#include <Engine/Helper/SdlEventManager.h>
+#include <Engine/Helper/GlfwEventManager.h>
 #include <Engine/Helper/ScreenshotCapture.h>
 #include <Engine/GraphicsHelper/Viewport.h>
 #include <Engine/GraphicsHelper/SceneRenderer.h>
@@ -36,7 +36,7 @@ AbstractFramework::~AbstractFramework()
 	Editor::GetInstance()->DestroyInstance();
 #endif
 
-	SdlEventManager::DestroyInstance();
+	GlfwEventManager::DestroyInstance();
 	m_RenderArea.Uninitialize();
 	SafeDelete(m_Viewport);
 	SceneRenderer::DestroyInstance();
@@ -161,7 +161,7 @@ void AbstractFramework::LoadConfig()
 void AbstractFramework::InitializeGame()
 {
 	InputManager::GetInstance();	// init input manager
-	SdlEventManager::GetInstance()->Init();
+	GlfwEventManager::GetInstance()->Init(m_RenderArea.GetWindow());
 
 	RenderPipeline::GetInstance()->Initialize();
 

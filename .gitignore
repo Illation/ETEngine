@@ -18,6 +18,7 @@ build/.vs
 /dependancies/submodules/bullet/build/
 /dependancies/submodules/rttr/build/
 /dependancies/submodules/assimp/build/
+/dependancies/submodules/glfw/build/
 
 /build/x32
 /build/x64

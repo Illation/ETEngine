@@ -1,31 +1,37 @@
 #pragma once
-#include <SDL.h>
+#include <GLFW/glfw3.h>
 
 #include "GraphicsHelper/RenderArea.h"
 
 
 //---------------------------------
-// SdlRenderArea
+// GlfwRenderArea
 //
-// Render area using SDL windows as a subsystem, managing an openGL context
+// Render area using GLFW windows as a subsystem, managing an openGL context
 //
-class SdlRenderArea : public I_RenderArea
+class GlfwRenderArea : public I_RenderArea
 {
 	// construct destruct
 	//-------------------
 public:
-	SdlRenderArea() : I_RenderArea() {}
-	virtual ~SdlRenderArea() = default;
+	GlfwRenderArea() : I_RenderArea() {}
+	virtual ~GlfwRenderArea() = default;
 
 	void Initialize();
 	void Uninitialize();
 
+	// functionality
+	//---------------
 	void Update();
-
 	void SetVSyncEnabled(bool const val);
 
 private:
 	void OnResize();
+
+	// accessors
+	//-----------
+public:
+	GLFWwindow* GetWindow() const { return m_Window; }
 
 	// Render Area Interface
 	//-----------------------
@@ -46,8 +52,7 @@ private:
 	std::function<void(vec2 const)> m_OnResize;
 	std::function<void()> m_OnRender;
 
-	SDL_GLContext m_Context = nullptr;
-	SDL_Window* m_Window = nullptr;
+	GLFWwindow* m_Window = nullptr; // also serves as context
 
 	bool m_ShouldDraw = false;
 };

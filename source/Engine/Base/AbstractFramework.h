@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "TickOrder.h"
-#include "SdlRenderArea.h"
+#include "GlfwRenderArea.h"
 
 #include <EtCore/UpdateCycle/RealTimeTickTriggerer.h>
 #include <EtCore/UpdateCycle/Tickable.h>
@@ -31,6 +31,6 @@ private:
 	void GameLoop();
 
 private:
-	SdlRenderArea m_RenderArea;
+	GlfwRenderArea m_RenderArea;
 	Viewport* m_Viewport = nullptr;
 };

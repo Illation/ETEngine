@@ -237,11 +237,27 @@ function(getOpenAlBuildDir openal_build)
 endfunction(getOpenAlBuildDir)
 
 
+# rttr output directory
+##########################
+function(getGlfwBuildDir glfw_build)
+	if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
+		set(_p "x64")
+	else() # 32 bit
+		set(_p "x32")
+	endif()
+
+	set(${glfw_build} "${PROJECT_BINARY_DIR}/../dependancies/submodules/glfw/build/${_p}" PARENT_SCOPE)
+endfunction(getGlfwBuildDir)
+
+
 # link to all dependancies
 ###########################
-function(dependancyLinks TARGET _useSdlMain)
+function(dependancyLinks TARGET)
 
 	set(dep_dir "${PROJECT_BINARY_DIR}/../dependancies")
+	
+	set(_glfwBuild )
+	getGlfwBuildDir(_glfwBuild)
 	
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
@@ -260,14 +276,10 @@ function(dependancyLinks TARGET _useSdlMain)
 	set(_alBuild )
 	getOpenAlBuildDir(_alBuild)
 
-	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-		set(dep_pf "${dep_dir}/x64")
-	 else() 
-		set(dep_pf "${dep_dir}/x32")
-	endif()
-
 	# separate debug and release libs
 	target_link_libraries (${TARGET} 		
+		debug ${_glfwBuild}/src/Debug/glfw3.lib						optimized ${_glfwBuild}/src/Debug/glfw3.lib
+
 		debug ${_rttrBuild}/install/lib/librttr_core_d.lib			optimized ${_rttrBuild}/install/lib/librttr_core.lib
 	
 		debug ${_bulletBuild}/lib/Debug/BulletDynamics_Debug.lib	optimized ${_bulletBuild}/lib/Release/BulletDynamics.lib
@@ -282,15 +294,8 @@ function(dependancyLinks TARGET _useSdlMain)
 		debug ${_vcpkgInstall}/debug/lib/zlibd.lib					optimized ${_vcpkgInstall}/lib/zlib.lib
 		debug ${_vcpkgInstall}/debug/lib/freetyped.lib				optimized ${_vcpkgInstall}/lib/freetype.lib	)
 
-	target_link_libraries (${TARGET} ${dep_pf}/sdl2/SDL2.lib )
-
 	if (MSVC)
 		target_link_libraries(${TARGET} opengl32.lib)
-
-		if (_useSdlMain)
-			target_link_libraries(${TARGET} ${dep_pf}/sdl2/SDL2main.lib)
-		endif(_useSdlMain)
-
 	endif(MSVC)
 
 endfunction(dependancyLinks)
@@ -301,13 +306,6 @@ endfunction(dependancyLinks)
 function(getVcpkgLibs out_list)
 	set (${out_list} "freetype" "bz2" "libpng16" "zlib" "zlibd" PARENT_SCOPE)
 endfunction(getVcpkgLibs)
-
-
-# place a list of unified libraries in the out list
-####################################################
-function(getUniLibs out_list)
-	set (${out_list} "sdl2" PARENT_SCOPE)
-endfunction(getUniLibs)
 
 
 # link to all dependancies
@@ -332,13 +330,7 @@ function(libIncludeDirs)
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/bullet/bullet3/src")
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/openal/openal-soft/include")
 	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/assimp/assimp/include")
-
-	set(libs )
-	getUniLibs(libs)
-
-	foreach(_lib ${libs})
-		include_directories("${PROJECT_BINARY_DIR}/../dependancies/include/${_lib}/")	
-	endforeach(_lib)
+	include_directories("${PROJECT_BINARY_DIR}/../dependancies/submodules/glfw/glfw/include")
 
 endfunction(libIncludeDirs)
 
@@ -374,16 +366,6 @@ endfunction(getMatchingFiles)
 # copy dll (and pdb) files in the appropriate directory according to configuration - post build command version
 ################################################################################################################
 function(copyDllCommand _target)
-
-	# paths for our libraries depend on the architecture we compile for
-	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-		set(_p "x64")
-	 else() 
-		set(_p "x32")
-	endif()
-
-	set(uni_libs )
-	getUniLibs(uni_libs)
 	
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
@@ -401,17 +383,6 @@ function(copyDllCommand _target)
 		set(_vcCfg "/debug")
 	
 		# for debug applications we also copy pdbs	
-		foreach(_lib ${uni_libs})
-			file(GLOB pdbs ${PROJECT_SOURCE_DIR}/dependancies/${_p}/${_lib}/*.pdb)
-			foreach(_pdb ${pdbs})
-				add_custom_command(TARGET ${_target} 
-					POST_BUILD
-					COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_pdb}" $<TARGET_FILE_DIR:${_target}>
-					COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_pdb}" 
-				)
-			endforeach()
-		endforeach()
-
 		file(GLOB pdbs ${_vcpkgInstall}${_vcCfg}/bin/*.pdb)
 		getMatchingFiles("${vcpkg_libs}" "${pdbs}" pdbs)
 		foreach(_pdb ${pdbs})
@@ -428,17 +399,6 @@ function(copyDllCommand _target)
 			COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_alBuild}/Debug/OpenAL32.pdb" 
 		)
 	endif()
-
-	foreach(_lib ${uni_libs})
-		file(GLOB dlls ${PROJECT_SOURCE_DIR}/dependancies/${_p}/${_lib}/*.dll)
-		foreach(_dll ${dlls})
-			add_custom_command(TARGET ${_target} 
-				POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_dll}" $<TARGET_FILE_DIR:${_target}> 
-				COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_dll}" 
-			)
-		endforeach()
-	endforeach()
 	
 	file(GLOB debugDlls ${_vcpkgInstall}/debug/bin/*.dll)
 	getMatchingFiles("${vcpkg_libs}" "${debugDlls}" debugDlls)
@@ -486,9 +446,6 @@ function(installDlls TARGET)
 	 else() 
 		set(platform "x32")
 	endif()
-
-	set(uni_libs )
-	getUniLibs(uni_libs)
 	
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
@@ -510,13 +467,6 @@ function(installDlls TARGET)
 			set(_vcCfg "/debug")
 
 			# for debug applications we also copy pdbs
-			foreach(_lib ${uni_libs})
-				install(DIRECTORY ${projectBase}/dependancies/${platform}/${_lib}/
-					CONFIGURATIONS ${configType}
-					DESTINATION ${binDir}/
-					FILES_MATCHING PATTERN "*.pdb")
-			endforeach()
-			
 			file(GLOB pdbs ${_vcpkgInstall}${_vcCfg}/bin/*.pdb)
 			getMatchingFiles("${vcpkg_libs}" "${pdbs}" pdbs)
 			foreach(_pdb ${pdbs})
@@ -526,14 +476,7 @@ function(installDlls TARGET)
 			install(FILES ${_alBuild}/Debug/OpenAL32.pdb CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
 		endif()
 
-		# copy dlls for all libraries
-		foreach(_lib ${uni_libs})
-			install(DIRECTORY ${projectBase}/dependancies/${platform}/${_lib}/
-				CONFIGURATIONS ${configType}
-				DESTINATION ${binDir}/
-				FILES_MATCHING PATTERN "*.dll")
-		endforeach()
-		
+		# copy dlls for all libraries		
 		file(GLOB dlls ${_vcpkgInstall}${_vcCfg}/bin/*.dll)
 		getMatchingFiles("${vcpkg_libs}" "${dlls}" dlls)
 		foreach(_dll ${dlls})

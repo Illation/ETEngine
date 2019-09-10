@@ -16,9 +16,13 @@ void SetDebuggingOptions();
 //---------------------------------
 // main
 //
-// Entry point into the framework. SDL does some sneaky magic that calls this function, so it's not the first function to run
+// Entry point into the framework. 
 //
+//#if defined(PLATFORM_Win)
+//int WinMain(int argc, char *argv[])
+//#else
 int main(int argc, char *argv[])
+//#endif
 {
 	// set up environment
 	//-------------------------

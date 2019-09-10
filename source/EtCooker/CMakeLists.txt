@@ -20,7 +20,7 @@ add_definitions(-DUNCOOKED_RESOURCES)
 
 add_definitions(-D_CONSOLE)
 # executable and dependancies
-add_executable(EtCooker WIN32 ${projectFiles})
+add_executable(EtCooker ${projectFiles})
 targetCompileOptions(EtCooker)
 
 # directory stuff
@@ -29,7 +29,7 @@ outputDirectories(EtCooker)
 
 # linking
 target_link_libraries (EtCooker EtEngine)
-dependancyLinks(EtCooker TRUE)
+dependancyLinks(EtCooker)
 
 # library includes
 libIncludeDirs()
