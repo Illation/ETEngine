@@ -7,7 +7,11 @@
 - source: [https://github.com/assimp/assimp](https://github.com/assimp/assimp/tree/d672ae21d03c4fbe5c9b441ec2ba25004f0c282c)
 - license: [3-clause BSD](https://github.com/assimp/assimp/blob/master/LICENSE)
 
+assimp redistributes:
+
 #### irrXML
+
+- license: [zlib](https://www.ambiera.com/irrxml/license.html)
 
 
 ## Bullet
@@ -24,6 +28,8 @@
 - source: [https://github.com/Dav1dde/glad](https://github.com/Dav1dde/glad/tree/2a5ac49ba7b5275e6f0f6d1fa07bfb0e6875ce18)
 - license: [MIT](https://github.com/Dav1dde/glad/blob/master/LICENSE)
 
+Glad uses a python interpreter which is obtained by Vcpkg (see below).
+
 
 ## GLFW
 - source: [https://github.com/glfw/glfw](https://github.com/glfw/glfw/tree/7f02898264d6077738f0e8032f027eb7e252c90e)
@@ -34,10 +40,14 @@
 - source: [https://github.com/tcoppex/ext-mikktspace](https://github.com/tcoppex/ext-mikktspace/tree/f824a879858b7f843f900ac023fc9495b064ae5d)
 - license: [zlib](https://opensource.org/licenses/Zlib)
 
+Mirror of blender tangent space calculations: https://wiki.blender.org/index.php/Dev:Shading/Tangent_Space_Normal_Maps
+
 
 ## OpenAL-soft
 - source: [https://github.com/kcat/openal-soft](https://github.com/kcat/openal-soft/tree/987fd13796d5761b7adc5f6e137e7a6149d02f7b)
 - license: [LGPL](https://github.com/kcat/openal-soft/blob/master/COPYING)
+
+This project dynamically links to openAl soft.
 
 
 ## RTTR
@@ -49,17 +59,101 @@
 - source: [https://github.com/nothings/stb](https://github.com/nothings/stb/tree/052dce117ed989848a950308bd99eef55525dfb1)
 - license: [Public domain / MIT](https://opensource.org/licenses/MIT)
 
-#### stb_image
-#### stb_image_resize
-#### stb_image_write
-#### stb_vorbis
+single file libraries being used:
+
+##### stb_image
+##### stb_image_resize
+##### stb_image_write
+##### stb_vorbis
 
 
 ## Vcpkg
 - source: [https://github.com/microsoft/vcpkg](https://github.com/Microsoft/vcpkg/tree/3f6ab4834e8469bbe1f6569b7941c720f178b688)
 - license: [MIT](https://github.com/microsoft/vcpkg/blob/master/LICENSE.txt)
 
+Vcpkg is used to build and obtain sources of other libraries. It also downloads a python interpreter, which is used for gl context binding creation.
+
+Libraries used by the runtime engine are:
+
 #### freetype
-#### gtkmm
+FreeType License - https://www.freetype.org/license.html
+
+#### libpng
+LibPng License - http://www.libpng.org/pub/png/src/libpng-LICENSE.txt
+
 #### zlib
-#### bz2
+ZLib License - https://www.zlib.net/zlib_license.html
+
+#### bzip2
+bzip2 license - https://sourceware.org/bzip2/
+
+------------------------------------------------------------
+
+Other libraries, which will be used by the editor are:
+
+#### atk
+GNU LGPL License - https://developer.gnome.org/atk/
+
+#### atkmm
+GNU LGPL License - https://github.com/GNOME/atkmm/blob/master/COPYING
+
+#### cairo
+GNU LGPL License - https://www.cairographics.org/
+
+#### cairomm-1.0
+GNU LGPL License - https://www.cairographics.org/cairomm/
+
+#### epoxy
+MIT - https://github.com/anholt/libepoxy/blob/master/COPYING
+
+#### expat
+MIT - https://github.com/libexpat/libexpat/blob/master/expat/COPYING
+
+#### fontconfig
+MIT - https://www.freedesktop.org/wiki/Software/fontconfig/
+
+#### gdk-pixbuf
+GNU LGPL License - https://github.com/GNOME/gdk-pixbuf/blob/master/COPYING
+
+#### glib
+GNU LGPL License - https://github.com/GNOME/glib/blob/master/COPYING
+
+#### glibmm
+GNU LGPL License - https://github.com/GNOME/glibmm/blob/master/COPYING
+
+#### gobject-2.0
+GNU LGPL License - https://developer.gnome.org/gobject/
+
+#### gtk-3.0
+GNU LGPL License - https://github.com/GNOME/gtk/blob/master/COPYING
+
+#### gtkmm
+GNU LGPL License - https://www.gtkmm.org/en/license.html
+
+#### harfbuzz
+Old MIT - https://github.com/harfbuzz/harfbuzz/blob/master/COPYING
+
+#### libffi
+MIT - https://github.com/libffi/libffi/blob/master/LICENSE
+
+#### libiconv
+GNU LGPL License - https://www.gnu.org/software/libiconv/
+
+#### libintl
+GNU LGPL License - https://www.gnu.org/software/gettext/manual/html_node/GNU-LGPL.html#GNU-LGPL
+
+#### pango
+GNU LGPL License - https://github.com/GNOME/pango/blob/master/COPYING
+
+#### pangomm
+GNU LGPL License - https://github.com/GNOME/pangomm/blob/master/COPYING
+
+#### pcre
+BSD License - https://www.pcre.org/licence.txt
+
+#### pixman-1
+MIT - http://www.pixman.org/
+
+#### sigc++
+LGPL-3.0 - https://github.com/libsigcplusplus/libsigcplusplus/blob/master/COPYING
+
