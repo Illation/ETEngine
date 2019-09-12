@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "serialization.h"
 
+
 namespace serialization {
 
 
@@ -17,6 +18,20 @@ bool ToJsonRecursive(const rttr::instance& inst, JSON::Value*& outJVal)
 {
 	JSON::Object* outJObject = new JSON::Object();
 	outJVal = outJObject;
+
+	JSON::Object* appendJObject = outJObject;
+
+	// pointers are wrapped into another object layour to allow polymorphism
+	if (inst.get_type().is_pointer())
+	{
+		rttr::type internalPointerType = inst.get_derived_type().get_raw_type();
+
+		JSON::Pair keyVal = std::make_pair(internalPointerType.get_name().to_string(), new JSON::Object());
+
+		outJObject->value.emplace_back(keyVal);
+
+		appendJObject = keyVal.second->obj();
+	}
 
 	rttr::instance instObj = inst.get_type().get_raw_type().is_wrapper() ? inst.get_wrapped_instance() : inst;
 
@@ -46,7 +61,7 @@ bool ToJsonRecursive(const rttr::instance& inst, JSON::Value*& outJVal)
 		}
 		else
 		{
-			outJObject->value.push_back(keyVal);
+			appendJObject->value.push_back(keyVal);
 		}
 	}
 
@@ -775,11 +790,7 @@ bool ExtractPointerValueType(rttr::type &inOutValType, JSON::Value const* &inOut
 		}
 		JSON::Object const* const jObj = inOutJVal->obj();
 
-		if (jObj->value.size() != 1u)
-		{
-			LOG("ExtractPointerValueType > Expected pointer JSON object to have exactly one internal value!", LogLevel::Warning);
-			return false;
-		}
+		ET_ASSERT(jObj->value.size() == 1u, "Expected pointer JSON object to have exactly one internal value!");
 
 		// figure out what kind of object we are deserializing
 		std::string internalTypeName = jObj->value[0].first;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <EtCore/Content/AssetStub.h>
+#include <EtCore/Reflection/registerMath.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/Mesh.h>
 #include <Engine/Audio/AudioData.h>
@@ -22,6 +23,7 @@ void ForceLinking()
 	FORCE_LINKING(EnvironmentMapAsset)
 	FORCE_LINKING(FontAsset)
 	FORCE_LINKING(TextureAsset)
+	FORCE_LINKING(MathRegistrationLinkEnforcer)
 }
 
 

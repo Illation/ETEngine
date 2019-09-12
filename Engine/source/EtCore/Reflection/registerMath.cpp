@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "registerMath.h"
 
 
 // reflection
@@ -21,3 +22,5 @@ RTTR_REGISTRATION
 		.property("z", &vec4::z)
 		.property("w", &vec4::w);
 }
+
+DEFINE_FORCED_LINKING(MathRegistrationLinkEnforcer) // force the linker to include this unit

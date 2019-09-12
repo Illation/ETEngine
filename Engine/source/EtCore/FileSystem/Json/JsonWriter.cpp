@@ -241,6 +241,13 @@ bool Writer::WriteArray(Array const* const jArray)
 
 	// begin the array
 	m_JsonString += s_BeginArray;
+
+	// if the array is empty, no further processing is needed
+	if (jArray->value.size() == 0u)
+	{
+		m_JsonString += s_EndArray;
+		return true;
+	}
 	
 	// if this is an array of complex types and we are not writing a compact json file write a new line per element
 	bool writeNlPerElement = false;
