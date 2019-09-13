@@ -519,7 +519,8 @@ endfunction(installResources)
 #####################################################################
 function(installCookResources TARGET)
 
-	set(cmp_dir "${ENGINE_DIRECTORY_ABS}/resources/")
+	set(cmp_dir "${PROJECT_DIRECTORY}/resources/")
+	set(cmp_dir_engine "${ENGINE_DIRECTORY_ABS}/resources/")
 
 	# figure out the directory the cooker binary lives in
 	#-----------------------------------------------------------
@@ -534,10 +535,12 @@ function(installCookResources TARGET)
 
 	set(resource_name "compiledPackage")
 	set(res_file "${cmp_dir}asset_database.json")
+	set(res_file_engine "${cmp_dir_engine}asset_database.json")
 
 	# any files that can trigger the resources to be rebuilt
-	file(GLOB_RECURSE deps ${cmp_dir}/assets/*.*)
-	list (APPEND deps ${cmp_dir}/asset_database.json)
+	file(GLOB_RECURSE deps ${cmp_dir}/assets/*.* ${cmp_dir_engine}/assets/*.*)
+	list (APPEND deps ${res_file})
+	list (APPEND deps ${res_file_engine})
 
 	set(target_name "cook-installed-resources-${TARGET}")
 
@@ -546,9 +549,10 @@ function(installCookResources TARGET)
 	add_custom_target(${target_name} 
 		DEPENDS ${deps} EtCooker 
 		
-		COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file} ; Out directory Directory: ${pak_file_dir}"
+		COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file} ; Out directory: ${pak_file_dir}"
 		COMMAND ${CMAKE_COMMAND} -E echo ""
-		COMMAND ${cooker_dir}EtCooker.exe ${res_file} ${pak_file_dir} n
+		COMMAND ${CMAKE_COMMAND} -E echo "${cooker_dir}EtCooker.exe ${res_file} ${res_file_engine} ${pak_file_dir} n"
+		COMMAND ${cooker_dir}EtCooker.exe ${res_file} ${res_file_engine} ${pak_file_dir} n
 		COMMAND ${CMAKE_COMMAND} -E echo ""
 		COMMAND ${CMAKE_COMMAND} -E echo ""
 		

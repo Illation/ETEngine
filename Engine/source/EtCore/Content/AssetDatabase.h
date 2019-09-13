@@ -52,6 +52,7 @@ public:
 		RTTR_ENABLE()
 	};
 
+	AssetDatabase(bool const ownsAssets = true) : m_OwnsAssets(ownsAssets) {}
 	~AssetDatabase();
 
 	T_AssetList GetAssetsInPackage(T_Hash const packageId);
@@ -67,5 +68,8 @@ public:
 	std::vector<AssetCache> caches;
 
 	RTTR_ENABLE()
+
+private:
+	bool m_OwnsAssets = true;
 };
 

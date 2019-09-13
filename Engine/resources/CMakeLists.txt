@@ -9,7 +9,8 @@
 ############################################
 
 set(gen_dir "${PROJECT_DIRECTORY}/source/Runtime/_generated/")
-set(cmp_dir "${CMAKE_CURRENT_SOURCE_DIR}/")
+set(cmp_dir "${PROJECT_DIRECTORY}/resources/")
+set(cmp_dir_engine "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 # figure out the directory the cooker binary lives in
 #-----------------------------------------------------------
@@ -24,10 +25,12 @@ set(cooker_dir "${bin_base_dir}EtCooker/")
 set(resource_name "compiled_package")
 set(target_files "${gen_dir}${resource_name}.h" "${gen_dir}${resource_name}.cpp")
 set(res_file "${cmp_dir}asset_database.json")
+set(res_file_engine "${cmp_dir_engine}asset_database.json")
 
 # any files that can trigger the resources to be rebuilt
-file(GLOB_RECURSE deps ${cmp_dir}/assets/*.*)
-list (APPEND deps ${cmp_dir}/asset_database.json)
+file(GLOB_RECURSE deps ${cmp_dir}/assets/*.* ${cmp_dir_engine}/assets/*.*)
+list (APPEND deps ${res_file})
+list (APPEND deps ${res_file_engine})
 
 
 # the command list that will run - for compiling resources
@@ -36,10 +39,10 @@ add_custom_command(
     OUTPUT ${target_files}
     DEPENDS ${deps} EtCooker
 
-	COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file} ; Generated Directory: ${gen_dir}"
+	COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file} Engine Source ${res_file_engine} ; Generated Directory: ${gen_dir}"
 	COMMAND ${CMAKE_COMMAND} -E echo ""
-	COMMAND ${CMAKE_COMMAND} -E echo "${cooker_dir}EtCooker.exe ${res_file} ${gen_dir} y ${resource_name}"
-    COMMAND ${cooker_dir}EtCooker.exe ${res_file} ${gen_dir} y ${resource_name}
+	COMMAND ${CMAKE_COMMAND} -E echo "${cooker_dir}EtCooker.exe ${res_file} ${res_file_engine} ${gen_dir} y ${resource_name}"
+    COMMAND ${cooker_dir}EtCooker.exe ${res_file} ${res_file_engine} ${gen_dir} y ${resource_name}
 	COMMAND ${CMAKE_COMMAND} -E echo ""
 	COMMAND ${CMAKE_COMMAND} -E echo ""
 	

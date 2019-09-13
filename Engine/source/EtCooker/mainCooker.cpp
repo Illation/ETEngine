@@ -21,8 +21,17 @@
 
 // forward declarations
 void AddPackageToWriter(T_Hash const packageId, std::string const& dbBase, PackageWriter &writer, AssetDatabase& db);
-void CookCompiledPackage(std::string const& dbBase, std::string const& outPath, std::string const& resName, AssetDatabase& db);
-void CookFilePackages(std::string const& dbBase, std::string const& outPath, AssetDatabase& db);
+void CookCompiledPackage(std::string const& dbBase, 
+	std::string const& outPath, 
+	std::string const& resName, 
+	AssetDatabase& db, 
+	std::string const& engineDbBase, 
+	AssetDatabase& engineDb);
+void CookFilePackages(std::string const& dbBase, 
+	std::string const& outPath, 
+	AssetDatabase& db,
+	std::string const& engineDbBase,
+	AssetDatabase& engineDb);
 
 
 //---------------------------------
@@ -43,9 +52,10 @@ int main(int argc, char *argv[])
 	}
 	FileUtil::SetExecutablePath(argv[0]); // working dir from executable path
 	std::string databasePath(argv[1]);
-	std::string outPath(argv[2]);
-	bool const genCompiledResource = (std::string(argv[3]) == "y");
-	ET_ASSERT(genCompiledResource || (std::string(argv[3]) == "n"), "Expected argument 3 to be either 'y' or 'n'!");
+	std::string engineDbPath(argv[2]);
+	std::string outPath(argv[3]);
+	bool const genCompiledResource = (std::string(argv[4]) == "y");
+	ET_ASSERT(genCompiledResource || (std::string(argv[4]) == "n"), "Expected argument 4 to be either 'y' or 'n'!");
 
 	// Init stuff
 	//------------
@@ -59,6 +69,13 @@ int main(int argc, char *argv[])
 	}
 	std::string dbBase = FileUtil::ExtractPath(databasePath);
 
+	AssetDatabase engineDb;
+	if (!serialization::DeserializeFromFile(engineDbPath, engineDb))
+	{
+		LOG("main > unable to deserialize engine database at '" + std::string(engineDbPath) + std::string("'"), LogLevel::Error);
+	}
+	std::string engineDbBase = FileUtil::ExtractPath(engineDbPath);
+
 	if (genCompiledResource)
 	{
 		if (argc < 5)
@@ -66,13 +83,13 @@ int main(int argc, char *argv[])
 			std::cerr << "main > When specifying compiled resource, also specify the resource name in the last arg" << std::endl;
 			return 2;
 		}
-		std::string resName(argv[4]);
+		std::string resName(argv[5]);
 
-		CookCompiledPackage(dbBase, outPath, resName, database);
+		CookCompiledPackage(dbBase, outPath, resName, database, engineDbBase, engineDb);
 	}
 	else
 	{
-		CookFilePackages(dbBase, outPath, database);
+		CookFilePackages(dbBase, outPath, database, engineDbBase, engineDb);
 	}
 
 	// Clean up
@@ -114,7 +131,12 @@ void AddPackageToWriter(T_Hash const packageId, std::string const& dbBase, Packa
 // Writes the package with compiled data that ends up as a generated source file.
 //  - this includes the file for the asset database
 //
-void CookCompiledPackage(std::string const& dbBase, std::string const& outPath, std::string const& resName, AssetDatabase& db)
+void CookCompiledPackage(std::string const& dbBase, 
+	std::string const& outPath, 
+	std::string const& resName, 
+	AssetDatabase& db,
+	std::string const& engineDbBase,
+	AssetDatabase& engineDb)
 {
 	// Create a package writer - all file paths will be written relative to our database directory
 	PackageWriter packageWriter;
@@ -128,7 +150,10 @@ void CookCompiledPackage(std::string const& dbBase, std::string const& outPath, 
 	// Ensure the generated file directory exists
 	Directory* tempDir = new Directory(s_TempPath, nullptr, true);
 
-	if (!serialization::SerializeToFile(tempDbFullPath, db))
+	AssetDatabase mergeDb(false);
+	mergeDb.Merge(db);
+	mergeDb.Merge(engineDb);
+	if (!serialization::SerializeToFile(tempDbFullPath, mergeDb))
 	{
 		LOG(FS("CookCompiledPackage > Failed to serialize asset database to '%s'", tempDbFullPath.c_str()), LogLevel::Error);
 	}
@@ -140,6 +165,7 @@ void CookCompiledPackage(std::string const& dbBase, std::string const& outPath, 
 	// add all other compiled files to the package
 	static T_Hash const s_CompiledPackageId = 0u;
 	AddPackageToWriter(s_CompiledPackageId, dbBase, packageWriter, db);
+	AddPackageToWriter(s_CompiledPackageId, engineDbBase, packageWriter, engineDb);
 
 	// write our package
 	packageWriter.Write(packageData);
@@ -162,15 +188,34 @@ void CookCompiledPackage(std::string const& dbBase, std::string const& outPath, 
 // Writes the package with compiled data that ends up as a generated source file.
 //  - this includes the file for the asset database
 //
-void CookFilePackages(std::string const& dbBase, std::string const& outPath, AssetDatabase& db)
+void CookFilePackages(std::string const& dbBase, 
+	std::string const& outPath, 
+	AssetDatabase& db,
+	std::string const& engineDbBase,
+	AssetDatabase& engineDb)
 {
+	// Get a unified list of package descriptors
+	std::vector<AssetDatabase::PackageDescriptor> descriptors = db.packages;
+	for (AssetDatabase::PackageDescriptor const& desc : engineDb.packages)
+	{
+		// check if there is already a package with the same ID tracked in "descriptors"
+		if (std::find_if(descriptors.cbegin(), descriptors.cend(), [&desc](AssetDatabase::PackageDescriptor const& tracked)
+			{
+				return tracked.GetId() == desc.GetId();
+			}) == descriptors.cend())
+		{
+			descriptors.emplace_back(desc);
+		}
+	}
+
 	// each package can have a separate asset list
-	for (AssetDatabase::PackageDescriptor const& desc : db.packages)
+	for (AssetDatabase::PackageDescriptor const& desc : descriptors)
 	{
 		PackageWriter packageWriter;
 		std::vector<uint8> packageData;
 
 		AddPackageToWriter(desc.GetId(), dbBase, packageWriter, db);
+		AddPackageToWriter(desc.GetId(), engineDbBase, packageWriter, engineDb);
 
 		// write our package
 		packageWriter.Write(packageData);

@@ -72,6 +72,11 @@ std::type_info const& AssetDatabase::AssetCache::GetType() const
 //
 AssetDatabase::~AssetDatabase()
 {
+	if (!m_OwnsAssets)
+	{
+		return;
+	}
+
 	for (AssetCache& cache : caches)
 	{
 		for (I_Asset* asset : cache.cache)
@@ -232,7 +237,7 @@ void AssetDatabase::Merge(AssetDatabase const& other)
 					ET_ASSERT(std::find_if(packages.cbegin(), packages.cend(), [rhAsset](PackageDescriptor const& lhPackage)
 						{
 							return lhPackage.GetId() == rhAsset->GetPackageId();
-						}) != packages.cend(), 
+						}) != packages.cend() || rhAsset->GetPackageId() == 0u,
 						"Asset merged into DB, but DB doesn't contain package '%s'",
 						rhAsset->GetPackageName().c_str());
 
