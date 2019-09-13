@@ -27,7 +27,7 @@ RTTR_REGISTRATION
 		.property("mag filter",			&TextureParameters::magFilter)
 		.property("mipmap filter",		&TextureParameters::mipFilter)
 		.property("wrap S",				&TextureParameters::wrapS)
-		.property("wrap	T",				&TextureParameters::wrapT)
+		.property("wrap T",				&TextureParameters::wrapT)
 		.property("border color",		&TextureParameters::borderColor)
 		.property("generate mipmaps",	&TextureParameters::genMipMaps);
 }

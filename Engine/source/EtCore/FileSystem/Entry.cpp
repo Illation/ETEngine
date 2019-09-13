@@ -50,7 +50,7 @@ std::string Entry::GetPath()
 {
 	if (m_Parent)
 	{
-		return std::string(m_Parent->GetPath() + m_Parent->GetNameOnly());
+		return std::string(m_Parent->GetPath() + m_Parent->GetNameOnly() + m_Path);
 	}
 	else
 	{
@@ -65,7 +65,7 @@ std::string Entry::GetPath()
 //
 std::string Entry::GetName()
 {
-	return m_Path + m_Filename;
+	return GetPath() + m_Filename;
 }
 
 //---------------------------------

@@ -51,7 +51,7 @@ namespace serialization
 	//---------------------
 
 	// serialization
-	bool ToJsonRecursive(rttr::instance const& inst, JSON::Value*& outJObject);
+	bool ToJsonRecursive(rttr::instance const& inst, JSON::Value*& outJObject, rttr::type const& callingType);
 
 	bool VariantToJsonValue(rttr::variant const& var, JSON::Value*& outVal);
 	bool AtomicTypeToJsonValue(rttr::type const& valueType, rttr::variant  const& var, JSON::Value*& outVal);

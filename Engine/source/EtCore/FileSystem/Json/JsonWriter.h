@@ -57,6 +57,7 @@ private:
 	uint16 m_IndentationLevel = 0;
 
 	bool m_Compact = false;
+	bool m_UseDoubleWhitespace = true;
 };
 
 } // namespace JSON

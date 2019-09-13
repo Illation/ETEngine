@@ -14,7 +14,7 @@ namespace serialization {
 //
 // Recursively convert an rttr::instance to a json object - returns false if any properties fail to serialize
 //
-bool ToJsonRecursive(const rttr::instance& inst, JSON::Value*& outJVal)
+bool ToJsonRecursive(const rttr::instance& inst, JSON::Value*& outJVal, rttr::type const& callingType)
 {
 	JSON::Object* outJObject = new JSON::Object();
 	outJVal = outJObject;
@@ -22,7 +22,7 @@ bool ToJsonRecursive(const rttr::instance& inst, JSON::Value*& outJVal)
 	JSON::Object* appendJObject = outJObject;
 
 	// pointers are wrapped into another object layour to allow polymorphism
-	if (inst.get_type().is_pointer())
+	if (callingType.is_pointer())
 	{
 		rttr::type internalPointerType = inst.get_derived_type().get_raw_type();
 
@@ -107,7 +107,7 @@ bool VariantToJsonValue(rttr::variant const& var, JSON::Value*& outVal)
 	{
 		if (!(wrappedType.get_properties().empty())) // try converting the variant to a JSON object
 		{
-			if (!ToJsonRecursive(var, outVal))
+			if (!ToJsonRecursive(var, outVal, wrappedType))
 			{
 				LOG("VariantToJsonValue > Failed to convert variant to JSON object, typeName: '" + wrappedType.get_name().to_string() 
 					+ std::string("'!"), LogLevel::Warning);
@@ -331,7 +331,7 @@ bool ArrayToJsonArray(const rttr::variant_sequential_view& view, JSON::Value*& o
 			}
 			else // object
 			{
-				if (!ToJsonRecursive(wrappedVar, jItem))
+				if (!ToJsonRecursive(wrappedVar, jItem, valueType))
 				{
 					LOG("ArrayToJsonArray > failed to convert array element to json object, typeName: '" + valueType.get_name().to_string()
 						+ std::string("'!"), LogLevel::Warning);

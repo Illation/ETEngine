@@ -9,6 +9,7 @@
 #include <EtCore/FileSystem/Package/FilePackage.h>
 #include <EtCore/Reflection/Serialization.h>
 #include <EtCore/Content/AssetDatabase.h>
+#include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/linkerHelper.h>
 
@@ -19,8 +20,8 @@
 
 
 // forward declarations
-void WritePackageToData(T_Hash const packageId, std::string const& dbBase, PackageWriter &writer, std::vector<uint8>& packageData, AssetDatabase& db);
-void CookCompiledPackage(std::string const& dbBase, std::string const& dbPath, std::string const& outPath, std::string const& resName, AssetDatabase& db);
+void AddPackageToWriter(T_Hash const packageId, std::string const& dbBase, PackageWriter &writer, AssetDatabase& db);
+void CookCompiledPackage(std::string const& dbBase, std::string const& outPath, std::string const& resName, AssetDatabase& db);
 void CookFilePackages(std::string const& dbBase, std::string const& outPath, AssetDatabase& db);
 
 
@@ -67,7 +68,7 @@ int main(int argc, char *argv[])
 		}
 		std::string resName(argv[4]);
 
-		CookCompiledPackage(dbBase, databasePath, outPath, resName, database);
+		CookCompiledPackage(dbBase, outPath, resName, database);
 	}
 	else
 	{
@@ -86,11 +87,11 @@ int main(int argc, char *argv[])
 
 
 //--------------------
-// WritePackageToData
+// AddPackageToWriter
 //
-// Gets all assets in a package and creates a binary data blob for it
+// Gets all assets in a package of that database and adds them to the package writer
 //
-void WritePackageToData(T_Hash const packageId, std::string const& dbBase, PackageWriter &writer, std::vector<uint8>& packageData, AssetDatabase& db)
+void AddPackageToWriter(T_Hash const packageId, std::string const& dbBase, PackageWriter &writer, AssetDatabase& db)
 {
 	// Loop over files - add them to the writer
 	AssetDatabase::T_AssetList assets = db.GetAssetsInPackage(packageId);
@@ -105,9 +106,6 @@ void WritePackageToData(T_Hash const packageId, std::string const& dbBase, Packa
 		File* assetFile = new File(filePath + assetName, nullptr);
 		writer.AddFile(assetFile, dbBase, E_CompressionType::Store);
 	}
-
-	// write our package
-	writer.Write(packageData);
 }
 
 //---------------------
@@ -116,21 +114,46 @@ void WritePackageToData(T_Hash const packageId, std::string const& dbBase, Packa
 // Writes the package with compiled data that ends up as a generated source file.
 //  - this includes the file for the asset database
 //
-void CookCompiledPackage(std::string const& dbBase, std::string const& dbPath, std::string const& outPath, std::string const& resName, AssetDatabase& db)
+void CookCompiledPackage(std::string const& dbBase, std::string const& outPath, std::string const& resName, AssetDatabase& db)
 {
 	// Create a package writer - all file paths will be written relative to our database directory
 	PackageWriter packageWriter;
 	std::vector<uint8> packageData;
 
-	// add the asset database to the compiled package
-	File* dbFile = new File(dbPath, nullptr);
-	packageWriter.AddFile(dbFile, dbBase, E_CompressionType::Store);
+	// serialize the asset database to a temporary file
+	static std::string const s_TempPath("temp");
+	std::string const dbName(ResourceManager::s_DatabasePath);
+	std::string const tempDbFullPath = s_TempPath + std::string("/") + dbName;
 
+	// Ensure the generated file directory exists
+	Directory* tempDir = new Directory(s_TempPath, nullptr, true);
+
+	if (!serialization::SerializeToFile(tempDbFullPath, db))
+	{
+		LOG(FS("CookCompiledPackage > Failed to serialize asset database to '%s'", tempDbFullPath.c_str()), LogLevel::Error);
+	}
+
+	// load the asset database from the temporary file and add it to the package
+	File* dbFile = new File(dbName, tempDir);
+	packageWriter.AddFile(dbFile, dbFile->GetPath(), E_CompressionType::Store);
+
+	// add all other compiled files to the package
 	static T_Hash const s_CompiledPackageId = 0u;
-	WritePackageToData(s_CompiledPackageId, dbBase, packageWriter, packageData, db);
+	AddPackageToWriter(s_CompiledPackageId, dbBase, packageWriter, db);
+
+	// write our package
+	packageWriter.Write(packageData);
 
 	// Generate source file
 	GenerateCompilableResource(packageData, resName, outPath);
+
+	// cleanup
+	if (!tempDir->Delete())
+	{
+		LOG("CookCompiledPackage > Failed to clean up temporary file directory!", LogLevel::Error);
+		delete tempDir;
+	}
+	tempDir = nullptr;
 }
 
 //---------------------
@@ -147,7 +170,10 @@ void CookFilePackages(std::string const& dbBase, std::string const& outPath, Ass
 		PackageWriter packageWriter;
 		std::vector<uint8> packageData;
 
-		WritePackageToData(desc.GetId(), dbBase, packageWriter, packageData, db);
+		AddPackageToWriter(desc.GetId(), dbBase, packageWriter, db);
+
+		// write our package
+		packageWriter.Write(packageData);
 
 		// Ensure the generated file directory exists
 		Directory* dir = new Directory(outPath + desc.GetPath(), nullptr, true);

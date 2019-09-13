@@ -177,7 +177,13 @@ bool Writer::WriteNumber(Number const* const jNum)
 		std::ostringstream streamObj;
 		streamObj << jNum->value;
 
-		m_JsonString += streamObj.str();
+		std::string numString = streamObj.str();
+		if (numString.find('.') == std::string::npos)
+		{
+			numString += ".0";
+		}
+
+		m_JsonString += numString;
 	}
 	
 	return true;
@@ -255,7 +261,7 @@ bool Writer::WriteArray(Array const* const jArray)
 	{
 		auto const foundComplexTypeIt = std::find_if(jArray->value.cbegin(), jArray->value.cend(), [](Value const* const val)
 		{
-			return val->GetType() == ValueType::JSON_Array || val->GetType() == ValueType::JSON_Object;
+			return val->GetType() == ValueType::JSON_Array || val->GetType() == ValueType::JSON_Object || val->GetType() == ValueType::JSON_String;
 		});
 
 		if (foundComplexTypeIt != jArray->value.cend())
@@ -334,7 +340,15 @@ void Writer::WriteIndentations()
 {
 	for (uint16 i = 0; i < m_IndentationLevel; ++i)
 	{
-		m_JsonString += s_Tab;
+		if (m_UseDoubleWhitespace)
+		{
+			m_JsonString += s_Whitespace;
+			m_JsonString += s_Whitespace;
+		}
+		else
+		{
+			m_JsonString += s_Tab;
+		}
 	}
 }
 
