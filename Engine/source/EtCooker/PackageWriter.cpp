@@ -29,15 +29,6 @@ PackageWriter::FileEntryInfo::FileEntryInfo(PkgEntry const& lEntry, File* const 
 
 
 //---------------------------------
-// PackageWriter::PackageWriter
-//
-// Construct a package writer while specifying the root directory - this will be used to resolve relative file paths
-//
-PackageWriter::PackageWriter(std::string const& rootDir)
-	: m_RootDir(rootDir)
-{ }
-
-//---------------------------------
 // PackageWriter::~PackageWriter
 //
 // Close all files in destructor
@@ -62,14 +53,14 @@ PackageWriter::~PackageWriter()
 //
 // Add a file to the writer and create a package entry for it - takes ownership
 //
-void PackageWriter::AddFile(File* const file, E_CompressionType const compression)
+void PackageWriter::AddFile(File* const file, std::string const& rootDir, E_CompressionType const compression)
 {
 	m_Files.emplace_back(PkgEntry(), file, std::string());
 	PkgEntry& entry = m_Files[m_Files.size() - 1].entry;
 	std::string& relName = m_Files[m_Files.size() - 1].relName;
 
 	// assign the name the relative path of the file compared to the root directory of the package writer
-	relName = FileUtil::GetRelativePath(file->GetName(), m_RootDir);
+	relName = FileUtil::GetRelativePath(file->GetName(), rootDir);
 
 	entry.fileId = GetHash(relName);
 	entry.compressionType = compression; 

@@ -168,3 +168,13 @@ I_Asset* AssetDatabase::GetAsset(T_Hash const assetId, std::type_info const& typ
 
 	return *foundAssetIt;
 }
+
+//---------------------------------
+// AssetDatabase::Merge
+//
+// Merge another asset database into this one. This moves the other database's content into this one, so the other DB will be empty.
+//
+void AssetDatabase::Merge(AssetDatabase const& other)
+{
+	// not implemented	
+}

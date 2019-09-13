@@ -59,6 +59,8 @@ public:
 	I_Asset* GetAsset(T_Hash const assetId);
 	I_Asset* GetAsset(T_Hash const assetId, std::type_info const& type);
 
+	void Merge(AssetDatabase const& other);
+
 	// Data
 	////////
 	std::vector<PackageDescriptor> packages;

@@ -103,7 +103,7 @@ void WritePackageToData(T_Hash const packageId, std::string const& dbBase, Packa
 		LOG(assetName + std::string(" [") + std::to_string(id) + std::string("] @: ") + FileUtil::GetAbsolutePath(filePath));
 
 		File* assetFile = new File(filePath + assetName, nullptr);
-		writer.AddFile(assetFile, E_CompressionType::Store);
+		writer.AddFile(assetFile, dbBase, E_CompressionType::Store);
 	}
 
 	// write our package
@@ -119,12 +119,12 @@ void WritePackageToData(T_Hash const packageId, std::string const& dbBase, Packa
 void CookCompiledPackage(std::string const& dbBase, std::string const& dbPath, std::string const& outPath, std::string const& resName, AssetDatabase& db)
 {
 	// Create a package writer - all file paths will be written relative to our database directory
-	PackageWriter packageWriter(dbBase);
+	PackageWriter packageWriter;
 	std::vector<uint8> packageData;
 
 	// add the asset database to the compiled package
 	File* dbFile = new File(dbPath, nullptr);
-	packageWriter.AddFile(dbFile, E_CompressionType::Store);
+	packageWriter.AddFile(dbFile, dbBase, E_CompressionType::Store);
 
 	static T_Hash const s_CompiledPackageId = 0u;
 	WritePackageToData(s_CompiledPackageId, dbBase, packageWriter, packageData, db);
@@ -144,7 +144,7 @@ void CookFilePackages(std::string const& dbBase, std::string const& outPath, Ass
 	// each package can have a separate asset list
 	for (AssetDatabase::PackageDescriptor const& desc : db.packages)
 	{
-		PackageWriter packageWriter(dbBase);
+		PackageWriter packageWriter;
 		std::vector<uint8> packageData;
 
 		WritePackageToData(desc.GetId(), dbBase, packageWriter, packageData, db);

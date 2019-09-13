@@ -25,19 +25,18 @@ public:
 
 	// c-tor d-tor
 	//------------------
-	PackageWriter(std::string const& rootDir);
+	PackageWriter() = default;
 	~PackageWriter();
 
 	// functionality
 	//------------------
-	void AddFile(File* const file, E_CompressionType const compression);
+	void AddFile(File* const file, std::string const& rootDir, E_CompressionType const compression);
 
 	void Write(std::vector<uint8>& data);
 
 	// Data
 	///////
 private:
-	std::string const& m_RootDir;
 	std::vector<FileEntryInfo> m_Files;
 };
 
