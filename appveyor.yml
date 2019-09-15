@@ -1,16 +1,27 @@
 version: 1.0.{build}
+
 image: Visual Studio 2017
+
 configuration: Release
+
 platform: x64
+
 install:
-- cmd: cd ./Projects/Demo
-- cmd: cmake -G "Visual Studio 15 2017 Win64" -H. -Bbuild
+- cmd: >-
+    cd ./Projects/Demo
+    cmake -G "Visual Studio 15 2017 Win64" -H. -Bbuild
+
 build_script:
-- cmd: cd ./Projects/Demo
-- cmd: cmake --build build --target all --config Develop
+- cmd: >-
+    cd ./Projects/Demo
+    cmake --build build --target all --config Develop
+
 after_build:
-- cmd: cd ./Projects/Demo
-- cmd: cmake --build build --target install
-- cmd: cmake --build build --target cook-installed-resources-Demo
+- cmd: >-
+	cd ./Projects/Demo
+	cmake --build build --target install
+	cmake --build build --target cook-installed-resources-Demo
+
 test_script:
-- cmd: .\Projects\Demo\bin\Debug_x64\Testing\Testing.exe ..\..\..\..\..\Engine\unit_tests\
+- cmd: >-
+    .\Projects\Demo\bin\Debug_x64\Testing\Testing.exe ..\..\..\..\..\Engine\unit_tests\
