@@ -51,6 +51,14 @@ getToolsetTriplet(_vcpkgTargetToolset)
 set(_toolsetTriplet "${_tripletDir}/${_vcpkgTargetToolset}.cmake")
 if(NOT EXISTS "${_toolsetTriplet}")
 
+	if(DEFINED MSVC_TOOLSET_VERSION)
+		set(_toolset "v${MSVC_TOOLSET_VERSION}")
+	elseif(DEFINED CMAKE_VS_PLATFORM_TOOLSET)
+		set(_toolset "${CMAKE_VS_PLATFORM_TOOLSET}")
+	else()
+		message(FATAL_ERROR "Visual studio toolset couldn't be deduced from cmake")
+	endif()
+
 	message(STATUS "creating VCPKG toolset triplet for '${_toolset}'")
 	message(STATUS "------------------------------------------------")
 
