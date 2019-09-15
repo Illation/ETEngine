@@ -75,10 +75,10 @@ if(NOT EXISTS "${_toolsetTriplet}")
 	file(APPEND ${_toolsetTriplet} "\nset(VCPKG_PLATFORM_TOOLSET ${_toolset})")
 	file(APPEND ${_toolsetTriplet} "\nset(VCPKG_VISUAL_STUDIO_PATH \"${_compilerRoot}\")")
 
-	if(ETE_SINGLE_CONFIG)
-		string(TOLOWER ${ETE_BUILD_LIB_CONFIG} _config)
-		file(APPEND ${_toolsetTriplet} "\nset(VCPKG_BUILD_TYPE ${_config})")
-	endif()
+#	if(ETE_SINGLE_CONFIG)
+#		string(TOLOWER ${ETE_BUILD_LIB_CONFIG} _config)
+#		file(APPEND ${_toolsetTriplet} "\nset(VCPKG_BUILD_TYPE ${_config})")
+#	endif()
 
 else()
 
