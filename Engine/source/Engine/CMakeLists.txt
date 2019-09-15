@@ -16,6 +16,7 @@ precompiled_headers(${sources})
 target_definitions()
 
 # library and dependancies
+message(STATUS "Adding target: EtEngine")
 add_library(EtEngine ${projectFiles})
 targetCompileOptions(EtEngine)
 

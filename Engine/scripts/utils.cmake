@@ -162,6 +162,12 @@ function(getToolsetTriplet out_triplet)
 
 	set(_vcpkgTarget )
 	getVcpkgTarget(_vcpkgTarget)
+	
+	if(ETE_SINGLE_CONFIG)
+		set(_config "-${ETE_BUILD_LIB_CONFIG}")
+	else()
+		set(_config "")
+	endif()
 
 	if(DEFINED MSVC_TOOLSET_VERSION)
 		set(_toolset "v${MSVC_TOOLSET_VERSION}")
@@ -171,7 +177,7 @@ function(getToolsetTriplet out_triplet)
 		message(FATAL_ERROR "Visual studio toolset couldn't be deduced from cmake")
 	endif()
 
-	set(${out_triplet} "${_vcpkgTarget}-${_toolset}" PARENT_SCOPE)
+	set(${out_triplet} "${_vcpkgTarget}-${_toolset}${_config}" PARENT_SCOPE)
 endfunction(getToolsetTriplet)
 
 
@@ -701,6 +707,7 @@ function(installCookResources TARGET)
 
 	# the command list that will run - for installing resources
 	#-----------------------------------------------------------
+	message(STATUS "Adding target: ${target_name}")
 	add_custom_target(${target_name} 
 		DEPENDS ${deps} EtCooker 
 		

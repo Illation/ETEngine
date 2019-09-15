@@ -51,6 +51,7 @@ add_custom_command(
     VERBATIM
 )
 
+message(STATUS "Adding target: cook-compiled-resources")
 add_custom_target( cook-compiled-resources DEPENDS ${target_files} )
 
 foreach(_target_file ${target_files})

@@ -18,6 +18,7 @@ target_definitions()
 
 add_definitions(-D_CONSOLE)
 # executable and dependancies
+message(STATUS "Adding target: unit_tests")
 add_executable(unit_tests ${projectFiles})
 targetCompileOptions(unit_tests)
 

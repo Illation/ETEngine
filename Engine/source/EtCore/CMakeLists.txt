@@ -17,6 +17,7 @@ precompiled_headers(${sources})
 target_definitions()
 
 # library and dependancies
+message(STATUS "Adding target: EtCore")
 add_library(EtCore ${sources} ${headers})
 targetCompileOptions(EtCore)
 

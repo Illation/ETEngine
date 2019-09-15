@@ -9,7 +9,7 @@ platform: x64
 install:
 - cmd: >-
     cd ./Projects/Demo
-    cmake -G "Visual Studio 15 2017 Win64" -H. -Bbuild
+    cmake -G "Visual Studio 15 2017 Win64" -DETE_SINGLE_CONFIG=ON -DETE_BUILD_LIB_CONFIG=Release -H. -Bbuild
 
 build_script:
 - cmd: >-

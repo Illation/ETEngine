@@ -15,6 +15,7 @@ list (APPEND projectFiles ${sources})
 target_definitions()
 
 # header only library builds with one source file that includes all headers
+message(STATUS "Adding target: EtMath")
 add_library(EtMath ${projectFiles})
 targetCompileOptions(EtMath)
 

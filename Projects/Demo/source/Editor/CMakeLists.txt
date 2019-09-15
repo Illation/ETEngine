@@ -30,6 +30,7 @@ add_dependencies(DemoEditor compile-resources-editor)
 add_dependencies(DemoEditor compile-schemas-editor)
 
 # linking
+message(STATUS "Adding target: DemoEditor")
 target_link_libraries (DemoEditor EtEngine)
 dependancyLinks(DemoEditor) 
 editorLinks(DemoEditor)

@@ -26,6 +26,7 @@ if (MSVC)
 endif(MSVC)
 
 # executable and dependancies
+message(STATUS "Adding target: EtEngineDemo")
 add_executable(EtEngineDemo ${projectFiles})
 targetCompileOptions(EtEngineDemo)
 

@@ -44,6 +44,10 @@ if((NOT EXISTS "${_header}") OR (NOT EXISTS "${_source}"))
 	message(STATUS "Done generating GL Bindings")
 	message(STATUS "=================================")
 
+else()
+
+	message(STATUS "OpenGL bindings already generated!")
+
 endif()
 
 # create a library from the generated files
@@ -52,6 +56,7 @@ endif()
 list (APPEND projectFiles ${_header})
 list (APPEND projectFiles ${_source})
 
+message(STATUS "Adding target: glad")
 add_library(glad ${projectFiles})
 
 assign_source_group(${projectFiles})

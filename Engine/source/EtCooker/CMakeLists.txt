@@ -20,6 +20,7 @@ add_definitions(-DUNCOOKED_RESOURCES)
 
 add_definitions(-D_CONSOLE)
 # executable and dependancies
+message(STATUS "Adding target: EtCooker")
 add_executable(EtCooker ${projectFiles})
 targetCompileOptions(EtCooker)
 

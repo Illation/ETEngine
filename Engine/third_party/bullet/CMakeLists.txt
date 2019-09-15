@@ -19,7 +19,11 @@ set(_modDir "${CMAKE_CURRENT_SOURCE_DIR}/bullet3")
 set(_buildDir )
 getBulletBuildDir(_buildDir)
 
-list (APPEND _configs "Debug" "Release")
+if(ETE_SINGLE_CONFIG)
+	list (APPEND _configs "${ETE_BUILD_LIB_CONFIG}")
+else()
+	list (APPEND _configs "Debug" "Release")
+endif()
 list (APPEND _targets "BulletCollision" "BulletDynamics" "LinearMath")
 
 # if we don't have the libaries files in the place we expect, build the library
@@ -58,7 +62,11 @@ if(NOT EXISTS "${_buildDir}/")
 	endforeach()
 
     message(STATUS "=================================")
-    message(STATUS "Finished building bullet Physics")
+    message(STATUS "Finished building Bullet Physics")
     message(STATUS "=================================")
+
+else()
+
+	message(STATUS "Library already built: Bullet Physics")
 
 endif()

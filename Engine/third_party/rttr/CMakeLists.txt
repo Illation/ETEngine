@@ -23,7 +23,12 @@ if(NOT EXISTS "${_buildDir}/")
 	endif()
 
 	set(_modDir "${CMAKE_CURRENT_SOURCE_DIR}/rttr")
-	list (APPEND _configs "Debug" "Release")
+
+	if(ETE_SINGLE_CONFIG)
+		list (APPEND _configs "${ETE_BUILD_LIB_CONFIG}")
+	else()
+		list (APPEND _configs "Debug" "Release")
+	endif()
 
     message(STATUS "================================")
     message(STATUS "Building RTTR for ${_generator}")
@@ -67,5 +72,9 @@ if(NOT EXISTS "${_buildDir}/")
     message(STATUS "=======================")
     message(STATUS "Finished building RTTR")
     message(STATUS "=======================")
+
+else()
+
+	message(STATUS "Library already built: RTTR")
 
 endif()
