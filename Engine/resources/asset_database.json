@@ -1,0 +1,547 @@
+{
+  "asset database": {
+    "packages": [
+      {
+        "name": "content1",
+        "path": "content/"
+      }
+    ],
+    "caches": [
+      {
+        "cache": [
+          {
+            "stub asset": {
+              "name": "AtmoPrecompGeo.glsl",
+              "path": "assets/Shaders/AtmoPreComp/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "stub asset": {
+              "name": "AtmoPrecompVert.glsl",
+              "path": "assets/Shaders/AtmoPreComp/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "stub asset": {
+              "name": "Common.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "stub asset": {
+              "name": "CommonAtmosphere.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "stub asset": {
+              "name": "CommonDeferred.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "stub asset": {
+              "name": "CommonPBR.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          }
+        ]
+      },
+      {
+        "cache": [
+          {
+            "shader asset": {
+              "name": "ComputeDirectIrradiance.glsl",
+              "path": "assets/Shaders/AtmoPreComp/",
+              "package": "",
+              "references": [
+                "AtmoPrecompVert.glsl",
+                "AtmoPrecompGeo.glsl",
+                "Common.glsl",
+                "CommonAtmosphere.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "ComputeIndirectIrradiance.glsl",
+              "path": "assets/Shaders/AtmoPreComp/",
+              "package": "",
+              "references": [
+                "AtmoPrecompVert.glsl",
+                "AtmoPrecompGeo.glsl",
+                "Common.glsl",
+                "CommonAtmosphere.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "ComputeMultipleScattering.glsl",
+              "path": "assets/Shaders/AtmoPreComp/",
+              "package": "",
+              "references": [
+                "AtmoPrecompVert.glsl",
+                "AtmoPrecompGeo.glsl",
+                "Common.glsl",
+                "CommonAtmosphere.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "ComputeScatteringDensity.glsl",
+              "path": "assets/Shaders/AtmoPreComp/",
+              "package": "",
+              "references": [
+                "AtmoPrecompVert.glsl",
+                "AtmoPrecompGeo.glsl",
+                "Common.glsl",
+                "CommonAtmosphere.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "ComputeSingleScattering.glsl",
+              "path": "assets/Shaders/AtmoPreComp/",
+              "package": "",
+              "references": [
+                "AtmoPrecompVert.glsl",
+                "AtmoPrecompGeo.glsl",
+                "Common.glsl",
+                "CommonAtmosphere.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "ComputeTransmittance.glsl",
+              "path": "assets/Shaders/AtmoPreComp/",
+              "package": "",
+              "references": [
+                "AtmoPrecompVert.glsl",
+                "AtmoPrecompGeo.glsl",
+                "Common.glsl",
+                "CommonAtmosphere.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "ComputeGlyphSDF.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "shader asset": {
+              "name": "DebugRenderer.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "shader asset": {
+              "name": "EditorComposite.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "shader asset": {
+              "name": "FwdBrdfLutShader.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": [
+                "Common.glsl",
+                "CommonPBR.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "FwdConvBRDFShader.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": [
+                "Common.glsl",
+                "CommonPBR.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "FwdConvIrradianceShader.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": [
+                "Common.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "FwdConvRadianceShader.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "shader asset": {
+              "name": "FwdEquiCubeShader.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "shader asset": {
+              "name": "FwdLightDirectionalShader.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": [
+                "Common.glsl",
+                "CommonDeferred.glsl",
+                "CommonPBR.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "FwdLightDirectionalShadowShader.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": [
+                "Common.glsl",
+                "CommonDeferred.glsl",
+                "CommonPBR.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "FwdLightPointShader.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": [
+                "Common.glsl",
+                "CommonDeferred.glsl",
+                "CommonPBR.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "FwdNullShader.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "shader asset": {
+              "name": "FwdSkyboxShader.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "shader asset": {
+              "name": "FwdStarField.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": [
+                "Common.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "PlanetPatch.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": [
+                "CommonDeferred.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "PlanetWire.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "shader asset": {
+              "name": "PostAtmosphere.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": [
+                "Common.glsl",
+                "CommonAtmosphere.glsl",
+                "CommonDeferred.glsl",
+                "CommonPBR.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "PostBufferDisplay.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": [
+                "Common.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "PostDeferredComposite.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": [
+                "Common.glsl",
+                "CommonDeferred.glsl",
+                "CommonPBR.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "PostDownsample.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": [
+                "Common.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "PostFXAA.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "shader asset": {
+              "name": "PostGaussian.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "shader asset": {
+              "name": "PostProcessing.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "shader asset": {
+              "name": "PostScreenSpaceReflections.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": [
+                "Common.glsl",
+                "CommonDeferred.glsl",
+                "CommonPBR.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
+              "name": "PostSprite.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "shader asset": {
+              "name": "PostText.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          }
+        ]
+      },
+      {
+        "cache": [
+          {
+            "texture asset": {
+              "name": "Splashscreen.jpg",
+              "path": "assets/Textures/",
+              "package": "",
+              "references": [],
+              "use SRGB": false,
+              "force resolution": false,
+              "parameters": {
+                "min filter": "Linear",
+                "mag filter": "Linear",
+                "mipmap filter": "Linear",
+                "wrap S": "Repeat",
+                "wrap T": "Repeat",
+                "border color": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "w": 0.0
+                },
+                "generate mipmaps": true
+              }
+            }
+          },
+          {
+            "texture asset": {
+              "name": "Consolas_32_0.tga",
+              "path": "assets/Fonts/",
+              "package": "content1",
+              "references": [],
+              "use SRGB": false,
+              "force resolution": true,
+              "parameters": {
+                "min filter": "Linear",
+                "mag filter": "Linear",
+                "mipmap filter": "Linear",
+                "wrap S": "Repeat",
+                "wrap T": "Repeat",
+                "border color": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "w": 0.0
+                },
+                "generate mipmaps": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "cache": [
+          {
+            "font asset": {
+              "name": "Consolas_32.fnt",
+              "path": "assets/Fonts/",
+              "package": "content1",
+              "references": [],
+              "size": 42,
+              "padding": 1,
+              "spread": 5,
+              "highres": 32
+            }
+          },
+          {
+            "font asset": {
+              "name": "papyrus.ttf",
+              "path": "assets/Fonts/",
+              "package": "content1",
+              "references": [],
+              "size": 42,
+              "padding": 1,
+              "spread": 5,
+              "highres": 32
+            }
+          },
+          {
+            "font asset": {
+              "name": "Ubuntu-Regular.ttf",
+              "path": "assets/Fonts/",
+              "package": "content1",
+              "references": [],
+              "size": 42,
+              "padding": 1,
+              "spread": 5,
+              "highres": 32
+            }
+          },
+          {
+            "font asset": {
+              "name": "Roboto-Bold.ttf",
+              "path": "assets/Fonts/roboto2014/",
+              "package": "content1",
+              "references": [],
+              "size": 42,
+              "padding": 1,
+              "spread": 5,
+              "highres": 32
+            }
+          },
+          {
+            "font asset": {
+              "name": "RobotoCondensed-Regular.ttf",
+              "path": "assets/Fonts/roboto2014/",
+              "package": "content1",
+              "references": [],
+              "size": 42,
+              "padding": 1,
+              "spread": 5,
+              "highres": 32
+            }
+          }
+        ]
+      },
+      {
+        "cache": [
+          {
+            "mesh asset": {
+              "name": "bunny.dae",
+              "path": "assets/Models/",
+              "package": "content1",
+              "references": []
+            }
+          },
+          {
+            "mesh asset": {
+              "name": "cube.dae",
+              "path": "assets/Models/",
+              "package": "content1",
+              "references": []
+            }
+          },
+          {
+            "mesh asset": {
+              "name": "monkey.dae",
+              "path": "assets/Models/",
+              "package": "content1",
+              "references": []
+            }
+          },
+          {
+            "mesh asset": {
+              "name": "sphere.dae",
+              "path": "assets/Models/",
+              "package": "content1",
+              "references": []
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

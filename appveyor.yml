@@ -1,13 +1,27 @@
 version: 1.0.{build}
+
 image: Visual Studio 2017
+
 configuration: Release
+
 platform: x64
+
 install:
-- cmd: cmake -G "Visual Studio 15 2017 Win64" -H. -Bbuild
+- cmd: >-
+    cd ./Projects/Demo
+    cmake -G "Visual Studio 15 2017 Win64" -DETE_SINGLE_CONFIG=ON -DETE_BUILD_LIB_CONFIG=Release -H. -Bbuild
+
 build_script:
-- cmd: cmake --build build --target all --config Develop
+- cmd: >-
+    cd ./Projects/Demo
+    cmake --build build --target all --config Develop
+
 after_build:
-- cmd: cmake --build build --target install
-- cmd: cmake --build build --target cook-installed-resources-Demo
+- cmd: >-
+	cd ./Projects/Demo
+	cmake --build build --target install
+	cmake --build build --target cook-installed-resources-EtEngineDemo
+
 test_script:
-- cmd: .\bin\Debug_x64\Testing\Testing.exe
+- cmd: >-
+    .\Projects\Demo\bin\Debug_x64\unit_tests\unit_tests.exe ..\..\..\..\..\Engine\unit_tests\

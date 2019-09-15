@@ -45,6 +45,8 @@
      * AudioSourceComponent
      * Loading .ogg(vorbis) and .wav(pcm) files
  * Logging system for console, file and debug
+ * Packaging system
+ * Loading screen / splash screen
 
 ### Integration
  * Project Generation with CMake
@@ -63,7 +65,6 @@
  * Atmospheric Scattering
  
 ### General
- * UI System
  * Debug Overlay
      * Debug Overlay as Editor build mode
  
@@ -107,15 +108,14 @@
  * occlusion culling
  
 ### General
+ * UI System
  * Serialize Levels
- * Packaging system
  * Binary asset file types
  * Linux support
      * Travis CI Setup
  * Screenshot manager
  * SIMD math
  * Multithreading support
- * Loading screen / splash screen
  
 ### Integration
  * Code coverage measurment

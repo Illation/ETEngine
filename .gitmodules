@@ -1,3 +1,36 @@
-[submodule "dependancies/submodules/bullet/bullet3"]
-	path = dependancies/submodules/bullet/bullet3
+[submodule "third_party/assimp/assimp"]
+	path = Engine/third_party/assimp/assimp
+	url = https://github.com/assimp/assimp
+[submodule "third_party/bullet/bullet3"]
+	path = Engine/third_party/bullet/bullet3
 	url = https://github.com/bulletphysics/bullet3
+[submodule "third_party/Catch2"]
+	path = Engine/third_party/Catch2
+	url = https://github.com/catchorg/Catch2
+[submodule "third_party/glad/glad"]
+	path = Engine/third_party/glad/glad
+	url = https://github.com/Dav1dde/glad
+[submodule "third_party/glfw/glfw"]
+	path = Engine/third_party/glfw/glfw
+	url = https://github.com/glfw/glfw
+[submodule "third_party/mikkt/ext-mikktspace"]
+	path = Engine/third_party/mikkt/ext-mikktspace
+	url = https://github.com/tcoppex/ext-mikktspace
+[submodule "third_party/openal/openal-soft"]
+	path = Engine/third_party/openal/openal-soft
+	url = https://github.com/kcat/openal-soft
+[submodule "third_party/rttr/rttr"]
+	path = Engine/third_party/rttr/rttr
+	url = https://github.com/rttrorg/rttr
+[submodule "third_party/stb/stb"]
+	path = Engine/third_party/stb/stb
+	url = https://github.com/nothings/stb
+[submodule "third_party/vcpkg/vcpkg"]
+	path = Engine/third_party/vcpkg/vcpkg
+	url = https://github.com/Microsoft/vcpkg
+[submodule "Engine/third_party/gtk/GTK-for-Windows-Runtime-Environment-Installer"]
+	path = Engine/third_party/gtk/GTK-for-Windows-Runtime-Environment-Installer
+	url = https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer
+[submodule "Engine/third_party/gtk/Ultimate-Maia"]
+	path = Engine/third_party/gtk/Ultimate-Maia
+	url = https://github.com/bolimage/Ultimate-Maia

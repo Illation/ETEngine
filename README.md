@@ -10,24 +10,24 @@ __Full feature list and backlog here: [LINK](doc/features.md)__
 
 | Service | System | Compiler | Branch | Status |
 | ------- | ------ | -------- | ------ | ------ |
-| [AppVeyor](https://ci.appveyor.com/project/Illation/etengine)| Windows 32 | Visual Studio 2017 | master | [![AppVeyor](https://ci.appveyor.com/api/projects/status/jsr44exh2l0y5gs6/branch/master?svg=true)](https://ci.appveyor.com/project/Illation/etengine)
+| [AppVeyor](https://ci.appveyor.com/project/Illation/etengine)| Windows 64 | Visual Studio 2017 | master | [![AppVeyor](https://ci.appveyor.com/api/projects/status/jsr44exh2l0y5gs6/branch/master?svg=true)](https://ci.appveyor.com/project/Illation/etengine)
 
 ## How to build
 
 For visual studio 2017:
 
+    cd Projects/Demo
     cmake -G "Visual Studio 15 2017 Win64" -H. -Bbuild
+    cmake --build build --target all --config Develop
+	cmake --build build --target install
+	cmake --build build --target cook-installed-resources-EtEngineDemo
 
-Next build the solution that appears in build/EtEngine.sln
-
-Finally, build the "INSTALL" project in said solution.
-
-In all other cases (including unit tests) check [the build documentation](doc/building.md).
+For more information (including unit tests and content cooking) check [the build documentation](doc/building.md).
 
  
 ## Third Party
 
-For a list of third party libraries and licenses check [HERE](doc/third_party.md).
+For a list of third party libraries and licenses check [HERE](Engine/third_party/Readme.md).
 
 ## Screenshots
 
