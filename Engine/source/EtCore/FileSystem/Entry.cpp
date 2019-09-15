@@ -17,7 +17,7 @@
 
 
 //---------------------------------
-// Entry::Entry
+// Entry::c-tor
 //
 // Entry constructor sets up the parent and path members
 //
@@ -38,6 +38,19 @@ Entry::Entry(std::string name, Directory* pParent)
 	else
 	{
 		m_Path = "/";
+	}
+}
+
+//---------------------------------
+// Entry::d-tor
+//
+// Make sure to remove the entry from the parent during destruction
+//
+Entry::~Entry()
+{
+	if (m_Parent != nullptr)
+	{
+		m_Parent->RemoveChild(this);
 	}
 }
 
@@ -404,22 +417,29 @@ void Directory::GetChildrenRecursive(std::vector<File*>& children)
 //
 bool Directory::Delete()
 {
-    for(auto c : m_pChildren)
-    {
-        if(c->GetType() == Entry::EntryType::ENTRY_DIRECTORY)
-        {
-			if(c->GetName() != "../" && c->GetName() != "./")
-			{
-				if(!(c->Delete()))return false;
-			}
-        }
-		else
+	if (m_pChildren.size() > 0u)
+	{
+		for(size_t idx = m_pChildren.size() - 1; idx < m_pChildren.size(); --idx)
 		{
-			if(!(c->Delete()))return false;
+			if(m_pChildren[idx]->GetType() == Entry::EntryType::ENTRY_DIRECTORY)
+			{
+				if(m_pChildren[idx]->GetName() != "../" && m_pChildren[idx]->GetName() != "./")
+				{
+					if (!(m_pChildren[idx]->Delete()))
+					{
+						return false;
+					}
+				}
+			}
+			else
+			{
+				if (!(m_pChildren[idx]->Delete()))
+				{
+					return false;
+				}
+			}
 		}
-
-		c = nullptr;
-    }
+	}
 
 	m_pChildren.clear();
 

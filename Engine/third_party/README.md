@@ -67,6 +67,20 @@ single file libraries being used:
 ##### stb_vorbis
 
 
+## Ultimate-Maia GTK Theme
+- source: https://github.com/bolimage/Ultimate-Maia
+- license: [LGPL](https://github.com/bolimage/Ultimate-Maia/blob/master/LICENSE)
+
+files are copied as is to the editor window
+
+
+## GTK-for-Windows-Runtime-Environment-Installer
+- source: https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer
+- license: None provided
+
+Used to copy some dlls for the Engine editor. No license is provided, so LGPL is assumed as that is the case for all other GTK libraries
+
+
 ## Vcpkg
 - source: [https://github.com/microsoft/vcpkg](https://github.com/Microsoft/vcpkg/tree/3f6ab4834e8469bbe1f6569b7941c720f178b688)
 - license: [MIT](https://github.com/microsoft/vcpkg/blob/master/LICENSE.txt)

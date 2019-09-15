@@ -23,7 +23,7 @@ targetCompileOptions(Testing)
 
 # directory stuff
 assign_source_group(${projectFiles})
-outputDirectories(Testing)
+outputDirectories(Testing "")
 
 # linking
 target_link_libraries (Testing EtEngine)
@@ -37,5 +37,5 @@ include_directories("${ENGINE_DIRECTORY_ABS}/third_party/Catch2/single_include/"
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_include_directories (Testing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-installDlls(Testing)
+installDlls(Testing "")
 installResources(Testing)

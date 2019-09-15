@@ -18,7 +18,7 @@ class Entry
 {
 public:
 	Entry(std::string name, Directory* pParent);
-    virtual ~Entry(){}
+    virtual ~Entry();
 
     std::string GetName();
 	std::string GetNameOnly();
@@ -108,9 +108,10 @@ public:
 
 	bool Delete() override;
 
+	void RemoveChild( Entry* child );
+
 private:
 	friend class File;
-	void RemoveChild( Entry* child );
 
 	bool DeleteDir();
     void RecursiveMount();

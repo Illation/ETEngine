@@ -35,7 +35,7 @@ endmacro(setupConfigurations)
 
 # output dir for executables
 ############################
-function(outputDirectories TARGET)
+function(outputDirectories TARGET _suffix)
 
 	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8") # 64 bit
 		set(_p "x64")	
@@ -46,7 +46,7 @@ function(outputDirectories TARGET)
 	foreach(_c ${CMAKE_CONFIGURATION_TYPES})
 		string(TOUPPER ${_c} _C)
 
-		set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${_C} ${PROJECT_DIRECTORY}/bin/${_c}_${_p}/${TARGET})
+		set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${_C} ${PROJECT_DIRECTORY}/bin/${_c}_${_p}/${TARGET}${_suffix})
 	endforeach()
 
 endfunction(outputDirectories)
@@ -250,8 +250,8 @@ function(getGlfwBuildDir glfw_build)
 endfunction(getGlfwBuildDir)
 
 
-# link to all dependancies
-###########################
+# link to all runtime dependencies
+###################################
 function(dependancyLinks TARGET)
 
 	set(_glfwBuild )
@@ -297,6 +297,62 @@ function(dependancyLinks TARGET)
 	endif(MSVC)
 
 endfunction(dependancyLinks)
+
+
+# link to all editor dependencies
+###################################
+function(editorLinks TARGET)
+
+	set(_vcpkgInstall )
+	getVcpkgInstallDir(_vcpkgInstall)
+	
+	set(_dbg "${_vcpkgInstall}/debug/lib/")
+	set(_rel "${_vcpkgInstall}/lib/")
+
+	target_link_libraries (${TARGET} 		
+		debug ${_dbg}bz2d.lib				optimized ${_rel}bz2.lib			
+		debug ${_dbg}cairod.lib				optimized ${_rel}cairo.lib	
+		debug ${_dbg}cairo-gobjectd.lib		optimized ${_rel}cairo-gobject.lib	
+		debug ${_dbg}libpng16d.lib			optimized ${_rel}libpng16.lib	
+		debug ${_dbg}pcre16d.lib			optimized ${_rel}pcre16.lib	
+		debug ${_dbg}pcre32d.lib			optimized ${_rel}pcre32.lib	
+		debug ${_dbg}pcrecppd.lib			optimized ${_rel}pcrecpp.lib	
+		debug ${_dbg}pcred.lib				optimized ${_rel}pcre.lib	
+		debug ${_dbg}pcreposixd.lib			optimized ${_rel}pcreposix.lib	
+		debug ${_dbg}pixman-1d.lib			optimized ${_rel}pixman-1.lib	
+
+		debug ${_dbg}atk-1.0.lib			optimized ${_rel}atk-1.0.lib	 
+		debug ${_dbg}atkmm.lib				optimized ${_rel}atkmm.lib	 
+		debug ${_dbg}cairomm-1.0.lib		optimized ${_rel}cairomm-1.0.lib	 
+		debug ${_dbg}epoxy.lib				optimized ${_rel}epoxy.lib	 
+		debug ${_dbg}expat.lib				optimized ${_rel}expat.lib	 
+		debug ${_dbg}fontconfig.lib			optimized ${_rel}fontconfig.lib	 
+		debug ${_dbg}gailutil-3.0.lib		optimized ${_rel}gailutil-3.0.lib	 
+		debug ${_dbg}gdk_pixbuf-2.0.lib		optimized ${_rel}gdk_pixbuf-2.0.lib	 
+		debug ${_dbg}gdk-3.0.lib			optimized ${_rel}gdk-3.0.lib	 
+		debug ${_dbg}gdkmm.lib				optimized ${_rel}gdkmm.lib	 
+		debug ${_dbg}gio-2.0.lib			optimized ${_rel}gio-2.0.lib	 
+		debug ${_dbg}giomm.lib				optimized ${_rel}giomm.lib	 
+		debug ${_dbg}glib-2.0.lib			optimized ${_rel}glib-2.0.lib	 
+		debug ${_dbg}glibmm.lib				optimized ${_rel}glibmm.lib	 
+		debug ${_dbg}gmodule-2.0.lib		optimized ${_rel}gmodule-2.0.lib	 
+		debug ${_dbg}gobject-2.0.lib		optimized ${_rel}gobject-2.0.lib	 
+		debug ${_dbg}gthread-2.0.lib		optimized ${_rel}gthread-2.0.lib	 
+		debug ${_dbg}gtk-3.0.lib			optimized ${_rel}gtk-3.0.lib	 
+		debug ${_dbg}gtkmm.lib				optimized ${_rel}gtkmm.lib	 
+		debug ${_dbg}harfbuzz.lib			optimized ${_rel}harfbuzz.lib	 
+		debug ${_dbg}libcharset.lib			optimized ${_rel}libcharset.lib	 
+		debug ${_dbg}libffi.lib				optimized ${_rel}libffi.lib	 
+		debug ${_dbg}libiconv.lib			optimized ${_rel}libiconv.lib	 
+		debug ${_dbg}libintl.lib			optimized ${_rel}libintl.lib	 
+		debug ${_dbg}pango-1.0.lib			optimized ${_rel}pango-1.0.lib	 
+		debug ${_dbg}pangocairo-1.0.lib		optimized ${_rel}pangocairo-1.0.lib	 
+		debug ${_dbg}pangoft2-1.0.lib		optimized ${_rel}pangoft2-1.0.lib	 
+		debug ${_dbg}pangomm.lib			optimized ${_rel}pangomm.lib	 
+		debug ${_dbg}pangowin32-1.0.lib		optimized ${_rel}pangowin32-1.0.lib	 
+		debug ${_dbg}sigc-2.0.lib			optimized ${_rel}sigc-2.0.lib	 )
+
+endfunction(editorLinks)
 
 
 # place a list of all libraries built by vcpkg
@@ -433,10 +489,9 @@ endfunction(copyDllCommand)
 
 # install dll (and pdb) files in the appropriate directory according to configuration
 ######################################################################################
-function(installDlls TARGET)
+function(installDlls TARGET _suffix)
 
-	set(projectBase "${PROJECT_BINARY_DIR}/..")
-	set(baseBinDir "${projectBase}/bin")
+	set(baseBinDir "${PROJECT_DIRECTORY}/bin")
 
 	# paths for our libraries depend on the architecture we compile for
 	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
@@ -455,7 +510,7 @@ function(installDlls TARGET)
 
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
 
-		set(binDir "${baseBinDir}/${configType}_${platform}/${TARGET}")
+		set(binDir "${baseBinDir}/${configType}_${platform}/${TARGET}${_suffix}")
 
 		# where the lib files live
 		set(libcfg "Release") 
@@ -488,6 +543,48 @@ function(installDlls TARGET)
 endfunction(installDlls)
 
 
+# install dll (and pdb) files in the appropriate directory according to configuration
+######################################################################################
+function(installEditorDlls TARGET)
+
+	set(baseBinDir "${PROJECT_DIRECTORY}/bin")
+
+	# paths for our libraries depend on the architecture we compile for
+	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+		set(platform "x64")
+	 else() 
+		set(platform "x32")
+	endif()
+	
+	set(_vcpkgInstall )
+	getVcpkgInstallDir(_vcpkgInstall)
+
+	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
+
+		set(binDir "${baseBinDir}/${configType}_${platform}/${TARGET}/bin")
+
+		set(_vcCfg "")
+		if(("${configType}" STREQUAL "Debug") OR ("${configType}" STREQUAL "DebugEditor"))
+			set(_vcCfg "/debug")
+
+			# for debug applications we also copy pdbs
+			file(GLOB pdbs ${_vcpkgInstall}${_vcCfg}/bin/*.pdb)
+			foreach(_pdb ${pdbs})
+				install(FILES ${_pdb} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
+			endforeach()
+		endif()
+
+		# copy dlls for all libraries		
+		file(GLOB dlls ${_vcpkgInstall}${_vcCfg}/bin/*.dll)
+		foreach(_dll ${dlls})
+			install(FILES ${_dll} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
+		endforeach()
+
+	endforeach()
+
+endfunction(installEditorDlls)
+
+
 # install everything in the appropriate directory according to configuration
 #############################################################################
 function(installResources TARGET)
@@ -513,6 +610,64 @@ function(installResources TARGET)
 	endforeach()
 
 endfunction(installResources)
+
+
+# install everything in the appropriate directory according to configuration
+#############################################################################
+function(installEditorResources TARGET)
+
+	set(baseBinDir "${PROJECT_DIRECTORY}/bin")
+
+	# paths for our libraries depend on the architecture we compile for
+	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+		set(platform "x64")
+	 else() 
+		set(platform "x32")
+	endif()
+
+	set(_edPackagedDir "${ENGINE_DIRECTORY_ABS}/third_party/gtk/GTK-for-Windows-Runtime-Environment-Installer/gtk-nsis-pack")
+
+	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
+
+		set(binDir "${baseBinDir}/${configType}_${platform}/${TARGET}")
+
+		# pixbuf loaders
+		install(DIRECTORY ${_edPackagedDir}/lib/gdk-pixbuf-2.0/
+			CONFIGURATIONS ${configType}
+			DESTINATION ${binDir}/lib/gdk-pixbuf-2.0/)
+
+		# gtk config
+		install(DIRECTORY ${ENGINE_DIRECTORY_ABS}/config/gtk-3.0/
+			CONFIGURATIONS ${configType}
+			DESTINATION ${binDir}/share/gtk-3.0/)
+			
+		# generated share
+		install(DIRECTORY ${PROJECT_DIRECTORY}/build/temp/share/
+			CONFIGURATIONS ${configType}
+			DESTINATION ${binDir}/share/)
+			
+		# icons
+		install(DIRECTORY ${_edPackagedDir}/share/icons/
+			CONFIGURATIONS ${configType}
+			DESTINATION ${binDir}/share/icons/)
+			
+		# theme
+		install(DIRECTORY ${ENGINE_DIRECTORY_ABS}/third_party/gtk/Ultimate-Maia/Ultimate-Maia/gtk-3.0/
+			CONFIGURATIONS ${configType}
+			DESTINATION ${binDir}/share/themes/Ultimate-Maia/gtk-3.0)
+		install(DIRECTORY ${ENGINE_DIRECTORY_ABS}/third_party/gtk/Ultimate-Maia/Ultimate-Dark/gtk-3.0/
+			CONFIGURATIONS ${configType}
+			DESTINATION ${binDir}/share/themes/Ultimate-Maia/gtk-3.0)
+		install(DIRECTORY ${ENGINE_DIRECTORY_ABS}/third_party/gtk/Ultimate-Maia/Ultimate-Maia/metacity-1/
+			CONFIGURATIONS ${configType}
+			DESTINATION ${binDir}/share/themes/Ultimate-Maia/metacity-1)
+		install(FILES ${ENGINE_DIRECTORY_ABS}/third_party/gtk/Ultimate-Maia/Ultimate-Dark/index.theme
+			CONFIGURATIONS ${configType}
+			DESTINATION ${binDir}/share/themes/Ultimate-Maia)
+
+	endforeach()
+
+endfunction(installEditorResources)
 
 
 # cook package files and install them in the binary output directory

@@ -31,6 +31,8 @@ public:
 	// functionality
 	//------------------
 	void AddFile(File* const file, std::string const& rootDir, E_CompressionType const compression);
+	void RemoveFile(File* const file);
+	void Cleanup();
 
 	void Write(std::vector<uint8>& data);
 

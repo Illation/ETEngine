@@ -28,3 +28,9 @@
 [submodule "third_party/vcpkg/vcpkg"]
 	path = Engine/third_party/vcpkg/vcpkg
 	url = https://github.com/Microsoft/vcpkg
+[submodule "Engine/third_party/gtk/GTK-for-Windows-Runtime-Environment-Installer"]
+	path = Engine/third_party/gtk/GTK-for-Windows-Runtime-Environment-Installer
+	url = https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer
+[submodule "Engine/third_party/gtk/Ultimate-Maia"]
+	path = Engine/third_party/gtk/Ultimate-Maia
+	url = https://github.com/bolimage/Ultimate-Maia

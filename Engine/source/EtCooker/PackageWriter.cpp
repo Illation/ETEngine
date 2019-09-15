@@ -29,23 +29,11 @@ PackageWriter::FileEntryInfo::FileEntryInfo(PkgEntry const& lEntry, File* const 
 
 
 //---------------------------------
-// PackageWriter::~PackageWriter
-//
-// Close all files in destructor
+// PackageWriter::d-tor
 //
 PackageWriter::~PackageWriter()
 {
-	for (FileEntryInfo& entryFile : m_Files)
-	{
-		if (entryFile.file->IsOpen())
-		{
-			entryFile.file->Close();
-
-			// delete the file
-			delete entryFile.file;
-			entryFile.file = nullptr;
-		}
-	}
+	Cleanup();
 }
 
 //---------------------------------
@@ -75,6 +63,46 @@ void PackageWriter::AddFile(File* const file, std::string const& rootDir, E_Comp
 
 	// get the file size
 	entry.size = file->GetSize();
+}
+
+//---------------------------------
+// PackageWriter::RemoveFile
+//
+// Remove a file without deleting it
+//
+void PackageWriter::RemoveFile(File* const file)
+{
+	auto entryIt = std::find_if(m_Files.begin(), m_Files.end(), [file](FileEntryInfo const& info)
+		{
+			return info.file == file;
+		});
+
+	if (entryIt != m_Files.cend())
+	{
+		m_Files.erase(entryIt);
+	}
+}
+
+//---------------------------------
+// PackageWriter::Cleanup
+//
+// Close all files
+//
+void PackageWriter::Cleanup()
+{
+	for (FileEntryInfo& entryFile : m_Files)
+	{
+		if (entryFile.file->IsOpen())
+		{
+			entryFile.file->Close();
+
+			// delete the file
+			delete entryFile.file;
+			entryFile.file = nullptr;
+		}
+	}
+
+	m_Files.clear();
 }
 
 //---------------------------------

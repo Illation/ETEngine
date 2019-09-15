@@ -25,4 +25,5 @@ assign_source_group(${generalFiles})
 
 add_subdirectory (third_party)
 add_subdirectory (resources)
+add_subdirectory (config)
 add_subdirectory (source)

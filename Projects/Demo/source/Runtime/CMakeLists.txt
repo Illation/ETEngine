@@ -31,7 +31,7 @@ targetCompileOptions(EtEngineDemo)
 
 # directory stuff
 assign_source_group(${projectFiles})
-outputDirectories(EtEngineDemo)
+outputDirectories(EtEngineDemo "")
 
 add_dependencies(EtEngineDemo cook-compiled-resources)
 
@@ -47,6 +47,6 @@ include_directories("${ENGINE_DIRECTORY_ABS}/source")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_include_directories (EtEngineDemo PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-installDlls(EtEngineDemo)
+installDlls(EtEngineDemo "")
 installResources(EtEngineDemo)
 installCookResources(EtEngineDemo)

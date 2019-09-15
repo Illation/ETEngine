@@ -174,6 +174,7 @@ void CookCompiledPackage(std::string const& dbBase,
 	GenerateCompilableResource(packageData, resName, outPath);
 
 	// cleanup
+	packageWriter.RemoveFile(dbFile);
 	if (!tempDir->Delete())
 	{
 		LOG("CookCompiledPackage > Failed to clean up temporary file directory!", LogLevel::Error);

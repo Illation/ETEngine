@@ -25,7 +25,7 @@ targetCompileOptions(EtCooker)
 
 # directory stuff
 assign_source_group(${projectFiles})
-outputDirectories(EtCooker)
+outputDirectories(EtCooker "")
 
 # linking
 target_link_libraries (EtCooker EtEngine)
