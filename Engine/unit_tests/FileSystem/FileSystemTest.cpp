@@ -1,6 +1,8 @@
 #include <Engine/stdafx.h>
 #include <catch2/catch.hpp>
 
+#include <mainTesting.h>
+
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <thread>
@@ -8,7 +10,7 @@
 
 TEST_CASE( "mount", "[filesystem]" )
 {
-	std::string dirName = "../../../source/Testing/Engine/FileSystem/TestDir/";
+	std::string dirName = g_UnitTestDir + "FileSystem/TestDir/";
 	Directory* pDir = new Directory( dirName, nullptr );
 
 	REQUIRE( pDir->IsMounted() == false );
@@ -54,7 +56,7 @@ TEST_CASE( "copy file", "[filesystem]" )
 	std::string expectedContent = "Hello I am a test file!\r\nwith 2 lines\r\n";
 	auto expectedContentLines = FileUtil::ParseLines(expectedContent);
 
-	std::string dirName = "../../../source/Testing/Engine/FileSystem/TestDir/";
+	std::string dirName = g_UnitTestDir + "FileSystem/TestDir/";
 	Directory* pDir = new Directory( dirName, nullptr );
 	bool mountResult = pDir->Mount( true );
 	REQUIRE( mountResult == true );

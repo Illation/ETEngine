@@ -13,4 +13,4 @@ after_build:
 - cmd: cmake --build build --target install
 - cmd: cmake --build build --target cook-installed-resources-Demo
 test_script:
-- cmd: .Projects\Demo\bin\Debug_x64\Testing\Testing.exe
+- cmd: .\Projects\Demo\bin\Debug_x64\Testing\Testing.exe ..\..\..\..\..\Engine\unit_tests\

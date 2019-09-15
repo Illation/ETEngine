@@ -3,6 +3,8 @@
 #include <Engine/stdafx.h>
 #include <Engine/Helper/GLTF.h>
 
+#include <mainTesting.h>
+
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/Json/JsonParser.h>
@@ -17,7 +19,7 @@ TEST_CASE("Decode Base64", "[gltf]")
 	REQUIRE(expected == FileUtil::AsText(decoded));
 }
 
-std::string baseDir = "../../../source/Testing/Engine/Helper/";
+std::string baseDir = g_UnitTestDir + "Helper/";
 std::string fileName = "Box.gltf";
 std::string glbFileName = "Corset.glb";
 

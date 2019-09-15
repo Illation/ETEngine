@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <iostream>
+#include <string>
+
+#include "mainTesting.h"
 
 #include <EtCore/Helper/AtomicTypes.h>
 #include <EtCore/FileSystem/FileUtil.h>
@@ -17,8 +20,19 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		std::cerr << "main > Couldn't get extract working directory from arguments, exiting!" << std::endl;
+		std::cerr << "main > Couldn't extract working directory from arguments, exiting!" << std::endl;
 		return 1;
+	}
+
+	// root directory for file related tests
+	if (argc > 1)
+	{
+		g_UnitTestDir = std::string(argv[1]);
+	}
+	else
+	{
+		std::cerr << "main > Couldn't extract test directory from arguments, exiting!" << std::endl;
+		return 2;
 	}
 
 	int result = Catch::Session().run(argc, argv);
