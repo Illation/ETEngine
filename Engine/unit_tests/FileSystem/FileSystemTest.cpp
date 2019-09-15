@@ -10,7 +10,7 @@
 
 TEST_CASE( "mount", "[filesystem]" )
 {
-	std::string dirName = g_UnitTestDir + "FileSystem/TestDir/";
+	std::string dirName = global::g_UnitTestDir + "FileSystem/TestDir/";
 	Directory* pDir = new Directory( dirName, nullptr );
 
 	REQUIRE( pDir->IsMounted() == false );
@@ -56,7 +56,7 @@ TEST_CASE( "copy file", "[filesystem]" )
 	std::string expectedContent = "Hello I am a test file!\r\nwith 2 lines\r\n";
 	auto expectedContentLines = FileUtil::ParseLines(expectedContent);
 
-	std::string dirName = g_UnitTestDir + "FileSystem/TestDir/";
+	std::string dirName = global::g_UnitTestDir + "FileSystem/TestDir/";
 	Directory* pDir = new Directory( dirName, nullptr );
 	bool mountResult = pDir->Mount( true );
 	REQUIRE( mountResult == true );

@@ -1,4 +1,8 @@
 #pragma once
 
-static std::string g_UnitTestDir;
+class global
+{
+public:
+	static std::string g_UnitTestDir;
+};
 

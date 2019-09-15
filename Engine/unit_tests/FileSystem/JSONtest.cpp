@@ -12,7 +12,7 @@
 
 TEST_CASE("Parse", "[json]")
 {
-	File* jsonFile = new File(g_UnitTestDir + "FileSystem/json_test_file.json", nullptr);
+	File* jsonFile = new File(global::g_UnitTestDir + "FileSystem/json_test_file.json", nullptr);
 	bool openResult = jsonFile->Open( FILE_ACCESS_MODE::Read );
 	REQUIRE( openResult == true );
 	JSON::Parser parser = JSON::Parser(FileUtil::AsText(jsonFile->Read()));

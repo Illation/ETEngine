@@ -11,6 +11,9 @@
 #include <EtCore/FileSystem/FileUtil.h>
 
 
+std::string global::g_UnitTestDir = std::string();
+
+
 int main(int argc, char* argv[]) 
 {
 	// working dir
@@ -27,7 +30,8 @@ int main(int argc, char* argv[])
 	// root directory for file related tests
 	if (argc > 1)
 	{
-		g_UnitTestDir = std::string(argv[1]);
+		global::g_UnitTestDir = std::string(argv[1]);
+		argc = 1;
 	}
 	else
 	{

@@ -20,8 +20,8 @@ after_build:
 - cmd: >-
 	cd ./Projects/Demo
 	cmake --build build --target install
-	cmake --build build --target cook-installed-resources-Demo
+	cmake --build build --target cook-installed-resources-EtEngineDemo
 
 test_script:
 - cmd: >-
-    .\Projects\Demo\bin\Debug_x64\Testing\Testing.exe ..\..\..\..\..\Engine\unit_tests\
+    .\Projects\Demo\bin\Debug_x64\unit_tests\unit_tests.exe ..\..\..\..\..\Engine\unit_tests\

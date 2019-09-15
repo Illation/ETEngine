@@ -19,13 +19,14 @@ TEST_CASE("Decode Base64", "[gltf]")
 	REQUIRE(expected == FileUtil::AsText(decoded));
 }
 
-std::string baseDir = g_UnitTestDir + "Helper/";
 std::string fileName = "Box.gltf";
 std::string glbFileName = "Corset.glb";
 
 TEST_CASE("Evaluate URI", "[gltf]")
 {
 	std::string ext;
+
+	std::string baseDir = global::g_UnitTestDir + "Helper/";
 
 	glTF::URI embedded;
 	embedded.path = "data:application/octet-stream;base64,AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAvwAAAL8AAAA/AAAAPwAAAL8AAAA/AAAAvwAAAD8AAAA/AAAAPwAAAD8AAAA/AAAAPwAAAL8AAAA/AAAAvwAAAL8AAAA/AAAAPwAAAL8AAAC/AAAAvwAAAL8AAAC/AAAAPwAAAD8AAAA/AAAAPwAAAL8AAAA/AAAAPwAAAD8AAAC/AAAAPwAAAL8AAAC/AAAAvwAAAD8AAAA/AAAAPwAAAD8AAAA/AAAAvwAAAD8AAAC/AAAAPwAAAD8AAAC/AAAAvwAAAL8AAAA/AAAAvwAAAD8AAAA/AAAAvwAAAL8AAAC/AAAAvwAAAD8AAAC/AAAAvwAAAL8AAAC/AAAAvwAAAD8AAAC/AAAAPwAAAL8AAAC/AAAAPwAAAD8AAAC/AAABAAIAAwACAAEABAAFAAYABwAGAAUACAAJAAoACwAKAAkADAANAA4ADwAOAA0AEAARABIAEwASABEAFAAVABYAFwAWABUA";
@@ -49,6 +50,8 @@ TEST_CASE("Evaluate URI", "[gltf]")
 
 TEST_CASE("Parse GLTF json", "[gltf]")
 {
+	std::string baseDir = global::g_UnitTestDir + "Helper/";
+
 	File* input = new File(baseDir+fileName, nullptr);
 	REQUIRE(input->Open(FILE_ACCESS_MODE::Read) == true);
 	std::vector<uint8> binaryContent = input->Read();
@@ -66,6 +69,8 @@ TEST_CASE("Parse GLTF json", "[gltf]")
 
 TEST_CASE("Parse GLB asset", "[gltf]")
 {
+	std::string baseDir = global::g_UnitTestDir + "Helper/";
+
 	File* input = new File(baseDir + glbFileName, nullptr);
 	REQUIRE(input->Open(FILE_ACCESS_MODE::Read) == true);
 	std::vector<uint8> binaryContent = input->Read();
