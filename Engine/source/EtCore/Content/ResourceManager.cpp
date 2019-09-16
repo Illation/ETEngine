@@ -86,25 +86,33 @@ void ResourceManager::Deinit()
 }
 
 //---------------------------------
-// ResourceManager::GetPackage
+// ResourceManager::GetLoadData
 //
-// Get an abstract package by its ID - if none is found returns nullptr
+// Retrieve the data for this asset from its package
 //
-I_Package* ResourceManager::GetPackage(T_Hash const id)
+bool ResourceManager::GetLoadData(I_Asset const* const asset, std::vector<uint8>& outData) const
 {
-	// find the package iterator
-	auto const foundPackageIt = std::find_if(m_Packages.begin(), m_Packages.end(), [&id](T_IndexedPackage const& indexedPackage)
+	// Get the package the asset lives in
+	auto const foundPackageIt = std::find_if(m_Packages.begin(), m_Packages.end(), [asset](T_IndexedPackage const& indexedPackage)
 	{
-		return indexedPackage.first == id;
+		return indexedPackage.first == asset->GetPackageId();
 	});
 
 	// check the iterator is valid
 	if (foundPackageIt == m_Packages.cend())
 	{
-		return nullptr;
+		LOG(FS("No package (name:'%s', id:'%x') found for asset '%s'", asset->GetPackageName().c_str(), asset->GetPackageId(), asset->GetName().c_str()),
+			LogLevel::Warning);
+		return false;
 	}
 
-	return foundPackageIt->second;
+	// get binary data from the package
+	if (!(foundPackageIt->second->GetEntryData(asset->GetPackageEntryId(), outData)))
+	{
+		return false;
+	}
+
+	return true;
 }
 
 //---------------------------------

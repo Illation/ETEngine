@@ -45,7 +45,8 @@ public:
 	// Accessors
 	//---------------------
 	bool IsUnloadDeferred() const { return m_DeferUnloadToFlush; }
-	I_Package* GetPackage(T_Hash const id);
+
+	bool GetLoadData(I_Asset const* const asset, std::vector<uint8>& outData) const;
 
 	// Managing assets
 	//---------------------
