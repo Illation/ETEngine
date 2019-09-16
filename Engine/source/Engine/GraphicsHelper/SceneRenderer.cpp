@@ -34,9 +34,9 @@ void SceneRenderer::ShowSplashScreen()
 {
 	m_IsShowingSpashScreen = true;
 
-	m_SplashBackgroundTex = ResourceManager::GetInstance()->GetAssetData<TextureData>("Splashscreen.jpg"_hash);
-	m_SplashTitleFont = ResourceManager::GetInstance()->GetAssetData<SpriteFont>("Roboto-Bold.ttf"_hash);
-	m_SplashRegFont = ResourceManager::GetInstance()->GetAssetData<SpriteFont>("RobotoCondensed-Regular.ttf"_hash);
+	m_SplashBackgroundTex = ResourceManager::Instance()->GetAssetData<TextureData>("Splashscreen.jpg"_hash);
+	m_SplashTitleFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Roboto-Bold.ttf"_hash);
+	m_SplashRegFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("RobotoCondensed-Regular.ttf"_hash);
 
 	SpriteRenderer::GetInstance()->Draw(m_SplashBackgroundTex.get(), vec2(0));
 

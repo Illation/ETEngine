@@ -39,7 +39,7 @@ SpriteRenderer::~SpriteRenderer()
 //
 void SpriteRenderer::Initialize()
 {
-	m_Shader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostSprite.glsl"_hash);
+	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostSprite.glsl"_hash);
 
 	STATE->SetShader(m_Shader.get());
 

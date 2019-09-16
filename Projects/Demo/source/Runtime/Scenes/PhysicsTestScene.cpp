@@ -43,7 +43,7 @@ void PhysicsTestScene::Initialize()
 {
 	//Fonts
 	//**************************
-	m_DebugFont = ResourceManager::GetInstance()->GetAssetData<SpriteFont>("Ubuntu-Regular.ttf"_hash);
+	m_DebugFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Ubuntu-Regular.ttf"_hash);
 
 	//Materials
 	//**************************
@@ -166,7 +166,7 @@ void PhysicsTestScene::Initialize()
 
 	m_Source = new AudioSourceComponent();
 
-	m_Source->SetAudioData(ResourceManager::GetInstance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
+	m_Source->SetAudioData(ResourceManager::Instance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
 	m_Source->SetLooping(true);
 	m_Source->Play();
 	m_pLightEntity->AddComponent(m_Source);
@@ -193,7 +193,7 @@ void PhysicsTestScene::Update()
 		{
 			m_CurrentTrack--;
 		}
-		m_Source->SetAudioData(ResourceManager::GetInstance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
+		m_Source->SetAudioData(ResourceManager::Instance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
 	}
 	else if (INPUT->GetKeyState(E_KbdKey::RightBracket) == E_KeyState::Pressed)
 	{
@@ -206,7 +206,7 @@ void PhysicsTestScene::Update()
 		{
 			m_CurrentTrack++;
 		}
-		m_Source->SetAudioData(ResourceManager::GetInstance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
+		m_Source->SetAudioData(ResourceManager::Instance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
 	}
 
 	if(INPUT->GetMouseButton(E_MouseButton::Right) == E_KeyState::Pressed)

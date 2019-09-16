@@ -169,7 +169,7 @@ void I_Asset::Load()
 	}
 
 	// get binary data from the package
-	if (!(ResourceManager::GetInstance()->GetLoadData(this, m_LoadData)))
+	if (!(ResourceManager::Instance()->GetLoadData(this, m_LoadData)))
 	{
 		LOG("I_Asset::Load > couldn't get data for '" + m_Path + m_Name + std::string("' (") + std::to_string(m_PackageEntryId) 
 			+ std::string(") in package '") + m_PackageName + std::string("'"), LogLevel::Warning);
@@ -202,7 +202,9 @@ void I_Asset::Load()
 //
 void I_Asset::Unload(bool const force)
 {
-	if (force || !(ResourceManager::GetInstance()->IsUnloadDeferred()))
+	ResourceManager const* const resMan = ResourceManager::Instance();
+
+	if (force || resMan == nullptr || !(resMan->IsUnloadDeferred()))
 	{
 		UnloadInternal();
 	}

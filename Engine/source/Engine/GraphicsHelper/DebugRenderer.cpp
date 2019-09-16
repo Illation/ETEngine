@@ -25,7 +25,7 @@ DebugRenderer::~DebugRenderer()
 
 void DebugRenderer::Initialize()
 {
-	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("DebugRenderer.glsl"_hash);
+	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("DebugRenderer.glsl"_hash);
 
 	STATE->SetShader(m_pShader.get());
 	m_uWVP = glGetUniformLocation(m_pShader->GetProgram(), "uViewProj");

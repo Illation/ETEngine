@@ -44,7 +44,7 @@ void Atmosphere::Initialize()
 {
 	Precalculate();
 	//Load and compile Shaders
-	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostAtmosphere.glsl"_hash);
+	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostAtmosphere.glsl"_hash);
 }
 void Atmosphere::Draw(Planet* pPlanet, float radius)
 {

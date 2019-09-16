@@ -24,7 +24,7 @@ void Patch::Init()
 {
 	//Shader Init
 	//***********
-	m_pPatchShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PlanetPatch.glsl"_hash);
+	m_pPatchShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PlanetPatch.glsl"_hash);
 	STATE->SetShader(m_pPatchShader.get());
 
 	m_pPatchShader->Upload("texDiffuse"_hash, (int32)0);

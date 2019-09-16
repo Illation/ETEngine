@@ -15,13 +15,13 @@ SpriteComponent::SpriteComponent(T_Hash const spriteAsset, vec2 const& pivot, ve
 
 void SpriteComponent::Initialize()
 {
-	m_Texture = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_SpriteAsset);
+	m_Texture = ResourceManager::Instance()->GetAssetData<TextureData>(m_SpriteAsset);
 }
 
 void SpriteComponent::SetTexture(T_Hash const spriteAsset)
 {
 	m_SpriteAsset = spriteAsset;
-	m_Texture = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_SpriteAsset);
+	m_Texture = ResourceManager::Instance()->GetAssetData<TextureData>(m_SpriteAsset);
 }
 
 void SpriteComponent::Draw()

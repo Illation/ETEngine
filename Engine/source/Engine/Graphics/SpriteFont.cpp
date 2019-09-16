@@ -302,7 +302,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 	STATE->SetViewport(ivec2(0), ivec2(texWidth, texHeight));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	AssetPtr<ShaderData> computeSdf = ResourceManager::GetInstance()->GetAssetData<ShaderData>("ComputeGlyphSDF.glsl"_hash);
+	AssetPtr<ShaderData> computeSdf = ResourceManager::Instance()->GetAssetData<ShaderData>("ComputeGlyphSDF.glsl"_hash);
 	STATE->SetShader(computeSdf.get());
 	computeSdf->Upload("uTex"_hash, 0);
 	computeSdf->Upload("uSpread"_hash, static_cast<float>(m_Spread));
@@ -461,7 +461,7 @@ SpriteFont* FontAsset::LoadFnt(const std::vector<uint8>& binaryContent)
 
 	ET_ASSERT(!pn.empty(), "SpriteFont(.fnt): Invalid Font Sprite [Empty]");
 
-	pFont->m_TextureAsset = ResourceManager::GetInstance()->GetAssetData<TextureData>(GetHash(pn));
+	pFont->m_TextureAsset = ResourceManager::Instance()->GetAssetData<TextureData>(GetHash(pn));
 	pFont->m_pTexture = pFont->m_TextureAsset.get();
 	pBinReader->SetBufferPosition(pos + Block2Size);
 	//**********

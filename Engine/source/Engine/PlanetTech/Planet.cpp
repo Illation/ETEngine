@@ -36,9 +36,9 @@ void Planet::Initialize()
 	//LoadTextures
 	LoadPlanet();
 
-	m_pDetail1 = ResourceManager::GetInstance()->GetAssetData<TextureData>("MoonDetail1.jpg"_hash);
-	m_pDetail2 = ResourceManager::GetInstance()->GetAssetData<TextureData>("MoonDetail2.jpg"_hash);
-	m_pHeightDetail = ResourceManager::GetInstance()->GetAssetData<TextureData>("MoonHeightDetail1.jpg"_hash);
+	m_pDetail1 = ResourceManager::Instance()->GetAssetData<TextureData>("MoonDetail1.jpg"_hash);
+	m_pDetail2 = ResourceManager::Instance()->GetAssetData<TextureData>("MoonDetail2.jpg"_hash);
+	m_pHeightDetail = ResourceManager::Instance()->GetAssetData<TextureData>("MoonHeightDetail1.jpg"_hash);
 
 	m_pTriangulator->Init();
 	m_pPatch->Init();

@@ -51,7 +51,7 @@ TextRenderer::~TextRenderer()
 //
 void TextRenderer::Initialize()
 {
-	m_pTextShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostText.glsl"_hash);
+	m_pTextShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostText.glsl"_hash);
 
 	STATE->SetShader(m_pTextShader.get());
 

@@ -29,7 +29,7 @@ ScreenSpaceReflections::~ScreenSpaceReflections()
 
 void ScreenSpaceReflections::Initialize()
 {
-	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostScreenSpaceReflections.glsl"_hash);
+	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostScreenSpaceReflections.glsl"_hash);
 
 	int32 width = WINDOW.Width, height = WINDOW.Height;
 

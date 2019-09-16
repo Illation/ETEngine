@@ -67,7 +67,7 @@ void UIViewportRenderer::Draw(ivec2 pos, ivec2 size)
 
 void UIViewportRenderer::Initialize(ivec2 size)
 {
-	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("EditorComposite.glsl"_hash);
+	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("EditorComposite.glsl"_hash);
 
 	STATE->SetShader(m_pShader.get());
 	m_pShader->Upload("uTex"_hash, 0);

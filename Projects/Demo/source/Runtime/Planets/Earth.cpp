@@ -16,6 +16,6 @@ Earth::~Earth()
 }
 void Earth::LoadPlanet()
 {
-	m_pDiffuse = ResourceManager::GetInstance()->GetAssetData<TextureData>("Earth8k.jpg"_hash);
-	m_pHeight = ResourceManager::GetInstance()->GetAssetData<TextureData>("EarthHeight8k.jpg"_hash);
+	m_pDiffuse = ResourceManager::Instance()->GetAssetData<TextureData>("Earth8k.jpg"_hash);
+	m_pHeight = ResourceManager::Instance()->GetAssetData<TextureData>("EarthHeight8k.jpg"_hash);
 }

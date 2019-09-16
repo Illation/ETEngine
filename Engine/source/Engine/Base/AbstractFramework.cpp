@@ -10,7 +10,7 @@
 #include <EtCore/Helper/Commands.h>
 #include <EtCore/Helper/PerformanceInfo.h>
 #include <EtCore/UpdateCycle/TickManager.h>
-#include <EtCore/Content/ResourceManager.h>
+#include <EtCore/Content/PackageResourceManager.h>
 
 #include <Engine/SceneGraph/SceneManager.h>
 #include <Engine/GraphicsHelper/LightVolume.h>
@@ -41,21 +41,20 @@ AbstractFramework::~AbstractFramework()
 	SafeDelete(m_Viewport);
 	SceneRenderer::DestroyInstance();
 
-	SceneManager::GetInstance()->DestroyInstance();
+	SceneManager::DestroyInstance();
 
-	PhysicsManager::GetInstance()->DestroyInstance();
-	AudioManager::GetInstance()->DestroyInstance();
+	PhysicsManager::DestroyInstance();
+	AudioManager::DestroyInstance();
 
-	InputManager::GetInstance()->DestroyInstance();
-	ContextManager::GetInstance()->DestroyInstance();
+	InputManager::DestroyInstance();
+	ContextManager::DestroyInstance();
 	
-	RenderPipeline::GetInstance()->DestroyInstance();
-	Settings::GetInstance()->DestroyInstance();
+	RenderPipeline::DestroyInstance();
+	Settings::DestroyInstance();
 
-	ResourceManager::GetInstance()->Deinit();
 	ResourceManager::DestroyInstance();
 
-	TickManager::GetInstance()->DestroyInstance();
+	TickManager::DestroyInstance();
 
 	Logger::Release();
 }
@@ -75,7 +74,7 @@ void AbstractFramework::Run()
 	m_RenderArea.Initialize(); // also initializes the viewport and its renderer
 	m_Viewport->Redraw();
 
-	ResourceManager::GetInstance()->InitFromCompiledData();
+	ResourceManager::SetInstance(new PackageResourceManager());
 
 	SceneRenderer::GetInstance()->InitWithSplashScreen();
 	m_RenderArea.Update();

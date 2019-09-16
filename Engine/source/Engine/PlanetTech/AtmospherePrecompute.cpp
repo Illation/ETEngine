@@ -25,12 +25,12 @@ void AtmospherePrecompute::Init()
 {
 	m_Settings = AtmosphereSettings();
 
-	m_pComputeTransmittance = ResourceManager::GetInstance()->GetAssetData<ShaderData>("ComputeTransmittance.glsl"_hash);
-	m_pComputeDirectIrradiance = ResourceManager::GetInstance()->GetAssetData<ShaderData>("ComputeDirectIrradiance.glsl"_hash);
-	m_pComputeSingleScattering = ResourceManager::GetInstance()->GetAssetData<ShaderData>("ComputeSingleScattering.glsl"_hash);
-	m_pComputeScatteringDensity = ResourceManager::GetInstance()->GetAssetData<ShaderData>("ComputeScatteringDensity.glsl"_hash);
-	m_pComputeIndirectIrradiance = ResourceManager::GetInstance()->GetAssetData<ShaderData>("ComputeIndirectIrradiance.glsl"_hash);
-	m_pComputeMultipleScattering = ResourceManager::GetInstance()->GetAssetData<ShaderData>("ComputeMultipleScattering.glsl"_hash);
+	m_pComputeTransmittance = ResourceManager::Instance()->GetAssetData<ShaderData>("ComputeTransmittance.glsl"_hash);
+	m_pComputeDirectIrradiance = ResourceManager::Instance()->GetAssetData<ShaderData>("ComputeDirectIrradiance.glsl"_hash);
+	m_pComputeSingleScattering = ResourceManager::Instance()->GetAssetData<ShaderData>("ComputeSingleScattering.glsl"_hash);
+	m_pComputeScatteringDensity = ResourceManager::Instance()->GetAssetData<ShaderData>("ComputeScatteringDensity.glsl"_hash);
+	m_pComputeIndirectIrradiance = ResourceManager::Instance()->GetAssetData<ShaderData>("ComputeIndirectIrradiance.glsl"_hash);
+	m_pComputeMultipleScattering = ResourceManager::Instance()->GetAssetData<ShaderData>("ComputeMultipleScattering.glsl"_hash);
 
 	//Computation textures
 	m_TexDeltaIrradiance = new TextureData(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H,

@@ -38,7 +38,7 @@ Editor::~Editor()
 
 void Editor::Initialize()
 {
-	m_EditorFont = ResourceManager::GetInstance()->GetAssetData<SpriteFont>("Consolas_32.fnt"_hash);
+	m_EditorFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Consolas_32.fnt"_hash);
 
 	//Create toolbar
 	m_pToolbar->SetColor(vec4(vec3(0.2f), 1));
@@ -50,10 +50,10 @@ void Editor::Initialize()
 					new UIText("and another", m_EditorFont)
 					//, ivec4(5), vec4(vec3(0.35f), 1))
 				, UIDynamicBox::Positioning::DYNAMIC);
-			pDynBox->AddChild(new UISprite(ResourceManager::GetInstance()->GetAssetData<TextureData>("starSprite.png"_hash)), 
+			pDynBox->AddChild(new UISprite(ResourceManager::Instance()->GetAssetData<TextureData>("starSprite.png"_hash)), 
 				UIDynamicBox::Positioning::DYNAMIC);
 			pDynBox->AddChild(new UIText("and another", m_EditorFont), UIDynamicBox::Positioning::DYNAMIC);
-			pDynBox->AddChild(new UISprite( ResourceManager::GetInstance()->GetAssetData<TextureData>("sample_texture.png"_hash)), 
+			pDynBox->AddChild(new UISprite( ResourceManager::Instance()->GetAssetData<TextureData>("sample_texture.png"_hash)), 
 				UIDynamicBox::Positioning::DYNAMIC);
 	m_pToolbar->SetChild(pDynBox);
 

@@ -40,7 +40,7 @@ void GbufferMaterial::LoadTextures()
 
 	if (m_TexDiffuseAsset != 0u)
 	{
-		m_TexDiffuse = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_TexDiffuseAsset);
+		m_TexDiffuse = ResourceManager::Instance()->GetAssetData<TextureData>(m_TexDiffuseAsset);
 		m_Shader->Upload("texDiffuse"_hash, 0);
 	}
 	else
@@ -50,7 +50,7 @@ void GbufferMaterial::LoadTextures()
 
 	if (m_TexSpecAsset != 0u)
 	{
-		m_TexSpec = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_TexSpecAsset);
+		m_TexSpec = ResourceManager::Instance()->GetAssetData<TextureData>(m_TexSpecAsset);
 		m_Shader->Upload("texSpecular"_hash, 2);
 	}
 	else
@@ -60,7 +60,7 @@ void GbufferMaterial::LoadTextures()
 
 	if (m_TexNormAsset != 0u)
 	{
-		m_TexNorm = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_TexNormAsset);
+		m_TexNorm = ResourceManager::Instance()->GetAssetData<TextureData>(m_TexNormAsset);
 		m_Shader->Upload("texNormal"_hash, 1);
 	}
 	else

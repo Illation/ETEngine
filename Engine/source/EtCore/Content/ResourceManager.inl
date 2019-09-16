@@ -15,7 +15,7 @@ template <class T_DataType>
 AssetPtr<T_DataType> ResourceManager::GetAssetData(T_Hash const assetId)
 {
 	// Get the asset
-	RawAsset<T_DataType>* asset = GetAsset<T_DataType>(assetId);
+	RawAsset<T_DataType>* asset = static_cast<RawAsset<T_DataType>*>(GetAssetInternal(assetId, typeid(T_DataType)));
 
 	// Check we actually found the asset
 	if (asset == nullptr)
@@ -35,17 +35,4 @@ AssetPtr<T_DataType> ResourceManager::GetAssetData(T_Hash const assetId)
 	Flush(); // as far as we know there won't be any more accesses to references during load so we should make sure to free the memory we won't need
 
 	return retPtr;
-}
-
-
-//---------------------------------
-// ResourceManager::GetAsset
-//
-// Get an asset by it's template type
-//
-template <class T_DataType>
-RawAsset<T_DataType>* ResourceManager::GetAsset(T_Hash const assetId)
-{
-	I_Asset* abstractAsset = m_Database.GetAsset(assetId, typeid(T_DataType));
-	return static_cast<RawAsset<T_DataType>*>(abstractAsset);
 }

@@ -29,7 +29,7 @@ DensityProfileLayer JSONDensityProfile(JSON::Object* jlayer)
 
 AtmosphereParameters::AtmosphereParameters(T_Hash const assetId, dvec3 &skyColor, dvec3 &sunColor)
 {
-	AssetPtr<StubData> jsonText = ResourceManager::GetInstance()->GetAssetData<StubData>(assetId);
+	AssetPtr<StubData> jsonText = ResourceManager::Instance()->GetAssetData<StubData>(assetId);
 
 	JSON::Parser parser = JSON::Parser(std::string(jsonText->GetText(), jsonText->GetLength()));
 	JSON::Object* root = parser.GetRoot();

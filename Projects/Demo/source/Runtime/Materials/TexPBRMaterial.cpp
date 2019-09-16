@@ -20,19 +20,19 @@ void TexPBRMaterial::LoadTextures()
 {
 	STATE->SetShader(m_Shader.get());
 	
-	m_TexBaseColor = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_BaseColorId);
+	m_TexBaseColor = ResourceManager::Instance()->GetAssetData<TextureData>(m_BaseColorId);
 	m_Shader->Upload("texBaseColor"_hash, 0);
 
-	m_TexRoughness = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_RoughnessId);
+	m_TexRoughness = ResourceManager::Instance()->GetAssetData<TextureData>(m_RoughnessId);
 	m_Shader->Upload("texRoughness"_hash, 1);
 
-	m_TexMetalness = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_MetalnessId);
+	m_TexMetalness = ResourceManager::Instance()->GetAssetData<TextureData>(m_MetalnessId);
 	m_Shader->Upload("texMetalness"_hash, 2);
 
-	m_TexAO = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_AoId);
+	m_TexAO = ResourceManager::Instance()->GetAssetData<TextureData>(m_AoId);
 	m_Shader->Upload("texAO"_hash, 3);
 
-	m_TexNorm = ResourceManager::GetInstance()->GetAssetData<TextureData>(m_NormalId);
+	m_TexNorm = ResourceManager::Instance()->GetAssetData<TextureData>(m_NormalId);
 	m_Shader->Upload("texNormal"_hash, 4);
 
 	m_OutdatedTextureData = false;

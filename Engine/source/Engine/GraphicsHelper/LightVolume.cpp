@@ -64,8 +64,8 @@ DirectLightVolume::~DirectLightVolume()
 }
 void DirectLightVolume::Initialize()
 {
-	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdLightDirectionalShader.glsl"_hash);
-	m_pShaderShadowed = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdLightDirectionalShadowShader.glsl"_hash);
+	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdLightDirectionalShader.glsl"_hash);
+	m_pShaderShadowed = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdLightDirectionalShadowShader.glsl"_hash);
 
 	m_IsInitialized = true;
 }

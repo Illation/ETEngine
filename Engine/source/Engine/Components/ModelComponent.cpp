@@ -49,7 +49,7 @@ void ModelComponent::SetMaterial(Material* pMaterial)
 //
 void ModelComponent::Initialize()
 {
-	m_Mesh = ResourceManager::GetInstance()->GetAssetData<MeshData>(m_AssetId);
+	m_Mesh = ResourceManager::Instance()->GetAssetData<MeshData>(m_AssetId);
 	UpdateMaterial();
 }
 

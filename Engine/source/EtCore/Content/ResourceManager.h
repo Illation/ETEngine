@@ -1,12 +1,5 @@
 #pragma once
-#include <EtCore/Helper/Singleton.h>
-
-#include "AssetDatabase.h"
 #include "AssetPointer.h"
-
-
-// forward decl
-class I_Package;
 
 
 //---------------------------------
@@ -14,62 +7,67 @@ class I_Package;
 //
 // Class that manages the lifetime of assets
 //
-class ResourceManager : public Singleton<ResourceManager>
+class ResourceManager 
 {
-public:
 	// Definitions
 	//---------------------
+private:
+	static ResourceManager* s_Instance;
+	friend class ResourceManager;
 
-	friend class Singleton<ResourceManager>;
-
+public:
 	static constexpr char s_DatabasePath[] = "asset_database.json";
 
-	typedef std::pair<T_Hash, I_Package*> T_IndexedPackage;
+	// Singleton
+	//---------------------
 
-private:
+	static void SetInstance(ResourceManager* const instance);
+	static void DestroyInstance();
+
+	static ResourceManager* Instance() { return s_Instance; }
+
+public:
 	// Construct destruct
 	//---------------------
 	ResourceManager() = default;
-	~ResourceManager();
+	virtual ~ResourceManager() = default;
+
 	// Protect from copy construction
+private:
 	ResourceManager(const ResourceManager& t);
 	ResourceManager& operator=(const ResourceManager& t);
 
 public:
-	// Init Deinit
-	//---------------------
-	void InitFromCompiledData();
-
-	void Deinit();
-
 	// Accessors
 	//---------------------
 	bool IsUnloadDeferred() const { return m_DeferUnloadToFlush; }
-
-	bool GetLoadData(I_Asset const* const asset, std::vector<uint8>& outData) const;
 
 	// Managing assets
 	//---------------------
 	template <class T_DataType>
 	AssetPtr<T_DataType> GetAssetData(T_Hash const assetId);
 
-	void Flush(); 
 
-	// Utility
+	// Interface
 	//---------------------
-private:
-	template <class T_DataType>
-	RawAsset<T_DataType>* GetAsset(T_Hash const assetId);
+protected:
+	virtual void Init() = 0;
+	virtual void Deinit() = 0;
 
+public:
+	virtual bool GetLoadData(I_Asset const* const asset, std::vector<uint8>& outData) const = 0;
+
+	virtual void Flush() = 0; 
+
+protected:
+	virtual I_Asset* GetAssetInternal(T_Hash const assetId, std::type_info const& type) = 0;
 
 	// Data
 	///////
 
-	AssetDatabase m_Database;
-	std::vector<T_IndexedPackage> m_Packages;
-
 	bool m_DeferUnloadToFlush = false;
 };
+
 
 
 #include "ResourceManager.inl"

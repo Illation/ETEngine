@@ -23,7 +23,7 @@ StarField::~StarField()
 
 void StarField::Initialize()
 {
-	AssetPtr<StubData> jsonDbText = ResourceManager::GetInstance()->GetAssetData<StubData>(m_AssetId);
+	AssetPtr<StubData> jsonDbText = ResourceManager::Instance()->GetAssetData<StubData>(m_AssetId);
 
 	JSON::Parser parser = JSON::Parser(std::string(jsonDbText->GetText(), jsonDbText->GetLength()));
 	JSON::Object* root = parser.GetRoot();
@@ -44,8 +44,8 @@ void StarField::Initialize()
 		}
 	}
 	
-	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdStarField.glsl"_hash);
-	m_pSprite = ResourceManager::GetInstance()->GetAssetData<TextureData>("starSprite.png"_hash);
+	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdStarField.glsl"_hash);
+	m_pSprite = ResourceManager::Instance()->GetAssetData<TextureData>("starSprite.png"_hash);
 
 	STATE->SetShader(m_pShader.get());
 	m_pShader->Upload("uTexture"_hash, 0);

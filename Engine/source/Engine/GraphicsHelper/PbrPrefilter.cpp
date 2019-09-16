@@ -39,7 +39,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, resolution, resolution);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO); 
 	//Shader
-	STATE->SetShader(ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdBrdfLutShader.glsl"_hash).get());
+	STATE->SetShader(ResourceManager::Instance()->GetAssetData<ShaderData>("FwdBrdfLutShader.glsl"_hash).get());
 
 	m_LUT = new TextureData(resolution, resolution, GL_RG16F, GL_RG, GL_FLOAT);
 	m_LUT->Build();
@@ -108,7 +108,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, irradianceRes, irradianceRes);
 
 	//shader
-	AssetPtr<ShaderData> irradianceShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdConvIrradianceShader.glsl"_hash);
+	AssetPtr<ShaderData> irradianceShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdConvIrradianceShader.glsl"_hash);
 
 	STATE->SetShader(irradianceShader.get());
 	irradianceShader->Upload("environmentMap"_hash, 0);
@@ -138,7 +138,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	radiance->SetParameters(params);
 
 	//Shader
-	AssetPtr<ShaderData> radianceShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("FwdConvRadianceShader.glsl"_hash);
+	AssetPtr<ShaderData> radianceShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdConvRadianceShader.glsl"_hash);
 
 	STATE->SetShader(radianceShader.get());
 	radianceShader->Upload("environmentMap"_hash, 0);

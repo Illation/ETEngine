@@ -19,7 +19,7 @@ SkyboxMaterial::SkyboxMaterial(T_Hash const assetId)
 
 void SkyboxMaterial::LoadTextures()
 {
-	m_EnvironmentMap = ResourceManager::GetInstance()->GetAssetData<EnvironmentMap>(m_AssetId);
+	m_EnvironmentMap = ResourceManager::Instance()->GetAssetData<EnvironmentMap>(m_AssetId);
 }
 
 void SkyboxMaterial::UploadDerivedVariables()

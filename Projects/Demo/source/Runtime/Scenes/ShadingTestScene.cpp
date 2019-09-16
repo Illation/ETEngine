@@ -35,7 +35,7 @@ void ShadingTestScene::Initialize()
 {
 	//Fonts
 	//***************************
-	m_pDebugFont = ResourceManager::GetInstance()->GetAssetData<SpriteFont>("Consolas_32.fnt"_hash);
+	m_pDebugFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Consolas_32.fnt"_hash);
 
 	//Camera
 	//**************************

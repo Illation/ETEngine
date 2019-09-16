@@ -47,10 +47,10 @@ void PostProcessingRenderer::DeleteFramebuffers()
 void PostProcessingRenderer::Initialize()
 {
 	//Load and compile Shaders
-	m_pDownsampleShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostDownsample.glsl"_hash);
-	m_pGaussianShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostGaussian.glsl"_hash);
-	m_pPostProcShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostProcessing.glsl"_hash);
-	m_pFXAAShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>("PostFXAA.glsl"_hash);
+	m_pDownsampleShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostDownsample.glsl"_hash);
+	m_pGaussianShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostGaussian.glsl"_hash);
+	m_pPostProcShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostProcessing.glsl"_hash);
+	m_pFXAAShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostFXAA.glsl"_hash);
 
 	//Access shader variables
 	STATE->SetShader(m_pDownsampleShader.get());

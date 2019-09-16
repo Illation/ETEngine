@@ -17,7 +17,7 @@ void Material::Initialize()
 	if (!m_IsInitialized)
 	{
 		//Load Shader
-		m_Shader = ResourceManager::GetInstance()->GetAssetData<ShaderData>(GetHash(FileUtil::ExtractName(m_ShaderFile)));
+		m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>(GetHash(FileUtil::ExtractName(m_ShaderFile)));
 
 		// determine layout flags and locations
 		std::vector<ShaderData::T_AttributeLocation> const& attributes = m_Shader->GetAttributes();

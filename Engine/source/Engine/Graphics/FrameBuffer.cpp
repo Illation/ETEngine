@@ -31,7 +31,7 @@ FrameBuffer::~FrameBuffer()
 void FrameBuffer::Initialize()
 {
 	//Load and compile Shaders
-	m_pShader = ResourceManager::GetInstance()->GetAssetData<ShaderData>(GetHash(FileUtil::ExtractName(m_ShaderFile)));
+	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>(GetHash(FileUtil::ExtractName(m_ShaderFile)));
 
 	//GetAccessTo shader attributes
 	STATE->SetShader(m_pShader.get());
