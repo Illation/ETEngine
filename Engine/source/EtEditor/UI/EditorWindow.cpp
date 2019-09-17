@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "EditorWindow.h"
 
-#include <EditorApp.h>
+#include <EtEditor/EditorApp.h>
 
 #include <EtCore/Helper/InputManager.h>
 

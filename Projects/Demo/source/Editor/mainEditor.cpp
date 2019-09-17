@@ -1,7 +1,7 @@
 #include <Engine/stdafx.h>
 #include <Engine/linkerHelper.h>
 
-#include "EditorApp.h"
+#include <EtEditor/EditorApp.h>
 
 #include <glibmm/refptr.h>
 #include <glibmm/miscutils.h>

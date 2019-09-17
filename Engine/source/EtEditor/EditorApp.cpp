@@ -13,8 +13,8 @@
 #include <giomm/resource.h>
 #include <glibmm/vectorutils.h>
 
-#include <UI/EditorWindow.h>
-#include <UI/SettingsDialog.h>
+#include <EtEditor/UI/EditorWindow.h>
+#include <EtEditor/UI/SettingsDialog.h>
 
 #include <EtCore/Helper/Commands.h>
 #include <EtCore/Helper/InputManager.h>
