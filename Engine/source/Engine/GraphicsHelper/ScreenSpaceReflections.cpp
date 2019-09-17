@@ -31,7 +31,7 @@ void ScreenSpaceReflections::Initialize()
 {
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostScreenSpaceReflections.glsl"_hash);
 
-	int32 width = WINDOW.Width, height = WINDOW.Height;
+	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
 	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Linear;
@@ -42,14 +42,14 @@ void ScreenSpaceReflections::Initialize()
 	//Generate texture and fbo and rbo as initial postprocessing target
 	glGenFramebuffers(1, &m_CollectFBO);
 	STATE->BindFramebuffer(m_CollectFBO);
-	m_CollectTex = new TextureData(width, height, GL_RGB16F, GL_RGB, GL_FLOAT);
+	m_CollectTex = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
 	m_CollectTex->Build();
 	m_CollectTex->SetParameters(params);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_CollectTex->GetHandle(), 0);
 	//Render Buffer for depth and stencil
 	glGenRenderbuffers(1, &m_CollectRBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, m_CollectRBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowSettings.Width, windowSettings.Height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_CollectRBO);
 }
 

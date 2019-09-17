@@ -49,7 +49,7 @@ void Frustum::Update()
 {
 	//calculate generalized relative width and aspect ratio
 	float normHalfWidth = tan(etm::radians(m_FOV));
-	float aspectRatio = WINDOW.GetAspectRatio();
+	float aspectRatio = Config::GetInstance()->GetWindow().AspectRatio;
 
 	//calculate width and height for near and far plane
 	float nearHW = normHalfWidth*m_NearPlane;
@@ -73,7 +73,7 @@ void Frustum::Update()
 	m_Corners.fd = fCenter - m_Up*farHH + m_Right*farHW;
 
 	//float yFac = tanf( etm::radians(m_FOV) / 2 );
-	//float xFac = yFac*WINDOW.GetAspectRatio();
+	//float xFac = yFac*Config::GetInstance()->GetWindow().AspectRatio;
 	//vec3 nCenter = m_Position + m_Forward*m_NearPlane;
 	//vec3 fCenter = m_Position + m_Forward*m_FarPlane;
 	//vec3 nearHW = m_Right*m_FarPlane*xFac;

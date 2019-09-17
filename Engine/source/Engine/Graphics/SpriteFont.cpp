@@ -365,7 +365,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	STATE->BindFramebuffer(0);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	STATE->SetViewport(ivec2(0), WINDOW.Dimensions);
+	STATE->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 
 	glDeleteRenderbuffers(1, &captureRBO);
 	glDeleteFramebuffers(1, &captureFBO);

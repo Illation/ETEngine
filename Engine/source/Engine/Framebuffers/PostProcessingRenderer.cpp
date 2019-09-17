@@ -71,12 +71,12 @@ void PostProcessingRenderer::Initialize()
 
 	GenerateFramebuffers();
 
-	//WINDOW.WindowResizeEvent.AddListener( std::bind( &PostProcessingRenderer::ResizeFBTextures, this ) );
+	//Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener( std::bind( &PostProcessingRenderer::ResizeFBTextures, this ) );
 }
 
 void PostProcessingRenderer::GenerateFramebuffers()
 {
-	int32 width = WINDOW.Width, height = WINDOW.Height;
+	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
 	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Linear;
@@ -87,22 +87,22 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	//Generate texture and fbo and rbo as initial postprocessing target
 	glGenFramebuffers( 1, &m_CollectFBO );
 	STATE->BindFramebuffer( m_CollectFBO );
-	m_CollectTex = new TextureData( width, height, GL_RGB16F, GL_RGB, GL_FLOAT );
+	m_CollectTex = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT );
 	m_CollectTex->Build();
 	m_CollectTex->SetParameters(params);
-	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_CollectTex->GetHandle(), 0 );
+	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_CollectTex->GetHandle(), 0);
 	//Render Buffer for depth and stencil
 	glGenRenderbuffers( 1, &m_CollectRBO );
 	glBindRenderbuffer( GL_RENDERBUFFER, m_CollectRBO );
-	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height );
-	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_CollectRBO );
+	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowSettings.Width, windowSettings.Height);
+	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_CollectRBO);
 
 	//Generate textures for the hdr fbo to output into
 	glGenFramebuffers( 1, &m_HDRoutFBO );
 	STATE->BindFramebuffer( m_HDRoutFBO );
 	for(GLuint i = 0; i < 2; i++)
 	{
-		m_ColorBuffers[i] = new TextureData( width, height, GL_RGB16F, GL_RGB, GL_FLOAT );
+		m_ColorBuffers[i] = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
 		m_ColorBuffers[i]->Build();
 		m_ColorBuffers[i]->SetParameters(params, true);
 		// attach texture to framebuffer
@@ -117,15 +117,17 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	glGenFramebuffers( NUM_BLOOM_DOWNSAMPLES, m_DownPingPongFBO );
 	for(GLuint i = 0; i < NUM_BLOOM_DOWNSAMPLES; i++)
 	{
-		float resMult = 1.f / (float)std::pow( 2, i + 1 );
+		float resMult = 1.f / (float)std::pow(2, i + 1);
+		ivec2 res = etm::vecCast<int32>(etm::vecCast<float>(windowSettings.Dimensions) * resMult);
+
 		STATE->BindFramebuffer( m_DownSampleFBO[i] );
-		m_DownSampleTexture[i] = new TextureData( (GLsizei)(width*resMult), (GLsizei)(height*resMult), GL_RGB16F, GL_RGB, GL_FLOAT );
+		m_DownSampleTexture[i] = new TextureData(res.x, res.y, GL_RGB16F, GL_RGB, GL_FLOAT );
 		m_DownSampleTexture[i]->Build();
 		m_DownSampleTexture[i]->SetParameters(params, true);
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DownSampleTexture[i]->GetHandle(), 0 );
 
 		STATE->BindFramebuffer( m_DownPingPongFBO[i] );
-		m_DownPingPongTexture[i] = new TextureData( (GLsizei)(width*resMult), (GLsizei)(height*resMult), GL_RGB16F, GL_RGB, GL_FLOAT );
+		m_DownPingPongTexture[i] = new TextureData(res.x, res.y, GL_RGB16F, GL_RGB, GL_FLOAT );
 		m_DownPingPongTexture[i]->Build();
 		m_DownPingPongTexture[i]->SetParameters(params, true);
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DownPingPongTexture[i]->GetHandle(), 0 );
@@ -136,14 +138,16 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	for(GLuint i = 0; i < 2; i++)
 	{
 		STATE->BindFramebuffer( m_PingPongFBO[i] );
-		m_PingPongTexture[i] = new TextureData( width, height, GL_RGB16F, GL_RGB, GL_FLOAT );
+		m_PingPongTexture[i] = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
 		m_PingPongTexture[i]->Build();
 		m_PingPongTexture[i]->SetParameters(params, true);
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_PingPongTexture[i]->GetHandle(), 0 );
 	}
 
-	if(!(glCheckFramebufferStatus( GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE))
-		LOG( "Framebuffer>Initialize() FAILED!", LogLevel::Error );
+	if (!(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE))
+	{
+		LOG("Framebuffer::Initialize > FAILED!", LogLevel::Error);
+	}
 }
 
 void PostProcessingRenderer::EnableInput()
@@ -152,6 +156,9 @@ void PostProcessingRenderer::EnableInput()
 }
 void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &settings)
 {
+	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
+
 	STATE->SetDepthEnabled(false);
 	//get glow
 	STATE->BindFramebuffer(m_HDRoutFBO);
@@ -160,12 +167,11 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	m_pDownsampleShader->Upload("threshold"_hash, settings.bloomThreshold);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 	//downsample glow
-	int32 width = SETTINGS->Window.Width, height = SETTINGS->Window.Height;
 	for (GLuint i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
 		if (i > 0) STATE->SetShader(m_pDownsampleShader.get());
 		float resMult = 1.f / (float)std::pow(2, i + 1);
-		STATE->SetViewport(ivec2(0), ivec2((int32)(width*resMult), (int32)(height*resMult)));
+		STATE->SetViewport(ivec2(0), etm::vecCast<int32>(etm::vecCast<float>(windowSettings.Dimensions) * resMult));
 		STATE->BindFramebuffer(m_DownSampleFBO[i]);
 		if (i > 0)
 		{
@@ -175,12 +181,12 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
 		//blur downsampled
-		//STATE->SetViewport(ivec2(0), ivec2(width, height));
+		//STATE->SetViewport(ivec2(0), windowSettings.Dimensions);
 		STATE->SetShader(m_pGaussianShader.get());
 	#ifdef EDITOR
 		for (uint32 sample = 0; sample < 10; sample++)
 	#else
-		for (uint32 sample = 0; sample < static_cast<uint32>(GRAPHICS.NumBlurPasses * 2); sample++)
+		for (uint32 sample = 0; sample < static_cast<uint32>(graphicsSettings.NumBlurPasses * 2); sample++)
 	#endif
 		{
 			// #todo: needs custom ping pong buffer, buffers textures are wrong size
@@ -193,14 +199,14 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		}
 	}
-	STATE->SetViewport(ivec2(0), ivec2(width, height));
+	STATE->SetViewport(ivec2(0), windowSettings.Dimensions);
 	//ping pong gaussian blur
 	bool horizontal = true;
 	STATE->SetShader(m_pGaussianShader.get());
 #ifdef EDITOR
 	for (GLuint i = 0; i < 10; i++)
 #else
-	for (GLuint i = 0; i < (GLuint)GRAPHICS.NumBlurPasses * 2; i++)
+	for (GLuint i = 0; i < (GLuint)graphicsSettings.NumBlurPasses * 2; i++)
 #endif
 	{
 		STATE->BindFramebuffer(m_PingPongFBO[horizontal]);
@@ -210,7 +216,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 		horizontal = !horizontal;
 	}
 	//combine with hdr result
-	if (GRAPHICS.UseFXAA)
+	if (graphicsSettings.UseFXAA)
 	{
 		// use the second pingpong fbo to store FXAA
 		STATE->BindFramebuffer(m_PingPongFBO[1]);
@@ -233,11 +239,11 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	RenderPipeline::GetInstance()->DrawOverlays();//Make sure text and sprites get antialiased
 
 	//FXAA
-	if (GRAPHICS.UseFXAA)
+	if (graphicsSettings.UseFXAA)
 	{
 		STATE->BindFramebuffer(FBO);
 		STATE->SetShader(m_pFXAAShader.get());
-		m_pFXAAShader->Upload("uInverseScreen"_hash, 1.f / etm::vecCast<float>(WINDOW.Dimensions));
+		m_pFXAAShader->Upload("uInverseScreen"_hash, 1.f / etm::vecCast<float>(windowSettings.Dimensions));
 		STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_PingPongTexture[1]->GetHandle());
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 	}
@@ -245,9 +251,9 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 
 void PostProcessingRenderer::ResizeFBTextures()
 {
-	int32 width = WINDOW.Width, height = WINDOW.Height;
+	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
-	bool upsize = WINDOW.Width > m_CollectTex->GetResolution().x || WINDOW.Height > m_CollectTex->GetResolution().y;
+	bool upsize = windowSettings.Width > m_CollectTex->GetResolution().x || windowSettings.Height > m_CollectTex->GetResolution().y;
 	if(upsize)
 	{
 		//completely regenerate everything
@@ -281,23 +287,22 @@ void PostProcessingRenderer::ResizeFBTextures()
 		return;
 	}
 
-	m_CollectTex->Resize( WINDOW.Dimensions );
+	m_CollectTex->Resize(windowSettings.Dimensions );
 	for(uint32 i = 0; i < 2; i++)
 	{
-		m_ColorBuffers[i]->Resize( WINDOW.Dimensions );
+		m_ColorBuffers[i]->Resize(windowSettings.Dimensions );
 	}
 	for(GLuint i = 0; i < NUM_BLOOM_DOWNSAMPLES; i++)
 	{
 		//STATE->BindFramebuffer( m_DownSampleFBO[i] );
 		float resMult = 1.f / (float)std::pow( 2, i + 1 );
+		STATE->SetViewport(ivec2(0), etm::vecCast<int32>(etm::vecCast<float>(windowSettings.Dimensions) * resMult));
 
-		ivec2 dimensions = ivec2( (int32)((float)width * resMult, (float)height * resMult) );
-
-		m_DownSampleTexture[i]->Resize( dimensions );
-		m_DownPingPongTexture[i]->Resize( dimensions );
+		m_DownSampleTexture[i]->Resize(windowSettings.Dimensions);
+		m_DownPingPongTexture[i]->Resize(windowSettings.Dimensions);
 	}
 	for(GLuint i = 0; i < 2; i++)
 	{
-		m_PingPongTexture[i]->Resize( WINDOW.Dimensions );
+		m_PingPongTexture[i]->Resize(windowSettings.Dimensions );
 	}
 }

@@ -7,6 +7,10 @@ RTTR_REGISTRATION
 {
 	using namespace rttr;
 
+	registration::class_<etm::vector<2, int32>>("ivec2")
+		.property("x", &ivec2::x)
+		.property("y", &ivec2::y);
+
 	registration::class_<etm::vector<2, float>>("vec2")
 		.property("x", &vec2::x)
 		.property("y", &vec2::y);

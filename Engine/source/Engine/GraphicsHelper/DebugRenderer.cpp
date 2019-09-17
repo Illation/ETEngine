@@ -7,7 +7,6 @@
 
 #include <Engine/Components/CameraComponent.h>
 #include <Engine/Graphics/Shader.h>
-#include <Engine/Editor/Editor.h>
 
 
 DebugRenderer::DebugRenderer()
@@ -85,11 +84,9 @@ void DebugRenderer::UpdateBuffer()
 void DebugRenderer::Draw()
 {
 	if (m_Lines.size() <= 0)
+	{
 		return;
-
-#ifdef EDITOR
-	Editor::GetInstance()->DrawSceneVisualizers();
-#endif
+	}
 
 	STATE->SetShader(m_pShader.get());
 	m_pShader->Upload("uViewProj"_hash, CAMERA->GetViewProj());
@@ -130,7 +127,7 @@ void DebugRenderer::CheckMetaData(float thickness)
 
 void DebugRenderer::DrawLine(vec3 start, vec3 end, vec4 col /*= vec4(1)*/, float thickness /*= 1*/)
 {
-#if defined(EDITOR) || defined(ET_DEBUG)
+#if defined(ET_DEBUG)
 	CheckMetaData(thickness);
 	m_Lines.push_back(LineVertex(start, col));
 	m_Lines.push_back(LineVertex(end, col));
@@ -139,7 +136,7 @@ void DebugRenderer::DrawLine(vec3 start, vec3 end, vec4 col /*= vec4(1)*/, float
 
 void DebugRenderer::DrawLine(vec3 start, vec4 startCol, vec3 end, vec4 endCol, float thickness /*= 1*/)
 {
-#if defined(EDITOR) || defined(ET_DEBUG)
+#if defined(ET_DEBUG)
 	CheckMetaData(thickness);
 	m_Lines.push_back(LineVertex(start, startCol));
 	m_Lines.push_back(LineVertex(end, endCol));
@@ -148,7 +145,7 @@ void DebugRenderer::DrawLine(vec3 start, vec4 startCol, vec3 end, vec4 endCol, f
 
 void DebugRenderer::DrawGrid(float pixelSpacingRad)
 {
-#if defined(EDITOR) || defined(ET_DEBUG)
+#if defined(ET_DEBUG)
 	vec3 camPos = CAMERA->GetTransform()->GetPosition();
 		
 	//max draw distance of the grid
@@ -159,7 +156,7 @@ void DebugRenderer::DrawGrid(float pixelSpacingRad)
 	//figure out the spacing of lines
 	static const float unit = 1;
 
-	float spacing = tan((CAMERA->GetFOV() / WINDOW.Width)*pixelSpacingRad)*std::abs(camPos.y);
+	float spacing = tan((CAMERA->GetFOV() / Config::GetInstance()->GetWindow().Width)*pixelSpacingRad)*std::abs(camPos.y);
 	int32 digitCount = 0;
 	float num = abs(spacing);
 	while (num >= unit)

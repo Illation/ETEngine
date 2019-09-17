@@ -19,7 +19,7 @@
 //
 void RenderState::Initialize()
 {
-	m_ViewportSize = WINDOW.Dimensions;
+	m_ViewportSize = Config::GetInstance()->GetWindow().Dimensions;
 
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_NumTextureUnits);
 	for (int32 i = 0; i < m_NumTextureUnits; i++)

@@ -60,7 +60,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 	//*************************************************
 	STATE->BindFramebuffer(0);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	STATE->SetViewport(ivec2(0), WINDOW.Dimensions);
+	STATE->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 
 	glDeleteRenderbuffers(1, &captureRBO);
 	glDeleteFramebuffers(1, &captureFBO);
@@ -175,7 +175,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	//*************************************************
 	STATE->BindTexture(GL_TEXTURE_2D, 0);
 	STATE->BindFramebuffer(0);
-	STATE->SetViewport(ivec2(0), WINDOW.Dimensions);
+	STATE->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 
 	glDeleteRenderbuffers(1, &captureRBO);
 	glDeleteFramebuffers(1, &captureFBO);

@@ -194,7 +194,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	envCubeMap->SetParameters(params);
 
 	STATE->BindTexture(GL_TEXTURE_2D, 0);
-	STATE->SetViewport(ivec2(0), WINDOW.Dimensions);
+	STATE->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 
 	glDeleteRenderbuffers(1, &captureRBO);
 	glDeleteFramebuffers(1, &captureFBO);

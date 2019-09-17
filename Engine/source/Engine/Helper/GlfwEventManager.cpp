@@ -85,7 +85,7 @@ void GlfwEventManager::Init(GLFWwindow* const window)
 	{
 		UNUSED(window);
 
-		WINDOW.Resize(width, height);
+		Config::GetInstance()->GetWindow().Resize(width, height);
 	});
 
 	// window closing

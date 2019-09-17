@@ -25,9 +25,6 @@ protected:
 	virtual void OnTick() override = 0;
 
 private:
-	void LoadConfig();
-	void InitializeGame();
-
 	void GameLoop();
 
 private:

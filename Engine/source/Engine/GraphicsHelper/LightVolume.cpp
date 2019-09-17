@@ -117,7 +117,7 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *
 	m_pShaderShadowed->Upload("Color"_hash, col);
 
 	//shadow info
-	m_pShaderShadowed->Upload("PcfSamples"_hash, GRAPHICS.NumPCFSamples);
+	m_pShaderShadowed->Upload("PcfSamples"_hash, Config::GetInstance()->GetGraphics().NumPCFSamples);
 	m_pShaderShadowed->Upload("Bias"_hash, pShadow->m_Bias);
 
 	std::string ligStr = "cascades[";

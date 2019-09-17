@@ -47,22 +47,22 @@ void GlfwRenderArea::Initialize()
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #endif
 
-	Settings* const settings = Settings::GetInstance();
+	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
 	GLFWmonitor* const primaryMonitor = glfwGetPrimaryMonitor();
 	GLFWmonitor* fullscreenMonitor = nullptr;
-	if (settings->Window.Fullscreen)
+	if (windowSettings.Fullscreen)
 	{
 		fullscreenMonitor = primaryMonitor;
 	}
 
 #ifdef EDITOR
-	ivec2 const dim = settings->Window.EditorDimensions;
+	ivec2 const dim = windowSettings.EditorDimensions;
 #else
-	ivec2 const dim = settings->Window.Dimensions;
+	ivec2 const dim = windowSettings.Dimensions;
 #endif
 
-	m_Window = glfwCreateWindow(dim.x, dim.y, settings->Window.Title.c_str(), fullscreenMonitor, nullptr);
+	m_Window = glfwCreateWindow(dim.x, dim.y, windowSettings.Title.c_str(), fullscreenMonitor, nullptr);
 	if (m_Window == nullptr)
 	{
 		glfwTerminate();
@@ -125,7 +125,7 @@ void GlfwRenderArea::Initialize()
 #endif
 #endif
 
-	WINDOW.WindowResizeEvent.AddListener(std::bind(&GlfwRenderArea::OnResize, this));
+	Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener(std::bind(&GlfwRenderArea::OnResize, this));
 
 	if (m_OnInit)
 	{
@@ -181,7 +181,7 @@ void GlfwRenderArea::OnResize()
 {
 	if (m_OnResize)
 	{
-		m_OnResize(etm::vecCast<float>(SETTINGS->Window.Dimensions));
+		m_OnResize(etm::vecCast<float>(Config::GetInstance()->GetWindow().Dimensions));
 	}
 }
 

@@ -3,6 +3,7 @@
 #include "Command.h"
 #include <EtCore/FileSystem/FileUtil.h>
 
+// doesn't work anymore, keeping code as an example
 void DebugCopyResourceFiles()
 {
 #ifdef PLATFORM_Win

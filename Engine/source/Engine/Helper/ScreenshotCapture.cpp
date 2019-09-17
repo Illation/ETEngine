@@ -39,7 +39,7 @@ std::string ScreenshotCapture::GetFileName()
 
 	auto entries = m_BaseDir->GetChildrenByExt(extension);
 
-	std::string baseName = WINDOW.Title;
+	std::string baseName = Config::GetInstance()->GetWindow().Title;
 	for (uint32 i = 0; i < (uint32)baseName.size(); ++i)
 	{
 		if (std::isspace(baseName[i]))baseName[i] = '_';
@@ -74,13 +74,15 @@ void ScreenshotCapture::HandleCapture()
 
 	std::string filename = GetFileName();
 
-	// Make the BYTE array, factor of 3 because it's RBG.
-	uint8* pixels = new uint8[3 * WINDOW.Width * WINDOW.Height];
+	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
-	glReadPixels(0, 0, WINDOW.Width, WINDOW.Height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+	// Make the BYTE array, factor of 3 because it's RBG.
+	uint8* pixels = new uint8[3 * windowSettings.Width * windowSettings.Height];
+
+	glReadPixels(0, 0, windowSettings.Width, windowSettings.Height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 
 	stbi_flip_vertically_on_write(true);
-	if (stbi_write_jpg(filename.c_str(), WINDOW.Width, WINDOW.Height, 3, pixels, 90) != 0)
+	if (stbi_write_jpg(filename.c_str(), windowSettings.Width, windowSettings.Height, 3, pixels, 90) != 0)
 	{	
 		LOG("Screenshot saved to: " + filename);
 	}

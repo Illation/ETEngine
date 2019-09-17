@@ -49,5 +49,5 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_include_directories (EtEngineDemo PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 installDlls(EtEngineDemo "")
-installResources(EtEngineDemo)
+installConfig(EtEngineDemo)
 installCookResources(EtEngineDemo)

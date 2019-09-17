@@ -233,7 +233,9 @@ void PhysicsTestScene::Update()
 
 	if(INPUT->GetKeyState(E_KbdKey::X) == E_KeyState::Pressed)
 	{
-		GRAPHICS.UseFXAA = !(GRAPHICS.UseFXAA);
+		Config::Settings::Graphics& graphicsSettings = Config::GetInstance()->GetGraphics();
+		graphicsSettings.UseFXAA = !(graphicsSettings.UseFXAA);
+		Config::GetInstance()->Save();
 	}
 
 	SpriteRenderer::GetInstance()->Draw(m_DebugFont->GetAtlas(), vec2(1000, 0),

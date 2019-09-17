@@ -7,7 +7,6 @@
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Json/JsonParser.h>
 #include <EtCore/FileSystem/Json/JsonDom.h>
-#include <EtCore/Helper/Commands.h>
 #include <EtCore/Helper/PerformanceInfo.h>
 #include <EtCore/UpdateCycle/TickManager.h>
 #include <EtCore/Content/PackageResourceManager.h>
@@ -25,17 +24,9 @@
 #include <Engine/GraphicsHelper/Viewport.h>
 #include <Engine/GraphicsHelper/SceneRenderer.h>
 
-#ifdef EDITOR
-#	include <Engine/Editor/Editor.h>
-#endif
-
 
 AbstractFramework::~AbstractFramework()
 {
-#ifdef EDITOR
-	Editor::GetInstance()->DestroyInstance();
-#endif
-
 	GlfwEventManager::DestroyInstance();
 	m_RenderArea.Uninitialize();
 	SafeDelete(m_Viewport);
@@ -50,7 +41,6 @@ AbstractFramework::~AbstractFramework()
 	ContextManager::DestroyInstance();
 	
 	RenderPipeline::DestroyInstance();
-	Settings::DestroyInstance();
 
 	ResourceManager::DestroyInstance();
 
@@ -62,12 +52,8 @@ AbstractFramework::~AbstractFramework()
 void AbstractFramework::Run()
 {
 	Logger::Initialize();//Init logger first because all output depends on it from the start
-#ifndef ET_SHIPPING
-	DebugCopyResourceFiles();
-#endif
 
-	LoadConfig();
-	PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
+	Config::GetInstance()->Initialize();
 
 	m_Viewport = new Viewport(&m_RenderArea);
 	m_Viewport->SetRenderer(SceneRenderer::GetInstance());
@@ -79,96 +65,39 @@ void AbstractFramework::Run()
 	SceneRenderer::GetInstance()->InitWithSplashScreen();
 	m_RenderArea.Update();
 
-	InitializeGame();
+	AudioManager::GetInstance()->Initialize();
+	PhysicsManager::GetInstance()->Initialize();
 
-	GameLoop();
-}
-
-void AbstractFramework::LoadConfig()
-{
-	Settings* pSet = Settings::GetInstance();//Initialize Game Settings
-
-	File* jsonFile = new File("./config.json", nullptr);
-	if (!jsonFile->Open(FILE_ACCESS_MODE::Read))
-		return;
-
-	JSON::Parser parser = JSON::Parser(FileUtil::AsText(jsonFile->Read()));
-	delete jsonFile;
-	jsonFile = nullptr;
-
-	JSON::Object* root = parser.GetRoot();
-	if (!root)
-	{
-		LOG("unable to read config json", Warning);
-		return;
-	}
-
-	JSON::Object* graphics = (*root)["graphics"]->obj();
-	if (graphics)
-	{
-		JSON::ApplyNumValue(graphics, pSet->Graphics.NumCascades, "CSM Cascade Count");
-		JSON::ApplyNumValue(graphics, pSet->Graphics.NumPCFSamples, "PCF Sample Count");
-		JSON::ApplyNumValue(graphics, pSet->Graphics.CSMDrawDistance, "CSM Draw Distance");
-		JSON::ApplyNumValue(graphics, pSet->Graphics.PbrBrdfLutSize, "PBR BRDF LUT Resolution");
-		JSON::ApplyNumValue(graphics, pSet->Graphics.TextureScaleFactor, "Texture Scale Factor");
-		JSON::ApplyNumValue(graphics, pSet->Graphics.NumBlurPasses, "Bloom Blur Passes");
-		JSON::ApplyBoolValue(graphics, pSet->Graphics.UseFXAA, "Use FXAA");
-	}
-	JSON::Object* window = (*root)["window"]->obj();
-	if (window)
-	{
-		JSON::ApplyBoolValue(window, pSet->Window.Fullscreen, "Fullscreen");
-		JSON::ApplyStrValue(window, pSet->Window.Title, "Title");
-		std::vector<ivec2> resolutions;
-		JSON::Value* jval = (*window)["Resolutions"];
-		if (jval)
-		{
-			for (JSON::Value* res : jval->arr()->value)
-			{
-				ivec2 vec;
-				if (JSON::ArrayVector(res, vec))resolutions.push_back(vec);
-			}
-		}
-		uint32 resIdx;
-		if (JSON::ApplyNumValue(window, resIdx, pSet->Window.Fullscreen ? "Fullscreen Resolution" : "Windowed Resolution"))
-		{
-			if (resIdx < (uint32)resolutions.size()) 
-				pSet->Window.Resize(resolutions[resIdx].x, resolutions[resIdx].y, false);
-		}
-	}
-	AudioManager::GetInstance()->Initialize();//Initialize Audio
-	PhysicsManager::GetInstance()->Initialize();//Initialize Physics
-	SceneManager::GetInstance();//Initialize SceneManager
+	// set up scene manager
+	SceneManager::GetInstance();
 	AddScenes();
-	JSON::String* initialScene = (*root)["start scene"]->str();
-	if (initialScene)
+	std::string const& initScene = Config::GetInstance()->GetStartScene();
+	if (!initScene.empty())
 	{
-		SceneManager::GetInstance()->SetActiveGameScene(initialScene->value);
+		SceneManager::GetInstance()->SetActiveGameScene(initScene);
 	}
-	//Screenshot manager
-	JSON::String* screenshotDir = (*root)["screenshot dir"]->str();
-	if (screenshotDir)
+
+	// set up screenshot manager
+	std::string const& screenshotDir = Config::GetInstance()->GetScreenshotDir();
+	if (!screenshotDir.empty())
 	{
-		ScreenshotCapture::GetInstance()->Initialize(screenshotDir->value);
+		ScreenshotCapture::GetInstance()->Initialize(Config::GetInstance()->GetUserDirPath() + screenshotDir);
 	}
 	else
 	{
-		ScreenshotCapture::GetInstance()->Initialize("./");
+		ScreenshotCapture::GetInstance()->Initialize(Config::GetInstance()->GetUserDirPath() + std::string("./"));
 	}
-}
 
-void AbstractFramework::InitializeGame()
-{
+	PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
+
 	InputManager::GetInstance();	// init input manager
 	GlfwEventManager::GetInstance()->Init(m_RenderArea.GetWindow());
 
 	RenderPipeline::GetInstance()->Initialize();
 
-#ifdef EDITOR
-	Editor::GetInstance()->Initialize();
-#endif
-
 	RegisterAsTriggerer();
+
+	GameLoop();
 }
 
 void AbstractFramework::GameLoop()

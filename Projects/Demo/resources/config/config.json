@@ -1,0 +1,35 @@
+{
+  "settings": {
+    "graphics": {
+      "use FXAA": true,
+      "CSM cascade count": 3,
+      "CSM draw distance": 200,
+      "PCF sample count": 3,
+      "BRDF LUT size": 512,
+      "texture scale factor": 1,
+      "bloom blur passes": 5
+    },
+    "window": {
+      "title": "ETEngine Demo",
+      "fullscreen": false,
+      "resolutions": [
+        {
+          "x": 1280,
+          "y": 720
+        },
+        {
+          "x": 1920,
+          "y": 1080
+        },
+        {
+          "x": 2560,
+          "y": 1440
+        }
+      ],
+      "fullscreen resolution": 2,
+      "windowed resolution": 1
+    },
+    "start scene": "ShadingTestScene",
+    "screenshot dir": "./Screenshots/"
+  }
+}

@@ -39,4 +39,3 @@ include_directories("${ENGINE_DIRECTORY_ABS}/source")
 target_include_directories (unit_tests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 installDlls(unit_tests "")
-installResources(unit_tests)

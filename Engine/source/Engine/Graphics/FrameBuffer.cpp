@@ -45,7 +45,7 @@ void FrameBuffer::Initialize()
 	if (!(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE))
 		LOG("Framebuffer>Initialize() FAILED!", LogLevel::Error);
 
-	WINDOW.WindowResizeEvent.AddListener( std::bind( &FrameBuffer::ResizeFramebufferTextures, this ) );
+	Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener(std::bind( &FrameBuffer::ResizeFramebufferTextures, this));
 }
 
 void FrameBuffer::AccessShaderAttributes()
@@ -76,9 +76,11 @@ void FrameBuffer::Draw()
 
 void FrameBuffer::GenerateFramebufferTextures()
 {
+	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+
 	STATE->BindFramebuffer(m_GlFrameBuffer);
+
 	//Textures
-	int32 width = WINDOW.Width, height = WINDOW.Height;
 	std::vector<GLuint> attachments;
 	attachments.reserve(m_NumTargets);
 	m_pTextureVec.reserve(m_NumTargets);
@@ -89,7 +91,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 	//Depth buffer
 	if (m_CaptureDepth)
 	{
-		TextureData* depthMap = new TextureData( width, height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT );
+		TextureData* depthMap = new TextureData(windowSettings.Width, windowSettings.Height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT );
 		depthMap->Build();
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap->GetHandle(), 0);
 		depthMap->SetParameters(params);
@@ -99,7 +101,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 	//Color buffers
 	for (uint32 i = 0; i < m_NumTargets; i++)
 	{
-		TextureData* colorBuffer = new TextureData( width, height, GL_RGBA16F, GL_RGBA, m_Format );
+		TextureData* colorBuffer = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGBA16F, GL_RGBA, m_Format );
 		colorBuffer->Build();
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffer->GetHandle(), 0 );
 		colorBuffer->SetParameters(params, true);
@@ -112,7 +114,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 	{
 		glGenRenderbuffers(1, &m_RboDepthStencil);
 		glBindRenderbuffer(GL_RENDERBUFFER, m_RboDepthStencil);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowSettings.Width, windowSettings.Height);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RboDepthStencil);
 	}
 
@@ -121,10 +123,11 @@ void FrameBuffer::GenerateFramebufferTextures()
 
 void FrameBuffer::ResizeFramebufferTextures()
 {
-	int32 width = WINDOW.Width, height = WINDOW.Height;
-	assert( m_pTextureVec.size() > 0 );
-	bool upscale = WINDOW.Width > m_pTextureVec[0]->GetResolution().x || WINDOW.Height > m_pTextureVec[0]->GetResolution().y;
-	if(upscale)
+	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+
+	ET_ASSERT(m_pTextureVec.size() > 0);
+
+	if(windowSettings.Width > m_pTextureVec[0]->GetResolution().x || windowSettings.Height > m_pTextureVec[0]->GetResolution().y)
 	{
 		glDeleteRenderbuffers( 1, &m_RboDepthStencil );
 		for(uint32 i = 0; i < m_pTextureVec.size(); i++)
@@ -141,7 +144,7 @@ void FrameBuffer::ResizeFramebufferTextures()
 	uint32 offset = 0;
 	if(m_CaptureDepth)
 	{
-		m_pTextureVec[0]->Resize( WINDOW.Dimensions );
+		m_pTextureVec[0]->Resize(windowSettings.Dimensions);
 		++offset;
 	}
 	else 
@@ -151,12 +154,12 @@ void FrameBuffer::ResizeFramebufferTextures()
 		glDeleteRenderbuffers( 1, &m_RboDepthStencil );
 		glGenRenderbuffers( 1, &m_RboDepthStencil );
 		glBindRenderbuffer( GL_RENDERBUFFER, m_RboDepthStencil );
-		glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height );
-		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RboDepthStencil );
+		glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowSettings.Width, windowSettings.Height);
+		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RboDepthStencil);
 	}
 	assert( m_pTextureVec.size() >= offset + m_NumTargets );
 	for(uint32 i = offset; i < offset + m_NumTargets; ++i)
 	{
-		m_pTextureVec[i]->Resize( WINDOW.Dimensions );
+		m_pTextureVec[i]->Resize(windowSettings.Dimensions);
 	}
 }

@@ -20,8 +20,7 @@ class Config : public Singleton<Config>
 	//-----------------
 public:
 
-	static constexpr char s_PointerPath[] = "../config/userDirPointer.json";
-	static constexpr char s_DefaultUserDir[] = "../config/";
+	static constexpr char s_PointerPath[] = "userDirPointer.json";
 	static constexpr char s_ConfigFileRelativePath[] = "./config.json";
 
 	//---------------------------------
@@ -31,7 +30,7 @@ public:
 	//
 	struct UserDirPointer
 	{
-		std::string m_UserDirPath = s_DefaultUserDir;
+		std::string m_UserDirPath;
 
 		RTTR_ENABLE()
 	};
@@ -84,6 +83,13 @@ public:
 			//---------------------------
 			std::string Title = "ETEngine";
 			bool Fullscreen = false;
+			std::vector<ivec2> Resolutions;
+			size_t FullscreenRes;
+			size_t WindowedRes;
+
+			// Derived settings after loading data
+			//-------------------------------------
+			float AspectRatio;
 			union
 			{
 				struct
@@ -95,16 +101,14 @@ public:
 				ivec2 Dimensions;
 			};
 
-			// Derived settings after loading data
-			//-------------------------------------
-			float AspectRatio;
-
 			// utility
 			MulticastDelegate WindowResizeEvent;
 		};
 
 		Graphics m_Graphics;
 		Window m_Window;
+		std::string m_StartScene;
+		std::string m_ScreenshotDir;
 
 		RTTR_ENABLE()
 	};
@@ -129,6 +133,9 @@ public:
 
 	Settings::Window const& GetWindow() const { return m_Settings.m_Window; }
 	Settings::Window & GetWindow() { return m_Settings.m_Window; }
+
+	std::string const& GetStartScene() const { return m_Settings.m_StartScene; }
+	std::string const& GetScreenshotDir() const { return m_Settings.m_ScreenshotDir; }
 
 	// initialization
 	void Initialize();

@@ -2,22 +2,18 @@
 
 #include "CIE.h"
 
+#include <EtCore/Content/ResourceManager.h>
+#include <EtCore/Content/AssetStub.h>
 #include <EtCore/FileSystem/Json/JsonParser.h>
-#include <EtCore/FileSystem/Entry.h>
-#include <EtCore/FileSystem/FileUtil.h>
 
 
 void CIE::LoadData()
 {
-	File* jsonFile = new File("./cie.json", nullptr);
-	if (!jsonFile->Open(FILE_ACCESS_MODE::Read))
-		return;
+	AssetPtr<StubData> jsonCieText = ResourceManager::Instance()->GetAssetData<StubData>("cie.json"_hash);
 
-	JSON::Parser parser = JSON::Parser(FileUtil::AsText(jsonFile->Read()));
-	delete jsonFile;
-	jsonFile = nullptr;
-
+	JSON::Parser parser = JSON::Parser(std::string(jsonCieText->GetText(), jsonCieText->GetLength()));
 	JSON::Object* root = parser.GetRoot();
+
 	m_Table = (*root)["2 deg color matching"]->arr()->NumArr();
 	auto jxyz = (*root)["xyz to rgb"];
 	JSON::ArrayMatrix(jxyz, m_CieToRgb);

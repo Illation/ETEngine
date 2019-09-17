@@ -38,20 +38,22 @@ void SceneRenderer::ShowSplashScreen()
 	m_SplashTitleFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Roboto-Bold.ttf"_hash);
 	m_SplashRegFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("RobotoCondensed-Regular.ttf"_hash);
 
+	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+
 	SpriteRenderer::GetInstance()->Draw(m_SplashBackgroundTex.get(), vec2(0));
 
 	std::string title = "E   T   E N G I N E";
-	int16 titleFontSize = (int16)(150 * ((float)WINDOW.Height / (float)1440));
+	int16 titleFontSize = static_cast<int16>(150.f * (static_cast<float>(windowSettings.Height) / 1440.f));
 	ivec2 titleSize = TextRenderer::GetInstance()->GetTextSize(title, m_SplashTitleFont.get(), titleFontSize);
-	TextRenderer::GetInstance()->SetColor(vec4(1));
+	TextRenderer::GetInstance()->SetColor(vec4(1.f));
 	TextRenderer::GetInstance()->SetFont(m_SplashTitleFont.get());
-	TextRenderer::GetInstance()->DrawText(title, etm::vecCast<float>(WINDOW.Dimensions / 2 - titleSize / 2), titleFontSize);
+	TextRenderer::GetInstance()->DrawText(title, etm::vecCast<float>(windowSettings.Dimensions / 2 - titleSize / 2), titleFontSize);
 
 	TextRenderer::GetInstance()->SetFont(m_SplashRegFont.get());
 	std::string loading = "LOADING";
-	int16 loadingFontSize = (int16)(50 * ((float)WINDOW.Height / (float)1440));
+	int16 loadingFontSize = static_cast<int16>(50.f * (static_cast<float>(windowSettings.Height) / 1440.f));
 	ivec2 loadingSize = TextRenderer::GetInstance()->GetTextSize(loading, m_SplashRegFont.get(), loadingFontSize);
-	TextRenderer::GetInstance()->DrawText(loading, etm::vecCast<float>(WINDOW.Dimensions - ivec2(loadingSize.x + 20, 20)), loadingFontSize);
+	TextRenderer::GetInstance()->DrawText(loading, etm::vecCast<float>(windowSettings.Dimensions - ivec2(loadingSize.x + 20, 20)), loadingFontSize);
 
 	SpriteRenderer::GetInstance()->Draw();
 	TextRenderer::GetInstance()->Draw();

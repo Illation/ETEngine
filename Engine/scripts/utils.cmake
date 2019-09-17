@@ -593,11 +593,13 @@ function(installEditorDlls TARGET)
 endfunction(installEditorDlls)
 
 
-# install everything in the appropriate directory according to configuration
-#############################################################################
-function(installResources TARGET)
+# sets up the user directory and config data
+#############################################
+function(installConfig TARGET)
 
 	set(baseBinDir "${PROJECT_DIRECTORY}/bin")
+	set(tempBuildDir "${PROJECT_DIRECTORY}/build/temp")
+	set(configDir "${PROJECT_DIRECTORY}/resources/config")
 
 	# paths for our libraries depend on the architecture we compile for
 	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
@@ -606,18 +608,25 @@ function(installResources TARGET)
 		set(platform "x32")
 	endif()
 
+	# user directory where user data and configuration
+	set(userDir "${PROJECT_DIRECTORY}/user_data")
+
+	# create a file within the packaged resources that points to the user directory
+	get_filename_component(absUserDir ${userDir} ABSOLUTE)
+	file(WRITE ${tempBuildDir}/config/userDirPointer.json
+		"{\"dir pointer\":{\"user dir path\":\"${absUserDir}/\"}}" )
+		
+	# copy config files
+	install(DIRECTORY ${configDir}/ DESTINATION ${userDir}/)
+
+	# copy user dir pointer to output directory
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
-
-		set(binDir "${baseBinDir}/${configType}_${platform}/${TARGET}")
-
-		# copy config files
-		install(DIRECTORY ${PROJECT_DIRECTORY}/source/Runtime/Config/
-			CONFIGURATIONS ${configType}
-			DESTINATION ${binDir}/)
-
+		install(FILES ${tempBuildDir}/config/userDirPointer.json 
+		CONFIGURATIONS ${configType} 
+		DESTINATION ${baseBinDir}/${configType}_${platform}/${TARGET}/)
 	endforeach()
 
-endfunction(installResources)
+endfunction(installConfig)
 
 
 # install everything in the appropriate directory according to configuration

@@ -38,7 +38,7 @@ inline void SafeRelease(Interface &pInterfaceToRelease)
 #include <EtCore/Helper/PerformanceInfo.h>
 
 #include <Engine/Components/TransformComponent.h>
-#include <Engine/Base/Settings.h>
+#include <Engine/Base/Config.h>
 #include <Engine/Base/SceneContext.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>
 #include <Engine/GraphicsHelper/RenderState.h>
@@ -47,11 +47,8 @@ inline void SafeRelease(Interface &pInterfaceToRelease)
 //Working singleton Set
 #define CAMERA static_cast<SceneContext*>(ContextManager::GetInstance()->GetActiveContext())->camera
 #define SCENE static_cast<SceneContext*>(ContextManager::GetInstance()->GetActiveContext())->scene
-#define SETTINGS Settings::GetInstance()
 #define INPUT InputManager::GetInstance()
 #define TRANSFORM GetTransform()
-#define WINDOW Settings::GetInstance()->Window
-#define GRAPHICS Settings::GetInstance()->Graphics
 #define PIPELINE RenderPipeline::GetInstance()
 #define STATE Viewport::GetGlobalRenderState()
 #pragma endregion Macros

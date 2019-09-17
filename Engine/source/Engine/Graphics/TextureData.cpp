@@ -266,13 +266,14 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 		return false;
 	}
 
-	if (!etm::nearEquals(GRAPHICS.TextureScaleFactor, 1.f))
+	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
+	if (!etm::nearEquals(graphicsSettings.TextureScaleFactor, 1.f))
 	{
 		if (!m_ForceResolution)
 		{
 			// resize
-			int32 const outWidth = static_cast<int32>(static_cast<float>(width) * GRAPHICS.TextureScaleFactor);
-			int32 const outHeight = static_cast<int32>(static_cast<float>(height) * GRAPHICS.TextureScaleFactor);
+			int32 const outWidth = static_cast<int32>(static_cast<float>(width) * graphicsSettings.TextureScaleFactor);
+			int32 const outHeight = static_cast<int32>(static_cast<float>(height) * graphicsSettings.TextureScaleFactor);
 			uint8* outBits = new uint8[outWidth * outHeight * channels];
 
 			stbir_resize_uint8(bits, width, height, 0, outBits, outWidth, outHeight, 0, channels);

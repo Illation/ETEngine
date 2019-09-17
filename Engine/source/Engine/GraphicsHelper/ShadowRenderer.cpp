@@ -29,6 +29,8 @@ void ShadowRenderer::Initialize()
 
 void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalShadowData *pShadowData)
 {
+	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
+
 	//Calculate light camera matrix
 	//*****************************
 	//view
@@ -41,11 +43,11 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 	FrustumCorners corners = CAMERA->GetFrustum()->GetCorners();
 	corners.Transform(lightView);
 
-	for (int32 i = 0; i < GRAPHICS.NumCascades; i++)
+	for (int32 i = 0; i < graphicsSettings.NumCascades; i++)
 	{
 		//calculate orthographic projection matrix based on cascade
-		float cascadeStart = (i == 0) ? 0 : pShadowData->m_Cascades[i - 1].distance / GRAPHICS.CSMDrawDistance;
-		float cascadeEnd = pShadowData->m_Cascades[i].distance / GRAPHICS.CSMDrawDistance;
+		float cascadeStart = (i == 0) ? 0 : pShadowData->m_Cascades[i - 1].distance / graphicsSettings.CSMDrawDistance;
+		float cascadeEnd = pShadowData->m_Cascades[i].distance / graphicsSettings.CSMDrawDistance;
 		std::vector<vec3> cascade;
 		cascade.push_back(corners.na + (corners.fa - corners.na)*cascadeStart);
 		cascade.push_back(corners.nb + (corners.fb - corners.nb)*cascadeStart);
@@ -62,7 +64,7 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 		float top = std::numeric_limits<float>::lowest();
 		float zFar = std::numeric_limits<float>::lowest();
 
-		float zNear = -GRAPHICS.CSMDrawDistance;//temp, should be calculated differently
+		float zNear = -graphicsSettings.CSMDrawDistance;//temp, should be calculated differently
 
 		for (size_t j = 0; j < cascade.size(); j++)
 		{
@@ -95,11 +97,13 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 
 DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 {
+	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
+
 	//Calculate cascade distances
 	m_Cascades.clear();
 	float sizeL = 1;
-	float distMult = GRAPHICS.CSMDrawDistance / powf(2.f, static_cast<float>(GRAPHICS.NumCascades - 1));
-	for (int32 cascade = 0; cascade < GRAPHICS.NumCascades; cascade++)
+	float distMult = graphicsSettings.CSMDrawDistance / powf(2.f, static_cast<float>(graphicsSettings.NumCascades - 1));
+	for (int32 cascade = 0; cascade < graphicsSettings.NumCascades; cascade++)
 	{
 		auto data = CascadeData();
 

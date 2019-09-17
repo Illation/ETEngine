@@ -18,27 +18,32 @@ RTTR_REGISTRATION
 	registration::class_<Config::Settings::Graphics>("output")
 		.constructor<>()
 		.property("use FXAA", &Config::Settings::Graphics::UseFXAA)
-		.property("num cascades", &Config::Settings::Graphics::NumCascades)
-		.property("csm draw distance", &Config::Settings::Graphics::CSMDrawDistance)
-		.property("num PCF samples", &Config::Settings::Graphics::NumPCFSamples)
+		.property("CSM cascade count", &Config::Settings::Graphics::NumCascades)
+		.property("CSM draw distance", &Config::Settings::Graphics::CSMDrawDistance)
+		.property("PCF sample count", &Config::Settings::Graphics::NumPCFSamples)
 		.property("BRDF LUT size", &Config::Settings::Graphics::PbrBrdfLutSize)
-		.property("device id", &Config::Settings::Graphics::TextureScaleFactor)
-		.property("device id", &Config::Settings::Graphics::NumBlurPasses)
+		.property("texture scale factor", &Config::Settings::Graphics::TextureScaleFactor)
+		.property("bloom blur passes", &Config::Settings::Graphics::NumBlurPasses)
 		;
 
 	registration::class_<Config::Settings::Window>("window")
 		.constructor<>()
 		.method("DeriveSettings", &Config::Settings::Window::DeriveSettings)
 		.method("Resize", &Config::Settings::Window::Resize)
+
 		.property("title", &Config::Settings::Window::Title)
 		.property("fullscreen", &Config::Settings::Window::Fullscreen)
-		.property("dimensions", &Config::Settings::Window::Dimensions)
+		.property("resolutions", &Config::Settings::Window::Resolutions)
+		.property("fullscreen resolution", &Config::Settings::Window::FullscreenRes)
+		.property("windowed resolution", &Config::Settings::Window::WindowedRes)
 		;
 
 	registration::class_<Config::Settings>("settings")
 		.constructor<>()
 		.property("graphics", &Config::Settings::m_Graphics)
 		.property("window", &Config::Settings::m_Window)
+		.property("start scene", &Config::Settings::m_StartScene)
+		.property("screenshot dir", &Config::Settings::m_ScreenshotDir)
 		;
 }
 
@@ -49,6 +54,19 @@ RTTR_REGISTRATION
 //
 void Config::Settings::Window::DeriveSettings()
 {
+	size_t const resIdx = Fullscreen ? FullscreenRes : WindowedRes;
+	if (resIdx < Resolutions.size())
+	{
+		Dimensions = Resolutions[resIdx];
+	}
+	else
+	{
+		LOG(FS("Settings::Window::DeriveSettings > Invalid resolution index in '%s' mode: %u", 
+			(Fullscreen ? "fullscreen" : "windowed"),
+			(Fullscreen ? FullscreenRes : WindowedRes)), 
+			LogLevel::Warning);
+	}
+
 	AspectRatio = static_cast<float>(Width) / static_cast<float>(Height);
 }
 
@@ -85,8 +103,7 @@ void Config::Initialize()
 	}
 	else
 	{
-		LOG("Config::Initialize > unable to deserialize pointer to user directory, using default user directory: '"
-			+ std::string(s_DefaultUserDir) + std::string("'"), Warning);
+		LOG("Config::Initialize > unable to deserialize pointer to user directory!", LogLevel::Error);
 	}
 
 	// try deserializing settings

@@ -3,7 +3,6 @@
 
 #include "TransformComponent.h"
 
-#include <Engine/Base/Settings.h>
 #include <Engine/Graphics/Frustum.h>
 
 
@@ -38,16 +37,17 @@ void CameraComponent::Initialize()
 
 void CameraComponent::Update()
 {
+	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+
 	//Calculate projection
 	if (m_PerspectiveProjection)
 	{
-		m_Projection=etm::perspective(etm::radians(m_FOV),
-			(float)(WINDOW.Width) / (float)WINDOW.Height, m_NearPlane, m_FarPlane);
+		m_Projection=etm::perspective(etm::radians(m_FOV), windowSettings.AspectRatio, m_NearPlane, m_FarPlane);
 	}
 	else
 	{
-		float viewWidth = (m_Size>0) ? m_Size * WINDOW.GetAspectRatio() : WINDOW.Width;
-		float viewHeight = (m_Size>0) ? m_Size : WINDOW.Height;
+		float viewWidth = (m_Size>0) ? m_Size * windowSettings.AspectRatio : windowSettings.Width;
+		float viewHeight = (m_Size>0) ? m_Size : windowSettings.Height;
 		m_Projection = etm::orthographic(0.f, viewWidth, viewHeight, 0.f, m_NearPlane, m_FarPlane);
 	}
 	//Calculate parameters to linearize depthbuffer values

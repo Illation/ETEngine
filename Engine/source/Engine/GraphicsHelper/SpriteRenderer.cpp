@@ -82,7 +82,7 @@ void SpriteRenderer::Initialize()
 	TextureParameters params;
 	m_EmptyTex->SetParameters(params);
 
-	WINDOW.WindowResizeEvent.AddListener(std::bind(&SpriteRenderer::OnWindowResize, this));
+	Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener(std::bind(&SpriteRenderer::OnWindowResize, this));
 }
 
 
@@ -141,7 +141,7 @@ void SpriteRenderer::Draw(TextureData const* tex,
 	break;
 
 	case E_ScalingMode::Texture:
-		finalScale = scale * etm::vecCast<float>(tex->GetResolution()) / GRAPHICS.TextureScaleFactor;
+		finalScale = scale * etm::vecCast<float>(tex->GetResolution()) / Config::GetInstance()->GetGraphics().TextureScaleFactor;
 		break;
 
 	case E_ScalingMode::TextureAbs:

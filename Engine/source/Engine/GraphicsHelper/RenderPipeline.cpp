@@ -76,11 +76,11 @@ void RenderPipeline::Initialize()
 	m_pSSR = new ScreenSpaceReflections();
 	m_pSSR->Initialize();
 
-	PbrPrefilter::GetInstance()->Precompute(GRAPHICS.PbrBrdfLutSize);
+	PbrPrefilter::GetInstance()->Precompute(Config::GetInstance()->GetGraphics().PbrBrdfLutSize);
 
 	m_ClearColor = vec3(101.f / 255.f, 114.f / 255.f, 107.f / 255.f)*0.1f;
 
-	WINDOW.WindowResizeEvent.AddListener( std::bind( &RenderPipeline::OnResize, this ) );
+	Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener( std::bind( &RenderPipeline::OnResize, this ) );
 }
 
 void RenderPipeline::DrawShadow()
@@ -97,6 +97,9 @@ void RenderPipeline::DrawShadow()
 void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 {
 	m_pRenderScenes = pScenes;
+
+	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+
 	//Shadow Mapping
 	//**************
 	STATE->SetDepthEnabled(true);
@@ -117,7 +120,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	m_pGBuffer->Enable();
 
 	//reset viewport
-	STATE->SetViewport(ivec2(0), WINDOW.Dimensions);
+	STATE->SetViewport(ivec2(0), windowSettings.Dimensions);
 
 	STATE->SetClearColor(vec4(m_ClearColor, 1.f));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -144,8 +147,8 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	STATE->BindDrawFramebuffer(m_pSSR->GetTargetFBO());
 	//STATE->BindDrawFramebuffer( 0 );
 	glBlitFramebuffer(
-		0, 0, WINDOW.Width, WINDOW.Height,
-		0, 0, WINDOW.Width, WINDOW.Height,
+		0, 0, windowSettings.Width, windowSettings.Height,
+		0, 0, windowSettings.Width, windowSettings.Height,
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
 	//Render Light Volumes
@@ -179,8 +182,8 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	STATE->BindReadFramebuffer(m_pSSR->GetTargetFBO());
 	STATE->BindDrawFramebuffer(m_pPostProcessing->GetTargetFBO());
 	glBlitFramebuffer(
-		0, 0, WINDOW.Width, WINDOW.Height,
-		0, 0, WINDOW.Width, WINDOW.Height,
+		0, 0, windowSettings.Width, windowSettings.Height,
+		0, 0, windowSettings.Width, windowSettings.Height,
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
 	STATE->SetDepthEnabled(true);
