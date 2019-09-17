@@ -2,7 +2,7 @@
   "asset database": {
     "packages": [
       {
-        "name": "content1",
+        "name": "engine_content",
         "path": "content/"
       }
     ],
@@ -428,7 +428,7 @@
             "texture asset": {
               "name": "Consolas_32_0.tga",
               "path": "assets/Fonts/",
-              "package": "content1",
+              "package": "engine_content",
               "references": [],
               "use SRGB": false,
               "force resolution": true,
@@ -456,7 +456,7 @@
             "font asset": {
               "name": "Consolas_32.fnt",
               "path": "assets/Fonts/",
-              "package": "content1",
+              "package": "engine_content",
               "references": [],
               "size": 42,
               "padding": 1,
@@ -468,7 +468,7 @@
             "font asset": {
               "name": "papyrus.ttf",
               "path": "assets/Fonts/",
-              "package": "content1",
+              "package": "engine_content",
               "references": [],
               "size": 42,
               "padding": 1,
@@ -480,7 +480,7 @@
             "font asset": {
               "name": "Ubuntu-Regular.ttf",
               "path": "assets/Fonts/",
-              "package": "content1",
+              "package": "engine_content",
               "references": [],
               "size": 42,
               "padding": 1,
@@ -492,7 +492,7 @@
             "font asset": {
               "name": "Roboto-Bold.ttf",
               "path": "assets/Fonts/roboto2014/",
-              "package": "content1",
+              "package": "engine_content",
               "references": [],
               "size": 42,
               "padding": 1,
@@ -504,7 +504,7 @@
             "font asset": {
               "name": "RobotoCondensed-Regular.ttf",
               "path": "assets/Fonts/roboto2014/",
-              "package": "content1",
+              "package": "engine_content",
               "references": [],
               "size": 42,
               "padding": 1,
@@ -520,7 +520,7 @@
             "mesh asset": {
               "name": "bunny.dae",
               "path": "assets/Models/",
-              "package": "content1",
+              "package": "engine_content",
               "references": []
             }
           },
@@ -528,7 +528,7 @@
             "mesh asset": {
               "name": "cube.dae",
               "path": "assets/Models/",
-              "package": "content1",
+              "package": "engine_content",
               "references": []
             }
           },
@@ -536,7 +536,7 @@
             "mesh asset": {
               "name": "monkey.dae",
               "path": "assets/Models/",
-              "package": "content1",
+              "package": "engine_content",
               "references": []
             }
           },
@@ -544,7 +544,7 @@
             "mesh asset": {
               "name": "sphere.dae",
               "path": "assets/Models/",
-              "package": "content1",
+              "package": "engine_content",
               "references": []
             }
           }

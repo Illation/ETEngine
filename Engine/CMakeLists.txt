@@ -8,19 +8,18 @@
 # general library that has the build files, easy way to make sure we can see the build files in the IDE, shouldn't actually be built
 #####################################
 
-message(STATUS "finding general project files ...")
-file(GLOB_RECURSE generalFiles
-	${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.cmake
-	${CMAKE_CURRENT_SOURCE_DIR}/../CMakeLists.txt
-	${CMAKE_CURRENT_SOURCE_DIR}/../*.md
-	${CMAKE_CURRENT_SOURCE_DIR}/../appveyor.yml
-	${CMAKE_CURRENT_SOURCE_DIR}/../.gitignore
-	${CMAKE_CURRENT_SOURCE_DIR}/../.gitattributes )
+file(GLOB generalFiles ${CMAKE_CURRENT_SOURCE_DIR}/../*)
+	
+file(GLOB_RECURSE engineFiles
+	${CMAKE_CURRENT_SOURCE_DIR}/scripts/*
+	${CMAKE_CURRENT_SOURCE_DIR}/resources/*
+	${CMAKE_CURRENT_SOURCE_DIR}/config/* )
 
 message(STATUS "Adding target: General")
-add_library(General ${generalFiles})
+add_library(General ${generalFiles} ${engineFiles})
 set_target_properties(General PROPERTIES LINKER_LANGUAGE NONE) # we don't build this library
-assign_source_group(${generalFiles})
+assign_source_group(${engineFiles})
+
 
 # all other targets are under source and resources
 ##################################################

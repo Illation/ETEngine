@@ -9,10 +9,6 @@
 #include <Engine/SceneGraph/SceneManager.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>
 
-#ifdef EDITOR
-#	include <Engine/Editor/Editor.h>
-#endif
-
 
 //---------------------------------
 // SceneRenderer::InitWithSplashScreen
@@ -89,13 +85,6 @@ void SceneRenderer::OnRender()
 		activeScenes.push_back(SceneManager::GetInstance()->GetActiveScene());
 	}
 
-#ifdef EDITOR
-	RenderPipeline::GetInstance()->Draw(activeScenes, Editor::GetInstance()->GetSceneTarget());
-	Editor::GetInstance()->Draw();
-#else
-
 	// #note: currently only one scene but could be expanded for nested scenes
 	RenderPipeline::GetInstance()->Draw(activeScenes, 0);
-
-#endif
 }

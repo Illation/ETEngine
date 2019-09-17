@@ -10,21 +10,13 @@
 macro(setupConfigurations)
 
 	# set our configuration types
-	set(CMAKE_CONFIGURATION_TYPES "Debug;DebugEditor;Develop;DevelopEditor;Shipping" 
-		CACHE STRING "Available build-types: Debug, DebugEditor, Develop, DevelopEditor and Shipping" FORCE)
+	set(CMAKE_CONFIGURATION_TYPES "Debug;Develop;Shipping" 
+		CACHE STRING "Available build-types: Debug, Develop and Shipping" FORCE)
 		
 	# copy settings from existing build types
-	set(CMAKE_CXX_FLAGS_DEBUGEDITOR "${CMAKE_CXX_FLAGS_DEBUG}" )
-	set(CMAKE_C_FLAGS_DEBUGEDITOR "${CMAKE_C_FLAGS_DEBUG}")
-	set(CMAKE_EXE_LINKER_FLAGS_DEBUGEDITOR "${CMAKE_EXE_LINKER_FLAGS_DEBUG}")
-
 	set(CMAKE_CXX_FLAGS_DEVELOP "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 	set(CMAKE_C_FLAGS_DEVELOP "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
 	set(CMAKE_EXE_LINKER_FLAGS_DEVELOP "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
-
-	set(CMAKE_CXX_FLAGS_DEVELOPEDITOR "${CMAKE_CXX_FLAGS_DEVELOP}")
-	set(CMAKE_C_FLAGS_DEVELOPEDITOR "${CMAKE_C_FLAGS_DEVELOP}")
-	set(CMAKE_EXE_LINKER_FLAGS_DEVELOPEDITOR "${CMAKE_EXE_LINKER_FLAGS_DEVELOP}")
 
 	set(CMAKE_CXX_FLAGS_SHIPPING "${CMAKE_CXX_FLAGS_RELEASE}")
 	set(CMAKE_C_FLAGS_SHIPPING "${CMAKE_C_FLAGS_RELEASE}" )
@@ -88,6 +80,20 @@ function(assign_source_group)
 endfunction(assign_source_group)
 
 
+# create a general target for the project
+###########################################
+function(createProjectGeneral)
+    
+	file(GLOB_RECURSE projectFiles ${PROJECT_DIRECTORY}/resources/*)
+
+	message(STATUS "Adding target: GeneralProject")
+	add_library(GeneralProject ${projectFiles})
+	set_target_properties(GeneralProject PROPERTIES LINKER_LANGUAGE NONE) # we don't build this library
+	assign_source_group(${projectFiles})
+
+endfunction(createProjectGeneral)
+
+
 # PCH
 #########
 function(precompiled_headers SOURCELIST)
@@ -114,9 +120,7 @@ function(targetCompileOptions _target)
 	target_compile_options(
 		${_target} PRIVATE 
 		"$<$<CONFIG:Debug>:/D_DEBUG /DET_DEBUG>"
-		"$<$<CONFIG:DebugEditor>:/D_DEBUG /DET_DEBUG /DEDITOR>"
 		"$<$<CONFIG:Develop>:/DET_DEVELOP>"
-		"$<$<CONFIG:DevelopEditor>:/DET_DEVELOP /DEDITOR>"
 		"$<$<CONFIG:Shipping>:/DET_SHIPPING>"
 	)
 endfunction(targetCompileOptions)
@@ -440,7 +444,7 @@ function(copyDllCommand _target)
 	# where the lib files live
 	set(_cfg "Release") 
 	set(_vcCfg "")
-	if(("$<CONFIG>" STREQUAL "Debug") OR ("$<CONFIG>" STREQUAL "DebugEditor"))
+	if("$<CONFIG>" STREQUAL "Debug")
 		set(_cfg "Debug")
 		set(_vcCfg "/debug")
 	
@@ -467,8 +471,8 @@ function(copyDllCommand _target)
 	foreach(_dll ${debugDlls})
 		add_custom_command(TARGET ${_target} 
 			POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,copy_if_different\ "${_dll}"\ $<TARGET_FILE_DIR:${_target}>,echo\ "">
-			COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "Copying ${_dll}",echo\ "">
+			COMMAND ${CMAKE_COMMAND} -E $<IF:$<CONFIG:Debug>,copy_if_different\ "${_dll}"\ $<TARGET_FILE_DIR:${_target}>,echo\ "">
+			COMMAND ${CMAKE_COMMAND} -E $<IF:$<CONFIG:Debug>,echo\ "Copying ${_dll}",echo\ "">
 		)
 	endforeach()
 	file(GLOB releaseDlls ${_vcpkgInstall}/bin/*.dll)
@@ -476,20 +480,20 @@ function(copyDllCommand _target)
 	foreach(_dll ${releaseDlls})
 		add_custom_command(TARGET ${_target} 
 			POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",copy_if_different\ "${_dll}"\ $<TARGET_FILE_DIR:${_target}>>
-			COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",echo\ "Copying ${_dll}">
+			COMMAND ${CMAKE_COMMAND} -E $<IF:$<CONFIG:Debug>,echo\ "",copy_if_different\ "${_dll}"\ $<TARGET_FILE_DIR:${_target}>>
+			COMMAND ${CMAKE_COMMAND} -E $<IF:$<CONFIG:Debug>,echo\ "",echo\ "Copying ${_dll}">
 		)
 	endforeach()
 	
 	add_custom_command(TARGET ${_target} 
 		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,copy_if_different\ "${_alBuild}/Debug/OpenAL32.dll"\ $<TARGET_FILE_DIR:${_target}>,echo\ "">
-		COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "Copying ${_alBuild}/Debug/OpenAL32.dll",echo\ "">
+		COMMAND ${CMAKE_COMMAND} -E $<IF:$<CONFIG:Debug>,copy_if_different\ "${_alBuild}/Debug/OpenAL32.dll"\ $<TARGET_FILE_DIR:${_target}>,echo\ "">
+		COMMAND ${CMAKE_COMMAND} -E $<IF:$<CONFIG:Debug>,echo\ "Copying ${_alBuild}/Debug/OpenAL32.dll",echo\ "">
 	)
 	add_custom_command(TARGET ${_target} 
 		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",copy_if_different\ "${_alBuild}/Release/OpenAL32.dll"\ $<TARGET_FILE_DIR:${_target}>>
-		COMMAND ${CMAKE_COMMAND} -E $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:DebugEditor>>,echo\ "",echo\ "Copying ${_alBuild}/Release/OpenAL32.dll">
+		COMMAND ${CMAKE_COMMAND} -E $<IF:$<CONFIG:Debug>,echo\ "",copy_if_different\ "${_alBuild}/Release/OpenAL32.dll"\ $<TARGET_FILE_DIR:${_target}>>
+		COMMAND ${CMAKE_COMMAND} -E $<IF:$<CONFIG:Debug>,echo\ "",echo\ "Copying ${_alBuild}/Release/OpenAL32.dll">
 	)
 
 endfunction(copyDllCommand)
@@ -523,7 +527,7 @@ function(installDlls TARGET _suffix)
 		# where the lib files live
 		set(libcfg "Release") 
 		set(_vcCfg "")
-		if(("${configType}" STREQUAL "Debug") OR ("${configType}" STREQUAL "DebugEditor"))
+		if("${configType}" STREQUAL "Debug")
 			set(libcfg "Debug")
 			set(_vcCfg "/debug")
 

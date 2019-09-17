@@ -45,6 +45,8 @@ set(CMAKE_CXX_STANDARD 14)  # C++ 14
 # run the engine CMake script and then the project
 ###################################################
 
+createProjectGeneral()
+
 # ensure we can mount the external engine folder
 set(_engineMountDir "${PROJECT_DIRECTORY}/build/Engine")
 

@@ -183,11 +183,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 		//blur downsampled
 		//STATE->SetViewport(ivec2(0), windowSettings.Dimensions);
 		STATE->SetShader(m_pGaussianShader.get());
-	#ifdef EDITOR
-		for (uint32 sample = 0; sample < 10; sample++)
-	#else
 		for (uint32 sample = 0; sample < static_cast<uint32>(graphicsSettings.NumBlurPasses * 2); sample++)
-	#endif
 		{
 			// #todo: needs custom ping pong buffer, buffers textures are wrong size
 			bool horizontal = sample % 2 == 0;
@@ -203,11 +199,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	//ping pong gaussian blur
 	bool horizontal = true;
 	STATE->SetShader(m_pGaussianShader.get());
-#ifdef EDITOR
-	for (GLuint i = 0; i < 10; i++)
-#else
 	for (GLuint i = 0; i < (GLuint)graphicsSettings.NumBlurPasses * 2; i++)
-#endif
 	{
 		STATE->BindFramebuffer(m_PingPongFBO[horizontal]);
 		m_pGaussianShader->Upload("horizontal"_hash, horizontal);

@@ -56,11 +56,7 @@ void GlfwRenderArea::Initialize()
 		fullscreenMonitor = primaryMonitor;
 	}
 
-#ifdef EDITOR
-	ivec2 const dim = windowSettings.EditorDimensions;
-#else
 	ivec2 const dim = windowSettings.Dimensions;
-#endif
 
 	m_Window = glfwCreateWindow(dim.x, dim.y, windowSettings.Title.c_str(), fullscreenMonitor, nullptr);
 	if (m_Window == nullptr)
