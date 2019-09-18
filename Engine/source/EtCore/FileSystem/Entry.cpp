@@ -59,7 +59,7 @@ Entry::~Entry()
 //
 // Get the path of an entry, recursively stepping up the parent list
 //
-std::string Entry::GetPath()
+std::string Entry::GetPath() const
 {
 	if (m_Parent)
 	{
@@ -76,19 +76,9 @@ std::string Entry::GetPath()
 //
 // Get the name of an entry including its path
 //
-std::string Entry::GetName()
+std::string Entry::GetName() const
 {
 	return GetPath() + m_Filename;
-}
-
-//---------------------------------
-// Entry::GetNameOnly
-//
-// Get the name of an entry without the attached path
-//
-std::string Entry::GetNameOnly()
-{
-	return m_Filename;
 }
 
 //---------------------------------
@@ -322,25 +312,6 @@ void Directory::RemoveChild( Entry* child )
 }
 
 //---------------------------------
-// Directory::RecursiveMount
-//
-// Recursively mount all subdirectories
-//
-void Directory::RecursiveMount()
-{
-    for(auto c : m_pChildren)
-    {
-        if(c->GetType() == Entry::EntryType::ENTRY_DIRECTORY)
-        {
-			if (c->GetName() != "../" && c->GetName() != "./")
-			{
-				static_cast<Directory*>(c)->Mount(true); 
-			}
-        }
-    }
-}
-
-//---------------------------------
 // Directory::Unmount
 //
 // Unmount the directory and all subdirectories
@@ -365,6 +336,53 @@ void Directory::Unmount()
 
     m_pChildren.clear();
     m_IsMounted = false;
+}
+
+//---------------------------------
+// Directory::Delete
+//
+// Delete this directory, also deletes the object
+//
+bool Directory::Delete()
+{
+	if (m_pChildren.size() > 0u)
+	{
+		for(size_t idx = m_pChildren.size() - 1; idx < m_pChildren.size(); --idx)
+		{
+			if(m_pChildren[idx]->GetType() == Entry::EntryType::ENTRY_DIRECTORY)
+			{
+				if(m_pChildren[idx]->GetName() != "../" && m_pChildren[idx]->GetName() != "./")
+				{
+					if (!(m_pChildren[idx]->Delete()))
+					{
+						return false;
+					}
+				}
+			}
+			else
+			{
+				if (!(m_pChildren[idx]->Delete()))
+				{
+					return false;
+				}
+			}
+		}
+	}
+
+	m_pChildren.clear();
+
+	if(DeleteDir())
+	{
+		if(m_Parent)
+		{
+			m_Parent->RemoveChild( this );
+		}
+
+		delete this;
+		return true;
+	}
+
+	return false;
 }
 
 //---------------------------------
@@ -413,48 +431,76 @@ void Directory::GetChildrenRecursive(std::vector<File*>& children)
 }
 
 //---------------------------------
-// Directory::Delete
+// Directory::GetMountedChild
 //
-// Delete this directory, also deletes the object
+// Returns nullptr, or the child Entry if it is found
 //
-bool Directory::Delete()
+Entry* Directory::GetMountedChild(std::string const& path) const
 {
-	if (m_pChildren.size() > 0u)
+	std::string modPath = path;
+
+	FileUtil::RemoveExcessPathDelimiters(modPath);
+	FileUtil::RemoveRelativePath(modPath);
+
+	return GetMountedChildRecursive(modPath);
+}
+
+//---------------------------------
+// Directory::RecursiveMount
+//
+// Recursively mount all subdirectories
+//
+void Directory::RecursiveMount()
+{
+	for (auto c : m_pChildren)
 	{
-		for(size_t idx = m_pChildren.size() - 1; idx < m_pChildren.size(); --idx)
+		if (c->GetType() == Entry::EntryType::ENTRY_DIRECTORY)
 		{
-			if(m_pChildren[idx]->GetType() == Entry::EntryType::ENTRY_DIRECTORY)
+			if (c->GetName() != "../" && c->GetName() != "./")
 			{
-				if(m_pChildren[idx]->GetName() != "../" && m_pChildren[idx]->GetName() != "./")
-				{
-					if (!(m_pChildren[idx]->Delete()))
-					{
-						return false;
-					}
-				}
-			}
-			else
-			{
-				if (!(m_pChildren[idx]->Delete()))
-				{
-					return false;
-				}
+				static_cast<Directory*>(c)->Mount(true);
 			}
 		}
 	}
+}
 
-	m_pChildren.clear();
+//---------------------------------
+// Directory::GetMountedChildRecursive
+//
+Entry* Directory::GetMountedChildRecursive(std::string& path) const
+{
+	// split off the next search directory and figure out if this is the last one
+	std::string searchName = FileUtil::SplitFirstDirectory(path);
 
-	if(DeleteDir())
+	bool isFinalEntry = searchName.empty();
+	if (isFinalEntry)
 	{
-		if(m_Parent)
-		{
-			m_Parent->RemoveChild( this );
-		}
-
-		delete this;
-		return true;
+		searchName = path;
 	}
 
-	return false;
+	// try finding the child
+	auto childIt = std::find_if(m_pChildren.begin(), m_pChildren.end(), [&searchName](Entry const* const entry)
+		{
+			return entry->GetNameOnly() == searchName;
+		});
+
+	if (childIt == m_pChildren.cend()) // child not found
+	{
+		return nullptr;
+	}
+
+	Entry* const childEntry = *childIt;
+
+	if (!isFinalEntry) // if we are supposed to find a child of the found entry, make sure we have a directory and repeat the search in its children
+	{
+		if (childEntry->GetType() == Entry::EntryType::ENTRY_FILE)
+		{
+			return nullptr;
+		}
+
+		return static_cast<Directory*>(childEntry)->GetMountedChildRecursive(path);
+	}
+
+	// we found the final entry
+	return childEntry;
 }

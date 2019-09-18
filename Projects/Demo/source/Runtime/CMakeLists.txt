@@ -32,6 +32,7 @@ targetCompileOptions(EtEngineDemo)
 
 # directory stuff
 assign_source_group(${projectFiles})
+assignIdeFolder(EtEngineDemo Project)
 outputDirectories(EtEngineDemo "")
 
 add_dependencies(EtEngineDemo cook-compiled-resources)

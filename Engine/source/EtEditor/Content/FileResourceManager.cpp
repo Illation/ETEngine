@@ -23,15 +23,29 @@ FileResourceManager::FileResourceManager()
 //---------------------------------
 // FileResourceManager::Init
 //
-// Load the asset database from raw package data, assuming the raw package contains an entry with an id from s_DatabasePath
+// Load the asset database from the engine and project files and link them together
 //
 void FileResourceManager::Init()
 {
-	m_ProjectDir = new Directory(EditorConfig::GetInstance()->GetProjectPath() + s_ResourceDirRelPath + s_DatabasePath, nullptr);
-	m_ProjectDir->Mount(true);
+	// init databases and file directories unlinked 
+	InitDb(m_ProjectDb, m_ProjectDir, EditorConfig::GetInstance()->GetProjectPath());
+	InitDb(m_EngineDb, m_EngineDir, EditorConfig::GetInstance()->GetEnginePath());
 
-	m_EngineDir = new Directory(EditorConfig::GetInstance()->GetEnginePath() + s_ResourceDirRelPath + s_DatabasePath, nullptr);
-	m_EngineDir->Mount(true);
+	// link databases
+	auto assetGetter = [this](T_Hash const assetId)
+	{
+		I_Asset* const ret = m_ProjectDb.GetAsset(assetId);
+
+		if (ret == nullptr)
+		{
+			return m_EngineDb.GetAsset(assetId);
+		}
+
+		return ret;
+	};
+
+	SetAssetReferences(m_ProjectDb, assetGetter);
+	SetAssetReferences(m_EngineDb, assetGetter);
 }
 
 //---------------------------------
@@ -83,3 +97,28 @@ I_Asset* FileResourceManager::GetAssetInternal(T_Hash const assetId, std::type_i
 	return ret;
 }
 
+//---------------------------------
+// FileResourceManager::InitDb
+//
+// Initialize an individual Asset Database
+//
+void FileResourceManager::InitDb(AssetDatabase& db, Directory*& dir, std::string const& path)
+{
+	// mount the directory
+	dir = new Directory(path + s_ResourceDirRelPath, nullptr, true);
+	dir->Mount(true);
+
+	// find the database file
+	Entry* const dbEntry = dir->GetMountedChild(s_DatabasePath);
+	ET_ASSERT(dbEntry != nullptr);
+	ET_ASSERT(dbEntry->GetType() == Entry::ENTRY_FILE);
+
+	File* const dbFile = static_cast<File*>(dbEntry);
+	dbFile->Open(FILE_ACCESS_MODE::Read);
+
+	// deserialize the database from that files content
+	if (!(serialization::DeserializeFromJsonString(FileUtil::AsText(dbFile->Read()), db)))
+	{
+		LOG(FS("FileResourceManager::Init > unable to deserialize asset DB at '%s'", dbEntry->GetName().c_str()), LogLevel::Error);
+	}
+}

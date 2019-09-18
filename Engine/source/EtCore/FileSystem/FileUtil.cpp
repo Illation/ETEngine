@@ -336,6 +336,37 @@ bool FileUtil::RemoveRelativePath(std::string& path)
 }
 
 //---------------------------------
+// FileUtil::SplitFirstDirectory
+//
+// Returns the first directory component, if any. The path variable will be modified to contain what is left
+//
+std::string FileUtil::SplitFirstDirectory(std::string& path)
+{
+	// get the first delimiter
+	size_t closestIdx = std::numeric_limits<size_t>::max();
+	for (char const token : pathDelimiters)
+	{
+		size_t index = path.find(token);
+		if (index != std::string::npos && index < closestIdx)
+		{
+			closestIdx = index;
+		}
+	}
+
+	// if none is found return an empty path
+	if (closestIdx > path.size())
+	{
+		return "";
+	}
+
+	++closestIdx;
+
+	std::string ret = path.substr(0, closestIdx);
+	path = path.substr(closestIdx);
+	return ret;
+}
+
+//---------------------------------
 // FileUtil::GetAbsolutePath
 //
 // Gets the absolute path relative to the executable

@@ -14,4 +14,5 @@ message(STATUS "Adding target: NothingsStb")
 add_library(NothingsStb ${projectFiles})
 
 assign_source_group(${projectFiles})
+assignIdeFolder(NothingsStb Engine/3rdParty)
 libOutputDirectories(NothingsStb)

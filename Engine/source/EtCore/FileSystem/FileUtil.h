@@ -30,6 +30,7 @@ public:
 	static void UnifyPathDelimiters(std::string& path);
 	static void RemoveExcessPathDelimiters(std::string& path);
 	static bool RemoveRelativePath(std::string& path);
+	static std::string SplitFirstDirectory(std::string& path);
 	static std::string GetAbsolutePath(std::string const& path);
 	static std::string GetRelativePath(std::string const& inPath, std::string const& rootPath);
 

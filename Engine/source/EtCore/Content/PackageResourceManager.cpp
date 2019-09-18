@@ -55,17 +55,7 @@ void PackageResourceManager::Init()
 	}
 
 	// Link asset references together
-	for (AssetDatabase::AssetCache& cache : m_Database.caches)
-	{
-		// every asset per cache
-		for (I_Asset* asset : cache.cache)
-		{
-			for (I_Asset::Reference& reference : asset->m_References)
-			{
-				reference.m_Asset = m_Database.GetAsset(GetHash(reference.m_Name));
-			}
-		}
-	}
+	SetAssetReferences(m_Database, [this](T_Hash const assetId) { return m_Database.GetAsset(assetId); });
 }
 
 //---------------------------------

@@ -12,4 +12,5 @@ message(STATUS "Adding target: MikkTSpace")
 add_library(MikkTSpace ${projectFiles})
 
 assign_source_group(${projectFiles})
+assignIdeFolder(MikkTSpace Engine/3rdParty)
 libOutputDirectories(MikkTSpace)

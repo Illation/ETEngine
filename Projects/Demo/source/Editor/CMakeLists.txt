@@ -24,6 +24,7 @@ targetCompileOptions(DemoEditor)
 
 # directory stuff
 assign_source_group(${projectFiles})
+assignIdeFolder(DemoEditor Project)
 outputDirectories(DemoEditor "/bin") 
 
 add_dependencies(DemoEditor compile-resources-editor)

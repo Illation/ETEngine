@@ -60,6 +60,7 @@ message(STATUS "Adding target: glad")
 add_library(glad ${projectFiles})
 
 assign_source_group(${projectFiles})
+assignIdeFolder(glad Engine/3rdParty)
 set_target_properties(glad PROPERTIES LINKER_LANGUAGE C)
 
 target_include_directories (glad PRIVATE ${_incDir})

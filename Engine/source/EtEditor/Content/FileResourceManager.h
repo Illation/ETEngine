@@ -45,6 +45,8 @@ public:
 protected:
 	I_Asset* GetAssetInternal(T_Hash const assetId, std::type_info const& type) override;
 
+	void InitDb(AssetDatabase& db, Directory*& dir, std::string const& path);
+
 	// Data
 	///////
 

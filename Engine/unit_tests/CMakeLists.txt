@@ -24,6 +24,7 @@ targetCompileOptions(unit_tests)
 
 # directory stuff
 assign_source_group(${projectFiles})
+assignIdeFolder(unit_tests Engine/UnitTests)
 outputDirectories(unit_tests "")
 
 # linking

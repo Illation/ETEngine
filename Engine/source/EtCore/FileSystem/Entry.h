@@ -20,11 +20,11 @@ public:
 	Entry(std::string name, Directory* pParent);
     virtual ~Entry();
 
-    std::string GetName();
-	std::string GetNameOnly();
+    std::string GetName() const;
+	std::string GetNameOnly() const { return m_Filename; }
 	std::string GetExtension();
     Directory* GetParent(){ return m_Parent; }
-    virtual std::string GetPath();
+    std::string GetPath() const;
 
 	virtual bool Delete() = 0;
 
@@ -86,35 +86,51 @@ private:
 //
 class Directory : public Entry
 {
+	friend class File;
+	friend class Directory;
+
 public:
+    // construct destruct
+	//--------------------
     Directory(std::string name, Directory* pParent, bool ensureExists = false);
     virtual ~Directory();
-    //Inherited Methods
-    Entry::EntryType GetType()
-    {
-        return Entry::EntryType::ENTRY_DIRECTORY;
-    }
+
+    // Entry interface
+	//------------------
+    Entry::EntryType GetType() override { return Entry::EntryType::ENTRY_DIRECTORY; }
     
+	// functionality
+	//---------------
     bool Mount(bool recursive = false);
     void Unmount();
-    std::vector<Entry*> GetChildren() { return m_pChildren; }
-	std::vector<Entry*> GetChildrenByExt(std::string ext);
-	void GetChildrenRecursive(std::vector<File*>& children);
 
 	bool Exists();
 	bool Create();
 
-    bool IsMounted(){ return m_IsMounted; }
-
 	bool Delete() override;
 
-	void RemoveChild( Entry* child );
+	void RemoveChild(Entry* child);
 
+	// accessors
+	//---------------
+	std::vector<Entry*> GetChildren() { return m_pChildren; }
+	std::vector<Entry*> GetChildrenByExt(std::string ext);
+	void GetChildrenRecursive(std::vector<File*>& children);
+
+	Entry* GetMountedChild(std::string const& path) const;
+
+	bool IsMounted() { return m_IsMounted; }
+
+	// utility
+	//-----------
 private:
-	friend class File;
 
 	bool DeleteDir();
     void RecursiveMount();
+	Entry* GetMountedChildRecursive(std::string& path) const;
+
+	// Data
+	///////
 
     std::vector<Entry*> m_pChildren;
     bool m_IsMounted = false;

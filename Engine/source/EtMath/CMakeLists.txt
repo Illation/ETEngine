@@ -20,6 +20,7 @@ add_library(EtMath ${projectFiles})
 targetCompileOptions(EtMath)
 
 assign_source_group(${projectFiles})
+assignIdeFolder(EtMath Engine)
 
 # base directory
 target_include_directories (EtMath PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

@@ -79,6 +79,19 @@ function(assign_source_group)
     endforeach()
 endfunction(assign_source_group)
 
+# place a target inside of an IDE filter
+#########################################
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# can't place those targets in custom folder, so increasing visibility by placing them  in the top level
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "") 
+
+macro(assignIdeFolder _target _folder)
+	if(MSVC)
+		set_property (TARGET "${_target}" PROPERTY FOLDER "${_folder}")
+	endif()
+endmacro(assignIdeFolder)
+
 
 # create a general target for the project
 ###########################################
@@ -90,6 +103,7 @@ function(createProjectGeneral)
 	add_library(GeneralProject ${projectFiles})
 	set_target_properties(GeneralProject PROPERTIES LINKER_LANGUAGE NONE) # we don't build this library
 	assign_source_group(${projectFiles})
+	assignIdeFolder(GeneralProject Project/General)
 
 endfunction(createProjectGeneral)
 
@@ -745,5 +759,6 @@ function(installCookResources TARGET)
 
 		VERBATIM
 	)
+	assignIdeFolder(${target_name} Project/Build)
 
 endfunction(installCookResources)

@@ -53,6 +53,7 @@ add_custom_command(
 
 message(STATUS "Adding target: cook-compiled-resources")
 add_custom_target( cook-compiled-resources DEPENDS ${target_files} )
+assignIdeFolder(cook-compiled-resources Engine/Build)
 
 foreach(_target_file ${target_files})
 	get_filename_component(_abs_target "${_target_file}" ABSOLUTE)

@@ -20,7 +20,7 @@ public:
 	// Definitions
 	//---------------------
 
-	friend class PackageResourceManager; 
+	friend class ResourceManager; 
 	friend class I_AssetPtr;
 
 	struct Reference final
@@ -37,7 +37,7 @@ public:
 
 	private:
 		friend class I_Asset;
-		friend class PackageResourceManager;
+		friend class ResourceManager;
 
 		void Ref();
 		void Deref();

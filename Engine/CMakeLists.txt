@@ -19,6 +19,7 @@ message(STATUS "Adding target: General")
 add_library(General ${generalFiles} ${engineFiles})
 set_target_properties(General PROPERTIES LINKER_LANGUAGE NONE) # we don't build this library
 assign_source_group(${engineFiles})
+assignIdeFolder(General Engine/General)
 
 
 # all other targets are under source and resources

@@ -21,6 +21,7 @@ add_library(EtEngine ${projectFiles})
 targetCompileOptions(EtEngine)
 
 assign_source_group(${projectFiles})
+assignIdeFolder(EtEngine Engine)
 libOutputDirectories(EtEngine)
 
 target_link_libraries (EtEngine glad NothingsStb MikkTSpace EtMath EtCore)

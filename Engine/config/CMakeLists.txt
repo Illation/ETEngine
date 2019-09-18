@@ -39,6 +39,7 @@ add_custom_command(
 
 message(STATUS "Adding target: compile-resources-editor")
 add_custom_target( compile-resources-editor DEPENDS ${target_file} )
+assignIdeFolder(compile-resources-editor Engine/Build)
 
 set_source_files_properties( ${target_file} PROPERTIES GENERATED TRUE )
 
@@ -73,3 +74,4 @@ add_custom_command(
 
 message(STATUS "Adding target: compile-schemas-editor")
 add_custom_target( compile-schemas-editor DEPENDS ${schema_file} )
+assignIdeFolder(compile-schemas-editor Engine/Build)

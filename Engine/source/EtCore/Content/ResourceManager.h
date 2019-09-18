@@ -2,6 +2,9 @@
 #include "AssetPointer.h"
 
 
+struct AssetDatabase;
+
+
 //---------------------------------
 // ResourceManager
 //
@@ -14,6 +17,9 @@ class ResourceManager
 private:
 	static ResourceManager* s_Instance;
 	friend class ResourceManager;
+
+protected:
+	typedef std::function<I_Asset*(T_Hash const)> T_ReferenceAssetGetter;
 
 public:
 	static constexpr char s_DatabasePath[] = "asset_database.json";
@@ -47,10 +53,13 @@ public:
 	template <class T_DataType>
 	AssetPtr<T_DataType> GetAssetData(T_Hash const assetId);
 
+	// utility
+	//---------------------
+protected:
+	void SetAssetReferences(AssetDatabase&db, T_ReferenceAssetGetter const& fnc) const;
 
 	// Interface
 	//---------------------
-protected:
 	virtual void Init() = 0;
 	virtual void Deinit() = 0;
 

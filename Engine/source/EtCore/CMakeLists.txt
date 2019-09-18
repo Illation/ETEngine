@@ -22,6 +22,7 @@ add_library(EtCore ${sources} ${headers})
 targetCompileOptions(EtCore)
 
 assign_source_group(${projectFiles})
+assignIdeFolder(EtCore Engine)
 
 libOutputDirectories(EtCore)
 
