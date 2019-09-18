@@ -117,20 +117,9 @@ bool PackageResourceManager::GetLoadData(I_Asset const* const asset, std::vector
 //---------------------------------
 // PackageResourceManager::Flush
 //
-// Force unloading all assets with no references
-//
 void PackageResourceManager::Flush()
 {
-	for (AssetDatabase::AssetCache& cache : m_Database.caches)
-	{
-		for (I_Asset* asset : cache.cache)
-		{
-			if (asset->GetRefCount() <= 0u && asset->IsLoaded())
-			{
-				asset->Unload(true);
-			}
-		}
-	}
+	m_Database.Flush();
 }
 
 //-------------------------------------------

@@ -6,6 +6,11 @@
 #include <rttr/registration>
 
 
+//========
+// Config
+//========
+
+
 // reflection
 RTTR_REGISTRATION
 {
@@ -48,7 +53,7 @@ RTTR_REGISTRATION
 }
 
 //-------------------------------------------
-// Config::Settings::Window::GetAspectRatio
+// Config::Settings::Window::DeriveSettings
 //
 // Derive some settings from those that where loaded from json
 //
@@ -122,7 +127,7 @@ void Config::Initialize()
 }
 
 //---------------------------------
-// Config::Initialize
+// Config::Save
 //
 // Save the configuration to disk
 //

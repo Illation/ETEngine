@@ -617,8 +617,7 @@ function(installConfig TARGET)
 
 	# create a file within the packaged resources that points to the user directory
 	get_filename_component(absUserDir ${userDir} ABSOLUTE)
-	file(WRITE ${tempBuildDir}/config/userDirPointer.json
-		"{\"dir pointer\":{\"user dir path\":\"${absUserDir}/\"}}" )
+	file(WRITE ${tempBuildDir}/config/userDirPointer.json "{\"dir pointer\":{\"user dir path\":\"${absUserDir}/\"}}" )
 		
 	# copy config files
 	install(DIRECTORY ${configDir}/ DESTINATION ${userDir}/)
@@ -626,8 +625,8 @@ function(installConfig TARGET)
 	# copy user dir pointer to output directory
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
 		install(FILES ${tempBuildDir}/config/userDirPointer.json 
-		CONFIGURATIONS ${configType} 
-		DESTINATION ${baseBinDir}/${configType}_${platform}/${TARGET}/)
+			CONFIGURATIONS ${configType} 
+			DESTINATION ${baseBinDir}/${configType}_${platform}/${TARGET}/)
 	endforeach()
 
 endfunction(installConfig)
@@ -638,6 +637,7 @@ endfunction(installConfig)
 function(installEditorResources TARGET)
 
 	set(baseBinDir "${PROJECT_DIRECTORY}/bin")
+	set(tempBuildDir "${PROJECT_DIRECTORY}/build/temp")
 
 	# paths for our libraries depend on the architecture we compile for
 	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
@@ -647,10 +647,18 @@ function(installEditorResources TARGET)
 	endif()
 
 	set(_edPackagedDir "${ENGINE_DIRECTORY_ABS}/third_party/gtk/GTK-for-Windows-Runtime-Environment-Installer/gtk-nsis-pack")
+	
+	file(WRITE ${tempBuildDir}/config/dirPointers.json 
+		"{\"dir pointers\":{\"project dir path\":\"${PROJECT_DIRECTORY}/\",\"engine dir path\":\"${ENGINE_DIRECTORY_ABS}/\"}}" )
 
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
 
 		set(binDir "${baseBinDir}/${configType}_${platform}/${TARGET}")
+
+		# config files
+		install(FILES ${tempBuildDir}/config/dirPointers.json 
+			CONFIGURATIONS ${configType} 
+			DESTINATION ${binDir}/config/)
 
 		# pixbuf loaders
 		install(DIRECTORY ${_edPackagedDir}/lib/gdk-pixbuf-2.0/

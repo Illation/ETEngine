@@ -175,6 +175,25 @@ I_Asset* AssetDatabase::GetAsset(T_Hash const assetId, std::type_info const& typ
 }
 
 //---------------------------------
+// AssetDatabase::Flush
+//
+// Force unloading all assets with no references
+//
+void AssetDatabase::Flush()
+{
+	for (AssetDatabase::AssetCache& cache : caches)
+	{
+		for (I_Asset* asset : cache.cache)
+		{
+			if (asset->GetRefCount() <= 0u && asset->IsLoaded())
+			{
+				asset->Unload(true);
+			}
+		}
+	}
+}
+
+//---------------------------------
 // AssetDatabase::Merge
 //
 // Merge another asset database into this one. 

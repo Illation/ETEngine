@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "EditorApp.h"
 
+#include "EditorConfig.h"
+
 #pragma warning( push )
 #pragma warning( disable : 4244 ) // glib warnings
 #include <glibmm/main.h>
@@ -13,6 +15,7 @@
 #include <giomm/resource.h>
 #include <glibmm/vectorutils.h>
 
+#include <EtEditor/Content/FileResourceManager.h>
 #include <EtEditor/UI/EditorWindow.h>
 #include <EtEditor/UI/SettingsDialog.h>
 
@@ -35,9 +38,6 @@ EditorApp::EditorApp()
 	RegisterAsTriggerer();
 	
 	Logger::Initialize();//Init logger first because all output depends on it from the start
-#ifndef SHIPPING
-	DebugCopyResourceFiles();
-#endif
 	InitializeUtilities();
 
 	// Allow updating every frame in a gameloop style - called as quickly as possible
@@ -69,6 +69,10 @@ EditorApp::~EditorApp()
 {
 	PerformanceInfo::DestroyInstance();
 	InputManager::DestroyInstance();
+
+	EditorConfig::DestroyInstance();
+
+	ResourceManager::DestroyInstance();
 
 	Logger::Release();
 	TickManager::GetInstance()->DestroyInstance();
@@ -193,6 +197,10 @@ void EditorApp::on_activate()
 //
 void EditorApp::InitializeUtilities()
 {
+	EditorConfig::GetInstance()->Initialize();
+
+	ResourceManager::SetInstance(new FileResourceManager());
+
 	InputManager::GetInstance();
 
 	PerformanceInfo::GetInstance();

@@ -52,14 +52,21 @@ public:
 		RTTR_ENABLE()
 	};
 
+	// Construct destruct
+	//---------------------
 	AssetDatabase(bool const ownsAssets = true) : m_OwnsAssets(ownsAssets) {}
 	~AssetDatabase();
 
+	// Accessors
+	//---------------------
 	T_AssetList GetAssetsInPackage(T_Hash const packageId);
 
 	I_Asset* GetAsset(T_Hash const assetId);
 	I_Asset* GetAsset(T_Hash const assetId, std::type_info const& type);
 
+	// Functionality
+	//---------------------
+	void Flush();
 	void Merge(AssetDatabase const& other);
 
 	// Data

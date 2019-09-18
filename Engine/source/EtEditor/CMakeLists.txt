@@ -24,7 +24,7 @@ add_library(EtEditor ${projectFiles})
 targetCompileOptions(EtEditor)
 
 # directory stuff
-assign_source_group(${EtEditor})
+assign_source_group(${projectFiles})
 libOutputDirectories(EtEditor) 
 
 # linking
