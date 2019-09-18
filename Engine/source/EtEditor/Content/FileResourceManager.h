@@ -47,6 +47,8 @@ protected:
 
 	void InitDb(AssetDatabase& db, Directory*& dir, std::string const& path);
 
+	bool IsEngineResource(I_Asset const* const asset) const;
+
 	// Data
 	///////
 

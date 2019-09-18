@@ -61,8 +61,8 @@ public:
 	//---------------------
 	T_AssetList GetAssetsInPackage(T_Hash const packageId);
 
-	I_Asset* GetAsset(T_Hash const assetId);
-	I_Asset* GetAsset(T_Hash const assetId, std::type_info const& type);
+	I_Asset* GetAsset(T_Hash const assetId, bool const reportErrors = true) const;
+	I_Asset* GetAsset(T_Hash const assetId, std::type_info const& type, bool const reportErrors = true) const; // faster option
 
 	// Functionality
 	//---------------------

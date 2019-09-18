@@ -118,10 +118,10 @@ AssetDatabase::T_AssetList AssetDatabase::GetAssetsInPackage(T_Hash const packag
 //
 // Get an asset by its ID
 //
-I_Asset* AssetDatabase::GetAsset(T_Hash const assetId)
+I_Asset* AssetDatabase::GetAsset(T_Hash const assetId, bool const reportErrors) const
 {
 	// in this version we loop over all caches
-	for (AssetCache& cache : caches)
+	for (AssetCache const& cache : caches)
 	{
 		// try finding our asset by its ID in the cache
 		auto foundAssetIt = std::find_if(cache.cache.begin(), cache.cache.end(), [assetId](I_Asset* asset)
@@ -136,7 +136,10 @@ I_Asset* AssetDatabase::GetAsset(T_Hash const assetId)
 	}
 
 	// didn't find an asset in any cache, return null
-	LOG("AssetDatabase::GetAsset > Couldn't find asset with ID '" + std::to_string(assetId) + std::string("'!"), LogLevel::Warning);
+	if (reportErrors)
+	{
+		LOG("AssetDatabase::GetAsset > Couldn't find asset with ID '" + std::to_string(assetId) + std::string("'!"), LogLevel::Warning);
+	}
 	return nullptr;
 }
 
@@ -145,29 +148,37 @@ I_Asset* AssetDatabase::GetAsset(T_Hash const assetId)
 //
 // Get an asset by its ID and type
 //
-I_Asset* AssetDatabase::GetAsset(T_Hash const assetId, std::type_info const& type)
+I_Asset* AssetDatabase::GetAsset(T_Hash const assetId, std::type_info const& type, bool const reportErrors) const
 {
 	// Try finding a cache containing our type
-	auto foundCacheIt = std::find_if(caches.begin(), caches.end(), [&type](AssetCache& cache)
+	auto const foundCacheIt = std::find_if(caches.cbegin(), caches.cend(), [&type](AssetCache const& cache)
 	{
 		return cache.GetType() == type;
 	});
 
 	if (foundCacheIt == caches.cend())
 	{
-		LOG("AssetDatabase::GetAsset > Couldn't find asset cache of type '" + std::string(type.name()) + std::string("'!"), LogLevel::Warning);
+		if (reportErrors)
+		{
+			LOG("AssetDatabase::GetAsset > Couldn't find asset cache of type '" + std::string(type.name()) + std::string("'!"), LogLevel::Warning);
+		}
+
 		return nullptr;
 	}
 
 	// try finding our asset by its ID in the cache
-	auto foundAssetIt = std::find_if(foundCacheIt->cache.begin(), foundCacheIt->cache.end(), [assetId](I_Asset* asset)
+	auto const foundAssetIt = std::find_if(foundCacheIt->cache.cbegin(), foundCacheIt->cache.cend(), [assetId](I_Asset const* const asset)
 	{
 		return asset->GetId() == assetId;
 	});
 
 	if (foundAssetIt == foundCacheIt->cache.cend())
 	{
-		LOG("ResourceManager::GetAsset > Couldn't find asset with ID '" + std::to_string(assetId) + std::string("'!"), LogLevel::Warning);
+		if (reportErrors)
+		{
+			LOG("ResourceManager::GetAsset > Couldn't find asset with ID '" + std::to_string(assetId) + std::string("'!"), LogLevel::Warning);
+		}
+
 		return nullptr;
 	}
 

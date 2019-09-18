@@ -34,11 +34,11 @@ void FileResourceManager::Init()
 	// link databases
 	auto assetGetter = [this](T_Hash const assetId)
 	{
-		I_Asset* const ret = m_ProjectDb.GetAsset(assetId);
+		I_Asset* ret = m_ProjectDb.GetAsset(assetId, false);
 
 		if (ret == nullptr)
 		{
-			return m_EngineDb.GetAsset(assetId);
+			return m_EngineDb.GetAsset(assetId); // we only need to log if the first search fails
 		}
 
 		return ret;
@@ -66,7 +66,30 @@ void FileResourceManager::Deinit()
 //
 bool FileResourceManager::GetLoadData(I_Asset const* const asset, std::vector<uint8>& outData) const
 {
-	return false;
+	// figure out which directory we need to search in
+	Directory const* const searchDir = (IsEngineResource(asset) ? m_EngineDir : m_ProjectDir);
+
+	// find the database file
+	Entry* const dbEntry = searchDir->GetMountedChild(asset->GetPath() + asset->GetName());
+
+	// make sure we have a valid asset
+	if ((dbEntry == nullptr) || (dbEntry->GetType() != Entry::ENTRY_DIRECTORY))
+	{
+		LOG(FS("Asset '%s' not found at location: %s", asset->GetName().c_str(), (searchDir->GetName() + asset->GetPath()).c_str()), LogLevel::Warning);
+		return false;
+	}
+
+	// open the file
+	File* const dbFile = static_cast<File*>(dbEntry);
+	if (!(dbFile->Open(FILE_ACCESS_MODE::Read)))
+	{
+		LOG(FS("Failed to open file '%s'", dbFile->GetName()), LogLevel::Warning);
+		return false;
+	}
+
+	// read the file into our load data array
+	outData = dbFile->Read();
+	return true;
 }
 
 //---------------------------------
@@ -87,11 +110,11 @@ void FileResourceManager::Flush()
 //
 I_Asset* FileResourceManager::GetAssetInternal(T_Hash const assetId, std::type_info const& type)
 {
-	I_Asset* const ret = m_ProjectDb.GetAsset(assetId, type);
+	I_Asset* ret = m_ProjectDb.GetAsset(assetId, type, false);
 
 	if (ret == nullptr)
 	{
-		return m_EngineDb.GetAsset(assetId, type);
+		return m_EngineDb.GetAsset(assetId, type); // only log if first search fails
 	}
 
 	return ret;
@@ -121,4 +144,12 @@ void FileResourceManager::InitDb(AssetDatabase& db, Directory*& dir, std::string
 	{
 		LOG(FS("FileResourceManager::Init > unable to deserialize asset DB at '%s'", dbEntry->GetName().c_str()), LogLevel::Error);
 	}
+}
+
+//---------------------------------
+// FileResourceManager::IsEngineResource
+//
+bool FileResourceManager::IsEngineResource(I_Asset const* const asset) const
+{
+	return (m_EngineDb.GetAsset(asset->GetId(), asset->GetType(), false) != nullptr);
 }
