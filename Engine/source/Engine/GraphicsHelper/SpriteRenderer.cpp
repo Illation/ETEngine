@@ -24,8 +24,8 @@
 //
 SpriteRenderer::~SpriteRenderer()
 {
-	glDeleteVertexArrays(1, &m_VAO);
-	glDeleteBuffers(1, &m_VBO);
+	STATE->DeleteVertexArrays(1, &m_VAO);
+	STATE->DeleteBuffers(1, &m_VBO);
 
 	m_Sprites.clear();
 	m_Textures.clear();
@@ -47,26 +47,27 @@ void SpriteRenderer::Initialize()
 	m_Shader->Upload("u3DTexture"_hash, 1);
 
 	//Generate buffers and arrays
-	glGenVertexArrays(1, &m_VAO);
-	glGenBuffers(1, &m_VBO);
+	STATE->GenerateVertexArrays(1, &m_VAO);
+	STATE->GenerateBuffers(1, &m_VBO);
 
 	//bind
 	STATE->BindVertexArray(m_VAO);
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
 	//set data and attributes
-	glBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
+	STATE->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
 
 	//input layout
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
+	STATE->SetVertexAttributeArrayEnabled(0, true);
+	STATE->SetVertexAttributeArrayEnabled(1, true);
+	STATE->SetVertexAttributeArrayEnabled(2, true);
+	STATE->SetVertexAttributeArrayEnabled(3, true);
 
-	glVertexAttribIPointer(0, (GLint)1, GL_UNSIGNED_INT, (GLsizei)sizeof(SpriteVertex), (GLvoid*)offsetof(SpriteVertex, TextureId));
-	glVertexAttribPointer(1, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(SpriteVertex), (GLvoid*)offsetof(SpriteVertex, TransformData));
-	glVertexAttribPointer(2, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(SpriteVertex), (GLvoid*)offsetof(SpriteVertex, TransformData2));
-	glVertexAttribPointer(3, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(SpriteVertex), (GLvoid*)offsetof(SpriteVertex, Color));
+	int32 const vertSize = sizeof(SpriteVertex);
+	STATE->DefineVertexAttribIPointer(0, (GLint)1, GL_UNSIGNED_INT, vertSize, (GLvoid*)offsetof(SpriteVertex, TextureId));
+	STATE->DefineVertexAttributePointer(1, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(SpriteVertex, TransformData));
+	STATE->DefineVertexAttributePointer(2, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(SpriteVertex, TransformData2));
+	STATE->DefineVertexAttributePointer(3, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(SpriteVertex, Color));
 
 	//unbind
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
@@ -256,13 +257,13 @@ void SpriteRenderer::UpdateBuffer()
 			m_BufferSize = (uint32)m_Sprites.size() * sizeof( SpriteVertex );
 		}
 
-		glBufferData(GL_ARRAY_BUFFER, m_BufferSize, m_Sprites.data(), GL_DYNAMIC_DRAW);
+		STATE->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, m_Sprites.data(), GL_DYNAMIC_DRAW);
 	}
 	else
 	{
-		GLvoid* p = glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
+		GLvoid* p = STATE->MapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
 		memcpy( p, m_Sprites.data(), m_Sprites.size() * sizeof( SpriteVertex ) );
-		glUnmapBuffer( GL_ARRAY_BUFFER );
+		STATE->UnmapBuffer( GL_ARRAY_BUFFER );
 	}
 
 

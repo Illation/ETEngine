@@ -57,7 +57,11 @@ UIViewportRenderer::~UIViewportRenderer()
 
 void UIViewportRenderer::Draw(ivec2 pos, ivec2 size)
 {
-	if (!m_Initialized)return;
+	if (!m_Initialized)
+	{
+		return;
+	}
+
 	STATE->SetShader(m_pShader.get());
 	STATE->SetViewport(pos, size);
 
@@ -79,7 +83,7 @@ void UIViewportRenderer::Initialize(ivec2 size)
 	m_pTex = new TextureData(size.x, size.y, GL_RGB16F, GL_RGB, GL_FLOAT);
 	m_pTex->Build();
 	m_pTex->SetParameters(params);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTex->GetHandle(), 0);
+	STATE->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_pTex->GetHandle(), 0);
 
 	m_Initialized = true;
 }

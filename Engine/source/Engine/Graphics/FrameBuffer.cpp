@@ -93,7 +93,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 	{
 		TextureData* depthMap = new TextureData(windowSettings.Width, windowSettings.Height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT );
 		depthMap->Build();
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap->GetHandle(), 0);
+		STATE->LinkTextureToDepth(GL_TEXTURE_2D, depthMap->GetHandle());
 		depthMap->SetParameters(params);
 		m_pTextureVec.emplace_back(depthMap);
 	}
@@ -103,7 +103,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 	{
 		TextureData* colorBuffer = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGBA16F, GL_RGBA, m_Format );
 		colorBuffer->Build();
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffer->GetHandle(), 0 );
+		STATE->LinkTextureToFbo2D(i, GL_TEXTURE_2D, colorBuffer->GetHandle(), 0);
 		colorBuffer->SetParameters(params, true);
 		m_pTextureVec.emplace_back(colorBuffer);
 		attachments.emplace_back(GL_COLOR_ATTACHMENT0 + i);

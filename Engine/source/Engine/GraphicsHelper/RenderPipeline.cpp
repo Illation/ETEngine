@@ -123,7 +123,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
 	STATE->SetViewport(ivec2(0), windowSettings.Dimensions);
 
 	STATE->SetClearColor(vec4(m_ClearColor, 1.f));
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	STATE->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	STATE->SetFaceCullingMode(GL_BACK);
 	for (auto pScene : pScenes)

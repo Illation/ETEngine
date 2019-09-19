@@ -40,8 +40,8 @@ TextRenderer::TextCache::TextCache(std::string const& text, vec2 const pos, vec4
 //
 TextRenderer::~TextRenderer()
 {
-	glDeleteVertexArrays(1, &m_VAO);
-	glDeleteBuffers(1, &m_VBO);
+	STATE->DeleteVertexArrays(1, &m_VAO);
+	STATE->DeleteBuffers(1, &m_VBO);
 }
 
 //---------------------------------
@@ -58,8 +58,8 @@ void TextRenderer::Initialize()
 	m_pTextShader->Upload("fontTex"_hash, 0);
 
 	//Generate buffers and arrays
-	glGenVertexArrays(1, &m_VAO);
-	glGenBuffers(1, &m_VBO);
+	STATE->GenerateVertexArrays(1, &m_VAO);
+	STATE->GenerateBuffers(1, &m_VBO);
 
 
 	//bind
@@ -67,23 +67,24 @@ void TextRenderer::Initialize()
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
 	//set data and attributes
-	glBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
+	STATE->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
 
 	//input layout
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
-	glEnableVertexAttribArray(4);
-	glEnableVertexAttribArray(5);
+	STATE->SetVertexAttributeArrayEnabled(0, true);
+	STATE->SetVertexAttributeArrayEnabled(1, true);
+	STATE->SetVertexAttributeArrayEnabled(2, true);
+	STATE->SetVertexAttributeArrayEnabled(3, true);
+	STATE->SetVertexAttributeArrayEnabled(4, true);
+	STATE->SetVertexAttributeArrayEnabled(5, true);
 
-	glVertexAttribPointer(0, (GLint)3, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, Position));
-	glVertexAttribPointer(1, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, Color));
-	glVertexAttribPointer(2, (GLint)2, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, TexCoord));
-	glVertexAttribPointer(3, (GLint)2, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, CharacterDimension));
-	glVertexAttribPointer(4, (GLint)1, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, SizeMult));
-	glVertexAttribIPointer(5, (GLint)1, GL_UNSIGNED_INT, (GLsizei)sizeof(TextVertex), (GLvoid*)offsetof(TextVertex, ChannelId));
+	int32 const vertSize = sizeof(TextVertex);
+	STATE->DefineVertexAttributePointer(0, (GLint)3, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, Position));
+	STATE->DefineVertexAttributePointer(1, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, Color));
+	STATE->DefineVertexAttributePointer(2, (GLint)2, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, TexCoord));
+	STATE->DefineVertexAttributePointer(3, (GLint)2, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, CharacterDimension));
+	STATE->DefineVertexAttributePointer(4, (GLint)1, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, SizeMult));
+	STATE->DefineVertexAttribIPointer(5, (GLint)1, GL_UNSIGNED_INT, vertSize, (GLvoid*)offsetof(TextVertex, ChannelId));
 
 	//unbind
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
@@ -323,7 +324,7 @@ void TextRenderer::UpdateBuffer()
 
 	//Send the vertex buffer again
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, static_cast<uint32>(tVerts.size() * sizeof(TextVertex)), tVerts.data(), GL_DYNAMIC_DRAW);
+	STATE->SetBufferData(GL_ARRAY_BUFFER, static_cast<uint32>(tVerts.size() * sizeof(TextVertex)), tVerts.data(), GL_DYNAMIC_DRAW);
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
 
 	//Done Modifying

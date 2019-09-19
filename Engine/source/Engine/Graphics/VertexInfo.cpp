@@ -180,8 +180,8 @@ void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const flags, std::v
 		{
 			ET_ASSERT(locationIdx < locations.size());
 
-			glEnableVertexAttribArray(locations[locationIdx]);
-			glVertexAttribPointer(locations[locationIdx],
+			STATE->SetVertexAttributeArrayEnabled(locations[locationIdx], true);
+			STATE->DefineVertexAttributePointer(locations[locationIdx],
 				it->second.dataCount,
 				DataTypeInfo::GetTypeId(it->second.dataType),
 				GL_FALSE,
@@ -217,8 +217,8 @@ void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const supportedFlag
 			{
 				ET_ASSERT(locationIdx < locations.size());
 
-				glEnableVertexAttribArray(locations[locationIdx]);
-				glVertexAttribPointer(locations[locationIdx],
+				STATE->SetVertexAttributeArrayEnabled(locations[locationIdx], true);
+				STATE->DefineVertexAttributePointer(locations[locationIdx],
 					it->second.dataCount,
 					DataTypeInfo::GetTypeId(it->second.dataType),
 					GL_FALSE,

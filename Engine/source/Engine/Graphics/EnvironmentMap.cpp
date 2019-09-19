@@ -79,7 +79,7 @@ DEFINE_FORCED_LINKING(EnvironmentMapAsset) // force the shader class to be linke
 //
 bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
-	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	STATE->SetSeamlessCubemapsEnabled(true);
 
 	//load equirectangular texture
 	//****************************
@@ -183,8 +183,8 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	for (uint32 i = 0; i < 6; ++i)
 	{
 		equiCubeShader->Upload("view"_hash, captureViews[i]);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap->GetHandle(), 0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		STATE->LinkTextureToFbo2D(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap->GetHandle(), 0);
+		STATE->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
 	}

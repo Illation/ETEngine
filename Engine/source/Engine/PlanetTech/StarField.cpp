@@ -17,8 +17,8 @@ StarField::StarField(T_Hash const assetId)
 
 StarField::~StarField()
 {
-	glDeleteVertexArrays(1, &m_VAO);
-	glDeleteBuffers(1, &m_VBO);
+	STATE->DeleteVertexArrays(1, &m_VAO);
+	STATE->DeleteBuffers(1, &m_VBO);
 }
 
 void StarField::Initialize()
@@ -51,18 +51,18 @@ void StarField::Initialize()
 	m_pShader->Upload("uTexture"_hash, 0);
 
 	//Generate buffers and arrays
-	glGenVertexArrays(1, &m_VAO);
-	glGenBuffers(1, &m_VBO);
+	STATE->GenerateVertexArrays(1, &m_VAO);
+	STATE->GenerateBuffers(1, &m_VBO);
 
 	//bind
 	STATE->BindVertexArray(m_VAO);
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
 	//set data and attributes
-	glBufferData(GL_ARRAY_BUFFER, m_Stars.size()*sizeof(vec4), m_Stars.data(), GL_DYNAMIC_DRAW);
+	STATE->SetBufferData(GL_ARRAY_BUFFER, m_Stars.size()*sizeof(vec4), m_Stars.data(), GL_DYNAMIC_DRAW);
 
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(vec4), (GLvoid*)0);
+	STATE->SetVertexAttributeArrayEnabled(0, true);
+	STATE->DefineVertexAttributePointer(0, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(vec4), (GLvoid*)0);
 
 	//unbind
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);

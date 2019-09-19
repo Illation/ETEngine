@@ -90,7 +90,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	m_CollectTex = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT );
 	m_CollectTex->Build();
 	m_CollectTex->SetParameters(params);
-	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_CollectTex->GetHandle(), 0);
+	STATE->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_CollectTex->GetHandle(), 0);
 	//Render Buffer for depth and stencil
 	STATE->GenRenderBuffers(1, &m_CollectRBO);
 	STATE->BindRenderbuffer(m_CollectRBO);
@@ -106,7 +106,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 		m_ColorBuffers[i]->Build();
 		m_ColorBuffers[i]->SetParameters(params, true);
 		// attach texture to framebuffer
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_ColorBuffers[i]->GetHandle(), 0 );
+		STATE->LinkTextureToFbo2D(i, GL_TEXTURE_2D, m_ColorBuffers[i]->GetHandle(), 0);
 	}
 	//mrt
 	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
@@ -124,13 +124,13 @@ void PostProcessingRenderer::GenerateFramebuffers()
 		m_DownSampleTexture[i] = new TextureData(res.x, res.y, GL_RGB16F, GL_RGB, GL_FLOAT );
 		m_DownSampleTexture[i]->Build();
 		m_DownSampleTexture[i]->SetParameters(params, true);
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DownSampleTexture[i]->GetHandle(), 0 );
+		STATE->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_DownSampleTexture[i]->GetHandle(), 0);
 
 		STATE->BindFramebuffer( m_DownPingPongFBO[i] );
 		m_DownPingPongTexture[i] = new TextureData(res.x, res.y, GL_RGB16F, GL_RGB, GL_FLOAT );
 		m_DownPingPongTexture[i]->Build();
 		m_DownPingPongTexture[i]->SetParameters(params, true);
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DownPingPongTexture[i]->GetHandle(), 0 );
+		STATE->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_DownPingPongTexture[i]->GetHandle(), 0);
 	}
 
 	//Generate framebuffers and textures for gaussian ping pong
@@ -141,7 +141,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 		m_PingPongTexture[i] = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
 		m_PingPongTexture[i]->Build();
 		m_PingPongTexture[i]->SetParameters(params, true);
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_PingPongTexture[i]->GetHandle(), 0 );
+		STATE->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_PingPongTexture[i]->GetHandle(), 0);
 	}
 
 	if (!(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE))

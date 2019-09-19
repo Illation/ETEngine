@@ -43,7 +43,6 @@ private:
 
 	//Shader and its uniforms
 	AssetPtr<ShaderData> m_pShader;
-	GLint m_uWVP = 0;
 
 private:
 	friend class Singleton<DebugRenderer>;

@@ -181,7 +181,7 @@ MeshSurface::MeshSurface(MeshData const* const mesh, Material const* const mater
 	ET_ASSERT(m_Material != nullptr);
 
 	// create a new vertex array
-	glGenVertexArrays(1, &m_VertexArray);
+	STATE->GenerateVertexArrays(1, &m_VertexArray);
 	STATE->BindVertexArray(m_VertexArray);
 
 	// link it to the mesh's buffer
@@ -201,7 +201,7 @@ MeshSurface::MeshSurface(MeshData const* const mesh, Material const* const mater
 //
 MeshSurface::~MeshSurface()
 {
-	glDeleteVertexArrays(1, &m_VertexArray);
+	STATE->DeleteVertexArrays(1, &m_VertexArray);
 }
 
 
@@ -375,14 +375,14 @@ MeshData::MeshData(MeshDataContainer const* const cpuData)
 	//------------------
 
 	// vertex buffer
-	glGenBuffers(1, &m_VertexBuffer);
+	STATE->GenerateBuffers(1, &m_VertexBuffer);
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, bufferSize, interleaved, GL_STATIC_DRAW);
+	STATE->SetBufferData(GL_ARRAY_BUFFER, bufferSize, interleaved, GL_STATIC_DRAW);
 
 	// index buffer - #todo: might be okay to store index buffer with 16bits per index
-	glGenBuffers(1, &m_IndexBuffer);
+	STATE->GenerateBuffers(1, &m_IndexBuffer);
 	STATE->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * cpuData->m_Indices.size(), cpuData->m_Indices.data(), GL_STATIC_DRAW);
+	STATE->SetBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * cpuData->m_Indices.size(), cpuData->m_Indices.data(), GL_STATIC_DRAW);
 
 	// free CPU side data
 	//--------------------
@@ -397,8 +397,8 @@ MeshData::MeshData(MeshDataContainer const* const cpuData)
 //
 MeshData::~MeshData()
 {
-	glDeleteBuffers(1, &m_VertexBuffer);
-	glDeleteBuffers(1, &m_IndexBuffer);
+	STATE->DeleteBuffers(1, &m_VertexBuffer);
+	STATE->DeleteBuffers(1, &m_IndexBuffer);
 
 	SafeDelete(m_Surfaces);
 }
@@ -424,9 +424,9 @@ RTTR_REGISTRATION
 {
 	using namespace rttr;
 
-registration::class_<MeshAsset>("mesh asset")
-.constructor<MeshAsset const&>()
-.constructor<>()(rttr::detail::as_object());
+	registration::class_<MeshAsset>("mesh asset")
+		.constructor<MeshAsset const&>()
+		.constructor<>()(rttr::detail::as_object());
 
 	rttr::type::register_converter_func([](MeshAsset& asset, bool& ok) -> I_Asset*
 	{

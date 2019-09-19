@@ -45,7 +45,7 @@ void ScreenSpaceReflections::Initialize()
 	m_CollectTex = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
 	m_CollectTex->Build();
 	m_CollectTex->SetParameters(params);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_CollectTex->GetHandle(), 0);
+	STATE->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_CollectTex->GetHandle(), 0);
 	//Render Buffer for depth and stencil
 	STATE->GenRenderBuffers(1, &m_CollectRBO);
 	STATE->BindRenderbuffer(m_CollectRBO);

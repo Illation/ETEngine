@@ -50,10 +50,10 @@ void PbrPrefilter::Precompute(int32 resolution)
 
 	STATE->BindRenderbuffer(captureRBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, resolution, resolution);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_LUT->GetHandle(), 0);
+	STATE->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_LUT->GetHandle(), 0);
 
 	STATE->SetViewport(ivec2(0), ivec2(resolution));
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	STATE->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
 	//Reset render settings and return generated texture
@@ -123,8 +123,8 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	for (uint32 i = 0; i < 6; ++i)
 	{
 		irradianceShader->Upload("view"_hash, captureViews[i]);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradiance->GetHandle(), 0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		STATE->LinkTextureToFbo2D(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradiance->GetHandle(), 0);
+		STATE->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
 	}
@@ -164,9 +164,9 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 		for (uint32 i = 0; i < 6; ++i)
 		{
 			radianceShader->Upload("view"_hash, captureViews[i]);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, radiance->GetHandle(), mip);
+			STATE->LinkTextureToFbo2D(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, radiance->GetHandle(), mip);
 
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			STATE->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
 		}
 	}

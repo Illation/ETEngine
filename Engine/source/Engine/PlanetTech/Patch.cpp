@@ -36,35 +36,35 @@ void Patch::Init()
 	//Buffer Initialisation
 	//*********************
 	//Generate buffers and arrays
-	glGenVertexArrays(1, &m_VAO);
-	glGenBuffers(1, &m_VBO);
-	glGenBuffers(1, &m_EBO);
-	glGenBuffers(1, &m_VBOInstance);
+	STATE->GenerateVertexArrays(1, &m_VAO);
+	STATE->GenerateBuffers(1, &m_VBO);
+	STATE->GenerateBuffers(1, &m_EBO);
+	STATE->GenerateBuffers(1, &m_VBOInstance);
 	//bind
 	STATE->BindVertexArray(m_VAO);
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	//input layout
 	//************
 	//geometry
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(PatchVertex), (GLvoid*)offsetof(PatchVertex, pos));
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(PatchVertex), (GLvoid*)offsetof(PatchVertex, morph));
+	STATE->SetVertexAttributeArrayEnabled(0, true);
+	STATE->SetVertexAttributeArrayEnabled(1, true);
+	STATE->DefineVertexAttributePointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(PatchVertex), (GLvoid*)offsetof(PatchVertex, pos));
+	STATE->DefineVertexAttributePointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(PatchVertex), (GLvoid*)offsetof(PatchVertex, morph));
 	//instances
 	//bind
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBOInstance);
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
-	glEnableVertexAttribArray(4);
-	glEnableVertexAttribArray(5);
-	glVertexAttribIPointer(2, 1, GL_INT, sizeof(PatchInstance), (GLvoid*)offsetof(PatchInstance, level));
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(PatchInstance), (GLvoid*)offsetof(PatchInstance, a));
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(PatchInstance), (GLvoid*)offsetof(PatchInstance, r));
-	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(PatchInstance), (GLvoid*)offsetof(PatchInstance, s));
-	glVertexAttribDivisor(2, 1);
-	glVertexAttribDivisor(3, 1);
-	glVertexAttribDivisor(4, 1);
-	glVertexAttribDivisor(5, 1);
+	STATE->SetVertexAttributeArrayEnabled(2, true);
+	STATE->SetVertexAttributeArrayEnabled(3, true);
+	STATE->SetVertexAttributeArrayEnabled(4, true);
+	STATE->SetVertexAttributeArrayEnabled(5, true);
+	STATE->DefineVertexAttribIPointer(2, 1, GL_INT, sizeof(PatchInstance), (GLvoid*)offsetof(PatchInstance, level));
+	STATE->DefineVertexAttributePointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(PatchInstance), (GLvoid*)offsetof(PatchInstance, a));
+	STATE->DefineVertexAttributePointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(PatchInstance), (GLvoid*)offsetof(PatchInstance, r));
+	STATE->DefineVertexAttributePointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(PatchInstance), (GLvoid*)offsetof(PatchInstance, s));
+	STATE->DefineVertexAttribDivisor(2, 1);
+	STATE->DefineVertexAttribDivisor(3, 1);
+	STATE->DefineVertexAttribDivisor(4, 1);
+	STATE->DefineVertexAttribDivisor(5, 1);
 	//Indices
 	STATE->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 	//unbind
@@ -126,9 +126,9 @@ void Patch::GenerateGeometry(int16 levels)
 	}
 	//Rebind dat shizzle
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, m_Vertices.size() * sizeof(PatchVertex), m_Vertices.data(), GL_DYNAMIC_DRAW);
+	STATE->SetBufferData(GL_ARRAY_BUFFER, m_Vertices.size() * sizeof(PatchVertex), m_Vertices.data(), GL_DYNAMIC_DRAW);
 	STATE->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*m_Indices.size(), m_Indices.data(), GL_STATIC_DRAW);
+	STATE->SetBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*m_Indices.size(), m_Indices.data(), GL_STATIC_DRAW);
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -137,7 +137,7 @@ void Patch::BindInstances(std::vector<PatchInstance> &instances)
 	//update buffer
 	m_NumInstances = (int32)instances.size();
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBOInstance);
-	glBufferData(GL_ARRAY_BUFFER, instances.size() * sizeof(PatchInstance), instances.data(), GL_STATIC_DRAW);
+	STATE->SetBufferData(GL_ARRAY_BUFFER, instances.size() * sizeof(PatchInstance), instances.data(), GL_STATIC_DRAW);
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -184,7 +184,7 @@ void Patch::Draw()
 
 Patch::~Patch()
 {
-	glDeleteVertexArrays(1, &m_EBO);
-	glDeleteVertexArrays(1, &m_VAO);
-	glDeleteBuffers(1, &m_VBO);
+	STATE->DeleteVertexArrays(1, &m_EBO);
+	STATE->DeleteVertexArrays(1, &m_VAO);
+	STATE->DeleteBuffers(1, &m_VBO);
 }

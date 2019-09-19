@@ -55,8 +55,8 @@ void PrimitiveRenderer::AddGeometry(PrimitiveGeometry* pGeometry)
 //Unit Quad
 primitives::Quad::~Quad()
 {
-	glDeleteBuffers(1, &m_VBO);
-	glDeleteVertexArrays(1, &m_VAO);
+	STATE->DeleteBuffers(1, &m_VBO);
+	STATE->DeleteVertexArrays(1, &m_VAO);
 }
 void primitives::Quad::Draw()
 {
@@ -75,22 +75,22 @@ void primitives::Quad::Initialize()
 		 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
 	};
 	// Setup plane VAO
-	glGenVertexArrays(1, &m_VAO);
-	glGenBuffers(1, &m_VBO);
+	STATE->GenerateVertexArrays(1, &m_VAO);
+	STATE->GenerateBuffers(1, &m_VBO);
 	STATE->BindVertexArray(m_VAO);
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	STATE->SetBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	STATE->SetVertexAttributeArrayEnabled(0, true);
+	STATE->DefineVertexAttributePointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+	STATE->SetVertexAttributeArrayEnabled(1, true);
+	STATE->DefineVertexAttributePointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 }
 
 //Unit cube
 primitives::Cube::~Cube()
 {
-	glDeleteBuffers(1, &m_VBO);
-	glDeleteVertexArrays(1, &m_VAO);
+	STATE->DeleteBuffers(1, &m_VBO);
+	STATE->DeleteVertexArrays(1, &m_VAO);
 }
 void primitives::Cube::Draw()
 {
@@ -145,19 +145,19 @@ void primitives::Cube::Initialize()
 		-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f,// top-left
 		-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f // bottom-left        
 	};
-	glGenVertexArrays(1, &m_VAO);
-	glGenBuffers(1, &m_VBO);
+	STATE->GenerateVertexArrays(1, &m_VAO);
+	STATE->GenerateBuffers(1, &m_VBO);
 	// Fill buffer
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	STATE->SetBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	// Link vertex attributes
 	STATE->BindVertexArray(m_VAO);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+	STATE->SetVertexAttributeArrayEnabled(0, true);
+	STATE->DefineVertexAttributePointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+	STATE->SetVertexAttributeArrayEnabled(1, true);
+	STATE->DefineVertexAttributePointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	STATE->SetVertexAttributeArrayEnabled(2, true);
+	STATE->DefineVertexAttributePointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
 	STATE->BindVertexArray(0);
 }
@@ -166,8 +166,8 @@ void primitives::Cube::Initialize()
 template<int32 level>
 primitives::IcoSphere<level>::~IcoSphere()
 {
-	glDeleteBuffers(1, &m_VBO);
-	glDeleteVertexArrays(1, &m_VAO);
+	STATE->DeleteBuffers(1, &m_VBO);
+	STATE->DeleteVertexArrays(1, &m_VAO);
 }
 template<int32 level>
 void primitives::IcoSphere<level>::Draw()
@@ -192,15 +192,15 @@ void primitives::IcoSphere<level>::Initialize()
 	}
 	m_NumVerts = (int32)vertices.size();
 
-	glGenVertexArrays(1, &m_VAO);
-	glGenBuffers(1, &m_VBO);
+	STATE->GenerateVertexArrays(1, &m_VAO);
+	STATE->GenerateBuffers(1, &m_VBO);
 	// Fill buffer
 	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
+	STATE->SetBufferData(GL_ARRAY_BUFFER, sizeof(vec3)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
 	// Link vertex attributes
 	STATE->BindVertexArray(m_VAO);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+	STATE->SetVertexAttributeArrayEnabled(0, true);
+	STATE->DefineVertexAttributePointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
 	STATE->BindVertexArray(0);
 }

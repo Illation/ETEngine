@@ -33,6 +33,10 @@ public:
 	void SetStencilEnabled(bool enabled) { EnOrDisAble(m_StencilTestEnabled, enabled, GL_STENCIL_TEST); }
 	void SetCullEnabled(bool enabled) { EnOrDisAble(m_CullFaceEnabled, enabled, GL_CULL_FACE); }
 
+	void SetDebugOutEnabled(bool enabled) { EnOrDisAble(m_DebugOutputEnabled, enabled, GL_DEBUG_OUTPUT); }
+	void SetDebugOutSynchonousEnabled(bool enabled) { EnOrDisAble(m_DebugOutputSynchronousEnabled, enabled, GL_DEBUG_OUTPUT_SYNCHRONOUS); }
+	void SetSeamlessCubemapsEnabled(bool enabled) { EnOrDisAble(m_SeamlessCubemapsEnabled, enabled, GL_TEXTURE_CUBE_MAP_SEAMLESS); }
+
 	void SetFaceCullingMode(GLenum cullMode);
 	void SetBlendEquation(GLenum equation);
 	void SetBlendFunction(GLenum sFactor, GLenum dFactor);
@@ -83,6 +87,8 @@ public:
 	void SetVertexAttributeArrayEnabled(GLuint index, bool enabled) const; // could at some point be a member on VertexArray data object
 
 	void DefineVertexAttributePointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid const* pointer) const;
+	void DefineVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, GLvoid const* pointer) const;
+	void DefineVertexAttribDivisor(GLuint index, GLuint divisor) const;
 
 	void* MapBuffer(GLenum target, GLenum access) const;
 	void UnmapBuffer(GLenum target) const;
@@ -111,6 +117,10 @@ public:
 	void GenRenderBuffers(GLsizei n, GLuint *ids) const;
 	void DeleteRenderBuffers(GLsizei n, GLuint *ids) const;
 
+	void LinkTextureToFbo(uint8 const attachment, uint32 const texHandle, int32 const level) const; 
+	void LinkTextureToFbo2D(uint8 const attachment, uint32 const texTarget, uint32 const texHandle, int32 const level) const; // link to current draw FB with a color attachment
+	void LinkTextureToDepth(uint32 const texTarget, uint32 const texHandle);
+
 private:
 
 	void EnOrDisAble(bool &state, bool enabled, GLenum glState);
@@ -132,6 +142,11 @@ private:
 	GLenum m_CullFaceMode = GL_BACK;
 	
 	bool m_StencilTestEnabled = false;
+
+	bool m_DebugOutputEnabled = false;
+	bool m_DebugOutputSynchronousEnabled = false;
+
+	bool m_SeamlessCubemapsEnabled = false;
 
 	bool m_BlendEnabled = false;
 	bool m_IndividualBlend = false;

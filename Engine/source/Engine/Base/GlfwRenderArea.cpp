@@ -113,8 +113,8 @@ void GlfwRenderArea::Initialize()
 		LOG("");
 	}
 
-	glEnable(GL_DEBUG_OUTPUT);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	STATE->SetDebugOutEnabled(true);
+	STATE->SetDebugOutSynchonousEnabled(true);
 	glDebugMessageCallback(glLogCallback, nullptr);
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
 

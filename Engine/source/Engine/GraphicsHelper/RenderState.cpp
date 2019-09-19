@@ -528,6 +528,26 @@ void RenderState::DefineVertexAttributePointer(GLuint index, GLint size, GLenum 
 }
 
 //---------------------------------
+// RenderState::DefineVertexAttribIPointer
+//
+// Same as above, but for non normalized integers
+//
+void RenderState::DefineVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, GLvoid const* pointer) const
+{
+	glVertexAttribIPointer(index, size, type, stride, pointer);
+}
+
+//---------------------------------
+// RenderState::DefineVertexAttribDivisor
+//
+// Additional vertex stride during instanced rendering
+//
+void RenderState::DefineVertexAttribDivisor(GLuint index, GLuint divisor) const
+{
+	glVertexAttribDivisor(index, divisor);
+}
+
+//---------------------------------
 // RenderState::MapBuffer
 //
 // Map the data of a buffer to a pointer on the CPU so that it can be modified
@@ -725,4 +745,34 @@ void RenderState::GenRenderBuffers(GLsizei n, GLuint *ids) const
 void RenderState::DeleteRenderBuffers(GLsizei n, GLuint *ids) const
 {
 	glDeleteRenderbuffers(n, ids);
+}
+
+//---------------------------------
+// RenderState::LinkTextureToFbo
+//
+// link to current draw FB with a color attachment
+//
+void RenderState::LinkTextureToFbo(uint8 const attachment, uint32 const texHandle, int32 const level) const
+{
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + static_cast<uint32>(attachment), texHandle, level);
+}
+
+//---------------------------------
+// RenderState::LinkTextureToFbo
+//
+// Same as above, but specifies a target
+//
+void RenderState::LinkTextureToFbo2D(uint8 const attachment, uint32 const texTarget, uint32 const texHandle, int32 const level) const
+{
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + static_cast<uint32>(attachment), texTarget, texHandle, level);
+}
+
+//---------------------------------
+// RenderState::LinkTextureToFbo
+//
+// Link a depth texture to an FBO
+//
+void RenderState::LinkTextureToDepth(uint32 const texTarget, uint32 const texHandle)
+{
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texTarget, texHandle, 0);
 }

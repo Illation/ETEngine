@@ -133,7 +133,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	STATE->SetBlendFunction(GL_ONE, GL_ONE);
 	STATE->SetBlendEnabled(false);
 
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, atmo->m_TexTransmittance->GetHandle(), 0);
+	STATE->LinkTextureToFbo(0, atmo->m_TexTransmittance->GetHandle(), 0);
 	glDrawBuffer(GL_COLOR_ATTACHMENT0);
 	STATE->SetViewport(ivec2(0), ivec2(m_Settings.TRANSMITTANCE_W, m_Settings.TRANSMITTANCE_H));
 	STATE->SetShader(m_pComputeTransmittance.get());
@@ -143,8 +143,8 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	// depending on 'blend', either initialize irradiance_texture_ with zeros or
 	// leave it unchanged (we don't want the direct irradiance in
 	// irradiance_texture_, but only the irradiance from the sky).
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_TexDeltaIrradiance->GetHandle(), 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, atmo->m_TexIrradiance->GetHandle(), 0);
+	STATE->LinkTextureToFbo(0, m_TexDeltaIrradiance->GetHandle(), 0);
+	STATE->LinkTextureToFbo(1, atmo->m_TexIrradiance->GetHandle(), 0);
 	glDrawBuffers(2, kDrawBuffers);
 	STATE->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
 	STATE->SetShader(m_pComputeDirectIrradiance.get());
@@ -158,18 +158,10 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	// delta_rayleigh_scattering_texture and delta_mie_scattering_texture, and
 	// either store them or accumulate them in scattering_texture_ and
 	// optional_single_mie_scattering_texture_.
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_TexDeltaRayleigh->GetHandle(), 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, m_TexDeltaMie->GetHandle(), 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, atmo->m_TexInscatter->GetHandle(), 0);
-	//if (optional_single_mie_scattering_texture_ != 0)
-	//{
-	//	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, optional_single_mie_scattering_texture_, 0);
-	//	glDrawBuffers(4, kDrawBuffers);
-	//}
-	//else
-	//{
+	STATE->LinkTextureToFbo(0, m_TexDeltaRayleigh->GetHandle(), 0);
+	STATE->LinkTextureToFbo(1, m_TexDeltaMie->GetHandle(), 0);
+	STATE->LinkTextureToFbo(2, atmo->m_TexInscatter->GetHandle(), 0);
 	glDrawBuffers(3, kDrawBuffers);
-	//}
 	STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 	STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 	STATE->SetShader(m_pComputeSingleScattering.get());
@@ -189,10 +181,10 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	{
 		// Compute the scattering density, and store it in
 		// delta_scattering_density_texture.
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_TexDeltaScattering->GetHandle(), 0);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0);
+		STATE->LinkTextureToFbo(0, m_TexDeltaScattering->GetHandle(), 0);
+		STATE->LinkTextureToFbo(1, 0, 0);
+		STATE->LinkTextureToFbo(2, 0, 0);
+		STATE->LinkTextureToFbo(3, 0, 0);
 		glDrawBuffer(GL_COLOR_ATTACHMENT0);
 		STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 		STATE->SetShader(m_pComputeScatteringDensity.get());
@@ -215,8 +207,8 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 
 		// Compute the indirect irradiance, store it in delta_irradiance_texture and
 		// accumulate it in irradiance_texture_.
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_TexDeltaIrradiance->GetHandle(), 0);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, atmo->m_TexIrradiance->GetHandle(), 0);
+		STATE->LinkTextureToFbo(0, m_TexDeltaIrradiance->GetHandle(), 0);
+		STATE->LinkTextureToFbo(1, atmo->m_TexIrradiance->GetHandle(), 0);
 		glDrawBuffers(2, kDrawBuffers);
 		STATE->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
 		STATE->SetShader(m_pComputeIndirectIrradiance.get());
@@ -235,8 +227,8 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		// Compute the multiple scattering, store it in
 		// delta_multiple_scattering_texture, and accumulate it in
 		// scattering_texture_.
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_TexDeltaMultipleScattering->GetHandle(), 0);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, atmo->m_TexInscatter->GetHandle(), 0);
+		STATE->LinkTextureToFbo(0, m_TexDeltaMultipleScattering->GetHandle(), 0);
+		STATE->LinkTextureToFbo(1, atmo->m_TexInscatter->GetHandle(), 0);
 		glDrawBuffers(2, kDrawBuffers);
 		STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 		STATE->SetShader(m_pComputeMultipleScattering.get());
@@ -253,9 +245,9 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 			STATE->SetBlendEnabled(false);
 		}
 	}
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0);
+	STATE->LinkTextureToFbo(1, 0, 0);
+	STATE->LinkTextureToFbo(2, 0, 0);
+	STATE->LinkTextureToFbo(3, 0, 0);
 
 	STATE->SetBlendEnabled(false);
 

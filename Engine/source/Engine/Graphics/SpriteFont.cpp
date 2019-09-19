@@ -297,10 +297,10 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, texWidth, texHeight);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pFont->m_pTexture->GetHandle(), 0);
+	STATE->LinkTextureToFbo2D(0, GL_TEXTURE_2D, pFont->m_pTexture->GetHandle(), 0);
 
 	STATE->SetViewport(ivec2(0), ivec2(texWidth, texHeight));
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	STATE->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	AssetPtr<ShaderData> computeSdf = ResourceManager::Instance()->GetAssetData<ShaderData>("ComputeGlyphSDF.glsl"_hash);
 	STATE->SetShader(computeSdf.get());
