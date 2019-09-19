@@ -31,11 +31,11 @@ void PbrPrefilter::Precompute(int32 resolution)
 	//************************
 	//Create framebuffer
 	GLuint captureFBO, captureRBO;
-	glGenFramebuffers(1, &captureFBO);
-	glGenRenderbuffers(1, &captureRBO);
+	STATE->GenFramebuffers(1, &captureFBO);
+	STATE->GenRenderBuffers(1, &captureRBO);
 
 	STATE->BindFramebuffer(captureFBO);
-	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	STATE->BindRenderbuffer(captureRBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, resolution, resolution);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO); 
 	//Shader
@@ -48,7 +48,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 	params.wrapT = E_TextureWrapMode::ClampToEdge;
 	m_LUT->SetParameters(params);
 
-	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	STATE->BindRenderbuffer(captureRBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, resolution, resolution);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_LUT->GetHandle(), 0);
 
@@ -59,11 +59,11 @@ void PbrPrefilter::Precompute(int32 resolution)
 	//Reset render settings and return generated texture
 	//*************************************************
 	STATE->BindFramebuffer(0);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	STATE->BindRenderbuffer(0);
 	STATE->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 
-	glDeleteRenderbuffers(1, &captureRBO);
-	glDeleteFramebuffers(1, &captureFBO);
+	STATE->DeleteRenderBuffers(1, &captureRBO);
+	STATE->DeleteFramebuffers(1, &captureFBO);
 	LOG("Precalculating PBR BRDF LUT . . . . . . DONE", Info, false, logPos);
 }
 
@@ -81,11 +81,11 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 
 	//Create framebuffer
 	GLuint captureFBO, captureRBO;
-	glGenFramebuffers(1, &captureFBO);
-	glGenRenderbuffers(1, &captureRBO);
+	STATE->GenFramebuffers(1, &captureFBO);
+	STATE->GenRenderBuffers(1, &captureRBO);
 
 	STATE->BindFramebuffer(captureFBO);
-	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	STATE->BindRenderbuffer(captureRBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, resolution, resolution);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
@@ -104,7 +104,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 
 	//Framebuffer
 	STATE->BindFramebuffer(captureFBO);
-	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	STATE->BindRenderbuffer(captureRBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, irradianceRes, irradianceRes);
 
 	//shader
@@ -155,7 +155,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 		// reisze framebuffer according to mip-level size.
 		uint32 mipWidth = (uint32)(radianceRes * std::pow(0.5, mip));
 		uint32 mipHeight = (uint32)(radianceRes * std::pow(0.5, mip));
-		glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+		STATE->BindRenderbuffer(captureRBO);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
 		STATE->SetViewport(ivec2(0), ivec2(mipWidth, mipHeight));
 
@@ -177,8 +177,8 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	STATE->BindFramebuffer(0);
 	STATE->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 
-	glDeleteRenderbuffers(1, &captureRBO);
-	glDeleteFramebuffers(1, &captureFBO);
+	STATE->DeleteRenderBuffers(1, &captureRBO);
+	STATE->DeleteFramebuffers(1, &captureFBO);
 }
 
 TextureData* PbrPrefilter::GetLUT()

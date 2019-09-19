@@ -72,12 +72,7 @@ void Viewport::SetRenderer(I_ViewportRenderer* renderer)
 //
 RenderState* Viewport::GetGlobalRenderState()
 {
-	if (g_CurrentViewport == nullptr)
-	{
-		LOG("GetGlobalRenderState > g_CurrentViewport not set -> couldn't retrieve state", LogLevel::Error);
-		return nullptr;
-	}
-
+	ET_ASSERT(g_CurrentViewport != nullptr);
 	return g_CurrentViewport->GetState();
 }
 

@@ -143,11 +143,11 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 {
 	//Create framebuffer
 	uint32 captureFBO, captureRBO;
-	glGenFramebuffers(1, &captureFBO);
-	glGenRenderbuffers(1, &captureRBO);
+	STATE->GenFramebuffers(1, &captureFBO);
+	STATE->GenRenderBuffers(1, &captureRBO);
 
 	STATE->BindFramebuffer(captureFBO);
-	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	STATE->BindRenderbuffer(captureRBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, resolution, resolution);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
@@ -196,8 +196,8 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	STATE->BindTexture(GL_TEXTURE_2D, 0);
 	STATE->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 
-	glDeleteRenderbuffers(1, &captureRBO);
-	glDeleteFramebuffers(1, &captureFBO);
+	STATE->DeleteRenderBuffers(1, &captureRBO);
+	STATE->DeleteFramebuffers(1, &captureFBO);
 
 	return envCubeMap;
 }

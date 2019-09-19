@@ -51,7 +51,7 @@ void AtmospherePrecompute::Init()
 	m_TexDeltaScattering->Build();
 	m_TexDeltaScattering->SetParameters(m_Settings.m_TexParams);
 
-	glGenFramebuffers(1, &m_FBO);
+	STATE->GenFramebuffers(1, &m_FBO);
 
 	m_IsInitialized = true;
 }
@@ -71,7 +71,7 @@ void AtmospherePrecompute::Unload()//unload textures and fbos needed for precomp
 	delete m_TexDeltaScattering;
 	m_TexDeltaScattering = nullptr;
 
-	glDeleteFramebuffers(1, &m_FBO);
+	STATE->DeleteFramebuffers(1, &m_FBO);
 	// #todo also unload shaders, extra functionality for content manager
 
 	//assert(glGetError == 0);

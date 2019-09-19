@@ -107,7 +107,7 @@ DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 	{
 		auto data = CascadeData();
 
-		glGenFramebuffers(1, &(data.fbo));
+		STATE->GenFramebuffers(1, &(data.fbo));
 
 		data.pTexture = new TextureData( Resolution.x, Resolution.y, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT );
 		data.pTexture->Build();
@@ -135,7 +135,7 @@ DirectionalShadowData::~DirectionalShadowData()
 {
 	for ( size_t i = 0; i < m_Cascades.size(); ++i )
 	{
-		glDeleteRenderbuffers(1, &(m_Cascades[i].fbo));
+		STATE->DeleteRenderBuffers(1, &(m_Cascades[i].fbo));
 		SafeDelete(m_Cascades[i].pTexture);
 	}
 }

@@ -20,12 +20,12 @@ FrameBuffer::FrameBuffer(std::string shaderFile, GLenum format, uint32 numTarget
 }
 FrameBuffer::~FrameBuffer()
 {
-	glDeleteRenderbuffers(1, &m_RboDepthStencil);
+	STATE->DeleteRenderBuffers(1, &m_RboDepthStencil);
 	for (size_t i = 0; i < m_pTextureVec.size(); i++)
 	{
 		SafeDelete(m_pTextureVec[i]);
 	}
-	glDeleteFramebuffers(1, &m_GlFrameBuffer);
+	STATE->DeleteFramebuffers(1, &m_GlFrameBuffer);
 }
 
 void FrameBuffer::Initialize()
@@ -38,7 +38,7 @@ void FrameBuffer::Initialize()
 	AccessShaderAttributes();
 
 	//FrameBuffer
-	glGenFramebuffers(1, &m_GlFrameBuffer);
+	STATE->GenFramebuffers(1, &m_GlFrameBuffer);
 
 	GenerateFramebufferTextures();
 
@@ -112,8 +112,8 @@ void FrameBuffer::GenerateFramebufferTextures()
 	//Render Buffer for depth and stencil
 	if (!m_CaptureDepth)
 	{
-		glGenRenderbuffers(1, &m_RboDepthStencil);
-		glBindRenderbuffer(GL_RENDERBUFFER, m_RboDepthStencil);
+		STATE->GenRenderBuffers(1, &m_RboDepthStencil);
+		STATE->BindRenderbuffer(m_RboDepthStencil);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowSettings.Width, windowSettings.Height);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RboDepthStencil);
 	}
@@ -129,14 +129,14 @@ void FrameBuffer::ResizeFramebufferTextures()
 
 	if(windowSettings.Width > m_pTextureVec[0]->GetResolution().x || windowSettings.Height > m_pTextureVec[0]->GetResolution().y)
 	{
-		glDeleteRenderbuffers( 1, &m_RboDepthStencil );
+		STATE->DeleteRenderBuffers( 1, &m_RboDepthStencil );
 		for(uint32 i = 0; i < m_pTextureVec.size(); i++)
 		{
 			SafeDelete( m_pTextureVec[i] );
 		}
 		m_pTextureVec.clear();
-		glDeleteFramebuffers( 1, &m_GlFrameBuffer );
-		glGenFramebuffers( 1, &m_GlFrameBuffer );
+		STATE->DeleteFramebuffers( 1, &m_GlFrameBuffer );
+		STATE->GenFramebuffers( 1, &m_GlFrameBuffer );
 		GenerateFramebufferTextures();
 		return;
 	}
@@ -151,9 +151,9 @@ void FrameBuffer::ResizeFramebufferTextures()
 	{
 		//completely regenerate the renderbuffer object
 		STATE->BindFramebuffer(m_GlFrameBuffer);
-		glDeleteRenderbuffers( 1, &m_RboDepthStencil );
-		glGenRenderbuffers( 1, &m_RboDepthStencil );
-		glBindRenderbuffer( GL_RENDERBUFFER, m_RboDepthStencil );
+		STATE->DeleteRenderBuffers( 1, &m_RboDepthStencil );
+		STATE->GenRenderBuffers(1, &m_RboDepthStencil);
+		STATE->BindRenderbuffer(m_RboDepthStencil);
 		glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowSettings.Width, windowSettings.Height);
 		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RboDepthStencil);
 	}

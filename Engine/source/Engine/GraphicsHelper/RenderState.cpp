@@ -294,6 +294,20 @@ void RenderState::BindDrawFramebuffer(GLuint handle)
 }
 
 //---------------------------------
+// RenderState::BindFramebuffer
+//
+// Set the active renderbuffer
+//
+void RenderState::BindRenderbuffer(GLuint handle)
+{
+	if (handle != m_Renderbuffer)
+	{
+		m_Renderbuffer = handle;
+		glBindRenderbuffer(GL_RENDERBUFFER, handle);
+	}
+}
+
+//---------------------------------
 // RenderState::SetActiveTexture
 //
 // Set the currently active texture unit
@@ -671,4 +685,44 @@ void RenderState::GetActiveUniform(GLuint program, GLuint index, GLsizei bufSize
 void RenderState::GetActiveAttribute(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const
 {
 	glGetActiveAttrib(program, index, bufSize, length, size, type, name);
+}
+
+//---------------------------------
+// RenderState::GenFramebuffers
+//
+// Create a number of framebuffer objects
+//
+void RenderState::GenFramebuffers(GLsizei n, GLuint *ids) const
+{
+	glGenFramebuffers(n, ids);
+}
+
+//---------------------------------
+// RenderState::DeleteFramebuffers
+//
+// Frees the framebuffer GPU resources
+//
+void RenderState::DeleteFramebuffers(GLsizei n, GLuint *ids) const
+{
+	glDeleteFramebuffers(n, ids);
+}
+
+//---------------------------------
+// RenderState::GenRenderBuffers
+//
+// Create a number of renderbuffer objects
+//
+void RenderState::GenRenderBuffers(GLsizei n, GLuint *ids) const
+{
+	glGenRenderbuffers(n, ids);
+}
+
+//---------------------------------
+// RenderState::DeleteRenderBuffers
+//
+// Frees the renderbuffer GPU resources
+//
+void RenderState::DeleteRenderBuffers(GLsizei n, GLuint *ids) const
+{
+	glDeleteRenderbuffers(n, ids);
 }

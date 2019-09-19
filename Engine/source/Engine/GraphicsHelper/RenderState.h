@@ -48,6 +48,8 @@ public:
 	void BindReadFramebuffer(GLuint handle);
 	void BindDrawFramebuffer(GLuint handle);
 
+	void BindRenderbuffer(GLuint handle);
+
 	void SetActiveTexture(uint32 unit);
 	void BindTexture(GLenum target, GLuint handle);
 
@@ -103,6 +105,12 @@ public:
 	void GetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const;
 	void GetActiveAttribute(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const;
 
+	void GenFramebuffers(GLsizei n, GLuint *ids) const;
+	void DeleteFramebuffers(GLsizei n, GLuint *ids) const;
+
+	void GenRenderBuffers(GLsizei n, GLuint *ids) const;
+	void DeleteRenderBuffers(GLsizei n, GLuint *ids) const;
+
 private:
 
 	void EnOrDisAble(bool &state, bool enabled, GLenum glState);
@@ -113,6 +121,8 @@ private:
 
 	GLuint m_ReadFramebuffer = 0;
 	GLuint m_DrawFramebuffer = 0;
+
+	GLuint m_Renderbuffer = 0u;
 
 	int32 m_MaxDrawBuffers; //Depends on gpu and drivers
 

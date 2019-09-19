@@ -289,11 +289,11 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	GLuint captureFBO, captureRBO;
 
-	glGenFramebuffers(1, &captureFBO);
-	glGenRenderbuffers(1, &captureRBO);
+	STATE->GenFramebuffers(1, &captureFBO);
+	STATE->GenRenderBuffers(1, &captureRBO);
 
 	STATE->BindFramebuffer(captureFBO);
-	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	STATE->BindRenderbuffer(captureRBO);
 
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, texWidth, texHeight);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
@@ -364,11 +364,11 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 	FT_Done_FreeType(ft);
 
 	STATE->BindFramebuffer(0);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	STATE->BindRenderbuffer(0);
 	STATE->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 
-	glDeleteRenderbuffers(1, &captureRBO);
-	glDeleteFramebuffers(1, &captureFBO);
+	STATE->DeleteRenderBuffers(1, &captureRBO);
+	STATE->DeleteFramebuffers(1, &captureFBO);
 
 	return pFont;
 }

@@ -52,7 +52,7 @@ UIViewportRenderer::~UIViewportRenderer()
 {
 	if (!m_Initialized)return;
 	delete m_pTex; m_pTex = nullptr;
-	glDeleteFramebuffers(1, &m_FBO);
+	STATE->DeleteFramebuffers(1, &m_FBO);
 }
 
 void UIViewportRenderer::Draw(ivec2 pos, ivec2 size)
@@ -74,7 +74,7 @@ void UIViewportRenderer::Initialize(ivec2 size)
 
 	TextureParameters params(false);
 
-	glGenFramebuffers(1, &m_FBO);
+	STATE->GenFramebuffers(1, &m_FBO);
 	STATE->BindFramebuffer(m_FBO);
 	m_pTex = new TextureData(size.x, size.y, GL_RGB16F, GL_RGB, GL_FLOAT);
 	m_pTex->Build();

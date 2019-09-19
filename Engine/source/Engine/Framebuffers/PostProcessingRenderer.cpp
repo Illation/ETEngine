@@ -23,25 +23,25 @@ PostProcessingRenderer::~PostProcessingRenderer()
 
 void PostProcessingRenderer::DeleteFramebuffers()
 {
-	glDeleteRenderbuffers(1, &m_CollectRBO);
+	STATE->DeleteRenderBuffers(1, &m_CollectRBO);
 	delete m_CollectTex; m_CollectTex = nullptr;
-	glDeleteFramebuffers(1, &m_CollectFBO);
+	STATE->DeleteFramebuffers(1, &m_CollectFBO);
 
 	delete m_ColorBuffers[0]; m_ColorBuffers[0] = nullptr;
 	delete m_ColorBuffers[1]; m_ColorBuffers[1] = nullptr;
-	glDeleteFramebuffers(1, &m_HDRoutFBO);
+	STATE->DeleteFramebuffers(1, &m_HDRoutFBO);
 
 	delete m_PingPongTexture[0]; m_PingPongTexture[0] = nullptr;
 	delete m_PingPongTexture[1]; m_PingPongTexture[1] = nullptr;
-	glDeleteFramebuffers(2, &(m_PingPongFBO[0]));
+	STATE->DeleteFramebuffers(2, &(m_PingPongFBO[0]));
 
 	for(uint32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; i++)
 	{
 		delete m_DownSampleTexture[i]; m_DownSampleTexture[i] = nullptr;
 		delete m_DownPingPongTexture[i]; m_DownPingPongTexture[i] = nullptr;
 	}
-	glDeleteFramebuffers(NUM_BLOOM_DOWNSAMPLES, &(m_DownSampleFBO[0]));
-	glDeleteFramebuffers(NUM_BLOOM_DOWNSAMPLES, &(m_DownPingPongFBO[0]));
+	STATE->DeleteFramebuffers(NUM_BLOOM_DOWNSAMPLES, &(m_DownSampleFBO[0]));
+	STATE->DeleteFramebuffers(NUM_BLOOM_DOWNSAMPLES, &(m_DownPingPongFBO[0]));
 }
 
 void PostProcessingRenderer::Initialize()
@@ -85,21 +85,21 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	params.wrapT = E_TextureWrapMode::ClampToEdge;
 
 	//Generate texture and fbo and rbo as initial postprocessing target
-	glGenFramebuffers( 1, &m_CollectFBO );
-	STATE->BindFramebuffer( m_CollectFBO );
+	STATE->GenFramebuffers(1, &m_CollectFBO);
+	STATE->BindFramebuffer(m_CollectFBO);
 	m_CollectTex = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT );
 	m_CollectTex->Build();
 	m_CollectTex->SetParameters(params);
 	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_CollectTex->GetHandle(), 0);
 	//Render Buffer for depth and stencil
-	glGenRenderbuffers( 1, &m_CollectRBO );
-	glBindRenderbuffer( GL_RENDERBUFFER, m_CollectRBO );
+	STATE->GenRenderBuffers(1, &m_CollectRBO);
+	STATE->BindRenderbuffer(m_CollectRBO);
 	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowSettings.Width, windowSettings.Height);
 	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_CollectRBO);
 
 	//Generate textures for the hdr fbo to output into
-	glGenFramebuffers( 1, &m_HDRoutFBO );
-	STATE->BindFramebuffer( m_HDRoutFBO );
+	STATE->GenFramebuffers(1, &m_HDRoutFBO);
+	STATE->BindFramebuffer(m_HDRoutFBO);
 	for(GLuint i = 0; i < 2; i++)
 	{
 		m_ColorBuffers[i] = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
@@ -113,8 +113,8 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	glDrawBuffers( 2, attachments );
 
 	//Generate framebuffers for downsampling
-	glGenFramebuffers( NUM_BLOOM_DOWNSAMPLES, m_DownSampleFBO );
-	glGenFramebuffers( NUM_BLOOM_DOWNSAMPLES, m_DownPingPongFBO );
+	STATE->GenFramebuffers(NUM_BLOOM_DOWNSAMPLES, m_DownSampleFBO);
+	STATE->GenFramebuffers(NUM_BLOOM_DOWNSAMPLES, m_DownPingPongFBO);
 	for(GLuint i = 0; i < NUM_BLOOM_DOWNSAMPLES; i++)
 	{
 		float resMult = 1.f / (float)std::pow(2, i + 1);
@@ -134,7 +134,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	}
 
 	//Generate framebuffers and textures for gaussian ping pong
-	glGenFramebuffers( 2, m_PingPongFBO );
+	STATE->GenFramebuffers( 2, m_PingPongFBO );
 	for(GLuint i = 0; i < 2; i++)
 	{
 		STATE->BindFramebuffer( m_PingPongFBO[i] );
