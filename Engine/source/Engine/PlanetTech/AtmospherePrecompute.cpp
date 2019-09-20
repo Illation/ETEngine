@@ -121,20 +121,12 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	atmo->m_TexInscatter->Build();
 	atmo->m_TexInscatter->SetParameters(m_Settings.m_TexParams);
 
-	//Buffers for blending
-	const GLuint kDrawBuffers[4] =
-	{
-		GL_COLOR_ATTACHMENT0,
-		GL_COLOR_ATTACHMENT1,
-		GL_COLOR_ATTACHMENT2,
-		GL_COLOR_ATTACHMENT3
-	};
 	STATE->SetBlendEquation(GL_FUNC_ADD);
 	STATE->SetBlendFunction(GL_ONE, GL_ONE);
 	STATE->SetBlendEnabled(false);
 
 	STATE->LinkTextureToFbo(0, atmo->m_TexTransmittance->GetHandle(), 0);
-	glDrawBuffer(GL_COLOR_ATTACHMENT0);
+	STATE->SetDrawBufferCount(1);
 	STATE->SetViewport(ivec2(0), ivec2(m_Settings.TRANSMITTANCE_W, m_Settings.TRANSMITTANCE_H));
 	STATE->SetShader(m_pComputeTransmittance.get());
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
@@ -145,7 +137,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	// irradiance_texture_, but only the irradiance from the sky).
 	STATE->LinkTextureToFbo(0, m_TexDeltaIrradiance->GetHandle(), 0);
 	STATE->LinkTextureToFbo(1, atmo->m_TexIrradiance->GetHandle(), 0);
-	glDrawBuffers(2, kDrawBuffers);
+	STATE->SetDrawBufferCount(2);
 	STATE->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
 	STATE->SetShader(m_pComputeDirectIrradiance.get());
 	STATE->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTarget(), atmo->m_TexTransmittance->GetHandle());
@@ -161,7 +153,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	STATE->LinkTextureToFbo(0, m_TexDeltaRayleigh->GetHandle(), 0);
 	STATE->LinkTextureToFbo(1, m_TexDeltaMie->GetHandle(), 0);
 	STATE->LinkTextureToFbo(2, atmo->m_TexInscatter->GetHandle(), 0);
-	glDrawBuffers(3, kDrawBuffers);
+	STATE->SetDrawBufferCount(3);
 	STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 	STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 	STATE->SetShader(m_pComputeSingleScattering.get());
@@ -185,7 +177,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		STATE->LinkTextureToFbo(1, 0, 0);
 		STATE->LinkTextureToFbo(2, 0, 0);
 		STATE->LinkTextureToFbo(3, 0, 0);
-		glDrawBuffer(GL_COLOR_ATTACHMENT0);
+		STATE->SetDrawBufferCount(1);
 		STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 		STATE->SetShader(m_pComputeScatteringDensity.get());
 		STATE->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTarget(), atmo->m_TexTransmittance->GetHandle());
@@ -209,7 +201,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		// accumulate it in irradiance_texture_.
 		STATE->LinkTextureToFbo(0, m_TexDeltaIrradiance->GetHandle(), 0);
 		STATE->LinkTextureToFbo(1, atmo->m_TexIrradiance->GetHandle(), 0);
-		glDrawBuffers(2, kDrawBuffers);
+		STATE->SetDrawBufferCount(2);
 		STATE->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
 		STATE->SetShader(m_pComputeIndirectIrradiance.get());
 		m_pComputeIndirectIrradiance->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
@@ -229,7 +221,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		// scattering_texture_.
 		STATE->LinkTextureToFbo(0, m_TexDeltaMultipleScattering->GetHandle(), 0);
 		STATE->LinkTextureToFbo(1, atmo->m_TexInscatter->GetHandle(), 0);
-		glDrawBuffers(2, kDrawBuffers);
+		STATE->SetDrawBufferCount(2);
 		STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 		STATE->SetShader(m_pComputeMultipleScattering.get());
 		m_pComputeMultipleScattering->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);

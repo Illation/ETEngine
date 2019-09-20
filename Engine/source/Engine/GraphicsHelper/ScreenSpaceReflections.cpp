@@ -49,8 +49,8 @@ void ScreenSpaceReflections::Initialize()
 	//Render Buffer for depth and stencil
 	STATE->GenRenderBuffers(1, &m_CollectRBO);
 	STATE->BindRenderbuffer(m_CollectRBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowSettings.Width, windowSettings.Height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_CollectRBO);
+	STATE->SetRenderbufferStorage(GL_DEPTH24_STENCIL8, windowSettings.Dimensions);
+	STATE->LinkRenderbufferToFbo(GL_DEPTH_STENCIL_ATTACHMENT, m_CollectRBO);
 }
 
 void ScreenSpaceReflections::EnableInput()

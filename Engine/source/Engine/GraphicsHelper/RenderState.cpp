@@ -106,6 +106,14 @@ void RenderState::EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLe
 }
 
 //---------------------------------
+// RenderState::SetDepthEnabled
+//
+void RenderState::SetDepthEnabled(bool enabled)
+{
+	EnOrDisAble(m_DepthTestEnabled, enabled, GL_DEPTH_TEST);
+}
+
+//---------------------------------
 // RenderState::SetBlendEnabled
 //
 // Set the buffers on which blending is enabled
@@ -125,10 +133,14 @@ void RenderState::SetBlendEnabled(const std::vector<bool> &blendBuffers)
 //
 void RenderState::SetBlendEnabled(bool enabled, uint32 index)
 {
-	assert((int32)index < m_MaxDrawBuffers);
+	ET_ASSERT(static_cast<int32>(index) < m_MaxDrawBuffers);
+
 	m_IndividualBlend = true;
 	if (index >= m_BlendEnabledIndexed.size())
+	{
 		m_BlendEnabledIndexed.push_back(m_BlendEnabled);
+	}
+
 	EnOrDisAbleIndexed(m_BlendEnabledIndexed, enabled, GL_BLEND, index);
 }
 
@@ -139,6 +151,7 @@ void RenderState::SetBlendEnabled(bool enabled, uint32 index)
 //
 void RenderState::SetBlendEnabled(bool enabled)
 {
+	// if we previously blended per buffer index, reset those
 	if (m_IndividualBlend)
 	{
 		m_BlendEnabled = !enabled;
@@ -146,9 +159,51 @@ void RenderState::SetBlendEnabled(bool enabled)
 		{
 			m_BlendEnabledIndexed[i] = enabled;
 		}
+
 		m_IndividualBlend = false;
 	}
+
 	EnOrDisAble(m_BlendEnabled, enabled, GL_BLEND);
+}
+
+//---------------------------------
+// RenderState::SetStencilEnabled
+//
+void RenderState::SetStencilEnabled(bool enabled)
+{
+	EnOrDisAble(m_StencilTestEnabled, enabled, GL_STENCIL_TEST);
+}
+
+//---------------------------------
+// RenderState::SetCullEnabled
+//
+void RenderState::SetCullEnabled(bool enabled)
+{
+	EnOrDisAble(m_CullFaceEnabled, enabled, GL_CULL_FACE);
+}
+
+//---------------------------------
+// RenderState::SetDebugOutEnabled
+//
+void RenderState::SetDebugOutEnabled(bool enabled)
+{
+	EnOrDisAble(m_DebugOutputEnabled, enabled, GL_DEBUG_OUTPUT);
+}
+
+//---------------------------------
+// RenderState::SetDebugOutSynchonousEnabled
+//
+void RenderState::SetDebugOutSynchonousEnabled(bool enabled)
+{
+	EnOrDisAble(m_DebugOutputSynchronousEnabled, enabled, GL_DEBUG_OUTPUT_SYNCHRONOUS);
+}
+
+//---------------------------------
+// RenderState::SetSeamlessCubemapsEnabled
+//
+void RenderState::SetSeamlessCubemapsEnabled(bool enabled)
+{
+	EnOrDisAble(m_SeamlessCubemapsEnabled, enabled, GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
 
 //---------------------------------
@@ -748,6 +803,16 @@ void RenderState::DeleteRenderBuffers(GLsizei n, GLuint *ids) const
 }
 
 //---------------------------------
+// RenderState::SetRenderbufferStorage
+//
+// Establish a renderbuffers dataformat and storage
+//
+void RenderState::SetRenderbufferStorage(GLenum format, ivec2 const dimensions) const
+{
+	glRenderbufferStorage(GL_RENDERBUFFER, format, dimensions.x, dimensions.y);
+}
+
+//---------------------------------
 // RenderState::LinkTextureToFbo
 //
 // link to current draw FB with a color attachment
@@ -772,7 +837,63 @@ void RenderState::LinkTextureToFbo2D(uint8 const attachment, uint32 const texTar
 //
 // Link a depth texture to an FBO
 //
-void RenderState::LinkTextureToDepth(uint32 const texTarget, uint32 const texHandle)
+void RenderState::LinkTextureToFboDepth(uint32 const texTarget, uint32 const texHandle) const
 {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texTarget, texHandle, 0);
+}
+
+//---------------------------------
+// RenderState::LinkRenderbufferToFbo
+//
+void RenderState::LinkRenderbufferToFbo(GLenum const attachment, uint32 const rboHandle) const
+{
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, rboHandle);
+}
+
+//---------------------------------
+// RenderState::SetDrawBufferCount
+//
+// Setup the amount of color attachments on the current framebuffer
+//
+void RenderState::SetDrawBufferCount(size_t count) const
+{
+	// we may also disable drawing color
+	if (count == 0)
+	{
+		glDrawBuffer(GL_NONE);
+		return;
+	}
+
+	// setup attachment list
+	std::vector<GLenum> attachments;
+	attachments.reserve(count);
+
+	for (size_t i = 0u; i < count; ++i)
+	{
+		attachments.emplace_back(GL_COLOR_ATTACHMENT0 + static_cast<uint32>(i));
+	}
+
+	// set the buffers
+	glDrawBuffers(static_cast<GLsizei>(count), attachments.data());
+}
+
+//-----------------------------------
+// RenderState::SetReadBufferEnabled
+//
+// For the current buffer, whether or not openGL will read a color value.
+// Assumes double buffered rendering
+//
+void RenderState::SetReadBufferEnabled(bool const val) const
+{
+	glReadBuffer(val ? GL_BACK : GL_NONE);
+}
+
+//-----------------------------------
+// RenderState::SetReadBufferEnabled
+//
+// Byte alignment requirements for pixel rows in memory
+//
+void RenderState::SetPixelUnpackAlignment(int32 const val) const
+{
+	glPixelStorei(GL_UNPACK_ALIGNMENT, val);
 }

@@ -112,10 +112,10 @@ DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 		data.pTexture = new TextureData( Resolution.x, Resolution.y, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT );
 		data.pTexture->Build();
 		STATE->BindFramebuffer(data.fbo);
-		STATE->LinkTextureToDepth(GL_TEXTURE_2D, data.pTexture->GetHandle());
+		STATE->LinkTextureToFboDepth(GL_TEXTURE_2D, data.pTexture->GetHandle());
 		//only depth components
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
+		STATE->SetDrawBufferCount(0);
+		STATE->SetReadBufferEnabled(false);
 
 		TextureParameters params(false, true);
 		params.wrapS = E_TextureWrapMode::ClampToEdge;

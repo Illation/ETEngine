@@ -26,16 +26,16 @@ public:
 
 	// State changes
 	//--------------
-	void SetDepthEnabled(bool enabled) { EnOrDisAble(m_DepthTestEnabled, enabled, GL_DEPTH_TEST); }
+	void SetDepthEnabled(bool enabled);
 	void SetBlendEnabled(bool enabled);
 	void SetBlendEnabled(bool enabled, uint32 index);
 	void SetBlendEnabled(const std::vector<bool> &blendBuffers);
-	void SetStencilEnabled(bool enabled) { EnOrDisAble(m_StencilTestEnabled, enabled, GL_STENCIL_TEST); }
-	void SetCullEnabled(bool enabled) { EnOrDisAble(m_CullFaceEnabled, enabled, GL_CULL_FACE); }
+	void SetStencilEnabled(bool enabled);
+	void SetCullEnabled(bool enabled);
 
-	void SetDebugOutEnabled(bool enabled) { EnOrDisAble(m_DebugOutputEnabled, enabled, GL_DEBUG_OUTPUT); }
-	void SetDebugOutSynchonousEnabled(bool enabled) { EnOrDisAble(m_DebugOutputSynchronousEnabled, enabled, GL_DEBUG_OUTPUT_SYNCHRONOUS); }
-	void SetSeamlessCubemapsEnabled(bool enabled) { EnOrDisAble(m_SeamlessCubemapsEnabled, enabled, GL_TEXTURE_CUBE_MAP_SEAMLESS); }
+	void SetDebugOutEnabled(bool enabled);
+	void SetDebugOutSynchonousEnabled(bool enabled);
+	void SetSeamlessCubemapsEnabled(bool enabled);
 
 	void SetFaceCullingMode(GLenum cullMode);
 	void SetBlendEquation(GLenum equation);
@@ -117,9 +117,18 @@ public:
 	void GenRenderBuffers(GLsizei n, GLuint *ids) const;
 	void DeleteRenderBuffers(GLsizei n, GLuint *ids) const;
 
+	void SetRenderbufferStorage(GLenum format, ivec2 const dimensions) const;
+
 	void LinkTextureToFbo(uint8 const attachment, uint32 const texHandle, int32 const level) const; 
 	void LinkTextureToFbo2D(uint8 const attachment, uint32 const texTarget, uint32 const texHandle, int32 const level) const; // link to current draw FB with a color attachment
-	void LinkTextureToDepth(uint32 const texTarget, uint32 const texHandle);
+	void LinkTextureToFboDepth(uint32 const texTarget, uint32 const texHandle) const;
+
+	void LinkRenderbufferToFbo(GLenum const attachment, uint32 const rboHandle) const;
+
+	void SetDrawBufferCount(size_t count) const;
+	void SetReadBufferEnabled(bool const val) const;
+
+	void SetPixelUnpackAlignment(int32 const val) const;
 
 private:
 

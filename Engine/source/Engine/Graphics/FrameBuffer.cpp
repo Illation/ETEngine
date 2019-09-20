@@ -81,8 +81,6 @@ void FrameBuffer::GenerateFramebufferTextures()
 	STATE->BindFramebuffer(m_GlFrameBuffer);
 
 	//Textures
-	std::vector<GLuint> attachments;
-	attachments.reserve(m_NumTargets);
 	m_pTextureVec.reserve(m_NumTargets);
 
 	TextureParameters params(false);
@@ -93,7 +91,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 	{
 		TextureData* depthMap = new TextureData(windowSettings.Width, windowSettings.Height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT );
 		depthMap->Build();
-		STATE->LinkTextureToDepth(GL_TEXTURE_2D, depthMap->GetHandle());
+		STATE->LinkTextureToFboDepth(GL_TEXTURE_2D, depthMap->GetHandle());
 		depthMap->SetParameters(params);
 		m_pTextureVec.emplace_back(depthMap);
 	}
@@ -106,7 +104,6 @@ void FrameBuffer::GenerateFramebufferTextures()
 		STATE->LinkTextureToFbo2D(i, GL_TEXTURE_2D, colorBuffer->GetHandle(), 0);
 		colorBuffer->SetParameters(params, true);
 		m_pTextureVec.emplace_back(colorBuffer);
-		attachments.emplace_back(GL_COLOR_ATTACHMENT0 + i);
 	}
 
 	//Render Buffer for depth and stencil
@@ -114,11 +111,11 @@ void FrameBuffer::GenerateFramebufferTextures()
 	{
 		STATE->GenRenderBuffers(1, &m_RboDepthStencil);
 		STATE->BindRenderbuffer(m_RboDepthStencil);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowSettings.Width, windowSettings.Height);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RboDepthStencil);
+		STATE->SetRenderbufferStorage(GL_DEPTH24_STENCIL8, windowSettings.Dimensions);
+		STATE->LinkRenderbufferToFbo(GL_DEPTH_STENCIL_ATTACHMENT, m_RboDepthStencil);
 	}
 
-	glDrawBuffers(m_NumTargets, attachments.data());
+	STATE->SetDrawBufferCount(static_cast<size_t>(m_NumTargets));
 }
 
 void FrameBuffer::ResizeFramebufferTextures()
@@ -154,8 +151,8 @@ void FrameBuffer::ResizeFramebufferTextures()
 		STATE->DeleteRenderBuffers( 1, &m_RboDepthStencil );
 		STATE->GenRenderBuffers(1, &m_RboDepthStencil);
 		STATE->BindRenderbuffer(m_RboDepthStencil);
-		glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowSettings.Width, windowSettings.Height);
-		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RboDepthStencil);
+		STATE->SetRenderbufferStorage(GL_DEPTH24_STENCIL8, windowSettings.Dimensions);
+		STATE->LinkRenderbufferToFbo(GL_DEPTH_STENCIL_ATTACHMENT, m_RboDepthStencil);
 	}
 	assert( m_pTextureVec.size() >= offset + m_NumTargets );
 	for(uint32 i = offset; i < offset + m_NumTargets; ++i)

@@ -94,8 +94,8 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	//Render Buffer for depth and stencil
 	STATE->GenRenderBuffers(1, &m_CollectRBO);
 	STATE->BindRenderbuffer(m_CollectRBO);
-	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowSettings.Width, windowSettings.Height);
-	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_CollectRBO);
+	STATE->SetRenderbufferStorage(GL_DEPTH24_STENCIL8, windowSettings.Dimensions);
+	STATE->LinkRenderbufferToFbo(GL_DEPTH_STENCIL_ATTACHMENT, m_CollectRBO);
 
 	//Generate textures for the hdr fbo to output into
 	STATE->GenFramebuffers(1, &m_HDRoutFBO);
@@ -109,8 +109,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 		STATE->LinkTextureToFbo2D(i, GL_TEXTURE_2D, m_ColorBuffers[i]->GetHandle(), 0);
 	}
 	//mrt
-	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-	glDrawBuffers( 2, attachments );
+	STATE->SetDrawBufferCount(2);
 
 	//Generate framebuffers for downsampling
 	STATE->GenFramebuffers(NUM_BLOOM_DOWNSAMPLES, m_DownSampleFBO);

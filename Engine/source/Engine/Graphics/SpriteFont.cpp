@@ -295,8 +295,8 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 	STATE->BindFramebuffer(captureFBO);
 	STATE->BindRenderbuffer(captureRBO);
 
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, texWidth, texHeight);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+	STATE->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(texWidth, texHeight));
+	STATE->LinkRenderbufferToFbo(GL_DEPTH_ATTACHMENT, captureRBO);
 	STATE->LinkTextureToFbo2D(0, GL_TEXTURE_2D, pFont->m_pTexture->GetHandle(), 0);
 
 	STATE->SetViewport(ivec2(0), ivec2(texWidth, texHeight));
@@ -318,7 +318,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	//Render to Glyphs atlas
 	FT_Set_Pixel_Sizes(face, 0, m_FontSize * m_HighRes);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	STATE->SetPixelUnpackAlignment(1);
 	for (auto& character : characters)
 	{
 		auto metric = character.second;
