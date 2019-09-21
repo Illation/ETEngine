@@ -46,7 +46,7 @@ void Material::Initialize()
 
 void Material::UploadVariables(mat4 matModel)
 {
-	STATE->SetShader(m_Shader.get());
+	Viewport::GetCurrentApiContext()->SetShader(m_Shader.get());
 	//Upload matrices
 	if (m_StandardTransform)
 	{
@@ -59,7 +59,7 @@ void Material::UploadVariables(mat4 matModel)
 
 void Material::UploadVariables(mat4 matModel, const mat4 &matWVP)
 {
-	STATE->SetShader(m_Shader.get());
+	Viewport::GetCurrentApiContext()->SetShader(m_Shader.get());
 	//Upload matrices
 	if (m_StandardTransform)
 	{

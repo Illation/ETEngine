@@ -3,7 +3,7 @@
 
 #include "ViewportRenderer.h"
 #include "RenderArea.h"
-#include "RenderState.h"
+#include "GraphicsApiContext.h"
 
 
 //=====================
@@ -22,7 +22,7 @@ Viewport* Viewport::g_CurrentViewport = nullptr;
 //
 Viewport::Viewport(I_RenderArea* const area)
 	: m_Area(area)
-	, m_RenderState(new RenderState())
+	, m_ApiContext(new GraphicsApiContext())
 {
 	RegisterAsTriggerer();
 
@@ -37,7 +37,7 @@ Viewport::Viewport(I_RenderArea* const area)
 //
 Viewport::~Viewport()
 {
-	SafeDelete(m_RenderState);
+	SafeDelete(m_ApiContext);
 }
 
 //---------------------------------
@@ -66,14 +66,14 @@ void Viewport::SetRenderer(I_ViewportRenderer* renderer)
 }
 
 //---------------------------------
-// Viewport::GetGlobalRenderState
+// Viewport::GetCurrentApiContext
 //
 // returns the render state of the current viewport
 //
-RenderState* Viewport::GetGlobalRenderState()
+GraphicsApiContext* Viewport::GetCurrentApiContext()
 {
 	ET_ASSERT(g_CurrentViewport != nullptr);
-	return g_CurrentViewport->GetState();
+	return g_CurrentViewport->GetApiContext();
 }
 
 //---------------------------------
@@ -86,7 +86,7 @@ void Viewport::OnRealize()
 	MakeCurrent();
 
 	// init render state
-	m_RenderState->Initialize();
+	m_ApiContext->Initialize();
 
 	// init renderer
 	if (m_Renderer != nullptr)
@@ -155,6 +155,8 @@ void Viewport::OnRender()
 //
 void Viewport::Render()
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	if (m_Renderer != nullptr)
 	{
 		m_Renderer->OnRender();
@@ -162,11 +164,11 @@ void Viewport::Render()
 	else
 	{
 		// Draw pink to indicate that no renderer is attached
-		STATE->SetClearColor(vec4(0.55f, 0.075f, 0.2f, 1.f));
-		STATE->Clear(GL_COLOR_BUFFER_BIT);
+		api->SetClearColor(vec4(0.55f, 0.075f, 0.2f, 1.f));
+		api->Clear(GL_COLOR_BUFFER_BIT);
 	}
 
-	STATE->Flush();
+	api->Flush();
 }
 
 //---------------------------------

@@ -170,6 +170,8 @@ bool AttributeDescriptor::ValidateFlags(T_VertexFlags const supportedFlags, T_Ve
 //
 void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const flags, std::vector<int32> const& locations)
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	uint16 const stride = AttributeDescriptor::GetVertexSize(flags);
 
 	uint32 startPos = 0u;
@@ -180,8 +182,8 @@ void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const flags, std::v
 		{
 			ET_ASSERT(locationIdx < locations.size());
 
-			STATE->SetVertexAttributeArrayEnabled(locations[locationIdx], true);
-			STATE->DefineVertexAttributePointer(locations[locationIdx],
+			api->SetVertexAttributeArrayEnabled(locations[locationIdx], true);
+			api->DefineVertexAttributePointer(locations[locationIdx],
 				it->second.dataCount,
 				DataTypeInfo::GetTypeId(it->second.dataType),
 				GL_FALSE,
@@ -205,6 +207,8 @@ void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const flags, std::v
 //
 void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const supportedFlags, T_VertexFlags const targetFlags, std::vector<int32> const& locations)
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	uint16 const stride = AttributeDescriptor::GetVertexSize(supportedFlags);
 
 	uint32 startPos = 0u;
@@ -217,8 +221,8 @@ void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const supportedFlag
 			{
 				ET_ASSERT(locationIdx < locations.size());
 
-				STATE->SetVertexAttributeArrayEnabled(locations[locationIdx], true);
-				STATE->DefineVertexAttributePointer(locations[locationIdx],
+				api->SetVertexAttributeArrayEnabled(locations[locationIdx], true);
+				api->DefineVertexAttributePointer(locations[locationIdx],
 					it->second.dataCount,
 					DataTypeInfo::GetTypeId(it->second.dataType),
 					GL_FALSE,

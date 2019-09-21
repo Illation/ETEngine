@@ -276,6 +276,8 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 	int32 const texHeight = std::max(std::max(maxPos[0].y, maxPos[1].y), std::max(maxPos[2].y, maxPos[3].y));
 
 	//Setup rendering
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Linear;
 	params.magFilter = E_TextureFilterMode::Linear;
@@ -289,21 +291,21 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	GLuint captureFBO, captureRBO;
 
-	STATE->GenFramebuffers(1, &captureFBO);
-	STATE->GenRenderBuffers(1, &captureRBO);
+	api->GenFramebuffers(1, &captureFBO);
+	api->GenRenderBuffers(1, &captureRBO);
 
-	STATE->BindFramebuffer(captureFBO);
-	STATE->BindRenderbuffer(captureRBO);
+	api->BindFramebuffer(captureFBO);
+	api->BindRenderbuffer(captureRBO);
 
-	STATE->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(texWidth, texHeight));
-	STATE->LinkRenderbufferToFbo(GL_DEPTH_ATTACHMENT, captureRBO);
-	STATE->LinkTextureToFbo2D(0, GL_TEXTURE_2D, pFont->m_pTexture->GetHandle(), 0);
+	api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(texWidth, texHeight));
+	api->LinkRenderbufferToFbo(GL_DEPTH_ATTACHMENT, captureRBO);
+	api->LinkTextureToFbo2D(0, GL_TEXTURE_2D, pFont->m_pTexture->GetHandle(), 0);
 
-	STATE->SetViewport(ivec2(0), ivec2(texWidth, texHeight));
-	STATE->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	api->SetViewport(ivec2(0), ivec2(texWidth, texHeight));
+	api->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	AssetPtr<ShaderData> computeSdf = ResourceManager::Instance()->GetAssetData<ShaderData>("ComputeGlyphSDF.glsl"_hash);
-	STATE->SetShader(computeSdf.get());
+	api->SetShader(computeSdf.get());
 	computeSdf->Upload("uTex"_hash, 0);
 	computeSdf->Upload("uSpread"_hash, static_cast<float>(m_Spread));
 	computeSdf->Upload("uHighRes"_hash, static_cast<float>(m_HighRes));
@@ -312,13 +314,13 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 	params.wrapT = E_TextureWrapMode::ClampToBorder;
 	params.borderColor = vec4(0);
 
-	STATE->SetBlendEnabled(true);
-	STATE->SetBlendEquation(GL_FUNC_ADD);
-	STATE->SetBlendFunction(GL_ONE, GL_ONE);
+	api->SetBlendEnabled(true);
+	api->SetBlendEquation(GL_FUNC_ADD);
+	api->SetBlendFunction(GL_ONE, GL_ONE);
 
 	//Render to Glyphs atlas
 	FT_Set_Pixel_Sizes(face, 0, m_FontSize * m_HighRes);
-	STATE->SetPixelUnpackAlignment(1);
+	api->SetPixelUnpackAlignment(1);
 	for (auto& character : characters)
 	{
 		auto metric = character.second;
@@ -345,8 +347,8 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 		pTexture->SetParameters(params);
 
 		ivec2 res = ivec2(metric->Width - m_Padding * 2, metric->Height - m_Padding * 2);
-		STATE->SetViewport(etm::vecCast<int32>(metric->TexCoord) + ivec2(m_Padding), res);
-		STATE->LazyBindTexture(0, GL_TEXTURE_2D, pTexture->GetHandle());
+		api->SetViewport(etm::vecCast<int32>(metric->TexCoord) + ivec2(m_Padding), res);
+		api->LazyBindTexture(0, GL_TEXTURE_2D, pTexture->GetHandle());
 		computeSdf->Upload("uChannel"_hash, static_cast<int32>(metric->Channel));
 		computeSdf->Upload("uResolution"_hash, etm::vecCast<float>(res));
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
@@ -358,17 +360,17 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 	}
 
 	//Cleanup
-	STATE->SetBlendEnabled(false);
+	api->SetBlendEnabled(false);
 
 	FT_Done_Face(face);
 	FT_Done_FreeType(ft);
 
-	STATE->BindFramebuffer(0);
-	STATE->BindRenderbuffer(0);
-	STATE->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
+	api->BindFramebuffer(0);
+	api->BindRenderbuffer(0);
+	api->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 
-	STATE->DeleteRenderBuffers(1, &captureRBO);
-	STATE->DeleteFramebuffers(1, &captureFBO);
+	api->DeleteRenderBuffers(1, &captureRBO);
+	api->DeleteFramebuffers(1, &captureFBO);
 
 	return pFont;
 }

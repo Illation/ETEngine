@@ -114,13 +114,15 @@ void UIDynamicBox::AddChild( UIContainer* child, Positioning positioning )
 
 bool UIPortal::Draw(uint16 level)
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	//Limit dimensions
 	vec2 size = vec2((float)m_Rect.size.x, (float)m_Rect.size.y);
 	vec2 pos = vec2((float)m_Rect.pos.x, (float)m_Rect.pos.y) + vec2((float)m_WorldPos.x, (float)m_WorldPos.y);
 
 	ivec2 prevPos, prevSize;
-	STATE->GetViewport(prevPos, prevSize);
-	STATE->SetViewport(m_Rect.pos + m_WorldPos, m_Rect.size);
+	api->GetViewport(prevPos, prevSize);
+	api->SetViewport(m_Rect.pos + m_WorldPos, m_Rect.size);
 
 	//Render Background
 	SpriteRenderer::GetInstance()->Draw(nullptr, pos, m_Color, vec2(0), size, 0, 1);
@@ -139,7 +141,7 @@ bool UIPortal::Draw(uint16 level)
 		}
 	}
 	//Restore viewport size
-	STATE->SetViewport(prevPos, prevSize);
+	api->SetViewport(prevPos, prevSize);
 	return false;
 }
 

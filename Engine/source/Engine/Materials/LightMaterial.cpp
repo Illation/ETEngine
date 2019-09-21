@@ -30,7 +30,7 @@ void LightMaterial::UploadDerivedVariables()
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
-		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+		Viewport::GetCurrentApiContext()->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
 	}
 	//for position reconstruction
 	m_Shader->Upload("projectionA"_hash, CAMERA->GetDepthProjA());

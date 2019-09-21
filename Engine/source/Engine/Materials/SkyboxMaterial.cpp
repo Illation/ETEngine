@@ -25,7 +25,7 @@ void SkyboxMaterial::LoadTextures()
 void SkyboxMaterial::UploadDerivedVariables()
 {
 	m_Shader->Upload("skybox"_hash, 0);
-	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, m_EnvironmentMap->GetRadianceHandle());
+	Viewport::GetCurrentApiContext()->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, m_EnvironmentMap->GetRadianceHandle());
 
 	m_Shader->Upload("numMipMaps"_hash, m_EnvironmentMap->GetNumMipMaps());
 	m_Shader->Upload("roughness"_hash, m_Roughness);

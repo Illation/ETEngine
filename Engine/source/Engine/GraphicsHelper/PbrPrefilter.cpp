@@ -25,21 +25,23 @@ PbrPrefilter::~PbrPrefilter()
 
 void PbrPrefilter::Precompute(int32 resolution)
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	ivec2 logPos = Logger::GetCursorPosition();
 	LOG("Precalculating PBR BRDF LUT . . .");
 	//setup BRDF look up table
 	//************************
 	//Create framebuffer
 	GLuint captureFBO, captureRBO;
-	STATE->GenFramebuffers(1, &captureFBO);
-	STATE->GenRenderBuffers(1, &captureRBO);
+	api->GenFramebuffers(1, &captureFBO);
+	api->GenRenderBuffers(1, &captureRBO);
 
-	STATE->BindFramebuffer(captureFBO);
-	STATE->BindRenderbuffer(captureRBO);
-	STATE->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(resolution));
-	STATE->LinkRenderbufferToFbo(GL_DEPTH_ATTACHMENT, captureRBO);
+	api->BindFramebuffer(captureFBO);
+	api->BindRenderbuffer(captureRBO);
+	api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(resolution));
+	api->LinkRenderbufferToFbo(GL_DEPTH_ATTACHMENT, captureRBO);
 	//Shader
-	STATE->SetShader(ResourceManager::Instance()->GetAssetData<ShaderData>("FwdBrdfLutShader.glsl"_hash).get());
+	api->SetShader(ResourceManager::Instance()->GetAssetData<ShaderData>("FwdBrdfLutShader.glsl"_hash).get());
 
 	m_LUT = new TextureData(resolution, resolution, GL_RG16F, GL_RG, GL_FLOAT);
 	m_LUT->Build();
@@ -48,22 +50,22 @@ void PbrPrefilter::Precompute(int32 resolution)
 	params.wrapT = E_TextureWrapMode::ClampToEdge;
 	m_LUT->SetParameters(params);
 
-	STATE->BindRenderbuffer(captureRBO);
-	STATE->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(resolution));
-	STATE->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_LUT->GetHandle(), 0);
+	api->BindRenderbuffer(captureRBO);
+	api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(resolution));
+	api->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_LUT->GetHandle(), 0);
 
-	STATE->SetViewport(ivec2(0), ivec2(resolution));
-	STATE->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	api->SetViewport(ivec2(0), ivec2(resolution));
+	api->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
 	//Reset render settings and return generated texture
 	//*************************************************
-	STATE->BindFramebuffer(0);
-	STATE->BindRenderbuffer(0);
-	STATE->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
+	api->BindFramebuffer(0);
+	api->BindRenderbuffer(0);
+	api->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 
-	STATE->DeleteRenderBuffers(1, &captureRBO);
-	STATE->DeleteFramebuffers(1, &captureFBO);
+	api->DeleteRenderBuffers(1, &captureRBO);
+	api->DeleteFramebuffers(1, &captureFBO);
 	LOG("Precalculating PBR BRDF LUT . . . . . . DONE", Info, false, logPos);
 }
 
@@ -74,6 +76,8 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	int32 const irradianceRes, 
 	int32 const radianceRes)
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	//setup for convoluted irradiance cubemap
 	//***************************************
 	mat4 captureProjection = CubeCaptureProjection();
@@ -81,13 +85,13 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 
 	//Create framebuffer
 	GLuint captureFBO, captureRBO;
-	STATE->GenFramebuffers(1, &captureFBO);
-	STATE->GenRenderBuffers(1, &captureRBO);
+	api->GenFramebuffers(1, &captureFBO);
+	api->GenRenderBuffers(1, &captureRBO);
 
-	STATE->BindFramebuffer(captureFBO);
-	STATE->BindRenderbuffer(captureRBO);
-	STATE->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(resolution));
-	STATE->LinkRenderbufferToFbo(GL_DEPTH_ATTACHMENT, captureRBO);
+	api->BindFramebuffer(captureFBO);
+	api->BindRenderbuffer(captureRBO);
+	api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(resolution));
+	api->LinkRenderbufferToFbo(GL_DEPTH_ATTACHMENT, captureRBO);
 
 	//texture
 	irradiance = new TextureData(E_TextureType::CubeMap, irradianceRes, irradianceRes);
@@ -103,32 +107,32 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	irradiance->SetParameters(params);
 
 	//Framebuffer
-	STATE->BindFramebuffer(captureFBO);
-	STATE->BindRenderbuffer(captureRBO);
-	STATE->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(irradianceRes));
+	api->BindFramebuffer(captureFBO);
+	api->BindRenderbuffer(captureRBO);
+	api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(irradianceRes));
 
 	//shader
 	AssetPtr<ShaderData> irradianceShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdConvIrradianceShader.glsl"_hash);
 
-	STATE->SetShader(irradianceShader.get());
+	api->SetShader(irradianceShader.get());
 	irradianceShader->Upload("environmentMap"_hash, 0);
-	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, source->GetHandle());
+	api->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, source->GetHandle());
 	irradianceShader->Upload("projection"_hash, captureProjection);
 
 	//render irradiance cubemap
 	//*************************
 
-	STATE->SetViewport(ivec2(0), ivec2(irradianceRes));
-	STATE->BindFramebuffer(captureFBO);
+	api->SetViewport(ivec2(0), ivec2(irradianceRes));
+	api->BindFramebuffer(captureFBO);
 	for (uint32 i = 0; i < 6; ++i)
 	{
 		irradianceShader->Upload("view"_hash, captureViews[i]);
-		STATE->LinkTextureToFbo2D(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradiance->GetHandle(), 0);
-		STATE->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		api->LinkTextureToFbo2D(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradiance->GetHandle(), 0);
+		api->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
 	}
-	STATE->BindFramebuffer(0);
+	api->BindFramebuffer(0);
 
 	//setup radiance
 	//**************
@@ -140,45 +144,45 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	//Shader
 	AssetPtr<ShaderData> radianceShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdConvRadianceShader.glsl"_hash);
 
-	STATE->SetShader(radianceShader.get());
+	api->SetShader(radianceShader.get());
 	radianceShader->Upload("environmentMap"_hash, 0);
 	radianceShader->Upload("resolution"_hash, static_cast<float>(radianceRes));
-	STATE->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, source->GetHandle());
+	api->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, source->GetHandle());
 	radianceShader->Upload("projection"_hash, captureProjection);
 
 	//render radiance
 	//***************
-	STATE->BindFramebuffer(captureFBO);
+	api->BindFramebuffer(captureFBO);
 	uint32 maxMipLevels = (uint32)std::log2(radianceRes) - 2;//at least 4x4
 	for (uint32 mip = 0; mip < maxMipLevels + 1; ++mip)
 	{
 		// reisze framebuffer according to mip-level size.
 		uint32 mipWidth = (uint32)(radianceRes * std::pow(0.5, mip));
 		uint32 mipHeight = (uint32)(radianceRes * std::pow(0.5, mip));
-		STATE->BindRenderbuffer(captureRBO);
-		STATE->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(mipWidth, mipHeight));
-		STATE->SetViewport(ivec2(0), ivec2(mipWidth, mipHeight));
+		api->BindRenderbuffer(captureRBO);
+		api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(mipWidth, mipHeight));
+		api->SetViewport(ivec2(0), ivec2(mipWidth, mipHeight));
 
 		float roughness = (float)mip / (float)(maxMipLevels);
 		radianceShader->Upload("roughness"_hash, roughness);
 		for (uint32 i = 0; i < 6; ++i)
 		{
 			radianceShader->Upload("view"_hash, captureViews[i]);
-			STATE->LinkTextureToFbo2D(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, radiance->GetHandle(), mip);
+			api->LinkTextureToFbo2D(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, radiance->GetHandle(), mip);
 
-			STATE->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			api->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
 		}
 	}
 
 	//Reset render settings and return generated texture
 	//*************************************************
-	STATE->BindTexture(GL_TEXTURE_2D, 0);
-	STATE->BindFramebuffer(0);
-	STATE->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
+	api->BindTexture(GL_TEXTURE_2D, 0);
+	api->BindFramebuffer(0);
+	api->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 
-	STATE->DeleteRenderBuffers(1, &captureRBO);
-	STATE->DeleteFramebuffers(1, &captureFBO);
+	api->DeleteRenderBuffers(1, &captureRBO);
+	api->DeleteFramebuffers(1, &captureFBO);
 }
 
 TextureData* PbrPrefilter::GetLUT()

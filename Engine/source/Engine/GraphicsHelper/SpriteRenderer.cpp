@@ -24,8 +24,10 @@
 //
 SpriteRenderer::~SpriteRenderer()
 {
-	STATE->DeleteVertexArrays(1, &m_VAO);
-	STATE->DeleteBuffers(1, &m_VBO);
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->DeleteVertexArrays(1, &m_VAO);
+	api->DeleteBuffers(1, &m_VBO);
 
 	m_Sprites.clear();
 	m_Textures.clear();
@@ -39,39 +41,41 @@ SpriteRenderer::~SpriteRenderer()
 //
 void SpriteRenderer::Initialize()
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostSprite.glsl"_hash);
 
-	STATE->SetShader(m_Shader.get());
+	api->SetShader(m_Shader.get());
 
 	m_Shader->Upload("uTexture"_hash, 0);
 	m_Shader->Upload("u3DTexture"_hash, 1);
 
 	//Generate buffers and arrays
-	STATE->GenerateVertexArrays(1, &m_VAO);
-	STATE->GenerateBuffers(1, &m_VBO);
+	api->GenerateVertexArrays(1, &m_VAO);
+	api->GenerateBuffers(1, &m_VBO);
 
 	//bind
-	STATE->BindVertexArray(m_VAO);
-	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindVertexArray(m_VAO);
+	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
 	//set data and attributes
-	STATE->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
+	api->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
 
 	//input layout
-	STATE->SetVertexAttributeArrayEnabled(0, true);
-	STATE->SetVertexAttributeArrayEnabled(1, true);
-	STATE->SetVertexAttributeArrayEnabled(2, true);
-	STATE->SetVertexAttributeArrayEnabled(3, true);
+	api->SetVertexAttributeArrayEnabled(0, true);
+	api->SetVertexAttributeArrayEnabled(1, true);
+	api->SetVertexAttributeArrayEnabled(2, true);
+	api->SetVertexAttributeArrayEnabled(3, true);
 
 	int32 const vertSize = sizeof(SpriteVertex);
-	STATE->DefineVertexAttribIPointer(0, (GLint)1, GL_UNSIGNED_INT, vertSize, (GLvoid*)offsetof(SpriteVertex, TextureId));
-	STATE->DefineVertexAttributePointer(1, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(SpriteVertex, TransformData));
-	STATE->DefineVertexAttributePointer(2, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(SpriteVertex, TransformData2));
-	STATE->DefineVertexAttributePointer(3, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(SpriteVertex, Color));
+	api->DefineVertexAttribIPointer(0, (GLint)1, GL_UNSIGNED_INT, vertSize, (GLvoid*)offsetof(SpriteVertex, TextureId));
+	api->DefineVertexAttributePointer(1, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(SpriteVertex, TransformData));
+	api->DefineVertexAttributePointer(2, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(SpriteVertex, TransformData2));
+	api->DefineVertexAttributePointer(3, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(SpriteVertex, Color));
 
 	//unbind
-	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
-	STATE->BindVertexArray(0);
+	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindVertexArray(0);
 
 	CalculateTransform();
 
@@ -136,7 +140,7 @@ void SpriteRenderer::Draw(TextureData const* tex,
 	case E_ScalingMode::Screen:
 	{
 		ivec2 viewPos, viewSize;
-		STATE->GetViewport(viewPos, viewSize);
+		Viewport::GetCurrentApiContext()->GetViewport(viewPos, viewSize);
 		finalScale = scale * etm::vecCast<float>(viewSize);
 	}
 	break;
@@ -183,15 +187,19 @@ void SpriteRenderer::OnWindowResize()
 void SpriteRenderer::Draw()
 {
 	if (m_Sprites.size() <= 0)
+	{
 		return;
+	}
+
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	UpdateBuffer();
 
-	STATE->BindVertexArray(m_VAO);
+	api->BindVertexArray(m_VAO);
 
 	CalculateTransform();
-	STATE->SetShader(m_Shader.get());
-	STATE->SetActiveTexture(0);
+	api->SetShader(m_Shader.get());
+	api->SetActiveTexture(0);
 	m_Shader->Upload("uTransform"_hash, m_Transform);
 
 	uint32 batchSize = 1;
@@ -208,25 +216,25 @@ void SpriteRenderer::Draw()
 		TextureData const* const texData = m_Textures[m_Sprites[i].TextureId];
 		if (texData->GetTarget() == GL_TEXTURE_2D)
 		{
-			STATE->SetActiveTexture(0);
+			api->SetActiveTexture(0);
 			m_Shader->Upload("uDraw3D"_hash, false);
 		}
 		else
 		{
-			STATE->SetActiveTexture(1);
+			api->SetActiveTexture(1);
 			m_Shader->Upload("uDraw3D"_hash, true);
 			m_Shader->Upload("uLayer"_hash, m_Layer);
 		}
-		STATE->BindTexture(texData->GetTarget(), texData->GetHandle());
+		api->BindTexture(texData->GetTarget(), texData->GetHandle());
 
 		//Draw
-		STATE->DrawArrays(GL_POINTS, batchOffset, batchSize);
+		api->DrawArrays(GL_POINTS, batchOffset, batchSize);
 
 		batchOffset += batchSize;
 		batchSize = 1;
 	}
 
-	STATE->BindVertexArray(0);
+	api->BindVertexArray(0);
 
 	m_Sprites.clear();
 	m_Textures.clear();
@@ -243,11 +251,13 @@ void SpriteRenderer::Draw()
 //
 void SpriteRenderer::UpdateBuffer()
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	//Bind Object vertex array
-	STATE->BindVertexArray(m_VAO);
+	api->BindVertexArray(m_VAO);
 
 	//Send the vertex buffer again
-	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
 	bool bufferResize = m_Sprites.size() * sizeof( SpriteVertex ) > m_BufferSize;
 	if(!m_VBO || bufferResize) //first creation or resize
@@ -257,20 +267,20 @@ void SpriteRenderer::UpdateBuffer()
 			m_BufferSize = (uint32)m_Sprites.size() * sizeof( SpriteVertex );
 		}
 
-		STATE->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, m_Sprites.data(), GL_DYNAMIC_DRAW);
+		api->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, m_Sprites.data(), GL_DYNAMIC_DRAW);
 	}
 	else
 	{
-		GLvoid* p = STATE->MapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
+		GLvoid* p = api->MapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
 		memcpy( p, m_Sprites.data(), m_Sprites.size() * sizeof( SpriteVertex ) );
-		STATE->UnmapBuffer( GL_ARRAY_BUFFER );
+		api->UnmapBuffer( GL_ARRAY_BUFFER );
 	}
 
 
-	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(GL_ARRAY_BUFFER, 0);
 
 	//Done Modifying
-	STATE->BindVertexArray(0);
+	api->BindVertexArray(0);
 }
 
 //---------------------------------
@@ -281,7 +291,7 @@ void SpriteRenderer::UpdateBuffer()
 void SpriteRenderer::CalculateTransform()
 {
 	ivec2 viewPos, viewSize;
-	STATE->GetViewport(viewPos, viewSize);
+	Viewport::GetCurrentApiContext()->GetViewport(viewPos, viewSize);
 
 	int32 const width = viewSize.x;
 	int32 const height = viewSize.y;

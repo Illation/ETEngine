@@ -180,18 +180,20 @@ MeshSurface::MeshSurface(MeshData const* const mesh, Material const* const mater
 	ET_ASSERT(mesh != nullptr);
 	ET_ASSERT(m_Material != nullptr);
 
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	// create a new vertex array
-	STATE->GenerateVertexArrays(1, &m_VertexArray);
-	STATE->BindVertexArray(m_VertexArray);
+	api->GenerateVertexArrays(1, &m_VertexArray);
+	api->BindVertexArray(m_VertexArray);
 
 	// link it to the mesh's buffer
-	STATE->BindBuffer(GL_ARRAY_BUFFER, mesh->GetVertexBuffer());
-	STATE->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIndexBuffer());
+	api->BindBuffer(GL_ARRAY_BUFFER, mesh->GetVertexBuffer());
+	api->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIndexBuffer());
 
 	//Specify Input Layout
 	AttributeDescriptor::DefineAttributeArray(mesh->GetSupportedFlags(), m_Material->GetLayoutFlags(), m_Material->GetAttributeLocations());
 
-	STATE->BindVertexArray(0u);
+	api->BindVertexArray(0u);
 }
 
 //---------------------------------
@@ -201,7 +203,7 @@ MeshSurface::MeshSurface(MeshData const* const mesh, Material const* const mater
 //
 MeshSurface::~MeshSurface()
 {
-	STATE->DeleteVertexArrays(1, &m_VertexArray);
+	Viewport::GetCurrentApiContext()->DeleteVertexArrays(1, &m_VertexArray);
 }
 
 
@@ -374,15 +376,17 @@ MeshData::MeshData(MeshDataContainer const* const cpuData)
 	// copy data to GPU
 	//------------------
 
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	// vertex buffer
-	STATE->GenerateBuffers(1, &m_VertexBuffer);
-	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
-	STATE->SetBufferData(GL_ARRAY_BUFFER, bufferSize, interleaved, GL_STATIC_DRAW);
+	api->GenerateBuffers(1, &m_VertexBuffer);
+	api->BindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+	api->SetBufferData(GL_ARRAY_BUFFER, bufferSize, interleaved, GL_STATIC_DRAW);
 
 	// index buffer - #todo: might be okay to store index buffer with 16bits per index
-	STATE->GenerateBuffers(1, &m_IndexBuffer);
-	STATE->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
-	STATE->SetBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * cpuData->m_Indices.size(), cpuData->m_Indices.data(), GL_STATIC_DRAW);
+	api->GenerateBuffers(1, &m_IndexBuffer);
+	api->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+	api->SetBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * cpuData->m_Indices.size(), cpuData->m_Indices.data(), GL_STATIC_DRAW);
 
 	// free CPU side data
 	//--------------------
@@ -397,8 +401,10 @@ MeshData::MeshData(MeshDataContainer const* const cpuData)
 //
 MeshData::~MeshData()
 {
-	STATE->DeleteBuffers(1, &m_VertexBuffer);
-	STATE->DeleteBuffers(1, &m_IndexBuffer);
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->DeleteBuffers(1, &m_VertexBuffer);
+	api->DeleteBuffers(1, &m_IndexBuffer);
 
 	SafeDelete(m_Surfaces);
 }

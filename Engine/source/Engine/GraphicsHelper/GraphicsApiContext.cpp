@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "RenderState.h"
+#include "GraphicsApiContext.h"
 
 #include <glad/glad.h>
 
@@ -9,16 +9,16 @@
 
 
 //===================
-// Render State
+// API Context
 //===================
 
 
 //---------------------------------
-// RenderState::Initialize
+// GraphicsApiContext::Initialize
 //
 // Initialize the state with default values
 //
-void RenderState::Initialize()
+void GraphicsApiContext::Initialize()
 {
 	m_ViewportSize = Config::GetInstance()->GetWindow().Dimensions;
 
@@ -107,11 +107,11 @@ void RenderState::Initialize()
 }
 
 //---------------------------------
-// RenderState::EnOrDisAble
+// GraphicsApiContext::EnOrDisAble
 //
 // Enable or disable a setting
 //
-void RenderState::EnOrDisAble(bool &state, bool enabled, GLenum glState)
+void GraphicsApiContext::EnOrDisAble(bool &state, bool enabled, GLenum glState)
 {
 	if (!(state == enabled))
 	{
@@ -128,12 +128,12 @@ void RenderState::EnOrDisAble(bool &state, bool enabled, GLenum glState)
 }
 
 //---------------------------------
-// RenderState::EnOrDisAbleIndexed
+// GraphicsApiContext::EnOrDisAbleIndexed
 //
 // Enable or disable a setting at a specific index
 // Note the index should be validated before calling this function
 //
-void RenderState::EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLenum glState, uint32 index)
+void GraphicsApiContext::EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLenum glState, uint32 index)
 {
 	if (!(state[index] == enabled))
 	{
@@ -150,9 +150,9 @@ void RenderState::EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLe
 }
 
 //---------------------------------
-// RenderState::GetTexTarget
+// GraphicsApiContext::GetTexTarget
 //
-uint32 const RenderState::GetTexTarget(E_TextureType const type) const
+uint32 const GraphicsApiContext::GetTexTarget(E_TextureType const type) const
 {
 	switch (type)
 	{
@@ -171,19 +171,19 @@ uint32 const RenderState::GetTexTarget(E_TextureType const type) const
 }
 
 //---------------------------------
-// RenderState::SetDepthEnabled
+// GraphicsApiContext::SetDepthEnabled
 //
-void RenderState::SetDepthEnabled(bool enabled)
+void GraphicsApiContext::SetDepthEnabled(bool enabled)
 {
 	EnOrDisAble(m_DepthTestEnabled, enabled, GL_DEPTH_TEST);
 }
 
 //---------------------------------
-// RenderState::SetBlendEnabled
+// GraphicsApiContext::SetBlendEnabled
 //
 // Set the buffers on which blending is enabled
 //
-void RenderState::SetBlendEnabled(const std::vector<bool> &blendBuffers)
+void GraphicsApiContext::SetBlendEnabled(const std::vector<bool> &blendBuffers)
 {
 	for (uint32 i = 0; i < blendBuffers.size(); i++)
 	{
@@ -192,11 +192,11 @@ void RenderState::SetBlendEnabled(const std::vector<bool> &blendBuffers)
 }
 
 //---------------------------------
-// RenderState::SetBlendEnabled
+// GraphicsApiContext::SetBlendEnabled
 //
 // Set whether blending is enabled on a specific buffer
 //
-void RenderState::SetBlendEnabled(bool enabled, uint32 index)
+void GraphicsApiContext::SetBlendEnabled(bool enabled, uint32 index)
 {
 	ET_ASSERT(static_cast<int32>(index) < m_MaxDrawBuffers);
 
@@ -210,11 +210,11 @@ void RenderState::SetBlendEnabled(bool enabled, uint32 index)
 }
 
 //---------------------------------
-// RenderState::SetBlendEnabled
+// GraphicsApiContext::SetBlendEnabled
 //
 // Set whether blending pixels is enabled in the render pipeline
 //
-void RenderState::SetBlendEnabled(bool enabled)
+void GraphicsApiContext::SetBlendEnabled(bool enabled)
 {
 	// if we previously blended per buffer index, reset those
 	if (m_IndividualBlend)
@@ -232,35 +232,35 @@ void RenderState::SetBlendEnabled(bool enabled)
 }
 
 //---------------------------------
-// RenderState::SetStencilEnabled
+// GraphicsApiContext::SetStencilEnabled
 //
-void RenderState::SetStencilEnabled(bool enabled)
+void GraphicsApiContext::SetStencilEnabled(bool enabled)
 {
 	EnOrDisAble(m_StencilTestEnabled, enabled, GL_STENCIL_TEST);
 }
 
 //---------------------------------
-// RenderState::SetCullEnabled
+// GraphicsApiContext::SetCullEnabled
 //
-void RenderState::SetCullEnabled(bool enabled)
+void GraphicsApiContext::SetCullEnabled(bool enabled)
 {
 	EnOrDisAble(m_CullFaceEnabled, enabled, GL_CULL_FACE);
 }
 
 //---------------------------------
-// RenderState::SetSeamlessCubemapsEnabled
+// GraphicsApiContext::SetSeamlessCubemapsEnabled
 //
-void RenderState::SetSeamlessCubemapsEnabled(bool enabled)
+void GraphicsApiContext::SetSeamlessCubemapsEnabled(bool enabled)
 {
 	EnOrDisAble(m_SeamlessCubemapsEnabled, enabled, GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
 
 //---------------------------------
-// RenderState::SetFaceCullingMode
+// GraphicsApiContext::SetFaceCullingMode
 //
 // Set the culling mode (front back neither...)
 //
-void RenderState::SetFaceCullingMode(GLenum cullMode)
+void GraphicsApiContext::SetFaceCullingMode(GLenum cullMode)
 {
 	if (!(m_CullFaceMode == cullMode))
 	{
@@ -270,11 +270,11 @@ void RenderState::SetFaceCullingMode(GLenum cullMode)
 }
 
 //---------------------------------
-// RenderState::SetBlendEquation
+// GraphicsApiContext::SetBlendEquation
 //
 // Set the equation we use to blend pixels
 //
-void RenderState::SetBlendEquation(GLenum equation)
+void GraphicsApiContext::SetBlendEquation(GLenum equation)
 {
 	if (!(m_BlendEquationRGB == equation && m_BlendEquationAlpha == equation))
 	{
@@ -285,11 +285,11 @@ void RenderState::SetBlendEquation(GLenum equation)
 }
 
 //---------------------------------
-// RenderState::SetBlendFunction
+// GraphicsApiContext::SetBlendFunction
 //
 // Set the function we use to blend pixels
 //
-void RenderState::SetBlendFunction(GLenum sFactor, GLenum dFactor)
+void GraphicsApiContext::SetBlendFunction(GLenum sFactor, GLenum dFactor)
 {
 	if (!(m_BlendFuncSFactor == sFactor && m_BlendFuncDFactor == dFactor))
 	{
@@ -300,11 +300,11 @@ void RenderState::SetBlendFunction(GLenum sFactor, GLenum dFactor)
 }
 
 //---------------------------------
-// RenderState::SetViewport
+// GraphicsApiContext::SetViewport
 //
 // Set the dimensions of the current opengl viewport (not the engine viewport)
 //
-void RenderState::SetViewport(ivec2 pos, ivec2 size)
+void GraphicsApiContext::SetViewport(ivec2 pos, ivec2 size)
 {
 	if (!(etm::nearEqualsV(m_ViewportPosition, pos) && etm::nearEqualsV(m_ViewportSize, size)))
 	{
@@ -315,22 +315,22 @@ void RenderState::SetViewport(ivec2 pos, ivec2 size)
 }
 
 //---------------------------------
-// RenderState::GetViewport
+// GraphicsApiContext::GetViewport
 //
 // Get the dimensions of the current opengl viewport (not the engine viewport)
 //
-void RenderState::GetViewport(ivec2 &pos, ivec2 &size)
+void GraphicsApiContext::GetViewport(ivec2 &pos, ivec2 &size)
 {
 	pos = m_ViewportPosition;
 	size = m_ViewportSize;
 }
 
 //---------------------------------
-// RenderState::SetClearColor
+// GraphicsApiContext::SetClearColor
 //
 // Set the colour that gets drawn when we clear the viewport
 //
-void RenderState::SetClearColor(vec4 col)
+void GraphicsApiContext::SetClearColor(vec4 col)
 {
 	if (!(etm::nearEqualsV(m_ClearColor, col)))
 	{
@@ -340,11 +340,11 @@ void RenderState::SetClearColor(vec4 col)
 }
 
 //---------------------------------
-// RenderState::SetShader
+// GraphicsApiContext::SetShader
 //
 // Set the shader we draw with
 //
-void RenderState::SetShader(ShaderData const* pShader)
+void GraphicsApiContext::SetShader(ShaderData const* pShader)
 {
 	if (!(m_pBoundShader == pShader))
 	{
@@ -355,11 +355,11 @@ void RenderState::SetShader(ShaderData const* pShader)
 }
 
 //---------------------------------
-// RenderState::BindFramebuffer
+// GraphicsApiContext::BindFramebuffer
 //
 // Set the framebuffer we will draw to and read from
 //
-void RenderState::BindFramebuffer(GLuint handle)
+void GraphicsApiContext::BindFramebuffer(GLuint handle)
 {
 	if (!(m_ReadFramebuffer == handle && m_DrawFramebuffer == handle))
 	{
@@ -370,11 +370,11 @@ void RenderState::BindFramebuffer(GLuint handle)
 }
 
 //---------------------------------
-// RenderState::BindReadFramebuffer
+// GraphicsApiContext::BindReadFramebuffer
 //
 // Set the framebuffer we will read from
 //
-void RenderState::BindReadFramebuffer(GLuint handle)
+void GraphicsApiContext::BindReadFramebuffer(GLuint handle)
 {
 	if (!(m_ReadFramebuffer == handle))
 	{
@@ -384,11 +384,11 @@ void RenderState::BindReadFramebuffer(GLuint handle)
 }
 
 //---------------------------------
-// RenderState::BindDrawFramebuffer
+// GraphicsApiContext::BindDrawFramebuffer
 //
 // Set the framebuffer we will draw to
 //
-void RenderState::BindDrawFramebuffer(GLuint handle)
+void GraphicsApiContext::BindDrawFramebuffer(GLuint handle)
 {
 	if (!(m_DrawFramebuffer == handle))
 	{
@@ -398,11 +398,11 @@ void RenderState::BindDrawFramebuffer(GLuint handle)
 }
 
 //---------------------------------
-// RenderState::BindFramebuffer
+// GraphicsApiContext::BindFramebuffer
 //
 // Set the active renderbuffer
 //
-void RenderState::BindRenderbuffer(GLuint handle)
+void GraphicsApiContext::BindRenderbuffer(GLuint handle)
 {
 	if (handle != m_Renderbuffer)
 	{
@@ -412,11 +412,11 @@ void RenderState::BindRenderbuffer(GLuint handle)
 }
 
 //---------------------------------
-// RenderState::SetActiveTexture
+// GraphicsApiContext::SetActiveTexture
 //
 // Set the currently active texture unit
 //
-void RenderState::SetActiveTexture(uint32 unit)
+void GraphicsApiContext::SetActiveTexture(uint32 unit)
 {
 	if (!(m_ActiveTexture == unit))
 	{
@@ -426,11 +426,11 @@ void RenderState::SetActiveTexture(uint32 unit)
 }
 
 //---------------------------------
-// RenderState::BindTexture
+// GraphicsApiContext::BindTexture
 //
 // Bind a texture to a target
 //
-void RenderState::BindTexture(GLenum target, GLuint handle)
+void GraphicsApiContext::BindTexture(GLenum target, GLuint handle)
 {
 	if (!(m_pTextureUnits[m_ActiveTexture][target] == handle))
 	{
@@ -440,11 +440,11 @@ void RenderState::BindTexture(GLenum target, GLuint handle)
 }
 
 //---------------------------------
-// RenderState::LazyBindTexture
+// GraphicsApiContext::LazyBindTexture
 //
 // If the current texture isn't bound to its target, bind it
 //
-void RenderState::LazyBindTexture(uint32 unit, GLenum target, GLuint handle)
+void GraphicsApiContext::LazyBindTexture(uint32 unit, GLenum target, GLuint handle)
 {
 	if (!(m_pTextureUnits[unit][target] == handle))
 	{
@@ -455,11 +455,11 @@ void RenderState::LazyBindTexture(uint32 unit, GLenum target, GLuint handle)
 }
 
 //---------------------------------
-// RenderState::BindVertexArray
+// GraphicsApiContext::BindVertexArray
 //
 // Bind the current vertex array that the state operates on
 //
-void RenderState::BindVertexArray(GLuint vertexArray)
+void GraphicsApiContext::BindVertexArray(GLuint vertexArray)
 {
 	if (!(m_VertexArray == vertexArray))
 	{
@@ -473,11 +473,11 @@ void RenderState::BindVertexArray(GLuint vertexArray)
 }
 
 //---------------------------------
-// RenderState::BindBuffer
+// GraphicsApiContext::BindBuffer
 //
 // Bind the current buffer that the state operates on
 //
-void RenderState::BindBuffer(GLenum target, GLuint buffer)
+void GraphicsApiContext::BindBuffer(GLenum target, GLuint buffer)
 {
 	if (!(m_BufferTargets[target] == buffer))
 	{
@@ -487,11 +487,11 @@ void RenderState::BindBuffer(GLenum target, GLuint buffer)
 }
 
 //---------------------------------
-// RenderState::SetLineWidth
+// GraphicsApiContext::SetLineWidth
 //
 // Set the width of lines that are drawn
 //
-void RenderState::SetLineWidth(float const lineWidth)
+void GraphicsApiContext::SetLineWidth(float const lineWidth)
 {
 	if (!etm::nearEquals(m_LineWidth, lineWidth))
 	{
@@ -501,114 +501,114 @@ void RenderState::SetLineWidth(float const lineWidth)
 }
 
 //---------------------------------
-// RenderState::DrawArrays
+// GraphicsApiContext::DrawArrays
 //
 // Draw vertex data (without indices)
 //
-void RenderState::DrawArrays(GLenum mode, uint32 first, uint32 count) 
+void GraphicsApiContext::DrawArrays(GLenum mode, uint32 first, uint32 count) 
 {
 	glDrawArrays(mode, first, count);
 	PERFORMANCE->m_DrawCalls++;
 }
 
 //---------------------------------
-// RenderState::DrawElements
+// GraphicsApiContext::DrawElements
 //
 // Draw vertex data with indices
 //
-void RenderState::DrawElements(GLenum mode, uint32 count, GLenum type, const void * indices)
+void GraphicsApiContext::DrawElements(GLenum mode, uint32 count, GLenum type, const void * indices)
 {
 	glDrawElements(mode, count, type, indices);
 	PERFORMANCE->m_DrawCalls++;
 }
 
 //---------------------------------
-// RenderState::DrawElementsInstanced
+// GraphicsApiContext::DrawElementsInstanced
 //
 // Draw instanced vertex data with indices
 //
-void RenderState::DrawElementsInstanced(GLenum mode, uint32 count, GLenum type, const void * indices, uint32 primcount)
+void GraphicsApiContext::DrawElementsInstanced(GLenum mode, uint32 count, GLenum type, const void * indices, uint32 primcount)
 {
 	glDrawElementsInstanced(mode, count, type, indices, primcount);
 	PERFORMANCE->m_DrawCalls++;
 }
 
 //---------------------------------
-// RenderState::Flush
+// GraphicsApiContext::Flush
 //
 // Force OpenGL to execute all commands now
 //
-void RenderState::Flush() const
+void GraphicsApiContext::Flush() const
 {
 	glFlush();
 }
 
 //---------------------------------
-// RenderState::Clear
+// GraphicsApiContext::Clear
 //
 // Clear the part of the currently set viewport that is mapped to the mask
 //
-void RenderState::Clear(GLbitfield mask) const
+void GraphicsApiContext::Clear(GLbitfield mask) const
 {
 	glClear(mask);
 }
 
 //---------------------------------
-// RenderState::GenerateVertexArrays
+// GraphicsApiContext::GenerateVertexArrays
 //
 // Generate a vertex array
 //
-void RenderState::GenerateVertexArrays(GLsizei n, GLuint *arrays) const
+void GraphicsApiContext::GenerateVertexArrays(GLsizei n, GLuint *arrays) const
 {
 	glGenVertexArrays(n, arrays);
 }
 
 //---------------------------------
-// RenderState::GenerateBuffers
+// GraphicsApiContext::GenerateBuffers
 //
 // Generate a buffer
 //
-void RenderState::GenerateBuffers(GLsizei n, GLuint *buffers) const
+void GraphicsApiContext::GenerateBuffers(GLsizei n, GLuint *buffers) const
 {
 	glGenBuffers(n, buffers);
 }
 
 //---------------------------------
-// RenderState::DeleteVertexArrays
+// GraphicsApiContext::DeleteVertexArrays
 //
 // Delete a vertex array
 //
-void RenderState::DeleteVertexArrays(GLsizei n, GLuint *arrays) const
+void GraphicsApiContext::DeleteVertexArrays(GLsizei n, GLuint *arrays) const
 {
 	glDeleteVertexArrays(n, arrays);
 }
 
 //---------------------------------
-// RenderState::DeleteBuffers
+// GraphicsApiContext::DeleteBuffers
 //
 // Delete a buffer
 //
-void RenderState::DeleteBuffers(GLsizei n, GLuint *buffers) const
+void GraphicsApiContext::DeleteBuffers(GLsizei n, GLuint *buffers) const
 {
 	glDeleteBuffers(n, buffers);
 }
 
 //---------------------------------
-// RenderState::SetBufferData
+// GraphicsApiContext::SetBufferData
 //
 // Fill the buffer at target with an array of data
 //
-void RenderState::SetBufferData(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage) const
+void GraphicsApiContext::SetBufferData(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage) const
 {
 	glBufferData(target, size, data, usage);
 }
 
 //---------------------------------
-// RenderState::SetVertexAttributeArrayEnabled
+// GraphicsApiContext::SetVertexAttributeArrayEnabled
 //
 // Enable or disable an attribute at an index in the current vertex array
 //
-void RenderState::SetVertexAttributeArrayEnabled(GLuint index, bool enabled) const
+void GraphicsApiContext::SetVertexAttributeArrayEnabled(GLuint index, bool enabled) const
 {
 	if (enabled)
 	{
@@ -621,60 +621,60 @@ void RenderState::SetVertexAttributeArrayEnabled(GLuint index, bool enabled) con
 }
 
 //---------------------------------
-// RenderState::DefineVertexAttributePointer
+// GraphicsApiContext::DefineVertexAttributePointer
 //
 // Define the type of data the attribute at a certain index in the current vertex array is mapped to
 //
-void RenderState::DefineVertexAttributePointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid const* pointer) 
+void GraphicsApiContext::DefineVertexAttributePointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid const* pointer) 
 	const
 {
 	glVertexAttribPointer(index, size, type, normalized, stride, pointer);
 }
 
 //---------------------------------
-// RenderState::DefineVertexAttribIPointer
+// GraphicsApiContext::DefineVertexAttribIPointer
 //
 // Same as above, but for non normalized integers
 //
-void RenderState::DefineVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, GLvoid const* pointer) const
+void GraphicsApiContext::DefineVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, GLvoid const* pointer) const
 {
 	glVertexAttribIPointer(index, size, type, stride, pointer);
 }
 
 //---------------------------------
-// RenderState::DefineVertexAttribDivisor
+// GraphicsApiContext::DefineVertexAttribDivisor
 //
 // Additional vertex stride during instanced rendering
 //
-void RenderState::DefineVertexAttribDivisor(GLuint index, GLuint divisor) const
+void GraphicsApiContext::DefineVertexAttribDivisor(GLuint index, GLuint divisor) const
 {
 	glVertexAttribDivisor(index, divisor);
 }
 
 //---------------------------------
-// RenderState::MapBuffer
+// GraphicsApiContext::MapBuffer
 //
 // Map the data of a buffer to a pointer on the CPU so that it can be modified
 //
-void* RenderState::MapBuffer(GLenum target, GLenum access) const
+void* GraphicsApiContext::MapBuffer(GLenum target, GLenum access) const
 {
 	return glMapBuffer(target, access);
 }
 
 //---------------------------------
-// RenderState::UnmapBuffer
+// GraphicsApiContext::UnmapBuffer
 //
 // Unmap a buffer from the pointer it's mapped to on the CPU
 //
-void RenderState::UnmapBuffer(GLenum target) const
+void GraphicsApiContext::UnmapBuffer(GLenum target) const
 {
 	glUnmapBuffer(target);
 }
 
 //---------------------------------
-// RenderState::UnmapBuffer
+// GraphicsApiContext::UnmapBuffer
 //
-uint32 RenderState::GenerateTexture() const
+uint32 GraphicsApiContext::GenerateTexture() const
 {
 	uint32 ret;
 	glGenTextures(1, &ret);
@@ -682,19 +682,19 @@ uint32 RenderState::GenerateTexture() const
 }
 
 //---------------------------------
-// RenderState::DeleteTexture
+// GraphicsApiContext::DeleteTexture
 //
-void RenderState::DeleteTexture(uint32& handle) const
+void GraphicsApiContext::DeleteTexture(uint32& handle) const
 {
 	glDeleteTextures(1, &handle);
 }
 
 //---------------------------------
-// RenderState::SetTextureData
+// GraphicsApiContext::SetTextureData
 //
 // upload a textures bits to its GPU location
 //
-void RenderState::SetTextureData(TextureData& texture, void* data) 
+void GraphicsApiContext::SetTextureData(TextureData& texture, void* data) 
 {
 	uint32 const target = GetTexTarget(texture.GetTargetType());
 
@@ -727,11 +727,11 @@ void RenderState::SetTextureData(TextureData& texture, void* data)
 }
 
 //---------------------------------
-// RenderState::SetTextureParams
+// GraphicsApiContext::SetTextureParams
 //
 // Update parameters on a texture
 //
-void RenderState::SetTextureParams(TextureData const& texture, uint8& mipLevels, TextureParameters& prev, TextureParameters const& next, bool const force) 
+void GraphicsApiContext::SetTextureParams(TextureData const& texture, uint8& mipLevels, TextureParameters& prev, TextureParameters const& next, bool const force) 
 {
 	uint32 const target = GetTexTarget(texture.GetTargetType());
 	BindTexture(target, texture.GetHandle());
@@ -799,419 +799,419 @@ void RenderState::SetTextureParams(TextureData const& texture, uint8& mipLevels,
 }
 
 //---------------------------------
-// RenderState::CreateShader
+// GraphicsApiContext::CreateShader
 //
 // Create a shader object and return its handle
 //
-GLuint RenderState::CreateShader(GLenum shaderType) const
+GLuint GraphicsApiContext::CreateShader(GLenum shaderType) const
 {
 	return glCreateShader(shaderType);
 }
 
 //---------------------------------
-// RenderState::CreateProgram
+// GraphicsApiContext::CreateProgram
 //
 // Create a program object and return its handle
 //
-GLuint RenderState::CreateProgram() const
+GLuint GraphicsApiContext::CreateProgram() const
 {
 	return glCreateProgram();
 }
 
 //---------------------------------
-// RenderState::DeleteShader
+// GraphicsApiContext::DeleteShader
 //
 // Delete a shader by its handle
 //
-void RenderState::DeleteShader(GLuint shader)
+void GraphicsApiContext::DeleteShader(GLuint shader)
 {
 	glDeleteShader(shader);
 }
 
 //---------------------------------
-// RenderState::DeleteProgram
+// GraphicsApiContext::DeleteProgram
 //
 // Delete a program by its handle
 //
-void RenderState::DeleteProgram(GLuint program)
+void GraphicsApiContext::DeleteProgram(GLuint program)
 {
 	glDeleteProgram(program);
 }
 
 //---------------------------------
-// RenderState::SetShaderSource
+// GraphicsApiContext::SetShaderSource
 //
 // Set the source code of a shader
 //
-void RenderState::SetShaderSource(GLuint shader, GLsizei count, GLchar const **string, int32* length) const
+void GraphicsApiContext::SetShaderSource(GLuint shader, GLsizei count, GLchar const **string, int32* length) const
 {
 	glShaderSource(shader, count, string, length);
 }
 
 //---------------------------------
-// RenderState::CompileShader
+// GraphicsApiContext::CompileShader
 //
 // Compile a shader
 //
-void RenderState::CompileShader(GLuint shader) const
+void GraphicsApiContext::CompileShader(GLuint shader) const
 {
 	glCompileShader(shader);
 }
 
 //---------------------------------
-// RenderState::BindFragmentDataLocation
+// GraphicsApiContext::BindFragmentDataLocation
 //
 // Set the return member of a fragment shader
 //
-void RenderState::BindFragmentDataLocation(GLuint program, GLuint colorNumber, std::string const& name) const
+void GraphicsApiContext::BindFragmentDataLocation(GLuint program, GLuint colorNumber, std::string const& name) const
 {
 	glBindFragDataLocation(program, colorNumber, name.c_str());
 }
 
 //---------------------------------
-// RenderState::AttachShader
+// GraphicsApiContext::AttachShader
 //
 // Attach a shader to a program before linking
 //
-void RenderState::AttachShader(GLuint program, GLuint shader) const
+void GraphicsApiContext::AttachShader(GLuint program, GLuint shader) const
 {
 	glAttachShader(program, shader);
 }
 
 //---------------------------------
-// RenderState::LinkProgram
+// GraphicsApiContext::LinkProgram
 //
 // Link the shaders in a program
 //
-void RenderState::LinkProgram(GLuint program) const
+void GraphicsApiContext::LinkProgram(GLuint program) const
 {
 	glLinkProgram(program);
 }
 
 //---------------------------------
-// RenderState::GetShaderIV
+// GraphicsApiContext::GetShaderIV
 //
 // Get an integer value from a shader
 //
-void RenderState::GetShaderIV(GLuint shader, GLenum pname, GLint *params) const
+void GraphicsApiContext::GetShaderIV(GLuint shader, GLenum pname, GLint *params) const
 {
 	glGetShaderiv(shader, pname, params);
 }
 
 //---------------------------------
-// RenderState::GetShaderInfoLog
+// GraphicsApiContext::GetShaderInfoLog
 //
 // Get logged information about a shader
 //
-void RenderState::GetShaderInfoLog(GLuint shader, GLsizei maxLength, GLsizei *length, GLchar *infoLog) const
+void GraphicsApiContext::GetShaderInfoLog(GLuint shader, GLsizei maxLength, GLsizei *length, GLchar *infoLog) const
 {
 	glGetShaderInfoLog(shader, maxLength, length, infoLog);
 }
 
 //---------------------------------
-// RenderState::GetProgramIV
+// GraphicsApiContext::GetProgramIV
 //
 // Get an integer value from a program
 //
-void RenderState::GetProgramIV(GLuint program, GLenum pname, GLint *params) const
+void GraphicsApiContext::GetProgramIV(GLuint program, GLenum pname, GLint *params) const
 {
 	glGetProgramiv(program, pname, params);
 }
 
 //---------------------------------
-// RenderState::GetProgramIV
+// GraphicsApiContext::GetProgramIV
 //
 // Get information about a uniform in a program at a given index
 //
-void RenderState::GetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const
+void GraphicsApiContext::GetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const
 {
 	glGetActiveUniform(program, index, bufSize, length, size, type, name);
 }
 
 //---------------------------------
-// RenderState::GetActiveAttribute
+// GraphicsApiContext::GetActiveAttribute
 //
 // Get information about an attribute in a program at a given index
 //
-void RenderState::GetActiveAttribute(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const
+void GraphicsApiContext::GetActiveAttribute(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const
 {
 	glGetActiveAttrib(program, index, bufSize, length, size, type, name);
 }
 
 //---------------------------------
-// RenderState::UploadUniform
+// GraphicsApiContext::UploadUniform
 //
 // Upload a boolean to the GPU
 //
-void RenderState::UploadUniform(const Uniform<bool> &uniform)
+void GraphicsApiContext::UploadUniform(const Uniform<bool> &uniform)
 {
 	glUniform1i(uniform.location, uniform.data);
 }
 
 //---------------------------------
-// RenderState::UploadUniform
+// GraphicsApiContext::UploadUniform
 //
 // Upload a 4x4 Matrix to the GPU
 //
-void RenderState::UploadUniform(const Uniform<mat4> &uniform)
+void GraphicsApiContext::UploadUniform(const Uniform<mat4> &uniform)
 {
 	glUniformMatrix4fv(uniform.location, 1, GL_FALSE, etm::valuePtr(uniform.data));
 }
 
 //---------------------------------
-// RenderState::UploadUniform
+// GraphicsApiContext::UploadUniform
 //
 // Upload a 3x3 Matrix to the GPU
 //
-void RenderState::UploadUniform(const Uniform<mat3> &uniform)
+void GraphicsApiContext::UploadUniform(const Uniform<mat3> &uniform)
 {
 	glUniformMatrix3fv(uniform.location, 1, GL_FALSE, etm::valuePtr(uniform.data));
 }
 
 //---------------------------------
-// RenderState::UploadUniform
+// GraphicsApiContext::UploadUniform
 //
 // Upload a 4D Vector to the GPU
 //
-void RenderState::UploadUniform(const Uniform<vec4> &uniform)
+void GraphicsApiContext::UploadUniform(const Uniform<vec4> &uniform)
 {
 	glUniform4f(uniform.location, uniform.data.x, uniform.data.y, uniform.data.z, uniform.data.w);
 }
 
 //---------------------------------
-// RenderState::UploadUniform
+// GraphicsApiContext::UploadUniform
 //
 // Upload a 3D Vector to the GPU
 //
-void RenderState::UploadUniform(const Uniform<vec3> &uniform)
+void GraphicsApiContext::UploadUniform(const Uniform<vec3> &uniform)
 {
 	glUniform3f(uniform.location, uniform.data.x, uniform.data.y, uniform.data.z);
 }
 
 //---------------------------------
-// RenderState::UploadUniform
+// GraphicsApiContext::UploadUniform
 //
 // Upload a 2D Vector to the GPU
 //
-void RenderState::UploadUniform(const Uniform<vec2> &uniform)
+void GraphicsApiContext::UploadUniform(const Uniform<vec2> &uniform)
 {
 	glUniform2f(uniform.location, uniform.data.x, uniform.data.y);
 }
 
 //---------------------------------
-// RenderState::UploadUniform
+// GraphicsApiContext::UploadUniform
 //
 // Upload a scalar to the GPU
 //
-void RenderState::UploadUniform(const Uniform<float> &uniform)
+void GraphicsApiContext::UploadUniform(const Uniform<float> &uniform)
 {
 	glUniform1f(uniform.location, uniform.data);
 }
 
 //---------------------------------
-// RenderState::UploadUniform
+// GraphicsApiContext::UploadUniform
 //
 // Upload an integer to the GPU
 //
-void RenderState::UploadUniform(const Uniform<int32> &uniform)
+void GraphicsApiContext::UploadUniform(const Uniform<int32> &uniform)
 {
 	glUniform1i(uniform.location, uniform.data);
 }
 
 //---------------------------------
-// RenderState::UploadUniform
+// GraphicsApiContext::UploadUniform
 //
 // Upload an unsigned integer to the GPU
 //
-void RenderState::UploadUniform(const Uniform<uint32> &uniform)
+void GraphicsApiContext::UploadUniform(const Uniform<uint32> &uniform)
 {
 	glUniform1ui(uniform.location, uniform.data);
 }
 
 //---------------------------------
-// RenderState::InitUniform
+// GraphicsApiContext::InitUniform
 //
-// RenderState::Download a boolean from the GPU
+// GraphicsApiContext::Download a boolean from the GPU
 //
-void RenderState::InitUniform(uint32 const program, Uniform<bool> &uniform)
+void GraphicsApiContext::InitUniform(uint32 const program, Uniform<bool> &uniform)
 {
 	glGetUniformiv(program, uniform.location, reinterpret_cast<int32*>(&uniform.data));
 }
 
 //---------------------------------
-// RenderState::InitUniform
+// GraphicsApiContext::InitUniform
 //
 // Download an integer from the GPU
 //
-void RenderState::InitUniform(uint32 const program, Uniform<int32> &uniform)
+void GraphicsApiContext::InitUniform(uint32 const program, Uniform<int32> &uniform)
 {
 	glGetUniformiv(program, uniform.location, &uniform.data);
 }
 
 //---------------------------------
-// RenderState::InitUniform
+// GraphicsApiContext::InitUniform
 //
 // Download an unsigned integer from the GPU
 //
-void RenderState::InitUniform(uint32 const program, Uniform<uint32> &uniform)
+void GraphicsApiContext::InitUniform(uint32 const program, Uniform<uint32> &uniform)
 {
 	glGetUniformuiv(program, uniform.location, &uniform.data);
 }
 
 //---------------------------------
-// RenderState::InitUniform
+// GraphicsApiContext::InitUniform
 //
 // Download a float from the GPU
 //
-void RenderState::InitUniform(uint32 const program, Uniform<float> &uniform)
+void GraphicsApiContext::InitUniform(uint32 const program, Uniform<float> &uniform)
 {
 	glGetUniformfv(program, uniform.location, &uniform.data);
 }
 
 //---------------------------------
-// RenderState::InitUniform
+// GraphicsApiContext::InitUniform
 //
 // Download a 2D vector from the GPU
 //
-void RenderState::InitUniform(uint32 const program, Uniform<vec2> &uniform)
+void GraphicsApiContext::InitUniform(uint32 const program, Uniform<vec2> &uniform)
 {
 	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
 }
 
 //---------------------------------
-// RenderState::InitUniform
+// GraphicsApiContext::InitUniform
 //
 // Download a 3D vector from the GPU
 //
-void RenderState::InitUniform(uint32 const program, Uniform<vec3> &uniform)
+void GraphicsApiContext::InitUniform(uint32 const program, Uniform<vec3> &uniform)
 {
 	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
 }
 
 //---------------------------------
-// RenderState::InitUniform
+// GraphicsApiContext::InitUniform
 //
 // Download a 4D vector from the GPU
 //
-void RenderState::InitUniform(uint32 const program, Uniform<vec4> &uniform)
+void GraphicsApiContext::InitUniform(uint32 const program, Uniform<vec4> &uniform)
 {
 	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
 }
 
 //---------------------------------
-// RenderState::InitUniform
+// GraphicsApiContext::InitUniform
 //
 // Download a 3x3 matrix from the GPU
 //
-void RenderState::InitUniform(uint32 const program, Uniform<mat3> &uniform)
+void GraphicsApiContext::InitUniform(uint32 const program, Uniform<mat3> &uniform)
 {
 	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
 }
 
 //---------------------------------
-// RenderState::InitUniform
+// GraphicsApiContext::InitUniform
 //
 // Download a 4x4 matrix from the GPU
 //
-void RenderState::InitUniform(uint32 const program, Uniform<mat4> &uniform)
+void GraphicsApiContext::InitUniform(uint32 const program, Uniform<mat4> &uniform)
 {
 	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
 }
 
 //---------------------------------
-// RenderState::GenFramebuffers
+// GraphicsApiContext::GenFramebuffers
 //
 // Create a number of framebuffer objects
 //
-void RenderState::GenFramebuffers(GLsizei n, GLuint *ids) const
+void GraphicsApiContext::GenFramebuffers(GLsizei n, GLuint *ids) const
 {
 	glGenFramebuffers(n, ids);
 }
 
 //---------------------------------
-// RenderState::DeleteFramebuffers
+// GraphicsApiContext::DeleteFramebuffers
 //
 // Frees the framebuffer GPU resources
 //
-void RenderState::DeleteFramebuffers(GLsizei n, GLuint *ids) const
+void GraphicsApiContext::DeleteFramebuffers(GLsizei n, GLuint *ids) const
 {
 	glDeleteFramebuffers(n, ids);
 }
 
 //---------------------------------
-// RenderState::GenRenderBuffers
+// GraphicsApiContext::GenRenderBuffers
 //
 // Create a number of renderbuffer objects
 //
-void RenderState::GenRenderBuffers(GLsizei n, GLuint *ids) const
+void GraphicsApiContext::GenRenderBuffers(GLsizei n, GLuint *ids) const
 {
 	glGenRenderbuffers(n, ids);
 }
 
 //---------------------------------
-// RenderState::DeleteRenderBuffers
+// GraphicsApiContext::DeleteRenderBuffers
 //
 // Frees the renderbuffer GPU resources
 //
-void RenderState::DeleteRenderBuffers(GLsizei n, GLuint *ids) const
+void GraphicsApiContext::DeleteRenderBuffers(GLsizei n, GLuint *ids) const
 {
 	glDeleteRenderbuffers(n, ids);
 }
 
 //---------------------------------
-// RenderState::SetRenderbufferStorage
+// GraphicsApiContext::SetRenderbufferStorage
 //
 // Establish a renderbuffers dataformat and storage
 //
-void RenderState::SetRenderbufferStorage(GLenum format, ivec2 const dimensions) const
+void GraphicsApiContext::SetRenderbufferStorage(GLenum format, ivec2 const dimensions) const
 {
 	glRenderbufferStorage(GL_RENDERBUFFER, format, dimensions.x, dimensions.y);
 }
 
 //---------------------------------
-// RenderState::LinkTextureToFbo
+// GraphicsApiContext::LinkTextureToFbo
 //
 // link to current draw FB with a color attachment
 //
-void RenderState::LinkTextureToFbo(uint8 const attachment, uint32 const texHandle, int32 const level) const
+void GraphicsApiContext::LinkTextureToFbo(uint8 const attachment, uint32 const texHandle, int32 const level) const
 {
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + static_cast<uint32>(attachment), texHandle, level);
 }
 
 //---------------------------------
-// RenderState::LinkTextureToFbo
+// GraphicsApiContext::LinkTextureToFbo
 //
 // Same as above, but specifies a target
 //
-void RenderState::LinkTextureToFbo2D(uint8 const attachment, uint32 const texTarget, uint32 const texHandle, int32 const level) const
+void GraphicsApiContext::LinkTextureToFbo2D(uint8 const attachment, uint32 const texTarget, uint32 const texHandle, int32 const level) const
 {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + static_cast<uint32>(attachment), texTarget, texHandle, level);
 }
 
 //---------------------------------
-// RenderState::LinkTextureToFbo
+// GraphicsApiContext::LinkTextureToFbo
 //
 // Link a depth texture to an FBO
 //
-void RenderState::LinkTextureToFboDepth(uint32 const texTarget, uint32 const texHandle) const
+void GraphicsApiContext::LinkTextureToFboDepth(uint32 const texTarget, uint32 const texHandle) const
 {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texTarget, texHandle, 0);
 }
 
 //---------------------------------
-// RenderState::LinkRenderbufferToFbo
+// GraphicsApiContext::LinkRenderbufferToFbo
 //
-void RenderState::LinkRenderbufferToFbo(GLenum const attachment, uint32 const rboHandle) const
+void GraphicsApiContext::LinkRenderbufferToFbo(GLenum const attachment, uint32 const rboHandle) const
 {
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, rboHandle);
 }
 
 //---------------------------------
-// RenderState::SetDrawBufferCount
+// GraphicsApiContext::SetDrawBufferCount
 //
 // Setup the amount of color attachments on the current framebuffer
 //
-void RenderState::SetDrawBufferCount(size_t count) const
+void GraphicsApiContext::SetDrawBufferCount(size_t count) const
 {
 	// we may also disable drawing color
 	if (count == 0)
@@ -1234,22 +1234,38 @@ void RenderState::SetDrawBufferCount(size_t count) const
 }
 
 //-----------------------------------
-// RenderState::SetReadBufferEnabled
+// GraphicsApiContext::SetReadBufferEnabled
 //
 // For the current buffer, whether or not openGL will read a color value.
 // Assumes double buffered rendering
 //
-void RenderState::SetReadBufferEnabled(bool const val) const
+void GraphicsApiContext::SetReadBufferEnabled(bool const val) const
 {
 	glReadBuffer(val ? GL_BACK : GL_NONE);
 }
 
 //-----------------------------------
-// RenderState::SetReadBufferEnabled
+// GraphicsApiContext::SetReadBufferEnabled
+//
+bool GraphicsApiContext::IsFramebufferComplete() const
+{
+	return (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+}
+
+//-----------------------------------
+// GraphicsApiContext::CopyDepthReadToDrawFbo
+//
+void GraphicsApiContext::CopyDepthReadToDrawFbo(ivec2 const source, ivec2 const target) const
+{
+	glBlitFramebuffer( 0, 0, source.x, source.y, 0, 0, target.x, target.y, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+}
+
+//-----------------------------------
+// GraphicsApiContext::SetReadBufferEnabled
 //
 // Byte alignment requirements for pixel rows in memory
 //
-void RenderState::SetPixelUnpackAlignment(int32 const val) const
+void GraphicsApiContext::SetPixelUnpackAlignment(int32 const val) const
 {
 	glPixelStorei(GL_UNPACK_ALIGNMENT, val);
 }

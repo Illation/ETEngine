@@ -12,7 +12,7 @@
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>
-#include <Engine/GraphicsHelper/RenderState.h>
+#include <Engine/GraphicsHelper/GraphicsApiContext.h>
 #include <Engine/Components/TransformComponent.h>
 #include <Engine/Components/CameraComponent.h>
 
@@ -74,9 +74,11 @@ void Planet::Update()
 
 void Planet::Draw()
 {
-	STATE->SetCullEnabled(false);
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->SetCullEnabled(false);
 	m_pPatch->Draw();
-	STATE->SetCullEnabled(true);
+	api->SetCullEnabled(true);
 }
 void Planet::DrawForward()
 {

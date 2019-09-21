@@ -79,7 +79,7 @@ DEFINE_FORCED_LINKING(EnvironmentMapAsset) // force the shader class to be linke
 //
 bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
-	STATE->SetSeamlessCubemapsEnabled(true);
+	Viewport::GetCurrentApiContext()->SetSeamlessCubemapsEnabled(true);
 
 	//load equirectangular texture
 	//****************************
@@ -141,15 +141,17 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 const resolution)
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	//Create framebuffer
 	uint32 captureFBO, captureRBO;
-	STATE->GenFramebuffers(1, &captureFBO);
-	STATE->GenRenderBuffers(1, &captureRBO);
+	api->GenFramebuffers(1, &captureFBO);
+	api->GenRenderBuffers(1, &captureRBO);
 
-	STATE->BindFramebuffer(captureFBO);
-	STATE->BindRenderbuffer(captureRBO);
-	STATE->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(resolution));
-	STATE->LinkRenderbufferToFbo(GL_DEPTH_ATTACHMENT, captureRBO);
+	api->BindFramebuffer(captureFBO);
+	api->BindRenderbuffer(captureRBO);
+	api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(resolution));
+	api->LinkRenderbufferToFbo(GL_DEPTH_ATTACHMENT, captureRBO);
 
 	//Preallocate memory for cubemap
 	TextureData* const envCubeMap = new TextureData(E_TextureType::CubeMap, resolution, resolution);
@@ -170,34 +172,34 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	AssetPtr<ShaderData> equiCubeShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdEquiCubeShader.glsl"_hash);
 
 	// convert HDR equirectangular environment map to cubemap equivalent
-	STATE->SetShader(equiCubeShader.get());
+	api->SetShader(equiCubeShader.get());
 	equiCubeShader->Upload("equirectangularMap"_hash, 0);
-	STATE->LazyBindTexture(0, GL_TEXTURE_2D, pEqui->GetHandle());
+	api->LazyBindTexture(0, GL_TEXTURE_2D, pEqui->GetHandle());
 	equiCubeShader->Upload("projection"_hash, CubeCaptureProjection());
 
 	//render the cube
 	//***************
 
-	STATE->SetViewport(ivec2(0), ivec2(resolution));
-	STATE->BindFramebuffer(captureFBO);
+	api->SetViewport(ivec2(0), ivec2(resolution));
+	api->BindFramebuffer(captureFBO);
 	for (uint32 i = 0; i < 6; ++i)
 	{
 		equiCubeShader->Upload("view"_hash, captureViews[i]);
-		STATE->LinkTextureToFbo2D(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap->GetHandle(), 0);
-		STATE->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		api->LinkTextureToFbo2D(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap->GetHandle(), 0);
+		api->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
 	}
-	STATE->BindFramebuffer(0);
+	api->BindFramebuffer(0);
 
 	params.genMipMaps = true;
 	envCubeMap->SetParameters(params);
 
-	STATE->BindTexture(GL_TEXTURE_2D, 0);
-	STATE->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
+	api->BindTexture(GL_TEXTURE_2D, 0);
+	api->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 
-	STATE->DeleteRenderBuffers(1, &captureRBO);
-	STATE->DeleteFramebuffers(1, &captureFBO);
+	api->DeleteRenderBuffers(1, &captureRBO);
+	api->DeleteFramebuffers(1, &captureFBO);
 
 	return envCubeMap;
 }

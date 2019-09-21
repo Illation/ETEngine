@@ -18,21 +18,6 @@
 #pragma endregion stl
 
 #pragma region
-//*****************************************************************************
-//Declare templates for releasing interfaces and deleting objects 
-//*****************************************************************************
-template<class Interface>
-inline void SafeRelease(Interface &pInterfaceToRelease)
-{
-	if (pInterfaceToRelease != 0)
-	{
-		pInterfaceToRelease->Release();
-		pInterfaceToRelease = 0;
-	}
-}
-#pragma endregion Templates
-
-#pragma region
 #include <EtCore/stdafx.h>
 #include <EtCore/Helper/InputManager.h>
 #include <EtCore/Helper/PerformanceInfo.h>
@@ -41,7 +26,7 @@ inline void SafeRelease(Interface &pInterfaceToRelease)
 #include <Engine/Base/Config.h>
 #include <Engine/Base/SceneContext.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>
-#include <Engine/GraphicsHelper/RenderState.h>
+#include <Engine/GraphicsHelper/GraphicsApiContext.h>
 #include <Engine/GraphicsHelper/Viewport.h>
 
 //Working singleton Set
@@ -50,5 +35,4 @@ inline void SafeRelease(Interface &pInterfaceToRelease)
 #define INPUT InputManager::GetInstance()
 #define TRANSFORM GetTransform()
 #define PIPELINE RenderPipeline::GetInstance()
-#define STATE Viewport::GetGlobalRenderState()
 #pragma endregion Macros

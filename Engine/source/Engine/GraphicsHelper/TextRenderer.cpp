@@ -40,8 +40,10 @@ TextRenderer::TextCache::TextCache(std::string const& text, vec2 const pos, vec4
 //
 TextRenderer::~TextRenderer()
 {
-	STATE->DeleteVertexArrays(1, &m_VAO);
-	STATE->DeleteBuffers(1, &m_VBO);
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->DeleteVertexArrays(1, &m_VAO);
+	api->DeleteBuffers(1, &m_VBO);
 }
 
 //---------------------------------
@@ -51,44 +53,46 @@ TextRenderer::~TextRenderer()
 //
 void TextRenderer::Initialize()
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	m_pTextShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostText.glsl"_hash);
 
-	STATE->SetShader(m_pTextShader.get());
+	api->SetShader(m_pTextShader.get());
 
 	m_pTextShader->Upload("fontTex"_hash, 0);
 
 	//Generate buffers and arrays
-	STATE->GenerateVertexArrays(1, &m_VAO);
-	STATE->GenerateBuffers(1, &m_VBO);
+	api->GenerateVertexArrays(1, &m_VAO);
+	api->GenerateBuffers(1, &m_VBO);
 
 
 	//bind
-	STATE->BindVertexArray(m_VAO);
-	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindVertexArray(m_VAO);
+	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
 	//set data and attributes
-	STATE->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
+	api->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
 
 	//input layout
 
-	STATE->SetVertexAttributeArrayEnabled(0, true);
-	STATE->SetVertexAttributeArrayEnabled(1, true);
-	STATE->SetVertexAttributeArrayEnabled(2, true);
-	STATE->SetVertexAttributeArrayEnabled(3, true);
-	STATE->SetVertexAttributeArrayEnabled(4, true);
-	STATE->SetVertexAttributeArrayEnabled(5, true);
+	api->SetVertexAttributeArrayEnabled(0, true);
+	api->SetVertexAttributeArrayEnabled(1, true);
+	api->SetVertexAttributeArrayEnabled(2, true);
+	api->SetVertexAttributeArrayEnabled(3, true);
+	api->SetVertexAttributeArrayEnabled(4, true);
+	api->SetVertexAttributeArrayEnabled(5, true);
 
 	int32 const vertSize = sizeof(TextVertex);
-	STATE->DefineVertexAttributePointer(0, (GLint)3, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, Position));
-	STATE->DefineVertexAttributePointer(1, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, Color));
-	STATE->DefineVertexAttributePointer(2, (GLint)2, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, TexCoord));
-	STATE->DefineVertexAttributePointer(3, (GLint)2, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, CharacterDimension));
-	STATE->DefineVertexAttributePointer(4, (GLint)1, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, SizeMult));
-	STATE->DefineVertexAttribIPointer(5, (GLint)1, GL_UNSIGNED_INT, vertSize, (GLvoid*)offsetof(TextVertex, ChannelId));
+	api->DefineVertexAttributePointer(0, (GLint)3, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, Position));
+	api->DefineVertexAttributePointer(1, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, Color));
+	api->DefineVertexAttributePointer(2, (GLint)2, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, TexCoord));
+	api->DefineVertexAttributePointer(3, (GLint)2, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, CharacterDimension));
+	api->DefineVertexAttributePointer(4, (GLint)1, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, SizeMult));
+	api->DefineVertexAttribIPointer(5, (GLint)1, GL_UNSIGNED_INT, vertSize, (GLvoid*)offsetof(TextVertex, ChannelId));
 
 	//unbind
-	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
-	STATE->BindVertexArray(0);
+	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindVertexArray(0);
 
 	CalculateTransform();
 
@@ -207,8 +211,10 @@ void TextRenderer::Draw()
 		return;
 	}
 
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	//Bind Object vertex array
-	STATE->BindVertexArray(m_VAO);
+	api->BindVertexArray(m_VAO);
 
 	UpdateBuffer();
 
@@ -219,31 +225,31 @@ void TextRenderer::Draw()
 
 	//Enable this objects shader
 	CalculateTransform();
-	STATE->SetShader(m_pTextShader.get());
-	STATE->SetActiveTexture(0);
+	api->SetShader(m_pTextShader.get());
+	api->SetActiveTexture(0);
 	m_pTextShader->Upload("transform"_hash, m_Transform);
 
 	//Bind Object vertex array
-	STATE->BindVertexArray(m_VAO);
+	api->BindVertexArray(m_VAO);
 
 	for (QueuedFont& queued : m_QueuedFonts)
 	{
 		if (queued.m_IsAddedToRenderer)
 		{
-			STATE->BindTexture(GL_TEXTURE_2D, queued.m_Font->GetAtlas()->GetHandle());
+			api->BindTexture(GL_TEXTURE_2D, queued.m_Font->GetAtlas()->GetHandle());
 
 			vec2 const texSize = etm::vecCast<float>(queued.m_Font->GetAtlas()->GetResolution());
 			m_pTextShader->Upload("texSize"_hash, texSize);
 
 			//Draw the object
-			STATE->DrawArrays(GL_POINTS, queued.m_BufferStart, queued.m_BufferSize);
+			api->DrawArrays(GL_POINTS, queued.m_BufferStart, queued.m_BufferSize);
 
 			queued.m_IsAddedToRenderer = false;
 		}
 	}
 
 	//unbind vertex array
-	STATE->BindVertexArray(0);
+	api->BindVertexArray(0);
 }
 
 //---------------------------------
@@ -319,16 +325,18 @@ void TextRenderer::UpdateBuffer()
 		}
 	}
 
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	//Bind Object vertex array
-	STATE->BindVertexArray(m_VAO);
+	api->BindVertexArray(m_VAO);
 
 	//Send the vertex buffer again
-	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	STATE->SetBufferData(GL_ARRAY_BUFFER, static_cast<uint32>(tVerts.size() * sizeof(TextVertex)), tVerts.data(), GL_DYNAMIC_DRAW);
-	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->SetBufferData(GL_ARRAY_BUFFER, static_cast<uint32>(tVerts.size() * sizeof(TextVertex)), tVerts.data(), GL_DYNAMIC_DRAW);
+	api->BindBuffer(GL_ARRAY_BUFFER, 0);
 
 	//Done Modifying
-	STATE->BindVertexArray(0);
+	api->BindVertexArray(0);
 
 	m_NumCharacters = 0;
 }
@@ -341,7 +349,7 @@ void TextRenderer::UpdateBuffer()
 void TextRenderer::CalculateTransform()
 {
 	ivec2 viewPos, viewSize;
-	STATE->GetViewport(viewPos, viewSize);
+	Viewport::GetCurrentApiContext()->GetViewport(viewPos, viewSize);
 	int32 width = viewSize.x, height = viewSize.y;
 	float scaleX = (width > 0) ? 2.f / width : 0;
 	float scaleY = (height > 0) ? 2.f / height : 0;

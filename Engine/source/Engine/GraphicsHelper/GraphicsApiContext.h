@@ -13,17 +13,17 @@ class Uniform;
 
 
 //---------------------------------
-// RenderState
+// GraphicsApiContext
 //
-// CPU representation of the OpenGL state - helps avoiding sending too many calls to the GPU
+// Wrapper for all graphics API calls, avoids resubmitting api calls by caching some of the state CPU side
 //
-class RenderState
+class GraphicsApiContext
 {
 public:
 
 	// init deinit
 	//--------------
-	RenderState() = default;
+	GraphicsApiContext() = default;
 
 	void Initialize();
 
@@ -153,6 +153,10 @@ public:
 
 	void SetDrawBufferCount(size_t count) const;
 	void SetReadBufferEnabled(bool const val) const;
+
+	bool IsFramebufferComplete() const;
+
+	void CopyDepthReadToDrawFbo(ivec2 const source, ivec2 const target) const;
 
 	void SetPixelUnpackAlignment(int32 const val) const;
 

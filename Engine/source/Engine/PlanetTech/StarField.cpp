@@ -17,8 +17,10 @@ StarField::StarField(T_Hash const assetId)
 
 StarField::~StarField()
 {
-	STATE->DeleteVertexArrays(1, &m_VAO);
-	STATE->DeleteBuffers(1, &m_VBO);
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->DeleteVertexArrays(1, &m_VAO);
+	api->DeleteBuffers(1, &m_VBO);
 }
 
 void StarField::Initialize()
@@ -43,49 +45,53 @@ void StarField::Initialize()
 			starCount++;
 		}
 	}
-	
+
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdStarField.glsl"_hash);
 	m_pSprite = ResourceManager::Instance()->GetAssetData<TextureData>("starSprite.png"_hash);
 
-	STATE->SetShader(m_pShader.get());
+	api->SetShader(m_pShader.get());
 	m_pShader->Upload("uTexture"_hash, 0);
 
 	//Generate buffers and arrays
-	STATE->GenerateVertexArrays(1, &m_VAO);
-	STATE->GenerateBuffers(1, &m_VBO);
+	api->GenerateVertexArrays(1, &m_VAO);
+	api->GenerateBuffers(1, &m_VBO);
 
 	//bind
-	STATE->BindVertexArray(m_VAO);
-	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindVertexArray(m_VAO);
+	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
 	//set data and attributes
-	STATE->SetBufferData(GL_ARRAY_BUFFER, m_Stars.size()*sizeof(vec4), m_Stars.data(), GL_DYNAMIC_DRAW);
+	api->SetBufferData(GL_ARRAY_BUFFER, m_Stars.size()*sizeof(vec4), m_Stars.data(), GL_DYNAMIC_DRAW);
 
-	STATE->SetVertexAttributeArrayEnabled(0, true);
-	STATE->DefineVertexAttributePointer(0, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(vec4), (GLvoid*)0);
+	api->SetVertexAttributeArrayEnabled(0, true);
+	api->DefineVertexAttributePointer(0, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(vec4), (GLvoid*)0);
 
 	//unbind
-	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
-	STATE->BindVertexArray(0);
+	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindVertexArray(0);
 }
 
 void StarField::DrawForward()
 {
-	STATE->SetBlendEnabled(true);
-	STATE->SetBlendEquation(GL_FUNC_ADD);
-	STATE->SetBlendFunction(GL_ONE, GL_ZERO);
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	STATE->BindVertexArray(m_VAO);
-	STATE->SetShader(m_pShader.get());
-	STATE->SetActiveTexture(0);
-	STATE->BindTexture(m_pSprite->GetTarget(), m_pSprite->GetHandle());
+	api->SetBlendEnabled(true);
+	api->SetBlendEquation(GL_FUNC_ADD);
+	api->SetBlendFunction(GL_ONE, GL_ZERO);
+
+	api->BindVertexArray(m_VAO);
+	api->SetShader(m_pShader.get());
+	api->SetActiveTexture(0);
+	api->BindTexture(m_pSprite->GetTarget(), m_pSprite->GetHandle());
 	m_pShader->Upload("viewProj"_hash, CAMERA->GetStatViewProj());
 	m_pShader->Upload("viewInv"_hash, CAMERA->GetViewInv());
 	m_pShader->Upload("uRadius"_hash, m_Radius);
 	m_pShader->Upload("uBaseFlux"_hash, m_BaseFlux);
 	m_pShader->Upload("uBaseMag"_hash, m_BaseMag);
 	m_pShader->Upload("uAspectRatio"_hash, Config::GetInstance()->GetWindow().AspectRatio);
-	STATE->DrawArrays(GL_POINTS, 0, m_DrawnStars);
-	STATE->BindVertexArray(0);
-	STATE->SetBlendEnabled(false);
+	api->DrawArrays(GL_POINTS, 0, m_DrawnStars);
+	api->BindVertexArray(0);
+	api->SetBlendEnabled(false);
 }

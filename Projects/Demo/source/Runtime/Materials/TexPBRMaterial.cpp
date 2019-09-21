@@ -18,7 +18,7 @@ TexPBRMaterial::TexPBRMaterial(T_Hash const bcId, T_Hash const roughId, T_Hash c
 
 void TexPBRMaterial::LoadTextures()
 {
-	STATE->SetShader(m_Shader.get());
+	Viewport::GetCurrentApiContext()->SetShader(m_Shader.get());
 	
 	m_TexBaseColor = ResourceManager::Instance()->GetAssetData<TextureData>(m_BaseColorId);
 	m_Shader->Upload("texBaseColor"_hash, 0);
@@ -46,11 +46,13 @@ void TexPBRMaterial::UploadDerivedVariables()
 		LoadTextures();
 	}
 
-	STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_TexBaseColor->GetHandle());
-	STATE->LazyBindTexture(1, GL_TEXTURE_2D, m_TexRoughness->GetHandle());
-	STATE->LazyBindTexture(2, GL_TEXTURE_2D, m_TexMetalness->GetHandle());
-	STATE->LazyBindTexture(3, GL_TEXTURE_2D, m_TexAO->GetHandle());
-	STATE->LazyBindTexture(4, GL_TEXTURE_2D, m_TexNorm->GetHandle());
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->LazyBindTexture(0, GL_TEXTURE_2D, m_TexBaseColor->GetHandle());
+	api->LazyBindTexture(1, GL_TEXTURE_2D, m_TexRoughness->GetHandle());
+	api->LazyBindTexture(2, GL_TEXTURE_2D, m_TexMetalness->GetHandle());
+	api->LazyBindTexture(3, GL_TEXTURE_2D, m_TexAO->GetHandle());
+	api->LazyBindTexture(4, GL_TEXTURE_2D, m_TexNorm->GetHandle());
 
 	//Upload uniforms
 	//m_Shader->Upload("specular"_hash, m_Specular);

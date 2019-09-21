@@ -41,7 +41,7 @@ ShaderData::~ShaderData()
 	{
 		delete uni.second;
 	}
-	STATE->DeleteProgram(m_ShaderProgram);
+	Viewport::GetCurrentApiContext()->DeleteProgram(m_ShaderProgram);
 }
 
 
@@ -112,34 +112,37 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	// Combine Shaders into a program
 	//------------------
-	GLuint shaderProgram = STATE->CreateProgram();
 
-	STATE->AttachShader(shaderProgram, vertexShader);
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	GLuint shaderProgram = api->CreateProgram();
+
+	api->AttachShader(shaderProgram, vertexShader);
 
 	if (useGeo)
 	{
-		STATE->AttachShader(shaderProgram, geoShader);
+		api->AttachShader(shaderProgram, geoShader);
 	}
 
 	if (useFrag)
 	{
-		STATE->AttachShader(shaderProgram, fragmentShader);
-		STATE->BindFragmentDataLocation(shaderProgram, 0, "outColor");
+		api->AttachShader(shaderProgram, fragmentShader);
+		api->BindFragmentDataLocation(shaderProgram, 0, "outColor");
 	}
 
-	STATE->LinkProgram(shaderProgram);
+	api->LinkProgram(shaderProgram);
 
 	// Delete shader objects now that we have a program
-	STATE->DeleteShader(vertexShader);
+	api->DeleteShader(vertexShader);
 
 	if (useGeo)
 	{
-		STATE->DeleteShader(geoShader);
+		api->DeleteShader(geoShader);
 	}
 
 	if (useFrag)
 	{
-		STATE->DeleteShader(fragmentShader);
+		api->DeleteShader(fragmentShader);
 	}
 
 	// Create shader data
@@ -147,7 +150,7 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	// Extract uniform info
 	//------------------
-	STATE->SetShader(m_Data);
+	api->SetShader(m_Data);
 	GetUniformLocations(shaderProgram, m_Data->m_Uniforms);
 	GetAttributes(shaderProgram, m_Data->m_Attributes);
 
@@ -162,18 +165,20 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 GLuint ShaderAsset::CompileShader(std::string const&shaderSourceStr, GLenum type)
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	const char *shaderSource = shaderSourceStr.c_str();
-	GLuint shader = STATE->CreateShader(type);
-	STATE->SetShaderSource(shader, 1, &shaderSource, nullptr);
+	GLuint shader = api->CreateShader(type);
+	api->SetShaderSource(shader, 1, &shaderSource, nullptr);
 
 	//error handling
 	GLint status;
-	STATE->CompileShader(shader);
-	STATE->GetShaderIV(shader, GL_COMPILE_STATUS, &status);
+	api->CompileShader(shader);
+	api->GetShaderIV(shader, GL_COMPILE_STATUS, &status);
 	if (!(status == GL_TRUE))
 	{
 		char buffer[512];
-		STATE->GetShaderInfoLog(shader, 512, NULL, buffer);
+		api->GetShaderInfoLog(shader, 512, NULL, buffer);
 		std::string sName;
 		switch (type)
 		{
@@ -361,8 +366,10 @@ bool ShaderAsset::ReplaceInclude(std::string &line)
 //
 void ShaderAsset::GetUniformLocations(GLuint const shaderProgram, std::map<uint32, I_Uniform*> &uniforms)
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	GLint count;
-	STATE->GetProgramIV(shaderProgram, GL_ACTIVE_UNIFORMS, &count);
+	api->GetProgramIV(shaderProgram, GL_ACTIVE_UNIFORMS, &count);
 
 	for (GLint i = 0; i < count; i++)
 	{
@@ -373,7 +380,7 @@ void ShaderAsset::GetUniformLocations(GLuint const shaderProgram, std::map<uint3
 		GLchar name[bufSize];
 		GLsizei length;
 
-		STATE->GetActiveUniform(shaderProgram, (GLuint)i, bufSize, &length, &size, &type, name);
+		api->GetActiveUniform(shaderProgram, (GLuint)i, bufSize, &length, &size, &type, name);
 		std::string uniName = std::string(name, length);
 		std::string endName;
 
@@ -454,8 +461,10 @@ void ShaderAsset::GetUniformLocations(GLuint const shaderProgram, std::map<uint3
 //
 void ShaderAsset::GetAttributes(GLuint const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes)
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	GLint count;
-	STATE->GetProgramIV(shaderProgram, GL_ACTIVE_ATTRIBUTES, &count);
+	api->GetProgramIV(shaderProgram, GL_ACTIVE_ATTRIBUTES, &count);
 
 	for (GLint i = 0; i < count; i++)
 	{
@@ -466,7 +475,7 @@ void ShaderAsset::GetAttributes(GLuint const shaderProgram, std::vector<ShaderDa
 		GLchar name[bufSize];
 		GLsizei length = 0;
 
-		STATE->GetActiveAttribute(shaderProgram, (GLuint)i, bufSize, &length, &size, &type, name);
+		api->GetActiveAttribute(shaderProgram, (GLuint)i, bufSize, &length, &size, &type, name);
 
 		AttributeDescriptor info;
 		info.name = std::string(name, length);

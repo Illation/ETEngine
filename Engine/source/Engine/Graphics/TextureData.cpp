@@ -26,7 +26,7 @@ TextureData::TextureData(int32 const width, int32 const height, int32 const inte
 	, m_Depth(depth)
 	, m_TargetType((depth > 1) ? E_TextureType::Texture3D : E_TextureType::Texture2D)
 {
-	m_Handle = STATE->GenerateTexture();
+	m_Handle = Viewport::GetCurrentApiContext()->GenerateTexture();
 }
 
 //---------------------------------
@@ -42,7 +42,7 @@ TextureData::TextureData(E_TextureType const targetType, int32 const height, int
 	, m_Format(GL_RGB)
 	, m_Type(GL_FLOAT)
 {
-	m_Handle = STATE->GenerateTexture();
+	m_Handle = Viewport::GetCurrentApiContext()->GenerateTexture();
 }
 
 //---------------------------------
@@ -52,7 +52,7 @@ TextureData::TextureData(E_TextureType const targetType, int32 const height, int
 //
 TextureData::~TextureData()
 {
-	STATE->DeleteTexture(m_Handle);
+	Viewport::GetCurrentApiContext()->DeleteTexture(m_Handle);
 }
 
 //---------------------------------
@@ -85,7 +85,7 @@ uint32 TextureData::GetTarget() const
 //
 void TextureData::Build(void* data)
 {
-	STATE->SetTextureData(*this, data);
+	Viewport::GetCurrentApiContext()->SetTextureData(*this, data);
 }
 
 //---------------------------------
@@ -97,7 +97,7 @@ void TextureData::Build(void* data)
 //
 void TextureData::SetParameters(TextureParameters const& params, bool const force)
 {
-	STATE->SetTextureParams(*this, m_MipLevels, m_Parameters, params, force);
+	Viewport::GetCurrentApiContext()->SetTextureParams(*this, m_MipLevels, m_Parameters, params, force);
 }
 
 //---------------------------------
@@ -114,8 +114,10 @@ bool TextureData::Resize(ivec2 const& newSize)
 	bool const regenerate = (newSize.x > m_Width) || (newSize.y > m_Height);
 	if (regenerate)
 	{
-		STATE->DeleteTexture(m_Handle);
-		m_Handle = STATE->GenerateTexture();
+		GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+		api->DeleteTexture(m_Handle);
+		m_Handle = api->GenerateTexture();
 	}
 
 	Build();

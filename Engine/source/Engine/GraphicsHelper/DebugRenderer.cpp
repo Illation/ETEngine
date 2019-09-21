@@ -16,48 +16,54 @@ DebugRenderer::DebugRenderer()
 
 DebugRenderer::~DebugRenderer()
 {
-	STATE->DeleteVertexArrays(1, &m_VAO);
-	STATE->DeleteBuffers(1, &m_VBO);
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->DeleteVertexArrays(1, &m_VAO);
+	api->DeleteBuffers(1, &m_VBO);
 	m_Lines.clear();
 	m_MetaData.clear();
 }
 
 void DebugRenderer::Initialize()
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("DebugRenderer.glsl"_hash);
 
-	STATE->SetShader(m_pShader.get());
+	api->SetShader(m_pShader.get());
 
 	//Generate buffers and arrays
-	STATE->GenerateVertexArrays(1, &m_VAO);
-	STATE->GenerateBuffers(1, &m_VBO);
+	api->GenerateVertexArrays(1, &m_VAO);
+	api->GenerateBuffers(1, &m_VBO);
 
 	//bind
-	STATE->BindVertexArray(m_VAO);
-	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindVertexArray(m_VAO);
+	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
 	//set data and attributes
-	STATE->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
+	api->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
 
 	//input layout
-	STATE->SetVertexAttributeArrayEnabled(0, true);
-	STATE->SetVertexAttributeArrayEnabled(1, true);
+	api->SetVertexAttributeArrayEnabled(0, true);
+	api->SetVertexAttributeArrayEnabled(1, true);
 
-	STATE->DefineVertexAttributePointer(0, (GLint)3, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(LineVertex), (GLvoid*)offsetof(LineVertex, pos));
-	STATE->DefineVertexAttributePointer(1, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(LineVertex), (GLvoid*)offsetof(LineVertex, col));
+	api->DefineVertexAttributePointer(0, (GLint)3, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(LineVertex), (GLvoid*)offsetof(LineVertex, pos));
+	api->DefineVertexAttributePointer(1, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(LineVertex), (GLvoid*)offsetof(LineVertex, col));
 
 	//unbind
-	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
-	STATE->BindVertexArray(0);
+	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindVertexArray(0);
 }
 
 void DebugRenderer::UpdateBuffer()
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	//Bind Object vertex array
-	STATE->BindVertexArray(m_VAO);
+	api->BindVertexArray(m_VAO);
 
 	//Send the vertex buffer again
-	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
 	bool bufferResize = m_Lines.size() * sizeof(LineVertex) > m_BufferSize;
 	if (!m_VBO || bufferResize) //first creation or resize
@@ -67,17 +73,17 @@ void DebugRenderer::UpdateBuffer()
 			m_BufferSize = (uint32)m_Lines.size() * sizeof(LineVertex);
 		}
 
-		STATE->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, m_Lines.data(), GL_DYNAMIC_DRAW);
+		api->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, m_Lines.data(), GL_DYNAMIC_DRAW);
 	}
 	else
 	{
-		GLvoid* p = STATE->MapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+		GLvoid* p = api->MapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 		memcpy(p, m_Lines.data(), sizeof(LineVertex)*m_Lines.size());
-		STATE->UnmapBuffer(GL_ARRAY_BUFFER);
+		api->UnmapBuffer(GL_ARRAY_BUFFER);
 	}
 
 
-	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void DebugRenderer::Draw()
@@ -87,24 +93,26 @@ void DebugRenderer::Draw()
 		return;
 	}
 
-	STATE->SetShader(m_pShader.get());
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->SetShader(m_pShader.get());
 	m_pShader->Upload("uViewProj"_hash, CAMERA->GetViewProj());
 
 	UpdateBuffer();
 	
-	STATE->SetBlendEnabled(true);
-	STATE->SetBlendEquation(GL_FUNC_ADD);
-	STATE->SetBlendFunction(GL_ONE, GL_ZERO);
+	api->SetBlendEnabled(true);
+	api->SetBlendEquation(GL_FUNC_ADD);
+	api->SetBlendFunction(GL_ONE, GL_ZERO);
 
 	for (const auto& meta : m_MetaData)
 	{
-		STATE->SetLineWidth(meta.thickness);
-		STATE->DrawArrays(GL_LINES, meta.start, meta.size);
+		api->SetLineWidth(meta.thickness);
+		api->DrawArrays(GL_LINES, meta.start, meta.size);
 	}
 
-	STATE->BindVertexArray(0);
+	api->BindVertexArray(0);
 
-	STATE->SetBlendEnabled(false);
+	api->SetBlendEnabled(false);
 
 	m_Lines.clear();
 	m_MetaData.clear();

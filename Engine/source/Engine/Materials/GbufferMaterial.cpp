@@ -33,7 +33,7 @@ void GbufferMaterial::SetSpecularTexture(T_Hash const id)
 
 void GbufferMaterial::LoadTextures()
 {
-	STATE->SetShader(m_Shader.get());
+	Viewport::GetCurrentApiContext()->SetShader(m_Shader.get());
 	m_Shader->Upload("useDifTex"_hash, (m_TexDiffuseAsset != 0u));
 	m_Shader->Upload("useNormTex"_hash, (m_TexNormAsset != 0u));
 	m_Shader->Upload("useSpecTex"_hash, (m_TexSpecAsset != 0u));
@@ -73,19 +73,21 @@ void GbufferMaterial::LoadTextures()
 
 void GbufferMaterial::UploadDerivedVariables()
 {
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	//Bind active textures
 	if (m_OutdatedTextureData)LoadTextures();
 	if (m_TexDiffuse != nullptr)
 	{
-		STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_TexDiffuse->GetHandle());
+		api->LazyBindTexture(0, GL_TEXTURE_2D, m_TexDiffuse->GetHandle());
 	}
 	if (m_TexNorm != nullptr)
 	{
-		STATE->LazyBindTexture(1, GL_TEXTURE_2D, m_TexNorm->GetHandle());
+		api->LazyBindTexture(1, GL_TEXTURE_2D, m_TexNorm->GetHandle());
 	}
 	if (m_TexSpec != nullptr)
 	{
-		STATE->LazyBindTexture(2, GL_TEXTURE_2D, m_TexSpec->GetHandle());
+		api->LazyBindTexture(2, GL_TEXTURE_2D, m_TexSpec->GetHandle());
 	}
 
 	//Upload uniforms

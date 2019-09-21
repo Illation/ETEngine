@@ -3,7 +3,7 @@
 
 #include "LightVolume.h"
 #include "ShadowRenderer.h"
-#include "RenderState.h"
+#include "GraphicsApiContext.h"
 #include "TextRenderer.h"
 #include "PrimitiveRenderer.h"
 #include "SpriteRenderer.h"
@@ -100,11 +100,13 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO)
 
 	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
+	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	//Shadow Mapping
 	//**************
-	STATE->SetDepthEnabled(true);
-	STATE->SetCullEnabled(true);
-	STATE->SetFaceCullingMode(GL_FRONT);//Maybe draw two sided materials in seperate pass
+	api->SetDepthEnabled(true);
+	api->SetCullEnabled(true);
+	api->SetFaceCullingMode(GL_FRONT);//Maybe draw two sided materials in seperate pass
 	for (auto pScene : pScenes)
 	{
 		auto lightVec = pScene->GetLights(); //Todo: automatically add all light components to an array for faster access
@@ -120,12 +122,12 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO)
 	m_pGBuffer->Enable();
 
 	//reset viewport
-	STATE->SetViewport(ivec2(0), windowSettings.Dimensions);
+	api->SetViewport(ivec2(0), windowSettings.Dimensions);
 
-	STATE->SetClearColor(vec4(m_ClearColor, 1.f));
-	STATE->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	api->SetClearColor(vec4(m_ClearColor, 1.f));
+	api->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	STATE->SetFaceCullingMode(GL_BACK);
+	api->SetFaceCullingMode(GL_BACK);
 	for (auto pScene : pScenes)
 	{
 		pScene->Draw();
@@ -134,33 +136,30 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO)
 			pEntity->RootDraw();
 		}
 	}
-	STATE->SetCullEnabled(false);
+	api->SetCullEnabled(false);
 	//Step two: blend data and calculate lighting with gbuffer
-	//STATE->BindFramebuffer( 0 );
+	//api->BindFramebuffer( 0 );
 	//m_pPostProcessing->EnableInput();
 	m_pSSR->EnableInput();
 	//Ambient IBL
 	m_pGBuffer->Draw();
 
 	//copy Z-Buffer from gBuffer
-	STATE->BindReadFramebuffer(m_pGBuffer->Get());
-	STATE->BindDrawFramebuffer(m_pSSR->GetTargetFBO());
-	//STATE->BindDrawFramebuffer( 0 );
-	glBlitFramebuffer(
-		0, 0, windowSettings.Width, windowSettings.Height,
-		0, 0, windowSettings.Width, windowSettings.Height,
-		GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	api->BindReadFramebuffer(m_pGBuffer->Get());
+	api->BindDrawFramebuffer(m_pSSR->GetTargetFBO());
+	//api->BindDrawFramebuffer( 0 );
+	api->CopyDepthReadToDrawFbo(windowSettings.Dimensions, windowSettings.Dimensions);
 
 	//Render Light Volumes
-	//STATE->SetStencilEnabled(true); // #todo lightvolume stencil test
+	//api->SetStencilEnabled(true); // #todo lightvolume stencil test
 
-	STATE->SetDepthEnabled(false);
-	STATE->SetBlendEnabled(true);
-	STATE->SetBlendEquation(GL_FUNC_ADD);
-	STATE->SetBlendFunction(GL_ONE, GL_ONE);
+	api->SetDepthEnabled(false);
+	api->SetBlendEnabled(true);
+	api->SetBlendEquation(GL_FUNC_ADD);
+	api->SetBlendFunction(GL_ONE, GL_ONE);
 
-	STATE->SetCullEnabled(true);
-	STATE->SetFaceCullingMode(GL_FRONT);
+	api->SetCullEnabled(true);
+	api->SetFaceCullingMode(GL_FRONT);
 
 	for (auto pScene : pScenes)
 	{
@@ -171,22 +170,19 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO)
 		}
 	}
 
-	STATE->SetFaceCullingMode(GL_BACK);
-	STATE->SetBlendEnabled(false);
+	api->SetFaceCullingMode(GL_BACK);
+	api->SetBlendEnabled(false);
 
-	STATE->SetCullEnabled(false);
+	api->SetCullEnabled(false);
 
-	//STATE->SetStencilEnabled(false);
+	//api->SetStencilEnabled(false);
 	m_pPostProcessing->EnableInput();
 	m_pSSR->Draw();
-	STATE->BindReadFramebuffer(m_pSSR->GetTargetFBO());
-	STATE->BindDrawFramebuffer(m_pPostProcessing->GetTargetFBO());
-	glBlitFramebuffer(
-		0, 0, windowSettings.Width, windowSettings.Height,
-		0, 0, windowSettings.Width, windowSettings.Height,
-		GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	api->BindReadFramebuffer(m_pSSR->GetTargetFBO());
+	api->BindDrawFramebuffer(m_pPostProcessing->GetTargetFBO());
+	api->CopyDepthReadToDrawFbo(windowSettings.Dimensions, windowSettings.Dimensions);
 
-	STATE->SetDepthEnabled(true);
+	api->SetDepthEnabled(true);
 
 	//Foreward Rendering
 	//******************
@@ -212,7 +208,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO)
 #endif
 
 	//Draw to default buffer
-	STATE->SetDepthEnabled(false);
+	api->SetDepthEnabled(false);
 	if(pScenes.size() > 0)
 		m_pPostProcessing->Draw(outFBO, pScenes[0]->GetPostProcessingSettings());
 
