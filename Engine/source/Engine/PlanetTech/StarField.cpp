@@ -66,7 +66,7 @@ void StarField::Initialize()
 	api->SetBufferData(GL_ARRAY_BUFFER, m_Stars.size()*sizeof(vec4), m_Stars.data(), GL_DYNAMIC_DRAW);
 
 	api->SetVertexAttributeArrayEnabled(0, true);
-	api->DefineVertexAttributePointer(0, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(vec4), (GLvoid*)0);
+	api->DefineVertexAttributePointer(0, 4, E_DataType::Float, false, sizeof(vec4), 0);
 
 	//unbind
 	api->BindBuffer(GL_ARRAY_BUFFER, 0);

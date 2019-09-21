@@ -47,8 +47,8 @@ void DebugRenderer::Initialize()
 	api->SetVertexAttributeArrayEnabled(0, true);
 	api->SetVertexAttributeArrayEnabled(1, true);
 
-	api->DefineVertexAttributePointer(0, (GLint)3, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(LineVertex), (GLvoid*)offsetof(LineVertex, pos));
-	api->DefineVertexAttributePointer(1, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(LineVertex), (GLvoid*)offsetof(LineVertex, col));
+	api->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, sizeof(LineVertex), offsetof(LineVertex, pos));
+	api->DefineVertexAttributePointer(1, 4, E_DataType::Float, false, sizeof(LineVertex), offsetof(LineVertex, col));
 
 	//unbind
 	api->BindBuffer(GL_ARRAY_BUFFER, 0);

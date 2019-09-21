@@ -68,10 +68,10 @@ void SpriteRenderer::Initialize()
 	api->SetVertexAttributeArrayEnabled(3, true);
 
 	int32 const vertSize = sizeof(SpriteVertex);
-	api->DefineVertexAttribIPointer(0, (GLint)1, GL_UNSIGNED_INT, vertSize, (GLvoid*)offsetof(SpriteVertex, TextureId));
-	api->DefineVertexAttributePointer(1, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(SpriteVertex, TransformData));
-	api->DefineVertexAttributePointer(2, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(SpriteVertex, TransformData2));
-	api->DefineVertexAttributePointer(3, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(SpriteVertex, Color));
+	api->DefineVertexAttribIPointer(0, 1, E_DataType::UInt, vertSize, offsetof(SpriteVertex, TextureId));
+	api->DefineVertexAttributePointer(1, 4, E_DataType::Float, false, vertSize, offsetof(SpriteVertex, TransformData));
+	api->DefineVertexAttributePointer(2, 4, E_DataType::Float, false, vertSize, offsetof(SpriteVertex, TransformData2));
+	api->DefineVertexAttributePointer(3, 4, E_DataType::Float, false, vertSize, offsetof(SpriteVertex, Color));
 
 	//unbind
 	api->BindBuffer(GL_ARRAY_BUFFER, 0);

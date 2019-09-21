@@ -141,7 +141,7 @@ void ModelComponent::DrawShadow()
 
 	nullMat->UploadVariables(m_pEntity->GetTransform()->GetWorld(), matWVP);
 
-	api->DrawElements(GL_TRIANGLES, static_cast<uint32>(m_Mesh->GetIndexCount()), DataTypeInfo::GetTypeId(m_Mesh->GetIndexDataType()), 0);
+	api->DrawElements(GL_TRIANGLES, static_cast<uint32>(m_Mesh->GetIndexCount()), m_Mesh->GetIndexDataType(), 0);
 }
 
 //---------------------------------
@@ -182,5 +182,5 @@ void ModelComponent::DrawCall()
 
 	// Draw 
 	api->SetDepthEnabled(true);
-	api->DrawElements(GL_TRIANGLES, static_cast<uint32>(m_Mesh->GetIndexCount()), DataTypeInfo::GetTypeId(m_Mesh->GetIndexDataType()), 0);
+	api->DrawElements(GL_TRIANGLES, static_cast<uint32>(m_Mesh->GetIndexCount()), m_Mesh->GetIndexDataType(), 0);
 }

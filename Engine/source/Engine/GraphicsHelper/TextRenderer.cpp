@@ -83,12 +83,12 @@ void TextRenderer::Initialize()
 	api->SetVertexAttributeArrayEnabled(5, true);
 
 	int32 const vertSize = sizeof(TextVertex);
-	api->DefineVertexAttributePointer(0, (GLint)3, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, Position));
-	api->DefineVertexAttributePointer(1, (GLint)4, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, Color));
-	api->DefineVertexAttributePointer(2, (GLint)2, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, TexCoord));
-	api->DefineVertexAttributePointer(3, (GLint)2, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, CharacterDimension));
-	api->DefineVertexAttributePointer(4, (GLint)1, GL_FLOAT, GL_FALSE, vertSize, (GLvoid*)offsetof(TextVertex, SizeMult));
-	api->DefineVertexAttribIPointer(5, (GLint)1, GL_UNSIGNED_INT, vertSize, (GLvoid*)offsetof(TextVertex, ChannelId));
+	api->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, vertSize, offsetof(TextVertex, Position));
+	api->DefineVertexAttributePointer(1, 4, E_DataType::Float, false, vertSize, offsetof(TextVertex, Color));
+	api->DefineVertexAttributePointer(2, 2, E_DataType::Float, false, vertSize, offsetof(TextVertex, TexCoord));
+	api->DefineVertexAttributePointer(3, 2, E_DataType::Float, false, vertSize, offsetof(TextVertex, CharacterDimension));
+	api->DefineVertexAttributePointer(4, 1, E_DataType::Float, false, vertSize, offsetof(TextVertex, SizeMult));
+	api->DefineVertexAttribIPointer(5, 1, E_DataType::UInt, vertSize, offsetof(TextVertex, ChannelId));
 
 	//unbind
 	api->BindBuffer(GL_ARRAY_BUFFER, 0);

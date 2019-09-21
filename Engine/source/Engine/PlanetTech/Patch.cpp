@@ -50,8 +50,8 @@ void Patch::Init()
 	//geometry
 	api->SetVertexAttributeArrayEnabled(0, true);
 	api->SetVertexAttributeArrayEnabled(1, true);
-	api->DefineVertexAttributePointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(PatchVertex), (GLvoid*)offsetof(PatchVertex, pos));
-	api->DefineVertexAttributePointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(PatchVertex), (GLvoid*)offsetof(PatchVertex, morph));
+	api->DefineVertexAttributePointer(0, 2, E_DataType::Float, false, sizeof(PatchVertex), offsetof(PatchVertex, pos));
+	api->DefineVertexAttributePointer(1, 2, E_DataType::Float, false, sizeof(PatchVertex), offsetof(PatchVertex, morph));
 	//instances
 	//bind
 	api->BindBuffer(GL_ARRAY_BUFFER, m_VBOInstance);
@@ -59,10 +59,10 @@ void Patch::Init()
 	api->SetVertexAttributeArrayEnabled(3, true);
 	api->SetVertexAttributeArrayEnabled(4, true);
 	api->SetVertexAttributeArrayEnabled(5, true);
-	api->DefineVertexAttribIPointer(2, 1, GL_INT, sizeof(PatchInstance), (GLvoid*)offsetof(PatchInstance, level));
-	api->DefineVertexAttributePointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(PatchInstance), (GLvoid*)offsetof(PatchInstance, a));
-	api->DefineVertexAttributePointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(PatchInstance), (GLvoid*)offsetof(PatchInstance, r));
-	api->DefineVertexAttributePointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(PatchInstance), (GLvoid*)offsetof(PatchInstance, s));
+	api->DefineVertexAttribIPointer(2, 1, E_DataType::Int, sizeof(PatchInstance), offsetof(PatchInstance, level));
+	api->DefineVertexAttributePointer(3, 3, E_DataType::Float, false, sizeof(PatchInstance), offsetof(PatchInstance, a));
+	api->DefineVertexAttributePointer(4, 3, E_DataType::Float, false, sizeof(PatchInstance), offsetof(PatchInstance, r));
+	api->DefineVertexAttributePointer(5, 3, E_DataType::Float, false, sizeof(PatchInstance), offsetof(PatchInstance, s));
 	api->DefineVertexAttribDivisor(2, 1);
 	api->DefineVertexAttribDivisor(3, 1);
 	api->DefineVertexAttribDivisor(4, 1);

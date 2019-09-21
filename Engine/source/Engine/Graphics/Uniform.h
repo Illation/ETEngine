@@ -15,9 +15,8 @@ class I_Uniform
 {
 public:
 	virtual const std::type_info& GetType() const = 0;
-	virtual void Init(uint32 const program) = 0;
 
-	GLint location = -1;
+	T_UniformLoc location = -1;
 	std::string name;
 };
 
@@ -33,7 +32,6 @@ class Uniform : public I_Uniform
 public:
 	virtual const std::type_info& GetType() const { return typeid(T); }
 	void Upload(const T &rhs);
-	void Init(uint32 const program);
 	T data;
 };
 

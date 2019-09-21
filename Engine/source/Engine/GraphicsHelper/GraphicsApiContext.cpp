@@ -171,6 +171,47 @@ uint32 const GraphicsApiContext::GetTexTarget(E_TextureType const type) const
 }
 
 //---------------------------------
+// GraphicsApiContext::GetTypeId
+//
+uint32 const GraphicsApiContext::GetTypeId(E_DataType const type) const
+{
+	switch (type)
+	{
+	case E_DataType::Byte: return GL_BYTE;
+	case E_DataType::UByte: return GL_UNSIGNED_BYTE;
+	case E_DataType::Short: return GL_SHORT;
+	case E_DataType::UShort: return GL_UNSIGNED_SHORT;
+	case E_DataType::Int: return GL_INT;
+	case E_DataType::UInt: return GL_UNSIGNED_INT;
+	case E_DataType::Half: return GL_HALF_FLOAT;
+	case E_DataType::Float: return GL_FLOAT;
+	case E_DataType::Double: return GL_DOUBLE;
+	}
+
+	ET_ASSERT(true, "Unhandled data type!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// GraphicsApiContext::ConvShaderType
+//
+GLenum const GraphicsApiContext::ConvShaderType(E_ShaderType const type) const
+{
+	switch (type)
+	{
+	case E_ShaderType::Compute:					return GL_COMPUTE_SHADER;
+	case E_ShaderType::Vertex:					return GL_VERTEX_SHADER;
+	case E_ShaderType::TesselationControl:		return GL_TESS_CONTROL_SHADER;
+	case E_ShaderType::TesselationEvaluation:	return GL_TESS_EVALUATION_SHADER;
+	case E_ShaderType::Geometry:				return GL_GEOMETRY_SHADER;
+	case E_ShaderType::Fragment:				return GL_FRAGMENT_SHADER;
+	}
+
+	ET_ASSERT(true, "Unhandled shader type!");
+	return GL_NONE;
+}
+
+//---------------------------------
 // GraphicsApiContext::SetDepthEnabled
 //
 void GraphicsApiContext::SetDepthEnabled(bool enabled)
@@ -516,9 +557,9 @@ void GraphicsApiContext::DrawArrays(GLenum mode, uint32 first, uint32 count)
 //
 // Draw vertex data with indices
 //
-void GraphicsApiContext::DrawElements(GLenum mode, uint32 count, GLenum type, const void * indices)
+void GraphicsApiContext::DrawElements(GLenum mode, uint32 count, E_DataType const type, const void * indices)
 {
-	glDrawElements(mode, count, type, indices);
+	glDrawElements(mode, count, GetTypeId(type), indices);
 	PERFORMANCE->m_DrawCalls++;
 }
 
@@ -625,10 +666,14 @@ void GraphicsApiContext::SetVertexAttributeArrayEnabled(GLuint index, bool enabl
 //
 // Define the type of data the attribute at a certain index in the current vertex array is mapped to
 //
-void GraphicsApiContext::DefineVertexAttributePointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid const* pointer) 
-	const
+void GraphicsApiContext::DefineVertexAttributePointer(uint32 const index, 
+	int32 const size, 
+	E_DataType const type, 
+	bool const norm, 
+	int32 const stride, 
+	size_t const offset) const
 {
-	glVertexAttribPointer(index, size, type, normalized, stride, pointer);
+	glVertexAttribPointer(index, size, GetTypeId(type), (norm ? GL_TRUE : GL_FALSE), stride, static_cast<char const*>(0) + offset);
 }
 
 //---------------------------------
@@ -636,9 +681,13 @@ void GraphicsApiContext::DefineVertexAttributePointer(GLuint index, GLint size, 
 //
 // Same as above, but for non normalized integers
 //
-void GraphicsApiContext::DefineVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, GLvoid const* pointer) const
+void GraphicsApiContext::DefineVertexAttribIPointer(uint32 const index, 
+	int32 const size, 
+	E_DataType const type, 
+	int32 const stride, 
+	size_t const offset) const
 {
-	glVertexAttribIPointer(index, size, type, stride, pointer);
+	glVertexAttribIPointer(index, size, GetTypeId(type), stride, static_cast<char const*>(0) + offset);
 }
 
 //---------------------------------
@@ -803,9 +852,9 @@ void GraphicsApiContext::SetTextureParams(TextureData const& texture, uint8& mip
 //
 // Create a shader object and return its handle
 //
-GLuint GraphicsApiContext::CreateShader(GLenum shaderType) const
+T_ShaderLoc GraphicsApiContext::CreateShader(E_ShaderType const type) const
 {
-	return glCreateShader(shaderType);
+	return glCreateShader(ConvShaderType(type));
 }
 
 //---------------------------------
@@ -813,7 +862,7 @@ GLuint GraphicsApiContext::CreateShader(GLenum shaderType) const
 //
 // Create a program object and return its handle
 //
-GLuint GraphicsApiContext::CreateProgram() const
+T_ShaderLoc GraphicsApiContext::CreateProgram() const
 {
 	return glCreateProgram();
 }
@@ -823,7 +872,7 @@ GLuint GraphicsApiContext::CreateProgram() const
 //
 // Delete a shader by its handle
 //
-void GraphicsApiContext::DeleteShader(GLuint shader)
+void GraphicsApiContext::DeleteShader(T_ShaderLoc const shader)
 {
 	glDeleteShader(shader);
 }
@@ -833,19 +882,9 @@ void GraphicsApiContext::DeleteShader(GLuint shader)
 //
 // Delete a program by its handle
 //
-void GraphicsApiContext::DeleteProgram(GLuint program)
+void GraphicsApiContext::DeleteProgram(T_ShaderLoc const program)
 {
 	glDeleteProgram(program);
-}
-
-//---------------------------------
-// GraphicsApiContext::SetShaderSource
-//
-// Set the source code of a shader
-//
-void GraphicsApiContext::SetShaderSource(GLuint shader, GLsizei count, GLchar const **string, int32* length) const
-{
-	glShaderSource(shader, count, string, length);
 }
 
 //---------------------------------
@@ -853,8 +892,10 @@ void GraphicsApiContext::SetShaderSource(GLuint shader, GLsizei count, GLchar co
 //
 // Compile a shader
 //
-void GraphicsApiContext::CompileShader(GLuint shader) const
+void GraphicsApiContext::CompileShader(T_ShaderLoc const shader, std::string const& source) const
 {
+	char const* sourcePtr = source.c_str();
+	glShaderSource(shader, 1, &sourcePtr, nullptr);
 	glCompileShader(shader);
 }
 
@@ -863,7 +904,7 @@ void GraphicsApiContext::CompileShader(GLuint shader) const
 //
 // Set the return member of a fragment shader
 //
-void GraphicsApiContext::BindFragmentDataLocation(GLuint program, GLuint colorNumber, std::string const& name) const
+void GraphicsApiContext::BindFragmentDataLocation(T_ShaderLoc const program, uint32 const colorNumber, std::string const& name) const
 {
 	glBindFragDataLocation(program, colorNumber, name.c_str());
 }
@@ -873,7 +914,7 @@ void GraphicsApiContext::BindFragmentDataLocation(GLuint program, GLuint colorNu
 //
 // Attach a shader to a program before linking
 //
-void GraphicsApiContext::AttachShader(GLuint program, GLuint shader) const
+void GraphicsApiContext::AttachShader(T_ShaderLoc const program, T_ShaderLoc const shader) const
 {
 	glAttachShader(program, shader);
 }
@@ -883,49 +924,176 @@ void GraphicsApiContext::AttachShader(GLuint program, GLuint shader) const
 //
 // Link the shaders in a program
 //
-void GraphicsApiContext::LinkProgram(GLuint program) const
+void GraphicsApiContext::LinkProgram(T_ShaderLoc const program) const
 {
 	glLinkProgram(program);
 }
 
 //---------------------------------
-// GraphicsApiContext::GetShaderIV
+// GraphicsApiContext::IsShaderCompiled
 //
-// Get an integer value from a shader
-//
-void GraphicsApiContext::GetShaderIV(GLuint shader, GLenum pname, GLint *params) const
+bool GraphicsApiContext::IsShaderCompiled(T_ShaderLoc const shader) const
 {
-	glGetShaderiv(shader, pname, params);
+	GLint status;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+	return (status == GL_TRUE);
 }
 
 //---------------------------------
-// GraphicsApiContext::GetShaderInfoLog
+// GraphicsApiContext::GetShaderInfo
 //
 // Get logged information about a shader
 //
-void GraphicsApiContext::GetShaderInfoLog(GLuint shader, GLsizei maxLength, GLsizei *length, GLchar *infoLog) const
+void GraphicsApiContext::GetShaderInfo(T_ShaderLoc const shader, std::string& info) const
 {
-	glGetShaderInfoLog(shader, maxLength, length, infoLog);
+	char buffer[512];
+	glGetShaderInfoLog(shader, 512, NULL, buffer);
+	info = std::string(buffer);
 }
 
 //---------------------------------
-// GraphicsApiContext::GetProgramIV
+// GraphicsApiContext::GetAttributeCount
 //
-// Get an integer value from a program
-//
-void GraphicsApiContext::GetProgramIV(GLuint program, GLenum pname, GLint *params) const
+int32 GraphicsApiContext::GetAttributeCount(T_ShaderLoc const program) const
 {
-	glGetProgramiv(program, pname, params);
+	GLint count;
+	glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &count);
+	return count;
 }
 
 //---------------------------------
-// GraphicsApiContext::GetProgramIV
+// GraphicsApiContext::GetUniformCount
 //
-// Get information about a uniform in a program at a given index
-//
-void GraphicsApiContext::GetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const
+int32 GraphicsApiContext::GetUniformCount(T_ShaderLoc const program) const
 {
-	glGetActiveUniform(program, index, bufSize, length, size, type, name);
+	GLint count;
+	glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count);
+	return count;
+}
+
+//---------------------------------
+// GraphicsApiContext::GetActiveUniforms
+//
+// Get a list of initialized uniform objects for a particular uniform index
+//
+void GraphicsApiContext::GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<I_Uniform*>& uniforms) const
+{
+	GLint arrayCount; // support 1D arrays of structs
+	GLenum type;
+
+	const GLsizei bufSize = 256;
+	GLchar name[bufSize];
+	GLsizei length;
+
+	glGetActiveUniform(program, index, bufSize, &length, &arrayCount, &type, name);
+	std::string uniName = std::string(name, length);
+	std::string endName;
+
+	// if we have an array of structs, separate out the beginning and end bit so we can create our name with the index
+	if (arrayCount > 1)
+	{
+		size_t const found = uniName.find(']');
+
+		if (found < uniName.size() - 1)
+		{
+			endName = uniName.substr(uniName.find(']') + 1);
+		}
+
+		uniName = uniName.substr(0, uniName.find('['));
+	}
+
+	// for each array uniform (or the single uniform
+	for (GLint arrayIdx = 0; arrayIdx < arrayCount; ++arrayIdx)
+	{
+		// generate the full name
+		std::string fullName = uniName;
+		if (arrayCount > 1)
+		{
+			fullName += "[" + std::to_string(arrayIdx) + "]" + endName;
+		}
+
+		I_Uniform* uni;
+		switch (type)
+		{
+		case GL_BOOL:
+			uni = new Uniform<bool>();
+			break;
+		case GL_INT:
+		case GL_SAMPLER_2D:
+		case GL_SAMPLER_3D:
+		case GL_SAMPLER_CUBE:
+		case GL_SAMPLER_2D_SHADOW:
+			uni = new Uniform<int32>();
+			break;
+		case GL_UNSIGNED_INT:
+			uni = new Uniform<uint32>();
+			break;
+		case GL_FLOAT:
+			uni = new Uniform<float>();
+			break;
+		case GL_FLOAT_VEC2:
+			uni = new Uniform<vec2>();
+			break;
+		case GL_FLOAT_VEC3:
+			uni = new Uniform<vec3>();
+			break;
+		case GL_FLOAT_VEC4:
+			uni = new Uniform<vec4>();
+			break;
+		case GL_FLOAT_MAT3:
+			uni = new Uniform<mat3>();
+			break;
+		case GL_FLOAT_MAT4:
+			uni = new Uniform<mat4>();
+			break;
+		default:
+			LOG(std::string("unknown uniform type ") + std::to_string(type), LogLevel::Warning);
+			return;
+		}
+
+		uni->name = fullName;
+		uni->location = glGetUniformLocation(program, uni->name.c_str());
+
+		switch (type)
+		{
+		case GL_BOOL:
+			glGetUniformiv(program, uni->location, reinterpret_cast<int32*>(&static_cast<Uniform<bool>*>(uni)->data));
+			break;
+		case GL_INT:
+		case GL_SAMPLER_2D:
+		case GL_SAMPLER_3D:
+		case GL_SAMPLER_CUBE:
+		case GL_SAMPLER_2D_SHADOW:
+			glGetUniformiv(program, uni->location, &static_cast<Uniform<int32>*>(uni)->data);
+			break;
+		case GL_UNSIGNED_INT:
+			glGetUniformuiv(program, uni->location, &static_cast<Uniform<uint32>*>(uni)->data);
+			break;
+		case GL_FLOAT:
+			glGetUniformfv(program, uni->location, &static_cast<Uniform<float>*>(uni)->data);
+			break;
+		case GL_FLOAT_VEC2:
+			glGetUniformfv(program, uni->location, etm::valuePtr(static_cast<Uniform<vec2>*>(uni)->data));
+			break;
+		case GL_FLOAT_VEC3:
+			glGetUniformfv(program, uni->location, etm::valuePtr(static_cast<Uniform<vec3>*>(uni)->data));
+			break;
+		case GL_FLOAT_VEC4:
+			glGetUniformfv(program, uni->location, etm::valuePtr(static_cast<Uniform<vec4>*>(uni)->data));
+			break;
+		case GL_FLOAT_MAT3:
+			glGetUniformfv(program, uni->location, etm::valuePtr(static_cast<Uniform<mat3>*>(uni)->data));
+			break;
+		case GL_FLOAT_MAT4:
+			glGetUniformfv(program, uni->location, etm::valuePtr(static_cast<Uniform<mat4>*>(uni)->data));
+			break;
+		default:
+			LOG(std::string("unknown uniform type ") + std::to_string(type), LogLevel::Warning);
+			return;
+		}
+
+		uniforms.emplace_back(uni);
+	}
 }
 
 //---------------------------------
@@ -933,9 +1101,172 @@ void GraphicsApiContext::GetActiveUniform(GLuint program, GLuint index, GLsizei 
 //
 // Get information about an attribute in a program at a given index
 //
-void GraphicsApiContext::GetActiveAttribute(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const
+void GraphicsApiContext::GetActiveAttribute(T_ShaderLoc const program, uint32 const index, AttributeDescriptor& info) const
 {
-	glGetActiveAttrib(program, index, bufSize, length, size, type, name);
+	GLint size = 0;
+	GLenum type = 0;
+
+	const GLsizei bufSize = 256;
+	GLchar name[bufSize];
+	GLsizei length = 0;
+
+	glGetActiveAttrib(program, index, bufSize, &length, &size, &type, name);
+
+	info.name = std::string(name, length);
+
+	switch (type)
+	{
+	case GL_FLOAT:
+		info.dataType = E_DataType::Float;
+		info.dataCount = 1u;
+		break;
+	case GL_FLOAT_VEC2:
+		info.dataType = E_DataType::Float;
+		info.dataCount = 2u;
+		break;
+	case GL_FLOAT_VEC3:
+		info.dataType = E_DataType::Float;
+		info.dataCount = 3u;
+		break;
+	case GL_FLOAT_VEC4:
+		info.dataType = E_DataType::Float;
+		info.dataCount = 4u;
+		break;
+	case GL_FLOAT_MAT2:
+		info.dataType = E_DataType::Float;
+		info.dataCount = 4u;
+		break;
+	case GL_FLOAT_MAT3:
+		info.dataType = E_DataType::Float;
+		info.dataCount = 9u;
+		break;
+	case GL_FLOAT_MAT4:
+		info.dataType = E_DataType::Float;
+		info.dataCount = 16u;
+		break;
+	case GL_FLOAT_MAT2x3:
+		info.dataType = E_DataType::Float;
+		info.dataCount = 6u;
+		break;
+	case GL_FLOAT_MAT2x4:
+		info.dataType = E_DataType::Float;
+		info.dataCount = 8u;
+		break;
+	case GL_FLOAT_MAT3x2:
+		info.dataType = E_DataType::Float;
+		info.dataCount = 6u;
+		break;
+	case GL_FLOAT_MAT3x4:
+		info.dataType = E_DataType::Float;
+		info.dataCount = 12u;
+		break;
+	case GL_FLOAT_MAT4x2:
+		info.dataType = E_DataType::Float;
+		info.dataCount = 8u;
+		break;
+	case GL_FLOAT_MAT4x3:
+		info.dataType = E_DataType::Float;
+		info.dataCount = 12u;
+		break;
+	case GL_INT:
+		info.dataType = E_DataType::Int;
+		info.dataCount = 1u;
+		break;
+	case GL_INT_VEC2:
+		info.dataType = E_DataType::Int;
+		info.dataCount = 2u;
+		break;
+	case GL_INT_VEC3:
+		info.dataType = E_DataType::Int;
+		info.dataCount = 3u;
+		break;
+	case GL_INT_VEC4:
+		info.dataType = E_DataType::Int;
+		info.dataCount = 4u;
+		break;
+	case GL_UNSIGNED_INT:
+		info.dataType = E_DataType::UInt;
+		info.dataCount = 1u;
+		break;
+	case GL_UNSIGNED_INT_VEC2:
+		info.dataType = E_DataType::UInt;
+		info.dataCount = 2u;
+		break;
+	case GL_UNSIGNED_INT_VEC3:
+		info.dataType = E_DataType::UInt;
+		info.dataCount = 3u;
+		break;
+	case GL_UNSIGNED_INT_VEC4:
+		info.dataType = E_DataType::UInt;
+		info.dataCount = 4u;
+		break;
+	case GL_DOUBLE:
+		info.dataType = E_DataType::Double;
+		info.dataCount = 1u;
+		break;
+	case GL_DOUBLE_VEC2:
+		info.dataType = E_DataType::Double;
+		info.dataCount = 2u;
+		break;
+	case GL_DOUBLE_VEC3:
+		info.dataType = E_DataType::Double;
+		info.dataCount = 3u;
+		break;
+	case GL_DOUBLE_VEC4:
+		info.dataType = E_DataType::Double;
+		info.dataCount = 4u;
+		break;
+	case GL_DOUBLE_MAT2:
+		info.dataType = E_DataType::Double;
+		info.dataCount = 4u;
+		break;
+	case GL_DOUBLE_MAT3:
+		info.dataType = E_DataType::Double;
+		info.dataCount = 9u;
+		break;
+	case GL_DOUBLE_MAT4:
+		info.dataType = E_DataType::Double;
+		info.dataCount = 16u;
+		break;
+	case GL_DOUBLE_MAT2x3:
+		info.dataType = E_DataType::Double;
+		info.dataCount = 6u;
+		break;
+	case GL_DOUBLE_MAT2x4:
+		info.dataType = E_DataType::Double;
+		info.dataCount = 8u;
+		break;
+	case GL_DOUBLE_MAT3x2:
+		info.dataType = E_DataType::Double;
+		info.dataCount = 6u;
+		break;
+	case GL_DOUBLE_MAT3x4:
+		info.dataType = E_DataType::Double;
+		info.dataCount = 12u;
+		break;
+	case GL_DOUBLE_MAT4x2:
+		info.dataType = E_DataType::Double;
+		info.dataCount = 8u;
+		break;
+	case GL_DOUBLE_MAT4x3:
+		info.dataType = E_DataType::Double;
+		info.dataCount = 12u;
+		break;
+
+	default:
+		LOG(FS("unknown attribute type '%u'", type), LogLevel::Warning);
+		return;
+	}
+}
+
+//---------------------------------
+// GraphicsApiContext::GetAttributeLocation
+//
+// ID for an attribute on this shader program
+//
+T_AttribLoc GraphicsApiContext::GetAttributeLocation(T_ShaderLoc const program, std::string const& name) const
+{
+	return glGetAttribLocation(program, name.c_str());
 }
 
 //---------------------------------
@@ -1026,96 +1357,6 @@ void GraphicsApiContext::UploadUniform(const Uniform<int32> &uniform)
 void GraphicsApiContext::UploadUniform(const Uniform<uint32> &uniform)
 {
 	glUniform1ui(uniform.location, uniform.data);
-}
-
-//---------------------------------
-// GraphicsApiContext::InitUniform
-//
-// GraphicsApiContext::Download a boolean from the GPU
-//
-void GraphicsApiContext::InitUniform(uint32 const program, Uniform<bool> &uniform)
-{
-	glGetUniformiv(program, uniform.location, reinterpret_cast<int32*>(&uniform.data));
-}
-
-//---------------------------------
-// GraphicsApiContext::InitUniform
-//
-// Download an integer from the GPU
-//
-void GraphicsApiContext::InitUniform(uint32 const program, Uniform<int32> &uniform)
-{
-	glGetUniformiv(program, uniform.location, &uniform.data);
-}
-
-//---------------------------------
-// GraphicsApiContext::InitUniform
-//
-// Download an unsigned integer from the GPU
-//
-void GraphicsApiContext::InitUniform(uint32 const program, Uniform<uint32> &uniform)
-{
-	glGetUniformuiv(program, uniform.location, &uniform.data);
-}
-
-//---------------------------------
-// GraphicsApiContext::InitUniform
-//
-// Download a float from the GPU
-//
-void GraphicsApiContext::InitUniform(uint32 const program, Uniform<float> &uniform)
-{
-	glGetUniformfv(program, uniform.location, &uniform.data);
-}
-
-//---------------------------------
-// GraphicsApiContext::InitUniform
-//
-// Download a 2D vector from the GPU
-//
-void GraphicsApiContext::InitUniform(uint32 const program, Uniform<vec2> &uniform)
-{
-	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
-}
-
-//---------------------------------
-// GraphicsApiContext::InitUniform
-//
-// Download a 3D vector from the GPU
-//
-void GraphicsApiContext::InitUniform(uint32 const program, Uniform<vec3> &uniform)
-{
-	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
-}
-
-//---------------------------------
-// GraphicsApiContext::InitUniform
-//
-// Download a 4D vector from the GPU
-//
-void GraphicsApiContext::InitUniform(uint32 const program, Uniform<vec4> &uniform)
-{
-	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
-}
-
-//---------------------------------
-// GraphicsApiContext::InitUniform
-//
-// Download a 3x3 matrix from the GPU
-//
-void GraphicsApiContext::InitUniform(uint32 const program, Uniform<mat3> &uniform)
-{
-	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
-}
-
-//---------------------------------
-// GraphicsApiContext::InitUniform
-//
-// Download a 4x4 matrix from the GPU
-//
-void GraphicsApiContext::InitUniform(uint32 const program, Uniform<mat4> &uniform)
-{
-	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
 }
 
 //---------------------------------

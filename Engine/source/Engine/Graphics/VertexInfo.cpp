@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "VertexInfo.h"
 
-#include <glad/glad.h>
-
 
 //================
 // Data Type Info
@@ -12,38 +10,17 @@
 // static definition for vertex data types
 std::vector<DataTypeInfo> const DataTypeInfo::s_DataTypes =
 {
-	{ E_DataType::Byte,		GL_BYTE,			1 },
-	{ E_DataType::UByte,	GL_UNSIGNED_BYTE,	1 },
-	{ E_DataType::Short,	GL_SHORT,			2 },
-	{ E_DataType::UShort,	GL_UNSIGNED_SHORT,	2 },
-	{ E_DataType::Int,		GL_INT,				4 },
-	{ E_DataType::UInt,		GL_UNSIGNED_INT,	4 },
-	{ E_DataType::Half,		GL_HALF_FLOAT,		2 },
-	{ E_DataType::Float,	GL_FLOAT,			4 },
-	{ E_DataType::Double,	GL_DOUBLE,			8 }
+	{ E_DataType::Byte,		1 },
+	{ E_DataType::UByte,	1 },
+	{ E_DataType::Short,	2 },
+	{ E_DataType::UShort,	2 },
+	{ E_DataType::Int,		4 },
+	{ E_DataType::UInt,		4 },
+	{ E_DataType::Half,		2 },
+	{ E_DataType::Float,	4 },
+	{ E_DataType::Double,	8 }
 };
 
-
-//-------------------------------------------
-// AttributeDescriptor::GetTypeId
-//
-// Converts an attribute data type into the OpenGL equivalent
-//
-uint32 DataTypeInfo::GetTypeId(E_DataType const dataType)
-{
-	auto const typeIt = std::find_if(s_DataTypes.cbegin(), s_DataTypes.cend(), [dataType](DataTypeInfo const& typeInfo)
-	{
-		return typeInfo.type == dataType;
-	});
-
-	if (typeIt == s_DataTypes.cend())
-	{
-		ET_ASSERT(false, "Data type not implemented!");
-		return 0u;
-	}
-
-	return typeIt->typeId;
-}
 
 //-------------------------------------------
 // AttributeDescriptor::GetTypeSize
@@ -64,27 +41,6 @@ uint16 DataTypeInfo::GetTypeSize(E_DataType const dataType)
 	}
 
 	return typeIt->size;
-}
-
-//-------------------------------------------
-// DataTypeInfo::GetDataType
-//
-// Gets a data type from its ID
-//
-E_DataType DataTypeInfo::GetDataType(uint32 const typeId)
-{
-	auto const typeIt = std::find_if(s_DataTypes.cbegin(), s_DataTypes.cend(), [typeId](DataTypeInfo const& typeInfo)
-	{
-		return typeInfo.typeId == typeId;
-	});
-
-	if (typeIt == s_DataTypes.cend())
-	{
-		ET_ASSERT(false, "Data type not implemented!");
-		return E_DataType::Invalid;
-	}
-
-	return typeIt->type;
 }
 
 
@@ -185,10 +141,10 @@ void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const flags, std::v
 			api->SetVertexAttributeArrayEnabled(locations[locationIdx], true);
 			api->DefineVertexAttributePointer(locations[locationIdx],
 				it->second.dataCount,
-				DataTypeInfo::GetTypeId(it->second.dataType),
-				GL_FALSE,
+				it->second.dataType,
+				false,
 				stride,
-				static_cast<char const*>(0) + startPos);
+				static_cast<size_t>(startPos));
 
 			startPos += it->second.dataCount * DataTypeInfo::GetTypeSize(it->second.dataType); // the next attribute starts after this one
 			++locationIdx;
@@ -224,10 +180,10 @@ void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const supportedFlag
 				api->SetVertexAttributeArrayEnabled(locations[locationIdx], true);
 				api->DefineVertexAttributePointer(locations[locationIdx],
 					it->second.dataCount,
-					DataTypeInfo::GetTypeId(it->second.dataType),
-					GL_FALSE,
+					it->second.dataType,
+					false,
 					stride,
-					static_cast<char const*>(0) + startPos);
+					static_cast<size_t>(startPos));
 
 				++locationIdx;
 			}

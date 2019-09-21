@@ -3,13 +3,37 @@
 #include <map>
 #include <glad/glad.h>
 
+#include <Engine/Graphics/VertexInfo.h>
+
 
 // forward declarations
 class ShaderData;
 class TextureData;
 
+class I_Uniform;
 template<typename T>
 class Uniform;
+
+
+typedef int32 T_AttribLoc;
+typedef int32 T_UniformLoc;
+typedef uint32 T_ShaderLoc;
+
+
+//---------------------------------
+// E_ShaderType
+//
+// Shaders for each type in the programmable render pipeline
+//
+enum class E_ShaderType : uint8
+{
+	Compute,
+	Vertex,
+	TesselationControl,
+	TesselationEvaluation,
+	Geometry,
+	Fragment
+};
 
 
 //---------------------------------
@@ -70,7 +94,7 @@ public:
 	//Draw Calls
 	//--------------
 	void DrawArrays(GLenum mode, uint32 first, uint32 count);
-	void DrawElements(GLenum mode, uint32 count, GLenum type, const void * indices);
+	void DrawElements(GLenum mode, uint32 count, E_DataType const type, const void * indices);
 	void DrawElementsInstanced(GLenum mode, uint32 count, GLenum type, const void * indices, uint32 primcount);
 
 	// other commands
@@ -87,8 +111,8 @@ public:
 	void SetBufferData(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage) const;
 	void SetVertexAttributeArrayEnabled(GLuint index, bool enabled) const; // could at some point be a member on VertexArray data object
 
-	void DefineVertexAttributePointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid const* pointer) const;
-	void DefineVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, GLvoid const* pointer) const;
+	void DefineVertexAttributePointer(uint32 const index, int32 const size, E_DataType const type, bool const norm, int32 const stride, size_t const offset) const;
+	void DefineVertexAttribIPointer(uint32 const index, int32 const size, E_DataType const type, int32 const stride, size_t const offset) const;
 	void DefineVertexAttribDivisor(GLuint index, GLuint divisor) const;
 
 	void* MapBuffer(GLenum target, GLenum access) const;
@@ -99,23 +123,24 @@ public:
 	void SetTextureData(TextureData& texture, void* data);
 	void SetTextureParams(TextureData const& texture, uint8& mipLevels, TextureParameters& prev, TextureParameters const& next, bool const force);
 
-	GLuint CreateShader(GLenum shaderType) const;
-	GLuint CreateProgram() const;
-	void DeleteShader(GLuint shader);
-	void DeleteProgram(GLuint program);
+	T_ShaderLoc CreateShader(E_ShaderType const type) const;
+	T_ShaderLoc CreateProgram() const;
+	void DeleteShader(T_ShaderLoc const shader);
+	void DeleteProgram(T_ShaderLoc const program);
 
-	void SetShaderSource(GLuint shader, GLsizei count, GLchar const **string, int32* length) const;
-	void CompileShader(GLuint shader) const;
-	void BindFragmentDataLocation(GLuint program, GLuint colorNumber, std::string const& name) const;
-	void AttachShader(GLuint program, GLuint shader) const;
-	void LinkProgram(GLuint program) const;
+	void CompileShader(T_ShaderLoc const shader, std::string const& source) const;
+	void BindFragmentDataLocation(T_ShaderLoc const program, uint32 const colorNumber, std::string const& name) const;
+	void AttachShader(T_ShaderLoc const program, T_ShaderLoc const shader) const;
+	void LinkProgram(T_ShaderLoc const program) const;
 
-	void GetShaderIV(GLuint shader, GLenum pname, GLint *params) const;
-	void GetShaderInfoLog(GLuint shader, GLsizei maxLength, GLsizei *length, GLchar *infoLog) const;
+	bool IsShaderCompiled(T_ShaderLoc const shader) const;
+	void GetShaderInfo(T_ShaderLoc const shader, std::string& info) const;
 
-	void GetProgramIV(GLuint program, GLenum pname, GLint *params) const;
-	void GetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const;
-	void GetActiveAttribute(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const;
+	int32 GetAttributeCount(T_ShaderLoc const program) const;
+	int32 GetUniformCount(T_ShaderLoc const program) const;
+	void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<I_Uniform*>& uniforms) const;
+	void GetActiveAttribute(T_ShaderLoc const program, uint32 const index, AttributeDescriptor& info) const;
+	T_AttribLoc GetAttributeLocation(T_ShaderLoc const program, std::string const& name) const;
 
 	void UploadUniform(const Uniform<bool> &uniform);
 	void UploadUniform(const Uniform<int32> &uniform);
@@ -126,16 +151,6 @@ public:
 	void UploadUniform(const Uniform<vec4> &uniform);
 	void UploadUniform(const Uniform<mat3> &uniform);
 	void UploadUniform(const Uniform<mat4> &uniform);
-
-	void InitUniform(uint32 const program, Uniform<bool> &uniform);
-	void InitUniform(uint32 const program, Uniform<int32> &uniform);
-	void InitUniform(uint32 const program, Uniform<uint32> &uniform);
-	void InitUniform(uint32 const program, Uniform<float> &uniform);
-	void InitUniform(uint32 const program, Uniform<vec2> &uniform);
-	void InitUniform(uint32 const program, Uniform<vec3> &uniform);
-	void InitUniform(uint32 const program, Uniform<vec4> &uniform);
-	void InitUniform(uint32 const program, Uniform<mat3> &uniform);
-	void InitUniform(uint32 const program, Uniform<mat4> &uniform);
 
 	void GenFramebuffers(GLsizei n, GLuint *ids) const;
 	void DeleteFramebuffers(GLsizei n, GLuint *ids) const;
@@ -169,6 +184,9 @@ private:
 	void EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLenum glState, uint32 index);
 
 	uint32 const GetTexTarget(E_TextureType const type) const;
+	uint32 const GetTypeId(E_DataType const type) const;
+
+	GLenum const ConvShaderType(E_ShaderType const type) const;
 
 	GLuint m_ReadFramebuffer = 0;
 	GLuint m_DrawFramebuffer = 0;

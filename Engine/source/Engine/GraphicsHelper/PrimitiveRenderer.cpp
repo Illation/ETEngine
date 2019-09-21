@@ -87,9 +87,9 @@ void primitives::Quad::Initialize()
 	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	api->SetBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
 	api->SetVertexAttributeArrayEnabled(0, true);
-	api->DefineVertexAttributePointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+	api->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, 5 * sizeof(float), 0);
 	api->SetVertexAttributeArrayEnabled(1, true);
-	api->DefineVertexAttributePointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	api->DefineVertexAttributePointer(1, 2, E_DataType::Float, false, 5 * sizeof(float), (3 * sizeof(float)));
 }
 
 //Unit cube
@@ -166,11 +166,11 @@ void primitives::Cube::Initialize()
 	// Link vertex attributes
 	api->BindVertexArray(m_VAO);
 	api->SetVertexAttributeArrayEnabled(0, true);
-	api->DefineVertexAttributePointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+	api->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, 8 * sizeof(float), 0);
 	api->SetVertexAttributeArrayEnabled(1, true);
-	api->DefineVertexAttributePointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	api->DefineVertexAttributePointer(1, 3, E_DataType::Float, false, 8 * sizeof(float), (3 * sizeof(float)));
 	api->SetVertexAttributeArrayEnabled(2, true);
-	api->DefineVertexAttributePointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+	api->DefineVertexAttributePointer(2, 2, E_DataType::Float, false, 8 * sizeof(float), (6 * sizeof(float)));
 	api->BindBuffer(GL_ARRAY_BUFFER, 0);
 	api->BindVertexArray(0);
 }
@@ -219,7 +219,7 @@ void primitives::IcoSphere<level>::Initialize()
 	// Link vertex attributes
 	api->BindVertexArray(m_VAO);
 	api->SetVertexAttributeArrayEnabled(0, true);
-	api->DefineVertexAttributePointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+	api->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, 3 * sizeof(float), 0);
 	api->BindBuffer(GL_ARRAY_BUFFER, 0);
 	api->BindVertexArray(0);
 }
