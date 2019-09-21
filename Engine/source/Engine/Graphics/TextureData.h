@@ -1,8 +1,6 @@
 #pragma once
 #include "TextureParameters.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/Content/Asset.h>
 #include <EtCore/Helper/LinkerUtils.h>
 
@@ -42,7 +40,14 @@ public:
 	uint32 GetHandle() const { return m_Handle; }
 	ivec2 GetResolution() const { return ivec2(m_Width, m_Height); }
 	int32 GetNumMipLevels() const { return m_MipLevels; }
+
 	uint32 GetTarget() const;
+	int32 GetInternalFormat() const { return m_InternalFormat; }
+	uint32 GetFormat() const { return m_Format; }
+	uint32 GetDataType() const { return m_Type; }
+
+	E_TextureType GetTargetType() const { return m_TargetType; }
+	int32 GetDepth() const { return m_Depth; }
 
 	// Functionality
 	//--------------
@@ -65,9 +70,9 @@ private:
 	E_TextureType m_TargetType = E_TextureType::Texture2D;
 
 	// Format
-	int32 m_InternalFormat = GL_RGB;
-	uint32 m_Format = GL_RGB;
-	uint32 m_Type = GL_FLOAT;
+	int32 m_InternalFormat;
+	uint32 m_Format;
+	uint32 m_Type;
 
 	TextureParameters m_Parameters;
 };

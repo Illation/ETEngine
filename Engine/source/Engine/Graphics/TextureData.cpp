@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "TextureData.h"
 
+#include <glad/glad.h>
+
 #include <stb/stb_image.h>
 #include <stb/stb_image_resize.h>
 
@@ -24,7 +26,7 @@ TextureData::TextureData(int32 const width, int32 const height, int32 const inte
 	, m_Depth(depth)
 	, m_TargetType((depth > 1) ? E_TextureType::Texture3D : E_TextureType::Texture2D)
 {
-	glGenTextures(1, &m_Handle);
+	m_Handle = STATE->GenerateTexture();
 }
 
 //---------------------------------
@@ -36,8 +38,11 @@ TextureData::TextureData(E_TextureType const targetType, int32 const height, int
 	: m_TargetType(targetType)
 	, m_Height(height)
 	, m_Width(width)
+	, m_InternalFormat(GL_RGB)
+	, m_Format(GL_RGB)
+	, m_Type(GL_FLOAT)
 {
-	glGenTextures(1, &m_Handle);
+	m_Handle = STATE->GenerateTexture();
 }
 
 //---------------------------------
@@ -47,7 +52,7 @@ TextureData::TextureData(E_TextureType const targetType, int32 const height, int
 //
 TextureData::~TextureData()
 {
-	glDeleteTextures(1, &m_Handle);
+	STATE->DeleteTexture(m_Handle);
 }
 
 //---------------------------------
@@ -80,27 +85,7 @@ uint32 TextureData::GetTarget() const
 //
 void TextureData::Build(void* data)
 {
-	uint32 const target = GetTarget();
-	STATE->BindTexture(target, m_Handle);
-
-	switch (m_TargetType)
-	{
-	case E_TextureType::Texture2D:
-		glTexImage2D(target, 0, m_InternalFormat, m_Width, m_Height, 0, m_Format, m_Type, data);
-		break;
-
-	case E_TextureType::Texture3D:
-		glTexImage3D(target, 0, m_InternalFormat, m_Width, m_Height, m_Depth, 0, m_Format, m_Type, data);
-		break;
-
-	case E_TextureType::CubeMap:
-		ET_ASSERT(m_Width == m_Height);
-		for (uint8 face = 0u; face < s_NumCubeFaces; ++face)
-		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, GL_RGB16F, m_Width, m_Height, 0, GL_RGB, GL_FLOAT, nullptr);
-		}
-		break;
-	}
+	STATE->SetTextureData(*this, data);
 }
 
 //---------------------------------
@@ -112,71 +97,7 @@ void TextureData::Build(void* data)
 //
 void TextureData::SetParameters(TextureParameters const& params, bool const force)
 {
-	uint32 const target = GetTarget();
-	STATE->BindTexture(target, m_Handle);
-
-	// filter options
-	//---------------
-	// in the future it may make sense to create filter groups so that things such as anisotropy can be set globally
-	if((m_Parameters.minFilter != params.minFilter) || 
-		(m_Parameters.mipFilter != params.mipFilter) || 
-		(m_Parameters.genMipMaps != params.genMipMaps) ||
-		force)
-	{
-		int32 minFilter = GetMinFilter(params.minFilter, params.mipFilter, params.genMipMaps);
-		ET_ASSERT(minFilter != 0);
-
-		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilter);
-	}
-
-	if ((m_Parameters.magFilter != params.magFilter) || force)
-	{
-		int32 filter = GetFilter(params.magFilter);
-		ET_ASSERT(filter != 0);
-
-		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filter);
-	}
-
-	// address mode
-	//-------------
-	if ((m_Parameters.wrapS != params.wrapS) || force)
-	{
-		glTexParameteri(target, GL_TEXTURE_WRAP_S, GetWrapMode(params.wrapS));
-	}
-
-	if ((m_Parameters.wrapT != params.wrapT) || force)
-	{
-		glTexParameteri(target, GL_TEXTURE_WRAP_T, GetWrapMode(params.wrapT));
-	}
-
-	if ((m_Depth > 1) && ((m_Parameters.wrapR != params.wrapR) || force))
-	{
-		glTexParameteri(target, GL_TEXTURE_WRAP_R, GetWrapMode(params.wrapR));
-	}
-
-	// border color
-	if (!etm::nearEqualsV(m_Parameters.borderColor, params.borderColor ) || force)
-	{
-		glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, params.borderColor.data.data());
-	}
-
-	// other
-	//-------
-	if ((params.isDepthTex && (m_Parameters.compareMode != params.compareMode)) || (params.isDepthTex && force))
-	{
-		glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, GetCompareMode(params.compareMode));//shadow map comp mode
-	}
-
-	// generate mip maps if we must
-	//-----------------------------
-	if ((!m_Parameters.genMipMaps && params.genMipMaps) || (params.genMipMaps && force) || (params.genMipMaps && (m_MipLevels == 0u)))
-	{
-		glGenerateMipmap(target);
-		float const largerRes = static_cast<float>(std::max(m_Width, m_Height));
-		m_MipLevels = 1u + static_cast<uint8>(floor(log10(largerRes) / log10(2.f)));
-	}
-
-	m_Parameters = params;
+	STATE->SetTextureParams(*this, m_MipLevels, m_Parameters, params, force);
 }
 
 //---------------------------------
@@ -193,8 +114,8 @@ bool TextureData::Resize(ivec2 const& newSize)
 	bool const regenerate = (newSize.x > m_Width) || (newSize.y > m_Height);
 	if (regenerate)
 	{
-		glDeleteTextures(1, &m_Handle);
-		glGenTextures(1, &m_Handle);
+		STATE->DeleteTexture(m_Handle);
+		m_Handle = STATE->GenerateTexture();
 	}
 
 	Build();

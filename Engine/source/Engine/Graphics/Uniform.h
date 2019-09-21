@@ -37,28 +37,4 @@ public:
 	T data;
 };
 
-// implementation for uploading a uniform to the currently bound shader
-namespace detail
-{
-	void UploadUniform(const Uniform<bool> &uniform);
-	void UploadUniform(const Uniform<int32> &uniform);
-	void UploadUniform(const Uniform<uint32> &uniform);
-	void UploadUniform(const Uniform<float> &uniform);
-	void UploadUniform(const Uniform<vec2> &uniform);
-	void UploadUniform(const Uniform<vec3> &uniform);
-	void UploadUniform(const Uniform<vec4> &uniform);
-	void UploadUniform(const Uniform<mat3> &uniform);
-	void UploadUniform(const Uniform<mat4> &uniform);
-
-	void InitUniform(uint32 const program, Uniform<bool> &uniform);
-	void InitUniform(uint32 const program, Uniform<int32> &uniform);
-	void InitUniform(uint32 const program, Uniform<uint32> &uniform);
-	void InitUniform(uint32 const program, Uniform<float> &uniform);
-	void InitUniform(uint32 const program, Uniform<vec2> &uniform);
-	void InitUniform(uint32 const program, Uniform<vec3> &uniform);
-	void InitUniform(uint32 const program, Uniform<vec4> &uniform);
-	void InitUniform(uint32 const program, Uniform<mat3> &uniform);
-	void InitUniform(uint32 const program, Uniform<mat4> &uniform);
-}
-
 #include "Uniform.inl"

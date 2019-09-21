@@ -94,7 +94,7 @@ void RenderPipeline::DrawShadow()
 	}
 }
 
-void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO)
+void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO)
 {
 	m_pRenderScenes = pScenes;
 

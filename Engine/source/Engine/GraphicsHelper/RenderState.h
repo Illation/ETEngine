@@ -8,6 +8,9 @@
 class ShaderData;
 class TextureData;
 
+template<typename T>
+class Uniform;
+
 
 //---------------------------------
 // RenderState
@@ -33,8 +36,6 @@ public:
 	void SetStencilEnabled(bool enabled);
 	void SetCullEnabled(bool enabled);
 
-	void SetDebugOutEnabled(bool enabled);
-	void SetDebugOutSynchonousEnabled(bool enabled);
 	void SetSeamlessCubemapsEnabled(bool enabled);
 
 	void SetFaceCullingMode(GLenum cullMode);
@@ -93,6 +94,11 @@ public:
 	void* MapBuffer(GLenum target, GLenum access) const;
 	void UnmapBuffer(GLenum target) const;
 
+	uint32 GenerateTexture() const;
+	void DeleteTexture(uint32& handle) const;
+	void SetTextureData(TextureData& texture, void* data);
+	void SetTextureParams(TextureData const& texture, uint8& mipLevels, TextureParameters& prev, TextureParameters const& next, bool const force);
+
 	GLuint CreateShader(GLenum shaderType) const;
 	GLuint CreateProgram() const;
 	void DeleteShader(GLuint shader);
@@ -110,6 +116,26 @@ public:
 	void GetProgramIV(GLuint program, GLenum pname, GLint *params) const;
 	void GetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const;
 	void GetActiveAttribute(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const;
+
+	void UploadUniform(const Uniform<bool> &uniform);
+	void UploadUniform(const Uniform<int32> &uniform);
+	void UploadUniform(const Uniform<uint32> &uniform);
+	void UploadUniform(const Uniform<float> &uniform);
+	void UploadUniform(const Uniform<vec2> &uniform);
+	void UploadUniform(const Uniform<vec3> &uniform);
+	void UploadUniform(const Uniform<vec4> &uniform);
+	void UploadUniform(const Uniform<mat3> &uniform);
+	void UploadUniform(const Uniform<mat4> &uniform);
+
+	void InitUniform(uint32 const program, Uniform<bool> &uniform);
+	void InitUniform(uint32 const program, Uniform<int32> &uniform);
+	void InitUniform(uint32 const program, Uniform<uint32> &uniform);
+	void InitUniform(uint32 const program, Uniform<float> &uniform);
+	void InitUniform(uint32 const program, Uniform<vec2> &uniform);
+	void InitUniform(uint32 const program, Uniform<vec3> &uniform);
+	void InitUniform(uint32 const program, Uniform<vec4> &uniform);
+	void InitUniform(uint32 const program, Uniform<mat3> &uniform);
+	void InitUniform(uint32 const program, Uniform<mat4> &uniform);
 
 	void GenFramebuffers(GLsizei n, GLuint *ids) const;
 	void DeleteFramebuffers(GLsizei n, GLuint *ids) const;
@@ -138,6 +164,8 @@ private:
 	//the index for blending must be smaller than max draw buffers too
 	void EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLenum glState, uint32 index);
 
+	uint32 const GetTexTarget(E_TextureType const type) const;
+
 	GLuint m_ReadFramebuffer = 0;
 	GLuint m_DrawFramebuffer = 0;
 
@@ -151,9 +179,6 @@ private:
 	GLenum m_CullFaceMode = GL_BACK;
 	
 	bool m_StencilTestEnabled = false;
-
-	bool m_DebugOutputEnabled = false;
-	bool m_DebugOutputSynchronousEnabled = false;
 
 	bool m_SeamlessCubemapsEnabled = false;
 

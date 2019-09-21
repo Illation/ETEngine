@@ -17,7 +17,7 @@ void Uniform<T>::Upload(const T &rhs)
 	if (!(rhs == data))
 	{
 		data = rhs;
-		detail::UploadUniform(*this);
+		STATE->UploadUniform(*this);
 	}
 }
 
@@ -29,5 +29,5 @@ void Uniform<T>::Upload(const T &rhs)
 template<typename T>
 void Uniform<T>::Init(uint32 const program)
 {
-	detail::InitUniform(program, *this);
+	STATE->InitUniform(program, *this);
 }

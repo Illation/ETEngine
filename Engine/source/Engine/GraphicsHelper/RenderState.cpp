@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 
 #include <Engine/Graphics/Shader.h>
+#include <Engine/Graphics/Uniform.h>
 
 
 //===================
@@ -60,6 +61,49 @@ void RenderState::Initialize()
 		{ GL_TRANSFORM_FEEDBACK_BUFFER, 0 },
 		{ GL_UNIFORM_BUFFER, 0 }
 	};
+
+
+	// potentially hook up opengl to the logger
+#if defined(ET_DEBUG)
+#if defined(GRAPHICS_API_VERBOSE)
+
+	auto glLogCallback = [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+	{
+		UNUSED(source);
+		UNUSED(id);
+		UNUSED(length);
+		UNUSED(userParam);
+
+		LogLevel level = LogLevel::Info;
+		switch (type)
+		{
+		case GL_DEBUG_TYPE_ERROR:
+			level = LogLevel::Error;
+			break;
+		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+			level = LogLevel::Warning;
+			break;
+		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+			level = LogLevel::Warning;
+			break;
+		}
+
+		if (severity == GL_DEBUG_SEVERITY_HIGH)
+		{
+			level = LogLevel::Error;
+		}
+
+		LOG(message, level);
+		LOG("");
+	}
+
+	glEnable(GL_DEBUG_OUTPUT);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glDebugMessageCallback(glLogCallback, nullptr);
+	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
+
+#endif
+#endif
 }
 
 //---------------------------------
@@ -103,6 +147,27 @@ void RenderState::EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLe
 			glDisablei(glState, index);
 		}
 	}
+}
+
+//---------------------------------
+// RenderState::GetTexTarget
+//
+uint32 const RenderState::GetTexTarget(E_TextureType const type) const
+{
+	switch (type)
+	{
+	case E_TextureType::Texture2D:
+		return GL_TEXTURE_2D;
+
+	case E_TextureType::Texture3D:
+		return GL_TEXTURE_3D;
+
+	case E_TextureType::CubeMap:
+		return GL_TEXTURE_CUBE_MAP;
+	}
+
+	ET_ASSERT(true, "Unhandled texture type!");
+	return GL_NONE;
 }
 
 //---------------------------------
@@ -180,22 +245,6 @@ void RenderState::SetStencilEnabled(bool enabled)
 void RenderState::SetCullEnabled(bool enabled)
 {
 	EnOrDisAble(m_CullFaceEnabled, enabled, GL_CULL_FACE);
-}
-
-//---------------------------------
-// RenderState::SetDebugOutEnabled
-//
-void RenderState::SetDebugOutEnabled(bool enabled)
-{
-	EnOrDisAble(m_DebugOutputEnabled, enabled, GL_DEBUG_OUTPUT);
-}
-
-//---------------------------------
-// RenderState::SetDebugOutSynchonousEnabled
-//
-void RenderState::SetDebugOutSynchonousEnabled(bool enabled)
-{
-	EnOrDisAble(m_DebugOutputSynchronousEnabled, enabled, GL_DEBUG_OUTPUT_SYNCHRONOUS);
 }
 
 //---------------------------------
@@ -623,6 +672,133 @@ void RenderState::UnmapBuffer(GLenum target) const
 }
 
 //---------------------------------
+// RenderState::UnmapBuffer
+//
+uint32 RenderState::GenerateTexture() const
+{
+	uint32 ret;
+	glGenTextures(1, &ret);
+	return ret;
+}
+
+//---------------------------------
+// RenderState::DeleteTexture
+//
+void RenderState::DeleteTexture(uint32& handle) const
+{
+	glDeleteTextures(1, &handle);
+}
+
+//---------------------------------
+// RenderState::SetTextureData
+//
+// upload a textures bits to its GPU location
+//
+void RenderState::SetTextureData(TextureData& texture, void* data) 
+{
+	uint32 const target = GetTexTarget(texture.GetTargetType());
+
+	BindTexture(target, texture.GetHandle());
+
+	ivec2 const res = texture.GetResolution();
+	int32 const intFmt = texture.GetInternalFormat();
+
+	switch (texture.GetTargetType())
+	{
+	case E_TextureType::Texture2D:
+		glTexImage2D(target, 0, intFmt, res.x, res.y, 0, texture.GetFormat(), texture.GetDataType(), data);
+		break;
+
+	case E_TextureType::Texture3D:
+		glTexImage3D(target, 0, intFmt, res.x, res.y, texture.GetDepth(), 0, texture.GetFormat(), texture.GetDataType(), data);
+		break;
+
+	case E_TextureType::CubeMap:
+		ET_ASSERT(res.x == res.y);
+		ET_ASSERT(data == nullptr, "directly uploading data to a cubemap is not currently supported");
+
+		for (uint8 face = 0u; face < TextureData::s_NumCubeFaces; ++face)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, GL_RGB16F, res.x, res.y, 0, GL_RGB, GL_FLOAT, nullptr);
+		}
+
+		break;
+	}
+}
+
+//---------------------------------
+// RenderState::SetTextureParams
+//
+// Update parameters on a texture
+//
+void RenderState::SetTextureParams(TextureData const& texture, uint8& mipLevels, TextureParameters& prev, TextureParameters const& next, bool const force) 
+{
+	uint32 const target = GetTexTarget(texture.GetTargetType());
+	BindTexture(target, texture.GetHandle());
+
+	// filter options
+	//---------------
+	// in the future it may make sense to create filter groups so that things such as anisotropy can be set globally
+	if ((prev.minFilter != next.minFilter) || (prev.mipFilter != next.mipFilter) || (prev.genMipMaps != next.genMipMaps) || force)
+	{
+		int32 minFilter = GetMinFilter(next.minFilter, next.mipFilter, next.genMipMaps);
+		ET_ASSERT(minFilter != 0);
+
+		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilter);
+	}
+
+	if ((prev.magFilter != next.magFilter) || force)
+	{
+		int32 filter = GetFilter(next.magFilter);
+		ET_ASSERT(filter != 0);
+
+		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filter);
+	}
+
+	// address mode
+	//-------------
+	if ((prev.wrapS != next.wrapS) || force)
+	{
+		glTexParameteri(target, GL_TEXTURE_WRAP_S, GetWrapMode(next.wrapS));
+	}
+
+	if ((prev.wrapT != next.wrapT) || force)
+	{
+		glTexParameteri(target, GL_TEXTURE_WRAP_T, GetWrapMode(next.wrapT));
+	}
+
+	if ((texture.GetDepth() > 1) && ((prev.wrapR != next.wrapR) || force))
+	{
+		glTexParameteri(target, GL_TEXTURE_WRAP_R, GetWrapMode(next.wrapR));
+	}
+
+	// border color
+	if (!etm::nearEqualsV(prev.borderColor, next.borderColor) || force)
+	{
+		glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, next.borderColor.data.data());
+	}
+
+	// other
+	//-------
+	if ((next.isDepthTex && (prev.compareMode != next.compareMode)) || (next.isDepthTex && force))
+	{
+		glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, GetCompareMode(next.compareMode));//shadow map comp mode
+	}
+
+	// generate mip maps if we must
+	//-----------------------------
+	if ((!prev.genMipMaps && next.genMipMaps) || (next.genMipMaps && force) || (next.genMipMaps && (mipLevels == 0u)))
+	{
+		glGenerateMipmap(target);
+		ivec2 const res = texture.GetResolution();
+		float const largerRes = static_cast<float>(std::max(res.x, res.y));
+		mipLevels = 1u + static_cast<uint8>(floor(log10(largerRes) / log10(2.f)));
+	}
+
+	prev = next;
+}
+
+//---------------------------------
 // RenderState::CreateShader
 //
 // Create a shader object and return its handle
@@ -760,6 +936,186 @@ void RenderState::GetActiveUniform(GLuint program, GLuint index, GLsizei bufSize
 void RenderState::GetActiveAttribute(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) const
 {
 	glGetActiveAttrib(program, index, bufSize, length, size, type, name);
+}
+
+//---------------------------------
+// RenderState::UploadUniform
+//
+// Upload a boolean to the GPU
+//
+void RenderState::UploadUniform(const Uniform<bool> &uniform)
+{
+	glUniform1i(uniform.location, uniform.data);
+}
+
+//---------------------------------
+// RenderState::UploadUniform
+//
+// Upload a 4x4 Matrix to the GPU
+//
+void RenderState::UploadUniform(const Uniform<mat4> &uniform)
+{
+	glUniformMatrix4fv(uniform.location, 1, GL_FALSE, etm::valuePtr(uniform.data));
+}
+
+//---------------------------------
+// RenderState::UploadUniform
+//
+// Upload a 3x3 Matrix to the GPU
+//
+void RenderState::UploadUniform(const Uniform<mat3> &uniform)
+{
+	glUniformMatrix3fv(uniform.location, 1, GL_FALSE, etm::valuePtr(uniform.data));
+}
+
+//---------------------------------
+// RenderState::UploadUniform
+//
+// Upload a 4D Vector to the GPU
+//
+void RenderState::UploadUniform(const Uniform<vec4> &uniform)
+{
+	glUniform4f(uniform.location, uniform.data.x, uniform.data.y, uniform.data.z, uniform.data.w);
+}
+
+//---------------------------------
+// RenderState::UploadUniform
+//
+// Upload a 3D Vector to the GPU
+//
+void RenderState::UploadUniform(const Uniform<vec3> &uniform)
+{
+	glUniform3f(uniform.location, uniform.data.x, uniform.data.y, uniform.data.z);
+}
+
+//---------------------------------
+// RenderState::UploadUniform
+//
+// Upload a 2D Vector to the GPU
+//
+void RenderState::UploadUniform(const Uniform<vec2> &uniform)
+{
+	glUniform2f(uniform.location, uniform.data.x, uniform.data.y);
+}
+
+//---------------------------------
+// RenderState::UploadUniform
+//
+// Upload a scalar to the GPU
+//
+void RenderState::UploadUniform(const Uniform<float> &uniform)
+{
+	glUniform1f(uniform.location, uniform.data);
+}
+
+//---------------------------------
+// RenderState::UploadUniform
+//
+// Upload an integer to the GPU
+//
+void RenderState::UploadUniform(const Uniform<int32> &uniform)
+{
+	glUniform1i(uniform.location, uniform.data);
+}
+
+//---------------------------------
+// RenderState::UploadUniform
+//
+// Upload an unsigned integer to the GPU
+//
+void RenderState::UploadUniform(const Uniform<uint32> &uniform)
+{
+	glUniform1ui(uniform.location, uniform.data);
+}
+
+//---------------------------------
+// RenderState::InitUniform
+//
+// RenderState::Download a boolean from the GPU
+//
+void RenderState::InitUniform(uint32 const program, Uniform<bool> &uniform)
+{
+	glGetUniformiv(program, uniform.location, reinterpret_cast<int32*>(&uniform.data));
+}
+
+//---------------------------------
+// RenderState::InitUniform
+//
+// Download an integer from the GPU
+//
+void RenderState::InitUniform(uint32 const program, Uniform<int32> &uniform)
+{
+	glGetUniformiv(program, uniform.location, &uniform.data);
+}
+
+//---------------------------------
+// RenderState::InitUniform
+//
+// Download an unsigned integer from the GPU
+//
+void RenderState::InitUniform(uint32 const program, Uniform<uint32> &uniform)
+{
+	glGetUniformuiv(program, uniform.location, &uniform.data);
+}
+
+//---------------------------------
+// RenderState::InitUniform
+//
+// Download a float from the GPU
+//
+void RenderState::InitUniform(uint32 const program, Uniform<float> &uniform)
+{
+	glGetUniformfv(program, uniform.location, &uniform.data);
+}
+
+//---------------------------------
+// RenderState::InitUniform
+//
+// Download a 2D vector from the GPU
+//
+void RenderState::InitUniform(uint32 const program, Uniform<vec2> &uniform)
+{
+	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
+}
+
+//---------------------------------
+// RenderState::InitUniform
+//
+// Download a 3D vector from the GPU
+//
+void RenderState::InitUniform(uint32 const program, Uniform<vec3> &uniform)
+{
+	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
+}
+
+//---------------------------------
+// RenderState::InitUniform
+//
+// Download a 4D vector from the GPU
+//
+void RenderState::InitUniform(uint32 const program, Uniform<vec4> &uniform)
+{
+	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
+}
+
+//---------------------------------
+// RenderState::InitUniform
+//
+// Download a 3x3 matrix from the GPU
+//
+void RenderState::InitUniform(uint32 const program, Uniform<mat3> &uniform)
+{
+	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
+}
+
+//---------------------------------
+// RenderState::InitUniform
+//
+// Download a 4x4 matrix from the GPU
+//
+void RenderState::InitUniform(uint32 const program, Uniform<mat4> &uniform)
+{
+	glGetUniformfv(program, uniform.location, etm::valuePtr(uniform.data));
 }
 
 //---------------------------------
