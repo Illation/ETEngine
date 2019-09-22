@@ -100,8 +100,8 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	//Render Buffer for depth and stencil
 	api->GenRenderBuffers(1, &m_CollectRBO);
 	api->BindRenderbuffer(m_CollectRBO);
-	api->SetRenderbufferStorage(GL_DEPTH24_STENCIL8, windowSettings.Dimensions);
-	api->LinkRenderbufferToFbo(GL_DEPTH_STENCIL_ATTACHMENT, m_CollectRBO);
+	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24_Stencil8, windowSettings.Dimensions);
+	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24_Stencil8, m_CollectRBO);
 
 	//Generate textures for the hdr fbo to output into
 	api->GenFramebuffers(1, &m_HDRoutFBO);
@@ -159,7 +159,7 @@ void PostProcessingRenderer::EnableInput()
 {
 	Viewport::GetCurrentApiContext()->BindFramebuffer(m_CollectFBO);
 }
-void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &settings)
+void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSettings &settings)
 {
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 

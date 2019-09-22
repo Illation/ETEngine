@@ -106,7 +106,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO)
 	//**************
 	api->SetDepthEnabled(true);
 	api->SetCullEnabled(true);
-	api->SetFaceCullingMode(GL_FRONT);//Maybe draw two sided materials in seperate pass
+	api->SetFaceCullingMode(E_FaceCullMode::Front);//Maybe draw two sided materials in seperate pass
 	for (auto pScene : pScenes)
 	{
 		auto lightVec = pScene->GetLights(); //Todo: automatically add all light components to an array for faster access
@@ -127,7 +127,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO)
 	api->SetClearColor(vec4(m_ClearColor, 1.f));
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
-	api->SetFaceCullingMode(GL_BACK);
+	api->SetFaceCullingMode(E_FaceCullMode::Back);
 	for (auto pScene : pScenes)
 	{
 		pScene->Draw();
@@ -159,7 +159,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO)
 	api->SetBlendFunction(GL_ONE, GL_ONE);
 
 	api->SetCullEnabled(true);
-	api->SetFaceCullingMode(GL_FRONT);
+	api->SetFaceCullingMode(E_FaceCullMode::Front);
 
 	for (auto pScene : pScenes)
 	{
@@ -170,7 +170,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO)
 		}
 	}
 
-	api->SetFaceCullingMode(GL_BACK);
+	api->SetFaceCullingMode(E_FaceCullMode::Back);
 	api->SetBlendEnabled(false);
 
 	api->SetCullEnabled(false);

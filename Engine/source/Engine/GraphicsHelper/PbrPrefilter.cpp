@@ -32,14 +32,15 @@ void PbrPrefilter::Precompute(int32 resolution)
 	//setup BRDF look up table
 	//************************
 	//Create framebuffer
-	GLuint captureFBO, captureRBO;
+	T_FbLoc captureFBO;
+	T_RbLoc captureRBO;
 	api->GenFramebuffers(1, &captureFBO);
 	api->GenRenderBuffers(1, &captureRBO);
 
 	api->BindFramebuffer(captureFBO);
 	api->BindRenderbuffer(captureRBO);
-	api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(resolution));
-	api->LinkRenderbufferToFbo(GL_DEPTH_ATTACHMENT, captureRBO);
+	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(resolution));
+	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, captureRBO);
 	//Shader
 	api->SetShader(ResourceManager::Instance()->GetAssetData<ShaderData>("FwdBrdfLutShader.glsl"_hash).get());
 
@@ -51,7 +52,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 	m_LUT->SetParameters(params);
 
 	api->BindRenderbuffer(captureRBO);
-	api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(resolution));
+	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(resolution));
 	api->LinkTextureToFbo2D(0, m_LUT->GetHandle(), 0);
 
 	api->SetViewport(ivec2(0), ivec2(resolution));
@@ -84,14 +85,15 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	std::vector<mat4> captureViews = CubeCaptureViews();
 
 	//Create framebuffer
-	GLuint captureFBO, captureRBO;
+	T_FbLoc captureFBO;
+	T_RbLoc captureRBO;
 	api->GenFramebuffers(1, &captureFBO);
 	api->GenRenderBuffers(1, &captureRBO);
 
 	api->BindFramebuffer(captureFBO);
 	api->BindRenderbuffer(captureRBO);
-	api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(resolution));
-	api->LinkRenderbufferToFbo(GL_DEPTH_ATTACHMENT, captureRBO);
+	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(resolution));
+	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, captureRBO);
 
 	//texture
 	irradiance = new TextureData(E_TextureType::CubeMap, irradianceRes, irradianceRes);
@@ -109,7 +111,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	//Framebuffer
 	api->BindFramebuffer(captureFBO);
 	api->BindRenderbuffer(captureRBO);
-	api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(irradianceRes));
+	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(irradianceRes));
 
 	//shader
 	AssetPtr<ShaderData> irradianceShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdConvIrradianceShader.glsl"_hash);
@@ -160,7 +162,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 		uint32 mipWidth = (uint32)(radianceRes * std::pow(0.5, mip));
 		uint32 mipHeight = (uint32)(radianceRes * std::pow(0.5, mip));
 		api->BindRenderbuffer(captureRBO);
-		api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(mipWidth, mipHeight));
+		api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(mipWidth, mipHeight));
 		api->SetViewport(ivec2(0), ivec2(mipWidth, mipHeight));
 
 		float roughness = (float)mip / (float)(maxMipLevels);

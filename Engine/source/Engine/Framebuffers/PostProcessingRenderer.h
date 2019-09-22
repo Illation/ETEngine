@@ -19,9 +19,9 @@ public:
 	void Initialize();
 
 	void EnableInput();
-	void Draw(GLuint FBO, const PostProcessingSettings &settings);
+	void Draw(T_FbLoc const FBO, const PostProcessingSettings &settings);
 
-	GLuint GetTargetFBO() { return m_CollectFBO; }
+	T_FbLoc GetTargetFBO() { return m_CollectFBO; }
 	TextureData* GetTargetTexture() { return m_CollectTex; }
 
 private:
@@ -35,18 +35,18 @@ private:
 	AssetPtr<ShaderData> m_pPostProcShader;
 	AssetPtr<ShaderData> m_pFXAAShader;
 
-	GLuint m_CollectFBO;
+	T_FbLoc m_CollectFBO;
 	TextureData* m_CollectTex = nullptr;
-	GLuint m_CollectRBO;
+	T_RbLoc m_CollectRBO;
 
-	GLuint m_HDRoutFBO;
+	T_FbLoc m_HDRoutFBO;
 	TextureData* m_ColorBuffers[2];
 
-	GLuint m_PingPongFBO[2];
+	T_FbLoc m_PingPongFBO[2];
 	TextureData* m_PingPongTexture[2];
 
-	GLuint m_DownSampleFBO[NUM_BLOOM_DOWNSAMPLES];
+	T_FbLoc m_DownSampleFBO[NUM_BLOOM_DOWNSAMPLES];
 	TextureData* m_DownSampleTexture[NUM_BLOOM_DOWNSAMPLES];
-	GLuint m_DownPingPongFBO[NUM_BLOOM_DOWNSAMPLES];
+	T_FbLoc m_DownPingPongFBO[NUM_BLOOM_DOWNSAMPLES];
 	TextureData* m_DownPingPongTexture[NUM_BLOOM_DOWNSAMPLES];
 };

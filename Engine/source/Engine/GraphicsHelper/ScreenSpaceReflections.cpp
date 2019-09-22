@@ -53,8 +53,8 @@ void ScreenSpaceReflections::Initialize()
 	//Render Buffer for depth and stencil
 	api->GenRenderBuffers(1, &m_CollectRBO);
 	api->BindRenderbuffer(m_CollectRBO);
-	api->SetRenderbufferStorage(GL_DEPTH24_STENCIL8, windowSettings.Dimensions);
-	api->LinkRenderbufferToFbo(GL_DEPTH_STENCIL_ATTACHMENT, m_CollectRBO);
+	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24_Stencil8, windowSettings.Dimensions);
+	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24_Stencil8, m_CollectRBO);
 }
 
 void ScreenSpaceReflections::EnableInput()

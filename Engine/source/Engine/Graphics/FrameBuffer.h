@@ -14,7 +14,7 @@ public:
 	void Enable(bool active = true);
 	void Draw();
 
-	GLuint Get() { return m_GlFrameBuffer; }
+	T_FbLoc Get() { return m_GlFrameBuffer; }
 
 	std::vector<TextureData*> GetTextures() { return m_pTextureVec; }
 
@@ -36,7 +36,8 @@ private:
 	GLenum m_Format;
 	uint32 m_NumTargets = 1;
 
-	GLuint m_GlFrameBuffer;
-	GLuint m_RboDepthStencil;
+
+	T_FbLoc m_GlFrameBuffer;
+	T_RbLoc m_RboDepthStencil;
 };
 

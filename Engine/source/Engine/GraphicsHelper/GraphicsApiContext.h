@@ -24,6 +24,9 @@ typedef uint32 T_TextureLoc;
 typedef uint32 T_BufferLoc;
 typedef uint32 T_ArrayLoc;
 
+typedef uint32 T_FbLoc;
+typedef uint32 T_RbLoc;
+
 
 //---------------------------------
 // E_TextureType
@@ -115,6 +118,25 @@ enum class E_AccessMode : uint8
 	ReadWrite
 };
 
+//---------------------------------
+// E_RenderBufferFormat
+//
+enum class E_RenderBufferFormat : uint8
+{
+	Depth24,
+	Depth24_Stencil8
+};
+
+//---------------------------------
+// E_FaceCullMode
+//
+enum class E_FaceCullMode : uint8
+{
+	Front,
+	Back,
+	FrontBack
+};
+
 
 //---------------------------------
 // GraphicsApiContext
@@ -133,33 +155,33 @@ public:
 
 	// State changes
 	//--------------
-	void SetDepthEnabled(bool enabled);
-	void SetBlendEnabled(bool enabled);
-	void SetBlendEnabled(bool enabled, uint32 index);
-	void SetBlendEnabled(const std::vector<bool> &blendBuffers);
-	void SetStencilEnabled(bool enabled);
-	void SetCullEnabled(bool enabled);
+	void SetDepthEnabled(bool const enabled);
+	void SetBlendEnabled(bool const enabled);
+	void SetBlendEnabled(bool const enabled, uint32 const index);
+	void SetBlendEnabled(std::vector<bool> const& blendBuffers);
+	void SetStencilEnabled(bool const enabled);
+	void SetCullEnabled(bool const enabled);
 
-	void SetSeamlessCubemapsEnabled(bool enabled);
+	void SetSeamlessCubemapsEnabled(bool const enabled);
 
-	void SetFaceCullingMode(GLenum cullMode);
+	void SetFaceCullingMode(E_FaceCullMode const cullMode);
 	void SetBlendEquation(GLenum equation);
 	void SetBlendFunction(GLenum sFactor, GLenum dFactor);
 
-	void SetViewport(ivec2 pos, ivec2 size);
-	void GetViewport(ivec2 &pos, ivec2 &size);
+	void SetViewport(ivec2 const pos, ivec2 const size);
+	void GetViewport(ivec2& pos, ivec2& size);
 
-	void SetClearColor(vec4 col);
+	void SetClearColor(vec4 const& col);
 
 	void SetShader(ShaderData const* pShader);
 
-	void BindFramebuffer(GLuint handle);
-	void BindReadFramebuffer(GLuint handle);
-	void BindDrawFramebuffer(GLuint handle);
+	void BindFramebuffer(T_FbLoc const handle);
+	void BindReadFramebuffer(T_FbLoc const handle);
+	void BindDrawFramebuffer(T_FbLoc const handle);
 
-	void BindRenderbuffer(GLuint handle);
+	void BindRenderbuffer(T_RbLoc const handle);
 
-	void SetActiveTexture(uint32 unit);
+	void SetActiveTexture(uint32 const unit);
 	void BindTexture(E_TextureType const target, T_TextureLoc const handle);
 
 	//Makes sure that a texture is bound to a units target for shading, 
@@ -232,22 +254,22 @@ public:
 	void DefineVertexAttribIPointer(uint32 const index, int32 const size, E_DataType const type, int32 const stride, size_t const offset) const;
 	void DefineVertexAttribDivisor(uint32 const index, uint32 const divisor) const;
 
-	void GenFramebuffers(GLsizei n, GLuint *ids) const;
-	void DeleteFramebuffers(GLsizei n, GLuint *ids) const;
+	void GenFramebuffers(int32 const n, T_FbLoc *ids) const;
+	void DeleteFramebuffers(int32 const n, T_FbLoc *ids) const;
 
-	void GenRenderBuffers(GLsizei n, GLuint *ids) const;
-	void DeleteRenderBuffers(GLsizei n, GLuint *ids) const;
+	void GenRenderBuffers(int32 const n, T_RbLoc *ids) const;
+	void DeleteRenderBuffers(int32 const n, T_RbLoc *ids) const;
 
-	void SetRenderbufferStorage(GLenum format, ivec2 const dimensions) const;
+	void SetRenderbufferStorage(E_RenderBufferFormat const format, ivec2 const dimensions) const;
 
 	void LinkTextureToFbo(uint8 const attachment, T_TextureLoc const texHandle, int32 const level) const;
 	void LinkTextureToFbo2D(uint8 const attachment, T_TextureLoc const texHandle, int32 const level) const; // link to current draw FB with a color attachment
 	void LinkCubeMapFaceToFbo2D(uint8 const face, T_TextureLoc const texHandle, int32 const level) const;
 	void LinkTextureToFboDepth(T_TextureLoc const texHandle) const;
 
-	void LinkRenderbufferToFbo(GLenum const attachment, uint32 const rboHandle) const;
+	void LinkRenderbufferToFbo(E_RenderBufferFormat const attachment, uint32 const rboHandle) const;
 
-	void SetDrawBufferCount(size_t count) const;
+	void SetDrawBufferCount(size_t const count) const;
 	void SetReadBufferEnabled(bool const val) const;
 
 	bool IsFramebufferComplete() const;
@@ -272,18 +294,19 @@ private:
 	GLenum ConvBufferType(E_BufferType const type) const;
 	GLenum ConvUsageHint(E_UsageHint const hint) const;
 	GLenum ConvAccessMode(E_AccessMode const mode) const;
+	GLenum ConvFaceCullMode(E_FaceCullMode const mode) const;
 
-	GLuint m_ReadFramebuffer = 0;
-	GLuint m_DrawFramebuffer = 0;
+	T_FbLoc m_ReadFramebuffer = 0;
+	T_FbLoc m_DrawFramebuffer = 0;
 
-	GLuint m_Renderbuffer = 0u;
+	T_RbLoc m_Renderbuffer = 0u;
 
 	int32 m_MaxDrawBuffers; //Depends on gpu and drivers
 
 	bool m_DepthTestEnabled = false;
 
 	bool m_CullFaceEnabled = false;
-	GLenum m_CullFaceMode = GL_BACK;
+	E_FaceCullMode m_CullFaceMode = E_FaceCullMode::Back;
 	
 	bool m_StencilTestEnabled = false;
 

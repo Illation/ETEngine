@@ -41,7 +41,7 @@ private:
 	struct CascadeData
 	{
 		float distance;
-		GLuint fbo;
+		T_FbLoc fbo;
 		TextureData* pTexture;
 		mat4 lightVP;
 	};

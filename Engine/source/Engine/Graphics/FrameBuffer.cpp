@@ -118,8 +118,8 @@ void FrameBuffer::GenerateFramebufferTextures()
 	{
 		api->GenRenderBuffers(1, &m_RboDepthStencil);
 		api->BindRenderbuffer(m_RboDepthStencil);
-		api->SetRenderbufferStorage(GL_DEPTH24_STENCIL8, windowSettings.Dimensions);
-		api->LinkRenderbufferToFbo(GL_DEPTH_STENCIL_ATTACHMENT, m_RboDepthStencil);
+		api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24_Stencil8, windowSettings.Dimensions);
+		api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24_Stencil8, m_RboDepthStencil);
 	}
 
 	api->SetDrawBufferCount(static_cast<size_t>(m_NumTargets));
@@ -160,8 +160,8 @@ void FrameBuffer::ResizeFramebufferTextures()
 		api->DeleteRenderBuffers( 1, &m_RboDepthStencil );
 		api->GenRenderBuffers(1, &m_RboDepthStencil);
 		api->BindRenderbuffer(m_RboDepthStencil);
-		api->SetRenderbufferStorage(GL_DEPTH24_STENCIL8, windowSettings.Dimensions);
-		api->LinkRenderbufferToFbo(GL_DEPTH_STENCIL_ATTACHMENT, m_RboDepthStencil);
+		api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24_Stencil8, windowSettings.Dimensions);
+		api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24_Stencil8, m_RboDepthStencil);
 	}
 	assert( m_pTextureVec.size() >= offset + m_NumTargets );
 	for(uint32 i = offset; i < offset + m_NumTargets; ++i)

@@ -289,7 +289,8 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 	texture->SetParameters(params);
 	pFont->m_pTexture = texture;
 
-	GLuint captureFBO, captureRBO;
+	T_FbLoc captureFBO;
+	T_RbLoc captureRBO;
 
 	api->GenFramebuffers(1, &captureFBO);
 	api->GenRenderBuffers(1, &captureRBO);
@@ -297,8 +298,8 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 	api->BindFramebuffer(captureFBO);
 	api->BindRenderbuffer(captureRBO);
 
-	api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(texWidth, texHeight));
-	api->LinkRenderbufferToFbo(GL_DEPTH_ATTACHMENT, captureRBO);
+	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(texWidth, texHeight));
+	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, captureRBO);
 	api->LinkTextureToFbo2D(0, pFont->m_pTexture->GetHandle(), 0);
 
 	api->SetViewport(ivec2(0), ivec2(texWidth, texHeight));

@@ -33,7 +33,7 @@ private:
 	TextureData* m_TexDeltaMie;
 	TextureData* m_TexDeltaScattering;
 
-	GLuint m_FBO;
+	T_FbLoc m_FBO;
 
 	AtmosphereSettings m_Settings;
 

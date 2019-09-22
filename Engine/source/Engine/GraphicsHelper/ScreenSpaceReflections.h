@@ -11,14 +11,14 @@ public:
 	void Initialize();
 
 	void EnableInput();
-	GLuint GetTargetFBO() { return m_CollectFBO; }
+	T_FbLoc GetTargetFBO() { return m_CollectFBO; }
 
 	void Draw();
 private:
 
 	AssetPtr<ShaderData> m_pShader;
 
-	GLuint m_CollectFBO;
+	T_FbLoc m_CollectFBO;
 	TextureData* m_CollectTex = nullptr;
-	GLuint m_CollectRBO;
+	T_RbLoc m_CollectRBO;
 };

@@ -241,6 +241,9 @@ GLenum GraphicsApiContext::ConvUsageHint(E_UsageHint const hint) const
 	return GL_NONE;
 }
 
+//---------------------------------
+// GraphicsApiContext::ConvAccessMode
+//
 GLenum GraphicsApiContext::ConvAccessMode(E_AccessMode const mode) const
 {
 	switch (mode)
@@ -255,9 +258,25 @@ GLenum GraphicsApiContext::ConvAccessMode(E_AccessMode const mode) const
 }
 
 //---------------------------------
+// GraphicsApiContext::ConvFaceCullMode
+//
+GLenum GraphicsApiContext::ConvFaceCullMode(E_FaceCullMode const mode) const
+{
+	switch (mode)
+	{
+	case E_FaceCullMode::Front:		return GL_FRONT;
+	case E_FaceCullMode::Back:		return GL_BACK;
+	case E_FaceCullMode::FrontBack:	return GL_FRONT_AND_BACK;
+	}
+
+	ET_ASSERT(true, "Unhandled access mode!");
+	return GL_NONE;
+}
+
+//---------------------------------
 // GraphicsApiContext::SetDepthEnabled
 //
-void GraphicsApiContext::SetDepthEnabled(bool enabled)
+void GraphicsApiContext::SetDepthEnabled(bool const enabled)
 {
 	EnOrDisAble(m_DepthTestEnabled, enabled, GL_DEPTH_TEST);
 }
@@ -267,7 +286,7 @@ void GraphicsApiContext::SetDepthEnabled(bool enabled)
 //
 // Set the buffers on which blending is enabled
 //
-void GraphicsApiContext::SetBlendEnabled(const std::vector<bool> &blendBuffers)
+void GraphicsApiContext::SetBlendEnabled(std::vector<bool> const& blendBuffers)
 {
 	for (uint32 i = 0; i < blendBuffers.size(); i++)
 	{
@@ -280,7 +299,7 @@ void GraphicsApiContext::SetBlendEnabled(const std::vector<bool> &blendBuffers)
 //
 // Set whether blending is enabled on a specific buffer
 //
-void GraphicsApiContext::SetBlendEnabled(bool enabled, uint32 index)
+void GraphicsApiContext::SetBlendEnabled(bool const enabled, uint32 const index)
 {
 	ET_ASSERT(static_cast<int32>(index) < m_MaxDrawBuffers);
 
@@ -298,7 +317,7 @@ void GraphicsApiContext::SetBlendEnabled(bool enabled, uint32 index)
 //
 // Set whether blending pixels is enabled in the render pipeline
 //
-void GraphicsApiContext::SetBlendEnabled(bool enabled)
+void GraphicsApiContext::SetBlendEnabled(bool const enabled)
 {
 	// if we previously blended per buffer index, reset those
 	if (m_IndividualBlend)
@@ -318,7 +337,7 @@ void GraphicsApiContext::SetBlendEnabled(bool enabled)
 //---------------------------------
 // GraphicsApiContext::SetStencilEnabled
 //
-void GraphicsApiContext::SetStencilEnabled(bool enabled)
+void GraphicsApiContext::SetStencilEnabled(bool const enabled)
 {
 	EnOrDisAble(m_StencilTestEnabled, enabled, GL_STENCIL_TEST);
 }
@@ -326,7 +345,7 @@ void GraphicsApiContext::SetStencilEnabled(bool enabled)
 //---------------------------------
 // GraphicsApiContext::SetCullEnabled
 //
-void GraphicsApiContext::SetCullEnabled(bool enabled)
+void GraphicsApiContext::SetCullEnabled(bool const enabled)
 {
 	EnOrDisAble(m_CullFaceEnabled, enabled, GL_CULL_FACE);
 }
@@ -334,7 +353,7 @@ void GraphicsApiContext::SetCullEnabled(bool enabled)
 //---------------------------------
 // GraphicsApiContext::SetSeamlessCubemapsEnabled
 //
-void GraphicsApiContext::SetSeamlessCubemapsEnabled(bool enabled)
+void GraphicsApiContext::SetSeamlessCubemapsEnabled(bool const enabled)
 {
 	EnOrDisAble(m_SeamlessCubemapsEnabled, enabled, GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
@@ -344,12 +363,12 @@ void GraphicsApiContext::SetSeamlessCubemapsEnabled(bool enabled)
 //
 // Set the culling mode (front back neither...)
 //
-void GraphicsApiContext::SetFaceCullingMode(GLenum cullMode)
+void GraphicsApiContext::SetFaceCullingMode(E_FaceCullMode const cullMode)
 {
 	if (!(m_CullFaceMode == cullMode))
 	{
 		m_CullFaceMode = cullMode;
-		glCullFace(m_CullFaceMode);
+		glCullFace(ConvFaceCullMode(m_CullFaceMode));
 	}
 }
 
@@ -388,7 +407,7 @@ void GraphicsApiContext::SetBlendFunction(GLenum sFactor, GLenum dFactor)
 //
 // Set the dimensions of the current opengl viewport (not the engine viewport)
 //
-void GraphicsApiContext::SetViewport(ivec2 pos, ivec2 size)
+void GraphicsApiContext::SetViewport(ivec2 const pos, ivec2 const size)
 {
 	if (!(etm::nearEqualsV(m_ViewportPosition, pos) && etm::nearEqualsV(m_ViewportSize, size)))
 	{
@@ -403,7 +422,7 @@ void GraphicsApiContext::SetViewport(ivec2 pos, ivec2 size)
 //
 // Get the dimensions of the current opengl viewport (not the engine viewport)
 //
-void GraphicsApiContext::GetViewport(ivec2 &pos, ivec2 &size)
+void GraphicsApiContext::GetViewport(ivec2& pos, ivec2& size)
 {
 	pos = m_ViewportPosition;
 	size = m_ViewportSize;
@@ -414,7 +433,7 @@ void GraphicsApiContext::GetViewport(ivec2 &pos, ivec2 &size)
 //
 // Set the colour that gets drawn when we clear the viewport
 //
-void GraphicsApiContext::SetClearColor(vec4 col)
+void GraphicsApiContext::SetClearColor(vec4 const& col)
 {
 	if (!(etm::nearEqualsV(m_ClearColor, col)))
 	{
@@ -443,7 +462,7 @@ void GraphicsApiContext::SetShader(ShaderData const* pShader)
 //
 // Set the framebuffer we will draw to and read from
 //
-void GraphicsApiContext::BindFramebuffer(GLuint handle)
+void GraphicsApiContext::BindFramebuffer(T_FbLoc const handle)
 {
 	if (!(m_ReadFramebuffer == handle && m_DrawFramebuffer == handle))
 	{
@@ -458,7 +477,7 @@ void GraphicsApiContext::BindFramebuffer(GLuint handle)
 //
 // Set the framebuffer we will read from
 //
-void GraphicsApiContext::BindReadFramebuffer(GLuint handle)
+void GraphicsApiContext::BindReadFramebuffer(T_FbLoc const handle)
 {
 	if (!(m_ReadFramebuffer == handle))
 	{
@@ -472,7 +491,7 @@ void GraphicsApiContext::BindReadFramebuffer(GLuint handle)
 //
 // Set the framebuffer we will draw to
 //
-void GraphicsApiContext::BindDrawFramebuffer(GLuint handle)
+void GraphicsApiContext::BindDrawFramebuffer(T_FbLoc const handle)
 {
 	if (!(m_DrawFramebuffer == handle))
 	{
@@ -486,7 +505,7 @@ void GraphicsApiContext::BindDrawFramebuffer(GLuint handle)
 //
 // Set the active renderbuffer
 //
-void GraphicsApiContext::BindRenderbuffer(GLuint handle)
+void GraphicsApiContext::BindRenderbuffer(T_RbLoc const handle)
 {
 	if (handle != m_Renderbuffer)
 	{
@@ -500,7 +519,7 @@ void GraphicsApiContext::BindRenderbuffer(GLuint handle)
 //
 // Set the currently active texture unit
 //
-void GraphicsApiContext::SetActiveTexture(uint32 unit)
+void GraphicsApiContext::SetActiveTexture(uint32 const unit)
 {
 	if (!(m_ActiveTexture == unit))
 	{
@@ -1424,7 +1443,7 @@ void GraphicsApiContext::UploadUniform(const Uniform<uint32> &uniform)
 //
 // Create a number of framebuffer objects
 //
-void GraphicsApiContext::GenFramebuffers(GLsizei n, GLuint *ids) const
+void GraphicsApiContext::GenFramebuffers(int32 const n, T_FbLoc *ids) const
 {
 	glGenFramebuffers(n, ids);
 }
@@ -1434,7 +1453,7 @@ void GraphicsApiContext::GenFramebuffers(GLsizei n, GLuint *ids) const
 //
 // Frees the framebuffer GPU resources
 //
-void GraphicsApiContext::DeleteFramebuffers(GLsizei n, GLuint *ids) const
+void GraphicsApiContext::DeleteFramebuffers(int32 const n, T_FbLoc *ids) const
 {
 	glDeleteFramebuffers(n, ids);
 }
@@ -1444,7 +1463,7 @@ void GraphicsApiContext::DeleteFramebuffers(GLsizei n, GLuint *ids) const
 //
 // Create a number of renderbuffer objects
 //
-void GraphicsApiContext::GenRenderBuffers(GLsizei n, GLuint *ids) const
+void GraphicsApiContext::GenRenderBuffers(int32 const n, T_RbLoc *ids) const
 {
 	glGenRenderbuffers(n, ids);
 }
@@ -1454,7 +1473,7 @@ void GraphicsApiContext::GenRenderBuffers(GLsizei n, GLuint *ids) const
 //
 // Frees the renderbuffer GPU resources
 //
-void GraphicsApiContext::DeleteRenderBuffers(GLsizei n, GLuint *ids) const
+void GraphicsApiContext::DeleteRenderBuffers(int32 const n, T_RbLoc *ids) const
 {
 	glDeleteRenderbuffers(n, ids);
 }
@@ -1464,9 +1483,23 @@ void GraphicsApiContext::DeleteRenderBuffers(GLsizei n, GLuint *ids) const
 //
 // Establish a renderbuffers dataformat and storage
 //
-void GraphicsApiContext::SetRenderbufferStorage(GLenum format, ivec2 const dimensions) const
+void GraphicsApiContext::SetRenderbufferStorage(E_RenderBufferFormat const format, ivec2 const dimensions) const
 {
-	glRenderbufferStorage(GL_RENDERBUFFER, format, dimensions.x, dimensions.y);
+	GLenum glFmt = GL_NONE;
+	switch (format)
+	{
+	case E_RenderBufferFormat::Depth24:
+		glFmt = GL_DEPTH_COMPONENT24;
+		break;
+
+	case E_RenderBufferFormat::Depth24_Stencil8:
+		glFmt = GL_DEPTH24_STENCIL8;
+		break;
+	}
+
+	ET_ASSERT(glFmt != GL_NONE, "Unhandled render buffer format!");
+
+	glRenderbufferStorage(GL_RENDERBUFFER, glFmt, dimensions.x, dimensions.y);
 }
 
 //---------------------------------
@@ -1512,9 +1545,23 @@ void GraphicsApiContext::LinkTextureToFboDepth(T_TextureLoc const texHandle) con
 //---------------------------------
 // GraphicsApiContext::LinkRenderbufferToFbo
 //
-void GraphicsApiContext::LinkRenderbufferToFbo(GLenum const attachment, uint32 const rboHandle) const
+void GraphicsApiContext::LinkRenderbufferToFbo(E_RenderBufferFormat const attachment, uint32 const rboHandle) const
 {
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, rboHandle);
+	GLenum glFmt = GL_NONE;
+	switch (attachment)
+	{
+	case E_RenderBufferFormat::Depth24:
+		glFmt = GL_DEPTH_ATTACHMENT;
+		break;
+
+	case E_RenderBufferFormat::Depth24_Stencil8:
+		glFmt = GL_DEPTH_STENCIL_ATTACHMENT;
+		break;
+	}
+
+	ET_ASSERT(glFmt != GL_NONE, "Unhandled render buffer format!");
+
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, glFmt, GL_RENDERBUFFER, rboHandle);
 }
 
 //---------------------------------
@@ -1522,7 +1569,7 @@ void GraphicsApiContext::LinkRenderbufferToFbo(GLenum const attachment, uint32 c
 //
 // Setup the amount of color attachments on the current framebuffer
 //
-void GraphicsApiContext::SetDrawBufferCount(size_t count) const
+void GraphicsApiContext::SetDrawBufferCount(size_t const count) const
 {
 	// we may also disable drawing color
 	if (count == 0)

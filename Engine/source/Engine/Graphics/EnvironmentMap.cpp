@@ -144,14 +144,15 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Create framebuffer
-	uint32 captureFBO, captureRBO;
+	T_FbLoc captureFBO;
+	T_RbLoc captureRBO;
 	api->GenFramebuffers(1, &captureFBO);
 	api->GenRenderBuffers(1, &captureRBO);
 
 	api->BindFramebuffer(captureFBO);
 	api->BindRenderbuffer(captureRBO);
-	api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(resolution));
-	api->LinkRenderbufferToFbo(GL_DEPTH_ATTACHMENT, captureRBO);
+	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(resolution));
+	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, captureRBO);
 
 	//Preallocate memory for cubemap
 	TextureData* const envCubeMap = new TextureData(E_TextureType::CubeMap, resolution, resolution);

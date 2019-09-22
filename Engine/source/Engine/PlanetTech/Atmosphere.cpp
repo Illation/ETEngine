@@ -116,13 +116,13 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	//}
 
 	api->SetCullEnabled(true);
-	api->SetFaceCullingMode(GL_FRONT);
+	api->SetFaceCullingMode(E_FaceCullMode::Front);
 	api->SetDepthEnabled(false);
 	api->SetBlendEnabled(true);
 	api->SetBlendEquation(GL_FUNC_ADD);
 	api->SetBlendFunction(GL_ONE, GL_ONE);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::IcoSphere<3> >();
-	api->SetFaceCullingMode(GL_BACK);
+	api->SetFaceCullingMode(E_FaceCullMode::Back);
 	api->SetBlendEnabled(false);
 	api->SetDepthEnabled(true);
 	api->SetCullEnabled(false);
