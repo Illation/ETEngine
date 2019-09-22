@@ -89,7 +89,7 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
-		api->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+		api->LazyBindTexture(i, gbufferTex[i]->GetTargetType(), gbufferTex[i]->GetHandle());
 	}
 
 	//for position reconstruction
@@ -117,7 +117,7 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
-		api->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+		api->LazyBindTexture(i, gbufferTex[i]->GetTargetType(), gbufferTex[i]->GetHandle());
 	}
 
 	//for position reconstruction
@@ -141,7 +141,7 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *
 
 		//Shadow map
 		m_pShaderShadowed->Upload(GetHash(ligStr + std::to_string(i) + "].ShadowMap"), static_cast<int32>(3 + i));
-		api->LazyBindTexture(3 + i, GL_TEXTURE_2D, pShadow->m_Cascades[i].pTexture->GetHandle());
+		api->LazyBindTexture(3 + i, pShadow->m_Cascades[i].pTexture->GetTargetType(), pShadow->m_Cascades[i].pTexture->GetHandle());
 
 		//cascade distance
 		m_pShaderShadowed->Upload(GetHash(ligStr + std::to_string(i) + "].Distance"), pShadow->m_Cascades[i].distance);

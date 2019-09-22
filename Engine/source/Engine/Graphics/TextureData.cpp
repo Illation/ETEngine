@@ -56,29 +56,6 @@ TextureData::~TextureData()
 }
 
 //---------------------------------
-// TextureData::GetTarget
-//
-// returns a textures target type
-//
-uint32 TextureData::GetTarget() const
-{
-	switch (m_TargetType)
-	{
-	case E_TextureType::Texture2D:
-		return GL_TEXTURE_2D;
-
-	case E_TextureType::Texture3D:
-		return GL_TEXTURE_3D;
-
-	case E_TextureType::CubeMap:
-		return GL_TEXTURE_CUBE_MAP;
-	}
-
-	ET_ASSERT(true, "Unhandled texture type!");
-	return GL_NONE;
-}
-
-//---------------------------------
 // TextureData::Build
 //
 // send the data to the GPU location. Can be initialized without any image data

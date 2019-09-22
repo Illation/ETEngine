@@ -52,10 +52,10 @@ void PbrPrefilter::Precompute(int32 resolution)
 
 	api->BindRenderbuffer(captureRBO);
 	api->SetRenderbufferStorage(GL_DEPTH_COMPONENT24, ivec2(resolution));
-	api->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_LUT->GetHandle(), 0);
+	api->LinkTextureToFbo2D(0, m_LUT->GetHandle(), 0);
 
 	api->SetViewport(ivec2(0), ivec2(resolution));
-	api->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
 	//Reset render settings and return generated texture
@@ -116,7 +116,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 
 	api->SetShader(irradianceShader.get());
 	irradianceShader->Upload("environmentMap"_hash, 0);
-	api->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, source->GetHandle());
+	api->LazyBindTexture(0, E_TextureType::CubeMap, source->GetHandle());
 	irradianceShader->Upload("projection"_hash, captureProjection);
 
 	//render irradiance cubemap
@@ -124,11 +124,11 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 
 	api->SetViewport(ivec2(0), ivec2(irradianceRes));
 	api->BindFramebuffer(captureFBO);
-	for (uint32 i = 0; i < 6; ++i)
+	for (uint8 face = 0; face < 6; ++face)
 	{
-		irradianceShader->Upload("view"_hash, captureViews[i]);
-		api->LinkTextureToFbo2D(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradiance->GetHandle(), 0);
-		api->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		irradianceShader->Upload("view"_hash, captureViews[face]);
+		api->LinkCubeMapFaceToFbo2D(face, irradiance->GetHandle(), 0);
+		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
 	}
@@ -147,7 +147,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	api->SetShader(radianceShader.get());
 	radianceShader->Upload("environmentMap"_hash, 0);
 	radianceShader->Upload("resolution"_hash, static_cast<float>(radianceRes));
-	api->LazyBindTexture(0, GL_TEXTURE_CUBE_MAP, source->GetHandle());
+	api->LazyBindTexture(0, E_TextureType::CubeMap, source->GetHandle());
 	radianceShader->Upload("projection"_hash, captureProjection);
 
 	//render radiance
@@ -165,19 +165,19 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 
 		float roughness = (float)mip / (float)(maxMipLevels);
 		radianceShader->Upload("roughness"_hash, roughness);
-		for (uint32 i = 0; i < 6; ++i)
+		for (uint8 faceIdx = 0; faceIdx < 6; ++faceIdx)
 		{
-			radianceShader->Upload("view"_hash, captureViews[i]);
-			api->LinkTextureToFbo2D(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, radiance->GetHandle(), mip);
+			radianceShader->Upload("view"_hash, captureViews[faceIdx]);
+			api->LinkCubeMapFaceToFbo2D(faceIdx, radiance->GetHandle(), mip);
 
-			api->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
 		}
 	}
 
 	//Reset render settings and return generated texture
 	//*************************************************
-	api->BindTexture(GL_TEXTURE_2D, 0);
+	api->BindTexture(E_TextureType::Texture2D, 0);
 	api->BindFramebuffer(0);
 	api->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 

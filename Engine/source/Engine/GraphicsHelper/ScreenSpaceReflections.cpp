@@ -49,7 +49,7 @@ void ScreenSpaceReflections::Initialize()
 	m_CollectTex = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
 	m_CollectTex->Build();
 	m_CollectTex->SetParameters(params);
-	api->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_CollectTex->GetHandle(), 0);
+	api->LinkTextureToFbo2D(0, m_CollectTex->GetHandle(), 0);
 	//Render Buffer for depth and stencil
 	api->GenRenderBuffers(1, &m_CollectRBO);
 	api->BindRenderbuffer(m_CollectRBO);
@@ -74,10 +74,10 @@ void ScreenSpaceReflections::Draw()
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
-		api->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());
 	}
 	m_pShader->Upload("uFinalImage"_hash, 3);
-	api->LazyBindTexture(3, GL_TEXTURE_2D, m_CollectTex->GetHandle());
+	api->LazyBindTexture(3, E_TextureType::Texture2D, m_CollectTex->GetHandle());
 	//for position reconstruction
 	m_pShader->Upload("K"_hash, sinf(TIME->GetTime()) * 20 + 25);
 	m_pShader->Upload("projectionA"_hash, CAMERA->GetDepthProjA());

@@ -90,7 +90,7 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 		//Set Framebuffer
 		api->BindFramebuffer(pShadowData->m_Cascades[i].fbo);
 		//Clear Framebuffer
-		api->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
 		//Draw scene with light matrix and null material
 		RenderPipeline::GetInstance()->DrawShadow();
@@ -116,7 +116,7 @@ DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 		data.pTexture = new TextureData( Resolution.x, Resolution.y, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT );
 		data.pTexture->Build();
 		api->BindFramebuffer(data.fbo);
-		api->LinkTextureToFboDepth(GL_TEXTURE_2D, data.pTexture->GetHandle());
+		api->LinkTextureToFboDepth(data.pTexture->GetHandle());
 		//only depth components
 		api->SetDrawBufferCount(0);
 		api->SetReadBufferEnabled(false);

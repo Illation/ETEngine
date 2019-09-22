@@ -18,8 +18,8 @@ DebugRenderer::~DebugRenderer()
 {
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	api->DeleteVertexArrays(1, &m_VAO);
-	api->DeleteBuffers(1, &m_VBO);
+	api->DeleteVertexArray(m_VAO);
+	api->DeleteBuffer(m_VBO);
 	m_Lines.clear();
 	m_MetaData.clear();
 }
@@ -33,15 +33,15 @@ void DebugRenderer::Initialize()
 	api->SetShader(m_pShader.get());
 
 	//Generate buffers and arrays
-	api->GenerateVertexArrays(1, &m_VAO);
-	api->GenerateBuffers(1, &m_VBO);
+	m_VAO = api->CreateVertexArray();
+	m_VBO = api->CreateBuffer();
 
 	//bind
 	api->BindVertexArray(m_VAO);
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
 
 	//set data and attributes
-	api->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
+	api->SetBufferData(E_BufferType::Vertex, m_BufferSize, nullptr, E_UsageHint::Dynamic);
 
 	//input layout
 	api->SetVertexAttributeArrayEnabled(0, true);
@@ -51,7 +51,7 @@ void DebugRenderer::Initialize()
 	api->DefineVertexAttributePointer(1, 4, E_DataType::Float, false, sizeof(LineVertex), offsetof(LineVertex, col));
 
 	//unbind
-	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(E_BufferType::Vertex, 0);
 	api->BindVertexArray(0);
 }
 
@@ -63,7 +63,7 @@ void DebugRenderer::UpdateBuffer()
 	api->BindVertexArray(m_VAO);
 
 	//Send the vertex buffer again
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
 
 	bool bufferResize = m_Lines.size() * sizeof(LineVertex) > m_BufferSize;
 	if (!m_VBO || bufferResize) //first creation or resize
@@ -73,17 +73,17 @@ void DebugRenderer::UpdateBuffer()
 			m_BufferSize = (uint32)m_Lines.size() * sizeof(LineVertex);
 		}
 
-		api->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, m_Lines.data(), GL_DYNAMIC_DRAW);
+		api->SetBufferData(E_BufferType::Vertex, m_BufferSize, m_Lines.data(), E_UsageHint::Dynamic);
 	}
 	else
 	{
-		GLvoid* p = api->MapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+		void* p = api->MapBuffer(E_BufferType::Vertex, E_AccessMode::Write);
 		memcpy(p, m_Lines.data(), sizeof(LineVertex)*m_Lines.size());
-		api->UnmapBuffer(GL_ARRAY_BUFFER);
+		api->UnmapBuffer(E_BufferType::Vertex);
 	}
 
 
-	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(E_BufferType::Vertex, 0);
 }
 
 void DebugRenderer::Draw()
@@ -107,7 +107,7 @@ void DebugRenderer::Draw()
 	for (const auto& meta : m_MetaData)
 	{
 		api->SetLineWidth(meta.thickness);
-		api->DrawArrays(GL_LINES, meta.start, meta.size);
+		api->DrawArrays(E_DrawMode::Lines, meta.start, meta.size);
 	}
 
 	api->BindVertexArray(0);

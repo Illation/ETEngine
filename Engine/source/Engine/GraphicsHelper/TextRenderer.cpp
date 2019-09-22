@@ -42,8 +42,8 @@ TextRenderer::~TextRenderer()
 {
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	api->DeleteVertexArrays(1, &m_VAO);
-	api->DeleteBuffers(1, &m_VBO);
+	api->DeleteVertexArray(m_VAO);
+	api->DeleteBuffer(m_VBO);
 }
 
 //---------------------------------
@@ -62,16 +62,16 @@ void TextRenderer::Initialize()
 	m_pTextShader->Upload("fontTex"_hash, 0);
 
 	//Generate buffers and arrays
-	api->GenerateVertexArrays(1, &m_VAO);
-	api->GenerateBuffers(1, &m_VBO);
+	m_VAO = api->CreateVertexArray();
+	m_VBO = api->CreateBuffer();
 
 
 	//bind
 	api->BindVertexArray(m_VAO);
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
 
 	//set data and attributes
-	api->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
+	api->SetBufferData(E_BufferType::Vertex, m_BufferSize, nullptr, E_UsageHint::Dynamic);
 
 	//input layout
 
@@ -91,7 +91,7 @@ void TextRenderer::Initialize()
 	api->DefineVertexAttribIPointer(5, 1, E_DataType::UInt, vertSize, offsetof(TextVertex, ChannelId));
 
 	//unbind
-	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(E_BufferType::Vertex, 0);
 	api->BindVertexArray(0);
 
 	CalculateTransform();
@@ -236,13 +236,13 @@ void TextRenderer::Draw()
 	{
 		if (queued.m_IsAddedToRenderer)
 		{
-			api->BindTexture(GL_TEXTURE_2D, queued.m_Font->GetAtlas()->GetHandle());
+			api->BindTexture(E_TextureType::Texture2D, queued.m_Font->GetAtlas()->GetHandle());
 
 			vec2 const texSize = etm::vecCast<float>(queued.m_Font->GetAtlas()->GetResolution());
 			m_pTextShader->Upload("texSize"_hash, texSize);
 
 			//Draw the object
-			api->DrawArrays(GL_POINTS, queued.m_BufferStart, queued.m_BufferSize);
+			api->DrawArrays(E_DrawMode::Points, queued.m_BufferStart, queued.m_BufferSize);
 
 			queued.m_IsAddedToRenderer = false;
 		}
@@ -331,9 +331,9 @@ void TextRenderer::UpdateBuffer()
 	api->BindVertexArray(m_VAO);
 
 	//Send the vertex buffer again
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	api->SetBufferData(GL_ARRAY_BUFFER, static_cast<uint32>(tVerts.size() * sizeof(TextVertex)), tVerts.data(), GL_DYNAMIC_DRAW);
-	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
+	api->SetBufferData(E_BufferType::Vertex, static_cast<uint32>(tVerts.size() * sizeof(TextVertex)), tVerts.data(), E_UsageHint::Dynamic);
+	api->BindBuffer(E_BufferType::Vertex, 0);
 
 	//Done Modifying
 	api->BindVertexArray(0);

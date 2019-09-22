@@ -96,7 +96,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	m_CollectTex = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT );
 	m_CollectTex->Build();
 	m_CollectTex->SetParameters(params);
-	api->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_CollectTex->GetHandle(), 0);
+	api->LinkTextureToFbo2D(0, m_CollectTex->GetHandle(), 0);
 	//Render Buffer for depth and stencil
 	api->GenRenderBuffers(1, &m_CollectRBO);
 	api->BindRenderbuffer(m_CollectRBO);
@@ -112,7 +112,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 		m_ColorBuffers[i]->Build();
 		m_ColorBuffers[i]->SetParameters(params, true);
 		// attach texture to framebuffer
-		api->LinkTextureToFbo2D(i, GL_TEXTURE_2D, m_ColorBuffers[i]->GetHandle(), 0);
+		api->LinkTextureToFbo2D(i, m_ColorBuffers[i]->GetHandle(), 0);
 	}
 	//mrt
 	api->SetDrawBufferCount(2);
@@ -129,13 +129,13 @@ void PostProcessingRenderer::GenerateFramebuffers()
 		m_DownSampleTexture[i] = new TextureData(res.x, res.y, GL_RGB16F, GL_RGB, GL_FLOAT );
 		m_DownSampleTexture[i]->Build();
 		m_DownSampleTexture[i]->SetParameters(params, true);
-		api->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_DownSampleTexture[i]->GetHandle(), 0);
+		api->LinkTextureToFbo2D(0, m_DownSampleTexture[i]->GetHandle(), 0);
 
 		api->BindFramebuffer( m_DownPingPongFBO[i] );
 		m_DownPingPongTexture[i] = new TextureData(res.x, res.y, GL_RGB16F, GL_RGB, GL_FLOAT );
 		m_DownPingPongTexture[i]->Build();
 		m_DownPingPongTexture[i]->SetParameters(params, true);
-		api->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_DownPingPongTexture[i]->GetHandle(), 0);
+		api->LinkTextureToFbo2D(0, m_DownPingPongTexture[i]->GetHandle(), 0);
 	}
 
 	//Generate framebuffers and textures for gaussian ping pong
@@ -146,7 +146,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 		m_PingPongTexture[i] = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
 		m_PingPongTexture[i]->Build();
 		m_PingPongTexture[i]->SetParameters(params, true);
-		api->LinkTextureToFbo2D(0, GL_TEXTURE_2D, m_PingPongTexture[i]->GetHandle(), 0);
+		api->LinkTextureToFbo2D(0, m_PingPongTexture[i]->GetHandle(), 0);
 	}
 
 	if (!(api->IsFramebufferComplete()))
@@ -170,7 +170,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	//get glow
 	api->BindFramebuffer(m_HDRoutFBO);
 	api->SetShader(m_pDownsampleShader.get());
-	api->LazyBindTexture(0, GL_TEXTURE_2D, m_CollectTex->GetHandle());
+	api->LazyBindTexture(0, E_TextureType::Texture2D, m_CollectTex->GetHandle());
 	m_pDownsampleShader->Upload("threshold"_hash, settings.bloomThreshold);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 	//downsample glow
@@ -182,7 +182,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 		api->BindFramebuffer(m_DownSampleFBO[i]);
 		if (i > 0)
 		{
-			api->LazyBindTexture(0, GL_TEXTURE_2D, m_DownSampleTexture[i - 1]->GetHandle());
+			api->LazyBindTexture(0, E_TextureType::Texture2D, m_DownSampleTexture[i - 1]->GetHandle());
 		}
 		m_pDownsampleShader->Upload("threshold"_hash, settings.bloomThreshold);
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
@@ -197,7 +197,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 			//output is the current framebuffer, or on the last item the framebuffer of the downsample texture
 			api->BindFramebuffer(horizontal ? m_DownPingPongFBO[i] : m_DownSampleFBO[i]);
 			//input is previous framebuffers texture, or on first item the result of downsampling
-			api->LazyBindTexture(0, GL_TEXTURE_2D, (horizontal ? m_DownSampleTexture[i] : m_DownPingPongTexture[i])->GetHandle());
+			api->LazyBindTexture(0, E_TextureType::Texture2D, (horizontal ? m_DownSampleTexture[i] : m_DownPingPongTexture[i])->GetHandle());
 			m_pGaussianShader->Upload("horizontal"_hash, horizontal);
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		}
@@ -210,7 +210,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 	{
 		api->BindFramebuffer(m_PingPongFBO[horizontal]);
 		m_pGaussianShader->Upload("horizontal"_hash, horizontal);
-		api->LazyBindTexture(0, GL_TEXTURE_2D, ((i == 0) ? m_ColorBuffers[1] : m_PingPongTexture[!horizontal])->GetHandle());
+		api->LazyBindTexture(0, E_TextureType::Texture2D, ((i == 0) ? m_ColorBuffers[1] : m_PingPongTexture[!horizontal])->GetHandle());
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 		horizontal = !horizontal;
 	}
@@ -225,11 +225,11 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 		api->BindFramebuffer(FBO);
 	}
 	api->SetShader(m_pPostProcShader.get());
-	api->LazyBindTexture(0, GL_TEXTURE_2D, m_CollectTex->GetHandle());
-	api->LazyBindTexture(1, GL_TEXTURE_2D, m_PingPongTexture[0]->GetHandle());
+	api->LazyBindTexture(0, E_TextureType::Texture2D, m_CollectTex->GetHandle());
+	api->LazyBindTexture(1, E_TextureType::Texture2D, m_PingPongTexture[0]->GetHandle());
 	for (int32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
-		api->LazyBindTexture(2+i, GL_TEXTURE_2D, m_DownSampleTexture[i]->GetHandle());
+		api->LazyBindTexture(2+i, E_TextureType::Texture2D, m_DownSampleTexture[i]->GetHandle());
 	}
 	m_pPostProcShader->Upload("exposure"_hash, settings.exposure);
 	m_pPostProcShader->Upload("gamma"_hash, settings.gamma);
@@ -243,7 +243,7 @@ void PostProcessingRenderer::Draw(GLuint FBO, const PostProcessingSettings &sett
 		api->BindFramebuffer(FBO);
 		api->SetShader(m_pFXAAShader.get());
 		m_pFXAAShader->Upload("uInverseScreen"_hash, 1.f / etm::vecCast<float>(windowSettings.Dimensions));
-		api->LazyBindTexture(0, GL_TEXTURE_2D, m_PingPongTexture[1]->GetHandle());
+		api->LazyBindTexture(0, E_TextureType::Texture2D, m_PingPongTexture[1]->GetHandle());
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 	}
 }
@@ -259,13 +259,13 @@ void PostProcessingRenderer::ResizeFBTextures()
 	{
 		//completely regenerate everything
 		DeleteFramebuffers();
-		api->LazyBindTexture( 0, GL_TEXTURE_2D, 0 );
-		api->LazyBindTexture( 1, GL_TEXTURE_2D, 0 );
-		api->LazyBindTexture( 2, GL_TEXTURE_2D, 0 );
-		api->LazyBindTexture( 3, GL_TEXTURE_2D, 0 );
-		api->LazyBindTexture( 4, GL_TEXTURE_2D, 0 );
-		api->LazyBindTexture( 5, GL_TEXTURE_2D, 0 );
-		api->LazyBindTexture( 6, GL_TEXTURE_2D, 0 );
+		api->LazyBindTexture( 0, E_TextureType::Texture2D, 0 );
+		api->LazyBindTexture( 1, E_TextureType::Texture2D, 0 );
+		api->LazyBindTexture( 2, E_TextureType::Texture2D, 0 );
+		api->LazyBindTexture( 3, E_TextureType::Texture2D, 0 );
+		api->LazyBindTexture( 4, E_TextureType::Texture2D, 0 );
+		api->LazyBindTexture( 5, E_TextureType::Texture2D, 0 );
+		api->LazyBindTexture( 6, E_TextureType::Texture2D, 0 );
 
 		//Access shader variables
 		api->SetShader(m_pDownsampleShader.get());

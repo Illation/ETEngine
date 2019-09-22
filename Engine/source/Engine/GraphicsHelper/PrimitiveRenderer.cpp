@@ -57,15 +57,15 @@ primitives::Quad::~Quad()
 {
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	api->DeleteBuffers(1, &m_VBO);
-	api->DeleteVertexArrays(1, &m_VAO);
+	api->DeleteBuffer(m_VBO);
+	api->DeleteVertexArray(m_VAO);
 }
 void primitives::Quad::Draw()
 {
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->BindVertexArray(m_VAO);
-	api->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	api->DrawArrays(E_DrawMode::TriangleStrip, 0, 4);
 	api->BindVertexArray(0);
 }
 void primitives::Quad::Initialize()
@@ -81,11 +81,11 @@ void primitives::Quad::Initialize()
 		 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
 	};
 	// Setup plane VAO
-	api->GenerateVertexArrays(1, &m_VAO);
-	api->GenerateBuffers(1, &m_VBO);
+	m_VAO = api->CreateVertexArray();
+	m_VBO = api->CreateBuffer();
 	api->BindVertexArray(m_VAO);
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	api->SetBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
+	api->SetBufferData(E_BufferType::Vertex, sizeof(quadVertices), &quadVertices, E_UsageHint::Static);
 	api->SetVertexAttributeArrayEnabled(0, true);
 	api->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, 5 * sizeof(float), 0);
 	api->SetVertexAttributeArrayEnabled(1, true);
@@ -97,15 +97,15 @@ primitives::Cube::~Cube()
 {
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	api->DeleteBuffers(1, &m_VBO);
-	api->DeleteVertexArrays(1, &m_VAO);
+	api->DeleteBuffer(m_VBO);
+	api->DeleteVertexArray(m_VAO);
 }
 void primitives::Cube::Draw()
 {
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->BindVertexArray(m_VAO);
-	api->DrawArrays(GL_TRIANGLES, 0, 36);
+	api->DrawArrays(E_DrawMode::Triangles, 0, 36);
 	api->BindVertexArray(0);
 }
 void primitives::Cube::Initialize()
@@ -158,11 +158,11 @@ void primitives::Cube::Initialize()
 
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	api->GenerateVertexArrays(1, &m_VAO);
-	api->GenerateBuffers(1, &m_VBO);
+	m_VAO = api->CreateVertexArray();
+	m_VBO = api->CreateBuffer();
 	// Fill buffer
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	api->SetBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
+	api->SetBufferData(E_BufferType::Vertex, sizeof(vertices), vertices, E_UsageHint::Static);
 	// Link vertex attributes
 	api->BindVertexArray(m_VAO);
 	api->SetVertexAttributeArrayEnabled(0, true);
@@ -171,7 +171,7 @@ void primitives::Cube::Initialize()
 	api->DefineVertexAttributePointer(1, 3, E_DataType::Float, false, 8 * sizeof(float), (3 * sizeof(float)));
 	api->SetVertexAttributeArrayEnabled(2, true);
 	api->DefineVertexAttributePointer(2, 2, E_DataType::Float, false, 8 * sizeof(float), (6 * sizeof(float)));
-	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(E_BufferType::Vertex, 0);
 	api->BindVertexArray(0);
 }
 
@@ -181,8 +181,8 @@ primitives::IcoSphere<level>::~IcoSphere()
 {
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	api->DeleteBuffers(1, &m_VBO);
-	api->DeleteVertexArrays(1, &m_VAO);
+	api->DeleteBuffer(m_VBO);
+	api->DeleteVertexArray(m_VAO);
 }
 template<int32 level>
 void primitives::IcoSphere<level>::Draw()
@@ -190,7 +190,7 @@ void primitives::IcoSphere<level>::Draw()
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->BindVertexArray(m_VAO);
-	api->DrawArrays(GL_TRIANGLES, 0, m_NumVerts);
+	api->DrawArrays(E_DrawMode::Triangles, 0, m_NumVerts);
 	api->BindVertexArray(0);
 }
 template<int32 level>
@@ -211,16 +211,16 @@ void primitives::IcoSphere<level>::Initialize()
 
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	api->GenerateVertexArrays(1, &m_VAO);
-	api->GenerateBuffers(1, &m_VBO);
+	m_VAO = api->CreateVertexArray();
+	m_VBO = api->CreateBuffer();
 	// Fill buffer
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	api->SetBufferData(GL_ARRAY_BUFFER, sizeof(vec3)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
+	api->SetBufferData(E_BufferType::Vertex, sizeof(vec3)*vertices.size(), vertices.data(), E_UsageHint::Static);
 	// Link vertex attributes
 	api->BindVertexArray(m_VAO);
 	api->SetVertexAttributeArrayEnabled(0, true);
 	api->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, 3 * sizeof(float), 0);
-	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(E_BufferType::Vertex, 0);
 	api->BindVertexArray(0);
 }
 template<int32 level>

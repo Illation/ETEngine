@@ -120,7 +120,7 @@ private:
 	vec4 m_Color = vec4(0, 0, 0, 1);
 	size_t m_ActiveFontIdx;
 
-	GLuint m_VAO;
-	GLuint m_VBO;
+	T_ArrayLoc m_VAO;
+	T_BufferLoc m_VBO;
 };
 

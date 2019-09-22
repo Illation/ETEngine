@@ -25,19 +25,11 @@ void GraphicsApiContext::Initialize()
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_NumTextureUnits);
 	for (int32 i = 0; i < m_NumTextureUnits; i++)
 	{
-		std::map<GLenum, GLuint> targets = 
+		std::map<E_TextureType, T_TextureLoc> targets =
 		{
-			{ GL_TEXTURE_1D, 0 },
-			{ GL_TEXTURE_2D, 0 },
-			{ GL_TEXTURE_3D, 0 },
-			{ GL_TEXTURE_1D_ARRAY, 0 },
-			{ GL_TEXTURE_2D_ARRAY, 0 },
-			{ GL_TEXTURE_RECTANGLE, 0 },
-			{ GL_TEXTURE_CUBE_MAP, 0 },
-			{ GL_TEXTURE_2D_MULTISAMPLE, 0 },
-			{ GL_TEXTURE_2D_MULTISAMPLE_ARRAY, 0 },
-			{ GL_TEXTURE_BUFFER, 0 },
-			{ GL_TEXTURE_CUBE_MAP_ARRAY, 0 }
+			{ E_TextureType::Texture2D, 0 },
+			{ E_TextureType::Texture3D, 0 },
+			{ E_TextureType::CubeMap, 0 },
 		};
 		m_pTextureUnits.push_back(targets);
 	}
@@ -46,20 +38,9 @@ void GraphicsApiContext::Initialize()
 
 	m_BufferTargets =
 	{
-		{ GL_ARRAY_BUFFER, 0 },
-		{ GL_ATOMIC_COUNTER_BUFFER, 0 },
-		{ GL_COPY_READ_BUFFER, 0 },
-		{ GL_COPY_WRITE_BUFFER, 0 },
-		{ GL_DISPATCH_INDIRECT_BUFFER, 0 },
-		{ GL_DRAW_INDIRECT_BUFFER, 0 },
-		{ GL_ELEMENT_ARRAY_BUFFER, 0 },
-		{ GL_PIXEL_PACK_BUFFER, 0 },
-		{ GL_PIXEL_UNPACK_BUFFER, 0 },
-		{ GL_QUERY_BUFFER, 0 },
-		{ GL_SHADER_STORAGE_BUFFER, 0 },
-		{ GL_TEXTURE_BUFFER, 0 },
-		{ GL_TRANSFORM_FEEDBACK_BUFFER, 0 },
-		{ GL_UNIFORM_BUFFER, 0 }
+		{ E_BufferType::Vertex, 0 },
+		{ E_BufferType::Index, 0 },
+		{ E_BufferType::Uniform, 0 }
 	};
 
 
@@ -152,18 +133,13 @@ void GraphicsApiContext::EnOrDisAbleIndexed(std::vector<bool> &state, bool enabl
 //---------------------------------
 // GraphicsApiContext::GetTexTarget
 //
-uint32 const GraphicsApiContext::GetTexTarget(E_TextureType const type) const
+uint32 GraphicsApiContext::GetTexTarget(E_TextureType const type) const
 {
 	switch (type)
 	{
-	case E_TextureType::Texture2D:
-		return GL_TEXTURE_2D;
-
-	case E_TextureType::Texture3D:
-		return GL_TEXTURE_3D;
-
-	case E_TextureType::CubeMap:
-		return GL_TEXTURE_CUBE_MAP;
+	case E_TextureType::Texture2D:	return GL_TEXTURE_2D;
+	case E_TextureType::Texture3D:	return GL_TEXTURE_3D;
+	case E_TextureType::CubeMap:	return GL_TEXTURE_CUBE_MAP;
 	}
 
 	ET_ASSERT(true, "Unhandled texture type!");
@@ -173,7 +149,7 @@ uint32 const GraphicsApiContext::GetTexTarget(E_TextureType const type) const
 //---------------------------------
 // GraphicsApiContext::GetTypeId
 //
-uint32 const GraphicsApiContext::GetTypeId(E_DataType const type) const
+uint32 GraphicsApiContext::GetTypeId(E_DataType const type) const
 {
 	switch (type)
 	{
@@ -195,7 +171,7 @@ uint32 const GraphicsApiContext::GetTypeId(E_DataType const type) const
 //---------------------------------
 // GraphicsApiContext::ConvShaderType
 //
-GLenum const GraphicsApiContext::ConvShaderType(E_ShaderType const type) const
+GLenum GraphicsApiContext::ConvShaderType(E_ShaderType const type) const
 {
 	switch (type)
 	{
@@ -208,6 +184,73 @@ GLenum const GraphicsApiContext::ConvShaderType(E_ShaderType const type) const
 	}
 
 	ET_ASSERT(true, "Unhandled shader type!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// GraphicsApiContext::ConvDrawMode
+//
+GLenum GraphicsApiContext::ConvDrawMode(E_DrawMode const mode) const
+{
+	switch (mode)
+	{
+	case E_DrawMode::Points:		return GL_POINTS;
+	case E_DrawMode::LineStrip:		return GL_LINE_STRIP;
+	case E_DrawMode::LineLoop:		return GL_LINE_LOOP;
+	case E_DrawMode::Lines:			return GL_LINES;
+	case E_DrawMode::TriangleStrip:	return GL_TRIANGLE_STRIP;
+	case E_DrawMode::TriangleFan:	return GL_TRIANGLE_FAN;
+	case E_DrawMode::Triangles:		return GL_TRIANGLES;
+	case E_DrawMode::Patches:		return GL_PATCHES;
+	}
+
+	ET_ASSERT(true, "Unhandled draw mode!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// GraphicsApiContext::ConvDrawMode
+//
+// Not all buffer types are currently listed, they will be added when support is needed
+//
+GLenum GraphicsApiContext::ConvBufferType(E_BufferType const type) const
+{
+	switch (type)
+	{
+	case E_BufferType::Vertex:	return GL_ARRAY_BUFFER;
+	case E_BufferType::Index:	return GL_ELEMENT_ARRAY_BUFFER;
+	case E_BufferType::Uniform:	return GL_UNIFORM_BUFFER;
+	}
+
+	ET_ASSERT(true, "Unhandled buffer type!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// GraphicsApiContext::ConvUsageHint
+//
+GLenum GraphicsApiContext::ConvUsageHint(E_UsageHint const hint) const
+{
+	switch (hint)
+	{
+	case E_UsageHint::Static:	return GL_STATIC_DRAW;
+	case E_UsageHint::Dynamic:	return GL_DYNAMIC_DRAW;
+	}
+
+	ET_ASSERT(true, "Unhandled usage hint!");
+	return GL_NONE;
+}
+
+GLenum GraphicsApiContext::ConvAccessMode(E_AccessMode const mode) const
+{
+	switch (mode)
+	{
+	case E_AccessMode::Read:		return GL_READ_ONLY;
+	case E_AccessMode::Write:		return GL_WRITE_ONLY;
+	case E_AccessMode::ReadWrite:	return GL_READ_WRITE;
+	}
+
+	ET_ASSERT(true, "Unhandled access mode!");
 	return GL_NONE;
 }
 
@@ -471,12 +514,12 @@ void GraphicsApiContext::SetActiveTexture(uint32 unit)
 //
 // Bind a texture to a target
 //
-void GraphicsApiContext::BindTexture(GLenum target, GLuint handle)
+void GraphicsApiContext::BindTexture(E_TextureType const target, T_TextureLoc const handle)
 {
 	if (!(m_pTextureUnits[m_ActiveTexture][target] == handle))
 	{
 		m_pTextureUnits[m_ActiveTexture][target] = handle;
-		glBindTexture(target, handle);
+		glBindTexture(GetTexTarget(target), handle);
 	}
 }
 
@@ -485,13 +528,13 @@ void GraphicsApiContext::BindTexture(GLenum target, GLuint handle)
 //
 // If the current texture isn't bound to its target, bind it
 //
-void GraphicsApiContext::LazyBindTexture(uint32 unit, GLenum target, GLuint handle)
+void GraphicsApiContext::LazyBindTexture(uint32 const unit, E_TextureType const target, T_TextureLoc const handle)
 {
 	if (!(m_pTextureUnits[unit][target] == handle))
 	{
 		SetActiveTexture(unit);
 		m_pTextureUnits[m_ActiveTexture][target] = handle;
-		glBindTexture(target, handle);
+		glBindTexture(GetTexTarget(target), handle);
 	}
 }
 
@@ -500,7 +543,7 @@ void GraphicsApiContext::LazyBindTexture(uint32 unit, GLenum target, GLuint hand
 //
 // Bind the current vertex array that the state operates on
 //
-void GraphicsApiContext::BindVertexArray(GLuint vertexArray)
+void GraphicsApiContext::BindVertexArray(T_ArrayLoc const vertexArray)
 {
 	if (!(m_VertexArray == vertexArray))
 	{
@@ -509,7 +552,7 @@ void GraphicsApiContext::BindVertexArray(GLuint vertexArray)
 
 		//Aparrently binding a new vertex array unbinds the old element array buffer
 		//Coincedentially it doesn't seem to happen with array buffers
-		m_BufferTargets[GL_ELEMENT_ARRAY_BUFFER] = 0;
+		m_BufferTargets[E_BufferType::Index] = 0;
 	}
 }
 
@@ -518,12 +561,12 @@ void GraphicsApiContext::BindVertexArray(GLuint vertexArray)
 //
 // Bind the current buffer that the state operates on
 //
-void GraphicsApiContext::BindBuffer(GLenum target, GLuint buffer)
+void GraphicsApiContext::BindBuffer(E_BufferType const target, T_BufferLoc const buffer)
 {
-	if (!(m_BufferTargets[target] == buffer))
+	if (m_BufferTargets[target] != buffer)
 	{
 		m_BufferTargets[target] = buffer;
-		glBindBuffer(target, buffer);
+		glBindBuffer(ConvBufferType(target), buffer);
 	}
 }
 
@@ -546,9 +589,9 @@ void GraphicsApiContext::SetLineWidth(float const lineWidth)
 //
 // Draw vertex data (without indices)
 //
-void GraphicsApiContext::DrawArrays(GLenum mode, uint32 first, uint32 count) 
+void GraphicsApiContext::DrawArrays(E_DrawMode const mode, uint32 const first, uint32 const count)
 {
-	glDrawArrays(mode, first, count);
+	glDrawArrays(ConvDrawMode(mode), first, count);
 	PERFORMANCE->m_DrawCalls++;
 }
 
@@ -557,9 +600,9 @@ void GraphicsApiContext::DrawArrays(GLenum mode, uint32 first, uint32 count)
 //
 // Draw vertex data with indices
 //
-void GraphicsApiContext::DrawElements(GLenum mode, uint32 count, E_DataType const type, const void * indices)
+void GraphicsApiContext::DrawElements(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices)
 {
-	glDrawElements(mode, count, GetTypeId(type), indices);
+	glDrawElements(ConvDrawMode(mode), count, GetTypeId(type), indices);
 	PERFORMANCE->m_DrawCalls++;
 }
 
@@ -568,9 +611,9 @@ void GraphicsApiContext::DrawElements(GLenum mode, uint32 count, E_DataType cons
 //
 // Draw instanced vertex data with indices
 //
-void GraphicsApiContext::DrawElementsInstanced(GLenum mode, uint32 count, GLenum type, const void * indices, uint32 primcount)
+void GraphicsApiContext::DrawElementsInstanced(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices, uint32 const prims)
 {
-	glDrawElementsInstanced(mode, count, type, indices, primcount);
+	glDrawElementsInstanced(ConvDrawMode(mode), count, GetTypeId(type), indices, prims);
 	PERFORMANCE->m_DrawCalls++;
 }
 
@@ -589,49 +632,66 @@ void GraphicsApiContext::Flush() const
 //
 // Clear the part of the currently set viewport that is mapped to the mask
 //
-void GraphicsApiContext::Clear(GLbitfield mask) const
+void GraphicsApiContext::Clear(T_ClearFlags const mask) const
 {
-	glClear(mask);
+	GLbitfield field = 0;
+
+	if (mask & E_ClearFlag::Color)
+	{
+		field |= GL_COLOR_BUFFER_BIT;
+	}
+
+	if (mask & E_ClearFlag::Depth)
+	{
+		field |= GL_DEPTH_BUFFER_BIT;
+	}
+
+	if (mask & E_ClearFlag::Stencil)
+	{
+		field |= GL_STENCIL_BUFFER_BIT;
+	}
+
+	glClear(field);
 }
 
 //---------------------------------
-// GraphicsApiContext::GenerateVertexArrays
+// GraphicsApiContext::CreateVertexArray
 //
-// Generate a vertex array
-//
-void GraphicsApiContext::GenerateVertexArrays(GLsizei n, GLuint *arrays) const
+T_ArrayLoc GraphicsApiContext::CreateVertexArray() const
 {
-	glGenVertexArrays(n, arrays);
+	T_ArrayLoc ret;
+	glGenVertexArrays(1, &ret);
+	return ret;
 }
 
 //---------------------------------
-// GraphicsApiContext::GenerateBuffers
+// GraphicsApiContext::CreateBuffer
 //
-// Generate a buffer
-//
-void GraphicsApiContext::GenerateBuffers(GLsizei n, GLuint *buffers) const
+T_BufferLoc GraphicsApiContext::CreateBuffer() const
 {
-	glGenBuffers(n, buffers);
+	T_BufferLoc ret;
+	glGenBuffers(1, &ret);
+	return ret;
 }
 
 //---------------------------------
-// GraphicsApiContext::DeleteVertexArrays
+// GraphicsApiContext::DeleteVertexArray
 //
 // Delete a vertex array
 //
-void GraphicsApiContext::DeleteVertexArrays(GLsizei n, GLuint *arrays) const
+void GraphicsApiContext::DeleteVertexArray(T_ArrayLoc& loc) const
 {
-	glDeleteVertexArrays(n, arrays);
+	glDeleteVertexArrays(1, &loc);
 }
 
 //---------------------------------
-// GraphicsApiContext::DeleteBuffers
+// GraphicsApiContext::DeleteBuffer
 //
 // Delete a buffer
 //
-void GraphicsApiContext::DeleteBuffers(GLsizei n, GLuint *buffers) const
+void GraphicsApiContext::DeleteBuffer(T_BufferLoc& loc) const
 {
-	glDeleteBuffers(n, buffers);
+	glDeleteBuffers(1, &loc);
 }
 
 //---------------------------------
@@ -639,9 +699,9 @@ void GraphicsApiContext::DeleteBuffers(GLsizei n, GLuint *buffers) const
 //
 // Fill the buffer at target with an array of data
 //
-void GraphicsApiContext::SetBufferData(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage) const
+void GraphicsApiContext::SetBufferData(E_BufferType const target, int64 const size, void const* const data, E_UsageHint const usage) const
 {
-	glBufferData(target, size, data, usage);
+	glBufferData(ConvBufferType(target), size, data, ConvUsageHint(usage));
 }
 
 //---------------------------------
@@ -649,7 +709,7 @@ void GraphicsApiContext::SetBufferData(GLenum target, GLsizeiptr size, const GLv
 //
 // Enable or disable an attribute at an index in the current vertex array
 //
-void GraphicsApiContext::SetVertexAttributeArrayEnabled(GLuint index, bool enabled) const
+void GraphicsApiContext::SetVertexAttributeArrayEnabled(uint32 const index, bool const enabled) const
 {
 	if (enabled)
 	{
@@ -695,7 +755,7 @@ void GraphicsApiContext::DefineVertexAttribIPointer(uint32 const index,
 //
 // Additional vertex stride during instanced rendering
 //
-void GraphicsApiContext::DefineVertexAttribDivisor(GLuint index, GLuint divisor) const
+void GraphicsApiContext::DefineVertexAttribDivisor(uint32 const index, uint32 const divisor) const
 {
 	glVertexAttribDivisor(index, divisor);
 }
@@ -705,9 +765,9 @@ void GraphicsApiContext::DefineVertexAttribDivisor(GLuint index, GLuint divisor)
 //
 // Map the data of a buffer to a pointer on the CPU so that it can be modified
 //
-void* GraphicsApiContext::MapBuffer(GLenum target, GLenum access) const
+void* GraphicsApiContext::MapBuffer(E_BufferType const target, E_AccessMode const access) const
 {
-	return glMapBuffer(target, access);
+	return glMapBuffer(ConvBufferType(target), ConvAccessMode(access));
 }
 
 //---------------------------------
@@ -715,17 +775,17 @@ void* GraphicsApiContext::MapBuffer(GLenum target, GLenum access) const
 //
 // Unmap a buffer from the pointer it's mapped to on the CPU
 //
-void GraphicsApiContext::UnmapBuffer(GLenum target) const
+void GraphicsApiContext::UnmapBuffer(E_BufferType const target) const
 {
-	glUnmapBuffer(target);
+	glUnmapBuffer(ConvBufferType(target));
 }
 
 //---------------------------------
 // GraphicsApiContext::UnmapBuffer
 //
-uint32 GraphicsApiContext::GenerateTexture() const
+T_TextureLoc GraphicsApiContext::GenerateTexture() const
 {
-	uint32 ret;
+	T_TextureLoc ret;
 	glGenTextures(1, &ret);
 	return ret;
 }
@@ -733,7 +793,7 @@ uint32 GraphicsApiContext::GenerateTexture() const
 //---------------------------------
 // GraphicsApiContext::DeleteTexture
 //
-void GraphicsApiContext::DeleteTexture(uint32& handle) const
+void GraphicsApiContext::DeleteTexture(T_TextureLoc& handle) const
 {
 	glDeleteTextures(1, &handle);
 }
@@ -747,7 +807,7 @@ void GraphicsApiContext::SetTextureData(TextureData& texture, void* data)
 {
 	uint32 const target = GetTexTarget(texture.GetTargetType());
 
-	BindTexture(target, texture.GetHandle());
+	BindTexture(texture.GetTargetType(), texture.GetHandle());
 
 	ivec2 const res = texture.GetResolution();
 	int32 const intFmt = texture.GetInternalFormat();
@@ -783,7 +843,7 @@ void GraphicsApiContext::SetTextureData(TextureData& texture, void* data)
 void GraphicsApiContext::SetTextureParams(TextureData const& texture, uint8& mipLevels, TextureParameters& prev, TextureParameters const& next, bool const force) 
 {
 	uint32 const target = GetTexTarget(texture.GetTargetType());
-	BindTexture(target, texture.GetHandle());
+	BindTexture(texture.GetTargetType(), texture.GetHandle());
 
 	// filter options
 	//---------------
@@ -1414,7 +1474,7 @@ void GraphicsApiContext::SetRenderbufferStorage(GLenum format, ivec2 const dimen
 //
 // link to current draw FB with a color attachment
 //
-void GraphicsApiContext::LinkTextureToFbo(uint8 const attachment, uint32 const texHandle, int32 const level) const
+void GraphicsApiContext::LinkTextureToFbo(uint8 const attachment, T_TextureLoc const texHandle, int32 const level) const
 {
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + static_cast<uint32>(attachment), texHandle, level);
 }
@@ -1424,9 +1484,19 @@ void GraphicsApiContext::LinkTextureToFbo(uint8 const attachment, uint32 const t
 //
 // Same as above, but specifies a target
 //
-void GraphicsApiContext::LinkTextureToFbo2D(uint8 const attachment, uint32 const texTarget, uint32 const texHandle, int32 const level) const
+void GraphicsApiContext::LinkTextureToFbo2D(uint8 const attachment, T_TextureLoc const texHandle, int32 const level) const
 {
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + static_cast<uint32>(attachment), texTarget, texHandle, level);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + static_cast<uint32>(attachment), GL_TEXTURE_2D, texHandle, level);
+}
+
+//---------------------------------
+// GraphicsApiContext::LinkTextureToFbo
+//
+// Same as above, but specifies a target
+//
+void GraphicsApiContext::LinkCubeMapFaceToFbo2D(uint8 const face, T_TextureLoc const texHandle, int32 const level) const
+{
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, texHandle, level);
 }
 
 //---------------------------------
@@ -1434,9 +1504,9 @@ void GraphicsApiContext::LinkTextureToFbo2D(uint8 const attachment, uint32 const
 //
 // Link a depth texture to an FBO
 //
-void GraphicsApiContext::LinkTextureToFboDepth(uint32 const texTarget, uint32 const texHandle) const
+void GraphicsApiContext::LinkTextureToFboDepth(T_TextureLoc const texHandle) const
 {
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texTarget, texHandle, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texHandle, 0);
 }
 
 //---------------------------------

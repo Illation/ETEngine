@@ -83,7 +83,7 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
-		api->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());
 	}
 	m_pShader->Upload("projectionA"_hash, CAMERA->GetDepthProjA());
 	m_pShader->Upload("projectionB"_hash, CAMERA->GetDepthProjB());
@@ -101,11 +101,11 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	//m_pShader->Upload("uSunSpectralRadToLum"_hash, etm::vecCast<float>(m_SunColor));
 
 	m_pShader->Upload("uTexIrridiance"_hash, 3);
-	api->LazyBindTexture(3, GL_TEXTURE_2D, m_TexIrradiance->GetHandle());
+	api->LazyBindTexture(3, E_TextureType::Texture2D, m_TexIrradiance->GetHandle());
 	m_pShader->Upload("uTexInscatter"_hash, 4);
-	api->LazyBindTexture(4, GL_TEXTURE_3D, m_TexInscatter->GetHandle());
+	api->LazyBindTexture(4, E_TextureType::Texture3D, m_TexInscatter->GetHandle());
 	m_pShader->Upload("uTexTransmittance"_hash, 5);
-	api->LazyBindTexture(5, GL_TEXTURE_2D, m_TexTransmittance->GetHandle());
+	api->LazyBindTexture(5, E_TextureType::Texture2D, m_TexTransmittance->GetHandle());
 
 	m_pShader->Upload("SunDir"_hash, m_pSun->GetTransform()->GetForward());
 	m_pShader->Upload("uSunSize"_hash, vec2(tan(m_Params.sun_angular_radius), cos(m_Params.sun_angular_radius)));

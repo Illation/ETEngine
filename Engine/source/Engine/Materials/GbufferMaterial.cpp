@@ -79,15 +79,15 @@ void GbufferMaterial::UploadDerivedVariables()
 	if (m_OutdatedTextureData)LoadTextures();
 	if (m_TexDiffuse != nullptr)
 	{
-		api->LazyBindTexture(0, GL_TEXTURE_2D, m_TexDiffuse->GetHandle());
+		api->LazyBindTexture(0, E_TextureType::Texture2D, m_TexDiffuse->GetHandle());
 	}
 	if (m_TexNorm != nullptr)
 	{
-		api->LazyBindTexture(1, GL_TEXTURE_2D, m_TexNorm->GetHandle());
+		api->LazyBindTexture(1, E_TextureType::Texture2D, m_TexNorm->GetHandle());
 	}
 	if (m_TexSpec != nullptr)
 	{
-		api->LazyBindTexture(2, GL_TEXTURE_2D, m_TexSpec->GetHandle());
+		api->LazyBindTexture(2, E_TextureType::Texture2D, m_TexSpec->GetHandle());
 	}
 
 	//Upload uniforms

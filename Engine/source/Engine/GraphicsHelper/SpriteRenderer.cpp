@@ -26,8 +26,8 @@ SpriteRenderer::~SpriteRenderer()
 {
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	api->DeleteVertexArrays(1, &m_VAO);
-	api->DeleteBuffers(1, &m_VBO);
+	api->DeleteVertexArray(m_VAO);
+	api->DeleteBuffer(m_VBO);
 
 	m_Sprites.clear();
 	m_Textures.clear();
@@ -51,15 +51,15 @@ void SpriteRenderer::Initialize()
 	m_Shader->Upload("u3DTexture"_hash, 1);
 
 	//Generate buffers and arrays
-	api->GenerateVertexArrays(1, &m_VAO);
-	api->GenerateBuffers(1, &m_VBO);
+	m_VAO = api->CreateVertexArray();
+	m_VBO = api->CreateBuffer();
 
 	//bind
 	api->BindVertexArray(m_VAO);
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
 
 	//set data and attributes
-	api->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
+	api->SetBufferData(E_BufferType::Vertex, m_BufferSize, nullptr, E_UsageHint::Dynamic);
 
 	//input layout
 	api->SetVertexAttributeArrayEnabled(0, true);
@@ -74,7 +74,7 @@ void SpriteRenderer::Initialize()
 	api->DefineVertexAttributePointer(3, 4, E_DataType::Float, false, vertSize, offsetof(SpriteVertex, Color));
 
 	//unbind
-	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(E_BufferType::Vertex, 0);
 	api->BindVertexArray(0);
 
 	CalculateTransform();
@@ -161,7 +161,7 @@ void SpriteRenderer::Draw(TextureData const* tex,
 	vertex.TransformData2 = vec4(pivot, finalScale);
 	vertex.Color = color;
 
-	if (tex->GetTarget() == GL_TEXTURE_3D)
+	if (tex->GetTargetType() == E_TextureType::Texture3D)
 	{
 		m_Layer = layer;
 	}
@@ -214,7 +214,7 @@ void SpriteRenderer::Draw()
 		}
 
 		TextureData const* const texData = m_Textures[m_Sprites[i].TextureId];
-		if (texData->GetTarget() == GL_TEXTURE_2D)
+		if (texData->GetTargetType() == E_TextureType::Texture2D)
 		{
 			api->SetActiveTexture(0);
 			m_Shader->Upload("uDraw3D"_hash, false);
@@ -225,10 +225,10 @@ void SpriteRenderer::Draw()
 			m_Shader->Upload("uDraw3D"_hash, true);
 			m_Shader->Upload("uLayer"_hash, m_Layer);
 		}
-		api->BindTexture(texData->GetTarget(), texData->GetHandle());
+		api->BindTexture(texData->GetTargetType(), texData->GetHandle());
 
 		//Draw
-		api->DrawArrays(GL_POINTS, batchOffset, batchSize);
+		api->DrawArrays(E_DrawMode::Points, batchOffset, batchSize);
 
 		batchOffset += batchSize;
 		batchSize = 1;
@@ -257,7 +257,7 @@ void SpriteRenderer::UpdateBuffer()
 	api->BindVertexArray(m_VAO);
 
 	//Send the vertex buffer again
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
 
 	bool bufferResize = m_Sprites.size() * sizeof( SpriteVertex ) > m_BufferSize;
 	if(!m_VBO || bufferResize) //first creation or resize
@@ -267,17 +267,17 @@ void SpriteRenderer::UpdateBuffer()
 			m_BufferSize = (uint32)m_Sprites.size() * sizeof( SpriteVertex );
 		}
 
-		api->SetBufferData(GL_ARRAY_BUFFER, m_BufferSize, m_Sprites.data(), GL_DYNAMIC_DRAW);
+		api->SetBufferData(E_BufferType::Vertex, m_BufferSize, m_Sprites.data(), E_UsageHint::Dynamic);
 	}
 	else
 	{
-		GLvoid* p = api->MapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
+		GLvoid* p = api->MapBuffer(E_BufferType::Vertex, E_AccessMode::Write);
 		memcpy( p, m_Sprites.data(), m_Sprites.size() * sizeof( SpriteVertex ) );
-		api->UnmapBuffer( GL_ARRAY_BUFFER );
+		api->UnmapBuffer(E_BufferType::Vertex);
 	}
 
 
-	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(E_BufferType::Vertex, 0);
 
 	//Done Modifying
 	api->BindVertexArray(0);

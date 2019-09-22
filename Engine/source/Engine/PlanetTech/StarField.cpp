@@ -19,8 +19,8 @@ StarField::~StarField()
 {
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	api->DeleteVertexArrays(1, &m_VAO);
-	api->DeleteBuffers(1, &m_VBO);
+	api->DeleteVertexArray(m_VAO);
+	api->DeleteBuffer(m_VBO);
 }
 
 void StarField::Initialize()
@@ -55,21 +55,21 @@ void StarField::Initialize()
 	m_pShader->Upload("uTexture"_hash, 0);
 
 	//Generate buffers and arrays
-	api->GenerateVertexArrays(1, &m_VAO);
-	api->GenerateBuffers(1, &m_VBO);
+	m_VAO = api->CreateVertexArray();
+	m_VBO = api->CreateBuffer();
 
 	//bind
 	api->BindVertexArray(m_VAO);
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
 
 	//set data and attributes
-	api->SetBufferData(GL_ARRAY_BUFFER, m_Stars.size()*sizeof(vec4), m_Stars.data(), GL_DYNAMIC_DRAW);
+	api->SetBufferData(E_BufferType::Vertex, m_Stars.size()*sizeof(vec4), m_Stars.data(), E_UsageHint::Dynamic);
 
 	api->SetVertexAttributeArrayEnabled(0, true);
 	api->DefineVertexAttributePointer(0, 4, E_DataType::Float, false, sizeof(vec4), 0);
 
 	//unbind
-	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(E_BufferType::Vertex, 0);
 	api->BindVertexArray(0);
 }
 
@@ -84,14 +84,14 @@ void StarField::DrawForward()
 	api->BindVertexArray(m_VAO);
 	api->SetShader(m_pShader.get());
 	api->SetActiveTexture(0);
-	api->BindTexture(m_pSprite->GetTarget(), m_pSprite->GetHandle());
+	api->BindTexture(m_pSprite->GetTargetType(), m_pSprite->GetHandle());
 	m_pShader->Upload("viewProj"_hash, CAMERA->GetStatViewProj());
 	m_pShader->Upload("viewInv"_hash, CAMERA->GetViewInv());
 	m_pShader->Upload("uRadius"_hash, m_Radius);
 	m_pShader->Upload("uBaseFlux"_hash, m_BaseFlux);
 	m_pShader->Upload("uBaseMag"_hash, m_BaseMag);
 	m_pShader->Upload("uAspectRatio"_hash, Config::GetInstance()->GetWindow().AspectRatio);
-	api->DrawArrays(GL_POINTS, 0, m_DrawnStars);
+	api->DrawArrays(E_DrawMode::Points, 0, m_DrawnStars);
 	api->BindVertexArray(0);
 	api->SetBlendEnabled(false);
 }

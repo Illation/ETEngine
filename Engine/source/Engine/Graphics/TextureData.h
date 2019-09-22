@@ -4,18 +4,7 @@
 #include <EtCore/Content/Asset.h>
 #include <EtCore/Helper/LinkerUtils.h>
 
-
-//---------------------------------
-// E_TextureType
-//
-// Denotes the type a texture can be
-//
-enum class E_TextureType : uint8
-{
-	Texture2D,
-	Texture3D,
-	CubeMap
-};
+#include <Engine/GraphicsHelper/GraphicsApiContext.h>
 
 
 //---------------------------------
@@ -37,11 +26,10 @@ public:
 
 	// Accessors
 	//----------
-	uint32 GetHandle() const { return m_Handle; }
+	T_TextureLoc GetHandle() const { return m_Handle; }
 	ivec2 GetResolution() const { return ivec2(m_Width, m_Height); }
 	int32 GetNumMipLevels() const { return m_MipLevels; }
 
-	uint32 GetTarget() const;
 	int32 GetInternalFormat() const { return m_InternalFormat; }
 	uint32 GetFormat() const { return m_Format; }
 	uint32 GetDataType() const { return m_Type; }
@@ -60,7 +48,7 @@ private:
 	///////
 
 	// GPU data
-	uint32 m_Handle;
+	T_TextureLoc m_Handle;
 
 	// Resolution
 	int32 m_Width;

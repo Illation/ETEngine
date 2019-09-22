@@ -125,7 +125,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO)
 	api->SetViewport(ivec2(0), windowSettings.Dimensions);
 
 	api->SetClearColor(vec4(m_ClearColor, 1.f));
-	api->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
 	api->SetFaceCullingMode(GL_BACK);
 	for (auto pScene : pScenes)

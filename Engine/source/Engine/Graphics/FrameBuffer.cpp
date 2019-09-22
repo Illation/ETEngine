@@ -70,7 +70,7 @@ void FrameBuffer::Draw()
 
 	for (uint32 i = 0; i < (uint32)m_pTextureVec.size(); i++)
 	{
-		api->LazyBindTexture(i, GL_TEXTURE_2D, m_pTextureVec[i]->GetHandle());
+		api->LazyBindTexture(i, E_TextureType::Texture2D, m_pTextureVec[i]->GetHandle());
 	}
 
 	UploadDerivedVariables();
@@ -98,7 +98,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 	{
 		TextureData* depthMap = new TextureData(windowSettings.Width, windowSettings.Height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT );
 		depthMap->Build();
-		api->LinkTextureToFboDepth(GL_TEXTURE_2D, depthMap->GetHandle());
+		api->LinkTextureToFboDepth(depthMap->GetHandle());
 		depthMap->SetParameters(params);
 		m_pTextureVec.emplace_back(depthMap);
 	}
@@ -108,7 +108,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 	{
 		TextureData* colorBuffer = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGBA16F, GL_RGBA, m_Format );
 		colorBuffer->Build();
-		api->LinkTextureToFbo2D(i, GL_TEXTURE_2D, colorBuffer->GetHandle(), 0);
+		api->LinkTextureToFbo2D(i, colorBuffer->GetHandle(), 0);
 		colorBuffer->SetParameters(params, true);
 		m_pTextureVec.emplace_back(colorBuffer);
 	}

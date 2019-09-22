@@ -165,7 +165,7 @@ void Viewport::Render()
 	{
 		// Draw pink to indicate that no renderer is attached
 		api->SetClearColor(vec4(0.55f, 0.075f, 0.2f, 1.f));
-		api->Clear(GL_COLOR_BUFFER_BIT);
+		api->Clear(E_ClearFlag::Color);
 	}
 
 	api->Flush();

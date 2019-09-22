@@ -19,6 +19,23 @@ typedef int32 T_AttribLoc;
 typedef int32 T_UniformLoc;
 typedef uint32 T_ShaderLoc;
 
+typedef uint32 T_TextureLoc;
+
+typedef uint32 T_BufferLoc;
+typedef uint32 T_ArrayLoc;
+
+
+//---------------------------------
+// E_TextureType
+//
+// Denotes the type a texture can be
+//
+enum class E_TextureType : uint8
+{
+	Texture2D,
+	Texture3D,
+	CubeMap
+};
 
 //---------------------------------
 // E_ShaderType
@@ -33,6 +50,69 @@ enum class E_ShaderType : uint8
 	TesselationEvaluation,
 	Geometry,
 	Fragment
+};
+
+//---------------------------------
+// E_DrawMode
+//
+// How vertex data should be drawn
+//
+enum class E_DrawMode : uint8 
+{
+	Points,
+	LineStrip,
+	LineLoop,
+	Lines,
+	TriangleStrip,
+	TriangleFan,
+	Triangles,
+	Patches
+};
+
+//---------------------------------
+// E_ClearFlags
+//
+// Which buffers should be reset
+//
+typedef uint8 T_ClearFlags;
+enum E_ClearFlag : T_ClearFlags
+{
+	Color	= 1 << 0,
+	Depth	= 1 << 1,
+	Stencil = 1 << 2
+};
+
+//---------------------------------
+// E_BufferType
+//
+// Specifies the purpose / target of buffer data and operations
+//
+enum class E_BufferType : uint8
+{
+	Vertex,
+	Index,
+	Uniform
+};
+
+//---------------------------------
+// E_UsageHint
+//
+// Whether or not a buffer will change often
+//
+enum class E_UsageHint : uint8
+{
+	Static,
+	Dynamic
+};
+
+//---------------------------------
+// E_AccessMode
+//
+enum class E_AccessMode : uint8
+{
+	Read,
+	Write,
+	ReadWrite
 };
 
 
@@ -80,46 +160,42 @@ public:
 	void BindRenderbuffer(GLuint handle);
 
 	void SetActiveTexture(uint32 unit);
-	void BindTexture(GLenum target, GLuint handle);
+	void BindTexture(E_TextureType const target, T_TextureLoc const handle);
 
 	//Makes sure that a texture is bound to a units target for shading, 
 	//only changes active texture unit if the texture was not bound yet
-	void LazyBindTexture(uint32 unit, GLenum target, GLuint handle);
+	void LazyBindTexture(uint32 const unit, E_TextureType const target, T_TextureLoc const handle);
 
-	void BindVertexArray(GLuint vertexArray);
-	void BindBuffer(GLenum target, GLuint buffer);
+	void BindVertexArray(T_ArrayLoc const vertexArray);
+	void BindBuffer(E_BufferType const target, T_BufferLoc const buffer);
 
 	void SetLineWidth(float const lineWidth);
 
 	//Draw Calls
 	//--------------
-	void DrawArrays(GLenum mode, uint32 first, uint32 count);
-	void DrawElements(GLenum mode, uint32 count, E_DataType const type, const void * indices);
-	void DrawElementsInstanced(GLenum mode, uint32 count, GLenum type, const void * indices, uint32 primcount);
+	void DrawArrays(E_DrawMode const mode, uint32 const first, uint32 const count);
+	void DrawElements(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices);
+	void DrawElementsInstanced(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices, uint32 const primcount);
 
 	// other commands
 	//--------------
 	void Flush() const;
-	void Clear(GLbitfield mask) const;
+	void Clear(T_ClearFlags const mask) const;
 
-	void GenerateVertexArrays(GLsizei n, GLuint *arrays) const;
-	void GenerateBuffers(GLsizei n, GLuint *buffers) const;
+	T_ArrayLoc CreateVertexArray() const;
+	T_BufferLoc CreateBuffer() const;
 
-	void DeleteVertexArrays(GLsizei n, GLuint *arrays) const;
-	void DeleteBuffers(GLsizei n, GLuint *buffers) const;
+	void DeleteVertexArray(T_ArrayLoc& loc) const;
+	void DeleteBuffer(T_BufferLoc& loc) const;
 
-	void SetBufferData(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage) const;
-	void SetVertexAttributeArrayEnabled(GLuint index, bool enabled) const; // could at some point be a member on VertexArray data object
+	void SetBufferData(E_BufferType const target, int64 const size, void const* const data, E_UsageHint const usage) const;
+	void SetVertexAttributeArrayEnabled(uint32 const index, bool const enabled) const; // could at some point be a member on VertexArray data object
 
-	void DefineVertexAttributePointer(uint32 const index, int32 const size, E_DataType const type, bool const norm, int32 const stride, size_t const offset) const;
-	void DefineVertexAttribIPointer(uint32 const index, int32 const size, E_DataType const type, int32 const stride, size_t const offset) const;
-	void DefineVertexAttribDivisor(GLuint index, GLuint divisor) const;
+	void* MapBuffer(E_BufferType const target, E_AccessMode const access) const;
+	void UnmapBuffer(E_BufferType const target) const;
 
-	void* MapBuffer(GLenum target, GLenum access) const;
-	void UnmapBuffer(GLenum target) const;
-
-	uint32 GenerateTexture() const;
-	void DeleteTexture(uint32& handle) const;
+	T_TextureLoc GenerateTexture() const;
+	void DeleteTexture(T_TextureLoc& handle) const;
 	void SetTextureData(TextureData& texture, void* data);
 	void SetTextureParams(TextureData const& texture, uint8& mipLevels, TextureParameters& prev, TextureParameters const& next, bool const force);
 
@@ -152,6 +228,10 @@ public:
 	void UploadUniform(const Uniform<mat3> &uniform);
 	void UploadUniform(const Uniform<mat4> &uniform);
 
+	void DefineVertexAttributePointer(uint32 const index, int32 const size, E_DataType const type, bool const norm, int32 const stride, size_t const offset) const;
+	void DefineVertexAttribIPointer(uint32 const index, int32 const size, E_DataType const type, int32 const stride, size_t const offset) const;
+	void DefineVertexAttribDivisor(uint32 const index, uint32 const divisor) const;
+
 	void GenFramebuffers(GLsizei n, GLuint *ids) const;
 	void DeleteFramebuffers(GLsizei n, GLuint *ids) const;
 
@@ -160,9 +240,10 @@ public:
 
 	void SetRenderbufferStorage(GLenum format, ivec2 const dimensions) const;
 
-	void LinkTextureToFbo(uint8 const attachment, uint32 const texHandle, int32 const level) const; 
-	void LinkTextureToFbo2D(uint8 const attachment, uint32 const texTarget, uint32 const texHandle, int32 const level) const; // link to current draw FB with a color attachment
-	void LinkTextureToFboDepth(uint32 const texTarget, uint32 const texHandle) const;
+	void LinkTextureToFbo(uint8 const attachment, T_TextureLoc const texHandle, int32 const level) const;
+	void LinkTextureToFbo2D(uint8 const attachment, T_TextureLoc const texHandle, int32 const level) const; // link to current draw FB with a color attachment
+	void LinkCubeMapFaceToFbo2D(uint8 const face, T_TextureLoc const texHandle, int32 const level) const;
+	void LinkTextureToFboDepth(T_TextureLoc const texHandle) const;
 
 	void LinkRenderbufferToFbo(GLenum const attachment, uint32 const rboHandle) const;
 
@@ -183,10 +264,14 @@ private:
 	//the index for blending must be smaller than max draw buffers too
 	void EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLenum glState, uint32 index);
 
-	uint32 const GetTexTarget(E_TextureType const type) const;
-	uint32 const GetTypeId(E_DataType const type) const;
+	uint32 GetTexTarget(E_TextureType const type) const;
+	uint32 GetTypeId(E_DataType const type) const;
 
-	GLenum const ConvShaderType(E_ShaderType const type) const;
+	GLenum ConvShaderType(E_ShaderType const type) const;
+	GLenum ConvDrawMode(E_DrawMode const mode) const;
+	GLenum ConvBufferType(E_BufferType const type) const;
+	GLenum ConvUsageHint(E_UsageHint const hint) const;
+	GLenum ConvAccessMode(E_AccessMode const mode) const;
 
 	GLuint m_ReadFramebuffer = 0;
 	GLuint m_DrawFramebuffer = 0;
@@ -221,10 +306,10 @@ private:
 
 	uint32 m_ActiveTexture = 0;
 	int32 m_NumTextureUnits; //depends on gpu and drivers
-	std::vector<std::map<GLenum, GLuint> > m_pTextureUnits; // #todo: in the future, abstract texture data here to support all types of textures
+	std::vector<std::map<E_TextureType, T_TextureLoc> > m_pTextureUnits; // #todo: in the future, abstract texture data here to support all types of textures
 
-	GLuint m_VertexArray = 0;
-	std::map<GLenum, GLuint> m_BufferTargets;
+	T_ArrayLoc m_VertexArray = 0;
+	std::map<E_BufferType, T_BufferLoc> m_BufferTargets;
 
 	float m_LineWidth = 1.f;
 };

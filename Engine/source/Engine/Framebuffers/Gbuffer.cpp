@@ -39,15 +39,15 @@ void Gbuffer::UploadDerivedVariables()
 	if (SCENE->SkyboxEnabled())
 	{
 		m_pShader->Upload("texIrradiance"_hash, 3);
-		api->LazyBindTexture(3, GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetIrradianceHandle());
+		api->LazyBindTexture(3, E_TextureType::CubeMap, SCENE->GetEnvironmentMap()->GetIrradianceHandle());
 
 		m_pShader->Upload("texEnvRadiance"_hash, 4);
-		api->LazyBindTexture(4, GL_TEXTURE_CUBE_MAP, SCENE->GetEnvironmentMap()->GetRadianceHandle());
+		api->LazyBindTexture(4, E_TextureType::CubeMap, SCENE->GetEnvironmentMap()->GetRadianceHandle());
 
 		m_pShader->Upload("MAX_REFLECTION_LOD"_hash, static_cast<float>(SCENE->GetEnvironmentMap()->GetNumMipMaps()));
 	}
 
 	m_pShader->Upload("texBRDFLUT"_hash, 5);
 	TextureData* pLUT = PbrPrefilter::GetInstance()->GetLUT();
-	api->LazyBindTexture(5, pLUT->GetTarget(), pLUT->GetHandle());
+	api->LazyBindTexture(5, pLUT->GetTargetType(), pLUT->GetHandle());
 }

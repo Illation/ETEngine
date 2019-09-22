@@ -183,12 +183,12 @@ MeshSurface::MeshSurface(MeshData const* const mesh, Material const* const mater
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	// create a new vertex array
-	api->GenerateVertexArrays(1, &m_VertexArray);
+	m_VertexArray = api->CreateVertexArray();
 	api->BindVertexArray(m_VertexArray);
 
 	// link it to the mesh's buffer
-	api->BindBuffer(GL_ARRAY_BUFFER, mesh->GetVertexBuffer());
-	api->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIndexBuffer());
+	api->BindBuffer(E_BufferType::Vertex, mesh->GetVertexBuffer());
+	api->BindBuffer(E_BufferType::Index, mesh->GetIndexBuffer());
 
 	//Specify Input Layout
 	AttributeDescriptor::DefineAttributeArray(mesh->GetSupportedFlags(), m_Material->GetLayoutFlags(), m_Material->GetAttributeLocations());
@@ -203,7 +203,7 @@ MeshSurface::MeshSurface(MeshData const* const mesh, Material const* const mater
 //
 MeshSurface::~MeshSurface()
 {
-	Viewport::GetCurrentApiContext()->DeleteVertexArrays(1, &m_VertexArray);
+	Viewport::GetCurrentApiContext()->DeleteVertexArray(m_VertexArray);
 }
 
 
@@ -379,14 +379,14 @@ MeshData::MeshData(MeshDataContainer const* const cpuData)
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	// vertex buffer
-	api->GenerateBuffers(1, &m_VertexBuffer);
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
-	api->SetBufferData(GL_ARRAY_BUFFER, bufferSize, interleaved, GL_STATIC_DRAW);
+	m_VertexBuffer = api->CreateBuffer();
+	api->BindBuffer(E_BufferType::Vertex, m_VertexBuffer);
+	api->SetBufferData(E_BufferType::Vertex, bufferSize, interleaved, E_UsageHint::Static);
 
 	// index buffer - #todo: might be okay to store index buffer with 16bits per index
-	api->GenerateBuffers(1, &m_IndexBuffer);
-	api->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
-	api->SetBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * cpuData->m_Indices.size(), cpuData->m_Indices.data(), GL_STATIC_DRAW);
+	m_IndexBuffer = api->CreateBuffer();
+	api->BindBuffer(E_BufferType::Index, m_IndexBuffer);
+	api->SetBufferData(E_BufferType::Index, sizeof(uint32) * cpuData->m_Indices.size(), cpuData->m_Indices.data(), E_UsageHint::Static);
 
 	// free CPU side data
 	//--------------------
@@ -403,8 +403,8 @@ MeshData::~MeshData()
 {
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	api->DeleteBuffers(1, &m_VertexBuffer);
-	api->DeleteBuffers(1, &m_IndexBuffer);
+	api->DeleteBuffer(m_VertexBuffer);
+	api->DeleteBuffer(m_IndexBuffer);
 
 	SafeDelete(m_Surfaces);
 }

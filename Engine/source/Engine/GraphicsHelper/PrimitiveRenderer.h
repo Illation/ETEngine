@@ -58,8 +58,8 @@ namespace primitives
 		void Draw(); //vec3 pos, vec2 tc
 		void Initialize();
 	private:
-		GLuint m_VAO = 0;
-		GLuint m_VBO = 0;
+		T_ArrayLoc m_VAO = 0;
+		T_BufferLoc m_VBO = 0;
 	};
 
 	class Cube : public PrimitiveGeometry
@@ -72,8 +72,8 @@ namespace primitives
 		void Draw(); //vec3 pos, vec3 norm, vec2 tc
 		void Initialize();
 	private:
-		GLuint m_VAO = 0;
-		GLuint m_VBO = 0;
+		T_ArrayLoc m_VAO = 0;
+		T_BufferLoc m_VBO = 0;
 	};
 
 	template<int32 level>
@@ -89,8 +89,8 @@ namespace primitives
 	private:
 		// #todo: generate with index buffer
 		void SubAndPush(std::vector<vec3> &vertices, const int32 lev, const vec3 &a, const vec3 &b, const vec3 &c) const;
-		GLuint m_VAO = 0;
-		GLuint m_VBO = 0;
+		T_ArrayLoc m_VAO = 0;
+		T_BufferLoc m_VBO = 0;
 		int32 m_NumVerts;
 	};
 }

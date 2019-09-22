@@ -38,13 +38,13 @@ void Patch::Init()
 	//Buffer Initialisation
 	//*********************
 	//Generate buffers and arrays
-	api->GenerateVertexArrays(1, &m_VAO);
-	api->GenerateBuffers(1, &m_VBO);
-	api->GenerateBuffers(1, &m_EBO);
-	api->GenerateBuffers(1, &m_VBOInstance);
+	m_VAO = api->CreateVertexArray();
+	m_VBO = api->CreateBuffer();
+	m_EBO = api->CreateBuffer();
+	m_VBOInstance = api->CreateBuffer();
 	//bind
 	api->BindVertexArray(m_VAO);
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
 	//input layout
 	//************
 	//geometry
@@ -54,7 +54,7 @@ void Patch::Init()
 	api->DefineVertexAttributePointer(1, 2, E_DataType::Float, false, sizeof(PatchVertex), offsetof(PatchVertex, morph));
 	//instances
 	//bind
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VBOInstance);
+	api->BindBuffer(E_BufferType::Vertex, m_VBOInstance);
 	api->SetVertexAttributeArrayEnabled(2, true);
 	api->SetVertexAttributeArrayEnabled(3, true);
 	api->SetVertexAttributeArrayEnabled(4, true);
@@ -68,9 +68,9 @@ void Patch::Init()
 	api->DefineVertexAttribDivisor(4, 1);
 	api->DefineVertexAttribDivisor(5, 1);
 	//Indices
-	api->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+	api->BindBuffer(E_BufferType::Index, m_EBO);
 	//unbind
-	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(E_BufferType::Vertex, 0);
 	api->BindVertexArray(0);
 
 	GenerateGeometry(m_Levels);
@@ -130,11 +130,11 @@ void Patch::GenerateGeometry(int16 levels)
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	// rebind
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	api->SetBufferData(GL_ARRAY_BUFFER, m_Vertices.size() * sizeof(PatchVertex), m_Vertices.data(), GL_DYNAMIC_DRAW);
-	api->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-	api->SetBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*m_Indices.size(), m_Indices.data(), GL_STATIC_DRAW);
-	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
+	api->SetBufferData(E_BufferType::Vertex, m_Vertices.size() * sizeof(PatchVertex), m_Vertices.data(), E_UsageHint::Dynamic);
+	api->BindBuffer(E_BufferType::Index, m_EBO);
+	api->SetBufferData(E_BufferType::Index, sizeof(uint32)*m_Indices.size(), m_Indices.data(), E_UsageHint::Static);
+	api->BindBuffer(E_BufferType::Vertex, 0);
 }
 
 void Patch::BindInstances(std::vector<PatchInstance> &instances)
@@ -143,9 +143,9 @@ void Patch::BindInstances(std::vector<PatchInstance> &instances)
 
 	//update buffer
 	m_NumInstances = (int32)instances.size();
-	api->BindBuffer(GL_ARRAY_BUFFER, m_VBOInstance);
-	api->SetBufferData(GL_ARRAY_BUFFER, instances.size() * sizeof(PatchInstance), instances.data(), GL_STATIC_DRAW);
-	api->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(E_BufferType::Vertex, m_VBOInstance);
+	api->SetBufferData(E_BufferType::Vertex, instances.size() * sizeof(PatchInstance), instances.data(), E_UsageHint::Static);
+	api->BindBuffer(E_BufferType::Vertex, 0);
 }
 
 void Patch::UploadDistanceLUT(std::vector<float> &distances)
@@ -173,17 +173,17 @@ void Patch::Draw()
 	m_pPatchShader->Upload("radius"_hash, m_pPlanet->GetRadius());
 	m_pPatchShader->Upload("morphRange"_hash, m_MorphRange);
 
-	api->LazyBindTexture(0, GL_TEXTURE_2D, m_pPlanet->GetDiffuseMap()->GetHandle());
-	api->LazyBindTexture(1, GL_TEXTURE_2D, m_pPlanet->GetHeightMap()->GetHandle());
-	api->LazyBindTexture(2, GL_TEXTURE_2D, m_pPlanet->GetDetail1Map()->GetHandle());
-	api->LazyBindTexture(3, GL_TEXTURE_2D, m_pPlanet->GetDetail2Map()->GetHandle());
-	api->LazyBindTexture(4, GL_TEXTURE_2D, m_pPlanet->GetHeightDetailMap()->GetHandle());
+	api->LazyBindTexture(0, m_pPlanet->GetDiffuseMap()->GetTargetType(), m_pPlanet->GetDiffuseMap()->GetHandle());
+	api->LazyBindTexture(1, m_pPlanet->GetHeightMap()->GetTargetType(), m_pPlanet->GetHeightMap()->GetHandle());
+	api->LazyBindTexture(2, m_pPlanet->GetDetail1Map()->GetTargetType(), m_pPlanet->GetDetail1Map()->GetHandle());
+	api->LazyBindTexture(3, m_pPlanet->GetDetail2Map()->GetTargetType(), m_pPlanet->GetDetail2Map()->GetHandle());
+	api->LazyBindTexture(4, m_pPlanet->GetHeightDetailMap()->GetTargetType(), m_pPlanet->GetHeightDetailMap()->GetHandle());
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);
 
 	//Draw the object
-	api->DrawElementsInstanced(GL_TRIANGLES, (uint32)m_Indices.size(), GL_UNSIGNED_INT, 0, m_NumInstances);
+	api->DrawElementsInstanced(E_DrawMode::Triangles, static_cast<uint32>(m_Indices.size()), E_DataType::UInt, 0, m_NumInstances);
 
 	//unbind vertex array
 	api->BindVertexArray(0);
@@ -193,7 +193,8 @@ Patch::~Patch()
 {
 	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	api->DeleteVertexArrays(1, &m_EBO);
-	api->DeleteVertexArrays(1, &m_VAO);
-	api->DeleteBuffers(1, &m_VBO);
+	api->DeleteVertexArray(m_VAO);
+	api->DeleteBuffer(m_EBO);
+	api->DeleteBuffer(m_VBO);
+	api->DeleteBuffer(m_VBOInstance);
 }

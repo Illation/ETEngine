@@ -174,7 +174,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	// convert HDR equirectangular environment map to cubemap equivalent
 	api->SetShader(equiCubeShader.get());
 	equiCubeShader->Upload("equirectangularMap"_hash, 0);
-	api->LazyBindTexture(0, GL_TEXTURE_2D, pEqui->GetHandle());
+	api->LazyBindTexture(0, E_TextureType::Texture2D, pEqui->GetHandle());
 	equiCubeShader->Upload("projection"_hash, CubeCaptureProjection());
 
 	//render the cube
@@ -182,11 +182,11 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 
 	api->SetViewport(ivec2(0), ivec2(resolution));
 	api->BindFramebuffer(captureFBO);
-	for (uint32 i = 0; i < 6; ++i)
+	for (uint8 face = 0; face < 6; ++face)
 	{
-		equiCubeShader->Upload("view"_hash, captureViews[i]);
-		api->LinkTextureToFbo2D(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap->GetHandle(), 0);
-		api->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		equiCubeShader->Upload("view"_hash, captureViews[face]);
+		api->LinkCubeMapFaceToFbo2D(face, envCubeMap->GetHandle(), 0);
+		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
 	}
@@ -195,7 +195,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	params.genMipMaps = true;
 	envCubeMap->SetParameters(params);
 
-	api->BindTexture(GL_TEXTURE_2D, 0);
+	api->BindTexture(E_TextureType::Texture2D, 0);
 	api->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 
 	api->DeleteRenderBuffers(1, &captureRBO);
