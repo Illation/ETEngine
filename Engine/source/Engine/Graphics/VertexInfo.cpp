@@ -126,7 +126,7 @@ bool AttributeDescriptor::ValidateFlags(T_VertexFlags const supportedFlags, T_Ve
 //
 void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const flags, std::vector<int32> const& locations)
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	uint16 const stride = AttributeDescriptor::GetVertexSize(flags);
 
@@ -163,7 +163,7 @@ void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const flags, std::v
 //
 void AttributeDescriptor::DefineAttributeArray(T_VertexFlags const supportedFlags, T_VertexFlags const targetFlags, std::vector<int32> const& locations)
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	uint16 const stride = AttributeDescriptor::GetVertexSize(supportedFlags);
 

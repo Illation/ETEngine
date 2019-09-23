@@ -3,7 +3,6 @@
 
 #include "Shader.h"
 
-#include <glad/glad.h>
 #include <stb/stb_image.h>
 
 #include <EtCore/Content/ResourceManager.h>
@@ -105,7 +104,7 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 		return false;
 	}
 
-	TextureData hdrTexture(width, height, GL_RGB16F, GL_RGB, GL_FLOAT);
+	TextureData hdrTexture(ivec2(width, height), E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 	hdrTexture.Build((void*)hdrFloats);
 
 	// we have our equirectangular texture on the GPU so we can clean up the load data on the CPU
@@ -141,7 +140,7 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 const resolution)
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Create framebuffer
 	T_FbLoc captureFBO;
@@ -155,7 +154,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, captureRBO);
 
 	//Preallocate memory for cubemap
-	TextureData* const envCubeMap = new TextureData(E_TextureType::CubeMap, resolution, resolution);
+	TextureData* const envCubeMap = new TextureData(E_TextureType::CubeMap, ivec2(resolution));
 	envCubeMap->Build();
 
 	TextureParameters params(false);

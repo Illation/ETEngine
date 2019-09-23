@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "StarField.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Content/AssetStub.h>
 #include <EtCore/FileSystem/Json/JsonParser.h>
@@ -17,7 +15,7 @@ StarField::StarField(T_Hash const assetId)
 
 StarField::~StarField()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->DeleteVertexArray(m_VAO);
 	api->DeleteBuffer(m_VBO);
@@ -46,7 +44,7 @@ void StarField::Initialize()
 		}
 	}
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdStarField.glsl"_hash);
 	m_pSprite = ResourceManager::Instance()->GetAssetData<TextureData>("starSprite.png"_hash);
@@ -75,11 +73,11 @@ void StarField::Initialize()
 
 void StarField::DrawForward()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->SetBlendEnabled(true);
-	api->SetBlendEquation(GL_FUNC_ADD);
-	api->SetBlendFunction(GL_ONE, GL_ZERO);
+	api->SetBlendEquation(E_BlendEquation::Add);
+	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::Zero);
 
 	api->BindVertexArray(m_VAO);
 	api->SetShader(m_pShader.get());

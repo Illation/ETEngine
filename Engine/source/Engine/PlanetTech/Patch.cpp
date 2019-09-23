@@ -4,8 +4,6 @@
 #include "Triangulator.h"
 #include "Planet.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Graphics/Shader.h>
@@ -22,7 +20,7 @@ Patch::Patch(int16 levels)
 
 void Patch::Init()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Shader Init
 	//***********
@@ -127,7 +125,7 @@ void Patch::GenerateGeometry(int16 levels)
 		rowIdx = nextIdx;
 	}
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	// rebind
 	api->BindBuffer(E_BufferType::Vertex, m_VBO);
@@ -139,7 +137,7 @@ void Patch::GenerateGeometry(int16 levels)
 
 void Patch::BindInstances(std::vector<PatchInstance> &instances)
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//update buffer
 	m_NumInstances = (int32)instances.size();
@@ -159,7 +157,7 @@ void Patch::UploadDistanceLUT(std::vector<float> &distances)
 
 void Patch::Draw()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->SetShader(m_pPatchShader.get());
 
@@ -191,7 +189,7 @@ void Patch::Draw()
 
 Patch::~Patch()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->DeleteVertexArray(m_VAO);
 	api->DeleteBuffer(m_EBO);

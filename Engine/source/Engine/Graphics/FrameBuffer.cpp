@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "FrameBuffer.h"
 
-#include <glad/glad.h>
-
 #include "Shader.h"
 #include "TextureData.h"
 
@@ -12,15 +10,15 @@
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 
 
-FrameBuffer::FrameBuffer(std::string shaderFile, GLenum format, uint32 numTargets)
-	:m_ShaderFile(shaderFile),
-	m_Format(format),
-	m_NumTargets(numTargets)
-{
-}
+FrameBuffer::FrameBuffer(std::string shaderFile, E_DataType const format, uint32 numTargets)
+	: m_ShaderFile(shaderFile)
+	, m_Format(format)
+	, m_NumTargets(numTargets)
+{ }
+
 FrameBuffer::~FrameBuffer()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->DeleteRenderBuffers(1, &m_RboDepthStencil);
 	for (size_t i = 0; i < m_pTextureVec.size(); i++)
@@ -32,7 +30,7 @@ FrameBuffer::~FrameBuffer()
 
 void FrameBuffer::Initialize()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Load and compile Shaders
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>(GetHash(FileUtil::ExtractName(m_ShaderFile)));
@@ -63,7 +61,7 @@ void FrameBuffer::Enable(bool active)
 
 void FrameBuffer::Draw()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->SetDepthEnabled(false);
 	api->SetShader(m_pShader.get());
@@ -81,7 +79,7 @@ void FrameBuffer::Draw()
 
 void FrameBuffer::GenerateFramebufferTextures()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
@@ -96,7 +94,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 	//Depth buffer
 	if (m_CaptureDepth)
 	{
-		TextureData* depthMap = new TextureData(windowSettings.Width, windowSettings.Height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT );
+		TextureData* depthMap = new TextureData(windowSettings.Dimensions, E_ColorFormat::Depth24, E_ColorFormat::Depth, E_DataType::Float);
 		depthMap->Build();
 		api->LinkTextureToFboDepth(depthMap->GetHandle());
 		depthMap->SetParameters(params);
@@ -106,7 +104,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 	//Color buffers
 	for (uint32 i = 0; i < m_NumTargets; i++)
 	{
-		TextureData* colorBuffer = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGBA16F, GL_RGBA, m_Format );
+		TextureData* colorBuffer = new TextureData(windowSettings.Dimensions, E_ColorFormat::RGBA16f, E_ColorFormat::RGBA, m_Format);
 		colorBuffer->Build();
 		api->LinkTextureToFbo2D(i, colorBuffer->GetHandle(), 0);
 		colorBuffer->SetParameters(params, true);
@@ -127,7 +125,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 
 void FrameBuffer::ResizeFramebufferTextures()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 

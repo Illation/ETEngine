@@ -73,7 +73,7 @@ void GbufferMaterial::LoadTextures()
 
 void GbufferMaterial::UploadDerivedVariables()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Bind active textures
 	if (m_OutdatedTextureData)LoadTextures();

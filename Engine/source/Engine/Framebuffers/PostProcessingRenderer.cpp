@@ -1,15 +1,12 @@
 #include "stdafx.h"
 #include "PostProcessingRenderer.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Graphics/Shader.h>
 #include <Engine/GraphicsHelper/ShadowRenderer.h>
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>
-#include <Engine/GraphicsHelper/GraphicsApiContext.h>
 #include <Engine/Graphics/TextureData.h>
 
 
@@ -23,7 +20,7 @@ PostProcessingRenderer::~PostProcessingRenderer()
 
 void PostProcessingRenderer::DeleteFramebuffers()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->DeleteRenderBuffers(1, &m_CollectRBO);
 	delete m_CollectTex; m_CollectTex = nullptr;
@@ -48,7 +45,7 @@ void PostProcessingRenderer::DeleteFramebuffers()
 
 void PostProcessingRenderer::Initialize()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Load and compile Shaders
 	m_pDownsampleShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostDownsample.glsl"_hash);
@@ -80,7 +77,7 @@ void PostProcessingRenderer::Initialize()
 
 void PostProcessingRenderer::GenerateFramebuffers()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
@@ -93,7 +90,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	//Generate texture and fbo and rbo as initial postprocessing target
 	api->GenFramebuffers(1, &m_CollectFBO);
 	api->BindFramebuffer(m_CollectFBO);
-	m_CollectTex = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT );
+	m_CollectTex = new TextureData(windowSettings.Dimensions, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 	m_CollectTex->Build();
 	m_CollectTex->SetParameters(params);
 	api->LinkTextureToFbo2D(0, m_CollectTex->GetHandle(), 0);
@@ -106,9 +103,9 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	//Generate textures for the hdr fbo to output into
 	api->GenFramebuffers(1, &m_HDRoutFBO);
 	api->BindFramebuffer(m_HDRoutFBO);
-	for(GLuint i = 0; i < 2; i++)
+	for(uint32 i = 0; i < 2; i++)
 	{
-		m_ColorBuffers[i] = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
+		m_ColorBuffers[i] = new TextureData(windowSettings.Dimensions, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 		m_ColorBuffers[i]->Build();
 		m_ColorBuffers[i]->SetParameters(params, true);
 		// attach texture to framebuffer
@@ -120,19 +117,19 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	//Generate framebuffers for downsampling
 	api->GenFramebuffers(NUM_BLOOM_DOWNSAMPLES, m_DownSampleFBO);
 	api->GenFramebuffers(NUM_BLOOM_DOWNSAMPLES, m_DownPingPongFBO);
-	for(GLuint i = 0; i < NUM_BLOOM_DOWNSAMPLES; i++)
+	for(uint32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; i++)
 	{
 		float resMult = 1.f / (float)std::pow(2, i + 1);
 		ivec2 res = etm::vecCast<int32>(etm::vecCast<float>(windowSettings.Dimensions) * resMult);
 
 		api->BindFramebuffer( m_DownSampleFBO[i] );
-		m_DownSampleTexture[i] = new TextureData(res.x, res.y, GL_RGB16F, GL_RGB, GL_FLOAT );
+		m_DownSampleTexture[i] = new TextureData(res, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 		m_DownSampleTexture[i]->Build();
 		m_DownSampleTexture[i]->SetParameters(params, true);
 		api->LinkTextureToFbo2D(0, m_DownSampleTexture[i]->GetHandle(), 0);
 
 		api->BindFramebuffer( m_DownPingPongFBO[i] );
-		m_DownPingPongTexture[i] = new TextureData(res.x, res.y, GL_RGB16F, GL_RGB, GL_FLOAT );
+		m_DownPingPongTexture[i] = new TextureData(res, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 		m_DownPingPongTexture[i]->Build();
 		m_DownPingPongTexture[i]->SetParameters(params, true);
 		api->LinkTextureToFbo2D(0, m_DownPingPongTexture[i]->GetHandle(), 0);
@@ -140,10 +137,10 @@ void PostProcessingRenderer::GenerateFramebuffers()
 
 	//Generate framebuffers and textures for gaussian ping pong
 	api->GenFramebuffers( 2, m_PingPongFBO );
-	for(GLuint i = 0; i < 2; i++)
+	for(uint32 i = 0; i < 2; i++)
 	{
 		api->BindFramebuffer( m_PingPongFBO[i] );
-		m_PingPongTexture[i] = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
+		m_PingPongTexture[i] = new TextureData(windowSettings.Dimensions, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 		m_PingPongTexture[i]->Build();
 		m_PingPongTexture[i]->SetParameters(params, true);
 		api->LinkTextureToFbo2D(0, m_PingPongTexture[i]->GetHandle(), 0);
@@ -161,7 +158,7 @@ void PostProcessingRenderer::EnableInput()
 }
 void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSettings &settings)
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
@@ -174,7 +171,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 	m_pDownsampleShader->Upload("threshold"_hash, settings.bloomThreshold);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 	//downsample glow
-	for (GLuint i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
+	for (uint32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
 		if (i > 0) api->SetShader(m_pDownsampleShader.get());
 		float resMult = 1.f / (float)std::pow(2, i + 1);
@@ -206,7 +203,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 	//ping pong gaussian blur
 	bool horizontal = true;
 	api->SetShader(m_pGaussianShader.get());
-	for (GLuint i = 0; i < (GLuint)graphicsSettings.NumBlurPasses * 2; i++)
+	for (uint32 i = 0; i < static_cast<uint32>(graphicsSettings.NumBlurPasses * 2); i++)
 	{
 		api->BindFramebuffer(m_PingPongFBO[horizontal]);
 		m_pGaussianShader->Upload("horizontal"_hash, horizontal);
@@ -250,7 +247,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 
 void PostProcessingRenderer::ResizeFBTextures()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
@@ -293,7 +290,7 @@ void PostProcessingRenderer::ResizeFBTextures()
 	{
 		m_ColorBuffers[i]->Resize(windowSettings.Dimensions );
 	}
-	for(GLuint i = 0; i < NUM_BLOOM_DOWNSAMPLES; i++)
+	for(uint32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; i++)
 	{
 		//api->BindFramebuffer( m_DownSampleFBO[i] );
 		float resMult = 1.f / (float)std::pow( 2, i + 1 );
@@ -302,7 +299,7 @@ void PostProcessingRenderer::ResizeFBTextures()
 		m_DownSampleTexture[i]->Resize(windowSettings.Dimensions);
 		m_DownPingPongTexture[i]->Resize(windowSettings.Dimensions);
 	}
-	for(GLuint i = 0; i < 2; i++)
+	for(uint32 i = 0; i < 2; i++)
 	{
 		m_PingPongTexture[i]->Resize(windowSettings.Dimensions );
 	}

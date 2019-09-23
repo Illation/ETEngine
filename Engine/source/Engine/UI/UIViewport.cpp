@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "UIViewport.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
@@ -62,7 +60,7 @@ void UIViewportRenderer::Draw(ivec2 pos, ivec2 size)
 		return;
 	}
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->SetShader(m_pShader.get());
 	api->SetViewport(pos, size);
@@ -73,7 +71,7 @@ void UIViewportRenderer::Draw(ivec2 pos, ivec2 size)
 
 void UIViewportRenderer::Initialize(ivec2 size)
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("EditorComposite.glsl"_hash);
 
@@ -84,7 +82,7 @@ void UIViewportRenderer::Initialize(ivec2 size)
 
 	api->GenFramebuffers(1, &m_FBO);
 	api->BindFramebuffer(m_FBO);
-	m_pTex = new TextureData(size.x, size.y, GL_RGB16F, GL_RGB, GL_FLOAT);
+	m_pTex = new TextureData(size, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 	m_pTex->Build();
 	m_pTex->SetParameters(params);
 	api->LinkTextureToFbo2D(0, m_pTex->GetHandle(), 0);

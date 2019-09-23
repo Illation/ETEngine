@@ -114,7 +114,7 @@ void UIDynamicBox::AddChild( UIContainer* child, Positioning positioning )
 
 bool UIPortal::Draw(uint16 level)
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Limit dimensions
 	vec2 size = vec2((float)m_Rect.size.x, (float)m_Rect.size.y);

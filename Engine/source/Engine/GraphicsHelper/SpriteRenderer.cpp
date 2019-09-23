@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "SpriteRenderer.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Graphics/TextureData.h>
@@ -24,7 +22,7 @@
 //
 SpriteRenderer::~SpriteRenderer()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->DeleteVertexArray(m_VAO);
 	api->DeleteBuffer(m_VBO);
@@ -41,7 +39,7 @@ SpriteRenderer::~SpriteRenderer()
 //
 void SpriteRenderer::Initialize()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostSprite.glsl"_hash);
 
@@ -80,7 +78,7 @@ void SpriteRenderer::Initialize()
 	CalculateTransform();
 
 	//Create empty dummy texture
-	m_EmptyTex = new TextureData(1, 1, GL_RGB, GL_RGB, GL_FLOAT);
+	m_EmptyTex = new TextureData(ivec2(1), E_ColorFormat::RGB, E_ColorFormat::RGB, E_DataType::Float);
 
 	m_EmptyTex->Build((void*)(vec4(1).data.data()));
 
@@ -191,7 +189,7 @@ void SpriteRenderer::Draw()
 		return;
 	}
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	UpdateBuffer();
 
@@ -251,7 +249,7 @@ void SpriteRenderer::Draw()
 //
 void SpriteRenderer::UpdateBuffer()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);
@@ -271,7 +269,7 @@ void SpriteRenderer::UpdateBuffer()
 	}
 	else
 	{
-		GLvoid* p = api->MapBuffer(E_BufferType::Vertex, E_AccessMode::Write);
+		void* p = api->MapBuffer(E_BufferType::Vertex, E_AccessMode::Write);
 		memcpy( p, m_Sprites.data(), m_Sprites.size() * sizeof( SpriteVertex ) );
 		api->UnmapBuffer(E_BufferType::Vertex);
 	}

@@ -1,9 +1,8 @@
 #pragma once
 
-#include <map>
-#include <glad/glad.h>
-
 #include <Engine/Graphics/VertexInfo.h>
+
+#include "GraphicsTypes.h"
 
 
 // forward declarations
@@ -15,324 +14,167 @@ template<typename T>
 class Uniform;
 
 
-typedef int32 T_AttribLoc;
-typedef int32 T_UniformLoc;
-typedef uint32 T_ShaderLoc;
-
-typedef uint32 T_TextureLoc;
-
-typedef uint32 T_BufferLoc;
-typedef uint32 T_ArrayLoc;
-
-typedef uint32 T_FbLoc;
-typedef uint32 T_RbLoc;
-
-
 //---------------------------------
-// E_TextureType
+// I_GraphicsApiContext
 //
-// Denotes the type a texture can be
+// Interface for any graphics API wrapper
 //
-enum class E_TextureType : uint8
-{
-	Texture2D,
-	Texture3D,
-	CubeMap
-};
-
-//---------------------------------
-// E_ShaderType
-//
-// Shaders for each type in the programmable render pipeline
-//
-enum class E_ShaderType : uint8
-{
-	Compute,
-	Vertex,
-	TesselationControl,
-	TesselationEvaluation,
-	Geometry,
-	Fragment
-};
-
-//---------------------------------
-// E_DrawMode
-//
-// How vertex data should be drawn
-//
-enum class E_DrawMode : uint8 
-{
-	Points,
-	LineStrip,
-	LineLoop,
-	Lines,
-	TriangleStrip,
-	TriangleFan,
-	Triangles,
-	Patches
-};
-
-//---------------------------------
-// E_ClearFlags
-//
-// Which buffers should be reset
-//
-typedef uint8 T_ClearFlags;
-enum E_ClearFlag : T_ClearFlags
-{
-	Color	= 1 << 0,
-	Depth	= 1 << 1,
-	Stencil = 1 << 2
-};
-
-//---------------------------------
-// E_BufferType
-//
-// Specifies the purpose / target of buffer data and operations
-//
-enum class E_BufferType : uint8
-{
-	Vertex,
-	Index,
-	Uniform
-};
-
-//---------------------------------
-// E_UsageHint
-//
-// Whether or not a buffer will change often
-//
-enum class E_UsageHint : uint8
-{
-	Static,
-	Dynamic
-};
-
-//---------------------------------
-// E_AccessMode
-//
-enum class E_AccessMode : uint8
-{
-	Read,
-	Write,
-	ReadWrite
-};
-
-//---------------------------------
-// E_RenderBufferFormat
-//
-enum class E_RenderBufferFormat : uint8
-{
-	Depth24,
-	Depth24_Stencil8
-};
-
-//---------------------------------
-// E_FaceCullMode
-//
-enum class E_FaceCullMode : uint8
-{
-	Front,
-	Back,
-	FrontBack
-};
-
-
-//---------------------------------
-// GraphicsApiContext
-//
-// Wrapper for all graphics API calls, avoids resubmitting api calls by caching some of the state CPU side
-//
-class GraphicsApiContext
+class I_GraphicsApiContext
 {
 public:
 
 	// init deinit
 	//--------------
-	GraphicsApiContext() = default;
+	I_GraphicsApiContext() = default;
+	virtual ~I_GraphicsApiContext() = default;
 
-	void Initialize();
+	virtual void Initialize() = 0;
 
 	// State changes
 	//--------------
-	void SetDepthEnabled(bool const enabled);
-	void SetBlendEnabled(bool const enabled);
-	void SetBlendEnabled(bool const enabled, uint32 const index);
-	void SetBlendEnabled(std::vector<bool> const& blendBuffers);
-	void SetStencilEnabled(bool const enabled);
-	void SetCullEnabled(bool const enabled);
+	virtual void SetDepthEnabled(bool const enabled) = 0;
+	virtual void SetBlendEnabled(bool const enabled) = 0;
+	virtual void SetBlendEnabled(bool const enabled, uint32 const index) = 0;
+	virtual void SetBlendEnabled(std::vector<bool> const& blendBuffers) = 0;
+	virtual void SetStencilEnabled(bool const enabled) = 0;
+	virtual void SetCullEnabled(bool const enabled) = 0;
 
-	void SetSeamlessCubemapsEnabled(bool const enabled);
+	virtual void SetSeamlessCubemapsEnabled(bool const enabled) = 0;
 
-	void SetFaceCullingMode(E_FaceCullMode const cullMode);
-	void SetBlendEquation(GLenum equation);
-	void SetBlendFunction(GLenum sFactor, GLenum dFactor);
+	virtual void SetFaceCullingMode(E_FaceCullMode const cullMode) = 0;
+	virtual void SetBlendEquation(E_BlendEquation const equation) = 0;
+	virtual void SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor) = 0;
 
-	void SetViewport(ivec2 const pos, ivec2 const size);
-	void GetViewport(ivec2& pos, ivec2& size);
+	virtual void SetViewport(ivec2 const pos, ivec2 const size) = 0;
+	virtual void GetViewport(ivec2& pos, ivec2& size) = 0;
 
-	void SetClearColor(vec4 const& col);
+	virtual void SetClearColor(vec4 const& col) = 0;
 
-	void SetShader(ShaderData const* pShader);
+	virtual void SetShader(ShaderData const* pShader) = 0;
 
-	void BindFramebuffer(T_FbLoc const handle);
-	void BindReadFramebuffer(T_FbLoc const handle);
-	void BindDrawFramebuffer(T_FbLoc const handle);
+	virtual void BindFramebuffer(T_FbLoc const handle) = 0;
+	virtual void BindReadFramebuffer(T_FbLoc const handle) = 0;
+	virtual void BindDrawFramebuffer(T_FbLoc const handle) = 0;
 
-	void BindRenderbuffer(T_RbLoc const handle);
+	virtual void BindRenderbuffer(T_RbLoc const handle) = 0;
 
-	void SetActiveTexture(uint32 const unit);
-	void BindTexture(E_TextureType const target, T_TextureLoc const handle);
+	virtual void SetActiveTexture(uint32 const unit) = 0;
+	virtual void BindTexture(E_TextureType const target, T_TextureLoc const handle) = 0;
 
 	//Makes sure that a texture is bound to a units target for shading, 
 	//only changes active texture unit if the texture was not bound yet
-	void LazyBindTexture(uint32 const unit, E_TextureType const target, T_TextureLoc const handle);
+	virtual void LazyBindTexture(uint32 const unit, E_TextureType const target, T_TextureLoc const handle) = 0;
 
-	void BindVertexArray(T_ArrayLoc const vertexArray);
-	void BindBuffer(E_BufferType const target, T_BufferLoc const buffer);
+	virtual void BindVertexArray(T_ArrayLoc const vertexArray) = 0;
+	virtual void BindBuffer(E_BufferType const target, T_BufferLoc const buffer) = 0;
 
-	void SetLineWidth(float const lineWidth);
+	virtual void SetLineWidth(float const lineWidth) = 0;
 
 	//Draw Calls
 	//--------------
-	void DrawArrays(E_DrawMode const mode, uint32 const first, uint32 const count);
-	void DrawElements(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices);
-	void DrawElementsInstanced(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices, uint32 const primcount);
+	virtual void DrawArrays(E_DrawMode const mode, uint32 const first, uint32 const count) = 0;
+	virtual void DrawElements(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices) = 0;
+	virtual void DrawElementsInstanced(E_DrawMode const mode, 
+		uint32 const count, 
+		E_DataType const type, 
+		const void * indices, 
+		uint32 const primcount) = 0;
 
 	// other commands
 	//--------------
-	void Flush() const;
-	void Clear(T_ClearFlags const mask) const;
+	virtual void Flush() const = 0;
+	virtual void Clear(T_ClearFlags const mask) const = 0;
 
-	T_ArrayLoc CreateVertexArray() const;
-	T_BufferLoc CreateBuffer() const;
+	virtual T_ArrayLoc CreateVertexArray() const = 0;
+	virtual T_BufferLoc CreateBuffer() const = 0;
 
-	void DeleteVertexArray(T_ArrayLoc& loc) const;
-	void DeleteBuffer(T_BufferLoc& loc) const;
+	virtual void DeleteVertexArray(T_ArrayLoc& loc) const = 0;
+	virtual void DeleteBuffer(T_BufferLoc& loc) const = 0;
 
-	void SetBufferData(E_BufferType const target, int64 const size, void const* const data, E_UsageHint const usage) const;
-	void SetVertexAttributeArrayEnabled(uint32 const index, bool const enabled) const; // could at some point be a member on VertexArray data object
+	virtual void SetBufferData(E_BufferType const target, int64 const size, void const* const data, E_UsageHint const usage) const = 0;
+	// could at some point be a member on VertexArray data object
+	virtual void SetVertexAttributeArrayEnabled(uint32 const index, bool const enabled) const = 0; 
 
-	void* MapBuffer(E_BufferType const target, E_AccessMode const access) const;
-	void UnmapBuffer(E_BufferType const target) const;
+	virtual void* MapBuffer(E_BufferType const target, E_AccessMode const access) const = 0;
+	virtual void UnmapBuffer(E_BufferType const target) const = 0;
 
-	T_TextureLoc GenerateTexture() const;
-	void DeleteTexture(T_TextureLoc& handle) const;
-	void SetTextureData(TextureData& texture, void* data);
-	void SetTextureParams(TextureData const& texture, uint8& mipLevels, TextureParameters& prev, TextureParameters const& next, bool const force);
+	virtual T_TextureLoc GenerateTexture() const = 0;
+	virtual void DeleteTexture(T_TextureLoc& handle) const = 0;
+	virtual void SetTextureData(TextureData& texture, void* data) = 0;
+	virtual void SetTextureParams(TextureData const& texture, 
+		uint8& mipLevels, 
+		TextureParameters& prev, 
+		TextureParameters const& next, 
+		bool const force) = 0;
 
-	T_ShaderLoc CreateShader(E_ShaderType const type) const;
-	T_ShaderLoc CreateProgram() const;
-	void DeleteShader(T_ShaderLoc const shader);
-	void DeleteProgram(T_ShaderLoc const program);
+	virtual T_ShaderLoc CreateShader(E_ShaderType const type) const = 0;
+	virtual T_ShaderLoc CreateProgram() const = 0;
+	virtual void DeleteShader(T_ShaderLoc const shader) = 0;
+	virtual void DeleteProgram(T_ShaderLoc const program) = 0;
 
-	void CompileShader(T_ShaderLoc const shader, std::string const& source) const;
-	void BindFragmentDataLocation(T_ShaderLoc const program, uint32 const colorNumber, std::string const& name) const;
-	void AttachShader(T_ShaderLoc const program, T_ShaderLoc const shader) const;
-	void LinkProgram(T_ShaderLoc const program) const;
+	virtual void CompileShader(T_ShaderLoc const shader, std::string const& source) const = 0;
+	virtual void BindFragmentDataLocation(T_ShaderLoc const program, uint32 const colorNumber, std::string const& name) const = 0;
+	virtual void AttachShader(T_ShaderLoc const program, T_ShaderLoc const shader) const = 0;
+	virtual void LinkProgram(T_ShaderLoc const program) const = 0;
 
-	bool IsShaderCompiled(T_ShaderLoc const shader) const;
-	void GetShaderInfo(T_ShaderLoc const shader, std::string& info) const;
+	virtual bool IsShaderCompiled(T_ShaderLoc const shader) const = 0;
+	virtual void GetShaderInfo(T_ShaderLoc const shader, std::string& info) const = 0;
 
-	int32 GetAttributeCount(T_ShaderLoc const program) const;
-	int32 GetUniformCount(T_ShaderLoc const program) const;
-	void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<I_Uniform*>& uniforms) const;
-	void GetActiveAttribute(T_ShaderLoc const program, uint32 const index, AttributeDescriptor& info) const;
-	T_AttribLoc GetAttributeLocation(T_ShaderLoc const program, std::string const& name) const;
+	virtual int32 GetAttributeCount(T_ShaderLoc const program) const = 0;
+	virtual int32 GetUniformCount(T_ShaderLoc const program) const = 0;
+	virtual void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<I_Uniform*>& uniforms) const = 0;
+	virtual void GetActiveAttribute(T_ShaderLoc const program, uint32 const index, AttributeDescriptor& info) const = 0;
+	virtual T_AttribLoc GetAttributeLocation(T_ShaderLoc const program, std::string const& name) const = 0;
 
-	void UploadUniform(const Uniform<bool> &uniform);
-	void UploadUniform(const Uniform<int32> &uniform);
-	void UploadUniform(const Uniform<uint32> &uniform);
-	void UploadUniform(const Uniform<float> &uniform);
-	void UploadUniform(const Uniform<vec2> &uniform);
-	void UploadUniform(const Uniform<vec3> &uniform);
-	void UploadUniform(const Uniform<vec4> &uniform);
-	void UploadUniform(const Uniform<mat3> &uniform);
-	void UploadUniform(const Uniform<mat4> &uniform);
+	virtual void UploadUniform(const Uniform<bool> &uniform) = 0;
+	virtual void UploadUniform(const Uniform<int32> &uniform) = 0;
+	virtual void UploadUniform(const Uniform<uint32> &uniform) = 0;
+	virtual void UploadUniform(const Uniform<float> &uniform) = 0;
+	virtual void UploadUniform(const Uniform<vec2> &uniform) = 0;
+	virtual void UploadUniform(const Uniform<vec3> &uniform) = 0;
+	virtual void UploadUniform(const Uniform<vec4> &uniform) = 0;
+	virtual void UploadUniform(const Uniform<mat3> &uniform) = 0;
+	virtual void UploadUniform(const Uniform<mat4> &uniform) = 0;
 
-	void DefineVertexAttributePointer(uint32 const index, int32 const size, E_DataType const type, bool const norm, int32 const stride, size_t const offset) const;
-	void DefineVertexAttribIPointer(uint32 const index, int32 const size, E_DataType const type, int32 const stride, size_t const offset) const;
-	void DefineVertexAttribDivisor(uint32 const index, uint32 const divisor) const;
+	virtual void DefineVertexAttributePointer(uint32 const index, 
+		int32 const size, 
+		E_DataType const type, 
+		bool const norm, 
+		int32 const stride, 
+		size_t const offset) const = 0;
+	virtual void DefineVertexAttribIPointer(uint32 const index, 
+		int32 const size, 
+		E_DataType const type, 
+		int32 const stride, 
+		size_t const offset) const = 0;
+	virtual void DefineVertexAttribDivisor(uint32 const index, uint32 const divisor) const = 0;
 
-	void GenFramebuffers(int32 const n, T_FbLoc *ids) const;
-	void DeleteFramebuffers(int32 const n, T_FbLoc *ids) const;
+	virtual void GenFramebuffers(int32 const n, T_FbLoc *ids) const = 0;
+	virtual void DeleteFramebuffers(int32 const n, T_FbLoc *ids) const = 0;
 
-	void GenRenderBuffers(int32 const n, T_RbLoc *ids) const;
-	void DeleteRenderBuffers(int32 const n, T_RbLoc *ids) const;
+	virtual void GenRenderBuffers(int32 const n, T_RbLoc *ids) const = 0;
+	virtual void DeleteRenderBuffers(int32 const n, T_RbLoc *ids) const = 0;
 
-	void SetRenderbufferStorage(E_RenderBufferFormat const format, ivec2 const dimensions) const;
+	virtual void SetRenderbufferStorage(E_RenderBufferFormat const format, ivec2 const dimensions) const = 0;
 
-	void LinkTextureToFbo(uint8 const attachment, T_TextureLoc const texHandle, int32 const level) const;
-	void LinkTextureToFbo2D(uint8 const attachment, T_TextureLoc const texHandle, int32 const level) const; // link to current draw FB with a color attachment
-	void LinkCubeMapFaceToFbo2D(uint8 const face, T_TextureLoc const texHandle, int32 const level) const;
-	void LinkTextureToFboDepth(T_TextureLoc const texHandle) const;
+	virtual void LinkTextureToFbo(uint8 const attachment, T_TextureLoc const texHandle, int32 const level) const = 0;
+	// link to current draw FB with a color attachment
+	virtual void LinkTextureToFbo2D(uint8 const attachment, T_TextureLoc const texHandle, int32 const level) const = 0; 
+	virtual void LinkCubeMapFaceToFbo2D(uint8 const face, T_TextureLoc const texHandle, int32 const level) const = 0;
+	virtual void LinkTextureToFboDepth(T_TextureLoc const texHandle) const = 0;
 
-	void LinkRenderbufferToFbo(E_RenderBufferFormat const attachment, uint32 const rboHandle) const;
+	virtual void LinkRenderbufferToFbo(E_RenderBufferFormat const attachment, uint32 const rboHandle) const = 0;
 
-	void SetDrawBufferCount(size_t const count) const;
-	void SetReadBufferEnabled(bool const val) const;
+	virtual void SetDrawBufferCount(size_t const count) const = 0;
+	virtual void SetReadBufferEnabled(bool const val) const = 0;
 
-	bool IsFramebufferComplete() const;
+	virtual bool IsFramebufferComplete() const = 0;
 
-	void CopyDepthReadToDrawFbo(ivec2 const source, ivec2 const target) const;
+	virtual void CopyDepthReadToDrawFbo(ivec2 const source, ivec2 const target) const = 0;
 
-	void SetPixelUnpackAlignment(int32 const val) const;
+	virtual void SetPixelUnpackAlignment(int32 const val) const = 0;
 
-private:
+	virtual void SetDepthFunction(E_DepthFunc const func) const = 0;
 
-	void EnOrDisAble(bool &state, bool enabled, GLenum glState);
-
-	//The index should be validated before calling this function, only blend and scissor test can be larger than 0
-	//the index for blending must be smaller than max draw buffers too
-	void EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLenum glState, uint32 index);
-
-	uint32 GetTexTarget(E_TextureType const type) const;
-	uint32 GetTypeId(E_DataType const type) const;
-
-	GLenum ConvShaderType(E_ShaderType const type) const;
-	GLenum ConvDrawMode(E_DrawMode const mode) const;
-	GLenum ConvBufferType(E_BufferType const type) const;
-	GLenum ConvUsageHint(E_UsageHint const hint) const;
-	GLenum ConvAccessMode(E_AccessMode const mode) const;
-	GLenum ConvFaceCullMode(E_FaceCullMode const mode) const;
-
-	T_FbLoc m_ReadFramebuffer = 0;
-	T_FbLoc m_DrawFramebuffer = 0;
-
-	T_RbLoc m_Renderbuffer = 0u;
-
-	int32 m_MaxDrawBuffers; //Depends on gpu and drivers
-
-	bool m_DepthTestEnabled = false;
-
-	bool m_CullFaceEnabled = false;
-	E_FaceCullMode m_CullFaceMode = E_FaceCullMode::Back;
-	
-	bool m_StencilTestEnabled = false;
-
-	bool m_SeamlessCubemapsEnabled = false;
-
-	bool m_BlendEnabled = false;
-	bool m_IndividualBlend = false;
-	std::vector<bool> m_BlendEnabledIndexed;
-	GLenum m_BlendEquationRGB = GL_FUNC_ADD;
-	GLenum m_BlendEquationAlpha = GL_FUNC_ADD;
-	GLenum m_BlendFuncSFactor = GL_ONE;
-	GLenum m_BlendFuncDFactor = GL_ZERO;
-
-	ivec2 m_ViewportPosition = ivec2(0);
-	ivec2 m_ViewportSize; //initialize with values used during context creation
-
-	vec4 m_ClearColor = vec4(0);
-
-	ShaderData const* m_pBoundShader = nullptr;
-
-	uint32 m_ActiveTexture = 0;
-	int32 m_NumTextureUnits; //depends on gpu and drivers
-	std::vector<std::map<E_TextureType, T_TextureLoc> > m_pTextureUnits; // #todo: in the future, abstract texture data here to support all types of textures
-
-	T_ArrayLoc m_VertexArray = 0;
-	std::map<E_BufferType, T_BufferLoc> m_BufferTargets;
-
-	float m_LineWidth = 1.f;
+	virtual void ReadPixels(ivec2 const pos, ivec2 const size, E_ColorFormat const format, E_DataType const type, void* data) const = 0;
 };

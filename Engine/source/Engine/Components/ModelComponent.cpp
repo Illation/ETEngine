@@ -12,7 +12,6 @@
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/SceneGraph/Entity.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>
-#include <Engine/GraphicsHelper/GraphicsApiContext.h>
 #include <Engine/GraphicsHelper/ShadowRenderer.h>
 #include <Engine/Materials/NullMaterial.h>
 
@@ -129,7 +128,7 @@ void ModelComponent::DrawForward()
 //
 void ModelComponent::DrawShadow()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	// #todo: implement culling
 
@@ -151,7 +150,7 @@ void ModelComponent::DrawShadow()
 //
 void ModelComponent::DrawCall()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Frustum culling
 	switch (m_CullMode)

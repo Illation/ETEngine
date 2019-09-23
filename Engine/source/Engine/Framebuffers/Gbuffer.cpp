@@ -14,7 +14,7 @@ Gbuffer::Gbuffer(bool demo):
 	FrameBuffer(demo?
 		"Shaders/PostBufferDisplay.glsl":
 		"Shaders/PostDeferredComposite.glsl", 
-		GL_FLOAT, 2)
+		E_DataType::Float, 2)
 {
 	m_CaptureDepth = true;
 }
@@ -28,7 +28,7 @@ void Gbuffer::AccessShaderAttributes()
 
 void Gbuffer::UploadDerivedVariables()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//for position reconstruction
 	//m_pShader->Upload("projectionA"_hash, CAMERA->GetDepthProjA());

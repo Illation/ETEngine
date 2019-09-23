@@ -3,10 +3,7 @@
 
 #include <limits>
 
-#include <glad/glad.h>
-
 #include "RenderPipeline.h"
-#include "GraphicsApiContext.h"
 
 #include <Engine/Materials/NullMaterial.h>
 #include <Engine/Graphics/Shader.h>
@@ -31,7 +28,7 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 {
 	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Calculate light camera matrix
 	//*****************************
@@ -101,7 +98,7 @@ DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 {
 	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Calculate cascade distances
 	m_Cascades.clear();
@@ -113,7 +110,7 @@ DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 
 		api->GenFramebuffers(1, &(data.fbo));
 
-		data.pTexture = new TextureData( Resolution.x, Resolution.y, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT );
+		data.pTexture = new TextureData(Resolution, E_ColorFormat::Depth, E_ColorFormat::Depth, E_DataType::Float);
 		data.pTexture->Build();
 		api->BindFramebuffer(data.fbo);
 		api->LinkTextureToFboDepth(data.pTexture->GetHandle());
@@ -137,7 +134,7 @@ DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 
 DirectionalShadowData::~DirectionalShadowData()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	for ( size_t i = 0; i < m_Cascades.size(); ++i )
 	{

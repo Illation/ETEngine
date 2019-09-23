@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "DebugRenderer.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Components/CameraComponent.h>
@@ -16,7 +14,7 @@ DebugRenderer::DebugRenderer()
 
 DebugRenderer::~DebugRenderer()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->DeleteVertexArray(m_VAO);
 	api->DeleteBuffer(m_VBO);
@@ -26,7 +24,7 @@ DebugRenderer::~DebugRenderer()
 
 void DebugRenderer::Initialize()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("DebugRenderer.glsl"_hash);
 
@@ -57,7 +55,7 @@ void DebugRenderer::Initialize()
 
 void DebugRenderer::UpdateBuffer()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);
@@ -93,7 +91,7 @@ void DebugRenderer::Draw()
 		return;
 	}
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->SetShader(m_pShader.get());
 	m_pShader->Upload("uViewProj"_hash, CAMERA->GetViewProj());
@@ -101,8 +99,8 @@ void DebugRenderer::Draw()
 	UpdateBuffer();
 	
 	api->SetBlendEnabled(true);
-	api->SetBlendEquation(GL_FUNC_ADD);
-	api->SetBlendFunction(GL_ONE, GL_ZERO);
+	api->SetBlendEquation(E_BlendEquation::Add);
+	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::Zero);
 
 	for (const auto& meta : m_MetaData)
 	{

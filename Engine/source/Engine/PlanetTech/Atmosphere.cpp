@@ -48,7 +48,7 @@ void Atmosphere::Initialize()
 }
 void Atmosphere::Draw(Planet* pPlanet, float radius)
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	vec3 pos = pPlanet->GetTransform()->GetPosition();
 	float surfaceRadius = pPlanet->GetRadius();
@@ -119,8 +119,8 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	api->SetFaceCullingMode(E_FaceCullMode::Front);
 	api->SetDepthEnabled(false);
 	api->SetBlendEnabled(true);
-	api->SetBlendEquation(GL_FUNC_ADD);
-	api->SetBlendFunction(GL_ONE, GL_ONE);
+	api->SetBlendEquation(E_BlendEquation::Add);
+	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::One);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::IcoSphere<3> >();
 	api->SetFaceCullingMode(E_FaceCullMode::Back);
 	api->SetBlendEnabled(false);

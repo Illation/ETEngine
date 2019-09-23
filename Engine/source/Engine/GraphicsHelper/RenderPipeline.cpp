@@ -3,7 +3,6 @@
 
 #include "LightVolume.h"
 #include "ShadowRenderer.h"
-#include "GraphicsApiContext.h"
 #include "TextRenderer.h"
 #include "PrimitiveRenderer.h"
 #include "SpriteRenderer.h"
@@ -100,7 +99,7 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO)
 
 	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Shadow Mapping
 	//**************
@@ -155,8 +154,8 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO)
 
 	api->SetDepthEnabled(false);
 	api->SetBlendEnabled(true);
-	api->SetBlendEquation(GL_FUNC_ADD);
-	api->SetBlendFunction(GL_ONE, GL_ONE);
+	api->SetBlendEquation(E_BlendEquation::Add);
+	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::One);
 
 	api->SetCullEnabled(true);
 	api->SetFaceCullingMode(E_FaceCullMode::Front);

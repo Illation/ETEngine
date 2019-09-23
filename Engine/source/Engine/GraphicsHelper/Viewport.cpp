@@ -3,7 +3,6 @@
 
 #include "ViewportRenderer.h"
 #include "RenderArea.h"
-#include "GraphicsApiContext.h"
 
 
 //=====================
@@ -22,11 +21,10 @@ Viewport* Viewport::g_CurrentViewport = nullptr;
 //
 Viewport::Viewport(I_RenderArea* const area)
 	: m_Area(area)
-	, m_ApiContext(new GraphicsApiContext())
 {
 	RegisterAsTriggerer();
 
-	m_Area->SetOnInit(std::function<void()>(std::bind(&Viewport::OnRealize, this)));
+	m_Area->SetOnInit(std::function<void(I_GraphicsApiContext* const)>(std::bind(&Viewport::OnRealize, this, std::placeholders::_1)));
 	m_Area->SetOnDeinit(std::function<void()>(std::bind(&Viewport::OnUnrealize, this)));
 	m_Area->SetOnResize(std::function<void(vec2 const)>(std::bind(&Viewport::OnResize, this, std::placeholders::_1)));
 	m_Area->SetOnRender(std::function<void()>(std::bind(&Viewport::OnRender, this)));
@@ -61,7 +59,7 @@ void Viewport::SetRenderer(I_ViewportRenderer* renderer)
 
 	if (m_IsRealized)
 	{
-		OnRealize();
+		OnRealize(m_ApiContext);
 	}
 }
 
@@ -70,7 +68,7 @@ void Viewport::SetRenderer(I_ViewportRenderer* renderer)
 //
 // returns the render state of the current viewport
 //
-GraphicsApiContext* Viewport::GetCurrentApiContext()
+I_GraphicsApiContext* Viewport::GetCurrentApiContext()
 {
 	ET_ASSERT(g_CurrentViewport != nullptr);
 	return g_CurrentViewport->GetApiContext();
@@ -79,10 +77,12 @@ GraphicsApiContext* Viewport::GetCurrentApiContext()
 //---------------------------------
 // Viewport::OnRealize
 //
-// init open gl stuff
+// From this point on graphics API functions can be called for this viewport
 //
-void Viewport::OnRealize()
+void Viewport::OnRealize(I_GraphicsApiContext* const api)
 {
+	m_ApiContext = api;
+
 	MakeCurrent();
 
 	// init render state
@@ -155,7 +155,7 @@ void Viewport::OnRender()
 //
 void Viewport::Render()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	if (m_Renderer != nullptr)
 	{

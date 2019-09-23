@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "TextRenderer.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Graphics/SpriteFont.h>
@@ -40,7 +38,7 @@ TextRenderer::TextCache::TextCache(std::string const& text, vec2 const pos, vec4
 //
 TextRenderer::~TextRenderer()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->DeleteVertexArray(m_VAO);
 	api->DeleteBuffer(m_VBO);
@@ -53,7 +51,7 @@ TextRenderer::~TextRenderer()
 //
 void TextRenderer::Initialize()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	m_pTextShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostText.glsl"_hash);
 
@@ -211,7 +209,7 @@ void TextRenderer::Draw()
 		return;
 	}
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);
@@ -325,7 +323,7 @@ void TextRenderer::UpdateBuffer()
 		}
 	}
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);

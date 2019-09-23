@@ -3,8 +3,6 @@
 
 #include "PrimitiveRenderer.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Graphics/TextureData.h>
@@ -25,7 +23,7 @@ PbrPrefilter::~PbrPrefilter()
 
 void PbrPrefilter::Precompute(int32 resolution)
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	ivec2 logPos = Logger::GetCursorPosition();
 	LOG("Precalculating PBR BRDF LUT . . .");
@@ -44,7 +42,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 	//Shader
 	api->SetShader(ResourceManager::Instance()->GetAssetData<ShaderData>("FwdBrdfLutShader.glsl"_hash).get());
 
-	m_LUT = new TextureData(resolution, resolution, GL_RG16F, GL_RG, GL_FLOAT);
+	m_LUT = new TextureData(ivec2(resolution), E_ColorFormat::RG16f, E_ColorFormat::RG, E_DataType::Float);
 	m_LUT->Build();
 	TextureParameters params(false);
 	params.wrapS = E_TextureWrapMode::ClampToEdge;
@@ -77,7 +75,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	int32 const irradianceRes, 
 	int32 const radianceRes)
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//setup for convoluted irradiance cubemap
 	//***************************************
@@ -96,7 +94,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, captureRBO);
 
 	//texture
-	irradiance = new TextureData(E_TextureType::CubeMap, irradianceRes, irradianceRes);
+	irradiance = new TextureData(E_TextureType::CubeMap, ivec2(irradianceRes));
 	irradiance->Build();
 
 	TextureParameters params(false);
@@ -138,7 +136,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 
 	//setup radiance
 	//**************
-	radiance = new TextureData(E_TextureType::CubeMap, radianceRes, radianceRes);
+	radiance = new TextureData(E_TextureType::CubeMap, ivec2(radianceRes));
 	radiance->Build();
 	params.genMipMaps = true;
 	radiance->SetParameters(params);

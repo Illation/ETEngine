@@ -1,4 +1,6 @@
 #pragma once
+
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include "GraphicsHelper/RenderArea.h"
@@ -36,7 +38,7 @@ public:
 	// Render Area Interface
 	//-----------------------
 protected:
-	void SetOnInit(std::function<void()>& callback) override { m_OnInit = callback; }
+	void SetOnInit(std::function<void(I_GraphicsApiContext* const)>& callback) override { m_OnInit = callback; }
 	void SetOnDeinit(std::function<void()>& callback) override { m_OnDeinit = callback; }
 	void SetOnResize(std::function<void(vec2 const)>& callback) override { m_OnResize = callback; }
 	void SetOnRender(std::function<void()>& callback) override { m_OnRender = callback; }
@@ -47,7 +49,7 @@ protected:
 	// Data
 	///////
 private:
-	std::function<void()> m_OnInit;
+	std::function<void(I_GraphicsApiContext* const)> m_OnInit;
 	std::function<void()> m_OnDeinit;
 	std::function<void(vec2 const)> m_OnResize;
 	std::function<void()> m_OnRender;

@@ -1,7 +1,6 @@
 #pragma once
 
 class AbstractScene;
-class GraphicsApiContext;
 class ScreenSpaceReflections;
 
 

@@ -53,9 +53,9 @@ public:
 	//Texture Settings
 	ivec3 m_ScatteringTexDim;
 	TextureParameters m_TexParams;
-	static const GLenum FORMAT = GL_RGBA;
-	static const GLenum INTERNAL2D = GL_RGBA32F;
-	static const GLenum INTERNAL3D = GL_RGBA16F;//half precision
+	static const E_ColorFormat FORMAT = E_ColorFormat::RGBA;
+	static const E_ColorFormat INTERNAL2D = E_ColorFormat::RGBA32f;
+	static const E_ColorFormat INTERNAL3D = E_ColorFormat::RGBA16f;//half precision
 
 	void UploadTextureSize(ShaderData const* const shader) const;
 	int32 TRANSMITTANCE_W = 256;

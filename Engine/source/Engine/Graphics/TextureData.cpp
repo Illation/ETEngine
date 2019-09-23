@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "TextureData.h"
 
-#include <glad/glad.h>
-
 #include <stb/stb_image.h>
 #include <stb/stb_image_resize.h>
 
@@ -17,12 +15,11 @@
 //
 // Create the texture and generate a new GPU texture resource
 //
-TextureData::TextureData(int32 const width, int32 const height, int32 const internalFormat, uint32 const format, uint32 const type, int32 const depth)
-	: m_Width(width)
-	, m_Height(height)
-	, m_InternalFormat(internalFormat)
+TextureData::TextureData(ivec2 const res, E_ColorFormat const intern, E_ColorFormat const format, E_DataType const type, int32 const depth)
+	: m_Resolution(res)
+	, m_Internal(intern)
 	, m_Format(format)
-	, m_Type(type)
+	, m_DataType(type)
 	, m_Depth(depth)
 	, m_TargetType((depth > 1) ? E_TextureType::Texture3D : E_TextureType::Texture2D)
 {
@@ -34,13 +31,12 @@ TextureData::TextureData(int32 const width, int32 const height, int32 const inte
 //
 // Create a texture of a specific type with a preexisting handle
 //
-TextureData::TextureData(E_TextureType const targetType, int32 const height, int32 const width)
+TextureData::TextureData(E_TextureType const targetType, ivec2 const res)
 	: m_TargetType(targetType)
-	, m_Height(height)
-	, m_Width(width)
-	, m_InternalFormat(GL_RGB)
-	, m_Format(GL_RGB)
-	, m_Type(GL_FLOAT)
+	, m_Resolution(res)
+	, m_Internal(E_ColorFormat::RGB)
+	, m_Format(E_ColorFormat::RGB)
+	, m_DataType(E_DataType::Float)
 {
 	m_Handle = Viewport::GetCurrentApiContext()->GenerateTexture();
 }
@@ -85,13 +81,13 @@ void TextureData::SetParameters(TextureParameters const& params, bool const forc
 //
 bool TextureData::Resize(ivec2 const& newSize)
 {
-	m_Width = newSize.x; 
-	m_Height = newSize.y;
+	bool const regenerate = (newSize.x > m_Resolution.x) || (newSize.y > m_Resolution.y);
 
-	bool const regenerate = (newSize.x > m_Width) || (newSize.y > m_Height);
+	m_Resolution = newSize;
+
 	if (regenerate)
 	{
-		GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+		I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 		api->DeleteTexture(m_Handle);
 		m_Handle = api->GenerateTexture();
@@ -189,7 +185,7 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	// check number of channels
 
 	//Upload to GPU
-	m_Data = new TextureData(width, height, m_UseSrgb ? GL_SRGB : GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+	m_Data = new TextureData(ivec2(width, height), (m_UseSrgb ? E_ColorFormat::SRGB : E_ColorFormat::RGB), E_ColorFormat::RGB, E_DataType::UByte);
 	m_Data->Build((void*)bits);
 	m_Data->SetParameters(m_Parameters);
 

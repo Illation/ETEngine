@@ -80,7 +80,7 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 
 	// #todo: avoid getting all the uniform info again and again
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->SetShader(m_pShader.get());
 
@@ -107,7 +107,7 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *
 		Initialize();
 	}
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->SetShader(m_pShaderShadowed.get());
 

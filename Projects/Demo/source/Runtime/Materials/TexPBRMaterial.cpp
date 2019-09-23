@@ -46,7 +46,7 @@ void TexPBRMaterial::UploadDerivedVariables()
 		LoadTextures();
 	}
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->LazyBindTexture(0, m_TexBaseColor->GetTargetType(), m_TexBaseColor->GetHandle());
 	api->LazyBindTexture(1, m_TexRoughness->GetTargetType(), m_TexRoughness->GetHandle());

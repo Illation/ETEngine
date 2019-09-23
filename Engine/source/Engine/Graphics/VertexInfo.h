@@ -1,26 +1,7 @@
 #pragma once
 
+#include <Engine/GraphicsHelper/GraphicsTypes.h>
 
-//---------------------------------
-// E_DataType
-//
-// Per attribute data type
-//
-enum class E_DataType
-{
-	Byte,
-	UByte,
-	Short,
-	UShort,
-	Int,
-	UInt,
-
-	Half,
-	Float,
-	Double,
-
-	Invalid
-};
 
 //---------------------------------
 // DataTypeInfo

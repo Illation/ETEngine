@@ -4,8 +4,6 @@
 #include <ft2build.h>
 #include <freetype/freetype.h>
 
-#include <glad/glad.h>
-
 #include <EtCore/FileSystem/BinaryReader.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/ResourceManager.h>
@@ -276,7 +274,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 	int32 const texHeight = std::max(std::max(maxPos[0].y, maxPos[1].y), std::max(maxPos[2].y, maxPos[3].y));
 
 	//Setup rendering
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Linear;
@@ -284,7 +282,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 	params.wrapS = E_TextureWrapMode::ClampToEdge;
 	params.wrapT = E_TextureWrapMode::ClampToEdge;
 
-	TextureData* const texture = new TextureData(texWidth, texHeight, GL_RGBA16F, GL_RGBA, GL_FLOAT);
+	TextureData* const texture = new TextureData(ivec2(texWidth, texHeight), E_ColorFormat::RGBA16f, E_ColorFormat::RGBA, E_DataType::Float);
 	texture->Build();
 	texture->SetParameters(params);
 	pFont->m_pTexture = texture;
@@ -316,8 +314,8 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 	params.borderColor = vec4(0);
 
 	api->SetBlendEnabled(true);
-	api->SetBlendEquation(GL_FUNC_ADD);
-	api->SetBlendFunction(GL_ONE, GL_ONE);
+	api->SetBlendEquation(E_BlendEquation::Add);
+	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::One);
 
 	//Render to Glyphs atlas
 	FT_Set_Pixel_Sizes(face, 0, m_FontSize * m_HighRes);
@@ -343,7 +341,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 		uint32 width = face->glyph->bitmap.width;
 		uint32 height = face->glyph->bitmap.rows;
-		auto pTexture = new TextureData(width, height, GL_RED, GL_RED, GL_UNSIGNED_BYTE);
+		auto pTexture = new TextureData(ivec2(width, height), E_ColorFormat::Red, E_ColorFormat::Red, E_DataType::UByte);
 		pTexture->Build(face->glyph->bitmap.buffer);
 		pTexture->SetParameters(params);
 

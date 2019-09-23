@@ -4,8 +4,6 @@
 #include "RenderPipeline.h"
 #include "PrimitiveRenderer.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Helper/Commands.h>
 
@@ -22,7 +20,7 @@ ScreenSpaceReflections::ScreenSpaceReflections()
 
 ScreenSpaceReflections::~ScreenSpaceReflections()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->DeleteRenderBuffers(1, &m_CollectRBO);
 	SafeDelete(m_CollectTex);
@@ -31,7 +29,7 @@ ScreenSpaceReflections::~ScreenSpaceReflections()
 
 void ScreenSpaceReflections::Initialize()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostScreenSpaceReflections.glsl"_hash);
 
@@ -46,7 +44,7 @@ void ScreenSpaceReflections::Initialize()
 	//Generate texture and fbo and rbo as initial postprocessing target
 	api->GenFramebuffers(1, &m_CollectFBO);
 	api->BindFramebuffer(m_CollectFBO);
-	m_CollectTex = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
+	m_CollectTex = new TextureData(windowSettings.Dimensions, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 	m_CollectTex->Build();
 	m_CollectTex->SetParameters(params);
 	api->LinkTextureToFbo2D(0, m_CollectTex->GetHandle(), 0);
@@ -64,7 +62,7 @@ void ScreenSpaceReflections::EnableInput()
 
 void ScreenSpaceReflections::Draw()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->SetShader(m_pShader.get());
 

@@ -3,8 +3,6 @@
 #include "Shader.h"
 #include "Uniform.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Content/AssetStub.h>
@@ -114,7 +112,7 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 	// Combine Shaders into a program
 	//------------------
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	T_ShaderLoc const shaderProgram = api->CreateProgram();
 
@@ -166,7 +164,7 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 T_ShaderLoc ShaderAsset::CompileShader(std::string const& shaderSourceStr, E_ShaderType const type)
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	T_ShaderLoc shader = api->CreateShader(type);
 
@@ -363,7 +361,7 @@ bool ShaderAsset::ReplaceInclude(std::string &line)
 //
 void ShaderAsset::GetUniformLocations(T_ShaderLoc const shaderProgram, std::map<uint32, I_Uniform*> &uniforms)
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	int32 const count = api->GetUniformCount(shaderProgram);
 
@@ -391,7 +389,7 @@ void ShaderAsset::GetUniformLocations(T_ShaderLoc const shaderProgram, std::map<
 //
 void ShaderAsset::GetAttributes(T_ShaderLoc const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes)
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	int32 const count = api->GetAttributeCount(shaderProgram);
 	for (int32 attribIdx = 0; attribIdx < count; ++attribIdx)

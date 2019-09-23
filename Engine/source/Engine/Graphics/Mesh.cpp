@@ -3,8 +3,6 @@
 
 #include "Material.h"
 
-#include <glad/glad.h>
-
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>  
 #include <assimp/postprocess.h>
@@ -180,7 +178,7 @@ MeshSurface::MeshSurface(MeshData const* const mesh, Material const* const mater
 	ET_ASSERT(mesh != nullptr);
 	ET_ASSERT(m_Material != nullptr);
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	// create a new vertex array
 	m_VertexArray = api->CreateVertexArray();
@@ -376,7 +374,7 @@ MeshData::MeshData(MeshDataContainer const* const cpuData)
 	// copy data to GPU
 	//------------------
 
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	// vertex buffer
 	m_VertexBuffer = api->CreateBuffer();
@@ -401,7 +399,7 @@ MeshData::MeshData(MeshDataContainer const* const cpuData)
 //
 MeshData::~MeshData()
 {
-	GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->DeleteBuffer(m_VertexBuffer);
 	api->DeleteBuffer(m_IndexBuffer);
