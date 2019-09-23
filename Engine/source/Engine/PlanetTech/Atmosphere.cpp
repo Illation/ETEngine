@@ -48,6 +48,8 @@ void Atmosphere::Initialize()
 }
 void Atmosphere::Draw(Planet* pPlanet, float radius)
 {
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	vec3 pos = pPlanet->GetTransform()->GetPosition();
 	float surfaceRadius = pPlanet->GetRadius();
 	radius += surfaceRadius;
@@ -69,7 +71,7 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	//	//reload the shader
 	//	m_pShader = ContentManager::Reload<ShaderData>("Shaders/PostAtmosphere.glsl");
 	//}
-	STATE->SetShader(m_pShader.get());
+	api->SetShader(m_pShader.get());
 
 	m_pShader->Upload("model"_hash, World);
 	m_pShader->Upload("worldViewProj"_hash, CAMERA->GetViewProj());
@@ -81,7 +83,7 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
-		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());
 	}
 	m_pShader->Upload("projectionA"_hash, CAMERA->GetDepthProjA());
 	m_pShader->Upload("projectionB"_hash, CAMERA->GetDepthProjB());
@@ -99,11 +101,11 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	//m_pShader->Upload("uSunSpectralRadToLum"_hash, etm::vecCast<float>(m_SunColor));
 
 	m_pShader->Upload("uTexIrridiance"_hash, 3);
-	STATE->LazyBindTexture(3, GL_TEXTURE_2D, m_TexIrradiance->GetHandle());
+	api->LazyBindTexture(3, E_TextureType::Texture2D, m_TexIrradiance->GetHandle());
 	m_pShader->Upload("uTexInscatter"_hash, 4);
-	STATE->LazyBindTexture(4, GL_TEXTURE_3D, m_TexInscatter->GetHandle());
+	api->LazyBindTexture(4, E_TextureType::Texture3D, m_TexInscatter->GetHandle());
 	m_pShader->Upload("uTexTransmittance"_hash, 5);
-	STATE->LazyBindTexture(5, GL_TEXTURE_2D, m_TexTransmittance->GetHandle());
+	api->LazyBindTexture(5, E_TextureType::Texture2D, m_TexTransmittance->GetHandle());
 
 	m_pShader->Upload("SunDir"_hash, m_pSun->GetTransform()->GetForward());
 	m_pShader->Upload("uSunSize"_hash, vec2(tan(m_Params.sun_angular_radius), cos(m_Params.sun_angular_radius)));
@@ -113,15 +115,15 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	//	m_pShader->Upload("SunIntensity"_hash, pDirLight->GetBrightness());
 	//}
 
-	STATE->SetCullEnabled(true);
-	STATE->SetFaceCullingMode(GL_FRONT);
-	STATE->SetDepthEnabled(false);
-	STATE->SetBlendEnabled(true);
-	STATE->SetBlendEquation(GL_FUNC_ADD);
-	STATE->SetBlendFunction(GL_ONE, GL_ONE);
+	api->SetCullEnabled(true);
+	api->SetFaceCullingMode(E_FaceCullMode::Front);
+	api->SetDepthEnabled(false);
+	api->SetBlendEnabled(true);
+	api->SetBlendEquation(E_BlendEquation::Add);
+	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::One);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::IcoSphere<3> >();
-	STATE->SetFaceCullingMode(GL_BACK);
-	STATE->SetBlendEnabled(false);
-	STATE->SetDepthEnabled(true);
-	STATE->SetCullEnabled(false);
+	api->SetFaceCullingMode(E_FaceCullMode::Back);
+	api->SetBlendEnabled(false);
+	api->SetDepthEnabled(true);
+	api->SetCullEnabled(false);
 }

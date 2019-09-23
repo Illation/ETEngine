@@ -3,7 +3,7 @@
 #include <EtCore/UpdateCycle/RealTimeTickTriggerer.h>
 
 
-class RenderState;
+class I_GraphicsApiContext;
 class I_ViewportRenderer;
 class I_RenderArea;
 
@@ -36,13 +36,13 @@ private:
 	// accessors
 	//-----------
 public:
-	RenderState* GetState() { return m_RenderState; }
-	static RenderState* GetGlobalRenderState();
+	I_GraphicsApiContext* GetApiContext() { return m_ApiContext; }
+	static I_GraphicsApiContext* GetCurrentApiContext();
 
 	// callbacks
 	//-----------
 protected:
-	void OnRealize();
+	void OnRealize(I_GraphicsApiContext* const api);
 	void OnUnrealize();
 	void OnResize(vec2 const resolution);
 	void OnRender();
@@ -60,7 +60,7 @@ private:
 	I_RenderArea* m_Area = nullptr;
 
 	I_ViewportRenderer* m_Renderer = nullptr;
-	RenderState* m_RenderState = nullptr; // since a viewport has it's own open gl context, each viewport has it's own render state
+	I_GraphicsApiContext* m_ApiContext = nullptr; 
 
 	ivec2 m_Dimensions;
 

@@ -3,10 +3,7 @@
 
 #include <limits>
 
-#include <glad/glad.h>
-
 #include "RenderPipeline.h"
-#include "RenderState.h"
 
 #include <Engine/Materials/NullMaterial.h>
 #include <Engine/Graphics/Shader.h>
@@ -30,6 +27,8 @@ void ShadowRenderer::Initialize()
 void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalShadowData *pShadowData)
 {
 	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
+
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Calculate light camera matrix
 	//*****************************
@@ -84,11 +83,11 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 
 		//Set viewport
 		ivec2 res = pShadowData->m_Cascades[i].pTexture->GetResolution();
-		STATE->SetViewport(ivec2(0), res);
+		api->SetViewport(ivec2(0), res);
 		//Set Framebuffer
-		STATE->BindFramebuffer(pShadowData->m_Cascades[i].fbo);
+		api->BindFramebuffer(pShadowData->m_Cascades[i].fbo);
 		//Clear Framebuffer
-		glClear(GL_DEPTH_BUFFER_BIT);
+		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
 		//Draw scene with light matrix and null material
 		RenderPipeline::GetInstance()->DrawShadow();
@@ -99,6 +98,8 @@ DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 {
 	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
 
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	//Calculate cascade distances
 	m_Cascades.clear();
 	float sizeL = 1;
@@ -107,22 +108,22 @@ DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 	{
 		auto data = CascadeData();
 
-		STATE->GenFramebuffers(1, &(data.fbo));
+		api->GenFramebuffers(1, &(data.fbo));
 
-		data.pTexture = new TextureData( Resolution.x, Resolution.y, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT );
+		data.pTexture = new TextureData(Resolution, E_ColorFormat::Depth, E_ColorFormat::Depth, E_DataType::Float);
 		data.pTexture->Build();
-		STATE->BindFramebuffer(data.fbo);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, data.pTexture->GetHandle(), 0);
+		api->BindFramebuffer(data.fbo);
+		api->LinkTextureToFboDepth(data.pTexture->GetHandle());
 		//only depth components
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
+		api->SetDrawBufferCount(0);
+		api->SetReadBufferEnabled(false);
 
 		TextureParameters params(false, true);
 		params.wrapS = E_TextureWrapMode::ClampToEdge;
 		params.wrapT = E_TextureWrapMode::ClampToEdge;
 		data.pTexture->SetParameters(params);
 
-		STATE->BindFramebuffer(0);
+		api->BindFramebuffer(0);
 
 		data.distance = sizeL*distMult;
 		sizeL *= 2;
@@ -133,9 +134,11 @@ DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 
 DirectionalShadowData::~DirectionalShadowData()
 {
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	for ( size_t i = 0; i < m_Cascades.size(); ++i )
 	{
-		STATE->DeleteRenderBuffers(1, &(m_Cascades[i].fbo));
+		api->DeleteRenderBuffers(1, &(m_Cascades[i].fbo));
 		SafeDelete(m_Cascades[i].pTexture);
 	}
 }

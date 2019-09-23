@@ -50,13 +50,13 @@ public:
 	// accessors
 	//-----------
 	Material const* GetMaterial() const { return m_Material; }
-	uint32 GetVertexArray() const { return m_VertexArray; }
+	T_ArrayLoc GetVertexArray() const { return m_VertexArray; }
 
 	// Data
 	///////
 private:
 	Material const* m_Material = nullptr;
-	uint32 m_VertexArray = 0u;
+	T_ArrayLoc m_VertexArray = 0u;
 };
 
 
@@ -104,8 +104,8 @@ public:
 	Sphere const& GetBoundingSphere() const { return m_BoundingSphere; }
 	size_t GetIndexCount() const { return m_IndexCount; }
 	E_DataType GetIndexDataType() const { return m_IndexDataType; }
-	uint32 GetVertexBuffer() const { return m_VertexBuffer; }
-	uint32 GetIndexBuffer() const { return m_IndexBuffer; }
+	T_BufferLoc GetVertexBuffer() const { return m_VertexBuffer; }
+	T_BufferLoc GetIndexBuffer() const { return m_IndexBuffer; }
 	MeshSurface const* GetSurface(Material const* const material) const;
 
 	// Data
@@ -122,8 +122,8 @@ private:
 	size_t m_VertexCount = 0u;
 	size_t m_IndexCount = 0u;
 
-	uint32 m_VertexBuffer = 0u;
-	uint32 m_IndexBuffer = 0u;
+	T_BufferLoc m_VertexBuffer = 0u;
+	T_BufferLoc m_IndexBuffer = 0u;
 
 	SurfaceContainer* m_Surfaces = nullptr; // pointer in order to enable const access
 };

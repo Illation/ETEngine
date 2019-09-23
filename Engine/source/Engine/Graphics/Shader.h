@@ -21,17 +21,17 @@ class ShaderData final
 	friend class ShaderAsset;
 
 public:
-	typedef std::pair<int32, AttributeDescriptor> T_AttributeLocation;
+	typedef std::pair<T_AttribLoc, AttributeDescriptor> T_AttributeLocation;
 
 	// Construct destruct
 	//---------------------
 	ShaderData() = default;
-	ShaderData(GLuint shaderProg);
+	ShaderData(T_ShaderLoc const program);
 	~ShaderData();
 
 	// accessors
 	//---------------------
-	GLuint const GetProgram() const { return m_ShaderProgram; }
+	T_ShaderLoc const GetProgram() const { return m_ShaderProgram; }
 	std::string const& GetName() const { return m_Name; }
 	std::vector<T_AttributeLocation> const& GetAttributes() const { return m_Attributes; }
 
@@ -44,7 +44,7 @@ public:
 	///////
 private:
 
-	GLuint m_ShaderProgram;
+	T_ShaderLoc m_ShaderProgram;
 	std::string m_Name;
 
 	std::map<T_Hash, I_Uniform*> m_Uniforms;
@@ -72,7 +72,7 @@ public:
 	// Utility
 	//---------------------
 private:
-	GLuint CompileShader(const std::string &shaderSourceStr, GLenum type);
+	T_ShaderLoc CompileShader(std::string const& shaderSourceStr, E_ShaderType const type);
 
 	bool Precompile(std::string &shaderContent, 
 		bool &useGeo, 
@@ -83,8 +83,8 @@ private:
 
 	bool ReplaceInclude(std::string &line);
 
-	void GetUniformLocations(GLuint const shaderProgram, std::map<uint32, I_Uniform*>& uniforms);
-	void GetAttributes(GLuint const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes);
+	void GetUniformLocations(T_ShaderLoc const shaderProgram, std::map<uint32, I_Uniform*>& uniforms);
+	void GetAttributes(T_ShaderLoc const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes);
 
 	RTTR_ENABLE(Asset<ShaderData, false>)
 };

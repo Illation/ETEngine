@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "DebugRenderer.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Components/CameraComponent.h>
@@ -16,49 +14,54 @@ DebugRenderer::DebugRenderer()
 
 DebugRenderer::~DebugRenderer()
 {
-	glDeleteVertexArrays(1, &m_VAO);
-	glDeleteBuffers(1, &m_VBO);
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->DeleteVertexArray(m_VAO);
+	api->DeleteBuffer(m_VBO);
 	m_Lines.clear();
 	m_MetaData.clear();
 }
 
 void DebugRenderer::Initialize()
 {
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("DebugRenderer.glsl"_hash);
 
-	STATE->SetShader(m_pShader.get());
-	m_uWVP = glGetUniformLocation(m_pShader->GetProgram(), "uViewProj");
+	api->SetShader(m_pShader.get());
 
 	//Generate buffers and arrays
-	glGenVertexArrays(1, &m_VAO);
-	glGenBuffers(1, &m_VBO);
+	m_VAO = api->CreateVertexArray();
+	m_VBO = api->CreateBuffer();
 
 	//bind
-	STATE->BindVertexArray(m_VAO);
-	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindVertexArray(m_VAO);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
 
 	//set data and attributes
-	glBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
+	api->SetBufferData(E_BufferType::Vertex, m_BufferSize, nullptr, E_UsageHint::Dynamic);
 
 	//input layout
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
+	api->SetVertexAttributeArrayEnabled(0, true);
+	api->SetVertexAttributeArrayEnabled(1, true);
 
-	glVertexAttribPointer(0, (GLint)3, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(LineVertex), (GLvoid*)offsetof(LineVertex, pos));
-	glVertexAttribPointer(1, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(LineVertex), (GLvoid*)offsetof(LineVertex, col));
+	api->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, sizeof(LineVertex), offsetof(LineVertex, pos));
+	api->DefineVertexAttributePointer(1, 4, E_DataType::Float, false, sizeof(LineVertex), offsetof(LineVertex, col));
 
 	//unbind
-	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
-	STATE->BindVertexArray(0);
+	api->BindBuffer(E_BufferType::Vertex, 0);
+	api->BindVertexArray(0);
 }
 
 void DebugRenderer::UpdateBuffer()
 {
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	//Bind Object vertex array
-	STATE->BindVertexArray(m_VAO);
+	api->BindVertexArray(m_VAO);
 
 	//Send the vertex buffer again
-	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
 
 	bool bufferResize = m_Lines.size() * sizeof(LineVertex) > m_BufferSize;
 	if (!m_VBO || bufferResize) //first creation or resize
@@ -68,17 +71,17 @@ void DebugRenderer::UpdateBuffer()
 			m_BufferSize = (uint32)m_Lines.size() * sizeof(LineVertex);
 		}
 
-		glBufferData(GL_ARRAY_BUFFER, m_BufferSize, m_Lines.data(), GL_DYNAMIC_DRAW);
+		api->SetBufferData(E_BufferType::Vertex, m_BufferSize, m_Lines.data(), E_UsageHint::Dynamic);
 	}
 	else
 	{
-		GLvoid* p = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+		void* p = api->MapBuffer(E_BufferType::Vertex, E_AccessMode::Write);
 		memcpy(p, m_Lines.data(), sizeof(LineVertex)*m_Lines.size());
-		glUnmapBuffer(GL_ARRAY_BUFFER);
+		api->UnmapBuffer(E_BufferType::Vertex);
 	}
 
 
-	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(E_BufferType::Vertex, 0);
 }
 
 void DebugRenderer::Draw()
@@ -88,24 +91,26 @@ void DebugRenderer::Draw()
 		return;
 	}
 
-	STATE->SetShader(m_pShader.get());
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->SetShader(m_pShader.get());
 	m_pShader->Upload("uViewProj"_hash, CAMERA->GetViewProj());
 
 	UpdateBuffer();
 	
-	STATE->SetBlendEnabled(true);
-	STATE->SetBlendEquation(GL_FUNC_ADD);
-	STATE->SetBlendFunction(GL_ONE, GL_ZERO);
+	api->SetBlendEnabled(true);
+	api->SetBlendEquation(E_BlendEquation::Add);
+	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::Zero);
 
 	for (const auto& meta : m_MetaData)
 	{
-		glLineWidth(meta.thickness);
-		STATE->DrawArrays(GL_LINES, meta.start, meta.size);
+		api->SetLineWidth(meta.thickness);
+		api->DrawArrays(E_DrawMode::Lines, meta.start, meta.size);
 	}
 
-	STATE->BindVertexArray(0);
+	api->BindVertexArray(0);
 
-	STATE->SetBlendEnabled(false);
+	api->SetBlendEnabled(false);
 
 	m_Lines.clear();
 	m_MetaData.clear();

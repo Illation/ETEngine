@@ -3,7 +3,6 @@
 
 #include "ViewportRenderer.h"
 #include "RenderArea.h"
-#include "RenderState.h"
 
 
 //=====================
@@ -22,11 +21,10 @@ Viewport* Viewport::g_CurrentViewport = nullptr;
 //
 Viewport::Viewport(I_RenderArea* const area)
 	: m_Area(area)
-	, m_RenderState(new RenderState())
 {
 	RegisterAsTriggerer();
 
-	m_Area->SetOnInit(std::function<void()>(std::bind(&Viewport::OnRealize, this)));
+	m_Area->SetOnInit(std::function<void(I_GraphicsApiContext* const)>(std::bind(&Viewport::OnRealize, this, std::placeholders::_1)));
 	m_Area->SetOnDeinit(std::function<void()>(std::bind(&Viewport::OnUnrealize, this)));
 	m_Area->SetOnResize(std::function<void(vec2 const)>(std::bind(&Viewport::OnResize, this, std::placeholders::_1)));
 	m_Area->SetOnRender(std::function<void()>(std::bind(&Viewport::OnRender, this)));
@@ -37,7 +35,7 @@ Viewport::Viewport(I_RenderArea* const area)
 //
 Viewport::~Viewport()
 {
-	SafeDelete(m_RenderState);
+	SafeDelete(m_ApiContext);
 }
 
 //---------------------------------
@@ -61,32 +59,34 @@ void Viewport::SetRenderer(I_ViewportRenderer* renderer)
 
 	if (m_IsRealized)
 	{
-		OnRealize();
+		OnRealize(m_ApiContext);
 	}
 }
 
 //---------------------------------
-// Viewport::GetGlobalRenderState
+// Viewport::GetCurrentApiContext
 //
 // returns the render state of the current viewport
 //
-RenderState* Viewport::GetGlobalRenderState()
+I_GraphicsApiContext* Viewport::GetCurrentApiContext()
 {
 	ET_ASSERT(g_CurrentViewport != nullptr);
-	return g_CurrentViewport->GetState();
+	return g_CurrentViewport->GetApiContext();
 }
 
 //---------------------------------
 // Viewport::OnRealize
 //
-// init open gl stuff
+// From this point on graphics API functions can be called for this viewport
 //
-void Viewport::OnRealize()
+void Viewport::OnRealize(I_GraphicsApiContext* const api)
 {
+	m_ApiContext = api;
+
 	MakeCurrent();
 
 	// init render state
-	m_RenderState->Initialize();
+	m_ApiContext->Initialize();
 
 	// init renderer
 	if (m_Renderer != nullptr)
@@ -155,6 +155,8 @@ void Viewport::OnRender()
 //
 void Viewport::Render()
 {
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	if (m_Renderer != nullptr)
 	{
 		m_Renderer->OnRender();
@@ -162,11 +164,11 @@ void Viewport::Render()
 	else
 	{
 		// Draw pink to indicate that no renderer is attached
-		STATE->SetClearColor(vec4(0.55f, 0.075f, 0.2f, 1.f));
-		STATE->Clear(GL_COLOR_BUFFER_BIT);
+		api->SetClearColor(vec4(0.55f, 0.075f, 0.2f, 1.f));
+		api->Clear(E_ClearFlag::Color);
 	}
 
-	STATE->Flush();
+	api->Flush();
 }
 
 //---------------------------------

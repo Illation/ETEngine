@@ -35,15 +35,14 @@ private:
 	//Linebuffer
 	std::vector<LineVertex> m_Lines;
 	uint32 m_BufferSize = 0;
-	GLuint m_VAO = 0;
-	GLuint m_VBO = 0;
+	T_ArrayLoc m_VAO = 0;
+	T_BufferLoc m_VBO = 0;
 
 	//Metadata
 	std::vector<LineMetaData> m_MetaData;
 
 	//Shader and its uniforms
 	AssetPtr<ShaderData> m_pShader;
-	GLint m_uWVP = 0;
 
 private:
 	friend class Singleton<DebugRenderer>;

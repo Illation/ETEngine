@@ -1,26 +1,7 @@
 #pragma once
 
+#include <Engine/GraphicsHelper/GraphicsTypes.h>
 
-//---------------------------------
-// E_DataType
-//
-// Per attribute data type
-//
-enum class E_DataType
-{
-	Byte,
-	UByte,
-	Short,
-	UShort,
-	Int,
-	UInt,
-
-	Half,
-	Float,
-	Double,
-
-	Invalid
-};
 
 //---------------------------------
 // DataTypeInfo
@@ -35,15 +16,12 @@ struct DataTypeInfo
 
 	// static functionality
 	//----------------------
-	static uint32 GetTypeId(E_DataType const dataType);
 	static uint16 GetTypeSize(E_DataType const dataType);
-	static E_DataType GetDataType(uint32 const typeId);
 
 	// Data
 	///////
 
 	E_DataType type;
-	uint32 typeId;
 	uint16 size;
 };
 

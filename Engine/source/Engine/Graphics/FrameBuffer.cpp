@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "FrameBuffer.h"
 
-#include <glad/glad.h>
-
 #include "Shader.h"
 #include "TextureData.h"
 
@@ -12,38 +10,41 @@
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 
 
-FrameBuffer::FrameBuffer(std::string shaderFile, GLenum format, uint32 numTargets)
-	:m_ShaderFile(shaderFile),
-	m_Format(format),
-	m_NumTargets(numTargets)
-{
-}
+FrameBuffer::FrameBuffer(std::string shaderFile, E_DataType const format, uint32 numTargets)
+	: m_ShaderFile(shaderFile)
+	, m_Format(format)
+	, m_NumTargets(numTargets)
+{ }
+
 FrameBuffer::~FrameBuffer()
 {
-	STATE->DeleteRenderBuffers(1, &m_RboDepthStencil);
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->DeleteRenderBuffers(1, &m_RboDepthStencil);
 	for (size_t i = 0; i < m_pTextureVec.size(); i++)
 	{
 		SafeDelete(m_pTextureVec[i]);
 	}
-	STATE->DeleteFramebuffers(1, &m_GlFrameBuffer);
+	api->DeleteFramebuffers(1, &m_GlFrameBuffer);
 }
 
 void FrameBuffer::Initialize()
 {
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	//Load and compile Shaders
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>(GetHash(FileUtil::ExtractName(m_ShaderFile)));
 
 	//GetAccessTo shader attributes
-	STATE->SetShader(m_pShader.get());
+	api->SetShader(m_pShader.get());
 	AccessShaderAttributes();
 
 	//FrameBuffer
-	STATE->GenFramebuffers(1, &m_GlFrameBuffer);
+	api->GenFramebuffers(1, &m_GlFrameBuffer);
 
 	GenerateFramebufferTextures();
 
-	if (!(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE))
-		LOG("Framebuffer>Initialize() FAILED!", LogLevel::Error);
+	ET_ASSERT(api->IsFramebufferComplete(), "Creating framebuffer failed!");
 
 	Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener(std::bind( &FrameBuffer::ResizeFramebufferTextures, this));
 }
@@ -55,17 +56,19 @@ void FrameBuffer::AccessShaderAttributes()
 
 void FrameBuffer::Enable(bool active)
 {
-	if (active) STATE->BindFramebuffer(m_GlFrameBuffer);
-	else STATE->BindFramebuffer(0);
+	Viewport::GetCurrentApiContext()->BindFramebuffer(active ? m_GlFrameBuffer : 0);
 }
 
 void FrameBuffer::Draw()
 {
-	STATE->SetDepthEnabled(false);
-	STATE->SetShader(m_pShader.get());
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->SetDepthEnabled(false);
+	api->SetShader(m_pShader.get());
+
 	for (uint32 i = 0; i < (uint32)m_pTextureVec.size(); i++)
 	{
-		STATE->LazyBindTexture(i, GL_TEXTURE_2D, m_pTextureVec[i]->GetHandle());
+		api->LazyBindTexture(i, E_TextureType::Texture2D, m_pTextureVec[i]->GetHandle());
 	}
 
 	UploadDerivedVariables();
@@ -76,13 +79,13 @@ void FrameBuffer::Draw()
 
 void FrameBuffer::GenerateFramebufferTextures()
 {
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
-	STATE->BindFramebuffer(m_GlFrameBuffer);
+	api->BindFramebuffer(m_GlFrameBuffer);
 
 	//Textures
-	std::vector<GLuint> attachments;
-	attachments.reserve(m_NumTargets);
 	m_pTextureVec.reserve(m_NumTargets);
 
 	TextureParameters params(false);
@@ -91,9 +94,9 @@ void FrameBuffer::GenerateFramebufferTextures()
 	//Depth buffer
 	if (m_CaptureDepth)
 	{
-		TextureData* depthMap = new TextureData(windowSettings.Width, windowSettings.Height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT );
+		TextureData* depthMap = new TextureData(windowSettings.Dimensions, E_ColorFormat::Depth24, E_ColorFormat::Depth, E_DataType::Float);
 		depthMap->Build();
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap->GetHandle(), 0);
+		api->LinkTextureToFboDepth(depthMap->GetHandle());
 		depthMap->SetParameters(params);
 		m_pTextureVec.emplace_back(depthMap);
 	}
@@ -101,42 +104,43 @@ void FrameBuffer::GenerateFramebufferTextures()
 	//Color buffers
 	for (uint32 i = 0; i < m_NumTargets; i++)
 	{
-		TextureData* colorBuffer = new TextureData(windowSettings.Width, windowSettings.Height, GL_RGBA16F, GL_RGBA, m_Format );
+		TextureData* colorBuffer = new TextureData(windowSettings.Dimensions, E_ColorFormat::RGBA16f, E_ColorFormat::RGBA, m_Format);
 		colorBuffer->Build();
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffer->GetHandle(), 0 );
+		api->LinkTextureToFbo2D(i, colorBuffer->GetHandle(), 0);
 		colorBuffer->SetParameters(params, true);
 		m_pTextureVec.emplace_back(colorBuffer);
-		attachments.emplace_back(GL_COLOR_ATTACHMENT0 + i);
 	}
 
 	//Render Buffer for depth and stencil
 	if (!m_CaptureDepth)
 	{
-		STATE->GenRenderBuffers(1, &m_RboDepthStencil);
-		STATE->BindRenderbuffer(m_RboDepthStencil);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowSettings.Width, windowSettings.Height);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RboDepthStencil);
+		api->GenRenderBuffers(1, &m_RboDepthStencil);
+		api->BindRenderbuffer(m_RboDepthStencil);
+		api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24_Stencil8, windowSettings.Dimensions);
+		api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24_Stencil8, m_RboDepthStencil);
 	}
 
-	glDrawBuffers(m_NumTargets, attachments.data());
+	api->SetDrawBufferCount(static_cast<size_t>(m_NumTargets));
 }
 
 void FrameBuffer::ResizeFramebufferTextures()
 {
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
 	ET_ASSERT(m_pTextureVec.size() > 0);
 
 	if(windowSettings.Width > m_pTextureVec[0]->GetResolution().x || windowSettings.Height > m_pTextureVec[0]->GetResolution().y)
 	{
-		STATE->DeleteRenderBuffers( 1, &m_RboDepthStencil );
+		api->DeleteRenderBuffers( 1, &m_RboDepthStencil );
 		for(uint32 i = 0; i < m_pTextureVec.size(); i++)
 		{
 			SafeDelete( m_pTextureVec[i] );
 		}
 		m_pTextureVec.clear();
-		STATE->DeleteFramebuffers( 1, &m_GlFrameBuffer );
-		STATE->GenFramebuffers( 1, &m_GlFrameBuffer );
+		api->DeleteFramebuffers( 1, &m_GlFrameBuffer );
+		api->GenFramebuffers( 1, &m_GlFrameBuffer );
 		GenerateFramebufferTextures();
 		return;
 	}
@@ -150,12 +154,12 @@ void FrameBuffer::ResizeFramebufferTextures()
 	else 
 	{
 		//completely regenerate the renderbuffer object
-		STATE->BindFramebuffer(m_GlFrameBuffer);
-		STATE->DeleteRenderBuffers( 1, &m_RboDepthStencil );
-		STATE->GenRenderBuffers(1, &m_RboDepthStencil);
-		STATE->BindRenderbuffer(m_RboDepthStencil);
-		glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowSettings.Width, windowSettings.Height);
-		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RboDepthStencil);
+		api->BindFramebuffer(m_GlFrameBuffer);
+		api->DeleteRenderBuffers( 1, &m_RboDepthStencil );
+		api->GenRenderBuffers(1, &m_RboDepthStencil);
+		api->BindRenderbuffer(m_RboDepthStencil);
+		api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24_Stencil8, windowSettings.Dimensions);
+		api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24_Stencil8, m_RboDepthStencil);
 	}
 	assert( m_pTextureVec.size() >= offset + m_NumTargets );
 	for(uint32 i = offset; i < offset + m_NumTargets; ++i)

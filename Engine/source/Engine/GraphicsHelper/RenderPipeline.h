@@ -1,7 +1,6 @@
 #pragma once
 
 class AbstractScene;
-class RenderState;
 class ScreenSpaceReflections;
 
 
@@ -17,7 +16,7 @@ public:
 	PostProcessingRenderer* GetPostProcessor() { return m_pPostProcessing; }	
 
 	void DrawShadow();
-	void Draw(std::vector<AbstractScene*> pScenes, GLuint outFBO);
+	void Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO);
 	void DrawOverlays();
 
 	void OnResize();

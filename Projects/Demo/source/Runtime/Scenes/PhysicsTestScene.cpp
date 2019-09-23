@@ -209,7 +209,7 @@ void PhysicsTestScene::Update()
 		m_Source->SetAudioData(ResourceManager::Instance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
 	}
 
-	if(INPUT->GetMouseButton(E_MouseButton::Right) == E_KeyState::Pressed)
+	if(INPUT->GetMouseButton(E_MouseButton::Right) >= E_KeyState::Down)
 	{
 		auto pModelComp = new ModelComponent("sphere.dae"_hash);
 		pModelComp->SetMaterial(m_pBallMat);

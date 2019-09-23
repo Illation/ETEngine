@@ -10,7 +10,7 @@ public:
 	UIViewportRenderer() {}
 	virtual ~UIViewportRenderer();
 
-	GLuint GetTarget() const { return m_FBO; }
+	T_FbLoc GetTarget() const { return m_FBO; }
 	void Draw(ivec2 pos, ivec2 size);
 	void Initialize(ivec2 size);
 private:
@@ -18,7 +18,7 @@ private:
 
 	bool m_Initialized = false;
 
-	GLuint m_FBO;
+	T_FbLoc m_FBO;
 	TextureData* m_pTex = nullptr;
 };
 
@@ -28,7 +28,7 @@ public:
 	UIViewport();
 	virtual ~UIViewport();
 
-	GLuint GetTarget() const { return m_Renderer->GetTarget(); }
+	T_FbLoc GetTarget() const { return m_Renderer->GetTarget(); }
 	void Initialize();
 
 	void SetSize(ivec2 size)override;

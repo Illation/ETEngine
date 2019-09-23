@@ -12,7 +12,6 @@
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>
-#include <Engine/GraphicsHelper/RenderState.h>
 #include <Engine/Components/TransformComponent.h>
 #include <Engine/Components/CameraComponent.h>
 
@@ -55,7 +54,7 @@ void Planet::Update()
 
 	if(m_Rotate)
 	{
-		GetTransform()->SetRotation(GetTransform()->GetRotation() * quat(vec3::UP, -(GLfloat)TIME->DeltaTime() * 0.01f ));
+		GetTransform()->SetRotation(GetTransform()->GetRotation() * quat(vec3::UP, -(TIME->DeltaTime() * 0.01f)));
 	}
 
 	// #todo should happen after transform update maybe at the beginning of draw
@@ -74,9 +73,11 @@ void Planet::Update()
 
 void Planet::Draw()
 {
-	STATE->SetCullEnabled(false);
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->SetCullEnabled(false);
 	m_pPatch->Draw();
-	STATE->SetCullEnabled(true);
+	api->SetCullEnabled(true);
 }
 void Planet::DrawForward()
 {

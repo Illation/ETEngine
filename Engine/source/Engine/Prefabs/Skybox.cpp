@@ -35,8 +35,8 @@ void Skybox::Update()
 
 void Skybox::DrawForward()
 {
-	//set opengl depth function to less equal and the backside is drawn
-	glDepthFunc(GL_LEQUAL);
+	//set depth function to less equal and the backside is drawn
+	Viewport::GetCurrentApiContext()->SetDepthFunction(E_DepthFunc::LEqual);
 }
 
 EnvironmentMap const* Skybox::GetHDRMap() const

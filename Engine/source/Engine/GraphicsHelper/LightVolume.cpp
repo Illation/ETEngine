@@ -47,7 +47,9 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 	//Frustum culling
 	Sphere objSphere = Sphere(pos, radius);
 	if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
+	{
 		return;
+	}
 
 	//mat4 World = etm::translate(pos)*etm::scale(vec3(radius));
 	mat4 World = etm::scale( vec3( radius ) )*etm::translate( pos );
@@ -71,20 +73,25 @@ void DirectLightVolume::Initialize()
 }
 void DirectLightVolume::Draw(vec3 dir, vec3 col)
 {
-	if (!m_IsInitialized) Initialize();
+	if (!m_IsInitialized)
+	{
+		Initialize();
+	}
 
 	// #todo: avoid getting all the uniform info again and again
 
-	STATE->SetShader(m_pShader.get());
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	//m_pShader->Upload("texGBufferA"_hash, 0);
+	api->SetShader(m_pShader.get());
+
 	m_pShader->Upload("texGBufferB"_hash, 1);
 	m_pShader->Upload("texGBufferC"_hash, 2);
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
-		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+		api->LazyBindTexture(i, gbufferTex[i]->GetTargetType(), gbufferTex[i]->GetHandle());
 	}
+
 	//for position reconstruction
 	m_pShader->Upload("viewProjInv"_hash, CAMERA->GetStatViewProjInv());
 
@@ -95,9 +102,14 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 }
 void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *pShadow)
 {
-	if (!m_IsInitialized) Initialize();
+	if (!m_IsInitialized)
+	{
+		Initialize();
+	}
 
-	STATE->SetShader(m_pShaderShadowed.get());
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->SetShader(m_pShaderShadowed.get());
 
 	m_pShaderShadowed->Upload("texGBufferA"_hash, 0);
 	m_pShaderShadowed->Upload("texGBufferB"_hash, 1);
@@ -105,8 +117,9 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *
 	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
-		STATE->LazyBindTexture(i, GL_TEXTURE_2D, gbufferTex[i]->GetHandle());
+		api->LazyBindTexture(i, gbufferTex[i]->GetTargetType(), gbufferTex[i]->GetHandle());
 	}
+
 	//for position reconstruction
 	m_pShaderShadowed->Upload("projectionA"_hash, CAMERA->GetDepthProjA());
 	m_pShaderShadowed->Upload("projectionB"_hash, CAMERA->GetDepthProjB());
@@ -128,7 +141,7 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *
 
 		//Shadow map
 		m_pShaderShadowed->Upload(GetHash(ligStr + std::to_string(i) + "].ShadowMap"), static_cast<int32>(3 + i));
-		STATE->LazyBindTexture(3 + i, GL_TEXTURE_2D, pShadow->m_Cascades[i].pTexture->GetHandle());
+		api->LazyBindTexture(3 + i, pShadow->m_Cascades[i].pTexture->GetTargetType(), pShadow->m_Cascades[i].pTexture->GetHandle());
 
 		//cascade distance
 		m_pShaderShadowed->Upload(GetHash(ligStr + std::to_string(i) + "].Distance"), pShadow->m_Cascades[i].distance);

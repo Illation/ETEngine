@@ -55,10 +55,10 @@ private:
 	uint32 m_RC;
 
 	//OpenGl stuff
-	GLuint m_VAO;
-	GLuint m_VBO;
-	GLuint m_EBO;
-	GLuint m_VBOInstance;
+	T_ArrayLoc m_VAO;
+	T_BufferLoc m_VBO;
+	T_BufferLoc m_EBO;
+	T_BufferLoc m_VBOInstance;
 
 	AssetPtr<ShaderData> m_pPatchShader;
 

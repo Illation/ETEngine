@@ -1,42 +1,6 @@
 #pragma once
 
-
-//---------------------------------
-// E_TextureFilterMode
-//
-// How to sample a (sub) pixel in the texture
-//
-enum class E_TextureFilterMode
-{
-	Nearest,
-	Linear
-	// Anisotropic
-};
-
-//---------------------------------
-// E_TextureWrapMode
-//
-// How to sample a pixel outside of normalized texture coordinates
-//
-enum class E_TextureWrapMode
-{
-	ClampToEdge,
-	ClampToBorder,
-	MirrorClampToEdge,
-	MirroredRepeat,
-	Repeat
-};
-
-//---------------------------------
-// E_TextureCompareMode
-//
-// How to compare a texture to the depth texture
-//
-enum class E_TextureCompareMode
-{
-	CompareRToTexture,
-	None
-};
+#include <Engine/GraphicsHelper/GraphicsTypes.h>
 
 
 //---------------------------------
@@ -73,8 +37,3 @@ struct TextureParameters final
 
 	RTTR_ENABLE()
 };
-
-int32 GetFilter(E_TextureFilterMode const filter);
-int32 GetMinFilter(E_TextureFilterMode const minFilter, E_TextureFilterMode const mipFilter, bool const useMip);
-int32 GetWrapMode(E_TextureWrapMode const wrap);
-int32 GetCompareMode(E_TextureCompareMode const comp);

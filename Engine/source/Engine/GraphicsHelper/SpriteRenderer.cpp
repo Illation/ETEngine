@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "SpriteRenderer.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Graphics/TextureData.h>
@@ -24,8 +22,10 @@
 //
 SpriteRenderer::~SpriteRenderer()
 {
-	glDeleteVertexArrays(1, &m_VAO);
-	glDeleteBuffers(1, &m_VBO);
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->DeleteVertexArray(m_VAO);
+	api->DeleteBuffer(m_VBO);
 
 	m_Sprites.clear();
 	m_Textures.clear();
@@ -39,43 +39,46 @@ SpriteRenderer::~SpriteRenderer()
 //
 void SpriteRenderer::Initialize()
 {
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostSprite.glsl"_hash);
 
-	STATE->SetShader(m_Shader.get());
+	api->SetShader(m_Shader.get());
 
 	m_Shader->Upload("uTexture"_hash, 0);
 	m_Shader->Upload("u3DTexture"_hash, 1);
 
 	//Generate buffers and arrays
-	glGenVertexArrays(1, &m_VAO);
-	glGenBuffers(1, &m_VBO);
+	m_VAO = api->CreateVertexArray();
+	m_VBO = api->CreateBuffer();
 
 	//bind
-	STATE->BindVertexArray(m_VAO);
-	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindVertexArray(m_VAO);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
 
 	//set data and attributes
-	glBufferData(GL_ARRAY_BUFFER, m_BufferSize, NULL, GL_DYNAMIC_DRAW);
+	api->SetBufferData(E_BufferType::Vertex, m_BufferSize, nullptr, E_UsageHint::Dynamic);
 
 	//input layout
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
+	api->SetVertexAttributeArrayEnabled(0, true);
+	api->SetVertexAttributeArrayEnabled(1, true);
+	api->SetVertexAttributeArrayEnabled(2, true);
+	api->SetVertexAttributeArrayEnabled(3, true);
 
-	glVertexAttribIPointer(0, (GLint)1, GL_UNSIGNED_INT, (GLsizei)sizeof(SpriteVertex), (GLvoid*)offsetof(SpriteVertex, TextureId));
-	glVertexAttribPointer(1, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(SpriteVertex), (GLvoid*)offsetof(SpriteVertex, TransformData));
-	glVertexAttribPointer(2, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(SpriteVertex), (GLvoid*)offsetof(SpriteVertex, TransformData2));
-	glVertexAttribPointer(3, (GLint)4, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(SpriteVertex), (GLvoid*)offsetof(SpriteVertex, Color));
+	int32 const vertSize = sizeof(SpriteVertex);
+	api->DefineVertexAttribIPointer(0, 1, E_DataType::UInt, vertSize, offsetof(SpriteVertex, TextureId));
+	api->DefineVertexAttributePointer(1, 4, E_DataType::Float, false, vertSize, offsetof(SpriteVertex, TransformData));
+	api->DefineVertexAttributePointer(2, 4, E_DataType::Float, false, vertSize, offsetof(SpriteVertex, TransformData2));
+	api->DefineVertexAttributePointer(3, 4, E_DataType::Float, false, vertSize, offsetof(SpriteVertex, Color));
 
 	//unbind
-	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
-	STATE->BindVertexArray(0);
+	api->BindBuffer(E_BufferType::Vertex, 0);
+	api->BindVertexArray(0);
 
 	CalculateTransform();
 
 	//Create empty dummy texture
-	m_EmptyTex = new TextureData(1, 1, GL_RGB, GL_RGB, GL_FLOAT);
+	m_EmptyTex = new TextureData(ivec2(1), E_ColorFormat::RGB, E_ColorFormat::RGB, E_DataType::Float);
 
 	m_EmptyTex->Build((void*)(vec4(1).data.data()));
 
@@ -135,7 +138,7 @@ void SpriteRenderer::Draw(TextureData const* tex,
 	case E_ScalingMode::Screen:
 	{
 		ivec2 viewPos, viewSize;
-		STATE->GetViewport(viewPos, viewSize);
+		Viewport::GetCurrentApiContext()->GetViewport(viewPos, viewSize);
 		finalScale = scale * etm::vecCast<float>(viewSize);
 	}
 	break;
@@ -156,7 +159,7 @@ void SpriteRenderer::Draw(TextureData const* tex,
 	vertex.TransformData2 = vec4(pivot, finalScale);
 	vertex.Color = color;
 
-	if (tex->GetTarget() == GL_TEXTURE_3D)
+	if (tex->GetTargetType() == E_TextureType::Texture3D)
 	{
 		m_Layer = layer;
 	}
@@ -182,15 +185,19 @@ void SpriteRenderer::OnWindowResize()
 void SpriteRenderer::Draw()
 {
 	if (m_Sprites.size() <= 0)
+	{
 		return;
+	}
+
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	UpdateBuffer();
 
-	STATE->BindVertexArray(m_VAO);
+	api->BindVertexArray(m_VAO);
 
 	CalculateTransform();
-	STATE->SetShader(m_Shader.get());
-	STATE->SetActiveTexture(0);
+	api->SetShader(m_Shader.get());
+	api->SetActiveTexture(0);
 	m_Shader->Upload("uTransform"_hash, m_Transform);
 
 	uint32 batchSize = 1;
@@ -205,27 +212,27 @@ void SpriteRenderer::Draw()
 		}
 
 		TextureData const* const texData = m_Textures[m_Sprites[i].TextureId];
-		if (texData->GetTarget() == GL_TEXTURE_2D)
+		if (texData->GetTargetType() == E_TextureType::Texture2D)
 		{
-			STATE->SetActiveTexture(0);
+			api->SetActiveTexture(0);
 			m_Shader->Upload("uDraw3D"_hash, false);
 		}
 		else
 		{
-			STATE->SetActiveTexture(1);
+			api->SetActiveTexture(1);
 			m_Shader->Upload("uDraw3D"_hash, true);
 			m_Shader->Upload("uLayer"_hash, m_Layer);
 		}
-		STATE->BindTexture(texData->GetTarget(), texData->GetHandle());
+		api->BindTexture(texData->GetTargetType(), texData->GetHandle());
 
 		//Draw
-		STATE->DrawArrays(GL_POINTS, batchOffset, batchSize);
+		api->DrawArrays(E_DrawMode::Points, batchOffset, batchSize);
 
 		batchOffset += batchSize;
 		batchSize = 1;
 	}
 
-	STATE->BindVertexArray(0);
+	api->BindVertexArray(0);
 
 	m_Sprites.clear();
 	m_Textures.clear();
@@ -242,11 +249,13 @@ void SpriteRenderer::Draw()
 //
 void SpriteRenderer::UpdateBuffer()
 {
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	//Bind Object vertex array
-	STATE->BindVertexArray(m_VAO);
+	api->BindVertexArray(m_VAO);
 
 	//Send the vertex buffer again
-	STATE->BindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
 
 	bool bufferResize = m_Sprites.size() * sizeof( SpriteVertex ) > m_BufferSize;
 	if(!m_VBO || bufferResize) //first creation or resize
@@ -256,20 +265,20 @@ void SpriteRenderer::UpdateBuffer()
 			m_BufferSize = (uint32)m_Sprites.size() * sizeof( SpriteVertex );
 		}
 
-		glBufferData(GL_ARRAY_BUFFER, m_BufferSize, m_Sprites.data(), GL_DYNAMIC_DRAW);
+		api->SetBufferData(E_BufferType::Vertex, m_BufferSize, m_Sprites.data(), E_UsageHint::Dynamic);
 	}
 	else
 	{
-		GLvoid* p = glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
+		void* p = api->MapBuffer(E_BufferType::Vertex, E_AccessMode::Write);
 		memcpy( p, m_Sprites.data(), m_Sprites.size() * sizeof( SpriteVertex ) );
-		glUnmapBuffer( GL_ARRAY_BUFFER );
+		api->UnmapBuffer(E_BufferType::Vertex);
 	}
 
 
-	STATE->BindBuffer(GL_ARRAY_BUFFER, 0);
+	api->BindBuffer(E_BufferType::Vertex, 0);
 
 	//Done Modifying
-	STATE->BindVertexArray(0);
+	api->BindVertexArray(0);
 }
 
 //---------------------------------
@@ -280,7 +289,7 @@ void SpriteRenderer::UpdateBuffer()
 void SpriteRenderer::CalculateTransform()
 {
 	ivec2 viewPos, viewSize;
-	STATE->GetViewport(viewPos, viewSize);
+	Viewport::GetCurrentApiContext()->GetViewport(viewPos, viewSize);
 
 	int32 const width = viewSize.x;
 	int32 const height = viewSize.y;

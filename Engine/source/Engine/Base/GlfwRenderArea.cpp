@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GlfwRenderArea.h"
 
-#include <glad/glad.h>
+#include <Engine/GraphicsHelper/GlContextImpl.h>
 
 
 //=====================
@@ -78,54 +78,11 @@ void GlfwRenderArea::Initialize()
 	LOG(FS("Version:  %s", glGetString(GL_VERSION)));
 	LOG("");
 
-	// potentially hook up opengl to the logger
-	//------------------------------------------
-#if defined(ET_DEBUG)
-#if defined(GRAPHICS_API_VERBOSE)
-
-	auto glLogCallback = [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
-	{
-		UNUSED(source);
-		UNUSED(id);
-		UNUSED(length);
-		UNUSED(userParam);
-
-		LogLevel level = LogLevel::Info;
-		switch (type)
-		{
-		case GL_DEBUG_TYPE_ERROR:
-			level = LogLevel::Error;
-			break;
-		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-			level = LogLevel::Warning;
-			break;
-		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-			level = LogLevel::Warning;
-			break;
-		}
-
-		if (severity == GL_DEBUG_SEVERITY_HIGH)
-		{
-			level = LogLevel::Error;
-		}
-
-		LOG(message, level);
-		LOG("");
-	}
-
-	glEnable(GL_DEBUG_OUTPUT);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-	glDebugMessageCallback(glLogCallback, nullptr);
-	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
-
-#endif
-#endif
-
 	Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener(std::bind(&GlfwRenderArea::OnResize, this));
 
 	if (m_OnInit)
 	{
-		m_OnInit();
+		m_OnInit(new GlContext());
 	}
 }
 

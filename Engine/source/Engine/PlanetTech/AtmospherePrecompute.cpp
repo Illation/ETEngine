@@ -3,8 +3,6 @@
 
 #include "Atmosphere.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
@@ -33,25 +31,25 @@ void AtmospherePrecompute::Init()
 	m_pComputeMultipleScattering = ResourceManager::Instance()->GetAssetData<ShaderData>("ComputeMultipleScattering.glsl"_hash);
 
 	//Computation textures
-	m_TexDeltaIrradiance = new TextureData(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H,
-		m_Settings.INTERNAL2D, m_Settings.FORMAT, GL_FLOAT);
+	m_TexDeltaIrradiance = new TextureData(ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H),
+		m_Settings.INTERNAL2D, m_Settings.FORMAT, E_DataType::Float);
 	m_TexDeltaIrradiance->Build();
 	m_TexDeltaIrradiance->SetParameters(m_Settings.m_TexParams);
 
-	m_TexDeltaRayleigh = new TextureData(m_Settings.m_ScatteringTexDim.x, m_Settings.m_ScatteringTexDim.y, m_Settings.INTERNAL3D, m_Settings.FORMAT, GL_FLOAT, m_Settings.m_ScatteringTexDim.z);
+	m_TexDeltaRayleigh = new TextureData(m_Settings.m_ScatteringTexDim.xy, m_Settings.INTERNAL3D, m_Settings.FORMAT, E_DataType::Float, m_Settings.m_ScatteringTexDim.z);
 	m_TexDeltaRayleigh->Build();
 	m_TexDeltaRayleigh->SetParameters(m_Settings.m_TexParams);
 	m_TexDeltaMultipleScattering = m_TexDeltaRayleigh; //Multiple scattering and rayleigh share same gpu texture space
 
-	m_TexDeltaMie = new TextureData(m_Settings.m_ScatteringTexDim.x, m_Settings.m_ScatteringTexDim.y, m_Settings.INTERNAL3D, m_Settings.FORMAT, GL_FLOAT, m_Settings.m_ScatteringTexDim.z);
+	m_TexDeltaMie = new TextureData(m_Settings.m_ScatteringTexDim.xy, m_Settings.INTERNAL3D, m_Settings.FORMAT, E_DataType::Float, m_Settings.m_ScatteringTexDim.z);
 	m_TexDeltaMie->Build();
 	m_TexDeltaMie->SetParameters(m_Settings.m_TexParams);
 
-	m_TexDeltaScattering = new TextureData(m_Settings.m_ScatteringTexDim.x, m_Settings.m_ScatteringTexDim.y, m_Settings.INTERNAL3D, m_Settings.FORMAT, GL_FLOAT, m_Settings.m_ScatteringTexDim.z);
+	m_TexDeltaScattering = new TextureData(m_Settings.m_ScatteringTexDim.xy, m_Settings.INTERNAL3D, m_Settings.FORMAT, E_DataType::Float, m_Settings.m_ScatteringTexDim.z);
 	m_TexDeltaScattering->Build();
 	m_TexDeltaScattering->SetParameters(m_Settings.m_TexParams);
 
-	STATE->GenFramebuffers(1, &m_FBO);
+	Viewport::GetCurrentApiContext()->GenFramebuffers(1, &m_FBO);
 
 	m_IsInitialized = true;
 }
@@ -71,7 +69,7 @@ void AtmospherePrecompute::Unload()//unload textures and fbos needed for precomp
 	delete m_TexDeltaScattering;
 	m_TexDeltaScattering = nullptr;
 
-	STATE->DeleteFramebuffers(1, &m_FBO);
+	Viewport::GetCurrentApiContext()->DeleteFramebuffers(1, &m_FBO);
 	// #todo also unload shaders, extra functionality for content manager
 
 	//assert(glGetError == 0);
@@ -85,6 +83,8 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	{
 		Init();
 	}
+
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Precomputation variables
 	atmo->m_Params.Upload(m_pComputeTransmittance.get(), "uAtmosphere");
@@ -100,88 +100,72 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	atmo->m_Params.Upload(m_pComputeMultipleScattering.get(), "uAtmosphere");
 	m_Settings.UploadTextureSize(m_pComputeMultipleScattering.get());
 
-	STATE->BindFramebuffer(m_FBO);
+	api->BindFramebuffer(m_FBO);
 
 	int32 numScatteringOrders = 4;
 	mat3 luminanceFromRadiance = mat3(); //Might not be needed as we dont precompute luminance
 	bool blend = false; //Same here
 
 	//Specific texture initialization
-	atmo->m_TexTransmittance = new TextureData(m_Settings.TRANSMITTANCE_W, m_Settings.TRANSMITTANCE_H,
-		m_Settings.INTERNAL2D, m_Settings.FORMAT, GL_FLOAT);
+	atmo->m_TexTransmittance = new TextureData(ivec2(m_Settings.TRANSMITTANCE_W, m_Settings.TRANSMITTANCE_H),
+		m_Settings.INTERNAL2D, m_Settings.FORMAT, E_DataType::Float);
 	atmo->m_TexTransmittance->Build();
 	atmo->m_TexTransmittance->SetParameters(m_Settings.m_TexParams);
-	atmo->m_TexIrradiance = new TextureData(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H,
-		m_Settings.INTERNAL2D, m_Settings.FORMAT, GL_FLOAT);
+	atmo->m_TexIrradiance = new TextureData(ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H),
+		m_Settings.INTERNAL2D, m_Settings.FORMAT, E_DataType::Float);
 	atmo->m_TexIrradiance->Build();
 	atmo->m_TexIrradiance->SetParameters(m_Settings.m_TexParams);
 
-	atmo->m_TexInscatter = new TextureData(m_Settings.m_ScatteringTexDim.x, m_Settings.m_ScatteringTexDim.y,
-		m_Settings.INTERNAL3D, m_Settings.FORMAT, GL_FLOAT, m_Settings.m_ScatteringTexDim.z);
+	atmo->m_TexInscatter = new TextureData(m_Settings.m_ScatteringTexDim.xy,
+		m_Settings.INTERNAL3D, m_Settings.FORMAT, E_DataType::Float, m_Settings.m_ScatteringTexDim.z);
 	atmo->m_TexInscatter->Build();
 	atmo->m_TexInscatter->SetParameters(m_Settings.m_TexParams);
 
-	//Buffers for blending
-	const GLuint kDrawBuffers[4] =
-	{
-		GL_COLOR_ATTACHMENT0,
-		GL_COLOR_ATTACHMENT1,
-		GL_COLOR_ATTACHMENT2,
-		GL_COLOR_ATTACHMENT3
-	};
-	STATE->SetBlendEquation(GL_FUNC_ADD);
-	STATE->SetBlendFunction(GL_ONE, GL_ONE);
-	STATE->SetBlendEnabled(false);
+	api->SetBlendEquation(E_BlendEquation::Add);
+	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::One);
+	api->SetBlendEnabled(false);
 
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, atmo->m_TexTransmittance->GetHandle(), 0);
-	glDrawBuffer(GL_COLOR_ATTACHMENT0);
-	STATE->SetViewport(ivec2(0), ivec2(m_Settings.TRANSMITTANCE_W, m_Settings.TRANSMITTANCE_H));
-	STATE->SetShader(m_pComputeTransmittance.get());
+	api->LinkTextureToFbo(0, atmo->m_TexTransmittance->GetHandle(), 0);
+	api->SetDrawBufferCount(1);
+	api->SetViewport(ivec2(0), ivec2(m_Settings.TRANSMITTANCE_W, m_Settings.TRANSMITTANCE_H));
+	api->SetShader(m_pComputeTransmittance.get());
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 
 	// Compute the direct irradiance, store it in delta_irradiance_texture and,
 	// depending on 'blend', either initialize irradiance_texture_ with zeros or
 	// leave it unchanged (we don't want the direct irradiance in
 	// irradiance_texture_, but only the irradiance from the sky).
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_TexDeltaIrradiance->GetHandle(), 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, atmo->m_TexIrradiance->GetHandle(), 0);
-	glDrawBuffers(2, kDrawBuffers);
-	STATE->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
-	STATE->SetShader(m_pComputeDirectIrradiance.get());
-	STATE->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTarget(), atmo->m_TexTransmittance->GetHandle());
+	api->LinkTextureToFbo(0, m_TexDeltaIrradiance->GetHandle(), 0);
+	api->LinkTextureToFbo(1, atmo->m_TexIrradiance->GetHandle(), 0);
+	api->SetDrawBufferCount(2);
+	api->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
+	api->SetShader(m_pComputeDirectIrradiance.get());
+	api->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetHandle());
 	m_pComputeDirectIrradiance->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetHandle()));
-	STATE->SetBlendEnabled({ false, blend });
+	api->SetBlendEnabled({ false, blend });
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
-	STATE->SetBlendEnabled(false);
+	api->SetBlendEnabled(false);
 
 	// Compute the rayleigh and mie single scattering, store them in
 	// delta_rayleigh_scattering_texture and delta_mie_scattering_texture, and
 	// either store them or accumulate them in scattering_texture_ and
 	// optional_single_mie_scattering_texture_.
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_TexDeltaRayleigh->GetHandle(), 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, m_TexDeltaMie->GetHandle(), 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, atmo->m_TexInscatter->GetHandle(), 0);
-	//if (optional_single_mie_scattering_texture_ != 0)
-	//{
-	//	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, optional_single_mie_scattering_texture_, 0);
-	//	glDrawBuffers(4, kDrawBuffers);
-	//}
-	//else
-	//{
-	glDrawBuffers(3, kDrawBuffers);
-	//}
-	STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
-	STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
-	STATE->SetShader(m_pComputeSingleScattering.get());
+	api->LinkTextureToFbo(0, m_TexDeltaRayleigh->GetHandle(), 0);
+	api->LinkTextureToFbo(1, m_TexDeltaMie->GetHandle(), 0);
+	api->LinkTextureToFbo(2, atmo->m_TexInscatter->GetHandle(), 0);
+	api->SetDrawBufferCount(3);
+	api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
+	api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
+	api->SetShader(m_pComputeSingleScattering.get());
 	m_pComputeSingleScattering->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
-	STATE->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTarget(), atmo->m_TexTransmittance->GetHandle());
+	api->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetHandle());
 	m_pComputeSingleScattering->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetHandle()));
 	for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 	{
 		m_pComputeSingleScattering->Upload("layer"_hash, layer);
-		STATE->SetBlendEnabled({ false, false, blend, blend });
+		api->SetBlendEnabled({ false, false, blend, blend });
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
-		STATE->SetBlendEnabled(false);
+		api->SetBlendEnabled(false);
 	}
 
 	// Compute the 2nd, 3rd and 4th order of scattering, in sequence.
@@ -189,22 +173,22 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	{
 		// Compute the scattering density, and store it in
 		// delta_scattering_density_texture.
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_TexDeltaScattering->GetHandle(), 0);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0);
-		glDrawBuffer(GL_COLOR_ATTACHMENT0);
-		STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
-		STATE->SetShader(m_pComputeScatteringDensity.get());
-		STATE->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTarget(), atmo->m_TexTransmittance->GetHandle());
+		api->LinkTextureToFbo(0, m_TexDeltaScattering->GetHandle(), 0);
+		api->LinkTextureToFbo(1, 0, 0);
+		api->LinkTextureToFbo(2, 0, 0);
+		api->LinkTextureToFbo(3, 0, 0);
+		api->SetDrawBufferCount(1);
+		api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
+		api->SetShader(m_pComputeScatteringDensity.get());
+		api->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetHandle());
 		m_pComputeScatteringDensity->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetHandle()));
-		STATE->LazyBindTexture(m_TexDeltaRayleigh->GetHandle(), m_TexDeltaRayleigh->GetTarget(), m_TexDeltaRayleigh->GetHandle());
+		api->LazyBindTexture(m_TexDeltaRayleigh->GetHandle(), m_TexDeltaRayleigh->GetTargetType(), m_TexDeltaRayleigh->GetHandle());
 		m_pComputeScatteringDensity->Upload("uTexRayleigh"_hash, static_cast<int32>(m_TexDeltaRayleigh->GetHandle()));
-		STATE->LazyBindTexture(m_TexDeltaMie->GetHandle(), m_TexDeltaMie->GetTarget(), m_TexDeltaMie->GetHandle());
+		api->LazyBindTexture(m_TexDeltaMie->GetHandle(), m_TexDeltaMie->GetTargetType(), m_TexDeltaMie->GetHandle());
 		m_pComputeScatteringDensity->Upload("uTexDeltaMie"_hash, static_cast<int32>(m_TexDeltaMie->GetHandle()));
-		STATE->LazyBindTexture(m_TexDeltaMultipleScattering->GetHandle(), m_TexDeltaMultipleScattering->GetTarget(), m_TexDeltaMultipleScattering->GetHandle());
+		api->LazyBindTexture(m_TexDeltaMultipleScattering->GetHandle(), m_TexDeltaMultipleScattering->GetTargetType(), m_TexDeltaMultipleScattering->GetHandle());
 		m_pComputeScatteringDensity->Upload("uTexMultipleScattering"_hash, static_cast<int32>(m_TexDeltaMultipleScattering->GetHandle()));
-		STATE->LazyBindTexture(m_TexDeltaIrradiance->GetHandle(), m_TexDeltaIrradiance->GetTarget(), m_TexDeltaIrradiance->GetHandle());
+		api->LazyBindTexture(m_TexDeltaIrradiance->GetHandle(), m_TexDeltaIrradiance->GetTargetType(), m_TexDeltaIrradiance->GetHandle());
 		m_pComputeScatteringDensity->Upload("uTexDeltaIrradiance"_hash, static_cast<int32>(m_TexDeltaIrradiance->GetHandle()));
 		m_pComputeScatteringDensity->Upload("scattering_order"_hash, scatteringOrder);
 		for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
@@ -215,65 +199,67 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 
 		// Compute the indirect irradiance, store it in delta_irradiance_texture and
 		// accumulate it in irradiance_texture_.
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_TexDeltaIrradiance->GetHandle(), 0);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, atmo->m_TexIrradiance->GetHandle(), 0);
-		glDrawBuffers(2, kDrawBuffers);
-		STATE->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
-		STATE->SetShader(m_pComputeIndirectIrradiance.get());
+		api->LinkTextureToFbo(0, m_TexDeltaIrradiance->GetHandle(), 0);
+		api->LinkTextureToFbo(1, atmo->m_TexIrradiance->GetHandle(), 0);
+		api->SetDrawBufferCount(2);
+		api->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
+		api->SetShader(m_pComputeIndirectIrradiance.get());
 		m_pComputeIndirectIrradiance->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
-		STATE->LazyBindTexture(m_TexDeltaRayleigh->GetHandle(), m_TexDeltaRayleigh->GetTarget(), m_TexDeltaRayleigh->GetHandle());
+		api->LazyBindTexture(m_TexDeltaRayleigh->GetHandle(), m_TexDeltaRayleigh->GetTargetType(), m_TexDeltaRayleigh->GetHandle());
 		m_pComputeIndirectIrradiance->Upload("uTexRayleigh"_hash, static_cast<int32>(m_TexDeltaRayleigh->GetHandle()));
-		STATE->LazyBindTexture(m_TexDeltaMie->GetHandle(), m_TexDeltaMie->GetTarget(), m_TexDeltaMie->GetHandle());
+		api->LazyBindTexture(m_TexDeltaMie->GetHandle(), m_TexDeltaMie->GetTargetType(), m_TexDeltaMie->GetHandle());
 		m_pComputeIndirectIrradiance->Upload("uTexDeltaMie"_hash, static_cast<int32>(m_TexDeltaMie->GetHandle()));
-		STATE->LazyBindTexture(m_TexDeltaMultipleScattering->GetHandle(), m_TexDeltaMultipleScattering->GetTarget(), m_TexDeltaMultipleScattering->GetHandle());
+		api->LazyBindTexture(m_TexDeltaMultipleScattering->GetHandle(), m_TexDeltaMultipleScattering->GetTargetType(), m_TexDeltaMultipleScattering->GetHandle());
 		//m_pComputeIndirectIrradiance->Upload("uTexDeltaIrradiance"_hash, static_cast<int32>(m_TexDeltaMultipleScattering->GetHandle()));
 		m_pComputeIndirectIrradiance->Upload("scattering_order"_hash, scatteringOrder);
-		STATE->SetBlendEnabled({ false, true });
+		api->SetBlendEnabled({ false, true });
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
-		STATE->SetBlendEnabled(false);
+		api->SetBlendEnabled(false);
 
 		// Compute the multiple scattering, store it in
 		// delta_multiple_scattering_texture, and accumulate it in
 		// scattering_texture_.
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_TexDeltaMultipleScattering->GetHandle(), 0);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, atmo->m_TexInscatter->GetHandle(), 0);
-		glDrawBuffers(2, kDrawBuffers);
-		STATE->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
-		STATE->SetShader(m_pComputeMultipleScattering.get());
+		api->LinkTextureToFbo(0, m_TexDeltaMultipleScattering->GetHandle(), 0);
+		api->LinkTextureToFbo(1, atmo->m_TexInscatter->GetHandle(), 0);
+		api->SetDrawBufferCount(2);
+		api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
+		api->SetShader(m_pComputeMultipleScattering.get());
 		m_pComputeMultipleScattering->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
-		STATE->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTarget(), atmo->m_TexTransmittance->GetHandle());
+		api->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetHandle());
 		m_pComputeMultipleScattering->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetHandle()));
-		STATE->LazyBindTexture(m_TexDeltaScattering->GetHandle(), m_TexDeltaScattering->GetTarget(), m_TexDeltaScattering->GetHandle());
+		api->LazyBindTexture(m_TexDeltaScattering->GetHandle(), m_TexDeltaScattering->GetTargetType(), m_TexDeltaScattering->GetHandle());
 		m_pComputeMultipleScattering->Upload("uTexDeltaScatteringDensity"_hash, static_cast<int32>(m_TexDeltaScattering->GetHandle()));
 		for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 		{
 			m_pComputeMultipleScattering->Upload("layer"_hash, layer);
-			STATE->SetBlendEnabled({ false, true });
+			api->SetBlendEnabled({ false, true });
 			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
-			STATE->SetBlendEnabled(false);
+			api->SetBlendEnabled(false);
 		}
 	}
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0);
+	api->LinkTextureToFbo(1, 0, 0);
+	api->LinkTextureToFbo(2, 0, 0);
+	api->LinkTextureToFbo(3, 0, 0);
 
-	STATE->SetBlendEnabled(false);
+	api->SetBlendEnabled(false);
 
 	Unload();
 }
 
 void AtmospherePrecompute::SetUniforms(ShaderData* shader, TextureData* transmittance, TextureData* scattering, TextureData* irradiance, TextureData* mie)
 {
-	STATE->LazyBindTexture(transmittance->GetHandle(), transmittance->GetTarget(), transmittance->GetHandle());
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->LazyBindTexture(transmittance->GetHandle(), transmittance->GetTargetType(), transmittance->GetHandle());
 	shader->Upload("uTexTransmittance"_hash, static_cast<int32>(transmittance->GetHandle()));
 
-	STATE->LazyBindTexture(scattering->GetHandle(), scattering->GetTarget(), scattering->GetHandle());
+	api->LazyBindTexture(scattering->GetHandle(), scattering->GetTargetType(), scattering->GetHandle());
 	shader->Upload("uTexScattering"_hash, static_cast<int32>(scattering->GetHandle()));
 
-	STATE->LazyBindTexture(irradiance->GetHandle(), irradiance->GetTarget(), irradiance->GetHandle());
+	api->LazyBindTexture(irradiance->GetHandle(), irradiance->GetTargetType(), irradiance->GetHandle());
 	shader->Upload("uTexIrradiance"_hash, static_cast<int32>(irradiance->GetHandle()));
 
-	STATE->LazyBindTexture(mie->GetHandle(), mie->GetTarget(), mie->GetHandle());
+	api->LazyBindTexture(mie->GetHandle(), mie->GetTargetType(), mie->GetHandle());
 	shader->Upload("uTexMie"_hash, static_cast<int32>(mie->GetHandle()));
 }
 

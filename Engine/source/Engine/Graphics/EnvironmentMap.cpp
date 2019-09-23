@@ -3,7 +3,6 @@
 
 #include "Shader.h"
 
-#include <glad/glad.h>
 #include <stb/stb_image.h>
 
 #include <EtCore/Content/ResourceManager.h>
@@ -79,7 +78,7 @@ DEFINE_FORCED_LINKING(EnvironmentMapAsset) // force the shader class to be linke
 //
 bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
-	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	Viewport::GetCurrentApiContext()->SetSeamlessCubemapsEnabled(true);
 
 	//load equirectangular texture
 	//****************************
@@ -105,7 +104,7 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 		return false;
 	}
 
-	TextureData hdrTexture(width, height, GL_RGB16F, GL_RGB, GL_FLOAT);
+	TextureData hdrTexture(ivec2(width, height), E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 	hdrTexture.Build((void*)hdrFloats);
 
 	// we have our equirectangular texture on the GPU so we can clean up the load data on the CPU
@@ -141,18 +140,21 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 const resolution)
 {
-	//Create framebuffer
-	uint32 captureFBO, captureRBO;
-	STATE->GenFramebuffers(1, &captureFBO);
-	STATE->GenRenderBuffers(1, &captureRBO);
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	STATE->BindFramebuffer(captureFBO);
-	STATE->BindRenderbuffer(captureRBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, resolution, resolution);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+	//Create framebuffer
+	T_FbLoc captureFBO;
+	T_RbLoc captureRBO;
+	api->GenFramebuffers(1, &captureFBO);
+	api->GenRenderBuffers(1, &captureRBO);
+
+	api->BindFramebuffer(captureFBO);
+	api->BindRenderbuffer(captureRBO);
+	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(resolution));
+	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, captureRBO);
 
 	//Preallocate memory for cubemap
-	TextureData* const envCubeMap = new TextureData(E_TextureType::CubeMap, resolution, resolution);
+	TextureData* const envCubeMap = new TextureData(E_TextureType::CubeMap, ivec2(resolution));
 	envCubeMap->Build();
 
 	TextureParameters params(false);
@@ -170,34 +172,34 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	AssetPtr<ShaderData> equiCubeShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdEquiCubeShader.glsl"_hash);
 
 	// convert HDR equirectangular environment map to cubemap equivalent
-	STATE->SetShader(equiCubeShader.get());
+	api->SetShader(equiCubeShader.get());
 	equiCubeShader->Upload("equirectangularMap"_hash, 0);
-	STATE->LazyBindTexture(0, GL_TEXTURE_2D, pEqui->GetHandle());
+	api->LazyBindTexture(0, E_TextureType::Texture2D, pEqui->GetHandle());
 	equiCubeShader->Upload("projection"_hash, CubeCaptureProjection());
 
 	//render the cube
 	//***************
 
-	STATE->SetViewport(ivec2(0), ivec2(resolution));
-	STATE->BindFramebuffer(captureFBO);
-	for (uint32 i = 0; i < 6; ++i)
+	api->SetViewport(ivec2(0), ivec2(resolution));
+	api->BindFramebuffer(captureFBO);
+	for (uint8 face = 0; face < 6; ++face)
 	{
-		equiCubeShader->Upload("view"_hash, captureViews[i]);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap->GetHandle(), 0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		equiCubeShader->Upload("view"_hash, captureViews[face]);
+		api->LinkCubeMapFaceToFbo2D(face, envCubeMap->GetHandle(), 0);
+		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
 		PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
 	}
-	STATE->BindFramebuffer(0);
+	api->BindFramebuffer(0);
 
 	params.genMipMaps = true;
 	envCubeMap->SetParameters(params);
 
-	STATE->BindTexture(GL_TEXTURE_2D, 0);
-	STATE->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
+	api->BindTexture(E_TextureType::Texture2D, 0);
+	api->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
 
-	STATE->DeleteRenderBuffers(1, &captureRBO);
-	STATE->DeleteFramebuffers(1, &captureFBO);
+	api->DeleteRenderBuffers(1, &captureRBO);
+	api->DeleteFramebuffers(1, &captureFBO);
 
 	return envCubeMap;
 }

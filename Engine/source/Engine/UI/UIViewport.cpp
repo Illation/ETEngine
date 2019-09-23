@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "UIViewport.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
@@ -52,34 +50,42 @@ UIViewportRenderer::~UIViewportRenderer()
 {
 	if (!m_Initialized)return;
 	delete m_pTex; m_pTex = nullptr;
-	STATE->DeleteFramebuffers(1, &m_FBO);
+	Viewport::GetCurrentApiContext()->DeleteFramebuffers(1, &m_FBO);
 }
 
 void UIViewportRenderer::Draw(ivec2 pos, ivec2 size)
 {
-	if (!m_Initialized)return;
-	STATE->SetShader(m_pShader.get());
-	STATE->SetViewport(pos, size);
+	if (!m_Initialized)
+	{
+		return;
+	}
 
-	STATE->LazyBindTexture(0, GL_TEXTURE_2D, m_pTex->GetHandle());
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->SetShader(m_pShader.get());
+	api->SetViewport(pos, size);
+
+	api->LazyBindTexture(0, E_TextureType::Texture2D, m_pTex->GetHandle());
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
 }
 
 void UIViewportRenderer::Initialize(ivec2 size)
 {
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("EditorComposite.glsl"_hash);
 
-	STATE->SetShader(m_pShader.get());
+	api->SetShader(m_pShader.get());
 	m_pShader->Upload("uTex"_hash, 0);
 
 	TextureParameters params(false);
 
-	STATE->GenFramebuffers(1, &m_FBO);
-	STATE->BindFramebuffer(m_FBO);
-	m_pTex = new TextureData(size.x, size.y, GL_RGB16F, GL_RGB, GL_FLOAT);
+	api->GenFramebuffers(1, &m_FBO);
+	api->BindFramebuffer(m_FBO);
+	m_pTex = new TextureData(size, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 	m_pTex->Build();
 	m_pTex->SetParameters(params);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTex->GetHandle(), 0);
+	api->LinkTextureToFbo2D(0, m_pTex->GetHandle(), 0);
 
 	m_Initialized = true;
 }

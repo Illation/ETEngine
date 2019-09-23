@@ -12,7 +12,6 @@
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/SceneGraph/Entity.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>
-#include <Engine/GraphicsHelper/RenderState.h>
 #include <Engine/GraphicsHelper/ShadowRenderer.h>
 #include <Engine/Materials/NullMaterial.h>
 
@@ -129,17 +128,19 @@ void ModelComponent::DrawForward()
 //
 void ModelComponent::DrawShadow()
 {
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	// #todo: implement culling
 
 	NullMaterial* const nullMat = ShadowRenderer::GetInstance()->GetNullMaterial();
 	mat4 matWVP = ShadowRenderer::GetInstance()->GetLightVP();
 
 	MeshSurface const* surface = m_Mesh->GetSurface(nullMat);
-	STATE->BindVertexArray(surface->GetVertexArray());
+	api->BindVertexArray(surface->GetVertexArray());
 
 	nullMat->UploadVariables(m_pEntity->GetTransform()->GetWorld(), matWVP);
 
-	STATE->DrawElements(GL_TRIANGLES, static_cast<uint32>(m_Mesh->GetIndexCount()), DataTypeInfo::GetTypeId(m_Mesh->GetIndexDataType()), 0);
+	api->DrawElements(E_DrawMode::Triangles, static_cast<uint32>(m_Mesh->GetIndexCount()), m_Mesh->GetIndexDataType(), 0);
 }
 
 //---------------------------------
@@ -149,6 +150,8 @@ void ModelComponent::DrawShadow()
 //
 void ModelComponent::DrawCall()
 {
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
 	//Frustum culling
 	switch (m_CullMode)
 	{
@@ -172,11 +175,11 @@ void ModelComponent::DrawCall()
 
 	//Get Vertex Object
 	MeshSurface const* surface = m_Mesh->GetSurface(m_Material);
-	STATE->BindVertexArray(surface->GetVertexArray());
+	api->BindVertexArray(surface->GetVertexArray());
 	
 	m_Material->UploadVariables(m_pEntity->GetTransform()->GetWorld());
 
 	// Draw 
-	STATE->SetDepthEnabled(true);
-	STATE->DrawElements(GL_TRIANGLES, static_cast<uint32>(m_Mesh->GetIndexCount()), DataTypeInfo::GetTypeId(m_Mesh->GetIndexDataType()), 0);
+	api->SetDepthEnabled(true);
+	api->DrawElements(E_DrawMode::Triangles, static_cast<uint32>(m_Mesh->GetIndexCount()), m_Mesh->GetIndexDataType(), 0);
 }

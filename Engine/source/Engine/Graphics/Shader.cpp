@@ -3,8 +3,6 @@
 #include "Shader.h"
 #include "Uniform.h"
 
-#include <glad/glad.h>
-
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Content/AssetStub.h>
@@ -26,8 +24,8 @@
 //
 // Construct shader data from an OpenGl program pointer
 //
-ShaderData::ShaderData(GLuint shaderProg) 
-	: m_ShaderProgram(shaderProg) 
+ShaderData::ShaderData(T_ShaderLoc const program)
+	: m_ShaderProgram(program)
 { }
 
 //---------------------------------
@@ -41,7 +39,8 @@ ShaderData::~ShaderData()
 	{
 		delete uni.second;
 	}
-	STATE->DeleteProgram(m_ShaderProgram);
+
+	Viewport::GetCurrentApiContext()->DeleteProgram(m_ShaderProgram);
 }
 
 
@@ -96,50 +95,53 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	// Compile
 	//------------------
-	GLuint vertexShader = CompileShader(vertSource, GL_VERTEX_SHADER);
+	T_ShaderLoc const vertexShader = CompileShader(vertSource, E_ShaderType::Vertex);
 
-	GLuint geoShader = 0;
+	T_ShaderLoc geoShader = 0;
 	if (useGeo)
 	{
-		geoShader = CompileShader(geoSource, GL_GEOMETRY_SHADER);
+		geoShader = CompileShader(geoSource, E_ShaderType::Geometry);
 	}
 
-	GLuint fragmentShader = 0;
+	T_ShaderLoc fragmentShader = 0;
 	if (useFrag)
 	{
-		fragmentShader = CompileShader(fragSource, GL_FRAGMENT_SHADER);
+		fragmentShader = CompileShader(fragSource, E_ShaderType::Fragment);
 	}
 
 	// Combine Shaders into a program
 	//------------------
-	GLuint shaderProgram = STATE->CreateProgram();
 
-	STATE->AttachShader(shaderProgram, vertexShader);
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	T_ShaderLoc const shaderProgram = api->CreateProgram();
+
+	api->AttachShader(shaderProgram, vertexShader);
 
 	if (useGeo)
 	{
-		STATE->AttachShader(shaderProgram, geoShader);
+		api->AttachShader(shaderProgram, geoShader);
 	}
 
 	if (useFrag)
 	{
-		STATE->AttachShader(shaderProgram, fragmentShader);
-		STATE->BindFragmentDataLocation(shaderProgram, 0, "outColor");
+		api->AttachShader(shaderProgram, fragmentShader);
+		api->BindFragmentDataLocation(shaderProgram, 0, "outColor");
 	}
 
-	STATE->LinkProgram(shaderProgram);
+	api->LinkProgram(shaderProgram);
 
 	// Delete shader objects now that we have a program
-	STATE->DeleteShader(vertexShader);
+	api->DeleteShader(vertexShader);
 
 	if (useGeo)
 	{
-		STATE->DeleteShader(geoShader);
+		api->DeleteShader(geoShader);
 	}
 
 	if (useFrag)
 	{
-		STATE->DeleteShader(fragmentShader);
+		api->DeleteShader(fragmentShader);
 	}
 
 	// Create shader data
@@ -147,7 +149,7 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	// Extract uniform info
 	//------------------
-	STATE->SetShader(m_Data);
+	api->SetShader(m_Data);
 	GetUniformLocations(shaderProgram, m_Data->m_Uniforms);
 	GetAttributes(shaderProgram, m_Data->m_Attributes);
 
@@ -160,38 +162,36 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 // Compile a glsl shader
 //
-GLuint ShaderAsset::CompileShader(std::string const&shaderSourceStr, GLenum type)
+T_ShaderLoc ShaderAsset::CompileShader(std::string const& shaderSourceStr, E_ShaderType const type)
 {
-	const char *shaderSource = shaderSourceStr.c_str();
-	GLuint shader = STATE->CreateShader(type);
-	STATE->SetShaderSource(shader, 1, &shaderSource, nullptr);
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	T_ShaderLoc shader = api->CreateShader(type);
 
 	//error handling
-	GLint status;
-	STATE->CompileShader(shader);
-	STATE->GetShaderIV(shader, GL_COMPILE_STATUS, &status);
-	if (!(status == GL_TRUE))
+	api->CompileShader(shader, shaderSourceStr);
+	if (!(api->IsShaderCompiled(shader)))
 	{
-		char buffer[512];
-		STATE->GetShaderInfoLog(shader, 512, NULL, buffer);
 		std::string sName;
 		switch (type)
 		{
-		case GL_VERTEX_SHADER:
+		case E_ShaderType::Vertex:
 			sName = "vertex";
 			break;
-		case GL_GEOMETRY_SHADER:
+		case E_ShaderType::Geometry:
 			sName = "geometry";
 			break;
-		case GL_FRAGMENT_SHADER:
+		case E_ShaderType::Fragment:
 			sName = "fragment";
 			break;
 		default:
 			sName = "invalid type";
 			break;
 		}
-		LOG(std::string("ShaderAsset::CompileShader > Compiling ") + sName + " shader failed", LogLevel::Warning);
-		LOG(buffer, Warning);
+
+		std::string errorInfo;
+		api->GetShaderInfo(shader, errorInfo);
+		LOG(FS("ShaderAsset::CompileShader > Compiling %s shader failed: %s", sName.c_str(), errorInfo.c_str()), LogLevel::Warning);
 	}
 
 	return shader;
@@ -359,90 +359,25 @@ bool ShaderAsset::ReplaceInclude(std::string &line)
 //
 // Extract shader uniforms from a program
 //
-void ShaderAsset::GetUniformLocations(GLuint const shaderProgram, std::map<uint32, I_Uniform*> &uniforms)
+void ShaderAsset::GetUniformLocations(T_ShaderLoc const shaderProgram, std::map<uint32, I_Uniform*> &uniforms)
 {
-	GLint count;
-	STATE->GetProgramIV(shaderProgram, GL_ACTIVE_UNIFORMS, &count);
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	for (GLint i = 0; i < count; i++)
+	int32 const count = api->GetUniformCount(shaderProgram);
+
+	for (int32 uniIdx = 0; uniIdx < count; ++uniIdx)
 	{
-		GLint size;
-		GLenum type;
-
-		const GLsizei bufSize = 256;
-		GLchar name[bufSize];
-		GLsizei length;
-
-		STATE->GetActiveUniform(shaderProgram, (GLuint)i, bufSize, &length, &size, &type, name);
-		std::string uniName = std::string(name, length);
-		std::string endName;
-
-		if (size > 1)
+		std::vector<I_Uniform*> unis;
+		api->GetActiveUniforms(shaderProgram, static_cast<uint32>(uniIdx), unis);
+		
+		for (I_Uniform* const uni : unis)
 		{
-			auto found = uniName.find(']');
-			if (found < uniName.size() - 1) endName = uniName.substr(uniName.find(']') + 1);
-			uniName = uniName.substr(0, uniName.find('['));
-		}
+			T_Hash const hash = GetHash(uni->name);
 
-		for (uint32 j = 0; j < (uint32)size; ++j)
-		{
-			std::string fullName = uniName;
-			if (size > 1)fullName += "[" + std::to_string(j) + "]" + endName;
-
-			I_Uniform* pUni;
-			switch (type)
-			{
-			case GL_BOOL:
-				pUni = new Uniform<bool>();
-				break;
-			case GL_INT:
-				pUni = new Uniform<int32>();
-				break;
-			case GL_UNSIGNED_INT:
-				pUni = new Uniform<uint32>();
-				break;
-			case GL_FLOAT:
-				pUni = new Uniform<float>();
-				break;
-			case GL_FLOAT_VEC2:
-				pUni = new Uniform<vec2>();
-				break;
-			case GL_FLOAT_VEC3:
-				pUni = new Uniform<vec3>();
-				break;
-			case GL_FLOAT_VEC4:
-				pUni = new Uniform<vec4>();
-				break;
-			case GL_FLOAT_MAT3:
-				pUni = new Uniform<mat3>();
-				break;
-			case GL_FLOAT_MAT4:
-				pUni = new Uniform<mat4>();
-				break;
-			case GL_SAMPLER_2D:
-				pUni = new Uniform<int32>();
-				break;
-			case GL_SAMPLER_3D:
-				pUni = new Uniform<int32>();
-				break;
-			case GL_SAMPLER_CUBE:
-				pUni = new Uniform<int32>();
-				break;
-			case GL_SAMPLER_2D_SHADOW:
-				pUni = new Uniform<int32>();
-				break;
-			default:
-				LOG(std::string("unknown uniform type ") + std::to_string(type), LogLevel::Warning);
-				return;
-			}
-
-			pUni->name = fullName;
-			pUni->location = glGetUniformLocation(shaderProgram, pUni->name.c_str());
-			pUni->Init(shaderProgram);
-
-			T_Hash const hash = GetHash(fullName);
+			// ensure no hash collisions
 			ET_ASSERT(uniforms.find(hash) == uniforms.end());
-			uniforms[hash] = pUni;
+
+			uniforms[hash] = uni;
 		}
 	}
 }
@@ -452,170 +387,16 @@ void ShaderAsset::GetUniformLocations(GLuint const shaderProgram, std::map<uint3
 //
 // Extract the vertex attributes from a program, provided it has a vertex shader
 //
-void ShaderAsset::GetAttributes(GLuint const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes)
+void ShaderAsset::GetAttributes(T_ShaderLoc const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes)
 {
-	GLint count;
-	STATE->GetProgramIV(shaderProgram, GL_ACTIVE_ATTRIBUTES, &count);
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	for (GLint i = 0; i < count; i++)
+	int32 const count = api->GetAttributeCount(shaderProgram);
+	for (int32 attribIdx = 0; attribIdx < count; ++attribIdx)
 	{
-		GLint size = 0;
-		GLenum type = 0;
-
-		const GLsizei bufSize = 256;
-		GLchar name[bufSize];
-		GLsizei length = 0;
-
-		STATE->GetActiveAttribute(shaderProgram, (GLuint)i, bufSize, &length, &size, &type, name);
-
 		AttributeDescriptor info;
-		info.name = std::string(name, length);
+		api->GetActiveAttribute(shaderProgram, static_cast<uint32>(attribIdx), info);
 
-		switch (type)
-		{
-		case GL_FLOAT:
-			info.dataType = E_DataType::Float;
-			info.dataCount = 1u;
-			break;
-		case GL_FLOAT_VEC2:
-			info.dataType = E_DataType::Float;
-			info.dataCount = 2u;
-			break;
-		case GL_FLOAT_VEC3:
-			info.dataType = E_DataType::Float;
-			info.dataCount = 3u;
-			break;
-		case GL_FLOAT_VEC4:
-			info.dataType = E_DataType::Float;
-			info.dataCount = 4u;
-			break;
-		case GL_FLOAT_MAT2:
-			info.dataType = E_DataType::Float;
-			info.dataCount = 4u;
-			break;
-		case GL_FLOAT_MAT3:
-			info.dataType = E_DataType::Float;
-			info.dataCount = 9u;
-			break;
-		case GL_FLOAT_MAT4:
-			info.dataType = E_DataType::Float;
-			info.dataCount = 16u;
-			break;
-		case GL_FLOAT_MAT2x3:
-			info.dataType = E_DataType::Float;
-			info.dataCount = 6u;
-			break;
-		case GL_FLOAT_MAT2x4:
-			info.dataType = E_DataType::Float;
-			info.dataCount = 8u;
-			break;
-		case GL_FLOAT_MAT3x2:
-			info.dataType = E_DataType::Float;
-			info.dataCount = 6u;
-			break;
-		case GL_FLOAT_MAT3x4:
-			info.dataType = E_DataType::Float;
-			info.dataCount = 12u;
-			break;
-		case GL_FLOAT_MAT4x2:
-			info.dataType = E_DataType::Float;
-			info.dataCount = 8u;
-			break;
-		case GL_FLOAT_MAT4x3:
-			info.dataType = E_DataType::Float;
-			info.dataCount = 12u;
-			break;
-		case GL_INT:
-			info.dataType = E_DataType::Int;
-			info.dataCount = 1u;
-			break;
-		case GL_INT_VEC2:
-			info.dataType = E_DataType::Int;
-			info.dataCount = 2u;
-			break;
-		case GL_INT_VEC3:
-			info.dataType = E_DataType::Int;
-			info.dataCount = 3u;
-			break;
-		case GL_INT_VEC4:
-			info.dataType = E_DataType::Int;
-			info.dataCount = 4u;
-			break;
-		case GL_UNSIGNED_INT:
-			info.dataType = E_DataType::UInt;
-			info.dataCount = 1u;
-			break;
-		case GL_UNSIGNED_INT_VEC2:
-			info.dataType = E_DataType::UInt;
-			info.dataCount = 2u;
-			break;
-		case GL_UNSIGNED_INT_VEC3:
-			info.dataType = E_DataType::UInt;
-			info.dataCount = 3u;
-			break;
-		case GL_UNSIGNED_INT_VEC4:
-			info.dataType = E_DataType::UInt;
-			info.dataCount = 4u;
-			break;
-		case GL_DOUBLE:
-			info.dataType = E_DataType::Double;
-			info.dataCount = 1u;
-			break;
-		case GL_DOUBLE_VEC2:
-			info.dataType = E_DataType::Double;
-			info.dataCount = 2u;
-			break;
-		case GL_DOUBLE_VEC3:
-			info.dataType = E_DataType::Double;
-			info.dataCount = 3u;
-			break;
-		case GL_DOUBLE_VEC4:
-			info.dataType = E_DataType::Double;
-			info.dataCount = 4u;
-			break;
-		case GL_DOUBLE_MAT2:
-			info.dataType = E_DataType::Double;
-			info.dataCount = 4u;
-			break;
-		case GL_DOUBLE_MAT3:
-			info.dataType = E_DataType::Double;
-			info.dataCount = 9u;
-			break;
-		case GL_DOUBLE_MAT4:
-			info.dataType = E_DataType::Double;
-			info.dataCount = 16u;
-			break;
-		case GL_DOUBLE_MAT2x3:
-			info.dataType = E_DataType::Double;
-			info.dataCount = 6u;
-			break;
-		case GL_DOUBLE_MAT2x4:
-			info.dataType = E_DataType::Double;
-			info.dataCount = 8u;
-			break;
-		case GL_DOUBLE_MAT3x2:
-			info.dataType = E_DataType::Double;
-			info.dataCount = 6u;
-			break;
-		case GL_DOUBLE_MAT3x4:
-			info.dataType = E_DataType::Double;
-			info.dataCount = 12u;
-			break;
-		case GL_DOUBLE_MAT4x2:
-			info.dataType = E_DataType::Double;
-			info.dataCount = 8u;
-			break;
-		case GL_DOUBLE_MAT4x3:
-			info.dataType = E_DataType::Double;
-			info.dataCount = 12u;
-			break;
-		default:
-			LOG(std::string("unknown attribute type ") + std::to_string(type), LogLevel::Warning);
-			return;
-		}
-
-		GLint location = glGetAttribLocation(shaderProgram, info.name.c_str());
-
-		attributes.emplace_back(location, info);
+		attributes.emplace_back(api->GetAttributeLocation(shaderProgram, info.name), info);
 	}
 }
