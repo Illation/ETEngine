@@ -76,6 +76,7 @@ void SceneRenderer::OnRender()
 {
 	if (m_IsShowingSpashScreen)
 	{
+		ShowSplashScreen();
 		return;
 	}
 
@@ -85,6 +86,13 @@ void SceneRenderer::OnRender()
 		activeScenes.push_back(SceneManager::GetInstance()->GetActiveScene());
 	}
 
+	if (activeScenes.empty())
+	{
+		return;
+	}
+
+	T_FbLoc targetFb = Viewport::GetCurrentApiContext()->GetActiveFramebuffer();
+
 	// #note: currently only one scene but could be expanded for nested scenes
-	RenderPipeline::GetInstance()->Draw(activeScenes, 0);
+	RenderPipeline::GetInstance()->Draw(activeScenes, targetFb);
 }

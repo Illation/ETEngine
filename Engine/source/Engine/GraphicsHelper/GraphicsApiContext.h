@@ -70,6 +70,8 @@ public:
 
 	virtual void SetLineWidth(float const lineWidth) = 0;
 
+	virtual T_FbLoc GetActiveFramebuffer() = 0;
+
 	//Draw Calls
 	//--------------
 	virtual void DrawArrays(E_DrawMode const mode, uint32 const first, uint32 const count) = 0;

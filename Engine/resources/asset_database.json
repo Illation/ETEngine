@@ -165,6 +165,16 @@
           },
           {
             "shader asset": {
+              "name": "DefUberShader.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": [
+                "CommonDeferred.glsl"
+              ]
+            }
+          },
+          {
+            "shader asset": {
               "name": "EditorComposite.glsl",
               "path": "assets/Shaders/",
               "package": "",

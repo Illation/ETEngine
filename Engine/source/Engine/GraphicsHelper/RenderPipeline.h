@@ -16,7 +16,7 @@ public:
 	PostProcessingRenderer* GetPostProcessor() { return m_pPostProcessing; }	
 
 	void DrawShadow();
-	void Draw(std::vector<AbstractScene*> pScenes, uint32 outFBO);
+	void Draw(std::vector<AbstractScene*> pScenes, T_FbLoc outFBO);
 	void DrawOverlays();
 
 	void OnResize();

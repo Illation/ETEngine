@@ -73,7 +73,7 @@ bool FileResourceManager::GetLoadData(I_Asset const* const asset, std::vector<ui
 	Entry* const dbEntry = searchDir->GetMountedChild(asset->GetPath() + asset->GetName());
 
 	// make sure we have a valid asset
-	if ((dbEntry == nullptr) || (dbEntry->GetType() != Entry::ENTRY_DIRECTORY))
+	if ((dbEntry == nullptr) || (dbEntry->GetType() == Entry::ENTRY_DIRECTORY))
 	{
 		LOG(FS("Asset '%s' not found at location: %s", asset->GetName().c_str(), (searchDir->GetName() + asset->GetPath()).c_str()), LogLevel::Warning);
 		return false;

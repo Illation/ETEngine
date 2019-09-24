@@ -2,6 +2,7 @@
 #include "EditorWindow.h"
 
 #include <EtEditor/EditorApp.h>
+#include <EtEditor/Rendering/GtkRenderArea.h>
 
 #include <EtCore/Helper/InputManager.h>
 
@@ -9,6 +10,19 @@
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/textview.h>
 #include <gtkmm/settings.h>
+#include <gtkmm/glarea.h>
+
+#include <Engine/GraphicsHelper/SceneRenderer.h>
+
+
+namespace Gtk
+{
+	template<class T, class... T_Args>
+	auto make_managed(T_Args&&... args)
+	{
+		return manage(new T(std::forward<T_Args>(args)...));
+	}
+}
 
 
 //===========================
@@ -90,4 +104,54 @@ EditorAppWindow* EditorAppWindow::create(EditorApp *const editorApp)
 void EditorAppWindow::SetEditorApp(EditorApp *const editorApp)
 {
 	m_EditorApp = editorApp;
+
+	// create a new viewport
+	std::string viewName = "Scene View";
+	std::unique_ptr<Viewport> viewport = std::move(CreateViewport(viewName));
+
+	// Set the viewports renderer to the oscillator
+	viewport->SetRenderer(SceneRenderer::GetInstance());
+
+	// manage the pointer to the viewport
+	m_Viewports.emplace_back(std::move(viewport));
+}
+
+//---------------------------------
+// EditorAppWindow::Init
+//
+// After we have an openGl context and a resource manager we sho9uld show the splash screen
+//
+void EditorAppWindow::Init()
+{
+	ET_ASSERT(!m_Viewports.empty());
+	//m_Viewports[0]->MakeCurrent();
+
+	SceneRenderer::GetInstance()->InitWithSplashScreen();
+
+	m_Viewports[0]->Redraw();
+}
+
+//---------------------------------
+// EditorAppWindow::CreateViewport
+//
+// Create a viewport with an openGL area in it
+//
+std::unique_ptr<Viewport> EditorAppWindow::CreateViewport(std::string const& name)
+{
+	// get the stack
+	Gtk::Stack* viewportStack;
+	m_RefBuilder->get_widget("stack", viewportStack);
+	ET_ASSERT(viewportStack != nullptr, "No 'stack' object in window.ui!");
+
+	// add a GL area to the stack
+	Gtk::GLArea* glArea = Gtk::make_managed<Gtk::GLArea>();
+	glArea->set_auto_render(true);
+
+	// create a viewport from the area
+	std::unique_ptr<Viewport> viewport = std::make_unique<Viewport>(new GtkRenderArea(glArea));
+
+	glArea->show();
+	viewportStack->add(*glArea, name, name);
+
+	return std::move(viewport);
 }

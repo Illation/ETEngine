@@ -92,6 +92,6 @@ void GbufferMaterial::UploadDerivedVariables()
 
 	//Upload uniforms
 	m_Shader->Upload("diffuseColor"_hash, m_DiffuseColor);
-	m_Shader->Upload("specularColor"_hash, m_SpecularColor);
+	//m_Shader->Upload("specularColor"_hash, m_SpecularColor);
 	m_Shader->Upload("specularPower"_hash, m_SpecularPower);
 }

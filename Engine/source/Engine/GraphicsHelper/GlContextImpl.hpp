@@ -16,6 +16,13 @@ void GL_CONTEXT_CLASSNAME::Initialize()
 {
 	m_ViewportSize = Config::GetInstance()->GetWindow().Dimensions;
 
+	LOG("OpenGL loaded");
+	LOG("");
+	LOG(FS("Vendor:   %s", glGetString(GL_VENDOR)));
+	LOG(FS("Renderer: %s", glGetString(GL_RENDERER)));
+	LOG(FS("Version:  %s", glGetString(GL_VERSION)));
+	LOG("");
+
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_NumTextureUnits);
 	for (int32 i = 0; i < m_NumTextureUnits; i++)
 	{
@@ -409,6 +416,24 @@ void GL_CONTEXT_CLASSNAME::SetLineWidth(float const lineWidth)
 		m_LineWidth = lineWidth;
 		glLineWidth(m_LineWidth);
 	}
+}
+
+//---------------------------------
+// GlContext::GetActiveFramebuffer
+//
+// Rerieves the currently active framebuffer, and updates the state to reflect that
+//
+T_FbLoc GL_CONTEXT_CLASSNAME::GetActiveFramebuffer()
+{
+	int32 result = 0;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &result);
+
+	T_FbLoc ret = static_cast<T_FbLoc>(result);
+
+	m_ReadFramebuffer = ret;
+	m_DrawFramebuffer = ret;
+
+	return ret;
 }
 
 //---------------------------------

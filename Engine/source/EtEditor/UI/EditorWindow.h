@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine/GraphicsHelper/Viewport.h>
+
 #include <gtkmm/applicationwindow.h>
 #include <gtkmm/builder.h>
 #include <glibmm/refptr.h>
@@ -26,7 +28,11 @@ public:
 	static EditorAppWindow* create(EditorApp *const editorApp);
 	void SetEditorApp(EditorApp *const editorApp);
 
+	void Init();
+
 private:
+
+	std::unique_ptr<Viewport> CreateViewport(std::string const& name);
 
 	// Data
 	/////////
@@ -35,4 +41,6 @@ private:
 	Glib::RefPtr<Gio::Settings> m_Settings;
 
 	EditorApp* m_EditorApp = nullptr;
+
+	std::vector<std::unique_ptr<Viewport>> m_Viewports;
 };

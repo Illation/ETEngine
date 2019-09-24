@@ -71,13 +71,6 @@ void GlfwRenderArea::Initialize()
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	SetVSyncEnabled(true);
 
-	LOG("OpenGL loaded");
-	LOG("");
-	LOG(FS("Vendor:   %s", glGetString(GL_VENDOR)));
-	LOG(FS("Renderer: %s", glGetString(GL_RENDERER)));
-	LOG(FS("Version:  %s", glGetString(GL_VERSION)));
-	LOG("");
-
 	Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener(std::bind(&GlfwRenderArea::OnResize, this));
 
 	if (m_OnInit)

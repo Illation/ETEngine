@@ -66,6 +66,8 @@ public:
 
 	void SetLineWidth(float const lineWidth) override;
 
+	T_FbLoc GetActiveFramebuffer() override;
+
 	//Draw Calls
 	//--------------
 	void DrawArrays(E_DrawMode const mode, uint32 const first, uint32 const count) override;

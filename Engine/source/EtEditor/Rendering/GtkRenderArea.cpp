@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GtkRenderArea.h"
 
-#include <Engine/GraphicsHelper/GladGlContext.h>
+#include "EpoxyGlContext.h"
 
 
 //=====================
@@ -18,27 +18,58 @@ GtkRenderArea::GtkRenderArea(Gtk::GLArea* glArea)
 	: I_RenderArea()
 	, m_GlArea(glArea)
 {
-
+	m_GlArea->signal_realize().connect(sigc::mem_fun(*this, &GtkRenderArea::OnRealize));
+	m_GlArea->signal_unrealize().connect(sigc::mem_fun(*this, &GtkRenderArea::OnUnrealize), false);
+	m_GlArea->signal_resize().connect(sigc::mem_fun(*this, &GtkRenderArea::OnResize), false);
+	m_GlArea->signal_render().connect(sigc::mem_fun(*this, &GtkRenderArea::OnRender), false);
 }
 
-void GtkRenderArea::SetOnInit(std::function<void(I_GraphicsApiContext* const)>& callback)
+//---------------------------------
+// GtkRenderArea::OnRealize
+//
+void GtkRenderArea::OnRealize()
 {
-
+	if (m_OnInit)
+	{
+		m_OnInit(new EpoxyGlContext());
+	}
 }
 
-void GtkRenderArea::SetOnDeinit(std::function<void()>& callback)
+//---------------------------------
+// GtkRenderArea::OnUnrealize
+//
+void GtkRenderArea::OnUnrealize()
 {
-
+	if (m_OnDeinit)
+	{
+		m_OnDeinit();
+	}
 }
 
-void GtkRenderArea::SetOnResize(std::function<void(vec2 const)>& callback)
+//---------------------------------
+// GtkRenderArea::SetOnResize
+//
+void GtkRenderArea::OnResize(int32 x, int32 y)
 {
-
+	if (m_OnResize)
+	{
+		m_OnResize(etm::vecCast<float>(ivec2(x, y)));
+	}
 }
 
-void GtkRenderArea::SetOnRender(std::function<void()>& callback)
+//---------------------------------
+// GtkRenderArea::SetOnRender
+//
+bool GtkRenderArea::OnRender(const Glib::RefPtr<Gdk::GLContext>& context)
 {
+	UNUSED(context);
 
+	if (m_OnRender)
+	{
+		m_OnRender();
+	}
+
+	return true;
 }
 
 //---------------------------------
