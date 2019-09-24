@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GlfwRenderArea.h"
 
-#include <Engine/GraphicsHelper/GlContextImpl.h>
+#include <Engine/GraphicsHelper/GladGlContext.h>
 
 
 //=====================
@@ -82,7 +82,7 @@ void GlfwRenderArea::Initialize()
 
 	if (m_OnInit)
 	{
-		m_OnInit(new GlContext());
+		m_OnInit(new GladGlContext());
 	}
 }
 

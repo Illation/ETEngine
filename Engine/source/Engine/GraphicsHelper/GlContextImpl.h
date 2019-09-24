@@ -1,24 +1,24 @@
-#pragma once
-
 #include <map>
-#include <glad/glad.h>
 
 #include "GraphicsApiContext.h"
 
+#ifndef GL_CONTEXT_CLASSNAME
+#error you must declare the name of the class with #define GL_CONTEXT_CLASSNAME YourGlImplementationClassName
+#endif GL_CONTEXT_CLASSNAME
 
 //---------------------------------
 // GlContext
 //
 // Wrapper for all graphics API calls, avoids resubmitting api calls by caching some of the state CPU side
 //
-class GlContext final : public I_GraphicsApiContext
+class GL_CONTEXT_CLASSNAME final : public I_GraphicsApiContext
 {
 public:
 
 	// init deinit
 	//--------------
-	GlContext() : I_GraphicsApiContext() {}
-	~GlContext() = default;
+	GL_CONTEXT_CLASSNAME() : I_GraphicsApiContext() {}
+	~GL_CONTEXT_CLASSNAME() = default;
 
 	//===============================
 	// Interface implementation
@@ -252,3 +252,4 @@ private:
 
 	float m_LineWidth = 1.f;
 };
+
