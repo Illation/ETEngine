@@ -37,7 +37,7 @@ protected:
 	void OnInit() override {}
 	void OnDeinit() override {}
 	void OnResize(ivec2 const dim) override {}
-	void OnRender() override;
+	void OnRender(T_FbLoc const targetFb) override;
 
 	// Data
 	///////

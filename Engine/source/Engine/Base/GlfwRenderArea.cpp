@@ -106,7 +106,7 @@ void GlfwRenderArea::Update()
 	{
 		if (m_OnRender)
 		{
-			m_OnRender();
+			m_OnRender(0u);
 			glfwSwapBuffers(m_Window); // swap render buffers
 		}
 	}

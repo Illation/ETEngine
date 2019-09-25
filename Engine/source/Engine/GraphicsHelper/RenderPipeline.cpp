@@ -77,7 +77,7 @@ void RenderPipeline::Initialize()
 
 	PbrPrefilter::GetInstance()->Precompute(Config::GetInstance()->GetGraphics().PbrBrdfLutSize);
 
-	m_ClearColor = vec3(101.f / 255.f, 114.f / 255.f, 107.f / 255.f)*0.1f;
+	m_ClearColor = vec3(200.f / 255.f, 114.f / 255.f, 200.f / 255.f)*0.8f;
 
 	Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener( std::bind( &RenderPipeline::OnResize, this ) );
 }
@@ -208,8 +208,10 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, T_FbLoc outFBO)
 
 	//Draw to default buffer
 	api->SetDepthEnabled(false);
-	if(pScenes.size() > 0)
+	if (pScenes.size() > 0)
+	{
 		m_pPostProcessing->Draw(outFBO, pScenes[0]->GetPostProcessingSettings());
+	}
 
 	for (auto pScene : pScenes)
 	{

@@ -18,6 +18,10 @@ GtkRenderArea::GtkRenderArea(Gtk::GLArea* glArea)
 	: I_RenderArea()
 	, m_GlArea(glArea)
 {
+	m_GlArea->set_has_depth_buffer(true);
+	m_GlArea->set_has_stencil_buffer(true);
+	m_GlArea->set_required_version(4, 5);
+
 	m_GlArea->signal_realize().connect(sigc::mem_fun(*this, &GtkRenderArea::OnRealize));
 	m_GlArea->signal_unrealize().connect(sigc::mem_fun(*this, &GtkRenderArea::OnUnrealize), false);
 	m_GlArea->signal_resize().connect(sigc::mem_fun(*this, &GtkRenderArea::OnResize), false);
@@ -66,7 +70,7 @@ bool GtkRenderArea::OnRender(const Glib::RefPtr<Gdk::GLContext>& context)
 
 	if (m_OnRender)
 	{
-		m_OnRender();
+		m_OnRender(Viewport::GetCurrentApiContext()->GetActiveFramebuffer());
 	}
 
 	return true;

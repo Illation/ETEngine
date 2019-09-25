@@ -27,7 +27,7 @@ Viewport::Viewport(I_RenderArea* const area)
 	m_Area->SetOnInit(std::function<void(I_GraphicsApiContext* const)>(std::bind(&Viewport::OnRealize, this, std::placeholders::_1)));
 	m_Area->SetOnDeinit(std::function<void()>(std::bind(&Viewport::OnUnrealize, this)));
 	m_Area->SetOnResize(std::function<void(vec2 const)>(std::bind(&Viewport::OnResize, this, std::placeholders::_1)));
-	m_Area->SetOnRender(std::function<void()>(std::bind(&Viewport::OnRender, this)));
+	m_Area->SetOnRender(std::function<void(T_FbLoc const)>(std::bind(&Viewport::OnRender, this, std::placeholders::_1)));
 }
 
 //---------------------------------
@@ -137,13 +137,13 @@ void Viewport::OnResize(vec2 const resolution)
 //
 // This function updates everything in a gameloops style and then calls Render, making sure to refresh itself at screen refresh rate
 //
-void Viewport::OnRender()
+void Viewport::OnRender(T_FbLoc const targetFb)
 {
 	MakeCurrent();
 
 	TriggerTick(); // if this is the first real time thing we will start the update process here
 
-	Render();
+	Render(targetFb);
 
 	m_Area->QueueDraw(); // request drawing again
 }
@@ -153,13 +153,13 @@ void Viewport::OnRender()
 //
 // Draws the GL Area
 //
-void Viewport::Render()
+void Viewport::Render(T_FbLoc const targetFb)
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	if (m_Renderer != nullptr)
 	{
-		m_Renderer->OnRender();
+		m_Renderer->OnRender(targetFb);
 	}
 	else
 	{

@@ -31,7 +31,7 @@ public:
 	void Redraw();
 	void SetRenderer(I_ViewportRenderer* renderer);
 private:
-	void Render();
+	void Render(T_FbLoc const targetFb);
 
 	// accessors
 	//-----------
@@ -45,7 +45,7 @@ protected:
 	void OnRealize(I_GraphicsApiContext* const api);
 	void OnUnrealize();
 	void OnResize(vec2 const resolution);
-	void OnRender();
+	void OnRender(T_FbLoc const targetFb);
 
 	// utility
 	//-----------

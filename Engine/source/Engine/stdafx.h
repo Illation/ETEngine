@@ -34,5 +34,4 @@
 #define SCENE static_cast<SceneContext*>(ContextManager::GetInstance()->GetActiveContext())->scene
 #define INPUT InputManager::GetInstance()
 #define TRANSFORM GetTransform()
-#define PIPELINE RenderPipeline::GetInstance()
 #pragma endregion Macros

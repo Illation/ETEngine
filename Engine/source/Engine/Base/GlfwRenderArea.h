@@ -41,7 +41,7 @@ protected:
 	void SetOnInit(std::function<void(I_GraphicsApiContext* const)>& callback) override { m_OnInit = callback; }
 	void SetOnDeinit(std::function<void()>& callback) override { m_OnDeinit = callback; }
 	void SetOnResize(std::function<void(vec2 const)>& callback) override { m_OnResize = callback; }
-	void SetOnRender(std::function<void()>& callback) override { m_OnRender = callback; }
+	void SetOnRender(std::function<void(T_FbLoc const)>& callback) override { m_OnRender = callback; }
 
 	void QueueDraw() override;
 	bool MakeCurrent() override;
@@ -52,7 +52,7 @@ private:
 	std::function<void(I_GraphicsApiContext* const)> m_OnInit;
 	std::function<void()> m_OnDeinit;
 	std::function<void(vec2 const)> m_OnResize;
-	std::function<void()> m_OnRender;
+	std::function<void(T_FbLoc const)> m_OnRender;
 
 	GLFWwindow* m_Window = nullptr; // also serves as context
 
