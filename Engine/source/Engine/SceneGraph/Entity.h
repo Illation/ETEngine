@@ -114,6 +114,7 @@ protected:
 private:
 	friend class AbstractScene;
 	friend class RenderPipeline;
+	friend class SceneRenderer;
 
 	void RootInitialize();
 	void RootStart();

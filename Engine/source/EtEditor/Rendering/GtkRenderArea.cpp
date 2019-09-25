@@ -19,8 +19,10 @@ GtkRenderArea::GtkRenderArea(Gtk::GLArea* glArea)
 	, m_GlArea(glArea)
 {
 	m_GlArea->set_has_depth_buffer(true);
-	m_GlArea->set_has_stencil_buffer(true);
+	m_GlArea->set_has_stencil_buffer(false);
 	m_GlArea->set_required_version(4, 5);
+	m_GlArea->set_double_buffered(true);
+	m_GlArea->set_use_es(false);
 
 	m_GlArea->signal_realize().connect(sigc::mem_fun(*this, &GtkRenderArea::OnRealize));
 	m_GlArea->signal_unrealize().connect(sigc::mem_fun(*this, &GtkRenderArea::OnUnrealize), false);
@@ -55,6 +57,8 @@ void GtkRenderArea::OnUnrealize()
 //
 void GtkRenderArea::OnResize(int32 x, int32 y)
 {
+	Config::GetInstance()->GetWindow().Resize(x, y);
+
 	if (m_OnResize)
 	{
 		m_OnResize(etm::vecCast<float>(ivec2(x, y)));

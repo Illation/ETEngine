@@ -137,7 +137,6 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, T_FbLoc outFBO)
 	}
 	api->SetCullEnabled(false);
 	//Step two: blend data and calculate lighting with gbuffer
-	//api->BindFramebuffer( 0 );
 	//m_pPostProcessing->EnableInput();
 	m_pSSR->EnableInput();
 	//Ambient IBL
@@ -146,7 +145,6 @@ void RenderPipeline::Draw(std::vector<AbstractScene*> pScenes, T_FbLoc outFBO)
 	//copy Z-Buffer from gBuffer
 	api->BindReadFramebuffer(m_pGBuffer->Get());
 	api->BindDrawFramebuffer(m_pSSR->GetTargetFBO());
-	//api->BindDrawFramebuffer( 0 );
 	api->CopyDepthReadToDrawFbo(windowSettings.Dimensions, windowSettings.Dimensions);
 
 	//Render Light Volumes

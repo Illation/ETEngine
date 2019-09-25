@@ -8,6 +8,7 @@
 
 #include <Engine/SceneGraph/SceneManager.h>
 #include <Engine/GraphicsHelper/RenderPipeline.h>
+#include <Engine/SceneGraph/Entity.h>
 
 
 //---------------------------------
@@ -30,9 +31,20 @@ void SceneRenderer::ShowSplashScreen()
 {
 	m_IsShowingSpashScreen = true;
 
-	m_SplashBackgroundTex = ResourceManager::Instance()->GetAssetData<TextureData>("Splashscreen.jpg"_hash);
-	m_SplashTitleFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Roboto-Bold.ttf"_hash);
-	m_SplashRegFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("RobotoCondensed-Regular.ttf"_hash);
+	if (m_SplashBackgroundTex == nullptr)
+	{
+		m_SplashBackgroundTex = ResourceManager::Instance()->GetAssetData<TextureData>("Splashscreen.jpg"_hash);
+	}
+
+	if (m_SplashTitleFont == nullptr)
+	{
+		m_SplashTitleFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Roboto-Bold.ttf"_hash);
+	}
+
+	if (m_SplashRegFont == nullptr)
+	{
+		m_SplashRegFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("RobotoCondensed-Regular.ttf"_hash);
+	}
 
 	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 

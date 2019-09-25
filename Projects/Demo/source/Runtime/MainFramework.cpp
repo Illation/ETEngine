@@ -5,6 +5,7 @@
 #include <Engine/Graphics/Shader.h>
 #include <Engine/SceneGraph/SceneManager.h>
 
+#include <Runtime/Scenes/EditorScene.h>
 #include <Runtime/Scenes/TestScene.h>
 #include <Runtime/Scenes/SkyboxTestScene.h>
 #include <Runtime/Scenes/ShadingTestScene.h>
@@ -25,6 +26,7 @@ MainFramework::~MainFramework()
 
 void MainFramework::AddScenes()
 {
+	SceneManager::GetInstance()->AddGameScene(new EditorScene());
 	SceneManager::GetInstance()->AddGameScene(new PlanetTestScene());
 	SceneManager::GetInstance()->AddGameScene(new PhysicsTestScene());
 	SceneManager::GetInstance()->AddGameScene(new ShadingTestScene());

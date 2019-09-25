@@ -53,6 +53,7 @@ protected:
 
 private:
 	friend class SceneManager;
+	friend class SceneRenderer;
 	friend class RenderPipeline;
 
 	void RootInitialize();
