@@ -29,7 +29,7 @@
       "fullscreen resolution": 2,
       "windowed resolution": 1
     },
-    "start scene": "ShadingTestScene",
+    "start scene": "EditorScene",
     "screenshot dir": "./Screenshots/"
   }
 }

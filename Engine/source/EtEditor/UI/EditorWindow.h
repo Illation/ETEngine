@@ -30,6 +30,9 @@ public:
 
 	void Init();
 
+	static E_MouseButton GetButtonFromGtk(uint32 const buttonCode);
+	static E_KbdKey GetKeyFromGtk(uint32 const keyCode);
+
 private:
 
 	std::unique_ptr<Viewport> CreateViewport(std::string const& name);

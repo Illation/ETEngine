@@ -44,12 +44,17 @@
   uniform sampler2D uTexBaseColor;
   uniform sampler2D uTexNormal;
   uniform sampler2D uTexMetallicRoughness;
+  uniform sampler2D uTexOcclusion;
+  uniform sampler2D uTexEmissive;
 
   uniform bool uUseBaseColTex;
   uniform bool uUseNormalTex;
   uniform bool uUseMetallicRoughnessTex;
+  uniform bool uUseOcclusionTex;
+  uniform bool uUseEmissiveTex;
 
   uniform vec3 uBaseColor = vec3(1.f);
+  uniform vec3 uEmissiveFactor = vec3(0.f);
   uniform float uRoughness = 0.f;
   uniform float uMetallic = 0.f;
 
@@ -82,6 +87,14 @@
       baseCol *= texture(uTexBaseColor, Texcoord).rgb;
     }
 
+    vec3 emissive = uEmissiveFactor;
+    if (uUseEmissiveTex)
+    {
+      emissive *= texture(uTexEmissive, Texcoord).rgb;
+    }
+
+    baseCol += emissive;
+
     float rough = uRoughness;
     float metal = uMetallic;
     if (uUseMetallicRoughnessTex)
@@ -91,6 +104,10 @@
     }
 
     float ao = 1.f;
+    if (uUseOcclusionTex)
+    {
+      ao *= texture(uTexOcclusion, Texcoord).r;
+    }
 
     texGBufferB = vec4(encodeNormal(norm), metal, ao);
     texGBufferC = vec4(baseCol, rough);

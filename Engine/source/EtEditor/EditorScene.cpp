@@ -35,15 +35,14 @@ void EditorScene::Initialize()
 	//Materials
 	//**************************
 	m_Mat = new UberMaterial();
-	m_Mat->SetBaseColorTexture("kabuto_baseColor.png"_hash);
+	//m_Mat->SetBaseColorTexture("kabuto_baseColor.png"_hash);
 	m_Mat->SetNormalTexture("kabuto_normal.png"_hash);
 	m_Mat->SetMetallicRoughnessTexture("kabuto_metallic_roughness.png"_hash);
-	m_Mat->SetRoughness(1.0f);
-	m_Mat->SetMetallic(1.0f);
+	m_Mat->SetOcclusionTexture("kabuto_ao.png"_hash);
 
 	m_FloorMat = new UberMaterial();
-	m_FloorMat->SetRoughness(1.0f);
-	m_FloorMat->SetMetallic(0.0f);
+	m_FloorMat->SetBaseColor(0.5f);
+	m_FloorMat->SetMetallic(0.f);
 
 	//Skybox
 	//**************************
