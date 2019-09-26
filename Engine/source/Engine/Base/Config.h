@@ -59,7 +59,7 @@ public:
 
 			int32 PbrBrdfLutSize = 512;
 
-			float TextureScaleFactor = 0.25f;
+			float TextureScaleFactor = 1.f;
 
 			//Bloom Quality
 			int32 NumBlurPasses = 5;

@@ -41,24 +41,24 @@
   layout (location = 0) out vec4 texGBufferB;
   layout (location = 1) out vec4 texGBufferC;
 
-  uniform sampler2D texDiffuse;
-  uniform sampler2D texSpecular;
-  uniform sampler2D texNormal;
+  uniform sampler2D uTexBaseColor;
+  uniform sampler2D uTexNormal;
+  uniform sampler2D uTexMetallicRoughness;
 
-  uniform bool useDifTex;
-  uniform bool useNormTex;
-  uniform bool useSpecTex;
+  uniform bool uUseBaseColTex;
+  uniform bool uUseNormalTex;
+  uniform bool uUseMetallicRoughnessTex;
 
-  uniform vec3 diffuseColor = vec3(1);
-  uniform vec3 specularColor = vec3(1);
-  uniform float specularPower = 1;
+  uniform vec3 uBaseColor = vec3(1.f);
+  uniform float uRoughness = 0.f;
+  uniform float uMetallic = 0.f;
 
 
   vec3 mapNormal()
   {
     vec3 norm = normalize(Normal);
 
-    if (!useNormTex)
+    if (!uUseNormalTex)
     {
       return norm;
     }
@@ -67,7 +67,7 @@
     vec3 binorm = normalize(cross(tang, norm));
     mat3 localAxis = mat3(tang, binorm, norm);
 
-    vec3 normSample = ((texture(texNormal, Texcoord).rgb)*2)-vec3(1, 1, 1);
+    vec3 normSample = ((texture(uTexNormal, Texcoord).rgb)*2)-vec3(1, 1, 1);
     norm = localAxis*normalize(normSample);
     return normalize(norm);
   }
@@ -76,18 +76,18 @@
   {
     vec3 norm = mapNormal();
 
-    vec3 baseCol = diffuseColor;
-    if (useDifTex)
+    vec3 baseCol = uBaseColor;
+    if (uUseBaseColTex)
     {
-      baseCol *= texture(texDiffuse, Texcoord).rgb;
+      baseCol *= texture(uTexBaseColor, Texcoord).rgb;
     }
 
-    float rough = 1.f;
-    float metal = specularPower;
-    if (useSpecTex)
+    float rough = uRoughness;
+    float metal = uMetallic;
+    if (uUseMetallicRoughnessTex)
     {
-      rough *= texture(texSpecular, Texcoord).g;
-      metal *= texture(texSpecular, Texcoord).b;
+      rough *= texture(uTexMetallicRoughness, Texcoord).g;
+      metal *= texture(uTexMetallicRoughness, Texcoord).b;
     }
 
     float ao = 1.f;

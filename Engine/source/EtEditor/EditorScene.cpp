@@ -13,11 +13,12 @@
 #include <Engine/Components/LightComponent.h>
 #include <Engine/Components/SpriteComponent.h>
 #include <Engine/Prefabs/Skybox.h>
-#include <Engine/Materials/GbufferMaterial.h>
+#include <Engine/Materials/UberMaterial.h>
 
 EditorScene::~EditorScene()
 {
 	SafeDelete(m_Mat);
+	SafeDelete(m_FloorMat);
 }
 
 void EditorScene::Initialize()
@@ -33,8 +34,16 @@ void EditorScene::Initialize()
 
 	//Materials
 	//**************************
-	m_Mat = new GbufferMaterial();
-	m_Mat->SetSpecCol(vec3(0.5f));
+	m_Mat = new UberMaterial();
+	m_Mat->SetBaseColorTexture("kabuto_baseColor.png"_hash);
+	m_Mat->SetNormalTexture("kabuto_normal.png"_hash);
+	m_Mat->SetMetallicRoughnessTexture("kabuto_metallic_roughness.png"_hash);
+	m_Mat->SetRoughness(1.0f);
+	m_Mat->SetMetallic(1.0f);
+
+	m_FloorMat = new UberMaterial();
+	m_FloorMat->SetRoughness(1.0f);
+	m_FloorMat->SetMetallic(0.0f);
 
 	//Skybox
 	//**************************
@@ -52,7 +61,7 @@ void EditorScene::Initialize()
 	}
 	{
 		auto pModelComp = new ModelComponent("HelmetStand.dae"_hash);
-		pModelComp->SetMaterial(m_Mat);
+		pModelComp->SetMaterial(m_FloorMat);
 		auto pHelmet = new Entity();
 		pHelmet->AddComponent(pModelComp);
 		pHelmet->GetTransform()->SetPosition(vec3(0, 0, 0));
@@ -60,7 +69,7 @@ void EditorScene::Initialize()
 	}
 	{
 		auto pModelComp = new ModelComponent("Env.dae"_hash);
-		pModelComp->SetMaterial(m_Mat);
+		pModelComp->SetMaterial(m_FloorMat);
 		auto pHelmet = new Entity();
 		pHelmet->AddComponent(pModelComp);
 		pHelmet->GetTransform()->SetPosition(vec3(0, 0, 0));

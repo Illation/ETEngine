@@ -7,7 +7,7 @@
 class Entity;
 class DirectionalLight;
 class SpriteFont;
-class GbufferMaterial;
+class UberMaterial;
 
 
 class EditorScene final : public AbstractScene
@@ -25,7 +25,8 @@ private:
 
 private:
 
-	GbufferMaterial* m_Mat = nullptr;
+	UberMaterial* m_Mat = nullptr;
+	UberMaterial* m_FloorMat = nullptr;
 	Entity* m_pLigEntity = nullptr;
 	DirectionalLight* m_pLight = nullptr;
 
