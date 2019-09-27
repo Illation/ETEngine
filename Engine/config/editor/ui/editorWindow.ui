@@ -20,7 +20,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="spacing">0</property>
-            <property name="show_close_button">True</property>
+            <property name="show_close_button">False</property>
             <child type="title">
               <object class="GtkStackSwitcher" id="editorTabs">
                 <property name="visible">True</property>
@@ -92,7 +92,7 @@
                           <object class="GtkStack" id="resourceBrowserSwitcher">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <!--<child>
+                            <child>
                               <object class="GtkFileChooserWidget" id="projectResourceBrowser">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
@@ -114,7 +114,7 @@
                                 <property name="title" translatable="yes">Engine Assets</property>
                                 <property name="position">1</property>
                               </packing>
-                            </child>-->
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>

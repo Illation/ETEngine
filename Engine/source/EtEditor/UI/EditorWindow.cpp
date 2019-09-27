@@ -81,7 +81,7 @@ EditorAppWindow::EditorAppWindow(BaseObjectType* cobject, Glib::RefPtr<Gtk::Buil
 EditorAppWindow* EditorAppWindow::create(EditorApp *const editorApp)
 {
 	// Load the Builder file and instantiate its widgets.
-	Glib::RefPtr<Gtk::Builder> refBuilder = Gtk::Builder::create_from_resource("/com/leah-lindner/editor/ui/window.ui");
+	Glib::RefPtr<Gtk::Builder> refBuilder = Gtk::Builder::create_from_resource("/com/leah-lindner/editor/ui/editorWindow.ui");
 
 	// get the toplevel element
 	EditorAppWindow* window = nullptr;
@@ -106,14 +106,7 @@ void EditorAppWindow::SetEditorApp(EditorApp *const editorApp)
 	m_EditorApp = editorApp;
 
 	// create a new viewport
-	std::string viewName = "Scene View";
-	std::unique_ptr<Viewport> viewport = std::move(CreateViewport(viewName));
-
-	// Set the viewports renderer to the oscillator
-	viewport->SetRenderer(SceneRenderer::GetInstance());
-
-	// manage the pointer to the viewport
-	m_Viewports.emplace_back(std::move(viewport));
+	m_SceneViewport = std::move(CreateSceneViewport());
 }
 
 //---------------------------------
@@ -123,28 +116,21 @@ void EditorAppWindow::SetEditorApp(EditorApp *const editorApp)
 //
 void EditorAppWindow::Init()
 {
-	ET_ASSERT(!m_Viewports.empty());
-	//m_Viewports[0]->MakeCurrent();
-
 	SceneRenderer::GetInstance()->InitWithSplashScreen();
-
-	m_Viewports[0]->Redraw();
+	m_SceneViewport->Redraw();
 }
 
 //---------------------------------
-// EditorAppWindow::CreateViewport
+// EditorAppWindow::CreateSceneViewport
 //
 // Create a viewport with an openGL area in it
 //
-std::unique_ptr<Viewport> EditorAppWindow::CreateViewport(std::string const& name)
+std::unique_ptr<Viewport> EditorAppWindow::CreateSceneViewport()
 {
-	// get the stack
-	Gtk::Stack* viewportStack;
-	m_RefBuilder->get_widget("stack", viewportStack);
-	ET_ASSERT(viewportStack != nullptr, "No 'stack' object in window.ui!");
-
-	// add a GL area to the stack
-	Gtk::GLArea* glArea = Gtk::make_managed<Gtk::GLArea>();
+	// Find the GL Area widget that is responsible for rendering the scene
+	Gtk::GLArea* glArea = nullptr;// Gtk::make_managed<Gtk::GLArea>();
+	m_RefBuilder->get_widget("glSceneViewport", glArea);
+	ET_ASSERT(glArea != nullptr, "No 'glSceneViewport' object in window.ui!");
 	glArea->set_auto_render(true);
 
 	// create a viewport from the area
@@ -216,7 +202,9 @@ std::unique_ptr<Viewport> EditorAppWindow::CreateViewport(std::string const& nam
 	glArea->signal_scroll_event().connect(scrollCallback, false);
 
 	glArea->show();
-	viewportStack->add(*glArea, name, name);
+
+	// create a scene renderer for the viewport
+	viewport->SetRenderer(SceneRenderer::GetInstance());
 
 	return std::move(viewport);
 }

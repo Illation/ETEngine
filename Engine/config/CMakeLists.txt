@@ -63,6 +63,7 @@ add_custom_command(
 	COMMAND ${CMAKE_COMMAND} -E echo "--"
 	COMMAND ${CMAKE_COMMAND} -E echo "PostBuild: compiling schema files - Source Directory: ${schema_dir} ; Output Directory: ${schema_out} ;"
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${schema_out}
+    COMMAND ${CMAKE_COMMAND} -E echo "${tool_dir}glib-compile-schemas.exe --targetdir=${schema_out} ${schema_dir}"
     COMMAND ${tool_dir}glib-compile-schemas.exe --targetdir=${schema_out} ${schema_dir}
 	COMMAND ${CMAKE_COMMAND} -E echo "--"
 	COMMAND ${CMAKE_COMMAND} -E echo "--"

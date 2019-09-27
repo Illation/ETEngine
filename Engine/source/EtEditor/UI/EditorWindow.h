@@ -35,7 +35,7 @@ public:
 
 private:
 
-	std::unique_ptr<Viewport> CreateViewport(std::string const& name);
+	std::unique_ptr<Viewport> CreateSceneViewport();
 
 	// Data
 	/////////
@@ -45,5 +45,5 @@ private:
 
 	EditorApp* m_EditorApp = nullptr;
 
-	std::vector<std::unique_ptr<Viewport>> m_Viewports;
+	std::unique_ptr<Viewport> m_SceneViewport;
 };
