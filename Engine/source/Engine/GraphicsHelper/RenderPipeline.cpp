@@ -77,7 +77,7 @@ void RenderPipeline::Initialize()
 
 	PbrPrefilter::GetInstance()->Precompute(Config::GetInstance()->GetGraphics().PbrBrdfLutSize);
 
-	m_ClearColor = vec3(200.f / 255.f, 114.f / 255.f, 200.f / 255.f)*0.8f;
+	m_ClearColor = vec3(200.f / 255.f, 114.f / 255.f, 200.f / 255.f)*0.0f;
 
 	Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener( std::bind( &RenderPipeline::OnResize, this ) );
 }

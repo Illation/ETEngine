@@ -35,7 +35,7 @@ void EditorScene::Initialize()
 	//Materials
 	//**************************
 	m_Mat = new UberMaterial();
-	//m_Mat->SetBaseColorTexture("kabuto_baseColor.png"_hash);
+	m_Mat->SetBaseColorTexture("kabuto_baseColor.png"_hash);
 	m_Mat->SetNormalTexture("kabuto_normal.png"_hash);
 	m_Mat->SetMetallicRoughnessTexture("kabuto_metallic_roughness.png"_hash);
 	m_Mat->SetOcclusionTexture("kabuto_ao.png"_hash);
