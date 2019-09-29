@@ -3,23 +3,44 @@
 #include <vector>
 #include <typeinfo>
 #include <functional>
+
+
 class AbstractComponent;
 class AbstractScene;
 class TransformComponent;
+
+
 class Entity
 {
+private:
+	friend class AbstractScene;
+	friend class RenderPipeline;
+	friend class SceneRenderer;
+
+	// construct destruct
+	//---------------------
 public:
 	Entity();
 	virtual ~Entity();
 
+	// functionality
+	//---------------
 	void AddChild(Entity* pEntity);
 	void RemoveChild(Entity* pEntity);
 
 	void AddComponent(AbstractComponent* pComp);
 	void RemoveComponent(AbstractComponent* pComp);
 
-	const std::string& GetTag() const { return m_Tag; }
-	void SetTag(const std::string& tag) { m_Tag = tag; }
+	void SetTag(std::string const& tag) { m_Tag = tag; }
+	void SetName(std::string const& name);
+
+	void RecursiveAppendChildren(std::vector<Entity const*>& list) const;
+
+	// accessors
+	//------------
+	std::string const& GetTag() const { return m_Tag; }
+	std::string const& GetName() const { return m_Name; }
+	T_Hash GetId() const { return m_Id; } 
 
 	TransformComponent* GetTransform() const { return m_pTransform; }
 
@@ -27,82 +48,22 @@ public:
 	Entity* GetParent() const { return m_pParentEntity; }
 
 	template<class T> 
-	bool HasComponent(bool searchChildren = false)
-	{
-		return GetComponent<T>(searchChildren) != nullptr;
-	}
+	bool HasComponent(bool searchChildren = false);
 
 	template<class T> 
-	T* GetComponent(bool searchChildren = false)
-	{
-		const std::type_info& ti = typeid(T);
-		for (auto *component : m_pComponentVec)
-		{
-			if (component && typeid(*component) == ti)
-				return static_cast<T*>(component);
-		}
-
-		if (searchChildren)
-		{
-			for (auto *child : m_pChildVec)
-			{
-				if (child->GetComponent<T>(searchChildren) != nullptr)
-					return child->GetComponent<T>(searchChildren);
-			}
-		}
-
-		return nullptr;
-	}
+	T* GetComponent(bool searchChildren = false);
 
 	template<class T> 
-	std::vector<T*> GetComponents(bool searchChildren = false)
-	{
-		const type_info& ti = typeid(T);
-		std::vector<T*> components;
-		for (auto *component : m_pComponentVec)
-		{
-			if (component && typeid(*component) == ti)
-				components.push_back(static_cast<T*>(component));
-		}
-		if (searchChildren)
-		{
-			for (auto *child : m_pChildVec)
-			{
-				auto childComponents = child->GetComponents<T>(searchChildren);
-
-				for (auto *childComp : childComponents)
-					components.push_back(static_cast<T*>(childComp));
-			}
-		}
-		return components;
-	}
+	std::vector<T*> GetComponents(bool searchChildren = false);
 
 	template<class T> 
-	T* GetChild()
-	{
-		const type_info& ti = typeid(T);
-		for (auto *child : m_pChildVec)
-		{
-			if (child && typeid(*child) == ti)
-				return static_cast<T*>(child);
-		}
-		return nullptr;
-	}
+	T* GetChild();
 
 	template<class T> 
-	std::vector<T*> GetChildren()
-	{
-		const type_info& ti = typeid(T);
-		std::vector<T*> children;
+	std::vector<T*> GetChildren();
 
-		for (auto *child : m_pChildVec)
-		{
-			if (child && typeid(*child) == ti)
-				children.push_back(static_cast<T*>(child));
-		}
-		return children;
-	}
-
+	// interface
+	//------------
 protected:
 	virtual void Initialize() {}
 	virtual void Start() {}
@@ -112,16 +73,18 @@ protected:
 	virtual void Update() {}
 
 private:
-	friend class AbstractScene;
-	friend class RenderPipeline;
-	friend class SceneRenderer;
 
+	// utility
+	//------------
 	void RootInitialize();
 	void RootStart();
 	void RootDraw();
 	void RootDrawForward();
 	void RootDrawShadow();
 	void RootUpdate();
+
+	// Data
+	///////
 
 	std::vector<Entity*> m_pChildVec;
 	std::vector<AbstractComponent*> m_pComponentVec;
@@ -132,5 +95,9 @@ private:
 	Entity* m_pParentEntity = nullptr;
 	TransformComponent* m_pTransform = nullptr;
 	std::string m_Tag;
+
+	std::string m_Name;
+	T_Hash m_Id = 0u;
 };
 
+#include "Entity.inl"

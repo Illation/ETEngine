@@ -35,11 +35,20 @@ AbstractScene::~AbstractScene()
 	SafeDelete(m_SceneContext);
 }
 
-void AbstractScene::AddEntity(Entity* pEntity)
+void AbstractScene::AddEntity(Entity* entity)
 {
-	pEntity->m_pParentScene = this;
-	pEntity->RootInitialize();
-	m_pEntityVec.push_back(pEntity);
+	entity->m_pParentScene = this;
+
+	if (entity->GetId() == 0u)
+	{
+		std::string uniqueName;
+		GetUniqueEntityName("Entity", uniqueName);
+		entity->SetName(uniqueName);
+	}
+
+	entity->RootInitialize();
+
+	m_pEntityVec.push_back(entity);
 }
 
 void AbstractScene::RemoveEntity(Entity* pEntity, bool deleteEntity)
@@ -83,6 +92,7 @@ void AbstractScene::RootInitialize()
 	}
 
 	m_IsInitialized = true;
+	m_EventDispatcher.Notify(new SceneEventData(E_SceneEvent::Initialized));
 
 	m_SceneContext->time->Start();
 }
@@ -187,4 +197,31 @@ EnvironmentMap const* AbstractScene::GetEnvironmentMap() const
 		return m_pSkybox->GetHDRMap();
 	}
 	return nullptr;
+}
+
+void AbstractScene::GetUniqueEntityName(std::string const& suggestion, std::string& uniqueName) const
+{
+	uniqueName = suggestion;
+	size_t index = 0;
+
+	std::vector<Entity const*> allEntities;
+	for (Entity const* const entity : m_pEntityVec)
+	{
+		entity->RecursiveAppendChildren(allEntities);
+	}
+
+	auto constructEntityName = [&]()
+	{
+		return suggestion + "_" + std::to_string(index);
+	};
+
+	while (!(std::find_if(allEntities.begin(), allEntities.end(), [&](Entity const* const entity)
+	{
+		return entity->GetName() == constructEntityName();
+	}) == allEntities.end()))
+	{
+		index++;
+	}
+
+	uniqueName = constructEntityName();
 }

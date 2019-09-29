@@ -188,6 +188,7 @@ void EditorApp::on_activate()
 
 		SceneManager::GetInstance()->AddGameScene(new EditorScene());
 		SceneManager::GetInstance()->SetActiveGameScene("EditorScene");
+		m_SceneSelection.SetScene(SceneManager::GetInstance()->GetNewActiveScene());
 
 		RenderPipeline::GetInstance()->Initialize();
 	}

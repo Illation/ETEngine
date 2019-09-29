@@ -11,6 +11,7 @@
 #include <gtkmm/textview.h>
 #include <gtkmm/settings.h>
 #include <gtkmm/glarea.h>
+#include <gtkmm/treeview.h>
 
 #include <Engine/GraphicsHelper/SceneRenderer.h>
 
@@ -42,9 +43,14 @@ EditorAppWindow::EditorAppWindow(BaseObjectType* cobject, Glib::RefPtr<Gtk::Buil
 
 	// listen for keyboard input
 	// on press
-	auto keyPressedCallback = [](GdkEventKey* evnt) -> bool
+	auto keyPressedCallback = [this](GdkEventKey* evnt) -> bool
 	{
-		InputManager::GetInstance()->OnKeyPressed(GetKeyFromGtk(evnt->keyval));
+		if (m_IsNavigating)
+		{
+			InputManager::GetInstance()->OnKeyPressed(GetKeyFromGtk(evnt->keyval));
+			return true;
+		}
+
 		return false;
 	};
 	signal_key_press_event().connect(keyPressedCallback, false);
@@ -53,7 +59,7 @@ EditorAppWindow::EditorAppWindow(BaseObjectType* cobject, Glib::RefPtr<Gtk::Buil
 	auto keyReleasedCallback = [](GdkEventKey* evnt) -> bool
 	{
 		InputManager::GetInstance()->OnKeyReleased(GetKeyFromGtk(evnt->keyval));
-		return false;
+		return true;
 	};
 	signal_key_release_event().connect(keyReleasedCallback, false);
 
@@ -88,7 +94,7 @@ EditorAppWindow* EditorAppWindow::create(EditorApp *const editorApp)
 	refBuilder->get_widget_derived("app_window", window);
 	if (!window)
 	{
-		throw std::runtime_error("No 'app_window' object in window.ui");
+		throw std::runtime_error("No 'app_window' object in editorWindow.ui");
 	}
 
 	window->SetEditorApp(editorApp);
@@ -105,8 +111,9 @@ void EditorAppWindow::SetEditorApp(EditorApp *const editorApp)
 {
 	m_EditorApp = editorApp;
 
-	// create a new viewport
 	m_SceneViewport = std::move(CreateSceneViewport());
+
+	m_Outliner = std::move(CreateOutliner());
 }
 
 //---------------------------------
@@ -130,7 +137,7 @@ std::unique_ptr<Viewport> EditorAppWindow::CreateSceneViewport()
 	// Find the GL Area widget that is responsible for rendering the scene
 	Gtk::GLArea* glArea = nullptr;// Gtk::make_managed<Gtk::GLArea>();
 	m_RefBuilder->get_widget("glSceneViewport", glArea);
-	ET_ASSERT(glArea != nullptr, "No 'glSceneViewport' object in window.ui!");
+	ET_ASSERT(glArea != nullptr, "No 'glSceneViewport' object in editorWindow.ui!");
 	glArea->set_auto_render(true);
 
 	// create a viewport from the area
@@ -139,8 +146,9 @@ std::unique_ptr<Viewport> EditorAppWindow::CreateSceneViewport()
 	// hook up events
 	// mouse click
 	glArea->add_events(Gdk::BUTTON_PRESS_MASK);
-	auto mousePressedCallback = [](GdkEventButton* evnt) -> bool
+	auto mousePressedCallback = [this](GdkEventButton* evnt) -> bool
 	{
+		m_IsNavigating = true;
 		InputManager::GetInstance()->OnMousePressed(GetButtonFromGtk(evnt->button));
 		return false;
 	};
@@ -148,9 +156,10 @@ std::unique_ptr<Viewport> EditorAppWindow::CreateSceneViewport()
 
 	// mouse release
 	glArea->add_events(Gdk::BUTTON_RELEASE_MASK);
-	auto mouseReleasedCallback = [](GdkEventButton* evnt) -> bool
+	auto mouseReleasedCallback = [this](GdkEventButton* evnt) -> bool
 	{
 		InputManager::GetInstance()->OnMouseReleased(GetButtonFromGtk(evnt->button));
+		m_IsNavigating = false;
 		return false;
 	};
 	glArea->signal_button_release_event().connect(mouseReleasedCallback, false);
@@ -207,6 +216,23 @@ std::unique_ptr<Viewport> EditorAppWindow::CreateSceneViewport()
 	viewport->SetRenderer(SceneRenderer::GetInstance());
 
 	return std::move(viewport);
+}
+
+//---------------------------------
+// EditorAppWindow::CreateOutliner
+//
+std::unique_ptr<Outliner> EditorAppWindow::CreateOutliner()
+{
+	// Find the GL Area widget that is responsible for rendering the scene
+	Gtk::TreeView* treeView = nullptr;// Gtk::make_managed<Gtk::GLArea>();
+	m_RefBuilder->get_widget("outlinerView", treeView);
+	ET_ASSERT(treeView != nullptr, "No 'outlinerView' object in editorWindow.ui!");
+
+	// create a viewport from the area
+	ET_ASSERT(m_EditorApp != nullptr);
+
+	std::unique_ptr<Outliner> outliner = std::make_unique<Outliner>(&(m_EditorApp->GetSceneSelection()), treeView);
+	return std::move(outliner);
 }
 
 //---------------------------------

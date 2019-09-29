@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Outliner.h"
+
 #include <Engine/GraphicsHelper/Viewport.h>
 
 #include <gtkmm/applicationwindow.h>
@@ -36,6 +38,7 @@ public:
 private:
 
 	std::unique_ptr<Viewport> CreateSceneViewport();
+	std::unique_ptr<Outliner> CreateOutliner();
 
 	// Data
 	/////////
@@ -45,5 +48,8 @@ private:
 
 	EditorApp* m_EditorApp = nullptr;
 
+	bool m_IsNavigating = false;
+
 	std::unique_ptr<Viewport> m_SceneViewport;
+	std::unique_ptr<Outliner> m_Outliner;
 };

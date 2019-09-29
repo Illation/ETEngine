@@ -155,13 +155,13 @@
                     </child>
                     <child>
                       <object class="GtkTreeView" id="outlinerView">
-                        <property name="height_request">250</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
                         <property name="model">treestore</property>
                         <property name="reorderable">True</property>
+                        <property name="enable_grid_lines">both</property>
                         <property name="enable_tree_lines">True</property>
                         <property name="activate_on_single_click">True</property>
                         <child internal-child="selection">
@@ -189,8 +189,6 @@
                       <object class="GtkLabel" id="outlinerInfo">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="margin_left">8</property>
                         <property name="margin_top">2</property>
                         <property name="margin_bottom">2</property>
                         <property name="label" translatable="yes">X Entities</property>

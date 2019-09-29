@@ -30,6 +30,21 @@ Entity::~Entity()
 	}
 }
 
+void Entity::SetName(std::string const& name)
+{
+	m_Name = name;
+	m_Id = GetHash(name);
+}
+
+void Entity::RecursiveAppendChildren(std::vector<Entity const*>& list) const
+{
+	list.push_back(this);
+	for (Entity const* const child : m_pChildVec)
+	{
+		child->RecursiveAppendChildren(list);
+	}
+}
+
 void Entity::RootInitialize()
 {
 	if (m_IsInitialized)

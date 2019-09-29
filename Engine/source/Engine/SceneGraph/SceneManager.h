@@ -24,6 +24,7 @@ public:
 	void NextScene();
 	void PreviousScene();
 	AbstractScene* GetActiveScene() const { return m_ActiveScene; }
+	AbstractScene* GetNewActiveScene() const { return m_NewActiveScene; }
 
 protected:
 	void OnTick() override;

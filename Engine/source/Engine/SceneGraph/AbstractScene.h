@@ -3,6 +3,7 @@
 
 #include <Engine/Graphics/EnvironmentMap.h>
 #include <Engine/Graphics/PostProcessingSettings.h>
+#include "SceneEvents.h"
 
 
 //forward declaration
@@ -19,6 +20,11 @@ class Skybox;
 class PhysicsWorld;
 
 
+//---------------------------
+// AbstractScene
+//
+// Root scene - currently works through inheritance
+//
 class AbstractScene
 {
 public:
@@ -38,6 +44,12 @@ public:
 	bool SkyboxEnabled() { return m_UseSkyBox; }
 	PhysicsWorld* GetPhysicsWorld() const { return m_pPhysicsWorld; }
 	AudioListenerComponent* GetAudioListener() const { return m_AudioListener; }
+
+	std::string const& GetName() const { return m_Name; }
+	std::vector<Entity*> const& GetEntities() { return m_pEntityVec; }
+	std::vector<Entity*> const& GetEntities() const { return m_pEntityVec; }
+
+	SceneEventDispatcher& GetEventDispatcher() { return m_EventDispatcher; }
 
 protected:
 
@@ -61,6 +73,8 @@ private:
 	void RootOnActivated();
 	void RootOnDeactivated();
 
+	void GetUniqueEntityName(std::string const& suggestion, std::string& uniqueName) const;
+
 	bool m_IsInitialized = false;
 	std::string m_Name;
 	std::vector<Entity*> m_pEntityVec;
@@ -73,5 +87,7 @@ private:
 
 	bool m_UseSkyBox = false;
 	Skybox* m_pSkybox = nullptr;
+
+	SceneEventDispatcher m_EventDispatcher;
 };
 
