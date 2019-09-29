@@ -31,6 +31,8 @@ For a list of third party libraries and licenses check [HERE](Engine/third_party
 
 ## Screenshots
 
+#### WIP Editor
+![](./screenshots/Editor.jpg)
 #### Atmosphere
 Atmospheric Perspective
 ![](./screenshots/GroundAtmosphere.jpg)
