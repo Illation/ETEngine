@@ -4,6 +4,7 @@
 #include <gtkmm/treemodelcolumn.h>
 #include <glibmm/refptr.h>
 #include <gtkmm/treemodel.h>
+#include <gtkmm/treeselection.h>
 
 #include <EtEditor/SceneSelection.h>
 
@@ -27,12 +28,14 @@ public:
 
 		ModelColumns()
 		{
-			add(m_Id);
 			add(m_Name);
+			add(m_Id);
+			add(m_Entity);
 		}
 
-		Gtk::TreeModelColumn<T_Hash> m_Id;
 		Gtk::TreeModelColumn<Glib::ustring> m_Name;
+		Gtk::TreeModelColumn<T_Hash> m_Id;
+		Gtk::TreeModelColumn<Entity*> m_Entity;
 	};
 
 	// construct destruct
@@ -49,6 +52,7 @@ protected:
 	//-------------------
 private:
 	void OnTreeViewRowActivated(Gtk::TreeModel::Path const& path, Gtk::TreeViewColumn* const column);
+	void OnSelectionChanged();
 
 	void RefillTreeView();
 
@@ -59,6 +63,7 @@ private:
 
 	ModelColumns m_Columns;
 	Glib::RefPtr<Gtk::TreeStore> m_TreeModel;
+	Glib::RefPtr<Gtk::TreeSelection> m_TreeSelection;
 
 	SceneSelection* m_SceneSelection;
 };

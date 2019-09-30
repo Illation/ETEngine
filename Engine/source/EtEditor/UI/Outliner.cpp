@@ -24,8 +24,15 @@ Outliner::Outliner(SceneSelection* sceneSelection, Gtk::TreeView* treeView)
 
 	m_TreeView->set_model(m_TreeModel);
 
+	m_TreeSelection = m_TreeView->get_selection();
+	m_TreeSelection->set_mode(Gtk::SELECTION_MULTIPLE);
+	m_TreeSelection->signal_changed().connect( sigc::mem_fun(*this, &Outliner::OnSelectionChanged) );
+
 	//All the items to be reordered with drag-and-drop:
 	m_TreeView->set_reorderable();
+
+	m_TreeView->append_column("Name", m_Columns.m_Name);
+	m_TreeView->append_column("ID", m_Columns.m_Id);
 
 	m_TreeView->signal_row_activated().connect(sigc::mem_fun(*this, &Outliner::OnTreeViewRowActivated));
 
@@ -38,27 +45,6 @@ Outliner::Outliner(SceneSelection* sceneSelection, Gtk::TreeView* treeView)
 Outliner::~Outliner()
 {
 	m_SceneSelection->UnregisterListener(this);
-}
-
-//--------------------
-// Outliner::OnTreeViewRowActivated
-//
-// When an item in the list gets selected
-//
-void Outliner::OnTreeViewRowActivated(Gtk::TreeModel::Path const& path, Gtk::TreeViewColumn* const column)
-{
-	UNUSED(column);
-
-	Gtk::TreeModel::iterator const it = m_TreeModel->get_iter(path);
-	if (it)
-	{
-		Gtk::TreeModel::Row row = *it;
-
-		T_Hash id = row[m_Columns.m_Id];
-		Glib::ustring name = row[m_Columns.m_Name];
-
-		LOG(FS("Row activated: ID=%u, Name=%s", id, name.c_str()));
-	}
 }
 
 //--------------------------
@@ -78,6 +64,47 @@ void Outliner::OnSceneEvent(SceneEventData const* const eventData)
 	}
 }
 
+//------------------------------------
+// Outliner::OnTreeViewRowActivated
+//
+// When an item in the list gets double clicked / opened
+//
+void Outliner::OnTreeViewRowActivated(Gtk::TreeModel::Path const& path, Gtk::TreeViewColumn* const column)
+{
+	UNUSED(column);
+
+	Gtk::TreeModel::iterator const it = m_TreeModel->get_iter(path);
+	if (it)
+	{
+		Gtk::TreeModel::Row row = *it;
+
+		Glib::ustring name = row[m_Columns.m_Name];
+		T_Hash id = row[m_Columns.m_Id];
+
+		LOG(FS("Row activated: Name=%s, ID=%u", name.c_str(), id));
+	}
+}
+
+//--------------------------------
+// Outliner::OnSelectionChanged
+//
+// Update the selected item list
+//
+void Outliner::OnSelectionChanged()
+{
+	auto onSelectionIteration = [this](const Gtk::TreeModel::iterator& it)
+		{
+			Gtk::TreeModel::Row row = *it;
+
+			Glib::ustring name = row[m_Columns.m_Name];
+			T_Hash id = row[m_Columns.m_Id];
+
+			LOG(FS("Row selected: Name=%s, ID=%u", name.c_str(), id));
+		};
+
+	m_TreeSelection->selected_foreach_iter(onSelectionIteration);
+}
+
 //--------------------------
 // Outliner::RefillTreeView
 //
@@ -85,22 +112,21 @@ void Outliner::OnSceneEvent(SceneEventData const* const eventData)
 //
 void Outliner::RefillTreeView()
 {
-	AbstractScene const* const scene = m_SceneSelection->GetScene();
+	AbstractScene* const scene = m_SceneSelection->GetScene();
 	ET_ASSERT(scene != nullptr);
 
 	Gtk::TreeModel::Row row = *(m_TreeModel->append());
-	row[m_Columns.m_Id] = 0;
 	row[m_Columns.m_Name] = scene->GetName();
+	row[m_Columns.m_Id] = 0u;
+	row[m_Columns.m_Entity] = nullptr;
 
-	for (Entity const* const entity : scene->GetEntities())
+	for (Entity* const entity : scene->GetEntities())
 	{
 		Gtk::TreeModel::iterator iter = m_TreeModel->append(row.children());
-		(*iter)[m_Columns.m_Id] = entity->GetId();
 		(*iter)[m_Columns.m_Name] = entity->GetName();
+		(*iter)[m_Columns.m_Id] = entity->GetId();
+		(*iter)[m_Columns.m_Entity] = entity;
 	}
-
-	m_TreeView->append_column("ID", m_Columns.m_Id);
-	m_TreeView->append_column("Name", m_Columns.m_Name);
 
 	m_TreeView->show_all_children();
 	m_TreeView->expand_all();

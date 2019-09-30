@@ -163,9 +163,10 @@
                         <property name="model">treestore</property>
                         <property name="reorderable">True</property>
                         <property name="enable_tree_lines">True</property>
-                        <property name="activate_on_single_click">True</property>
                         <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
+                          <object class="GtkTreeSelection">
+                            <property name="mode">multiple</property>
+                          </object>
                         </child>
                       </object>
                       <packing>
