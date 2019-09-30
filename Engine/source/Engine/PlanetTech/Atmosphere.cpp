@@ -15,7 +15,7 @@
 #include <Engine/Graphics/Light.h>
 #include <Engine/GraphicsHelper/SpriteRenderer.h>
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
-#include <Engine/GraphicsHelper/RenderPipeline.h>
+#include <Engine/GraphicsHelper/SceneRenderer.h>
 #include <Engine/Prefabs/Skybox.h>
 #include <Engine/SceneGraph/AbstractScene.h>
 
@@ -80,7 +80,7 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	m_pShader->Upload("texGBufferA"_hash, 0);
 	//m_pShader->Upload("texGBufferB"_hash, 1);
 	//m_pShader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
+	auto gbufferTex = SceneRenderer::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());

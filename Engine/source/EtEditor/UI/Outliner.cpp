@@ -92,14 +92,11 @@ void Outliner::OnTreeViewRowActivated(Gtk::TreeModel::Path const& path, Gtk::Tre
 //
 void Outliner::OnSelectionChanged()
 {
+	m_SceneSelection->ClearSelection();
+
 	auto onSelectionIteration = [this](const Gtk::TreeModel::iterator& it)
 		{
-			Gtk::TreeModel::Row row = *it;
-
-			Glib::ustring name = row[m_Columns.m_Name];
-			T_Hash id = row[m_Columns.m_Id];
-
-			LOG(FS("Row selected: Name=%s, ID=%u", name.c_str(), id));
+			m_SceneSelection->AddItemToSelection((*it)[m_Columns.m_Entity]);
 		};
 
 	m_TreeSelection->selected_foreach_iter(onSelectionIteration);

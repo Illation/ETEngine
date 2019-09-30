@@ -60,6 +60,22 @@ void SceneSelection::UnregisterListener(I_SceneSelectionListener const* const li
 }
 
 //----------------------------------------------------
+// SceneSelection::UnregisterListener
+//
+void SceneSelection::ClearSelection()
+{
+	m_SelectedEntities.clear();
+}
+
+//----------------------------------------------------
+// SceneSelection::AddItemToSelection
+//
+void SceneSelection::AddItemToSelection(Entity* const entity)
+{
+	m_SelectedEntities.emplace_back(entity);
+}
+
+//----------------------------------------------------
 // SceneSelection::OnSceneEvent
 //
 // pass the event through to any listeners

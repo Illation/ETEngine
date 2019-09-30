@@ -135,7 +135,7 @@ void EditorAppWindow::Init()
 std::unique_ptr<Viewport> EditorAppWindow::CreateSceneViewport()
 {
 	// Find the GL Area widget that is responsible for rendering the scene
-	Gtk::GLArea* glArea = nullptr;// Gtk::make_managed<Gtk::GLArea>();
+	Gtk::GLArea* glArea = nullptr;
 	m_RefBuilder->get_widget("glSceneViewport", glArea);
 	ET_ASSERT(glArea != nullptr, "No 'glSceneViewport' object in editorWindow.ui!");
 	glArea->set_auto_render(true);
@@ -223,8 +223,7 @@ std::unique_ptr<Viewport> EditorAppWindow::CreateSceneViewport()
 //
 std::unique_ptr<Outliner> EditorAppWindow::CreateOutliner()
 {
-	// Find the GL Area widget that is responsible for rendering the scene
-	Gtk::TreeView* treeView = nullptr;// Gtk::make_managed<Gtk::GLArea>();
+	Gtk::TreeView* treeView = nullptr;
 	m_RefBuilder->get_widget("outlinerView", treeView);
 	ET_ASSERT(treeView != nullptr, "No 'outlinerView' object in editorWindow.ui!");
 

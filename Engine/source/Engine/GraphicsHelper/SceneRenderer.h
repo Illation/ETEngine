@@ -9,6 +9,10 @@
 #include <Engine/Graphics/TextureData.h>
 
 
+class PostProcessingRenderer;
+class ScreenSpaceReflections;
+
+
 //---------------------------------
 // SceneRenderer
 //
@@ -22,29 +26,55 @@ class SceneRenderer : public I_ViewportRenderer, public Singleton<SceneRenderer>
 	//--------------------
 private:
 	SceneRenderer() : I_ViewportRenderer() {}
-	virtual ~SceneRenderer() = default;
+	virtual ~SceneRenderer();
 
 	// functionality
 	//-----------------------------
 public:
 	void InitWithSplashScreen();
+	void InitRenderingSystems();
+
 	void ShowSplashScreen();
 	void HideSplashScreen();
+
+	void DrawOverlays();
+	void DrawShadow();
+
+private:
+	void Draw(T_FbLoc targetFb);
 
 	// Viewport Renderer Interface
 	//-----------------------------
 protected:
 	void OnInit() override {}
 	void OnDeinit() override {}
-	void OnResize(ivec2 const dim) override {}
+	void OnResize(ivec2 const dim) override;
 	void OnRender(T_FbLoc const targetFb) override;
+
+	// accessors
+	//--------------
+public:
+	Gbuffer* GetGBuffer() { return m_GBuffer; }
 
 	// Data
 	///////
 private:
+
+	bool m_IsInitialized = false;
+
+	// splash screen
 	AssetPtr<TextureData> m_SplashBackgroundTex;
 	AssetPtr<SpriteFont> m_SplashTitleFont;
 	AssetPtr<SpriteFont> m_SplashRegFont;
 
 	bool m_IsShowingSpashScreen = false;
+
+	// scene rendering
+	vec3 m_ClearColor;
+
+	std::vector<AbstractScene*> m_RenderScenes;
+
+	Gbuffer* m_GBuffer = nullptr;
+	PostProcessingRenderer* m_PostProcessing = nullptr;
+	ScreenSpaceReflections* m_SSR = nullptr;
 };

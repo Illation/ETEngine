@@ -5,7 +5,7 @@
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/FrameBuffer.h>
 #include <Engine/Framebuffers/Gbuffer.h>
-#include <Engine/GraphicsHelper/RenderPipeline.h>
+#include <Engine/GraphicsHelper/SceneRenderer.h>
 
 
 LightMaterial::LightMaterial(vec3 col)
@@ -27,7 +27,7 @@ void LightMaterial::UploadDerivedVariables()
 	m_Shader->Upload("texGBufferA"_hash, 0);
 	m_Shader->Upload("texGBufferB"_hash, 1);
 	m_Shader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
+	auto gbufferTex = SceneRenderer::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		Viewport::GetCurrentApiContext()->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());

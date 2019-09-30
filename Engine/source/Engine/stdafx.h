@@ -25,7 +25,6 @@
 #include <Engine/Components/TransformComponent.h>
 #include <Engine/Base/Config.h>
 #include <Engine/Base/SceneContext.h>
-#include <Engine/GraphicsHelper/RenderPipeline.h>
 #include <Engine/GraphicsHelper/GraphicsApiContext.h>
 #include <Engine/GraphicsHelper/Viewport.h>
 

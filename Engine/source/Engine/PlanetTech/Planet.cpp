@@ -11,7 +11,6 @@
 
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/Frustum.h>
-#include <Engine/GraphicsHelper/RenderPipeline.h>
 #include <Engine/Components/TransformComponent.h>
 #include <Engine/Components/CameraComponent.h>
 

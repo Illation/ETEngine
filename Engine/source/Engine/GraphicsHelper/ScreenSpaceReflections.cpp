@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "ScreenSpaceReflections.h"
 
-#include "RenderPipeline.h"
 #include "PrimitiveRenderer.h"
+#include "SceneRenderer.h"
 
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Helper/Commands.h>
@@ -69,7 +69,7 @@ void ScreenSpaceReflections::Draw()
 	m_pShader->Upload("texGBufferA"_hash, 0);
 	m_pShader->Upload("texGBufferB"_hash, 1);
 	m_pShader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
+	auto gbufferTex = SceneRenderer::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());

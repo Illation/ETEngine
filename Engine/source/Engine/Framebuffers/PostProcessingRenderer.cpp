@@ -3,10 +3,10 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Graphics/Shader.h>
 #include <Engine/GraphicsHelper/ShadowRenderer.h>
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
-#include <Engine/GraphicsHelper/RenderPipeline.h>
+#include <Engine/GraphicsHelper/SceneRenderer.h>
+#include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
 
 
@@ -232,7 +232,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 	m_pPostProcShader->Upload("gamma"_hash, settings.gamma);
 	m_pPostProcShader->Upload("bloomMult"_hash, settings.bloomMult);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
-	RenderPipeline::GetInstance()->DrawOverlays();//Make sure text and sprites get antialiased
+	SceneRenderer::GetInstance()->DrawOverlays();//Make sure text and sprites get antialiased
 
 	//FXAA
 	if (graphicsSettings.UseFXAA)

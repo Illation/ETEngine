@@ -19,7 +19,6 @@ private:
 	friend class Singleton<TextRenderer>;
 	friend class AbstractScene;
 	friend class AbstractFramework;
-	friend class RenderPipeline;
 	friend class SceneRenderer;
 	friend class UIPortal;
 

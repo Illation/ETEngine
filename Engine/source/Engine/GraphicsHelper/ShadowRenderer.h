@@ -17,7 +17,7 @@ public:
 
 private:
 	friend class AbstractFramework;
-	friend class RenderPipeline; //should init and destroy singleton
+	friend class SceneRenderer; //should init and destroy singleton
 
 	void Initialize();
 	bool IsInitialized = false;

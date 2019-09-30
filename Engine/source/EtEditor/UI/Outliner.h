@@ -17,6 +17,8 @@ namespace Gtk {
 //--------------------
 // Outliner
 //
+// visual representation of the scene hierachy and selection
+//
 class Outliner final : public I_SceneSelectionListener
 {
 public:

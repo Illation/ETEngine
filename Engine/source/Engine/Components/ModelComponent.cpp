@@ -11,7 +11,6 @@
 #include <Engine/Graphics/Material.h>
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/SceneGraph/Entity.h>
-#include <Engine/GraphicsHelper/RenderPipeline.h>
 #include <Engine/GraphicsHelper/ShadowRenderer.h>
 #include <Engine/Materials/NullMaterial.h>
 

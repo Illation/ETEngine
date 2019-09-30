@@ -12,7 +12,6 @@ class SpriteRenderer : public Singleton<SpriteRenderer>
 private:
 	// Definitions
 	//--------------------------
-	friend class RenderPipeline;
 	friend class SceneRenderer;
 	friend class UIPortal;
 	friend class Singleton<SpriteRenderer>;

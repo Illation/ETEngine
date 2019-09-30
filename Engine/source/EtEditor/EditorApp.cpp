@@ -25,6 +25,7 @@
 #include <EtCore/UpdateCycle/TickManager.h>
 
 #include <Engine/SceneGraph/SceneManager.h>
+#include <Engine/GraphicsHelper/SceneRenderer.h>
 #include <Engine/Physics/PhysicsManager.h>
 #include <Engine/Audio/AudioManager.h>
 
@@ -190,7 +191,7 @@ void EditorApp::on_activate()
 		SceneManager::GetInstance()->SetActiveGameScene("EditorScene");
 		m_SceneSelection.SetScene(SceneManager::GetInstance()->GetNewActiveScene());
 
-		RenderPipeline::GetInstance()->Initialize();
+		SceneRenderer::GetInstance()->InitRenderingSystems();
 	}
 	// If create_appwindow() throws an exception (perhaps from Gtk::Builder),
 	// no window has been created, no window has been added to the application,

@@ -3,7 +3,7 @@
 
 #include <limits>
 
-#include "RenderPipeline.h"
+#include "SceneRenderer.h"
 
 #include <Engine/Materials/NullMaterial.h>
 #include <Engine/Graphics/Shader.h>
@@ -90,7 +90,7 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
 		//Draw scene with light matrix and null material
-		RenderPipeline::GetInstance()->DrawShadow();
+		SceneRenderer::GetInstance()->DrawShadow();
 	}
 }
 

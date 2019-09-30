@@ -3,7 +3,7 @@
 
 #include "ShadowRenderer.h"
 #include "PrimitiveRenderer.h"
-#include "RenderPipeline.h"
+#include "SceneRenderer.h"
 
 #include <EtCore/Content/ResourceManager.h>
 
@@ -86,7 +86,7 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 
 	m_pShader->Upload("texGBufferB"_hash, 1);
 	m_pShader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
+	auto gbufferTex = SceneRenderer::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		api->LazyBindTexture(i, gbufferTex[i]->GetTargetType(), gbufferTex[i]->GetHandle());
@@ -114,7 +114,7 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *
 	m_pShaderShadowed->Upload("texGBufferA"_hash, 0);
 	m_pShaderShadowed->Upload("texGBufferB"_hash, 1);
 	m_pShaderShadowed->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = RenderPipeline::GetInstance()->GetGBuffer()->GetTextures();
+	auto gbufferTex = SceneRenderer::GetInstance()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		api->LazyBindTexture(i, gbufferTex[i]->GetTargetType(), gbufferTex[i]->GetHandle());

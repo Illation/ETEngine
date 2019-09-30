@@ -10,7 +10,7 @@ public:
 	void DrawGrid(float pixelSpacingRad = etm::radians(75));
 
 private:
-	friend class RenderPipeline;
+	friend class SceneRenderer;
 
 	struct LineVertex
 	{

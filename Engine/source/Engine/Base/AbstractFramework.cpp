@@ -14,7 +14,6 @@
 #include <Engine/GraphicsHelper/ShadowRenderer.h>
 #include <Engine/GraphicsHelper/TextRenderer.h>
 #include <Engine/GraphicsHelper/PrimitiveRenderer.h>
-#include <Engine/GraphicsHelper/RenderPipeline.h>
 #include <Engine/Physics/PhysicsManager.h>
 #include <Engine/Audio/AudioManager.h>
 #include <Engine/Helper/GlfwEventManager.h>
@@ -38,8 +37,6 @@ AbstractFramework::~AbstractFramework()
 	InputManager::DestroyInstance();
 	ContextManager::DestroyInstance();
 	
-	RenderPipeline::DestroyInstance();
-
 	ResourceManager::DestroyInstance();
 
 	TickManager::DestroyInstance();
@@ -91,7 +88,7 @@ void AbstractFramework::Run()
 	InputManager::GetInstance();	// init input manager
 	GlfwEventManager::GetInstance()->Init(m_RenderArea.GetWindow());
 
-	RenderPipeline::GetInstance()->Initialize();
+	SceneRenderer::GetInstance()->InitRenderingSystems();
 
 	RegisterAsTriggerer();
 

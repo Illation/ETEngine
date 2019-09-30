@@ -14,7 +14,6 @@ class Entity
 {
 private:
 	friend class AbstractScene;
-	friend class RenderPipeline;
 	friend class SceneRenderer;
 
 	// construct destruct

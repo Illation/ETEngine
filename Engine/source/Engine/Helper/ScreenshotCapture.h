@@ -11,7 +11,7 @@ public:
 
 private:
 	friend class Singleton<ScreenshotCapture>;
-	friend class RenderPipeline;
+	friend class SceneRenderer;
 	friend class AbstractFramework;
 
 	ScreenshotCapture() = default;

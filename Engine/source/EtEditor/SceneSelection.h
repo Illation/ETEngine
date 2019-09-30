@@ -37,6 +37,9 @@ public:
 	void RegisterListener(I_SceneSelectionListener* const listener);
 	void UnregisterListener(I_SceneSelectionListener const* const listener);
 
+	void ClearSelection();
+	void AddItemToSelection(Entity* const entity);
+
 private:
 	void OnSceneEvent(SceneEventData const* const eventData);
 
