@@ -15,6 +15,7 @@ class Entity
 private:
 	friend class AbstractScene;
 	friend class SceneRenderer;
+	friend class OutlineRenderer;
 
 	// construct destruct
 	//---------------------

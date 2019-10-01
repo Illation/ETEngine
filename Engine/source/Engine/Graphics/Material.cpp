@@ -57,15 +57,12 @@ void Material::UploadVariables(mat4 matModel)
 	UploadDerivedVariables();
 }
 
-void Material::UploadVariables(mat4 matModel, const mat4 &matWVP)
+void Material::UploadModelOnly(mat4 matModel)
 {
 	Viewport::GetCurrentApiContext()->SetShader(m_Shader.get());
-	//Upload matrices
+
 	if (m_StandardTransform)
 	{
 		m_Shader->Upload("model"_hash, matModel);
-		m_Shader->Upload("worldViewProj"_hash, matWVP);
 	}
-
-	UploadDerivedVariables();
 }

@@ -5,6 +5,8 @@
 
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
+#include <Engine/Materials/ColorMaterial.h>
+#include <Engine/SceneGraph/Entity.h>
 
 
 //====================
@@ -13,19 +15,30 @@
 
 
 //---------------------------------
-// SpriteRenderer::Initialize
+// OutlineRenderer::d-tor
+//
+OutlineRenderer::~OutlineRenderer()
+{
+	SafeDelete(m_Material);
+}
+
+//---------------------------------
+// OutlineRenderer::Initialize
 //
 void OutlineRenderer::Initialize()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("DebugRenderer.glsl"_hash);
+	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdColorShader.glsl"_hash);
+
+	m_Material = new ColorMaterial();
+	m_Material->Initialize();
 
 	// init frame buffers
 }
 
 //---------------------------------
-// SpriteRenderer::AddEntity
+// OutlineRenderer::AddEntity
 //
 // Adds an entity to the current color list
 //
@@ -38,7 +51,7 @@ void OutlineRenderer::AddEntity(Entity* const entity)
 }
 
 //---------------------------------
-// SpriteRenderer::AddEntities
+// OutlineRenderer::AddEntities
 //
 // Add a bunch of entities to the current color list
 //
@@ -51,7 +64,7 @@ void OutlineRenderer::AddEntities(std::vector<Entity*> const& entities)
 }
 
 //---------------------------------
-// SpriteRenderer::Draw
+// OutlineRenderer::Draw
 //
 void OutlineRenderer::Draw(T_FbLoc const targetFb)
 {
@@ -62,11 +75,26 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb)
 
 	UNUSED(targetFb);
 
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->SetShader(m_Shader.get());
+	m_Shader->Upload("worldViewProj"_hash, CAMERA->GetViewProj());
+
+	for (EntityList& list : m_Lists)
+	{
+		m_Shader->Upload("uColor"_hash, m_Color);
+
+		for (Entity* const entity : list.entities)
+		{
+			entity->RootDrawMaterial(static_cast<Material*>(m_Material));
+		}
+	}
+
 	m_Lists.clear();
 }
 
 //---------------------------------
-// SpriteRenderer::AccessEntityListIt
+// OutlineRenderer::AccessEntityListIt
 //
 // Find or create an entity list matching our color
 //

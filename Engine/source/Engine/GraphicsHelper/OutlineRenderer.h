@@ -2,12 +2,15 @@
 #include <EtCore/Content/AssetPointer.h>
 
 
+class ColorMaterial;
+
+
 //---------------------------------
 // OutlineRenderer
 //
 // Rendering class that can draw outlines around 3D objects in the scene
 //
-class OutlineRenderer
+class OutlineRenderer final
 {
 private:
 	// Definitions
@@ -30,7 +33,7 @@ private:
 	// construct destruct
 	//--------------------
 	OutlineRenderer() = default;
-	virtual ~OutlineRenderer() = default;
+	~OutlineRenderer();
 
 	OutlineRenderer(const OutlineRenderer& t) = delete;
 	OutlineRenderer& operator=(const OutlineRenderer& t) = delete;
@@ -59,4 +62,5 @@ private:
 	T_EntityLists m_Lists;
 
 	AssetPtr<ShaderData> m_Shader;
+	ColorMaterial* m_Material;
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include <EtCore/Content/AssetPointer.h>
 
 class TextureData;
 class NullMaterial;
@@ -22,7 +23,7 @@ private:
 	void Initialize();
 	bool IsInitialized = false;
 
-
+	AssetPtr<ShaderData> m_Shader;
 	NullMaterial* m_pMaterial;
 	mat4 m_LightVP;
 };

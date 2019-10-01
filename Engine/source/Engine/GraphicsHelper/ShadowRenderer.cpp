@@ -5,6 +5,8 @@
 
 #include "SceneRenderer.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Materials/NullMaterial.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
@@ -18,6 +20,7 @@ ShadowRenderer::~ShadowRenderer()
 }
 void ShadowRenderer::Initialize()
 {
+	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdNullShader.glsl"_hash);
 	m_pMaterial = new NullMaterial();
 	m_pMaterial->Initialize();
 
@@ -88,6 +91,9 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 		api->BindFramebuffer(pShadowData->m_Cascades[i].fbo);
 		//Clear Framebuffer
 		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
+
+		api->SetShader(m_Shader.get());
+		m_Shader->Upload("worldViewProj"_hash, m_LightVP);
 
 		//Draw scene with light matrix and null material
 		SceneRenderer::GetInstance()->DrawShadow();

@@ -11,8 +11,6 @@
 #include <Engine/Graphics/Material.h>
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/SceneGraph/Entity.h>
-#include <Engine/GraphicsHelper/ShadowRenderer.h>
-#include <Engine/Materials/NullMaterial.h>
 
 
 //=================
@@ -131,12 +129,9 @@ void ModelComponent::DrawMaterial(Material* const mat)
 
 	// #todo: implement culling
 
-	mat4 matWVP = ShadowRenderer::GetInstance()->GetLightVP();
-
 	MeshSurface const* surface = m_Mesh->GetSurface(mat);
 	api->BindVertexArray(surface->GetVertexArray());
-
-	mat->UploadVariables(m_pEntity->GetTransform()->GetWorld(), matWVP);
+	mat->UploadModelOnly(m_pEntity->GetTransform()->GetWorld());
 
 	api->DrawElements(E_DrawMode::Triangles, static_cast<uint32>(m_Mesh->GetIndexCount()), m_Mesh->GetIndexDataType(), 0);
 }

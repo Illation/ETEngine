@@ -96,7 +96,11 @@ void Outliner::OnSelectionChanged()
 
 	auto onSelectionIteration = [this](const Gtk::TreeModel::iterator& it)
 		{
-			m_SceneSelection->AddItemToSelection((*it)[m_Columns.m_Entity]);
+			Entity* const entity = (*it)[m_Columns.m_Entity];
+			if (entity != nullptr)
+			{
+				m_SceneSelection->AddItemToSelection(entity);
+			}
 		};
 
 	m_TreeSelection->selected_foreach_iter(onSelectionIteration);

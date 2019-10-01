@@ -15,7 +15,7 @@ public:
 
 	virtual void Initialize();
 	void UploadVariables(mat4 matModel);
-	void UploadVariables(mat4 matModel, const mat4 &matWVP);
+	void UploadModelOnly(mat4 matModel);
 
 	T_VertexFlags GetLayoutFlags() const { return m_LayoutFlags; }
 	std::vector<int32> const& GetAttributeLocations() const { return m_AttributeLocations; }
