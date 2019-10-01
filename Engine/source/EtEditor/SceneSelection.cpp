@@ -3,6 +3,8 @@
 
 #include <Engine/SceneGraph/AbstractScene.h>
 #include <Engine/SceneGraph/Entity.h>
+#include <Engine/GraphicsHelper/SceneRenderer.h>
+#include <Engine/GraphicsHelper/OutlineRenderer.h>
 
 
 //==========================
@@ -86,4 +88,15 @@ void SceneSelection::OnSceneEvent(SceneEventData const* const eventData)
 	{
 		listener->OnSceneEvent(eventData);
 	}
+}
+
+//----------------------------------------------------
+// SceneSelection::OnTick
+//
+void SceneSelection::OnTick()
+{
+	OutlineRenderer& outlineRenderer = SceneRenderer::GetInstance()->GetOutlineRenderer();
+
+	outlineRenderer.SetColor(m_OutlineColor);
+	outlineRenderer.AddEntities(m_SelectedEntities);
 }

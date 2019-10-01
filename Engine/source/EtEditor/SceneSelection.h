@@ -1,6 +1,11 @@
 #pragma once
 #include <vector>
 
+#include "EditorTickOrder.h"
+
+#include <EtCore/UpdateCycle/Tickable.h>
+
+
 class AbstractScene;
 class Entity;
 
@@ -22,9 +27,14 @@ public:
 //--------------------
 // SceneSelection
 //
-class SceneSelection
+class SceneSelection final : public I_Tickable
 {
 public:
+
+	// ctor dtor
+	//---------------
+	SceneSelection() : I_Tickable(static_cast<uint32>(E_EditorTickOrder::TICK_SceneSelection)) {}
+	~SceneSelection() = default;
 
 	// accessors
 	//--------------------
@@ -43,6 +53,10 @@ public:
 private:
 	void OnSceneEvent(SceneEventData const* const eventData);
 
+	// I_Tickable interface
+	//----------------------
+	void OnTick() override; 
+	
 	// Data
 	///////
 
@@ -50,5 +64,7 @@ private:
 	std::vector<Entity*> m_SelectedEntities;
 
 	std::vector<I_SceneSelectionListener*> m_Listeners;
+
+	vec4 m_OutlineColor = vec4(0.5f, 0.5f, 1.f, 1.f);
 };
 

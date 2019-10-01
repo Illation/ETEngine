@@ -12,5 +12,7 @@ enum class E_TickOrder : uint32
 	TICK_Editor,
 	TICK_Framework,
 	TICK_GlfwEventManager,
+
+	COUNT
 };
 

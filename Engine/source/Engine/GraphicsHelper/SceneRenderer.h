@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ViewportRenderer.h"
+#include "OutlineRenderer.h"
 
 #include <EtCore/Helper/Singleton.h>
 #include <EtCore/Content/AssetPointer.h>
@@ -41,7 +42,7 @@ public:
 	void DrawShadow();
 
 private:
-	void Draw(T_FbLoc targetFb);
+	void Draw();
 
 	// Viewport Renderer Interface
 	//-----------------------------
@@ -55,6 +56,7 @@ protected:
 	//--------------
 public:
 	Gbuffer* GetGBuffer() { return m_GBuffer; }
+	OutlineRenderer& GetOutlineRenderer() { return m_OutlineRenderer; }
 
 	// Data
 	///////
@@ -73,8 +75,10 @@ private:
 	vec3 m_ClearColor;
 
 	std::vector<AbstractScene*> m_RenderScenes;
+	T_FbLoc m_TargetFb = 0u;
 
 	Gbuffer* m_GBuffer = nullptr;
 	PostProcessingRenderer* m_PostProcessing = nullptr;
 	ScreenSpaceReflections* m_SSR = nullptr;
+	OutlineRenderer m_OutlineRenderer;
 };

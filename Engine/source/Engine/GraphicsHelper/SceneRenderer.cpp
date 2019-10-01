@@ -84,6 +84,8 @@ void SceneRenderer::InitRenderingSystems()
 
 	CIE::GetInstance()->LoadData();
 
+	m_OutlineRenderer.Initialize();
+
 	m_PostProcessing = new PostProcessingRenderer();
 	m_PostProcessing->Initialize();
 
@@ -165,6 +167,7 @@ void SceneRenderer::HideSplashScreen()
 //
 void SceneRenderer::DrawOverlays()
 {
+	m_OutlineRenderer.Draw(m_TargetFb);
 	SpriteRenderer::GetInstance()->Draw();
 	TextRenderer::GetInstance()->Draw();
 }
@@ -192,10 +195,9 @@ void SceneRenderer::DrawShadow()
 //
 // Main scene drawing function
 //
-void SceneRenderer::Draw(T_FbLoc targetFb)
+void SceneRenderer::Draw()
 {
 	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
-
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Shadow Mapping
@@ -305,7 +307,7 @@ void SceneRenderer::Draw(T_FbLoc targetFb)
 	api->SetDepthEnabled(false);
 	if (m_RenderScenes.size() > 0)
 	{
-		m_PostProcessing->Draw(targetFb, m_RenderScenes[0]->GetPostProcessingSettings());
+		m_PostProcessing->Draw(m_TargetFb, m_RenderScenes[0]->GetPostProcessingSettings());
 	}
 
 	for (auto pScene : m_RenderScenes)
@@ -360,6 +362,7 @@ void SceneRenderer::OnRender(T_FbLoc const targetFb)
 
 	// #note: currently only one scene but could be expanded for nested scenes
 	m_RenderScenes = activeScenes;
+	m_TargetFb = targetFb;
 
-	Draw(targetFb);
+	Draw();
 }
