@@ -121,23 +121,22 @@ void ModelComponent::DrawForward()
 }
 
 //---------------------------------
-// ModelComponent::DrawShadow
+// ModelComponent::DrawMaterial
 //
-// Render our mesh with a null material from the perspective of a light source
+// Render a specified material
 //
-void ModelComponent::DrawShadow()
+void ModelComponent::DrawMaterial(Material* const mat)
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	// #todo: implement culling
 
-	NullMaterial* const nullMat = ShadowRenderer::GetInstance()->GetNullMaterial();
 	mat4 matWVP = ShadowRenderer::GetInstance()->GetLightVP();
 
-	MeshSurface const* surface = m_Mesh->GetSurface(nullMat);
+	MeshSurface const* surface = m_Mesh->GetSurface(mat);
 	api->BindVertexArray(surface->GetVertexArray());
 
-	nullMat->UploadVariables(m_pEntity->GetTransform()->GetWorld(), matWVP);
+	mat->UploadVariables(m_pEntity->GetTransform()->GetWorld(), matWVP);
 
 	api->DrawElements(E_DrawMode::Triangles, static_cast<uint32>(m_Mesh->GetIndexCount()), m_Mesh->GetIndexDataType(), 0);
 }

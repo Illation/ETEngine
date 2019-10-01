@@ -109,18 +109,18 @@ void Entity::RootDrawForward()
 		pChild->RootDrawForward();
 	}
 }
-void Entity::RootDrawShadow()
+void Entity::RootDrawMaterial(Material* const mat)
 {
-	DrawShadow();
+	DrawMaterial(mat);
 	//Component Draw
 	for (AbstractComponent* pComp : m_pComponentVec)
 	{
-		pComp->DrawShadow();
+		pComp->DrawMaterial(mat);
 	}
 	//Root-Object Draw
 	for (Entity* pChild : m_pChildVec)
 	{
-		pChild->RootDrawShadow();
+		pChild->RootDrawMaterial(mat);
 	}
 }
 

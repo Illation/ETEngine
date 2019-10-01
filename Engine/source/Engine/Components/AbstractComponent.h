@@ -3,6 +3,7 @@
 //forward declaration
 class Entity;
 class TransformComponent;
+class Material;
 
 class AbstractComponent
 {
@@ -19,7 +20,7 @@ protected:
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
 	virtual void DrawForward() = 0;
-	virtual void DrawShadow() {}
+	virtual void DrawMaterial(Material* const) {}
 	virtual void PostDraw();
 
 	Entity* m_pEntity = nullptr;

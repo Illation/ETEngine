@@ -22,8 +22,10 @@
 #include <Engine/Framebuffers/Gbuffer.h>
 #include <Engine/Components/LightComponent.h>
 #include <Engine/Prefabs/Skybox.h>
+#include <Engine/Graphics/Material.h>
 #include <Engine/Graphics/CIE.h>
 #include <Engine/Graphics/SpriteFont.h>
+#include <Engine/Materials/NullMaterial.h>
 
 
 //---------------------------------
@@ -174,11 +176,13 @@ void SceneRenderer::DrawOverlays()
 //
 void SceneRenderer::DrawShadow()
 {
-	for (auto pScene : m_RenderScenes)
+	NullMaterial* nullMat = ShadowRenderer::GetInstance()->GetNullMaterial();
+
+	for (auto scene : m_RenderScenes)
 	{
-		for (Entity* pEntity : pScene->m_pEntityVec)
+		for (Entity* entity : scene->m_pEntityVec)
 		{
-			pEntity->RootDrawShadow();
+			entity->RootDrawMaterial(static_cast<Material*>(nullMat));
 		}
 	}
 }

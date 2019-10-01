@@ -68,7 +68,7 @@ protected:
 	virtual void Start() {}
 	virtual void Draw() {}
 	virtual void DrawForward() {}
-	virtual void DrawShadow() {}
+	virtual void DrawMaterial(Material* const) {}
 	virtual void Update() {}
 
 private:
@@ -79,7 +79,7 @@ private:
 	void RootStart();
 	void RootDraw();
 	void RootDrawForward();
-	void RootDrawShadow();
+	void RootDrawMaterial(Material* const mat);
 	void RootUpdate();
 
 	// Data

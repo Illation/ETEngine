@@ -46,7 +46,7 @@ protected:
 	virtual void Update();
 	virtual void Draw();
 	virtual void DrawForward();
-	virtual void DrawShadow();
+	virtual void DrawMaterial(Material* const mat);
 
 	// utility
 	//---------
