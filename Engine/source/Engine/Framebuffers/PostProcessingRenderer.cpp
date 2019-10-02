@@ -212,15 +212,8 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 		horizontal = !horizontal;
 	}
 	//combine with hdr result
-	if (graphicsSettings.UseFXAA)
-	{
-		// use the second pingpong fbo to store FXAA
-		api->BindFramebuffer(m_PingPongFBO[1]);
-	}
-	else
-	{
-		api->BindFramebuffer(FBO);
-	}
+	T_FbLoc currentFb = graphicsSettings.UseFXAA ? m_PingPongFBO[1] : FBO;
+	api->BindFramebuffer(currentFb);
 	api->SetShader(m_pPostProcShader.get());
 	api->LazyBindTexture(0, E_TextureType::Texture2D, m_CollectTex->GetHandle());
 	api->LazyBindTexture(1, E_TextureType::Texture2D, m_PingPongTexture[0]->GetHandle());
@@ -232,7 +225,8 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 	m_pPostProcShader->Upload("gamma"_hash, settings.gamma);
 	m_pPostProcShader->Upload("bloomMult"_hash, settings.bloomMult);
 	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
-	SceneRenderer::GetInstance()->DrawOverlays();//Make sure text and sprites get antialiased
+
+	SceneRenderer::GetInstance()->DrawOverlays(currentFb);//Make sure text and sprites get antialiased
 
 	//FXAA
 	if (graphicsSettings.UseFXAA)

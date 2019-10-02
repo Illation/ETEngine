@@ -400,6 +400,14 @@
           },
           {
             "shader asset": {
+              "name": "PostSobel.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "shader asset": {
               "name": "PostSprite.glsl",
               "path": "assets/Shaders/",
               "package": "",

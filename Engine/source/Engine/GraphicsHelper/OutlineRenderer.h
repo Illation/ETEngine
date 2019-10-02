@@ -40,6 +40,9 @@ private:
 
 	void Initialize();
 
+	void CreateRenderTarget();
+	void DestroyRenderTarget();
+
 	// Functionality
 	//---------------
 public:
@@ -48,7 +51,7 @@ public:
 	void AddEntities(std::vector<Entity*> const& entities);
 
 private:
-	void OnWindowResize() {}
+	void OnWindowResize();
 	void Draw(T_FbLoc const targetFb);
 
 	// utility
@@ -63,4 +66,10 @@ private:
 
 	AssetPtr<ShaderData> m_Shader;
 	ColorMaterial* m_Material;
+
+	T_FbLoc m_DrawTarget;
+	TextureData* m_DrawTex = nullptr;
+	T_RbLoc m_DrawDepth;
+
+	AssetPtr<ShaderData> m_SobelShader;
 };

@@ -38,7 +38,7 @@ public:
 	void ShowSplashScreen();
 	void HideSplashScreen();
 
-	void DrawOverlays();
+	void DrawOverlays(T_FbLoc const targetFb);
 	void DrawShadow();
 
 private:

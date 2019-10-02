@@ -95,6 +95,11 @@ void SceneSelection::OnSceneEvent(SceneEventData const* const eventData)
 //
 void SceneSelection::OnTick()
 {
+	if (m_SelectedEntities.empty())
+	{
+		return;
+	}
+
 	OutlineRenderer& outlineRenderer = SceneRenderer::GetInstance()->GetOutlineRenderer();
 
 	outlineRenderer.SetColor(m_OutlineColor);

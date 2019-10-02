@@ -165,9 +165,9 @@ void SceneRenderer::HideSplashScreen()
 //
 // Post scene things which should be drawn to the viewport
 //
-void SceneRenderer::DrawOverlays()
+void SceneRenderer::DrawOverlays(T_FbLoc const targetFb)
 {
-	m_OutlineRenderer.Draw(m_TargetFb);
+	m_OutlineRenderer.Draw(targetFb);
 	SpriteRenderer::GetInstance()->Draw();
 	TextRenderer::GetInstance()->Draw();
 }
