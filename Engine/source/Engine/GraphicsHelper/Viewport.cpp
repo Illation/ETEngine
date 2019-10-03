@@ -159,6 +159,11 @@ void Viewport::Render(T_FbLoc const targetFb)
 
 	if (m_Renderer != nullptr)
 	{
+		for (I_ViewportListener* const listener : m_Listeners)
+		{
+			listener->OnViewportPreRender(targetFb);
+		}
+
 		m_Renderer->OnRender(targetFb);
 	}
 	else
@@ -169,6 +174,48 @@ void Viewport::Render(T_FbLoc const targetFb)
 	}
 
 	api->Flush();
+
+	for (I_ViewportListener* const listener : m_Listeners)
+	{
+		listener->OnViewportPostFlush(targetFb);
+	}
+}
+
+//---------------------------------
+// Viewport::RegisterListener
+//
+void Viewport::RegisterListener(I_ViewportListener* const listener)
+{
+	ET_ASSERT(std::find(m_Listeners.cbegin(), m_Listeners.cend(), listener) == m_Listeners.cend(), "Listener already registered!");
+
+	m_Listeners.emplace_back(listener);
+}
+
+//---------------------------------
+// Viewport::UnregisterListener
+//
+void Viewport::UnregisterListener(I_ViewportListener* const listener)
+{
+	// try finding the listener
+	auto listenerIt = std::find(m_Listeners.begin(), m_Listeners.end(), listener);
+
+	// it should have been found
+	if (listenerIt == m_Listeners.cend())
+	{
+		LOG("Viewport::UnregisterListener > Listener not found", LogLevel::Warning);
+		return;
+	}
+
+	// swap and remove - the order of the listener list doesn't matter
+	if (m_Listeners.size() > 1u)
+	{
+		std::iter_swap(listenerIt, std::prev(m_Listeners.end()));
+		m_Listeners.pop_back();
+	}
+	else
+	{
+		m_Listeners.clear();
+	}
 }
 
 //---------------------------------

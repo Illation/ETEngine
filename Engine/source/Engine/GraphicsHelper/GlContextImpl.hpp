@@ -480,6 +480,16 @@ void GL_CONTEXT_CLASSNAME::Flush() const
 }
 
 //---------------------------------
+// GlContext::Finish
+//
+// Force OpenGL to execute all commands now and don't return until its done
+//
+void GL_CONTEXT_CLASSNAME::Finish() const
+{
+	glFinish();
+}
+
+//---------------------------------
 // GlContext::Clear
 //
 // Clear the part of the currently set viewport that is mapped to the mask
@@ -1741,6 +1751,7 @@ GLenum GL_CONTEXT_CLASSNAME::ConvColorFormat(E_ColorFormat const fmt) const
 
 	case E_ColorFormat::RG16f:			return GL_RG16F;
 	case E_ColorFormat::RGB16f:			return GL_RGB16F;
+	case E_ColorFormat::RGBA8:			return GL_RGBA8;
 	case E_ColorFormat::RGBA16f:		return GL_RGBA16F;
 	case E_ColorFormat::RGBA32f:		return GL_RGBA32F;
 	case E_ColorFormat::SRGB:			return GL_SRGB;

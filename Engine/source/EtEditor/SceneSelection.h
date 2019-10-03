@@ -5,6 +5,8 @@
 
 #include <EtCore/UpdateCycle/Tickable.h>
 
+#include <EtEditor/Rendering/EntityIdRenderer.h>
+
 
 class AbstractScene;
 class Entity;
@@ -50,6 +52,8 @@ public:
 	void ClearSelection();
 	void AddItemToSelection(Entity* const entity);
 
+	void Pick(ivec2 const pos, Viewport* const viewport, bool const add);
+
 private:
 	void OnSceneEvent(SceneEventData const* const eventData);
 
@@ -66,5 +70,8 @@ private:
 	std::vector<I_SceneSelectionListener*> m_Listeners;
 
 	vec4 m_OutlineColor = vec4(0.5f, 0.5f, 1.f, 1.f);
+
+	EntityIdRenderer m_IdRenderer;
+	bool m_IsIdRendererInitialized = false;
 };
 

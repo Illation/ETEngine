@@ -49,6 +49,8 @@ public:
 	std::vector<Entity*> const& GetEntities() { return m_pEntityVec; }
 	std::vector<Entity*> const& GetEntities() const { return m_pEntityVec; }
 
+	Entity* GetEntity(T_Hash const id) const;
+
 	SceneEventDispatcher& GetEventDispatcher() { return m_EventDispatcher; }
 
 protected:

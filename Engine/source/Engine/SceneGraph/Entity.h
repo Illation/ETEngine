@@ -15,7 +15,6 @@ class Entity
 private:
 	friend class AbstractScene;
 	friend class SceneRenderer;
-	friend class OutlineRenderer;
 
 	// construct destruct
 	//---------------------
@@ -35,6 +34,8 @@ public:
 	void SetName(std::string const& name);
 
 	void RecursiveAppendChildren(std::vector<Entity const*>& list) const;
+	void RecursiveAppendChildren(std::vector<Entity*>& list);
+	void RootDrawMaterial(Material* const mat);
 
 	// accessors
 	//------------
@@ -80,7 +81,6 @@ private:
 	void RootStart();
 	void RootDraw();
 	void RootDrawForward();
-	void RootDrawMaterial(Material* const mat);
 	void RootUpdate();
 
 	// Data

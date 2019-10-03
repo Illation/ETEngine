@@ -57,6 +57,7 @@ protected:
 public:
 	Gbuffer* GetGBuffer() { return m_GBuffer; }
 	OutlineRenderer& GetOutlineRenderer() { return m_OutlineRenderer; }
+	std::vector<AbstractScene*> const& GetRenderScenes() { return m_RenderScenes; }
 
 	// Data
 	///////

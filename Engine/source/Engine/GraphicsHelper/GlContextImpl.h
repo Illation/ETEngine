@@ -80,7 +80,8 @@ public:
 
 	// other commands
 	//--------------
-	void Flush() const;
+	void Flush() const override;
+	void Finish() const override;
 	void Clear(T_ClearFlags const mask) const override;
 
 	T_ArrayLoc CreateVertexArray() const override;

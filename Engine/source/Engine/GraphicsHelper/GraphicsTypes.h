@@ -233,6 +233,7 @@ enum class E_ColorFormat : uint8
 
 	RG16f,
 	RGB16f,
+	RGBA8,
 	RGBA16f,
 	RGBA32f,
 	SRGB

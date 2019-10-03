@@ -143,13 +143,28 @@ std::unique_ptr<Viewport> EditorAppWindow::CreateSceneViewport()
 	// create a viewport from the area
 	std::unique_ptr<Viewport> viewport = std::make_unique<Viewport>(new GtkRenderArea(glArea));
 
+	Viewport* const viewportCptr = viewport.get();
+
 	// hook up events
 	// mouse click
 	glArea->add_events(Gdk::BUTTON_PRESS_MASK);
-	auto mousePressedCallback = [this](GdkEventButton* evnt) -> bool
+	auto mousePressedCallback = [this, glArea, viewportCptr](GdkEventButton* evnt) -> bool
 	{
-		m_IsNavigating = true;
-		InputManager::GetInstance()->OnMousePressed(GetButtonFromGtk(evnt->button));
+		E_MouseButton const code = GetButtonFromGtk(evnt->button);
+		if (code == E_MouseButton::Right)
+		{
+			// on right click we trigger picking 
+			ivec2 pos = etm::vecCast<int32>(dvec2(evnt->x, evnt->y));
+			pos = pos - ivec2(glArea->get_allocation().get_x(), glArea->get_allocation().get_y());
+
+			m_EditorApp->GetSceneSelection().Pick(pos, viewportCptr, evnt->state & GdkModifierType::GDK_CONTROL_MASK);
+		}
+		else
+		{
+			// other clicks (left) we navigate
+			m_IsNavigating = true;
+			InputManager::GetInstance()->OnMousePressed(code);
+		}
 		return false;
 	};
 	glArea->signal_button_press_event().connect(mousePressedCallback, false);

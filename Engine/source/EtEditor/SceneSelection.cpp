@@ -22,6 +22,12 @@ void SceneSelection::SetScene(AbstractScene* const scene)
 	m_Scene = scene;
 
 	m_Scene->GetEventDispatcher().Register(E_SceneEvent::All, T_SceneEventCallback(std::bind(&SceneSelection::OnSceneEvent, this, std::placeholders::_1)));
+
+	if (!m_IsIdRendererInitialized)
+	{
+		m_IdRenderer.Initialize();
+		m_IsIdRendererInitialized = true;
+	}
 }
 
 //----------------------------------------------------
@@ -75,6 +81,27 @@ void SceneSelection::ClearSelection()
 void SceneSelection::AddItemToSelection(Entity* const entity)
 {
 	m_SelectedEntities.emplace_back(entity);
+}
+
+//----------------------------------------------------
+// SceneSelection::Pick
+//
+// try picking an entity from within the viewport
+//
+void SceneSelection::Pick(ivec2 const pos, Viewport* const viewport, bool const add)
+{
+	if (!add)
+	{
+		m_SelectedEntities.clear();
+	}
+
+	m_IdRenderer.Pick(pos, viewport, std::function<void(Entity* const)>([this](Entity* const pickResult)
+		{
+			if (pickResult != nullptr)
+			{
+				AddItemToSelection(pickResult);
+			}
+		}));
 }
 
 //----------------------------------------------------

@@ -241,6 +241,14 @@
           },
           {
             "shader asset": {
+              "name": "FwdIdShader.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
+          },
+          {
+            "shader asset": {
               "name": "FwdLightDirectionalShader.glsl",
               "path": "assets/Shaders/",
               "package": "",

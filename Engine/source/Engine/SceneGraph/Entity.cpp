@@ -45,6 +45,15 @@ void Entity::RecursiveAppendChildren(std::vector<Entity const*>& list) const
 	}
 }
 
+void Entity::RecursiveAppendChildren(std::vector<Entity*>& list) 
+{
+	list.push_back(this);
+	for (Entity* const child : m_pChildVec)
+	{
+		child->RecursiveAppendChildren(list);
+	}
+}
+
 void Entity::RootInitialize()
 {
 	if (m_IsInitialized)

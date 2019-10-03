@@ -56,8 +56,9 @@ void OutlineRenderer::CreateRenderTarget()
 	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Linear;
 	params.magFilter = E_TextureFilterMode::Linear;
-	params.wrapS = E_TextureWrapMode::ClampToEdge;
-	params.wrapT = E_TextureWrapMode::ClampToEdge;
+	params.wrapS = E_TextureWrapMode::ClampToBorder;
+	params.wrapT = E_TextureWrapMode::ClampToBorder;
+	params.borderColor = vec4(vec3(0.f), 1.f);
 
 	//Generate texture and fbo and rbo as initial postprocessing target
 	api->GenFramebuffers(1, &m_DrawTarget);

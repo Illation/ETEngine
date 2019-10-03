@@ -181,6 +181,27 @@ const PostProcessingSettings& AbstractScene::GetPostProcessingSettings() const
 	return m_PostProcessingSettings;
 }
 
+Entity* AbstractScene::GetEntity(T_Hash const id) const
+{
+	std::vector<Entity*> allEntities;
+	for (Entity* const entity : m_pEntityVec)
+	{
+		entity->RecursiveAppendChildren(allEntities);
+	}
+
+	auto const foundIt = std::find_if(allEntities.begin(), allEntities.end(), [id](Entity const* const entity)
+		{
+			return entity->GetId() == id;
+		});
+
+	if (foundIt == allEntities.cend())
+	{
+		return nullptr;
+	}
+
+	return *foundIt;
+}
+
 void AbstractScene::SetSkybox(T_Hash const assetId)
 {
 	m_UseSkyBox = true;

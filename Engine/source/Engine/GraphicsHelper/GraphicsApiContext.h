@@ -85,6 +85,7 @@ public:
 	// other commands
 	//--------------
 	virtual void Flush() const = 0;
+	virtual void Finish() const = 0;
 	virtual void Clear(T_ClearFlags const mask) const = 0;
 
 	virtual T_ArrayLoc CreateVertexArray() const = 0;

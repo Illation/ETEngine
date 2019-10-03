@@ -9,6 +9,22 @@ class I_RenderArea;
 
 
 //---------------------------------
+// I_ViewportListener
+//
+// Interface that can react to viewport events
+//
+class I_ViewportListener
+{
+public:
+
+	virtual ~I_ViewportListener() = default;
+
+	virtual void OnViewportPreRender(T_FbLoc const targetFb) = 0;
+	virtual void OnViewportPostFlush(T_FbLoc const targetFb) = 0;
+};
+
+
+//---------------------------------
 // Viewport
 //
 // Contains a drawable area
@@ -33,9 +49,12 @@ public:
 private:
 	void Render(T_FbLoc const targetFb);
 
+public:
+	void RegisterListener(I_ViewportListener* const listener);
+	void UnregisterListener(I_ViewportListener* const listener);
+
 	// accessors
 	//-----------
-public:
 	I_GraphicsApiContext* GetApiContext() { return m_ApiContext; }
 	static I_GraphicsApiContext* GetCurrentApiContext();
 
@@ -65,4 +84,6 @@ private:
 	ivec2 m_Dimensions;
 
 	bool m_IsRealized = false;
+
+	std::vector<I_ViewportListener*> m_Listeners;
 };
