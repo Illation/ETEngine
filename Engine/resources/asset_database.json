@@ -197,7 +197,9 @@
               "name": "FwdColorShader.glsl",
               "path": "assets/Shaders/",
               "package": "",
-              "references": []
+              "references": [
+                "CommonDeferred.glsl"
+              ]
             }
           },
           {

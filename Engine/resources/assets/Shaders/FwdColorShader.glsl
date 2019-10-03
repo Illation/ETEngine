@@ -14,13 +14,29 @@
 </VERTEX>
 <FRAGMENT>
 	#version 330 core
-	
+
+	#include "CommonDeferred.glsl"	
+
 	layout (location = 0) out vec4 outColor;
 	
 	uniform vec4 uColor;
+	uniform float uOcclusionFactor = 0.5f;
+
+	uniform vec2 uViewSize;
+	
+	GBUFFER_SAMPLER
 	
 	void main()
 	{
-		outColor = uColor;
+		vec2 coord = gl_FragCoord.xy / uViewSize;
+		float gbufferDepth = UNPACK_DEPTH(coord);
+
+		float multiplier = 1.f;
+		if (gbufferDepth < gl_FragCoord.z)
+		{
+			multiplier = uOcclusionFactor;
+		}
+
+		outColor = vec4(uColor.rgb * multiplier, 1.f);
 	}
 </FRAGMENT>

@@ -124,8 +124,9 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb)
 	}
 
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
-	api->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
+	api->SetViewport(ivec2(0), windowSettings.Dimensions);
 
 	// draw the shapes as colors to the intermediate rendertarget
 	//------------------------------------------------------------
@@ -136,13 +137,16 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb)
 
 	api->SetShader(m_Shader.get());
 	m_Shader->Upload("worldViewProj"_hash, CAMERA->GetViewProj());
+	m_Shader->Upload("uViewSize"_hash, etm::vecCast<float>(windowSettings.Dimensions));
+
+	m_Shader->Upload("uOcclusionFactor"_hash, 0.15f);
 
 	// bind the gbuffers depth texture
-	//m_Shader->Upload("texGBufferA"_hash, 0);
-	//api->LazyBindTexture(0, E_TextureType::Texture2D, SceneRenderer::GetInstance()->GetGBuffer()->GetTextures()[0]->GetHandle());
+	m_Shader->Upload("texGBufferA"_hash, 0);
+	auto gbufferTex = SceneRenderer::GetInstance()->GetGBuffer()->GetTextures()[0];
+	api->LazyBindTexture(0, gbufferTex->GetTargetType(), gbufferTex->GetHandle());
 
-	//api->SetDepthEnabled(true);
-	//api->SetDepthFunction(E_DepthFunc::GEqual);
+	api->SetDepthEnabled(true); 
 
 	for (EntityList& list : m_Lists)
 	{
@@ -155,8 +159,6 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb)
 	}
 
 	m_Lists.clear();
-
-	//return;
 
 	// apply a sobel shader to the colored shapes and render it to the target framebuffer
 	//------------------------------------------------------------------------------------
