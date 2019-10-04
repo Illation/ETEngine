@@ -50,6 +50,7 @@ public:
 protected:
 	void OnSceneEvent(SceneEventData const* const eventData) override;
 	void OnEntitySelectionChanged(Entity* const entity, bool const selected) override;
+	void OnEntitySelectionCleared() override;
 
 	// Functionality
 	//-------------------

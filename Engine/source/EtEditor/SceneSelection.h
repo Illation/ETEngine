@@ -24,6 +24,7 @@ public:
 
 	virtual void OnSceneEvent(SceneEventData const* const) = 0;
 	virtual void OnEntitySelectionChanged(Entity* const entity, bool const selected) = 0;
+	virtual void OnEntitySelectionCleared() = 0;
 };
 
 
@@ -50,7 +51,7 @@ public:
 	void RegisterListener(I_SceneSelectionListener* const listener);
 	void UnregisterListener(I_SceneSelectionListener const* const listener);
 
-	void ClearSelection();
+	void ClearSelection(bool const notify = false);
 	void ToggleEntitySelected(Entity* const entity, bool const notify = false);
 
 	void Pick(ivec2 const pos, Viewport* const viewport, bool const add);

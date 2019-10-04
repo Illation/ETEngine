@@ -88,6 +88,16 @@ void Outliner::OnEntitySelectionChanged(Entity* const entity, bool const selecte
 	}
 }
 
+//--------------------------------
+// Outliner::OnSelectionChanged
+//
+// Update the selected item list
+//
+void Outliner::OnEntitySelectionCleared()
+{
+	m_TreeSelection->unselect_all();
+}
+
 //------------------------------------
 // Outliner::OnTreeViewRowActivated
 //

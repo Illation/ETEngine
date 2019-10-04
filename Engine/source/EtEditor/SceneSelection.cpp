@@ -70,9 +70,17 @@ void SceneSelection::UnregisterListener(I_SceneSelectionListener const* const li
 //----------------------------------------------------
 // SceneSelection::UnregisterListener
 //
-void SceneSelection::ClearSelection()
+void SceneSelection::ClearSelection(bool const notify)
 {
 	m_SelectedEntities.clear();
+
+	if (notify)
+	{
+		for (I_SceneSelectionListener* const listener : m_Listeners)
+		{
+			listener->OnEntitySelectionCleared();
+		}
+	}
 }
 
 //----------------------------------------------------
@@ -113,7 +121,7 @@ void SceneSelection::Pick(ivec2 const pos, Viewport* const viewport, bool const 
 {
 	if (!add)
 	{
-		m_SelectedEntities.clear();
+		ClearSelection(true);
 	}
 
 	m_IdRenderer.Pick(pos, viewport, std::function<void(Entity* const)>([this](Entity* const pickResult)
