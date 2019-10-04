@@ -48,7 +48,8 @@ public:
 	// scene selection listener interface
 	//--------------------------------------
 protected:
-	void OnSceneEvent(SceneEventData const* const eventData);
+	void OnSceneEvent(SceneEventData const* const eventData) override;
+	void OnEntitySelectionChanged(Entity* const entity, bool const selected) override;
 
 	// Functionality
 	//-------------------
@@ -57,6 +58,10 @@ private:
 	void OnSelectionChanged();
 
 	void RefillTreeView();
+
+	// Utility
+	//-------------
+	Gtk::TreeModel::Row RecursiveGetChild(Entity* const entity, Gtk::TreeModel::Children const& children) const;
 
 	// Data
 	///////

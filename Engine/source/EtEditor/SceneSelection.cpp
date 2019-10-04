@@ -76,11 +76,32 @@ void SceneSelection::ClearSelection()
 }
 
 //----------------------------------------------------
-// SceneSelection::AddItemToSelection
+// SceneSelection::ToggleEntitySelected
 //
-void SceneSelection::AddItemToSelection(Entity* const entity)
+// Selects the entity, or deselects if it already was selected. Notification can be disabled in case the triggerer is also a listener
+//
+void SceneSelection::ToggleEntitySelected(Entity* const entity, bool const notify)
 {
-	m_SelectedEntities.emplace_back(entity);
+	auto entityIt = std::find(m_SelectedEntities.begin(), m_SelectedEntities.end(), entity);
+
+	bool const selected = (entityIt == m_SelectedEntities.end());
+
+	if (selected)
+	{
+		m_SelectedEntities.emplace_back(entity);
+	}
+	else
+	{
+		m_SelectedEntities.erase(entityIt);
+	}
+
+	if (notify)
+	{
+		for (I_SceneSelectionListener* const listener : m_Listeners)
+		{
+			listener->OnEntitySelectionChanged(entity, selected);
+		}
+	}
 }
 
 //----------------------------------------------------
@@ -99,7 +120,7 @@ void SceneSelection::Pick(ivec2 const pos, Viewport* const viewport, bool const 
 		{
 			if (pickResult != nullptr)
 			{
-				AddItemToSelection(pickResult);
+				ToggleEntitySelected(pickResult, true);
 			}
 		}));
 }

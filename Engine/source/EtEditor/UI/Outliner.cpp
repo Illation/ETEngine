@@ -64,6 +64,30 @@ void Outliner::OnSceneEvent(SceneEventData const* const eventData)
 	}
 }
 
+//--------------------------
+// Outliner::OnSceneEvent
+//
+// React to any changes in the scene
+//
+void Outliner::OnEntitySelectionChanged(Entity* const entity, bool const selected)
+{
+	Gtk::TreeModel::Children children = m_TreeModel->children();
+
+	auto row = RecursiveGetChild(entity, children);
+
+	if (row)
+	{
+		if (selected)
+		{
+			m_TreeSelection->select(row);
+		}
+		else
+		{
+			m_TreeSelection->unselect(row);
+		}
+	}
+}
+
 //------------------------------------
 // Outliner::OnTreeViewRowActivated
 //
@@ -99,7 +123,7 @@ void Outliner::OnSelectionChanged()
 			Entity* const entity = (*it)[m_Columns.m_Entity];
 			if (entity != nullptr)
 			{
-				m_SceneSelection->AddItemToSelection(entity);
+				m_SceneSelection->ToggleEntitySelected(entity);
 			}
 		};
 
@@ -131,4 +155,27 @@ void Outliner::RefillTreeView()
 
 	m_TreeView->show_all_children();
 	m_TreeView->expand_all();
+}
+
+//--------------------------
+// Outliner::RecursiveGetChild
+//
+Gtk::TreeModel::Row Outliner::RecursiveGetChild(Entity* const entity, Gtk::TreeModel::Children const& children) const
+{
+	for (Gtk::TreeModel::Children::iterator it = children.begin(); it != children.end(); ++it)
+	{
+		Gtk::TreeModel::Row row = *it;
+		if (row[m_Columns.m_Entity] == entity)
+		{
+			return row;
+		}
+
+		row = RecursiveGetChild(entity, it->children());
+		if (row)
+		{
+			return row;
+		}
+	}
+
+	return *(children.end());
 }

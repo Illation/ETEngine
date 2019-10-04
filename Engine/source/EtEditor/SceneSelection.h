@@ -23,6 +23,7 @@ public:
 	virtual ~I_SceneSelectionListener() = default;
 
 	virtual void OnSceneEvent(SceneEventData const* const) = 0;
+	virtual void OnEntitySelectionChanged(Entity* const entity, bool const selected) = 0;
 };
 
 
@@ -50,7 +51,7 @@ public:
 	void UnregisterListener(I_SceneSelectionListener const* const listener);
 
 	void ClearSelection();
-	void AddItemToSelection(Entity* const entity);
+	void ToggleEntitySelected(Entity* const entity, bool const notify = false);
 
 	void Pick(ivec2 const pos, Viewport* const viewport, bool const add);
 
