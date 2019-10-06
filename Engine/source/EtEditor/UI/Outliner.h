@@ -5,6 +5,8 @@
 #include <glibmm/refptr.h>
 #include <gtkmm/treemodel.h>
 #include <gtkmm/treeselection.h>
+#include <gtkmm/frame.h>
+#include <gtkmm/builder.h>
 
 #include <EtEditor/SceneSelection.h>
 
@@ -42,7 +44,7 @@ public:
 
 	// construct destruct
 	//--------------------
-	Outliner(SceneSelection* sceneSelection, Gtk::TreeView* treeView);
+	Outliner(SceneSelection* sceneSelection, Gtk::Frame* parent);
 	~Outliner();
 
 	// scene selection listener interface
@@ -66,6 +68,8 @@ private:
 
 	// Data
 	///////
+
+	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
 
 	Gtk::TreeView* m_TreeView;
 

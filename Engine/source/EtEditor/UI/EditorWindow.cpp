@@ -11,7 +11,8 @@
 #include <gtkmm/textview.h>
 #include <gtkmm/settings.h>
 #include <gtkmm/glarea.h>
-#include <gtkmm/treeview.h>
+#include <gtkmm/paned.h>
+#include <gtkmm/box.h>
 
 #include <Engine/GraphicsHelper/SceneRenderer.h>
 
@@ -114,6 +115,8 @@ void EditorAppWindow::SetEditorApp(EditorApp *const editorApp)
 	m_SceneViewport = std::move(CreateSceneViewport());
 
 	m_Outliner = std::move(CreateOutliner());
+
+	show_all_children();
 }
 
 //---------------------------------
@@ -238,14 +241,35 @@ std::unique_ptr<Viewport> EditorAppWindow::CreateSceneViewport()
 //
 std::unique_ptr<Outliner> EditorAppWindow::CreateOutliner()
 {
-	Gtk::TreeView* treeView = nullptr;
-	m_RefBuilder->get_widget("outlinerView", treeView);
-	ET_ASSERT(treeView != nullptr, "No 'outlinerView' object in editorWindow.ui!");
+	Gtk::Paned* propertySpace = nullptr;
+	m_RefBuilder->get_widget("propertySpace", propertySpace);
+	ET_ASSERT(propertySpace != nullptr);
+
+	Gtk::Frame* childFrame = Gtk::make_managed<Gtk::Frame>();
+	childFrame->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
+
+	propertySpace->add2(*childFrame);
 
 	// create a viewport from the area
 	ET_ASSERT(m_EditorApp != nullptr);
 
-	std::unique_ptr<Outliner> outliner = std::make_unique<Outliner>(&(m_EditorApp->GetSceneSelection()), treeView);
+	std::unique_ptr<Outliner> outliner = std::make_unique<Outliner>(&(m_EditorApp->GetSceneSelection()), childFrame);
+
+	propertySpace->set_position(200);
+
+	childFrame->show();
+	childFrame->show_all_children();
+
+	{
+		Gtk::Widget* child1 = propertySpace->get_child2();
+		Gtk::Widget* box = static_cast<Gtk::Frame*>(child1)->get_child();
+		std::vector<Gtk::Widget*> children = static_cast<Gtk::Box*>(box)->get_children();
+		for (Gtk::Widget* const child : children)
+		{
+			LOG(FS("%s", child->get_name().c_str()));
+		}
+	}
+
 	return std::move(outliner);
 }
 

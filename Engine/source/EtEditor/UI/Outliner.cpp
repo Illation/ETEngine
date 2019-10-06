@@ -3,6 +3,7 @@
 
 #include <gtkmm/treeviewcolumn.h>
 #include <gtkmm/treeview.h>
+#include <gtkmm/box.h>
 
 #include <Engine/SceneGraph/AbstractScene.h>
 #include <Engine/SceneGraph/Entity.h>
@@ -16,10 +17,19 @@
 //--------------------
 // Outliner::c-tor
 //
-Outliner::Outliner(SceneSelection* sceneSelection, Gtk::TreeView* treeView)
+Outliner::Outliner(SceneSelection* sceneSelection, Gtk::Frame* parent)
 	: m_SceneSelection(sceneSelection)
-	, m_TreeView(treeView)
 {
+	m_RefBuilder = Gtk::Builder::create_from_resource("/com/leah-lindner/editor/ui/outliner.ui");
+
+	// get the toplevel element
+	Gtk::Box* box = nullptr;
+	m_RefBuilder->get_widget("outliner", box);
+	ET_ASSERT(box != nullptr);
+
+	m_RefBuilder->get_widget("outlinerView", m_TreeView);
+	ET_ASSERT(m_TreeView != nullptr);
+
 	m_TreeModel = Gtk::TreeStore::create(m_Columns);
 
 	m_TreeView->set_model(m_TreeModel);
@@ -37,6 +47,9 @@ Outliner::Outliner(SceneSelection* sceneSelection, Gtk::TreeView* treeView)
 	m_TreeView->signal_row_activated().connect(sigc::mem_fun(*this, &Outliner::OnTreeViewRowActivated));
 
 	m_SceneSelection->RegisterListener(this);
+
+	parent->add(*box);
+	box->show_all_children();
 }
 
 //--------------------
