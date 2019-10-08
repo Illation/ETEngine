@@ -67,5 +67,27 @@ private:
 	// Data
 	////////
 	CommandlineArguments m_CmdArguments;
+};
+
+
+class SceneEditor
+{
+public:
+	std::unique_ptr<Viewport> CreateSceneViewport();
+	std::unique_ptr<Outliner> CreateOutliner();
+
+	static E_MouseButton GetButtonFromGtk(uint32 const buttonCode);
+	static E_KbdKey GetKeyFromGtk(uint32 const keyCode);
+
+private:
+
+	// Data
+	///////
+
 	SceneSelection m_SceneSelection;
+
+	bool m_IsNavigating = false;
+
+	std::unique_ptr<Viewport> m_SceneViewport;
+	std::unique_ptr<Outliner> m_Outliner;
 };

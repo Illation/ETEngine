@@ -257,18 +257,7 @@ std::unique_ptr<Outliner> EditorAppWindow::CreateOutliner()
 
 	propertySpace->set_position(200);
 
-	childFrame->show();
 	childFrame->show_all_children();
-
-	{
-		Gtk::Widget* child1 = propertySpace->get_child2();
-		Gtk::Widget* box = static_cast<Gtk::Frame*>(child1)->get_child();
-		std::vector<Gtk::Widget*> children = static_cast<Gtk::Box*>(box)->get_children();
-		for (Gtk::Widget* const child : children)
-		{
-			LOG(FS("%s", child->get_name().c_str()));
-		}
-	}
 
 	return std::move(outliner);
 }
