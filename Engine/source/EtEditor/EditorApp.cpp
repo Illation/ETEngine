@@ -2,7 +2,7 @@
 #include "EditorApp.h"
 
 #include "EditorConfig.h"
-#include "EditorScene.h"
+#include "SceneEditor.h"
 
 #pragma warning( push )
 #pragma warning( disable : 4244 ) // glib warnings
@@ -24,15 +24,11 @@
 #include <EtCore/Helper/InputManager.h>
 #include <EtCore/UpdateCycle/TickManager.h>
 
-#include <Engine/SceneGraph/SceneManager.h>
-#include <Engine/GraphicsHelper/SceneRenderer.h>
-#include <Engine/Physics/PhysicsManager.h>
-#include <Engine/Audio/AudioManager.h>
-
 
 //====================
 // Editor Application 
 //====================
+
 
 //---------------------------------
 // EditorApp::c-tor
@@ -182,16 +178,7 @@ void EditorApp::on_activate()
 	{
 		EditorAppWindow* appwindow = CreateMainWindow();
 		appwindow->present();
-		appwindow->Init();
-
-		AudioManager::GetInstance()->Initialize();
-		PhysicsManager::GetInstance()->Initialize();
-
-		SceneManager::GetInstance()->AddGameScene(new EditorScene());
-		SceneManager::GetInstance()->SetActiveGameScene("EditorScene");
-		m_SceneSelection.SetScene(SceneManager::GetInstance()->GetNewActiveScene());
-
-		SceneRenderer::GetInstance()->InitRenderingSystems();
+		appwindow->AddEditor(new SceneEditor());
 	}
 	// If create_appwindow() throws an exception (perhaps from Gtk::Builder),
 	// no window has been created, no window has been added to the application,

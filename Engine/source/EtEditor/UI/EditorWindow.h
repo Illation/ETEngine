@@ -1,9 +1,5 @@
 #pragma once
 
-#include "Outliner.h"
-
-#include <Engine/GraphicsHelper/Viewport.h>
-
 #include <gtkmm/applicationwindow.h>
 #include <gtkmm/builder.h>
 #include <glibmm/refptr.h>
@@ -12,8 +8,14 @@
 
 
 //forward declarations
+namespace Gtk {
+	class Frame;
+}
+
 class Gio::File;
+
 class EditorApp;
+class I_Editor;
 
 
 //---------------------------------
@@ -24,13 +26,22 @@ class EditorApp;
 class EditorAppWindow final : public Gtk::ApplicationWindow
 {
 public:
+	// definitions
+	//--------------
+	typedef std::pair<I_Editor*, Gtk::Frame*> T_EditorFramePair;
+
+	// construct destruct
+	//--------------------
 	EditorAppWindow(BaseObjectType* cobject, Glib::RefPtr<Gtk::Builder> const& refBuilder);
-	virtual ~EditorAppWindow() = default;
+	virtual ~EditorAppWindow();
 
 	static EditorAppWindow* create(EditorApp *const editorApp);
-	void SetEditorApp(EditorApp *const editorApp);
+	void Init(EditorApp *const editorApp);
 
-	void Init();
+	// functionality
+	//---------------
+	void AddEditor(I_Editor* const editor); // takes ownership
+	void RemoveEditor(I_Editor* const editor);
 
 private:
 
@@ -41,4 +52,8 @@ private:
 	Glib::RefPtr<Gio::Settings> m_Settings;
 
 	EditorApp* m_EditorApp = nullptr;
+
+	Gtk::Stack* m_EditorStack = nullptr;
+
+	std::vector<T_EditorFramePair> m_Editors;
 };

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "SceneSelection.h"
-
 #include <EtCore/UpdateCycle/DefaultTickTriggerer.h>
 
 #include <list>
@@ -54,11 +52,7 @@ protected:
 private:
 	void InitializeUtilities();
 
-public:
-	SceneSelection& GetSceneSelection() { return m_SceneSelection; }
-
 	// Runtime
-private:
 	bool OnTick();
 	void OnActionPreferences();
 	void OnActionQuit();
@@ -70,24 +64,3 @@ private:
 };
 
 
-class SceneEditor
-{
-public:
-	std::unique_ptr<Viewport> CreateSceneViewport();
-	std::unique_ptr<Outliner> CreateOutliner();
-
-	static E_MouseButton GetButtonFromGtk(uint32 const buttonCode);
-	static E_KbdKey GetKeyFromGtk(uint32 const keyCode);
-
-private:
-
-	// Data
-	///////
-
-	SceneSelection m_SceneSelection;
-
-	bool m_IsNavigating = false;
-
-	std::unique_ptr<Viewport> m_SceneViewport;
-	std::unique_ptr<Outliner> m_Outliner;
-};

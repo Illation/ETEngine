@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <object class="GtkPaned" id="sceneEditor">
+    <property name="visible">True</property>
+    <property name="can_focus">True</property>
+    <property name="wide_handle">True</property>
+    <child>
+      <object class="GtkFrame">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label_xalign">0.5</property>
+        <property name="shadow_type">in</property>
+        <child>
+          <object class="GtkPaned" id="editSpace">
+            <property name="width_request">1000</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="orientation">vertical</property>
+            <property name="position">173</property>
+            <property name="wide_handle">True</property>
+            <child>
+              <object class="GtkFrame">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label_xalign">0.5</property>
+                <property name="shadow_type">in</property>
+                <child>
+                  <object class="GtkGLArea" id="glSceneViewport">
+                    <property name="width_request">900</property>
+                    <property name="height_request">500</property>
+                    <property name="visible">True</property>
+                    <property name="app_paintable">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="has_depth_buffer">True</property>
+                  </object>
+                </child>
+                <child type="label_item">
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="resize">True</property>
+                <property name="shrink">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkFrame">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label_xalign">0.5</property>
+                <property name="shadow_type">in</property>
+                <child>
+                  <object class="GtkBox" id="resources">
+                    <property name="width_request">1400</property>
+                    <property name="height_request">200</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkStackSwitcher" id="resourceBrowserTabs">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="stack">resourceBrowserSwitcher</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkStack" id="resourceBrowserSwitcher">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkFileChooserWidget" id="projectResourceBrowser">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="select_multiple">True</property>
+                          </object>
+                          <packing>
+                            <property name="name">Project Assets</property>
+                            <property name="title" translatable="yes">Project Assets</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkFileChooserWidget" id="engineResourceBrowser">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="select_multiple">True</property>
+                          </object>
+                          <packing>
+                            <property name="name">Engine Assets</property>
+                            <property name="title" translatable="yes">Engine Assets</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+                <child type="label_item">
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="resize">True</property>
+                <property name="shrink">True</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+        <child type="label_item">
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="resize">True</property>
+        <property name="shrink">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkPaned" id="propertySpace">
+        <property name="width_request">500</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="hexpand">True</property>
+        <property name="orientation">vertical</property>
+        <property name="position">33</property>
+        <property name="wide_handle">True</property>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <object class="GtkFrame">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label_xalign">0.5</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="GtkBox" id="propertyEditor">
+                <property name="height_request">500</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+            </child>
+            <child type="label_item">
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="resize">True</property>
+            <property name="shrink">True</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="resize">True</property>
+        <property name="shrink">True</property>
+      </packing>
+    </child>
+  </object>
+</interface>
