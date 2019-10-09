@@ -110,6 +110,8 @@ void EditorAppWindow::AddEditor(I_Editor* const editor)
 
 	m_EditorStack->add(*childFrame, editor->GetName(), editor->GetName());
 
+	show_all_children();
+
 	editor->Init(childFrame);
 
 	show_all_children();

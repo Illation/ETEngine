@@ -45,7 +45,7 @@ SceneEditor::~SceneEditor()
 //
 void SceneEditor::Init(Gtk::Frame* const parent)
 {
-	m_RefBuilder = Gtk::Builder::create_from_resource("/com/leah-lindner/editor/ui/outliner.ui");
+	m_RefBuilder = Gtk::Builder::create_from_resource("/com/leah-lindner/editor/ui/sceneEditor.ui");
 
 	// get the toplevel element
 	Gtk::Paned* paned = nullptr;
@@ -191,7 +191,7 @@ std::unique_ptr<Viewport> SceneEditor::CreateSceneViewport()
 	};
 	glArea->signal_scroll_event().connect(scrollCallback, false);
 
-	glArea->show();
+	glArea->show(); // ensure context creation
 
 	// create a scene renderer for the viewport
 	viewport->SetRenderer(SceneRenderer::GetInstance());
