@@ -2,15 +2,7 @@
 #include "EditorBase.h"
 
 #include "SceneSelection.h"
-
-#include <EtEditor/UI/Outliner.h>
-#include <EtEditor/UI/SceneViewport.h>
-
-
-// forward
-namespace Gtk {
-	class Paned;
-}
+#include "SceneEditorListener.h"
 
 
 //---------------------------------
@@ -18,7 +10,7 @@ namespace Gtk {
 //
 // Editor that modifies a scene. It currently can't make permanent changes as scenes are still code defined instead of data driven
 //
-class SceneEditor final : public I_Editor
+class SceneEditor final : public EditorBase
 {
 public:
 	// definitions
@@ -27,23 +19,22 @@ public:
 
 	// construct destruct
 	//--------------------
-	SceneEditor() : I_Editor() {}
+	SceneEditor() : EditorBase() {}
 	~SceneEditor();
 
-	// I_Editor interface
+	// EditorBase interface
 	//--------------------
 	void Init(Gtk::Frame* const parent) override;
 	std::string const& GetName() const override { return s_EditorName; }
 
-	// functionality
-	// these should eventually be replaced by a generic tool creation interface
-	//--------------------------------------------------------------------------
-	std::unique_ptr<SceneViewport> CreateSceneViewport();
-	std::unique_ptr<Outliner> CreateOutliner();
-
+	// accessors
+	//-----------
 	SceneSelection& GetSceneSelection() { return m_SceneSelection; }
 
-	static Gtk::Frame* CreateInnerFrame(Gtk::Paned* const split, bool const isFirst);
+	// functionality
+	//----------------
+	void RegisterListener(I_SceneEditorListener* const listener);
+	void UnregisterListener(I_SceneEditorListener const* const listener);
 
 private:
 
@@ -52,9 +43,6 @@ private:
 
 	SceneSelection m_SceneSelection;
 
-	bool m_IsNavigating = false;
-
-	std::unique_ptr<SceneViewport> m_SceneViewport;
-	std::unique_ptr<Outliner> m_Outliner;
+	std::vector<I_SceneEditorListener*> m_Listeners;
 };
 

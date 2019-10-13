@@ -3,14 +3,15 @@
 
 #include "EditorScene.h"
 
+#include <gtkmm/paned.h>
+#include <gtkmm/frame.h>
+#include <gtkmm/box.h>
+
 #include <EtCore/Helper/InputManager.h>
 
 #include <Engine/SceneGraph/SceneManager.h>
 #include <Engine/Physics/PhysicsManager.h>
 #include <Engine/Audio/AudioManager.h>
-
-#include <gtkmm/paned.h>
-#include <gtkmm/box.h>
 
 #include <EtEditor/UI/GtkUtil.h>
 
@@ -45,15 +46,15 @@ void SceneEditor::Init(Gtk::Frame* const parent)
 	Gtk::Paned* const paned = Gtk::make_managed<Gtk::Paned>(Gtk::ORIENTATION_HORIZONTAL);
 	parent->add(*paned);
 
-	m_SceneViewport = std::move(CreateSceneViewport());
-	m_SceneViewport->Init(this, CreateInnerFrame(paned, true));
-	m_Outliner = std::move(CreateOutliner());
-	m_Outliner->Init(this, CreateInnerFrame(paned, false));
-
+	CreateTool(E_EditorTool::SceneViewport, CreateInnerFrame(paned, true));
+	CreateTool(E_EditorTool::Outliner, CreateInnerFrame(paned, false));
 	paned->set_position(1000);
-	paned->show_all_children();
 
-	m_SceneViewport->ShowSplashScreen();
+	paned->show_all_children();
+	for (I_SceneEditorListener* const listener : m_Listeners)
+	{
+		listener->OnShown();
+	}
 
 	AudioManager::GetInstance()->Initialize();
 	PhysicsManager::GetInstance()->Initialize();
@@ -61,45 +62,46 @@ void SceneEditor::Init(Gtk::Frame* const parent)
 	SceneManager::GetInstance()->AddGameScene(new EditorScene());
 	SceneManager::GetInstance()->SetActiveGameScene("EditorScene");
 	m_SceneSelection.SetScene(SceneManager::GetInstance()->GetNewActiveScene());
-
-	m_SceneViewport->InitRenderingSystems();
-}
-
-//---------------------------------
-// SceneEditor::CreateSceneViewport
-//
-// Create a viewport with an openGL area in it
-//
-std::unique_ptr<SceneViewport> SceneEditor::CreateSceneViewport()
-{
-	return std::make_unique<SceneViewport>();
-}
-
-//---------------------------------
-// SceneEditor::CreateOutliner
-//
-std::unique_ptr<Outliner> SceneEditor::CreateOutliner()
-{
-	return std::make_unique<Outliner>();
-}
-
-//---------------------------------
-// SceneEditor::CreateInnerFrame
-//
-Gtk::Frame* SceneEditor::CreateInnerFrame(Gtk::Paned* const split, bool const isFirst)
-{
-	Gtk::Frame* childFrame = Gtk::make_managed<Gtk::Frame>();
-	childFrame->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-
-	if (isFirst)
+	for (I_SceneEditorListener* const listener : m_Listeners)
 	{
-		split->add1(*childFrame);
+		listener->OnSceneSet();
+	}
+}
+
+//----------------------------------------------------
+// SceneEditor::RegisterListener
+//
+void SceneEditor::RegisterListener(I_SceneEditorListener* const listener)
+{
+	ET_ASSERT(std::find(m_Listeners.cbegin(), m_Listeners.cend(), listener) == m_Listeners.cend(), "Listener already registered!");
+
+	m_Listeners.emplace_back(listener);
+}
+
+//----------------------------------------------------
+// SceneEditor::UnregisterListener
+//
+void SceneEditor::UnregisterListener(I_SceneEditorListener const* const listener)
+{
+	// try finding the listener
+	auto listenerIt = std::find(m_Listeners.begin(), m_Listeners.end(), listener);
+
+	// it should have been found
+	if (listenerIt == m_Listeners.cend())
+	{
+		LOG("SceneEditor::UnregisterListener > Listener not found", LogLevel::Warning);
+		return;
+	}
+
+	// swap and remove - the order of the listener list doesn't matter
+	if (m_Listeners.size() > 1u)
+	{
+		std::iter_swap(listenerIt, std::prev(m_Listeners.end()));
+		m_Listeners.pop_back();
 	}
 	else
 	{
-		split->add2(*childFrame);
+		m_Listeners.clear();
 	}
-
-	return childFrame;
 }
 

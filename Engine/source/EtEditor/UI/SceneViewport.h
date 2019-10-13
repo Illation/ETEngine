@@ -7,9 +7,11 @@
 #include <gtkmm/frame.h>
 #include <gtkmm/builder.h>
 #include <glibmm/refptr.h>
-#include "EditorTool.h"
+
+#include <EtEditor/SceneEditorListener.h>
 
 
+// forward
 class SceneEditor;
 
 
@@ -18,7 +20,7 @@ class SceneEditor;
 //
 // Space to draw the scene in
 //
-class SceneViewport final : public I_EditorTool
+class SceneViewport final : public I_EditorTool, public I_SceneEditorListener
 {
 public:
 	// construct destruct
@@ -28,12 +30,12 @@ public:
 
 	// Editor tool interface
 	//-----------------------
-	void Init(I_Editor* const editor, Gtk::Frame* parent) override;
+	void Init(EditorBase* const editor, Gtk::Frame* parent) override;
 
-	// functionality
-	//---------------
-	void ShowSplashScreen();
-	void InitRenderingSystems();
+	// scene editor listener interface
+	//---------------------------------
+	void OnShown();
+	void OnSceneSet();
 
 	// Data
 	///////

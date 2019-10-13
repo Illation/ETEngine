@@ -2,7 +2,7 @@
 
 
 // forward
-class I_Editor;
+class EditorBase;
 namespace Gtk {
 	class Frame;
 }
@@ -30,6 +30,6 @@ class I_EditorTool
 public:
 	~I_EditorTool() = default;
 
-	virtual void Init(I_Editor* const editor, Gtk::Frame* const parent) = 0;
+	virtual void Init(EditorBase* const editor, Gtk::Frame* const parent) = 0;
 };
 

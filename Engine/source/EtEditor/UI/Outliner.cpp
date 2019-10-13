@@ -37,7 +37,7 @@ Outliner::~Outliner()
 //
 // Tool initialization implementation
 //
-void Outliner::Init(I_Editor* const editor, Gtk::Frame* parent)
+void Outliner::Init(EditorBase* const editor, Gtk::Frame* parent)
 {
 	m_SceneSelection = &(static_cast<SceneEditor*>(editor)->GetSceneSelection());
 

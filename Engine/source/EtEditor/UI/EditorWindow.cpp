@@ -97,7 +97,7 @@ void EditorAppWindow::Init(EditorApp *const editorApp)
 //
 // Adds an editor to the stack and initializes it. We should ensure here there is only one scene editor
 //
-void EditorAppWindow::AddEditor(I_Editor* const editor)
+void EditorAppWindow::AddEditor(EditorBase* const editor)
 {
 	ET_ASSERT(editor != nullptr);
 	ET_ASSERT(std::find_if(m_Editors.begin(), m_Editors.end(), [editor](T_EditorFramePair const& editorFrame)
@@ -124,7 +124,7 @@ void EditorAppWindow::AddEditor(I_Editor* const editor)
 //
 // Closes an editor and its tools
 //
-void EditorAppWindow::RemoveEditor(I_Editor* const editor)
+void EditorAppWindow::RemoveEditor(EditorBase* const editor)
 {
 	ET_ASSERT(editor != nullptr);
 	auto editorIt = std::find_if(m_Editors.begin(), m_Editors.end(), [editor](T_EditorFramePair const& editorFrame)

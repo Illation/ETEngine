@@ -30,6 +30,7 @@ SceneViewport::SceneViewport()
 //
 SceneViewport::~SceneViewport()
 {
+	m_Editor->UnregisterListener(this);
 	SceneRenderer::DestroyInstance();
 }
 
@@ -38,7 +39,7 @@ SceneViewport::~SceneViewport()
 //
 // Tool initialization implementation
 //
-void SceneViewport::Init(I_Editor* const editor, Gtk::Frame* parent)
+void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* parent)
 {
 	m_Editor = static_cast<SceneEditor*>(editor);
 
@@ -160,24 +161,28 @@ void SceneViewport::Init(I_Editor* const editor, Gtk::Frame* parent)
 
 	// create a scene renderer for the viewport
 	m_Viewport->SetRenderer(SceneRenderer::GetInstance());
+
+	m_Editor->RegisterListener(this);
 }
 
 
 //---------------------------------
-// SceneEditor::ShowSplashScreen
+// SceneEditor::OnShown
 //
-void SceneViewport::ShowSplashScreen()
+// Show the splash screen as soon as possible
+//
+void SceneViewport::OnShown()
 {
 	SceneRenderer::GetInstance()->InitWithSplashScreen();
 	m_Viewport->Redraw();
 }
 
 //------------------------------------
-// SceneEditor::InitRenderingSystems
+// SceneEditor::OnSceneSet
 //
-// in the future this should happen event based
+// Once the scene is set we can start setting up rendering
 //
-void SceneViewport::InitRenderingSystems()
+void SceneViewport::OnSceneSet()
 {
 	SceneRenderer::GetInstance()->InitRenderingSystems();
 }
