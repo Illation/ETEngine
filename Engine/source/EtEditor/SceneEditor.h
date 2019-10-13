@@ -3,9 +3,14 @@
 
 #include "SceneSelection.h"
 
-#include <Engine/GraphicsHelper/Viewport.h>
-
 #include <EtEditor/UI/Outliner.h>
+#include <EtEditor/UI/SceneViewport.h>
+
+
+// forward
+namespace Gtk {
+	class Paned;
+}
 
 
 //---------------------------------
@@ -33,28 +38,23 @@ public:
 	// functionality
 	// these should eventually be replaced by a generic tool creation interface
 	//--------------------------------------------------------------------------
-	std::unique_ptr<Viewport> CreateSceneViewport();
+	std::unique_ptr<SceneViewport> CreateSceneViewport();
 	std::unique_ptr<Outliner> CreateOutliner();
 
-	// accessors
-	//-----------
-	static E_MouseButton GetButtonFromGtk(uint32 const buttonCode);
-	static E_KbdKey GetKeyFromGtk(uint32 const keyCode);
-
 	SceneSelection& GetSceneSelection() { return m_SceneSelection; }
+
+	static Gtk::Frame* CreateInnerFrame(Gtk::Paned* const split, bool const isFirst);
 
 private:
 
 	// Data
 	///////
 
-	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
-
 	SceneSelection m_SceneSelection;
 
 	bool m_IsNavigating = false;
 
-	std::unique_ptr<Viewport> m_SceneViewport;
+	std::unique_ptr<SceneViewport> m_SceneViewport;
 	std::unique_ptr<Outliner> m_Outliner;
 };
 

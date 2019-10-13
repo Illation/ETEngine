@@ -6,6 +6,7 @@
     <file preprocess="xml-stripblanks">ui/app_menu.ui</file>
     <file preprocess="xml-stripblanks">ui/prefs.ui</file>
     <file preprocess="xml-stripblanks">ui/outliner.ui</file>
+    <file preprocess="xml-stripblanks">ui/sceneViewport.ui</file>
     <file>ui/icons/menu.png</file>
   </gresource>
 </gresources>

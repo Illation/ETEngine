@@ -1,27 +1,31 @@
 #pragma once
 
+#include "EditorTool.h"
+
 #include <gtkmm/treestore.h>
 #include <gtkmm/treemodelcolumn.h>
-#include <glibmm/refptr.h>
 #include <gtkmm/treemodel.h>
 #include <gtkmm/treeselection.h>
 #include <gtkmm/frame.h>
 #include <gtkmm/builder.h>
+#include <glibmm/refptr.h>
 
 #include <EtEditor/SceneSelection.h>
 
 
+// forward
 namespace Gtk {
 	class TreeView;
 	class TreeViewColumn;
 }
+
 
 //--------------------
 // Outliner
 //
 // visual representation of the scene hierachy and selection
 //
-class Outliner final : public I_SceneSelectionListener
+class Outliner final : public I_SceneSelectionListener, public I_EditorTool
 {
 public:
 	// definitions
@@ -44,8 +48,12 @@ public:
 
 	// construct destruct
 	//--------------------
-	Outliner(SceneSelection* sceneSelection, Gtk::Frame* parent);
+	Outliner();
 	~Outliner();
+
+	// Editor tool interface
+	//-----------------------
+	void Init(I_Editor* const editor, Gtk::Frame* parent) override;
 
 	// scene selection listener interface
 	//--------------------------------------

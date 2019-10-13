@@ -1,5 +1,7 @@
 #pragma once
 
+#include <EtCore/Helper/InputManager.h>
+
 
 namespace Gtk {
 
@@ -18,4 +20,12 @@ auto make_managed(T_Args&&... args)
 
 } // namespace Gtk
 
+
+
+namespace GtkUtil {
+
+	E_MouseButton GetButtonFromGtk(uint32 const buttonCode);
+	E_KbdKey GetKeyFromGtk(uint32 const keyCode);
+
+} // namepace GtkUtil
 
