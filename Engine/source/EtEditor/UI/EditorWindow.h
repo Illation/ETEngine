@@ -15,7 +15,7 @@ namespace Gtk {
 class Gio::File;
 
 class EditorApp;
-class I_Editor;
+class EditorBase;
 
 
 //---------------------------------
@@ -28,7 +28,7 @@ class EditorAppWindow final : public Gtk::ApplicationWindow
 public:
 	// definitions
 	//--------------
-	typedef std::pair<I_Editor*, Gtk::Frame*> T_EditorFramePair;
+	typedef std::pair<EditorBase*, Gtk::Frame*> T_EditorFramePair;
 
 	// construct destruct
 	//--------------------
@@ -40,8 +40,8 @@ public:
 
 	// functionality
 	//---------------
-	void AddEditor(I_Editor* const editor); // takes ownership
-	void RemoveEditor(I_Editor* const editor);
+	void AddEditor(EditorBase* const editor); // takes ownership
+	void RemoveEditor(EditorBase* const editor);
 
 private:
 

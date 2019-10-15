@@ -7,6 +7,7 @@
 
 #include <Engine/SceneGraph/AbstractScene.h>
 #include <Engine/SceneGraph/Entity.h>
+#include <EtEditor/SceneEditor.h>
 
 
 //==========================
@@ -17,10 +18,28 @@
 //--------------------
 // Outliner::c-tor
 //
-Outliner::Outliner(SceneSelection* sceneSelection, Gtk::Frame* parent)
-	: m_SceneSelection(sceneSelection)
+Outliner::Outliner()
+	: I_EditorTool()
 {
 	m_RefBuilder = Gtk::Builder::create_from_resource("/com/leah-lindner/editor/ui/outliner.ui");
+}
+
+//--------------------
+// Outliner::d-tor
+//
+Outliner::~Outliner()
+{
+	m_SceneSelection->UnregisterListener(this);
+}
+
+//--------------------
+// Outliner::Init
+//
+// Tool initialization implementation
+//
+void Outliner::Init(EditorBase* const editor, Gtk::Frame* parent)
+{
+	m_SceneSelection = &(static_cast<SceneEditor*>(editor)->GetSceneSelection());
 
 	// get the toplevel element
 	Gtk::Box* box = nullptr;
@@ -36,7 +55,7 @@ Outliner::Outliner(SceneSelection* sceneSelection, Gtk::Frame* parent)
 
 	m_TreeSelection = m_TreeView->get_selection();
 	m_TreeSelection->set_mode(Gtk::SELECTION_MULTIPLE);
-	m_TreeSelection->signal_changed().connect( sigc::mem_fun(*this, &Outliner::OnSelectionChanged) );
+	m_TreeSelection->signal_changed().connect(sigc::mem_fun(*this, &Outliner::OnSelectionChanged));
 
 	//All the items to be reordered with drag-and-drop:
 	m_TreeView->set_reorderable();
@@ -50,14 +69,6 @@ Outliner::Outliner(SceneSelection* sceneSelection, Gtk::Frame* parent)
 
 	parent->add(*box);
 	box->show_all_children();
-}
-
-//--------------------
-// Outliner::d-tor
-//
-Outliner::~Outliner()
-{
-	m_SceneSelection->UnregisterListener(this);
 }
 
 //--------------------------
