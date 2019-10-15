@@ -3,5 +3,5 @@
 #include <epoxy/gl.h>
 
 #define GL_CONTEXT_CLASSNAME EpoxyGlContext
-#include <Engine/GraphicsHelper/GlContextImpl.h>
+#include <Engine/GraphicsContext/GlContextImpl.h>
 

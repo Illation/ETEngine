@@ -1,12 +1,12 @@
 #pragma once
 
-#include "AtmosphereSettings.h"
+#include <Engine/PlanetTech/AtmosphereSettings.h>
 
 #include <EtCore/Content/AssetPointer.h>
 
 class Atmosphere;
 
-class AtmospherePrecompute : public Singleton<AtmospherePrecompute>
+class AtmospherePrecompute final
 {
 public:
 	//Separate from constructor so we can unload the resources if we don't need them anymore
@@ -53,7 +53,7 @@ private:
 	bool m_Finished = false;
 
 private:
-	friend class Singleton<AtmospherePrecompute>;
+	friend class RenderingSystems;
 
 	AtmospherePrecompute();
 	~AtmospherePrecompute();

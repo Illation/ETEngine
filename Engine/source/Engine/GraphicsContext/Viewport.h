@@ -57,6 +57,7 @@ public:
 	//-----------
 	I_GraphicsApiContext* GetApiContext() { return m_ApiContext; }
 	static I_GraphicsApiContext* GetCurrentApiContext();
+	static Viewport* GetCurrentViewport();
 
 	// callbacks
 	//-----------

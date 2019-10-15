@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "PostProcessingRenderer.h"
 
+#include "SceneRenderer.h"
+
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/GraphicsHelper/ShadowRenderer.h>
-#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
-#include <Engine/GraphicsHelper/SceneRenderer.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 PostProcessingRenderer::PostProcessingRenderer()
@@ -169,7 +169,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 	api->SetShader(m_pDownsampleShader.get());
 	api->LazyBindTexture(0, E_TextureType::Texture2D, m_CollectTex->GetHandle());
 	m_pDownsampleShader->Upload("threshold"_hash, settings.bloomThreshold);
-	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 	//downsample glow
 	for (uint32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
@@ -182,7 +182,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 			api->LazyBindTexture(0, E_TextureType::Texture2D, m_DownSampleTexture[i - 1]->GetHandle());
 		}
 		m_pDownsampleShader->Upload("threshold"_hash, settings.bloomThreshold);
-		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 
 		//blur downsampled
 		//api->SetViewport(ivec2(0), windowSettings.Dimensions);
@@ -196,7 +196,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 			//input is previous framebuffers texture, or on first item the result of downsampling
 			api->LazyBindTexture(0, E_TextureType::Texture2D, (horizontal ? m_DownSampleTexture[i] : m_DownPingPongTexture[i])->GetHandle());
 			m_pGaussianShader->Upload("horizontal"_hash, horizontal);
-			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+			RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 		}
 	}
 	api->SetViewport(ivec2(0), windowSettings.Dimensions);
@@ -208,7 +208,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 		api->BindFramebuffer(m_PingPongFBO[horizontal]);
 		m_pGaussianShader->Upload("horizontal"_hash, horizontal);
 		api->LazyBindTexture(0, E_TextureType::Texture2D, ((i == 0) ? m_ColorBuffers[1] : m_PingPongTexture[!horizontal])->GetHandle());
-		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 		horizontal = !horizontal;
 	}
 	//combine with hdr result
@@ -224,7 +224,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 	m_pPostProcShader->Upload("exposure"_hash, settings.exposure);
 	m_pPostProcShader->Upload("gamma"_hash, settings.gamma);
 	m_pPostProcShader->Upload("bloomMult"_hash, settings.bloomMult);
-	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 
 	SceneRenderer::GetInstance()->DrawOverlays(currentFb);//Make sure text and sprites get antialiased
 
@@ -235,7 +235,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 		api->SetShader(m_pFXAAShader.get());
 		m_pFXAAShader->Upload("uInverseScreen"_hash, 1.f / etm::vecCast<float>(windowSettings.Dimensions));
 		api->LazyBindTexture(0, E_TextureType::Texture2D, m_PingPongTexture[1]->GetHandle());
-		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 	}
 }
 

@@ -6,15 +6,12 @@
 #include <Engine/Graphics/Frustum.h>
 
 
-#define CONTEXT Context::GetInstance()
-
 CameraComponent::CameraComponent():
 	m_FOV(45),
 	m_NearPlane(0.1f),
 	m_FarPlane(1000.0f),
 	m_Size(25.0f),
-	m_PerspectiveProjection(true),
-m_IsActive(true)
+	m_PerspectiveProjection(true)
 {
 	m_Projection = mat4();
 	m_View = mat4();
@@ -29,10 +26,6 @@ m_IsActive(true)
 CameraComponent::~CameraComponent()
 {
 	delete m_pFrustum;
-}
-
-void CameraComponent::Initialize()
-{
 }
 
 void CameraComponent::Update()
@@ -77,18 +70,4 @@ void CameraComponent::Update()
 	m_pFrustum->SetCullTransform(mat4());//Frustum will be in world space and objects need to transform themselves
 	if(!m_IsFrustumFrozen)m_pFrustum->SetToCamera(this);
 	m_pFrustum->Update();
-}
-
-void CameraComponent::Draw()
-{
-	//Nothing to do
-}
-void CameraComponent::DrawForward()
-{
-	//Nothing to do
-}
-
-void CameraComponent::SetActive()
-{
-	CAMERA = this;
 }

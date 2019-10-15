@@ -1,13 +1,12 @@
 #include "stdafx.h"
 #include "AtmospherePrecompute.h"
 
-#include "Atmosphere.h"
+#include "GlobalRenderingSystems.h"
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 #include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/CIE.h>
+#include <Engine/PlanetTech/Atmosphere.h>
 
 
 AtmospherePrecompute::AtmospherePrecompute()
@@ -129,7 +128,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	api->SetDrawBufferCount(1);
 	api->SetViewport(ivec2(0), ivec2(m_Settings.TRANSMITTANCE_W, m_Settings.TRANSMITTANCE_H));
 	api->SetShader(m_pComputeTransmittance.get());
-	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 
 	// Compute the direct irradiance, store it in delta_irradiance_texture and,
 	// depending on 'blend', either initialize irradiance_texture_ with zeros or
@@ -143,7 +142,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	api->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetHandle());
 	m_pComputeDirectIrradiance->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetHandle()));
 	api->SetBlendEnabled({ false, blend });
-	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 	api->SetBlendEnabled(false);
 
 	// Compute the rayleigh and mie single scattering, store them in
@@ -164,7 +163,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	{
 		m_pComputeSingleScattering->Upload("layer"_hash, layer);
 		api->SetBlendEnabled({ false, false, blend, blend });
-		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 		api->SetBlendEnabled(false);
 	}
 
@@ -194,7 +193,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 		{
 			m_pComputeScatteringDensity->Upload("layer"_hash, layer);
-			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+			RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 		}
 
 		// Compute the indirect irradiance, store it in delta_irradiance_texture and
@@ -213,7 +212,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		//m_pComputeIndirectIrradiance->Upload("uTexDeltaIrradiance"_hash, static_cast<int32>(m_TexDeltaMultipleScattering->GetHandle()));
 		m_pComputeIndirectIrradiance->Upload("scattering_order"_hash, scatteringOrder);
 		api->SetBlendEnabled({ false, true });
-		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 		api->SetBlendEnabled(false);
 
 		// Compute the multiple scattering, store it in
@@ -233,7 +232,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		{
 			m_pComputeMultipleScattering->Upload("layer"_hash, layer);
 			api->SetBlendEnabled({ false, true });
-			PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+			RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 			api->SetBlendEnabled(false);
 		}
 	}
@@ -267,16 +266,16 @@ void AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(const std::
 	const std::vector<double>& solar_irradiance, double lambda_power, dvec3 &color)
 {
 	color = dvec3(0);
-	auto pCIE = CIE::GetInstance();
+	CIE& cie = RenderingSystems::Instance()->GetCie();
 	int32 dlambda = 1;
 	dvec3 lambdaVec = dvec3(AtmosphereSettings::kLambdaR, AtmosphereSettings::kLambdaG, AtmosphereSettings::kLambdaB);
-	dvec3 solarRGB = pCIE->Interpolate(wavelengths, solar_irradiance, lambdaVec);
+	dvec3 solarRGB = cie.Interpolate(wavelengths, solar_irradiance, lambdaVec);
 	for (int lambda = AtmosphereSettings::kLambdaMin; lambda < AtmosphereSettings::kLambdaMax; lambda += dlambda)
 	{
-		double irradiance = pCIE->Interpolate(wavelengths, solar_irradiance, lambda);
+		double irradiance = cie.Interpolate(wavelengths, solar_irradiance, lambda);
 
-		dvec3 xyz = pCIE->GetValue(lambda, AtmosphereSettings::kLambdaMin, AtmosphereSettings::kLambdaMax);
-		dvec3 rgb = pCIE->GetRGB(xyz);
+		dvec3 xyz = cie.GetValue(lambda, AtmosphereSettings::kLambdaMin, AtmosphereSettings::kLambdaMax);
+		dvec3 rgb = cie.GetRGB(xyz);
 
 		color = color + (rgb*irradiance / solarRGB * etm::pow((double)lambda / lambdaVec, lambda_power));
 	}
@@ -287,12 +286,12 @@ void AtmospherePrecompute::ConvertSpectrumToLinearSrgb( const std::vector<double
 	const std::vector<double>& spectrum, dvec3 &rgb) 
 {
 	dvec3 xyz = dvec3(0);
-	auto pCIE = CIE::GetInstance();
+	CIE& cie = RenderingSystems::Instance()->GetCie();
 	const int32 dlambda = 1;
 	for (int lambda = m_Settings.kLambdaMin; lambda < m_Settings.kLambdaMax; lambda += dlambda) 
 	{
-		double value = pCIE->Interpolate(wavelengths, spectrum, lambda);
-		xyz = xyz + pCIE->GetValue(lambda, AtmosphereSettings::kLambdaMin, AtmosphereSettings::kLambdaMax) * value;
+		double value = cie.Interpolate(wavelengths, spectrum, lambda);
+		xyz = xyz + cie.GetValue(lambda, AtmosphereSettings::kLambdaMin, AtmosphereSettings::kLambdaMax) * value;
 	}
-	rgb = pCIE->GetRGB(xyz);
+	rgb = cie.GetRGB(xyz);
 }

@@ -18,11 +18,11 @@ protected:
 	bool m_IsInitialized = false;
 };
 
-class PrimitiveRenderer : public Singleton<PrimitiveRenderer>
+class PrimitiveRenderer final
 {
 public:
 	PrimitiveRenderer();
-	virtual ~PrimitiveRenderer();
+	~PrimitiveRenderer();
 
 	template<class T>
 	void Draw()

@@ -3,7 +3,7 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include "GraphicsHelper/RenderArea.h"
+#include <Engine/GraphicsContext/RenderArea.h>
 
 
 //---------------------------------

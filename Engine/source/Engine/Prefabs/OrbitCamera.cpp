@@ -42,7 +42,7 @@ void OrbitCamera::SetRotation(float pitch, float yaw)
 
 void OrbitCamera::Update()
 {
-	if (m_pCamera->IsActive())
+	if (m_pCamera == CAMERA)
 	{
 		//TODO
 		//Scrolling changes distance

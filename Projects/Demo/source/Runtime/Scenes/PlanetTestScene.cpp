@@ -12,15 +12,15 @@
 #include <Engine/Graphics/FrameBuffer.h>
 #include <Engine/Graphics/SpriteFont.h>
 #include <Engine/Graphics/Light.h>
-#include <Engine/GraphicsHelper/TextRenderer.h>
-#include <Engine/Framebuffers/Gbuffer.h>
+#include <Engine/SceneRendering/TextRenderer.h>
+#include <Engine/SceneRendering/Gbuffer.h>
 #include <Engine/Components/ModelComponent.h>
 #include <Engine/Components/LightComponent.h>
 #include <Engine/Prefabs/Skybox.h>
 #include <Engine/Prefabs/OrbitCamera.h>
 #include <Engine/SceneGraph/Entity.h>
 #include <Engine/PlanetTech/StarField.h>
-#include <Engine/Helper/ScreenshotCapture.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 PlanetTestScene::PlanetTestScene() : AbstractScene("PlanetTestScene")
@@ -106,7 +106,7 @@ void PlanetTestScene::Update()
 
 	if (INPUT->GetKeyState(E_KbdKey::Num_0) == E_KeyState::Pressed)
 	{
-		ScreenshotCapture::GetInstance()->Take();
+		RenderingSystems::Instance()->GetScreenshotCapture().Take(Viewport::GetCurrentViewport());
 	}
 
 	//Change light settings

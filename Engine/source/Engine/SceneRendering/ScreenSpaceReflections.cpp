@@ -1,16 +1,16 @@
 #include "stdafx.h"
 #include "ScreenSpaceReflections.h"
 
-#include "PrimitiveRenderer.h"
 #include "SceneRenderer.h"
+#include "Gbuffer.h"
+#include "PostProcessingRenderer.h"
 
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Helper/Commands.h>
 
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
-#include <Engine/Framebuffers/Gbuffer.h>
-#include <Engine/Framebuffers/PostProcessingRenderer.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 ScreenSpaceReflections::ScreenSpaceReflections()
@@ -84,5 +84,5 @@ void ScreenSpaceReflections::Draw()
 	m_pShader->Upload("projection"_hash, CAMERA->GetViewProj());
 	m_pShader->Upload("camPos"_hash, CAMERA->GetTransform()->GetPosition());
 
-	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 }

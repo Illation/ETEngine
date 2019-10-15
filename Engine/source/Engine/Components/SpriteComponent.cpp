@@ -3,7 +3,7 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/GraphicsHelper/SpriteRenderer.h>
+#include <Engine/SceneRendering/SpriteRenderer.h>
 #include <Engine/Graphics/TextureData.h>
 
 

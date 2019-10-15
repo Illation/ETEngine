@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "UIComponent.h"
 
-#include <Engine/GraphicsHelper/SpriteRenderer.h>
-#include <Engine/GraphicsHelper/TextRenderer.h>
+#include <Engine/SceneRendering/SpriteRenderer.h>
+#include <Engine/SceneRendering/TextRenderer.h>
 
 
 UIComponent::UIComponent( ivec2 size, ivec2 localPos ) 

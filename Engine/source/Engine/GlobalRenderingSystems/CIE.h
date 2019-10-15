@@ -1,8 +1,7 @@
 #pragma once
-#include <EtCore/Helper/Singleton.h>
 
 
-class CIE : public Singleton<CIE>
+class CIE final
 {
 public:
 	void LoadData();
@@ -11,9 +10,9 @@ public:
 	double Interpolate(const std::vector<double>& wavelengths, const std::vector<double>& wavelength_function, double wavelength);
 	dvec3 Interpolate(const std::vector<double>& wavelengths, const std::vector<double>& wavelength_function, const dvec3 &xyz);
 private:
-	friend class Singleton<CIE>;
-	CIE() {}
-	virtual ~CIE() {}
+	friend class RenderingSystems;
+	CIE() = default;
+	~CIE() = default;
 
 	std::vector<double> m_Table;
 	dmat3 m_CieToRgb;

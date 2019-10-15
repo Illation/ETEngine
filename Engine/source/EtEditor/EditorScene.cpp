@@ -7,8 +7,8 @@
 #include <Engine/Graphics/SpriteFont.h>
 #include <Engine/Graphics/FrameBuffer.h>
 #include <Engine/Graphics/Light.h>
-#include <Engine/GraphicsHelper/TextRenderer.h>
-#include <Engine/Framebuffers/Gbuffer.h>
+#include <Engine/SceneRendering/TextRenderer.h>
+#include <Engine/SceneRendering/Gbuffer.h>
 #include <Engine/Components/ModelComponent.h>
 #include <Engine/Components/LightComponent.h>
 #include <Engine/Components/SpriteComponent.h>

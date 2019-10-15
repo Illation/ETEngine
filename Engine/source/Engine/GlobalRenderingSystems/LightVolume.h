@@ -6,16 +6,15 @@ class LightMaterial;
 class NullMaterial;
 class DirectionalShadowData;
 
-class PointLightVolume : public Singleton<PointLightVolume>
+class PointLightVolume final
 {
 public:
 	PointLightVolume();
-	virtual ~PointLightVolume();
+	~PointLightVolume();
 
 	void Draw(vec3 pos, float radius, vec3 col);
 
 private:
-	friend class AbstractFramework; //should init and destroy singleton
 	void Initialize();
 	bool IsInitialized = false;
 
@@ -23,11 +22,11 @@ private:
 	NullMaterial* m_pNullMaterial;
 };
 
-class DirectLightVolume : public Singleton<DirectLightVolume>
+class DirectLightVolume final
 {
 public:
 	DirectLightVolume();
-	virtual ~DirectLightVolume();
+	~DirectLightVolume();
 
 	void Draw(vec3 dir, vec3 col);
 	void DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *pShadow);
@@ -36,7 +35,6 @@ protected:
 	AssetPtr<ShaderData> m_pShader;
 	AssetPtr<ShaderData> m_pShaderShadowed;
 private:
-	friend class AbstractFramework; //should init and destroy singleton
 	void Initialize();
 	bool m_IsInitialized = false;
 };

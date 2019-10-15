@@ -1,18 +1,17 @@
 #include "stdafx.h"
 #include "LightVolume.h"
 
-#include "ShadowRenderer.h"
-#include "PrimitiveRenderer.h"
-#include "SceneRenderer.h"
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Materials/LightMaterial.h>
 #include <Engine/Materials/NullMaterial.h>
-#include <Engine/Framebuffers/Gbuffer.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Frustum.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <Engine/SceneRendering/Gbuffer.h>
+#include <Engine/SceneRendering/ShadowRenderer.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 
 
 PointLightVolume::PointLightVolume()
@@ -57,7 +56,7 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 	m_pMaterial->SetLight(pos, col, radius);
 	m_pMaterial->UploadVariables(World);
 
-	PrimitiveRenderer::GetInstance()->Draw<primitives::IcoSphere<2> >();
+	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::IcoSphere<2> >();
 }
 
 DirectLightVolume::DirectLightVolume(){}
@@ -98,7 +97,7 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 	m_pShader->Upload("Direction"_hash, dir);
 	m_pShader->Upload("Color"_hash, col);
 
-	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 }
 void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *pShadow)
 {
@@ -147,5 +146,5 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *
 		m_pShaderShadowed->Upload(GetHash(ligStr + std::to_string(i) + "].Distance"), pShadow->m_Cascades[i].distance);
 	}
 
-	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 }

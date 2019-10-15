@@ -8,9 +8,8 @@
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/FrameBuffer.h>
-#include <Engine/GraphicsHelper/SceneRenderer.h>
-#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
-#include <Engine/Framebuffers/GBuffer.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/GBuffer.h>
 #include <Engine/SceneGraph/Entity.h>
 
 

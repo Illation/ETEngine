@@ -3,8 +3,8 @@
 
 #include <Engine/SceneGraph/AbstractScene.h>
 #include <Engine/SceneGraph/Entity.h>
-#include <Engine/GraphicsHelper/SceneRenderer.h>
-#include <Engine/GraphicsHelper/OutlineRenderer.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/OutlineRenderer.h>
 
 
 //==========================

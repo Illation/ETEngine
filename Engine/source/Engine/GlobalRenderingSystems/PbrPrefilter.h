@@ -1,8 +1,7 @@
 #pragma once
-#include <EtCore/Helper/Singleton.h>
 
 
-class PbrPrefilter : public Singleton<PbrPrefilter>
+class PbrPrefilter final
 {
 public:
 	void Precompute(int32 resolution);
@@ -15,12 +14,11 @@ public:
 		int32 const radianceRes);
 
 	TextureData* GetLUT();
-protected:
 private:
-	friend class Singleton<PbrPrefilter>;
+	friend class RenderingSystems;
 
 	PbrPrefilter();
-	virtual ~PbrPrefilter();
+	~PbrPrefilter();
 
 	TextureData* m_LUT = nullptr;
 };

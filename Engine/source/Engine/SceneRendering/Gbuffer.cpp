@@ -4,7 +4,7 @@
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/EnvironmentMap.h>
-#include <Engine/GraphicsHelper/PbrPrefilter.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <Engine/SceneGraph/AbstractScene.h>
 #include <Engine/Components/LightComponent.h>
 #include <Engine/Prefabs/Skybox.h>
@@ -48,6 +48,6 @@ void Gbuffer::UploadDerivedVariables()
 	}
 
 	m_pShader->Upload("texBRDFLUT"_hash, 5);
-	TextureData* pLUT = PbrPrefilter::GetInstance()->GetLUT();
+	TextureData* pLUT = RenderingSystems::Instance()->GetPbrPrefilter().GetLUT();
 	api->LazyBindTexture(5, pLUT->GetTargetType(), pLUT->GetHandle());
 }

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ViewportRenderer.h"
 #include "OutlineRenderer.h"
 
 #include <EtCore/Helper/Singleton.h>
@@ -8,6 +7,7 @@
 
 #include <Engine/Graphics/SpriteFont.h>
 #include <Engine/Graphics/TextureData.h>
+#include <Engine/GraphicsContext/ViewportRenderer.h>
 
 
 class PostProcessingRenderer;

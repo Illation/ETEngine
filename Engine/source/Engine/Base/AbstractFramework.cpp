@@ -10,16 +10,12 @@
 #include <EtCore/Content/PackageResourceManager.h>
 
 #include <Engine/SceneGraph/SceneManager.h>
-#include <Engine/GraphicsHelper/LightVolume.h>
-#include <Engine/GraphicsHelper/ShadowRenderer.h>
-#include <Engine/GraphicsHelper/TextRenderer.h>
-#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 #include <Engine/Physics/PhysicsManager.h>
 #include <Engine/Audio/AudioManager.h>
 #include <Engine/Helper/GlfwEventManager.h>
-#include <Engine/Helper/ScreenshotCapture.h>
-#include <Engine/GraphicsHelper/Viewport.h>
-#include <Engine/GraphicsHelper/SceneRenderer.h>
+#include <Engine/GraphicsContext/Viewport.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/ShadowRenderer.h>
 
 
 AbstractFramework::~AbstractFramework()
@@ -36,6 +32,8 @@ AbstractFramework::~AbstractFramework()
 
 	InputManager::DestroyInstance();
 	ContextManager::DestroyInstance();
+
+	PerformanceInfo::DestroyInstance();
 	
 	ResourceManager::DestroyInstance();
 
@@ -70,17 +68,6 @@ void AbstractFramework::Run()
 	if (!initScene.empty())
 	{
 		SceneManager::GetInstance()->SetActiveGameScene(initScene);
-	}
-
-	// set up screenshot manager
-	std::string const& screenshotDir = Config::GetInstance()->GetScreenshotDir();
-	if (!screenshotDir.empty())
-	{
-		ScreenshotCapture::GetInstance()->Initialize(Config::GetInstance()->GetUserDirPath() + screenshotDir);
-	}
-	else
-	{
-		ScreenshotCapture::GetInstance()->Initialize(Config::GetInstance()->GetUserDirPath() + std::string("./"));
 	}
 
 	PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?

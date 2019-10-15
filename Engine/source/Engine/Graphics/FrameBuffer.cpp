@@ -7,7 +7,7 @@
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 FrameBuffer::FrameBuffer(std::string shaderFile, E_DataType const format, uint32 numTargets)
@@ -73,7 +73,7 @@ void FrameBuffer::Draw()
 
 	UploadDerivedVariables();
 
-	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 }
 
 

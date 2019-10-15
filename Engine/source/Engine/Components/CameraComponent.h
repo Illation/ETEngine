@@ -17,9 +17,6 @@ public:
 	void UsePerspectiveProjection() { m_PerspectiveProjection = true; }
 	void UseOrthographicProjection() { m_PerspectiveProjection = false; }
 
-	void SetActive();
-	bool IsActive() const { return m_IsActive; }
-
 	mat4 GetView() { return m_View; }
 	mat4 GetProj() { return m_Projection; }
 	mat4 GetViewInv() { return m_ViewInverse; }
@@ -39,10 +36,10 @@ public:
 
 protected:
 
-	virtual void Initialize();
+	virtual void Initialize() {}
 	virtual void Update();
-	virtual void Draw();
-	virtual void DrawForward();
+	virtual void Draw() {}
+	virtual void DrawForward() {}
 
 private:
 	mat4 m_View, m_Projection, m_ViewInverse, 
@@ -50,7 +47,7 @@ private:
 		m_StatViewProj, m_StatViewProjInv;//Ignore camera position for gbuffer reconstruction and skybox
 	float m_FarPlane, m_NearPlane, m_FOV, m_Size;
 	float m_DepthProjA, m_DepthProjB;//parameters to linearize depth values
-	bool m_IsActive, m_PerspectiveProjection;
+	bool m_PerspectiveProjection;
 
 	Frustum* m_pFrustum = nullptr;
 

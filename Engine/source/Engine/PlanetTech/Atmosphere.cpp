@@ -2,20 +2,19 @@
 #include "Atmosphere.h"
 
 #include "Planet.h"
-#include "AtmospherePrecompute.h"
 
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Helper/Commands.h>
 
-#include <Engine/Framebuffers/Gbuffer.h>
 #include <Engine/Components/LightComponent.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/Graphics/Light.h>
-#include <Engine/GraphicsHelper/SpriteRenderer.h>
-#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
-#include <Engine/GraphicsHelper/SceneRenderer.h>
+#include <Engine/SceneRendering/SpriteRenderer.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/Gbuffer.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <Engine/Prefabs/Skybox.h>
 #include <Engine/SceneGraph/AbstractScene.h>
 
@@ -37,7 +36,7 @@ Atmosphere::~Atmosphere()
 void Atmosphere::Precalculate()
 {
 	//Calculate look up textures here
-	AtmospherePrecompute::GetInstance()->Precalculate( this );
+	RenderingSystems::Instance()->GetAtmospherPrecompute().Precalculate(this);
 }
 
 void Atmosphere::Initialize()
@@ -95,7 +94,7 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	//m_pShader->Upload("SurfaceRadius"_hash, surfaceRadius);
 
 	m_Params.Upload(m_pShader.get(), "uAtmosphere");
-	AtmospherePrecompute::GetInstance()->GetSettings().UploadTextureSize(m_pShader.get());
+	RenderingSystems::Instance()->GetAtmospherPrecompute().GetSettings().UploadTextureSize(m_pShader.get());
 
 	//m_pShader->Upload("uSkySpectralRadToLum"_hash, etm::vecCast<float>(m_SkyColor));
 	//m_pShader->Upload("uSunSpectralRadToLum"_hash, etm::vecCast<float>(m_SunColor));
@@ -121,7 +120,7 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	api->SetBlendEnabled(true);
 	api->SetBlendEquation(E_BlendEquation::Add);
 	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::One);
-	PrimitiveRenderer::GetInstance()->Draw<primitives::IcoSphere<3> >();
+	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::IcoSphere<3> >();
 	api->SetFaceCullingMode(E_FaceCullMode::Back);
 	api->SetBlendEnabled(false);
 	api->SetDepthEnabled(true);

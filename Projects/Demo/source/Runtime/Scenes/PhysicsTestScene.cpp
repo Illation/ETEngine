@@ -12,10 +12,10 @@
 #include <Engine/Graphics/SpriteFont.h>
 #include <Engine/Graphics/Light.h>
 #include <Engine/Graphics/TextureData.h>
-#include <Engine/GraphicsHelper/SpriteRenderer.h>
-#include <Engine/GraphicsHelper/TextRenderer.h>
-#include <Engine/GraphicsHelper/DebugRenderer.h>
-#include <Engine/Helper/ScreenshotCapture.h>
+#include <Engine/SceneRendering/SpriteRenderer.h>
+#include <Engine/SceneRendering/TextRenderer.h>
+#include <Engine/SceneRendering/DebugRenderer.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <Engine/Components/ModelComponent.h>
 #include <Engine/Components/LightComponent.h>
 #include <Engine/Components/RigidBodyComponent.h>
@@ -179,7 +179,7 @@ void PhysicsTestScene::Update()
 
 	if(INPUT->GetKeyState(E_KbdKey::Num_0) == E_KeyState::Pressed)
 	{
-		ScreenshotCapture::GetInstance()->Take();
+		RenderingSystems::Instance()->GetScreenshotCapture().Take(Viewport::GetCurrentViewport());
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::LeftBracket) == E_KeyState::Pressed)

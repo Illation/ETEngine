@@ -4,8 +4,8 @@
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/FrameBuffer.h>
-#include <Engine/Framebuffers/Gbuffer.h>
-#include <Engine/GraphicsHelper/SceneRenderer.h>
+#include <Engine/SceneRendering/Gbuffer.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 
 
 LightMaterial::LightMaterial(vec3 col)

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GlfwRenderArea.h"
 
-#include <Engine/GraphicsHelper/GladGlContext.h>
+#include <Engine/GraphicsContext/GladGlContext.h>
 
 
 //=====================

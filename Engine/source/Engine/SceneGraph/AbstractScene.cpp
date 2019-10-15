@@ -10,9 +10,9 @@
 #include <Engine/Prefabs/FreeCamera.h>
 #include <Engine/Prefabs/Skybox.h>
 #include <Engine/Prefabs/FreeCamera.h>
-#include <Engine/Framebuffers/Gbuffer.h>
-#include <Engine/Framebuffers/PostProcessingRenderer.h>
-#include <Engine/GraphicsHelper/TextRenderer.h>
+#include <Engine/SceneRendering/Gbuffer.h>
+#include <Engine/SceneRendering/PostProcessingRenderer.h>
+#include <Engine/SceneRendering/TextRenderer.h>
 #include <Engine/Physics/PhysicsWorld.h>
 
 

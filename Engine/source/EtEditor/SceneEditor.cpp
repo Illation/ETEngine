@@ -9,7 +9,7 @@
 #include <EtCore/Helper/InputManager.h>
 
 #include <Engine/SceneGraph/SceneManager.h>
-#include <Engine/GraphicsHelper/SceneRenderer.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 #include <Engine/Physics/PhysicsManager.h>
 #include <Engine/Audio/AudioManager.h>
 

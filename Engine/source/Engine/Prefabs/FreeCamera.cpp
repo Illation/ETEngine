@@ -31,7 +31,7 @@ void FreeCamera::SetRotation(float pitch, float yaw)
 
 void FreeCamera::Update()
 {
-	if (m_pCamera->IsActive())
+	if (m_pCamera == CAMERA)
 	{
 		//move
 		//*******

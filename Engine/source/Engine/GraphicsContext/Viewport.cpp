@@ -75,6 +75,15 @@ I_GraphicsApiContext* Viewport::GetCurrentApiContext()
 }
 
 //---------------------------------
+// Viewport::GetCurrentViewport
+//
+Viewport* Viewport::GetCurrentViewport()
+{
+	ET_ASSERT(g_CurrentViewport != nullptr);
+	return g_CurrentViewport;
+}
+
+//---------------------------------
 // Viewport::OnRealize
 //
 // From this point on graphics API functions can be called for this viewport

@@ -3,8 +3,8 @@
 
 #include <limits>
 
-#include <Engine/GraphicsHelper/SpriteRenderer.h>
-#include <Engine/GraphicsHelper/TextRenderer.h>
+#include <Engine/SceneRendering/SpriteRenderer.h>
+#include <Engine/SceneRendering/TextRenderer.h>
 
 
 UIDynamicBox::~UIDynamicBox()

@@ -25,8 +25,8 @@
 #include <Engine/Components/TransformComponent.h>
 #include <Engine/Base/Config.h>
 #include <Engine/Base/SceneContext.h>
-#include <Engine/GraphicsHelper/GraphicsApiContext.h>
-#include <Engine/GraphicsHelper/Viewport.h>
+#include <Engine/GraphicsContext/GraphicsApiContext.h>
+#include <Engine/GraphicsContext/Viewport.h>
 
 //Working singleton Set
 #define CAMERA static_cast<SceneContext*>(ContextManager::GetInstance()->GetActiveContext())->camera

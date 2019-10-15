@@ -1,13 +1,12 @@
 #include "stdafx.h"
 #include "PbrPrefilter.h"
 
-#include "PrimitiveRenderer.h"
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/EnvironmentMap.h>
 #include <Engine/Graphics/Shader.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 PbrPrefilter::PbrPrefilter()
@@ -55,7 +54,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 
 	api->SetViewport(ivec2(0), ivec2(resolution));
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
-	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 
 	//Reset render settings and return generated texture
 	//*************************************************
@@ -130,7 +129,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 		api->LinkCubeMapFaceToFbo2D(face, irradiance->GetHandle(), 0);
 		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
-		PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
+		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
 	}
 	api->BindFramebuffer(0);
 
@@ -171,7 +170,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 			api->LinkCubeMapFaceToFbo2D(faceIdx, radiance->GetHandle(), mip);
 
 			api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
-			PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
+			RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
 		}
 	}
 

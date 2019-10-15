@@ -3,7 +3,7 @@
 
 #include <EtCore/UpdateCycle/RealTimeTickTriggerer.h>
 
-#include <Engine/GraphicsHelper/RenderArea.h>
+#include <Engine/GraphicsContext/RenderArea.h>
 
 
 //---------------------------------

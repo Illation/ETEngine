@@ -10,11 +10,11 @@
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/SceneGraph/Entity.h>
-#include <Engine/Graphics/FrameBuffer.h>
-#include <Engine/Framebuffers/Gbuffer.h>
 #include <Engine/Components/ModelComponent.h>
 #include <Engine/Components/LightComponent.h>
-#include <Engine/GraphicsHelper/TextRenderer.h>
+#include <Engine/SceneRendering/TextRenderer.h>
+#include <Engine/SceneRendering/Gbuffer.h>
+#include <Engine/Graphics/FrameBuffer.h>
 #include <Engine/Graphics/SpriteFont.h>
 #include <Engine/Graphics/Light.h>
 

@@ -3,27 +3,23 @@
 
 #include "TextRenderer.h"
 #include "SpriteRenderer.h"
-#include "LightVolume.h"
 #include "ShadowRenderer.h"
-#include "PrimitiveRenderer.h"
 #include "ScreenSpaceReflections.h"
 #include "DebugRenderer.h"
-#include "PbrPrefilter.h"
+#include "PostProcessingRenderer.h"
+#include "Gbuffer.h"
 
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Helper/PerformanceInfo.h>
 
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
+
 #include <Engine/SceneGraph/SceneManager.h>
 #include <Engine/SceneGraph/Entity.h>
 #include <Engine/SceneGraph/AbstractScene.h>
-#include <Engine/Helper/ScreenshotCapture.h>
-#include <Engine/PlanetTech/AtmospherePrecompute.h>
-#include <Engine/Framebuffers/PostProcessingRenderer.h>
-#include <Engine/Framebuffers/Gbuffer.h>
 #include <Engine/Components/LightComponent.h>
 #include <Engine/Prefabs/Skybox.h>
 #include <Engine/Graphics/Material.h>
-#include <Engine/Graphics/CIE.h>
 #include <Engine/Graphics/SpriteFont.h>
 #include <Engine/Materials/NullMaterial.h>
 
@@ -35,22 +31,16 @@
 //
 SceneRenderer::~SceneRenderer()
 {
-	PointLightVolume::DestroyInstance();
-	DirectLightVolume::DestroyInstance();
 	ShadowRenderer::DestroyInstance();
 	TextRenderer::DestroyInstance();
-	PerformanceInfo::DestroyInstance();
-	PrimitiveRenderer::DestroyInstance();
 	SpriteRenderer::DestroyInstance();
-	AtmospherePrecompute::DestroyInstance();
-	PbrPrefilter::DestroyInstance();
-	CIE::DestroyInstance();
 	DebugRenderer::DestroyInstance();
-	ScreenshotCapture::DestroyInstance();
 
 	SafeDelete(m_SSR);
 	SafeDelete(m_GBuffer);
 	SafeDelete(m_PostProcessing);
+
+	RenderingSystems::RemoveReference();
 }
 
 //---------------------------------
@@ -73,16 +63,10 @@ void SceneRenderer::InitRenderingSystems()
 {
 	ShowSplashScreen();
 
-	PointLightVolume::GetInstance();
-	DirectLightVolume::GetInstance();
+	RenderingSystems::AddReference();
 
 	DebugRenderer::GetInstance()->Initialize();
 	ShadowRenderer::GetInstance()->Initialize();
-
-	PerformanceInfo::GetInstance();
-	PrimitiveRenderer::GetInstance();
-
-	CIE::GetInstance()->LoadData();
 
 	m_OutlineRenderer.Initialize();
 
@@ -95,8 +79,6 @@ void SceneRenderer::InitRenderingSystems()
 
 	m_SSR = new ScreenSpaceReflections();
 	m_SSR->Initialize();
-
-	PbrPrefilter::GetInstance()->Precompute(Config::GetInstance()->GetGraphics().PbrBrdfLutSize);
 
 	m_ClearColor = vec3(200.f / 255.f, 114.f / 255.f, 200.f / 255.f)*0.0f;
 
@@ -314,8 +296,6 @@ void SceneRenderer::Draw()
 	{
 		pScene->PostDraw();
 	}
-
-	ScreenshotCapture::GetInstance()->HandleCapture();
 }
 
 //---------------------------------

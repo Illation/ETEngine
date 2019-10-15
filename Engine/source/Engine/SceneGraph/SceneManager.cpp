@@ -3,7 +3,7 @@
 #include "SceneManager.h"
 #include "AbstractScene.h"
 
-#include <Engine/GraphicsHelper/SceneRenderer.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 
 #include <algorithm>
 

@@ -2,16 +2,16 @@
 #include "OutlineRenderer.h"
 
 #include "SceneRenderer.h"
-#include "PrimitiveRenderer.h"
+#include "Gbuffer.h"
 
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/FrameBuffer.h>
-#include <Engine/Framebuffers/GBuffer.h>
 #include <Engine/Materials/ColorMaterial.h>
 #include <Engine/SceneGraph/Entity.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 //====================
@@ -176,7 +176,7 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb)
 	m_SobelShader->Upload("inColorTex"_hash, 1);
 	api->LazyBindTexture(1, E_TextureType::Texture2D, m_DrawTex->GetHandle());
 
-	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 
 	api->SetBlendEnabled(false);
 }
