@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SceneViewport.h"
 
-#include <Engine/GraphicsHelper/SceneRenderer.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 
 #include <EtEditor/Rendering/GtkRenderArea.h>
 #include <EtEditor/UI/GtkUtil.h>

@@ -36,6 +36,7 @@ void RenderingSystems::AddReference()
 	if (s_RefCount == 1u)
 	{
 		s_Instance = new RenderingSystems();
+		s_Instance->Initialize();
 	}
 }
 
@@ -57,11 +58,11 @@ void RenderingSystems::RemoveReference()
 }
 
 //---------------------------------
-// RenderingSystems::c-tor
+// RenderingSystems::Initialize
 //
-// Default constructor gets called upon first reference creation, and initializes all rendering systems
+// Called upon first reference creation, and initializes all rendering systems
 //
-RenderingSystems::RenderingSystems()
+void RenderingSystems::Initialize()
 {
 	m_Cie.LoadData();
 	m_PbrPrefilter.Precompute(Config::GetInstance()->GetGraphics().PbrBrdfLutSize);

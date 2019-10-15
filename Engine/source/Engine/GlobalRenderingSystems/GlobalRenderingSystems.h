@@ -34,8 +34,10 @@ public:
 	// construct destruct
 	//--------------------
 private:
-	RenderingSystems();
+	RenderingSystems() = default;
 	~RenderingSystems() = default;
+
+	void Initialize();
 
 	// accessors
 	//-----------

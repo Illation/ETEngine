@@ -48,6 +48,8 @@ SceneRenderer::~SceneRenderer()
 //
 void SceneRenderer::InitWithSplashScreen()
 {
+	RenderingSystems::AddReference();
+
 	TextRenderer::GetInstance()->Initialize();
 	SpriteRenderer::GetInstance()->Initialize();
 
@@ -62,8 +64,6 @@ void SceneRenderer::InitWithSplashScreen()
 void SceneRenderer::InitRenderingSystems()
 {
 	ShowSplashScreen();
-
-	RenderingSystems::AddReference();
 
 	DebugRenderer::GetInstance()->Initialize();
 	ShadowRenderer::GetInstance()->Initialize();
