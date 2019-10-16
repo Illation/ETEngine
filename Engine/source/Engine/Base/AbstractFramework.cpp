@@ -23,7 +23,7 @@ AbstractFramework::~AbstractFramework()
 	GlfwEventManager::DestroyInstance();
 	m_RenderArea.Uninitialize();
 	SafeDelete(m_Viewport);
-	SceneRenderer::DestroyInstance();
+	SafeDelete(m_SceneRenderer);
 
 	SceneManager::DestroyInstance();
 
@@ -49,13 +49,14 @@ void AbstractFramework::Run()
 	Config::GetInstance()->Initialize();
 
 	m_Viewport = new Viewport(&m_RenderArea);
-	m_Viewport->SetRenderer(SceneRenderer::GetInstance());
+	m_SceneRenderer = new SceneRenderer();
+	m_Viewport->SetRenderer(m_SceneRenderer);
 	m_RenderArea.Initialize(); // also initializes the viewport and its renderer
 	m_Viewport->Redraw();
 
 	ResourceManager::SetInstance(new PackageResourceManager());
 
-	SceneRenderer::GetInstance()->InitWithSplashScreen();
+	m_SceneRenderer->InitWithSplashScreen();
 	m_RenderArea.Update();
 
 	AudioManager::GetInstance()->Initialize();
@@ -75,7 +76,7 @@ void AbstractFramework::Run()
 	InputManager::GetInstance();	// init input manager
 	GlfwEventManager::GetInstance()->Init(m_RenderArea.GetWindow());
 
-	SceneRenderer::GetInstance()->InitRenderingSystems();
+	m_SceneRenderer->InitRenderingSystems();
 
 	RegisterAsTriggerer();
 

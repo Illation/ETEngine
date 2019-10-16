@@ -140,7 +140,7 @@ void EntityIdRenderer::OnViewportPreRender(T_FbLoc const targetFb)
 
 	api->SetDepthEnabled(true);
 
-	for (AbstractScene* const scene : SceneRenderer::GetInstance()->GetRenderScenes())
+	for (AbstractScene* const scene : SceneRenderer::GetCurrent()->GetRenderScenes())
 	{
 		for (Entity* const entity : scene->GetEntities())
 		{
@@ -198,7 +198,7 @@ void EntityIdRenderer::OnViewportPostFlush(T_FbLoc const targetFb)
 
 	Entity* foundEntity = nullptr;
 
-	for (AbstractScene* const scene : SceneRenderer::GetInstance()->GetRenderScenes())
+	for (AbstractScene* const scene : SceneRenderer::GetCurrent()->GetRenderScenes())
 	{
 		Entity* const entity = scene->GetEntity(pickedID);
 

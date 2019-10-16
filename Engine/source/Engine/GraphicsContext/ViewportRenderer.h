@@ -13,6 +13,7 @@ public:
 	virtual ~I_ViewportRenderer() = default;
 	I_ViewportRenderer& operator=(const I_ViewportRenderer&) { return *this; }
 
+	virtual std::type_info const& GetType() const = 0;
 	virtual void OnInit() {}
 	virtual void OnDeinit() {}
 	virtual void OnResize(ivec2 const dim) { UNUSED(dim); }

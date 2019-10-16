@@ -19,19 +19,20 @@ class ScreenSpaceReflections;
 //
 // Renders a Scene to the viewport - #todo: fully merge with render pipeline
 //
-class SceneRenderer : public I_ViewportRenderer, public Singleton<SceneRenderer>
+class SceneRenderer final : public I_ViewportRenderer
 {
-	friend class Singleton<SceneRenderer>;
+	// GlobalAccess
+	//---------------
+public:
+	static SceneRenderer* GetCurrent();
 
 	// construct destruct
 	//--------------------
-private:
 	SceneRenderer() : I_ViewportRenderer() {}
-	virtual ~SceneRenderer();
+	~SceneRenderer();
 
 	// functionality
 	//-----------------------------
-public:
 	void InitWithSplashScreen();
 	void InitRenderingSystems();
 
@@ -47,6 +48,7 @@ private:
 	// Viewport Renderer Interface
 	//-----------------------------
 protected:
+	std::type_info const& GetType() const override { return typeid(SceneRenderer); }
 	void OnInit() override {}
 	void OnDeinit() override {}
 	void OnResize(ivec2 const dim) override;

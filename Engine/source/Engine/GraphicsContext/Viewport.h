@@ -55,6 +55,7 @@ public:
 
 	// accessors
 	//-----------
+	I_ViewportRenderer* GetViewportRenderer() { return m_Renderer; }
 	I_GraphicsApiContext* GetApiContext() { return m_ApiContext; }
 	static I_GraphicsApiContext* GetCurrentApiContext();
 	static Viewport* GetCurrentViewport();

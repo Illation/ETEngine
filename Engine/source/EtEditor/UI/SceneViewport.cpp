@@ -31,7 +31,7 @@ SceneViewport::SceneViewport()
 SceneViewport::~SceneViewport()
 {
 	m_Editor->UnregisterListener(this);
-	SceneRenderer::DestroyInstance();
+	SafeDelete(m_SceneRenderer);
 }
 
 //--------------------
@@ -160,7 +160,8 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* parent)
 	glArea->show(); // ensure context creation
 
 	// create a scene renderer for the viewport
-	m_Viewport->SetRenderer(SceneRenderer::GetInstance());
+	m_SceneRenderer = new SceneRenderer();
+	m_Viewport->SetRenderer(m_SceneRenderer);
 
 	m_Editor->RegisterListener(this);
 }
@@ -173,7 +174,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* parent)
 //
 void SceneViewport::OnShown()
 {
-	SceneRenderer::GetInstance()->InitWithSplashScreen();
+	m_SceneRenderer->InitWithSplashScreen();
 	m_Viewport->Redraw();
 }
 
@@ -184,5 +185,5 @@ void SceneViewport::OnShown()
 //
 void SceneViewport::OnSceneSet()
 {
-	SceneRenderer::GetInstance()->InitRenderingSystems();
+	m_SceneRenderer->InitRenderingSystems();
 }

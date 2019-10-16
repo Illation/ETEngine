@@ -79,7 +79,7 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	m_pShader->Upload("texGBufferA"_hash, 0);
 	//m_pShader->Upload("texGBufferB"_hash, 1);
 	//m_pShader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = SceneRenderer::GetInstance()->GetGBuffer()->GetTextures();
+	auto gbufferTex = SceneRenderer::GetCurrent()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());

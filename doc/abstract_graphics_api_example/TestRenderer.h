@@ -23,6 +23,7 @@ private:
 	// Viewport Renderer Interface
 	//-----------------------------
 protected:
+	std::type_info const& GetType() const override { return typeid(TestRenderer); }
 	void OnInit() override;
 	void OnDeinit() override;
 	void OnResize(ivec2 const dim) override {}

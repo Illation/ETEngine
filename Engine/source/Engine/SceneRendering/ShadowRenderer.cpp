@@ -96,7 +96,7 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 		m_Shader->Upload("worldViewProj"_hash, m_LightVP);
 
 		//Draw scene with light matrix and null material
-		SceneRenderer::GetInstance()->DrawShadow();
+		SceneRenderer::GetCurrent()->DrawShadow();
 	}
 }
 

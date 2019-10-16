@@ -144,7 +144,7 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb)
 
 	// bind the gbuffers depth texture
 	m_Shader->Upload("texGBufferA"_hash, 0);
-	auto gbufferTex = SceneRenderer::GetInstance()->GetGBuffer()->GetTextures()[0];
+	auto gbufferTex = SceneRenderer::GetCurrent()->GetGBuffer()->GetTextures()[0];
 	api->LazyBindTexture(0, gbufferTex->GetTargetType(), gbufferTex->GetHandle());
 
 	api->SetDepthEnabled(true); 

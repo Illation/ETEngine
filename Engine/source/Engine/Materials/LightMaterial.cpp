@@ -27,7 +27,7 @@ void LightMaterial::UploadDerivedVariables()
 	m_Shader->Upload("texGBufferA"_hash, 0);
 	m_Shader->Upload("texGBufferB"_hash, 1);
 	m_Shader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = SceneRenderer::GetInstance()->GetGBuffer()->GetTextures();
+	auto gbufferTex = SceneRenderer::GetCurrent()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		Viewport::GetCurrentApiContext()->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());

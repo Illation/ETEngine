@@ -24,6 +24,24 @@
 #include <Engine/Materials/NullMaterial.h>
 
 
+//=================
+// Scene Renderer
+//=================
+
+
+//---------------------------------
+// SceneRenderer::GetCurrent
+//
+// Utility function to retrieve the scene renderer for the currently active viewport
+//
+SceneRenderer* SceneRenderer::GetCurrent()
+{
+	I_ViewportRenderer* const viewRenderer = Viewport::GetCurrentViewport()->GetViewportRenderer();
+	ET_ASSERT(viewRenderer->GetType() == typeid(SceneRenderer));
+
+	return static_cast<SceneRenderer*>(viewRenderer);
+}
+
 //---------------------------------
 // SceneRenderer::SceneRenderer
 //

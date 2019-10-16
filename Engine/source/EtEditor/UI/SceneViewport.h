@@ -13,6 +13,7 @@
 
 // forward
 class SceneEditor;
+class SceneRenderer;
 
 
 //--------------------
@@ -45,6 +46,7 @@ private:
 	SceneEditor* m_Editor;
 
 	std::unique_ptr<Viewport> m_Viewport;
+	SceneRenderer* m_SceneRenderer = nullptr;
 
 	bool m_IsNavigating = false;
 
