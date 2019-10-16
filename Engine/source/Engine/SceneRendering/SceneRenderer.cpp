@@ -1,11 +1,7 @@
 #include "stdafx.h"
 #include "SceneRenderer.h"
 
-#include "TextRenderer.h"
-#include "SpriteRenderer.h"
-#include "ShadowRenderer.h"
 #include "ScreenSpaceReflections.h"
-#include "DebugRenderer.h"
 #include "PostProcessingRenderer.h"
 #include "Gbuffer.h"
 
@@ -49,11 +45,6 @@ SceneRenderer* SceneRenderer::GetCurrent()
 //
 SceneRenderer::~SceneRenderer()
 {
-	ShadowRenderer::DestroyInstance();
-	TextRenderer::DestroyInstance();
-	SpriteRenderer::DestroyInstance();
-	DebugRenderer::DestroyInstance();
-
 	SafeDelete(m_SSR);
 	SafeDelete(m_GBuffer);
 	SafeDelete(m_PostProcessing);
@@ -68,8 +59,8 @@ void SceneRenderer::InitWithSplashScreen()
 {
 	RenderingSystems::AddReference();
 
-	TextRenderer::GetInstance()->Initialize();
-	SpriteRenderer::GetInstance()->Initialize();
+	m_TextRenderer.Initialize();
+	m_SpriteRenderer.Initialize();
 
 	ShowSplashScreen();
 }
@@ -83,8 +74,8 @@ void SceneRenderer::InitRenderingSystems()
 {
 	ShowSplashScreen();
 
-	DebugRenderer::GetInstance()->Initialize();
-	ShadowRenderer::GetInstance()->Initialize();
+	m_DebugRenderer.Initialize();
+	m_ShadowRenderer.Initialize();
 
 	m_OutlineRenderer.Initialize();
 
@@ -129,23 +120,23 @@ void SceneRenderer::ShowSplashScreen()
 
 	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
-	SpriteRenderer::GetInstance()->Draw(m_SplashBackgroundTex.get(), vec2(0));
+	m_SpriteRenderer.Draw(m_SplashBackgroundTex.get(), vec2(0));
 
 	std::string title = "E   T   E N G I N E";
 	int16 titleFontSize = static_cast<int16>(150.f * (static_cast<float>(windowSettings.Height) / 1440.f));
-	ivec2 titleSize = TextRenderer::GetInstance()->GetTextSize(title, m_SplashTitleFont.get(), titleFontSize);
-	TextRenderer::GetInstance()->SetColor(vec4(1.f));
-	TextRenderer::GetInstance()->SetFont(m_SplashTitleFont.get());
-	TextRenderer::GetInstance()->DrawText(title, etm::vecCast<float>(windowSettings.Dimensions / 2 - titleSize / 2), titleFontSize);
+	ivec2 titleSize = m_TextRenderer.GetTextSize(title, m_SplashTitleFont.get(), titleFontSize);
+	m_TextRenderer.SetColor(vec4(1.f));
+	m_TextRenderer.SetFont(m_SplashTitleFont.get());
+	m_TextRenderer.DrawText(title, etm::vecCast<float>(windowSettings.Dimensions / 2 - titleSize / 2), titleFontSize);
 
-	TextRenderer::GetInstance()->SetFont(m_SplashRegFont.get());
+	m_TextRenderer.SetFont(m_SplashRegFont.get());
 	std::string loading = "LOADING";
 	int16 loadingFontSize = static_cast<int16>(50.f * (static_cast<float>(windowSettings.Height) / 1440.f));
-	ivec2 loadingSize = TextRenderer::GetInstance()->GetTextSize(loading, m_SplashRegFont.get(), loadingFontSize);
-	TextRenderer::GetInstance()->DrawText(loading, etm::vecCast<float>(windowSettings.Dimensions - ivec2(loadingSize.x + 20, 20)), loadingFontSize);
+	ivec2 loadingSize = m_TextRenderer.GetTextSize(loading, m_SplashRegFont.get(), loadingFontSize);
+	m_TextRenderer.DrawText(loading, etm::vecCast<float>(windowSettings.Dimensions - ivec2(loadingSize.x + 20, 20)), loadingFontSize);
 
-	SpriteRenderer::GetInstance()->Draw();
-	TextRenderer::GetInstance()->Draw();
+	m_SpriteRenderer.Draw();
+	m_TextRenderer.Draw();
 }
 
 //---------------------------------
@@ -168,8 +159,8 @@ void SceneRenderer::HideSplashScreen()
 void SceneRenderer::DrawOverlays(T_FbLoc const targetFb)
 {
 	m_OutlineRenderer.Draw(targetFb);
-	SpriteRenderer::GetInstance()->Draw();
-	TextRenderer::GetInstance()->Draw();
+	m_SpriteRenderer.Draw();
+	m_TextRenderer.Draw();
 }
 
 //---------------------------------
@@ -179,7 +170,7 @@ void SceneRenderer::DrawOverlays(T_FbLoc const targetFb)
 //
 void SceneRenderer::DrawShadow()
 {
-	NullMaterial* nullMat = ShadowRenderer::GetInstance()->GetNullMaterial();
+	NullMaterial* nullMat = m_ShadowRenderer.GetNullMaterial();
 
 	for (auto scene : m_RenderScenes)
 	{
@@ -300,7 +291,7 @@ void SceneRenderer::Draw()
 	}
 
 #if defined(ET_DEBUG)
-	DebugRenderer::GetInstance()->Draw();
+	m_DebugRenderer->Draw();
 #endif
 
 	//Draw to default buffer

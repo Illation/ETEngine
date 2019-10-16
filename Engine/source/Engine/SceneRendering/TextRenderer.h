@@ -11,14 +11,11 @@ class ShaderData;
 //
 // Draws spritefonts in an efficient manner
 //
-class TextRenderer final : public Singleton<TextRenderer>
+class TextRenderer final 
 {
 	// definitions 
 	//-------------
 private:
-	friend class Singleton<TextRenderer>;
-	friend class AbstractScene;
-	friend class AbstractFramework;
 	friend class SceneRenderer;
 	friend class UIPortal;
 

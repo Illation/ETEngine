@@ -7,14 +7,13 @@
 //
 // Rendering class that can draw 2D images to the current framebuffer
 //
-class SpriteRenderer : public Singleton<SpriteRenderer>
+class SpriteRenderer final
 {
 private:
 	// Definitions
 	//--------------------------
 	friend class SceneRenderer;
 	friend class UIPortal;
-	friend class Singleton<SpriteRenderer>;
 
 	//---------------------------------
 	// SpriteRenderer::SpriteVertex
@@ -47,7 +46,7 @@ private:
 	// construct destruct
 	//--------------------
 	SpriteRenderer() = default;
-	virtual ~SpriteRenderer();
+	~SpriteRenderer();
 	SpriteRenderer(const SpriteRenderer& t);
 	SpriteRenderer& operator=(const SpriteRenderer& t);
 

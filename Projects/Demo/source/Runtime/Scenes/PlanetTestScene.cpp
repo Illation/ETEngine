@@ -133,30 +133,3 @@ void PlanetTestScene::Update()
 		sqrtf(powf(radius, 2) - powf(m_pPlanet->GetRadius(), 2)))*10);
 	CAMERA->SetNearClippingPlane(CAMERA->GetFarPlane()*0.000003f);
 }
-
-void PlanetTestScene::Draw()
-{
-	//TextRenderer::GetInstance()->SetFont(m_pDebugFont.get());
-	//TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
-	//std::string textOutput = "FPS: " + std::to_string( PERFORMANCE->GetRegularFPS() );
-	//TextRenderer::GetInstance()->DrawText( textOutput, vec2(20, 20));
-	//TextRenderer::GetInstance()->SetColor(vec4(1, 1, 1, 1));
-	//textOutput = "Frame ms: " + std::to_string( PERFORMANCE->GetFrameMS() );
-	//TextRenderer::GetInstance()->DrawText( textOutput, vec2(20, 50));
-	//textOutput = "Draw calls: " + std::to_string( PERFORMANCE->m_PrevDrawCalls );
-	//TextRenderer::GetInstance()->DrawText(textOutput, vec2(20, 80));
-
-	//float altitude = etm::distance(m_pPlanet->GetTransform()->GetPosition(), CAMERA->GetTransform()->GetPosition()) - m_pPlanet->GetRadius();
-	//textOutput = "Altitude: " + std::to_string( altitude );
-	//TextRenderer::GetInstance()->DrawText( textOutput, vec2(20, 110));
-	//textOutput = "Vertices: " + std::to_string( m_pPlanet->GetVertexCount() );
-	//TextRenderer::GetInstance()->DrawText( textOutput, vec2(20, 140));
-}
-
-void PlanetTestScene::DrawForward()
-{
-}
-
-void PlanetTestScene::PostDraw()
-{
-}

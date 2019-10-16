@@ -1,14 +1,8 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-class DebugRenderer : public Singleton<DebugRenderer>
+class DebugRenderer final
 {
-public:
-	void DrawLine(vec3 start, vec3 end, vec4 col = vec4(1), float thickness = 1);
-	void DrawLine(vec3 start, vec4 startCol, vec3 end, vec4 endCol, float thickness = 1);
-
-	void DrawGrid(float pixelSpacingRad = etm::radians(75));
-
 private:
 	friend class SceneRenderer;
 
@@ -25,11 +19,20 @@ private:
 		uint32 size = 0;
 	};
 
+	DebugRenderer() = default;
+	~DebugRenderer();
+
 	void Initialize();
+
+public:
+	void DrawLine(vec3 start, vec3 end, vec4 col = vec4(1), float thickness = 1);
+	void DrawLine(vec3 start, vec4 startCol, vec3 end, vec4 endCol, float thickness = 1);
+
+	void DrawGrid(float pixelSpacingRad = etm::radians(75));
+
+private:
 	void UpdateBuffer();
-
 	void Draw();
-
 	void CheckMetaData(float thickness);
 
 	//Linebuffer
@@ -43,16 +46,4 @@ private:
 
 	//Shader and its uniforms
 	AssetPtr<ShaderData> m_pShader;
-
-private:
-	friend class Singleton<DebugRenderer>;
-	//Private constructor and destructor for singleton
-	DebugRenderer();
-	virtual ~DebugRenderer();
-	// -------------------------
-	// Disabling default copy constructor and default 
-	// assignment operator.
-	// -------------------------
-	DebugRenderer(const DebugRenderer& t);
-	DebugRenderer& operator=(const DebugRenderer& t);
 };

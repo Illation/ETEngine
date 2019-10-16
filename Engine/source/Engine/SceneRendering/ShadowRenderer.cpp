@@ -13,11 +13,11 @@
 #include <Engine/Graphics/Frustum.h>
 
 
-ShadowRenderer::ShadowRenderer(){}
 ShadowRenderer::~ShadowRenderer()
 {
 	SafeDelete(m_pMaterial);
 }
+
 void ShadowRenderer::Initialize()
 {
 	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdNullShader.glsl"_hash);

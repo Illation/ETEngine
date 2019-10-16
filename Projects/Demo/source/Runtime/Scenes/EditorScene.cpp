@@ -138,16 +138,3 @@ void EditorScene::Update()
 		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
 	}
 }
-
-void EditorScene::Draw()
-{
-	TextRenderer::GetInstance()->SetFont(m_pDebugFont.get());
-	TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
-	std::string outString = "FPS: " + std::to_string( PERFORMANCE->GetRegularFPS() );
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20));
-	TextRenderer::GetInstance()->SetColor(vec4(1, 1, 1, 1));
-	outString = "Frame ms: " + std::to_string( PERFORMANCE->GetFrameMS() );
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 50));
-	outString = "Draw Calls: " + std::to_string( PERFORMANCE->m_PrevDrawCalls );
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 80));
-}

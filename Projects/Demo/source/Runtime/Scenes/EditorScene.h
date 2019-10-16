@@ -19,7 +19,7 @@ public:
 private:
 	void Initialize();
 	void Update();
-	void Draw();
+	void Draw() {}
 	void DrawForward() {}
 	void PostDraw() {}
 

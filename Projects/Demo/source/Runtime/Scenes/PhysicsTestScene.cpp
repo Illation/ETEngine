@@ -12,9 +12,7 @@
 #include <Engine/Graphics/SpriteFont.h>
 #include <Engine/Graphics/Light.h>
 #include <Engine/Graphics/TextureData.h>
-#include <Engine/SceneRendering/SpriteRenderer.h>
-#include <Engine/SceneRendering/TextRenderer.h>
-#include <Engine/SceneRendering/DebugRenderer.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 #include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <Engine/Components/ModelComponent.h>
 #include <Engine/Components/LightComponent.h>
@@ -238,35 +236,37 @@ void PhysicsTestScene::Update()
 		Config::GetInstance()->Save();
 	}
 
-	SpriteRenderer::GetInstance()->Draw(m_DebugFont->GetAtlas(), vec2(1000, 0),
+	SceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(m_DebugFont->GetAtlas(), vec2(1000, 0),
 		vec4(1), vec2(0), vec2(1), 0, 0, SpriteRenderer::E_ScalingMode::TextureAbs);
 }
 
 void PhysicsTestScene::Draw()
 {
-	TextRenderer::GetInstance()->SetFont(m_DebugFont.get());
-	TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
+	TextRenderer& textRenderer = SceneRenderer::GetCurrent()->GetTextRenderer();
+
+	textRenderer.SetFont(m_DebugFont.get());
+	textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
 	std::string outString = "FPS: " + std::to_string(PERFORMANCE->GetRegularFPS());
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 1));
-	TextRenderer::GetInstance()->SetColor(vec4(1, 1, 1, 1));
+	textRenderer.DrawText(outString, vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 1));
+	textRenderer.SetColor(vec4(1, 1, 1, 1));
 	outString = "Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS());
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 2));
+	textRenderer.DrawText(outString, vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 2));
 	outString = "Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls);
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*1.1f) * 3), 128);
+	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*1.1f) * 3), 128);
 	outString = "VAWAVMVoV.";
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*1.1f) * 5), 128);
+	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*1.1f) * 5), 128);
 
 	outString = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do ";
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 5), 64);
+	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 5), 64);
 	outString = "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut ";
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 6), 64);
+	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 6), 64);
 	outString = "enim ad minim veniam, quis nostrud exercitation ullamco ";
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 7), 64);
+	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 7), 64);
 	outString = "laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure ";
-	TextRenderer::GetInstance()->DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 8), 64);
+	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 8), 64);
 
 	vec3 lightPos = m_pLightEntity->GetTransform()->GetPosition();
-	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(2, 0, 0), vec4(1, 0, 0, 1), 2);
-	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(0, 2, 0), vec4(0, 1, 0, 1), 2);
-	DebugRenderer::GetInstance()->DrawLine(lightPos, lightPos + vec3(0, 0, 2), vec4(0, 0, 1, 1), 2);
+	SceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(2, 0, 0), vec4(1, 0, 0, 1), 2);
+	SceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(0, 2, 0), vec4(0, 1, 0, 1), 2);
+	SceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(0, 0, 2), vec4(0, 0, 1, 1), 2);
 }

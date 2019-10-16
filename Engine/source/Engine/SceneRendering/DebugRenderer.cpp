@@ -7,11 +7,6 @@
 #include <Engine/Graphics/Shader.h>
 
 
-DebugRenderer::DebugRenderer()
-{
-
-}
-
 DebugRenderer::~DebugRenderer()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();

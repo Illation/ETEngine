@@ -6,21 +6,34 @@ class NullMaterial;
 class DirectionalShadowData;
 class TransformComponent;
 
-class ShadowRenderer : public Singleton<ShadowRenderer>
+class ShadowRenderer final
 {
-public:
-	ShadowRenderer();
-	virtual ~ShadowRenderer();
+	// definitions
+	//-------------
+private:
+	friend class SceneRenderer; 
 
+	// construct destruct
+	//---------------------
+	ShadowRenderer() = default;
+	~ShadowRenderer();
+
+	void Initialize();
+
+	// functionality
+	//---------------
+public:
 	void MapDirectional(TransformComponent *pTransform, DirectionalShadowData *pShadowData);
+
+	// accessors
+	//---------------
 	mat4 GetLightVP() { return m_LightVP; }
 	NullMaterial* GetNullMaterial() { return m_pMaterial; }
 
+	// Data
+	///////
 private:
-	friend class AbstractFramework;
-	friend class SceneRenderer; //should init and destroy singleton
 
-	void Initialize();
 	bool IsInitialized = false;
 
 	AssetPtr<ShaderData> m_Shader;

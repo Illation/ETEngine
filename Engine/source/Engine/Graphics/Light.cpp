@@ -2,6 +2,7 @@
 #include "Light.h"
 
 #include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 #include <Engine/SceneRendering/ShadowRenderer.h>
 
 
@@ -44,6 +45,6 @@ void DirectionalLight::GenerateShadow(TransformComponent* pTransform)
 {
 	if (IsShadowEnabled())
 	{
-		ShadowRenderer::GetInstance()->MapDirectional(pTransform, m_pShadowData);
+		SceneRenderer::GetCurrent()->GetShadowRenderer().MapDirectional(pTransform, m_pShadowData);
 	}
 }
