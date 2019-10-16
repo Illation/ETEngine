@@ -4,6 +4,59 @@
 #include "EpoxyGlContext.h"
 
 
+//=========================
+// Single Context GL Area
+//=========================
+
+
+// static
+SingleContextGlArea::ContextCache* SingleContextGlArea::s_SingleContextCache = nullptr;
+
+
+//---------------------------------
+// SingleContextGlArea::DestroyContext
+//
+void SingleContextGlArea::DestroyContext()
+{
+	delete s_SingleContextCache;
+	s_SingleContextCache = nullptr;
+}
+
+//---------------------------------
+// SingleContextGlArea::c-tor
+//
+SingleContextGlArea::SingleContextGlArea()
+	: Gtk::GLArea()
+{
+	signal_create_context().connect(sigc::mem_fun(*this, &SingleContextGlArea::OnCreateContext));
+}
+
+//---------------------------------
+// SingleContextGlArea::c-tor
+//
+SingleContextGlArea::SingleContextGlArea(BaseObjectType* cobject, Glib::RefPtr<Gtk::Builder> const& refBuilder)
+	: Gtk::GLArea(cobject)
+{
+	UNUSED(refBuilder);
+	signal_create_context().connect(sigc::mem_fun(*this, &SingleContextGlArea::OnCreateContext));
+}
+
+//---------------------------------
+// SingleContextGlArea::OnCreateContext
+//
+Glib::RefPtr<Gdk::GLContext> SingleContextGlArea::OnCreateContext()
+{
+	if (s_SingleContextCache == nullptr)
+	{
+		s_SingleContextCache = new ContextCache();
+		s_SingleContextCache->glibContext = Gtk::GLArea::on_create_context();
+		s_SingleContextCache->apiContext = new EpoxyGlContext();
+	}
+
+	return s_SingleContextCache->glibContext;
+}
+
+
 //=====================
 // GTK Render Area
 //=====================

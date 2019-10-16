@@ -1,9 +1,47 @@
 #pragma once
 #include <gtkmm/glarea.h>
+#include <gtkmm/builder.h>
 
 #include <EtCore/UpdateCycle/RealTimeTickTriggerer.h>
 
 #include <Engine/GraphicsContext/RenderArea.h>
+
+
+//---------------------------------
+// SingleContextGlArea
+//
+// Inherit from default GLArea to ensure all surfaces use the same openGL context
+//
+class SingleContextGlArea final : public Gtk::GLArea
+{
+	// definitions
+	//-------------------
+private:
+	//---------------------------------
+	// SingleContextCache
+	//
+	// Ensures all rendering areas in the editor use the same open GL context
+	//
+	struct ContextCache
+	{
+		Glib::RefPtr<Gdk::GLContext> glibContext;
+		I_GraphicsApiContext* apiContext;
+	};
+
+	static ContextCache* s_SingleContextCache;
+
+public:
+	static void DestroyContext();
+
+	// construct destruct
+	//-------------------
+	SingleContextGlArea();
+	SingleContextGlArea(BaseObjectType* cobject, Glib::RefPtr<Gtk::Builder> const& refBuilder);
+
+	// signals
+	//-----------------------
+	Glib::RefPtr<Gdk::GLContext> OnCreateContext();
+};
 
 
 //---------------------------------
@@ -19,11 +57,13 @@ public:
 	GtkRenderArea(Gtk::GLArea* glArea);
 	virtual ~GtkRenderArea() = default;
 
+	// signals
+	//-----------------------
 protected:
 	void OnRealize();
 	void OnUnrealize();
 	void OnResize(int32 x, int32 y);
-	bool OnRender(const Glib::RefPtr<Gdk::GLContext>& context);
+	bool OnRender(Glib::RefPtr<Gdk::GLContext> const& context);
 
 	// Render Area Interface
 	//-----------------------

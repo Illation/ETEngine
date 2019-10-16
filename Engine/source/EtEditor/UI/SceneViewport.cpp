@@ -7,7 +7,6 @@
 #include <EtEditor/UI/GtkUtil.h>
 #include <EtEditor/SceneEditor.h>
 
-#include <gtkmm/glarea.h>
 #include <gtkmm/builder.h>
 
 
@@ -44,8 +43,8 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* parent)
 	m_Editor = static_cast<SceneEditor*>(editor);
 
 	// Find the GL Area widget that is responsible for rendering the scene
-	Gtk::GLArea* glArea = nullptr;
-	m_RefBuilder->get_widget("glSceneViewport", glArea);
+	SingleContextGlArea* glArea = nullptr;
+	m_RefBuilder->get_widget_derived("glSceneViewport", glArea);
 	ET_ASSERT(glArea != nullptr, "No 'glSceneViewport' object in sceneViewport.ui!");
 	glArea->set_auto_render(true);
 
