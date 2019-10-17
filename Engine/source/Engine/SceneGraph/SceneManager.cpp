@@ -84,7 +84,10 @@ void SceneManager::OnTick()
 {
 	if (m_NewActiveScene != nullptr)
 	{
-		SceneRenderer::GetCurrent()->ShowSplashScreen();
+		for (SceneRenderer* sceneRenderer : SceneRenderer::GetAll())
+		{
+			sceneRenderer->ShowSplashScreen();
+		}
 		m_SplashFrame = true;
 
 		//Deactivate the current active scene
@@ -104,7 +107,10 @@ void SceneManager::OnTick()
 	}
 	else
 	{
-		SceneRenderer::GetCurrent()->HideSplashScreen();
+		for (SceneRenderer* sceneRenderer : SceneRenderer::GetAll())
+		{
+			sceneRenderer->HideSplashScreen();
+		}
 	}
 
 	if ((m_ActiveScene != nullptr) && (!m_SplashFrame))

@@ -25,6 +25,10 @@
 //=================
 
 
+// static
+std::vector<SceneRenderer*> SceneRenderer::s_AllSceneRenderers = std::vector<SceneRenderer*>();
+
+
 //---------------------------------
 // SceneRenderer::GetCurrent
 //
@@ -38,8 +42,21 @@ SceneRenderer* SceneRenderer::GetCurrent()
 	return static_cast<SceneRenderer*>(viewRenderer);
 }
 
+
+//--------------------------------------------------------------------------
+
+
 //---------------------------------
-// SceneRenderer::SceneRenderer
+// SceneRenderer::c-tor
+//
+SceneRenderer::SceneRenderer() 
+	: I_ViewportRenderer()
+{
+	s_AllSceneRenderers.emplace_back(this);
+}
+
+//---------------------------------
+// SceneRenderer::d-tor
 //
 // make sure all the singletons this system requires are uninitialized
 //
@@ -50,6 +67,12 @@ SceneRenderer::~SceneRenderer()
 	SafeDelete(m_PostProcessing);
 
 	RenderingSystems::RemoveReference();
+
+	// remove this reference from the list of all scene renderers
+	auto const foundIt = std::find(s_AllSceneRenderers.begin(), s_AllSceneRenderers.end(), this);
+	ET_ASSERT(foundIt != s_AllSceneRenderers.cend());
+
+	s_AllSceneRenderers.erase(foundIt);
 }
 
 //---------------------------------

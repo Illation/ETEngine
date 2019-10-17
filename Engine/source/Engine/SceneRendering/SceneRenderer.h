@@ -27,12 +27,15 @@ class SceneRenderer final : public I_ViewportRenderer
 {
 	// GlobalAccess
 	//---------------
+	static std::vector<SceneRenderer*> s_AllSceneRenderers;
+
 public:
 	static SceneRenderer* GetCurrent();
+	static std::vector<SceneRenderer*>& GetAll() { return s_AllSceneRenderers; }
 
 	// construct destruct
 	//--------------------
-	SceneRenderer() : I_ViewportRenderer() {}
+	SceneRenderer();
 	~SceneRenderer();
 
 	// functionality
