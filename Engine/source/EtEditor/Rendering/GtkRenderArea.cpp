@@ -28,7 +28,7 @@ void SingleContextGlArea::DestroyContext()
 SingleContextGlArea::SingleContextGlArea()
 	: Gtk::GLArea()
 {
-	signal_create_context().connect(sigc::mem_fun(*this, &SingleContextGlArea::OnCreateContext));
+	signal_create_context().connect(sigc::mem_fun(*this, &SingleContextGlArea::OnCreateContext), false);
 }
 
 //---------------------------------
@@ -38,7 +38,7 @@ SingleContextGlArea::SingleContextGlArea(BaseObjectType* cobject, Glib::RefPtr<G
 	: Gtk::GLArea(cobject)
 {
 	UNUSED(refBuilder);
-	signal_create_context().connect(sigc::mem_fun(*this, &SingleContextGlArea::OnCreateContext));
+	signal_create_context().connect(sigc::mem_fun(*this, &SingleContextGlArea::OnCreateContext), false);
 }
 
 //---------------------------------
@@ -56,6 +56,17 @@ Glib::RefPtr<Gdk::GLContext> SingleContextGlArea::OnCreateContext()
 	return s_SingleContextCache->glibContext;
 }
 
+//---------------------------------
+// SingleContextGlArea::GetApiContext
+//
+I_GraphicsApiContext* SingleContextGlArea::GetApiContext() const
+{
+	ET_ASSERT(s_SingleContextCache != nullptr);
+	ET_ASSERT(s_SingleContextCache->apiContext != nullptr);
+
+	return s_SingleContextCache->apiContext;
+}
+
 
 //=====================
 // GTK Render Area
@@ -67,7 +78,7 @@ Glib::RefPtr<Gdk::GLContext> SingleContextGlArea::OnCreateContext()
 //
 // Create a Window and an openGL context to draw to the window
 //
-GtkRenderArea::GtkRenderArea(Gtk::GLArea* glArea)
+GtkRenderArea::GtkRenderArea(SingleContextGlArea* const glArea)
 	: I_RenderArea()
 	, m_GlArea(glArea)
 {
@@ -90,7 +101,7 @@ void GtkRenderArea::OnRealize()
 {
 	if (m_OnInit)
 	{
-		m_OnInit(new EpoxyGlContext());
+		m_OnInit(m_GlArea->GetApiContext());
 	}
 }
 

@@ -38,8 +38,13 @@ public:
 	SingleContextGlArea();
 	SingleContextGlArea(BaseObjectType* cobject, Glib::RefPtr<Gtk::Builder> const& refBuilder);
 
+	// accessors
+	//-----------
+	I_GraphicsApiContext* GetApiContext() const;
+
 	// signals
 	//-----------------------
+private:
 	Glib::RefPtr<Gdk::GLContext> OnCreateContext();
 };
 
@@ -54,7 +59,7 @@ class GtkRenderArea : public I_RenderArea
 	// construct destruct
 	//-------------------
 public:
-	GtkRenderArea(Gtk::GLArea* glArea);
+	GtkRenderArea(SingleContextGlArea* const glArea);
 	virtual ~GtkRenderArea() = default;
 
 	// signals
@@ -83,6 +88,6 @@ private:
 	std::function<void(vec2 const)> m_OnResize;
 	std::function<void(T_FbLoc const)> m_OnRender;
 
-	Gtk::GLArea* m_GlArea = nullptr;
+	SingleContextGlArea* m_GlArea = nullptr;
 };
 
