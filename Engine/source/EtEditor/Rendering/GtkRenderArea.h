@@ -80,6 +80,8 @@ protected:
 	void QueueDraw() override;
 	bool MakeCurrent() override;
 
+	ivec2 GetDimensions() const override;
+
 	// Data
 	///////
 private:

@@ -366,7 +366,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	api->BindFramebuffer(0);
 	api->BindRenderbuffer(0);
-	api->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
+	api->SetViewport(ivec2(0), Viewport::GetCurrentViewport()->GetDimensions());
 
 	api->DeleteRenderBuffers(1, &captureRBO);
 	api->DeleteFramebuffers(1, &captureFBO);

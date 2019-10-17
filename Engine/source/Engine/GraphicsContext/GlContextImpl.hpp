@@ -12,9 +12,9 @@
 //
 // Initialize the state with default values
 //
-void GL_CONTEXT_CLASSNAME::Initialize()
+void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 {
-	m_ViewportSize = Config::GetInstance()->GetWindow().Dimensions;
+	m_ViewportSize = dimensions;
 
 	LOG("OpenGL loaded");
 	LOG("");

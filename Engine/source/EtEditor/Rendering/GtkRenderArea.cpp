@@ -121,8 +121,6 @@ void GtkRenderArea::OnUnrealize()
 //
 void GtkRenderArea::OnResize(int32 x, int32 y)
 {
-	Config::GetInstance()->GetWindow().Resize(x, y);
-
 	if (m_OnResize)
 	{
 		m_OnResize(etm::vecCast<float>(ivec2(x, y)));
@@ -174,4 +172,17 @@ bool GtkRenderArea::MakeCurrent()
 	}
 
 	return true;
+}
+
+//---------------------------------
+// GtkRenderArea::GetDimensions
+//
+ivec2 GtkRenderArea::GetDimensions() const
+{
+	ivec2 ret;
+
+	ret.x = m_GlArea->get_allocated_width();
+	ret.y = m_GlArea->get_allocated_height();
+
+	return ret;
 }

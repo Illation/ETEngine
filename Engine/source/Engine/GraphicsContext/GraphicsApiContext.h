@@ -28,7 +28,7 @@ public:
 	I_GraphicsApiContext() = default;
 	virtual ~I_GraphicsApiContext() = default;
 
-	virtual void Initialize() = 0;
+	virtual void Initialize(ivec2 const dimensions) = 0;
 
 	// State changes
 	//--------------

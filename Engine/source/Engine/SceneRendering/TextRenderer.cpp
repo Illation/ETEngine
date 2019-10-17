@@ -94,7 +94,7 @@ void TextRenderer::Initialize()
 
 	CalculateTransform();
 
-	Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener( std::bind( &TextRenderer::OnWindowResize, this ) );
+	Viewport::GetCurrentViewport()->GetResizeEvent().AddListener( std::bind( &TextRenderer::OnWindowResize, this ) );
 }
 
 //---------------------------------

@@ -52,7 +52,7 @@ void SceneEditor::Init(Gtk::Frame* const parent)
 
 	CreateTool(E_EditorTool::SceneViewport, CreateInnerFrame(paned, true));
 	CreateTool(E_EditorTool::Outliner, CreateInnerFrame(paned2, true));
-	//CreateTool(E_EditorTool::SceneViewport, CreateInnerFrame(paned2, false));
+	CreateTool(E_EditorTool::SceneViewport, CreateInnerFrame(paned2, false));
 	paned->set_position(1000);
 	paned2->set_position(500);
 

@@ -106,7 +106,7 @@ void Triangulator::GenerateGeometry()
 	//In future only recalculate on FOV or triangle density change
 	m_DistanceLUT.clear();
 	float sizeL = etm::length(m_Icosahedron[0].a - m_Icosahedron[0].b);
-	float frac = tanf((m_AllowedTriPx * etm::radians(m_pFrustum->GetFOV())) / Config::GetInstance()->GetWindow().Width);
+	float frac = tanf((m_AllowedTriPx * etm::radians(m_pFrustum->GetFOV())) / Viewport::GetCurrentViewport()->GetDimensions().x);
 	for (int32 level = 0; level < m_MaxLevel+5; level++)
 	{
 		m_DistanceLUT.push_back(sizeL / frac);

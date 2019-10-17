@@ -88,7 +88,7 @@ void StarField::DrawForward()
 	m_pShader->Upload("uRadius"_hash, m_Radius);
 	m_pShader->Upload("uBaseFlux"_hash, m_BaseFlux);
 	m_pShader->Upload("uBaseMag"_hash, m_BaseMag);
-	m_pShader->Upload("uAspectRatio"_hash, Config::GetInstance()->GetWindow().AspectRatio);
+	m_pShader->Upload("uAspectRatio"_hash, Viewport::GetCurrentViewport()->GetAspectRatio());
 	api->DrawArrays(E_DrawMode::Points, 0, m_DrawnStars);
 	api->BindVertexArray(0);
 	api->SetBlendEnabled(false);

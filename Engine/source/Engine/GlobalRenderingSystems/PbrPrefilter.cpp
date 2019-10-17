@@ -60,7 +60,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 	//*************************************************
 	api->BindFramebuffer(0);
 	api->BindRenderbuffer(0);
-	api->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
+	api->SetViewport(ivec2(0), Viewport::GetCurrentViewport()->GetDimensions());
 
 	api->DeleteRenderBuffers(1, &captureRBO);
 	api->DeleteFramebuffers(1, &captureFBO);
@@ -178,7 +178,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	//*************************************************
 	api->BindTexture(E_TextureType::Texture2D, 0);
 	api->BindFramebuffer(0);
-	api->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
+	api->SetViewport(ivec2(0), Viewport::GetCurrentViewport()->GetDimensions());
 
 	api->DeleteRenderBuffers(1, &captureRBO);
 	api->DeleteFramebuffers(1, &captureFBO);

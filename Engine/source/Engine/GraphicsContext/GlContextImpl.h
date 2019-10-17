@@ -24,7 +24,7 @@ public:
 	// Interface implementation
 	//===============================
 
-	void Initialize() override;
+	void Initialize(ivec2 const dimensions) override;
 
 	// State changes
 	//--------------

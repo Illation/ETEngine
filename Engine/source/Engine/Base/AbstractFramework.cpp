@@ -52,6 +52,7 @@ void AbstractFramework::Run()
 	m_SceneRenderer = new SceneRenderer();
 	m_Viewport->SetRenderer(m_SceneRenderer);
 	m_RenderArea.Initialize(); // also initializes the viewport and its renderer
+	m_Viewport->SynchDimensions();
 	m_Viewport->Redraw();
 
 	ResourceManager::SetInstance(new PackageResourceManager());
@@ -74,7 +75,7 @@ void AbstractFramework::Run()
 	PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
 
 	InputManager::GetInstance();	// init input manager
-	GlfwEventManager::GetInstance()->Init(m_RenderArea.GetWindow());
+	GlfwEventManager::GetInstance()->Init(&m_RenderArea);
 
 	m_SceneRenderer->InitRenderingSystems();
 

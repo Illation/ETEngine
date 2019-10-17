@@ -27,12 +27,12 @@ GlfwEventManager::~GlfwEventManager()
 // Register for all events we may be interested in
 // Init all possible cursors, and register as a cursor manager with the input manager
 //
-void GlfwEventManager::Init(GLFWwindow* const window)
+void GlfwEventManager::Init(GlfwRenderArea* const renderArea)
 {
-	m_Window = window;
+	m_RenderArea = renderArea;
 
 	// Register for keyboard events
-	glfwSetKeyCallback(m_Window, [](GLFWwindow* const window, int32 const key, int32 const scancode, int32 const action, int32 const mods)
+	glfwSetKeyCallback(renderArea->GetWindow(), [](GLFWwindow* const window, int32 const key, int32 const scancode, int32 const action, int32 const mods)
 	{
 		UNUSED(window);
 		UNUSED(scancode);
@@ -49,7 +49,7 @@ void GlfwEventManager::Init(GLFWwindow* const window)
 	});
 
 	// mouse motion #todo: support raw mouse motion
-	glfwSetCursorPosCallback(m_Window, [](GLFWwindow* const window, double const xpos, double const ypos)
+	glfwSetCursorPosCallback(renderArea->GetWindow(), [](GLFWwindow* const window, double const xpos, double const ypos)
 	{
 		UNUSED(window);
 
@@ -57,7 +57,7 @@ void GlfwEventManager::Init(GLFWwindow* const window)
 	});
 
 	// Mouse clicking
-	glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* const window, int32 const button, int32 const action, int32 const mods)
+	glfwSetMouseButtonCallback(renderArea->GetWindow(), [](GLFWwindow* const window, int32 const button, int32 const action, int32 const mods)
 	{
 		UNUSED(window);
 		UNUSED(mods);
@@ -73,7 +73,7 @@ void GlfwEventManager::Init(GLFWwindow* const window)
 	});
 
 	// scrolling
-	glfwSetScrollCallback(m_Window, [](GLFWwindow* const window, double const xoffset, double const yoffset)
+	glfwSetScrollCallback(renderArea->GetWindow(), [](GLFWwindow* const window, double const xoffset, double const yoffset)
 	{
 		UNUSED(window);
 
@@ -81,15 +81,17 @@ void GlfwEventManager::Init(GLFWwindow* const window)
 	});
 
 	// window resizing
-	glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* const window, int32 const width, int32 const height)
+	glfwSetWindowSizeCallback(renderArea->GetWindow(), [](GLFWwindow* const window, int32 const width, int32 const height)
 	{
 		UNUSED(window);
 
-		Config::GetInstance()->GetWindow().Resize(width, height);
+		GlfwRenderArea* const renderArea = static_cast<GlfwRenderArea*>(glfwGetWindowUserPointer(window));
+
+		renderArea->SetSize(ivec2(width, height));
 	});
 
 	// window closing
-	glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* const window)
+	glfwSetWindowCloseCallback(renderArea->GetWindow(), [](GLFWwindow* const window)
 	{
 		InputManager::GetInstance()->Quit();
 	});
@@ -114,7 +116,7 @@ bool GlfwEventManager::OnCursorResize(E_CursorShape const shape)
 	auto it = m_CursorMap.find(shape);
 	if (it != m_CursorMap.end())
 	{
-		glfwSetCursor(m_Window, it->second);
+		glfwSetCursor(m_RenderArea->GetWindow(), it->second);
 		return true;
 	}
 
@@ -130,7 +132,7 @@ bool GlfwEventManager::OnCursorResize(E_CursorShape const shape)
 void GlfwEventManager::OnTick()
 {
 	glfwPollEvents();
-	if (glfwWindowShouldClose(m_Window))
+	if (glfwWindowShouldClose(m_RenderArea->GetWindow()))
 	{
 		InputManager::GetInstance()->Quit();
 	}

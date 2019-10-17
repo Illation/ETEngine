@@ -30,10 +30,9 @@ ScreenSpaceReflections::~ScreenSpaceReflections()
 void ScreenSpaceReflections::Initialize()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostScreenSpaceReflections.glsl"_hash);
-
-	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 
 	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Linear;
@@ -44,14 +43,14 @@ void ScreenSpaceReflections::Initialize()
 	//Generate texture and fbo and rbo as initial postprocessing target
 	api->GenFramebuffers(1, &m_CollectFBO);
 	api->BindFramebuffer(m_CollectFBO);
-	m_CollectTex = new TextureData(windowSettings.Dimensions, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
+	m_CollectTex = new TextureData(dim, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 	m_CollectTex->Build();
 	m_CollectTex->SetParameters(params);
 	api->LinkTextureToFbo2D(0, m_CollectTex->GetHandle(), 0);
 	//Render Buffer for depth and stencil
 	api->GenRenderBuffers(1, &m_CollectRBO);
 	api->BindRenderbuffer(m_CollectRBO);
-	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24_Stencil8, windowSettings.Dimensions);
+	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24_Stencil8, dim);
 	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24_Stencil8, m_CollectRBO);
 }
 

@@ -20,4 +20,6 @@ public:
 
 	virtual void QueueDraw() = 0;
 	virtual bool MakeCurrent() = 0;
+
+	virtual ivec2 GetDimensions() const = 0;
 };

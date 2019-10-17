@@ -85,7 +85,7 @@ void SpriteRenderer::Initialize()
 	TextureParameters params;
 	m_EmptyTex->SetParameters(params);
 
-	Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener(std::bind(&SpriteRenderer::OnWindowResize, this));
+	Viewport::GetCurrentViewport()->GetResizeEvent().AddListener(std::bind(&SpriteRenderer::OnWindowResize, this));
 }
 
 

@@ -195,7 +195,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	envCubeMap->SetParameters(params);
 
 	api->BindTexture(E_TextureType::Texture2D, 0);
-	api->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
+	api->SetViewport(ivec2(0), Viewport::GetCurrentViewport()->GetDimensions());
 
 	api->DeleteRenderBuffers(1, &captureRBO);
 	api->DeleteFramebuffers(1, &captureFBO);

@@ -33,8 +33,6 @@ RTTR_REGISTRATION
 
 	registration::class_<Config::Settings::Window>("window")
 		.constructor<>()
-		.method("DeriveSettings", &Config::Settings::Window::DeriveSettings)
-		.method("Resize", &Config::Settings::Window::Resize)
 
 		.property("title", &Config::Settings::Window::Title)
 		.property("fullscreen", &Config::Settings::Window::Fullscreen)
@@ -52,45 +50,25 @@ RTTR_REGISTRATION
 		;
 }
 
-//-------------------------------------------
-// Config::Settings::Window::DeriveSettings
+//------------------------------------
+// Config::Settings::Window::GetSize
 //
-// Derive some settings from those that where loaded from json
+// Retrieves the initial window size as defined by the config data - may be overridden at runtime
 //
-void Config::Settings::Window::DeriveSettings()
+ivec2 Config::Settings::Window::GetSize() const
 {
 	size_t const resIdx = Fullscreen ? FullscreenRes : WindowedRes;
 	if (resIdx < Resolutions.size())
 	{
-		Dimensions = Resolutions[resIdx];
-	}
-	else
-	{
-		LOG(FS("Settings::Window::DeriveSettings > Invalid resolution index in '%s' mode: %u", 
-			(Fullscreen ? "fullscreen" : "windowed"),
-			(Fullscreen ? FullscreenRes : WindowedRes)), 
-			LogLevel::Warning);
+		return Resolutions[resIdx];
 	}
 
-	AspectRatio = static_cast<float>(Width) / static_cast<float>(Height);
-}
+	LOG(FS("Settings::Window::DeriveSettings > Invalid resolution index in '%s' mode: %u",
+		(Fullscreen ? "fullscreen" : "windowed"),
+		(Fullscreen ? FullscreenRes : WindowedRes)),
+		LogLevel::Warning);
 
-//------------------------------------
-// Config::Settings::Window::Resize
-//
-// Resizes the window and notifies listeners
-//
-void Config::Settings::Window::Resize(int32 width, int32 height, bool broadcast)
-{
-	Width = width;
-	Height = height;
-
-	DeriveSettings();
-
-	if (broadcast)
-	{
-		WindowResizeEvent.Broadcast();
-	}
+	return ivec2();
 }
 
 //---------------------------------
@@ -121,9 +99,6 @@ void Config::Initialize()
 	{
 		LOG("Config::Initialize > unable to deserialize config file to settings, using defaults", Warning);
 	}
-
-	// derive settings regardless of whether they where loaded or default
-	m_Settings.m_Window.DeriveSettings();
 }
 
 //---------------------------------

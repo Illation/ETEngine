@@ -36,15 +36,19 @@ class Viewport final : public I_RealTimeTickTriggerer
 	//---------------
 	static Viewport* g_CurrentViewport;
 
+public:
+	static I_GraphicsApiContext* GetCurrentApiContext();
+	static Viewport* GetCurrentViewport();
+
 	// construct destruct
 	//-------------------
-public:
 	Viewport(I_RenderArea* const area);
 	~Viewport();
 
 	// functionality
 	//---------------
 	void Redraw();
+	void SynchDimensions();
 	void SetRenderer(I_ViewportRenderer* renderer);
 private:
 	void Render(T_FbLoc const targetFb);
@@ -57,8 +61,10 @@ public:
 	//-----------
 	I_ViewportRenderer* GetViewportRenderer() { return m_Renderer; }
 	I_GraphicsApiContext* GetApiContext() { return m_ApiContext; }
-	static I_GraphicsApiContext* GetCurrentApiContext();
-	static Viewport* GetCurrentViewport();
+
+	ivec2 GetDimensions() const { return m_Dimensions; }
+	float GetAspectRatio() const { return m_AspectRatio; }
+	MulticastDelegate& GetResizeEvent() { return m_ResizeEvent; }
 
 	// callbacks
 	//-----------
@@ -84,6 +90,8 @@ private:
 	I_GraphicsApiContext* m_ApiContext = nullptr; 
 
 	ivec2 m_Dimensions;
+	float m_AspectRatio;
+	MulticastDelegate m_ResizeEvent;
 
 	bool m_IsRealized = false;
 

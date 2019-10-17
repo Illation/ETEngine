@@ -72,12 +72,11 @@ public:
 		//
 		struct Window
 		{
-			Window() : Dimensions(1920, 1080) {}
+			Window() = default;
 
-			// functionality
-			//---------------
-			void DeriveSettings();
-			void Resize(int32 width, int32 height, bool broadcast = true);
+			// accessors
+			//-----------
+			ivec2 GetSize() const;
 
 			// Settings loaded from JSON
 			//---------------------------
@@ -86,23 +85,6 @@ public:
 			std::vector<ivec2> Resolutions;
 			size_t FullscreenRes;
 			size_t WindowedRes;
-
-			// Derived settings after loading data
-			//-------------------------------------
-			float AspectRatio;
-			union
-			{
-				struct
-				{
-					int32 Width;
-					int32 Height;
-				};
-
-				ivec2 Dimensions;
-			};
-
-			// utility
-			MulticastDelegate WindowResizeEvent;
 		};
 
 		Graphics m_Graphics;

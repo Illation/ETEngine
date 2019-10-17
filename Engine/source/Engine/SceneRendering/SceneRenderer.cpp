@@ -118,22 +118,20 @@ void SceneRenderer::ShowSplashScreen()
 		m_SplashRegFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("RobotoCondensed-Regular.ttf"_hash);
 	}
 
-	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
-
 	m_SpriteRenderer.Draw(m_SplashBackgroundTex.get(), vec2(0));
 
 	std::string title = "E   T   E N G I N E";
-	int16 titleFontSize = static_cast<int16>(150.f * (static_cast<float>(windowSettings.Height) / 1440.f));
+	int16 titleFontSize = static_cast<int16>(150.f * (static_cast<float>(m_Dimensions.x) / 1440.f));
 	ivec2 titleSize = m_TextRenderer.GetTextSize(title, m_SplashTitleFont.get(), titleFontSize);
 	m_TextRenderer.SetColor(vec4(1.f));
 	m_TextRenderer.SetFont(m_SplashTitleFont.get());
-	m_TextRenderer.DrawText(title, etm::vecCast<float>(windowSettings.Dimensions / 2 - titleSize / 2), titleFontSize);
+	m_TextRenderer.DrawText(title, etm::vecCast<float>(m_Dimensions / 2 - titleSize / 2), titleFontSize);
 
 	m_TextRenderer.SetFont(m_SplashRegFont.get());
 	std::string loading = "LOADING";
-	int16 loadingFontSize = static_cast<int16>(50.f * (static_cast<float>(windowSettings.Height) / 1440.f));
+	int16 loadingFontSize = static_cast<int16>(50.f * (static_cast<float>(m_Dimensions.x) / 1440.f));
 	ivec2 loadingSize = m_TextRenderer.GetTextSize(loading, m_SplashRegFont.get(), loadingFontSize);
-	m_TextRenderer.DrawText(loading, etm::vecCast<float>(windowSettings.Dimensions - ivec2(loadingSize.x + 20, 20)), loadingFontSize);
+	m_TextRenderer.DrawText(loading, etm::vecCast<float>(m_Dimensions - ivec2(loadingSize.x + 20, 20)), loadingFontSize);
 
 	m_SpriteRenderer.Draw();
 	m_TextRenderer.Draw();
@@ -188,7 +186,6 @@ void SceneRenderer::DrawShadow()
 //
 void SceneRenderer::Draw()
 {
-	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Shadow Mapping
@@ -211,7 +208,7 @@ void SceneRenderer::Draw()
 	m_GBuffer->Enable();
 
 	//reset viewport
-	api->SetViewport(ivec2(0), windowSettings.Dimensions);
+	api->SetViewport(ivec2(0), m_Dimensions);
 
 	api->SetClearColor(vec4(m_ClearColor, 1.f));
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
@@ -235,7 +232,7 @@ void SceneRenderer::Draw()
 	//copy Z-Buffer from gBuffer
 	api->BindReadFramebuffer(m_GBuffer->Get());
 	api->BindDrawFramebuffer(m_SSR->GetTargetFBO());
-	api->CopyDepthReadToDrawFbo(windowSettings.Dimensions, windowSettings.Dimensions);
+	api->CopyDepthReadToDrawFbo(m_Dimensions, m_Dimensions);
 
 	//Render Light Volumes
 	//api->SetStencilEnabled(true); // #todo lightvolume stencil test
@@ -267,7 +264,7 @@ void SceneRenderer::Draw()
 	m_SSR->Draw();
 	api->BindReadFramebuffer(m_SSR->GetTargetFBO());
 	api->BindDrawFramebuffer(m_PostProcessing->GetTargetFBO());
-	api->CopyDepthReadToDrawFbo(windowSettings.Dimensions, windowSettings.Dimensions);
+	api->CopyDepthReadToDrawFbo(m_Dimensions, m_Dimensions);
 
 	api->SetDepthEnabled(true);
 
@@ -312,6 +309,8 @@ void SceneRenderer::Draw()
 //
 void SceneRenderer::OnResize(ivec2 const dim)
 {
+	m_Dimensions = dim;
+
 	if (!m_IsInitialized)
 	{
 		return;

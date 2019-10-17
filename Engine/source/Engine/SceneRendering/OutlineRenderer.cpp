@@ -42,7 +42,7 @@ void OutlineRenderer::Initialize()
 
 	CreateRenderTarget();
 
-	Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener( std::bind( &OutlineRenderer::OnWindowResize, this ) );
+	Viewport::GetCurrentViewport()->GetResizeEvent().AddListener( std::bind( &OutlineRenderer::OnWindowResize, this ) );
 }
 
 //---------------------------------
@@ -51,7 +51,7 @@ void OutlineRenderer::Initialize()
 void OutlineRenderer::CreateRenderTarget()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
-	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
 	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Linear;
@@ -63,14 +63,14 @@ void OutlineRenderer::CreateRenderTarget()
 	//Generate texture and fbo and rbo as initial postprocessing target
 	api->GenFramebuffers(1, &m_DrawTarget);
 	api->BindFramebuffer(m_DrawTarget);
-	m_DrawTex = new TextureData(windowSettings.Dimensions, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
+	m_DrawTex = new TextureData(dim, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 	m_DrawTex->Build();
 	m_DrawTex->SetParameters(params);
 	api->LinkTextureToFbo2D(0, m_DrawTex->GetHandle(), 0);
 
 	api->GenRenderBuffers(1, &m_DrawDepth);
 	api->BindRenderbuffer(m_DrawDepth);
-	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, windowSettings.Dimensions);
+	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, dim);
 	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, m_DrawDepth);
 
 	api->BindFramebuffer(0);
@@ -125,9 +125,9 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb)
 	}
 
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
-	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
-	api->SetViewport(ivec2(0), windowSettings.Dimensions);
+	api->SetViewport(ivec2(0), dim);
 
 	// draw the shapes as colors to the intermediate rendertarget
 	//------------------------------------------------------------
@@ -138,7 +138,7 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb)
 
 	api->SetShader(m_Shader.get());
 	m_Shader->Upload("worldViewProj"_hash, CAMERA->GetViewProj());
-	m_Shader->Upload("uViewSize"_hash, etm::vecCast<float>(windowSettings.Dimensions));
+	m_Shader->Upload("uViewSize"_hash, etm::vecCast<float>(dim));
 
 	m_Shader->Upload("uOcclusionFactor"_hash, 0.15f);
 

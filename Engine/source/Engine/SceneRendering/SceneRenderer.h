@@ -87,6 +87,8 @@ private:
 	// scene rendering
 	vec3 m_ClearColor;
 
+	ivec2 m_Dimensions;
+
 	std::vector<AbstractScene*> m_RenderScenes;
 	T_FbLoc m_TargetFb = 0u;
 

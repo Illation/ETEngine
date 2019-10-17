@@ -49,7 +49,7 @@ void Frustum::Update()
 {
 	//calculate generalized relative width and aspect ratio
 	float normHalfWidth = tan(etm::radians(m_FOV));
-	float aspectRatio = Config::GetInstance()->GetWindow().AspectRatio;
+	float aspectRatio = Viewport::GetCurrentViewport()->GetAspectRatio();
 
 	//calculate width and height for near and far plane
 	float nearHW = normHalfWidth*m_NearPlane;

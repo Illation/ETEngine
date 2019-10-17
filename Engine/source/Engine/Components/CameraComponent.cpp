@@ -30,17 +30,18 @@ CameraComponent::~CameraComponent()
 
 void CameraComponent::Update()
 {
-	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+	float const aspectRatio = Viewport::GetCurrentViewport()->GetAspectRatio();
+	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
 	//Calculate projection
 	if (m_PerspectiveProjection)
 	{
-		m_Projection=etm::perspective(etm::radians(m_FOV), windowSettings.AspectRatio, m_NearPlane, m_FarPlane);
+		m_Projection=etm::perspective(etm::radians(m_FOV), aspectRatio, m_NearPlane, m_FarPlane);
 	}
 	else
 	{
-		float viewWidth = (m_Size>0) ? m_Size * windowSettings.AspectRatio : windowSettings.Width;
-		float viewHeight = (m_Size>0) ? m_Size : windowSettings.Height;
+		float viewWidth = (m_Size>0) ? m_Size * aspectRatio : dim.x;
+		float viewHeight = (m_Size>0) ? m_Size : dim.y;
 		m_Projection = etm::orthographic(0.f, viewWidth, viewHeight, 0.f, m_NearPlane, m_FarPlane);
 	}
 	//Calculate parameters to linearize depthbuffer values

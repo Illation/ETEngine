@@ -71,17 +71,17 @@ void ScreenshotCapture::OnViewportPostFlush(T_FbLoc const targetFb)
 
 	std::string filename = GetFileName();
 
-	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+	ivec2 const dim = m_Viewport->GetDimensions();
 
 	// Make the BYTE array, factor of 3 because it's RBG.
-	uint8* pixels = new uint8[3 * windowSettings.Width * windowSettings.Height];
+	uint8* pixels = new uint8[3 * dim.x * dim.y];
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsApiContext* const api = m_Viewport->GetApiContext();
 	api->Finish();
-	api->ReadPixels(ivec2(0), windowSettings.Dimensions, E_ColorFormat::RGB, E_DataType::UByte, pixels);
+	api->ReadPixels(ivec2(0), dim, E_ColorFormat::RGB, E_DataType::UByte, pixels);
 
 	stbi_flip_vertically_on_write(true);
-	if (stbi_write_jpg(filename.c_str(), windowSettings.Width, windowSettings.Height, 3, pixels, 90) != 0)
+	if (stbi_write_jpg(filename.c_str(), dim.x, dim.y, 3, pixels, 90) != 0)
 	{	
 		LOG("Screenshot saved to: " + filename);
 	}

@@ -27,12 +27,10 @@ public:
 	void Update();
 	void SetVSyncEnabled(bool const val);
 
-private:
-	void OnResize();
+	void SetSize(ivec2 const size);
 
 	// accessors
 	//-----------
-public:
 	GLFWwindow* GetWindow() const { return m_Window; }
 
 	// Render Area Interface
@@ -45,6 +43,8 @@ protected:
 
 	void QueueDraw() override;
 	bool MakeCurrent() override;
+
+	ivec2 GetDimensions() const override;
 
 	// Data
 	///////

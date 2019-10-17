@@ -71,15 +71,13 @@ void PostProcessingRenderer::Initialize()
 	m_pFXAAShader->Upload("texColor"_hash, 0);
 
 	GenerateFramebuffers();
-
-	//Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener( std::bind( &PostProcessingRenderer::ResizeFBTextures, this ) );
 }
 
 void PostProcessingRenderer::GenerateFramebuffers()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
 	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Linear;
@@ -90,14 +88,14 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	//Generate texture and fbo and rbo as initial postprocessing target
 	api->GenFramebuffers(1, &m_CollectFBO);
 	api->BindFramebuffer(m_CollectFBO);
-	m_CollectTex = new TextureData(windowSettings.Dimensions, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
+	m_CollectTex = new TextureData(dim, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 	m_CollectTex->Build();
 	m_CollectTex->SetParameters(params);
 	api->LinkTextureToFbo2D(0, m_CollectTex->GetHandle(), 0);
 	//Render Buffer for depth and stencil
 	api->GenRenderBuffers(1, &m_CollectRBO);
 	api->BindRenderbuffer(m_CollectRBO);
-	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24_Stencil8, windowSettings.Dimensions);
+	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24_Stencil8, dim);
 	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24_Stencil8, m_CollectRBO);
 
 	//Generate textures for the hdr fbo to output into
@@ -105,7 +103,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	api->BindFramebuffer(m_HDRoutFBO);
 	for(uint32 i = 0; i < 2; i++)
 	{
-		m_ColorBuffers[i] = new TextureData(windowSettings.Dimensions, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
+		m_ColorBuffers[i] = new TextureData(dim, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 		m_ColorBuffers[i]->Build();
 		m_ColorBuffers[i]->SetParameters(params, true);
 		// attach texture to framebuffer
@@ -120,7 +118,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	for(uint32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; i++)
 	{
 		float resMult = 1.f / (float)std::pow(2, i + 1);
-		ivec2 res = etm::vecCast<int32>(etm::vecCast<float>(windowSettings.Dimensions) * resMult);
+		ivec2 res = etm::vecCast<int32>(etm::vecCast<float>(dim) * resMult);
 
 		api->BindFramebuffer( m_DownSampleFBO[i] );
 		m_DownSampleTexture[i] = new TextureData(res, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
@@ -140,7 +138,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	for(uint32 i = 0; i < 2; i++)
 	{
 		api->BindFramebuffer( m_PingPongFBO[i] );
-		m_PingPongTexture[i] = new TextureData(windowSettings.Dimensions, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
+		m_PingPongTexture[i] = new TextureData(dim, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 		m_PingPongTexture[i]->Build();
 		m_PingPongTexture[i]->SetParameters(params, true);
 		api->LinkTextureToFbo2D(0, m_PingPongTexture[i]->GetHandle(), 0);
@@ -160,7 +158,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
 
 	api->SetDepthEnabled(false);
@@ -175,7 +173,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 	{
 		if (i > 0) api->SetShader(m_pDownsampleShader.get());
 		float resMult = 1.f / (float)std::pow(2, i + 1);
-		api->SetViewport(ivec2(0), etm::vecCast<int32>(etm::vecCast<float>(windowSettings.Dimensions) * resMult));
+		api->SetViewport(ivec2(0), etm::vecCast<int32>(etm::vecCast<float>(dim) * resMult));
 		api->BindFramebuffer(m_DownSampleFBO[i]);
 		if (i > 0)
 		{
@@ -185,7 +183,6 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 
 		//blur downsampled
-		//api->SetViewport(ivec2(0), windowSettings.Dimensions);
 		api->SetShader(m_pGaussianShader.get());
 		for (uint32 sample = 0; sample < static_cast<uint32>(graphicsSettings.NumBlurPasses * 2); sample++)
 		{
@@ -199,7 +196,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 			RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 		}
 	}
-	api->SetViewport(ivec2(0), windowSettings.Dimensions);
+	api->SetViewport(ivec2(0), dim);
 	//ping pong gaussian blur
 	bool horizontal = true;
 	api->SetShader(m_pGaussianShader.get());
@@ -233,7 +230,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 	{
 		api->BindFramebuffer(FBO);
 		api->SetShader(m_pFXAAShader.get());
-		m_pFXAAShader->Upload("uInverseScreen"_hash, 1.f / etm::vecCast<float>(windowSettings.Dimensions));
+		m_pFXAAShader->Upload("uInverseScreen"_hash, 1.f / etm::vecCast<float>(dim));
 		api->LazyBindTexture(0, E_TextureType::Texture2D, m_PingPongTexture[1]->GetHandle());
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 	}
@@ -243,10 +240,9 @@ void PostProcessingRenderer::ResizeFBTextures()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
-	bool upsize = windowSettings.Width > m_CollectTex->GetResolution().x || windowSettings.Height > m_CollectTex->GetResolution().y;
-	if(upsize)
+	if(dim.x > m_CollectTex->GetResolution().x || dim.x > m_CollectTex->GetResolution().y)
 	{
 		//completely regenerate everything
 		DeleteFramebuffers();
@@ -279,22 +275,24 @@ void PostProcessingRenderer::ResizeFBTextures()
 		return;
 	}
 
-	m_CollectTex->Resize(windowSettings.Dimensions );
+	m_CollectTex->Resize(dim);
 	for(uint32 i = 0; i < 2; i++)
 	{
-		m_ColorBuffers[i]->Resize(windowSettings.Dimensions );
+		m_ColorBuffers[i]->Resize(dim);
 	}
+
 	for(uint32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; i++)
 	{
 		//api->BindFramebuffer( m_DownSampleFBO[i] );
 		float resMult = 1.f / (float)std::pow( 2, i + 1 );
-		api->SetViewport(ivec2(0), etm::vecCast<int32>(etm::vecCast<float>(windowSettings.Dimensions) * resMult));
+		api->SetViewport(ivec2(0), etm::vecCast<int32>(etm::vecCast<float>(dim) * resMult));
 
-		m_DownSampleTexture[i]->Resize(windowSettings.Dimensions);
-		m_DownPingPongTexture[i]->Resize(windowSettings.Dimensions);
+		m_DownSampleTexture[i]->Resize(dim);
+		m_DownPingPongTexture[i]->Resize(dim);
 	}
+
 	for(uint32 i = 0; i < 2; i++)
 	{
-		m_PingPongTexture[i]->Resize(windowSettings.Dimensions );
+		m_PingPongTexture[i]->Resize(dim);
 	}
 }

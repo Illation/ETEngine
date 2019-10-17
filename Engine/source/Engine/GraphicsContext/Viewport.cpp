@@ -13,6 +13,29 @@
 // static
 Viewport* Viewport::g_CurrentViewport = nullptr;
 
+//---------------------------------
+// Viewport::GetCurrentApiContext
+//
+// returns the render state of the current viewport
+//
+I_GraphicsApiContext* Viewport::GetCurrentApiContext()
+{
+	ET_ASSERT(g_CurrentViewport != nullptr);
+	return g_CurrentViewport->GetApiContext();
+}
+
+//---------------------------------
+// Viewport::GetCurrentViewport
+//
+Viewport* Viewport::GetCurrentViewport()
+{
+	ET_ASSERT(g_CurrentViewport != nullptr);
+	return g_CurrentViewport;
+}
+
+
+//-------------------------------------------------------------------------------
+
 
 //---------------------------------
 // Viewport::c-tor
@@ -49,6 +72,16 @@ void Viewport::Redraw()
 }
 
 //---------------------------------
+// Viewport::SynchDimensions
+//
+// Ensure the dimensions are in line with the render areas size - can be useful during application bootup
+//
+void Viewport::SynchDimensions()
+{
+	OnResize(etm::vecCast<float>(m_Area->GetDimensions()));
+}
+
+//---------------------------------
 // Viewport::SetRenderer
 //
 // Set the renderer, takes ownership of it
@@ -64,26 +97,6 @@ void Viewport::SetRenderer(I_ViewportRenderer* renderer)
 }
 
 //---------------------------------
-// Viewport::GetCurrentApiContext
-//
-// returns the render state of the current viewport
-//
-I_GraphicsApiContext* Viewport::GetCurrentApiContext()
-{
-	ET_ASSERT(g_CurrentViewport != nullptr);
-	return g_CurrentViewport->GetApiContext();
-}
-
-//---------------------------------
-// Viewport::GetCurrentViewport
-//
-Viewport* Viewport::GetCurrentViewport()
-{
-	ET_ASSERT(g_CurrentViewport != nullptr);
-	return g_CurrentViewport;
-}
-
-//---------------------------------
 // Viewport::OnRealize
 //
 // From this point on graphics API functions can be called for this viewport
@@ -94,8 +107,10 @@ void Viewport::OnRealize(I_GraphicsApiContext* const api)
 
 	MakeCurrent();
 
+	m_Dimensions = m_Area->GetDimensions();
+
 	// init render state
-	m_ApiContext->Initialize();
+	m_ApiContext->Initialize(m_Dimensions);
 
 	// init renderer
 	if (m_Renderer != nullptr)
@@ -134,11 +149,14 @@ void Viewport::OnResize(vec2 const resolution)
 	MakeCurrent();
 
 	m_Dimensions = etm::vecCast<int32>(resolution);
+	m_AspectRatio = resolution.x / resolution.y;
 
 	if (m_Renderer != nullptr)
 	{
 		m_Renderer->OnResize(m_Dimensions);
 	}
+
+	m_ResizeEvent.Broadcast();
 }
 
 //---------------------------------
@@ -164,8 +182,6 @@ void Viewport::OnRender(T_FbLoc const targetFb)
 //
 void Viewport::Render(T_FbLoc const targetFb)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
-
 	if (m_Renderer != nullptr)
 	{
 		for (I_ViewportListener* const listener : m_Listeners)
@@ -178,11 +194,11 @@ void Viewport::Render(T_FbLoc const targetFb)
 	else
 	{
 		// Draw pink to indicate that no renderer is attached
-		api->SetClearColor(vec4(0.55f, 0.075f, 0.2f, 1.f));
-		api->Clear(E_ClearFlag::Color);
+		m_ApiContext->SetClearColor(vec4(0.55f, 0.075f, 0.2f, 1.f));
+		m_ApiContext->Clear(E_ClearFlag::Color);
 	}
 
-	api->Flush();
+	m_ApiContext->Flush();
 
 	for (I_ViewportListener* const listener : m_Listeners)
 	{

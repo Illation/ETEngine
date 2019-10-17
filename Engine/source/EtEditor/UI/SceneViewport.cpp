@@ -173,6 +173,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* parent)
 //
 void SceneViewport::OnShown()
 {
+	m_Viewport->SynchDimensions();
 	m_SceneRenderer->InitWithSplashScreen();
 	m_Viewport->Redraw();
 }

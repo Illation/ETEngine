@@ -156,7 +156,7 @@ void DebugRenderer::DrawGrid(float pixelSpacingRad)
 	//figure out the spacing of lines
 	static const float unit = 1;
 
-	float spacing = tan((CAMERA->GetFOV() / Config::GetInstance()->GetWindow().Width)*pixelSpacingRad)*std::abs(camPos.y);
+	float spacing = tan((CAMERA->GetFOV() / Viewport::GetCurrentViewport()->GetDimensions().x)*pixelSpacingRad)*std::abs(camPos.y);
 	int32 digitCount = 0;
 	float num = abs(spacing);
 	while (num >= unit)
