@@ -45,7 +45,7 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 
 	//Frustum culling
 	Sphere objSphere = Sphere(pos, radius);
-	if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
+	if (SceneRenderer::GetCurrent()->GetCamera().GetFrustum().ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
 	{
 		return;
 	}
@@ -92,7 +92,7 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 	}
 
 	//for position reconstruction
-	m_pShader->Upload("viewProjInv"_hash, CAMERA->GetStatViewProjInv());
+	m_pShader->Upload("viewProjInv"_hash, SceneRenderer::GetCurrent()->GetCamera().GetStatViewProjInv());
 
 	m_pShader->Upload("Direction"_hash, dir);
 	m_pShader->Upload("Color"_hash, col);
@@ -120,10 +120,12 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *
 	}
 
 	//for position reconstruction
-	m_pShaderShadowed->Upload("projectionA"_hash, CAMERA->GetDepthProjA());
-	m_pShaderShadowed->Upload("projectionB"_hash, CAMERA->GetDepthProjB());
-	m_pShaderShadowed->Upload("viewProjInv"_hash, CAMERA->GetStatViewProjInv());
-	m_pShaderShadowed->Upload("camPos"_hash, CAMERA->GetTransform()->GetPosition());
+	Camera const& cam = SceneRenderer::GetCurrent()->GetCamera();
+
+	m_pShaderShadowed->Upload("projectionA"_hash, cam.GetDepthProjA());
+	m_pShaderShadowed->Upload("projectionB"_hash, cam.GetDepthProjB());
+	m_pShaderShadowed->Upload("viewProjInv"_hash, cam.GetStatViewProjInv());
+	m_pShaderShadowed->Upload("camPos"_hash, cam.GetPosition());
 
 	m_pShaderShadowed->Upload("Direction"_hash, dir);
 	m_pShaderShadowed->Upload("Color"_hash, col);

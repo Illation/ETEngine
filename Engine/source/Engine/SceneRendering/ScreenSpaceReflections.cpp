@@ -11,6 +11,7 @@
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 
 
 ScreenSpaceReflections::ScreenSpaceReflections()
@@ -77,11 +78,14 @@ void ScreenSpaceReflections::Draw()
 	api->LazyBindTexture(3, E_TextureType::Texture2D, m_CollectTex->GetHandle());
 	//for position reconstruction
 	m_pShader->Upload("K"_hash, sinf(TIME->GetTime()) * 20 + 25);
-	m_pShader->Upload("projectionA"_hash, CAMERA->GetDepthProjA());
-	m_pShader->Upload("projectionB"_hash, CAMERA->GetDepthProjB());
-	m_pShader->Upload("viewProjInv"_hash, CAMERA->GetStatViewProjInv());
-	m_pShader->Upload("projection"_hash, CAMERA->GetViewProj());
-	m_pShader->Upload("camPos"_hash, CAMERA->GetTransform()->GetPosition());
+
+	Camera const& cam = SceneRenderer::GetCurrent()->GetCamera();
+
+	m_pShader->Upload("projectionA"_hash, cam.GetDepthProjA());
+	m_pShader->Upload("projectionB"_hash, cam.GetDepthProjB());
+	m_pShader->Upload("viewProjInv"_hash, cam.GetStatViewProjInv());
+	m_pShader->Upload("projection"_hash, cam.GetViewProj());
+	m_pShader->Upload("camPos"_hash, cam.GetPosition());
 
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 }

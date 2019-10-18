@@ -7,6 +7,7 @@
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/EnvironmentMap.h>
 #include <Engine/Components/TransformComponent.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 
 
 SkyboxMaterial::SkyboxMaterial(T_Hash const assetId) 
@@ -30,5 +31,5 @@ void SkyboxMaterial::UploadDerivedVariables()
 	m_Shader->Upload("numMipMaps"_hash, m_EnvironmentMap->GetNumMipMaps());
 	m_Shader->Upload("roughness"_hash, m_Roughness);
 
-	m_Shader->Upload("viewProj"_hash, CAMERA->GetStatViewProj());
+	m_Shader->Upload("viewProj"_hash, SceneRenderer::GetCurrent()->GetCamera().GetStatViewProj());
 }

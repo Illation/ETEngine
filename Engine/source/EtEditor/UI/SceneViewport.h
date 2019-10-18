@@ -50,5 +50,7 @@ private:
 
 	bool m_IsNavigating = false;
 
+	T_SceneEventCallbackId m_SceneInitCallback = SceneEventDispatcher::s_InvalidCallbackId;
+
 	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
 };

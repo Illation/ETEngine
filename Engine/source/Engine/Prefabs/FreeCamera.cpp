@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include <Engine/Components/CameraComponent.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 
 
 FreeCamera::FreeCamera()
@@ -75,7 +76,8 @@ void FreeCamera::Update()
 		float currSpeed = m_MoveSpeed * m_SpeedMultiplier;  
 
 		//move relative to cameras view space - luckily the camera already has those inverted matrices calculated
-		vec3 currPos = TRANSFORM->GetPosition() + etm::CreateFromMat4( m_pCamera->GetViewInv() ) * m_Move * currSpeed * TIME->DeltaTime();
+		mat3 const camMat = etm::CreateFromMat4(SceneRenderer::GetCurrent()->GetCamera().GetViewInv());
+		vec3 currPos = TRANSFORM->GetPosition() + camMat * m_Move * currSpeed * TIME->DeltaTime();
 		TRANSFORM->SetPosition(currPos);
 
 		//Rotate

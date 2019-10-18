@@ -54,9 +54,13 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	radius += surfaceRadius;
 	float icoRadius = radius / 0.996407747f;//scale up the sphere so the face center reaches the top of the atmosphere
 
+	Camera const& cam = SceneRenderer::GetCurrent()->GetCamera();
+
 	Sphere objSphere = Sphere(pos, radius);
-	if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
+	if (cam.GetFrustum().ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
+	{
 		return;
+	}
 
 	//mat4 World = etm::translate(pos)*etm::scale(vec3(icoRadius));
 	mat4 World = etm::scale(vec3(icoRadius))*etm::translate(pos);
@@ -73,7 +77,7 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	api->SetShader(m_pShader.get());
 
 	m_pShader->Upload("model"_hash, World);
-	m_pShader->Upload("worldViewProj"_hash, CAMERA->GetViewProj());
+	m_pShader->Upload("worldViewProj"_hash, cam.GetViewProj());
 
 	// #todo: stop repeating this everywhere
 	m_pShader->Upload("texGBufferA"_hash, 0);
@@ -84,10 +88,11 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	{
 		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());
 	}
-	m_pShader->Upload("projectionA"_hash, CAMERA->GetDepthProjA());
-	m_pShader->Upload("projectionB"_hash, CAMERA->GetDepthProjB());
-	m_pShader->Upload("viewProjInv"_hash, CAMERA->GetStatViewProjInv());
-	m_pShader->Upload("camPos"_hash, CAMERA->GetTransform()->GetPosition());
+
+	m_pShader->Upload("projectionA"_hash, cam.GetDepthProjA());
+	m_pShader->Upload("projectionB"_hash, cam.GetDepthProjB());
+	m_pShader->Upload("viewProjInv"_hash, cam.GetStatViewProjInv());
+	m_pShader->Upload("camPos"_hash, cam.GetPosition());
 
 	m_pShader->Upload("Position"_hash, pos);
 	m_pShader->Upload("Radius"_hash, radius);

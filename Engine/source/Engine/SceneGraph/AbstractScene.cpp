@@ -104,8 +104,6 @@ void AbstractScene::RootUpdate()
 
 	//PERFORMANCE->StartFrameTimer();
 
-	m_SceneContext->camera->Update();
-
 	Update();
 	if(INPUT->GetKeyState(E_KbdKey::Up) == E_KeyState::Down)
 	{
@@ -179,6 +177,12 @@ const PostProcessingSettings& AbstractScene::GetPostProcessingSettings() const
 {
 	//Any settings blending should be done here
 	return m_PostProcessingSettings;
+}
+
+CameraComponent const* AbstractScene::GetActiveCamera() const
+{
+	ET_ASSERT(m_SceneContext != nullptr);
+	return m_SceneContext->camera;
 }
 
 Entity* AbstractScene::GetEntity(T_Hash const id) const

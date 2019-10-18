@@ -185,5 +185,15 @@ void SceneViewport::OnShown()
 //
 void SceneViewport::OnSceneSet()
 {
+	// Set our cameras initial position to the scenes active camera once the scene is loaded
+	m_SceneInitCallback = m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Register(E_SceneEvent::Initialized, T_SceneEventCallback(
+		[this](SceneEventData const* const eventData)
+		{
+			CameraComponent const* camComp = m_Editor->GetSceneSelection().GetScene()->GetActiveCamera();
+			camComp->PopulateCamera(m_SceneRenderer->GetCamera());
+
+			//m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Unregister(m_SceneInitCallback);
+		}));
+
 	m_SceneRenderer->InitRenderingSystems();
 }

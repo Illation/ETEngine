@@ -5,7 +5,7 @@
 
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/Components/TransformComponent.h>
-#include <Engine/Components/CameraComponent.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 
 
 Triangulator::Triangulator(Planet* pPlanet)
@@ -59,7 +59,11 @@ bool Triangulator::Update()
 	}
 
 	m_pFrustum->SetCullTransform(m_pPlanet->GetTransform()->GetWorld());
-	if (!m_LockFrustum) m_pFrustum->SetToCamera(CAMERA);
+	if (!m_LockFrustum)
+	{
+		m_pFrustum->SetToCamera(SceneRenderer::GetCurrent()->GetCamera());
+	}
+
 	m_pFrustum->Update();
 
 	return true;

@@ -137,7 +137,7 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb)
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
 	api->SetShader(m_Shader.get());
-	m_Shader->Upload("worldViewProj"_hash, CAMERA->GetViewProj());
+	m_Shader->Upload("worldViewProj"_hash, SceneRenderer::GetCurrent()->GetCamera().GetViewProj());
 	m_Shader->Upload("uViewSize"_hash, etm::vecCast<float>(dim));
 
 	m_Shader->Upload("uOcclusionFactor"_hash, 0.15f);

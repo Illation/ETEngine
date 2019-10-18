@@ -97,6 +97,11 @@ void AbstractFramework::GameLoop()
 		//****
 		//DRAW
 
+		if (SceneManager::GetInstance()->GetActiveScene()->IsInitialized())
+		{
+			SceneManager::GetInstance()->GetActiveScene()->GetActiveCamera()->PopulateCamera(m_SceneRenderer->GetCamera());
+		}
+
 		m_RenderArea.Update();
 	}
 }

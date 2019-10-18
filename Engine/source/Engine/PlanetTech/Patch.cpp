@@ -11,6 +11,7 @@
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/Components/TransformComponent.h>
 #include <Engine/Components/CameraComponent.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 
 
 Patch::Patch(int16 levels)
@@ -163,7 +164,7 @@ void Patch::Draw()
 
 	// Pass transformations to the shader
 	m_pPatchShader->Upload("model"_hash, m_pPlanet->GetTransform()->GetWorld());
-	m_pPatchShader->Upload("viewProj"_hash, CAMERA->GetViewProj());
+	m_pPatchShader->Upload("viewProj"_hash, SceneRenderer::GetCurrent()->GetCamera().GetViewProj());
 
 	//Set other uniforms here too!
 	vec3 camPos = m_pPlanet->GetTriangulator()->GetFrustum()->GetPositionOS();

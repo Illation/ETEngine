@@ -11,6 +11,7 @@
 
 #include <Engine/Graphics/SpriteFont.h>
 #include <Engine/Graphics/TextureData.h>
+#include <Engine/Graphics/Camera.h>
 #include <Engine/GraphicsContext/ViewportRenderer.h>
 
 
@@ -64,6 +65,8 @@ protected:
 	// accessors
 	//--------------
 public:
+	Camera& GetCamera() { return m_Camera; }
+
 	std::vector<AbstractScene*> const& GetRenderScenes() { return m_RenderScenes; }
 
 	Gbuffer* GetGBuffer() { return m_GBuffer; }
@@ -89,8 +92,9 @@ private:
 
 	// scene rendering
 	vec3 m_ClearColor;
-
 	ivec2 m_Dimensions;
+
+	Camera m_Camera;
 
 	std::vector<AbstractScene*> m_RenderScenes;
 	T_FbLoc m_TargetFb = 0u;

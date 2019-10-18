@@ -36,17 +36,6 @@ void Frustum::SetCullTransform(mat4 objectWorld)
 	m_CullInverse = etm::inverse(objectWorld);
 }
 
-void Frustum::SetToCamera(CameraComponent* pCamera)
-{
-	m_Position = pCamera->GetTransform()->GetPosition();
-	m_Forward = pCamera->GetTransform()->GetForward();
-	m_Up = pCamera->GetTransform()->GetUp();
-	m_Right = pCamera->GetTransform()->GetRight();
-	m_NearPlane = pCamera->GetNearPlane();
-	m_FarPlane = pCamera->GetFarPlane();
-	m_FOV = pCamera->GetFOV();
-}
-
 void Frustum::SetToCamera(Camera const& camera)
 {
 	m_Position = camera.GetPosition();

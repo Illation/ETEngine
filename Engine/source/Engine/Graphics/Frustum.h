@@ -1,6 +1,5 @@
 #pragma once
 
-class CameraComponent;
 class Camera;
 
 enum class VolumeCheck
@@ -35,7 +34,6 @@ public:
 
 	void Update();
 
-	void SetToCamera(CameraComponent* pCamera);
 	void SetToCamera(Camera const& camera);
 	void SetCullTransform(mat4 objectWorld);
 
@@ -48,7 +46,7 @@ public:
 	const float GetFOV() { return m_FOV; }
 	const float GetRadInvFOV() { return m_RadInvFOV; }
 
-	FrustumCorners GetCorners() { return m_Corners; }
+	FrustumCorners const& GetCorners() const { return m_Corners; }
 
 private:
 	//transform to the culled objects object space and back to world space

@@ -6,6 +6,7 @@
 #include <Engine/Graphics/EnvironmentMap.h>
 #include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <Engine/SceneGraph/AbstractScene.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 #include <Engine/Components/LightComponent.h>
 #include <Engine/Prefabs/Skybox.h>
 
@@ -21,7 +22,6 @@ Gbuffer::Gbuffer(bool demo):
 
 void Gbuffer::AccessShaderAttributes()
 {
-	//m_pShader->Upload("texGBufferA"_hash, 0);
 	m_pShader->Upload("texGBufferB"_hash, 1);
 	m_pShader->Upload("texGBufferC"_hash, 2);
 }
@@ -31,10 +31,7 @@ void Gbuffer::UploadDerivedVariables()
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//for position reconstruction
-	//m_pShader->Upload("projectionA"_hash, CAMERA->GetDepthProjA());
-	//m_pShader->Upload("projectionB"_hash, CAMERA->GetDepthProjB());
-	m_pShader->Upload("viewProjInv"_hash, CAMERA->GetStatViewProjInv());
-	//m_pShader->Upload("camPos"_hash, CAMERA->GetTransform()->GetPosition());
+	m_pShader->Upload("viewProjInv"_hash, SceneRenderer::GetCurrent()->GetCamera().GetStatViewProjInv());
 
 	if (SCENE->SkyboxEnabled())
 	{

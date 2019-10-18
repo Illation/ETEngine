@@ -21,7 +21,8 @@ void SceneSelection::SetScene(AbstractScene* const scene)
 {
 	m_Scene = scene;
 
-	m_Scene->GetEventDispatcher().Register(E_SceneEvent::All, T_SceneEventCallback(std::bind(&SceneSelection::OnSceneEvent, this, std::placeholders::_1)));
+	m_Scene->GetEventDispatcher().Register(E_SceneEvent::All, 
+		T_SceneEventCallback(std::bind(&SceneSelection::OnSceneEvent, this, std::placeholders::_1)));
 
 	if (!m_IsIdRendererInitialized)
 	{
