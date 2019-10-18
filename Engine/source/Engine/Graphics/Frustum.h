@@ -1,6 +1,7 @@
 #pragma once
 
 class CameraComponent;
+class Camera;
 
 enum class VolumeCheck
 {
@@ -35,6 +36,7 @@ public:
 	void Update();
 
 	void SetToCamera(CameraComponent* pCamera);
+	void SetToCamera(Camera const& camera);
 	void SetCullTransform(mat4 objectWorld);
 
 	VolumeCheck ContainsPoint(const vec3 &point) const;

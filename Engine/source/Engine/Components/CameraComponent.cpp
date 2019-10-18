@@ -57,7 +57,7 @@ void CameraComponent::Update()
 	//calculate utility
 	m_ViewInverse = etm::inverse(m_View);
 	m_ViewProjection = m_View * m_Projection;
-	m_ViewProjectionInverse = etm::inverse(m_View);
+	m_ViewProjectionInverse = etm::inverse(m_ViewProjection);
 	m_StatViewProj = etm::DiscardW(m_View) * m_Projection;
 	m_StatViewProjInv = inverse(m_StatViewProj);
 

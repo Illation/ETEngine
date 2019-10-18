@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Frustum.h"
 
+#include "Camera.h"
+
 #include <Engine/Components/TransformComponent.h>
 #include <Engine/Components/CameraComponent.h>
 
@@ -43,6 +45,19 @@ void Frustum::SetToCamera(CameraComponent* pCamera)
 	m_NearPlane = pCamera->GetNearPlane();
 	m_FarPlane = pCamera->GetFarPlane();
 	m_FOV = pCamera->GetFOV();
+}
+
+void Frustum::SetToCamera(Camera const& camera)
+{
+	m_Position = camera.GetPosition();
+
+	m_Forward = camera.GetForward();
+	m_Up = camera.GetUp();
+	m_Right = etm::cross(m_Up, m_Forward);
+
+	m_NearPlane = camera.GetNearPlane();
+	m_FarPlane = camera.GetFarPlane();
+	m_FOV = camera.GetFOV();
 }
 
 void Frustum::Update()
