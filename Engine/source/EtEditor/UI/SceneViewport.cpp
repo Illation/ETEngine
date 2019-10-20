@@ -54,7 +54,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* parent)
 	// hook up events
 
 	// keyboard press
-	glArea->add_events(Gdk::KEY_PRESS_MASK);
+	glArea->set_events(Gdk::KEY_PRESS_MASK | Gdk::KEY_RELEASE_MASK);
 	auto keyPressedCallback = [this](GdkEventKey* evnt) -> bool
 	{
 		if (m_IsNavigating)
@@ -65,16 +65,15 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* parent)
 
 		return false;
 	};
-	glArea->signal_key_press_event().connect(keyPressedCallback, false);
+	glArea->signal_key_press_event().connect(keyPressedCallback, true);
 
 	// keyboard release
-	glArea->add_events(Gdk::KEY_RELEASE_MASK);
 	auto keyReleasedCallback = [](GdkEventKey* evnt) -> bool
 	{
 		InputManager::GetInstance()->OnKeyReleased(GtkUtil::GetKeyFromGtk(evnt->keyval));
 		return true;
 	};
-	glArea->signal_key_release_event().connect(keyReleasedCallback, false);
+	glArea->signal_key_release_event().connect(keyReleasedCallback, true);
 
 	// mouse click
 	glArea->add_events(Gdk::BUTTON_PRESS_MASK);

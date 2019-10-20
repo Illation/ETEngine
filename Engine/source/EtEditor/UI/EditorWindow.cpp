@@ -42,6 +42,19 @@ EditorAppWindow::EditorAppWindow(BaseObjectType* cobject, Glib::RefPtr<Gtk::Buil
 	}
 	set_show_menubar(true);
 
+	auto keyPressedCallback = [this](GdkEventKey* evnt) -> bool
+	{
+		return false;
+	};
+	signal_key_press_event().connect(keyPressedCallback, true);
+
+	// keyboard release
+	auto keyReleasedCallback = [](GdkEventKey* evnt) -> bool
+	{
+		return true;
+	};
+	signal_key_release_event().connect(keyReleasedCallback, true);
+
 	// Set the window icon.
 	set_icon(Gdk::Pixbuf::create_from_resource("/com/leah-lindner/editor/ui/icons/menu.png"));
 }

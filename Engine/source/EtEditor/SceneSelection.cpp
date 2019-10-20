@@ -158,8 +158,11 @@ void SceneSelection::OnTick()
 	}
 
 	// actually we should do this for every viewport with a scene renderer
-	OutlineRenderer& outlineRenderer = SceneRenderer::GetCurrent()->GetOutlineRenderer();
+	for (SceneRenderer* sceneRenderer : SceneRenderer::GetAll())
+	{
+		OutlineRenderer& outlineRenderer = sceneRenderer->GetOutlineRenderer();
 
-	outlineRenderer.SetColor(m_OutlineColor);
-	outlineRenderer.AddEntities(m_SelectedEntities);
+		outlineRenderer.SetColor(m_OutlineColor);
+		outlineRenderer.AddEntities(m_SelectedEntities);
+	}
 }
