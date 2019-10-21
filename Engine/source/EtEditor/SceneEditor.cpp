@@ -15,6 +15,7 @@
 #include <Engine/Audio/AudioManager.h>
 
 #include <EtEditor/UI/GtkUtil.h>
+#include <EtEditor/UI/SceneViewport.h>
 
 
 //==========================
@@ -75,6 +76,32 @@ void SceneEditor::Init(Gtk::Frame* const parent)
 }
 
 //----------------------------------------------------
+// SceneEditor::OnKeyEvent
+//
+bool SceneEditor::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
+{
+	if (m_NavigatingViewport != nullptr)
+	{
+		return m_NavigatingViewport->OnKeyEvent(pressed, evnt);
+	}
+
+	return false;
+}
+
+//----------------------------------------------------
+// SceneEditor::OnTick
+//
+void SceneEditor::OnTick()
+{
+	m_SceneSelection.UpdateOutliners();
+
+	for (I_SceneEditorListener* const listener : m_Listeners)
+	{
+		listener->OnEditorTick();
+	}
+}
+
+//----------------------------------------------------
 // SceneEditor::RegisterListener
 //
 void SceneEditor::RegisterListener(I_SceneEditorListener* const listener)
@@ -110,4 +137,3 @@ void SceneEditor::UnregisterListener(I_SceneEditorListener const* const listener
 		m_Listeners.clear();
 	}
 }
-

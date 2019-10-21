@@ -7,8 +7,10 @@
 #include <gtkmm/frame.h>
 #include <gtkmm/builder.h>
 #include <glibmm/refptr.h>
+#include <gdk/gdk.h>
 
 #include <EtEditor/SceneEditorListener.h>
+#include <EtEditor/EditorCamera.h>
 
 
 // forward
@@ -37,6 +39,11 @@ public:
 	//---------------------------------
 	void OnShown();
 	void OnSceneSet();
+	void OnEditorTick();
+
+	// functionality
+	//----------------
+	bool OnKeyEvent(bool const pressed, GdkEventKey* const evnt);
 
 	// Data
 	///////
@@ -45,10 +52,9 @@ private:
 
 	SceneEditor* m_Editor;
 
+	EditorCamera m_Camera;
 	std::unique_ptr<Viewport> m_Viewport;
 	SceneRenderer* m_SceneRenderer = nullptr;
-
-	bool m_IsNavigating = false;
 
 	T_SceneEventCallbackId m_SceneInitCallback = SceneEventDispatcher::s_InvalidCallbackId;
 

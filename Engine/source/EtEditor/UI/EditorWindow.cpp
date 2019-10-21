@@ -44,14 +44,26 @@ EditorAppWindow::EditorAppWindow(BaseObjectType* cobject, Glib::RefPtr<Gtk::Buil
 
 	auto keyPressedCallback = [this](GdkEventKey* evnt) -> bool
 	{
-		return false;
+		EditorBase* const activeEditor = GetVisibleEditor();
+		if (activeEditor == nullptr)
+		{
+			return false;
+		}
+
+		return activeEditor->OnKeyEvent(true, evnt);
 	};
 	signal_key_press_event().connect(keyPressedCallback, true);
 
 	// keyboard release
-	auto keyReleasedCallback = [](GdkEventKey* evnt) -> bool
+	auto keyReleasedCallback = [this](GdkEventKey* evnt) -> bool
 	{
-		return true;
+		EditorBase* const activeEditor = GetVisibleEditor();
+		if (activeEditor == nullptr)
+		{
+			return false;
+		}
+
+		return activeEditor->OnKeyEvent(false, evnt);
 	};
 	signal_key_release_event().connect(keyReleasedCallback, true);
 
@@ -154,4 +166,31 @@ void EditorAppWindow::RemoveEditor(EditorBase* const editor)
 
 	// we don't swap because order might matter in the future, and the list will probably never have enough pointers to impact performance
 	m_Editors.erase(editorIt); 
+}
+
+//---------------------------------
+// EditorAppWindow::GetVisibleEditor
+//
+// Retrieve the editor that is currently visible in the stack
+//
+EditorBase* EditorAppWindow::GetVisibleEditor() const
+{
+	// get the visible frame
+	Gtk::Widget* childWidget = m_EditorStack->get_visible_child();
+	if (childWidget == nullptr)
+	{
+		return nullptr;
+	}
+
+	// find an editor bound to that frame
+	auto const foundPairIt = std::find_if(m_Editors.cbegin(), m_Editors.cend(), [childWidget](T_EditorFramePair const& childPair)
+		{
+			return childPair.second == childWidget;
+		});
+	if (foundPairIt == m_Editors.cend())
+	{
+		return nullptr;
+	}
+
+	return foundPairIt->first;
 }

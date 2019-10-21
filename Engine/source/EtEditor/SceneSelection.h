@@ -3,8 +3,6 @@
 
 #include "EditorTickOrder.h"
 
-#include <EtCore/UpdateCycle/Tickable.h>
-
 #include <EtEditor/Rendering/EntityIdRenderer.h>
 
 
@@ -31,13 +29,13 @@ public:
 //--------------------
 // SceneSelection
 //
-class SceneSelection final : public I_Tickable
+class SceneSelection final 
 {
 public:
 
 	// ctor dtor
 	//---------------
-	SceneSelection() : I_Tickable(static_cast<uint32>(E_EditorTickOrder::TICK_SceneSelection)) {}
+	SceneSelection() = default;
 	~SceneSelection() = default;
 
 	// accessors
@@ -56,12 +54,10 @@ public:
 
 	void Pick(ivec2 const pos, Viewport* const viewport, bool const add);
 
+	void UpdateOutliners() const;
+
 private:
 	void OnSceneEvent(SceneEventData const* const eventData);
-
-	// I_Tickable interface
-	//----------------------
-	void OnTick() override; 
 	
 	// Data
 	///////

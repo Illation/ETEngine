@@ -45,6 +45,8 @@ public:
 
 private:
 
+	EditorBase* GetVisibleEditor() const;
+
 	// Data
 	/////////
 

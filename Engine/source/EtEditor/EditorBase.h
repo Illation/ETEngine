@@ -1,6 +1,8 @@
 #pragma once
 #include <EtEditor/UI/EditorTool.h>
 
+#include <gdk/gdk.h>
+
 
 // forward
 namespace Gtk {
@@ -27,6 +29,8 @@ public:
 	//------------
 	virtual void Init(Gtk::Frame* const parent) = 0;
 	virtual std::string const& GetName() const = 0;
+
+	virtual bool OnKeyEvent(bool const pressed, GdkEventKey* const evnt);
 
 	// functionality
 	//------------------

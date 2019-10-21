@@ -53,28 +53,6 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* parent)
 
 	// hook up events
 
-	// keyboard press
-	glArea->set_events(Gdk::KEY_PRESS_MASK | Gdk::KEY_RELEASE_MASK);
-	auto keyPressedCallback = [this](GdkEventKey* evnt) -> bool
-	{
-		if (m_IsNavigating)
-		{
-			InputManager::GetInstance()->OnKeyPressed(GtkUtil::GetKeyFromGtk(evnt->keyval));
-			return true;
-		}
-
-		return false;
-	};
-	glArea->signal_key_press_event().connect(keyPressedCallback, true);
-
-	// keyboard release
-	auto keyReleasedCallback = [](GdkEventKey* evnt) -> bool
-	{
-		InputManager::GetInstance()->OnKeyReleased(GtkUtil::GetKeyFromGtk(evnt->keyval));
-		return true;
-	};
-	glArea->signal_key_release_event().connect(keyReleasedCallback, true);
-
 	// mouse click
 	glArea->add_events(Gdk::BUTTON_PRESS_MASK);
 	auto mousePressedCallback = [this, glArea](GdkEventButton* evnt) -> bool
@@ -91,10 +69,11 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* parent)
 		else
 		{
 			// other clicks (left) we navigate
-			m_IsNavigating = true;
+			m_Editor->SetNavigatingViewport(this);
+			m_Camera.SetEnabled(true);
 			InputManager::GetInstance()->OnMousePressed(code);
 		}
-		return false;
+		return true;
 	};
 	glArea->signal_button_press_event().connect(mousePressedCallback, false);
 
@@ -103,8 +82,9 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* parent)
 	auto mouseReleasedCallback = [this](GdkEventButton* evnt) -> bool
 	{
 		InputManager::GetInstance()->OnMouseReleased(GtkUtil::GetButtonFromGtk(evnt->button));
-		m_IsNavigating = false;
-		return false;
+		m_Camera.SetEnabled(false);
+		m_Editor->SetNavigatingViewport(nullptr);
+		return true;
 	};
 	glArea->signal_button_release_event().connect(mouseReleasedCallback, false);
 
@@ -188,11 +168,37 @@ void SceneViewport::OnSceneSet()
 	m_SceneInitCallback = m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Register(E_SceneEvent::Initialized, T_SceneEventCallback(
 		[this](SceneEventData const* const eventData)
 		{
-			CameraComponent const* camComp = m_Editor->GetSceneSelection().GetScene()->GetActiveCamera();
-			camComp->PopulateCamera(m_SceneRenderer->GetCamera());
+			m_Camera.ImitateComponent(m_Editor->GetSceneSelection().GetScene()->GetActiveCamera());
+			m_Camera.PopulateCamera(m_SceneRenderer->GetCamera());
 
 			//m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Unregister(m_SceneInitCallback);
 		}));
 
 	m_SceneRenderer->InitRenderingSystems();
+}
+
+//------------------------------------
+// SceneEditor::OnEditorTick
+//
+void SceneViewport::OnEditorTick()
+{
+	m_Camera.Update(m_SceneRenderer->GetCamera());
+	m_Camera.PopulateCamera(m_SceneRenderer->GetCamera());
+}
+
+//------------------------------------
+// SceneEditor::OnKeyEvent
+//
+bool SceneViewport::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
+{
+	if (pressed)
+	{
+		InputManager::GetInstance()->OnKeyPressed(GtkUtil::GetKeyFromGtk(evnt->keyval));
+	}
+	else
+	{
+		InputManager::GetInstance()->OnKeyReleased(GtkUtil::GetKeyFromGtk(evnt->keyval));
+	}
+
+	return true;
 }

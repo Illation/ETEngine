@@ -11,6 +11,9 @@ public:
 	CameraComponent();
 	~CameraComponent() = default;
 
+	float GetFieldOfView() const { return m_FieldOfView; }
+	float GetFarPlane() const { return m_FarPlane; }
+
 	void SetFieldOfView(float fov) { m_FieldOfView = fov; }
 	void SetOrthoSize(float size) { m_Size = size; }
 	void SetNearClippingPlane(float nearPlane) { m_NearPlane = nearPlane; }

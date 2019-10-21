@@ -8,7 +8,7 @@
 //
 enum class E_EditorTickOrder : uint32
 {
-	TICK_SceneSelection = static_cast<E_EditorTickOrder>(E_TickOrder::COUNT),
+	TICK_SceneEditor = static_cast<E_EditorTickOrder>(E_TickOrder::COUNT),
 
 	COUNT
 };

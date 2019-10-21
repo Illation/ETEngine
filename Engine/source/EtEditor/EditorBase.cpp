@@ -36,6 +36,19 @@ Gtk::Frame* EditorBase::CreateInnerFrame(Gtk::Paned* const split, bool const isF
 }
 
 //---------------------------------
+// EditorBase::OnKeyEvent
+//
+// by default editors don't handle key events, but this can be overridden by implementations
+//
+bool EditorBase::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
+{
+	UNUSED(pressed);
+	UNUSED(evnt);
+
+	return false;
+}
+
+//---------------------------------
 // EditorBase
 //
 void EditorBase::CreateTool(E_EditorTool const toolType, Gtk::Frame* const parent)

@@ -96,12 +96,12 @@ void PlanetTestScene::Update()
 
 	if (INPUT->GetKeyState(E_KbdKey::J) == E_KeyState::Down)
 	{
-		CAMERA->SetFieldOfView(CAMERA->GetFOV() + TIME->DeltaTime()*10);
+		CAMERA->SetFieldOfView(CAMERA->GetFieldOfView() + TIME->DeltaTime()*10);
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::K) == E_KeyState::Down)
 	{
-		CAMERA->SetFieldOfView(CAMERA->GetFOV() - TIME->DeltaTime()*10);
+		CAMERA->SetFieldOfView(CAMERA->GetFieldOfView() - TIME->DeltaTime()*10);
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::Num_0) == E_KeyState::Pressed)

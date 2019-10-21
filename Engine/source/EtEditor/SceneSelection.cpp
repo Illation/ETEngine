@@ -135,22 +135,9 @@ void SceneSelection::Pick(ivec2 const pos, Viewport* const viewport, bool const 
 }
 
 //----------------------------------------------------
-// SceneSelection::OnSceneEvent
+// SceneSelection::UpdateOutliners
 //
-// pass the event through to any listeners
-//
-void SceneSelection::OnSceneEvent(SceneEventData const* const eventData)
-{
-	for (I_SceneSelectionListener* const listener : m_Listeners)
-	{
-		listener->OnSceneEvent(eventData);
-	}
-}
-
-//----------------------------------------------------
-// SceneSelection::OnTick
-//
-void SceneSelection::OnTick()
+void SceneSelection::UpdateOutliners() const
 {
 	if (m_SelectedEntities.empty())
 	{
@@ -164,5 +151,18 @@ void SceneSelection::OnTick()
 
 		outlineRenderer.SetColor(m_OutlineColor);
 		outlineRenderer.AddEntities(m_SelectedEntities);
+	}
+}
+
+//----------------------------------------------------
+// SceneSelection::OnSceneEvent
+//
+// pass the event through to any listeners
+//
+void SceneSelection::OnSceneEvent(SceneEventData const* const eventData)
+{
+	for (I_SceneSelectionListener* const listener : m_Listeners)
+	{
+		listener->OnSceneEvent(eventData);
 	}
 }
