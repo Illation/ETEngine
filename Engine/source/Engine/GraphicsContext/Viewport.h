@@ -76,7 +76,7 @@ protected:
 
 	// utility
 	//-----------
-private:
+public:
 	void MakeCurrent();
 
 

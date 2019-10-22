@@ -2,6 +2,10 @@
 #include "Frustum.h"
 
 
+// forward
+class Viewport;
+
+
 //-----------
 // Camera
 //
@@ -26,6 +30,8 @@ public:
 	void SetSize(float const size, bool const deferRecalculation = false);
 
 	void SetClippingPlanes(float const nearPlane, float const farPlane, bool const deferRecalculation = false);
+
+	void SetViewport(Viewport const* const viewport, bool const deferRecalculation = false);
 
 	// accessors
 	//-----------
@@ -75,6 +81,8 @@ private:
 	bool m_IsPerspective = true;
 	float m_FieldOfView = 45.f; // angle of perspective camera in degrees
 	float m_Size = 25.f; // width of orthographic camera
+
+	Viewport const* m_Viewport = nullptr; // aspect ratio of projection matrix
 
 	// depth 
 	float m_NearPlane = 1.f;

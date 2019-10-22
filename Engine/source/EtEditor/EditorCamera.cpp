@@ -103,13 +103,14 @@ void EditorCamera::Update(Camera const& currentCamera)
 //
 // Populate the parameters of a graphical camera for rendering 
 //
-void EditorCamera::PopulateCamera(Camera& target) const
+void EditorCamera::PopulateCamera(Camera& target, Viewport const* const viewport) const
 {
 	target.SetTransformation(m_Position, m_Forward, m_Up, true);
 
 	target.SetIsPerspective(true, true);
 	target.SetFieldOfView(m_FieldOfView, true);
 	target.SetClippingPlanes(m_NearPlane, m_FarPlane, true);
+	target.SetViewport(viewport, true);
 
 	target.Recalculate();
 }

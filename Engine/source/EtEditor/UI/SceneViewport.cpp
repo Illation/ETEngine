@@ -152,6 +152,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* parent)
 //
 void SceneViewport::OnShown()
 {
+	m_Viewport->MakeCurrent();
 	m_Viewport->SynchDimensions();
 	m_SceneRenderer->InitWithSplashScreen();
 	m_Viewport->Redraw();
@@ -164,12 +165,14 @@ void SceneViewport::OnShown()
 //
 void SceneViewport::OnSceneSet()
 {
+	m_Viewport->MakeCurrent();
+
 	// Set our cameras initial position to the scenes active camera once the scene is loaded
 	m_SceneInitCallback = m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Register(E_SceneEvent::Initialized, T_SceneEventCallback(
 		[this](SceneEventData const* const eventData)
 		{
 			m_Camera.ImitateComponent(m_Editor->GetSceneSelection().GetScene()->GetActiveCamera());
-			m_Camera.PopulateCamera(m_SceneRenderer->GetCamera());
+			m_Camera.PopulateCamera(m_SceneRenderer->GetCamera(), m_Viewport.get());
 
 			//m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Unregister(m_SceneInitCallback);
 		}));
@@ -183,7 +186,7 @@ void SceneViewport::OnSceneSet()
 void SceneViewport::OnEditorTick()
 {
 	m_Camera.Update(m_SceneRenderer->GetCamera());
-	m_Camera.PopulateCamera(m_SceneRenderer->GetCamera());
+	m_Camera.PopulateCamera(m_SceneRenderer->GetCamera(), m_Viewport.get());
 }
 
 //------------------------------------

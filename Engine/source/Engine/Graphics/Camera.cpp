@@ -92,6 +92,20 @@ void Camera::SetClippingPlanes(float const nearPlane, float const farPlane, bool
 }
 
 //----------------------------
+// Camera::SetViewport
+//
+void Camera::SetViewport(Viewport const* const viewport, bool const deferRecalculation)
+{
+	m_Viewport = viewport;
+
+	if (!deferRecalculation)
+	{
+		RecalculateProjection();
+		RecalculateDerived();
+	}
+}
+
+//----------------------------
 // Camera::Recalculate
 //
 void Camera::Recalculate()
@@ -117,8 +131,10 @@ void Camera::RecalculateView()
 //
 void Camera::RecalculateProjection()
 {
+	ET_ASSERT(m_Viewport != nullptr);
+
 	// Maybe camera should be linked to a specific viewport instead of getting the current one
-	float const aspectRatio = Viewport::GetCurrentViewport()->GetAspectRatio();
+	float const aspectRatio = m_Viewport->GetAspectRatio();
 
 	//Calculate projection
 	if (m_IsPerspective)
@@ -127,7 +143,7 @@ void Camera::RecalculateProjection()
 	}
 	else
 	{
-		ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
+		ivec2 const dim = m_Viewport->GetDimensions();
 
 		float viewWidth = (m_Size > 0) ? m_Size * aspectRatio : dim.x;
 		float viewHeight = (m_Size > 0) ? m_Size : dim.y;

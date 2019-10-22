@@ -3,6 +3,7 @@
 
 // forward
 class CameraComponent;
+class Viewport;
 
 
 //---------------------------------
@@ -27,7 +28,7 @@ public:
 	// functionality
 	//----------------
 	void Update(Camera const& currentCamera);
-	void PopulateCamera(Camera& target) const;
+	void PopulateCamera(Camera& target, Viewport const* const viewport) const;
 
 	void ImitateComponent(CameraComponent const* const comp);
 
