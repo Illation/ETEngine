@@ -1,14 +1,7 @@
 #pragma once
-#include <EtEditor/UI/EditorTool.h>
+#include "EditorNode.h"
 
 #include <gdk/gdk.h>
-
-
-// forward
-namespace Gtk {
-	class Frame;
-	class Paned;
-}
 
 
 //---------------------------------

@@ -16,7 +16,9 @@ namespace Gtk {
 enum class E_EditorTool
 {
 	SceneViewport,
-	Outliner
+	Outliner,
+
+	Invalid
 };
 
 
