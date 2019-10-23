@@ -29,13 +29,27 @@ RTTR_REGISTRATION
 	registration::class_<EditorNode>("editor node");
 
 	registration::class_<EditorSplitNode>("editor split node")
+		.constructor<>()(rttr::detail::as_object())
 		.property("split ratio", &EditorSplitNode::m_SplitRatio)
 		.property("is horizontal", &EditorSplitNode::m_IsHorizontal)
 		.property("child 1", &EditorSplitNode::m_Child1)
 		.property("child 2", &EditorSplitNode::m_Child2);
 
+	rttr::type::register_converter_func([](EditorSplitNode& node, bool& ok) -> EditorNode*
+	{
+		ok = true;
+		return new EditorSplitNode(node);
+	});
+
 	registration::class_<EditorToolNode>("editor tool node")
+		.constructor<>()(rttr::detail::as_object())
 		.property("type", &EditorToolNode::m_Type);
+
+	rttr::type::register_converter_func([](EditorToolNode& node, bool& ok) -> EditorNode*
+	{
+		ok = true;
+		return new EditorToolNode(node);
+	});
 }
 
 
@@ -77,7 +91,7 @@ void EditorSplitNode::InitInternal(EditorBase* const editor)
 
 	Gtk::Frame* childFrame2 = Gtk::make_managed<Gtk::Frame>();
 	childFrame2->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-	m_Paned->add1(*childFrame2);
+	m_Paned->add2(*childFrame2);
 
 	m_Child1->Init(editor, childFrame1);
 	m_Child2->Init(editor, childFrame2);
@@ -88,6 +102,16 @@ void EditorSplitNode::InitInternal(EditorBase* const editor)
 // Editor Tool Node
 //====================
 
+
+//---------------------------------
+// EditorToolNode::c-tor
+//
+// Shallow copy constructor implementation due to unique ptr
+//
+EditorToolNode::EditorToolNode(EditorToolNode const& other) : EditorNode()
+{
+	m_Type = other.GetType();
+}
 
 //---------------------------------
 // EditorToolNode::InitInternal

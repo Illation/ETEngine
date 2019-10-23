@@ -84,11 +84,17 @@ class EditorToolNode final : public EditorNode
 {
 public:
 	EditorToolNode() : EditorNode() {}
+	EditorToolNode(EditorToolNode const& other);
 	~EditorToolNode() = default;
 
 	bool IsLeaf() const override { return true; }
 private:
 	void InitInternal(EditorBase* const editor) override;
+
+public:
+	E_EditorTool GetType() const { return m_Type; }
+
+private:
 
 	E_EditorTool m_Type = E_EditorTool::Invalid;
 	std::unique_ptr<I_EditorTool> m_Tool;
