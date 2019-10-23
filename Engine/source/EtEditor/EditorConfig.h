@@ -30,6 +30,9 @@ public:
 		std::string m_ProjectPath;
 		std::string m_EnginePath;
 
+		// derived
+		std::string m_EditorUserDir;
+
 		RTTR_ENABLE()
 	};
 
@@ -48,6 +51,7 @@ private:
 public:
 	std::string const& GetProjectPath() const { return m_DirPointers.m_ProjectPath; }
 	std::string const& GetEnginePath() const { return m_DirPointers.m_EnginePath; }
+	std::string const& GetEditorUserDir() const { return m_DirPointers.m_EditorUserDir; }
 
 	// initialization
 	void Initialize();

@@ -35,4 +35,6 @@ void EditorConfig::Initialize()
 	{
 		LOG("EditorConfig::Initialize > unable to deserialize directory pointers!", LogLevel::Error);
 	}
+
+	m_DirPointers.m_EditorUserDir = m_DirPointers.m_ProjectPath + std::string("/user_data/editor/");
 }

@@ -23,6 +23,7 @@ class SceneEditor final : public EditorBase, public I_Tickable
 	//--------------
 public:
 	static std::string const s_EditorName;
+	static std::string const s_LayoutName;
 
 	// construct destruct
 	//--------------------
@@ -31,8 +32,9 @@ public:
 
 	// EditorBase interface
 	//--------------------
-	void Init(Gtk::Frame* const parent) override;
+	void InitInternal() override;
 	std::string const& GetName() const override { return s_EditorName; }
+	std::string const& GetLayoutName() const override { return s_LayoutName; }
 
 	bool OnKeyEvent(bool const pressed, GdkEventKey* const evnt) override;
 

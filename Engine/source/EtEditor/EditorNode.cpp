@@ -21,7 +21,10 @@ RTTR_REGISTRATION
     registration::enumeration<E_EditorTool>("E_EditorTool") (
 		value("SceneViewport", E_EditorTool::SceneViewport),
 		value("Outliner", E_EditorTool::Outliner),
-		value("Invalid", E_EditorTool::Invalid) );
+		value("Invalid", E_EditorTool::Invalid));
+
+	registration::class_<EditorNodeHierachy>("editor node hierachy")
+		.property("root", &EditorNodeHierachy::root);
 
 	registration::class_<EditorNode>("editor node");
 

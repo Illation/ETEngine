@@ -61,9 +61,17 @@ void EditorCamera::Update(Camera const& currentCamera)
 		move.z -= (InputManager::GetInstance()->GetKeyState(E_KbdKey::S) == E_KeyState::Down) ? 1.0f : 0.0f;
 	}
 
+	if (!etm::isZero(move))
+	{
+		move = etm::normalize(move);
+	}
+
 	//Acceleration
-	vec3 const delta = move - m_Movement;
-	m_Movement = m_Movement + delta * s_Accelleration * time->DeltaTime();
+	{
+		vec3 const delta = move - m_Movement;
+		float const acc = s_Accelleration * time->DeltaTime();
+		m_Movement = m_Movement + (delta * etm::Clamp01(acc));
+	}
 
 	//handle scrolling to change camera speed
 	float const scroll = m_IsEnabled ? InputManager::GetInstance()->GetMouseWheelDelta().y : 0.f;

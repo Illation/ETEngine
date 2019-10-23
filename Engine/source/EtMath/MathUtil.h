@@ -63,7 +63,7 @@ namespace etm
 	template<class T>
 	inline T Clamp01(T const& value)
 	{
-		return Clamp(T, static_cast<T>(1), static_cast<T>(0));
+		return Clamp<T>(value, static_cast<T>(1), static_cast<T>(0));
 	}
 
 	template<class T>

@@ -1,11 +1,12 @@
 #include "stdafx.h"
 #include "EditorBase.h"
+#include "EditorConfig.h"
 
 #include <gtkmm/frame.h>
-#include <gtkmm/paned.h>
+
+#include <EtCore/Reflection/Serialization.h>
 
 #include <EtEditor/UI/GtkUtil.h>
-
 #include <EtEditor/UI/Outliner.h>
 #include <EtEditor/UI/SceneViewport.h>
 
@@ -16,23 +17,27 @@
 
 
 //---------------------------------
-// EditorBase::CreateInnerFrame
+// EditorBase::Init
 //
-Gtk::Frame* EditorBase::CreateInnerFrame(Gtk::Paned* const split, bool const isFirst)
+// deserialize the default tool layout and construct the tools from it, then init the editor systems
+//
+void EditorBase::Init(Gtk::Frame* const parent)
 {
-	Gtk::Frame* childFrame = Gtk::make_managed<Gtk::Frame>();
-	childFrame->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
+	std::string const layoutPath = FS("%slayouts/%s.json", EditorConfig::GetInstance()->GetEditorUserDir().c_str(), GetLayoutName().c_str());
 
-	if (isFirst)
+	if (!(serialization::DeserializeFromFile(layoutPath, m_NodeHierachy)))
 	{
-		split->add1(*childFrame);
-	}
-	else
-	{
-		split->add2(*childFrame);
+		LOG(FS("Failed to deserialize layout file for '%s' at: %s", GetName().c_str(), layoutPath.c_str()), LogLevel::Warning);
 	}
 
-	return childFrame;
+	ET_ASSERT(m_NodeHierachy.root != nullptr);
+
+	m_NodeHierachy.root->Init(this, parent);
+
+	// set ratios upon realize event
+	parent->show_all_children();
+
+	InitInternal();
 }
 
 //---------------------------------
@@ -46,31 +51,4 @@ bool EditorBase::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
 	UNUSED(evnt);
 
 	return false;
-}
-
-//---------------------------------
-// EditorBase
-//
-void EditorBase::CreateTool(E_EditorTool const toolType, Gtk::Frame* const parent)
-{
-	std::unique_ptr<I_EditorTool> tool;
-
-	switch (toolType)
-	{
-	case E_EditorTool::SceneViewport:
-		tool = std::make_unique<SceneViewport>();
-		break;
-
-	case E_EditorTool::Outliner:
-		tool = std::make_unique<Outliner>();
-		break;
-
-	default:
-		ET_ASSERT(true, "unhandled editor tool type");
-		break;
-	}
-
-	tool->Init(this, parent);
-
-	m_Tools.emplace_back(std::move(tool));
 }

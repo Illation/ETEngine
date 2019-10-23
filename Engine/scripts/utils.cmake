@@ -664,6 +664,11 @@ function(installEditorResources TARGET)
 	
 	file(WRITE ${tempBuildDir}/config/dirPointers.json 
 		"{\"dir pointers\":{\"project dir path\":\"${PROJECT_DIRECTORY}/\",\"engine dir path\":\"${ENGINE_DIRECTORY_ABS}/\"}}" )
+		
+	set(userDirEditor "${PROJECT_DIRECTORY}/user_data/editor")
+		
+	# copy config files
+	install(DIRECTORY ${ENGINE_DIRECTORY_ABS}/config/editor/layouts/ DESTINATION ${userDirEditor}/layouts/)
 
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
 

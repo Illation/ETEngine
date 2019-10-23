@@ -11,6 +11,19 @@ namespace Gtk {
 	class Paned;
 }
 
+class EditorNode;
+
+
+//---------------------------------
+// EditorNodeHierachy
+//
+struct EditorNodeHierachy
+{
+	EditorNode* root = nullptr;
+
+	RTTR_ENABLE()
+};
+
 
 //---------------------------------
 // EditorNode

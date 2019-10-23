@@ -1,25 +1,27 @@
 {
-  "root": {
-    "editor split node": {
-      "split ratio": 0.67,
-      "is horizontal": true,
-      "child 1": {
-        "editor tool node": {
-          "type": "SceneViewport"
-        }
-      },
-      "child 2": {
-        "editor split node": {
-          "split ratio": 0.5,
-          "is horizontal": false,
-          "child 1": {
-            "editor tool node": {
-              "type": "Outliner"
-            }
-          },
-          "child 2": {
-            "editor tool node": {
-              "type": "SceneViewport"
+  "editor node hierachy": {
+    "root": {
+      "editor split node": {
+        "split ratio": 0.67,
+        "is horizontal": true,
+        "child 1": {
+          "editor tool node": {
+            "type": "SceneViewport"
+          }
+        },
+        "child 2": {
+          "editor split node": {
+            "split ratio": 0.5,
+            "is horizontal": false,
+            "child 1": {
+              "editor tool node": {
+                "type": "Outliner"
+              }
+            },
+            "child 2": {
+              "editor tool node": {
+                "type": "SceneViewport"
+              }
             }
           }
         }
