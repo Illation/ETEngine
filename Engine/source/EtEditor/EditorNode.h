@@ -17,11 +17,14 @@ class EditorNode;
 //---------------------------------
 // EditorNodeHierachy
 //
+// Serialization wrapper
+//
 struct EditorNodeHierachy
 {
-	EditorNode* root = nullptr;
-
 	RTTR_ENABLE()
+
+public:
+	EditorNode* root = nullptr;
 };
 
 
@@ -32,18 +35,29 @@ struct EditorNodeHierachy
 //
 class EditorNode
 {
+	// definitions
+	//-------------
+	RTTR_ENABLE()
+
+	// construct destruct
+	//--------------------
 public:
 	virtual ~EditorNode() = default;
 
+	// functionality
+	//----------------
 	void Init(EditorBase* const editor, Gtk::Frame* const attachment);
 
+	// interface
+	//----------------
 	virtual bool IsLeaf() const = 0;
 protected:
 	virtual void InitInternal(EditorBase* const editor) = 0;
 
-	Gtk::Frame* m_Attachment = nullptr;
+	// Data
+	///////
 
-	RTTR_ENABLE()
+	Gtk::Frame* m_Attachment = nullptr;
 };
 
 
@@ -54,13 +68,30 @@ protected:
 //
 class EditorSplitNode final : public EditorNode
 {
+	// definitions
+	//-------------
+	RTTR_ENABLE(EditorNode)
+	RTTR_REGISTRATION_FRIEND
+
+	// construct destruct
+	//--------------------
 public:
 	EditorSplitNode() : EditorNode() {}
 	~EditorSplitNode() = default;
 
+	// editor node interface
+	//-----------------------
 	bool IsLeaf() const override { return false; }
 private:
 	void InitInternal(EditorBase* const editor) override;
+
+	// functionality
+	//----------------
+public:
+	void AdjustLayout();
+
+	// Data
+	///////
 
 	Gtk::Paned* m_Paned = nullptr;
 
@@ -70,8 +101,7 @@ private:
 	EditorNode* m_Child1 = nullptr;
 	EditorNode* m_Child2 = nullptr;
 
-	RTTR_ENABLE(EditorNode)
-	RTTR_REGISTRATION_FRIEND
+	bool m_LayoutAdjusted = false;
 };
 
 
@@ -82,25 +112,35 @@ private:
 //
 class EditorToolNode final : public EditorNode 
 {
+	// definitions
+	//-------------
+	RTTR_ENABLE(EditorNode)
+	RTTR_REGISTRATION_FRIEND
+
+	// construct destruct
+	//--------------------
 public:
 	EditorToolNode() : EditorNode() {}
 	EditorToolNode(EditorToolNode const& other);
 	~EditorToolNode() = default;
 
+	// editor node interface
+	//-----------------------
 	bool IsLeaf() const override { return true; }
 private:
 	void InitInternal(EditorBase* const editor) override;
 
+	// accessors
+	//-----------
 public:
 	E_EditorTool GetType() const { return m_Type; }
 
-private:
+	// Data
+	///////
 
+private:
 	E_EditorTool m_Type = E_EditorTool::Invalid;
 	std::unique_ptr<I_EditorTool> m_Tool;
-
-	RTTR_ENABLE(EditorNode)
-	RTTR_REGISTRATION_FRIEND
 };
 
 

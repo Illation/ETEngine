@@ -55,12 +55,15 @@ private:
 	// Runtime
 	bool OnTick();
 	void OnActionPreferences();
+	void OnSaveEditorLayout();
 	void OnActionQuit();
 
 private:
 	// Data
 	////////
 	CommandlineArguments m_CmdArguments;
+
+	EditorAppWindow* m_AppWindow = nullptr;
 };
 
 

@@ -136,6 +136,7 @@ void EditorApp::on_startup()
 
 	// Add actions and keyboard accelerators for the application menu.
 	add_action("preferences", sigc::mem_fun(*this, &EditorApp::OnActionPreferences));
+	add_action("save_layout", sigc::mem_fun(*this, &EditorApp::OnSaveEditorLayout));
 	add_action("quit", sigc::mem_fun(*this, &EditorApp::OnActionQuit));
 	set_accel_for_action("app.quit", "<Ctrl>Q");
 
@@ -176,9 +177,9 @@ void EditorApp::on_activate()
 	// The application has been started, so let's show a window.
 	try
 	{
-		EditorAppWindow* appwindow = CreateMainWindow();
-		appwindow->present();
-		appwindow->AddEditor(new SceneEditor());
+		m_AppWindow = CreateMainWindow();
+		m_AppWindow->present();
+		m_AppWindow->AddEditor(new SceneEditor());
 	}
 	// If create_appwindow() throws an exception (perhaps from Gtk::Builder),
 	// no window has been created, no window has been added to the application,
@@ -249,6 +250,18 @@ void EditorApp::OnActionPreferences()
 	{
 		LOG("EditorApp::OnActionPreferences > " + std::string(ex.what()), LogLevel::Error);
 	}
+}
+
+//---------------------------------
+// EditorApp::OnActionPreferences
+//
+// On clicking the preferences button in the menu we show the SettingsDialog
+//
+void EditorApp::OnSaveEditorLayout()
+{
+	ET_ASSERT(m_AppWindow != nullptr);
+
+	m_AppWindow->SaveLayout();
 }
 
 //---------------------------------

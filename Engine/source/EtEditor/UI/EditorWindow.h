@@ -43,6 +43,8 @@ public:
 	void AddEditor(EditorBase* const editor); // takes ownership
 	void RemoveEditor(EditorBase* const editor);
 
+	void SaveLayout();
+
 private:
 
 	EditorBase* GetVisibleEditor() const;

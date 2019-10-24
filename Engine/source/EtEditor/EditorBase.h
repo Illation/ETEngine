@@ -25,6 +25,7 @@ public:
 	// functionality
 	//------------------
 	void Init(Gtk::Frame* const parent);
+	void SaveLayout();
 
 	virtual bool OnKeyEvent(bool const pressed, GdkEventKey* const evnt);
 protected:

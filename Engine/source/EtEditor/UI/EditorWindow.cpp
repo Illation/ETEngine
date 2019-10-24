@@ -169,6 +169,19 @@ void EditorAppWindow::RemoveEditor(EditorBase* const editor)
 }
 
 //---------------------------------
+// EditorAppWindow::SaveLayout
+//
+// Retrieve the editor that is currently visible in the stack
+//
+void EditorAppWindow::SaveLayout()
+{
+	EditorBase* const activeEditor = GetVisibleEditor();
+	ET_ASSERT(activeEditor != nullptr);
+
+	activeEditor->SaveLayout();
+}
+
+//---------------------------------
 // EditorAppWindow::GetVisibleEditor
 //
 // Retrieve the editor that is currently visible in the stack

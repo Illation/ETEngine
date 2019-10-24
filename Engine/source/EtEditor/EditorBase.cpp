@@ -23,6 +23,7 @@
 //
 void EditorBase::Init(Gtk::Frame* const parent)
 {
+	// load the tool hierachy from a layout file
 	std::string const layoutPath = FS("%slayouts/%s.json", EditorConfig::GetInstance()->GetEditorUserDir().c_str(), GetLayoutName().c_str());
 
 	if (!(serialization::DeserializeFromFile(layoutPath, m_NodeHierachy)))
@@ -32,12 +33,39 @@ void EditorBase::Init(Gtk::Frame* const parent)
 
 	ET_ASSERT(m_NodeHierachy.root != nullptr);
 
+	// initialize the tools and gtk widgets based on the loaded hierachy
 	m_NodeHierachy.root->Init(this, parent);
 
-	// set ratios upon realize event
+	// once the widget sizes are available, adjust the sizes of widgets based on what the layout loaded
+	auto allocateCallback = [this](Gtk::Allocation& allocation)
+	{
+		UNUSED(allocation);
+
+		if (!m_NodeHierachy.root->IsLeaf())
+		{
+			static_cast<EditorSplitNode*>(m_NodeHierachy.root)->AdjustLayout();
+		}
+	};
+	parent->signal_size_allocate().connect(allocateCallback, true);
+
+	// ..
 	parent->show_all_children();
 
+	// let the derived editor do any initialization it needs
 	InitInternal();
+}
+
+//---------------------------------
+// EditorBase::SaveLayout
+//
+void EditorBase::SaveLayout()
+{
+	std::string const layoutPath = FS("%slayouts/%s.json", EditorConfig::GetInstance()->GetEditorUserDir().c_str(), GetLayoutName().c_str());
+
+	if (!serialization::SerializeToFile(layoutPath, m_NodeHierachy))
+	{
+		LOG(FS("EditorBase::SaveLayout > unable to save the layout to: %s", layoutPath.c_str()), LogLevel::Warning);
+	}
 }
 
 //---------------------------------
