@@ -41,10 +41,7 @@ void EditorBase::Init(Gtk::Frame* const parent)
 	{
 		UNUSED(allocation);
 
-		if (!m_NodeHierachy.root->IsLeaf())
-		{
-			static_cast<EditorSplitNode*>(m_NodeHierachy.root)->AdjustLayout();
-		}
+		m_HasInitialSize = true;
 	};
 	parent->signal_size_allocate().connect(allocateCallback, true);
 
@@ -65,6 +62,24 @@ void EditorBase::SaveLayout()
 	if (!serialization::SerializeToFile(layoutPath, m_NodeHierachy))
 	{
 		LOG(FS("EditorBase::SaveLayout > unable to save the layout to: %s", layoutPath.c_str()), LogLevel::Warning);
+	}
+}
+
+//---------------------------------
+// EditorBase::OnAllocationAvailable
+//
+// Set the positions of split handles
+//
+void EditorBase::OnAllocationAvailable()
+{
+	if (!m_HasInitialSize)
+	{
+		return;
+	}
+
+	if (!m_NodeHierachy.root->IsLeaf())
+	{
+		static_cast<EditorSplitNode*>(m_NodeHierachy.root)->AdjustLayout();
 	}
 }
 

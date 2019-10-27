@@ -105,32 +105,32 @@ bool VariantToJsonValue(rttr::variant const& var, JSON::Value*& outVal)
 	}
 	else
 	{
-		if (!(wrappedType.get_properties().empty())) // try converting the variant to a JSON object
+		if (!ToJsonRecursive(var, outVal, wrappedType))
 		{
-			if (!ToJsonRecursive(var, outVal, wrappedType))
-			{
-				LOG("VariantToJsonValue > Failed to convert variant to JSON object, typeName: '" + wrappedType.get_name().to_string() 
-					+ std::string("'!"), LogLevel::Warning);
+			LOG("VariantToJsonValue > Failed to convert variant to JSON object, typeName: '" + wrappedType.get_name().to_string()
+				+ std::string("'!"), LogLevel::Warning);
 
-				return false;
-			}
+			return false;
 		}
-		else // if that fails, try converting it to a string
-		{
-			bool stringConversionSuccess = false;
-			std::string text = var.to_string(&stringConversionSuccess);
+		//if (!(wrappedType.get_properties().empty())) // try converting the variant to a JSON object
+		//{
+		//}
+		//else // if that fails, try converting it to a string
+		//{
+		//	bool stringConversionSuccess = false;
+		//	std::string text = var.to_string(&stringConversionSuccess);
 
-			if (!stringConversionSuccess)
-			{
-				LOG("VariantToJsonValue > Failed to convert variant to JSON string, result: '" + text + std::string("' typeName: '")
-					+ wrappedType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
+		//	if (!stringConversionSuccess)
+		//	{
+		//		LOG("VariantToJsonValue > Failed to convert variant to JSON string, result: '" + text + std::string("' typeName: '")
+		//			+ wrappedType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
 
-				return false;
-			}
+		//		return false;
+		//	}
 
-			outVal = new JSON::String();
-			outVal->str()->value = text;
-		}
+		//	outVal = new JSON::String();
+		//	outVal->str()->value = text;
+		//}
 	}
 
 	return true;

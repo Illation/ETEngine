@@ -27,6 +27,8 @@ public:
 	void Init(Gtk::Frame* const parent);
 	void SaveLayout();
 
+	void OnAllocationAvailable();
+
 	virtual bool OnKeyEvent(bool const pressed, GdkEventKey* const evnt);
 protected:
 
@@ -34,5 +36,7 @@ protected:
 	///////
 
 	EditorNodeHierachy m_NodeHierachy;
+
+	bool m_HasInitialSize = false;
 };
 

@@ -31,6 +31,18 @@ EditorAppWindow::EditorAppWindow(BaseObjectType* cobject, Glib::RefPtr<Gtk::Buil
 	m_RefBuilder->get_widget("editorSwitcher", m_EditorStack);
 	ET_ASSERT(m_EditorStack != nullptr);
 
+	auto realizeCallback = [this](Cairo::RefPtr<Cairo::Context> const&)
+	{
+		// Destroy all editors
+		for (T_EditorFramePair& pair : m_Editors)
+		{
+			pair.first->OnAllocationAvailable();
+		}
+
+		return false;
+	};
+	signal_draw().connect(realizeCallback, true);
+
 	//show all the widgets
 	show_all_children();
 

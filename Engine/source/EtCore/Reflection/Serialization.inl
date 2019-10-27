@@ -55,7 +55,7 @@ bool SerializeToFile(std::string const& filePath, T const& serialObject)
 	if (serializeSuccess)
 	{
 		FILE_ACCESS_FLAGS outFlags;
-		outFlags.SetFlags(FILE_ACCESS_FLAGS::FLAGS::Create); // create a new file or overwrite the existing one
+		outFlags.SetFlags(FILE_ACCESS_FLAGS::FLAGS::Create | FILE_ACCESS_FLAGS::FLAGS::Exists); // create a new file or overwrite the existing one
 		if (!file->Open(FILE_ACCESS_MODE::Write, outFlags))
 		{
 			LOG("SerializeToFile > unable to open file '" + filePath + std::string("' for writing!"), Warning);
