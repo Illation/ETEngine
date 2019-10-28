@@ -33,5 +33,7 @@ public:
 	~I_EditorTool() = default;
 
 	virtual void Init(EditorBase* const editor, Gtk::Frame* const parent) = 0;
+
+	virtual bool IsToolbarTopPref() const { return true; }
 };
 

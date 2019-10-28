@@ -24,6 +24,7 @@ class SceneEditor final : public EditorBase, public I_Tickable
 public:
 	static std::string const s_EditorName;
 	static std::string const s_LayoutName;
+	static std::vector<E_EditorTool> const s_SupportedTools;
 
 	// construct destruct
 	//--------------------
@@ -35,6 +36,7 @@ public:
 	void InitInternal() override;
 	std::string const& GetName() const override { return s_EditorName; }
 	std::string const& GetLayoutName() const override { return s_LayoutName; }
+	std::vector<E_EditorTool> const& GetSupportedTools() const override { return s_SupportedTools; }
 
 	bool OnKeyEvent(bool const pressed, GdkEventKey* const evnt) override;
 

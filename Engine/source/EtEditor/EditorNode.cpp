@@ -7,6 +7,10 @@
 
 #include <gtkmm/paned.h>
 #include <gtkmm/frame.h>
+#include <gtkmm/box.h>
+#include <gtkmm/comboboxtext.h>
+
+#include <EtCore/Reflection/ReflectionUtil.h>
 
 #include <EtEditor/UI/GtkUtil.h>
 #include <EtEditor/UI/Outliner.h>
@@ -188,6 +192,9 @@ EditorToolNode::EditorToolNode(EditorToolNode const& other) : EditorNode()
 //
 void EditorToolNode::InitInternal(EditorBase* const editor)
 {
+	ET_ASSERT(editor != nullptr);
+	std::vector<E_EditorTool> const& supportedTools = editor->GetSupportedTools();
+
 	ET_ASSERT(m_Type != E_EditorTool::Invalid);
 
 	switch (m_Type)
@@ -205,5 +212,37 @@ void EditorToolNode::InitInternal(EditorBase* const editor)
 		break;
 	}
 
-	m_Tool->Init(editor, m_Attachment);
+	// space for utility bar with tool switcher
+	m_Container = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_VERTICAL);
+	m_Attachment->add(*m_Container);
+
+	// frame for the tool area
+	m_InnerFrame = Gtk::make_managed<Gtk::Frame>();
+	m_InnerFrame->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
+
+	// combobox to switch tools - this could be a horizontal box in the future, containing menus specified by the tool
+	m_Toolbar = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
+	m_ToolSelector = Gtk::make_managed<Gtk::ComboBoxText>(false);
+	m_Toolbar->pack_start(*m_ToolSelector, Gtk::PACK_SHRINK);
+
+	for (E_EditorTool const toolType : supportedTools)
+	{
+		m_ToolSelector->append(reflection::EnumString(toolType).c_str());
+	}
+
+	if (m_Tool->IsToolbarTopPref())
+	{
+		m_Container->pack_start(*m_Toolbar, Gtk::PACK_SHRINK);
+		m_Container->pack_start(*m_InnerFrame, Gtk::PACK_EXPAND_WIDGET);
+	}
+	else
+	{
+		m_Container->pack_start(*m_InnerFrame, Gtk::PACK_EXPAND_WIDGET);
+		m_Container->pack_start(*m_Toolbar, Gtk::PACK_SHRINK);
+	}
+
+	// create the tool
+	m_Tool->Init(editor, m_InnerFrame);
+
+	// option to add menus for the tool to the toolbar here
 }

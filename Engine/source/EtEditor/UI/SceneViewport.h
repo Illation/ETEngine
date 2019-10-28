@@ -34,6 +34,7 @@ public:
 	// Editor tool interface
 	//-----------------------
 	void Init(EditorBase* const editor, Gtk::Frame* parent) override;
+	bool IsToolbarTopPref() const override { return false; }
 
 	// scene editor listener interface
 	//---------------------------------

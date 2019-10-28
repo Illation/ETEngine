@@ -9,6 +9,8 @@
 namespace Gtk {
 	class Frame;
 	class Paned;
+	class Box;
+	class ComboBoxText;
 }
 
 class EditorNode;
@@ -141,6 +143,11 @@ public:
 private:
 	E_EditorTool m_Type = E_EditorTool::Invalid;
 	std::unique_ptr<I_EditorTool> m_Tool;
+
+	Gtk::Box* m_Container = nullptr;
+	Gtk::Box* m_Toolbar = nullptr;
+	Gtk::ComboBoxText* m_ToolSelector = nullptr;
+	Gtk::Frame* m_InnerFrame = nullptr;
 };
 
 

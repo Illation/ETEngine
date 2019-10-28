@@ -21,6 +21,7 @@ protected:
 public:
 	virtual std::string const& GetName() const = 0;
 	virtual std::string const& GetLayoutName() const = 0;
+	virtual std::vector<E_EditorTool> const& GetSupportedTools() const = 0;
 
 	// functionality
 	//------------------
