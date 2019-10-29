@@ -97,8 +97,11 @@ void SceneEventDispatcher::Notify(SceneEventData const* const eventData)
 {
 	ET_ASSERT(eventData != nullptr);
 
+	// Copy ensures listeners can unregister themselves during callback
+	std::vector<Listener> listenersCopy = m_Listeners;
+
 	// consider each listener
-	for (Listener const& listener : m_Listeners)
+	for (Listener const& listener : listenersCopy)
 	{
 		// check if it is listening for our event type
 		if (listener.flags & eventData->eventType)

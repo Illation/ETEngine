@@ -75,7 +75,10 @@ void GlfwRenderArea::Initialize()
 
 	if (m_OnInit)
 	{
-		m_OnInit(new GladGlContext());
+		ET_ASSERT(m_Context == nullptr);
+		m_Context = new GladGlContext();
+
+		m_OnInit(m_Context);
 	}
 }
 
@@ -90,6 +93,8 @@ void GlfwRenderArea::Uninitialize()
 	{
 		m_OnDeinit();
 	}
+
+	delete m_Context;
 
 	glfwDestroyWindow(m_Window);
 	m_Window = nullptr;

@@ -16,7 +16,7 @@
 
 
 //---------------------------
-// SceneEditor::c-tor
+// SceneViewport::c-tor
 //
 SceneViewport::SceneViewport()
 	: I_EditorTool()
@@ -25,20 +25,21 @@ SceneViewport::SceneViewport()
 }
 
 //---------------------------
-// SceneEditor::d-tor
+// SceneViewport::d-tor
 //
 SceneViewport::~SceneViewport()
 {
 	m_Editor->UnregisterListener(this);
 	SafeDelete(m_SceneRenderer);
+	SafeDelete(m_RenderArea);
 }
 
 //--------------------
-// Outliner::Init
+// SceneViewport::Init
 //
 // Tool initialization implementation
 //
-void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* parent)
+void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 {
 	m_Editor = static_cast<SceneEditor*>(editor);
 
@@ -49,7 +50,8 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* parent)
 	glArea->set_auto_render(true);
 
 	// create a viewport from the area
-	m_Viewport = std::make_unique<Viewport>(new GtkRenderArea(glArea));
+	m_RenderArea = new GtkRenderArea(glArea);
+	m_Viewport = std::make_unique<Viewport>(m_RenderArea);
 
 	// hook up events
 
@@ -144,9 +146,18 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* parent)
 	m_Editor->RegisterListener(this);
 }
 
+//--------------------
+// SceneViewport::Deinit
+//
+void SceneViewport::Deinit(Gtk::Frame* const parent)
+{
+	Gtk::Widget* child = parent->get_child();
+	parent->remove();
+	SafeDelete(child);
+}
 
 //---------------------------------
-// SceneEditor::OnShown
+// SceneViewport::OnShown
 //
 // Show the splash screen as soon as possible
 //
@@ -159,7 +170,7 @@ void SceneViewport::OnShown()
 }
 
 //------------------------------------
-// SceneEditor::OnSceneSet
+// SceneViewport::OnSceneSet
 //
 // Once the scene is set we can start setting up rendering
 //
@@ -174,14 +185,14 @@ void SceneViewport::OnSceneSet()
 			m_Camera.ImitateComponent(m_Editor->GetSceneSelection().GetScene()->GetActiveCamera());
 			m_Camera.PopulateCamera(m_SceneRenderer->GetCamera(), m_Viewport.get());
 
-			//m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Unregister(m_SceneInitCallback);
+			m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Unregister(m_SceneInitCallback);
 		}));
 
 	m_SceneRenderer->InitRenderingSystems();
 }
 
 //------------------------------------
-// SceneEditor::OnEditorTick
+// SceneViewport::OnEditorTick
 //
 void SceneViewport::OnEditorTick()
 {
@@ -190,7 +201,7 @@ void SceneViewport::OnEditorTick()
 }
 
 //------------------------------------
-// SceneEditor::OnKeyEvent
+// SceneViewport::OnKeyEvent
 //
 bool SceneViewport::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
 {

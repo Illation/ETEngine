@@ -1,5 +1,4 @@
 #pragma once
-#include <rttr/type>
 
 
 //---------------------------------
@@ -13,6 +12,9 @@ namespace reflection
 
 template<typename TEnum>
 std::string EnumString(TEnum const value);
+
+template<typename TEnum>
+TEnum EnumFromString(std::string const& value);
 
 
 }

@@ -56,10 +56,7 @@ Viewport::Viewport(I_RenderArea* const area)
 //---------------------------------
 // Viewport::d-tor
 //
-Viewport::~Viewport()
-{
-	SafeDelete(m_ApiContext);
-}
+Viewport::~Viewport() = default;
 
 //---------------------------------
 // Viewport::Redraw

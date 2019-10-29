@@ -56,6 +56,8 @@ private:
 
 	GLFWwindow* m_Window = nullptr; // also serves as context
 
+	I_GraphicsApiContext* m_Context = nullptr;
+
 	bool m_ShouldDraw = false;
 };
 

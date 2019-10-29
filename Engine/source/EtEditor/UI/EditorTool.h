@@ -30,9 +30,10 @@ enum class E_EditorTool
 class I_EditorTool
 {
 public:
-	~I_EditorTool() = default;
+	virtual ~I_EditorTool() = default;
 
 	virtual void Init(EditorBase* const editor, Gtk::Frame* const parent) = 0;
+	virtual void Deinit(Gtk::Frame* const parent) = 0;
 
 	virtual bool IsToolbarTopPref() const { return true; }
 };

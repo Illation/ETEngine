@@ -132,6 +132,12 @@ public:
 private:
 	void InitInternal(EditorBase* const editor) override;
 
+	// functionality
+	//---------------
+	void CreateTool();
+	void CreateToolbar();
+	void OnToolComboChanged();
+
 	// accessors
 	//-----------
 public:
@@ -141,9 +147,14 @@ public:
 	///////
 
 private:
+	// reflected
 	E_EditorTool m_Type = E_EditorTool::Invalid;
-	std::unique_ptr<I_EditorTool> m_Tool;
 
+	// model
+	std::unique_ptr<I_EditorTool> m_Tool;
+	EditorBase* m_Editor = nullptr;
+
+	// ui
 	Gtk::Box* m_Container = nullptr;
 	Gtk::Box* m_Toolbar = nullptr;
 	Gtk::ComboBoxText* m_ToolSelector = nullptr;

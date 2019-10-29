@@ -192,11 +192,30 @@ EditorToolNode::EditorToolNode(EditorToolNode const& other) : EditorNode()
 //
 void EditorToolNode::InitInternal(EditorBase* const editor)
 {
+	// space for utility bar with tool switcher
+	m_Container = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_VERTICAL);
+	m_Attachment->add(*m_Container);
+
+	// frame for the tool area
+	m_InnerFrame = Gtk::make_managed<Gtk::Frame>();
+	m_InnerFrame->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
+
+	m_Container->pack_start(*m_InnerFrame);
+
+	// create the tool
 	ET_ASSERT(editor != nullptr);
-	std::vector<E_EditorTool> const& supportedTools = editor->GetSupportedTools();
+	m_Editor = editor;
 
-	ET_ASSERT(m_Type != E_EditorTool::Invalid);
+	CreateTool();
 
+	CreateToolbar();
+}
+
+//---------------------------------
+// EditorToolNode::CreateTool
+//
+void EditorToolNode::CreateTool()
+{
 	switch (m_Type)
 	{
 	case E_EditorTool::SceneViewport:
@@ -212,37 +231,78 @@ void EditorToolNode::InitInternal(EditorBase* const editor)
 		break;
 	}
 
-	// space for utility bar with tool switcher
-	m_Container = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_VERTICAL);
-	m_Attachment->add(*m_Container);
+	m_Tool->Init(m_Editor, m_InnerFrame);
+}
 
-	// frame for the tool area
-	m_InnerFrame = Gtk::make_managed<Gtk::Frame>();
-	m_InnerFrame->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-
-	// combobox to switch tools - this could be a horizontal box in the future, containing menus specified by the tool
+//---------------------------------
+// EditorToolNode::CreateToolbar
+//
+void EditorToolNode::CreateToolbar()
+{
+	// Create the toolbar and a combobox within allowing to select the tool
 	m_Toolbar = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
 	m_ToolSelector = Gtk::make_managed<Gtk::ComboBoxText>(false);
+
 	m_Toolbar->pack_start(*m_ToolSelector, Gtk::PACK_SHRINK);
 
+	// populate the combobox with all tools that our editor supports
+	std::vector<E_EditorTool> const& supportedTools = m_Editor->GetSupportedTools();
 	for (E_EditorTool const toolType : supportedTools)
 	{
-		m_ToolSelector->append(reflection::EnumString(toolType).c_str());
+		std::string toolName = reflection::EnumString(toolType);
+		m_ToolSelector->append(Glib::ustring(toolName), Glib::ustring(toolName));
 	}
 
-	if (m_Tool->IsToolbarTopPref())
+	// set our tool current tool as the active element in the combobox
+	auto const findResultIt = std::find(supportedTools.cbegin(), supportedTools.cend(), m_Type);
+	if (findResultIt != supportedTools.cend())
 	{
-		m_Container->pack_start(*m_Toolbar, Gtk::PACK_SHRINK);
-		m_Container->pack_start(*m_InnerFrame, Gtk::PACK_EXPAND_WIDGET);
+		m_ToolSelector->set_active(static_cast<int32>(findResultIt - supportedTools.cbegin()));
 	}
 	else
 	{
-		m_Container->pack_start(*m_InnerFrame, Gtk::PACK_EXPAND_WIDGET);
-		m_Container->pack_start(*m_Toolbar, Gtk::PACK_SHRINK);
+		ET_ASSERT(false, // warning
+			"Current tool type '%s' is not supported by editor '%s'", 
+			reflection::EnumString(m_Type).c_str(), 
+			m_Editor->GetName().c_str());
 	}
 
-	// create the tool
-	m_Tool->Init(editor, m_InnerFrame);
+	// ensure we get notified when a new tool is selected
+	m_ToolSelector->signal_changed().connect(sigc::mem_fun(*this, &EditorToolNode::OnToolComboChanged));
+
+	// add our toolbar to the tool container either in the beginning or the end
+	if (m_Tool->IsToolbarTopPref())
+	{
+		m_Container->pack_start(*m_Toolbar, Gtk::PACK_SHRINK);
+	}
+	else
+	{
+		m_Container->pack_end(*m_Toolbar, Gtk::PACK_SHRINK);
+	}
 
 	// option to add menus for the tool to the toolbar here
+}
+
+//-------------------------------------
+// EditorToolNode::OnToolComboChanged
+//
+// Switch the displayed tool if the user selects a different one
+//
+void EditorToolNode::OnToolComboChanged()
+{
+	Glib::ustring toolId = m_ToolSelector->get_active_id();
+	if (!(toolId.empty()))
+	{
+		E_EditorTool const newType = reflection::EnumFromString<E_EditorTool>(toolId.raw());
+
+		if (newType != m_Type)
+		{
+			m_Type = newType;
+
+			// switch the tool
+			m_Tool->Deinit(m_InnerFrame);
+			m_Tool.reset(nullptr);
+			CreateTool();
+		}
+	}
 }

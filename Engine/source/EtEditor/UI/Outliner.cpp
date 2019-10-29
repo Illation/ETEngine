@@ -71,6 +71,14 @@ void Outliner::Init(EditorBase* const editor, Gtk::Frame* parent)
 	box->show_all_children();
 }
 
+//--------------------
+// Outliner::Deinit
+//
+void Outliner::Deinit(Gtk::Frame* const parent)
+{
+
+}
+
 //--------------------------
 // Outliner::OnSceneEvent
 //

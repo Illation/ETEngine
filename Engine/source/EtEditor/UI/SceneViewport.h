@@ -33,7 +33,8 @@ public:
 
 	// Editor tool interface
 	//-----------------------
-	void Init(EditorBase* const editor, Gtk::Frame* parent) override;
+	void Init(EditorBase* const editor, Gtk::Frame* const parent) override;
+	void Deinit(Gtk::Frame* const parent) override;
 	bool IsToolbarTopPref() const override { return false; }
 
 	// scene editor listener interface
@@ -55,6 +56,7 @@ private:
 
 	EditorCamera m_Camera;
 	std::unique_ptr<Viewport> m_Viewport;
+	I_RenderArea* m_RenderArea = nullptr;
 	SceneRenderer* m_SceneRenderer = nullptr;
 
 	T_SceneEventCallbackId m_SceneInitCallback = SceneEventDispatcher::s_InvalidCallbackId;
