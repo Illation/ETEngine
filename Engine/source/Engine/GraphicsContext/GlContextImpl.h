@@ -18,7 +18,7 @@ public:
 	// init deinit
 	//--------------
 	GL_CONTEXT_CLASSNAME() : I_GraphicsApiContext() {}
-	~GL_CONTEXT_CLASSNAME() = default;
+	~GL_CONTEXT_CLASSNAME();
 
 	//===============================
 	// Interface implementation

@@ -8,6 +8,14 @@
 
 
 //---------------------------------
+// GlContext::d-tor
+//
+GL_CONTEXT_CLASSNAME::~GL_CONTEXT_CLASSNAME()
+{
+	LOG("OpenGL unloaded");
+}
+
+//---------------------------------
 // GlContext::Initialize
 //
 // Initialize the state with default values
