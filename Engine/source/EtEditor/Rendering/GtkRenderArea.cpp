@@ -136,7 +136,7 @@ bool GtkRenderArea::OnRender(const Glib::RefPtr<Gdk::GLContext>& context)
 
 	if (m_OnRender)
 	{
-		m_OnRender(Viewport::GetCurrentApiContext()->GetActiveFramebuffer());
+		m_OnRender(m_GlArea->GetApiContext()->GetActiveFramebuffer());
 	}
 
 	return true;

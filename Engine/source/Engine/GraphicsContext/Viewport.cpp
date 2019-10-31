@@ -87,6 +87,11 @@ void Viewport::SetRenderer(I_ViewportRenderer* renderer)
 {
 	m_Renderer = renderer;
 
+	if (m_Renderer == nullptr) // for deinitialization
+	{
+		return;
+	}
+
 	if (m_IsRealized)
 	{
 		OnRealize(m_ApiContext);

@@ -29,11 +29,6 @@ SceneViewport::SceneViewport()
 //
 SceneViewport::~SceneViewport()
 {
-	m_Viewport->MakeCurrent();
-
-	m_Editor->UnregisterListener(this);
-	SafeDelete(m_SceneRenderer);
-	SafeDelete(m_RenderArea);
 }
 
 //--------------------
@@ -153,9 +148,18 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 //
 void SceneViewport::Deinit(Gtk::Frame* const parent)
 {
+	m_Viewport->MakeCurrent();
+
+	m_Editor->UnregisterListener(this);
+	SafeDelete(m_SceneRenderer);
+	m_Viewport->SetRenderer(nullptr);
+
 	Gtk::Widget* child = parent->get_child();
 	parent->remove();
-	//SafeDelete(child);
+	SafeDelete(child);
+	m_Viewport.reset(nullptr);
+
+	SafeDelete(m_RenderArea);
 }
 
 //---------------------------------
