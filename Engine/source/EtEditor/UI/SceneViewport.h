@@ -34,7 +34,7 @@ public:
 	// Editor tool interface
 	//-----------------------
 	void Init(EditorBase* const editor, Gtk::Frame* const parent) override;
-	void Deinit(Gtk::Frame* const parent) override;
+	void OnDeinit() override;
 	bool IsToolbarTopPref() const override { return false; }
 
 	// scene editor listener interface
@@ -47,10 +47,13 @@ public:
 	//----------------
 	bool OnKeyEvent(bool const pressed, GdkEventKey* const evnt);
 
+private:
+	// utility
+	//----------
+	void InitCamera();
+
 	// Data
 	///////
-
-private:
 
 	SceneEditor* m_Editor;
 
@@ -62,4 +65,6 @@ private:
 	T_SceneEventCallbackId m_SceneInitCallback = SceneEventDispatcher::s_InvalidCallbackId;
 
 	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
+
+	bool m_IsInitialized = false;
 };

@@ -45,6 +45,7 @@ SceneEditor::~SceneEditor()
 //
 void SceneEditor::InitInternal()
 {
+	m_IsShown = true;
 	for (I_SceneEditorListener* const listener : m_Listeners)
 	{
 		listener->OnShown();

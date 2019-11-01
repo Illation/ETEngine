@@ -49,6 +49,7 @@ private:
 	//-----------
 public:
 	SceneSelection& GetSceneSelection() { return m_SceneSelection; }
+	bool IsShown() const { return m_IsShown; }
 
 	// functionality
 	//----------------
@@ -66,5 +67,7 @@ private:
 
 	SceneViewport* m_NavigatingViewport;
 	std::vector<I_SceneEditorListener*> m_Listeners;
+
+	bool m_IsShown = false;
 };
 

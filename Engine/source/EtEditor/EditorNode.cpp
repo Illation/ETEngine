@@ -299,9 +299,18 @@ void EditorToolNode::OnToolComboChanged()
 		{
 			m_Type = newType;
 
-			// switch the tool
-			m_Tool->Deinit(m_InnerFrame);
+			// allow the tool to destroy resources depending on the frame being attached
+			m_Tool->OnDeinit();
+
+			// remove the child widget
+			Gtk::Widget* child = m_InnerFrame->get_child();
+			m_InnerFrame->remove();
+			SafeDelete(child);
+
+			// delete the tool
 			m_Tool.reset(nullptr);
+
+			// create the new tool
 			CreateTool();
 		}
 	}

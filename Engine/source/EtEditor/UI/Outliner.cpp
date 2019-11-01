@@ -73,20 +73,15 @@ void Outliner::Init(EditorBase* const editor, Gtk::Frame* parent)
 		if (scene->IsInitialized())
 		{
 			RefillTreeView();
-			OnSelectionChanged();
+			for (Entity* const entity : m_SceneSelection->GetSelectedEntities())
+			{
+				OnEntitySelectionChanged(entity, true);
+			}
 		}
 	}
 
 	parent->add(*box);
 	box->show_all_children();
-}
-
-//--------------------
-// Outliner::Deinit
-//
-void Outliner::Deinit(Gtk::Frame* const parent)
-{
-
 }
 
 //--------------------------

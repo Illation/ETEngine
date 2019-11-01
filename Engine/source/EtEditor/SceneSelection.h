@@ -41,6 +41,7 @@ public:
 	// accessors
 	//--------------------
 	AbstractScene* GetScene() { return m_Scene; }
+	std::vector<Entity*> const& GetSelectedEntities() const { return m_SelectedEntities; }
 
 	// functionality
 	//--------------------

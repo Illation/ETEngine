@@ -29,6 +29,13 @@ SceneViewport::SceneViewport()
 //
 SceneViewport::~SceneViewport()
 {
+	if (m_IsInitialized)
+	{
+		OnDeinit();
+	}
+
+	m_Viewport.reset(nullptr);
+	SafeDelete(m_RenderArea);
 }
 
 //--------------------
@@ -141,12 +148,23 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	m_Viewport->SetRenderer(m_SceneRenderer);
 
 	m_Editor->RegisterListener(this);
+
+	// in case the editor is already initialized at this point (we switch a tool to being a scene viewport at runtime) - do further init steps
+	if (m_Editor->IsShown())
+	{
+		OnShown();
+	}
+
+	if (m_Editor->GetSceneSelection().GetScene() != nullptr)
+	{
+		OnSceneSet();
+	}
 }
 
-//--------------------
-// SceneViewport::Deinit
+//----------------------------
+// SceneViewport::OnDeinit
 //
-void SceneViewport::Deinit(Gtk::Frame* const parent)
+void SceneViewport::OnDeinit()
 {
 	m_Viewport->MakeCurrent();
 
@@ -154,12 +172,7 @@ void SceneViewport::Deinit(Gtk::Frame* const parent)
 	SafeDelete(m_SceneRenderer);
 	m_Viewport->SetRenderer(nullptr);
 
-	Gtk::Widget* child = parent->get_child();
-	parent->remove();
-	SafeDelete(child);
-	m_Viewport.reset(nullptr);
-
-	SafeDelete(m_RenderArea);
+	m_IsInitialized = false;
 }
 
 //---------------------------------
@@ -185,16 +198,27 @@ void SceneViewport::OnSceneSet()
 	m_Viewport->MakeCurrent();
 
 	// Set our cameras initial position to the scenes active camera once the scene is loaded
-	m_SceneInitCallback = m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Register(E_SceneEvent::Initialized, T_SceneEventCallback(
-		[this](SceneEventData const* const eventData)
-		{
-			m_Camera.ImitateComponent(m_Editor->GetSceneSelection().GetScene()->GetActiveCamera());
-			m_Camera.PopulateCamera(m_SceneRenderer->GetCamera(), m_Viewport.get());
 
-			m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Unregister(m_SceneInitCallback);
-		}));
+	AbstractScene const* const scene = m_Editor->GetSceneSelection().GetScene();
+	if (scene != nullptr && scene->IsInitialized())
+	{
+		InitCamera();
+	}
+	else
+	{
+		m_SceneInitCallback = m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Register(E_SceneEvent::Initialized, 
+			T_SceneEventCallback( [this](SceneEventData const* const eventData)
+			{
+				UNUSED(eventData);
+				InitCamera();
+
+				m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Unregister(m_SceneInitCallback);
+			}));
+	}
 
 	m_SceneRenderer->InitRenderingSystems();
+
+	m_IsInitialized = true;
 }
 
 //------------------------------------
@@ -221,4 +245,13 @@ bool SceneViewport::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
 	}
 
 	return true;
+}
+
+//------------------------------------
+// SceneViewport::InitCamera
+//
+void SceneViewport::InitCamera()
+{
+	m_Camera.ImitateComponent(m_Editor->GetSceneSelection().GetScene()->GetActiveCamera());
+	m_Camera.PopulateCamera(m_SceneRenderer->GetCamera(), m_Viewport.get());
 }
