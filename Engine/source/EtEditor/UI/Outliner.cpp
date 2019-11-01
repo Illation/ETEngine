@@ -67,6 +67,16 @@ void Outliner::Init(EditorBase* const editor, Gtk::Frame* parent)
 
 	m_SceneSelection->RegisterListener(this);
 
+	AbstractScene const* const scene = m_SceneSelection->GetScene();
+	if (scene != nullptr)
+	{
+		if (scene->IsInitialized())
+		{
+			RefillTreeView();
+			OnSelectionChanged();
+		}
+	}
+
 	parent->add(*box);
 	box->show_all_children();
 }

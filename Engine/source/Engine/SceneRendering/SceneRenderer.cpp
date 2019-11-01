@@ -36,7 +36,18 @@ std::vector<SceneRenderer*> SceneRenderer::s_AllSceneRenderers = std::vector<Sce
 //
 SceneRenderer* SceneRenderer::GetCurrent()
 {
-	I_ViewportRenderer* const viewRenderer = Viewport::GetCurrentViewport()->GetViewportRenderer();
+	Viewport* const viewport = Viewport::GetCurrentViewport();
+	if (viewport == nullptr)
+	{
+		return nullptr;
+	}
+
+	I_ViewportRenderer* const viewRenderer = viewport->GetViewportRenderer();
+	if (viewRenderer == nullptr)
+	{
+		return nullptr;
+	}
+
 	ET_ASSERT(viewRenderer->GetType() == typeid(SceneRenderer));
 
 	return static_cast<SceneRenderer*>(viewRenderer);

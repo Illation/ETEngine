@@ -76,7 +76,8 @@ void FreeCamera::Update()
 		float currSpeed = m_MoveSpeed * m_SpeedMultiplier;  
 
 		//move relative to cameras view space - luckily the camera already has those inverted matrices calculated
-		mat3 const camMat = etm::CreateFromMat4(SceneRenderer::GetCurrent()->GetCamera().GetViewInv());
+		vec3 const lookAt = TRANSFORM->GetPosition() + TRANSFORM->GetForward();
+		mat3 const camMat = etm::CreateFromMat4(etm::inverse(etm::lookAt(TRANSFORM->GetPosition(), lookAt, TRANSFORM->GetUp())));
 		vec3 currPos = TRANSFORM->GetPosition() + camMat * m_Move * currSpeed * TIME->DeltaTime();
 		TRANSFORM->SetPosition(currPos);
 

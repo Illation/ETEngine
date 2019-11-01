@@ -29,7 +29,6 @@ I_GraphicsApiContext* Viewport::GetCurrentApiContext()
 //
 Viewport* Viewport::GetCurrentViewport()
 {
-	ET_ASSERT(g_CurrentViewport != nullptr);
 	return g_CurrentViewport;
 }
 
@@ -56,7 +55,13 @@ Viewport::Viewport(I_RenderArea* const area)
 //---------------------------------
 // Viewport::d-tor
 //
-Viewport::~Viewport() = default;
+Viewport::~Viewport()
+{
+	if (g_CurrentViewport == this)
+	{
+		g_CurrentViewport = nullptr;
+	}
+}
 
 //---------------------------------
 // Viewport::Redraw
