@@ -2,6 +2,8 @@
 #include <rttr/type>
 #include <rttr/registration_friend.h>
 
+#include <gdk/gdk.h>
+
 #include <EtEditor/UI/EditorTool.h>
 
 
@@ -11,9 +13,12 @@ namespace Gtk {
 	class Paned;
 	class Box;
 	class ComboBoxText;
+	class Overlay;
 }
 
 class EditorNode;
+class EditorSplitNode;
+class EditorToolNode;
 
 
 //---------------------------------
@@ -48,7 +53,14 @@ public:
 
 	// functionality
 	//----------------
-	void Init(EditorBase* const editor, Gtk::Frame* const attachment);
+	void Init(EditorBase* const editor, Gtk::Frame* const attachment, EditorSplitNode* const parent);
+
+	Gtk::Frame* GetAttachment() const { return m_Attachment; }
+	EditorSplitNode* GetParent() const { return m_Parent; }
+
+	// accessors
+	//-----------
+	bool ContainsPointer() const;
 
 	// interface
 	//----------------
@@ -60,6 +72,7 @@ protected:
 	///////
 
 	Gtk::Frame* m_Attachment = nullptr;
+	EditorSplitNode* m_Parent = nullptr;
 };
 
 
@@ -92,9 +105,16 @@ private:
 public:
 	void AdjustLayout();
 
+	// accessors
+	//-----------
+	bool IsHorizontal() const { return m_IsHorizontal; }
+	EditorNode* GetChild1() const { return m_Child1; }
+	EditorNode* GetChild2() const { return m_Child2; }
+
 	// Data
 	///////
 
+private:
 	Gtk::Paned* m_Paned = nullptr;
 
 	float m_SplitRatio = 0.5f;
@@ -104,6 +124,63 @@ public:
 	EditorNode* m_Child2 = nullptr;
 
 	bool m_LayoutAdjusted = false;
+};
+
+
+//---------------------------------
+// ToolHierachyHandle
+//
+// Handle added to tool leaf nodes to allow splitting and merging of tools
+//
+class ToolHierachyHandle final
+{
+	// definitions
+	//-------------
+	RTTR_REGISTRATION_FRIEND
+
+	static float const s_SplitThreshold;
+
+	enum class E_DragState
+	{
+		None,
+		Start,
+		Abort,
+
+		CollapseNeighbour,
+		CollapseOwner,
+		CollapseAbort,
+
+		VSplit,
+		VSplitAbort,
+
+		HSplit,
+		HSplitAbort
+	};
+
+	// construct destruct
+	//--------------------
+public:
+	~ToolHierachyHandle() = default;
+
+	// functionality
+	//---------------
+	void Init(Gtk::Overlay* const attachment, EditorToolNode* const owner, bool right, bool top);
+
+private:
+	void ProcessDrag(GdkEventMotion* const motion);
+	void ActionDragResult();
+
+	// Data
+	///////
+
+	EditorToolNode* m_Owner = nullptr;
+	EditorToolNode* m_Neighbour = nullptr;
+
+	bool m_IsRightAligned = false;
+	bool m_IsTopAligned = false;
+
+	E_DragState m_DragState = E_DragState::None;
+	ivec2 m_Position; // in start state represents the initial position, otherwise the position within the owning frame in case of a split
 };
 
 
@@ -159,6 +236,7 @@ private:
 	Gtk::Box* m_Toolbar = nullptr;
 	Gtk::ComboBoxText* m_ToolSelector = nullptr;
 	Gtk::Frame* m_InnerFrame = nullptr;
+
+	ToolHierachyHandle m_Handle1;
+	ToolHierachyHandle m_Handle2;
 };
-
-

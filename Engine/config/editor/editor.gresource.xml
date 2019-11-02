@@ -8,7 +8,9 @@
     <file preprocess="xml-stripblanks">ui/outliner.ui</file>
     <file preprocess="xml-stripblanks">ui/sceneViewport.ui</file>
     <file>ui/icons/menu.png</file>
-    <file>ui/icons/tool_hierachy_control.png</file>
-    <file>ui/icons/tool_hierachy_control2.png</file>
+    <file>ui/icons/tool_hierachy_control_tl.png</file>
+    <file>ui/icons/tool_hierachy_control_tr.png</file>
+    <file>ui/icons/tool_hierachy_control_bl.png</file>
+    <file>ui/icons/tool_hierachy_control_br.png</file>
   </gresource>
 </gresources>

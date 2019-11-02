@@ -19,6 +19,14 @@
 //---------------------------------
 // EditorBase::Init
 //
+Gtk::Frame* EditorBase::GetRoot()
+{
+	return m_NodeHierachy.root->GetAttachment();
+}
+
+//---------------------------------
+// EditorBase::Init
+//
 // deserialize the default tool layout and construct the tools from it, then init the editor systems
 //
 void EditorBase::Init(Gtk::Frame* const parent)
@@ -34,7 +42,7 @@ void EditorBase::Init(Gtk::Frame* const parent)
 	ET_ASSERT(m_NodeHierachy.root != nullptr);
 
 	// initialize the tools and gtk widgets based on the loaded hierachy
-	m_NodeHierachy.root->Init(this, parent);
+	m_NodeHierachy.root->Init(this, parent, nullptr);
 
 	// once the widget sizes are available, adjust the sizes of widgets based on what the layout loaded
 	auto allocateCallback = [this](Gtk::Allocation& allocation)

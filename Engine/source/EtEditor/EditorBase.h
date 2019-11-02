@@ -23,6 +23,10 @@ public:
 	virtual std::string const& GetLayoutName() const = 0;
 	virtual std::vector<E_EditorTool> const& GetSupportedTools() const = 0;
 
+	// accessors
+	//-----------
+	Gtk::Frame* GetRoot();
+
 	// functionality
 	//------------------
 	void Init(Gtk::Frame* const parent);

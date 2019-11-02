@@ -10,6 +10,7 @@
 #include <gtkmm/frame.h>
 #include <gtkmm/box.h>
 #include <gtkmm/comboboxtext.h>
+#include <gtkmm/eventbox.h>
 #include <gtkmm/image.h>
 
 #include <EtCore/Reflection/ReflectionUtil.h>
@@ -28,6 +29,18 @@ RTTR_REGISTRATION
 		value("SceneViewport", E_EditorTool::SceneViewport),
 		value("Outliner", E_EditorTool::Outliner),
 		value("Invalid", E_EditorTool::Invalid));
+
+	registration::enumeration<ToolHierachyHandle::E_DragState>("E_DragState") (
+		value("None", ToolHierachyHandle::E_DragState::None),
+		value("Start", ToolHierachyHandle::E_DragState::Start),
+		value("Abort", ToolHierachyHandle::E_DragState::Abort),
+		value("Collapse Neighbour", ToolHierachyHandle::E_DragState::CollapseNeighbour),
+		value("Collapse Owner", ToolHierachyHandle::E_DragState::CollapseOwner),
+		value("Collapse Abort", ToolHierachyHandle::E_DragState::CollapseAbort),
+		value("Vertical Split", ToolHierachyHandle::E_DragState::VSplit),
+		value("Vertical Split Abort", ToolHierachyHandle::E_DragState::VSplitAbort),
+		value("Horizontal Split", ToolHierachyHandle::E_DragState::HSplit),
+		value("Horizontal Split Abort", ToolHierachyHandle::E_DragState::HSplitAbort));
 
 	registration::class_<EditorNodeHierachy>("editor node hierachy")
 		.property("root", &EditorNodeHierachy::root);
@@ -67,11 +80,24 @@ RTTR_REGISTRATION
 //---------------------------------
 // EditorNode::Init
 //
-void EditorNode::Init(EditorBase* const editor, Gtk::Frame* const attachment)
+void EditorNode::Init(EditorBase* const editor, Gtk::Frame* const attachment, EditorSplitNode* const parent)
 { 
 	m_Attachment = attachment;
+	m_Parent = parent;
 
 	InitInternal(editor);
+}
+
+//---------------------------------
+// EditorNode::ContainsPointer
+//
+bool EditorNode::ContainsPointer() const
+{
+	ivec2 pos;
+	m_Attachment->get_pointer(pos.x, pos.y);
+	Gtk::Allocation const alloc = m_Attachment->get_allocation();
+
+	return (pos.x > 0 && pos.y > 0 && pos.x < alloc.get_width() && pos.y < alloc.get_height());
 }
 
 
@@ -102,8 +128,8 @@ void EditorSplitNode::InitInternal(EditorBase* const editor)
 	m_Paned->pack2(*childFrame2, true, true);
 
 	// init the child widgets
-	m_Child1->Init(editor, childFrame1);
-	m_Child2->Init(editor, childFrame2);
+	m_Child1->Init(editor, childFrame1, this);
+	m_Child2->Init(editor, childFrame2, this);
 }
 
 //---------------------------------
@@ -179,6 +205,252 @@ void EditorSplitNode::AdjustLayout()
 //====================
 
 
+float const ToolHierachyHandle::s_SplitThreshold = 20.f;
+
+
+//-------------------------------------
+// ToolHierachyHandle::Init
+//
+void ToolHierachyHandle::Init(Gtk::Overlay* const attachment, EditorToolNode* const owner, bool right, bool top)
+{
+	// set internals
+	ET_ASSERT(attachment != nullptr);
+	ET_ASSERT(owner != nullptr);
+
+	m_Owner = owner;
+	m_IsRightAligned = right;
+	m_IsTopAligned = top;
+
+	// find any neighbouring nodes
+	EditorSplitNode* const parentSplit = m_Owner->GetParent();
+	if (parentSplit != nullptr)
+	{
+		EditorNode* testNeighbour = nullptr;
+
+		// figure out which node to check based on our alignment and parent split orientation
+		if (parentSplit->IsHorizontal())
+		{
+			if (m_IsRightAligned)
+			{
+				testNeighbour = parentSplit->GetChild1();
+			}
+			else
+			{
+				testNeighbour = parentSplit->GetChild2();
+			}
+		}
+		else
+		{
+			if (m_IsTopAligned)
+			{
+				testNeighbour = parentSplit->GetChild1();
+			}
+			else
+			{
+				testNeighbour = parentSplit->GetChild2();
+			}
+		}
+
+		// we can only merge with leaf nodes, and if this is an outer handle the node we are testing will be the owner
+		ET_ASSERT(testNeighbour != nullptr);
+		if (testNeighbour != m_Owner && testNeighbour->IsLeaf())
+		{
+			m_Neighbour = static_cast<EditorToolNode*>(testNeighbour);
+		}
+	}
+
+	// create thw events
+	Gtk::EventBox* const eventBox = Gtk::make_managed<Gtk::EventBox>();
+	attachment->add_overlay(*eventBox);
+	eventBox->set_halign(m_IsRightAligned ? Gtk::ALIGN_END : Gtk::ALIGN_START);
+	eventBox->set_valign(m_IsTopAligned ? Gtk::ALIGN_START : Gtk::ALIGN_END);
+
+	eventBox->add_events(Gdk::BUTTON_PRESS_MASK | Gdk::BUTTON_RELEASE_MASK | Gdk::POINTER_MOTION_MASK);
+
+	auto mousePressedCallback = [this](GdkEventButton* evnt) -> bool
+	{
+		m_DragState = E_DragState::Start;
+
+		// initial mouse position - coord space doesn't matter as long as threwhold check uses same
+		m_Position = etm::vecCast<int32>(dvec2(evnt->x, evnt->y)); 
+
+		return true;
+	};
+	eventBox->signal_button_press_event().connect(mousePressedCallback, false);
+
+	auto mouseReleasedCallback = [this](GdkEventButton* evnt) -> bool
+	{
+		ActionDragResult();
+
+		m_DragState = E_DragState::None;
+		return true;
+	};
+	eventBox->signal_button_release_event().connect(mouseReleasedCallback, false);
+
+	auto mouseMotionCallback = [this, eventBox](GdkEventMotion* evnt) -> bool
+	{
+		if (m_DragState != E_DragState::None)
+		{
+			ProcessDrag(evnt);
+
+			return true;
+		}
+
+		return false;
+	};
+	eventBox->signal_motion_notify_event().connect(mouseMotionCallback, false);
+
+	// create the icon
+	Gtk::Image* const image = Gtk::make_managed<Gtk::Image>();
+	eventBox->add(*image);
+	if (m_IsTopAligned)
+	{
+		if (m_IsRightAligned)
+		{
+			image->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control_tr.png");
+		}
+		else
+		{
+			image->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control_tl.png");
+		}
+	}
+	else
+	{
+		if (m_IsRightAligned)
+		{
+			image->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control_br.png");
+		}
+		else
+		{
+			image->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control_bl.png");
+		}
+	}
+}
+//---------------------------------
+// ToolHierachyHandle::ProcessDrag
+//
+// figure out drag state and position
+//
+void ToolHierachyHandle::ProcessDrag(GdkEventMotion* const motion)
+{
+	switch (m_DragState)
+	{
+	case E_DragState::Start:
+	{
+		// Check if we can collapse onto our neighbour
+		if (m_Neighbour != nullptr && m_Neighbour->ContainsPointer())
+		{
+			m_DragState = E_DragState::CollapseNeighbour;
+			break;
+		}
+
+		// otherwise check if we surpass the threshold to split the node
+		vec2 const mouseDelta = etm::vecCast<float>(dvec2(motion->x, motion->y)) - etm::vecCast<float>(m_Position);
+		if (etm::length(mouseDelta) > s_SplitThreshold)
+		{
+			if (m_Owner->ContainsPointer())
+			{
+				if (std::abs(mouseDelta.x) > std::abs(mouseDelta.y))
+				{
+					m_DragState = E_DragState::HSplit;
+				}
+				else
+				{
+					m_DragState = E_DragState::VSplit;
+				}
+			}
+			else
+			{
+				m_DragState = E_DragState::Abort;
+			}
+		}
+
+		break;
+	}
+
+	case E_DragState::Abort:
+		// Do nothing, just wait for mouse release
+		break;
+
+	case E_DragState::CollapseNeighbour:
+	case E_DragState::CollapseOwner:
+	case E_DragState::CollapseAbort:
+		if (m_Neighbour->ContainsPointer())
+		{
+			m_DragState = E_DragState::CollapseNeighbour;
+		}
+		else if (m_Owner->ContainsPointer())
+		{
+			m_DragState = E_DragState::CollapseOwner;
+		}
+		else
+		{
+			m_DragState = E_DragState::CollapseAbort;
+		}
+
+		break;
+
+	case E_DragState::VSplit:
+	case E_DragState::VSplitAbort:
+		if (m_Owner->ContainsPointer())
+		{
+			m_DragState = E_DragState::VSplit;
+			m_Owner->GetAttachment()->get_pointer(m_Position.x, m_Position.y);
+		}
+		else
+		{
+			m_DragState = E_DragState::VSplitAbort;
+		}
+
+		break;
+
+	case E_DragState::HSplit:
+	case E_DragState::HSplitAbort:
+		if (m_Owner->ContainsPointer())
+		{
+			m_DragState = E_DragState::HSplit;
+			m_Owner->GetAttachment()->get_pointer(m_Position.x, m_Position.y);
+		}
+		else
+		{
+			m_DragState = E_DragState::HSplitAbort;
+		}
+
+		break;
+
+	default:
+		ET_ASSERT(true, "Unhandled drag state!"); // maybe the state wasn't reset correctly or this function was called illegally
+	}
+}
+
+//---------------------------------
+// ToolHierachyHandle::ActionDragResult
+//
+// Based on the current drag state, split the node, collapse the node or do nothing
+//
+void ToolHierachyHandle::ActionDragResult()
+{
+	LOG(FS("ToolHierachyHandle[%s %s] drag action: %s", 
+		(m_IsTopAligned ? "top" : "bottom"), 
+		(m_IsRightAligned ? "right" : "left"),
+		reflection::EnumString(m_DragState).c_str()));
+
+	if (m_DragState == E_DragState::HSplit)
+	{
+		LOG(FS("Split position: %i", m_Position.x));
+	}
+	else if (m_DragState == E_DragState::VSplit)
+	{
+		LOG(FS("Split position: %i", m_Position.y));
+	}
+}
+
+
+//====================
+// Editor Tool Node
+//====================
+
+
 //---------------------------------
 // EditorToolNode::c-tor
 //
@@ -216,17 +488,8 @@ void EditorToolNode::InitInternal(EditorBase* const editor)
 	CreateToolbar();
 
 	// overlays for splitting and colapsing tools
-	Gtk::Image* const image1 = Gtk::make_managed<Gtk::Image>();
-	image1->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control.png");
-	overlay->add_overlay(*image1);
-	image1->set_halign(Gtk::ALIGN_START);
-	image1->set_valign(Gtk::ALIGN_END);
-
-	Gtk::Image* const image2 = Gtk::make_managed<Gtk::Image>();
-	image2->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control2.png");
-	overlay->add_overlay(*image2);
-	image2->set_halign(Gtk::ALIGN_END);
-	image2->set_valign(Gtk::ALIGN_START);
+	m_Handle1.Init(overlay, this, false, false);
+	m_Handle2.Init(overlay, this, true, true);
 }
 
 //---------------------------------
