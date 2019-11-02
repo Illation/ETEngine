@@ -5,10 +5,12 @@
 
 #include <rttr/registration>
 
+#include <gtkmm/overlay.h>
 #include <gtkmm/paned.h>
 #include <gtkmm/frame.h>
 #include <gtkmm/box.h>
 #include <gtkmm/comboboxtext.h>
+#include <gtkmm/image.h>
 
 #include <EtCore/Reflection/ReflectionUtil.h>
 
@@ -93,11 +95,11 @@ void EditorSplitNode::InitInternal(EditorBase* const editor)
 	// attatch inner frames to the paned widget in order to create shadowing
 	Gtk::Frame* childFrame1 = Gtk::make_managed<Gtk::Frame>();
 	childFrame1->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-	m_Paned->add1(*childFrame1);
+	m_Paned->pack1(*childFrame1, true, true);
 
 	Gtk::Frame* childFrame2 = Gtk::make_managed<Gtk::Frame>();
 	childFrame2->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-	m_Paned->add2(*childFrame2);
+	m_Paned->pack2(*childFrame2, true, true);
 
 	// init the child widgets
 	m_Child1->Init(editor, childFrame1);
@@ -192,9 +194,12 @@ EditorToolNode::EditorToolNode(EditorToolNode const& other) : EditorNode()
 //
 void EditorToolNode::InitInternal(EditorBase* const editor)
 {
+	Gtk::Overlay* const overlay = Gtk::make_managed<Gtk::Overlay>();
+	m_Attachment->add(*overlay);
+
 	// space for utility bar with tool switcher
 	m_Container = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_VERTICAL);
-	m_Attachment->add(*m_Container);
+	overlay->add(*m_Container);
 
 	// frame for the tool area
 	m_InnerFrame = Gtk::make_managed<Gtk::Frame>();
@@ -209,6 +214,19 @@ void EditorToolNode::InitInternal(EditorBase* const editor)
 	CreateTool();
 
 	CreateToolbar();
+
+	// overlays for splitting and colapsing tools
+	Gtk::Image* const image1 = Gtk::make_managed<Gtk::Image>();
+	image1->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control.png");
+	overlay->add_overlay(*image1);
+	image1->set_halign(Gtk::ALIGN_START);
+	image1->set_valign(Gtk::ALIGN_END);
+
+	Gtk::Image* const image2 = Gtk::make_managed<Gtk::Image>();
+	image2->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control2.png");
+	overlay->add_overlay(*image2);
+	image2->set_halign(Gtk::ALIGN_END);
+	image2->set_valign(Gtk::ALIGN_START);
 }
 
 //---------------------------------
@@ -241,6 +259,7 @@ void EditorToolNode::CreateToolbar()
 {
 	// Create the toolbar and a combobox within allowing to select the tool
 	m_Toolbar = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
+	m_Toolbar->set_margin_left(20);
 	m_ToolSelector = Gtk::make_managed<Gtk::ComboBoxText>(false);
 
 	m_Toolbar->pack_start(*m_ToolSelector, Gtk::PACK_SHRINK);
