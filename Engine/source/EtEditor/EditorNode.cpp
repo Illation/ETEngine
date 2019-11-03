@@ -12,6 +12,9 @@
 #include <gtkmm/comboboxtext.h>
 #include <gtkmm/eventbox.h>
 #include <gtkmm/image.h>
+#include <gtkmm/window.h>
+#include <glibmm/main.h>
+#include <cairomm/context.h>
 
 #include <EtCore/Reflection/ReflectionUtil.h>
 
@@ -211,10 +214,9 @@ float const ToolHierachyHandle::s_SplitThreshold = 20.f;
 //-------------------------------------
 // ToolHierachyHandle::Init
 //
-void ToolHierachyHandle::Init(Gtk::Overlay* const attachment, EditorToolNode* const owner, bool right, bool top)
+void ToolHierachyHandle::Init(EditorToolNode* const owner, bool right, bool top)
 {
 	// set internals
-	ET_ASSERT(attachment != nullptr);
 	ET_ASSERT(owner != nullptr);
 
 	m_Owner = owner;
@@ -261,7 +263,7 @@ void ToolHierachyHandle::Init(Gtk::Overlay* const attachment, EditorToolNode* co
 
 	// create thw events
 	Gtk::EventBox* const eventBox = Gtk::make_managed<Gtk::EventBox>();
-	attachment->add_overlay(*eventBox);
+	m_Owner->GetOverlay()->add_overlay(*eventBox);
 	eventBox->set_halign(m_IsRightAligned ? Gtk::ALIGN_END : Gtk::ALIGN_START);
 	eventBox->set_valign(m_IsTopAligned ? Gtk::ALIGN_START : Gtk::ALIGN_END);
 
@@ -272,7 +274,12 @@ void ToolHierachyHandle::Init(Gtk::Overlay* const attachment, EditorToolNode* co
 		m_DragState = E_DragState::Start;
 
 		// initial mouse position - coord space doesn't matter as long as threwhold check uses same
-		m_Position = etm::vecCast<int32>(dvec2(evnt->x, evnt->y)); 
+		m_Position = etm::vecCast<int32>(dvec2(evnt->x, evnt->y));
+		m_Owner->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
+		if (m_Neighbour != nullptr)
+		{
+			m_Neighbour->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
+		}
 
 		return true;
 	};
@@ -378,14 +385,23 @@ void ToolHierachyHandle::ProcessDrag(GdkEventMotion* const motion)
 		if (m_Neighbour->ContainsPointer())
 		{
 			m_DragState = E_DragState::CollapseNeighbour;
+
+			m_Owner->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
+			m_Neighbour->SetFeedbackState(ToolNodeFeedback::E_State::Collapse);
 		}
 		else if (m_Owner->ContainsPointer())
 		{
 			m_DragState = E_DragState::CollapseOwner;
+
+			m_Owner->SetFeedbackState(ToolNodeFeedback::E_State::Collapse);
+			m_Neighbour->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
 		}
 		else
 		{
 			m_DragState = E_DragState::CollapseAbort;
+
+			m_Owner->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
+			m_Neighbour->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
 		}
 
 		break;
@@ -396,10 +412,14 @@ void ToolHierachyHandle::ProcessDrag(GdkEventMotion* const motion)
 		{
 			m_DragState = E_DragState::VSplit;
 			m_Owner->GetAttachment()->get_pointer(m_Position.x, m_Position.y);
+
+			m_Owner->SetFeedbackState(ToolNodeFeedback::E_State::VSplit);
+			m_Owner->GetFeedback().SetSplitPosition(m_Position.y);
 		}
 		else
 		{
 			m_DragState = E_DragState::VSplitAbort;
+			m_Owner->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
 		}
 
 		break;
@@ -410,16 +430,26 @@ void ToolHierachyHandle::ProcessDrag(GdkEventMotion* const motion)
 		{
 			m_DragState = E_DragState::HSplit;
 			m_Owner->GetAttachment()->get_pointer(m_Position.x, m_Position.y);
+
+			m_Owner->SetFeedbackState(ToolNodeFeedback::E_State::HSplit);
+			m_Owner->GetFeedback().SetSplitPosition(m_Position.x);
 		}
 		else
 		{
 			m_DragState = E_DragState::HSplitAbort;
+			m_Owner->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
 		}
 
 		break;
 
 	default:
 		ET_ASSERT(true, "Unhandled drag state!"); // maybe the state wasn't reset correctly or this function was called illegally
+	}
+
+	m_Owner->GetFeedback().ForceRedraw();
+	if (m_Neighbour != nullptr)
+	{
+		m_Neighbour->GetFeedback().ForceRedraw();
 	}
 }
 
@@ -443,6 +473,126 @@ void ToolHierachyHandle::ActionDragResult()
 	{
 		LOG(FS("Split position: %i", m_Position.y));
 	}
+
+	m_Owner->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
+	if (m_Neighbour != nullptr)
+	{
+		m_Neighbour->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
+	}
+}
+
+
+//====================
+// Tool Node Feedback
+//====================
+
+
+double const ToolNodeFeedback::s_LineWidth = 2.0;
+
+
+//---------------------------------
+// ToolNodeFeedback::on_draw
+//
+bool ToolNodeFeedback::on_draw(Cairo::RefPtr<Cairo::Context> const& cr)
+{
+	Gtk::Allocation const allocation = get_allocation();
+	double const width = static_cast<double>(allocation.get_width());
+	double const height = static_cast<double>(allocation.get_height());
+
+	cr->push_group();
+	cr->set_source_rgba(0.0, 0.0, 0.0, 0.5);
+	cr->rectangle(0.0, 0.0, width, height);
+	cr->fill();
+
+	// draw a split line
+	cr->set_source_rgba(1.0, 1.0, 1.0, 1.0);
+	cr->set_line_width(s_LineWidth);
+	if (m_State == E_State::HSplit)
+	{
+		cr->move_to(static_cast<double>(m_SplitPos), 0.0);
+		cr->line_to(static_cast<double>(m_SplitPos), height);
+		cr->stroke();
+	}
+	else if (m_State == E_State::VSplit)
+	{
+		cr->move_to(0.0, static_cast<double>(m_SplitPos));
+		cr->line_to(width, static_cast<double>(m_SplitPos));
+		cr->stroke();
+	}
+	else if (m_State == E_State::Collapse)
+	{
+		// generate the path for a filled arrow
+		cr->move_to(width * 0.5, height * 0.5);
+		switch (m_Border)
+		{
+		case E_Border::Left:
+			cr->line_to(width * 0.25, height * 0.25);
+			cr->line_to(width * 0.25, height * 0.375);
+			cr->line_to(width * 0.0, height * 0.375);
+			cr->line_to(width * 0.0, height * 0.625);
+			cr->line_to(width * 0.25, height * 0.625);
+			cr->line_to(width * 0.25, height * 0.75);
+			break;
+
+		case E_Border::Right:
+			cr->line_to(width * 0.75, height * 0.25);
+			cr->line_to(width * 0.75, height * 0.375);
+			cr->line_to(width * 1.0, height * 0.375);
+			cr->line_to(width * 1.0, height * 0.625);
+			cr->line_to(width * 0.75, height * 0.625);
+			cr->line_to(width * 0.75, height * 0.75);
+			break;
+
+		case E_Border::Top:
+			cr->line_to(width * 0.25, height * 0.25);
+			cr->line_to(width * 0.375, height * 0.25);
+			cr->line_to(width * 0.375, height * 0.0);
+			cr->line_to(width * 0.625, height * 0.0);
+			cr->line_to(width * 0.625, height * 0.25);
+			cr->line_to(width* 0.75, height * 0.25);
+			break;
+
+		case E_Border::Bottom:
+			cr->line_to(width * 0.25, height * 0.75);
+			cr->line_to(width * 0.375, height * 0.75);
+			cr->line_to(width * 0.375, height * 1.0);
+			cr->line_to(width * 0.625, height * 1.0);
+			cr->line_to(width * 0.625, height * 0.75);
+			cr->line_to(width * 0.75, height * 0.75);
+			break;
+		}
+		cr->close_path();
+
+		// draw the arrow, subtracting from the surface
+		Cairo::Operator const opDefault = cr->get_operator();
+
+		cr->set_operator(Cairo::Operator::OPERATOR_DEST_OUT);
+		cr->set_source_rgba(1.0, 1.0, 1.0, 0.5);
+		cr->fill();
+
+		cr->set_operator(opDefault);
+	}
+
+	cr->pop_group_to_source();
+	cr->rectangle(0.0, 0.0, width, height);
+	cr->fill();
+
+	return true;
+}
+
+//---------------------------------
+// ToolNodeFeedback::ForceRedraw
+//
+bool ToolNodeFeedback::ForceRedraw()
+{
+	auto win = get_window();
+	if (win)
+	{
+		Gdk::Rectangle r(0, 0, get_allocation().get_width(), get_allocation().get_height());
+		win->invalidate_rect(r, false);
+	}
+
+	return true;
 }
 
 
@@ -466,12 +616,12 @@ EditorToolNode::EditorToolNode(EditorToolNode const& other) : EditorNode()
 //
 void EditorToolNode::InitInternal(EditorBase* const editor)
 {
-	Gtk::Overlay* const overlay = Gtk::make_managed<Gtk::Overlay>();
-	m_Attachment->add(*overlay);
+	m_Overlay = Gtk::make_managed<Gtk::Overlay>();
+	m_Attachment->add(*m_Overlay);
 
 	// space for utility bar with tool switcher
 	m_Container = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_VERTICAL);
-	overlay->add(*m_Container);
+	m_Overlay->add(*m_Container);
 
 	// frame for the tool area
 	m_InnerFrame = Gtk::make_managed<Gtk::Frame>();
@@ -488,8 +638,21 @@ void EditorToolNode::InitInternal(EditorBase* const editor)
 	CreateToolbar();
 
 	// overlays for splitting and colapsing tools
-	m_Handle1.Init(overlay, this, false, false);
-	m_Handle2.Init(overlay, this, true, true);
+	m_Handle1.Init(this, false, false);
+	m_Handle2.Init(this, true, true);
+
+	// set the feedback border to determine arrow directions
+	if (m_Parent != nullptr)
+	{
+		if (m_Parent->IsHorizontal())
+		{
+			m_Feedback.SetBorder((m_Parent->GetChild1() == this) ? ToolNodeFeedback::E_Border::Right : ToolNodeFeedback::E_Border::Left);
+		}
+		else
+		{
+			m_Feedback.SetBorder((m_Parent->GetChild1() == this) ? ToolNodeFeedback::E_Border::Bottom : ToolNodeFeedback::E_Border::Top);
+		}
+	}
 }
 
 //---------------------------------
@@ -596,4 +759,23 @@ void EditorToolNode::OnToolComboChanged()
 			CreateTool();
 		}
 	}
+}
+
+//-------------------------------------
+// EditorToolNode::OnToolComboChanged
+//
+void EditorToolNode::SetFeedbackState(ToolNodeFeedback::E_State const state)
+{
+	if ((m_Feedback.GetState() == ToolNodeFeedback::E_State::Inactive) && (state != ToolNodeFeedback::E_State::Inactive))
+	{
+		m_Overlay->add_overlay(m_Feedback);
+		m_Overlay->set_overlay_pass_through(m_Feedback, true);
+		m_Overlay->show_all_children();
+	}
+	else if ((m_Feedback.GetState() != ToolNodeFeedback::E_State::Inactive) && (state == ToolNodeFeedback::E_State::Inactive))
+	{
+		static_cast<Gtk::Container*>(m_Overlay)->remove(m_Feedback);
+	}
+
+	m_Feedback.SetState(state);
 }

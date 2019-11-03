@@ -3,6 +3,7 @@
 #include <rttr/registration_friend.h>
 
 #include <gdk/gdk.h>
+#include <gtkmm/drawingarea.h>
 
 #include <EtEditor/UI/EditorTool.h>
 
@@ -164,7 +165,7 @@ public:
 
 	// functionality
 	//---------------
-	void Init(Gtk::Overlay* const attachment, EditorToolNode* const owner, bool right, bool top);
+	void Init(EditorToolNode* const owner, bool right, bool top);
 
 private:
 	void ProcessDrag(GdkEventMotion* const motion);
@@ -181,6 +182,67 @@ private:
 
 	E_DragState m_DragState = E_DragState::None;
 	ivec2 m_Position; // in start state represents the initial position, otherwise the position within the owning frame in case of a split
+};
+
+
+//---------------------------------
+// ToolNodeFeedback
+//
+// Surface to draw into a tools overlat when collapsing or splitting the tool
+//
+class ToolNodeFeedback final : public Gtk::DrawingArea
+{
+	// definitions
+	//-------------
+
+	static double const s_LineWidth;
+
+public:
+	enum class E_State : uint8
+	{
+		Inactive,
+		Collapse,
+		HSplit,
+		VSplit
+	};
+
+	enum class E_Border : uint8
+	{
+		Left,
+		Right,
+		Top,
+		Bottom
+	};
+
+	// construct destruct
+	//--------------------
+	ToolNodeFeedback() = default;
+	~ToolNodeFeedback() = default;
+
+	// drawingArea interface
+	//-----------------------
+protected:
+	bool on_draw(Cairo::RefPtr<Cairo::Context> const& cr) override;
+
+	// accessors
+	//---------------
+public:
+	E_State GetState() const { return m_State; }
+
+	// functionality
+	//---------------
+	void SetState(E_State const state) { m_State = state; }
+	void SetBorder(E_Border const border) { m_Border = border; }
+	void SetSplitPosition(int32 const splitPos) { m_SplitPos = splitPos; }
+	bool ForceRedraw();
+
+	// Data
+	///////
+
+private:
+	E_State m_State = E_State::Inactive;
+	E_Border m_Border = E_Border::Left;
+	int32 m_SplitPos = 0;
 };
 
 
@@ -219,6 +281,9 @@ private:
 	//-----------
 public:
 	E_EditorTool GetType() const { return m_Type; }
+	Gtk::Overlay* GetOverlay() const { return m_Overlay; }
+	void SetFeedbackState(ToolNodeFeedback::E_State const state);
+	ToolNodeFeedback& GetFeedback() { return m_Feedback; }
 
 	// Data
 	///////
@@ -232,6 +297,7 @@ private:
 	EditorBase* m_Editor = nullptr;
 
 	// ui
+	Gtk::Overlay* m_Overlay = nullptr;
 	Gtk::Box* m_Container = nullptr;
 	Gtk::Box* m_Toolbar = nullptr;
 	Gtk::ComboBoxText* m_ToolSelector = nullptr;
@@ -239,4 +305,6 @@ private:
 
 	ToolHierachyHandle m_Handle1;
 	ToolHierachyHandle m_Handle2;
+
+	ToolNodeFeedback m_Feedback;
 };
