@@ -167,6 +167,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 void SceneViewport::OnDeinit()
 {
 	m_Viewport->MakeCurrent();
+	m_Viewport->SetActive(false);
 
 	m_Editor->UnregisterListener(this);
 	SafeDelete(m_SceneRenderer);

@@ -173,13 +173,15 @@ void Viewport::OnResize(vec2 const resolution)
 //
 void Viewport::OnRender(T_FbLoc const targetFb)
 {
-	MakeCurrent();
-
 	TriggerTick(); // if this is the first real time thing we will start the update process here
 
-	Render(targetFb);
+	if (m_IsActive)
+	{
+		MakeCurrent();
+		Render(targetFb);
 
-	m_Area->QueueDraw(); // request drawing again
+		m_Area->QueueDraw(); // request drawing again
+	}
 }
 
 //---------------------------------

@@ -173,5 +173,5 @@ void Camera::RecalculateDerived()
 	// update frustum
 	m_Frustum.SetCullTransform(mat4()); // Frustum will be in world space and objects need to transform themselves
 	m_Frustum.SetToCamera(*this);
-	m_Frustum.Update();
+	m_Frustum.Update(m_Viewport);
 }

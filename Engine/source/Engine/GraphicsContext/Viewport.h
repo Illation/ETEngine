@@ -50,6 +50,7 @@ public:
 	void Redraw();
 	void SynchDimensions();
 	void SetRenderer(I_ViewportRenderer* renderer);
+	void SetActive(bool const val) { m_IsActive = val; }
 private:
 	void Render(T_FbLoc const targetFb);
 
@@ -94,6 +95,7 @@ private:
 	MulticastDelegate m_ResizeEvent;
 
 	bool m_IsRealized = false;
+	bool m_IsActive = true;
 
 	std::vector<I_ViewportListener*> m_Listeners;
 };

@@ -25,13 +25,23 @@ class EditorToolNode;
 //---------------------------------
 // EditorNodeHierachy
 //
-// Serialization wrapper
+// Contains for a tree structure of dynamically laid out tools
 //
-struct EditorNodeHierachy
+class EditorNodeHierachy
 {
+	// definitions
+	//-------------
 	RTTR_ENABLE()
 
+	// functionality
+	//----------------
 public:
+	void SplitNode(EditorToolNode* const node, EditorBase* const editor);
+	void CollapseNode(EditorToolNode* const node, EditorBase* const editor);
+
+	// Data
+	///////
+
 	EditorNode* root = nullptr;
 };
 
@@ -46,6 +56,7 @@ class EditorNode
 	// definitions
 	//-------------
 	RTTR_ENABLE()
+	friend class EditorNodeHierachy;
 
 	// construct destruct
 	//--------------------
@@ -55,6 +66,7 @@ public:
 	// functionality
 	//----------------
 	void Init(EditorBase* const editor, Gtk::Frame* const attachment, EditorSplitNode* const parent);
+	Gtk::Frame* UnlinkAttachment();
 
 	Gtk::Frame* GetAttachment() const { return m_Attachment; }
 	EditorSplitNode* GetParent() const { return m_Parent; }
@@ -88,12 +100,13 @@ class EditorSplitNode final : public EditorNode
 	//-------------
 	RTTR_ENABLE(EditorNode)
 	RTTR_REGISTRATION_FRIEND
+	friend class EditorNodeHierachy;
 
 	// construct destruct
 	//--------------------
 public:
 	EditorSplitNode() : EditorNode() {}
-	~EditorSplitNode() = default;
+	~EditorSplitNode();
 
 	// editor node interface
 	//-----------------------
@@ -105,6 +118,7 @@ private:
 	//----------------
 public:
 	void AdjustLayout();
+	void ReinitHierachyHandles();
 
 	// accessors
 	//-----------
@@ -228,6 +242,7 @@ protected:
 	//---------------
 public:
 	E_State GetState() const { return m_State; }
+	int32 GetSplitPos() const { return m_SplitPos; }
 
 	// functionality
 	//---------------
@@ -257,13 +272,14 @@ class EditorToolNode final : public EditorNode
 	//-------------
 	RTTR_ENABLE(EditorNode)
 	RTTR_REGISTRATION_FRIEND
+	friend class EditorNodeHierachy;
 
 	// construct destruct
 	//--------------------
 public:
 	EditorToolNode() : EditorNode() {}
 	EditorToolNode(EditorToolNode const& other);
-	~EditorToolNode() = default;
+	~EditorToolNode();
 
 	// editor node interface
 	//-----------------------
@@ -274,8 +290,13 @@ private:
 	// functionality
 	//---------------
 	void CreateTool();
+public:
+	void DestroyTool();
+private:
 	void CreateToolbar();
 	void OnToolComboChanged();
+public:
+	void InitHierachyUI();
 
 	// accessors
 	//-----------
@@ -284,6 +305,7 @@ public:
 	Gtk::Overlay* GetOverlay() const { return m_Overlay; }
 	void SetFeedbackState(ToolNodeFeedback::E_State const state);
 	ToolNodeFeedback& GetFeedback() { return m_Feedback; }
+	EditorBase* GetEditor() const { return m_Editor; }
 
 	// Data
 	///////

@@ -25,9 +25,9 @@ class EditorBase;
 //
 class EditorAppWindow final : public Gtk::ApplicationWindow
 {
-public:
 	// definitions
 	//--------------
+public:
 	typedef std::pair<EditorBase*, Gtk::Frame*> T_EditorFramePair;
 
 	// construct destruct

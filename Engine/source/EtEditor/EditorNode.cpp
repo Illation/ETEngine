@@ -75,6 +75,133 @@ RTTR_REGISTRATION
 }
 
 
+//======================
+// Editor Node Hierachy
+//======================
+
+
+//---------------------------------
+// EditorNodeHierachy::SplitNode
+//
+void EditorNodeHierachy::SplitNode(EditorToolNode* const node, EditorBase* const editor)
+{
+	bool const horizontal = node->GetFeedback().GetState() == ToolNodeFeedback::E_State::HSplit;
+	float const splitFrac = static_cast<float>(node->GetFeedback().GetSplitPos())
+		/ static_cast<float>(horizontal ? node->GetAttachment()->get_allocated_width() : node->GetAttachment()->get_allocated_height());
+
+	node->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
+
+	EditorSplitNode* const split = new EditorSplitNode();
+
+	// find the pointer in the tree referencing our node
+	if (node->GetParent() == nullptr)
+	{
+		ET_ASSERT(node == root);
+		root = split;
+	}
+	else
+	{
+		if (node == node->GetParent()->GetChild1())
+		{
+			node->GetParent()->m_Child1 = split;
+		}
+		else
+		{
+			ET_ASSERT(node == node->GetParent()->GetChild2());
+			node->GetParent()->m_Child2 = split;
+		}
+	}
+
+	// assign the basic information that would otherwise be provided by reflection
+	EditorToolNode* const splitTool = new EditorToolNode();
+	splitTool->m_Type = node->GetType();
+
+	split->m_IsHorizontal = horizontal;
+	split->m_SplitRatio = splitFrac;
+	split->m_Child1 = node;
+	split->m_Child2 = splitTool;
+
+	// emulate node intialization
+	split->m_Attachment = node->UnlinkAttachment();
+	split->m_Parent = node->GetParent();
+	split->InitInternal(editor);
+
+	// mark UI as dirty
+	split->GetAttachment()->show_all_children();
+	split->AdjustLayout();
+
+	// enusre neighbouring nodes don't allow collapsing the previous neighbour which is now split
+	if (split->GetParent() != nullptr)
+	{
+		split->GetParent()->ReinitHierachyHandles();
+	}
+
+	split->GetAttachment()->show_all_children();
+}
+
+//----------------------------------
+// EditorNodeHierachy::CollapseNode
+//
+void EditorNodeHierachy::CollapseNode(EditorToolNode* const node, EditorBase* const editor)
+{
+	EditorSplitNode* splitToDelete = node->GetParent();
+	ET_ASSERT(splitToDelete != nullptr);
+
+	// destroy the tool first in case its destruction relies on being attached to the window (such as open GL contexts etc)
+	node->DestroyTool();
+
+	// find the node that doesn't collapse
+	EditorNode* survivingNode = nullptr;
+	if (node == splitToDelete->GetChild1())
+	{
+		survivingNode = splitToDelete->GetChild2();
+		splitToDelete->m_Child2 = nullptr;
+	}
+	else
+	{
+		ET_ASSERT(node == splitToDelete->GetChild2());
+		survivingNode = splitToDelete->GetChild1();
+		splitToDelete->m_Child1 = nullptr;
+	}
+
+	// attatch the surviving node to the parent of the collapsing split node
+	if (splitToDelete->GetParent() == nullptr)
+	{
+		ET_ASSERT(splitToDelete == root);
+		root = survivingNode;
+	}
+	else
+	{
+		if (splitToDelete == splitToDelete->GetParent()->GetChild1())
+		{
+			splitToDelete->GetParent()->m_Child1 = survivingNode;
+		}
+		else
+		{
+			ET_ASSERT(splitToDelete == splitToDelete->GetParent()->GetChild2());
+			splitToDelete->GetParent()->m_Child2 = survivingNode;
+		}
+	}
+
+	// provide the newly attached node with the splits base ui elements
+	survivingNode->UnlinkAttachment();
+	survivingNode->m_Attachment = splitToDelete->UnlinkAttachment();
+	survivingNode->m_Parent = splitToDelete->GetParent();
+
+	SafeDelete(splitToDelete);
+
+	// reattach the tool nodes UI
+	survivingNode->InitInternal(editor);
+
+	if (survivingNode->GetParent() != nullptr)
+	{
+		survivingNode->GetParent()->ReinitHierachyHandles();
+	}
+
+	survivingNode->GetAttachment()->show_all_children();
+}
+
+
 //==============
 // Editor Node
 //==============
@@ -89,6 +216,21 @@ void EditorNode::Init(EditorBase* const editor, Gtk::Frame* const attachment, Ed
 	m_Parent = parent;
 
 	InitInternal(editor);
+}
+
+//---------------------------------
+// EditorNode::UnlinkAttachment
+//
+// In order to reparent a node, detatch a nodes internals from its current attachment
+//
+Gtk::Frame* EditorNode::UnlinkAttachment()
+{
+	m_Attachment->remove();
+
+	Gtk::Frame* const attachment = m_Attachment;
+	m_Attachment = nullptr;
+
+	return attachment;
 }
 
 //---------------------------------
@@ -108,6 +250,27 @@ bool EditorNode::ContainsPointer() const
 // Editor Split Node
 //====================
 
+
+//---------------------------------
+// EditorSplitNode::d-tor
+//
+EditorSplitNode::~EditorSplitNode()
+{
+	if (m_Paned == nullptr)
+	{
+		return;
+	}
+
+	// in case of collapsing, the surviving child should be set to nullptr in the split before calling the destructor
+	SafeDelete(m_Child1);
+	SafeDelete(m_Child2);
+
+	// if this nodes UI is unlinked from its attachment, we need to manually delete the UI
+	if (m_Paned->get_parent() == nullptr)
+	{
+		delete m_Paned;
+	}
+}
 
 //---------------------------------
 // EditorSplitNode::InitInternal
@@ -202,10 +365,26 @@ void EditorSplitNode::AdjustLayout()
 	m_Paned->property_position().signal_changed().connect(positionChangedCallback);
 }
 
+//----------------------------------------
+// EditorSplitNode::ReinitHierachyHandles
+//
+void EditorSplitNode::ReinitHierachyHandles()
+{
+	if (m_Child1->IsLeaf())
+	{
+		static_cast<EditorToolNode*>(m_Child1)->InitHierachyUI();
+	}
 
-//====================
-// Editor Tool Node
-//====================
+	if (m_Child2->IsLeaf())
+	{
+		static_cast<EditorToolNode*>(m_Child2)->InitHierachyUI();
+	}
+}
+
+
+//======================
+// Tool Hierachy Handle
+//======================
 
 
 float const ToolHierachyHandle::s_SplitThreshold = 20.f;
@@ -219,11 +398,14 @@ void ToolHierachyHandle::Init(EditorToolNode* const owner, bool right, bool top)
 	// set internals
 	ET_ASSERT(owner != nullptr);
 
+	bool const reinit = m_Owner != nullptr;
+
 	m_Owner = owner;
 	m_IsRightAligned = right;
 	m_IsTopAligned = top;
 
 	// find any neighbouring nodes
+	m_Neighbour = nullptr;
 	EditorSplitNode* const parentSplit = m_Owner->GetParent();
 	if (parentSplit != nullptr)
 	{
@@ -234,11 +416,11 @@ void ToolHierachyHandle::Init(EditorToolNode* const owner, bool right, bool top)
 		{
 			if (m_IsRightAligned)
 			{
-				testNeighbour = parentSplit->GetChild1();
+				testNeighbour = parentSplit->GetChild2();
 			}
 			else
 			{
-				testNeighbour = parentSplit->GetChild2();
+				testNeighbour = parentSplit->GetChild1();
 			}
 		}
 		else
@@ -259,6 +441,12 @@ void ToolHierachyHandle::Init(EditorToolNode* const owner, bool right, bool top)
 		{
 			m_Neighbour = static_cast<EditorToolNode*>(testNeighbour);
 		}
+	}
+
+	// we should have already created our child widgets and hooked up events previously
+	if (reinit)
+	{
+		return;
 	}
 
 	// create thw events
@@ -460,24 +648,32 @@ void ToolHierachyHandle::ProcessDrag(GdkEventMotion* const motion)
 //
 void ToolHierachyHandle::ActionDragResult()
 {
-	LOG(FS("ToolHierachyHandle[%s %s] drag action: %s", 
-		(m_IsTopAligned ? "top" : "bottom"), 
-		(m_IsRightAligned ? "right" : "left"),
-		reflection::EnumString(m_DragState).c_str()));
+	switch (m_DragState)
+	{
+	case E_DragState::VSplit:
+	case E_DragState::HSplit:
+		m_Owner->GetEditor()->QueueNodeForSplit(m_Owner); // the split code will read the feedback and reset it after
+		break;
 
-	if (m_DragState == E_DragState::HSplit)
-	{
-		LOG(FS("Split position: %i", m_Position.x));
-	}
-	else if (m_DragState == E_DragState::VSplit)
-	{
-		LOG(FS("Split position: %i", m_Position.y));
-	}
+	case E_DragState::CollapseNeighbour:
+		ET_ASSERT(m_Neighbour != nullptr);
 
-	m_Owner->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
-	if (m_Neighbour != nullptr)
-	{
-		m_Neighbour->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
+		m_Neighbour->SetFeedbackState(ToolNodeFeedback::E_State::Inactive); // no feedback state read required for collapse
+		m_Neighbour->GetEditor()->QueueNodeForCollapse(m_Neighbour);
+		break;
+
+	case E_DragState::CollapseOwner:
+		m_Owner->SetFeedbackState(ToolNodeFeedback::E_State::Inactive); // no feedback state read required for collapse
+		m_Owner->GetEditor()->QueueNodeForCollapse(m_Owner);
+		break;
+
+	default:
+		m_Owner->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
+		if (m_Neighbour != nullptr)
+		{
+			m_Neighbour->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
+		}
+		break;
 	}
 }
 
@@ -612,12 +808,40 @@ EditorToolNode::EditorToolNode(EditorToolNode const& other) : EditorNode()
 }
 
 //---------------------------------
+// EditorToolNode::d-tor
+//
+EditorToolNode::~EditorToolNode()
+{
+	if (m_Tool != nullptr)
+	{
+		DestroyTool();
+	}
+
+	if (m_Overlay != nullptr && m_Overlay->get_parent() != nullptr)
+	{
+		delete m_Overlay; // should also delete other managed wdigets
+	}
+}
+
+//---------------------------------
 // EditorToolNode::InitInternal
 //
 void EditorToolNode::InitInternal(EditorBase* const editor)
 {
-	m_Overlay = Gtk::make_managed<Gtk::Overlay>();
+	// if the node is being reinitialized to to restructuring of the hierachy, all we do is relink our UI to the attachment
+	bool const reinit = m_Overlay != nullptr;
+
+	if (!reinit)
+	{
+		m_Overlay = Gtk::make_managed<Gtk::Overlay>();
+	}
 	m_Attachment->add(*m_Overlay);
+
+	if (reinit)
+	{
+		InitHierachyUI();
+		return;
+	}
 
 	// space for utility bar with tool switcher
 	m_Container = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_VERTICAL);
@@ -637,22 +861,7 @@ void EditorToolNode::InitInternal(EditorBase* const editor)
 
 	CreateToolbar();
 
-	// overlays for splitting and colapsing tools
-	m_Handle1.Init(this, false, false);
-	m_Handle2.Init(this, true, true);
-
-	// set the feedback border to determine arrow directions
-	if (m_Parent != nullptr)
-	{
-		if (m_Parent->IsHorizontal())
-		{
-			m_Feedback.SetBorder((m_Parent->GetChild1() == this) ? ToolNodeFeedback::E_Border::Right : ToolNodeFeedback::E_Border::Left);
-		}
-		else
-		{
-			m_Feedback.SetBorder((m_Parent->GetChild1() == this) ? ToolNodeFeedback::E_Border::Bottom : ToolNodeFeedback::E_Border::Top);
-		}
-	}
+	InitHierachyUI();
 }
 
 //---------------------------------
@@ -676,6 +885,23 @@ void EditorToolNode::CreateTool()
 	}
 
 	m_Tool->Init(m_Editor, m_InnerFrame);
+}
+
+//-------------------------------------
+// EditorToolNode::DestroyTool
+//
+void EditorToolNode::DestroyTool()
+{
+	// allow the tool to destroy resources depending on the frame being attached
+	m_Tool->OnDeinit();
+
+	// remove the child widget
+	Gtk::Widget* child = m_InnerFrame->get_child();
+	m_InnerFrame->remove();
+	SafeDelete(child);
+
+	// delete the tool
+	m_Tool.reset(nullptr);
 }
 
 //---------------------------------
@@ -744,18 +970,7 @@ void EditorToolNode::OnToolComboChanged()
 		{
 			m_Type = newType;
 
-			// allow the tool to destroy resources depending on the frame being attached
-			m_Tool->OnDeinit();
-
-			// remove the child widget
-			Gtk::Widget* child = m_InnerFrame->get_child();
-			m_InnerFrame->remove();
-			SafeDelete(child);
-
-			// delete the tool
-			m_Tool.reset(nullptr);
-
-			// create the new tool
+			DestroyTool();
 			CreateTool();
 		}
 	}
@@ -778,4 +993,27 @@ void EditorToolNode::SetFeedbackState(ToolNodeFeedback::E_State const state)
 	}
 
 	m_Feedback.SetState(state);
+}
+
+//-------------------------------------
+// EditorToolNode::InitHierachyUI
+//
+void EditorToolNode::InitHierachyUI()
+{
+	// overlays for splitting and colapsing tools
+	m_Handle1.Init(this, false, false);
+	m_Handle2.Init(this, true, true);
+
+	// set the feedback border to determine arrow directions
+	if (m_Parent != nullptr)
+	{
+		if (m_Parent->IsHorizontal())
+		{
+			m_Feedback.SetBorder((m_Parent->GetChild1() == this) ? ToolNodeFeedback::E_Border::Right : ToolNodeFeedback::E_Border::Left);
+		}
+		else
+		{
+			m_Feedback.SetBorder((m_Parent->GetChild1() == this) ? ToolNodeFeedback::E_Border::Bottom : ToolNodeFeedback::E_Border::Top);
+		}
+	}
 }

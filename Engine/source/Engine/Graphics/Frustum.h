@@ -1,6 +1,7 @@
 #pragma once
 
 class Camera;
+class Viewport;
 
 enum class VolumeCheck
 {
@@ -32,7 +33,7 @@ public:
 	Frustum();
 	~Frustum();
 
-	void Update();
+	void Update(Viewport const* const viewport);
 
 	void SetToCamera(Camera const& camera);
 	void SetCullTransform(mat4 objectWorld);

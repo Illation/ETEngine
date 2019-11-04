@@ -64,7 +64,7 @@ bool Triangulator::Update()
 		m_pFrustum->SetToCamera(SceneRenderer::GetCurrent()->GetCamera());
 	}
 
-	m_pFrustum->Update();
+	m_pFrustum->Update(Viewport::GetCurrentViewport());
 
 	return true;
 }

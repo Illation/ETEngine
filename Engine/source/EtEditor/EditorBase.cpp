@@ -3,6 +3,7 @@
 #include "EditorConfig.h"
 
 #include <gtkmm/frame.h>
+#include <glibmm/main.h>
 
 #include <EtCore/Reflection/Serialization.h>
 
@@ -15,6 +16,19 @@
 // Editor Base
 //===============
 
+
+//---------------------------------
+// EditorBase::OnKeyEvent
+//
+// by default editors don't handle key events, but this can be overridden by implementations
+//
+bool EditorBase::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
+{
+	UNUSED(pressed);
+	UNUSED(evnt);
+
+	return false;
+}
 
 //---------------------------------
 // EditorBase::Init
@@ -53,6 +67,15 @@ void EditorBase::Init(Gtk::Frame* const parent)
 	};
 	parent->signal_size_allocate().connect(allocateCallback, true);
 
+	// periodically check if the layout needs to change
+	auto onTimeout = [this]() -> bool
+	{
+		ProcessLayoutChanges();
+
+		return true;
+	};
+	Glib::signal_timeout().connect(onTimeout, 33); 
+
 	// ..
 	parent->show_all_children();
 
@@ -74,6 +97,22 @@ void EditorBase::SaveLayout()
 }
 
 //---------------------------------
+// EditorBase::QueueNodeForSplit
+//
+void EditorBase::QueueNodeForSplit(EditorToolNode* const node)
+{
+	m_QueuedSplits.emplace_back(node);
+}
+
+//---------------------------------
+// EditorBase::QueueNodeForCollapse
+//
+void EditorBase::QueueNodeForCollapse(EditorToolNode* const node)
+{
+	m_QueuedCollapse.emplace_back(node);
+}
+
+//---------------------------------
 // EditorBase::OnAllocationAvailable
 //
 // Set the positions of split handles
@@ -92,14 +131,21 @@ void EditorBase::OnAllocationAvailable()
 }
 
 //---------------------------------
-// EditorBase::OnKeyEvent
+// EditorBase::ProcessLayoutChanges
 //
-// by default editors don't handle key events, but this can be overridden by implementations
+// Split or collapse queued nodes based on their state
 //
-bool EditorBase::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
+void EditorBase::ProcessLayoutChanges()
 {
-	UNUSED(pressed);
-	UNUSED(evnt);
+	for (EditorToolNode* const node : m_QueuedSplits)
+	{
+		m_NodeHierachy.SplitNode(node, this);
+	}
+	m_QueuedSplits.clear();
 
-	return false;
+	for (EditorToolNode* const node : m_QueuedCollapse)
+	{
+		m_NodeHierachy.CollapseNode(node, this);
+	}
+	m_QueuedCollapse.clear();
 }

@@ -49,11 +49,11 @@ void Frustum::SetToCamera(Camera const& camera)
 	m_FOV = camera.GetFOV();
 }
 
-void Frustum::Update()
+void Frustum::Update(Viewport const* const viewport)
 {
 	//calculate generalized relative width and aspect ratio
 	float normHalfWidth = tan(etm::radians(m_FOV));
-	float aspectRatio = Viewport::GetCurrentViewport()->GetAspectRatio();
+	float aspectRatio = viewport->GetAspectRatio();
 
 	//calculate width and height for near and far plane
 	float nearHW = normHalfWidth*m_NearPlane;

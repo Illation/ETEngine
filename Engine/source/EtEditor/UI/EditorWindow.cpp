@@ -11,6 +11,7 @@
 
 #include <EtEditor/EditorApp.h>
 #include <EtEditor/EditorBase.h>
+#include <EtEditor/EditorTickOrder.h>
 
 
 //===========================
