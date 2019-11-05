@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <menu id="headermenu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Flip</attribute>
+        <attribute name="action">header.flip</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Show Header</attribute>
+        <attribute name="action">header.show</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Collapse Tile</attribute>
+        <attribute name="action">header.collapse</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Split Tile _Horizontally</attribute>
+        <attribute name="action">header.hsplit</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Split Tile _Vertically</attribute>
+        <attribute name="action">header.vsplit</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

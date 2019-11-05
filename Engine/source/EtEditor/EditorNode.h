@@ -3,7 +3,10 @@
 #include <rttr/registration_friend.h>
 
 #include <gdk/gdk.h>
+#include <gtkmm/builder.h>
 #include <gtkmm/drawingarea.h>
+#include <glibmm/refptr.h>
+#include <giomm/simpleactiongroup.h>
 
 #include <EtEditor/UI/EditorTool.h>
 
@@ -15,6 +18,8 @@ namespace Gtk {
 	class Box;
 	class ComboBoxText;
 	class Overlay;
+	class Menu;
+	class EventBox;
 }
 namespace Gdk {
 	class Cursor;
@@ -36,16 +41,26 @@ class EditorNodeHierachy
 	//-------------
 	RTTR_ENABLE()
 
+	// construct destruct
+	//--------------------
+public:
+	EditorNodeHierachy();
+
 	// functionality
 	//----------------
-public:
 	void SplitNode(EditorToolNode* const node, EditorBase* const editor);
 	void CollapseNode(EditorToolNode* const node, EditorBase* const editor);
+
+	Gtk::Menu* GetHeaderMenu() const { return m_HeaderMenu; }
 
 	// Data
 	///////
 
 	EditorNode* root = nullptr;
+
+private:
+	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
+	Gtk::Menu* m_HeaderMenu = nullptr;
 };
 
 
@@ -300,6 +315,7 @@ public:
 private:
 	void CreateToolbar();
 	void OnToolComboChanged();
+	void AddToolbarContent();
 public:
 	void InitHierachyUI();
 
@@ -318,6 +334,7 @@ public:
 private:
 	// reflected
 	E_EditorTool m_Type = E_EditorTool::Invalid;
+	bool m_IsToolbarVisible = true;
 
 	// model
 	std::unique_ptr<I_EditorTool> m_Tool;
@@ -326,9 +343,13 @@ private:
 	// ui
 	Gtk::Overlay* m_Overlay = nullptr;
 	Gtk::Box* m_Container = nullptr;
+	Gtk::EventBox* m_ToolbarEventBox = nullptr;
 	Gtk::Box* m_Toolbar = nullptr;
 	Gtk::ComboBoxText* m_ToolSelector = nullptr;
+	Gtk::Widget* m_ToolbarContent = nullptr;
 	Gtk::Frame* m_InnerFrame = nullptr;
+
+	Glib::RefPtr<Gio::SimpleActionGroup> m_ToolbarActionGroup;
 
 	ToolHierachyHandle m_Handle1;
 	ToolHierachyHandle m_Handle2;

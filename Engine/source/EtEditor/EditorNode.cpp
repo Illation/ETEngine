@@ -13,8 +13,11 @@
 #include <gtkmm/eventbox.h>
 #include <gtkmm/image.h>
 #include <gtkmm/window.h>
+#include <gtkmm/menu.h>
 #include <gdkmm/cursor.h>
+#include <giomm/menu.h>
 #include <glibmm/main.h>
+#include <glibmm/object.h>
 #include <cairomm/context.h>
 
 #include <EtCore/Reflection/ReflectionUtil.h>
@@ -80,6 +83,18 @@ RTTR_REGISTRATION
 // Editor Node Hierachy
 //======================
 
+
+//---------------------------------
+// EditorNodeHierachy::c-tor
+//
+EditorNodeHierachy::EditorNodeHierachy()
+{
+	m_RefBuilder = Gtk::Builder::create_from_resource("/com/leah-lindner/editor/ui/menu_header.ui");
+
+	Glib::RefPtr<Glib::Object> object = m_RefBuilder->get_object("headermenu");
+	Glib::RefPtr<Gio::Menu> gmenu = Glib::RefPtr<Gio::Menu>::cast_dynamic(object);
+	m_HeaderMenu = new Gtk::Menu(gmenu);
+}
 
 //---------------------------------
 // EditorNodeHierachy::SplitNode
@@ -923,6 +938,12 @@ void EditorToolNode::DestroyTool()
 
 	// delete the tool
 	m_Tool.reset(nullptr);
+
+	if (m_ToolbarContent != nullptr)
+	{
+		m_Toolbar->remove(*m_ToolbarContent);
+		SafeDelete(m_ToolbarContent);
+	}
 }
 
 //---------------------------------
@@ -931,11 +952,59 @@ void EditorToolNode::DestroyTool()
 void EditorToolNode::CreateToolbar()
 {
 	// Create the toolbar and a combobox within allowing to select the tool
+	m_ToolbarEventBox = Gtk::make_managed<Gtk::EventBox>();
 	m_Toolbar = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
+	m_ToolbarEventBox->add(*m_Toolbar);
 	m_Toolbar->set_margin_left(20);
 	m_ToolSelector = Gtk::make_managed<Gtk::ComboBoxText>(false);
 
 	m_Toolbar->pack_start(*m_ToolSelector, Gtk::PACK_SHRINK);
+
+	// open a popup menu upon rightclick on the toolbar
+	m_ToolbarEventBox->add_events(Gdk::BUTTON_PRESS_MASK);
+	auto onButtonPress = [this](GdkEventButton* evnt) -> bool
+	{
+		if ((evnt->type == GDK_BUTTON_PRESS) && (evnt->button == 3))
+		{
+			Gtk::Menu* menu = m_Editor->GetHierachy().GetHeaderMenu();
+			ET_ASSERT(menu != nullptr);
+
+			if (menu->get_attach_widget() == nullptr)
+			{
+				menu->attach_to_widget(*m_ToolbarEventBox);
+			}
+
+			menu->insert_action_group("header", m_ToolbarActionGroup);
+			menu->popup(evnt->button, evnt->time);
+			return true; 
+		}
+
+		return false;
+	};
+	m_ToolbarEventBox->signal_button_press_event().connect(onButtonPress, false);
+
+	m_ToolbarActionGroup = Gio::SimpleActionGroup::create();
+
+	auto onFlip = [this]()
+	{
+		LOG("Flipped header");
+	};
+	m_ToolbarActionGroup->add_action("flip", onFlip);
+
+	auto onShow = [this]()
+	{
+		if (m_IsToolbarVisible)
+		{
+			LOG("Hiding header");
+		}
+		else
+		{
+			LOG("Showing header");
+		}
+		m_IsToolbarVisible = !m_IsToolbarVisible;
+		m_ToolbarActionGroup->lookup("show")->change_state(m_IsToolbarVisible);
+	};
+	m_ToolbarActionGroup->add_action_bool("show", onShow, m_IsToolbarVisible);
 
 	// populate the combobox with all tools that our editor supports
 	std::vector<E_EditorTool> const& supportedTools = m_Editor->GetSupportedTools();
@@ -965,19 +1034,14 @@ void EditorToolNode::CreateToolbar()
 	// add our toolbar to the tool container either in the beginning or the end
 	if (m_Tool->IsToolbarTopPref())
 	{
-		m_Container->pack_start(*m_Toolbar, Gtk::PACK_SHRINK);
+		m_Container->pack_start(*m_ToolbarEventBox, Gtk::PACK_SHRINK);
 	}
 	else
 	{
-		m_Container->pack_end(*m_Toolbar, Gtk::PACK_SHRINK);
+		m_Container->pack_end(*m_ToolbarEventBox, Gtk::PACK_SHRINK);
 	}
 
-	// option to add menus for the tool to the toolbar here
-	Gtk::Widget* const toolbarContent = m_Tool->GetToolbarContent();
-	if (toolbarContent != nullptr)
-	{
-		m_Toolbar->pack_end(*toolbarContent, Gtk::PACK_EXPAND_WIDGET);
-	}
+	AddToolbarContent();
 }
 
 //-------------------------------------
@@ -998,6 +1062,7 @@ void EditorToolNode::OnToolComboChanged()
 
 			DestroyTool();
 			CreateTool();
+			AddToolbarContent();
 		}
 	}
 }
@@ -1041,5 +1106,20 @@ void EditorToolNode::InitHierachyUI()
 		{
 			m_Feedback.SetBorder((m_Parent->GetChild1() == this) ? ToolNodeFeedback::E_Border::Bottom : ToolNodeFeedback::E_Border::Top);
 		}
+	}
+}
+
+//-------------------------------------
+// EditorToolNode::AddToolbarContent
+//
+// option to add menus for the tool to the toolbar here
+//
+void EditorToolNode::AddToolbarContent()
+{
+	m_ToolbarContent = m_Tool->GetToolbarContent();
+	if (m_ToolbarContent != nullptr)
+	{
+		m_Toolbar->pack_end(*m_ToolbarContent, Gtk::PACK_EXPAND_WIDGET);
+		m_Toolbar->show_all_children();
 	}
 }

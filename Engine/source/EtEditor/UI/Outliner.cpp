@@ -98,6 +98,7 @@ Gtk::Widget* Outliner::GetToolbarContent()
 
 	Gtk::SearchEntry* const searchEntry = Gtk::make_managed<Gtk::SearchEntry>();
 	toolbar->pack_start(*searchEntry);
+	m_TreeView->set_search_entry(*searchEntry);
 
 	return toolbar;
 }

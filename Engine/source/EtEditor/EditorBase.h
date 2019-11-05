@@ -28,6 +28,7 @@ public:
 	// accessors
 	//-----------
 	Gtk::Frame* GetRoot();
+	EditorNodeHierachy& GetHierachy() { return m_NodeHierachy; }
 
 	// functionality
 	//------------------
