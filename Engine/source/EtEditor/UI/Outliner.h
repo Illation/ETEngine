@@ -54,6 +54,7 @@ public:
 	// Editor tool interface
 	//-----------------------
 	void Init(EditorBase* const editor, Gtk::Frame* parent) override;
+	Gtk::Widget* GetToolbarContent() override;
 
 	// scene selection listener interface
 	//--------------------------------------

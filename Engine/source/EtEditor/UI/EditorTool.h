@@ -5,6 +5,7 @@
 class EditorBase;
 namespace Gtk {
 	class Frame;
+	class Widget;
 }
 
 
@@ -34,6 +35,7 @@ public:
 
 	virtual void Init(EditorBase* const editor, Gtk::Frame* const parent) = 0;
 	virtual void OnDeinit() {} // called before unattaching the frames child
+	virtual Gtk::Widget* GetToolbarContent() { return nullptr; }
 
 	virtual bool IsToolbarTopPref() const { return true; }
 };

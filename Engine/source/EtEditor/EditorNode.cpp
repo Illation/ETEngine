@@ -13,6 +13,7 @@
 #include <gtkmm/eventbox.h>
 #include <gtkmm/image.h>
 #include <gtkmm/window.h>
+#include <gdkmm/cursor.h>
 #include <glibmm/main.h>
 #include <cairomm/context.h>
 
@@ -473,11 +474,12 @@ void ToolHierachyHandle::Init(EditorToolNode* const owner, bool right, bool top)
 	};
 	eventBox->signal_button_press_event().connect(mousePressedCallback, false);
 
-	auto mouseReleasedCallback = [this](GdkEventButton* evnt) -> bool
+	auto mouseReleasedCallback = [this, eventBox](GdkEventButton* evnt) -> bool
 	{
 		ActionDragResult();
 
 		m_DragState = E_DragState::None;
+		eventBox->get_window()->set_cursor();
 		return true;
 	};
 	eventBox->signal_button_release_event().connect(mouseReleasedCallback, false);
@@ -494,6 +496,25 @@ void ToolHierachyHandle::Init(EditorToolNode* const owner, bool right, bool top)
 		return false;
 	};
 	eventBox->signal_motion_notify_event().connect(mouseMotionCallback, false);
+
+	m_CursorCross = Gdk::Cursor::create(eventBox->get_display(), Gdk::CursorType::DIAMOND_CROSS);
+
+	auto mouseEnterCallback = [this, eventBox](GdkEventCrossing* evnt) -> bool
+	{
+		eventBox->get_window()->set_cursor(m_CursorCross);
+		return true;
+	};
+	eventBox->signal_enter_notify_event().connect(mouseEnterCallback, true);
+
+	auto mouseLeaveCallback = [this, eventBox](GdkEventCrossing* evnt) -> bool
+	{
+		if (m_DragState != E_DragState::None)
+		{
+			eventBox->get_window()->set_cursor();
+		}
+		return true;
+	};
+	eventBox->signal_leave_notify_event().connect(mouseEnterCallback, true);
 
 	// create the icon
 	Gtk::Image* const image = Gtk::make_managed<Gtk::Image>();
@@ -952,6 +973,11 @@ void EditorToolNode::CreateToolbar()
 	}
 
 	// option to add menus for the tool to the toolbar here
+	Gtk::Widget* const toolbarContent = m_Tool->GetToolbarContent();
+	if (toolbarContent != nullptr)
+	{
+		m_Toolbar->pack_end(*toolbarContent, Gtk::PACK_EXPAND_WIDGET);
+	}
 }
 
 //-------------------------------------

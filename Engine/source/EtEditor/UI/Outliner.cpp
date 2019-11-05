@@ -4,10 +4,13 @@
 #include <gtkmm/treeviewcolumn.h>
 #include <gtkmm/treeview.h>
 #include <gtkmm/box.h>
+#include <gtkmm/searchentry.h>
 
 #include <Engine/SceneGraph/AbstractScene.h>
 #include <Engine/SceneGraph/Entity.h>
+
 #include <EtEditor/SceneEditor.h>
+#include <EtEditor/UI/GtkUtil.h>
 
 
 //==========================
@@ -82,6 +85,21 @@ void Outliner::Init(EditorBase* const editor, Gtk::Frame* parent)
 
 	parent->add(*box);
 	box->show_all_children();
+}
+
+//------------------------------
+// Outliner::GetToolbarContent
+//
+Gtk::Widget* Outliner::GetToolbarContent()
+{
+	Gtk::Box* const toolbar = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
+	toolbar->set_margin_left(20);
+	toolbar->set_margin_right(20);
+
+	Gtk::SearchEntry* const searchEntry = Gtk::make_managed<Gtk::SearchEntry>();
+	toolbar->pack_start(*searchEntry);
+
+	return toolbar;
 }
 
 //--------------------------

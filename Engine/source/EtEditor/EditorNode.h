@@ -16,6 +16,9 @@ namespace Gtk {
 	class ComboBoxText;
 	class Overlay;
 }
+namespace Gdk {
+	class Cursor;
+}
 
 class EditorNode;
 class EditorSplitNode;
@@ -193,6 +196,8 @@ private:
 
 	bool m_IsRightAligned = false;
 	bool m_IsTopAligned = false;
+
+	Glib::RefPtr<Gdk::Cursor> m_CursorCross;
 
 	E_DragState m_DragState = E_DragState::None;
 	ivec2 m_Position; // in start state represents the initial position, otherwise the position within the owning frame in case of a split

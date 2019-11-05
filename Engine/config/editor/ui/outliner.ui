@@ -1,74 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkBox" id="outliner">
-      <property name="height_request">250</property>
-      <property name="visible">True</property>
-      <property name="can_focus">False</property>
-      <property name="hexpand">True</property>
-      <property name="vexpand">True</property>
-      <property name="orientation">vertical</property>
-      <child>
-        <object class="GtkSearchEntry" id="outlinerSearch">
-          <property name="visible">True</property>
-          <property name="can_focus">True</property>
-          <property name="primary_icon_name">edit-find-symbolic</property>
-          <property name="primary_icon_activatable">False</property>
-          <property name="primary_icon_sensitive">False</property>
-        </object>
-        <packing>
-          <property name="expand">False</property>
-          <property name="fill">True</property>
-          <property name="position">0</property>
-        </packing>
-      </child>
-      <child>
-        <object class="GtkTreeView" id="outlinerView">
-          <property name="height_request">250</property>
-          <property name="visible">True</property>
-          <property name="can_focus">True</property>
-          <property name="hexpand">True</property>
-          <property name="vexpand">True</property>
-          <property name="reorderable">True</property>
-          <property name="enable_tree_lines">True</property>
-          <child internal-child="selection">
-            <object class="GtkTreeSelection">
-              <property name="mode">multiple</property>
-            </object>
-          </child>
-        </object>
-        <packing>
-          <property name="expand">True</property>
-          <property name="fill">True</property>
-          <property name="position">1</property>
-        </packing>
-      </child>
-      <child>
-        <object class="GtkSeparator">
-          <property name="visible">True</property>
-          <property name="can_focus">False</property>
-        </object>
-        <packing>
-          <property name="expand">False</property>
-          <property name="fill">True</property>
-          <property name="position">2</property>
-        </packing>
-      </child>
-      <child>
-        <object class="GtkLabel" id="outlinerInfo">
-          <property name="visible">True</property>
-          <property name="can_focus">False</property>
-          <property name="halign">start</property>
-          <property name="margin_top">2</property>
-          <property name="margin_bottom">2</property>
-          <property name="label" translatable="yes">X Entities</property>
-        </object>
-        <packing>
-          <property name="expand">False</property>
-          <property name="fill">True</property>
-          <property name="pack_type">end</property>
-          <property name="position">3</property>
-        </packing>
-      </child>
-    </object>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="hexpand">True</property>
+    <property name="vexpand">True</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkTreeView" id="outlinerView">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <property name="reorderable">True</property>
+        <property name="enable_search">False</property>
+        <property name="enable_tree_lines">True</property>
+        <child internal-child="selection">
+          <object class="GtkTreeSelection">
+            <property name="mode">multiple</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="outlinerInfo">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="halign">start</property>
+        <property name="margin_top">2</property>
+        <property name="margin_bottom">2</property>
+        <property name="label" translatable="yes">X Entities</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="pack_type">end</property>
+        <property name="position">2</property>
+      </packing>
+    </child>
+  </object>
 </interface>
