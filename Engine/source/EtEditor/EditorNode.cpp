@@ -15,7 +15,6 @@
 #include <gtkmm/window.h>
 #include <gtkmm/menu.h>
 #include <gdkmm/cursor.h>
-#include <giomm/menu.h>
 #include <glibmm/main.h>
 #include <glibmm/object.h>
 #include <cairomm/context.h>
@@ -92,8 +91,28 @@ EditorNodeHierachy::EditorNodeHierachy()
 	m_RefBuilder = Gtk::Builder::create_from_resource("/com/leah-lindner/editor/ui/menu_header.ui");
 
 	Glib::RefPtr<Glib::Object> object = m_RefBuilder->get_object("headermenu");
-	Glib::RefPtr<Gio::Menu> gmenu = Glib::RefPtr<Gio::Menu>::cast_dynamic(object);
-	m_HeaderMenu = new Gtk::Menu(gmenu);
+	m_GMenu = Glib::RefPtr<Gio::Menu>::cast_dynamic(object);
+	m_FlipItem = Gio::MenuItem::create("_Flip to top", "header.flip");
+	m_GMenu->prepend_item(m_FlipItem);
+	m_HeaderMenu = new Gtk::Menu(m_GMenu);
+}
+
+//---------------------------------
+// EditorNodeHierachy::SplitNode
+//
+void EditorNodeHierachy::SetHeaderMenuFlipTarget(bool const top)
+{
+	if (top)
+	{
+		m_FlipItem->set_label("_Flip to top");
+	}
+	else
+	{
+		m_FlipItem->set_label("_Flip to bottom");
+	}
+
+	m_GMenu->remove(0);
+	m_GMenu->prepend_item(m_FlipItem);
 }
 
 //---------------------------------
@@ -462,16 +481,15 @@ void ToolHierachyHandle::Init(EditorToolNode* const owner, bool right, bool top)
 	// we should have already created our child widgets and hooked up events previously
 	if (reinit)
 	{
+		SetCornerImage();
 		return;
 	}
 
 	// create thw events
-	Gtk::EventBox* const eventBox = Gtk::make_managed<Gtk::EventBox>();
-	m_Owner->GetOverlay()->add_overlay(*eventBox);
-	eventBox->set_halign(m_IsRightAligned ? Gtk::ALIGN_END : Gtk::ALIGN_START);
-	eventBox->set_valign(m_IsTopAligned ? Gtk::ALIGN_START : Gtk::ALIGN_END);
+	m_EventBox = Gtk::make_managed<Gtk::EventBox>();
+	m_Owner->GetOverlay()->add_overlay(*m_EventBox);
 
-	eventBox->add_events(Gdk::BUTTON_PRESS_MASK | Gdk::BUTTON_RELEASE_MASK | Gdk::POINTER_MOTION_MASK);
+	m_EventBox->add_events(Gdk::BUTTON_PRESS_MASK | Gdk::BUTTON_RELEASE_MASK | Gdk::POINTER_MOTION_MASK);
 
 	auto mousePressedCallback = [this](GdkEventButton* evnt) -> bool
 	{
@@ -487,19 +505,19 @@ void ToolHierachyHandle::Init(EditorToolNode* const owner, bool right, bool top)
 
 		return true;
 	};
-	eventBox->signal_button_press_event().connect(mousePressedCallback, false);
+	m_EventBox->signal_button_press_event().connect(mousePressedCallback, false);
 
-	auto mouseReleasedCallback = [this, eventBox](GdkEventButton* evnt) -> bool
+	auto mouseReleasedCallback = [this](GdkEventButton* evnt) -> bool
 	{
 		ActionDragResult();
 
 		m_DragState = E_DragState::None;
-		eventBox->get_window()->set_cursor();
+		m_EventBox->get_window()->set_cursor();
 		return true;
 	};
-	eventBox->signal_button_release_event().connect(mouseReleasedCallback, false);
+	m_EventBox->signal_button_release_event().connect(mouseReleasedCallback, false);
 
-	auto mouseMotionCallback = [this, eventBox](GdkEventMotion* evnt) -> bool
+	auto mouseMotionCallback = [this](GdkEventMotion* evnt) -> bool
 	{
 		if (m_DragState != E_DragState::None)
 		{
@@ -510,53 +528,65 @@ void ToolHierachyHandle::Init(EditorToolNode* const owner, bool right, bool top)
 
 		return false;
 	};
-	eventBox->signal_motion_notify_event().connect(mouseMotionCallback, false);
+	m_EventBox->signal_motion_notify_event().connect(mouseMotionCallback, false);
 
-	m_CursorCross = Gdk::Cursor::create(eventBox->get_display(), Gdk::CursorType::DIAMOND_CROSS);
+	m_CursorCross = Gdk::Cursor::create(m_EventBox->get_display(), Gdk::CursorType::DIAMOND_CROSS);
 
-	auto mouseEnterCallback = [this, eventBox](GdkEventCrossing* evnt) -> bool
+	auto mouseEnterCallback = [this](GdkEventCrossing* evnt) -> bool
 	{
-		eventBox->get_window()->set_cursor(m_CursorCross);
+		m_EventBox->get_window()->set_cursor(m_CursorCross);
 		return true;
 	};
-	eventBox->signal_enter_notify_event().connect(mouseEnterCallback, true);
+	m_EventBox->signal_enter_notify_event().connect(mouseEnterCallback, true);
 
-	auto mouseLeaveCallback = [this, eventBox](GdkEventCrossing* evnt) -> bool
+	auto mouseLeaveCallback = [this](GdkEventCrossing* evnt) -> bool
 	{
 		if (m_DragState != E_DragState::None)
 		{
-			eventBox->get_window()->set_cursor();
+			m_EventBox->get_window()->set_cursor();
 		}
 		return true;
 	};
-	eventBox->signal_leave_notify_event().connect(mouseEnterCallback, true);
+	m_EventBox->signal_leave_notify_event().connect(mouseEnterCallback, true);
 
 	// create the icon
-	Gtk::Image* const image = Gtk::make_managed<Gtk::Image>();
-	eventBox->add(*image);
+	m_Image = Gtk::make_managed<Gtk::Image>();
+	m_EventBox->add(*m_Image);
+	SetCornerImage();
+}
+
+//------------------------------------
+// ToolHierachyHandle::SetCornerImage
+//
+void ToolHierachyHandle::SetCornerImage()
+{
 	if (m_IsTopAligned)
 	{
 		if (m_IsRightAligned)
 		{
-			image->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control_tr.png");
+			m_Image->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control_tr.png");
 		}
 		else
 		{
-			image->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control_tl.png");
+			m_Image->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control_tl.png");
 		}
 	}
 	else
 	{
 		if (m_IsRightAligned)
 		{
-			image->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control_br.png");
+			m_Image->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control_br.png");
 		}
 		else
 		{
-			image->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control_bl.png");
+			m_Image->set_from_resource("/com/leah-lindner/editor/ui/icons/tool_hierachy_control_bl.png");
 		}
 	}
+
+	m_EventBox->set_halign(m_IsRightAligned ? Gtk::ALIGN_END : Gtk::ALIGN_START);
+	m_EventBox->set_valign(m_IsTopAligned ? Gtk::ALIGN_START : Gtk::ALIGN_END);
 }
+
 //---------------------------------
 // ToolHierachyHandle::ProcessDrag
 //
@@ -966,7 +996,8 @@ void EditorToolNode::CreateToolbar()
 	{
 		if ((evnt->type == GDK_BUTTON_PRESS) && (evnt->button == 3))
 		{
-			Gtk::Menu* menu = m_Editor->GetHierachy().GetHeaderMenu();
+			m_Editor->GetHierachy().SetHeaderMenuFlipTarget(!m_IsToolbarTop);
+			Gtk::Menu* const menu = m_Editor->GetHierachy().GetHeaderMenu();
 			ET_ASSERT(menu != nullptr);
 
 			if (menu->get_attach_widget() == nullptr)
@@ -987,7 +1018,9 @@ void EditorToolNode::CreateToolbar()
 
 	auto onFlip = [this]()
 	{
-		LOG("Flipped header");
+		m_IsToolbarTop = !m_IsToolbarTop;
+		ReorderToolbar();
+		InitHierachyUI(); // depends on toolbar position
 	};
 	m_ToolbarActionGroup->add_action("flip", onFlip);
 
@@ -1032,14 +1065,9 @@ void EditorToolNode::CreateToolbar()
 	m_ToolSelector->signal_changed().connect(sigc::mem_fun(*this, &EditorToolNode::OnToolComboChanged));
 
 	// add our toolbar to the tool container either in the beginning or the end
-	if (m_Tool->IsToolbarTopPref())
-	{
-		m_Container->pack_start(*m_ToolbarEventBox, Gtk::PACK_SHRINK);
-	}
-	else
-	{
-		m_Container->pack_end(*m_ToolbarEventBox, Gtk::PACK_SHRINK);
-	}
+	m_IsToolbarTop = m_Tool->IsToolbarTopPref();
+	m_Container->pack_start(*m_ToolbarEventBox, Gtk::PACK_SHRINK);
+	ReorderToolbar();
 
 	AddToolbarContent();
 }
@@ -1087,13 +1115,47 @@ void EditorToolNode::SetFeedbackState(ToolNodeFeedback::E_State const state)
 }
 
 //-------------------------------------
+// EditorToolNode::AddToolbarContent
+//
+// option to add menus for the tool to the toolbar here
+//
+void EditorToolNode::AddToolbarContent()
+{
+	m_ToolbarContent = m_Tool->GetToolbarContent();
+	if (m_ToolbarContent != nullptr)
+	{
+		m_Toolbar->pack_end(*m_ToolbarContent, Gtk::PACK_EXPAND_WIDGET);
+		m_Toolbar->show_all_children();
+	}
+}
+
+//-------------------------------------
+// EditorToolNode::ReorderToolbar
+//
+void EditorToolNode::ReorderToolbar()
+{
+	if (m_IsToolbarTop)
+	{
+		m_Container->reorder_child(*m_InnerFrame, 1);
+		m_Container->reorder_child(*m_ToolbarEventBox, 0);
+	}
+	else
+	{
+		m_Container->reorder_child(*m_ToolbarEventBox, 1);
+		m_Container->reorder_child(*m_InnerFrame, 0); 
+	}
+
+	m_Container->show_all_children();
+}
+
+//-------------------------------------
 // EditorToolNode::InitHierachyUI
 //
 void EditorToolNode::InitHierachyUI()
 {
 	// overlays for splitting and colapsing tools
-	m_Handle1.Init(this, false, false);
-	m_Handle2.Init(this, true, true);
+	m_Handle1.Init(this, false, m_IsToolbarTop);
+	m_Handle2.Init(this, true, !m_IsToolbarTop);
 
 	// set the feedback border to determine arrow directions
 	if (m_Parent != nullptr)
@@ -1106,20 +1168,5 @@ void EditorToolNode::InitHierachyUI()
 		{
 			m_Feedback.SetBorder((m_Parent->GetChild1() == this) ? ToolNodeFeedback::E_Border::Bottom : ToolNodeFeedback::E_Border::Top);
 		}
-	}
-}
-
-//-------------------------------------
-// EditorToolNode::AddToolbarContent
-//
-// option to add menus for the tool to the toolbar here
-//
-void EditorToolNode::AddToolbarContent()
-{
-	m_ToolbarContent = m_Tool->GetToolbarContent();
-	if (m_ToolbarContent != nullptr)
-	{
-		m_Toolbar->pack_end(*m_ToolbarContent, Gtk::PACK_EXPAND_WIDGET);
-		m_Toolbar->show_all_children();
 	}
 }

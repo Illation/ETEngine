@@ -4,12 +4,6 @@
   <menu id="headermenu">
     <section>
       <item>
-        <attribute name="label" translatable="yes">_Flip</attribute>
-        <attribute name="action">header.flip</attribute>
-      </item>
-    </section>
-    <section>
-      <item>
         <attribute name="label" translatable="yes">_Show Header</attribute>
         <attribute name="action">header.show</attribute>
       </item>

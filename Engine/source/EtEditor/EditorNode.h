@@ -7,6 +7,8 @@
 #include <gtkmm/drawingarea.h>
 #include <glibmm/refptr.h>
 #include <giomm/simpleactiongroup.h>
+#include <giomm/menu.h>
+#include <giomm/menuitem.h>
 
 #include <EtEditor/UI/EditorTool.h>
 
@@ -20,6 +22,7 @@ namespace Gtk {
 	class Overlay;
 	class Menu;
 	class EventBox;
+	class Image;
 }
 namespace Gdk {
 	class Cursor;
@@ -48,9 +51,12 @@ public:
 
 	// functionality
 	//----------------
+	void SetHeaderMenuFlipTarget(bool const top);
 	void SplitNode(EditorToolNode* const node, EditorBase* const editor);
 	void CollapseNode(EditorToolNode* const node, EditorBase* const editor);
 
+	// accessors
+	//-----------
 	Gtk::Menu* GetHeaderMenu() const { return m_HeaderMenu; }
 
 	// Data
@@ -61,6 +67,8 @@ public:
 private:
 	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
 	Gtk::Menu* m_HeaderMenu = nullptr;
+	Glib::RefPtr<Gio::Menu> m_GMenu;
+	Glib::RefPtr<Gio::MenuItem> m_FlipItem;
 };
 
 
@@ -198,8 +206,9 @@ public:
 	// functionality
 	//---------------
 	void Init(EditorToolNode* const owner, bool right, bool top);
-
 private:
+	void SetCornerImage();
+
 	void ProcessDrag(GdkEventMotion* const motion);
 	void ActionDragResult();
 
@@ -211,6 +220,9 @@ private:
 
 	bool m_IsRightAligned = false;
 	bool m_IsTopAligned = false;
+
+	Gtk::EventBox* m_EventBox = nullptr;
+	Gtk::Image* m_Image = nullptr;
 
 	Glib::RefPtr<Gdk::Cursor> m_CursorCross;
 
@@ -316,6 +328,7 @@ private:
 	void CreateToolbar();
 	void OnToolComboChanged();
 	void AddToolbarContent();
+	void ReorderToolbar();
 public:
 	void InitHierachyUI();
 
@@ -335,6 +348,7 @@ private:
 	// reflected
 	E_EditorTool m_Type = E_EditorTool::Invalid;
 	bool m_IsToolbarVisible = true;
+	bool m_IsToolbarTop = false;
 
 	// model
 	std::unique_ptr<I_EditorTool> m_Tool;
