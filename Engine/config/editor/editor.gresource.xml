@@ -13,5 +13,7 @@
     <file>ui/icons/tool_hierachy_control_tr.png</file>
     <file>ui/icons/tool_hierachy_control_bl.png</file>
     <file>ui/icons/tool_hierachy_control_br.png</file>
+    <file>ui/icons/show_header_top.png</file>
+    <file>ui/icons/show_header_bot.png</file>
   </gresource>
 </gresources>

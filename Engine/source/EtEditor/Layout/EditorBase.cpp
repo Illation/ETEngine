@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "EditorBase.h"
 
+#include "EditorSplitNode.h"
+
 #include <gtkmm/frame.h>
 #include <glibmm/main.h>
 
@@ -8,8 +10,6 @@
 
 #include <EtEditor/Util/GtkUtil.h>
 #include <EtEditor/Util/EditorConfig.h>
-#include <EtEditor/Tools/Outliner.h>
-#include <EtEditor/Tools/SceneViewport.h>
 
 
 //===============

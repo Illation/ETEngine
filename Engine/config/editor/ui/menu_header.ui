@@ -16,11 +16,11 @@
     </section>
     <section>
       <item>
-        <attribute name="label" translatable="yes">Split Tile _Horizontally</attribute>
+        <attribute name="label" translatable="yes">_Horizontal Split</attribute>
         <attribute name="action">header.hsplit</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">Split Tile _Vertically</attribute>
+        <attribute name="label" translatable="yes">_Vertical Split</attribute>
         <attribute name="action">header.vsplit</attribute>
       </item>
     </section>

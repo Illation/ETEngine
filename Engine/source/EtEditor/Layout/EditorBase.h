@@ -1,7 +1,12 @@
 #pragma once
+#include "EditorNodeHierachy.h"
 #include "EditorNode.h"
+#include "EditorTool.h"
 
 #include <gdk/gdk.h>
+
+
+class EditorToolNode;
 
 
 //---------------------------------
