@@ -10,7 +10,7 @@
 
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
-#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 //=============
@@ -350,7 +350,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 		api->LazyBindTexture(0, E_TextureType::Texture2D, pTexture->GetHandle());
 		computeSdf->Upload("uChannel"_hash, static_cast<int32>(metric->Channel));
 		computeSdf->Upload("uResolution"_hash, etm::vecCast<float>(res));
-		PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 
 		delete pTexture;
 
@@ -366,7 +366,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	api->BindFramebuffer(0);
 	api->BindRenderbuffer(0);
-	api->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
+	api->SetViewport(ivec2(0), Viewport::GetCurrentViewport()->GetDimensions());
 
 	api->DeleteRenderBuffers(1, &captureRBO);
 	api->DeleteFramebuffers(1, &captureFBO);

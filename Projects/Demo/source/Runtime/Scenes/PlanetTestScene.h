@@ -18,9 +18,9 @@ public:
 private:
 	void Initialize();
 	void Update();
-	void Draw();
-	void DrawForward();
-	void PostDraw();
+	void Draw() {}
+	void DrawForward() {}
+	void PostDraw() {}
 private:
 	Entity* m_pLigEntity = nullptr;
 	DirectionalLight* m_pLight = nullptr;

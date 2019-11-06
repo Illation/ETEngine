@@ -7,6 +7,10 @@
         <attribute name="label" translatable="yes">_Preferences</attribute>
         <attribute name="action">app.preferences</attribute>
       </item>
+      <item>
+        <attribute name="label" translatable="yes">_Save Editor Layout</attribute>
+        <attribute name="action">app.save_layout</attribute>
+      </item>
     </section>
     <section>
       <item>

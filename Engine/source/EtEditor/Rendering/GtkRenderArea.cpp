@@ -4,6 +4,70 @@
 #include "EpoxyGlContext.h"
 
 
+//=========================
+// Single Context GL Area
+//=========================
+
+
+// static
+SingleContextGlArea::ContextCache* SingleContextGlArea::s_SingleContextCache = nullptr;
+
+
+//---------------------------------
+// SingleContextGlArea::DestroyContext
+//
+void SingleContextGlArea::DestroyContext()
+{
+	delete s_SingleContextCache;
+	s_SingleContextCache = nullptr;
+}
+
+//---------------------------------
+// SingleContextGlArea::c-tor
+//
+SingleContextGlArea::SingleContextGlArea()
+	: Gtk::GLArea()
+{
+	signal_create_context().connect(sigc::mem_fun(*this, &SingleContextGlArea::OnCreateContext), false);
+}
+
+//---------------------------------
+// SingleContextGlArea::c-tor
+//
+SingleContextGlArea::SingleContextGlArea(BaseObjectType* cobject, Glib::RefPtr<Gtk::Builder> const& refBuilder)
+	: Gtk::GLArea(cobject)
+{
+	UNUSED(refBuilder);
+	signal_create_context().connect(sigc::mem_fun(*this, &SingleContextGlArea::OnCreateContext), false);
+}
+
+//---------------------------------
+// SingleContextGlArea::OnCreateContext
+//
+Glib::RefPtr<Gdk::GLContext> SingleContextGlArea::OnCreateContext()
+{
+	if (s_SingleContextCache == nullptr)
+	{
+		s_SingleContextCache = new ContextCache();
+		s_SingleContextCache->glibContext = Gtk::GLArea::on_create_context();
+		s_SingleContextCache->apiContext = new EpoxyGlContext();
+	}
+
+	return s_SingleContextCache->glibContext;
+}
+
+//---------------------------------
+// SingleContextGlArea::GetApiContext
+//
+I_GraphicsApiContext* SingleContextGlArea::GetApiContext() const
+{
+	ET_ASSERT(s_SingleContextCache != nullptr);
+	ET_ASSERT(s_SingleContextCache->apiContext != nullptr);
+
+	return s_SingleContextCache->apiContext;
+}
+
+
 //=====================
 // GTK Render Area
 //=====================
@@ -14,7 +78,7 @@
 //
 // Create a Window and an openGL context to draw to the window
 //
-GtkRenderArea::GtkRenderArea(Gtk::GLArea* glArea)
+GtkRenderArea::GtkRenderArea(SingleContextGlArea* const glArea)
 	: I_RenderArea()
 	, m_GlArea(glArea)
 {
@@ -37,7 +101,7 @@ void GtkRenderArea::OnRealize()
 {
 	if (m_OnInit)
 	{
-		m_OnInit(new EpoxyGlContext());
+		m_OnInit(m_GlArea->GetApiContext());
 	}
 }
 
@@ -57,8 +121,6 @@ void GtkRenderArea::OnUnrealize()
 //
 void GtkRenderArea::OnResize(int32 x, int32 y)
 {
-	Config::GetInstance()->GetWindow().Resize(x, y);
-
 	if (m_OnResize)
 	{
 		m_OnResize(etm::vecCast<float>(ivec2(x, y)));
@@ -74,7 +136,7 @@ bool GtkRenderArea::OnRender(const Glib::RefPtr<Gdk::GLContext>& context)
 
 	if (m_OnRender)
 	{
-		m_OnRender(Viewport::GetCurrentApiContext()->GetActiveFramebuffer());
+		m_OnRender(m_GlArea->GetApiContext()->GetActiveFramebuffer());
 	}
 
 	return true;
@@ -110,4 +172,17 @@ bool GtkRenderArea::MakeCurrent()
 	}
 
 	return true;
+}
+
+//---------------------------------
+// GtkRenderArea::GetDimensions
+//
+ivec2 GtkRenderArea::GetDimensions() const
+{
+	ivec2 ret;
+
+	ret.x = m_GlArea->get_allocated_width();
+	ret.y = m_GlArea->get_allocated_height();
+
+	return ret;
 }

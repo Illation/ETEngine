@@ -1,14 +1,15 @@
 #include "stdafx.h"
 #include "Light.h"
 
-#include <Engine/GraphicsHelper/LightVolume.h>
-#include <Engine/GraphicsHelper/ShadowRenderer.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/ShadowRenderer.h>
 
 
 void PointLight::DrawVolume(TransformComponent* pTransform)
 {
 	vec3 col = color*brightness;
-	PointLightVolume::GetInstance()->Draw(pTransform->GetPosition(), radius, col);
+	RenderingSystems::Instance()->GetPointLightVolume().Draw(pTransform->GetPosition(), radius, col);
 }
 
 void DirectionalLight::DrawVolume(TransformComponent* pTransform)
@@ -16,11 +17,11 @@ void DirectionalLight::DrawVolume(TransformComponent* pTransform)
 	vec3 col = color*brightness;
 	if (IsShadowEnabled())
 	{
-		DirectLightVolume::GetInstance()->DrawShadowed(pTransform->GetForward(), col, m_pShadowData);
+		RenderingSystems::Instance()->GetDirectLightVolume().DrawShadowed(pTransform->GetForward(), col, m_pShadowData);
 	}
 	else
 	{
-		DirectLightVolume::GetInstance()->Draw(pTransform->GetForward(), col);
+		RenderingSystems::Instance()->GetDirectLightVolume().Draw(pTransform->GetForward(), col);
 	}
 }
 
@@ -28,8 +29,10 @@ void DirectionalLight::SetShadowEnabled(bool enabled)
 {
 	if (enabled)
 	{
-		if(!IsShadowEnabled())
+		if (!IsShadowEnabled())
+		{
 			m_pShadowData = new DirectionalShadowData(ivec2(1024, 1024)*8);
+		}
 	}
 	else
 	{
@@ -40,5 +43,8 @@ void DirectionalLight::SetShadowEnabled(bool enabled)
 
 void DirectionalLight::GenerateShadow(TransformComponent* pTransform)
 {
-	if(IsShadowEnabled())ShadowRenderer::GetInstance()->MapDirectional(pTransform, m_pShadowData);
+	if (IsShadowEnabled())
+	{
+		SceneRenderer::GetCurrent()->GetShadowRenderer().MapDirectional(pTransform, m_pShadowData);
+	}
 }

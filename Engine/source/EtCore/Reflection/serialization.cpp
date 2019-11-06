@@ -105,32 +105,32 @@ bool VariantToJsonValue(rttr::variant const& var, JSON::Value*& outVal)
 	}
 	else
 	{
-		if (!(wrappedType.get_properties().empty())) // try converting the variant to a JSON object
+		if (!ToJsonRecursive(var, outVal, wrappedType))
 		{
-			if (!ToJsonRecursive(var, outVal, wrappedType))
-			{
-				LOG("VariantToJsonValue > Failed to convert variant to JSON object, typeName: '" + wrappedType.get_name().to_string() 
-					+ std::string("'!"), LogLevel::Warning);
+			LOG("VariantToJsonValue > Failed to convert variant to JSON object, typeName: '" + wrappedType.get_name().to_string()
+				+ std::string("'!"), LogLevel::Warning);
 
-				return false;
-			}
+			return false;
 		}
-		else // if that fails, try converting it to a string
-		{
-			bool stringConversionSuccess = false;
-			std::string text = var.to_string(&stringConversionSuccess);
+		//if (!(wrappedType.get_properties().empty())) // try converting the variant to a JSON object
+		//{
+		//}
+		//else // if that fails, try converting it to a string
+		//{
+		//	bool stringConversionSuccess = false;
+		//	std::string text = var.to_string(&stringConversionSuccess);
 
-			if (!stringConversionSuccess)
-			{
-				LOG("VariantToJsonValue > Failed to convert variant to JSON string, result: '" + text + std::string("' typeName: '")
-					+ wrappedType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
+		//	if (!stringConversionSuccess)
+		//	{
+		//		LOG("VariantToJsonValue > Failed to convert variant to JSON string, result: '" + text + std::string("' typeName: '")
+		//			+ wrappedType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
 
-				return false;
-			}
+		//		return false;
+		//	}
 
-			outVal = new JSON::String();
-			outVal->str()->value = text;
-		}
+		//	outVal = new JSON::String();
+		//	outVal->str()->value = text;
+		//}
 	}
 
 	return true;
@@ -709,68 +709,95 @@ bool AssociativeViewFromJsonRecursive(rttr::variant_associative_view& view, JSON
 //
 void FromJsonValue(JSON::Value const* jVal, rttr::type &valueType, rttr::variant &var)
 {
-	if (!ExtractPointerValueType(valueType, jVal))
+	rttr::type localType = valueType;
+	if (!ExtractPointerValueType(localType, jVal))
 	{
 		return;
 	}
 
 	switch (jVal->GetType())
 	{
-
 		case JSON::JSON_Array:
 		{
-			if (valueType.is_sequential_container())
+			if (localType.is_sequential_container())
 			{
 				auto view = var.create_sequential_view();
 
 				if (!ArrayFromJsonRecursive(view, jVal))
 				{
 					LOG("FromJsonValue > There was an issue deserializing the sequential view, typeName: '"
-						+ valueType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
+						+ localType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
 				}
 			}
-			else if (valueType.is_associative_container())
+			else if (localType.is_associative_container())
 			{
 				auto associativeView = var.create_associative_view();
 
 				if (!AssociativeViewFromJsonRecursive(associativeView, jVal))
 				{
 					LOG("FromJsonValue > There was an issue deserializing the associate view, typeName: '"
-						+ valueType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
+						+ localType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
 				}
 			}
 			else
 			{
 				LOG("FromJsonValue > Found a JSON value of type array, but the property is not a sequential or associate container, typeName: '"
-					+ valueType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
+					+ localType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
 			}
 
 			break;
 		}
+
 		case JSON::JSON_Object:
 		{
-			ObjectFromJsonRecursive(jVal, var, valueType);
+			// for pointers we will have to create the type
+			if (localType != valueType)
+			{
+				// find the right constructor for our type
+				rttr::constructor ctor = localType.get_constructor();
+
+				//use it
+				if (ctor.is_valid())
+				{
+					var = ctor.invoke();
+				}
+				else
+				{
+					LOG(FS("FromJsonValue > Failed to get a valid constructor from property, typeName: '%s'!", localType.get_name().data()), 
+						LogLevel::Warning);
+
+					break;
+				}
+			}
+
+			ObjectFromJsonRecursive(jVal, var, localType);
 
 			if (!var.is_valid())
 			{
 				LOG("FromJsonValue > Failed to create a valid object from property, typeName: '"
-					+ valueType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
+					+ localType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
+				break;
+			}
+
+			if (localType != valueType)
+			{
+				var.convert(rttr::type(valueType));
 			}
 
 			break;
 		}
+
 		default:
 		{
-			rttr::type const& vType = valueType;
+			rttr::type const& vType = localType;
 
 			var = ExtractBasicTypes(jVal); // extract the basic type to a variant
 			if (!(var.convert(vType))) // then try to convert it to the type of our property
 			{
 				LOG("FromJsonValue > Failed to convert basic type extracted from JSON to property value type, typeName: '"
-					+ valueType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
+					+ localType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
 			}
 		}
-
 	}
 }
 

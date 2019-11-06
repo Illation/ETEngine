@@ -11,6 +11,7 @@
 #include <Engine/Graphics/Material.h>
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/SceneGraph/Entity.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 
 
 //=================
@@ -155,7 +156,7 @@ void ModelComponent::DrawCall()
 		vec3 scale = TRANSFORM->GetScale();
 		float maxScale = std::max(scale.x, std::max(scale.y, scale.z));
 		Sphere objSphere = Sphere(GetTransform()->GetPosition() + filterSphere.pos, filterSphere.radius*maxScale);
-		if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
+		if (SceneRenderer::GetCurrent()->GetCamera().GetFrustum().ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
 		{
 			return;
 		}

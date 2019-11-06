@@ -44,6 +44,9 @@ public:
 	bool SkyboxEnabled() { return m_UseSkyBox; }
 	PhysicsWorld* GetPhysicsWorld() const { return m_pPhysicsWorld; }
 	AudioListenerComponent* GetAudioListener() const { return m_AudioListener; }
+	CameraComponent const* GetActiveCamera() const;
+
+	bool IsInitialized() const { return m_IsInitialized; }
 
 	std::string const& GetName() const { return m_Name; }
 	std::vector<Entity*> const& GetEntities() { return m_pEntityVec; }

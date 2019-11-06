@@ -1,9 +1,52 @@
 #pragma once
 #include <gtkmm/glarea.h>
+#include <gtkmm/builder.h>
 
 #include <EtCore/UpdateCycle/RealTimeTickTriggerer.h>
 
-#include <Engine/GraphicsHelper/RenderArea.h>
+#include <Engine/GraphicsContext/RenderArea.h>
+
+
+//---------------------------------
+// SingleContextGlArea
+//
+// Inherit from default GLArea to ensure all surfaces use the same openGL context
+//
+class SingleContextGlArea final : public Gtk::GLArea
+{
+	// definitions
+	//-------------------
+private:
+	//---------------------------------
+	// SingleContextCache
+	//
+	// Ensures all rendering areas in the editor use the same open GL context
+	//
+	struct ContextCache
+	{
+		Glib::RefPtr<Gdk::GLContext> glibContext;
+		I_GraphicsApiContext* apiContext;
+	};
+
+	static ContextCache* s_SingleContextCache;
+
+public:
+	static void DestroyContext();
+
+	// construct destruct
+	//-------------------
+	SingleContextGlArea();
+	SingleContextGlArea(BaseObjectType* cobject, Glib::RefPtr<Gtk::Builder> const& refBuilder);
+
+	// accessors
+	//-----------
+	I_GraphicsApiContext* GetApiContext() const;
+
+	// signals
+	//-----------------------
+private:
+	Glib::RefPtr<Gdk::GLContext> OnCreateContext();
+};
 
 
 //---------------------------------
@@ -16,14 +59,16 @@ class GtkRenderArea : public I_RenderArea
 	// construct destruct
 	//-------------------
 public:
-	GtkRenderArea(Gtk::GLArea* glArea);
+	GtkRenderArea(SingleContextGlArea* const glArea);
 	virtual ~GtkRenderArea() = default;
 
+	// signals
+	//-----------------------
 protected:
 	void OnRealize();
 	void OnUnrealize();
 	void OnResize(int32 x, int32 y);
-	bool OnRender(const Glib::RefPtr<Gdk::GLContext>& context);
+	bool OnRender(Glib::RefPtr<Gdk::GLContext> const& context);
 
 	// Render Area Interface
 	//-----------------------
@@ -35,6 +80,8 @@ protected:
 	void QueueDraw() override;
 	bool MakeCurrent() override;
 
+	ivec2 GetDimensions() const override;
+
 	// Data
 	///////
 private:
@@ -43,6 +90,6 @@ private:
 	std::function<void(vec2 const)> m_OnResize;
 	std::function<void(T_FbLoc const)> m_OnRender;
 
-	Gtk::GLArea* m_GlArea = nullptr;
+	SingleContextGlArea* m_GlArea = nullptr;
 };
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GlfwRenderArea.h"
 
-#include <Engine/GraphicsHelper/GladGlContext.h>
+#include <Engine/GraphicsContext/GladGlContext.h>
 
 
 //=====================
@@ -56,7 +56,7 @@ void GlfwRenderArea::Initialize()
 		fullscreenMonitor = primaryMonitor;
 	}
 
-	ivec2 const dim = windowSettings.Dimensions;
+	ivec2 const dim = windowSettings.GetSize();
 
 	m_Window = glfwCreateWindow(dim.x, dim.y, windowSettings.Title.c_str(), fullscreenMonitor, nullptr);
 	if (m_Window == nullptr)
@@ -65,17 +65,20 @@ void GlfwRenderArea::Initialize()
 		LOG("Failed to create window with GLFW!", LogLevel::Error);
 	}
 
+	glfwSetWindowUserPointer(m_Window, this);
+
 	// Check OpenGL properties and create open gl function pointers
 	//--------------------------------------------------------------
 	MakeCurrent();
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	SetVSyncEnabled(true);
 
-	Config::GetInstance()->GetWindow().WindowResizeEvent.AddListener(std::bind(&GlfwRenderArea::OnResize, this));
-
 	if (m_OnInit)
 	{
-		m_OnInit(new GladGlContext());
+		ET_ASSERT(m_Context == nullptr);
+		m_Context = new GladGlContext();
+
+		m_OnInit(m_Context);
 	}
 }
 
@@ -90,6 +93,8 @@ void GlfwRenderArea::Uninitialize()
 	{
 		m_OnDeinit();
 	}
+
+	delete m_Context;
 
 	glfwDestroyWindow(m_Window);
 	m_Window = nullptr;
@@ -123,11 +128,11 @@ void GlfwRenderArea::SetVSyncEnabled(bool const val)
 //---------------------------------
 // GlfwRenderArea::SetVSyncEnabled
 //
-void GlfwRenderArea::OnResize()
+void GlfwRenderArea::SetSize(ivec2 const size)
 {
 	if (m_OnResize)
 	{
-		m_OnResize(etm::vecCast<float>(Config::GetInstance()->GetWindow().Dimensions));
+		m_OnResize(etm::vecCast<float>(size));
 	}
 }
 
@@ -150,4 +155,16 @@ bool GlfwRenderArea::MakeCurrent()
 {
 	glfwMakeContextCurrent(m_Window);
 	return true;
+}
+
+//---------------------------------
+// GtkRenderArea::GetDimensions
+//
+ivec2 GlfwRenderArea::GetDimensions() const
+{
+	ivec2 ret;
+
+	glfwGetWindowSize(m_Window, &ret.x, &ret.y);
+
+	return ret;
 }

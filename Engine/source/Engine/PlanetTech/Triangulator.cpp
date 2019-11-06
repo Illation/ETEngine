@@ -5,7 +5,7 @@
 
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/Components/TransformComponent.h>
-#include <Engine/Components/CameraComponent.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 
 
 Triangulator::Triangulator(Planet* pPlanet)
@@ -59,8 +59,12 @@ bool Triangulator::Update()
 	}
 
 	m_pFrustum->SetCullTransform(m_pPlanet->GetTransform()->GetWorld());
-	if (!m_LockFrustum) m_pFrustum->SetToCamera(CAMERA);
-	m_pFrustum->Update();
+	if (!m_LockFrustum)
+	{
+		m_pFrustum->SetToCamera(SceneRenderer::GetCurrent()->GetCamera());
+	}
+
+	m_pFrustum->Update(Viewport::GetCurrentViewport());
 
 	return true;
 }
@@ -106,7 +110,7 @@ void Triangulator::GenerateGeometry()
 	//In future only recalculate on FOV or triangle density change
 	m_DistanceLUT.clear();
 	float sizeL = etm::length(m_Icosahedron[0].a - m_Icosahedron[0].b);
-	float frac = tanf((m_AllowedTriPx * etm::radians(m_pFrustum->GetFOV())) / Config::GetInstance()->GetWindow().Width);
+	float frac = tanf((m_AllowedTriPx * etm::radians(m_pFrustum->GetFOV())) / Viewport::GetCurrentViewport()->GetDimensions().x);
 	for (int32 level = 0; level < m_MaxLevel+5; level++)
 	{
 		m_DistanceLUT.push_back(sizeL / frac);

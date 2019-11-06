@@ -2,20 +2,19 @@
 #include "Atmosphere.h"
 
 #include "Planet.h"
-#include "AtmospherePrecompute.h"
 
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Helper/Commands.h>
 
-#include <Engine/Framebuffers/Gbuffer.h>
 #include <Engine/Components/LightComponent.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/Graphics/Light.h>
-#include <Engine/GraphicsHelper/SpriteRenderer.h>
-#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
-#include <Engine/GraphicsHelper/SceneRenderer.h>
+#include <Engine/SceneRendering/SpriteRenderer.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/Gbuffer.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <Engine/Prefabs/Skybox.h>
 #include <Engine/SceneGraph/AbstractScene.h>
 
@@ -37,7 +36,7 @@ Atmosphere::~Atmosphere()
 void Atmosphere::Precalculate()
 {
 	//Calculate look up textures here
-	AtmospherePrecompute::GetInstance()->Precalculate( this );
+	RenderingSystems::Instance()->GetAtmospherPrecompute().Precalculate(this);
 }
 
 void Atmosphere::Initialize()
@@ -55,9 +54,13 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	radius += surfaceRadius;
 	float icoRadius = radius / 0.996407747f;//scale up the sphere so the face center reaches the top of the atmosphere
 
+	Camera const& cam = SceneRenderer::GetCurrent()->GetCamera();
+
 	Sphere objSphere = Sphere(pos, radius);
-	if (CAMERA->GetFrustum()->ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
+	if (cam.GetFrustum().ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
+	{
 		return;
+	}
 
 	//mat4 World = etm::translate(pos)*etm::scale(vec3(icoRadius));
 	mat4 World = etm::scale(vec3(icoRadius))*etm::translate(pos);
@@ -74,28 +77,29 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	api->SetShader(m_pShader.get());
 
 	m_pShader->Upload("model"_hash, World);
-	m_pShader->Upload("worldViewProj"_hash, CAMERA->GetViewProj());
+	m_pShader->Upload("worldViewProj"_hash, cam.GetViewProj());
 
 	// #todo: stop repeating this everywhere
 	m_pShader->Upload("texGBufferA"_hash, 0);
 	//m_pShader->Upload("texGBufferB"_hash, 1);
 	//m_pShader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = SceneRenderer::GetInstance()->GetGBuffer()->GetTextures();
+	auto gbufferTex = SceneRenderer::GetCurrent()->GetGBuffer()->GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());
 	}
-	m_pShader->Upload("projectionA"_hash, CAMERA->GetDepthProjA());
-	m_pShader->Upload("projectionB"_hash, CAMERA->GetDepthProjB());
-	m_pShader->Upload("viewProjInv"_hash, CAMERA->GetStatViewProjInv());
-	m_pShader->Upload("camPos"_hash, CAMERA->GetTransform()->GetPosition());
+
+	m_pShader->Upload("projectionA"_hash, cam.GetDepthProjA());
+	m_pShader->Upload("projectionB"_hash, cam.GetDepthProjB());
+	m_pShader->Upload("viewProjInv"_hash, cam.GetStatViewProjInv());
+	m_pShader->Upload("camPos"_hash, cam.GetPosition());
 
 	m_pShader->Upload("Position"_hash, pos);
 	m_pShader->Upload("Radius"_hash, radius);
 	//m_pShader->Upload("SurfaceRadius"_hash, surfaceRadius);
 
 	m_Params.Upload(m_pShader.get(), "uAtmosphere");
-	AtmospherePrecompute::GetInstance()->GetSettings().UploadTextureSize(m_pShader.get());
+	RenderingSystems::Instance()->GetAtmospherPrecompute().GetSettings().UploadTextureSize(m_pShader.get());
 
 	//m_pShader->Upload("uSkySpectralRadToLum"_hash, etm::vecCast<float>(m_SkyColor));
 	//m_pShader->Upload("uSunSpectralRadToLum"_hash, etm::vecCast<float>(m_SunColor));
@@ -121,7 +125,7 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	api->SetBlendEnabled(true);
 	api->SetBlendEquation(E_BlendEquation::Add);
 	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::One);
-	PrimitiveRenderer::GetInstance()->Draw<primitives::IcoSphere<3> >();
+	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::IcoSphere<3> >();
 	api->SetFaceCullingMode(E_FaceCullMode::Back);
 	api->SetBlendEnabled(false);
 	api->SetDepthEnabled(true);

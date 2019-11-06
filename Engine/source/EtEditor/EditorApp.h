@@ -1,7 +1,5 @@
 #pragma once
 
-#include "SceneSelection.h"
-
 #include <EtCore/UpdateCycle/DefaultTickTriggerer.h>
 
 #include <list>
@@ -54,18 +52,18 @@ protected:
 private:
 	void InitializeUtilities();
 
-public:
-	SceneSelection& GetSceneSelection() { return m_SceneSelection; }
-
 	// Runtime
-private:
 	bool OnTick();
 	void OnActionPreferences();
+	void OnSaveEditorLayout();
 	void OnActionQuit();
 
 private:
 	// Data
 	////////
 	CommandlineArguments m_CmdArguments;
-	SceneSelection m_SceneSelection;
+
+	EditorAppWindow* m_AppWindow = nullptr;
 };
+
+

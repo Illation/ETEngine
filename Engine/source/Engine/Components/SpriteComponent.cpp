@@ -3,7 +3,7 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/GraphicsHelper/SpriteRenderer.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 #include <Engine/Graphics/TextureData.h>
 
 
@@ -31,7 +31,7 @@ void SpriteComponent::Draw()
 		return;
 	}
 
-	SpriteRenderer::GetInstance()->Draw(m_Texture.get(), 
+	SceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(m_Texture.get(),
 		TRANSFORM->GetPosition().xy, 
 		m_Color, 
 		m_Pivot, 

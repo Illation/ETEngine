@@ -5,7 +5,7 @@
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Entry.h>
 
-#include <EtEditor/EditorConfig.h>
+#include <EtEditor/Util/EditorConfig.h>
 
 
 //==========================

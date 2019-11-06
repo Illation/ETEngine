@@ -1,18 +1,16 @@
 #include "stdafx.h"
 
 #include "AtmosphereSettings.h"
-#include "AtmospherePrecompute.h"
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Content/AssetStub.h>
 #include <EtCore/FileSystem/Json/JsonParser.h>
 
-#include <Engine/Graphics/CIE.h>
-
 
 vec3 InterpolatedSpectrum(const std::vector<double_t> &wavelengths, const std::vector<double_t> &v, const dvec3 &lambdas, float scale)
 {
-	dvec3 ret = CIE::GetInstance()->Interpolate(wavelengths, v, lambdas);
+	dvec3 ret = RenderingSystems::Instance()->GetCie().Interpolate(wavelengths, v, lambdas);
 	return vec3((float)ret.x, (float)ret.y, (float)ret.z) * scale;
 }
 

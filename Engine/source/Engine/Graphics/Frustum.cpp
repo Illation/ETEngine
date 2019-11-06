@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Frustum.h"
 
+#include "Camera.h"
+
 #include <Engine/Components/TransformComponent.h>
 #include <Engine/Components/CameraComponent.h>
 
@@ -34,22 +36,24 @@ void Frustum::SetCullTransform(mat4 objectWorld)
 	m_CullInverse = etm::inverse(objectWorld);
 }
 
-void Frustum::SetToCamera(CameraComponent* pCamera)
+void Frustum::SetToCamera(Camera const& camera)
 {
-	m_Position = pCamera->GetTransform()->GetPosition();
-	m_Forward = pCamera->GetTransform()->GetForward();
-	m_Up = pCamera->GetTransform()->GetUp();
-	m_Right = pCamera->GetTransform()->GetRight();
-	m_NearPlane = pCamera->GetNearPlane();
-	m_FarPlane = pCamera->GetFarPlane();
-	m_FOV = pCamera->GetFOV();
+	m_Position = camera.GetPosition();
+
+	m_Forward = camera.GetForward();
+	m_Up = camera.GetUp();
+	m_Right = etm::cross(m_Up, m_Forward);
+
+	m_NearPlane = camera.GetNearPlane();
+	m_FarPlane = camera.GetFarPlane();
+	m_FOV = camera.GetFOV();
 }
 
-void Frustum::Update()
+void Frustum::Update(Viewport const* const viewport)
 {
 	//calculate generalized relative width and aspect ratio
 	float normHalfWidth = tan(etm::radians(m_FOV));
-	float aspectRatio = Config::GetInstance()->GetWindow().AspectRatio;
+	float aspectRatio = viewport->GetAspectRatio();
 
 	//calculate width and height for near and far plane
 	float nearHW = normHalfWidth*m_NearPlane;

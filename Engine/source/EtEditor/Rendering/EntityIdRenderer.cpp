@@ -8,9 +8,8 @@
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/FrameBuffer.h>
-#include <Engine/GraphicsHelper/SceneRenderer.h>
-#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
-#include <Engine/Framebuffers/GBuffer.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/GBuffer.h>
 #include <Engine/SceneGraph/Entity.h>
 
 
@@ -48,7 +47,7 @@ void EntityIdRenderer::Initialize()
 void EntityIdRenderer::CreateRenderTarget()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
-	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
 	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Nearest;
@@ -59,14 +58,14 @@ void EntityIdRenderer::CreateRenderTarget()
 	//Generate texture and fbo and rbo as initial postprocessing target
 	api->GenFramebuffers(1, &m_DrawTarget);
 	api->BindFramebuffer(m_DrawTarget);
-	m_DrawTex = new TextureData(windowSettings.Dimensions, E_ColorFormat::RGBA8, E_ColorFormat::RGBA, E_DataType::UByte);
+	m_DrawTex = new TextureData(dim, E_ColorFormat::RGBA8, E_ColorFormat::RGBA, E_DataType::UByte);
 	m_DrawTex->Build();
 	m_DrawTex->SetParameters(params);
 	api->LinkTextureToFbo2D(0, m_DrawTex->GetHandle(), 0);
 
 	api->GenRenderBuffers(1, &m_DrawDepth);
 	api->BindRenderbuffer(m_DrawDepth);
-	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, windowSettings.Dimensions);
+	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, dim);
 	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, m_DrawDepth);
 
 	api->BindFramebuffer(0);
@@ -114,20 +113,18 @@ void EntityIdRenderer::Pick(ivec2 const pixel, Viewport* const viewport, std::fu
 void EntityIdRenderer::OnViewportPreRender(T_FbLoc const targetFb)
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
-	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
-
-	// probably also best to defer this operation to a specific time
+	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
 	// if the view size changed since the last pick we need to recreate our rendertarget with the correct size
-	if (!(etm::nearEqualsV(m_LastViewSize, windowSettings.Dimensions)))
+	if (!(etm::nearEqualsV(m_LastViewSize, dim)))
 	{
 		DestroyRenderTarget();
 		CreateRenderTarget();
 
-		m_LastViewSize = windowSettings.Dimensions;
+		m_LastViewSize = dim;
 	}
 
-	api->SetViewport(ivec2(0), windowSettings.Dimensions);
+	api->SetViewport(ivec2(0), dim);
 
 	// draw the shapes as colors to the intermediate rendertarget
 	//------------------------------------------------------------
@@ -137,11 +134,11 @@ void EntityIdRenderer::OnViewportPreRender(T_FbLoc const targetFb)
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
 	api->SetShader(m_Shader.get());
-	m_Shader->Upload("worldViewProj"_hash, CAMERA->GetViewProj());
+	m_Shader->Upload("worldViewProj"_hash, SceneRenderer::GetCurrent()->GetCamera().GetViewProj());
 
 	api->SetDepthEnabled(true);
 
-	for (AbstractScene* const scene : SceneRenderer::GetInstance()->GetRenderScenes())
+	for (AbstractScene* const scene : SceneRenderer::GetCurrent()->GetRenderScenes())
 	{
 		for (Entity* const entity : scene->GetEntities())
 		{
@@ -199,7 +196,7 @@ void EntityIdRenderer::OnViewportPostFlush(T_FbLoc const targetFb)
 
 	Entity* foundEntity = nullptr;
 
-	for (AbstractScene* const scene : SceneRenderer::GetInstance()->GetRenderScenes())
+	for (AbstractScene* const scene : SceneRenderer::GetCurrent()->GetRenderScenes())
 	{
 		Entity* const entity = scene->GetEntity(pickedID);
 

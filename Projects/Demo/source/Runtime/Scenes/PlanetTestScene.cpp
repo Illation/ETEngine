@@ -12,15 +12,15 @@
 #include <Engine/Graphics/FrameBuffer.h>
 #include <Engine/Graphics/SpriteFont.h>
 #include <Engine/Graphics/Light.h>
-#include <Engine/GraphicsHelper/TextRenderer.h>
-#include <Engine/Framebuffers/Gbuffer.h>
+#include <Engine/SceneRendering/TextRenderer.h>
+#include <Engine/SceneRendering/Gbuffer.h>
 #include <Engine/Components/ModelComponent.h>
 #include <Engine/Components/LightComponent.h>
 #include <Engine/Prefabs/Skybox.h>
 #include <Engine/Prefabs/OrbitCamera.h>
 #include <Engine/SceneGraph/Entity.h>
 #include <Engine/PlanetTech/StarField.h>
-#include <Engine/Helper/ScreenshotCapture.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 PlanetTestScene::PlanetTestScene() : AbstractScene("PlanetTestScene")
@@ -96,17 +96,17 @@ void PlanetTestScene::Update()
 
 	if (INPUT->GetKeyState(E_KbdKey::J) == E_KeyState::Down)
 	{
-		CAMERA->SetFieldOfView(CAMERA->GetFOV() + TIME->DeltaTime()*10);
+		CAMERA->SetFieldOfView(CAMERA->GetFieldOfView() + TIME->DeltaTime()*10);
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::K) == E_KeyState::Down)
 	{
-		CAMERA->SetFieldOfView(CAMERA->GetFOV() - TIME->DeltaTime()*10);
+		CAMERA->SetFieldOfView(CAMERA->GetFieldOfView() - TIME->DeltaTime()*10);
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::Num_0) == E_KeyState::Pressed)
 	{
-		ScreenshotCapture::GetInstance()->Take();
+		RenderingSystems::Instance()->GetScreenshotCapture().Take(Viewport::GetCurrentViewport());
 	}
 
 	//Change light settings
@@ -132,31 +132,4 @@ void PlanetTestScene::Update()
 	CAMERA->SetFarClippingPlane((sqrtf(powf(m_pPlanet->GetRadius() + altitude, 2) - powf(m_pPlanet->GetRadius(), 2)) +
 		sqrtf(powf(radius, 2) - powf(m_pPlanet->GetRadius(), 2)))*10);
 	CAMERA->SetNearClippingPlane(CAMERA->GetFarPlane()*0.000003f);
-}
-
-void PlanetTestScene::Draw()
-{
-	//TextRenderer::GetInstance()->SetFont(m_pDebugFont.get());
-	//TextRenderer::GetInstance()->SetColor(vec4(1, 0.3f, 0.3f, 1));
-	//std::string textOutput = "FPS: " + std::to_string( PERFORMANCE->GetRegularFPS() );
-	//TextRenderer::GetInstance()->DrawText( textOutput, vec2(20, 20));
-	//TextRenderer::GetInstance()->SetColor(vec4(1, 1, 1, 1));
-	//textOutput = "Frame ms: " + std::to_string( PERFORMANCE->GetFrameMS() );
-	//TextRenderer::GetInstance()->DrawText( textOutput, vec2(20, 50));
-	//textOutput = "Draw calls: " + std::to_string( PERFORMANCE->m_PrevDrawCalls );
-	//TextRenderer::GetInstance()->DrawText(textOutput, vec2(20, 80));
-
-	//float altitude = etm::distance(m_pPlanet->GetTransform()->GetPosition(), CAMERA->GetTransform()->GetPosition()) - m_pPlanet->GetRadius();
-	//textOutput = "Altitude: " + std::to_string( altitude );
-	//TextRenderer::GetInstance()->DrawText( textOutput, vec2(20, 110));
-	//textOutput = "Vertices: " + std::to_string( m_pPlanet->GetVertexCount() );
-	//TextRenderer::GetInstance()->DrawText( textOutput, vec2(20, 140));
-}
-
-void PlanetTestScene::DrawForward()
-{
-}
-
-void PlanetTestScene::PostDraw()
-{
 }

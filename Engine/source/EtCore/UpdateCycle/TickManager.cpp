@@ -38,20 +38,22 @@ TickManager::Tickable& TickManager::Tickable::operator=(Tickable const& other)
 //
 void TickManager::TriggerRealTime(I_RealTimeTickTriggerer* const triggerer)
 {
-	auto findResult = std::find_if(m_RealTimeTriggerers.begin(), m_RealTimeTriggerers.end(), [triggerer](T_RealTimeTriggerer const& rt)
+	std::vector<T_RealTimeTriggerer> triggerersCopy = m_RealTimeTriggerers; // ensure adding or removing during tick doesn't cause issues
+
+	auto findResult = std::find_if(triggerersCopy.begin(), triggerersCopy.end(), [triggerer](T_RealTimeTriggerer const& rt)
 	{
 		return rt.first == triggerer;
 	});
 
 	// only trigger a tick if this triggerer is registered
-	if (findResult != m_RealTimeTriggerers.cend())
+	if (findResult != triggerersCopy.cend())
 	{
 		// If this triggerer has already been rendered but is calling again we should update everything
 		if (findResult->second)
 		{
 			EndTick();
 
-			for (T_RealTimeTriggerer& rt : m_RealTimeTriggerers)
+			for (T_RealTimeTriggerer& rt : triggerersCopy)
 			{
 				rt.second = false;
 			}

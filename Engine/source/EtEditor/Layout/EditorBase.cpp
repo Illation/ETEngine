@@ -1,0 +1,151 @@
+#include "stdafx.h"
+#include "EditorBase.h"
+
+#include "EditorSplitNode.h"
+
+#include <gtkmm/frame.h>
+#include <glibmm/main.h>
+
+#include <EtCore/Reflection/Serialization.h>
+
+#include <EtEditor/Util/GtkUtil.h>
+#include <EtEditor/Util/EditorConfig.h>
+
+
+//===============
+// Editor Base
+//===============
+
+
+//---------------------------------
+// EditorBase::OnKeyEvent
+//
+// by default editors don't handle key events, but this can be overridden by implementations
+//
+bool EditorBase::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
+{
+	UNUSED(pressed);
+	UNUSED(evnt);
+
+	return false;
+}
+
+//---------------------------------
+// EditorBase::Init
+//
+Gtk::Frame* EditorBase::GetRoot()
+{
+	return m_NodeHierachy.root->GetAttachment();
+}
+
+//---------------------------------
+// EditorBase::Init
+//
+// deserialize the default tool layout and construct the tools from it, then init the editor systems
+//
+void EditorBase::Init(Gtk::Frame* const parent)
+{
+	// load the tool hierachy from a layout file
+	std::string const layoutPath = FS("%slayouts/%s.json", EditorConfig::GetInstance()->GetEditorUserDir().c_str(), GetLayoutName().c_str());
+
+	if (!(serialization::DeserializeFromFile(layoutPath, m_NodeHierachy)))
+	{
+		LOG(FS("Failed to deserialize layout file for '%s' at: %s", GetName().c_str(), layoutPath.c_str()), LogLevel::Warning);
+	}
+
+	ET_ASSERT(m_NodeHierachy.root != nullptr);
+
+	// initialize the tools and gtk widgets based on the loaded hierachy
+	m_NodeHierachy.root->Init(this, parent, nullptr);
+
+	// once the widget sizes are available, adjust the sizes of widgets based on what the layout loaded
+	auto allocateCallback = [this](Gtk::Allocation& allocation)
+	{
+		UNUSED(allocation);
+
+		m_HasInitialSize = true;
+	};
+	parent->signal_size_allocate().connect(allocateCallback, true);
+
+	// periodically check if the layout needs to change
+	auto onTimeout = [this]() -> bool
+	{
+		ProcessLayoutChanges();
+
+		return true;
+	};
+	Glib::signal_timeout().connect(onTimeout, 33); 
+
+	// ..
+	parent->show_all_children();
+
+	// let the derived editor do any initialization it needs
+	InitInternal();
+}
+
+//---------------------------------
+// EditorBase::SaveLayout
+//
+void EditorBase::SaveLayout()
+{
+	std::string const layoutPath = FS("%slayouts/%s.json", EditorConfig::GetInstance()->GetEditorUserDir().c_str(), GetLayoutName().c_str());
+
+	if (!serialization::SerializeToFile(layoutPath, m_NodeHierachy))
+	{
+		LOG(FS("EditorBase::SaveLayout > unable to save the layout to: %s", layoutPath.c_str()), LogLevel::Warning);
+	}
+}
+
+//---------------------------------
+// EditorBase::QueueNodeForSplit
+//
+void EditorBase::QueueNodeForSplit(EditorToolNode* const node)
+{
+	m_QueuedSplits.emplace_back(node);
+}
+
+//---------------------------------
+// EditorBase::QueueNodeForCollapse
+//
+void EditorBase::QueueNodeForCollapse(EditorToolNode* const node)
+{
+	m_QueuedCollapse.emplace_back(node);
+}
+
+//---------------------------------
+// EditorBase::OnAllocationAvailable
+//
+// Set the positions of split handles
+//
+void EditorBase::OnAllocationAvailable()
+{
+	if (!m_HasInitialSize)
+	{
+		return;
+	}
+
+	if (!m_NodeHierachy.root->IsLeaf())
+	{
+		static_cast<EditorSplitNode*>(m_NodeHierachy.root)->AdjustLayout();
+	}
+}
+
+//---------------------------------
+// EditorBase::ProcessLayoutChanges
+//
+// Split or collapse queued nodes based on their state
+//
+void EditorBase::ProcessLayoutChanges()
+{
+	for (EditorToolNode* const node : m_QueuedSplits)
+	{
+		m_NodeHierachy.SplitNode(node, this);
+	}
+	m_QueuedSplits.clear();
+
+	for (EditorToolNode* const node : m_QueuedCollapse)
+	{
+		m_NodeHierachy.CollapseNode(node, this);
+	}
+	m_QueuedCollapse.clear();
+}

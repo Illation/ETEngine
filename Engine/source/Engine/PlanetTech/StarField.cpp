@@ -7,6 +7,7 @@
 
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
 
 
 StarField::StarField(T_Hash const assetId) 
@@ -75,6 +76,8 @@ void StarField::DrawForward()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
+	Camera const& cam = SceneRenderer::GetCurrent()->GetCamera();
+
 	api->SetBlendEnabled(true);
 	api->SetBlendEquation(E_BlendEquation::Add);
 	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::Zero);
@@ -83,12 +86,12 @@ void StarField::DrawForward()
 	api->SetShader(m_pShader.get());
 	api->SetActiveTexture(0);
 	api->BindTexture(m_pSprite->GetTargetType(), m_pSprite->GetHandle());
-	m_pShader->Upload("viewProj"_hash, CAMERA->GetStatViewProj());
-	m_pShader->Upload("viewInv"_hash, CAMERA->GetViewInv());
+	m_pShader->Upload("viewProj"_hash, cam.GetStatViewProj());
+	m_pShader->Upload("viewInv"_hash, cam.GetViewInv());
 	m_pShader->Upload("uRadius"_hash, m_Radius);
 	m_pShader->Upload("uBaseFlux"_hash, m_BaseFlux);
 	m_pShader->Upload("uBaseMag"_hash, m_BaseMag);
-	m_pShader->Upload("uAspectRatio"_hash, Config::GetInstance()->GetWindow().AspectRatio);
+	m_pShader->Upload("uAspectRatio"_hash, Viewport::GetCurrentViewport()->GetAspectRatio());
 	api->DrawArrays(E_DrawMode::Points, 0, m_DrawnStars);
 	api->BindVertexArray(0);
 	api->SetBlendEnabled(false);

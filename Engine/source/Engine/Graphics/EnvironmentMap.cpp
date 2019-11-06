@@ -8,8 +8,7 @@
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
-#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
-#include <Engine/GraphicsHelper/PbrPrefilter.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 //=================
@@ -188,7 +187,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 		api->LinkCubeMapFaceToFbo2D(face, envCubeMap->GetHandle(), 0);
 		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
-		PrimitiveRenderer::GetInstance()->Draw<primitives::Cube>();
+		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
 	}
 	api->BindFramebuffer(0);
 
@@ -196,7 +195,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	envCubeMap->SetParameters(params);
 
 	api->BindTexture(E_TextureType::Texture2D, 0);
-	api->SetViewport(ivec2(0), Config::GetInstance()->GetWindow().Dimensions);
+	api->SetViewport(ivec2(0), Viewport::GetCurrentViewport()->GetDimensions());
 
 	api->DeleteRenderBuffers(1, &captureRBO);
 	api->DeleteFramebuffers(1, &captureFBO);

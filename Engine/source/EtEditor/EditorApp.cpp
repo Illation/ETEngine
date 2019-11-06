@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "EditorApp.h"
 
-#include "EditorConfig.h"
-#include "EditorScene.h"
-
 #pragma warning( push )
 #pragma warning( disable : 4244 ) // glib warnings
 #include <glibmm/main.h>
@@ -17,22 +14,20 @@
 #include <glibmm/vectorutils.h>
 
 #include <EtEditor/Content/FileResourceManager.h>
-#include <EtEditor/UI/EditorWindow.h>
-#include <EtEditor/UI/SettingsDialog.h>
+#include <EtEditor/Layout/EditorWindow.h>
+#include <EtEditor/Util/SettingsDialog.h>
+#include <EtEditor/Util/EditorConfig.h>
+#include <EtEditor/SceneEditor/SceneEditor.h>
 
 #include <EtCore/Helper/Commands.h>
 #include <EtCore/Helper/InputManager.h>
 #include <EtCore/UpdateCycle/TickManager.h>
 
-#include <Engine/SceneGraph/SceneManager.h>
-#include <Engine/GraphicsHelper/SceneRenderer.h>
-#include <Engine/Physics/PhysicsManager.h>
-#include <Engine/Audio/AudioManager.h>
-
 
 //====================
 // Editor Application 
 //====================
+
 
 //---------------------------------
 // EditorApp::c-tor
@@ -140,6 +135,7 @@ void EditorApp::on_startup()
 
 	// Add actions and keyboard accelerators for the application menu.
 	add_action("preferences", sigc::mem_fun(*this, &EditorApp::OnActionPreferences));
+	add_action("save_layout", sigc::mem_fun(*this, &EditorApp::OnSaveEditorLayout));
 	add_action("quit", sigc::mem_fun(*this, &EditorApp::OnActionQuit));
 	set_accel_for_action("app.quit", "<Ctrl>Q");
 
@@ -180,18 +176,9 @@ void EditorApp::on_activate()
 	// The application has been started, so let's show a window.
 	try
 	{
-		EditorAppWindow* appwindow = CreateMainWindow();
-		appwindow->present();
-		appwindow->Init();
-
-		AudioManager::GetInstance()->Initialize();
-		PhysicsManager::GetInstance()->Initialize();
-
-		SceneManager::GetInstance()->AddGameScene(new EditorScene());
-		SceneManager::GetInstance()->SetActiveGameScene("EditorScene");
-		m_SceneSelection.SetScene(SceneManager::GetInstance()->GetNewActiveScene());
-
-		SceneRenderer::GetInstance()->InitRenderingSystems();
+		m_AppWindow = CreateMainWindow();
+		m_AppWindow->present();
+		m_AppWindow->AddEditor(new SceneEditor());
 	}
 	// If create_appwindow() throws an exception (perhaps from Gtk::Builder),
 	// no window has been created, no window has been added to the application,
@@ -262,6 +249,18 @@ void EditorApp::OnActionPreferences()
 	{
 		LOG("EditorApp::OnActionPreferences > " + std::string(ex.what()), LogLevel::Error);
 	}
+}
+
+//---------------------------------
+// EditorApp::OnActionPreferences
+//
+// On clicking the preferences button in the menu we show the SettingsDialog
+//
+void EditorApp::OnSaveEditorLayout()
+{
+	ET_ASSERT(m_AppWindow != nullptr);
+
+	m_AppWindow->SaveLayout();
 }
 
 //---------------------------------

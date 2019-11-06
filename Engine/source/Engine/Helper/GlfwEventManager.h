@@ -9,6 +9,7 @@
 #include <EtCore/Helper/Singleton.h>
 
 #include <Engine/Base/TickOrder.h>
+#include <Engine/Base/GlfwRenderArea.h>
 
 
 //----------------------------
@@ -28,7 +29,7 @@ public:
 	GlfwEventManager() : I_Tickable(static_cast<uint32>(E_TickOrder::TICK_GlfwEventManager)) {}
 	virtual ~GlfwEventManager();
 
-	void Init(GLFWwindow* const window);
+	void Init(GlfwRenderArea* const renderArea);
 
 	// modify state
 	//--------------
@@ -46,6 +47,6 @@ private:
 
 	// Cursors
 	std::map<E_CursorShape, GLFWcursor*> m_CursorMap;
-	GLFWwindow* m_Window = nullptr;
+	GlfwRenderArea* m_RenderArea = nullptr;
 };
 

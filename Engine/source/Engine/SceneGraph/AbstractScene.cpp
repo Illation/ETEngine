@@ -10,9 +10,9 @@
 #include <Engine/Prefabs/FreeCamera.h>
 #include <Engine/Prefabs/Skybox.h>
 #include <Engine/Prefabs/FreeCamera.h>
-#include <Engine/Framebuffers/Gbuffer.h>
-#include <Engine/Framebuffers/PostProcessingRenderer.h>
-#include <Engine/GraphicsHelper/TextRenderer.h>
+#include <Engine/SceneRendering/Gbuffer.h>
+#include <Engine/SceneRendering/PostProcessingRenderer.h>
+#include <Engine/SceneRendering/TextRenderer.h>
 #include <Engine/Physics/PhysicsWorld.h>
 
 
@@ -104,8 +104,6 @@ void AbstractScene::RootUpdate()
 
 	//PERFORMANCE->StartFrameTimer();
 
-	m_SceneContext->camera->Update();
-
 	Update();
 	if(INPUT->GetKeyState(E_KbdKey::Up) == E_KeyState::Down)
 	{
@@ -179,6 +177,12 @@ const PostProcessingSettings& AbstractScene::GetPostProcessingSettings() const
 {
 	//Any settings blending should be done here
 	return m_PostProcessingSettings;
+}
+
+CameraComponent const* AbstractScene::GetActiveCamera() const
+{
+	ET_ASSERT(m_SceneContext != nullptr);
+	return m_SceneContext->camera;
 }
 
 Entity* AbstractScene::GetEntity(T_Hash const id) const

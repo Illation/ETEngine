@@ -3,7 +3,7 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include "GraphicsHelper/RenderArea.h"
+#include <Engine/GraphicsContext/RenderArea.h>
 
 
 //---------------------------------
@@ -27,12 +27,10 @@ public:
 	void Update();
 	void SetVSyncEnabled(bool const val);
 
-private:
-	void OnResize();
+	void SetSize(ivec2 const size);
 
 	// accessors
 	//-----------
-public:
 	GLFWwindow* GetWindow() const { return m_Window; }
 
 	// Render Area Interface
@@ -46,6 +44,8 @@ protected:
 	void QueueDraw() override;
 	bool MakeCurrent() override;
 
+	ivec2 GetDimensions() const override;
+
 	// Data
 	///////
 private:
@@ -55,6 +55,8 @@ private:
 	std::function<void(T_FbLoc const)> m_OnRender;
 
 	GLFWwindow* m_Window = nullptr; // also serves as context
+
+	I_GraphicsApiContext* m_Context = nullptr;
 
 	bool m_ShouldDraw = false;
 };

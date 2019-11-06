@@ -10,16 +10,12 @@
 #include <EtCore/Content/PackageResourceManager.h>
 
 #include <Engine/SceneGraph/SceneManager.h>
-#include <Engine/GraphicsHelper/LightVolume.h>
-#include <Engine/GraphicsHelper/ShadowRenderer.h>
-#include <Engine/GraphicsHelper/TextRenderer.h>
-#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 #include <Engine/Physics/PhysicsManager.h>
 #include <Engine/Audio/AudioManager.h>
 #include <Engine/Helper/GlfwEventManager.h>
-#include <Engine/Helper/ScreenshotCapture.h>
-#include <Engine/GraphicsHelper/Viewport.h>
-#include <Engine/GraphicsHelper/SceneRenderer.h>
+#include <Engine/GraphicsContext/Viewport.h>
+#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/ShadowRenderer.h>
 
 
 AbstractFramework::~AbstractFramework()
@@ -27,7 +23,7 @@ AbstractFramework::~AbstractFramework()
 	GlfwEventManager::DestroyInstance();
 	m_RenderArea.Uninitialize();
 	SafeDelete(m_Viewport);
-	SceneRenderer::DestroyInstance();
+	SafeDelete(m_SceneRenderer);
 
 	SceneManager::DestroyInstance();
 
@@ -36,6 +32,8 @@ AbstractFramework::~AbstractFramework()
 
 	InputManager::DestroyInstance();
 	ContextManager::DestroyInstance();
+
+	PerformanceInfo::DestroyInstance();
 	
 	ResourceManager::DestroyInstance();
 
@@ -51,13 +49,15 @@ void AbstractFramework::Run()
 	Config::GetInstance()->Initialize();
 
 	m_Viewport = new Viewport(&m_RenderArea);
-	m_Viewport->SetRenderer(SceneRenderer::GetInstance());
+	m_SceneRenderer = new SceneRenderer();
+	m_Viewport->SetRenderer(m_SceneRenderer);
 	m_RenderArea.Initialize(); // also initializes the viewport and its renderer
+	m_Viewport->SynchDimensions();
 	m_Viewport->Redraw();
 
 	ResourceManager::SetInstance(new PackageResourceManager());
 
-	SceneRenderer::GetInstance()->InitWithSplashScreen();
+	m_SceneRenderer->InitWithSplashScreen();
 	m_RenderArea.Update();
 
 	AudioManager::GetInstance()->Initialize();
@@ -72,23 +72,12 @@ void AbstractFramework::Run()
 		SceneManager::GetInstance()->SetActiveGameScene(initScene);
 	}
 
-	// set up screenshot manager
-	std::string const& screenshotDir = Config::GetInstance()->GetScreenshotDir();
-	if (!screenshotDir.empty())
-	{
-		ScreenshotCapture::GetInstance()->Initialize(Config::GetInstance()->GetUserDirPath() + screenshotDir);
-	}
-	else
-	{
-		ScreenshotCapture::GetInstance()->Initialize(Config::GetInstance()->GetUserDirPath() + std::string("./"));
-	}
-
 	PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
 
 	InputManager::GetInstance();	// init input manager
-	GlfwEventManager::GetInstance()->Init(m_RenderArea.GetWindow());
+	GlfwEventManager::GetInstance()->Init(&m_RenderArea);
 
-	SceneRenderer::GetInstance()->InitRenderingSystems();
+	m_SceneRenderer->InitRenderingSystems();
 
 	RegisterAsTriggerer();
 
@@ -107,6 +96,11 @@ void AbstractFramework::GameLoop()
 
 		//****
 		//DRAW
+
+		if (SceneManager::GetInstance()->GetActiveScene()->IsInitialized())
+		{
+			SceneManager::GetInstance()->GetActiveScene()->GetActiveCamera()->PopulateCamera(m_SceneRenderer->GetCamera());
+		}
 
 		m_RenderArea.Update();
 	}

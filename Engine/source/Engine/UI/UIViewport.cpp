@@ -3,9 +3,9 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/GraphicsHelper/PrimitiveRenderer.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 UIViewport::UIViewport():UIFixedContainer()
@@ -66,7 +66,7 @@ void UIViewportRenderer::Draw(ivec2 pos, ivec2 size)
 	api->SetViewport(pos, size);
 
 	api->LazyBindTexture(0, E_TextureType::Texture2D, m_pTex->GetHandle());
-	PrimitiveRenderer::GetInstance()->Draw<primitives::Quad>();
+	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 }
 
 void UIViewportRenderer::Initialize(ivec2 size)
