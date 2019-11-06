@@ -67,13 +67,6 @@ single file libraries being used:
 ##### stb_vorbis
 
 
-## Ultimate-Maia GTK Theme
-- source: https://github.com/bolimage/Ultimate-Maia
-- license: [LGPL](https://github.com/bolimage/Ultimate-Maia/blob/master/LICENSE)
-
-files are copied as is to the editor window
-
-
 ## GTK-for-Windows-Runtime-Environment-Installer
 - source: https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer
 - license: None provided

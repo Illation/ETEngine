@@ -699,20 +699,6 @@ function(installEditorResources TARGET)
 			CONFIGURATIONS ${configType}
 			DESTINATION ${binDir}/share/icons/)
 			
-		# theme
-		install(DIRECTORY ${ENGINE_DIRECTORY_ABS}/third_party/gtk/Ultimate-Maia/Ultimate-Maia/gtk-3.0/
-			CONFIGURATIONS ${configType}
-			DESTINATION ${binDir}/share/themes/Ultimate-Maia/gtk-3.0)
-		install(DIRECTORY ${ENGINE_DIRECTORY_ABS}/third_party/gtk/Ultimate-Maia/Ultimate-Dark/gtk-3.0/
-			CONFIGURATIONS ${configType}
-			DESTINATION ${binDir}/share/themes/Ultimate-Maia/gtk-3.0)
-		install(DIRECTORY ${ENGINE_DIRECTORY_ABS}/third_party/gtk/Ultimate-Maia/Ultimate-Maia/metacity-1/
-			CONFIGURATIONS ${configType}
-			DESTINATION ${binDir}/share/themes/Ultimate-Maia/metacity-1)
-		install(FILES ${ENGINE_DIRECTORY_ABS}/third_party/gtk/Ultimate-Maia/Ultimate-Dark/index.theme
-			CONFIGURATIONS ${configType}
-			DESTINATION ${binDir}/share/themes/Ultimate-Maia)
-
 	endforeach()
 
 endfunction(installEditorResources)
