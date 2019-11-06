@@ -10,8 +10,8 @@
 #include <Engine/Physics/PhysicsManager.h>
 #include <Engine/Audio/AudioManager.h>
 
-#include <EtEditor/UI/GtkUtil.h>
-#include <EtEditor/UI/SceneViewport.h>
+#include <EtEditor/Util/GtkUtil.h>
+#include <EtEditor/Tools/SceneViewport.h>
 
 
 //==========================

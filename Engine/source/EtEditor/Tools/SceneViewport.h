@@ -1,7 +1,4 @@
 #pragma once
-
-#include "EditorTool.h"
-
 #include <Engine/GraphicsContext/Viewport.h>
 
 #include <gtkmm/frame.h>
@@ -9,8 +6,9 @@
 #include <glibmm/refptr.h>
 #include <gdk/gdk.h>
 
-#include <EtEditor/SceneEditorListener.h>
-#include <EtEditor/EditorCamera.h>
+#include <EtEditor/SceneEditor/SceneEditorListener.h>
+#include <EtEditor/Rendering/EditorCamera.h>
+#include <EtEditor/Layout/EditorTool.h>
 
 
 // forward

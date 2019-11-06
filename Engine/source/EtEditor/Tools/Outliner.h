@@ -1,7 +1,4 @@
 #pragma once
-
-#include "EditorTool.h"
-
 #include <gtkmm/treestore.h>
 #include <gtkmm/treemodelcolumn.h>
 #include <gtkmm/treemodel.h>
@@ -10,7 +7,8 @@
 #include <gtkmm/builder.h>
 #include <glibmm/refptr.h>
 
-#include <EtEditor/SceneSelection.h>
+#include <EtEditor/SceneEditor/SceneSelection.h>
+#include <EtEditor/Layout/EditorTool.h>
 
 
 // forward

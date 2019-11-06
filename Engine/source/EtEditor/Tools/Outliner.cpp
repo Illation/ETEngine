@@ -9,8 +9,8 @@
 #include <Engine/SceneGraph/AbstractScene.h>
 #include <Engine/SceneGraph/Entity.h>
 
-#include <EtEditor/SceneEditor.h>
-#include <EtEditor/UI/GtkUtil.h>
+#include <EtEditor/SceneEditor/SceneEditor.h>
+#include <EtEditor/Util/GtkUtil.h>
 
 
 //==========================

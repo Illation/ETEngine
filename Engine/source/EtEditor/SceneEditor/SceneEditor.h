@@ -1,12 +1,12 @@
 #pragma once
-#include "EditorBase.h"
-
 #include "SceneSelection.h"
 #include "SceneEditorListener.h"
 
-#include <gdk/gdkevents.h>
+#include <gdk/gdk.h>
 
 #include <EtCore/UpdateCycle/Tickable.h>
+
+#include <EtEditor/Layout/EditorBase.h>
 
 
 class SceneViewport;

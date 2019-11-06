@@ -1,4 +1,6 @@
 #pragma once
+#include "EditorTool.h"
+
 #include <rttr/type>
 #include <rttr/registration_friend.h>
 
@@ -9,8 +11,6 @@
 #include <giomm/simpleactiongroup.h>
 #include <giomm/menu.h>
 #include <giomm/menuitem.h>
-
-#include <EtEditor/UI/EditorTool.h>
 
 
 // forward

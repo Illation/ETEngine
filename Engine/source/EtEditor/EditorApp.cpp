@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "EditorApp.h"
 
-#include "EditorConfig.h"
-#include "SceneEditor.h"
-
 #pragma warning( push )
 #pragma warning( disable : 4244 ) // glib warnings
 #include <glibmm/main.h>
@@ -17,8 +14,10 @@
 #include <glibmm/vectorutils.h>
 
 #include <EtEditor/Content/FileResourceManager.h>
-#include <EtEditor/UI/EditorWindow.h>
-#include <EtEditor/UI/SettingsDialog.h>
+#include <EtEditor/Layout/EditorWindow.h>
+#include <EtEditor/Util/SettingsDialog.h>
+#include <EtEditor/Util/EditorConfig.h>
+#include <EtEditor/SceneEditor/SceneEditor.h>
 
 #include <EtCore/Helper/Commands.h>
 #include <EtCore/Helper/InputManager.h>

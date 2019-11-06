@@ -4,8 +4,8 @@
 #include <Engine/SceneRendering/SceneRenderer.h>
 
 #include <EtEditor/Rendering/GtkRenderArea.h>
-#include <EtEditor/UI/GtkUtil.h>
-#include <EtEditor/SceneEditor.h>
+#include <EtEditor/Util/GtkUtil.h>
+#include <EtEditor/SceneEditor/SceneEditor.h>
 
 #include <gtkmm/builder.h>
 

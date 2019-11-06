@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include "EditorBase.h"
-#include "EditorConfig.h"
 
 #include <gtkmm/frame.h>
 #include <glibmm/main.h>
 
 #include <EtCore/Reflection/Serialization.h>
 
-#include <EtEditor/UI/GtkUtil.h>
-#include <EtEditor/UI/Outliner.h>
-#include <EtEditor/UI/SceneViewport.h>
+#include <EtEditor/Util/GtkUtil.h>
+#include <EtEditor/Util/EditorConfig.h>
+#include <EtEditor/Tools/Outliner.h>
+#include <EtEditor/Tools/SceneViewport.h>
 
 
 //===============

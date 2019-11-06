@@ -1,8 +1,7 @@
 #pragma once
 #include <vector>
 
-#include "EditorTickOrder.h"
-
+#include <EtEditor/Util/EditorTickOrder.h>
 #include <EtEditor/Rendering/EntityIdRenderer.h>
 
 

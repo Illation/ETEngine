@@ -1,17 +1,17 @@
 #include "stdafx.h"
 #include "EditorWindow.h"
 
+#include "EditorBase.h"
+
 #include <gtkmm/object.h>
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/textview.h>
 #include <gtkmm/settings.h>
 #include <gtkmm/frame.h>
 
-#include "GtkUtil.h"
-
 #include <EtEditor/EditorApp.h>
-#include <EtEditor/EditorBase.h>
-#include <EtEditor/EditorTickOrder.h>
+#include <EtEditor/Util/GtkUtil.h>
+#include <EtEditor/Util/EditorTickOrder.h>
 
 
 //===========================

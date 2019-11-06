@@ -21,9 +21,9 @@
 
 #include <EtCore/Reflection/ReflectionUtil.h>
 
-#include <EtEditor/UI/GtkUtil.h>
-#include <EtEditor/UI/Outliner.h>
-#include <EtEditor/UI/SceneViewport.h>
+#include <EtEditor/Util/GtkUtil.h>
+#include <EtEditor/Tools/Outliner.h>
+#include <EtEditor/Tools/SceneViewport.h>
 
 
 // reflection
