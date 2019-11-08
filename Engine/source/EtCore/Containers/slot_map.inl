@@ -29,7 +29,7 @@ slot_map<TType, TIndexType>::slot_map(slot_map&& moving)
 // move assignment
 //
 template <class TType, class TIndexType>
-slot_map& slot_map<TType, TIndexType>::operator=(slot_map&& moving)
+slot_map<TType, TIndexType>& slot_map<TType, TIndexType>::operator=(slot_map&& moving)
 {
 	clear();
 	moving.swap(*this);
@@ -46,10 +46,9 @@ slot_map& slot_map<TType, TIndexType>::operator=(slot_map&& moving)
 // access to data by ID
 //
 template <class TType, class TIndexType>
-slot_map::reference slot_map<TType, TIndexType>::operator[](id_type const id)
+TType& slot_map<TType, TIndexType>::operator[](id_type const id)
 {
-	ET_ASSERT(m_Indices.size() > id);
-	ET_ASSERT(m_Data.size() > m_Indices[id]);
+	ET_ASSERT(is_valid(id));
 
 	return m_Data[m_Indices[id]];
 }
@@ -58,7 +57,7 @@ slot_map::reference slot_map<TType, TIndexType>::operator[](id_type const id)
 // slot_map::operator[]
 //
 template <class TType, class TIndexType>
-slot_map::const_reference slot_map<TType, TIndexType>::operator[](id_type const id) const
+TType const& slot_map<TType, TIndexType>::operator[](id_type const id) const
 {
 	ET_ASSERT(is_valid(id));
 
@@ -69,7 +68,7 @@ slot_map::const_reference slot_map<TType, TIndexType>::operator[](id_type const 
 // slot_map::get
 //
 template <class TType, class TIndexType>
-slot_map::pointer slot_map<TType, TIndexType>::at(id_type const id)
+TType* slot_map<TType, TIndexType>::at(id_type const id)
 {
 	return is_valid(id) ? &(*this)[id] : nullptr;
 }
@@ -78,7 +77,7 @@ slot_map::pointer slot_map<TType, TIndexType>::at(id_type const id)
 // slot_map::get
 //
 template <class TType, class TIndexType>
-slot_map::const_pointer slot_map<TType, TIndexType>::at(id_type const id) const
+TType const* slot_map<TType, TIndexType>::at(id_type const id) const
 {
 	return is_valid(id) ? &(*this)[id] : nullptr;
 }
@@ -87,7 +86,7 @@ slot_map::const_pointer slot_map<TType, TIndexType>::at(id_type const id) const
 // slot_map::data
 //
 template <class TType, class TIndexType>
-slot_map::pointer slot_map<TType, TIndexType>::data()
+TType* slot_map<TType, TIndexType>::data()
 {
 	return m_Data.data();
 }
@@ -96,7 +95,7 @@ slot_map::pointer slot_map<TType, TIndexType>::data()
 // slot_map::data
 //
 template <class TType, class TIndexType>
-slot_map::const_pointer slot_map<TType, TIndexType>::data() const
+TType const* slot_map<TType, TIndexType>::data() const
 {
 	return m_Data.data();
 }
@@ -105,7 +104,7 @@ slot_map::const_pointer slot_map<TType, TIndexType>::data() const
 // slot_map::iterator_id
 //
 template <class TType, class TIndexType> 
-slot_map::id_type slot_map<TType, TIndexType>::iterator_id(iterator const it) const
+TIndexType slot_map<TType, TIndexType>::iterator_id(iterator const it) const
 {
 	return m_IndexPositions[it - m_Data.cbegin()];
 }
@@ -114,9 +113,29 @@ slot_map::id_type slot_map<TType, TIndexType>::iterator_id(iterator const it) co
 // slot_map::iterator_id
 //
 template <class TType, class TIndexType>
-slot_map::id_type slot_map<TType, TIndexType>::iterator_id(const_iterator const it) const
+TIndexType slot_map<TType, TIndexType>::iterator_id(const_iterator const it) const
 {
 	return m_IndexPositions[it - m_Data.cbegin()];
+}
+
+//-----------------------
+// slot_map::get_iterator
+//
+template <class TType, class TIndexType> 
+typename slot_map<TType, TIndexType>::iterator slot_map<TType, TIndexType>::get_iterator(id_type const id)
+{
+	ET_ASSERT(m_Indices.size() > id);
+	return begin() + m_Indices[id];
+}
+
+//-----------------------
+// slot_map::get_iterator
+//
+template <class TType, class TIndexType>
+typename slot_map<TType, TIndexType>::const_iterator slot_map<TType, TIndexType>::get_iterator(id_type const id) const
+{
+	ET_ASSERT(m_Indices.size() > id);
+	return cbegin() + m_Indices[id];
 }
 
 //--------------------
@@ -136,7 +155,7 @@ bool slot_map<TType, TIndexType>::is_valid(id_type const id) const
 // slot_map::begin
 //
 template <class TType, class TIndexType >
-slot_map::iterator slot_map<TType, TIndexType>::begin()
+typename slot_map<TType, TIndexType>::iterator slot_map<TType, TIndexType>::begin()
 {
 	return m_Data.begin();
 }
@@ -145,7 +164,7 @@ slot_map::iterator slot_map<TType, TIndexType>::begin()
 // slot_map::begin
 //
 template <class TType, class TIndexType >
-slot_map::const_iterator slot_map<TType, TIndexType>::begin() const
+typename slot_map<TType, TIndexType>::const_iterator slot_map<TType, TIndexType>::begin() const
 {
 	return m_Data.cbegin();
 }
@@ -154,7 +173,7 @@ slot_map::const_iterator slot_map<TType, TIndexType>::begin() const
 // slot_map::cbegin
 //
 template <class TType, class TIndexType >
-slot_map::const_iterator slot_map<TType, TIndexType>::cbegin() const
+typename slot_map<TType, TIndexType>::const_iterator slot_map<TType, TIndexType>::cbegin() const
 {
 	return m_Data.cbegin();
 }
@@ -163,7 +182,7 @@ slot_map::const_iterator slot_map<TType, TIndexType>::cbegin() const
 // slot_map::end
 //
 template <class TType, class TIndexType >
-slot_map::iterator slot_map<TType, TIndexType>::end()
+typename slot_map<TType, TIndexType>::iterator slot_map<TType, TIndexType>::end()
 {
 	return m_Data.end();
 }
@@ -172,7 +191,7 @@ slot_map::iterator slot_map<TType, TIndexType>::end()
 // slot_map::end
 //
 template <class TType, class TIndexType >
-slot_map::const_iterator slot_map<TType, TIndexType>::end() const
+typename slot_map<TType, TIndexType>::const_iterator slot_map<TType, TIndexType>::end() const
 {
 	return m_Data.cend();
 }
@@ -181,7 +200,7 @@ slot_map::const_iterator slot_map<TType, TIndexType>::end() const
 // slot_map::cend
 //
 template <class TType, class TIndexType >
-slot_map::const_iterator slot_map<TType, TIndexType>::cend() const
+typename slot_map<TType, TIndexType>::const_iterator slot_map<TType, TIndexType>::cend() const
 {
 	return m_Data.cend();
 }
@@ -190,7 +209,7 @@ slot_map::const_iterator slot_map<TType, TIndexType>::cend() const
 // slot_map::rbegin
 //
 template <class TType, class TIndexType >
-slot_map::reverse_iterator slot_map<TType, TIndexType>::rbegin()
+typename slot_map<TType, TIndexType>::reverse_iterator slot_map<TType, TIndexType>::rbegin()
 {
 	return m_Data.rbegin();
 }
@@ -199,7 +218,7 @@ slot_map::reverse_iterator slot_map<TType, TIndexType>::rbegin()
 // slot_map::rbegin
 //
 template <class TType, class TIndexType >
-slot_map::const_reverse_iterator slot_map<TType, TIndexType>::rbegin() const
+typename slot_map<TType, TIndexType>::const_reverse_iterator slot_map<TType, TIndexType>::rbegin() const
 {
 	return m_Data.crbegin();
 }
@@ -208,7 +227,7 @@ slot_map::const_reverse_iterator slot_map<TType, TIndexType>::rbegin() const
 // slot_map::crbegin
 //
 template <class TType, class TIndexType >
-slot_map::const_reverse_iterator slot_map<TType, TIndexType>::crbegin() const
+typename slot_map<TType, TIndexType>::const_reverse_iterator slot_map<TType, TIndexType>::crbegin() const
 {
 	return m_Data.crbegin();
 }
@@ -217,7 +236,7 @@ slot_map::const_reverse_iterator slot_map<TType, TIndexType>::crbegin() const
 // slot_map::end
 //
 template <class TType, class TIndexType >
-slot_map::reverse_iterator slot_map<TType, TIndexType>::rend()
+typename slot_map<TType, TIndexType>::reverse_iterator slot_map<TType, TIndexType>::rend()
 {
 	return m_Data.rend();
 }
@@ -226,7 +245,7 @@ slot_map::reverse_iterator slot_map<TType, TIndexType>::rend()
 // slot_map::rend
 //
 template <class TType, class TIndexType >
-slot_map::const_reverse_iterator slot_map<TType, TIndexType>::rend() const
+typename slot_map<TType, TIndexType>::const_reverse_iterator slot_map<TType, TIndexType>::rend() const
 {
 	return m_Data.crend();
 }
@@ -235,7 +254,7 @@ slot_map::const_reverse_iterator slot_map<TType, TIndexType>::rend() const
 // slot_map::crend
 //
 template <class TType, class TIndexType >
-slot_map::const_reverse_iterator slot_map<TType, TIndexType>::crend() const
+typename slot_map<TType, TIndexType>::const_reverse_iterator slot_map<TType, TIndexType>::crend() const
 {
 	return m_Data.crend();
 }
@@ -257,7 +276,7 @@ bool slot_map<TType, TIndexType>::empty() const
 // slot_map::size
 //
 template <class TType, class TIndexType>
-slot_map::size_type slot_map<TType, TIndexType>::size() const
+typename slot_map<TType, TIndexType>::size_type slot_map<TType, TIndexType>::size() const
 {
 	return m_Data.size();
 }
@@ -266,7 +285,7 @@ slot_map::size_type slot_map<TType, TIndexType>::size() const
 // slot_map::max_size
 //
 template <class TType, class TIndexType>
-slot_map::size_type slot_map<TType, TIndexType>::max_size() const
+typename slot_map<TType, TIndexType>::size_type slot_map<TType, TIndexType>::max_size() const
 {
 	return s_InvalidIndex - 1;
 }
@@ -275,7 +294,7 @@ slot_map::size_type slot_map<TType, TIndexType>::max_size() const
 // slot_map::size
 //
 template <class TType, class TIndexType>
-slot_map::size_type slot_map<TType, TIndexType>::capacity() const
+typename slot_map<TType, TIndexType>::size_type slot_map<TType, TIndexType>::capacity() const
 {
 	return static_cast<size_type>(std::max(m_Data.capacity(), static_cast<std::vector<TType>::size_type>(max_size())));
 }
@@ -284,12 +303,55 @@ slot_map::size_type slot_map<TType, TIndexType>::capacity() const
 // functionality
 //////////////////
 
+//--------------------
+// slot_map::insert
+//
+template <class TType, class TIndexType>
+std::pair<slot_map::iterator, slot_map::id_type> slot_map<TType, TIndexType>::insert(TType const& value)
+{
+	return insert_impl(value);
+}
+
+//--------------------
+// slot_map::insert
+//
+template <class TType, class TIndexType>
+std::pair<slot_map::iterator, slot_map::id_type> slot_map<TType, TIndexType>::insert(TType&& moving_value)
+{
+	return insert_impl(std::move(value));
+}
 
 //--------------------
 // slot_map::erase
 //
 template <class TType, class TIndexType>
-slot_map::iterator slot_map<TType, TIndexType>::erase(iterator const it)
+void slot_map<TType, TIndexType>::erase(id_type const id)
+{
+	ET_ASSERT(is_valid(id));
+	if (size() <= static_cast<index_type>(1))
+	{
+		clear();
+		return;
+	}
+
+	iterator const it = get_iterator(id);
+	iterator const last = std::prev(end());
+	m_Indices[iterator_id(last)] = m_Indices[id];
+
+	std::iter_swap(it, last);
+	m_Data.pop_back();
+	m_IndexPositions[m_Indices[id]] = m_IndexPositions[m_IndexPositions.size() - 1];
+	m_IndexPositions.pop_back();
+
+	m_Indices[id] = m_FreeHead;
+	m_FreeHead = id;
+}
+
+//--------------------
+// slot_map::erase
+//
+template <class TType, class TIndexType>
+typename slot_map<TType, TIndexType>::iterator slot_map<TType, TIndexType>::erase(iterator const it)
 {
 	iterator const next = std::next(it);
 	erase(iterator_id(it));
@@ -300,7 +362,7 @@ slot_map::iterator slot_map<TType, TIndexType>::erase(iterator const it)
 // slot_map::erase
 //
 template <class TType, class TIndexType>
-slot_map::const_iterator slot_map<TType, TIndexType>::erase(const_iterator const it)
+typename slot_map<TType, TIndexType>::const_iterator slot_map<TType, TIndexType>::erase(const_iterator const it)
 {
 	const_iterator const next = std::next(it);
 	erase(iterator_id(it));
@@ -340,6 +402,37 @@ void slot_map<TType, TIndexType>::reserve(size_type const new_cap)
 	m_Data.reserve(static_cast<std::vector<TType>::size_type>(new_cap));
 	m_Indices.reserve(static_cast<std::vector<index_type>::size_type>(new_cap));
 	m_IndexPositions.reserve(static_cast<std::vector<index_type>::size_type>(new_cap));
+}
+
+
+// utility
+///////////
+
+//------------------------
+// slot_map::insert_impl
+//
+template <class TType, class TIndexType>
+std::pair<slot_map::iterator, slot_map::id_type> slot_map<TType, TIndexType>::insert_impl(TType&& value)
+{
+	index_type const dataPos = static_cast<index_type>(m_Data.size());
+
+	index_type indexPos;
+	if (m_FreeHead == s_InvalidIndex)
+	{
+		indexPos = static_cast<index_type>(m_Indices.size());
+		m_Indices.push_back(dataPos);
+	}
+	else
+	{
+		indexPos = m_FreeHead;
+		m_FreeHead = m_Indices[m_FreeHead];
+		m_Indices[indexPos] = dataPos;
+	}
+
+	m_Data.push_back(std::forward(<TType>(value)));
+	m_IndexPositions.push_back(indexPos);
+
+	return std::make_pair(get_iterator(indexPos), indexPos);
 }
 
 

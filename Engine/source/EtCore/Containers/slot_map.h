@@ -48,11 +48,11 @@ public:
 	using pointer = TType*;
 	using const_pointer = TType const*;
 
-	using iterator = std::vector<TType>::iterator;
-	using const_iterator = std::vector<TType>::const_iterator;
-	using reverse_iterator = std::vector<TType>::reverse_iterator;
-	using const_reverse_iterator = std::vector<TType>::const_reverse_iterator;
-	using differnce_type = std::vector<TType>::difference_type;
+	using iterator = typename std::vector<TType>::iterator;
+	using const_iterator = typename std::vector<TType>::const_iterator;
+	using reverse_iterator = typename std::vector<TType>::reverse_iterator;
+	using const_reverse_iterator = typename std::vector<TType>::const_reverse_iterator;
+	using difference_type = typename std::vector<TType>::difference_type;
 
 private:
 	static constexpr index_type s_InvalidIndex = std::numeric_limits<index_type>::max();
@@ -85,6 +85,10 @@ public:
 	// convert an iterator to an ID
 	id_type iterator_id(iterator const it) const;
 	id_type iterator_id(const_iterator const it) const;
+
+	// convert an ID to an iterator
+	iterator get_iterator(id_type const id);
+	const_iterator get_iterator(id_type const id) const;
 
 	// check if an ID is valid
 	bool is_valid(id_type const id) const;
@@ -148,10 +152,14 @@ public:
 	// ensure the maps internal arrays have enough space to keep adding elements without future reallocation
 	void reserve(size_type const new_cap);
 
+	// utility
+	//---------
+private:
+	std::pair<iterator, id_type> insert_impl(TType&& value);
+
 	// Data
 	///////
 
-private:
 	std::vector<TType> m_Data;
 	std::vector<index_type> m_Indices;
 	std::vector<index_type> m_IndexPositions;
