@@ -64,62 +64,88 @@ public:
 	slot_map(slot_map const& copy) = default;
 	slot_map(slot_map&& moving);
 
-	slot_map& operator=(slot_map const& rhs);
+	slot_map& operator=(slot_map const& rhs) = default;
 	slot_map& operator=(slot_map&& moving);
 
 	// accessors
 	//-----------
+
+	// access to data by ID
 	reference operator[](id_type const id);
 	const_reference operator[](id_type const id) const;
 
-	pointer get(id_type const id);
-	const_pointer get(id_type const id) const;
+	// return a pointer to the data or nullptr for an invalid ID
+	pointer at(id_type const id);
+	const_pointer at(id_type const id) const;
 
+	// pointer to the first element being stored
 	pointer data();
 	const_pointer data() const;
 
+	// convert an iterator to an ID
 	id_type iterator_id(iterator const it) const;
 	id_type iterator_id(const_iterator const it) const;
 
+	// check if an ID is valid
+	bool is_valid(id_type const id) const;
+
 	// iterators
 	//-----------
+
+	// iterator pointing to the first element in data
 	iterator begin();
-	iterator end();
-
 	const_iterator begin() const;
-	const_iterator end() const;
-
 	const_iterator cbegin() const;
+
+	// "invalid" iterator after the last element in data
+	iterator end();
+	const_iterator end() const;
 	const_iterator cend() const;
 
+	// iterator pointing to the first element in reversed data
 	reverse_iterator rbegin();
-	reverse_iterator rend();
-
 	const_reverse_iterator rbegin() const;
-	const_reverse_iterator rend() const;
-
 	const_reverse_iterator crbegin() const;
+
+	// "invalid" iterator pointing after the last element in reversed data
+	reverse_iterator rend();
+	const_reverse_iterator rend() const;
 	const_reverse_iterator crend() const;
 
 	// capacity
 	//----------
-	bool empty() const;
-	size_type size() const;
-	size_type max_size() const;
-	size_type capacity() const;
+
+	// check if any data is stored
+	bool empty() const; 
+
+	// count of data elements (not indices)
+	size_type size() const; 
+
+	// maximum amount of elements this structure can contain
+	size_type max_size() const; 
+
+	// amount of data that can currently be contained without reallocating the data
+	size_type capacity() const; 
 
 	// functionality
 	//---------------
+	
+	// add an element to the map return a pair of an iterator pointing to the element and the elements new ID
 	std::pair<iterator, id_type> insert(TType const& value);
 	std::pair<iterator, id_type> insert(TType&& moving_value);
-	
+
+	// remove an element from the map
 	void erase(id_type const id);
-	iterator erase(iterator const it);
+	iterator erase(iterator const it); // return an iterator to the next element
 	const_iterator erase(const_iterator const it);
+
+	// remove all elements from the map
 	void clear();
 
+	// swap the contents of the map with another maps contents
 	void swap(slot_map& other);
 
+	// ensure the maps internal arrays have enough space to keep adding elements without future reallocation
 	void reserve(size_type const new_cap);
 
 	// Data
@@ -135,3 +161,6 @@ private:
 
 
 } // namespace core
+
+
+#include "slot_map.inl"
