@@ -1,8 +1,39 @@
 #pragma once
 #include <typeinfo>
+#include <EtCore/Containers/slot_map.h>
+
 
 class TransformComponent;
 class DirectionalShadowData;
+
+namespace render {
+
+
+	//struct PointLight
+	//{
+	//	vec3 m_Color;
+	//	float m_Brightness;
+	//	vec3 m_Position;
+	//	float m_Radius;
+	//};
+	//struct ShadedDirectionalLight
+	//{
+	//	vec3 m_Color;
+	//	float m_Brightness;
+	//	vec3 m_Direction;
+	//	DirectionalShadowData m_ShadowData;
+	//};
+	struct DirectionalLight
+	{
+		vec3 m_Color;
+		float m_Brightness;
+		vec3 m_Direction;
+	};
+
+	typedef core::slot_map<DirectionalLight>::id_type T_DirLightId;
+
+
+} // namespace render
 
 class Light
 {
@@ -17,6 +48,9 @@ public:
 	vec3 GetColor() { return color; }
 	void SetBrightness(float b) { brightness = b; m_Update = true; }
 	float GetBrightness() { return brightness; }
+
+	virtual void AddToRenderScene(TransformComponent const* const transf) = 0;
+	virtual void RemoveFromRenderScene() = 0;
 
 	//Shadow stuff
 	virtual void SetShadowEnabled( bool enabled ) { UNUSED( enabled ); }
@@ -42,6 +76,9 @@ public:
 
 	void DrawVolume(TransformComponent* pTransform);
 
+	void AddToRenderScene(TransformComponent const* const transf) override { UNUSED(transf); }
+	void RemoveFromRenderScene() override {}
+
 protected:
 	float radius;
 };
@@ -62,7 +99,11 @@ public:
 	virtual void SetShadowEnabled(bool enabled);
 	virtual bool IsShadowEnabled() { return m_pShadowData != nullptr; }
 	virtual void GenerateShadow(TransformComponent* pTransform);
+
+	void AddToRenderScene(TransformComponent const* const transf) override;
+	void RemoveFromRenderScene() override;
 protected:
 
 	DirectionalShadowData* m_pShadowData = nullptr;
+	render::T_DirLightId m_LightId;
 };

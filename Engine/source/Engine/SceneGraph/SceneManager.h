@@ -7,6 +7,7 @@
 #include <EtCore/UpdateCycle/Tickable.h>
 
 #include <Engine/Base/TickOrder.h>
+#include <GraphicsHelper/RenderScene.h>
 
 
 //Forward Declaration
@@ -23,8 +24,10 @@ public:
 	void SetActiveGameScene(std::string sceneName);
 	void NextScene();
 	void PreviousScene();
+
 	AbstractScene* GetActiveScene() const { return m_ActiveScene; }
 	AbstractScene* GetNewActiveScene() const { return m_NewActiveScene; }
+	render::Scene& GetRenderScene() { return m_RenderScene; }
 
 protected:
 	void OnTick() override;
@@ -39,6 +42,8 @@ private:
 	std::vector<AbstractScene*> m_pSceneVec;
 	bool m_IsInitialized = false;
 	AbstractScene* m_ActiveScene = nullptr, *m_NewActiveScene = nullptr;
+
+	render::Scene m_RenderScene;
 
 	bool m_SplashFrame = false;
 };

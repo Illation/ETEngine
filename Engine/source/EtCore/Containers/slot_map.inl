@@ -278,7 +278,7 @@ bool slot_map<TType, TIndexType>::empty() const
 template <class TType, class TIndexType>
 typename slot_map<TType, TIndexType>::size_type slot_map<TType, TIndexType>::size() const
 {
-	return m_Data.size();
+	return static_cast<size_type>(m_Data.size());
 }
 
 //--------------------
@@ -302,26 +302,6 @@ typename slot_map<TType, TIndexType>::size_type slot_map<TType, TIndexType>::cap
 
 // functionality
 //////////////////
-
-//--------------------
-// slot_map::insert
-//
-template <class TType, class TIndexType>
-std::pair<typename slot_map<TType, TIndexType>::iterator, typename slot_map<TType, TIndexType>::id_type> 
-	slot_map<TType, TIndexType>::insert(TType const& value)
-{
-	return insert_impl(value);
-}
-
-//--------------------
-// slot_map::insert
-//
-template <class TType, class TIndexType>
-std::pair<typename slot_map<TType, TIndexType>::iterator, typename slot_map<TType, TIndexType>::id_type> 
-	slot_map<TType, TIndexType>::insert(TType&& moving_value)
-{
-	return insert_impl(std::move(moving_value));
-}
 
 //--------------------
 // slot_map::erase
@@ -413,29 +393,29 @@ void slot_map<TType, TIndexType>::reserve(size_type const new_cap)
 //------------------------
 // slot_map::insert_impl
 //
-template <class TType, class TIndexType>
-std::pair<slot_map::iterator, slot_map::id_type> slot_map<TType, TIndexType>::insert_impl(TType&& value)
-{
-	index_type const dataPos = static_cast<index_type>(m_Data.size());
-
-	index_type indexPos;
-	if (m_FreeHead == s_InvalidIndex)
-	{
-		indexPos = static_cast<index_type>(m_Indices.size());
-		m_Indices.push_back(dataPos);
-	}
-	else
-	{
-		indexPos = m_FreeHead;
-		m_FreeHead = m_Indices[m_FreeHead];
-		m_Indices[indexPos] = dataPos;
-	}
-
-	m_Data.push_back(std::forward(<TType>(value)));
-	m_IndexPositions.push_back(indexPos);
-
-	return std::make_pair(get_iterator(indexPos), indexPos);
-}
+//template <class TType, class TIndexType>
+//std::pair<slot_map::iterator, typename slot_map<TType, TIndexType>::id_type> slot_map<TType, TIndexType>::insert_impl(TType&& value)
+//{
+//	index_type const dataPos = static_cast<index_type>(m_Data.size());
+//
+//	index_type indexPos;
+//	if (m_FreeHead == s_InvalidIndex)
+//	{
+//		indexPos = static_cast<index_type>(m_Indices.size());
+//		m_Indices.push_back(dataPos);
+//	}
+//	else
+//	{
+//		indexPos = m_FreeHead;
+//		m_FreeHead = m_Indices[m_FreeHead];
+//		m_Indices[indexPos] = dataPos;
+//	}
+//
+//	m_Data.push_back(std::forward(<TType>(value)));
+//	m_IndexPositions.push_back(indexPos);
+//
+//	return std::make_pair(get_iterator(indexPos), indexPos);
+//}
 
 
 } // namespace core

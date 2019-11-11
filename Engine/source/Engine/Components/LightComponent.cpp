@@ -11,11 +11,13 @@ LightComponent::LightComponent(Light* light):
 }
 LightComponent::~LightComponent()
 {
+	m_Light->RemoveFromRenderScene();
 	SafeDelete(m_Light);
 }
 
 void LightComponent::Initialize()
 {
+	m_Light->AddToRenderScene(GetTransform());
 }
 void LightComponent::Update()
 {

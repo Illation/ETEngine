@@ -12,6 +12,7 @@
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/SceneGraph/Entity.h>
 #include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneGraph/SceneManager.h>
 
 
 //=================
@@ -27,6 +28,14 @@
 ModelComponent::ModelComponent(T_Hash const assetId)
 	: m_AssetId(assetId)
 { }
+
+//---------------------------------
+// ModelComponent::d-tor
+//
+ModelComponent::~ModelComponent()
+{
+	SceneManager::GetInstance()->GetRenderScene().RemoveInstance(m_InstanceId);
+}
 
 //---------------------------------
 // ModelComponent::SetMaterial
@@ -48,6 +57,7 @@ void ModelComponent::Initialize()
 {
 	m_Mesh = ResourceManager::Instance()->GetAssetData<MeshData>(m_AssetId);
 	UpdateMaterial();
+	m_InstanceId = SceneManager::GetInstance()->GetRenderScene().AddInstance(m_Material, m_Mesh, GetTransform()->GetNodeId());
 }
 
 //---------------------------------

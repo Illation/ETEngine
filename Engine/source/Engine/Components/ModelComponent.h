@@ -3,6 +3,8 @@
 
 #include <EtCore/Content/AssetPointer.h>
 
+#include <Engine/GraphicsHelper/RenderScene.h>
+
 
 class Material;
 class MeshData;
@@ -27,7 +29,7 @@ public:
 	// construct destruct
 	//--------------------
 	ModelComponent(T_Hash const assetId);
-	virtual ~ModelComponent() = default;
+	virtual ~ModelComponent();
 
 private:
 	ModelComponent(const ModelComponent& yRef);
@@ -64,5 +66,7 @@ private:
 	bool m_MaterialSet = false;
 
 	CullMode m_CullMode = CullMode::SPHERE;
+
+	render::Scene::T_InstanceId m_InstanceId;
 };
 

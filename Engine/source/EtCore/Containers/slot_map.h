@@ -135,8 +135,8 @@ public:
 	//---------------
 	
 	// add an element to the map return a pair of an iterator pointing to the element and the elements new ID
-	std::pair<iterator, id_type> insert(TType const& value);
-	std::pair<iterator, id_type> insert(TType&& moving_value);
+	std::pair<iterator, id_type> insert(TType const& value) { return insert_impl(value); }
+	std::pair<iterator, id_type> insert(TType&& moving_value) { return insert_impl(std::move(moving_value)); }
 
 	// remove an element from the map
 	void erase(id_type const id);
@@ -155,7 +155,28 @@ public:
 	// utility
 	//---------
 private:
-	std::pair<iterator, id_type> insert_impl(TType&& value);
+	std::pair<iterator, id_type> insert_impl(TType&& value)
+	{
+		index_type const dataPos = static_cast<index_type>(m_Data.size());
+
+		index_type indexPos;
+		if (m_FreeHead == s_InvalidIndex)
+		{
+			indexPos = static_cast<index_type>(m_Indices.size());
+			m_Indices.push_back(dataPos);
+		}
+		else
+		{
+			indexPos = m_FreeHead;
+			m_FreeHead = m_Indices[m_FreeHead];
+			m_Indices[indexPos] = dataPos;
+		}
+
+		m_Data.push_back(std::forward<TType>(value));
+		m_IndexPositions.push_back(indexPos);
+
+		return std::make_pair(get_iterator(indexPos), indexPos);
+	}
 
 	// Data
 	///////

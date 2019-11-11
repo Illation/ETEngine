@@ -1,5 +1,6 @@
 #pragma once
 #include "AbstractComponent.h"
+#include <Engine/GraphicsHelper/RenderSceneFwd.h>
 
 class TransformComponent : public AbstractComponent
 {
@@ -33,6 +34,8 @@ public:
 	const vec3& GetUp() const { return m_Up; }
 	const vec3& GetRight() const { return m_Right; }
 
+	render::T_NodeId GetNodeId() const { return m_NodeId; }
+
 protected:
 
 	virtual void Initialize();
@@ -63,6 +66,8 @@ private:
 	quat m_Rotation = quat(),
 		m_WorldRotation = quat();
 	mat4 m_World;
+
+	render::T_NodeId m_NodeId;
 
 private:
 	// -------------------------

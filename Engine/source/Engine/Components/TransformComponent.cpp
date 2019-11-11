@@ -5,6 +5,7 @@
 #include "RigidBodyComponent.h"
 
 #include <Engine/SceneGraph/Entity.h>
+#include <Engine/SceneGraph/SceneManager.h>
 
 
 TransformComponent::TransformComponent()
@@ -15,11 +16,13 @@ TransformComponent::TransformComponent()
 
 TransformComponent::~TransformComponent()
 {
+	SceneManager::GetInstance()->GetRenderScene().RemoveNode(m_NodeId);
 }
 
 void TransformComponent::Initialize()
 {
 	UpdateTransforms();
+	m_NodeId = SceneManager::GetInstance()->GetRenderScene().AddNode(m_World);
 }
 
 void TransformComponent::Update()
@@ -81,6 +84,7 @@ void TransformComponent::UpdateTransforms()
 	m_Right = m_WorldRotation*vec3::RIGHT;
 	m_Up = etm::cross(m_Forward, m_Right);
 
+	SceneManager::GetInstance()->GetRenderScene().UpdateNode(m_NodeId, m_World);
 	m_IsTransformChanged = TransformChanged::NONE;
 }
 

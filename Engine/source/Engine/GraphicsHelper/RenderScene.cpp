@@ -22,7 +22,7 @@ namespace render {
 //
 T_NodeId Scene::AddNode(mat4 const& transform)
 {
-	return m_Nodes.insert(transform).second;
+	return m_Nodes.insert(mat4(transform)).second;
 }
 
 //----------------------
@@ -50,7 +50,7 @@ void Scene::RemoveNode(T_NodeId const node)
 //
 // Adds a drawable mesh to the scene
 //
-Scene::T_InstanceId Scene::AddInstance(Material* const material, MeshData* const mesh, T_NodeId const node)
+Scene::T_InstanceId Scene::AddInstance(Material* const material, AssetPtr<MeshData> const mesh, T_NodeId const node)
 {
 	AssetPtr<ShaderData> const shader = material->GetShader();
 	
@@ -143,7 +143,46 @@ Scene::T_InstanceId Scene::AddInstance(Material* const material, MeshData* const
 //
 void Scene::RemoveInstance(T_InstanceId const instance)
 {
-	// #todo
+	MeshInstance const& inst = m_Instances[instance];
+
+	MaterialCollection& collection = m_OpaqueRenderables[inst.m_Collection];
+	MaterialCollection::MaterialInstance& material = collection.m_Materials[inst.m_Material];
+	MaterialCollection::Mesh& mesh = material.m_Meshes[inst.m_Mesh];
+	if (mesh.m_Instances.size() == 1u)
+	{
+		if (material.m_Meshes.size() == 1u)
+		{
+			if (collection.m_Materials.size() == 1u)
+			{
+				if (m_OpaqueRenderables.size() == 1u)
+				{
+					m_OpaqueRenderables.clear();
+				}
+				else
+				{
+					collection.m_Materials.erase(inst.m_Material);
+				}
+			}
+			else
+			{
+				collection.m_Materials.erase(inst.m_Material);
+			}
+		}
+		else
+		{
+			material.m_Meshes.erase(inst.m_Mesh);
+		}
+	}
+	else
+	{
+		auto foundTransform = std::find(mesh.m_Instances.begin(), mesh.m_Instances.end(), inst.m_Transform);
+		ET_ASSERT(foundTransform != mesh.m_Instances.cend());
+
+		std::iter_swap(foundTransform, std::prev(mesh.m_Instances.end()));
+		mesh.m_Instances.pop_back();
+	}
+
+	m_Instances.erase(instance);
 }
 
 //----------------------
@@ -151,7 +190,7 @@ void Scene::RemoveInstance(T_InstanceId const instance)
 //
 T_DirLightId Scene::AddDirectionalLight(DirectionalLight const& light)
 {
-	return m_DirectionalLights.insert(light).second;
+	return m_DirectionalLights.insert(DirectionalLight(light)).second;
 }
 
 //----------------------
