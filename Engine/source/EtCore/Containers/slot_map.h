@@ -54,12 +54,12 @@ public:
 	using const_reverse_iterator = typename std::vector<TType>::const_reverse_iterator;
 	using difference_type = typename std::vector<TType>::difference_type;
 
-private:
+//private:
 	static constexpr index_type s_InvalidIndex = std::numeric_limits<index_type>::max();
 
 	// construct destruct
 	//--------------------
-public:
+//public:
 	slot_map() = default;
 	slot_map(slot_map const& copy) = default;
 	slot_map(slot_map&& moving);

@@ -307,7 +307,8 @@ typename slot_map<TType, TIndexType>::size_type slot_map<TType, TIndexType>::cap
 // slot_map::insert
 //
 template <class TType, class TIndexType>
-std::pair<slot_map::iterator, slot_map::id_type> slot_map<TType, TIndexType>::insert(TType const& value)
+std::pair<typename slot_map<TType, TIndexType>::iterator, typename slot_map<TType, TIndexType>::id_type> 
+	slot_map<TType, TIndexType>::insert(TType const& value)
 {
 	return insert_impl(value);
 }
@@ -316,9 +317,10 @@ std::pair<slot_map::iterator, slot_map::id_type> slot_map<TType, TIndexType>::in
 // slot_map::insert
 //
 template <class TType, class TIndexType>
-std::pair<slot_map::iterator, slot_map::id_type> slot_map<TType, TIndexType>::insert(TType&& moving_value)
+std::pair<typename slot_map<TType, TIndexType>::iterator, typename slot_map<TType, TIndexType>::id_type> 
+	slot_map<TType, TIndexType>::insert(TType&& moving_value)
 {
-	return insert_impl(std::move(value));
+	return insert_impl(std::move(moving_value));
 }
 
 //--------------------

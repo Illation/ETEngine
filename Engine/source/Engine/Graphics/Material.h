@@ -20,6 +20,7 @@ public:
 	T_VertexFlags GetLayoutFlags() const { return m_LayoutFlags; }
 	std::vector<int32> const& GetAttributeLocations() const { return m_AttributeLocations; }
 	bool IsForwardRendered() const { return m_DrawForward; }
+	AssetPtr<ShaderData> GetShader() const { return m_Shader; }
 
 protected:
 	virtual void LoadTextures() = 0;
