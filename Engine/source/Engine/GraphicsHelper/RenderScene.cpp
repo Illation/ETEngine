@@ -1,9 +1,12 @@
 #include "stdafx.h"
 #include "RenderScene.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/Mesh.h>
 #include <Engine/Graphics/Material.h>
+#include <Engine/Graphics/EnvironmentMap.h>
 
 
 
@@ -115,7 +118,9 @@ Scene::T_InstanceId Scene::AddInstance(Material* const material, AssetPtr<MeshDa
 		meshId = newMesh.second;
 
 		foundMeshIt->m_VAO = vao;
-		foundMeshIt->m_BoundingVolume = mesh->GetBoundingSphere();
+		foundMeshIt->m_IndexCount = static_cast<uint32>(mesh->GetIndexCount());
+		foundMeshIt->m_IndexDataType = mesh->GetIndexDataType();
+		foundMeshIt->m_BoundingVolume = mesh->GetBoundingSphere(); 
 	}
 	else
 	{
@@ -207,6 +212,21 @@ void Scene::UpdateDirectionalLight(T_DirLightId const lightId, DirectionalLight 
 void Scene::RemoveDirectionalLight(T_DirLightId const lightId)
 {
 	m_DirectionalLights.erase(lightId);
+}
+
+//----------------------
+// Scene::SetSkyboxMap
+//
+void Scene::SetSkyboxMap(T_Hash const assetIdEnvMap)
+{
+	if (assetIdEnvMap == 0u)
+	{
+		m_Skybox.m_EnvironmentMap = nullptr;
+	}
+	else
+	{
+		m_Skybox.m_EnvironmentMap = ResourceManager::Instance()->GetAssetData<EnvironmentMap>(assetIdEnvMap);
+	}
 }
 
 

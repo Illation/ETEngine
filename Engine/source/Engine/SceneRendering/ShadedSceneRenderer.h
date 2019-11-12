@@ -1,6 +1,7 @@
 #pragma once
-#include "PostProcessingRenderer.h"
 #include "Gbuffer.h"
+#include "ScreenSpaceReflections.h"
+#include "PostProcessingRenderer.h"
 
 #include <Engine/Graphics/Camera.h>
 #include <Engine/GraphicsContext/ViewportRenderer.h>
@@ -19,7 +20,11 @@ class Scene;
 //
 class ShadedSceneRenderer final : public I_ViewportRenderer
 {
+	// GlobalAccess
+	//---------------
 public:
+	static ShadedSceneRenderer* GetCurrent();
+
 	// construct destruct
 	//--------------------
 	ShadedSceneRenderer(render::Scene const* const renderScene);
@@ -40,7 +45,12 @@ protected:
 	//--------------
 public:
 	Camera& GetCamera() { return m_Camera; }
-	Gbuffer* GetGBuffer() { return &m_GBuffer; }
+	Camera const& GetCamera() const { return m_Camera; }
+
+	Gbuffer& GetGBuffer() { return m_GBuffer; }
+	Gbuffer const& GetGBuffer() const { return m_GBuffer; }
+
+	render::Scene const* GetScene() const { return m_RenderScene; }
 
 	// Data
 	///////
@@ -58,7 +68,10 @@ private:
 	T_FbLoc m_TargetFb = 0u;
 
 	Gbuffer m_GBuffer;
+	ScreenSpaceReflections m_SSR;
 	PostProcessingRenderer m_PostProcessing;
+
+	AssetPtr<ShaderData> m_SkyboxShader;
 };
 
 

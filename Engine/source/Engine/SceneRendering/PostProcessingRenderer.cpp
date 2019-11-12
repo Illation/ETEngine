@@ -223,7 +223,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 	m_pPostProcShader->Upload("bloomMult"_hash, settings.bloomMult);
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 
-	SceneRenderer::GetCurrent()->DrawOverlays(currentFb);//Make sure text and sprites get antialiased
+	//SceneRenderer::GetCurrent()->DrawOverlays(currentFb);//Make sure text and sprites get antialiased
 
 	//FXAA
 	if (graphicsSettings.UseFXAA)

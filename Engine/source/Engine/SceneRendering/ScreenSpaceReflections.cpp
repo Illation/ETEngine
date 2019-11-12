@@ -11,7 +11,7 @@
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/ShadedSceneRenderer.h>
 
 
 ScreenSpaceReflections::ScreenSpaceReflections()
@@ -69,7 +69,7 @@ void ScreenSpaceReflections::Draw()
 	m_pShader->Upload("texGBufferA"_hash, 0);
 	m_pShader->Upload("texGBufferB"_hash, 1);
 	m_pShader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = SceneRenderer::GetCurrent()->GetGBuffer()->GetTextures();
+	auto gbufferTex = render::ShadedSceneRenderer::GetCurrent()->GetGBuffer().GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());
@@ -77,9 +77,13 @@ void ScreenSpaceReflections::Draw()
 	m_pShader->Upload("uFinalImage"_hash, 3);
 	api->LazyBindTexture(3, E_TextureType::Texture2D, m_CollectTex->GetHandle());
 	//for position reconstruction
-	m_pShader->Upload("K"_hash, sinf(TIME->GetTime()) * 20 + 25);
+	BaseContext* const context = ContextManager::GetInstance()->GetActiveContext();
+	if (context != nullptr)
+	{
+		m_pShader->Upload("K"_hash, sinf(context->time->GetTime()) * 20 + 25);
+	}
 
-	Camera const& cam = SceneRenderer::GetCurrent()->GetCamera();
+	Camera const& cam = render::ShadedSceneRenderer::GetCurrent()->GetCamera();
 
 	m_pShader->Upload("projectionA"_hash, cam.GetDepthProjA());
 	m_pShader->Upload("projectionB"_hash, cam.GetDepthProjB());

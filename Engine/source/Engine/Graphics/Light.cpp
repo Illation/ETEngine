@@ -54,7 +54,7 @@ void DirectionalLight::AddToRenderScene(TransformComponent const* const transf)
 {
 	if (m_pShadowData != nullptr)
 	{
-		return;
+		//return;
 	}
 
 	render::DirectionalLight renderLight;

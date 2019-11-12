@@ -12,6 +12,7 @@
 #include <Engine/SceneRendering/Gbuffer.h>
 #include <Engine/SceneRendering/ShadowRenderer.h>
 #include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/ShadedSceneRenderer.h>
 
 
 PointLightVolume::PointLightVolume()
@@ -85,14 +86,14 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 
 	m_pShader->Upload("texGBufferB"_hash, 1);
 	m_pShader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = SceneRenderer::GetCurrent()->GetGBuffer()->GetTextures();
+	auto gbufferTex = render::ShadedSceneRenderer::GetCurrent()->GetGBuffer().GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		api->LazyBindTexture(i, gbufferTex[i]->GetTargetType(), gbufferTex[i]->GetHandle());
 	}
 
 	//for position reconstruction
-	m_pShader->Upload("viewProjInv"_hash, SceneRenderer::GetCurrent()->GetCamera().GetStatViewProjInv());
+	m_pShader->Upload("viewProjInv"_hash, render::ShadedSceneRenderer::GetCurrent()->GetCamera().GetStatViewProjInv());
 
 	m_pShader->Upload("Direction"_hash, dir);
 	m_pShader->Upload("Color"_hash, col);

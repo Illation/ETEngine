@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RenderSceneFwd.h"
+#include "Skybox.h"
 
 #include <Engine/Graphics/PostProcessingSettings.h>
 
@@ -16,13 +17,6 @@ namespace render {
 //	Material* m_Material;
 //	T_NodeId m_Transform;
 //	::Planet m_Planet;
-//};
-
-//struct Skybox
-//{
-//	T_ArrayLoc m_VAO;
-//	AssetPtr<ShaderData> m_Shader;
-//	float m_Roughness;
 //};
 
 //struct Atmosphere
@@ -78,8 +72,17 @@ public:
 	void UpdateDirectionalLight(T_DirLightId const lightId, DirectionalLight const& value);
 	void RemoveDirectionalLight(T_DirLightId const lightId);
 
+	void SetSkyboxMap(T_Hash const assetIdEnvMap);
+	void SetSkyboxRoughness(float const value) { m_Skybox.m_Roughness = value; }
+
 	// accessors
 	//-------------
+	core::slot_map<mat4> const& GetNodes() const { return m_Nodes; }
+	core::slot_map<MaterialCollection> const& GetOpaqueRenderables() const { return m_OpaqueRenderables; }
+	core::slot_map<DirectionalLight> const& GetDirectionalLights() const { return m_DirectionalLights; }
+
+	Skybox const& GetSkybox() const { return m_Skybox; }
+
 	PostProcessingSettings const& GetPostProcessingSettings() const { return m_PostProcessingSettings; }
 
 	// Data
@@ -100,7 +103,7 @@ private:
 	core::slot_map<DirectionalLight> m_DirectionalLights;
 	//core::slot_map<ShadedDirectionalLight> m_ShadedDirectional;
 
-	//Skybox m_Skybox;
+	Skybox m_Skybox;
 	//core::slot_map<MaterialCollection> m_ForwardRenderables;
 	//core::slot_map<Atmosphere> m_Atmospheres;
 

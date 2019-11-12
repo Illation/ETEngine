@@ -3,7 +3,7 @@
 
 
 class CubeMap;
-class HDRMapas;
+class EnvironmentMap;
 
 class SkyboxMaterial : public Material
 {

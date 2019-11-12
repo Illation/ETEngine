@@ -165,9 +165,7 @@ void decomposeTRS(const matrix<4, 4, T>& mat, vector<3, T>& translation, quatern
 	translation = mat[3].xyz;
 
 	//Scale
-	scaleVec.x = length(mat[0].xyz);
-	scaleVec.y = length(mat[1].xyz);
-	scaleVec.z = length(mat[2].xyz);
+	scaleVec = decomposeScale(mat);
 
 	//Rotation
 	matrix<3, 3, T> rotMat(uninitialized);
@@ -175,6 +173,18 @@ void decomposeTRS(const matrix<4, 4, T>& mat, vector<3, T>& translation, quatern
 	rotMat[1] = mat[1].xyz / scaleVec.y;
 	rotMat[2] = mat[2].xyz / scaleVec.z;
 	rotation = quat(rotMat);
+}
+
+template <class T>
+vector<3, T> decomposeScale(matrix<4, 4, T> const& mat)
+{
+	vector<3, T> result;
+
+	result.x = length(mat[0].xyz);
+	result.y = length(mat[1].xyz);
+	result.z = length(mat[2].xyz);
+
+	return result;
 }
 
 

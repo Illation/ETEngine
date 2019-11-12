@@ -14,6 +14,7 @@
 #include <Engine/SceneRendering/PostProcessingRenderer.h>
 #include <Engine/SceneRendering/TextRenderer.h>
 #include <Engine/Physics/PhysicsWorld.h>
+#include <Engine/SceneGraph/SceneManager.h>
 
 
 AbstractScene::AbstractScene(std::string name) 
@@ -24,6 +25,7 @@ AbstractScene::AbstractScene(std::string name)
 
 AbstractScene::~AbstractScene()
 {
+	SceneManager::GetInstance()->GetRenderScene().SetSkyboxMap(0u);
 	for (Entity* pEntity : m_pEntityVec)
 	{
 		SafeDelete(pEntity);
@@ -125,13 +127,13 @@ void AbstractScene::RootUpdate()
 	{
 		float r = std::min(std::max(m_pSkybox->GetRoughness() -TIME->DeltaTime(), 0.f), 1.f);
 		LOG("Roughness: " + std::to_string(r));
-		m_pSkybox->SetRoughness(r);
+		SceneManager::GetInstance()->GetRenderScene().SetSkyboxRoughness(r);
 	}
 	if (INPUT->GetKeyState(E_KbdKey::Right) == E_KeyState::Down && m_UseSkyBox)
 	{
 		float r = std::min(std::max(m_pSkybox->GetRoughness() + TIME->DeltaTime(), 0.f), 1.f);
 		LOG("Roughness: " + std::to_string(r));
-		m_pSkybox->SetRoughness(r);
+		SceneManager::GetInstance()->GetRenderScene().SetSkyboxRoughness(r);
 	}
 
 	for (Entity* pEntity : m_pEntityVec)
@@ -208,11 +210,7 @@ Entity* AbstractScene::GetEntity(T_Hash const id) const
 
 void AbstractScene::SetSkybox(T_Hash const assetId)
 {
-	m_UseSkyBox = true;
-	SafeDelete(m_pSkybox);
-	m_pSkybox = new Skybox(assetId);
-	m_pSkybox->RootInitialize();
-	m_pSkybox->SetRoughness(0.15f);
+	SceneManager::GetInstance()->GetRenderScene().SetSkyboxMap(assetId);
 }
 
 EnvironmentMap const* AbstractScene::GetEnvironmentMap() const

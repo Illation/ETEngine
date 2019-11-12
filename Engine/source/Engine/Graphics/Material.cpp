@@ -8,6 +8,7 @@
 #include <EtCore/Content/ResourceManager.h>
 
 #include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/ShadedSceneRenderer.h>
 
 
 Material::Material(std::string shaderFile) :
@@ -67,4 +68,14 @@ void Material::UploadModelOnly(mat4 matModel)
 	{
 		m_Shader->Upload("model"_hash, matModel);
 	}
+}
+
+void Material::UploadNonInstanceVariables()
+{
+	if (m_StandardTransform)
+	{
+		m_Shader->Upload("worldViewProj"_hash, render::ShadedSceneRenderer::GetCurrent()->GetCamera().GetViewProj());
+	}
+
+	UploadDerivedVariables();
 }
