@@ -13,7 +13,9 @@
 
 // forward
 class SceneEditor;
-class SceneRenderer;
+namespace render {
+	class ShadedSceneRenderer;
+}
 
 
 //--------------------
@@ -58,7 +60,7 @@ private:
 	EditorCamera m_Camera;
 	std::unique_ptr<Viewport> m_Viewport;
 	I_RenderArea* m_RenderArea = nullptr;
-	SceneRenderer* m_SceneRenderer = nullptr;
+	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
 
 	T_SceneEventCallbackId m_SceneInitCallback = SceneEventDispatcher::s_InvalidCallbackId;
 

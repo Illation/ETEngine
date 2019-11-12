@@ -21,8 +21,8 @@ TransformComponent::~TransformComponent()
 
 void TransformComponent::Initialize()
 {
-	UpdateTransforms();
 	m_NodeId = SceneManager::GetInstance()->GetRenderScene().AddNode(m_World);
+	UpdateTransforms();
 }
 
 void TransformComponent::Update()

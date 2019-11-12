@@ -22,7 +22,7 @@ class ScreenSpaceReflections;
 //---------------------------------
 // SceneRenderer
 //
-// Renders a Scene to the viewport - #todo: fully merge with render pipeline
+// Renders a Scene to the viewport
 //
 class SceneRenderer final : public I_ViewportRenderer
 {

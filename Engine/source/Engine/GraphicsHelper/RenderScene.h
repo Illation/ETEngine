@@ -2,6 +2,8 @@
 
 #include "RenderSceneFwd.h"
 
+#include <Engine/Graphics/PostProcessingSettings.h>
+
 
 class MeshData;
 
@@ -76,6 +78,9 @@ public:
 	void UpdateDirectionalLight(T_DirLightId const lightId, DirectionalLight const& value);
 	void RemoveDirectionalLight(T_DirLightId const lightId);
 
+	// accessors
+	//-------------
+	PostProcessingSettings const& GetPostProcessingSettings() const { return m_PostProcessingSettings; }
 
 	// Data
 	///////
@@ -100,6 +105,8 @@ private:
 	//core::slot_map<Atmosphere> m_Atmospheres;
 
 	//core::slot_map<Sprite> m_Sprites;
+
+	PostProcessingSettings m_PostProcessingSettings;
 };
 
 

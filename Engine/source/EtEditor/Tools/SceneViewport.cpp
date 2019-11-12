@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "SceneViewport.h"
 
-#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/ShadedSceneRenderer.h>
+#include <Engine/SceneGraph/SceneManager.h>
 
 #include <EtEditor/Rendering/GtkRenderArea.h>
 #include <EtEditor/Util/GtkUtil.h>
@@ -144,7 +145,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	glArea->show(); // ensure context creation
 
 	// create a scene renderer for the viewport
-	m_SceneRenderer = new SceneRenderer();
+	m_SceneRenderer = new render::ShadedSceneRenderer(&(SceneManager::GetInstance()->GetRenderScene()));
 	m_Viewport->SetRenderer(m_SceneRenderer);
 
 	m_Editor->RegisterListener(this);
@@ -185,7 +186,7 @@ void SceneViewport::OnShown()
 {
 	m_Viewport->MakeCurrent();
 	m_Viewport->SynchDimensions();
-	m_SceneRenderer->InitWithSplashScreen();
+	//m_SceneRenderer->InitWithSplashScreen();
 	m_Viewport->Redraw();
 }
 

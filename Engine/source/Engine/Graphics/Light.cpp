@@ -61,7 +61,7 @@ void DirectionalLight::AddToRenderScene(TransformComponent const* const transf)
 	renderLight.m_Brightness = brightness;
 	renderLight.m_Direction = transf->GetForward();
 	renderLight.m_Color = color;
-	m_LightId = SceneManager::GetInstance()->GetRenderScene().AddDirectionalLight(render::DirectionalLight());
+	m_LightId = SceneManager::GetInstance()->GetRenderScene().AddDirectionalLight(renderLight);
 }
 
 void DirectionalLight::RemoveFromRenderScene()
