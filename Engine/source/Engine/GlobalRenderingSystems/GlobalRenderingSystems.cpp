@@ -77,4 +77,6 @@ void RenderingSystems::Initialize()
 	{
 		m_ScreenshotCapture.Initialize(Config::GetInstance()->GetUserDirPath() + std::string("./"));
 	}
+
+	m_NullMaterial.Initialize();
 }

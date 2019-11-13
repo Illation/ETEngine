@@ -4,7 +4,6 @@
 #include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <Engine/SceneRendering/SceneRenderer.h>
 #include <Engine/SceneRendering/ShadowRenderer.h>
-#include <Engine/SceneGraph/SceneManager.h>
 
 
 void PointLight::DrawVolume(TransformComponent* pTransform)
@@ -18,7 +17,7 @@ void DirectionalLight::DrawVolume(TransformComponent* pTransform)
 	vec3 col = color*brightness;
 	if (IsShadowEnabled())
 	{
-		RenderingSystems::Instance()->GetDirectLightVolume().DrawShadowed(pTransform->GetForward(), col, m_pShadowData);
+		RenderingSystems::Instance()->GetDirectLightVolume().DrawShadowed(pTransform->GetForward(), col, *m_pShadowData);
 	}
 	else
 	{
@@ -46,26 +45,6 @@ void DirectionalLight::GenerateShadow(TransformComponent* pTransform)
 {
 	if (IsShadowEnabled())
 	{
-		SceneRenderer::GetCurrent()->GetShadowRenderer().MapDirectional(pTransform, m_pShadowData);
+		SceneRenderer::GetCurrent()->GetShadowRenderer().MapDirectional(pTransform->GetWorld(), *m_pShadowData, SceneRenderer::GetCurrent());
 	}
-}
-
-void DirectionalLight::AddToRenderScene(TransformComponent const* const transf)
-{
-	if (m_pShadowData != nullptr)
-	{
-		//return;
-	}
-
-	render::DirectionalLight renderLight;
-	renderLight.m_Brightness = brightness;
-	renderLight.m_Direction = transf->GetForward();
-	renderLight.m_Color = color;
-	m_LightId = SceneManager::GetInstance()->GetRenderScene().AddDirectionalLight(renderLight);
-}
-
-void DirectionalLight::RemoveFromRenderScene()
-{
-	SceneManager::GetInstance()->GetRenderScene().RemoveDirectionalLight(m_LightId);
-	m_LightId = core::slot_map<DirectionalLight>::s_InvalidIndex;
 }

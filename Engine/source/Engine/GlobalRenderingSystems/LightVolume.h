@@ -29,7 +29,7 @@ public:
 	~DirectLightVolume();
 
 	void Draw(vec3 dir, vec3 col);
-	void DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *pShadow);
+	void DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData const& shadow);
 
 protected:
 	AssetPtr<ShaderData> m_pShader;

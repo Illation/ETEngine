@@ -6,15 +6,30 @@ class NullMaterial;
 class DirectionalShadowData;
 class TransformComponent;
 
+//---------------------------------
+// I_ShadowRenderer
+//
+// Interface for a class that can draw a shadow depth map
+//
+class I_ShadowRenderer
+{
+public:
+	virtual ~I_ShadowRenderer() = default;
+
+	virtual void DrawShadow(NullMaterial* const nullMaterial) = 0;
+	virtual Camera const& GetCamera() const = 0;
+};
+
+//---------------------------------
+// ShadowRenderer
+//
+// Class that can fill out shadow data for light sources
+//
 class ShadowRenderer final
 {
-	// definitions
-	//-------------
-private:
-	friend class SceneRenderer; 
-
 	// construct destruct
 	//---------------------
+public:
 	ShadowRenderer() = default;
 	~ShadowRenderer();
 
@@ -22,13 +37,7 @@ private:
 
 	// functionality
 	//---------------
-public:
-	void MapDirectional(TransformComponent *pTransform, DirectionalShadowData *pShadowData);
-
-	// accessors
-	//---------------
-	mat4 GetLightVP() { return m_LightVP; }
-	NullMaterial* GetNullMaterial() { return m_pMaterial; }
+	void MapDirectional(mat4 const& lightTransform, DirectionalShadowData& shadowData, I_ShadowRenderer* const shadowRenderer);
 
 	// Data
 	///////

@@ -7,6 +7,7 @@ namespace core {
 
 // we should rarely have to store more than 2 ^ 32 elements
 typedef uint32 T_DefaultSlotMapIndexType;
+typedef T_DefaultSlotMapIndexType T_SlotId;
 
 
 //---------------------------------
@@ -32,13 +33,13 @@ typedef uint32 T_DefaultSlotMapIndexType;
 //  * if the default index type is used (32 bit ints) the footprint in 64 bit build shouldn't be significantly larger 
 //     - than storing the data array + an array of pointers to each element
 //
-template <class TType, class TIndexType = T_DefaultSlotMapIndexType>
+template <class TType>
 class slot_map final
 {
 	// definitions
 	//-------------
 public:
-	using index_type = TIndexType;
+	using index_type = T_DefaultSlotMapIndexType;
 	using size_type = index_type; 
 	using id_type = index_type;		
 

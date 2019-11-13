@@ -6,6 +6,7 @@
 #include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <Engine/GraphicsHelper/RenderScene.h>
 #include <Engine/Graphics/Material.h>
+#include <Engine/Materials/NullMaterial.h>
 
 
 namespace render {
@@ -45,7 +46,7 @@ ShadedSceneRenderer* ShadedSceneRenderer::GetCurrent()
 //---------------------------------
 // ShadedSceneRenderer::c-tor
 //
-ShadedSceneRenderer::ShadedSceneRenderer(render::Scene const* const renderScene)
+ShadedSceneRenderer::ShadedSceneRenderer(render::Scene* const renderScene)
 	: I_ViewportRenderer()
 	, m_RenderScene(renderScene)
 { }
@@ -69,6 +70,7 @@ void ShadedSceneRenderer::InitRenderingSystems()
 {
 	RenderingSystems::AddReference();
 
+	m_ShadowRenderer.Initialize();
 	m_PostProcessing.Initialize();
 
 	m_GBuffer.Initialize();
@@ -115,7 +117,16 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 	//Shadow Mapping
 	//**************
-	// #todo: update shadow maps
+	auto lightIt = m_RenderScene->GetDirectionalLightsShaded().begin();
+	auto shadowIt = m_RenderScene->GetDirectionalShadowData().begin();
+	while ((lightIt != m_RenderScene->GetDirectionalLightsShaded().end()) && (shadowIt != m_RenderScene->GetDirectionalShadowData().end()))
+	{
+		mat4 const& transform = m_RenderScene->GetNodes()[lightIt->m_NodeId];
+		m_ShadowRenderer.MapDirectional(transform, *shadowIt, this);
+
+		lightIt++;
+		shadowIt++;
+	}
 
 	//Deferred Rendering
 	//******************
@@ -180,15 +191,40 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->SetCullEnabled(true);
 	api->SetFaceCullingMode(E_FaceCullMode::Front);
 
-	// direct
-	for (DirectionalLight const& dirLight : m_RenderScene->GetDirectionalLights())
+	// pointlights
+	for (Light const& pointLight : m_RenderScene->GetPointLights())
 	{
-		vec3 col = dirLight.m_Color * dirLight.m_Brightness;
-		RenderingSystems::Instance()->GetDirectLightVolume().Draw(dirLight.m_Direction, col);
+		mat4 const& transform = m_RenderScene->GetNodes()[pointLight.m_NodeId];
+		float const scale = etm::length(etm::decomposeScale(transform));
+		vec3 const pos = etm::decomposePosition(transform);
+
+		RenderingSystems::Instance()->GetPointLightVolume().Draw(pos, scale, pointLight.m_Color);
+	}
+	
+	// direct
+	for (Light const& dirLight : m_RenderScene->GetDirectionalLights())
+	{
+		mat4 const& transform = m_RenderScene->GetNodes()[dirLight.m_NodeId];
+		vec3 const dir = (transform * vec4(vec3::FORWARD, 1.f)).xyz;
+		RenderingSystems::Instance()->GetDirectLightVolume().Draw(dir, dirLight.m_Color);
 	}
 
-	// #todo: direct with shadow
-	// #todo: pointlights
+	// direct with shadow
+	lightIt = m_RenderScene->GetDirectionalLightsShaded().begin();
+	shadowIt = m_RenderScene->GetDirectionalShadowData().begin();
+	while ((lightIt != m_RenderScene->GetDirectionalLightsShaded().end()) && (shadowIt != m_RenderScene->GetDirectionalShadowData().end()))
+	{
+		Light const& dirLight = *lightIt;
+		DirectionalShadowData const& shadow = *shadowIt;
+
+		mat4 const& transform = m_RenderScene->GetNodes()[dirLight.m_NodeId];
+		vec3 const dir = (transform * vec4(vec3::FORWARD, 1.f)).xyz;
+
+		RenderingSystems::Instance()->GetDirectLightVolume().DrawShadowed(dir, dirLight.m_Color, shadow);
+
+		lightIt++;
+		shadowIt++;
+	}
 
 	api->SetFaceCullingMode(E_FaceCullMode::Back);
 	api->SetBlendEnabled(false);
@@ -232,6 +268,35 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	// post processing
 	api->SetCullEnabled(false);
 	m_PostProcessing.Draw(targetFb, m_RenderScene->GetPostProcessingSettings()); // #todo: draw overlays
+}
+
+//---------------------------------
+// ShadedSceneRenderer::DrawShadow
+//
+// Render the scene to the depth buffer of the current framebuffer
+//
+void ShadedSceneRenderer::DrawShadow(NullMaterial* const nullMaterial)
+{
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	// No need to set shaders or upload material parameters as that is the calling functions responsibility
+	for (MaterialCollection::Mesh const& mesh : m_RenderScene->GetShadowCasters().m_Meshes)
+	{
+		api->BindVertexArray(mesh.m_VAO);
+		for (T_NodeId const node : mesh.m_Instances)
+		{
+			// #todo: collect a list of transforms and draw this instanced
+			mat4 const& transform = m_RenderScene->GetNodes()[node];
+			Sphere instSphere = Sphere((transform * vec4(mesh.m_BoundingVolume.pos, 1.f)).xyz,
+				etm::length(etm::decomposeScale(transform)) * mesh.m_BoundingVolume.radius);
+
+			if (true) // #todo: light frustum check
+			{
+				nullMaterial->UploadModelOnly(transform);
+				api->DrawElements(E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
+			}
+		}
+	}
 }
 
 

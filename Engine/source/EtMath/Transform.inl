@@ -162,7 +162,7 @@ template <class T>
 void decomposeTRS(const matrix<4, 4, T>& mat, vector<3, T>& translation, quaternion<T>& rotation, vector<3, T>& scaleVec)
 {
 	//Translation
-	translation = mat[3].xyz;
+	translation = decomposePosition(mat);
 
 	//Scale
 	scaleVec = decomposeScale(mat);
@@ -173,6 +173,12 @@ void decomposeTRS(const matrix<4, 4, T>& mat, vector<3, T>& translation, quatern
 	rotMat[1] = mat[1].xyz / scaleVec.y;
 	rotMat[2] = mat[2].xyz / scaleVec.z;
 	rotation = quat(rotMat);
+}
+
+template <class T>
+vector<3, T> decomposePosition(matrix<4, 4, T> const& mat)
+{
+	return mat[3].xyz;
 }
 
 template <class T>

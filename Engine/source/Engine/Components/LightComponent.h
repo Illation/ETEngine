@@ -1,11 +1,12 @@
 #pragma once
 #include "AbstractComponent.h"
+#include <Engine/Graphics/Light.h>
 
 #include <typeinfo>
 
 
 class TransformComponent;
-class Light;
+
 
 class LightComponent : public AbstractComponent
 {
@@ -40,6 +41,7 @@ private:
 	friend class TransformComponent;
 	
 	bool m_PositionUpdated = false;
+	render::T_LightId m_LightId;
 
 private:
 	// -------------------------

@@ -47,7 +47,7 @@ public:
 	//
 	struct MaterialInstance
 	{
-		Material* m_Material;
+		Material* m_Material = nullptr;
 		core::slot_map<Mesh> m_Meshes;
 	};
 

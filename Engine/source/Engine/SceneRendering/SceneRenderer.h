@@ -24,7 +24,7 @@ class ScreenSpaceReflections;
 //
 // Renders a Scene to the viewport
 //
-class SceneRenderer final : public I_ViewportRenderer
+class SceneRenderer final : public I_ViewportRenderer, public I_ShadowRenderer
 {
 	// GlobalAccess
 	//---------------
@@ -48,10 +48,16 @@ public:
 	void HideSplashScreen();
 
 	void DrawOverlays(T_FbLoc const targetFb);
-	void DrawShadow();
 
 private:
 	void Draw();
+
+	// Shadow Renderer Interface
+	//-----------------------------
+public:
+	void DrawShadow(NullMaterial* const nullMaterial) override;
+
+	Camera const& GetCamera() const override { return m_Camera; }
 
 	// Viewport Renderer Interface
 	//-----------------------------

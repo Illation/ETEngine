@@ -11,7 +11,6 @@
 #include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <Engine/SceneRendering/Gbuffer.h>
 #include <Engine/SceneRendering/ShadowRenderer.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
 #include <Engine/SceneRendering/ShadedSceneRenderer.h>
 
 
@@ -46,7 +45,7 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 
 	//Frustum culling
 	Sphere objSphere = Sphere(pos, radius);
-	if (SceneRenderer::GetCurrent()->GetCamera().GetFrustum().ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
+	if (render::ShadedSceneRenderer::GetCurrent()->GetCamera().GetFrustum().ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
 	{
 		return;
 	}
@@ -100,7 +99,7 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 }
-void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *pShadow)
+void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData const& shadow)
 {
 	if (!m_IsInitialized)
 	{
@@ -114,14 +113,14 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *
 	m_pShaderShadowed->Upload("texGBufferA"_hash, 0);
 	m_pShaderShadowed->Upload("texGBufferB"_hash, 1);
 	m_pShaderShadowed->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = SceneRenderer::GetCurrent()->GetGBuffer()->GetTextures();
+	auto gbufferTex = render::ShadedSceneRenderer::GetCurrent()->GetGBuffer().GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		api->LazyBindTexture(i, gbufferTex[i]->GetTargetType(), gbufferTex[i]->GetHandle());
 	}
 
 	//for position reconstruction
-	Camera const& cam = SceneRenderer::GetCurrent()->GetCamera();
+	Camera const& cam = render::ShadedSceneRenderer::GetCurrent()->GetCamera();
 
 	m_pShaderShadowed->Upload("projectionA"_hash, cam.GetDepthProjA());
 	m_pShaderShadowed->Upload("projectionB"_hash, cam.GetDepthProjB());
@@ -133,20 +132,20 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData *
 
 	//shadow info
 	m_pShaderShadowed->Upload("PcfSamples"_hash, Config::GetInstance()->GetGraphics().NumPCFSamples);
-	m_pShaderShadowed->Upload("Bias"_hash, pShadow->m_Bias);
+	m_pShaderShadowed->Upload("Bias"_hash, shadow.m_Bias);
 
 	std::string ligStr = "cascades[";
-	for (uint32 i = 0; i < (uint32)pShadow->m_Cascades.size(); i++)
+	for (uint32 i = 0; i < (uint32)shadow.m_Cascades.size(); i++)
 	{
 		//Light Projection
-		m_pShaderShadowed->Upload(GetHash(ligStr + std::to_string(i) + "].LightVP"), pShadow->m_Cascades[i].lightVP);
+		m_pShaderShadowed->Upload(GetHash(ligStr + std::to_string(i) + "].LightVP"), shadow.m_Cascades[i].lightVP);
 
 		//Shadow map
 		m_pShaderShadowed->Upload(GetHash(ligStr + std::to_string(i) + "].ShadowMap"), static_cast<int32>(3 + i));
-		api->LazyBindTexture(3 + i, pShadow->m_Cascades[i].pTexture->GetTargetType(), pShadow->m_Cascades[i].pTexture->GetHandle());
+		api->LazyBindTexture(3 + i, shadow.m_Cascades[i].pTexture->GetTargetType(), shadow.m_Cascades[i].pTexture->GetHandle());
 
 		//cascade distance
-		m_pShaderShadowed->Upload(GetHash(ligStr + std::to_string(i) + "].Distance"), pShadow->m_Cascades[i].distance);
+		m_pShaderShadowed->Upload(GetHash(ligStr + std::to_string(i) + "].Distance"), shadow.m_Cascades[i].distance);
 	}
 
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();

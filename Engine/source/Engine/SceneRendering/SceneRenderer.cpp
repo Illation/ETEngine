@@ -196,24 +196,6 @@ void SceneRenderer::DrawOverlays(T_FbLoc const targetFb)
 }
 
 //---------------------------------
-// SceneRenderer::DrawShadow
-//
-// Render the scene to the depth buffer of the current framebuffer
-//
-void SceneRenderer::DrawShadow()
-{
-	NullMaterial* nullMat = m_ShadowRenderer.GetNullMaterial();
-
-	for (auto scene : m_RenderScenes)
-	{
-		for (Entity* entity : scene->m_pEntityVec)
-		{
-			entity->RootDrawMaterial(static_cast<Material*>(nullMat));
-		}
-	}
-}
-
-//---------------------------------
 // SceneRenderer::Draw
 //
 // Main scene drawing function
@@ -335,6 +317,22 @@ void SceneRenderer::Draw()
 	for (auto pScene : m_RenderScenes)
 	{
 		pScene->PostDraw();
+	}
+}
+
+//---------------------------------
+// SceneRenderer::DrawShadow
+//
+// Render the scene to the depth buffer of the current framebuffer
+//
+void SceneRenderer::DrawShadow(NullMaterial* const nullMaterial)
+{
+	for (auto scene : m_RenderScenes)
+	{
+		for (Entity* entity : scene->m_pEntityVec)
+		{
+			entity->RootDrawMaterial(static_cast<Material*>(nullMaterial));
+		}
 	}
 }
 

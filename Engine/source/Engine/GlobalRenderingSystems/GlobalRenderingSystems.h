@@ -7,6 +7,8 @@
 #include "LightVolume.h"
 #include "ScreenshotCapture.h"
 
+#include <Engine/Materials/NullMaterial.h>
+
 
 //---------------------------------
 // RenderingSystems
@@ -49,6 +51,7 @@ public:
 	PointLightVolume& GetPointLightVolume() { return m_PointLightVolume; }
 	AtmospherePrecompute& GetAtmospherPrecompute() { return m_AtmospherePrecompute; }
 	ScreenshotCapture& GetScreenshotCapture() { return m_ScreenshotCapture; }
+	NullMaterial* GetNullMaterial() { return &m_NullMaterial; }
 
 	// Data
 	///////
@@ -66,4 +69,6 @@ private:
 	AtmospherePrecompute m_AtmospherePrecompute;
 
 	ScreenshotCapture m_ScreenshotCapture;
+
+	NullMaterial m_NullMaterial;
 };

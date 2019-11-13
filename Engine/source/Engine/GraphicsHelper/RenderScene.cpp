@@ -7,7 +7,7 @@
 #include <Engine/Graphics/Mesh.h>
 #include <Engine/Graphics/Material.h>
 #include <Engine/Graphics/EnvironmentMap.h>
-
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 namespace render {
@@ -101,35 +101,14 @@ Scene::T_InstanceId Scene::AddInstance(Material* const material, AssetPtr<MeshDa
 	ET_ASSERT(materialId != core::slot_map<MaterialCollection::MaterialInstance>::s_InvalidIndex);
 
 	// find or create a mesh in the material instance
-	T_ArrayLoc const vao = mesh->GetSurface(material)->GetVertexArray();
+	T_MeshId meshId = AddMeshToMaterial(*foundMaterialIt, mesh, node);
 
-	auto foundMeshIt = std::find_if(foundMaterialIt->m_Meshes.begin(), foundMaterialIt->m_Meshes.end(),
-		[vao](MaterialCollection::Mesh const& matInst)
-		{
-			return matInst.m_VAO == vao;
-		});
-
-	T_MaterialInstanceId meshId = core::slot_map<MaterialCollection::MaterialInstance>::s_InvalidIndex;
-	if (foundMeshIt == foundMaterialIt->m_Meshes.cend())
+	// also make the mesh cast a shadow
+	if (m_ShadowCasters.m_Material == nullptr)
 	{
-		auto newMesh = foundMaterialIt->m_Meshes.insert(MaterialCollection::Mesh());
-
-		foundMeshIt = newMesh.first;
-		meshId = newMesh.second;
-
-		foundMeshIt->m_VAO = vao;
-		foundMeshIt->m_IndexCount = static_cast<uint32>(mesh->GetIndexCount());
-		foundMeshIt->m_IndexDataType = mesh->GetIndexDataType();
-		foundMeshIt->m_BoundingVolume = mesh->GetBoundingSphere(); 
+		m_ShadowCasters.m_Material = RenderingSystems::Instance()->GetNullMaterial();
 	}
-	else
-	{
-		meshId = foundMaterialIt->m_Meshes.iterator_id(foundMeshIt);
-	}
-
-	ET_ASSERT(meshId != core::slot_map<MaterialCollection::Mesh>::s_InvalidIndex);
-
-	foundMeshIt->m_Instances.emplace_back(node);
+	T_MeshId casterId = AddMeshToMaterial(m_ShadowCasters, mesh, node);
 
 	// link the instance data to its own ID
 	auto newInstance = m_Instances.insert(MeshInstance());
@@ -137,6 +116,7 @@ Scene::T_InstanceId Scene::AddInstance(Material* const material, AssetPtr<MeshDa
 	newInstance.first->m_Collection = collectionId;
 	newInstance.first->m_Material = materialId;
 	newInstance.first->m_Mesh = meshId;
+	newInstance.first->m_ShadowCaster = casterId;
 	newInstance.first->m_Transform = node;
 	newInstance.first->m_IsOpaque = true;
 
@@ -152,21 +132,15 @@ void Scene::RemoveInstance(T_InstanceId const instance)
 
 	MaterialCollection& collection = m_OpaqueRenderables[inst.m_Collection];
 	MaterialCollection::MaterialInstance& material = collection.m_Materials[inst.m_Material];
-	MaterialCollection::Mesh& mesh = material.m_Meshes[inst.m_Mesh];
-	if (mesh.m_Instances.size() == 1u)
+	RemoveMeshFromMaterial(m_ShadowCasters, inst.m_ShadowCaster, inst.m_Transform);
+	RemoveMeshFromMaterial(material, inst.m_Mesh, inst.m_Transform);
+	if (material.m_Meshes.size() == 0u)
 	{
-		if (material.m_Meshes.size() == 1u)
+		if (collection.m_Materials.size() == 1u)
 		{
-			if (collection.m_Materials.size() == 1u)
+			if (m_OpaqueRenderables.size() == 1u)
 			{
-				if (m_OpaqueRenderables.size() == 1u)
-				{
-					m_OpaqueRenderables.clear();
-				}
-				else
-				{
-					collection.m_Materials.erase(inst.m_Material);
-				}
+				m_OpaqueRenderables.clear();
 			}
 			else
 			{
@@ -175,43 +149,101 @@ void Scene::RemoveInstance(T_InstanceId const instance)
 		}
 		else
 		{
-			material.m_Meshes.erase(inst.m_Mesh);
+			collection.m_Materials.erase(inst.m_Material);
 		}
 	}
-	else
-	{
-		auto foundTransform = std::find(mesh.m_Instances.begin(), mesh.m_Instances.end(), inst.m_Transform);
-		ET_ASSERT(foundTransform != mesh.m_Instances.cend());
-
-		std::iter_swap(foundTransform, std::prev(mesh.m_Instances.end()));
-		mesh.m_Instances.pop_back();
-	}
-
+	
 	m_Instances.erase(instance);
 }
 
 //----------------------
 // Scene::AddDirectionalLight
 //
-T_DirLightId Scene::AddDirectionalLight(DirectionalLight const& light)
+T_LightId Scene::AddLight(vec3 const& color, T_NodeId const node, bool const isDirectional, bool const hasShadow)
 {
-	return m_DirectionalLights.insert(DirectionalLight(light)).second;
+	ET_ASSERT(hasShadow ? isDirectional : true, "point lights don't support shadow maps");
+
+	Light light;
+	light.m_Color = color;
+	light.m_NodeId = node;
+
+	T_LightId lightId;
+	if (isDirectional)
+	{
+		if (hasShadow)
+		{
+			lightId = m_DirectionalLightsShaded.insert(Light(light)).second;
+			T_LightId const shadowId = m_DirectionalShadowData.insert(DirectionalShadowData(ivec2(1024, 1024) * 8)).second;
+			
+			ET_ASSERT(lightId == shadowId);
+		}
+		else
+		{
+			lightId = m_DirectionalLights.insert(Light(light)).second;
+		}
+	}
+	else
+	{
+		lightId = m_PointLights.insert(Light(light)).second;
+	}
+
+	LightInstance instance;
+	instance.m_SlotId = lightId;
+	instance.m_IsDirectional = isDirectional;
+	instance.m_HasShadow = hasShadow;
+
+	return m_Lights.insert(LightInstance(instance)).second;
 }
 
 //----------------------
 // Scene::UpdateDirectionalLight
 //
-void Scene::UpdateDirectionalLight(T_DirLightId const lightId, DirectionalLight const& value)
+void Scene::UpdateLightColor(T_LightId const lightId, vec3 const& value)
 {
-	m_DirectionalLights[lightId] = value;
+	LightInstance const& instance = m_Lights[lightId];
+
+	if (instance.m_IsDirectional)
+	{
+		if (instance.m_HasShadow)
+		{
+			m_DirectionalLightsShaded[instance.m_SlotId].m_Color = value;
+		}
+		else
+		{
+			m_DirectionalLights[instance.m_SlotId].m_Color = value;
+		}
+	}
+	else
+	{
+		m_PointLights[instance.m_SlotId].m_Color = value;
+	}
 }
 
 //----------------------
 // Scene::RemoveDirectionalLight
 //
-void Scene::RemoveDirectionalLight(T_DirLightId const lightId)
+void Scene::RemoveLight(T_LightId const lightId)
 {
-	m_DirectionalLights.erase(lightId);
+	LightInstance const& instance = m_Lights[lightId];
+
+	if (instance.m_IsDirectional)
+	{
+		if (instance.m_HasShadow)
+		{
+			m_DirectionalLightsShaded.erase(instance.m_SlotId);
+			m_DirectionalShadowData.erase(instance.m_SlotId);
+		}
+		else
+		{
+			m_DirectionalLights.erase(instance.m_SlotId);
+		}
+	}
+	else
+	{
+		m_PointLights.erase(instance.m_SlotId);
+	}
+
+	m_Lights.erase(lightId);
 }
 
 //----------------------
@@ -226,6 +258,64 @@ void Scene::SetSkyboxMap(T_Hash const assetIdEnvMap)
 	else
 	{
 		m_Skybox.m_EnvironmentMap = ResourceManager::Instance()->GetAssetData<EnvironmentMap>(assetIdEnvMap);
+	}
+}
+
+//--------------------------
+// Scene::AddMeshToMaterial
+//
+core::T_SlotId Scene::AddMeshToMaterial(MaterialCollection::MaterialInstance& material, AssetPtr<MeshData> const mesh, T_NodeId const node)
+{
+	T_ArrayLoc const vao = mesh->GetSurface(material.m_Material)->GetVertexArray();
+
+	auto foundMeshIt = std::find_if(material.m_Meshes.begin(), material.m_Meshes.end(),
+		[vao](MaterialCollection::Mesh const& matInst)
+	{
+		return matInst.m_VAO == vao;
+	});
+
+	T_MaterialInstanceId meshId = core::slot_map<MaterialCollection::MaterialInstance>::s_InvalidIndex;
+	if (foundMeshIt == material.m_Meshes.cend())
+	{
+		auto newMesh = material.m_Meshes.insert(MaterialCollection::Mesh());
+
+		foundMeshIt = newMesh.first;
+		meshId = newMesh.second;
+
+		foundMeshIt->m_VAO = vao;
+		foundMeshIt->m_IndexCount = static_cast<uint32>(mesh->GetIndexCount());
+		foundMeshIt->m_IndexDataType = mesh->GetIndexDataType();
+		foundMeshIt->m_BoundingVolume = mesh->GetBoundingSphere();
+	}
+	else
+	{
+		meshId = material.m_Meshes.iterator_id(foundMeshIt);
+	}
+
+	ET_ASSERT(meshId != core::slot_map<MaterialCollection::Mesh>::s_InvalidIndex);
+
+	foundMeshIt->m_Instances.emplace_back(node);
+
+	return meshId;
+}
+
+//-------------------------------
+// Scene::RemoveMeshFromMaterial
+//
+void Scene::RemoveMeshFromMaterial(MaterialCollection::MaterialInstance& material, T_MeshId meshId, T_NodeId node)
+{
+	MaterialCollection::Mesh& mesh = material.m_Meshes[meshId];
+	if (mesh.m_Instances.size() == 1u)
+	{			
+		material.m_Meshes.erase(meshId);
+	}
+	else
+	{
+		auto foundTransform = std::find(mesh.m_Instances.begin(), mesh.m_Instances.end(), node);
+		ET_ASSERT(foundTransform != mesh.m_Instances.cend());
+
+		std::iter_swap(foundTransform, std::prev(mesh.m_Instances.end()));
+		mesh.m_Instances.pop_back();
 	}
 }
 

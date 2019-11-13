@@ -7,11 +7,11 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Materials/NullMaterial.h>
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 ShadowRenderer::~ShadowRenderer()
@@ -22,13 +22,12 @@ ShadowRenderer::~ShadowRenderer()
 void ShadowRenderer::Initialize()
 {
 	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdNullShader.glsl"_hash);
-	m_pMaterial = new NullMaterial();
-	m_pMaterial->Initialize();
+	m_pMaterial = RenderingSystems::Instance()->GetNullMaterial();
 
 	IsInitialized = true;
 }
 
-void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalShadowData *pShadowData)
+void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShadowData& shadowData, I_ShadowRenderer* const shadowRenderer)
 {
 	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
 
@@ -37,20 +36,20 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 	//Calculate light camera matrix
 	//*****************************
 	//view
-	vec3 worldPos = pTransform->GetWorldPosition();
-	vec3 lookAt = worldPos - pTransform->GetForward();
-	vec3 upVec = pTransform->GetUp();// vec3::UP;//
+	vec3 worldPos = etm::decomposePosition(lightTransform);
+	vec3 lookAt = worldPos - (lightTransform * vec4(vec3::FORWARD, 1.f)).xyz;
+	vec3 upVec = (lightTransform * vec4(vec3::UP, 1.f)).xyz;
 	mat4 lightView = etm::lookAt(worldPos, lookAt, upVec);
 
 	//transform frustum into light space
-	FrustumCorners corners = SceneRenderer::GetCurrent()->GetCamera().GetFrustum().GetCorners();
+	FrustumCorners corners = shadowRenderer->GetCamera().GetFrustum().GetCorners();
 	corners.Transform(lightView);
 
 	for (int32 i = 0; i < graphicsSettings.NumCascades; i++)
 	{
 		//calculate orthographic projection matrix based on cascade
-		float cascadeStart = (i == 0) ? 0 : pShadowData->m_Cascades[i - 1].distance / graphicsSettings.CSMDrawDistance;
-		float cascadeEnd = pShadowData->m_Cascades[i].distance / graphicsSettings.CSMDrawDistance;
+		float cascadeStart = (i == 0) ? 0 : shadowData.m_Cascades[i - 1].distance / graphicsSettings.CSMDrawDistance;
+		float cascadeEnd = shadowData.m_Cascades[i].distance / graphicsSettings.CSMDrawDistance;
 		std::vector<vec3> cascade;
 		cascade.push_back(corners.na + (corners.fa - corners.na)*cascadeStart);
 		cascade.push_back(corners.nb + (corners.fb - corners.nb)*cascadeStart);
@@ -83,13 +82,13 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 
 		//view projection
 		m_LightVP = lightView * lightProjection;
-		pShadowData->m_Cascades[i].lightVP = m_LightVP;
+		shadowData.m_Cascades[i].lightVP = m_LightVP;
 
 		//Set viewport
-		ivec2 res = pShadowData->m_Cascades[i].pTexture->GetResolution();
+		ivec2 res = shadowData.m_Cascades[i].pTexture->GetResolution();
 		api->SetViewport(ivec2(0), res);
 		//Set Framebuffer
-		api->BindFramebuffer(pShadowData->m_Cascades[i].fbo);
+		api->BindFramebuffer(shadowData.m_Cascades[i].fbo);
 		//Clear Framebuffer
 		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
@@ -97,7 +96,7 @@ void ShadowRenderer::MapDirectional(TransformComponent *pTransform, DirectionalS
 		m_Shader->Upload("worldViewProj"_hash, m_LightVP);
 
 		//Draw scene with light matrix and null material
-		SceneRenderer::GetCurrent()->DrawShadow();
+		shadowRenderer->DrawShadow(m_pMaterial);
 	}
 }
 
