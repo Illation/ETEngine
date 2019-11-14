@@ -1,14 +1,16 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <Engine/SceneGraph/Entity.h>
+#include <Engine/Graphics/Camera.h>
 
 
-class StarField : public Entity
+class StarField final
 {
 public:
 	StarField(T_Hash const assetId);
 	virtual ~StarField();
+
+	void Draw(Camera const& cam) const;
 
 	void SetRadius(float radius) { m_Radius = radius; }
 	void SetMaxStars(uint32 maxStars) { m_MaxStars = maxStars; }
@@ -16,15 +18,8 @@ public:
 	void SetBaseFlux(float mult) { m_BaseFlux = mult; }
 	void SetBaseMag(float mag) { m_BaseMag = mag; }
 
-protected:
-	virtual void Initialize();
-	virtual void Update() {}
-	virtual void Draw() {}
-	virtual void DrawForward();
-
 private:
 	std::vector<vec4> m_Stars;
-	T_Hash m_AssetId;
 
 	AssetPtr<ShaderData> m_pShader;
 	AssetPtr<TextureData> m_pSprite;

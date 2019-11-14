@@ -7,24 +7,11 @@
 
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
 
 
 StarField::StarField(T_Hash const assetId) 
-	: m_AssetId(assetId)
-{ }
-
-StarField::~StarField()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
-
-	api->DeleteVertexArray(m_VAO);
-	api->DeleteBuffer(m_VBO);
-}
-
-void StarField::Initialize()
-{
-	AssetPtr<StubData> jsonDbText = ResourceManager::Instance()->GetAssetData<StubData>(m_AssetId);
+	AssetPtr<StubData> jsonDbText = ResourceManager::Instance()->GetAssetData<StubData>(assetId);
 
 	JSON::Parser parser = JSON::Parser(std::string(jsonDbText->GetText(), jsonDbText->GetLength()));
 	JSON::Object* root = parser.GetRoot();
@@ -62,7 +49,7 @@ void StarField::Initialize()
 	api->BindBuffer(E_BufferType::Vertex, m_VBO);
 
 	//set data and attributes
-	api->SetBufferData(E_BufferType::Vertex, m_Stars.size()*sizeof(vec4), m_Stars.data(), E_UsageHint::Dynamic);
+	api->SetBufferData(E_BufferType::Vertex, m_Stars.size() * sizeof(vec4), m_Stars.data(), E_UsageHint::Dynamic);
 
 	api->SetVertexAttributeArrayEnabled(0, true);
 	api->DefineVertexAttributePointer(0, 4, E_DataType::Float, false, sizeof(vec4), 0);
@@ -72,11 +59,17 @@ void StarField::Initialize()
 	api->BindVertexArray(0);
 }
 
-void StarField::DrawForward()
+StarField::~StarField()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	Camera const& cam = SceneRenderer::GetCurrent()->GetCamera();
+	api->DeleteVertexArray(m_VAO);
+	api->DeleteBuffer(m_VBO);
+}
+
+void StarField::Draw(Camera const& cam) const
+{
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->SetBlendEnabled(true);
 	api->SetBlendEquation(E_BlendEquation::Add);

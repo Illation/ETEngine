@@ -19,7 +19,6 @@
 #include <Engine/Prefabs/Skybox.h>
 #include <Engine/Prefabs/OrbitCamera.h>
 #include <Engine/SceneGraph/Entity.h>
-#include <Engine/PlanetTech/StarField.h>
 #include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
@@ -45,9 +44,7 @@ void PlanetTestScene::Initialize()
 	//Skybox
 	//**************************
 	SetSkybox("Milkyway_small.hdr"_hash);
-
-	StarField* pStarField = new StarField("HYGmxyz.json"_hash);
-	AddEntity(pStarField);
+	SetStarfield("HYGmxyz.json"_hash);
 
 	//Models
 	//*************************

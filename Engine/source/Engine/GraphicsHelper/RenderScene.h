@@ -8,6 +8,7 @@
 
 
 class MeshData;
+class StarField;
 
 
 namespace render {
@@ -89,11 +90,14 @@ public:
 	void SetSkyboxMap(T_Hash const assetIdEnvMap);
 	void SetSkyboxRoughness(float const value) { m_Skybox.m_Roughness = value; }
 
+	void SetStarfield(T_Hash const assetId);
+
 	// accessors
 	//-------------
 	core::slot_map<mat4> const& GetNodes() const { return m_Nodes; }
 
 	core::slot_map<MaterialCollection> const& GetOpaqueRenderables() const { return m_OpaqueRenderables; }
+	core::slot_map<MaterialCollection> const& GetForwardRenderables() const { return m_ForwardRenderables; }
 
 	core::slot_map<Light> const& GetPointLights() const { return m_PointLights; }
 	core::slot_map<Light> const& GetDirectionalLights() const { return m_DirectionalLights; }
@@ -105,6 +109,7 @@ public:
 	MaterialCollection::MaterialInstance const& GetShadowCasters() const { return m_ShadowCasters; }
 
 	Skybox const& GetSkybox() const { return m_Skybox; }
+	StarField const* GetStarfield() const { return m_Starfield; }
 
 	PostProcessingSettings const& GetPostProcessingSettings() const { return m_PostProcessingSettings; }
 
@@ -138,7 +143,8 @@ private:
 	MaterialCollection::MaterialInstance m_ShadowCasters;
 
 	Skybox m_Skybox;
-	//core::slot_map<MaterialCollection> m_ForwardRenderables;
+	StarField* m_Starfield = nullptr;
+	core::slot_map<MaterialCollection> m_ForwardRenderables;
 	//core::slot_map<Atmosphere> m_Atmospheres;
 
 	//core::slot_map<Sprite> m_Sprites;

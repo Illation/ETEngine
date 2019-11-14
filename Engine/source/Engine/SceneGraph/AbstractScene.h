@@ -35,6 +35,7 @@ public:
 	void RemoveEntity(Entity* pEntity, bool deleteEntity = true);
 	void SetActiveCamera(CameraComponent* pCamera);
 	void SetSkybox(T_Hash const assetId);
+	void SetStarfield(T_Hash const assetId);
 	void SetAudioListener(AudioListenerComponent* val) { m_AudioListener = val; }
 
 	EnvironmentMap const* GetEnvironmentMap() const;

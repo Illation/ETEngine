@@ -7,6 +7,7 @@
 #include <Engine/GraphicsHelper/RenderScene.h>
 #include <Engine/Graphics/Material.h>
 #include <Engine/Materials/NullMaterial.h>
+#include <Engine/PlanetTech/StarField.h>
 
 
 namespace render {
@@ -15,6 +16,7 @@ namespace render {
 //=======================
 // Shaded Scene Renderer
 //=======================
+
 
 //---------------------------------
 // ShadedSceneRenderer::GetCurrent
@@ -144,31 +146,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	// #todo: draw terrain
 
 	// render opaque objects to GBuffer
-	for (MaterialCollection const& collection : m_RenderScene->GetOpaqueRenderables())
-	{
-		api->SetShader(collection.m_Shader.get());
-		for (MaterialCollection::MaterialInstance const& material : collection.m_Materials)
-		{
-			material.m_Material->UploadNonInstanceVariables();
-			for (MaterialCollection::Mesh const& mesh : material.m_Meshes)
-			{
-				api->BindVertexArray(mesh.m_VAO);
-				for (T_NodeId const node : mesh.m_Instances)
-				{
-					// #todo: collect a list of transforms and draw this instanced
-					mat4 const& transform = m_RenderScene->GetNodes()[node];
-					Sphere instSphere = Sphere((transform * vec4(mesh.m_BoundingVolume.pos, 1.f)).xyz, 
-						etm::length(etm::decomposeScale(transform)) * mesh.m_BoundingVolume.radius);
-
-					if (m_Camera.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
-					{
-						material.m_Material->UploadModelOnly(transform);
-						api->DrawElements(E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
-					}
-				}
-			}
-		}
-	}
+	DrawMaterialCollectionGroup(m_RenderScene->GetOpaqueRenderables());
 
 	// render ambient IBL
 	api->SetFaceCullingMode(E_FaceCullMode::Back);
@@ -261,9 +239,17 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
 	}
 
-	// #todo: draw stars
-	// #todo: draw atmosphere
-	// #todo: forward rendering
+	// draw stars
+	StarField const* const starfield = m_RenderScene->GetStarfield();
+	if (starfield != nullptr)
+	{
+		starfield->Draw(m_Camera);
+	}
+
+	// forward rendering
+	DrawMaterialCollectionGroup(m_RenderScene->GetForwardRenderables());
+	
+	// #todo: draw atmospheres
 
 	// post processing
 	api->SetCullEnabled(false);
@@ -294,6 +280,42 @@ void ShadedSceneRenderer::DrawShadow(NullMaterial* const nullMaterial)
 			{
 				nullMaterial->UploadModelOnly(transform);
 				api->DrawElements(E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
+			}
+		}
+	}
+}
+
+//--------------------------------------------------
+// ShadedSceneRenderer::DrawMaterialCollectionGroup
+//
+// Draws all meshes in a list of shaders
+//
+void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCollection> const& collectionGroup)
+{
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	for (MaterialCollection const& collection : collectionGroup)
+	{
+		api->SetShader(collection.m_Shader.get());
+		for (MaterialCollection::MaterialInstance const& material : collection.m_Materials)
+		{
+			material.m_Material->UploadNonInstanceVariables();
+			for (MaterialCollection::Mesh const& mesh : material.m_Meshes)
+			{
+				api->BindVertexArray(mesh.m_VAO);
+				for (T_NodeId const node : mesh.m_Instances)
+				{
+					// #todo: collect a list of transforms and draw this instanced
+					mat4 const& transform = m_RenderScene->GetNodes()[node];
+					Sphere instSphere = Sphere((transform * vec4(mesh.m_BoundingVolume.pos, 1.f)).xyz, 
+						etm::length(etm::decomposeScale(transform)) * mesh.m_BoundingVolume.radius);
+
+					if (m_Camera.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
+					{
+						material.m_Material->UploadModelOnly(transform);
+						api->DrawElements(E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
+					}
+				}
 			}
 		}
 	}

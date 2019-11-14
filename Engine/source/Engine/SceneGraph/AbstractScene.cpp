@@ -213,6 +213,11 @@ void AbstractScene::SetSkybox(T_Hash const assetId)
 	SceneManager::GetInstance()->GetRenderScene().SetSkyboxMap(assetId);
 }
 
+void AbstractScene::SetStarfield(T_Hash const assetId)
+{
+	SceneManager::GetInstance()->GetRenderScene().SetStarfield(assetId);
+}
+
 EnvironmentMap const* AbstractScene::GetEnvironmentMap() const
 {
 	if (m_UseSkyBox)

@@ -59,9 +59,13 @@ public:
 
 	render::Scene const* GetScene() const { return m_RenderScene; }
 
+	// utility
+	//---------
+private:
+	void DrawMaterialCollectionGroup(core::slot_map<MaterialCollection> const& collectionGroup);
+
 	// Data
 	///////
-private:
 
 	bool m_IsInitialized = false;
 

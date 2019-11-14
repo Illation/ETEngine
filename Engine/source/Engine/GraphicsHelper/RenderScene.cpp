@@ -8,6 +8,7 @@
 #include <Engine/Graphics/Material.h>
 #include <Engine/Graphics/EnvironmentMap.h>
 #include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <Engine/PlanetTech/StarField.h>
 
 
 namespace render {
@@ -56,24 +57,26 @@ void Scene::RemoveNode(T_NodeId const node)
 Scene::T_InstanceId Scene::AddInstance(Material* const material, AssetPtr<MeshData> const mesh, T_NodeId const node)
 {
 	AssetPtr<ShaderData> const shader = material->GetShader();
+
+	core::slot_map<MaterialCollection>& collectionGroup = material->IsForwardRendered() ? m_ForwardRenderables : m_OpaqueRenderables;
 	
 	// find or create a collection for the shader
-	auto foundCollectionIt = std::find_if(m_OpaqueRenderables.begin(), m_OpaqueRenderables.end(), [shader](MaterialCollection const& col)
+	auto foundCollectionIt = std::find_if(collectionGroup.begin(), collectionGroup.end(), [shader](MaterialCollection const& col)
 		{
 			return col.m_Shader == shader;
 		});
 
 	T_CollectionId collectionId = core::slot_map<MaterialCollection>::s_InvalidIndex;
-	if (foundCollectionIt == m_OpaqueRenderables.cend())
+	if (foundCollectionIt == collectionGroup.cend())
 	{
-		auto newCollection = m_OpaqueRenderables.insert(MaterialCollection());
+		auto newCollection = collectionGroup.insert(MaterialCollection());
 		foundCollectionIt = newCollection.first;
 		collectionId = newCollection.second;
 		foundCollectionIt->m_Shader = shader;
 	}
 	else
 	{
-		collectionId = m_OpaqueRenderables.iterator_id(foundCollectionIt);
+		collectionId = collectionGroup.iterator_id(foundCollectionIt);
 	}
 
 	ET_ASSERT(collectionId != core::slot_map<MaterialCollection>::s_InvalidIndex);
@@ -118,7 +121,7 @@ Scene::T_InstanceId Scene::AddInstance(Material* const material, AssetPtr<MeshDa
 	newInstance.first->m_Mesh = meshId;
 	newInstance.first->m_ShadowCaster = casterId;
 	newInstance.first->m_Transform = node;
-	newInstance.first->m_IsOpaque = true;
+	newInstance.first->m_IsOpaque = !(material->IsForwardRendered());
 
 	return newInstance.second;
 }
@@ -130,7 +133,9 @@ void Scene::RemoveInstance(T_InstanceId const instance)
 {
 	MeshInstance const& inst = m_Instances[instance];
 
-	MaterialCollection& collection = m_OpaqueRenderables[inst.m_Collection];
+	core::slot_map<MaterialCollection>& collectionGroup = inst.m_IsOpaque ? m_OpaqueRenderables : m_ForwardRenderables;
+
+	MaterialCollection& collection = collectionGroup[inst.m_Collection];
 	MaterialCollection::MaterialInstance& material = collection.m_Materials[inst.m_Material];
 	RemoveMeshFromMaterial(m_ShadowCasters, inst.m_ShadowCaster, inst.m_Transform);
 	RemoveMeshFromMaterial(material, inst.m_Mesh, inst.m_Transform);
@@ -138,9 +143,9 @@ void Scene::RemoveInstance(T_InstanceId const instance)
 	{
 		if (collection.m_Materials.size() == 1u)
 		{
-			if (m_OpaqueRenderables.size() == 1u)
+			if (collectionGroup.size() == 1u)
 			{
-				m_OpaqueRenderables.clear();
+				collectionGroup.clear();
 			}
 			else
 			{
@@ -258,6 +263,27 @@ void Scene::SetSkyboxMap(T_Hash const assetIdEnvMap)
 	else
 	{
 		m_Skybox.m_EnvironmentMap = ResourceManager::Instance()->GetAssetData<EnvironmentMap>(assetIdEnvMap);
+	}
+}
+
+//---------------------
+// Scene::SetStarfield
+//
+void Scene::SetStarfield(T_Hash const assetId)
+{
+	if ((assetId == 0u) && (m_Starfield != nullptr))
+	{
+		delete m_Starfield;
+		m_Starfield = nullptr;
+	}
+	else
+	{
+		if (m_Starfield != nullptr)
+		{
+			delete m_Starfield;
+		}
+
+		m_Starfield = new StarField(assetId);
 	}
 }
 
