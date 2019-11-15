@@ -10,7 +10,7 @@
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/Frustum.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/ShadedSceneRenderer.h>
 #include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
@@ -42,7 +42,7 @@ void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShado
 	mat4 lightView = etm::lookAt(worldPos, lookAt, upVec);
 
 	//transform frustum into light space
-	FrustumCorners corners = shadowRenderer->GetCamera().GetFrustum().GetCorners();
+	FrustumCorners corners = render::ShadedSceneRenderer::GetCurrent()->GetCamera().GetFrustum().GetCorners();
 	corners.Transform(lightView);
 
 	for (int32 i = 0; i < graphicsSettings.NumCascades; i++)

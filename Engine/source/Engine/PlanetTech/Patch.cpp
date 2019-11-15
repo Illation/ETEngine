@@ -14,13 +14,13 @@
 #include <Engine/SceneRendering/SceneRenderer.h>
 
 
-Patch::Patch(int16 levels)
-	:m_Levels(levels)
-{
-}
+namespace render {
 
-void Patch::Init()
+
+void Patch::Init(int16 const levels)
 {
+	m_Levels = levels;
+
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Shader Init
@@ -156,27 +156,28 @@ void Patch::UploadDistanceLUT(std::vector<float> &distances)
 	}
 }
 
-void Patch::Draw()
+void Patch::Draw(Planet* const planet, Scene const* const renderScene)
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->SetShader(m_pPatchShader.get());
 
 	// Pass transformations to the shader
-	m_pPatchShader->Upload("model"_hash, m_pPlanet->GetTransform()->GetWorld());
+	mat4 const& planetWorld = renderScene->GetNodes()[planet->GetNodeId()];
+	m_pPatchShader->Upload("model"_hash, planetWorld);
 	m_pPatchShader->Upload("viewProj"_hash, SceneRenderer::GetCurrent()->GetCamera().GetViewProj());
 
 	//Set other uniforms here too!
-	vec3 camPos = m_pPlanet->GetTriangulator()->GetFrustum()->GetPositionOS();
+	vec3 camPos = planet->GetTriangulator()->GetFrustum()->GetPositionOS();
 	m_pPatchShader->Upload("camPos"_hash, camPos);
-	m_pPatchShader->Upload("radius"_hash, m_pPlanet->GetRadius());
+	m_pPatchShader->Upload("radius"_hash, planet->GetRadius());
 	m_pPatchShader->Upload("morphRange"_hash, m_MorphRange);
 
-	api->LazyBindTexture(0, m_pPlanet->GetDiffuseMap()->GetTargetType(), m_pPlanet->GetDiffuseMap()->GetHandle());
-	api->LazyBindTexture(1, m_pPlanet->GetHeightMap()->GetTargetType(), m_pPlanet->GetHeightMap()->GetHandle());
-	api->LazyBindTexture(2, m_pPlanet->GetDetail1Map()->GetTargetType(), m_pPlanet->GetDetail1Map()->GetHandle());
-	api->LazyBindTexture(3, m_pPlanet->GetDetail2Map()->GetTargetType(), m_pPlanet->GetDetail2Map()->GetHandle());
-	api->LazyBindTexture(4, m_pPlanet->GetHeightDetailMap()->GetTargetType(), m_pPlanet->GetHeightDetailMap()->GetHandle());
+	api->LazyBindTexture(0, planet->GetTexDiffuse()->GetTargetType(), planet->GetTexDiffuse()->GetHandle());
+	api->LazyBindTexture(1, planet->GetTexDetail1()->GetTargetType(), planet->GetTexDetail1()->GetHandle());
+	api->LazyBindTexture(2, planet->GetTexDetail2()->GetTargetType(), planet->GetTexDetail2()->GetHandle());
+	api->LazyBindTexture(3, planet->GetTexHeight()->GetTargetType(), planet->GetTexHeight()->GetHandle());
+	api->LazyBindTexture(4, planet->GetTexHeightDetail()->GetTargetType(), planet->GetTexHeightDetail()->GetHandle());
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);
@@ -197,3 +198,6 @@ Patch::~Patch()
 	api->DeleteBuffer(m_VBO);
 	api->DeleteBuffer(m_VBOInstance);
 }
+
+
+} // namespace render

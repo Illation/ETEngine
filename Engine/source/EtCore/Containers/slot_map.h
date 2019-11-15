@@ -8,6 +8,7 @@ namespace core {
 // we should rarely have to store more than 2 ^ 32 elements
 typedef uint32 T_DefaultSlotMapIndexType;
 typedef T_DefaultSlotMapIndexType T_SlotId;
+static constexpr T_SlotId INVALID_SLOT_ID = std::numeric_limits<T_SlotId>::max();
 
 
 //---------------------------------

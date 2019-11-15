@@ -52,6 +52,7 @@ public:
 	AtmospherePrecompute& GetAtmospherPrecompute() { return m_AtmospherePrecompute; }
 	ScreenshotCapture& GetScreenshotCapture() { return m_ScreenshotCapture; }
 	NullMaterial* GetNullMaterial() { return &m_NullMaterial; }
+	Patch& GetPatch() { return m_Patch; }
 
 	// Data
 	///////
@@ -67,6 +68,7 @@ private:
 	PointLightVolume m_PointLightVolume;
 
 	AtmospherePrecompute m_AtmospherePrecompute;
+	render::Patch m_Patch;
 
 	ScreenshotCapture m_ScreenshotCapture;
 

@@ -8,19 +8,14 @@
 #include <Engine/SceneRendering/SceneRenderer.h>
 
 
-Triangulator::Triangulator(Planet* pPlanet)
-	: m_pPlanet(pPlanet)
-{
-	m_pFrustum = new Frustum();
-}
-Triangulator::~Triangulator()
-{
-	SafeDelete(m_pFrustum);
-}
+namespace render {
 
-void Triangulator::Init()
+
+void Triangulator::Init(Planet* const planet)
 {
-	auto ico = GetIcosahedronPositions(m_pPlanet->GetRadius());
+	m_Planet = planet;
+
+	auto ico = GetIcosahedronPositions(m_Planet->GetRadius());
 	auto indices = GetIcosahedronIndices();
 	for (size_t i = 0; i < indices.size(); i+=3)
 	{
@@ -33,21 +28,8 @@ void Triangulator::Init()
 	GenerateGeometry();
 }
 
-bool Triangulator::Update()
+bool Triangulator::Update(Scene const* const renderScene)
 {
-	//Set Max subd level
-	//bool levelChanged = false;
-	//if (INPUT->IsKeyboardKeyPressed(E_KbdKey::Up))
-	//{
-	//	m_MaxLevel++;
-	//	levelChanged = true;
-	//}
-	//if (INPUT->IsKeyboardKeyPressed(E_KbdKey::Down) && m_MaxLevel>0)
-	//{
-	//	m_MaxLevel--;
-	//	levelChanged = true;
-	//}
-	//if (levelChanged)Precalculate();
 	m_MaxLevel = 22;
 	Precalculate();
 
@@ -58,13 +40,14 @@ bool Triangulator::Update()
 		m_LockFrustum = !m_LockFrustum;
 	}
 
-	m_pFrustum->SetCullTransform(m_pPlanet->GetTransform()->GetWorld());
+	mat4 const& planetWorld = renderScene->GetNodes()[m_Planet->GetNodeId()];
+	m_Frustum.SetCullTransform(planetWorld);
 	if (!m_LockFrustum)
 	{
-		m_pFrustum->SetToCamera(SceneRenderer::GetCurrent()->GetCamera());
+		m_Frustum.SetToCamera(SceneRenderer::GetCurrent()->GetCamera());
 	}
 
-	m_pFrustum->Update(Viewport::GetCurrentViewport());
+	m_Frustum.Update(Viewport::GetCurrentViewport());
 
 	return true;
 }
@@ -72,7 +55,7 @@ bool Triangulator::Update()
 void Triangulator::Precalculate()
 {
 	//determine culling angle behind planet based on max height
-	float cullingAngle = acosf(m_pPlanet->GetRadius()/(m_pPlanet->GetRadius()+m_pPlanet->GetMaxHeight()));
+	float cullingAngle = acosf(m_Planet->GetRadius()/(m_Planet->GetRadius()+m_Planet->GetMaxHeight()));
 	//Dot Product LUT
 	m_TriLevelDotLUT.clear();
 	m_TriLevelDotLUT.push_back(0.5f+sinf(cullingAngle));
@@ -88,17 +71,17 @@ void Triangulator::Precalculate()
 	vec3 b = m_Icosahedron[0].b;
 	vec3 c = m_Icosahedron[0].c;
 	vec3 center = (a + b + c) / 3.f;
-	center = center * m_pPlanet->GetRadius() / etm::length(center);//+maxHeight
+	center = center * m_Planet->GetRadius() / etm::length(center);//+maxHeight
 	m_HeightMultLUT.push_back(1 / etm::dot( etm::normalize(a), etm::normalize(center)));
-	float normMaxHeight = m_pPlanet->GetMaxHeight() / m_pPlanet->GetRadius();
+	float normMaxHeight = m_Planet->GetMaxHeight() / m_Planet->GetRadius();
 	for (int32 i = 1; i <= m_MaxLevel; i++)
 	{
 		vec3 A = b + ((c - b)*0.5f);
 		vec3 B = c + ((a - c)*0.5f);
 		c = a + ((b - a)*0.5f);
-		a = A * m_pPlanet->GetRadius() / etm::length(A);
-		b = B * m_pPlanet->GetRadius() / etm::length(B);
-		c = c * m_pPlanet->GetRadius() / etm::length(c);
+		a = A * m_Planet->GetRadius() / etm::length(A);
+		b = B * m_Planet->GetRadius() / etm::length(B);
+		c = c * m_Planet->GetRadius() / etm::length(c);
 		m_HeightMultLUT.push_back(1 / etm::dot( etm::normalize(a), etm::normalize(center)) + normMaxHeight);
 	}
 }
@@ -110,7 +93,7 @@ void Triangulator::GenerateGeometry()
 	//In future only recalculate on FOV or triangle density change
 	m_DistanceLUT.clear();
 	float sizeL = etm::length(m_Icosahedron[0].a - m_Icosahedron[0].b);
-	float frac = tanf((m_AllowedTriPx * etm::radians(m_pFrustum->GetFOV())) / Viewport::GetCurrentViewport()->GetDimensions().x);
+	float frac = tanf((m_AllowedTriPx * etm::radians(m_Frustum.GetFOV())) / Viewport::GetCurrentViewport()->GetDimensions().x);
 	for (int32 level = 0; level < m_MaxLevel+5; level++)
 	{
 		m_DistanceLUT.push_back(sizeL / frac);
@@ -130,7 +113,7 @@ TriNext Triangulator::SplitHeuristic(vec3 &a, vec3 &b, vec3 &c, int16 level, boo
 {
 	vec3 center = (a + b + c) / 3.f;
 	//Perform backface culling
-	float dotNV = etm::dot( etm::normalize(center), etm::normalize(center - m_pFrustum->GetPositionOS()));
+	float dotNV = etm::dot( etm::normalize(center), etm::normalize(center - m_Frustum.GetPositionOS()));
 	if (dotNV >= m_TriLevelDotLUT[level])
 	{
 		return TriNext::CULL;
@@ -139,17 +122,17 @@ TriNext Triangulator::SplitHeuristic(vec3 &a, vec3 &b, vec3 &c, int16 level, boo
 	//Perform Frustum culling
 	if (frustumCull)
 	{
-		auto intersect = m_pFrustum->ContainsTriVolume(a, b, c, m_HeightMultLUT[level]);
-		//auto intersect = m_pFrustum->ContainsTriangle(a, b, c);
+		auto intersect = m_Frustum.ContainsTriVolume(a, b, c, m_HeightMultLUT[level]);
+		//auto intersect = m_Frustum.ContainsTriangle(a, b, c);
 		if (intersect == VolumeCheck::OUTSIDE) return TriNext::CULL;
 		if (intersect == VolumeCheck::CONTAINS)//stop frustum culling -> all children are also inside the frustum
 		{
 			//check if new splits are allowed
 			if (level >= m_MaxLevel)return TriNext::LEAF;
 			//split according to distance
-			float aDist = etm::length(a - m_pFrustum->GetPositionOS());
-			float bDist = etm::length(b - m_pFrustum->GetPositionOS());
-			float cDist = etm::length(c - m_pFrustum->GetPositionOS());
+			float aDist = etm::length(a - m_Frustum.GetPositionOS());
+			float bDist = etm::length(b - m_Frustum.GetPositionOS());
+			float cDist = etm::length(c - m_Frustum.GetPositionOS());
 			if (std::fminf(aDist, std::fminf(bDist, cDist)) < m_DistanceLUT[level])return TriNext::SPLIT;
 			return TriNext::LEAF;
 		}
@@ -157,9 +140,9 @@ TriNext Triangulator::SplitHeuristic(vec3 &a, vec3 &b, vec3 &c, int16 level, boo
 	//check if new splits are allowed
 	if (level >= m_MaxLevel)return TriNext::LEAF;
 	//split according to distance
-	float aDist = etm::length(a - m_pFrustum->GetPositionOS());
-	float bDist = etm::length(b - m_pFrustum->GetPositionOS());
-	float cDist = etm::length(c - m_pFrustum->GetPositionOS());
+	float aDist = etm::length(a - m_Frustum.GetPositionOS());
+	float bDist = etm::length(b - m_Frustum.GetPositionOS());
+	float cDist = etm::length(c - m_Frustum.GetPositionOS());
 	if (std::fminf(aDist, std::fminf(bDist, cDist)) < m_DistanceLUT[level])return TriNext::SPLITCULL;
 	return TriNext::LEAF;
 }
@@ -176,9 +159,9 @@ void Triangulator::RecursiveTriangle(vec3 a, vec3 b, vec3 c, int16 level, bool f
 		vec3 B = c + ((a - c)*0.5f);
 		vec3 C = a + ((b - a)*0.5f);
 		//make the distance from center larger according to planet radius
-		A = A * m_pPlanet->GetRadius() / etm::length(A);
-		B = B * m_pPlanet->GetRadius() / etm::length(B);
-		C = C * m_pPlanet->GetRadius() / etm::length(C);
+		A = A * m_Planet->GetRadius() / etm::length(A);
+		B = B * m_Planet->GetRadius() / etm::length(B);
+		C = C * m_Planet->GetRadius() / etm::length(C);
 		//Make 4 new triangles
 		int16 nLevel = level + 1;
 		RecursiveTriangle(a, B, C, nLevel, next == SPLITCULL);//Winding is inverted
@@ -191,3 +174,6 @@ void Triangulator::RecursiveTriangle(vec3 a, vec3 b, vec3 c, int16 level, bool f
 		m_Positions.push_back(PatchInstance((BYTE)level, a, b-a, c-a));
 	}
 }
+
+
+} // namespace render

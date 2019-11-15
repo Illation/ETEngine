@@ -1,16 +1,13 @@
 #pragma once
+#include <Engine/Prefabs/PlanetTemplate.h>
 
-#include <Engine/PlanetTech/Planet.h>
 
-
-class Moon:public Planet
+class Moon : public PlanetTemplate
 {
 public:
-	Moon();
-	~Moon();
+	Moon() = default;
+	~Moon() = default;
 
 protected:
-	void LoadPlanet();
-
-	Atmosphere* m_pAtmosphere;
+	void LoadPlanet() override;
 };

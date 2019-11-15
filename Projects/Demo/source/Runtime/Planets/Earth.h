@@ -1,11 +1,11 @@
 #pragma once
-#include <Engine/PlanetTech/Planet.h>
+#include <Engine/Prefabs/PlanetTemplate.h>
 
-class Earth:public Planet
+class Earth : public PlanetTemplate
 {
 public:
-	Earth();
-	~Earth();
+	Earth() = default;
+	~Earth() = default;
 
 protected:
 	void LoadPlanet();

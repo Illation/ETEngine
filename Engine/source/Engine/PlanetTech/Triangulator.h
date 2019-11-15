@@ -1,9 +1,13 @@
 #pragma once
 #include "Patch.h"
+#include <Engine/Graphics/Frustum.h>
 
 
-class Frustum;
+namespace render {
+
+
 class Planet;
+
 
 enum TriNext
 {
@@ -36,19 +40,19 @@ struct Tri
 	vec3 c;
 };
 
-class Triangulator
+class Triangulator final
 {
 public:
-	Triangulator(Planet* pPlanet);
-	~Triangulator();
+	Triangulator() = default;
+	~Triangulator() = default;
 
 	//Member functions
-	void Init();
-	bool Update();
+	void Init(Planet* const planet);
+	bool Update(Scene const* const renderScene);
 	void GenerateGeometry();
 
 	bool IsFrustumLocked() { return m_LockFrustum; }
-	Frustum* GetFrustum() { return m_pFrustum; }
+	Frustum& GetFrustum() { return m_Frustum; }
 	int32 GetVertexCount() { return (int32)m_Positions.size(); }
 
 private:
@@ -69,10 +73,12 @@ private:
 
 	std::vector<Tri*> m_Leafs;
 
-	Planet* m_pPlanet = nullptr;
-	Frustum* m_pFrustum = nullptr;
+	Planet* m_Planet = nullptr;
+	Frustum m_Frustum;
 	bool m_LockFrustum = false;
 
 	std::vector<PatchInstance> m_Positions;
 };
 
+
+} // namespace render
