@@ -12,10 +12,14 @@
 class PlanetTemplate : public Entity
 {
 public:
-	Planet() = default;
-	virtual ~Planet() = default;
+	PlanetTemplate() = default;
+	virtual ~PlanetTemplate();
 
 	void SetSunlight(core::T_SlotId const lightId);
+
+	float GetRadius() const { return m_Params.radius; }
+	float GetMaxHeight() const { return m_Params.height; }
+	float GetAtmosphereHeight() const { return m_AtmosphereHeight; }
 
 protected:
 	void Initialize() override;
@@ -24,14 +28,17 @@ protected:
 	void Draw() override {}
 	void DrawForward() override {}
 
-	virtual void LoadPlanet() = 0;
-
 protected:
 
-	PlanetParams m_Params;
+	render::PlanetParams m_Params;
+
+	T_Hash m_AtmosphereAssetId = 0u;
+	float m_AtmosphereHeight = 0.f;
 
 private:
 	bool m_Rotate = false;
-	core::T_SlotId m_PlanetId;
+	core::T_SlotId m_PlanetId = core::INVALID_SLOT_ID;
+
+	core::T_SlotId m_AtmoId = core::INVALID_SLOT_ID;
 };
 

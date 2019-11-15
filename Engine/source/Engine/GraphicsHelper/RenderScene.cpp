@@ -6,6 +6,7 @@
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/Mesh.h>
 #include <Engine/Graphics/Material.h>
+#include <Engine/Graphics/TextureData.h>
 #include <Engine/Graphics/EnvironmentMap.h>
 #include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <Engine/PlanetTech/StarField.h>
@@ -285,6 +286,182 @@ void Scene::SetStarfield(T_Hash const assetId)
 
 		m_Starfield = new StarField(assetId);
 	}
+}
+
+//------------------
+// Scene::AddPlanet
+//
+core::T_SlotId Scene::AddPlanet(PlanetParams const& params, T_NodeId const node)
+{
+	auto newPlanet = m_Terrains.insert(Planet());
+	newPlanet.first->Init(params, node);
+	return newPlanet.second;
+}
+
+//---------------------
+// Scene::RemovePlanet
+//
+void Scene::RemovePlanet(core::T_SlotId const planetId)
+{
+	m_Terrains.erase(planetId);
+}
+
+//----------------------
+// Scene::AddAtmosphere
+//
+// Create an instance of an atmosphere, and if there is no render data for the inst, create new rendering data as well
+//
+core::T_SlotId Scene::AddAtmosphere(AtmosphereInstance const& inst)
+{
+	auto newInst = m_AtmosphereInstances.insert(AtmosphereInstance(inst));
+
+	auto const foundAtmo = std::find_if(m_Atmospheres.begin(), m_Atmospheres.end(), [&inst](std::pair<Atmosphere, uint8> const& atmo)
+		{
+			return atmo.first.GetId() == inst.atmosphereId;
+		});
+
+	if (foundAtmo != m_Atmospheres.cend())
+	{
+		foundAtmo->second++;
+	}
+	else
+	{
+		m_Atmospheres.emplace_back(Atmosphere(), 1u);
+		std::prev(m_Atmospheres.end())->first.Initialize(inst.atmosphereId);
+	}
+
+	return newInst.second;
+}
+
+//------------------------------
+// Scene::UpdateAtmosphereLight
+//
+void Scene::UpdateAtmosphereLight(core::T_SlotId const atmoId, T_LightId const lightId)
+{
+	m_AtmosphereInstances[atmoId].lightId = lightId;
+}
+
+//-------------------------
+// Scene::RemoveAtmosphere
+//
+// Remove an instance of an atmosphere, and if it was the last instance of a rendering data set, also remove the rendering data
+//
+void Scene::RemoveAtmosphere(core::T_SlotId const atmoId)
+{
+	AtmosphereInstance const& inst = m_AtmosphereInstances[atmoId];
+
+	auto const foundAtmo = std::find_if(m_Atmospheres.begin(), m_Atmospheres.end(), [&inst](std::pair<Atmosphere, uint8> const& atmo)
+		{
+			return atmo.first.GetId() == inst.atmosphereId;
+		});
+	ET_ASSERT(foundAtmo != m_Atmospheres.cend());
+
+	if (foundAtmo->second == 1u)
+	{
+		if (m_Atmospheres.size() > 1u)
+		{
+			std::iter_swap(foundAtmo, std::prev(m_Atmospheres.end()));
+			m_Atmospheres.pop_back();
+		}
+		else
+		{
+			m_Atmospheres.clear();
+		}
+	}
+	else
+	{
+		foundAtmo->second--;
+	}
+
+	m_AtmosphereInstances.erase(atmoId);
+}
+
+//------------------
+// Scene::AddSprite
+//
+core::T_SlotId Scene::AddSprite(T_Hash const textureId, T_NodeId const node, vec2 const pivot, vec4 const& color)
+{
+	auto sprite = m_Sprites.insert(Sprite());
+
+	sprite.first->node = node;
+	sprite.first->pivot = pivot;
+	sprite.first->color = color;
+	sprite.first->texture = ResourceManager::Instance()->GetAssetData<TextureData>(textureId);
+
+	return sprite.second;
+}
+
+//----------------------------
+// Scene::UpdateSpriteTexture
+//
+void Scene::UpdateSpriteTexture(core::T_SlotId const spriteId, T_Hash const textureId)
+{
+	m_Sprites[spriteId].texture = ResourceManager::Instance()->GetAssetData<TextureData>(textureId);
+}
+
+//--------------------------
+// Scene::UpdateSpritePivot
+//
+void Scene::UpdateSpritePivot(core::T_SlotId const spriteId, vec2 const pivot)
+{
+	m_Sprites[spriteId].pivot = pivot;
+}
+
+//--------------------------
+// Scene::UpdateSpriteColor
+//
+void Scene::UpdateSpriteColor(core::T_SlotId const spriteId, vec4 const& color)
+{
+	m_Sprites[spriteId].color = color;
+}
+
+//---------------------
+// Scene::RemoveSprite
+//
+void Scene::RemoveSprite(core::T_SlotId const spriteId)
+{
+	m_Sprites.erase(spriteId);
+}
+
+//-----------------
+// Scene::GetLight
+//
+Light const& Scene::GetLight(T_LightId const lightId) const
+{
+	LightInstance const& instance = m_Lights[lightId];
+
+	if (instance.m_IsDirectional)
+	{
+		if (instance.m_HasShadow)
+		{
+			return m_DirectionalLightsShaded[instance.m_SlotId];
+		}
+		else
+		{
+			return m_DirectionalLights[instance.m_SlotId];
+		}
+	}
+	else
+	{
+		return m_PointLights[instance.m_SlotId];
+	}
+}
+
+//----------------------
+// Scene::GetAtmosphere
+//
+render::Atmosphere const& Scene::GetAtmosphere(T_Hash const atmoId) const
+{
+	AtmosphereInstance const& inst = m_AtmosphereInstances[atmoId];
+
+	auto const foundAtmo = std::find_if(m_Atmospheres.cbegin(), m_Atmospheres.cbegin(), [&inst](std::pair<Atmosphere, uint8> const& atmo)
+	{
+		return atmo.first.GetId() == inst.atmosphereId;
+	});
+
+	ET_ASSERT(foundAtmo != m_Atmospheres.cend());
+
+	return foundAtmo->first;
 }
 
 //--------------------------

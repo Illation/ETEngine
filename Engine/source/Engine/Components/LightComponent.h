@@ -28,6 +28,8 @@ public:
 	void DrawVolume();
 	void GenerateShadow();
 
+	render::T_LightId GetLightId() const { return m_LightId; }
+
 protected:
 
 	Light* m_Light = nullptr;
@@ -41,7 +43,7 @@ private:
 	friend class TransformComponent;
 	
 	bool m_PositionUpdated = false;
-	render::T_LightId m_LightId;
+	render::T_LightId m_LightId = core::INVALID_SLOT_ID;
 
 private:
 	// -------------------------

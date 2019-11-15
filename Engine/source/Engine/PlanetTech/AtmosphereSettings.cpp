@@ -8,6 +8,9 @@
 #include <EtCore/FileSystem/Json/JsonParser.h>
 
 
+namespace render {
+
+
 vec3 InterpolatedSpectrum(const std::vector<double_t> &wavelengths, const std::vector<double_t> &v, const dvec3 &lambdas, float scale)
 {
 	dvec3 ret = RenderingSystems::Instance()->GetCie().Interpolate(wavelengths, v, lambdas);
@@ -113,7 +116,7 @@ AtmosphereParameters::AtmosphereParameters(T_Hash const assetId, dvec3 &skyColor
 	AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(wavelengths, solar_irradiance, 0, sunColor);
 }
 
-void AtmosphereParameters::Upload(ShaderData const* const shader, const std::string &varName)
+void AtmosphereParameters::Upload(ShaderData const* const shader, const std::string &varName) const
 {
 	Viewport::GetCurrentApiContext()->SetShader(shader);
 
@@ -133,7 +136,7 @@ void AtmosphereParameters::Upload(ShaderData const* const shader, const std::str
 	shader->Upload(GetHash(varName + ".mu_s_min"), mu_s_min, false);
 }
 
-void AtmosphereParameters::UploadDensityProfile(ShaderData const* const shader, const std::string &varName, const DensityProfile &profile)
+void AtmosphereParameters::UploadDensityProfile(ShaderData const* const shader, const std::string &varName, const DensityProfile &profile) const
 {
 	for (uint32 i = 0; i < 2; ++i)
 	{
@@ -211,3 +214,6 @@ AtmosphereSettings::AtmosphereSettings()
 
 	m_ScatteringTexDim = ivec3(INSCATTER_NU * INSCATTER_MU_S, INSCATTER_MU, INSCATTER_R);
 }
+
+
+} // namespace render

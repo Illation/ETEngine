@@ -48,9 +48,9 @@ public:
 
 	void Init(int16 const levels = 5);
 	void GenerateGeometry(int16 levels);
-	void BindInstances(std::vector<PatchInstance> &instances);
-	void UploadDistanceLUT(std::vector<float> &distances);
-	void Draw(Planet* const planet, Scene const* const renderScene);
+	void BindInstances(std::vector<PatchInstance> const& instances);
+	void UploadDistanceLUT(std::vector<float> const& distances);
+	void Draw(Planet const& planet, mat4 const& transform, mat4 const& viewProjection);
 private:
 	std::vector<PatchVertex>m_Vertices;
 	std::vector<uint32>m_Indices;

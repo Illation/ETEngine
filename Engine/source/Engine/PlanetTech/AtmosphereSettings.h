@@ -5,6 +5,10 @@
 
 //Values copied from https://ebruneton.github.io/precomputed_atmospheric_scattering/atmosphere/constants.h.html
 
+
+namespace render { 
+
+
 struct DensityProfileLayer
 {
 	DensityProfileLayer();
@@ -25,7 +29,7 @@ struct AtmosphereParameters
 {
 	AtmosphereParameters() {}
 	AtmosphereParameters(T_Hash const assetId, dvec3 &skyColor, dvec3 &sunColor);
-	void Upload(ShaderData const* const shader, const std::string &varName);
+	void Upload(ShaderData const* const shader, const std::string &varName) const;
 
 	vec3 solarIrradiance;
 	float sun_angular_radius;
@@ -43,7 +47,7 @@ struct AtmosphereParameters
 	float mu_s_min;
 
 private:
-	void UploadDensityProfile(ShaderData const* const shader, const std::string &varName, const DensityProfile &profile);
+	void UploadDensityProfile(ShaderData const* const shader, const std::string &varName, const DensityProfile &profile) const;
 };
 
 struct AtmosphereSettings
@@ -82,3 +86,6 @@ public:
 	//Other
 	uint32 NUM_PRECOMPUTED_WAVELENGTHS = 3; //we approximate luminance but dont precompute it
 };
+
+
+} // namespace render

@@ -184,18 +184,6 @@ void SceneRenderer::HideSplashScreen()
 }
 
 //---------------------------------
-// SceneRenderer::DrawOverlays
-//
-// Post scene things which should be drawn to the viewport
-//
-void SceneRenderer::DrawOverlays(T_FbLoc const targetFb)
-{
-	m_OutlineRenderer.Draw(targetFb);
-	m_SpriteRenderer.Draw();
-	m_TextRenderer.Draw();
-}
-
-//---------------------------------
 // SceneRenderer::Draw
 //
 // Main scene drawing function
@@ -311,7 +299,7 @@ void SceneRenderer::Draw()
 	api->SetDepthEnabled(false);
 	if (m_RenderScenes.size() > 0)
 	{
-		m_PostProcessing->Draw(m_TargetFb, m_RenderScenes[0]->GetPostProcessingSettings());
+		m_PostProcessing->Draw(m_TargetFb, m_RenderScenes[0]->GetPostProcessingSettings(), this);
 	}
 
 	for (auto pScene : m_RenderScenes)
@@ -334,6 +322,18 @@ void SceneRenderer::DrawShadow(NullMaterial* const nullMaterial)
 			entity->RootDrawMaterial(static_cast<Material*>(nullMaterial));
 		}
 	}
+}
+
+//---------------------------------
+// SceneRenderer::DrawOverlays
+//
+// Post scene things which should be drawn to the viewport
+//
+void SceneRenderer::DrawOverlays(T_FbLoc const targetFb)
+{
+	m_OutlineRenderer.Draw(targetFb);
+	m_SpriteRenderer.Draw();
+	m_TextRenderer.Draw();
 }
 
 //---------------------------------

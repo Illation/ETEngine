@@ -36,9 +36,6 @@ struct PlanetParams
 
 	float radius = 0.f;
 	float height = 0.f;
-
-	T_Hash amosphereAssetId = 0u;
-	float atmosphereHeight = 0.f;
 };
 
 //-----------------------------
@@ -48,15 +45,13 @@ struct PlanetParams
 //
 class Planet final
 {
+	// construct destruct
+	//--------------------
 public:
 	Planet() = default;
 	~Planet() = default;
 
 	void Init(PlanetParams const& params, core::T_SlotId const nodeId);
-
-	// functionality
-	//---------------
-	void UpdateTriangles(Scene const* const renderScene);
 
 	// Accessors
 	//-----------
@@ -64,8 +59,8 @@ public:
 	float GetRadius() const { return m_Radius; }
 	float GetMaxHeight() const { return m_MaxHeight; }
 
-	int32 GetVertexCount() const;
 	Triangulator& GetTriangulator() { return m_Triangulator; }
+	Triangulator const& GetTriangulator() const { return m_Triangulator; }
 
 	TextureData const* GetTexDiffuse() const { return m_TexDiffuse.get(); }
 	TextureData const* GetTexDetail1() const { return m_TexDetail1.get(); }
@@ -73,13 +68,11 @@ public:
 	TextureData const* GetTexHeight() const { return m_TexHeight.get(); }
 	TextureData const* GetTexHeightDetail() const { return m_TexHeightDetail.get(); }
 
-	core::T_SlotId GetAtmosphere() const { return m_AtmoInst; }
-
 	// Data
 	///////
 private:
 
-	core::T_SlotId m_Node = INVALID_SLOT_ID;
+	core::T_SlotId m_Node = core::INVALID_SLOT_ID;
 
 	float m_Radius = 0.f;
 	float m_MaxHeight = 0.f;
@@ -90,8 +83,6 @@ private:
 
 	AssetPtr<TextureData> m_TexHeight;
 	AssetPtr<TextureData> m_TexHeightDetail;
-
-	core::T_SlotId m_AtmoInst = INVALID_SLOT_ID;
 
 	Triangulator m_Triangulator;
 };

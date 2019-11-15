@@ -5,9 +5,5 @@
 class Moon : public PlanetTemplate
 {
 public:
-	Moon() = default;
-	~Moon() = default;
-
-protected:
-	void LoadPlanet() override;
+	Moon();
 };

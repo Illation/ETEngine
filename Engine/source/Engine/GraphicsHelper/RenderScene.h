@@ -2,6 +2,10 @@
 
 #include "RenderSceneFwd.h"
 #include "Skybox.h"
+#include "Sprite.h"
+
+#include <Engine/PlanetTech/Atmosphere.h>
+#include <Engine/PlanetTech/Planet.h>
 
 #include <Engine/Graphics/PostProcessingSettings.h>
 #include <Engine/SceneRendering/ShadowRenderer.h>
@@ -12,26 +16,6 @@ class StarField;
 
 
 namespace render {
-
-
-//struct Planet
-//{
-//	Material* m_Material;
-//	T_NodeId m_Transform;
-//	::Planet m_Planet;
-//};
-
-//struct Atmosphere
-//{
-//	T_NodeId m_Transform;
-//	::Atmosphere* m_Atmosphere;
-//};
-
-//struct Sprite
-//{
-//	T_NodeId m_Transform;
-//	SpriteComponent* m_Sprite;
-//};
 
 
 //----------------------
@@ -74,6 +58,7 @@ class Scene final
 public:
 	typedef core::slot_map<MeshInstance>::id_type T_InstanceId;
 
+
 	// functionality
 	//-------------
 	T_NodeId AddNode(mat4 const& transform);
@@ -92,9 +77,26 @@ public:
 
 	void SetStarfield(T_Hash const assetId);
 
+	core::T_SlotId AddPlanet(PlanetParams const& params, T_NodeId const node);
+	void RemovePlanet(core::T_SlotId const planetId);
+
+	core::T_SlotId AddAtmosphere(AtmosphereInstance const& inst);
+	void UpdateAtmosphereLight(core::T_SlotId const atmoId, T_LightId const lightId);
+	void RemoveAtmosphere(core::T_SlotId const atmoId);
+
+	core::T_SlotId AddSprite(T_Hash const textureId, T_NodeId const node, vec2 const pivot, vec4 const& color);
+	void UpdateSpriteTexture(core::T_SlotId const spriteId, T_Hash const textureId);
+	void UpdateSpritePivot(core::T_SlotId const spriteId, vec2 const pivot);
+	void UpdateSpriteColor(core::T_SlotId const spriteId, vec4 const& color);
+	void RemoveSprite(core::T_SlotId const spriteId);
+
+
 	// accessors
 	//-------------
 	core::slot_map<mat4> const& GetNodes() const { return m_Nodes; }
+
+	core::slot_map<Planet> const& GetTerrains() const { return m_Terrains; }
+	core::slot_map<Planet>& GetTerrains() { return m_Terrains; }
 
 	core::slot_map<MaterialCollection> const& GetOpaqueRenderables() const { return m_OpaqueRenderables; }
 	core::slot_map<MaterialCollection> const& GetForwardRenderables() const { return m_ForwardRenderables; }
@@ -102,6 +104,8 @@ public:
 	core::slot_map<Light> const& GetPointLights() const { return m_PointLights; }
 	core::slot_map<Light> const& GetDirectionalLights() const { return m_DirectionalLights; }
 	core::slot_map<Light> const& GetDirectionalLightsShaded() const { return m_DirectionalLightsShaded; }
+
+	Light const& GetLight(T_LightId const lightId) const;
 
 	core::slot_map<DirectionalShadowData>& GetDirectionalShadowData() { return m_DirectionalShadowData; }
 	core::slot_map<DirectionalShadowData> const& GetDirectionalShadowData() const { return m_DirectionalShadowData; }
@@ -111,7 +115,13 @@ public:
 	Skybox const& GetSkybox() const { return m_Skybox; }
 	StarField const* GetStarfield() const { return m_Starfield; }
 
+	core::slot_map<AtmosphereInstance> const& GetAtmosphereInstances() const { return m_AtmosphereInstances; }
+	Atmosphere const& GetAtmosphere(T_Hash const atmoId) const;
+
+	core::slot_map<Sprite> const& GetSprites() const { return m_Sprites; }
+
 	PostProcessingSettings const& GetPostProcessingSettings() const { return m_PostProcessingSettings; }
+
 
 	// utility
 	//---------
@@ -119,19 +129,20 @@ private:
 	core::T_SlotId AddMeshToMaterial(MaterialCollection::MaterialInstance& material, AssetPtr<MeshData> const mesh, T_NodeId const node);
 	void RemoveMeshFromMaterial(MaterialCollection::MaterialInstance& material, T_MeshId meshId, T_NodeId node);
 
+
 	// Data
 	///////
 
-	// mapping
-	//---------
+	// internal mapping
+	//------------------
 	core::slot_map<MeshInstance> m_Instances;
 	core::slot_map<LightInstance> m_Lights;
 
-	// renderable
-	//------------
+	// accessible render data
+	//------------------------
 	core::slot_map<mat4> m_Nodes;
 
-	//core::slot_map<Planet> m_Terrains;
+	core::slot_map<Planet> m_Terrains;
 	core::slot_map<MaterialCollection> m_OpaqueRenderables;
 
 	core::slot_map<Light> m_PointLights;
@@ -145,9 +156,10 @@ private:
 	Skybox m_Skybox;
 	StarField* m_Starfield = nullptr;
 	core::slot_map<MaterialCollection> m_ForwardRenderables;
-	//core::slot_map<Atmosphere> m_Atmospheres;
+	core::slot_map<AtmosphereInstance> m_AtmosphereInstances; // map into atmospheres - #todo: make atmosphere lists contain their instances
+	std::vector<std::pair<Atmosphere, uint8>> m_Atmospheres; // < renderable atmosphere | refcount >
 
-	//core::slot_map<Sprite> m_Sprites;
+	core::slot_map<Sprite> m_Sprites;
 
 	PostProcessingSettings m_PostProcessingSettings;
 };

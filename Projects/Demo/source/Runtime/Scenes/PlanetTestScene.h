@@ -4,7 +4,7 @@
 #include <Engine/SceneGraph/AbstractScene.h>
 
 
-class Planet;
+class PlanetTemplate;
 class Entity;
 class DirectionalLight;
 class SpriteFont;
@@ -25,7 +25,7 @@ private:
 	Entity* m_pLigEntity = nullptr;
 	DirectionalLight* m_pLight = nullptr;
 
-	Planet* m_pPlanet = nullptr;
+	PlanetTemplate* m_pPlanet = nullptr;
 
 	AssetPtr<SpriteFont> m_pDebugFont;
 };

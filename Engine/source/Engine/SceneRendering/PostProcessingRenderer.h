@@ -7,6 +7,9 @@
 
 class ShaderData;
 class TextureData;
+namespace render {
+	class I_OverlayRenderer;
+}
 
 static const int32 NUM_BLOOM_DOWNSAMPLES = 5;
 
@@ -19,7 +22,7 @@ public:
 	void Initialize();
 
 	void EnableInput();
-	void Draw(T_FbLoc const FBO, const PostProcessingSettings &settings);
+	void Draw(T_FbLoc const FBO, PostProcessingSettings const& settings, render::I_OverlayRenderer* const overlayRenderer);
 
 	T_FbLoc GetTargetFBO() { return m_CollectFBO; }
 	TextureData* GetTargetTexture() { return m_CollectTex; }

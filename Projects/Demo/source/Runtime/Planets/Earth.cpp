@@ -2,7 +2,7 @@
 #include "Earth.h"
 
 
-void Earth::LoadPlanet()
+Earth::Earth()
 {
 	m_Params.radius = 6371.1f;
 	m_Params.height = 8.848f;

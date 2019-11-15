@@ -3,6 +3,9 @@
 #include "Gbuffer.h"
 #include "ScreenSpaceReflections.h"
 #include "PostProcessingRenderer.h"
+#include "OverlayRenderer.h"
+#include "TextRenderer.h"
+#include "SpriteRenderer.h"
 
 #include <Engine/Graphics/Camera.h>
 #include <Engine/GraphicsContext/ViewportRenderer.h>
@@ -19,7 +22,7 @@ class Scene;
 //
 // Renders a Scene to the viewport
 //
-class ShadedSceneRenderer final : public I_ViewportRenderer, public I_ShadowRenderer
+class ShadedSceneRenderer final : public I_ViewportRenderer, public I_ShadowRenderer, public I_OverlayRenderer
 {
 	// GlobalAccess
 	//---------------
@@ -49,6 +52,10 @@ public:
 
 	Camera const& GetCamera() const override { return m_Camera; }
 
+	// Overlay Renderer Interface
+	//-----------------------------
+	void DrawOverlays(T_FbLoc const targetFb) override;
+
 	// accessors
 	//--------------
 public:
@@ -58,6 +65,9 @@ public:
 	Gbuffer const& GetGBuffer() const { return m_GBuffer; }
 
 	render::Scene const* GetScene() const { return m_RenderScene; }
+
+	TextRenderer& GetTextRenderer() { return m_TextRenderer; }
+	SpriteRenderer& GetSpriteRenderer() { return m_SpriteRenderer; }
 
 	// utility
 	//---------
@@ -84,6 +94,9 @@ private:
 	PostProcessingRenderer m_PostProcessing;
 
 	AssetPtr<ShaderData> m_SkyboxShader;
+
+	TextRenderer m_TextRenderer;
+	SpriteRenderer m_SpriteRenderer;
 };
 
 

@@ -28,7 +28,7 @@ void Triangulator::Init(Planet* const planet)
 	GenerateGeometry();
 }
 
-bool Triangulator::Update(Scene const* const renderScene)
+bool Triangulator::Update(mat4 const& transform, Camera const& camera)
 {
 	m_MaxLevel = 22;
 	Precalculate();
@@ -40,11 +40,10 @@ bool Triangulator::Update(Scene const* const renderScene)
 		m_LockFrustum = !m_LockFrustum;
 	}
 
-	mat4 const& planetWorld = renderScene->GetNodes()[m_Planet->GetNodeId()];
-	m_Frustum.SetCullTransform(planetWorld);
+	m_Frustum.SetCullTransform(transform);
 	if (!m_LockFrustum)
 	{
-		m_Frustum.SetToCamera(SceneRenderer::GetCurrent()->GetCamera());
+		m_Frustum.SetToCamera(camera);
 	}
 
 	m_Frustum.Update(Viewport::GetCurrentViewport());

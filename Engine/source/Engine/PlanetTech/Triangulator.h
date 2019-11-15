@@ -48,12 +48,15 @@ public:
 
 	//Member functions
 	void Init(Planet* const planet);
-	bool Update(Scene const* const renderScene);
+	bool Update(mat4 const& transform, Camera const& camera);
 	void GenerateGeometry();
 
 	bool IsFrustumLocked() { return m_LockFrustum; }
 	Frustum& GetFrustum() { return m_Frustum; }
-	int32 GetVertexCount() { return (int32)m_Positions.size(); }
+	Frustum const& GetFrustum() const { return m_Frustum; }
+
+	std::vector<PatchInstance> const& GetPositions() const { return m_Positions; }
+	std::vector<float> const& GetDistanceLUT() const { return m_DistanceLUT; }
 
 private:
 	friend class Planet;

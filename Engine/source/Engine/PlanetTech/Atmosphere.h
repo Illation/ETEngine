@@ -2,45 +2,70 @@
 #include "AtmosphereSettings.h"
 
 #include <EtCore/Content/AssetPointer.h>
+#include <EtCore/Containers/slot_map.h>
 
 #include <Engine/Graphics/FrameBuffer.h>
 #include <Engine/Graphics/TextureData.h>
 
 
-class Planet;
-class Atmosphere;
 class AtmoPreCompute;
-class LightComponent;
 
+
+namespace render {
+
+
+//-----------------------------
+// AtmosphereInstance
+//
+// Draw parameters for an atmosphere within a render scene
+//
+struct AtmosphereInstance
+{
+	T_Hash atmosphereId = 0u;
+
+	core::T_SlotId nodeId = core::INVALID_SLOT_ID;
+	core::T_SlotId lightId = core::INVALID_SLOT_ID; // for sun direction, color
+
+	float height = 0.f;
+	float groundRadius = 0.f;
+};
+
+
+//-----------------------------
+// Atmosphere
+//
+// Rendering data for an atmosphere, the result of a precomputation
+//
 class Atmosphere
 {
 public:
-	Atmosphere() {}
-	Atmosphere(T_Hash const parameterAssetId);
+	Atmosphere() = default;
 	~Atmosphere();
 
-	void Precalculate();
-	void Initialize();
-	void Draw(Planet* pPlanet, float radius);
+	void Initialize(T_Hash const parameterAssetId);
 
-	void SetSunlight(LightComponent* pLight) { m_pSun = pLight; }
+	T_Hash GetId() const { return m_Id; }
+
+	void Draw(vec3 const& position, float const height, float const groundRadius, vec3 const& sunDir) const;
 
 private:
 	friend class AtmospherePrecompute;
 
 	void GetUniforms();
 
-	LightComponent* m_pSun;
+	T_Hash m_Id = 0u;
 
 	AtmosphereParameters m_Params;
 	dvec3 m_SkyColor;
 	dvec3 m_SunColor;
 
 	//textures for precomputed data
-	TextureData* m_TexTransmittance;
-	TextureData* m_TexIrradiance;
-	TextureData* m_TexInscatter;
+	TextureData* m_TexTransmittance = nullptr;
+	TextureData* m_TexIrradiance = nullptr;
+	TextureData* m_TexInscatter = nullptr;
 
 	AssetPtr<ShaderData> m_pShader;
 };
 
+
+} // namespace render

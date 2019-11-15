@@ -11,7 +11,7 @@
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/Components/TransformComponent.h>
 #include <Engine/Components/CameraComponent.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/ShadedSceneRenderer.h>
 
 
 namespace render {
@@ -136,7 +136,7 @@ void Patch::GenerateGeometry(int16 levels)
 	api->BindBuffer(E_BufferType::Vertex, 0);
 }
 
-void Patch::BindInstances(std::vector<PatchInstance> &instances)
+void Patch::BindInstances(std::vector<PatchInstance> const& instances)
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
@@ -147,7 +147,7 @@ void Patch::BindInstances(std::vector<PatchInstance> &instances)
 	api->BindBuffer(E_BufferType::Vertex, 0);
 }
 
-void Patch::UploadDistanceLUT(std::vector<float> &distances)
+void Patch::UploadDistanceLUT(std::vector<float> const& distances)
 {
 	Viewport::GetCurrentApiContext()->SetShader(m_pPatchShader.get());
 	for (size_t i = 0; i < distances.size(); i++)
@@ -156,28 +156,27 @@ void Patch::UploadDistanceLUT(std::vector<float> &distances)
 	}
 }
 
-void Patch::Draw(Planet* const planet, Scene const* const renderScene)
+void Patch::Draw(Planet const& planet, mat4 const& transform, mat4 const& viewProjection)
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->SetShader(m_pPatchShader.get());
 
 	// Pass transformations to the shader
-	mat4 const& planetWorld = renderScene->GetNodes()[planet->GetNodeId()];
-	m_pPatchShader->Upload("model"_hash, planetWorld);
-	m_pPatchShader->Upload("viewProj"_hash, SceneRenderer::GetCurrent()->GetCamera().GetViewProj());
+	m_pPatchShader->Upload("model"_hash, transform);
+	m_pPatchShader->Upload("viewProj"_hash, viewProjection);
 
 	//Set other uniforms here too!
-	vec3 camPos = planet->GetTriangulator()->GetFrustum()->GetPositionOS();
+	vec3 camPos = planet.GetTriangulator().GetFrustum().GetPositionOS();
 	m_pPatchShader->Upload("camPos"_hash, camPos);
-	m_pPatchShader->Upload("radius"_hash, planet->GetRadius());
+	m_pPatchShader->Upload("radius"_hash, planet.GetRadius());
 	m_pPatchShader->Upload("morphRange"_hash, m_MorphRange);
 
-	api->LazyBindTexture(0, planet->GetTexDiffuse()->GetTargetType(), planet->GetTexDiffuse()->GetHandle());
-	api->LazyBindTexture(1, planet->GetTexDetail1()->GetTargetType(), planet->GetTexDetail1()->GetHandle());
-	api->LazyBindTexture(2, planet->GetTexDetail2()->GetTargetType(), planet->GetTexDetail2()->GetHandle());
-	api->LazyBindTexture(3, planet->GetTexHeight()->GetTargetType(), planet->GetTexHeight()->GetHandle());
-	api->LazyBindTexture(4, planet->GetTexHeightDetail()->GetTargetType(), planet->GetTexHeightDetail()->GetHandle());
+	api->LazyBindTexture(0, planet.GetTexDiffuse()->GetTargetType(), planet.GetTexDiffuse()->GetHandle());
+	api->LazyBindTexture(1, planet.GetTexDetail1()->GetTargetType(), planet.GetTexDetail1()->GetHandle());
+	api->LazyBindTexture(2, planet.GetTexDetail2()->GetTargetType(), planet.GetTexDetail2()->GetHandle());
+	api->LazyBindTexture(3, planet.GetTexHeight()->GetTargetType(), planet.GetTexHeight()->GetHandle());
+	api->LazyBindTexture(4, planet.GetTexHeightDetail()->GetTargetType(), planet.GetTexHeightDetail()->GetHandle());
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);

@@ -8,6 +8,7 @@
 #include "ScreenshotCapture.h"
 
 #include <Engine/Materials/NullMaterial.h>
+#include <Engine/PlanetTech/Patch.h>
 
 
 //---------------------------------
@@ -49,10 +50,10 @@ public:
 	CIE& GetCie() { return m_Cie; }
 	DirectLightVolume& GetDirectLightVolume() { return m_DirectLightVolume; }
 	PointLightVolume& GetPointLightVolume() { return m_PointLightVolume; }
-	AtmospherePrecompute& GetAtmospherPrecompute() { return m_AtmospherePrecompute; }
+	render::AtmospherePrecompute& GetAtmospherPrecompute() { return m_AtmospherePrecompute; }
+	render::Patch& GetPatch() { return m_Patch; }
 	ScreenshotCapture& GetScreenshotCapture() { return m_ScreenshotCapture; }
 	NullMaterial* GetNullMaterial() { return &m_NullMaterial; }
-	Patch& GetPatch() { return m_Patch; }
 
 	// Data
 	///////
@@ -67,7 +68,7 @@ private:
 	DirectLightVolume m_DirectLightVolume;
 	PointLightVolume m_PointLightVolume;
 
-	AtmospherePrecompute m_AtmospherePrecompute;
+	render::AtmospherePrecompute m_AtmospherePrecompute;
 	render::Patch m_Patch;
 
 	ScreenshotCapture m_ScreenshotCapture;

@@ -72,6 +72,9 @@ void ShadedSceneRenderer::InitRenderingSystems()
 {
 	RenderingSystems::AddReference();
 
+	m_TextRenderer.Initialize();
+	m_SpriteRenderer.Initialize();
+
 	m_ShadowRenderer.Initialize();
 	m_PostProcessing.Initialize();
 
@@ -138,14 +141,28 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	//reset viewport
 	api->SetViewport(ivec2(0), m_Dimensions);
 	api->SetDepthEnabled(true);
-	api->SetCullEnabled(true);
 
 	api->SetClearColor(vec4(m_ClearColor, 1.f));
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
-	// #todo: draw terrain
+	// draw terrains
+	api->SetCullEnabled(false);
+	Patch& patch = RenderingSystems::Instance()->GetPatch();
+	for (Planet& planet : m_RenderScene->GetTerrains())
+	{
+		if (planet.GetTriangulator().Update(m_RenderScene->GetNodes()[planet.GetNodeId()], m_Camera))
+		{
+			planet.GetTriangulator().GenerateGeometry();
+		}
+
+		//Bind patch instances
+		patch.BindInstances(planet.GetTriangulator().GetPositions());
+		patch.UploadDistanceLUT(planet.GetTriangulator().GetDistanceLUT());
+		patch.Draw(planet, m_RenderScene->GetNodes()[planet.GetNodeId()], m_Camera.GetViewProj());
+	}
 
 	// render opaque objects to GBuffer
+	api->SetCullEnabled(true);
 	DrawMaterialCollectionGroup(m_RenderScene->GetOpaqueRenderables());
 
 	// render ambient IBL
@@ -247,13 +264,50 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	}
 
 	// forward rendering
+	api->SetCullEnabled(true);
 	DrawMaterialCollectionGroup(m_RenderScene->GetForwardRenderables());
 	
-	// #todo: draw atmospheres
+	// draw atmospheres
+	if (m_RenderScene->GetAtmosphereInstances().size() > 0u)
+	{
+		api->SetFaceCullingMode(E_FaceCullMode::Front);
+		api->SetDepthEnabled(false);
+		api->SetBlendEnabled(true);
+		api->SetBlendEquation(E_BlendEquation::Add);
+		api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::One);
+
+		for (AtmosphereInstance const& atmoInst : m_RenderScene->GetAtmosphereInstances())
+		{
+			vec3 const pos = etm::decomposePosition(m_RenderScene->GetNodes()[atmoInst.nodeId]);
+
+			ET_ASSERT(atmoInst.lightId != core::INVALID_SLOT_ID);
+			Light const& sun = m_RenderScene->GetLight(atmoInst.lightId);
+			vec3 const sunDir = (m_RenderScene->GetNodes()[sun.m_NodeId] * vec4(vec3::FORWARD, 1.f)).xyz;
+
+			m_RenderScene->GetAtmosphere(atmoInst.atmosphereId).Draw(pos, atmoInst.height, atmoInst.groundRadius, sunDir);
+		}
+
+		api->SetFaceCullingMode(E_FaceCullMode::Back);
+		api->SetBlendEnabled(false);
+		api->SetDepthEnabled(true);
+	}
+
+	// add scene sprites before the overlay pass
+	SpriteRenderer::E_ScalingMode const scalingMode = SpriteRenderer::E_ScalingMode::Texture;
+	for (Sprite const& sprite : m_RenderScene->GetSprites())
+	{
+		mat4 const& transform = m_RenderScene->GetNodes()[sprite.node];
+
+		vec3 pos, scale;
+		quat rot;
+		etm::decomposeTRS(transform, pos, rot, scale);
+
+		m_SpriteRenderer.Draw(sprite.texture.get(), pos.xy, sprite.color, sprite.pivot, scale.xy, rot.Roll(), pos.z, scalingMode);
+	}
 
 	// post processing
 	api->SetCullEnabled(false);
-	m_PostProcessing.Draw(targetFb, m_RenderScene->GetPostProcessingSettings()); // #todo: draw overlays
+	m_PostProcessing.Draw(targetFb, m_RenderScene->GetPostProcessingSettings(), this);
 }
 
 //---------------------------------
@@ -319,6 +373,17 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 			}
 		}
 	}
+}
+
+//-----------------------------------
+// ShadedSceneRenderer::DrawOverlays
+//
+// Post scene things which should be drawn to the viewport before anti aliasing
+//
+void ShadedSceneRenderer::DrawOverlays(T_FbLoc const targetFb)
+{
+	m_SpriteRenderer.Draw();
+	m_TextRenderer.Draw();
 }
 
 

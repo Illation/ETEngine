@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "PostProcessingRenderer.h"
 
-#include "SceneRenderer.h"
+#include "OverlayRenderer.h"
 
 #include <EtCore/Content/ResourceManager.h>
 
@@ -154,7 +154,7 @@ void PostProcessingRenderer::EnableInput()
 {
 	Viewport::GetCurrentApiContext()->BindFramebuffer(m_CollectFBO);
 }
-void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSettings &settings)
+void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings const& settings, render::I_OverlayRenderer* const overlayRenderer)
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
@@ -223,7 +223,11 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, const PostProcessingSetting
 	m_pPostProcShader->Upload("bloomMult"_hash, settings.bloomMult);
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 
-	//SceneRenderer::GetCurrent()->DrawOverlays(currentFb);//Make sure text and sprites get antialiased
+	// Make sure text and sprites get antialiased by drawing them before FXAA
+	if (overlayRenderer != nullptr)
+	{
+		overlayRenderer->DrawOverlays(currentFb); 
+	}
 
 	//FXAA
 	if (graphicsSettings.UseFXAA)

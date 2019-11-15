@@ -4,7 +4,15 @@
 
 #include <EtCore/Content/AssetPointer.h>
 
+
+class RenderingSystems;
+
+
+namespace render {
+
+
 class Atmosphere;
+
 
 class AtmospherePrecompute final
 {
@@ -58,3 +66,6 @@ private:
 	AtmospherePrecompute();
 	~AtmospherePrecompute();
 };
+
+
+} // namespace render

@@ -43,9 +43,9 @@ public:
 	VolumeCheck ContainsTriangle(vec3 &a, vec3 &b, vec3 &c);
 	VolumeCheck ContainsTriVolume(vec3 &a, vec3 &b, vec3 &c, float height);
 
-	const vec3 &GetPositionOS() { return m_PositionObject; }
-	const float GetFOV() { return m_FOV; }
-	const float GetRadInvFOV() { return m_RadInvFOV; }
+	vec3 const& GetPositionOS() const { return m_PositionObject; }
+	float GetFOV() const { return m_FOV; }
+	float GetRadInvFOV() const { return m_RadInvFOV; }
 
 	FrustumCorners const& GetCorners() const { return m_Corners; }
 

@@ -12,78 +12,91 @@
 #include <Engine/Graphics/Frustum.h>
 #include <Engine/Graphics/Light.h>
 #include <Engine/SceneRendering/SpriteRenderer.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/ShadedSceneRenderer.h>
 #include <Engine/SceneRendering/Gbuffer.h>
 #include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <Engine/Prefabs/Skybox.h>
 #include <Engine/SceneGraph/AbstractScene.h>
 
 
-Atmosphere::Atmosphere(T_Hash const parameterAssetId)
-{
-	m_Params = AtmosphereParameters(parameterAssetId, m_SkyColor, m_SunColor);
-}
+namespace render {
+
+
+//============
+// Atnosphere
+//============
+
+
+//-------------------------
+// Atmosphere::d-tor
+//
 Atmosphere::~Atmosphere()
 {
-	delete m_TexTransmittance;
-	m_TexTransmittance = nullptr;
-	delete m_TexIrradiance;
-	m_TexIrradiance = nullptr;
-	delete m_TexInscatter;
-	m_TexInscatter = nullptr;
+	if (m_Id != 0u)
+	{
+		delete m_TexTransmittance;
+		delete m_TexIrradiance;
+		delete m_TexInscatter;
+
+		m_TexTransmittance = nullptr;
+		m_TexIrradiance = nullptr;
+		m_TexInscatter = nullptr;
+	}
 }
 
-void Atmosphere::Precalculate()
+//-------------------------
+// Atmosphere::Initialize
+//
+// Load parameters, precalculate look up textures...
+//
+void Atmosphere::Initialize(T_Hash const parameterAssetId)
 {
-	//Calculate look up textures here
+	m_Id = parameterAssetId;
+
+	m_Params = AtmosphereParameters(m_Id, m_SkyColor, m_SunColor);
+
 	RenderingSystems::Instance()->GetAtmospherPrecompute().Precalculate(this);
-}
 
-void Atmosphere::Initialize()
-{
-	Precalculate();
 	//Load and compile Shaders
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostAtmosphere.glsl"_hash);
 }
-void Atmosphere::Draw(Planet* pPlanet, float radius)
+
+//-------------------------
+// Atmosphere::Draw
+//
+void Atmosphere::Draw(vec3 const& position, float const height, float const groundRadius, vec3 const& sunDir) const
 {
+	ET_ASSERT(m_Id != 0u, "Atmosphere wasn't initialized before drawing");
+	ET_ASSERT(m_TexTransmittance != nullptr, "Atmosphere wasn't precalculated before drawing");
+	ET_ASSERT(m_TexIrradiance != nullptr);
+	ET_ASSERT(m_TexInscatter != nullptr);
+
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	vec3 pos = pPlanet->GetTransform()->GetPosition();
-	float surfaceRadius = pPlanet->GetRadius();
-	radius += surfaceRadius;
-	float icoRadius = radius / 0.996407747f;//scale up the sphere so the face center reaches the top of the atmosphere
+	float const radius = groundRadius + height;
+	float const icoRadius = radius / 0.996407747f;//scale up the sphere so the face center reaches the top of the atmosphere
 
-	Camera const& cam = SceneRenderer::GetCurrent()->GetCamera();
+	Camera const& cam = render::ShadedSceneRenderer::GetCurrent()->GetCamera();
 
-	Sphere objSphere = Sphere(pos, radius);
+	Sphere objSphere = Sphere(position, radius);
 	if (cam.GetFrustum().ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
 	{
 		return;
 	}
 
-	//mat4 World = etm::translate(pos)*etm::scale(vec3(icoRadius));
-	mat4 World = etm::scale(vec3(icoRadius))*etm::translate(pos);
+	//mat4 transform = etm::translate(position)*etm::scale(vec3(icoRadius));
+	mat4 transform = etm::scale(vec3(icoRadius))*etm::translate(position);
 
-	//Hotreload shader
-	//if (INPUT->GetKeyState(E_KbdKey::LeftAlt) == E_KeyState::Down &&
-	//	INPUT->GetKeyState(E_KbdKey::R) == E_KeyState::Pressed)
-	//{
-	//	//if there is a debugger attached copy over the resource files 
-	//	DebugCopyResourceFiles();
-	//	//reload the shader
-	//	m_pShader = ContentManager::Reload<ShaderData>("Shaders/PostAtmosphere.glsl");
-	//}
 	api->SetShader(m_pShader.get());
 
-	m_pShader->Upload("model"_hash, World);
+	m_pShader->Upload("model"_hash, transform);
 	m_pShader->Upload("worldViewProj"_hash, cam.GetViewProj());
 
 	// #todo: stop repeating this everywhere
 	m_pShader->Upload("texGBufferA"_hash, 0);
 	//m_pShader->Upload("texGBufferB"_hash, 1);
 	//m_pShader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = SceneRenderer::GetCurrent()->GetGBuffer()->GetTextures();
+	auto gbufferTex = render::ShadedSceneRenderer::GetCurrent()->GetGBuffer().GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());
@@ -94,9 +107,9 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	m_pShader->Upload("viewProjInv"_hash, cam.GetStatViewProjInv());
 	m_pShader->Upload("camPos"_hash, cam.GetPosition());
 
-	m_pShader->Upload("Position"_hash, pos);
+	m_pShader->Upload("Position"_hash, position);
 	m_pShader->Upload("Radius"_hash, radius);
-	//m_pShader->Upload("SurfaceRadius"_hash, surfaceRadius);
+	//m_pShader->Upload("SurfaceRadius"_hash, groundRadius);
 
 	m_Params.Upload(m_pShader.get(), "uAtmosphere");
 	RenderingSystems::Instance()->GetAtmospherPrecompute().GetSettings().UploadTextureSize(m_pShader.get());
@@ -111,23 +124,15 @@ void Atmosphere::Draw(Planet* pPlanet, float radius)
 	m_pShader->Upload("uTexTransmittance"_hash, 5);
 	api->LazyBindTexture(5, E_TextureType::Texture2D, m_TexTransmittance->GetHandle());
 
-	m_pShader->Upload("SunDir"_hash, m_pSun->GetTransform()->GetForward());
+	m_pShader->Upload("SunDir"_hash, sunDir);
 	m_pShader->Upload("uSunSize"_hash, vec2(tan(m_Params.sun_angular_radius), cos(m_Params.sun_angular_radius)));
-	//DirectionalLight* pDirLight = m_pSun->GetLight<DirectionalLight>();
-	//if (pDirLight)
+	//if (light)
 	//{
-	//	m_pShader->Upload("SunIntensity"_hash, pDirLight->GetBrightness());
+	//	m_pShader->Upload("SunIntensity"_hash, brightness);
 	//}
 
-	api->SetCullEnabled(true);
-	api->SetFaceCullingMode(E_FaceCullMode::Front);
-	api->SetDepthEnabled(false);
-	api->SetBlendEnabled(true);
-	api->SetBlendEquation(E_BlendEquation::Add);
-	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::One);
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::IcoSphere<3> >();
-	api->SetFaceCullingMode(E_FaceCullMode::Back);
-	api->SetBlendEnabled(false);
-	api->SetDepthEnabled(true);
-	api->SetCullEnabled(false);
 }
+
+
+} // namespace render

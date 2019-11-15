@@ -4,6 +4,9 @@
 
 class SpriteFont;
 class ShaderData;
+namespace render {
+	class ShadedSceneRenderer;
+}
 
 
 //---------------------------------
@@ -17,6 +20,7 @@ class TextRenderer final
 	//-------------
 private:
 	friend class SceneRenderer;
+	friend class render::ShadedSceneRenderer;
 	friend class UIPortal;
 
 	//---------------------------------

@@ -2,6 +2,11 @@
 #include <EtCore/Content/AssetPointer.h>
 
 
+namespace render {
+	class ShadedSceneRenderer;
+}
+
+
 //---------------------------------
 // SpriteRenderer
 //
@@ -13,6 +18,7 @@ private:
 	// Definitions
 	//--------------------------
 	friend class SceneRenderer;
+	friend class render::ShadedSceneRenderer;
 	friend class UIPortal;
 
 	//---------------------------------

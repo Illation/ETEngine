@@ -5,6 +5,7 @@
 #include "DebugRenderer.h"
 #include "TextRenderer.h"
 #include "SpriteRenderer.h"
+#include "OverlayRenderer.h"
 
 #include <EtCore/Helper/Singleton.h>
 #include <EtCore/Content/AssetPointer.h>
@@ -24,7 +25,7 @@ class ScreenSpaceReflections;
 //
 // Renders a Scene to the viewport
 //
-class SceneRenderer final : public I_ViewportRenderer, public I_ShadowRenderer
+class SceneRenderer final : public I_ViewportRenderer, public I_ShadowRenderer, public render::I_OverlayRenderer
 {
 	// GlobalAccess
 	//---------------
@@ -47,8 +48,6 @@ public:
 	void ShowSplashScreen();
 	void HideSplashScreen();
 
-	void DrawOverlays(T_FbLoc const targetFb);
-
 private:
 	void Draw();
 
@@ -58,6 +57,10 @@ public:
 	void DrawShadow(NullMaterial* const nullMaterial) override;
 
 	Camera const& GetCamera() const override { return m_Camera; }
+
+	// Overlay Renderer Interface
+	//-----------------------------
+	void DrawOverlays(T_FbLoc const targetFb) override;
 
 	// Viewport Renderer Interface
 	//-----------------------------

@@ -9,6 +9,9 @@
 #include <Engine/PlanetTech/Atmosphere.h>
 
 
+namespace render {
+
+
 AtmospherePrecompute::AtmospherePrecompute()
 {
 	Init();
@@ -295,3 +298,6 @@ void AtmospherePrecompute::ConvertSpectrumToLinearSrgb( const std::vector<double
 	}
 	rgb = cie.GetRGB(xyz);
 }
+
+
+} // namespace render

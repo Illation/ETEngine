@@ -35,33 +35,6 @@ void Planet::Init(PlanetParams const& params, core::T_SlotId const nodeId)
 	m_TexHeightDetail = ResourceManager::Instance()->GetAssetData<TextureData>(params.texHeightDetailId);
 
 	m_Triangulator.Init(this);
-
-	// create atmosphere
-}
-
-//-------------------------
-// Planet::UpdateTriangles
-//
-// Change Planet Geometry
-//
-void Planet::UpdateTriangles(Scene const* const renderScene)
-{
-	if (m_Triangulator.Update(renderScene))
-	{
-		//Change the actual vertex positions
-		m_Triangulator.GenerateGeometry();
-		//Bind patch instances
-		m_pPatch->BindInstances(m_pTriangulator->m_Positions);
-		m_pPatch->UploadDistanceLUT(m_pTriangulator->m_DistanceLUT);
-	}
-}
-
-//-------------------------
-// Planet::GetVertexCount
-//
-int32 Planet::GetVertexCount() const
-{
-	return m_Triangulator.GetVertexCount() * m_pPatch->GetVertexCount();
 }
 
 
