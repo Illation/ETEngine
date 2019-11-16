@@ -7,6 +7,7 @@
 
 class AbstractScene;
 class Entity;
+class OutlineExtension;
 
 
 //-------------------------------
@@ -54,7 +55,8 @@ public:
 
 	void Pick(ivec2 const pos, Viewport* const viewport, bool const add);
 
-	void UpdateOutliners() const;
+	void UpdateOutlines() const;
+	void RecursiveAddOutlines(Entity* const entity) const;
 
 private:
 	void OnSceneEvent(SceneEventData const* const eventData);
@@ -71,5 +73,7 @@ private:
 
 	EntityIdRenderer m_IdRenderer;
 	bool m_IsIdRendererInitialized = false;
+
+	OutlineExtension* m_OutlineExtension = nullptr;
 };
 

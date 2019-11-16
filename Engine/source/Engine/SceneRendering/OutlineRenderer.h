@@ -1,8 +1,10 @@
 #pragma once
-#include <EtCore/Content/AssetPointer.h>
+#include "OutlineExtension.h"
+#include "RenderEvents.h"
 
 
-class ColorMaterial;
+class Camera;
+class TextureData;
 
 
 //---------------------------------
@@ -12,64 +14,35 @@ class ColorMaterial;
 //
 class OutlineRenderer final
 {
-private:
-	// Definitions
-	//--------------------------
-	friend class SceneRenderer;
-
-	//---------------------------------
-	// OutlineRenderer::EntityList
-	//
-	// Lists that we can draw as a single unit without updating shader data (apart from model matricies)
-	//
-	struct EntityList
-	{
-		vec4 color;
-		std::vector<Entity*> entities;
-	};
-
-	typedef std::vector<EntityList> T_EntityLists;
-
 	// construct destruct
 	//--------------------
+public:
 	OutlineRenderer() = default;
 	~OutlineRenderer();
 
-	OutlineRenderer(const OutlineRenderer& t) = delete;
-	OutlineRenderer& operator=(const OutlineRenderer& t) = delete;
-
-	void Initialize();
-
-	void CreateRenderTarget();
-	void DestroyRenderTarget();
+	void Initialize(render::RenderEventDispatcher* const eventDispatcher);
 
 	// Functionality
 	//---------------
 public:
-	void SetColor(vec4 const& col) { m_Color = col; }
-	void AddEntity(Entity* const entity);
-	void AddEntities(std::vector<Entity*> const& entities);
-
-private:
 	void OnWindowResize();
-	void Draw(T_FbLoc const targetFb);
+	void Draw(T_FbLoc const targetFb, OutlineExtension const& outlines, core::slot_map<mat4> const& nodes, Camera const& cam, Gbuffer const& gbuffer);
 
 	// utility
 	//---------
-	T_EntityLists::iterator AccessEntityListIt(vec4 const& col);
+private:
+	void CreateRenderTarget();
+	void DestroyRenderTarget();
 
 	// Data
 	///////
-
-	vec4 m_Color;
-	T_EntityLists m_Lists;
-
-	AssetPtr<ShaderData> m_Shader;
-	ColorMaterial* m_Material;
 
 	T_FbLoc m_DrawTarget;
 	TextureData* m_DrawTex = nullptr;
 	T_RbLoc m_DrawDepth;
 
 	AssetPtr<ShaderData> m_SobelShader;
+
+	render::RenderEventDispatcher* m_EventDispatcher = nullptr;
+	render::T_RenderEventCallbackId m_CallbackId = core::INVALID_SLOT_ID;
 };

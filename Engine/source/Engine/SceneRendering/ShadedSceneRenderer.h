@@ -6,6 +6,7 @@
 #include "OverlayRenderer.h"
 #include "TextRenderer.h"
 #include "SpriteRenderer.h"
+#include "RenderEvents.h"
 
 #include <Engine/Graphics/Camera.h>
 #include <Engine/GraphicsContext/ViewportRenderer.h>
@@ -69,6 +70,8 @@ public:
 	TextRenderer& GetTextRenderer() { return m_TextRenderer; }
 	SpriteRenderer& GetSpriteRenderer() { return m_SpriteRenderer; }
 
+	RenderEventDispatcher& GetEventDispatcher() { return m_Events; }
+
 	// utility
 	//---------
 private:
@@ -97,6 +100,8 @@ private:
 
 	TextRenderer m_TextRenderer;
 	SpriteRenderer m_SpriteRenderer;
+
+	RenderEventDispatcher m_Events;
 };
 
 

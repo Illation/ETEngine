@@ -16,7 +16,7 @@ public:
 
 	T_FbLoc Get() { return m_GlFrameBuffer; }
 
-	std::vector<TextureData*> GetTextures() { return m_pTextureVec; }
+	std::vector<TextureData*> const& GetTextures() const { return m_pTextureVec; }
 
 protected:
 

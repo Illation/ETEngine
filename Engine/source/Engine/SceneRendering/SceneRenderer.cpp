@@ -111,8 +111,6 @@ void SceneRenderer::InitRenderingSystems()
 	m_DebugRenderer.Initialize();
 	m_ShadowRenderer.Initialize();
 
-	m_OutlineRenderer.Initialize();
-
 	m_PostProcessing = new PostProcessingRenderer();
 	m_PostProcessing->Initialize();
 
@@ -331,7 +329,6 @@ void SceneRenderer::DrawShadow(NullMaterial* const nullMaterial)
 //
 void SceneRenderer::DrawOverlays(T_FbLoc const targetFb)
 {
-	m_OutlineRenderer.Draw(targetFb);
 	m_SpriteRenderer.Draw();
 	m_TextRenderer.Draw();
 }

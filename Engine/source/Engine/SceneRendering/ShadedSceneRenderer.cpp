@@ -165,6 +165,8 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->SetCullEnabled(true);
 	DrawMaterialCollectionGroup(m_RenderScene->GetOpaqueRenderables());
 
+	m_Events.Notify(new RenderEventData(E_RenderEvent::RenderDeferred, this, m_GBuffer.Get()));
+
 	// render ambient IBL
 	api->SetFaceCullingMode(E_FaceCullMode::Back);
 	api->SetCullEnabled(false);
@@ -226,6 +228,8 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 	api->SetCullEnabled(false);
 
+	m_Events.Notify(new RenderEventData(E_RenderEvent::RenderLights, this, m_SSR.GetTargetFBO()));
+
 	// draw SSR
 	m_PostProcessing.EnableInput();
 	m_SSR.Draw();
@@ -266,6 +270,8 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	// forward rendering
 	api->SetCullEnabled(true);
 	DrawMaterialCollectionGroup(m_RenderScene->GetForwardRenderables());
+
+	m_Events.Notify(new RenderEventData(E_RenderEvent::RenderForward, this, m_PostProcessing.GetTargetFBO()));
 	
 	// draw atmospheres
 	if (m_RenderScene->GetAtmosphereInstances().size() > 0u)
@@ -384,6 +390,8 @@ void ShadedSceneRenderer::DrawOverlays(T_FbLoc const targetFb)
 {
 	m_SpriteRenderer.Draw();
 	m_TextRenderer.Draw();
+
+	m_Events.Notify(new RenderEventData(E_RenderEvent::RenderOutlines, this, targetFb));
 }
 
 

@@ -81,7 +81,7 @@ bool SceneEditor::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
 //
 void SceneEditor::OnTick()
 {
-	m_SceneSelection.UpdateOutliners();
+	m_SceneSelection.UpdateOutlines();
 
 	for (I_SceneEditorListener* const listener : m_Listeners)
 	{

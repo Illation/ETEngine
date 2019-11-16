@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SceneExtension.h"
 #include "RenderSceneFwd.h"
 #include "Skybox.h"
 #include "Sprite.h"
@@ -58,6 +59,10 @@ class Scene final
 public:
 	typedef core::slot_map<MeshInstance>::id_type T_InstanceId;
 
+	// construct destruct
+	//--------------------
+	~Scene();
+
 
 	// functionality
 	//-------------
@@ -90,6 +95,8 @@ public:
 	void UpdateSpriteColor(core::T_SlotId const spriteId, vec4 const& color);
 	void RemoveSprite(core::T_SlotId const spriteId);
 
+	void AddExtension(I_SceneExtension* const ext);
+
 
 	// accessors
 	//-------------
@@ -121,6 +128,8 @@ public:
 	core::slot_map<Sprite> const& GetSprites() const { return m_Sprites; }
 
 	PostProcessingSettings const& GetPostProcessingSettings() const { return m_PostProcessingSettings; }
+
+	I_SceneExtension* GetExtension(T_Hash const extensionId) const;
 
 
 	// utility
@@ -162,6 +171,8 @@ private:
 	core::slot_map<Sprite> m_Sprites;
 
 	PostProcessingSettings m_PostProcessingSettings;
+
+	std::vector<I_SceneExtension*> m_Extensions;
 };
 
 

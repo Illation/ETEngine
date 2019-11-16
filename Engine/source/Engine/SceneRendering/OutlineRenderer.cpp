@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "OutlineRenderer.h"
 
-#include "SceneRenderer.h"
+#include "ShadedSceneRenderer.h"
 #include "Gbuffer.h"
 
 #include <EtCore/Content/ResourceManager.h>
@@ -10,8 +10,9 @@
 #include <Engine/Graphics/Shader.h>
 #include <Engine/Graphics/FrameBuffer.h>
 #include <Engine/Materials/ColorMaterial.h>
-#include <Engine/SceneGraph/Entity.h>
 #include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <Engine/GraphicsHelper/RenderScene.h>
+
 
 
 //====================
@@ -24,25 +25,48 @@
 //
 OutlineRenderer::~OutlineRenderer()
 {
-	SafeDelete(m_Material);
-
 	DestroyRenderTarget();
+
+	if (m_EventDispatcher != nullptr)
+	{
+		m_EventDispatcher->Unregister(m_CallbackId);
+		m_EventDispatcher = nullptr;
+	}
 }
 
 //---------------------------------
 // OutlineRenderer::Initialize
 //
-void OutlineRenderer::Initialize()
+void OutlineRenderer::Initialize(render::RenderEventDispatcher* const eventDispatcher)
 {
 	m_SobelShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostSobel.glsl"_hash);
-	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdColorShader.glsl"_hash);
-
-	m_Material = new ColorMaterial();
-	m_Material->Initialize();
 
 	CreateRenderTarget();
 
 	Viewport::GetCurrentViewport()->GetResizeEvent().AddListener( std::bind( &OutlineRenderer::OnWindowResize, this ) );
+
+	m_EventDispatcher = eventDispatcher;
+	m_CallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RenderOutlines, render::T_RenderEventCallback(
+		[this](render::RenderEventData const* const evnt) -> void
+		{
+			if (evnt->renderer->GetType() == typeid(render::ShadedSceneRenderer))
+			{
+				render::ShadedSceneRenderer const* const renderer = static_cast<render::ShadedSceneRenderer const*>(evnt->renderer);
+				render::I_SceneExtension const* const ext = renderer->GetScene()->GetExtension("OutlineExtension"_hash);
+				if (ext == nullptr)
+				{
+					LOG("render scene does not have an outline extension");
+					return;
+				}
+
+				OutlineExtension const* const outlineExt = static_cast<OutlineExtension const*>(ext);
+				Draw(evnt->targetFb, *outlineExt, renderer->GetScene()->GetNodes(), renderer->GetCamera(), renderer->GetGBuffer());
+			}
+			else
+			{
+				ET_ASSERT(true, "Cannot retrieve outline info from unhandled renderer!");
+			}
+		}));
 }
 
 //---------------------------------
@@ -89,37 +113,15 @@ void OutlineRenderer::DestroyRenderTarget()
 }
 
 //---------------------------------
-// OutlineRenderer::AddEntity
-//
-// Adds an entity to the current color list
-//
-void OutlineRenderer::AddEntity(Entity* const entity)
-{
-	auto listIt = AccessEntityListIt(m_Color);
-	ET_ASSERT(listIt != m_Lists.cend());
-
-	listIt->entities.emplace_back(entity);
-}
-
-//---------------------------------
-// OutlineRenderer::AddEntities
-//
-// Add a bunch of entities to the current color list
-//
-void OutlineRenderer::AddEntities(std::vector<Entity*> const& entities)
-{
-	auto listIt = AccessEntityListIt(m_Color);
-	ET_ASSERT(listIt != m_Lists.cend());
-
-	listIt->entities.insert(listIt->entities.end(), entities.begin(), entities.end());
-}
-
-//---------------------------------
 // OutlineRenderer::Draw
 //
-void OutlineRenderer::Draw(T_FbLoc const targetFb)
+void OutlineRenderer::Draw(T_FbLoc const targetFb, 
+	OutlineExtension const& outlines, 
+	core::slot_map<mat4> const& nodes, 
+	Camera const& cam, 
+	Gbuffer const& gbuffer)
 {
-	if (m_Lists.empty())
+	if (outlines.GetOutlineLists().empty())
 	{
 		return;
 	}
@@ -136,30 +138,43 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb)
 	api->SetClearColor(vec4(vec3(0.f), 1.f));
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
-	api->SetShader(m_Shader.get());
-	m_Shader->Upload("worldViewProj"_hash, SceneRenderer::GetCurrent()->GetCamera().GetViewProj());
-	m_Shader->Upload("uViewSize"_hash, etm::vecCast<float>(dim));
+	ColorMaterial* const mat = RenderingSystems::Instance()->GetColorMaterial();
+	AssetPtr<ShaderData> const shader = mat->GetShader();
 
-	m_Shader->Upload("uOcclusionFactor"_hash, 0.15f);
+	api->SetShader(shader.get());
+	shader->Upload("worldViewProj"_hash, cam.GetViewProj());
+	shader->Upload("uViewSize"_hash, etm::vecCast<float>(dim));
+
+	shader->Upload("uOcclusionFactor"_hash, 0.15f);
 
 	// bind the gbuffers depth texture
-	m_Shader->Upload("texGBufferA"_hash, 0);
-	auto gbufferTex = SceneRenderer::GetCurrent()->GetGBuffer()->GetTextures()[0];
-	api->LazyBindTexture(0, gbufferTex->GetTargetType(), gbufferTex->GetHandle());
+	shader->Upload("texGBufferA"_hash, 0);
+	api->LazyBindTexture(0, gbuffer.GetTextures()[0]->GetTargetType(), gbuffer.GetTextures()[0]->GetHandle());
 
 	api->SetDepthEnabled(true); 
 
-	for (EntityList& list : m_Lists)
+	for (OutlineExtension::OutlineList const& list : outlines.GetOutlineLists())
 	{
-		m_Shader->Upload("uColor"_hash, m_Color);
+		shader->Upload("uColor"_hash, list.color);
 
-		for (Entity* const entity : list.entities)
+		for (render::MaterialCollection::Mesh const& mesh : list.meshes)
 		{
-			entity->RootDrawMaterial(static_cast<Material*>(m_Material));
+			api->BindVertexArray(mesh.m_VAO);
+			for (render::T_NodeId const node : mesh.m_Instances)
+			{
+				// #todo: collect a list of transforms and draw this instanced
+				mat4 const& transform = nodes[node];
+				Sphere instSphere = Sphere((transform * vec4(mesh.m_BoundingVolume.pos, 1.f)).xyz,
+					etm::length(etm::decomposeScale(transform)) * mesh.m_BoundingVolume.radius);
+
+				if (cam.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
+				{
+					mat->UploadModelOnly(transform);
+					api->DrawElements(E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
+				}
+			}
 		}
 	}
-
-	m_Lists.clear();
 
 	// apply a sobel shader to the colored shapes and render it to the target framebuffer
 	//------------------------------------------------------------------------------------
@@ -179,29 +194,6 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb)
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 
 	api->SetBlendEnabled(false);
-}
-
-//---------------------------------
-// OutlineRenderer::AccessEntityListIt
-//
-// Find or create an entity list matching our color
-//
-OutlineRenderer::T_EntityLists::iterator OutlineRenderer::AccessEntityListIt(vec4 const& col)
-{
-	auto listIt = std::find_if(m_Lists.begin(), m_Lists.end(), [&col](EntityList const& list)
-		{
-			return etm::nearEqualsV(list.color, col);
-		});
-
-	// create a new one if none was found
-	if (listIt == m_Lists.cend())
-	{
-		m_Lists.emplace_back(EntityList());
-		listIt = std::prev(m_Lists.end());
-		listIt->color = col;
-	}
-
-	return listIt;
 }
 
 //---------------------------------

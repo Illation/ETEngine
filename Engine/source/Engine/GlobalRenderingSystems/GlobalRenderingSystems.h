@@ -8,6 +8,7 @@
 #include "ScreenshotCapture.h"
 
 #include <Engine/Materials/NullMaterial.h>
+#include <Engine/Materials/ColorMaterial.h>
 #include <Engine/PlanetTech/Patch.h>
 
 
@@ -54,6 +55,7 @@ public:
 	render::Patch& GetPatch() { return m_Patch; }
 	ScreenshotCapture& GetScreenshotCapture() { return m_ScreenshotCapture; }
 	NullMaterial* GetNullMaterial() { return &m_NullMaterial; }
+	ColorMaterial* GetColorMaterial() { return &m_ColorMaterial; }
 
 	// Data
 	///////
@@ -74,4 +76,5 @@ private:
 	ScreenshotCapture m_ScreenshotCapture;
 
 	NullMaterial m_NullMaterial;
+	ColorMaterial m_ColorMaterial;
 };

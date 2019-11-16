@@ -47,6 +47,7 @@ public:
 
 	AbstractScene* GetScene();
 	Entity* GetParent() const { return m_pParentEntity; }
+	std::vector<Entity*> const& GetChildren() const { return m_pChildVec; }
 
 	template<class T> 
 	bool HasComponent(bool searchChildren = false);
@@ -61,7 +62,7 @@ public:
 	T* GetChild();
 
 	template<class T> 
-	std::vector<T*> GetChildren();
+	std::vector<T*> GetChildrenOfType();
 
 	// interface
 	//------------

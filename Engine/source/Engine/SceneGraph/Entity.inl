@@ -81,8 +81,7 @@ T* Entity::GetChild()
 }
 
 template<class T>
-std::vector<T*>
-Entity::GetChildren()
+std::vector<T*> Entity::GetChildrenOfType()
 {
 	const type_info& ti = typeid(T);
 	std::vector<T*> children;

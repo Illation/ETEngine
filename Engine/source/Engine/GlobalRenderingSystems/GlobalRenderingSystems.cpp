@@ -79,6 +79,7 @@ void RenderingSystems::Initialize()
 	}
 
 	m_NullMaterial.Initialize();
+	m_ColorMaterial.Initialize();
 
 	m_Patch.Init(4);
 }

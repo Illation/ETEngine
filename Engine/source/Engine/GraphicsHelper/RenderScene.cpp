@@ -21,6 +21,17 @@ namespace render {
 
 
 //----------------------
+// Scene::d-tor
+//
+Scene::~Scene()
+{
+	for (I_SceneExtension* const ext : m_Extensions)
+	{
+		delete ext;
+	}
+}
+
+//----------------------
 // Scene::AddNode
 //
 // Add a transformation to the scene
@@ -423,6 +434,16 @@ void Scene::RemoveSprite(core::T_SlotId const spriteId)
 	m_Sprites.erase(spriteId);
 }
 
+//---------------------
+// Scene::AddExtension
+//
+void Scene::AddExtension(I_SceneExtension* const ext)
+{
+	ET_ASSERT(GetExtension(ext->GetId()) == nullptr, "Extension was already added!");
+
+	m_Extensions.emplace_back(ext);
+}
+
 //-----------------
 // Scene::GetLight
 //
@@ -464,6 +485,26 @@ render::Atmosphere const& Scene::GetAtmosphere(T_Hash const atmoId) const
 	return foundAtmo->first;
 }
 
+//---------------------
+// Scene::GetExtension
+//
+// Get an extension, if we have it, else null
+//
+render::I_SceneExtension* Scene::GetExtension(T_Hash const extensionId) const
+{
+	auto foundIt = std::find_if(m_Extensions.cbegin(), m_Extensions.cend(), [extensionId](I_SceneExtension const* const ext)
+		{
+			return ext->GetId() == extensionId;
+		});
+
+	if (foundIt == m_Extensions.cend())
+	{
+		return nullptr;
+	}
+
+	return *foundIt;
+}
+
 //--------------------------
 // Scene::AddMeshToMaterial
 //
@@ -471,11 +512,10 @@ core::T_SlotId Scene::AddMeshToMaterial(MaterialCollection::MaterialInstance& ma
 {
 	T_ArrayLoc const vao = mesh->GetSurface(material.m_Material)->GetVertexArray();
 
-	auto foundMeshIt = std::find_if(material.m_Meshes.begin(), material.m_Meshes.end(),
-		[vao](MaterialCollection::Mesh const& matInst)
-	{
-		return matInst.m_VAO == vao;
-	});
+	auto foundMeshIt = std::find_if(material.m_Meshes.begin(), material.m_Meshes.end(), [vao](MaterialCollection::Mesh const& matInst)
+		{
+			return matInst.m_VAO == vao;
+		});
 
 	T_MaterialInstanceId meshId = core::slot_map<MaterialCollection::MaterialInstance>::s_InvalidIndex;
 	if (foundMeshIt == material.m_Meshes.cend())

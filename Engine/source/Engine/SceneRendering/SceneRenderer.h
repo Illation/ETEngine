@@ -83,7 +83,6 @@ public:
 	TextRenderer& GetTextRenderer() { return m_TextRenderer; }
 	SpriteRenderer& GetSpriteRenderer() { return m_SpriteRenderer; }
 
-	OutlineRenderer& GetOutlineRenderer() { return m_OutlineRenderer; }
 	DebugRenderer& GetDebugRenderer() { return m_DebugRenderer; }
 
 	// Data
@@ -115,6 +114,5 @@ private:
 	TextRenderer m_TextRenderer;
 	SpriteRenderer m_SpriteRenderer;
 
-	OutlineRenderer m_OutlineRenderer;
 	DebugRenderer m_DebugRenderer;
 };

@@ -41,6 +41,10 @@ public:
 	void SetMaterial(Material* pMat);
 	void SetCullMode(CullMode mode) { m_CullMode = mode; }
 
+	// accessors
+	//-----------
+	AssetPtr<MeshData> GetMesh() const { return m_Mesh; }
+
 	// component interface
 	//---------------------
 protected:

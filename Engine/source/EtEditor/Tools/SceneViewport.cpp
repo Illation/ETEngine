@@ -219,6 +219,7 @@ void SceneViewport::OnSceneSet()
 	}
 
 	m_SceneRenderer->InitRenderingSystems();
+	m_OutlineRenderer.Initialize(&(m_SceneRenderer->GetEventDispatcher()));
 
 	m_IsInitialized = true;
 }

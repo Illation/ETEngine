@@ -1,10 +1,13 @@
 #include "stdafx.h"
 #include "SceneSelection.h"
 
+#include <Engine/SceneGraph/SceneManager.h>
 #include <Engine/SceneGraph/AbstractScene.h>
 #include <Engine/SceneGraph/Entity.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
-#include <Engine/SceneRendering/OutlineRenderer.h>
+#include <Engine/Components/ModelComponent.h>
+
+#include <Engine/GraphicsHelper/RenderScene.h>
+#include <Engine/SceneRendering/OutlineExtension.h>
 
 
 //==========================
@@ -28,6 +31,18 @@ void SceneSelection::SetScene(AbstractScene* const scene)
 	{
 		m_IdRenderer.Initialize();
 		m_IsIdRendererInitialized = true;
+	}
+
+	render::Scene& renderScene = SceneManager::GetInstance()->GetRenderScene();
+	render::I_SceneExtension* const ext = renderScene.GetExtension("OutlineExtension"_hash);
+	if (ext == nullptr)
+	{
+		m_OutlineExtension = new OutlineExtension();
+		renderScene.AddExtension(m_OutlineExtension);
+	}
+	else
+	{
+		m_OutlineExtension = static_cast<OutlineExtension*>(ext);
 	}
 }
 
@@ -137,7 +152,7 @@ void SceneSelection::Pick(ivec2 const pos, Viewport* const viewport, bool const 
 //----------------------------------------------------
 // SceneSelection::UpdateOutliners
 //
-void SceneSelection::UpdateOutliners() const
+void SceneSelection::UpdateOutlines() const
 {
 	if (m_SelectedEntities.empty())
 	{
@@ -145,12 +160,14 @@ void SceneSelection::UpdateOutliners() const
 	}
 
 	// actually we should do this for every viewport with a scene renderer
-	for (SceneRenderer* sceneRenderer : SceneRenderer::GetAll())
+	if (m_OutlineExtension != nullptr)
 	{
-		OutlineRenderer& outlineRenderer = sceneRenderer->GetOutlineRenderer();
-
-		outlineRenderer.SetColor(m_OutlineColor);
-		outlineRenderer.AddEntities(m_SelectedEntities);
+		m_OutlineExtension->Clear();
+		m_OutlineExtension->SetColor(m_OutlineColor);
+		for (Entity* const entity : m_SelectedEntities)
+		{
+			RecursiveAddOutlines(entity);
+		}
 	}
 }
 
@@ -164,5 +181,22 @@ void SceneSelection::OnSceneEvent(SceneEventData const* const eventData)
 	for (I_SceneSelectionListener* const listener : m_Listeners)
 	{
 		listener->OnSceneEvent(eventData);
+	}
+}
+
+//----------------------------------------------------
+// SceneSelection::OnSceneEvent
+//
+void SceneSelection::RecursiveAddOutlines(Entity* const entity) const
+{
+	ModelComponent* const modelComp = entity->GetComponent<ModelComponent>();
+	if (modelComp != nullptr)
+	{
+		m_OutlineExtension->AddMesh(modelComp->GetMesh(), entity->GetTransform()->GetNodeId());
+	}
+
+	for (Entity* const child : entity->GetChildren())
+	{
+		RecursiveAddOutlines(entity);
 	}
 }
