@@ -14,7 +14,7 @@
 #include <Engine/Audio/AudioManager.h>
 #include <Engine/Helper/GlfwEventManager.h>
 #include <Engine/GraphicsContext/Viewport.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/ShadedSceneRenderer.h>
 #include <Engine/SceneRendering/ShadowRenderer.h>
 
 
@@ -48,8 +48,9 @@ void AbstractFramework::Run()
 
 	Config::GetInstance()->Initialize();
 
+	SceneManager::GetInstance();
 	m_Viewport = new Viewport(&m_RenderArea);
-	m_SceneRenderer = new SceneRenderer();
+	m_SceneRenderer = new render::ShadedSceneRenderer(&(SceneManager::GetInstance()->GetRenderScene()));
 	m_Viewport->SetRenderer(m_SceneRenderer);
 	m_RenderArea.Initialize(); // also initializes the viewport and its renderer
 	m_Viewport->SynchDimensions();
@@ -57,14 +58,13 @@ void AbstractFramework::Run()
 
 	ResourceManager::SetInstance(new PackageResourceManager());
 
-	m_SceneRenderer->InitWithSplashScreen();
-	m_RenderArea.Update();
+	//m_SceneRenderer->InitWithSplashScreen();
+	//m_RenderArea.Update();
 
 	AudioManager::GetInstance()->Initialize();
 	PhysicsManager::GetInstance()->Initialize();
 
 	// set up scene manager
-	SceneManager::GetInstance();
 	AddScenes();
 	std::string const& initScene = Config::GetInstance()->GetStartScene();
 	if (!initScene.empty())

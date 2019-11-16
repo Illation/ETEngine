@@ -10,7 +10,9 @@
 
 
 class Viewport;
-class SceneRenderer;
+namespace render {
+	class ShadedSceneRenderer;
+}
 
 
 class AbstractFramework : public I_RealTimeTickTriggerer, public I_Tickable
@@ -31,5 +33,5 @@ private:
 private:
 	GlfwRenderArea m_RenderArea;
 	Viewport* m_Viewport = nullptr;
-	SceneRenderer* m_SceneRenderer = nullptr;
+	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
 };
