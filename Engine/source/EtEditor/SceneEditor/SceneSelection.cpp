@@ -140,7 +140,7 @@ void SceneSelection::Pick(ivec2 const pos, Viewport* const viewport, bool const 
 		ClearSelection(true);
 	}
 
-	m_IdRenderer.Pick(pos, viewport, std::function<void(Entity* const)>([this](Entity* const pickResult)
+	m_IdRenderer.Pick(pos, viewport, m_Scene, std::function<void(Entity* const)>([this](Entity* const pickResult)
 		{
 			if (pickResult != nullptr)
 			{

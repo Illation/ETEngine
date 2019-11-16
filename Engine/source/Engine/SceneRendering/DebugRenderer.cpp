@@ -3,8 +3,8 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/SceneRendering/SceneRenderer.h>
 #include <Engine/Graphics/Shader.h>
+#include <Engine/Graphics/Camera.h>
 
 
 DebugRenderer::~DebugRenderer()
@@ -79,7 +79,7 @@ void DebugRenderer::UpdateBuffer()
 	api->BindBuffer(E_BufferType::Vertex, 0);
 }
 
-void DebugRenderer::Draw()
+void DebugRenderer::Draw(Camera const& camera)
 {
 	if (m_Lines.size() <= 0)
 	{
@@ -89,7 +89,7 @@ void DebugRenderer::Draw()
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->SetShader(m_pShader.get());
-	m_pShader->Upload("uViewProj"_hash, SceneRenderer::GetCurrent()->GetCamera().GetViewProj());
+	m_pShader->Upload("uViewProj"_hash, camera.GetViewProj());
 
 	UpdateBuffer();
 	
@@ -143,22 +143,20 @@ void DebugRenderer::DrawLine(vec3 start, vec4 startCol, vec3 end, vec4 endCol, f
 #endif
 }
 
-void DebugRenderer::DrawGrid(float pixelSpacingRad)
+void DebugRenderer::DrawGrid(Camera const& camera, float pixelSpacingRad)
 {
 #if defined(ET_DEBUG)
-	Camera const& cam = SceneRenderer::GetCurrent()->GetCamera();
-
-	vec3 camPos = cam.GetPosition();
+	vec3 camPos = camera.GetPosition();
 		
 	//max draw distance of the grid
 	constexpr float falloffAngle = etm::radians(75.f);
-	float distLimit = sqrt(pow(cam.GetFarPlane(), 2) - camPos.y*camPos.y);
+	float distLimit = sqrt(pow(camera.GetFarPlane(), 2) - camPos.y*camPos.y);
 	float maxDist = std::min(tan(falloffAngle)*std::abs(camPos.y), distLimit);
 
 	//figure out the spacing of lines
 	static const float unit = 1;
 
-	float spacing = tan((cam.GetFOV() / Viewport::GetCurrentViewport()->GetDimensions().x)*pixelSpacingRad)*std::abs(camPos.y);
+	float spacing = tan((camera.GetFOV() / Viewport::GetCurrentViewport()->GetDimensions().x)*pixelSpacingRad)*std::abs(camPos.y);
 	int32 digitCount = 0;
 	float num = abs(spacing);
 	while (num >= unit)
