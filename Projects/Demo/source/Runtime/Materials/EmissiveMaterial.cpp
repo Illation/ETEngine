@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "EmissiveMaterial.h"
 
-#include <Engine/Graphics/Shader.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
 
 
 EmissiveMaterial::EmissiveMaterial(vec3 col)

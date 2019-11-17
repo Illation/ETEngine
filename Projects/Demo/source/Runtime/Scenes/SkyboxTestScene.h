@@ -1,15 +1,12 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <Engine/SceneGraph/AbstractScene.h>
+#include <EtFramework/SceneGraph/AbstractScene.h>
 
 
-class FrameBuffer;
 class TexPBRMaterial;
-class EmissiveMaterial;
 class PointLight;
 class Entity;
-class Skybox;
 class DirectionalLight;
 class SpriteFont;
 

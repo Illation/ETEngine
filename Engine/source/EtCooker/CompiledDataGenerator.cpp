@@ -1,6 +1,5 @@
 #include "CompiledDataGenerator.h"
-
-#include <Engine/stdafx.h>
+#include <EtFramework/stdafx.h>
 
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>

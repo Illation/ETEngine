@@ -1,19 +1,16 @@
 #include "stdafx.h"
-
 #include "MainFramework.h"
 
-#include <Engine/Graphics/Shader.h>
-#include <Engine/SceneGraph/SceneManager.h>
+#include <EtFramework/SceneGraph/SceneManager.h>
 
 #include <Runtime/Scenes/EditorScene.h>
 #include <Runtime/Scenes/TestScene.h>
 #include <Runtime/Scenes/SkyboxTestScene.h>
 #include <Runtime/Scenes/ShadingTestScene.h>
 #include <Runtime/Scenes/PlanetTestScene.h>
-
 #include <Runtime/Scenes/PhysicsTestScene.h>
 
-#include <btBulletCollisionCommon.h>
+//#include <btBulletCollisionCommon.h>
 
 
 MainFramework::MainFramework() :

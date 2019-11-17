@@ -1,16 +1,12 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <Engine/SceneGraph/AbstractScene.h>
+#include <EtFramework/SceneGraph/AbstractScene.h>
 
 
-class FrameBuffer;
 class TexPBRMaterial;
 class ParamPBRMaterial;
-class EmissiveMaterial;
-class PointLight;
 class Entity;
-class Skybox;
 class DirectionalLight;
 class SpriteFont;
 
@@ -24,8 +20,8 @@ private:
 	void Initialize();
 	void Update();
 	void Draw();
-	void DrawForward();
-	void PostDraw();
+	void DrawForward() {}
+	void PostDraw() {}
 private:
 	TexPBRMaterial* m_pMat = nullptr;
 	ParamPBRMaterial* m_pStandMat = nullptr;

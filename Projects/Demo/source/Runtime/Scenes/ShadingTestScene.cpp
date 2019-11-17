@@ -9,16 +9,15 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/SceneGraph/Entity.h>
-#include <Engine/Graphics/SpriteFont.h>
-#include <Engine/Graphics/FrameBuffer.h>
-#include <Engine/Graphics/Light.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
-#include <Engine/SceneRendering/Gbuffer.h>
-#include <Engine/Components/ModelComponent.h>
-#include <Engine/Components/LightComponent.h>
-#include <Engine/Components/SpriteComponent.h>
-#include <Engine/Prefabs/Skybox.h>
+#include <EtRendering/GraphicsTypes/SpriteFont.h>
+#include <EtRendering/GraphicsTypes/Light.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
+
+#include <EtFramework/Components/ModelComponent.h>
+#include <EtFramework/Components/LightComponent.h>
+#include <EtFramework/Components/SpriteComponent.h>
+#include <EtFramework/SceneGraph/Entity.h>
+#include <EtFramework/Templates/Skybox.h>
 
 
 ShadingTestScene::ShadingTestScene() : AbstractScene("ShadingTestScene")
@@ -36,11 +35,6 @@ void ShadingTestScene::Initialize()
 	//Fonts
 	//***************************
 	m_pDebugFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Consolas_32.fnt"_hash);
-
-	//Camera
-	//**************************
-	//auto cam = new OrbitCamera();
-	//AddEntity(cam);
 
 	//Materials
 	//**************************
@@ -173,7 +167,7 @@ void ShadingTestScene::Update()
 
 void ShadingTestScene::Draw()
 {
-	TextRenderer& textRenderer = SceneRenderer::GetCurrent()->GetTextRenderer();
+	TextRenderer& textRenderer = render::ShadedSceneRenderer::GetCurrent()->GetTextRenderer();
 
 	textRenderer.SetFont(m_pDebugFont.get());
 	textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
@@ -184,12 +178,4 @@ void ShadingTestScene::Draw()
 	textRenderer.DrawText(outString, vec2(20, 50));
 	outString = "Draw Calls: " + std::to_string( PERFORMANCE->m_PrevDrawCalls );
 	textRenderer.DrawText(outString, vec2(20, 80));
-}
-
-void ShadingTestScene::DrawForward()
-{
-}
-
-void ShadingTestScene::PostDraw()
-{
 }

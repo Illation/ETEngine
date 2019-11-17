@@ -29,7 +29,7 @@ assignIdeFolder(EtEditor Engine/Editor)
 libOutputDirectories(EtEditor) 
 
 # linking
-target_link_libraries (EtEditor EtEngine)
+target_link_libraries (EtEditor EtFramework)
 
 # library includes
 libIncludeDirs()

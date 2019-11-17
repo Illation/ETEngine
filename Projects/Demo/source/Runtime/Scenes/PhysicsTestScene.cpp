@@ -8,22 +8,23 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/SceneGraph/Entity.h>
-#include <Engine/Graphics/SpriteFont.h>
-#include <Engine/Graphics/Light.h>
-#include <Engine/Graphics/TextureData.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
-#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
-#include <Engine/Components/ModelComponent.h>
-#include <Engine/Components/LightComponent.h>
-#include <Engine/Components/RigidBodyComponent.h>
-#include <Engine/Components/AudioListenerComponent.h>
-#include <Engine/Components/AudioSourceComponent.h>
-#include <Engine/Physics/PhysicsManager.h>
-#include <Engine/Physics/BulletETM.h>
-#include <Engine/Physics/PhysicsWorld.h>
-#include <Engine/Audio/AudioManager.h>
-#include <Engine/Audio/AudioData.h>
+#include <EtRendering/Graphics/SpriteFont.h>
+#include <EtRendering/Graphics/Light.h>
+#include <EtRendering/Graphics/TextureData.h>
+#include <EtRendering/SceneRendering/SceneRenderer.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+
+#include <EtFramework/Components/ModelComponent.h>
+#include <EtFramework/Components/LightComponent.h>
+#include <EtFramework/Components/RigidBodyComponent.h>
+#include <EtFramework/Components/AudioListenerComponent.h>
+#include <EtFramework/Components/AudioSourceComponent.h>
+#include <EtFramework/SceneGraph/Entity.h>
+#include <EtFramework/Physics/PhysicsManager.h>
+#include <EtFramework/Physics/BulletETM.h>
+#include <EtFramework/Physics/PhysicsWorld.h>
+#include <EtFramework/Audio/AudioManager.h>
+#include <EtFramework/Audio/AudioData.h>
 
 
 PhysicsTestScene::PhysicsTestScene() : AbstractScene("PhysicsTestScene")

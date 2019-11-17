@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine/Prefabs/PlanetTemplate.h>
+#include <EtFramework/Templates/PlanetTemplate.h>
 
 
 class Earth : public PlanetTemplate

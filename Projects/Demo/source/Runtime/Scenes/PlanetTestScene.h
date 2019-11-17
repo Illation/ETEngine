@@ -1,7 +1,7 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <Engine/SceneGraph/AbstractScene.h>
+#include <EtFramework/SceneGraph/AbstractScene.h>
 
 
 class PlanetTemplate;

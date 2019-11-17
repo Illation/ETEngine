@@ -9,17 +9,16 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Graphics/FrameBuffer.h>
-#include <Engine/Graphics/SpriteFont.h>
-#include <Engine/Graphics/Light.h>
-#include <Engine/SceneRendering/TextRenderer.h>
-#include <Engine/SceneRendering/Gbuffer.h>
-#include <Engine/Components/ModelComponent.h>
-#include <Engine/Components/LightComponent.h>
-#include <Engine/Prefabs/Skybox.h>
-#include <Engine/Prefabs/OrbitCamera.h>
-#include <Engine/SceneGraph/Entity.h>
-#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRendering/Graphics/FrameBuffer.h>
+#include <EtRendering/Graphics/SpriteFont.h>
+#include <EtRendering/Graphics/Light.h>
+#include <EtRendering/SceneRendering/TextRenderer.h>
+
+#include <EtFramework/Components/ModelComponent.h>
+#include <EtFramework/Components/LightComponent.h>
+#include <EtFramework/Templates/OrbitCamera.h>
+#include <EtFramework/SceneGraph/Entity.h>
 
 
 PlanetTestScene::PlanetTestScene() : AbstractScene("PlanetTestScene")
@@ -34,12 +33,6 @@ void PlanetTestScene::Initialize()
 	//Fonts
 	//**************************
 	m_pDebugFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Consolas_32.fnt"_hash);
-
-	//Camera
-	//**************************
-
-	//Materials
-	//**************************
 
 	//Skybox
 	//**************************

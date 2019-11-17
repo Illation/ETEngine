@@ -11,7 +11,7 @@
 #include <EtCore/Content/AssetDatabase.h>
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/linkerHelper.h>
+#include <EtFramework/linkerHelper.h>
 
 
 //============

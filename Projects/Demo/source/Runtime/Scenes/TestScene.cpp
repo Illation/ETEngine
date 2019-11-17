@@ -9,14 +9,15 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/SceneGraph/Entity.h>
-#include <Engine/Components/ModelComponent.h>
-#include <Engine/Components/LightComponent.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
-#include <Engine/SceneRendering/Gbuffer.h>
-#include <Engine/Graphics/FrameBuffer.h>
-#include <Engine/Graphics/SpriteFont.h>
-#include <Engine/Graphics/Light.h>
+#include <EtRendering/SceneRendering/SceneRenderer.h>
+#include <EtRendering/SceneRendering/Gbuffer.h>
+#include <EtRendering/Graphics/FrameBuffer.h>
+#include <EtRendering/Graphics/SpriteFont.h>
+#include <EtRendering/Graphics/Light.h>
+
+#include <EtFramework/SceneGraph/Entity.h>
+#include <EtFramework/Components/ModelComponent.h>
+#include <EtFramework/Components/LightComponent.h>
 
 
 TestScene::TestScene() : AbstractScene("TestScene")
