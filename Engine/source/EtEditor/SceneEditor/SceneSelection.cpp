@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "SceneSelection.h"
 
-#include <Engine/SceneGraph/SceneManager.h>
-#include <Engine/SceneGraph/AbstractScene.h>
-#include <Engine/SceneGraph/Entity.h>
-#include <Engine/Components/ModelComponent.h>
+#include <EtFramework/SceneGraph/SceneManager.h>
+#include <EtFramework/SceneGraph/AbstractScene.h>
+#include <EtFramework/SceneGraph/Entity.h>
+#include <EtFramework/Components/ModelComponent.h>
 
-#include <Engine/GraphicsHelper/RenderScene.h>
-#include <Engine/SceneRendering/OutlineExtension.h>
+#include <EtRendering/SceneStructure/RenderScene.h>
+#include <EtRendering/SceneRendering/OutlineExtension.h>
 
 
 //==========================

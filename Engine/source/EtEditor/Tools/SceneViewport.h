@@ -4,8 +4,8 @@
 #include <glibmm/refptr.h>
 #include <gdk/gdk.h>
 
-#include <Engine/GraphicsContext/Viewport.h>
-#include <Engine/SceneRendering/OutlineRenderer.h>
+#include <EtRendering/GraphicsContext/Viewport.h>
+#include <EtRendering/SceneRendering/OutlineRenderer.h>
 
 #include <EtEditor/SceneEditor/SceneEditorListener.h>
 #include <EtEditor/Rendering/EditorCamera.h>

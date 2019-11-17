@@ -6,8 +6,8 @@
 #include <gtkmm/box.h>
 #include <gtkmm/searchentry.h>
 
-#include <Engine/SceneGraph/AbstractScene.h>
-#include <Engine/SceneGraph/Entity.h>
+#include <EtFramework/SceneGraph/AbstractScene.h>
+#include <EtFramework/SceneGraph/Entity.h>
 
 #include <EtEditor/SceneEditor/SceneEditor.h>
 #include <EtEditor/Util/GtkUtil.h>

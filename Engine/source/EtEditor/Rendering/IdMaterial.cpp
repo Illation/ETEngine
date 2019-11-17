@@ -1,6 +1,5 @@
-#include <Engine/stdafx.h>
+#include <EtFramework/stdafx.h>
 #include "IdMaterial.h"
-#include <Engine/Graphics/Shader.h>
 
 
 //---------------------------------

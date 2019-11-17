@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "EditorCamera.h"
 
-#include <Engine/Graphics/Camera.h>
-#include <Engine/Components/CameraComponent.h>
-#include <Engine/Components/TransformComponent.h>
+#include <EtRendering/GraphicsTypes/Camera.h>
+
+#include <EtFramework/Components/CameraComponent.h>
+#include <EtFramework/Components/TransformComponent.h>
 
 
 //================

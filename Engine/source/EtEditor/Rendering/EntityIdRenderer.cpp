@@ -5,14 +5,14 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/FrameBuffer.h>
-#include <Engine/Graphics/Mesh.h>
-#include <Engine/SceneRendering/ShadedSceneRenderer.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/GraphicsTypes/FrameBuffer.h>
+#include <EtRendering/GraphicsTypes/Mesh.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
-#include <Engine/SceneGraph/Entity.h>
-#include <Engine/Components/ModelComponent.h>
+#include <EtFramework/SceneGraph/Entity.h>
+#include <EtFramework/Components/ModelComponent.h>
 
 
 //====================

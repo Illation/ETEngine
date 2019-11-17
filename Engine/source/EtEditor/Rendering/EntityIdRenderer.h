@@ -1,8 +1,8 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <Engine/GraphicsContext/Viewport.h>
-#include <Engine/GraphicsContext/GraphicsTypes.h>
+#include <EtRendering/GraphicsContext/Viewport.h>
+#include <EtRendering/GraphicsContext/GraphicsTypes.h>
 
 
 class IdMaterial;

@@ -1,14 +1,15 @@
 #include "stdafx.h"
 #include "SceneViewport.h"
 
-#include <Engine/SceneRendering/ShadedSceneRenderer.h>
-#include <Engine/SceneGraph/SceneManager.h>
+#include <gtkmm/builder.h>
+
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
+
+#include <EtFramework/SceneGraph/SceneManager.h>
 
 #include <EtEditor/Rendering/GtkRenderArea.h>
 #include <EtEditor/Util/GtkUtil.h>
 #include <EtEditor/SceneEditor/SceneEditor.h>
-
-#include <gtkmm/builder.h>
 
 
 //===================
