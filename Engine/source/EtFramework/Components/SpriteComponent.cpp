@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SpriteComponent.h"
 
-#include <Engine/SceneGraph/SceneManager.h>
+#include <EtFramework/SceneGraph/SceneManager.h>
 
 
 SpriteComponent::SpriteComponent(T_Hash const textureAsset, vec2 const& pivot, vec4 const& color)

@@ -3,9 +3,6 @@
 
 #include "Camera.h"
 
-#include <Engine/Components/TransformComponent.h>
-#include <Engine/Components/CameraComponent.h>
-
 
 void FrustumCorners::Transform(mat4 space)
 {

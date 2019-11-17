@@ -2,10 +2,10 @@
 #include "PhysicsWorld.h"
 
 #include <btBulletDynamicsCommon.h>
+
 #include "PhysicsManager.h"
 #include "BulletETM.h"
 
-PhysicsWorld::PhysicsWorld() { }
 
 PhysicsWorld::~PhysicsWorld()
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include "Patch.h"
-#include <Engine/Graphics/Frustum.h>
+#include <EtRendering/GraphicsTypes/Frustum.h>
 
 
 namespace render {

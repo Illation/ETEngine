@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIComponent.h"
 
-#include <Engine/SceneRendering/SceneRenderer.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 
 UIComponent::UIComponent( ivec2 size, ivec2 localPos ) 
@@ -19,14 +19,14 @@ UISprite::UISprite(AssetPtr<TextureData> tex)
 bool UISprite::Draw( uint16 level ) 
 {
 	UNUSED(level);
-	SceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(m_Texture.get(), etm::vecCast<float>(m_WorldPos+m_Rect.pos), m_Color, vec2( 0 ),
+	render::ShadedSceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(m_Texture.get(), etm::vecCast<float>(m_WorldPos+m_Rect.pos), m_Color, vec2( 0 ),
 		etm::vecCast<float>(m_Rect.size), 0, 1, SpriteRenderer::E_ScalingMode::Pixel );
 
 	return false;
 }
 
 UIText::UIText(std::string text, AssetPtr<SpriteFont> font)
-	: UIComponent(SceneRenderer::GetCurrent()->GetTextRenderer().GetTextSize(text, font.get()), ivec2(0))
+	: UIComponent(render::ShadedSceneRenderer::GetCurrent()->GetTextRenderer().GetTextSize(text, font.get()), ivec2(0))
 	, m_Font(font)
 	, m_Text(text)
 { }
@@ -35,7 +35,7 @@ bool UIText::Draw(uint16 level)
 {
 	UNUSED(level);
 
-	TextRenderer& textRenderer = SceneRenderer::GetCurrent()->GetTextRenderer();
+	TextRenderer& textRenderer = render::ShadedSceneRenderer::GetCurrent()->GetTextRenderer();
 
 	textRenderer.SetFont(m_Font.get());
 	textRenderer.SetColor(m_Color);

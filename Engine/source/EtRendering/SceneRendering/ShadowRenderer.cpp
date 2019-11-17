@@ -3,15 +3,13 @@
 
 #include <limits>
 
-#include "SceneRenderer.h"
-
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/Frustum.h>
-#include <Engine/SceneRendering/ShadedSceneRenderer.h>
-#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/GraphicsTypes/Frustum.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 ShadowRenderer::~ShadowRenderer()

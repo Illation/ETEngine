@@ -5,7 +5,7 @@ class btDiscreteDynamicsWorld;
 class PhysicsWorld
 {
 public:
-	PhysicsWorld();
+	PhysicsWorld() = default;
 	virtual ~PhysicsWorld();
 
 	void Initialize();

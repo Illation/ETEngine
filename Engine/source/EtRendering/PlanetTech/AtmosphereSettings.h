@@ -1,6 +1,6 @@
 #pragma once
-#include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/TextureData.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
 
 
 //Values copied from https://ebruneton.github.io/precomputed_atmospheric_scattering/atmosphere/constants.h.html

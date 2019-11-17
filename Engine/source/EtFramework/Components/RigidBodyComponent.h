@@ -5,6 +5,7 @@
 class btRigidBody;
 class btCollisionShape;
 
+
 class RigidBodyComponent : public AbstractComponent
 {
 public:

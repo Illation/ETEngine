@@ -1,22 +1,16 @@
 #include "stdafx.h"
 #include "Gbuffer.h"
 
-#include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/EnvironmentMap.h>
-#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
-#include <Engine/SceneGraph/AbstractScene.h>
-#include <Engine/SceneRendering/ShadedSceneRenderer.h>
-#include <Engine/Components/LightComponent.h>
-#include <Engine/Prefabs/Skybox.h>
-#include <Engine/GraphicsHelper/RenderScene.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/GraphicsTypes/EnvironmentMap.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
+#include <EtRendering/GraphicsHelper/RenderScene.h>
 
 
 Gbuffer::Gbuffer(bool demo):
-	FrameBuffer(demo?
-		"Shaders/PostBufferDisplay.glsl":
-		"Shaders/PostDeferredComposite.glsl", 
-		E_DataType::Float, 2)
+	FrameBuffer(demo ? "Shaders/PostBufferDisplay.glsl" : "Shaders/PostDeferredComposite.glsl", E_DataType::Float, 2)
 {
 	m_CaptureDepth = true;
 }

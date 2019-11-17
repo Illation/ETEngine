@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "Light.h"
 
-#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
-#include <Engine/SceneRendering/ShadowRenderer.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRendering/SceneRendering/ShadowRenderer.h>
 
 
 void PointLight::DrawVolume(TransformComponent* pTransform)
@@ -38,13 +37,5 @@ void DirectionalLight::SetShadowEnabled(bool enabled)
 	{
 		SafeDelete(m_pShadowData);
 		m_pShadowData = nullptr;
-	}
-}
-
-void DirectionalLight::GenerateShadow(TransformComponent* pTransform)
-{
-	if (IsShadowEnabled())
-	{
-		SceneRenderer::GetCurrent()->GetShadowRenderer().MapDirectional(pTransform->GetWorld(), *m_pShadowData, SceneRenderer::GetCurrent());
 	}
 }

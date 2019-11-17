@@ -2,11 +2,10 @@
 
 #include "AudioSourceComponent.h"
 
-#include <Engine/SceneGraph/Entity.h>
-
-#include <Engine/Audio/AudioData.h>
-#include <Engine/Audio/AudioManager.h>
-#include <Engine/Audio/OpenAL_ETM.h>
+#include <EtFramework/SceneGraph/Entity.h>
+#include <EtFramework/Audio/AudioData.h>
+#include <EtFramework/Audio/AudioManager.h>
+#include <EtFramework/Audio/OpenAL_ETM.h>
 
 
 AudioSourceComponent::~AudioSourceComponent()

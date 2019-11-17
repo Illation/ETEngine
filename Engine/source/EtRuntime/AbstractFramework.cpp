@@ -96,7 +96,7 @@ void AbstractFramework::GameLoop()
 
 		if (SceneManager::GetInstance()->GetActiveScene()->IsInitialized())
 		{
-			SceneManager::GetInstance()->GetActiveScene()->GetActiveCamera()->PopulateCamera(m_SceneRenderer->GetCamera());
+			SceneManager::GetInstance()->GetActiveScene()->GetActiveCamera()->PopulateCamera(m_SceneRenderer->GetCamera(), *m_Viewport);
 		}
 
 		m_RenderArea.Update();

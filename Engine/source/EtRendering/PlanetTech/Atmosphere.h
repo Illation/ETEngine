@@ -4,8 +4,7 @@
 #include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Containers/slot_map.h>
 
-#include <Engine/Graphics/FrameBuffer.h>
-#include <Engine/Graphics/TextureData.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
 
 
 class AtmoPreCompute;

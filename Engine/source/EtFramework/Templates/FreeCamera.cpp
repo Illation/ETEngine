@@ -3,17 +3,11 @@
 
 #include <algorithm>
 
-#include <Engine/Components/CameraComponent.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
+#include <EtFramework/Components/CameraComponent.h>
 
 
 FreeCamera::FreeCamera()
 	:m_Move(vec3(0))
-{
-}
-
-
-FreeCamera::~FreeCamera()
 {
 }
 

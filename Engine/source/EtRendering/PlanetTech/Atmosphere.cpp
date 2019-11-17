@@ -6,17 +6,14 @@
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Helper/Commands.h>
 
-#include <Engine/Components/LightComponent.h>
-#include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/Frustum.h>
-#include <Engine/Graphics/Light.h>
-#include <Engine/SceneRendering/SpriteRenderer.h>
-#include <Engine/SceneRendering/ShadedSceneRenderer.h>
-#include <Engine/SceneRendering/Gbuffer.h>
-#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
-#include <Engine/Prefabs/Skybox.h>
-#include <Engine/SceneGraph/AbstractScene.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/GraphicsTypes/Frustum.h>
+#include <EtRendering/GraphicsTypes/Light.h>
+#include <EtRendering/SceneRendering/SpriteRenderer.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
+#include <EtRendering/SceneRendering/Gbuffer.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 namespace render {

@@ -7,9 +7,9 @@
 #include "LightVolume.h"
 #include "ScreenshotCapture.h"
 
-#include <Engine/Materials/NullMaterial.h>
-#include <Engine/Materials/ColorMaterial.h>
-#include <Engine/PlanetTech/Patch.h>
+#include <EtRendering/Materials/NullMaterial.h>
+#include <EtRendering/Materials/ColorMaterial.h>
+#include <EtRendering/PlanetTech/Patch.h>
 
 
 //---------------------------------

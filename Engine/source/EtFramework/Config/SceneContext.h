@@ -1,8 +1,8 @@
 #pragma once
 #include <EtCore/Helper/Context.h>
 
-#include <Engine/Components/CameraComponent.h>
-#include <Engine/SceneGraph/AbstractScene.h>
+#include <EtFramework/Components/CameraComponent.h>
+#include <EtFramework/SceneGraph/AbstractScene.h>
 
 
 struct SceneContext : public BaseContext

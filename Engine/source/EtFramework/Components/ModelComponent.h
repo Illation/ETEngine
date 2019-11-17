@@ -2,8 +2,7 @@
 #include "AbstractComponent.h"
 
 #include <EtCore/Content/AssetPointer.h>
-
-#include <Engine/GraphicsHelper/RenderScene.h>
+#include <EtCore/Containers/slot_map.h>
 
 
 class Material;
@@ -50,15 +49,14 @@ public:
 protected:
 	virtual void Initialize();
 	virtual void Update();
-	virtual void Draw();
-	virtual void DrawForward();
-	virtual void DrawMaterial(Material* const mat);
+	virtual void Draw() {}
+	virtual void DrawForward() {}
+	virtual void DrawMaterial(Material* const) {}
 
 	// utility
 	//---------
 private:
 	void UpdateMaterial();
-	void DrawCall();
 
 	// Data
 	///////
@@ -71,6 +69,6 @@ private:
 
 	CullMode m_CullMode = CullMode::SPHERE;
 
-	render::Scene::T_InstanceId m_InstanceId;
+	core::T_SlotId m_InstanceId;
 };
 

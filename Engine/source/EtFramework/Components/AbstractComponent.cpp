@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include <Engine/SceneGraph/Entity.h>
+#include <EtFramework/SceneGraph/Entity.h>
 
 
 AbstractComponent::AbstractComponent(void)

@@ -5,8 +5,8 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Graphics/Shader.h>
-#include <Engine/PlanetTech/Atmosphere.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/PlanetTech/Atmosphere.h>
 
 
 namespace render {

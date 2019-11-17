@@ -1,12 +1,7 @@
 #pragma once
-#include <string>
-#include <vector>
-
 #include <rttr/type>
 
 #include <EtCore/Helper/Singleton.h>
-
-#include <Engine/Helper/MulticastDelegate.h>
 
 
 //---------------------------------

@@ -3,15 +3,15 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Materials/LightMaterial.h>
-#include <Engine/Materials/NullMaterial.h>
-#include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/Frustum.h>
-#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
-#include <Engine/SceneRendering/Gbuffer.h>
-#include <Engine/SceneRendering/ShadowRenderer.h>
-#include <Engine/SceneRendering/ShadedSceneRenderer.h>
+#include <EtRendering/Materials/LightMaterial.h>
+#include <EtRendering/Materials/NullMaterial.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/GraphicsTypes/Frustum.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRendering/SceneRendering/Gbuffer.h>
+#include <EtRendering/SceneRendering/ShadowRenderer.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 
 PointLightVolume::PointLightVolume()

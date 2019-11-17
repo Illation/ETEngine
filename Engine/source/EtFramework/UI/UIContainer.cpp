@@ -3,7 +3,7 @@
 
 #include <limits>
 
-#include <Engine/SceneRendering/SceneRenderer.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 
 UIDynamicBox::~UIDynamicBox()
@@ -124,8 +124,8 @@ bool UIPortal::Draw(uint16 level)
 	api->SetViewport(m_Rect.pos + m_WorldPos, m_Rect.size);
 
 	//Render Background
-	SceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(nullptr, pos, m_Color, vec2(0), size, 0, 1);
-	SceneRenderer::GetCurrent()->GetSpriteRenderer().Draw();
+	render::ShadedSceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(nullptr, pos, m_Color, vec2(0), size, 0, 1);
+	render::ShadedSceneRenderer::GetCurrent()->GetSpriteRenderer().Draw();
 
 	//Render subcomponents
 	if (m_Child)
@@ -135,8 +135,8 @@ bool UIPortal::Draw(uint16 level)
 		{
 			draw = m_Child->Draw(level);
 			level++;
-			SceneRenderer::GetCurrent()->GetSpriteRenderer().Draw();
-			SceneRenderer::GetCurrent()->GetTextRenderer().Draw();
+			render::ShadedSceneRenderer::GetCurrent()->GetSpriteRenderer().Draw();
+			render::ShadedSceneRenderer::GetCurrent()->GetTextRenderer().Draw();
 		}
 	}
 	//Restore viewport size

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIPadding.h"
 
-#include <Engine/SceneRendering/SceneRenderer.h>
+#include <Engine/SceneRendering/ShadedSceneRenderer.h>
 
 
 UIFixedPadding::UIFixedPadding(UIFixedContainer* child, ivec4 padding, vec4 color) 
@@ -22,7 +22,7 @@ bool UIFixedPadding::Draw(uint16 level)
 	{
 		vec2 pos = etm::vecCast<float>(m_Rect.pos) + etm::vecCast<float>(m_WorldPos);
 
-		SceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(nullptr, pos, m_Color, vec2(0), etm::vecCast<float>(m_Rect.size), 0, 1);
+		render::ShadedSceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(nullptr, pos, m_Color, vec2(0), etm::vecCast<float>(m_Rect.size), 0, 1);
 
 		m_Level = level;
 		return true;//has children, gotta go deeper
@@ -69,7 +69,7 @@ bool UIDynamicPadding::Draw(uint16 level)
 		if (!etm::nearEquals(m_Color.a, 0.f))
 		{
 			vec2 pos = etm::vecCast<float>(m_Rect.pos) + etm::vecCast<float>(m_WorldPos);
-			SceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(nullptr, pos, m_Color, vec2(0), etm::vecCast<float>(m_Rect.size), 0, 1);
+			render::ShadedSceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(nullptr, pos, m_Color, vec2(0), etm::vecCast<float>(m_Rect.size), 0, 1);
 		}
 
 		m_Level = level;

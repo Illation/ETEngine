@@ -1,8 +1,8 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <Engine/Graphics/FrameBuffer.h>
-#include <Engine/Graphics/PostProcessingSettings.h>
+#include <EtRendering/GraphicsTypes/FrameBuffer.h>
+#include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
 
 
 class ShaderData;

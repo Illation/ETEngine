@@ -4,8 +4,8 @@
 #include "LightComponent.h"
 #include "RigidBodyComponent.h"
 
-#include <Engine/SceneGraph/Entity.h>
-#include <Engine/SceneGraph/SceneManager.h>
+#include <EtFramework/SceneGraph/Entity.h>
+#include <EtFramework/SceneGraph/SceneManager.h>
 
 
 TransformComponent::TransformComponent()

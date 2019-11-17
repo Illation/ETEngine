@@ -1,11 +1,11 @@
 #include "stdafx.h"
-
 #include "SceneManager.h"
+
 #include "AbstractScene.h"
 
-#include <Engine/SceneRendering/SceneRenderer.h>
-
 #include <algorithm>
+
+#include <EtRendering/SceneRendering/SceneRenderer.h>
 
 
 SceneManager::~SceneManager()

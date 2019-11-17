@@ -6,12 +6,9 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/Frustum.h>
-#include <Engine/Components/TransformComponent.h>
-#include <Engine/Components/CameraComponent.h>
-#include <Engine/SceneRendering/ShadedSceneRenderer.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/GraphicsTypes/Frustum.h>
 
 
 namespace render {

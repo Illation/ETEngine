@@ -1,6 +1,5 @@
 #pragma once
-
-#include <Engine/GraphicsContext/GraphicsTypes.h>
+#include <EtRendering/GraphicsContext/GraphicsTypes.h>
 
 
 //---------------------------------

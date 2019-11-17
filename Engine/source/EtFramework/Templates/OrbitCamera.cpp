@@ -3,7 +3,7 @@
 
 #include "FixedCamera.h"
 
-#include <Engine/Components/CameraComponent.h>
+#include <EtFramework/Components/CameraComponent.h>
 
 
 OrbitCamera::OrbitCamera()

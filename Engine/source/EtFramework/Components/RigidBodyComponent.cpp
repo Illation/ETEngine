@@ -5,9 +5,9 @@
 
 #include "AbstractComponent.h"
 
-#include <Engine/Physics/BulletETM.h>
-#include <Engine/SceneGraph/Entity.h>
-#include <Engine/Physics/PhysicsWorld.h>
+#include <EtFramework/Physics/BulletETM.h>
+#include <EtFramework/Physics/PhysicsWorld.h>
+#include <EtFramework/SceneGraph/Entity.h>
 
 
 RigidBodyComponent::RigidBodyComponent(bool isStatic) 

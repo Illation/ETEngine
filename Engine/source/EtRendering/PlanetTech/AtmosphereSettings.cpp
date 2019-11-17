@@ -1,11 +1,11 @@
 #include "stdafx.h"
-
 #include "AtmosphereSettings.h"
-#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Content/AssetStub.h>
 #include <EtCore/FileSystem/Json/JsonParser.h>
+
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 namespace render {

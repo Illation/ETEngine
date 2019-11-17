@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine/SceneGraph/Entity.h>
+#include <EtFramework/SceneGraph/Entity.h>
 
 
 class CameraComponent;

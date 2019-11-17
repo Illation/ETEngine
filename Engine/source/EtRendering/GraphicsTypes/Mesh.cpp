@@ -11,7 +11,7 @@
 
 #include <EtCore/FileSystem/FileUtil.h>
 
-#include <Engine/Helper/GLTF.h>
+#include <EtRendering/SceneStructure/GLTF.h>
 
 
 //=====================

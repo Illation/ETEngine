@@ -1,18 +1,16 @@
 #pragma once
-
-#include <string>
-#include <vector>
-
 #include <EtCore/Helper/Singleton.h>
 #include <EtCore/UpdateCycle/Tickable.h>
 
-#include <Engine/Base/TickOrder.h>
-#include <GraphicsHelper/RenderScene.h>
+#include <EtRendering/GraphicsHelper/RenderScene.h>
+
+#include <EtFramework/Util/TickOrder.h>
 
 
 //Forward Declaration
 class AbstractScene;
 class AbstractFramework;
+
 
 class SceneManager : public Singleton<SceneManager>, public I_Tickable
 {

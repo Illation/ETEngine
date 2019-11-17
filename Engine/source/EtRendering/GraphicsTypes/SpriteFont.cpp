@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "SpriteFont.h"
 
+#include "TextureData.h"
+#include "Shader.h"
+
 #include <ft2build.h>
 #include <freetype/freetype.h>
 
@@ -8,9 +11,7 @@
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/Shader.h>
-#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 //=============

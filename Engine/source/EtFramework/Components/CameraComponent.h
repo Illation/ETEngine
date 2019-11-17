@@ -3,6 +3,7 @@
 
 
 class Camera;
+class Viewport;
 
 
 class CameraComponent final : public AbstractComponent
@@ -22,7 +23,7 @@ public:
 	void UsePerspectiveProjection() { m_IsPerspective = true; }
 	void UseOrthographicProjection() { m_IsPerspective = false; }
 
-	void PopulateCamera(Camera& target) const;
+	void PopulateCamera(Camera& target, Viewport const& viewport) const;
 
 protected:
 

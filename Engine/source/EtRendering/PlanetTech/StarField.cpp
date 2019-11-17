@@ -5,8 +5,8 @@
 #include <EtCore/Content/AssetStub.h>
 #include <EtCore/FileSystem/Json/JsonParser.h>
 
-#include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/TextureData.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
 
 
 StarField::StarField(T_Hash const assetId) 

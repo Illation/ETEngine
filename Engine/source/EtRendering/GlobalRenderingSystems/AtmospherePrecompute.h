@@ -1,8 +1,7 @@
 #pragma once
-
-#include <Engine/PlanetTech/AtmosphereSettings.h>
-
 #include <EtCore/Content/AssetPointer.h>
+
+#include <EtRendering/PlanetTech/AtmosphereSettings.h>
 
 
 class RenderingSystems;

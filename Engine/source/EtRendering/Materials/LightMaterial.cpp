@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "LightMaterial.h"
 
-#include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/FrameBuffer.h>
-#include <Engine/SceneRendering/Gbuffer.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/GraphicsTypes/FrameBuffer.h>
+#include <EtRendering/SceneRendering/Gbuffer.h>
+#include <EtRendering/SceneRendering/SceneRenderer.h>
 
 
 LightMaterial::LightMaterial(vec3 col)

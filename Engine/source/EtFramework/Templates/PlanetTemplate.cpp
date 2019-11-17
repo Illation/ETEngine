@@ -1,10 +1,9 @@
 #include "stdafx.h"
 #include "PlanetTemplate.h"
 
-#include <Engine/Components/TransformComponent.h>
-#include <Engine/Components/CameraComponent.h>
-
-#include <Engine/SceneGraph/SceneManager.h>
+#include <EtFramework/Components/TransformComponent.h>
+#include <EtFramework/Components/CameraComponent.h>
+#include <EtFramework/SceneGraph/SceneManager.h>
 
 
 //=================

@@ -7,12 +7,11 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Graphics/Mesh.h>
-#include <Engine/Graphics/Material.h>
-#include <Engine/Graphics/Frustum.h>
-#include <Engine/SceneGraph/Entity.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
-#include <Engine/SceneGraph/SceneManager.h>
+#include <EtRendering/GraphicsTypes/Mesh.h>
+#include <EtRendering/GraphicsTypes/Material.h>
+
+#include <EtFramework/SceneGraph/Entity.h>
+#include <EtFramework/SceneGraph/SceneManager.h>
 
 
 //=================
@@ -56,7 +55,9 @@ void ModelComponent::SetMaterial(Material* pMaterial)
 void ModelComponent::Initialize()
 {
 	m_Mesh = ResourceManager::Instance()->GetAssetData<MeshData>(m_AssetId);
+
 	UpdateMaterial();
+
 	m_InstanceId = SceneManager::GetInstance()->GetRenderScene().AddInstance(m_Material, m_Mesh, GetTransform()->GetNodeId());
 }
 
@@ -89,101 +90,4 @@ void ModelComponent::UpdateMaterial()
 void ModelComponent::Update()
 {
 	UpdateMaterial();
-}
-
-//---------------------------------
-// ModelComponent::Draw
-//
-// If the material is rendered deferred we do our draw call here
-//
-void ModelComponent::Draw()
-{
-	if (m_Material == nullptr)
-	{
-		LOG("ModelComponent::Draw > material is null!", LogLevel::Warning);
-		return;
-	}
-
-	if (!(m_Material->IsForwardRendered()))
-	{
-		DrawCall();
-	}
-}
-
-//---------------------------------
-// ModelComponent::DrawForward
-//
-// If the material is rendered forward we do our draw call here
-//
-void ModelComponent::DrawForward()
-{
-	if (m_Material == nullptr)
-	{
-		LOG("ModelComponent::Draw > material is null", LogLevel::Warning);
-		return;
-	}
-
-	if (m_Material->IsForwardRendered())
-	{
-		DrawCall();
-	}
-}
-
-//---------------------------------
-// ModelComponent::DrawMaterial
-//
-// Render a specified material
-//
-void ModelComponent::DrawMaterial(Material* const mat)
-{
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
-
-	// #todo: implement culling
-
-	MeshSurface const* surface = m_Mesh->GetSurface(mat);
-	api->BindVertexArray(surface->GetVertexArray());
-	mat->UploadModelOnly(m_pEntity->GetTransform()->GetWorld());
-
-	api->DrawElements(E_DrawMode::Triangles, static_cast<uint32>(m_Mesh->GetIndexCount()), m_Mesh->GetIndexDataType(), 0);
-}
-
-//---------------------------------
-// ModelComponent::DrawCall
-//
-// Performs the draw call, assuming we can't cull our mesh
-//
-void ModelComponent::DrawCall()
-{
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
-
-	//Frustum culling
-	switch (m_CullMode)
-	{
-	case CullMode::SPHERE:
-	{
-		Sphere const& filterSphere = m_Mesh->GetBoundingSphere();
-		//auto filterSphere = m_pMeshFilter->GetBoundingSphere();
-		vec3 scale = TRANSFORM->GetScale();
-		float maxScale = std::max(scale.x, std::max(scale.y, scale.z));
-		Sphere objSphere = Sphere(GetTransform()->GetPosition() + filterSphere.pos, filterSphere.radius*maxScale);
-		if (SceneRenderer::GetCurrent()->GetCamera().GetFrustum().ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
-		{
-			return;
-		}
-	}
-	case CullMode::DISABLED:
-		break;
-	default:
-		break;
-	}
-
-	//Get Vertex Object
-	MeshSurface const* surface = m_Mesh->GetSurface(m_Material);
-	api->BindVertexArray(surface->GetVertexArray());
-	
-	m_Material->UploadVariables(m_pEntity->GetTransform()->GetWorld());
-
-	// Draw 
-	api->SetDepthEnabled(true);
-	api->DrawElements(E_DrawMode::Triangles, static_cast<uint32>(m_Mesh->GetIndexCount()), m_Mesh->GetIndexDataType(), 0);
 }

@@ -5,8 +5,8 @@
 
 #include "AbstractScene.h"
 
-#include <Engine/Components/AbstractComponent.h>
-#include <Engine/Components/TransformComponent.h>
+#include <EtFramework/Components/AbstractComponent.h>
+#include <EtFramework/Components/TransformComponent.h>
 
 
 Entity::Entity():m_Tag(std::string(""))

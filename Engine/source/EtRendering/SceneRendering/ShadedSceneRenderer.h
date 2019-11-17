@@ -8,8 +8,8 @@
 #include "SpriteRenderer.h"
 #include "RenderEvents.h"
 
-#include <Engine/Graphics/Camera.h>
-#include <Engine/GraphicsContext/ViewportRenderer.h>
+#include <EtRendering/GraphicsTypes/Camera.h>
+#include <EtRendering/GraphicsContext/ViewportRenderer.h>
 
 
 namespace render {

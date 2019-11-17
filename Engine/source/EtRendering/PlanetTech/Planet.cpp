@@ -6,7 +6,7 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Graphics/Shader.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
 
 
 namespace render {

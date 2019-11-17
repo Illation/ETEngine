@@ -1,6 +1,6 @@
 #pragma once
 #include "AbstractComponent.h"
-#include <Engine/Graphics/Light.h>
+#include <EtRendering/GraphicsTypes/Light.h>
 
 #include <typeinfo>
 
@@ -25,9 +25,6 @@ public:
 		return dynamic_cast<T*>(m_Light);
 	}
 
-	void DrawVolume();
-	void GenerateShadow();
-
 	render::T_LightId GetLightId() const { return m_LightId; }
 
 protected:
@@ -36,8 +33,8 @@ protected:
 
 	virtual void Initialize();
 	virtual void Update();
-	virtual void Draw();
-	virtual void DrawForward();
+	virtual void Draw() {}
+	virtual void DrawForward() {}
 
 private:
 	friend class TransformComponent;

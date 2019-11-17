@@ -1,7 +1,7 @@
 #pragma once
-#include <Engine/SceneGraph/Entity.h>
+#include <EtFramework/SceneGraph/Entity.h>
 
-#include <Engine/PlanetTech/Planet.h>
+#include <EtRendering/PlanetTech/Planet.h>
 
 
 //-----------------------------

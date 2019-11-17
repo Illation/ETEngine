@@ -7,7 +7,7 @@
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 FrameBuffer::FrameBuffer(std::string shaderFile, E_DataType const format, uint32 numTargets)

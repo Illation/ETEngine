@@ -4,7 +4,7 @@
 #include <EtCore/Content/Asset.h>
 #include <EtCore/Helper/LinkerUtils.h>
 
-#include <Engine/GraphicsContext/GraphicsApiContext.h>
+#include <EtRendering/GraphicsContext/GraphicsApiContext.h>
 
 
 //---------------------------------

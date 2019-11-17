@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine/Graphics/Material.h>
+#include <EtRendering/GraphicsTypes/Material.h>
 
 
 //---------------------------------

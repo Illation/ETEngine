@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FixedCamera.h"
 
-#include <Engine/Components/CameraComponent.h>
+#include <EtFramework/Components/CameraComponent.h>
 
 
 FixedCamera::FixedCamera()

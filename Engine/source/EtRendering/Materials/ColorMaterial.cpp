@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "ColorMaterial.h"
-#include <Engine/Graphics/Shader.h>
 
 
 //---------------------------------

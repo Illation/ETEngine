@@ -3,9 +3,9 @@
 
 #include "Planet.h"
 
-#include <Engine/Graphics/Frustum.h>
-#include <Engine/Components/TransformComponent.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
+#include <EtRendering/GraphicsTypes/Frustum.h>
+#include <EtRendering/Components/TransformComponent.h>
+#include <EtRendering/SceneRendering/SceneRenderer.h>
 
 
 namespace render {

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "AudioData.h"
 
+#include "AudioManager.h"
+
 #include <rttr/registration>
 #include <rttr/detail/policies/ctor_policies.h>
 
@@ -8,8 +10,6 @@
 
 #include <EtCore/FileSystem/BinaryReader.h>
 #include <EtCore/FileSystem/FileUtil.h>
-
-#include <Engine/Audio/AudioManager.h>
 
 
 //===================

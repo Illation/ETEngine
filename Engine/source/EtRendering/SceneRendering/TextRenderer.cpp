@@ -3,9 +3,9 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Graphics/SpriteFont.h>
-#include <Engine/Graphics/Shader.h>
-#include <Engine/Graphics/TextureData.h>
+#include <EtRendering/GraphicsTypes/SpriteFont.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
 
 
 //=============================

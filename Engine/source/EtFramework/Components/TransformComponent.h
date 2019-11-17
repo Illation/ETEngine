@@ -1,6 +1,8 @@
 #pragma once
 #include "AbstractComponent.h"
-#include <Engine/GraphicsHelper/RenderSceneFwd.h>
+
+#include <EtCore/Containers/slot_map.h>
+
 
 class TransformComponent : public AbstractComponent
 {
@@ -34,7 +36,7 @@ public:
 	const vec3& GetUp() const { return m_Up; }
 	const vec3& GetRight() const { return m_Right; }
 
-	render::T_NodeId GetNodeId() const { return m_NodeId; }
+	core::T_SlotId GetNodeId() const { return m_NodeId; }
 
 protected:
 
@@ -67,7 +69,7 @@ private:
 		m_WorldRotation = quat();
 	mat4 m_World;
 
-	render::T_NodeId m_NodeId;
+	core::T_SlotId m_NodeId;
 
 private:
 	// -------------------------

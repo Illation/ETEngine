@@ -3,11 +3,11 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
-#include <Engine/GraphicsHelper/RenderScene.h>
-#include <Engine/Graphics/Material.h>
-#include <Engine/Materials/NullMaterial.h>
-#include <Engine/PlanetTech/StarField.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRendering/SceneStructure/RenderScene.h>
+#include <EtRendering/GraphicsTypes/Material.h>
+#include <EtRendering/Materials/NullMaterial.h>
+#include <EtRendering/PlanetTech/StarField.h>
 
 
 namespace render {

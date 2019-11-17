@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine/Graphics/FrameBuffer.h>
+#include <EtRendering/GraphicsTypes/FrameBuffer.h>
 
 
 class Gbuffer : public FrameBuffer

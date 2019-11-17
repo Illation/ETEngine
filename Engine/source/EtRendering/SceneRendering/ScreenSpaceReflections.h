@@ -6,7 +6,7 @@ class ShaderData;
 class ScreenSpaceReflections
 {
 public:
-	ScreenSpaceReflections();
+	ScreenSpaceReflections() = default;
 	virtual ~ScreenSpaceReflections();
 	void Initialize();
 

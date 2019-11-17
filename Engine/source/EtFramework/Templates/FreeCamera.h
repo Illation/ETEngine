@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine/SceneGraph/Entity.h>
+#include <EtFramework/SceneGraph/Entity.h>
 
 
 class CameraComponent;
@@ -8,7 +8,7 @@ class FreeCamera : public Entity
 {
 public:
 	FreeCamera();
-	virtual ~FreeCamera();
+	virtual ~FreeCamera() = default;
 
 	void SetRotation(float pitch, float yaw);
 

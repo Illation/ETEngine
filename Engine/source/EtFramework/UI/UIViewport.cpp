@@ -3,9 +3,9 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/Shader.h>
-#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRendering/Graphics/TextureData.h>
+#include <EtRendering/Graphics/Shader.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 UIViewport::UIViewport():UIFixedContainer()

@@ -1,9 +1,10 @@
 #pragma once
 #include <EtCore/Helper/Hash.h>
 
-#include <Engine/Graphics/EnvironmentMap.h>
-#include <Engine/Graphics/PostProcessingSettings.h>
 #include "SceneEvents.h"
+
+#include <EtRendering/GraphicsTypes/EnvironmentMap.h>
+#include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
 
 
 //forward declaration
@@ -16,7 +17,6 @@ class SceneManager;
 class Gbuffer;
 class PostProcessingRenderer;
 class AudioListenerComponent;
-class Skybox;
 class PhysicsWorld;
 
 
@@ -38,11 +38,6 @@ public:
 	void SetStarfield(T_Hash const assetId);
 	void SetAudioListener(AudioListenerComponent* val) { m_AudioListener = val; }
 
-	EnvironmentMap const* GetEnvironmentMap() const;
-	Skybox* GetSkybox() { return m_pSkybox; }
-	std::vector<LightComponent*> GetLights();
-	const PostProcessingSettings& GetPostProcessingSettings() const;
-	bool SkyboxEnabled() { return m_UseSkyBox; }
 	PhysicsWorld* GetPhysicsWorld() const { return m_pPhysicsWorld; }
 	AudioListenerComponent* GetAudioListener() const { return m_AudioListener; }
 	CameraComponent const* GetActiveCamera() const;
@@ -89,9 +84,6 @@ private:
 	AudioListenerComponent* m_AudioListener = nullptr;
 
 	PhysicsWorld* m_pPhysicsWorld = nullptr;
-
-	bool m_UseSkyBox = false;
-	Skybox* m_pSkybox = nullptr;
 
 	SceneEventDispatcher m_EventDispatcher;
 };

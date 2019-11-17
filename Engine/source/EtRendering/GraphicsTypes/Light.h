@@ -86,7 +86,6 @@ public:
 	//Shadow stuff
 	virtual void SetShadowEnabled(bool enabled);
 	virtual bool IsShadowEnabled() { return m_pShadowData != nullptr; }
-	virtual void GenerateShadow(TransformComponent* pTransform);
 
 protected:
 

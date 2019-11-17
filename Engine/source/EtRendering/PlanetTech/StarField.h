@@ -1,7 +1,7 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <Engine/Graphics/Camera.h>
+#include <EtRendering/GraphicsTypes/Camera.h>
 
 
 class StarField final

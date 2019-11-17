@@ -5,16 +5,16 @@
 
 #include <EtCore/Helper/Time.h>
 
-#include <Engine/Components/CameraComponent.h>
-#include <Engine/Components/LightComponent.h>
-#include <Engine/Prefabs/FreeCamera.h>
-#include <Engine/Prefabs/Skybox.h>
-#include <Engine/Prefabs/FreeCamera.h>
-#include <Engine/SceneRendering/Gbuffer.h>
-#include <Engine/SceneRendering/PostProcessingRenderer.h>
-#include <Engine/SceneRendering/TextRenderer.h>
-#include <Engine/Physics/PhysicsWorld.h>
-#include <Engine/SceneGraph/SceneManager.h>
+#include <EtRendering/SceneRendering/Gbuffer.h>
+#include <EtRendering/SceneRendering/PostProcessingRenderer.h>
+#include <EtRendering/SceneRendering/TextRenderer.h>
+
+#include <EtFramework/Components/CameraComponent.h>
+#include <EtFramework/Components/LightComponent.h>
+#include <EtFramework/Templates/FreeCamera.h>
+#include <EtFramework/Templates/FreeCamera.h>
+#include <EtFramework/Physics/PhysicsWorld.h>
+#include <EtFramework/SceneGraph/SceneManager.h>
 
 
 AbstractScene::AbstractScene(std::string name) 
@@ -31,7 +31,6 @@ AbstractScene::~AbstractScene()
 		SafeDelete(pEntity);
 	}
 	m_pEntityVec.clear();
-	if (m_pSkybox)SafeDelete(m_pSkybox);
 
 	SafeDelete(m_pPhysicsWorld);
 	SafeDelete(m_SceneContext);
@@ -123,26 +122,10 @@ void AbstractScene::RootUpdate()
 		LOG("Exposure: " + std::to_string(exposure));
 		m_PostProcessingSettings.exposure = exposure;
 	}
-	if (INPUT->GetKeyState(E_KbdKey::Left) == E_KeyState::Down && m_UseSkyBox)
-	{
-		float r = std::min(std::max(m_pSkybox->GetRoughness() -TIME->DeltaTime(), 0.f), 1.f);
-		LOG("Roughness: " + std::to_string(r));
-		SceneManager::GetInstance()->GetRenderScene().SetSkyboxRoughness(r);
-	}
-	if (INPUT->GetKeyState(E_KbdKey::Right) == E_KeyState::Down && m_UseSkyBox)
-	{
-		float r = std::min(std::max(m_pSkybox->GetRoughness() + TIME->DeltaTime(), 0.f), 1.f);
-		LOG("Roughness: " + std::to_string(r));
-		SceneManager::GetInstance()->GetRenderScene().SetSkyboxRoughness(r);
-	}
 
 	for (Entity* pEntity : m_pEntityVec)
 	{
 		pEntity->RootUpdate();
-	}
-	if (m_UseSkyBox)
-	{
-		m_pSkybox->RootUpdate();
 	}
 
 	m_pPhysicsWorld->Update();
@@ -162,23 +145,6 @@ void AbstractScene::RootOnDeactivated()
 void AbstractScene::SetActiveCamera(CameraComponent* pCamera)
 {
 	m_SceneContext->camera = pCamera;
-}
-
-std::vector<LightComponent*> AbstractScene::GetLights()
-{
-	std::vector<LightComponent*> ret;
-	for (auto *pEntity : m_pEntityVec)
-	{
-		auto entityLights = pEntity->GetComponents<LightComponent>();
-		ret.insert(ret.end(), entityLights.begin(), entityLights.end());
-	}
-	return ret;
-}
-
-const PostProcessingSettings& AbstractScene::GetPostProcessingSettings() const
-{
-	//Any settings blending should be done here
-	return m_PostProcessingSettings;
 }
 
 CameraComponent const* AbstractScene::GetActiveCamera() const
@@ -216,15 +182,6 @@ void AbstractScene::SetSkybox(T_Hash const assetId)
 void AbstractScene::SetStarfield(T_Hash const assetId)
 {
 	SceneManager::GetInstance()->GetRenderScene().SetStarfield(assetId);
-}
-
-EnvironmentMap const* AbstractScene::GetEnvironmentMap() const
-{
-	if (m_UseSkyBox)
-	{
-		return m_pSkybox->GetHDRMap();
-	}
-	return nullptr;
 }
 
 void AbstractScene::GetUniqueEntityName(std::string const& suggestion, std::string& uniqueName) const

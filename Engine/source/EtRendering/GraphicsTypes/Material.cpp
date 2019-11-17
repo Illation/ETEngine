@@ -7,8 +7,8 @@
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/SceneRendering/SceneRenderer.h>
-#include <Engine/SceneRendering/ShadedSceneRenderer.h>
+#include <EtRendering/SceneRendering/SceneRenderer.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 
 Material::Material(std::string shaderFile) :
