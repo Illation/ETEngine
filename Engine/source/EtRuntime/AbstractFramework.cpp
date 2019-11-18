@@ -43,17 +43,30 @@ void AbstractFramework::Run()
 {
 	Logger::Initialize();//Init logger first because all output depends on it from the start
 
-	Config::GetInstance()->Initialize();
+	Config* const cfg = Config::GetInstance();
+	cfg->Initialize();
 
 	SceneManager::GetInstance();
 	m_Viewport = new Viewport(&m_RenderArea);
 	m_SceneRenderer = new render::ShadedSceneRenderer(&(SceneManager::GetInstance()->GetRenderScene()));
 	m_Viewport->SetRenderer(m_SceneRenderer);
 	m_RenderArea.Initialize(); // also initializes the viewport and its renderer
+
+	std::string const& screenshotDir = cfg->GetScreenshotDir();
+	if (!screenshotDir.empty())
+	{
+		m_ScreenshotCapture.Initialize(cfg->GetUserDirPath() + screenshotDir);
+	}
+	else
+	{
+		m_ScreenshotCapture.Initialize(cfg->GetUserDirPath() + std::string("./"));
+	}
+
 	m_Viewport->SynchDimensions();
 	m_Viewport->Redraw();
 
 	ResourceManager::SetInstance(new PackageResourceManager());
+	cfg->InitRenderConfig();
 
 	//m_SceneRenderer->InitWithSplashScreen();
 	//m_RenderArea.Update();

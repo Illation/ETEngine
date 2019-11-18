@@ -27,7 +27,7 @@ void ShadowRenderer::Initialize()
 
 void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShadowData& shadowData, I_ShadowRenderer* const shadowRenderer)
 {
-	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
+	render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
 
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
@@ -100,7 +100,7 @@ void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShado
 
 DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
 {
-	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
+	render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
 
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 

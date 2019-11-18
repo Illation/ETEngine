@@ -43,4 +43,9 @@ void MainFramework::OnTick()
 	{
 		SceneManager::GetInstance()->NextScene();
 	}
+
+	if (INPUT->GetKeyState(E_KbdKey::F12) == E_KeyState::Pressed)
+	{
+		m_ScreenshotCapture.Take(Viewport::GetCurrentViewport());
+	}
 }

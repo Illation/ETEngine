@@ -5,6 +5,7 @@
 
 class Camera;
 class TextureData;
+class Gbuffer;
 
 
 //---------------------------------

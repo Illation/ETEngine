@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ScreenSpaceReflections.h"
 
-#include "SceneRenderer.h"
+#include "ShadedSceneRenderer.h"
 #include "Gbuffer.h"
 #include "PostProcessingRenderer.h"
 
@@ -11,7 +11,6 @@
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
-#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 
 ScreenSpaceReflections::~ScreenSpaceReflections()

@@ -3,6 +3,8 @@
 
 #include <EtCore/Helper/Singleton.h>
 
+#include <EtRendering/GlobalRenderingSystems/GraphicsSettings.h>
+
 
 //---------------------------------
 // Config
@@ -39,28 +41,6 @@ public:
 	{
 	public:
 		//---------------------------------
-		// Config::Settings::Graphics
-		//
-		// Configuration for our rt audio output stream
-		//
-		struct Graphics
-		{
-			bool UseFXAA = true;
-
-			//Shadow Quality
-			int32 NumCascades = 3;
-			float CSMDrawDistance = 200.f;
-			int32 NumPCFSamples = 3;
-
-			int32 PbrBrdfLutSize = 512;
-
-			float TextureScaleFactor = 1.f;
-
-			//Bloom Quality
-			int32 NumBlurPasses = 5;
-		};
-
-		//---------------------------------
 		// Config::Settings::Window
 		//
 		// Configuration for window settings
@@ -82,7 +62,7 @@ public:
 			size_t WindowedRes;
 		};
 
-		Graphics m_Graphics;
+		render::GraphicsSettings m_Graphics;
 		Window m_Window;
 		std::string m_StartScene;
 		std::string m_ScreenshotDir;
@@ -97,16 +77,13 @@ private:
 	// Default constructor and destructor
 	//-----------------
 	Config() = default;
-	virtual ~Config() = default;
+	virtual ~Config();
 
 
 	// Public interface
 	//-----------------
 public:
 	std::string const& GetUserDirPath() const { return m_UserDir.m_UserDirPath; }
-
-	Settings::Graphics const& GetGraphics() const { return m_Settings.m_Graphics; }
-	Settings::Graphics & GetGraphics() { return m_Settings.m_Graphics; }
 
 	Settings::Window const& GetWindow() const { return m_Settings.m_Window; }
 	Settings::Window & GetWindow() { return m_Settings.m_Window; }
@@ -116,6 +93,7 @@ public:
 
 	// initialization
 	void Initialize();
+	void InitRenderConfig();
 	void Save();
 
 	// DATA
@@ -125,5 +103,6 @@ private:
 	UserDirPointer m_UserDir;
 
 	Settings m_Settings;
+	bool m_HasRenderRef = false;
 };
 

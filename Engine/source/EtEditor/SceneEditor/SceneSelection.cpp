@@ -6,8 +6,8 @@
 #include <EtFramework/SceneGraph/Entity.h>
 #include <EtFramework/Components/ModelComponent.h>
 
+#include <EtRendering/Extensions/OutlineExtension.h>
 #include <EtRendering/SceneStructure/RenderScene.h>
-#include <EtRendering/SceneRendering/OutlineExtension.h>
 
 
 //==========================

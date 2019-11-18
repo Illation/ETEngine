@@ -10,10 +10,10 @@
 #include <EtRendering/SceneRendering/Gbuffer.h>
 #include <EtRendering/Materials/UberMaterial.h>
 
-#include <Engine/SceneGraph/Entity.h>
-#include <Engine/Components/ModelComponent.h>
-#include <Engine/Components/LightComponent.h>
-#include <Engine/Components/SpriteComponent.h>
+#include <EtFramework/SceneGraph/Entity.h>
+#include <EtFramework/Components/ModelComponent.h>
+#include <EtFramework/Components/LightComponent.h>
+#include <EtFramework/Components/SpriteComponent.h>
 
 
 EditorScene::~EditorScene()

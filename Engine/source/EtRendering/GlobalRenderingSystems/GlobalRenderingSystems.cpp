@@ -1,5 +1,29 @@
-#include <Engine/stdafx.h>
+#include <EtRendering/stdafx.h>
 #include "GlobalRenderingSystems.h"
+
+#include <rttr/registration>
+
+
+//===================
+// Graphics Settings
+//===================
+
+
+// reflection - done here because graphics settings don't have a source file with linked code
+RTTR_REGISTRATION
+{
+	using namespace rttr;
+	registration::class_<render::GraphicsSettings>("graphics settings")
+		.constructor<>()
+		.property("use FXAA", &render::GraphicsSettings::UseFXAA)
+		.property("CSM cascade count", &render::GraphicsSettings::NumCascades)
+		.property("CSM draw distance", &render::GraphicsSettings::CSMDrawDistance)
+		.property("PCF sample count", &render::GraphicsSettings::NumPCFSamples)
+		.property("BRDF LUT size", &render::GraphicsSettings::PbrBrdfLutSize)
+		.property("texture scale factor", &render::GraphicsSettings::TextureScaleFactor)
+		.property("bloom blur passes", &render::GraphicsSettings::NumBlurPasses)
+		;
+}
 
 
 //===========================
@@ -22,6 +46,27 @@ RenderingSystems* RenderingSystems::Instance()
 	ET_ASSERT(s_Instance != nullptr);
 
 	return s_Instance;
+}
+
+//---------------------------------
+// RenderingSystems::AddReference
+//
+// This version of add reference initializes with the specified graphics settings
+//
+void RenderingSystems::AddReference(render::GraphicsSettings const& settings)
+{
+	s_RefCount++;
+
+	if (s_RefCount == 1u)
+	{
+		s_Instance = new RenderingSystems();
+		s_Instance->SetGraphicsSettings(settings);
+		s_Instance->Initialize();
+	}
+	else
+	{
+		s_Instance->SetGraphicsSettings(settings);
+	}
 }
 
 //---------------------------------
@@ -65,18 +110,7 @@ void RenderingSystems::RemoveReference()
 void RenderingSystems::Initialize()
 {
 	m_Cie.LoadData();
-	m_PbrPrefilter.Precompute(Config::GetInstance()->GetGraphics().PbrBrdfLutSize);
-
-	// set up screenshot manager
-	std::string const& screenshotDir = Config::GetInstance()->GetScreenshotDir();
-	if (!screenshotDir.empty())
-	{
-		m_ScreenshotCapture.Initialize(Config::GetInstance()->GetUserDirPath() + screenshotDir);
-	}
-	else
-	{
-		m_ScreenshotCapture.Initialize(Config::GetInstance()->GetUserDirPath() + std::string("./"));
-	}
+	m_PbrPrefilter.Precompute(m_GraphicsSettings.PbrBrdfLutSize);
 
 	m_NullMaterial.Initialize();
 	m_ColorMaterial.Initialize();

@@ -12,13 +12,9 @@ class Directory;
 //
 class ScreenshotCapture final : public I_ViewportListener
 {
-	// definitions
-	//---------------
-private:
-	friend class RenderingSystems;
-
 	// construct destruct
 	//---------------------
+public:
 	ScreenshotCapture() = default;
 	virtual ~ScreenshotCapture();
 
@@ -26,7 +22,6 @@ private:
 
 	// functionality
 	//----------------
-public:
 	void Take(Viewport* const viewport);
 
 	// Viewport Listener interface

@@ -1,6 +1,6 @@
 #pragma once
-
 #include <EtCore/UpdateCycle/RealTimeTickTriggerer.h>
+#include <EtCore/Helper/MulticastDelegate.h>
 
 
 class I_GraphicsApiContext;

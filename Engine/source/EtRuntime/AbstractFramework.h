@@ -5,6 +5,7 @@
 #include <EtCore/UpdateCycle/Tickable.h>
 
 #include <EtFramework/Config/TickOrder.h>
+#include <EtFramework/Util/ScreenshotCapture.h>
 
 #include <EtRuntime/Rendering/GlfwRenderArea.h>
 
@@ -34,4 +35,7 @@ private:
 	GlfwRenderArea m_RenderArea;
 	Viewport* m_Viewport = nullptr;
 	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
+
+protected:
+	ScreenshotCapture m_ScreenshotCapture;
 };

@@ -3,8 +3,8 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/Graphics/TextureData.h>
-#include <EtRendering/Graphics/Shader.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 

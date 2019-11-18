@@ -7,7 +7,7 @@
 #include <EtCore/FileSystem/Json/JsonParser.h>
 #include <EtCore/FileSystem/Json/JsonDom.h>
 
-#include <Engine/Graphics/Mesh.h>
+#include <EtRendering/GraphicsTypes/Mesh.h>
 
 
 bool glTF::EvaluateURI(URI& uri, const std::string& basePath)

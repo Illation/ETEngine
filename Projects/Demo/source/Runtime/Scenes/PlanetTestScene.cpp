@@ -10,9 +10,9 @@
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
-#include <EtRendering/Graphics/FrameBuffer.h>
-#include <EtRendering/Graphics/SpriteFont.h>
-#include <EtRendering/Graphics/Light.h>
+#include <EtRendering/GraphicsTypes/FrameBuffer.h>
+#include <EtRendering/GraphicsTypes/SpriteFont.h>
+#include <EtRendering/GraphicsTypes/Light.h>
 #include <EtRendering/SceneRendering/TextRenderer.h>
 
 #include <EtFramework/Components/ModelComponent.h>
@@ -93,11 +93,6 @@ void PlanetTestScene::Update()
 	if (INPUT->GetKeyState(E_KbdKey::K) == E_KeyState::Down)
 	{
 		CAMERA->SetFieldOfView(CAMERA->GetFieldOfView() - TIME->DeltaTime()*10);
-	}
-
-	if (INPUT->GetKeyState(E_KbdKey::Num_0) == E_KeyState::Pressed)
-	{
-		RenderingSystems::Instance()->GetScreenshotCapture().Take(Viewport::GetCurrentViewport());
 	}
 
 	//Change light settings

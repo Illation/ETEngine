@@ -1,14 +1,11 @@
 #include "stdafx.h"
 #include "Config.h"
 
-#include <EtCore/Reflection/Serialization.h>
-
 #include <rttr/registration>
 
+#include <EtCore/Reflection/Serialization.h>
 
-//========
-// Config
-//========
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 // reflection
@@ -18,17 +15,6 @@ RTTR_REGISTRATION
 
 	registration::class_<Config::UserDirPointer>("dir pointer")
 		.property("user dir path", &Config::UserDirPointer::m_UserDirPath)
-		;
-
-	registration::class_<Config::Settings::Graphics>("output")
-		.constructor<>()
-		.property("use FXAA", &Config::Settings::Graphics::UseFXAA)
-		.property("CSM cascade count", &Config::Settings::Graphics::NumCascades)
-		.property("CSM draw distance", &Config::Settings::Graphics::CSMDrawDistance)
-		.property("PCF sample count", &Config::Settings::Graphics::NumPCFSamples)
-		.property("BRDF LUT size", &Config::Settings::Graphics::PbrBrdfLutSize)
-		.property("texture scale factor", &Config::Settings::Graphics::TextureScaleFactor)
-		.property("bloom blur passes", &Config::Settings::Graphics::NumBlurPasses)
 		;
 
 	registration::class_<Config::Settings::Window>("window")
@@ -50,6 +36,12 @@ RTTR_REGISTRATION
 		;
 }
 
+
+//==============================
+// Config :: Settings :: Window
+//==============================
+
+
 //------------------------------------
 // Config::Settings::Window::GetSize
 //
@@ -69,6 +61,23 @@ ivec2 Config::Settings::Window::GetSize() const
 		LogLevel::Warning);
 
 	return ivec2();
+}
+
+
+//========
+// Config
+//========
+
+
+//---------------------------------
+// Config::d-tor
+//
+Config::~Config()
+{
+	if (m_HasRenderRef)
+	{
+		RenderingSystems::RemoveReference();
+	}
 }
 
 //---------------------------------
@@ -98,6 +107,24 @@ void Config::Initialize()
 	else
 	{
 		LOG("Config::Initialize > unable to deserialize config file to settings, using defaults", Warning);
+	}
+}
+
+//---------------------------------
+// Config::InitRenderConfig
+//
+// Pass the graphics settings to the rendering configuration
+//
+void Config::InitRenderConfig()
+{
+	if (m_HasRenderRef)
+	{
+		RenderingSystems::Instance()->SetGraphicsSettings(m_Settings.m_Graphics);
+	}
+	else
+	{
+		RenderingSystems::AddReference(m_Settings.m_Graphics);
+		m_HasRenderRef = true;
 	}
 }
 

@@ -159,7 +159,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
-	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
+	render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
 
 	api->SetDepthEnabled(false);
 	//get glow

@@ -1,10 +1,12 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
+
 class TextureData;
 class NullMaterial;
 class DirectionalShadowData;
-class TransformComponent;
+class Camera;
+
 
 //---------------------------------
 // I_ShadowRenderer

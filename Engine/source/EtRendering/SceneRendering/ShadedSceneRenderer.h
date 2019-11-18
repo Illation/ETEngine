@@ -1,21 +1,22 @@
 #pragma once
 #include "ShadowRenderer.h"
+#include "OverlayRenderer.h"
 #include "Gbuffer.h"
 #include "ScreenSpaceReflections.h"
 #include "PostProcessingRenderer.h"
-#include "OverlayRenderer.h"
 #include "TextRenderer.h"
 #include "SpriteRenderer.h"
-#include "RenderEvents.h"
 
 #include <EtRendering/GraphicsTypes/Camera.h>
 #include <EtRendering/GraphicsContext/ViewportRenderer.h>
+#include <EtRendering/Extensions/RenderEvents.h>
 
 
 namespace render {
 
 
 class Scene;
+class MaterialCollection;
 
 
 //---------------------------------

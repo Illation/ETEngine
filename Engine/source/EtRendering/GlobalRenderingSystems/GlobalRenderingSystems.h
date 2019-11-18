@@ -1,11 +1,11 @@
 #pragma once
 
+#include "GraphicsSettings.h"
 #include "PrimitiveRenderer.h"
 #include "PbrPrefilter.h"
 #include "AtmospherePrecompute.h"
 #include "CIE.h"
 #include "LightVolume.h"
-#include "ScreenshotCapture.h"
 
 #include <EtRendering/Materials/NullMaterial.h>
 #include <EtRendering/Materials/ColorMaterial.h>
@@ -32,6 +32,7 @@ private:
 public:
 	static RenderingSystems* Instance();
 
+	static void AddReference(render::GraphicsSettings const& settings);
 	static void AddReference();
 	static void RemoveReference();
 
@@ -43,9 +44,15 @@ private:
 
 	void Initialize();
 
+	// functionality
+	//---------------
+public:
+	void SetGraphicsSettings(render::GraphicsSettings const& settings) { m_GraphicsSettings = settings; }
+
 	// accessors
 	//-----------
-public:
+	render::GraphicsSettings const& GetGraphicsSettings() const { return m_GraphicsSettings; }
+
 	PrimitiveRenderer& GetPrimitiveRenderer() { return m_PrimitiveRenderer; }
 	PbrPrefilter& GetPbrPrefilter() { return m_PbrPrefilter; }
 	CIE& GetCie() { return m_Cie; }
@@ -53,13 +60,14 @@ public:
 	PointLightVolume& GetPointLightVolume() { return m_PointLightVolume; }
 	render::AtmospherePrecompute& GetAtmospherPrecompute() { return m_AtmospherePrecompute; }
 	render::Patch& GetPatch() { return m_Patch; }
-	ScreenshotCapture& GetScreenshotCapture() { return m_ScreenshotCapture; }
 	NullMaterial* GetNullMaterial() { return &m_NullMaterial; }
 	ColorMaterial* GetColorMaterial() { return &m_ColorMaterial; }
 
 	// Data
 	///////
 private:
+
+	render::GraphicsSettings m_GraphicsSettings;
 
 	PrimitiveRenderer m_PrimitiveRenderer;
 
@@ -72,8 +80,6 @@ private:
 
 	render::AtmospherePrecompute m_AtmospherePrecompute;
 	render::Patch m_Patch;
-
-	ScreenshotCapture m_ScreenshotCapture;
 
 	NullMaterial m_NullMaterial;
 	ColorMaterial m_ColorMaterial;

@@ -7,7 +7,6 @@
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/SceneRendering/SceneRenderer.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 
@@ -54,7 +53,7 @@ void Material::UploadVariables(mat4 matModel)
 	if (m_StandardTransform)
 	{
 		m_Shader->Upload("model"_hash, matModel);
-		m_Shader->Upload("worldViewProj"_hash, SceneRenderer::GetCurrent()->GetCamera().GetViewProj());
+		m_Shader->Upload("worldViewProj"_hash, render::ShadedSceneRenderer::GetCurrent()->GetCamera().GetViewProj());
 	}
 
 	UploadDerivedVariables();

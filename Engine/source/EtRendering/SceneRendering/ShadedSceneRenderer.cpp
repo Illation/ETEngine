@@ -5,6 +5,7 @@
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/SceneStructure/RenderScene.h>
+#include <EtRendering/GraphicsTypes/EnvironmentMap.h>
 #include <EtRendering/GraphicsTypes/Material.h>
 #include <EtRendering/Materials/NullMaterial.h>
 #include <EtRendering/PlanetTech/StarField.h>

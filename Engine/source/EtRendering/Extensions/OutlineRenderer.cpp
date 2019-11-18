@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "OutlineRenderer.h"
 
-#include "ShadedSceneRenderer.h"
-#include "Gbuffer.h"
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/GraphicsTypes/TextureData.h>
@@ -12,6 +9,8 @@
 #include <EtRendering/Materials/ColorMaterial.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/SceneStructure/RenderScene.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
+#include <EtRendering/SceneRendering/Gbuffer.h>
 
 
 

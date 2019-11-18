@@ -4,8 +4,7 @@
 #include "Planet.h"
 
 #include <EtRendering/GraphicsTypes/Frustum.h>
-#include <EtRendering/Components/TransformComponent.h>
-#include <EtRendering/SceneRendering/SceneRenderer.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 
 namespace render {
@@ -34,12 +33,6 @@ bool Triangulator::Update(mat4 const& transform, Camera const& camera)
 	Precalculate();
 
 	//Frustum update
-
-	if (INPUT->GetKeyState(E_KbdKey::Space) == E_KeyState::Pressed)
-	{
-		m_LockFrustum = !m_LockFrustum;
-	}
-
 	m_Frustum.SetCullTransform(transform);
 	if (!m_LockFrustum)
 	{

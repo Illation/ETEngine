@@ -8,7 +8,7 @@
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
-#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 //=================

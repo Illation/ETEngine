@@ -20,6 +20,7 @@
 #pragma region
 #include <EtCore/stdafx.h>
 #include <EtCore/Helper/PerformanceInfo.h>
+#include <EtCore/Helper/Hash.h>
 
 #include <EtRendering/GraphicsContext/GraphicsApiContext.h>
 #include <EtRendering/GraphicsContext/Viewport.h>

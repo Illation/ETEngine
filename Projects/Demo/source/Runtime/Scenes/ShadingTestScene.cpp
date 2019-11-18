@@ -17,7 +17,6 @@
 #include <EtFramework/Components/LightComponent.h>
 #include <EtFramework/Components/SpriteComponent.h>
 #include <EtFramework/SceneGraph/Entity.h>
-#include <EtFramework/Templates/Skybox.h>
 
 
 ShadingTestScene::ShadingTestScene() : AbstractScene("ShadingTestScene")

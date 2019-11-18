@@ -5,7 +5,7 @@
 #include <gdk/gdk.h>
 
 #include <EtRendering/GraphicsContext/Viewport.h>
-#include <EtRendering/SceneRendering/OutlineRenderer.h>
+#include <EtRendering/Extensions/OutlineRenderer.h>
 
 #include <EtEditor/SceneEditor/SceneEditorListener.h>
 #include <EtEditor/Rendering/EditorCamera.h>

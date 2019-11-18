@@ -2,9 +2,9 @@
 #include <EtCore/Helper/Singleton.h>
 #include <EtCore/UpdateCycle/Tickable.h>
 
-#include <EtRendering/GraphicsHelper/RenderScene.h>
+#include <EtRendering/SceneStructure/RenderScene.h>
 
-#include <EtFramework/Util/TickOrder.h>
+#include <EtFramework/Config/TickOrder.h>
 
 
 //Forward Declaration

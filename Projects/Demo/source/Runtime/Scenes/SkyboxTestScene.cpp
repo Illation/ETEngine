@@ -8,7 +8,7 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/SceneRendering/SceneRenderer.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/SceneRendering/Gbuffer.h>
 #include <EtRendering/GraphicsTypes/SpriteFont.h>
 #include <EtRendering/GraphicsTypes/FrameBuffer.h>
@@ -17,8 +17,7 @@
 #include <EtFramework/SceneGraph/Entity.h>
 #include <EtFramework/Components/ModelComponent.h>
 #include <EtFramework/Components/LightComponent.h>
-#include <EtFramework/Prefabs/Skybox.h>
-#include <EtFramework/Prefabs/OrbitCamera.h>
+#include <EtFramework/Templates/OrbitCamera.h>
 
 
 SkyboxTestScene::SkyboxTestScene() : AbstractScene("SkyboxTestScene")
@@ -118,7 +117,7 @@ void SkyboxTestScene::Update()
 
 void SkyboxTestScene::Draw()
 {
-	TextRenderer& textRenderer = SceneRenderer::GetCurrent()->GetTextRenderer();
+	TextRenderer& textRenderer = render::ShadedSceneRenderer::GetCurrent()->GetTextRenderer();
 
 	textRenderer.SetFont(m_pDebugFont.get());
 	textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));

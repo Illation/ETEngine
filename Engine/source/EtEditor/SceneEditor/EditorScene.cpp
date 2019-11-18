@@ -3,17 +3,18 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/SceneGraph/Entity.h>
-#include <Engine/Graphics/SpriteFont.h>
-#include <Engine/Graphics/FrameBuffer.h>
-#include <Engine/Graphics/Light.h>
-#include <Engine/SceneRendering/TextRenderer.h>
-#include <Engine/SceneRendering/Gbuffer.h>
-#include <Engine/Components/ModelComponent.h>
-#include <Engine/Components/LightComponent.h>
-#include <Engine/Components/SpriteComponent.h>
-#include <Engine/Prefabs/Skybox.h>
-#include <Engine/Materials/UberMaterial.h>
+#include <EtRendering/GraphicsTypes/SpriteFont.h>
+#include <EtRendering/GraphicsTypes/FrameBuffer.h>
+#include <EtRendering/GraphicsTypes/Light.h>
+#include <EtRendering/SceneRendering/TextRenderer.h>
+#include <EtRendering/SceneRendering/Gbuffer.h>
+#include <EtRendering/Materials/UberMaterial.h>
+
+#include <EtFramework/SceneGraph/Entity.h>
+#include <EtFramework/Components/ModelComponent.h>
+#include <EtFramework/Components/LightComponent.h>
+#include <EtFramework/Components/SpriteComponent.h>
+
 
 EditorScene::~EditorScene()
 {

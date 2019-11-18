@@ -5,7 +5,7 @@
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/FrameBuffer.h>
 #include <EtRendering/SceneRendering/Gbuffer.h>
-#include <EtRendering/SceneRendering/SceneRenderer.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 
 LightMaterial::LightMaterial(vec3 col)
@@ -27,13 +27,13 @@ void LightMaterial::UploadDerivedVariables()
 	m_Shader->Upload("texGBufferA"_hash, 0);
 	m_Shader->Upload("texGBufferB"_hash, 1);
 	m_Shader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = SceneRenderer::GetCurrent()->GetGBuffer()->GetTextures();
+	auto gbufferTex = render::ShadedSceneRenderer::GetCurrent()->GetGBuffer().GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
 		Viewport::GetCurrentApiContext()->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());
 	}
 	//for position reconstruction
-	Camera const& cam = SceneRenderer::GetCurrent()->GetCamera();
+	Camera const& cam = render::ShadedSceneRenderer::GetCurrent()->GetCamera();
 
 	m_Shader->Upload("projectionA"_hash, cam.GetDepthProjA());
 	m_Shader->Upload("projectionB"_hash, cam.GetDepthProjB());

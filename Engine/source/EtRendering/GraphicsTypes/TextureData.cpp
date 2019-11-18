@@ -4,6 +4,8 @@
 #include <stb/stb_image.h>
 #include <stb/stb_image_resize.h>
 
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+
 
 //==============
 // Texture Data
@@ -162,7 +164,7 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 		return false;
 	}
 
-	Config::Settings::Graphics const& graphicsSettings = Config::GetInstance()->GetGraphics();
+	render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
 	if (!etm::nearEquals(graphicsSettings.TextureScaleFactor, 1.f))
 	{
 		if (!m_ForceResolution)

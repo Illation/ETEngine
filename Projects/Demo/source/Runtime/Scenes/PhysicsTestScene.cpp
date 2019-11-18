@@ -8,10 +8,10 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/Graphics/SpriteFont.h>
-#include <EtRendering/Graphics/Light.h>
-#include <EtRendering/Graphics/TextureData.h>
-#include <EtRendering/SceneRendering/SceneRenderer.h>
+#include <EtRendering/GraphicsTypes/SpriteFont.h>
+#include <EtRendering/GraphicsTypes/Light.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 #include <EtFramework/Components/ModelComponent.h>
@@ -176,11 +176,6 @@ void PhysicsTestScene::Update()
 	vec3 lightPos = m_LightCentralPos + vec3(sin(TIME->GetTime()), 0.f, cos(TIME->GetTime()))*m_LightRotDistance;
 	m_pLightEntity->GetTransform()->SetPosition(lightPos);
 
-	if(INPUT->GetKeyState(E_KbdKey::Num_0) == E_KeyState::Pressed)
-	{
-		RenderingSystems::Instance()->GetScreenshotCapture().Take(Viewport::GetCurrentViewport());
-	}
-
 	if (INPUT->GetKeyState(E_KbdKey::LeftBracket) == E_KeyState::Pressed)
 	{
 		ET_ASSERT(m_AudioIdPlaylist.size() > 0u);
@@ -230,20 +225,13 @@ void PhysicsTestScene::Update()
 		pRBComp->ApplyImpulse(bDir*m_SphereForce);
 	}
 
-	if(INPUT->GetKeyState(E_KbdKey::X) == E_KeyState::Pressed)
-	{
-		Config::Settings::Graphics& graphicsSettings = Config::GetInstance()->GetGraphics();
-		graphicsSettings.UseFXAA = !(graphicsSettings.UseFXAA);
-		Config::GetInstance()->Save();
-	}
-
-	SceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(m_DebugFont->GetAtlas(), vec2(1000, 0),
+	render::ShadedSceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(m_DebugFont->GetAtlas(), vec2(1000, 0),
 		vec4(1), vec2(0), vec2(1), 0, 0, SpriteRenderer::E_ScalingMode::TextureAbs);
 }
 
 void PhysicsTestScene::Draw()
 {
-	TextRenderer& textRenderer = SceneRenderer::GetCurrent()->GetTextRenderer();
+	TextRenderer& textRenderer = render::ShadedSceneRenderer::GetCurrent()->GetTextRenderer();
 
 	textRenderer.SetFont(m_DebugFont.get());
 	textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
@@ -266,8 +254,8 @@ void PhysicsTestScene::Draw()
 	outString = "laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure ";
 	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 8), 64);
 
-	vec3 lightPos = m_pLightEntity->GetTransform()->GetPosition();
-	SceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(2, 0, 0), vec4(1, 0, 0, 1), 2);
-	SceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(0, 2, 0), vec4(0, 1, 0, 1), 2);
-	SceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(0, 0, 2), vec4(0, 0, 1, 1), 2);
+	//vec3 lightPos = m_pLightEntity->GetTransform()->GetPosition();
+	//render::ShadedSceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(2, 0, 0), vec4(1, 0, 0, 1), 2);
+	//render::ShadedSceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(0, 2, 0), vec4(0, 1, 0, 1), 2);
+	//render::ShadedSceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(0, 0, 2), vec4(0, 0, 1, 1), 2);
 }

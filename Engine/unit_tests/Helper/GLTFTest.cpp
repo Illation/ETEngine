@@ -1,13 +1,13 @@
 #include <catch2/catch.hpp>
-
-#include <Engine/stdafx.h>
-#include <Engine/Helper/GLTF.h>
+#include <EtFramework/stdafx.h>
 
 #include <mainTesting.h>
 
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/Json/JsonParser.h>
+
+#include <EtRendering/SceneStructure/GLTF.h>
 
 
 TEST_CASE("Decode Base64", "[gltf]")

@@ -5,10 +5,9 @@
 
 #include <EtCore/Helper/InputManager.h>
 
-#include <Engine/SceneGraph/SceneManager.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
-#include <Engine/Physics/PhysicsManager.h>
-#include <Engine/Audio/AudioManager.h>
+#include <EtFramework/SceneGraph/SceneManager.h>
+#include <EtFramework/Physics/PhysicsManager.h>
+#include <EtFramework/Audio/AudioManager.h>
 
 #include <EtEditor/Util/GtkUtil.h>
 #include <EtEditor/Tools/SceneViewport.h>

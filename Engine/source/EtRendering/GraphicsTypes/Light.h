@@ -3,8 +3,8 @@
 #include <EtCore/Containers/slot_map.h>
 
 
-class TransformComponent;
 class DirectionalShadowData;
+
 
 namespace render {
 
@@ -44,13 +44,10 @@ public:
 	//Shadow stuff
 	virtual void SetShadowEnabled( bool enabled ) { UNUSED( enabled ); }
 	virtual bool IsShadowEnabled() { return false; }
-	virtual void GenerateShadow( TransformComponent* pTransform ) { UNUSED( pTransform ); }
 
 protected:
 	vec3 color;
 	float brightness;
-	friend class LightComponent;
-	virtual void DrawVolume( TransformComponent* pTransform ) { UNUSED( pTransform ); };
 	bool m_Update = true;
 };
 
@@ -62,8 +59,6 @@ public:
 
 	void SetRadius(float rad) { radius = rad;  m_Update = true;}
 	float GetRadius() { return radius; }
-
-	void DrawVolume(TransformComponent* pTransform);
 
 protected:
 	float radius;
@@ -78,8 +73,6 @@ public:
 	{
 		SetShadowEnabled(false);
 	}
-
-	void DrawVolume(TransformComponent* pTransform);
 
 	bool IsDirectional() const override { return true; }
 

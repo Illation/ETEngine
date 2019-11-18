@@ -216,11 +216,6 @@ void TextRenderer::Draw()
 
 	UpdateBuffer();
 
-	if (INPUT->GetKeyState(E_KbdKey::K) == E_KeyState::Pressed)
-	{
-		m_bUseKerning = !m_bUseKerning;
-	}
-
 	//Enable this objects shader
 	CalculateTransform();
 	api->SetShader(m_pTextShader.get());

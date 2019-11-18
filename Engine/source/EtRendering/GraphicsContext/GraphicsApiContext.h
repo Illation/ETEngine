@@ -1,6 +1,7 @@
 #pragma once
 
 #include <EtRendering/GraphicsTypes/VertexInfo.h>
+#include <EtRendering/GraphicsTypes/TextureParameters.h>
 
 #include "GraphicsTypes.h"
 

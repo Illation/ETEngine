@@ -5,7 +5,7 @@
 
 #include <algorithm>
 
-#include <EtRendering/SceneRendering/SceneRenderer.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 
 SceneManager::~SceneManager()
@@ -84,10 +84,10 @@ void SceneManager::OnTick()
 {
 	if (m_NewActiveScene != nullptr)
 	{
-		for (SceneRenderer* sceneRenderer : SceneRenderer::GetAll())
-		{
-			sceneRenderer->ShowSplashScreen();
-		}
+		//for (SceneRenderer* sceneRenderer : SceneRenderer::GetAll())
+		//{
+		//	sceneRenderer->ShowSplashScreen();
+		//}
 		m_SplashFrame = true;
 
 		//Deactivate the current active scene
@@ -107,10 +107,10 @@ void SceneManager::OnTick()
 	}
 	else
 	{
-		for (SceneRenderer* sceneRenderer : SceneRenderer::GetAll())
-		{
-			sceneRenderer->HideSplashScreen();
-		}
+		//for (SceneRenderer* sceneRenderer : SceneRenderer::GetAll())
+		//{
+		//	sceneRenderer->HideSplashScreen();
+		//}
 	}
 
 	if ((m_ActiveScene != nullptr) && (!m_SplashFrame))

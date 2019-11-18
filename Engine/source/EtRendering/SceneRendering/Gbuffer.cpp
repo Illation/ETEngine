@@ -6,7 +6,7 @@
 #include <EtRendering/GraphicsTypes/EnvironmentMap.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
-#include <EtRendering/GraphicsHelper/RenderScene.h>
+#include <EtRendering/SceneStructure/RenderScene.h>
 
 
 Gbuffer::Gbuffer(bool demo):

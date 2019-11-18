@@ -5,6 +5,7 @@
 
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 //====================
@@ -144,7 +145,7 @@ void SpriteRenderer::Draw(TextureData const* tex,
 	break;
 
 	case E_ScalingMode::Texture:
-		finalScale = scale * etm::vecCast<float>(tex->GetResolution()) / Config::GetInstance()->GetGraphics().TextureScaleFactor;
+		finalScale = scale * etm::vecCast<float>(tex->GetResolution()) / RenderingSystems::Instance()->GetGraphicsSettings().TextureScaleFactor;
 		break;
 
 	case E_ScalingMode::TextureAbs:

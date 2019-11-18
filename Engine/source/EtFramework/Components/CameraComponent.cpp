@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CameraComponent.h"
 
-#include <EtRendering/GraphicsTypew/Camera.h>
+#include <EtRendering/GraphicsTypes/Camera.h>
 #include <EtRendering/GraphicsContext/Viewport.h>
 
 
@@ -16,7 +16,7 @@ void CameraComponent::PopulateCamera(Camera& target, Viewport const& viewport) c
 	target.SetFieldOfView(m_FieldOfView, true);
 	target.SetSize(m_Size, true);
 	target.SetClippingPlanes(m_NearPlane, m_FarPlane, true);
-	target.SetViewport(viewport true);
+	target.SetViewport(&viewport, true);
 
 	target.Recalculate();
 }

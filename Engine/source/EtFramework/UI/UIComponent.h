@@ -5,7 +5,7 @@
 #include <EtCore/Content/AssetPointer.h>
 
 #include <EtRendering/GraphicsTypes/TextureData.h>
-#include <EtRendering/Graphics/SpriteFont.h>
+#include <EtRendering/GraphicsTypes/SpriteFont.h>
 
 
 enum class UIComponentType : uint8

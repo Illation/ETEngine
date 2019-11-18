@@ -2,11 +2,11 @@
 
 #include <EtCore/Content/AssetStub.h>
 #include <EtCore/Reflection/registerMath.h>
-#include <EtRendering/Graphics/Shader.h>
-#include <EtRendering/Graphics/Mesh.h>
-#include <EtRendering/Graphics/EnvironmentMap.h>
-#include <EtRendering/Graphics/SpriteFont.h>
-#include <EtRendering/Graphics/TextureData.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/GraphicsTypes/Mesh.h>
+#include <EtRendering/GraphicsTypes/EnvironmentMap.h>
+#include <EtRendering/GraphicsTypes/SpriteFont.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
 
 
 namespace render {

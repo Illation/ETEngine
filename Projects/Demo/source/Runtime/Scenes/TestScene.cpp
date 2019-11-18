@@ -9,11 +9,11 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/SceneRendering/SceneRenderer.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/SceneRendering/Gbuffer.h>
-#include <EtRendering/Graphics/FrameBuffer.h>
-#include <EtRendering/Graphics/SpriteFont.h>
-#include <EtRendering/Graphics/Light.h>
+#include <EtRendering/GraphicsTypes/FrameBuffer.h>
+#include <EtRendering/GraphicsTypes/SpriteFont.h>
+#include <EtRendering/GraphicsTypes/Light.h>
 
 #include <EtFramework/SceneGraph/Entity.h>
 #include <EtFramework/Components/ModelComponent.h>
@@ -222,7 +222,7 @@ void TestScene::Update()
 
 void TestScene::Draw()
 {
-	TextRenderer& textRenderer = SceneRenderer::GetCurrent()->GetTextRenderer();
+	TextRenderer& textRenderer = render::ShadedSceneRenderer::GetCurrent()->GetTextRenderer();
 
 	textRenderer.SetFont(m_pDebugFont.get());
 	textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
