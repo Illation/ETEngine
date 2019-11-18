@@ -1,53 +1,67 @@
 #pragma once
 #include "AbstractComponent.h"
-#include <EtRendering/GraphicsTypes/Light.h>
 
-#include <typeinfo>
-
-
-class TransformComponent;
+#include <EtCore/Containers/slot_map.h>
 
 
+//---------------------------------
+// LightComponent
+//
+// Component that lights the scene
+//
 class LightComponent : public AbstractComponent
 {
+	// definitions
+	//-------------
 public:
-	LightComponent(Light* light);
+	enum class Type
+	{
+		Point,
+		Directional
+	};
+
+	// construct destruct
+	//--------------------
+	LightComponent(Type const type, vec3 const& color = vec3(1.f), float const brightness = 1.f, bool const castsShadow = false);
 	~LightComponent();
 
-	template<class T>
-	bool IsLightType()
-	{
-		return GetLight<T>() != nullptr;
-	}
-	template<class T>
-	T* GetLight()
-	{
-		return dynamic_cast<T*>(m_Light);
-	}
+private:
+	LightComponent(const LightComponent& yRef);
+	LightComponent& operator=(const LightComponent& yRef);
 
-	render::T_LightId GetLightId() const { return m_LightId; }
+	// accessors
+	//-----------
+public:
+	core::T_SlotId GetLightId() const { return m_LightId; }
 
+	vec3 const& GetColor() const { return m_Color; }
+	float GetBrightness() const { return m_Brightness; }
+
+	// functionality
+	//---------------
+	void SetColor(vec3 const& col) { m_Color = col; m_ColorChanged = true; }
+	void SetBrightness(float const value) { m_Brightness = value; m_ColorChanged = true; }
+
+	// component interface
+	//---------------------
 protected:
-
-	Light* m_Light = nullptr;
-
 	virtual void Initialize();
 	virtual void Update();
 	virtual void Draw() {}
 	virtual void DrawForward() {}
 
 private:
-	friend class TransformComponent;
-	
-	bool m_PositionUpdated = false;
-	render::T_LightId m_LightId = core::INVALID_SLOT_ID;
 
-private:
-	// -------------------------
-	// Disabling default copy constructor and default 
-	// assignment operator.
-	// -------------------------
-	LightComponent(const LightComponent& yRef);
-	LightComponent& operator=(const LightComponent& yRef);
+	// Data
+	///////
+
+	Type m_Type;
+	vec3 m_Color;
+	float m_Brightness;
+	bool m_CastsShadow;
+
+	bool m_ColorChanged = false;
+
+	core::T_SlotId m_LightId = core::INVALID_SLOT_ID;
 };
 

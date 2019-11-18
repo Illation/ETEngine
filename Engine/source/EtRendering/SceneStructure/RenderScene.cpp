@@ -190,9 +190,11 @@ T_LightId Scene::AddLight(vec3 const& color, T_NodeId const node, bool const isD
 		if (hasShadow)
 		{
 			lightId = m_DirectionalLightsShaded.insert(Light(light)).second;
-			T_LightId const shadowId = m_DirectionalShadowData.insert(DirectionalShadowData(ivec2(1024, 1024) * 8)).second;
+
+			auto shadowData = m_DirectionalShadowData.insert(DirectionalShadowData());
+			shadowData.first->Init(ivec2(1024, 1024) * 8);
 			
-			ET_ASSERT(lightId == shadowId);
+			ET_ASSERT(lightId == shadowData.second);
 		}
 		else
 		{
@@ -248,6 +250,8 @@ void Scene::RemoveLight(T_LightId const lightId)
 		if (instance.m_HasShadow)
 		{
 			m_DirectionalLightsShaded.erase(instance.m_SlotId);
+
+			m_DirectionalShadowData[instance.m_SlotId].Destroy();
 			m_DirectionalShadowData.erase(instance.m_SlotId);
 		}
 		else

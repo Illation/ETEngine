@@ -9,7 +9,7 @@
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/Frustum.h>
-#include <EtRendering/GraphicsTypes/Light.h>
+#include <EtRendering/SceneStructure/Light.h>
 #include <EtRendering/SceneRendering/SpriteRenderer.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/SceneRendering/Gbuffer.h>

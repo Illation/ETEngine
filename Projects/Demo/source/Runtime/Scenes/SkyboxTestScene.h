@@ -5,9 +5,7 @@
 
 
 class TexPBRMaterial;
-class PointLight;
-class Entity;
-class DirectionalLight;
+class LightComponent;
 class SpriteFont;
 
 
@@ -20,12 +18,11 @@ private:
 	void Initialize();
 	void Update();
 	void Draw();
-	void DrawForward();
-	void PostDraw();
+	void DrawForward() {}
+	void PostDraw() {}
 private:
 	TexPBRMaterial* m_pMat = nullptr;
-	Entity* m_pLigEntity = nullptr;
-	DirectionalLight* m_pLight = nullptr;
+	LightComponent* m_Light = nullptr;
 
 	AssetPtr<SpriteFont> m_pDebugFont;
 };

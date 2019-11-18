@@ -13,7 +13,6 @@
 #include <EtRendering/SceneRendering/Gbuffer.h>
 #include <EtRendering/GraphicsTypes/FrameBuffer.h>
 #include <EtRendering/GraphicsTypes/SpriteFont.h>
-#include <EtRendering/GraphicsTypes/Light.h>
 
 #include <EtFramework/SceneGraph/Entity.h>
 #include <EtFramework/Components/ModelComponent.h>
@@ -74,21 +73,20 @@ void TestScene::Initialize()
 	pModelComp1->SetMaterial(m_pLightMat);
 	auto pLigEntity = new Entity();
 	pLigEntity->AddComponent(pModelComp1);
-	pLigEntity->AddComponent(new LightComponent(
-		new DirectionalLight(vec3(1, 1, 1), 0.0004f)));
+	pLigEntity->AddComponent(new LightComponent(LightComponent::Type::Directional, vec3(1, 1, 1), 0.0004f));
 	pLigEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
 	AddEntity(pLigEntity);
 
 	//Moveable point light
 	auto pModelComp2 = new ModelComponent("sphere.dae"_hash);
 	pModelComp2->SetMaterial(m_pLightMat);
-	m_pLigEnt = new Entity();
-	m_pLigEnt->AddComponent(pModelComp2);
-	m_pLight = new PointLight(vec3(1, 0.8f, 0.8f), 1.f, 10.f);
-	m_pLigEnt->AddComponent(new LightComponent(m_pLight));
-	m_pLigEnt->GetTransform()->SetPosition(vec3(1, -2, -1));
-	m_pLigEnt->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
-	AddEntity(m_pLigEnt);
+	auto lightEntity = new Entity();
+	lightEntity->AddComponent(pModelComp2);
+	m_Light = new LightComponent(LightComponent::Type::Point, vec3(1, 0.8f, 0.8f), 1.f);
+	lightEntity->AddComponent(m_Light);
+	lightEntity->GetTransform()->SetPosition(vec3(1, -2, -1));
+	lightEntity->GetTransform()->Scale(vec3(10.f));
+	AddEntity(lightEntity);
 	
 	//Random point light field
 	std::random_device rd;
@@ -109,15 +107,14 @@ void TestScene::Initialize()
 		auto swirl = SwirlyLight();
 		swirl.origin = vec3(disXZ(gen), -disY(gen)*3, disXZ(gen));
 
-		auto pPoint = new PointLight(normalize(vec3(disC(gen), disC(gen), disC(gen))), disI(gen) * 500, 3.5f);
-		pLigEnt->AddComponent(new LightComponent(pPoint));
+		auto pPoint = new LightComponent(LightComponent::Type::Point, normalize(vec3(disC(gen), disC(gen), disC(gen))), disI(gen) * 500);
+		pLigEnt->AddComponent(pPoint);
 		pLigEnt->AddComponent(pLigMod);
 		pLigEnt->GetTransform()->SetPosition(swirl.origin);
-		pLigEnt->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
+		pLigEnt->GetTransform()->Scale(vec3(3.5f));
 		AddEntity(pLigEnt);
 
-		swirl.light = pLigEnt;
-		swirl.comp = pPoint;
+		swirl.light = pPoint;
 		swirl.angle = disA(gen);
 		swirl.radius = disR(gen);
 		swirl.angle2 = disA(gen);
@@ -148,75 +145,69 @@ void TestScene::Update()
 		vec3 pos = m_Lights[i].origin + vec3(m_Lights[i].radius*std::cosf(m_Lights[i].angle)
 			, -m_Lights[i].radius2*std::sinf(m_Lights[i].angle2), -m_Lights[i].radius*std::sinf(m_Lights[i].angle));
 		m_Lights[i].light->GetTransform()->SetPosition(pos);
-		m_Lights[i].comp->SetBrightness(m_Lights[i].comp->GetBrightness()+std::cosf(m_Lights[i].angle) * 3.5f);
+		m_Lights[i].light->SetBrightness(m_Lights[i].light->GetBrightness()+std::cosf(m_Lights[i].angle) * 3.5f);
 	}
 
 	//Move light
 	if (INPUT->GetKeyState(E_KbdKey::KP_2) == E_KeyState::Down)
 	{
-		m_pLigEnt->GetTransform()->SetPosition(
-			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 0, -1)*TIME->DeltaTime());
+		m_Light->GetTransform()->SetPosition( m_Light->GetTransform()->GetPosition() + vec3(0, 0, -1)*TIME->DeltaTime());
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_8) == E_KeyState::Down)
 	{
-		m_pLigEnt->GetTransform()->SetPosition(
-			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 0, 1)*TIME->DeltaTime());
+		m_Light->GetTransform()->SetPosition( m_Light->GetTransform()->GetPosition() + vec3(0, 0, 1)*TIME->DeltaTime());
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_4) == E_KeyState::Down)
 	{
-		m_pLigEnt->GetTransform()->SetPosition(
-			m_pLigEnt->GetTransform()->GetPosition() + vec3(-1, 0, 0)*TIME->DeltaTime());
+		m_Light->GetTransform()->SetPosition( m_Light->GetTransform()->GetPosition() + vec3(-1, 0, 0)*TIME->DeltaTime());
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_6) == E_KeyState::Down)
 	{
-		m_pLigEnt->GetTransform()->SetPosition(
-			m_pLigEnt->GetTransform()->GetPosition() + vec3(1, 0, 0)*TIME->DeltaTime());
+		m_Light->GetTransform()->SetPosition( m_Light->GetTransform()->GetPosition() + vec3(1, 0, 0)*TIME->DeltaTime());
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_Minus) == E_KeyState::Down)
 	{
-		m_pLigEnt->GetTransform()->SetPosition(
-			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, -1, 0)*TIME->DeltaTime());
+		m_Light->GetTransform()->SetPosition( m_Light->GetTransform()->GetPosition() + vec3(0, -1, 0)*TIME->DeltaTime());
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_Plus) == E_KeyState::Down)
 	{
-		m_pLigEnt->GetTransform()->SetPosition(
-			m_pLigEnt->GetTransform()->GetPosition() + vec3(0, 1, 0)*TIME->DeltaTime());
+		m_Light->GetTransform()->SetPosition( m_Light->GetTransform()->GetPosition() + vec3(0, 1, 0)*TIME->DeltaTime());
 	}
 
 	//Change light settings
 	if (INPUT->GetKeyState(E_KbdKey::KP_1) == E_KeyState::Down)
 	{
-		float newRad = m_pLight->GetRadius() * 4;
-		m_pLight->SetRadius(m_pLight->GetRadius()-(newRad-m_pLight->GetRadius())*TIME->DeltaTime());
-		LOG("Linear: " + std::to_string(m_pLight->GetRadius()));
+		float const scale = etm::length(m_Light->GetTransform()->GetScale());
+		m_Light->GetTransform()->Scale(scale - (scale * 4 - scale)*TIME->DeltaTime());
+		LOG("Linear: " + std::to_string(etm::length(m_Light->GetTransform()->GetScale())));
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_7) == E_KeyState::Down)
 	{
-		float newRad = m_pLight->GetRadius() * 4;
-		m_pLight->SetRadius(m_pLight->GetRadius()+(newRad-m_pLight->GetRadius())*TIME->DeltaTime());
-		LOG("Linear: " + std::to_string(m_pLight->GetRadius()));
+		float const scale = etm::length(m_Light->GetTransform()->GetScale());
+		m_Light->GetTransform()->Scale(scale + (scale * 4 - scale)*TIME->DeltaTime());
+		LOG("Linear: " + std::to_string(etm::length(m_Light->GetTransform()->GetScale())));
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_3) == E_KeyState::Down)
 	{
-		float b = m_pLight->GetBrightness();
+		float b = m_Light->GetBrightness();
 		float nB = b * 4;
-		m_pLight->SetBrightness(b - (nB - b)*TIME->DeltaTime());
-		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
+		m_Light->SetBrightness(b - (nB - b)*TIME->DeltaTime());
+		LOG("Linear: " + std::to_string(m_Light->GetBrightness()));
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_9) == E_KeyState::Down)
 	{
-		float b = m_pLight->GetBrightness();
+		float b = m_Light->GetBrightness();
 		float nB = b * 4;
-		m_pLight->SetBrightness(b + (nB - b)*TIME->DeltaTime());
-		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
+		m_Light->SetBrightness(b + (nB - b)*TIME->DeltaTime());
+		LOG("Linear: " + std::to_string(m_Light->GetBrightness()));
 	}
 }
 

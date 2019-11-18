@@ -8,26 +8,35 @@
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/Frustum.h>
+#include <EtRendering/GraphicsTypes/DirectionalShadowData.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
-ShadowRenderer::~ShadowRenderer()
-{
-	SafeDelete(m_pMaterial);
-}
+namespace render {
 
+
+//=================
+// Shadow Renderer
+//=================
+
+
+//---------------------------------
+// ShadowRenderer::Initialize
+//
 void ShadowRenderer::Initialize()
 {
 	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdNullShader.glsl"_hash);
-	m_pMaterial = RenderingSystems::Instance()->GetNullMaterial();
-
-	IsInitialized = true;
 }
 
+//---------------------------------
+// ShadowRenderer::MapDirectional
+//
+// Fill out shadow data for a directional lights perspective relative to a camera
+//
 void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShadowData& shadowData, I_ShadowRenderer* const shadowRenderer)
 {
-	render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
+	GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
 
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
@@ -40,14 +49,15 @@ void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShado
 	mat4 lightView = etm::lookAt(worldPos, lookAt, upVec);
 
 	//transform frustum into light space
-	FrustumCorners corners = render::ShadedSceneRenderer::GetCurrent()->GetCamera().GetFrustum().GetCorners();
+	FrustumCorners corners = ShadedSceneRenderer::GetCurrent()->GetCamera().GetFrustum().GetCorners();
 	corners.Transform(lightView);
 
-	for (int32 i = 0; i < graphicsSettings.NumCascades; i++)
+	std::vector<DirectionalShadowData::CascadeData>& cascades = shadowData.AccessCascades();
+	for (int32 i = 0; i < cascades.size(); i++)
 	{
 		//calculate orthographic projection matrix based on cascade
-		float cascadeStart = (i == 0) ? 0 : shadowData.m_Cascades[i - 1].distance / graphicsSettings.CSMDrawDistance;
-		float cascadeEnd = shadowData.m_Cascades[i].distance / graphicsSettings.CSMDrawDistance;
+		float cascadeStart = (i == 0) ? 0 : cascades[i - 1].distance / graphicsSettings.CSMDrawDistance;
+		float cascadeEnd = cascades[i].distance / graphicsSettings.CSMDrawDistance;
 		std::vector<vec3> cascade;
 		cascade.push_back(corners.na + (corners.fa - corners.na)*cascadeStart);
 		cascade.push_back(corners.nb + (corners.fb - corners.nb)*cascadeStart);
@@ -79,70 +89,24 @@ void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShado
 		mat4 lightProjection = etm::orthographic(left*mult, right*mult, bottom*mult, top*mult, zNear, zFar*mult);
 
 		//view projection
-		m_LightVP = lightView * lightProjection;
-		shadowData.m_Cascades[i].lightVP = m_LightVP;
+		mat4 lightVP = lightView * lightProjection;
+		cascades[i].lightVP = lightVP;
 
 		//Set viewport
-		ivec2 res = shadowData.m_Cascades[i].pTexture->GetResolution();
+		ivec2 res = cascades[i].texture->GetResolution();
 		api->SetViewport(ivec2(0), res);
 		//Set Framebuffer
-		api->BindFramebuffer(shadowData.m_Cascades[i].fbo);
+		api->BindFramebuffer(cascades[i].fbo);
 		//Clear Framebuffer
 		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
 		api->SetShader(m_Shader.get());
-		m_Shader->Upload("worldViewProj"_hash, m_LightVP);
+		m_Shader->Upload("worldViewProj"_hash, lightVP);
 
 		//Draw scene with light matrix and null material
-		shadowRenderer->DrawShadow(m_pMaterial);
+		shadowRenderer->DrawShadow(RenderingSystems::Instance()->GetNullMaterial());
 	}
 }
 
-DirectionalShadowData::DirectionalShadowData(ivec2 Resolution)
-{
-	render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
-
-	//Calculate cascade distances
-	m_Cascades.clear();
-	float sizeL = 1;
-	float distMult = graphicsSettings.CSMDrawDistance / powf(2.f, static_cast<float>(graphicsSettings.NumCascades - 1));
-	for (int32 cascade = 0; cascade < graphicsSettings.NumCascades; cascade++)
-	{
-		auto data = CascadeData();
-
-		api->GenFramebuffers(1, &(data.fbo));
-
-		data.pTexture = new TextureData(Resolution, E_ColorFormat::Depth, E_ColorFormat::Depth, E_DataType::Float);
-		data.pTexture->Build();
-		api->BindFramebuffer(data.fbo);
-		api->LinkTextureToFboDepth(data.pTexture->GetHandle());
-		//only depth components
-		api->SetDrawBufferCount(0);
-		api->SetReadBufferEnabled(false);
-
-		TextureParameters params(false, true);
-		params.wrapS = E_TextureWrapMode::ClampToEdge;
-		params.wrapT = E_TextureWrapMode::ClampToEdge;
-		data.pTexture->SetParameters(params);
-
-		api->BindFramebuffer(0);
-
-		data.distance = sizeL*distMult;
-		sizeL *= 2;
-
-		m_Cascades.push_back(data);
-	}
-}
-
-DirectionalShadowData::~DirectionalShadowData()
-{
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
-
-	for ( size_t i = 0; i < m_Cascades.size(); ++i )
-	{
-		api->DeleteRenderBuffers(1, &(m_Cascades[i].fbo));
-		SafeDelete(m_Cascades[i].pTexture);
-	}
-}
+} // namespace render

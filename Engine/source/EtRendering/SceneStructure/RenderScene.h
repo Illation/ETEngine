@@ -7,7 +7,7 @@
 #include <EtRendering/PlanetTech/Atmosphere.h>
 #include <EtRendering/PlanetTech/Planet.h>
 #include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
-#include <EtRendering/SceneRendering/ShadowRenderer.h>
+#include <EtRendering/GraphicsTypes/DirectionalShadowData.h>
 
 
 class MeshData;

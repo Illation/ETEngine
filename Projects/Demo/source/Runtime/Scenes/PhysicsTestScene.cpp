@@ -9,7 +9,6 @@
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/GraphicsTypes/SpriteFont.h>
-#include <EtRendering/GraphicsTypes/Light.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
@@ -134,15 +133,13 @@ void PhysicsTestScene::Initialize()
 	//Directional
 	auto pModelComp1 = new ModelComponent("sphere.dae"_hash);
 	pModelComp1->SetMaterial(m_pLightMat);
-	m_pLightEntity = new Entity();
-	m_pLightEntity->AddComponent(pModelComp1);
-	auto pLight = new DirectionalLight(vec3(1, 1, 1), 10.f);
-	pLight->SetShadowEnabled(true);
-	m_pLightEntity->AddComponent(new LightComponent(pLight));
-	m_pLightEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
-	m_pLightEntity->GetTransform()->Rotate(quat(vec3(1, 0, 1), -etm::PI_DIV4));
-	m_pLightEntity->GetTransform()->SetPosition(vec3(0, 50, 0));
-	AddEntity(m_pLightEntity);
+	auto lightEntity = new Entity();
+	lightEntity->AddComponent(pModelComp1);
+	m_Light = new LightComponent(LightComponent::Type::Point, vec3(1, 1, 1), 10.f);
+	lightEntity->AddComponent(m_Light);
+	lightEntity->GetTransform()->Scale(vec3(3.f));
+	lightEntity->GetTransform()->SetPosition(vec3(0, 50, 0));
+	AddEntity(lightEntity);
 
 	//Camera
 	//**************************
@@ -168,13 +165,13 @@ void PhysicsTestScene::Initialize()
 	m_Source->SetAudioData(ResourceManager::Instance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
 	m_Source->SetLooping(true);
 	m_Source->Play();
-	m_pLightEntity->AddComponent(m_Source);
+	lightEntity->AddComponent(m_Source);
 }
 
 void PhysicsTestScene::Update()
 {
 	vec3 lightPos = m_LightCentralPos + vec3(sin(TIME->GetTime()), 0.f, cos(TIME->GetTime()))*m_LightRotDistance;
-	m_pLightEntity->GetTransform()->SetPosition(lightPos);
+	m_Light->GetTransform()->SetPosition(lightPos);
 
 	if (INPUT->GetKeyState(E_KbdKey::LeftBracket) == E_KeyState::Pressed)
 	{
@@ -254,7 +251,7 @@ void PhysicsTestScene::Draw()
 	outString = "laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure ";
 	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 8), 64);
 
-	//vec3 lightPos = m_pLightEntity->GetTransform()->GetPosition();
+	//vec3 lightPos = m_Light->GetTransform()->GetPosition();
 	//render::ShadedSceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(2, 0, 0), vec4(1, 0, 0, 1), 2);
 	//render::ShadedSceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(0, 2, 0), vec4(0, 1, 0, 1), 2);
 	//render::ShadedSceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(0, 0, 2), vec4(0, 0, 1, 1), 2);

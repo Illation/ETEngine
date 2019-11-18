@@ -7,15 +7,13 @@
 class FrameBuffer;
 class TexPBRMaterial;
 class EmissiveMaterial;
-class PointLight;
-class Entity;
+class LightComponent;
 class SpriteFont;
 
 
 struct SwirlyLight
 {
-	Entity* light;
-	PointLight* comp;
+	LightComponent* light = nullptr;
 	vec3 origin;
 	float radius = 1;
 	float radius2 = 1;
@@ -47,8 +45,7 @@ private:
 
 	std::vector<SwirlyLight> m_Lights;
 
-	PointLight* m_pLight = nullptr;
-	Entity* m_pLigEnt = nullptr;
+	LightComponent* m_Light = nullptr;
 
 	AssetPtr<SpriteFont> m_pDebugFont;
 };

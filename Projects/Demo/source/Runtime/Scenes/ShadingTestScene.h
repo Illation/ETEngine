@@ -6,8 +6,7 @@
 
 class TexPBRMaterial;
 class ParamPBRMaterial;
-class Entity;
-class DirectionalLight;
+class LightComponent;
 class SpriteFont;
 
 
@@ -26,8 +25,7 @@ private:
 	TexPBRMaterial* m_pMat = nullptr;
 	ParamPBRMaterial* m_pStandMat = nullptr;
 	ParamPBRMaterial* m_pEnvMat = nullptr;
-	Entity* m_pLigEntity = nullptr;
-	DirectionalLight* m_pLight = nullptr;
+	LightComponent* m_Light = nullptr;
 
 	AssetPtr<SpriteFont> m_pDebugFont;
 };

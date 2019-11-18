@@ -1,26 +1,18 @@
 #pragma once
+#include "ShadowRendererInterface.h"
+
 #include <EtCore/Content/AssetPointer.h>
 
 
-class TextureData;
-class NullMaterial;
-class DirectionalShadowData;
-class Camera;
+// forward
+class ShaderData;
+namespace render {
+	class DirectionalShadowData;
+}
 
 
-//---------------------------------
-// I_ShadowRenderer
-//
-// Interface for a class that can draw a shadow depth map
-//
-class I_ShadowRenderer
-{
-public:
-	virtual ~I_ShadowRenderer() = default;
+namespace render {
 
-	virtual void DrawShadow(NullMaterial* const nullMaterial) = 0;
-	virtual Camera const& GetCamera() const = 0;
-};
 
 //---------------------------------
 // ShadowRenderer
@@ -33,7 +25,7 @@ class ShadowRenderer final
 	//---------------------
 public:
 	ShadowRenderer() = default;
-	~ShadowRenderer();
+	~ShadowRenderer() = default;
 
 	void Initialize();
 
@@ -45,32 +37,8 @@ public:
 	///////
 private:
 
-	bool IsInitialized = false;
-
 	AssetPtr<ShaderData> m_Shader;
-	NullMaterial* m_pMaterial;
-	mat4 m_LightVP;
 };
 
-class DirectionalShadowData
-{
-	//later for cascaded shadow mapping we need a bunch of those
-public:
-	DirectionalShadowData(ivec2 Resolution);
-	virtual ~DirectionalShadowData();
 
-private:
-	friend class ShadowRenderer;
-	friend class DirectLightVolume;
-
-	struct CascadeData
-	{
-		float distance;
-		T_FbLoc fbo;
-		TextureData* pTexture;
-		mat4 lightVP;
-	};
-	std::vector<CascadeData> m_Cascades;
-
-	float m_Bias = 0;
-};
+} // namespace render

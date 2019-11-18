@@ -1,7 +1,6 @@
 #pragma once
 #include "MaterialCollection.h"
-
-#include <EtRendering/GraphicsTypes/Light.h>
+#include "Light.h"
 
 
 namespace render {

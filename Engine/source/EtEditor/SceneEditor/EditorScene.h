@@ -4,8 +4,7 @@
 #include <EtFramework/SceneGraph/AbstractScene.h>
 
 
-class Entity;
-class DirectionalLight;
+class LightComponent;
 class SpriteFont;
 class UberMaterial;
 
@@ -27,8 +26,7 @@ private:
 
 	UberMaterial* m_Mat = nullptr;
 	UberMaterial* m_FloorMat = nullptr;
-	Entity* m_pLigEntity = nullptr;
-	DirectionalLight* m_pLight = nullptr;
+	LightComponent* m_Light = nullptr;
 
 	AssetPtr<SpriteFont> m_pDebugFont;
 };

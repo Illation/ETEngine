@@ -3,13 +3,14 @@
 
 class ShaderData;
 class LightMaterial;
-class NullMaterial;
-class DirectionalShadowData;
+namespace render {
+	class DirectionalShadowData;
+}
 
 class PointLightVolume final
 {
 public:
-	PointLightVolume();
+	PointLightVolume() = default;
 	~PointLightVolume();
 
 	void Draw(vec3 pos, float radius, vec3 col);
@@ -19,21 +20,20 @@ private:
 	bool IsInitialized = false;
 
 	LightMaterial* m_pMaterial;
-	NullMaterial* m_pNullMaterial;
 };
 
 class DirectLightVolume final
 {
 public:
-	DirectLightVolume();
-	~DirectLightVolume();
+	DirectLightVolume() = default;
+	~DirectLightVolume() = default;
 
 	void Draw(vec3 dir, vec3 col);
-	void DrawShadowed(vec3 dir, vec3 col, DirectionalShadowData const& shadow);
+	void DrawShadowed(vec3 dir, vec3 col, render::DirectionalShadowData const& shadow);
 
 protected:
-	AssetPtr<ShaderData> m_pShader;
-	AssetPtr<ShaderData> m_pShaderShadowed;
+	AssetPtr<ShaderData> m_Shader;
+	AssetPtr<ShaderData> m_ShaderShadowed;
 private:
 	void Initialize();
 	bool m_IsInitialized = false;

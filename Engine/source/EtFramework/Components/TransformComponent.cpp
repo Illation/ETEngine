@@ -49,16 +49,6 @@ void TransformComponent::UpdateTransforms()
 	else if (m_IsTransformChanged & TransformChanged::NONE)
 		return;
 
-	//Light handling
-	if (m_IsTransformChanged & TransformChanged::TRANSLATION | TransformChanged::ROTATION)
-	{
-		auto ligComp = m_pEntity->GetComponent<LightComponent>();
-		if (!(ligComp == nullptr))
-		{
-			ligComp->m_PositionUpdated = true;
-		}
-	}
-
 	//Calculate World Matrix
 	//**********************
 	m_World = etm::scale(m_Scale)*etm::rotate(m_Rotation)*etm::translate(m_Position);

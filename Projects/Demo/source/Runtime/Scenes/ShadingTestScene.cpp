@@ -10,7 +10,6 @@
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/GraphicsTypes/SpriteFont.h>
-#include <EtRendering/GraphicsTypes/Light.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 #include <EtFramework/Components/ModelComponent.h>
@@ -92,22 +91,19 @@ void ShadingTestScene::Initialize()
 
 	//Lights
 	//**************************
-	m_pLigEntity = new Entity();
-	m_pLight = new DirectionalLight(vec3(1, 1, 1), 2.99f);
-	m_pLight->SetShadowEnabled(true);
-	m_pLigEntity->AddComponent(new LightComponent( m_pLight));
+	Entity* lightEntity = new Entity();
+	m_Light = new LightComponent(LightComponent::Type::Directional, vec3(1, 1, 1), 2.99f, true);
+	lightEntity->AddComponent(m_Light);
 	vec3 axis;
-	float angle = etm::angleSafeAxis( vec3( 1, -3, -1 ), vec3( 1, 0, 1 ), axis );
-	m_pLigEntity->GetTransform()->SetRotation(quat(axis, angle));
-	AddEntity(m_pLigEntity);
+	float angle = etm::angleSafeAxis(vec3(1, -3, -1), vec3(1, 0, 1), axis);
+	lightEntity->GetTransform()->SetRotation(quat(axis, angle));
+	AddEntity(lightEntity);
 
-	auto pLigEntity = new Entity();
-	auto pLight = new DirectionalLight(vec3(1, 1, 1), 4.5f);
-	//pLight->SetShadowEnabled(true);
-	pLigEntity->AddComponent(new LightComponent(pLight));
-	pLigEntity->GetTransform()->SetRotation(quat(axis, angle));
-	pLigEntity->GetTransform()->RotateEuler(0, 1, 0);
-	AddEntity(pLigEntity);
+	lightEntity = new Entity();
+	lightEntity->AddComponent(new LightComponent(LightComponent::Type::Directional, vec3(1, 1, 1), 1.5f, false));
+	lightEntity->GetTransform()->SetRotation(quat(axis, angle));
+	lightEntity->GetTransform()->RotateEuler(0, 1, 0);
+	AddEntity(lightEntity);
 
 	//UI
 	//************************
@@ -128,39 +124,39 @@ void ShadingTestScene::Update()
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_2) == E_KeyState::Down)
 	{
-		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), TIME->DeltaTime()));
+		m_Light->GetTransform()->Rotate(quat(vec3(1, 0, 0), TIME->DeltaTime()));
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_8) == E_KeyState::Down)
 	{
-		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), -TIME->DeltaTime()));
+		m_Light->GetTransform()->Rotate(quat(vec3(1, 0, 0), -TIME->DeltaTime()));
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_4) == E_KeyState::Down)
 	{
-		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), TIME->DeltaTime()));
+		m_Light->GetTransform()->Rotate(quat(vec3(0, 1, 0), TIME->DeltaTime()));
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_6) == E_KeyState::Down)
 	{
-		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), -TIME->DeltaTime()));
+		m_Light->GetTransform()->Rotate(quat(vec3(0, 1, 0), -TIME->DeltaTime()));
 	}
 
 	//Change light settings
 	if (INPUT->GetKeyState(E_KbdKey::KP_3) == E_KeyState::Down)
 	{
-		float b = m_pLight->GetBrightness();
+		float b = m_Light->GetBrightness();
 		float nB = b * 4;
-		m_pLight->SetBrightness(b - (nB - b)*TIME->DeltaTime());
-		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
+		m_Light->SetBrightness(b - (nB - b)*TIME->DeltaTime());
+		LOG("Linear: " + std::to_string(m_Light->GetBrightness()));
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_9) == E_KeyState::Down)
 	{
-		float b = m_pLight->GetBrightness();
+		float b = m_Light->GetBrightness();
 		float nB = b * 4;
-		m_pLight->SetBrightness(b + (nB - b)*TIME->DeltaTime());
-		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
+		m_Light->SetBrightness(b + (nB - b)*TIME->DeltaTime());
+		LOG("Linear: " + std::to_string(m_Light->GetBrightness()));
 	}
 }
 
