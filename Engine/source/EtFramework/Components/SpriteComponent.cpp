@@ -10,17 +10,17 @@ SpriteComponent::SpriteComponent(T_Hash const textureAsset, vec2 const& pivot, v
 	, m_Color(color)
 {}
 
-SpriteComponent::~SpriteComponent()
+void SpriteComponent::Init()
+{
+	m_Id = SceneManager::GetInstance()->GetRenderScene().AddSprite(m_TextureAssetId, GetTransform()->GetNodeId(), m_Pivot, m_Color);
+}
+
+void SpriteComponent::Deinit()
 {
 	if (m_Id != core::INVALID_SLOT_ID)
 	{
 		SceneManager::GetInstance()->GetRenderScene().RemoveSprite(m_Id);
 	}
-}
-
-void SpriteComponent::Initialize()
-{
-	m_Id = SceneManager::GetInstance()->GetRenderScene().AddSprite(m_TextureAssetId, GetTransform()->GetNodeId(), m_Pivot, m_Color);
 }
 
 void SpriteComponent::SetTexture(T_Hash const textureAsset)

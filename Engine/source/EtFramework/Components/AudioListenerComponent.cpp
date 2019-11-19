@@ -19,14 +19,24 @@ void AudioListenerComponent::SetGain(float val)
 	if (AudioManager::GetInstance()->TestALError("AudioListenerComponent set gain error"))return;
 }
 
-void AudioListenerComponent::Initialize()
+void AudioListenerComponent::Init()
 {
-	AbstractScene* pScene = GetEntity()->GetScene();
-	if (pScene->GetAudioListener() && pScene->GetAudioListener() != this)
+	AbstractScene* const scene = GetEntity()->GetScene();
+	if (scene->GetAudioListener() && scene->GetAudioListener() != this)
 	{
 		LOG("Scene already has an audio listener!", Warning);
 	}
-	GetEntity()->GetScene()->SetAudioListener(this);
+
+	scene->SetAudioListener(this);
+}
+
+void AudioListenerComponent::Deinit()
+{
+	AbstractScene* const scene = GetEntity()->GetScene();
+	if (scene->GetAudioListener() == this)
+	{
+		scene->SetAudioListener(nullptr);
+	}
 }
 
 void AudioListenerComponent::Update()

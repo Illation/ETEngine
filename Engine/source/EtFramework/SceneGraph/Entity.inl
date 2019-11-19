@@ -1,19 +1,31 @@
 #pragma once
 
 
+//========
+// Entity
+//========
 
 
+// template accessors
+//////////////////////
+
+//----------------------
+// Entity::HasComponent
+//
 template<class T>
 bool Entity::HasComponent(bool searchChildren /*= false*/)
 {
 	return GetComponent<T>(searchChildren) != nullptr;
 }
 
+//----------------------
+// Entity::GetComponent
+//
 template<class T>
 T* Entity::GetComponent(bool searchChildren /*= false*/)
 {
 	const std::type_info& ti = typeid(T);
-	for (auto *component : m_pComponentVec)
+	for (auto *component : m_Components)
 	{
 		if (component && typeid(*component) == ti)
 		{
@@ -23,7 +35,7 @@ T* Entity::GetComponent(bool searchChildren /*= false*/)
 
 	if (searchChildren)
 	{
-		for (auto *child : m_pChildVec)
+		for (auto *child : m_Children)
 		{
 			if (child->GetComponent<T>(searchChildren) != nullptr)
 			{
@@ -35,41 +47,14 @@ T* Entity::GetComponent(bool searchChildren /*= false*/)
 	return nullptr;
 }
 
-template<class T>
-std::vector<T*>
-Entity::GetComponents(bool searchChildren /*= false*/)
-{
-	const type_info& ti = typeid(T);
-	std::vector<T*> components;
-	for (auto *component : m_pComponentVec)
-	{
-		if (component && typeid(*component) == ti)
-		{
-			components.push_back(static_cast<T*>(component));
-		}
-	}
-
-	if (searchChildren)
-	{
-		for (auto *child : m_pChildVec)
-		{
-			auto childComponents = child->GetComponents<T>(searchChildren);
-
-			for (auto *childComp : childComponents)
-			{
-				components.push_back(static_cast<T*>(childComp));
-			}
-		}
-	}
-
-	return components;
-}
-
+//-------------------
+// Entity::GetChild
+//
 template<class T>
 T* Entity::GetChild()
 {
 	const type_info& ti = typeid(T);
-	for (auto *child : m_pChildVec)
+	for (auto *child : m_Children)
 	{
 		if (child && typeid(*child) == ti)
 		{
@@ -80,13 +65,16 @@ T* Entity::GetChild()
 	return nullptr;
 }
 
+//---------------------------
+// Entity::GetChildrenOfType
+//
 template<class T>
 std::vector<T*> Entity::GetChildrenOfType()
 {
 	const type_info& ti = typeid(T);
 	std::vector<T*> children;
 
-	for (auto *child : m_pChildVec)
+	for (auto *child : m_Children)
 	{
 		if (child && typeid(*child) == ti)
 		{

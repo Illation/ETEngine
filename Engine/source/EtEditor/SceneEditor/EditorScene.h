@@ -16,11 +16,8 @@ public:
 	virtual ~EditorScene();
 
 private:
-	void Initialize();
+	void Init();
 	void Update();
-	void Draw() {}
-	void DrawForward() {}
-	void PostDraw() {}
 
 private:
 

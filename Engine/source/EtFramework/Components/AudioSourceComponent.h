@@ -13,8 +13,8 @@ class AudioData;
 class AudioSourceComponent : public AbstractComponent
 {
 public:
-	AudioSourceComponent() {}
-	virtual ~AudioSourceComponent();
+	AudioSourceComponent() = default;
+	virtual ~AudioSourceComponent() = default;
 
 	void SetAudioData(AssetPtr<AudioData> const& data);
 
@@ -45,10 +45,9 @@ public:
 	void SetMaxDistance(float val);
 
 protected:
-	virtual void Initialize() override;
+	virtual void Init() override;
+	virtual void Deinit() override;
 	virtual void Update() override;
-	virtual void Draw() override {}
-	virtual void DrawForward() override {}
 
 private:
 	vec3 m_PrevPos = vec3(0);

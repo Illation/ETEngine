@@ -92,7 +92,9 @@ void SceneManager::OnTick()
 
 		//Deactivate the current active scene
 		if (m_ActiveScene != nullptr)
-			m_ActiveScene->RootOnDeactivated();
+		{
+			m_ActiveScene->RootDeactivate();
+		}
 
 		//Set New Scene
 		m_ActiveScene = m_NewActiveScene;
@@ -103,7 +105,7 @@ void SceneManager::OnTick()
 		m_SplashFrame = false;
 		LOG(std::string("Switching to scene: ") + m_ActiveScene->m_Name);
 		//Active the new scene and reset SceneTimer
-		m_ActiveScene->RootOnActivated();
+		m_ActiveScene->RootActivate();
 	}
 	else
 	{

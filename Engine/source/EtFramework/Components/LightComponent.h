@@ -23,7 +23,7 @@ public:
 	// construct destruct
 	//--------------------
 	LightComponent(Type const type, vec3 const& color = vec3(1.f), float const brightness = 1.f, bool const castsShadow = false);
-	~LightComponent();
+	~LightComponent() = default;
 
 private:
 	LightComponent(const LightComponent& yRef);
@@ -45,10 +45,9 @@ public:
 	// component interface
 	//---------------------
 protected:
-	virtual void Initialize();
-	virtual void Update();
-	virtual void Draw() {}
-	virtual void DrawForward() {}
+	virtual void Init() override;
+	virtual void Deinit() override;
+	virtual void Update() override;
 
 private:
 

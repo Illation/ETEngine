@@ -17,56 +17,64 @@
 #include <EtFramework/SceneGraph/SceneManager.h>
 
 
-AbstractScene::AbstractScene(std::string name) 
-	: m_Name(name)
-	, m_IsInitialized(false)
-{
-}
+//================
+// Abstract Scene
+//================
 
+
+// construct destruct
+//////////////////////
+
+//----------------------
+// AbstractScene::c-tor
+//
+AbstractScene::AbstractScene(std::string const& name) 
+	: m_Name(name)
+{ }
+
+//----------------------
+// AbstractScene::d-tor
+//
 AbstractScene::~AbstractScene()
 {
-	SceneManager::GetInstance()->GetRenderScene().SetSkyboxMap(0u);
-	for (Entity* pEntity : m_pEntityVec)
+	if (m_IsInitialized)
 	{
-		SafeDelete(pEntity);
+		RootDeinit();
 	}
-	m_pEntityVec.clear();
-
-	SafeDelete(m_pPhysicsWorld);
-	SafeDelete(m_SceneContext);
 }
 
-void AbstractScene::AddEntity(Entity* entity)
+
+// root
+////////
+
+//-----------------------------
+// AbstractScene::RootActivate
+//
+void AbstractScene::RootActivate()
 {
-	entity->m_pParentScene = this;
-
-	if (entity->GetId() == 0u)
-	{
-		std::string uniqueName;
-		GetUniqueEntityName("Entity", uniqueName);
-		entity->SetName(uniqueName);
-	}
-
-	entity->RootInitialize();
-
-	m_pEntityVec.push_back(entity);
+	RootInit();
+	ContextManager::GetInstance()->SetActiveContext(m_SceneContext);
+	OnActivated();
 }
 
-void AbstractScene::RemoveEntity(Entity* pEntity, bool deleteEntity)
+//-------------------------------
+// AbstractScene::RootDeactivate
+//
+void AbstractScene::RootDeactivate()
 {
-	auto it = find(m_pEntityVec.begin(), m_pEntityVec.end(), pEntity);
-	m_pEntityVec.erase(it);
-	if (deleteEntity)
-	{
-		delete pEntity;
-		pEntity = nullptr;
-	}
-	else pEntity->m_pParentScene = nullptr;
+	RootDeinit();
+	OnDeactivated();
 }
 
-void AbstractScene::RootInitialize()
+//-------------------------
+// AbstractScene::RootInit
+//
+void AbstractScene::RootInit()
 {
-	if (m_IsInitialized)return;
+	if (m_IsInitialized)
+	{
+		return;
+	}
 
 	//Create SceneContext
 	FreeCamera* freeCam = new FreeCamera();
@@ -80,16 +88,13 @@ void AbstractScene::RootInitialize()
 
 	ContextManager::GetInstance()->SetActiveContext(m_SceneContext);
 
-	m_PostProcessingSettings = PostProcessingSettings();
-
 	m_pPhysicsWorld = new PhysicsWorld();
 	m_pPhysicsWorld->Initialize();
-
-	Initialize();
+	Init();
 
 	for (Entity* pEntity : m_pEntityVec)
 	{
-		pEntity->RootInitialize();
+		pEntity->RootInit();
 	}
 
 	m_IsInitialized = true;
@@ -98,30 +103,43 @@ void AbstractScene::RootInitialize()
 	m_SceneContext->time->Start();
 }
 
+//---------------------------
+// AbstractScene::RootDeinit
+//
+void AbstractScene::RootDeinit()
+{
+	if (!m_IsInitialized)
+	{
+		return;
+	}
+
+	for (Entity* pEntity : m_pEntityVec)
+	{
+		pEntity->RootDeinit();
+	}
+
+	for (Entity* pEntity : m_pEntityVec)
+	{
+		SafeDelete(pEntity);
+	}
+
+	m_pEntityVec.clear();
+
+	ContextManager::GetInstance()->SetActiveContext(nullptr);
+	SceneManager::GetInstance()->GetRenderScene().SetSkyboxMap(0u);
+
+	SafeDelete(m_pPhysicsWorld);
+	SafeDelete(m_SceneContext);
+
+	m_IsInitialized = false;
+}
+
+//-----------------------------
+// AbstractScene::RootUpdate
+//
 void AbstractScene::RootUpdate()
 {
-	// active time and performance are updated by tick manager
-	//m_SceneContext->time->Update();
-
-	//PERFORMANCE->StartFrameTimer();
-
 	Update();
-	if(INPUT->GetKeyState(E_KbdKey::Up) == E_KeyState::Down)
-	{
-		float exposure = m_PostProcessingSettings.exposure;
-		float newExp = exposure * 4.f;
-		exposure += (newExp - exposure)*TIME->DeltaTime();
-		LOG("Exposure: " + std::to_string(exposure));
-		m_PostProcessingSettings.exposure = exposure;
-	}
-	if(INPUT->GetKeyState(E_KbdKey::Down) == E_KeyState::Down)
-	{
-		float exposure = m_PostProcessingSettings.exposure;
-		float newExp = exposure * 4.f;
-		exposure -= (newExp - exposure)*TIME->DeltaTime();
-		LOG("Exposure: " + std::to_string(exposure));
-		m_PostProcessingSettings.exposure = exposure;
-	}
 
 	for (Entity* pEntity : m_pEntityVec)
 	{
@@ -131,28 +149,75 @@ void AbstractScene::RootUpdate()
 	m_pPhysicsWorld->Update();
 }
 
-void AbstractScene::RootOnActivated()
+
+// functionality
+/////////////////
+
+//-----------------------------
+// AbstractScene::AddEntity
+//
+void AbstractScene::AddEntity(Entity* entity)
 {
-	RootInitialize();
-	ContextManager::GetInstance()->SetActiveContext(m_SceneContext);
-	OnActivated();
-}
-void AbstractScene::RootOnDeactivated()
-{
-	OnDeactivated();
+	entity->m_ParentScene = this;
+
+	if (entity->GetId() == 0u)
+	{
+		std::string uniqueName;
+		GetUniqueEntityName("Entity", uniqueName);
+		entity->SetName(uniqueName);
+	}
+
+	entity->RootInit();
+
+	m_pEntityVec.push_back(entity);
 }
 
+//-----------------------------
+// AbstractScene::RemoveEntity
+//
+void AbstractScene::RemoveEntity(Entity* pEntity, bool deleteEntity)
+{
+	auto it = find(m_pEntityVec.begin(), m_pEntityVec.end(), pEntity);
+	m_pEntityVec.erase(it);
+	if (deleteEntity)
+	{
+		delete pEntity;
+		pEntity = nullptr;
+	}
+	else pEntity->m_ParentScene = nullptr;
+}
+
+//--------------------------------
+// AbstractScene::SetActiveCamera
+//
 void AbstractScene::SetActiveCamera(CameraComponent* pCamera)
 {
 	m_SceneContext->camera = pCamera;
 }
 
-CameraComponent const* AbstractScene::GetActiveCamera() const
+//--------------------------
+// AbstractScene::SetSkybox
+//
+void AbstractScene::SetSkybox(T_Hash const assetId)
 {
-	ET_ASSERT(m_SceneContext != nullptr);
-	return m_SceneContext->camera;
+	SceneManager::GetInstance()->GetRenderScene().SetSkyboxMap(assetId);
 }
 
+//-----------------------------
+// AbstractScene::SetStarfield
+//
+void AbstractScene::SetStarfield(T_Hash const assetId)
+{
+	SceneManager::GetInstance()->GetRenderScene().SetStarfield(assetId);
+}
+
+
+// accessors
+/////////////
+
+//--------------------------
+// AbstractScene::GetEntity
+//
 Entity* AbstractScene::GetEntity(T_Hash const id) const
 {
 	std::vector<Entity*> allEntities;
@@ -174,16 +239,22 @@ Entity* AbstractScene::GetEntity(T_Hash const id) const
 	return *foundIt;
 }
 
-void AbstractScene::SetSkybox(T_Hash const assetId)
+//--------------------------------
+// AbstractScene::GetActiveCamera
+//
+CameraComponent const* AbstractScene::GetActiveCamera() const
 {
-	SceneManager::GetInstance()->GetRenderScene().SetSkyboxMap(assetId);
+	ET_ASSERT(m_SceneContext != nullptr);
+	return m_SceneContext->camera;
 }
 
-void AbstractScene::SetStarfield(T_Hash const assetId)
-{
-	SceneManager::GetInstance()->GetRenderScene().SetStarfield(assetId);
-}
 
+// utility
+///////////
+
+//------------------------------------
+// AbstractScene::GetUniqueEntityName
+//
 void AbstractScene::GetUniqueEntityName(std::string const& suggestion, std::string& uniqueName) const
 {
 	uniqueName = suggestion;

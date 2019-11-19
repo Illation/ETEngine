@@ -12,10 +12,10 @@ public:
 	void SetGain(float val);
 
 protected:
-	virtual void Initialize() override;
+	virtual void Init() override;
+	virtual void Deinit() override;
+
 	virtual void Update() override;
-	virtual void Draw() override {}
-	virtual void DrawForward() override {}
 
 private:
 	vec3 m_PrevPos = vec3(0);

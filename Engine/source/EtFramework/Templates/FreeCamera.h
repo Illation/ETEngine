@@ -14,7 +14,7 @@ public:
 
 protected:
 
-	virtual void Initialize();
+	virtual void Init();
 	virtual void Update();
 
 private:

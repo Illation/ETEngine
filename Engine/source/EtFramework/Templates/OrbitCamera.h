@@ -15,9 +15,9 @@ public:
 
 protected:
 
-	virtual void Initialize();
+	virtual void Init();
 	virtual void Update();
-	virtual void Start();
+	virtual void OnPostComponentInit();
 
 private:
 	float m_Distance = 10;

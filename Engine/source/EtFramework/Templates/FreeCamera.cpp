@@ -11,7 +11,7 @@ FreeCamera::FreeCamera()
 {
 }
 
-void FreeCamera::Initialize()
+void FreeCamera::Init()
 {
 	//Camera Component
 	m_pCamera = new CameraComponent();

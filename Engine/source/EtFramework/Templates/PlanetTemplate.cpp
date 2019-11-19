@@ -34,11 +34,11 @@ PlanetTemplate::~PlanetTemplate()
 }
 
 //---------------------------------
-// PlanetTemplate::Initialize
+// PlanetTemplate::Init
 //
 // Add rendering data to render::Scene
 //
-void PlanetTemplate::Initialize()
+void PlanetTemplate::Init()
 {
 	GetTransform()->SetRotation(GetTransform()->GetRotation() * quat(vec3(0.0f, 1.0f, 0.0f), etm::radians(270.f)));
 

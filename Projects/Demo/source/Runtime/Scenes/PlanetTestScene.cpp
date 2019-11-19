@@ -18,6 +18,7 @@
 #include <EtFramework/Components/LightComponent.h>
 #include <EtFramework/Templates/OrbitCamera.h>
 #include <EtFramework/SceneGraph/Entity.h>
+#include <EtFramework/SceneGraph/SceneManager.h>
 
 
 PlanetTestScene::PlanetTestScene() : AbstractScene("PlanetTestScene")
@@ -27,7 +28,7 @@ PlanetTestScene::~PlanetTestScene()
 {
 }
 
-void PlanetTestScene::Initialize()
+void PlanetTestScene::Init()
 {
 	//Skybox
 	//**************************
@@ -50,7 +51,12 @@ void PlanetTestScene::Initialize()
 
 	CAMERA->GetTransform()->SetPosition(0, 0, -(m_Planet->GetRadius() + 10));
 
-	m_PostProcessingSettings.exposure = 0.01f;
+	//Initial exposure
+	//*************************
+	render::Scene& renderScene = SceneManager::GetInstance()->GetRenderScene();
+	PostProcessingSettings ppSettings = renderScene.GetPostProcessingSettings();
+	ppSettings.exposure = 0.01f;
+	renderScene.SetPostProcessingSettings(ppSettings);
 }
 
 void PlanetTestScene::Update()

@@ -4,11 +4,11 @@
 #include <EtCore/Containers/slot_map.h>
 
 
-class TransformComponent : public AbstractComponent
+class TransformComponent final : public AbstractComponent
 {
 public:
 	TransformComponent();
-	virtual ~TransformComponent();
+	~TransformComponent() = default;
 
 	void Translate(float x, float y, float z);
 	void Translate(const vec3& translation );
@@ -40,10 +40,9 @@ public:
 
 protected:
 
-	virtual void Initialize();
-	virtual void Update();
-	virtual void Draw();
-	virtual void DrawForward();
+	void Init() override;
+	void Deinit() override;
+	void Update() override;
 
 
 	void UpdateTransforms();

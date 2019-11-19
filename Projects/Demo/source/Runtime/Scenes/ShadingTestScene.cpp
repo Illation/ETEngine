@@ -28,7 +28,7 @@ ShadingTestScene::~ShadingTestScene()
 	SafeDelete(m_pEnvMat); 
 }
 
-void ShadingTestScene::Initialize()
+void ShadingTestScene::Init()
 {
 	//Fonts
 	//***************************
@@ -158,19 +158,16 @@ void ShadingTestScene::Update()
 		m_Light->SetBrightness(b + (nB - b)*TIME->DeltaTime());
 		LOG("Linear: " + std::to_string(m_Light->GetBrightness()));
 	}
-}
 
-void ShadingTestScene::Draw()
-{
 	TextRenderer& textRenderer = render::ShadedSceneRenderer::GetCurrent()->GetTextRenderer();
 
 	textRenderer.SetFont(m_pDebugFont.get());
 	textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
-	std::string outString = "FPS: " + std::to_string( PERFORMANCE->GetRegularFPS() );
+	std::string outString = "FPS: " + std::to_string(PERFORMANCE->GetRegularFPS());
 	textRenderer.DrawText(outString, vec2(20, 20));
 	textRenderer.SetColor(vec4(1, 1, 1, 1));
-	outString = "Frame ms: " + std::to_string( PERFORMANCE->GetFrameMS() );
+	outString = "Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS());
 	textRenderer.DrawText(outString, vec2(20, 50));
-	outString = "Draw Calls: " + std::to_string( PERFORMANCE->m_PrevDrawCalls );
+	outString = "Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls);
 	textRenderer.DrawText(outString, vec2(20, 80));
 }

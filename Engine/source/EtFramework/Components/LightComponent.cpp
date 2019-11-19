@@ -23,17 +23,9 @@ LightComponent::LightComponent(Type const type, vec3 const& color, float const b
 }
 
 //---------------------------------
-// LightComponent::d-tor
+// LightComponent::Init
 //
-LightComponent::~LightComponent()
-{
-	SceneManager::GetInstance()->GetRenderScene().RemoveLight(m_LightId);
-}
-
-//---------------------------------
-// LightComponent::Initialize
-//
-void LightComponent::Initialize()
+void LightComponent::Init()
 {
 	vec3 const col = m_Color * m_Brightness;
 
@@ -41,6 +33,14 @@ void LightComponent::Initialize()
 		GetTransform()->GetNodeId(), 
 		m_Type == Type::Directional,
 		m_CastsShadow);
+}
+
+//---------------------------------
+// LightComponent::Deinit
+//
+void LightComponent::Deinit()
+{
+	SceneManager::GetInstance()->GetRenderScene().RemoveLight(m_LightId);
 }
 
 //---------------------------------

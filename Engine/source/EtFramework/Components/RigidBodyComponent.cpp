@@ -16,12 +16,11 @@ RigidBodyComponent::RigidBodyComponent(bool isStatic)
 
 RigidBodyComponent::~RigidBodyComponent() 
 {
-	GetEntity()->GetScene()->GetPhysicsWorld()->GetWorld()->removeRigidBody(m_pBody);
 	delete m_pBody->getMotionState();
 	delete m_pBody;
 }
 
-void RigidBodyComponent::Initialize()
+void RigidBodyComponent::Init()
 {
 	btAssert((!m_pCollisionShape || m_pCollisionShape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
 
@@ -45,6 +44,11 @@ void RigidBodyComponent::Initialize()
 	m_pBody->setUserIndex(-1);
 
 	GetEntity()->GetScene()->GetPhysicsWorld()->GetWorld()->addRigidBody(m_pBody);
+}
+
+void RigidBodyComponent::Deinit()
+{
+	GetEntity()->GetScene()->GetPhysicsWorld()->GetWorld()->removeRigidBody(m_pBody);
 }
 
 void RigidBodyComponent::SetPosition(const vec3 &pos)

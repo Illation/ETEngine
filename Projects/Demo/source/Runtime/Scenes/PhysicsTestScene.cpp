@@ -37,7 +37,7 @@ PhysicsTestScene::~PhysicsTestScene()
 	SafeDelete(m_pLightMat);
 }
 
-void PhysicsTestScene::Initialize()
+void PhysicsTestScene::Init()
 {
 	//Fonts
 	//**************************
@@ -130,14 +130,20 @@ void PhysicsTestScene::Initialize()
 	//Lights
 	//**************************
 
-	//Directional
+	// Moving point light
+	auto lightEntity = new Entity();
+
+	auto lightMeshEntity = new Entity();
+	lightEntity->AddChild(lightMeshEntity);
+
 	auto pModelComp1 = new ModelComponent("sphere.dae"_hash);
 	pModelComp1->SetMaterial(m_pLightMat);
-	auto lightEntity = new Entity();
-	lightEntity->AddComponent(pModelComp1);
-	m_Light = new LightComponent(LightComponent::Type::Point, vec3(1, 1, 1), 10.f);
+	lightMeshEntity->GetTransform()->Scale(vec3(0.01f));
+	lightMeshEntity->AddComponent(pModelComp1);
+
+	m_Light = new LightComponent(LightComponent::Type::Point, vec3(1, 1, 1), 20.f);
 	lightEntity->AddComponent(m_Light);
-	lightEntity->GetTransform()->Scale(vec3(3.f));
+	lightEntity->GetTransform()->Scale(vec3(10.f));
 	lightEntity->GetTransform()->SetPosition(vec3(0, 50, 0));
 	AddEntity(lightEntity);
 
@@ -224,10 +230,7 @@ void PhysicsTestScene::Update()
 
 	render::ShadedSceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(m_DebugFont->GetAtlas(), vec2(1000, 0),
 		vec4(1), vec2(0), vec2(1), 0, 0, SpriteRenderer::E_ScalingMode::TextureAbs);
-}
 
-void PhysicsTestScene::Draw()
-{
 	TextRenderer& textRenderer = render::ShadedSceneRenderer::GetCurrent()->GetTextRenderer();
 
 	textRenderer.SetFont(m_DebugFont.get());

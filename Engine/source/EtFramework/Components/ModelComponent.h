@@ -28,7 +28,7 @@ public:
 	// construct destruct
 	//--------------------
 	ModelComponent(T_Hash const assetId);
-	virtual ~ModelComponent();
+	virtual ~ModelComponent() = default;
 
 private:
 	ModelComponent(const ModelComponent& yRef);
@@ -47,11 +47,9 @@ public:
 	// component interface
 	//---------------------
 protected:
-	virtual void Initialize();
-	virtual void Update();
-	virtual void Draw() {}
-	virtual void DrawForward() {}
-	virtual void DrawMaterial(Material* const) {}
+	virtual void Init() override;
+	virtual void Deinit() override;
+	virtual void Update() override;
 
 	// utility
 	//---------

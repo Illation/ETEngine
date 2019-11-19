@@ -12,7 +12,7 @@ public:
 
 protected:
 
-	virtual void Initialize();
+	virtual void Init();
 
 private:
 

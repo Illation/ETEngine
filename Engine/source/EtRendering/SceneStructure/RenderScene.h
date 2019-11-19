@@ -80,6 +80,8 @@ public:
 
 	void SetStarfield(T_Hash const assetId);
 
+	void SetPostProcessingSettings(PostProcessingSettings const& settings) { m_PostProcessingSettings = settings; }
+
 	core::T_SlotId AddPlanet(PlanetParams const& params, T_NodeId const node);
 	void RemovePlanet(core::T_SlotId const planetId);
 

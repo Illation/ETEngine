@@ -1,5 +1,6 @@
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/Uniform.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
 
 
 //===================

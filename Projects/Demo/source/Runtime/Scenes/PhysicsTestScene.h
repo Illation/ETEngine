@@ -19,11 +19,9 @@ public:
 	PhysicsTestScene();
 	virtual ~PhysicsTestScene();
 private:
-	void Initialize();
+	void Init();
 	void Update();
-	void Draw();
-	void DrawForward() {}
-	void PostDraw() {}
+
 private:
 	TexPBRMaterial* m_pFloorMat = nullptr;
 	TexPBRMaterial* m_pBallMat = nullptr;

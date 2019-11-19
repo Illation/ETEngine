@@ -1,236 +1,256 @@
 #include "stdafx.h"
 #include "Entity.h"
 
-#include <iostream>
-
 #include "AbstractScene.h"
 
 #include <EtFramework/Components/AbstractComponent.h>
 #include <EtFramework/Components/TransformComponent.h>
 
 
-Entity::Entity():m_Tag(std::string(""))
+//========
+// Entity
+//========
+
+
+// construct destruct
+//////////////////////
+
+//---------------------
+// Entity::c-tor
+//
+// Ensure we have a transform component
+//
+Entity::Entity()
+	: m_Transform(new TransformComponent())
 {
-	m_pTransform = new TransformComponent();
-	AddComponent(m_pTransform);
+	AddComponent(m_Transform);
 }
 
+//---------------------
+// Entity::d-tor
+//
 Entity::~Entity()
 {
-	//Component Cleanup
-	for (AbstractComponent* pComp : m_pComponentVec)
+	if (m_IsInitialized)
 	{
-		SafeDelete(pComp);
+		RootDeinit();
 	}
 
 	//Object Cleanup
-	for (Entity* pChild : m_pChildVec)
+	for (Entity* child : m_Children)
 	{
-		SafeDelete(pChild);
+		SafeDelete(child);
+	}
+
+	//Component Cleanup
+	for (AbstractComponent* component : m_Components)
+	{
+		SafeDelete(component);
 	}
 }
 
+
+// root
+//////////
+
+//---------------------
+// Entity::RootInit
+//
+// Init derived classes, child entities and all components
+//
+void Entity::RootInit()
+{
+	if (m_IsInitialized)
+	{
+		return;
+	}
+
+	Init();
+
+	//Root-Component Initialization
+	for (AbstractComponent* const component : m_Components)
+	{
+		component->RootInit();
+	}
+
+	//Root-Object Initialization
+	for (Entity* const child : m_Children)
+	{
+		child->RootInit();
+	}
+
+	OnPostComponentInit();
+
+	m_IsInitialized = true;
+}
+
+//---------------------
+// Entity::RootDeinit
+//
+void Entity::RootDeinit()
+{
+	if (!m_IsInitialized)
+	{
+		return;
+	}
+
+	Deinit();
+
+	// Root-Object deinit
+	for (Entity* const child : m_Children)
+	{
+		child->RootDeinit();
+	}
+
+	// Root-Component deinit
+	// iterate in reverse so that transform is removed last
+	for (auto it = m_Components.rbegin(); it != m_Components.rend(); it++) 
+	{
+		(*it)->RootDeinit();
+	}
+
+	m_IsInitialized = false;
+}
+
+//---------------------
+// Entity::RootUpdate
+//
+// Recursively update all children and components
+//
+void Entity::RootUpdate()
+{
+	Update();
+
+	//Component Update
+	for (AbstractComponent* const component : m_Components)
+	{
+		component->Update();
+	}
+
+	//Root-Object Update
+	for (Entity* const child : m_Children)
+	{
+		child->RootUpdate();
+	}
+}
+
+
+// functionality
+/////////////////
+
+//---------------------
+// Entity::AddChild
+//
+void Entity::AddChild(Entity* const entity)
+{
+	ET_ASSERT(entity->GetParent() == nullptr, "Entity already attatched to another parent!");
+	ET_ASSERT(entity->GetScene() == nullptr, "Entity already attatched to another scene!");
+
+	entity->m_ParentEntity = this;
+	m_Children.push_back(entity);
+
+	if (m_IsInitialized)
+	{
+		entity->RootInit();
+	}
+}
+
+//---------------------
+// Entity::RemoveChild
+//
+void Entity::RemoveChild(Entity* const entity)
+{
+	auto it = std::find(m_Children.begin(), m_Children.end(), entity);
+
+	ET_ASSERT(it != m_Children.cend(), "Entity to remove is not a child of entity to remove from!");
+
+	m_Children.erase(it); // swap-pop in the future?
+	entity->m_ParentEntity = nullptr;
+}
+
+//----------------------
+// Entity::AddComponent
+//
+void Entity::AddComponent(AbstractComponent* const component)
+{
+	ET_ASSERT(!(typeid(*component) == typeid(TransformComponent) && HasComponent<TransformComponent>()), "Entity already has a transform component");
+	// #todo: check for components of any type
+
+	component->m_Entity = this;
+
+	if (m_IsInitialized)
+	{
+		component->RootInit();
+	}
+
+	m_Components.push_back(component);
+}
+
+//-------------------------
+// Entity::RemoveComponent
+//
+void Entity::RemoveComponent(AbstractComponent* const component)
+{
+	ET_ASSERT(typeid(*component) == typeid(TransformComponent), "TransformComponent can't be removed!");
+
+	auto it = std::find(m_Components.begin(), m_Components.end(), component);
+
+	ET_ASSERT(it != m_Components.cend(), "Component is not attached to this entity!");
+
+	m_Components.erase(it);
+	component->m_Entity = nullptr;
+}
+
+//---------------------
+// Entity::SetName
+//
 void Entity::SetName(std::string const& name)
 {
 	m_Name = name;
 	m_Id = GetHash(name);
 }
 
+
+// accessors
+/////////////
+
+//---------------------------------
+// Entity::RecursiveAppendChildren
+//
+// Add all children to a flat list
+//
 void Entity::RecursiveAppendChildren(std::vector<Entity const*>& list) const
 {
 	list.push_back(this);
-	for (Entity const* const child : m_pChildVec)
+	for (Entity const* const child : m_Children)
 	{
 		child->RecursiveAppendChildren(list);
 	}
 }
 
+//---------------------------------
+// Entity::RecursiveAppendChildren
+//
+// Add all children to a flat list
+//
 void Entity::RecursiveAppendChildren(std::vector<Entity*>& list) 
 {
 	list.push_back(this);
-	for (Entity* const child : m_pChildVec)
+	for (Entity* const child : m_Children)
 	{
 		child->RecursiveAppendChildren(list);
 	}
 }
 
-void Entity::RootInitialize()
-{
-	if (m_IsInitialized)
-		return;
-	Initialize();
-	//Root-Component Initialization
-	for (AbstractComponent* pComp : m_pComponentVec)
-	{
-		pComp->RootInitialize();
-	}
-	//Root-Object Initialization
-	for (Entity* pChild : m_pChildVec)
-	{
-		pChild->RootInitialize();
-	}
-	RootStart();
-	m_IsInitialized = true;
-}
-void Entity::RootStart()
-{
-	Start();
-}
-void Entity::RootUpdate()
-{
-	Update();
-	//Component Update
-	for (AbstractComponent* pComp : m_pComponentVec)
-	{
-		pComp->Update();
-	}
-	//Root-Object Update
-	for (Entity* pChild : m_pChildVec)
-	{
-		pChild->RootUpdate();
-	}
-}
-void Entity::RootDraw()
-{
-	Draw();
-	//Component Draw
-	for (AbstractComponent* pComp : m_pComponentVec)
-	{
-		pComp->Draw();
-	}
-	//Root-Object Draw
-	for (Entity* pChild : m_pChildVec)
-	{
-		pChild->RootDraw();
-	}
-}
-void Entity::RootDrawForward()
-{
-	DrawForward();
-	//Component Draw
-	for (AbstractComponent* pComp : m_pComponentVec)
-	{
-		pComp->DrawForward();
-	}
-	//Root-Object Draw
-	for (Entity* pChild : m_pChildVec)
-	{
-		pChild->RootDrawForward();
-	}
-}
-void Entity::RootDrawMaterial(Material* const mat)
-{
-	DrawMaterial(mat);
-	//Component Draw
-	for (AbstractComponent* pComp : m_pComponentVec)
-	{
-		pComp->DrawMaterial(mat);
-	}
-	//Root-Object Draw
-	for (Entity* pChild : m_pChildVec)
-	{
-		pChild->RootDrawMaterial(mat);
-	}
-}
-
-void Entity::AddChild(Entity* pEntity)
-{
-#if ET_DEBUG
-	if (pEntity->m_pParentEntity)
-	{
-		if (pEntity->m_pParentEntity == this)
-		{
-			LOG("Entity::AddChild > Entity to add is already attached to this parent", Warning);
-			return;
-		}
-		LOG("Entity::AddChild > Entity to add is already attached to another GameObject. Detach it from it's current parent before attaching it to another one.", Warning);
-		return;
-	}
-
-	if (pEntity->m_pParentScene)
-	{
-		LOG("Entity::AddChild > Entity is currently attached to a Scene. Detach it from it's current parent before attaching it to another one.", Warning);
-		return;
-	}
-#endif
-
-	pEntity->m_pParentEntity = this;
-	m_pChildVec.push_back(pEntity);
-	if (m_IsInitialized)
-	{
-		pEntity->RootInitialize();
-	}
-}
-
-void Entity::RemoveChild(Entity* pEntity)
-{
-	auto it = find(m_pChildVec.begin(), m_pChildVec.end(), pEntity);
-
-#if ET_DEBUG
-	if (it == m_pChildVec.end())
-	{
-		LOG("GameObject::RemoveChild > GameObject to remove is not attached to this GameObject!", Warning);
-		return;
-	}
-#endif
-
-	m_pChildVec.erase(it);
-	pEntity->m_pParentEntity = nullptr;
-}
-
-void Entity::AddComponent(AbstractComponent* pComp)
-{
-#if ET_DEBUG
-	if (typeid(*pComp) == typeid(TransformComponent) && HasComponent<TransformComponent>())
-	{
-		LOG("GameObject::AddComponent > GameObject can contain only one TransformComponent!", Warning);
-		return;
-	}
-
-	for (auto *component : m_pComponentVec)
-	{
-		if (component == pComp)
-		{
-			LOG("GameObject::AddComponent > GameObject already contains this component!", Warning);
-			return;
-		}
-	}
-#endif
-
-	pComp->m_pEntity = this;
-	if (m_IsInitialized)
-		pComp->RootInitialize();
-
-	m_pComponentVec.push_back(pComp);
-}
-
-void Entity::RemoveComponent(AbstractComponent* pComp)
-{
-	auto it = find(m_pComponentVec.begin(), m_pComponentVec.end(), pComp);
-
-#if ET_DEBUG
-	if (it == m_pComponentVec.end())
-	{
-		LOG("GameObject::RemoveComponent > Component is not attached to this GameObject!", Warning);
-		return;
-	}
-
-	if (typeid(*pComp) == typeid(TransformComponent))
-	{
-		LOG( "GameObject::RemoveComponent > TransformComponent can't be removed!", Warning);
-		return;
-	}
-#endif
-
-	m_pComponentVec.erase(it);
-	pComp->m_pEntity = nullptr;
-}
-
+//---------------------
+// Entity::GetScene
+//
 AbstractScene* Entity::GetScene()
 {
-	if (!m_pParentScene && m_pParentEntity)
+	if (!m_ParentScene && m_ParentEntity)
 	{
-		return m_pParentEntity->GetScene();
+		return m_ParentEntity->GetScene();
 	}
-	return m_pParentScene;
+
+	return m_ParentScene;
 }

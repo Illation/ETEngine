@@ -6,16 +6,15 @@ class btRigidBody;
 class btCollisionShape;
 
 
-class RigidBodyComponent : public AbstractComponent
+class RigidBodyComponent final : public AbstractComponent
 {
 public:
 	RigidBodyComponent(bool isStatic = false);
-	virtual ~RigidBodyComponent();
+	~RigidBodyComponent();
 
-	void Initialize();
-	void Update() {}
-	void Draw() {}
-	void DrawForward() {}
+	void Init() override;
+	void Deinit() override;
+	void Update() override {}
 
 	float GetMass() const { return m_Mass; }
 	void SetMass(float val) { m_Mass = val; }

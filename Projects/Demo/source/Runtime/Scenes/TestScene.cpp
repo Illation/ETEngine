@@ -28,7 +28,7 @@ TestScene::~TestScene()
 	SafeDelete(m_pLightMat);
 }
 
-void TestScene::Initialize()
+void TestScene::Init()
 {
 	//Fonts
 	//**************************
@@ -209,10 +209,7 @@ void TestScene::Update()
 		m_Light->SetBrightness(b + (nB - b)*TIME->DeltaTime());
 		LOG("Linear: " + std::to_string(m_Light->GetBrightness()));
 	}
-}
 
-void TestScene::Draw()
-{
 	TextRenderer& textRenderer = render::ShadedSceneRenderer::GetCurrent()->GetTextRenderer();
 
 	textRenderer.SetFont(m_pDebugFont.get());
@@ -224,14 +221,6 @@ void TestScene::Draw()
 	textRenderer.DrawText(outString, vec2(20, 50));
 	outString = "Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls);
 	textRenderer.DrawText(outString, vec2(20, 80));
-	outString = "Lights: " + std::to_string( (int32)m_Lights.size() );
+	outString = "Lights: " + std::to_string((int32)m_Lights.size());
 	textRenderer.DrawText(outString, vec2(20, 110));
-}
-
-void TestScene::DrawForward()
-{
-}
-
-void TestScene::PostDraw()
-{
 }

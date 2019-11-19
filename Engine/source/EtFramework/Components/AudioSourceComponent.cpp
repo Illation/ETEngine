@@ -8,12 +8,7 @@
 #include <EtFramework/Audio/OpenAL_ETM.h>
 
 
-AudioSourceComponent::~AudioSourceComponent()
-{
-	alDeleteSources(1, &m_Source);
-}
-
-void AudioSourceComponent::Initialize()
+void AudioSourceComponent::Init()
 {
 	alGenSources((ALuint)1, &m_Source);
 	AudioManager::GetInstance()->TestALError("AudioSourceComponent generate source error");
@@ -43,6 +38,11 @@ void AudioSourceComponent::Initialize()
 			alSourcePlay(m_Source);
 		}
 	}
+}
+
+void AudioSourceComponent::Deinit()
+{
+	alDeleteSources(1, &m_Source);
 }
 
 void AudioSourceComponent::SetGain(float val)

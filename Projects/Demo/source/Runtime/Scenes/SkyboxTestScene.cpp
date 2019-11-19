@@ -27,7 +27,7 @@ SkyboxTestScene::~SkyboxTestScene()
 	SafeDelete(m_pMat);
 }
 
-void SkyboxTestScene::Initialize()
+void SkyboxTestScene::Init()
 {
 	//Fonts
 	//**************************
@@ -109,10 +109,7 @@ void SkyboxTestScene::Update()
 		m_Light->SetBrightness(b + (nB - b)*TIME->DeltaTime());
 		LOG("Linear: " + std::to_string(m_Light->GetBrightness()));
 	}
-}
 
-void SkyboxTestScene::Draw()
-{
 	TextRenderer& textRenderer = render::ShadedSceneRenderer::GetCurrent()->GetTextRenderer();
 
 	textRenderer.SetFont(m_pDebugFont.get());

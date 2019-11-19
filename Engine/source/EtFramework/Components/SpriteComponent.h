@@ -8,7 +8,7 @@ class SpriteComponent final : public AbstractComponent
 {
 public:
 	SpriteComponent(T_Hash const textureAsset, vec2 const& pivot = vec2(0), vec4 const& color = vec4(1));
-	virtual ~SpriteComponent();
+	virtual ~SpriteComponent() = default;
 
 	vec2 GetPivot() const { return m_Pivot; }
 	vec4 const& GetColor() const { return m_Color; }
@@ -18,10 +18,9 @@ public:
 	void SetTexture(T_Hash const textureAsset);
 
 protected:
-	void Initialize() override;
+	void Init() override;
+	void Deinit() override;
 	void Update() override {}
-	void Draw() override {}
-	void DrawForward() override {}
 
 private:
 

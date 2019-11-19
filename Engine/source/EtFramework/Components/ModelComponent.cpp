@@ -29,14 +29,6 @@ ModelComponent::ModelComponent(T_Hash const assetId)
 { }
 
 //---------------------------------
-// ModelComponent::d-tor
-//
-ModelComponent::~ModelComponent()
-{
-	SceneManager::GetInstance()->GetRenderScene().RemoveInstance(m_InstanceId);
-}
-
-//---------------------------------
 // ModelComponent::SetMaterial
 //
 // Updates the material and marks it as dirty
@@ -48,17 +40,25 @@ void ModelComponent::SetMaterial(Material* pMaterial)
 }
 
 //---------------------------------
-// ModelComponent::Initialize
+// ModelComponent::Init
 //
 // Loads the mesh data
 //
-void ModelComponent::Initialize()
+void ModelComponent::Init()
 {
 	m_Mesh = ResourceManager::Instance()->GetAssetData<MeshData>(m_AssetId);
 
 	UpdateMaterial();
 
 	m_InstanceId = SceneManager::GetInstance()->GetRenderScene().AddInstance(m_Material, m_Mesh, GetTransform()->GetNodeId());
+}
+
+//---------------------------------
+// ModelComponent::Deinit
+//
+void ModelComponent::Deinit()
+{
+	SceneManager::GetInstance()->GetRenderScene().RemoveInstance(m_InstanceId);
 }
 
 //---------------------------------

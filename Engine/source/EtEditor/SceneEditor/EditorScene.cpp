@@ -21,7 +21,7 @@ EditorScene::~EditorScene()
 	SafeDelete(m_FloorMat);
 }
 
-void EditorScene::Initialize()
+void EditorScene::Init()
 {
 	//Fonts
 	//***************************

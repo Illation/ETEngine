@@ -1,41 +1,61 @@
 #include "stdafx.h"
 #include "AbstractComponent.h"
 
-#include <iostream>
-
 #include <EtFramework/SceneGraph/Entity.h>
 
 
-AbstractComponent::AbstractComponent(void)
-{
-}
-AbstractComponent::~AbstractComponent(void)
-{
-}
+//====================
+// Abstract Component
+//====================
 
-void AbstractComponent::RootInitialize()
+
+//-----------------------------
+// AbstractComponent::d-tor
+//
+AbstractComponent::~AbstractComponent()
 {
 	if (m_IsInitialized)
-		return;
+	{
+		RootDeinit();
+	}
+}
 
-	Initialize();
+//-----------------------------
+// AbstractComponent::RootInit
+//
+void AbstractComponent::RootInit()
+{
+	if (m_IsInitialized)
+	{
+		return;
+	}
+
+	Init();
 
 	m_IsInitialized = true;
 }
 
-void AbstractComponent::PostDraw()
+//-------------------------------
+// AbstractComponent::RootDeinit
+//
+void AbstractComponent::RootDeinit()
 {
+	if (!m_IsInitialized)
+	{
+		return;
+	}
+
+	Deinit();
+
+	m_IsInitialized = false;
 }
 
+//---------------------------------
+// AbstractComponent::GetTransform
+//
 TransformComponent* AbstractComponent::GetTransform() const
 {
-#if ET_DEBUG
-	if (!m_pEntity)
-	{
-		LOG("AbstractComponent::GetTransform() > Failed to retrieve the TransformComponent. GameObject is NULL.", Warning);
-		return nullptr;
-	}
-#endif
+	ET_ASSERT(m_Entity != nullptr, "Can't access transform as not attached to entity!");
 
-	return m_pEntity->GetTransform();
+	return m_Entity->GetTransform();
 }

@@ -15,7 +15,7 @@ OrbitCamera::~OrbitCamera()
 {
 }
 
-void OrbitCamera::Initialize()
+void OrbitCamera::Init()
 {
 	//Camera Component
 	m_pCamera = new CameraComponent();
@@ -27,7 +27,7 @@ void OrbitCamera::Initialize()
 	AddChild(m_pCamParent);
 }
 
-void OrbitCamera::Start()
+void OrbitCamera::OnPostComponentInit()
 {
 	m_pCamera = m_pFixCam->GetComponent<CameraComponent>();
 	GetScene()->SetActiveCamera(m_pCamera);

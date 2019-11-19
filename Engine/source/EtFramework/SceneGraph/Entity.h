@@ -8,11 +8,16 @@ class AbstractScene;
 class TransformComponent;
 
 
+//---------------------
+// Entity
+//
+// Base class for elements in a scene graph hierachy, can hold multiple components
+//
 class Entity
 {
-private:
+	// definitsions
+	//--------------
 	friend class AbstractScene;
-	friend class SceneRenderer;
 
 	// construct destruct
 	//---------------------
@@ -20,32 +25,48 @@ public:
 	Entity();
 	virtual ~Entity();
 
+	// interface
+	//------------
+protected:
+	virtual void Init() {}
+	virtual void Deinit() {}
+	virtual void OnPostComponentInit() {}
+	virtual void Update() {}
+
+	// Root
+	//------
+private:
+	void RootInit();
+	void RootDeinit();
+
+	void RootUpdate();
+
 	// functionality
 	//---------------
-	void AddChild(Entity* pEntity);
-	void RemoveChild(Entity* pEntity);
+public:
+	void AddChild(Entity* const entity);
+	void RemoveChild(Entity* const entity);
 
-	void AddComponent(AbstractComponent* pComp);
-	void RemoveComponent(AbstractComponent* pComp);
+	void AddComponent(AbstractComponent* const component);
+	void RemoveComponent(AbstractComponent* const component);
 
 	void SetTag(std::string const& tag) { m_Tag = tag; }
 	void SetName(std::string const& name);
 
-	void RecursiveAppendChildren(std::vector<Entity const*>& list) const;
-	void RecursiveAppendChildren(std::vector<Entity*>& list);
-	void RootDrawMaterial(Material* const mat);
-
 	// accessors
 	//------------
+	void RecursiveAppendChildren(std::vector<Entity const*>& list) const;
+	void RecursiveAppendChildren(std::vector<Entity*>& list);
+
 	std::string const& GetTag() const { return m_Tag; }
 	std::string const& GetName() const { return m_Name; }
 	T_Hash GetId() const { return m_Id; } 
 
-	TransformComponent* GetTransform() const { return m_pTransform; }
+	TransformComponent* GetTransform() const { return m_Transform; }
 
 	AbstractScene* GetScene();
-	Entity* GetParent() const { return m_pParentEntity; }
-	std::vector<Entity*> const& GetChildren() const { return m_pChildVec; }
+	Entity* GetParent() const { return m_ParentEntity; }
+	std::vector<Entity*> const& GetChildren() const { return m_Children; }
 
 	template<class T> 
 	bool HasComponent(bool searchChildren = false);
@@ -54,49 +75,32 @@ public:
 	T* GetComponent(bool searchChildren = false);
 
 	template<class T> 
-	std::vector<T*> GetComponents(bool searchChildren = false);
-
-	template<class T> 
 	T* GetChild();
 
 	template<class T> 
 	std::vector<T*> GetChildrenOfType();
 
-	// interface
-	//------------
-protected:
-	virtual void Initialize() {}
-	virtual void Start() {}
-	virtual void Draw() {}
-	virtual void DrawForward() {}
-	virtual void DrawMaterial(Material* const) {}
-	virtual void Update() {}
-
-private:
-
-	// utility
-	//------------
-	void RootInitialize();
-	void RootStart();
-	void RootDraw();
-	void RootDrawForward();
-	void RootUpdate();
-
 	// Data
 	///////
 
-	std::vector<Entity*> m_pChildVec;
-	std::vector<AbstractComponent*> m_pComponentVec;
+private:
 
 	bool m_IsInitialized = false;
 	bool m_IsActive = true;
-	AbstractScene* m_pParentScene = nullptr;
-	Entity* m_pParentEntity = nullptr;
-	TransformComponent* m_pTransform = nullptr;
-	std::string m_Tag;
+
+	AbstractScene* m_ParentScene = nullptr;
+
+	Entity* m_ParentEntity = nullptr;
+	std::vector<Entity*> m_Children;
+
+	TransformComponent* m_Transform = nullptr;
+	std::vector<AbstractComponent*> m_Components;
 
 	std::string m_Name;
 	T_Hash m_Id = 0u;
+
+	std::string m_Tag;
 };
+
 
 #include "Entity.inl"

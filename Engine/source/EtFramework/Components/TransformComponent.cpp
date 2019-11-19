@@ -13,16 +13,15 @@ TransformComponent::TransformComponent()
 	m_IsTransformChanged = TransformChanged::NONE;
 }
 
-
-TransformComponent::~TransformComponent()
-{
-	SceneManager::GetInstance()->GetRenderScene().RemoveNode(m_NodeId);
-}
-
-void TransformComponent::Initialize()
+void TransformComponent::Init()
 {
 	m_NodeId = SceneManager::GetInstance()->GetRenderScene().AddNode(m_World);
 	UpdateTransforms();
+}
+
+void TransformComponent::Deinit()
+{
+	SceneManager::GetInstance()->GetRenderScene().RemoveNode(m_NodeId);
 }
 
 void TransformComponent::Update()
@@ -33,8 +32,8 @@ void TransformComponent::Update()
 void TransformComponent::UpdateTransforms()
 {
 	//Rigid body handling
-	auto rigidbody = m_pEntity->GetComponent<RigidBodyComponent>();
-	if (rigidbody)
+	RigidBodyComponent* const rigidbody = GetEntity()->GetComponent<RigidBodyComponent>();
+	if (rigidbody != nullptr)
 	{
 		if (m_IsTransformChanged & TransformChanged::TRANSLATION)
 			rigidbody->SetPosition(m_Position);
@@ -47,13 +46,15 @@ void TransformComponent::UpdateTransforms()
 			m_Rotation = rigidbody->GetRotation();
 	}
 	else if (m_IsTransformChanged & TransformChanged::NONE)
+	{
 		return;
+	}
 
 	//Calculate World Matrix
 	//**********************
 	m_World = etm::scale(m_Scale)*etm::rotate(m_Rotation)*etm::translate(m_Position);
 
-	Entity* parent = m_pEntity->GetParent();
+	Entity* parent = GetEntity()->GetParent();
 	if (parent)
 	{
 		mat4 parentWorld = parent->GetTransform()->m_World;
@@ -76,13 +77,6 @@ void TransformComponent::UpdateTransforms()
 
 	SceneManager::GetInstance()->GetRenderScene().UpdateNode(m_NodeId, m_World);
 	m_IsTransformChanged = TransformChanged::NONE;
-}
-
-void TransformComponent::Draw()
-{
-}
-void TransformComponent::DrawForward()
-{
 }
 
 void TransformComponent::Translate(float x, float y, float z)

@@ -13,7 +13,7 @@ FixedCamera::~FixedCamera()
 {
 }
 
-void FixedCamera::Initialize()
+void FixedCamera::Init()
 {
 	//Camera Component
 	m_pCamera = new CameraComponent();

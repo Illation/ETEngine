@@ -16,11 +16,9 @@ public:
 	ShadingTestScene();
 	~ShadingTestScene();
 private:
-	void Initialize();
+	void Init();
 	void Update();
-	void Draw();
-	void DrawForward() {}
-	void PostDraw() {}
+
 private:
 	TexPBRMaterial* m_pMat = nullptr;
 	ParamPBRMaterial* m_pStandMat = nullptr;

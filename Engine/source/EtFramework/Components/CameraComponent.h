@@ -27,10 +27,9 @@ public:
 
 protected:
 
-	virtual void Initialize() {}
-	virtual void Update() {}
-	virtual void Draw() {}
-	virtual void DrawForward() {}
+	void Init() override {}
+	void Deinit() override {}
+	void Update() override {}
 
 private:
 	bool m_IsPerspective = true;
