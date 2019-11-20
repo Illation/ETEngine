@@ -477,11 +477,9 @@ Light const& Scene::GetLight(T_LightId const lightId) const
 //
 render::Atmosphere const& Scene::GetAtmosphere(T_Hash const atmoId) const
 {
-	AtmosphereInstance const& inst = m_AtmosphereInstances[atmoId];
-
-	auto const foundAtmo = std::find_if(m_Atmospheres.cbegin(), m_Atmospheres.cbegin(), [&inst](std::pair<Atmosphere, uint8> const& atmo)
+	auto const foundAtmo = std::find_if(m_Atmospheres.cbegin(), m_Atmospheres.cbegin(), [atmoId](std::pair<Atmosphere, uint8> const& atmo)
 	{
-		return atmo.first.GetId() == inst.atmosphereId;
+		return atmo.first.GetId() == atmoId;
 	});
 
 	ET_ASSERT(foundAtmo != m_Atmospheres.cend());

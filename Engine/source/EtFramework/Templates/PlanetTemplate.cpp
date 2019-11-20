@@ -33,14 +33,18 @@ PlanetTemplate::~PlanetTemplate()
 	}
 }
 
-//---------------------------------
-// PlanetTemplate::Init
+//-------------------------------------
+// PlanetTemplate::OnPostComponentInit
 //
 // Add rendering data to render::Scene
 //
-void PlanetTemplate::Init()
+void PlanetTemplate::OnPostComponentInit()
 {
 	GetTransform()->SetRotation(GetTransform()->GetRotation() * quat(vec3(0.0f, 1.0f, 0.0f), etm::radians(270.f)));
+
+	m_Params.texDetail1Id = "MoonDetail1.jpg"_hash;
+	m_Params.texDetail2Id = "MoonDetail2.jpg"_hash;
+	m_Params.texHeightDetailId = "MoonHeightDetail1.jpg"_hash;
 
 	// add planet to scene
 	render::T_NodeId const nodeId = GetTransform()->GetNodeId();

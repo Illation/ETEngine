@@ -22,7 +22,7 @@ public:
 	float GetAtmosphereHeight() const { return m_AtmosphereHeight; }
 
 protected:
-	void Init() override;
+	void OnPostComponentInit() override;
 	void Update() override;
 
 protected:

@@ -90,7 +90,6 @@ private:
 	Camera m_Camera;
 
 	render::Scene* m_RenderScene = nullptr;
-	T_FbLoc m_TargetFb = 0u;
 
 	ShadowRenderer m_ShadowRenderer;
 	Gbuffer m_GBuffer;

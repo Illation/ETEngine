@@ -4,6 +4,7 @@
 
 namespace render {
 	class ShadedSceneRenderer;
+	class SplashScreenRenderer;
 }
 
 
@@ -17,7 +18,7 @@ class SpriteRenderer final
 private:
 	// Definitions
 	//--------------------------
-	friend class SceneRenderer;
+	friend class render::SplashScreenRenderer;
 	friend class render::ShadedSceneRenderer;
 	friend class UIPortal;
 
