@@ -7,6 +7,8 @@
 #include <EtRendering/GraphicsContext/Viewport.h>
 #include <EtRendering/Extensions/OutlineRenderer.h>
 
+#include <EtFramework/SceneGraph/SceneEvents.h>
+
 #include <EtEditor/SceneEditor/SceneEditorListener.h>
 #include <EtEditor/Rendering/EditorCamera.h>
 #include <EtEditor/Layout/EditorTool.h>
@@ -65,7 +67,7 @@ private:
 	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
 	OutlineRenderer m_OutlineRenderer;
 
-	T_SceneEventCallbackId m_SceneInitCallback = SceneEventDispatcher::s_InvalidCallbackId;
+	T_SceneEventCallbackId m_SceneInitCallback = T_SceneEventDispatcher::INVALID_ID;
 
 	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
 

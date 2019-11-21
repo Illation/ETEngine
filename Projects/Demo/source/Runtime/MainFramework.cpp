@@ -23,12 +23,12 @@ MainFramework::~MainFramework()
 
 void MainFramework::AddScenes()
 {
-	SceneManager::GetInstance()->AddGameScene(new EditorScene());
-	SceneManager::GetInstance()->AddGameScene(new PlanetTestScene());
-	SceneManager::GetInstance()->AddGameScene(new PhysicsTestScene());
-	//SceneManager::GetInstance()->AddGameScene(new ShadingTestScene());
-	//SceneManager::GetInstance()->AddGameScene(new SkyboxTestScene());
-	//SceneManager::GetInstance()->AddGameScene(new TestScene());
+	SceneManager::GetInstance()->AddScene(new EditorScene());
+	SceneManager::GetInstance()->AddScene(new PlanetTestScene());
+	SceneManager::GetInstance()->AddScene(new PhysicsTestScene());
+	//SceneManager::GetInstance()->AddScene(new ShadingTestScene());
+	//SceneManager::GetInstance()->AddScene(new SkyboxTestScene());
+	//SceneManager::GetInstance()->AddScene(new TestScene());
 }
 
 void MainFramework::OnTick()

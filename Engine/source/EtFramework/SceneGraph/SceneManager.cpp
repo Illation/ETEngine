@@ -1,81 +1,87 @@
 #include "stdafx.h"
 #include "SceneManager.h"
 
-#include "AbstractScene.h"
-
 #include <algorithm>
 
-#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
+#include "AbstractScene.h"
 
 
 SceneManager::~SceneManager()
 {
-	for (AbstractScene* scene : m_pSceneVec)
+	for (AbstractScene* scene : m_Scenes)
 	{
 		delete scene;
 		scene = nullptr;
 	}
 }
 
-void SceneManager::AddGameScene(AbstractScene* scene)
+void SceneManager::AddScene(AbstractScene* const scene)
 {
-	auto it = find(m_pSceneVec.begin(), m_pSceneVec.end(), scene);
+	auto it = find(m_Scenes.begin(), m_Scenes.end(), scene);
 
-	if (it == m_pSceneVec.end())
+	if (it == m_Scenes.end())
 	{
-		m_pSceneVec.push_back(scene);
+		m_Scenes.push_back(scene);
 
-		if (m_ActiveScene == nullptr && m_NewActiveScene == nullptr)
-			m_NewActiveScene = scene;
+		if ((m_ActiveScene == nullptr) && (m_NewActiveScene == nullptr))
+		{
+			SetNewScene(scene);
+		}
 	}
 }
 
-void SceneManager::RemoveGameScene(AbstractScene* scene)
+void SceneManager::RemoveScene(AbstractScene* const scene)
 {
-	auto it = find(m_pSceneVec.begin(), m_pSceneVec.end(), scene);
+	auto it = find(m_Scenes.begin(), m_Scenes.end(), scene);
 
-	if (it != m_pSceneVec.end())
+	if (it != m_Scenes.end())
 	{
-		m_pSceneVec.erase(it);
+		m_Scenes.erase(it);
 	}
 }
 
-void SceneManager::SetActiveGameScene(std::string sceneName)
+void SceneManager::SetActiveGameScene(std::string const& sceneName)
 {
-	auto it = find_if(m_pSceneVec.begin(), m_pSceneVec.end(), [sceneName](AbstractScene* scene)
-	{
-		return (strcmp(scene->m_Name.c_str(), sceneName.c_str()) == 0);
-	});
+	auto it = find_if(m_Scenes.begin(), m_Scenes.end(), [&sceneName](AbstractScene* scene)
+		{
+			return scene->GetName() == sceneName;
+		});
 
-	if (it != m_pSceneVec.end())
+	if (it != m_Scenes.end())
 	{
-		m_NewActiveScene = *it;
+		SetNewScene(*it);
 	}
 }
 
 void SceneManager::NextScene()
 {
-	for (uint32 i = 0; i < m_pSceneVec.size(); ++i)
+	for (size_t i = 0; i < m_Scenes.size(); ++i)
 	{
-		if (m_pSceneVec[i] == m_ActiveScene)
+		if (m_Scenes[i] == m_ActiveScene)
 		{
-			auto nextScene = (++i) % m_pSceneVec.size();
-			m_NewActiveScene = m_pSceneVec[nextScene];
-			break;
+			size_t nextSceneIdx = (++i) % m_Scenes.size();
+
+			SetNewScene(m_Scenes[nextSceneIdx]);
+			return;
 		}
 	}
 }
 
 void SceneManager::PreviousScene()
 {
-	for (size_t i = 0; i < m_pSceneVec.size(); ++i)
+	for (size_t i = 0; i < m_Scenes.size(); ++i)
 	{
-		if (m_pSceneVec[i] == m_ActiveScene)
+		if (m_Scenes[i] == m_ActiveScene)
 		{
-			if (i == 0) i = m_pSceneVec.size();
+			if (i == 0)
+			{
+				i = m_Scenes.size();
+			}
+
 			--i;
-			m_NewActiveScene = m_pSceneVec[i];
-			break;
+
+			SetNewScene(m_Scenes[i]);
+			return;
 		}
 	}
 }
@@ -84,39 +90,31 @@ void SceneManager::OnTick()
 {
 	if (m_NewActiveScene != nullptr)
 	{
-		//for (SceneRenderer* sceneRenderer : SceneRenderer::GetAll())
-		//{
-		//	sceneRenderer->ShowSplashScreen();
-		//}
-		m_SplashFrame = true;
-
 		//Deactivate the current active scene
 		if (m_ActiveScene != nullptr)
 		{
 			m_ActiveScene->RootDeactivate();
+			m_EventDispatcher.Notify(E_SceneEvent::Deactivated, new SceneEventData(m_ActiveScene));
 		}
 
 		//Set New Scene
 		m_ActiveScene = m_NewActiveScene;
 		m_NewActiveScene = nullptr;
-	}
-	else if (m_SplashFrame)
-	{
-		m_SplashFrame = false;
-		LOG(std::string("Switching to scene: ") + m_ActiveScene->m_Name);
+
 		//Active the new scene and reset SceneTimer
+		LOG(std::string("Switching to scene: ") + m_ActiveScene->m_Name);
 		m_ActiveScene->RootActivate();
-	}
-	else
-	{
-		//for (SceneRenderer* sceneRenderer : SceneRenderer::GetAll())
-		//{
-		//	sceneRenderer->HideSplashScreen();
-		//}
+		m_EventDispatcher.Notify(E_SceneEvent::Activated, new SceneEventData(m_ActiveScene));
 	}
 
-	if ((m_ActiveScene != nullptr) && (!m_SplashFrame))
+	if (m_ActiveScene != nullptr)
 	{
 		m_ActiveScene->RootUpdate();
 	}
+}
+
+void SceneManager::SetNewScene(AbstractScene* const scene)
+{
+	m_NewActiveScene = scene;
+	m_EventDispatcher.Notify(E_SceneEvent::SceneSwitch, new SceneEventData(m_NewActiveScene));
 }

@@ -1,8 +1,6 @@
 #pragma once
 #include <EtCore/Helper/Hash.h>
 
-#include "SceneEvents.h"
-
 
 //forward declaration
 class Entity;
@@ -78,8 +76,6 @@ public:
 	AudioListenerComponent* GetAudioListener() const { return m_AudioListener; }
 	CameraComponent const* GetActiveCamera() const;
 
-	SceneEventDispatcher& GetEventDispatcher() { return m_EventDispatcher; }
-
 	// utility
 	//------------
 private:
@@ -101,8 +97,5 @@ private:
 	// Single items
 	SceneContext* m_SceneContext = nullptr;
 	AudioListenerComponent* m_AudioListener = nullptr;
-
-	// Events
-	SceneEventDispatcher m_EventDispatcher;
 };
 

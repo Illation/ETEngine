@@ -1,6 +1,8 @@
 #pragma once
+#include <EtCore/Helper/GenericEventDispatcher.h>
 
-#include <functional>
+
+class AbstractScene;
 
 
 //---------------------------
@@ -13,7 +15,9 @@ enum E_SceneEvent : T_SceneEventFlags
 {
 	Invalid = 0,
 
-	Initialized = 1 << 0,
+	SceneSwitch	= 1 << 0,
+	Deactivated	= 1 << 1,
+	Activated	= 1 << 2,
 
 	All = 0xFF
 };
@@ -26,62 +30,16 @@ enum E_SceneEvent : T_SceneEventFlags
 struct SceneEventData
 {
 public:
-	SceneEventData(E_SceneEvent const evnt) : eventType(evnt) {}
+	SceneEventData(AbstractScene* const abstractScene) : scene(abstractScene) {}
 	virtual ~SceneEventData() = default;
 
-	E_SceneEvent eventType;
+	AbstractScene* scene = nullptr;
 };
 
-typedef size_t T_SceneEventCallbackId;
-typedef std::function<void(SceneEventData const* const)> T_SceneEventCallback;
 
-//---------------------------
-// SceneEventDispatcher
-//
-// Manages listeners and sends them notifications
-//
-class SceneEventDispatcher final
-{
-private:
+typedef core::GenericEventDispatcher<T_SceneEventFlags, SceneEventData> T_SceneEventDispatcher;
 
-	// definitions
-	//----------------
 
-	//---------------------------
-	// E_SceneEvent::Listener
-	//
-	// All the information needed to manage a callback
-	//
-	struct Listener
-	{
-		Listener(T_SceneEventCallbackId const callbackId, T_SceneEventFlags const eventFlags, T_SceneEventCallback& func);
-
-		T_SceneEventCallbackId id;
-		T_SceneEventFlags flags;
-		T_SceneEventCallback callback;
-	};
-
-public:
-	static T_SceneEventCallbackId const s_InvalidCallbackId;
-
-	// construct destruct
-	//---------------------
-	SceneEventDispatcher();
-	~SceneEventDispatcher() = default;
-
-	// functionality
-	//---------------
-	T_SceneEventCallbackId Register(T_SceneEventFlags const flags, T_SceneEventCallback& callback);
-	void Unregister(T_SceneEventCallbackId& callbackId);
-
-	void Notify(SceneEventData const* const eventData); // maybe should be private to only entities and AbstractScene
-
-private:
-
-	// Data
-	///////
-
-	std::vector<Listener> m_Listeners;
-	T_SceneEventCallbackId m_NextCallbackId;
-};
+typedef T_SceneEventDispatcher::T_CallbackId T_SceneEventCallbackId;
+typedef T_SceneEventDispatcher::T_CallbackFn T_SceneEventCallback;
 

@@ -51,6 +51,7 @@ public:
 	void SynchDimensions();
 	void SetRenderer(I_ViewportRenderer* renderer);
 	void SetActive(bool const val) { m_IsActive = val; }
+	void SetTickDisabled(bool const val) { m_TickDisabled = val; }
 private:
 	void Render(T_FbLoc const targetFb);
 
@@ -96,6 +97,8 @@ private:
 
 	bool m_IsRealized = false;
 	bool m_IsActive = true;
+
+	bool m_TickDisabled = false;
 
 	std::vector<I_ViewportListener*> m_Listeners;
 };

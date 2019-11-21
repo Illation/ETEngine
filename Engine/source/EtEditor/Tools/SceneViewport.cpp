@@ -172,6 +172,8 @@ void SceneViewport::OnDeinit()
 	m_Viewport->SetActive(false);
 
 	m_Editor->UnregisterListener(this);
+
+	m_OutlineRenderer.Deinit();
 	SafeDelete(m_SceneRenderer);
 	m_Viewport->SetRenderer(nullptr);
 
@@ -209,18 +211,20 @@ void SceneViewport::OnSceneSet()
 	}
 	else
 	{
-		m_SceneInitCallback = m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Register(E_SceneEvent::Initialized, 
-			T_SceneEventCallback( [this](SceneEventData const* const eventData)
+		m_SceneInitCallback = SceneManager::GetInstance()->GetEventDispatcher().Register(E_SceneEvent::Activated,
+			T_SceneEventCallback( [this](T_SceneEventFlags const flags, SceneEventData const* const eventData)
 			{
+				UNUSED(flags);
 				UNUSED(eventData);
+
 				InitCamera();
 
-				m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Unregister(m_SceneInitCallback);
+				SceneManager::GetInstance()->GetEventDispatcher().Unregister(m_SceneInitCallback);
 			}));
 	}
 
 	m_SceneRenderer->InitRenderingSystems();
-	m_OutlineRenderer.Initialize(&(m_SceneRenderer->GetEventDispatcher()));
+	m_OutlineRenderer.Init(&(m_SceneRenderer->GetEventDispatcher()));
 
 	m_IsInitialized = true;
 }

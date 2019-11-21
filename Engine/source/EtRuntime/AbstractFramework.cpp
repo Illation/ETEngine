@@ -83,13 +83,39 @@ void AbstractFramework::Run()
 		SceneManager::GetInstance()->SetActiveGameScene(initScene);
 	}
 
+	// ensure we show the splash screen every time the scene switches
+	// Callback ID not required as we destroy the scene manager here before destroying this class
+	SceneManager::GetInstance()->GetEventDispatcher().Register(E_SceneEvent::SceneSwitch | E_SceneEvent::Activated, 
+		T_SceneEventCallback([this](T_SceneEventFlags const flags, SceneEventData const* const evnt)
+		{
+			UNUSED(evnt);
+
+			switch (static_cast<E_SceneEvent>(flags))
+			{
+			case E_SceneEvent::SceneSwitch:
+				m_Viewport->SetRenderer(m_SplashScreenRenderer);
+
+				m_Viewport->SetTickDisabled(true);
+				m_RenderArea.Update(); // update manually incase we don't run the game loop before the new scene is activated 
+				m_Viewport->SetTickDisabled(false);
+				break;
+
+			case E_SceneEvent::Activated:
+				m_Viewport->SetRenderer(m_SceneRenderer); // update will happen anyway during the loop
+				break;
+
+			default:
+				ET_ASSERT(true, "Unexpected scene event type!");
+				break;
+			}
+		}));
+
 	PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
 
 	InputManager::GetInstance();	// init input manager
 	GlfwEventManager::GetInstance()->Init(&m_RenderArea);
 
 	m_SceneRenderer = new render::ShadedSceneRenderer(&(SceneManager::GetInstance()->GetRenderScene()));
-	m_Viewport->SetRenderer(m_SceneRenderer);
 	m_SceneRenderer->InitRenderingSystems();
 
 	RegisterAsTriggerer();

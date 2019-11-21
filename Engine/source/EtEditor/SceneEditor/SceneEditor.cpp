@@ -53,7 +53,7 @@ void SceneEditor::InitInternal()
 	AudioManager::GetInstance()->Initialize();
 	PhysicsManager::GetInstance()->Initialize();
 
-	SceneManager::GetInstance()->AddGameScene(new EditorScene());
+	SceneManager::GetInstance()->AddScene(new EditorScene());
 	SceneManager::GetInstance()->SetActiveGameScene("EditorScene");
 	m_SceneSelection.SetScene(SceneManager::GetInstance()->GetNewActiveScene());
 	for (I_SceneEditorListener* const listener : m_Listeners)

@@ -1,4 +1,6 @@
 #pragma once
+#include "SceneEvents.h"
+
 #include <EtCore/Helper/Singleton.h>
 #include <EtCore/UpdateCycle/Tickable.h>
 
@@ -7,42 +9,62 @@
 #include <EtFramework/Config/TickOrder.h>
 
 
-//Forward Declaration
-class AbstractScene;
-class AbstractFramework;
+class AbstracScene;
 
 
+//--------------------
+// SceneManager
+//
+// Global class responsible for controlling the current scene, switching between scenes - also provides access to the render scene
+//
 class SceneManager : public Singleton<SceneManager>, public I_Tickable
 {
+	// construct destruct
+	//--------------------
 public:
+	SceneManager() : I_Tickable(static_cast<uint32>(E_TickOrder::TICK_SceneManager)) {}
 	~SceneManager();
 
-	void AddGameScene(AbstractScene* scene);
-	void RemoveGameScene(AbstractScene* scene);
-	void SetActiveGameScene(std::string sceneName);
+	// functionality
+	//---------------
+	void AddScene(AbstractScene* const scene);
+	void RemoveScene(AbstractScene* const scene);
+
+	void SetActiveGameScene(std::string const& sceneName);
+
 	void NextScene();
 	void PreviousScene();
 
+	// accessors
+	//-----------
 	AbstractScene* GetActiveScene() const { return m_ActiveScene; }
 	AbstractScene* GetNewActiveScene() const { return m_NewActiveScene; }
+
 	render::Scene& GetRenderScene() { return m_RenderScene; }
 
+	T_SceneEventDispatcher& GetEventDispatcher() { return m_EventDispatcher; }
+
+	// tickable interface
+	//--------------------
 protected:
 	void OnTick() override;
 	
+	// utility
+	//---------
 private:
-	friend class AbstractFramework;
-	friend class Singleton<SceneManager>;
+	void SetNewScene(AbstractScene* const scene);
 
-	SceneManager() : I_Tickable(static_cast<uint32>(E_TickOrder::TICK_SceneManager)) {}
+	
+	// Data
+	///////
 
+	std::vector<AbstractScene*> m_Scenes;
 
-	std::vector<AbstractScene*> m_pSceneVec;
-	bool m_IsInitialized = false;
-	AbstractScene* m_ActiveScene = nullptr, *m_NewActiveScene = nullptr;
+	AbstractScene* m_ActiveScene = nullptr;
+	AbstractScene* m_NewActiveScene = nullptr;
 
 	render::Scene m_RenderScene;
 
-	bool m_SplashFrame = false;
+	T_SceneEventDispatcher m_EventDispatcher;
 };
 

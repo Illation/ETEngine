@@ -71,7 +71,7 @@ public:
 	TextRenderer& GetTextRenderer() { return m_TextRenderer; }
 	SpriteRenderer& GetSpriteRenderer() { return m_SpriteRenderer; }
 
-	RenderEventDispatcher& GetEventDispatcher() { return m_Events; }
+	T_RenderEventDispatcher& GetEventDispatcher() { return m_Events; }
 
 	// utility
 	//---------
@@ -101,7 +101,7 @@ private:
 	TextRenderer m_TextRenderer;
 	SpriteRenderer m_SpriteRenderer;
 
-	RenderEventDispatcher m_Events;
+	T_RenderEventDispatcher m_Events;
 };
 
 

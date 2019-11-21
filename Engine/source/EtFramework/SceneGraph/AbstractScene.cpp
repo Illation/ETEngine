@@ -98,7 +98,6 @@ void AbstractScene::RootInit()
 	}
 
 	m_IsInitialized = true;
-	m_EventDispatcher.Notify(new SceneEventData(E_SceneEvent::Initialized));
 
 	m_SceneContext->time->Start();
 }

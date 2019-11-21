@@ -173,7 +173,10 @@ void Viewport::OnResize(vec2 const resolution)
 //
 void Viewport::OnRender(T_FbLoc const targetFb)
 {
-	TriggerTick(); // if this is the first real time thing we will start the update process here
+	if (!m_TickDisabled)
+	{
+		TriggerTick(); // if this is the first real time thing we will start the update process here
+	}
 
 	if (m_IsActive)
 	{

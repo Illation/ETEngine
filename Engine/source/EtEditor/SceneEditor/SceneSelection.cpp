@@ -24,8 +24,8 @@ void SceneSelection::SetScene(AbstractScene* const scene)
 {
 	m_Scene = scene;
 
-	m_Scene->GetEventDispatcher().Register(E_SceneEvent::All, 
-		T_SceneEventCallback(std::bind(&SceneSelection::OnSceneEvent, this, std::placeholders::_1)));
+	SceneManager::GetInstance()->GetEventDispatcher().Register(E_SceneEvent::All, 
+		T_SceneEventCallback(std::bind(&SceneSelection::OnSceneEvent, this, std::placeholders::_1, std::placeholders::_2)));
 
 	if (!m_IsIdRendererInitialized)
 	{
@@ -176,11 +176,11 @@ void SceneSelection::UpdateOutlines() const
 //
 // pass the event through to any listeners
 //
-void SceneSelection::OnSceneEvent(SceneEventData const* const eventData)
+void SceneSelection::OnSceneEvent(T_SceneEventFlags const flags, SceneEventData const* const eventData)
 {
 	for (I_SceneSelectionListener* const listener : m_Listeners)
 	{
-		listener->OnSceneEvent(eventData);
+		listener->OnSceneEvent(static_cast<E_SceneEvent>(flags), eventData);
 	}
 }
 

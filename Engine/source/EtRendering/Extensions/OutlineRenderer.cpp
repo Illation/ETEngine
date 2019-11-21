@@ -24,19 +24,16 @@
 //
 OutlineRenderer::~OutlineRenderer()
 {
-	DestroyRenderTarget();
-
-	if (m_EventDispatcher != nullptr)
+	if (m_IsInitialized)
 	{
-		m_EventDispatcher->Unregister(m_CallbackId);
-		m_EventDispatcher = nullptr;
+		Deinit();
 	}
 }
 
 //---------------------------------
-// OutlineRenderer::Initialize
+// OutlineRenderer::Init
 //
-void OutlineRenderer::Initialize(render::RenderEventDispatcher* const eventDispatcher)
+void OutlineRenderer::Init(render::T_RenderEventDispatcher* const eventDispatcher)
 {
 	m_SobelShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostSobel.glsl"_hash);
 
@@ -46,8 +43,10 @@ void OutlineRenderer::Initialize(render::RenderEventDispatcher* const eventDispa
 
 	m_EventDispatcher = eventDispatcher;
 	m_CallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RenderOutlines, render::T_RenderEventCallback(
-		[this](render::RenderEventData const* const evnt) -> void
+		[this](render::T_RenderEventFlags const flags, render::RenderEventData const* const evnt) -> void
 		{
+			UNUSED(flags);
+
 			if (evnt->renderer->GetType() == typeid(render::ShadedSceneRenderer))
 			{
 				render::ShadedSceneRenderer const* const renderer = static_cast<render::ShadedSceneRenderer const*>(evnt->renderer);
@@ -66,6 +65,26 @@ void OutlineRenderer::Initialize(render::RenderEventDispatcher* const eventDispa
 				ET_ASSERT(true, "Cannot retrieve outline info from unhandled renderer!");
 			}
 		}));
+
+	m_IsInitialized = true;
+}
+
+//---------------------------------
+// OutlineRenderer::Deinit
+//
+void OutlineRenderer::Deinit()
+{
+	DestroyRenderTarget();
+
+	m_SobelShader = nullptr;
+
+	if (m_EventDispatcher != nullptr)
+	{
+		m_EventDispatcher->Unregister(m_CallbackId);
+		m_EventDispatcher = nullptr;
+	}
+
+	m_IsInitialized = false;
 }
 
 //---------------------------------

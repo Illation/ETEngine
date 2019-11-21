@@ -21,7 +21,8 @@ public:
 	OutlineRenderer() = default;
 	~OutlineRenderer();
 
-	void Initialize(render::RenderEventDispatcher* const eventDispatcher);
+	void Init(render::T_RenderEventDispatcher* const eventDispatcher);
+	void Deinit();
 
 	// Functionality
 	//---------------
@@ -38,12 +39,14 @@ private:
 	// Data
 	///////
 
+	bool m_IsInitialized = false;
+
 	T_FbLoc m_DrawTarget;
 	TextureData* m_DrawTex = nullptr;
 	T_RbLoc m_DrawDepth;
 
 	AssetPtr<ShaderData> m_SobelShader;
 
-	render::RenderEventDispatcher* m_EventDispatcher = nullptr;
-	render::T_RenderEventCallbackId m_CallbackId = core::INVALID_SLOT_ID;
+	render::T_RenderEventDispatcher* m_EventDispatcher = nullptr;
+	render::T_RenderEventCallbackId m_CallbackId = render::T_RenderEventDispatcher::INVALID_ID;
 };

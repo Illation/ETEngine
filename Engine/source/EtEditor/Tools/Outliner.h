@@ -57,7 +57,7 @@ public:
 	// scene selection listener interface
 	//--------------------------------------
 protected:
-	void OnSceneEvent(SceneEventData const* const eventData) override;
+	void OnSceneEvent(E_SceneEvent const eventType, SceneEventData const* const eventData) override;
 	void OnEntitySelectionChanged(Entity* const entity, bool const selected) override;
 	void OnEntitySelectionCleared() override;
 

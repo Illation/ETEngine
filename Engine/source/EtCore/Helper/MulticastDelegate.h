@@ -22,3 +22,4 @@ public:
 private:
 	std::vector< std::function<void()> > m_Listeners;
 };
+
