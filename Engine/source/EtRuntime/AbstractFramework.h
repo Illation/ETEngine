@@ -13,6 +13,7 @@
 class Viewport;
 namespace render {
 	class ShadedSceneRenderer;
+	class SplashScreenRenderer;
 }
 
 
@@ -35,6 +36,7 @@ private:
 	GlfwRenderArea m_RenderArea;
 	Viewport* m_Viewport = nullptr;
 	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
+	render::SplashScreenRenderer* m_SplashScreenRenderer = nullptr;
 
 protected:
 	ScreenshotCapture m_ScreenshotCapture;

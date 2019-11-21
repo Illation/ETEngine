@@ -5,6 +5,7 @@
 #include <EtCore/UpdateCycle/TickManager.h>
 #include <EtRendering/GraphicsContext/Viewport.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
+#include <EtRendering/SceneRendering/SplashScreenRenderer.h>
 #include <EtRendering/SceneRendering/ShadowRenderer.h>
 
 #include <EtFramework/SceneGraph/SceneManager.h>
@@ -48,8 +49,8 @@ void AbstractFramework::Run()
 
 	SceneManager::GetInstance();
 	m_Viewport = new Viewport(&m_RenderArea);
-	m_SceneRenderer = new render::ShadedSceneRenderer(&(SceneManager::GetInstance()->GetRenderScene()));
-	m_Viewport->SetRenderer(m_SceneRenderer);
+	m_SplashScreenRenderer = new render::SplashScreenRenderer();
+	m_Viewport->SetRenderer(m_SplashScreenRenderer);
 	m_RenderArea.Initialize(); // also initializes the viewport and its renderer
 
 	std::string const& screenshotDir = cfg->GetScreenshotDir();
@@ -68,8 +69,8 @@ void AbstractFramework::Run()
 	ResourceManager::SetInstance(new PackageResourceManager());
 	cfg->InitRenderConfig();
 
-	//m_SceneRenderer->InitWithSplashScreen();
-	//m_RenderArea.Update();
+	m_SplashScreenRenderer->Init();
+	m_RenderArea.Update();
 
 	AudioManager::GetInstance()->Initialize();
 	PhysicsManager::GetInstance()->Initialize();
@@ -87,6 +88,8 @@ void AbstractFramework::Run()
 	InputManager::GetInstance();	// init input manager
 	GlfwEventManager::GetInstance()->Init(&m_RenderArea);
 
+	m_SceneRenderer = new render::ShadedSceneRenderer(&(SceneManager::GetInstance()->GetRenderScene()));
+	m_Viewport->SetRenderer(m_SceneRenderer);
 	m_SceneRenderer->InitRenderingSystems();
 
 	RegisterAsTriggerer();
