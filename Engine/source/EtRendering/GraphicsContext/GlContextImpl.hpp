@@ -1503,6 +1503,27 @@ void GL_CONTEXT_CLASSNAME::ReadPixels(ivec2 const pos, ivec2 const size, E_Color
 	glReadPixels(pos.x, pos.y, size.x, size.y, ConvColorFormat(format), ConvDataType(type), data);
 }
 
+//---------------------------------
+// GlContext::DebugPushGroup
+//
+// Push a debugging scope onto the stack e.g for renderdoc
+//
+void GL_CONTEXT_CLASSNAME::DebugPushGroup(std::string const& message, bool const isThirdParty) const
+{
+	GLenum const source = isThirdParty ? GL_DEBUG_SOURCE_THIRD_PARTY : GL_DEBUG_SOURCE_APPLICATION;
+	glPushDebugGroup(source, GetHash(message), static_cast<GLsizei>(message.length()), message.c_str());
+}
+
+//---------------------------------
+// GlContext::DebugPopGroup
+//
+// Pop the debugging scope. <see above>
+//
+void GL_CONTEXT_CLASSNAME::DebugPopGroup() const
+{
+	glPopDebugGroup();
+}
+
 
 // Open GL Conversions
 ////////////////////////
@@ -1758,6 +1779,7 @@ GLenum GL_CONTEXT_CLASSNAME::ConvColorFormat(E_ColorFormat const fmt) const
 
 	case E_ColorFormat::Depth24:		return GL_DEPTH_COMPONENT24;
 
+	case E_ColorFormat::R8:				return GL_R8;
 	case E_ColorFormat::RG16f:			return GL_RG16F;
 	case E_ColorFormat::RGB16f:			return GL_RGB16F;
 	case E_ColorFormat::RGBA8:			return GL_RGBA8;

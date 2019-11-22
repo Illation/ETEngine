@@ -181,4 +181,7 @@ public:
 	virtual void SetDepthFunction(E_DepthFunc const func) const = 0;
 
 	virtual void ReadPixels(ivec2 const pos, ivec2 const size, E_ColorFormat const format, E_DataType const type, void* data) const = 0;
+
+	virtual void DebugPushGroup(std::string const& message, bool const isThirdParty = false) const = 0;
+	virtual void DebugPopGroup() const = 0;
 };

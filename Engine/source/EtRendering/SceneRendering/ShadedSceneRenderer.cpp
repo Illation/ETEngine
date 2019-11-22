@@ -123,6 +123,8 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 	//Shadow Mapping
 	//**************
+	api->DebugPushGroup("shadow map generation");
+
 	auto lightIt = m_RenderScene->GetDirectionalLightsShaded().begin();
 	auto shadowIt = m_RenderScene->GetDirectionalShadowData().begin();
 	while ((lightIt != m_RenderScene->GetDirectionalLightsShaded().end()) && (shadowIt != m_RenderScene->GetDirectionalShadowData().end()))
@@ -134,8 +136,11 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 		shadowIt++;
 	}
 
+	api->DebugPopGroup();
+
 	//Deferred Rendering
 	//******************
+	api->DebugPushGroup("deferred render pass");
 	//Step one: Draw the data onto gBuffer
 	m_GBuffer.Enable();
 
@@ -143,10 +148,13 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->SetViewport(ivec2(0), m_Dimensions);
 	api->SetDepthEnabled(true);
 
+	api->DebugPushGroup("clear previous pass");
 	api->SetClearColor(vec4(m_ClearColor, 1.f));
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
+	api->DebugPopGroup();
 
 	// draw terrains
+	api->DebugPushGroup("terrains");
 	api->SetCullEnabled(false);
 	Patch& patch = RenderingSystems::Instance()->GetPatch();
 	for (Planet& planet : m_RenderScene->GetTerrains())
@@ -161,26 +169,39 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 		patch.UploadDistanceLUT(planet.GetTriangulator().GetDistanceLUT());
 		patch.Draw(planet, m_RenderScene->GetNodes()[planet.GetNodeId()], m_Camera.GetViewProj());
 	}
+	api->DebugPopGroup();
 
 	// render opaque objects to GBuffer
+	api->DebugPushGroup("opaque objects");
 	api->SetCullEnabled(true);
 	DrawMaterialCollectionGroup(m_RenderScene->GetOpaqueRenderables());
+	api->DebugPopGroup();
 
+	api->DebugPushGroup("extensions");
 	m_Events.Notify(E_RenderEvent::RenderDeferred, new RenderEventData(this, m_GBuffer.Get()));
+	api->DebugPopGroup();
 
+	api->DebugPopGroup();
+
+	api->DebugPushGroup("lighting pass");
 	// render ambient IBL
+	api->DebugPushGroup("image based lighting");
 	api->SetFaceCullingMode(E_FaceCullMode::Back);
 	api->SetCullEnabled(false);
 
 	m_SSR.EnableInput();
 	m_GBuffer.Draw();
+	api->DebugPopGroup();
 
 	//copy Z-Buffer from gBuffer
+	api->DebugPushGroup("blit");
 	api->BindReadFramebuffer(m_GBuffer.Get());
 	api->BindDrawFramebuffer(m_SSR.GetTargetFBO());
 	api->CopyDepthReadToDrawFbo(m_Dimensions, m_Dimensions);
+	api->DebugPopGroup();
 
 	// Render Light Volumes
+	api->DebugPushGroup("light volumes");
 	api->SetDepthEnabled(false);
 	api->SetBlendEnabled(true);
 	api->SetBlendEquation(E_BlendEquation::Add);
@@ -190,6 +211,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->SetFaceCullingMode(E_FaceCullMode::Front);
 
 	// pointlights
+	api->DebugPushGroup("point lights");
 	for (Light const& pointLight : m_RenderScene->GetPointLights())
 	{
 		mat4 const& transform = m_RenderScene->GetNodes()[pointLight.m_NodeId];
@@ -198,16 +220,20 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 		RenderingSystems::Instance()->GetPointLightVolume().Draw(pos, scale, pointLight.m_Color);
 	}
+	api->DebugPopGroup();
 	
 	// direct
+	api->DebugPushGroup("directional lights");
 	for (Light const& dirLight : m_RenderScene->GetDirectionalLights())
 	{
 		mat4 const& transform = m_RenderScene->GetNodes()[dirLight.m_NodeId];
 		vec3 const dir = (transform * vec4(vec3::FORWARD, 1.f)).xyz;
 		RenderingSystems::Instance()->GetDirectLightVolume().Draw(dir, dirLight.m_Color);
 	}
+	api->DebugPopGroup();
 
 	// direct with shadow
+	api->DebugPushGroup("directional lights shadowed");
 	lightIt = m_RenderScene->GetDirectionalLightsShaded().begin();
 	shadowIt = m_RenderScene->GetDirectionalShadowData().begin();
 	while ((lightIt != m_RenderScene->GetDirectionalLightsShaded().end()) && (shadowIt != m_RenderScene->GetDirectionalShadowData().end()))
@@ -223,28 +249,39 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 		lightIt++;
 		shadowIt++;
 	}
+	api->DebugPopGroup();
 
 	api->SetFaceCullingMode(E_FaceCullMode::Back);
 	api->SetBlendEnabled(false);
 
 	api->SetCullEnabled(false);
+	api->DebugPopGroup(); // light volumes
 
+	api->DebugPushGroup("extensions");
 	m_Events.Notify(E_RenderEvent::RenderLights, new RenderEventData(this, m_SSR.GetTargetFBO()));
+	api->DebugPopGroup(); 
 
 	// draw SSR
+	api->DebugPushGroup("reflections");
 	m_PostProcessing.EnableInput();
 	m_SSR.Draw();
+	api->DebugPopGroup();
 	// copy depth again
+	api->DebugPushGroup("blit");
 	api->BindReadFramebuffer(m_SSR.GetTargetFBO());
 	api->BindDrawFramebuffer(m_PostProcessing.GetTargetFBO());
 	api->CopyDepthReadToDrawFbo(m_Dimensions, m_Dimensions);
+	api->DebugPopGroup();
 
-	api->SetDepthEnabled(true);
+	api->DebugPopGroup(); // lighting
 
 	//Forward Rendering
 	//******************
+	api->DebugPushGroup("forward render pass");
+	api->SetDepthEnabled(true);
 
 	// draw skybox
+	api->DebugPushGroup("skybox");
 	Skybox const& skybox = m_RenderScene->GetSkybox();
 	if (skybox.m_EnvironmentMap != nullptr)
 	{
@@ -260,21 +297,29 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 		api->SetDepthFunction(E_DepthFunc::LEqual);
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
 	}
+	api->DebugPopGroup();
 
 	// draw stars
+	api->DebugPushGroup("stars");
 	StarField const* const starfield = m_RenderScene->GetStarfield();
 	if (starfield != nullptr)
 	{
 		starfield->Draw(m_Camera);
 	}
+	api->DebugPopGroup();
 
 	// forward rendering
+	api->DebugPushGroup("forward renderables");
 	api->SetCullEnabled(true);
 	DrawMaterialCollectionGroup(m_RenderScene->GetForwardRenderables());
+	api->DebugPopGroup();
 
+	api->DebugPushGroup("extensions");
 	m_Events.Notify(E_RenderEvent::RenderForward, new RenderEventData(this, m_PostProcessing.GetTargetFBO()));
+	api->DebugPopGroup();
 	
 	// draw atmospheres
+	api->DebugPushGroup("atmospheres");
 	if (m_RenderScene->GetAtmosphereInstances().size() > 0u)
 	{
 		api->SetFaceCullingMode(E_FaceCullMode::Front);
@@ -298,8 +343,12 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 		api->SetBlendEnabled(false);
 		api->SetDepthEnabled(true);
 	}
+	api->DebugPopGroup();
+
+	api->DebugPopGroup(); // forward render pass
 
 	// add scene sprites before the overlay pass
+	api->DebugPushGroup("post processing pass");
 	SpriteRenderer::E_ScalingMode const scalingMode = SpriteRenderer::E_ScalingMode::Texture;
 	for (Sprite const& sprite : m_RenderScene->GetSprites())
 	{
@@ -315,6 +364,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	// post processing
 	api->SetCullEnabled(false);
 	m_PostProcessing.Draw(targetFb, m_RenderScene->GetPostProcessingSettings(), this);
+	api->DebugPopGroup(); // post processing pass
 }
 
 //---------------------------------

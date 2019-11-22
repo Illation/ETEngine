@@ -43,6 +43,7 @@ AbstractFramework::~AbstractFramework()
 void AbstractFramework::Run()
 {
 	Logger::Initialize();//Init logger first because all output depends on it from the start
+	Logger::StartFileLogging("debug_log.log");
 
 	Config* const cfg = Config::GetInstance();
 	cfg->Initialize();
@@ -67,6 +68,7 @@ void AbstractFramework::Run()
 	m_Viewport->Redraw();
 
 	ResourceManager::SetInstance(new PackageResourceManager());
+
 	cfg->InitRenderConfig();
 
 	m_SplashScreenRenderer->Init();
@@ -102,10 +104,6 @@ void AbstractFramework::Run()
 
 			case E_SceneEvent::Activated:
 				m_Viewport->SetRenderer(m_SceneRenderer); // update will happen anyway during the loop
-
-				m_Viewport->SetTickDisabled(true);
-				m_RenderArea.Update(); // update manually incase we don't run the game loop before the new scene is activated 
-				m_Viewport->SetTickDisabled(false);
 				break;
 
 			default:

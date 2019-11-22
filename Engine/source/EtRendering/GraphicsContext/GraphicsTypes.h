@@ -231,6 +231,7 @@ enum class E_ColorFormat : uint8
 	// only for internal formats
 	Depth24,
 
+	R8,
 	RG16f,
 	RGB16f,
 	RGBA8,

@@ -178,6 +178,9 @@ public:
 
 	void ReadPixels(ivec2 const pos, ivec2 const size, E_ColorFormat const format, E_DataType const type, void* data) const override;
 
+	void DebugPushGroup(std::string const& message, bool const isThirdParty = false) const override;
+	void DebugPopGroup() const override;
+
 private:
 
 	//===============================

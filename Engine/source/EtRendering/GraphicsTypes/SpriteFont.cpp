@@ -323,6 +323,9 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 	api->SetPixelUnpackAlignment(1);
 	for (auto& character : characters)
 	{
+		// enable this line of code for RenderDoc debugging, as render doc has issues with binding openGl textures with altered unpack alignment
+		//continue; 
+
 		auto metric = character.second;
 
 		uint32 glyphIdx = FT_Get_Char_Index(face, metric->Character);
@@ -342,8 +345,8 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 		uint32 width = face->glyph->bitmap.width;
 		uint32 height = face->glyph->bitmap.rows;
-		auto pTexture = new TextureData(ivec2(width, height), E_ColorFormat::Red, E_ColorFormat::Red, E_DataType::UByte);
-		pTexture->Build(face->glyph->bitmap.buffer);
+		auto pTexture = new TextureData(ivec2(width, height), E_ColorFormat::R8, E_ColorFormat::Red, E_DataType::UByte);
+		pTexture->Build(face->glyph->bitmap.buffer); // this is the line that causes the render doc issue
 		pTexture->SetParameters(params);
 
 		ivec2 res = ivec2(metric->Width - m_Padding * 2, metric->Height - m_Padding * 2);
@@ -358,6 +361,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 		//modify texture coordinates after rendering sprites
 		metric->TexCoord = metric->TexCoord / vec2(static_cast<float>(texWidth), static_cast<float>(texHeight));
 	}
+	api->SetPixelUnpackAlignment(4);
 
 	//Cleanup
 	api->SetBlendEnabled(false);
