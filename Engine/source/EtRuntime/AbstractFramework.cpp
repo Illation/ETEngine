@@ -102,6 +102,10 @@ void AbstractFramework::Run()
 
 			case E_SceneEvent::Activated:
 				m_Viewport->SetRenderer(m_SceneRenderer); // update will happen anyway during the loop
+
+				m_Viewport->SetTickDisabled(true);
+				m_RenderArea.Update(); // update manually incase we don't run the game loop before the new scene is activated 
+				m_Viewport->SetTickDisabled(false);
 				break;
 
 			default:

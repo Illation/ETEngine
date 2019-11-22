@@ -287,10 +287,13 @@ void Scene::SetSkyboxMap(T_Hash const assetIdEnvMap)
 //
 void Scene::SetStarfield(T_Hash const assetId)
 {
-	if ((assetId == 0u) && (m_Starfield != nullptr))
+	if (assetId == 0u)
 	{
-		delete m_Starfield;
-		m_Starfield = nullptr;
+		if (m_Starfield != nullptr)
+		{
+			delete m_Starfield;
+			m_Starfield = nullptr;
+		}
 	}
 	else
 	{

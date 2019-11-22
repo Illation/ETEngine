@@ -126,6 +126,7 @@ void AbstractScene::RootDeinit()
 
 	ContextManager::GetInstance()->SetActiveContext(nullptr);
 	SceneManager::GetInstance()->GetRenderScene().SetSkyboxMap(0u);
+	SceneManager::GetInstance()->GetRenderScene().SetStarfield(0u);
 
 	SafeDelete(m_pPhysicsWorld);
 	SafeDelete(m_SceneContext);

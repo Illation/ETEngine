@@ -106,8 +106,7 @@ void SceneManager::OnTick()
 		m_ActiveScene->RootActivate();
 		m_EventDispatcher.Notify(E_SceneEvent::Activated, new SceneEventData(m_ActiveScene));
 	}
-
-	if (m_ActiveScene != nullptr)
+	else if (m_ActiveScene != nullptr)
 	{
 		m_ActiveScene->RootUpdate();
 	}

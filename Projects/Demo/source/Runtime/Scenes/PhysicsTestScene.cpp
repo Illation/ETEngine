@@ -141,7 +141,7 @@ void PhysicsTestScene::Init()
 	lightMeshEntity->GetTransform()->Scale(vec3(0.01f));
 	lightMeshEntity->AddComponent(pModelComp1);
 
-	m_Light = new LightComponent(LightComponent::Type::Point, vec3(1, 1, 1), 20.f);
+	m_Light = new LightComponent(LightComponent::Type::Point, vec3(1, 1, 1), 900.f);
 	lightEntity->AddComponent(m_Light);
 	lightEntity->GetTransform()->Scale(vec3(10.f));
 	lightEntity->GetTransform()->SetPosition(vec3(0, 50, 0));
