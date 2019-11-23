@@ -439,10 +439,18 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 //
 void ShadedSceneRenderer::DrawOverlays(T_FbLoc const targetFb)
 {
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	api->DebugPushGroup("draw overlays");
+
 	m_SpriteRenderer.Draw();
 	m_TextRenderer.Draw();
 
+	api->DebugPushGroup("extensions");
 	m_Events.Notify(E_RenderEvent::RenderOutlines, new RenderEventData(this, targetFb));
+	api->DebugPopGroup(); // extensions
+
+	api->DebugPopGroup(); // draw overlays
 }
 
 

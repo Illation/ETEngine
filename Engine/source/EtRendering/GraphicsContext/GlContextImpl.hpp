@@ -25,6 +25,11 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 {
 	m_ViewportSize = dimensions;
 
+	if (m_IsInitialized)
+	{
+		return;
+	}
+
 	LOG("OpenGL loaded");
 	LOG("");
 	LOG(FS("Vendor:   %s", glGetString(GL_VENDOR)));
@@ -95,6 +100,8 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 
 #endif
 #endif
+
+	m_IsInitialized = true;
 }
 
 //---------------------------------
@@ -1308,8 +1315,23 @@ void GL_CONTEXT_CLASSNAME::GenFramebuffers(int32 const n, T_FbLoc *ids) const
 //
 // Frees the framebuffer GPU resources
 //
-void GL_CONTEXT_CLASSNAME::DeleteFramebuffers(int32 const n, T_FbLoc *ids) const
+void GL_CONTEXT_CLASSNAME::DeleteFramebuffers(int32 const n, T_FbLoc *ids) 
 {
+	for (int32 idx = 0; idx < n; ++idx)
+	{
+		if (ids[idx] == m_ReadFramebuffer)
+		{
+			m_ReadFramebuffer = 0u;
+			break;
+		}
+
+		if (ids[idx] == m_DrawFramebuffer)
+		{
+			m_DrawFramebuffer = 0u;
+			break;
+		}
+	}
+
 	glDeleteFramebuffers(n, ids);
 }
 
@@ -1328,8 +1350,17 @@ void GL_CONTEXT_CLASSNAME::GenRenderBuffers(int32 const n, T_RbLoc *ids) const
 //
 // Frees the renderbuffer GPU resources
 //
-void GL_CONTEXT_CLASSNAME::DeleteRenderBuffers(int32 const n, T_RbLoc *ids) const
+void GL_CONTEXT_CLASSNAME::DeleteRenderBuffers(int32 const n, T_RbLoc *ids) 
 {
+	for (int32 idx = 0; idx < n; ++idx)
+	{
+		if (ids[idx] == m_Renderbuffer)
+		{
+			m_Renderbuffer = 0u;
+			break;
+		}
+	}
+
 	glDeleteRenderbuffers(n, ids);
 }
 

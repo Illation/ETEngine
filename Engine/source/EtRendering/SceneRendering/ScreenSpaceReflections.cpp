@@ -41,12 +41,12 @@ void ScreenSpaceReflections::Initialize()
 	m_CollectTex = new TextureData(dim, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 	m_CollectTex->Build();
 	m_CollectTex->SetParameters(params);
-	api->LinkTextureToFbo2D(0, m_CollectTex->GetHandle(), 0);
 	//Render Buffer for depth and stencil
 	api->GenRenderBuffers(1, &m_CollectRBO);
 	api->BindRenderbuffer(m_CollectRBO);
-	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24_Stencil8, dim);
-	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24_Stencil8, m_CollectRBO);
+	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, dim);
+	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, m_CollectRBO);
+	api->LinkTextureToFbo2D(0, m_CollectTex->GetHandle(), 0);
 }
 
 void ScreenSpaceReflections::EnableInput()

@@ -151,10 +151,10 @@ public:
 	void DefineVertexAttribDivisor(uint32 const index, uint32 const divisor) const override;
 
 	void GenFramebuffers(int32 const n, T_FbLoc *ids) const override;
-	void DeleteFramebuffers(int32 const n, T_FbLoc *ids) const override;
+	void DeleteFramebuffers(int32 const n, T_FbLoc *ids) override;
 
 	void GenRenderBuffers(int32 const n, T_RbLoc *ids) const override;
-	void DeleteRenderBuffers(int32 const n, T_RbLoc *ids) const override;
+	void DeleteRenderBuffers(int32 const n, T_RbLoc *ids) override;
 
 	void SetRenderbufferStorage(E_RenderBufferFormat const format, ivec2 const dimensions) const override;
 
@@ -216,6 +216,9 @@ private:
 
 	// Data
 	///////
+
+	bool m_IsInitialized = false;
+
 
 	T_FbLoc m_ReadFramebuffer = 0;
 	T_FbLoc m_DrawFramebuffer = 0;

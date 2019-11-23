@@ -7,9 +7,9 @@
 
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/GraphicsTypes/Camera.h>
 #include <EtRendering/GraphicsTypes/Frustum.h>
 #include <EtRendering/GraphicsTypes/DirectionalShadowData.h>
-#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
@@ -49,7 +49,7 @@ void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShado
 	mat4 lightView = etm::lookAt(worldPos, lookAt, upVec);
 
 	//transform frustum into light space
-	FrustumCorners corners = ShadedSceneRenderer::GetCurrent()->GetCamera().GetFrustum().GetCorners();
+	FrustumCorners corners = shadowRenderer->GetCamera().GetFrustum().GetCorners();
 	corners.Transform(lightView);
 
 	std::vector<DirectionalShadowData::CascadeData>& cascades = shadowData.AccessCascades();

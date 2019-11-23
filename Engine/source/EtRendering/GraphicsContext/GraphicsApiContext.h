@@ -154,10 +154,10 @@ public:
 	virtual void DefineVertexAttribDivisor(uint32 const index, uint32 const divisor) const = 0;
 
 	virtual void GenFramebuffers(int32 const n, T_FbLoc *ids) const = 0;
-	virtual void DeleteFramebuffers(int32 const n, T_FbLoc *ids) const = 0;
+	virtual void DeleteFramebuffers(int32 const n, T_FbLoc *ids) = 0;
 
 	virtual void GenRenderBuffers(int32 const n, T_RbLoc *ids) const = 0;
-	virtual void DeleteRenderBuffers(int32 const n, T_RbLoc *ids) const = 0;
+	virtual void DeleteRenderBuffers(int32 const n, T_RbLoc *ids) = 0;
 
 	virtual void SetRenderbufferStorage(E_RenderBufferFormat const format, ivec2 const dimensions) const = 0;
 

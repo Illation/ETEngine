@@ -91,12 +91,13 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	m_CollectTex = new TextureData(dim, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 	m_CollectTex->Build();
 	m_CollectTex->SetParameters(params);
-	api->LinkTextureToFbo2D(0, m_CollectTex->GetHandle(), 0);
 	//Render Buffer for depth and stencil
 	api->GenRenderBuffers(1, &m_CollectRBO);
 	api->BindRenderbuffer(m_CollectRBO);
 	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24_Stencil8, dim);
 	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24_Stencil8, m_CollectRBO);
+
+	api->LinkTextureToFbo2D(0, m_CollectTex->GetHandle(), 0);
 
 	//Generate textures for the hdr fbo to output into
 	api->GenFramebuffers(1, &m_HDRoutFBO);
@@ -161,6 +162,8 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 	render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
 
+	api->DebugPushGroup("generate bloom");
+
 	api->SetDepthEnabled(false);
 	//get glow
 	api->BindFramebuffer(m_HDRoutFBO);
@@ -169,9 +172,15 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 	m_pDownsampleShader->Upload("threshold"_hash, settings.bloomThreshold);
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 	//downsample glow
+	api->DebugPushGroup("downsample glow");
 	for (uint32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
-		if (i > 0) api->SetShader(m_pDownsampleShader.get());
+		api->DebugPushGroup(FS("downsample pass %u", i));
+		if (i > 0)
+		{
+			api->SetShader(m_pDownsampleShader.get());
+		}
+
 		float resMult = 1.f / (float)std::pow(2, i + 1);
 		api->SetViewport(ivec2(0), etm::vecCast<int32>(etm::vecCast<float>(dim) * resMult));
 		api->BindFramebuffer(m_DownSampleFBO[i]);
@@ -179,10 +188,12 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 		{
 			api->LazyBindTexture(0, E_TextureType::Texture2D, m_DownSampleTexture[i - 1]->GetHandle());
 		}
+
 		m_pDownsampleShader->Upload("threshold"_hash, settings.bloomThreshold);
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 
 		//blur downsampled
+		api->DebugPushGroup("blur");
 		api->SetShader(m_pGaussianShader.get());
 		for (uint32 sample = 0; sample < static_cast<uint32>(graphicsSettings.NumBlurPasses * 2); sample++)
 		{
@@ -195,7 +206,14 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 			m_pGaussianShader->Upload("horizontal"_hash, horizontal);
 			RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 		}
+
+		api->DebugPopGroup(); // blur
+		api->DebugPopGroup(); // downsample pass
 	}
+
+	api->DebugPopGroup(); // downsample glow
+
+	api->DebugPushGroup("gaussian blur");
 	api->SetViewport(ivec2(0), dim);
 	//ping pong gaussian blur
 	bool horizontal = true;
@@ -208,7 +226,12 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 		horizontal = !horizontal;
 	}
+
+	api->DebugPopGroup(); // gaussian blur
+	api->DebugPopGroup(); // generate bloom
+
 	//combine with hdr result
+	api->DebugPushGroup("combine bloom + tonemapping");
 	T_FbLoc currentFb = graphicsSettings.UseFXAA ? m_PingPongFBO[1] : FBO;
 	api->BindFramebuffer(currentFb);
 	api->SetShader(m_pPostProcShader.get());
@@ -222,6 +245,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 	m_pPostProcShader->Upload("gamma"_hash, settings.gamma);
 	m_pPostProcShader->Upload("bloomMult"_hash, settings.bloomMult);
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
+	api->DebugPopGroup(); // bloom + tonemapping
 
 	// Make sure text and sprites get antialiased by drawing them before FXAA
 	if (overlayRenderer != nullptr)
@@ -232,11 +256,13 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 	//FXAA
 	if (graphicsSettings.UseFXAA)
 	{
+		api->DebugPushGroup("anti  aliasing");
 		api->BindFramebuffer(FBO);
 		api->SetShader(m_pFXAAShader.get());
 		m_pFXAAShader->Upload("uInverseScreen"_hash, 1.f / etm::vecCast<float>(dim));
 		api->LazyBindTexture(0, E_TextureType::Texture2D, m_PingPongTexture[1]->GetHandle());
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
+		api->DebugPopGroup(); // anti aliasing
 	}
 }
 

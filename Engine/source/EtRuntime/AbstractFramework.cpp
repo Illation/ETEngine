@@ -43,7 +43,7 @@ AbstractFramework::~AbstractFramework()
 void AbstractFramework::Run()
 {
 	Logger::Initialize();//Init logger first because all output depends on it from the start
-	Logger::StartFileLogging("debug_log.log");
+	//Logger::StartFileLogging("debug_log.log");
 
 	Config* const cfg = Config::GetInstance();
 	cfg->Initialize();

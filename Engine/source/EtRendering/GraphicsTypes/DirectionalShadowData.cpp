@@ -41,6 +41,7 @@ void DirectionalShadowData::Init(ivec2 const resolution)
 		TextureParameters params(false, true);
 		params.wrapS = E_TextureWrapMode::ClampToEdge;
 		params.wrapT = E_TextureWrapMode::ClampToEdge;
+		params.compareMode = E_TextureCompareMode::CompareRToTexture;
 		cascade.texture->SetParameters(params);
 
 		// create render target
