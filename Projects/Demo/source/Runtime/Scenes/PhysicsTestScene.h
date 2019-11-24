@@ -2,7 +2,7 @@
 #include <EtCore/Helper/Hash.h>
 #include <EtCore/Content/AssetPointer.h>
 
-#include <Engine/SceneGraph/AbstractScene.h>
+#include <EtFramework/SceneGraph/AbstractScene.h>
 
 
 class TexPBRMaterial;
@@ -10,6 +10,7 @@ class EmissiveMaterial;
 class SpriteFont;
 class btCollisionShape;
 class AudioSourceComponent;
+class LightComponent;
 
 
 class PhysicsTestScene : public AbstractScene
@@ -18,11 +19,9 @@ public:
 	PhysicsTestScene();
 	virtual ~PhysicsTestScene();
 private:
-	void Initialize();
+	void Init();
 	void Update();
-	void Draw();
-	void DrawForward() {}
-	void PostDraw() {}
+
 private:
 	TexPBRMaterial* m_pFloorMat = nullptr;
 	TexPBRMaterial* m_pBallMat = nullptr;
@@ -40,7 +39,7 @@ private:
 	std::vector<T_Hash> m_AudioIdPlaylist;
 	size_t m_CurrentTrack = 0u;
 	AudioSourceComponent* m_Source;
-	Entity* m_pLightEntity = nullptr;
+	LightComponent* m_Light = nullptr;
 	vec3 m_LightCentralPos = vec3(0);
 	float m_LightRotDistance = 1.f;
 

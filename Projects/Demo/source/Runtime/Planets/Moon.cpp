@@ -1,29 +1,14 @@
 #include "stdafx.h"
 #include "Moon.h"
 
-#include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Graphics/TextureData.h>
-#include <Engine/PlanetTech/Atmosphere.h>
-
-
-Moon::Moon():Planet()
+Moon::Moon()
 {
-	m_Radius = 1737.1f;
-	m_MaxHeight = 10.7f;
-}
-Moon::~Moon()
-{
-	delete m_pAtmosphere;
-	m_pAtmosphere = nullptr;
-}
+	m_Params.radius = 1737.1f;
+	m_Params.height = 10.7f;
+	m_Params.texDiffuseId = "moon8k.jpg"_hash;
+	m_Params.texHeightId = "MoonHeight.jpg"_hash;
 
-void Moon::LoadPlanet()
-{
-	m_pDiffuse = ResourceManager::Instance()->GetAssetData<TextureData>("moon8k.jpg"_hash);
-	m_pHeight = ResourceManager::Instance()->GetAssetData<TextureData>("MoonHeight.jpg"_hash);
-
-	m_pAtmosphere = new Atmosphere("atmo_earth.json"_hash);
-	m_pAtmosphere->Initialize();
-	SetAtmosphere(m_pAtmosphere, 100);
+	m_AtmosphereAssetId = "atmo_earth.json"_hash;
+	m_AtmosphereHeight = 100;
 }

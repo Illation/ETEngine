@@ -1,5 +1,5 @@
-#include <Engine/stdafx.h>
-#include <Engine/linkerHelper.h>
+#include <EtFramework/stdafx.h>
+#include <EtFramework/linkerHelper.h>
 
 #include <EtEditor/EditorApp.h>
 

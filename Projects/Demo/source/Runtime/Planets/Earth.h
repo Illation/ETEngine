@@ -1,12 +1,9 @@
 #pragma once
-#include <Engine/PlanetTech/Planet.h>
+#include <EtFramework/Templates/PlanetTemplate.h>
 
-class Earth:public Planet
+
+class Earth : public PlanetTemplate
 {
 public:
 	Earth();
-	~Earth();
-
-protected:
-	void LoadPlanet();
 };

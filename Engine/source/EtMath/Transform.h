@@ -66,6 +66,12 @@ namespace etm
 	template <class T>
 	void decomposeTRS(const matrix<4, 4, T>& mat, vector<3, T>& translation, quaternion<T>& rotation, vector<3, T>& scaleVec);
 
+	template <class T>
+	vector<3, T> decomposePosition(matrix<4, 4, T> const& mat);
+
+	template <class T>
+	vector<3, T> decomposeScale(matrix<4, 4, T> const& mat);
+
 } // namespace etm
 
 #include "Transform.inl"

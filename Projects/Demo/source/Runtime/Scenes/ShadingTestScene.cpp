@@ -9,16 +9,13 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/SceneGraph/Entity.h>
-#include <Engine/Graphics/SpriteFont.h>
-#include <Engine/Graphics/FrameBuffer.h>
-#include <Engine/Graphics/Light.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
-#include <Engine/SceneRendering/Gbuffer.h>
-#include <Engine/Components/ModelComponent.h>
-#include <Engine/Components/LightComponent.h>
-#include <Engine/Components/SpriteComponent.h>
-#include <Engine/Prefabs/Skybox.h>
+#include <EtRendering/GraphicsTypes/SpriteFont.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
+
+#include <EtFramework/Components/ModelComponent.h>
+#include <EtFramework/Components/LightComponent.h>
+#include <EtFramework/Components/SpriteComponent.h>
+#include <EtFramework/SceneGraph/Entity.h>
 
 
 ShadingTestScene::ShadingTestScene() : AbstractScene("ShadingTestScene")
@@ -31,16 +28,11 @@ ShadingTestScene::~ShadingTestScene()
 	SafeDelete(m_pEnvMat); 
 }
 
-void ShadingTestScene::Initialize()
+void ShadingTestScene::Init()
 {
 	//Fonts
 	//***************************
 	m_pDebugFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Consolas_32.fnt"_hash);
-
-	//Camera
-	//**************************
-	//auto cam = new OrbitCamera();
-	//AddEntity(cam);
 
 	//Materials
 	//**************************
@@ -99,22 +91,19 @@ void ShadingTestScene::Initialize()
 
 	//Lights
 	//**************************
-	m_pLigEntity = new Entity();
-	m_pLight = new DirectionalLight(vec3(1, 1, 1), 2.99f);
-	m_pLight->SetShadowEnabled(true);
-	m_pLigEntity->AddComponent(new LightComponent( m_pLight));
+	Entity* lightEntity = new Entity();
+	m_Light = new LightComponent(LightComponent::Type::Directional, vec3(1, 1, 1), 2.99f, true);
+	lightEntity->AddComponent(m_Light);
 	vec3 axis;
-	float angle = etm::angleSafeAxis( vec3( 1, -3, -1 ), vec3( 1, 0, 1 ), axis );
-	m_pLigEntity->GetTransform()->SetRotation(quat(axis, angle));
-	AddEntity(m_pLigEntity);
+	float angle = etm::angleSafeAxis(vec3(1, -3, -1), vec3(1, 0, 1), axis);
+	lightEntity->GetTransform()->SetRotation(quat(axis, angle));
+	AddEntity(lightEntity);
 
-	auto pLigEntity = new Entity();
-	auto pLight = new DirectionalLight(vec3(1, 1, 1), 4.5f);
-	//pLight->SetShadowEnabled(true);
-	pLigEntity->AddComponent(new LightComponent(pLight));
-	pLigEntity->GetTransform()->SetRotation(quat(axis, angle));
-	pLigEntity->GetTransform()->RotateEuler(0, 1, 0);
-	AddEntity(pLigEntity);
+	lightEntity = new Entity();
+	lightEntity->AddComponent(new LightComponent(LightComponent::Type::Directional, vec3(1, 1, 1), 1.5f, false));
+	lightEntity->GetTransform()->SetRotation(quat(axis, angle));
+	lightEntity->GetTransform()->RotateEuler(0, 1, 0);
+	AddEntity(lightEntity);
 
 	//UI
 	//************************
@@ -135,61 +124,50 @@ void ShadingTestScene::Update()
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_2) == E_KeyState::Down)
 	{
-		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), TIME->DeltaTime()));
+		m_Light->GetTransform()->Rotate(quat(vec3(1, 0, 0), TIME->DeltaTime()));
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_8) == E_KeyState::Down)
 	{
-		m_pLigEntity->GetTransform()->Rotate(quat(vec3(1, 0, 0), -TIME->DeltaTime()));
+		m_Light->GetTransform()->Rotate(quat(vec3(1, 0, 0), -TIME->DeltaTime()));
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_4) == E_KeyState::Down)
 	{
-		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), TIME->DeltaTime()));
+		m_Light->GetTransform()->Rotate(quat(vec3(0, 1, 0), TIME->DeltaTime()));
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_6) == E_KeyState::Down)
 	{
-		m_pLigEntity->GetTransform()->Rotate(quat(vec3(0, 1, 0), -TIME->DeltaTime()));
+		m_Light->GetTransform()->Rotate(quat(vec3(0, 1, 0), -TIME->DeltaTime()));
 	}
 
 	//Change light settings
 	if (INPUT->GetKeyState(E_KbdKey::KP_3) == E_KeyState::Down)
 	{
-		float b = m_pLight->GetBrightness();
+		float b = m_Light->GetBrightness();
 		float nB = b * 4;
-		m_pLight->SetBrightness(b - (nB - b)*TIME->DeltaTime());
-		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
+		m_Light->SetBrightness(b - (nB - b)*TIME->DeltaTime());
+		LOG("Linear: " + std::to_string(m_Light->GetBrightness()));
 	}
 
 	if (INPUT->GetKeyState(E_KbdKey::KP_9) == E_KeyState::Down)
 	{
-		float b = m_pLight->GetBrightness();
+		float b = m_Light->GetBrightness();
 		float nB = b * 4;
-		m_pLight->SetBrightness(b + (nB - b)*TIME->DeltaTime());
-		LOG("Linear: " + std::to_string(m_pLight->GetBrightness()));
+		m_Light->SetBrightness(b + (nB - b)*TIME->DeltaTime());
+		LOG("Linear: " + std::to_string(m_Light->GetBrightness()));
 	}
-}
 
-void ShadingTestScene::Draw()
-{
-	TextRenderer& textRenderer = SceneRenderer::GetCurrent()->GetTextRenderer();
+	TextRenderer& textRenderer = render::ShadedSceneRenderer::GetCurrent()->GetTextRenderer();
 
 	textRenderer.SetFont(m_pDebugFont.get());
 	textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
-	std::string outString = "FPS: " + std::to_string( PERFORMANCE->GetRegularFPS() );
+	std::string outString = "FPS: " + std::to_string(PERFORMANCE->GetRegularFPS());
 	textRenderer.DrawText(outString, vec2(20, 20));
 	textRenderer.SetColor(vec4(1, 1, 1, 1));
-	outString = "Frame ms: " + std::to_string( PERFORMANCE->GetFrameMS() );
+	outString = "Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS());
 	textRenderer.DrawText(outString, vec2(20, 50));
-	outString = "Draw Calls: " + std::to_string( PERFORMANCE->m_PrevDrawCalls );
+	outString = "Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls);
 	textRenderer.DrawText(outString, vec2(20, 80));
-}
-
-void ShadingTestScene::DrawForward()
-{
-}
-
-void ShadingTestScene::PostDraw()
-{
 }

@@ -1,21 +1,19 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <Engine/SceneGraph/AbstractScene.h>
+#include <EtFramework/SceneGraph/AbstractScene.h>
 
 
 class FrameBuffer;
 class TexPBRMaterial;
 class EmissiveMaterial;
-class PointLight;
-class Entity;
+class LightComponent;
 class SpriteFont;
 
 
 struct SwirlyLight
 {
-	Entity* light;
-	PointLight* comp;
+	LightComponent* light = nullptr;
 	vec3 origin;
 	float radius = 1;
 	float radius2 = 1;
@@ -36,19 +34,16 @@ public:
 	TestScene();
 	~TestScene();
 private:
-	void Initialize();
+	void Init();
 	void Update();
-	void Draw();
-	void DrawForward();
-	void PostDraw();
+
 private:
 	TexPBRMaterial* m_pMat = nullptr;
 	EmissiveMaterial* m_pLightMat = nullptr;
 
 	std::vector<SwirlyLight> m_Lights;
 
-	PointLight* m_pLight = nullptr;
-	Entity* m_pLigEnt = nullptr;
+	LightComponent* m_Light = nullptr;
 
 	AssetPtr<SpriteFont> m_pDebugFont;
 };

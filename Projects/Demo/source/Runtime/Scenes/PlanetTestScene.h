@@ -1,12 +1,11 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <Engine/SceneGraph/AbstractScene.h>
+#include <EtFramework/SceneGraph/AbstractScene.h>
 
 
-class Planet;
-class Entity;
-class DirectionalLight;
+class PlanetTemplate;
+class LightComponent;
 class SpriteFont;
 
 
@@ -15,18 +14,14 @@ class PlanetTestScene : public AbstractScene
 public:
 	PlanetTestScene();
 	~PlanetTestScene();
+
 private:
-	void Initialize();
+	void Init();
 	void Update();
-	void Draw() {}
-	void DrawForward() {}
-	void PostDraw() {}
+
 private:
-	Entity* m_pLigEntity = nullptr;
-	DirectionalLight* m_pLight = nullptr;
 
-	Planet* m_pPlanet = nullptr;
-
-	AssetPtr<SpriteFont> m_pDebugFont;
+	LightComponent* m_Light = nullptr;
+	PlanetTemplate* m_Planet = nullptr;
 };
 

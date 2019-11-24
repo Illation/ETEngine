@@ -30,7 +30,7 @@ assignIdeFolder(EtCooker Engine)
 outputDirectories(EtCooker "")
 
 # linking
-target_link_libraries (EtCooker EtEngine)
+target_link_libraries (EtCooker EtFramework)
 dependancyLinks(EtCooker)
 
 # library includes

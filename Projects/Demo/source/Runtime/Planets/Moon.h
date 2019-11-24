@@ -1,16 +1,9 @@
 #pragma once
+#include <EtFramework/Templates/PlanetTemplate.h>
 
-#include <Engine/PlanetTech/Planet.h>
 
-
-class Moon:public Planet
+class Moon : public PlanetTemplate
 {
 public:
 	Moon();
-	~Moon();
-
-protected:
-	void LoadPlanet();
-
-	Atmosphere* m_pAtmosphere;
 };

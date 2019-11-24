@@ -5,10 +5,9 @@
 
 #include <EtCore/Helper/InputManager.h>
 
-#include <Engine/SceneGraph/SceneManager.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
-#include <Engine/Physics/PhysicsManager.h>
-#include <Engine/Audio/AudioManager.h>
+#include <EtFramework/SceneGraph/SceneManager.h>
+#include <EtFramework/Physics/PhysicsManager.h>
+#include <EtFramework/Audio/AudioManager.h>
 
 #include <EtEditor/Util/GtkUtil.h>
 #include <EtEditor/Tools/SceneViewport.h>
@@ -54,7 +53,7 @@ void SceneEditor::InitInternal()
 	AudioManager::GetInstance()->Initialize();
 	PhysicsManager::GetInstance()->Initialize();
 
-	SceneManager::GetInstance()->AddGameScene(new EditorScene());
+	SceneManager::GetInstance()->AddScene(new EditorScene());
 	SceneManager::GetInstance()->SetActiveGameScene("EditorScene");
 	m_SceneSelection.SetScene(SceneManager::GetInstance()->GetNewActiveScene());
 	for (I_SceneEditorListener* const listener : m_Listeners)
@@ -81,7 +80,7 @@ bool SceneEditor::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
 //
 void SceneEditor::OnTick()
 {
-	m_SceneSelection.UpdateOutliners();
+	m_SceneSelection.UpdateOutlines();
 
 	for (I_SceneEditorListener* const listener : m_Listeners)
 	{

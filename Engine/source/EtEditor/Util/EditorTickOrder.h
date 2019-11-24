@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine/Base/TickOrder.h>
+#include <EtFramework/Config/TickOrder.h>
 
 //---------------------------------
 // E_TickOrder

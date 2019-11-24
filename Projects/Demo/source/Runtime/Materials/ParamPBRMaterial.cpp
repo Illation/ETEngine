@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ParamPBRMaterial.h"
 
-#include <Engine/Graphics/Shader.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
 
 
 ParamPBRMaterial::ParamPBRMaterial(vec3 baseCol, float roughness, float metal) 

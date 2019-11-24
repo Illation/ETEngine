@@ -4,7 +4,7 @@
 
 #include <EtCore/UpdateCycle/RealTimeTickTriggerer.h>
 
-#include <Engine/GraphicsContext/RenderArea.h>
+#include <EtRendering/GraphicsContext/RenderArea.h>
 
 
 //---------------------------------

@@ -1,21 +1,11 @@
 #include "stdafx.h"
 #include "Earth.h"
 
-#include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Graphics/TextureData.h>
-
-
-Earth::Earth():Planet()
+Earth::Earth()
 {
-	m_Radius = 6371.1f;
-	m_MaxHeight = 8.848f;
-}
-Earth::~Earth()
-{
-}
-void Earth::LoadPlanet()
-{
-	m_pDiffuse = ResourceManager::Instance()->GetAssetData<TextureData>("Earth8k.jpg"_hash);
-	m_pHeight = ResourceManager::Instance()->GetAssetData<TextureData>("EarthHeight8k.jpg"_hash);
+	m_Params.radius = 6371.1f;
+	m_Params.height = 8.848f;
+	m_Params.texDiffuseId = "Earth8k.jpg"_hash;
+	m_Params.texHeightId = "EarthHeight8k.jpg"_hash;
 }

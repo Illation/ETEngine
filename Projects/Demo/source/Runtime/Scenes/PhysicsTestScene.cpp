@@ -8,22 +8,22 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/SceneGraph/Entity.h>
-#include <Engine/Graphics/SpriteFont.h>
-#include <Engine/Graphics/Light.h>
-#include <Engine/Graphics/TextureData.h>
-#include <Engine/SceneRendering/SceneRenderer.h>
-#include <Engine/GlobalRenderingSystems/GlobalRenderingSystems.h>
-#include <Engine/Components/ModelComponent.h>
-#include <Engine/Components/LightComponent.h>
-#include <Engine/Components/RigidBodyComponent.h>
-#include <Engine/Components/AudioListenerComponent.h>
-#include <Engine/Components/AudioSourceComponent.h>
-#include <Engine/Physics/PhysicsManager.h>
-#include <Engine/Physics/BulletETM.h>
-#include <Engine/Physics/PhysicsWorld.h>
-#include <Engine/Audio/AudioManager.h>
-#include <Engine/Audio/AudioData.h>
+#include <EtRendering/GraphicsTypes/SpriteFont.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+
+#include <EtFramework/Components/ModelComponent.h>
+#include <EtFramework/Components/LightComponent.h>
+#include <EtFramework/Components/RigidBodyComponent.h>
+#include <EtFramework/Components/AudioListenerComponent.h>
+#include <EtFramework/Components/AudioSourceComponent.h>
+#include <EtFramework/SceneGraph/Entity.h>
+#include <EtFramework/Physics/PhysicsManager.h>
+#include <EtFramework/Physics/BulletETM.h>
+#include <EtFramework/Physics/PhysicsWorld.h>
+#include <EtFramework/Audio/AudioManager.h>
+#include <EtFramework/Audio/AudioData.h>
 
 
 PhysicsTestScene::PhysicsTestScene() : AbstractScene("PhysicsTestScene")
@@ -37,7 +37,7 @@ PhysicsTestScene::~PhysicsTestScene()
 	SafeDelete(m_pLightMat);
 }
 
-void PhysicsTestScene::Initialize()
+void PhysicsTestScene::Init()
 {
 	//Fonts
 	//**************************
@@ -130,18 +130,22 @@ void PhysicsTestScene::Initialize()
 	//Lights
 	//**************************
 
-	//Directional
+	// Moving point light
+	auto lightEntity = new Entity();
+
+	auto lightMeshEntity = new Entity();
+	lightEntity->AddChild(lightMeshEntity);
+
 	auto pModelComp1 = new ModelComponent("sphere.dae"_hash);
 	pModelComp1->SetMaterial(m_pLightMat);
-	m_pLightEntity = new Entity();
-	m_pLightEntity->AddComponent(pModelComp1);
-	auto pLight = new DirectionalLight(vec3(1, 1, 1), 10.f);
-	pLight->SetShadowEnabled(true);
-	m_pLightEntity->AddComponent(new LightComponent(pLight));
-	m_pLightEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
-	m_pLightEntity->GetTransform()->Rotate(quat(vec3(1, 0, 1), -etm::PI_DIV4));
-	m_pLightEntity->GetTransform()->SetPosition(vec3(0, 50, 0));
-	AddEntity(m_pLightEntity);
+	lightMeshEntity->GetTransform()->Scale(vec3(0.01f));
+	lightMeshEntity->AddComponent(pModelComp1);
+
+	m_Light = new LightComponent(LightComponent::Type::Point, vec3(1, 1, 1), 900.f);
+	lightEntity->AddComponent(m_Light);
+	lightEntity->GetTransform()->Scale(vec3(10.f));
+	lightEntity->GetTransform()->SetPosition(vec3(0, 50, 0));
+	AddEntity(lightEntity);
 
 	//Camera
 	//**************************
@@ -167,18 +171,13 @@ void PhysicsTestScene::Initialize()
 	m_Source->SetAudioData(ResourceManager::Instance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
 	m_Source->SetLooping(true);
 	m_Source->Play();
-	m_pLightEntity->AddComponent(m_Source);
+	lightEntity->AddComponent(m_Source);
 }
 
 void PhysicsTestScene::Update()
 {
 	vec3 lightPos = m_LightCentralPos + vec3(sin(TIME->GetTime()), 0.f, cos(TIME->GetTime()))*m_LightRotDistance;
-	m_pLightEntity->GetTransform()->SetPosition(lightPos);
-
-	if(INPUT->GetKeyState(E_KbdKey::Num_0) == E_KeyState::Pressed)
-	{
-		RenderingSystems::Instance()->GetScreenshotCapture().Take(Viewport::GetCurrentViewport());
-	}
+	m_Light->GetTransform()->SetPosition(lightPos);
 
 	if (INPUT->GetKeyState(E_KbdKey::LeftBracket) == E_KeyState::Pressed)
 	{
@@ -229,20 +228,10 @@ void PhysicsTestScene::Update()
 		pRBComp->ApplyImpulse(bDir*m_SphereForce);
 	}
 
-	if(INPUT->GetKeyState(E_KbdKey::X) == E_KeyState::Pressed)
-	{
-		Config::Settings::Graphics& graphicsSettings = Config::GetInstance()->GetGraphics();
-		graphicsSettings.UseFXAA = !(graphicsSettings.UseFXAA);
-		Config::GetInstance()->Save();
-	}
-
-	SceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(m_DebugFont->GetAtlas(), vec2(1000, 0),
+	render::ShadedSceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(m_DebugFont->GetAtlas(), vec2(1000, 0),
 		vec4(1), vec2(0), vec2(1), 0, 0, SpriteRenderer::E_ScalingMode::TextureAbs);
-}
 
-void PhysicsTestScene::Draw()
-{
-	TextRenderer& textRenderer = SceneRenderer::GetCurrent()->GetTextRenderer();
+	TextRenderer& textRenderer = render::ShadedSceneRenderer::GetCurrent()->GetTextRenderer();
 
 	textRenderer.SetFont(m_DebugFont.get());
 	textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
@@ -265,8 +254,8 @@ void PhysicsTestScene::Draw()
 	outString = "laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure ";
 	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 8), 64);
 
-	vec3 lightPos = m_pLightEntity->GetTransform()->GetPosition();
-	SceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(2, 0, 0), vec4(1, 0, 0, 1), 2);
-	SceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(0, 2, 0), vec4(0, 1, 0, 1), 2);
-	SceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(0, 0, 2), vec4(0, 0, 1, 1), 2);
+	//vec3 lightPos = m_Light->GetTransform()->GetPosition();
+	//render::ShadedSceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(2, 0, 0), vec4(1, 0, 0, 1), 2);
+	//render::ShadedSceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(0, 2, 0), vec4(0, 1, 0, 1), 2);
+	//render::ShadedSceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(0, 0, 2), vec4(0, 0, 1, 1), 2);
 }

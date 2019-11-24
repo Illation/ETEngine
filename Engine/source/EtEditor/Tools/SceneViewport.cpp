@@ -1,13 +1,15 @@
 #include "stdafx.h"
 #include "SceneViewport.h"
 
-#include <Engine/SceneRendering/SceneRenderer.h>
+#include <gtkmm/builder.h>
+
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
+
+#include <EtFramework/SceneGraph/SceneManager.h>
 
 #include <EtEditor/Rendering/GtkRenderArea.h>
 #include <EtEditor/Util/GtkUtil.h>
 #include <EtEditor/SceneEditor/SceneEditor.h>
-
-#include <gtkmm/builder.h>
 
 
 //===================
@@ -144,7 +146,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	glArea->show(); // ensure context creation
 
 	// create a scene renderer for the viewport
-	m_SceneRenderer = new SceneRenderer();
+	m_SceneRenderer = new render::ShadedSceneRenderer(&(SceneManager::GetInstance()->GetRenderScene()));
 	m_Viewport->SetRenderer(m_SceneRenderer);
 
 	m_Editor->RegisterListener(this);
@@ -170,6 +172,8 @@ void SceneViewport::OnDeinit()
 	m_Viewport->SetActive(false);
 
 	m_Editor->UnregisterListener(this);
+
+	m_OutlineRenderer.Deinit();
 	SafeDelete(m_SceneRenderer);
 	m_Viewport->SetRenderer(nullptr);
 
@@ -185,7 +189,7 @@ void SceneViewport::OnShown()
 {
 	m_Viewport->MakeCurrent();
 	m_Viewport->SynchDimensions();
-	m_SceneRenderer->InitWithSplashScreen();
+	//m_SceneRenderer->InitWithSplashScreen();
 	m_Viewport->Redraw();
 }
 
@@ -207,17 +211,20 @@ void SceneViewport::OnSceneSet()
 	}
 	else
 	{
-		m_SceneInitCallback = m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Register(E_SceneEvent::Initialized, 
-			T_SceneEventCallback( [this](SceneEventData const* const eventData)
+		m_SceneInitCallback = SceneManager::GetInstance()->GetEventDispatcher().Register(E_SceneEvent::Activated,
+			T_SceneEventCallback( [this](T_SceneEventFlags const flags, SceneEventData const* const eventData)
 			{
+				UNUSED(flags);
 				UNUSED(eventData);
+
 				InitCamera();
 
-				m_Editor->GetSceneSelection().GetScene()->GetEventDispatcher().Unregister(m_SceneInitCallback);
+				SceneManager::GetInstance()->GetEventDispatcher().Unregister(m_SceneInitCallback);
 			}));
 	}
 
 	m_SceneRenderer->InitRenderingSystems();
+	m_OutlineRenderer.Init(&(m_SceneRenderer->GetEventDispatcher()));
 
 	m_IsInitialized = true;
 }

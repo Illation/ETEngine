@@ -1,10 +1,13 @@
 #pragma once
-#include <Engine/GraphicsContext/Viewport.h>
-
 #include <gtkmm/frame.h>
 #include <gtkmm/builder.h>
 #include <glibmm/refptr.h>
 #include <gdk/gdk.h>
+
+#include <EtRendering/GraphicsContext/Viewport.h>
+#include <EtRendering/Extensions/OutlineRenderer.h>
+
+#include <EtFramework/SceneGraph/SceneEvents.h>
 
 #include <EtEditor/SceneEditor/SceneEditorListener.h>
 #include <EtEditor/Rendering/EditorCamera.h>
@@ -13,7 +16,9 @@
 
 // forward
 class SceneEditor;
-class SceneRenderer;
+namespace render {
+	class ShadedSceneRenderer;
+}
 
 
 //--------------------
@@ -58,9 +63,11 @@ private:
 	EditorCamera m_Camera;
 	std::unique_ptr<Viewport> m_Viewport;
 	I_RenderArea* m_RenderArea = nullptr;
-	SceneRenderer* m_SceneRenderer = nullptr;
 
-	T_SceneEventCallbackId m_SceneInitCallback = SceneEventDispatcher::s_InvalidCallbackId;
+	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
+	OutlineRenderer m_OutlineRenderer;
+
+	T_SceneEventCallbackId m_SceneInitCallback = T_SceneEventDispatcher::INVALID_ID;
 
 	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
 

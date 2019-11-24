@@ -3,8 +3,8 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <Engine/Graphics/TextureData.h>
-#include <Engine/Graphics/Shader.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
 
 
 TexPBRMaterial::TexPBRMaterial(T_Hash const bcId, T_Hash const roughId, T_Hash const metalId, T_Hash const aoId, T_Hash const normId) 

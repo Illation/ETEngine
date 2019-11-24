@@ -1,12 +1,15 @@
 #pragma once
 #include <vector>
 
+#include <EtFramework/SceneGraph/SceneEvents.h>
+
 #include <EtEditor/Util/EditorTickOrder.h>
 #include <EtEditor/Rendering/EntityIdRenderer.h>
 
 
 class AbstractScene;
 class Entity;
+class OutlineExtension;
 
 
 //-------------------------------
@@ -19,7 +22,7 @@ class I_SceneSelectionListener
 public:
 	virtual ~I_SceneSelectionListener() = default;
 
-	virtual void OnSceneEvent(SceneEventData const* const) = 0;
+	virtual void OnSceneEvent(E_SceneEvent const, SceneEventData const* const) = 0;
 	virtual void OnEntitySelectionChanged(Entity* const entity, bool const selected) = 0;
 	virtual void OnEntitySelectionCleared() = 0;
 };
@@ -54,10 +57,11 @@ public:
 
 	void Pick(ivec2 const pos, Viewport* const viewport, bool const add);
 
-	void UpdateOutliners() const;
+	void UpdateOutlines() const;
+	void RecursiveAddOutlines(Entity* const entity) const;
 
 private:
-	void OnSceneEvent(SceneEventData const* const eventData);
+	void OnSceneEvent(T_SceneEventFlags const flags, SceneEventData const* const eventData);
 	
 	// Data
 	///////
@@ -71,5 +75,7 @@ private:
 
 	EntityIdRenderer m_IdRenderer;
 	bool m_IsIdRendererInitialized = false;
+
+	OutlineExtension* m_OutlineExtension = nullptr;
 };
 

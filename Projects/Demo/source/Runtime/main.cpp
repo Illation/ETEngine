@@ -1,12 +1,11 @@
 #include "stdafx.h"
-
 #include "MainFramework.h"
 
 #include <iostream>
 
 #include <EtCore/FileSystem/FileUtil.h>
 
-#include <Engine/linkerHelper.h>
+#include <EtFramework/linkerHelper.h>
 
 #include <Runtime/_generated/compiled_package.h>
 
@@ -18,11 +17,7 @@ void SetDebuggingOptions();
 //
 // Entry point into the framework. 
 //
-//#if defined(PLATFORM_Win)
-//int WinMain(int argc, char *argv[])
-//#else
 int main(int argc, char *argv[])
-//#endif
 {
 	// set up environment
 	//-------------------------

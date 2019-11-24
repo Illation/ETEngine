@@ -7,6 +7,8 @@ namespace core {
 
 // we should rarely have to store more than 2 ^ 32 elements
 typedef uint32 T_DefaultSlotMapIndexType;
+typedef T_DefaultSlotMapIndexType T_SlotId;
+static constexpr T_SlotId INVALID_SLOT_ID = std::numeric_limits<T_SlotId>::max();
 
 
 //---------------------------------
@@ -32,13 +34,13 @@ typedef uint32 T_DefaultSlotMapIndexType;
 //  * if the default index type is used (32 bit ints) the footprint in 64 bit build shouldn't be significantly larger 
 //     - than storing the data array + an array of pointers to each element
 //
-template <class TType, class TIndexType = T_DefaultSlotMapIndexType>
+template <class TType>
 class slot_map final
 {
 	// definitions
 	//-------------
 public:
-	using index_type = TIndexType;
+	using index_type = T_DefaultSlotMapIndexType;
 	using size_type = index_type; 
 	using id_type = index_type;		
 
@@ -54,12 +56,12 @@ public:
 	using const_reverse_iterator = typename std::vector<TType>::const_reverse_iterator;
 	using difference_type = typename std::vector<TType>::difference_type;
 
-private:
+//private:
 	static constexpr index_type s_InvalidIndex = std::numeric_limits<index_type>::max();
 
 	// construct destruct
 	//--------------------
-public:
+//public:
 	slot_map() = default;
 	slot_map(slot_map const& copy) = default;
 	slot_map(slot_map&& moving);
@@ -135,8 +137,8 @@ public:
 	//---------------
 	
 	// add an element to the map return a pair of an iterator pointing to the element and the elements new ID
-	std::pair<iterator, id_type> insert(TType const& value);
-	std::pair<iterator, id_type> insert(TType&& moving_value);
+	std::pair<iterator, id_type> insert(TType const& value) { return insert_impl(value); }
+	std::pair<iterator, id_type> insert(TType&& moving_value) { return insert_impl(std::move(moving_value)); }
 
 	// remove an element from the map
 	void erase(id_type const id);
@@ -155,7 +157,28 @@ public:
 	// utility
 	//---------
 private:
-	std::pair<iterator, id_type> insert_impl(TType&& value);
+	std::pair<iterator, id_type> insert_impl(TType&& value)
+	{
+		index_type const dataPos = static_cast<index_type>(m_Data.size());
+
+		index_type indexPos;
+		if (m_FreeHead == s_InvalidIndex)
+		{
+			indexPos = static_cast<index_type>(m_Indices.size());
+			m_Indices.push_back(dataPos);
+		}
+		else
+		{
+			indexPos = m_FreeHead;
+			m_FreeHead = m_Indices[m_FreeHead];
+			m_Indices[indexPos] = dataPos;
+		}
+
+		m_Data.push_back(std::forward<TType>(value));
+		m_IndexPositions.push_back(indexPos);
+
+		return std::make_pair(get_iterator(indexPos), indexPos);
+	}
 
 	// Data
 	///////

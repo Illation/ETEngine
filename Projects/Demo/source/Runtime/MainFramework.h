@@ -1,10 +1,5 @@
 #pragma once
-
-#include <Engine/Base/AbstractFramework.h>
-
-
-class ShaderData;
-class StubData;
+#include <EtRuntime/AbstractFramework.h>
 
 
 class MainFramework : public AbstractFramework

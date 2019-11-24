@@ -1,11 +1,10 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <Engine/SceneGraph/AbstractScene.h>
+#include <EtFramework/SceneGraph/AbstractScene.h>
 
 
-class Entity;
-class DirectionalLight;
+class LightComponent;
 class SpriteFont;
 class UberMaterial;
 
@@ -17,18 +16,14 @@ public:
 	virtual ~EditorScene();
 
 private:
-	void Initialize();
+	void Init();
 	void Update();
-	void Draw() {}
-	void DrawForward() {}
-	void PostDraw() {}
 
 private:
 
 	UberMaterial* m_Mat = nullptr;
 	UberMaterial* m_FloorMat = nullptr;
-	Entity* m_pLigEntity = nullptr;
-	DirectionalLight* m_pLight = nullptr;
+	LightComponent* m_Light = nullptr;
 
 	AssetPtr<SpriteFont> m_pDebugFont;
 };
