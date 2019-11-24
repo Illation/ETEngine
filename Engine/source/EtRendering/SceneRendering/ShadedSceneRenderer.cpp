@@ -125,6 +125,9 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	//**************
 	api->DebugPushGroup("shadow map generation");
 
+	api->SetDepthEnabled(true);
+	api->SetCullEnabled(true);
+
 	auto lightIt = m_RenderScene->GetDirectionalLightsShaded().begin();
 	auto shadowIt = m_RenderScene->GetDirectionalShadowData().begin();
 	while ((lightIt != m_RenderScene->GetDirectionalLightsShaded().end()) && (shadowIt != m_RenderScene->GetDirectionalShadowData().end()))
@@ -146,7 +149,6 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 	//reset viewport
 	api->SetViewport(ivec2(0), m_Dimensions);
-	api->SetDepthEnabled(true);
 
 	api->DebugPushGroup("clear previous pass");
 	api->SetClearColor(vec4(m_ClearColor, 1.f));

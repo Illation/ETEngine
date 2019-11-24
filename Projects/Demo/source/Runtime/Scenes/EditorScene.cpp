@@ -85,11 +85,11 @@ void EditorScene::Init()
 	lightEntity->GetTransform()->SetRotation(quat(axis, angle));
 	AddEntity(lightEntity);
 
-	lightEntity = new Entity();
-	lightEntity->AddComponent(new LightComponent(LightComponent::Type::Directional, vec3(1, 1, 1), 1.5f, false));
-	lightEntity->GetTransform()->SetRotation(quat(axis, angle));
-	lightEntity->GetTransform()->RotateEuler(0, 1, 0);
-	AddEntity(lightEntity);
+	//lightEntity = new Entity();
+	//lightEntity->AddComponent(new LightComponent(LightComponent::Type::Directional, vec3(1, 1, 1), 1.5f, false));
+	//lightEntity->GetTransform()->SetRotation(quat(axis, angle));
+	//lightEntity->GetTransform()->RotateEuler(0, 1, 0);
+	//AddEntity(lightEntity);
 
 	CAMERA->GetTransform()->SetPosition(0, 0, -10);
 }
