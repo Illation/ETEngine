@@ -336,7 +336,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 			ET_ASSERT(atmoInst.lightId != core::INVALID_SLOT_ID);
 			Light const& sun = m_RenderScene->GetLight(atmoInst.lightId);
-			vec3 const sunDir = (m_RenderScene->GetNodes()[sun.m_NodeId] * vec4(vec3::FORWARD, 1.f)).xyz;
+			vec3 const sunDir = etm::normalize((m_RenderScene->GetNodes()[sun.m_NodeId] * vec4(vec3::FORWARD, 1.f)).xyz);
 
 			m_RenderScene->GetAtmosphere(atmoInst.atmosphereId).Draw(pos, atmoInst.height, atmoInst.groundRadius, sunDir);
 		}
