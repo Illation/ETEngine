@@ -100,7 +100,7 @@ public:
 	void UnmapBuffer(E_BufferType const target) const override;
 
 	T_TextureLoc GenerateTexture() const override;
-	void DeleteTexture(T_TextureLoc& handle) const override;
+	void DeleteTexture(T_TextureLoc& handle) override;
 	void SetTextureData(TextureData& texture, void* data) override;
 	void SetTextureParams(TextureData const& texture, 
 		uint8& mipLevels, 
@@ -254,7 +254,7 @@ private:
 	uint32 m_ActiveTexture = 0;
 	int32 m_NumTextureUnits; //depends on gpu and drivers
 	// #todo: in the future, abstract texture data here to support all types of textures
-	std::vector<std::map<E_TextureType, T_TextureLoc> > m_pTextureUnits; 
+	std::vector<std::map<E_TextureType, T_TextureLoc> > m_TextureUnits; 
 
 	T_ArrayLoc m_VertexArray = 0;
 	std::map<E_BufferType, T_BufferLoc> m_BufferTargets;

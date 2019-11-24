@@ -103,7 +103,7 @@ public:
 	virtual void UnmapBuffer(E_BufferType const target) const = 0;
 
 	virtual T_TextureLoc GenerateTexture() const = 0;
-	virtual void DeleteTexture(T_TextureLoc& handle) const = 0;
+	virtual void DeleteTexture(T_TextureLoc& handle) = 0;
 	virtual void SetTextureData(TextureData& texture, void* data) = 0;
 	virtual void SetTextureParams(TextureData const& texture, 
 		uint8& mipLevels, 

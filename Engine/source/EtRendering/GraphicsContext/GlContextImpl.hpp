@@ -46,7 +46,7 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 			{ E_TextureType::Texture3D, 0 },
 			{ E_TextureType::CubeMap, 0 },
 		};
-		m_pTextureUnits.push_back(targets);
+		m_TextureUnits.push_back(targets);
 	}
 
 	glGetIntegerv(GL_MAX_DRAW_BUFFERS, &m_MaxDrawBuffers);
@@ -366,9 +366,9 @@ void GL_CONTEXT_CLASSNAME::SetActiveTexture(uint32 const unit)
 //
 void GL_CONTEXT_CLASSNAME::BindTexture(E_TextureType const target, T_TextureLoc const handle)
 {
-	if (!(m_pTextureUnits[m_ActiveTexture][target] == handle))
+	if (!(m_TextureUnits[m_ActiveTexture][target] == handle))
 	{
-		m_pTextureUnits[m_ActiveTexture][target] = handle;
+		m_TextureUnits[m_ActiveTexture][target] = handle;
 		glBindTexture(ConvTextureType(target), handle);
 	}
 }
@@ -380,10 +380,10 @@ void GL_CONTEXT_CLASSNAME::BindTexture(E_TextureType const target, T_TextureLoc 
 //
 void GL_CONTEXT_CLASSNAME::LazyBindTexture(uint32 const unit, E_TextureType const target, T_TextureLoc const handle)
 {
-	if (!(m_pTextureUnits[unit][target] == handle))
+	if (!(m_TextureUnits[unit][target] == handle))
 	{
 		SetActiveTexture(unit);
-		m_pTextureUnits[m_ActiveTexture][target] = handle;
+		m_TextureUnits[m_ActiveTexture][target] = handle;
 		glBindTexture(ConvTextureType(target), handle);
 	}
 }
@@ -671,8 +671,20 @@ T_TextureLoc GL_CONTEXT_CLASSNAME::GenerateTexture() const
 //---------------------------------
 // GlContext::DeleteTexture
 //
-void GL_CONTEXT_CLASSNAME::DeleteTexture(T_TextureLoc& handle) const
+void GL_CONTEXT_CLASSNAME::DeleteTexture(T_TextureLoc& handle) 
 {
+	// reset bound textures
+	for (std::map<E_TextureType, T_TextureLoc>& unit : m_TextureUnits)
+	{
+		for (auto& target : unit)
+		{
+			if (target.second == handle)
+			{
+				target.second = 0u;
+			}
+		}
+	}
+	
 	glDeleteTextures(1, &handle);
 }
 
