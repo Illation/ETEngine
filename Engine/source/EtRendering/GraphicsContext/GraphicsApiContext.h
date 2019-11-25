@@ -102,6 +102,12 @@ public:
 	virtual void* MapBuffer(E_BufferType const target, E_AccessMode const access) const = 0;
 	virtual void UnmapBuffer(E_BufferType const target) const = 0;
 
+	virtual void BindBufferRange(E_BufferType const target, 
+		uint32 const index, 
+		T_BufferLoc const buffer, 
+		size_t const offset, 
+		size_t const size) const = 0;
+
 	virtual T_TextureLoc GenerateTexture() const = 0;
 	virtual void DeleteTexture(T_TextureLoc& handle) = 0;
 	virtual void SetTextureData(TextureData& texture, void* data) = 0;

@@ -659,6 +659,20 @@ void GL_CONTEXT_CLASSNAME::UnmapBuffer(E_BufferType const target) const
 }
 
 //---------------------------------
+// GlContext::BindBufferRange
+//
+// Bind a buffer to a shared location (index)
+//
+void GL_CONTEXT_CLASSNAME::BindBufferRange(E_BufferType const target, 
+	uint32 const index, 
+	T_BufferLoc const buffer, 
+	size_t const offset, 
+	size_t const size) const
+{
+	glBindBufferRange(ConvBufferType(target), index, buffer, offset, size);
+}
+
+//---------------------------------
 // GlContext::UnmapBuffer
 //
 T_TextureLoc GL_CONTEXT_CLASSNAME::GenerateTexture() const

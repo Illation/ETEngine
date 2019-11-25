@@ -6,6 +6,7 @@
 #include "AtmospherePrecompute.h"
 #include "CIE.h"
 #include "LightVolume.h"
+#include "SharedVarController.h"
 
 #include <EtRendering/Materials/NullMaterial.h>
 #include <EtRendering/Materials/ColorMaterial.h>
@@ -55,6 +56,7 @@ public:
 
 	PrimitiveRenderer& GetPrimitiveRenderer() { return m_PrimitiveRenderer; }
 	PbrPrefilter& GetPbrPrefilter() { return m_PbrPrefilter; }
+	render::SharedVarController& GetSharedVarController() { return m_SharedVarController; }
 	CIE& GetCie() { return m_Cie; }
 	DirectLightVolume& GetDirectLightVolume() { return m_DirectLightVolume; }
 	PointLightVolume& GetPointLightVolume() { return m_PointLightVolume; }
@@ -72,6 +74,8 @@ private:
 	PrimitiveRenderer m_PrimitiveRenderer;
 
 	PbrPrefilter m_PbrPrefilter;
+
+	render::SharedVarController m_SharedVarController;
 
 	CIE m_Cie;
 

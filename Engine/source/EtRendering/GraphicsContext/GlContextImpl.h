@@ -99,6 +99,12 @@ public:
 	void* MapBuffer(E_BufferType const target, E_AccessMode const access) const override;
 	void UnmapBuffer(E_BufferType const target) const override;
 
+	void BindBufferRange(E_BufferType const target,
+		uint32 const index,
+		T_BufferLoc const buffer,
+		size_t const offset,
+		size_t const size) const override;
+
 	T_TextureLoc GenerateTexture() const override;
 	void DeleteTexture(T_TextureLoc& handle) override;
 	void SetTextureData(TextureData& texture, void* data) override;
