@@ -79,8 +79,8 @@ void StarField::Draw(Camera const& cam) const
 	api->SetShader(m_pShader.get());
 	api->SetActiveTexture(0);
 	api->BindTexture(m_pSprite->GetTargetType(), m_pSprite->GetHandle());
-	m_pShader->Upload("viewProj"_hash, cam.GetStatViewProj());
-	m_pShader->Upload("viewInv"_hash, cam.GetViewInv());
+	//m_pShader->Upload("viewProj"_hash, cam.GetStatViewProj());
+	//m_pShader->Upload("viewInv"_hash, cam.GetViewInv());
 	m_pShader->Upload("uRadius"_hash, m_Radius);
 	m_pShader->Upload("uBaseFlux"_hash, m_BaseFlux);
 	m_pShader->Upload("uBaseMag"_hash, m_BaseMag);

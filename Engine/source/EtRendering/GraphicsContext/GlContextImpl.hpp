@@ -919,6 +919,32 @@ void GL_CONTEXT_CLASSNAME::GetShaderInfo(T_ShaderLoc const shader, std::string& 
 }
 
 //---------------------------------
+// GlContext::GetUniformBlockIndex
+//
+// Get the index of a uniform block within a shader
+//
+T_BlockIndex GL_CONTEXT_CLASSNAME::GetUniformBlockIndex(T_ShaderLoc const program, std::string const& blockName) const
+{
+	return glGetUniformBlockIndex(program, blockName.c_str());
+}
+
+//---------------------------------
+// GlContext::IsBlockIndexValid
+//
+bool GL_CONTEXT_CLASSNAME::IsBlockIndexValid(T_BlockIndex const index) const
+{
+	return (index != GL_INVALID_INDEX);
+}
+
+//-----------------------------------
+// GlContext::SetUniformBlockBinding
+//
+void GL_CONTEXT_CLASSNAME::SetUniformBlockBinding(T_ShaderLoc const program, T_BlockIndex const blockIndex, uint32 const bindingIndex) const
+{
+	glUniformBlockBinding(program, blockIndex, bindingIndex);
+}
+
+//---------------------------------
 // GlContext::GetAttributeCount
 //
 int32 GL_CONTEXT_CLASSNAME::GetAttributeCount(T_ShaderLoc const program) const

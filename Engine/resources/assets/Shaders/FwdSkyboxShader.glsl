@@ -1,17 +1,16 @@
 <VERTEX>
 	#version 330 core
+	#include "CommonSharedVars.glsl"
 	
 	layout (location = 0) in vec3 position;
 	
 	out vec3 TexCoords;
 	
-	uniform mat4 viewProj;
-	
 	void main()
 	{
 		TexCoords = position;
 		
-		gl_Position = (viewProj*vec4(position, 1.0)).xyww;
+		gl_Position = (staticViewProjection*vec4(position, 1.0)).xyww;
 	}  
 </VERTEX>
 <FRAGMENT>

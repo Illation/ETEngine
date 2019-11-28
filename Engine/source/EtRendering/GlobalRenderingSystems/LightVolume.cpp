@@ -4,7 +4,6 @@
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/Materials/LightMaterial.h>
-#include <EtRendering/Materials/NullMaterial.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/Frustum.h>
@@ -79,8 +78,6 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 		Initialize();
 	}
 
-	// #todo: avoid getting all the uniform info again and again
-
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->SetShader(m_Shader.get());
@@ -94,8 +91,6 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 	}
 
 	//for position reconstruction
-	m_Shader->Upload("viewProjInv"_hash, render::ShadedSceneRenderer::GetCurrent()->GetCamera().GetStatViewProjInv());
-
 	m_Shader->Upload("Direction"_hash, dir);
 	m_Shader->Upload("Color"_hash, col);
 
@@ -121,14 +116,6 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, render::DirectionalShad
 	{
 		api->LazyBindTexture(i, gbufferTex[i]->GetTargetType(), gbufferTex[i]->GetHandle());
 	}
-
-	//for position reconstruction
-	Camera const& cam = render::ShadedSceneRenderer::GetCurrent()->GetCamera();
-
-	m_ShaderShadowed->Upload("projectionA"_hash, cam.GetDepthProjA());
-	m_ShaderShadowed->Upload("projectionB"_hash, cam.GetDepthProjB());
-	m_ShaderShadowed->Upload("viewProjInv"_hash, cam.GetStatViewProjInv());
-	m_ShaderShadowed->Upload("camPos"_hash, cam.GetPosition());
 
 	m_ShaderShadowed->Upload("Direction"_hash, dir);
 	m_ShaderShadowed->Upload("Color"_hash, col);

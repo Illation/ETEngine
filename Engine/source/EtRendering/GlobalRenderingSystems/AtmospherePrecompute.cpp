@@ -12,10 +12,6 @@
 namespace render {
 
 
-AtmospherePrecompute::AtmospherePrecompute()
-{
-	Init();
-}
 AtmospherePrecompute::~AtmospherePrecompute()
 {
 	Unload();

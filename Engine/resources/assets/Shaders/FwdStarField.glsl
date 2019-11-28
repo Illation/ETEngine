@@ -18,6 +18,7 @@
 </VERTEX>
 <GEOMETRY>
 	#version 400 core
+	#include "CommonSharedVars.glsl"
 	
 	layout(points, invocations = 1) in;
 	layout(triangle_strip, max_vertices=4) out;
@@ -34,12 +35,10 @@
 	} outputs;
 	uniform float uRadius;
 	uniform float uAspectRatio = 1;
-	uniform mat4 viewProj;
-	uniform mat4 viewInv;
 
 	void CreateVertex(vec3 pos, float mag, vec2 texCoord)
 	{
-		vec4 pos4 = (viewProj * vec4(pos, 1.0f)).xyzw;
+		vec4 pos4 = (staticViewProjection * vec4(pos, 1.0f)).xyzw;
 		pos4.z = pos4.w*0.999999;
 		gl_Position = pos4; 
 		outputs.magnitude = mag;

@@ -1,5 +1,6 @@
 <VERTEX>
 	#version 330 core
+	#include "CommonSharedVars.glsl"
 
 	in vec3 position;
 	in vec3 normal;
@@ -8,9 +9,8 @@
 	out vec3 Normal;
 
 	uniform mat4 model;
-	uniform mat4 worldViewProj;
 
-void main()
+	void main()
 	{
 		mat3 normMat = inverse(mat3(model));
 		normMat = transpose(normMat);
@@ -18,7 +18,7 @@ void main()
 
 		vec4 pos = model*vec4(position, 1.0);
 		Position = pos.xyz;
-		gl_Position = worldViewProj*pos;
+		gl_Position = viewProjection*pos;
 	}
 </VERTEX>
 <FRAGMENT>

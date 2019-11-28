@@ -109,10 +109,12 @@ void RenderingSystems::RemoveReference()
 //
 void RenderingSystems::Initialize()
 {
+	m_SharedVarController.Init();
+
+	m_AtmospherePrecompute.Init();
+
 	m_Cie.LoadData();
 	m_PbrPrefilter.Precompute(m_GraphicsSettings.PbrBrdfLutSize);
-
-	m_SharedVarController.Init();
 
 	m_NullMaterial.Initialize();
 	m_ColorMaterial.Initialize();

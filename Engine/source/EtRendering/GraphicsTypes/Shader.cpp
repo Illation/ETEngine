@@ -10,6 +10,9 @@
 #include <rttr/registration>
 #include <rttr/detail/policies/ctor_policies.h>
 
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRendering/GlobalRenderingSystems/SharedVarController.h>
+
 
 //===================
 // Shader Data
@@ -153,6 +156,14 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 	GetUniformLocations(shaderProgram, m_Data->m_Uniforms);
 	GetAttributes(shaderProgram, m_Data->m_Attributes);
 
+	// hook up shared uniform variables if the shader requires it
+	render::SharedVarController const& sharedVarController = RenderingSystems::Instance()->GetSharedVarController();
+	m_Data->m_SharedVarIdx = api->GetUniformBlockIndex(shaderProgram, sharedVarController.GetBlockName());
+	if (api->IsBlockIndexValid(m_Data->m_SharedVarIdx))
+	{
+		api->SetUniformBlockBinding(shaderProgram, m_Data->m_SharedVarIdx, sharedVarController.GetBufferBinding());
+	}
+
 	// all done
 	return true;
 }
@@ -191,7 +202,7 @@ T_ShaderLoc ShaderAsset::CompileShader(std::string const& shaderSourceStr, E_Sha
 
 		std::string errorInfo;
 		api->GetShaderInfo(shader, errorInfo);
-		LOG(FS("ShaderAsset::CompileShader > Compiling %s shader failed: %s", sName.c_str(), errorInfo.c_str()), LogLevel::Warning);
+		ET_ASSERT(false, "ShaderAsset::CompileShader > Compiling %s shader failed: %s", sName.c_str(), errorInfo.c_str());
 	}
 
 	return shader;

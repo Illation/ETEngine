@@ -160,7 +160,6 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 	AssetPtr<ShaderData> const shader = mat->GetShader();
 
 	api->SetShader(shader.get());
-	shader->Upload("worldViewProj"_hash, cam.GetViewProj());
 	shader->Upload("uViewSize"_hash, etm::vecCast<float>(dim));
 
 	shader->Upload("uOcclusionFactor"_hash, 0.15f);

@@ -153,7 +153,7 @@ void Patch::UploadDistanceLUT(std::vector<float> const& distances)
 	}
 }
 
-void Patch::Draw(Planet const& planet, mat4 const& transform, mat4 const& viewProjection)
+void Patch::Draw(Planet const& planet, mat4 const& transform)
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
@@ -161,11 +161,9 @@ void Patch::Draw(Planet const& planet, mat4 const& transform, mat4 const& viewPr
 
 	// Pass transformations to the shader
 	m_pPatchShader->Upload("model"_hash, transform);
-	m_pPatchShader->Upload("viewProj"_hash, viewProjection);
 
 	//Set other uniforms here too!
 	vec3 camPos = planet.GetTriangulator().GetFrustum().GetPositionOS();
-	m_pPatchShader->Upload("camPos"_hash, camPos);
 	m_pPatchShader->Upload("radius"_hash, planet.GetRadius());
 	m_pPatchShader->Upload("morphRange"_hash, m_MorphRange);
 

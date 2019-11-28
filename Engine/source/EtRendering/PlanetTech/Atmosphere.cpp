@@ -87,7 +87,6 @@ void Atmosphere::Draw(vec3 const& position, float const height, float const grou
 	api->SetShader(m_pShader.get());
 
 	m_pShader->Upload("model"_hash, transform);
-	m_pShader->Upload("worldViewProj"_hash, cam.GetViewProj());
 
 	// #todo: stop repeating this everywhere
 	m_pShader->Upload("texGBufferA"_hash, 0);
@@ -98,11 +97,6 @@ void Atmosphere::Draw(vec3 const& position, float const height, float const grou
 	{
 		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());
 	}
-
-	m_pShader->Upload("projectionA"_hash, cam.GetDepthProjA());
-	m_pShader->Upload("projectionB"_hash, cam.GetDepthProjB());
-	m_pShader->Upload("viewProjInv"_hash, cam.GetStatViewProjInv());
-	m_pShader->Upload("camPos"_hash, cam.GetPosition());
 
 	m_pShader->Upload("Position"_hash, position);
 	m_pShader->Upload("Radius"_hash, radius);

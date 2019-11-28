@@ -3,6 +3,7 @@
 typedef int32 T_AttribLoc;
 typedef int32 T_UniformLoc;
 typedef uint32 T_ShaderLoc;
+typedef int32 T_BlockIndex;
 
 typedef uint32 T_TextureLoc;
 

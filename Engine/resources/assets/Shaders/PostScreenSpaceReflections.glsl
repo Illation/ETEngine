@@ -1,16 +1,17 @@
 <VERTEX>
 	#version 330 core
+	#include "CommonSharedVars.glsl"
+
 	layout (location = 0) in vec3 pos;
 	layout (location = 1) in vec2 texCoords;
 	
 	out vec2 Texcoord;
 	out vec3 ViewRay;
 	
-	uniform mat4 viewProjInv;
 	void main()
 	{
 		Texcoord = texCoords;
-		ViewRay = (viewProjInv * vec4(pos.xy, 1, 1)).xyz;
+		ViewRay = (staticViewProjectionInv * vec4(pos.xy, 1, 1)).xyz;
 		gl_Position = vec4(pos, 1.0);
 	}
 </VERTEX>
@@ -30,9 +31,6 @@
 	GBUFFER_SAMPLER
 
 	uniform sampler2D uFinalImage; 
-
-	uniform mat4 viewInv;
-	uniform mat4 projection;
 
 	const float rayStep = 0.1;
 	const float minRayStep = 0.1;
@@ -109,7 +107,7 @@
 		for(int i = 0; i < numBinarySearchSteps; i++)
 		{
 
-			projectedCoord = projection * vec4(hitCoord, 1.0);
+			projectedCoord = viewProjection * vec4(hitCoord, 1.0);
 			projectedCoord.xy /= projectedCoord.w;
 			projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 	 
@@ -142,7 +140,7 @@
 		{
 			hitCoord += dir;
 	 
-			projectedCoord = projection * vec4(hitCoord, 1.0);
+			projectedCoord = viewProjection * vec4(hitCoord, 1.0);
 			projectedCoord.xy /= projectedCoord.w;
 			projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 	 
@@ -153,7 +151,7 @@
 			//dDepth = vec3(viewInv * vec4(hitCoord, 1)).z - depth;
 			dDepth = depth;//hitCoord.z - depth;
 
-			if((vec3(projection * vec4(dir, 1)).z - dDepth) < 1.2)
+			if((vec3(viewProjection * vec4(dir, 1)).z - dDepth) < 1.2)
 			if(dDepth <= 0.0)
 			{   
 				return vec4(BinarySearch(dir, hitCoord, dDepth), 1.0);

@@ -1,5 +1,8 @@
 <VERTEX>
 	#version 330 core
+
+	#include "CommonSharedVars.glsl"
+
 	//Patch
 	layout (location = 0) in vec2 pos;
 	layout (location = 1) in vec2 morph;
@@ -9,13 +12,11 @@
 	layout (location = 4) in vec3 r;
 	layout (location = 5) in vec3 s;
 	//Morph calculation
-	uniform vec3 camPos;
 	uniform float radius;
 	uniform float morphRange;
 	uniform float distanceLUT[32];
 	//Transformation
 	uniform mat4 model;
-	uniform mat4 viewProj;
 	//Height sampling
 	uniform sampler2D texHeight;
 	uniform sampler2D texHeightDetail;
@@ -82,7 +83,7 @@
 		normMat = transpose(normMat);
 		Normal = normalize(normMat * Tex3);
 		
-		gl_Position = viewProj * model * vec4(TriPos, 1.0f);
+		gl_Position = viewProjection * model * vec4(TriPos, 1.0f);
 	}
 </VERTEX>
 <FRAGMENT>
@@ -96,8 +97,6 @@
 	
 	layout (location = 0) out vec4 texGBufferB;    
 	layout (location = 1) out vec4 texGBufferC;    
-	
-	uniform vec3 camPos;
 	
 	uniform sampler2D texDiffuse;
 	uniform sampler2D texHeight;

@@ -32,13 +32,6 @@ void LightMaterial::UploadDerivedVariables()
 	{
 		Viewport::GetCurrentApiContext()->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());
 	}
-	//for position reconstruction
-	Camera const& cam = render::ShadedSceneRenderer::GetCurrent()->GetCamera();
-
-	m_Shader->Upload("projectionA"_hash, cam.GetDepthProjA());
-	m_Shader->Upload("projectionB"_hash, cam.GetDepthProjB());
-	m_Shader->Upload("viewProjInv"_hash, cam.GetStatViewProjInv());
-	m_Shader->Upload("camPos"_hash, cam.GetPosition());
 
 	m_Shader->Upload("Position"_hash, m_Position);
 	m_Shader->Upload("Color"_hash, m_Color);

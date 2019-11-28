@@ -27,12 +27,6 @@ void SceneSelection::SetScene(AbstractScene* const scene)
 	SceneManager::GetInstance()->GetEventDispatcher().Register(E_SceneEvent::All, 
 		T_SceneEventCallback(std::bind(&SceneSelection::OnSceneEvent, this, std::placeholders::_1, std::placeholders::_2)));
 
-	if (!m_IsIdRendererInitialized)
-	{
-		m_IdRenderer.Initialize();
-		m_IsIdRendererInitialized = true;
-	}
-
 	render::Scene& renderScene = SceneManager::GetInstance()->GetRenderScene();
 	render::I_SceneExtension* const ext = renderScene.GetExtension("OutlineExtension"_hash);
 	if (ext == nullptr)
@@ -181,6 +175,12 @@ void SceneSelection::OnSceneEvent(T_SceneEventFlags const flags, SceneEventData 
 	for (I_SceneSelectionListener* const listener : m_Listeners)
 	{
 		listener->OnSceneEvent(static_cast<E_SceneEvent>(flags), eventData);
+	}
+
+	if ((flags == E_SceneEvent::Activated) && !m_IsIdRendererInitialized)
+	{
+		m_IdRenderer.Initialize();
+		m_IsIdRendererInitialized = true;
 	}
 }
 

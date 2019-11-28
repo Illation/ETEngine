@@ -49,6 +49,8 @@ private:
 
 	std::map<T_Hash, I_Uniform*> m_Uniforms;
 	std::vector<T_AttributeLocation> m_Attributes;
+
+	T_BlockIndex m_SharedVarIdx;
 };
 
 //---------------------------------

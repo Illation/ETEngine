@@ -13,6 +13,7 @@
 	#version 330 core
 	
 	#include "Common.glsl"
+	#include "CommonSharedVars.glsl"
 	
 	in vec2 Texcoord;
 	
@@ -24,8 +25,6 @@
 	uniform sampler2D texBaseColRough;            // | BCo.r   BCo.g   BCo.b | Rou.x |
 	
 	uniform samplerCube texEnvironment;
-	
-	uniform vec3 camPos;
 	
 	uniform float fresnelPow = 2.5;
 	uniform float fresnelMult = 2.0;

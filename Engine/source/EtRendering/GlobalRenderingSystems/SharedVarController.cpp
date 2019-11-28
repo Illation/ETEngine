@@ -35,10 +35,10 @@ void SharedVarController::Init()
 	m_BufferLocation = api->CreateBuffer();
 
 	api->BindBuffer(E_BufferType::Uniform, m_BufferLocation);
-	api->SetBufferData(E_BufferType::Uniform, sizeof(m_BufferLocation), nullptr, E_UsageHint::Dynamic);
+	api->SetBufferData(E_BufferType::Uniform, sizeof(m_Data), nullptr, E_UsageHint::Dynamic);
 	api->BindBuffer(E_BufferType::Uniform, 0u);
 
-	api->BindBufferRange(E_BufferType::Uniform, m_BufferBinding, m_BufferLocation, 0, sizeof(m_BufferLocation));
+	api->BindBufferRange(E_BufferType::Uniform, m_BufferBinding, m_BufferLocation, 0, sizeof(m_Data));
 }
 
 //-----------------------------
@@ -54,7 +54,7 @@ void SharedVarController::Deinit()
 //---------------------------------
 // SharedVarController::UpdataData
 //
-void SharedVarController::UpdataData(Camera const& camera, Gbuffer const& gbuffer)
+void SharedVarController::UpdataData(Camera const& camera)
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
@@ -63,6 +63,8 @@ void SharedVarController::UpdataData(Camera const& camera, Gbuffer const& gbuffe
 	m_Data.projection = camera.GetProj();
 	m_Data.viewProjection = camera.GetViewProj();
 	m_Data.viewProjectionInv = camera.GetViewProjInv();
+	m_Data.staticViewProjection = camera.GetStatViewProj();
+	m_Data.staticViewProjectionInv = camera.GetStatViewProjInv();
 
 	Time* const time = ContextManager::GetInstance()->GetActiveContext()->time;
 	m_Data.time = time->GetTime();
@@ -72,19 +74,8 @@ void SharedVarController::UpdataData(Camera const& camera, Gbuffer const& gbuffe
 	m_Data.projectionA = camera.GetDepthProjA();
 	m_Data.projectionB = camera.GetDepthProjB();
 
-	static uint32 const s_StartTexUnit = 37;
-
-	m_Data.gbufferSamplerA = static_cast<int32>(s_StartTexUnit); // #todo: come up with a binding system
-	m_Data.gbufferSamplerB = static_cast<int32>(s_StartTexUnit + 1);
-	m_Data.gbufferSamplerC = static_cast<int32>(s_StartTexUnit + 2);
-	auto gbufferTex = gbuffer.GetTextures();
-	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
-	{
-		api->LazyBindTexture(s_StartTexUnit + i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());
-	}
-
 	api->BindBuffer(E_BufferType::Uniform, m_BufferLocation);
-	api->SetBufferData(E_BufferType::Uniform, sizeof(m_BufferLocation), &m_Data, E_UsageHint::Dynamic);
+	api->SetBufferData(E_BufferType::Uniform, sizeof(m_Data), &m_Data, E_UsageHint::Dynamic);
 	api->BindBuffer(E_BufferType::Uniform, 0u);
 }
 

@@ -25,23 +25,16 @@ class SharedVarController final
 		mat4 projection;
 		mat4 viewProjection;
 		mat4 viewProjectionInv;
+		mat4 staticViewProjection;
+		mat4 staticViewProjectionInv;
 
 		float time = 0.f;
 		float deltaTime = 0.f;
 
-		vec3 camPos;
-		float _padding;
-
 		float projectionA = 0.f;
 		float projectionB = 0.f;
 
-		// samplers
-		int32 gbufferSamplerA = -1; // depth
-
-		int32 gbufferSamplerB = -1;
-		int32 gbufferSamplerC = -1;
-
-		// maybe in the future last frame
+		vec3 camPos;
 	};
 
 	// construct deconstruct
@@ -55,12 +48,13 @@ public:
 
 	// functionality
 	//---------------
-	void UpdataData(Camera const& camera, Gbuffer const& gbuffer);
+	void UpdataData(Camera const& camera);
 
 	// accessors
 	//-----------
 	T_BufferLoc const GetBufferLocation() const { return m_BufferLocation; }
 	uint32 const GetBufferBinding() const { return m_BufferBinding; }
+	std::string const& GetBlockName() const { return m_UniformBlockName; }
 
 private:
 
@@ -71,6 +65,8 @@ private:
 
 	GlobalData m_Data;
 	T_BufferLoc m_BufferLocation;
+
+	std::string m_UniformBlockName = "SharedVars";
 	uint32 m_BufferBinding = 0u;
 };
 

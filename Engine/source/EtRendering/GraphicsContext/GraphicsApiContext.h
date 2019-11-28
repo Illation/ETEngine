@@ -130,6 +130,11 @@ public:
 	virtual bool IsShaderCompiled(T_ShaderLoc const shader) const = 0;
 	virtual void GetShaderInfo(T_ShaderLoc const shader, std::string& info) const = 0;
 
+	virtual T_BlockIndex GetUniformBlockIndex(T_ShaderLoc const program, std::string const& blockName) const = 0;
+	virtual bool IsBlockIndexValid(T_BlockIndex const index) const = 0;
+
+	virtual void SetUniformBlockBinding(T_ShaderLoc const program, T_BlockIndex const blockIndex, uint32 const bindingIndex) const = 0;
+
 	virtual int32 GetAttributeCount(T_ShaderLoc const program) const = 0;
 	virtual int32 GetUniformCount(T_ShaderLoc const program) const = 0;
 	virtual void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<I_Uniform*>& uniforms) const = 0;

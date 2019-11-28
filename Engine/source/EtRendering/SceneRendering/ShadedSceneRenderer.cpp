@@ -121,6 +121,10 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
+	// Global variables for all rendering systems
+	//********************************************
+	RenderingSystems::Instance()->GetSharedVarController().UpdataData(m_Camera);
+
 	//Shadow Mapping
 	//**************
 	api->DebugPushGroup("shadow map generation");
@@ -169,7 +173,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 		//Bind patch instances
 		patch.BindInstances(planet.GetTriangulator().GetPositions());
 		patch.UploadDistanceLUT(planet.GetTriangulator().GetDistanceLUT());
-		patch.Draw(planet, m_RenderScene->GetNodes()[planet.GetNodeId()], m_Camera.GetViewProj());
+		patch.Draw(planet, m_RenderScene->GetNodes()[planet.GetNodeId()]);
 	}
 	api->DebugPopGroup();
 
@@ -293,8 +297,6 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 		m_SkyboxShader->Upload("numMipMaps"_hash, skybox.m_EnvironmentMap->GetNumMipMaps());
 		m_SkyboxShader->Upload("roughness"_hash, skybox.m_Roughness);
-
-		m_SkyboxShader->Upload("viewProj"_hash, m_Camera.GetStatViewProj());
 
 		api->SetDepthFunction(E_DepthFunc::LEqual);
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();

@@ -62,7 +62,7 @@ private:
 private:
 	friend class RenderingSystems;
 
-	AtmospherePrecompute();
+	AtmospherePrecompute() = default;
 	~AtmospherePrecompute();
 };
 

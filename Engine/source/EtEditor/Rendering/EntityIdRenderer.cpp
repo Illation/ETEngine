@@ -9,6 +9,7 @@
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/FrameBuffer.h>
 #include <EtRendering/GraphicsTypes/Mesh.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 #include <EtFramework/SceneGraph/Entity.h>
@@ -132,6 +133,9 @@ void EntityIdRenderer::OnViewportPreRender(T_FbLoc const targetFb)
 		return;
 	}
 
+	// we need to manually update the camera info a bit earlier during this draw call
+	RenderingSystems::Instance()->GetSharedVarController().UpdataData(*camera);
+
 	ivec2 const dim = m_ViewportToPickFrom->GetDimensions();
 
 	// if the view size changed since the last pick we need to recreate our rendertarget with the correct size
@@ -153,7 +157,6 @@ void EntityIdRenderer::OnViewportPreRender(T_FbLoc const targetFb)
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
 	api->SetShader(m_Shader.get());
-	m_Shader->Upload("worldViewProj"_hash, camera->GetViewProj());
 
 	api->SetDepthEnabled(true);
 

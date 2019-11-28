@@ -77,13 +77,5 @@ void ScreenSpaceReflections::Draw()
 		m_pShader->Upload("K"_hash, sinf(context->time->GetTime()) * 20 + 25);
 	}
 
-	Camera const& cam = render::ShadedSceneRenderer::GetCurrent()->GetCamera();
-
-	m_pShader->Upload("projectionA"_hash, cam.GetDepthProjA());
-	m_pShader->Upload("projectionB"_hash, cam.GetDepthProjB());
-	m_pShader->Upload("viewProjInv"_hash, cam.GetStatViewProjInv());
-	m_pShader->Upload("projection"_hash, cam.GetViewProj());
-	m_pShader->Upload("camPos"_hash, cam.GetPosition());
-
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 }

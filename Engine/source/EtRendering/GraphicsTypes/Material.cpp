@@ -53,7 +53,6 @@ void Material::UploadVariables(mat4 matModel)
 	if (m_StandardTransform)
 	{
 		m_Shader->Upload("model"_hash, matModel);
-		m_Shader->Upload("worldViewProj"_hash, render::ShadedSceneRenderer::GetCurrent()->GetCamera().GetViewProj());
 	}
 
 	UploadDerivedVariables();
@@ -71,10 +70,5 @@ void Material::UploadModelOnly(mat4 matModel)
 
 void Material::UploadNonInstanceVariables()
 {
-	if (m_StandardTransform)
-	{
-		m_Shader->Upload("worldViewProj"_hash, render::ShadedSceneRenderer::GetCurrent()->GetCamera().GetViewProj());
-	}
-
 	UploadDerivedVariables();
 }

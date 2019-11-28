@@ -27,7 +27,6 @@ void Gbuffer::UploadDerivedVariables()
 
 	//for position reconstruction
 	render::ShadedSceneRenderer const* const sceneRenderer = render::ShadedSceneRenderer::GetCurrent();
-	m_pShader->Upload("viewProjInv"_hash, sceneRenderer->GetCamera().GetStatViewProjInv());
 
 	AssetPtr<EnvironmentMap> envMap = sceneRenderer->GetScene()->GetSkybox().m_EnvironmentMap;
 	if (envMap != nullptr)

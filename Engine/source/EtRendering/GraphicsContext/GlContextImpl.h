@@ -127,6 +127,11 @@ public:
 	bool IsShaderCompiled(T_ShaderLoc const shader) const override;
 	void GetShaderInfo(T_ShaderLoc const shader, std::string& info) const override;
 
+	T_BlockIndex GetUniformBlockIndex(T_ShaderLoc const program, std::string const& blockName) const override;
+	bool IsBlockIndexValid(T_BlockIndex const index) const override;
+
+	void SetUniformBlockBinding(T_ShaderLoc const program, T_BlockIndex const blockIndex, uint32 const bindingIndex) const override;
+
 	int32 GetAttributeCount(T_ShaderLoc const program) const override;
 	int32 GetUniformCount(T_ShaderLoc const program) const override;
 	void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<I_Uniform*>& uniforms) const override;

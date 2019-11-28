@@ -35,6 +35,7 @@
               "path": "assets/Shaders/",
               "package": "",
               "references": [
+                "CommonSharedVars.glsl",
                 "CommonDeferred.glsl"
               ]
             }
@@ -45,6 +46,7 @@
               "path": "assets/Shaders/",
               "package": "",
               "references": [
+                "CommonSharedVars.glsl",
                 "CommonDeferred.glsl"
               ]
             }
@@ -55,6 +57,7 @@
               "path": "assets/Shaders/",
               "package": "",
               "references": [
+                "CommonSharedVars.glsl",
                 "Common.glsl"
               ]
             }

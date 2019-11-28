@@ -64,6 +64,14 @@
               "package": "",
               "references": []
             }
+          },
+          {
+            "stub asset": {
+              "name": "CommonSharedVars.glsl",
+              "path": "assets/Shaders/",
+              "package": "",
+              "references": []
+            }
           }
         ]
       },
@@ -169,6 +177,7 @@
               "path": "assets/Shaders/",
               "package": "",
               "references": [
+                "CommonSharedVars.glsl",
                 "CommonDeferred.glsl"
               ]
             }
@@ -198,6 +207,7 @@
               "path": "assets/Shaders/",
               "package": "",
               "references": [
+                "CommonSharedVars.glsl",
                 "CommonDeferred.glsl"
               ]
             }
@@ -244,7 +254,9 @@
               "name": "FwdIdShader.glsl",
               "path": "assets/Shaders/",
               "package": "",
-              "references": []
+              "references": [
+                "CommonSharedVars.glsl"
+              ]
             }
           },
           {
@@ -254,6 +266,7 @@
               "package": "",
               "references": [
                 "Common.glsl",
+                "CommonSharedVars.glsl",
                 "CommonDeferred.glsl",
                 "CommonPBR.glsl"
               ]
@@ -266,6 +279,7 @@
               "package": "",
               "references": [
                 "Common.glsl",
+                "CommonSharedVars.glsl",
                 "CommonDeferred.glsl",
                 "CommonPBR.glsl"
               ]
@@ -278,6 +292,7 @@
               "package": "",
               "references": [
                 "Common.glsl",
+                "CommonSharedVars.glsl",
                 "CommonDeferred.glsl",
                 "CommonPBR.glsl"
               ]
@@ -296,7 +311,9 @@
               "name": "FwdSkyboxShader.glsl",
               "path": "assets/Shaders/",
               "package": "",
-              "references": []
+              "references": [
+                "CommonSharedVars.glsl"
+              ]
             }
           },
           {
@@ -305,6 +322,7 @@
               "path": "assets/Shaders/",
               "package": "",
               "references": [
+                "CommonSharedVars.glsl",
                 "Common.glsl"
               ]
             }
@@ -315,6 +333,7 @@
               "path": "assets/Shaders/",
               "package": "",
               "references": [
+                "CommonSharedVars.glsl",
                 "CommonDeferred.glsl"
               ]
             }
@@ -324,7 +343,9 @@
               "name": "PlanetWire.glsl",
               "path": "assets/Shaders/",
               "package": "",
-              "references": []
+              "references": [
+                "CommonSharedVars.glsl"
+              ]
             }
           },
           {
@@ -335,6 +356,7 @@
               "references": [
                 "Common.glsl",
                 "CommonAtmosphere.glsl",
+                "CommonSharedVars.glsl",
                 "CommonDeferred.glsl",
                 "CommonPBR.glsl"
               ]
@@ -357,6 +379,7 @@
               "package": "",
               "references": [
                 "Common.glsl",
+                "CommonSharedVars.glsl",
                 "CommonDeferred.glsl",
                 "CommonPBR.glsl"
               ]
@@ -403,6 +426,7 @@
               "package": "",
               "references": [
                 "Common.glsl",
+                "CommonSharedVars.glsl",
                 "CommonDeferred.glsl",
                 "CommonPBR.glsl"
               ]
