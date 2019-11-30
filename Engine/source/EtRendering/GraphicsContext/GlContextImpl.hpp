@@ -30,12 +30,55 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 		return;
 	}
 
+	// Info
+	//******
+
 	LOG("OpenGL loaded");
 	LOG("");
 	LOG(FS("Vendor:   %s", glGetString(GL_VENDOR)));
 	LOG(FS("Renderer: %s", glGetString(GL_RENDERER)));
 	LOG(FS("Version:  %s", glGetString(GL_VERSION)));
 	LOG("");
+
+	// Check extensions
+	//******************
+
+	std::vector<std::string> requiredExtensions = { "GL_ARB_bindless_texture" };
+	std::vector<std::string> foundExtensions;
+
+	int32 numExtensions;
+	glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
+	for (int32 i = 0; i < numExtensions; ++i)
+	{
+		GLubyte const* foundExt = glGetStringi(GL_EXTENSIONS, i);
+		foundExtensions.emplace_back(std::string(reinterpret_cast<char const*>(foundExt)));
+	}
+
+	bool allFound = true;
+
+	LOG("Required extensions:");
+	for (std::string const& required : requiredExtensions)
+	{
+		if (std::find(foundExtensions.cbegin(), foundExtensions.cend(), required) != foundExtensions.cend())
+		{
+			LOG(FS("\t%s - found", required.c_str()));
+		}
+		else
+		{
+			LOG(FS("\t%s - not found", required.c_str()), LogLevel::Warning);
+			allFound = false;
+		}
+	}
+
+	LOG("");
+
+	if (!allFound)
+	{
+		LOG("Not all required OpenGL extensions are available on this device! Try updating your graphics card drivers!", LogLevel::Error);
+	}
+
+	// texture units
+	//***************
 
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_NumTextureUnits);
 	for (int32 i = 0; i < m_NumTextureUnits; i++)
@@ -49,6 +92,9 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 		m_TextureUnits.push_back(targets);
 	}
 
+	// draw buffers
+	//***************
+
 	glGetIntegerv(GL_MAX_DRAW_BUFFERS, &m_MaxDrawBuffers);
 
 	m_BufferTargets =
@@ -58,6 +104,8 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 		{ E_BufferType::Uniform, 0 }
 	};
 
+	// debugging
+	//***********
 
 	// potentially hook up opengl to the logger
 #if defined(ET_DEBUG)
