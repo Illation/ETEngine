@@ -106,13 +106,15 @@ public:
 		size_t const size) const override;
 
 	T_TextureLoc GenerateTexture() const override;
-	void DeleteTexture(T_TextureLoc& handle) override;
+	void DeleteTexture(T_TextureLoc& texLoc) override;
 	void SetTextureData(TextureData& texture, void* data) override;
 	void SetTextureParams(TextureData const& texture, 
 		uint8& mipLevels, 
 		TextureParameters& prev, 
 		TextureParameters const& next, 
 		bool const force) override;
+	T_TextureHandle GetTextureHandle(T_TextureLoc const texLoc) const override;
+	void SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const override;
 
 	T_ShaderLoc CreateShader(E_ShaderType const type) const override;
 	T_ShaderLoc CreateProgram() const override;

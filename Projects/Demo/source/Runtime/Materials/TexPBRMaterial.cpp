@@ -48,11 +48,11 @@ void TexPBRMaterial::UploadDerivedVariables()
 
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	api->LazyBindTexture(0, m_TexBaseColor->GetTargetType(), m_TexBaseColor->GetHandle());
-	api->LazyBindTexture(1, m_TexRoughness->GetTargetType(), m_TexRoughness->GetHandle());
-	api->LazyBindTexture(2, m_TexMetalness->GetTargetType(), m_TexMetalness->GetHandle());
-	api->LazyBindTexture(3, m_TexAO->GetTargetType(), m_TexAO->GetHandle());
-	api->LazyBindTexture(4, m_TexNorm->GetTargetType(), m_TexNorm->GetHandle());
+	api->LazyBindTexture(0, m_TexBaseColor->GetTargetType(), m_TexBaseColor->GetLocation());
+	api->LazyBindTexture(1, m_TexRoughness->GetTargetType(), m_TexRoughness->GetLocation());
+	api->LazyBindTexture(2, m_TexMetalness->GetTargetType(), m_TexMetalness->GetLocation());
+	api->LazyBindTexture(3, m_TexAO->GetTargetType(), m_TexAO->GetLocation());
+	api->LazyBindTexture(4, m_TexNorm->GetTargetType(), m_TexNorm->GetLocation());
 
 	//Upload uniforms
 	//m_Shader->Upload("specular"_hash, m_Specular);

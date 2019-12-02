@@ -299,7 +299,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(texWidth, texHeight));
 	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, captureRBO);
-	api->LinkTextureToFbo2D(0, pFont->m_pTexture->GetHandle(), 0);
+	api->LinkTextureToFbo2D(0, pFont->m_pTexture->GetLocation(), 0);
 
 	api->SetViewport(ivec2(0), ivec2(texWidth, texHeight));
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
@@ -348,7 +348,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 		ivec2 res = ivec2(metric->Width - m_Padding * 2, metric->Height - m_Padding * 2);
 		api->SetViewport(etm::vecCast<int32>(metric->TexCoord) + ivec2(m_Padding), res);
-		api->LazyBindTexture(0, E_TextureType::Texture2D, pTexture->GetHandle());
+		api->LazyBindTexture(0, E_TextureType::Texture2D, pTexture->GetLocation());
 		computeSdf->Upload("uChannel"_hash, static_cast<int32>(metric->Channel));
 		computeSdf->Upload("uResolution"_hash, etm::vecCast<float>(res));
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();

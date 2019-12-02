@@ -65,7 +65,7 @@ void UIViewportRenderer::Draw(ivec2 pos, ivec2 size)
 	api->SetShader(m_pShader.get());
 	api->SetViewport(pos, size);
 
-	api->LazyBindTexture(0, E_TextureType::Texture2D, m_pTex->GetHandle());
+	api->LazyBindTexture(0, E_TextureType::Texture2D, m_pTex->GetLocation());
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 }
 
@@ -85,7 +85,7 @@ void UIViewportRenderer::Initialize(ivec2 size)
 	m_pTex = new TextureData(size, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 	m_pTex->Build();
 	m_pTex->SetParameters(params);
-	api->LinkTextureToFbo2D(0, m_pTex->GetHandle(), 0);
+	api->LinkTextureToFbo2D(0, m_pTex->GetLocation(), 0);
 
 	m_Initialized = true;
 }

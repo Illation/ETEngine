@@ -123,7 +123,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::One);
 	api->SetBlendEnabled(false);
 
-	api->LinkTextureToFbo(0, atmo->m_TexTransmittance->GetHandle(), 0);
+	api->LinkTextureToFbo(0, atmo->m_TexTransmittance->GetLocation(), 0);
 	api->SetDrawBufferCount(1);
 	api->SetViewport(ivec2(0), ivec2(m_Settings.TRANSMITTANCE_W, m_Settings.TRANSMITTANCE_H));
 	api->SetShader(m_pComputeTransmittance.get());
@@ -133,13 +133,13 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	// depending on 'blend', either initialize irradiance_texture_ with zeros or
 	// leave it unchanged (we don't want the direct irradiance in
 	// irradiance_texture_, but only the irradiance from the sky).
-	api->LinkTextureToFbo(0, m_TexDeltaIrradiance->GetHandle(), 0);
-	api->LinkTextureToFbo(1, atmo->m_TexIrradiance->GetHandle(), 0);
+	api->LinkTextureToFbo(0, m_TexDeltaIrradiance->GetLocation(), 0);
+	api->LinkTextureToFbo(1, atmo->m_TexIrradiance->GetLocation(), 0);
 	api->SetDrawBufferCount(2);
 	api->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
 	api->SetShader(m_pComputeDirectIrradiance.get());
-	api->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetHandle());
-	m_pComputeDirectIrradiance->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetHandle()));
+	api->LazyBindTexture(atmo->m_TexTransmittance->GetLocation(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetLocation());
+	m_pComputeDirectIrradiance->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetLocation()));
 	api->SetBlendEnabled({ false, blend });
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 	api->SetBlendEnabled(false);
@@ -148,16 +148,16 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	// delta_rayleigh_scattering_texture and delta_mie_scattering_texture, and
 	// either store them or accumulate them in scattering_texture_ and
 	// optional_single_mie_scattering_texture_.
-	api->LinkTextureToFbo(0, m_TexDeltaRayleigh->GetHandle(), 0);
-	api->LinkTextureToFbo(1, m_TexDeltaMie->GetHandle(), 0);
-	api->LinkTextureToFbo(2, atmo->m_TexInscatter->GetHandle(), 0);
+	api->LinkTextureToFbo(0, m_TexDeltaRayleigh->GetLocation(), 0);
+	api->LinkTextureToFbo(1, m_TexDeltaMie->GetLocation(), 0);
+	api->LinkTextureToFbo(2, atmo->m_TexInscatter->GetLocation(), 0);
 	api->SetDrawBufferCount(3);
 	api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 	api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 	api->SetShader(m_pComputeSingleScattering.get());
 	m_pComputeSingleScattering->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
-	api->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetHandle());
-	m_pComputeSingleScattering->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetHandle()));
+	api->LazyBindTexture(atmo->m_TexTransmittance->GetLocation(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetLocation());
+	m_pComputeSingleScattering->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetLocation()));
 	for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 	{
 		m_pComputeSingleScattering->Upload("layer"_hash, layer);
@@ -171,23 +171,23 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	{
 		// Compute the scattering density, and store it in
 		// delta_scattering_density_texture.
-		api->LinkTextureToFbo(0, m_TexDeltaScattering->GetHandle(), 0);
+		api->LinkTextureToFbo(0, m_TexDeltaScattering->GetLocation(), 0);
 		api->LinkTextureToFbo(1, 0, 0);
 		api->LinkTextureToFbo(2, 0, 0);
 		api->LinkTextureToFbo(3, 0, 0);
 		api->SetDrawBufferCount(1);
 		api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 		api->SetShader(m_pComputeScatteringDensity.get());
-		api->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetHandle());
-		m_pComputeScatteringDensity->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetHandle()));
-		api->LazyBindTexture(m_TexDeltaRayleigh->GetHandle(), m_TexDeltaRayleigh->GetTargetType(), m_TexDeltaRayleigh->GetHandle());
-		m_pComputeScatteringDensity->Upload("uTexRayleigh"_hash, static_cast<int32>(m_TexDeltaRayleigh->GetHandle()));
-		api->LazyBindTexture(m_TexDeltaMie->GetHandle(), m_TexDeltaMie->GetTargetType(), m_TexDeltaMie->GetHandle());
-		m_pComputeScatteringDensity->Upload("uTexDeltaMie"_hash, static_cast<int32>(m_TexDeltaMie->GetHandle()));
-		api->LazyBindTexture(m_TexDeltaMultipleScattering->GetHandle(), m_TexDeltaMultipleScattering->GetTargetType(), m_TexDeltaMultipleScattering->GetHandle());
-		m_pComputeScatteringDensity->Upload("uTexMultipleScattering"_hash, static_cast<int32>(m_TexDeltaMultipleScattering->GetHandle()));
-		api->LazyBindTexture(m_TexDeltaIrradiance->GetHandle(), m_TexDeltaIrradiance->GetTargetType(), m_TexDeltaIrradiance->GetHandle());
-		m_pComputeScatteringDensity->Upload("uTexDeltaIrradiance"_hash, static_cast<int32>(m_TexDeltaIrradiance->GetHandle()));
+		api->LazyBindTexture(atmo->m_TexTransmittance->GetLocation(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetLocation());
+		m_pComputeScatteringDensity->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetLocation()));
+		api->LazyBindTexture(m_TexDeltaRayleigh->GetLocation(), m_TexDeltaRayleigh->GetTargetType(), m_TexDeltaRayleigh->GetLocation());
+		m_pComputeScatteringDensity->Upload("uTexRayleigh"_hash, static_cast<int32>(m_TexDeltaRayleigh->GetLocation()));
+		api->LazyBindTexture(m_TexDeltaMie->GetLocation(), m_TexDeltaMie->GetTargetType(), m_TexDeltaMie->GetLocation());
+		m_pComputeScatteringDensity->Upload("uTexDeltaMie"_hash, static_cast<int32>(m_TexDeltaMie->GetLocation()));
+		api->LazyBindTexture(m_TexDeltaMultipleScattering->GetLocation(), m_TexDeltaMultipleScattering->GetTargetType(), m_TexDeltaMultipleScattering->GetLocation());
+		m_pComputeScatteringDensity->Upload("uTexMultipleScattering"_hash, static_cast<int32>(m_TexDeltaMultipleScattering->GetLocation()));
+		api->LazyBindTexture(m_TexDeltaIrradiance->GetLocation(), m_TexDeltaIrradiance->GetTargetType(), m_TexDeltaIrradiance->GetLocation());
+		m_pComputeScatteringDensity->Upload("uTexDeltaIrradiance"_hash, static_cast<int32>(m_TexDeltaIrradiance->GetLocation()));
 		m_pComputeScatteringDensity->Upload("scattering_order"_hash, scatteringOrder);
 		for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 		{
@@ -197,17 +197,17 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 
 		// Compute the indirect irradiance, store it in delta_irradiance_texture and
 		// accumulate it in irradiance_texture_.
-		api->LinkTextureToFbo(0, m_TexDeltaIrradiance->GetHandle(), 0);
-		api->LinkTextureToFbo(1, atmo->m_TexIrradiance->GetHandle(), 0);
+		api->LinkTextureToFbo(0, m_TexDeltaIrradiance->GetLocation(), 0);
+		api->LinkTextureToFbo(1, atmo->m_TexIrradiance->GetLocation(), 0);
 		api->SetDrawBufferCount(2);
 		api->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
 		api->SetShader(m_pComputeIndirectIrradiance.get());
 		m_pComputeIndirectIrradiance->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
-		api->LazyBindTexture(m_TexDeltaRayleigh->GetHandle(), m_TexDeltaRayleigh->GetTargetType(), m_TexDeltaRayleigh->GetHandle());
-		m_pComputeIndirectIrradiance->Upload("uTexRayleigh"_hash, static_cast<int32>(m_TexDeltaRayleigh->GetHandle()));
-		api->LazyBindTexture(m_TexDeltaMie->GetHandle(), m_TexDeltaMie->GetTargetType(), m_TexDeltaMie->GetHandle());
-		m_pComputeIndirectIrradiance->Upload("uTexDeltaMie"_hash, static_cast<int32>(m_TexDeltaMie->GetHandle()));
-		api->LazyBindTexture(m_TexDeltaMultipleScattering->GetHandle(), m_TexDeltaMultipleScattering->GetTargetType(), m_TexDeltaMultipleScattering->GetHandle());
+		api->LazyBindTexture(m_TexDeltaRayleigh->GetLocation(), m_TexDeltaRayleigh->GetTargetType(), m_TexDeltaRayleigh->GetLocation());
+		m_pComputeIndirectIrradiance->Upload("uTexRayleigh"_hash, static_cast<int32>(m_TexDeltaRayleigh->GetLocation()));
+		api->LazyBindTexture(m_TexDeltaMie->GetLocation(), m_TexDeltaMie->GetTargetType(), m_TexDeltaMie->GetLocation());
+		m_pComputeIndirectIrradiance->Upload("uTexDeltaMie"_hash, static_cast<int32>(m_TexDeltaMie->GetLocation()));
+		api->LazyBindTexture(m_TexDeltaMultipleScattering->GetLocation(), m_TexDeltaMultipleScattering->GetTargetType(), m_TexDeltaMultipleScattering->GetLocation());
 		//m_pComputeIndirectIrradiance->Upload("uTexDeltaIrradiance"_hash, static_cast<int32>(m_TexDeltaMultipleScattering->GetHandle()));
 		m_pComputeIndirectIrradiance->Upload("scattering_order"_hash, scatteringOrder);
 		api->SetBlendEnabled({ false, true });
@@ -217,16 +217,16 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		// Compute the multiple scattering, store it in
 		// delta_multiple_scattering_texture, and accumulate it in
 		// scattering_texture_.
-		api->LinkTextureToFbo(0, m_TexDeltaMultipleScattering->GetHandle(), 0);
-		api->LinkTextureToFbo(1, atmo->m_TexInscatter->GetHandle(), 0);
+		api->LinkTextureToFbo(0, m_TexDeltaMultipleScattering->GetLocation(), 0);
+		api->LinkTextureToFbo(1, atmo->m_TexInscatter->GetLocation(), 0);
 		api->SetDrawBufferCount(2);
 		api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 		api->SetShader(m_pComputeMultipleScattering.get());
 		m_pComputeMultipleScattering->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
-		api->LazyBindTexture(atmo->m_TexTransmittance->GetHandle(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetHandle());
-		m_pComputeMultipleScattering->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetHandle()));
-		api->LazyBindTexture(m_TexDeltaScattering->GetHandle(), m_TexDeltaScattering->GetTargetType(), m_TexDeltaScattering->GetHandle());
-		m_pComputeMultipleScattering->Upload("uTexDeltaScatteringDensity"_hash, static_cast<int32>(m_TexDeltaScattering->GetHandle()));
+		api->LazyBindTexture(atmo->m_TexTransmittance->GetLocation(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetLocation());
+		m_pComputeMultipleScattering->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetLocation()));
+		api->LazyBindTexture(m_TexDeltaScattering->GetLocation(), m_TexDeltaScattering->GetTargetType(), m_TexDeltaScattering->GetLocation());
+		m_pComputeMultipleScattering->Upload("uTexDeltaScatteringDensity"_hash, static_cast<int32>(m_TexDeltaScattering->GetLocation()));
 		for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 		{
 			m_pComputeMultipleScattering->Upload("layer"_hash, layer);
@@ -248,17 +248,17 @@ void AtmospherePrecompute::SetUniforms(ShaderData* shader, TextureData* transmit
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	api->LazyBindTexture(transmittance->GetHandle(), transmittance->GetTargetType(), transmittance->GetHandle());
-	shader->Upload("uTexTransmittance"_hash, static_cast<int32>(transmittance->GetHandle()));
+	api->LazyBindTexture(transmittance->GetLocation(), transmittance->GetTargetType(), transmittance->GetLocation());
+	shader->Upload("uTexTransmittance"_hash, static_cast<int32>(transmittance->GetLocation()));
 
-	api->LazyBindTexture(scattering->GetHandle(), scattering->GetTargetType(), scattering->GetHandle());
-	shader->Upload("uTexScattering"_hash, static_cast<int32>(scattering->GetHandle()));
+	api->LazyBindTexture(scattering->GetLocation(), scattering->GetTargetType(), scattering->GetLocation());
+	shader->Upload("uTexScattering"_hash, static_cast<int32>(scattering->GetLocation()));
 
-	api->LazyBindTexture(irradiance->GetHandle(), irradiance->GetTargetType(), irradiance->GetHandle());
-	shader->Upload("uTexIrradiance"_hash, static_cast<int32>(irradiance->GetHandle()));
+	api->LazyBindTexture(irradiance->GetLocation(), irradiance->GetTargetType(), irradiance->GetLocation());
+	shader->Upload("uTexIrradiance"_hash, static_cast<int32>(irradiance->GetLocation()));
 
-	api->LazyBindTexture(mie->GetHandle(), mie->GetTargetType(), mie->GetHandle());
-	shader->Upload("uTexMie"_hash, static_cast<int32>(mie->GetHandle()));
+	api->LazyBindTexture(mie->GetLocation(), mie->GetTargetType(), mie->GetLocation());
+	shader->Upload("uTexMie"_hash, static_cast<int32>(mie->GetLocation()));
 }
 
 void AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(const std::vector<double>& wavelengths,

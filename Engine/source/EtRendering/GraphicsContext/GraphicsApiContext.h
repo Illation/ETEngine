@@ -109,13 +109,15 @@ public:
 		size_t const size) const = 0;
 
 	virtual T_TextureLoc GenerateTexture() const = 0;
-	virtual void DeleteTexture(T_TextureLoc& handle) = 0;
+	virtual void DeleteTexture(T_TextureLoc& texLoc) = 0;
 	virtual void SetTextureData(TextureData& texture, void* data) = 0;
 	virtual void SetTextureParams(TextureData const& texture, 
 		uint8& mipLevels, 
 		TextureParameters& prev, 
 		TextureParameters const& next, 
 		bool const force) = 0;
+	virtual T_TextureHandle GetTextureHandle(T_TextureLoc const texLoc) const = 0;
+	virtual void SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const = 0;
 
 	virtual T_ShaderLoc CreateShader(E_ShaderType const type) const = 0;
 	virtual T_ShaderLoc CreateProgram() const = 0;

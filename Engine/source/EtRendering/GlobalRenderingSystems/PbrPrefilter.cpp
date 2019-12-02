@@ -50,7 +50,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 
 	api->BindRenderbuffer(captureRBO);
 	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(resolution));
-	api->LinkTextureToFbo2D(0, m_LUT->GetHandle(), 0);
+	api->LinkTextureToFbo2D(0, m_LUT->GetLocation(), 0);
 
 	api->SetViewport(ivec2(0), ivec2(resolution));
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
@@ -115,7 +115,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 
 	api->SetShader(irradianceShader.get());
 	irradianceShader->Upload("environmentMap"_hash, 0);
-	api->LazyBindTexture(0, E_TextureType::CubeMap, source->GetHandle());
+	api->LazyBindTexture(0, E_TextureType::CubeMap, source->GetLocation());
 	irradianceShader->Upload("projection"_hash, captureProjection);
 
 	//render irradiance cubemap
@@ -126,7 +126,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	for (uint8 face = 0; face < 6; ++face)
 	{
 		irradianceShader->Upload("view"_hash, captureViews[face]);
-		api->LinkCubeMapFaceToFbo2D(face, irradiance->GetHandle(), 0);
+		api->LinkCubeMapFaceToFbo2D(face, irradiance->GetLocation(), 0);
 		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
@@ -146,7 +146,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	api->SetShader(radianceShader.get());
 	radianceShader->Upload("environmentMap"_hash, 0);
 	radianceShader->Upload("resolution"_hash, static_cast<float>(radianceRes));
-	api->LazyBindTexture(0, E_TextureType::CubeMap, source->GetHandle());
+	api->LazyBindTexture(0, E_TextureType::CubeMap, source->GetLocation());
 	radianceShader->Upload("projection"_hash, captureProjection);
 
 	//render radiance
@@ -167,7 +167,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 		for (uint8 faceIdx = 0; faceIdx < 6; ++faceIdx)
 		{
 			radianceShader->Upload("view"_hash, captureViews[faceIdx]);
-			api->LinkCubeMapFaceToFbo2D(faceIdx, radiance->GetHandle(), mip);
+			api->LinkCubeMapFaceToFbo2D(faceIdx, radiance->GetLocation(), mip);
 
 			api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 			RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();

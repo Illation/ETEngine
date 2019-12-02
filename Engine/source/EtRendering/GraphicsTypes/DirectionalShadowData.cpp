@@ -47,7 +47,7 @@ void DirectionalShadowData::Init(ivec2 const resolution)
 		// create render target
 		api->GenFramebuffers(1, &(cascade.fbo));
 		api->BindFramebuffer(cascade.fbo);
-		api->LinkTextureToFboDepth(cascade.texture->GetHandle());
+		api->LinkTextureToFboDepth(cascade.texture->GetLocation());
 		//only depth components
 		api->SetDrawBufferCount(0);
 		api->SetReadBufferEnabled(false);

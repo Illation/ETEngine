@@ -64,7 +64,7 @@ void EntityIdRenderer::CreateRenderTarget()
 	m_DrawTex = new TextureData(dim, E_ColorFormat::RGBA8, E_ColorFormat::RGBA, E_DataType::UByte);
 	m_DrawTex->Build();
 	m_DrawTex->SetParameters(params);
-	api->LinkTextureToFbo2D(0, m_DrawTex->GetHandle(), 0);
+	api->LinkTextureToFbo2D(0, m_DrawTex->GetLocation(), 0);
 
 	api->GenRenderBuffers(1, &m_DrawDepth);
 	api->BindRenderbuffer(m_DrawDepth);

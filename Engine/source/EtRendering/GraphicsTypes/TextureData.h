@@ -26,7 +26,7 @@ public:
 
 	// Accessors
 	//----------
-	T_TextureLoc GetHandle() const { return m_Handle; }
+	T_TextureLoc GetLocation() const { return m_Location; }
 	ivec2 GetResolution() const { return m_Resolution; }
 	int32 GetNumMipLevels() const { return m_MipLevels; }
 
@@ -42,13 +42,15 @@ public:
 	void Build(void* data = nullptr);
 	void SetParameters(TextureParameters const& params, bool const force = false);
 	bool Resize(ivec2 const& newSize);
+	void CreateHandle();
 
 private:
 	// Data
 	///////
 
 	// GPU data
-	T_TextureLoc m_Handle;
+	T_TextureLoc m_Location;
+	T_TextureHandle m_Handle = 0u;
 
 	// Resolution
 	ivec2 m_Resolution;

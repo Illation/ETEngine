@@ -167,11 +167,11 @@ void Patch::Draw(Planet const& planet, mat4 const& transform)
 	m_pPatchShader->Upload("radius"_hash, planet.GetRadius());
 	m_pPatchShader->Upload("morphRange"_hash, m_MorphRange);
 
-	api->LazyBindTexture(0, planet.GetTexDiffuse()->GetTargetType(), planet.GetTexDiffuse()->GetHandle());
-	api->LazyBindTexture(2, planet.GetTexDetail1()->GetTargetType(), planet.GetTexDetail1()->GetHandle());
-	api->LazyBindTexture(3, planet.GetTexDetail2()->GetTargetType(), planet.GetTexDetail2()->GetHandle());
-	api->LazyBindTexture(1, planet.GetTexHeight()->GetTargetType(), planet.GetTexHeight()->GetHandle());
-	api->LazyBindTexture(4, planet.GetTexHeightDetail()->GetTargetType(), planet.GetTexHeightDetail()->GetHandle());
+	api->LazyBindTexture(0, planet.GetTexDiffuse()->GetTargetType(), planet.GetTexDiffuse()->GetLocation());
+	api->LazyBindTexture(2, planet.GetTexDetail1()->GetTargetType(), planet.GetTexDetail1()->GetLocation());
+	api->LazyBindTexture(3, planet.GetTexDetail2()->GetTargetType(), planet.GetTexDetail2()->GetLocation());
+	api->LazyBindTexture(1, planet.GetTexHeight()->GetTargetType(), planet.GetTexHeight()->GetLocation());
+	api->LazyBindTexture(4, planet.GetTexHeightDetail()->GetTargetType(), planet.GetTexHeightDetail()->GetLocation());
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);

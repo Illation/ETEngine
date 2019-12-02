@@ -733,21 +733,21 @@ T_TextureLoc GL_CONTEXT_CLASSNAME::GenerateTexture() const
 //---------------------------------
 // GlContext::DeleteTexture
 //
-void GL_CONTEXT_CLASSNAME::DeleteTexture(T_TextureLoc& handle) 
+void GL_CONTEXT_CLASSNAME::DeleteTexture(T_TextureLoc& texLoc)
 {
 	// reset bound textures
 	for (std::map<E_TextureType, T_TextureLoc>& unit : m_TextureUnits)
 	{
 		for (auto& target : unit)
 		{
-			if (target.second == handle)
+			if (target.second == texLoc)
 			{
 				target.second = 0u;
 			}
 		}
 	}
 	
-	glDeleteTextures(1, &handle);
+	glDeleteTextures(1, &texLoc);
 }
 
 //---------------------------------
@@ -759,7 +759,7 @@ void GL_CONTEXT_CLASSNAME::SetTextureData(TextureData& texture, void* data)
 {
 	uint32 const target = ConvTextureType(texture.GetTargetType());
 
-	BindTexture(texture.GetTargetType(), texture.GetHandle());
+	BindTexture(texture.GetTargetType(), texture.GetLocation());
 
 	ivec2 const res = texture.GetResolution();
 
@@ -798,7 +798,7 @@ void GL_CONTEXT_CLASSNAME::SetTextureData(TextureData& texture, void* data)
 void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, uint8& mipLevels, TextureParameters& prev, TextureParameters const& next, bool const force)
 {
 	uint32 const target = ConvTextureType(texture.GetTargetType());
-	BindTexture(texture.GetTargetType(), texture.GetHandle());
+	BindTexture(texture.GetTargetType(), texture.GetLocation());
 
 	// filter options
 	//---------------
@@ -860,6 +860,33 @@ void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, uint8& m
 	}
 
 	prev = next;
+}
+
+//---------------------------------
+// GlContext::GetTextureHandle
+//
+// Create a handle for bindless access of a texture, at the cost of not being able to change parameters any longer
+//
+T_TextureHandle GL_CONTEXT_CLASSNAME::GetTextureHandle(T_TextureLoc const texLoc) const
+{
+	return glGetTextureHandleARB(texLoc);
+}
+
+//--------------------------------------
+// GlContext::SetTextureHandleResidency
+//
+// 'bind' a texture handle so it can be used by shaders
+//
+void GL_CONTEXT_CLASSNAME::SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const
+{
+	if (isResident)
+	{
+		glMakeTextureHandleResidentARB(handle);
+	}
+	else
+	{
+		glMakeTextureHandleNonResidentARB(handle);
+	}
 }
 
 //---------------------------------

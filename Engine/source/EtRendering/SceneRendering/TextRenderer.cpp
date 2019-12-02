@@ -229,7 +229,7 @@ void TextRenderer::Draw()
 	{
 		if (queued.m_IsAddedToRenderer)
 		{
-			api->BindTexture(E_TextureType::Texture2D, queued.m_Font->GetAtlas()->GetHandle());
+			api->BindTexture(E_TextureType::Texture2D, queued.m_Font->GetAtlas()->GetLocation());
 
 			vec2 const texSize = etm::vecCast<float>(queued.m_Font->GetAtlas()->GetResolution());
 			m_pTextShader->Upload("texSize"_hash, texSize);

@@ -112,31 +112,31 @@ void UberMaterial::UploadDerivedVariables()
 	if (m_TexBaseColor != nullptr)
 	{
 		m_Shader->Upload("uTexBaseColor"_hash, 0);
-		api->LazyBindTexture(0, E_TextureType::Texture2D, m_TexBaseColor->GetHandle());
+		api->LazyBindTexture(0, E_TextureType::Texture2D, m_TexBaseColor->GetLocation());
 	}
 
 	if (m_TexNormal != nullptr)
 	{
 		m_Shader->Upload("uTexNormal"_hash, 1);
-		api->LazyBindTexture(1, E_TextureType::Texture2D, m_TexNormal->GetHandle());
+		api->LazyBindTexture(1, E_TextureType::Texture2D, m_TexNormal->GetLocation());
 	}
 
 	if (m_TexMetallicRoughness != nullptr)
 	{
 		m_Shader->Upload("uTexMetallicRoughness"_hash, 2);
-		api->LazyBindTexture(2, E_TextureType::Texture2D, m_TexMetallicRoughness->GetHandle());
+		api->LazyBindTexture(2, E_TextureType::Texture2D, m_TexMetallicRoughness->GetLocation());
 	}
 
 	if (m_TexNormal != nullptr)
 	{
 		m_Shader->Upload("uTexOcclusion"_hash, 3);
-		api->LazyBindTexture(3, E_TextureType::Texture2D, m_TexOcclusion->GetHandle());
+		api->LazyBindTexture(3, E_TextureType::Texture2D, m_TexOcclusion->GetLocation());
 	}
 
 	if (m_TexEmissive != nullptr)
 	{
 		m_Shader->Upload("uTexEmissive"_hash, 4);
-		api->LazyBindTexture(4, E_TextureType::Texture2D, m_TexEmissive->GetHandle());
+		api->LazyBindTexture(4, E_TextureType::Texture2D, m_TexEmissive->GetLocation());
 	}
 
 	//Upload uniforms

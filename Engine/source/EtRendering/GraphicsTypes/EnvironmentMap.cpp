@@ -173,7 +173,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	// convert HDR equirectangular environment map to cubemap equivalent
 	api->SetShader(equiCubeShader.get());
 	equiCubeShader->Upload("equirectangularMap"_hash, 0);
-	api->LazyBindTexture(0, E_TextureType::Texture2D, pEqui->GetHandle());
+	api->LazyBindTexture(0, E_TextureType::Texture2D, pEqui->GetLocation());
 	equiCubeShader->Upload("projection"_hash, CubeCaptureProjection());
 
 	//render the cube
@@ -184,7 +184,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	for (uint8 face = 0; face < 6; ++face)
 	{
 		equiCubeShader->Upload("view"_hash, captureViews[face]);
-		api->LinkCubeMapFaceToFbo2D(face, envCubeMap->GetHandle(), 0);
+		api->LinkCubeMapFaceToFbo2D(face, envCubeMap->GetLocation(), 0);
 		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();

@@ -25,7 +25,7 @@ TextureData::TextureData(ivec2 const res, E_ColorFormat const intern, E_ColorFor
 	, m_Depth(depth)
 	, m_TargetType((depth > 1) ? E_TextureType::Texture3D : E_TextureType::Texture2D)
 {
-	m_Handle = Viewport::GetCurrentApiContext()->GenerateTexture();
+	m_Location = Viewport::GetCurrentApiContext()->GenerateTexture();
 }
 
 //---------------------------------
@@ -40,7 +40,7 @@ TextureData::TextureData(E_TextureType const targetType, ivec2 const res)
 	, m_Format(E_ColorFormat::RGB)
 	, m_DataType(E_DataType::Float)
 {
-	m_Handle = Viewport::GetCurrentApiContext()->GenerateTexture();
+	m_Location = Viewport::GetCurrentApiContext()->GenerateTexture();
 }
 
 //---------------------------------
@@ -50,7 +50,13 @@ TextureData::TextureData(E_TextureType const targetType, ivec2 const res)
 //
 TextureData::~TextureData()
 {
-	Viewport::GetCurrentApiContext()->DeleteTexture(m_Handle);
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	if (m_Handle != 0u)
+	{
+		api->SetTextureHandleResidency(m_Handle, false);
+	}
+
+	api->DeleteTexture(m_Location);
 }
 
 //---------------------------------
@@ -60,6 +66,8 @@ TextureData::~TextureData()
 //
 void TextureData::Build(void* data)
 {
+	ET_ASSERT(m_Handle == 0u, "Shouldn't build after a handle was created!");
+
 	Viewport::GetCurrentApiContext()->SetTextureData(*this, data);
 }
 
@@ -72,6 +80,8 @@ void TextureData::Build(void* data)
 //
 void TextureData::SetParameters(TextureParameters const& params, bool const force)
 {
+	ET_ASSERT(m_Handle == 0u, "Shouldn't set parameters after a handle was created!");
+
 	Viewport::GetCurrentApiContext()->SetTextureParams(*this, m_MipLevels, m_Parameters, params, force);
 }
 
@@ -83,7 +93,7 @@ void TextureData::SetParameters(TextureParameters const& params, bool const forc
 //
 bool TextureData::Resize(ivec2 const& newSize)
 {
-	bool const regenerate = (newSize.x > m_Resolution.x) || (newSize.y > m_Resolution.y);
+	bool const regenerate = (newSize.x > m_Resolution.x) || (newSize.y > m_Resolution.y) || (m_Handle != 0u);
 
 	m_Resolution = newSize;
 
@@ -91,8 +101,8 @@ bool TextureData::Resize(ivec2 const& newSize)
 	{
 		I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-		api->DeleteTexture(m_Handle);
-		m_Handle = api->GenerateTexture();
+		api->DeleteTexture(m_Location);
+		m_Location = api->GenerateTexture();
 	}
 
 	Build();
@@ -102,9 +112,26 @@ bool TextureData::Resize(ivec2 const& newSize)
 		SetParameters(m_Parameters, true);
 	}
 
+	if (m_Handle != 0u)
+	{
+		CreateHandle();
+	}
+
 	return regenerate;
 }
 
+//---------------------------------
+// TextureData::CreateHandle
+//
+// Create a handle that allows bindless use of the texture. After the handle is created, no other modifying operations should be done (except resize)
+//
+void TextureData::CreateHandle()
+{
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	m_Handle = api->GetTextureHandle(m_Location);
+	api->SetTextureHandleResidency(m_Handle, true); // #todo: in the future we should have a system that makes inactive handles non resident after a while
+}
 
 //===================
 // Texture Asset
@@ -190,6 +217,8 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	m_Data = new TextureData(ivec2(width, height), (m_UseSrgb ? E_ColorFormat::SRGB : E_ColorFormat::RGB), E_ColorFormat::RGB, E_DataType::UByte);
 	m_Data->Build((void*)bits);
 	m_Data->SetParameters(m_Parameters);
+
+	m_Data->CreateHandle();
 
 	stbi_image_free(bits);
 	bits = nullptr;

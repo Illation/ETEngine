@@ -108,7 +108,7 @@ void OutlineRenderer::CreateRenderTarget()
 	m_DrawTex = new TextureData(dim, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
 	m_DrawTex->Build();
 	m_DrawTex->SetParameters(params);
-	api->LinkTextureToFbo2D(0, m_DrawTex->GetHandle(), 0);
+	api->LinkTextureToFbo2D(0, m_DrawTex->GetLocation(), 0);
 
 	api->GenRenderBuffers(1, &m_DrawDepth);
 	api->BindRenderbuffer(m_DrawDepth);
@@ -166,7 +166,7 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 
 	// bind the gbuffers depth texture
 	shader->Upload("texGBufferA"_hash, 0);
-	api->LazyBindTexture(0, gbuffer.GetTextures()[0]->GetTargetType(), gbuffer.GetTextures()[0]->GetHandle());
+	api->LazyBindTexture(0, gbuffer.GetTextures()[0]->GetTargetType(), gbuffer.GetTextures()[0]->GetLocation());
 
 	api->SetDepthEnabled(true); 
 
@@ -206,7 +206,7 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 	api->SetShader(m_SobelShader.get());
 
 	m_SobelShader->Upload("inColorTex"_hash, 1);
-	api->LazyBindTexture(1, E_TextureType::Texture2D, m_DrawTex->GetHandle());
+	api->LazyBindTexture(1, E_TextureType::Texture2D, m_DrawTex->GetLocation());
 
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 

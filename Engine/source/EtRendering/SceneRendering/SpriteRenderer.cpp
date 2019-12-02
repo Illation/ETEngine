@@ -224,7 +224,7 @@ void SpriteRenderer::Draw()
 			m_Shader->Upload("uDraw3D"_hash, true);
 			m_Shader->Upload("uLayer"_hash, m_Layer);
 		}
-		api->BindTexture(texData->GetTargetType(), texData->GetHandle());
+		api->BindTexture(texData->GetTargetType(), texData->GetLocation());
 
 		//Draw
 		api->DrawArrays(E_DrawMode::Points, batchOffset, batchSize);

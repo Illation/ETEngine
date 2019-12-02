@@ -46,7 +46,7 @@ void ScreenSpaceReflections::Initialize()
 	api->BindRenderbuffer(m_CollectRBO);
 	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, dim);
 	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, m_CollectRBO);
-	api->LinkTextureToFbo2D(0, m_CollectTex->GetHandle(), 0);
+	api->LinkTextureToFbo2D(0, m_CollectTex->GetLocation(), 0);
 }
 
 void ScreenSpaceReflections::EnableInput()
@@ -66,10 +66,10 @@ void ScreenSpaceReflections::Draw()
 	auto gbufferTex = render::ShadedSceneRenderer::GetCurrent()->GetGBuffer().GetTextures();
 	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
 	{
-		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetHandle());
+		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetLocation());
 	}
 	m_pShader->Upload("uFinalImage"_hash, 3);
-	api->LazyBindTexture(3, E_TextureType::Texture2D, m_CollectTex->GetHandle());
+	api->LazyBindTexture(3, E_TextureType::Texture2D, m_CollectTex->GetLocation());
 	//for position reconstruction
 	BaseContext* const context = ContextManager::GetInstance()->GetActiveContext();
 	if (context != nullptr)

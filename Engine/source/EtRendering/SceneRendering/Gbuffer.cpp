@@ -42,5 +42,5 @@ void Gbuffer::UploadDerivedVariables()
 
 	m_pShader->Upload("texBRDFLUT"_hash, 5);
 	TextureData* pLUT = RenderingSystems::Instance()->GetPbrPrefilter().GetLUT();
-	api->LazyBindTexture(5, pLUT->GetTargetType(), pLUT->GetHandle());
+	api->LazyBindTexture(5, pLUT->GetTargetType(), pLUT->GetLocation());
 }

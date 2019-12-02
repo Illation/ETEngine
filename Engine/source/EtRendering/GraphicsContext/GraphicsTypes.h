@@ -6,6 +6,7 @@ typedef uint32 T_ShaderLoc;
 typedef int32 T_BlockIndex;
 
 typedef uint32 T_TextureLoc;
+typedef uint64 T_TextureHandle;
 
 typedef uint32 T_BufferLoc;
 typedef uint32 T_ArrayLoc;

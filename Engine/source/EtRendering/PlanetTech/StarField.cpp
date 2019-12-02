@@ -78,7 +78,7 @@ void StarField::Draw(Camera const& cam) const
 	api->BindVertexArray(m_VAO);
 	api->SetShader(m_pShader.get());
 	api->SetActiveTexture(0);
-	api->BindTexture(m_pSprite->GetTargetType(), m_pSprite->GetHandle());
+	api->BindTexture(m_pSprite->GetTargetType(), m_pSprite->GetLocation());
 	//m_pShader->Upload("viewProj"_hash, cam.GetStatViewProj());
 	//m_pShader->Upload("viewInv"_hash, cam.GetViewInv());
 	m_pShader->Upload("uRadius"_hash, m_Radius);
