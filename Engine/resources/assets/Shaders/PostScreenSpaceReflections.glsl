@@ -28,8 +28,6 @@
 	
 	layout (location = 0) out vec4 outColor;
 	
-	GBUFFER_SAMPLER
-
 	uniform sampler2D uFinalImage; 
 
 	const float rayStep = 0.1;

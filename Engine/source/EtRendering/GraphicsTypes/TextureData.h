@@ -27,6 +27,7 @@ public:
 	// Accessors
 	//----------
 	T_TextureLoc GetLocation() const { return m_Location; }
+	T_TextureHandle GetHandle() const { return m_Handle; }
 	ivec2 GetResolution() const { return m_Resolution; }
 	int32 GetNumMipLevels() const { return m_MipLevels; }
 

@@ -24,11 +24,6 @@ vec3 reconstructPosition(vec3 viewRay, vec3 camPosition, float depth, float proj
 
 #include "CommonSharedVars.glsl"
 
-#define GBUFFER_SAMPLER														\
-uniform sampler2D texGBufferA;		/*| <----   Depth   ----> | xxxxx |*/ 	\
-uniform sampler2D texGBufferB;  	/*| Nor.x   Nor.y | Met.x | AO .x |*/ 	\
-uniform sampler2D texGBufferC; 		/*| BCo.r   BCo.g   BCo.b | Rou.x |*/ 	\
-
 #define UNPACK_DEPTH(texCoord)		\
 texture(texGBufferA, texCoord).r	\
 

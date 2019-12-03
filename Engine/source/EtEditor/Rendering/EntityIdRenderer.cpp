@@ -125,16 +125,17 @@ void EntityIdRenderer::OnViewportPreRender(T_FbLoc const targetFb)
 	ET_ASSERT(viewRenderer != nullptr);
 	if (viewRenderer->GetType() == typeid(render::ShadedSceneRenderer))
 	{
-		camera = &(static_cast<render::ShadedSceneRenderer*>(viewRenderer)->GetCamera());
+		render::ShadedSceneRenderer* const shadedSceneRenderer = static_cast<render::ShadedSceneRenderer*>(viewRenderer);
+		camera = &(shadedSceneRenderer->GetCamera());
+
+		// we need to manually update the camera info a bit earlier during this draw call
+		RenderingSystems::Instance()->GetSharedVarController().UpdataData(*camera, shadedSceneRenderer->GetGBuffer());
 	}
 	else
 	{
 		ET_ASSERT(true, "Can't find camera foro current view renderer");
 		return;
 	}
-
-	// we need to manually update the camera info a bit earlier during this draw call
-	RenderingSystems::Instance()->GetSharedVarController().UpdataData(*camera);
 
 	ivec2 const dim = m_ViewportToPickFrom->GetDimensions();
 

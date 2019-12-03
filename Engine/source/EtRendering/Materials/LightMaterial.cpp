@@ -24,15 +24,6 @@ void LightMaterial::SetLight(vec3 pos, vec3 color, float radius)
 
 void LightMaterial::UploadDerivedVariables()
 {
-	m_Shader->Upload("texGBufferA"_hash, 0);
-	m_Shader->Upload("texGBufferB"_hash, 1);
-	m_Shader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = render::ShadedSceneRenderer::GetCurrent()->GetGBuffer().GetTextures();
-	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
-	{
-		Viewport::GetCurrentApiContext()->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetLocation());
-	}
-
 	m_Shader->Upload("Position"_hash, m_Position);
 	m_Shader->Upload("Color"_hash, m_Color);
 	m_Shader->Upload("Radius"_hash, m_Radius);

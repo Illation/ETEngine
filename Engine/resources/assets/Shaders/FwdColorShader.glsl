@@ -24,8 +24,6 @@
 
 	uniform vec2 uViewSize;
 	
-	GBUFFER_SAMPLER
-	
 	void main()
 	{
 		vec2 coord = gl_FragCoord.xy / uViewSize;

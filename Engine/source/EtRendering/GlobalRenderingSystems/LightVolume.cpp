@@ -82,14 +82,6 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 
 	api->SetShader(m_Shader.get());
 
-	m_Shader->Upload("texGBufferB"_hash, 1);
-	m_Shader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = render::ShadedSceneRenderer::GetCurrent()->GetGBuffer().GetTextures();
-	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
-	{
-		api->LazyBindTexture(i, gbufferTex[i]->GetTargetType(), gbufferTex[i]->GetLocation());
-	}
-
 	//for position reconstruction
 	m_Shader->Upload("Direction"_hash, dir);
 	m_Shader->Upload("Color"_hash, col);
@@ -107,15 +99,6 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, render::DirectionalShad
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->SetShader(m_ShaderShadowed.get());
-
-	m_ShaderShadowed->Upload("texGBufferA"_hash, 0);
-	m_ShaderShadowed->Upload("texGBufferB"_hash, 1);
-	m_ShaderShadowed->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = render::ShadedSceneRenderer::GetCurrent()->GetGBuffer().GetTextures();
-	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
-	{
-		api->LazyBindTexture(i, gbufferTex[i]->GetTargetType(), gbufferTex[i]->GetLocation());
-	}
 
 	m_ShaderShadowed->Upload("Direction"_hash, dir);
 	m_ShaderShadowed->Upload("Color"_hash, col);

@@ -123,7 +123,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 	// Global variables for all rendering systems
 	//********************************************
-	RenderingSystems::Instance()->GetSharedVarController().UpdataData(m_Camera);
+	RenderingSystems::Instance()->GetSharedVarController().UpdataData(m_Camera, m_GBuffer);
 
 	//Shadow Mapping
 	//**************

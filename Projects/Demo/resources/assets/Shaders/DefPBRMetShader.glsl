@@ -37,9 +37,9 @@
 	in vec3 Normal;
 	in vec3 Tangent;
 	in vec2 Texcoord;
-	
-	layout (location = 0) out vec4 texGBufferB;    
-	layout (location = 1) out vec4 texGBufferC;    
+
+	layout(location = 0) out vec4 outGBufferB;
+	layout(location = 1) out vec4 outGBufferC;
 	
 	uniform sampler2D texBaseColor;
 	uniform sampler2D texRoughness;
@@ -69,7 +69,7 @@
 		float metal = texture(texMetalness, Texcoord).r;
 		float ao = texture(texAO, Texcoord).r;
 		
-		texGBufferB = vec4(encodeNormal(norm), metal, ao);
-		texGBufferC = vec4(baseCol, rough);
+		outGBufferB = vec4(encodeNormal(norm), metal, ao);
+		outGBufferC = vec4(baseCol, rough);
 	}
 </FRAGMENT>

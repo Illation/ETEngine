@@ -26,8 +26,6 @@
 	
 	layout (location = 0) out vec4 outColor;
 	
-	GBUFFER_SAMPLER
-	
 	//uniform samplerCube texEnvironment;
 	uniform samplerCube texIrradiance;
 	uniform samplerCube texEnvRadiance;

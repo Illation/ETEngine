@@ -88,16 +88,6 @@ void Atmosphere::Draw(vec3 const& position, float const height, float const grou
 
 	m_pShader->Upload("model"_hash, transform);
 
-	// #todo: stop repeating this everywhere
-	m_pShader->Upload("texGBufferA"_hash, 0);
-	//m_pShader->Upload("texGBufferB"_hash, 1);
-	//m_pShader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = render::ShadedSceneRenderer::GetCurrent()->GetGBuffer().GetTextures();
-	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
-	{
-		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetLocation());
-	}
-
 	m_pShader->Upload("Position"_hash, position);
 	m_pShader->Upload("Radius"_hash, radius);
 	//m_pShader->Upload("SurfaceRadius"_hash, groundRadius);

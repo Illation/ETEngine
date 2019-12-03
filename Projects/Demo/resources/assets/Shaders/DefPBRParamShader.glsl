@@ -29,8 +29,8 @@
 	in vec3 Position;
 	in vec3 Normal;
 
-	layout (location = 0) out vec4 texGBufferB;
-	layout (location = 1) out vec4 texGBufferC;
+	layout (location = 0) out vec4 outGBufferB;    
+	layout (location = 1) out vec4 outGBufferC;    
 
 	uniform vec3 baseColor;
 	uniform float roughness;
@@ -40,7 +40,7 @@
 	{
 		vec3 norm = normalize(Normal);
 
-		texGBufferB = vec4(encodeNormal(norm), metalness, 1);
-		texGBufferC = vec4(baseColor, roughness);
+		outGBufferB = vec4(encodeNormal(norm), metalness, 1);
+		outGBufferC = vec4(baseColor, roughness);
 	}
 </FRAGMENT>

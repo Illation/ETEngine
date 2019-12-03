@@ -60,16 +60,9 @@ void ScreenSpaceReflections::Draw()
 
 	api->SetShader(m_pShader.get());
 
-	m_pShader->Upload("texGBufferA"_hash, 0);
-	m_pShader->Upload("texGBufferB"_hash, 1);
-	m_pShader->Upload("texGBufferC"_hash, 2);
-	auto gbufferTex = render::ShadedSceneRenderer::GetCurrent()->GetGBuffer().GetTextures();
-	for (uint32 i = 0; i < (uint32)gbufferTex.size(); i++)
-	{
-		api->LazyBindTexture(i, E_TextureType::Texture2D, gbufferTex[i]->GetLocation());
-	}
 	m_pShader->Upload("uFinalImage"_hash, 3);
 	api->LazyBindTexture(3, E_TextureType::Texture2D, m_CollectTex->GetLocation());
+
 	//for position reconstruction
 	BaseContext* const context = ContextManager::GetInstance()->GetActiveContext();
 	if (context != nullptr)

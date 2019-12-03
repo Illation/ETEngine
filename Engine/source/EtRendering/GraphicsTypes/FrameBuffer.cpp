@@ -97,6 +97,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 		depthMap->Build();
 		api->LinkTextureToFboDepth(depthMap->GetLocation());
 		depthMap->SetParameters(params);
+		depthMap->CreateHandle();
 		m_pTextureVec.emplace_back(depthMap);
 	}
 
@@ -107,6 +108,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 		colorBuffer->Build();
 		api->LinkTextureToFbo2D(i, colorBuffer->GetLocation(), 0);
 		colorBuffer->SetParameters(params, true);
+		colorBuffer->CreateHandle();
 		m_pTextureVec.emplace_back(colorBuffer);
 	}
 

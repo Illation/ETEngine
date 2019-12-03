@@ -27,8 +27,6 @@
 	//out
 	layout (location = 0) out vec4 outColor;
 	
-	GBUFFER_SAMPLER
-	
 	uniform mat4 CameraView;
 	
 	//Light

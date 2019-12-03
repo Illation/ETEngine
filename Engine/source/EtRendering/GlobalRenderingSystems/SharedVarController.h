@@ -35,6 +35,12 @@ class SharedVarController final
 		float projectionB = 0.f;
 
 		vec3 camPos;
+
+		float _padding1;
+
+		T_TextureHandle gbufferA;
+		T_TextureHandle gbufferB;
+		T_TextureHandle gbufferC;
 	};
 
 	// construct deconstruct
@@ -48,7 +54,7 @@ public:
 
 	// functionality
 	//---------------
-	void UpdataData(Camera const& camera);
+	void UpdataData(Camera const& camera, Gbuffer const& gbuffer);
 
 	// accessors
 	//-----------

@@ -17,8 +17,6 @@ Gbuffer::Gbuffer(bool demo):
 
 void Gbuffer::AccessShaderAttributes()
 {
-	m_pShader->Upload("texGBufferB"_hash, 1);
-	m_pShader->Upload("texGBufferC"_hash, 2);
 }
 
 void Gbuffer::UploadDerivedVariables()

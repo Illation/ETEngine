@@ -93,13 +93,21 @@ void TextureData::SetParameters(TextureParameters const& params, bool const forc
 //
 bool TextureData::Resize(ivec2 const& newSize)
 {
-	bool const regenerate = (newSize.x > m_Resolution.x) || (newSize.y > m_Resolution.y) || (m_Handle != 0u);
+	bool const hasHandle = (m_Handle != 0u);
+
+	bool const regenerate = (newSize.x > m_Resolution.x) || (newSize.y > m_Resolution.y) || hasHandle;
 
 	m_Resolution = newSize;
 
 	if (regenerate)
 	{
 		I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+		if (hasHandle)
+		{
+			api->SetTextureHandleResidency(m_Handle, false);
+			m_Handle = 0u;
+		}
 
 		api->DeleteTexture(m_Location);
 		m_Location = api->GenerateTexture();
@@ -112,7 +120,7 @@ bool TextureData::Resize(ivec2 const& newSize)
 		SetParameters(m_Parameters, true);
 	}
 
-	if (m_Handle != 0u)
+	if (hasHandle)
 	{
 		CreateHandle();
 	}

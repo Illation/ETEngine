@@ -29,8 +29,6 @@
 	//out
 	layout (location = 0) out vec4 outColor;
 	
-	GBUFFER_SAMPLER
-	
 	uniform vec3 Position;
 	
 	uniform vec3 SunDir;

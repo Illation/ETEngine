@@ -27,8 +27,6 @@
 	//out
 	layout (location = 0) out vec4 outColor;
 	
-	GBUFFER_SAMPLER
-	
 	//Light
 	uniform vec3 Direction;
 	uniform vec3 Color;

@@ -95,8 +95,8 @@
 	in vec3 Normal;
 	in vec3 TriPos;
 	
-	layout (location = 0) out vec4 texGBufferB;    
-	layout (location = 1) out vec4 texGBufferC;    
+	layout (location = 0) out vec4 outGBufferB;    
+	layout (location = 1) out vec4 outGBufferC;    
 	
 	uniform sampler2D texDiffuse;
 	uniform sampler2D texHeight;
@@ -155,7 +155,7 @@
 		norm = normalize(norm+normDetail*detail*2);
 		
 		//output to gbuffer MRT
-		texGBufferB = vec4(encodeNormal(norm), 0/*metal*/, 1/*ao*/);
-		texGBufferC = vec4(dif, 0.8/*roughness*/);
+		outGBufferB = vec4(encodeNormal(norm), 0/*metal*/, 1/*ao*/);
+		outGBufferC = vec4(dif, 0.8/*roughness*/);
 	} 
 </FRAGMENT>

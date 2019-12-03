@@ -54,7 +54,7 @@ void SharedVarController::Deinit()
 //---------------------------------
 // SharedVarController::UpdataData
 //
-void SharedVarController::UpdataData(Camera const& camera)
+void SharedVarController::UpdataData(Camera const& camera, Gbuffer const& gbuffer)
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
@@ -73,6 +73,11 @@ void SharedVarController::UpdataData(Camera const& camera)
 	m_Data.camPos = camera.GetPosition();
 	m_Data.projectionA = camera.GetDepthProjA();
 	m_Data.projectionB = camera.GetDepthProjB();
+
+	std::vector<TextureData*> const& gbufferTex = gbuffer.GetTextures();
+	m_Data.gbufferA = gbufferTex[0]->GetHandle();
+	m_Data.gbufferB = gbufferTex[1]->GetHandle();
+	m_Data.gbufferC = gbufferTex[2]->GetHandle();
 
 	api->BindBuffer(E_BufferType::Uniform, m_BufferLocation);
 	api->SetBufferData(E_BufferType::Uniform, sizeof(m_Data), &m_Data, E_UsageHint::Dynamic);

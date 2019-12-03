@@ -164,10 +164,6 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 
 	shader->Upload("uOcclusionFactor"_hash, 0.15f);
 
-	// bind the gbuffers depth texture
-	shader->Upload("texGBufferA"_hash, 0);
-	api->LazyBindTexture(0, gbuffer.GetTextures()[0]->GetTargetType(), gbuffer.GetTextures()[0]->GetLocation());
-
 	api->SetDepthEnabled(true); 
 
 	for (OutlineExtension::OutlineList const& list : outlines.GetOutlineLists())
