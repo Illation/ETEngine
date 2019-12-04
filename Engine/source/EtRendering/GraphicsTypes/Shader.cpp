@@ -44,6 +44,9 @@ ShaderData::~ShaderData()
 	}
 
 	Viewport::GetCurrentApiContext()->DeleteProgram(m_ShaderProgram);
+
+	render::parameters::DestroyBlock(m_CurrentUniforms);
+	render::parameters::DestroyBlock(m_DefaultUniforms);
 }
 
 
@@ -154,6 +157,7 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 	//------------------
 	api->SetShader(m_Data);
 	GetUniformLocations(shaderProgram, m_Data->m_Uniforms);
+	InitUniforms();
 	GetAttributes(shaderProgram, m_Data->m_Attributes);
 
 	// hook up shared uniform variables if the shader requires it
@@ -394,7 +398,57 @@ void ShaderAsset::GetUniformLocations(T_ShaderLoc const shaderProgram, std::map<
 }
 
 //---------------------------------
-// ShaderAsset::GetUniformLocations
+// ShaderAsset::InitUniforms
+//
+// Extract shader uniforms from a program
+//
+void ShaderAsset::InitUniforms()
+{
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	int32 const count = api->GetUniformCount(m_Data->m_ShaderProgram);
+
+	for (int32 uniIdx = 0; uniIdx < count; ++uniIdx)
+	{
+		std::vector<UniformDescriptor> unis;
+		api->GetActiveUniforms(m_Data->m_ShaderProgram, static_cast<uint32>(uniIdx), unis);
+
+		for (UniformDescriptor const& uni : unis)
+		{
+			// #todo: exclude uniforms from shared block - check glGetActiveUniformBlockiv
+
+			T_Hash const hash = GetHash(uni.name);
+
+			// ensure no hash collisions
+			ET_ASSERT(std::find(m_Data->m_UniformIds.cbegin(), m_Data->m_UniformIds.cend(), hash) == m_Data->m_UniformIds.cend());
+
+			m_Data->m_UniformIds.push_back(hash);
+
+			m_Data->m_UniformLayout.push_back(render::UniformParam());
+			render::UniformParam& uniParam = m_Data->m_UniformLayout[m_Data->m_UniformLayout.size() - 1];
+			uniParam.location = uni.location;
+			uniParam.type = uni.type;
+			uniParam.offset = m_Data->m_UniformDataSize;
+
+			m_Data->m_UniformDataSize += render::parameters::GetSize(uni.type);
+		}
+	}
+
+	m_Data->m_DefaultUniforms = render::parameters::CreateBlock(m_Data->m_UniformDataSize);
+
+	// init defaults
+	for (render::UniformParam const& param : m_Data->m_UniformLayout)
+	{
+		api->PopulateUniform(m_Data->m_ShaderProgram, param.location, param.type, static_cast<void*>(m_Data->m_DefaultUniforms + param.offset));
+	}
+
+	// current state is default state
+	m_Data->m_CurrentUniforms = render::parameters::CreateBlock(m_Data->m_UniformDataSize);
+	render::parameters::CopyBlockData(m_Data->m_DefaultUniforms, m_Data->m_CurrentUniforms, m_Data->m_UniformDataSize);
+}
+
+//---------------------------------
+// ShaderAsset::GetAttributes
 //
 // Extract the vertex attributes from a program, provided it has a vertex shader
 //

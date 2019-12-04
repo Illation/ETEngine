@@ -258,3 +258,39 @@ enum class E_DepthFunc : uint8
 	GEqual,
 	Always
 };
+
+//---------------------------------
+// E_ParamType
+//
+// Parameter types for shaders or materials
+//
+enum class E_ParamType : uint8
+{
+	Texture2D,
+	Texture3D,
+	TextureCube,
+	TextureShadow,
+	Matrix4x4,
+	Matrix3x3,
+	Vector4,
+	Vector3,
+	Vector2,
+	UInt,
+	Int,
+	Float,
+	Boolean,
+
+	Invalid
+};
+
+//---------------------------------
+// UniformDescriptor
+//
+// access information for a uniform parameter within a parameterBlock
+//
+struct UniformDescriptor
+{
+	T_UniformLoc location;
+	E_ParamType type;
+	std::string name;
+};

@@ -1044,6 +1044,56 @@ int32 GL_CONTEXT_CLASSNAME::GetUniformCount(T_ShaderLoc const program) const
 //
 // Get a list of initialized uniform objects for a particular uniform index
 //
+void GL_CONTEXT_CLASSNAME::GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<UniformDescriptor>& uniforms) const
+{
+	GLint arrayCount; // support 1D arrays of structs
+	GLenum type;
+
+	const GLsizei bufSize = 256;
+	GLchar name[bufSize];
+	GLsizei length;
+
+	glGetActiveUniform(program, index, bufSize, &length, &arrayCount, &type, name);
+	std::string uniName = std::string(name, length);
+	std::string endName;
+
+	// if we have an array of structs, separate out the beginning and end bit so we can create our name with the index
+	if (arrayCount > 1)
+	{
+		size_t const found = uniName.find(']');
+
+		if (found < uniName.size() - 1)
+		{
+			endName = uniName.substr(uniName.find(']') + 1);
+		}
+
+		uniName = uniName.substr(0, uniName.find('['));
+	}
+
+	// for each array uniform (or the single uniform
+	for (GLint arrayIdx = 0; arrayIdx < arrayCount; ++arrayIdx)
+	{		
+		uniforms.push_back(UniformDescriptor());
+		UniformDescriptor& uni = uniforms[uniforms.size() - 1];
+
+		// generate the full name
+		uni.name = uniName;
+		if (arrayCount > 1)
+		{
+			uni.name += "[" + std::to_string(arrayIdx) + "]" + endName;
+		}
+
+		uni.type = ParseParamType(type);
+
+		uni.location = glGetUniformLocation(program, uni.name.c_str());
+	}
+}
+
+//---------------------------------
+// GlContext::GetActiveUniforms
+//
+// Get a list of initialized uniform objects for a particular uniform index
+//
 void GL_CONTEXT_CLASSNAME::GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<I_Uniform*>& uniforms) const
 {
 	GLint arrayCount; // support 1D arrays of structs
@@ -1335,6 +1385,55 @@ void GL_CONTEXT_CLASSNAME::GetActiveAttribute(T_ShaderLoc const program, uint32 
 T_AttribLoc GL_CONTEXT_CLASSNAME::GetAttributeLocation(T_ShaderLoc const program, std::string const& name) const
 {
 	return glGetAttribLocation(program, name.c_str());
+}
+
+//---------------------------------
+// GlContext::PopulateUniform
+//
+// Fill the data with the shaders current parameter value
+//
+void GL_CONTEXT_CLASSNAME::PopulateUniform(T_ShaderLoc const program, T_UniformLoc const location, E_ParamType const type, void* data) const
+{
+	switch (type)
+	{
+	case E_ParamType::Texture2D:
+	case E_ParamType::Texture3D:
+	case E_ParamType::TextureCube:
+	case E_ParamType::TextureShadow:
+		*static_cast<TextureData const**>(data) = nullptr;
+		return;
+	case E_ParamType::Matrix4x4:
+		glGetUniformfv(program, location, etm::valuePtr(*static_cast<mat4*>(data)));
+		return;
+	case E_ParamType::Matrix3x3:
+		glGetUniformfv(program, location, etm::valuePtr(*static_cast<mat3*>(data)));
+		return;
+	case E_ParamType::Vector4:
+		glGetUniformfv(program, location, etm::valuePtr(*static_cast<vec4*>(data)));
+		return;
+	case E_ParamType::Vector3:
+		glGetUniformfv(program, location, etm::valuePtr(*static_cast<vec3*>(data)));
+		return;
+	case E_ParamType::Vector2:
+		glGetUniformfv(program, location, etm::valuePtr(*static_cast<vec2*>(data)));
+		return;
+	case E_ParamType::UInt:
+		glGetUniformuiv(program, location, static_cast<uint32*>(data));
+		return;
+	case E_ParamType::Int:
+		glGetUniformiv(program, location, static_cast<int32*>(data));
+		return;
+	case E_ParamType::Float:
+		glGetUniformfv(program, location, static_cast<float*>(data));
+		return;
+	case E_ParamType::Boolean:
+		int32 temp;
+		glGetUniformiv(program, location, &temp);
+		*static_cast<bool*>(data) = static_cast<bool>(temp);
+		return;
+	}
+
+	ET_ASSERT(true, "Unhandled parameter type!");
 }
 
 //---------------------------------
@@ -2069,3 +2168,30 @@ GLenum GL_CONTEXT_CLASSNAME::ConvDepthFunction(E_DepthFunc const func) const
 	ET_ASSERT(true, "Unhandled depth function!");
 	return 0;
 }
+
+//---------------------------------
+// GlContext::ParseParamType
+//
+E_ParamType GL_CONTEXT_CLASSNAME::ParseParamType(GLenum const param) const
+{
+	switch (param)
+	{
+	case GL_SAMPLER_2D:			return E_ParamType::Texture2D;
+	case GL_SAMPLER_3D:			return E_ParamType::Texture3D;
+	case GL_SAMPLER_CUBE:		return E_ParamType::TextureCube;
+	case GL_SAMPLER_2D_SHADOW:	return E_ParamType::TextureShadow;
+	case GL_FLOAT_MAT4:			return E_ParamType::Matrix4x4;
+	case GL_FLOAT_MAT3:			return E_ParamType::Matrix3x3;
+	case GL_FLOAT_VEC4:			return E_ParamType::Vector4;
+	case GL_FLOAT_VEC3:			return E_ParamType::Vector3;
+	case GL_FLOAT_VEC2:			return E_ParamType::Vector2;
+	case GL_UNSIGNED_INT:		return E_ParamType::UInt;
+	case GL_INT:				return E_ParamType::Int;
+	case GL_FLOAT:				return E_ParamType::Float;
+	case GL_BOOL:				return E_ParamType::Boolean;
+	}
+
+	ET_ASSERT(true, "Unhandled GLenum parameter type!");
+	return E_ParamType::Invalid;
+}
+

@@ -140,8 +140,11 @@ public:
 	virtual int32 GetAttributeCount(T_ShaderLoc const program) const = 0;
 	virtual int32 GetUniformCount(T_ShaderLoc const program) const = 0;
 	virtual void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<I_Uniform*>& uniforms) const = 0;
+	virtual void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<UniformDescriptor>& uniforms) const = 0;
 	virtual void GetActiveAttribute(T_ShaderLoc const program, uint32 const index, AttributeDescriptor& info) const = 0;
 	virtual T_AttribLoc GetAttributeLocation(T_ShaderLoc const program, std::string const& name) const = 0;
+
+	virtual void PopulateUniform(T_ShaderLoc const program, T_UniformLoc const location, E_ParamType const type, void* data) const = 0;
 
 	virtual void UploadUniform(const Uniform<bool> &uniform) = 0;
 	virtual void UploadUniform(const Uniform<int32> &uniform) = 0;

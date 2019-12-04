@@ -136,9 +136,12 @@ public:
 
 	int32 GetAttributeCount(T_ShaderLoc const program) const override;
 	int32 GetUniformCount(T_ShaderLoc const program) const override;
+	void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<UniformDescriptor>& uniforms) const override;
 	void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<I_Uniform*>& uniforms) const override;
 	void GetActiveAttribute(T_ShaderLoc const program, uint32 const index, AttributeDescriptor& info) const override;
 	T_AttribLoc GetAttributeLocation(T_ShaderLoc const program, std::string const& name) const override;
+
+	void PopulateUniform(T_ShaderLoc const program, T_UniformLoc const location, E_ParamType const type, void* data) const override;
 
 	void UploadUniform(const Uniform<bool> &uniform) override;
 	void UploadUniform(const Uniform<int32> &uniform) override;
@@ -222,6 +225,8 @@ private:
 	GLenum ConvWrapMode(E_TextureWrapMode const wrap) const;
 	GLenum ConvCompareMode(E_TextureCompareMode const comp) const;
 	GLenum ConvDepthFunction(E_DepthFunc const func) const;
+
+	E_ParamType ParseParamType(GLenum const param) const;
 
 	//================
 	// Current State

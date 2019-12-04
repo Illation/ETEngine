@@ -1,5 +1,6 @@
 #pragma once
 #include "VertexInfo.h"
+#include "ParameterBlock.h"
 
 #include <EtCore/Content/Asset.h>
 #include <EtCore/Helper/LinkerUtils.h>
@@ -32,7 +33,6 @@ public:
 	// accessors
 	//---------------------
 	T_ShaderLoc const GetProgram() const { return m_ShaderProgram; }
-	std::string const& GetName() const { return m_Name; }
 	std::vector<T_AttributeLocation> const& GetAttributes() const { return m_Attributes; }
 
 	// accessors
@@ -45,12 +45,21 @@ public:
 private:
 
 	T_ShaderLoc m_ShaderProgram;
-	std::string m_Name;
 
-	std::map<T_Hash, I_Uniform*> m_Uniforms;
+	// attribute data
 	std::vector<T_AttributeLocation> m_Attributes;
 
+	// uniform data
+	std::vector<render::UniformParam> m_UniformLayout;
+	std::vector<T_Hash> m_UniformIds;
+	render::T_ParameterBlock m_DefaultUniforms = nullptr;
+	render::T_ParameterBlock m_CurrentUniforms = nullptr;
+	size_t m_UniformDataSize = 0u;
+
 	T_BlockIndex m_SharedVarIdx;
+
+	// deprecated
+	std::map<T_Hash, I_Uniform*> m_Uniforms;
 };
 
 //---------------------------------
@@ -85,6 +94,7 @@ private:
 
 	bool ReplaceInclude(std::string &line);
 
+	void InitUniforms();
 	void GetUniformLocations(T_ShaderLoc const shaderProgram, std::map<uint32, I_Uniform*>& uniforms);
 	void GetAttributes(T_ShaderLoc const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes);
 
