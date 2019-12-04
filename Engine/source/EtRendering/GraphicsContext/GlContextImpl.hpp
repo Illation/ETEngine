@@ -1011,6 +1011,64 @@ bool GL_CONTEXT_CLASSNAME::IsBlockIndexValid(T_BlockIndex const index) const
 	return (index != GL_INVALID_INDEX);
 }
 
+//---------------------------------
+// GlContext::GetUniformBlockNames
+//
+std::vector<std::string> GL_CONTEXT_CLASSNAME::GetUniformBlockNames(T_ShaderLoc const program) const
+{
+	// amount of uniform blocks in the shader
+	GLint blockCount = 0;
+	glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &blockCount);
+
+	// length of the longest blocks name for our string buffer
+	GLint maxNameLength = 0;
+	glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &maxNameLength);
+
+	std::vector<std::string> ret;
+
+	GLchar* name = new GLchar[maxNameLength]; // no need to keep reallocating
+
+	// get all the names
+	for (GLint i = 0; i < blockCount; ++i)
+	{
+		GLsizei length;
+		glGetActiveUniformBlockName(program, static_cast<GLuint>(i), maxNameLength, &length, name);
+		ret.emplace_back(name, length);
+	}
+
+	delete[] name;
+
+	return ret; // should be moved automatically
+}
+
+//--------------------------------------
+// GlContext::GetUniformIndicesForBlock
+//
+std::vector<int32> GL_CONTEXT_CLASSNAME::GetUniformIndicesForBlock(T_ShaderLoc const program, T_BlockIndex const blockIndex) const
+{
+	std::vector<int32> ret;
+
+	GLint indexCount = 0;
+	glGetActiveUniformBlockiv(program, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &indexCount);
+
+	if (indexCount <= 0)
+	{
+		return ret;
+	}
+
+	GLint* indices = new GLint[indexCount];
+	glGetActiveUniformBlockiv(program, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices);
+
+	for (GLint i = 0; i < indexCount; ++i)
+	{
+		ret.emplace_back(indices[i]);
+	}
+
+	delete[] indices;
+
+	return ret;
+}
+
 //-----------------------------------
 // GlContext::SetUniformBlockBinding
 //

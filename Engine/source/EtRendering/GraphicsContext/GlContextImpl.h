@@ -131,6 +131,8 @@ public:
 
 	T_BlockIndex GetUniformBlockIndex(T_ShaderLoc const program, std::string const& blockName) const override;
 	bool IsBlockIndexValid(T_BlockIndex const index) const override;
+	std::vector<std::string> GetUniformBlockNames(T_ShaderLoc const program) const override;
+	std::vector<int32> GetUniformIndicesForBlock(T_ShaderLoc const program, T_BlockIndex const blockIndex) const override;
 
 	void SetUniformBlockBinding(T_ShaderLoc const program, T_BlockIndex const blockIndex, uint32 const bindingIndex) const override;
 

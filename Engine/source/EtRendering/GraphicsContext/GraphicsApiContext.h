@@ -134,6 +134,8 @@ public:
 
 	virtual T_BlockIndex GetUniformBlockIndex(T_ShaderLoc const program, std::string const& blockName) const = 0;
 	virtual bool IsBlockIndexValid(T_BlockIndex const index) const = 0;
+	virtual std::vector<std::string> GetUniformBlockNames(T_ShaderLoc const program) const = 0;
+	virtual std::vector<int32> GetUniformIndicesForBlock(T_ShaderLoc const program, T_BlockIndex const blockIndex) const = 0;
 
 	virtual void SetUniformBlockBinding(T_ShaderLoc const program, T_BlockIndex const blockIndex, uint32 const bindingIndex) const = 0;
 

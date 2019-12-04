@@ -47,18 +47,23 @@ private:
 	T_ShaderLoc m_ShaderProgram;
 
 	// attribute data
+	//----------------
 	std::vector<T_AttributeLocation> m_Attributes;
 
 	// uniform data
+	//--------------
+
+	// loose uniforms
 	std::vector<render::UniformParam> m_UniformLayout;
 	std::vector<T_Hash> m_UniformIds;
-	render::T_ParameterBlock m_DefaultUniforms = nullptr;
 	render::T_ParameterBlock m_CurrentUniforms = nullptr;
 	size_t m_UniformDataSize = 0u;
 
-	T_BlockIndex m_SharedVarIdx;
+	// within blocks
+	std::vector<T_Hash> m_UniformBlocks; // addressed by their indices
 
 	// deprecated
+	/////////////
 	std::map<T_Hash, I_Uniform*> m_Uniforms;
 };
 

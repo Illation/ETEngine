@@ -46,7 +46,6 @@ ShaderData::~ShaderData()
 	Viewport::GetCurrentApiContext()->DeleteProgram(m_ShaderProgram);
 
 	render::parameters::DestroyBlock(m_CurrentUniforms);
-	render::parameters::DestroyBlock(m_DefaultUniforms);
 }
 
 
@@ -159,14 +158,6 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 	GetUniformLocations(shaderProgram, m_Data->m_Uniforms);
 	InitUniforms();
 	GetAttributes(shaderProgram, m_Data->m_Attributes);
-
-	// hook up shared uniform variables if the shader requires it
-	render::SharedVarController const& sharedVarController = RenderingSystems::Instance()->GetSharedVarController();
-	m_Data->m_SharedVarIdx = api->GetUniformBlockIndex(shaderProgram, sharedVarController.GetBlockName());
-	if (api->IsBlockIndexValid(m_Data->m_SharedVarIdx))
-	{
-		api->SetUniformBlockBinding(shaderProgram, m_Data->m_SharedVarIdx, sharedVarController.GetBufferBinding());
-	}
 
 	// all done
 	return true;
@@ -406,17 +397,56 @@ void ShaderAsset::InitUniforms()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
+	// uniform blocks
+	//----------------
+	std::vector<std::string> blockNames = api->GetUniformBlockNames(m_Data->m_ShaderProgram);
+	for (std::string const& blockName : blockNames)
+	{
+		m_Data->m_UniformBlocks.emplace_back(GetHash(blockName));
+	}
+
+	// hook up shared uniform variables if the shader requires it
+	render::SharedVarController const& sharedVarController = RenderingSystems::Instance()->GetSharedVarController();
+
+	T_Hash const sharedBlockId = GetHash(sharedVarController.GetBlockName());
+	auto const foundBlock = std::find(m_Data->m_UniformBlocks.cbegin(), m_Data->m_UniformBlocks.cend(), sharedBlockId);
+
+	if (foundBlock != m_Data->m_UniformBlocks.cend())
+	{
+		T_BlockIndex const blockIndex = static_cast<T_BlockIndex>(foundBlock - m_Data->m_UniformBlocks.cbegin());
+		api->SetUniformBlockBinding(m_Data->m_ShaderProgram, blockIndex, sharedVarController.GetBufferBinding());
+	}
+
+	// get all uniforms that are contained by uniform blocsk so we can exclude them
+	std::vector<int32> blockContainedUniIndices;
+	for (T_BlockIndex blockIdx = 0; blockIdx < static_cast<T_BlockIndex>(m_Data->m_UniformBlocks.size()); ++blockIdx)
+	{
+		std::vector<int32> indicesForCurrentBlock = api->GetUniformIndicesForBlock(m_Data->m_ShaderProgram, blockIdx);
+
+		// merge with blockContainedUniIndices
+		blockContainedUniIndices.reserve(blockContainedUniIndices.size() + indicesForCurrentBlock.size());
+		blockContainedUniIndices.insert(blockContainedUniIndices.end(), indicesForCurrentBlock.begin(), indicesForCurrentBlock.end());
+	}
+
+	// default uniform variables
+	//-----------------------------
 	int32 const count = api->GetUniformCount(m_Data->m_ShaderProgram);
 
 	for (int32 uniIdx = 0; uniIdx < count; ++uniIdx)
 	{
+		// skip uniforms contained in blocks
+		if (std::find(blockContainedUniIndices.cbegin(), blockContainedUniIndices.cend(), uniIdx) != blockContainedUniIndices.cend())
+		{
+			continue;
+		}
+
+		// get all descriptors for index (may be more than one if contained by array)
 		std::vector<UniformDescriptor> unis;
 		api->GetActiveUniforms(m_Data->m_ShaderProgram, static_cast<uint32>(uniIdx), unis);
 
+		// create a layout for each
 		for (UniformDescriptor const& uni : unis)
 		{
-			// #todo: exclude uniforms from shared block - check glGetActiveUniformBlockiv
-
 			T_Hash const hash = GetHash(uni.name);
 
 			// ensure no hash collisions
@@ -434,17 +464,14 @@ void ShaderAsset::InitUniforms()
 		}
 	}
 
-	m_Data->m_DefaultUniforms = render::parameters::CreateBlock(m_Data->m_UniformDataSize);
+	// allocate parameters
+	m_Data->m_CurrentUniforms = render::parameters::CreateBlock(m_Data->m_UniformDataSize);
 
 	// init defaults
 	for (render::UniformParam const& param : m_Data->m_UniformLayout)
 	{
-		api->PopulateUniform(m_Data->m_ShaderProgram, param.location, param.type, static_cast<void*>(m_Data->m_DefaultUniforms + param.offset));
+		api->PopulateUniform(m_Data->m_ShaderProgram, param.location, param.type, static_cast<void*>(m_Data->m_CurrentUniforms + param.offset));
 	}
-
-	// current state is default state
-	m_Data->m_CurrentUniforms = render::parameters::CreateBlock(m_Data->m_UniformDataSize);
-	render::parameters::CopyBlockData(m_Data->m_DefaultUniforms, m_Data->m_CurrentUniforms, m_Data->m_UniformDataSize);
 }
 
 //---------------------------------
