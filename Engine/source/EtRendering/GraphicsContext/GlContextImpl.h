@@ -13,6 +13,54 @@
 //
 class GL_CONTEXT_CLASSNAME final : public I_GraphicsApiContext
 {
+	// definitions
+	//-------------
+
+	//----------------------------
+	// TextureUnitCache
+	//
+	// Manages assignment of bindings for textures
+	//
+	class TextureUnitCache
+	{
+		// definitions
+		//-------------
+		struct Unit
+		{
+			Unit(T_TextureUnit const u = 0u, T_TextureLoc const t = 0u) : unit(u), texture(t) {}
+
+			T_TextureUnit unit;
+			T_TextureLoc texture;
+		};
+
+		typedef std::list<Unit> T_LruList;
+
+		// construct destruct
+		//--------------------
+	public:
+		TextureUnitCache(E_TextureType const type, size_t const size);
+
+		// accessors
+		//---------------
+		E_TextureType const GetType() { return m_Type; }
+
+		// functionality
+		//---------------
+		T_TextureUnit Bind(T_TextureLoc const tex, bool const ensureActive, T_TextureUnit& activeUnit);
+		void OnTextureDelete(T_TextureLoc const tex);
+
+		// Data
+		///////
+
+	private:
+
+		E_TextureType const m_Type;
+		size_t const m_MaxUnits;
+
+		T_LruList m_List;
+		std::unordered_map<T_TextureLoc, T_LruList::iterator> m_Map;
+	};
+
 public:
 
 	// init deinit
@@ -54,12 +102,7 @@ public:
 
 	void BindRenderbuffer(T_RbLoc const handle) override;
 
-	void SetActiveTexture(uint32 const unit) override;
-	void BindTexture(E_TextureType const target, T_TextureLoc const handle) override;
-
-	//Makes sure that a texture is bound to a units target for shading, 
-	//only changes active texture unit if the texture was not bound yet
-	void LazyBindTexture(uint32 const unit, E_TextureType const target, T_TextureLoc const handle) override;
+	T_TextureUnit BindTexture(E_TextureType const target, T_TextureLoc const texLoc, bool const ensureActive) override;
 
 	void BindVertexArray(T_ArrayLoc const vertexArray) override;
 	void BindBuffer(E_BufferType const target, T_BufferLoc const buffer) override;
@@ -271,10 +314,8 @@ private:
 
 	ShaderData const* m_pBoundShader = nullptr;
 
-	uint32 m_ActiveTexture = 0;
-	int32 m_NumTextureUnits; //depends on gpu and drivers
-	// #todo: in the future, abstract texture data here to support all types of textures
-	std::vector<std::map<E_TextureType, T_TextureLoc> > m_TextureUnits; 
+	T_TextureUnit m_ActiveUnit = 0u;
+	std::vector<TextureUnitCache> m_TextureUnits;
 
 	T_ArrayLoc m_VertexArray = 0;
 	std::map<E_BufferType, T_BufferLoc> m_BufferTargets;

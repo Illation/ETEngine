@@ -3,6 +3,115 @@
 #include <EtRendering/GraphicsTypes/TextureData.h>
 
 
+//====================
+// Texture Unit Cache
+//====================
+
+
+//------------------------------------
+// GlContext::TextureUnitCache::c-tor
+//
+GL_CONTEXT_CLASSNAME::TextureUnitCache::TextureUnitCache(E_TextureType const type, size_t const size) 
+	: m_Type(Type)
+	, m_MaxUnits(size) 
+{
+	for (T_TextureUnit unit = 0u; unit < m_MaxUnits; ++unit)
+	{
+		m_List.emplace_front(unit);
+	}
+}
+
+//-----------------------------------
+// GlContext::TextureUnitCache::Bind
+//
+// Ensure a texture is bound, and return the unit it is bound to.
+// If the texture isn't bound, assign it to the least recently used unit
+// If the texture is bound and ensureActive is false, it is not guaranteed that the active unit is set to the current texture
+//
+T_TextureUnit GL_CONTEXT_CLASSNAME::TextureUnitCache::Bind(T_TextureLoc const tex, bool const ensureActive, T_TextureUnit& activeUnit)
+{
+	// we don't want to be using this function to unbind textures
+	ET_ASSERT(tex != 0u);
+
+	auto mapIt = m_Map.find(tex); // check if the texture is currently bound
+
+	if (mapIt != m_Map.cend()) // the texture is already bound
+	{
+		// this is now the most recently used unit
+		m_List.push_front(*(mapIt->second));
+		m_List.pop_back();
+		mapIt->second = m_List.begin();
+
+		Unit const& binding = *mapIt.second;
+
+		// for texture modification purposes, this is now ensured to be the active unit
+		if (ensureActive && (activeUnit != binding.unit))
+		{
+			activeUnit = currentBinding.unit;
+			glActiveTexture(GL_TEXTURE0 + activeUnit);
+		}
+
+		return binding.unit;
+	}
+	else // the texture isn't bound
+	{
+		// find the least recently used unit
+		Unit currentBinding = m_List.back();
+
+		// remove mapping of LRU unit, unless no texture is bound to it yet
+		if (currentBinding.texture != 0u)
+		{
+			auto oldMapIt = m_Map.find(currentBinding.texture);
+			ET_ASSERT(oldMapIt != m_Map.cend());
+			m_Map.erase(oldMapIt);
+		}
+
+		ET_ASSERT(currentBinding.texture != tex);
+		currentBinding.texture = tex;
+
+		// this unit is now most recently used
+		m_List.push_front(currentBinding);
+		m_List.pop_back();
+		m_Map.emplace(tex, m_List.begin());
+
+		// we need to ensure that this is the active unit so we can bind a new texture to it
+		if (activeUnit != currentBinding.unit)
+		{
+			activeUnit = currentBinding.unit;
+			glActiveTexture(GL_TEXTURE0 + activeUnit);
+		}
+
+		// do the binding
+		glBindTexture(ConvTextureType(m_Type), tex);
+
+		return currentBinding.unit;
+	}
+}
+
+//----------------------------------------------
+// GlContext::TextureUnitCache::OnTextureDelete
+//
+// When a texture gets deleted, texture units referring to it get reset
+//
+void GL_CONTEXT_CLASSNAME::TextureUnitCache::OnTextureDelete(T_TextureLoc const tex)
+{
+	auto mapIt = m_Map.find(tex);
+
+	// the texture is currently bound
+	if (mapIt != m_Map.cend()) 
+	{
+		// LRU unit is unit with texture, texture is unset
+		m_List.emplace_back(mapIt->second->unit, 0u)
+		m_List.erase(mapIt->second);
+
+		// unreference texture from map
+		m_Map.erase(mapIt);
+	}
+
+	// opengl will have freed the unit in its call upon glDeleteTextures
+}
+
+
 //===================
 // Open GL Context
 //===================
@@ -80,16 +189,11 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 	// texture units
 	//***************
 
-	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_NumTextureUnits);
-	for (int32 i = 0; i < m_NumTextureUnits; i++)
+	int32 maxTexUnits;
+	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTexUnits);
+	for (uint8 typeIdx = 0u; typeIdx < static_cast<uint8>(E_TextureType::COUNT); ++typeIdx)
 	{
-		std::map<E_TextureType, T_TextureLoc> targets =
-		{
-			{ E_TextureType::Texture2D, 0 },
-			{ E_TextureType::Texture3D, 0 },
-			{ E_TextureType::CubeMap, 0 },
-		};
-		m_TextureUnits.push_back(targets);
+		m_TextureUnits.emplace_back(static_cast<E_TextureType>(typeIdx), maxTexUnits);
 	}
 
 	// draw buffers
@@ -394,46 +498,20 @@ void GL_CONTEXT_CLASSNAME::BindRenderbuffer(T_RbLoc const handle)
 }
 
 //---------------------------------
-// GlContext::SetActiveTexture
-//
-// Set the currently active texture unit
-//
-void GL_CONTEXT_CLASSNAME::SetActiveTexture(uint32 const unit)
-{
-	if (!(m_ActiveTexture == unit))
-	{
-		m_ActiveTexture = unit;
-		glActiveTexture(GL_TEXTURE0 + unit);
-	}
-}
-
-//---------------------------------
 // GlContext::BindTexture
 //
 // Bind a texture to a target
 //
-void GL_CONTEXT_CLASSNAME::BindTexture(E_TextureType const target, T_TextureLoc const handle)
+void GL_CONTEXT_CLASSNAME::BindTexture(E_TextureType const target, T_TextureLoc const texLoc, bool const ensureActive)
 {
-	if (!(m_TextureUnits[m_ActiveTexture][target] == handle))
-	{
-		m_TextureUnits[m_ActiveTexture][target] = handle;
-		glBindTexture(ConvTextureType(target), handle);
-	}
-}
+	auto cacheIt = std::find_if(m_TextureUnits.cbegin(), m_TextureUnits.cend(), [target](TextureUnitCache const& cache)
+		{
+			return cache.GetType() == target;
+		});
 
-//---------------------------------
-// GlContext::LazyBindTexture
-//
-// If the current texture isn't bound to its target, bind it
-//
-void GL_CONTEXT_CLASSNAME::LazyBindTexture(uint32 const unit, E_TextureType const target, T_TextureLoc const handle)
-{
-	if (!(m_TextureUnits[unit][target] == handle))
-	{
-		SetActiveTexture(unit);
-		m_TextureUnits[m_ActiveTexture][target] = handle;
-		glBindTexture(ConvTextureType(target), handle);
-	}
+	ET_ASSERT(cacheIt != m_TextureUnits.cend());
+
+	cacheIt->Bind(texLoc, ensureActive, m_ActiveUnit);
 }
 
 //---------------------------------
@@ -736,18 +814,18 @@ T_TextureLoc GL_CONTEXT_CLASSNAME::GenerateTexture() const
 void GL_CONTEXT_CLASSNAME::DeleteTexture(T_TextureLoc& texLoc)
 {
 	// reset bound textures
-	for (std::map<E_TextureType, T_TextureLoc>& unit : m_TextureUnits)
+	auto cacheIt = std::find_if(m_TextureUnits.cbegin(), m_TextureUnits.cend(), [target](TextureUnitCache const& cache)
 	{
-		for (auto& target : unit)
-		{
-			if (target.second == texLoc)
-			{
-				target.second = 0u;
-			}
-		}
-	}
+		return cache.GetType() == target;
+	});
+
+	ET_ASSERT(cacheIt != m_TextureUnits.cend());
+
+	cacheIt->OnDeleteTexture(texLoc);
 	
 	glDeleteTextures(1, &texLoc);
+
+	texLoc = 0u;
 }
 
 //---------------------------------

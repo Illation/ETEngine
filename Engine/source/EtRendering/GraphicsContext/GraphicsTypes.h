@@ -5,6 +5,7 @@ typedef int32 T_UniformLoc;
 typedef uint32 T_ShaderLoc;
 typedef int32 T_BlockIndex;
 
+typedef uint32 T_TextureUnit;
 typedef uint32 T_TextureLoc;
 typedef uint64 T_TextureHandle;
 
@@ -82,7 +83,9 @@ enum class E_TextureType : uint8
 {
 	Texture2D,
 	Texture3D,
-	CubeMap
+	CubeMap,
+
+	COUNT
 };
 
 //---------------------------------

@@ -59,12 +59,8 @@ public:
 
 	virtual void BindRenderbuffer(T_RbLoc const handle) = 0;
 
-	virtual void SetActiveTexture(uint32 const unit) = 0;
-	virtual void BindTexture(E_TextureType const target, T_TextureLoc const handle) = 0;
-
-	//Makes sure that a texture is bound to a units target for shading, 
-	//only changes active texture unit if the texture was not bound yet
-	virtual void LazyBindTexture(uint32 const unit, E_TextureType const target, T_TextureLoc const handle) = 0;
+	// uses the LRU texture unit as a binding point and returns it's index, or the unit the texture is currently bound to
+	virtual T_TextureUnit BindTexture(E_TextureType const target, T_TextureLoc const texLoc, bool const ensureActive = true) = 0;
 
 	virtual void BindVertexArray(T_ArrayLoc const vertexArray) = 0;
 	virtual void BindBuffer(E_BufferType const target, T_BufferLoc const buffer) = 0;
@@ -148,15 +144,15 @@ public:
 
 	virtual void PopulateUniform(T_ShaderLoc const program, T_UniformLoc const location, E_ParamType const type, void* data) const = 0;
 
-	virtual void UploadUniform(const Uniform<bool> &uniform) = 0;
-	virtual void UploadUniform(const Uniform<int32> &uniform) = 0;
-	virtual void UploadUniform(const Uniform<uint32> &uniform) = 0;
-	virtual void UploadUniform(const Uniform<float> &uniform) = 0;
-	virtual void UploadUniform(const Uniform<vec2> &uniform) = 0;
-	virtual void UploadUniform(const Uniform<vec3> &uniform) = 0;
-	virtual void UploadUniform(const Uniform<vec4> &uniform) = 0;
-	virtual void UploadUniform(const Uniform<mat3> &uniform) = 0;
-	virtual void UploadUniform(const Uniform<mat4> &uniform) = 0;
+	virtual void UploadUniform(T_UniformLoc const location, bool const data) = 0;
+	virtual void UploadUniform(T_UniformLoc const location, int32 const data) = 0;
+	virtual void UploadUniform(T_UniformLoc const location, uint32 const data) = 0;
+	virtual void UploadUniform(T_UniformLoc const location, float const data) = 0;
+	virtual void UploadUniform(T_UniformLoc const location, vec2 const data) = 0;
+	virtual void UploadUniform(T_UniformLoc const location, vec3 const& data) = 0;
+	virtual void UploadUniform(T_UniformLoc const location, vec4 const& data) = 0;
+	virtual void UploadUniform(T_UniformLoc const location, mat3 const& data) = 0;
+	virtual void UploadUniform(T_UniformLoc const location, mat4 const& data) = 0;
 
 	virtual void DefineVertexAttributePointer(uint32 const index, 
 		int32 const size, 
