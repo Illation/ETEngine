@@ -6,6 +6,40 @@
 #error you must declare the name of the class with #define GL_CONTEXT_CLASSNAME YourGlImplementationClassName
 #endif GL_CONTEXT_CLASSNAME
 
+#ifndef GL_CONTEXT_NS
+#	define GL_CONTEXT_NS GL_CONTEXT_CLASSNAME ## _ns
+#endif GL_CONTEXT_NS
+
+
+//---------------------------------
+// GL_CONTEXT_NS
+//
+// conversion functions
+//
+namespace GL_CONTEXT_NS {
+
+	GLenum ConvTextureType(E_TextureType const type);
+	GLenum ConvDataType(E_DataType const type);
+	GLenum ConvShaderType(E_ShaderType const type);
+	GLenum ConvDrawMode(E_DrawMode const mode);
+	GLenum ConvBufferType(E_BufferType const type);
+	GLenum ConvUsageHint(E_UsageHint const hint);
+	GLenum ConvAccessMode(E_AccessMode const mode);
+	GLenum ConvFaceCullMode(E_FaceCullMode const mode);
+	GLenum ConvBlendEquation(E_BlendEquation const equ);
+	GLenum ConvBlendFactor(E_BlendFactor const fac);
+	GLenum ConvColorFormat(E_ColorFormat const fmt);
+	GLenum ConvFilter(E_TextureFilterMode const filter);
+	GLenum ConvMinFilter(E_TextureFilterMode const minFilter, E_TextureFilterMode const mipFilter, bool const useMip);
+	GLenum ConvWrapMode(E_TextureWrapMode const wrap);
+	GLenum ConvCompareMode(E_TextureCompareMode const comp);
+	GLenum ConvDepthFunction(E_DepthFunc const func);
+
+	E_ParamType ParseParamType(GLenum const param);
+
+} // namespace GL_CONTEXT_NS
+
+
 //---------------------------------
 // GlContext
 //
@@ -243,9 +277,9 @@ public:
 
 private:
 
-	//===============================
-	// Open GL Conversions
-	//===============================
+	//=========
+	// Utility
+	//=========
 
 	void EnOrDisAble(bool &state, bool enabled, GLenum glState);
 
@@ -253,24 +287,6 @@ private:
 	//the index for blending must be smaller than max draw buffers too
 	void EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLenum glState, uint32 index);
 
-	GLenum ConvTextureType(E_TextureType const type) const;
-	GLenum ConvDataType(E_DataType const type) const;
-	GLenum ConvShaderType(E_ShaderType const type) const;
-	GLenum ConvDrawMode(E_DrawMode const mode) const;
-	GLenum ConvBufferType(E_BufferType const type) const;
-	GLenum ConvUsageHint(E_UsageHint const hint) const;
-	GLenum ConvAccessMode(E_AccessMode const mode) const;
-	GLenum ConvFaceCullMode(E_FaceCullMode const mode) const;
-	GLenum ConvBlendEquation(E_BlendEquation const equ) const;
-	GLenum ConvBlendFactor(E_BlendFactor const fac) const;
-	GLenum ConvColorFormat(E_ColorFormat const fmt) const;
-	GLenum ConvFilter(E_TextureFilterMode const filter) const;
-	GLenum ConvMinFilter(E_TextureFilterMode const minFilter, E_TextureFilterMode const mipFilter, bool const useMip) const;
-	GLenum ConvWrapMode(E_TextureWrapMode const wrap) const;
-	GLenum ConvCompareMode(E_TextureCompareMode const comp) const;
-	GLenum ConvDepthFunction(E_DepthFunc const func) const;
-
-	E_ParamType ParseParamType(GLenum const param) const;
 
 	//================
 	// Current State
@@ -315,6 +331,7 @@ private:
 
 	T_TextureUnit m_ActiveUnit = 0u;
 	std::vector<TextureUnitCache> m_TextureUnits;
+	bool m_BindlessTexturesAvailable = false;
 
 	T_ArrayLoc m_VertexArray = 0;
 	std::map<E_BufferType, T_BufferLoc> m_BufferTargets;

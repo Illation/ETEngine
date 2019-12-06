@@ -2,6 +2,384 @@
 #include <EtRendering/GraphicsTypes/TextureData.h>
 
 
+//======================
+// Conversion functions
+//======================
+
+
+namespace GL_CONTEXT_NS {
+
+
+//---------------------------------
+// ConvTextureType
+//
+GLenum ConvTextureType(E_TextureType const type)
+{
+	switch (type)
+	{
+	case E_TextureType::Texture2D:	return GL_TEXTURE_2D;
+	case E_TextureType::Texture3D:	return GL_TEXTURE_3D;
+	case E_TextureType::CubeMap:	return GL_TEXTURE_CUBE_MAP;
+	}
+
+	ET_ASSERT(true, "Unhandled texture type!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// ConvDataType
+//
+GLenum ConvDataType(E_DataType const type)
+{
+	switch (type)
+	{
+	case E_DataType::Byte: return GL_BYTE;
+	case E_DataType::UByte: return GL_UNSIGNED_BYTE;
+	case E_DataType::Short: return GL_SHORT;
+	case E_DataType::UShort: return GL_UNSIGNED_SHORT;
+	case E_DataType::Int: return GL_INT;
+	case E_DataType::UInt: return GL_UNSIGNED_INT;
+	case E_DataType::Half: return GL_HALF_FLOAT;
+	case E_DataType::Float: return GL_FLOAT;
+	case E_DataType::Double: return GL_DOUBLE;
+	}
+
+	ET_ASSERT(true, "Unhandled data type!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// ConvShaderType
+//
+GLenum ConvShaderType(E_ShaderType const type)
+{
+	switch (type)
+	{
+	case E_ShaderType::Compute:					return GL_COMPUTE_SHADER;
+	case E_ShaderType::Vertex:					return GL_VERTEX_SHADER;
+	case E_ShaderType::TesselationControl:		return GL_TESS_CONTROL_SHADER;
+	case E_ShaderType::TesselationEvaluation:	return GL_TESS_EVALUATION_SHADER;
+	case E_ShaderType::Geometry:				return GL_GEOMETRY_SHADER;
+	case E_ShaderType::Fragment:				return GL_FRAGMENT_SHADER;
+	}
+
+	ET_ASSERT(true, "Unhandled shader type!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// ConvDrawMode
+//
+GLenum ConvDrawMode(E_DrawMode const mode)
+{
+	switch (mode)
+	{
+	case E_DrawMode::Points:		return GL_POINTS;
+	case E_DrawMode::LineStrip:		return GL_LINE_STRIP;
+	case E_DrawMode::LineLoop:		return GL_LINE_LOOP;
+	case E_DrawMode::Lines:			return GL_LINES;
+	case E_DrawMode::TriangleStrip:	return GL_TRIANGLE_STRIP;
+	case E_DrawMode::TriangleFan:	return GL_TRIANGLE_FAN;
+	case E_DrawMode::Triangles:		return GL_TRIANGLES;
+	case E_DrawMode::Patches:		return GL_PATCHES;
+	}
+
+	ET_ASSERT(true, "Unhandled draw mode!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// ConvDrawMode
+//
+// Not all buffer types are currently listed, they will be added when support is needed
+//
+GLenum ConvBufferType(E_BufferType const type)
+{
+	switch (type)
+	{
+	case E_BufferType::Vertex:	return GL_ARRAY_BUFFER;
+	case E_BufferType::Index:	return GL_ELEMENT_ARRAY_BUFFER;
+	case E_BufferType::Uniform:	return GL_UNIFORM_BUFFER;
+	}
+
+	ET_ASSERT(true, "Unhandled buffer type!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// ConvUsageHint
+//
+GLenum ConvUsageHint(E_UsageHint const hint)
+{
+	switch (hint)
+	{
+	case E_UsageHint::Static:	return GL_STATIC_DRAW;
+	case E_UsageHint::Dynamic:	return GL_DYNAMIC_DRAW;
+	}
+
+	ET_ASSERT(true, "Unhandled usage hint!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// ConvAccessMode
+//
+GLenum ConvAccessMode(E_AccessMode const mode)
+{
+	switch (mode)
+	{
+	case E_AccessMode::Read:		return GL_READ_ONLY;
+	case E_AccessMode::Write:		return GL_WRITE_ONLY;
+	case E_AccessMode::ReadWrite:	return GL_READ_WRITE;
+	}
+
+	ET_ASSERT(true, "Unhandled access mode!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// ConvFaceCullMode
+//
+GLenum ConvFaceCullMode(E_FaceCullMode const mode)
+{
+	switch (mode)
+	{
+	case E_FaceCullMode::Front:		return GL_FRONT;
+	case E_FaceCullMode::Back:		return GL_BACK;
+	case E_FaceCullMode::FrontBack:	return GL_FRONT_AND_BACK;
+	}
+
+	ET_ASSERT(true, "Unhandled access mode!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// ConvBlendEquation
+//
+GLenum ConvBlendEquation(E_BlendEquation const equ)
+{
+	switch (equ)
+	{
+	case E_BlendEquation::Add:		return GL_FUNC_ADD;
+	case E_BlendEquation::Subtract:	return GL_FUNC_SUBTRACT;
+	case E_BlendEquation::RevSub:	return GL_FUNC_REVERSE_SUBTRACT;
+	case E_BlendEquation::Min:		return GL_MIN;
+	case E_BlendEquation::Max:		return GL_MAX;
+	}
+
+	ET_ASSERT(true, "Unhandled blend equation!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// ConvBlendFactor
+//
+GLenum ConvBlendFactor(E_BlendFactor const fac)
+{
+	switch (fac)
+	{
+	case E_BlendFactor::Zero:					return GL_ZERO;
+	case E_BlendFactor::One:					return GL_ONE;
+	case E_BlendFactor::SourceCol:				return GL_SRC_COLOR;
+	case E_BlendFactor::OneMinusSourceCol:		return GL_ONE_MINUS_SRC_COLOR;
+	case E_BlendFactor::DestCol:				return GL_DST_COLOR;
+	case E_BlendFactor::OneMinusDestCol:		return GL_ONE_MINUS_DST_COLOR;
+	case E_BlendFactor::SourceAlpha:			return GL_SRC_ALPHA;
+	case E_BlendFactor::OneMinusSourceAlpha:	return GL_ONE_MINUS_SRC_ALPHA;
+	case E_BlendFactor::DestAlpha:				return GL_DST_ALPHA;
+	case E_BlendFactor::OneMinusDestAlpha:		return GL_ONE_MINUS_DST_ALPHA;
+	case E_BlendFactor::ConstCol:				return GL_CONSTANT_COLOR;
+	case E_BlendFactor::OneMinusConstCol:		return GL_ONE_MINUS_CONSTANT_COLOR;
+	case E_BlendFactor::ConstAlpha:				return GL_CONSTANT_ALPHA;
+	case E_BlendFactor::OneMinusConstAlpha:		return GL_ONE_MINUS_CONSTANT_ALPHA;
+	}
+
+	ET_ASSERT(true, "Unhandled blend factor!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// ConvColorFormat
+//
+// must grow along with E_ColorFormat - reinterpret to GLint for internal format
+//
+GLenum ConvColorFormat(E_ColorFormat const fmt)
+{
+	switch (fmt)
+	{
+	case E_ColorFormat::Depth:			return GL_DEPTH_COMPONENT;
+	case E_ColorFormat::DepthStencil:	return GL_DEPTH_STENCIL;
+
+	case E_ColorFormat::Red:			return GL_RED;
+	case E_ColorFormat::RG:				return GL_RG;
+	case E_ColorFormat::RGB:			return GL_RGB;
+	case E_ColorFormat::RGBA:			return GL_RGBA;
+
+	case E_ColorFormat::Depth24:		return GL_DEPTH_COMPONENT24;
+
+	case E_ColorFormat::R8:				return GL_R8;
+	case E_ColorFormat::RG16f:			return GL_RG16F;
+	case E_ColorFormat::RGB16f:			return GL_RGB16F;
+	case E_ColorFormat::RGBA8:			return GL_RGBA8;
+	case E_ColorFormat::RGBA16f:		return GL_RGBA16F;
+	case E_ColorFormat::RGBA32f:		return GL_RGBA32F;
+	case E_ColorFormat::SRGB:			return GL_SRGB;
+	}
+
+	ET_ASSERT(true, "Unhandled color format!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// GetFilter
+//
+// Convert E_TextureFilterMode to OpenGL enum
+//
+GLenum ConvFilter(E_TextureFilterMode const filter)
+{
+	switch (filter)
+	{
+	case E_TextureFilterMode::Nearest: return GL_NEAREST;
+	case E_TextureFilterMode::Linear:  return GL_LINEAR;
+	}
+
+	ET_ASSERT(true, "Unhandled texture filter mode!");
+	return GL_NONE;
+}
+
+//---------------------------------
+// GetMinFilter
+//
+// Convert E_TextureFilterMode to OpenGL enum for min filters
+//
+GLenum ConvMinFilter(E_TextureFilterMode const minFilter, E_TextureFilterMode const mipFilter, bool const useMip)
+{
+	if (useMip)
+	{
+		switch (minFilter)
+		{
+		case E_TextureFilterMode::Nearest:
+			switch (mipFilter)
+			{
+			case E_TextureFilterMode::Nearest: return GL_NEAREST_MIPMAP_NEAREST;
+			case E_TextureFilterMode::Linear:  return GL_NEAREST_MIPMAP_LINEAR;
+
+			default:
+				ET_ASSERT(true, "Unhandled texture filter mode!");
+				break;
+			}
+			break;
+
+		case E_TextureFilterMode::Linear:
+			switch (mipFilter)
+			{
+			case E_TextureFilterMode::Nearest: return GL_LINEAR_MIPMAP_NEAREST;
+			case E_TextureFilterMode::Linear: return GL_LINEAR_MIPMAP_LINEAR;
+
+			default:
+				ET_ASSERT(true, "Unhandled texture filter mode!");
+				break;
+			}
+			break;
+
+		default:
+			ET_ASSERT(true, "Unhandled texture filter mode!");
+			break;
+		}
+		return 0;
+	}
+
+	return ConvFilter(minFilter);
+}
+
+//---------------------------------
+// ConvWrapMode
+//
+// Convert E_TextureWrapMode to OpenGL enum
+//
+GLenum ConvWrapMode(E_TextureWrapMode const wrap)
+{
+	switch (wrap)
+	{
+	case E_TextureWrapMode::ClampToEdge:		return GL_CLAMP_TO_EDGE;
+	case E_TextureWrapMode::ClampToBorder:		return GL_CLAMP_TO_BORDER;
+	case E_TextureWrapMode::MirrorClampToEdge:	return GL_MIRROR_CLAMP_TO_EDGE;
+	case E_TextureWrapMode::MirroredRepeat:		return GL_MIRRORED_REPEAT;
+	case E_TextureWrapMode::Repeat:				return GL_REPEAT;
+	}
+
+	ET_ASSERT(true, "Unhandled texture wrap mode!");
+	return 0;
+}
+
+//---------------------------------
+// ConvCompareMode
+//
+// Convert E_TextureCompareMode to OpenGL enum
+//
+GLenum ConvCompareMode(E_TextureCompareMode const comp) 
+{
+	switch (comp)
+	{
+	case E_TextureCompareMode::CompareRToTexture:	return GL_COMPARE_REF_TO_TEXTURE;
+	case E_TextureCompareMode::None:				return GL_NONE;
+	}
+
+	ET_ASSERT(true, "Unhandled texture compare mode!");
+	return 0;
+}
+
+//---------------------------------
+// ConvDepthFunction
+//
+GLenum ConvDepthFunction(E_DepthFunc const func)
+{
+	switch (func)
+	{
+	case E_DepthFunc::Never:	return GL_NEVER;
+	case E_DepthFunc::Less:		return GL_LESS;
+	case E_DepthFunc::Equal:	return GL_EQUAL;
+	case E_DepthFunc::LEqual:	return GL_LEQUAL;
+	case E_DepthFunc::Greater:	return GL_GREATER;
+	case E_DepthFunc::NotEqual:	return GL_NOTEQUAL;
+	case E_DepthFunc::GEqual:	return GL_GEQUAL;
+	case E_DepthFunc::Always:	return GL_ALWAYS;
+	}
+
+	ET_ASSERT(true, "Unhandled depth function!");
+	return 0;
+}
+
+//---------------------------------
+// ParseParamType
+//
+E_ParamType ParseParamType(GLenum const param) 
+{
+	switch (param)
+	{
+	case GL_SAMPLER_2D:			return E_ParamType::Texture2D;
+	case GL_SAMPLER_3D:			return E_ParamType::Texture3D;
+	case GL_SAMPLER_CUBE:		return E_ParamType::TextureCube;
+	case GL_SAMPLER_2D_SHADOW:	return E_ParamType::TextureShadow;
+	case GL_FLOAT_MAT4:			return E_ParamType::Matrix4x4;
+	case GL_FLOAT_MAT3:			return E_ParamType::Matrix3x3;
+	case GL_FLOAT_VEC4:			return E_ParamType::Vector4;
+	case GL_FLOAT_VEC3:			return E_ParamType::Vector3;
+	case GL_FLOAT_VEC2:			return E_ParamType::Vector2;
+	case GL_UNSIGNED_INT:		return E_ParamType::UInt;
+	case GL_INT:				return E_ParamType::Int;
+	case GL_FLOAT:				return E_ParamType::Float;
+	case GL_BOOL:				return E_ParamType::Boolean;
+	}
+
+	ET_ASSERT(true, "Unhandled GLenum parameter type!");
+	return E_ParamType::Invalid;
+}
+
+
+} // namespace GL_CONTEXT_NS
+
+
 //====================
 // Texture Unit Cache
 //====================
@@ -11,7 +389,7 @@
 // GlContext::TextureUnitCache::c-tor
 //
 GL_CONTEXT_CLASSNAME::TextureUnitCache::TextureUnitCache(E_TextureType const type, size_t const size) 
-	: m_Type(Type)
+	: m_Type(type)
 	, m_MaxUnits(size) 
 {
 	for (T_TextureUnit unit = 0u; unit < m_MaxUnits; ++unit)
@@ -38,15 +416,15 @@ T_TextureUnit GL_CONTEXT_CLASSNAME::TextureUnitCache::Bind(T_TextureLoc const te
 	{
 		// this is now the most recently used unit
 		m_List.push_front(*(mapIt->second));
-		m_List.pop_back();
+		m_List.erase(mapIt->second);
 		mapIt->second = m_List.begin();
 
-		Unit const& binding = *mapIt.second;
+		Unit const& binding = *(mapIt->second);
 
 		// for texture modification purposes, this is now ensured to be the active unit
 		if (ensureActive && (activeUnit != binding.unit))
 		{
-			activeUnit = currentBinding.unit;
+			activeUnit = binding.unit;
 			glActiveTexture(GL_TEXTURE0 + activeUnit);
 		}
 
@@ -81,7 +459,7 @@ T_TextureUnit GL_CONTEXT_CLASSNAME::TextureUnitCache::Bind(T_TextureLoc const te
 		}
 
 		// do the binding
-		glBindTexture(ConvTextureType(m_Type), tex);
+		glBindTexture(GL_CONTEXT_NS::ConvTextureType(m_Type), tex);
 
 		return currentBinding.unit;
 	}
@@ -100,7 +478,7 @@ void GL_CONTEXT_CLASSNAME::TextureUnitCache::OnTextureDelete(T_TextureLoc const 
 	if (mapIt != m_Map.cend()) 
 	{
 		// LRU unit is unit with texture, texture is unset
-		m_List.emplace_back(mapIt->second->unit, 0u)
+		m_List.emplace_back(mapIt->second->unit, 0u);
 		m_List.erase(mapIt->second);
 
 		// unreference texture from map
@@ -152,28 +530,41 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 	//******************
 
 	std::vector<std::string> requiredExtensions = { "GL_ARB_bindless_texture" };
-	std::vector<std::string> foundExtensions;
+	std::vector<T_Hash> requiredExtHashes;
+	for (std::string const& required : requiredExtensions)
+	{
+		requiredExtHashes.emplace_back(GetHash(required));
+	}
+
+	std::vector<T_Hash> foundExtensions;
 
 	int32 numExtensions;
 	glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
 	for (int32 i = 0; i < numExtensions; ++i)
 	{
 		GLubyte const* foundExt = glGetStringi(GL_EXTENSIONS, i);
-		foundExtensions.emplace_back(std::string(reinterpret_cast<char const*>(foundExt)));
+		foundExtensions.emplace_back(GetHash(reinterpret_cast<char const*>(foundExt)));
 	}
 
 	bool allFound = true;
 
 	LOG("Required extensions:");
-	for (std::string const& required : requiredExtensions)
+	for (size_t reqIdx = 0u; reqIdx < requiredExtensions.size(); ++ reqIdx)
 	{
+		T_Hash const required = requiredExtHashes[reqIdx];
+
 		if (std::find(foundExtensions.cbegin(), foundExtensions.cend(), required) != foundExtensions.cend())
 		{
-			LOG(FS("\t%s - found", required.c_str()));
+			LOG(FS("\t%s - found", requiredExtensions[reqIdx].c_str()));
+
+			if (required == "GL_ARB_bindless_texture"_hash)
+			{
+				m_BindlessTexturesAvailable = true;
+			}
 		}
 		else
 		{
-			LOG(FS("\t%s - not found", required.c_str()), LogLevel::Warning);
+			LOG(FS("\t%s - not found", requiredExtensions[reqIdx].c_str()), LogLevel::Warning);
 			allFound = false;
 		}
 	}
@@ -182,7 +573,7 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 
 	if (!allFound)
 	{
-		LOG("Not all required OpenGL extensions are available on this device! Try updating your graphics card drivers!", LogLevel::Error);
+		LOG("Not all required OpenGL extensions are available on this device! Try updating your graphics card drivers!", LogLevel::Warning);
 	}
 
 	// texture units
@@ -350,7 +741,7 @@ void GL_CONTEXT_CLASSNAME::SetFaceCullingMode(E_FaceCullMode const cullMode)
 	if (!(m_CullFaceMode == cullMode))
 	{
 		m_CullFaceMode = cullMode;
-		glCullFace(ConvFaceCullMode(m_CullFaceMode));
+		glCullFace(GL_CONTEXT_NS::ConvFaceCullMode(m_CullFaceMode));
 	}
 }
 
@@ -365,7 +756,7 @@ void GL_CONTEXT_CLASSNAME::SetBlendEquation(E_BlendEquation const equation)
 	{
 		m_BlendEquationRGB = equation;
 		m_BlendEquationAlpha = equation;
-		glBlendEquation(ConvBlendEquation(equation));
+		glBlendEquation(GL_CONTEXT_NS::ConvBlendEquation(equation));
 	}
 }
 
@@ -380,7 +771,7 @@ void GL_CONTEXT_CLASSNAME::SetBlendFunction(E_BlendFactor const sFactor, E_Blend
 	{
 		m_BlendFuncSFactor = sFactor;
 		m_BlendFuncDFactor = dFactor;
-		glBlendFunc(ConvBlendFactor(sFactor), ConvBlendFactor(dFactor));
+		glBlendFunc(GL_CONTEXT_NS::ConvBlendFactor(sFactor), GL_CONTEXT_NS::ConvBlendFactor(dFactor));
 	}
 }
 
@@ -501,9 +892,9 @@ void GL_CONTEXT_CLASSNAME::BindRenderbuffer(T_RbLoc const handle)
 //
 // Bind a texture to a target
 //
-void GL_CONTEXT_CLASSNAME::BindTexture(E_TextureType const target, T_TextureLoc const texLoc, bool const ensureActive)
+T_TextureUnit GL_CONTEXT_CLASSNAME::BindTexture(E_TextureType const target, T_TextureLoc const texLoc, bool const ensureActive)
 {
-	m_TextureUnits[static_cast<size_t>(target)].Bind(texLoc, ensureActive, m_ActiveUnit);
+	return m_TextureUnits[static_cast<size_t>(target)].Bind(texLoc, ensureActive, m_ActiveUnit);
 }
 
 //---------------------------------
@@ -534,7 +925,7 @@ void GL_CONTEXT_CLASSNAME::BindBuffer(E_BufferType const target, T_BufferLoc con
 	if (m_BufferTargets[target] != buffer)
 	{
 		m_BufferTargets[target] = buffer;
-		glBindBuffer(ConvBufferType(target), buffer);
+		glBindBuffer(GL_CONTEXT_NS::ConvBufferType(target), buffer);
 	}
 }
 
@@ -577,7 +968,7 @@ T_FbLoc GL_CONTEXT_CLASSNAME::GetActiveFramebuffer()
 //
 void GL_CONTEXT_CLASSNAME::DrawArrays(E_DrawMode const mode, uint32 const first, uint32 const count)
 {
-	glDrawArrays(ConvDrawMode(mode), first, count);
+	glDrawArrays(GL_CONTEXT_NS::ConvDrawMode(mode), first, count);
 	PERFORMANCE->m_DrawCalls++;
 }
 
@@ -588,7 +979,7 @@ void GL_CONTEXT_CLASSNAME::DrawArrays(E_DrawMode const mode, uint32 const first,
 //
 void GL_CONTEXT_CLASSNAME::DrawElements(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices)
 {
-	glDrawElements(ConvDrawMode(mode), count, ConvDataType(type), indices);
+	glDrawElements(GL_CONTEXT_NS::ConvDrawMode(mode), count, GL_CONTEXT_NS::ConvDataType(type), indices);
 	PERFORMANCE->m_DrawCalls++;
 }
 
@@ -599,7 +990,7 @@ void GL_CONTEXT_CLASSNAME::DrawElements(E_DrawMode const mode, uint32 const coun
 //
 void GL_CONTEXT_CLASSNAME::DrawElementsInstanced(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices, uint32 const prims)
 {
-	glDrawElementsInstanced(ConvDrawMode(mode), count, ConvDataType(type), indices, prims);
+	glDrawElementsInstanced(GL_CONTEXT_NS::ConvDrawMode(mode), count, GL_CONTEXT_NS::ConvDataType(type), indices, prims);
 	PERFORMANCE->m_DrawCalls++;
 }
 
@@ -697,7 +1088,7 @@ void GL_CONTEXT_CLASSNAME::DeleteBuffer(T_BufferLoc& loc) const
 //
 void GL_CONTEXT_CLASSNAME::SetBufferData(E_BufferType const target, int64 const size, void const* const data, E_UsageHint const usage) const
 {
-	glBufferData(ConvBufferType(target), size, data, ConvUsageHint(usage));
+	glBufferData(GL_CONTEXT_NS::ConvBufferType(target), size, data, GL_CONTEXT_NS::ConvUsageHint(usage));
 }
 
 //---------------------------------
@@ -729,7 +1120,7 @@ void GL_CONTEXT_CLASSNAME::DefineVertexAttributePointer(uint32 const index,
 	int32 const stride, 
 	size_t const offset) const
 {
-	glVertexAttribPointer(index, size, ConvDataType(type), (norm ? GL_TRUE : GL_FALSE), stride, static_cast<char const*>(0) + offset);
+	glVertexAttribPointer(index, size, GL_CONTEXT_NS::ConvDataType(type), (norm ? GL_TRUE : GL_FALSE), stride, static_cast<char const*>(0) + offset);
 }
 
 //---------------------------------
@@ -743,7 +1134,7 @@ void GL_CONTEXT_CLASSNAME::DefineVertexAttribIPointer(uint32 const index,
 	int32 const stride, 
 	size_t const offset) const
 {
-	glVertexAttribIPointer(index, size, ConvDataType(type), stride, static_cast<char const*>(0) + offset);
+	glVertexAttribIPointer(index, size, GL_CONTEXT_NS::ConvDataType(type), stride, static_cast<char const*>(0) + offset);
 }
 
 //---------------------------------
@@ -763,7 +1154,7 @@ void GL_CONTEXT_CLASSNAME::DefineVertexAttribDivisor(uint32 const index, uint32 
 //
 void* GL_CONTEXT_CLASSNAME::MapBuffer(E_BufferType const target, E_AccessMode const access) const
 {
-	return glMapBuffer(ConvBufferType(target), ConvAccessMode(access));
+	return glMapBuffer(GL_CONTEXT_NS::ConvBufferType(target), GL_CONTEXT_NS::ConvAccessMode(access));
 }
 
 //---------------------------------
@@ -773,7 +1164,7 @@ void* GL_CONTEXT_CLASSNAME::MapBuffer(E_BufferType const target, E_AccessMode co
 //
 void GL_CONTEXT_CLASSNAME::UnmapBuffer(E_BufferType const target) const
 {
-	glUnmapBuffer(ConvBufferType(target));
+	glUnmapBuffer(GL_CONTEXT_NS::ConvBufferType(target));
 }
 
 //---------------------------------
@@ -787,7 +1178,7 @@ void GL_CONTEXT_CLASSNAME::BindBufferRange(E_BufferType const target,
 	size_t const offset, 
 	size_t const size) const
 {
-	glBindBufferRange(ConvBufferType(target), index, buffer, offset, size);
+	glBindBufferRange(GL_CONTEXT_NS::ConvBufferType(target), index, buffer, offset, size);
 }
 
 //---------------------------------
@@ -823,24 +1214,33 @@ void GL_CONTEXT_CLASSNAME::DeleteTexture(T_TextureLoc& texLoc)
 //
 void GL_CONTEXT_CLASSNAME::SetTextureData(TextureData& texture, void* data)
 {
-	uint32 const target = ConvTextureType(texture.GetTargetType());
+	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
 
-	BindTexture(texture.GetTargetType(), texture.GetLocation());
+	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
 
 	ivec2 const res = texture.GetResolution();
 
-	GLint const intFmt = static_cast<GLint>(ConvColorFormat(texture.GetInternalFormat()));
+	GLint const intFmt = static_cast<GLint>(GL_CONTEXT_NS::ConvColorFormat(texture.GetInternalFormat()));
 	E_ColorFormat format = texture.GetFormat();
 	ET_ASSERT(format <= E_ColorFormat::RGBA, "Texture format can't specify data sizes!");
 
 	switch (texture.GetTargetType())
 	{
 	case E_TextureType::Texture2D:
-		glTexImage2D(target, 0, intFmt, res.x, res.y, 0, ConvColorFormat(format), ConvDataType(texture.GetDataType()), data);
+		glTexImage2D(target, 0, intFmt, res.x, res.y, 0, GL_CONTEXT_NS::ConvColorFormat(format), GL_CONTEXT_NS::ConvDataType(texture.GetDataType()), data);
 		break;
 
 	case E_TextureType::Texture3D:
-		glTexImage3D(target, 0, intFmt, res.x, res.y, texture.GetDepth(), 0, ConvColorFormat(format), ConvDataType(texture.GetDataType()), data);
+		glTexImage3D(target, 
+			0, 
+			intFmt, 
+			res.x, 
+			res.y, 
+			texture.GetDepth(), 
+			0, 
+			GL_CONTEXT_NS::ConvColorFormat(format), 
+			GL_CONTEXT_NS::ConvDataType(texture.GetDataType()), 
+			data);
 		break;
 
 	case E_TextureType::CubeMap:
@@ -863,15 +1263,15 @@ void GL_CONTEXT_CLASSNAME::SetTextureData(TextureData& texture, void* data)
 //
 void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, uint8& mipLevels, TextureParameters& prev, TextureParameters const& next, bool const force)
 {
-	uint32 const target = ConvTextureType(texture.GetTargetType());
-	BindTexture(texture.GetTargetType(), texture.GetLocation());
+	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
+	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
 
 	// filter options
 	//---------------
 	// in the future it may make sense to create filter groups so that things such as anisotropy can be set globally
 	if ((prev.minFilter != next.minFilter) || (prev.mipFilter != next.mipFilter) || (prev.genMipMaps != next.genMipMaps) || force)
 	{
-		int32 minFilter = ConvMinFilter(next.minFilter, next.mipFilter, next.genMipMaps);
+		int32 minFilter = GL_CONTEXT_NS::ConvMinFilter(next.minFilter, next.mipFilter, next.genMipMaps);
 		ET_ASSERT(minFilter != 0);
 
 		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilter);
@@ -879,7 +1279,7 @@ void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, uint8& m
 
 	if ((prev.magFilter != next.magFilter) || force)
 	{
-		int32 filter = ConvFilter(next.magFilter);
+		int32 filter = GL_CONTEXT_NS::ConvFilter(next.magFilter);
 		ET_ASSERT(filter != 0);
 
 		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filter);
@@ -889,17 +1289,17 @@ void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, uint8& m
 	//-------------
 	if ((prev.wrapS != next.wrapS) || force)
 	{
-		glTexParameteri(target, GL_TEXTURE_WRAP_S, ConvWrapMode(next.wrapS));
+		glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CONTEXT_NS::ConvWrapMode(next.wrapS));
 	}
 
 	if ((prev.wrapT != next.wrapT) || force)
 	{
-		glTexParameteri(target, GL_TEXTURE_WRAP_T, ConvWrapMode(next.wrapT));
+		glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CONTEXT_NS::ConvWrapMode(next.wrapT));
 	}
 
 	if ((texture.GetDepth() > 1) && ((prev.wrapR != next.wrapR) || force))
 	{
-		glTexParameteri(target, GL_TEXTURE_WRAP_R, ConvWrapMode(next.wrapR));
+		glTexParameteri(target, GL_TEXTURE_WRAP_R, GL_CONTEXT_NS::ConvWrapMode(next.wrapR));
 	}
 
 	// border color
@@ -912,7 +1312,7 @@ void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, uint8& m
 	//-------
 	if ((next.isDepthTex && (prev.compareMode != next.compareMode)) || (next.isDepthTex && force))
 	{
-		glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, ConvCompareMode(next.compareMode));//shadow map comp mode
+		glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, GL_CONTEXT_NS::ConvCompareMode(next.compareMode));//shadow map comp mode
 	}
 
 	// generate mip maps if we must
@@ -935,6 +1335,11 @@ void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, uint8& m
 //
 T_TextureHandle GL_CONTEXT_CLASSNAME::GetTextureHandle(T_TextureLoc const texLoc) const
 {
+	if (!m_BindlessTexturesAvailable)
+	{
+		return 0u;
+	}
+
 	return glGetTextureHandleARB(texLoc);
 }
 
@@ -945,6 +1350,11 @@ T_TextureHandle GL_CONTEXT_CLASSNAME::GetTextureHandle(T_TextureLoc const texLoc
 //
 void GL_CONTEXT_CLASSNAME::SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const
 {
+	if (!m_BindlessTexturesAvailable)
+	{
+		return;
+	}
+
 	if (isResident)
 	{
 		glMakeTextureHandleResidentARB(handle);
@@ -962,7 +1372,7 @@ void GL_CONTEXT_CLASSNAME::SetTextureHandleResidency(T_TextureHandle const handl
 //
 T_ShaderLoc GL_CONTEXT_CLASSNAME::CreateShader(E_ShaderType const type) const
 {
-	return glCreateShader(ConvShaderType(type));
+	return glCreateShader(GL_CONTEXT_NS::ConvShaderType(type));
 }
 
 //---------------------------------
@@ -1207,7 +1617,7 @@ void GL_CONTEXT_CLASSNAME::GetActiveUniforms(T_ShaderLoc const program, uint32 c
 			uni.name += "[" + std::to_string(arrayIdx) + "]" + endName;
 		}
 
-		uni.type = ParseParamType(type);
+		uni.type = GL_CONTEXT_NS::ParseParamType(type);
 
 		uni.location = glGetUniformLocation(program, uni.name.c_str());
 	}
@@ -1746,7 +2156,7 @@ void GL_CONTEXT_CLASSNAME::SetPixelUnpackAlignment(int32 const val) const
 //
 void GL_CONTEXT_CLASSNAME::SetDepthFunction(E_DepthFunc const func) const
 {
-	glDepthFunc(ConvDepthFunction(func));
+	glDepthFunc(GL_CONTEXT_NS::ConvDepthFunction(func));
 }
 
 //---------------------------------
@@ -1756,7 +2166,7 @@ void GL_CONTEXT_CLASSNAME::SetDepthFunction(E_DepthFunc const func) const
 //
 void GL_CONTEXT_CLASSNAME::ReadPixels(ivec2 const pos, ivec2 const size, E_ColorFormat const format, E_DataType const type, void* data) const
 {
-	glReadPixels(pos.x, pos.y, size.x, size.y, ConvColorFormat(format), ConvDataType(type), data);
+	glReadPixels(pos.x, pos.y, size.x, size.y, GL_CONTEXT_NS::ConvColorFormat(format), GL_CONTEXT_NS::ConvDataType(type), data);
 }
 
 //---------------------------------
@@ -1781,8 +2191,8 @@ void GL_CONTEXT_CLASSNAME::DebugPopGroup() const
 }
 
 
-// Open GL Conversions
-////////////////////////
+// Utility
+///////////
 
 
 //---------------------------------
@@ -1828,369 +2238,4 @@ void GL_CONTEXT_CLASSNAME::EnOrDisAbleIndexed(std::vector<bool> &state, bool ena
 	}
 }
 
-//---------------------------------
-// GlContext::ConvTextureType
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvTextureType(E_TextureType const type) const
-{
-	switch (type)
-	{
-	case E_TextureType::Texture2D:	return GL_TEXTURE_2D;
-	case E_TextureType::Texture3D:	return GL_TEXTURE_3D;
-	case E_TextureType::CubeMap:	return GL_TEXTURE_CUBE_MAP;
-	}
-
-	ET_ASSERT(true, "Unhandled texture type!");
-	return GL_NONE;
-}
-
-//---------------------------------
-// GlContext::ConvDataType
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvDataType(E_DataType const type) const
-{
-	switch (type)
-	{
-	case E_DataType::Byte: return GL_BYTE;
-	case E_DataType::UByte: return GL_UNSIGNED_BYTE;
-	case E_DataType::Short: return GL_SHORT;
-	case E_DataType::UShort: return GL_UNSIGNED_SHORT;
-	case E_DataType::Int: return GL_INT;
-	case E_DataType::UInt: return GL_UNSIGNED_INT;
-	case E_DataType::Half: return GL_HALF_FLOAT;
-	case E_DataType::Float: return GL_FLOAT;
-	case E_DataType::Double: return GL_DOUBLE;
-	}
-
-	ET_ASSERT(true, "Unhandled data type!");
-	return GL_NONE;
-}
-
-//---------------------------------
-// GlContext::ConvShaderType
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvShaderType(E_ShaderType const type) const
-{
-	switch (type)
-	{
-	case E_ShaderType::Compute:					return GL_COMPUTE_SHADER;
-	case E_ShaderType::Vertex:					return GL_VERTEX_SHADER;
-	case E_ShaderType::TesselationControl:		return GL_TESS_CONTROL_SHADER;
-	case E_ShaderType::TesselationEvaluation:	return GL_TESS_EVALUATION_SHADER;
-	case E_ShaderType::Geometry:				return GL_GEOMETRY_SHADER;
-	case E_ShaderType::Fragment:				return GL_FRAGMENT_SHADER;
-	}
-
-	ET_ASSERT(true, "Unhandled shader type!");
-	return GL_NONE;
-}
-
-//---------------------------------
-// GlContext::ConvDrawMode
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvDrawMode(E_DrawMode const mode) const
-{
-	switch (mode)
-	{
-	case E_DrawMode::Points:		return GL_POINTS;
-	case E_DrawMode::LineStrip:		return GL_LINE_STRIP;
-	case E_DrawMode::LineLoop:		return GL_LINE_LOOP;
-	case E_DrawMode::Lines:			return GL_LINES;
-	case E_DrawMode::TriangleStrip:	return GL_TRIANGLE_STRIP;
-	case E_DrawMode::TriangleFan:	return GL_TRIANGLE_FAN;
-	case E_DrawMode::Triangles:		return GL_TRIANGLES;
-	case E_DrawMode::Patches:		return GL_PATCHES;
-	}
-
-	ET_ASSERT(true, "Unhandled draw mode!");
-	return GL_NONE;
-}
-
-//---------------------------------
-// GlContext::ConvDrawMode
-//
-// Not all buffer types are currently listed, they will be added when support is needed
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvBufferType(E_BufferType const type) const
-{
-	switch (type)
-	{
-	case E_BufferType::Vertex:	return GL_ARRAY_BUFFER;
-	case E_BufferType::Index:	return GL_ELEMENT_ARRAY_BUFFER;
-	case E_BufferType::Uniform:	return GL_UNIFORM_BUFFER;
-	}
-
-	ET_ASSERT(true, "Unhandled buffer type!");
-	return GL_NONE;
-}
-
-//---------------------------------
-// GlContext::ConvUsageHint
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvUsageHint(E_UsageHint const hint) const
-{
-	switch (hint)
-	{
-	case E_UsageHint::Static:	return GL_STATIC_DRAW;
-	case E_UsageHint::Dynamic:	return GL_DYNAMIC_DRAW;
-	}
-
-	ET_ASSERT(true, "Unhandled usage hint!");
-	return GL_NONE;
-}
-
-//---------------------------------
-// GlContext::ConvAccessMode
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvAccessMode(E_AccessMode const mode) const
-{
-	switch (mode)
-	{
-	case E_AccessMode::Read:		return GL_READ_ONLY;
-	case E_AccessMode::Write:		return GL_WRITE_ONLY;
-	case E_AccessMode::ReadWrite:	return GL_READ_WRITE;
-	}
-
-	ET_ASSERT(true, "Unhandled access mode!");
-	return GL_NONE;
-}
-
-//---------------------------------
-// GlContext::ConvFaceCullMode
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvFaceCullMode(E_FaceCullMode const mode) const
-{
-	switch (mode)
-	{
-	case E_FaceCullMode::Front:		return GL_FRONT;
-	case E_FaceCullMode::Back:		return GL_BACK;
-	case E_FaceCullMode::FrontBack:	return GL_FRONT_AND_BACK;
-	}
-
-	ET_ASSERT(true, "Unhandled access mode!");
-	return GL_NONE;
-}
-
-//---------------------------------
-// GlContext::ConvBlendEquation
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvBlendEquation(E_BlendEquation const equ) const
-{
-	switch (equ)
-	{
-	case E_BlendEquation::Add:		return GL_FUNC_ADD;
-	case E_BlendEquation::Subtract:	return GL_FUNC_SUBTRACT;
-	case E_BlendEquation::RevSub:	return GL_FUNC_REVERSE_SUBTRACT;
-	case E_BlendEquation::Min:		return GL_MIN;
-	case E_BlendEquation::Max:		return GL_MAX;
-	}
-
-	ET_ASSERT(true, "Unhandled blend equation!");
-	return GL_NONE;
-}
-
-//---------------------------------
-// GlContext::ConvBlendFactor
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvBlendFactor(E_BlendFactor const fac) const
-{
-	switch (fac)
-	{
-	case E_BlendFactor::Zero:					return GL_ZERO;
-	case E_BlendFactor::One:					return GL_ONE;
-	case E_BlendFactor::SourceCol:				return GL_SRC_COLOR;
-	case E_BlendFactor::OneMinusSourceCol:		return GL_ONE_MINUS_SRC_COLOR;
-	case E_BlendFactor::DestCol:				return GL_DST_COLOR;
-	case E_BlendFactor::OneMinusDestCol:		return GL_ONE_MINUS_DST_COLOR;
-	case E_BlendFactor::SourceAlpha:			return GL_SRC_ALPHA;
-	case E_BlendFactor::OneMinusSourceAlpha:	return GL_ONE_MINUS_SRC_ALPHA;
-	case E_BlendFactor::DestAlpha:				return GL_DST_ALPHA;
-	case E_BlendFactor::OneMinusDestAlpha:		return GL_ONE_MINUS_DST_ALPHA;
-	case E_BlendFactor::ConstCol:				return GL_CONSTANT_COLOR;
-	case E_BlendFactor::OneMinusConstCol:		return GL_ONE_MINUS_CONSTANT_COLOR;
-	case E_BlendFactor::ConstAlpha:				return GL_CONSTANT_ALPHA;
-	case E_BlendFactor::OneMinusConstAlpha:		return GL_ONE_MINUS_CONSTANT_ALPHA;
-	}
-
-	ET_ASSERT(true, "Unhandled blend factor!");
-	return GL_NONE;
-}
-
-//---------------------------------
-// GlContext::ConvColorFormat
-//
-// must grow along with E_ColorFormat - reinterpret to GLint for internal format
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvColorFormat(E_ColorFormat const fmt) const
-{
-	switch (fmt)
-	{
-	case E_ColorFormat::Depth:			return GL_DEPTH_COMPONENT;
-	case E_ColorFormat::DepthStencil:	return GL_DEPTH_STENCIL;
-
-	case E_ColorFormat::Red:			return GL_RED;
-	case E_ColorFormat::RG:				return GL_RG;
-	case E_ColorFormat::RGB:			return GL_RGB;
-	case E_ColorFormat::RGBA:			return GL_RGBA;
-
-	case E_ColorFormat::Depth24:		return GL_DEPTH_COMPONENT24;
-
-	case E_ColorFormat::R8:				return GL_R8;
-	case E_ColorFormat::RG16f:			return GL_RG16F;
-	case E_ColorFormat::RGB16f:			return GL_RGB16F;
-	case E_ColorFormat::RGBA8:			return GL_RGBA8;
-	case E_ColorFormat::RGBA16f:		return GL_RGBA16F;
-	case E_ColorFormat::RGBA32f:		return GL_RGBA32F;
-	case E_ColorFormat::SRGB:			return GL_SRGB;
-	}
-
-	ET_ASSERT(true, "Unhandled color format!");
-	return GL_NONE;
-}
-
-//---------------------------------
-// GlContext::GetFilter
-//
-// Convert E_TextureFilterMode to OpenGL enum
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvFilter(E_TextureFilterMode const filter) const
-{
-	switch (filter)
-	{
-	case E_TextureFilterMode::Nearest: return GL_NEAREST;
-	case E_TextureFilterMode::Linear:  return GL_LINEAR;
-	}
-
-	ET_ASSERT(true, "Unhandled texture filter mode!");
-	return GL_NONE;
-}
-
-//---------------------------------
-// GlContext::GetMinFilter
-//
-// Convert E_TextureFilterMode to OpenGL enum for min filters
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvMinFilter(E_TextureFilterMode const minFilter, E_TextureFilterMode const mipFilter, bool const useMip) const
-{
-	if (useMip)
-	{
-		switch (minFilter)
-		{
-		case E_TextureFilterMode::Nearest:
-			switch (mipFilter)
-			{
-			case E_TextureFilterMode::Nearest: return GL_NEAREST_MIPMAP_NEAREST;
-			case E_TextureFilterMode::Linear:  return GL_NEAREST_MIPMAP_LINEAR;
-
-			default:
-				ET_ASSERT(true, "Unhandled texture filter mode!");
-				break;
-			}
-			break;
-
-		case E_TextureFilterMode::Linear:
-			switch (mipFilter)
-			{
-			case E_TextureFilterMode::Nearest: return GL_LINEAR_MIPMAP_NEAREST;
-			case E_TextureFilterMode::Linear: return GL_LINEAR_MIPMAP_LINEAR;
-
-			default:
-				ET_ASSERT(true, "Unhandled texture filter mode!");
-				break;
-			}
-			break;
-
-		default:
-			ET_ASSERT(true, "Unhandled texture filter mode!");
-			break;
-		}
-		return 0;
-	}
-
-	return ConvFilter(minFilter);
-}
-
-//---------------------------------
-// GlContext::ConvWrapMode
-//
-// Convert E_TextureWrapMode to OpenGL enum
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvWrapMode(E_TextureWrapMode const wrap) const
-{
-	switch (wrap)
-	{
-	case E_TextureWrapMode::ClampToEdge:		return GL_CLAMP_TO_EDGE;
-	case E_TextureWrapMode::ClampToBorder:		return GL_CLAMP_TO_BORDER;
-	case E_TextureWrapMode::MirrorClampToEdge:	return GL_MIRROR_CLAMP_TO_EDGE;
-	case E_TextureWrapMode::MirroredRepeat:		return GL_MIRRORED_REPEAT;
-	case E_TextureWrapMode::Repeat:				return GL_REPEAT;
-	}
-
-	ET_ASSERT(true, "Unhandled texture wrap mode!");
-	return 0;
-}
-
-//---------------------------------
-// GlContext::ConvCompareMode
-//
-// Convert E_TextureCompareMode to OpenGL enum
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvCompareMode(E_TextureCompareMode const comp) const
-{
-	switch (comp)
-	{
-	case E_TextureCompareMode::CompareRToTexture:	return GL_COMPARE_REF_TO_TEXTURE;
-	case E_TextureCompareMode::None:				return GL_NONE;
-	}
-
-	ET_ASSERT(true, "Unhandled texture compare mode!");
-	return 0;
-}
-
-//---------------------------------
-// GlContext::ConvDepthFunction
-//
-GLenum GL_CONTEXT_CLASSNAME::ConvDepthFunction(E_DepthFunc const func) const
-{
-	switch (func)
-	{
-	case E_DepthFunc::Never:	return GL_NEVER;
-	case E_DepthFunc::Less:		return GL_LESS;
-	case E_DepthFunc::Equal:	return GL_EQUAL;
-	case E_DepthFunc::LEqual:	return GL_LEQUAL;
-	case E_DepthFunc::Greater:	return GL_GREATER;
-	case E_DepthFunc::NotEqual:	return GL_NOTEQUAL;
-	case E_DepthFunc::GEqual:	return GL_GEQUAL;
-	case E_DepthFunc::Always:	return GL_ALWAYS;
-	}
-
-	ET_ASSERT(true, "Unhandled depth function!");
-	return 0;
-}
-
-//---------------------------------
-// GlContext::ParseParamType
-//
-E_ParamType GL_CONTEXT_CLASSNAME::ParseParamType(GLenum const param) const
-{
-	switch (param)
-	{
-	case GL_SAMPLER_2D:			return E_ParamType::Texture2D;
-	case GL_SAMPLER_3D:			return E_ParamType::Texture3D;
-	case GL_SAMPLER_CUBE:		return E_ParamType::TextureCube;
-	case GL_SAMPLER_2D_SHADOW:	return E_ParamType::TextureShadow;
-	case GL_FLOAT_MAT4:			return E_ParamType::Matrix4x4;
-	case GL_FLOAT_MAT3:			return E_ParamType::Matrix3x3;
-	case GL_FLOAT_VEC4:			return E_ParamType::Vector4;
-	case GL_FLOAT_VEC3:			return E_ParamType::Vector3;
-	case GL_FLOAT_VEC2:			return E_ParamType::Vector2;
-	case GL_UNSIGNED_INT:		return E_ParamType::UInt;
-	case GL_INT:				return E_ParamType::Int;
-	case GL_FLOAT:				return E_ParamType::Float;
-	case GL_BOOL:				return E_ParamType::Boolean;
-	}
-
-	ET_ASSERT(true, "Unhandled GLenum parameter type!");
-	return E_ParamType::Invalid;
-}
 
