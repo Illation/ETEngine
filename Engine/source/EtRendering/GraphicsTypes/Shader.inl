@@ -1,5 +1,7 @@
 #pragma once
-#include "Uniform.h"
+#include "TextureData.h"
+
+#include <EtRendering/GraphicsContext/Viewport.h>
 
 
 //===================
@@ -70,28 +72,28 @@ bool ShaderData::Upload<TextureData const*>(T_Hash const uniform, TextureData co
 
 	ET_ASSERT(render::parameters::MatchesTexture(param.type, textureData->GetTargetType()));
 
-	T_TextureHandle const texHandle = textureData->GetHandle();
-	if (texHandle != 0u)
-	{
-		if (render::parameters::Read<TDataType>(m_CurrentUniforms, param.offset) == data)
-		{
-			return true; // no need for API call as the state wouldn't change
-		}
+	//T_TextureHandle const texHandle = textureData->GetHandle();
+	//if (texHandle != 0u)
+	//{
+	//	if (render::parameters::Read<TextureData const*>(m_CurrentUniforms, param.offset) == textureData)
+	//	{
+	//		return true; // no need for API call as the state wouldn't change
+	//	}
 
-		ET_ASSERT(false, "Uploading bindless textures is not yet supported!");
-		// #todo: upload bindless texture handle
-	}
-	else
-	{
+	//	ET_ASSERT(false, "Uploading bindless textures is not yet supported!");
+	//	// #todo: upload bindless texture handle
+	//}
+	//else
+	//{
 		// we overwrite sampler uniforms every time because the bindings may have changed for bound textures
 		I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-		T_TextureUnit const binding = api->BindTexture(textureData->GetTargetType(), textureData->GetHandle());
+		T_TextureUnit const binding = api->BindTexture(textureData->GetTargetType(), textureData->GetLocation(), false);
 		api->UploadUniform(param.location, binding);
-	}
+	//}
 
 	// ensure the shader reflects the GPU state
-	render::parameters::Write<TDataType>(m_CurrentUniforms, param.offset, data);
+	render::parameters::Write<TextureData const*>(m_CurrentUniforms, param.offset, textureData);
 
 	return true;
 }

@@ -116,8 +116,7 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, render::DirectionalShad
 		m_ShaderShadowed->Upload(GetHash(cascadeStruct + "LightVP"), cascades[cascadeIdx].lightVP);
 
 		//Shadow map
-		m_ShaderShadowed->Upload(GetHash(cascadeStruct + "ShadowMap"), static_cast<int32>(3 + cascadeIdx));
-		api->LazyBindTexture(3 + cascadeIdx, cascades[cascadeIdx].texture->GetTargetType(), cascades[cascadeIdx].texture->GetLocation());
+		m_ShaderShadowed->Upload(GetHash(cascadeStruct + "ShadowMap"), static_cast<TextureData const*>(cascades[cascadeIdx].texture));
 
 		//cascade distance
 		m_ShaderShadowed->Upload(GetHash(cascadeStruct + "Distance"), cascades[cascadeIdx].distance);

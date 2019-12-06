@@ -182,21 +182,20 @@ public:
 	int32 GetAttributeCount(T_ShaderLoc const program) const override;
 	int32 GetUniformCount(T_ShaderLoc const program) const override;
 	void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<UniformDescriptor>& uniforms) const override;
-	void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<I_Uniform*>& uniforms) const override;
 	void GetActiveAttribute(T_ShaderLoc const program, uint32 const index, AttributeDescriptor& info) const override;
 	T_AttribLoc GetAttributeLocation(T_ShaderLoc const program, std::string const& name) const override;
 
 	void PopulateUniform(T_ShaderLoc const program, T_UniformLoc const location, E_ParamType const type, void* data) const override;
 
-	void UploadUniform(const Uniform<bool> &uniform) override;
-	void UploadUniform(const Uniform<int32> &uniform) override;
-	void UploadUniform(const Uniform<uint32> &uniform) override;
-	void UploadUniform(const Uniform<float> &uniform) override;
-	void UploadUniform(const Uniform<vec2> &uniform) override;
-	void UploadUniform(const Uniform<vec3> &uniform) override;
-	void UploadUniform(const Uniform<vec4> &uniform) override;
-	void UploadUniform(const Uniform<mat3> &uniform) override;
-	void UploadUniform(const Uniform<mat4> &uniform) override;
+	void UploadUniform(T_UniformLoc const location, bool const data) const override;
+	void UploadUniform(T_UniformLoc const location, int32 const data) const override;
+	void UploadUniform(T_UniformLoc const location, uint32 const data) const override;
+	void UploadUniform(T_UniformLoc const location, float const data) const override;
+	void UploadUniform(T_UniformLoc const location, vec2 const data) const override;
+	void UploadUniform(T_UniformLoc const location, vec3 const& data) const override;
+	void UploadUniform(T_UniformLoc const location, vec4 const& data) const override;
+	void UploadUniform(T_UniformLoc const location, mat3 const& data) const override;
+	void UploadUniform(T_UniformLoc const location, mat4 const& data) const override;
 
 	void DefineVertexAttributePointer(uint32 const index, 
 		int32 const size, 

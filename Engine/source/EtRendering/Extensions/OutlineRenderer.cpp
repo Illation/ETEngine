@@ -201,8 +201,7 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 
 	api->SetShader(m_SobelShader.get());
 
-	m_SobelShader->Upload("inColorTex"_hash, 1);
-	api->LazyBindTexture(1, E_TextureType::Texture2D, m_DrawTex->GetLocation());
+	m_SobelShader->Upload("inColorTex"_hash, static_cast<TextureData const*>(m_DrawTex));
 
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 

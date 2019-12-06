@@ -6,8 +6,8 @@
 #include <EtCore/Helper/LinkerUtils.h>
 
 
-// forward declarations
-class I_Uniform;
+// forward
+class TextureData;
 
 
 //---------------------------------
@@ -41,7 +41,7 @@ public:
 	bool Upload(T_Hash const uniform, TDataType const& data, bool const reportWarnings = true) const;
 
 	template<>
-	bool Upload<TextureData const*>(T_Hash const uniform, const TextureData const* const& textureData, bool const reportWarnings = true) const;
+	bool Upload<TextureData const*>(T_Hash const uniform, TextureData const* const& textureData, bool const reportWarnings) const;
 
 	// Data
 	///////
@@ -64,10 +64,6 @@ private:
 
 	// within blocks
 	std::vector<T_Hash> m_UniformBlocks; // addressed by their indices
-
-	// deprecated
-	/////////////
-	std::map<T_Hash, I_Uniform*> m_Uniforms;
 };
 
 //---------------------------------
@@ -103,7 +99,6 @@ private:
 	bool ReplaceInclude(std::string &line);
 
 	void InitUniforms();
-	void GetUniformLocations(T_ShaderLoc const shaderProgram, std::map<uint32, I_Uniform*>& uniforms);
 	void GetAttributes(T_ShaderLoc const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes);
 
 	RTTR_ENABLE(Asset<ShaderData, false>)

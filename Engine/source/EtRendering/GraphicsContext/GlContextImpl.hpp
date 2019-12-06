@@ -1,5 +1,4 @@
 #include <EtRendering/GraphicsTypes/Shader.h>
-#include <EtRendering/GraphicsTypes/Uniform.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 
 
@@ -504,14 +503,7 @@ void GL_CONTEXT_CLASSNAME::BindRenderbuffer(T_RbLoc const handle)
 //
 void GL_CONTEXT_CLASSNAME::BindTexture(E_TextureType const target, T_TextureLoc const texLoc, bool const ensureActive)
 {
-	auto cacheIt = std::find_if(m_TextureUnits.cbegin(), m_TextureUnits.cend(), [target](TextureUnitCache const& cache)
-		{
-			return cache.GetType() == target;
-		});
-
-	ET_ASSERT(cacheIt != m_TextureUnits.cend());
-
-	cacheIt->Bind(texLoc, ensureActive, m_ActiveUnit);
+	m_TextureUnits[static_cast<size_t>(target)].Bind(texLoc, ensureActive, m_ActiveUnit);
 }
 
 //---------------------------------
@@ -814,14 +806,10 @@ T_TextureLoc GL_CONTEXT_CLASSNAME::GenerateTexture() const
 void GL_CONTEXT_CLASSNAME::DeleteTexture(T_TextureLoc& texLoc)
 {
 	// reset bound textures
-	auto cacheIt = std::find_if(m_TextureUnits.cbegin(), m_TextureUnits.cend(), [target](TextureUnitCache const& cache)
+	for (TextureUnitCache& cache : m_TextureUnits)
 	{
-		return cache.GetType() == target;
-	});
-
-	ET_ASSERT(cacheIt != m_TextureUnits.cend());
-
-	cacheIt->OnDeleteTexture(texLoc);
+		cache.OnTextureDelete(texLoc);
+	}
 	
 	glDeleteTextures(1, &texLoc);
 
@@ -1226,131 +1214,6 @@ void GL_CONTEXT_CLASSNAME::GetActiveUniforms(T_ShaderLoc const program, uint32 c
 }
 
 //---------------------------------
-// GlContext::GetActiveUniforms
-//
-// Get a list of initialized uniform objects for a particular uniform index
-//
-void GL_CONTEXT_CLASSNAME::GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<I_Uniform*>& uniforms) const
-{
-	GLint arrayCount; // support 1D arrays of structs
-	GLenum type;
-
-	const GLsizei bufSize = 256;
-	GLchar name[bufSize];
-	GLsizei length;
-
-	glGetActiveUniform(program, index, bufSize, &length, &arrayCount, &type, name);
-	std::string uniName = std::string(name, length);
-	std::string endName;
-
-	// if we have an array of structs, separate out the beginning and end bit so we can create our name with the index
-	if (arrayCount > 1)
-	{
-		size_t const found = uniName.find(']');
-
-		if (found < uniName.size() - 1)
-		{
-			endName = uniName.substr(uniName.find(']') + 1);
-		}
-
-		uniName = uniName.substr(0, uniName.find('['));
-	}
-
-	// for each array uniform (or the single uniform
-	for (GLint arrayIdx = 0; arrayIdx < arrayCount; ++arrayIdx)
-	{
-		// generate the full name
-		std::string fullName = uniName;
-		if (arrayCount > 1)
-		{
-			fullName += "[" + std::to_string(arrayIdx) + "]" + endName;
-		}
-
-		I_Uniform* uni;
-		switch (type)
-		{
-		case GL_BOOL:
-			uni = new Uniform<bool>();
-			break;
-		case GL_INT:
-		case GL_SAMPLER_2D:
-		case GL_SAMPLER_3D:
-		case GL_SAMPLER_CUBE:
-		case GL_SAMPLER_2D_SHADOW:
-			uni = new Uniform<int32>();
-			break;
-		case GL_UNSIGNED_INT:
-			uni = new Uniform<uint32>();
-			break;
-		case GL_FLOAT:
-			uni = new Uniform<float>();
-			break;
-		case GL_FLOAT_VEC2:
-			uni = new Uniform<vec2>();
-			break;
-		case GL_FLOAT_VEC3:
-			uni = new Uniform<vec3>();
-			break;
-		case GL_FLOAT_VEC4:
-			uni = new Uniform<vec4>();
-			break;
-		case GL_FLOAT_MAT3:
-			uni = new Uniform<mat3>();
-			break;
-		case GL_FLOAT_MAT4:
-			uni = new Uniform<mat4>();
-			break;
-		default:
-			LOG(std::string("unknown uniform type ") + std::to_string(type), LogLevel::Warning);
-			return;
-		}
-
-		uni->name = fullName;
-		uni->location = glGetUniformLocation(program, uni->name.c_str());
-
-		switch (type)
-		{
-		case GL_BOOL:
-			glGetUniformiv(program, uni->location, reinterpret_cast<int32*>(&static_cast<Uniform<bool>*>(uni)->data));
-			break;
-		case GL_INT:
-		case GL_SAMPLER_2D:
-		case GL_SAMPLER_3D:
-		case GL_SAMPLER_CUBE:
-		case GL_SAMPLER_2D_SHADOW:
-			glGetUniformiv(program, uni->location, &static_cast<Uniform<int32>*>(uni)->data);
-			break;
-		case GL_UNSIGNED_INT:
-			glGetUniformuiv(program, uni->location, &static_cast<Uniform<uint32>*>(uni)->data);
-			break;
-		case GL_FLOAT:
-			glGetUniformfv(program, uni->location, &static_cast<Uniform<float>*>(uni)->data);
-			break;
-		case GL_FLOAT_VEC2:
-			glGetUniformfv(program, uni->location, etm::valuePtr(static_cast<Uniform<vec2>*>(uni)->data));
-			break;
-		case GL_FLOAT_VEC3:
-			glGetUniformfv(program, uni->location, etm::valuePtr(static_cast<Uniform<vec3>*>(uni)->data));
-			break;
-		case GL_FLOAT_VEC4:
-			glGetUniformfv(program, uni->location, etm::valuePtr(static_cast<Uniform<vec4>*>(uni)->data));
-			break;
-		case GL_FLOAT_MAT3:
-			glGetUniformfv(program, uni->location, etm::valuePtr(static_cast<Uniform<mat3>*>(uni)->data));
-			break;
-		case GL_FLOAT_MAT4:
-			glGetUniformfv(program, uni->location, etm::valuePtr(static_cast<Uniform<mat4>*>(uni)->data));
-			break;
-		default:
-			LOG(std::string("unknown uniform type ") + std::to_string(type), LogLevel::Warning);
-			return;
-		}
-
-		uniforms.emplace_back(uni);
-	}
-}
-
-//---------------------------------
 // GlContext::GetActiveAttribute
 //
 // Get information about an attribute in a program at a given index
@@ -1577,69 +1440,9 @@ void GL_CONTEXT_CLASSNAME::PopulateUniform(T_ShaderLoc const program, T_UniformL
 //
 // Upload a boolean to the GPU
 //
-void GL_CONTEXT_CLASSNAME::UploadUniform(const Uniform<bool> &uniform)
+void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, bool const data) const
 {
-	glUniform1i(uniform.location, uniform.data);
-}
-
-//---------------------------------
-// GlContext::UploadUniform
-//
-// Upload a 4x4 Matrix to the GPU
-//
-void GL_CONTEXT_CLASSNAME::UploadUniform(const Uniform<mat4> &uniform)
-{
-	glUniformMatrix4fv(uniform.location, 1, GL_FALSE, etm::valuePtr(uniform.data));
-}
-
-//---------------------------------
-// GlContext::UploadUniform
-//
-// Upload a 3x3 Matrix to the GPU
-//
-void GL_CONTEXT_CLASSNAME::UploadUniform(const Uniform<mat3> &uniform)
-{
-	glUniformMatrix3fv(uniform.location, 1, GL_FALSE, etm::valuePtr(uniform.data));
-}
-
-//---------------------------------
-// GlContext::UploadUniform
-//
-// Upload a 4D Vector to the GPU
-//
-void GL_CONTEXT_CLASSNAME::UploadUniform(const Uniform<vec4> &uniform)
-{
-	glUniform4f(uniform.location, uniform.data.x, uniform.data.y, uniform.data.z, uniform.data.w);
-}
-
-//---------------------------------
-// GlContext::UploadUniform
-//
-// Upload a 3D Vector to the GPU
-//
-void GL_CONTEXT_CLASSNAME::UploadUniform(const Uniform<vec3> &uniform)
-{
-	glUniform3f(uniform.location, uniform.data.x, uniform.data.y, uniform.data.z);
-}
-
-//---------------------------------
-// GlContext::UploadUniform
-//
-// Upload a 2D Vector to the GPU
-//
-void GL_CONTEXT_CLASSNAME::UploadUniform(const Uniform<vec2> &uniform)
-{
-	glUniform2f(uniform.location, uniform.data.x, uniform.data.y);
-}
-
-//---------------------------------
-// GlContext::UploadUniform
-//
-// Upload a scalar to the GPU
-//
-void GL_CONTEXT_CLASSNAME::UploadUniform(const Uniform<float> &uniform)
-{
-	glUniform1f(uniform.location, uniform.data);
+	glUniform1i(location, data);
 }
 
 //---------------------------------
@@ -1647,9 +1450,9 @@ void GL_CONTEXT_CLASSNAME::UploadUniform(const Uniform<float> &uniform)
 //
 // Upload an integer to the GPU
 //
-void GL_CONTEXT_CLASSNAME::UploadUniform(const Uniform<int32> &uniform)
+void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, int32 const data) const
 {
-	glUniform1i(uniform.location, uniform.data);
+	glUniform1i(location, data);
 }
 
 //---------------------------------
@@ -1657,9 +1460,69 @@ void GL_CONTEXT_CLASSNAME::UploadUniform(const Uniform<int32> &uniform)
 //
 // Upload an unsigned integer to the GPU
 //
-void GL_CONTEXT_CLASSNAME::UploadUniform(const Uniform<uint32> &uniform)
+void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, uint32 const data) const
 {
-	glUniform1ui(uniform.location, uniform.data);
+	glUniform1ui(location, data);
+}
+
+//---------------------------------
+// GlContext::UploadUniform
+//
+// Upload a scalar to the GPU
+//
+void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, float const data) const
+{
+	glUniform1f(location, data);
+}
+
+//---------------------------------
+// GlContext::UploadUniform
+//
+// Upload a 2D Vector to the GPU
+//
+void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, vec2 const data) const
+{
+	glUniform2f(location, data.x, data.y);
+}
+
+//---------------------------------
+// GlContext::UploadUniform
+//
+// Upload a 3D Vector to the GPU
+//
+void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, vec3 const& data) const
+{
+	glUniform3f(location, data.x, data.y, data.z);
+}
+
+//---------------------------------
+// GlContext::UploadUniform
+//
+// Upload a 4D Vector to the GPU
+//
+void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, vec4 const& data) const
+{
+	glUniform4f(location, data.x, data.y, data.z, data.w);
+}
+
+//---------------------------------
+// GlContext::UploadUniform
+//
+// Upload a 3x3 Matrix to the GPU
+//
+void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, mat3 const& data) const
+{
+	glUniformMatrix3fv(location, 1, GL_FALSE, etm::valuePtr(data));
+}
+
+//---------------------------------
+// GlContext::UploadUniform
+//
+// Upload a 4x4 Matrix to the GPU
+//
+void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, mat4 const& data) const
+{
+	glUniformMatrix4fv(location, 1, GL_FALSE, etm::valuePtr(data));
 }
 
 //---------------------------------

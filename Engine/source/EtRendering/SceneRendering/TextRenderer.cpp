@@ -55,10 +55,6 @@ void TextRenderer::Initialize()
 
 	m_pTextShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostText.glsl"_hash);
 
-	api->SetShader(m_pTextShader.get());
-
-	m_pTextShader->Upload("fontTex"_hash, 0);
-
 	//Generate buffers and arrays
 	m_VAO = api->CreateVertexArray();
 	m_VBO = api->CreateBuffer();
@@ -219,7 +215,6 @@ void TextRenderer::Draw()
 	//Enable this objects shader
 	CalculateTransform();
 	api->SetShader(m_pTextShader.get());
-	api->SetActiveTexture(0);
 	m_pTextShader->Upload("transform"_hash, m_Transform);
 
 	//Bind Object vertex array
@@ -229,10 +224,9 @@ void TextRenderer::Draw()
 	{
 		if (queued.m_IsAddedToRenderer)
 		{
-			api->BindTexture(E_TextureType::Texture2D, queued.m_Font->GetAtlas()->GetLocation());
-
-			vec2 const texSize = etm::vecCast<float>(queued.m_Font->GetAtlas()->GetResolution());
-			m_pTextShader->Upload("texSize"_hash, texSize);
+			TextureData const* const fontTex = queued.m_Font->GetAtlas();
+			m_pTextShader->Upload("fontTex"_hash, fontTex);
+			m_pTextShader->Upload("texSize"_hash, etm::vecCast<float>(fontTex->GetResolution())); // #todo: possibly we can just query this in glsl
 
 			//Draw the object
 			api->DrawArrays(E_DrawMode::Points, queued.m_BufferStart, queued.m_BufferSize);

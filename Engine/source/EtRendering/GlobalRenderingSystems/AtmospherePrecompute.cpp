@@ -138,8 +138,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	api->SetDrawBufferCount(2);
 	api->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
 	api->SetShader(m_pComputeDirectIrradiance.get());
-	api->LazyBindTexture(atmo->m_TexTransmittance->GetLocation(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetLocation());
-	m_pComputeDirectIrradiance->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetLocation()));
+	m_pComputeDirectIrradiance->Upload("uTexTransmittance"_hash, static_cast<TextureData const*>(atmo->m_TexTransmittance));
 	api->SetBlendEnabled({ false, blend });
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 	api->SetBlendEnabled(false);
@@ -156,8 +155,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 	api->SetShader(m_pComputeSingleScattering.get());
 	m_pComputeSingleScattering->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
-	api->LazyBindTexture(atmo->m_TexTransmittance->GetLocation(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetLocation());
-	m_pComputeSingleScattering->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetLocation()));
+	m_pComputeSingleScattering->Upload("uTexTransmittance"_hash, static_cast<TextureData const*>(atmo->m_TexTransmittance));
 	for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 	{
 		m_pComputeSingleScattering->Upload("layer"_hash, layer);
@@ -178,16 +176,11 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		api->SetDrawBufferCount(1);
 		api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 		api->SetShader(m_pComputeScatteringDensity.get());
-		api->LazyBindTexture(atmo->m_TexTransmittance->GetLocation(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetLocation());
-		m_pComputeScatteringDensity->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetLocation()));
-		api->LazyBindTexture(m_TexDeltaRayleigh->GetLocation(), m_TexDeltaRayleigh->GetTargetType(), m_TexDeltaRayleigh->GetLocation());
-		m_pComputeScatteringDensity->Upload("uTexRayleigh"_hash, static_cast<int32>(m_TexDeltaRayleigh->GetLocation()));
-		api->LazyBindTexture(m_TexDeltaMie->GetLocation(), m_TexDeltaMie->GetTargetType(), m_TexDeltaMie->GetLocation());
-		m_pComputeScatteringDensity->Upload("uTexDeltaMie"_hash, static_cast<int32>(m_TexDeltaMie->GetLocation()));
-		api->LazyBindTexture(m_TexDeltaMultipleScattering->GetLocation(), m_TexDeltaMultipleScattering->GetTargetType(), m_TexDeltaMultipleScattering->GetLocation());
-		m_pComputeScatteringDensity->Upload("uTexMultipleScattering"_hash, static_cast<int32>(m_TexDeltaMultipleScattering->GetLocation()));
-		api->LazyBindTexture(m_TexDeltaIrradiance->GetLocation(), m_TexDeltaIrradiance->GetTargetType(), m_TexDeltaIrradiance->GetLocation());
-		m_pComputeScatteringDensity->Upload("uTexDeltaIrradiance"_hash, static_cast<int32>(m_TexDeltaIrradiance->GetLocation()));
+		m_pComputeScatteringDensity->Upload("uTexTransmittance"_hash, static_cast<TextureData const*>(atmo->m_TexTransmittance));
+		m_pComputeScatteringDensity->Upload("uTexRayleigh"_hash, static_cast<TextureData const*>(m_TexDeltaRayleigh));
+		m_pComputeScatteringDensity->Upload("uTexDeltaMie"_hash, static_cast<TextureData const*>(m_TexDeltaMie));
+		m_pComputeScatteringDensity->Upload("uTexMultipleScattering"_hash, static_cast<TextureData const*>(m_TexDeltaMultipleScattering));
+		m_pComputeScatteringDensity->Upload("uTexDeltaIrradiance"_hash, static_cast<TextureData const*>(m_TexDeltaIrradiance));
 		m_pComputeScatteringDensity->Upload("scattering_order"_hash, scatteringOrder);
 		for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 		{
@@ -203,12 +196,9 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		api->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
 		api->SetShader(m_pComputeIndirectIrradiance.get());
 		m_pComputeIndirectIrradiance->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
-		api->LazyBindTexture(m_TexDeltaRayleigh->GetLocation(), m_TexDeltaRayleigh->GetTargetType(), m_TexDeltaRayleigh->GetLocation());
-		m_pComputeIndirectIrradiance->Upload("uTexRayleigh"_hash, static_cast<int32>(m_TexDeltaRayleigh->GetLocation()));
-		api->LazyBindTexture(m_TexDeltaMie->GetLocation(), m_TexDeltaMie->GetTargetType(), m_TexDeltaMie->GetLocation());
-		m_pComputeIndirectIrradiance->Upload("uTexDeltaMie"_hash, static_cast<int32>(m_TexDeltaMie->GetLocation()));
-		api->LazyBindTexture(m_TexDeltaMultipleScattering->GetLocation(), m_TexDeltaMultipleScattering->GetTargetType(), m_TexDeltaMultipleScattering->GetLocation());
-		//m_pComputeIndirectIrradiance->Upload("uTexDeltaIrradiance"_hash, static_cast<int32>(m_TexDeltaMultipleScattering->GetHandle()));
+		m_pComputeIndirectIrradiance->Upload("uTexRayleigh"_hash, static_cast<TextureData const*>(m_TexDeltaRayleigh));
+		m_pComputeIndirectIrradiance->Upload("uTexDeltaMie"_hash, static_cast<TextureData const*>(m_TexDeltaMie));
+		//m_pComputeIndirectIrradiance->Upload("uTexDeltaIrradiance"_hash, static_cast<TextureData const*>(m_TexDeltaMultipleScattering));
 		m_pComputeIndirectIrradiance->Upload("scattering_order"_hash, scatteringOrder);
 		api->SetBlendEnabled({ false, true });
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
@@ -223,10 +213,8 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
 		api->SetShader(m_pComputeMultipleScattering.get());
 		m_pComputeMultipleScattering->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
-		api->LazyBindTexture(atmo->m_TexTransmittance->GetLocation(), atmo->m_TexTransmittance->GetTargetType(), atmo->m_TexTransmittance->GetLocation());
-		m_pComputeMultipleScattering->Upload("uTexTransmittance"_hash, static_cast<int32>(atmo->m_TexTransmittance->GetLocation()));
-		api->LazyBindTexture(m_TexDeltaScattering->GetLocation(), m_TexDeltaScattering->GetTargetType(), m_TexDeltaScattering->GetLocation());
-		m_pComputeMultipleScattering->Upload("uTexDeltaScatteringDensity"_hash, static_cast<int32>(m_TexDeltaScattering->GetLocation()));
+		m_pComputeMultipleScattering->Upload("uTexTransmittance"_hash, static_cast<TextureData const*>(atmo->m_TexTransmittance));
+		m_pComputeMultipleScattering->Upload("uTexDeltaScatteringDensity"_hash, static_cast<TextureData const*>(m_TexDeltaScattering));
 		for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 		{
 			m_pComputeMultipleScattering->Upload("layer"_hash, layer);
@@ -248,17 +236,10 @@ void AtmospherePrecompute::SetUniforms(ShaderData* shader, TextureData* transmit
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	api->LazyBindTexture(transmittance->GetLocation(), transmittance->GetTargetType(), transmittance->GetLocation());
-	shader->Upload("uTexTransmittance"_hash, static_cast<int32>(transmittance->GetLocation()));
-
-	api->LazyBindTexture(scattering->GetLocation(), scattering->GetTargetType(), scattering->GetLocation());
-	shader->Upload("uTexScattering"_hash, static_cast<int32>(scattering->GetLocation()));
-
-	api->LazyBindTexture(irradiance->GetLocation(), irradiance->GetTargetType(), irradiance->GetLocation());
-	shader->Upload("uTexIrradiance"_hash, static_cast<int32>(irradiance->GetLocation()));
-
-	api->LazyBindTexture(mie->GetLocation(), mie->GetTargetType(), mie->GetLocation());
-	shader->Upload("uTexMie"_hash, static_cast<int32>(mie->GetLocation()));
+	shader->Upload("uTexTransmittance"_hash, static_cast<TextureData const*>(transmittance));
+	shader->Upload("uTexScattering"_hash, static_cast<TextureData const*>(scattering));
+	shader->Upload("uTexIrradiance"_hash, static_cast<TextureData const*>(irradiance));
+	shader->Upload("uTexMie"_hash, static_cast<TextureData const*>(mie));
 }
 
 void AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(const std::vector<double>& wavelengths,

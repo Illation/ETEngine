@@ -137,22 +137,21 @@ public:
 
 	virtual int32 GetAttributeCount(T_ShaderLoc const program) const = 0;
 	virtual int32 GetUniformCount(T_ShaderLoc const program) const = 0;
-	virtual void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<I_Uniform*>& uniforms) const = 0;
 	virtual void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<UniformDescriptor>& uniforms) const = 0;
 	virtual void GetActiveAttribute(T_ShaderLoc const program, uint32 const index, AttributeDescriptor& info) const = 0;
 	virtual T_AttribLoc GetAttributeLocation(T_ShaderLoc const program, std::string const& name) const = 0;
 
 	virtual void PopulateUniform(T_ShaderLoc const program, T_UniformLoc const location, E_ParamType const type, void* data) const = 0;
 
-	virtual void UploadUniform(T_UniformLoc const location, bool const data) = 0;
-	virtual void UploadUniform(T_UniformLoc const location, int32 const data) = 0;
-	virtual void UploadUniform(T_UniformLoc const location, uint32 const data) = 0;
-	virtual void UploadUniform(T_UniformLoc const location, float const data) = 0;
-	virtual void UploadUniform(T_UniformLoc const location, vec2 const data) = 0;
-	virtual void UploadUniform(T_UniformLoc const location, vec3 const& data) = 0;
-	virtual void UploadUniform(T_UniformLoc const location, vec4 const& data) = 0;
-	virtual void UploadUniform(T_UniformLoc const location, mat3 const& data) = 0;
-	virtual void UploadUniform(T_UniformLoc const location, mat4 const& data) = 0;
+	virtual void UploadUniform(T_UniformLoc const location, bool const data) const = 0;
+	virtual void UploadUniform(T_UniformLoc const location, int32 const data) const = 0;
+	virtual void UploadUniform(T_UniformLoc const location, uint32 const data) const = 0;
+	virtual void UploadUniform(T_UniformLoc const location, float const data) const = 0;
+	virtual void UploadUniform(T_UniformLoc const location, vec2 const data) const = 0;
+	virtual void UploadUniform(T_UniformLoc const location, vec3 const& data) const = 0;
+	virtual void UploadUniform(T_UniformLoc const location, vec4 const& data) const = 0;
+	virtual void UploadUniform(T_UniformLoc const location, mat3 const& data) const = 0;
+	virtual void UploadUniform(T_UniformLoc const location, mat4 const& data) const = 0;
 
 	virtual void DefineVertexAttributePointer(uint32 const index, 
 		int32 const size, 

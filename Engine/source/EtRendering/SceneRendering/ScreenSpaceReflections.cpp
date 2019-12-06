@@ -60,8 +60,7 @@ void ScreenSpaceReflections::Draw()
 
 	api->SetShader(m_pShader.get());
 
-	m_pShader->Upload("uFinalImage"_hash, 3);
-	api->LazyBindTexture(3, E_TextureType::Texture2D, m_CollectTex->GetLocation());
+	m_pShader->Upload("uFinalImage"_hash, static_cast<TextureData const*>(m_CollectTex));
 
 	//for position reconstruction
 	BaseContext* const context = ContextManager::GetInstance()->GetActiveContext();

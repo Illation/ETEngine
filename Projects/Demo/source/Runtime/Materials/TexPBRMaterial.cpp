@@ -21,19 +21,10 @@ void TexPBRMaterial::LoadTextures()
 	Viewport::GetCurrentApiContext()->SetShader(m_Shader.get());
 	
 	m_TexBaseColor = ResourceManager::Instance()->GetAssetData<TextureData>(m_BaseColorId);
-	m_Shader->Upload("texBaseColor"_hash, 0);
-
 	m_TexRoughness = ResourceManager::Instance()->GetAssetData<TextureData>(m_RoughnessId);
-	m_Shader->Upload("texRoughness"_hash, 1);
-
 	m_TexMetalness = ResourceManager::Instance()->GetAssetData<TextureData>(m_MetalnessId);
-	m_Shader->Upload("texMetalness"_hash, 2);
-
 	m_TexAO = ResourceManager::Instance()->GetAssetData<TextureData>(m_AoId);
-	m_Shader->Upload("texAO"_hash, 3);
-
 	m_TexNorm = ResourceManager::Instance()->GetAssetData<TextureData>(m_NormalId);
-	m_Shader->Upload("texNormal"_hash, 4);
 
 	m_OutdatedTextureData = false;
 }
@@ -46,13 +37,11 @@ void TexPBRMaterial::UploadDerivedVariables()
 		LoadTextures();
 	}
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
-
-	api->LazyBindTexture(0, m_TexBaseColor->GetTargetType(), m_TexBaseColor->GetLocation());
-	api->LazyBindTexture(1, m_TexRoughness->GetTargetType(), m_TexRoughness->GetLocation());
-	api->LazyBindTexture(2, m_TexMetalness->GetTargetType(), m_TexMetalness->GetLocation());
-	api->LazyBindTexture(3, m_TexAO->GetTargetType(), m_TexAO->GetLocation());
-	api->LazyBindTexture(4, m_TexNorm->GetTargetType(), m_TexNorm->GetLocation());
+	m_Shader->Upload("texBaseColor"_hash, m_TexBaseColor.get());
+	m_Shader->Upload("texRoughness"_hash, m_TexRoughness.get());
+	m_Shader->Upload("texMetalness"_hash, m_TexMetalness.get());
+	m_Shader->Upload("texAO"_hash, m_TexAO.get());
+	m_Shader->Upload("texNormal"_hash, m_TexNorm.get());
 
 	//Upload uniforms
 	//m_Shader->Upload("specular"_hash, m_Specular);

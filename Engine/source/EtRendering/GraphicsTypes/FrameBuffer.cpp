@@ -66,11 +66,6 @@ void FrameBuffer::Draw()
 	api->SetDepthEnabled(false);
 	api->SetShader(m_pShader.get());
 
-	for (uint32 i = 0; i < (uint32)m_pTextureVec.size(); i++)
-	{
-		api->LazyBindTexture(i, E_TextureType::Texture2D, m_pTextureVec[i]->GetLocation());
-	}
-
 	UploadDerivedVariables();
 
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();

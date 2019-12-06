@@ -60,7 +60,7 @@ std::type_info const& GetTypeId(E_ParamType const type)
 	}
 
 	ET_ASSERT(false, "Unhandled parameter type!");
-	return 0u;
+	return typeid(nullptr);
 }
 
 //---------------------------------
@@ -68,7 +68,7 @@ std::type_info const& GetTypeId(E_ParamType const type)
 //
 bool MatchesTexture(E_ParamType const param, E_TextureType const texture)
 {
-	switch (type)
+	switch (param)
 	{
 	case E_ParamType::Texture2D: return (texture == E_TextureType::Texture2D);
 	case E_ParamType::Texture3D: return (texture == E_TextureType::Texture3D);
