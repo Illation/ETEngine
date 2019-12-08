@@ -44,11 +44,6 @@ void SpriteRenderer::Initialize()
 
 	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostSprite.glsl"_hash);
 
-	api->SetShader(m_Shader.get());
-
-	m_Shader->Upload("uTexture"_hash, 0);
-	m_Shader->Upload("u3DTexture"_hash, 1);
-
 	//Generate buffers and arrays
 	m_VAO = api->CreateVertexArray();
 	m_VBO = api->CreateBuffer();
@@ -198,7 +193,7 @@ void SpriteRenderer::Draw()
 
 	CalculateTransform();
 	api->SetShader(m_Shader.get());
-	api->SetActiveTexture(0);
+
 	m_Shader->Upload("uTransform"_hash, m_Transform);
 
 	uint32 batchSize = 1;
@@ -215,16 +210,15 @@ void SpriteRenderer::Draw()
 		TextureData const* const texData = m_Textures[m_Sprites[i].TextureId];
 		if (texData->GetTargetType() == E_TextureType::Texture2D)
 		{
-			api->SetActiveTexture(0);
 			m_Shader->Upload("uDraw3D"_hash, false);
+			m_Shader->Upload("uTexture"_hash, texData);
 		}
 		else
 		{
-			api->SetActiveTexture(1);
 			m_Shader->Upload("uDraw3D"_hash, true);
+			m_Shader->Upload("u3DTexture"_hash, texData);
 			m_Shader->Upload("uLayer"_hash, m_Layer);
 		}
-		api->BindTexture(texData->GetTargetType(), texData->GetLocation());
 
 		//Draw
 		api->DrawArrays(E_DrawMode::Points, batchOffset, batchSize);

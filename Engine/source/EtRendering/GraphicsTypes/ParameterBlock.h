@@ -36,6 +36,8 @@ namespace parameters {
 
 
 size_t GetSize(E_ParamType const type);
+std::type_info const& GetTypeId(E_ParamType const type);
+bool MatchesTexture(E_ParamType const param, E_TextureType const texture);
 
 T_ParameterBlock CreateBlock(size_t const size);
 void DestroyBlock(T_ParameterBlock& block);
@@ -45,7 +47,10 @@ void CopyBlockData(T_ConstParameterBlock const source, T_ParameterBlock const ta
 template<typename TParamType>
 TParamType const& Read(T_ConstParameterBlock const block, size_t const offset);
 
-template<typename TParamType>
+template<typename TParamType, typename std::enable_if_t<!std::is_pointer<TParamType>::value>* = 0>
+void Write(T_ParameterBlock const block, size_t const offset, TParamType const& param);
+
+template<typename TParamType, typename std::enable_if_t<std::is_pointer<TParamType>::value>* = 0>
 void Write(T_ParameterBlock const block, size_t const offset, TParamType const& param);
 
 

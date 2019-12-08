@@ -38,6 +38,48 @@ size_t GetSize(E_ParamType const type)
 }
 
 //---------------------------------
+// GetTypeId
+//
+std::type_info const& GetTypeId(E_ParamType const type)
+{
+	switch (type)
+	{
+	case E_ParamType::Texture2D: return typeid(TextureData const*);
+	case E_ParamType::Texture3D: return typeid(TextureData const*);
+	case E_ParamType::TextureCube: return typeid(TextureData const*);
+	case E_ParamType::TextureShadow: return typeid(TextureData const*);
+	case E_ParamType::Matrix4x4: return typeid(mat4);
+	case E_ParamType::Matrix3x3: return typeid(mat3);
+	case E_ParamType::Vector4: return typeid(vec4);
+	case E_ParamType::Vector3: return typeid(vec3);
+	case E_ParamType::Vector2: return typeid(vec2);
+	case E_ParamType::UInt: return typeid(uint32);
+	case E_ParamType::Int: return typeid(int32);
+	case E_ParamType::Float: return typeid(float);
+	case E_ParamType::Boolean: return typeid(bool);
+	}
+
+	ET_ASSERT(false, "Unhandled parameter type!");
+	return typeid(nullptr);
+}
+
+//---------------------------------
+// MatchesTexture
+//
+bool MatchesTexture(E_ParamType const param, E_TextureType const texture)
+{
+	switch (param)
+	{
+	case E_ParamType::Texture2D: return (texture == E_TextureType::Texture2D);
+	case E_ParamType::Texture3D: return (texture == E_TextureType::Texture3D);
+	case E_ParamType::TextureCube: return (texture == E_TextureType::CubeMap);
+	case E_ParamType::TextureShadow: return (texture == E_TextureType::Texture2D);
+	}
+
+	return false;
+}
+
+//---------------------------------
 // CreateBlock
 //
 T_ParameterBlock CreateBlock(size_t const size)

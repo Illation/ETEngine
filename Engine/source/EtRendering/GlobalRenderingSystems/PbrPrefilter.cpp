@@ -114,8 +114,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	AssetPtr<ShaderData> irradianceShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdConvIrradianceShader.glsl"_hash);
 
 	api->SetShader(irradianceShader.get());
-	irradianceShader->Upload("environmentMap"_hash, 0);
-	api->LazyBindTexture(0, E_TextureType::CubeMap, source->GetLocation());
+	irradianceShader->Upload("environmentMap"_hash, source);
 	irradianceShader->Upload("projection"_hash, captureProjection);
 
 	//render irradiance cubemap
@@ -131,6 +130,8 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
 	}
+
+	//api->UnbindTexture(irradiance->GetTargetType(), irradiance->GetLocation());
 	api->BindFramebuffer(0);
 
 	//setup radiance
@@ -144,9 +145,8 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	AssetPtr<ShaderData> radianceShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdConvRadianceShader.glsl"_hash);
 
 	api->SetShader(radianceShader.get());
-	radianceShader->Upload("environmentMap"_hash, 0);
+	radianceShader->Upload("environmentMap"_hash, source);
 	radianceShader->Upload("resolution"_hash, static_cast<float>(radianceRes));
-	api->LazyBindTexture(0, E_TextureType::CubeMap, source->GetLocation());
 	radianceShader->Upload("projection"_hash, captureProjection);
 
 	//render radiance
@@ -176,7 +176,8 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 
 	//Reset render settings and return generated texture
 	//*************************************************
-	api->BindTexture(E_TextureType::Texture2D, 0);
+	api->UnbindTexture(source->GetTargetType(), source->GetLocation());
+	api->UnbindTexture(radiance->GetTargetType(), radiance->GetLocation());
 	api->BindFramebuffer(0);
 	api->SetViewport(ivec2(0), Viewport::GetCurrentViewport()->GetDimensions());
 

@@ -292,8 +292,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	if (skybox.m_EnvironmentMap != nullptr)
 	{
 		api->SetShader(m_SkyboxShader.get());
-		m_SkyboxShader->Upload("skybox"_hash, 0);
-		api->LazyBindTexture(0, E_TextureType::CubeMap, skybox.m_EnvironmentMap->GetRadianceHandle());
+		m_SkyboxShader->Upload("skybox"_hash, skybox.m_EnvironmentMap->GetRadiance());
 
 		m_SkyboxShader->Upload("numMipMaps"_hash, skybox.m_EnvironmentMap->GetNumMipMaps());
 		m_SkyboxShader->Upload("roughness"_hash, skybox.m_Roughness);

@@ -98,12 +98,9 @@ void Atmosphere::Draw(vec3 const& position, float const height, float const grou
 	//m_pShader->Upload("uSkySpectralRadToLum"_hash, etm::vecCast<float>(m_SkyColor));
 	//m_pShader->Upload("uSunSpectralRadToLum"_hash, etm::vecCast<float>(m_SunColor));
 
-	m_pShader->Upload("uTexIrridiance"_hash, 3);
-	api->LazyBindTexture(3, E_TextureType::Texture2D, m_TexIrradiance->GetLocation());
-	m_pShader->Upload("uTexInscatter"_hash, 4);
-	api->LazyBindTexture(4, E_TextureType::Texture3D, m_TexInscatter->GetLocation());
-	m_pShader->Upload("uTexTransmittance"_hash, 5);
-	api->LazyBindTexture(5, E_TextureType::Texture2D, m_TexTransmittance->GetLocation());
+	m_pShader->Upload("uTexIrridiance"_hash, static_cast<TextureData const*>(m_TexIrradiance));
+	m_pShader->Upload("uTexInscatter"_hash, static_cast<TextureData const*>(m_TexInscatter));
+	m_pShader->Upload("uTexTransmittance"_hash, static_cast<TextureData const*>(m_TexTransmittance));
 
 	m_pShader->Upload("SunDir"_hash, sunDir);
 	m_pShader->Upload("uSunSize"_hash, vec2(tan(m_Params.sun_angular_radius), cos(m_Params.sun_angular_radius)));

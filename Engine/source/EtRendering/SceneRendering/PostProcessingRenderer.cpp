@@ -53,23 +53,6 @@ void PostProcessingRenderer::Initialize()
 	m_pPostProcShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostProcessing.glsl"_hash);
 	m_pFXAAShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostFXAA.glsl"_hash);
 
-	//Access shader variables
-	api->SetShader(m_pDownsampleShader.get());
-	m_pDownsampleShader->Upload("texColor"_hash, 0);
-
-	api->SetShader(m_pGaussianShader.get());
-	m_pGaussianShader->Upload("image"_hash, 0);
-
-	api->SetShader(m_pPostProcShader.get());
-	m_pPostProcShader->Upload("texColor"_hash, 0);
-	for (int32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
-	{
-		m_pPostProcShader->Upload(GetHash(std::string("texBloom") + std::to_string(i)), i + 1);
-	}
-
-	api->SetShader(m_pFXAAShader.get());
-	m_pFXAAShader->Upload("texColor"_hash, 0);
-
 	GenerateFramebuffers();
 }
 
@@ -168,7 +151,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 	//get glow
 	api->BindFramebuffer(m_HDRoutFBO);
 	api->SetShader(m_pDownsampleShader.get());
-	api->LazyBindTexture(0, E_TextureType::Texture2D, m_CollectTex->GetLocation());
+	m_pDownsampleShader->Upload("texColor"_hash, static_cast<TextureData const*>(m_CollectTex));
 	m_pDownsampleShader->Upload("threshold"_hash, settings.bloomThreshold);
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 	//downsample glow
@@ -186,7 +169,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 		api->BindFramebuffer(m_DownSampleFBO[i]);
 		if (i > 0)
 		{
-			api->LazyBindTexture(0, E_TextureType::Texture2D, m_DownSampleTexture[i - 1]->GetLocation());
+			m_pDownsampleShader->Upload("texColor"_hash, static_cast<TextureData const*>(m_DownSampleTexture[i - 1]));
 		}
 
 		m_pDownsampleShader->Upload("threshold"_hash, settings.bloomThreshold);
@@ -202,7 +185,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 			//output is the current framebuffer, or on the last item the framebuffer of the downsample texture
 			api->BindFramebuffer(horizontal ? m_DownPingPongFBO[i] : m_DownSampleFBO[i]);
 			//input is previous framebuffers texture, or on first item the result of downsampling
-			api->LazyBindTexture(0, E_TextureType::Texture2D, (horizontal ? m_DownSampleTexture[i] : m_DownPingPongTexture[i])->GetLocation());
+			m_pGaussianShader->Upload("image"_hash, static_cast<TextureData const*>(horizontal ? m_DownSampleTexture[i] : m_DownPingPongTexture[i]));
 			m_pGaussianShader->Upload("horizontal"_hash, horizontal);
 			RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 		}
@@ -222,7 +205,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 	{
 		api->BindFramebuffer(m_PingPongFBO[horizontal]);
 		m_pGaussianShader->Upload("horizontal"_hash, horizontal);
-		api->LazyBindTexture(0, E_TextureType::Texture2D, ((i == 0) ? m_ColorBuffers[1] : m_PingPongTexture[!horizontal])->GetLocation());
+		m_pGaussianShader->Upload("image"_hash, static_cast<TextureData const*>((i == 0) ? m_ColorBuffers[1] : m_PingPongTexture[!horizontal]));
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 		horizontal = !horizontal;
 	}
@@ -235,12 +218,14 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 	T_FbLoc currentFb = graphicsSettings.UseFXAA ? m_PingPongFBO[1] : FBO;
 	api->BindFramebuffer(currentFb);
 	api->SetShader(m_pPostProcShader.get());
-	api->LazyBindTexture(0, E_TextureType::Texture2D, m_CollectTex->GetLocation());
-	api->LazyBindTexture(1, E_TextureType::Texture2D, m_PingPongTexture[0]->GetLocation());
+
+	m_pPostProcShader->Upload("texColor"_hash, static_cast<TextureData const*>(m_CollectTex));
+	m_pPostProcShader->Upload("texBloom0"_hash, static_cast<TextureData const*>(m_PingPongTexture[0]));
 	for (int32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; ++i)
 	{
-		api->LazyBindTexture(2+i, E_TextureType::Texture2D, m_DownSampleTexture[i]->GetLocation());
+		m_pPostProcShader->Upload(GetHash(FS("texBloom%i", i + 1)), static_cast<TextureData const*>(m_DownSampleTexture[i]));
 	}
+
 	m_pPostProcShader->Upload("exposure"_hash, settings.exposure);
 	m_pPostProcShader->Upload("gamma"_hash, settings.gamma);
 	m_pPostProcShader->Upload("bloomMult"_hash, settings.bloomMult);
@@ -253,15 +238,19 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 		overlayRenderer->DrawOverlays(currentFb); 
 	}
 
-	//FXAA
+	// FXAA
 	if (graphicsSettings.UseFXAA)
 	{
 		api->DebugPushGroup("anti  aliasing");
+
 		api->BindFramebuffer(FBO);
+
 		api->SetShader(m_pFXAAShader.get());
 		m_pFXAAShader->Upload("uInverseScreen"_hash, 1.f / etm::vecCast<float>(dim));
-		api->LazyBindTexture(0, E_TextureType::Texture2D, m_PingPongTexture[1]->GetLocation());
+		m_pFXAAShader->Upload("texColor"_hash, static_cast<TextureData const*>(m_PingPongTexture[1]));
+
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
+
 		api->DebugPopGroup(); // anti aliasing
 	}
 }
@@ -276,13 +265,6 @@ void PostProcessingRenderer::ResizeFBTextures()
 	{
 		//completely regenerate everything
 		DeleteFramebuffers();
-		api->LazyBindTexture( 0, E_TextureType::Texture2D, 0 );
-		api->LazyBindTexture( 1, E_TextureType::Texture2D, 0 );
-		api->LazyBindTexture( 2, E_TextureType::Texture2D, 0 );
-		api->LazyBindTexture( 3, E_TextureType::Texture2D, 0 );
-		api->LazyBindTexture( 4, E_TextureType::Texture2D, 0 );
-		api->LazyBindTexture( 5, E_TextureType::Texture2D, 0 );
-		api->LazyBindTexture( 6, E_TextureType::Texture2D, 0 );
 
 		//Access shader variables
 		api->SetShader(m_pDownsampleShader.get());

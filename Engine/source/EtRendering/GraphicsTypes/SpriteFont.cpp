@@ -306,7 +306,6 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 	AssetPtr<ShaderData> computeSdf = ResourceManager::Instance()->GetAssetData<ShaderData>("ComputeGlyphSDF.glsl"_hash);
 	api->SetShader(computeSdf.get());
-	computeSdf->Upload("uTex"_hash, 0);
 	computeSdf->Upload("uSpread"_hash, static_cast<float>(m_Spread));
 	computeSdf->Upload("uHighRes"_hash, static_cast<float>(m_HighRes));
 
@@ -348,7 +347,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 		ivec2 res = ivec2(metric->Width - m_Padding * 2, metric->Height - m_Padding * 2);
 		api->SetViewport(etm::vecCast<int32>(metric->TexCoord) + ivec2(m_Padding), res);
-		api->LazyBindTexture(0, E_TextureType::Texture2D, pTexture->GetLocation());
+		computeSdf->Upload("uTex"_hash, static_cast<TextureData const*>(pTexture));
 		computeSdf->Upload("uChannel"_hash, static_cast<int32>(metric->Channel));
 		computeSdf->Upload("uResolution"_hash, etm::vecCast<float>(res));
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();

@@ -17,9 +17,9 @@ public:
 
 	// accessors
 	//-----------
-	uint32 GetHandle() const { return m_Map->GetLocation(); }
-	uint32 GetIrradianceHandle() const { return m_Irradiance->GetLocation(); }
-	uint32 GetRadianceHandle() const { return m_Radiance->GetLocation(); }
+	uint32 GetLocation() const { return m_Map->GetLocation(); }
+	TextureData const* GetIrradiance() const { return m_Irradiance; }
+	TextureData const* GetRadiance() const { return m_Radiance; }
 	int32 GetNumMipMaps() const { return m_NumMipMaps; }
 
 	// Data

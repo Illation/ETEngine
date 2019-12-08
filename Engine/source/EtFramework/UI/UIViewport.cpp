@@ -32,9 +32,12 @@ void UIViewport::SetSize(ivec2 size)
 		m_Renderer->~UIViewportRenderer();
 		m_Renderer = new(m_Renderer) UIViewportRenderer();
 	}
+
 	m_Rect.size = size;
-	if(m_RendererInitialized)
+	if (m_RendererInitialized)
+	{
 		m_Renderer->Initialize(m_Rect.size);
+	}
 }
 
 bool UIViewport::Draw(uint16 level) 
@@ -65,7 +68,8 @@ void UIViewportRenderer::Draw(ivec2 pos, ivec2 size)
 	api->SetShader(m_pShader.get());
 	api->SetViewport(pos, size);
 
-	api->LazyBindTexture(0, E_TextureType::Texture2D, m_pTex->GetLocation());
+	api->SetShader(m_pShader.get());
+	m_pShader->Upload("uTex"_hash, static_cast<TextureData const*>(m_pTex));
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 }
 
@@ -74,9 +78,6 @@ void UIViewportRenderer::Initialize(ivec2 size)
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("EditorComposite.glsl"_hash);
-
-	api->SetShader(m_pShader.get());
-	m_pShader->Upload("uTex"_hash, 0);
 
 	TextureParameters params(false);
 

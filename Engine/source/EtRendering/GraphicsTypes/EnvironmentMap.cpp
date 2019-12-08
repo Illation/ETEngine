@@ -117,8 +117,8 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	TextureData* const envCubemap = EquirectangularToCubeMap(&hdrTexture, m_CubemapRes);
 
-	TextureData* irradianceMap;
-	TextureData* radianceMap;
+	TextureData* irradianceMap = nullptr;
+	TextureData* radianceMap = nullptr;
 	PbrPrefilter::PrefilterCube(envCubemap, irradianceMap, radianceMap, m_CubemapRes, m_IrradianceRes, m_RadianceRes);
 
 	m_Data = new EnvironmentMap(envCubemap, irradianceMap, radianceMap);
@@ -137,7 +137,7 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 // Convert an equirectangular 2D texture into a cube map
 //
-TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 const resolution)
+TextureData* EquirectangularToCubeMap(TextureData const* const equiTexture, int32 const resolution)
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
@@ -172,8 +172,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 
 	// convert HDR equirectangular environment map to cubemap equivalent
 	api->SetShader(equiCubeShader.get());
-	equiCubeShader->Upload("equirectangularMap"_hash, 0);
-	api->LazyBindTexture(0, E_TextureType::Texture2D, pEqui->GetLocation());
+	equiCubeShader->Upload("equirectangularMap"_hash, equiTexture);
 	equiCubeShader->Upload("projection"_hash, CubeCaptureProjection());
 
 	//render the cube
@@ -194,7 +193,8 @@ TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 cons
 	params.genMipMaps = true;
 	envCubeMap->SetParameters(params);
 
-	api->BindTexture(E_TextureType::Texture2D, 0);
+	api->UnbindTexture(equiTexture->GetTargetType(), equiTexture->GetLocation());
+	api->UnbindTexture(envCubeMap->GetTargetType(), envCubeMap->GetLocation());
 	api->SetViewport(ivec2(0), Viewport::GetCurrentViewport()->GetDimensions());
 
 	api->DeleteRenderBuffers(1, &captureRBO);

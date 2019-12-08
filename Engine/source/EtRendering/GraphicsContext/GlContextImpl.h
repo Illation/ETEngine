@@ -6,6 +6,40 @@
 #error you must declare the name of the class with #define GL_CONTEXT_CLASSNAME YourGlImplementationClassName
 #endif GL_CONTEXT_CLASSNAME
 
+#ifndef GL_CONTEXT_NS
+#	define GL_CONTEXT_NS GL_CONTEXT_CLASSNAME ## _ns
+#endif GL_CONTEXT_NS
+
+
+//---------------------------------
+// GL_CONTEXT_NS
+//
+// conversion functions
+//
+namespace GL_CONTEXT_NS {
+
+	GLenum ConvTextureType(E_TextureType const type);
+	GLenum ConvDataType(E_DataType const type);
+	GLenum ConvShaderType(E_ShaderType const type);
+	GLenum ConvDrawMode(E_DrawMode const mode);
+	GLenum ConvBufferType(E_BufferType const type);
+	GLenum ConvUsageHint(E_UsageHint const hint);
+	GLenum ConvAccessMode(E_AccessMode const mode);
+	GLenum ConvFaceCullMode(E_FaceCullMode const mode);
+	GLenum ConvBlendEquation(E_BlendEquation const equ);
+	GLenum ConvBlendFactor(E_BlendFactor const fac);
+	GLenum ConvColorFormat(E_ColorFormat const fmt);
+	GLenum ConvFilter(E_TextureFilterMode const filter);
+	GLenum ConvMinFilter(E_TextureFilterMode const minFilter, E_TextureFilterMode const mipFilter, bool const useMip);
+	GLenum ConvWrapMode(E_TextureWrapMode const wrap);
+	GLenum ConvCompareMode(E_TextureCompareMode const comp);
+	GLenum ConvDepthFunction(E_DepthFunc const func);
+
+	E_ParamType ParseParamType(GLenum const param);
+
+} // namespace GL_CONTEXT_NS
+
+
 //---------------------------------
 // GlContext
 //
@@ -13,6 +47,54 @@
 //
 class GL_CONTEXT_CLASSNAME final : public I_GraphicsApiContext
 {
+	// definitions
+	//-------------
+
+	//----------------------------
+	// TextureUnitCache
+	//
+	// Manages assignment of bindings for textures
+	//
+	class TextureUnitCache
+	{
+		// definitions
+		//-------------
+		struct Unit
+		{
+			Unit(T_TextureUnit const u = 0u, T_TextureLoc const t = 0u) : unit(u), texture(t) {}
+
+			T_TextureUnit unit;
+			T_TextureLoc texture;
+		};
+
+		typedef std::list<Unit> T_LruList;
+
+		// construct destruct
+		//--------------------
+	public:
+		TextureUnitCache(size_t const size = 0u);
+
+		// functionality
+		//---------------
+		T_TextureUnit Bind(E_TextureType const type, T_TextureLoc const tex, bool const ensureActive);
+		void Unbind(E_TextureType const type, T_TextureLoc const tex);
+		void OnTextureDelete(T_TextureLoc const tex);
+
+		// utility
+		//---------
+	private:
+		void EnsureActive(T_TextureUnit const targetUnit);
+
+		// Data
+		///////
+
+		T_TextureUnit m_ActiveUnit = 0u;
+		size_t m_MaxUnits;
+
+		T_LruList m_List;
+		std::unordered_map<T_TextureLoc, T_LruList::iterator> m_Map;
+	};
+
 public:
 
 	// init deinit
@@ -54,12 +136,8 @@ public:
 
 	void BindRenderbuffer(T_RbLoc const handle) override;
 
-	void SetActiveTexture(uint32 const unit) override;
-	void BindTexture(E_TextureType const target, T_TextureLoc const handle) override;
-
-	//Makes sure that a texture is bound to a units target for shading, 
-	//only changes active texture unit if the texture was not bound yet
-	void LazyBindTexture(uint32 const unit, E_TextureType const target, T_TextureLoc const handle) override;
+	T_TextureUnit BindTexture(E_TextureType const target, T_TextureLoc const texLoc, bool const ensureActive) override;
+	void UnbindTexture(E_TextureType const target, T_TextureLoc const texLoc) override;
 
 	void BindVertexArray(T_ArrayLoc const vertexArray) override;
 	void BindBuffer(E_BufferType const target, T_BufferLoc const buffer) override;
@@ -139,21 +217,20 @@ public:
 	int32 GetAttributeCount(T_ShaderLoc const program) const override;
 	int32 GetUniformCount(T_ShaderLoc const program) const override;
 	void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<UniformDescriptor>& uniforms) const override;
-	void GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<I_Uniform*>& uniforms) const override;
 	void GetActiveAttribute(T_ShaderLoc const program, uint32 const index, AttributeDescriptor& info) const override;
 	T_AttribLoc GetAttributeLocation(T_ShaderLoc const program, std::string const& name) const override;
 
 	void PopulateUniform(T_ShaderLoc const program, T_UniformLoc const location, E_ParamType const type, void* data) const override;
 
-	void UploadUniform(const Uniform<bool> &uniform) override;
-	void UploadUniform(const Uniform<int32> &uniform) override;
-	void UploadUniform(const Uniform<uint32> &uniform) override;
-	void UploadUniform(const Uniform<float> &uniform) override;
-	void UploadUniform(const Uniform<vec2> &uniform) override;
-	void UploadUniform(const Uniform<vec3> &uniform) override;
-	void UploadUniform(const Uniform<vec4> &uniform) override;
-	void UploadUniform(const Uniform<mat3> &uniform) override;
-	void UploadUniform(const Uniform<mat4> &uniform) override;
+	void UploadUniform(T_UniformLoc const location, bool const data) const override;
+	void UploadUniform(T_UniformLoc const location, int32 const data) const override;
+	void UploadUniform(T_UniformLoc const location, uint32 const data) const override;
+	void UploadUniform(T_UniformLoc const location, float const data) const override;
+	void UploadUniform(T_UniformLoc const location, vec2 const data) const override;
+	void UploadUniform(T_UniformLoc const location, vec3 const& data) const override;
+	void UploadUniform(T_UniformLoc const location, vec4 const& data) const override;
+	void UploadUniform(T_UniformLoc const location, mat3 const& data) const override;
+	void UploadUniform(T_UniformLoc const location, mat4 const& data) const override;
 
 	void DefineVertexAttributePointer(uint32 const index, 
 		int32 const size, 
@@ -201,9 +278,9 @@ public:
 
 private:
 
-	//===============================
-	// Open GL Conversions
-	//===============================
+	//=========
+	// Utility
+	//=========
 
 	void EnOrDisAble(bool &state, bool enabled, GLenum glState);
 
@@ -211,24 +288,6 @@ private:
 	//the index for blending must be smaller than max draw buffers too
 	void EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLenum glState, uint32 index);
 
-	GLenum ConvTextureType(E_TextureType const type) const;
-	GLenum ConvDataType(E_DataType const type) const;
-	GLenum ConvShaderType(E_ShaderType const type) const;
-	GLenum ConvDrawMode(E_DrawMode const mode) const;
-	GLenum ConvBufferType(E_BufferType const type) const;
-	GLenum ConvUsageHint(E_UsageHint const hint) const;
-	GLenum ConvAccessMode(E_AccessMode const mode) const;
-	GLenum ConvFaceCullMode(E_FaceCullMode const mode) const;
-	GLenum ConvBlendEquation(E_BlendEquation const equ) const;
-	GLenum ConvBlendFactor(E_BlendFactor const fac) const;
-	GLenum ConvColorFormat(E_ColorFormat const fmt) const;
-	GLenum ConvFilter(E_TextureFilterMode const filter) const;
-	GLenum ConvMinFilter(E_TextureFilterMode const minFilter, E_TextureFilterMode const mipFilter, bool const useMip) const;
-	GLenum ConvWrapMode(E_TextureWrapMode const wrap) const;
-	GLenum ConvCompareMode(E_TextureCompareMode const comp) const;
-	GLenum ConvDepthFunction(E_DepthFunc const func) const;
-
-	E_ParamType ParseParamType(GLenum const param) const;
 
 	//================
 	// Current State
@@ -271,10 +330,8 @@ private:
 
 	ShaderData const* m_pBoundShader = nullptr;
 
-	uint32 m_ActiveTexture = 0;
-	int32 m_NumTextureUnits; //depends on gpu and drivers
-	// #todo: in the future, abstract texture data here to support all types of textures
-	std::vector<std::map<E_TextureType, T_TextureLoc> > m_TextureUnits; 
+	TextureUnitCache m_TextureUnits;
+	bool m_BindlessTexturesAvailable = false;
 
 	T_ArrayLoc m_VertexArray = 0;
 	std::map<E_BufferType, T_BufferLoc> m_BufferTargets;

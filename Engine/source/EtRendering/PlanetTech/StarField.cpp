@@ -37,9 +37,6 @@ StarField::StarField(T_Hash const assetId)
 	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdStarField.glsl"_hash);
 	m_pSprite = ResourceManager::Instance()->GetAssetData<TextureData>("starSprite.png"_hash);
 
-	api->SetShader(m_pShader.get());
-	m_pShader->Upload("uTexture"_hash, 0);
-
 	//Generate buffers and arrays
 	m_VAO = api->CreateVertexArray();
 	m_VBO = api->CreateBuffer();
@@ -77,10 +74,7 @@ void StarField::Draw(Camera const& cam) const
 
 	api->BindVertexArray(m_VAO);
 	api->SetShader(m_pShader.get());
-	api->SetActiveTexture(0);
-	api->BindTexture(m_pSprite->GetTargetType(), m_pSprite->GetLocation());
-	//m_pShader->Upload("viewProj"_hash, cam.GetStatViewProj());
-	//m_pShader->Upload("viewInv"_hash, cam.GetViewInv());
+	m_pShader->Upload("uTexture"_hash, m_pSprite.get());
 	m_pShader->Upload("uRadius"_hash, m_Radius);
 	m_pShader->Upload("uBaseFlux"_hash, m_BaseFlux);
 	m_pShader->Upload("uBaseMag"_hash, m_BaseMag);

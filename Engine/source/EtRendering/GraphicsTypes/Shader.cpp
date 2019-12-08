@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "Shader.h"
-#include "Uniform.h"
 
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/AssetPointer.h>
@@ -38,11 +37,6 @@ ShaderData::ShaderData(T_ShaderLoc const program)
 //
 ShaderData::~ShaderData()
 {
-	for (auto &uni : m_Uniforms)
-	{
-		delete uni.second;
-	}
-
 	Viewport::GetCurrentApiContext()->DeleteProgram(m_ShaderProgram);
 
 	render::parameters::DestroyBlock(m_CurrentUniforms);
@@ -155,7 +149,6 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 	// Extract uniform info
 	//------------------
 	api->SetShader(m_Data);
-	GetUniformLocations(shaderProgram, m_Data->m_Uniforms);
 	InitUniforms();
 	GetAttributes(shaderProgram, m_Data->m_Attributes);
 
@@ -358,34 +351,6 @@ bool ShaderAsset::ReplaceInclude(std::string &line)
 
 	// we're done
 	return true;
-}
-
-//---------------------------------
-// ShaderAsset::GetUniformLocations
-//
-// Extract shader uniforms from a program
-//
-void ShaderAsset::GetUniformLocations(T_ShaderLoc const shaderProgram, std::map<uint32, I_Uniform*> &uniforms)
-{
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
-
-	int32 const count = api->GetUniformCount(shaderProgram);
-
-	for (int32 uniIdx = 0; uniIdx < count; ++uniIdx)
-	{
-		std::vector<I_Uniform*> unis;
-		api->GetActiveUniforms(shaderProgram, static_cast<uint32>(uniIdx), unis);
-		
-		for (I_Uniform* const uni : unis)
-		{
-			T_Hash const hash = GetHash(uni->name);
-
-			// ensure no hash collisions
-			ET_ASSERT(uniforms.find(hash) == uniforms.end());
-
-			uniforms[hash] = uni;
-		}
-	}
 }
 
 //---------------------------------
