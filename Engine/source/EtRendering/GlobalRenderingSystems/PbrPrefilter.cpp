@@ -130,6 +130,8 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
 	}
+
+	//api->UnbindTexture(irradiance->GetTargetType(), irradiance->GetLocation());
 	api->BindFramebuffer(0);
 
 	//setup radiance
@@ -176,7 +178,6 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	//*************************************************
 	api->UnbindTexture(source->GetTargetType(), source->GetLocation());
 	api->UnbindTexture(radiance->GetTargetType(), radiance->GetLocation());
-	api->UnbindTexture(irradiance->GetTargetType(), irradiance->GetLocation());
 	api->BindFramebuffer(0);
 	api->SetViewport(ivec2(0), Viewport::GetCurrentViewport()->GetDimensions());
 

@@ -72,28 +72,24 @@ class GL_CONTEXT_CLASSNAME final : public I_GraphicsApiContext
 		// construct destruct
 		//--------------------
 	public:
-		TextureUnitCache(E_TextureType const type, size_t const size);
-
-		// accessors
-		//---------------
-		E_TextureType const GetType() { return m_Type; }
+		TextureUnitCache(size_t const size = 0u);
 
 		// functionality
 		//---------------
-		T_TextureUnit Bind(T_TextureLoc const tex, bool const ensureActive, T_TextureUnit& activeUnit);
-		void Unbind(T_TextureLoc const tex, T_TextureUnit& activeUnit);
+		T_TextureUnit Bind(E_TextureType const type, T_TextureLoc const tex, bool const ensureActive);
+		void Unbind(E_TextureType const type, T_TextureLoc const tex);
 		void OnTextureDelete(T_TextureLoc const tex);
 
 		// utility
 		//---------
 	private:
-		void EnsureActive(T_TextureUnit const targetUnit, T_TextureUnit& activeUnit);
+		void EnsureActive(T_TextureUnit const targetUnit);
 
 		// Data
 		///////
 
-		E_TextureType const m_Type;
-		size_t const m_MaxUnits;
+		T_TextureUnit m_ActiveUnit = 0u;
+		size_t m_MaxUnits;
 
 		T_LruList m_List;
 		std::unordered_map<T_TextureLoc, T_LruList::iterator> m_Map;
@@ -334,8 +330,7 @@ private:
 
 	ShaderData const* m_pBoundShader = nullptr;
 
-	T_TextureUnit m_ActiveUnit = 0u;
-	std::vector<TextureUnitCache> m_TextureUnits;
+	TextureUnitCache m_TextureUnits;
 	bool m_BindlessTexturesAvailable = false;
 
 	T_ArrayLoc m_VertexArray = 0;
