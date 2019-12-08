@@ -174,6 +174,9 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 
 	//Reset render settings and return generated texture
 	//*************************************************
+	api->UnbindTexture(source->GetTargetType(), source->GetLocation());
+	api->UnbindTexture(radiance->GetTargetType(), radiance->GetLocation());
+	api->UnbindTexture(irradiance->GetTargetType(), irradiance->GetLocation());
 	api->BindFramebuffer(0);
 	api->SetViewport(ivec2(0), Viewport::GetCurrentViewport()->GetDimensions());
 

@@ -89,7 +89,7 @@ bool ShaderData::Upload<TextureData const*>(T_Hash const uniform, TextureData co
 		I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 		T_TextureUnit const binding = api->BindTexture(textureData->GetTargetType(), textureData->GetLocation(), false);
-		api->UploadUniform(param.location, binding);
+		api->UploadUniform(param.location, static_cast<int32>(binding));
 	//}
 
 	// ensure the shader reflects the GPU state

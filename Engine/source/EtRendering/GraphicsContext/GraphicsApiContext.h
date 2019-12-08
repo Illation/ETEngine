@@ -61,6 +61,7 @@ public:
 
 	// uses the LRU texture unit as a binding point and returns it's index, or the unit the texture is currently bound to
 	virtual T_TextureUnit BindTexture(E_TextureType const target, T_TextureLoc const texLoc, bool const ensureActive = true) = 0;
+	virtual void UnbindTexture(E_TextureType const target, T_TextureLoc const texLoc) = 0;
 
 	virtual void BindVertexArray(T_ArrayLoc const vertexArray) = 0;
 	virtual void BindBuffer(E_BufferType const target, T_BufferLoc const buffer) = 0;

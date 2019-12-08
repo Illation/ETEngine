@@ -193,6 +193,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const equiTexture, int3
 	params.genMipMaps = true;
 	envCubeMap->SetParameters(params);
 
+	api->UnbindTexture(envCubeMap->GetTargetType(), envCubeMap->GetLocation());
 	api->SetViewport(ivec2(0), Viewport::GetCurrentViewport()->GetDimensions());
 
 	api->DeleteRenderBuffers(1, &captureRBO);

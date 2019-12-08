@@ -81,12 +81,16 @@ class GL_CONTEXT_CLASSNAME final : public I_GraphicsApiContext
 		// functionality
 		//---------------
 		T_TextureUnit Bind(T_TextureLoc const tex, bool const ensureActive, T_TextureUnit& activeUnit);
+		void Unbind(T_TextureLoc const tex, T_TextureUnit& activeUnit);
 		void OnTextureDelete(T_TextureLoc const tex);
+
+		// utility
+		//---------
+	private:
+		void EnsureActive(T_TextureUnit const targetUnit, T_TextureUnit& activeUnit);
 
 		// Data
 		///////
-
-	private:
 
 		E_TextureType const m_Type;
 		size_t const m_MaxUnits;
@@ -137,6 +141,7 @@ public:
 	void BindRenderbuffer(T_RbLoc const handle) override;
 
 	T_TextureUnit BindTexture(E_TextureType const target, T_TextureLoc const texLoc, bool const ensureActive) override;
+	void UnbindTexture(E_TextureType const target, T_TextureLoc const texLoc) override;
 
 	void BindVertexArray(T_ArrayLoc const vertexArray) override;
 	void BindBuffer(E_BufferType const target, T_BufferLoc const buffer) override;

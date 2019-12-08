@@ -422,10 +422,9 @@ T_TextureUnit GL_CONTEXT_CLASSNAME::TextureUnitCache::Bind(T_TextureLoc const te
 		Unit const& binding = *(mapIt->second);
 
 		// for texture modification purposes, this is now ensured to be the active unit
-		if (ensureActive && (activeUnit != binding.unit))
+		if (ensureActive)
 		{
-			activeUnit = binding.unit;
-			glActiveTexture(GL_TEXTURE0 + activeUnit);
+			EnsureActive(binding.unit, activeUnit);
 		}
 
 		return binding.unit;
@@ -452,16 +451,53 @@ T_TextureUnit GL_CONTEXT_CLASSNAME::TextureUnitCache::Bind(T_TextureLoc const te
 		m_Map.emplace(tex, m_List.begin());
 
 		// we need to ensure that this is the active unit so we can bind a new texture to it
-		if (activeUnit != currentBinding.unit)
-		{
-			activeUnit = currentBinding.unit;
-			glActiveTexture(GL_TEXTURE0 + activeUnit);
-		}
+		EnsureActive(currentBinding.unit, activeUnit);
 
 		// do the binding
 		glBindTexture(GL_CONTEXT_NS::ConvTextureType(m_Type), tex);
 
 		return currentBinding.unit;
+	}
+}
+
+//----------------------------------------------
+// GlContext::TextureUnitCache::Unbind
+//
+void GL_CONTEXT_CLASSNAME::TextureUnitCache::Unbind(T_TextureLoc const tex, T_TextureUnit& activeUnit)
+{
+	auto mapIt = m_Map.find(tex);
+
+	// the texture is currently bound
+	if (mapIt != m_Map.cend())
+	{
+		Unit const& binding = *(mapIt->second);
+
+		// ensure the current active texture is the one we unbind
+		EnsureActive(binding.unit, activeUnit);
+
+		// unbind that texture
+		glBindTexture(GL_CONTEXT_NS::ConvTextureType(m_Type), 0u);
+
+		// LRU unit is unit with texture, texture is unset
+		m_List.emplace_back(mapIt->second->unit, 0u);
+		m_List.erase(mapIt->second);
+
+		// unreference texture from map
+		m_Map.erase(mapIt);
+	}
+}
+
+//----------------------------------------------
+// GlContext::TextureUnitCache::EnsureActive
+//
+// set the current active texture to the targetUnit, if not already
+//
+void GL_CONTEXT_CLASSNAME::TextureUnitCache::EnsureActive(T_TextureUnit const targetUnit, T_TextureUnit& activeUnit)
+{
+	if (activeUnit != targetUnit)
+	{
+		activeUnit = targetUnit;
+		glActiveTexture(GL_TEXTURE0 + activeUnit);
 	}
 }
 
@@ -895,6 +931,16 @@ void GL_CONTEXT_CLASSNAME::BindRenderbuffer(T_RbLoc const handle)
 T_TextureUnit GL_CONTEXT_CLASSNAME::BindTexture(E_TextureType const target, T_TextureLoc const texLoc, bool const ensureActive)
 {
 	return m_TextureUnits[static_cast<size_t>(target)].Bind(texLoc, ensureActive, m_ActiveUnit);
+}
+
+//---------------------------------
+// GlContext::BindTexture
+//
+// Unbind a texture from whatever target it is bound to
+//
+void GL_CONTEXT_CLASSNAME::UnbindTexture(E_TextureType const target, T_TextureLoc const texLoc)
+{
+	m_TextureUnits[static_cast<size_t>(target)].Unbind(texLoc, m_ActiveUnit);
 }
 
 //---------------------------------
