@@ -609,6 +609,22 @@
             }
           }
         ]
+      },
+      {
+        "cache": [
+          {
+            "material asset": {
+              "name": "M_UberOpaque.json",
+              "path": "assets/Materials/",
+              "package": "engine_content",
+              "references": [
+                "DefUberShader.glsl",
+                "kabuto_baseColor.png"
+              ],
+              "draw type": "Opaque"
+            }
+          }
+        ]
       }
     ]
   }

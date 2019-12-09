@@ -1,70 +1,103 @@
 #pragma once
+#include "Shader.h"
+
+#include <EtCore/Content/Asset.h>
+#include <EtCore/Content/AssetPointer.h>
+#include <EtCore/Helper/LinkerUtils.h>
+
 
 namespace render {
 
 
-class I_MaterialParam
+//---------------------------------
+// Material
+//
+// Combines with a mesh to create a surface, sets the state of a shader
+//
+class Material final
 {
+	// definitions
+	//---------------------
 public:
-	virtual ~I_MaterialParam = default;
-
-	virtual std::type_info const& GetType() const = 0;
-	virtual std::string const& GetName() const = 0;
-	virtual T_Hash const GetId() const = 0;
-};
-
-template <typename TDataType>
-class MaterialParam final : public I_MaterialParam;
-{
-public:
-	MaterialParam(std::string const& name = std::string()) : I_MaterialParam(), m_Name(name), m_Id(GetHash(name)) {}
-	~MaterialParam() = default;
-
-	std::type_info const& GetType() const override { return typeid(TDataType); }
-	std::string const& GetName() const override { return m_Name; }
-	T_Hash const GetId() const override { return m_Id; }
-
-	void Set(TDataType const& value) { m_Data = value; }
-
-private:
-	std::string m_Name;
-	T_Hash m_Id = 0u;
-	TDataType m_Data;
-};
-
-class MaterialInstance;
-
-class Material
-{
-public:
+	//---------------------------------
+	// E_DrawType
+	//
+	// The type of surface this material represents
+	//
 	enum class E_DrawType
 	{
 		Opaque,
-		Translucent
+		AlphaBlend,
+		// AlphaTest
+		// Unlit
+		// Subsurface
+		// Decal
+		// Translucent
 	};
 
+	// Construct destruct
+	//---------------------
+	Material(AssetPtr<ShaderData> const shader, 
+		E_DrawType const drawType,
+		T_ParameterBlock const defaultParameters, 
+		std::vector<AssetPtr<TextureData>> const& textureReferences);
+	~Material();
+
+	// accessors
+	//---------------------
+	ShaderData const* GetShader() const { return m_Shader.get(); }
+	E_DrawType GetDrawType() const { return m_DrawType; }
+	T_VertexFlags GetLayoutFlags() const { return m_LayoutFlags; }
+	std::vector<int32> const& GetAttributeLocations() const { return m_AttributeLocations; }
+
+	// functionliaty
+	//---------------------
+	void UploadToShader() const;
+
+	// Data
+	///////
 private:
+
+	// shading
 	E_DrawType m_DrawType = E_DrawType::Opaque;
 	AssetPtr<ShaderData> m_Shader;
-	MaterialInstance m_BaseInstance;
 
+	// vertices
 	T_VertexFlags m_LayoutFlags = 0u;
 	std::vector<int32> m_AttributeLocations;
-	std::vector<int32> m_ParamLocations;
+
+	// parameters
+	T_ParameterBlock m_DefaultParameters = nullptr;
+
+	// utility
+	std::vector<AssetPtr<TextureData>> m_TextureReferences; // prevent textures from unloading
 };
 
-class MaterialInstance final
+
+//---------------------------------
+// MaterialAsset
+//
+// Loadable Material Data
+//
+class MaterialAsset final : public Asset<Material, false>
 {
-	template <typename TDataType>
-	TDataType const& GetParameter(T_Hash const id) const;
+	DECLARE_FORCED_LINKING()
+public:
+	// Construct destruct
+	//---------------------
+	MaterialAsset() : Asset<Material, false>() {}
+	virtual ~MaterialAsset() = default;
 
-	template <typename TDataType>
-	void SetParameter(T_Hash const id, TDataType const& value);
+	// Asset overrides
+	//---------------------
+	bool LoadFromMemory(std::vector<uint8> const& data) override;
 
-private:
-	AssetPtr<MaterialInstance> m_Parent;
-	AssetPtr<Material> m_Material;
-	std::vector<I_MaterialParam*> m_Parameters;
+	// Data
+	///////
+public:
+	Material::E_DrawType m_DrawType = Material::E_DrawType::Opaque;
+
+	RTTR_ENABLE(Asset<Material, false>)
 };
 
 

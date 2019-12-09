@@ -33,9 +33,14 @@ public:
 	// accessors
 	//---------------------
 	T_ShaderLoc const GetProgram() const { return m_ShaderProgram; }
+
 	std::vector<T_AttributeLocation> const& GetAttributes() const { return m_Attributes; }
 
-	// accessors
+	std::vector<render::UniformParam> const& GetUniformLayout() const { return m_UniformLayout; }
+	std::vector<T_Hash> const& GetUniformIds() const { return m_UniformIds; }
+	render::T_ParameterBlock CopyCurrentUniforms() const;
+
+	// functionliaty
 	//---------------------
 	template<typename TDataType>
 	bool Upload(T_Hash const uniform, TDataType const& data, bool const reportWarnings = true) const;

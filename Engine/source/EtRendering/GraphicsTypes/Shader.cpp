@@ -42,6 +42,15 @@ ShaderData::~ShaderData()
 	render::parameters::DestroyBlock(m_CurrentUniforms);
 }
 
+//---------------------------------
+// ShaderData::CopyCurrentUniforms
+//
+render::T_ParameterBlock ShaderData::CopyCurrentUniforms() const
+{
+	render::T_ParameterBlock const ret = render::parameters::CreateBlock(m_UniformDataSize);
+	render::parameters::CopyBlockData(m_CurrentUniforms, ret, m_UniformDataSize);
+	return ret;
+}
 
 //===================
 // Shader Asset

@@ -1,0 +1,50 @@
+{
+  "material descriptor": {
+    "parameters": [
+      {
+        "boolean param": {
+          "name": "uUseBaseColTex",
+          "data": true
+        }
+      },
+      {
+        "texture param": {
+          "name": "uTexBaseColor",
+          "data": "kabuto_baseColor.png"
+        }
+      },
+      {
+        "vector3D param": {
+          "name": "uBaseColor",
+          "data": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "vector3D param": {
+          "name": "uEmissiveFactor",
+          "data": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        }
+      },
+      {
+        "float param": {
+          "name": "uRoughness",
+          "data": 1.0
+        }
+      },
+      {
+        "float param": {
+          "name": "uMetallic",
+          "data": 1.0
+        }
+      }
+    ]
+  }
+}

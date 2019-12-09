@@ -4,6 +4,7 @@
 #include <EtCore/Reflection/registerMath.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/Mesh.h>
+#include <EtRendering/GraphicsTypes/MaterialData.h>
 #include <EtRendering/GraphicsTypes/EnvironmentMap.h>
 #include <EtRendering/GraphicsTypes/SpriteFont.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
@@ -22,6 +23,7 @@ void ForceLinking()
 	FORCE_LINKING(StubAsset)
 	FORCE_LINKING(ShaderAsset)
 	FORCE_LINKING(MeshAsset)
+	FORCE_LINKING(MaterialAsset)
 	FORCE_LINKING(EnvironmentMapAsset)
 	FORCE_LINKING(FontAsset)
 	FORCE_LINKING(TextureAsset)
