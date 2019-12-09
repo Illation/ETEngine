@@ -44,6 +44,8 @@ void DestroyBlock(T_ParameterBlock& block);
 
 void CopyBlockData(T_ConstParameterBlock const source, T_ParameterBlock const target, size_t const blockSize);
 
+bool Compare(T_ConstParameterBlock const lhs, T_ConstParameterBlock const rhs, size_t const offset, E_ParamType const type);
+
 template<typename TParamType>
 TParamType const& Read(T_ConstParameterBlock const block, size_t const offset);
 

@@ -25,6 +25,12 @@ RTTR_REGISTRATION
 		.property("y", &vec4::y)
 		.property("z", &vec4::z)
 		.property("w", &vec4::w);
+
+	registration::class_<etm::matrix<3, 3, float>>("mat3")
+		.property("rows", &mat3::rows);
+
+	registration::class_<etm::matrix<4, 4, float>>("mat4")
+		.property("rows", &mat4::rows);
 }
 
 DEFINE_FORCED_LINKING(MathRegistrationLinkEnforcer) // force the linker to include this unit

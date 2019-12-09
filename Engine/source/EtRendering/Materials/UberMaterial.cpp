@@ -5,7 +5,6 @@
 
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
-#include <EtRendering/GraphicsTypes/MaterialData.h>
 
 
 UberMaterial::UberMaterial() 
@@ -44,8 +43,6 @@ void UberMaterial::SetEmissiveTexture(T_Hash const id)
 
 void UberMaterial::LoadTextures()
 {
-	AssetPtr<render::Material> const renderMat = ResourceManager::Instance()->GetAssetData<render::Material>("M_UberOpaque.json"_hash);
-
 	Viewport::GetCurrentApiContext()->SetShader(m_Shader.get());
 
 	if (m_TexBaseColorAsset != 0u)

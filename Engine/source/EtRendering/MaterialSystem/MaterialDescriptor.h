@@ -1,5 +1,5 @@
 #pragma once
-#include "ParameterBlock.h"
+#include <EtRendering/GraphicsTypes/ParameterBlock.h>
 
 #include <rttr/registration_friend.h>
 
@@ -105,7 +105,10 @@ public:
 namespace parameters {
 
 
-T_ParameterBlock ConvertDescriptor(MaterialDescriptor const& desc, ShaderData const* const shader, std::vector<AssetPtr<TextureData>> const& textureRefs);
+void ConvertDescriptor(T_ParameterBlock const baseParams,
+	MaterialDescriptor const& desc, 
+	ShaderData const* const shader, 
+	std::vector<AssetPtr<TextureData>> const& textureRefs);
 
 
 } // namespace parameters

@@ -618,8 +618,7 @@
               "path": "assets/Materials/",
               "package": "engine_content",
               "references": [
-                "DefUberShader.glsl",
-                "kabuto_baseColor.png"
+                "DefUberShader.glsl"
               ],
               "draw type": "Opaque"
             }

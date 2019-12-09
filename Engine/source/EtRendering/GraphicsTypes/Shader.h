@@ -38,10 +38,13 @@ public:
 
 	std::vector<render::UniformParam> const& GetUniformLayout() const { return m_UniformLayout; }
 	std::vector<T_Hash> const& GetUniformIds() const { return m_UniformIds; }
-	render::T_ParameterBlock CopyCurrentUniforms() const;
+	render::T_ConstParameterBlock GetCurrentUniforms() const { return m_CurrentUniforms; }
 
 	// functionliaty
 	//---------------------
+	render::T_ParameterBlock CopyParameterBlock(render::T_ConstParameterBlock const source) const;
+	void UploadParameterBlock(render::T_ConstParameterBlock const block) const;
+
 	template<typename TDataType>
 	bool Upload(T_Hash const uniform, TDataType const& data, bool const reportWarnings = true) const;
 

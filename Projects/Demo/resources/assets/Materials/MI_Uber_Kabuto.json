@@ -1,0 +1,54 @@
+{
+  "material descriptor": {
+    "parameters": [
+      {
+        "boolean param": {
+          "name": "uUseBaseColTex",
+          "data": true
+        }
+      },
+      {
+        "texture param": {
+          "name": "uTexBaseColor",
+          "data": "kabuto_baseColor.png"
+        }
+      },
+      {
+        "boolean param": {
+          "name": "uUseNormalTex",
+          "data": true
+        }
+      },
+      {
+        "texture param": {
+          "name": "uTexNormal",
+          "data": "kabuto_normal.png"
+        }
+      },
+      {
+        "boolean param": {
+          "name": "uUseMetallicRoughnessTex",
+          "data": true
+        }
+      },
+      {
+        "texture param": {
+          "name": "uTexMetallicRoughness",
+          "data": "kabuto_metallic_roughness.png"
+        }
+      },
+      {
+        "boolean param": {
+          "name": "uUseOcclusionTex",
+          "data": true
+        }
+      },
+      {
+        "texture param": {
+          "name": "uTexOcclusion",
+          "data": "kabuto_ao.png"
+        }
+      }
+    ]
+  }
+}

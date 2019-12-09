@@ -12,7 +12,7 @@
 // Get the data of an asset. Loads the asset if it's not loaded yet
 //
 template <class T_DataType>
-AssetPtr<T_DataType> ResourceManager::GetAssetData(T_Hash const assetId)
+AssetPtr<T_DataType> ResourceManager::GetAssetData(T_Hash const assetId, bool const reportWarnings)
 {
 	// Get the asset
 	RawAsset<T_DataType>* asset = static_cast<RawAsset<T_DataType>*>(GetAssetInternal(assetId, typeid(T_DataType)));
@@ -20,7 +20,11 @@ AssetPtr<T_DataType> ResourceManager::GetAssetData(T_Hash const assetId)
 	// Check we actually found the asset
 	if (asset == nullptr)
 	{
-		LOG("ResourceManager::GetAssetData > Couldn't find asset with ID '" + std::to_string(assetId) + std::string("'!"), LogLevel::Warning);
+		if (reportWarnings)
+		{
+			ET_ASSERT(false, "Couldn't find asset with ID '%u'!", assetId);
+		}
+
 		return nullptr;
 	}
 

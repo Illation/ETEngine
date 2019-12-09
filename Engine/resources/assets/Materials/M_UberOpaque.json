@@ -4,13 +4,31 @@
       {
         "boolean param": {
           "name": "uUseBaseColTex",
-          "data": true
+          "data": false
         }
       },
       {
-        "texture param": {
-          "name": "uTexBaseColor",
-          "data": "kabuto_baseColor.png"
+        "boolean param": {
+          "name": "uUseNormalTex",
+          "data": false
+        }
+      },
+      {
+        "boolean param": {
+          "name": "uUseMetallicRoughnessTex",
+          "data": false
+        }
+      },
+      {
+        "boolean param": {
+          "name": "uUseOcclusionTex",
+          "data": false
+        }
+      },
+      {
+        "boolean param": {
+          "name": "uUseEmissiveTex",
+          "data": false
         }
       },
       {

@@ -106,6 +106,16 @@ void CopyBlockData(T_ConstParameterBlock const source, T_ParameterBlock const ta
 	memcpy(target, source, blockSize);
 }
 
+//---------------------------------
+// Compare
+//
+// Check if two parameter blocks hold the same data
+//
+bool Compare(T_ConstParameterBlock const lhs, T_ConstParameterBlock const rhs, size_t const offset, E_ParamType const type)
+{
+	return (memcmp(lhs + offset, rhs + offset, GetSize(type)) == 0);
+}
+
 
 } // namespace parameters
 } // namespace render

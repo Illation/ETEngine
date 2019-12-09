@@ -1,9 +1,11 @@
 #pragma once
-#include "Shader.h"
+#include "MaterialInterface.h"
 
 #include <EtCore/Content/Asset.h>
 #include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Helper/LinkerUtils.h>
+
+#include <EtRendering/GraphicsTypes/Shader.h>
 
 
 namespace render {
@@ -14,7 +16,7 @@ namespace render {
 //
 // Combines with a mesh to create a surface, sets the state of a shader
 //
-class Material final
+class Material final : public I_Material
 {
 	// definitions
 	//---------------------
@@ -43,16 +45,18 @@ public:
 		std::vector<AssetPtr<TextureData>> const& textureReferences);
 	~Material();
 
+	// material interface
+	//---------------------
+	Material const* GetBaseMaterial() const override { return this; }
+	T_ConstParameterBlock GetParameters() const override { return m_DefaultParameters; }
+
 	// accessors
 	//---------------------
 	ShaderData const* GetShader() const { return m_Shader.get(); }
 	E_DrawType GetDrawType() const { return m_DrawType; }
+
 	T_VertexFlags GetLayoutFlags() const { return m_LayoutFlags; }
 	std::vector<int32> const& GetAttributeLocations() const { return m_AttributeLocations; }
-
-	// functionliaty
-	//---------------------
-	void UploadToShader() const;
 
 	// Data
 	///////
@@ -81,14 +85,18 @@ private:
 //
 class MaterialAsset final : public Asset<Material, false>
 {
+	// definitions
+	//-------------
+	RTTR_ENABLE(Asset<Material, false>)
 	DECLARE_FORCED_LINKING()
-public:
+
 	// Construct destruct
 	//---------------------
+public:
 	MaterialAsset() : Asset<Material, false>() {}
 	virtual ~MaterialAsset() = default;
 
-	// Asset overrides
+	// Asset interface
 	//---------------------
 	bool LoadFromMemory(std::vector<uint8> const& data) override;
 
@@ -96,8 +104,6 @@ public:
 	///////
 public:
 	Material::E_DrawType m_DrawType = Material::E_DrawType::Opaque;
-
-	RTTR_ENABLE(Asset<Material, false>)
 };
 
 

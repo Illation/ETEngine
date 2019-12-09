@@ -49,7 +49,8 @@ Material::Material(AssetPtr<ShaderData> const shader,
 	T_ParameterBlock const defaultParameters, 
 	std::vector<AssetPtr<TextureData>> const& textureReferences
 )
-	: m_Shader(shader)
+	: I_Material()
+	, m_Shader(shader)
 	, m_DrawType(drawType)
 	, m_DefaultParameters(defaultParameters)
 	, m_TextureReferences(textureReferences)
@@ -83,15 +84,6 @@ Material::~Material()
 	{
 		parameters::DestroyBlock(m_DefaultParameters);
 	}
-}
-
-//--------------------------
-// Material::UploadToShader
-//
-// Upload all variables to the shader in preparation for rendering
-//
-void Material::UploadToShader() const
-{
 }
 
 
@@ -144,7 +136,12 @@ bool MaterialAsset::LoadFromMemory(std::vector<uint8> const& data)
 	}
 
 	// convert to a parameter block
-	T_ParameterBlock const params = parameters::ConvertDescriptor(descriptor, shaderRef.get(), textureRefs);
+	// ideally this should be done before any uniforms are set in the shader
+	T_ParameterBlock const params = shaderRef->CopyParameterBlock(shaderRef->GetCurrentUniforms());
+	if (params != nullptr)
+	{
+		parameters::ConvertDescriptor(params, descriptor, shaderRef.get(), textureRefs);
+	}
 
 	// Create the material
 	m_Data = new Material(shaderRef, m_DrawType, params, textureRefs);

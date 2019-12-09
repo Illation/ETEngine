@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "MaterialDescriptor.h"
 
-#include "Shader.h"
+#include <EtRendering/GraphicsTypes/Shader.h>
 
 #include <rttr/registration>
 
@@ -80,16 +80,12 @@ namespace parameters {
 //
 // Convert a material descriptor into a shader parameter set
 //
-T_ParameterBlock ConvertDescriptor(MaterialDescriptor const& desc, ShaderData const* const shader, std::vector<AssetPtr<TextureData>> const& textureRefs)
+void ConvertDescriptor(T_ParameterBlock const baseParams, 
+	MaterialDescriptor const& desc, 
+	ShaderData const* const shader, 
+	std::vector<AssetPtr<TextureData>> const& textureRefs)
 {
 	ET_ASSERT(shader != nullptr);
-
-	// ideally this should be done before any uniforms are set in the shader
-	T_ParameterBlock const block = shader->CopyCurrentUniforms();
-	if (block == nullptr)
-	{
-		return block; // if the material has no parameters we just return null
-	}
 
 	std::vector<UniformParam> const& layout = shader->GetUniformLayout();
 	std::vector<T_Hash> const& ids = shader->GetUniformIds();
@@ -135,53 +131,53 @@ T_ParameterBlock ConvertDescriptor(MaterialDescriptor const& desc, ShaderData co
 					break;
 				}
 
-				render::parameters::Write(block, param.offset, (*texIt).get());
+				render::parameters::Write(baseParams, param.offset, (*texIt).get());
 			}
 			break;
 
 		case E_ParamType::Matrix4x4:
 			ET_ASSERT(baseParam->GetType() == typeid(mat4));
-			parameters::Write(block, param.offset, static_cast<MaterialParam<mat4> const*>(baseParam)->GetData());
+			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<mat4> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::Matrix3x3:
 			ET_ASSERT(baseParam->GetType() == typeid(mat3));
-			parameters::Write(block, param.offset, static_cast<MaterialParam<mat3> const*>(baseParam)->GetData());
+			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<mat3> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::Vector4:
 			ET_ASSERT(baseParam->GetType() == typeid(vec4));
-			parameters::Write(block, param.offset, static_cast<MaterialParam<vec4> const*>(baseParam)->GetData());
+			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<vec4> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::Vector3:
 			ET_ASSERT(baseParam->GetType() == typeid(vec3));
-			parameters::Write(block, param.offset, static_cast<MaterialParam<vec3> const*>(baseParam)->GetData());
+			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<vec3> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::Vector2:
 			ET_ASSERT(baseParam->GetType() == typeid(vec2));
-			parameters::Write(block, param.offset, static_cast<MaterialParam<vec2> const*>(baseParam)->GetData());
+			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<vec2> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::UInt:
 			ET_ASSERT(baseParam->GetType() == typeid(uint32));
-			parameters::Write(block, param.offset, static_cast<MaterialParam<uint32> const*>(baseParam)->GetData());
+			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<uint32> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::Int:
 			ET_ASSERT(baseParam->GetType() == typeid(int32));
-			parameters::Write(block, param.offset, static_cast<MaterialParam<int32> const*>(baseParam)->GetData());
+			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<int32> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::Float:
 			ET_ASSERT(baseParam->GetType() == typeid(float));
-			parameters::Write(block, param.offset, static_cast<MaterialParam<float> const*>(baseParam)->GetData());
+			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<float> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::Boolean:
 			ET_ASSERT(baseParam->GetType() == typeid(bool));
-			parameters::Write(block, param.offset, static_cast<MaterialParam<bool> const*>(baseParam)->GetData());
+			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<bool> const*>(baseParam)->GetData());
 			break;
 
 		default:
@@ -189,8 +185,6 @@ T_ParameterBlock ConvertDescriptor(MaterialDescriptor const& desc, ShaderData co
 			break;
 		}
 	}
-
-	return block;
 }
 
 

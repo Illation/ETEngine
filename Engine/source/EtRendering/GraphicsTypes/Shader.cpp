@@ -42,15 +42,102 @@ ShaderData::~ShaderData()
 	render::parameters::DestroyBlock(m_CurrentUniforms);
 }
 
-//---------------------------------
-// ShaderData::CopyCurrentUniforms
+
+// functionality 
+/////////////////
+
+//--------------------------------
+// ShaderData::CopyParameterBlock
 //
-render::T_ParameterBlock ShaderData::CopyCurrentUniforms() const
+render::T_ParameterBlock ShaderData::CopyParameterBlock(render::T_ConstParameterBlock const source) const
 {
 	render::T_ParameterBlock const ret = render::parameters::CreateBlock(m_UniformDataSize);
-	render::parameters::CopyBlockData(m_CurrentUniforms, ret, m_UniformDataSize);
+	render::parameters::CopyBlockData(source, ret, m_UniformDataSize);
 	return ret;
 }
+
+//----------------------------------
+// ShaderData::UploadParameterBlock
+//
+// Upload all variables in a parameter block according to the shaders layout
+//
+void ShaderData::UploadParameterBlock(render::T_ConstParameterBlock const block) const
+{
+	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	for (render::UniformParam const& param : m_UniformLayout)
+	{
+		// textures are alwats updated as we are not storing their binding points at the moement 
+		// #todo: this can and should be improved
+		switch (param.type)
+		{
+		case E_ParamType::Texture2D:
+		case E_ParamType::Texture3D:
+		case E_ParamType::TextureCube:
+		case E_ParamType::TextureShadow:
+		{
+			TextureData const* const texture = render::parameters::Read<TextureData const*>(block, param.offset);
+			T_TextureUnit const binding = api->BindTexture(texture->GetTargetType(), texture->GetLocation(), false);
+			api->UploadUniform(param.location, static_cast<int32>(binding));
+		}
+		continue;
+		}
+
+		// check difference
+		if (render::parameters::Compare(block, m_CurrentUniforms, param.offset, param.type))
+		{
+			continue;
+		}
+
+		// upload
+		switch (param.type)
+		{
+		case E_ParamType::Matrix4x4:
+			api->UploadUniform(param.location, render::parameters::Read<mat4>(block, param.offset));
+			break;
+
+		case E_ParamType::Matrix3x3:
+			api->UploadUniform(param.location, render::parameters::Read<mat3>(block, param.offset));
+			break;
+
+		case E_ParamType::Vector4:
+			api->UploadUniform(param.location, render::parameters::Read<vec4>(block, param.offset));
+			break;
+
+		case E_ParamType::Vector3:
+			api->UploadUniform(param.location, render::parameters::Read<vec3>(block, param.offset));
+			break;
+
+		case E_ParamType::Vector2:
+			api->UploadUniform(param.location, render::parameters::Read<vec2>(block, param.offset));
+			break;
+
+		case E_ParamType::UInt:
+			api->UploadUniform(param.location, render::parameters::Read<uint32>(block, param.offset));
+			break;
+
+		case E_ParamType::Int:
+			api->UploadUniform(param.location, render::parameters::Read<int32>(block, param.offset));
+			break;
+
+		case E_ParamType::Float:
+			api->UploadUniform(param.location, render::parameters::Read<float>(block, param.offset));
+			break;
+
+		case E_ParamType::Boolean:
+			api->UploadUniform(param.location, render::parameters::Read<bool>(block, param.offset));
+			break;
+
+		default:
+			ET_ASSERT(false, "Unhandled parameter type");
+			break;
+		}
+	}
+
+	// ensure the state is reflected
+	render::parameters::CopyBlockData(block, m_CurrentUniforms, m_UniformDataSize);
+}
+
 
 //===================
 // Shader Asset

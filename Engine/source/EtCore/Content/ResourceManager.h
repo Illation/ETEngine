@@ -51,7 +51,7 @@ public:
 	// Managing assets
 	//---------------------
 	template <class T_DataType>
-	AssetPtr<T_DataType> GetAssetData(T_Hash const assetId);
+	AssetPtr<T_DataType> GetAssetData(T_Hash const assetId, bool const reportWarnings = true);
 
 	// utility
 	//---------------------
