@@ -1,0 +1,36 @@
+{
+  "material descriptor": {
+    "parameters": [
+      {
+        "texture param": {
+          "name": "texBaseColor",
+          "data": "greasyMetal_baseCol.png"
+        }
+      },
+      {
+        "texture param": {
+          "name": "texNormal",
+          "data": "greasyMetal_norm.png"
+        }
+      },
+      {
+        "texture param": {
+          "name": "texRoughness",
+          "data": "greasyMetal_rough.png"
+        }
+      },
+      {
+        "texture param": {
+          "name": "texMetalness",
+          "data": "greasyMetal_metal.png"
+        }
+      },
+      {
+        "texture param": {
+          "name": "texAO",
+          "data": "mahogany_ao.png"
+        }
+      }
+    ]
+  }
+}

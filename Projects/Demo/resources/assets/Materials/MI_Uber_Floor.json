@@ -1,0 +1,22 @@
+{
+  "material descriptor": {
+    "parameters": [
+      {
+        "vector3D param": {
+          "name": "uBaseColor",
+          "data": {
+            "x": 5.0,
+            "y": 5.0,
+            "z": 5.0
+          }
+        }
+      },
+      {
+        "float param": {
+          "name": "uMetallic",
+          "data": 0.0
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "material descriptor": {
+    "parameters": [
+      {
+        "vector3D param": {
+          "name": "baseColor",
+          "data": {
+            "x": 0.8,
+            "y": 0.8,
+            "z": 0.8
+          }
+        }
+      },
+      {
+        "float param": {
+          "name": "roughness",
+          "data": 0.5
+        }
+      },
+      {
+        "float param": {
+          "name": "metalness",
+          "data": 0.0
+        }
+      }
+    ]
+  }
+}

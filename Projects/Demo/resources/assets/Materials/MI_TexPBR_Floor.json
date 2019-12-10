@@ -1,0 +1,36 @@
+{
+  "material descriptor": {
+    "parameters": [
+      {
+        "texture param": {
+          "name": "texBaseColor",
+          "data": "mahogany_baseCol.png"
+        }
+      },
+      {
+        "texture param": {
+          "name": "texNormal",
+          "data": "mahogany_norm.png"
+        }
+      },
+      {
+        "texture param": {
+          "name": "texRoughness",
+          "data": "mahogany_rough.png"
+        }
+      },
+      {
+        "texture param": {
+          "name": "texMetalness",
+          "data": "bamboo_metal.png"
+        }
+      },
+      {
+        "texture param": {
+          "name": "texAO",
+          "data": "mahogany_ao.png"
+        }
+      }
+    ]
+  }
+}

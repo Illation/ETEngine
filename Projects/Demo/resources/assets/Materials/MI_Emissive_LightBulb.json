@@ -1,0 +1,16 @@
+{
+  "material descriptor": {
+    "parameters": [
+      {
+        "vector3D param": {
+          "name": "color",
+          "data": {
+            "x": 500.0,
+            "y": 500.0,
+            "z": 500.0
+          }
+        }
+      }
+    ]
+  }
+}

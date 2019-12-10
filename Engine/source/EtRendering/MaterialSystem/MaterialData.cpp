@@ -15,7 +15,8 @@ RTTR_REGISTRATION
 
 	registration::enumeration<render::Material::E_DrawType>("E_DrawType") (
 		value("Opaque", render::Material::E_DrawType::Opaque),
-		value("AlphaBlend", render::Material::E_DrawType::AlphaBlend));
+		value("AlphaBlend", render::Material::E_DrawType::AlphaBlend),
+		value("Custom", render::Material::E_DrawType::Custom));
 
 	registration::class_<render::MaterialAsset>("material asset")
 		.constructor<render::MaterialAsset const&>()

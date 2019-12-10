@@ -30,6 +30,7 @@ public:
 	{
 		Opaque,
 		AlphaBlend,
+		Custom,
 		// AlphaTest
 		// Unlit
 		// Subsurface

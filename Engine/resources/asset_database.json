@@ -622,6 +622,39 @@
               ],
               "draw type": "Opaque"
             }
+          },
+          {
+            "material asset": {
+              "name": "M_Light.json",
+              "path": "assets/Materials/",
+              "package": "engine_content",
+              "references": [
+                "FwdLightPointShader.glsl"
+              ],
+              "draw type": "Custom"
+            }
+          },
+          {
+            "material asset": {
+              "name": "M_Null.json",
+              "path": "assets/Materials/",
+              "package": "engine_content",
+              "references": [
+                "FwdNullShader.glsl"
+              ],
+              "draw type": "Custom"
+            }
+          },
+          {
+            "material asset": {
+              "name": "M_Color.json",
+              "path": "assets/Materials/",
+              "package": "engine_content",
+              "references": [
+                "FwdColorShader.glsl"
+              ],
+              "draw type": "Custom"
+            }
           }
         ]
       }

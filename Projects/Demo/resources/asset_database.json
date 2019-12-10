@@ -879,6 +879,143 @@
       {
         "cache": [
           {
+            "material asset": {
+              "name": "M_ParamPBR.json",
+              "path": "assets/Materials/",
+              "package": "content1",
+              "references": [
+                "DefPBRParamShader.glsl"
+              ],
+              "draw type": "Opaque"
+            }
+          },
+          {
+            "material asset": {
+              "name": "M_TexPBR.json",
+              "path": "assets/Materials/",
+              "package": "content1",
+              "references": [
+                "DefPBRMetShader.glsl"
+              ],
+              "draw type": "Opaque"
+            }
+          },
+          {
+            "material asset": {
+              "name": "M_Emissive.json",
+              "path": "assets/Materials/",
+              "package": "content1",
+              "references": [
+                "FwdEmissiveShader.glsl"
+              ],
+              "draw type": "AlphaBlend"
+            }
+          }
+        ]
+      },
+      {
+        "cache": [
+          {
+            "material instance asset": {
+              "name": "MI_Emissive_LightBulb.json",
+              "path": "assets/Materials/",
+              "package": "content1",
+              "references": [
+                "M_Emissive.json"
+              ]
+            }
+          },
+          {
+            "material instance asset": {
+              "name": "MI_ParamPBR_Environment.json",
+              "path": "assets/Materials/",
+              "package": "content1",
+              "references": [
+                "M_ParamPBR.json"
+              ]
+            }
+          },
+          {
+            "material instance asset": {
+              "name": "MI_ParamPBR_Stand.json",
+              "path": "assets/Materials/",
+              "package": "content1",
+              "references": [
+                "M_ParamPBR.json"
+              ]
+            }
+          },
+          {
+            "material instance asset": {
+              "name": "MI_TexPBR_Ball.json",
+              "path": "assets/Materials/",
+              "package": "content1",
+              "references": [
+                "M_TexPBR.json",
+                "greasyMetal_baseCol.png",
+                "greasyMetal_norm.png",
+                "greasyMetal_rough.png",
+                "greasyMetal_metal.png",
+                "mahogany_ao.png"
+              ]
+            }
+          },
+          {
+            "material instance asset": {
+              "name": "MI_TexPBR_Block.json",
+              "path": "assets/Materials/",
+              "package": "content1",
+              "references": [
+                "M_TexPBR.json",
+                "bamboo_baseCol.png",
+                "bamboo_norm.png",
+                "bamboo_rough.png",
+                "bamboo_metal.png",
+                "bamboo_ao.png"
+              ]
+            }
+          },
+          {
+            "material instance asset": {
+              "name": "MI_TexPBR_Floor.json",
+              "path": "assets/Materials/",
+              "package": "content1",
+              "references": [
+                "M_TexPBR.json",
+                "mahogany_baseCol.png",
+                "mahogany_norm.png",
+                "mahogany_rough.png",
+                "bamboo_metal.png",
+                "mahogany_ao.png"
+              ]
+            }
+          },
+          {
+            "material instance asset": {
+              "name": "MI_TexPBR_Kabuto.json",
+              "path": "assets/Materials/",
+              "package": "content1",
+              "references": [
+                "M_TexPBR.json",
+                "kabuto_baseColor.png",
+                "kabuto_normal.png",
+                "kabuto_roughness.png",
+                "kabuto_metal.png",
+                "kabuto_ao.png"
+              ]
+            }
+          },
+          {
+            "material instance asset": {
+              "name": "MI_Uber_Floor.json",
+              "path": "assets/Materials/",
+              "package": "content1",
+              "references": [
+                "M_UberOpaque.json"
+              ]
+            }
+          },
+          {
             "material instance asset": {
               "name": "MI_Uber_Kabuto.json",
               "path": "assets/Materials/",
