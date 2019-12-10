@@ -4,13 +4,8 @@
 #include <EtFramework/SceneGraph/SceneManager.h>
 
 #include <Runtime/Scenes/EditorScene.h>
-#include <Runtime/Scenes/TestScene.h>
-#include <Runtime/Scenes/SkyboxTestScene.h>
-#include <Runtime/Scenes/ShadingTestScene.h>
 #include <Runtime/Scenes/PlanetTestScene.h>
 #include <Runtime/Scenes/PhysicsTestScene.h>
-
-//#include <btBulletCollisionCommon.h>
 
 
 MainFramework::MainFramework() :
@@ -26,9 +21,6 @@ void MainFramework::AddScenes()
 	SceneManager::GetInstance()->AddScene(new EditorScene());
 	SceneManager::GetInstance()->AddScene(new PlanetTestScene());
 	SceneManager::GetInstance()->AddScene(new PhysicsTestScene());
-	//SceneManager::GetInstance()->AddScene(new ShadingTestScene());
-	//SceneManager::GetInstance()->AddScene(new SkyboxTestScene());
-	//SceneManager::GetInstance()->AddScene(new TestScene());
 }
 
 void MainFramework::OnTick()

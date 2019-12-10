@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "OutlineExtension.h"
 
-#include <EtRendering/GraphicsTypes/Material.h>
 #include <EtRendering/GraphicsTypes/Mesh.h>
-#include <EtRendering/Materials/ColorMaterial.h>
+#include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 

@@ -13,7 +13,7 @@ class EditorScene final : public AbstractScene
 {
 public:
 	EditorScene() : AbstractScene("EditorScene") {}
-	virtual ~EditorScene();
+	~EditorScene() = default;
 
 private:
 	void Init();
@@ -21,8 +21,6 @@ private:
 
 private:
 
-	UberMaterial* m_Mat = nullptr;
-	UberMaterial* m_FloorMat = nullptr;
 	LightComponent* m_Light = nullptr;
 
 	AssetPtr<SpriteFont> m_pDebugFont;

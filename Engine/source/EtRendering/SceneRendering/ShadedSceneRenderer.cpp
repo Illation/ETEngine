@@ -6,8 +6,7 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/SceneStructure/RenderScene.h>
 #include <EtRendering/GraphicsTypes/EnvironmentMap.h>
-#include <EtRendering/GraphicsTypes/Material.h>
-#include <EtRendering/Materials/NullMaterial.h>
+#include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/PlanetTech/StarField.h>
 
 
@@ -375,7 +374,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 //
 // Render the scene to the depth buffer of the current framebuffer
 //
-void ShadedSceneRenderer::DrawShadow(NullMaterial* const nullMaterial)
+void ShadedSceneRenderer::DrawShadow(I_Material const* const nullMaterial)
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
@@ -392,7 +391,7 @@ void ShadedSceneRenderer::DrawShadow(NullMaterial* const nullMaterial)
 
 			if (true) // #todo: light frustum check
 			{
-				nullMaterial->UploadModelOnly(transform);
+				nullMaterial->GetBaseMaterial()->GetShader()->Upload("model"_hash, transform);
 				api->DrawElements(E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
 			}
 		}
@@ -413,7 +412,9 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 		api->SetShader(collection.m_Shader.get());
 		for (MaterialCollection::MaterialInstance const& material : collection.m_Materials)
 		{
-			material.m_Material->UploadNonInstanceVariables();
+			ET_ASSERT(collection.m_Shader.get() == material.m_Material->GetBaseMaterial()->GetShader());
+
+			collection.m_Shader->UploadParameterBlock(material.m_Material->GetParameters());
 			for (MaterialCollection::Mesh const& mesh : material.m_Meshes)
 			{
 				api->BindVertexArray(mesh.m_VAO);
@@ -426,7 +427,7 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 
 					if (m_Camera.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
 					{
-						material.m_Material->UploadModelOnly(transform);
+						collection.m_Shader->Upload("model"_hash, transform);
 						api->DrawElements(E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
 					}
 				}

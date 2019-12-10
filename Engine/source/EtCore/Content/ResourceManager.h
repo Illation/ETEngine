@@ -69,7 +69,7 @@ public:
 	virtual void Flush() = 0; 
 
 protected:
-	virtual I_Asset* GetAssetInternal(T_Hash const assetId, std::type_info const& type) = 0;
+	virtual I_Asset* GetAssetInternal(T_Hash const assetId, std::type_info const& type, bool const reportErrors) = 0;
 
 	// Data
 	///////

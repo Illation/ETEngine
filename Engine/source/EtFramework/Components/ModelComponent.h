@@ -5,7 +5,6 @@
 #include <EtCore/Containers/slot_map.h>
 
 
-class Material;
 class MeshData;
 
 
@@ -16,32 +15,19 @@ class MeshData;
 //
 class ModelComponent : public AbstractComponent
 {
-	// definitions
-	//-------------
-public:
-	enum class CullMode
-	{
-		SPHERE,
-		DISABLED
-	};
-
 	// construct destruct
 	//--------------------
-	ModelComponent(T_Hash const meshId, T_Hash const materialId = 0u);
+public:
+	ModelComponent(T_Hash const meshId, T_Hash const materialId);
 	virtual ~ModelComponent() = default;
 
 private:
 	ModelComponent(const ModelComponent& yRef);
 	ModelComponent& operator=(const ModelComponent& yRef);
 
-	// functionality
-	//---------------
-public:
-	void SetMaterial(Material* pMat);
-	void SetCullMode(CullMode mode) { m_CullMode = mode; }
-
 	// accessors
 	//-----------
+public:
 	AssetPtr<MeshData> GetMesh() const { return m_Mesh; }
 
 	// component interface
@@ -49,26 +35,17 @@ public:
 protected:
 	virtual void Init() override;
 	virtual void Deinit() override;
-	virtual void Update() override;
-
-	// utility
-	//---------
-private:
-	void UpdateMaterial();
+	virtual void Update() {}
 
 	// Data
 	///////
+private:
 
 	T_Hash m_MeshId = 0u;
 	AssetPtr<MeshData> m_Mesh;
 
 	T_Hash m_MaterialId = 0u;
-	I_AssetPtr m_MaterialAsset;
-
-	Material* m_Material = nullptr;
-	bool m_MaterialSet = false;
-
-	CullMode m_CullMode = CullMode::SPHERE;
+	I_AssetPtr m_Material;
 
 	core::T_SlotId m_InstanceId;
 };

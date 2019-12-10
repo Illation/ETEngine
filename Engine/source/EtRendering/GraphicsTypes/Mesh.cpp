@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "Mesh.h"
 
-#include "Material.h"
-
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>  
 #include <assimp/postprocess.h>
@@ -12,6 +10,7 @@
 #include <EtCore/FileSystem/FileUtil.h>
 
 #include <EtRendering/SceneStructure/GLTF.h>
+#include <EtRendering/MaterialSystem/MaterialData.h>
 
 
 //=====================
@@ -172,7 +171,7 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 //
 // Construct a surface from a mesh and material combination
 //
-MeshSurface::MeshSurface(MeshData const* const mesh, Material const* const material)
+MeshSurface::MeshSurface(MeshData const* const mesh, render::Material const* const material)
 	: m_Material(material)
 {
 	ET_ASSERT(mesh != nullptr);
@@ -228,7 +227,7 @@ SurfaceContainer::~SurfaceContainer()
 //
 // Returns a pointer to a surface for the material in question. If none is found we create it
 //
-MeshSurface const* SurfaceContainer::GetSurface(MeshData const* const mesh, Material const* const material)
+MeshSurface const* SurfaceContainer::GetSurface(MeshData const* const mesh, render::Material const* const material)
 {
 	// try finding the existing surface
 	auto surfaceIt = std::find_if(m_Surfaces.begin(), m_Surfaces.end(), [material](MeshSurface* surface)
@@ -412,7 +411,7 @@ MeshData::~MeshData()
 //
 // Retrieves (and potentially creates) a new surface for the material in question
 //
-MeshSurface const* MeshData::GetSurface(Material const* const material) const
+MeshSurface const* MeshData::GetSurface(render::Material const* const material) const
 {
 	return m_Surfaces->GetSurface(this, material);
 }

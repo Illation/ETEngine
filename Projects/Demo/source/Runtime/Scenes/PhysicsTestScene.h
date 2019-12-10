@@ -5,8 +5,6 @@
 #include <EtFramework/SceneGraph/AbstractScene.h>
 
 
-class TexPBRMaterial;
-class EmissiveMaterial;
 class SpriteFont;
 class btCollisionShape;
 class AudioSourceComponent;
@@ -16,19 +14,13 @@ class LightComponent;
 class PhysicsTestScene : public AbstractScene
 {
 public:
-	PhysicsTestScene();
-	virtual ~PhysicsTestScene();
+	PhysicsTestScene() : AbstractScene("PhysicsTestScene") {}
+	virtual ~PhysicsTestScene() = default;
 private:
 	void Init();
 	void Update();
 
 private:
-	TexPBRMaterial* m_pFloorMat = nullptr;
-	TexPBRMaterial* m_pBallMat = nullptr;
-	TexPBRMaterial* m_pBlockMat = nullptr;
-
-	EmissiveMaterial* m_pLightMat = nullptr;
-
 	btCollisionShape* m_pSphereShape = nullptr;
 	float m_SphereSize = 0.2f;
 	float m_SphereForce = 30;

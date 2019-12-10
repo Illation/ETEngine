@@ -2,8 +2,8 @@
 #include <EtCore/Content/AssetPointer.h>
 
 class ShaderData;
-class LightMaterial;
 namespace render {
+	class Material;
 	class DirectionalShadowData;
 }
 
@@ -11,15 +11,12 @@ class PointLightVolume final
 {
 public:
 	PointLightVolume() = default;
-	~PointLightVolume();
+	~PointLightVolume() = default;
 
 	void Draw(vec3 pos, float radius, vec3 col);
 
 private:
-	void Initialize();
-	bool IsInitialized = false;
-
-	LightMaterial* m_pMaterial;
+	AssetPtr<render::Material> m_Material;
 };
 
 class DirectLightVolume final

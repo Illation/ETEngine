@@ -68,7 +68,7 @@ public:
 	void UpdateNode(T_NodeId const node, mat4 const& transform);
 	void RemoveNode(T_NodeId const node);
 
-	T_InstanceId AddInstance(::Material* const material, AssetPtr<MeshData> const mesh, T_NodeId const node);
+	T_InstanceId AddInstance(I_Material const* const material, AssetPtr<MeshData> const mesh, T_NodeId const node);
 	void RemoveInstance(T_InstanceId const instance);
 
 	T_LightId AddLight(vec3 const& color, T_NodeId const node, bool const isDirectional, bool const hasShadow);

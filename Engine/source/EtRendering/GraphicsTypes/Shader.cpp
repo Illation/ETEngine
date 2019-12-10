@@ -77,8 +77,11 @@ void ShaderData::UploadParameterBlock(render::T_ConstParameterBlock const block)
 		case E_ParamType::TextureShadow:
 		{
 			TextureData const* const texture = render::parameters::Read<TextureData const*>(block, param.offset);
-			T_TextureUnit const binding = api->BindTexture(texture->GetTargetType(), texture->GetLocation(), false);
-			api->UploadUniform(param.location, static_cast<int32>(binding));
+			if (texture != nullptr)
+			{
+				T_TextureUnit const binding = api->BindTexture(texture->GetTargetType(), texture->GetLocation(), false);
+				api->UploadUniform(param.location, static_cast<int32>(binding));
+			}
 		}
 		continue;
 		}

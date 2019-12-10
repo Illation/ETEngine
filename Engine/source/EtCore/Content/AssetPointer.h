@@ -26,6 +26,9 @@ public:
 	bool is_null() const;
 	void swap(I_AssetPtr& other) noexcept;
 
+	template <class T_DataType>
+	T_DataType const* get_as() const;
+
 protected:
 	// functions
 	inline bool IncrementRefCount();

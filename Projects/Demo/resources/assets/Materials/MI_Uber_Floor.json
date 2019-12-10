@@ -5,9 +5,9 @@
         "vector3D param": {
           "name": "uBaseColor",
           "data": {
-            "x": 5.0,
-            "y": 5.0,
-            "z": 5.0
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
           }
         }
       },

@@ -50,7 +50,7 @@ protected:
 	// Shadow Renderer Interface
 	//-----------------------------
 public:
-	void DrawShadow(NullMaterial* const nullMaterial) override;
+	void DrawShadow(I_Material const* const nullMaterial) override;
 
 	Camera const& GetCamera() const override { return m_Camera; }
 

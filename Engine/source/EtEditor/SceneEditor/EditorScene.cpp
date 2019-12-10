@@ -7,19 +7,12 @@
 #include <EtRendering/GraphicsTypes/FrameBuffer.h>
 #include <EtRendering/SceneRendering/TextRenderer.h>
 #include <EtRendering/SceneRendering/Gbuffer.h>
-#include <EtRendering/Materials/UberMaterial.h>
 
 #include <EtFramework/SceneGraph/Entity.h>
 #include <EtFramework/Components/ModelComponent.h>
 #include <EtFramework/Components/LightComponent.h>
 #include <EtFramework/Components/SpriteComponent.h>
 
-
-EditorScene::~EditorScene()
-{
-	SafeDelete(m_Mat);
-	SafeDelete(m_FloorMat);
-}
 
 void EditorScene::Init()
 {
@@ -32,18 +25,6 @@ void EditorScene::Init()
 	//auto cam = new OrbitCamera();
 	//AddEntity(cam);
 
-	//Materials
-	//**************************
-	m_Mat = new UberMaterial();
-	m_Mat->SetBaseColorTexture("kabuto_baseColor.png"_hash);
-	m_Mat->SetNormalTexture("kabuto_normal.png"_hash);
-	m_Mat->SetMetallicRoughnessTexture("kabuto_metallic_roughness.png"_hash);
-	m_Mat->SetOcclusionTexture("kabuto_ao.png"_hash);
-
-	m_FloorMat = new UberMaterial();
-	m_FloorMat->SetBaseColor(0.5f);
-	m_FloorMat->SetMetallic(0.f);
-
 	//Skybox
 	//**************************
 	SetSkybox("Ice_Lake_Ref.hdr"_hash);
@@ -51,24 +32,21 @@ void EditorScene::Init()
 	//Models
 	//*************************
 	{
-		auto pModelComp = new ModelComponent("HelmetSettled.dae"_hash);
-		pModelComp->SetMaterial(m_Mat);
+		auto pModelComp = new ModelComponent("HelmetSettled.dae"_hash, "MI_Uber_Kabuto.json"_hash);
 		auto pHelmet = new Entity();
 		pHelmet->AddComponent(pModelComp);
 		pHelmet->GetTransform()->SetPosition(vec3(0, 0, 0));
 		AddEntity(pHelmet);
 	}
 	{
-		auto pModelComp = new ModelComponent("HelmetStand.dae"_hash);
-		pModelComp->SetMaterial(m_FloorMat);
+		auto pModelComp = new ModelComponent("HelmetStand.dae"_hash, "MI_Uber_Floor.json"_hash);
 		auto pHelmet = new Entity();
 		pHelmet->AddComponent(pModelComp);
 		pHelmet->GetTransform()->SetPosition(vec3(0, 0, 0));
 		AddEntity(pHelmet);
 	}
 	{
-		auto pModelComp = new ModelComponent("Env.dae"_hash);
-		pModelComp->SetMaterial(m_FloorMat);
+		auto pModelComp = new ModelComponent("Env.dae"_hash, "MI_Uber_Floor.json"_hash);
 		auto pHelmet = new Entity();
 		pHelmet->AddComponent(pModelComp);
 		pHelmet->GetTransform()->SetPosition(vec3(0, 0, 0));
@@ -85,11 +63,11 @@ void EditorScene::Init()
 	lightEntity->GetTransform()->SetRotation(quat(axis, angle));
 	AddEntity(lightEntity);
 
-	lightEntity = new Entity();
-	lightEntity->AddComponent(new LightComponent(LightComponent::Type::Directional, vec3(1, 1, 1), 1.5f, false));
-	lightEntity->GetTransform()->SetRotation(quat(axis, angle));
-	lightEntity->GetTransform()->RotateEuler(0, 1, 0);
-	AddEntity(lightEntity);
+	//lightEntity = new Entity();
+	//lightEntity->AddComponent(new LightComponent(LightComponent::Type::Directional, vec3(1, 1, 1), 1.5f, false));
+	//lightEntity->GetTransform()->SetRotation(quat(axis, angle));
+	//lightEntity->GetTransform()->RotateEuler(0, 1, 0);
+	//AddEntity(lightEntity);
 
 	CAMERA->GetTransform()->SetPosition(0, 0, -10);
 }

@@ -6,7 +6,7 @@
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/FrameBuffer.h>
-#include <EtRendering/Materials/ColorMaterial.h>
+#include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/SceneStructure/RenderScene.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
@@ -156,10 +156,10 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 	api->SetClearColor(vec4(vec3(0.f), 1.f));
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
-	ColorMaterial* const mat = RenderingSystems::Instance()->GetColorMaterial();
-	AssetPtr<ShaderData> const shader = mat->GetShader();
+	render::Material const* const mat = RenderingSystems::Instance()->GetColorMaterial();
+	ShaderData const* const shader = mat->GetShader();
 
-	api->SetShader(shader.get());
+	api->SetShader(shader);
 	shader->Upload("uViewSize"_hash, etm::vecCast<float>(dim));
 
 	shader->Upload("uOcclusionFactor"_hash, 0.15f);
@@ -182,7 +182,7 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 
 				if (cam.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
 				{
-					mat->UploadModelOnly(transform);
+					shader->Upload("model"_hash, transform);
 					api->DrawElements(E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
 				}
 			}

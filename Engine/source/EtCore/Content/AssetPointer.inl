@@ -22,6 +22,23 @@ inline std::type_info const& I_AssetPtr::GetType() const
 }
 
 //---------------------------------
+// I_AssetPtr::get_as
+//
+// Cast the data to a certain type -> cast safety is the responsibility of the calling function
+//
+template <class T_DataType>
+T_DataType const* I_AssetPtr::get_as() const
+{
+	if (m_Asset != nullptr)
+	{
+		ET_ASSERT(m_Asset->IsLoaded());
+		return static_cast<RawAsset<T_DataType>*>(m_Asset)->GetData();
+	}
+
+	return nullptr;
+}
+
+//---------------------------------
 // I_AssetPtr::IncrementRefCount
 //
 // Increments the ref count and returns true if this is the first reference

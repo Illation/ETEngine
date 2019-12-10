@@ -5,9 +5,11 @@
 #include <EtRendering/GraphicsContext/GraphicsTypes.h>
 
 
-class IdMaterial;
 class AbstractScene;
 class Camera;
+namespace render {
+	class Material;
+}
 
 
 //---------------------------------
@@ -56,7 +58,7 @@ private:
 	///////
 
 	AssetPtr<ShaderData> m_Shader;
-	IdMaterial* m_Material;
+	AssetPtr<render::Material> m_Material;
 
 	T_FbLoc m_DrawTarget;
 	TextureData* m_DrawTex = nullptr;

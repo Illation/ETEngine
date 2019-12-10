@@ -5,7 +5,6 @@
 
 #include <Runtime/Planets/Moon.h>
 #include <Runtime/Planets/Earth.h>
-#include <Runtime/Materials/EmissiveMaterial.h>
 
 #include <EtCore/Content/ResourceManager.h>
 
@@ -20,13 +19,6 @@
 #include <EtFramework/SceneGraph/Entity.h>
 #include <EtFramework/SceneGraph/SceneManager.h>
 
-
-PlanetTestScene::PlanetTestScene() : AbstractScene("PlanetTestScene")
-{
-}
-PlanetTestScene::~PlanetTestScene()
-{
-}
 
 void PlanetTestScene::Init()
 {

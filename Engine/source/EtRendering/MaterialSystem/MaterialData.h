@@ -54,6 +54,7 @@ public:
 	// accessors
 	//---------------------
 	ShaderData const* GetShader() const { return m_Shader.get(); }
+	AssetPtr<ShaderData> GetShaderAsset() const { return m_Shader; }
 	E_DrawType GetDrawType() const { return m_DrawType; }
 
 	T_VertexFlags GetLayoutFlags() const { return m_LayoutFlags; }

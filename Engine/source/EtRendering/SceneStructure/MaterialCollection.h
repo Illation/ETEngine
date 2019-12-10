@@ -8,7 +8,9 @@
 
 
 class ShaderData;
-class Material;
+namespace render {
+	class I_Material;
+}
 
 
 namespace render {
@@ -47,7 +49,7 @@ public:
 	//
 	struct MaterialInstance
 	{
-		Material* m_Material = nullptr;
+		I_Material const* m_Material = nullptr;
 		core::slot_map<Mesh> m_Meshes;
 	};
 

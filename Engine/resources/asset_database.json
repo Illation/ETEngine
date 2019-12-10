@@ -655,6 +655,17 @@
               ],
               "draw type": "Custom"
             }
+          },
+          {
+            "material asset": {
+              "name": "M_Id.json",
+              "path": "assets/Materials/",
+              "package": "engine_content",
+              "references": [
+                "FwdIdShader.glsl"
+              ],
+              "draw type": "Custom"
+            }
           }
         ]
       }

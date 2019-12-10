@@ -160,7 +160,7 @@ I_Asset* AssetDatabase::GetAsset(T_Hash const assetId, std::type_info const& typ
 	{
 		if (reportErrors)
 		{
-			LOG("AssetDatabase::GetAsset > Couldn't find asset cache of type '" + std::string(type.name()) + std::string("'!"), LogLevel::Warning);
+			ET_ASSERT(false, "Couldn't find asset cache of type '%s'!", type.name());
 		}
 
 		return nullptr;
@@ -176,7 +176,7 @@ I_Asset* AssetDatabase::GetAsset(T_Hash const assetId, std::type_info const& typ
 	{
 		if (reportErrors)
 		{
-			LOG("ResourceManager::GetAsset > Couldn't find asset with ID '" + std::to_string(assetId) + std::string("'!"), LogLevel::Warning);
+			ET_ASSERT(false, "Couldn't find asset with ID '%u'!", assetId);
 		}
 
 		return nullptr;

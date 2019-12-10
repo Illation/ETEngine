@@ -5,9 +5,9 @@
 
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/Mesh.h>
-#include <EtRendering/GraphicsTypes/Material.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/EnvironmentMap.h>
+#include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/PlanetTech/StarField.h>
 
@@ -66,11 +66,12 @@ void Scene::RemoveNode(T_NodeId const node)
 //
 // Adds a drawable mesh to the scene
 //
-Scene::T_InstanceId Scene::AddInstance(::Material* const material, AssetPtr<MeshData> const mesh, T_NodeId const node)
+Scene::T_InstanceId Scene::AddInstance(I_Material const* const material, AssetPtr<MeshData> const mesh, T_NodeId const node)
 {
-	AssetPtr<ShaderData> const shader = material->GetShader();
+	AssetPtr<ShaderData> const shader = material->GetBaseMaterial()->GetShaderAsset();
 
-	core::slot_map<MaterialCollection>& collectionGroup = material->IsForwardRendered() ? m_ForwardRenderables : m_OpaqueRenderables;
+	bool const opaque = (material->GetBaseMaterial()->GetDrawType() == Material::E_DrawType::Opaque);
+	core::slot_map<MaterialCollection>& collectionGroup = opaque ? m_OpaqueRenderables : m_ForwardRenderables;
 	
 	// find or create a collection for the shader
 	auto foundCollectionIt = std::find_if(collectionGroup.begin(), collectionGroup.end(), [shader](MaterialCollection const& col)
@@ -133,7 +134,7 @@ Scene::T_InstanceId Scene::AddInstance(::Material* const material, AssetPtr<Mesh
 	newInstance.first->m_Mesh = meshId;
 	newInstance.first->m_ShadowCaster = casterId;
 	newInstance.first->m_Transform = node;
-	newInstance.first->m_IsOpaque = !(material->IsForwardRendered());
+	newInstance.first->m_IsOpaque = opaque;
 
 	return newInstance.second;
 }
@@ -515,7 +516,7 @@ render::I_SceneExtension* Scene::GetExtension(T_Hash const extensionId) const
 //
 core::T_SlotId Scene::AddMeshToMaterial(MaterialCollection::MaterialInstance& material, AssetPtr<MeshData> const mesh, T_NodeId const node)
 {
-	T_ArrayLoc const vao = mesh->GetSurface(material.m_Material)->GetVertexArray();
+	T_ArrayLoc const vao = mesh->GetSurface(material.m_Material->GetBaseMaterial())->GetVertexArray();
 
 	auto foundMeshIt = std::find_if(material.m_Meshes.begin(), material.m_Meshes.end(), [vao](MaterialCollection::Mesh const& matInst)
 		{

@@ -12,8 +12,8 @@ class SpriteFont;
 class PlanetTestScene : public AbstractScene
 {
 public:
-	PlanetTestScene();
-	~PlanetTestScene();
+	PlanetTestScene() : AbstractScene("PlanetTestScene") {}
+	~PlanetTestScene() = default;
 
 private:
 	void Init();

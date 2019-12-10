@@ -8,7 +8,6 @@
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/GraphicsTypes/Mesh.h>
-#include <EtRendering/GraphicsTypes/Material.h>
 #include <EtRendering/MaterialSystem/MaterialInstance.h>
 #include <EtRendering/MaterialSystem/MaterialData.h>
 
@@ -32,38 +31,26 @@ ModelComponent::ModelComponent(T_Hash const meshId, T_Hash const materialId)
 { }
 
 //---------------------------------
-// ModelComponent::SetMaterial
-//
-// Updates the material and marks it as dirty
-//
-void ModelComponent::SetMaterial(Material* pMaterial)
-{
-	m_MaterialSet = true;
-	m_Material = pMaterial;
-}
-
-//---------------------------------
 // ModelComponent::Init
 //
 // Loads the mesh data
 //
 void ModelComponent::Init()
 {
+	// Load mesh
 	m_Mesh = ResourceManager::Instance()->GetAssetData<MeshData>(m_MeshId);
 
-	if (m_MaterialId != 0u)
+	// Load material
+	m_Material = ResourceManager::Instance()->GetAssetData<render::Material>(m_MaterialId, false);
+	if (m_Material == nullptr)
 	{
-		m_MaterialAsset = ResourceManager::Instance()->GetAssetData<render::Material>(m_MaterialId, false);
-		if (m_MaterialAsset == nullptr)
-		{
-			m_MaterialAsset = ResourceManager::Instance()->GetAssetData<render::MaterialInstance>(m_MaterialId);
-		}
+		m_Material = ResourceManager::Instance()->GetAssetData<render::MaterialInstance>(m_MaterialId);
 	}
 
+	render::I_Material const* const mat = m_Material.get_as<render::I_Material>();
 
-	UpdateMaterial();
-
-	m_InstanceId = SceneManager::GetInstance()->GetRenderScene().AddInstance(m_Material, m_Mesh, GetTransform()->GetNodeId());
+	// register
+	m_InstanceId = SceneManager::GetInstance()->GetRenderScene().AddInstance(mat, m_Mesh, GetTransform()->GetNodeId());
 }
 
 //---------------------------------
@@ -72,35 +59,4 @@ void ModelComponent::Init()
 void ModelComponent::Deinit()
 {
 	SceneManager::GetInstance()->GetRenderScene().RemoveInstance(m_InstanceId);
-}
-
-//---------------------------------
-// ModelComponent::UpdateMaterial
-//
-// Links the mesh to the material
-//
-void ModelComponent::UpdateMaterial()
-{
-	if (m_MaterialSet)
-	{
-		m_MaterialSet = false;
-		if (m_Material == nullptr)
-		{
-			LOG("ModelComponent::UpdateMaterial> material is null", Warning);
-			return;
-		}
-
-		m_Material->Initialize();
-		m_Mesh->GetSurface(m_Material); // make sure we have a mesh surface cached for our material
-	}
-}
-
-//---------------------------------
-// ModelComponent::Update
-//
-// Update the material if it changed
-//
-void ModelComponent::Update()
-{
-	UpdateMaterial();
 }

@@ -3,7 +3,7 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/Materials/LightMaterial.h>
+#include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/Frustum.h>
@@ -18,27 +18,12 @@
 //====================
 
 
-PointLightVolume::~PointLightVolume()
-{
-	if (!IsInitialized)
-		return;
-	SafeDelete(m_pMaterial);
-}
-
-void PointLightVolume::Initialize()
-{
-	m_pMaterial = new LightMaterial();
-	m_pMaterial->Initialize();
-
-	IsInitialized = true;
-}
-
 void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 {
 	//Make sure everything is set up
-	if (!IsInitialized)
+	if (m_Material == nullptr)
 	{
-		Initialize();
+		m_Material = ResourceManager::Instance()->GetAssetData<render::Material>("M_Light.json"_hash);
 	}
 
 	//Frustum culling
@@ -48,11 +33,13 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 		return;
 	}
 
-	//mat4 World = etm::translate(pos)*etm::scale(vec3(radius));
-	mat4 World = etm::scale( vec3( radius ) )*etm::translate( pos );
+	ShaderData const* const shader = m_Material->GetShader();
+	Viewport::GetCurrentApiContext()->SetShader(shader);
 
-	m_pMaterial->SetLight(pos, col, radius);
-	m_pMaterial->UploadVariables(World);
+	shader->Upload("Position"_hash, pos);
+	shader->Upload("Color"_hash, col);
+	shader->Upload("Radius"_hash, radius);
+	shader->Upload("model"_hash, etm::scale(vec3(radius))*etm::translate(pos));
 
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::IcoSphere<2> >();
 }

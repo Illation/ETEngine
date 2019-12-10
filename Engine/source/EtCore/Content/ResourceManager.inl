@@ -15,7 +15,7 @@ template <class T_DataType>
 AssetPtr<T_DataType> ResourceManager::GetAssetData(T_Hash const assetId, bool const reportWarnings)
 {
 	// Get the asset
-	RawAsset<T_DataType>* asset = static_cast<RawAsset<T_DataType>*>(GetAssetInternal(assetId, typeid(T_DataType)));
+	RawAsset<T_DataType>* asset = static_cast<RawAsset<T_DataType>*>(GetAssetInternal(assetId, typeid(T_DataType), reportWarnings));
 
 	// Check we actually found the asset
 	if (asset == nullptr)

@@ -6,8 +6,10 @@
 
 
 // forward declarations
-class Material;
 class MeshData;
+namespace render {
+	class Material;
+}
 
 
 //---------------------------------
@@ -44,18 +46,18 @@ class MeshSurface final
 public:
 	// c-tor d-tor
 	//-------------
-	MeshSurface(MeshData const* const mesh, Material const* const material);
+	MeshSurface(MeshData const* const mesh, render::Material const* const material);
 	~MeshSurface();
 
 	// accessors
 	//-----------
-	Material const* GetMaterial() const { return m_Material; }
+	render::Material const* GetMaterial() const { return m_Material; }
 	T_ArrayLoc GetVertexArray() const { return m_VertexArray; }
 
 	// Data
 	///////
 private:
-	Material const* m_Material = nullptr;
+	render::Material const* m_Material = nullptr;
 	T_ArrayLoc m_VertexArray = 0u;
 };
 
@@ -75,7 +77,7 @@ public:
 
 	// functionality
 	//-------------
-	MeshSurface const* GetSurface(MeshData const* const mesh, Material const* const material);
+	MeshSurface const* GetSurface(MeshData const* const mesh, render::Material const* const material);
 
 	// Data
 	///////
@@ -106,7 +108,7 @@ public:
 	E_DataType GetIndexDataType() const { return m_IndexDataType; }
 	T_BufferLoc GetVertexBuffer() const { return m_VertexBuffer; }
 	T_BufferLoc GetIndexBuffer() const { return m_IndexBuffer; }
-	MeshSurface const* GetSurface(Material const* const material) const;
+	MeshSurface const* GetSurface(render::Material const* const material) const;
 
 	// Data
 	///////

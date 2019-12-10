@@ -1,14 +1,13 @@
 #include "stdafx.h"
 #include "EntityIdRenderer.h"
 
-#include "IdMaterial.h"
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/FrameBuffer.h>
 #include <EtRendering/GraphicsTypes/Mesh.h>
+#include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
@@ -26,8 +25,6 @@
 //
 EntityIdRenderer::~EntityIdRenderer()
 {
-	SafeDelete(m_Material);
-
 	DestroyRenderTarget();
 }
 
@@ -37,9 +34,7 @@ EntityIdRenderer::~EntityIdRenderer()
 void EntityIdRenderer::Initialize()
 {
 	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdIdShader.glsl"_hash);
-
-	m_Material = new IdMaterial();
-	m_Material->Initialize();
+	m_Material = ResourceManager::Instance()->GetAssetData<render::Material>("M_Id.json"_hash);
 
 	CreateRenderTarget();
 }
@@ -246,10 +241,10 @@ void EntityIdRenderer::RecursiveDrawEntity(Entity* const entity, Camera const& c
 
 			I_GraphicsApiContext* const api = m_ViewportToPickFrom->GetApiContext();;
 
-			MeshSurface const* surface = modelComp->GetMesh()->GetSurface(m_Material);
+			MeshSurface const* surface = modelComp->GetMesh()->GetSurface(m_Material.get());
 
 			api->BindVertexArray(surface->GetVertexArray());
-			m_Material->UploadModelOnly(entity->GetTransform()->GetWorld());
+			m_Shader->Upload("model"_hash, entity->GetTransform()->GetWorld());
 
 			api->DrawElements(E_DrawMode::Triangles, static_cast<uint32>(mesh->GetIndexCount()), mesh->GetIndexDataType(), 0);
 		}

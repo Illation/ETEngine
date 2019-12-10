@@ -1,8 +1,10 @@
 #pragma once
 
 
-class NullMaterial;
 class Camera;
+namespace render {
+	class I_Material;
+}
 
 
 namespace render {
@@ -18,7 +20,7 @@ class I_ShadowRenderer
 public:
 	virtual ~I_ShadowRenderer() = default;
 
-	virtual void DrawShadow(NullMaterial* const nullMaterial) = 0;
+	virtual void DrawShadow(I_Material const* const nullMaterial) = 0;
 	virtual Camera const& GetCamera() const = 0;
 };
 

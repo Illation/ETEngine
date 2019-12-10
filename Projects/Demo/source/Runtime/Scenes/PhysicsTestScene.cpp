@@ -3,9 +3,6 @@
 
 #include <btBulletDynamicsCommon.h>
 
-#include <Runtime/Materials/TexPBRMaterial.h>
-#include <Runtime/Materials/EmissiveMaterial.h>
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/GraphicsTypes/SpriteFont.h>
@@ -26,17 +23,6 @@
 #include <EtFramework/Audio/AudioData.h>
 
 
-PhysicsTestScene::PhysicsTestScene() : AbstractScene("PhysicsTestScene")
-{
-}
-PhysicsTestScene::~PhysicsTestScene()
-{
-	SafeDelete(m_pFloorMat);
-	SafeDelete(m_pBallMat);
-	SafeDelete(m_pBlockMat);
-	SafeDelete(m_pLightMat);
-}
-
 void PhysicsTestScene::Init()
 {
 	//Fonts
@@ -45,30 +31,6 @@ void PhysicsTestScene::Init()
 
 	//Materials
 	//**************************
-	m_pFloorMat = new TexPBRMaterial(
-		"mahogany_baseCol.png"_hash,
-		"mahogany_rough.png"_hash,
-		"bamboo_metal.png"_hash,
-		"mahogany_ao.png"_hash,
-		"mahogany_norm.png"_hash);
-	m_pFloorMat->SetSpecular(0.5f);
-	m_pBallMat = new TexPBRMaterial(
-		"greasyMetal_baseCol.png"_hash,
-		"greasyMetal_rough.png"_hash,
-		"greasyMetal_metal.png"_hash,
-		"mahogany_ao.png"_hash,
-		"greasyMetal_norm.png"_hash);
-	m_pBallMat->SetSpecular(0.5f);
-	m_pBlockMat = new TexPBRMaterial(
-		"bamboo_baseCol.png"_hash,
-		"bamboo_rough.png"_hash,
-		"bamboo_metal.png"_hash,
-		"bamboo_ao.png"_hash,
-		"bamboo_norm.png"_hash);
-	m_pBlockMat->SetSpecular(0.5f);
-
-	m_pLightMat = new EmissiveMaterial(vec3(500));
-
 	GetPhysicsWorld()->GetWorld()->setGravity(ToBtVec3(vec3(0, -9.81f, 0)*0.1f));
 	m_pSphereShape = PhysicsManager::GetInstance()->CreateSphereShape(m_SphereSize);
 
@@ -78,8 +40,7 @@ void PhysicsTestScene::Init()
 	//*************************
 	//Floor
 	{
-		auto pModelComp = new ModelComponent("cube.dae"_hash);
-		pModelComp->SetMaterial(m_pFloorMat);
+		auto pModelComp = new ModelComponent("cube.dae"_hash, "MI_TexPBR_Floor.json"_hash);
 		auto pFloor = new Entity();
 		pFloor->AddComponent(pModelComp);
 		pFloor->GetTransform()->SetPosition(vec3(0));
@@ -104,8 +65,7 @@ void PhysicsTestScene::Init()
 	{
 		for (size_t i = 0; i < amountPerRow; i++)
 		{
-			auto pModelComp = new ModelComponent("cube.dae"_hash);
-			pModelComp->SetMaterial(m_pBlockMat);
+			auto pModelComp = new ModelComponent("cube.dae"_hash, "MI_TexPBR_Block.json"_hash);
 			auto pBlock = new Entity();
 			pBlock->AddComponent(pModelComp);
 			if (level % 2 < 1)
@@ -136,8 +96,7 @@ void PhysicsTestScene::Init()
 	auto lightMeshEntity = new Entity();
 	lightEntity->AddChild(lightMeshEntity);
 
-	auto pModelComp1 = new ModelComponent("sphere.dae"_hash);
-	pModelComp1->SetMaterial(m_pLightMat);
+	auto pModelComp1 = new ModelComponent("sphere.dae"_hash, "MI_Emissive_LightBulb.json"_hash);
 	lightMeshEntity->GetTransform()->Scale(vec3(0.01f));
 	lightMeshEntity->AddComponent(pModelComp1);
 
@@ -208,8 +167,7 @@ void PhysicsTestScene::Update()
 
 	if(INPUT->GetMouseButton(E_MouseButton::Right) >= E_KeyState::Down)
 	{
-		auto pModelComp = new ModelComponent("sphere.dae"_hash);
-		pModelComp->SetMaterial(m_pBallMat);
+		auto pModelComp = new ModelComponent("sphere.dae"_hash, "MI_TexPBR_Ball.json"_hash);
 		auto pBall = new Entity();
 		pBall->AddComponent(pModelComp);
 		vec3 bDir = CAMERA->GetTransform()->GetForward();

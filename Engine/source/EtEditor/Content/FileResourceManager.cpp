@@ -108,13 +108,13 @@ void FileResourceManager::Flush()
 //
 // Tries finding the asset in either asset database
 //
-I_Asset* FileResourceManager::GetAssetInternal(T_Hash const assetId, std::type_info const& type)
+I_Asset* FileResourceManager::GetAssetInternal(T_Hash const assetId, std::type_info const& type, bool const reportErrors)
 {
 	I_Asset* ret = m_ProjectDb.GetAsset(assetId, type, false);
 
 	if (ret == nullptr)
 	{
-		return m_EngineDb.GetAsset(assetId, type); // only log if first search fails
+		return m_EngineDb.GetAsset(assetId, type, reportErrors); // only log if first search fails
 	}
 
 	return ret;

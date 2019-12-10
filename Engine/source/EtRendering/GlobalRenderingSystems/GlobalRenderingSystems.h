@@ -8,8 +8,7 @@
 #include "LightVolume.h"
 #include "SharedVarController.h"
 
-#include <EtRendering/Materials/NullMaterial.h>
-#include <EtRendering/Materials/ColorMaterial.h>
+#include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/PlanetTech/Patch.h>
 
 
@@ -62,8 +61,8 @@ public:
 	PointLightVolume& GetPointLightVolume() { return m_PointLightVolume; }
 	render::AtmospherePrecompute& GetAtmospherPrecompute() { return m_AtmospherePrecompute; }
 	render::Patch& GetPatch() { return m_Patch; }
-	NullMaterial* GetNullMaterial() { return &m_NullMaterial; }
-	ColorMaterial* GetColorMaterial() { return &m_ColorMaterial; }
+	render::Material const* GetNullMaterial() const { return m_NullMaterial.get(); }
+	render::Material const* GetColorMaterial() const { return m_ColorMaterial.get(); }
 
 	// Data
 	///////
@@ -85,6 +84,6 @@ private:
 	render::AtmospherePrecompute m_AtmospherePrecompute;
 	render::Patch m_Patch;
 
-	NullMaterial m_NullMaterial;
-	ColorMaterial m_ColorMaterial;
+	AssetPtr<render::Material> m_NullMaterial;
+	AssetPtr<render::Material> m_ColorMaterial;
 };

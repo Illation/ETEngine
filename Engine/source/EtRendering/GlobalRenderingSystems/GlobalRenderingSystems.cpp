@@ -3,6 +3,8 @@
 
 #include <rttr/registration>
 
+#include <EtCore/Content/ResourceManager.h>
+
 
 //===================
 // Graphics Settings
@@ -116,8 +118,8 @@ void RenderingSystems::Initialize()
 	m_Cie.LoadData();
 	m_PbrPrefilter.Precompute(m_GraphicsSettings.PbrBrdfLutSize);
 
-	m_NullMaterial.Initialize();
-	m_ColorMaterial.Initialize();
+	m_NullMaterial = ResourceManager::Instance()->GetAssetData<render::Material>("M_Null.json"_hash);
+	m_ColorMaterial = ResourceManager::Instance()->GetAssetData<render::Material>("M_Color.json"_hash);
 
 	m_Patch.Init(4);
 }
