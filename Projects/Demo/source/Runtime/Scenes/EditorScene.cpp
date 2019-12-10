@@ -8,7 +8,6 @@
 #include <EtRendering/SceneRendering/TextRenderer.h>
 #include <EtRendering/SceneRendering/Gbuffer.h>
 #include <EtRendering/Materials/UberMaterial.h>
-#include <EtRendering/MaterialSystem/MaterialInstance.h>
 
 #include <EtFramework/SceneGraph/Entity.h>
 #include <EtFramework/Components/ModelComponent.h>
@@ -35,8 +34,6 @@ void EditorScene::Init()
 
 	//Materials
 	//**************************
-	AssetPtr<render::MaterialInstance> const mi = ResourceManager::Instance()->GetAssetData<render::MaterialInstance>("MI_Uber_Kabuto.json"_hash);
-
 	m_Mat = new UberMaterial();
 	m_Mat->SetBaseColorTexture("kabuto_baseColor.png"_hash);
 	m_Mat->SetNormalTexture("kabuto_normal.png"_hash);
@@ -54,7 +51,7 @@ void EditorScene::Init()
 	//Models
 	//*************************
 	{
-		auto pModelComp = new ModelComponent("HelmetSettled.dae"_hash);
+		auto pModelComp = new ModelComponent("HelmetSettled.dae"_hash, "MI_Uber_Kabuto.json"_hash);
 		pModelComp->SetMaterial(m_Mat);
 		auto pHelmet = new Entity();
 		pHelmet->AddComponent(pModelComp);

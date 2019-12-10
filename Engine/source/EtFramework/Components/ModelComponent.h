@@ -27,7 +27,7 @@ public:
 
 	// construct destruct
 	//--------------------
-	ModelComponent(T_Hash const assetId);
+	ModelComponent(T_Hash const meshId, T_Hash const materialId = 0u);
 	virtual ~ModelComponent() = default;
 
 private:
@@ -59,8 +59,11 @@ private:
 	// Data
 	///////
 
-	T_Hash m_AssetId;
+	T_Hash m_MeshId = 0u;
 	AssetPtr<MeshData> m_Mesh;
+
+	T_Hash m_MaterialId = 0u;
+	I_AssetPtr m_MaterialAsset;
 
 	Material* m_Material = nullptr;
 	bool m_MaterialSet = false;

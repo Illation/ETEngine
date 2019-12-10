@@ -9,6 +9,8 @@
 
 #include <EtRendering/GraphicsTypes/Mesh.h>
 #include <EtRendering/GraphicsTypes/Material.h>
+#include <EtRendering/MaterialSystem/MaterialInstance.h>
+#include <EtRendering/MaterialSystem/MaterialData.h>
 
 #include <EtFramework/SceneGraph/Entity.h>
 #include <EtFramework/SceneGraph/SceneManager.h>
@@ -24,8 +26,9 @@
 //
 // default constructor sets the asset ID
 //
-ModelComponent::ModelComponent(T_Hash const assetId)
-	: m_AssetId(assetId)
+ModelComponent::ModelComponent(T_Hash const meshId, T_Hash const materialId)
+	: m_MeshId(meshId)
+	, m_MaterialId(materialId)
 { }
 
 //---------------------------------
@@ -46,7 +49,17 @@ void ModelComponent::SetMaterial(Material* pMaterial)
 //
 void ModelComponent::Init()
 {
-	m_Mesh = ResourceManager::Instance()->GetAssetData<MeshData>(m_AssetId);
+	m_Mesh = ResourceManager::Instance()->GetAssetData<MeshData>(m_MeshId);
+
+	if (m_MaterialId != 0u)
+	{
+		m_MaterialAsset = ResourceManager::Instance()->GetAssetData<render::Material>(m_MaterialId, false);
+		if (m_MaterialAsset == nullptr)
+		{
+			m_MaterialAsset = ResourceManager::Instance()->GetAssetData<render::MaterialInstance>(m_MaterialId);
+		}
+	}
+
 
 	UpdateMaterial();
 

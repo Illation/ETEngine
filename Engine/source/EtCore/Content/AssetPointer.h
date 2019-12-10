@@ -10,15 +10,21 @@
 //
 class I_AssetPtr
 {
-protected:
-	I_AssetPtr() = default;
-	
 public:
+	I_AssetPtr() = default; 
+	I_AssetPtr(std::nullptr_t) {}
+
+	I_AssetPtr& operator=(I_AssetPtr const& rhs);
+
 	I_AssetPtr(I_Asset* asset);
 	virtual ~I_AssetPtr();
 
 	I_Asset const* GetAsset() const { return m_Asset; }
 	inline std::type_info const& GetType() const;
+
+	// utility
+	bool is_null() const;
+	void swap(I_AssetPtr& other) noexcept;
 
 protected:
 	// functions
@@ -65,8 +71,6 @@ public:
 	// utility
 	void swap(AssetPtr& other) noexcept;
 
-	bool is_null() const;
-
 public:
 	// accessors
 	// we can only retrieve const data from asset pointers
@@ -79,6 +83,9 @@ public:
 // Asset pointer comparisons
 //--------------------------
 
+
+bool operator == (I_AssetPtr const& ptr, std::nullptr_t);
+bool operator == (std::nullptr_t, I_AssetPtr const& ptr);
 
 template <class T_DataType>
 bool operator == (AssetPtr<T_DataType> const& ptr, std::nullptr_t);

@@ -66,7 +66,7 @@ void Scene::RemoveNode(T_NodeId const node)
 //
 // Adds a drawable mesh to the scene
 //
-Scene::T_InstanceId Scene::AddInstance(Material* const material, AssetPtr<MeshData> const mesh, T_NodeId const node)
+Scene::T_InstanceId Scene::AddInstance(::Material* const material, AssetPtr<MeshData> const mesh, T_NodeId const node)
 {
 	AssetPtr<ShaderData> const shader = material->GetShader();
 

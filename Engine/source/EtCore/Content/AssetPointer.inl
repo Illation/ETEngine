@@ -164,17 +164,6 @@ void AssetPtr<T_DataType>::swap(AssetPtr<T_DataType>& other) noexcept
 	std::swap(m_Asset, other.m_Asset);
 }
 
-//---------------------------------
-// AssetPtr::is_null
-//
-// Cheap check if the pointer is null
-//
-template <class T_DataType>
-bool AssetPtr<T_DataType>::is_null() const
-{
-	return (m_Asset == nullptr);
-}
-
 
 // Accessors
 /////////////
