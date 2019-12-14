@@ -8,45 +8,75 @@
 #include <Runtime/Scenes/PhysicsTestScene.h>
 
 
-MainFramework::MainFramework() :
-	AbstractFramework()
-{
-}
-MainFramework::~MainFramework()
-{
-}
+//================
+// Main Framework
+//================
 
+
+//--------------------------
+// MainFramework::AddScenes
+//
+// Init function
+//
 void MainFramework::AddScenes()
 {
-	SceneManager::GetInstance()->AddScene(new EditorScene());
-	SceneManager::GetInstance()->AddScene(new PlanetTestScene());
-	SceneManager::GetInstance()->AddScene(new PhysicsTestScene());
+	SceneManager* const sceneMan = SceneManager::GetInstance();
+
+	sceneMan->AddScene(new EditorScene());
+	sceneMan->AddScene(new PlanetTestScene());
+	sceneMan->AddScene(new PhysicsTestScene());
+	
+	sceneMan->GetEventDispatcher().Register(E_SceneEvent::Activated,
+		T_SceneEventCallback([this](T_SceneEventFlags const flags, SceneEventData const* const evnt)
+		{
+			UNUSED(flags);
+			UNUSED(evnt);
+
+			CameraComponent* const cam = CAMERA;
+			ET_ASSERT(evnt->scene->GetActiveCamera() == cam);
+
+			m_CameraController.SetCameraComponent(cam);
+			m_CameraController.Reset();
+		}));
 }
 
+//--------------------------
+// MainFramework::OnTick
+//
+// Demo specific updates indepenant of scene
+//
 void MainFramework::OnTick()
-{	
+{
+	SceneManager* const sceneMan = SceneManager::GetInstance();
+	InputManager* const input = InputManager::GetInstance();
+
 	// Scene switching
-	if(INPUT->GetKeyState(E_KbdKey::F3) == E_KeyState::Pressed)
+	//-----------------
+	if(input->GetKeyState(E_KbdKey::F3) == E_KeyState::Pressed)
 	{
-		SceneManager::GetInstance()->PreviousScene();
+		sceneMan->PreviousScene();
 	}
 
-	if(INPUT->GetKeyState(E_KbdKey::F4) == E_KeyState::Pressed)
+	if(input->GetKeyState(E_KbdKey::F4) == E_KeyState::Pressed)
 	{
-		SceneManager::GetInstance()->NextScene();
+		sceneMan->NextScene();
 	}
 
 	// Screenshots
-	if (INPUT->GetKeyState(E_KbdKey::F12) == E_KeyState::Pressed)
+	//-------------
+	if (input->GetKeyState(E_KbdKey::F12) == E_KeyState::Pressed)
 	{
 		m_ScreenshotCapture.Take(Viewport::GetCurrentViewport());
 	}
 
-	// Exposure control
-	bool const up = (INPUT->GetKeyState(E_KbdKey::Up) == E_KeyState::Down);
-	if (up || (INPUT->GetKeyState(E_KbdKey::Down) == E_KeyState::Down))
+	// view
+	//------
+	m_CameraController.Update();
+
+	bool const up = (input->GetKeyState(E_KbdKey::Up) == E_KeyState::Down);
+	if (up || (input->GetKeyState(E_KbdKey::Down) == E_KeyState::Down))
 	{
-		render::Scene& renderScene = SceneManager::GetInstance()->GetRenderScene();
+		render::Scene& renderScene = sceneMan->GetRenderScene();
 		PostProcessingSettings ppSettings = renderScene.GetPostProcessingSettings();
 
 		float const newExp = ppSettings.exposure * 4.f;

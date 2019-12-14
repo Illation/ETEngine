@@ -11,8 +11,6 @@
 
 #include <EtFramework/Components/CameraComponent.h>
 #include <EtFramework/Components/LightComponent.h>
-#include <EtFramework/Templates/FreeCamera.h>
-#include <EtFramework/Templates/FreeCamera.h>
 #include <EtFramework/Physics/PhysicsWorld.h>
 #include <EtFramework/SceneGraph/SceneManager.h>
 
@@ -77,13 +75,13 @@ void AbstractScene::RootInit()
 	}
 
 	//Create SceneContext
-	FreeCamera* freeCam = new FreeCamera();
-	freeCam->GetTransform()->SetPosition(0, -1, -3.5);
-	freeCam->GetTransform()->RotateEuler(etm::radians(20.f), 0, 0);
-	AddEntity(freeCam);
+	CameraComponent* const camComp = new CameraComponent();
+	Entity* const camEntity = new Entity();
+	camEntity->AddComponent(camComp);
+	AddEntity(camEntity);
 
 	m_SceneContext = new SceneContext();
-	m_SceneContext->camera = freeCam->GetComponent<CameraComponent>();
+	m_SceneContext->camera = camComp;
 	m_SceneContext->scene = this;
 
 	ContextManager::GetInstance()->SetActiveContext(m_SceneContext);

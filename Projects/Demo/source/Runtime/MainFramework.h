@@ -1,15 +1,31 @@
 #pragma once
+#include "FreeCamera.h"
+
 #include <EtRuntime/AbstractFramework.h>
 
 
-class MainFramework : public AbstractFramework
+//--------------------------
+// MainFramework
+//
+// User facing wrapper around the engine
+//
+class MainFramework final : public AbstractFramework
 {
+	// construct destruct
+	//--------------------
 public:
-	MainFramework();
-	~MainFramework();
+	MainFramework() : AbstractFramework() {} // initializes the engine
+	~MainFramework() = default;
 
+	// framework interface
+	//---------------------
 private:
-	void AddScenes();
+	void AddScenes() override;
 	void OnTick() override;
+
+	// Data
+	///////
+
+	FreeCamera m_CameraController;
 };
 

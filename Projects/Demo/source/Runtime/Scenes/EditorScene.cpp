@@ -20,11 +20,6 @@ void EditorScene::Init()
 	//***************************
 	m_pDebugFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Consolas_32.fnt"_hash);
 
-	//Camera
-	//**************************
-	//auto cam = new OrbitCamera();
-	//AddEntity(cam);
-
 	//Skybox
 	//**************************
 	SetSkybox("Ice_Lake_Ref.hdr"_hash);
@@ -62,12 +57,6 @@ void EditorScene::Init()
 	float angle = etm::angleSafeAxis( vec3( 1, -3, -1 ), vec3( 1, 0, 1 ), axis );
 	lightEntity->GetTransform()->SetRotation(quat(axis, angle));
 	AddEntity(lightEntity);
-
-	//lightEntity = new Entity();
-	//lightEntity->AddComponent(new LightComponent(LightComponent::Type::Directional, vec3(1, 1, 1), 1.5f, false));
-	//lightEntity->GetTransform()->SetRotation(quat(axis, angle));
-	//lightEntity->GetTransform()->RotateEuler(0, 1, 0);
-	//AddEntity(lightEntity);
 
 	CAMERA->GetTransform()->SetPosition(0, 0, -10);
 }

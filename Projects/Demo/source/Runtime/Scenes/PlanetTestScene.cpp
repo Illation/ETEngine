@@ -15,7 +15,6 @@
 
 #include <EtFramework/Components/ModelComponent.h>
 #include <EtFramework/Components/LightComponent.h>
-#include <EtFramework/Templates/OrbitCamera.h>
 #include <EtFramework/SceneGraph/Entity.h>
 #include <EtFramework/SceneGraph/SceneManager.h>
 

@@ -106,10 +106,7 @@ void PhysicsTestScene::Init()
 	lightEntity->GetTransform()->SetPosition(vec3(0, 50, 0));
 	AddEntity(lightEntity);
 
-	//Camera
-	//**************************
-	CAMERA->GetTransform()->Translate(vec3(0, 2, 0));
-	m_LightCentralPos = CAMERA->GetTransform()->GetPosition();
+	m_LightCentralPos = vec3(0.f, 2.f, 0.f);
 
 	//Audio
 	//**************************
@@ -122,15 +119,18 @@ void PhysicsTestScene::Init()
 
 	AudioManager::GetInstance()->SetDistanceModel(AL_INVERSE_DISTANCE);
 
-	auto pListener = new AudioListenerComponent();
-	CAMERA->GetEntity()->AddComponent(pListener);
-
 	m_Source = new AudioSourceComponent();
 
 	m_Source->SetAudioData(ResourceManager::Instance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
 	m_Source->SetLooping(true);
 	m_Source->Play();
 	lightEntity->AddComponent(m_Source);
+
+	//Camera (+ audio listener)
+	//**************************
+	auto pListener = new AudioListenerComponent();
+	CAMERA->GetEntity()->AddComponent(pListener);
+	CAMERA->GetTransform()->SetPosition(0, 2, -10);
 }
 
 void PhysicsTestScene::Update()
