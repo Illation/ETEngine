@@ -65,8 +65,6 @@ void Entity::RootInit()
 		return;
 	}
 
-	Init();
-
 	//Root-Component Initialization
 	for (AbstractComponent* const component : m_Components)
 	{
@@ -78,8 +76,6 @@ void Entity::RootInit()
 	{
 		child->RootInit();
 	}
-
-	OnPostComponentInit();
 
 	m_IsInitialized = true;
 }
@@ -93,8 +89,6 @@ void Entity::RootDeinit()
 	{
 		return;
 	}
-
-	Deinit();
 
 	// Root-Object deinit
 	for (Entity* const child : m_Children)
@@ -119,8 +113,6 @@ void Entity::RootDeinit()
 //
 void Entity::RootUpdate()
 {
-	Update();
-
 	//Component Update
 	for (AbstractComponent* const component : m_Components)
 	{

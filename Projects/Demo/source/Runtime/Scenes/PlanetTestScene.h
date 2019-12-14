@@ -4,9 +4,9 @@
 #include <EtFramework/SceneGraph/AbstractScene.h>
 
 
-class PlanetTemplate;
 class LightComponent;
-class SpriteFont;
+class PlanetComponent;
+class AtmosphereComponent;
 
 
 class PlanetTestScene : public AbstractScene
@@ -22,6 +22,8 @@ private:
 private:
 
 	LightComponent* m_Light = nullptr;
-	PlanetTemplate* m_Planet = nullptr;
+
+	PlanetComponent* m_Planet = nullptr;
+	AtmosphereComponent* m_Atmosphere = nullptr;
 };
 

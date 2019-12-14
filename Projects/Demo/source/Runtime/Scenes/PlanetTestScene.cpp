@@ -3,9 +3,6 @@
 
 #include <random>
 
-#include <Runtime/Planets/Moon.h>
-#include <Runtime/Planets/Earth.h>
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
@@ -13,6 +10,8 @@
 #include <EtRendering/GraphicsTypes/SpriteFont.h>
 #include <EtRendering/SceneRendering/TextRenderer.h>
 
+#include <EtFramework/Components/PlanetComponent.h>
+#include <EtFramework/Components/AtmosphereComponent.h>
 #include <EtFramework/Components/ModelComponent.h>
 #include <EtFramework/Components/LightComponent.h>
 #include <EtFramework/SceneGraph/Entity.h>
@@ -34,12 +33,37 @@ void PlanetTestScene::Init()
 	lightEntity->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
 	AddEntity(lightEntity);
 
-	//Models
+	//Planet
 	//*************************
-	m_Planet = new Moon();
-	AddEntity(m_Planet);//Planet is initialized
-	m_Planet->SetSunlight(m_Light->GetLightId());//Associate this light with the sun for the atmosphere
+	Entity* const planetEntity = new Entity();
 
+	render::PlanetParams params;
+	params.radius = 1737.1f;
+	params.height = 10.7f;
+	params.texDiffuseId = "moon8k.jpg"_hash;
+	params.texHeightId = "MoonHeight.jpg"_hash;
+	params.texDetail1Id = "MoonDetail1.jpg"_hash;
+	params.texDetail2Id = "MoonDetail2.jpg"_hash;
+	params.texHeightDetailId = "MoonHeightDetail1.jpg"_hash;
+
+	// earth alternative
+	//params.radius = 6371.1f;
+	//params.height = 8.848f;
+	//params.texDiffuseId = "Earth8k.jpg"_hash;
+	//params.texHeightId = "EarthHeight8k.jpg"_hash;
+
+	m_Planet = new PlanetComponent(params);
+
+	m_Atmosphere = new AtmosphereComponent("atmo_earth.json"_hash, 100.f, params.radius);
+
+	planetEntity->AddComponent(m_Planet);
+	planetEntity->AddComponent(m_Atmosphere);
+	AddEntity(planetEntity); // Planet is initialized
+
+	m_Atmosphere->SetSunlight(m_Light->GetLightId());//Associate this light with the sun for the atmosphere
+
+	//Camera
+	//*************************
 	CAMERA->GetTransform()->SetPosition(0, 0, -(m_Planet->GetRadius() + 10));
 
 	//Initial exposure
@@ -102,8 +126,9 @@ void PlanetTestScene::Update()
 	}
 
 	//Calculate far plane based on planet
-	float radius = std::max(m_Planet->GetRadius() + m_Planet->GetMaxHeight(), m_Planet->GetRadius() + m_Planet->GetAtmosphereHeight());
+	float radius = std::max(m_Planet->GetRadius() + m_Planet->GetMaxHeight(), m_Planet->GetRadius() + m_Atmosphere->GetAtmosphereHeight());
 	float altitude = etm::distance(m_Planet->GetTransform()->GetPosition(), CAMERA->GetTransform()->GetPosition()) - m_Planet->GetRadius();
+
 	CAMERA->SetFarClippingPlane((sqrtf(powf(m_Planet->GetRadius() + altitude, 2) - powf(m_Planet->GetRadius(), 2)) +
 		sqrtf(powf(radius, 2) - powf(m_Planet->GetRadius(), 2)))*10);
 	CAMERA->SetNearClippingPlane(CAMERA->GetFarPlane()*0.000003f);

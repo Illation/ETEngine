@@ -13,7 +13,7 @@ class TransformComponent;
 //
 // Base class for elements in a scene graph hierachy, can hold multiple components
 //
-class Entity
+class Entity final
 {
 	// definitsions
 	//--------------
@@ -24,14 +24,6 @@ class Entity
 public:
 	Entity();
 	virtual ~Entity();
-
-	// interface
-	//------------
-protected:
-	virtual void Init() {}
-	virtual void Deinit() {}
-	virtual void OnPostComponentInit() {}
-	virtual void Update() {}
 
 	// Root
 	//------

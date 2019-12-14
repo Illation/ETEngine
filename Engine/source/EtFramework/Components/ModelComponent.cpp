@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "ModelComponent.h"
 
-#include <iostream>
-
 #include "TransformComponent.h"
 
 #include <EtCore/Content/ResourceManager.h>
