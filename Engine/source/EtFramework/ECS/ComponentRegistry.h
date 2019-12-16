@@ -7,7 +7,8 @@ namespace framework {
 
 // definitions
 //*************
-typedef uint16 T_CompTypeIdx;
+typedef uint16 T_CompTypeIdx; 
+static constexpr T_CompTypeIdx INVALID_COMP_TYPE_IDX = std::numeric_limits<T_CompTypeIdx>::max();
 
 
 //--------------------
