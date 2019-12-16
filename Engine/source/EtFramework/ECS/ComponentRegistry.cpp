@@ -5,8 +5,13 @@
 namespace framework {
 
 
-//----------------------------
-// ComonentRegistry::Instance
+//====================
+// Component Registry
+//====================
+
+
+//-----------------------------
+// ComponentRegistry::Instance
 //
 // Global singleton access
 //
@@ -17,31 +22,31 @@ ComponentRegistry& ComponentRegistry::Instance()
 }
 
 //----------------------------
-// ComonentRegistry::GetSize
+// ComponentRegistry::GetSize
 //
 // Size in bytes required to store a component
 //
 size_t ComponentRegistry::GetSize(T_CompTypeIdx const idx) const
 {
-	ET_ASSERT(idx < m_ComponentTypes.size());
+	ET_ASSERT(static_cast<size_t>(idx) < m_ComponentTypes.size());
 
 	return m_ComponentTypes[idx].data_size;
 }
 
 //----------------------------
-// ComonentRegistry::GetType
+// ComponentRegistry::GetType
 //
 // Any other type info related to a component
 //
 rttr::type const& ComponentRegistry::GetType(T_CompTypeIdx const idx) const
 {
-	ET_ASSERT(idx < m_ComponentTypes.size());
+	ET_ASSERT(static_cast<size_t>(idx) < m_ComponentTypes.size());
 
 	return m_ComponentTypes[idx].type;
 }
 
-//------------------------------
-// ComonentRegistry::GetTypeIdx
+//-------------------------------
+// ComponentRegistry::GetTypeIdx
 //
 T_CompTypeIdx ComponentRegistry::GetTypeIdx(rttr::type const& type) const
 {

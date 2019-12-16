@@ -7,11 +7,11 @@ namespace framework {
 
 // definitions
 //*************
-typedef size_t T_CompTypeIdx;
+typedef uint16 T_CompTypeIdx;
 
 
 //--------------------
-// ComonentRegistry
+// ComponentRegistry
 //
 // Contains a static enumeration of component info
 //

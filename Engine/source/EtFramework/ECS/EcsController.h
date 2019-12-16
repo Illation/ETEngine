@@ -1,39 +1,42 @@
 #pragma once
-#include "ComponentRegistry.h"
+#include "EntityFwd.h"
 
 
 namespace framework {
 
 
-class Archetype
+// fwd
+class Archetype;
+
+
+//---------------
+// EcsController
+//
+// Full context for an entity component system
+//
+class EcsController final
 {
-public:
+	// definitions
+	//-------------
+	struct EntityData final
+	{
+		T_EntityId parent = INVALID_ENTITY_ID;
+		std::vector<T_EntityId> children;
+		size_t layer = 0u;
 
-};
+		Archetype const* archetype = nullptr;
+		size_t index = 0u;
+	};
 
+	struct ArchetypeContainer final
+	{
+		std::vector<Archetype*> archetypes;
+	};
 
-struct ArchetypeContainer
-{
-	std::vector<Archetype*> archetypes;
-};
-
-
-struct Entity
-{
-	Archetype const* archetype = nullptr;
-	size_t index = 0u;
-};
-
-
-typedef core::T_SlotId T_EntityId;
-
-
-class EcsController
-{
 public:
 
 private:
-	core::slot_map<Entity> m_Entities;
+	core::slot_map<EntityData> m_Entities;
 	std::vector<ArchetypeContainer> m_HierachyLevels;
 };
 
