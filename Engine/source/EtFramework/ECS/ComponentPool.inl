@@ -12,17 +12,37 @@ namespace framework {
 //--------------------
 // ComponentPool::Get
 //
-// Element access
+// element access
 //
 template <typename TComponentType>
 TComponentType& ComponentPool::Get(size_t const idx)
 {
-	ET_ASSERT(TComponentType::GetTypeIdx() == componentType);
+	ET_ASSERT(TComponentType::GetTypeIndex() == m_ComponentType);
+	return *static_cast<TComponentType*>(At(idx));
+}
 
-	size_t const byteIdx = idx * ComponentRegistry::Instance().GetSize(m_ComponentType);
-	ET_ASSERT(byteIdx < m_Size);
+//--------------------
+// ComponentPool::Get
+//
+// const element access
+//
+template <typename TComponentType>
+TComponentType const& ComponentPool::Get(size_t const idx) const
+{
+	ET_ASSERT(TComponentType::GetTypeIndex() == m_ComponentType);
+	return *static_cast<TComponentType const*>(At(idx));
+}
 
-	return static_cast<TComponentType>(m_Data[byteIdx]);
+//------------------------
+// ComponentPool::Append
+//
+// Add an component to the end of the buffer
+//
+template<typename TComponentType, typename std::enable_if_t<!std::is_pointer<TComponentType>::value>*>
+void ComponentPool::Append(TComponentType const& component)
+{
+	ET_ASSERT(TComponentType::GetTypeIndex() == m_ComponentType);
+	Append(&component);
 }
 
 
