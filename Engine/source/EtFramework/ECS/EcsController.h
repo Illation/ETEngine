@@ -34,6 +34,13 @@ class EcsController final
 		std::vector<Archetype*> archetypes;
 	};
 
+	struct RegisteredSystem final
+	{
+		SystemBase* system;
+		std::vector<std::vector<Archetype*>> matchingArchetypes;
+		std::vector<RegisteredSystem const*> dependencies;
+	};
+
 	// construct destruct
 	//--------------------
 public:
@@ -41,7 +48,6 @@ public:
 
 	// functionality
 	//---------------
-	// #todo: support bulk component add / remove with variadic templates
 
 	// entity managment
 	T_EntityId AddEntity(T_EntityId const parent = INVALID_ENTITY_ID);
@@ -52,6 +58,7 @@ public:
 	void RemoveEntity(T_EntityId& entity);
 
 	// components
+	// #todo: support bulk component add / remove with variadic templates
 	void* AddComponent(T_EntityId const entity, RawComponentData const& component);
 	template<typename TComponentType>
 	TComponentType& AddComponent(T_EntityId const entity);
@@ -67,6 +74,10 @@ public:
 	void RemoveComponents(T_EntityId const entity, std::vector<T_CompTypeIdx> const& components);
 
 	// systems
+	void Update(); // Process all systems
+
+	void RegisterSystem(SystemBase* const system);
+	void UnregisterSystem(rttr::type const& systemType);
 
 	// accessors
 	//-----------
@@ -92,12 +103,19 @@ public:
 
 	void const* GetComponentData(T_EntityId const entity, T_CompTypeIdx const compType) const;
 
+	// systems
+	bool IsSystemRegistered(rttr::type const& systemType) const;
+
 	// Data
 	///////
 
 private:
 	core::slot_map<EntityData> m_Entities;
+
 	std::vector<ArchetypeContainer> m_HierachyLevels;
+
+	std::vector<RegisteredSystem*> m_Systems;
+	std::vector<std::vector<RegisteredSystem*>> m_UpdateGraph;
 };
 
 
