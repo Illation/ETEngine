@@ -8,7 +8,8 @@ namespace framework {
 //------------------
 // RawComponentData
 //
-// Type erased component data 
+// Type erased component data
+// - #note: this does not copy the componentData, it just points to it, so the component data must be kept alive until after this was used (to copy)
 //
 struct RawComponentData final
 {

@@ -45,15 +45,17 @@ TEST_CASE("archetype add", "[ecs]")
 	framework::T_EntityId const ent3 = 4u;
 	
 	std::string const val0 = "first";
+	TestBComponent bComp0(val0);
 
 	std::vector<framework::RawComponentData> compList{
-		framework::MakeRawComponent(TestBComponent(val0)),
-		framework::MakeRawComponent(TestCComponent(0u))
+		framework::MakeRawComponent(bComp0), // this is safe use of raw components, as the data it is created from exceeds the life time
+		framework::MakeRawComponent(TestCComponent(0u)) // this is unsafe, as the component data may be destroyed before it is copied into the archetype
 	};
 	size_t const idx0 = archBC.AddEntity(ent0, compList);
 
 	REQUIRE(archBC.GetSize() == 1u);
 
+	// this is safe again, as adding the component to the archetype is inlined - the component data persists
 	size_t const idx1 = archBC.AddEntity(ent1, {framework::MakeRawComponent(TestBComponent("1")), framework::MakeRawComponent(TestCComponent(1u))});
 	size_t const idx2 = archBC.AddEntity(ent2, {framework::MakeRawComponent(TestBComponent("2")), framework::MakeRawComponent(TestCComponent(2u))});
 	size_t const idx3 = archBC.AddEntity(ent3, {framework::MakeRawComponent(TestBComponent("3")), framework::MakeRawComponent(TestCComponent(3u))});
