@@ -92,10 +92,10 @@ TEST_CASE("archetype remove", "[ecs]")
 	framework::T_EntityId const ent4 = 14u;
 	framework::T_EntityId const ent5 = 15u;
 
-	size_t const idx0 = archBC.AddEntity(ent0, { framework::MakeRawComponent(TestBComponent("0")), framework::MakeRawComponent(TestCComponent(0u)) });
-	size_t const idx1 = archBC.AddEntity(ent1, { framework::MakeRawComponent(TestBComponent("1")), framework::MakeRawComponent(TestCComponent(1u)) });
-	size_t const idx2 = archBC.AddEntity(ent2, { framework::MakeRawComponent(TestBComponent("2")), framework::MakeRawComponent(TestCComponent(2u)) });
-	size_t const idx3 = archBC.AddEntity(ent3, { framework::MakeRawComponent(TestBComponent("3")), framework::MakeRawComponent(TestCComponent(3u)) });
+	size_t const idx0 = archBC.AddEntity(ent0, {framework::MakeRawComponent(TestBComponent("0")), framework::MakeRawComponent(TestCComponent(0u))});
+	size_t const idx1 = archBC.AddEntity(ent1, {framework::MakeRawComponent(TestBComponent("1")), framework::MakeRawComponent(TestCComponent(1u))});
+	size_t const idx2 = archBC.AddEntity(ent2, {framework::MakeRawComponent(TestBComponent("2")), framework::MakeRawComponent(TestCComponent(2u))});
+	size_t const idx3 = archBC.AddEntity(ent3, {framework::MakeRawComponent(TestBComponent("3")), framework::MakeRawComponent(TestCComponent(3u))});
 
 	REQUIRE(archBC.GetSize() == 4u);
 
@@ -117,8 +117,8 @@ TEST_CASE("archetype remove", "[ecs]")
 	REQUIRE(archBC.GetPool(TestCComponent::GetTypeIndex()).Get<TestCComponent>(idx1).val == 3u);
 	REQUIRE(archBC.GetPool(TestBComponent::GetTypeIndex()).Get<TestBComponent>(idx1).name == "3");
 
-	size_t const idx4 = archBC.AddEntity(ent4, { framework::MakeRawComponent(TestBComponent("4")), framework::MakeRawComponent(TestCComponent(4u)) });
-	size_t const idx5 = archBC.AddEntity(ent5, { framework::MakeRawComponent(TestBComponent("5")), framework::MakeRawComponent(TestCComponent(5u)) });
+	size_t const idx4 = archBC.AddEntity(ent4, {framework::MakeRawComponent(TestBComponent("4")), framework::MakeRawComponent(TestCComponent(4u))});
+	size_t const idx5 = archBC.AddEntity(ent5, {framework::MakeRawComponent(TestBComponent("5")), framework::MakeRawComponent(TestCComponent(5u))});
 
 	REQUIRE(archBC.GetSize() == 5u);
 
