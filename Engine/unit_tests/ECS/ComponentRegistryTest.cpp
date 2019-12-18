@@ -9,6 +9,8 @@
 
 #include <mainTesting.h>
 
+#include <EtFramework/ECS/ComponentSignature.h>
+
 
 // reflection
 //------------
@@ -69,3 +71,33 @@ TEST_CASE( "register", "[ecs]" )
 	REQUIRE(cTypeIdx == framework::ComponentRegistry::Instance().GetTypeIdx(rttr::type::get<TestCComponent>()));
 }
 
+
+TEST_CASE("signature", "[ecs]")
+{
+	framework::T_CompTypeList cTypes = framework::GenCompTypeList<TestBComponent, TestAComponent>();
+
+	REQUIRE(cTypes.size() == 2u);
+	REQUIRE(cTypes[0] == 1u);
+	REQUIRE(cTypes[1] == 0u);
+
+	framework::ComponentSignature const sig(cTypes);
+	REQUIRE(sig.GetSize() == 2u);
+	REQUIRE(sig.GetTypes()[0] == 0u);
+	REQUIRE(sig.GetTypes()[1] == 1u);
+	REQUIRE(sig.GetMaxComponentType() == 1u);
+
+	framework::ComponentSignature const abSig = framework::GenSignature<TestAComponent, TestBComponent>();
+	REQUIRE(abSig == sig);
+
+	framework::ComponentSignature const bcSig = framework::GenSignature<TestCComponent, TestBComponent>();
+	REQUIRE(bcSig.GetTypes()[0] == 1u);
+	REQUIRE(bcSig.GetTypes()[1] == 2u);
+	REQUIRE_FALSE(abSig == bcSig);
+
+	std::vector<framework::RawComponentData> compList{
+		framework::RawComponentData(TestBComponent::GetTypeIndex(), nullptr),
+		framework::RawComponentData(TestAComponent::GetTypeIndex(), nullptr)
+	};
+	REQUIRE(abSig.MatchesComponentsUnsorted(compList));
+	REQUIRE_FALSE(bcSig.MatchesComponentsUnsorted(compList));
+}

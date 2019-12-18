@@ -16,6 +16,9 @@ struct TestBComponent final
 	ECS_DECLARE_COMPONENT
 public:
 
+	TestBComponent() = default;
+	TestBComponent(std::string const& value) : name(value) {}
+
 	std::string name = "whatever";
 };
 

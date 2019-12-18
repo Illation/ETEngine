@@ -28,6 +28,7 @@ public:
 	void const* At(size_t const idx) const;
 
 	size_t GetSize() const;
+	T_CompTypeIdx GetType() const { return m_ComponentType; }
 
 	// functionality
 	//---------------

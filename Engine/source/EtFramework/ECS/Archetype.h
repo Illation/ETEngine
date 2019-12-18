@@ -1,5 +1,6 @@
 #pragma once
 #include "ComponentPool.h"
+#include "ComponentSignature.h"
 #include "EntityFwd.h"
 
 
@@ -16,20 +17,33 @@ class Archetype final
 	// construct destruct
 	//--------------------
 public:
-	Archetype(std::vector<T_CompTypeIdx> const& compTypes) : m_ComponentTypes(compTypes) { ET_ASSERT(false, "not implemented"); }
+	Archetype(ComponentSignature const& sig);
 
 	// accessors
 	//-----------
-	ComponentPool& GetPool(T_CompTypeIdx const typeIdx) { return m_ComponentPools[m_Mapping[typeIdx]]; }
+	bool HasComponent(T_CompTypeIdx const compType) const;
+	ComponentSignature const& GetSignature() const { return m_Signature; }
+
+	size_t GetSize() const { return m_Entities.size(); }
+
+	ComponentPool& GetPool(T_CompTypeIdx const typeIdx);
+	ComponentPool const& GetPool(T_CompTypeIdx const typeIdx) const;
+
+	T_EntityId GetEntity(size_t const idx) const;
+
+	// functionality
+	//---------------
+	size_t AddEntity(T_EntityId const entity, std::vector<RawComponentData> const& components);
+	void RemoveEntity(size_t const idx);
 
 	// Data
 	///////
 
 private:
-	std::vector<T_CompTypeIdx> m_Mapping; // slot map like -> access pools by component type index
+	std::vector<T_CompTypeIdx> m_Mapping; // slot_map alike -> access pools by component type index
 
 	std::vector<ComponentPool> m_ComponentPools;
-	std::vector<T_CompTypeIdx> m_ComponentTypes; // signature
+	ComponentSignature const m_Signature; 
 
 	std::vector<T_EntityId> m_Entities; // map back into the controllers entity list, can also act as component count
 };

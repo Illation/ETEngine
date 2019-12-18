@@ -64,6 +64,13 @@ private:
 };
 
 
+// Component type list
+typedef std::vector<T_CompTypeIdx> T_CompTypeList;
+
+template<typename... Args>
+T_CompTypeList GenCompTypeList();
+
+
 } // namespace framework
 
 

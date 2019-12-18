@@ -19,4 +19,9 @@ struct RawComponentData final
 };
 
 
+// create from 'real' components
+template<typename TComponentType>
+RawComponentData MakeRawComponent(TComponentType& comp) { return RawComponentData(TComponentType::GetTypeIndex(), &comp); }
+
+
 } // namespace framework

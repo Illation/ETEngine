@@ -31,5 +31,55 @@ T_CompTypeIdx ComponentRegistry::Register()
 }
 
 
+//=====================
+// Component Type List
+//=====================
+
+
+namespace detail {
+
+	//-----------------------------
+	// CompTypeListAdder
+	//
+	// implements a recursive variadic template
+	//
+	template <typename... Args>
+	struct CompTypeListAdder;
+
+	template<typename TComponentType>
+	struct CompTypeListAdder<TComponentType>
+	{
+		static void Call(T_CompTypeList& list)
+		{
+			list.emplace_back(TComponentType::GetTypeIndex());
+		}
+	};
+
+	template<typename TComponentType, typename... Args>
+	struct CompTypeListAdder<TComponentType, Args...>
+	{
+		static void Call(T_CompTypeList& list)
+		{
+			list.emplace_back(TComponentType::GetTypeIndex());
+			CompTypeListAdder<Args...>::Call(list);
+		}
+	};
+
+} // namespace detail
+
+//-----------------------------
+// GenCompTypeList
+//
+// Generate a list of components from their types
+//
+template<typename... Args>
+T_CompTypeList GenCompTypeList()
+{
+	T_CompTypeList ret;
+	detail::CompTypeListAdder<Args...>::Call(ret);
+	return ret;
+}
+
+
 } // namespace framework
 
