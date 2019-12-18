@@ -16,8 +16,8 @@ namespace framework {
 //
 // Iteratable view of a selection of components
 //
-ComponentView::Accessor::Accessor(void*& pointerRef, T_CompTypeIdx const type, bool const readAccess) 
-	: currentElement(reinterpret_cast<uint8*&>(pointerRef))
+ComponentView::Accessor::Accessor(void** pointerRef, T_CompTypeIdx const type, bool const readAccess) 
+	: currentElement(reinterpret_cast<uint8*&>(*pointerRef))
 	, typeIdx(type)
 	, read(readAccess)
 { } 
@@ -29,20 +29,47 @@ ComponentView::Accessor::Accessor(void*& pointerRef, T_CompTypeIdx const type, b
 
 
 //----------------------
-// ComponentView::c-tor
+// ComponentView::Init
 //
 // initialize references to all pointers
 //
-ComponentView::ComponentView(BaseComponentRange* const range) 
-	: m_Max(range->m_Count)
+void ComponentView::Init(BaseComponentRange* const range)
 {
-	Register(); 
+	m_Range = range;
+
+	Register();
 
 	// set the pointers to the position within the pool that the range starts from
 	for (Accessor& access : m_Accessors)
 	{
-		access.currentElement = static_cast<uint8*>(range->m_Archetype->GetPool(access.typeIdx).At(range->m_Offset));
+		access.currentElement = static_cast<uint8*>(m_Range->m_Archetype->GetPool(access.typeIdx).At(m_Range->m_Offset));
 	}
+}
+
+//----------------------
+// ComponentView::IsEnd
+//
+// Whether we are upon the last entity in the range
+//
+bool ComponentView::IsEnd() const
+{
+	return (m_Current >= m_Range->m_Count);
+}
+
+//----------------------------
+// ComponentView::GetTypeList
+//
+// List of component types we access
+//
+T_CompTypeList ComponentView::GetTypeList() const
+{
+	T_CompTypeList ret;
+	for (Accessor const& access : m_Accessors)
+	{
+		ret.emplace_back(access.typeIdx);
+	}
+
+	return ret;
 }
 
 //---------------------
@@ -53,7 +80,7 @@ ComponentView::ComponentView(BaseComponentRange* const range)
 bool ComponentView::Next()
 {
 	m_Current++;
-	if (m_Current >= m_Max)
+	if (m_Current >= m_Range->m_Count)
 	{
 		return true;
 	}

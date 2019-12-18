@@ -21,17 +21,9 @@ class BaseComponentRange
 
 	// construct destruct
 	//--------------------
-public:
-	BaseComponentRange(Archetype* const archetype, size_t const offset, size_t const count)
-		: m_Archetype(archetype)
-		, m_Offset(offset)
-		, m_Count(count)
-	{
-		ET_ASSERT(m_Archetype != nullptr);
-		ET_ASSERT(offset + count < m_Archetype->GetSize());
-	}
-
-	virtual ~BaseComponentRange() = 0; // make BaseComponentRange abstract
+protected:
+	BaseComponentRange(Archetype* const archetype, size_t const offset, size_t const count);
+	virtual ~BaseComponentRange() = default;
 
 	// Data
 	///////
@@ -71,33 +63,20 @@ public:
 		// construct destruct
 		//--------------------
 		iterator() = default;
-		iterator(BaseComponentRange* const range) : m_View(new TViewType(range)) {}
+		iterator(BaseComponentRange* const range);
 		~iterator() { delete m_View; }
 
 		// functionality
 		//---------------
-		iterator& operator++() // prefix - postfix is omitted as we do not wish to make a copy of the view type
-		{
-			m_View->Next(); 
-			return *this;
-		}
+		iterator& operator++(); // prefix - postfix is omitted as we do not wish to make a copy of the view type
 
 		// accessors
 		//-----------
-		bool IsEnd() const
-		{
-			return ((m_View == nullptr) || m_View->IsEnd());
-		}
+		bool IsEnd() const;
 
-		bool operator==(iterator const& other) const
-		{
-			return (IsEnd() ? other.IsEnd() : (m_View == other.m_View));
-		}
+		bool operator==(iterator const& other) const;
 
-		bool operator!=(iterator const& other) const
-		{
-			return !(*this == other);
-		}
+		bool operator!=(iterator const& other) const;
 
 		TViewType& operator*() { return *m_View; }
 		TViewType* operator->() { return m_View; }
@@ -111,15 +90,17 @@ public:
 
 	// construct destruct
 	//--------------------
-	ComponentRange(Archetype* const archetype, size_t const offset, size_t const count) : BaseComponentRange(archetype, offset, count) {}
+	ComponentRange(Archetype* const archetype, size_t const offset, size_t const count);
 	~ComponentRange() = default;
 
 	// accessors
 	//-----------
 	iterator begin() { return iterator(this); }
-	iterator end() { return iterator(); }
+	iterator end() { return iterator(); } // null iterator
 };
 
 
 } // namespace framework
 
+
+#include "ComponentRange.inl"

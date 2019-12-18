@@ -1,6 +1,7 @@
 #pragma once
 #include "ComponentRegistry.h"
 #include "ComponentRange.h"
+#include "ComponentSignature.h"
 
 
 namespace framework {
@@ -17,7 +18,7 @@ class ComponentView
 	//-------------
 	struct Accessor
 	{
-		Accessor(void*& pointerRef, T_CompTypeIdx const type, bool const readAccess);
+		Accessor(void** pointerRef, T_CompTypeIdx const type, bool const readAccess);
 
 		uint8*& currentElement;
 		T_CompTypeIdx const typeIdx = INVALID_COMP_TYPE_IDX;
@@ -38,10 +39,10 @@ protected:
 	public:	
 		TComponentType const* operator&() const { return m_Data; }
 		TComponentType const& operator*() const { return *m_Data; }
-		TComponentType const& operator->() const { return *m_Data; }
+		TComponentType const* operator->() const { return m_Data; }
 
 	private:
-		TComponentType const* m_Data;
+		TComponentType* m_Data;
 	};
 
 	//-------------------
@@ -56,7 +57,7 @@ protected:
 	public:
 		TComponentType* operator&() { return m_Data; }
 		TComponentType& operator*() { return *m_Data; }
-		TComponentType& operator->() { return *m_Data; }
+		TComponentType* operator->() { return m_Data; }
 
 	private:
 		TComponentType* m_Data;
@@ -65,11 +66,15 @@ protected:
 	// construct destruct
 	//--------------------
 public:
-	ComponentView(BaseComponentRange* const range);
+	ComponentView() = default;
+	virtual ~ComponentView() = default;
+
+	void Init(BaseComponentRange* const range);
 
 	// accessors
 	//-----------
-	bool IsEnd() const { return m_Current >= m_Max; }
+	bool IsEnd() const;
+	T_CompTypeList GetTypeList() const;
 
 	// functionality
 	//---------------
@@ -77,15 +82,14 @@ public:
 
 	// interface
 	//-----------
-protected:
 	virtual void Register() = 0;
 
+protected:
 	template<typename TComponentType>
-	void Register(ReadAccess<TComponentType>& read);
+	void Declare(ReadAccess<TComponentType>& read);
 
 	template<typename TComponentType>
-	void Register(WriteAccess<TComponentType>& write);
-
+	void Declare(WriteAccess<TComponentType>& write);
 
 	// Data
 	///////
@@ -93,8 +97,13 @@ protected:
 private:
 	std::vector<Accessor> m_Accessors;
 	size_t m_Current = 0u;
-	size_t const m_Max;
+	BaseComponentRange* m_Range = nullptr;
 };
+
+
+// create a signature from a view
+template<typename TViewType>
+ComponentSignature SignatureFromView();
 
 
 } // namespace framework
