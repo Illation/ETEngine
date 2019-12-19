@@ -24,6 +24,7 @@ public:
 	size_t GetSize() const { return m_Impl.size(); }
 	T_CompTypeIdx GetMaxComponentType() const;
 	bool MatchesComponentsUnsorted(std::vector<RawComponentData> const& list) const;
+	bool Contains(ComponentSignature const& other) const;
 
 	// Data
 	///////

@@ -88,6 +88,8 @@ TEST_CASE("signature", "[ecs]")
 
 	framework::ComponentSignature const abSig = framework::GenSignature<TestAComponent, TestBComponent>();
 	REQUIRE(abSig == sig);
+	REQUIRE(abSig.Contains(sig));
+	REQUIRE(sig.Contains(abSig));
 
 	framework::ComponentSignature const bcSig = framework::GenSignature<TestCComponent, TestBComponent>();
 	REQUIRE(bcSig.GetTypes()[0] == 1u);

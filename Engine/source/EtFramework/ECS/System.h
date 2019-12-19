@@ -1,5 +1,6 @@
 #pragma once
 #include "ComponentRegistry.h"
+#include "ComponentRange.h"
 
 #include <rttr/type.h>
 
@@ -11,18 +12,8 @@ namespace framework {
 class Archetype;
 
 
-//---------------
-// E_ComponentAccess
-//
-// Abstract implementation of a system
-//
-enum class E_ComponentAccess : uint8
-{
-	Read,
-	ReadWrite,
-	Exclude,
-	Undefined
-};
+// def
+typedef std::vector<rttr::type::type_id> T_DependencyList;
 
 
 //---------------
@@ -40,39 +31,30 @@ public:
 
 	// interface
 	//-----------
-	virtual rttr::type const& GetType() const = 0;
+	virtual rttr::type::type_id GetTypeId() const = 0;
+	virtual ComponentSignature GetSignature() const = 0;
 
-	virtual void Process(Archetype* const archetype, size_t const offset, size_t const count) const = 0; // the important one
+	virtual void RootProcess(Archetype* const archetype, size_t const offset, size_t const count) const = 0; // the important one
 
 	// accessors
 	//-----------
-	bool MatchesSignature(std::vector<T_CompTypeIdx> const& sig) const;
-	std::vector<T_CompTypeIdx> const& GetSignature() const { return m_Signature; }
-	E_ComponentAccess GetAccessType(T_CompTypeIdx const typeIdx) const;
-
-	std::vector<rttr::type> const& GetDependencies() const { return m_Dependencies; }
-	std::vector<rttr::type> const& GetDependents() const { return m_Dependents; }
+	T_DependencyList const& GetDependencies() const { return m_Dependencies; }
+	T_DependencyList const& GetDependents() const { return m_Dependents; }
 
 	// utility - use these in system constructor
 	//-------------------------------------------
 protected:
-	template<typename TComponentType>
-	void DeclareComponentAccess(E_ComponentAccess const access);
-	template<typename TComponentType, typename... Args>
-	void DeclareComponentAccess(E_ComponentAccess const access);
-
-	void DeclareDependencies(std::vector<rttr::type> const& dep);
-	void DeclareDependents(std::vector<rttr::type> const& dep);
+	template<typename... Args>
+	void DeclareDependencies();
+	template<typename... Args>
+	void DeclareDependents();
 
 	// Data
 	///////
 
 private:
-	std::vector<T_CompTypeIdx> m_Signature;
-	std::vector<E_ComponentAccess> m_Access;
-
-	std::vector<rttr::type> m_Dependencies;
-	std::vector<rttr::type> m_Dependents;
+	T_DependencyList m_Dependencies;
+	T_DependencyList m_Dependents;
 };
 
 
@@ -80,17 +62,31 @@ private:
 // System
 //
 // Use CRTP to infer the type method - create new systems by inheriting: 
-//  class MySystem : public System<MySystem>
+//  class MySystem : public System<MySystem, MyComponentView>
 //
-template <class TSystemType>
+template <class TSystemType, typename TViewType>
 class System : public SystemBase
 {
+	// construct destruct
+	//--------------------
 public:
 	System() : SystemBase() {}
-	virtual ~System() {}
+	virtual ~System() = default;
 
-	rttr::type const& GetType() const override { return rttr::type::get<TSystemType>(); }
+	// System Base interface implementation
+	//--------------------------------------
+	rttr::type::type_id GetTypeId() const override;
+	ComponentSignature GetSignature() const override;
+
+	void RootProcess(Archetype* const archetype, size_t const offset, size_t const count) const override;
+
+	// interface
+	//-----------
+	virtual void Process(ComponentRange<TViewType>& range) const = 0;
 };
 
 
 } // namespace framework
+
+
+#include "System.inl"

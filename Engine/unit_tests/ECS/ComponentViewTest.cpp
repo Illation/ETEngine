@@ -1,5 +1,5 @@
 #include <EtFramework/stdafx.h>
-#include "TestComponents.h"
+#include "TestComponentViews.h"
 
 #include <catch2/catch.hpp>
 #include <rttr/registration>
@@ -9,25 +9,7 @@
 
 #include <mainTesting.h>
 
-#include <EtFramework/ECS/Archetype.h>
-#include <EtFramework/ECS/ComponentView.h>
-
-
 // components should already have been registered in ComponentRegistryTest.cpp
-
-
-struct TestBCView final : public framework::ComponentView
-{
-	WriteAccess<TestBComponent> b;
-	ReadAccess<TestCComponent> c;
-
-	void Register() override
-	{
-		Declare(b);
-		Declare(c);
-	}
-};
-
 
 framework::Archetype GenTestArchetype(size_t const count)
 {
@@ -35,9 +17,9 @@ framework::Archetype GenTestArchetype(size_t const count)
 
 	for (size_t idx = 0u; idx < count; ++idx)
 	{
-		arch.AddEntity(static_cast<framework::T_EntityId>(idx), { 
-			framework::MakeRawComponent(TestBComponent(std::to_string(idx))), 
-			framework::MakeRawComponent(TestCComponent(static_cast<uint32>(idx))) 
+		arch.AddEntity(static_cast<framework::T_EntityId>(idx), {
+			framework::MakeRawComponent(TestBComponent(std::to_string(idx))),
+			framework::MakeRawComponent(TestCComponent(static_cast<uint32>(idx)))
 			});
 	}
 
@@ -47,8 +29,15 @@ framework::Archetype GenTestArchetype(size_t const count)
 
 TEST_CASE("component view signature", "[ecs]")
 {
-	framework::ComponentSignature viewSig = framework::SignatureFromView<TestBCView>();
-	REQUIRE(viewSig == framework::GenSignature<TestBComponent, TestCComponent>());
+	framework::ComponentSignature archBCSig = framework::GenSignature<TestBComponent, TestCComponent>();
+	framework::ComponentSignature viewBCSig = framework::SignatureFromView<TestBCView>();
+	framework::ComponentSignature viewCSig = framework::SignatureFromView<TestCView>();
+
+	REQUIRE(viewBCSig == archBCSig);
+	REQUIRE_FALSE(viewCSig == archBCSig);
+
+	REQUIRE(archBCSig.Contains(viewCSig));
+	REQUIRE_FALSE(viewCSig.Contains(archBCSig));
 }
 
 

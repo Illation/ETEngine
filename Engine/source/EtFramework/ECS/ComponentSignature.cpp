@@ -53,6 +53,45 @@ bool ComponentSignature::MatchesComponentsUnsorted(std::vector<RawComponentData>
 	return true;
 }
 
+//-----------------------------------------------
+// ComponentSignature::Contains
+//
+bool ComponentSignature::Contains(ComponentSignature const& other) const
+{
+	if (other.GetSize() > m_Impl.size()) // there is definitly a type in the other signature that we don't have
+	{
+		return false;
+	}
+
+	T_CompTypeList const& otherTypes = other.GetTypes();
+
+	// since both lists are sorted we can just iterate linearly over the smaller list and our inner list at the same time
+	size_t idx = 0;
+	for (T_CompTypeIdx const otherType : otherTypes) 
+	{
+		T_CompTypeIdx thisType = INVALID_COMP_TYPE_IDX; // iterate our inner list until we find the matching component
+		do
+		{
+			if (idx >= m_Impl.size()) // if we reach the end of our list the comparison failed
+			{
+				return false;
+			}
+
+			thisType = m_Impl[idx];
+
+			if (thisType > otherType) // if our type is larger, the matching type won't be found as both lists are sorted
+			{
+				return false;
+			}
+
+			++idx;
+		} 
+		while (thisType != otherType);
+	}
+
+	return true;
+}
+
 //-------------------------------
 // ComponentSignature comparison
 //

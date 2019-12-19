@@ -7,6 +7,20 @@
 namespace framework {
 
 
+//---------------
+// E_ComponentAccess
+//
+// Abstract implementation of a system
+//
+enum class E_ComponentAccess : uint8
+{
+	Read,
+	ReadWrite,
+	Exclude,
+	Undefined
+};
+
+
 //-------------------
 // ComponentView
 //

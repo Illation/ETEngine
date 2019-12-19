@@ -77,7 +77,7 @@ public:
 	void Update(); // Process all systems
 
 	void RegisterSystem(SystemBase* const system);
-	void UnregisterSystem(rttr::type const& systemType);
+	void UnregisterSystem(rttr::type::type_id const systemType);
 
 	// accessors
 	//-----------
