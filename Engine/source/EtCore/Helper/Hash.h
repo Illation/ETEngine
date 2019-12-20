@@ -14,15 +14,16 @@ typedef uint32 T_Hash;
 namespace detail
 {
 
-	constexpr T_Hash fnv1a_32(char const* s, size_t count);
-	constexpr T_Hash hash_gen(char const* s, size_t count);
+	constexpr T_Hash fnv1a_32(char const* const s, size_t const count);
+	constexpr T_Hash hash_gen(char const* const s, size_t const count);
 
 } // namespace detail
 
 
-constexpr T_Hash GetHash(const std::string &str);
+constexpr T_Hash GetHash(std::string const& str);
+constexpr T_Hash GetDataHash(uint8 const* const data, size_t const count);
 
-inline constexpr T_Hash operator"" _hash(char const* s, size_t count);
+inline constexpr T_Hash operator"" _hash(char const* const s, size_t const count);
 
 
 #include "Hash.inl"

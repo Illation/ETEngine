@@ -96,9 +96,9 @@ TEST_CASE("signature", "[ecs]")
 	REQUIRE(bcSig.GetTypes()[1] == 2u);
 	REQUIRE_FALSE(abSig == bcSig);
 
-	std::vector<framework::RawComponentData> compList{
-		framework::RawComponentData(TestBComponent::GetTypeIndex(), nullptr),
-		framework::RawComponentData(TestAComponent::GetTypeIndex(), nullptr)
+	std::vector<framework::RawComponentPtr> compList{
+		framework::RawComponentPtr(TestBComponent::GetTypeIndex(), nullptr),
+		framework::RawComponentPtr(TestAComponent::GetTypeIndex(), nullptr)
 	};
 	REQUIRE(abSig.MatchesComponentsUnsorted(compList));
 	REQUIRE_FALSE(bcSig.MatchesComponentsUnsorted(compList));

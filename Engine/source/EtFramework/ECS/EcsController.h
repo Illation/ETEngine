@@ -1,6 +1,6 @@
 #pragma once
 #include "EntityFwd.h"
-#include "RawComponentData.h"
+#include "RawComponentPointer.h"
 
 
 namespace framework {
@@ -8,6 +8,8 @@ namespace framework {
 
 // fwd
 class Archetype;
+class SystemBase;
+class ComponentSignature;
 
 
 //---------------
@@ -23,61 +25,69 @@ class EcsController final
 	{
 		T_EntityId parent = INVALID_ENTITY_ID;
 		std::vector<T_EntityId> children;
-		size_t layer = 0u;
+		uint8 layer = 0u; // deeply nested hierachies are discouraged for performance reasons. 256 layers should be enough
 
-		Archetype const* archetype = nullptr;
+		Archetype* archetype = nullptr;
 		size_t index = 0u;
 	};
 
 	struct ArchetypeContainer final
 	{
-		std::vector<Archetype*> archetypes;
+		std::unordered_map<T_Hash, Archetype> archetypes;
 	};
 
 	struct RegisteredSystem final
 	{
+		struct ArchetypeLayer
+		{
+			uint8 layer;
+			std::vector<Archetype*> archetypes;
+		};
+
 		SystemBase* system;
-		std::vector<std::vector<Archetype*>> matchingArchetypes;
+		std::vector<ArchetypeLayer> matchingArchetypes;
 		std::vector<RegisteredSystem const*> dependencies;
 	};
 
 	// construct destruct
 	//--------------------
 public:
-	EcsController();
+	EcsController() = default;
+	~EcsController() = default; // for now
 
 	// functionality
 	//---------------
 
 	// entity managment
 	T_EntityId AddEntity(T_EntityId const parent = INVALID_ENTITY_ID);
-	T_EntityId AddEntity(std::vector<RawComponentData> const& components, T_EntityId const parent = INVALID_ENTITY_ID);
+	T_EntityId AddEntity(std::vector<RawComponentPtr> const& components);
+	T_EntityId AddEntity(T_EntityId const parent, std::vector<RawComponentPtr> const& components);
+
+	template<typename TComponentType, typename... Args>
+	T_EntityId AddEntity(TComponentType const& component1, Args... components);
+	template<typename TComponentType, typename... Args>
+	T_EntityId AddEntity(T_EntityId const parent, TComponentType const& component1, Args... components);
 
 	void ReparentEntity(T_EntityId const entity, T_EntityId const newParent);
 
 	void RemoveEntity(T_EntityId& entity);
 
 	// components
-	// #todo: support bulk component add / remove with variadic templates
-	void* AddComponent(T_EntityId const entity, RawComponentData const& component);
-	template<typename TComponentType>
-	TComponentType& AddComponent(T_EntityId const entity);
-	template<typename TComponentType>
-	TComponentType& AddComponent(T_EntityId const entity, TComponentType const& component);
+	template<typename TComponentType, typename... Args>
+	void AddComponents(T_EntityId const entity, TComponentType const& component1, Args... components);
+	void AddComponents(T_EntityId const entity, std::vector<RawComponentPtr>& components);
 
-	void AddComponents(T_EntityId const entity, std::vector<RawComponentData> const& components);
-
-	void RemoveComponent(T_EntityId const entity, T_CompTypeIdx const typeIdx);
-	template<typename TComponentType>
-	void RemoveComponent(T_EntityId const entity);
-
-	void RemoveComponents(T_EntityId const entity, std::vector<T_CompTypeIdx> const& components);
+	template<typename TComponentType, typename... Args>
+	void RemoveComponents(T_EntityId const entity);
+	void RemoveComponents(T_EntityId const entity, std::vector<T_CompTypeIdx> const& componentTypes);
 
 	// systems
 	void Update(); // Process all systems
 
-	void RegisterSystem(SystemBase* const system);
-	void UnregisterSystem(rttr::type::type_id const systemType);
+	template<typename TSystemType>
+	void RegisterSystem();
+	template<typename TSystemType>
+	void UnregisterSystem();
 
 	// accessors
 	//-----------
@@ -104,12 +114,22 @@ public:
 	void const* GetComponentData(T_EntityId const entity, T_CompTypeIdx const compType) const;
 
 	// systems
-	bool IsSystemRegistered(rttr::type const& systemType) const;
+	template<typename TSystemType>
+	bool IsSystemRegistered() const;
+
+	// utility
+	//---------
+private:
+	Archetype* FindOrCreateArchetype(ComponentSignature const& sig, uint8 const layer);
+	void MoveArchetype(T_EntityId const entId, EntityData& ent, T_CompTypeList const& compTypes, std::vector<RawComponentPtr> const& components);
+	void RemoveEntityFromArchetype(EntityData& ent);
+	T_CompTypeList GetComponentsAndTypes(EntityData& ent, std::vector<RawComponentPtr>& components);
+
+	void RemoveEntityFromParent(T_EntityId const entity, T_EntityId const parent);
 
 	// Data
 	///////
 
-private:
 	core::slot_map<EntityData> m_Entities;
 
 	std::vector<ArchetypeContainer> m_HierachyLevels;

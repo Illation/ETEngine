@@ -13,9 +13,26 @@ namespace framework {
 //---------------------------
 // ComponentSignature::c-tor
 //
+// construct from type list
+//
 ComponentSignature::ComponentSignature(T_CompTypeList const& types)
 	: m_Impl(types)
 {
+	std::sort(m_Impl.begin(), m_Impl.end());
+}
+
+//---------------------------
+// ComponentSignature::c-tor
+//
+// construct from component list
+//
+ComponentSignature::ComponentSignature(std::vector<RawComponentPtr> const& components)
+{
+	for (RawComponentPtr const& comp : components)
+	{
+		m_Impl.push_back(comp.typeIdx);
+	}
+
 	std::sort(m_Impl.begin(), m_Impl.end());
 }
 
@@ -35,14 +52,14 @@ T_CompTypeIdx ComponentSignature::GetMaxComponentType() const
 //-----------------------------------------------
 // ComponentSignature::MatchesComponentsUnsorted
 //
-bool ComponentSignature::MatchesComponentsUnsorted(std::vector<RawComponentData> const& list) const
+bool ComponentSignature::MatchesComponentsUnsorted(std::vector<RawComponentPtr> const& list) const
 {
 	if (m_Impl.size() != list.size())
 	{
 		return false;
 	}
 
-	for (RawComponentData const& data : list)
+	for (RawComponentPtr const& data : list)
 	{
 		if (std::find(m_Impl.cbegin(), m_Impl.cend(), data.typeIdx) == m_Impl.cend())
 		{
@@ -53,7 +70,7 @@ bool ComponentSignature::MatchesComponentsUnsorted(std::vector<RawComponentData>
 	return true;
 }
 
-//-----------------------------------------------
+//--------------------------------
 // ComponentSignature::Contains
 //
 bool ComponentSignature::Contains(ComponentSignature const& other) const
@@ -90,6 +107,14 @@ bool ComponentSignature::Contains(ComponentSignature const& other) const
 	}
 
 	return true;
+}
+
+//----------------------------
+// ComponentSignature::GenId
+//
+T_Hash ComponentSignature::GenId() const
+{
+	return GetDataHash(reinterpret_cast<uint8 const*>(m_Impl.data()), m_Impl.size() * sizeof(T_CompTypeIdx));
 }
 
 //-------------------------------

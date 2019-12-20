@@ -85,11 +85,11 @@ T_EntityId Archetype::GetEntity(size_t const idx) const
 //
 // #todo: we might want to simply assume that the components are sorted by signature to add their data for performance reasons
 //
-size_t Archetype::AddEntity(T_EntityId const entity, std::vector<RawComponentData> const& components)
+size_t Archetype::AddEntity(T_EntityId const entity, std::vector<RawComponentPtr> const& components)
 {
 	ET_ASSERT(m_Signature.MatchesComponentsUnsorted(components));
 
-	for (RawComponentData const& component : components)
+	for (RawComponentPtr const& component : components)
 	{
 		m_ComponentPools[m_Mapping[component.typeIdx]].Append(component.data);
 	}
@@ -102,9 +102,9 @@ size_t Archetype::AddEntity(T_EntityId const entity, std::vector<RawComponentDat
 //-------------------------
 // Archetype::RemoveEntity
 //
-// Remove all the component data for an entity from the archetype
+// Remove all the component data for an entity from the archetype - returns the entity id that was placed in the current index
 //
-void Archetype::RemoveEntity(size_t const idx)
+T_EntityId Archetype::RemoveEntity(size_t const idx)
 {
 	ET_ASSERT(idx < m_Entities.size());
 
@@ -122,6 +122,13 @@ void Archetype::RemoveEntity(size_t const idx)
 		m_Entities[idx] = m_Entities[m_Entities.size() - 1];
 		m_Entities.pop_back();
 	}
+
+	if (m_Entities.size() == idx)
+	{
+		return INVALID_ENTITY_ID;
+	}
+	
+	return m_Entities[idx];
 }
 
 

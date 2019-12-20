@@ -33,8 +33,8 @@ public:
 
 	// functionality
 	//---------------
-	size_t AddEntity(T_EntityId const entity, std::vector<RawComponentData> const& components);
-	void RemoveEntity(size_t const idx);
+	size_t AddEntity(T_EntityId const entity, std::vector<RawComponentPtr> const& components);
+	T_EntityId RemoveEntity(size_t const idx);
 
 	// Data
 	///////

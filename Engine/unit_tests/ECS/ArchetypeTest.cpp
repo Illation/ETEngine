@@ -47,7 +47,7 @@ TEST_CASE("archetype add", "[ecs]")
 	std::string const val0 = "first";
 	TestBComponent bComp0(val0);
 
-	std::vector<framework::RawComponentData> compList{
+	std::vector<framework::RawComponentPtr> compList{
 		framework::MakeRawComponent(bComp0), // this is safe use of raw components, as the data it is created from exceeds the life time
 		framework::MakeRawComponent(TestCComponent(0u)) // this is unsafe, as the component data may be destroyed before it is copied into the archetype
 	};
