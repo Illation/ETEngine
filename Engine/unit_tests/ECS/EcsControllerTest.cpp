@@ -132,3 +132,59 @@ TEST_CASE("controller entity hierachy", "[ecs]")
 	ecs.RemoveEntity(ent1);
 	REQUIRE(ecs.GetEntityCount() == 1u);
 }
+
+
+TEST_CASE("controller system overwrite", "[ecs]")
+{
+	framework::EcsController ecs;
+	// generate entities
+	// first 10 don't have a C component so shouldn't be processed by the overwrite system
+	for (uint32 idx = 0u; idx < static_cast<uint32>(10u); ++idx)
+	{
+		ecs.AddEntity(TestOverwriteComp());
+	}
+
+	// these will be processed by the overwrite system
+	for (uint32 idx = 0u; idx < static_cast<uint32>(16u); ++idx)
+	{
+		ecs.AddEntity(TestOverwriteComp(), TestCComponent(idx));
+	}
+
+	ecs.RegisterSystem<TestOverwriteSystem>(4u);
+
+	ecs.Process();
+
+	REQUIRE(ecs.GetEntityCount() == 26u);
+
+	// these entities don't have a C component and should remain untouched
+	REQUIRE_FALSE(ecs.GetComponent<TestOverwriteComp>(0u).overwritten);
+	REQUIRE_FALSE(ecs.GetComponent<TestOverwriteComp>(1u).overwritten);
+	REQUIRE_FALSE(ecs.GetComponent<TestOverwriteComp>(2u).overwritten);
+	REQUIRE_FALSE(ecs.GetComponent<TestOverwriteComp>(3u).overwritten);
+	REQUIRE_FALSE(ecs.GetComponent<TestOverwriteComp>(4u).overwritten);
+	REQUIRE_FALSE(ecs.GetComponent<TestOverwriteComp>(5u).overwritten);
+	REQUIRE_FALSE(ecs.GetComponent<TestOverwriteComp>(6u).overwritten);
+	REQUIRE_FALSE(ecs.GetComponent<TestOverwriteComp>(7u).overwritten);
+	REQUIRE_FALSE(ecs.GetComponent<TestOverwriteComp>(8u).overwritten);
+	REQUIRE_FALSE(ecs.GetComponent<TestOverwriteComp>(9u).overwritten);
+
+	// these have a C component, but the value is too low for an overwrite to occur
+	REQUIRE_FALSE(ecs.GetComponent<TestOverwriteComp>(10u).overwritten);
+	REQUIRE_FALSE(ecs.GetComponent<TestOverwriteComp>(11u).overwritten);
+	REQUIRE_FALSE(ecs.GetComponent<TestOverwriteComp>(12u).overwritten);
+	REQUIRE_FALSE(ecs.GetComponent<TestOverwriteComp>(13u).overwritten);
+
+	// these entities have all required components and C is high enough for the overwrite to occur
+	REQUIRE(ecs.GetComponent<TestOverwriteComp>(14u).overwritten);
+	REQUIRE(ecs.GetComponent<TestOverwriteComp>(15u).overwritten);
+	REQUIRE(ecs.GetComponent<TestOverwriteComp>(16u).overwritten);
+	REQUIRE(ecs.GetComponent<TestOverwriteComp>(17u).overwritten);
+	REQUIRE(ecs.GetComponent<TestOverwriteComp>(18u).overwritten);
+	REQUIRE(ecs.GetComponent<TestOverwriteComp>(19u).overwritten);
+	REQUIRE(ecs.GetComponent<TestOverwriteComp>(20u).overwritten);
+	REQUIRE(ecs.GetComponent<TestOverwriteComp>(21u).overwritten);
+	REQUIRE(ecs.GetComponent<TestOverwriteComp>(22u).overwritten);
+	REQUIRE(ecs.GetComponent<TestOverwriteComp>(23u).overwritten);
+	REQUIRE(ecs.GetComponent<TestOverwriteComp>(24u).overwritten);
+	REQUIRE(ecs.GetComponent<TestOverwriteComp>(25u).overwritten);
+}

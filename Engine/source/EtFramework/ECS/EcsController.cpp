@@ -21,12 +21,20 @@ namespace framework {
 //
 EcsController::~EcsController()
 {
+	// delete archetypes
 	for (ArchetypeContainer& container : m_HierachyLevels)
 	{
 		for (std::pair<T_Hash const, Archetype*>& arch : container.archetypes)
 		{
 			delete arch.second;
 		}
+	}
+
+	// delete systems
+	for (RegisteredSystem* const sys : m_Systems)
+	{
+		delete sys->system;
+		delete sys;
 	}
 }
 
@@ -258,12 +266,12 @@ void EcsController::RemoveComponents(T_EntityId const entity, T_CompTypeList con
 // system managment
 ////////////////////
 
-//-----------------------
-// EcsController::Update
+//------------------------
+// EcsController::Process
 //
 // Update all systems according to their implicit schedule
 //
-void EcsController::Update()
+void EcsController::Process()
 {
 	for (RegisteredSystem* const sys : m_Schedule)
 	{
@@ -570,6 +578,7 @@ void EcsController::RecalculateSystemSchedule()
 	m_Schedule.clear();
 	for (RegisteredSystem* const sys : m_Systems)
 	{
+		sys->visited = false;
 		sys->scheduled = false;
 	}
 

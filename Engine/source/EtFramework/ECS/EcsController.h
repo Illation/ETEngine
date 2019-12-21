@@ -93,7 +93,7 @@ public:
 	void RemoveComponents(T_EntityId const entity, T_CompTypeList const& componentTypes);
 
 	// systems
-	void Update(); // Process all systems
+	void Process(); 
 
 	template<typename TSystemType, typename... Args>
 	void RegisterSystem(Args... args);
