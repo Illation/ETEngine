@@ -265,7 +265,19 @@ void EcsController::RemoveComponents(T_EntityId const entity, T_CompTypeList con
 //
 void EcsController::Update()
 {
-	ET_ASSERT(false, "not implemented!");
+	for (RegisteredSystem* const sys : m_Schedule)
+	{
+		for (RegisteredSystem::ArchetypeLayer& layer : sys->matchingArchetypes)
+		{
+			for (Archetype* const arch : layer.archetypes)
+			{
+				if (arch->GetSize() > 0u)
+				{
+					sys->system->RootProcess(arch, 0u, arch->GetSize());
+				}
+			}
+		}
+	}
 }
 
 
@@ -359,6 +371,20 @@ Archetype* EcsController::FindOrCreateArchetype(ComponentSignature const& sig, u
 		auto res = cont.archetypes.emplace(sigId, new Archetype(sig));
 		ET_ASSERT(res.second == true);
 		foundA = res.first;
+
+		// upon creation, check if there are any systems that should iterate this archetype
+		for (RegisteredSystem* const sys : m_Systems)
+		{
+			if (foundA->second->GetSignature().Contains(sys->signature))
+			{
+				while (sys->matchingArchetypes.size() <= static_cast<size_t>(layer)) // ensure we have enough layers
+				{
+					sys->matchingArchetypes.push_back(RegisteredSystem::ArchetypeLayer());
+				}
+
+				sys->matchingArchetypes[layer].archetypes.push_back(foundA->second);
+			}
+		}
 	}
 
 	return foundA->second;
@@ -436,6 +462,143 @@ void EcsController::RemoveEntityFromParent(T_EntityId const entity, T_EntityId c
 			parentEnt.children[idx] = parentEnt.children[parentEnt.children.size() - 1];
 			parentEnt.children.pop_back();
 		}
+	}
+}
+
+//---------------------------------------
+// EcsController::RegisterSystemInternal
+//
+void EcsController::RegisterSystemInternal(SystemBase* const sys)
+{
+	// create registered system
+	RegisteredSystem* const registered = new RegisteredSystem(sys);
+
+	// add to dependencies
+	for (RegisteredSystem* const other : m_Systems)
+	{
+		if (std::find(sys->GetDependencies().cbegin(), sys->GetDependencies().cend(), other->system->GetTypeId()) != sys->GetDependencies().cend())
+		{
+			registered->dependencies.emplace_back(other);
+		}
+
+		if (std::find(sys->GetDependents().cbegin(), sys->GetDependents().cend(), other->system->GetTypeId()) != sys->GetDependents().cend())
+		{
+			other->dependencies.emplace_back(registered);
+		}
+	}
+
+	// add existing archetypes
+	for (uint8 layer = 0u; layer < static_cast<uint8>(m_HierachyLevels.size()); ++layer)
+	{
+		for (std::pair<T_Hash const, Archetype*>& arch : m_HierachyLevels[layer].archetypes)
+		{
+			// go layer wise to ensure correct hierachy dependency resolution
+			if (arch.second->GetSignature().Contains(registered->signature))
+			{
+				while (registered->matchingArchetypes.size() <= static_cast<size_t>(layer)) // ensure we have enough layers
+				{
+					registered->matchingArchetypes.push_back(RegisteredSystem::ArchetypeLayer());
+				}
+
+				registered->matchingArchetypes[layer].archetypes.push_back(arch.second);
+			}
+		}
+	}
+
+	// add to system list
+	m_Systems.emplace_back(registered);
+
+	RecalculateSystemSchedule();
+}
+
+//-----------------------------------------
+// EcsController::UnregisterSystemInternal
+//
+void EcsController::UnregisterSystemInternal(T_SystemType const sysType)
+{
+	// find the registered system
+	auto foundSys = std::find_if(m_Systems.cbegin(), m_Systems.cend(), [sysType](RegisteredSystem const* const sys)
+		{
+			return (sys->system->GetTypeId() == sysType);
+		});
+	ET_ASSERT(foundSys != m_Systems.cend());
+
+	RegisteredSystem* const registered = *foundSys;
+
+	// remove from system list - swap and remove
+	uint8 const idx = static_cast<uint8>(foundSys - m_Systems.cbegin());
+	if (idx != m_Systems.size() - 1)
+	{
+		m_Systems[idx] = m_Systems[m_Systems.size() - 1];
+	}
+
+	m_Systems.pop_back();
+
+	// since there are other systems left, remove this system from their dependencies
+	for (RegisteredSystem* const other : m_Systems)
+	{
+		auto const foundDep = std::find(other->dependencies.cbegin(), other->dependencies.cend(), registered);
+
+		if (foundDep != other->dependencies.cend())
+		{
+			// swap and remove
+			size_t const depIdx = foundDep - other->dependencies.cbegin();
+			if (depIdx != other->dependencies.size() - 1)
+			{
+				other->dependencies[depIdx] = other->dependencies[other->dependencies.size() - 1];
+			}
+
+			other->dependencies.pop_back();
+		}
+	}
+
+	// delete the system
+	delete registered->system;
+	delete registered;
+
+	RecalculateSystemSchedule();
+}
+
+//------------------------------------------
+// EcsController::RecalculateSystemSchedule
+//
+// Sort the update schedule by system dependencies
+//
+void EcsController::RecalculateSystemSchedule()
+{
+	// reset
+	m_Schedule.clear();
+	for (RegisteredSystem* const sys : m_Systems)
+	{
+		sys->scheduled = false;
+	}
+
+	// sort
+	for (RegisteredSystem* const sys : m_Systems)
+	{
+		TopologicalSort(sys);
+	}
+}
+
+//------------------------------------------
+// EcsController::TopologicalSort
+//
+// Adds systems to the schedule in a valid order according to their dependencies
+//
+void EcsController::TopologicalSort(RegisteredSystem* const sys)
+{
+	if (!sys->scheduled)
+	{
+		ET_ASSERT(!(sys->visited), "Circular dependency detected!");
+
+		sys->visited = true;
+		for (RegisteredSystem* const dep : sys->dependencies)
+		{
+			TopologicalSort(dep);
+		}
+
+		sys->scheduled = true;
+		m_Schedule.emplace_back(sys);
 	}
 }
 

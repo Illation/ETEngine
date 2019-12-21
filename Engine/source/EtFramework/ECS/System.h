@@ -13,6 +13,7 @@ class Archetype;
 
 
 // def
+typedef rttr::type::type_id T_SystemType;
 typedef std::vector<rttr::type::type_id> T_DependencyList;
 
 
@@ -31,7 +32,7 @@ public:
 
 	// interface
 	//-----------
-	virtual rttr::type::type_id GetTypeId() const = 0;
+	virtual T_SystemType GetTypeId() const = 0;
 	virtual ComponentSignature GetSignature() const = 0;
 
 	virtual void RootProcess(Archetype* const archetype, size_t const offset, size_t const count) const = 0; // the important one
@@ -75,7 +76,7 @@ public:
 
 	// System Base interface implementation
 	//--------------------------------------
-	rttr::type::type_id GetTypeId() const override;
+	T_SystemType GetTypeId() const override;
 	ComponentSignature GetSignature() const override;
 
 	void RootProcess(Archetype* const archetype, size_t const offset, size_t const count) const override;

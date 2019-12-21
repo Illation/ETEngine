@@ -72,7 +72,7 @@ void SystemBase::DeclareDependents()
 // System::GetTypeId
 //
 template <class TSystemType, typename TViewType>
-rttr::type::type_id framework::System<TSystemType, TViewType>::GetTypeId() const
+T_SystemType framework::System<TSystemType, TViewType>::GetTypeId() const
 {
 	return rttr::type::get<TSystemType>().get_id();
 }

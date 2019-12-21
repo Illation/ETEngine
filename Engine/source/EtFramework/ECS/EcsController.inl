@@ -101,6 +101,43 @@ TComponentType const& EcsController::GetComponent(T_EntityId const entity) const
 	return *static_cast<TComponentType const*>(GetComponentData(entity, TComponentType::GetTypeIndex()));
 }
 
+//-------------------------------
+// EcsController::RegisterSystem
+//
+// Add the system to the update graph - it will iterate over all entities that have components matching its view
+//
+template<typename TSystemType, typename... Args>
+void EcsController::RegisterSystem(Args... args)
+{
+	ET_ASSERT(!IsSystemRegistered<TSystemType>());
+	RegisterSystemInternal(new TSystemType(args...));
+}
+
+//---------------------------------
+// EcsController::UnregisterSystem
+//
+// Remove the system from the update graph
+//
+template<typename TSystemType>
+void EcsController::UnregisterSystem()
+{
+	ET_ASSERT(IsSystemRegistered<TSystemType>());
+	UnregisterSystemInternal(rttr::type::get<TSystemType>().get_id());
+}
+
+//-----------------------------------
+// EcsController::IsSystemRegistered
+//
+template<typename TSystemType>
+bool EcsController::IsSystemRegistered() const
+{
+	T_SystemType const typeId = rttr::type::get<TSystemType>().get_id();
+	return (std::find_if(m_Systems.cbegin(), m_Systems.cend(), [typeId](RegisteredSystem const* const sys) 
+		{ 
+			return (sys->system->GetTypeId() == typeId); 
+		}) != m_Systems.cend());
+}
+
 
 } // namespace framework
 

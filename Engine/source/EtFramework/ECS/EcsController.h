@@ -1,6 +1,8 @@
 #pragma once
 #include "EntityFwd.h"
 #include "RawComponentPointer.h"
+#include "ComponentSignature.h"
+#include "System.h"
 
 
 namespace framework {
@@ -8,8 +10,6 @@ namespace framework {
 
 // fwd
 class Archetype;
-class SystemBase;
-class ComponentSignature;
 
 
 //---------------
@@ -40,13 +40,22 @@ class EcsController final
 	{
 		struct ArchetypeLayer
 		{
-			uint8 layer;
 			std::vector<Archetype*> archetypes;
 		};
 
+		RegisteredSystem(SystemBase* const sys) : system(sys), signature(sys->GetSignature()) {} 
+
+		// system
 		SystemBase* system;
+		ComponentSignature signature;
+
+		// for topological sort
+		std::vector<RegisteredSystem*> dependencies;
+		bool visited = false;
+		bool scheduled = false;
+
+		// component combinations to iterate
 		std::vector<ArchetypeLayer> matchingArchetypes;
-		std::vector<RegisteredSystem const*> dependencies;
 	};
 
 	// construct destruct
@@ -86,8 +95,8 @@ public:
 	// systems
 	void Update(); // Process all systems
 
-	template<typename TSystemType>
-	void RegisterSystem();
+	template<typename TSystemType, typename... Args>
+	void RegisterSystem(Args... args);
 	template<typename TSystemType>
 	void UnregisterSystem();
 
@@ -129,6 +138,12 @@ private:
 
 	void RemoveEntityFromParent(T_EntityId const entity, T_EntityId const parent);
 
+	void RegisterSystemInternal(SystemBase* const sys);
+	void UnregisterSystemInternal(T_SystemType const sysType);
+
+	void RecalculateSystemSchedule();
+	void TopologicalSort(RegisteredSystem* const sys);
+
 	// Data
 	///////
 
@@ -136,8 +151,8 @@ private:
 
 	std::vector<ArchetypeContainer> m_HierachyLevels;
 
-	std::vector<RegisteredSystem*> m_Systems;
-	std::vector<std::vector<RegisteredSystem*>> m_UpdateGraph;
+	std::vector<RegisteredSystem*> m_Systems; // system ownership
+	std::vector<RegisteredSystem*> m_Schedule; // for iteration
 };
 
 
