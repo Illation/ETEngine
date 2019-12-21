@@ -17,8 +17,14 @@ namespace framework {
 //
 Archetype::Archetype(ComponentSignature const& sig) 
 	: m_Signature(sig)
-	, m_Mapping(sig.GetMaxComponentType() + 1u, INVALID_COMP_TYPE_IDX) // fill the mapping vector so there is a value for each type index in the signature
 {
+	// fill the mapping vector so there is a value for each type index in the signature
+	T_CompTypeIdx const max = m_Signature.GetMaxComponentType();
+	if (max != INVALID_COMP_TYPE_IDX)
+	{
+		m_Mapping = std::vector<T_CompTypeIdx>(max + 1u, INVALID_COMP_TYPE_IDX);
+	}
+
 	// we will add a pool for each type in the signature
 	m_ComponentPools.reserve(m_Signature.GetTypes().size());
 
@@ -129,6 +135,19 @@ T_EntityId Archetype::RemoveEntity(size_t const idx)
 	}
 	
 	return m_Entities[idx];
+}
+
+//-------------------------
+// Archetype::Clear
+//
+void Archetype::Clear()
+{
+	for (ComponentPool& pool : m_ComponentPools)
+	{
+		pool.Clear();
+	}
+
+	m_Entities.clear();
 }
 
 

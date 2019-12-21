@@ -13,6 +13,23 @@ namespace framework {
 //================
 
 
+// construct destruct
+//////////////////////
+
+//--------------------------
+// EcsController::d-tor
+//
+EcsController::~EcsController()
+{
+	for (ArchetypeContainer& container : m_HierachyLevels)
+	{
+		for (std::pair<T_Hash const, Archetype*>& arch : container.archetypes)
+		{
+			delete arch.second;
+		}
+	}
+}
+
 // entity managment
 /////////////////////
 
@@ -20,30 +37,39 @@ namespace framework {
 // EcsController::AddEntity
 //
 // Add an entity without components to the system
-//  - if the parent is not set to INVALID_ENTITY_ID, the entity is linked to the parent and placed in the layer below
 //
-T_EntityId EcsController::AddEntity(T_EntityId const parent)
+T_EntityId EcsController::AddEntity()
 {
-	return AddEntity(parent, {});
+	return AddEntityChild(INVALID_ENTITY_ID);
 }
 
-//--------------------------
-// EcsController::AddEntity
+//-------------------------------
+// EcsController::AddEntityChild
+//
+// Add an entity without components to the system, one level below the parent entity
+//
+T_EntityId EcsController::AddEntityChild(T_EntityId const parent)
+{
+	return AddEntityBatched(parent, {});
+}
+
+//---------------------------------
+// EcsController::AddEntityBatched
 //
 // Add an entity with a set of components
 //
-T_EntityId EcsController::AddEntity(std::vector<RawComponentPtr> const& components)
+T_EntityId EcsController::AddEntityBatched(std::vector<RawComponentPtr> const& components)
 {
-	return AddEntity(INVALID_ENTITY_ID, components);
+	return AddEntityBatched(INVALID_ENTITY_ID, components);
 }
 
-//--------------------------
-// EcsController::AddEntity
+//----------------------------------
+// EcsController::AddEntityBatched
 //
 // Add an entity with a set of components
 //  - the entity is linked to the parent and placed in the layer below
 //
-T_EntityId EcsController::AddEntity(T_EntityId const parent, std::vector<RawComponentPtr> const& components)
+T_EntityId EcsController::AddEntityBatched(T_EntityId const parent, std::vector<RawComponentPtr> const& components)
 {
 	// create the entity data
 	auto ent = m_Entities.insert(EntityData());
@@ -85,14 +111,17 @@ void EcsController::ReparentEntity(T_EntityId const entity, T_EntityId const new
 	T_CompTypeList compTypes = GetComponentsAndTypes(ent, components);
 
 	// add to new parent, and get new layer
-	if (newParent != INVALID_ENTITY_ID)
+	ent.parent = newParent;
+	if (ent.parent != INVALID_ENTITY_ID)
 	{
-		ent.parent = newParent;
-
-		EntityData& parentEnt = m_Entities[newParent];
+		EntityData& parentEnt = m_Entities[ent.parent];
 		parentEnt.children.push_back(entity);
 
 		ent.layer = parentEnt.layer + 1u;
+	}
+	else
+	{
+		ent.layer = 0u;
 	}
 
 	// #todo: handle cases in which the hierachy level didn't change
@@ -111,7 +140,7 @@ void EcsController::ReparentEntity(T_EntityId const entity, T_EntityId const new
 //
 // Remove an entity and all its children
 //
-void EcsController::RemoveEntity(T_EntityId& entity)
+void EcsController::RemoveEntity(T_EntityId const entity)
 {
 	// get referred entity
 	EntityData& ent = m_Entities[entity];
@@ -121,15 +150,31 @@ void EcsController::RemoveEntity(T_EntityId& entity)
 	RemoveEntityFromArchetype(ent);
 
 	// recursively remove children
-	for (T_EntityId& childId : ent.children)
+	for (T_EntityId const childId : ent.children)
 	{
 		RemoveEntity(childId);
 	}
 
 	// remove from entity map
 	m_Entities.erase(entity);
+}
 
-	entity = INVALID_ENTITY_ID;
+//----------------------------------
+// EcsController::RemoveAllEntities
+//
+// While the entities and their components are removed, the now empty archetypes persist
+//
+void EcsController::RemoveAllEntities()
+{
+	m_Entities.clear();
+
+	for (ArchetypeContainer& level : m_HierachyLevels)
+	{
+		for (std::pair<T_Hash const, Archetype*>& arch : level.archetypes)
+		{
+			arch.second->Clear();
+		}
+	}
 }
 
 
@@ -170,7 +215,7 @@ void EcsController::AddComponents(T_EntityId const entity, std::vector<RawCompon
 //
 // Remove a list of components from an entity
 //
-void EcsController::RemoveComponents(T_EntityId const entity, std::vector<T_CompTypeIdx> const& componentTypes)
+void EcsController::RemoveComponents(T_EntityId const entity, T_CompTypeList const& componentTypes)
 {
 	// get referred entity
 	EntityData& ent = m_Entities[entity];
@@ -270,6 +315,16 @@ bool EcsController::HasComponent(T_EntityId const entity, T_CompTypeIdx const co
 //---------------------------------
 // EcsController::GetComponentData
 //
+void* EcsController::GetComponentData(T_EntityId const entity, T_CompTypeIdx const compType) 
+{
+	EntityData& ent = m_Entities[entity];
+
+	return ent.archetype->GetPool(compType).At(ent.index);
+}
+
+//---------------------------------
+// EcsController::GetComponentData
+//
 void const* EcsController::GetComponentData(T_EntityId const entity, T_CompTypeIdx const compType) const
 {
 	EntityData const& ent = m_Entities[entity];
@@ -291,7 +346,7 @@ Archetype* EcsController::FindOrCreateArchetype(ComponentSignature const& sig, u
 	T_Hash const sigId = sig.GenId();
 
 	// ensure we have an archetype container for the hierachy layer we are on
-	while (m_HierachyLevels.size() < static_cast<size_t>(layer))
+	while (m_HierachyLevels.size() <= static_cast<size_t>(layer))
 	{
 		m_HierachyLevels.emplace_back(ArchetypeContainer());
 	}
@@ -301,12 +356,12 @@ Archetype* EcsController::FindOrCreateArchetype(ComponentSignature const& sig, u
 	auto foundA = cont.archetypes.find(sigId);
 	if (foundA == cont.archetypes.cend())
 	{
-		auto res = cont.archetypes.emplace(sigId, Archetype(sig));
+		auto res = cont.archetypes.emplace(sigId, new Archetype(sig));
 		ET_ASSERT(res.second == true);
 		foundA = res.first;
 	}
 
-	return &foundA->second;
+	return foundA->second;
 }
 
 //------------------------------

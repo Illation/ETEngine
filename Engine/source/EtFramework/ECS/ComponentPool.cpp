@@ -86,5 +86,13 @@ void ComponentPool::Erase(size_t const idx)
 	m_Buffer.resize(m_Buffer.size() - typeSize);
 }
 
+//----------------------
+// ComponentPool::Clear
+//
+void ComponentPool::Clear()
+{
+	m_Buffer.clear();
+}
+
 
 } // namespace framework

@@ -1,5 +1,5 @@
 #include <EtFramework/stdafx.h>
-#include "TestComponentViews.h"
+#include "EcsTestUtilities.h"
 
 #include <catch2/catch.hpp>
 #include <rttr/registration>
@@ -9,98 +9,6 @@
 
 #include <mainTesting.h>
 
-#include <EtFramework/ECS/System.h>
-
-// components should already have been registered in ComponentRegistryTest.cpp
-
-
-class TestBCSystem final : public framework::System<TestBCSystem, TestBCView>
-{
-public:
-	TestBCSystem() = default;
-	// base class constructors don't do anything so are not needed unless we declare dependencies or init lookup variables
-
-	void Process(framework::ComponentRange<TestBCView>& range) const override
-	{
-		size_t idx = 0u;
-
-		for (TestBCView& view : range)
-		{
-			REQUIRE(view.b->name == std::to_string(idx));
-			REQUIRE(view.c->val == static_cast<uint32>(idx));
-
-			idx++;
-		}
-	}
-};
-
-//======================
-// overwrite component
-//======================
-
-struct TestOverwriteComp final
-{
-	ECS_DECLARE_COMPONENT
-public:
-
-	TestOverwriteComp() = default;
-
-	bool overwritten = false;
-};
-
-RTTR_REGISTRATION
-{
-	using namespace rttr;
-
-	registration::class_<TestOverwriteComp>("test overwrite component")
-		.property("overwritten", &TestOverwriteComp::overwritten);
-}
-
-ECS_REGISTER_COMPONENT(TestOverwriteComp);
-
-//======================
-// overwrite system
-//======================
-
-struct TestOverwriteSystemView final : public framework::ComponentView
-{
-	WriteAccess<TestOverwriteComp> overwrite;
-	ReadAccess<TestCComponent> c;
-
-	void Register() override
-	{
-		Declare(overwrite);
-		Declare(c);
-	}
-};
-
-class TestOverwriteSystem final : public framework::System<TestOverwriteSystem, TestOverwriteSystemView>
-{
-public:
-	TestOverwriteSystem(size_t const min) 
-		: m_OverwriteMin(min)
-	{
-		DeclareDependents<TestBCSystem>();
-	}
-
-	void Process(framework::ComponentRange<TestOverwriteSystemView>& range) const override
-	{
-		for (TestOverwriteSystemView& view : range)
-		{
-			if (view.c->val >= m_OverwriteMin)
-			{
-				view.overwrite->overwritten = true;
-			}
-		}
-	}
-
-private:
-	size_t const m_OverwriteMin = 0u;
-};
-
-//======================
-// tests
-//======================
 
 TEST_CASE("system dependency", "[ecs]")
 {

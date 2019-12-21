@@ -35,6 +35,7 @@ public:
 	//---------------
 	size_t AddEntity(T_EntityId const entity, std::vector<RawComponentPtr> const& components);
 	T_EntityId RemoveEntity(size_t const idx);
+	void Clear();
 
 	// Data
 	///////

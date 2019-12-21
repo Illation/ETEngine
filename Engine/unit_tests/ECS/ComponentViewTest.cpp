@@ -1,5 +1,5 @@
 #include <EtFramework/stdafx.h>
-#include "TestComponentViews.h"
+#include "EcsTestUtilities.h"
 
 #include <catch2/catch.hpp>
 #include <rttr/registration>
@@ -8,23 +8,6 @@
 #include <chrono>
 
 #include <mainTesting.h>
-
-// components should already have been registered in ComponentRegistryTest.cpp
-
-framework::Archetype GenTestArchetype(size_t const count)
-{
-	framework::Archetype arch(framework::GenSignature<TestBComponent, TestCComponent>());
-
-	for (size_t idx = 0u; idx < count; ++idx)
-	{
-		arch.AddEntity(static_cast<framework::T_EntityId>(idx), {
-			framework::MakeRawComponent(TestBComponent(std::to_string(idx))),
-			framework::MakeRawComponent(TestCComponent(static_cast<uint32>(idx)))
-			});
-	}
-
-	return arch;
-}
 
 
 TEST_CASE("component view signature", "[ecs]")

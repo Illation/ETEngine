@@ -37,6 +37,7 @@ public:
 	void Append(void const* const componentData);
 
 	void Erase(size_t const idx); // swap with last element and pop_back
+	void Clear();
 
 	// Data
 	///////

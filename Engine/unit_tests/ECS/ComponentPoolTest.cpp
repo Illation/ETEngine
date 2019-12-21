@@ -1,5 +1,5 @@
 #include <EtFramework/stdafx.h>
-#include "TestComponents.h"
+#include "EcsTestUtilities.h"
 
 #include <catch2/catch.hpp>
 #include <rttr/registration>
@@ -10,9 +10,6 @@
 #include <mainTesting.h>
 
 #include <EtFramework/ECS/ComponentPool.h>
-
-
-// components should already have been registered in ComponentRegistryTest.cpp
 
 
 TEST_CASE("append, get, at pool", "[ecs]")

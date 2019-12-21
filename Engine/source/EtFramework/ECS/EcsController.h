@@ -33,7 +33,7 @@ class EcsController final
 
 	struct ArchetypeContainer final
 	{
-		std::unordered_map<T_Hash, Archetype> archetypes;
+		std::unordered_map<T_Hash, Archetype*> archetypes;
 	};
 
 	struct RegisteredSystem final
@@ -53,33 +53,35 @@ class EcsController final
 	//--------------------
 public:
 	EcsController() = default;
-	~EcsController() = default; // for now
+	~EcsController();
 
 	// functionality
 	//---------------
 
 	// entity managment
-	T_EntityId AddEntity(T_EntityId const parent = INVALID_ENTITY_ID);
-	T_EntityId AddEntity(std::vector<RawComponentPtr> const& components);
-	T_EntityId AddEntity(T_EntityId const parent, std::vector<RawComponentPtr> const& components);
+	T_EntityId AddEntity();
+	T_EntityId AddEntityChild(T_EntityId const parent);
+	T_EntityId AddEntityBatched(std::vector<RawComponentPtr> const& components);
+	T_EntityId AddEntityBatched(T_EntityId const parent, std::vector<RawComponentPtr> const& components);
 
 	template<typename TComponentType, typename... Args>
-	T_EntityId AddEntity(TComponentType const& component1, Args... components);
+	T_EntityId AddEntity(TComponentType& component1, Args... args);
 	template<typename TComponentType, typename... Args>
-	T_EntityId AddEntity(T_EntityId const parent, TComponentType const& component1, Args... components);
+	T_EntityId AddEntityChild(T_EntityId const parent, TComponentType& component1, Args... args);
 
 	void ReparentEntity(T_EntityId const entity, T_EntityId const newParent);
 
-	void RemoveEntity(T_EntityId& entity);
+	void RemoveEntity(T_EntityId const entity);
+	void RemoveAllEntities();
 
 	// components
 	template<typename TComponentType, typename... Args>
-	void AddComponents(T_EntityId const entity, TComponentType const& component1, Args... components);
+	void AddComponents(T_EntityId const entity, TComponentType& component1, Args... args);
 	void AddComponents(T_EntityId const entity, std::vector<RawComponentPtr>& components);
 
 	template<typename TComponentType, typename... Args>
 	void RemoveComponents(T_EntityId const entity);
-	void RemoveComponents(T_EntityId const entity, std::vector<T_CompTypeIdx> const& componentTypes);
+	void RemoveComponents(T_EntityId const entity, T_CompTypeList const& componentTypes);
 
 	// systems
 	void Update(); // Process all systems
@@ -92,11 +94,10 @@ public:
 	// accessors
 	//-----------
 
-	// hierachy
+	// entities
+	size_t GetEntityCount() const { return m_Entities.size(); }
 	bool HasParent(T_EntityId const entity) const;
-
 	T_EntityId GetParent(T_EntityId const entity) const;
-
 	std::vector<T_EntityId> const& GetChildren(T_EntityId const entity) const;
 
 	// components
@@ -111,6 +112,7 @@ public:
 	template<typename TComponentType>
 	TComponentType const& GetComponent(T_EntityId const entity) const;
 
+	void* GetComponentData(T_EntityId const entity, T_CompTypeIdx const compType);
 	void const* GetComponentData(T_EntityId const entity, T_CompTypeIdx const compType) const;
 
 	// systems
@@ -140,3 +142,6 @@ private:
 
 
 } // namespace framework
+
+
+#include "EcsController.inl"

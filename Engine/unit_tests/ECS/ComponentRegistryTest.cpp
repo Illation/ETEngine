@@ -1,8 +1,7 @@
 #include <EtFramework/stdafx.h>
-#include "TestComponents.h"
+#include "EcsTestUtilities.h"
 
 #include <catch2/catch.hpp>
-#include <rttr/registration>
 
 #include <thread>
 #include <chrono>
@@ -10,34 +9,6 @@
 #include <mainTesting.h>
 
 #include <EtFramework/ECS/ComponentSignature.h>
-
-
-// reflection
-//------------
-// #note: this is also used for other unit tests
-
-RTTR_REGISTRATION
-{
-	using namespace rttr;
-
-	registration::class_<TestAComponent>("test A component")
-		.property("x", &TestAComponent::x)
-		.property("y", &TestAComponent::y);
-
-	registration::class_<TestBComponent>("test B component")
-		.property("name", &TestBComponent::name);
-
-	registration::class_<TestCComponent>("test C component")
-		.property("value", &TestCComponent::val);
-}
-
-ECS_REGISTER_COMPONENT(TestAComponent);
-ECS_REGISTER_COMPONENT(TestBComponent);
-ECS_REGISTER_COMPONENT(TestCComponent);
-
-
-// tests
-//-------
 
 
 TEST_CASE( "register", "[ecs]" )
