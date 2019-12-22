@@ -29,6 +29,26 @@ namespace detail {
 		GenCompPtrList(list, args...);
 	}
 
+	//-------------------------------
+	// EcsController::AddToEcs
+	//
+	// variadic template recursively adds components to a raw component pointer list and finally create an entity from that component list
+	// adding the entity in the last recursion call prevents components from going out of scope for some reason
+	//
+	template<typename TComponentType>
+	T_EntityId AddToEcs(EcsController& ecs, T_EntityId const parent, std::vector<RawComponentPtr>& list, TComponentType& component)
+	{
+		list.emplace_back(MakeRawComponent(component));
+		return ecs.AddEntityBatched(parent, list);
+	}
+
+	template<typename TComponentType, typename... Args>
+	T_EntityId AddToEcs(EcsController& ecs, T_EntityId const parent, std::vector<RawComponentPtr>& list, TComponentType& component1, Args... args)
+	{
+		list.emplace_back(MakeRawComponent(component1));
+		return AddToEcs(ecs, parent, list, args...);
+	}
+
 } // namespace detail
 
 
@@ -48,9 +68,7 @@ template<typename TComponentType, typename... Args>
 T_EntityId EcsController::AddEntityChild(T_EntityId const parent, TComponentType& component1, Args... args)
 {
 	std::vector<RawComponentPtr> components;
-	detail::GenCompPtrList(components, component1, args...);
-
-	return AddEntityBatched(parent, components);
+	return detail::AddToEcs(*this, parent, components, component1, args...);
 }
 
 //------------------------------
