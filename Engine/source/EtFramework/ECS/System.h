@@ -35,7 +35,8 @@ public:
 	virtual T_SystemType GetTypeId() const = 0;
 	virtual ComponentSignature GetSignature() const = 0;
 
-	virtual void RootProcess(Archetype* const archetype, size_t const offset, size_t const count) const = 0; // the important one
+	// the important one
+	virtual void RootProcess(EcsController* const controller, Archetype* const archetype, size_t const offset, size_t const count) const = 0; 
 
 	// accessors
 	//-----------
@@ -79,7 +80,7 @@ public:
 	T_SystemType GetTypeId() const override;
 	ComponentSignature GetSignature() const override;
 
-	void RootProcess(Archetype* const archetype, size_t const offset, size_t const count) const override;
+	void RootProcess(EcsController* const controller, Archetype* const archetype, size_t const offset, size_t const count) const override;
 
 	// interface
 	//-----------

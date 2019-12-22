@@ -31,6 +31,17 @@ void ComponentView::Declare(WriteAccess<TComponentType>& write)
 	m_Accessors.push_back(Accessor(reinterpret_cast<void**>(&(write.m_Data)), TComponentType::GetTypeIndex(), false));
 }
 
+//-------------------------
+// ComponentView::Declare
+//
+// initialize a read access to a parents components
+//
+template<typename TComponentType>
+void ComponentView::Declare(ParentRead<TComponentType>& parentRead)
+{
+	m_ParentAccessors.push_back(Accessor(reinterpret_cast<void**>(&(parentRead.m_Data)), TComponentType::GetTypeIndex(), true));
+}
+
 
 // signature generation
 //----------------------
@@ -42,8 +53,6 @@ template<typename TViewType>
 ComponentSignature SignatureFromView()
 {
 	TViewType temp;
-	temp.Register();
-
 	return ComponentSignature(temp.GetTypeList());
 }
 

@@ -281,7 +281,7 @@ void EcsController::Process()
 			{
 				if (arch->GetSize() > 0u)
 				{
-					sys->system->RootProcess(arch, 0u, arch->GetSize());
+					sys->system->RootProcess(this, arch, 0u, arch->GetSize());
 				}
 			}
 		}

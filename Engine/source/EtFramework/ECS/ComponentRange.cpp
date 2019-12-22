@@ -14,8 +14,9 @@ namespace framework {
 //---------------------------
 // BaseComponentRange::c-tor
 //
-BaseComponentRange::BaseComponentRange(Archetype* const archetype, size_t const offset, size_t const count)
-	: m_Archetype(archetype)
+BaseComponentRange::BaseComponentRange(EcsController* const controller, Archetype* const archetype, size_t const offset, size_t const count)
+	: m_Controller(controller)
+	, m_Archetype(archetype)
 	, m_Offset(offset)
 	, m_Count(count)
 {

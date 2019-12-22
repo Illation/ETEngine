@@ -188,3 +188,63 @@ TEST_CASE("controller system overwrite", "[ecs]")
 	REQUIRE(ecs.GetComponent<TestOverwriteComp>(24u).overwritten);
 	REQUIRE(ecs.GetComponent<TestOverwriteComp>(25u).overwritten);
 }
+
+
+TEST_CASE("controller system hierachy", "[ecs]")
+{
+	framework::EcsController ecs;
+
+	// generate entities
+	ecs.AddEntity(TestCComponent(0u));
+	ecs.AddEntityChild(0u, TestCComponent(0u));
+	ecs.AddEntityChild(1u, TestCComponent(0u));
+	ecs.AddEntityChild(2u, TestCComponent(0u));
+	ecs.AddEntityChild(3u, TestCComponent(0u));
+	ecs.AddEntityChild(4u, TestCComponent(0u));
+	ecs.AddEntityChild(5u, TestCComponent(0u));
+	ecs.AddEntityChild(6u, TestCComponent(0u));
+
+	struct TestCHierachyView final : public framework::ComponentView
+	{
+		TestCHierachyView() : framework::ComponentView()
+		{
+			Declare(parentC);
+			Declare(c);
+		}
+
+		ParentRead<TestCComponent> parentC;
+		WriteAccess<TestCComponent> c;
+	};
+
+	class TestCHierachySystem final : public framework::System<TestCHierachySystem, TestCHierachyView>
+	{
+	public:
+		TestCHierachySystem() = default;
+		// base class constructors don't do anything so are not needed unless we declare dependencies or init lookup variables
+
+		void Process(framework::ComponentRange<TestCHierachyView>& range) const
+		{
+			for (TestCHierachyView& view : range)
+			{
+				if (view.parentC.IsValid())
+				{
+					view.c->val = view.parentC->val + 1u;
+				}
+			}
+		}
+	};
+
+	ecs.RegisterSystem<TestCHierachySystem>();
+
+	ecs.Process();
+
+	REQUIRE(ecs.GetEntityCount() == 8u);
+	REQUIRE(ecs.GetComponent<TestCComponent>(0u).val == 0u);
+	REQUIRE(ecs.GetComponent<TestCComponent>(1u).val == 1u);
+	REQUIRE(ecs.GetComponent<TestCComponent>(2u).val == 2u);
+	REQUIRE(ecs.GetComponent<TestCComponent>(3u).val == 3u);
+	REQUIRE(ecs.GetComponent<TestCComponent>(4u).val == 4u);
+	REQUIRE(ecs.GetComponent<TestCComponent>(5u).val == 5u);
+	REQUIRE(ecs.GetComponent<TestCComponent>(6u).val == 6u);
+	REQUIRE(ecs.GetComponent<TestCComponent>(7u).val == 7u);
+}

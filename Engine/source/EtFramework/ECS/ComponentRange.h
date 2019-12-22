@@ -6,6 +6,7 @@ namespace framework {
 
 // fwd
 class Archetype;
+class EcsController;
 
 
 //-------------------
@@ -22,13 +23,14 @@ class BaseComponentRange
 	// construct destruct
 	//--------------------
 protected:
-	BaseComponentRange(Archetype* const archetype, size_t const offset, size_t const count);
+	BaseComponentRange(EcsController* const controller, Archetype* const archetype, size_t const offset, size_t const count);
 	virtual ~BaseComponentRange() = default;
 
 	// Data
 	///////
 
 private:
+	EcsController* const m_Controller = nullptr;
 	Archetype* const m_Archetype = nullptr;
 	size_t const m_Offset = 0u;
 	size_t const m_Count = 0u;
@@ -90,7 +92,7 @@ public:
 
 	// construct destruct
 	//--------------------
-	ComponentRange(Archetype* const archetype, size_t const offset, size_t const count);
+	ComponentRange(EcsController* const controller, Archetype* const archetype, size_t const offset, size_t const count);
 	~ComponentRange() = default;
 
 	// accessors

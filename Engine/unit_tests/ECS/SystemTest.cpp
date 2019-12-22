@@ -33,7 +33,7 @@ TEST_CASE("system iterate", "[ecs]")
 
 	REQUIRE(arch.GetSignature().Contains(systemBC.GetSignature()));
 
-	systemBC.RootProcess(&arch, 0u, entityCount);
+	systemBC.RootProcess(nullptr, &arch, 0u, entityCount);
 }
 
 TEST_CASE("system overwrite", "[ecs]")
@@ -53,22 +53,22 @@ TEST_CASE("system overwrite", "[ecs]")
 
 	// create and run the overwrite system
 	TestOverwriteSystem sys(overwriteMin);
-	sys.RootProcess(&arch, 0u, overwriteEnd);
+	sys.RootProcess(nullptr, &arch, 0u, overwriteEnd);
 
 	// validate that the system changed the components
 	struct COverwriteReadOnlyView final : public framework::ComponentView
 	{
-		ReadAccess<TestOverwriteComp> o;
-		ReadAccess<TestCComponent> c;
-
-		void Register() override
+		COverwriteReadOnlyView() : framework::ComponentView()
 		{
 			Declare(o);
 			Declare(c);
 		}
+
+		ReadAccess<TestOverwriteComp> o;
+		ReadAccess<TestCComponent> c;
 	};
 
-	framework::ComponentRange<COverwriteReadOnlyView> range(&arch, 0u, entityCount);
+	framework::ComponentRange<COverwriteReadOnlyView> range(nullptr, &arch, 0u, entityCount);
 
 	size_t idx = 0u;
 	for (COverwriteReadOnlyView& view : range)

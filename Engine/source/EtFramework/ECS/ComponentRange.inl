@@ -72,8 +72,8 @@ bool ComponentRange<TViewType>::iterator::operator!=(iterator const& other) cons
 // ComponentRange::c-tor
 //
 template<typename TViewType>
-ComponentRange<TViewType>::ComponentRange(Archetype* const archetype, size_t const offset, size_t const count) 
-	: BaseComponentRange(archetype, offset, count)
+ComponentRange<TViewType>::ComponentRange(EcsController* const controller, Archetype* const archetype, size_t const offset, size_t const count)
+	: BaseComponentRange(controller, archetype, offset, count)
 { }
 
 

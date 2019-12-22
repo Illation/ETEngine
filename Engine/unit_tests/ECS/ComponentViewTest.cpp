@@ -32,7 +32,7 @@ TEST_CASE("component view", "[ecs]")
 	REQUIRE(arch.GetSize() == entityCount);
 
 	// full iteration
-	framework::ComponentRange<TestBCView> range(&arch, 0u, entityCount);
+	framework::ComponentRange<TestBCView> range(nullptr, &arch, 0u, entityCount);
 
 	size_t idx = 0u;
 	for (TestBCView& view : range)
@@ -47,7 +47,7 @@ TEST_CASE("component view", "[ecs]")
 
 	// iteration starting from an offset (8 - 15)
 	size_t const halved = entityCount / 2u;
-	framework::ComponentRange<TestBCView> halfRange(&arch, halved, halved);
+	framework::ComponentRange<TestBCView> halfRange(nullptr, &arch, halved, halved);
 
 	idx = 0u;
 	for (TestBCView& view : halfRange)

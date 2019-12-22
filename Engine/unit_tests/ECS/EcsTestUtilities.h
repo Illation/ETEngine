@@ -55,36 +55,36 @@ public:
 
 struct TestBCView final : public framework::ComponentView
 {
-	WriteAccess<TestBComponent> b;
-	ReadAccess<TestCComponent> c;
-
-	void Register() override
+	TestBCView() : framework::ComponentView()
 	{
 		Declare(b);
 		Declare(c);
 	}
+
+	WriteAccess<TestBComponent> b;
+	ReadAccess<TestCComponent> c;
 };
 
 struct TestCView final : public framework::ComponentView
 {
-	ReadAccess<TestCComponent> c;
-
-	void Register() override
+	TestCView() : framework::ComponentView()
 	{
 		Declare(c);
 	}
+
+	ReadAccess<TestCComponent> c;
 };
 
 struct TestOverwriteSystemView final : public framework::ComponentView
 {
-	WriteAccess<TestOverwriteComp> overwrite;
-	ReadAccess<TestCComponent> c;
-
-	void Register() override
+	TestOverwriteSystemView() : framework::ComponentView()
 	{
 		Declare(overwrite);
 		Declare(c);
 	}
+
+	WriteAccess<TestOverwriteComp> overwrite;
+	ReadAccess<TestCComponent> c;
 };
 
 // utility

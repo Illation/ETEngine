@@ -77,6 +77,26 @@ protected:
 		TComponentType* m_Data;
 	};
 
+	//-------------------
+	// ParentRead
+	//
+	// Read a component from the parent entity
+	//
+	template<typename TComponentType>
+	class ParentRead
+	{
+		friend class ComponentView;
+	public:
+		TComponentType const* operator&() const { return m_Data; }
+		TComponentType const& operator*() const { return *m_Data; }
+		TComponentType const* operator->() const { return m_Data; }
+
+		bool IsValid() const { return m_Data != nullptr; }
+
+	private:
+		TComponentType* m_Data = nullptr;
+	};
+
 	// construct destruct
 	//--------------------
 public:
@@ -94,10 +114,10 @@ public:
 	//---------------
 	bool Next();
 
+	void CalcParentPointers();
+
 	// interface
 	//-----------
-	virtual void Register() = 0;
-
 protected:
 	template<typename TComponentType>
 	void Declare(ReadAccess<TComponentType>& read);
@@ -105,11 +125,15 @@ protected:
 	template<typename TComponentType>
 	void Declare(WriteAccess<TComponentType>& write);
 
+	template<typename TComponentType>
+	void Declare(ParentRead<TComponentType>& write);
+
 	// Data
 	///////
 
 private:
 	std::vector<Accessor> m_Accessors;
+	std::vector<Accessor> m_ParentAccessors;
 	size_t m_Current = 0u;
 	BaseComponentRange* m_Range = nullptr;
 };

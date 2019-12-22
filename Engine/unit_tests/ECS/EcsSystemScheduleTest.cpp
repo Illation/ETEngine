@@ -15,10 +15,7 @@
 // some structures to test correct system ordering
 ///////////////////////////////////////////////////
 
-struct TestEmptyView final : public framework::ComponentView
-{
-	void Register() override {}
-};
+struct TestEmptyView final : public framework::ComponentView {};
 
 class TestFirstSystem final : public framework::System<TestFirstSystem, TestEmptyView>
 {
