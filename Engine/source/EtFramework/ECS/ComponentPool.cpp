@@ -56,7 +56,13 @@ size_t ComponentPool::GetSize() const
 void ComponentPool::Append(void const* const componentData)
 {
 	size_t const typeSize = ComponentRegistry::Instance().GetSize(m_ComponentType);
-	m_Buffer.insert(m_Buffer.end(), static_cast<uint8 const*>(componentData), static_cast<uint8 const*>(componentData) + typeSize);
+	size_t const byteIdx = m_Buffer.size();
+
+	// add space in the buffer so we can create our new component
+	m_Buffer.resize(byteIdx + typeSize);
+	
+	// call the copy constructor on the component in our new memory location
+	ComponentRegistry::Instance().GetCopyAssign(m_ComponentType)(componentData, static_cast<void*>(&m_Buffer[byteIdx]));
 }
 
 //------------------------
@@ -70,6 +76,9 @@ void ComponentPool::Erase(size_t const idx)
 	size_t const byteIdx = idx * typeSize;
 
 	ET_ASSERT(byteIdx < m_Buffer.size()); // ensure we are not out of range
+
+	// call the destructor on the component we are erasing
+	ComponentRegistry::Instance().GetDestructor(m_ComponentType)(static_cast<void const*>(m_Buffer.data() + byteIdx));
 
 	if (m_Buffer.size() == typeSize) // only one element is left so we can just clear all data in the buffer
 	{

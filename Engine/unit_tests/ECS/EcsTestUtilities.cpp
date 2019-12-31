@@ -24,6 +24,9 @@ RTTR_REGISTRATION
 
 	registration::class_<TestOverwriteComp>("test overwrite component")
 		.property("overwritten", &TestOverwriteComp::overwritten);
+
+	registration::class_<TestRefCountComp>("test ref count component")
+		.property("pointer", &TestRefCountComp::ptr);
 }
 
 // component registration
@@ -33,6 +36,7 @@ ECS_REGISTER_COMPONENT(TestAComponent);
 ECS_REGISTER_COMPONENT(TestBComponent);
 ECS_REGISTER_COMPONENT(TestCComponent);
 ECS_REGISTER_COMPONENT(TestOverwriteComp);
+ECS_REGISTER_COMPONENT(TestRefCountComp);
 
 // utility
 //---------

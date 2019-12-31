@@ -19,6 +19,16 @@ T_CompTypeIdx ComponentRegistry::Register()
 	// create type info from the template data
 	ComponentTypeInfo ti(rttr::type::get<TComponentType>(), sizeof(TComponentType));
 
+	ti.copyAssign = [](void const* const source, void* const target) -> void
+	{
+		new (static_cast<TComponentType*>(target)) TComponentType(*static_cast<TComponentType const*>(source));
+	};
+
+	ti.destructor = [](void const* const lhs) -> void
+	{
+		static_cast<TComponentType const*>(lhs)->~TComponentType();
+	};
+
 	// ensure we only register components once
 	ET_ASSERT(GetTypeIdx(ti.type) == s_InvalidTypeIdx, "Component '%s' was already registered!", ti.type.get_name().data());
 

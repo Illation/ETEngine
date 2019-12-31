@@ -50,6 +50,31 @@ public:
 	bool overwritten = false;
 };
 
+struct TestRefCountComp final
+{
+	ECS_DECLARE_COMPONENT
+public:
+
+	TestRefCountComp() = default;
+	TestRefCountComp(uint32* const p) 
+		: ptr(p) 
+	{ 
+		(*ptr)++; 
+	}
+	TestRefCountComp(TestRefCountComp const& other)
+	{
+		ptr = other.ptr;
+		(*ptr)++;
+	}
+	~TestRefCountComp() 
+	{ 
+		(*ptr)--; 
+	}
+
+	uint32* ptr = nullptr;
+};
+
+
 // Views
 //*******
 

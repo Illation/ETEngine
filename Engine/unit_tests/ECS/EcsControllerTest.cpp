@@ -248,3 +248,24 @@ TEST_CASE("controller system hierachy", "[ecs]")
 	REQUIRE(ecs.GetComponent<TestCComponent>(6u).val == 6u);
 	REQUIRE(ecs.GetComponent<TestCComponent>(7u).val == 7u);
 }
+
+
+TEST_CASE("controller component construction", "[ecs]")
+{
+	framework::EcsController ecs;
+
+	uint32 counter = 0;
+
+	// generate entities
+	ecs.AddEntity(TestRefCountComp(&counter));
+	REQUIRE(counter == 1u);
+
+	ecs.AddEntity(TestRefCountComp(&counter));
+	REQUIRE(counter == 2u);
+
+	ecs.RemoveEntity(0u);
+	REQUIRE(counter == 1u);
+
+	ecs.RemoveEntity(1u);
+	REQUIRE(counter == 0u);
+}

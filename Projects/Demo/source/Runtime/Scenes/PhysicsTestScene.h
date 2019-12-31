@@ -1,11 +1,9 @@
 #pragma once
 #include <EtCore/Helper/Hash.h>
-#include <EtCore/Content/AssetPointer.h>
 
 #include <EtFramework/SceneGraph/AbstractScene.h>
 
 
-class SpriteFont;
 class btCollisionShape;
 class AudioSourceComponent;
 class LightComponent;
@@ -34,6 +32,4 @@ private:
 	LightComponent* m_Light = nullptr;
 	vec3 m_LightCentralPos = vec3(0);
 	float m_LightRotDistance = 1.f;
-
-	AssetPtr<SpriteFont> m_DebugFont;
 };

@@ -20,6 +20,9 @@ class ComponentRegistry
 {
 	// definitions
 	//-------------
+	typedef void (*T_CompCopyAssign)(void const* const, void* const); // source, target
+	typedef void (*T_CompDestructor)(void const* const);
+
 	struct ComponentTypeInfo
 	{
 	public:
@@ -27,6 +30,8 @@ class ComponentRegistry
 
 		rttr::type type;
 		size_t data_size;
+		T_CompCopyAssign copyAssign = nullptr;
+		T_CompDestructor destructor = nullptr;
 	};
 
 public:
@@ -53,6 +58,8 @@ public:
 	//-----------
 	size_t GetSize(T_CompTypeIdx const idx) const;
 	rttr::type const& GetType(T_CompTypeIdx const idx) const;
+	T_CompCopyAssign GetCopyAssign(T_CompTypeIdx const idx) const;
+	T_CompDestructor GetDestructor(T_CompTypeIdx const idx) const;
 
 	T_CompTypeIdx GetTypeIdx(rttr::type const& type) const;
 

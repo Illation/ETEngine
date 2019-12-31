@@ -5,7 +5,6 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/GraphicsTypes/SpriteFont.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
@@ -19,16 +18,11 @@
 #include <EtFramework/Physics/PhysicsManager.h>
 #include <EtFramework/Physics/BulletETM.h>
 #include <EtFramework/Physics/PhysicsWorld.h>
-#include <EtFramework/Audio/AudioManager.h>
 #include <EtFramework/Audio/AudioData.h>
 
 
 void PhysicsTestScene::Init()
 {
-	//Fonts
-	//**************************
-	m_DebugFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Ubuntu-Regular.ttf"_hash);
-
 	//Materials
 	//**************************
 	GetPhysicsWorld()->GetWorld()->setGravity(ToBtVec3(vec3(0, -9.81f, 0)*0.1f));
@@ -117,8 +111,6 @@ void PhysicsTestScene::Init()
 		"pcm1644m.wav"_hash,
 		"pcm1644s.wav"_hash };
 
-	AudioManager::GetInstance()->SetDistanceModel(AL_INVERSE_DISTANCE);
-
 	m_Source = new AudioSourceComponent();
 
 	m_Source->SetAudioData(ResourceManager::Instance()->GetAssetData<AudioData>(m_AudioIdPlaylist[m_CurrentTrack]));
@@ -185,35 +177,4 @@ void PhysicsTestScene::Update()
 
 		pRBComp->ApplyImpulse(bDir*m_SphereForce);
 	}
-
-	render::ShadedSceneRenderer::GetCurrent()->GetSpriteRenderer().Draw(m_DebugFont->GetAtlas(), vec2(1000, 0),
-		vec4(1), vec2(0), vec2(1), 0, 0, SpriteRenderer::E_ScalingMode::TextureAbs);
-
-	TextRenderer& textRenderer = render::ShadedSceneRenderer::GetCurrent()->GetTextRenderer();
-
-	textRenderer.SetFont(m_DebugFont.get());
-	textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
-	std::string outString = "FPS: " + std::to_string(PERFORMANCE->GetRegularFPS());
-	textRenderer.DrawText(outString, vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 1));
-	textRenderer.SetColor(vec4(1, 1, 1, 1));
-	outString = "Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS());
-	textRenderer.DrawText(outString, vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 2));
-	outString = "Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls);
-	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*1.1f) * 3), 128);
-	outString = "VAWAVMVoV.";
-	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*1.1f) * 5), 128);
-
-	outString = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do ";
-	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 5), 64);
-	outString = "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut ";
-	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 6), 64);
-	outString = "enim ad minim veniam, quis nostrud exercitation ullamco ";
-	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 7), 64);
-	outString = "laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure ";
-	textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*2.5f) * 8), 64);
-
-	//vec3 lightPos = m_Light->GetTransform()->GetPosition();
-	//render::ShadedSceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(2, 0, 0), vec4(1, 0, 0, 1), 2);
-	//render::ShadedSceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(0, 2, 0), vec4(0, 1, 0, 1), 2);
-	//render::ShadedSceneRenderer::GetCurrent()->GetDebugRenderer().DrawLine(lightPos, lightPos + vec3(0, 0, 2), vec4(0, 0, 1, 1), 2);
 }

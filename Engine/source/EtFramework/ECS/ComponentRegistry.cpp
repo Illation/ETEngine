@@ -45,6 +45,30 @@ rttr::type const& ComponentRegistry::GetType(T_CompTypeIdx const idx) const
 	return m_ComponentTypes[idx].type;
 }
 
+//---------------------------------------
+// ComponentRegistry::GetCopyConstructor
+//
+// Function that copies a block of memory with the components copy constructor
+//
+ComponentRegistry::T_CompCopyAssign ComponentRegistry::GetCopyAssign(T_CompTypeIdx const idx) const
+{
+	ET_ASSERT(static_cast<size_t>(idx) < m_ComponentTypes.size());
+
+	return m_ComponentTypes[idx].copyAssign;
+}
+
+//---------------------------------------
+// ComponentRegistry::GetCopyConstructor
+//
+// Function that calls the components destructor on a block of memory without freeing it
+//
+ComponentRegistry::T_CompDestructor ComponentRegistry::GetDestructor(T_CompTypeIdx const idx) const
+{
+	ET_ASSERT(static_cast<size_t>(idx) < m_ComponentTypes.size());
+
+	return m_ComponentTypes[idx].destructor;
+}
+
 //-------------------------------
 // ComponentRegistry::GetTypeIdx
 //

@@ -1,7 +1,14 @@
 #include "stdafx.h"
 #include "MainFramework.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
+#include <EtRendering/GraphicsTypes/SpriteFont.h>
+#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+
 #include <EtFramework/SceneGraph/SceneManager.h>
+#include <EtFramework/Audio/AudioManager.h>
 
 #include <Runtime/Scenes/EditorScene.h>
 #include <Runtime/Scenes/PlanetTestScene.h>
@@ -20,6 +27,10 @@
 //
 void MainFramework::AddScenes()
 {
+	// Fonts
+	m_DebugFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Ubuntu-Regular.ttf"_hash);
+
+	// scenes
 	SceneManager* const sceneMan = SceneManager::GetInstance();
 
 	sceneMan->AddScene(new EditorScene());
@@ -38,6 +49,9 @@ void MainFramework::AddScenes()
 			m_CameraController.SetCameraComponent(cam);
 			m_CameraController.Reset();
 		}));
+
+	// audio
+	AudioManager::GetInstance()->SetDistanceModel(AL_INVERSE_DISTANCE);
 }
 
 //--------------------------
@@ -85,5 +99,44 @@ void MainFramework::OnTick()
 		LOG(FS("Exposure: %f", ppSettings.exposure));
 
 		renderScene.SetPostProcessingSettings(ppSettings);
+	}
+
+	// debug info
+	//------------
+	if (input->GetKeyState(E_KbdKey::H) == E_KeyState::Pressed)
+	{
+		m_DrawDebugInfo = !m_DrawDebugInfo;
+	}
+
+	if (input->GetKeyState(E_KbdKey::J) == E_KeyState::Pressed)
+	{
+		m_DrawFontAtlas = !m_DrawFontAtlas;
+	}
+
+	I_ViewportRenderer* const viewRenderer = Viewport::GetCurrentViewport()->GetViewportRenderer();
+	if (viewRenderer != nullptr && viewRenderer->GetType() == typeid(render::ShadedSceneRenderer))
+	{
+		render::ShadedSceneRenderer* const sceneRenderer = static_cast<render::ShadedSceneRenderer*>(viewRenderer);
+
+		if (m_DrawDebugInfo)
+		{
+			TextRenderer& textRenderer = sceneRenderer->GetTextRenderer();
+
+			textRenderer.SetFont(m_DebugFont.get());
+			textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
+			std::string outString = "FPS: " + std::to_string(PERFORMANCE->GetRegularFPS());
+			textRenderer.DrawText(outString, vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 1));
+			textRenderer.SetColor(vec4(1, 1, 1, 1));
+			outString = "Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS());
+			textRenderer.DrawText(outString, vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 2));
+			outString = "Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls);
+			textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*1.1f) * 3), 128);
+		}
+
+		if (m_DrawFontAtlas)
+		{
+			SpriteRenderer::E_ScalingMode const scalingMode = SpriteRenderer::E_ScalingMode::TextureAbs;
+			sceneRenderer->GetSpriteRenderer().Draw(m_DebugFont->GetAtlas(), vec2(1000, 0), vec4(1), vec2(0), vec2(1), 0, 0, scalingMode);
+		}
 	}
 }

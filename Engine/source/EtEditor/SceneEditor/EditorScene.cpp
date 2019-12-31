@@ -1,13 +1,6 @@
 #include "stdafx.h"
 #include "EditorScene.h"
 
-#include <EtCore/Content/ResourceManager.h>
-
-#include <EtRendering/GraphicsTypes/SpriteFont.h>
-#include <EtRendering/GraphicsTypes/FrameBuffer.h>
-#include <EtRendering/SceneRendering/TextRenderer.h>
-#include <EtRendering/SceneRendering/Gbuffer.h>
-
 #include <EtFramework/SceneGraph/Entity.h>
 #include <EtFramework/Components/ModelComponent.h>
 #include <EtFramework/Components/LightComponent.h>
@@ -16,10 +9,6 @@
 
 void EditorScene::Init()
 {
-	//Fonts
-	//***************************
-	m_pDebugFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Consolas_32.fnt"_hash);
-
 	//Skybox
 	//**************************
 	SetSkybox("Ice_Lake_Ref.hdr"_hash);

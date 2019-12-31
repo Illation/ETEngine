@@ -1,7 +1,12 @@
 #pragma once
 #include "FreeCamera.h"
 
+#include <EtCore/Content/AssetPointer.h>
+
 #include <EtRuntime/AbstractFramework.h>
+
+
+class SpriteFont;
 
 
 //--------------------------
@@ -27,5 +32,9 @@ private:
 	///////
 
 	FreeCamera m_CameraController;
+
+	AssetPtr<SpriteFont> m_DebugFont;
+	bool m_DrawDebugInfo = true;
+	bool m_DrawFontAtlas = false;
 };
 

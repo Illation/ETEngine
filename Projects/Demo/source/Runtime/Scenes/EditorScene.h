@@ -1,11 +1,8 @@
 #pragma once
-#include <EtCore/Content/AssetPointer.h>
-
 #include <EtFramework/SceneGraph/AbstractScene.h>
 
 
 class LightComponent;
-class SpriteFont;
 
 
 class EditorScene final : public AbstractScene
@@ -21,7 +18,5 @@ private:
 private:
 
 	LightComponent* m_Light = nullptr;
-
-	AssetPtr<SpriteFont> m_pDebugFont;
 };
 
