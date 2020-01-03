@@ -1,7 +1,20 @@
 #pragma once
+#include <rttr/type>
 
-struct PostProcessingSettings
+#include <EtCore/Helper/LinkerUtils.h>
+
+
+//---------------------------------
+// PostProcessingSettings
+//
+// Defines tuning for post processing
+//
+struct PostProcessingSettings final
 {
+	DECLARE_FORCED_LINKING()
+	RTTR_ENABLE()
+
+public:
 	//High dynamic range
 	float exposure = 1.f;
 

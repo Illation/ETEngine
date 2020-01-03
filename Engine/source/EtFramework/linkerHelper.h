@@ -3,6 +3,7 @@
 #include <EtRendering/linkerHelper.h>
 
 #include <EtFramework/Audio/AudioData.h>
+#include <EtFramework/SceneGraph/SceneDescriptor.h>
 
 
 //---------------------------------
@@ -15,6 +16,7 @@ void ForceLinking()
 	render::ForceLinking();
 
 	FORCE_LINKING(AudioAsset)
+	framework::FORCE_LINKING(SceneDescriptorAsset)
 }
 
 

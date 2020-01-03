@@ -1,4 +1,7 @@
 #pragma once
+#include <rttr/type>
+
+#include <EtFramework/ECS/RawComponentPointer.h>
 
 
 namespace framework {
@@ -11,6 +14,8 @@ namespace framework {
 //
 class I_ComponentDescriptor
 {
+	RTTR_ENABLE()
+
 public:
 	virtual T_CompTypeIdx GetType() const = 0;
 	virtual RawComponentPtr MakeRawData() = 0; // has ownership
@@ -24,6 +29,8 @@ public:
 template<class TComponentType>
 class ComponentDescriptor : public I_ComponentDescriptor
 {
+	RTTR_ENABLE(I_ComponentDescriptor)
+
 public:
 	T_CompTypeIdx GetType() const override { return TComponentType::GetTypeIndex(); }
 	RawComponentPtr MakeRawData() override { return RawComponentPtr(GetType(), reinterpret_cast<void*>(MakeData())); }

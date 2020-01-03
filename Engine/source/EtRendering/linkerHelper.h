@@ -9,6 +9,7 @@
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/MaterialSystem/MaterialInstance.h>
+#include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
 
 
 namespace render {
@@ -30,6 +31,7 @@ void ForceLinking()
 	FORCE_LINKING(FontAsset)
 	FORCE_LINKING(TextureAsset)
 	FORCE_LINKING(MathRegistrationLinkEnforcer)
+	FORCE_LINKING(PostProcessingSettings)
 }
 
 
