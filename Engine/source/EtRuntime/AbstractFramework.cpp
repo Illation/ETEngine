@@ -85,6 +85,7 @@ void AbstractFramework::Run()
 	if (!initScene.empty())
 	{
 		SceneManager::GetInstance()->SetActiveGameScene(initScene);
+		//framework::UnifiedScene::Instance().LoadScene(GetHash(initScene + ".json"));
 	}
 
 	// ensure we show the splash screen every time the scene switches

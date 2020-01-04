@@ -158,8 +158,8 @@ private:
 	quat m_Rotation;
 	quat m_WorldRotation;
 
-	vec3 m_Scale = vec3(1);
-	vec3 m_WorldScale = vec3(1);
+	vec3 m_Scale = vec3(1.f);
+	vec3 m_WorldScale = vec3(1.f);
 
 	vec3 m_Forward = vec3::FORWARD;
 	vec3 m_Up = vec3::UP;
@@ -198,7 +198,7 @@ public:
 
 	vec3 position;
 	quat rotation;
-	vec3 scale;
+	vec3 scale = vec3(1.f);
 };
 
 

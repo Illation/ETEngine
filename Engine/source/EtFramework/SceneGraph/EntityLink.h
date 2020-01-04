@@ -19,6 +19,13 @@ struct EntityLink final
 	RTTR_ENABLE()
 public:
 
+	// construct destruct
+	//--------------------
+	EntityLink() = default;
+	EntityLink(EntityLink const& other);
+	EntityLink& operator=(EntityLink const& other);
+	~EntityLink();
+
 	// get / set for serialization
 	//-----------------------------
 	void SetDeserializedId(T_EntityId const val);
@@ -54,6 +61,7 @@ public:
 	//---------------
 	void OnEntityIdAssigned(T_EntityId const serialized, T_EntityId const assigned);
 	void RegisterLink(EntityLink* const link);
+	void UnregisterLink(EntityLink* const link);
 	void Clear();
 
 	// Data

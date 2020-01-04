@@ -10,8 +10,8 @@ RTTR_REGISTRATION
 	registration::class_<PostProcessingSettings>("post processing settings")
 		.property("exposure", &PostProcessingSettings::exposure)
 		.property("gamma", &PostProcessingSettings::gamma)
-		.property("bloomThreshold", &PostProcessingSettings::bloomThreshold)
-		.property("bloomMult", &PostProcessingSettings::bloomMult);
+		.property("bloom threshold", &PostProcessingSettings::bloomThreshold)
+		.property("bloom mult", &PostProcessingSettings::bloomMult);
 }
 
 DEFINE_FORCED_LINKING(PostProcessingSettings) // force the linker to include this unit

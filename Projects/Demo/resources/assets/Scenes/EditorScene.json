@@ -1,0 +1,155 @@
+{
+  "scene descriptor": {
+    "entities": [
+      {
+        "id": 1,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -10.0
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              }
+            }
+          }
+        ],
+        "children": []
+      },
+      {
+        "id": 0,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              }
+            }
+          }
+        ],
+        "children": []
+      },
+      {
+        "id": 2,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              }
+            }
+          }
+        ],
+        "children": []
+      },
+      {
+        "id": 3,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              }
+            }
+          }
+        ],
+        "children": []
+      },
+      {
+        "id": 4,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "rotation": {
+                "x": -0.452267021,
+                "y": -0.301511377,
+                "z": 0.452267021,
+                "w": 0.707106769
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              }
+            }
+          }
+        ],
+        "children": []
+      }
+    ],
+    "skybox": "Ice_Lake_Ref.hdr",
+    "starfield": "",
+    "active camera": {
+      "id": 1
+    },
+    "postprocessing": {
+      "exposure": 1.0,
+      "gamma": 2.2,
+      "bloom threshold": 10.0,
+      "bloom mult": 0.1
+    },
+    "audio listener": {
+      "id": -1
+    },
+    "gravity": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    }
+  }
+}

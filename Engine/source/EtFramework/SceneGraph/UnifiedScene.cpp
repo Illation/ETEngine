@@ -166,7 +166,8 @@ void UnifiedScene::AddEntity(EntityDescriptor const& entDesc, T_EntityId const p
 	}
 
 	// add the components to our new entity
-	m_Scene.AddComponents(id, components);
+	// we copy the pointer list because the pointers are repointed to the constructed components, which doesn't allow us to free the original memory
+	m_Scene.AddComponents(id, std::vector<RawComponentPtr>(components)); 
 
 	// we can now free the memory of our raw component data - this needs to be done manually as we are using void*
 	for (RawComponentPtr& comp : components)

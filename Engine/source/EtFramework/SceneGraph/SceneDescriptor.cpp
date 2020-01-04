@@ -23,9 +23,9 @@ RTTR_REGISTRATION
 		.property("entities", &framework::SceneDescriptor::entities)
 		.property("skybox", &framework::SceneDescriptor::skybox)
 		.property("starfield", &framework::SceneDescriptor::starfield)
-		.property("activeCamera", &framework::SceneDescriptor::activeCamera)
+		.property("active camera", &framework::SceneDescriptor::activeCamera)
 		.property("postprocessing", &framework::SceneDescriptor::postprocessing)
-		.property("audioListener", &framework::SceneDescriptor::audioListener)
+		.property("audio listener", &framework::SceneDescriptor::audioListener)
 		.property("gravity", &framework::SceneDescriptor::gravity);
 
 	registration::class_<framework::SceneDescriptorAsset>("scene descriptor asset")
