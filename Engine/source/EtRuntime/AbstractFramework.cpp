@@ -9,6 +9,7 @@
 #include <EtRendering/SceneRendering/ShadowRenderer.h>
 
 #include <EtFramework/SceneGraph/SceneManager.h>
+#include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/Physics/PhysicsManager.h>
 #include <EtFramework/Audio/AudioManager.h>
 
@@ -48,6 +49,7 @@ void AbstractFramework::Run()
 	Config* const cfg = Config::GetInstance();
 	cfg->Initialize();
 
+	framework::UnifiedScene::Instance().Init();
 	SceneManager::GetInstance();
 	m_Viewport = new Viewport(&m_RenderArea);
 	m_SplashScreenRenderer = new render::SplashScreenRenderer();

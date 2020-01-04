@@ -4,9 +4,14 @@
 #include "LightComponent.h"
 #include "RigidBodyComponent.h"
 
+#include <rttr/registration>
+
 #include <EtFramework/SceneGraph/Entity.h>
 #include <EtFramework/SceneGraph/SceneManager.h>
 
+
+// deprecated
+//------------
 
 TransformComponent::TransformComponent()
 {
@@ -124,3 +129,145 @@ void TransformComponent::Scale(const vec3& scale)
 	m_IsTransformChanged |= TransformChanged::SCALE;
 	m_Scale = scale;
 }
+
+
+// reflection
+//------------
+
+RTTR_REGISTRATION
+{
+	using namespace rttr;
+
+	registration::class_<framework::TransformComponent>("transform component");
+
+	registration::class_<framework::TransformComponentDesc>("transform comp desc")
+		.constructor<framework::TransformComponentDesc const&>()
+		.constructor<>()(rttr::detail::as_object())
+		.property("position", &framework::TransformComponentDesc::position)
+		.property("rotation", &framework::TransformComponentDesc::rotation)
+		.property("scale", &framework::TransformComponentDesc::scale);
+
+	rttr::type::register_converter_func([](framework::TransformComponentDesc& descriptor, bool& ok) -> framework::I_ComponentDescriptor*
+	{
+		ok = true;
+		return new framework::TransformComponentDesc(descriptor);
+	});
+}
+
+// component registration
+//------------------------
+
+ECS_REGISTER_COMPONENT(framework::TransformComponent);
+
+
+namespace framework {
+
+
+//=====================
+// Transform Component 
+//=====================
+
+
+//-------------------------------
+// TransformComponent::Translate
+//
+void TransformComponent::Translate(float x, float y, float z)
+{
+	Translate(vec3(x, y, z));
+}
+
+//-------------------------------
+// TransformComponent::Translate
+//
+void TransformComponent::Translate(const vec3& translation)
+{
+	m_TransformChanged |= E_TransformChanged::Translation;
+	m_Position = m_Position + translation;
+}
+
+//---------------------------------
+// TransformComponent::SetPosition
+//
+void TransformComponent::SetPosition(float x, float y, float z)
+{
+	SetPosition(vec3(x, y, z));
+}
+
+//---------------------------------
+// TransformComponent::SetPosition
+//
+void TransformComponent::SetPosition(const vec3& position)
+{
+	m_TransformChanged |= E_TransformChanged::Translation;
+	m_Position = position;
+}
+
+//---------------------------------
+// TransformComponent::RotateEuler
+//
+void TransformComponent::RotateEuler(float x, float y, float z)
+{
+	RotateEuler(vec3(x, y, z));
+}
+
+//---------------------------------
+// TransformComponent::RotateEuler
+//
+void TransformComponent::RotateEuler(const vec3& eulerAngles)
+{
+	m_TransformChanged |= E_TransformChanged::Rotation;
+
+	m_Rotation = quat(eulerAngles);
+}
+
+//----------------------------
+// TransformComponent::Rotate
+//
+void TransformComponent::Rotate(const quat& rotation)
+{
+	m_TransformChanged |= E_TransformChanged::Rotation;
+
+	m_Rotation = m_Rotation * rotation;
+}
+
+//------------------------------
+// TransformComponent::SetScale
+//
+void TransformComponent::SetScale(float x, float y, float z)
+{
+	SetScale(vec3(x, y, z));
+}
+
+//------------------------------
+// TransformComponent::SetScale
+//
+void TransformComponent::SetScale(const vec3& scale)
+{
+	m_TransformChanged |= E_TransformChanged::Scale;
+	m_Scale = scale;
+}
+
+
+//================================
+// Transform Component Descriptor
+//================================
+
+
+//----------------------------------
+// TransformComponentDesc::MakeData
+//
+// Create a transform component from a descriptor
+//
+TransformComponent* TransformComponentDesc::MakeData()
+{
+	TransformComponent* const ret = new TransformComponent();
+
+	ret->SetPosition(position);
+	ret->SetRotation(rotation);
+	ret->SetScale(scale);
+
+	return ret;
+}
+
+
+} // namespace framework

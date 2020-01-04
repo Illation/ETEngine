@@ -29,6 +29,11 @@ T_CompTypeIdx ComponentRegistry::Register()
 		static_cast<TComponentType const*>(lhs)->~TComponentType();
 	};
 
+	ti.fullDestructor = [](void const* const lhs) -> void
+	{
+		delete static_cast<TComponentType const*>(lhs);
+	};
+
 	// ensure we only register components once
 	ET_ASSERT(GetTypeIdx(ti.type) == s_InvalidTypeIdx, "Component '%s' was already registered!", ti.type.get_name().data());
 

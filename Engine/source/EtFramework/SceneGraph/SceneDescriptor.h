@@ -26,13 +26,20 @@ class EntityDescriptor
 	RTTR_ENABLE()
 	RTTR_REGISTRATION_FRIEND
 
+	// accessors
+	//-----------
+public:
+	T_EntityId GetId() const { return m_Id; }
+	std::vector<I_ComponentDescriptor*> const& GetComponents() const { return m_Components; }
+	std::vector<EntityDescriptor> const& GetChildren() const { return m_Children; }
+
 	// Data
 	///////
 
 private:
 	T_EntityId m_Id;
 	std::vector<I_ComponentDescriptor*> m_Components;
-	std::vector<EntityDescriptor*> m_Children;
+	std::vector<EntityDescriptor> m_Children;
 };
 
 

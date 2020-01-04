@@ -15,9 +15,10 @@ enum E_SceneEvent : T_SceneEventFlags
 {
 	Invalid = 0,
 
-	SceneSwitch	= 1 << 0,
-	Deactivated	= 1 << 1,
-	Activated	= 1 << 2,
+	SceneSwitch		= 1 << 0,
+	Deactivated		= 1 << 1,
+	Activated		= 1 << 2,
+	RegisterSystems	= 1 << 3,
 
 	All = 0xFF
 };

@@ -58,7 +58,7 @@ ComponentRegistry::T_CompCopyAssign ComponentRegistry::GetCopyAssign(T_CompTypeI
 }
 
 //---------------------------------------
-// ComponentRegistry::GetCopyConstructor
+// ComponentRegistry::GetDestructor
 //
 // Function that calls the components destructor on a block of memory without freeing it
 //
@@ -67,6 +67,18 @@ ComponentRegistry::T_CompDestructor ComponentRegistry::GetDestructor(T_CompTypeI
 	ET_ASSERT(static_cast<size_t>(idx) < m_ComponentTypes.size());
 
 	return m_ComponentTypes[idx].destructor;
+}
+
+//---------------------------------------
+// ComponentRegistry::GetDestructor
+//
+// Function that deletes the component
+//
+ComponentRegistry::T_CompDestructor ComponentRegistry::GetFullDestructor(T_CompTypeIdx const idx) const
+{
+	ET_ASSERT(static_cast<size_t>(idx) < m_ComponentTypes.size());
+
+	return m_ComponentTypes[idx].fullDestructor;
 }
 
 //-------------------------------

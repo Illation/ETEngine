@@ -32,6 +32,7 @@ class ComponentRegistry
 		size_t data_size;
 		T_CompCopyAssign copyAssign = nullptr;
 		T_CompDestructor destructor = nullptr;
+		T_CompDestructor fullDestructor = nullptr;
 	};
 
 public:
@@ -60,6 +61,7 @@ public:
 	rttr::type const& GetType(T_CompTypeIdx const idx) const;
 	T_CompCopyAssign GetCopyAssign(T_CompTypeIdx const idx) const;
 	T_CompDestructor GetDestructor(T_CompTypeIdx const idx) const;
+	T_CompDestructor GetFullDestructor(T_CompTypeIdx const idx) const;
 
 	T_CompTypeIdx GetTypeIdx(rttr::type const& type) const;
 

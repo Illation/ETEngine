@@ -9,6 +9,8 @@ public:
 	virtual ~PhysicsWorld();
 
 	void Initialize();
+	void Deinit();
+
 	void Update();
 
 	btDiscreteDynamicsWorld* GetWorld() const { return m_pWorld; }

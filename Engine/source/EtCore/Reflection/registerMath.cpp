@@ -26,6 +26,12 @@ RTTR_REGISTRATION
 		.property("z", &vec4::z)
 		.property("w", &vec4::w);
 
+	registration::class_<etm::quaternion<float>>("quat")
+		.property("x", &quat::x)
+		.property("y", &quat::y)
+		.property("z", &quat::z)
+		.property("w", &quat::w);
+
 	registration::class_<etm::matrix<3, 3, float>>("mat3")
 		.property("rows", &mat3::rows);
 
