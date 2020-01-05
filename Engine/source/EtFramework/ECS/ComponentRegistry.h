@@ -57,6 +57,8 @@ public:
 
 	// accessors
 	//-----------
+	size_t GetCount() const { return m_ComponentTypes.size(); }
+
 	size_t GetSize(T_CompTypeIdx const idx) const;
 	rttr::type const& GetType(T_CompTypeIdx const idx) const;
 	T_CompCopyAssign GetCopyAssign(T_CompTypeIdx const idx) const;

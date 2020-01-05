@@ -92,6 +92,47 @@ void EcsController::RemoveComponents(T_EntityId const entity)
 	RemoveComponents(entity, GenCompTypeList<TComponentType, Args...>());
 }
 
+//-----------------------------------------
+// EcsController::RegisterOnComponentAdded
+//
+template<typename TComponentType>
+T_ComEventId EcsController::RegisterOnComponentAdded(std::function<void(EcsController& ecs, TComponentType& comp)>& fn)
+{
+	return m_ComponentEvents[TComponentType::GetTypeIndex()].Register(detail::E_ComponentEvent::Added, detail::T_ComponentEventCallbackInternal(
+		[this, fn](detail::T_ComponentEvent const flags, detail::ComponentEventData const* const evnt) -> void
+		{
+			UNUSED(flags);
+			fn(*evnt->controller, *static_cast<TComponentType*>(evnt->component));
+		}));
+}
+
+//-------------------------------------------
+// EcsController::RegisterOnComponentRemoved
+//
+// Deinit components
+//
+template<typename TComponentType>
+T_ComEventId EcsController::RegisterOnComponentRemoved(std::function<void(EcsController& ecs, TComponentType& comp)>& fn)
+{
+	return m_ComponentEvents[TComponentType::GetTypeIndex()].Register(detail::E_ComponentEvent::Removed, detail::T_ComponentEventCallbackInternal(
+		[this, fn](detail::T_ComponentEvent const flags, detail::ComponentEventData const* const evnt) -> void
+		{
+			UNUSED(flags);
+			fn(*evnt->controller, *static_cast<TComponentType*>(evnt->component));
+		}));
+}
+
+//-----------------------------------------
+// EcsController::UnregisterComponentEvent
+//
+// Not required to be called unless the event is a member function that gets deleted before the ecs controller does
+//
+template<typename TComponentType>
+void EcsController::UnregisterComponentEvent(T_ComEventId& callbackId)
+{
+	m_ComponentEvents[TComponentType::GetTypeIndex()].Unregister(callbackId);
+}
+
 //-----------------------------
 // EcsController::HasComponent
 //

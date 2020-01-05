@@ -17,6 +17,13 @@ namespace framework {
 //////////////////////
 
 //--------------------------
+// EcsController::c-tor
+//	
+EcsController::EcsController()
+	: m_ComponentEvents(ComponentRegistry::Instance().GetCount())
+{ }
+
+//--------------------------
 // EcsController::d-tor
 //
 EcsController::~EcsController()
@@ -97,6 +104,15 @@ T_EntityId EcsController::AddEntityBatched(T_EntityId const parent, std::vector<
 	ent.first->archetype = FindOrCreateArchetype(ComponentSignature(components), ent.first->layer);
 	ent.first->index = ent.first->archetype->AddEntity(ent.second, components);
 
+	// emit events for the added components
+	std::vector<RawComponentPtr> addedComponents;
+	GetComponentsAndTypes(*(ent.first), addedComponents);
+
+	for (RawComponentPtr& comp : addedComponents)
+	{
+		m_ComponentEvents[comp.typeIdx].Notify(detail::E_ComponentEvent::Added, new detail::ComponentEventData(this, comp.data));
+	}
+
 	// return the ID
 	return ent.second;
 }
@@ -152,6 +168,14 @@ void EcsController::RemoveEntity(T_EntityId const entity)
 {
 	// get referred entity
 	EntityData& ent = m_Entities[entity];
+
+	// emit events for the entities components
+	std::vector<RawComponentPtr> components;
+	GetComponentsAndTypes(ent, components);
+	for (RawComponentPtr& comp : components)
+	{
+		m_ComponentEvents[comp.typeIdx].Notify(detail::E_ComponentEvent::Removed, new detail::ComponentEventData(this, comp.data));
+	}
 
 	RemoveEntityFromParent(entity, ent.parent);
 
@@ -211,10 +235,11 @@ void EcsController::AddComponents(T_EntityId const entity, std::vector<RawCompon
 
 	MoveArchetype(entity, ent, compTypes, currentComponents);
 
-	// reassign the component pointers
+	// reassign the component pointers and emit component add events
 	for (RawComponentPtr& comp : components)
 	{
 		comp.data = ent.archetype->GetPool(comp.typeIdx).At(ent.index);
+		m_ComponentEvents[comp.typeIdx].Notify(detail::E_ComponentEvent::Added, new detail::ComponentEventData(this, comp.data));
 	}
 }
 
@@ -231,7 +256,7 @@ void EcsController::RemoveComponents(T_EntityId const entity, T_CompTypeList con
 	std::vector<RawComponentPtr> currentComponents;
 	T_CompTypeList compTypes = GetComponentsAndTypes(ent, currentComponents);
 
-	// remove the components
+	// remove the components and emit events for them
 	for (T_CompTypeIdx const comp : componentTypes)
 	{
 		if (compTypes.size() == 1u)
@@ -241,6 +266,7 @@ void EcsController::RemoveComponents(T_EntityId const entity, T_CompTypeList con
 
 			ET_ASSERT(currentComponents.size() == 1u);
 			ET_ASSERT(currentComponents[0u].typeIdx == comp);
+			m_ComponentEvents[comp].Notify(detail::E_ComponentEvent::Removed, new detail::ComponentEventData(this, currentComponents[0u].data));
 			currentComponents.clear();
 		}
 		else
@@ -254,6 +280,7 @@ void EcsController::RemoveComponents(T_EntityId const entity, T_CompTypeList con
 			compTypes[idx] = compTypes[compTypes.size() - 1];
 			compTypes.pop_back();
 
+			m_ComponentEvents[comp].Notify(detail::E_ComponentEvent::Removed, new detail::ComponentEventData(this, currentComponents[idx].data));
 			currentComponents[idx] = currentComponents[currentComponents.size() - 1];
 			currentComponents.pop_back();
 		}

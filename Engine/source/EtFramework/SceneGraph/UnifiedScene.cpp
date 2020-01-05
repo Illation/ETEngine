@@ -5,7 +5,9 @@
 
 #include <EtCore/Helper/Context.h>
 #include <EtCore/Content/ResourceManager.h>
+
 #include <EtFramework/Physics/BulletETM.h>
+#include <EtFramework/Systems/TransformSystem.h>
 
 
 namespace framework {
@@ -34,7 +36,9 @@ UnifiedScene& UnifiedScene::Instance()
 //
 void UnifiedScene::Init()
 {
-	// m_Scene.RegisterSystem<TransformSystem>();
+	m_Scene.RegisterSystem<TransformSystem>();
+	m_Scene.RegisterOnComponentAdded(std::function<void(framework::EcsController&, TransformComponent&)>(TransformSystem::OnComponentAdded));
+	m_Scene.RegisterOnComponentRemoved(std::function<void(framework::EcsController&, TransformComponent&)>(TransformSystem::OnComponentRemoved));
 
 	m_EventDispatcher.Notify(E_SceneEvent::RegisterSystems, new SceneEventData(nullptr));
 }

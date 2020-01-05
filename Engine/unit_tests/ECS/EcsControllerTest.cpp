@@ -250,22 +250,60 @@ TEST_CASE("controller system hierachy", "[ecs]")
 }
 
 
-TEST_CASE("controller component construction", "[ecs]")
+TEST_CASE("controller component construction, component events", "[ecs]")
 {
 	framework::EcsController ecs;
 
 	uint32 counter = 0;
+	uint32 counter2 = 0;
+
+	auto onAdded = [&counter2](framework::EcsController& controller, TestRefCountComp& comp) -> void
+	{
+		UNUSED(controller);
+		UNUSED(comp);
+
+		++counter2;
+	};
+
+	auto onRemoved = [&counter2](framework::EcsController& controller, TestRefCountComp& comp) -> void
+	{
+		UNUSED(controller);
+		UNUSED(comp);
+
+		--counter2;
+	};
+
+	framework::T_ComEventId id = ecs.RegisterOnComponentAdded(std::function<void(framework::EcsController&, TestRefCountComp&)>(onAdded));
+	framework::T_ComEventId id2 = ecs.RegisterOnComponentRemoved(std::function<void(framework::EcsController&, TestRefCountComp&)>(onRemoved));
 
 	// generate entities
 	ecs.AddEntity(TestRefCountComp(&counter));
 	REQUIRE(counter == 1u);
+	REQUIRE(counter2 == 1u);
 
 	ecs.AddEntity(TestRefCountComp(&counter));
 	REQUIRE(counter == 2u);
+	REQUIRE(counter2 == 2u);
 
 	ecs.RemoveEntity(0u);
 	REQUIRE(counter == 1u);
+	REQUIRE(counter2 == 1u);
 
 	ecs.RemoveEntity(1u);
 	REQUIRE(counter == 0u);
+	REQUIRE(counter2 == 0u);
+
+	ecs.AddEntity(TestCComponent(0u));
+	REQUIRE(counter2 == 0u);
+
+	ecs.AddComponents(0u, TestRefCountComp(&counter));
+	REQUIRE(counter2 == 1u);
+
+	ecs.RemoveComponents<TestRefCountComp>(0u);
+	REQUIRE(counter2 == 0u);
+
+	ecs.UnregisterComponentEvent<TestRefCountComp>(id);
+	ecs.AddEntity(TestRefCountComp(&counter));
+	REQUIRE(counter == 1u);
+	REQUIRE(counter2 == 0u);
 }

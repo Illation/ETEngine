@@ -1,7 +1,8 @@
 #pragma once
+#include "ComponentSignature.h"
+#include "ComponentEvents.h"
 #include "EntityFwd.h"
 #include "RawComponentPointer.h"
-#include "ComponentSignature.h"
 #include "System.h"
 
 
@@ -61,7 +62,7 @@ class EcsController final
 	// construct destruct
 	//--------------------
 public:
-	EcsController() = default;
+	EcsController();
 	~EcsController();
 
 	// functionality
@@ -91,6 +92,14 @@ public:
 	template<typename TComponentType, typename... Args>
 	void RemoveComponents(T_EntityId const entity);
 	void RemoveComponents(T_EntityId const entity, T_CompTypeList const& componentTypes);
+
+	// component events
+	template<typename TComponentType>
+	T_ComEventId RegisterOnComponentAdded(std::function<void(EcsController& ecs, TComponentType& comp)>& fn);
+	template<typename TComponentType>
+	T_ComEventId RegisterOnComponentRemoved(std::function<void(EcsController& ecs, TComponentType& comp)>& fn);
+	template<typename TComponentType>
+	void UnregisterComponentEvent(T_ComEventId& callbackId);
 
 	// systems
 	void Process(); 
@@ -150,6 +159,8 @@ private:
 	core::slot_map<EntityData> m_Entities;
 
 	std::vector<ArchetypeContainer> m_HierachyLevels;
+
+	std::vector<detail::T_ComponentEventDispatcher> m_ComponentEvents;
 
 	std::vector<RegisteredSystem*> m_Systems; // system ownership
 	std::vector<RegisteredSystem*> m_Schedule; // for iteration
