@@ -8,6 +8,8 @@
 
 #include <EtFramework/Physics/BulletETM.h>
 #include <EtFramework/Systems/TransformSystem.h>
+#include <EtFramework/Systems/LightSystem.h>
+#include <EtFramework/Systems/ModelInit.h>
 
 
 namespace framework {
@@ -37,8 +39,17 @@ UnifiedScene& UnifiedScene::Instance()
 void UnifiedScene::Init()
 {
 	m_Scene.RegisterSystem<TransformSystem>();
-	m_Scene.RegisterOnComponentAdded(std::function<void(framework::EcsController&, TransformComponent&)>(TransformSystem::OnComponentAdded));
-	m_Scene.RegisterOnComponentRemoved(std::function<void(framework::EcsController&, TransformComponent&)>(TransformSystem::OnComponentRemoved));
+	m_Scene.RegisterOnComponentAdded(
+		std::function<void(framework::EcsController&, TransformComponent&, T_EntityId const)>(TransformSystem::OnComponentAdded));
+	m_Scene.RegisterOnComponentRemoved(
+		std::function<void(framework::EcsController&, TransformComponent&, T_EntityId const)>(TransformSystem::OnComponentRemoved));
+
+	m_Scene.RegisterSystem<LightSystem>();
+	m_Scene.RegisterOnComponentAdded(std::function<void(framework::EcsController&, LightComponent&, T_EntityId const)>(LightSystem::OnComponentAdded));
+	m_Scene.RegisterOnComponentRemoved(std::function<void(framework::EcsController&, LightComponent&, T_EntityId const)>(LightSystem::OnComponentRemoved));
+
+	m_Scene.RegisterOnComponentAdded(std::function<void(framework::EcsController&, ModelComponent&, T_EntityId const)>(ModelInit::OnComponentAdded));
+	m_Scene.RegisterOnComponentRemoved(std::function<void(framework::EcsController&, ModelComponent&, T_EntityId const)>(ModelInit::OnComponentRemoved));
 
 	m_EventDispatcher.Notify(E_SceneEvent::RegisterSystems, new SceneEventData(nullptr));
 }

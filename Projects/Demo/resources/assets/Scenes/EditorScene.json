@@ -23,6 +23,15 @@
                 "z": 1.0
               }
             }
+          },
+          {
+            "camera comp desc": {
+              "is perspective": true,
+              "field of view": 45.0,
+              "ortho size": 25.0,
+              "near plane": 0.1,
+              "far plane": 1000.0
+            }
           }
         ],
         "children": []
@@ -48,6 +57,12 @@
                 "y": 1.0,
                 "z": 1.0
               }
+            }
+          },
+          {
+            "model comp desc": {
+              "mesh": "HelmetSettled.dae",
+              "material": "MI_Uber_Kabuto.json"
             }
           }
         ],
@@ -75,6 +90,12 @@
                 "z": 1.0
               }
             }
+          },
+          {
+            "model comp desc": {
+              "mesh": "HelmetStand.dae",
+              "material": "MI_Uber_Floor.json"
+            }
           }
         ],
         "children": []
@@ -101,6 +122,12 @@
                 "z": 1.0
               }
             }
+          },
+          {
+            "model comp desc": {
+              "mesh": "Env.dae",
+              "material": "MI_Uber_Floor.json"
+            }
           }
         ],
         "children": []
@@ -126,6 +153,18 @@
                 "y": 1.0,
                 "z": 1.0
               }
+            }
+          },
+          {
+            "light comp desc": {
+              "type": "Directional",
+              "color": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "brightness": 2.99,
+              "casts shadow": true
             }
           }
         ],

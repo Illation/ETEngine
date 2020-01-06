@@ -110,7 +110,7 @@ T_EntityId EcsController::AddEntityBatched(T_EntityId const parent, std::vector<
 
 	for (RawComponentPtr& comp : addedComponents)
 	{
-		m_ComponentEvents[comp.typeIdx].Notify(detail::E_ComponentEvent::Added, new detail::ComponentEventData(this, comp.data));
+		m_ComponentEvents[comp.typeIdx].Notify(detail::E_ComponentEvent::Added, new detail::ComponentEventData(this, comp.data, ent.second));
 	}
 
 	// return the ID
@@ -174,7 +174,7 @@ void EcsController::RemoveEntity(T_EntityId const entity)
 	GetComponentsAndTypes(ent, components);
 	for (RawComponentPtr& comp : components)
 	{
-		m_ComponentEvents[comp.typeIdx].Notify(detail::E_ComponentEvent::Removed, new detail::ComponentEventData(this, comp.data));
+		m_ComponentEvents[comp.typeIdx].Notify(detail::E_ComponentEvent::Removed, new detail::ComponentEventData(this, comp.data, entity));
 	}
 
 	RemoveEntityFromParent(entity, ent.parent);
@@ -239,7 +239,7 @@ void EcsController::AddComponents(T_EntityId const entity, std::vector<RawCompon
 	for (RawComponentPtr& comp : components)
 	{
 		comp.data = ent.archetype->GetPool(comp.typeIdx).At(ent.index);
-		m_ComponentEvents[comp.typeIdx].Notify(detail::E_ComponentEvent::Added, new detail::ComponentEventData(this, comp.data));
+		m_ComponentEvents[comp.typeIdx].Notify(detail::E_ComponentEvent::Added, new detail::ComponentEventData(this, comp.data, entity));
 	}
 }
 
@@ -266,7 +266,7 @@ void EcsController::RemoveComponents(T_EntityId const entity, T_CompTypeList con
 
 			ET_ASSERT(currentComponents.size() == 1u);
 			ET_ASSERT(currentComponents[0u].typeIdx == comp);
-			m_ComponentEvents[comp].Notify(detail::E_ComponentEvent::Removed, new detail::ComponentEventData(this, currentComponents[0u].data));
+			m_ComponentEvents[comp].Notify(detail::E_ComponentEvent::Removed, new detail::ComponentEventData(this, currentComponents[0u].data, entity));
 			currentComponents.clear();
 		}
 		else
@@ -280,7 +280,7 @@ void EcsController::RemoveComponents(T_EntityId const entity, T_CompTypeList con
 			compTypes[idx] = compTypes[compTypes.size() - 1];
 			compTypes.pop_back();
 
-			m_ComponentEvents[comp].Notify(detail::E_ComponentEvent::Removed, new detail::ComponentEventData(this, currentComponents[idx].data));
+			m_ComponentEvents[comp].Notify(detail::E_ComponentEvent::Removed, new detail::ComponentEventData(this, currentComponents[idx].data, entity));
 			currentComponents[idx] = currentComponents[currentComponents.size() - 1];
 			currentComponents.pop_back();
 		}

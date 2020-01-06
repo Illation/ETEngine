@@ -4,6 +4,8 @@
 #include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Containers/slot_map.h>
 
+#include <EtFramework/SceneGraph/ComponentDescriptor.h>
+
 
 class MeshData;
 
@@ -49,4 +51,73 @@ private:
 
 	core::T_SlotId m_InstanceId;
 };
+
+
+namespace framework {
+
+
+//---------------------------------
+// ModelComponent
+//
+// Component that can draw mesh material combinations
+//
+class ModelComponent final
+{
+	// definitions
+	//-------------
+	ECS_DECLARE_COMPONENT
+
+	friend class ModelInit;
+
+	// construct destruct
+	//--------------------
+public:
+	ModelComponent(T_Hash const meshId, T_Hash const materialId);
+	~ModelComponent() = default;
+
+	// accessors
+	//-----------
+	AssetPtr<MeshData> GetMesh() const { return m_Mesh; }
+
+	// Data
+	///////
+private:
+
+	AssetPtr<MeshData> m_Mesh;
+	I_AssetPtr m_Material;
+
+	core::T_SlotId m_InstanceId = core::INVALID_SLOT_ID;
+};
+
+
+//---------------------------------
+// ModelComponentDesc
+//
+// Descriptor for serialization and deserialization of model components
+//
+class ModelComponentDesc final : public ComponentDescriptor<ModelComponent>
+{
+	// definitions
+	//-------------
+	RTTR_ENABLE(ComponentDescriptor<ModelComponent>)
+
+	// construct destruct
+	//--------------------
+public:
+	ModelComponentDesc() : ComponentDescriptor<ModelComponent>() {}
+	~ModelComponentDesc() = default;
+
+	// ComponentDescriptor interface
+	//-------------------------------
+	ModelComponent* MakeData() override;
+
+	// Data
+	///////
+
+	std::string mesh;
+	std::string material;
+};
+
+
+} // namespace framework
 

@@ -95,9 +95,9 @@ public:
 
 	// component events
 	template<typename TComponentType>
-	T_ComEventId RegisterOnComponentAdded(std::function<void(EcsController& ecs, TComponentType& comp)>& fn);
+	T_ComEventId RegisterOnComponentAdded(std::function<void(EcsController&, TComponentType&, T_EntityId const)>& fn);
 	template<typename TComponentType>
-	T_ComEventId RegisterOnComponentRemoved(std::function<void(EcsController& ecs, TComponentType& comp)>& fn);
+	T_ComEventId RegisterOnComponentRemoved(std::function<void(EcsController&, TComponentType&, T_EntityId const)>& fn);
 	template<typename TComponentType>
 	void UnregisterComponentEvent(T_ComEventId& callbackId);
 

@@ -28,6 +28,24 @@ I_AssetPtr::I_AssetPtr(I_Asset* asset)
 //---------------------------------
 // I_AssetPtr::operator=
 //
+// Copy construct the base asset ptr
+//
+I_AssetPtr::I_AssetPtr(I_AssetPtr const& copy)
+	: m_Asset(copy.m_Asset)
+{
+	if (m_Asset != nullptr) // having asset pointers point to null is valid
+	{
+		if (IncrementRefCount())
+		{
+			ET_ASSERT(!(m_Asset->IsLoaded()));
+			m_Asset->Load();
+		}
+	}
+}
+
+//---------------------------------
+// I_AssetPtr::operator=
+//
 // Copy the base asset ptr
 //
 I_AssetPtr& I_AssetPtr::operator=(I_AssetPtr const& rhs)

@@ -1,4 +1,6 @@
 #pragma once
+#include "EntityFwd.h"
+
 #include <EtCore/Helper/GenericEventDispatcher.h>
 
 
@@ -33,11 +35,12 @@ enum E_ComponentEvent : T_ComponentEvent
 struct ComponentEventData
 {
 public:
-	ComponentEventData(EcsController* const ecsController, void* const comp) : controller(ecsController), component(comp) {}
+	ComponentEventData(EcsController* const ecsController, void* const comp, T_EntityId const e) : controller(ecsController), component(comp), entity(e) {}
 	virtual ~ComponentEventData() = default;
 
 	EcsController* controller = nullptr;
 	void* component = nullptr;
+	T_EntityId entity = INVALID_ENTITY_ID;
 };
 
 

@@ -17,8 +17,11 @@ namespace framework {
 //
 // Register transform components in the render scene when they are added to the ECS
 //
-void TransformSystem::OnComponentAdded(EcsController& controller, TransformComponent& component)
+void TransformSystem::OnComponentAdded(EcsController& controller, TransformComponent& component, T_EntityId const entity)
 {
+	UNUSED(controller);
+	UNUSED(entity);
+
 	component.m_NodeId = UnifiedScene::Instance().GetRenderScene().AddNode(component.GetWorld());
 }
 
@@ -27,8 +30,11 @@ void TransformSystem::OnComponentAdded(EcsController& controller, TransformCompo
 //
 // Remove respectively
 //
-void TransformSystem::OnComponentRemoved(EcsController& controller, TransformComponent& component)
+void TransformSystem::OnComponentRemoved(EcsController& controller, TransformComponent& component, T_EntityId const entity)
 {
+	UNUSED(controller);
+	UNUSED(entity);
+
 	UnifiedScene::Instance().GetRenderScene().RemoveNode(component.GetNodeId());
 }
 

@@ -113,8 +113,8 @@ public:
 	TransformComponent() = default;
 	~TransformComponent() = default;
 
-	// utility
-	//---------
+	// modifiers
+	//-----------
 	void Translate(float x, float y, float z);
 	void Translate(const vec3& translation );
 	void SetPosition(float x, float y, float z);

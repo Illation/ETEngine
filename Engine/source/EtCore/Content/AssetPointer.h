@@ -14,6 +14,7 @@ public:
 	I_AssetPtr() = default; 
 	I_AssetPtr(std::nullptr_t) {}
 
+	I_AssetPtr(I_AssetPtr const& copy);
 	I_AssetPtr& operator=(I_AssetPtr const& rhs);
 
 	I_AssetPtr(I_Asset* asset);

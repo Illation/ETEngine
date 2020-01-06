@@ -2,7 +2,7 @@
 #include <EtFramework/Components/TransformComponent.h>
 
 #include <EtFramework/ECS/ComponentView.h>
-#include <EtFramework/ECS/System.h>
+#include <EtFramework/ECS/EcsController.h>
 
 
 namespace framework {
@@ -35,8 +35,8 @@ class TransformSystem final : public framework::System<TransformSystem, Transfor
 public:
 	TransformSystem() = default;
 
-	static void OnComponentAdded(EcsController& controller, TransformComponent& component);
-	static void OnComponentRemoved(EcsController& controller, TransformComponent& component);
+	static void OnComponentAdded(EcsController& controller, TransformComponent& component, T_EntityId const entity);
+	static void OnComponentRemoved(EcsController& controller, TransformComponent& component, T_EntityId const entity);
 
 	void Process(ComponentRange<TransformSystemView>& range) const override;
 };

@@ -49,7 +49,7 @@ void AbstractFramework::Run()
 	Config* const cfg = Config::GetInstance();
 	cfg->Initialize();
 
-	framework::UnifiedScene::Instance().Init();
+	//framework::UnifiedScene::Instance().Init();
 	SceneManager::GetInstance();
 	m_Viewport = new Viewport(&m_RenderArea);
 	m_SplashScreenRenderer = new render::SplashScreenRenderer();

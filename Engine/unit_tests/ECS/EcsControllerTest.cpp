@@ -257,24 +257,28 @@ TEST_CASE("controller component construction, component events", "[ecs]")
 	uint32 counter = 0;
 	uint32 counter2 = 0;
 
-	auto onAdded = [&counter2](framework::EcsController& controller, TestRefCountComp& comp) -> void
+	auto onAdded = [&counter2](framework::EcsController& controller, TestRefCountComp& comp, framework::T_EntityId const entity) -> void
 	{
 		UNUSED(controller);
 		UNUSED(comp);
+		UNUSED(entity);
 
 		++counter2;
 	};
 
-	auto onRemoved = [&counter2](framework::EcsController& controller, TestRefCountComp& comp) -> void
+	auto onRemoved = [&counter2](framework::EcsController& controller, TestRefCountComp& comp, framework::T_EntityId const entity) -> void
 	{
 		UNUSED(controller);
 		UNUSED(comp);
+		UNUSED(entity);
 
 		--counter2;
 	};
 
-	framework::T_ComEventId id = ecs.RegisterOnComponentAdded(std::function<void(framework::EcsController&, TestRefCountComp&)>(onAdded));
-	framework::T_ComEventId id2 = ecs.RegisterOnComponentRemoved(std::function<void(framework::EcsController&, TestRefCountComp&)>(onRemoved));
+	framework::T_ComEventId id = ecs.RegisterOnComponentAdded(
+		std::function<void(framework::EcsController&, TestRefCountComp&, framework::T_EntityId const)>(onAdded));
+	framework::T_ComEventId id2 = ecs.RegisterOnComponentRemoved(
+		std::function<void(framework::EcsController&, TestRefCountComp&, framework::T_EntityId const)>(onRemoved));
 
 	// generate entities
 	ecs.AddEntity(TestRefCountComp(&counter));
