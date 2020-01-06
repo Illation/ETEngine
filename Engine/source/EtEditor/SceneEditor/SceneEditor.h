@@ -6,10 +6,26 @@
 
 #include <EtCore/UpdateCycle/Tickable.h>
 
+#include <EtFramework/ECS/ComponentRegistry.h>
+
 #include <EtEditor/Layout/EditorBase.h>
 
 
 class SceneViewport;
+
+
+//---------------------------------
+// EditorMetaComponent
+//
+// Meta data for entities
+//
+struct EditorMetaComponent final
+{
+	ECS_DECLARE_COMPONENT
+public:
+
+	std::string name;
+};
 
 
 //---------------------------------
@@ -25,6 +41,10 @@ public:
 	static std::string const s_EditorName;
 	static std::string const s_LayoutName;
 	static std::vector<E_EditorTool> const s_SupportedTools;
+
+	// static functionality
+	//----------------------
+	static void RegisterEcsEvents();
 
 	// construct destruct
 	//--------------------

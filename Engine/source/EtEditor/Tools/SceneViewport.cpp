@@ -5,7 +5,7 @@
 
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
-#include <EtFramework/SceneGraph/SceneManager.h>
+#include <EtFramework/SceneGraph/UnifiedScene.h>
 
 #include <EtEditor/Rendering/GtkRenderArea.h>
 #include <EtEditor/Util/GtkUtil.h>
@@ -146,7 +146,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	glArea->show(); // ensure context creation
 
 	// create a scene renderer for the viewport
-	m_SceneRenderer = new render::ShadedSceneRenderer(&(SceneManager::GetInstance()->GetRenderScene()));
+	m_SceneRenderer = new render::ShadedSceneRenderer(&(fw::UnifiedScene::Instance().GetRenderScene()));
 	m_Viewport->SetRenderer(m_SceneRenderer);
 
 	m_Editor->RegisterListener(this);
@@ -157,7 +157,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 		OnShown();
 	}
 
-	if (m_Editor->GetSceneSelection().GetScene() != nullptr)
+	if (fw::UnifiedScene::Instance().GetSceneId() != 0u)
 	{
 		OnSceneSet();
 	}
@@ -204,14 +204,13 @@ void SceneViewport::OnSceneSet()
 
 	// Set our cameras initial position to the scenes active camera once the scene is loaded
 
-	AbstractScene const* const scene = m_Editor->GetSceneSelection().GetScene();
-	if (scene != nullptr && scene->IsInitialized())
+	if (fw::UnifiedScene::Instance().GetSceneId() != 0u)
 	{
 		InitCamera();
 	}
 	else
 	{
-		m_SceneInitCallback = SceneManager::GetInstance()->GetEventDispatcher().Register(E_SceneEvent::Activated,
+		m_SceneInitCallback = fw::UnifiedScene::Instance().GetEventDispatcher().Register(E_SceneEvent::Activated,
 			T_SceneEventCallback( [this](T_SceneEventFlags const flags, SceneEventData const* const eventData)
 			{
 				UNUSED(flags);
@@ -219,7 +218,7 @@ void SceneViewport::OnSceneSet()
 
 				InitCamera();
 
-				SceneManager::GetInstance()->GetEventDispatcher().Unregister(m_SceneInitCallback);
+				fw::UnifiedScene::Instance().GetEventDispatcher().Unregister(m_SceneInitCallback);
 			}));
 	}
 
@@ -260,6 +259,13 @@ bool SceneViewport::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
 //
 void SceneViewport::InitCamera()
 {
-	m_Camera.ImitateComponent(m_Editor->GetSceneSelection().GetScene()->GetActiveCamera());
+	fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
+	fw::T_EntityId const camEnt = fw::UnifiedScene::Instance().GetActiveCamera();
+
+	ET_ASSERT(camEnt != fw::INVALID_ENTITY_ID);
+	ET_ASSERT(ecs.HasComponent<fw::TransformComponent>(camEnt));
+	ET_ASSERT(ecs.HasComponent<fw::CameraComponent>(camEnt));
+
+	m_Camera.ImitateComponent(ecs.GetComponent<fw::CameraComponent>(camEnt), ecs.GetComponent<fw::TransformComponent>(camEnt));
 	m_Camera.PopulateCamera(m_SceneRenderer->GetCamera(), m_Viewport.get());
 }

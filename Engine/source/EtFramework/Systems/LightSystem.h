@@ -5,7 +5,7 @@
 #include <EtFramework/ECS/EcsController.h>
 
 
-namespace framework {
+namespace fw {
 
 
 //------------------
@@ -28,7 +28,7 @@ struct LightSystemView final : public ComponentView
 //
 // Extracts light colors into the rendering scene representation
 //
-class LightSystem final : public framework::System<LightSystem, LightSystemView>
+class LightSystem final : public fw::System<LightSystem, LightSystemView>
 {
 public:
 	LightSystem();
@@ -40,5 +40,5 @@ public:
 };
 
 
-} // namespace framework
+} // namespace fw
 

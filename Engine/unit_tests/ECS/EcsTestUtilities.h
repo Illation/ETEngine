@@ -78,9 +78,9 @@ public:
 // Views
 //*******
 
-struct TestBCView final : public framework::ComponentView
+struct TestBCView final : public fw::ComponentView
 {
-	TestBCView() : framework::ComponentView()
+	TestBCView() : fw::ComponentView()
 	{
 		Declare(b);
 		Declare(c);
@@ -90,9 +90,9 @@ struct TestBCView final : public framework::ComponentView
 	ReadAccess<TestCComponent> c;
 };
 
-struct TestCView final : public framework::ComponentView
+struct TestCView final : public fw::ComponentView
 {
-	TestCView() : framework::ComponentView()
+	TestCView() : fw::ComponentView()
 	{
 		Declare(c);
 	}
@@ -100,9 +100,9 @@ struct TestCView final : public framework::ComponentView
 	ReadAccess<TestCComponent> c;
 };
 
-struct TestOverwriteSystemView final : public framework::ComponentView
+struct TestOverwriteSystemView final : public fw::ComponentView
 {
-	TestOverwriteSystemView() : framework::ComponentView()
+	TestOverwriteSystemView() : fw::ComponentView()
 	{
 		Declare(overwrite);
 		Declare(c);
@@ -115,21 +115,21 @@ struct TestOverwriteSystemView final : public framework::ComponentView
 // utility
 //*********
 
-framework::Archetype GenTestArchetype(size_t const count);
+fw::Archetype GenTestArchetype(size_t const count);
 
 // systems
 //*********
 
-class TestBCSystem final : public framework::System<TestBCSystem, TestBCView>
+class TestBCSystem final : public fw::System<TestBCSystem, TestBCView>
 {
 public:
 	TestBCSystem() = default;
 	// base class constructors don't do anything so are not needed unless we declare dependencies or init lookup variables
 
-	void Process(framework::ComponentRange<TestBCView>& range) const override;
+	void Process(fw::ComponentRange<TestBCView>& range) const override;
 };
 
-class TestOverwriteSystem final : public framework::System<TestOverwriteSystem, TestOverwriteSystemView>
+class TestOverwriteSystem final : public fw::System<TestOverwriteSystem, TestOverwriteSystemView>
 {
 public:
 	TestOverwriteSystem(size_t const min)
@@ -138,7 +138,7 @@ public:
 		DeclareDependents<TestBCSystem>();
 	}
 
-	void Process(framework::ComponentRange<TestOverwriteSystemView>& range) const override;
+	void Process(fw::ComponentRange<TestOverwriteSystemView>& range) const override;
 
 private:
 	size_t const m_OverwriteMin = 0u;

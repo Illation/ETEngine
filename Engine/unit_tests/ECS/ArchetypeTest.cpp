@@ -14,14 +14,14 @@
 
 TEST_CASE("archetype create", "[ecs]")
 {
-	framework::Archetype archBC(framework::GenSignature<TestBComponent, TestCComponent>());
+	fw::Archetype archBC(fw::GenSignature<TestBComponent, TestCComponent>());
 
 	REQUIRE_FALSE(archBC.HasComponent(TestAComponent::GetTypeIndex()));
 	REQUIRE(archBC.HasComponent(TestBComponent::GetTypeIndex()));
 	REQUIRE(archBC.HasComponent(TestCComponent::GetTypeIndex()));
 
-	REQUIRE(archBC.GetSignature() == framework::GenSignature<TestCComponent, TestBComponent>());
-	REQUIRE_FALSE(archBC.GetSignature() == framework::GenSignature<TestCComponent, TestAComponent>());
+	REQUIRE(archBC.GetSignature() == fw::GenSignature<TestCComponent, TestBComponent>());
+	REQUIRE_FALSE(archBC.GetSignature() == fw::GenSignature<TestCComponent, TestAComponent>());
 
 	REQUIRE(archBC.GetPool(TestBComponent::GetTypeIndex()).GetType() == TestBComponent::GetTypeIndex());
 	REQUIRE(archBC.GetPool(TestCComponent::GetTypeIndex()).GetType() == TestCComponent::GetTypeIndex());
@@ -32,30 +32,30 @@ TEST_CASE("archetype create", "[ecs]")
 
 TEST_CASE("archetype add", "[ecs]")
 {
-	framework::Archetype archBC(framework::GenSignature<TestBComponent, TestCComponent>());
+	fw::Archetype archBC(fw::GenSignature<TestBComponent, TestCComponent>());
 
 	REQUIRE(archBC.GetSize() == 0u);
 
-	framework::T_EntityId const ent0 = 2u;
-	framework::T_EntityId const ent1 = 3u;
-	framework::T_EntityId const ent2 = 6u;
-	framework::T_EntityId const ent3 = 4u;
+	fw::T_EntityId const ent0 = 2u;
+	fw::T_EntityId const ent1 = 3u;
+	fw::T_EntityId const ent2 = 6u;
+	fw::T_EntityId const ent3 = 4u;
 	
 	std::string const val0 = "first";
 	TestBComponent bComp0(val0);
 
-	std::vector<framework::RawComponentPtr> compList{
-		framework::MakeRawComponent(bComp0), // this is safe use of raw components, as the data it is created from exceeds the life time
-		framework::MakeRawComponent(TestCComponent(0u)) // this is unsafe, as the component data may be destroyed before it is copied into the archetype
+	std::vector<fw::RawComponentPtr> compList{
+		fw::MakeRawComponent(bComp0), // this is safe use of raw components, as the data it is created from exceeds the life time
+		fw::MakeRawComponent(TestCComponent(0u)) // this is unsafe, as the component data may be destroyed before it is copied into the archetype
 	};
 	size_t const idx0 = archBC.AddEntity(ent0, compList);
 
 	REQUIRE(archBC.GetSize() == 1u);
 
 	// this is safe again, as adding the component to the archetype is inlined - the component data persists
-	size_t const idx1 = archBC.AddEntity(ent1, {framework::MakeRawComponent(TestBComponent("1")), framework::MakeRawComponent(TestCComponent(1u))});
-	size_t const idx2 = archBC.AddEntity(ent2, {framework::MakeRawComponent(TestBComponent("2")), framework::MakeRawComponent(TestCComponent(2u))});
-	size_t const idx3 = archBC.AddEntity(ent3, {framework::MakeRawComponent(TestBComponent("3")), framework::MakeRawComponent(TestCComponent(3u))});
+	size_t const idx1 = archBC.AddEntity(ent1, {fw::MakeRawComponent(TestBComponent("1")), fw::MakeRawComponent(TestCComponent(1u))});
+	size_t const idx2 = archBC.AddEntity(ent2, {fw::MakeRawComponent(TestBComponent("2")), fw::MakeRawComponent(TestCComponent(2u))});
+	size_t const idx3 = archBC.AddEntity(ent3, {fw::MakeRawComponent(TestBComponent("3")), fw::MakeRawComponent(TestCComponent(3u))});
 
 	REQUIRE(archBC.GetSize() == 4u);
 
@@ -80,19 +80,19 @@ TEST_CASE("archetype add", "[ecs]")
 
 TEST_CASE("archetype remove", "[ecs]")
 {
-	framework::Archetype archBC(framework::GenSignature<TestBComponent, TestCComponent>());
+	fw::Archetype archBC(fw::GenSignature<TestBComponent, TestCComponent>());
 
-	framework::T_EntityId const ent0 = 10u;
-	framework::T_EntityId const ent1 = 11u;
-	framework::T_EntityId const ent2 = 12u;
-	framework::T_EntityId const ent3 = 13u;
-	framework::T_EntityId const ent4 = 14u;
-	framework::T_EntityId const ent5 = 15u;
+	fw::T_EntityId const ent0 = 10u;
+	fw::T_EntityId const ent1 = 11u;
+	fw::T_EntityId const ent2 = 12u;
+	fw::T_EntityId const ent3 = 13u;
+	fw::T_EntityId const ent4 = 14u;
+	fw::T_EntityId const ent5 = 15u;
 
-	size_t const idx0 = archBC.AddEntity(ent0, {framework::MakeRawComponent(TestBComponent("0")), framework::MakeRawComponent(TestCComponent(0u))});
-	size_t const idx1 = archBC.AddEntity(ent1, {framework::MakeRawComponent(TestBComponent("1")), framework::MakeRawComponent(TestCComponent(1u))});
-	size_t const idx2 = archBC.AddEntity(ent2, {framework::MakeRawComponent(TestBComponent("2")), framework::MakeRawComponent(TestCComponent(2u))});
-	size_t const idx3 = archBC.AddEntity(ent3, {framework::MakeRawComponent(TestBComponent("3")), framework::MakeRawComponent(TestCComponent(3u))});
+	size_t const idx0 = archBC.AddEntity(ent0, {fw::MakeRawComponent(TestBComponent("0")), fw::MakeRawComponent(TestCComponent(0u))});
+	size_t const idx1 = archBC.AddEntity(ent1, {fw::MakeRawComponent(TestBComponent("1")), fw::MakeRawComponent(TestCComponent(1u))});
+	size_t const idx2 = archBC.AddEntity(ent2, {fw::MakeRawComponent(TestBComponent("2")), fw::MakeRawComponent(TestCComponent(2u))});
+	size_t const idx3 = archBC.AddEntity(ent3, {fw::MakeRawComponent(TestBComponent("3")), fw::MakeRawComponent(TestCComponent(3u))});
 
 	REQUIRE(archBC.GetSize() == 4u);
 
@@ -114,8 +114,8 @@ TEST_CASE("archetype remove", "[ecs]")
 	REQUIRE(archBC.GetPool(TestCComponent::GetTypeIndex()).Get<TestCComponent>(idx1).val == 3u);
 	REQUIRE(archBC.GetPool(TestBComponent::GetTypeIndex()).Get<TestBComponent>(idx1).name == "3");
 
-	size_t const idx4 = archBC.AddEntity(ent4, {framework::MakeRawComponent(TestBComponent("4")), framework::MakeRawComponent(TestCComponent(4u))});
-	size_t const idx5 = archBC.AddEntity(ent5, {framework::MakeRawComponent(TestBComponent("5")), framework::MakeRawComponent(TestCComponent(5u))});
+	size_t const idx4 = archBC.AddEntity(ent4, {fw::MakeRawComponent(TestBComponent("4")), fw::MakeRawComponent(TestCComponent(4u))});
+	size_t const idx5 = archBC.AddEntity(ent5, {fw::MakeRawComponent(TestBComponent("5")), fw::MakeRawComponent(TestCComponent(5u))});
 
 	REQUIRE(archBC.GetSize() == 5u);
 

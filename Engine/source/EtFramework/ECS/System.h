@@ -5,7 +5,7 @@
 #include <rttr/type.h>
 
 
-namespace framework {
+namespace fw {
 
 
 // fwd
@@ -88,7 +88,7 @@ public:
 };
 
 
-} // namespace framework
+} // namespace fw
 
 
 #include "System.inl"

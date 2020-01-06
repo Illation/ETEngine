@@ -2,7 +2,7 @@
 #include "ComponentRegistry.h"
 
 
-namespace framework {
+namespace fw {
 
 
 //---------------
@@ -48,7 +48,7 @@ private:
 };
 
 
-} // namespace framework
+} // namespace fw
 
 
 #include "ComponentPool.inl"

@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #include "SceneSelection.h"
 
-#include <EtFramework/SceneGraph/SceneManager.h>
-#include <EtFramework/SceneGraph/AbstractScene.h>
-#include <EtFramework/SceneGraph/Entity.h>
+#include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/Components/ModelComponent.h>
 
 #include <EtRendering/Extensions/OutlineExtension.h>
@@ -20,14 +18,12 @@
 //
 // start listening for scene events
 //
-void SceneSelection::SetScene(AbstractScene* const scene)
+void SceneSelection::SetScene()
 {
-	m_Scene = scene;
-
-	SceneManager::GetInstance()->GetEventDispatcher().Register(E_SceneEvent::All, 
+	fw::UnifiedScene::Instance().GetEventDispatcher().Register(E_SceneEvent::All,
 		T_SceneEventCallback(std::bind(&SceneSelection::OnSceneEvent, this, std::placeholders::_1, std::placeholders::_2)));
 
-	render::Scene& renderScene = SceneManager::GetInstance()->GetRenderScene();
+	render::Scene& renderScene = fw::UnifiedScene::Instance().GetRenderScene();
 	render::I_SceneExtension* const ext = renderScene.GetExtension("OutlineExtension"_hash);
 	if (ext == nullptr)
 	{
@@ -98,7 +94,7 @@ void SceneSelection::ClearSelection(bool const notify)
 //
 // Selects the entity, or deselects if it already was selected. Notification can be disabled in case the triggerer is also a listener
 //
-void SceneSelection::ToggleEntitySelected(Entity* const entity, bool const notify)
+void SceneSelection::ToggleEntitySelected(fw::T_EntityId const entity, bool const notify)
 {
 	auto entityIt = std::find(m_SelectedEntities.begin(), m_SelectedEntities.end(), entity);
 
@@ -134,9 +130,9 @@ void SceneSelection::Pick(ivec2 const pos, Viewport* const viewport, bool const 
 		ClearSelection(true);
 	}
 
-	m_IdRenderer.Pick(pos, viewport, m_Scene, std::function<void(Entity* const)>([this](Entity* const pickResult)
+	m_IdRenderer.Pick(pos, viewport, std::function<void(fw::T_EntityId const)>([this](fw::T_EntityId const pickResult)
 		{
-			if (pickResult != nullptr)
+			if (pickResult != fw::INVALID_ENTITY_ID)
 			{
 				ToggleEntitySelected(pickResult, true);
 			}
@@ -148,17 +144,12 @@ void SceneSelection::Pick(ivec2 const pos, Viewport* const viewport, bool const 
 //
 void SceneSelection::UpdateOutlines() const
 {
-	if (m_SelectedEntities.empty())
-	{
-		return;
-	}
-
 	// actually we should do this for every viewport with a scene renderer
 	if (m_OutlineExtension != nullptr)
 	{
 		m_OutlineExtension->Clear();
 		m_OutlineExtension->SetColor(m_OutlineColor);
-		for (Entity* const entity : m_SelectedEntities)
+		for (fw::T_EntityId const entity : m_SelectedEntities)
 		{
 			RecursiveAddOutlines(entity);
 		}
@@ -187,16 +178,19 @@ void SceneSelection::OnSceneEvent(T_SceneEventFlags const flags, SceneEventData 
 //----------------------------------------------------
 // SceneSelection::OnSceneEvent
 //
-void SceneSelection::RecursiveAddOutlines(Entity* const entity) const
+void SceneSelection::RecursiveAddOutlines(fw::T_EntityId const entity) const
 {
-	ModelComponent* const modelComp = entity->GetComponent<ModelComponent>();
-	if (modelComp != nullptr)
+	fw::EcsController const& ecs = fw::UnifiedScene::Instance().GetEcs();
+
+	if (ecs.HasComponent<fw::ModelComponent>(entity) && ecs.HasComponent<fw::TransformComponent>(entity))
 	{
-		m_OutlineExtension->AddMesh(modelComp->GetMesh(), entity->GetTransform()->GetNodeId());
+		m_OutlineExtension->AddMesh(ecs.GetComponent<fw::ModelComponent>(entity).GetMesh(), 
+			ecs.GetComponent<fw::TransformComponent>(entity).GetNodeId());
 	}
 
-	for (Entity* const child : entity->GetChildren())
+	std::vector<fw::T_EntityId> const& children = ecs.GetChildren(entity);
+	for (fw::T_EntityId const child : children)
 	{
-		RecursiveAddOutlines(entity);
+		RecursiveAddOutlines(child);
 	}
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace framework {
+namespace fw {
 
 
 // fwd
@@ -102,7 +102,7 @@ public:
 };
 
 
-} // namespace framework
+} // namespace fw
 
 
 #include "ComponentRange.inl"

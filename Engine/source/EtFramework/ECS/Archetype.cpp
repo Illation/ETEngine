@@ -2,7 +2,7 @@
 #include "Archetype.h"
 
 
-namespace framework {
+namespace fw {
 
 
 //===========
@@ -151,4 +151,4 @@ void Archetype::Clear()
 }
 
 
-} // namespace framework
+} // namespace fw

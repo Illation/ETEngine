@@ -36,12 +36,10 @@ public:
 		{
 			add(m_Name);
 			add(m_Id);
-			add(m_Entity);
 		}
 
 		Gtk::TreeModelColumn<Glib::ustring> m_Name;
-		Gtk::TreeModelColumn<T_Hash> m_Id;
-		Gtk::TreeModelColumn<Entity*> m_Entity;
+		Gtk::TreeModelColumn<fw::T_EntityId> m_Id;
 	};
 
 	// construct destruct
@@ -58,7 +56,7 @@ public:
 	//--------------------------------------
 protected:
 	void OnSceneEvent(E_SceneEvent const eventType, SceneEventData const* const eventData) override;
-	void OnEntitySelectionChanged(Entity* const entity, bool const selected) override;
+	void OnEntitySelectionChanged(fw::T_EntityId const entity, bool const selected) override;
 	void OnEntitySelectionCleared() override;
 
 	// Functionality
@@ -71,7 +69,7 @@ private:
 
 	// Utility
 	//-------------
-	Gtk::TreeModel::Row RecursiveGetChild(Entity* const entity, Gtk::TreeModel::Children const& children) const;
+	Gtk::TreeModel::Row RecursiveGetChild(fw::T_EntityId const entity, Gtk::TreeModel::Children const& children) const;
 
 	// Data
 	///////

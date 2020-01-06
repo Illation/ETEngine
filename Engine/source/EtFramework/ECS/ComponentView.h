@@ -4,7 +4,7 @@
 #include "ComponentSignature.h"
 
 
-namespace framework {
+namespace fw {
 
 
 //---------------
@@ -144,7 +144,7 @@ template<typename TViewType>
 ComponentSignature SignatureFromView();
 
 
-} // namespace framework
+} // namespace fw
 
 
 #include "ComponentView.inl"

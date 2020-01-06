@@ -118,6 +118,15 @@ typename slot_map<TType>::id_type slot_map<TType>::iterator_id(const_iterator co
 	return m_IndexPositions[it - m_Data.cbegin()];
 }
 
+//---------------
+// slot_map::ids
+//
+template <class TType>
+std::vector<typename slot_map<TType>::id_type> const& slot_map<TType>::ids() const
+{
+	return m_IndexPositions;
+}
+
 //-----------------------
 // slot_map::get_iterator
 //

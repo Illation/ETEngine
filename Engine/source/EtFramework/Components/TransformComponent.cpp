@@ -138,29 +138,29 @@ RTTR_REGISTRATION
 {
 	using namespace rttr;
 
-	registration::class_<framework::TransformComponent>("transform component");
+	registration::class_<fw::TransformComponent>("transform component");
 
-	registration::class_<framework::TransformComponentDesc>("transform comp desc")
-		.constructor<framework::TransformComponentDesc const&>()
+	registration::class_<fw::TransformComponentDesc>("transform comp desc")
+		.constructor<fw::TransformComponentDesc const&>()
 		.constructor<>()(rttr::detail::as_object())
-		.property("position", &framework::TransformComponentDesc::position)
-		.property("rotation", &framework::TransformComponentDesc::rotation)
-		.property("scale", &framework::TransformComponentDesc::scale);
+		.property("position", &fw::TransformComponentDesc::position)
+		.property("rotation", &fw::TransformComponentDesc::rotation)
+		.property("scale", &fw::TransformComponentDesc::scale);
 
-	rttr::type::register_converter_func([](framework::TransformComponentDesc& descriptor, bool& ok) -> framework::I_ComponentDescriptor*
+	rttr::type::register_converter_func([](fw::TransformComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
 	{
 		ok = true;
-		return new framework::TransformComponentDesc(descriptor);
+		return new fw::TransformComponentDesc(descriptor);
 	});
 }
 
 // component registration
 //------------------------
 
-ECS_REGISTER_COMPONENT(framework::TransformComponent);
+ECS_REGISTER_COMPONENT(fw::TransformComponent);
 
 
-namespace framework {
+namespace fw {
 
 
 //=====================
@@ -270,4 +270,4 @@ TransformComponent* TransformComponentDesc::MakeData()
 }
 
 
-} // namespace framework
+} // namespace fw

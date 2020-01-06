@@ -7,8 +7,6 @@
 #include <EtEditor/Rendering/EntityIdRenderer.h>
 
 
-class AbstractScene;
-class Entity;
 class OutlineExtension;
 
 
@@ -23,10 +21,9 @@ public:
 	virtual ~I_SceneSelectionListener() = default;
 
 	virtual void OnSceneEvent(E_SceneEvent const, SceneEventData const* const) = 0;
-	virtual void OnEntitySelectionChanged(Entity* const entity, bool const selected) = 0;
+	virtual void OnEntitySelectionChanged(fw::T_EntityId const entity, bool const selected) = 0;
 	virtual void OnEntitySelectionCleared() = 0;
 };
-
 
 //--------------------
 // SceneSelection
@@ -42,23 +39,22 @@ public:
 
 	// accessors
 	//--------------------
-	AbstractScene* GetScene() { return m_Scene; }
-	std::vector<Entity*> const& GetSelectedEntities() const { return m_SelectedEntities; }
+	std::vector<fw::T_EntityId> const& GetSelectedEntities() const { return m_SelectedEntities; }
 
 	// functionality
 	//--------------------
-	void SetScene(AbstractScene* const scene);
+	void SetScene();
 
 	void RegisterListener(I_SceneSelectionListener* const listener);
 	void UnregisterListener(I_SceneSelectionListener const* const listener);
 
 	void ClearSelection(bool const notify = false);
-	void ToggleEntitySelected(Entity* const entity, bool const notify = false);
+	void ToggleEntitySelected(fw::T_EntityId const entity, bool const notify = false);
 
 	void Pick(ivec2 const pos, Viewport* const viewport, bool const add);
 
 	void UpdateOutlines() const;
-	void RecursiveAddOutlines(Entity* const entity) const;
+	void RecursiveAddOutlines(fw::T_EntityId const entity) const;
 
 private:
 	void OnSceneEvent(T_SceneEventFlags const flags, SceneEventData const* const eventData);
@@ -66,8 +62,7 @@ private:
 	// Data
 	///////
 
-	AbstractScene* m_Scene = nullptr;
-	std::vector<Entity*> m_SelectedEntities;
+	std::vector<fw::T_EntityId> m_SelectedEntities;
 
 	std::vector<I_SceneSelectionListener*> m_Listeners;
 

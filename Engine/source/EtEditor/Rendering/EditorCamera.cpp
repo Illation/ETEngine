@@ -129,16 +129,15 @@ void EditorCamera::PopulateCamera(Camera& target, Viewport const* const viewport
 //
 // Position the camera in a way that matches the set up of a runtime camera
 //
-void EditorCamera::ImitateComponent(CameraComponent const* const comp)
+void EditorCamera::ImitateComponent(fw::CameraComponent const& camComp, fw::TransformComponent const& tfComp)
 {
-	TransformComponent const* const tfComp = comp->GetTransform();
-	m_Position = tfComp->GetPosition();
-	m_Forward = tfComp->GetForward();
-	m_Up = tfComp->GetUp();
-	m_Right = tfComp->GetRight();
+	m_Position = tfComp.GetPosition();
+	m_Forward = tfComp.GetForward();
+	m_Up = tfComp.GetUp();
+	m_Right = tfComp.GetRight();
 
 	m_Movement = vec3(0.f);
 
-	m_FieldOfView = comp->GetFieldOfView();
+	m_FieldOfView = camComp.GetFieldOfView();
 }
 

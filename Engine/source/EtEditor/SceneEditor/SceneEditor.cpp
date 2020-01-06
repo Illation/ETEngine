@@ -1,16 +1,31 @@
 #include "stdafx.h"
 #include "SceneEditor.h"
 
-#include "EditorScene.h"
+#include <rttr/registration>
 
 #include <EtCore/Helper/InputManager.h>
 
-#include <EtFramework/SceneGraph/SceneManager.h>
+#include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/Physics/PhysicsManager.h>
 #include <EtFramework/Audio/AudioManager.h>
 
 #include <EtEditor/Util/GtkUtil.h>
 #include <EtEditor/Tools/SceneViewport.h>
+
+
+//=======================
+// Editor Meta Component
+//=======================
+
+RTTR_REGISTRATION
+{
+	using namespace rttr;
+
+	registration::class_<EditorMetaComponent>("editor meta component")
+		.property("name", &EditorMetaComponent::name);
+}
+
+ECS_REGISTER_COMPONENT(EditorMetaComponent);
 
 
 //==========================
@@ -27,12 +42,29 @@ std::vector<E_EditorTool> const SceneEditor::s_SupportedTools = {
 	};
 
 
+//--------------------------------
+// SceneEditor::RegisterEcsEvents
+//
+// Any editor specific ecs events and systems should be added here
+//
+void SceneEditor::RegisterEcsEvents()
+{
+	fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
+
+	ecs.RegisterOnEntityAdded(fw::T_EntityEventFn([](fw::EcsController& ecs, fw::T_EntityId const entity) -> void
+		{
+			EditorMetaComponent comp;
+			comp.name = FS("Entity_%u", entity);
+
+			ecs.AddComponents(entity, comp);
+		}));
+}
+
 //---------------------------
 // SceneEditor::d-tor
 //
 SceneEditor::~SceneEditor()
 {
-	SceneManager::DestroyInstance();
 	PhysicsManager::DestroyInstance();
 	AudioManager::DestroyInstance();
 }
@@ -53,13 +85,13 @@ void SceneEditor::InitInternal()
 	AudioManager::GetInstance()->Initialize();
 	PhysicsManager::GetInstance()->Initialize();
 
-	SceneManager::GetInstance()->AddScene(new EditorScene());
-	SceneManager::GetInstance()->SetActiveGameScene("EditorScene");
-	m_SceneSelection.SetScene(SceneManager::GetInstance()->GetNewActiveScene());
+	m_SceneSelection.SetScene();
 	for (I_SceneEditorListener* const listener : m_Listeners)
 	{
 		listener->OnSceneSet();
 	}
+
+	fw::UnifiedScene::Instance().LoadScene("EditorScene.json"_hash);
 }
 
 //----------------------------------------------------

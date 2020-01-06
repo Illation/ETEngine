@@ -88,6 +88,9 @@ public:
 	id_type iterator_id(iterator const it) const;
 	id_type iterator_id(const_iterator const it) const;
 
+	// all valid ids, in no particular order
+	std::vector<id_type> const& ids() const;
+
 	// convert an ID to an iterator
 	iterator get_iterator(id_type const id);
 	const_iterator get_iterator(id_type const id) const;

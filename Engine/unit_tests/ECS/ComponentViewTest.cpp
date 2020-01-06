@@ -12,9 +12,9 @@
 
 TEST_CASE("component view signature", "[ecs]")
 {
-	framework::ComponentSignature archBCSig = framework::GenSignature<TestBComponent, TestCComponent>();
-	framework::ComponentSignature viewBCSig = framework::SignatureFromView<TestBCView>();
-	framework::ComponentSignature viewCSig = framework::SignatureFromView<TestCView>();
+	fw::ComponentSignature archBCSig = fw::GenSignature<TestBComponent, TestCComponent>();
+	fw::ComponentSignature viewBCSig = fw::SignatureFromView<TestBCView>();
+	fw::ComponentSignature viewCSig = fw::SignatureFromView<TestCView>();
 
 	REQUIRE(viewBCSig == archBCSig);
 	REQUIRE_FALSE(viewCSig == archBCSig);
@@ -28,11 +28,11 @@ TEST_CASE("component view", "[ecs]")
 {
 	size_t const entityCount = 16;
 
-	framework::Archetype arch = GenTestArchetype(entityCount);
+	fw::Archetype arch = GenTestArchetype(entityCount);
 	REQUIRE(arch.GetSize() == entityCount);
 
 	// full iteration
-	framework::ComponentRange<TestBCView> range(nullptr, &arch, 0u, entityCount);
+	fw::ComponentRange<TestBCView> range(nullptr, &arch, 0u, entityCount);
 
 	size_t idx = 0u;
 	for (TestBCView& view : range)
@@ -47,7 +47,7 @@ TEST_CASE("component view", "[ecs]")
 
 	// iteration starting from an offset (8 - 15)
 	size_t const halved = entityCount / 2u;
-	framework::ComponentRange<TestBCView> halfRange(nullptr, &arch, halved, halved);
+	fw::ComponentRange<TestBCView> halfRange(nullptr, &arch, halved, halved);
 
 	idx = 0u;
 	for (TestBCView& view : halfRange)

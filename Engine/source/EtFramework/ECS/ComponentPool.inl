@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace framework {
+namespace fw {
 
 
 //================
@@ -46,4 +46,4 @@ void ComponentPool::Append(TComponentType const& component)
 }
 
 
-} // namespace framework
+} // namespace fw

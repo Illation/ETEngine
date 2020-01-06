@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace framework {
+namespace fw {
 
 
 //=============
@@ -72,7 +72,7 @@ void SystemBase::DeclareDependents()
 // System::GetTypeId
 //
 template <class TSystemType, typename TViewType>
-T_SystemType framework::System<TSystemType, TViewType>::GetTypeId() const
+T_SystemType fw::System<TSystemType, TViewType>::GetTypeId() const
 {
 	return rttr::type::get<TSystemType>().get_id();
 }
@@ -81,7 +81,7 @@ T_SystemType framework::System<TSystemType, TViewType>::GetTypeId() const
 // System::GetSignature
 //
 template <class TSystemType, typename TViewType>
-ComponentSignature framework::System<TSystemType, TViewType>::GetSignature() const
+ComponentSignature fw::System<TSystemType, TViewType>::GetSignature() const
 {
 	return SignatureFromView<TViewType>();
 }
@@ -98,4 +98,4 @@ void System<TSystemType, TViewType>::RootProcess(EcsController* const control, A
 }
 	
 
-} // namespace framework
+} // namespace fw

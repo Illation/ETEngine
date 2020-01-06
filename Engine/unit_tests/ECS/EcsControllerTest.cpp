@@ -14,11 +14,11 @@
 
 TEST_CASE("controller entity and component creation", "[ecs]")
 {
-	framework::EcsController ecs;
+	fw::EcsController ecs;
 	REQUIRE(ecs.GetEntityCount() == 0u);
 
-	framework::T_EntityId const ent0 = ecs.AddEntity();
-	framework::T_EntityId const ent1 = ecs.AddEntity(TestAComponent(), TestBComponent("wowzer"), TestCComponent(9001));
+	fw::T_EntityId const ent0 = ecs.AddEntity();
+	fw::T_EntityId const ent1 = ecs.AddEntity(TestAComponent(), TestBComponent("wowzer"), TestCComponent(9001));
 	REQUIRE(ecs.GetEntityCount() == 2u);
 
 	REQUIRE(ent0 == 0u);
@@ -54,8 +54,8 @@ TEST_CASE("controller entity and component creation", "[ecs]")
 	REQUIRE(ecs.GetComponentTypes(ent1).size() == 1u);
 	REQUIRE(ecs.HasComponent<TestCComponent>(ent1));
 
-	framework::T_EntityId const ent2 = ecs.AddEntity(TestAComponent());
-	framework::T_EntityId const ent3 = ecs.AddEntity(TestAComponent());
+	fw::T_EntityId const ent2 = ecs.AddEntity(TestAComponent());
+	fw::T_EntityId const ent3 = ecs.AddEntity(TestAComponent());
 
 	REQUIRE(ecs.GetEntityCount() == 3u);
 
@@ -74,15 +74,15 @@ TEST_CASE("controller entity and component creation", "[ecs]")
 
 TEST_CASE("controller entity hierachy", "[ecs]")
 {
-	framework::EcsController ecs;
+	fw::EcsController ecs;
 
 	// create initial hierachy
-	framework::T_EntityId const ent0 = ecs.AddEntity(TestAComponent());
+	fw::T_EntityId const ent0 = ecs.AddEntity(TestAComponent());
 	REQUIRE(ecs.GetChildren(ent0).size() == 0u);
 
-	framework::T_EntityId const ent1 = ecs.AddEntityChild(ent0, TestAComponent(), TestBComponent("wowzer"), TestCComponent(9001));
-	framework::T_EntityId const ent2 = ecs.AddEntityChild(ent0);
-	framework::T_EntityId const ent3 = ecs.AddEntityChild(ent0, TestCComponent(3u), TestBComponent("3"));
+	fw::T_EntityId const ent1 = ecs.AddEntityChild(ent0, TestAComponent(), TestBComponent("wowzer"), TestCComponent(9001));
+	fw::T_EntityId const ent2 = ecs.AddEntityChild(ent0);
+	fw::T_EntityId const ent3 = ecs.AddEntityChild(ent0, TestCComponent(3u), TestBComponent("3"));
 
 	REQUIRE(ecs.GetEntityCount() == 4u);
 
@@ -96,7 +96,7 @@ TEST_CASE("controller entity hierachy", "[ecs]")
 	REQUIRE(ecs.GetChildren(ent0)[1] == ent2);
 	REQUIRE(ecs.GetChildren(ent0)[2] == ent3);
 	REQUIRE_FALSE(ecs.HasParent(ent0));
-	REQUIRE(ecs.GetParent(ent0) == framework::INVALID_ENTITY_ID);
+	REQUIRE(ecs.GetParent(ent0) == fw::INVALID_ENTITY_ID);
 
 	// reparent to lower level
 	// 3 to 2
@@ -123,8 +123,8 @@ TEST_CASE("controller entity hierachy", "[ecs]")
 	REQUIRE(ecs.GetEntityCount() == 4u);
 
 	// unparent 1
-	ecs.ReparentEntity(ent1, framework::INVALID_ENTITY_ID);
-	REQUIRE(ecs.GetParent(ent1) == framework::INVALID_ENTITY_ID);
+	ecs.ReparentEntity(ent1, fw::INVALID_ENTITY_ID);
+	REQUIRE(ecs.GetParent(ent1) == fw::INVALID_ENTITY_ID);
 	REQUIRE(ecs.GetChildren(ent0).size() == 0u);
 	REQUIRE(ecs.GetEntityCount() == 4u);
 
@@ -136,7 +136,7 @@ TEST_CASE("controller entity hierachy", "[ecs]")
 
 TEST_CASE("controller system overwrite", "[ecs]")
 {
-	framework::EcsController ecs;
+	fw::EcsController ecs;
 	// generate entities
 	// first 10 don't have a C component so shouldn't be processed by the overwrite system
 	for (uint32 idx = 0u; idx < static_cast<uint32>(10u); ++idx)
@@ -192,7 +192,7 @@ TEST_CASE("controller system overwrite", "[ecs]")
 
 TEST_CASE("controller system hierachy", "[ecs]")
 {
-	framework::EcsController ecs;
+	fw::EcsController ecs;
 
 	// generate entities
 	ecs.AddEntity(TestCComponent(0u));
@@ -204,9 +204,9 @@ TEST_CASE("controller system hierachy", "[ecs]")
 	ecs.AddEntityChild(5u, TestCComponent(0u));
 	ecs.AddEntityChild(6u, TestCComponent(0u));
 
-	struct TestCHierachyView final : public framework::ComponentView
+	struct TestCHierachyView final : public fw::ComponentView
 	{
-		TestCHierachyView() : framework::ComponentView()
+		TestCHierachyView() : fw::ComponentView()
 		{
 			Declare(parentC);
 			Declare(c);
@@ -216,13 +216,13 @@ TEST_CASE("controller system hierachy", "[ecs]")
 		WriteAccess<TestCComponent> c;
 	};
 
-	class TestCHierachySystem final : public framework::System<TestCHierachySystem, TestCHierachyView>
+	class TestCHierachySystem final : public fw::System<TestCHierachySystem, TestCHierachyView>
 	{
 	public:
 		TestCHierachySystem() = default;
 		// base class constructors don't do anything so are not needed unless we declare dependencies or init lookup variables
 
-		void Process(framework::ComponentRange<TestCHierachyView>& range) const
+		void Process(fw::ComponentRange<TestCHierachyView>& range) const
 		{
 			for (TestCHierachyView& view : range)
 			{
@@ -252,12 +252,12 @@ TEST_CASE("controller system hierachy", "[ecs]")
 
 TEST_CASE("controller component construction, component events", "[ecs]")
 {
-	framework::EcsController ecs;
+	fw::EcsController ecs;
 
 	uint32 counter = 0;
 	uint32 counter2 = 0;
 
-	auto onAdded = [&counter2](framework::EcsController& controller, TestRefCountComp& comp, framework::T_EntityId const entity) -> void
+	auto onAdded = [&counter2](fw::EcsController& controller, TestRefCountComp& comp, fw::T_EntityId const entity) -> void
 	{
 		UNUSED(controller);
 		UNUSED(comp);
@@ -266,7 +266,7 @@ TEST_CASE("controller component construction, component events", "[ecs]")
 		++counter2;
 	};
 
-	auto onRemoved = [&counter2](framework::EcsController& controller, TestRefCountComp& comp, framework::T_EntityId const entity) -> void
+	auto onRemoved = [&counter2](fw::EcsController& controller, TestRefCountComp& comp, fw::T_EntityId const entity) -> void
 	{
 		UNUSED(controller);
 		UNUSED(comp);
@@ -275,10 +275,8 @@ TEST_CASE("controller component construction, component events", "[ecs]")
 		--counter2;
 	};
 
-	framework::T_ComEventId id = ecs.RegisterOnComponentAdded(
-		std::function<void(framework::EcsController&, TestRefCountComp&, framework::T_EntityId const)>(onAdded));
-	framework::T_ComEventId id2 = ecs.RegisterOnComponentRemoved(
-		std::function<void(framework::EcsController&, TestRefCountComp&, framework::T_EntityId const)>(onRemoved));
+	fw::T_CompEventId id = ecs.RegisterOnComponentAdded(fw::T_CompEventFn<TestRefCountComp>(onAdded));
+	fw::T_CompEventId id2 = ecs.RegisterOnComponentRemoved(fw::T_CompEventFn<TestRefCountComp>(onRemoved));
 
 	// generate entities
 	ecs.AddEntity(TestRefCountComp(&counter));

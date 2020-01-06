@@ -41,15 +41,15 @@ ECS_REGISTER_COMPONENT(TestRefCountComp);
 // utility
 //---------
 
-framework::Archetype GenTestArchetype(size_t const count)
+fw::Archetype GenTestArchetype(size_t const count)
 {
-	framework::Archetype arch(framework::GenSignature<TestBComponent, TestCComponent>());
+	fw::Archetype arch(fw::GenSignature<TestBComponent, TestCComponent>());
 
 	for (size_t idx = 0u; idx < count; ++idx)
 	{
-		arch.AddEntity(static_cast<framework::T_EntityId>(idx), {
-			framework::MakeRawComponent(TestBComponent(std::to_string(idx))),
-			framework::MakeRawComponent(TestCComponent(static_cast<uint32>(idx)))
+		arch.AddEntity(static_cast<fw::T_EntityId>(idx), {
+			fw::MakeRawComponent(TestBComponent(std::to_string(idx))),
+			fw::MakeRawComponent(TestCComponent(static_cast<uint32>(idx)))
 			});
 	}
 
@@ -59,7 +59,7 @@ framework::Archetype GenTestArchetype(size_t const count)
 // systems
 //---------
 
-void TestBCSystem::Process(framework::ComponentRange<TestBCView>& range) const
+void TestBCSystem::Process(fw::ComponentRange<TestBCView>& range) const
 {
 	size_t idx = 0u;
 
@@ -73,7 +73,7 @@ void TestBCSystem::Process(framework::ComponentRange<TestBCView>& range) const
 }
 
 
-void TestOverwriteSystem::Process(framework::ComponentRange<TestOverwriteSystemView>& range) const
+void TestOverwriteSystem::Process(fw::ComponentRange<TestOverwriteSystemView>& range) const
 {
 	for (TestOverwriteSystemView& view : range)
 	{

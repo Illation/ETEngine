@@ -163,7 +163,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "brightness": 2.99,
+              "brightness": 16.99,
               "casts shadow": true
             }
           }
@@ -177,7 +177,7 @@
       "id": 1
     },
     "postprocessing": {
-      "exposure": 1.0,
+      "exposure": 0.8,
       "gamma": 2.2,
       "bloom threshold": 10.0,
       "bloom mult": 0.1

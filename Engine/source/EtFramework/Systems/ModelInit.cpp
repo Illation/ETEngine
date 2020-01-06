@@ -7,7 +7,7 @@
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
 
-namespace framework {
+namespace fw {
 
 
 //============
@@ -43,4 +43,4 @@ void ModelInit::OnComponentRemoved(EcsController& controller, ModelComponent& co
 }
 
 
-} // namespace framework
+} // namespace fw

@@ -2,7 +2,10 @@
 
 
 // forward
-class CameraComponent;
+namespace fw {
+	class TransformComponent;
+	class CameraComponent;
+}
 class Viewport;
 
 
@@ -30,7 +33,7 @@ public:
 	void Update(Camera const& currentCamera);
 	void PopulateCamera(Camera& target, Viewport const* const viewport) const;
 
-	void ImitateComponent(CameraComponent const* const comp);
+	void ImitateComponent(fw::CameraComponent const& camComp, fw::TransformComponent const& tfComp);
 
 	void SetEnabled(bool const val) { m_IsEnabled = val; }
 

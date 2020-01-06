@@ -14,7 +14,7 @@
 
 TEST_CASE("append, get, at pool", "[ecs]")
 {
-	framework::ComponentPool myCPool(TestCComponent::GetTypeIndex());
+	fw::ComponentPool myCPool(TestCComponent::GetTypeIndex());
 
 	REQUIRE(myCPool.GetSize() == 0u);
 
@@ -50,7 +50,7 @@ TEST_CASE("append, get, at pool", "[ecs]")
 
 TEST_CASE("erase pool", "[ecs]")
 {
-	framework::ComponentPool myCPool(TestCComponent::GetTypeIndex());
+	fw::ComponentPool myCPool(TestCComponent::GetTypeIndex());
 
 	myCPool.Append(TestCComponent(0u));
 	myCPool.Append(TestCComponent(1u));

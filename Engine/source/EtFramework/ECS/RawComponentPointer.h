@@ -2,7 +2,7 @@
 #include "ComponentRegistry.h"
 
 
-namespace framework {
+namespace fw {
 
 
 //------------------
@@ -25,4 +25,4 @@ template<typename TComponentType>
 RawComponentPtr MakeRawComponent(TComponentType& comp) { return RawComponentPtr(TComponentType::GetTypeIndex(), &comp); }
 
 
-} // namespace framework
+} // namespace fw

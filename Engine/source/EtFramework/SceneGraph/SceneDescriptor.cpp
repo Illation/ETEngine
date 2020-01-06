@@ -14,33 +14,33 @@ RTTR_REGISTRATION
 {
 	using namespace rttr;
 
-	registration::class_<framework::EntityDescriptor>("entity descriptor")
-		.property("id", &framework::EntityDescriptor::m_Id)
-		.property("components", &framework::EntityDescriptor::m_Components)
-		.property("children", &framework::EntityDescriptor::m_Children);
+	registration::class_<fw::EntityDescriptor>("entity descriptor")
+		.property("id", &fw::EntityDescriptor::m_Id)
+		.property("components", &fw::EntityDescriptor::m_Components)
+		.property("children", &fw::EntityDescriptor::m_Children);
 
-	registration::class_<framework::SceneDescriptor>("scene descriptor")
-		.property("entities", &framework::SceneDescriptor::entities)
-		.property("skybox", &framework::SceneDescriptor::skybox)
-		.property("starfield", &framework::SceneDescriptor::starfield)
-		.property("active camera", &framework::SceneDescriptor::activeCamera)
-		.property("postprocessing", &framework::SceneDescriptor::postprocessing)
-		.property("audio listener", &framework::SceneDescriptor::audioListener)
-		.property("gravity", &framework::SceneDescriptor::gravity);
+	registration::class_<fw::SceneDescriptor>("scene descriptor")
+		.property("entities", &fw::SceneDescriptor::entities)
+		.property("skybox", &fw::SceneDescriptor::skybox)
+		.property("starfield", &fw::SceneDescriptor::starfield)
+		.property("active camera", &fw::SceneDescriptor::activeCamera)
+		.property("postprocessing", &fw::SceneDescriptor::postprocessing)
+		.property("audio listener", &fw::SceneDescriptor::audioListener)
+		.property("gravity", &fw::SceneDescriptor::gravity);
 
-	registration::class_<framework::SceneDescriptorAsset>("scene descriptor asset")
-		.constructor<framework::SceneDescriptorAsset const&>()
+	registration::class_<fw::SceneDescriptorAsset>("scene descriptor asset")
+		.constructor<fw::SceneDescriptorAsset const&>()
 		.constructor<>()(rttr::detail::as_object());
-	rttr::type::register_converter_func([](framework::SceneDescriptorAsset& descriptor, bool& ok) -> I_Asset*
+	rttr::type::register_converter_func([](fw::SceneDescriptorAsset& descriptor, bool& ok) -> I_Asset*
 	{
 		ok = true;
-		return new framework::SceneDescriptorAsset(descriptor);
+		return new fw::SceneDescriptorAsset(descriptor);
 	});
 }
-DEFINE_FORCED_LINKING(framework::SceneDescriptorAsset) // force the asset class to be linked as it is only used in reflection
+DEFINE_FORCED_LINKING(fw::SceneDescriptorAsset) // force the asset class to be linked as it is only used in reflection
 
 
-namespace framework {
+namespace fw {
 
 
 //---------------------------------------
@@ -65,5 +65,5 @@ bool SceneDescriptorAsset::LoadFromMemory(std::vector<uint8> const& data)
 }
 
 
-} // namespace framework
+} // namespace fw
 

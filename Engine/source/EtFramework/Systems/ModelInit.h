@@ -4,7 +4,7 @@
 #include <EtFramework/ECS/EcsController.h>
 
 
-namespace framework {
+namespace fw {
 
 
 //-------------
@@ -20,5 +20,5 @@ public:
 };
 
 
-} // namespace framework
+} // namespace fw
 

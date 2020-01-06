@@ -4,8 +4,9 @@
 #include <EtRendering/GraphicsContext/Viewport.h>
 #include <EtRendering/GraphicsContext/GraphicsTypes.h>
 
+#include <EtFramework/ECS/EntityFwd.h>
 
-class AbstractScene;
+
 class Camera;
 namespace render {
 	class Material;
@@ -39,7 +40,7 @@ private:
 	// Functionality
 	//---------------
 public:
-	void Pick(ivec2 const pixel, Viewport* const viewport, AbstractScene* const scene, std::function<void(Entity* const)>& onEntityPicked);
+	void Pick(ivec2 const pixel, Viewport* const viewport, std::function<void(fw::T_EntityId const)>& onEntityPicked);
 	
 	// Viewport Listener interface
 	//-----------------------------
@@ -51,7 +52,8 @@ protected:
 	// Utility
 	//---------
 private:
-	void RecursiveDrawEntity(Entity* const entity, Camera const& camera) const;
+	void DrawEntity(fw::T_EntityId const entity, Camera const& camera) const;
+	void GetIdColor(fw::T_EntityId const id, vec4& col) const;
 
 
 	// Data
@@ -68,7 +70,6 @@ private:
 
 	ivec2 m_PixelToPick;
 	Viewport* m_ViewportToPickFrom = nullptr;
-	AbstractScene* m_Scene = nullptr;
-	std::function<void(Entity* const)> m_OnEntityPicked;
+	std::function<void(fw::T_EntityId const)> m_OnEntityPicked;
 };
 

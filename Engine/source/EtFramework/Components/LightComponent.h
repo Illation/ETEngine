@@ -65,7 +65,7 @@ private:
 };
 
 
-namespace framework {
+namespace fw {
 
 
 //---------------------------------
@@ -155,4 +155,4 @@ public:
 };
 
 
-} // namespace framework
+} // namespace fw

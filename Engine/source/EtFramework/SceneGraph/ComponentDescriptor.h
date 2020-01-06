@@ -4,7 +4,7 @@
 #include <EtFramework/ECS/RawComponentPointer.h>
 
 
-namespace framework {
+namespace fw {
 
 
 //-----------------------
@@ -58,4 +58,4 @@ public:
 };
 
 
-} // namespace framework
+} // namespace fw

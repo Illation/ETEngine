@@ -11,7 +11,7 @@
 #include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
 
 
-namespace framework {
+namespace fw {
 
 
 //-----------------------
@@ -80,17 +80,17 @@ public:
 //
 // Asset data to load a scene
 //
-class SceneDescriptorAsset final : public Asset<SceneDescriptor, true>
+class SceneDescriptorAsset final : public Asset<SceneDescriptor, false>
 {
 	// definitions
 	//-------------
 	DECLARE_FORCED_LINKING()
-	RTTR_ENABLE(Asset<SceneDescriptor, true>)
+	RTTR_ENABLE(Asset<SceneDescriptor, false>)
 
 	// Construct destruct
 	//---------------------
 public:
-	SceneDescriptorAsset() : Asset<SceneDescriptor, true>() {}
+	SceneDescriptorAsset() : Asset<SceneDescriptor, false>() {}
 	virtual ~SceneDescriptorAsset() = default;
 
 	// Asset interface
@@ -99,5 +99,5 @@ public:
 };
 
 
-} // namespace framework
+} // namespace fw
 

@@ -3,7 +3,7 @@
 #include "Archetype.h"
 
 
-namespace framework {
+namespace fw {
 
 
 //======================
@@ -25,4 +25,4 @@ BaseComponentRange::BaseComponentRange(EcsController* const controller, Archetyp
 }
 
 
-} // namespace framework
+} // namespace fw

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace framework {
+namespace fw {
 
 
 //====================
@@ -96,5 +96,5 @@ T_CompTypeList GenCompTypeList()
 }
 
 
-} // namespace framework
+} // namespace fw
 

@@ -11,12 +11,12 @@ RTTR_REGISTRATION
 {
 	using namespace rttr;
 
-	registration::class_<framework::EntityLink>("entity link")
-		.property("id", &framework::EntityLink::GetId, &framework::EntityLink::SetDeserializedId);
+	registration::class_<fw::EntityLink>("entity link")
+		.property("id", &fw::EntityLink::GetId, &fw::EntityLink::SetDeserializedId);
 }
 
 
-namespace framework {
+namespace fw {
 
 
 //=============
@@ -182,4 +182,4 @@ void EntityLinkResolver::Clear()
 }
 
 
-} // namespace framework
+} // namespace fw

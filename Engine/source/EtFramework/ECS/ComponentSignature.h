@@ -3,7 +3,7 @@
 #include "RawComponentPointer.h"
 
 
-namespace framework {
+namespace fw {
 
 
 //--------------------
@@ -45,4 +45,4 @@ template<typename... Args>
 ComponentSignature GenSignature() { return ComponentSignature(GenCompTypeList<Args...>()); }
 
 
-} // namespace framework
+} // namespace fw

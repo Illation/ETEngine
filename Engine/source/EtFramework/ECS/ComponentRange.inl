@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace framework {
+namespace fw {
 
 
 //==========================
@@ -77,6 +77,6 @@ ComponentRange<TViewType>::ComponentRange(EcsController* const controller, Arche
 { }
 
 
-} // namespace framework
+} // namespace fw
 
 

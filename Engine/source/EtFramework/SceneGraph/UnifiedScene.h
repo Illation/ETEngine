@@ -12,7 +12,7 @@
 #include <EtFramework/Physics/PhysicsWorld.h>
 
 
-namespace framework {
+namespace fw {
 
 
 //--------------------
@@ -51,7 +51,11 @@ public:
 	// accessors
 	//-----------
 	T_Hash GetSceneId() const { return m_CurrentScene; }
+	std::string const& GetSceneName() const { return m_SceneName; }
 	EcsController& GetEcs() { return m_Scene; }
+
+	T_EntityId GetActiveCamera() const { return m_ActiveCamera; }
+	T_EntityId GetAudioListener() const { return m_AudioListener; }
 
 	render::Scene& GetRenderScene() { return m_RenderScene; }
 	PhysicsWorld& GetPhysicsWorld() { return m_PhysicsWorld; }
@@ -67,6 +71,7 @@ private:
 	///////
 
 	T_Hash m_CurrentScene = 0u;
+	std::string m_SceneName;
 
 	EcsController m_Scene;
 
@@ -81,5 +86,5 @@ private:
 };
 
 
-} // namespace framework
+} // namespace fw
 

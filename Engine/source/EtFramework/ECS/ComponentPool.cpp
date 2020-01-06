@@ -2,7 +2,7 @@
 #include "ComponentPool.h"
 
 
-namespace framework {
+namespace fw {
 
 
 //================
@@ -104,4 +104,4 @@ void ComponentPool::Clear()
 }
 
 
-} // namespace framework
+} // namespace fw

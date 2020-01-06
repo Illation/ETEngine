@@ -73,28 +73,28 @@ RTTR_REGISTRATION
 {
 	using namespace rttr;
 
-	registration::class_<framework::ModelComponent>("model component");
+	registration::class_<fw::ModelComponent>("model component");
 
-	registration::class_<framework::ModelComponentDesc>("model comp desc")
-		.constructor<framework::ModelComponentDesc const&>()
+	registration::class_<fw::ModelComponentDesc>("model comp desc")
+		.constructor<fw::ModelComponentDesc const&>()
 		.constructor<>()(rttr::detail::as_object())
-		.property("mesh", &framework::ModelComponentDesc::mesh)
-		.property("material", &framework::ModelComponentDesc::material);
+		.property("mesh", &fw::ModelComponentDesc::mesh)
+		.property("material", &fw::ModelComponentDesc::material);
 
-	rttr::type::register_converter_func([](framework::ModelComponentDesc& descriptor, bool& ok) -> framework::I_ComponentDescriptor*
+	rttr::type::register_converter_func([](fw::ModelComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
 	{
 		ok = true;
-		return new framework::ModelComponentDesc(descriptor);
+		return new fw::ModelComponentDesc(descriptor);
 	});
 }
 
 // component registration
 //------------------------
 
-ECS_REGISTER_COMPONENT(framework::ModelComponent);
+ECS_REGISTER_COMPONENT(fw::ModelComponent);
 
 
-namespace framework {
+namespace fw {
 
 
 //=================
@@ -136,4 +136,4 @@ ModelComponent* ModelComponentDesc::MakeData()
 }
 
 
-} // namespace framework
+} // namespace fw

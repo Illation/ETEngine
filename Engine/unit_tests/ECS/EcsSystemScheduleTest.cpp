@@ -15,57 +15,57 @@
 // some structures to test correct system ordering
 ///////////////////////////////////////////////////
 
-struct TestEmptyView final : public framework::ComponentView {};
+struct TestEmptyView final : public fw::ComponentView {};
 
-class TestFirstSystem final : public framework::System<TestFirstSystem, TestEmptyView>
+class TestFirstSystem final : public fw::System<TestFirstSystem, TestEmptyView>
 {
 public:
-	TestFirstSystem(std::vector<framework::T_SystemType>* const order)
+	TestFirstSystem(std::vector<fw::T_SystemType>* const order)
 		: m_Order(order)
 	{
 	}
 
-	void Process(framework::ComponentRange<TestEmptyView>& range) const override
+	void Process(fw::ComponentRange<TestEmptyView>& range) const override
 	{
 		m_Order->push_back(GetTypeId());
 	}
 private:
-	std::vector<framework::T_SystemType>* const m_Order;
+	std::vector<fw::T_SystemType>* const m_Order;
 };
 
-class TestLastSystem final : public framework::System<TestLastSystem, TestEmptyView>
+class TestLastSystem final : public fw::System<TestLastSystem, TestEmptyView>
 {
 public:
-	TestLastSystem(std::vector<framework::T_SystemType>* const order)
+	TestLastSystem(std::vector<fw::T_SystemType>* const order)
 		: m_Order(order)
 	{
 		DeclareDependencies<TestFirstSystem>();
 	}
 
-	void Process(framework::ComponentRange<TestEmptyView>& range) const override
+	void Process(fw::ComponentRange<TestEmptyView>& range) const override
 	{
 		m_Order->push_back(GetTypeId());
 	}
 private:
-	std::vector<framework::T_SystemType>* const m_Order;
+	std::vector<fw::T_SystemType>* const m_Order;
 };
 
-class TestBetweenSystem final : public framework::System<TestBetweenSystem, TestEmptyView>
+class TestBetweenSystem final : public fw::System<TestBetweenSystem, TestEmptyView>
 {
 public:
-	TestBetweenSystem(std::vector<framework::T_SystemType>* const order)
+	TestBetweenSystem(std::vector<fw::T_SystemType>* const order)
 		: m_Order(order)
 	{
 		DeclareDependencies<TestFirstSystem>();
 		DeclareDependents<TestLastSystem>();
 	}
 
-	void Process(framework::ComponentRange<TestEmptyView>& range) const override
+	void Process(fw::ComponentRange<TestEmptyView>& range) const override
 	{
 		m_Order->push_back(GetTypeId());
 	}
 private:
-	std::vector<framework::T_SystemType>* const m_Order;
+	std::vector<fw::T_SystemType>* const m_Order;
 };
 
 
@@ -74,17 +74,17 @@ private:
 
 TEST_CASE("controller system scheduling", "[ecs]")
 {
-	std::vector<framework::T_SystemType> executedOrder;
+	std::vector<fw::T_SystemType> executedOrder;
 
-	framework::EcsController ecs;
+	fw::EcsController ecs;
 
-	framework::T_EntityId const ent0 = ecs.AddEntity();
+	fw::T_EntityId const ent0 = ecs.AddEntity();
 
 	ecs.RegisterSystem<TestLastSystem>(&executedOrder);
 	ecs.RegisterSystem<TestFirstSystem>(&executedOrder);
 	ecs.RegisterSystem<TestBetweenSystem>(&executedOrder);
 
-	framework::T_EntityId const ent1 = ecs.AddEntity(TestAComponent());
+	fw::T_EntityId const ent1 = ecs.AddEntity(TestAComponent());
 	// every system will be called twice (once for each entity archetype)
 
 	ecs.Process();

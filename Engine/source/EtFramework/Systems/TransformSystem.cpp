@@ -4,7 +4,7 @@
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
 
-namespace framework {
+namespace fw {
 
 
 //=====================
@@ -83,4 +83,4 @@ void TransformSystem::Process(ComponentRange<TransformSystemView>& range) const
 }
 
 
-} // namespace framework
+} // namespace fw

@@ -2,7 +2,7 @@
 #include "ComponentSignature.h"
 
 
-namespace framework {
+namespace fw {
 
 
 //=====================
@@ -126,4 +126,4 @@ bool operator==(ComponentSignature const& lhs, ComponentSignature const& rhs)
 }
 
 
-} // namespace framework
+} // namespace fw

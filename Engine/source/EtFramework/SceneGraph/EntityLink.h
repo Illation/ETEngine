@@ -4,7 +4,7 @@
 #include <EtFramework/ECS/EntityFwd.h>
 
 
-namespace framework {
+namespace fw {
 
 
 //------------
@@ -72,4 +72,4 @@ private:
 };
 
 
-} // namespace framework
+} // namespace fw

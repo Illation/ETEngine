@@ -13,8 +13,8 @@
 TEST_CASE("system dependency", "[ecs]")
 {
 	TestOverwriteSystem sys(0u);
-	framework::T_DependencyList const& dependencies = sys.GetDependencies();
-	framework::T_DependencyList const& dependents = sys.GetDependents();
+	fw::T_DependencyList const& dependencies = sys.GetDependencies();
+	fw::T_DependencyList const& dependents = sys.GetDependents();
 
 	REQUIRE(dependencies.size() == 0u);
 	REQUIRE(dependents.size() == 1u);
@@ -25,11 +25,11 @@ TEST_CASE("system iterate", "[ecs]")
 {
 	size_t const entityCount = 16;
 
-	framework::Archetype arch = GenTestArchetype(entityCount);
+	fw::Archetype arch = GenTestArchetype(entityCount);
 	REQUIRE(arch.GetSize() == entityCount);
 
 	TestBCSystem systemBC;
-	REQUIRE(systemBC.GetSignature() == framework::GenSignature<TestCComponent, TestBComponent>());
+	REQUIRE(systemBC.GetSignature() == fw::GenSignature<TestCComponent, TestBComponent>());
 
 	REQUIRE(arch.GetSignature().Contains(systemBC.GetSignature()));
 
@@ -43,12 +43,12 @@ TEST_CASE("system overwrite", "[ecs]")
 	size_t const overwriteEnd = 12u;
 
 	// generate entities
-	framework::Archetype arch(framework::GenSignature<TestOverwriteComp, TestCComponent>());
+	fw::Archetype arch(fw::GenSignature<TestOverwriteComp, TestCComponent>());
 
 	for (uint32 idx = 0u; idx < static_cast<uint32>(entityCount); ++idx)
 	{
-		framework::T_EntityId const entity = static_cast<framework::T_EntityId>(idx);
-		arch.AddEntity(entity, { framework::MakeRawComponent(TestOverwriteComp()), framework::MakeRawComponent(TestCComponent(idx)) });
+		fw::T_EntityId const entity = static_cast<fw::T_EntityId>(idx);
+		arch.AddEntity(entity, { fw::MakeRawComponent(TestOverwriteComp()), fw::MakeRawComponent(TestCComponent(idx)) });
 	}
 
 	// create and run the overwrite system
@@ -56,9 +56,9 @@ TEST_CASE("system overwrite", "[ecs]")
 	sys.RootProcess(nullptr, &arch, 0u, overwriteEnd);
 
 	// validate that the system changed the components
-	struct COverwriteReadOnlyView final : public framework::ComponentView
+	struct COverwriteReadOnlyView final : public fw::ComponentView
 	{
-		COverwriteReadOnlyView() : framework::ComponentView()
+		COverwriteReadOnlyView() : fw::ComponentView()
 		{
 			Declare(o);
 			Declare(c);
@@ -68,7 +68,7 @@ TEST_CASE("system overwrite", "[ecs]")
 		ReadAccess<TestCComponent> c;
 	};
 
-	framework::ComponentRange<COverwriteReadOnlyView> range(nullptr, &arch, 0u, entityCount);
+	fw::ComponentRange<COverwriteReadOnlyView> range(nullptr, &arch, 0u, entityCount);
 
 	size_t idx = 0u;
 	for (COverwriteReadOnlyView& view : range)

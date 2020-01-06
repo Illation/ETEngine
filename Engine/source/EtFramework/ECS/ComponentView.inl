@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace framework {
+namespace fw {
 
 
 //================
@@ -57,6 +57,6 @@ ComponentSignature SignatureFromView()
 }
 
 
-} // namespace framework
+} // namespace fw
 
 

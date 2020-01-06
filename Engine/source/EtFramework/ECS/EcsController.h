@@ -1,12 +1,12 @@
 #pragma once
 #include "ComponentSignature.h"
-#include "ComponentEvents.h"
+#include "EcsEvents.h"
 #include "EntityFwd.h"
 #include "RawComponentPointer.h"
 #include "System.h"
 
 
-namespace framework {
+namespace fw {
 
 
 // fwd
@@ -95,11 +95,16 @@ public:
 
 	// component events
 	template<typename TComponentType>
-	T_ComEventId RegisterOnComponentAdded(std::function<void(EcsController&, TComponentType&, T_EntityId const)>& fn);
+	T_CompEventId RegisterOnComponentAdded(T_CompEventFn<TComponentType>& fn);
 	template<typename TComponentType>
-	T_ComEventId RegisterOnComponentRemoved(std::function<void(EcsController&, TComponentType&, T_EntityId const)>& fn);
+	T_CompEventId RegisterOnComponentRemoved(T_CompEventFn<TComponentType>& fn);
 	template<typename TComponentType>
-	void UnregisterComponentEvent(T_ComEventId& callbackId);
+	void UnregisterComponentEvent(T_CompEventId& callbackId);
+
+	// entity events
+	T_EntityEventId RegisterOnEntityAdded(T_EntityEventFn& fn);
+	T_EntityEventId RegisterOnEntityRemoved(T_EntityEventFn& fn);
+	void UnregisterEntityEvent(T_EntityEventId& callbackId);
 
 	// systems
 	void Process(); 
@@ -114,6 +119,7 @@ public:
 
 	// entities
 	size_t GetEntityCount() const { return m_Entities.size(); }
+	std::vector<T_EntityId> const& GetEntities() const { return m_Entities.ids(); }
 	bool HasParent(T_EntityId const entity) const;
 	T_EntityId GetParent(T_EntityId const entity) const;
 	std::vector<T_EntityId> const& GetChildren(T_EntityId const entity) const;
@@ -123,7 +129,7 @@ public:
 
 	bool HasComponent(T_EntityId const entity, T_CompTypeIdx const compType) const;
 	template<typename TComponentType>
-	bool HasComponent(T_EntityId const entity);
+	bool HasComponent(T_EntityId const entity) const;
 
 	template<typename TComponentType>
 	TComponentType& GetComponent(T_EntityId const entity);
@@ -161,13 +167,14 @@ private:
 	std::vector<ArchetypeContainer> m_HierachyLevels;
 
 	std::vector<detail::T_ComponentEventDispatcher> m_ComponentEvents;
+	detail::T_EntityEventDispatcher m_EntityEvents;
 
 	std::vector<RegisteredSystem*> m_Systems; // system ownership
 	std::vector<RegisteredSystem*> m_Schedule; // for iteration
 };
 
 
-} // namespace framework
+} // namespace fw
 
 
 #include "EcsController.inl"

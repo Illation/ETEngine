@@ -34,31 +34,31 @@ RTTR_REGISTRATION
 {
 	using namespace rttr;
 
-	registration::class_<framework::CameraComponent>("camera component");
+	registration::class_<fw::CameraComponent>("camera component");
 
-	registration::class_<framework::CameraComponentDesc>("camera comp desc")
-		.constructor<framework::CameraComponentDesc const&>()
+	registration::class_<fw::CameraComponentDesc>("camera comp desc")
+		.constructor<fw::CameraComponentDesc const&>()
 		.constructor<>()(rttr::detail::as_object())
-		.property("is perspective", &framework::CameraComponentDesc::isPerspective)
-		.property("field of view", &framework::CameraComponentDesc::fieldOfView)
-		.property("ortho size", &framework::CameraComponentDesc::size)
-		.property("near plane", &framework::CameraComponentDesc::nearPlane)
-		.property("far plane", &framework::CameraComponentDesc::farPlane);
+		.property("is perspective", &fw::CameraComponentDesc::isPerspective)
+		.property("field of view", &fw::CameraComponentDesc::fieldOfView)
+		.property("ortho size", &fw::CameraComponentDesc::size)
+		.property("near plane", &fw::CameraComponentDesc::nearPlane)
+		.property("far plane", &fw::CameraComponentDesc::farPlane);
 
-	rttr::type::register_converter_func([](framework::CameraComponentDesc& descriptor, bool& ok) -> framework::I_ComponentDescriptor*
+	rttr::type::register_converter_func([](fw::CameraComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
 	{
 		ok = true;
-		return new framework::CameraComponentDesc(descriptor);
+		return new fw::CameraComponentDesc(descriptor);
 	});
 }
 
 // component registration
 //------------------------
 
-ECS_REGISTER_COMPONENT(framework::CameraComponent);
+ECS_REGISTER_COMPONENT(fw::CameraComponent);
 
 
-namespace framework {
+namespace fw {
 
 
 //==================
@@ -118,4 +118,4 @@ CameraComponent* CameraComponentDesc::MakeData()
 }
 
 
-} // namespace framework
+} // namespace fw

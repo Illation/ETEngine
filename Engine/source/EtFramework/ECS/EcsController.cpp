@@ -5,7 +5,7 @@
 #include "Archetype.h"
 
 
-namespace framework {
+namespace fw {
 
 
 //================
@@ -110,8 +110,11 @@ T_EntityId EcsController::AddEntityBatched(T_EntityId const parent, std::vector<
 
 	for (RawComponentPtr& comp : addedComponents)
 	{
-		m_ComponentEvents[comp.typeIdx].Notify(detail::E_ComponentEvent::Added, new detail::ComponentEventData(this, comp.data, ent.second));
+		m_ComponentEvents[comp.typeIdx].Notify(detail::E_EcsEvent::Added, new detail::ComponentEventData(this, comp.data, ent.second));
 	}
+
+	// entity events
+	m_EntityEvents.Notify(detail::E_EcsEvent::Added, new detail::EntityEventData(this, ent.second));
 
 	// return the ID
 	return ent.second;
@@ -166,6 +169,9 @@ void EcsController::ReparentEntity(T_EntityId const entity, T_EntityId const new
 //
 void EcsController::RemoveEntity(T_EntityId const entity)
 {
+	// entity events
+	m_EntityEvents.Notify(detail::E_EcsEvent::Removed, new detail::EntityEventData(this, entity));
+
 	// get referred entity
 	EntityData& ent = m_Entities[entity];
 
@@ -174,7 +180,7 @@ void EcsController::RemoveEntity(T_EntityId const entity)
 	GetComponentsAndTypes(ent, components);
 	for (RawComponentPtr& comp : components)
 	{
-		m_ComponentEvents[comp.typeIdx].Notify(detail::E_ComponentEvent::Removed, new detail::ComponentEventData(this, comp.data, entity));
+		m_ComponentEvents[comp.typeIdx].Notify(detail::E_EcsEvent::Removed, new detail::ComponentEventData(this, comp.data, entity));
 	}
 
 	RemoveEntityFromParent(entity, ent.parent);
@@ -239,7 +245,7 @@ void EcsController::AddComponents(T_EntityId const entity, std::vector<RawCompon
 	for (RawComponentPtr& comp : components)
 	{
 		comp.data = ent.archetype->GetPool(comp.typeIdx).At(ent.index);
-		m_ComponentEvents[comp.typeIdx].Notify(detail::E_ComponentEvent::Added, new detail::ComponentEventData(this, comp.data, entity));
+		m_ComponentEvents[comp.typeIdx].Notify(detail::E_EcsEvent::Added, new detail::ComponentEventData(this, comp.data, entity));
 	}
 }
 
@@ -266,7 +272,7 @@ void EcsController::RemoveComponents(T_EntityId const entity, T_CompTypeList con
 
 			ET_ASSERT(currentComponents.size() == 1u);
 			ET_ASSERT(currentComponents[0u].typeIdx == comp);
-			m_ComponentEvents[comp].Notify(detail::E_ComponentEvent::Removed, new detail::ComponentEventData(this, currentComponents[0u].data, entity));
+			m_ComponentEvents[comp].Notify(detail::E_EcsEvent::Removed, new detail::ComponentEventData(this, currentComponents[0u].data, entity));
 			currentComponents.clear();
 		}
 		else
@@ -280,13 +286,53 @@ void EcsController::RemoveComponents(T_EntityId const entity, T_CompTypeList con
 			compTypes[idx] = compTypes[compTypes.size() - 1];
 			compTypes.pop_back();
 
-			m_ComponentEvents[comp].Notify(detail::E_ComponentEvent::Removed, new detail::ComponentEventData(this, currentComponents[idx].data, entity));
+			m_ComponentEvents[comp].Notify(detail::E_EcsEvent::Removed, new detail::ComponentEventData(this, currentComponents[idx].data, entity));
 			currentComponents[idx] = currentComponents[currentComponents.size() - 1];
 			currentComponents.pop_back();
 		}
 	}
 
 	MoveArchetype(entity, ent, compTypes, currentComponents);
+}
+
+
+// entity events
+/////////////////
+
+//-----------------------------------------
+// EcsController::RegisterOnEntityAdded
+//
+T_EntityEventId EcsController::RegisterOnEntityAdded(T_EntityEventFn& fn)
+{
+	return m_EntityEvents.Register(detail::E_EcsEvent::Added, detail::T_EntityEventCallbackInternal(
+		[this, fn](detail::T_EcsEvent const flags, detail::EntityEventData const* const evnt) -> void
+		{
+			UNUSED(flags);
+			fn(*evnt->controller, evnt->entity);
+		}));
+}
+
+//-------------------------------------------
+// EcsController::RegisterOnEntityRemoved
+//
+T_EntityEventId EcsController::RegisterOnEntityRemoved(T_EntityEventFn& fn)
+{
+	return m_EntityEvents.Register(detail::E_EcsEvent::Removed, detail::T_EntityEventCallbackInternal(
+		[this, fn](detail::T_EcsEvent const flags, detail::EntityEventData const* const evnt) -> void
+		{
+			UNUSED(flags);
+			fn(*evnt->controller, evnt->entity);
+		}));
+}
+
+//--------------------------------------
+// EcsController::UnregisterEntityEvent
+//
+// Not required to be called unless the event is a member function that gets deleted before the ecs controller does
+//
+void EcsController::UnregisterEntityEvent(T_EntityEventId& callbackId)
+{
+	m_EntityEvents.Unregister(callbackId);
 }
 
 
@@ -639,4 +685,4 @@ void EcsController::TopologicalSort(RegisteredSystem* const sys)
 }
 
 
-} // namespace framework
+} // namespace fw

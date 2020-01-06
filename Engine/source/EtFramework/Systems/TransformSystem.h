@@ -5,7 +5,7 @@
 #include <EtFramework/ECS/EcsController.h>
 
 
-namespace framework {
+namespace fw {
 
 
 //---------------------------------
@@ -30,7 +30,7 @@ struct TransformSystemView final : public ComponentView
 //
 // Updates transform component world locations respecting the entity hierachy
 //
-class TransformSystem final : public framework::System<TransformSystem, TransformSystemView>
+class TransformSystem final : public fw::System<TransformSystem, TransformSystemView>
 {
 public:
 	TransformSystem() = default;
@@ -42,5 +42,5 @@ public:
 };
 
 
-} // namespace framework
+} // namespace fw
 

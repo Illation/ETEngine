@@ -12,7 +12,7 @@
 #include <EtFramework/Systems/ModelInit.h>
 
 
-namespace framework {
+namespace fw {
 
 
 //===============
@@ -39,17 +39,15 @@ UnifiedScene& UnifiedScene::Instance()
 void UnifiedScene::Init()
 {
 	m_Scene.RegisterSystem<TransformSystem>();
-	m_Scene.RegisterOnComponentAdded(
-		std::function<void(framework::EcsController&, TransformComponent&, T_EntityId const)>(TransformSystem::OnComponentAdded));
-	m_Scene.RegisterOnComponentRemoved(
-		std::function<void(framework::EcsController&, TransformComponent&, T_EntityId const)>(TransformSystem::OnComponentRemoved));
+	m_Scene.RegisterOnComponentAdded(T_CompEventFn<TransformComponent>(TransformSystem::OnComponentAdded));
+	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<TransformComponent>(TransformSystem::OnComponentRemoved));
 
 	m_Scene.RegisterSystem<LightSystem>();
-	m_Scene.RegisterOnComponentAdded(std::function<void(framework::EcsController&, LightComponent&, T_EntityId const)>(LightSystem::OnComponentAdded));
-	m_Scene.RegisterOnComponentRemoved(std::function<void(framework::EcsController&, LightComponent&, T_EntityId const)>(LightSystem::OnComponentRemoved));
+	m_Scene.RegisterOnComponentAdded(T_CompEventFn<LightComponent>(LightSystem::OnComponentAdded));
+	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<LightComponent>(LightSystem::OnComponentRemoved));
 
-	m_Scene.RegisterOnComponentAdded(std::function<void(framework::EcsController&, ModelComponent&, T_EntityId const)>(ModelInit::OnComponentAdded));
-	m_Scene.RegisterOnComponentRemoved(std::function<void(framework::EcsController&, ModelComponent&, T_EntityId const)>(ModelInit::OnComponentRemoved));
+	m_Scene.RegisterOnComponentAdded(T_CompEventFn<ModelComponent>(ModelInit::OnComponentAdded));
+	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<ModelComponent>(ModelInit::OnComponentRemoved));
 
 	m_EventDispatcher.Notify(E_SceneEvent::RegisterSystems, new SceneEventData(nullptr));
 }
@@ -95,6 +93,8 @@ void UnifiedScene::LoadScene(T_Hash const assetId)
 	//----------------------------------------------
 	AssetPtr<SceneDescriptor> const sceneDesc = ResourceManager::Instance()->GetAssetData<SceneDescriptor>(m_CurrentScene);
 	ET_ASSERT(sceneDesc != nullptr);
+
+	m_SceneName = sceneDesc.GetAsset()->GetName();
 
 	for (EntityDescriptor const& entDesc : sceneDesc->entities)
 	{
@@ -158,6 +158,7 @@ void UnifiedScene::UnloadScene()
 	m_AudioListener = INVALID_ENTITY_ID;
 
 	m_CurrentScene = 0u;
+	m_SceneName = "";
 }
 
 //-------------------------
@@ -200,4 +201,4 @@ void UnifiedScene::AddEntity(EntityDescriptor const& entDesc, T_EntityId const p
 }
 
 
-} // namespace framework
+} // namespace fw

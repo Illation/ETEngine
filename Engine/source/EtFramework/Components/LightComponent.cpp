@@ -69,34 +69,34 @@ RTTR_REGISTRATION
 {
 	using namespace rttr;
 
-	registration::enumeration<framework::LightComponent::E_Type>("light component type") (
-		value("Point", framework::LightComponent::E_Type::Point),
-		value("Directional", framework::LightComponent::E_Type::Directional));
+	registration::enumeration<fw::LightComponent::E_Type>("light component type") (
+		value("Point", fw::LightComponent::E_Type::Point),
+		value("Directional", fw::LightComponent::E_Type::Directional));
 
-	registration::class_<framework::LightComponent>("light component");
+	registration::class_<fw::LightComponent>("light component");
 
-	registration::class_<framework::LightComponentDesc>("light comp desc")
-		.constructor<framework::LightComponentDesc const&>()
+	registration::class_<fw::LightComponentDesc>("light comp desc")
+		.constructor<fw::LightComponentDesc const&>()
 		.constructor<>()(rttr::detail::as_object())
-		.property("type", &framework::LightComponentDesc::type)
-		.property("color", &framework::LightComponentDesc::color)
-		.property("brightness", &framework::LightComponentDesc::brightness)
-		.property("casts shadow", &framework::LightComponentDesc::castsShadow);
+		.property("type", &fw::LightComponentDesc::type)
+		.property("color", &fw::LightComponentDesc::color)
+		.property("brightness", &fw::LightComponentDesc::brightness)
+		.property("casts shadow", &fw::LightComponentDesc::castsShadow);
 
-	rttr::type::register_converter_func([](framework::LightComponentDesc& descriptor, bool& ok) -> framework::I_ComponentDescriptor*
+	rttr::type::register_converter_func([](fw::LightComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
 	{
 		ok = true;
-		return new framework::LightComponentDesc(descriptor);
+		return new fw::LightComponentDesc(descriptor);
 	});
 }
 
 // component registration
 //------------------------
 
-ECS_REGISTER_COMPONENT(framework::LightComponent);
+ECS_REGISTER_COMPONENT(fw::LightComponent);
 
 
-namespace framework {
+namespace fw {
 
 
 //=================
@@ -133,4 +133,4 @@ LightComponent* LightComponentDesc::MakeData()
 }
 
 
-} // namespace framework
+} // namespace fw

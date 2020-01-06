@@ -16,7 +16,7 @@ void ForceLinking()
 	render::ForceLinking();
 
 	FORCE_LINKING(AudioAsset)
-	framework::FORCE_LINKING(SceneDescriptorAsset)
+	fw::FORCE_LINKING(SceneDescriptorAsset)
 }
 
 

@@ -6,8 +6,7 @@
 #include <gtkmm/box.h>
 #include <gtkmm/searchentry.h>
 
-#include <EtFramework/SceneGraph/AbstractScene.h>
-#include <EtFramework/SceneGraph/Entity.h>
+#include <EtFramework/SceneGraph/UnifiedScene.h>
 
 #include <EtEditor/SceneEditor/SceneEditor.h>
 #include <EtEditor/Util/GtkUtil.h>
@@ -70,16 +69,12 @@ void Outliner::Init(EditorBase* const editor, Gtk::Frame* parent)
 
 	m_SceneSelection->RegisterListener(this);
 
-	AbstractScene const* const scene = m_SceneSelection->GetScene();
-	if (scene != nullptr)
+	if (fw::UnifiedScene::Instance().GetSceneId() != 0u)
 	{
-		if (scene->IsInitialized())
+		RefillTreeView();
+		for (fw::T_EntityId const entity : m_SceneSelection->GetSelectedEntities())
 		{
-			RefillTreeView();
-			for (Entity* const entity : m_SceneSelection->GetSelectedEntities())
-			{
-				OnEntitySelectionChanged(entity, true);
-			}
+			OnEntitySelectionChanged(entity, true);
 		}
 	}
 
@@ -125,8 +120,10 @@ void Outliner::OnSceneEvent(E_SceneEvent const eventType, SceneEventData const* 
 //
 // React to any changes in the scene
 //
-void Outliner::OnEntitySelectionChanged(Entity* const entity, bool const selected)
+void Outliner::OnEntitySelectionChanged(fw::T_EntityId const entity, bool const selected)
 {
+	ET_ASSERT(entity != fw::INVALID_ENTITY_ID);
+
 	Gtk::TreeModel::Children children = m_TreeModel->children();
 
 	auto row = RecursiveGetChild(entity, children);
@@ -186,8 +183,8 @@ void Outliner::OnSelectionChanged()
 
 	auto onSelectionIteration = [this](const Gtk::TreeModel::iterator& it)
 		{
-			Entity* const entity = (*it)[m_Columns.m_Entity];
-			if (entity != nullptr)
+			fw::T_EntityId const entity = (*it)[m_Columns.m_Id];
+			if (entity != fw::INVALID_ENTITY_ID)
 			{
 				m_SceneSelection->ToggleEntitySelected(entity);
 			}
@@ -203,20 +200,22 @@ void Outliner::OnSelectionChanged()
 //
 void Outliner::RefillTreeView()
 {
-	AbstractScene* const scene = m_SceneSelection->GetScene();
-	ET_ASSERT(scene != nullptr);
+	ET_ASSERT(fw::UnifiedScene::Instance().GetSceneId() != 0u);
+	fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
 
 	Gtk::TreeModel::Row row = *(m_TreeModel->append());
-	row[m_Columns.m_Name] = scene->GetName();
-	row[m_Columns.m_Id] = 0u;
-	row[m_Columns.m_Entity] = nullptr;
+	row[m_Columns.m_Name] = fw::UnifiedScene::Instance().GetSceneName();
+	row[m_Columns.m_Id] = fw::INVALID_ENTITY_ID;
 
-	for (Entity* const entity : scene->GetEntities())
+	for (fw::T_EntityId const id : ecs.GetEntities())
 	{
+		// #todo: make this recurse
+		ET_ASSERT(ecs.HasComponent<EditorMetaComponent>(id));
+		EditorMetaComponent const& meta = ecs.GetComponent<EditorMetaComponent>(id);
+
 		Gtk::TreeModel::iterator iter = m_TreeModel->append(row.children());
-		(*iter)[m_Columns.m_Name] = entity->GetName();
-		(*iter)[m_Columns.m_Id] = entity->GetId();
-		(*iter)[m_Columns.m_Entity] = entity;
+		(*iter)[m_Columns.m_Name] = meta.name;
+		(*iter)[m_Columns.m_Id] = id;
 	}
 
 	m_TreeView->show_all_children();
@@ -226,12 +225,12 @@ void Outliner::RefillTreeView()
 //--------------------------
 // Outliner::RecursiveGetChild
 //
-Gtk::TreeModel::Row Outliner::RecursiveGetChild(Entity* const entity, Gtk::TreeModel::Children const& children) const
+Gtk::TreeModel::Row Outliner::RecursiveGetChild(fw::T_EntityId const entity, Gtk::TreeModel::Children const& children) const
 {
 	for (Gtk::TreeModel::Children::iterator it = children.begin(); it != children.end(); ++it)
 	{
 		Gtk::TreeModel::Row row = *it;
-		if (row[m_Columns.m_Entity] == entity)
+		if (row[m_Columns.m_Id] == entity)
 		{
 			return row;
 		}

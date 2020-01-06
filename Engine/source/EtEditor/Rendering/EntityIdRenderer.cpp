@@ -11,8 +11,9 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
-#include <EtFramework/SceneGraph/Entity.h>
 #include <EtFramework/Components/ModelComponent.h>
+#include <EtFramework/Components/TransformComponent.h>
+#include <EtFramework/SceneGraph/UnifiedScene.h>
 
 
 //====================
@@ -87,13 +88,12 @@ void EntityIdRenderer::DestroyRenderTarget()
 // Picks an entity by drawing each entity visible to the scene renderer with a color calculated from its ID, 
 //  - then converting the color under the specified pixel back to the IT and finding the appropriate entity
 //
-void EntityIdRenderer::Pick(ivec2 const pixel, Viewport* const viewport, AbstractScene* const scene, std::function<void(Entity* const)>& onEntityPicked)
+void EntityIdRenderer::Pick(ivec2 const pixel, Viewport* const viewport, std::function<void(fw::T_EntityId const)>& onEntityPicked)
 {
 	if (m_ViewportToPickFrom == nullptr)
 	{
 		m_PixelToPick = pixel;
 		m_ViewportToPickFrom = viewport;
-		m_Scene = scene;
 		m_OnEntityPicked = onEntityPicked;
 
 		m_ViewportToPickFrom->RegisterListener(this);
@@ -149,17 +149,20 @@ void EntityIdRenderer::OnViewportPreRender(T_FbLoc const targetFb)
 	//------------------------------------------------------------
 	api->BindFramebuffer(m_DrawTarget);
 
-	api->SetClearColor(vec4(0.f));
+	vec4 invalidCol;
+	GetIdColor(fw::INVALID_ENTITY_ID, invalidCol);
+	api->SetClearColor(invalidCol);
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
 	api->SetShader(m_Shader.get());
 
 	api->SetDepthEnabled(true);
 
-	ET_ASSERT(m_Scene != nullptr);
-	for (Entity* const entity : m_Scene->GetEntities())
+	ET_ASSERT(fw::UnifiedScene::Instance().GetSceneId() != 0u);
+	std::vector<fw::T_EntityId> const& entities = fw::UnifiedScene::Instance().GetEcs().GetEntities();
+	for (fw::T_EntityId const entity : entities)
 	{
-		RecursiveDrawEntity(entity, *camera);
+		DrawEntity(entity, *camera);
 	}
 
 	api->BindFramebuffer(targetFb);
@@ -189,71 +192,76 @@ void EntityIdRenderer::OnViewportPostFlush(T_FbLoc const targetFb)
 	api->Flush(); // ensure this is not the active framebuffer before swapping
 
 	// convert the read pixels back into the entity ID
-	T_Hash pickedID =
+	fw::T_EntityId pickedID =
 		static_cast<uint32>(pixels[0]) +
 		static_cast<uint32>(pixels[1]) * 256 +
 		static_cast<uint32>(pixels[2]) * 256 * 256 +
 		static_cast<uint32>(pixels[3]) * 256 * 256 * 256;
 
-	m_OnEntityPicked(m_Scene->GetEntity(pickedID));
-
-	m_Scene = nullptr;
+	m_OnEntityPicked(pickedID);
 
 	m_ViewportToPickFrom->UnregisterListener(this);
 	m_ViewportToPickFrom = nullptr;
 }
 
-//---------------------------------------
-// EntityIdRenderer::RecursiveDrawEntity
+//------------------------------
+// EntityIdRenderer::DrawEntity
 //
 // Render the components of an entity, if possible
 //
-void EntityIdRenderer::RecursiveDrawEntity(Entity* const entity, Camera const& camera) const
+void EntityIdRenderer::DrawEntity(fw::T_EntityId const entity, Camera const& camera) const
 {
+	fw::EcsController const& ecs = fw::UnifiedScene::Instance().GetEcs();
+
 	// For now we only pick models
-	ModelComponent* const modelComp = entity->GetComponent<ModelComponent>();
-	if (modelComp != nullptr)
+	if (!(ecs.HasComponent<fw::ModelComponent>(entity) && ecs.HasComponent<fw::TransformComponent>(entity)))
 	{
-		// check the cameras frustum
-		MeshData const* const mesh = modelComp->GetMesh().get();
-
-		Sphere const& bv = mesh->GetBoundingSphere();
-		Sphere instSphere = Sphere((entity->GetTransform()->GetWorld() * vec4(bv.pos, 1.f)).xyz,
-			etm::length(entity->GetTransform()->GetScale()) * bv.radius);
-
-		if (camera.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
-		{
-			// convert the entities ID to a color
-			T_Hash const entityId = entity->GetId();
-
-			uint32 r = (entityId & 0x000000FF) >> 0;
-			uint32 g = (entityId & 0x0000FF00) >> 8;
-			uint32 b = (entityId & 0x00FF0000) >> 16;
-			uint32 a = (entityId & 0xFF000000) >> 24;
-
-			vec4 const color(static_cast<float>(r) / 255.f,
-				static_cast<float>(g) / 255.f,
-				static_cast<float>(b) / 255.f,
-				static_cast<float>(a) / 255.f);
-
-			// upload the color to the material and adraw the entity with it
-			m_Shader->Upload("uColor"_hash, color);
-
-			I_GraphicsApiContext* const api = m_ViewportToPickFrom->GetApiContext();;
-
-			MeshSurface const* surface = modelComp->GetMesh()->GetSurface(m_Material.get());
-
-			api->BindVertexArray(surface->GetVertexArray());
-			m_Shader->Upload("model"_hash, entity->GetTransform()->GetWorld());
-
-			api->DrawElements(E_DrawMode::Triangles, static_cast<uint32>(mesh->GetIndexCount()), mesh->GetIndexDataType(), 0);
-		}
+		return;
 	}
 
-	// Won't anyone think about the children??
-	for (Entity* const child : entity->GetChildren())
+	fw::ModelComponent const& modelComp = ecs.GetComponent<fw::ModelComponent>(entity);
+	fw::TransformComponent const& transfComp = ecs.GetComponent<fw::TransformComponent>(entity);
+
+	// check the cameras frustum
+	MeshData const* const mesh = modelComp.GetMesh().get();
+
+	Sphere const& bv = mesh->GetBoundingSphere();
+	Sphere const instSphere((transfComp.GetWorld() * vec4(bv.pos, 1.f)).xyz, etm::length(transfComp.GetScale()) * bv.radius);
+
+	if (camera.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
 	{
-		RecursiveDrawEntity(entity, camera);
+		vec4 color;
+		GetIdColor(entity, color);
+
+		// upload the color to the material and adraw the entity with it
+		m_Shader->Upload("uColor"_hash, color);
+
+		I_GraphicsApiContext* const api = m_ViewportToPickFrom->GetApiContext();;
+
+		MeshSurface const* surface = modelComp.GetMesh()->GetSurface(m_Material.get());
+
+		api->BindVertexArray(surface->GetVertexArray());
+		m_Shader->Upload("model"_hash, transfComp.GetWorld());
+
+		api->DrawElements(E_DrawMode::Triangles, static_cast<uint32>(mesh->GetIndexCount()), mesh->GetIndexDataType(), 0);
 	}
+}
+
+//------------------------------
+// EntityIdRenderer::GetIdColor
+//
+// convert an entities ID to a color
+//
+void EntityIdRenderer::GetIdColor(fw::T_EntityId const id, vec4& col) const
+{
+	uint32 r = (id & 0x000000FF) >> 0;
+	uint32 g = (id & 0x0000FF00) >> 8;
+	uint32 b = (id & 0x00FF0000) >> 16;
+	uint32 a = (id & 0xFF000000) >> 24;
+
+	col = vec4(static_cast<float>(r) / 255.f,
+		static_cast<float>(g) / 255.f,
+		static_cast<float>(b) / 255.f,
+		static_cast<float>(a) / 255.f);
 }
 

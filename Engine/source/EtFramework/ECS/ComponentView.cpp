@@ -4,7 +4,7 @@
 #include "EcsController.h"
 
 
-namespace framework {
+namespace fw {
 
 
 //====================
@@ -133,4 +133,4 @@ void ComponentView::CalcParentPointers()
 }
 
 
-} // namespace framework
+} // namespace fw

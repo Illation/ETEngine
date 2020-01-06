@@ -23,6 +23,8 @@
 #include <EtCore/Helper/InputManager.h>
 #include <EtCore/UpdateCycle/TickManager.h>
 
+#include <EtFramework/SceneGraph/UnifiedScene.h>
+
 
 //====================
 // Editor Application 
@@ -201,6 +203,16 @@ void EditorApp::on_activate()
 void EditorApp::InitializeUtilities()
 {
 	EditorConfig::GetInstance()->Initialize();
+
+	fw::UnifiedScene::Instance().GetEventDispatcher().Register(E_SceneEvent::RegisterSystems,
+		T_SceneEventCallback([this](T_SceneEventFlags const flags, SceneEventData const* const eventData)
+		{
+			UNUSED(flags);
+			UNUSED(eventData);
+
+			SceneEditor::RegisterEcsEvents();
+		}));
+	fw::UnifiedScene::Instance().Init();
 
 	ResourceManager::SetInstance(new FileResourceManager());
 

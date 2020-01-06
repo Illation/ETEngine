@@ -44,7 +44,7 @@ private:
 };
 
 
-namespace framework {
+namespace fw {
 
 
 class TransformComponent;
@@ -130,5 +130,5 @@ public:
 };
 
 
-} // namespace framework
+} // namespace fw
 

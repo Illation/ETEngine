@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace framework {
+namespace fw {
 
 
 //=================================
@@ -96,10 +96,10 @@ void EcsController::RemoveComponents(T_EntityId const entity)
 // EcsController::RegisterOnComponentAdded
 //
 template<typename TComponentType>
-T_ComEventId EcsController::RegisterOnComponentAdded(std::function<void(EcsController&, TComponentType&, T_EntityId const)>& fn)
+T_CompEventId EcsController::RegisterOnComponentAdded(T_CompEventFn<TComponentType>& fn)
 {
-	return m_ComponentEvents[TComponentType::GetTypeIndex()].Register(detail::E_ComponentEvent::Added, detail::T_ComponentEventCallbackInternal(
-		[this, fn](detail::T_ComponentEvent const flags, detail::ComponentEventData const* const evnt) -> void
+	return m_ComponentEvents[TComponentType::GetTypeIndex()].Register(detail::E_EcsEvent::Added, detail::T_ComponentEventCallbackInternal(
+		[this, fn](detail::T_EcsEvent const flags, detail::ComponentEventData const* const evnt) -> void
 		{
 			UNUSED(flags);
 			fn(*evnt->controller, *static_cast<TComponentType*>(evnt->component), evnt->entity);
@@ -112,10 +112,10 @@ T_ComEventId EcsController::RegisterOnComponentAdded(std::function<void(EcsContr
 // Deinit components
 //
 template<typename TComponentType>
-T_ComEventId EcsController::RegisterOnComponentRemoved(std::function<void(EcsController&, TComponentType&, T_EntityId const)>& fn)
+T_CompEventId EcsController::RegisterOnComponentRemoved(T_CompEventFn<TComponentType>& fn)
 {
-	return m_ComponentEvents[TComponentType::GetTypeIndex()].Register(detail::E_ComponentEvent::Removed, detail::T_ComponentEventCallbackInternal(
-		[this, fn](detail::T_ComponentEvent const flags, detail::ComponentEventData const* const evnt) -> void
+	return m_ComponentEvents[TComponentType::GetTypeIndex()].Register(detail::E_EcsEvent::Removed, detail::T_ComponentEventCallbackInternal(
+		[this, fn](detail::T_EcsEvent const flags, detail::ComponentEventData const* const evnt) -> void
 		{
 			UNUSED(flags);
 			fn(*evnt->controller, *static_cast<TComponentType*>(evnt->component), evnt->entity);
@@ -128,7 +128,7 @@ T_ComEventId EcsController::RegisterOnComponentRemoved(std::function<void(EcsCon
 // Not required to be called unless the event is a member function that gets deleted before the ecs controller does
 //
 template<typename TComponentType>
-void EcsController::UnregisterComponentEvent(T_ComEventId& callbackId)
+void EcsController::UnregisterComponentEvent(T_CompEventId& callbackId)
 {
 	m_ComponentEvents[TComponentType::GetTypeIndex()].Unregister(callbackId);
 }
@@ -137,7 +137,7 @@ void EcsController::UnregisterComponentEvent(T_ComEventId& callbackId)
 // EcsController::HasComponent
 //
 template<typename TComponentType>
-bool EcsController::HasComponent(T_EntityId const entity)
+bool EcsController::HasComponent(T_EntityId const entity) const
 {
 	return HasComponent(entity, TComponentType::GetTypeIndex());
 }
@@ -198,7 +198,7 @@ bool EcsController::IsSystemRegistered() const
 }
 
 
-} // namespace framework
+} // namespace fw
 
 
 
