@@ -29,13 +29,10 @@ class EntityDescriptor final
 	// construct destruct
 	//--------------------
 public:
-	EntityDescriptor() : m_AssignedId(new T_EntityId(m_Id)) {}
-	EntityDescriptor(EntityDescriptor const& other)
-		: m_Id(other.GetId())
-		, m_AssignedId(new T_EntityId(other.GetAssignedId()))
-		, m_Components(other.GetComponents())
-		, m_Children(other.GetChildren()) {}
-	~EntityDescriptor() { delete m_AssignedId; }
+	EntityDescriptor();
+	EntityDescriptor(EntityDescriptor const& other);
+	EntityDescriptor& operator=(EntityDescriptor const& other);
+	~EntityDescriptor();
 
 	// modifiers
 	//-----------
@@ -52,7 +49,7 @@ public:
 	///////
 
 private:
-	T_EntityId m_Id;
+	T_EntityId m_Id = INVALID_ENTITY_ID;
 	T_EntityId* m_AssignedId = nullptr; // use pointer in order to allow const modification
 	std::vector<I_ComponentDescriptor*> m_Components;
 	std::vector<EntityDescriptor> m_Children;
