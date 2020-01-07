@@ -19,17 +19,32 @@ namespace fw {
 //
 // Contains all component descriptions for an entity
 //
-class EntityDescriptor
+class EntityDescriptor final
 {
 	// definitions
 	//-------------
 	RTTR_ENABLE()
 	RTTR_REGISTRATION_FRIEND
 
+	// construct destruct
+	//--------------------
+public:
+	EntityDescriptor() : m_AssignedId(new T_EntityId(m_Id)) {}
+	EntityDescriptor(EntityDescriptor const& other)
+		: m_Id(other.GetId())
+		, m_AssignedId(new T_EntityId(other.GetAssignedId()))
+		, m_Components(other.GetComponents())
+		, m_Children(other.GetChildren()) {}
+	~EntityDescriptor() { delete m_AssignedId; }
+
+	// modifiers
+	//-----------
+	void SetAssignedId(T_EntityId const val) const { *m_AssignedId = val; }
+
 	// accessors
 	//-----------
-public:
 	T_EntityId GetId() const { return m_Id; }
+	T_EntityId GetAssignedId() const { return *m_AssignedId; }
 	std::vector<I_ComponentDescriptor*> const& GetComponents() const { return m_Components; }
 	std::vector<EntityDescriptor> const& GetChildren() const { return m_Children; }
 
@@ -38,6 +53,7 @@ public:
 
 private:
 	T_EntityId m_Id;
+	T_EntityId* m_AssignedId = nullptr; // use pointer in order to allow const modification
 	std::vector<I_ComponentDescriptor*> m_Components;
 	std::vector<EntityDescriptor> m_Children;
 };
@@ -48,7 +64,7 @@ private:
 //
 // Data to serialize / deserialize a scene with
 //
-struct SceneDescriptor
+struct SceneDescriptor final
 {
 	// definitions
 	//-------------
