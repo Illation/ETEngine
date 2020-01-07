@@ -125,6 +125,12 @@ void UnifiedScene::LoadScene(T_Hash const assetId)
 	// physics settings
 	m_PhysicsWorld.GetWorld()->setGravity(ToBtVec3(sceneDesc->gravity));
 
+	// post load for components that need it
+	for (EntityDescriptor const& entDesc : sceneDesc->entities)
+	{
+		PostLoadEntity(entDesc, INVALID_ENTITY_ID);
+	}
+
 	// done loading
 	//--------------
 	m_EventDispatcher.Notify(E_SceneEvent::Activated, new SceneEventData(nullptr));
@@ -173,6 +179,7 @@ void UnifiedScene::AddEntity(EntityDescriptor const& entDesc, T_EntityId const p
 
 	// update all entity links referring to the assigned ID
 	EntityLinkResolver::Instance().OnEntityIdAssigned(entDesc.GetId(), id);
+	entDesc.SetAssignedId(id);
 
 	// create a component data list
 	std::vector<RawComponentPtr> components;
@@ -197,6 +204,31 @@ void UnifiedScene::AddEntity(EntityDescriptor const& entDesc, T_EntityId const p
 	for (EntityDescriptor const& childDesc : entDesc.GetChildren())
 	{
 		AddEntity(childDesc, id);
+	}
+}
+
+//------------------------------
+// UnifiedScene::PostLoadEntity
+//
+// Allow components to be post load initialized once all entities and components are added, useful for linking component data together
+//
+void UnifiedScene::PostLoadEntity(EntityDescriptor const& entDesc, T_EntityId const parent)
+{
+	T_EntityId const id = entDesc.GetAssignedId();
+
+	for (I_ComponentDescriptor* const compDesc : entDesc.GetComponents())
+	{
+		if (compDesc->CallScenePostLoad())
+		{
+			void* const rawComp = m_Scene.GetComponentData(id, compDesc->GetType());
+			compDesc->OnScenePostLoadRoot(m_Scene, id, rawComp);
+		}
+	}
+
+	// recurse for children
+	for (EntityDescriptor const& childDesc : entDesc.GetChildren())
+	{
+		PostLoadEntity(childDesc, id);
 	}
 }
 

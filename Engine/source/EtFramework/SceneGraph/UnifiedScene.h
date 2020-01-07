@@ -66,6 +66,7 @@ public:
 	//---------
 private:
 	void AddEntity(EntityDescriptor const& entDesc, T_EntityId const parent);
+	void PostLoadEntity(EntityDescriptor const& entDesc, T_EntityId const parent);
 
 	// Data
 	///////

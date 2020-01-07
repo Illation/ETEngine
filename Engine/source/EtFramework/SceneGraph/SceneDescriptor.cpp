@@ -4,11 +4,6 @@
 #include <EtCore/Reflection/Serialization.h>
 
 
-//========================
-// Scene Descriptor Asset
-//========================
-
-
 // reflection
 RTTR_REGISTRATION
 {
@@ -41,6 +36,60 @@ DEFINE_FORCED_LINKING(fw::SceneDescriptorAsset) // force the asset class to be l
 
 
 namespace fw {
+
+
+//===================
+// Entity Descriptor
+//===================
+
+
+//-------------------------
+// EntityDescriptor::c-tor
+//
+// Default constructor creates a new assigned ID
+//
+EntityDescriptor::EntityDescriptor() 
+	: m_AssignedId(new T_EntityId(m_Id))
+{
+
+}
+
+//-------------------------
+// EntityDescriptor::c-tor
+//
+// Ensure copy contructor also creates a new assigned ID
+//
+EntityDescriptor::EntityDescriptor(EntityDescriptor const& other) 
+{
+	*this = other;
+}
+
+//----------------------
+// EntityDescriptor:: =
+//
+// Ensure copy contructor also creates a new assigned ID
+//
+EntityDescriptor& EntityDescriptor::operator=(EntityDescriptor const& other)
+{
+	m_Id = other.GetId();
+	m_AssignedId = new T_EntityId(other.GetAssignedId());
+	m_Components = other.GetComponents();
+	m_Children = other.GetChildren();
+
+	return *this;
+}
+
+//-------------------------
+// EntityDescriptor::d-tor
+//
+EntityDescriptor::~EntityDescriptor()
+{
+	delete m_AssignedId;
+}
+
+//========================
+// Scene Descriptor Asset
+//========================
 
 
 //---------------------------------------
