@@ -1047,6 +1047,23 @@
                 "Env.dae"
               ]
             }
+          },
+          {
+            "scene descriptor asset": {
+              "name": "PlanetScene.json",
+              "path": "assets/Scenes/",
+              "package": "content1",
+              "references": [
+                "Milkyway_small.hdr",
+                "HYGmxyz.json",
+                "moon8k.jpg",
+                "MoonHeight.jpg",
+                "MoonDetail1.jpg",
+                "MoonDetail2.jpg",
+                "MoonHeightDetail1.jpg",
+                "atmo_earth.json"
+              ]
+            }
           }
         ]
       }

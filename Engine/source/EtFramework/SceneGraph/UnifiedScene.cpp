@@ -10,6 +10,8 @@
 #include <EtFramework/Systems/TransformSystem.h>
 #include <EtFramework/Systems/LightSystem.h>
 #include <EtFramework/Systems/ModelInit.h>
+#include <EtFramework/Systems/PlanetInit.h>
+#include <EtFramework/Systems/AtmosphereInit.h>
 
 
 namespace fw {
@@ -48,6 +50,12 @@ void UnifiedScene::Init()
 
 	m_Scene.RegisterOnComponentAdded(T_CompEventFn<ModelComponent>(ModelInit::OnComponentAdded));
 	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<ModelComponent>(ModelInit::OnComponentRemoved));
+
+	m_Scene.RegisterOnComponentAdded(T_CompEventFn<PlanetComponent>(PlanetInit::OnComponentAdded));
+	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<PlanetComponent>(PlanetInit::OnComponentRemoved));
+
+	m_Scene.RegisterOnComponentAdded(T_CompEventFn<AtmosphereComponent>(AtmosphereInit::OnComponentAdded));
+	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<AtmosphereComponent>(AtmosphereInit::OnComponentRemoved));
 
 	m_EventDispatcher.Notify(E_SceneEvent::RegisterSystems, new SceneEventData(nullptr));
 }

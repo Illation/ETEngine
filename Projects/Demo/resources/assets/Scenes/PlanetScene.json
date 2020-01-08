@@ -1,0 +1,145 @@
+{
+  "scene descriptor": {
+    "entities": [
+      {
+        "id": 0,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -1747.1
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              }
+            }
+          },
+          {
+            "camera comp desc": {
+              "is perspective": true,
+              "field of view": 45.0,
+              "ortho size": 25.0,
+              "near plane": 0.01,
+              "far plane": 1000.0
+            }
+          }
+        ],
+        "children": []
+      },
+      {
+        "id": 1,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              }
+            }
+          },
+          {
+            "planet comp desc": {
+              "radius": 1737.1,
+              "height": 10.7,
+              "diffuse texture": "moon8k.jpg",
+              "detail texture 1": "MoonHeight.jpg",
+              "detail texture 2": "MoonDetail1.jpg",
+              "height texture": "MoonDetail2.jpg",
+              "height detail texture": "MoonHeightDetail1.jpg"
+            }
+          },
+          {
+            "atmosphere comp desc": {
+              "asset": "atmo_earth.json",
+              "height": 100.0,
+              "ground radius": 1737.1,
+              "sun": {
+                "id": 2
+              }
+            }
+          }
+        ],
+        "children": []
+      },
+      {
+        "id": 2,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 0.1,
+                "y": 0.1,
+                "z": 0.1
+              }
+            }
+          },
+          {
+            "light comp desc": {
+              "type": "Directional",
+              "color": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "brightness": 283.00,
+              "casts shadow": false
+            }
+          }
+        ],
+        "children": []
+      }
+    ],
+    "skybox": "Milkyway_small.hdr",
+    "starfield": "HYGmxyz.json",
+    "active camera": {
+      "id": 0
+    },
+    "postprocessing": {
+      "exposure": 0.01,
+      "gamma": 2.2,
+      "bloom threshold": 10.0,
+      "bloom mult": 0.1
+    },
+    "audio listener": {
+      "id": -1
+    },
+    "gravity": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    }
+  }
+}
