@@ -21,7 +21,7 @@ namespace fw {
 //
 LightSystem::LightSystem()
 {
-	DeclareDependencies<TransformSystem>(); // update lights after updating transforms
+	DeclareDependencies<TransformSystem::Compute>(); // update lights after updating transforms, though we don't need to wait for flags to update
 }
 
 //-----------------------------------

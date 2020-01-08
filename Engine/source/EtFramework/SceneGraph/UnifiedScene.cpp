@@ -8,6 +8,7 @@
 
 #include <EtFramework/Physics/BulletETM.h>
 #include <EtFramework/Systems/TransformSystem.h>
+#include <EtFramework/Systems/RigidBodySystem.h>
 #include <EtFramework/Systems/LightSystem.h>
 #include <EtFramework/Systems/ModelInit.h>
 #include <EtFramework/Systems/PlanetInit.h>
@@ -40,11 +41,10 @@ UnifiedScene& UnifiedScene::Instance()
 //
 void UnifiedScene::Init()
 {
-	m_Scene.RegisterSystem<TransformSystem>();
+	// component init / deinint
 	m_Scene.RegisterOnComponentAdded(T_CompEventFn<TransformComponent>(TransformSystem::OnComponentAdded));
 	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<TransformComponent>(TransformSystem::OnComponentRemoved));
 
-	m_Scene.RegisterSystem<LightSystem>();
 	m_Scene.RegisterOnComponentAdded(T_CompEventFn<LightComponent>(LightSystem::OnComponentAdded));
 	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<LightComponent>(LightSystem::OnComponentRemoved));
 
@@ -57,6 +57,16 @@ void UnifiedScene::Init()
 	m_Scene.RegisterOnComponentAdded(T_CompEventFn<AtmosphereComponent>(AtmosphereInit::OnComponentAdded));
 	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<AtmosphereComponent>(AtmosphereInit::OnComponentRemoved));
 
+	m_Scene.RegisterOnComponentAdded(T_CompEventFn<RigidBodyComponent>(RigidBodySystem::OnComponentAdded));
+	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<RigidBodyComponent>(RigidBodySystem::OnComponentRemoved));
+
+	// systems - listed in roughly the order they execute in
+	m_Scene.RegisterSystem<RigidBodySystem>();
+	m_Scene.RegisterSystem<TransformSystem::Compute>();
+	m_Scene.RegisterSystem<TransformSystem::Reset>();
+	m_Scene.RegisterSystem<LightSystem>();
+
+	// allow users of the framework to also register for events
 	m_EventDispatcher.Notify(E_SceneEvent::RegisterSystems, new SceneEventData(nullptr));
 }
 

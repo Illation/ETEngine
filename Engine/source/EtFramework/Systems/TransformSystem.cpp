@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "TransformSystem.h"
 
+#include "RigidBodySystem.h"
+
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
 
@@ -38,19 +40,39 @@ void TransformSystem::OnComponentRemoved(EcsController& controller, TransformCom
 	UnifiedScene::Instance().GetRenderScene().RemoveNode(component.GetNodeId());
 }
 
-//--------------------------
-// TransformSystem::Process
+//---------------------------------
+// TransformSystem::Compute::c-tor
 //
-// Hierachically update
+// dependency setup
 //
-void TransformSystem::Process(ComponentRange<TransformSystemView>& range) const
+TransformSystem::Compute::Compute()
+{
+	DeclareDependencies<RigidBodySystem>(); // the rigid body system may update transformations
+
+	DeclareDependents<TransformSystem::Reset>();
+}
+
+//-----------------------------------
+// TransformSystem::Compute::Process
+//
+// Update transforms
+//
+void TransformSystem::Compute::Process(ComponentRange<TransformSystem::ComputeView>& range) const
 {
 	render::Scene& renderScene = UnifiedScene::Instance().GetRenderScene();
 
-	for (TransformSystemView& view : range)
+	for (ComputeView& view : range)
 	{
+		// if neither this component nor the parent component has an updated transform, we don't need to recalculate anything
+		if (!view.transf->HasTransformChanged() && (!view.parent.IsValid() || !view.parent->HasTransformChanged()))
+		{
+			continue;
+		}
+
 		// this is the local matrix
-		view.transf->m_WorldTransform = etm::scale(view.transf->m_Scale) * etm::rotate(view.transf->m_Rotation) * etm::translate(view.transf->m_Position);
+		view.transf->m_WorldTransform = etm::scale(view.transf->m_Scale) 
+			* etm::rotate(view.transf->m_Rotation) 
+			* etm::translate(view.transf->m_Position);
 
 		if (view.parent.IsValid())
 		{
@@ -77,7 +99,20 @@ void TransformSystem::Process(ComponentRange<TransformSystemView>& range) const
 		// update in the rendering scene
 		renderScene.UpdateNode(view.transf->m_NodeId, view.transf->m_WorldTransform);
 
-		// reset
+		// since we changed our transform we need to set the transform changed flags so that the change trickles down to children
+		view.transf->m_TransformChanged = TransformComponent::E_TransformChanged::All;
+	}
+}
+
+//---------------------------------
+// TransformSystem::Reset::Process
+//
+// Reset dirty flag
+//
+void TransformSystem::Reset::Process(ComponentRange<TransformSystem::ResetView>& range) const
+{
+	for (ResetView& view : range)
+	{
 		view.transf->m_TransformChanged = TransformComponent::E_TransformChanged::None;
 	}
 }

@@ -101,10 +101,13 @@ class TransformComponent final
 	typedef uint8 T_TransformChanged;
 	enum E_TransformChanged : T_TransformChanged
 	{
-		None		= 1 << 0,
-		Translation = 1 << 1,
-		Rotation	= 1 << 2,
-		Scale		= 1 << 3
+		None = 0u,
+
+		Translation = 1u << 0,
+		Rotation	= 1u << 1,
+		Scale		= 1u << 2,
+
+		All = 0xFF
 	};
 
 	// construct destruct
@@ -147,6 +150,11 @@ public:
 	const vec3& GetRight() const { return m_Right; }
 
 	core::T_SlotId GetNodeId() const { return m_NodeId; }
+
+	bool HasTranslationChanged() const { return (m_TransformChanged & E_TransformChanged::Translation); }
+	bool HasRotationChanged() const { return (m_TransformChanged & E_TransformChanged::Rotation); }
+	bool HasScaleChanged() const { return (m_TransformChanged & E_TransformChanged::Scale); }
+	bool HasTransformChanged() const { return (m_TransformChanged != E_TransformChanged::None); }
 
 	// Data
 	///////

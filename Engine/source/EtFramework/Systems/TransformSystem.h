@@ -8,37 +8,70 @@
 namespace fw {
 
 
-//---------------------------------
-// TransformSystemView
-//
-// Data required for the transform system to operate
-//
-struct TransformSystemView final : public ComponentView
-{
-	TransformSystemView() : ComponentView()
-	{
-		Declare(parent);
-		Declare(transf);
-	}
-
-	ParentRead<TransformComponent> parent;
-	WriteAccess<TransformComponent> transf;
-};
-
 //-----------------
 // TransformSystem
 //
 // Updates transform component world locations respecting the entity hierachy
+//  - runs in two phases (compute -> reset) in order to skip unchanged components while respecting hierachy needs
 //
-class TransformSystem final : public fw::System<TransformSystem, TransformSystemView>
+class TransformSystem final
 {
 public:
-	TransformSystem() = default;
-
+	// Init / Deinit
+	//----------------
 	static void OnComponentAdded(EcsController& controller, TransformComponent& component, T_EntityId const entity);
 	static void OnComponentRemoved(EcsController& controller, TransformComponent& component, T_EntityId const entity);
 
-	void Process(ComponentRange<TransformSystemView>& range) const override;
+	//---------------------------------
+	// Compute
+	//
+	// Updates the positions, rotations, scales and matricies for the transform hierachy
+	//
+
+	struct ComputeView final : public ComponentView
+	{
+		ComputeView() : ComponentView()
+		{
+			Declare(parent);
+			Declare(transf);
+		}
+
+		ParentRead<TransformComponent> parent;
+		WriteAccess<TransformComponent> transf;
+	};
+
+	class Compute final : public fw::System<Compute, ComputeView>
+	{
+	public:
+		Compute();
+
+		void Process(ComponentRange<ComputeView>& range) const override;
+	};
+
+
+	//---------------------------------
+	// Reset
+	//
+	// Resets dirty flags
+	//
+
+	struct ResetView final : public ComponentView
+	{
+		ResetView() : ComponentView()
+		{
+			Declare(transf);
+		}
+
+		WriteAccess<TransformComponent> transf;
+	};
+
+	class Reset final : public fw::System<Reset, ResetView>
+	{
+	public:
+		Reset() = default;
+
+		void Process(ComponentRange<ResetView>& range) const override;
+	};
 };
 
 
