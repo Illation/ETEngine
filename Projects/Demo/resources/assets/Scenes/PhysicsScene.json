@@ -1,0 +1,344 @@
+{
+  "scene descriptor": {
+    "entities": [
+      {
+        "id": 0,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 0.0,
+                "y": 2.0,
+                "z": -10.0
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              }
+            }
+          },
+          {
+            "camera comp desc": {
+              "is perspective": true,
+              "field of view": 45.0,
+              "ortho size": 25.0,
+              "near plane": 0.1,
+              "far plane": 1000.0
+            }
+          },
+          {
+            "audio listener comp desc": {
+              "gain": 1.0
+            }
+          }
+        ],
+        "children": []
+      },
+      {
+        "id": 1,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 1.0,
+                "y": 2.0,
+                "z": 0.0
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 10.0,
+                "y": 10.0,
+                "z": 10.0
+              }
+            }
+          },
+          {
+            "light comp desc": {
+              "type": "Point",
+              "color": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "brightness": 900.0,
+              "casts shadow": false
+            }
+          },
+          {
+            "audio source comp desc": {
+              "audio asset": "Disfigure-Blank.ogg",
+              "play on init": true,
+              "loop": true,
+              "gain": 1.0,
+              "min gain": 0.0,
+              "max gain": 1.0,
+              "pitch": 1.0,
+              "params": {
+                "reference distance": 1.0,
+                "rolloff factor": 1.0,
+                "max distance": 999999999.0,
+                "inner cone angle": 360.0,
+                "outer cone angle": 360.0,
+                "outer cone gain": 0.0,
+                "is directional": false
+              }
+            }
+          }
+        ],
+        "children": [
+          {
+            "id": 2,
+            "components": [
+              {
+                "transform comp desc": {
+                  "position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                  },
+                  "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 1.0
+                  },
+                  "scale": {
+                    "x": 0.01,
+                    "y": 0.01,
+                    "z": 0.01
+                  }
+                }
+              },
+              {
+                "model comp desc": {
+                  "mesh": "sphere.dae",
+                  "material": "MI_Emissive_LightBulb.json"
+                }
+              }
+            ],
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 1000.0,
+                "y": 1.0,
+                "z": 1000.0
+              }
+            }
+          },
+          {
+            "model comp desc": {
+              "mesh": "cube.dae",
+              "material": "MI_TexPBR_Floor.json"
+            }
+          },
+          {
+            "rigid body comp desc": {
+              "is dynamic": false,
+              "mass": 0.0,
+              "shape": {
+                "box collider shape": {
+                  "half extents": {
+                    "x": 10.0,
+                    "y": 0.01,
+                    "z": 10.0
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "children": []
+      },
+      {
+        "id": 4,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 0.0,
+                "y": 0.076,
+                "z": 0.0
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 9.85,
+                "y": 6.0,
+                "z": 30.0
+              }
+            }
+          },
+          {
+            "model comp desc": {
+              "mesh": "cube.dae",
+              "material": "MI_TexPBR_Block.json"
+            }
+          },
+          {
+            "rigid body comp desc": {
+              "is dynamic": true,
+              "mass": 0.2,
+              "shape": {
+                "box collider shape": {
+                  "half extents": {
+                    "x": 0.0985,
+                    "y": 0.06,
+                    "z": 0.3
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "children": []
+      },
+      {
+        "id": 5,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 0.0,
+                "y": 0.2,
+                "z": 0.0
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 9.85,
+                "y": 6.0,
+                "z": 30.0
+              }
+            }
+          },
+          {
+            "model comp desc": {
+              "mesh": "cube.dae",
+              "material": "MI_TexPBR_Block.json"
+            }
+          },
+          {
+            "rigid body comp desc": {
+              "is dynamic": true,
+              "mass": 0.2,
+              "shape": {
+                "box collider shape": {
+                  "half extents": {
+                    "x": 0.0985,
+                    "y": 0.06,
+                    "z": 0.3
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "children": []
+      },
+      {
+        "id": 6,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 0.0,
+                "y": 0.4,
+                "z": 0.0
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 9.85,
+                "y": 6.0,
+                "z": 30.0
+              }
+            }
+          },
+          {
+            "model comp desc": {
+              "mesh": "cube.dae",
+              "material": "MI_TexPBR_Block.json"
+            }
+          },
+          {
+            "rigid body comp desc": {
+              "is dynamic": true,
+              "mass": 0.2,
+              "shape": {
+                "box collider shape": {
+                  "half extents": {
+                    "x": 0.0985,
+                    "y": 0.06,
+                    "z": 0.3
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "children": []
+      }
+    ],
+    "skybox": "Ice_Lake_Ref.hdr",
+    "starfield": "",
+    "active camera": {
+      "id": 0
+    },
+    "postprocessing": {
+      "exposure": 1.0,
+      "gamma": 2.2,
+      "bloom threshold": 10.0,
+      "bloom mult": 0.1
+    },
+    "audio listener": {
+      "id": 0
+    },
+    "gravity": {
+      "x": 0.0,
+      "y": -0.981,
+      "z": 0.0
+    }
+  }
+}

@@ -22,6 +22,19 @@ inline std::type_info const& I_AssetPtr::GetType() const
 }
 
 //---------------------------------
+// I_AssetPtr::GetId
+//
+T_Hash I_AssetPtr::GetId() const
+{
+	if (m_Asset == nullptr)
+	{
+		return 0u;
+	}
+
+	return m_Asset->GetId();
+}
+
+//---------------------------------
 // I_AssetPtr::get_as
 //
 // Cast the data to a certain type -> cast safety is the responsibility of the calling function

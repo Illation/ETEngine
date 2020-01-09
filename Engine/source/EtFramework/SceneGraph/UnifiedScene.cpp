@@ -14,6 +14,7 @@
 #include <EtFramework/Systems/PlanetInit.h>
 #include <EtFramework/Systems/AtmosphereInit.h>
 #include <EtFramework/Systems/AudioListenerSystem.h>
+#include <EtFramework/Systems/AudioSourceSystem.h>
 #include <EtFramework/Components/SpriteComponent.h>
 
 
@@ -65,10 +66,15 @@ void UnifiedScene::Init()
 	m_Scene.RegisterOnComponentAdded(T_CompEventFn<SpriteComponent>(SpriteComponent::OnComponentAdded));
 	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<SpriteComponent>(SpriteComponent::OnComponentRemoved));
 
+	m_Scene.RegisterOnComponentAdded(T_CompEventFn<AudioSourceComponent>(AudioSourceSystem::OnComponentAdded));
+	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<AudioSourceComponent>(AudioSourceSystem::OnComponentRemoved));
+
 	// systems - listed in roughly the order they execute in
 	m_Scene.RegisterSystem<RigidBodySystem>();
 	m_Scene.RegisterSystem<TransformSystem::Compute>();
+	m_Scene.RegisterSystem<AudioSourceSystem::Translate>();
 	m_Scene.RegisterSystem<TransformSystem::Reset>();
+	m_Scene.RegisterSystem<AudioSourceSystem::State>();
 	m_Scene.RegisterSystem<AudioListenerSystem>();
 	m_Scene.RegisterSystem<LightSystem>();
 

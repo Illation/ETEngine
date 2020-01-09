@@ -1064,6 +1064,22 @@
                 "atmo_earth.json"
               ]
             }
+          },
+          {
+            "scene descriptor asset": {
+              "name": "PhysicsScene.json",
+              "path": "assets/Scenes/",
+              "package": "content1",
+              "references": [
+                "Ice_Lake_Ref.hdr",
+                "Disfigure-Blank.ogg",
+                "sphere.dae",
+                "MI_Emissive_LightBulb.json",
+                "cube.dae",
+                "MI_TexPBR_Floor.json",
+                "MI_TexPBR_Block.json"
+              ]
+            }
           }
         ]
       }

@@ -22,6 +22,7 @@ public:
 
 	I_Asset const* GetAsset() const { return m_Asset; }
 	inline std::type_info const& GetType() const;
+	inline T_Hash GetId() const;
 
 	// utility
 	bool is_null() const;
