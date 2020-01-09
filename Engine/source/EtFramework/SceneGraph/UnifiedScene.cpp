@@ -13,6 +13,8 @@
 #include <EtFramework/Systems/ModelInit.h>
 #include <EtFramework/Systems/PlanetInit.h>
 #include <EtFramework/Systems/AtmosphereInit.h>
+#include <EtFramework/Systems/AudioListenerSystem.h>
+#include <EtFramework/Components/SpriteComponent.h>
 
 
 namespace fw {
@@ -60,10 +62,14 @@ void UnifiedScene::Init()
 	m_Scene.RegisterOnComponentAdded(T_CompEventFn<RigidBodyComponent>(RigidBodySystem::OnComponentAdded));
 	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<RigidBodyComponent>(RigidBodySystem::OnComponentRemoved));
 
+	m_Scene.RegisterOnComponentAdded(T_CompEventFn<SpriteComponent>(SpriteComponent::OnComponentAdded));
+	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<SpriteComponent>(SpriteComponent::OnComponentRemoved));
+
 	// systems - listed in roughly the order they execute in
 	m_Scene.RegisterSystem<RigidBodySystem>();
 	m_Scene.RegisterSystem<TransformSystem::Compute>();
 	m_Scene.RegisterSystem<TransformSystem::Reset>();
+	m_Scene.RegisterSystem<AudioListenerSystem>();
 	m_Scene.RegisterSystem<LightSystem>();
 
 	// allow users of the framework to also register for events
@@ -134,11 +140,17 @@ void UnifiedScene::LoadScene(T_Hash const assetId)
 	}
 
 	m_ActiveCamera = sceneDesc->activeCamera.id;
+	ET_ASSERT(m_ActiveCamera != INVALID_ENTITY_ID);
 
 	m_RenderScene.SetPostProcessingSettings(sceneDesc->postprocessing);
 
 	// audio settings
 	m_AudioListener = sceneDesc->audioListener.id;
+	if (m_AudioListener != INVALID_ENTITY_ID)
+	{
+		ET_ASSERT(m_Scene.HasComponent<AudioListenerComponent>(m_AudioListener));
+		m_Scene.AddComponents(m_AudioListener, ActiveAudioListenerComponent());
+	}
 
 	// physics settings
 	m_PhysicsWorld.GetWorld()->setGravity(ToBtVec3(sceneDesc->gravity));
