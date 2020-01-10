@@ -15,6 +15,7 @@
 #include <EtFramework/Systems/AtmosphereInit.h>
 #include <EtFramework/Systems/AudioListenerSystem.h>
 #include <EtFramework/Systems/AudioSourceSystem.h>
+#include <EtFramework/Systems/PlanetCameraClippingSystem.h>
 #include <EtFramework/Components/SpriteComponent.h>
 
 
@@ -76,6 +77,7 @@ void UnifiedScene::Init()
 	m_Scene.RegisterSystem<TransformSystem::Reset>();
 	m_Scene.RegisterSystem<AudioSourceSystem::State>();
 	m_Scene.RegisterSystem<AudioListenerSystem>();
+	m_Scene.RegisterSystem<PlanetCameraLinkSystem>();
 	m_Scene.RegisterSystem<LightSystem>();
 
 	// allow users of the framework to also register for events

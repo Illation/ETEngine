@@ -97,6 +97,25 @@ protected:
 		TComponentType* m_Data = nullptr;
 	};
 
+	//-------------------
+	// ParentRead
+	//
+	// Read a component from the parent entity
+	//
+	template<typename TComponentType>
+	class EntityRead
+	{
+		friend class ComponentView;
+	public:
+		TComponentType const* operator[](T_EntityId const id) const 
+		{ 
+			return static_cast<TComponentType const*>(m_Ecs->GetComponentData(id, TComponentType::GetTypeIndex()));
+		}
+
+	private:
+		EcsController const* m_Ecs = nullptr;
+	};
+
 	// construct destruct
 	//--------------------
 public:
@@ -126,7 +145,13 @@ protected:
 	void Declare(WriteAccess<TComponentType>& write);
 
 	template<typename TComponentType>
-	void Declare(ParentRead<TComponentType>& write);
+	void Declare(ParentRead<TComponentType>& read);
+
+	template<typename TComponentType>
+	void Declare(EntityRead<TComponentType>& read);
+
+	template<typename TComponentType>
+	void Include();
 
 	// Data
 	///////
@@ -134,6 +159,8 @@ protected:
 private:
 	std::vector<Accessor> m_Accessors;
 	std::vector<Accessor> m_ParentAccessors;
+	std::vector<EcsController const**> m_ControllerPtrs;
+	T_CompTypeList m_Includes;
 	size_t m_Current = 0u;
 	BaseComponentRange* m_Range = nullptr;
 };

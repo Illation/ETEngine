@@ -4,6 +4,7 @@
 #include <EtRendering/PlanetTech/Planet.h>
 
 #include <EtFramework/SceneGraph/ComponentDescriptor.h>
+#include <EtFramework/SceneGraph/EntityLink.h>
 
 
 //---------------------------------
@@ -84,6 +85,24 @@ private:
 	core::T_SlotId m_PlanetId = core::INVALID_SLOT_ID;
 };
 
+//---------------------------------
+// PlanetCameraLinkComponent
+//
+// Tags a camera so it uses the planet terrain to adjust its clipping planes
+//
+struct PlanetCameraLinkComponent final
+{
+	// definitions
+	//-------------
+	ECS_DECLARE_COMPONENT
+
+	// construct destruct
+	//--------------------
+public:
+	PlanetCameraLinkComponent(T_EntityId const p) : planet(p) {}
+
+	T_EntityId const planet;
+};
 
 //---------------------------------
 // PlanetComponentDesc
@@ -118,6 +137,34 @@ public:
 
 	std::string texHeight;
 	std::string texHeightDetail;
+};
+
+
+//---------------------------------
+// PlanetCameraLinkComponentDesc
+//
+// Descriptor for serialization and deserialization of planet camera link components
+//
+class PlanetCameraLinkComponentDesc final : public ComponentDescriptor<PlanetCameraLinkComponent>
+{
+	// definitions
+	//-------------
+	RTTR_ENABLE(ComponentDescriptor<PlanetCameraLinkComponent>)
+
+	// construct destruct
+	//--------------------
+public:
+	PlanetCameraLinkComponentDesc() : ComponentDescriptor<PlanetCameraLinkComponent>() {}
+	~PlanetCameraLinkComponentDesc() = default;
+
+	// ComponentDescriptor interface
+	//-------------------------------
+	PlanetCameraLinkComponent* MakeData() override;
+
+	// Data
+	///////
+
+	EntityLink planet;
 };
 
 

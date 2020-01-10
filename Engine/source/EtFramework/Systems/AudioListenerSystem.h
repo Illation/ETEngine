@@ -20,13 +20,11 @@ struct AudioListenerSystemView final : public ComponentView
 	{
 		Declare(listener);
 		Declare(transf);
-		Declare(_active);
+		Include<ActiveAudioListenerComponent>();
 	}
 
 	WriteAccess<AudioListenerComponent> listener;
 	ReadAccess<TransformComponent> transf;
-
-	ReadAccess<ActiveAudioListenerComponent> _active;
 };
 
 //---------------------

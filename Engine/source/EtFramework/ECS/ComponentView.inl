@@ -42,6 +42,28 @@ void ComponentView::Declare(ParentRead<TComponentType>& parentRead)
 	m_ParentAccessors.push_back(Accessor(reinterpret_cast<void**>(&(parentRead.m_Data)), TComponentType::GetTypeIndex(), true));
 }
 
+//-------------------------
+// ComponentView::Declare
+//
+// initialize a read access to an entities components
+//
+template<typename TComponentType>
+void ComponentView::Declare(EntityRead<TComponentType>& read)
+{
+	m_ControllerPtrs.emplace_back(&read.m_Ecs);
+}
+
+//-------------------------
+// ComponentView::Include
+//
+// Add a component type to the signature, useful for flag components that don't need to be read
+//
+template<typename TComponentType>
+void ComponentView::Include()
+{
+	m_Includes.emplace_back(TComponentType::GetTypeIndex());
+}
+
 
 // signature generation
 //----------------------

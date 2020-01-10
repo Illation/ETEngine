@@ -82,6 +82,8 @@ RTTR_REGISTRATION
 
 	registration::class_<fw::PlanetComponent>("planet component");
 
+	registration::class_<fw::PlanetCameraLinkComponent>("planet camera link component");
+
 	registration::class_<fw::PlanetComponentDesc>("planet comp desc")
 		.constructor<fw::PlanetComponentDesc const&>()
 		.constructor<>()(rttr::detail::as_object())
@@ -98,12 +100,24 @@ RTTR_REGISTRATION
 		ok = true;
 		return new fw::PlanetComponentDesc(descriptor);
 	});
+
+	registration::class_<fw::PlanetCameraLinkComponentDesc>("planet camera link comp desc")
+		.constructor<fw::PlanetCameraLinkComponentDesc const&>()
+		.constructor<>()(rttr::detail::as_object())
+		.property("planet", &fw::PlanetCameraLinkComponentDesc::planet);
+
+	rttr::type::register_converter_func([](fw::PlanetCameraLinkComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
+	{
+		ok = true;
+		return new fw::PlanetCameraLinkComponentDesc(descriptor);
+	});
 }
 
 // component registration
 //------------------------
 
 ECS_REGISTER_COMPONENT(fw::PlanetComponent);
+ECS_REGISTER_COMPONENT(fw::PlanetCameraLinkComponent);
 
 
 namespace fw {
@@ -147,6 +161,22 @@ PlanetComponent* PlanetComponentDesc::MakeData()
 	params.texHeightDetailId = GetHash(texHeightDetail);
 
 	return new PlanetComponent(params);
+}
+
+
+//=========================================
+// Planet Camera Link Component Descriptor
+//=========================================
+
+
+//-------------------------------
+// PlanetComponentDesc::MakeData
+//
+// Create a planet component from a descriptor
+//
+PlanetCameraLinkComponent* PlanetCameraLinkComponentDesc::MakeData()
+{
+	return new PlanetCameraLinkComponent(planet.id);
 }
 
 

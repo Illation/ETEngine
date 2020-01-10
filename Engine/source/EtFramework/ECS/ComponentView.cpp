@@ -44,6 +44,12 @@ void ComponentView::Init(BaseComponentRange* const range)
 		access.currentElement = static_cast<uint8*>(m_Range->m_Archetype->GetPool(access.typeIdx).At(m_Range->m_Offset));
 	}
 
+	// set the ecs controllers for accessors outside the current entity
+	for (EcsController const** controllerPtr : m_ControllerPtrs)
+	{
+		*controllerPtr = m_Range->m_Controller;
+	}
+
 	CalcParentPointers();
 }
 
@@ -65,10 +71,14 @@ bool ComponentView::IsEnd() const
 T_CompTypeList ComponentView::GetTypeList() const
 {
 	T_CompTypeList ret;
+	ret.reserve(m_Accessors.size() + m_Includes.size());
+
 	for (Accessor const& access : m_Accessors)
 	{
 		ret.emplace_back(access.typeIdx);
 	}
+
+	ret.insert(ret.end(), m_Includes.begin(), m_Includes.end());
 
 	return ret;
 }

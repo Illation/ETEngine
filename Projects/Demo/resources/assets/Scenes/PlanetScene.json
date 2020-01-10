@@ -32,6 +32,13 @@
               "near plane": 0.01,
               "far plane": 1000.0
             }
+          },
+          {
+            "planet camera link comp desc": {
+              "planet": {
+                "id": 1
+              }
+            }
           }
         ],
         "children": []
@@ -64,9 +71,9 @@
               "radius": 1737.1,
               "height": 10.7,
               "diffuse texture": "moon8k.jpg",
-              "detail texture 1": "MoonHeight.jpg",
-              "detail texture 2": "MoonDetail1.jpg",
-              "height texture": "MoonDetail2.jpg",
+              "detail texture 1": "MoonDetail1.jpg",
+              "detail texture 2": "MoonDetail2.jpg",
+              "height texture": "MoonHeight.jpg",
               "height detail texture": "MoonHeightDetail1.jpg"
             }
           },
