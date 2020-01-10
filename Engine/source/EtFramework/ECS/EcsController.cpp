@@ -120,6 +120,59 @@ T_EntityId EcsController::AddEntityBatched(T_EntityId const parent, std::vector<
 	return ent.second;
 }
 
+//---------------------------------------------
+// EcsController::DuplicateEntityAddComponents
+//
+// Duplicate the existing entity and add additional components
+//
+T_EntityId EcsController::DuplicateEntityAddComponents(T_EntityId const dupe, std::vector<RawComponentPtr> const& components)
+{
+	// get referred entities current components
+	std::vector<RawComponentPtr> currentComponents;
+	T_CompTypeList compTypes = GetComponentsAndTypes(m_Entities[dupe], currentComponents);
+
+	// add the new components
+	for (RawComponentPtr const& comp : components)
+	{
+		compTypes.emplace_back(comp.typeIdx);
+		currentComponents.emplace_back(comp);
+	}
+
+	auto ent = m_Entities.insert(EntityData());
+
+	EntityData const& dupeEnt = m_Entities[dupe]; 
+
+	// deal with hierachy issues
+	if (dupeEnt.parent != INVALID_ENTITY_ID)
+	{
+		ent.first->parent = dupeEnt.parent;
+
+		EntityData& parentEnt = m_Entities[dupeEnt.parent];
+		parentEnt.children.push_back(ent.second);
+
+		ent.first->layer = parentEnt.layer + 1u;
+	}
+
+	// find the archetype for the new component list
+	ent.first->archetype = FindOrCreateArchetype(ComponentSignature(currentComponents), ent.first->layer);
+	ent.first->index = ent.first->archetype->AddEntity(ent.second, currentComponents);
+
+	// emit events for the added components
+	std::vector<RawComponentPtr> addedComponents;
+	GetComponentsAndTypes(*(ent.first), addedComponents);
+
+	for (RawComponentPtr& comp : addedComponents)
+	{
+		m_ComponentEvents[comp.typeIdx].Notify(detail::E_EcsEvent::Added, new detail::ComponentEventData(this, comp.data, ent.second));
+	}
+
+	// entity events
+	m_EntityEvents.Notify(detail::E_EcsEvent::Added, new detail::EntityEventData(this, ent.second));
+
+	// return the ID
+	return ent.second;
+}
+
 //-------------------------------
 // EcsController::ReparentEntity
 //

@@ -1,65 +1,68 @@
 #pragma once
+#include <EtFramework/ECS/ComponentView.h>
+#include <EtFramework/ECS/EcsController.h>
+
+#include <EtFramework/Components/CameraComponent.h>
+#include <EtFramework/Components/TransformComponent.h>
 
 
 // forward
-namespace fw {
-	class TransformComponent;
-	class CameraComponent;
-}
-class Viewport;
+class Camera;
 
-
-//---------------------------------
-// EditorCamera
+//---------------------------
+// EditorCameraComponent
 //
-// Componentless implementation of a free moving camera
+// describes the state of editor camera behavior
 //
-class EditorCamera final
+struct EditorCameraComponent final
 {
-	// definitions
-	//--------------
+	ECS_DECLARE_COMPONENT
+
+public:
+	// set by editor
+	bool isEnabled = false;
+	Camera const* renderCamera = nullptr;
+
+	// inherent
+	vec3 movement;
+
+	float speedMultiplier = 1.f;
+
+	float totalPitch = 0.f;
+	float totalYaw = 0.f;
+};
+
+//---------------------------
+// EditorCameraSystemView
+//
+// ECS access pattern for editor camera behavior
+//
+struct EditorCameraSystemView final : public fw::ComponentView
+{
+	EditorCameraSystemView() : fw::ComponentView()
+	{
+		Declare(camera);
+		Declare(transform);
+		Include<fw::CameraComponent>();
+	}
+
+	WriteAccess<EditorCameraComponent> camera;
+	WriteAccess<fw::TransformComponent> transform;
+};
+
+//---------------------------
+// EditorCameraSystem
+//
+// Allow the user to move around in the 3D world with keyboard and mouse
+//
+class EditorCameraSystem final : public fw::System<EditorCameraSystem, EditorCameraSystemView>
+{
 	static float const s_MoveSpeed;
 	static float const s_Accelleration;
 	static float const s_RotationSpeed;
 
-	// construct destruct
-	//--------------------
 public:
-	EditorCamera();
-	~EditorCamera() = default;
+	EditorCameraSystem();
 
-	// functionality
-	//----------------
-	void Update(Camera const& currentCamera);
-	void PopulateCamera(Camera& target, Viewport const* const viewport) const;
-
-	void ImitateComponent(fw::CameraComponent const& camComp, fw::TransformComponent const& tfComp);
-
-	void SetEnabled(bool const val) { m_IsEnabled = val; }
-
-	// Data
-	///////
-private:
-
-	bool m_IsEnabled = false;
-
-	// movement
-	vec3 m_Movement;
-	float m_SpeedMultiplier = 1.f;
-
-	float m_TotalPitch = 0.f;
-	float m_TotalYaw = 0.f;
-
-	// camera parameters
-	float m_FieldOfView = 45.f; // angle of perspective camera in degrees
-	float m_NearPlane = 0.1f;
-	float m_FarPlane = 1000.f;
-
-	// transform parameters
-	vec3 m_Position;
-	vec3 m_Forward;
-	vec3 m_Up;
-
-	// utility
-	vec3 m_Right;
+	void Process(fw::ComponentRange<EditorCameraSystemView>& ramge) const override;
 };

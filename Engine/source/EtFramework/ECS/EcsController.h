@@ -79,6 +79,11 @@ public:
 	template<typename TComponentType, typename... Args>
 	T_EntityId AddEntityChild(T_EntityId const parent, TComponentType& component1, Args... args);
 
+	T_EntityId DuplicateEntityAddComponents(T_EntityId const dupe, std::vector<RawComponentPtr> const& components);
+
+	template<typename TComponentType, typename... Args>
+	T_EntityId DuplicateEntity(T_EntityId const dupe, TComponentType& component1, Args... args);
+
 	void ReparentEntity(T_EntityId const entity, T_EntityId const newParent);
 
 	void RemoveEntity(T_EntityId const entity);

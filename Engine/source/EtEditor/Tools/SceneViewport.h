@@ -10,7 +10,6 @@
 #include <EtFramework/SceneGraph/SceneEvents.h>
 
 #include <EtEditor/SceneEditor/SceneEditorListener.h>
-#include <EtEditor/Rendering/EditorCamera.h>
 #include <EtEditor/Layout/EditorTool.h>
 
 
@@ -60,7 +59,7 @@ private:
 
 	SceneEditor* m_Editor;
 
-	EditorCamera m_Camera;
+	fw::T_EntityId m_Camera = fw::INVALID_ENTITY_ID;
 	std::unique_ptr<Viewport> m_Viewport;
 	I_RenderArea* m_RenderArea = nullptr;
 

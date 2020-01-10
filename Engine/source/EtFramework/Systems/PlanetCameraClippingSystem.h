@@ -43,7 +43,7 @@ struct PlanetCameraLinkSystemView final : public ComponentView
 //
 // Sets the clipping planes of a camera relative to a planet
 //
-class PlanetCameraLinkSystem final : public fw::System<PlanetCameraLinkSystem, PlanetCameraLinkSystemView>
+class PlanetCameraLinkSystem final : public System<PlanetCameraLinkSystem, PlanetCameraLinkSystemView>
 {
 public:
 	PlanetCameraLinkSystem();

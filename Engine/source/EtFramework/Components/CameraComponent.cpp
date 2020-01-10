@@ -75,7 +75,7 @@ void CameraComponent::PopulateCamera(Camera& target, Viewport const& viewport, T
 {
 	target.SetTransformation(tfComp.GetPosition(), tfComp.GetForward(), tfComp.GetUp(), true);
 
-	target.SetIsPerspective(m_IsPerspective, true);
+	target.SetIsPerspective(true, true); // #todo: support ortho cameras
 	target.SetFieldOfView(m_FieldOfView, true);
 	target.SetSize(m_Size, true);
 	target.SetClippingPlanes(m_NearPlane, m_FarPlane, true);

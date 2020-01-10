@@ -22,8 +22,8 @@ PlanetCameraLinkSystem::PlanetCameraLinkSystem()
 	DeclareDependencies<TransformSystem::Compute>(); // update lights after updating transforms, though we don't need to wait for flags to update
 }
 
-//------------------------------
-// AudioListenerSystem::Process
+//---------------------------------
+// PlanetCameraLinkSystem::Process
 //
 // Set the cameras clipping planes to the planets size
 //

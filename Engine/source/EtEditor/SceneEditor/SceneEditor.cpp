@@ -9,6 +9,7 @@
 #include <EtFramework/Physics/PhysicsManager.h>
 #include <EtFramework/Audio/AudioManager.h>
 
+#include <EtEditor/Rendering/EditorCamera.h>
 #include <EtEditor/Util/GtkUtil.h>
 #include <EtEditor/Tools/SceneViewport.h>
 
@@ -58,6 +59,8 @@ void SceneEditor::RegisterEcsEvents()
 
 			ecs.AddComponents(entity, comp);
 		}));
+
+	ecs.RegisterSystem<EditorCameraSystem>();
 }
 
 //---------------------------

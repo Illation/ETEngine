@@ -7,6 +7,7 @@
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
+#include <EtEditor/Rendering/EditorCamera.h>
 #include <EtEditor/Rendering/GtkRenderArea.h>
 #include <EtEditor/Util/GtkUtil.h>
 #include <EtEditor/SceneEditor/SceneEditor.h>
@@ -78,7 +79,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 		{
 			// other clicks (left) we navigate
 			m_Editor->SetNavigatingViewport(this);
-			m_Camera.SetEnabled(true);
+			fw::UnifiedScene::Instance().GetEcs().GetComponent<EditorCameraComponent>(m_Camera).isEnabled = true;
 			InputManager::GetInstance()->OnMousePressed(code);
 		}
 		return true;
@@ -90,7 +91,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	auto mouseReleasedCallback = [this](GdkEventButton* evnt) -> bool
 	{
 		InputManager::GetInstance()->OnMouseReleased(GtkUtil::GetButtonFromGtk(evnt->button));
-		m_Camera.SetEnabled(false);
+		fw::UnifiedScene::Instance().GetEcs().GetComponent<EditorCameraComponent>(m_Camera).isEnabled = false;
 		m_Editor->SetNavigatingViewport(nullptr);
 		return true;
 	};
@@ -177,6 +178,11 @@ void SceneViewport::OnDeinit()
 	SafeDelete(m_SceneRenderer);
 	m_Viewport->SetRenderer(nullptr);
 
+	if (m_Camera != fw::INVALID_ENTITY_ID)
+	{
+		fw::UnifiedScene::Instance().GetEcs().RemoveEntity(m_Camera);
+	}
+
 	m_IsInitialized = false;
 }
 
@@ -233,8 +239,11 @@ void SceneViewport::OnSceneSet()
 //
 void SceneViewport::OnEditorTick()
 {
-	m_Camera.Update(m_SceneRenderer->GetCamera());
-	m_Camera.PopulateCamera(m_SceneRenderer->GetCamera(), m_Viewport.get());
+	fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
+
+	ecs.GetComponent<fw::CameraComponent>(m_Camera).PopulateCamera(m_SceneRenderer->GetCamera(), 
+		*m_Viewport, 
+		ecs.GetComponent<fw::TransformComponent>(m_Camera));
 }
 
 //------------------------------------
@@ -262,10 +271,7 @@ void SceneViewport::InitCamera()
 	fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
 	fw::T_EntityId const camEnt = fw::UnifiedScene::Instance().GetActiveCamera();
 
-	ET_ASSERT(camEnt != fw::INVALID_ENTITY_ID);
-	ET_ASSERT(ecs.HasComponent<fw::TransformComponent>(camEnt));
-	ET_ASSERT(ecs.HasComponent<fw::CameraComponent>(camEnt));
-
-	m_Camera.ImitateComponent(ecs.GetComponent<fw::CameraComponent>(camEnt), ecs.GetComponent<fw::TransformComponent>(camEnt));
-	m_Camera.PopulateCamera(m_SceneRenderer->GetCamera(), m_Viewport.get());
+	EditorCameraComponent edCamComp;
+	edCamComp.renderCamera = &m_SceneRenderer->GetCamera();
+	m_Camera = ecs.DuplicateEntity(camEnt, edCamComp);
 }

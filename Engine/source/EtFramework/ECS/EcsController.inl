@@ -49,6 +49,25 @@ namespace detail {
 		return AddToEcs(ecs, parent, list, args...);
 	}
 
+	//-------------------------------
+	// EcsController::DupeInEcs
+	//
+	// variadic template recursively adds components to a raw component pointer list and finallyduplicate an entity with that component list
+	//
+	template<typename TComponentType>
+	T_EntityId DupeInEcs(EcsController& ecs, T_EntityId const dupe, std::vector<RawComponentPtr>& list, TComponentType& component)
+	{
+		list.emplace_back(MakeRawComponent(component));
+		return ecs.DuplicateEntityAddComponents(dupe, list);
+	}
+
+	template<typename TComponentType, typename... Args>
+	T_EntityId DupeInEcs(EcsController& ecs, T_EntityId const dupe, std::vector<RawComponentPtr>& list, TComponentType& component1, Args... args)
+	{
+		list.emplace_back(MakeRawComponent(component1));
+		return DupeInEcs(ecs, dupe, list, args...);
+	}
+
 } // namespace detail
 
 
@@ -69,6 +88,16 @@ T_EntityId EcsController::AddEntityChild(T_EntityId const parent, TComponentType
 {
 	std::vector<RawComponentPtr> components;
 	return detail::AddToEcs(*this, parent, components, component1, args...);
+}
+
+//--------------------------------
+// EcsController::DuplicateEntity
+//
+template<typename TComponentType, typename... Args>
+T_EntityId EcsController::DuplicateEntity(T_EntityId const dupe, TComponentType& component1, Args... args)
+{
+	std::vector<RawComponentPtr> components;
+	return detail::DupeInEcs(*this, dupe, components, component1, args...);
 }
 
 //------------------------------
