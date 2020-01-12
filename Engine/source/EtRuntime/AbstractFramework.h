@@ -26,11 +26,12 @@ public:
 	void Run();
 
 protected:
-	virtual void AddScenes() = 0;
+	virtual void OnSystemInit() = 0;
+	virtual void OnInit() = 0;
 	virtual void OnTick() override = 0;
 
 private:
-	void GameLoop();
+	void MainLoop();
 
 private:
 	GlfwRenderArea m_RenderArea;

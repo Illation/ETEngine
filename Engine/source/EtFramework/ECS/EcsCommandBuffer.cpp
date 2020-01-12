@@ -25,9 +25,9 @@ EcsCommandBuffer::~EcsCommandBuffer()
 	ET_ASSERT(m_AddComponents.empty(), "deleting command buffer before it was merged!");
 	ET_ASSERT(m_RemoveComponents.empty(), "deleting command buffer before it was merged!");
 	
-	for (std::pair<T_EntityId const, std::vector<RawComponentPtr>>& addPair : m_AddComponents)
+	for (std::pair<T_EntityId const, AddBuffer>& addPair : m_AddComponents)
 	{
-		for (RawComponentPtr const& ptr : addPair.second)
+		for (RawComponentPtr const& ptr : addPair.second.components)
 		{
 			// match malloc with free - hence we don't use the full destructor
 			ComponentRegistry::Instance().GetDestructor(ptr.typeIdx)(ptr.data);
@@ -117,7 +117,7 @@ void EcsCommandBuffer::RemoveEntity(T_EntityId const entity)
 void EcsCommandBuffer::AddComponentList(T_EntityId const entity, std::vector<RawComponentPtr> const& components)
 {
 	// get the component pointer buffer for the entity
-	auto buffer = m_AddComponents.emplace(entity, std::vector<RawComponentPtr>()).first;
+	auto buffer = m_AddComponents.emplace(entity, AddBuffer()).first;
 	
 	// add components to buffer
 	for (RawComponentPtr const& comp : components)
@@ -126,7 +126,7 @@ void EcsCommandBuffer::AddComponentList(T_EntityId const entity, std::vector<Raw
 		RawComponentPtr copy(comp.typeIdx, malloc(ComponentRegistry::Instance().GetSize(comp.typeIdx)));
 		ComponentRegistry::Instance().GetCopyAssign(comp.typeIdx)(comp.data, copy.data);
 
-		buffer->second.push_back(copy);
+		buffer->second.components.push_back(copy);
 	}
 }
 
@@ -143,6 +143,16 @@ void EcsCommandBuffer::RemoveComponentTypes(T_EntityId const entity, T_CompTypeL
 	{
 		buffer->second.push_back(compType);
 	}
+}
+//----------------------------
+// EcsCommandBuffer::OnMerge
+//
+void EcsCommandBuffer::OnMerge(T_EntityId const entity, T_OnMergeFn& fn)
+{
+	// get the component pointer buffer for the entity
+	auto buffer = m_AddComponents.emplace(entity, AddBuffer()).first;
+
+	buffer->second.callbacks.emplace_back(fn);
 }
 
 
@@ -175,12 +185,18 @@ void EcsCommandBuffer::Merge()
 	m_RemoveComponents.clear();
 
 	// add components
-	for (std::pair<T_EntityId const, std::vector<RawComponentPtr>>& addComps : m_AddComponents)
+	for (std::pair<T_EntityId const, AddBuffer>& addComps : m_AddComponents)
 	{
-		m_Controller->AddComponents(addComps.first, std::vector<RawComponentPtr>(addComps.second));
+		m_Controller->AddComponents(addComps.first, std::vector<RawComponentPtr>(addComps.second.components));
+
+		// callbacks
+		for (T_OnMergeFn& fn : addComps.second.callbacks)
+		{
+			fn(*m_Controller, addComps.first);
+		}
 
 		// delete the components in the buffer as they have now been copied into the ECS
-		for (RawComponentPtr const& ptr : addComps.second)
+		for (RawComponentPtr const& ptr : addComps.second.components)
 		{
 			// match malloc with free - hence we don't use the full destructor
 			ComponentRegistry::Instance().GetDestructor(ptr.typeIdx)(ptr.data);

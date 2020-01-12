@@ -28,6 +28,7 @@ public:
 
 	ComponentPool& GetPool(T_CompTypeIdx const typeIdx);
 	ComponentPool const& GetPool(T_CompTypeIdx const typeIdx) const;
+	std::vector<ComponentPool>& GetPools() { return m_ComponentPools; }
 
 	T_EntityId GetEntity(size_t const idx) const;
 

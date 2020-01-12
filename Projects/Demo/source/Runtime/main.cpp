@@ -5,7 +5,7 @@
 
 #include <EtCore/FileSystem/FileUtil.h>
 
-#include <EtFramework/linkerHelper.h>
+#include <Common/linkerHelper.h>
 
 #include <Runtime/_generated/compiled_package.h>
 
@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 	//-------------------------
 	SetDebuggingOptions();
 
-	ForceLinking(); // makes sure the linker doesn't ignore reflection only data
+	demo::ForceLinking(); // makes sure the linker doesn't ignore reflection only data
 
 	// pass compiled data into core libraries so that core systems have access to it
 	FileUtil::SetCompiledData(GetCompiledData_compiled_package());

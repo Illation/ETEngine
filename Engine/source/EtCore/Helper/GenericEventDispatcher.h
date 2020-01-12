@@ -44,6 +44,10 @@ public:
 	GenericEventDispatcher() = default;
 	~GenericEventDispatcher() = default;
 
+	// accessors
+	//-----------
+	size_t GetListenerCount() const { return m_Listeners.size(); }
+
 	// functionality
 	//---------------
 	T_CallbackId Register(TFlagType const flags, T_CallbackFn& callback);

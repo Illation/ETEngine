@@ -19,7 +19,7 @@ bool UISplitter::Draw(uint16 level)
 
 void UISplitter::Update()
 {
-	vec2 mousePos = INPUT->GetMousePos();
+	vec2 mousePos = InputManager::GetInstance()->GetMousePos();
 	iRect overlapRegion;
 	switch (m_Mode)
 	{
@@ -36,7 +36,7 @@ void UISplitter::Update()
 	}
 	if (overlapRegion.Contains(mousePos))
 	{
-		if (INPUT->GetMouseButton(E_MouseButton::Left) == E_KeyState::Pressed)
+		if (InputManager::GetInstance()->GetMouseButton(E_MouseButton::Left) == E_KeyState::Pressed)
 		{
 			m_DragActive = true;
 		}
@@ -47,18 +47,18 @@ void UISplitter::Update()
 
 			if (m_Mode == UISplitter::Mode::HORIZONTAL)
 			{
-				INPUT->SetCursorShape(E_CursorShape::SizeWE);
+				InputManager::GetInstance()->SetCursorShape(E_CursorShape::SizeWE);
 			}
 			else
 			{
-				INPUT->SetCursorShape(E_CursorShape::SizeNS);
+				InputManager::GetInstance()->SetCursorShape(E_CursorShape::SizeNS);
 			}
 		}
 	}
 	else if (m_IsHovering)
 	{
 		m_IsHovering = false;
-		INPUT->SetCursorShape(E_CursorShape::Arrow);
+		InputManager::GetInstance()->SetCursorShape(E_CursorShape::Arrow);
 	}
 
 	if (m_DragActive)
@@ -72,11 +72,11 @@ void UISplitter::Update()
 			SetSplitPercentage((mousePos.y - (float)m_Rect.pos.y) / (float)m_Rect.size.y);
 			break;
 		}
-		if (INPUT->GetMouseButton(E_MouseButton::Left) == E_KeyState::Released)
+		if (InputManager::GetInstance()->GetMouseButton(E_MouseButton::Left) == E_KeyState::Released)
 		{
 			m_DragActive = false;
 		}
-		INPUT->ConsumeMouse();
+		InputManager::GetInstance()->ConsumeMouse();
 	}
 	m_First->Update();
 	m_Second->Update();

@@ -53,6 +53,7 @@ set(_engineMountDir "${PROJECT_DIRECTORY}/build/Engine")
 message(STATUS "Adding Engine targets ...")
 add_subdirectory (${ENGINE_DIRECTORY} ${_engineMountDir}) # external
 message(STATUS "Adding Project targets ...")
+add_subdirectory (source/Common)
 add_subdirectory (source/Editor)
 add_subdirectory (source/Runtime)
 

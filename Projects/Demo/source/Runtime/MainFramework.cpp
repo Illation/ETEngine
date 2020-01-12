@@ -1,18 +1,16 @@
 #include "stdafx.h"
 #include "MainFramework.h"
 
+#include "SpawnSystem.h"
+
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/GraphicsTypes/SpriteFont.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
-#include <EtFramework/SceneGraph/SceneManager.h>
+#include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/Audio/AudioManager.h>
-
-#include <Runtime/Scenes/EditorScene.h>
-#include <Runtime/Scenes/PlanetTestScene.h>
-#include <Runtime/Scenes/PhysicsTestScene.h>
 
 
 //================
@@ -20,34 +18,51 @@
 //================
 
 
+//-----------------------------
+// MainFramework::OnSystemInit
+//
+void MainFramework::OnSystemInit()
+{
+	fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
+
+	ecs.RegisterSystem<FreeCameraSystem>();
+	ecs.RegisterSystem<demo::SpawnSystem>();
+}
+
 //--------------------------
-// MainFramework::AddScenes
+// MainFramework::OnInit
 //
-// Init function
-//
-void MainFramework::AddScenes()
+void MainFramework::OnInit()
 {
 	// Fonts
 	m_DebugFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Ubuntu-Regular.ttf"_hash);
 
 	// scenes
-	SceneManager* const sceneMan = SceneManager::GetInstance();
+	fw::UnifiedScene& uniScene = fw::UnifiedScene::Instance();
 
-	sceneMan->AddScene(new EditorScene());
-	sceneMan->AddScene(new PlanetTestScene());
-	sceneMan->AddScene(new PhysicsTestScene());
+	m_Scenes.push_back(GetHash("EditorScene.json"));
+	m_Scenes.push_back(GetHash("PlanetScene.json"));
+	m_Scenes.push_back(GetHash("PhysicsScene.json"));
 	
-	sceneMan->GetEventDispatcher().Register(E_SceneEvent::Activated,
+	uniScene.GetEventDispatcher().Register(E_SceneEvent::Activated,
 		T_SceneEventCallback([this](T_SceneEventFlags const flags, SceneEventData const* const evnt)
 		{
 			UNUSED(flags);
 			UNUSED(evnt);
 
-			CameraComponent* const cam = CAMERA;
-			ET_ASSERT(evnt->scene->GetActiveCamera() == cam);
+			// active scene as loaded by user prefs
+			auto foundSceneIt = std::find(m_Scenes.cbegin(), m_Scenes.cend(), fw::UnifiedScene::Instance().GetSceneId());
+			ET_ASSERT(foundSceneIt != m_Scenes.cend());
+			m_CurrentScene = foundSceneIt - m_Scenes.cbegin();
 
-			m_CameraController.SetCameraComponent(cam);
-			m_CameraController.Reset();
+			// set up camera
+			fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
+			fw::T_EntityId const camEnt = fw::UnifiedScene::Instance().GetActiveCamera();
+
+			ET_ASSERT(camEnt != fw::INVALID_ENTITY_ID);
+			ET_ASSERT(!ecs.HasComponent<FreeCameraComponent>(camEnt));
+
+			ecs.AddComponents(camEnt, FreeCameraComponent());
 		}));
 
 	// audio
@@ -61,19 +76,26 @@ void MainFramework::AddScenes()
 //
 void MainFramework::OnTick()
 {
-	SceneManager* const sceneMan = SceneManager::GetInstance();
+	fw::UnifiedScene& uniScene = fw::UnifiedScene::Instance();
 	InputManager* const input = InputManager::GetInstance();
 
 	// Scene switching
 	//-----------------
 	if(input->GetKeyState(E_KbdKey::F3) == E_KeyState::Pressed)
 	{
-		sceneMan->PreviousScene();
+		if (--m_CurrentScene >= m_Scenes.size())
+		{
+			m_CurrentScene = m_Scenes.size() - 1;
+		}
+
+		uniScene.LoadScene(m_Scenes[m_CurrentScene]);
 	}
 
 	if(input->GetKeyState(E_KbdKey::F4) == E_KeyState::Pressed)
 	{
-		sceneMan->NextScene();
+		m_CurrentScene = (m_CurrentScene + 1) % m_Scenes.size();
+
+		uniScene.LoadScene(m_Scenes[m_CurrentScene]);
 	}
 
 	// Screenshots
@@ -85,12 +107,10 @@ void MainFramework::OnTick()
 
 	// view
 	//------
-	m_CameraController.Update();
-
 	bool const up = (input->GetKeyState(E_KbdKey::Up) == E_KeyState::Down);
 	if (up || (input->GetKeyState(E_KbdKey::Down) == E_KeyState::Down))
 	{
-		render::Scene& renderScene = sceneMan->GetRenderScene();
+		render::Scene& renderScene = uniScene.GetRenderScene();
 		PostProcessingSettings ppSettings = renderScene.GetPostProcessingSettings();
 
 		float const newExp = ppSettings.exposure * 4.f;
@@ -130,7 +150,7 @@ void MainFramework::OnTick()
 			outString = "Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS());
 			textRenderer.DrawText(outString, vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 2));
 			outString = "Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls);
-			textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*1.1f) * 3), 128);
+			textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*1.1f) * 3));
 		}
 
 		if (m_DrawFontAtlas)

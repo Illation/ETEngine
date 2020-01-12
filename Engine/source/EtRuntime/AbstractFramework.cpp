@@ -8,10 +8,10 @@
 #include <EtRendering/SceneRendering/SplashScreenRenderer.h>
 #include <EtRendering/SceneRendering/ShadowRenderer.h>
 
-#include <EtFramework/SceneGraph/SceneManager.h>
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/Physics/PhysicsManager.h>
 #include <EtFramework/Audio/AudioManager.h>
+#include <EtFramework/Components/CameraComponent.h>
 
 #include <EtRuntime/Core/GlfwEventManager.h>
 #include <EtRuntime/Core/PackageResourceManager.h>
@@ -24,7 +24,7 @@ AbstractFramework::~AbstractFramework()
 	SafeDelete(m_Viewport);
 	SafeDelete(m_SceneRenderer);
 
-	SceneManager::DestroyInstance();
+	fw::UnifiedScene::Instance().UnloadScene();
 
 	PhysicsManager::DestroyInstance();
 	AudioManager::DestroyInstance();
@@ -49,48 +49,19 @@ void AbstractFramework::Run()
 	Config* const cfg = Config::GetInstance();
 	cfg->Initialize();
 
-	//fw::UnifiedScene::Instance().Init();
-	SceneManager::GetInstance();
-	m_Viewport = new Viewport(&m_RenderArea);
-	m_SplashScreenRenderer = new render::SplashScreenRenderer();
-	m_Viewport->SetRenderer(m_SplashScreenRenderer);
-	m_RenderArea.Initialize(); // also initializes the viewport and its renderer
+	// init unified scene, systems etc
+	fw::UnifiedScene::Instance().GetEventDispatcher().Register(E_SceneEvent::RegisterSystems,
+		T_SceneEventCallback([this](T_SceneEventFlags const flags, SceneEventData const* const eventData)
+		{
+			UNUSED(flags);
+			UNUSED(eventData);
 
-	std::string const& screenshotDir = cfg->GetScreenshotDir();
-	if (!screenshotDir.empty())
-	{
-		m_ScreenshotCapture.Initialize(cfg->GetUserDirPath() + screenshotDir);
-	}
-	else
-	{
-		m_ScreenshotCapture.Initialize(cfg->GetUserDirPath() + std::string("./"));
-	}
-
-	m_Viewport->SynchDimensions();
-	m_Viewport->Redraw();
-
-	ResourceManager::SetInstance(new PackageResourceManager());
-
-	cfg->InitRenderConfig();
-
-	m_SplashScreenRenderer->Init();
-	m_RenderArea.Update();
-
-	AudioManager::GetInstance()->Initialize();
-	PhysicsManager::GetInstance()->Initialize();
-
-	// set up scene manager
-	AddScenes();
-	std::string const& initScene = Config::GetInstance()->GetStartScene();
-	if (!initScene.empty())
-	{
-		SceneManager::GetInstance()->SetActiveGameScene(initScene);
-		//fw::UnifiedScene::Instance().LoadScene(GetHash(initScene + ".json"));
-	}
+			OnSystemInit();
+		}));
 
 	// ensure we show the splash screen every time the scene switches
 	// Callback ID not required as we destroy the scene manager here before destroying this class
-	SceneManager::GetInstance()->GetEventDispatcher().Register(E_SceneEvent::SceneSwitch | E_SceneEvent::Activated, 
+	fw::UnifiedScene::Instance().GetEventDispatcher().Register(E_SceneEvent::SceneSwitch | E_SceneEvent::Activated,
 		T_SceneEventCallback([this](T_SceneEventFlags const flags, SceneEventData const* const evnt)
 		{
 			UNUSED(evnt);
@@ -115,20 +86,65 @@ void AbstractFramework::Run()
 			}
 		}));
 
+	fw::UnifiedScene::Instance().Init();
+
+	// init rendering target
+	m_Viewport = new Viewport(&m_RenderArea);
+	m_SplashScreenRenderer = new render::SplashScreenRenderer();
+	m_Viewport->SetRenderer(m_SplashScreenRenderer);
+	m_RenderArea.Initialize(); // also initializes the viewport and its renderer
+
+	// screenshots
+	std::string const& screenshotDir = cfg->GetScreenshotDir();
+	if (!screenshotDir.empty())
+	{
+		m_ScreenshotCapture.Initialize(cfg->GetUserDirPath() + screenshotDir);
+	}
+	else
+	{
+		m_ScreenshotCapture.Initialize(cfg->GetUserDirPath() + std::string("./"));
+	}
+
+	m_Viewport->SynchDimensions();
+	m_Viewport->Redraw();
+
+	// resources
+	ResourceManager::SetInstance(new PackageResourceManager());
+
+	cfg->InitRenderConfig();
+
+	m_SplashScreenRenderer->Init();
+	m_RenderArea.Update();
+
+	AudioManager::GetInstance()->Initialize();
+	PhysicsManager::GetInstance()->Initialize();
+
 	PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
 
-	InputManager::GetInstance();	// init input manager
+	// init input manager
+	InputManager::GetInstance();	
 	GlfwEventManager::GetInstance()->Init(&m_RenderArea);
 
-	m_SceneRenderer = new render::ShadedSceneRenderer(&(SceneManager::GetInstance()->GetRenderScene()));
+	// scene rendering
+	m_SceneRenderer = new render::ShadedSceneRenderer(&(fw::UnifiedScene::Instance().GetRenderScene()));
 	m_SceneRenderer->InitRenderingSystems();
 
+	// cause the loop to contine
 	RegisterAsTriggerer();
 
-	GameLoop();
+	// load scene
+	OnInit();
+	std::string const& initScene = Config::GetInstance()->GetStartScene();
+	if (!initScene.empty())
+	{
+		fw::UnifiedScene::Instance().LoadScene(GetHash(initScene + ".json"));
+	}
+
+	// update
+	MainLoop();
 }
 
-void AbstractFramework::GameLoop()
+void AbstractFramework::MainLoop()
 {
 	while (true)
 	{
@@ -141,10 +157,12 @@ void AbstractFramework::GameLoop()
 		//****
 		//DRAW
 
-		if (SceneManager::GetInstance()->GetActiveScene()->IsInitialized())
-		{
-			SceneManager::GetInstance()->GetActiveScene()->GetActiveCamera()->PopulateCamera(m_SceneRenderer->GetCamera(), *m_Viewport);
-		}
+		fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
+		fw::T_EntityId cam = fw::UnifiedScene::Instance().GetActiveCamera();
+
+		ecs.GetComponent<fw::CameraComponent>(cam).PopulateCamera(m_SceneRenderer->GetCamera(),
+			*m_Viewport,
+			ecs.GetComponent<fw::TransformComponent>(cam));
 
 		m_RenderArea.Update();
 	}

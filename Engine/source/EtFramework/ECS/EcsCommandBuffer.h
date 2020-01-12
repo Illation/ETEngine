@@ -20,11 +20,23 @@ class EcsController;
 //
 //		- Reparent entities
 //		- Remove Components
-//		- Add Components
+//		- Add Components - callbacks for entities with events
 //		- Remove entities
 //
 class EcsCommandBuffer final
 {
+	// definitions
+	//-------------
+public:
+	typedef std::function<void(EcsController&, T_EntityId const)> T_OnMergeFn;
+
+private:
+	struct AddBuffer
+	{
+		std::vector<RawComponentPtr> components;
+		std::vector<T_OnMergeFn> callbacks;
+	};
+
 	friend class SystemBase;
 
 	// construct destruct
@@ -58,6 +70,10 @@ public:
 	void RemoveComponents(T_EntityId const entity);
 	void RemoveComponentTypes(T_EntityId const entity, T_CompTypeList const& componentTypes);
 
+	// callbacks when adding components to entities
+	//----------------------------------------------
+	void OnMerge(T_EntityId const entity, T_OnMergeFn& fn);
+
 	// private system control
 	//------------------------
 private:
@@ -72,7 +88,7 @@ private:
 	std::vector<std::pair<T_EntityId, T_EntityId>> m_ReparentEntities; // [to reparent, new parent]
 	std::vector<T_EntityId> m_RemoveEntities;
 
-	std::unordered_map<T_EntityId, std::vector<RawComponentPtr>> m_AddComponents;
+	std::unordered_map<T_EntityId, AddBuffer> m_AddComponents;
 	std::unordered_map<T_EntityId, T_CompTypeList> m_RemoveComponents;
 };
 

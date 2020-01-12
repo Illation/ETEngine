@@ -3,132 +3,7 @@
 
 #include <btBulletDynamicsCommon.h>
 
-#include "AbstractComponent.h"
-
 #include <EtFramework/Physics/BulletETM.h>
-#include <EtFramework/Physics/PhysicsWorld.h>
-#include <EtFramework/Physics/PhysicsManager.h>
-#include <EtFramework/SceneGraph/Entity.h>
-
-
-// deprecated
-//------------
-
-
-RigidBodyComponent::RigidBodyComponent(bool isStatic) 
-	:m_IsDynamic(!isStatic)
-{ }
-
-RigidBodyComponent::~RigidBodyComponent() 
-{
-	delete m_pBody->getMotionState();
-	delete m_pBody;
-}
-
-void RigidBodyComponent::Init()
-{
-	btAssert((!m_pCollisionShape || m_pCollisionShape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
-
-	//rigidbody is dynamic if and only if mass is non zero, otherwise static
-	assert(!m_IsDynamic || m_Mass > 0);
-
-	btTransform startTransform;
-	startTransform.setOrigin(ToBtVec3(TRANSFORM->GetWorldPosition()));
-	startTransform.setRotation(ToBtQuat(TRANSFORM->GetWorldRotation()));
-
-	btVector3 localInertia(0, 0, 0);
-	if (m_IsDynamic)
-		m_pCollisionShape->calculateLocalInertia(m_Mass, localInertia);
-
-	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-
-	btRigidBody::btRigidBodyConstructionInfo cInfo(m_Mass, myMotionState, m_pCollisionShape, localInertia);
-
-	m_pBody = new btRigidBody(cInfo);
-
-	m_pBody->setUserIndex(-1);
-
-	GetEntity()->GetScene()->GetPhysicsWorld()->GetWorld()->addRigidBody(m_pBody);
-}
-
-void RigidBodyComponent::Deinit()
-{
-	GetEntity()->GetScene()->GetPhysicsWorld()->GetWorld()->removeRigidBody(m_pBody);
-}
-
-void RigidBodyComponent::SetPosition(const vec3 &pos)
-{
-	btTransform trans;
-	if (m_pBody && m_pBody->getMotionState())
-	{
-		m_pBody->getMotionState()->getWorldTransform(trans);
-		trans.setOrigin(ToBtVec3(pos));
-		m_pBody->getMotionState()->setWorldTransform(trans);
-	}
-}
-
-vec3 RigidBodyComponent::GetPosition()
-{
-	btTransform trans;
-	if (m_pBody && m_pBody->getMotionState())
-	{
-		m_pBody->getMotionState()->getWorldTransform(trans);
-		return ToEtmVec3(trans.getOrigin());
-	}
-	return vec3(0);
-}
-
-void RigidBodyComponent::SetRotation(const quat &rot)
-{
-	btTransform trans;
-	if (m_pBody && m_pBody->getMotionState())
-	{
-		m_pBody->getMotionState()->getWorldTransform(trans);
-		trans.setRotation(ToBtQuat(rot));
-		m_pBody->getMotionState()->setWorldTransform(trans);
-	}
-}
-
-quat RigidBodyComponent::GetRotation()
-{
-	btTransform trans;
-	if (m_pBody && m_pBody->getMotionState())
-	{
-		m_pBody->getMotionState()->getWorldTransform(trans);
-		return ToEtmQuat(trans.getRotation());
-	}
-	return quat();
-}
-
-void RigidBodyComponent::ApplyImpulse(const vec3 &force, const vec3 &offset)
-{
-	if (m_pBody)
-	{
-		if (etm::nearEqualsV(offset, vec3::ZERO))
-		{
-			m_pBody->applyCentralImpulse(ToBtVec3(force));
-		}
-		else
-		{
-			m_pBody->applyImpulse(ToBtVec3(force), ToBtVec3(offset));
-		}
-	}
-}
-
-void RigidBodyComponent::ApplyForce(const vec3 &force, const vec3 &offset /*= vec3(0)*/)
-{
-	if (m_pBody)
-	{
-		if (etm::nearEqualsV(offset, vec3::ZERO))
-		{
-			m_pBody->applyCentralForce(ToBtVec3(force));
-		}
-		else
-		{
-			m_pBody->applyForce(ToBtVec3(force), ToBtVec3(offset));
-		}
-	}
-}
 
 
 // reflection
@@ -138,34 +13,8 @@ RTTR_REGISTRATION
 {
 	using namespace rttr;
 
-	// component
 	registration::class_<fw::RigidBodyComponent>("rigid body component");
 
-	// box collider
-	registration::class_<fw::RigidBodyComponentDesc::BoxShape>("box collider shape")
-		.constructor<fw::RigidBodyComponentDesc::BoxShape const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("half extents", &fw::RigidBodyComponentDesc::BoxShape::m_HalfExtents);
-
-	rttr::type::register_converter_func([](fw::RigidBodyComponentDesc::BoxShape& shape, bool& ok) -> fw::RigidBodyComponentDesc::CollisionShape*
-	{
-		ok = true;
-		return new fw::RigidBodyComponentDesc::BoxShape(shape);
-	});
-
-	// sphere collider
-	registration::class_<fw::RigidBodyComponentDesc::SphereShape>("sphere collider shape")
-		.constructor<fw::RigidBodyComponentDesc::SphereShape const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("radius", &fw::RigidBodyComponentDesc::SphereShape::m_Radius);
-
-	rttr::type::register_converter_func([](fw::RigidBodyComponentDesc::SphereShape& shape, bool& ok) -> fw::RigidBodyComponentDesc::CollisionShape*
-	{
-		ok = true;
-		return new fw::RigidBodyComponentDesc::SphereShape(shape);
-	});
-
-	// component descriptor
 	registration::class_<fw::RigidBodyComponentDesc>("rigid body comp desc")
 		.constructor<fw::RigidBodyComponentDesc const&>()
 		.constructor<>()(rttr::detail::as_object())
@@ -290,20 +139,38 @@ void RigidBodyComponent::SetAngularVelocity(vec3 const& vel)
 //=================================
 
 
-//------------------------------------------------------------
-// RigidBodyComponentDesc::BoxShape::MakeBulletCollisionShape
+//-----------------------------
+// RigidBodyComponentDesc:: = 
 //
-btCollisionShape* RigidBodyComponentDesc::BoxShape::MakeBulletCollisionShape() const
+RigidBodyComponentDesc& RigidBodyComponentDesc::operator=(RigidBodyComponentDesc const& other)
 {
-	return PhysicsManager::GetInstance()->CreateBoxShape(m_HalfExtents);
+	isDynamic = other.isDynamic;
+	mass = other.mass;
+
+	delete shape;
+	shape = nullptr;
+	if (other.shape != nullptr)
+	{
+		shape = other.shape->Clone();
+	}
+
+	return *this;
 }
 
-//---------------------------------------------------------------
-// RigidBodyComponentDesc::SphereShape::MakeBulletCollisionShape
+//-------------------------------
+// RigidBodyComponentDesc::c-tor
 //
-btCollisionShape* RigidBodyComponentDesc::SphereShape::MakeBulletCollisionShape() const
+RigidBodyComponentDesc::RigidBodyComponentDesc(RigidBodyComponentDesc const& other)
 {
-	return PhysicsManager::GetInstance()->CreateSphereShape(m_Radius);
+	*this = other;
+}
+
+//-------------------------------
+// RigidBodyComponentDesc::d-tor
+//
+RigidBodyComponentDesc::~RigidBodyComponentDesc()
+{
+	delete shape;
 }
 
 //----------------------------------

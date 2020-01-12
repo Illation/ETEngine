@@ -4,6 +4,7 @@
 
 #include <EtFramework/Audio/AudioData.h>
 #include <EtFramework/SceneGraph/SceneDescriptor.h>
+#include <EtFramework/Physics/CollisionShape.h>
 
 
 //---------------------------------
@@ -17,6 +18,7 @@ void ForceLinking()
 
 	FORCE_LINKING(AudioAsset)
 	fw::FORCE_LINKING(SceneDescriptorAsset)
+	fw::FORCE_LINKING(BoxShape)
 }
 
 

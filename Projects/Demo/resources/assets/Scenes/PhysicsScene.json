@@ -37,6 +37,21 @@
             "audio listener comp desc": {
               "gain": 1.0
             }
+          },
+          {
+            "spawn comp desc": {
+              "mesh": "sphere.dae",
+              "material": "MI_TexPBR_Ball.json",
+              "scale": 0.2,
+              "shape": {
+                "sphere collider shape": {
+                  "radius": 0.2
+                }
+              },
+              "mass": 3.0,
+              "interval": 0.2,
+              "impulse": 30.0
+            }
           }
         ],
         "children": []

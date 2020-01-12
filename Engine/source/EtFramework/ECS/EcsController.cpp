@@ -257,8 +257,44 @@ void EcsController::RemoveEntity(T_EntityId const entity)
 //
 void EcsController::RemoveAllEntities()
 {
+	// emit remove events for entities
+	if (m_EntityEvents.GetListenerCount() > 0u) // ensure its worth iterating
+	{
+		std::vector<T_EntityId> const& entities = GetEntities();
+		for (T_EntityId const entity : entities)
+		{
+			m_EntityEvents.Notify(detail::E_EcsEvent::Removed, new detail::EntityEventData(this, entity));
+		}
+	}
+
+	// emit remove events for components
+	for (ArchetypeContainer& level : m_HierachyLevels)
+	{
+		for (std::pair<T_Hash const, Archetype*>& arch : level.archetypes)
+		{
+			size_t const entityCount = arch.second->GetSize();
+			if (entityCount > 0u) // ensure its worth iterating
+			{
+				for (ComponentPool& pool : arch.second->GetPools())
+				{
+					detail::T_ComponentEventDispatcher& events = m_ComponentEvents[pool.GetType()];
+
+					if (events.GetListenerCount() > 0u) // ensure its worth iterating
+					{
+						for (size_t idx = 0u; idx < entityCount; ++idx)
+						{
+							events.Notify(detail::E_EcsEvent::Removed, new detail::ComponentEventData(this, pool.At(idx), arch.second->GetEntity(idx)));
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// remove entites
 	m_Entities.clear();
 
+	// remove components
 	for (ArchetypeContainer& level : m_HierachyLevels)
 	{
 		for (std::pair<T_Hash const, Archetype*>& arch : level.archetypes)

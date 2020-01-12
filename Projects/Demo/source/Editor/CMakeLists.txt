@@ -32,7 +32,7 @@ add_dependencies(DemoEditor compile-schemas-editor)
 
 # linking
 message(STATUS "Adding target: DemoEditor")
-target_link_libraries (DemoEditor EtEditor)
+target_link_libraries (DemoEditor DemoCommon EtEditor)
 dependancyLinks(DemoEditor) 
 editorLinks(DemoEditor)
 

@@ -38,7 +38,7 @@ outputDirectories(EtEngineDemo "")
 add_dependencies(EtEngineDemo cook-compiled-resources)
 
 # linking
-target_link_libraries (EtEngineDemo EtRuntime)
+target_link_libraries (EtEngineDemo DemoCommon EtRuntime)
 dependancyLinks(EtEngineDemo)
 
 # library includes

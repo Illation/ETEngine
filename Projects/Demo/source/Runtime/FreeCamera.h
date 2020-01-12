@@ -1,45 +1,63 @@
 #pragma once
+#include <EtFramework/ECS/ComponentView.h>
+#include <EtFramework/ECS/EcsController.h>
+
+#include <EtFramework/Components/CameraComponent.h>
+#include <EtFramework/Components/TransformComponent.h>
 
 
-// forward
-class CameraComponent;
-
-
-//--------------------------
-// FreeCamera
+//---------------------------
+// FreeCameraComponent
 //
-// controller that allows unrestricted camera movement through a scene using WASD
+// describes the state of editor camera behavior
 //
-class FreeCamera
+struct FreeCameraComponent final
 {
-	// definitions
-	//-------------
-	static float const s_MoveSpeed;
-	static float const s_RotationSpeed;
-	static float const s_Acceleration;
+	ECS_DECLARE_COMPONENT
 
-	// construct destruct
-	//--------------------
 public:
-	FreeCamera();
-	virtual ~FreeCamera() = default;
+	// inherent
+	vec3 movement;
 
-	void SetCameraComponent(CameraComponent* const camComp) { m_Camera = camComp; }
+	float speedMultiplier = 1.f;
 
-	// functionality
-	//---------------
-	void Reset();
-	void Update();
+	float totalPitch = 0.f;
+	float totalYaw = 0.f;
+};
 
-	// Data
-	///////
-	
-private:
-	CameraComponent* m_Camera = nullptr;
 
-	float m_TotalPitch;
-	float m_TotalYaw;
-	float m_SpeedMultiplier;
-	vec3 m_Move;
+//---------------------------
+// FreeCameraSystemView
+//
+// ECS access pattern for editor camera behavior
+//
+struct FreeCameraSystemView final : public fw::ComponentView
+{
+	FreeCameraSystemView() : fw::ComponentView()
+	{
+		Declare(camera);
+		Declare(transform);
+		Include<fw::CameraComponent>();
+	}
+
+	WriteAccess<FreeCameraComponent> camera;
+	WriteAccess<fw::TransformComponent> transform;
+};
+
+//---------------------------
+// FreeCameraSystem
+//
+// Allow the user to move around in the 3D world with keyboard and mouse
+//
+class FreeCameraSystem final : public fw::System<FreeCameraSystem, FreeCameraSystemView>
+{
+	static float const s_MoveSpeed;
+	static float const s_Accelleration;
+	static float const s_RotationSpeed;
+
+public:
+	FreeCameraSystem();
+
+	void Process(fw::ComponentRange<FreeCameraSystemView>& ramge) override;
 };
 

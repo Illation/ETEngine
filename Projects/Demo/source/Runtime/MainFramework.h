@@ -25,13 +25,15 @@ public:
 	// framework interface
 	//---------------------
 private:
-	void AddScenes() override;
+	void OnSystemInit() override;
+	void OnInit() override;
 	void OnTick() override;
 
 	// Data
 	///////
 
-	FreeCamera m_CameraController;
+	size_t m_CurrentScene = 0u;
+	std::vector<T_Hash> m_Scenes;
 
 	AssetPtr<SpriteFont> m_DebugFont;
 	bool m_DrawDebugInfo = true;
