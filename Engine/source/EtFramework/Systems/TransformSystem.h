@@ -45,7 +45,7 @@ public:
 	public:
 		Compute();
 
-		void Process(ComponentRange<ComputeView>& range) const override;
+		void Process(ComponentRange<ComputeView>& range) override;
 	};
 
 
@@ -70,7 +70,7 @@ public:
 	public:
 		Reset() = default;
 
-		void Process(ComponentRange<ResetView>& range) const override;
+		void Process(ComponentRange<ResetView>& range) override;
 	};
 };
 

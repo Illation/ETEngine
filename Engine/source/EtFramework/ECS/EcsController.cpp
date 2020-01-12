@@ -401,6 +401,8 @@ void EcsController::Process()
 {
 	for (RegisteredSystem* const sys : m_Schedule)
 	{
+		sys->system->SetCommandController(this);
+
 		for (RegisteredSystem::ArchetypeLayer& layer : sys->matchingArchetypes)
 		{
 			for (Archetype* const arch : layer.archetypes)
@@ -411,6 +413,8 @@ void EcsController::Process()
 				}
 			}
 		}
+
+		sys->system->MergeCommands();
 	}
 }
 

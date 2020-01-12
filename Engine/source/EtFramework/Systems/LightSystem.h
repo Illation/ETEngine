@@ -36,7 +36,7 @@ public:
 	static void OnComponentAdded(EcsController& controller, LightComponent& component, T_EntityId const entity);
 	static void OnComponentRemoved(EcsController& controller, LightComponent& component, T_EntityId const entity);
 
-	void Process(ComponentRange<LightSystemView>& range) const override;
+	void Process(ComponentRange<LightSystemView>& range) override;
 };
 
 

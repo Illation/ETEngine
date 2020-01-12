@@ -57,7 +57,7 @@ TransformSystem::Compute::Compute()
 //
 // Update transforms
 //
-void TransformSystem::Compute::Process(ComponentRange<TransformSystem::ComputeView>& range) const
+void TransformSystem::Compute::Process(ComponentRange<TransformSystem::ComputeView>& range) 
 {
 	render::Scene& renderScene = UnifiedScene::Instance().GetRenderScene();
 
@@ -109,7 +109,7 @@ void TransformSystem::Compute::Process(ComponentRange<TransformSystem::ComputeVi
 //
 // Reset dirty flag
 //
-void TransformSystem::Reset::Process(ComponentRange<TransformSystem::ResetView>& range) const
+void TransformSystem::Reset::Process(ComponentRange<TransformSystem::ResetView>& range) 
 {
 	for (ResetView& view : range)
 	{

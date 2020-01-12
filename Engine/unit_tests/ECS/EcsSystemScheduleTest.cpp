@@ -25,7 +25,7 @@ public:
 	{
 	}
 
-	void Process(fw::ComponentRange<TestEmptyView>& range) const override
+	void Process(fw::ComponentRange<TestEmptyView>& range) override
 	{
 		m_Order->push_back(GetTypeId());
 	}
@@ -42,7 +42,7 @@ public:
 		DeclareDependencies<TestFirstSystem>();
 	}
 
-	void Process(fw::ComponentRange<TestEmptyView>& range) const override
+	void Process(fw::ComponentRange<TestEmptyView>& range) override
 	{
 		m_Order->push_back(GetTypeId());
 	}
@@ -60,7 +60,7 @@ public:
 		DeclareDependents<TestLastSystem>();
 	}
 
-	void Process(fw::ComponentRange<TestEmptyView>& range) const override
+	void Process(fw::ComponentRange<TestEmptyView>& range) override
 	{
 		m_Order->push_back(GetTypeId());
 	}

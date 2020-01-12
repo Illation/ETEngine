@@ -37,7 +37,7 @@ class AudioListenerSystem final : public fw::System<AudioListenerSystem, AudioLi
 public:
 	AudioListenerSystem();
 
-	void Process(ComponentRange<AudioListenerSystemView>& range) const override;
+	void Process(ComponentRange<AudioListenerSystemView>& range) override;
 };
 
 

@@ -57,7 +57,7 @@ void LightSystem::OnComponentRemoved(EcsController& controller, LightComponent& 
 //
 // Extract light colors
 //
-void LightSystem::Process(ComponentRange<LightSystemView>& range) const
+void LightSystem::Process(ComponentRange<LightSystemView>& range) 
 {
 	render::Scene& renderScene = UnifiedScene::Instance().GetRenderScene();
 

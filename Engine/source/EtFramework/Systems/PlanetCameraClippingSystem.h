@@ -48,7 +48,7 @@ class PlanetCameraLinkSystem final : public System<PlanetCameraLinkSystem, Plane
 public:
 	PlanetCameraLinkSystem();
 
-	void Process(ComponentRange<PlanetCameraLinkSystemView>& range) const override;
+	void Process(ComponentRange<PlanetCameraLinkSystemView>& range) override;
 };
 
 

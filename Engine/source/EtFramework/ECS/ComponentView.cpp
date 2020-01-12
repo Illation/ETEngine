@@ -88,6 +88,16 @@ T_CompTypeList ComponentView::GetTypeList() const
 //
 // Increment component pointers
 //
+T_EntityId ComponentView::GetCurrentEntity() const
+{
+	return m_Range->m_Archetype->GetEntity(m_Current);
+}
+
+//---------------------
+// ComponentView::Next
+//
+// Increment component pointers
+//
 bool ComponentView::Next()
 {
 	m_Current++;

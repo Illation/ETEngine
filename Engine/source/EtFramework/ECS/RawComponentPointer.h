@@ -25,4 +25,27 @@ template<typename TComponentType>
 RawComponentPtr MakeRawComponent(TComponentType& comp) { return RawComponentPtr(TComponentType::GetTypeIndex(), &comp); }
 
 
+namespace detail {
+
+	//----------------------------------
+	// EcsCommandBuffer::GenCompPtrList
+	//
+	// variadic template recursively adds components to a raw component pointer list
+	//
+	template<typename TComponentType>
+	void GenCompPtrList(std::vector<RawComponentPtr>& list, TComponentType& component)
+	{
+		list.emplace_back(MakeRawComponent(component));
+	}
+
+	template<typename TComponentType, typename... Args>
+	void GenCompPtrList(std::vector<RawComponentPtr>& list, TComponentType& component1, Args... args)
+	{
+		list.emplace_back(MakeRawComponent(component1));
+		GenCompPtrList(list, args...);
+	}
+
+} // namespace detail
+
+
 } // namespace fw

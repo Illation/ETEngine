@@ -128,6 +128,7 @@ public:
 	//-----------
 	bool IsEnd() const;
 	T_CompTypeList GetTypeList() const;
+	T_EntityId GetCurrentEntity() const;
 
 	// functionality
 	//---------------

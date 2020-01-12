@@ -39,7 +39,7 @@ public:
 	static void OnComponentAdded(EcsController& controller, RigidBodyComponent& component, T_EntityId const entity);
 	static void OnComponentRemoved(EcsController& controller, RigidBodyComponent& component, T_EntityId const entity);
 
-	void Process(ComponentRange<RigidBodySystemView>& range) const override;
+	void Process(ComponentRange<RigidBodySystemView>& range) override;
 };
 
 

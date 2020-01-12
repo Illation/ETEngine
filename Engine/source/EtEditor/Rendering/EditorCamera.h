@@ -64,5 +64,5 @@ class EditorCameraSystem final : public fw::System<EditorCameraSystem, EditorCam
 public:
 	EditorCameraSystem();
 
-	void Process(fw::ComponentRange<EditorCameraSystemView>& ramge) const override;
+	void Process(fw::ComponentRange<EditorCameraSystemView>& ramge) override;
 };

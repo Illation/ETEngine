@@ -1,6 +1,7 @@
 #pragma once
 #include "ComponentRegistry.h"
 #include "ComponentRange.h"
+#include "EcsCommandBuffer.h"
 
 #include <rttr/type.h>
 
@@ -36,12 +37,19 @@ public:
 	virtual ComponentSignature GetSignature() const = 0;
 
 	// the important one
-	virtual void RootProcess(EcsController* const controller, Archetype* const archetype, size_t const offset, size_t const count) const = 0; 
+	virtual void RootProcess(EcsController* const controller, Archetype* const archetype, size_t const offset, size_t const count) = 0; 
+
+	// functionality
+	//---------------
+	void SetCommandController(EcsController* const ecs) { m_CommandBuffer.SetController(ecs); }
+	void MergeCommands() { m_CommandBuffer.Merge(); }
 
 	// accessors
 	//-----------
 	T_DependencyList const& GetDependencies() const { return m_Dependencies; }
 	T_DependencyList const& GetDependents() const { return m_Dependents; }
+
+	EcsCommandBuffer& GetCommandBuffer() { return m_CommandBuffer; }
 
 	// utility - use these in system constructor
 	//-------------------------------------------
@@ -53,6 +61,8 @@ protected:
 
 	// Data
 	///////
+
+	EcsCommandBuffer m_CommandBuffer;
 
 private:
 	T_DependencyList m_Dependencies;
@@ -80,11 +90,11 @@ public:
 	T_SystemType GetTypeId() const override;
 	ComponentSignature GetSignature() const override;
 
-	void RootProcess(EcsController* const controller, Archetype* const archetype, size_t const offset, size_t const count) const override;
+	void RootProcess(EcsController* const controller, Archetype* const archetype, size_t const offset, size_t const count) override;
 
 	// interface
 	//-----------
-	virtual void Process(ComponentRange<TViewType>& range) const = 0;
+	virtual void Process(ComponentRange<TViewType>& range) = 0;
 };
 
 

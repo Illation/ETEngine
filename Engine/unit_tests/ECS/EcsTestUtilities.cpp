@@ -59,7 +59,7 @@ fw::Archetype GenTestArchetype(size_t const count)
 // systems
 //---------
 
-void TestBCSystem::Process(fw::ComponentRange<TestBCView>& range) const
+void TestBCSystem::Process(fw::ComponentRange<TestBCView>& range) 
 {
 	size_t idx = 0u;
 
@@ -73,7 +73,7 @@ void TestBCSystem::Process(fw::ComponentRange<TestBCView>& range) const
 }
 
 
-void TestOverwriteSystem::Process(fw::ComponentRange<TestOverwriteSystemView>& range) const
+void TestOverwriteSystem::Process(fw::ComponentRange<TestOverwriteSystemView>& range) 
 {
 	for (TestOverwriteSystemView& view : range)
 	{

@@ -105,7 +105,7 @@ AudioSourceSystem::Translate::Translate()
 //
 // Update 3D source data within openAL
 //
-void AudioSourceSystem::Translate::Process(ComponentRange<AudioSourceSystem::TranslateView>& range) const
+void AudioSourceSystem::Translate::Process(ComponentRange<AudioSourceSystem::TranslateView>& range) 
 {
 	for (TranslateView& view : range)
 	{
@@ -164,7 +164,7 @@ void AudioSourceSystem::Translate::Process(ComponentRange<AudioSourceSystem::Tra
 //
 // Update non location dependent data for all audio sources
 //
-void AudioSourceSystem::State::Process(ComponentRange<AudioSourceSystem::StateView>& range) const
+void AudioSourceSystem::State::Process(ComponentRange<AudioSourceSystem::StateView>& range) 
 {
 	for (StateView& view : range)
 	{

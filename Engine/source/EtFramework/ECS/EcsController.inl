@@ -12,24 +12,6 @@ namespace fw {
 namespace detail {
 
 	//-------------------------------
-	// EcsController::GenCompPtrList
-	//
-	// variadic template recursively adds components to a raw component pointer list
-	//
-	template<typename TComponentType>
-	void GenCompPtrList(std::vector<RawComponentPtr>& list, TComponentType& component) 
-	{
-		list.emplace_back(MakeRawComponent(component));
-	}
-
-	template<typename TComponentType, typename... Args>
-	void GenCompPtrList(std::vector<RawComponentPtr>& list, TComponentType& component1, Args... args) 
-	{
-		list.emplace_back(MakeRawComponent(component1));
-		GenCompPtrList(list, args...);
-	}
-
-	//-------------------------------
 	// EcsController::AddToEcs
 	//
 	// variadic template recursively adds components to a raw component pointer list and finally create an entity from that component list

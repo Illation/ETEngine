@@ -100,6 +100,16 @@ struct TestCView final : public fw::ComponentView
 	ReadAccess<TestCComponent> c;
 };
 
+struct TestCWriteView final : public fw::ComponentView
+{
+	TestCWriteView() : fw::ComponentView()
+	{
+		Declare(c);
+	}
+
+	WriteAccess<TestCComponent> c;
+};
+
 struct TestOverwriteSystemView final : public fw::ComponentView
 {
 	TestOverwriteSystemView() : fw::ComponentView()
@@ -126,7 +136,7 @@ public:
 	TestBCSystem() = default;
 	// base class constructors don't do anything so are not needed unless we declare dependencies or init lookup variables
 
-	void Process(fw::ComponentRange<TestBCView>& range) const override;
+	void Process(fw::ComponentRange<TestBCView>& range) override;
 };
 
 class TestOverwriteSystem final : public fw::System<TestOverwriteSystem, TestOverwriteSystemView>
@@ -138,7 +148,7 @@ public:
 		DeclareDependents<TestBCSystem>();
 	}
 
-	void Process(fw::ComponentRange<TestOverwriteSystemView>& range) const override;
+	void Process(fw::ComponentRange<TestOverwriteSystemView>& range) override;
 
 private:
 	size_t const m_OverwriteMin = 0u;

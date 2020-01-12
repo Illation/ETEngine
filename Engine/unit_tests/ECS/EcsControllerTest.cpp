@@ -222,7 +222,7 @@ TEST_CASE("controller system hierachy", "[ecs]")
 		TestCHierachySystem() = default;
 		// base class constructors don't do anything so are not needed unless we declare dependencies or init lookup variables
 
-		void Process(fw::ComponentRange<TestCHierachyView>& range) const
+		void Process(fw::ComponentRange<TestCHierachyView>& range) 
 		{
 			for (TestCHierachyView& view : range)
 			{

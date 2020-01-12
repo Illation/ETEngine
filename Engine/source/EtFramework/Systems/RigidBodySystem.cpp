@@ -73,7 +73,7 @@ void RigidBodySystem::OnComponentRemoved(EcsController& controller, RigidBodyCom
 // Synchronize physics transforms
 //  - if the rigid body was externally transformed, it moves the rigid body, otherwise the rigid body moves the transform
 //
-void RigidBodySystem::Process(ComponentRange<RigidBodySystemView>& range) const
+void RigidBodySystem::Process(ComponentRange<RigidBodySystemView>& range) 
 {
 	for (RigidBodySystemView& view : range)
 	{

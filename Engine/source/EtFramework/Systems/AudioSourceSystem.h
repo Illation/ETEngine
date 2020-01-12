@@ -48,7 +48,7 @@ public:
 	public:
 		Translate();
 
-		void Process(ComponentRange<TranslateView>& range) const override;
+		void Process(ComponentRange<TranslateView>& range) override;
 	};
 
 
@@ -73,7 +73,7 @@ public:
 	public:
 		State() = default;
 
-		void Process(ComponentRange<StateView>& range) const override;
+		void Process(ComponentRange<StateView>& range) override;
 	};
 };
 

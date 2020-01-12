@@ -130,7 +130,7 @@ public:
 	std::vector<T_EntityId> const& GetChildren(T_EntityId const entity) const;
 
 	// components
-	std::vector<T_CompTypeIdx> const& GetComponentTypes(T_EntityId const entity) const;
+	T_CompTypeList const& GetComponentTypes(T_EntityId const entity) const;
 
 	bool HasComponent(T_EntityId const entity, T_CompTypeIdx const compType) const;
 	template<typename TComponentType>
