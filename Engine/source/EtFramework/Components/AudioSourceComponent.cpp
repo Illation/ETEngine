@@ -34,8 +34,8 @@ RTTR_REGISTRATION
 		.property("play on init", &fw::AudioSourceCompDesc::playOnInit)
 		.property("loop", &fw::AudioSourceCompDesc::loop)
 		.property("gain", &fw::AudioSourceCompDesc::gain)
-		.property("max gain", &fw::AudioSourceCompDesc::minGain)
-		.property("min gain", &fw::AudioSourceCompDesc::maxGain)
+		.property("min gain", &fw::AudioSourceCompDesc::minGain)
+		.property("max gain", &fw::AudioSourceCompDesc::maxGain)
 		.property("pitch", &fw::AudioSourceCompDesc::pitch)
 		.property("params", &fw::AudioSourceCompDesc::params);
 

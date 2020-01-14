@@ -29,7 +29,6 @@ void AudioManager::Initialize()
 	ALCenum error;
 
 	LOG(std::string("Chosen device: ") + alcGetString(m_Device, ALC_DEVICE_SPECIFIER));
-	alGetError();
 
 	m_Context = alcCreateContext(m_Device, NULL);
 	if (!alcMakeContextCurrent(m_Context))
