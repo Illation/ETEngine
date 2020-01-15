@@ -1,35 +1,54 @@
-# Extra Terrestial Engine
+<img src="./doc/doc_resources/header.jpg"/>
 
-<img align="top" src="https://repository-images.githubusercontent.com/88983249/6b297180-d950-11e9-98a7-09c6417afdae"/>
+***********************************************************************************
 
-<br/>
-C++14 3D Game Engine.
+<img align="right" src="https://img.shields.io/github/license/illation/etengine"/>
+<img style="padding-right:10px;" align="right" src="https://img.shields.io/badge/version-0.7.0-green"/>
+
+#### Realtime 3D Graphics/Simulation/Game-Engine written in C++ 14.
+
+***********************************************************************************
+
+Focus is on ease of use, extensibility, performance and providing rendering features for planet scale environments, enabling space games and simulations.
+
+__E.T.__ stands for "extra terrestial" due to the goal for this technology to go to space one day.
+
+This project is under active development, and while a wide range of features are implemented and the overall architecture is approaching a cohesive state, many of the planned improvements are likely to touch a large crossection of the codebase.
+Therefore, while breaking changes are usually implemented in separate branches, the interface on the master branch changes relatively frequently.
+
+***********************************************************************************
+
 
 ## Features:
+
+
+#### Rendering
+
+<img align="right" src="./screenshots/Lighting.jpg" alt="PBR" width="48%"/>
+<img src="./screenshots/FamiliarView.jpg" alt="from space" width="48%"/>
+
+Rendering is based on modern principals including Physically based Rendering.
+The data driven material system allows for custom shaders and parameter inheritance through material instances (similar to UE4).
+A variety of rendering features aimed at space simulation have been implemented, such as planet terrain generation, atmospheric scattering and Starfields based on real sky data.
+
+<img align="right" width="450" src="./doc/doc_resources/architectureDiagram.png"/>
+
+#### Modular Architecture
+The project is split into multiple libraries. Low level libraries such as core or rendering can be used independently from high level ones such as the framework.
+Many features have interfaces and implementations, allowing overriding of functionality. If you want to implement your own renderer or support a different file system, you can do that.
 
 #### Data oriented design
 Many performance critical sections have been programmed with aspects such as cache locality in mind.
 The renderer uses an optimized scene structure and can operate independently from the gameplay side scene.
 Gameplay features are implemented using an Archetype based Entity Component System.
 
-#### Rendering
-Rendering is based on modern principals including Physically based Rendering.
-The data driven material system allows for custom shaders and parameter inheritance through material instances (similar to UE4).
-A variety of rendering features aimed at space simulation have been implemented, such as planet terrain generation, atmospheric scattering and Starfields based on real sky data.
-
-<img align="right" src="./screenshots/Lighting.jpg" alt="PBR" width="420"/>
-<img src="./screenshots/FamiliarView.jpg" alt="from space" width="420"/>
-
-<img align="right" width="450" src="https://github.com/Illation/ETEngine/blob/master/doc/doc_resources/ArchitectureDiagram.svg"/>
-
-#### Modular Architecture
-The project is split into multiple libraries. Low level libraries such as core or rendering can be used independently from high level ones such as the framework.
-Many features have interfaces and implementations, allowing overriding of functionality. If you want to implement your own renderer or support a different file system, you can do that.
-
 #### Data Driven
 Anything that is not a behavior can be described with data. The Resource manager allows for custom asset types. 
 Reflection of data structures allows for automated serialization and deserialization of content.
 The work in progress editor will allow for easy editing, and control the workflow from Content creation tools to optimized engine formats.
+
+<br/>
+<br/>
 
 ![](./screenshots/Editor.jpg)
 
@@ -50,13 +69,13 @@ For more information (including unit tests and content cooking) check [the build
 
 ## Continuous Integration
 
-Due to an [issue](https://github.com/Illation/ETEngine/issues/7) with library dependencies CI is currently not working. However the project has been built outside of automated build scripts and works just fine.
+Due to an [issue](https://github.com/Illation/ETEngine/issues/17) with library dependencies CI is currently not working. However the project has been built outside of automated build scripts and works just fine.
 
 ## Background
 
 This project started off in 2016 as an [OpenGL graphics framework](https://github.com/Illation/GLFramework) based on the "Overlord Engine" (Dx11) from the Graphics Programming course at [Howest University](https://www.digitalartsandentertainment.be/)
 
-In parallel I was writing my graduation work on [realtime planet rendering](https://github.com/Illation/PlanetRenderer), and in 2017 I merged the two projects into this engine.
+In parallel I was writing my graduation work on [realtime planet rendering](https://github.com/Illation/PlanetRenderer), and in 2017 I merged the two projects into this engine. 
 
 Since then I added a variety of graphics and gameplay features, however due to the design at the time this was getting increasingly difficult.
 
@@ -116,24 +135,17 @@ For a list of third party libraries and licenses check [HERE](Engine/third_party
 
 ## Screenshots
 
-#### Atmosphere
-Atmospheric Perspective
-![](./screenshots/GroundAtmosphere.jpg)
-Upper Atmosphere
-![](./screenshots/UpperAtmosphere.jpg)
-#### Planets
-Surface view
-![](./screenshots/Surface.jpg)
-#### Render Pipeline
-PBR and IBL
-![](./screenshots/PBR.jpg)
-2500 Lights with deferred rendering and Bloom
-![](./screenshots/DeferredBloom.jpg)
-#### Physics
+#### Atmosphere and Planets
+
+<img align="right" src="./screenshots/UpperAtmosphere.jpg" alt="upper atmosphere" width="48%"/>
+<img src="./screenshots/GroundAtmosphere.jpg" alt="atmospheric perspective" width="48%"/>
+
+<img align="right" src="./screenshots/MoarStars.jpg" alt="Stars" width="48%"/>
+<img src="./screenshots/Surface.jpg" alt="surface view" width="48%"/>
+
+#### Render Pipeline; Physics
+
+<img align="right" src="./screenshots/DeferredBloom.jpg" alt="Lights with deferred rendering and Bloom" width="48%"/>
+<img src="./screenshots/PBR.jpg" alt="PBR and IBL" width="48%"/>
+
 ![](./screenshots/BulletPhysics.jpg)
-#### Star fields
-![](./screenshots/MoarStars.jpg)
-![](./screenshots/Stars.jpg)
-#### Moar Screenshots
-![](./screenshots/Crescent.jpg)
-![](./screenshots/FromSpace.jpg)
