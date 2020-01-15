@@ -1,17 +1,11 @@
 # Extra Terrestial Engine
 
+<img align="top" src="https://repository-images.githubusercontent.com/88983249/6b297180-d950-11e9-98a7-09c6417afdae"/>
+
+<br/>
 C++14 3D Game Engine.
 
 ## Features:
-
-#### Modular Architecture
-The project is split into multiple libraries. Low level libraries such as core or rendering can be used independently from high level ones such as the framework.
-Many features have interfaces and implementations, allowing overriding of functionality. If you want to implement your own renderer or support a different file system, you can do that.
-
-#### Data Driven
-Anything that is not a behavior can be described with data. The Resource manager allows for custom asset types. 
-Reflection of data structures allows for automated serialization and deserialization of content.
-The work in progress editor will allow for easy editing, and control the workflow from Content creation tools to optimized engine formats.
 
 #### Data oriented design
 Many performance critical sections have been programmed with aspects such as cache locality in mind.
@@ -22,6 +16,22 @@ Gameplay features are implemented using an Archetype based Entity Component Syst
 Rendering is based on modern principals including Physically based Rendering.
 The data driven material system allows for custom shaders and parameter inheritance through material instances (similar to UE4).
 A variety of rendering features aimed at space simulation have been implemented, such as planet terrain generation, atmospheric scattering and Starfields based on real sky data.
+
+<img align="right" src="./screenshots/Lighting.jpg" alt="PBR" width="420"/>
+<img src="./screenshots/FamiliarView.jpg" alt="from space" width="420"/>
+
+<img align="right" width="450" src="https://github.com/Illation/ETEngine/blob/master/doc/doc_resources/ArchitectureDiagram.svg"/>
+
+#### Modular Architecture
+The project is split into multiple libraries. Low level libraries such as core or rendering can be used independently from high level ones such as the framework.
+Many features have interfaces and implementations, allowing overriding of functionality. If you want to implement your own renderer or support a different file system, you can do that.
+
+#### Data Driven
+Anything that is not a behavior can be described with data. The Resource manager allows for custom asset types. 
+Reflection of data structures allows for automated serialization and deserialization of content.
+The work in progress editor will allow for easy editing, and control the workflow from Content creation tools to optimized engine formats.
+
+![](./screenshots/Editor.jpg)
 
 
 ## How to build
@@ -74,7 +84,8 @@ __0.2 :__
 
 __0.3 :__ 
  * CMake build
- * Separate core library
+ * Separate core library - update  system
+ * reflection; serialization / deserialization
 
 __0.4 :__ 
  * Resource Manager, Asset Database
@@ -105,23 +116,17 @@ For a list of third party libraries and licenses check [HERE](Engine/third_party
 
 ## Screenshots
 
-#### WIP Editor
-![](./screenshots/Editor.jpg)
 #### Atmosphere
 Atmospheric Perspective
 ![](./screenshots/GroundAtmosphere.jpg)
 Upper Atmosphere
 ![](./screenshots/UpperAtmosphere.jpg)
 #### Planets
-From Space
-![](./screenshots/FamiliarView.jpg)
 Surface view
 ![](./screenshots/Surface.jpg)
 #### Render Pipeline
 PBR and IBL
 ![](./screenshots/PBR.jpg)
-Experimental CSM and SSR
-![](./screenshots/Lighting.jpg)
 2500 Lights with deferred rendering and Bloom
 ![](./screenshots/DeferredBloom.jpg)
 #### Physics
