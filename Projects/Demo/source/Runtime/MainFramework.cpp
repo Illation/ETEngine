@@ -2,6 +2,7 @@
 #include "MainFramework.h"
 
 #include "SpawnSystem.h"
+#include "LightControlSystem.h"
 
 #include <EtCore/Content/ResourceManager.h>
 
@@ -27,6 +28,7 @@ void MainFramework::OnSystemInit()
 
 	ecs.RegisterSystem<FreeCameraSystem>();
 	ecs.RegisterSystem<demo::SpawnSystem>();
+	ecs.RegisterSystem<demo::LightControlSystem>();
 }
 
 //--------------------------

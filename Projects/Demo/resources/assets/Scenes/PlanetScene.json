@@ -124,6 +124,11 @@
               "brightness": 283.00,
               "casts shadow": false
             }
+          },
+          {
+            "controled light comp desc": {
+
+            }
           }
         ],
         "children": []

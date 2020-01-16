@@ -2,6 +2,7 @@
 #include <EtFramework/linkerHelper.h>
 
 #include "SpawnComponent.h"
+#include "ControledLightComponent.h"
 
 
 namespace demo {
@@ -17,6 +18,7 @@ void ForceLinking()
 	::ForceLinking();
 
 	FORCE_LINKING(SpawnComponentDesc)
+	FORCE_LINKING(ControledLightComponentDesc)
 }
 
 

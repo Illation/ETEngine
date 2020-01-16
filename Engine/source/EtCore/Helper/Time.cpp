@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "Time.h"
 
+
 Time::Time()
 {
 	Start();
 }
-
 
 Time::~Time()
 {}
@@ -21,20 +21,33 @@ void Time::Update()
 	m_DeltaTime = HRTCast<float>( Diff( last, end ) );
 	last = end;
 }
-float Time::GetTime()
+
+float Time::GetTime() const
 {
 	auto end = Now();
 	return HRTCast<float>( Diff( begin, end ) );
 }
-float Time::DeltaTime()
+float Time::DeltaTime() const
 {
 	return m_DeltaTime;
 }
-float Time::FPS()
+float Time::FPS() const
 {
 	return (1.f / m_DeltaTime);
 }
-
+uint64 Time::Timestamp() const
+{
+#ifndef PLATFORM_Linux
+	return static_cast<uint64>(std::chrono::duration_cast<std::chrono::nanoseconds>(Diff(begin, Now())).count());
+#endif
+}
+uint64 Time::SystemTimestamp() const
+{
+#ifndef PLATFORM_Linux
+	auto end = Now();
+	return static_cast<uint64>(std::chrono::duration_cast<std::chrono::nanoseconds>(end.time_since_epoch()).count());
+#endif
+}
 
 //Platform abstraction
 #ifdef PLATFORM_Linux

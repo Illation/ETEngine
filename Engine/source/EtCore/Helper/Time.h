@@ -1,5 +1,4 @@
 #pragma once
-#include "Singleton.h"
 
 #ifdef PLATFORM_Linux
 	#include <time.h>
@@ -16,11 +15,15 @@ class Time
 public:
 	Time();
 	~Time();
+
 	void Start();
 	void Update();
-	float GetTime();
-	float DeltaTime();
-	float FPS();
+
+	float GetTime() const;
+	float DeltaTime() const;
+	float FPS() const;
+	uint64 Timestamp() const; // milliseconds
+	uint64 SystemTimestamp() const; // milliseconds
 
 private:
 	//Platform abstraction

@@ -14,8 +14,8 @@ namespace demo {
 //======================
 
 
-//-------------------------------
-// SpawnSystem::SpawnSystem
+//--------------------
+// SpawnSystem::c-tor
 //
 // system dependencies
 //
@@ -25,7 +25,7 @@ SpawnSystem::SpawnSystem()
 }
 
 //------------------------------
-// FreeCameraSystem::Process
+// SpawnSystem::Process
 //
 // Spawn upon user input
 //
