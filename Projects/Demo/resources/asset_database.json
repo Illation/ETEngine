@@ -1072,6 +1072,8 @@
               "package": "content1",
               "references": [
                 "Ice_Lake_Ref.hdr",
+                "HelmetSettled.dae",
+                "MI_Uber_Kabuto.json",
                 "Disfigure-Blank.ogg",
                 "sphere.dae",
                 "MI_Emissive_LightBulb.json",

@@ -4,6 +4,12 @@
 #include <EtFramework/SceneGraph/ComponentDescriptor.h>
 
 
+// fwd
+namespace fw {
+	class EcsController;
+}
+
+
 namespace demo {
 
 
@@ -38,27 +44,25 @@ public:
 //
 // Serialize / Deserialize
 //
-class SwirlyLightComponentDesc final : public fw::ComponentDescriptor<SwirlyLightComponent>
+class SwirlyLightComponentDesc final : public fw::ComponentDescriptor<SwirlyLightComponent, true>
 {
 	// definitions
 	//-------------
-	RTTR_ENABLE(ComponentDescriptor<SwirlyLightComponent>)
+	RTTR_ENABLE(ComponentDescriptor<SwirlyLightComponent, true>)
 	DECLARE_FORCED_LINKING()
 
 	// construct destruct
 	//--------------------
 public:
-	SwirlyLightComponentDesc() : ComponentDescriptor<SwirlyLightComponent>() {}
+	SwirlyLightComponentDesc() : ComponentDescriptor<SwirlyLightComponent, true>() {}
 
 	// ComponentDescriptor interface
 	//-------------------------------
 	SwirlyLightComponent* MakeData() override;
+	void OnScenePostLoad(fw::EcsController& ecs, fw::T_EntityId const id, SwirlyLightComponent& comp);
 	
 	// Data
 	///////
-
-	float minAngle = 0.f;
-	float maxAngle = etm::PI2;
 
 	float minRadius = 0.2f;
 	float maxRadius = 1.f;

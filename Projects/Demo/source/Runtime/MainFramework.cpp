@@ -3,6 +3,7 @@
 
 #include "SpawnSystem.h"
 #include "LightControlSystem.h"
+#include "SwirlyLightSystem.h"
 
 #include <EtCore/Content/ResourceManager.h>
 
@@ -29,6 +30,7 @@ void MainFramework::OnSystemInit()
 	ecs.RegisterSystem<FreeCameraSystem>();
 	ecs.RegisterSystem<demo::SpawnSystem>();
 	ecs.RegisterSystem<demo::LightControlSystem>();
+	ecs.RegisterSystem<demo::SwirlyLightSystem>();
 }
 
 //--------------------------

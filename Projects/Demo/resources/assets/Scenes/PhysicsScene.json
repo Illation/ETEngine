@@ -62,7 +62,7 @@
           {
             "transform comp desc": {
               "position": {
-                "x": 1.0,
+                "x": 0.0,
                 "y": 2.0,
                 "z": 0.0
               },
@@ -109,6 +109,15 @@
                 "outer cone gain": 0.0,
                 "is directional": false
               }
+            }
+          },
+          {
+            "swirly light comp desc": {
+              "min radius": 0.2,
+              "max radius": 1.0,
+              "min time mult": -1.0,
+              "max time mult": 1.0,
+              "bounds": 1.0
             }
           }
         ],
@@ -328,6 +337,49 @@
                     "y": 0.06,
                     "z": 0.3
                   }
+                }
+              }
+            }
+          }
+        ],
+        "children": []
+      },
+      {
+        "id": 7,
+        "components": [
+          {
+            "transform comp desc": {
+              "position": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 2.0
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 0.3,
+                "y": 0.3,
+                "z": 0.3
+              }
+            }
+          },
+          {
+            "model comp desc": {
+              "mesh": "HelmetSettled.dae",
+              "material": "MI_Uber_Kabuto.json"
+            }
+          },
+          {
+            "rigid body comp desc": {
+              "is dynamic": false,
+              "mass": 0.0,
+              "shape": {
+                "sphere collider shape": {
+                  "radius": 0.6
                 }
               }
             }

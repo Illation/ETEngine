@@ -6,6 +6,7 @@
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
+#include <EtFramework/Components/AudioListenerComponent.h>
 
 #include <EtEditor/Rendering/EditorCamera.h>
 #include <EtEditor/Rendering/GtkRenderArea.h>
@@ -274,4 +275,14 @@ void SceneViewport::InitCamera()
 	EditorCameraComponent edCamComp;
 	edCamComp.renderCamera = &m_SceneRenderer->GetCamera();
 	m_Camera = ecs.DuplicateEntity(camEnt, edCamComp);
+
+	if (ecs.HasComponent<fw::AudioListenerComponent>(camEnt))
+	{
+		ecs.RemoveComponents<fw::AudioListenerComponent>(camEnt);
+	}
+
+	if (ecs.HasComponent<fw::ActiveAudioListenerComponent>(camEnt))
+	{
+		ecs.RemoveComponents<fw::ActiveAudioListenerComponent>(camEnt);
+	}
 }
