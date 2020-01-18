@@ -226,6 +226,37 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 		m_pPostProcShader->Upload(GetHash(FS("texBloom%i", i + 1)), static_cast<TextureData const*>(m_DownSampleTexture[i]));
 	}
 
+	// precalculate some tonemapping settings
+	{
+		// b = linearStrength
+		// c = linearAngle
+		// d = toeStrength
+		// e = toeNumerator
+		// f = toeDenominator
+
+		float const eDivF = settings.toeNumerator / settings.toeDenominator;
+		float const cb = settings.linearAngle * settings.linearStrength;
+		float const de = settings.toeStrength * settings.toeNumerator;
+		float const df = settings.toeStrength * settings.toeDenominator;
+
+		m_pPostProcShader->Upload("uShoulderStrength"_hash, settings.shoulderStrength);
+		m_pPostProcShader->Upload("uLinearStrength"_hash, settings.linearStrength);
+
+		m_pPostProcShader->Upload("uEdivF"_hash, eDivF);
+		m_pPostProcShader->Upload("uCB"_hash, cb);
+		m_pPostProcShader->Upload("uDE"_hash, de);
+		m_pPostProcShader->Upload("uDF"_hash, df);
+
+		// apply filmic function to linear white
+		{
+			float const x = settings.linearWhite;
+			float const shoulderX = settings.shoulderStrength * x;
+			float const fLinWhite = ((x * (shoulderX + cb) + de) / (x * (shoulderX + settings.linearStrength) + df)) - eDivF;
+
+			m_pPostProcShader->Upload("uLinearWhiteMapped"_hash, fLinWhite);
+		}
+	}
+
 	m_pPostProcShader->Upload("exposure"_hash, settings.exposure);
 	m_pPostProcShader->Upload("gamma"_hash, settings.gamma);
 	m_pPostProcShader->Upload("bloomMult"_hash, settings.bloomMult);

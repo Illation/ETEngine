@@ -36,7 +36,7 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 	ShaderData const* const shader = m_Material->GetShader();
 	Viewport::GetCurrentApiContext()->SetShader(shader);
 
-	shader->Upload("Position"_hash, pos);
+	shader->Upload("Position"_hash, pos); 
 	shader->Upload("Color"_hash, col);
 	shader->Upload("Radius"_hash, radius);
 	shader->Upload("model"_hash, etm::scale(vec3(radius))*etm::translate(pos));

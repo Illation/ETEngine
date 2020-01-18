@@ -182,7 +182,14 @@
       "id": 1
     },
     "postprocessing": {
-      "exposure": 0.8,
+      "exposure": 1.5,
+      "shoulder strength": 0.22,
+      "linear strength": 0.3,
+      "linear angle": 0.1,
+      "toe strength": 0.2,
+      "toe numerator": 0.01,
+      "toe denominator": 0.3,
+      "linear white": 11.2,
       "gamma": 2.2,
       "bloom threshold": 10.0,
       "bloom mult": 0.1

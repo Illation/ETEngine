@@ -15,10 +15,20 @@ struct PostProcessingSettings final
 	RTTR_ENABLE()
 
 public:
-	//High dynamic range
+	// High dynamic range
 	float exposure = 1.f;
 
-	//Gamma correction
+	// filmic tonemapping
+	float shoulderStrength = 0.22f;
+	float linearStrength = 0.3f;
+	float linearAngle = 0.1f;
+	float toeStrength = 0.2f;
+	float toeNumerator = 0.01f;
+	float toeDenominator = 0.3f;
+
+	float linearWhite = 11.2f;
+
+	// Gamma correction
 	float gamma = 2.2f;
 
 	//Bloom

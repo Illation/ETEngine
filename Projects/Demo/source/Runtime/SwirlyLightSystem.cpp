@@ -25,6 +25,7 @@ SwirlyLightSystem::SwirlyLightSystem()
 //
 void SwirlyLightSystem::Process(fw::ComponentRange<SwirlyLightSystemView>& range)
 {
+	return;
 	// common vars
 	float const dt = ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime();
 

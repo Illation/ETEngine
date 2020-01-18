@@ -27,6 +27,29 @@
     uniform float gamma;
 	
 	uniform float bloomMult = 1;
+
+	// tonamapping settings with some multiplications precalculated
+	uniform float uShoulderStrength = 0.22;
+	uniform float uLinearStrength = 0.25;
+
+	uniform float uEdivF;
+	uniform float uCB;
+	uniform float uDE;
+	uniform float uDF;
+
+	// b = linearStrength
+	// c = linearAngle
+	// d = toeStrength
+	// e = toeNumerator
+	// f = toeDenominator
+
+	uniform float uLinearWhiteMapped;
+
+	vec3 FilmicTonemapping(in vec3 x)
+	{
+		vec3 shoulderX = uShoulderStrength * x;
+		return ((x * (shoulderX + uCB) + uDE) / (x * (shoulderX + uLinearStrength) + uDF)) - uEdivF;
+	}
 	
 	void main()
 	{
@@ -42,8 +65,9 @@
 		
 		color += bloom * bloomMult;
 		
-		// Reinhard tone mapping
-		vec3 mapped = vec3(1.0) - exp(-color * exposure);
+		// habel tonemapping
+		vec3 mapped = FilmicTonemapping(color * exposure) / uLinearWhiteMapped;
+
 		// Gamma correction 
 		mapped = pow(mapped, vec3(1.0 / gamma));
 		
