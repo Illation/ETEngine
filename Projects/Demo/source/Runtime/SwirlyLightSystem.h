@@ -1,10 +1,10 @@
 #pragma once
-#include "SwirlyLightComponent.h"
-
 #include <EtFramework/ECS/ComponentView.h>
 #include <EtFramework/ECS/EcsController.h>
 #include <EtFramework/Components/TransformComponent.h>
 #include <EtFramework/Components/LightComponent.h>
+
+#include <Common/SwirlyLightComponent.h>
 
 
 namespace demo {

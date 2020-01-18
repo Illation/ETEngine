@@ -86,6 +86,12 @@
                 "id": 2
               }
             }
+          },
+          {
+            "celestial body comp desc": {
+              "rotation speed": 0.01,
+              "start rotating": false
+            }
           }
         ],
         "children": []

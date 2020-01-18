@@ -103,6 +103,16 @@ void TransformComponent::Rotate(const quat& rotation)
 	m_Rotation = m_Rotation * rotation;
 }
 
+//---------------------------------
+// TransformComponent::SetRotation
+//
+void TransformComponent::SetRotation(const quat& rotation)
+{
+	m_TransformChanged |= E_TransformChanged::Rotation;
+
+	m_Rotation = rotation;
+}
+
 //------------------------------
 // TransformComponent::SetScale
 //

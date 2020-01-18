@@ -46,9 +46,9 @@ public:
 	void SetPosition(const vec3& position);
 
 	void RotateEuler(float x, float y, float z);
-	void RotateEuler(const vec3& eulerAngles );
+	void RotateEuler(const vec3& eulerAngles);
 	void Rotate(const quat& rotation);
-	void SetRotation(const quat& rotation) { m_Rotation = rotation; }
+	void SetRotation(const quat& rotation);
 
 	void SetScale(float x, float y, float z);
 	void SetScale(const vec3& scale);

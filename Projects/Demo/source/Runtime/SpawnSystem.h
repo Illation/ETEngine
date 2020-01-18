@@ -1,9 +1,9 @@
 #pragma once
-#include "SpawnComponent.h"
-
 #include <EtFramework/ECS/ComponentView.h>
 #include <EtFramework/ECS/EcsController.h>
 #include <EtFramework/Components/TransformComponent.h>
+
+#include <Common/SpawnComponent.h>
 
 
 namespace demo {
