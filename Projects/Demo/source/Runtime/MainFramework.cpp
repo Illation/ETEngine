@@ -5,6 +5,7 @@
 #include "LightControlSystem.h"
 #include "SwirlyLightSystem.h"
 #include "CelestialBodySystem.h"
+#include "PlaylistSystem.h"
 
 #include <EtCore/Content/ResourceManager.h>
 
@@ -33,6 +34,7 @@ void MainFramework::OnSystemInit()
 	ecs.RegisterSystem<demo::LightControlSystem>();
 	ecs.RegisterSystem<demo::SwirlyLightSystem>();
 	ecs.RegisterSystem<demo::CelestialBodySystem>();
+	ecs.RegisterSystem<demo::PlaylistSystem>();
 }
 
 //--------------------------

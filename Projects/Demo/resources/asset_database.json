@@ -81,7 +81,7 @@
               "path": "assets/Sounds/",
               "package": "content1",
               "references": [],
-              "force mono": false
+              "force mono": true
             }
           },
           {
@@ -1075,6 +1075,7 @@
                 "HelmetSettled.dae",
                 "MI_Uber_Kabuto.json",
                 "Disfigure-Blank.ogg",
+                "testmusic.ogg",
                 "sphere.dae",
                 "MI_Emissive_LightBulb.json",
                 "MI_TexPBR_Ball.json",

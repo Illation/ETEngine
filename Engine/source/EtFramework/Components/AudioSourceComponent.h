@@ -51,6 +51,8 @@ public:
 	E_PlaybackState GetState() const { return m_PrevState; }
 	bool IsLooping() const { return m_IsLooping; }
 
+	T_Hash GetTrack() const { return m_NextTrack; }
+
 	// Data
 	///////
 

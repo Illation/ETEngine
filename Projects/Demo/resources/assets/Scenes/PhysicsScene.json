@@ -112,6 +112,14 @@
             }
           },
           {
+            "playlist comp desc": {
+              "tracks": [
+                "Disfigure-Blank.ogg",
+                "testmusic.ogg"
+              ]
+            }
+          },
+          {
             "swirly light comp desc": {
               "min radius": 0.2,
               "max radius": 1.0,
@@ -119,6 +127,9 @@
               "max time mult": 1.0,
               "bounds": 1.0
             }
+          },
+          {
+            "controled light comp desc": { }
           }
         ],
         "children": [

@@ -5,6 +5,7 @@
 #include "ControledLightComponent.h"
 #include "SwirlyLightComponent.h"
 #include "CelestialBodyComponent.h"
+#include "PlaylistComponent.h"
 
 
 namespace demo {
@@ -23,6 +24,7 @@ void ForceLinking()
 	FORCE_LINKING(ControledLightComponentDesc)
 	FORCE_LINKING(SwirlyLightComponentDesc)
 	FORCE_LINKING(CelestialBodyComponentDesc)
+	FORCE_LINKING(PlaylistComponentDesc)
 }
 
 
