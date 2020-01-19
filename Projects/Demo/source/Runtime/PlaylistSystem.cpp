@@ -4,6 +4,7 @@
 #include <EtFramework/Systems/AudioSourceSystem.h>
 
 
+namespace et {
 namespace demo {
 
 
@@ -98,4 +99,4 @@ void PlaylistSystem::Process(fw::ComponentRange<PlaylistSystemView>& range)
 
 
 } // namespace demo
-
+} // namespace et

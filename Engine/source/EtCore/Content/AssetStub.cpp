@@ -2,9 +2,7 @@
 
 #include "AssetStub.h"
 
-#include <rttr/registration>
-#include <rttr/detail/policies/ctor_policies.h>
-
+#include <EtCore/Reflection/Registration.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
 
@@ -16,16 +14,8 @@
 // reflection
 RTTR_REGISTRATION
 {
-	using namespace rttr;
-
-	registration::class_<StubAsset>("stub asset")
-		.constructor<StubAsset const&>()
-		.constructor<>()(rttr::detail::as_object());
-	rttr::type::register_converter_func([](StubAsset& stub, bool& ok) -> I_Asset*
-	{
-		ok = true;
-		return new StubAsset(stub);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(StubAsset, "stub asset")
+	END_REGISTER_POLYMORPHIC_CLASS(StubAsset, I_Asset);
 }
 DEFINE_FORCED_LINKING(StubAsset) // force the asset class to be linked as it is only used in reflection
 

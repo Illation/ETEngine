@@ -4,6 +4,8 @@
 #include <stb/stb_image.h>
 #include <stb/stb_image_resize.h>
 
+#include <EtCore/Reflection/Registration.h>
+
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
@@ -149,20 +151,11 @@ void TextureData::CreateHandle()
 // reflection
 RTTR_REGISTRATION
 {
-	using namespace rttr;
-
-	registration::class_<TextureAsset>("texture asset")
-		.constructor<TextureAsset const&>()
-		.constructor<>()(rttr::detail::as_object())
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(TextureAsset, "texture asset")
 		.property("use SRGB", &TextureAsset::m_UseSrgb)
 		.property("force resolution", &TextureAsset::m_ForceResolution)
-		.property("parameters", &TextureAsset::m_Parameters);
-
-	rttr::type::register_converter_func([](TextureAsset& asset, bool& ok) -> I_Asset*
-	{
-		ok = true;
-		return new TextureAsset(asset);
-	});
+		.property("parameters", &TextureAsset::m_Parameters)
+	END_REGISTER_POLYMORPHIC_CLASS(TextureAsset, I_Asset);
 }
 DEFINE_FORCED_LINKING(TextureAsset) // force the shader class to be linked as it is only used in reflection
 

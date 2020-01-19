@@ -4,6 +4,7 @@
 #include <EtFramework/Systems/TransformSystem.h>
 
 
+namespace et {
 namespace demo {
 
 
@@ -45,3 +46,4 @@ void CelestialBodySystem::Process(fw::ComponentRange<CelestialBodySystemView>& r
 
 
 } // namespace demo
+} // namespace et

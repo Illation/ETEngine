@@ -4,6 +4,7 @@
 #include <EtFramework/SceneGraph/ComponentDescriptor.h>
 
 
+namespace et {
 namespace demo {
 
 
@@ -47,4 +48,4 @@ public:
 
 
 } // namespace demo
-
+} // namespace et

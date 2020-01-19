@@ -4,6 +4,7 @@
 #include <EtFramework/Systems/TransformSystem.h>
 
 
+namespace et {
 namespace demo {
 
 
@@ -53,6 +54,4 @@ void SwirlyLightSystem::Process(fw::ComponentRange<SwirlyLightSystemView>& range
 
 
 } // namespace demo
-
-
-
+} // namespace et

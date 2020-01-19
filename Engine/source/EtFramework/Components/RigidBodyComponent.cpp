@@ -3,7 +3,12 @@
 
 #include <btBulletDynamicsCommon.h>
 
+#include <EtCore/Reflection/Registration.h>
+
 #include <EtFramework/Physics/BulletETM.h>
+
+
+namespace fw {
 
 
 // reflection
@@ -11,31 +16,16 @@
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::class_<RigidBodyComponent>("rigid body component");
 
-	registration::class_<fw::RigidBodyComponent>("rigid body component");
-
-	registration::class_<fw::RigidBodyComponentDesc>("rigid body comp desc")
-		.constructor<fw::RigidBodyComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("is dynamic", &fw::RigidBodyComponentDesc::isDynamic)
-		.property("mass", &fw::RigidBodyComponentDesc::mass)
-		.property("shape", &fw::RigidBodyComponentDesc::shape);
-
-	rttr::type::register_converter_func([](fw::RigidBodyComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new fw::RigidBodyComponentDesc(descriptor);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(RigidBodyComponentDesc, "rigid body comp desc")
+		.property("is dynamic", &RigidBodyComponentDesc::isDynamic)
+		.property("mass", &RigidBodyComponentDesc::mass)
+		.property("shape", &RigidBodyComponentDesc::shape)
+	END_REGISTER_POLYMORPHIC_CLASS(RigidBodyComponentDesc, I_ComponentDescriptor);
 }
 
-// component registration
-//------------------------
-
-ECS_REGISTER_COMPONENT(fw::RigidBodyComponent);
-
-
-namespace fw {
+ECS_REGISTER_COMPONENT(RigidBodyComponent);
 
 
 //======================

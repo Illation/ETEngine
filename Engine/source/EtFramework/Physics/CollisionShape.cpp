@@ -8,6 +8,9 @@
 #include <EtFramework/Physics/PhysicsManager.h>
 
 
+namespace fw {
+
+
 //=================
 // Collision Shape
 //=================
@@ -18,37 +21,16 @@
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(BoxShape, "box collider shape")
+		.property("half extents", &BoxShape::m_HalfExtents)
+	END_REGISTER_POLYMORPHIC_CLASS(BoxShape, CollisionShape);
 
-	// box collider
-	registration::class_<fw::BoxShape>("box collider shape")
-		.constructor<fw::BoxShape const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("half extents", &fw::BoxShape::m_HalfExtents);
-
-	rttr::type::register_converter_func([](fw::BoxShape& shape, bool& ok) -> fw::CollisionShape*
-	{
-		ok = true;
-		return new fw::BoxShape(shape);
-	});
-
-	// sphere collider
-	registration::class_<fw::SphereShape>("sphere collider shape")
-		.constructor<fw::SphereShape const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("radius", &fw::SphereShape::m_Radius);
-
-	rttr::type::register_converter_func([](fw::SphereShape& shape, bool& ok) -> fw::CollisionShape*
-	{
-		ok = true;
-		return new fw::SphereShape(shape);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(SphereShape, "sphere collider shape")
+		.property("radius", &SphereShape::m_Radius)
+	END_REGISTER_POLYMORPHIC_CLASS(SphereShape, CollisionShape);
 }
 
 DEFINE_FORCED_LINKING(fw::BoxShape) // force the linker to include this unit
-
-
-namespace fw {
 
 
 //------------------------------------

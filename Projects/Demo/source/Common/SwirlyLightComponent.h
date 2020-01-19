@@ -10,6 +10,7 @@ namespace fw {
 }
 
 
+namespace et {
 namespace demo {
 
 
@@ -75,4 +76,4 @@ public:
 
 
 } // namespace demo
-
+} // namespace et

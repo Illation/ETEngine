@@ -7,6 +7,7 @@
 #include <Common/SwirlyLightComponent.h>
 
 
+namespace et {
 namespace demo {
 
 
@@ -44,4 +45,5 @@ public:
 
 
 } // namespace demo
+} // namespace et
 

@@ -6,6 +6,10 @@
 #include <EtFramework/Components/TransformComponent.h>
 
 
+namespace et {
+namespace demo {
+
+
 //---------------------------
 // FreeCameraComponent
 //
@@ -61,3 +65,6 @@ public:
 	void Process(fw::ComponentRange<FreeCameraSystemView>& ramge) override;
 };
 
+
+} // namespace demo
+} // namespace et

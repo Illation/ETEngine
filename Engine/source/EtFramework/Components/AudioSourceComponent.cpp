@@ -1,11 +1,14 @@
 #include "stdafx.h"
 #include "AudioSourceComponent.h"
 
-#include <rttr/registration>
+#include <EtCore/Reflection/Registration.h>
 
 #include <EtFramework/Audio/AudioData.h>
 #include <EtFramework/Audio/AudioManager.h>
 #include <EtFramework/Audio/OpenAL_ETM.h>
+
+
+namespace fw {
 
 
 // reflection
@@ -13,47 +16,33 @@
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::class_<AudioSourceComponent>("audio source component");
 
-	registration::class_<fw::AudioSourceComponent>("audio source component");
+	rttr::registration::class_<AudioSource3DParams>("audio source 3D params")
+		.property("reference distance", &AudioSource3DParams::referenceDistance)
+		.property("rolloff factor", &AudioSource3DParams::rolloffFactor)
+		.property("max distance", &AudioSource3DParams::maxDistance)
+		.property("inner cone angle", &AudioSource3DParams::innerConeAngle)
+		.property("outer cone angle", &AudioSource3DParams::outerConeAngle)
+		.property("outer cone gain", &AudioSource3DParams::outerConeGain)
+		.property("is directional", &AudioSource3DParams::isDirectional);
 
-	registration::class_<fw::AudioSource3DParams>("audio source 3D params")
-		.property("reference distance", &fw::AudioSource3DParams::referenceDistance)
-		.property("rolloff factor", &fw::AudioSource3DParams::rolloffFactor)
-		.property("max distance", &fw::AudioSource3DParams::maxDistance)
-		.property("inner cone angle", &fw::AudioSource3DParams::innerConeAngle)
-		.property("outer cone angle", &fw::AudioSource3DParams::outerConeAngle)
-		.property("outer cone gain", &fw::AudioSource3DParams::outerConeGain)
-		.property("is directional", &fw::AudioSource3DParams::isDirectional);
-	registration::class_<fw::AudioSourceComponent>("audio source 3D component");
-
-	registration::class_<fw::AudioSourceCompDesc>("audio source comp desc")
-		.constructor<fw::AudioSourceCompDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("audio asset", &fw::AudioSourceCompDesc::audioAsset)
-		.property("play on init", &fw::AudioSourceCompDesc::playOnInit)
-		.property("loop", &fw::AudioSourceCompDesc::loop)
-		.property("gain", &fw::AudioSourceCompDesc::gain)
-		.property("min gain", &fw::AudioSourceCompDesc::minGain)
-		.property("max gain", &fw::AudioSourceCompDesc::maxGain)
-		.property("pitch", &fw::AudioSourceCompDesc::pitch)
-		.property("params", &fw::AudioSourceCompDesc::params);
-
-	rttr::type::register_converter_func([](fw::AudioSourceCompDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new fw::AudioSourceCompDesc(descriptor);
-	});
+	rttr::registration::class_<fw::AudioSourceComponent>("audio source 3D component");
+	
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(AudioSourceCompDesc, "audio source comp desc")
+		.property("audio asset", &AudioSourceCompDesc::audioAsset)
+		.property("play on init", &AudioSourceCompDesc::playOnInit)
+		.property("loop", &AudioSourceCompDesc::loop)
+		.property("gain", &AudioSourceCompDesc::gain)
+		.property("min gain", &AudioSourceCompDesc::minGain)
+		.property("max gain", &AudioSourceCompDesc::maxGain)
+		.property("pitch", &AudioSourceCompDesc::pitch)
+		.property("params", &AudioSourceCompDesc::params)
+	END_REGISTER_POLYMORPHIC_CLASS(AudioSourceCompDesc, I_ComponentDescriptor);
 }
 
-// component registration
-//------------------------
-
-ECS_REGISTER_COMPONENT(fw::AudioSourceComponent);
-ECS_REGISTER_COMPONENT(fw::AudioSource3DComponent);
-
-
-namespace fw {
+ECS_REGISTER_COMPONENT(AudioSourceComponent);
+ECS_REGISTER_COMPONENT(AudioSource3DComponent);
 
 
 //========================

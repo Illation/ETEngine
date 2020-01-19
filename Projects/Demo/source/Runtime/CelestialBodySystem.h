@@ -6,6 +6,7 @@
 #include <Common/CelestialBodyComponent.h>
 
 
+namespace et {
 namespace demo {
 
 
@@ -41,4 +42,5 @@ public:
 
 
 } // namespace demo
+} // namespace et
 

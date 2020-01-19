@@ -7,6 +7,7 @@
 #include <ft2build.h>
 #include <freetype/freetype.h>
 
+#include <EtCore/Reflection/Registration.h>
 #include <EtCore/FileSystem/BinaryReader.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/ResourceManager.h>
@@ -102,21 +103,12 @@ void SpriteFont::SetMetric(FontMetric const& metric, wchar_t const& character)
 // reflection
 RTTR_REGISTRATION
 {
-	using namespace rttr;
-
-	registration::class_<FontAsset>("font asset")
-		.constructor<FontAsset const&>()
-		.constructor<>()(rttr::detail::as_object())
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(FontAsset, "font asset")
 		.property("size", &FontAsset::m_FontSize)
 		.property("padding", &FontAsset::m_Padding)
 		.property("spread", &FontAsset::m_Spread)
-		.property("highres", &FontAsset::m_HighRes);
-
-	rttr::type::register_converter_func([](FontAsset& asset, bool& ok) -> I_Asset*
-	{
-		ok = true;
-		return new FontAsset(asset);
-	});
+		.property("highres", &FontAsset::m_HighRes)
+	END_REGISTER_POLYMORPHIC_CLASS(FontAsset, I_Asset);
 }
 DEFINE_FORCED_LINKING(FontAsset) // force the shader class to be linked as it is only used in reflection
 

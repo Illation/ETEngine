@@ -1,8 +1,13 @@
 #include "stdafx.h"
 #include "SpriteComponent.h"
 
+#include <EtCore/Reflection/Registration.h>
+
 #include <EtFramework/Components/TransformComponent.h>
 #include <EtFramework/SceneGraph/UnifiedScene.h>
+
+
+namespace fw {
 
 
 // reflection
@@ -10,31 +15,16 @@
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::class_<SpriteComponent>("sprite component");
 
-	registration::class_<fw::SpriteComponent>("sprite component");
-
-	registration::class_<fw::SpriteComponentDesc>("sprite comp desc")
-		.constructor<fw::SpriteComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("texture asset", &fw::SpriteComponentDesc::textureAsset)
-		.property("pivot", &fw::SpriteComponentDesc::pivot)
-		.property("color", &fw::SpriteComponentDesc::color);
-
-	rttr::type::register_converter_func([](fw::SpriteComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new fw::SpriteComponentDesc(descriptor);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(SpriteComponentDesc, "sprite comp desc")
+		.property("texture asset", &SpriteComponentDesc::textureAsset)
+		.property("pivot", &SpriteComponentDesc::pivot)
+		.property("color", &SpriteComponentDesc::color)
+	END_REGISTER_POLYMORPHIC_CLASS(SpriteComponentDesc, I_ComponentDescriptor);
 }
 
-// component registration
-//------------------------
-
-ECS_REGISTER_COMPONENT(fw::SpriteComponent);
-
-
-namespace fw {
+ECS_REGISTER_COMPONENT(SpriteComponent);
 
 
 //==================

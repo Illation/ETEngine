@@ -5,8 +5,6 @@
 #include "EditorSplitNode.h"
 #include "EditorNodeHierachy.h"
 
-#include <rttr/registration>
-
 #include <gtkmm/comboboxtext.h>
 #include <gtkmm/box.h>
 #include <gtkmm/frame.h>
@@ -15,6 +13,7 @@
 #include <gtkmm/image.h>
 #include <gdkmm/cursor.h>
 
+#include <EtCore/Reflection/Registration.h>
 #include <EtCore/Reflection/ReflectionUtil.h>
 
 #include <EtEditor/Util/GtkUtil.h>
@@ -30,22 +29,14 @@
 // reflection
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::enumeration<E_EditorTool>("E_EditorTool") (
+		rttr::value("SceneViewport", E_EditorTool::SceneViewport),
+		rttr::value("Outliner", E_EditorTool::Outliner),
+		rttr::value("Invalid", E_EditorTool::Invalid));
 
-	registration::enumeration<E_EditorTool>("E_EditorTool") (
-		value("SceneViewport", E_EditorTool::SceneViewport),
-		value("Outliner", E_EditorTool::Outliner),
-		value("Invalid", E_EditorTool::Invalid));
-
-	registration::class_<EditorToolNode>("editor tool node")
-		.constructor<>()(rttr::detail::as_object())
-		.property("type", &EditorToolNode::m_Type);
-
-	rttr::type::register_converter_func([](EditorToolNode& node, bool& ok) -> EditorNode*
-	{
-		ok = true;
-		return new EditorToolNode(node);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(EditorToolNode, "editor tool node")
+		.property("type", &EditorToolNode::m_Type)
+	END_REGISTER_POLYMORPHIC_CLASS(EditorToolNode, EditorNode);
 }
 
 

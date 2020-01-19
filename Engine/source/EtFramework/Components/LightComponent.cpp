@@ -1,42 +1,32 @@
 #include "stdafx.h"
 #include "LightComponent.h"
 
+#include <EtCore/Reflection/Registration.h>
+
+
+namespace fw {
+
 
 // reflection
 //------------
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::enumeration<LightComponent::E_Type>("light component type") (
+		rttr::value("Point", LightComponent::E_Type::Point),
+		rttr::value("Directional", LightComponent::E_Type::Directional));
 
-	registration::enumeration<fw::LightComponent::E_Type>("light component type") (
-		value("Point", fw::LightComponent::E_Type::Point),
-		value("Directional", fw::LightComponent::E_Type::Directional));
+	rttr::registration::class_<LightComponent>("light component");
 
-	registration::class_<fw::LightComponent>("light component");
-
-	registration::class_<fw::LightComponentDesc>("light comp desc")
-		.constructor<fw::LightComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("type", &fw::LightComponentDesc::type)
-		.property("color", &fw::LightComponentDesc::color)
-		.property("brightness", &fw::LightComponentDesc::brightness)
-		.property("casts shadow", &fw::LightComponentDesc::castsShadow);
-
-	rttr::type::register_converter_func([](fw::LightComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new fw::LightComponentDesc(descriptor);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(LightComponentDesc, "light comp desc")
+		.property("type", &LightComponentDesc::type)
+		.property("color", &LightComponentDesc::color)
+		.property("brightness", &LightComponentDesc::brightness)
+		.property("casts shadow", &LightComponentDesc::castsShadow)
+	END_REGISTER_POLYMORPHIC_CLASS(LightComponentDesc, I_ComponentDescriptor);
 }
 
-// component registration
-//------------------------
-
-ECS_REGISTER_COMPONENT(fw::LightComponent);
-
-
-namespace fw {
+ECS_REGISTER_COMPONENT(LightComponent);
 
 
 //=================

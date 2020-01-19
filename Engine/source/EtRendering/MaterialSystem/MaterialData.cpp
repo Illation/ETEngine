@@ -7,37 +7,28 @@
 #include <EtCore/FileSystem/FileUtil.h>
 
 
-// reflection
-//////////////
-RTTR_REGISTRATION
-{
-	using namespace rttr;
-
-	registration::enumeration<render::Material::E_DrawType>("E_DrawType") (
-		value("Opaque", render::Material::E_DrawType::Opaque),
-		value("AlphaBlend", render::Material::E_DrawType::AlphaBlend),
-		value("Custom", render::Material::E_DrawType::Custom));
-
-	registration::class_<render::MaterialAsset>("material asset")
-		.constructor<render::MaterialAsset const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("draw type", &render::MaterialAsset::m_DrawType);
-
-	rttr::type::register_converter_func([](render::MaterialAsset& material, bool& ok) -> I_Asset*
-	{
-		ok = true;
-		return new render::MaterialAsset(material);
-	});
-}
-DEFINE_FORCED_LINKING(render::MaterialAsset) // force the material asset class to be linked
-
-
 namespace render {
 
 
 //==========
 // Material 
 //==========
+
+
+// reflection
+//////////////
+RTTR_REGISTRATION
+{
+	rttr::registration::enumeration<Material::E_DrawType>("E_DrawType") (
+		rttr::value("Opaque", Material::E_DrawType::Opaque),
+		rttr::value("AlphaBlend", Material::E_DrawType::AlphaBlend),
+		rttr::value("Custom", Material::E_DrawType::Custom));
+
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(MaterialAsset, "material asset")
+		.property("draw type", &MaterialAsset::m_DrawType)
+	END_REGISTER_POLYMORPHIC_CLASS(MaterialAsset, I_Asset);
+}
+DEFINE_FORCED_LINKING(MaterialAsset) // force the material asset class to be linked
 
 
 //--------------------------

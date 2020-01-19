@@ -17,6 +17,10 @@
 #include <EtFramework/Audio/AudioManager.h>
 
 
+namespace et {
+namespace demo {
+
+
 //================
 // Main Framework
 //================
@@ -30,11 +34,11 @@ void MainFramework::OnSystemInit()
 	fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
 
 	ecs.RegisterSystem<FreeCameraSystem>();
-	ecs.RegisterSystem<demo::SpawnSystem>();
-	ecs.RegisterSystem<demo::LightControlSystem>();
-	ecs.RegisterSystem<demo::SwirlyLightSystem>();
-	ecs.RegisterSystem<demo::CelestialBodySystem>();
-	ecs.RegisterSystem<demo::PlaylistSystem>();
+	ecs.RegisterSystem<SpawnSystem>();
+	ecs.RegisterSystem<LightControlSystem>();
+	ecs.RegisterSystem<SwirlyLightSystem>();
+	ecs.RegisterSystem<CelestialBodySystem>();
+	ecs.RegisterSystem<PlaylistSystem>();
 }
 
 //--------------------------
@@ -168,3 +172,7 @@ void MainFramework::OnTick()
 		}
 	}
 }
+
+
+} // namespace demo
+} // namespace et

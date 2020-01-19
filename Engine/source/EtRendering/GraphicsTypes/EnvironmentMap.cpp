@@ -5,6 +5,7 @@
 
 #include <stb/stb_image.h>
 
+#include <EtCore/Reflection/Registration.h>
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
@@ -52,20 +53,11 @@ EnvironmentMap::~EnvironmentMap()
 // reflection
 RTTR_REGISTRATION
 {
-	using namespace rttr;
-
-	registration::class_<EnvironmentMapAsset>("environment map asset")
-		.constructor<EnvironmentMapAsset const&>()
-		.constructor<>()(rttr::detail::as_object())
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(EnvironmentMapAsset, "environment map asset")
 		.property("Cubemap Resolution", &EnvironmentMapAsset::m_CubemapRes)
 		.property("Irradiance Resolution", &EnvironmentMapAsset::m_IrradianceRes)
-		.property("Radiance Resolution", &EnvironmentMapAsset::m_RadianceRes);
-
-	rttr::type::register_converter_func([](EnvironmentMapAsset& asset, bool& ok) -> I_Asset*
-	{
-		ok = true;
-		return new EnvironmentMapAsset(asset);
-	});
+		.property("Radiance Resolution", &EnvironmentMapAsset::m_RadianceRes)
+	END_REGISTER_POLYMORPHIC_CLASS(EnvironmentMapAsset, I_Asset);
 }
 DEFINE_FORCED_LINKING(EnvironmentMapAsset) // force the shader class to be linked as it is only used in reflection
 

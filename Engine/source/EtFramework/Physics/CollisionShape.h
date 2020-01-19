@@ -1,10 +1,11 @@
 #pragma once
-#include <rttr/registration_friend.h>
+#include <EtCore/Reflection/Registration.h>
 
 #include <EtCore/Helper/LinkerUtils.h>
 
 
 class btCollisionShape;
+REGISTRATION_NS(fw)
 
 
 namespace fw {
@@ -32,7 +33,7 @@ public:
 class BoxShape final : public CollisionShape
 {
 	RTTR_ENABLE(CollisionShape)
-	RTTR_REGISTRATION_FRIEND
+	REGISTRATION_FRIEND_NS(fw)
 	DECLARE_FORCED_LINKING()
 
 public:
@@ -52,7 +53,7 @@ private:
 class SphereShape final : public CollisionShape
 {
 	RTTR_ENABLE(CollisionShape)
-	RTTR_REGISTRATION_FRIEND
+	REGISTRATION_FRIEND_NS(fw)
 
 public:
 	SphereShape() : CollisionShape() {}

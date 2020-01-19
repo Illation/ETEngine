@@ -3,53 +3,43 @@
 
 #include <EtRendering/GraphicsTypes/Shader.h>
 
-#include <rttr/registration>
+
+namespace render {
 
 
 // reflection
-///////////////////////
+//////////////////
 
 // definition for a parameter deriving from BaseMaterialParam -> registers the type and a convesion function to enable serialized polymorphism
-#define REGISTER_DERIVED_PARAM(TYPE, NAME)														\
-registration::class_<TYPE>(NAME " param")														\
-	.constructor<>()(rttr::detail::as_object())													\
-	.property("data", &TYPE::m_Data);															\
-																								\
-rttr::type::register_converter_func([](TYPE& param, bool& ok) -> render::BaseMaterialParam*		\
-{																								\
-	ok = true;																					\
-	return new TYPE(param);																		\
-}); 
+#define REGISTER_DERIVED_PARAM(TClass, TName)					\
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(TClass, TName " param")	\
+		.property("data", &TClass::m_Data)						\
+	END_REGISTER_POLYMORPHIC_CLASS(TClass, BaseMaterialParam);			
 
 
 // register all the types
 RTTR_REGISTRATION
 {
-	using namespace rttr;
-
 	// base
-	registration::class_<render::BaseMaterialParam>("base material param")
-		.property("name", &render::BaseMaterialParam::GetName, &render::BaseMaterialParam::SetName);
+	rttr::registration::class_<BaseMaterialParam>("base material param")
+		.property("name", &BaseMaterialParam::GetName, &BaseMaterialParam::SetName);
 
 	// derived
-	REGISTER_DERIVED_PARAM(render::MaterialParam<std::string>, "texture"); // convert string to texture asset reference
-	REGISTER_DERIVED_PARAM(render::MaterialParam<mat4>, "matrix4x4");
-	REGISTER_DERIVED_PARAM(render::MaterialParam<mat3>, "matrix3x3");
-	REGISTER_DERIVED_PARAM(render::MaterialParam<vec4>, "vector4D");
-	REGISTER_DERIVED_PARAM(render::MaterialParam<vec3>, "vector3D");
-	REGISTER_DERIVED_PARAM(render::MaterialParam<vec2>, "vector2D");
-	REGISTER_DERIVED_PARAM(render::MaterialParam<uint32>, "uint");
-	REGISTER_DERIVED_PARAM(render::MaterialParam<int32>, "int");
-	REGISTER_DERIVED_PARAM(render::MaterialParam<float>, "float");
-	REGISTER_DERIVED_PARAM(render::MaterialParam<bool>, "boolean");
+	REGISTER_DERIVED_PARAM(MaterialParam<std::string>, "texture"); // convert string to texture asset reference
+	REGISTER_DERIVED_PARAM(MaterialParam<mat4>, "matrix4x4");
+	REGISTER_DERIVED_PARAM(MaterialParam<mat3>, "matrix3x3");
+	REGISTER_DERIVED_PARAM(MaterialParam<vec4>, "vector4D");
+	REGISTER_DERIVED_PARAM(MaterialParam<vec3>, "vector3D");
+	REGISTER_DERIVED_PARAM(MaterialParam<vec2>, "vector2D");
+	REGISTER_DERIVED_PARAM(MaterialParam<uint32>, "uint");
+	REGISTER_DERIVED_PARAM(MaterialParam<int32>, "int");
+	REGISTER_DERIVED_PARAM(MaterialParam<float>, "float");
+	REGISTER_DERIVED_PARAM(MaterialParam<bool>, "boolean");
 
 	// container
-	registration::class_<render::MaterialDescriptor>("material descriptor")
-		.property("parameters", &render::MaterialDescriptor::parameters);
+	rttr::registration::class_<MaterialDescriptor>("material descriptor")
+		.property("parameters", &MaterialDescriptor::parameters);
 }
-
-
-namespace render {
 
 
 //=========================

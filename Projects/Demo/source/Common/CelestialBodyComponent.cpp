@@ -1,7 +1,11 @@
 #include "stdafx.h"
 #include "CelestialBodyComponent.h"
 
-#include <rttr/registration>
+#include <EtCore/Reflection/Registration.h>
+
+
+namespace et {
+namespace demo {
 
 
 // reflection
@@ -9,32 +13,16 @@
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::class_<CelestialBodyComponent>("celestial body component");
 
-	registration::class_<demo::CelestialBodyComponent>("celestial body component");
-
-	registration::class_<demo::CelestialBodyComponentDesc>("celestial body comp desc")
-		.constructor<demo::CelestialBodyComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("rotation speed", &demo::CelestialBodyComponentDesc::rotationSpeed)
-		.property("start rotating", &demo::CelestialBodyComponentDesc::startRotating);
-
-	rttr::type::register_converter_func([](demo::CelestialBodyComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new demo::CelestialBodyComponentDesc(descriptor);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(CelestialBodyComponentDesc, "celestial body comp desc")
+		.property("rotation speed", &CelestialBodyComponentDesc::rotationSpeed)
+		.property("start rotating", &CelestialBodyComponentDesc::startRotating)
+	END_REGISTER_POLYMORPHIC_CLASS(CelestialBodyComponentDesc, fw::I_ComponentDescriptor);
 }
+DEFINE_FORCED_LINKING(CelestialBodyComponentDesc) // force the linker to include this unit
 
-DEFINE_FORCED_LINKING(demo::CelestialBodyComponentDesc) // force the linker to include this unit
-
-// component registration
-//------------------------
-
-ECS_REGISTER_COMPONENT(demo::CelestialBodyComponent);
-
-
-namespace demo {
+ECS_REGISTER_COMPONENT(CelestialBodyComponent);
 
 
 //======================================
@@ -59,5 +47,4 @@ CelestialBodyComponent* CelestialBodyComponentDesc::MakeData()
 
 
 } // namespace demo
-
-
+} // namespace et

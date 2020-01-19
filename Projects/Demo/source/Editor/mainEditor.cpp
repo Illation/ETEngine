@@ -25,10 +25,12 @@ void SetDebuggingOptions();
 //
 int main(int argc, char *argv[])
 {
+	using namespace et::demo;
+
 	// Memory leak checks
 	SetDebuggingOptions();
 
-	demo::ForceLinking(); // makes sure the linker doesn't ignore reflection only data
+	et::demo::ForceLinking(); // makes sure the linker doesn't ignore reflection only data
 
 	// working dir
 	if (argc > 0)

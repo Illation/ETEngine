@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "PlanetComponent.h"
 
-#include <rttr/registration>
+#include <EtCore/Reflection/Registration.h>
+
+
+namespace fw {
 
 
 // reflection
@@ -9,49 +12,27 @@
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::class_<PlanetComponent>("planet component");
+	
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(PlanetComponentDesc, "planet comp desc")
+		.property("radius", &PlanetComponentDesc::radius)
+		.property("height", &PlanetComponentDesc::height)
+		.property("diffuse texture", &PlanetComponentDesc::texDiffuse)
+		.property("detail texture 1", &PlanetComponentDesc::texDetail1)
+		.property("detail texture 2", &PlanetComponentDesc::texDetail2)
+		.property("height texture", &PlanetComponentDesc::texHeight)
+		.property("height detail texture", &PlanetComponentDesc::texHeightDetail)
+	END_REGISTER_POLYMORPHIC_CLASS(PlanetComponentDesc, I_ComponentDescriptor);
 
-	registration::class_<fw::PlanetComponent>("planet component");
-
-	registration::class_<fw::PlanetCameraLinkComponent>("planet camera link component");
-
-	registration::class_<fw::PlanetComponentDesc>("planet comp desc")
-		.constructor<fw::PlanetComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("radius", &fw::PlanetComponentDesc::radius)
-		.property("height", &fw::PlanetComponentDesc::height)
-		.property("diffuse texture", &fw::PlanetComponentDesc::texDiffuse)
-		.property("detail texture 1", &fw::PlanetComponentDesc::texDetail1)
-		.property("detail texture 2", &fw::PlanetComponentDesc::texDetail2)
-		.property("height texture", &fw::PlanetComponentDesc::texHeight)
-		.property("height detail texture", &fw::PlanetComponentDesc::texHeightDetail);
-
-	rttr::type::register_converter_func([](fw::PlanetComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new fw::PlanetComponentDesc(descriptor);
-	});
-
-	registration::class_<fw::PlanetCameraLinkComponentDesc>("planet camera link comp desc")
-		.constructor<fw::PlanetCameraLinkComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("planet", &fw::PlanetCameraLinkComponentDesc::planet);
-
-	rttr::type::register_converter_func([](fw::PlanetCameraLinkComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new fw::PlanetCameraLinkComponentDesc(descriptor);
-	});
+	rttr::registration::class_<PlanetCameraLinkComponent>("planet camera link component");
+	
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(PlanetCameraLinkComponentDesc, "planet camera link comp desc")
+		.property("planet", &PlanetCameraLinkComponentDesc::planet)
+	END_REGISTER_POLYMORPHIC_CLASS(PlanetCameraLinkComponentDesc, I_ComponentDescriptor);
 }
 
-// component registration
-//------------------------
-
-ECS_REGISTER_COMPONENT(fw::PlanetComponent);
-ECS_REGISTER_COMPONENT(fw::PlanetCameraLinkComponent);
-
-
-namespace fw {
+ECS_REGISTER_COMPONENT(PlanetComponent);
+ECS_REGISTER_COMPONENT(PlanetCameraLinkComponent);
 
 
 //==================

@@ -1,10 +1,13 @@
 #include "stdafx.h"
 #include "CameraComponent.h"
 
-#include <rttr/registration>
+#include <EtCore/Reflection/Registration.h>
 
 #include <EtRendering/GraphicsTypes/Camera.h>
 #include <EtRendering/GraphicsContext/Viewport.h>
+
+
+namespace fw {
 
 
 // reflection
@@ -12,33 +15,18 @@
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::class_<CameraComponent>("camera component");
 
-	registration::class_<fw::CameraComponent>("camera component");
-
-	registration::class_<fw::CameraComponentDesc>("camera comp desc")
-		.constructor<fw::CameraComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("is perspective", &fw::CameraComponentDesc::isPerspective)
-		.property("field of view", &fw::CameraComponentDesc::fieldOfView)
-		.property("ortho size", &fw::CameraComponentDesc::size)
-		.property("near plane", &fw::CameraComponentDesc::nearPlane)
-		.property("far plane", &fw::CameraComponentDesc::farPlane);
-
-	rttr::type::register_converter_func([](fw::CameraComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new fw::CameraComponentDesc(descriptor);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(CameraComponentDesc, "camera comp desc")
+		.property("is perspective", &CameraComponentDesc::isPerspective)
+		.property("field of view", &CameraComponentDesc::fieldOfView)
+		.property("ortho size", &CameraComponentDesc::size)
+		.property("near plane", &CameraComponentDesc::nearPlane)
+		.property("far plane", &CameraComponentDesc::farPlane)
+	END_REGISTER_POLYMORPHIC_CLASS(CameraComponentDesc, I_ComponentDescriptor);
 }
 
-// component registration
-//------------------------
-
-ECS_REGISTER_COMPONENT(fw::CameraComponent);
-
-
-namespace fw {
+ECS_REGISTER_COMPONENT(CameraComponent);
 
 
 //==================

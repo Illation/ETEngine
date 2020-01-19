@@ -8,6 +8,7 @@
 class AudioData;
 
 
+namespace et {
 namespace demo {
 
 
@@ -54,4 +55,4 @@ public:
 
 
 } // namespace demo
-
+} // namespace et

@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "AudioListenerComponent.h"
 
-#include <rttr/registration>
+#include <EtCore/Reflection/Registration.h>
+
+
+namespace fw {
 
 
 // reflection
@@ -9,31 +12,15 @@
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::class_<AudioListenerComponent>("audio listener component");
 
-	registration::class_<fw::AudioListenerComponent>("audio listener component");
-
-	registration::class_<fw::AudioListenerComponentDesc>("audio listener comp desc")
-		.constructor<fw::AudioListenerComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("gain", &fw::AudioListenerComponentDesc::gain);
-
-	rttr::type::register_converter_func([](fw::AudioListenerComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new fw::AudioListenerComponentDesc(descriptor);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(AudioListenerComponentDesc, "audio listener comp desc")
+		.property("gain", &AudioListenerComponentDesc::gain)
+	END_REGISTER_POLYMORPHIC_CLASS(AudioListenerComponentDesc, I_ComponentDescriptor);
 }
 
-
-// component registration
-//------------------------
-
-ECS_REGISTER_COMPONENT(fw::AudioListenerComponent);
-ECS_REGISTER_COMPONENT(fw::ActiveAudioListenerComponent);
-
-
-namespace fw {
+ECS_REGISTER_COMPONENT(AudioListenerComponent);
+ECS_REGISTER_COMPONENT(ActiveAudioListenerComponent);
 
 
 //=====================================

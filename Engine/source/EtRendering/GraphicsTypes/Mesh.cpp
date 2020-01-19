@@ -7,6 +7,7 @@
 
 #include <ext-mikktspace/mikktspace.h>
 
+#include <EtCore/Reflection/Registration.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
 #include <EtRendering/SceneStructure/GLTF.h>
@@ -425,17 +426,8 @@ MeshSurface const* MeshData::GetSurface(render::Material const* const material) 
 // reflection
 RTTR_REGISTRATION
 {
-	using namespace rttr;
-
-	registration::class_<MeshAsset>("mesh asset")
-		.constructor<MeshAsset const&>()
-		.constructor<>()(rttr::detail::as_object());
-
-	rttr::type::register_converter_func([](MeshAsset& asset, bool& ok) -> I_Asset*
-	{
-		ok = true;
-		return new MeshAsset(asset);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(MeshAsset, "mesh asset")
+	END_REGISTER_POLYMORPHIC_CLASS(MeshAsset, I_Asset);
 }
 DEFINE_FORCED_LINKING(MeshAsset) // force the shader class to be linked as it is only used in reflection
 

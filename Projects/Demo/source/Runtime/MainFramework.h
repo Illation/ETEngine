@@ -9,6 +9,10 @@
 class SpriteFont;
 
 
+namespace et {
+namespace demo {
+
+
 //--------------------------
 // MainFramework
 //
@@ -40,3 +44,6 @@ private:
 	bool m_DrawFontAtlas = false;
 };
 
+
+} // namespace demo
+} // namespace et

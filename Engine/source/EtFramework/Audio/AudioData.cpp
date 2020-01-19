@@ -3,11 +3,9 @@
 
 #include "AudioManager.h"
 
-#include <rttr/registration>
-#include <rttr/detail/policies/ctor_policies.h>
-
 #include <stb_vorbis.h>
 
+#include <EtCore/Reflection/Registration.h>
 #include <EtCore/FileSystem/BinaryReader.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
@@ -45,18 +43,9 @@ AudioData::~AudioData()
 // reflection
 RTTR_REGISTRATION
 {
-	using namespace rttr;
-
-	registration::class_<AudioAsset>("audio asset")
-		.constructor<AudioAsset const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("force mono", &AudioAsset::m_IsMonoForced);
-
-	rttr::type::register_converter_func([](AudioAsset& asset, bool& ok) -> I_Asset*
-	{
-		ok = true;
-		return new AudioAsset(asset);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(AudioAsset, "audio asset")
+		.property("force mono", &AudioAsset::m_IsMonoForced)
+	END_REGISTER_POLYMORPHIC_CLASS(AudioAsset, I_Asset);
 }
 DEFINE_FORCED_LINKING(AudioAsset) // force the asset class to be linked as it is only used in reflection
 

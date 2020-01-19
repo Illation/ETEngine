@@ -8,6 +8,7 @@
 #include "PlaylistComponent.h"
 
 
+namespace et {
 namespace demo {
 
 
@@ -29,5 +30,6 @@ void ForceLinking()
 
 
 } // namespace demo
+} // namespace et
 
 

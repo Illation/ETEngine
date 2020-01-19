@@ -3,30 +3,21 @@
 
 #include "MaterialDescriptor.h"
 
+#include <EtCore/Reflection/Registration.h>
 #include <EtCore/Reflection/Serialization.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
 
+namespace render {
+
+
 // reflection
-//////////////
 RTTR_REGISTRATION
 {
-	using namespace rttr;
-
-	registration::class_<render::MaterialInstanceAsset>("material instance asset")
-		.constructor<render::MaterialInstanceAsset const&>()
-		.constructor<>()(rttr::detail::as_object());
-
-	rttr::type::register_converter_func([](render::MaterialInstanceAsset& materialInstance, bool& ok) -> I_Asset*
-	{
-		ok = true;
-		return new render::MaterialInstanceAsset(materialInstance);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(MaterialInstanceAsset, "material instance asset")
+	END_REGISTER_POLYMORPHIC_CLASS(MaterialInstanceAsset, I_Asset);
 }
-DEFINE_FORCED_LINKING(render::MaterialInstanceAsset) // force the material instance asset class to be linked
-
-
-namespace render {
+DEFINE_FORCED_LINKING(MaterialInstanceAsset) // force the material instance asset class to be linked
 
 
 //===================

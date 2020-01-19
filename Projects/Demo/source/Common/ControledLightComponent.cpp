@@ -1,7 +1,11 @@
 #include "stdafx.h"
 #include "ControledLightComponent.h"
 
-#include <rttr/registration>
+#include <EtCore/Reflection/Registration.h>
+
+
+namespace et {
+namespace demo {
 
 
 // reflection
@@ -9,30 +13,14 @@
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::class_<ControledLightComponent>("controled light component");
 
-	registration::class_<demo::ControledLightComponent>("controled light component");
-
-	registration::class_<demo::ControledLightComponentDesc>("controled light comp desc")
-		.constructor<demo::ControledLightComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object());
-
-	rttr::type::register_converter_func([](demo::ControledLightComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new demo::ControledLightComponentDesc(descriptor);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(ControledLightComponentDesc, "controled light comp desc")
+	END_REGISTER_POLYMORPHIC_CLASS(ControledLightComponentDesc, fw::I_ComponentDescriptor);
 }
+DEFINE_FORCED_LINKING(ControledLightComponentDesc) // force the linker to include this unit
 
-DEFINE_FORCED_LINKING(demo::ControledLightComponentDesc) // force the linker to include this unit
-
-// component registration
-//------------------------
-
-ECS_REGISTER_COMPONENT(demo::ControledLightComponent);
-
-
-namespace demo {
+ECS_REGISTER_COMPONENT(ControledLightComponent);
 
 
 //======================================
@@ -52,3 +40,4 @@ ControledLightComponent* ControledLightComponentDesc::MakeData()
 
 
 } // namespace demo
+} // namespace et

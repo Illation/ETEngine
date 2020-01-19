@@ -1,13 +1,13 @@
 #pragma once
 #include <EtRendering/GraphicsTypes/ParameterBlock.h>
 
-#include <rttr/registration_friend.h>
-
+#include <EtCore/Reflection/Registration.h>
 #include <EtCore/Content/AssetPointer.h>
 
 
 class ShaderData;
 class TextureData;
+REGISTRATION_NS(render)
 
 
 namespace render {
@@ -61,7 +61,7 @@ class MaterialParam final : public BaseMaterialParam
 	// definitions
 	//-------------
 	RTTR_ENABLE(BaseMaterialParam)
-	RTTR_REGISTRATION_FRIEND
+	REGISTRATION_FRIEND_NS(render)
 
 	// construct destruct
 	//--------------------

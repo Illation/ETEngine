@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "SpawnComponent.h"
 
-#include <rttr/registration>
-
+#include <EtCore/Reflection/Registration.h>
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/GraphicsTypes/Mesh.h>
@@ -10,43 +9,30 @@
 #include <EtRendering/MaterialSystem/MaterialData.h>
 
 
+namespace et {
+namespace demo {
+
+
 // reflection
 //------------
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::class_<SpawnComponent>("spawn component");
 
-	registration::class_<demo::SpawnComponent>("spawn component");
-
-	registration::class_<demo::SpawnComponentDesc>("spawn comp desc")
-		.constructor<demo::SpawnComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("mesh", &demo::SpawnComponentDesc::mesh)
-		.property("material", &demo::SpawnComponentDesc::material)
-		.property("scale", &demo::SpawnComponentDesc::scale)
-		.property("shape", &demo::SpawnComponentDesc::shape)
-		.property("mass", &demo::SpawnComponentDesc::mass)
-		.property("interval", &demo::SpawnComponentDesc::interval)
-		.property("impulse", &demo::SpawnComponentDesc::impulse);
-
-	rttr::type::register_converter_func([](demo::SpawnComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new demo::SpawnComponentDesc(descriptor);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(SpawnComponentDesc, "spawn comp desc")
+		.property("mesh", &SpawnComponentDesc::mesh)
+		.property("material", &SpawnComponentDesc::material)
+		.property("scale", &SpawnComponentDesc::scale)
+		.property("shape", &SpawnComponentDesc::shape)
+		.property("mass", &SpawnComponentDesc::mass)
+		.property("interval", &SpawnComponentDesc::interval)
+		.property("impulse", &SpawnComponentDesc::impulse)
+	END_REGISTER_POLYMORPHIC_CLASS(SpawnComponentDesc, fw::I_ComponentDescriptor);
 }
+DEFINE_FORCED_LINKING(SpawnComponentDesc) // force the linker to include this unit
 
-DEFINE_FORCED_LINKING(demo::SpawnComponentDesc) // force the linker to include this unit
-
-// component registration
-//------------------------
-
-ECS_REGISTER_COMPONENT(demo::SpawnComponent);
-
-
-
-namespace demo {
+ECS_REGISTER_COMPONENT(SpawnComponent);
 
 
 //=================
@@ -140,3 +126,4 @@ SpawnComponent* SpawnComponentDesc::MakeData()
 
 
 } // namespace demo
+} // namespace et

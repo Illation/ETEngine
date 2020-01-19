@@ -6,6 +6,7 @@
 #include <Common/PlaylistComponent.h>
 
 
+namespace et {
 namespace demo {
 
 
@@ -39,4 +40,5 @@ public:
 
 
 } // namespace demo
+} // namespace et
 

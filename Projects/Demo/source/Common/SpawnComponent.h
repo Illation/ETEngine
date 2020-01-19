@@ -10,6 +10,7 @@ class MeshData;
 class btCollisionShape;
 
 
+namespace et {
 namespace demo {
 
 
@@ -91,4 +92,4 @@ public:
 
 
 } // namespace demo
-
+} // namespace et

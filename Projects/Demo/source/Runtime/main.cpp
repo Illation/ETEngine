@@ -19,11 +19,13 @@ void SetDebuggingOptions();
 //
 int main(int argc, char *argv[])
 {
+	using namespace et::demo;
+
 	// set up environment
 	//-------------------------
 	SetDebuggingOptions();
 
-	demo::ForceLinking(); // makes sure the linker doesn't ignore reflection only data
+	et::demo::ForceLinking(); // makes sure the linker doesn't ignore reflection only data
 
 	// pass compiled data into core libraries so that core systems have access to it
 	FileUtil::SetCompiledData(GetCompiledData_compiled_package());

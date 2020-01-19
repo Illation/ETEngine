@@ -1,13 +1,10 @@
 #include "stdafx.h"
-
 #include "Shader.h"
 
+#include <EtCore/Reflection/Registration.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Content/AssetStub.h>
-
-#include <rttr/registration>
-#include <rttr/detail/policies/ctor_policies.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/GlobalRenderingSystems/SharedVarController.h>
@@ -150,18 +147,11 @@ void ShaderData::UploadParameterBlock(render::T_ConstParameterBlock const block)
 // reflection
 RTTR_REGISTRATION
 {
-	using namespace rttr;
-
-	registration::class_<ShaderAsset>("shader asset")
-		.constructor<ShaderAsset const&>()
-		.constructor<>()( rttr::detail::as_object() );
-	rttr::type::register_converter_func( [](ShaderAsset& shader, bool& ok) -> I_Asset*
-	{
-		ok = true;
-		return new ShaderAsset(shader);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(ShaderAsset, "shader asset")
+	END_REGISTER_POLYMORPHIC_CLASS(ShaderAsset, I_Asset);
 }
 DEFINE_FORCED_LINKING(ShaderAsset) // force the shader asset class to be linked as it is only used in reflection
+
 
 //---------------------------------
 // ShaderAsset::LoadFromMemory

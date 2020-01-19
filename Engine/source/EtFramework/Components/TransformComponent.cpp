@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "TransformComponent.h"
 
-#include <rttr/registration>
+#include <EtCore/Reflection/Registration.h>
+
+
+namespace fw {
 
 
 // reflection
@@ -9,31 +12,16 @@
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::class_<TransformComponent>("transform component");
 
-	registration::class_<fw::TransformComponent>("transform component");
-
-	registration::class_<fw::TransformComponentDesc>("transform comp desc")
-		.constructor<fw::TransformComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("position", &fw::TransformComponentDesc::position)
-		.property("rotation", &fw::TransformComponentDesc::rotation)
-		.property("scale", &fw::TransformComponentDesc::scale);
-
-	rttr::type::register_converter_func([](fw::TransformComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new fw::TransformComponentDesc(descriptor);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(TransformComponentDesc, "transform comp desc")
+		.property("position", &TransformComponentDesc::position)
+		.property("rotation", &TransformComponentDesc::rotation)
+		.property("scale", &TransformComponentDesc::scale)
+	END_REGISTER_POLYMORPHIC_CLASS(TransformComponentDesc, I_ComponentDescriptor);
 }
 
-// component registration
-//------------------------
-
-ECS_REGISTER_COMPONENT(fw::TransformComponent);
-
-
-namespace fw {
+ECS_REGISTER_COMPONENT(TransformComponent);
 
 
 //=====================

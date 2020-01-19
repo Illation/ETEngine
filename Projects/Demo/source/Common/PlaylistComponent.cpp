@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "PlaylistComponent.h"
 
-#include <rttr/registration>
-
+#include <EtCore/Reflection/Registration.h>
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtFramework/ECS/EcsController.h>
@@ -10,36 +9,24 @@
 #include <EtFramework/Audio/AudioData.h>
 
 
+namespace et {
+namespace demo {
+
+
 // reflection
 //------------
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::class_<PlaylistComponent>("playlist component");
 
-	registration::class_<demo::PlaylistComponent>("playlist component");
-
-	registration::class_<demo::PlaylistComponentDesc>("playlist comp desc")
-		.constructor<demo::PlaylistComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("tracks", &demo::PlaylistComponentDesc::tracks);
-
-	rttr::type::register_converter_func([](demo::PlaylistComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new demo::PlaylistComponentDesc(descriptor);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(PlaylistComponentDesc, "playlist comp desc")
+		.property("tracks", &PlaylistComponentDesc::tracks)
+	END_REGISTER_POLYMORPHIC_CLASS(PlaylistComponentDesc, fw::I_ComponentDescriptor);
 }
+DEFINE_FORCED_LINKING(PlaylistComponentDesc) // force the linker to include this unit
 
-DEFINE_FORCED_LINKING(demo::PlaylistComponentDesc) // force the linker to include this unit
-
-// component registration
-//------------------------
-
-ECS_REGISTER_COMPONENT(demo::PlaylistComponent);
-
-
-namespace demo {
+ECS_REGISTER_COMPONENT(PlaylistComponent);
 
 
 //===============================
@@ -100,6 +87,4 @@ void PlaylistComponentDesc::OnScenePostLoad(fw::EcsController& ecs, fw::T_Entity
 
 
 } // namespace demo
-
-
-
+} // namespace et

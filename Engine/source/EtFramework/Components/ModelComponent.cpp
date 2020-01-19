@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "ModelComponent.h"
 
-#include <rttr/registration>
-
+#include <EtCore/Reflection/Registration.h>
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/GraphicsTypes/Mesh.h>
@@ -10,35 +9,26 @@
 #include <EtRendering/MaterialSystem/MaterialData.h>
 
 
+namespace fw {
+
+
 // reflection
 //------------
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
-
-	registration::class_<fw::ModelComponent>("model component");
-
-	registration::class_<fw::ModelComponentDesc>("model comp desc")
-		.constructor<fw::ModelComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("mesh", &fw::ModelComponentDesc::mesh)
-		.property("material", &fw::ModelComponentDesc::material);
-
-	rttr::type::register_converter_func([](fw::ModelComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new fw::ModelComponentDesc(descriptor);
-	});
+	rttr::registration::class_<ModelComponent>("model component");
+	
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(ModelComponentDesc, "model comp desc")
+		.property("mesh", &ModelComponentDesc::mesh)
+		.property("material", &ModelComponentDesc::material)
+	END_REGISTER_POLYMORPHIC_CLASS(ModelComponentDesc, I_ComponentDescriptor);
 }
 
 // component registration
 //------------------------
 
-ECS_REGISTER_COMPONENT(fw::ModelComponent);
-
-
-namespace fw {
+ECS_REGISTER_COMPONENT(ModelComponent);
 
 
 //=================

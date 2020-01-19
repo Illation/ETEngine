@@ -1,12 +1,15 @@
 #include "stdafx.h"
 #include "SwirlyLightComponent.h"
 
-#include <rttr/registration>
-
+#include <EtCore/Reflection/Registration.h>
 #include <EtCore/Helper/GlobalRandom.h>
 
 #include <EtFramework/ECS/EcsController.h>
 #include <EtFramework/Components/TransformComponent.h>
+
+
+namespace et {
+namespace demo {
 
 
 // reflection
@@ -14,36 +17,19 @@
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::class_<SwirlyLightComponent>("swirly light component");
 
-	registration::class_<demo::SwirlyLightComponent>("swirly light component");
-
-	registration::class_<demo::SwirlyLightComponentDesc>("swirly light comp desc")
-		.constructor<demo::SwirlyLightComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("min radius", &demo::SwirlyLightComponentDesc::minRadius)
-		.property("max radius", &demo::SwirlyLightComponentDesc::maxRadius)
-		.property("min time mult", &demo::SwirlyLightComponentDesc::minTimeMult)
-		.property("max time mult", &demo::SwirlyLightComponentDesc::maxTimeMult)
-		.property("bounds", &demo::SwirlyLightComponentDesc::bounds);
-
-	rttr::type::register_converter_func([](demo::SwirlyLightComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new demo::SwirlyLightComponentDesc(descriptor);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(SwirlyLightComponentDesc, "swirly light comp desc")
+		.property("min radius", &SwirlyLightComponentDesc::minRadius)
+		.property("max radius", &SwirlyLightComponentDesc::maxRadius)
+		.property("min time mult", &SwirlyLightComponentDesc::minTimeMult)
+		.property("max time mult", &SwirlyLightComponentDesc::maxTimeMult)
+		.property("bounds", &SwirlyLightComponentDesc::bounds)
+	END_REGISTER_POLYMORPHIC_CLASS(SwirlyLightComponentDesc, fw::I_ComponentDescriptor);
 }
+DEFINE_FORCED_LINKING(SwirlyLightComponentDesc) // force the linker to include this unit
 
-DEFINE_FORCED_LINKING(demo::SwirlyLightComponentDesc) // force the linker to include this unit
-
-// component registration
-//------------------------
-
-ECS_REGISTER_COMPONENT(demo::SwirlyLightComponent);
-
-
-
-namespace demo {
+ECS_REGISTER_COMPONENT(SwirlyLightComponent);
 
 
 //===================================
@@ -96,4 +82,4 @@ void SwirlyLightComponentDesc::OnScenePostLoad(fw::EcsController& ecs, fw::T_Ent
 
 
 } // namespace demo
-
+} // namespace et

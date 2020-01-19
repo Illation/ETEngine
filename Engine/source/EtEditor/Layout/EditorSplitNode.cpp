@@ -3,10 +3,10 @@
 
 #include "EditorToolNode.h"
 
-#include <rttr/registration>
-
 #include <gtkmm/frame.h>
 #include <gtkmm/paned.h>
+
+#include <EtCore/Reflection/Registration.h>
 
 #include <EtEditor/Util/GtkUtil.h>
 
@@ -19,20 +19,12 @@
 // reflection
 RTTR_REGISTRATION
 {
-	using namespace rttr;
-
-	registration::class_<EditorSplitNode>("editor split node")
-		.constructor<>()(rttr::detail::as_object())
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(EditorSplitNode, "editor split node")
 		.property("split ratio", &EditorSplitNode::m_SplitRatio)
 		.property("is horizontal", &EditorSplitNode::m_IsHorizontal)
 		.property("child 1", &EditorSplitNode::m_Child1)
-		.property("child 2", &EditorSplitNode::m_Child2);
-
-	rttr::type::register_converter_func([](EditorSplitNode& node, bool& ok) -> EditorNode*
-	{
-		ok = true;
-		return new EditorSplitNode(node);
-	});
+		.property("child 2", &EditorSplitNode::m_Child2)
+	END_REGISTER_POLYMORPHIC_CLASS(EditorSplitNode, EditorNode);
 }
 
 

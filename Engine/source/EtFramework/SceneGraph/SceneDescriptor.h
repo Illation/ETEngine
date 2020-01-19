@@ -3,12 +3,15 @@
 #include "EntityLink.h"
 
 #include <rttr/type>
-#include <rttr/registration_friend.h>
 
+#include <EtCore/Reflection/Registration.h>
 #include <EtCore/Content/Asset.h>
 #include <EtCore/Helper/LinkerUtils.h>
 
 #include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
+
+
+REGISTRATION_NS(fw)
 
 
 namespace fw {
@@ -24,7 +27,7 @@ class EntityDescriptor final
 	// definitions
 	//-------------
 	RTTR_ENABLE()
-	RTTR_REGISTRATION_FRIEND
+	REGISTRATION_FRIEND_NS(fw)
 
 	// construct destruct
 	//--------------------

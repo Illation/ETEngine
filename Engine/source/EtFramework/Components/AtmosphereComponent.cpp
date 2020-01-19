@@ -1,13 +1,16 @@
 #include "stdafx.h"
 #include "AtmosphereComponent.h"
 
-#include <rttr/registration>
-
 #include "TransformComponent.h"
 #include "LightComponent.h"
 
+#include <EtCore/Reflection/Registration.h>
+
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/ECS/EcsController.h>
+
+
+namespace fw {
 
 
 // reflection
@@ -15,32 +18,17 @@
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
+	rttr::registration::class_<AtmosphereComponent>("atmosphere component");
 
-	registration::class_<fw::AtmosphereComponent>("atmosphere component");
-
-	registration::class_<fw::AtmosphereComponentDesc>("atmosphere comp desc")
-		.constructor<fw::AtmosphereComponentDesc const&>()
-		.constructor<>()(rttr::detail::as_object())
-		.property("asset", &fw::AtmosphereComponentDesc::asset)
-		.property("height", &fw::AtmosphereComponentDesc::height)
-		.property("ground radius", &fw::AtmosphereComponentDesc::groundRadius)
-		.property("sun", &fw::AtmosphereComponentDesc::sun);
-
-	rttr::type::register_converter_func([](fw::AtmosphereComponentDesc& descriptor, bool& ok) -> fw::I_ComponentDescriptor*
-	{
-		ok = true;
-		return new fw::AtmosphereComponentDesc(descriptor);
-	});
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(AtmosphereComponentDesc, "atmosphere comp desc")
+		.property("asset", &AtmosphereComponentDesc::asset)
+		.property("height", &AtmosphereComponentDesc::height)
+		.property("ground radius", &AtmosphereComponentDesc::groundRadius)
+		.property("sun", &AtmosphereComponentDesc::sun)
+	END_REGISTER_POLYMORPHIC_CLASS(AtmosphereComponentDesc, I_ComponentDescriptor);
 }
 
-// component registration
-//------------------------
-
-ECS_REGISTER_COMPONENT(fw::AtmosphereComponent);
-
-
-namespace fw {
+ECS_REGISTER_COMPONENT(AtmosphereComponent);
 
 
 //======================

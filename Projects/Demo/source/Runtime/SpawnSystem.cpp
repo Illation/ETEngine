@@ -6,6 +6,7 @@
 #include <EtFramework/Components/ModelComponent.h>
 
 
+namespace et {
 namespace demo {
 
 
@@ -72,4 +73,4 @@ void SpawnSystem::Process(fw::ComponentRange<SpawnSystemView>& range)
 
 
 } // namespace demo
-
+} // namespace et

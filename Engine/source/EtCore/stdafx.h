@@ -49,6 +49,7 @@ inline void SafeDelete(T &pObjectToDelete)
 #include <EtCore/Helper/Logger.h>
 #include <EtCore/Helper/PerformanceInfo.h>
 #include <EtCore/Helper/StringUtil.h>
+#include <EtCore/Reflection/ReflectionUtil.h>
 //Working singleton Set
 #define TIME ContextManager::GetInstance()->GetActiveContext()->time
 #define LOG(fmt, ...) Logger::Log(fmt, __VA_ARGS__);

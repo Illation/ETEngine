@@ -1,9 +1,13 @@
 #include "stdafx.h"
 #include "FreeCamera.h"
 
-#include <rttr/registration>
+#include <EtCore/Reflection/Registration.h>
 
 #include <EtFramework/Systems/TransformSystem.h>
+
+
+namespace et {
+namespace demo {
 
 
 //==========================
@@ -13,9 +17,7 @@
 
 RTTR_REGISTRATION
 {
-	using namespace rttr;
-
-	registration::class_<FreeCameraComponent>("free camera component");
+	rttr::registration::class_<FreeCameraComponent>("free camera component");
 }
 
 ECS_REGISTER_COMPONENT(FreeCameraComponent);
@@ -119,3 +121,7 @@ void FreeCameraSystem::Process(fw::ComponentRange<FreeCameraSystemView>& range)
 		view.transform->SetRotation(rot);
 	}
 }
+
+
+} // namespace demo
+} // namespace et
