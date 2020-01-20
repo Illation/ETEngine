@@ -3,6 +3,8 @@
 #include "PackageWriter.h"
 #include "CompiledDataGenerator.h"
 
+#include <EtBuild/EngineVersion.h>
+
 #include <EtCore/Helper/Logger.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Entry.h>
@@ -61,6 +63,12 @@ int main(int argc, char *argv[])
 	//------------
 	Logger::Initialize();
 	Logger::StartFileLogging("cooker.log");
+
+	LOG(FS("E.T.Cooker"));
+	LOG(FS("//////////"));
+	LOG("");
+	LOG(FS(" - version: %s", et::build::Version::s_Name.c_str()));
+	LOG("");
 
 	AssetDatabase database;
 	if (!serialization::DeserializeFromFile(databasePath, database))

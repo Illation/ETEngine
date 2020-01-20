@@ -18,7 +18,7 @@ namespace demo {
 //
 // User facing wrapper around the engine
 //
-class MainFramework final : public AbstractFramework
+class MainFramework final : public rt::AbstractFramework
 {
 	// construct destruct
 	//--------------------

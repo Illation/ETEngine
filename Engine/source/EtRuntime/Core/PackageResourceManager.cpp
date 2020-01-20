@@ -7,6 +7,10 @@
 #include <EtCore/FileSystem/Package/FilePackage.h>
 
 
+namespace et {
+namespace rt {
+
+
 //==========================
 // Package Resource Manager
 //==========================
@@ -121,3 +125,6 @@ I_Asset* PackageResourceManager::GetAssetInternal(T_Hash const assetId, std::typ
 	return m_Database.GetAsset(assetId, type, reportErrors);
 }
 
+
+} // namespace rt
+} // namespace et

@@ -1,6 +1,4 @@
 #pragma once
-#include <iostream>
-
 #include <EtCore/UpdateCycle/RealTimeTickTriggerer.h>
 #include <EtCore/UpdateCycle/Tickable.h>
 
@@ -10,6 +8,7 @@
 #include <EtRuntime/Rendering/GlfwRenderArea.h>
 
 
+// fwd
 class Viewport;
 namespace render {
 	class ShadedSceneRenderer;
@@ -17,21 +16,42 @@ namespace render {
 }
 
 
+namespace et {
+namespace rt {
+
+
+//----------------------------
+// AbstractFramework
+//
+// Ties various engine systems together, loads them in the correct order, and provides an interface for Applications to instantiate and extend
+//  - To create a new project, create a class inheriting from this and run it
+//
 class AbstractFramework : public I_RealTimeTickTriggerer, public I_Tickable
 {
+	// construct destruct
+	//--------------------
 public:
 	AbstractFramework() : I_Tickable(static_cast<uint32>(E_TickOrder::TICK_Framework)) {}
 	virtual ~AbstractFramework();
 
+	// functionality
+	//---------------
 	void Run();
 
+	// interface
+	//-----------
 protected:
 	virtual void OnSystemInit() = 0;
 	virtual void OnInit() = 0;
 	virtual void OnTick() override = 0;
 
+	// utility
+	//---------
 private:
 	void MainLoop();
+
+	// Data
+	///////
 
 private:
 	GlfwRenderArea m_RenderArea;
@@ -42,3 +62,7 @@ private:
 protected:
 	ScreenshotCapture m_ScreenshotCapture;
 };
+
+
+} // namespace rt
+} // namespace et

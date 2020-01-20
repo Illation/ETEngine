@@ -13,17 +13,19 @@
 #include <giomm/resource.h>
 #include <glibmm/vectorutils.h>
 
-#include <EtEditor/Content/FileResourceManager.h>
-#include <EtEditor/Layout/EditorWindow.h>
-#include <EtEditor/Util/SettingsDialog.h>
-#include <EtEditor/Util/EditorConfig.h>
-#include <EtEditor/SceneEditor/SceneEditor.h>
+#include <EtBuild/EngineVersion.h>
 
 #include <EtCore/Helper/Commands.h>
 #include <EtCore/Helper/InputManager.h>
 #include <EtCore/UpdateCycle/TickManager.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
+
+#include <EtEditor/Content/FileResourceManager.h>
+#include <EtEditor/Layout/EditorWindow.h>
+#include <EtEditor/Util/SettingsDialog.h>
+#include <EtEditor/Util/EditorConfig.h>
+#include <EtEditor/SceneEditor/SceneEditor.h>
 
 
 //====================
@@ -41,6 +43,13 @@ EditorApp::EditorApp()
 	RegisterAsTriggerer();
 	
 	Logger::Initialize();//Init logger first because all output depends on it from the start
+
+	LOG(FS("E.T.Editor"));
+	LOG(FS("//////////"));
+	LOG("");
+	LOG(FS(" - version: %s", et::build::Version::s_Name.c_str()));
+	LOG("");
+
 	InitializeUtilities();
 
 	// Allow updating every frame in a gameloop style - called as quickly as possible

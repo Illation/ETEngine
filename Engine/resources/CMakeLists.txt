@@ -14,11 +14,9 @@ set(cmp_dir_engine "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 # figure out the directory the cooker binary lives in
 #-----------------------------------------------------------
-if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-	set(_p "x64")
- else() 
-	set(_p "x32")
-endif()
+set(_p )
+getPlatformArch(_p)
+	
 set(bin_base_dir "${PROJECT_DIRECTORY}/bin/$<CONFIG>_${_p}/")
 set(cooker_dir "${bin_base_dir}EtCooker/")
 

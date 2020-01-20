@@ -4,6 +4,10 @@
 #include <EtCore/Helper/InputManager.h>
 
 
+namespace et {
+namespace rt {
+
+
 //=====================
 // GLFW Event Manager
 //=====================
@@ -154,4 +158,8 @@ E_MouseButton GlfwEventManager::GetButtonFromGlfw(int32 const bottonCode)
 	default: return E_MouseButton::COUNT; // invalid button code
 	}			
 }
+
+
+} // namespace rt
+} // namespace et
 						   

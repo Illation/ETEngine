@@ -6,6 +6,10 @@
 #include <EtRendering/GraphicsContext/RenderArea.h>
 
 
+namespace et {
+namespace rt {
+
+
 //---------------------------------
 // GlfwRenderArea
 //
@@ -61,3 +65,6 @@ private:
 	bool m_ShouldDraw = false;
 };
 
+
+} // namespace rt
+} // namespace et

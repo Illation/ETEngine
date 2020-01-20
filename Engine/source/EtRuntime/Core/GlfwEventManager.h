@@ -12,6 +12,10 @@
 #include <EtRuntime/Rendering/GlfwRenderArea.h>
 
 
+namespace et {
+namespace rt {
+
+
 //----------------------------
 // GlfwEventManager
 //
@@ -50,3 +54,6 @@ private:
 	GlfwRenderArea* m_RenderArea = nullptr;
 };
 
+
+} // namespace rt
+} // namespace et

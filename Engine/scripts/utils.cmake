@@ -25,15 +25,33 @@ macro(setupConfigurations)
 endmacro(setupConfigurations)
 
 
+# Platform Architecture
+##########################
+function(getPlatformArch platform_architecture)
+
+	if (DEFINED CMAKE_VS_PLATFORM_NAME)
+		IF("${CMAKE_VS_PLATFORM_NAME}" MATCHES "x64")
+			set(${platform_architecture} "x64" PARENT_SCOPE)
+		else() # 32 bit
+			set(${platform_architecture} "x32" PARENT_SCOPE)
+		endif()
+	else()
+		if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
+			set(${platform_architecture} "x64" PARENT_SCOPE)
+		else() # 32 bit
+			set(${platform_architecture} "x32" PARENT_SCOPE)
+		endif()
+	endif()
+
+endfunction(getPlatformArch)
+
+
 # output dir for executables
 ############################
 function(outputDirectories TARGET _suffix)
 
-	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8") # 64 bit
-		set(_p "x64")	
-	else() # 32 bit
-		set(_p "x32")	
-	endif()
+	set(_p )
+	getPlatformArch(_p)
 
 	foreach(_c ${CMAKE_CONFIGURATION_TYPES})
 		string(TOUPPER ${_c} _C)
@@ -48,11 +66,8 @@ endfunction(outputDirectories)
 ############################
 function(libOutputDirectories TARGET)
 
-	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8") # 64 bit
-		set(_p "x64")	
-	else() # 32 bit
-		set(_p "x32")	
-	endif()
+	set(_p )
+	getPlatformArch(_p)
 
 	foreach(_c ${CMAKE_CONFIGURATION_TYPES})
 		string(TOUPPER ${_c} _C)
@@ -148,8 +163,11 @@ function(target_definitions)
 		add_definitions(-DPLATFORM_Win)
 	endif(MSVC)
 	
+	set(_p )
+	getPlatformArch(_p)
+	
 	# architecture
-	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+	if("${_p}" MATCHES "x64") # 64 bit
 		add_definitions(-DPLATFORM_x64)
 	 else() 
 		add_definitions(-DPLATFORM_x32)
@@ -161,7 +179,10 @@ endfunction(target_definitions)
 ####################################################
 function(getVcpkgTarget vcpkg_target)
 
-	if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
+	set(_p )
+	getPlatformArch(_p)
+
+	if("${_p}" MATCHES "x64") # 64 bit
 		if(MSVC)
 			set(${vcpkg_target} "x64-windows" PARENT_SCOPE)
 		else()
@@ -214,11 +235,9 @@ endfunction(getVcpkgInstallDir)
 # bullet output directory
 ##########################
 function(getBulletBuildDir bullet_build)
-	if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
-		set(_p "x64")
-	else() # 32 bit
-		set(_p "x32")
-	endif()
+
+	set(_p )
+	getPlatformArch(_p)
 
 	set(${bullet_build} "${ENGINE_DIRECTORY_ABS}/third_party/bullet/build/${_p}" PARENT_SCOPE)
 endfunction(getBulletBuildDir)
@@ -227,11 +246,9 @@ endfunction(getBulletBuildDir)
 # rttr output directory
 ##########################
 function(getRttrBuildDir rttr_build)
-	if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
-		set(_p "x64")
-	else() # 32 bit
-		set(_p "x32")
-	endif()
+
+	set(_p )
+	getPlatformArch(_p)
 
 	set(${rttr_build} "${ENGINE_DIRECTORY_ABS}/third_party/rttr/build/${_p}" PARENT_SCOPE)
 endfunction(getRttrBuildDir)
@@ -240,11 +257,9 @@ endfunction(getRttrBuildDir)
 # rttr output directory
 ##########################
 function(getAssimpBuildDir assimp_build)
-	if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
-		set(_p "x64")
-	else() # 32 bit
-		set(_p "x32")
-	endif()
+
+	set(_p )
+	getPlatformArch(_p)
 
 	set(${assimp_build} "${ENGINE_DIRECTORY_ABS}/third_party/assimp/build/${_p}" PARENT_SCOPE)
 endfunction(getAssimpBuildDir)
@@ -253,11 +268,9 @@ endfunction(getAssimpBuildDir)
 # rttr output directory
 ##########################
 function(getOpenAlBuildDir openal_build)
-	if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
-		set(_p "x64")
-	else() # 32 bit
-		set(_p "x32")
-	endif()
+
+	set(_p )
+	getPlatformArch(_p)
 
 	set(${openal_build} "${ENGINE_DIRECTORY_ABS}/third_party/openal/build/${_p}" PARENT_SCOPE)
 endfunction(getOpenAlBuildDir)
@@ -266,11 +279,9 @@ endfunction(getOpenAlBuildDir)
 # rttr output directory
 ##########################
 function(getGlfwBuildDir glfw_build)
-	if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
-		set(_p "x64")
-	else() # 32 bit
-		set(_p "x32")
-	endif()
+
+	set(_p )
+	getPlatformArch(_p)
 
 	set(${glfw_build} "${ENGINE_DIRECTORY_ABS}/third_party/glfw/build/${_p}" PARENT_SCOPE)
 endfunction(getGlfwBuildDir)
@@ -520,11 +531,8 @@ function(installDlls TARGET _suffix)
 	set(baseBinDir "${PROJECT_DIRECTORY}/bin")
 
 	# paths for our libraries depend on the architecture we compile for
-	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-		set(platform "x64")
-	 else() 
-		set(platform "x32")
-	endif()
+	set(_p )
+	getPlatformArch(_p)
 	
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
@@ -536,7 +544,7 @@ function(installDlls TARGET _suffix)
 
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
 
-		set(binDir "${baseBinDir}/${configType}_${platform}/${TARGET}${_suffix}")
+		set(binDir "${baseBinDir}/${configType}_${_p}/${TARGET}${_suffix}")
 
 		# where the lib files live
 		set(libcfg "Release") 
@@ -576,18 +584,15 @@ function(installEditorDlls TARGET)
 	set(baseBinDir "${PROJECT_DIRECTORY}/bin")
 
 	# paths for our libraries depend on the architecture we compile for
-	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-		set(platform "x64")
-	 else() 
-		set(platform "x32")
-	endif()
+	set(_p )
+	getPlatformArch(_p)
 	
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
 
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
 
-		set(binDir "${baseBinDir}/${configType}_${platform}/${TARGET}/bin")
+		set(binDir "${baseBinDir}/${configType}_${_p}/${TARGET}/bin")
 
 		set(_vcCfg "")
 		if(("${configType}" STREQUAL "Debug") OR ("${configType}" STREQUAL "DebugEditor"))
@@ -620,11 +625,8 @@ function(installConfig TARGET)
 	set(configDir "${PROJECT_DIRECTORY}/resources/config")
 
 	# paths for our libraries depend on the architecture we compile for
-	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-		set(platform "x64")
-	 else() 
-		set(platform "x32")
-	endif()
+	set(_p )
+	getPlatformArch(_p)
 
 	# user directory where user data and configuration
 	set(userDir "${PROJECT_DIRECTORY}/user_data")
@@ -640,7 +642,7 @@ function(installConfig TARGET)
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
 		install(FILES ${tempBuildDir}/config/userDirPointer.json 
 			CONFIGURATIONS ${configType} 
-			DESTINATION ${baseBinDir}/${configType}_${platform}/${TARGET}/)
+			DESTINATION ${baseBinDir}/${configType}_${_p}/${TARGET}/)
 	endforeach()
 
 endfunction(installConfig)
@@ -654,11 +656,8 @@ function(installEditorResources TARGET)
 	set(tempBuildDir "${PROJECT_DIRECTORY}/build/temp")
 
 	# paths for our libraries depend on the architecture we compile for
-	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-		set(platform "x64")
-	 else() 
-		set(platform "x32")
-	endif()
+	set(_p )
+	getPlatformArch(_p)
 
 	set(_edPackagedDir "${ENGINE_DIRECTORY_ABS}/third_party/gtk/GTK-for-Windows-Runtime-Environment-Installer/gtk-nsis-pack")
 	
@@ -672,7 +671,7 @@ function(installEditorResources TARGET)
 
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
 
-		set(binDir "${baseBinDir}/${configType}_${platform}/${TARGET}")
+		set(binDir "${baseBinDir}/${configType}_${_p}/${TARGET}")
 
 		# config files
 		install(FILES ${tempBuildDir}/config/dirPointers.json 
@@ -713,11 +712,8 @@ function(installCookResources TARGET)
 
 	# figure out the directory the cooker binary lives in
 	#-----------------------------------------------------------
-	if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-		set(_p "x64")
-	 else() 
-		set(_p "x32")
-	endif()
+	set(_p )
+	getPlatformArch(_p)
 	set(bin_base_dir "${PROJECT_DIRECTORY}/bin/$<CONFIG>_${_p}/")
 	set(cooker_dir "${bin_base_dir}EtCooker/")
 	set(pak_file_dir "${bin_base_dir}${TARGET}/")

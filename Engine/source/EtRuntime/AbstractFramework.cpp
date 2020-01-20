@@ -1,8 +1,11 @@
 #include "stdafx.h"
 #include "AbstractFramework.h"
 
+#include <EtBuild/EngineVersion.h>
+
 #include <EtCore/Helper/PerformanceInfo.h>
 #include <EtCore/UpdateCycle/TickManager.h>
+
 #include <EtRendering/GraphicsContext/Viewport.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/SceneRendering/SplashScreenRenderer.h>
@@ -17,6 +20,15 @@
 #include <EtRuntime/Core/PackageResourceManager.h>
 
 
+namespace et {
+namespace rt {
+
+
+//----------------------------
+// AbstractFramework::d-tor
+//
+// Deinit all systems
+//
 AbstractFramework::~AbstractFramework()
 {
 	GlfwEventManager::DestroyInstance();
@@ -41,10 +53,21 @@ AbstractFramework::~AbstractFramework()
 	Logger::Release();
 }
 
+//------------------------
+// AbstractFramework::Run
+//
+// Bootstrap the engine and start the main loop
+//
 void AbstractFramework::Run()
 {
 	Logger::Initialize();//Init logger first because all output depends on it from the start
 	//Logger::StartFileLogging("debug_log.log");
+
+	LOG(FS("E.T.Engine"));
+	LOG(FS("//////////"));
+	LOG("");
+	LOG(FS(" - version: %s", et::build::Version::s_Name.c_str()));
+	LOG("");
 
 	Config* const cfg = Config::GetInstance();
 	cfg->Initialize();
@@ -144,6 +167,11 @@ void AbstractFramework::Run()
 	MainLoop();
 }
 
+//-----------------------------
+// AbstractFramework::MainLoop
+//
+// Main update entry point
+//
 void AbstractFramework::MainLoop()
 {
 	while (true)
@@ -167,3 +195,7 @@ void AbstractFramework::MainLoop()
 		m_RenderArea.Update();
 	}
 }
+
+
+} // namespace rt
+} // namespace et

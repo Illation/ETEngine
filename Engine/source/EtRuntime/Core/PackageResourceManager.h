@@ -3,8 +3,12 @@
 #include <EtCore/Content/AssetDatabase.h>
 
 
-// forward decl
+// fwd
 class I_Package;
+
+
+namespace et {
+namespace rt {
 
 
 //---------------------------------
@@ -50,3 +54,6 @@ protected:
 	std::vector<T_IndexedPackage> m_Packages;
 };
 
+
+} // namespace rt
+} // namespace et

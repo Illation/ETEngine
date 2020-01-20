@@ -1,0 +1,14 @@
+// file configured automatically by CMake
+
+#include "EngineVersion.h"
+
+
+namespace et {
+namespace build {
+
+
+std::string const Version::s_Name = "@ET_ENGINE_VERSION@";
+
+
+} // namespace build
+} // namespace et

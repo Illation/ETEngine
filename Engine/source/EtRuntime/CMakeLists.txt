@@ -25,7 +25,7 @@ assignIdeFolder(EtRuntime Engine)
 
 libOutputDirectories(EtRuntime)
 
-target_link_libraries (EtRuntime EtFramework glad)
+target_link_libraries (EtRuntime EtFramework EtBuild glad)
 
 # library includes
 libIncludeDirs()

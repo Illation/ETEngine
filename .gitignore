@@ -5,6 +5,8 @@
 /Engine/third_party/assimp/build/
 /Engine/third_party/glfw/build/
 
+/Engine/source/EtBuild/EngineVersion.cpp
+
 /Projects/Demo/bin/
 /Projects/Demo/build/
 /Projects/Demo/lib/

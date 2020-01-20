@@ -3,6 +3,10 @@
 #include "GladGlContext.h"
 
 
+namespace et {
+namespace rt {
+
+
 //=====================
 // GLFW Render Area
 //=====================
@@ -167,3 +171,7 @@ ivec2 GlfwRenderArea::GetDimensions() const
 
 	return ret;
 }
+
+
+} // namespace rt
+} // namespace et
