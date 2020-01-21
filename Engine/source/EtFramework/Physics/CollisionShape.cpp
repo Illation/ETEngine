@@ -8,6 +8,7 @@
 #include <EtFramework/Physics/PhysicsManager.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -51,3 +52,4 @@ btCollisionShape* SphereShape::MakeBulletCollisionShape() const
 
 
 } // namespace fw
+} // namespace et

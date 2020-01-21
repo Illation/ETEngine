@@ -5,6 +5,10 @@
 #include <AL/alc.h>
 
 
+namespace et {
+namespace fw {
+
+
 class AudioManager : public Singleton<AudioManager>
 {
 public:
@@ -27,3 +31,7 @@ private:
 	AudioManager() {}
 	virtual ~AudioManager();
 };
+
+
+} // namespace fw
+} // namespace et

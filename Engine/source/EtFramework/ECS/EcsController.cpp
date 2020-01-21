@@ -5,6 +5,7 @@
 #include "Archetype.h"
 
 
+namespace et {
 namespace fw {
 
 
@@ -779,3 +780,4 @@ void EcsController::TopologicalSort(RegisteredSystem* const sys)
 
 
 } // namespace fw
+} // namespace et

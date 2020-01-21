@@ -19,6 +19,7 @@
 #include <EtFramework/Components/SpriteComponent.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -81,7 +82,7 @@ void UnifiedScene::Init()
 	m_Scene.RegisterSystem<LightSystem>();
 
 	// allow users of the framework to also register for events
-	m_EventDispatcher.Notify(E_SceneEvent::RegisterSystems, new SceneEventData(nullptr));
+	m_EventDispatcher.Notify(E_SceneEvent::RegisterSystems, new SceneEventData(this));
 }
 
 //----------------------
@@ -106,8 +107,8 @@ void UnifiedScene::LoadScene(T_Hash const assetId)
 	// preparation
 	//-------------
 
-	// notification before beginning the process so systems can prepare (spash screen, loading bar, timer etc)
-	m_EventDispatcher.Notify(E_SceneEvent::SceneSwitch, new SceneEventData(nullptr));
+	// notification before beginning the process so systems can prepare (splash screen, loading bar, timer etc)
+	m_EventDispatcher.Notify(E_SceneEvent::SceneSwitch, new SceneEventData(this));
 
 	if (m_CurrentScene != 0u)
 	{
@@ -121,7 +122,7 @@ void UnifiedScene::LoadScene(T_Hash const assetId)
 
 	m_CurrentScene = assetId;
 
-	// load scene descriptor and translate into ecs
+	// load scene descriptor and translate into ECS
 	//----------------------------------------------
 	AssetPtr<SceneDescriptor> const sceneDesc = ResourceManager::Instance()->GetAssetData<SceneDescriptor>(m_CurrentScene);
 	ET_ASSERT(sceneDesc != nullptr);
@@ -171,7 +172,7 @@ void UnifiedScene::LoadScene(T_Hash const assetId)
 
 	// done loading
 	//--------------
-	m_EventDispatcher.Notify(E_SceneEvent::Activated, new SceneEventData(nullptr));
+	m_EventDispatcher.Notify(E_SceneEvent::Activated, new SceneEventData(this));
 	m_Context.time->Start();
 }
 
@@ -181,7 +182,7 @@ void UnifiedScene::LoadScene(T_Hash const assetId)
 void UnifiedScene::UnloadScene()
 {
 	// notification first
-	m_EventDispatcher.Notify(E_SceneEvent::Deactivated, new SceneEventData(nullptr));
+	m_EventDispatcher.Notify(E_SceneEvent::Deactivated, new SceneEventData(this));
 
 	// clear
 	m_Scene.RemoveAllEntities();
@@ -208,7 +209,7 @@ void UnifiedScene::UnloadScene()
 //-------------------------
 // UnifiedScene::AddEntity
 //
-// Add an entity to the ecs and resolve dependency links
+// Add an entity to the ECS and resolve dependency links
 //  - set parent to INVALID_ENTITY_ID to indicate a root entity
 //
 void UnifiedScene::AddEntity(EntityDescriptor const& entDesc, T_EntityId const parent)
@@ -227,7 +228,7 @@ void UnifiedScene::AddEntity(EntityDescriptor const& entDesc, T_EntityId const p
 	}
 
 	// add the components to our new entity
-	// we copy the pointer list because the pointers are repointed to the constructed components, which doesn't allow us to free the original memory
+	// we copy the pointer list because the pointers are "repointed" to the constructed components, which doesn't allow us to free the original memory
 	m_Scene.AddComponents(id, std::vector<RawComponentPtr>(components)); 
 
 	// we can now free the memory of our raw component data - this needs to be done manually as we are using void*
@@ -272,3 +273,4 @@ void UnifiedScene::PostLoadEntity(EntityDescriptor const& entDesc, T_EntityId co
 
 
 } // namespace fw
+} // namespace et

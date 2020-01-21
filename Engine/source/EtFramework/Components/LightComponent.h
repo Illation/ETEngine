@@ -2,6 +2,7 @@
 #include <EtCore/Containers/slot_map.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -93,3 +94,4 @@ public:
 
 
 } // namespace fw
+} // namespace et

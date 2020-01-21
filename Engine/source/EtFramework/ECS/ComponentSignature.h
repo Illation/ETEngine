@@ -3,6 +3,7 @@
 #include "RawComponentPointer.h"
 
 
+namespace et {
 namespace fw {
 
 
@@ -46,3 +47,4 @@ ComponentSignature GenSignature() { return ComponentSignature(GenCompTypeList<Ar
 
 
 } // namespace fw
+} // namespace et

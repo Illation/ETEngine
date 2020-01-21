@@ -6,6 +6,10 @@
 #include <EtRendering/GlobalRenderingSystems/GraphicsSettings.h>
 
 
+namespace et {
+namespace fw {
+
+
 //---------------------------------
 // Config
 //
@@ -106,3 +110,6 @@ private:
 	bool m_HasRenderRef = false;
 };
 
+
+} // namespace fw
+} // namespace et

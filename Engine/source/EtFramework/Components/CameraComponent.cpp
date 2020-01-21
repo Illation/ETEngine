@@ -7,6 +7,7 @@
 #include <EtRendering/GraphicsContext/Viewport.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -87,3 +88,4 @@ CameraComponent* CameraComponentDesc::MakeData()
 
 
 } // namespace fw
+} // namespace et

@@ -4,6 +4,7 @@
 #include <EtCore/Reflection/Serialization.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -107,4 +108,4 @@ bool SceneDescriptorAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 
 } // namespace fw
-
+} // namespace et

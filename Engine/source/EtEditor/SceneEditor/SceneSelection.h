@@ -24,7 +24,7 @@ class I_SceneSelectionListener
 public:
 	virtual ~I_SceneSelectionListener() = default;
 
-	virtual void OnSceneEvent(E_SceneEvent const, SceneEventData const* const) = 0;
+	virtual void OnSceneEvent(fw::E_SceneEvent const, fw::SceneEventData const* const) = 0;
 	virtual void OnEntitySelectionChanged(fw::T_EntityId const entity, bool const selected) = 0;
 	virtual void OnEntitySelectionCleared() = 0;
 };
@@ -61,7 +61,7 @@ public:
 	void RecursiveAddOutlines(fw::T_EntityId const entity) const;
 
 private:
-	void OnSceneEvent(T_SceneEventFlags const flags, SceneEventData const* const eventData);
+	void OnSceneEvent(fw::T_SceneEventFlags const flags, fw::SceneEventData const* const eventData);
 	
 	// Data
 	///////

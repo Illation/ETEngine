@@ -7,6 +7,10 @@
 #include <EtFramework/Physics/CollisionShape.h>
 
 
+namespace et {
+namespace fw {
+
+
 //---------------------------------
 // ForceLinking
 //
@@ -17,8 +21,10 @@ void ForceLinking()
 	render::ForceLinking();
 
 	FORCE_LINKING(AudioAsset)
-	fw::FORCE_LINKING(SceneDescriptorAsset)
-	fw::FORCE_LINKING(BoxShape)
+	FORCE_LINKING(SceneDescriptorAsset)
+	FORCE_LINKING(BoxShape)
 }
 
 
+} // namespace fw
+} // namespace et

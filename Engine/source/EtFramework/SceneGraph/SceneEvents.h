@@ -2,7 +2,11 @@
 #include <EtCore/Helper/GenericEventDispatcher.h>
 
 
-class AbstractScene;
+namespace et {
+namespace fw {
+
+
+class UnifiedScene;
 
 
 //---------------------------
@@ -31,10 +35,10 @@ enum E_SceneEvent : T_SceneEventFlags
 struct SceneEventData
 {
 public:
-	SceneEventData(AbstractScene* const abstractScene) : scene(abstractScene) {}
+	SceneEventData(UnifiedScene* const uniScene) : scene(uniScene) {}
 	virtual ~SceneEventData() = default;
 
-	AbstractScene* scene = nullptr;
+	UnifiedScene* scene = nullptr;
 };
 
 
@@ -44,3 +48,6 @@ typedef core::GenericEventDispatcher<T_SceneEventFlags, SceneEventData> T_SceneE
 typedef T_SceneEventDispatcher::T_CallbackId T_SceneEventCallbackId;
 typedef T_SceneEventDispatcher::T_CallbackFn T_SceneEventCallback;
 
+
+} // namespace fw
+} // namespace et

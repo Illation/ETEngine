@@ -6,6 +6,7 @@
 #include <rttr/type.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -99,6 +100,7 @@ public:
 
 
 } // namespace fw
+} // namespace et
 
 
 #include "System.inl"

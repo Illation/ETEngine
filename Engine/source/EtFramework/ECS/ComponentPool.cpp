@@ -2,6 +2,7 @@
 #include "ComponentPool.h"
 
 
+namespace et {
 namespace fw {
 
 
@@ -105,3 +106,4 @@ void ComponentPool::Clear()
 
 
 } // namespace fw
+} // namespace et

@@ -1,6 +1,7 @@
 #pragma once
 
 
+namespace et {
 namespace fw {
 
 
@@ -99,3 +100,4 @@ void System<TSystemType, TViewType>::RootProcess(EcsController* const control, A
 	
 
 } // namespace fw
+} // namespace et

@@ -30,7 +30,7 @@ private:
 public:
 	// ctor dtor
 	//---------------
-	GlfwEventManager() : I_Tickable(static_cast<uint32>(E_TickOrder::TICK_GlfwEventManager)) {}
+	GlfwEventManager() : I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_GlfwEventManager)) {}
 	virtual ~GlfwEventManager();
 
 	void Init(GlfwRenderArea* const renderArea);

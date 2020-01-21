@@ -10,6 +10,10 @@
 #include <EtCore/FileSystem/FileUtil.h>
 
 
+namespace et {
+namespace fw {
+
+
 //===================
 // Audio Data
 //===================
@@ -274,3 +278,7 @@ void AudioAsset::ConvertToMono(AudioBufferData &bufferData)
 		break;
 	}
 }
+
+
+} // namespace fw
+} // namespace et

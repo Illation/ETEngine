@@ -50,7 +50,7 @@ void GlfwRenderArea::Initialize()
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #endif
 
-	Config::Settings::Window const& windowSettings = Config::GetInstance()->GetWindow();
+	fw::Config::Settings::Window const& windowSettings = fw::Config::GetInstance()->GetWindow();
 
 	GLFWmonitor* const primaryMonitor = glfwGetPrimaryMonitor();
 	GLFWmonitor* fullscreenMonitor = nullptr;

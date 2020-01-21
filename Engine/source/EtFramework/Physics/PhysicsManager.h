@@ -13,6 +13,11 @@ class btBoxShape;
 class btSphereShape;
 class btCollisionShape;
 
+
+namespace et {
+namespace fw {
+
+
 class PhysicsManager : public Singleton<PhysicsManager>
 {
 public:
@@ -42,3 +47,7 @@ private:
 	PhysicsManager();
 	virtual ~PhysicsManager();
 };
+
+
+} // namespace fw
+} // namespace et

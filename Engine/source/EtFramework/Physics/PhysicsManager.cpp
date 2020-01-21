@@ -4,6 +4,11 @@
 #include <btBulletDynamicsCommon.h>
 #include "BulletETM.h"
 
+
+namespace et {
+namespace fw {
+
+
 PhysicsManager::PhysicsManager() { }
 PhysicsManager::~PhysicsManager() { Destroy(); }
 
@@ -52,3 +57,7 @@ btSphereShape* PhysicsManager::CreateSphereShape(float radius)
 	m_pShapes.push_back(sphere);
 	return sphere;
 }
+
+
+} // namespace fw
+} // namespace et

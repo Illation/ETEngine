@@ -2,6 +2,7 @@
 #include <rttr/type.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -83,6 +84,7 @@ T_CompTypeList GenCompTypeList();
 
 
 } // namespace fw
+} // namespace et
 
 
 // macros
@@ -95,9 +97,9 @@ T_CompTypeList GenCompTypeList();
 //
 #define ECS_DECLARE_COMPONENT \
 private: \
-static fw::T_CompTypeIdx const s_TypeIndex; \
+static et::fw::T_CompTypeIdx const s_TypeIndex; \
 public: \
-static fw::T_CompTypeIdx GetTypeIndex() { return s_TypeIndex; } \
+static et::fw::T_CompTypeIdx GetTypeIndex() { return s_TypeIndex; } \
 private:
 
 //------------------------
@@ -106,7 +108,7 @@ private:
 // Declare this in a components source file after registering it with RTTR
 //
 #define ECS_REGISTER_COMPONENT(TComponentType) \
-fw::T_CompTypeIdx const TComponentType::s_TypeIndex = fw::ComponentRegistry::Instance().Register<TComponentType>();
+et::fw::T_CompTypeIdx const TComponentType::s_TypeIndex = et::fw::ComponentRegistry::Instance().Register<TComponentType>();
 
 
 #include "ComponentRegistry.inl"

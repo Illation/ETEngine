@@ -2,6 +2,10 @@
 #include "AudioManager.h"
 
 
+namespace et {
+namespace fw {
+
+
 void AudioManager::Initialize()
 {
 	m_Device = alcOpenDevice(NULL);
@@ -104,3 +108,7 @@ void AudioManager::ListAudioDevices(const ALCchar *devices)
 		next += (len + 2);
 	}
 }
+
+
+} // namespace fw
+} // namespace et

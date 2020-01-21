@@ -6,6 +6,7 @@
 #include "System.h"
 
 
+namespace et {
 namespace fw {
 
 
@@ -180,6 +181,7 @@ private:
 
 
 } // namespace fw
+} // namespace et
 
 
 #include "EcsController.inl"

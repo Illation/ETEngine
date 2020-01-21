@@ -6,6 +6,10 @@
 #include <EtCore/Helper/LinkerUtils.h>
 
 
+namespace et {
+namespace fw {
+
+
 //---------------------------------
 // AudioData
 //
@@ -77,6 +81,10 @@ public:
 
 	RTTR_ENABLE(Asset<AudioData, false>)
 };
+
+
+} // namespace fw
+} // namespace et
 
 
 #include "AudioData.inl"

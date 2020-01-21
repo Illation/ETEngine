@@ -9,6 +9,7 @@
 #include <EtRendering/MaterialSystem/MaterialData.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -83,3 +84,4 @@ ModelComponent* ModelComponentDesc::MakeData()
 
 
 } // namespace fw
+} // namespace et

@@ -4,6 +4,7 @@
 #include "ComponentSignature.h"
 
 
+namespace et {
 namespace fw {
 
 
@@ -173,6 +174,7 @@ ComponentSignature SignatureFromView();
 
 
 } // namespace fw
+} // namespace et
 
 
 #include "ComponentView.inl"

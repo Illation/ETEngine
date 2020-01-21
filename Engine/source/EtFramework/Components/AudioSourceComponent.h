@@ -7,10 +7,11 @@
 #include <EtFramework/ECS/EcsController.h>
 
 
-class AudioData;
-
-
+namespace et {
 namespace fw {
+
+
+class AudioData;
 
 
 //-----------------------
@@ -159,8 +160,9 @@ public:
 	float maxGain = 1.f;
 	float pitch = 1.f;
 
-	AudioSource3DParams params; // #todo: once deserialization supports nullptrs, make it a pointer
+	AudioSource3DParams params; // #todo: once deserialization supports null pointers, make it a pointer
 };
 
 
 } // namespace fw
+} // namespace et

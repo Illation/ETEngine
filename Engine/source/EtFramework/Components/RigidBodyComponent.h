@@ -6,6 +6,7 @@
 class btRigidBody;
 
 
+namespace et {
 namespace fw {
 
 
@@ -93,3 +94,4 @@ public:
 
 
 } // namespace fw
+} // namespace et

@@ -4,6 +4,7 @@
 #include <EtCore/Reflection/Registration.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -40,3 +41,4 @@ AudioListenerComponent* AudioListenerComponentDesc::MakeData()
 
 
 } // namespace fw
+} // namespace et

@@ -72,7 +72,7 @@ private:
 	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
 	OutlineRenderer m_OutlineRenderer;
 
-	T_SceneEventCallbackId m_SceneInitCallback = T_SceneEventDispatcher::INVALID_ID;
+	fw::T_SceneEventCallbackId m_SceneInitCallback = fw::T_SceneEventDispatcher::INVALID_ID;
 
 	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
 

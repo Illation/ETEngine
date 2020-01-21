@@ -6,6 +6,7 @@
 #include <EtFramework/Systems/TransformSystem.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -75,3 +76,4 @@ void LightSystem::Process(ComponentRange<LightSystemView>& range)
 
 
 } // namespace fw
+} // namespace et

@@ -1,6 +1,7 @@
 #pragma once
 
 
+namespace et {
 namespace fw {
 
 
@@ -47,3 +48,4 @@ void ComponentPool::Append(TComponentType const& component)
 
 
 } // namespace fw
+} // namespace et

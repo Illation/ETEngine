@@ -4,6 +4,7 @@
 #include <EtFramework/SceneGraph/ComponentDescriptor.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -133,4 +134,4 @@ public:
 
 
 } // namespace fw
-
+} // namespace et

@@ -4,6 +4,7 @@
 #include <EtCore/Reflection/Registration.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -93,3 +94,4 @@ PlanetCameraLinkComponent* PlanetCameraLinkComponentDesc::MakeData()
 
 
 } // namespace fw
+} // namespace et

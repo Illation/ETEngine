@@ -8,6 +8,7 @@
 #include <EtFramework/Physics/BulletETM.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -176,3 +177,4 @@ RigidBodyComponent* RigidBodyComponentDesc::MakeData()
 
 
 } // namespace fw
+} // namespace et

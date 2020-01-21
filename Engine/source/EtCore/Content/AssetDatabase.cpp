@@ -56,6 +56,7 @@ std::type_info const& AssetDatabase::AssetCache::GetType() const
 	{
 		return cache[0]->GetType();
 	}
+
 	return typeid(nullptr);
 }
 

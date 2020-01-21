@@ -4,6 +4,7 @@
 #include <EtCore/Reflection/Registration.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -142,3 +143,4 @@ TransformComponent* TransformComponentDesc::MakeData()
 
 
 } // namespace fw
+} // namespace et

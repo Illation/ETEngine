@@ -4,6 +4,15 @@
 #include <rttr/registration>
 
 
+namespace et {
+namespace fw {
+
+
+//=============
+// Entity Link 
+//=============
+
+
 // reflection
 //------------
 
@@ -14,14 +23,6 @@ RTTR_REGISTRATION
 	registration::class_<fw::EntityLink>("entity link")
 		.property("id", &fw::EntityLink::GetId, &fw::EntityLink::SetDeserializedId);
 }
-
-
-namespace fw {
-
-
-//=============
-// Entity Link 
-//=============
 
 
 //-------------------
@@ -183,3 +184,4 @@ void EntityLinkResolver::Clear()
 
 
 } // namespace fw
+} // namespace et

@@ -2,6 +2,7 @@
 #include "ComponentRegistry.h"
 
 
+namespace et {
 namespace fw {
 
 
@@ -101,4 +102,4 @@ T_CompTypeIdx ComponentRegistry::GetTypeIdx(rttr::type const& type) const
 
 
 } // namespace fw
-
+} // namespace et

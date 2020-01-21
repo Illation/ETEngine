@@ -1,6 +1,7 @@
 #pragma once
 
 
+namespace et {
 namespace fw {
 
 
@@ -103,6 +104,7 @@ public:
 
 
 } // namespace fw
+} // namespace et
 
 
 #include "ComponentRange.inl"

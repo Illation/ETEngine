@@ -5,6 +5,9 @@
 #include <EtFramework/ECS/System.h>
 
 
+using namespace et;
+
+
 // Components
 //************
 

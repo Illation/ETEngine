@@ -7,6 +7,10 @@
 #include "BulletETM.h"
 
 
+namespace et {
+namespace fw {
+
+
 PhysicsWorld::~PhysicsWorld()
 {
 	Deinit();
@@ -48,3 +52,7 @@ void PhysicsWorld::Update()
 
 	m_pWorld->stepSimulation(TIME->DeltaTime(), m_MaxSubsteps);
 }
+
+
+} // namespace fw
+} // namespace et

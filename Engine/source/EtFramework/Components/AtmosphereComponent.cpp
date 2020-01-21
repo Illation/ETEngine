@@ -10,6 +10,7 @@
 #include <EtFramework/ECS/EcsController.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -85,3 +86,4 @@ void AtmosphereComponentDesc::OnScenePostLoad(EcsController& ecs, T_EntityId con
 
 
 } // namespace fw
+} // namespace et

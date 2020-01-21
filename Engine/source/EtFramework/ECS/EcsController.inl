@@ -1,6 +1,7 @@
 #pragma once
 
 
+namespace et {
 namespace fw {
 
 
@@ -210,6 +211,4 @@ bool EcsController::IsSystemRegistered() const
 
 
 } // namespace fw
-
-
-
+} // namespace et

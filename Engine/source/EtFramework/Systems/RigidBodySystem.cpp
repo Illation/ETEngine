@@ -7,6 +7,7 @@
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -132,3 +133,4 @@ void RigidBodySystem::Process(ComponentRange<RigidBodySystemView>& range)
 
 
 } // namespace fw
+} // namespace et

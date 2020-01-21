@@ -4,6 +4,7 @@
 #include <EtCore/Reflection/Registration.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -64,3 +65,4 @@ LightComponent* LightComponentDesc::MakeData()
 
 
 } // namespace fw
+} // namespace et

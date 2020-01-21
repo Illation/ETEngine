@@ -19,7 +19,7 @@ namespace demo {
 //
 void ForceLinking()
 {
-	::ForceLinking();
+	fw::ForceLinking();
 
 	FORCE_LINKING(SpawnComponentDesc)
 	FORCE_LINKING(ControledLightComponentDesc)

@@ -1,6 +1,7 @@
 #pragma once
 
 
+namespace et {
 namespace fw {
 
 
@@ -80,5 +81,4 @@ ComponentSignature SignatureFromView()
 
 
 } // namespace fw
-
-
+} // namespace et

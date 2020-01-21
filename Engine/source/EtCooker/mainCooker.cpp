@@ -43,7 +43,7 @@ void CookFilePackages(std::string const& dbBase,
 //
 int main(int argc, char *argv[])
 {
-	ForceLinking();
+	et::fw::ForceLinking();
 
 	// parse arguments
 	//-----------------

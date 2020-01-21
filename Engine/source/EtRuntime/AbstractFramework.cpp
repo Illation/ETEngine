@@ -38,8 +38,8 @@ AbstractFramework::~AbstractFramework()
 
 	fw::UnifiedScene::Instance().UnloadScene();
 
-	PhysicsManager::DestroyInstance();
-	AudioManager::DestroyInstance();
+	fw::PhysicsManager::DestroyInstance();
+	fw::AudioManager::DestroyInstance();
 
 	InputManager::DestroyInstance();
 	ContextManager::DestroyInstance();
@@ -69,12 +69,12 @@ void AbstractFramework::Run()
 	LOG(FS(" - version: %s", et::build::Version::s_Name.c_str()));
 	LOG("");
 
-	Config* const cfg = Config::GetInstance();
+	fw::Config* const cfg = fw::Config::GetInstance();
 	cfg->Initialize();
 
 	// init unified scene, systems etc
-	fw::UnifiedScene::Instance().GetEventDispatcher().Register(E_SceneEvent::RegisterSystems,
-		T_SceneEventCallback([this](T_SceneEventFlags const flags, SceneEventData const* const eventData)
+	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::RegisterSystems,
+		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const eventData)
 		{
 			UNUSED(flags);
 			UNUSED(eventData);
@@ -84,14 +84,14 @@ void AbstractFramework::Run()
 
 	// ensure we show the splash screen every time the scene switches
 	// Callback ID not required as we destroy the scene manager here before destroying this class
-	fw::UnifiedScene::Instance().GetEventDispatcher().Register(E_SceneEvent::SceneSwitch | E_SceneEvent::Activated,
-		T_SceneEventCallback([this](T_SceneEventFlags const flags, SceneEventData const* const evnt)
+	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::SceneSwitch | fw::E_SceneEvent::Activated,
+		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const evnt)
 		{
 			UNUSED(evnt);
 
-			switch (static_cast<E_SceneEvent>(flags))
+			switch (static_cast<fw::E_SceneEvent>(flags))
 			{
-			case E_SceneEvent::SceneSwitch:
+			case fw::E_SceneEvent::SceneSwitch:
 				m_Viewport->SetRenderer(m_SplashScreenRenderer);
 
 				m_Viewport->SetTickDisabled(true);
@@ -99,7 +99,7 @@ void AbstractFramework::Run()
 				m_Viewport->SetTickDisabled(false);
 				break;
 
-			case E_SceneEvent::Activated:
+			case fw::E_SceneEvent::Activated:
 				m_Viewport->SetRenderer(m_SceneRenderer); // update will happen anyway during the loop
 				break;
 
@@ -139,8 +139,8 @@ void AbstractFramework::Run()
 	m_SplashScreenRenderer->Init();
 	m_RenderArea.Update();
 
-	AudioManager::GetInstance()->Initialize();
-	PhysicsManager::GetInstance()->Initialize();
+	fw::AudioManager::GetInstance()->Initialize();
+	fw::PhysicsManager::GetInstance()->Initialize();
 
 	PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
 
@@ -157,7 +157,7 @@ void AbstractFramework::Run()
 
 	// load scene
 	OnInit();
-	std::string const& initScene = Config::GetInstance()->GetStartScene();
+	std::string const& initScene = fw::Config::GetInstance()->GetStartScene();
 	if (!initScene.empty())
 	{
 		fw::UnifiedScene::Instance().LoadScene(GetHash(initScene + ".json"));

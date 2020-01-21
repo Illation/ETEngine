@@ -2,6 +2,11 @@
 
 #include <btBulletDynamicsCommon.h>
 
+
+namespace et {
+namespace fw {
+
+
 inline btVector3 ToBtVec3(const vec3 &rhs)
 {
 	return btVector3(rhs.x, rhs.y, rhs.z);
@@ -27,3 +32,7 @@ inline quat ToEtmQuat(const btQuaternion &rhs)
 {
 	return quat(ToEtmVec3(rhs.getAxis()), rhs.getAngle());
 }
+
+
+} // namespace fw
+} // namespace et

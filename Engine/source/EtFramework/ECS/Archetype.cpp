@@ -2,6 +2,7 @@
 #include "Archetype.h"
 
 
+namespace et {
 namespace fw {
 
 
@@ -152,3 +153,4 @@ void Archetype::Clear()
 
 
 } // namespace fw
+} // namespace et

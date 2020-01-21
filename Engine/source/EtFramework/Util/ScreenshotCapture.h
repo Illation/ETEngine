@@ -5,6 +5,10 @@
 class Directory;
 
 
+namespace et {
+namespace fw {
+
+
 //---------------------------------
 // ScreenshotCapture
 //
@@ -42,3 +46,7 @@ private:
 	Directory* m_BaseDir = nullptr;
 	Viewport* m_Viewport = nullptr;
 };
+
+
+} // namespace fw
+} // namespace et

@@ -8,6 +8,10 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
+namespace et {
+namespace fw {
+
+
 // reflection
 RTTR_REGISTRATION
 {
@@ -140,3 +144,7 @@ void Config::Save()
 		LOG("Config::Save > unable to serialize settings to config file", Warning);
 	}
 }
+
+
+} // namespace fw
+} // namespace et

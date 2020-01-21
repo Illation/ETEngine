@@ -2,6 +2,7 @@
 #include "ComponentRegistry.h"
 
 
+namespace et {
 namespace fw {
 
 
@@ -49,6 +50,7 @@ private:
 
 
 } // namespace fw
+} // namespace et
 
 
 #include "ComponentPool.inl"

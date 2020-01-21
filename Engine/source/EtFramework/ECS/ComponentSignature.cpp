@@ -2,6 +2,7 @@
 #include "ComponentSignature.h"
 
 
+namespace et {
 namespace fw {
 
 
@@ -127,3 +128,4 @@ bool operator==(ComponentSignature const& lhs, ComponentSignature const& rhs)
 
 
 } // namespace fw
+} // namespace et

@@ -9,6 +9,10 @@
 #include <EtCore/FileSystem/Entry.h>
 
 
+namespace et {
+namespace fw {
+
+
 //======================
 // Screenshot Capture
 //======================
@@ -139,3 +143,7 @@ std::string ScreenshotCapture::GetFileName()
 
 	return basePath + constructFileName();
 }
+
+
+} // namespace fw
+} // namespace et

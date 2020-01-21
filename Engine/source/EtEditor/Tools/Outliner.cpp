@@ -107,13 +107,13 @@ Gtk::Widget* Outliner::GetToolbarContent()
 //
 // React to any changes in the scene
 //
-void Outliner::OnSceneEvent(E_SceneEvent const eventType, SceneEventData const* const eventData)
+void Outliner::OnSceneEvent(fw::E_SceneEvent const eventType, fw::SceneEventData const* const eventData)
 {
 	UNUSED(eventData);
 
 	switch (eventType)
 	{
-	case E_SceneEvent::Activated:
+	case fw::E_SceneEvent::Activated:
 		RefillTreeView();
 		break;
 	}

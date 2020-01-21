@@ -217,8 +217,8 @@ void EditorApp::InitializeUtilities()
 {
 	EditorConfig::GetInstance()->Initialize();
 
-	fw::UnifiedScene::Instance().GetEventDispatcher().Register(E_SceneEvent::RegisterSystems,
-		T_SceneEventCallback([this](T_SceneEventFlags const flags, SceneEventData const* const eventData)
+	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::RegisterSystems,
+		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const eventData)
 		{
 			UNUSED(flags);
 			UNUSED(eventData);

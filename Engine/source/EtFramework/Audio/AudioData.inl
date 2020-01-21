@@ -1,6 +1,10 @@
 #pragma once
 
 
+namespace et {
+namespace fw {
+
+
 //===================
 // Audio Asset
 //===================
@@ -28,3 +32,7 @@ void AudioAsset::ConvertToMono(AudioBufferData &bufferData)
 	bufferData.data = dest;
 	bufferData.size = bufferData.size / 2;
 }
+
+
+} // namespace fw
+} // namespace et

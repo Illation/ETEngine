@@ -221,8 +221,8 @@ void SceneViewport::OnSceneSet()
 	}
 	else
 	{
-		m_SceneInitCallback = fw::UnifiedScene::Instance().GetEventDispatcher().Register(E_SceneEvent::Activated,
-			T_SceneEventCallback( [this](T_SceneEventFlags const flags, SceneEventData const* const eventData)
+		m_SceneInitCallback = fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::Activated,
+			fw::T_SceneEventCallback( [this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const eventData)
 			{
 				UNUSED(flags);
 				UNUSED(eventData);

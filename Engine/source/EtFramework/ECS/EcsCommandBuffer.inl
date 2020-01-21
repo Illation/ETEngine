@@ -1,6 +1,7 @@
 #pragma once
 
 
+namespace et {
 namespace fw {
 
 
@@ -58,3 +59,4 @@ void EcsCommandBuffer::RemoveComponents(T_EntityId const entity)
 
 
 } // namespace fw
+} // namespace et

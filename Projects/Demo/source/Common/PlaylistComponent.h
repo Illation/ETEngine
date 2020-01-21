@@ -5,7 +5,9 @@
 #include <EtFramework/SceneGraph/ComponentDescriptor.h>
 
 
-class AudioData;
+namespace et { namespace fw {
+	class AudioData;
+} }
 
 
 namespace et {
@@ -26,7 +28,7 @@ public:
 
 	// by holding pointers instead of IDs, we ensure the audio data is loaded and doesn't have to reloaded when we switch tracks
 	//  - we could be smart about it and only hold pointers of the current, next and previous track in order to keep memory requirements down
-	std::vector<AssetPtr<AudioData>> tracks; 
+	std::vector<AssetPtr<fw::AudioData>> tracks; 
 };
 
 

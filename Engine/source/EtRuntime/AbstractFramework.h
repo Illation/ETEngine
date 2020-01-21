@@ -31,7 +31,7 @@ class AbstractFramework : public I_RealTimeTickTriggerer, public I_Tickable
 	// construct destruct
 	//--------------------
 public:
-	AbstractFramework() : I_Tickable(static_cast<uint32>(E_TickOrder::TICK_Framework)) {}
+	AbstractFramework() : I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_Framework)) {}
 	virtual ~AbstractFramework();
 
 	// functionality
@@ -60,7 +60,7 @@ private:
 	render::SplashScreenRenderer* m_SplashScreenRenderer = nullptr;
 
 protected:
-	ScreenshotCapture m_ScreenshotCapture;
+	fw::ScreenshotCapture m_ScreenshotCapture;
 };
 
 

@@ -43,7 +43,7 @@ PlaylistComponent* PlaylistComponentDesc::MakeData()
 
 	for (std::string const& track : tracks)
 	{
-		ret->tracks.push_back(ResourceManager::Instance()->GetAssetData<AudioData>(GetHash(track)));
+		ret->tracks.push_back(ResourceManager::Instance()->GetAssetData<fw::AudioData>(GetHash(track)));
 	}
 
 	return ret;
@@ -69,7 +69,7 @@ void PlaylistComponentDesc::OnScenePostLoad(fw::EcsController& ecs, fw::T_Entity
 	}
 
 	// otherwise find it in the playlist
-	auto const findResult = std::find_if(comp.tracks.cbegin(), comp.tracks.cend(), [sourceTrack](AssetPtr<AudioData> const& data)
+	auto const findResult = std::find_if(comp.tracks.cbegin(), comp.tracks.cend(), [sourceTrack](AssetPtr<fw::AudioData> const& data)
 		{
 			return (data.GetId() == sourceTrack);
 		});

@@ -24,8 +24,8 @@ namespace edit {
 //
 void SceneSelection::SetScene()
 {
-	fw::UnifiedScene::Instance().GetEventDispatcher().Register(E_SceneEvent::All,
-		T_SceneEventCallback(std::bind(&SceneSelection::OnSceneEvent, this, std::placeholders::_1, std::placeholders::_2)));
+	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::All,
+		fw::T_SceneEventCallback(std::bind(&SceneSelection::OnSceneEvent, this, std::placeholders::_1, std::placeholders::_2)));
 
 	render::Scene& renderScene = fw::UnifiedScene::Instance().GetRenderScene();
 	render::I_SceneExtension* const ext = renderScene.GetExtension("OutlineExtension"_hash);
@@ -165,14 +165,14 @@ void SceneSelection::UpdateOutlines() const
 //
 // pass the event through to any listeners
 //
-void SceneSelection::OnSceneEvent(T_SceneEventFlags const flags, SceneEventData const* const eventData)
+void SceneSelection::OnSceneEvent(fw::T_SceneEventFlags const flags, fw::SceneEventData const* const eventData)
 {
 	for (I_SceneSelectionListener* const listener : m_Listeners)
 	{
-		listener->OnSceneEvent(static_cast<E_SceneEvent>(flags), eventData);
+		listener->OnSceneEvent(static_cast<fw::E_SceneEvent>(flags), eventData);
 	}
 
-	if ((flags == E_SceneEvent::Activated) && !m_IsIdRendererInitialized)
+	if ((flags == fw::E_SceneEvent::Activated) && !m_IsIdRendererInitialized)
 	{
 		m_IdRenderer.Initialize();
 		m_IsIdRendererInitialized = true;

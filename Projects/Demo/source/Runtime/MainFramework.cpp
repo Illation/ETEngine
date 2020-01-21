@@ -56,8 +56,8 @@ void MainFramework::OnInit()
 	m_Scenes.push_back(GetHash("PlanetScene.json"));
 	m_Scenes.push_back(GetHash("PhysicsScene.json"));
 	
-	uniScene.GetEventDispatcher().Register(E_SceneEvent::Activated,
-		T_SceneEventCallback([this](T_SceneEventFlags const flags, SceneEventData const* const evnt)
+	uniScene.GetEventDispatcher().Register(fw::E_SceneEvent::Activated,
+		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const evnt)
 		{
 			UNUSED(flags);
 			UNUSED(evnt);
@@ -78,13 +78,13 @@ void MainFramework::OnInit()
 		}));
 
 	// audio
-	AudioManager::GetInstance()->SetDistanceModel(AL_INVERSE_DISTANCE);
+	fw::AudioManager::GetInstance()->SetDistanceModel(AL_INVERSE_DISTANCE);
 }
 
 //--------------------------
 // MainFramework::OnTick
 //
-// Demo specific updates indepenant of scene
+// Demo specific updates indepenent of scene
 //
 void MainFramework::OnTick()
 {

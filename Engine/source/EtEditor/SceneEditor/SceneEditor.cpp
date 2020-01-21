@@ -72,8 +72,8 @@ void SceneEditor::RegisterEcsEvents()
 //
 SceneEditor::~SceneEditor()
 {
-	PhysicsManager::DestroyInstance();
-	AudioManager::DestroyInstance();
+	fw::PhysicsManager::DestroyInstance();
+	fw::AudioManager::DestroyInstance();
 }
 
 //---------------------------
@@ -89,8 +89,8 @@ void SceneEditor::InitInternal()
 		listener->OnShown();
 	}
 
-	AudioManager::GetInstance()->Initialize();
-	PhysicsManager::GetInstance()->Initialize();
+	fw::AudioManager::GetInstance()->Initialize();
+	fw::PhysicsManager::GetInstance()->Initialize();
 
 	m_SceneSelection.SetScene();
 	for (I_SceneEditorListener* const listener : m_Listeners)

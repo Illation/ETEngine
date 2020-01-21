@@ -11,9 +11,12 @@
 #include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
 
 
-REGISTRATION_NS(fw)
+namespace et {
+	REGISTRATION_NS(fw)
+}
 
 
+namespace et {
 namespace fw {
 
 
@@ -116,4 +119,4 @@ public:
 
 
 } // namespace fw
-
+} // namespace et

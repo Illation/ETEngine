@@ -4,6 +4,7 @@
 #include <EtFramework/Systems/TransformSystem.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -51,7 +52,4 @@ void PlanetCameraLinkSystem::Process(ComponentRange<PlanetCameraLinkSystemView>&
 
 
 } // namespace fw
-
-
-
-
+} // namespace et

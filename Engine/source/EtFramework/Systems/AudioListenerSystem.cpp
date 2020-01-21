@@ -9,6 +9,7 @@
 #include <EtFramework/Audio/OpenAL_ETM.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -81,4 +82,4 @@ void AudioListenerSystem::Process(ComponentRange<AudioListenerSystemView>& range
 
 
 } // namespace fw
-
+} // namespace et

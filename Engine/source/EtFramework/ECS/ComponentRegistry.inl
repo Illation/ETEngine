@@ -1,5 +1,7 @@
 #pragma once
 
+
+namespace et {
 namespace fw {
 
 
@@ -97,4 +99,4 @@ T_CompTypeList GenCompTypeList()
 
 
 } // namespace fw
-
+} // namespace et

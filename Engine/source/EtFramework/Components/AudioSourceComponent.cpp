@@ -8,6 +8,7 @@
 #include <EtFramework/Audio/OpenAL_ETM.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -103,3 +104,4 @@ void AudioSourceCompDesc::OnScenePostLoad(EcsController& ecs, T_EntityId const i
 
 
 } // namespace fw
+} // namespace et

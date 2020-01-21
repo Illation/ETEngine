@@ -4,6 +4,7 @@
 #include "EcsController.h"
 
 
+namespace et {
 namespace fw {
 
 
@@ -144,6 +145,7 @@ void EcsCommandBuffer::RemoveComponentTypes(T_EntityId const entity, T_CompTypeL
 		buffer->second.push_back(compType);
 	}
 }
+
 //----------------------------
 // EcsCommandBuffer::OnMerge
 //
@@ -217,3 +219,4 @@ void EcsCommandBuffer::Merge()
 
 
 } // namespace fw
+} // namespace et

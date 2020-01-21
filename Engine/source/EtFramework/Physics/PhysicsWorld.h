@@ -2,6 +2,11 @@
 
 class btDiscreteDynamicsWorld;
 
+
+namespace et {
+namespace fw {
+
+
 class PhysicsWorld
 {
 public:
@@ -20,3 +25,7 @@ private:
 
 	uint32 m_MaxSubsteps = 10;
 };
+
+
+} // namespace fw
+} // namespace et

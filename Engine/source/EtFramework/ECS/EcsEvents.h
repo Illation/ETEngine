@@ -4,6 +4,7 @@
 #include <EtCore/Helper/GenericEventDispatcher.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -98,3 +99,4 @@ typedef std::function<void(EcsController&, T_EntityId const)> T_EntityEventFn;
 
 
 } // namespace fw
+} // namespace et

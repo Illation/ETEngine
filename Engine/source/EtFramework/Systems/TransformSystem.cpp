@@ -6,6 +6,7 @@
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -119,3 +120,4 @@ void TransformSystem::Reset::Process(ComponentRange<TransformSystem::ResetView>&
 
 
 } // namespace fw
+} // namespace et

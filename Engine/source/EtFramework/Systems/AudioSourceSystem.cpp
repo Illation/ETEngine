@@ -11,6 +11,7 @@
 #include <EtFramework/Audio/OpenAL_ETM.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -262,4 +263,4 @@ void AudioSourceSystem::State::Process(ComponentRange<AudioSourceSystem::StateVi
 
 
 } // namespace fw
-
+} // namespace et

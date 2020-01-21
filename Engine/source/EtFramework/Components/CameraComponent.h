@@ -6,6 +6,7 @@ class Camera;
 class Viewport;
 
 
+namespace et {
 namespace fw {
 
 
@@ -93,4 +94,5 @@ public:
 
 
 } // namespace fw
+} // namespace et
 

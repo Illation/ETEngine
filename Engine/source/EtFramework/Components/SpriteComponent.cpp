@@ -7,6 +7,7 @@
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -126,3 +127,4 @@ SpriteComponent* SpriteComponentDesc::MakeData()
 
 
 } // namespace fw
+} // namespace et

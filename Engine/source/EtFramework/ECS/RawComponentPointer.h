@@ -2,6 +2,7 @@
 #include "ComponentRegistry.h"
 
 
+namespace et {
 namespace fw {
 
 
@@ -49,3 +50,4 @@ namespace detail {
 
 
 } // namespace fw
+} // namespace et

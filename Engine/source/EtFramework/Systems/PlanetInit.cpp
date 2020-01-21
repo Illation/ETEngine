@@ -5,6 +5,7 @@
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -44,3 +45,4 @@ void PlanetInit::OnComponentRemoved(EcsController& controller, PlanetComponent& 
 
 
 } // namespace fw
+} // namespace et

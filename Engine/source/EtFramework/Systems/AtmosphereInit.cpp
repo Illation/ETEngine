@@ -5,6 +5,7 @@
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
 
+namespace et {
 namespace fw {
 
 
@@ -47,3 +48,4 @@ void AtmosphereInit::OnComponentRemoved(EcsController& controller, AtmosphereCom
 
 
 } // namespace fw
+} // namespace et

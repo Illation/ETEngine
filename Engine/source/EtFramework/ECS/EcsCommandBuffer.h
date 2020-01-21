@@ -3,6 +3,7 @@
 #include "RawComponentPointer.h"
 
 
+namespace et {
 namespace fw {
 
 
@@ -94,7 +95,7 @@ private:
 
 
 } // namespace fw
+} // namespace et
 
 
 #include "EcsCommandBuffer.inl"
-

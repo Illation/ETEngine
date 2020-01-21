@@ -5,9 +5,12 @@
 
 
 class btCollisionShape;
-REGISTRATION_NS(fw)
+namespace et {
+	REGISTRATION_NS(fw)
+}
 
 
+namespace et {
 namespace fw {
 
 
@@ -33,7 +36,7 @@ public:
 class BoxShape final : public CollisionShape
 {
 	RTTR_ENABLE(CollisionShape)
-	REGISTRATION_FRIEND_NS(fw)
+	REGISTRATION_FRIEND_NS(et::fw)
 	DECLARE_FORCED_LINKING()
 
 public:
@@ -68,4 +71,5 @@ private:
 
 
 } // namespace fw
+} // namespace et
 

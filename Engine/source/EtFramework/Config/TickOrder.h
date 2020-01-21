@@ -1,6 +1,10 @@
 #pragma once
 
 
+namespace et {
+namespace fw {
+
+
 //---------------------------------
 // E_TickOrder
 //
@@ -16,3 +20,6 @@ enum class E_TickOrder : uint32
 	COUNT
 };
 
+
+} // namespace fw
+} // namespace et
