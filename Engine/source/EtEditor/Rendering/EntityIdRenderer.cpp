@@ -16,6 +16,10 @@
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
 
+namespace et {
+namespace edit {
+
+
 //====================
 // Entity ID Renderer
 //====================
@@ -265,3 +269,6 @@ void EntityIdRenderer::GetIdColor(fw::T_EntityId const id, vec4& col) const
 		static_cast<float>(a) / 255.f);
 }
 
+
+} // namespace edit
+} // namespace et

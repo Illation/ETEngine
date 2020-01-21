@@ -7,6 +7,10 @@
 #include <EtRendering/GraphicsContext/RenderArea.h>
 
 
+namespace et {
+namespace edit {
+
+
 //---------------------------------
 // SingleContextGlArea
 //
@@ -93,3 +97,6 @@ private:
 	SingleContextGlArea* m_GlArea = nullptr;
 };
 
+
+} // namespace edit
+} // namespace et

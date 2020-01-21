@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 	Glib::setenv("GSETTINGS_SCHEMA_DIR", ".", false);
 	Glib::setenv("XDG_DATA_DIRS", FileUtil::GetAbsolutePath("../share/"), false);
 
-	Glib::RefPtr<EditorApp> editorApp = EditorApp::create();
+	Glib::RefPtr<et::edit::EditorApp> editorApp = et::edit::EditorApp::create();
 
 	// Start the application, showing the initial window,
 	// and opening extra views for any files that it is asked to open,

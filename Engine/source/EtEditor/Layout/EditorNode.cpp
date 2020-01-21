@@ -8,6 +8,10 @@
 #include <gtkmm/frame.h>
 
 
+namespace et {
+namespace edit {
+
+
 //==============
 // Editor Node
 //==============
@@ -59,3 +63,6 @@ bool EditorNode::ContainsPointer() const
 	return (pos.x > 0 && pos.y > 0 && pos.x < alloc.get_width() && pos.y < alloc.get_height());
 }
 
+
+} // namespace edit
+} // namespace et

@@ -12,6 +12,10 @@
 #include <EtEditor/Util/GtkUtil.h>
 
 
+namespace et {
+namespace edit {
+
+
 //==========================
 // Outliner
 //==========================
@@ -244,3 +248,7 @@ Gtk::TreeModel::Row Outliner::RecursiveGetChild(fw::T_EntityId const entity, Gtk
 
 	return *(children.end());
 }
+
+
+} // namespace edit
+} // namespace et

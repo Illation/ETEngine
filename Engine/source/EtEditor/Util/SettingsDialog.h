@@ -9,6 +9,10 @@
 #include <gtkmm/comboboxtext.h>
 
 
+namespace et {
+namespace edit {
+
+
 //---------------------------------
 // SettingsDialog
 //
@@ -29,3 +33,7 @@ protected:
 	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
 	Glib::RefPtr<Gio::Settings> m_Settings;
 };
+
+
+} // namespace edit
+} // namespace et

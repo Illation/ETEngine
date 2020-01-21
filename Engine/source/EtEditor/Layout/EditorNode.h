@@ -7,6 +7,11 @@ namespace Gtk {
 	class Frame;
 }
 
+
+namespace et {
+namespace edit {
+
+
 class EditorSplitNode;
 class EditorBase;
 
@@ -53,3 +58,6 @@ protected:
 	EditorSplitNode* m_Parent = nullptr;
 };
 
+
+} // namespace edit
+} // namespace et

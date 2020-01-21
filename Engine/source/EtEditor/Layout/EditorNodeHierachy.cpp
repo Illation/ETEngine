@@ -13,6 +13,10 @@
 #include <gtkmm/menu.h>
 
 
+namespace et {
+namespace edit {
+
+
 //======================
 // Editor Node Hierachy
 //======================
@@ -181,3 +185,6 @@ void EditorNodeHierachy::CollapseNode(EditorToolNode* const node, EditorBase* co
 	survivingNode->GetAttachment()->show_all_children();
 }
 
+
+} // namespace edit
+} // namespace et

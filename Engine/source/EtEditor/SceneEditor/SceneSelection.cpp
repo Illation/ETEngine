@@ -8,6 +8,10 @@
 #include <EtRendering/SceneStructure/RenderScene.h>
 
 
+namespace et {
+namespace edit {
+
+
 //==========================
 // Scene Selection
 //==========================
@@ -194,3 +198,7 @@ void SceneSelection::RecursiveAddOutlines(fw::T_EntityId const entity) const
 		RecursiveAddOutlines(child);
 	}
 }
+
+
+} // namespace edit
+} // namespace et

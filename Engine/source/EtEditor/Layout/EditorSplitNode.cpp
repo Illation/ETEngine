@@ -19,13 +19,17 @@
 // reflection
 RTTR_REGISTRATION
 {
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(EditorSplitNode, "editor split node")
-		.property("split ratio", &EditorSplitNode::m_SplitRatio)
-		.property("is horizontal", &EditorSplitNode::m_IsHorizontal)
-		.property("child 1", &EditorSplitNode::m_Child1)
-		.property("child 2", &EditorSplitNode::m_Child2)
-	END_REGISTER_POLYMORPHIC_CLASS(EditorSplitNode, EditorNode);
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(et::edit::EditorSplitNode, "editor split node")
+		.property("split ratio", &et::edit::EditorSplitNode::m_SplitRatio)
+		.property("is horizontal", &et::edit::EditorSplitNode::m_IsHorizontal)
+		.property("child 1", &et::edit::EditorSplitNode::m_Child1)
+		.property("child 2", &et::edit::EditorSplitNode::m_Child2)
+	END_REGISTER_POLYMORPHIC_CLASS(et::edit::EditorSplitNode, et::edit::EditorNode);
 }
+
+
+namespace et {
+namespace edit {
 
 
 //---------------------------------
@@ -159,4 +163,5 @@ void EditorSplitNode::ReinitHierachyHandles()
 }
 
 
-
+} // namespace edit
+} // namespace et

@@ -8,6 +8,10 @@
 #include <EtFramework/Systems/TransformSystem.h>
 
 
+namespace et {
+namespace edit {
+
+
 //==========================
 // Editor Camera Component
 //==========================
@@ -115,3 +119,7 @@ void EditorCameraSystem::Process(fw::ComponentRange<EditorCameraSystemView>& ran
 		view.transform->SetRotation(rot);
 	}
 }
+
+
+} // namespace edit
+} // namespace et

@@ -10,6 +10,10 @@ namespace Gtk {
 }
 
 
+namespace et {
+namespace edit {
+
+
 //---------------------------------
 // EditorSplitNode
 //
@@ -62,3 +66,6 @@ private:
 	bool m_LayoutAdjusted = false;
 };
 
+
+} // namespace edit
+} // namespace et

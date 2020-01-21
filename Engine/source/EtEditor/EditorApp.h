@@ -9,6 +9,11 @@
 #include <glibmm/refptr.h>
 #include <glibmm/ustring.h>
 
+
+namespace et {
+namespace edit {
+
+
 // forward declarations
 class EditorAppWindow;
 
@@ -67,3 +72,5 @@ private:
 };
 
 
+} // namespace edit
+} // namespace et

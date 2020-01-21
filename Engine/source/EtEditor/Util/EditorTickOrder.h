@@ -1,6 +1,11 @@
 #pragma once
 #include <EtFramework/Config/TickOrder.h>
 
+
+namespace et {
+namespace edit {
+
+
 //---------------------------------
 // E_TickOrder
 //
@@ -14,3 +19,6 @@ enum class E_EditorTickOrder : uint32
 	COUNT
 };
 
+
+} // namespace edit
+} // namespace et

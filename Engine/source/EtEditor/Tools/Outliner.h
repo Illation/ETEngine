@@ -18,6 +18,10 @@ namespace Gtk {
 }
 
 
+namespace et {
+namespace edit {
+
+
 //--------------------
 // Outliner
 //
@@ -85,3 +89,6 @@ private:
 	SceneSelection* m_SceneSelection;
 };
 
+
+} // namespace edit
+} // namespace et

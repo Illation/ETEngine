@@ -14,6 +14,11 @@ namespace Gtk {
 
 class Gio::File;
 
+
+namespace et {
+namespace edit {
+
+
 class EditorApp;
 class EditorBase;
 
@@ -61,3 +66,7 @@ private:
 
 	std::vector<T_EditorFramePair> m_Editors;
 };
+
+
+} // namespace edit
+} // namespace et

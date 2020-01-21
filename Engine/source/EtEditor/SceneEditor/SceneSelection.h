@@ -10,6 +10,10 @@
 class OutlineExtension;
 
 
+namespace et {
+namespace edit {
+
+
 //-------------------------------
 // I_SceneSelectionListener
 //
@@ -74,3 +78,6 @@ private:
 	OutlineExtension* m_OutlineExtension = nullptr;
 };
 
+
+} // namespace edit
+} // namespace et

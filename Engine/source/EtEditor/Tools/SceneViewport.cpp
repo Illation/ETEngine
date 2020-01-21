@@ -14,6 +14,10 @@
 #include <EtEditor/SceneEditor/SceneEditor.h>
 
 
+namespace et {
+namespace edit {
+
+
 //===================
 // Scene Viewport
 //===================
@@ -286,3 +290,7 @@ void SceneViewport::InitCamera()
 		ecs.RemoveComponents<fw::ActiveAudioListenerComponent>(camEnt);
 	}
 }
+
+
+} // namespace edit
+} // namespace et

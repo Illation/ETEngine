@@ -12,6 +12,10 @@
 #include <EtEditor/Util/EditorConfig.h>
 
 
+namespace et {
+namespace edit {
+
+
 //===============
 // Editor Base
 //===============
@@ -149,3 +153,7 @@ void EditorBase::ProcessLayoutChanges()
 	}
 	m_QueuedCollapse.clear();
 }
+
+
+} // namespace edit
+} // namespace et

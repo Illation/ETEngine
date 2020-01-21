@@ -8,6 +8,10 @@
 #include <EtEditor/Util/EditorConfig.h>
 
 
+namespace et {
+namespace edit {
+
+
 //==========================
 // File Resource Manager
 //==========================
@@ -153,3 +157,7 @@ bool FileResourceManager::IsEngineResource(I_Asset const* const asset) const
 {
 	return (m_EngineDb.GetAsset(asset->GetId(), asset->GetType(), false) != nullptr);
 }
+
+
+} // namespace edit
+} // namespace et

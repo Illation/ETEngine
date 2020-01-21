@@ -4,6 +4,10 @@
 #include "EpoxyGlContext.h"
 
 
+namespace et {
+namespace edit {
+
+
 //=========================
 // Single Context GL Area
 //=========================
@@ -186,3 +190,7 @@ ivec2 GtkRenderArea::GetDimensions() const
 
 	return ret;
 }
+
+
+} // namespace edit
+} // namespace et

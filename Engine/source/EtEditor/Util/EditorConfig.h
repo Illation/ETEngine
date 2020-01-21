@@ -7,6 +7,10 @@
 #include <EtCore/Helper/Singleton.h>
 
 
+namespace et {
+namespace edit {
+
+
 //---------------------------------
 // EditorConfig
 //
@@ -63,3 +67,6 @@ private:
 	DirPointers m_DirPointers;
 };
 
+
+} // namespace edit
+} // namespace et

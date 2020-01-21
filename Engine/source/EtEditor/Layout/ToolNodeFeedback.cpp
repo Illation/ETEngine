@@ -4,6 +4,10 @@
 #include <cairomm/context.h>
 
 
+namespace et {
+namespace edit {
+
+
 //====================
 // Tool Node Feedback
 //====================
@@ -117,3 +121,6 @@ bool ToolNodeFeedback::ForceRedraw()
 	return true;
 }
 
+
+} // namespace edit
+} // namespace et

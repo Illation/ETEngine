@@ -13,6 +13,10 @@ namespace render {
 }
 
 
+namespace et {
+namespace edit {
+
+
 //---------------------------------
 // EntityIdRenderer
 //
@@ -73,3 +77,6 @@ private:
 	std::function<void(fw::T_EntityId const)> m_OnEntityPicked;
 };
 
+
+} // namespace edit
+} // namespace et

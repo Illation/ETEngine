@@ -3,6 +3,10 @@
 #include <glibmm/refptr.h>
 
 
+namespace et {
+namespace edit {
+
+
 //---------------------------------
 // ToolNodeFeedback
 //
@@ -64,3 +68,6 @@ private:
 	int32 m_SplitPos = 0;
 };
 
+
+} // namespace edit
+} // namespace et

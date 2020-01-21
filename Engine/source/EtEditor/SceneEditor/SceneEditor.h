@@ -11,6 +11,10 @@
 #include <EtEditor/Layout/EditorBase.h>
 
 
+namespace et {
+namespace edit {
+
+
 class SceneViewport;
 
 
@@ -91,3 +95,6 @@ private:
 	bool m_IsShown = false;
 };
 
+
+} // namespace edit
+} // namespace et

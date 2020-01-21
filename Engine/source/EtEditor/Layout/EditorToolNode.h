@@ -24,6 +24,10 @@ namespace Gdk {
 }
 
 
+namespace et {
+namespace edit {
+
+
 //---------------------------------
 // EditorToolNode
 //
@@ -110,3 +114,6 @@ private:
 	ToolNodeFeedback m_Feedback;
 };
 
+
+} // namespace edit
+} // namespace et

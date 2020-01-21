@@ -14,6 +14,10 @@
 #include <EtEditor/Util/EditorTickOrder.h>
 
 
+namespace et {
+namespace edit {
+
+
 //===========================
 // Editor Application Window
 //===========================
@@ -220,3 +224,7 @@ EditorBase* EditorAppWindow::GetVisibleEditor() const
 
 	return foundPairIt->first;
 }
+
+
+} // namespace edit
+} // namespace et

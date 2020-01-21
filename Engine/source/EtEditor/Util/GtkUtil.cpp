@@ -4,6 +4,10 @@
 #include <gdk/gdkkeysyms.h>
 
 
+namespace et {
+namespace edit {
+
+
 //===========
 // GTK Util
 //===========
@@ -169,3 +173,6 @@ E_KbdKey GtkUtil::GetKeyFromGtk(uint32 const keyCode)
 	}
 }
 
+
+} // namespace edit
+} // namespace et

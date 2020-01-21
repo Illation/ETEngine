@@ -1,6 +1,10 @@
 #pragma once
 
 
+namespace et {
+namespace edit {
+
+
 //-------------------------------
 // I_SceneEditorListener
 //
@@ -17,3 +21,6 @@ public:
 	virtual void OnEditorTick() = 0;
 };
 
+
+} // namespace edit
+} // namespace et

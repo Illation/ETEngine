@@ -6,6 +6,10 @@
 #include <gdk/gdk.h>
 
 
+namespace et {
+namespace edit {
+
+
 class EditorToolNode;
 
 
@@ -62,3 +66,6 @@ private:
 	bool m_HasInitialSize = false;
 };
 
+
+} // namespace edit
+} // namespace et

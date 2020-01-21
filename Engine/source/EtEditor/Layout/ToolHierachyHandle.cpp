@@ -23,18 +23,22 @@
 RTTR_REGISTRATION
 {
 	using namespace rttr;
-	registration::enumeration<ToolHierachyHandle::E_DragState>("E_DragState") (
-		value("None", ToolHierachyHandle::E_DragState::None),
-		value("Start", ToolHierachyHandle::E_DragState::Start),
-		value("Abort", ToolHierachyHandle::E_DragState::Abort),
-		value("Collapse Neighbour", ToolHierachyHandle::E_DragState::CollapseNeighbour),
-		value("Collapse Owner", ToolHierachyHandle::E_DragState::CollapseOwner),
-		value("Collapse Abort", ToolHierachyHandle::E_DragState::CollapseAbort),
-		value("Vertical Split", ToolHierachyHandle::E_DragState::VSplit),
-		value("Vertical Split Abort", ToolHierachyHandle::E_DragState::VSplitAbort),
-		value("Horizontal Split", ToolHierachyHandle::E_DragState::HSplit),
-		value("Horizontal Split Abort", ToolHierachyHandle::E_DragState::HSplitAbort));
+	registration::enumeration<et::edit::ToolHierachyHandle::E_DragState>("E_DragState") (
+		value("None", et::edit::ToolHierachyHandle::E_DragState::None),
+		value("Start", et::edit::ToolHierachyHandle::E_DragState::Start),
+		value("Abort", et::edit::ToolHierachyHandle::E_DragState::Abort),
+		value("Collapse Neighbour", et::edit::ToolHierachyHandle::E_DragState::CollapseNeighbour),
+		value("Collapse Owner", et::edit::ToolHierachyHandle::E_DragState::CollapseOwner),
+		value("Collapse Abort", et::edit::ToolHierachyHandle::E_DragState::CollapseAbort),
+		value("Vertical Split", et::edit::ToolHierachyHandle::E_DragState::VSplit),
+		value("Vertical Split Abort", et::edit::ToolHierachyHandle::E_DragState::VSplitAbort),
+		value("Horizontal Split", et::edit::ToolHierachyHandle::E_DragState::HSplit),
+		value("Horizontal Split Abort", et::edit::ToolHierachyHandle::E_DragState::HSplitAbort));
 }
+
+
+namespace et {
+namespace edit {
 
 
 float const ToolHierachyHandle::s_SplitThreshold = 20.f;
@@ -358,3 +362,6 @@ void ToolHierachyHandle::ActionDragResult()
 	}
 }
 
+
+} // namespace edit
+} // namespace et

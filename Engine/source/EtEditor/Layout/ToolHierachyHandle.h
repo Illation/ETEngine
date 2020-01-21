@@ -14,6 +14,11 @@ namespace Gdk {
 	class Cursor;
 }
 
+
+namespace et {
+namespace edit {
+
+
 class EditorToolNode;
 
 
@@ -79,3 +84,6 @@ private:
 	ivec2 m_Position; // in start state represents the initial position, otherwise the position within the owning frame in case of a split
 };
 
+
+} // namespace edit
+} // namespace et

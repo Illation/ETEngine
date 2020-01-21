@@ -14,6 +14,10 @@
 #include <EtEditor/Tools/SceneViewport.h>
 
 
+namespace et {
+namespace edit {
+
+
 //=======================
 // Editor Meta Component
 //=======================
@@ -159,3 +163,7 @@ void SceneEditor::UnregisterListener(I_SceneEditorListener const* const listener
 		m_Listeners.clear();
 	}
 }
+
+
+} // namespace edit
+} // namespace et

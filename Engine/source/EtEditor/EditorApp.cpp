@@ -28,6 +28,10 @@
 #include <EtEditor/SceneEditor/SceneEditor.h>
 
 
+namespace et {
+namespace edit {
+
+
 //====================
 // Editor Application 
 //====================
@@ -304,3 +308,7 @@ void EditorApp::OnActionQuit()
 		window->hide();
 	}
 }
+
+
+} // namespace edit
+} // namespace et

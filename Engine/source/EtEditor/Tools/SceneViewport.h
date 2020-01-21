@@ -14,10 +14,16 @@
 
 
 // forward
-class SceneEditor;
 namespace render {
 	class ShadedSceneRenderer;
 }
+
+
+namespace et {
+namespace edit {
+
+
+class SceneEditor;
 
 
 //--------------------
@@ -72,3 +78,7 @@ private:
 
 	bool m_IsInitialized = false;
 };
+
+
+} // namespace edit
+} // namespace et

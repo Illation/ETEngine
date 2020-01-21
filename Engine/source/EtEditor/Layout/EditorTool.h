@@ -2,11 +2,17 @@
 
 
 // forward
-class EditorBase;
 namespace Gtk {
 	class Frame;
 	class Widget;
 }
+
+
+namespace et {
+namespace edit {
+
+
+class EditorBase;
 
 
 //-------------------------------------------
@@ -40,3 +46,6 @@ public:
 	virtual bool IsToolbarTopPref() const { return true; }
 };
 
+
+} // namespace edit
+} // namespace et

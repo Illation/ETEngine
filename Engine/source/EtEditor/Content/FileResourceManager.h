@@ -8,6 +8,10 @@ class I_Package;
 class Directory;
 
 
+namespace et {
+namespace edit {
+
+
 //---------------------------------
 // FileResourceManager
 //
@@ -59,3 +63,6 @@ protected:
 	Directory* m_EngineDir = nullptr;
 };
 
+
+} // namespace edit
+} // namespace et

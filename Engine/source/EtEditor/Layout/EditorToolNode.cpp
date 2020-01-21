@@ -29,15 +29,19 @@
 // reflection
 RTTR_REGISTRATION
 {
-	rttr::registration::enumeration<E_EditorTool>("E_EditorTool") (
-		rttr::value("SceneViewport", E_EditorTool::SceneViewport),
-		rttr::value("Outliner", E_EditorTool::Outliner),
-		rttr::value("Invalid", E_EditorTool::Invalid));
+	rttr::registration::enumeration<et::edit::E_EditorTool>("E_EditorTool") (
+		rttr::value("SceneViewport", et::edit::E_EditorTool::SceneViewport),
+		rttr::value("Outliner", et::edit::E_EditorTool::Outliner),
+		rttr::value("Invalid", et::edit::E_EditorTool::Invalid));
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(EditorToolNode, "editor tool node")
-		.property("type", &EditorToolNode::m_Type)
-	END_REGISTER_POLYMORPHIC_CLASS(EditorToolNode, EditorNode);
+	BEGIN_REGISTER_POLYMORPHIC_CLASS(et::edit::EditorToolNode, "editor tool node")
+		.property("type", &et::edit::EditorToolNode::m_Type)
+	END_REGISTER_POLYMORPHIC_CLASS(et::edit::EditorToolNode, et::edit::EditorNode);
 }
+
+
+namespace et {
+namespace edit {
 
 
 //---------------------------------
@@ -443,3 +447,6 @@ void EditorToolNode::InitHierachyUI()
 	}
 }
 
+
+} // namespace edit
+} // namespace et

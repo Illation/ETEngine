@@ -2,9 +2,14 @@
 #include "SettingsDialog.h"
 
 
+namespace et {
+namespace edit {
+
+
 //====================
 // Settings Dialog
 //====================
+
 
 //---------------------------------
 // SettingsDialog::SettingsDialog
@@ -18,6 +23,7 @@ SettingsDialog::SettingsDialog(BaseObjectType* cobject, const Glib::RefPtr<Gtk::
 {
 	m_Settings = Gio::Settings::create("com.leah-lindner.editor");
 }
+
 
 //static
 //---------------------------------
@@ -39,3 +45,7 @@ SettingsDialog* SettingsDialog::create(Gtk::Window& parent)
 
 	return dialog;
 }
+
+
+} // namespace edit
+} // namespace et

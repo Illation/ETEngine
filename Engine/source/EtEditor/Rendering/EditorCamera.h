@@ -6,8 +6,14 @@
 #include <EtFramework/Components/TransformComponent.h>
 
 
+
 // forward
 class Camera;
+
+
+namespace et {
+namespace edit {
+
 
 //---------------------------
 // EditorCameraComponent
@@ -66,3 +72,7 @@ public:
 
 	void Process(fw::ComponentRange<EditorCameraSystemView>& ramge) override;
 };
+
+
+} // namespace edit
+} // namespace et

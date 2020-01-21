@@ -11,6 +11,11 @@ namespace Gtk {
 	class Menu;
 }
 
+
+namespace et {
+namespace edit {
+
+
 class EditorBase;
 class EditorNode;
 class EditorToolNode;
@@ -54,3 +59,6 @@ private:
 	Glib::RefPtr<Gio::MenuItem> m_FlipItem;
 };
 
+
+} // namespace edit
+} // namespace et

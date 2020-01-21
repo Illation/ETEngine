@@ -21,6 +21,8 @@ auto make_managed(T_Args&&... args)
 } // namespace Gtk
 
 
+namespace et {
+namespace edit {
 
 namespace GtkUtil {
 
@@ -28,4 +30,7 @@ namespace GtkUtil {
 	E_KbdKey GetKeyFromGtk(uint32 const keyCode);
 
 } // namepace GtkUtil
+
+} // namespace edit
+} // namespace et
 

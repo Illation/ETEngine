@@ -6,6 +6,10 @@
 #include <rttr/registration>
 
 
+namespace et {
+namespace edit {
+
+
 //======================
 // Editor Config
 //======================
@@ -38,3 +42,7 @@ void EditorConfig::Initialize()
 
 	m_DirPointers.m_EditorUserDir = m_DirPointers.m_ProjectPath + std::string("/user_data/editor/");
 }
+
+
+} // namespace edit
+} // namespace et
