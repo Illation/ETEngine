@@ -18,26 +18,22 @@ RTTR_REGISTRATION
 	using namespace rttr;
 
 	registration::class_<Config::UserDirPointer>("dir pointer")
-		.property("user dir path", &Config::UserDirPointer::m_UserDirPath)
-		;
+		.property("user dir path", &Config::UserDirPointer::m_UserDirPath) ;
 
 	registration::class_<Config::Settings::Window>("window")
 		.constructor<>()
-
 		.property("title", &Config::Settings::Window::Title)
 		.property("fullscreen", &Config::Settings::Window::Fullscreen)
 		.property("resolutions", &Config::Settings::Window::Resolutions)
 		.property("fullscreen resolution", &Config::Settings::Window::FullscreenRes)
-		.property("windowed resolution", &Config::Settings::Window::WindowedRes)
-		;
+		.property("windowed resolution", &Config::Settings::Window::WindowedRes) ;
 
 	registration::class_<Config::Settings>("settings")
 		.constructor<>()
 		.property("graphics", &Config::Settings::m_Graphics)
 		.property("window", &Config::Settings::m_Window)
 		.property("start scene", &Config::Settings::m_StartScene)
-		.property("screenshot dir", &Config::Settings::m_ScreenshotDir)
-		;
+		.property("screenshot dir", &Config::Settings::m_ScreenshotDir) ;
 }
 
 
