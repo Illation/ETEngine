@@ -40,7 +40,7 @@ ECS_REGISTER_COMPONENT(CameraComponent);
 //
 // fill out a render camera from the component
 //
-void CameraComponent::PopulateCamera(Camera& target, Viewport const& viewport, TransformComponent const& tfComp) const
+void CameraComponent::PopulateCamera(render::Camera& target, render::Viewport const& viewport, TransformComponent const& tfComp) const
 {
 	target.SetTransformation(tfComp.GetPosition(), tfComp.GetForward(), tfComp.GetUp(), true);
 

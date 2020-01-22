@@ -6,7 +6,7 @@
 
 #include <EtCore/Reflection/Registration.h>
 #include <EtCore/Content/Asset.h>
-#include <EtCore/Helper/LinkerUtils.h>
+#include <EtCore/Util/LinkerUtils.h>
 
 #include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
 
@@ -84,7 +84,7 @@ public:
 	std::string skybox;
 	std::string starfield;
 	EntityLink activeCamera;
-	PostProcessingSettings postprocessing;
+	render::PostProcessingSettings postprocessing;
 
 	// audio parameters
 	EntityLink audioListener;

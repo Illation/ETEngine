@@ -2,14 +2,16 @@
 #include "VertexInfo.h"
 
 #include <EtCore/Content/Asset.h>
-#include <EtCore/Helper/LinkerUtils.h>
+#include <EtCore/Util/LinkerUtils.h>
+
+
+namespace et {
+namespace render {
 
 
 // forward declarations
 class MeshData;
-namespace render {
-	class Material;
-}
+class Material;
 
 
 //---------------------------------
@@ -157,3 +159,7 @@ public:
 
 	RTTR_ENABLE(Asset<MeshData, false>)
 };
+
+
+} // namespace render
+} // namespace et

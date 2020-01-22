@@ -35,7 +35,7 @@ inline void SafeDelete(T &pObjectToDelete)
 }
 #pragma endregion Templates
 
-//platform independant utility to suppress unused parameter warnings from https://stackoverflow.com/questions/4851075
+//platform independent utility to suppress unused parameter warnings from https://stackoverflow.com/questions/4851075
 // use expression as sub-expression,
 // then make type of full expression int, discard result
 #define UNUSED(x) (void)(x)
@@ -43,12 +43,12 @@ inline void SafeDelete(T &pObjectToDelete)
 #pragma warning(disable : 4201) //nameless struct union - used in math library
 
 #pragma region
-#include <EtCore/Helper/AtomicTypes.h>
-#include <EtCore/Helper/Context.h>
-#include <EtCore/Helper/Time.h>
-#include <EtCore/Helper/Logger.h>
-#include <EtCore/Helper/PerformanceInfo.h>
-#include <EtCore/Helper/StringUtil.h>
+#include <EtCore/Util/AtomicTypes.h>
+#include <EtCore/Util/Context.h>
+#include <EtCore/Util/Time.h>
+#include <EtCore/Util/Logger.h>
+#include <EtCore/Util/PerformanceInfo.h>
+#include <EtCore/Util/StringUtil.h>
 #include <EtCore/Reflection/ReflectionUtil.h>
 //Working singleton Set
 #define TIME ContextManager::GetInstance()->GetActiveContext()->time

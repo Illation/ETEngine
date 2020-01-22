@@ -7,7 +7,7 @@
 
 #include "mainTesting.h"
 
-#include <EtCore/Helper/AtomicTypes.h>
+#include <EtCore/Util/AtomicTypes.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
 

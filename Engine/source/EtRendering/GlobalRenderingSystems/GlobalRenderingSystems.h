@@ -12,6 +12,10 @@
 #include <EtRendering/PlanetTech/Patch.h>
 
 
+namespace et {
+namespace render {
+
+
 //---------------------------------
 // RenderingSystems
 //
@@ -32,7 +36,7 @@ private:
 public:
 	static RenderingSystems* Instance();
 
-	static void AddReference(render::GraphicsSettings const& settings);
+	static void AddReference(GraphicsSettings const& settings);
 	static void AddReference();
 	static void RemoveReference();
 
@@ -47,43 +51,47 @@ private:
 	// functionality
 	//---------------
 public:
-	void SetGraphicsSettings(render::GraphicsSettings const& settings) { m_GraphicsSettings = settings; }
+	void SetGraphicsSettings(GraphicsSettings const& settings) { m_GraphicsSettings = settings; }
 
 	// accessors
 	//-----------
-	render::GraphicsSettings const& GetGraphicsSettings() const { return m_GraphicsSettings; }
+	GraphicsSettings const& GetGraphicsSettings() const { return m_GraphicsSettings; }
 
 	PrimitiveRenderer& GetPrimitiveRenderer() { return m_PrimitiveRenderer; }
 	PbrPrefilter& GetPbrPrefilter() { return m_PbrPrefilter; }
-	render::SharedVarController& GetSharedVarController() { return m_SharedVarController; }
+	SharedVarController& GetSharedVarController() { return m_SharedVarController; }
 	CIE& GetCie() { return m_Cie; }
 	DirectLightVolume& GetDirectLightVolume() { return m_DirectLightVolume; }
 	PointLightVolume& GetPointLightVolume() { return m_PointLightVolume; }
-	render::AtmospherePrecompute& GetAtmospherPrecompute() { return m_AtmospherePrecompute; }
-	render::Patch& GetPatch() { return m_Patch; }
-	render::Material const* GetNullMaterial() const { return m_NullMaterial.get(); }
-	render::Material const* GetColorMaterial() const { return m_ColorMaterial.get(); }
+	AtmospherePrecompute& GetAtmospherPrecompute() { return m_AtmospherePrecompute; }
+	Patch& GetPatch() { return m_Patch; }
+	Material const* GetNullMaterial() const { return m_NullMaterial.get(); }
+	Material const* GetColorMaterial() const { return m_ColorMaterial.get(); }
 
 	// Data
 	///////
 private:
 
-	render::GraphicsSettings m_GraphicsSettings;
+	GraphicsSettings m_GraphicsSettings;
 
 	PrimitiveRenderer m_PrimitiveRenderer;
 
 	PbrPrefilter m_PbrPrefilter;
 
-	render::SharedVarController m_SharedVarController;
+	SharedVarController m_SharedVarController;
 
 	CIE m_Cie;
 
 	DirectLightVolume m_DirectLightVolume;
 	PointLightVolume m_PointLightVolume;
 
-	render::AtmospherePrecompute m_AtmospherePrecompute;
-	render::Patch m_Patch;
+	AtmospherePrecompute m_AtmospherePrecompute;
+	Patch m_Patch;
 
-	AssetPtr<render::Material> m_NullMaterial;
-	AssetPtr<render::Material> m_ColorMaterial;
+	AssetPtr<Material> m_NullMaterial;
+	AssetPtr<Material> m_ColorMaterial;
 };
+
+
+} // namespace render
+} // namespace et

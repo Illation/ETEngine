@@ -4,6 +4,10 @@
 #include <EtRendering/GraphicsContext/Viewport.h>
 
 
+namespace et {
+namespace render {
+
+
 //===================
 // Shader Data
 //===================
@@ -97,3 +101,7 @@ bool ShaderData::Upload<TextureData const*>(T_Hash const uniform, TextureData co
 
 	return true;
 }
+
+
+} // namespace render
+} // namespace et

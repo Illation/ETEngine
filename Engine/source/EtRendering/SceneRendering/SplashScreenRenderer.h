@@ -5,10 +5,11 @@
 #include <EtRendering/GraphicsContext/ViewportRenderer.h>
 
 
-class TextureData;
-
-
+namespace et {
 namespace render {
+
+
+class TextureData;
 
 
 //---------------------------------
@@ -67,3 +68,4 @@ private:
 
 
 } // namespace render
+} // namespace et

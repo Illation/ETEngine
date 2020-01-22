@@ -59,7 +59,7 @@ SpawnComponent::SpawnComponent(T_Hash const meshId,
 	, interval(interv)
 	, impulse(imp)
 {
-	mesh = ResourceManager::Instance()->GetAssetData<MeshData>(meshId);
+	mesh = ResourceManager::Instance()->GetAssetData<render::MeshData>(meshId);
 
 	// Load material
 	material = ResourceManager::Instance()->GetAssetData<render::Material>(materialId, false);

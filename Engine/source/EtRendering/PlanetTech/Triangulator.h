@@ -3,6 +3,7 @@
 #include <EtRendering/GraphicsTypes/Frustum.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -85,3 +86,4 @@ private:
 
 
 } // namespace render
+} // namespace et

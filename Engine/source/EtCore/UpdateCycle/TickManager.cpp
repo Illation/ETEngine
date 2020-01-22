@@ -5,7 +5,7 @@
 #include "Tickable.h"
 #include "RealTimeTickTriggerer.h"
 #include "DefaultTickTriggerer.h"
-#include <EtCore/Helper/InputManager.h>
+#include <EtCore/Util/InputManager.h>
 
 
 //====================

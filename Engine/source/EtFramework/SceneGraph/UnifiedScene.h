@@ -2,7 +2,7 @@
 #include "SceneEvents.h"
 #include "SceneDescriptor.h"
 
-#include <EtCore/Helper/Context.h>
+#include <EtCore/Util/Context.h>
 #include <EtCore/UpdateCycle/Tickable.h>
 
 #include <EtRendering/SceneStructure/RenderScene.h>

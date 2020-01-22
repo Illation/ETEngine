@@ -2,10 +2,12 @@
 #include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Containers/slot_map.h>
 
-class TextureData;
 
-
+namespace et {
 namespace render {
+
+
+class TextureData;
 
 
 //----------------------
@@ -24,3 +26,4 @@ struct Sprite
 
 
 } // namespace render
+} // namespace et

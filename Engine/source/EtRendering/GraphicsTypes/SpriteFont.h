@@ -4,6 +4,10 @@
 #include <EtCore/Content/AssetPointer.h>
 
 
+namespace et {
+namespace render {
+
+
 class TextRenderer;
 
 
@@ -134,3 +138,6 @@ public:
 	RTTR_ENABLE(Asset<SpriteFont, false>)
 };
 
+
+} // namespace render
+} // namespace et

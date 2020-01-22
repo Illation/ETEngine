@@ -7,6 +7,7 @@
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -169,3 +170,4 @@ void Triangulator::RecursiveTriangle(vec3 a, vec3 b, vec3 c, int16 level, bool f
 
 
 } // namespace render
+} // namespace et

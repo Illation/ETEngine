@@ -4,13 +4,17 @@
 #include <EtCore/Reflection/Registration.h>
 #include <EtCore/Content/AssetPointer.h>
 
+namespace et {
+	REGISTRATION_NS(render)
+}
+
+
+namespace et {
+namespace render {
+
 
 class ShaderData;
 class TextureData;
-REGISTRATION_NS(render)
-
-
-namespace render {
 
 
 //---------------------------------
@@ -112,4 +116,7 @@ void ConvertDescriptor(T_ParameterBlock const baseParams,
 
 
 } // namespace parameters
+
+
 } // namespace render
+} // namespace et

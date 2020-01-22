@@ -3,7 +3,7 @@
 #include <rttr/type>
 
 #include <EtCore/Content/Asset.h>
-#include <EtCore/Helper/LinkerUtils.h>
+#include <EtCore/Util/LinkerUtils.h>
 
 
 //---------------------------------

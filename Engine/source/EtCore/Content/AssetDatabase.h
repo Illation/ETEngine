@@ -4,7 +4,7 @@
 
 #include "Asset.h"
 
-#include <EtCore/Helper/Hash.h>
+#include <EtCore/Hashing/Hash.h>
 
 
 //---------------------------------

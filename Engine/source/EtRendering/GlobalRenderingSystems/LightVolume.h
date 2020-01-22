@@ -1,11 +1,15 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-class ShaderData;
+
+namespace et {
 namespace render {
-	class Material;
-	class DirectionalShadowData;
-}
+
+
+class ShaderData;
+class Material;
+class DirectionalShadowData;
+
 
 class PointLightVolume final
 {
@@ -35,3 +39,7 @@ private:
 	void Initialize();
 	bool m_IsInitialized = false;
 };
+
+
+} // namespace render
+} // namespace et

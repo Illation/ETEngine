@@ -6,6 +6,7 @@
 #include <EtRendering/SceneRendering/Gbuffer.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -86,3 +87,4 @@ void SharedVarController::UpdataData(Camera const& camera, Gbuffer const& gbuffe
 
 
 } // namespace render
+} // namespace et

@@ -1,6 +1,9 @@
 #pragma once
 #include "TextureData.h"
 
+namespace et {
+namespace render {
+
 
 //---------------------------------
 // EnvironmentMap
@@ -66,3 +69,7 @@ public:
 TextureData* EquirectangularToCubeMap(TextureData const* const pEqui, int32 const resolution);
 mat4 CubeCaptureProjection();
 std::vector<mat4> CubeCaptureViews();
+
+
+} // namespace render
+} // namespace et

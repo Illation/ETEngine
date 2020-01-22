@@ -10,11 +10,12 @@
 #include <EtRendering/GraphicsTypes/DirectionalShadowData.h>
 
 
+namespace et {
+namespace render {
+	
+
 class MeshData;
 class StarField;
-
-
-namespace render {
 
 
 //----------------------
@@ -177,3 +178,4 @@ private:
 
 
 } // namespace render
+} // namespace et

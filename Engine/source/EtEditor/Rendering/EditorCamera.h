@@ -8,7 +8,9 @@
 
 
 // forward
-class Camera;
+namespace et { namespace render {
+	class Camera;
+} }
 
 
 namespace et {
@@ -27,7 +29,7 @@ struct EditorCameraComponent final
 public:
 	// set by editor
 	bool isEnabled = false;
-	Camera const* renderCamera = nullptr;
+	render::Camera const* renderCamera = nullptr;
 
 	// inherent
 	vec3 movement;

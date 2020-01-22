@@ -2,6 +2,10 @@
 #include "PostProcessingSettings.h"
 
 
+namespace et {
+namespace render {
+
+
 // reflection
 RTTR_REGISTRATION
 {
@@ -23,3 +27,6 @@ RTTR_REGISTRATION
 
 DEFINE_FORCED_LINKING(PostProcessingSettings) // force the linker to include this unit
 
+
+} // namespace render
+} // namespace et

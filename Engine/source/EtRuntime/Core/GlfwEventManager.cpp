@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GlfwEventManager.h"
 
-#include <EtCore/Helper/InputManager.h>
+#include <EtCore/Util/InputManager.h>
 
 
 namespace et {

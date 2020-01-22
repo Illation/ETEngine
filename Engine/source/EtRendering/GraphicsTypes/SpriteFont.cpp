@@ -15,6 +15,10 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
+namespace et {
+namespace render {
+
+
 //=============
 // Font Metric
 //=============
@@ -508,3 +512,7 @@ SpriteFont* FontAsset::LoadFnt(const std::vector<uint8>& binaryContent)
 
 	return pFont;
 }
+
+
+} // namespace render
+} // namespace et

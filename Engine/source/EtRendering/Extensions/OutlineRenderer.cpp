@@ -13,6 +13,9 @@
 #include <EtRendering/SceneRendering/Gbuffer.h>
 
 
+namespace et {
+namespace render {
+
 
 //====================
 // Outline Renderer
@@ -39,7 +42,11 @@ void OutlineRenderer::Init(render::T_RenderEventDispatcher* const eventDispatche
 
 	CreateRenderTarget();
 
-	Viewport::GetCurrentViewport()->GetResizeEvent().AddListener( std::bind( &OutlineRenderer::OnWindowResize, this ) );
+	m_VPCallbackId = Viewport::GetCurrentViewport()->GetEventDispatcher().Register(render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
+		[this](render::T_ViewportEventFlags const, render::ViewportEventData const* const) -> void
+		{
+			OnWindowResize();
+		}));
 
 	m_EventDispatcher = eventDispatcher;
 	m_CallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RenderOutlines, render::T_RenderEventCallback(
@@ -77,6 +84,11 @@ void OutlineRenderer::Deinit()
 	DestroyRenderTarget();
 
 	m_SobelShader = nullptr;
+
+	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
+	{
+		Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
+	}
 
 	if (m_EventDispatcher != nullptr)
 	{
@@ -216,3 +228,7 @@ void OutlineRenderer::OnWindowResize()
 	DestroyRenderTarget();
 	CreateRenderTarget();
 }
+
+
+} // namespace render
+} // namespace et

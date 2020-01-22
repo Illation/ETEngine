@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 
-#include <EtCore/Helper/AtomicTypes.h>
+#include <EtCore/Util/AtomicTypes.h>
 
 
 void GenerateCompilableResource(std::vector<uint8> const& data, std::string const& name, std::string const& path);

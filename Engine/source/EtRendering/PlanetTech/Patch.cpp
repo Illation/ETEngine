@@ -11,6 +11,7 @@
 #include <EtRendering/GraphicsTypes/Frustum.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -188,3 +189,4 @@ Patch::~Patch()
 
 
 } // namespace render
+} // namespace et

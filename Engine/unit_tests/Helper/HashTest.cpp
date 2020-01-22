@@ -1,5 +1,5 @@
 #include <catch2/catch.hpp>
-#include <EtCore/Helper/Hash.h>
+#include <EtCore/Hashing/Hash.h>
 
 
 TEST_CASE("String Hash", "[hash]")

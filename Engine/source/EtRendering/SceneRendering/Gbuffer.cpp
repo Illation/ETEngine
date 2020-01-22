@@ -9,6 +9,10 @@
 #include <EtRendering/SceneStructure/RenderScene.h>
 
 
+namespace et {
+namespace render {
+
+
 Gbuffer::Gbuffer(bool demo):
 	FrameBuffer(demo ? "Shaders/PostBufferDisplay.glsl" : "Shaders/PostDeferredComposite.glsl", E_DataType::Float, 2)
 {
@@ -38,3 +42,7 @@ void Gbuffer::UploadDerivedVariables()
 	TextureData const* lut = RenderingSystems::Instance()->GetPbrPrefilter().GetLUT();
 	m_pShader->Upload("texBRDFLUT"_hash, lut);
 }
+
+
+} // namespace render
+} // namespace et

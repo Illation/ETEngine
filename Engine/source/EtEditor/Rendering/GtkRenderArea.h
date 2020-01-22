@@ -29,7 +29,7 @@ private:
 	struct ContextCache
 	{
 		Glib::RefPtr<Gdk::GLContext> glibContext;
-		I_GraphicsApiContext* apiContext;
+		render::I_GraphicsApiContext* apiContext;
 	};
 
 	static ContextCache* s_SingleContextCache;
@@ -44,7 +44,7 @@ public:
 
 	// accessors
 	//-----------
-	I_GraphicsApiContext* GetApiContext() const;
+	render::I_GraphicsApiContext* GetApiContext() const;
 
 	// signals
 	//-----------------------
@@ -58,7 +58,7 @@ private:
 //
 // Render area using GTKmm GLArea as a subsystem, managing an openGL context
 //
-class GtkRenderArea : public I_RenderArea
+class GtkRenderArea : public render::I_RenderArea
 {
 	// construct destruct
 	//-------------------
@@ -76,10 +76,10 @@ protected:
 
 	// Render Area Interface
 	//-----------------------
-	void SetOnInit(std::function<void(I_GraphicsApiContext* const)>& callback) override { m_OnInit = callback; }
+	void SetOnInit(std::function<void(render::I_GraphicsApiContext* const)>& callback) override { m_OnInit = callback; }
 	void SetOnDeinit(std::function<void()>& callback) override { m_OnDeinit = callback; }
 	void SetOnResize(std::function<void(vec2 const)>& callback) override { m_OnResize = callback; }
-	void SetOnRender(std::function<void(T_FbLoc const)>& callback) override { m_OnRender = callback; }
+	void SetOnRender(std::function<void(render::T_FbLoc const)>& callback) override { m_OnRender = callback; }
 
 	void QueueDraw() override;
 	bool MakeCurrent() override;
@@ -89,10 +89,10 @@ protected:
 	// Data
 	///////
 private:
-	std::function<void(I_GraphicsApiContext* const)> m_OnInit;
+	std::function<void(render::I_GraphicsApiContext* const)> m_OnInit;
 	std::function<void()> m_OnDeinit;
 	std::function<void(vec2 const)> m_OnResize;
-	std::function<void(T_FbLoc const)> m_OnRender;
+	std::function<void(render::T_FbLoc const)> m_OnRender;
 
 	SingleContextGlArea* m_GlArea = nullptr;
 };

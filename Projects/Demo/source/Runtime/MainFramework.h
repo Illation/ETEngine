@@ -6,7 +6,9 @@
 #include <EtRuntime/AbstractFramework.h>
 
 
-class SpriteFont;
+namespace et { namespace render {
+	class SpriteFont;
+} }
 
 
 namespace et {
@@ -39,7 +41,7 @@ private:
 	size_t m_CurrentScene = 0u;
 	std::vector<T_Hash> m_Scenes;
 
-	AssetPtr<SpriteFont> m_DebugFont;
+	AssetPtr<render::SpriteFont> m_DebugFont;
 	bool m_DrawDebugInfo = true;
 	bool m_DrawFontAtlas = false;
 };

@@ -1,12 +1,12 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-class ShaderData;
 
-
+namespace et {
 namespace render {
 
-	
+
+class ShaderData;	
 class Planet;
 
 
@@ -76,3 +76,4 @@ private:
 
 
 } // namespace render
+} // namespace et

@@ -2,7 +2,7 @@
 #include "SwirlyLightComponent.h"
 
 #include <EtCore/Reflection/Registration.h>
-#include <EtCore/Helper/GlobalRandom.h>
+#include <EtCore/Util/GlobalRandom.h>
 
 #include <EtFramework/ECS/EcsController.h>
 #include <EtFramework/Components/TransformComponent.h>

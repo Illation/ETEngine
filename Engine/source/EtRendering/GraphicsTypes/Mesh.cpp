@@ -14,6 +14,10 @@
 #include <EtRendering/MaterialSystem/MaterialData.h>
 
 
+namespace et {
+namespace render {
+
+
 //=====================
 // Mesh Data Container
 //=====================
@@ -640,3 +644,7 @@ MeshDataContainer* MeshAsset::LoadGLTF(std::vector<uint8> const& data, std::stri
 
 	return ret;
 }
+
+
+} // namespace render
+} // namespace et

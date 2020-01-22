@@ -54,7 +54,7 @@ Glib::RefPtr<Gdk::GLContext> SingleContextGlArea::OnCreateContext()
 	{
 		s_SingleContextCache = new ContextCache();
 		s_SingleContextCache->glibContext = Gtk::GLArea::on_create_context();
-		s_SingleContextCache->apiContext = new EpoxyGlContext();
+		s_SingleContextCache->apiContext = new render::EpoxyGlContext();
 	}
 
 	return s_SingleContextCache->glibContext;
@@ -63,7 +63,7 @@ Glib::RefPtr<Gdk::GLContext> SingleContextGlArea::OnCreateContext()
 //---------------------------------
 // SingleContextGlArea::GetApiContext
 //
-I_GraphicsApiContext* SingleContextGlArea::GetApiContext() const
+render::I_GraphicsApiContext* SingleContextGlArea::GetApiContext() const
 {
 	ET_ASSERT(s_SingleContextCache != nullptr);
 	ET_ASSERT(s_SingleContextCache->apiContext != nullptr);

@@ -10,6 +10,10 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
+namespace et {
+namespace render {
+
+
 PostProcessingRenderer::PostProcessingRenderer()
 {
 }
@@ -339,3 +343,7 @@ void PostProcessingRenderer::ResizeFBTextures()
 		m_PingPongTexture[i]->Resize(dim);
 	}
 }
+
+
+} // namespace render
+} // namespace et

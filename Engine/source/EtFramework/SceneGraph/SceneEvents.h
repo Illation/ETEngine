@@ -1,5 +1,5 @@
 #pragma once
-#include <EtCore/Helper/GenericEventDispatcher.h>
+#include <EtCore/Util/GenericEventDispatcher.h>
 
 
 namespace et {

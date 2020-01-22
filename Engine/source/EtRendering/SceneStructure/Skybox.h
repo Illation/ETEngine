@@ -2,10 +2,11 @@
 #include <EtCore/Content/AssetPointer.h>
 
 
-class EnvironmentMap;
-
-
+namespace et {
 namespace render {
+
+
+class EnvironmentMap;
 
 
 //----------------------
@@ -21,3 +22,4 @@ struct Skybox
 
 
 } // namespace render
+} // namespace et

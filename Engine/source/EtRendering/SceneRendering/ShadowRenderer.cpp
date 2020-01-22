@@ -13,6 +13,7 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -110,3 +111,4 @@ void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShado
 
 
 } // namespace render
+} // namespace et

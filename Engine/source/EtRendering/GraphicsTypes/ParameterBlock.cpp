@@ -2,6 +2,7 @@
 #include "ParameterBlock.h"
 
 
+namespace et {
 namespace render {
 namespace parameters {
 
@@ -119,3 +120,4 @@ bool Compare(T_ConstParameterBlock const lhs, T_ConstParameterBlock const rhs, s
 
 } // namespace parameters
 } // namespace render
+} // namespace et

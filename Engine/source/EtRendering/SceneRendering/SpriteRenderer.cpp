@@ -8,6 +8,10 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
+namespace et {
+namespace render {
+
+
 //====================
 // Sprite Renderer
 //====================
@@ -24,6 +28,11 @@
 SpriteRenderer::~SpriteRenderer()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
+	{
+		Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
+	}
 
 	api->DeleteVertexArray(m_VAO);
 	api->DeleteBuffer(m_VBO);
@@ -81,7 +90,11 @@ void SpriteRenderer::Initialize()
 	TextureParameters params;
 	m_EmptyTex->SetParameters(params);
 
-	Viewport::GetCurrentViewport()->GetResizeEvent().AddListener(std::bind(&SpriteRenderer::OnWindowResize, this));
+	m_VPCallbackId = Viewport::GetCurrentViewport()->GetEventDispatcher().Register(render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
+		[this](render::T_ViewportEventFlags const, render::ViewportEventData const* const) -> void
+		{
+			OnWindowResize();
+		}));
 }
 
 
@@ -298,3 +311,7 @@ void SpriteRenderer::CalculateTransform()
 		0,		0,			1,		0,
 		-1,		1,			0,		1 });
 }
+
+
+} // namespace render
+} // namespace et

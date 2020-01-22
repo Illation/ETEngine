@@ -1,7 +1,7 @@
 #include <sys/types.h>
 #include <windows.h>
 
-#include "../../Helper/WindowsUtil.h"
+#include <EtCore/Util/WindowsUtil.h>	
 
 bool Directory::Exists()
 {

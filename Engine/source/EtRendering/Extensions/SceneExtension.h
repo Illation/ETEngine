@@ -1,6 +1,7 @@
 #pragma once
 
 
+namespace et {
 namespace render {
 
 
@@ -19,3 +20,4 @@ public:
 
 
 } // namespace render
+} // namespace et

@@ -6,7 +6,7 @@
 
 #include <_generated/resources.c>
 
-#include <EtCore/Helper/AtomicTypes.h>
+#include <EtCore/Util/AtomicTypes.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
 #include <EtEditor/EditorApp.h>

@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include <EtCore/Helper/AtomicTypes.h>
+#include <EtCore/Util/AtomicTypes.h>
 
 
 namespace et {

@@ -1,6 +1,7 @@
 #pragma once
 
 
+namespace et {
 namespace render {
 namespace parameters {
 
@@ -40,4 +41,5 @@ void Write(T_ParameterBlock const block, size_t const offset, TParamType const& 
 
 } // namespace parameters
 } // namespace render
+} // namespace et
 

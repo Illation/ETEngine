@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include <EtCore/UpdateCycle/Tickable.h>
-#include <EtCore/Helper/Singleton.h>
+#include <EtCore/Util/Singleton.h>
 
 #include <EtFramework/Config/TickOrder.h>
 

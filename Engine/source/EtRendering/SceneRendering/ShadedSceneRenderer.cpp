@@ -10,6 +10,7 @@
 #include <EtRendering/PlanetTech/StarField.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -459,3 +460,4 @@ void ShadedSceneRenderer::DrawOverlays(T_FbLoc const targetFb)
 
 
 } // namespace render
+} // namespace et

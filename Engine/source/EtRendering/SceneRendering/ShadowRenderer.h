@@ -4,14 +4,13 @@
 #include <EtCore/Content/AssetPointer.h>
 
 
+namespace et {
+namespace render {
+
+
 // forward
 class ShaderData;
-namespace render {
-	class DirectionalShadowData;
-}
-
-
-namespace render {
+class DirectionalShadowData;
 
 
 //---------------------------------
@@ -42,3 +41,4 @@ private:
 
 
 } // namespace render
+} // namespace et

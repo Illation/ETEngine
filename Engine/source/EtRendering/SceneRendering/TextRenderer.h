@@ -2,18 +2,20 @@
 #include <EtCore/Content/AssetPointer.h>
 
 
+namespace et {
+namespace render {
+
+
 class SpriteFont;
 class ShaderData;
-namespace render {
-	class ShadedSceneRenderer;
-	class SplashScreenRenderer;
-}
+class ShadedSceneRenderer;
+class SplashScreenRenderer;
 
 
 //---------------------------------
 // TextRenderer
 //
-// Draws spritefonts in an efficient manner
+// Draws sprite fonts in an efficient manner
 //
 class TextRenderer final 
 {
@@ -123,5 +125,10 @@ private:
 
 	T_ArrayLoc m_VAO;
 	T_BufferLoc m_VBO;
+
+	render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
 };
 
+
+} // namespace render
+} // namespace et

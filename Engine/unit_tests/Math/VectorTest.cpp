@@ -2,7 +2,7 @@
 
 #include <EtMath/Vector.h>
 
-#include <EtCore/Helper/AtomicTypes.h>
+#include <EtCore/Util/AtomicTypes.h>
 
 
 TEST_CASE("Generic vector functionality", "[vector]")

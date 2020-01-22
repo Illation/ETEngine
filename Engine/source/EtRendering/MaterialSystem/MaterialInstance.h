@@ -2,6 +2,7 @@
 #include "MaterialData.h"
 
 
+namespace et {
 namespace render {
 
 
@@ -70,4 +71,5 @@ public:
 
 
 } // namespace render
+} // namespace et
 

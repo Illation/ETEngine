@@ -1,5 +1,5 @@
 #pragma once
-#include <EtCore/Helper/LinkerUtils.h>
+#include <EtCore/Util/LinkerUtils.h>
 
 class MathRegistrationLinkEnforcer
 {

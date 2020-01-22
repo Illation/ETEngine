@@ -9,6 +9,10 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
+namespace et {
+namespace render {
+
+
 PbrPrefilter::PbrPrefilter()
 {
 
@@ -194,3 +198,7 @@ TextureData* PbrPrefilter::GetLUT()
 
 	return m_LUT;
 }
+
+
+} // namespace render
+} // namespace et

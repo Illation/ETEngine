@@ -7,10 +7,10 @@
 #include <EtFramework/ECS/EntityFwd.h>
 
 
-class Camera;
-namespace render {
+namespace et { namespace render {
+	class Camera;
 	class Material;
-}
+} }
 
 
 namespace et {
@@ -22,7 +22,7 @@ namespace edit {
 //
 // Renders all entities to the scene using an ID as a color
 //
-class EntityIdRenderer final : public I_ViewportListener
+class EntityIdRenderer final : public render::I_ViewportListener
 {
 public:	
 	// construct destruct
@@ -44,36 +44,36 @@ private:
 	// Functionality
 	//---------------
 public:
-	void Pick(ivec2 const pixel, Viewport* const viewport, std::function<void(fw::T_EntityId const)>& onEntityPicked);
+	void Pick(ivec2 const pixel, render::Viewport* const viewport, std::function<void(fw::T_EntityId const)>& onEntityPicked);
 	
 	// Viewport Listener interface
 	//-----------------------------
 protected:
 
-	void OnViewportPreRender(T_FbLoc const targetFb) override;
-	void OnViewportPostFlush(T_FbLoc const targetFb) override;
+	void OnViewportPreRender(render::T_FbLoc const targetFb) override;
+	void OnViewportPostFlush(render::T_FbLoc const targetFb) override;
 
 	// Utility
 	//---------
 private:
-	void DrawEntity(fw::T_EntityId const entity, Camera const& camera) const;
+	void DrawEntity(fw::T_EntityId const entity, render::Camera const& camera) const;
 	void GetIdColor(fw::T_EntityId const id, vec4& col) const;
 
 
 	// Data
 	///////
 
-	AssetPtr<ShaderData> m_Shader;
+	AssetPtr<render::ShaderData> m_Shader;
 	AssetPtr<render::Material> m_Material;
 
-	T_FbLoc m_DrawTarget;
-	TextureData* m_DrawTex = nullptr;
-	T_RbLoc m_DrawDepth;
+	render::T_FbLoc m_DrawTarget;
+	render::TextureData* m_DrawTex = nullptr;
+	render::T_RbLoc m_DrawDepth;
 
 	ivec2 m_LastViewSize; // if the view size changes we update the render target on resize 
 
 	ivec2 m_PixelToPick;
-	Viewport* m_ViewportToPickFrom = nullptr;
+	render::Viewport* m_ViewportToPickFrom = nullptr;
 	std::function<void(fw::T_EntityId const)> m_OnEntityPicked;
 };
 

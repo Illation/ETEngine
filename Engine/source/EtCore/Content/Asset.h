@@ -1,6 +1,6 @@
 #pragma once
 
-#include <EtCore/Helper/Hash.h>
+#include <EtCore/Hashing/Hash.h>
 
 #include <rttr/type>
 

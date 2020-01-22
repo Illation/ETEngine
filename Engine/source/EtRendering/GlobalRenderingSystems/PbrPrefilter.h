@@ -1,6 +1,10 @@
 #pragma once
 
 
+namespace et {
+namespace render {
+
+
 class PbrPrefilter final
 {
 public:
@@ -22,3 +26,7 @@ private:
 
 	TextureData* m_LUT = nullptr;
 };
+
+
+} // namespace render
+} // namespace et

@@ -2,11 +2,12 @@
 #include <EtRendering/GraphicsContext/GraphicsTypes.h>
 
 
+namespace et {
+namespace render {
+
+
 class Camera;
 class Gbuffer;
-
-
-namespace render {
 
 
 //--------------------
@@ -16,7 +17,7 @@ namespace render {
 //
 class SharedVarController final
 {
-	// definititions
+	// definitions
 	//---------------
 	struct GlobalData
 	{
@@ -78,3 +79,4 @@ private:
 
 
 } // namespace render
+} // namespace et

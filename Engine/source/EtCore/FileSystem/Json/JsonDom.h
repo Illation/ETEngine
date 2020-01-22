@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <EtCore/Helper/AtomicTypes.h>
+#include <EtCore/Util/AtomicTypes.h>
 
 namespace JSON
 {

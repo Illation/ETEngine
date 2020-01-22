@@ -5,6 +5,7 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -76,3 +77,4 @@ void DirectionalShadowData::Destroy()
 
 
 } // namespace render
+} // namespace et

@@ -8,6 +8,7 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -217,3 +218,4 @@ AtmosphereSettings::AtmosphereSettings()
 
 
 } // namespace render
+} // namespace et

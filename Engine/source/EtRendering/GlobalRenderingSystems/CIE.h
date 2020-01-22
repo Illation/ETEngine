@@ -1,5 +1,8 @@
 #pragma once
 
+namespace et {
+namespace render {
+
 
 class CIE final
 {
@@ -17,3 +20,7 @@ private:
 	std::vector<double> m_Table;
 	dmat3 m_CieToRgb;
 };
+
+
+} // namespace render
+} // namespace et

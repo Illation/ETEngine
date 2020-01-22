@@ -7,6 +7,10 @@
 #include <EtRendering/GraphicsTypes/Camera.h>
 
 
+namespace et {
+namespace render {
+
+
 DebugRenderer::~DebugRenderer()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
@@ -291,3 +295,7 @@ void DebugRenderer::DrawGrid(Camera const& camera, float pixelSpacingRad)
 	m_Lines.insert(m_Lines.end(), thickLines.begin(), thickLines.end());
 #endif
 }
+
+
+} // namespace render
+} // namespace et

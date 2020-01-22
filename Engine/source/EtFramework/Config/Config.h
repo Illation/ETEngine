@@ -1,7 +1,7 @@
 #pragma once
 #include <rttr/type>
 
-#include <EtCore/Helper/Singleton.h>
+#include <EtCore/Util/Singleton.h>
 
 #include <EtRendering/GlobalRenderingSystems/GraphicsSettings.h>
 

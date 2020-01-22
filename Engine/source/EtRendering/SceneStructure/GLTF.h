@@ -1,8 +1,15 @@
 #pragma once
 #include <EtCore/FileSystem/Json/JsonDom.h>
 
-struct MeshDataContainer;
+
 class BinaryReader;
+
+
+namespace et {
+namespace render {
+
+
+struct MeshDataContainer;
 
 namespace glTF
 {
@@ -532,3 +539,7 @@ namespace glTF
 	
 	bool GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& meshContainers);
 }
+
+
+} // namespace render
+} // namespace et

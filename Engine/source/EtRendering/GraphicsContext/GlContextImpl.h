@@ -11,6 +11,10 @@
 #endif GL_CONTEXT_NS
 
 
+namespace et {
+namespace render {
+
+
 //---------------------------------
 // GL_CONTEXT_NS
 //
@@ -339,3 +343,6 @@ private:
 	float m_LineWidth = 1.f;
 };
 
+
+} // namespace render
+} // namespace et

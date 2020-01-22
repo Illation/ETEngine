@@ -9,11 +9,11 @@
 
 
 // fwd
-class Viewport;
-namespace render {
+namespace et { namespace render {
+	class Viewport;
 	class ShadedSceneRenderer;
 	class SplashScreenRenderer;
-}
+} }
 
 
 namespace et {
@@ -55,7 +55,7 @@ private:
 
 private:
 	GlfwRenderArea m_RenderArea;
-	Viewport* m_Viewport = nullptr;
+	render::Viewport* m_Viewport = nullptr;
 	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
 	render::SplashScreenRenderer* m_SplashScreenRenderer = nullptr;
 

@@ -2,6 +2,10 @@
 #include "VertexInfo.h"
 
 
+namespace et {
+namespace render {
+
+
 //================
 // Data Type Info
 //================
@@ -221,3 +225,7 @@ bool AttributeDescriptor::GetVertexFlag(AttributeDescriptor const& desc, E_Verte
 	flag = attIt->first;
 	return true;
 }
+
+
+} // namespace render
+} // namespace et

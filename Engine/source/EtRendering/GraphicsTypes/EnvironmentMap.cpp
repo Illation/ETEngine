@@ -12,6 +12,10 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
+namespace et {
+namespace render {
+
+
 //=================
 // Environment Map
 //=================
@@ -221,3 +225,7 @@ std::vector<mat4> CubeCaptureViews()
 	ret.push_back(etm::lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, -1.0f, 0.0f)));
 	return ret;
 }
+
+
+} // namespace render
+} // namespace et

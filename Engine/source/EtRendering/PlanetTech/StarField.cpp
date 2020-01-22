@@ -9,6 +9,10 @@
 #include <EtRendering/GraphicsTypes/TextureData.h>
 
 
+namespace et {
+namespace render {
+
+
 StarField::StarField(T_Hash const assetId) 
 {
 	AssetPtr<StubData> jsonDbText = ResourceManager::Instance()->GetAssetData<StubData>(assetId);
@@ -83,3 +87,7 @@ void StarField::Draw(Camera const& cam) const
 	api->BindVertexArray(0);
 	api->SetBlendEnabled(false);
 }
+
+
+} // namespace render
+} // namespace et

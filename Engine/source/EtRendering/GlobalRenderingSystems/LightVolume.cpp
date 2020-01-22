@@ -13,6 +13,10 @@
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 
+namespace et {
+namespace render {
+
+
 //====================
 // Point Light Volume 
 //====================
@@ -111,3 +115,7 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, render::DirectionalShad
 
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 }
+
+
+} // namespace render
+} // namespace et

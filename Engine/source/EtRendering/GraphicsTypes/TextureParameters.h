@@ -2,6 +2,10 @@
 #include <EtRendering/GraphicsContext/GraphicsTypes.h>
 
 
+namespace et {
+namespace render {
+
+
 //---------------------------------
 // TextureParameters
 //
@@ -36,3 +40,7 @@ struct TextureParameters final
 
 	RTTR_ENABLE()
 };
+
+
+} // namespace render
+} // namespace et

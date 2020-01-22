@@ -1,5 +1,9 @@
 #pragma once
 
+namespace et {
+namespace render {
+
+
 class Camera;
 class Viewport;
 
@@ -68,3 +72,6 @@ private:
 	float m_NearPlane, m_FarPlane, m_FOV;
 };
 
+
+} // namespace render
+} // namespace et

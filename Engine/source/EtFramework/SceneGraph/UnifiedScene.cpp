@@ -3,7 +3,7 @@
 
 #include <btBulletDynamicsCommon.h>
 
-#include <EtCore/Helper/Context.h>
+#include <EtCore/Util/Context.h>
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtFramework/Physics/BulletETM.h>
@@ -190,7 +190,7 @@ void UnifiedScene::UnloadScene()
 	// reset rendering
 	m_RenderScene.SetSkyboxMap(0u);
 	m_RenderScene.SetStarfield(0u);
-	m_RenderScene.SetPostProcessingSettings(PostProcessingSettings());
+	m_RenderScene.SetPostProcessingSettings(render::PostProcessingSettings());
 
 	// reset physics
 	m_PhysicsWorld.Deinit();

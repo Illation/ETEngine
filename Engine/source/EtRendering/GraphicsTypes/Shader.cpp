@@ -10,6 +10,10 @@
 #include <EtRendering/GlobalRenderingSystems/SharedVarController.h>
 
 
+namespace et {
+namespace render {
+
+
 //===================
 // Shader Data
 //===================
@@ -546,3 +550,7 @@ void ShaderAsset::GetAttributes(T_ShaderLoc const shaderProgram, std::vector<Sha
 		attributes.emplace_back(api->GetAttributeLocation(shaderProgram, info.name), info);
 	}
 }
+
+
+} // namespace render
+} // namespace et

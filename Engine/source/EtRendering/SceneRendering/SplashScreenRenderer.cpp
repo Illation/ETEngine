@@ -8,6 +8,7 @@
 #include <EtRendering/GraphicsTypes/SpriteFont.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -92,3 +93,4 @@ void SplashScreenRenderer::OnRender(T_FbLoc const targetFb)
 
 
 } // namespace render
+} // namespace et

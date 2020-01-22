@@ -14,7 +14,7 @@ namespace fw {
 //
 // Captures the content of a viewport and outputs it to an image file
 //
-class ScreenshotCapture final : public I_ViewportListener
+class ScreenshotCapture final : public render::I_ViewportListener
 {
 	// construct destruct
 	//---------------------
@@ -26,14 +26,14 @@ public:
 
 	// functionality
 	//----------------
-	void Take(Viewport* const viewport);
+	void Take(render::Viewport* const viewport);
 
 	// Viewport Listener interface
 	//-----------------------------
 protected:
 
-	void OnViewportPreRender(T_FbLoc const) override {}
-	void OnViewportPostFlush(T_FbLoc const targetFb) override;
+	void OnViewportPreRender(render::T_FbLoc const) override {}
+	void OnViewportPostFlush(render::T_FbLoc const targetFb) override;
 
 	// utility
 	//----------
@@ -44,7 +44,7 @@ private:
 	///////
 
 	Directory* m_BaseDir = nullptr;
-	Viewport* m_Viewport = nullptr;
+	render::Viewport* m_Viewport = nullptr;
 };
 
 

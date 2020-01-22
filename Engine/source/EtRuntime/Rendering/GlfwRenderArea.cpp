@@ -79,7 +79,7 @@ void GlfwRenderArea::Initialize()
 	if (m_OnInit)
 	{
 		ET_ASSERT(m_Context == nullptr);
-		m_Context = new GladGlContext();
+		m_Context = new render::GladGlContext();
 
 		m_OnInit(m_Context);
 	}

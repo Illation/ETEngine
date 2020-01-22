@@ -1,8 +1,13 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
+namespace et {
+namespace render {
+
+
 class ShaderData;
 class TextureData;
+
 
 class FrameBuffer
 {
@@ -36,8 +41,12 @@ private:
 	E_DataType m_Format;
 	uint32 m_NumTargets = 1;
 
-
 	T_FbLoc m_GlFrameBuffer;
 	T_RbLoc m_RboDepthStencil;
+
+	render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
 };
 
+
+} // namespace render
+} // namespace et

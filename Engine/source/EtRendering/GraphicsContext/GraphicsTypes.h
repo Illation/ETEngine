@@ -1,5 +1,10 @@
 #pragma once
 
+
+namespace et {
+namespace render {
+
+
 typedef int32 T_AttribLoc;
 typedef int32 T_UniformLoc;
 typedef uint32 T_ShaderLoc;
@@ -297,3 +302,7 @@ struct UniformDescriptor
 	E_ParamType type;
 	std::string name;
 };
+
+
+} // namespace render
+} // namespace et

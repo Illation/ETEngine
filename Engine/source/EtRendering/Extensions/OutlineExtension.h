@@ -7,6 +7,10 @@
 #include <EtRendering/SceneStructure/MaterialCollection.h>
 
 
+namespace et {
+namespace render {
+
+
 class MeshData;
 
 
@@ -58,3 +62,6 @@ private:
 	T_OutlineLists m_Lists;
 };
 
+
+} // namespace render
+} // namespace et

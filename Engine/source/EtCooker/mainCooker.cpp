@@ -5,7 +5,7 @@
 
 #include <EtBuild/EngineVersion.h>
 
-#include <EtCore/Helper/Logger.h>
+#include <EtCore/Util/Logger.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/Package/FilePackage.h>

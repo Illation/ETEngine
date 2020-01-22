@@ -2,7 +2,12 @@
 
 #include <typeinfo>
 
-//Abstract intetrface
+
+namespace et {
+namespace render {
+
+
+// Abstract interface
 class PrimitiveGeometry
 {
 public:
@@ -94,3 +99,7 @@ namespace primitives
 		int32 m_NumVerts;
 	};
 }
+
+
+} // namespace render
+} // namespace et

@@ -3,7 +3,7 @@
 
 #include <EtBuild/EngineVersion.h>
 
-#include <EtCore/Helper/PerformanceInfo.h>
+#include <EtCore/Util/PerformanceInfo.h>
 #include <EtCore/UpdateCycle/TickManager.h>
 
 #include <EtRendering/GraphicsContext/Viewport.h>
@@ -112,7 +112,7 @@ void AbstractFramework::Run()
 	fw::UnifiedScene::Instance().Init();
 
 	// init rendering target
-	m_Viewport = new Viewport(&m_RenderArea);
+	m_Viewport = new render::Viewport(&m_RenderArea);
 	m_SplashScreenRenderer = new render::SplashScreenRenderer();
 	m_Viewport->SetRenderer(m_SplashScreenRenderer);
 	m_RenderArea.Initialize(); // also initializes the viewport and its renderer

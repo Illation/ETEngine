@@ -5,11 +5,14 @@
 #include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
 
 
+namespace et {
+namespace render {
+
+
 class ShaderData;
 class TextureData;
-namespace render {
-	class I_OverlayRenderer;
-}
+class I_OverlayRenderer;
+
 
 static const int32 NUM_BLOOM_DOWNSAMPLES = 5;
 
@@ -53,3 +56,7 @@ private:
 	T_FbLoc m_DownPingPongFBO[NUM_BLOOM_DOWNSAMPLES];
 	TextureData* m_DownPingPongTexture[NUM_BLOOM_DOWNSAMPLES];
 };
+
+
+} // namespace render
+} // namespace et

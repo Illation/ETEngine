@@ -1,7 +1,7 @@
 #pragma once
 #include "EntityFwd.h"
 
-#include <EtCore/Helper/GenericEventDispatcher.h>
+#include <EtCore/Util/GenericEventDispatcher.h>
 
 
 namespace et {

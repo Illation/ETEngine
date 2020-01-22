@@ -2,6 +2,7 @@
 #include <EtRendering/GraphicsContext/GraphicsTypes.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -57,7 +58,10 @@ void Write(T_ParameterBlock const block, size_t const offset, TParamType const& 
 
 
 } // namespace parameters
+
+
 } // namespace render
+} // namespace et
 
 
 #include "ParameterBlock.inl"

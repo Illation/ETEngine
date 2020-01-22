@@ -7,9 +7,7 @@
 #include <EtRendering/GraphicsTypes/TextureData.h>
 
 
-class AtmoPreCompute;
-
-
+namespace et {
 namespace render {
 
 
@@ -68,3 +66,4 @@ private:
 
 
 } // namespace render
+} // namespace et

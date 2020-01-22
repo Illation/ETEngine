@@ -12,6 +12,7 @@
 #include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -22,7 +23,7 @@ namespace render {
 //
 void ForceLinking()
 {
-	FORCE_LINKING(StubAsset)
+	::FORCE_LINKING(StubAsset)
 	FORCE_LINKING(ShaderAsset)
 	FORCE_LINKING(MeshAsset)
 	FORCE_LINKING(MaterialAsset)
@@ -35,6 +36,5 @@ void ForceLinking()
 }
 
 
-}
-
-
+} // namespace render
+} // namespace et

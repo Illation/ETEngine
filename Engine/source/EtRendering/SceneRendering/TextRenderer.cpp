@@ -8,6 +8,10 @@
 #include <EtRendering/GraphicsTypes/TextureData.h>
 
 
+namespace et {
+namespace render {
+
+
 //=============================
 // Text Renderer :: Text Cache
 //=============================
@@ -39,6 +43,11 @@ TextRenderer::TextCache::TextCache(std::string const& text, vec2 const pos, vec4
 TextRenderer::~TextRenderer()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
+	{
+		Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
+	}
 
 	api->DeleteVertexArray(m_VAO);
 	api->DeleteBuffer(m_VBO);
@@ -90,7 +99,11 @@ void TextRenderer::Initialize()
 
 	CalculateTransform();
 
-	Viewport::GetCurrentViewport()->GetResizeEvent().AddListener( std::bind( &TextRenderer::OnWindowResize, this ) );
+	m_VPCallbackId = Viewport::GetCurrentViewport()->GetEventDispatcher().Register(render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
+		[this](render::T_ViewportEventFlags const, render::ViewportEventData const* const) -> void
+		{
+			OnWindowResize();
+		}));
 }
 
 //---------------------------------
@@ -347,3 +360,7 @@ void TextRenderer::CalculateTransform()
 		0,		0,			1,		0,
 		-1,		1,			0,		1 });
 }
+
+
+} // namespace render
+} // namespace et

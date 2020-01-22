@@ -9,6 +9,7 @@
 #include <EtRendering/PlanetTech/Atmosphere.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -278,3 +279,4 @@ void AtmospherePrecompute::ConvertSpectrumToLinearSrgb( const std::vector<double
 
 
 } // namespace render
+} // namespace et

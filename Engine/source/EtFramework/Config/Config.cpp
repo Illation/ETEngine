@@ -76,7 +76,7 @@ Config::~Config()
 {
 	if (m_HasRenderRef)
 	{
-		RenderingSystems::RemoveReference();
+		render::RenderingSystems::RemoveReference();
 	}
 }
 
@@ -119,11 +119,11 @@ void Config::InitRenderConfig()
 {
 	if (m_HasRenderRef)
 	{
-		RenderingSystems::Instance()->SetGraphicsSettings(m_Settings.m_Graphics);
+		render::RenderingSystems::Instance()->SetGraphicsSettings(m_Settings.m_Graphics);
 	}
 	else
 	{
-		RenderingSystems::AddReference(m_Settings.m_Graphics);
+		render::RenderingSystems::AddReference(m_Settings.m_Graphics);
 		m_HasRenderRef = true;
 	}
 }

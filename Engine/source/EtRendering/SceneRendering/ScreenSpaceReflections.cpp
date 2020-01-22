@@ -6,11 +6,14 @@
 #include "PostProcessingRenderer.h"
 
 #include <EtCore/Content/ResourceManager.h>
-#include <EtCore/Helper/Commands.h>
 
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+
+
+namespace et {
+namespace render {
 
 
 ScreenSpaceReflections::~ScreenSpaceReflections()
@@ -71,3 +74,6 @@ void ScreenSpaceReflections::Draw()
 
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 }
+
+} // namespace render
+} // namespace et

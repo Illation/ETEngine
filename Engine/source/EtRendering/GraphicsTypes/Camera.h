@@ -2,6 +2,10 @@
 #include "Frustum.h"
 
 
+namespace et {
+namespace render {
+
+
 // forward
 class Viewport;
 
@@ -111,3 +115,6 @@ private:
 	mat4 m_StaticViewProjectionInverse;
 };
 
+
+} // namespace render
+} // namespace et

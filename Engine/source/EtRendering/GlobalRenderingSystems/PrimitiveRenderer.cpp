@@ -3,6 +3,10 @@
 #include "PrimitiveRenderer.h"
 
 
+namespace et {
+namespace render {
+
+
 //Abstract
 //*********
 
@@ -244,3 +248,7 @@ void primitives::IcoSphere<level>::SubAndPush(std::vector<vec3> &vertices, const
 		vertices.push_back(c);
 	}
 }
+
+
+} // namespace render
+} // namespace et

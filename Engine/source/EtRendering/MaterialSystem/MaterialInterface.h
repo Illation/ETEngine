@@ -2,6 +2,7 @@
 #include <EtRendering/GraphicsTypes/ParameterBlock.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -24,3 +25,4 @@ public:
 
 
 } // namespace render
+} // namespace et

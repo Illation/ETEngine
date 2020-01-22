@@ -8,6 +8,7 @@
 #include <EtCore/FileSystem/FileUtil.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -147,4 +148,4 @@ bool MaterialInstanceAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 
 } // namespace render
-
+} // namespace et

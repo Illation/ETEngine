@@ -2,15 +2,17 @@
 #include <EtFramework/SceneGraph/ComponentDescriptor.h>
 
 
-class Camera;
-class Viewport;
+// fwd
+namespace et { namespace render {
+	class Camera;
+	class Viewport;
+}  namespace fw {
+	class TransformComponent;
+} }
 
 
 namespace et {
 namespace fw {
-
-
-class TransformComponent;
 
 
 //---------------------------------
@@ -45,7 +47,7 @@ public:
 	void UsePerspectiveProjection() { m_IsPerspective = true; }
 	void UseOrthographicProjection() { m_IsPerspective = false; }
 
-	void PopulateCamera(Camera& target, Viewport const& viewport, TransformComponent const& tfComp) const;
+	void PopulateCamera(render::Camera& target, render::Viewport const& viewport, TransformComponent const& tfComp) const;
 
 	// Data
 	///////

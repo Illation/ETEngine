@@ -6,8 +6,10 @@
 #include <EtFramework/Physics/CollisionShape.h>
 
 
-class MeshData;
 class btCollisionShape;
+namespace et { namespace render {
+	class MeshData;
+} }
 
 
 namespace et {
@@ -42,7 +44,7 @@ public:
 	float impulse = 0.f;
 
 	// hold the assets so that they are loaded in already when spawning
-	AssetPtr<MeshData> mesh;
+	AssetPtr<render::MeshData> mesh;
 	I_AssetPtr material;
 	float scale = 1.f;
 

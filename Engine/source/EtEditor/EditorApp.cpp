@@ -15,8 +15,8 @@
 
 #include <EtBuild/EngineVersion.h>
 
-#include <EtCore/Helper/Commands.h>
-#include <EtCore/Helper/InputManager.h>
+#include <EtCore/Util/Commands.h>
+#include <EtCore/Util/InputManager.h>
 #include <EtCore/UpdateCycle/TickManager.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>

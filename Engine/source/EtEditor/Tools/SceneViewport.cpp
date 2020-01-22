@@ -63,7 +63,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 
 	// create a viewport from the area
 	m_RenderArea = new GtkRenderArea(glArea);
-	m_Viewport = std::make_unique<Viewport>(m_RenderArea);
+	m_Viewport = std::make_unique<render::Viewport>(m_RenderArea);
 
 	// hook up events
 

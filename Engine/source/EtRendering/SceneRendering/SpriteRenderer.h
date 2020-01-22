@@ -2,10 +2,12 @@
 #include <EtCore/Content/AssetPointer.h>
 
 
+namespace et {
 namespace render {
-	class ShadedSceneRenderer;
-	class SplashScreenRenderer;
-}
+
+
+class ShadedSceneRenderer;
+class SplashScreenRenderer;
 
 
 //---------------------------------
@@ -103,4 +105,10 @@ private:
 	mat4 m_Transform;
 
 	float m_Layer;
+
+	render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
 };
+
+
+} // namespace render
+} // namespace et

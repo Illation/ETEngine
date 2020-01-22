@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <strsafe.h>
 
-#include "../../Helper/WindowsUtil.h"
+#include <EtCore/Util/WindowsUtil.h>
 
 FILE_HANDLE FILE_BASE::Open( const char * pathName, FILE_ACCESS_FLAGS accessFlags, FILE_ACCESS_MODE accessMode )
 {

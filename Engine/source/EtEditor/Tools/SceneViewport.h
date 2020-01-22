@@ -14,9 +14,9 @@
 
 
 // forward
-namespace render {
+namespace et { namespace render {
 	class ShadedSceneRenderer;
-}
+} }
 
 
 namespace et {
@@ -66,11 +66,11 @@ private:
 	SceneEditor* m_Editor;
 
 	fw::T_EntityId m_Camera = fw::INVALID_ENTITY_ID;
-	std::unique_ptr<Viewport> m_Viewport;
-	I_RenderArea* m_RenderArea = nullptr;
+	std::unique_ptr<render::Viewport> m_Viewport;
+	render::I_RenderArea* m_RenderArea = nullptr;
 
 	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
-	OutlineRenderer m_OutlineRenderer;
+	render::OutlineRenderer m_OutlineRenderer;
 
 	fw::T_SceneEventCallbackId m_SceneInitCallback = fw::T_SceneEventDispatcher::INVALID_ID;
 

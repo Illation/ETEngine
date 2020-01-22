@@ -6,6 +6,7 @@
 //Values copied from https://ebruneton.github.io/precomputed_atmospheric_scattering/atmosphere/constants.h.html
 
 
+namespace et {
 namespace render { 
 
 
@@ -89,3 +90,4 @@ public:
 
 
 } // namespace render
+} // namespace et

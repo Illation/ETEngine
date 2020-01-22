@@ -2,9 +2,13 @@
 #include "TextureParameters.h"
 
 #include <EtCore/Content/Asset.h>
-#include <EtCore/Helper/LinkerUtils.h>
+#include <EtCore/Util/LinkerUtils.h>
 
 #include <EtRendering/GraphicsContext/GraphicsApiContext.h>
+
+
+namespace et {
+namespace render {
 
 
 //---------------------------------
@@ -96,3 +100,7 @@ public:
 
 	RTTR_ENABLE(Asset<TextureData, false>)
 };
+
+
+} // namespace render
+} // namespace et

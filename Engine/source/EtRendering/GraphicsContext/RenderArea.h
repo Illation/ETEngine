@@ -3,6 +3,10 @@
 #include <functional>
 
 
+namespace et {
+namespace render {
+
+
 //---------------------------------
 // I_RenderArea
 //
@@ -23,3 +27,7 @@ public:
 
 	virtual ivec2 GetDimensions() const = 0;
 };
+
+
+} // namespace render
+} // namespace et

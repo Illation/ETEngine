@@ -10,6 +10,10 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
+namespace et {
+namespace render {
+
+
 FrameBuffer::FrameBuffer(std::string shaderFile, E_DataType const format, uint32 numTargets)
 	: m_ShaderFile(shaderFile)
 	, m_Format(format)
@@ -19,6 +23,11 @@ FrameBuffer::FrameBuffer(std::string shaderFile, E_DataType const format, uint32
 FrameBuffer::~FrameBuffer()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+
+	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
+	{
+		Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
+	}
 
 	api->DeleteRenderBuffers(1, &m_RboDepthStencil);
 	for (size_t i = 0; i < m_pTextureVec.size(); i++)
@@ -46,7 +55,11 @@ void FrameBuffer::Initialize()
 
 	ET_ASSERT(api->IsFramebufferComplete(), "Creating framebuffer failed!");
 
-	Viewport::GetCurrentViewport()->GetResizeEvent().AddListener(std::bind( &FrameBuffer::ResizeFramebufferTextures, this));
+	m_VPCallbackId = Viewport::GetCurrentViewport()->GetEventDispatcher().Register(render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
+		[this](render::T_ViewportEventFlags const, render::ViewportEventData const* const) -> void
+		{
+			ResizeFramebufferTextures();
+		}));
 }
 
 void FrameBuffer::AccessShaderAttributes()
@@ -162,3 +175,7 @@ void FrameBuffer::ResizeFramebufferTextures()
 		m_pTextureVec[i]->Resize(dim);
 	}
 }
+
+
+} // namespace render
+} // namespace et

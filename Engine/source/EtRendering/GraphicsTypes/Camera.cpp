@@ -2,6 +2,10 @@
 #include "Camera.h"
 
 
+namespace et {
+namespace render {
+
+
 //=========
 // Camera
 //=========
@@ -175,3 +179,7 @@ void Camera::RecalculateDerived()
 	m_Frustum.SetToCamera(*this);
 	m_Frustum.Update(m_Viewport);
 }
+
+
+} // namespace render
+} // namespace et

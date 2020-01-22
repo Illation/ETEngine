@@ -1,6 +1,9 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
+namespace et {
+namespace render {
+
 
 class Camera;
 
@@ -51,3 +54,7 @@ private:
 	//Shader and its uniforms
 	AssetPtr<ShaderData> m_pShader;
 };
+
+
+} // namespace render
+} // namespace et

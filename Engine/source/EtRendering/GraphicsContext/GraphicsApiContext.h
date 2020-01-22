@@ -6,13 +6,13 @@
 #include "GraphicsTypes.h"
 
 
+namespace et {
+namespace render {
+
+
 // forward declarations
 class ShaderData;
 class TextureData;
-
-class I_Uniform;
-template<typename T>
-class Uniform;
 
 
 //---------------------------------
@@ -199,3 +199,7 @@ public:
 	virtual void DebugPushGroup(std::string const& message, bool const isThirdParty = false) const = 0;
 	virtual void DebugPopGroup() const = 0;
 };
+
+
+} // namespace render
+} // namespace et

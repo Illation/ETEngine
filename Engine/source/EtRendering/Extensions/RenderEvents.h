@@ -1,11 +1,12 @@
 #pragma once
-#include <EtCore/Helper/GenericEventDispatcher.h>
+#include <EtCore/Util/GenericEventDispatcher.h>
+
+
+namespace et {
+namespace render {
 
 
 class I_ViewportRenderer;
-
-
-namespace render {
 	
 
 //---------------------------
@@ -51,3 +52,4 @@ typedef T_RenderEventDispatcher::T_CallbackFn T_RenderEventCallback;
 
 
 } // namespace render
+} // namespace et

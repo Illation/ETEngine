@@ -3,6 +3,10 @@
 #include "RenderEvents.h"
 
 
+namespace et {
+namespace render {
+
+
 class Camera;
 class TextureData;
 class Gbuffer;
@@ -49,4 +53,10 @@ private:
 
 	render::T_RenderEventDispatcher* m_EventDispatcher = nullptr;
 	render::T_RenderEventCallbackId m_CallbackId = render::T_RenderEventDispatcher::INVALID_ID;
+
+	render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
 };
+
+
+} // namespace render
+} // namespace et

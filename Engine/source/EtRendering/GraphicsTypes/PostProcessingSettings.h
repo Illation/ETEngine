@@ -1,7 +1,11 @@
 #pragma once
 #include <rttr/type>
 
-#include <EtCore/Helper/LinkerUtils.h>
+#include <EtCore/Util/LinkerUtils.h>
+
+
+namespace et {
+namespace render {
 
 
 //---------------------------------
@@ -35,3 +39,7 @@ public:
 	float bloomThreshold = 10.f;
 	float bloomMult = 0.1f;
 };
+
+
+} // namespace render
+} // namespace et

@@ -1,13 +1,12 @@
 #pragma once
 
 
+namespace et {
+namespace render {
+
+
 class Camera;
-namespace render {
-	class I_Material;
-}
-
-
-namespace render {
+class I_Material;
 
 
 //---------------------------------
@@ -26,3 +25,4 @@ public:
 
 
 } // namespace render
+} // namespace et

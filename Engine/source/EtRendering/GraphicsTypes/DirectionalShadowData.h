@@ -1,11 +1,11 @@
 #pragma once
 
+namespace et {
+namespace render {
+
 
 // forward
 class TextureData;
-
-
-namespace render {
 
 
 //---------------------------------
@@ -58,3 +58,4 @@ private:
 
 
 } // namespace render
+} // namespace et

@@ -1,6 +1,11 @@
 #pragma once
 #include <EtCore/UpdateCycle/RealTimeTickTriggerer.h>
-#include <EtCore/Helper/MulticastDelegate.h>
+
+#include "ViewportEvents.h"
+
+
+namespace et {
+namespace render {
 
 
 class I_GraphicsApiContext;
@@ -66,7 +71,7 @@ public:
 
 	ivec2 GetDimensions() const { return m_Dimensions; }
 	float GetAspectRatio() const { return m_AspectRatio; }
-	MulticastDelegate& GetResizeEvent() { return m_ResizeEvent; }
+	render::T_ViewportEventDispatcher& GetEventDispatcher() { return m_Events; }
 
 	// callbacks
 	//-----------
@@ -93,12 +98,16 @@ private:
 
 	ivec2 m_Dimensions;
 	float m_AspectRatio;
-	MulticastDelegate m_ResizeEvent;
 
 	bool m_IsRealized = false;
 	bool m_IsActive = true;
 
 	bool m_TickDisabled = false;
 
-	std::vector<I_ViewportListener*> m_Listeners;
+	std::vector<I_ViewportListener*> m_Listeners; // #todo: use the event dispatcher instead
+	render::T_ViewportEventDispatcher m_Events;
 };
+
+
+} // namespace render
+} // namespace et

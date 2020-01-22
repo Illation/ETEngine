@@ -47,7 +47,7 @@ void MainFramework::OnSystemInit()
 void MainFramework::OnInit()
 {
 	// Fonts
-	m_DebugFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Ubuntu-Regular.ttf"_hash);
+	m_DebugFont = ResourceManager::Instance()->GetAssetData<render::SpriteFont>("Ubuntu-Regular.ttf"_hash);
 
 	// scenes
 	fw::UnifiedScene& uniScene = fw::UnifiedScene::Instance();
@@ -114,7 +114,7 @@ void MainFramework::OnTick()
 	//-------------
 	if (input->GetKeyState(E_KbdKey::F12) == E_KeyState::Pressed)
 	{
-		m_ScreenshotCapture.Take(Viewport::GetCurrentViewport());
+		m_ScreenshotCapture.Take(render::Viewport::GetCurrentViewport());
 	}
 
 	// view
@@ -123,7 +123,7 @@ void MainFramework::OnTick()
 	if (up || (input->GetKeyState(E_KbdKey::Down) == E_KeyState::Down))
 	{
 		render::Scene& renderScene = uniScene.GetRenderScene();
-		PostProcessingSettings ppSettings = renderScene.GetPostProcessingSettings();
+		render::PostProcessingSettings ppSettings = renderScene.GetPostProcessingSettings();
 
 		float const newExp = ppSettings.exposure * 4.f;
 		ppSettings.exposure += (newExp - ppSettings.exposure) * TIME->DeltaTime() * (up ? 1.f : -1.f);
@@ -145,14 +145,14 @@ void MainFramework::OnTick()
 		m_DrawFontAtlas = !m_DrawFontAtlas;
 	}
 
-	I_ViewportRenderer* const viewRenderer = Viewport::GetCurrentViewport()->GetViewportRenderer();
+	render::I_ViewportRenderer* const viewRenderer = render::Viewport::GetCurrentViewport()->GetViewportRenderer();
 	if (viewRenderer != nullptr && viewRenderer->GetType() == typeid(render::ShadedSceneRenderer))
 	{
 		render::ShadedSceneRenderer* const sceneRenderer = static_cast<render::ShadedSceneRenderer*>(viewRenderer);
 
 		if (m_DrawDebugInfo)
 		{
-			TextRenderer& textRenderer = sceneRenderer->GetTextRenderer();
+			render::TextRenderer& textRenderer = sceneRenderer->GetTextRenderer();
 
 			textRenderer.SetFont(m_DebugFont.get());
 			textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
@@ -167,7 +167,7 @@ void MainFramework::OnTick()
 
 		if (m_DrawFontAtlas)
 		{
-			SpriteRenderer::E_ScalingMode const scalingMode = SpriteRenderer::E_ScalingMode::TextureAbs;
+			render::SpriteRenderer::E_ScalingMode const scalingMode = render::SpriteRenderer::E_ScalingMode::TextureAbs;
 			sceneRenderer->GetSpriteRenderer().Draw(m_DebugFont->GetAtlas(), vec2(1000, 0), vec4(1), vec2(0), vec2(1), 0, 0, scalingMode);
 		}
 	}

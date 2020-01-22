@@ -31,12 +31,12 @@ void SceneSelection::SetScene()
 	render::I_SceneExtension* const ext = renderScene.GetExtension("OutlineExtension"_hash);
 	if (ext == nullptr)
 	{
-		m_OutlineExtension = new OutlineExtension();
+		m_OutlineExtension = new render::OutlineExtension();
 		renderScene.AddExtension(m_OutlineExtension);
 	}
 	else
 	{
-		m_OutlineExtension = static_cast<OutlineExtension*>(ext);
+		m_OutlineExtension = static_cast<render::OutlineExtension*>(ext);
 	}
 }
 
@@ -127,7 +127,7 @@ void SceneSelection::ToggleEntitySelected(fw::T_EntityId const entity, bool cons
 //
 // try picking an entity from within the viewport
 //
-void SceneSelection::Pick(ivec2 const pos, Viewport* const viewport, bool const add)
+void SceneSelection::Pick(ivec2 const pos, render::Viewport* const viewport, bool const add)
 {
 	if (!add)
 	{

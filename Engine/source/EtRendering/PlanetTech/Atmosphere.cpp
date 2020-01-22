@@ -4,7 +4,6 @@
 #include "Planet.h"
 
 #include <EtCore/Content/ResourceManager.h>
-#include <EtCore/Helper/Commands.h>
 
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
@@ -16,11 +15,12 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
+namespace et {
 namespace render {
 
 
 //============
-// Atnosphere
+// Atmosphere
 //============
 
 
@@ -114,3 +114,4 @@ void Atmosphere::Draw(vec3 const& position, float const height, float const grou
 
 
 } // namespace render
+} // namespace et

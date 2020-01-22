@@ -49,7 +49,7 @@ void ScreenshotCapture::Initialize(std::string basePath)
 //
 // Reigster ourselves with the requested viewport. the actual capture is deferred until rendering is completed
 //
-void ScreenshotCapture::Take(Viewport* const viewport)
+void ScreenshotCapture::Take(render::Viewport* const viewport)
 {
 	if (m_Viewport == nullptr)
 	{
@@ -69,8 +69,10 @@ void ScreenshotCapture::Take(Viewport* const viewport)
 // We wait for the viewports renderer to finish and the API to flush so the performance impact is minimal, 
 //  - then read the pixels from the GPU into a file and stop listening for viewport events again until the next capture request
 //
-void ScreenshotCapture::OnViewportPostFlush(T_FbLoc const targetFb)
+void ScreenshotCapture::OnViewportPostFlush(render::T_FbLoc const targetFb)
 {
+	using namespace render;
+
 	UNUSED(targetFb); // this should already be the current framebuffer
 
 	std::string filename = GetFileName();

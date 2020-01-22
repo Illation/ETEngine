@@ -1,7 +1,13 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
+
+namespace et {
+namespace render {
+
+
 class ShaderData;
+
 
 class ScreenSpaceReflections
 {
@@ -22,3 +28,7 @@ private:
 	TextureData* m_CollectTex = nullptr;
 	T_RbLoc m_CollectRBO;
 };
+
+
+} // namespace render
+} // namespace et

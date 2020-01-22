@@ -6,6 +6,9 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
+namespace et {
+namespace render {
+
 
 //====================
 // Outline Extension
@@ -56,3 +59,6 @@ void OutlineExtension::AddMesh(AssetPtr<MeshData> const mesh, render::T_NodeId c
 	foundMeshIt->m_Instances.emplace_back(node);
 }
 
+
+} // namespace render
+} // namespace et

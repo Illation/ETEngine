@@ -12,6 +12,7 @@
 #include <EtRendering/PlanetTech/StarField.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -570,3 +571,4 @@ void Scene::RemoveMeshFromMaterial(MaterialCollection::MaterialInstance& materia
 
 
 } // namespace render
+} // namespace et

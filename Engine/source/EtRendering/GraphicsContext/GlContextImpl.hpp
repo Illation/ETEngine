@@ -2,6 +2,10 @@
 #include <EtRendering/GraphicsTypes/TextureData.h>
 
 
+namespace et {
+namespace render {
+
+
 //======================
 // Conversion functions
 //======================
@@ -2278,3 +2282,5 @@ void GL_CONTEXT_CLASSNAME::EnOrDisAbleIndexed(std::vector<bool> &state, bool ena
 }
 
 
+} // namespace render
+} // namespace et

@@ -5,6 +5,10 @@
 #include "RenderArea.h"
 
 
+namespace et {
+namespace render {
+
+
 //=====================
 // Viewport
 //=====================
@@ -163,7 +167,7 @@ void Viewport::OnResize(vec2 const resolution)
 		m_Renderer->OnResize(m_Dimensions);
 	}
 
-	m_ResizeEvent.Broadcast();
+	m_Events.Notify(render::E_ViewportEvent::VP_Resized, new render::ViewportEventData(this, m_Dimensions));
 }
 
 //---------------------------------
@@ -269,3 +273,6 @@ void Viewport::MakeCurrent()
 
 	g_CurrentViewport = this;
 }
+
+} // namespace render
+} // namespace et

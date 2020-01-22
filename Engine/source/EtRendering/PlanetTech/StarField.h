@@ -4,6 +4,10 @@
 #include <EtRendering/GraphicsTypes/Camera.h>
 
 
+namespace et {
+namespace render {
+
+
 class StarField final
 {
 public:
@@ -35,3 +39,7 @@ private:
 	float m_BaseFlux = 0.000001f;
 	float m_BaseMag = 11.f;
 };
+
+
+} // namespace render
+} // namespace et

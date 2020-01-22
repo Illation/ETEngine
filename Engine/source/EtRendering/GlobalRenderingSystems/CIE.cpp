@@ -7,6 +7,10 @@
 #include <EtCore/FileSystem/Json/JsonParser.h>
 
 
+namespace et {
+namespace render {
+
+
 void CIE::LoadData()
 {
 	AssetPtr<StubData> jsonCieText = ResourceManager::Instance()->GetAssetData<StubData>("cie.json"_hash);
@@ -68,3 +72,7 @@ dvec3 CIE::Interpolate(const std::vector<double>& wavelengths, const std::vector
 		ret[i] = Interpolate(wavelengths, wavelength_function, xyz[i]);
 	return ret;
 }
+
+
+} // namespace render
+} // namespace et

@@ -38,7 +38,7 @@ EntityIdRenderer::~EntityIdRenderer()
 //
 void EntityIdRenderer::Initialize()
 {
-	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdIdShader.glsl"_hash);
+	m_Shader = ResourceManager::Instance()->GetAssetData<render::ShaderData>("FwdIdShader.glsl"_hash);
 	m_Material = ResourceManager::Instance()->GetAssetData<render::Material>("M_Id.json"_hash);
 
 	CreateRenderTarget();
@@ -49,6 +49,8 @@ void EntityIdRenderer::Initialize()
 //
 void EntityIdRenderer::CreateRenderTarget()
 {
+	using namespace render;
+
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
@@ -79,6 +81,8 @@ void EntityIdRenderer::CreateRenderTarget()
 //
 void EntityIdRenderer::DestroyRenderTarget()
 {
+	using namespace render;
+
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->DeleteRenderBuffers(1, &m_DrawDepth);
@@ -92,7 +96,7 @@ void EntityIdRenderer::DestroyRenderTarget()
 // Picks an entity by drawing each entity visible to the scene renderer with a color calculated from its ID, 
 //  - then converting the color under the specified pixel back to the IT and finding the appropriate entity
 //
-void EntityIdRenderer::Pick(ivec2 const pixel, Viewport* const viewport, std::function<void(fw::T_EntityId const)>& onEntityPicked)
+void EntityIdRenderer::Pick(ivec2 const pixel, render::Viewport* const viewport, std::function<void(fw::T_EntityId const)>& onEntityPicked)
 {
 	if (m_ViewportToPickFrom == nullptr)
 	{
@@ -113,8 +117,10 @@ void EntityIdRenderer::Pick(ivec2 const pixel, Viewport* const viewport, std::fu
 //
 // Runs before the viewports rendererer does its thing
 //
-void EntityIdRenderer::OnViewportPreRender(T_FbLoc const targetFb)
+void EntityIdRenderer::OnViewportPreRender(render::T_FbLoc const targetFb)
 {
+	using namespace render;
+
 	I_GraphicsApiContext* const api = m_ViewportToPickFrom->GetApiContext();
 
 	// extract the camera from the viewport
@@ -177,8 +183,10 @@ void EntityIdRenderer::OnViewportPreRender(T_FbLoc const targetFb)
 //
 // Runs after everything else has finished rendering
 //
-void EntityIdRenderer::OnViewportPostFlush(T_FbLoc const targetFb)
+void EntityIdRenderer::OnViewportPostFlush(render::T_FbLoc const targetFb)
 {
+	using namespace render;
+
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	api->BindFramebuffer(m_DrawTarget);
@@ -213,8 +221,10 @@ void EntityIdRenderer::OnViewportPostFlush(T_FbLoc const targetFb)
 //
 // Render the components of an entity, if possible
 //
-void EntityIdRenderer::DrawEntity(fw::T_EntityId const entity, Camera const& camera) const
+void EntityIdRenderer::DrawEntity(fw::T_EntityId const entity, render::Camera const& camera) const
 {
+	using namespace render;
+
 	fw::EcsController const& ecs = fw::UnifiedScene::Instance().GetEcs();
 
 	// For now we only pick models

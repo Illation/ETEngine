@@ -10,6 +10,9 @@
 #include <EtRendering/SceneStructure/GLTF.h>
 
 
+using namespace et::render;
+
+
 TEST_CASE("Decode Base64", "[gltf]")
 {
 	std::string base64 = "VGVzdFRleHQ=";

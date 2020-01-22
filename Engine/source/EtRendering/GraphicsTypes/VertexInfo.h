@@ -2,6 +2,10 @@
 #include <EtRendering/GraphicsContext/GraphicsTypes.h>
 
 
+namespace et {
+namespace render {
+
+
 //---------------------------------
 // DataTypeInfo
 //
@@ -69,3 +73,6 @@ struct AttributeDescriptor
 	uint32 dataCount;
 };
 
+
+} // namespace render
+} // namespace et

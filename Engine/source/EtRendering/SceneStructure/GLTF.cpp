@@ -10,6 +10,10 @@
 #include <EtRendering/GraphicsTypes/Mesh.h>
 
 
+namespace et {
+namespace render {
+
+
 bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
 {
 	if (uri.path.size() == 0)
@@ -1431,3 +1435,7 @@ bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& 
 	}
 	return true;
 }
+
+
+} // namespace render
+} // namespace et

@@ -4,6 +4,10 @@
 #include "Camera.h"
 
 
+namespace et {
+namespace render {
+
+
 void FrustumCorners::Transform(mat4 space)
 {
 	//move corners of the near plane
@@ -170,3 +174,7 @@ VolumeCheck Frustum::ContainsTriVolume(vec3 &a, vec3 &b, vec3 &c, float height)
 	}
 	return ret;
 }
+
+
+} // namespace render
+} // namespace et

@@ -4,7 +4,7 @@
 #include <limits>
 
 #ifdef PLATFORM_Win
-#	include "Helper/WindowsUtil.h"
+#	include <EtCore/Util/WindowsUtil.h>
 #endif
 
 

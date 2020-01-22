@@ -1,0 +1,48 @@
+#pragma once
+#include <EtCore/Util/GenericEventDispatcher.h>
+
+
+namespace et {
+namespace render {
+
+
+class Viewport;
+	
+
+//---------------------------
+// E_RenderEvent
+//
+typedef uint8 T_ViewportEventFlags;
+enum E_ViewportEvent : T_ViewportEventFlags
+{
+	VP_Invalid = 0,
+
+	VP_Resized	= 1 << 0,
+
+	VP_All = 0xFF
+};
+
+
+//---------------------------
+// ViewportEventData
+//
+struct ViewportEventData final
+{
+public:
+	ViewportEventData(Viewport const* const v, ivec2 const s) : viewport(v), size(s) {}
+	virtual ~ViewportEventData() = default;
+
+	Viewport const* const viewport = nullptr;
+	ivec2 const size;
+};
+
+
+typedef core::GenericEventDispatcher<T_ViewportEventFlags, ViewportEventData> T_ViewportEventDispatcher;
+
+
+typedef T_ViewportEventDispatcher::T_CallbackId T_ViewportEventCallbackId;
+typedef T_ViewportEventDispatcher::T_CallbackFn T_ViewportEventCallback;
+
+
+} // namespace render
+} // namespace et

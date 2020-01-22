@@ -4,13 +4,12 @@
 #include <EtRendering/PlanetTech/AtmosphereSettings.h>
 
 
-class RenderingSystems;
-
-
+namespace et {
 namespace render {
 
 
 class Atmosphere;
+class RenderingSystems;
 
 
 class AtmospherePrecompute final
@@ -68,3 +67,4 @@ private:
 
 
 } // namespace render
+} // namespace et

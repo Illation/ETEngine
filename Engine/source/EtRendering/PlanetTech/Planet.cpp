@@ -9,6 +9,7 @@
 #include <EtRendering/GraphicsTypes/Shader.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -39,4 +40,4 @@ void Planet::Init(PlanetParams const& params, core::T_SlotId const nodeId)
 
 
 } // namespace render
-
+} // namespace et

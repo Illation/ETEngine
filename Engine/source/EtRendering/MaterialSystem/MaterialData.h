@@ -3,11 +3,12 @@
 
 #include <EtCore/Content/Asset.h>
 #include <EtCore/Content/AssetPointer.h>
-#include <EtCore/Helper/LinkerUtils.h>
+#include <EtCore/Util/LinkerUtils.h>
 
 #include <EtRendering/GraphicsTypes/Shader.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -110,4 +111,5 @@ public:
 
 
 } // namespace render
+} // namespace et
 

@@ -7,15 +7,12 @@
 #include <EtRendering/GraphicsContext/GraphicsTypes.h>
 
 
+namespace et {
+namespace render {
+
+
 class ShaderData;
-namespace render {
-	class I_Material;
-}
-
-
-namespace render {
-
-
+class I_Material;
 typedef core::slot_map<mat4>::id_type T_NodeId;
 
 
@@ -59,3 +56,4 @@ public:
 
 
 } // namespace render
+} // namespace et

@@ -12,6 +12,7 @@
 #include <EtRendering/Extensions/RenderEvents.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -106,3 +107,4 @@ private:
 
 
 } // namespace render
+} // namespace et

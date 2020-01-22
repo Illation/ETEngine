@@ -44,7 +44,7 @@ ECS_REGISTER_COMPONENT(ModelComponent);
 //
 ModelComponent::ModelComponent(T_Hash const meshId, T_Hash const materialId)
 {
-	m_Mesh = ResourceManager::Instance()->GetAssetData<MeshData>(meshId);
+	m_Mesh = ResourceManager::Instance()->GetAssetData<render::MeshData>(meshId);
 
 	// Load material
 	m_Material = ResourceManager::Instance()->GetAssetData<render::Material>(materialId, false);
@@ -59,7 +59,7 @@ ModelComponent::ModelComponent(T_Hash const meshId, T_Hash const materialId)
 //
 // Construct from preloaded mesh and material
 //
-ModelComponent::ModelComponent(AssetPtr<MeshData> const mesh, I_AssetPtr const material)
+ModelComponent::ModelComponent(AssetPtr<render::MeshData> const mesh, I_AssetPtr const material)
 	: m_Mesh(mesh)
 	, m_Material(material)
 { 

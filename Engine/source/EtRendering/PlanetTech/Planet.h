@@ -7,14 +7,13 @@
 #include <EtRendering/GraphicsTypes/TextureData.h>
 
 
-// forward
-class ShaderData;
-class Frustum;
-
-
+namespace et {
 namespace render {
 
 
+// forward
+class ShaderData;
+class Frustum;
 class Triangulator;
 class Patch;
 class Atmosphere;
@@ -89,3 +88,4 @@ private:
 
 
 } // namespace render
+} // namespace et

@@ -1,5 +1,5 @@
 #pragma once
-#include <EtCore/Helper/Singleton.h>
+#include <EtCore/Util/Singleton.h>
 
 
 class btDefaultCollisionConfiguration;

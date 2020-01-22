@@ -2,6 +2,7 @@
 #include <EtCore/Containers/slot_map.h>
 
 
+namespace et {
 namespace render {
 
 
@@ -21,3 +22,4 @@ typedef core::T_SlotId T_LightId;
 
 
 } // namespace render
+} // namespace et

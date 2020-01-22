@@ -9,6 +9,10 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
+namespace et {
+namespace render {
+
+
 //==============
 // Texture Data
 //==============
@@ -226,3 +230,7 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	return true;
 }
+
+
+} // namespace render
+} // namespace et

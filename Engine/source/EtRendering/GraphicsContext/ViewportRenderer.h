@@ -1,6 +1,10 @@
 #pragma once
 
 
+namespace et {
+namespace render {
+
+
 //---------------------------------
 // I_ViewportRenderer
 //
@@ -20,3 +24,6 @@ public:
 	virtual void OnRender(T_FbLoc const targetFb) {}
 };
 
+
+} // namespace render
+} // namespace et

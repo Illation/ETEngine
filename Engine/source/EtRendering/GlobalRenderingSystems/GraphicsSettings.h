@@ -1,6 +1,7 @@
 #pragma once
 
 
+namespace et {
 namespace render {
 
 
@@ -27,5 +28,5 @@ struct GraphicsSettings
 };
 
 
-}
-
+} // namespace render
+} // namespace et

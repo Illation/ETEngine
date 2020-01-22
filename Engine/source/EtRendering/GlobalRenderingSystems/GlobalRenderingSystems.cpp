@@ -6,6 +6,10 @@
 #include <EtCore/Content/ResourceManager.h>
 
 
+namespace et {
+namespace render {
+
+
 //===================
 // Graphics Settings
 //===================
@@ -15,15 +19,15 @@
 RTTR_REGISTRATION
 {
 	using namespace rttr;
-	registration::class_<render::GraphicsSettings>("graphics settings")
+	registration::class_<GraphicsSettings>("graphics settings")
 		.constructor<>()
-		.property("use FXAA", &render::GraphicsSettings::UseFXAA)
-		.property("CSM cascade count", &render::GraphicsSettings::NumCascades)
-		.property("CSM draw distance", &render::GraphicsSettings::CSMDrawDistance)
-		.property("PCF sample count", &render::GraphicsSettings::NumPCFSamples)
-		.property("BRDF LUT size", &render::GraphicsSettings::PbrBrdfLutSize)
-		.property("texture scale factor", &render::GraphicsSettings::TextureScaleFactor)
-		.property("bloom blur passes", &render::GraphicsSettings::NumBlurPasses)
+		.property("use FXAA", &GraphicsSettings::UseFXAA)
+		.property("CSM cascade count", &GraphicsSettings::NumCascades)
+		.property("CSM draw distance", &GraphicsSettings::CSMDrawDistance)
+		.property("PCF sample count", &GraphicsSettings::NumPCFSamples)
+		.property("BRDF LUT size", &GraphicsSettings::PbrBrdfLutSize)
+		.property("texture scale factor", &GraphicsSettings::TextureScaleFactor)
+		.property("bloom blur passes", &GraphicsSettings::NumBlurPasses)
 		;
 }
 
@@ -55,7 +59,7 @@ RenderingSystems* RenderingSystems::Instance()
 //
 // This version of add reference initializes with the specified graphics settings
 //
-void RenderingSystems::AddReference(render::GraphicsSettings const& settings)
+void RenderingSystems::AddReference(GraphicsSettings const& settings)
 {
 	s_RefCount++;
 
@@ -118,8 +122,12 @@ void RenderingSystems::Initialize()
 	m_Cie.LoadData();
 	m_PbrPrefilter.Precompute(m_GraphicsSettings.PbrBrdfLutSize);
 
-	m_NullMaterial = ResourceManager::Instance()->GetAssetData<render::Material>("M_Null.json"_hash);
-	m_ColorMaterial = ResourceManager::Instance()->GetAssetData<render::Material>("M_Color.json"_hash);
+	m_NullMaterial = ResourceManager::Instance()->GetAssetData<Material>("M_Null.json"_hash);
+	m_ColorMaterial = ResourceManager::Instance()->GetAssetData<Material>("M_Color.json"_hash);
 
 	m_Patch.Init(4);
 }
+
+
+} // namespace render
+} // namespace et

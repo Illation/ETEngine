@@ -2,6 +2,10 @@
 #include "TextureParameters.h"
 
 
+namespace et {
+namespace render {
+
+
 // reflection
 RTTR_REGISTRATION
 {
@@ -47,3 +51,7 @@ TextureParameters::TextureParameters(bool useMipMaps, bool depthTex)
 	: genMipMaps(useMipMaps)
 	, isDepthTex(depthTex)
 { }
+
+
+} // namespace render
+} // namespace et

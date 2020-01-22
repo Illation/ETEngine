@@ -5,7 +5,10 @@
 #include <EtFramework/SceneGraph/ComponentDescriptor.h>
 
 
-class MeshData;
+// fwd
+namespace et { namespace render { 
+	class MeshData;
+} }
 
 
 namespace et {
@@ -29,18 +32,18 @@ class ModelComponent final
 	//--------------------
 public:
 	ModelComponent(T_Hash const meshId, T_Hash const materialId);
-	ModelComponent(AssetPtr<MeshData> const mesh, I_AssetPtr const material);
+	ModelComponent(AssetPtr<render::MeshData> const mesh, I_AssetPtr const material);
 	~ModelComponent() = default;
 
 	// accessors
 	//-----------
-	AssetPtr<MeshData> GetMesh() const { return m_Mesh; }
+	AssetPtr<render::MeshData> GetMesh() const { return m_Mesh; }
 
 	// Data
 	///////
 private:
 
-	AssetPtr<MeshData> m_Mesh;
+	AssetPtr<render::MeshData> m_Mesh;
 	I_AssetPtr m_Material;
 
 	core::T_SlotId m_InstanceId = core::INVALID_SLOT_ID;

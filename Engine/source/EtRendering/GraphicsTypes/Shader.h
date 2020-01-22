@@ -3,7 +3,11 @@
 #include "ParameterBlock.h"
 
 #include <EtCore/Content/Asset.h>
-#include <EtCore/Helper/LinkerUtils.h>
+#include <EtCore/Util/LinkerUtils.h>
+
+
+namespace et {
+namespace render {
 
 
 // forward
@@ -111,6 +115,10 @@ private:
 
 	RTTR_ENABLE(Asset<ShaderData, false>)
 };
+
+
+} // namespace render
+} // namespace et
 
 
 #include "Shader.inl"

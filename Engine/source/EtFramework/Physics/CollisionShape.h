@@ -1,7 +1,7 @@
 #pragma once
 #include <EtCore/Reflection/Registration.h>
 
-#include <EtCore/Helper/LinkerUtils.h>
+#include <EtCore/Util/LinkerUtils.h>
 
 
 class btCollisionShape;
