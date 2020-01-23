@@ -31,7 +31,7 @@ PackageResourceManager::PackageResourceManager()
 void PackageResourceManager::Init()
 {
 	// Create a new memory package from the data
-	MemoryPackage* const memPkg = new MemoryPackage(FileUtil::GetCompiledData());
+	core::MemoryPackage* const memPkg = new core::MemoryPackage(core::FileUtil::GetCompiledData());
 	m_Packages.emplace_back(0u, memPkg);
 
 	// get the raw json string for the asset database from that package
@@ -39,21 +39,21 @@ void PackageResourceManager::Init()
 	if (!memPkg->GetEntryData(GetHash(s_DatabasePath), rawData))
 	{
 		LOG("PackageResourceManager::Init > Unable to retrieve database from memory package at '" + std::string(s_DatabasePath) +
-			std::string("'"), LogLevel::Error);
+			std::string("'"), core::LogLevel::Error);
 		return;
 	}
 
 	// convert that data to a string and deserialize it as json
-	if (!serialization::DeserializeFromJsonString(FileUtil::AsText(rawData), m_Database))
+	if (!core::serialization::DeserializeFromJsonString(core::FileUtil::AsText(rawData), m_Database))
 	{
 		LOG("PackageResourceManager::Init > unable to deserialize asset database at '" + std::string(s_DatabasePath) + std::string("'"), 
-			LogLevel::Error);
+			core::LogLevel::Error);
 	}
 
 	// Create the file packages for all indexed packages
-	for (AssetDatabase::PackageDescriptor const& desc : m_Database.packages)
+	for (core::AssetDatabase::PackageDescriptor const& desc : m_Database.packages)
 	{
-		FilePackage* const filePkg = new FilePackage(desc.GetPath() + desc.GetName() + FilePackage::s_PackageFileExtension);
+		core::FilePackage* const filePkg = new core::FilePackage(desc.GetPath() + desc.GetName() + core::FilePackage::s_PackageFileExtension);
 		m_Packages.emplace_back(desc.GetId(), filePkg);
 	}
 
@@ -69,7 +69,7 @@ void PackageResourceManager::Init()
 void PackageResourceManager::Deinit()
 {
 	// clear the package list
-	for (std::pair<T_Hash, I_Package* >& package : m_Packages)
+	for (std::pair<T_Hash, core::I_Package* >& package : m_Packages)
 	{
 		delete package.second;
 		package.second = nullptr;
@@ -82,7 +82,7 @@ void PackageResourceManager::Deinit()
 //
 // Retrieve the data for this asset from its package
 //
-bool PackageResourceManager::GetLoadData(I_Asset const* const asset, std::vector<uint8>& outData) const
+bool PackageResourceManager::GetLoadData(core::I_Asset const* const asset, std::vector<uint8>& outData) const
 {
 	// Get the package the asset lives in
 	auto const foundPackageIt = std::find_if(m_Packages.begin(), m_Packages.end(), [asset](T_IndexedPackage const& indexedPackage)
@@ -94,7 +94,7 @@ bool PackageResourceManager::GetLoadData(I_Asset const* const asset, std::vector
 	if (foundPackageIt == m_Packages.cend())
 	{
 		LOG(FS("No package (name:'%s', id:'%x') found for asset '%s'", asset->GetPackageName().c_str(), asset->GetPackageId(), asset->GetName().c_str()),
-			LogLevel::Warning);
+			core::LogLevel::Warning);
 		return false;
 	}
 
@@ -120,7 +120,7 @@ void PackageResourceManager::Flush()
 //
 // Get an asset by it's template type
 //
-I_Asset* PackageResourceManager::GetAssetInternal(T_Hash const assetId, std::type_info const& type, bool const reportErrors)
+core::I_Asset* PackageResourceManager::GetAssetInternal(T_Hash const assetId, std::type_info const& type, bool const reportErrors)
 {
 	return m_Database.GetAsset(assetId, type, reportErrors);
 }

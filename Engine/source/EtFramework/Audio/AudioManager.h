@@ -9,7 +9,7 @@ namespace et {
 namespace fw {
 
 
-class AudioManager : public Singleton<AudioManager>
+class AudioManager : public core::Singleton<AudioManager>
 {
 public:
 	void Initialize();
@@ -27,7 +27,7 @@ private:
 	ALCcontext *m_Context;
 
 private:
-	friend class Singleton<AudioManager>;
+	friend class core::Singleton<AudioManager>;
 	AudioManager() {}
 	virtual ~AudioManager();
 };

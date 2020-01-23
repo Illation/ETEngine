@@ -36,7 +36,7 @@ struct CommandlineArguments
 //
 // Application for the engine editor
 //
-class EditorApp final : public Gtk::Application, public I_DefaultTickTriggerer
+class EditorApp final : public Gtk::Application, public core::I_DefaultTickTriggerer
 {
 protected:
 	EditorApp();

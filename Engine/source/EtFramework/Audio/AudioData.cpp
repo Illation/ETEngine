@@ -49,7 +49,7 @@ RTTR_REGISTRATION
 {
 	BEGIN_REGISTER_POLYMORPHIC_CLASS(AudioAsset, "audio asset")
 		.property("force mono", &AudioAsset::m_IsMonoForced)
-	END_REGISTER_POLYMORPHIC_CLASS(AudioAsset, I_Asset);
+	END_REGISTER_POLYMORPHIC_CLASS(AudioAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(AudioAsset) // force the asset class to be linked as it is only used in reflection
 
@@ -61,7 +61,7 @@ DEFINE_FORCED_LINKING(AudioAsset) // force the asset class to be linked as it is
 //
 bool AudioAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
-	std::string extension = FileUtil::ExtractExtension(GetName());
+	std::string extension = core::FileUtil::ExtractExtension(GetName());
 
 	bool dataLoaded = false;
 	AudioBufferData bufferData;
@@ -76,13 +76,13 @@ bool AudioAsset::LoadFromMemory(std::vector<uint8> const& data)
 	}
 	else
 	{
-		LOG("AudioAsset::LoadFromMemory > Cannot load audio data with this extension! Supported exensions: [.wav/.ogg]", LogLevel::Warning);
+		LOG("AudioAsset::LoadFromMemory > Cannot load audio data with this extension! Supported exensions: [.wav/.ogg]", core::LogLevel::Warning);
 		return false;
 	}
 
 	if (!dataLoaded)
 	{
-		LOG("AudioAsset::LoadFromMemory > Failed to load audio buffer data!", LogLevel::Warning);
+		LOG("AudioAsset::LoadFromMemory > Failed to load audio buffer data!", core::LogLevel::Warning);
 		return false;
 	}
 
@@ -97,7 +97,7 @@ bool AudioAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	if (AudioManager::GetInstance()->TestALError("Audio Loader alBufferData error"))
 	{
-		LOG("AudioAsset::LoadFromMemory > Failed - open AL error!", LogLevel::Warning);
+		LOG("AudioAsset::LoadFromMemory > Failed - open AL error!", core::LogLevel::Warning);
 		return false;
 	}
 
@@ -116,7 +116,7 @@ bool AudioAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 bool AudioAsset::LoadWavFile(AudioBufferData &bufferData, std::vector<uint8> const& binaryContent)
 {
-	auto pBinReader = new BinaryReader();
+	auto pBinReader = new core::BinaryReader();
 
 #define EXIT_FALSE {delete pBinReader;return false;}
 
@@ -140,7 +140,7 @@ bool AudioAsset::LoadWavFile(AudioBufferData &bufferData, std::vector<uint8> con
 	uint16 audioFormat = pBinReader->Read<uint16>();
 	if (audioFormat != 1)
 	{
-		LOG(std::string("Only uncompressed wave files are supported, audio format is: ") + std::to_string(audioFormat), Warning);
+		LOG(std::string("Only uncompressed wave files are supported, audio format is: ") + std::to_string(audioFormat), core::LogLevel::Warning);
 		EXIT_FALSE;
 	}
 	uint16 numChannels = pBinReader->Read<uint16>();
@@ -164,7 +164,7 @@ bool AudioAsset::LoadWavFile(AudioBufferData &bufferData, std::vector<uint8> con
 	{
 		if (i + bufferPos >= (uint32)binaryContent.size())
 		{
-			LOG("Unexpected end of wav files binary content", Warning);
+			LOG("Unexpected end of wav files binary content", core::LogLevel::Warning);
 			return false;
 		}
 		data[i] = binaryContent[i + bufferPos];
@@ -178,17 +178,17 @@ bool AudioAsset::LoadWavFile(AudioBufferData &bufferData, std::vector<uint8> con
 		{
 		case 8:bufferData.format = AL_FORMAT_MONO8; break;
 		case 16:bufferData.format = AL_FORMAT_MONO16; break;
-		default: LOG(std::string("only 8 and 16 bit formats are supported by openAL, bitSize: ") + std::to_string(bitsPerSample), Warning); EXIT_FALSE;
+		default: LOG(std::string("only 8 and 16 bit formats are supported by openAL, bitSize: ") + std::to_string(bitsPerSample), core::LogLevel::Warning); EXIT_FALSE;
 		} break;
 	case 2:
 		switch (bitsPerSample)
 		{
 		case 8:bufferData.format = AL_FORMAT_STEREO8; break;
 		case 16:bufferData.format = AL_FORMAT_STEREO16; break;
-		default: LOG(std::string("only 8 and 16 bit formats are supported by openAL, bitSize: ") + std::to_string(bitsPerSample), Warning); EXIT_FALSE;
+		default: LOG(std::string("only 8 and 16 bit formats are supported by openAL, bitSize: ") + std::to_string(bitsPerSample), core::LogLevel::Warning); EXIT_FALSE;
 		} break;
 	default:
-		LOG(std::string("Only mono and stereo supported by openAL, numChannels: ") + std::to_string(numChannels), Warning);
+		LOG(std::string("Only mono and stereo supported by openAL, numChannels: ") + std::to_string(numChannels), core::LogLevel::Warning);
 		EXIT_FALSE;
 	}
 	bufferData.data = data;
@@ -222,7 +222,7 @@ bool AudioAsset::LoadOggFile(AudioBufferData &bufferData, std::vector<uint8> con
 	case 1:bufferData.format = AL_FORMAT_MONO16; break;
 	case 2:bufferData.format = AL_FORMAT_STEREO16; break;
 	default:
-		LOG(std::string("Only mono and stereo supported by openAL, numChannels: ") + std::to_string(info.channels), LogLevel::Warning);
+		LOG(std::string("Only mono and stereo supported by openAL, numChannels: ") + std::to_string(info.channels), core::LogLevel::Warning);
 		stb_vorbis_close(vorbis);
 		return false;
 	}

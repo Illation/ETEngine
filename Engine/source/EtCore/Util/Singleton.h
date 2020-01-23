@@ -1,6 +1,10 @@
 #pragma once
 
 
+namespace et {
+namespace core {
+
+
 template<class T>
 class Singleton
 {
@@ -31,3 +35,7 @@ private:
 
 template<class T> 
 T* Singleton<T>::m_Instance = nullptr;
+
+
+} // namespace core
+} // namespace et

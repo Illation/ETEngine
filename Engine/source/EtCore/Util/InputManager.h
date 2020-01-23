@@ -4,6 +4,9 @@
 #include "Singleton.h"
 
 
+namespace et {
+
+
 //---------------------------------
 // E_KbdKey
 //
@@ -175,6 +178,10 @@ enum E_MouseButton : uint8
 	COUNT
 };
 
+
+namespace core {
+
+
 //---------------------------------
 // E_MouseButton
 //
@@ -280,3 +287,7 @@ private:
 	I_CursorShapeManager* m_CursorShapeManager = nullptr;
 	E_CursorShape m_CurrentCursorShape = E_CursorShape::Arrow;
 };
+
+
+} // namespace core
+} // namespace et

@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 	// working dir
 	if (argc > 0)
 	{
-		FileUtil::SetExecutablePath(argv[0]);
+		et::core::FileUtil::SetExecutablePath(argv[0]);
 	}
 	else
 	{

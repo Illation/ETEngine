@@ -44,11 +44,11 @@ void GlfwEventManager::Init(GlfwRenderArea* const renderArea)
 
 		if (action == GLFW_PRESS)
 		{
-			InputManager::GetInstance()->OnKeyPressed(static_cast<E_KbdKey>(key));
+			core::InputManager::GetInstance()->OnKeyPressed(static_cast<E_KbdKey>(key));
 		}
 		else if (action == GLFW_RELEASE)
 		{
-			InputManager::GetInstance()->OnKeyReleased(static_cast<E_KbdKey>(key));
+			core::InputManager::GetInstance()->OnKeyReleased(static_cast<E_KbdKey>(key));
 		}
 	});
 
@@ -57,7 +57,7 @@ void GlfwEventManager::Init(GlfwRenderArea* const renderArea)
 	{
 		UNUSED(window);
 
-		InputManager::GetInstance()->OnMouseMoved(etm::vecCast<int32>(dvec2(xpos, ypos)));
+		core::InputManager::GetInstance()->OnMouseMoved(etm::vecCast<int32>(dvec2(xpos, ypos)));
 	});
 
 	// Mouse clicking
@@ -68,11 +68,11 @@ void GlfwEventManager::Init(GlfwRenderArea* const renderArea)
 
 		if (action == GLFW_PRESS)
 		{
-			InputManager::GetInstance()->OnMousePressed(GetButtonFromGlfw(button));
+			core::InputManager::GetInstance()->OnMousePressed(GetButtonFromGlfw(button));
 		}
 		else if (action == GLFW_RELEASE)
 		{
-			InputManager::GetInstance()->OnMouseReleased(GetButtonFromGlfw(button));
+			core::InputManager::GetInstance()->OnMouseReleased(GetButtonFromGlfw(button));
 		}
 	});
 
@@ -81,7 +81,7 @@ void GlfwEventManager::Init(GlfwRenderArea* const renderArea)
 	{
 		UNUSED(window);
 
-		InputManager::GetInstance()->SetMouseWheelDelta(etm::vecCast<int32>(dvec2(xoffset, yoffset)));
+		core::InputManager::GetInstance()->SetMouseWheelDelta(etm::vecCast<int32>(dvec2(xoffset, yoffset)));
 	});
 
 	// window resizing
@@ -97,17 +97,17 @@ void GlfwEventManager::Init(GlfwRenderArea* const renderArea)
 	// window closing
 	glfwSetWindowCloseCallback(renderArea->GetWindow(), [](GLFWwindow* const window)
 	{
-		InputManager::GetInstance()->Quit();
+		core::InputManager::GetInstance()->Quit();
 	});
 
-	m_CursorMap[E_CursorShape::Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-	m_CursorMap[E_CursorShape::IBeam] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
-	m_CursorMap[E_CursorShape::Crosshair] = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
-	m_CursorMap[E_CursorShape::SizeWE] = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
-	m_CursorMap[E_CursorShape::SizeNS] = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
-	m_CursorMap[E_CursorShape::Hand] = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+	m_CursorMap[core::E_CursorShape::Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+	m_CursorMap[core::E_CursorShape::IBeam] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+	m_CursorMap[core::E_CursorShape::Crosshair] = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+	m_CursorMap[core::E_CursorShape::SizeWE] = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+	m_CursorMap[core::E_CursorShape::SizeNS] = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+	m_CursorMap[core::E_CursorShape::Hand] = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
 
-	InputManager::GetInstance()->RegisterCursorShapeManager(this);
+	core::InputManager::GetInstance()->RegisterCursorShapeManager(this);
 }
 
 //----------------------------
@@ -115,7 +115,7 @@ void GlfwEventManager::Init(GlfwRenderArea* const renderArea)
 //
 // Change the cursor currently used
 //
-bool GlfwEventManager::OnCursorResize(E_CursorShape const shape)
+bool GlfwEventManager::OnCursorResize(core::E_CursorShape const shape)
 {
 	auto it = m_CursorMap.find(shape);
 	if (it != m_CursorMap.end())
@@ -124,7 +124,7 @@ bool GlfwEventManager::OnCursorResize(E_CursorShape const shape)
 		return true;
 	}
 
-	LOG("INPUT::OnCursorResize > Shape not found", Warning);
+	LOG("INPUT::OnCursorResize > Shape not found", core::LogLevel::Warning);
 	return false;
 }
 
@@ -138,7 +138,7 @@ void GlfwEventManager::OnTick()
 	glfwPollEvents();
 	if (glfwWindowShouldClose(m_RenderArea->GetWindow()))
 	{
-		InputManager::GetInstance()->Quit();
+		core::InputManager::GetInstance()->Quit();
 	}
 }
 

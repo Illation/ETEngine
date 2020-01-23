@@ -5,6 +5,10 @@
 #include "TickManager.h"
 
 
+namespace et {
+namespace core {
+
+
 //===================================
 // default tick triggerer interface
 //===================================
@@ -51,3 +55,6 @@ void I_DefaultTickTriggerer::UnRegisterAsTriggerer()
 	TickManager::GetInstance()->UnregisterDefaultTriggerer(this);
 }
 
+
+} // namespace core
+} // namespace et

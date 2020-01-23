@@ -35,7 +35,7 @@ public:
 // Contains a drawable area
 //  - #todo support non realtime rendering
 //
-class Viewport final : public I_RealTimeTickTriggerer
+class Viewport final : public core::I_RealTimeTickTriggerer
 {
 	// definitions
 	//---------------

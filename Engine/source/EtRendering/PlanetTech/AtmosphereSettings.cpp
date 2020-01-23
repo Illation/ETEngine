@@ -18,48 +18,48 @@ vec3 InterpolatedSpectrum(const std::vector<double_t> &wavelengths, const std::v
 	return vec3((float)ret.x, (float)ret.y, (float)ret.z) * scale;
 }
 
-DensityProfileLayer JSONDensityProfile(JSON::Object* jlayer)
+DensityProfileLayer JSONDensityProfile(core::JSON::Object* jlayer)
 {
 	DensityProfileLayer ret = DensityProfileLayer();
-	JSON::ApplyNumValue(jlayer, ret.width, "width");
-	JSON::ApplyNumValue(jlayer, ret.exp_term, "exp term");
-	JSON::ApplyNumValue(jlayer, ret.exp_scale, "exp scale");
-	JSON::ApplyNumValue(jlayer, ret.linear_term, "linear term");
-	JSON::ApplyNumValue(jlayer, ret.constant_term, "constant term");
+	core::JSON::ApplyNumValue(jlayer, ret.width, "width");
+	core::JSON::ApplyNumValue(jlayer, ret.exp_term, "exp term");
+	core::JSON::ApplyNumValue(jlayer, ret.exp_scale, "exp scale");
+	core::JSON::ApplyNumValue(jlayer, ret.linear_term, "linear term");
+	core::JSON::ApplyNumValue(jlayer, ret.constant_term, "constant term");
 	return ret;
 }
 
 AtmosphereParameters::AtmosphereParameters(T_Hash const assetId, dvec3 &skyColor, dvec3 &sunColor)
 {
-	AssetPtr<StubData> jsonText = ResourceManager::Instance()->GetAssetData<StubData>(assetId);
+	AssetPtr<core::StubData> jsonText = core::ResourceManager::Instance()->GetAssetData<core::StubData>(assetId);
 
-	JSON::Parser parser = JSON::Parser(std::string(jsonText->GetText(), jsonText->GetLength()));
-	JSON::Object* root = parser.GetRoot();
+	core::JSON::Parser parser = core::JSON::Parser(std::string(jsonText->GetText(), jsonText->GetLength()));
+	core::JSON::Object* root = parser.GetRoot();
 
 	// CALCULATE ATMOSPHERE PARAMETERS
 	// *******************************
-	int32 kLambdaMin; JSON::ApplyNumValue(root, kLambdaMin, "lambdaMin"); // min wavelength
-	int32 kLambdaMax; JSON::ApplyNumValue(root, kLambdaMax, "lambdaMax");// max wavelength
+	int32 kLambdaMin; core::JSON::ApplyNumValue(root, kLambdaMin, "lambdaMin"); // min wavelength
+	int32 kLambdaMax; core::JSON::ApplyNumValue(root, kLambdaMax, "lambdaMax");// max wavelength
 	auto kSolarIrradiance = (*root)["solarIrradiance"]->arr()->NumArr();
 	auto kOzoneCrossSection = (*root)["ozoneCrossSection"]->arr()->NumArr();
-	double kDobsonUnit; JSON::ApplyNumValue(root, kDobsonUnit, "dobsonUnit");
-	double ozoneAltitude; JSON::ApplyNumValue(root, ozoneAltitude, "ozone altitude"); 
-	double ozoneDUs; JSON::ApplyNumValue(root, ozoneDUs, "ozone dobson units"); 
+	double kDobsonUnit; core::JSON::ApplyNumValue(root, kDobsonUnit, "dobsonUnit");
+	double ozoneAltitude; core::JSON::ApplyNumValue(root, ozoneAltitude, "ozone altitude"); 
+	double ozoneDUs; core::JSON::ApplyNumValue(root, ozoneDUs, "ozone dobson units"); 
 	double kMaxOzoneNumberDensity = ozoneDUs * kDobsonUnit / ozoneAltitude;
-	double kRayleigh; JSON::ApplyNumValue(root, kRayleigh, "rayleigh");
-	double kRayleighScaleHeight; JSON::ApplyNumValue(root, kRayleighScaleHeight, "rayleighScaleHeight");
-	double kMieScaleHeight; JSON::ApplyNumValue(root, kMieScaleHeight, "mieScaleHeight");
-	double kMieAngstromAlpha; JSON::ApplyNumValue(root, kMieAngstromAlpha, "mieAngstromAlpha");
-	double kMieAngstromBeta; JSON::ApplyNumValue(root, kMieAngstromBeta, "mieAngstromBeta");
-	double kMieSingleScatteringAlbedo; JSON::ApplyNumValue(root, kMieSingleScatteringAlbedo, "mieSingleScatteringAlbedo");
-	double kGroundAlbedo; JSON::ApplyNumValue(root, kGroundAlbedo, "groundAlbedo");
+	double kRayleigh; core::JSON::ApplyNumValue(root, kRayleigh, "rayleigh");
+	double kRayleighScaleHeight; core::JSON::ApplyNumValue(root, kRayleighScaleHeight, "rayleighScaleHeight");
+	double kMieScaleHeight; core::JSON::ApplyNumValue(root, kMieScaleHeight, "mieScaleHeight");
+	double kMieAngstromAlpha; core::JSON::ApplyNumValue(root, kMieAngstromAlpha, "mieAngstromAlpha");
+	double kMieAngstromBeta; core::JSON::ApplyNumValue(root, kMieAngstromBeta, "mieAngstromBeta");
+	double kMieSingleScatteringAlbedo; core::JSON::ApplyNumValue(root, kMieSingleScatteringAlbedo, "mieSingleScatteringAlbedo");
+	double kGroundAlbedo; core::JSON::ApplyNumValue(root, kGroundAlbedo, "groundAlbedo");
 
 	DensityProfileLayer rayleigh_layer = JSONDensityProfile((*root)["rayleigh layer"]->obj()); rayleigh_layer.exp_scale /= (float)kRayleighScaleHeight;
 	DensityProfileLayer mie_layer = JSONDensityProfile((*root)["mie layer"]->obj()); mie_layer.exp_scale /= (float)kMieScaleHeight;
 
-	double ozoneConstDiv; JSON::ApplyNumValue(root, ozoneConstDiv, "ozone constant divisor");
+	double ozoneConstDiv; core::JSON::ApplyNumValue(root, ozoneConstDiv, "ozone constant divisor");
 	std::vector<DensityProfileLayer> ozone_density;
-	JSON::Array* jOzoneDensity = (*root)["ozone density"]->arr();
+	core::JSON::Array* jOzoneDensity = (*root)["ozone density"]->arr();
 	for (auto jlayer : jOzoneDensity->value)
 	{
 		DensityProfileLayer layer = JSONDensityProfile(jlayer->obj());
@@ -68,8 +68,8 @@ AtmosphereParameters::AtmosphereParameters(T_Hash const assetId, dvec3 &skyColor
 		ozone_density.push_back(layer);
 	}
 
-	int32 lambdaIncrement; JSON::ApplyNumValue(root, lambdaIncrement, "lambda increment");
-	double rayleighLambdaExp; JSON::ApplyNumValue(root, rayleighLambdaExp, "rayleigh lambda exp");
+	int32 lambdaIncrement; core::JSON::ApplyNumValue(root, lambdaIncrement, "lambda increment");
+	double rayleighLambdaExp; core::JSON::ApplyNumValue(root, rayleighLambdaExp, "rayleigh lambda exp");
 
 	std::vector<double> wavelengths;
 	std::vector<double> solar_irradiance;
@@ -93,12 +93,12 @@ AtmosphereParameters::AtmosphereParameters(T_Hash const assetId, dvec3 &skyColor
 
 	AtmosphereSettings settings = AtmosphereSettings();
 	dvec3 lambdas = dvec3(settings.kLambdaR, settings.kLambdaG, settings.kLambdaB);
-	double kLengthUnitInMeters; JSON::ApplyNumValue(root, kLengthUnitInMeters, "length unit in meters");
+	double kLengthUnitInMeters; core::JSON::ApplyNumValue(root, kLengthUnitInMeters, "length unit in meters");
 
 	solarIrradiance = InterpolatedSpectrum(wavelengths, solar_irradiance, lambdas, 1.f);
-	JSON::ApplyNumValue(root, sun_angular_radius, "sun angular diameter"); sun_angular_radius /= 2.0;
-	JSON::ApplyNumValue(root, bottom_radius, "bottom radius"); bottom_radius /= (float)kLengthUnitInMeters;
-	JSON::ApplyNumValue(root, top_radius, "top radius"); top_radius /= (float)kLengthUnitInMeters;
+	core::JSON::ApplyNumValue(root, sun_angular_radius, "sun angular diameter"); sun_angular_radius /= 2.0;
+	core::JSON::ApplyNumValue(root, bottom_radius, "bottom radius"); bottom_radius /= (float)kLengthUnitInMeters;
+	core::JSON::ApplyNumValue(root, top_radius, "top radius"); top_radius /= (float)kLengthUnitInMeters;
 	bottom_radius = 1737.1f;// #temp , moon specific
 	top_radius = 1837.1f;// #temp , moon specific
 	rayleigh_density = DensityProfile({ rayleigh_layer }, (float)kLengthUnitInMeters);
@@ -107,11 +107,11 @@ AtmosphereParameters::AtmosphereParameters(T_Hash const assetId, dvec3 &skyColor
 	mieScattering = InterpolatedSpectrum(wavelengths, mie_scattering, lambdas, (float)kLengthUnitInMeters);
 	mieExtinction = InterpolatedSpectrum(wavelengths, mie_extinction, lambdas, (float)kLengthUnitInMeters);
 	mie_phase_function_g = (float)0.8f;
-	JSON::ApplyNumValue(root, mie_phase_function_g, "mie phase function");
+	core::JSON::ApplyNumValue(root, mie_phase_function_g, "mie phase function");
 	absorption_density = DensityProfile(ozone_density, (float)kLengthUnitInMeters);
 	absorptionExtinction = InterpolatedSpectrum(wavelengths, absorption_extinction, lambdas, (float)kLengthUnitInMeters);
 	groundAlbedo = InterpolatedSpectrum(wavelengths, ground_albedo, lambdas, 1.f);
-	JSON::ApplyNumValue(root, mu_s_min, "mu s min"); mu_s_min = cosf(etm::radians(mu_s_min));
+	core::JSON::ApplyNumValue(root, mu_s_min, "mu s min"); mu_s_min = cosf(etm::radians(mu_s_min));
 
 	AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(wavelengths, solar_irradiance, -3, skyColor);
 	AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(wavelengths, solar_irradiance, 0, sunColor);

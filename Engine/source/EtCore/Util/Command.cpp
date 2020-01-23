@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "Command.h"
 
+
+namespace et {
+namespace core {
+
+
 std::string execConsoleCommand(std::string const& cmd)
 {
 	//modified version of https://stackoverflow.com/a/35935443/4414168
@@ -95,3 +100,7 @@ std::string execConsoleCommand(std::string const& cmd)
 	return std::string("execConsoleCommand: not implemented");
 #endif
 }
+
+
+} // namespace core
+} // namespace et

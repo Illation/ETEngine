@@ -1,3 +1,9 @@
+
+
+namespace et {
+namespace core {
+
+
 FILE_HANDLE FILE_BASE::Open( const char * pathName, FILE_ACCESS_FLAGS accessFlags, FILE_ACCESS_MODE accessMode )
 {
     return open( pathName, GetLinuxFileFlags(accessFlags, accessMode), 0644 );
@@ -62,3 +68,7 @@ int32 FILE_BASE::GetLinuxFileFlags( FILE_ACCESS_FLAGS flags, FILE_ACCESS_MODE mo
 
     return result;
 }
+
+
+} // namespace core
+} // namespace et

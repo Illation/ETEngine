@@ -243,7 +243,7 @@ void Viewport::UnregisterListener(I_ViewportListener* const listener)
 	// it should have been found
 	if (listenerIt == m_Listeners.cend())
 	{
-		LOG("Viewport::UnregisterListener > Listener not found", LogLevel::Warning);
+		LOG("Viewport::UnregisterListener > Listener not found", core::LogLevel::Warning);
 		return;
 	}
 
@@ -268,7 +268,7 @@ void Viewport::MakeCurrent()
 {
 	if (!(m_Area->MakeCurrent()))
 	{
-		LOG("Viewport::MakeCurrent > An error occured making the context current during realize!", LogLevel::Warning);
+		LOG("Viewport::MakeCurrent > An error occured making the context current during realize!", core::LogLevel::Warning);
 	}
 
 	g_CurrentViewport = this;

@@ -8,6 +8,10 @@
 // from https://stackoverflow.com/questions/2342162/stdstring-formatting-like-sprintf
 
 
+namespace et {
+namespace core {
+
+
 //---------------------------------------------------------------------------------
 // string_format
 //
@@ -28,4 +32,8 @@ std::string string_format(char const* format = nullptr, Args ... args)
 }
 
 
-#define FS(...) string_format(__VA_ARGS__)
+} // namespace core
+} // namespace et
+
+
+#define FS(...) et::core::string_format(__VA_ARGS__)

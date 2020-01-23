@@ -9,6 +9,10 @@
 #include <EtCore/FileSystem/Json/JsonWriter.h>
 
 
+namespace et {
+namespace core {
+
+
 // This code is heavily based on https://github.com/rttrorg/rttr/tree/master/src/examples/json_serialization
 
 //---------------------------------
@@ -70,5 +74,9 @@ namespace serialization
 	void FromJsonRecursive(rttr::instance const inst, JSON::Value const* const jVal);
 
 } // namespace serialization
+
+
+} // namespace core
+} // namespace et
 
 #include "Serialization.inl"

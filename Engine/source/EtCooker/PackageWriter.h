@@ -1,7 +1,14 @@
 #pragma once
 #include <EtCore/FileSystem/Package/PackageDataStructure.h>
 
-class File;
+
+namespace et { namespace core {
+	class File;
+} }
+
+
+namespace et {
+namespace cooker {
 
 
 //---------------------------------
@@ -16,10 +23,10 @@ public:
 	//------------------
 	struct FileEntryInfo
 	{
-		FileEntryInfo(PkgEntry const& lEntry, File* const lFile, std::string const& lRelName);
+		FileEntryInfo(core::PkgEntry const& lEntry, core::File* const lFile, std::string const& lRelName);
 
-		PkgEntry entry;
-		File* file;
+		core::PkgEntry entry;
+		core::File* file;
 		std::string relName;
 	};
 
@@ -30,8 +37,8 @@ public:
 
 	// functionality
 	//------------------
-	void AddFile(File* const file, std::string const& rootDir, E_CompressionType const compression);
-	void RemoveFile(File* const file);
+	void AddFile(core::File* const file, std::string const& rootDir, core::E_CompressionType const compression);
+	void RemoveFile(core::File* const file);
 	void Cleanup();
 
 	void Write(std::vector<uint8>& data);
@@ -42,3 +49,6 @@ private:
 	std::vector<FileEntryInfo> m_Files;
 };
 
+
+} // namespace cooker
+} // namespace et

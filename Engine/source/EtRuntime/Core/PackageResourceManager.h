@@ -4,7 +4,9 @@
 
 
 // fwd
-class I_Package;
+namespace et { namespace core {
+	class I_Package;
+} }
 
 
 namespace et {
@@ -16,13 +18,13 @@ namespace rt {
 //
 // Resource manager implementation that uses packages
 //
-class PackageResourceManager : public ResourceManager 
+class PackageResourceManager : public core::ResourceManager 
 {
 	// Definitions
 	//---------------------
 public:
-	friend class ResourceManager;
-	typedef std::pair<T_Hash, I_Package*> T_IndexedPackage;
+	friend class core::ResourceManager;
+	typedef std::pair<T_Hash, core::I_Package*> T_IndexedPackage;
 
 	// Construct destruct
 	//---------------------
@@ -38,19 +40,19 @@ protected:
 	//---------------------
 public:
 
-	bool GetLoadData(I_Asset const* const asset, std::vector<uint8>& outData) const override;
+	bool GetLoadData(core::I_Asset const* const asset, std::vector<uint8>& outData) const override;
 
 	void Flush() override;
 
 	// utility
 	//---------------------
 protected:
-	I_Asset* GetAssetInternal(T_Hash const assetId, std::type_info const& type, bool const reportErrors) override;
+	core::I_Asset* GetAssetInternal(T_Hash const assetId, std::type_info const& type, bool const reportErrors) override;
 
 	// Data
 	///////
 
-	AssetDatabase m_Database;
+	core::AssetDatabase m_Database;
 	std::vector<T_IndexedPackage> m_Packages;
 };
 

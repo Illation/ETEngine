@@ -67,7 +67,7 @@ void SharedVarController::UpdataData(Camera const& camera, Gbuffer const& gbuffe
 	m_Data.staticViewProjection = camera.GetStatViewProj();
 	m_Data.staticViewProjectionInv = camera.GetStatViewProjInv();
 
-	Time* const time = ContextManager::GetInstance()->GetActiveContext()->time;
+	core::Time* const time = core::ContextManager::GetInstance()->GetActiveContext()->time;
 	m_Data.time = time->GetTime();
 	m_Data.deltaTime = time->DeltaTime();
 

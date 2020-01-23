@@ -52,9 +52,9 @@ void EditorBase::Init(Gtk::Frame* const parent)
 	// load the tool hierachy from a layout file
 	std::string const layoutPath = FS("%slayouts/%s.json", EditorConfig::GetInstance()->GetEditorUserDir().c_str(), GetLayoutName().c_str());
 
-	if (!(serialization::DeserializeFromFile(layoutPath, m_NodeHierachy)))
+	if (!(core::serialization::DeserializeFromFile(layoutPath, m_NodeHierachy)))
 	{
-		LOG(FS("Failed to deserialize layout file for '%s' at: %s", GetName().c_str(), layoutPath.c_str()), LogLevel::Warning);
+		LOG(FS("Failed to deserialize layout file for '%s' at: %s", GetName().c_str(), layoutPath.c_str()), core::LogLevel::Warning);
 	}
 
 	ET_ASSERT(m_NodeHierachy.root != nullptr);
@@ -94,9 +94,9 @@ void EditorBase::SaveLayout()
 {
 	std::string const layoutPath = FS("%slayouts/%s.json", EditorConfig::GetInstance()->GetEditorUserDir().c_str(), GetLayoutName().c_str());
 
-	if (!serialization::SerializeToFile(layoutPath, m_NodeHierachy))
+	if (!core::serialization::SerializeToFile(layoutPath, m_NodeHierachy))
 	{
-		LOG(FS("EditorBase::SaveLayout > unable to save the layout to: %s", layoutPath.c_str()), LogLevel::Warning);
+		LOG(FS("EditorBase::SaveLayout > unable to save the layout to: %s", layoutPath.c_str()), core::LogLevel::Warning);
 	}
 }
 

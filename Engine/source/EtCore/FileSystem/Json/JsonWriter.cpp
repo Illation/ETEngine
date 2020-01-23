@@ -2,6 +2,10 @@
 #include "JsonWriter.h"
 
 
+namespace et {
+namespace core {
+
+
 namespace JSON {
 
 
@@ -352,4 +356,8 @@ void Writer::WriteIndentations()
 	}
 }
 
+
 } // namespace JSON
+
+} // namespace core
+} // namespace et

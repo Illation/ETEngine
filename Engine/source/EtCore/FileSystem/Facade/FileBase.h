@@ -10,6 +10,11 @@
 #include "FileBaseWinReferences.h"
 #endif
 
+
+namespace et {
+namespace core {
+
+
 class FILE_BASE {
 public:
     static FILE_HANDLE Open( const char * pathName, FILE_ACCESS_FLAGS accessFlags, FILE_ACCESS_MODE accessMode );
@@ -31,3 +36,7 @@ private:
 
 #endif
 };
+
+
+} // namespace core
+} // namespace et

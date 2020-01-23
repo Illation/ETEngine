@@ -1,11 +1,16 @@
 #pragma once
-
 #include <EtCore/Hashing/Hash.h>
 
 #include <rttr/type>
 
 
-class I_AssetPtr;
+namespace et {
+	class I_AssetPtr;
+}
+
+
+namespace et {
+namespace core {
 
 
 //---------------------------------
@@ -179,5 +184,10 @@ public:
 protected:
 	RTTR_ENABLE(RawAsset<T_DataType>)
 };
+
+
+} // namespace core
+} // namespace et
+
 
 #include "Asset.inl"

@@ -21,7 +21,7 @@ namespace fw {
 //
 // Combines all scene subsystems (ecs, rendering, physics) into a single globally accessible class, which manages update, loading, unloading and events
 //
-class UnifiedScene : public I_Tickable
+class UnifiedScene : public  core::I_Tickable
 {
 	// static access
 	//---------------
@@ -77,7 +77,7 @@ private:
 
 	EcsController m_Scene;
 
-	BaseContext m_Context;
+	core::BaseContext m_Context;
 	T_EntityId m_ActiveCamera = INVALID_ENTITY_ID;
 	T_EntityId m_AudioListener = INVALID_ENTITY_ID;
 

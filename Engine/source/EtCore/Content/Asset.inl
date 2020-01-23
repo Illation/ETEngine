@@ -1,6 +1,10 @@
 #pragma once
 
 
+namespace et {
+namespace core {
+
+
 //---------------------------------
 // RawAsset::UnloadInternal
 //
@@ -16,3 +20,7 @@ void RawAsset<T_DataType>::UnloadInternal()
 	}
 	m_LoadData.clear();
 }
+
+
+} // namespace core
+} // namespace et

@@ -1,5 +1,10 @@
 #pragma once
 
+
+namespace et {
+namespace core {
+
+
 //---------------------------------
 // FileUtil
 //
@@ -40,3 +45,7 @@ private:
 	static std::string s_ExePath;
 	static uint8 const* s_CompiledData;
 };
+
+
+} // namespace core
+} // namespace et

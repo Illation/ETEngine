@@ -2,7 +2,9 @@
 #include <EtCore/FileSystem/Json/JsonDom.h>
 
 
-class BinaryReader;
+namespace et { namespace core {
+	class BinaryReader;
+} }
 
 
 namespace et {
@@ -413,41 +415,41 @@ namespace glTF
 	//Unify GLTF and GLB
 	bool ParseGLTFData(const std::vector<uint8>& binaryContent, const std::string path, const std::string& extension, glTFAsset& asset);
 
-	bool ParseGLBHeader(BinaryReader* pBinReader, Header &header);
-	bool ParseGLBChunk(BinaryReader* pBinReader, Chunk &header);
+	bool ParseGLBHeader(core::BinaryReader* pBinReader, Header &header);
+	bool ParseGLBChunk(core::BinaryReader* pBinReader, Chunk &header);
 
-	bool ParseGlTFJson(JSON::Object* json, Dom& dom);
+	bool ParseGlTFJson(core::JSON::Object* json, Dom& dom);
 
-	bool ParseAssetJson(JSON::Object* root, Asset& asset);
-	bool ParseExtensionsJson(JSON::Object* root, Dom& dom);
-	bool ParseSceneJson(JSON::Object* root, Dom& dom);
-	bool ParseScenesJson(JSON::Object* root, std::vector<Scene>& scenes);
-	bool ParseNodesJson(JSON::Object* root, std::vector<Node>& nodes);
-	bool ParseMeshesJson(JSON::Object* root, std::vector<Mesh>& meshes);
-	bool ParsePrimitiveJson(JSON::Object* primitiveObj, Primitive& primitive);
-	bool ParseAccessorsJson(JSON::Object* root, std::vector<Accessor>& accessors);
-	bool ParseBufferViewsJson(JSON::Object* root, std::vector<BufferView>& bufferViews);
-	bool ParseBuffersJson(JSON::Object* root, std::vector<Buffer>& buffers);
-	bool ParseTexturesJson(JSON::Object* root, std::vector<Texture>& textures);
-	bool ParseImagesJson(JSON::Object* root, std::vector<Image>& images);
-	bool ParseSamplersJson(JSON::Object* root, std::vector<Sampler>& samplers);
-	bool ParseMaterialsJson(JSON::Object* root, std::vector<Material>& materials);
-	bool ParsePbrMetallicRoughnessJson(JSON::Object* pbrObj, Material::PbrMetallicRoughness* pbr);
-	bool ParseTextureInfoJson(JSON::Object* textureInfo, Material::TextureInfo* info);
-	bool ParseCamerasJson(JSON::Object* root, std::vector<Camera>& cameras);
-	bool ParseSkinsJson(JSON::Object* root, std::vector<Skin>& skins);
-	bool ParseAnimationsJson(JSON::Object* root, std::vector<Animation>& animations);
+	bool ParseAssetJson(core::JSON::Object* root, Asset& asset);
+	bool ParseExtensionsJson(core::JSON::Object* root, Dom& dom);
+	bool ParseSceneJson(core::JSON::Object* root, Dom& dom);
+	bool ParseScenesJson(core::JSON::Object* root, std::vector<Scene>& scenes);
+	bool ParseNodesJson(core::JSON::Object* root, std::vector<Node>& nodes);
+	bool ParseMeshesJson(core::JSON::Object* root, std::vector<Mesh>& meshes);
+	bool ParsePrimitiveJson(core::JSON::Object* primitiveObj, Primitive& primitive);
+	bool ParseAccessorsJson(core::JSON::Object* root, std::vector<Accessor>& accessors);
+	bool ParseBufferViewsJson(core::JSON::Object* root, std::vector<BufferView>& bufferViews);
+	bool ParseBuffersJson(core::JSON::Object* root, std::vector<Buffer>& buffers);
+	bool ParseTexturesJson(core::JSON::Object* root, std::vector<Texture>& textures);
+	bool ParseImagesJson(core::JSON::Object* root, std::vector<Image>& images);
+	bool ParseSamplersJson(core::JSON::Object* root, std::vector<Sampler>& samplers);
+	bool ParseMaterialsJson(core::JSON::Object* root, std::vector<Material>& materials);
+	bool ParsePbrMetallicRoughnessJson(core::JSON::Object* pbrObj, Material::PbrMetallicRoughness* pbr);
+	bool ParseTextureInfoJson(core::JSON::Object* textureInfo, Material::TextureInfo* info);
+	bool ParseCamerasJson(core::JSON::Object* root, std::vector<Camera>& cameras);
+	bool ParseSkinsJson(core::JSON::Object* root, std::vector<Skin>& skins);
+	bool ParseAnimationsJson(core::JSON::Object* root, std::vector<Animation>& animations);
 
 	void LogGLTFVersionSupport();
 
-	bool OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, BinaryReader* pViewReader);
+	bool OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, core::BinaryReader* pViewReader);
 	bool GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& data);
 	template<typename T>
 	bool GetAccessorScalarArray(glTFAsset& asset, uint32 idx, std::vector<T>& data)
 	{
 		if (idx >= (uint32)asset.dom.accessors.size())
 		{
-			LOG("Accessor index out of range", Warning);
+			LOG("Accessor index out of range", core::LogLevel::Warning);
 			return false;
 		}
 		Accessor& accessor = asset.dom.accessors[idx];
@@ -455,13 +457,13 @@ namespace glTF
 		std::vector<uint8> accessorData;
 		if (!GetAccessorData(asset, idx, accessorData))
 		{
-			LOG("Unable to get accessor data", Warning);
+			LOG("Unable to get accessor data", core::LogLevel::Warning);
 		}
-		BinaryReader* pBinReader = new BinaryReader();
+		core::BinaryReader* pBinReader = new core::BinaryReader();
 		pBinReader->Open(accessorData);
 		if (!(pBinReader->Exists()))
 		{
-			LOG("Unable to convert accessor data", Warning);
+			LOG("Unable to convert accessor data", core::LogLevel::Warning);
 			delete pBinReader;
 			return false;
 		}
@@ -469,7 +471,7 @@ namespace glTF
 		{
 			if (pBinReader->GetBufferPosition() >= (int32)accessorData.size())
 			{
-				LOG("Binary reader out of range", Warning);
+				LOG("Binary reader out of range", core::LogLevel::Warning);
 				delete pBinReader;
 				return false;
 			}
@@ -503,25 +505,25 @@ namespace glTF
 	{
 		if (idx >= (uint32)asset.dom.accessors.size())
 		{
-			LOG("Accessor index out of range", Warning);
+			LOG("Accessor index out of range", core::LogLevel::Warning);
 			return false;
 		}
 		Accessor& accessor = asset.dom.accessors[idx];
 		uint8 compsPerEl = AccessorTypes[accessor.type].first;
 		if (compsPerEl != n)
 		{
-			LOG("Accessor type mismatch with vector size", Warning);
+			LOG("Accessor type mismatch with vector size", core::LogLevel::Warning);
 			return false;
 		}
 		std::vector<T> scalars;
 		if(!GetAccessorScalarArray(asset, idx, scalars))
 		{
-			LOG("Unable to get accessor scalar array for vector array", Warning);
+			LOG("Unable to get accessor scalar array for vector array", core::LogLevel::Warning);
 			return false;
 		}
 		if (convertCoords && n != 3)
 		{
-			LOG("Converting coordinates of a non-3D vector", Warning);
+			LOG("Converting coordinates of a non-3D vector", core::LogLevel::Warning);
 		}
 		convertCoords &= n > 1;
 		for (uint32 i = 0; i < scalars.size() / n; ++i)

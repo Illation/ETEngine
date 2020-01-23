@@ -4,6 +4,9 @@
 
 #include <EtCore/Util/AtomicTypes.h>
 
+namespace et {
+namespace cooker {
+
 
 void GenerateCompilableResource(std::vector<uint8> const& data, std::string const& name, std::string const& path);
 
@@ -18,3 +21,7 @@ namespace generator_detail {
 	std::string GetSourceString(std::vector<uint8> const& data, std::string const& name, std::string const& compiledDataName);
 
 } // namespace generator_detail
+
+
+} // namespace cooker
+} // namespace et

@@ -3,6 +3,10 @@
 #include "Time.h"
 
 
+namespace et {
+namespace core {
+
+
 //-----------------------
 // BaseContext
 //
@@ -48,3 +52,6 @@ private:
 	BaseContext* m_ActiveContext = nullptr;
 };
 
+
+} // namespace core
+} // namespace et

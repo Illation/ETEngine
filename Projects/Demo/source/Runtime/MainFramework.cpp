@@ -47,7 +47,7 @@ void MainFramework::OnSystemInit()
 void MainFramework::OnInit()
 {
 	// Fonts
-	m_DebugFont = ResourceManager::Instance()->GetAssetData<render::SpriteFont>("Ubuntu-Regular.ttf"_hash);
+	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<render::SpriteFont>("Ubuntu-Regular.ttf"_hash);
 
 	// scenes
 	fw::UnifiedScene& uniScene = fw::UnifiedScene::Instance();
@@ -89,7 +89,7 @@ void MainFramework::OnInit()
 void MainFramework::OnTick()
 {
 	fw::UnifiedScene& uniScene = fw::UnifiedScene::Instance();
-	InputManager* const input = InputManager::GetInstance();
+	core::InputManager* const input = core::InputManager::GetInstance();
 
 	// Scene switching
 	//-----------------

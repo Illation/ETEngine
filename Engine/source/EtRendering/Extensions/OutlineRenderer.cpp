@@ -38,7 +38,7 @@ OutlineRenderer::~OutlineRenderer()
 //
 void OutlineRenderer::Init(render::T_RenderEventDispatcher* const eventDispatcher)
 {
-	m_SobelShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostSobel.glsl"_hash);
+	m_SobelShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PostSobel.glsl"_hash);
 
 	CreateRenderTarget();
 

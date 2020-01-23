@@ -58,7 +58,7 @@ ivec2 Config::Settings::Window::GetSize() const
 	LOG(FS("Settings::Window::DeriveSettings > Invalid resolution index in '%s' mode: %u",
 		(Fullscreen ? "fullscreen" : "windowed"),
 		(Fullscreen ? FullscreenRes : WindowedRes)),
-		LogLevel::Warning);
+		core::LogLevel::Warning);
 
 	return ivec2();
 }
@@ -89,24 +89,24 @@ void Config::Initialize()
 {
 	// try deserializing the user directory path
 	UserDirPointer userDir;
-	if (serialization::DeserializeFromFile(s_PointerPath, userDir))
+	if (core::serialization::DeserializeFromFile(s_PointerPath, userDir))
 	{
 		m_UserDir = userDir;
 	}
 	else
 	{
-		LOG("Config::Initialize > unable to deserialize pointer to user directory!", LogLevel::Error);
+		LOG("Config::Initialize > unable to deserialize pointer to user directory!", core::LogLevel::Error);
 	}
 
 	// try deserializing settings
 	Settings settings;
-	if (serialization::DeserializeFromFile(GetUserDirPath() + s_ConfigFileRelativePath, settings))
+	if (core::serialization::DeserializeFromFile(GetUserDirPath() + s_ConfigFileRelativePath, settings))
 	{
 		m_Settings = settings;
 	}
 	else
 	{
-		LOG("Config::Initialize > unable to deserialize config file to settings, using defaults", Warning);
+		LOG("Config::Initialize > unable to deserialize config file to settings, using defaults", core::LogLevel::Warning);
 	}
 }
 
@@ -135,9 +135,9 @@ void Config::InitRenderConfig()
 //
 void Config::Save()
 {
-	if (!serialization::SerializeToFile(GetUserDirPath() + s_ConfigFileRelativePath, m_Settings))
+	if (!core::serialization::SerializeToFile(GetUserDirPath() + s_ConfigFileRelativePath, m_Settings))
 	{
-		LOG("Config::Save > unable to serialize settings to config file", Warning);
+		LOG("Config::Save > unable to serialize settings to config file", core::LogLevel::Warning);
 	}
 }
 

@@ -16,7 +16,7 @@ namespace render {
 RTTR_REGISTRATION
 {
 	BEGIN_REGISTER_POLYMORPHIC_CLASS(MaterialInstanceAsset, "material instance asset")
-	END_REGISTER_POLYMORPHIC_CLASS(MaterialInstanceAsset, I_Asset);
+	END_REGISTER_POLYMORPHIC_CLASS(MaterialInstanceAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(MaterialInstanceAsset) // force the material instance asset class to be linked
 
@@ -82,9 +82,9 @@ MaterialInstance::~MaterialInstance()
 bool MaterialInstanceAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
 	MaterialDescriptor descriptor;
-	if (!(serialization::DeserializeFromJsonString(FileUtil::AsText(data), descriptor)))
+	if (!(core::serialization::DeserializeFromJsonString(core::FileUtil::AsText(data), descriptor)))
 	{
-		LOG("MaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor", LogLevel::Warning);
+		LOG("MaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor", core::LogLevel::Warning);
 		return false;
 	}
 
@@ -122,7 +122,7 @@ bool MaterialInstanceAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	if ((materialRef == nullptr) && (parentRef == nullptr))
 	{
-		LOG("MaterialAsset::LoadFromMemory > Material instances must reference a material or parent instance!", LogLevel::Warning);
+		LOG("MaterialAsset::LoadFromMemory > Material instances must reference a material or parent instance!", core::LogLevel::Warning);
 		return false;
 	}
 

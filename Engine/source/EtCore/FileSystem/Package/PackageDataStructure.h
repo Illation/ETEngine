@@ -4,6 +4,10 @@
 #include <EtCore/Hashing/Hash.h>
 
 
+namespace et {
+namespace core {
+
+
 //---------------------------------
 // E_CompressionType
 //
@@ -50,3 +54,7 @@ struct PkgEntry
 	uint16 nameLength;
 	uint64 size;
 };
+
+
+} // namespace core
+} // namespace et

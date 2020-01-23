@@ -148,7 +148,7 @@ void SceneEditor::UnregisterListener(I_SceneEditorListener const* const listener
 	// it should have been found
 	if (listenerIt == m_Listeners.cend())
 	{
-		LOG("SceneEditor::UnregisterListener > Listener not found", LogLevel::Warning);
+		LOG("SceneEditor::UnregisterListener > Listener not found", core::LogLevel::Warning);
 		return;
 	}
 

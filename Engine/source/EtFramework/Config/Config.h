@@ -15,7 +15,7 @@ namespace fw {
 //
 // Config data for this project
 //
-class Config : public Singleton<Config>
+class Config : public core::Singleton<Config>
 {
 	// Definitions
 	//-----------------
@@ -75,7 +75,7 @@ public:
 	};
 
 private:
-	friend class Singleton<Config>;
+	friend class core::Singleton<Config>;
 
 
 	// Default constructor and destructor

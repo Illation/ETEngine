@@ -15,18 +15,18 @@ namespace render {
 
 StarField::StarField(T_Hash const assetId) 
 {
-	AssetPtr<StubData> jsonDbText = ResourceManager::Instance()->GetAssetData<StubData>(assetId);
+	AssetPtr<core::StubData> jsonDbText = core::ResourceManager::Instance()->GetAssetData<core::StubData>(assetId);
 
-	JSON::Parser parser = JSON::Parser(std::string(jsonDbText->GetText(), jsonDbText->GetLength()));
-	JSON::Object* root = parser.GetRoot();
+	core::JSON::Parser parser = core::JSON::Parser(std::string(jsonDbText->GetText(), jsonDbText->GetLength()));
+	core::JSON::Object* root = parser.GetRoot();
 
 	uint32 starCount = 0;
 
-	JSON::Array* jstarArray = (*root)["stars"]->arr();
+	core::JSON::Array* jstarArray = (*root)["stars"]->arr();
 	for (auto jStar : jstarArray->value)
 	{
 		vec4 star;
-		if (JSON::ArrayVector(jStar, star) && m_MaxStars == 0 ? true : starCount < m_MaxStars)
+		if (core::JSON::ArrayVector(jStar, star) && m_MaxStars == 0 ? true : starCount < m_MaxStars)
 		{
 			//HYG coordinates are in a different coordinate system Z up Y forward 
 			//first component is magnitude
@@ -38,8 +38,8 @@ StarField::StarField(T_Hash const assetId)
 
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdStarField.glsl"_hash);
-	m_pSprite = ResourceManager::Instance()->GetAssetData<TextureData>("starSprite.png"_hash);
+	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("FwdStarField.glsl"_hash);
+	m_pSprite = core::ResourceManager::Instance()->GetAssetData<TextureData>("starSprite.png"_hash);
 
 	//Generate buffers and arrays
 	m_VAO = api->CreateVertexArray();

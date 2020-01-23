@@ -28,12 +28,12 @@ void Planet::Init(PlanetParams const& params, core::T_SlotId const nodeId)
 	m_Radius = params.radius;
 	m_MaxHeight = params.height;
 
-	m_TexDiffuse = ResourceManager::Instance()->GetAssetData<TextureData>(params.texDiffuseId);
-	m_TexDetail1 = ResourceManager::Instance()->GetAssetData<TextureData>(params.texDetail1Id);
-	m_TexDetail2 = ResourceManager::Instance()->GetAssetData<TextureData>(params.texDetail2Id);
+	m_TexDiffuse = core::ResourceManager::Instance()->GetAssetData<TextureData>(params.texDiffuseId);
+	m_TexDetail1 = core::ResourceManager::Instance()->GetAssetData<TextureData>(params.texDetail1Id);
+	m_TexDetail2 = core::ResourceManager::Instance()->GetAssetData<TextureData>(params.texDetail2Id);
 
-	m_TexHeight = ResourceManager::Instance()->GetAssetData<TextureData>(params.texHeightId);
-	m_TexHeightDetail = ResourceManager::Instance()->GetAssetData<TextureData>(params.texHeightDetailId);
+	m_TexHeight = core::ResourceManager::Instance()->GetAssetData<TextureData>(params.texHeightId);
+	m_TexHeightDetail = core::ResourceManager::Instance()->GetAssetData<TextureData>(params.texHeightDetailId);
 
 	m_Triangulator.Init(this);
 }

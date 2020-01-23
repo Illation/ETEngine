@@ -2,6 +2,10 @@
 #include "registerMath.h"
 
 
+namespace et {
+namespace core {
+
+
 // reflection
 RTTR_REGISTRATION
 {
@@ -40,3 +44,7 @@ RTTR_REGISTRATION
 }
 
 DEFINE_FORCED_LINKING(MathRegistrationLinkEnforcer) // force the linker to include this unit
+
+
+} // namespace core
+} // namespace et

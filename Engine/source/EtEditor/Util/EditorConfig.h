@@ -16,7 +16,7 @@ namespace edit {
 //
 // Config data for this projects editor
 //
-class EditorConfig : public Singleton<EditorConfig>
+class EditorConfig : public core::Singleton<EditorConfig>
 {
 	// Definitions
 	//-----------------
@@ -41,7 +41,7 @@ public:
 	};
 
 private:
-	friend class Singleton<EditorConfig>;
+	friend class core::Singleton<EditorConfig>;
 
 
 	// Default constructor and destructor

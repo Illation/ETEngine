@@ -51,7 +51,7 @@ void SpriteRenderer::Initialize()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	m_Shader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostSprite.glsl"_hash);
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PostSprite.glsl"_hash);
 
 	//Generate buffers and arrays
 	m_VAO = api->CreateVertexArray();

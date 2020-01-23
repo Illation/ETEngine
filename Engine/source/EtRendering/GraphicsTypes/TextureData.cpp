@@ -159,7 +159,7 @@ RTTR_REGISTRATION
 		.property("use SRGB", &TextureAsset::m_UseSrgb)
 		.property("force resolution", &TextureAsset::m_ForceResolution)
 		.property("parameters", &TextureAsset::m_Parameters)
-	END_REGISTER_POLYMORPHIC_CLASS(TextureAsset, I_Asset);
+	END_REGISTER_POLYMORPHIC_CLASS(TextureAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(TextureAsset) // force the shader class to be linked as it is only used in reflection
 
@@ -185,13 +185,13 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	if (bits == nullptr)
 	{
-		LOG("TextureAsset::LoadFromMemory > Failed to load texture bytes from data!", LogLevel::Warning);
+		LOG("TextureAsset::LoadFromMemory > Failed to load texture bytes from data!", core::LogLevel::Warning);
 		return false;
 	}
 
 	if ((width == 0) || (height == 0))
 	{
-		LOG("TextureAsset::LoadFromMemory > Image is too small to display!", LogLevel::Warning);
+		LOG("TextureAsset::LoadFromMemory > Image is too small to display!", core::LogLevel::Warning);
 		stbi_image_free(bits);
 		return false;
 	}

@@ -44,13 +44,13 @@ ECS_REGISTER_COMPONENT(ModelComponent);
 //
 ModelComponent::ModelComponent(T_Hash const meshId, T_Hash const materialId)
 {
-	m_Mesh = ResourceManager::Instance()->GetAssetData<render::MeshData>(meshId);
+	m_Mesh = core::ResourceManager::Instance()->GetAssetData<render::MeshData>(meshId);
 
 	// Load material
-	m_Material = ResourceManager::Instance()->GetAssetData<render::Material>(materialId, false);
+	m_Material = core::ResourceManager::Instance()->GetAssetData<render::Material>(materialId, false);
 	if (m_Material == nullptr)
 	{
-		m_Material = ResourceManager::Instance()->GetAssetData<render::MaterialInstance>(materialId);
+		m_Material = core::ResourceManager::Instance()->GetAssetData<render::MaterialInstance>(materialId);
 	}
 }
 

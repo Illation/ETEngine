@@ -2,6 +2,10 @@
 #include "AssetPointer.h"
 
 
+namespace et {
+namespace core {
+
+
 struct AssetDatabase;
 
 
@@ -77,6 +81,9 @@ protected:
 	bool m_DeferUnloadToFlush = false;
 };
 
+
+} // namespace core
+} // namespace et
 
 
 #include "ResourceManager.inl"

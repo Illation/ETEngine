@@ -21,19 +21,9 @@
 //============
 
 
-// forward declarations
-void AddPackageToWriter(T_Hash const packageId, std::string const& dbBase, PackageWriter &writer, AssetDatabase& db);
-void CookCompiledPackage(std::string const& dbBase, 
-	std::string const& outPath, 
-	std::string const& resName, 
-	AssetDatabase& db, 
-	std::string const& engineDbBase, 
-	AssetDatabase& engineDb);
-void CookFilePackages(std::string const& dbBase, 
-	std::string const& outPath, 
-	AssetDatabase& db,
-	std::string const& engineDbBase,
-	AssetDatabase& engineDb);
+namespace et { namespace cooker {
+	int RunCooker(int argc, char *argv[]);
+} }
 
 
 //---------------------------------
@@ -42,6 +32,34 @@ void CookFilePackages(std::string const& dbBase,
 // Main function for the resource cooker - a simple command line program that compiles resources into a game ready format
 //
 int main(int argc, char *argv[])
+{
+	et::cooker::RunCooker(argc, argv);
+}
+
+
+namespace et {
+namespace cooker {
+
+
+// forward declarations
+void AddPackageToWriter(T_Hash const packageId, std::string const& dbBase, PackageWriter &writer, core::AssetDatabase& db);
+void CookCompiledPackage(std::string const& dbBase, 
+	std::string const& outPath, 
+	std::string const& resName, 
+	core::AssetDatabase& db, 
+	std::string const& engineDbBase, 
+	core::AssetDatabase& engineDb);
+void CookFilePackages(std::string const& dbBase, 
+	std::string const& outPath, 
+	core::AssetDatabase& db,
+	std::string const& engineDbBase,
+	core::AssetDatabase& engineDb);
+
+
+////////////////////////////////////////////////////
+
+
+int RunCooker(int argc, char *argv[])
 {
 	et::fw::ForceLinking();
 
@@ -52,7 +70,7 @@ int main(int argc, char *argv[])
 		std::cerr << "main > Not enough arguments, exiting! Usage: EtCooker.exe <database path> <out path> <create compiled resource [y/n]>" << std::endl;
 		return 1;
 	}
-	FileUtil::SetExecutablePath(argv[0]); // working dir from executable path
+	core::FileUtil::SetExecutablePath(argv[0]); // working dir from executable path
 	std::string databasePath(argv[1]);
 	std::string engineDbPath(argv[2]);
 	std::string outPath(argv[3]);
@@ -61,28 +79,28 @@ int main(int argc, char *argv[])
 
 	// Init stuff
 	//------------
-	Logger::Initialize();
-	Logger::StartFileLogging("cooker.log");
+	core::Logger::Initialize();
+	core::Logger::StartFileLogging("cooker.log");
 
 	LOG(FS("E.T.Cooker"));
 	LOG(FS("//////////"));
 	LOG("");
-	LOG(FS(" - version: %s", et::build::Version::s_Name.c_str()));
+	LOG(FS(" - version: %s", build::Version::s_Name.c_str()));
 	LOG("");
 
-	AssetDatabase database;
-	if (!serialization::DeserializeFromFile(databasePath, database))
+	core::AssetDatabase database;
+	if (!core::serialization::DeserializeFromFile(databasePath, database))
 	{
-		LOG("main > unable to deserialize asset database at '" + std::string(databasePath) + std::string("'"), LogLevel::Error);
+		LOG("main > unable to deserialize asset database at '" + std::string(databasePath) + std::string("'"), core::LogLevel::Error);
 	}
-	std::string dbBase = FileUtil::ExtractPath(databasePath);
+	std::string dbBase = core::FileUtil::ExtractPath(databasePath);
 
-	AssetDatabase engineDb;
-	if (!serialization::DeserializeFromFile(engineDbPath, engineDb))
+	core::AssetDatabase engineDb;
+	if (!core::serialization::DeserializeFromFile(engineDbPath, engineDb))
 	{
-		LOG("main > unable to deserialize engine database at '" + std::string(engineDbPath) + std::string("'"), LogLevel::Error);
+		LOG("main > unable to deserialize engine database at '" + std::string(engineDbPath) + std::string("'"), core::LogLevel::Error);
 	}
-	std::string engineDbBase = FileUtil::ExtractPath(engineDbPath);
+	std::string engineDbBase = core::FileUtil::ExtractPath(engineDbPath);
 
 	if (genCompiledResource)
 	{
@@ -102,13 +120,10 @@ int main(int argc, char *argv[])
 
 	// Clean up
 	//----------
-	Logger::Release();
+	core::Logger::Release();
 
 	return 0;
 }
-
-
-////////////////////////////////////////////////////
 
 
 //--------------------
@@ -116,20 +131,20 @@ int main(int argc, char *argv[])
 //
 // Gets all assets in a package of that database and adds them to the package writer
 //
-void AddPackageToWriter(T_Hash const packageId, std::string const& dbBase, PackageWriter &writer, AssetDatabase& db)
+void AddPackageToWriter(T_Hash const packageId, std::string const& dbBase, PackageWriter &writer, core::AssetDatabase& db)
 {
 	// Loop over files - add them to the writer
-	AssetDatabase::T_AssetList assets = db.GetAssetsInPackage(packageId);
-	for (I_Asset const* const asset : assets)
+	core::AssetDatabase::T_AssetList assets = db.GetAssetsInPackage(packageId);
+	for (core::I_Asset const* const asset : assets)
 	{
 		std::string const filePath = dbBase + asset->GetPath();
 		std::string const assetName = asset->GetName();
 		T_Hash const id = asset->GetId();
 
-		LOG(assetName + std::string(" [") + std::to_string(id) + std::string("] @: ") + FileUtil::GetAbsolutePath(filePath));
+		LOG(assetName + std::string(" [") + std::to_string(id) + std::string("] @: ") + core::FileUtil::GetAbsolutePath(filePath));
 
-		File* assetFile = new File(filePath + assetName, nullptr);
-		writer.AddFile(assetFile, dbBase, E_CompressionType::Store);
+		core::File* assetFile = new core::File(filePath + assetName, nullptr);
+		writer.AddFile(assetFile, dbBase, core::E_CompressionType::Store);
 	}
 }
 
@@ -142,9 +157,9 @@ void AddPackageToWriter(T_Hash const packageId, std::string const& dbBase, Packa
 void CookCompiledPackage(std::string const& dbBase, 
 	std::string const& outPath, 
 	std::string const& resName, 
-	AssetDatabase& db,
+	core::AssetDatabase& db,
 	std::string const& engineDbBase,
-	AssetDatabase& engineDb)
+	core::AssetDatabase& engineDb)
 {
 	// Create a package writer - all file paths will be written relative to our database directory
 	PackageWriter packageWriter;
@@ -152,23 +167,23 @@ void CookCompiledPackage(std::string const& dbBase,
 
 	// serialize the asset database to a temporary file
 	static std::string const s_TempPath("temp");
-	std::string const dbName(ResourceManager::s_DatabasePath);
+	std::string const dbName(core::ResourceManager::s_DatabasePath);
 	std::string const tempDbFullPath = s_TempPath + std::string("/") + dbName;
 
 	// Ensure the generated file directory exists
-	Directory* tempDir = new Directory(s_TempPath, nullptr, true);
+	core::Directory* tempDir = new core::Directory(s_TempPath, nullptr, true);
 
-	AssetDatabase mergeDb(false);
+	core::AssetDatabase mergeDb(false);
 	mergeDb.Merge(db);
 	mergeDb.Merge(engineDb);
-	if (!serialization::SerializeToFile(tempDbFullPath, mergeDb))
+	if (!core::serialization::SerializeToFile(tempDbFullPath, mergeDb))
 	{
-		LOG(FS("CookCompiledPackage > Failed to serialize asset database to '%s'", tempDbFullPath.c_str()), LogLevel::Error);
+		LOG(FS("CookCompiledPackage > Failed to serialize asset database to '%s'", tempDbFullPath.c_str()), core::LogLevel::Error);
 	}
 
 	// load the asset database from the temporary file and add it to the package
-	File* dbFile = new File(dbName, tempDir);
-	packageWriter.AddFile(dbFile, dbFile->GetPath(), E_CompressionType::Store);
+	core::File* dbFile = new core::File(dbName, tempDir);
+	packageWriter.AddFile(dbFile, dbFile->GetPath(), core::E_CompressionType::Store);
 
 	// add all other compiled files to the package
 	static T_Hash const s_CompiledPackageId = 0u;
@@ -185,7 +200,7 @@ void CookCompiledPackage(std::string const& dbBase,
 	packageWriter.RemoveFile(dbFile);
 	if (!tempDir->Delete())
 	{
-		LOG("CookCompiledPackage > Failed to clean up temporary file directory!", LogLevel::Error);
+		LOG("CookCompiledPackage > Failed to clean up temporary file directory!", core::LogLevel::Error);
 		delete tempDir;
 	}
 	tempDir = nullptr;
@@ -199,16 +214,16 @@ void CookCompiledPackage(std::string const& dbBase,
 //
 void CookFilePackages(std::string const& dbBase, 
 	std::string const& outPath, 
-	AssetDatabase& db,
+	core::AssetDatabase& db,
 	std::string const& engineDbBase,
-	AssetDatabase& engineDb)
+	core::AssetDatabase& engineDb)
 {
 	// Get a unified list of package descriptors
-	std::vector<AssetDatabase::PackageDescriptor> descriptors = db.packages;
-	for (AssetDatabase::PackageDescriptor const& desc : engineDb.packages)
+	std::vector<core::AssetDatabase::PackageDescriptor> descriptors = db.packages;
+	for (core::AssetDatabase::PackageDescriptor const& desc : engineDb.packages)
 	{
 		// check if there is already a package with the same ID tracked in "descriptors"
-		if (std::find_if(descriptors.cbegin(), descriptors.cend(), [&desc](AssetDatabase::PackageDescriptor const& tracked)
+		if (std::find_if(descriptors.cbegin(), descriptors.cend(), [&desc](core::AssetDatabase::PackageDescriptor const& tracked)
 			{
 				return tracked.GetId() == desc.GetId();
 			}) == descriptors.cend())
@@ -218,7 +233,7 @@ void CookFilePackages(std::string const& dbBase,
 	}
 
 	// each package can have a separate asset list
-	for (AssetDatabase::PackageDescriptor const& desc : descriptors)
+	for (core::AssetDatabase::PackageDescriptor const& desc : descriptors)
 	{
 		PackageWriter packageWriter;
 		std::vector<uint8> packageData;
@@ -230,15 +245,15 @@ void CookFilePackages(std::string const& dbBase,
 		packageWriter.Write(packageData);
 
 		// Ensure the generated file directory exists
-		Directory* dir = new Directory(outPath + desc.GetPath(), nullptr, true);
+		core::Directory* dir = new core::Directory(outPath + desc.GetPath(), nullptr, true);
 
 		// Create the output package file
-		File* outFile = new File(desc.GetName() + FilePackage::s_PackageFileExtension, dir);
-		FILE_ACCESS_FLAGS outFlags;
-		outFlags.SetFlags(FILE_ACCESS_FLAGS::FLAGS::Create | FILE_ACCESS_FLAGS::FLAGS::Exists);
-		if (!outFile->Open(FILE_ACCESS_MODE::Write, outFlags))
+		core::File* outFile = new core::File(desc.GetName() + core::FilePackage::s_PackageFileExtension, dir);
+		core::FILE_ACCESS_FLAGS outFlags;
+		outFlags.SetFlags(core::FILE_ACCESS_FLAGS::FLAGS::Create | core::FILE_ACCESS_FLAGS::FLAGS::Exists);
+		if (!outFile->Open(core::FILE_ACCESS_MODE::Write, outFlags))
 		{
-			LOG("CookFilePackages > Failed to open file " + outFile->GetName(), LogLevel::Warning);
+			LOG("CookFilePackages > Failed to open file " + outFile->GetName(), core::LogLevel::Warning);
 			continue;
 		}
 
@@ -251,3 +266,6 @@ void CookFilePackages(std::string const& dbBase,
 	}
 }
 
+
+} // namespace cooker
+} // namespace et

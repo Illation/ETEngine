@@ -7,6 +7,11 @@
 #include "WindowsUtil.h"
 #endif
 
+
+namespace et {
+namespace core {
+
+
 Logger::ConsoleLogger* Logger::m_ConsoleLogger = nullptr;
 Logger::FileLogger* Logger::m_FileLogger = nullptr;
 Logger::DebugLogger* Logger::m_DebugLogger = nullptr;
@@ -320,3 +325,7 @@ void Logger::DebugLogger::Log(const std::string& message)
 	OutputDebugString(message.c_str());
 #endif
 }
+
+
+} // namespace core
+} // namespace et

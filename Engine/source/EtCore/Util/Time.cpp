@@ -2,6 +2,10 @@
 #include "Time.h"
 
 
+namespace et {
+namespace core {
+
+
 Time::Time()
 {
 	Start();
@@ -87,3 +91,7 @@ uint64 Time::SystemTimestamp() const
 	}
 
 #endif
+
+
+} // namespace core
+} // namespace et

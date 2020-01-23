@@ -27,8 +27,8 @@ CelestialBodySystem::CelestialBodySystem()
 void CelestialBodySystem::Process(fw::ComponentRange<CelestialBodySystemView>& range)
 {
 	// common variables
-	bool const toggle = (InputManager::GetInstance()->GetKeyState(E_KbdKey::R) == E_KeyState::Pressed);
-	float const dt = ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime();
+	bool const toggle = (core::InputManager::GetInstance()->GetKeyState(E_KbdKey::R) == E_KeyState::Pressed);
+	float const dt = core::ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime();
 
 	for (CelestialBodySystemView& view : range)
 	{

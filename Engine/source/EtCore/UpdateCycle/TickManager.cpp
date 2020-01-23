@@ -8,6 +8,10 @@
 #include <EtCore/Util/InputManager.h>
 
 
+namespace et {
+namespace core {
+
+
 //====================
 // Tick Manager :: Tickable
 //====================
@@ -275,3 +279,7 @@ void TickManager::EndTick()
 	// update performance info
 	PERFORMANCE->Update();
 }
+
+
+} // namespace core
+} // namespace et

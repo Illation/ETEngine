@@ -2,6 +2,7 @@
 #include <algorithm>
 
 
+namespace et {
 namespace core {
 
 
@@ -79,3 +80,4 @@ void GenericEventDispatcher<TFlagType, TEventData>::Notify(TFlagType const event
 
 
 } // namespace core
+} // namespace et

@@ -6,6 +6,10 @@
 #include <EtCore/FileSystem/FileUtil.h>
 
 
+namespace et {
+namespace cooker {
+
+
 //===================================
 // Package Writer :: File Entry Info
 //===================================
@@ -16,7 +20,7 @@
 //
 // File entry info constructor that assigns all members
 //
-PackageWriter::FileEntryInfo::FileEntryInfo(PkgEntry const& lEntry, File* const lFile, std::string const& lRelName) 
+PackageWriter::FileEntryInfo::FileEntryInfo(core::PkgEntry const& lEntry, core::File* const lFile, std::string const& lRelName) 
 	: entry(lEntry)
 	, file(lFile)
 	, relName(lRelName)
@@ -41,23 +45,23 @@ PackageWriter::~PackageWriter()
 //
 // Add a file to the writer and create a package entry for it - takes ownership
 //
-void PackageWriter::AddFile(File* const file, std::string const& rootDir, E_CompressionType const compression)
+void PackageWriter::AddFile(core::File* const file, std::string const& rootDir, core::E_CompressionType const compression)
 {
-	m_Files.emplace_back(PkgEntry(), file, std::string());
-	PkgEntry& entry = m_Files[m_Files.size() - 1].entry;
+	m_Files.emplace_back(core::PkgEntry(), file, std::string());
+	core::PkgEntry& entry = m_Files[m_Files.size() - 1].entry;
 	std::string& relName = m_Files[m_Files.size() - 1].relName;
 
 	// assign the name the relative path of the file compared to the root directory of the package writer
-	relName = FileUtil::GetRelativePath(file->GetName(), rootDir);
+	relName = core::FileUtil::GetRelativePath(file->GetName(), rootDir);
 
 	entry.fileId = GetHash(relName);
 	entry.compressionType = compression; 
 	entry.nameLength = static_cast<uint16>(relName.size());
 
 	// try opening the file for now, so that we can get the size, keep it open for copying content later
-	if (!file->Open(FILE_ACCESS_MODE::Read))
+	if (!file->Open(core::FILE_ACCESS_MODE::Read))
 	{
-		LOG("PackageWriter::AddFile > unable to open file '" + relName + std::string("'!"), Warning);
+		LOG("PackageWriter::AddFile > unable to open file '" + relName + std::string("'!"), core::LogLevel::Warning);
 		return;
 	}
 
@@ -70,7 +74,7 @@ void PackageWriter::AddFile(File* const file, std::string const& rootDir, E_Comp
 //
 // Remove a file without deleting it
 //
-void PackageWriter::RemoveFile(File* const file)
+void PackageWriter::RemoveFile(core::File* const file)
 {
 	auto entryIt = std::find_if(m_Files.begin(), m_Files.end(), [file](FileEntryInfo const& info)
 		{
@@ -117,18 +121,18 @@ void PackageWriter::Write(std::vector<uint8>& data)
 	uint64 offset = 0u;
 
 	// as we go we can figure out the header
-	PkgHeader header;
+	core::PkgHeader header;
 	header.numEntries = static_cast<uint64>(m_Files.size());
-	offset += static_cast<uint64>(sizeof(PkgHeader));
+	offset += static_cast<uint64>(sizeof(core::PkgHeader));
 
 	// and the size that our central directory will be
-	offset += static_cast<uint64>(sizeof(PkgFileInfo)) * header.numEntries;
+	offset += static_cast<uint64>(sizeof(core::PkgFileInfo)) * header.numEntries;
 
 	// as we go we can fill in the entry information
-	std::vector<PkgFileInfo> fileInfos;
+	std::vector<core::PkgFileInfo> fileInfos;
 	for (FileEntryInfo& entryFile : m_Files)
 	{
-		PkgFileInfo info;
+		core::PkgFileInfo info;
 		info.fileId = entryFile.entry.fileId;
 		info.offset = offset;
 
@@ -136,8 +140,8 @@ void PackageWriter::Write(std::vector<uint8>& data)
 		fileInfos.emplace_back(info);
 
 		// accumulate our offset
-		PkgEntry& entry = entryFile.entry;
-		offset += sizeof(PkgEntry) + static_cast<uint64>(entry.nameLength) + entry.size;
+		core::PkgEntry& entry = entryFile.entry;
+		offset += sizeof(core::PkgEntry) + static_cast<uint64>(entry.nameLength) + entry.size;
 	}
 
 	// now we know the total size of the package file will be our offset, so we can initialize our data vector starting with the right size
@@ -149,14 +153,14 @@ void PackageWriter::Write(std::vector<uint8>& data)
 	//---------------------------
 
 	// header
-	memcpy(raw, &header, sizeof(PkgHeader));
-	offset = sizeof(PkgHeader);	// we can reuse it now that our vector has bin initialized
+	memcpy(raw, &header, sizeof(core::PkgHeader));
+	offset = sizeof(core::PkgHeader);	// we can reuse it now that our vector has bin initialized
 
 	// central dir
-	for (PkgFileInfo const& info : fileInfos)
+	for (core::PkgFileInfo const& info : fileInfos)
 	{
-		memcpy(raw + offset, &info, sizeof(PkgFileInfo));
-		offset += sizeof(PkgFileInfo);
+		memcpy(raw + offset, &info, sizeof(core::PkgFileInfo));
+		offset += sizeof(core::PkgFileInfo);
 	}
 
 	// files
@@ -166,17 +170,17 @@ void PackageWriter::Write(std::vector<uint8>& data)
 
 		if (offset != fileInfos[entryIndex].offset)
 		{
-			LOG("PackageWriter::Write > Entry offset doesn't match expected offset - " + entryFile.relName, LogLevel::Error);
+			LOG("PackageWriter::Write > Entry offset doesn't match expected offset - " + entryFile.relName, core::LogLevel::Error);
 		}
 
 		// copy the entry
-		memcpy(raw + offset, &entryFile.entry, sizeof(PkgEntry));
-		offset += sizeof(PkgEntry);
+		memcpy(raw + offset, &entryFile.entry, sizeof(core::PkgEntry));
+		offset += sizeof(core::PkgEntry);
 
 		// copy the file name string
 		if (entryFile.entry.nameLength != entryFile.relName.size())
 		{
-			LOG("PackageWriter::Write > Entry name length doesn't match file name length - " + entryFile.relName, LogLevel::Error);
+			LOG("PackageWriter::Write > Entry name length doesn't match file name length - " + entryFile.relName, core::LogLevel::Error);
 		}
 
 		memcpy(raw + offset, entryFile.relName.c_str(), entryFile.entry.nameLength);
@@ -187,10 +191,14 @@ void PackageWriter::Write(std::vector<uint8>& data)
 
 		if (entryFile.entry.size != static_cast<uint64>(fileContent.size()))
 		{
-			LOG("PackageWriter::Write > Entry size doesn't match read file contents size - " + entryFile.relName, LogLevel::Error);
+			LOG("PackageWriter::Write > Entry size doesn't match read file contents size - " + entryFile.relName, core::LogLevel::Error);
 		}
 
 		memcpy(raw + offset, fileContent.data(), entryFile.entry.size);
 		offset += entryFile.entry.size;
 	}
 }
+
+
+} // namespace cooker
+} // namespace et

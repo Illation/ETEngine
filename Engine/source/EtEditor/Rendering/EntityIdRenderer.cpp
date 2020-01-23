@@ -38,8 +38,8 @@ EntityIdRenderer::~EntityIdRenderer()
 //
 void EntityIdRenderer::Initialize()
 {
-	m_Shader = ResourceManager::Instance()->GetAssetData<render::ShaderData>("FwdIdShader.glsl"_hash);
-	m_Material = ResourceManager::Instance()->GetAssetData<render::Material>("M_Id.json"_hash);
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>("FwdIdShader.glsl"_hash);
+	m_Material = core::ResourceManager::Instance()->GetAssetData<render::Material>("M_Id.json"_hash);
 
 	CreateRenderTarget();
 }
@@ -108,7 +108,7 @@ void EntityIdRenderer::Pick(ivec2 const pixel, render::Viewport* const viewport,
 	}
 	else
 	{
-		LOG("EntityIdRenderer::Pick > some system is already picking for a viewport this frame!", LogLevel::Warning);
+		LOG("EntityIdRenderer::Pick > some system is already picking for a viewport this frame!", core::LogLevel::Warning);
 	}
 }
 

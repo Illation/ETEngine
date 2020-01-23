@@ -3,6 +3,9 @@
 #include "Asset.h"
 
 
+namespace et {
+
+
 //---------------------------------
 // I_AssetPtr
 //
@@ -17,10 +20,10 @@ public:
 	I_AssetPtr(I_AssetPtr const& copy);
 	I_AssetPtr& operator=(I_AssetPtr const& rhs);
 
-	I_AssetPtr(I_Asset* asset);
+	I_AssetPtr(core::I_Asset* asset);
 	virtual ~I_AssetPtr();
 
-	I_Asset const* GetAsset() const { return m_Asset; }
+	core::I_Asset const* GetAsset() const { return m_Asset; }
 	inline std::type_info const& GetType() const;
 	inline T_Hash GetId() const;
 
@@ -41,7 +44,7 @@ protected:
 	// Data
 	///////
 
-	I_Asset* m_Asset = nullptr;
+	core::I_Asset* m_Asset = nullptr;
 };
 
 
@@ -59,8 +62,8 @@ public:
 	AssetPtr(std::nullptr_t) : I_AssetPtr() {} // implicityly convert nullptr to this type
 
 	// Create from raw asset pointer
-	explicit AssetPtr(RawAsset<T_DataType>* rawAsset);
-	AssetPtr& operator=(RawAsset<T_DataType>* rawAsset);
+	explicit AssetPtr(core::RawAsset<T_DataType>* rawAsset);
+	AssetPtr& operator=(core::RawAsset<T_DataType>* rawAsset);
 
 	// copy asset pointers around
 	AssetPtr(AssetPtr const& copy);
@@ -109,6 +112,9 @@ bool operator != (std::nullptr_t, AssetPtr<T_DataType> const& ptr);
 
 template <class T_DataType>
 bool operator != (AssetPtr<T_DataType> const& ptr1, AssetPtr<T_DataType> const& ptr2);
+
+
+} // namespace et
 
 
 #include "AssetPointer.inl"

@@ -18,7 +18,7 @@ namespace et {
 namespace fw {
 
 
-class PhysicsManager : public Singleton<PhysicsManager>
+class PhysicsManager : public core::Singleton<PhysicsManager>
 {
 public:
 	void Initialize();
@@ -42,7 +42,7 @@ private:
 	std::vector<btCollisionShape*> m_pShapes;
 
 private:
-	friend class Singleton<PhysicsManager>;
+	friend class core::Singleton<PhysicsManager>;
 
 	PhysicsManager();
 	virtual ~PhysicsManager();

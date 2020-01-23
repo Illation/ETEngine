@@ -78,13 +78,13 @@ private:
 //
 // Loadable Texture Data
 //
-class TextureAsset final : public Asset<TextureData, false>
+class TextureAsset final : public core::Asset<TextureData, false>
 {
 	DECLARE_FORCED_LINKING()
 public:
 	// Construct destruct
 	//---------------------
-	TextureAsset() : Asset<TextureData, false>() {}
+	TextureAsset() : core::Asset<TextureData, false>() {}
 	virtual ~TextureAsset() = default;
 
 	// Asset overrides
@@ -98,7 +98,7 @@ public:
 	bool m_ForceResolution = false;
 	TextureParameters m_Parameters;
 
-	RTTR_ENABLE(Asset<TextureData, false>)
+	RTTR_ENABLE(core::Asset<TextureData, false>)
 };
 
 

@@ -1,5 +1,10 @@
 #pragma once
 
+
+namespace et {
+namespace core {
+
+
 class BinaryReader
 {
 public:
@@ -47,3 +52,6 @@ private:
 	BinaryReader& operator=(const BinaryReader& yRef);
 };
 
+
+} // namespace core
+} // namespace et

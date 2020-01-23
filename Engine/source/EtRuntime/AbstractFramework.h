@@ -26,12 +26,12 @@ namespace rt {
 // Ties various engine systems together, loads them in the correct order, and provides an interface for Applications to instantiate and extend
 //  - To create a new project, create a class inheriting from this and run it
 //
-class AbstractFramework : public I_RealTimeTickTriggerer, public I_Tickable
+class AbstractFramework : public core::I_RealTimeTickTriggerer, public core::I_Tickable
 {
 	// construct destruct
 	//--------------------
 public:
-	AbstractFramework() : I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_Framework)) {}
+	AbstractFramework() : core::I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_Framework)) {}
 	virtual ~AbstractFramework();
 
 	// functionality

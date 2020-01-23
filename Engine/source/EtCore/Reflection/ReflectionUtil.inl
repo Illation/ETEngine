@@ -2,6 +2,10 @@
 #include <rttr/type>
 
 
+namespace et {
+namespace core {
+
+
 // Inline functions
 //////////////////////
 
@@ -36,3 +40,5 @@ TEnum EnumFromString(std::string const& value)
 
 } // namespace reflection
 
+} // namespace core
+} // namespace et

@@ -138,13 +138,13 @@ private:
 //
 // Loadable Mesh Data
 //
-class MeshAsset final : public Asset<MeshData, false>
+class MeshAsset final : public core::Asset<MeshData, false>
 {
 	DECLARE_FORCED_LINKING()
 public:
 	// Construct destruct
 	//---------------------
-	MeshAsset() : Asset<MeshData, false>() {}
+	MeshAsset() : core::Asset<MeshData, false>() {}
 	virtual ~MeshAsset() = default;
 
 	// Asset overrides
@@ -157,7 +157,7 @@ public:
 	///////
 public:
 
-	RTTR_ENABLE(Asset<MeshData, false>)
+	RTTR_ENABLE(core::Asset<MeshData, false>)
 };
 
 

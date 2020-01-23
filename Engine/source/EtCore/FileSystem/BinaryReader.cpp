@@ -4,6 +4,10 @@
 #include <sstream> 
 
 
+namespace et {
+namespace core {
+
+
 BinaryReader::BinaryReader(void) :
 	m_Exists(false),
 	m_pReader(nullptr)
@@ -129,3 +133,7 @@ bool BinaryReader::MoveBufferPosition(int32 move)
 
 	return false;
 }
+
+
+} // namespace core
+} // namespace et

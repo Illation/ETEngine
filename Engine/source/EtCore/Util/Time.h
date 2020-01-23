@@ -1,14 +1,24 @@
 #pragma once
 
 #ifdef PLATFORM_Linux
-	#include <time.h>
+#include <time.h>
+#else
+#include <chrono>
+#endif
+
+
+namespace et {
+namespace core {
+
+
+#ifdef PLATFORM_Linux
 	typedef timespec HighResTime;
 	typedef timespec HighResDuration;
 #else
-	#include <chrono>
 	typedef std::chrono::steady_clock::time_point HighResTime;
 	typedef std::chrono::duration<int64, std::nano> HighResDuration;
 #endif
+
 
 class Time 
 {
@@ -44,3 +54,7 @@ private:
 	HighResTime last;
 	float m_DeltaTime;
 };
+
+
+} // namespace core
+} // namespace et

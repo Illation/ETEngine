@@ -10,6 +10,7 @@
 #include <EtRendering/SceneStructure/GLTF.h>
 
 
+using namespace et;
 using namespace et::render;
 
 
@@ -19,7 +20,7 @@ TEST_CASE("Decode Base64", "[gltf]")
 	std::string expected = "TestText";
 	std::vector<uint8> decoded;
 	REQUIRE(glTF::DecodeBase64(base64, decoded) == true);
-	REQUIRE(expected == FileUtil::AsText(decoded));
+	REQUIRE(expected == core::FileUtil::AsText(decoded));
 }
 
 std::string fileName = "Box.gltf";
@@ -55,15 +56,15 @@ TEST_CASE("Parse GLTF json", "[gltf]")
 {
 	std::string baseDir = global::g_UnitTestDir + "Helper/";
 
-	File* input = new File(baseDir+fileName, nullptr);
-	REQUIRE(input->Open(FILE_ACCESS_MODE::Read) == true);
+	core::File* input = new core::File(baseDir+fileName, nullptr);
+	REQUIRE(input->Open(core::FILE_ACCESS_MODE::Read) == true);
 	std::vector<uint8> binaryContent = input->Read();
 	std::string extension = input->GetExtension();
 	delete input;
 	input = nullptr;
 	REQUIRE(binaryContent.size() > 0);
-	JSON::Parser parser = JSON::Parser(FileUtil::AsText(binaryContent));
-	JSON::Object* root = parser.GetRoot();
+	core::JSON::Parser parser = core::JSON::Parser(core::FileUtil::AsText(binaryContent));
+	core::JSON::Object* root = parser.GetRoot();
 	REQUIRE(root != nullptr);
 
 	glTF::Dom dom;
@@ -74,8 +75,8 @@ TEST_CASE("Parse GLB asset", "[gltf]")
 {
 	std::string baseDir = global::g_UnitTestDir + "Helper/";
 
-	File* input = new File(baseDir + glbFileName, nullptr);
-	REQUIRE(input->Open(FILE_ACCESS_MODE::Read) == true);
+	core::File* input = new core::File(baseDir + glbFileName, nullptr);
+	REQUIRE(input->Open(core::FILE_ACCESS_MODE::Read) == true);
 	std::vector<uint8> binaryContent = input->Read();
 	REQUIRE(binaryContent.size() > 0);
 

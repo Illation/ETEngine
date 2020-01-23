@@ -6,6 +6,10 @@
 #include <EtCore/Util/LinkerUtils.h>
 
 
+namespace et {
+namespace core {
+
+
 //---------------------------------
 // StubData
 //
@@ -53,3 +57,6 @@ private:
 	RTTR_ENABLE(Asset<StubData, true>)
 };
 
+
+} // namespace core
+} // namespace et

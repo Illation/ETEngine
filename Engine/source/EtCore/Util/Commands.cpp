@@ -3,6 +3,11 @@
 #include "Command.h"
 #include <EtCore/FileSystem/FileUtil.h>
 
+
+namespace et {
+namespace core {
+
+
 // doesn't work anymore, keeping code as an example
 void DebugCopyResourceFiles()
 {
@@ -16,3 +21,7 @@ void DebugCopyResourceFiles()
 	}
 #endif
 }
+
+
+} // namespace core
+} // namespace et

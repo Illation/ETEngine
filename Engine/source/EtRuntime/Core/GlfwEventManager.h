@@ -21,7 +21,7 @@ namespace rt {
 //
 // Responsible for passing GLFW events to the input manager
 //
-class GlfwEventManager : public Singleton<GlfwEventManager>, public I_Tickable, public I_CursorShapeManager
+class GlfwEventManager : public core::Singleton<GlfwEventManager>, public core::I_Tickable, public core::I_CursorShapeManager
 {
 private:
 	// definitions
@@ -30,7 +30,7 @@ private:
 public:
 	// ctor dtor
 	//---------------
-	GlfwEventManager() : I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_GlfwEventManager)) {}
+	GlfwEventManager() : core::I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_GlfwEventManager)) {}
 	virtual ~GlfwEventManager();
 
 	void Init(GlfwRenderArea* const renderArea);
@@ -38,7 +38,7 @@ public:
 	// modify state
 	//--------------
 protected:
-	bool OnCursorResize(E_CursorShape const shape) override;
+	bool OnCursorResize(core::E_CursorShape const shape) override;
 private:
 	void OnTick() override; // call before all GUI ticks
 
@@ -50,7 +50,7 @@ private:
 	/////////
 
 	// Cursors
-	std::map<E_CursorShape, GLFWcursor*> m_CursorMap;
+	std::map<core::E_CursorShape, GLFWcursor*> m_CursorMap;
 	GlfwRenderArea* m_RenderArea = nullptr;
 };
 

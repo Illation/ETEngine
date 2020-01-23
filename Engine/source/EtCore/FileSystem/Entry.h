@@ -7,6 +7,11 @@
 #include "./Facade/FileAccessFlags.h"
 #include "./Facade/FileAccessMode.h"
 
+
+namespace et {
+namespace core {
+
+
 class Directory;
 
 //---------------------------------
@@ -135,3 +140,7 @@ private:
     std::vector<Entry*> m_pChildren;
     bool m_IsMounted = false;
 };
+
+
+} // namespace core
+} // namespace et

@@ -28,7 +28,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	ivec2 logPos = Logger::GetCursorPosition();
+	ivec2 logPos = core::Logger::GetCursorPosition();
 	LOG("Precalculating PBR BRDF LUT . . .");
 	//setup BRDF look up table
 	//************************
@@ -43,7 +43,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(resolution));
 	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, captureRBO);
 	//Shader
-	api->SetShader(ResourceManager::Instance()->GetAssetData<ShaderData>("FwdBrdfLutShader.glsl"_hash).get());
+	api->SetShader(core::ResourceManager::Instance()->GetAssetData<ShaderData>("FwdBrdfLutShader.glsl"_hash).get());
 
 	m_LUT = new TextureData(ivec2(resolution), E_ColorFormat::RG16f, E_ColorFormat::RG, E_DataType::Float);
 	m_LUT->Build();
@@ -68,7 +68,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 
 	api->DeleteRenderBuffers(1, &captureRBO);
 	api->DeleteFramebuffers(1, &captureFBO);
-	LOG("Precalculating PBR BRDF LUT . . . . . . DONE", Info, false, logPos);
+	LOG("Precalculating PBR BRDF LUT . . . . . . DONE", core::LogLevel::Info, false, logPos);
 }
 
 void PbrPrefilter::PrefilterCube(TextureData const* const source, 
@@ -115,7 +115,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(irradianceRes));
 
 	//shader
-	AssetPtr<ShaderData> irradianceShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdConvIrradianceShader.glsl"_hash);
+	AssetPtr<ShaderData> irradianceShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("FwdConvIrradianceShader.glsl"_hash);
 
 	api->SetShader(irradianceShader.get());
 	irradianceShader->Upload("environmentMap"_hash, source);
@@ -146,7 +146,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	radiance->SetParameters(params);
 
 	//Shader
-	AssetPtr<ShaderData> radianceShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdConvRadianceShader.glsl"_hash);
+	AssetPtr<ShaderData> radianceShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("FwdConvRadianceShader.glsl"_hash);
 
 	api->SetShader(radianceShader.get());
 	radianceShader->Upload("environmentMap"_hash, source);

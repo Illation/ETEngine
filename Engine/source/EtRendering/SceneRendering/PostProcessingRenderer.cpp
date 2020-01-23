@@ -52,10 +52,10 @@ void PostProcessingRenderer::Initialize()
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Load and compile Shaders
-	m_pDownsampleShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostDownsample.glsl"_hash);
-	m_pGaussianShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostGaussian.glsl"_hash);
-	m_pPostProcShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostProcessing.glsl"_hash);
-	m_pFXAAShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostFXAA.glsl"_hash);
+	m_pDownsampleShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PostDownsample.glsl"_hash);
+	m_pGaussianShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PostGaussian.glsl"_hash);
+	m_pPostProcShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PostProcessing.glsl"_hash);
+	m_pFXAAShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PostFXAA.glsl"_hash);
 
 	GenerateFramebuffers();
 }
@@ -134,7 +134,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 
 	if (!(api->IsFramebufferComplete()))
 	{
-		LOG("Framebuffer::Initialize > FAILED!", LogLevel::Error);
+		LOG("Framebuffer::Initialize > FAILED!", core::LogLevel::Error);
 	}
 }
 

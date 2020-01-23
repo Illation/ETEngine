@@ -4,6 +4,7 @@
 #include <functional>
 
 
+namespace et {
 namespace core {
 
 
@@ -65,6 +66,7 @@ private:
 
 
 } // namespace core
+} // namespace et
 
 
 #include "GenericEventDispatcher.inl"

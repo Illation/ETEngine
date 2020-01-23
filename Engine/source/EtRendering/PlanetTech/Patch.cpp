@@ -23,7 +23,7 @@ void Patch::Init(int16 const levels)
 
 	//Shader Init
 	//***********
-	m_pPatchShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PlanetPatch.glsl"_hash);
+	m_pPatchShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PlanetPatch.glsl"_hash);
 	
 	//Buffer Initialisation
 	//*********************

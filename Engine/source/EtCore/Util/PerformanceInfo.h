@@ -1,6 +1,11 @@
 #pragma once
 #include "Singleton.h"
 
+
+namespace et {
+namespace core {
+
+
 class PerformanceInfo : public Singleton<PerformanceInfo>
 {
 public:
@@ -28,3 +33,7 @@ private:
 	float m_FrameMS = 0;
 	float m_FrameMSStart = 0;
 };
+
+
+} // namespace core
+} // namespace et

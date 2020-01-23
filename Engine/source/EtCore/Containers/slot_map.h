@@ -2,6 +2,7 @@
 #include <vector>
 
 
+namespace et {
 namespace core {
 
 
@@ -195,6 +196,7 @@ private:
 
 
 } // namespace core
+} // namespace et
 
 
 #include "slot_map.inl"

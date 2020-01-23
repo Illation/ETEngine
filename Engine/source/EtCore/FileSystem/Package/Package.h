@@ -3,6 +3,10 @@
 #include "PackageDataStructure.h"
 
 
+namespace et {
+namespace core {
+
+
 //---------------------------------
 // I_Package
 //
@@ -19,3 +23,6 @@ public:
 	virtual bool GetEntryData(T_Hash const id, std::vector<uint8>& outData) = 0;
 };
 
+
+} // namespace core
+} // namespace et

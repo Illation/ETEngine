@@ -27,7 +27,7 @@ RTTR_REGISTRATION
 
 	BEGIN_REGISTER_POLYMORPHIC_CLASS(MaterialAsset, "material asset")
 		.property("draw type", &MaterialAsset::m_DrawType)
-	END_REGISTER_POLYMORPHIC_CLASS(MaterialAsset, I_Asset);
+	END_REGISTER_POLYMORPHIC_CLASS(MaterialAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(MaterialAsset) // force the material asset class to be linked
 
@@ -93,9 +93,9 @@ Material::~Material()
 bool MaterialAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
 	MaterialDescriptor descriptor;
-	if (!(serialization::DeserializeFromJsonString(FileUtil::AsText(data), descriptor)))
+	if (!(core::serialization::DeserializeFromJsonString(core::FileUtil::AsText(data), descriptor)))
 	{
-		LOG("MaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor", LogLevel::Warning);
+		LOG("MaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor", core::LogLevel::Warning);
 		return false;
 	}
 
@@ -124,7 +124,7 @@ bool MaterialAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	if (shaderRef == nullptr)
 	{
-		LOG("MaterialAsset::LoadFromMemory > Materials must reference a shader!", LogLevel::Warning);
+		LOG("MaterialAsset::LoadFromMemory > Materials must reference a shader!", core::LogLevel::Warning);
 		return false;
 	}
 

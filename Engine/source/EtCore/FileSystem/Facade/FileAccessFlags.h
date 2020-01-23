@@ -1,6 +1,11 @@
 #pragma once
 #include "stdafx.h"
 
+
+namespace et {
+namespace core {
+
+
 struct FILE_ACCESS_FLAGS 
 {
 
@@ -31,3 +36,7 @@ struct FILE_ACCESS_FLAGS
 private:
 	int32 Flags;
 };
+
+
+} // namespace core
+} // namespace et

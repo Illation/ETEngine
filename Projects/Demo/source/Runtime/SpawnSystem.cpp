@@ -32,14 +32,14 @@ SpawnSystem::SpawnSystem()
 //
 void SpawnSystem::Process(fw::ComponentRange<SpawnSystemView>& range)
 {
-	if (!(InputManager::GetInstance()->GetMouseButton(E_MouseButton::Right) >= E_KeyState::Down))
+	if (!(core::InputManager::GetInstance()->GetMouseButton(E_MouseButton::Right) >= E_KeyState::Down))
 	{
 		return;
 	}
 
 	// common variables
 	fw::EcsCommandBuffer& cb = GetCommandBuffer();
-	float const dt = ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime();
+	float const dt = core::ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime();
 
 	for (SpawnSystemView& view : range)
 	{

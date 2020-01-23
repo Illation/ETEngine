@@ -7,6 +7,8 @@
 
 TEST_CASE("Generic vector functionality", "[vector]")
 {
+	using namespace et;
+
 	int32 input1 = 1;
 	int32 input2 = 2;
 	int32 input3 = 3;

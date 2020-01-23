@@ -23,7 +23,7 @@ namespace render {
 //
 void ForceLinking()
 {
-	::FORCE_LINKING(StubAsset)
+	core::FORCE_LINKING(StubAsset)
 	FORCE_LINKING(ShaderAsset)
 	FORCE_LINKING(MeshAsset)
 	FORCE_LINKING(MaterialAsset)
@@ -31,7 +31,7 @@ void ForceLinking()
 	FORCE_LINKING(EnvironmentMapAsset)
 	FORCE_LINKING(FontAsset)
 	FORCE_LINKING(TextureAsset)
-	FORCE_LINKING(MathRegistrationLinkEnforcer)
+	core::FORCE_LINKING(MathRegistrationLinkEnforcer)
 	FORCE_LINKING(PostProcessingSettings)
 }
 

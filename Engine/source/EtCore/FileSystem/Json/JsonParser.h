@@ -1,6 +1,11 @@
 #pragma once
 #include "JSONdom.h"
 
+
+namespace et {
+namespace core {
+
+
 namespace JSON
 {
 	//The parser manages the lifetime of the dom
@@ -46,3 +51,7 @@ namespace JSON
 		bool m_Completed = false;
 	};
 }
+
+
+} // namespace core
+} // namespace et

@@ -5,6 +5,10 @@
 #include "Package.h"
 
 
+namespace et {
+namespace core {
+
+
 // forward decl
 class File;
 
@@ -57,3 +61,6 @@ private:
 	File* m_File = nullptr;
 };
 
+
+} // namespace core
+} // namespace et

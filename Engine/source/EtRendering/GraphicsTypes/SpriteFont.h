@@ -110,13 +110,13 @@ private:
 //
 // Loadable Font Data
 //
-class FontAsset final : public Asset<SpriteFont, false>
+class FontAsset final : public core::Asset<SpriteFont, false>
 {
 	DECLARE_FORCED_LINKING()
 public:
 	// Construct destruct
 	//---------------------
-	FontAsset() : Asset<SpriteFont, false>() {}
+	FontAsset() : core::Asset<SpriteFont, false>() {}
 	virtual ~FontAsset() = default;
 
 	// Asset overrides
@@ -135,7 +135,7 @@ public:
 	uint32 m_Spread = 5u;
 	uint32 m_HighRes = 32u;
 
-	RTTR_ENABLE(Asset<SpriteFont, false>)
+	RTTR_ENABLE(core::Asset<SpriteFont, false>)
 };
 
 

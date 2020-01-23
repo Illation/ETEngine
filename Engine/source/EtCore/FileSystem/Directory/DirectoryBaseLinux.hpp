@@ -2,6 +2,11 @@
 #include <dirent.h>
 #include <iostream>
 
+
+namespace et {
+namespace core {
+
+
 bool Directory::Mount(bool recursive)
 {
     if(!m_IsMounted)
@@ -45,3 +50,7 @@ bool Directory::DeleteDir()
 	int32 result = remove( path.c_str() );
 	return result != -1;
 }
+
+
+} // namespace core
+} // namespace et

@@ -4,6 +4,9 @@
 #include <rttr/registration>
 
 
+namespace et {
+namespace core {
+
 
 // reflection
 RTTR_REGISTRATION
@@ -290,3 +293,7 @@ void AssetDatabase::Merge(AssetDatabase const& other)
 		}
 	}
 }
+
+
+} // namespace core
+} // namespace et

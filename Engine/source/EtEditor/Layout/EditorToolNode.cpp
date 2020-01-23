@@ -249,7 +249,7 @@ void EditorToolNode::CreateToolbar()
 	std::vector<E_EditorTool> const& supportedTools = m_Editor->GetSupportedTools();
 	for (E_EditorTool const toolType : supportedTools)
 	{
-		std::string toolName = reflection::EnumString(toolType);
+		std::string toolName = core::reflection::EnumString(toolType);
 		m_ToolSelector->append(Glib::ustring(toolName), Glib::ustring(toolName));
 	}
 
@@ -263,7 +263,7 @@ void EditorToolNode::CreateToolbar()
 	{
 		ET_ASSERT(false, // warning
 			"Current tool type '%s' is not supported by editor '%s'", 
-			reflection::EnumString(m_Type).c_str(), 
+			core::reflection::EnumString(m_Type).c_str(), 
 			m_Editor->GetName().c_str());
 	}
 
@@ -325,7 +325,7 @@ void EditorToolNode::OnToolComboChanged()
 	Glib::ustring toolId = m_ToolSelector->get_active_id();
 	if (!(toolId.empty()))
 	{
-		E_EditorTool const newType = reflection::EnumFromString<E_EditorTool>(toolId.raw());
+		E_EditorTool const newType = core::reflection::EnumFromString<E_EditorTool>(toolId.raw());
 
 		if (newType != m_Type)
 		{

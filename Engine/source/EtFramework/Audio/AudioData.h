@@ -32,7 +32,7 @@ private:
 //
 // Loadable Audio Data
 //
-class AudioAsset final : public Asset<AudioData, false>
+class AudioAsset final : public core::Asset<AudioData, false>
 {
 	DECLARE_FORCED_LINKING()
 private:
@@ -55,7 +55,7 @@ private:
 public:
 	// Construct destruct
 	//---------------------
-	AudioAsset() : Asset<AudioData, false>() {}
+	AudioAsset() : core::Asset<AudioData, false>() {}
 	virtual ~AudioAsset() = default;
 
 	// Asset overrides
@@ -79,7 +79,7 @@ private:
 public:
 	bool m_IsMonoForced = false;
 
-	RTTR_ENABLE(Asset<AudioData, false>)
+	RTTR_ENABLE(core::Asset<AudioData, false>)
 };
 
 

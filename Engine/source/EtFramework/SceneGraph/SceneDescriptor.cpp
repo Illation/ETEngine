@@ -26,7 +26,7 @@ RTTR_REGISTRATION
 		.property("gravity", &SceneDescriptor::gravity);
 
 	BEGIN_REGISTER_POLYMORPHIC_CLASS(SceneDescriptorAsset, "scene descriptor asset")
-	END_REGISTER_POLYMORPHIC_CLASS(SceneDescriptorAsset, I_Asset);
+	END_REGISTER_POLYMORPHIC_CLASS(SceneDescriptorAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(SceneDescriptorAsset) // force the asset class to be linked as it is only used in reflection
 
@@ -95,9 +95,9 @@ bool SceneDescriptorAsset::LoadFromMemory(std::vector<uint8> const& data)
 	m_Data = new SceneDescriptor();
 
 	// convert that data to a string and deserialize it as json
-	if (!serialization::DeserializeFromJsonString(FileUtil::AsText(data), *m_Data))
+	if (!core::serialization::DeserializeFromJsonString(core::FileUtil::AsText(data), *m_Data))
 	{
-		LOG("SceneDescriptorAsset::LoadFromMemory > Failed to deserialize descriptor!", LogLevel::Warning);
+		LOG("SceneDescriptorAsset::LoadFromMemory > Failed to deserialize descriptor!", core::LogLevel::Warning);
 		delete m_Data;
 		m_Data = nullptr;
 		return false;

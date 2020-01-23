@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "PerformanceInfo.h"
 
+
+namespace et {
+namespace core {
+
+
 PerformanceInfo::PerformanceInfo()
 {
 }
@@ -33,3 +38,7 @@ void PerformanceInfo::StartFrameTimer()
 {
 	m_FrameMSStart = TIME->GetTime();
 }
+
+
+} // namespace core
+} // namespace et

@@ -1,6 +1,11 @@
 #pragma once
 #include "JSONdom.h"
 
+
+namespace et {
+namespace core {
+
+
 namespace JSON {
 	
 //---------------------------------
@@ -61,3 +66,7 @@ private:
 };
 
 } // namespace JSON
+
+
+} // namespace core
+} // namespace et

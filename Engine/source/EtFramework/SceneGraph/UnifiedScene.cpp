@@ -116,7 +116,7 @@ void UnifiedScene::LoadScene(T_Hash const assetId)
 	}
 
 	// timer etc
-	ContextManager::GetInstance()->SetActiveContext(&m_Context);
+	core::ContextManager::GetInstance()->SetActiveContext(&m_Context);
 
 	m_PhysicsWorld.Initialize();
 
@@ -124,7 +124,7 @@ void UnifiedScene::LoadScene(T_Hash const assetId)
 
 	// load scene descriptor and translate into ECS
 	//----------------------------------------------
-	AssetPtr<SceneDescriptor> const sceneDesc = ResourceManager::Instance()->GetAssetData<SceneDescriptor>(m_CurrentScene);
+	AssetPtr<SceneDescriptor> const sceneDesc = core::ResourceManager::Instance()->GetAssetData<SceneDescriptor>(m_CurrentScene);
 	ET_ASSERT(sceneDesc != nullptr);
 
 	m_SceneName = sceneDesc.GetAsset()->GetName();
@@ -196,7 +196,7 @@ void UnifiedScene::UnloadScene()
 	m_PhysicsWorld.Deinit();
 
 	// reset time
-	ContextManager::GetInstance()->SetActiveContext(nullptr);
+	core::ContextManager::GetInstance()->SetActiveContext(nullptr);
 
 	// invalidate state
 	m_ActiveCamera = INVALID_ENTITY_ID;

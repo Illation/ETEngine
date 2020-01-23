@@ -5,6 +5,11 @@
 
 #include <EtCore/Util/WindowsUtil.h>
 
+
+namespace et {
+namespace core {
+
+
 FILE_HANDLE FILE_BASE::Open( const char * pathName, FILE_ACCESS_FLAGS accessFlags, FILE_ACCESS_MODE accessMode )
 {
 	uint32 mode = 0;
@@ -134,3 +139,7 @@ bool FILE_BASE::DeleteFile( const char * pathName )
 	}
 	return true;
 }
+
+
+} // namespace core
+} // namespace et

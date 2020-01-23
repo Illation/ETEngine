@@ -1,6 +1,10 @@
 #pragma once
 
 
+namespace et {
+namespace core {
+
+
 //---------------------------------
 // I_DefaultTickTriggerer
 //
@@ -17,3 +21,6 @@ protected:
 	void UnRegisterAsTriggerer();
 };
 
+
+} // namespace core
+} // namespace et

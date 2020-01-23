@@ -1,8 +1,11 @@
 #pragma once
-
 #include <map>
 
 #include "Package.h"
+
+
+namespace et {
+namespace core {
 
 
 //---------------------------------
@@ -51,3 +54,6 @@ private:
 	uint8 const* m_Data = nullptr;
 };
 
+
+} // namespace core
+} // namespace et

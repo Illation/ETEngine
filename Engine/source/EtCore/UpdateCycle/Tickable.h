@@ -1,6 +1,9 @@
 #pragma once
 
 
+namespace et {
+namespace core {
+
 
 //---------------------------------
 // I_Tickable
@@ -19,3 +22,6 @@ public:
 	virtual void OnTick() {}
 };
 
+
+} // namespace core
+} // namespace et

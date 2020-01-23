@@ -30,7 +30,7 @@ void ScreenSpaceReflections::Initialize()
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
-	m_pShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostScreenSpaceReflections.glsl"_hash);
+	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PostScreenSpaceReflections.glsl"_hash);
 
 	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Linear;
@@ -66,7 +66,7 @@ void ScreenSpaceReflections::Draw()
 	m_pShader->Upload("uFinalImage"_hash, static_cast<TextureData const*>(m_CollectTex));
 
 	//for position reconstruction
-	BaseContext* const context = ContextManager::GetInstance()->GetActiveContext();
+	core::BaseContext* const context = core::ContextManager::GetInstance()->GetActiveContext();
 	if (context != nullptr)
 	{
 		m_pShader->Upload("K"_hash, sinf(context->time->GetTime()) * 20 + 25);

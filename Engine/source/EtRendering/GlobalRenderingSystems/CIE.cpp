@@ -13,14 +13,14 @@ namespace render {
 
 void CIE::LoadData()
 {
-	AssetPtr<StubData> jsonCieText = ResourceManager::Instance()->GetAssetData<StubData>("cie.json"_hash);
+	AssetPtr<core::StubData> jsonCieText = core::ResourceManager::Instance()->GetAssetData<core::StubData>("cie.json"_hash);
 
-	JSON::Parser parser = JSON::Parser(std::string(jsonCieText->GetText(), jsonCieText->GetLength()));
-	JSON::Object* root = parser.GetRoot();
+	core::JSON::Parser parser = core::JSON::Parser(std::string(jsonCieText->GetText(), jsonCieText->GetLength()));
+	core::JSON::Object* root = parser.GetRoot();
 
 	m_Table = (*root)["2 deg color matching"]->arr()->NumArr();
 	auto jxyz = (*root)["xyz to rgb"];
-	JSON::ArrayMatrix(jxyz, m_CieToRgb);
+	core::JSON::ArrayMatrix(jxyz, m_CieToRgb);
 }
 
 dvec3 CIE::GetValue(double wavelength, double lambdaMin, double lambdaMax)

@@ -35,9 +35,9 @@ RTTR_REGISTRATION
 void EditorConfig::Initialize()
 {
 	// try deserializing the user directory path
-	if (!(serialization::DeserializeFromFile(s_PointerPath, m_DirPointers)))
+	if (!(core::serialization::DeserializeFromFile(s_PointerPath, m_DirPointers)))
 	{
-		LOG("EditorConfig::Initialize > unable to deserialize directory pointers!", LogLevel::Error);
+		LOG("EditorConfig::Initialize > unable to deserialize directory pointers!", core::LogLevel::Error);
 	}
 
 	m_DirPointers.m_EditorUserDir = m_DirPointers.m_ProjectPath + std::string("/user_data/editor/");

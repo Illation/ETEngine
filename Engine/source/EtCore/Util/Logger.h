@@ -2,6 +2,11 @@
 
 #include <windows.h>
 
+
+namespace et {
+namespace core {
+
+
 enum LogLevel
 {
 	Info = 0x1,
@@ -118,3 +123,6 @@ private:
 	Logger& operator=(const Logger& obj);
 };
 
+
+} // namespace core
+} // namespace et

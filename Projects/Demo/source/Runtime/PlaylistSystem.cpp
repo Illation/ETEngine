@@ -27,7 +27,7 @@ PlaylistSystem::PlaylistSystem()
 void PlaylistSystem::Process(fw::ComponentRange<PlaylistSystemView>& range)
 {
 	// common variables
-	InputManager* const input = InputManager::GetInstance();
+	core::InputManager* const input = core::InputManager::GetInstance();
 
 	if (input->GetKeyState(E_KbdKey::P) == E_KeyState::Pressed)
 	{

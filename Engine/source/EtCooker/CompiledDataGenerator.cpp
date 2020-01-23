@@ -5,6 +5,10 @@
 #include <EtCore/FileSystem/FileUtil.h>
 
 
+namespace et {
+namespace cooker {
+
+
 //---------------------------------
 // GenerateCompilableResource
 //
@@ -13,21 +17,21 @@
 void GenerateCompilableResource(std::vector<uint8> const& data, std::string const& name, std::string const& path)
 {
 	// Ensure the generated file directory exists
-	Directory* dir = new Directory(path, nullptr, true); 
+	core::Directory* dir = new core::Directory(path, nullptr, true); 
 
 	// consistency of var names
 	std::string compiledDataName("s_CompiledData_" + name);
 
 	// file access flags for generated source files
-	FILE_ACCESS_FLAGS outFlags;
-	outFlags.SetFlags(FILE_ACCESS_FLAGS::FLAGS::Create | FILE_ACCESS_FLAGS::FLAGS::Exists);
+	core::FILE_ACCESS_FLAGS outFlags;
+	outFlags.SetFlags(core::FILE_ACCESS_FLAGS::FLAGS::Create | core::FILE_ACCESS_FLAGS::FLAGS::Exists);
 
 	// create the header file
-	File* header = new File(name + std::string(".h"), dir);
-	header->Open(FILE_ACCESS_MODE::Write, outFlags);
-	if (!(header->Write(FileUtil::FromText(generator_detail::GetHeaderString(name, compiledDataName)))))
+	core::File* header = new core::File(name + std::string(".h"), dir);
+	header->Open(core::FILE_ACCESS_MODE::Write, outFlags);
+	if (!(header->Write(core::FileUtil::FromText(generator_detail::GetHeaderString(name, compiledDataName)))))
 	{
-		LOG("GenerateCompilableResource > Couldn't write header file", LogLevel::Warning);
+		LOG("GenerateCompilableResource > Couldn't write header file", core::LogLevel::Warning);
 	}
 
 	// cleanup header
@@ -36,11 +40,11 @@ void GenerateCompilableResource(std::vector<uint8> const& data, std::string cons
 	header = nullptr;
 
 	// create the source file
-	File* source = new File(name + std::string(".cpp"), dir);
-	source->Open(FILE_ACCESS_MODE::Write, outFlags);
-	if (!(source->Write(FileUtil::FromText(generator_detail::GetSourceString(data, name, compiledDataName)))))
+	core::File* source = new core::File(name + std::string(".cpp"), dir);
+	source->Open(core::FILE_ACCESS_MODE::Write, outFlags);
+	if (!(source->Write(core::FileUtil::FromText(generator_detail::GetSourceString(data, name, compiledDataName)))))
 	{
-		LOG("GenerateCompilableResource > Couldn't write source file", LogLevel::Warning);
+		LOG("GenerateCompilableResource > Couldn't write source file", core::LogLevel::Warning);
 	}
 
 	// cleanup source
@@ -165,3 +169,6 @@ std::string GetSourceString(std::vector<uint8> const& data, std::string const& n
 
 } // namespace generator_detail
 
+
+} // namespace cooker
+} // namespace et

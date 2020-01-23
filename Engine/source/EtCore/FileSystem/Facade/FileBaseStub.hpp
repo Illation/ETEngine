@@ -1,3 +1,9 @@
+
+
+namespace et {
+namespace core {
+
+
 FILE_HANDLE FILE_SYSTEM::Open( const char * pathName, FILE_ACCESS_FLAGS accessFlags, FILE_ACCESS_MODE accessMode )
 {
 
@@ -22,3 +28,7 @@ bool FILE_SYSTEM::DeleteFile( const char * pathName )
 {
 
 }
+
+
+} // namespace core
+} // namespace et

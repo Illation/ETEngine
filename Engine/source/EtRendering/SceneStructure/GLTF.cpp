@@ -28,7 +28,7 @@ bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
 		auto dataPos = uri.path.find(',');
 		if (dataPos == std::string::npos)
 		{
-			LOG("couldn't find data uri data", Warning);
+			LOG("couldn't find data uri data", core::LogLevel::Warning);
 			return false;
 		}
 
@@ -36,7 +36,7 @@ bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
 		auto paramPos = mediatype.find(';');
 		if (paramPos == std::string::npos)
 		{
-			LOG("couldn't find data uri mediatype parameter", Warning);
+			LOG("couldn't find data uri mediatype parameter", core::LogLevel::Warning);
 			return false;
 		}
 		std::string parameter = mediatype.substr(paramPos + 1);
@@ -45,7 +45,7 @@ bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
 		auto subtypePos = mediatype.find('/');
 		if (subtypePos == std::string::npos)
 		{
-			LOG("couldn't find data uri mediatype subtype", Warning);
+			LOG("couldn't find data uri mediatype subtype", core::LogLevel::Warning);
 			return false;
 		}
 		uri.ext = mediatype.substr(subtypePos + 1);
@@ -67,11 +67,11 @@ bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
 	}
 	else
 	{
-		Directory* pDir = new Directory(basePath, nullptr);
-		File* input = new File(uri.path, pDir);
-		if (!input->Open(FILE_ACCESS_MODE::Read))
+		core::Directory* pDir = new core::Directory(basePath, nullptr);
+		core::File* input = new core::File(uri.path, pDir);
+		if (!input->Open(core::FILE_ACCESS_MODE::Read))
 		{
-			LOG(std::string("Unable to open external glTF asset") + uri.path, Warning);
+			LOG(std::string("Unable to open external glTF asset") + uri.path, core::LogLevel::Warning);
 			return false;
 		}
 		uri.binData = input->Read();
@@ -82,7 +82,7 @@ bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
 		pDir = nullptr;
 		if (uri.binData.size() == 0)
 		{
-			LOG(std::string("external glTF asset is empty") + uri.path, Warning);
+			LOG(std::string("external glTF asset is empty") + uri.path, core::LogLevel::Warning);
 		}
 		uri.type = URI::URI_FILE;
 		return true;
@@ -139,12 +139,12 @@ bool glTF::ParseGLTFData(const std::vector<uint8>& binaryContent, const std::str
 	}
 	if (lowerExt == "glb")
 	{
-		auto pBinReader = new BinaryReader(); 
+		auto pBinReader = new core::BinaryReader();
 		pBinReader->Open(binaryContent);
 		if (!pBinReader->Exists())
 		{
 			delete pBinReader;
-			LOG("glTF Failed to read the assetFile!", Warning);
+			LOG("glTF Failed to read the assetFile!", core::LogLevel::Warning);
 			return false;
 		}
 
@@ -160,17 +160,17 @@ bool glTF::ParseGLTFData(const std::vector<uint8>& binaryContent, const std::str
 		if (!ParseGLBChunk(pBinReader, jsonChunk))
 		{
 			delete pBinReader;
-			LOG("glTF failed to read json chunk from glb!", Warning);
+			LOG("glTF failed to read json chunk from glb!", core::LogLevel::Warning);
 			return false;
 		}
 		if (!(jsonChunk.chunkType == Chunk::ChunkType::JSON))
 		{
 			delete pBinReader;
-			LOG("expected chunk type to be JSON", Warning);
+			LOG("expected chunk type to be JSON", core::LogLevel::Warning);
 			return false;
 		}
-		JSON::Parser parser = JSON::Parser(FileUtil::AsText(jsonChunk.chunkData));
-		JSON::Object* root = parser.GetRoot();
+		core::JSON::Parser parser = core::JSON::Parser(core::FileUtil::AsText(jsonChunk.chunkData));
+		core::JSON::Object* root = parser.GetRoot();
 		if (root == nullptr)return false;
 		if (!glTF::ParseGlTFJson(root, asset.dom))return false;
 
@@ -181,13 +181,13 @@ bool glTF::ParseGLTFData(const std::vector<uint8>& binaryContent, const std::str
 			if (!ParseGLBChunk(pBinReader, asset.dataChunks[asset.dataChunks.size()-1]))
 			{
 				delete pBinReader;
-				LOG("glTF failed to read binary chunk from glb!", Warning);
+				LOG("glTF failed to read binary chunk from glb!", core::LogLevel::Warning);
 				return false;
 			}
 			if (!(asset.dataChunks[asset.dataChunks.size() - 1].chunkType == Chunk::ChunkType::BIN))
 			{
 				delete pBinReader;
-				LOG("expected chunk type to be BIN", Warning);
+				LOG("expected chunk type to be BIN", core::LogLevel::Warning);
 				return false;
 			}
 		}
@@ -196,39 +196,39 @@ bool glTF::ParseGLTFData(const std::vector<uint8>& binaryContent, const std::str
 	}
 	else if (lowerExt == "gltf")
 	{
-		JSON::Parser parser = JSON::Parser(FileUtil::AsText(binaryContent));
-		JSON::Object* root = parser.GetRoot();
+		core::JSON::Parser parser = core::JSON::Parser(core::FileUtil::AsText(binaryContent));
+		core::JSON::Object* root = parser.GetRoot();
 		if(root == nullptr)return false;
 		if(!glTF::ParseGlTFJson(root, asset.dom))return false;
 		return true;
 	}
-	LOG("Unrecognized glTF extension", Warning);
+	LOG("Unrecognized glTF extension", core::LogLevel::Warning);
 	return false;
 }
 
-bool glTF::ParseGLBHeader(BinaryReader* pBinReader, Header &header)
+bool glTF::ParseGLBHeader(core::BinaryReader* pBinReader, Header &header)
 {
 	header.magic = pBinReader->Read<uint32>();
 	if (!(header.magic == *reinterpret_cast<uint32*>("glTF")))
 	{
-		LOG("invalid glb file header!", Warning);
+		LOG("invalid glb file header!", core::LogLevel::Warning);
 		return false;
 	}
 	header.version = pBinReader->Read<uint32>();
 	if (!(header.version == 2))
 	{
-		LOG("invalid glb file header version!", Warning);
+		LOG("invalid glb file header version!", core::LogLevel::Warning);
 		return false;
 	}
 	header.length = pBinReader->Read<uint32>();
 	return true;
 }
 
-bool glTF::ParseGLBChunk(BinaryReader* pBinReader, Chunk &chunk)
+bool glTF::ParseGLBChunk(core::BinaryReader* pBinReader, Chunk &chunk)
 {
 	if (!(pBinReader->GetBufferPosition() % 4 == 0))//Make sure 4 byte alignement is respected
 	{
-		LOG("Expected binary buffer position for glb to be 4 byte aligned", Warning);
+		LOG("Expected binary buffer position for glb to be 4 byte aligned", core::LogLevel::Warning);
 		pBinReader->SetBufferPosition(((pBinReader->GetBufferPosition() / 4) + 1) * 4);
 	}
 	chunk.chunkLength = pBinReader->Read<uint32>();
@@ -242,107 +242,107 @@ bool glTF::ParseGLBChunk(BinaryReader* pBinReader, Chunk &chunk)
 	return true;
 }
 
-bool glTF::ParseGlTFJson(JSON::Object* json, Dom& dom)
+bool glTF::ParseGlTFJson(core::JSON::Object* json, Dom& dom)
 {
 	//Minimum requirement: asset and version
 	if (!ParseAssetJson(json, dom.asset))
 	{
-		LOG("Failed to parse assset from JSON, invalid glTF file", Warning);
+		LOG("Failed to parse assset from JSON, invalid glTF file", core::LogLevel::Warning);
 		return false;
 	}
 	//Also parse extensions and make sure we support them
 	if (!ParseExtensionsJson(json, dom))
 	{
-		LOG("Failed to parse extensions from JSON, invalid glTF file", Warning);
+		LOG("Failed to parse extensions from JSON, invalid glTF file", core::LogLevel::Warning);
 		return false;
 	}
 
 	//Rest of the data we are interested in
 	if (!ParseSceneJson(json, dom))
 	{
-		LOG("Failed to parse glTF scene from JSON", Warning);
+		LOG("Failed to parse glTF scene from JSON", core::LogLevel::Warning);
 		return false;
 	}
 	if (!ParseScenesJson(json, dom.scenes))
 	{
-		LOG("Failed to parse glTF scenes from JSON", Warning);
+		LOG("Failed to parse glTF scenes from JSON", core::LogLevel::Warning);
 		return false;
 	}
 	if (!ParseNodesJson(json, dom.nodes))
 	{
-		LOG("Failed to parse glTF nodes from JSON", Warning);
+		LOG("Failed to parse glTF nodes from JSON", core::LogLevel::Warning);
 		return false;
 	}
 	if (!ParseMeshesJson(json, dom.meshes))
 	{
-		LOG("Failed to parse glTF meshes from JSON", Warning);
+		LOG("Failed to parse glTF meshes from JSON", core::LogLevel::Warning);
 		return false;
 	}
 	if (!ParseAccessorsJson(json, dom.accessors))
 	{
-		LOG("Failed to parse glTF accessors from JSON", Warning);
+		LOG("Failed to parse glTF accessors from JSON", core::LogLevel::Warning);
 		return false;
 	}
 	if (!ParseBufferViewsJson(json, dom.bufferViews))
 	{
-		LOG("Failed to parse glTF bufferViews from JSON", Warning);
+		LOG("Failed to parse glTF bufferViews from JSON", core::LogLevel::Warning);
 		return false;
 	}
 	if (!ParseBuffersJson(json, dom.buffers))
 	{
-		LOG("Failed to parse glTF buffers from JSON", Warning);
+		LOG("Failed to parse glTF buffers from JSON", core::LogLevel::Warning);
 		return false;
 	}
 	if (!ParseImagesJson(json, dom.images))
 	{
-		LOG("Failed to parse glTF images from JSON", Warning);
+		LOG("Failed to parse glTF images from JSON", core::LogLevel::Warning);
 		return false;
 	}
 	if (!ParseTexturesJson(json, dom.textures))
 	{
-		LOG("Failed to parse glTF textures from JSON", Warning);
+		LOG("Failed to parse glTF textures from JSON", core::LogLevel::Warning);
 		return false;
 	}
 	if (!ParseSamplersJson(json, dom.samplers))
 	{
-		LOG("Failed to parse glTF samplers from JSON", Warning);
+		LOG("Failed to parse glTF samplers from JSON", core::LogLevel::Warning);
 		return false;
 	}
 	if (!ParseMaterialsJson(json, dom.materials))
 	{
-		LOG("Failed to parse glTF materials from JSON", Warning);
+		LOG("Failed to parse glTF materials from JSON", core::LogLevel::Warning);
 		return false;
 	}
 	if (!ParseCamerasJson(json, dom.cameras))
 	{
-		LOG("Failed to parse glTF cameras from JSON", Warning);
+		LOG("Failed to parse glTF cameras from JSON", core::LogLevel::Warning);
 		return false;
 	}
 	if (!ParseSkinsJson(json, dom.skins))
 	{
-		LOG("Failed to parse glTF skins from JSON", Warning);
+		LOG("Failed to parse glTF skins from JSON", core::LogLevel::Warning);
 		return false;
 	}
 	if (!ParseAnimationsJson(json, dom.animations))
 	{
-		LOG("Failed to parse glTF animations from JSON", Warning);
+		LOG("Failed to parse glTF animations from JSON", core::LogLevel::Warning);
 		return false;
 	}
 
 	return true;
 }
 
-bool glTF::ParseAssetJson(JSON::Object* root, Asset& asset)
+bool glTF::ParseAssetJson(core::JSON::Object* root, Asset& asset)
 {
-	JSON::Value* assetVal = (*root)["asset"];
+	core::JSON::Value* assetVal = (*root)["asset"];
 	if (!assetVal)return false;
-	if (!(assetVal->GetType() == JSON::ValueType::JSON_Object)) return false;
-	JSON::Object* assetObj = assetVal->obj();
+	if (!(assetVal->GetType() == core::JSON::ValueType::JSON_Object)) return false;
+	core::JSON::Object* assetObj = assetVal->obj();
 	
-	if(!JSON::ApplyStrValue(assetObj, asset.version, "version")) return false;
-	JSON::ApplyStrValue(assetObj, asset.minVersion, "minVersion");
-	JSON::ApplyStrValue(assetObj, asset.generator, "generator");
-	JSON::ApplyStrValue(assetObj, asset.copyright, "copyright");
+	if(!core::JSON::ApplyStrValue(assetObj, asset.version, "version")) return false;
+	core::JSON::ApplyStrValue(assetObj, asset.minVersion, "minVersion");
+	core::JSON::ApplyStrValue(assetObj, asset.generator, "generator");
+	core::JSON::ApplyStrValue(assetObj, asset.copyright, "copyright");
 
 	//Check version support
 	bool hasMinVersion = false;
@@ -352,7 +352,7 @@ bool glTF::ParseAssetJson(JSON::Object* root, Asset& asset)
 		float minAssetVersion = std::stof(asset.minVersion);
 		if (minAssetVersion < glTF::minVersion || minAssetVersion > glTF::maxVersion)
 		{
-			LOG("glTF minVersion is not supported by ETEngine", Warning);
+			LOG("glTF minVersion is not supported by ETEngine", core::LogLevel::Warning);
 			LogGLTFVersionSupport();
 			return false;
 		}
@@ -360,7 +360,7 @@ bool glTF::ParseAssetJson(JSON::Object* root, Asset& asset)
 	float version = std::stof(asset.version);
 	if (version < glTF::minVersion)
 	{
-		LOG("glTF version is too low not supported by ETEngine", Warning);
+		LOG("glTF version is too low not supported by ETEngine", core::LogLevel::Warning);
 		LogGLTFVersionSupport();
 		return false;
 	}
@@ -368,7 +368,7 @@ bool glTF::ParseAssetJson(JSON::Object* root, Asset& asset)
 	{
 		if (version > glTF::maxVersion)
 		{
-			LOG("glTF version is too high not supported by ETEngine", Warning);
+			LOG("glTF version is too high not supported by ETEngine", core::LogLevel::Warning);
 			LogGLTFVersionSupport();
 			return false;
 		}
@@ -377,19 +377,19 @@ bool glTF::ParseAssetJson(JSON::Object* root, Asset& asset)
 	return true;
 }
 
-bool glTF::ParseExtensionsJson(JSON::Object* root, Dom& dom)
+bool glTF::ParseExtensionsJson(core::JSON::Object* root, Dom& dom)
 {
-	JSON::Value* extUsedVal = (*root)["extensionsRequired"];
+	core::JSON::Value* extUsedVal = (*root)["extensionsRequired"];
 	if (extUsedVal)
 	{
-		if (!(extUsedVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+		if (!(extUsedVal->GetType() == core::JSON::ValueType::JSON_Array)) return false;
 		dom.extensionsUsed = extUsedVal->arr()->StrArr();
 	}
 
-	JSON::Value* extRequVal = (*root)["extensionsRequired"];
+	core::JSON::Value* extRequVal = (*root)["extensionsRequired"];
 	if (extRequVal)
 	{
-		if (!(extRequVal->GetType() == JSON::ValueType::JSON_Array)) return false;
+		if (!(extRequVal->GetType() == core::JSON::ValueType::JSON_Array)) return false;
 		dom.extensionsRequired = extRequVal->arr()->StrArr();
 	}
 
@@ -398,46 +398,46 @@ bool glTF::ParseExtensionsJson(JSON::Object* root, Dom& dom)
 	{
 		if (std::find(dom.extensionsUsed.begin(), dom.extensionsUsed.end(), requ) == dom.extensionsUsed.end())
 		{
-			LOG(std::string("Required glTF extension '") + requ + "' not found in used extensions", Warning);
+			LOG(std::string("Required glTF extension '") + requ + "' not found in used extensions", core::LogLevel::Warning);
 			return false;
 		}
 		if (std::find(supportedExtensions.begin(), supportedExtensions.end(), requ) == supportedExtensions.end())
 		{
-			LOG(std::string("Required glTF extension '") + requ + "' is not supported by ETEngine", Warning);
+			LOG(std::string("Required glTF extension '") + requ + "' is not supported by ETEngine", core::LogLevel::Warning);
 			return false;
 		}
 	}
 	return true;
 }
 
-bool glTF::ParseSceneJson(JSON::Object* root, Dom& dom)
+bool glTF::ParseSceneJson(core::JSON::Object* root, Dom& dom)
 {
-	JSON::ApplyIntValue(root, dom.scene, "scene");
+	core::JSON::ApplyIntValue(root, dom.scene, "scene");
 	return true;
 }
 
-bool glTF::ParseScenesJson(JSON::Object* root, std::vector<Scene>& scenes)
+bool glTF::ParseScenesJson(core::JSON::Object* root, std::vector<Scene>& scenes)
 {
-	JSON::Value* scenesVal = (*root)["scenes"];
+	core::JSON::Value* scenesVal = (*root)["scenes"];
 	if (!scenesVal)return true;
 
-	if (!(scenesVal->GetType() == JSON::ValueType::JSON_Array)) return false;
-	JSON::Array* scenesArr = scenesVal->arr();
+	if (!(scenesVal->GetType() == core::JSON::ValueType::JSON_Array)) return false;
+	core::JSON::Array* scenesArr = scenesVal->arr();
 
-	for (JSON::Value* sceneVal : scenesArr->value)
+	for (core::JSON::Value* sceneVal : scenesArr->value)
 	{
-		if (!(sceneVal->GetType() == JSON::ValueType::JSON_Object)) return false;
-		JSON::Object* sceneObj = sceneVal->obj();
+		if (!(sceneVal->GetType() == core::JSON::ValueType::JSON_Object)) return false;
+		core::JSON::Object* sceneObj = sceneVal->obj();
 
 		Scene scene;
 
-		JSON::ApplyStrValue(sceneObj, scene.name, "name");
+		core::JSON::ApplyStrValue(sceneObj, scene.name, "name");
 
-		JSON::Value* nodesVal = (*sceneObj)["nodes"];
+		core::JSON::Value* nodesVal = (*sceneObj)["nodes"];
 		if (nodesVal)
 		{
-			if (!(nodesVal->GetType() == JSON::ValueType::JSON_Array)) return false;
-			JSON::Array* nodesArr = nodesVal->arr();
+			if (!(nodesVal->GetType() == core::JSON::ValueType::JSON_Array)) return false;
+			core::JSON::Array* nodesArr = nodesVal->arr();
 			std::vector<int64> intArr = nodesArr->IntArr();
 			for (auto el : intArr) scene.nodes.push_back(static_cast<uint32>(el));
 		}
@@ -448,61 +448,61 @@ bool glTF::ParseScenesJson(JSON::Object* root, std::vector<Scene>& scenes)
 	return true;
 }
 
-bool glTF::ParseNodesJson(JSON::Object* root, std::vector<Node>& nodes)
+bool glTF::ParseNodesJson(core::JSON::Object* root, std::vector<Node>& nodes)
 {
-	JSON::Value* nodesVal = (*root)["nodes"];
+	core::JSON::Value* nodesVal = (*root)["nodes"];
 	if (!nodesVal)return true;
 
-	if (!(nodesVal->GetType() == JSON::ValueType::JSON_Array)) return false;
-	JSON::Array* nodesArr = nodesVal->arr();
+	if (!(nodesVal->GetType() == core::JSON::ValueType::JSON_Array)) return false;
+	core::JSON::Array* nodesArr = nodesVal->arr();
 
-	for (JSON::Value* nodeVal : nodesArr->value)
+	for (core::JSON::Value* nodeVal : nodesArr->value)
 	{
-		if (!(nodeVal->GetType() == JSON::ValueType::JSON_Object)) return false;
-		JSON::Object* nodeObj = nodeVal->obj();
+		if (!(nodeVal->GetType() == core::JSON::ValueType::JSON_Object)) return false;
+		core::JSON::Object* nodeObj = nodeVal->obj();
 
 		Node node;
 
-		JSON::ApplyStrValue(nodeObj, node.name, "name");
+		core::JSON::ApplyStrValue(nodeObj, node.name, "name");
 
-		JSON::Value* childrenVal = (*nodeObj)["children"];
+		core::JSON::Value* childrenVal = (*nodeObj)["children"];
 		if (childrenVal)
 		{
-			if (!(childrenVal->GetType() == JSON::ValueType::JSON_Array)) return false;
-			JSON::Array* childrenArr = childrenVal->arr();
+			if (!(childrenVal->GetType() == core::JSON::ValueType::JSON_Array)) return false;
+			core::JSON::Array* childrenArr = childrenVal->arr();
 			std::vector<int64> intArr = childrenArr->IntArr();
 			for (auto el : intArr) node.children.push_back(static_cast<uint32>(el));
 		}
 
 		bool hasTranslation = false;
-		JSON::Value* translationVal = (*nodeObj)["translation"];
+		core::JSON::Value* translationVal = (*nodeObj)["translation"];
 		if (translationVal)
 		{
-			if (!JSON::ArrayVector(translationVal, node.translation))return false;
+			if (!core::JSON::ArrayVector(translationVal, node.translation))return false;
 			hasTranslation = true;
 		}
 
 		bool hasRotation = false;
-		JSON::Value* rotationVal = (*nodeObj)["rotation"];
+		core::JSON::Value* rotationVal = (*nodeObj)["rotation"];
 		if (rotationVal)
 		{
-			if (!JSON::ArrayVector(rotationVal, node.rotation.v4))return false;
+			if (!core::JSON::ArrayVector(rotationVal, node.rotation.v4))return false;
 			hasRotation = true;
 		}
 
 		bool hasScale = false;
-		JSON::Value* scaleVal = (*nodeObj)["scale"];
+		core::JSON::Value* scaleVal = (*nodeObj)["scale"];
 		if (scaleVal)
 		{
-			if (!JSON::ArrayVector(scaleVal, node.scale))return false;
+			if (!core::JSON::ArrayVector(scaleVal, node.scale))return false;
 			hasScale = true;
 		}
 
 		bool hasMatrix = false;
-		JSON::Value* matrixVal = (*nodeObj)["matrix"];
+		core::JSON::Value* matrixVal = (*nodeObj)["matrix"];
 		if (matrixVal)
 		{
-			if(!JSON::ArrayMatrix(matrixVal, node.matrix))return false;
+			if(!core::JSON::ArrayMatrix(matrixVal, node.matrix))return false;
 			hasMatrix = true;
 		}
 
@@ -512,31 +512,31 @@ bool glTF::ParseNodesJson(JSON::Object* root, std::vector<Node>& nodes)
 			quat rot;
 			etm::decomposeTRS(node.matrix, trans, rot, scale);
 			if (!hasTranslation)node.translation = trans;
-			else if (!etm::nearEqualsV(node.translation, trans, 0.0001f))LOG("inconsistent translation values for node", Warning);
+			else if (!etm::nearEqualsV(node.translation, trans, 0.0001f))LOG("inconsistent translation values for node", core::LogLevel::Warning);
 			if (!hasRotation)node.rotation = rot;
 			else
 			{
 				//different quaternions can express the same rotation
 				vec3 testVec = vec3(0, 0, 1);
-				if (!etm::nearEqualsV(node.rotation * testVec, rot * testVec, 0.0001f))LOG("inconsistent rotation values for node", Warning);
+				if (!etm::nearEqualsV(node.rotation * testVec, rot * testVec, 0.0001f))LOG("inconsistent rotation values for node", core::LogLevel::Warning);
 			}
 			if (!hasScale)node.scale = scale;
-			else if (!etm::nearEqualsV(node.scale, scale, 0.0001f))LOG("inconsistent scale values for node", Warning);
+			else if (!etm::nearEqualsV(node.scale, scale, 0.0001f))LOG("inconsistent scale values for node", core::LogLevel::Warning);
 		}
 		else
 		{
 			node.matrix = etm::scale(node.scale) * etm::rotate(node.rotation) * etm::translate(node.translation);
 		}
 
-		JSON::ApplyIntValue(nodeObj, node.camera, "camera");
-		JSON::ApplyIntValue(nodeObj, node.mesh, "mesh");
-		JSON::ApplyIntValue(nodeObj, node.skin, "skin");
+		core::JSON::ApplyIntValue(nodeObj, node.camera, "camera");
+		core::JSON::ApplyIntValue(nodeObj, node.mesh, "mesh");
+		core::JSON::ApplyIntValue(nodeObj, node.skin, "skin");
 
-		JSON::Value* weightsVal = (*nodeObj)["weights"];
+		core::JSON::Value* weightsVal = (*nodeObj)["weights"];
 		if (weightsVal)
 		{
-			if (!(weightsVal->GetType() == JSON::ValueType::JSON_Array)) return false;
-			JSON::Array* weightsArr = weightsVal->arr();
+			if (!(weightsVal->GetType() == core::JSON::ValueType::JSON_Array)) return false;
+			core::JSON::Array* weightsArr = weightsVal->arr();
 			std::vector<double> arr = weightsArr->NumArr();
 			for (auto el : arr) node.weights.push_back(static_cast<float>(el));
 		}
@@ -547,32 +547,32 @@ bool glTF::ParseNodesJson(JSON::Object* root, std::vector<Node>& nodes)
 	return true;
 }
 
-bool glTF::ParseMeshesJson(JSON::Object* root, std::vector<Mesh>& meshes)
+bool glTF::ParseMeshesJson(core::JSON::Object* root, std::vector<Mesh>& meshes)
 {
-	JSON::Value* meshesVal = (*root)["meshes"];
+	core::JSON::Value* meshesVal = (*root)["meshes"];
 	if (!meshesVal)return true;
 
-	if (!(meshesVal->GetType() == JSON::ValueType::JSON_Array)) return false;
-	JSON::Array* meshesArr = meshesVal->arr();
+	if (!(meshesVal->GetType() == core::JSON::ValueType::JSON_Array)) return false;
+	core::JSON::Array* meshesArr = meshesVal->arr();
 
-	for (JSON::Value* meshVal : meshesArr->value)
+	for (core::JSON::Value* meshVal : meshesArr->value)
 	{
-		if (!(meshVal->GetType() == JSON::ValueType::JSON_Object)) return false;
-		JSON::Object* meshObj = meshVal->obj();
+		if (!(meshVal->GetType() == core::JSON::ValueType::JSON_Object)) return false;
+		core::JSON::Object* meshObj = meshVal->obj();
 
 		Mesh mesh;
 
-		JSON::ApplyStrValue(meshObj, mesh.name, "name");
+		core::JSON::ApplyStrValue(meshObj, mesh.name, "name");
 
-		JSON::Value* primitivesVal = (*meshObj)["primitives"];
+		core::JSON::Value* primitivesVal = (*meshObj)["primitives"];
 		if (primitivesVal)
 		{
-			if (!(primitivesVal->GetType() == JSON::ValueType::JSON_Array)) return false;
-			JSON::Array* primitivesArr = primitivesVal->arr();
-			for (JSON::Value* primitiveVal : primitivesArr->value)
+			if (!(primitivesVal->GetType() == core::JSON::ValueType::JSON_Array)) return false;
+			core::JSON::Array* primitivesArr = primitivesVal->arr();
+			for (core::JSON::Value* primitiveVal : primitivesArr->value)
 			{
-				if (!(primitiveVal->GetType() == JSON::ValueType::JSON_Object)) return false;
-				JSON::Object* primitiveObj = primitiveVal->obj();
+				if (!(primitiveVal->GetType() == core::JSON::ValueType::JSON_Object)) return false;
+				core::JSON::Object* primitiveObj = primitiveVal->obj();
 				Primitive prim;
 				if (ParsePrimitiveJson(primitiveObj, prim))
 				{
@@ -582,11 +582,11 @@ bool glTF::ParseMeshesJson(JSON::Object* root, std::vector<Mesh>& meshes)
 			}
 		}
 
-		JSON::Value* weightsVal = (*meshObj)["weights"];
+		core::JSON::Value* weightsVal = (*meshObj)["weights"];
 		if (weightsVal)
 		{
-			if (!(weightsVal->GetType() == JSON::ValueType::JSON_Array)) return false;
-			JSON::Array* nodesArr = weightsVal->arr();
+			if (!(weightsVal->GetType() == core::JSON::ValueType::JSON_Array)) return false;
+			core::JSON::Array* nodesArr = weightsVal->arr();
 			std::vector<double> weightArr = nodesArr->NumArr();
 			for (auto el : weightArr) mesh.weights.push_back(static_cast<float>(el));
 		}
@@ -597,40 +597,40 @@ bool glTF::ParseMeshesJson(JSON::Object* root, std::vector<Mesh>& meshes)
 	return true;
 }
 
-bool glTF::ParsePrimitiveJson(JSON::Object* primitiveObj, Primitive& primitive)
+bool glTF::ParsePrimitiveJson(core::JSON::Object* primitiveObj, Primitive& primitive)
 {
-	JSON::Value* attributesVal = (*primitiveObj)["attributes"];
+	core::JSON::Value* attributesVal = (*primitiveObj)["attributes"];
 	if (!attributesVal)return false;
-	if (!(attributesVal->GetType() == JSON::ValueType::JSON_Object)) return false;
-	JSON::Object* attributeObj = attributesVal->obj();
-	JSON::ApplyIntValue(attributeObj, primitive.attributes.position, "POSITION");
-	JSON::ApplyIntValue(attributeObj, primitive.attributes.normal, "NORMAL");
-	JSON::ApplyIntValue(attributeObj, primitive.attributes.tangent, "TANGENT");
-	JSON::ApplyIntValue(attributeObj, primitive.attributes.texcoord0, "TEXCOORD_0");
-	JSON::ApplyIntValue(attributeObj, primitive.attributes.texcoord1, "TEXCOORD_1");
-	JSON::ApplyIntValue(attributeObj, primitive.attributes.color0, "COLOR_0");
-	JSON::ApplyIntValue(attributeObj, primitive.attributes.joints0, "JOINTS_0");
-	JSON::ApplyIntValue(attributeObj, primitive.attributes.weights0, "WEIGHTS_0");
+	if (!(attributesVal->GetType() == core::JSON::ValueType::JSON_Object)) return false;
+	core::JSON::Object* attributeObj = attributesVal->obj();
+	core::JSON::ApplyIntValue(attributeObj, primitive.attributes.position, "POSITION");
+	core::JSON::ApplyIntValue(attributeObj, primitive.attributes.normal, "NORMAL");
+	core::JSON::ApplyIntValue(attributeObj, primitive.attributes.tangent, "TANGENT");
+	core::JSON::ApplyIntValue(attributeObj, primitive.attributes.texcoord0, "TEXCOORD_0");
+	core::JSON::ApplyIntValue(attributeObj, primitive.attributes.texcoord1, "TEXCOORD_1");
+	core::JSON::ApplyIntValue(attributeObj, primitive.attributes.color0, "COLOR_0");
+	core::JSON::ApplyIntValue(attributeObj, primitive.attributes.joints0, "JOINTS_0");
+	core::JSON::ApplyIntValue(attributeObj, primitive.attributes.weights0, "WEIGHTS_0");
 
-	JSON::ApplyIntValue(primitiveObj, primitive.indices, "indices");
-	JSON::ApplyIntValue(primitiveObj, primitive.material, "material");
-	JSON::ApplyIntValue(primitiveObj, primitive.mode, "mode");
+	core::JSON::ApplyIntValue(primitiveObj, primitive.indices, "indices");
+	core::JSON::ApplyIntValue(primitiveObj, primitive.material, "material");
+	core::JSON::ApplyIntValue(primitiveObj, primitive.mode, "mode");
 
-	JSON::Value* targetsVal = (*primitiveObj)["targets"];
+	core::JSON::Value* targetsVal = (*primitiveObj)["targets"];
 	if (targetsVal)
 	{
-		if (!(targetsVal->GetType() == JSON::ValueType::JSON_Array)) return false;
-		JSON::Array* targetsArr = targetsVal->arr();
-		for (JSON::Value* targetVal : targetsArr->value)
+		if (!(targetsVal->GetType() == core::JSON::ValueType::JSON_Array)) return false;
+		core::JSON::Array* targetsArr = targetsVal->arr();
+		for (core::JSON::Value* targetVal : targetsArr->value)
 		{
-			if (!(targetVal->GetType() == JSON::ValueType::JSON_Object)) return false;
-			JSON::Object* targetObj = targetVal->obj();
+			if (!(targetVal->GetType() == core::JSON::ValueType::JSON_Object)) return false;
+			core::JSON::Object* targetObj = targetVal->obj();
 
 			Primitive::Targets target;
 
-			JSON::ApplyIntValue(targetObj, target.position, "POSITION");
-			JSON::ApplyIntValue(targetObj, target.normal, "NORMAL");
-			JSON::ApplyIntValue(targetObj, target.tangent, "TANGENT");
+			core::JSON::ApplyIntValue(targetObj, target.position, "POSITION");
+			core::JSON::ApplyIntValue(targetObj, target.normal, "NORMAL");
+			core::JSON::ApplyIntValue(targetObj, target.tangent, "TANGENT");
 
 			primitive.targets.push_back(target);
 		}
@@ -639,8 +639,10 @@ bool glTF::ParsePrimitiveJson(JSON::Object* primitiveObj, Primitive& primitive)
 	return true;
 }
 
-bool glTF::ParseAccessorsJson(JSON::Object* root, std::vector<Accessor>& accessors)
+bool glTF::ParseAccessorsJson(core::JSON::Object* root, std::vector<Accessor>& accessors)
 {
+	using namespace core;
+
 	JSON::Value* accessorsVal = (*root)["accessors"];
 	if (!accessorsVal)return true;
 
@@ -726,8 +728,10 @@ bool glTF::ParseAccessorsJson(JSON::Object* root, std::vector<Accessor>& accesso
 	return true;
 }
 
-bool glTF::ParseBufferViewsJson(JSON::Object* root, std::vector<BufferView>& bufferViews)
+bool glTF::ParseBufferViewsJson(core::JSON::Object* root, std::vector<BufferView>& bufferViews)
 {
+	using namespace core;
+
 	JSON::Value* bufferViewsVal = (*root)["bufferViews"];
 	if (!bufferViewsVal)return true;
 
@@ -754,8 +758,10 @@ bool glTF::ParseBufferViewsJson(JSON::Object* root, std::vector<BufferView>& buf
 	return true;
 }
 
-bool glTF::ParseBuffersJson(JSON::Object* root, std::vector<Buffer>& buffers)
+bool glTF::ParseBuffersJson(core::JSON::Object* root, std::vector<Buffer>& buffers)
 {
+	using namespace core;
+
 	JSON::Value* buffersVal = (*root)["buffers"];
 	if (!buffersVal)return true;
 
@@ -779,8 +785,10 @@ bool glTF::ParseBuffersJson(JSON::Object* root, std::vector<Buffer>& buffers)
 	return true;
 }
 
-bool glTF::ParseTexturesJson(JSON::Object* root, std::vector<Texture>& textures)
+bool glTF::ParseTexturesJson(core::JSON::Object* root, std::vector<Texture>& textures)
 {
+	using namespace core;
+
 	JSON::Value* texturesVal = (*root)["textures"];
 	if (!texturesVal)return true;
 
@@ -804,8 +812,10 @@ bool glTF::ParseTexturesJson(JSON::Object* root, std::vector<Texture>& textures)
 	return true;
 }
 
-bool glTF::ParseImagesJson(JSON::Object* root, std::vector<Image>& images)
+bool glTF::ParseImagesJson(core::JSON::Object* root, std::vector<Image>& images)
 {
+	using namespace core;
+
 	JSON::Value* imagesVal = (*root)["images"];
 	if (!imagesVal)return true;
 
@@ -830,8 +840,10 @@ bool glTF::ParseImagesJson(JSON::Object* root, std::vector<Image>& images)
 	return true;
 }
 
-bool glTF::ParseSamplersJson(JSON::Object* root, std::vector<Sampler>& samplers)
+bool glTF::ParseSamplersJson(core::JSON::Object* root, std::vector<Sampler>& samplers)
 {
+	using namespace core;
+
 	JSON::Value* samplersVal = (*root)["samplers"];
 	if (!samplersVal)return true;
 
@@ -857,8 +869,10 @@ bool glTF::ParseSamplersJson(JSON::Object* root, std::vector<Sampler>& samplers)
 	return true;
 }
 
-bool glTF::ParseMaterialsJson(JSON::Object* root, std::vector<Material>& materials)
+bool glTF::ParseMaterialsJson(core::JSON::Object* root, std::vector<Material>& materials)
 {
+	using namespace core;
+
 	JSON::Value* materialsVal = (*root)["materials"];
 	if (!materialsVal)return true;
 
@@ -950,8 +964,10 @@ bool glTF::ParseMaterialsJson(JSON::Object* root, std::vector<Material>& materia
 	return true;
 }
 
-bool glTF::ParsePbrMetallicRoughnessJson(JSON::Object* pbrObj, Material::PbrMetallicRoughness* pbr)
+bool glTF::ParsePbrMetallicRoughnessJson(core::JSON::Object* pbrObj, Material::PbrMetallicRoughness* pbr)
 {
+	using namespace core;
+
 	if (!pbr) return false;
 
 	JSON::Value* baseColorFactorVal = (*pbrObj)["baseColorFactor"];
@@ -985,8 +1001,10 @@ bool glTF::ParsePbrMetallicRoughnessJson(JSON::Object* pbrObj, Material::PbrMeta
 	return true;
 }
 
-bool glTF::ParseTextureInfoJson(JSON::Object* textureInfo, Material::TextureInfo* info)
+bool glTF::ParseTextureInfoJson(core::JSON::Object* textureInfo, Material::TextureInfo* info)
 {
+	using namespace core;
+
 	if (!info)return false;
 
 	if (!JSON::ApplyIntValue(textureInfo, info->index, "index"))return false;
@@ -995,8 +1013,10 @@ bool glTF::ParseTextureInfoJson(JSON::Object* textureInfo, Material::TextureInfo
 	return true;
 }
 
-bool glTF::ParseCamerasJson(JSON::Object* root, std::vector<Camera>& cameras)
+bool glTF::ParseCamerasJson(core::JSON::Object* root, std::vector<Camera>& cameras)
 {
+	using namespace core;
+
 	JSON::Value* camerasVal = (*root)["cameras"];
 	if (!camerasVal)return true;
 
@@ -1060,8 +1080,10 @@ bool glTF::ParseCamerasJson(JSON::Object* root, std::vector<Camera>& cameras)
 	return true;
 }
 
-bool glTF::ParseSkinsJson(JSON::Object* root, std::vector<Skin>& skins)
+bool glTF::ParseSkinsJson(core::JSON::Object* root, std::vector<Skin>& skins)
 {
+	using namespace core;
+
 	JSON::Value* skinsVal = (*root)["skins"];
 	if (!skinsVal)return true;
 
@@ -1093,8 +1115,10 @@ bool glTF::ParseSkinsJson(JSON::Object* root, std::vector<Skin>& skins)
 	return true;
 }
 
-bool glTF::ParseAnimationsJson(JSON::Object* root, std::vector<Animation>& animations)
+bool glTF::ParseAnimationsJson(core::JSON::Object* root, std::vector<Animation>& animations)
 {
+	using namespace core;
+
 	JSON::Value* animationsVal = (*root)["animations"];
 	if (!animationsVal)return true;
 
@@ -1191,17 +1215,17 @@ void glTF::LogGLTFVersionSupport()
 	LOG(std::string("glTF minVersion ") + std::to_string(glTF::minVersion) + " maxVersion " + std::to_string(glTF::maxVersion));
 }
 
-bool glTF::OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, BinaryReader* pViewReader)
+bool glTF::OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, core::BinaryReader* pViewReader)
 {
 	if (viewIdx >= (int32)asset.dom.bufferViews.size())
 	{
-		LOG("BufferView index out of range", Warning);
+		LOG("BufferView index out of range", core::LogLevel::Warning);
 		return false;
 	}
 	BufferView& view = asset.dom.bufferViews[viewIdx];
 	if (view.buffer >= (uint32)asset.dom.buffers.size())
 	{
-		LOG("Buffer index out of range", Warning);
+		LOG("Buffer index out of range", core::LogLevel::Warning);
 		return false;
 	}
 	Buffer& buffer = asset.dom.buffers[view.buffer];
@@ -1209,7 +1233,7 @@ bool glTF::OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, BinaryReader* 
 	{
 		if (!EvaluateURI(buffer.uri, asset.basePath))
 		{
-			LOG("Failed to evaluate buffer URI", Warning);
+			LOG("Failed to evaluate buffer URI", core::LogLevel::Warning);
 			return false;
 		}
 	}
@@ -1217,7 +1241,7 @@ bool glTF::OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, BinaryReader* 
 	{
 		if (view.buffer >= (uint32)asset.dataChunks.size())
 		{
-			LOG("No data chunk loaded for glb buffer", Warning);
+			LOG("No data chunk loaded for glb buffer", core::LogLevel::Warning);
 			return false;
 		}
 		pViewReader->Open(asset.dataChunks[view.buffer].chunkData, (uint32)view.byteOffset, (uint32)view.byteLength);
@@ -1228,7 +1252,7 @@ bool glTF::OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, BinaryReader* 
 	}
 	if (!pViewReader->Exists())
 	{
-		LOG("glTF Failed to read the buffer view!", Warning);
+		LOG("glTF Failed to read the buffer view!", core::LogLevel::Warning);
 		return false;
 	}
 	return true;
@@ -1238,24 +1262,24 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 {
 	if (idx >= (uint32)asset.dom.accessors.size())
 	{
-		LOG("Accessor index out of range", Warning);
+		LOG("Accessor index out of range", core::LogLevel::Warning);
 		return false;
 	}
 	Accessor& accessor = asset.dom.accessors[idx];
 	if (accessor.sparse || accessor.bufferView == -1)
 	{
-		LOG("Unsupported accessor type, sparse accessors are not yet implemented", Warning);
+		LOG("Unsupported accessor type, sparse accessors are not yet implemented", core::LogLevel::Warning);
 		return false;
 	}
 	if (accessor.bufferView >= (int32)asset.dom.bufferViews.size())
 	{
-		LOG("BufferView index out of range", Warning);
+		LOG("BufferView index out of range", core::LogLevel::Warning);
 		return false;
 	}
 	BufferView& view = asset.dom.bufferViews[accessor.bufferView];
 	if (view.buffer >= (uint32)asset.dom.buffers.size())
 	{
-		LOG("Buffer index out of range", Warning);
+		LOG("Buffer index out of range", core::LogLevel::Warning);
 		return false;
 	}
 
@@ -1264,25 +1288,25 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 	uint8 elSize = compSize*compsPerEl;
 
 	//Validation
-	if (!(accessor.byteOffset % compSize == 0)) LOG("Accessors byte offset needs to be a multiple of the component size", Warning);
+	if (!(accessor.byteOffset % compSize == 0)) LOG("Accessors byte offset needs to be a multiple of the component size", core::LogLevel::Warning);
 	if (accessor.min.size())
 	{
-		if (!((uint32)accessor.min.size() == (uint32)compsPerEl)) LOG("Accessors min array size must equal components per element", Warning);
+		if (!((uint32)accessor.min.size() == (uint32)compsPerEl)) LOG("Accessors min array size must equal components per element", core::LogLevel::Warning);
 	}
 	if (accessor.max.size())
 	{
-		if (!((uint32)accessor.max.size() == (uint32)compsPerEl)) LOG("Accessors max array size must equal components per element", Warning);
+		if (!((uint32)accessor.max.size() == (uint32)compsPerEl)) LOG("Accessors max array size must equal components per element", core::LogLevel::Warning);
 	}
 
 	uint32 stride = (view.byteStride == -1) ? (uint32)elSize : view.byteStride;
-	if (!(stride % compSize == 0)) LOG("Accessors byte stride needs to be a multiple of the component size", Warning);
-	if(accessor.byteOffset+stride*(accessor.count-1)+elSize > view.byteLength)LOG("Accessors doesn't fit buffer view", Warning);
+	if (!(stride % compSize == 0)) LOG("Accessors byte stride needs to be a multiple of the component size", core::LogLevel::Warning);
+	if(accessor.byteOffset+stride*(accessor.count-1)+elSize > view.byteLength)LOG("Accessors doesn't fit buffer view", core::LogLevel::Warning);
 
-	BinaryReader* pViewReader = new BinaryReader();
+	core::BinaryReader* pViewReader = new core::BinaryReader();
 	if (!OpenBufferViewReader(asset, accessor.bufferView, pViewReader))
 	{
 		delete pViewReader;
-		LOG("Unable to read buffer view", Warning);
+		LOG("Unable to read buffer view", core::LogLevel::Warning);
 		return false;
 	}
 
@@ -1303,7 +1327,7 @@ bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& 
 {
 	for (const Mesh& mesh : asset.dom.meshes)
 	{
-		if (mesh.primitives.size() > 1)LOG("Currently ETEngine meshes only support one primitive", Warning);
+		if (mesh.primitives.size() > 1)LOG("Currently ETEngine meshes only support one primitive", core::LogLevel::Warning);
 		for (const Primitive& primitive : mesh.primitives)
 		{
 			MeshDataContainer* pMesh = new MeshDataContainer();
@@ -1312,14 +1336,14 @@ bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& 
 			//Basic positions
 			if (primitive.indices == -1)
 			{
-				LOG("ETEngine only supports indexed draw for meshes", Warning);
+				LOG("ETEngine only supports indexed draw for meshes", core::LogLevel::Warning);
 				continue;
 			}
 			else
 			{
 				if (primitive.indices >= (int32)asset.dom.accessors.size())
 				{
-					LOG("Accessor index out of range", Warning);
+					LOG("Accessor index out of range", core::LogLevel::Warning);
 					delete pMesh;
 					for (auto pEl : meshContainers)delete pEl;
 					meshContainers.clear();
@@ -1328,7 +1352,7 @@ bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& 
 				Accessor& accessor = asset.dom.accessors[primitive.indices];
 				if (accessor.type != Type::SCALAR)
 				{
-					LOG("Index accessor must be SCALAR", Warning);
+					LOG("Index accessor must be SCALAR", core::LogLevel::Warning);
 					delete pMesh;
 					for (auto pEl : meshContainers)delete pEl;
 					meshContainers.clear();
@@ -1366,7 +1390,7 @@ bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& 
 				}
 				if (primitive.attributes.texcoord1 != -1)
 				{
-					LOG("ETEngine currently supports only one set of texture coordinates for meshes", Warning);
+					LOG("ETEngine currently supports only one set of texture coordinates for meshes", core::LogLevel::Warning);
 				}
 			}
 			else if (primitive.attributes.texcoord1 != -1)
@@ -1404,7 +1428,7 @@ bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& 
 				}
 				if (!pMesh->ConstructTangentSpace(tangentInfo))
 				{
-					LOG("ETEngine failed to construct the tangent space for this mesh", Warning);
+					LOG("ETEngine failed to construct the tangent space for this mesh", core::LogLevel::Warning);
 				}
 			}
 
@@ -1423,11 +1447,11 @@ bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& 
 			//Animation
 			if (primitive.attributes.joints0 != -1)
 			{
-				LOG("ETEngine currently doesn't support joints for meshes", Warning);
+				LOG("ETEngine currently doesn't support joints for meshes", core::LogLevel::Warning);
 			}
 			if (primitive.attributes.weights0 != -1)
 			{
-				LOG("ETEngine currently doesn't support weights for meshes", Warning);
+				LOG("ETEngine currently doesn't support weights for meshes", core::LogLevel::Warning);
 			}
 
 			meshContainers.push_back(pMesh);

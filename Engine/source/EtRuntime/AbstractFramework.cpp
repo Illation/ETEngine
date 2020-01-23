@@ -41,16 +41,16 @@ AbstractFramework::~AbstractFramework()
 	fw::PhysicsManager::DestroyInstance();
 	fw::AudioManager::DestroyInstance();
 
-	InputManager::DestroyInstance();
-	ContextManager::DestroyInstance();
+	core::InputManager::DestroyInstance();
+	core::ContextManager::DestroyInstance();
 
-	PerformanceInfo::DestroyInstance();
+	core::PerformanceInfo::DestroyInstance();
 	
-	ResourceManager::DestroyInstance();
+	core::ResourceManager::DestroyInstance();
 
-	TickManager::DestroyInstance();
+	core::TickManager::DestroyInstance();
 
-	Logger::Release();
+	core::Logger::Release();
 }
 
 //------------------------
@@ -60,7 +60,7 @@ AbstractFramework::~AbstractFramework()
 //
 void AbstractFramework::Run()
 {
-	Logger::Initialize();//Init logger first because all output depends on it from the start
+	core::Logger::Initialize();//Init logger first because all output depends on it from the start
 	//Logger::StartFileLogging("debug_log.log");
 
 	LOG(FS("E.T.Engine"));
@@ -132,7 +132,7 @@ void AbstractFramework::Run()
 	m_Viewport->Redraw();
 
 	// resources
-	ResourceManager::SetInstance(new PackageResourceManager());
+	core::ResourceManager::SetInstance(new PackageResourceManager());
 
 	cfg->InitRenderConfig();
 
@@ -142,10 +142,10 @@ void AbstractFramework::Run()
 	fw::AudioManager::GetInstance()->Initialize();
 	fw::PhysicsManager::GetInstance()->Initialize();
 
-	PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
+	core::PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
 
 	// init input manager
-	InputManager::GetInstance();	
+	core::InputManager::GetInstance();	
 	GlfwEventManager::GetInstance()->Init(&m_RenderArea);
 
 	// scene rendering
@@ -176,7 +176,7 @@ void AbstractFramework::MainLoop()
 {
 	while (true)
 	{
-		if (!(InputManager::GetInstance()->IsRunning()))
+		if (!(core::InputManager::GetInstance()->IsRunning()))
 		{
 			return;
 		}

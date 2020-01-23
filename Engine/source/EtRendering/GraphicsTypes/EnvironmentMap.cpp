@@ -61,7 +61,7 @@ RTTR_REGISTRATION
 		.property("Cubemap Resolution", &EnvironmentMapAsset::m_CubemapRes)
 		.property("Irradiance Resolution", &EnvironmentMapAsset::m_IrradianceRes)
 		.property("Radiance Resolution", &EnvironmentMapAsset::m_RadianceRes)
-	END_REGISTER_POLYMORPHIC_CLASS(EnvironmentMapAsset, I_Asset);
+	END_REGISTER_POLYMORPHIC_CLASS(EnvironmentMapAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(EnvironmentMapAsset) // force the shader class to be linked as it is only used in reflection
 
@@ -77,7 +77,7 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	//load equirectangular texture
 	//****************************
-	std::string extension = FileUtil::ExtractExtension(GetName());
+	std::string extension = core::FileUtil::ExtractExtension(GetName());
 	ET_ASSERT(extension == "hdr", "Expected HDR file format!");
 
 	stbi_set_flip_vertically_on_load(true);
@@ -88,13 +88,13 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	if (hdrFloats == nullptr)
 	{
-		LOG("EnvironmentMapAsset::LoadFromMemory > Failed to load hdr floats from data!", LogLevel::Warning);
+		LOG("EnvironmentMapAsset::LoadFromMemory > Failed to load hdr floats from data!", core::LogLevel::Warning);
 		return false;
 	}
 
 	if ((width == 0) || (height == 0))
 	{
-		LOG("EnvironmentMapAsset::LoadFromMemory > Image is too small to display!", LogLevel::Warning);
+		LOG("EnvironmentMapAsset::LoadFromMemory > Image is too small to display!", core::LogLevel::Warning);
 		stbi_image_free(hdrFloats);
 		return false;
 	}
@@ -164,7 +164,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const equiTexture, int3
 	std::vector<mat4> captureViews = CubeCaptureViews();
 
 	//Get the shader
-	AssetPtr<ShaderData> equiCubeShader = ResourceManager::Instance()->GetAssetData<ShaderData>("FwdEquiCubeShader.glsl"_hash);
+	AssetPtr<ShaderData> equiCubeShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("FwdEquiCubeShader.glsl"_hash);
 
 	// convert HDR equirectangular environment map to cubemap equivalent
 	api->SetShader(equiCubeShader.get());

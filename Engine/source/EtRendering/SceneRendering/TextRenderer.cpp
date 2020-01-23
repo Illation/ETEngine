@@ -62,7 +62,7 @@ void TextRenderer::Initialize()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	m_pTextShader = ResourceManager::Instance()->GetAssetData<ShaderData>("PostText.glsl"_hash);
+	m_pTextShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PostText.glsl"_hash);
 
 	//Generate buffers and arrays
 	m_VAO = api->CreateVertexArray();
@@ -199,7 +199,7 @@ ivec2 TextRenderer::GetTextSize(std::string const& text, SpriteFont const* const
 		}
 		else
 		{
-			LOG("TextRenderer::GetTextSize>char not supported for current font", Warning);
+			LOG("TextRenderer::GetTextSize>char not supported for current font", core::LogLevel::Warning);
 		}
 	}
 
@@ -278,14 +278,14 @@ void TextRenderer::UpdateBuffer()
 				{
 					if (!SpriteFont::IsCharValid(charId))
 					{
-						LOG(FS("TextRenderer::UpdateBuffer > char '%c' not supported for current font", charId), Warning);
+						LOG(FS("TextRenderer::UpdateBuffer > char '%c' not supported for current font", charId), core::LogLevel::Warning);
 						continue;
 					}
 
 					FontMetric const& metric = queued.m_Font->GetMetric(charId);
 					if (!metric.IsValid)
 					{
-						LOG(FS("TextRenderer::UpdateBuffer > char '%c' doesn't have a valid metric", charId), Warning);
+						LOG(FS("TextRenderer::UpdateBuffer > char '%c' doesn't have a valid metric", charId), core::LogLevel::Warning);
 						continue;
 					}
 

@@ -2,6 +2,10 @@
 #include "InputManager.h"
 
 
+namespace et {
+namespace core {
+
+
 //===================
 // Input Manager
 //===================
@@ -170,3 +174,7 @@ void InputManager::CycleKeyState(E_KeyState& state) const
 		state = E_KeyState::Up;
 	}
 }
+
+
+} // namespace core
+} // namespace et

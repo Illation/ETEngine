@@ -83,13 +83,13 @@ private:
 //
 // Loadable Shader Data
 //
-class ShaderAsset final : public Asset<ShaderData, false>
+class ShaderAsset final : public core::Asset<ShaderData, false>
 {
 	DECLARE_FORCED_LINKING()
 public:
 	// Construct destruct
 	//---------------------
-	ShaderAsset() : Asset<ShaderData, false>() {}
+	ShaderAsset() : core::Asset<ShaderData, false>() {}
 	virtual ~ShaderAsset() = default;
 
 	// Asset overrides
@@ -113,7 +113,7 @@ private:
 	void InitUniforms();
 	void GetAttributes(T_ShaderLoc const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes);
 
-	RTTR_ENABLE(Asset<ShaderData, false>)
+	RTTR_ENABLE(core::Asset<ShaderData, false>)
 };
 
 

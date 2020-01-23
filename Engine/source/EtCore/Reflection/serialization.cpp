@@ -2,6 +2,9 @@
 #include "serialization.h"
 
 
+namespace et {
+namespace core {
+
 namespace serialization {
 
 
@@ -916,4 +919,8 @@ void FromJsonRecursive(rttr::instance const inst, JSON::Value const* const jVal)
 	ObjectFromJsonRecursive(jVal, inst, instType);
 }
 
+
 } // namespace serialization
+
+} // namespace core
+} // namespace et

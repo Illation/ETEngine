@@ -8,6 +8,10 @@
 #include <EtCore/FileSystem/Package/Package.h>
 
 
+namespace et {
+namespace core {
+
+
 // reflection
 RTTR_REGISTRATION
 {
@@ -209,3 +213,7 @@ void I_Asset::Unload(bool const force)
 		UnloadInternal();
 	}
 }
+
+
+} // namespace core
+} // namespace et

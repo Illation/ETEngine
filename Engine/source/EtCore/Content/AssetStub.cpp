@@ -6,6 +6,10 @@
 #include <EtCore/FileSystem/FileUtil.h>
 
 
+namespace et {
+namespace core {
+
+
 //===================
 // Stub Asset
 //===================
@@ -35,3 +39,6 @@ bool StubAsset::LoadFromMemory(std::vector<uint8> const& data)
 	return true;
 }
 
+
+} // namespace core
+} // namespace et

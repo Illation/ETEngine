@@ -4,6 +4,9 @@
 //////////////////////
 
 
+namespace et {
+namespace core {
+
 namespace serialization {
 
 
@@ -224,4 +227,8 @@ bool DeserializeFromJson(JSON::Object* const parentObj, T& outObject)
 	return true;
 }
 
+
 } // namespace serialization
+
+} // namespace core
+} // namespace et

@@ -37,7 +37,7 @@ public:
 //
 // Editor that modifies a scene. It currently can't make permanent changes as scenes are still code defined instead of data driven
 //
-class SceneEditor final : public EditorBase, public I_Tickable
+class SceneEditor final : public EditorBase, public core::I_Tickable
 {
 	// definitions
 	//--------------
@@ -52,7 +52,7 @@ public:
 
 	// construct destruct
 	//--------------------
-	SceneEditor() : EditorBase(), I_Tickable(static_cast<uint32>(E_EditorTickOrder::TICK_SceneEditor)) {}
+	SceneEditor() : EditorBase(), core::I_Tickable(static_cast<uint32>(E_EditorTickOrder::TICK_SceneEditor)) {}
 	~SceneEditor();
 
 	// EditorBase interface

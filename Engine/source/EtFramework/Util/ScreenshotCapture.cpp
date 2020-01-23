@@ -41,7 +41,7 @@ void ScreenshotCapture::Initialize(std::string basePath)
 	{
 		basePath += '/';
 	}
-	m_BaseDir = new Directory(basePath, nullptr, true);
+	m_BaseDir = new core::Directory(basePath, nullptr, true);
 }
 
 //---------------------------------
@@ -59,7 +59,7 @@ void ScreenshotCapture::Take(render::Viewport* const viewport)
 	}
 	else
 	{
-		LOG("ScreenshotCapture::Take > some system is already taking a capture of a viewport!", LogLevel::Warning);
+		LOG("ScreenshotCapture::Take > some system is already taking a capture of a viewport!", core::LogLevel::Warning);
 	}
 }
 
@@ -93,7 +93,7 @@ void ScreenshotCapture::OnViewportPostFlush(render::T_FbLoc const targetFb)
 	}
 	else
 	{
-		LOG("Failed to save Screenshot to: " + filename, Warning);
+		LOG("Failed to save Screenshot to: " + filename, core::LogLevel::Warning);
 	}
 
 	// Free resources
@@ -112,7 +112,7 @@ std::string ScreenshotCapture::GetFileName()
 {
 	if (!m_BaseDir->Mount(true))
 	{
-		LOG("Failed to mount screenshot directory", Warning);
+		LOG("Failed to mount screenshot directory", core::LogLevel::Warning);
 		return "";
 	}
 
@@ -132,7 +132,7 @@ std::string ScreenshotCapture::GetFileName()
 		return baseName + "_" + std::to_string(number) + "." + extension;
 	};
 
-	while (!(std::find_if(entries.begin(), entries.end(), [&](Entry* entry)
+	while (!(std::find_if(entries.begin(), entries.end(), [&](core::Entry* entry)
 	{
 		return entry->GetNameOnly() == constructFileName();
 	}) == entries.end()))

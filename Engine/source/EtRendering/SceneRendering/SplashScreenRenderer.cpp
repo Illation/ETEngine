@@ -30,9 +30,9 @@ void SplashScreenRenderer::Init()
 	m_SpriteRenderer.Initialize();
 
 	// #todo: make these customizable
-	m_SplashBackgroundTex = ResourceManager::Instance()->GetAssetData<TextureData>("Splashscreen.jpg"_hash);
-	m_SplashTitleFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("Roboto-Bold.ttf"_hash);
-	m_SplashRegFont = ResourceManager::Instance()->GetAssetData<SpriteFont>("RobotoCondensed-Regular.ttf"_hash);
+	m_SplashBackgroundTex = core::ResourceManager::Instance()->GetAssetData<TextureData>("Splashscreen.jpg"_hash);
+	m_SplashTitleFont = core::ResourceManager::Instance()->GetAssetData<SpriteFont>("Roboto-Bold.ttf"_hash);
+	m_SplashRegFont = core::ResourceManager::Instance()->GetAssetData<SpriteFont>("RobotoCondensed-Regular.ttf"_hash);
 
 	m_Title = "E   T   E N G I N E";
 	m_Subtitle = "LOADING";

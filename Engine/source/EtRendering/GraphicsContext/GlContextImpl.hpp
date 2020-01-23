@@ -603,7 +603,7 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 		}
 		else
 		{
-			LOG(FS("\t%s - not found", requiredExtensions[reqIdx].c_str()), LogLevel::Warning);
+			LOG(FS("\t%s - not found", requiredExtensions[reqIdx].c_str()), core::LogLevel::Warning);
 			allFound = false;
 		}
 	}
@@ -612,7 +612,7 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 
 	if (!allFound)
 	{
-		LOG("Not all required OpenGL extensions are available on this device! Try updating your graphics card drivers!", LogLevel::Warning);
+		LOG("Not all required OpenGL extensions are available on this device! Try updating your graphics card drivers!", core::LogLevel::Warning);
 	}
 
 	// texture units
@@ -1824,7 +1824,7 @@ void GL_CONTEXT_CLASSNAME::GetActiveAttribute(T_ShaderLoc const program, uint32 
 		break;
 
 	default:
-		LOG(FS("unknown attribute type '%u'", type), LogLevel::Warning);
+		LOG(FS("unknown attribute type '%u'", type), core::LogLevel::Warning);
 		return;
 	}
 }

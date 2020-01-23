@@ -51,17 +51,17 @@ private:
 //
 // Loadable material instance Data
 //
-class MaterialInstanceAsset final : public Asset<MaterialInstance, false>
+class MaterialInstanceAsset final : public core::Asset<MaterialInstance, false>
 {
 	// definitions
 	//-------------
-	RTTR_ENABLE(Asset<MaterialInstance, false>)
+	RTTR_ENABLE(core::Asset<MaterialInstance, false>)
 	DECLARE_FORCED_LINKING()
 
 	// Construct destruct
 	//---------------------
 public:
-	MaterialInstanceAsset() : Asset<MaterialInstance, false>() {}
+	MaterialInstanceAsset() : core::Asset<MaterialInstance, false>() {}
 	virtual ~MaterialInstanceAsset() = default;
 
 	// Asset interface

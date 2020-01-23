@@ -1,6 +1,10 @@
 #pragma once
 
 
+namespace et {
+namespace core {
+
+
 //===================
 // Resource Manager
 //===================
@@ -40,3 +44,7 @@ AssetPtr<T_DataType> ResourceManager::GetAssetData(T_Hash const assetId, bool co
 
 	return retPtr;
 }
+
+
+} // namespace core
+} // namespace et

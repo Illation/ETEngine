@@ -61,7 +61,7 @@ void SceneSelection::UnregisterListener(I_SceneSelectionListener const* const li
 	// it should have been found
 	if (listenerIt == m_Listeners.cend())
 	{
-		LOG("SceneSelection::UnregisterListener > Listener not found", LogLevel::Warning);
+		LOG("SceneSelection::UnregisterListener > Listener not found", core::LogLevel::Warning);
 		return;
 	}
 

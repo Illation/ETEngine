@@ -3,6 +3,11 @@
 
 #include <EtCore/Util/WindowsUtil.h>	
 
+
+namespace et {
+namespace core {
+
+
 bool Directory::Exists()
 {
 	std::string path = GetPath() + m_Filename;
@@ -74,3 +79,7 @@ bool Directory::DeleteDir()
 	std::string path = GetPath()+m_Filename;
 	return ::RemoveDirectory( path.c_str() ) == TRUE;
 }
+
+
+} // namespace core
+} // namespace et

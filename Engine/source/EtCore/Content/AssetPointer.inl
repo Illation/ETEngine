@@ -1,6 +1,9 @@
 #pragma once
 
 
+namespace et {
+
+
 //=========================
 // Abstract asset pointer
 //=========================
@@ -45,7 +48,7 @@ T_DataType const* I_AssetPtr::get_as() const
 	if (m_Asset != nullptr)
 	{
 		ET_ASSERT(m_Asset->IsLoaded());
-		return static_cast<RawAsset<T_DataType>*>(m_Asset)->GetData();
+		return static_cast<core::RawAsset<T_DataType>*>(m_Asset)->GetData();
 	}
 
 	return nullptr;
@@ -107,8 +110,8 @@ inline void I_AssetPtr::Invalidate()
 // Creates a new pointer to this asset using the underlying I_AssetPtr implementation
 //
 template <class T_DataType>
-AssetPtr<T_DataType>::AssetPtr(RawAsset<T_DataType>* rawAsset)
-	: I_AssetPtr(static_cast<I_Asset*>(rawAsset))
+AssetPtr<T_DataType>::AssetPtr(core::RawAsset<T_DataType>* rawAsset)
+	: I_AssetPtr(static_cast<core::I_Asset*>(rawAsset))
 {}
 
 //---------------------------------
@@ -117,7 +120,7 @@ AssetPtr<T_DataType>::AssetPtr(RawAsset<T_DataType>* rawAsset)
 // Assign from a raw pointer to an asset. Decrements the ref count of the current asset and Increments the ref count of the new asset
 //
 template <class T_DataType>
-AssetPtr<T_DataType>& AssetPtr<T_DataType>::operator=(RawAsset<T_DataType>* rawAsset)
+AssetPtr<T_DataType>& AssetPtr<T_DataType>::operator=(core::RawAsset<T_DataType>* rawAsset)
 {
 	AssetPtr tmp(rawAsset); // asserts if raw asset is null
 	tmp.swap(*this);
@@ -210,7 +213,7 @@ T_DataType const* AssetPtr<T_DataType>::get() const
 	{
 		ET_ASSERT(m_Asset->IsLoaded());
 		ET_ASSERT(m_Asset->GetType() == typeid(T_DataType));
-		return static_cast<RawAsset<T_DataType>*>(m_Asset)->GetData();
+		return static_cast<core::RawAsset<T_DataType>*>(m_Asset)->GetData();
 	}
 
 	return nullptr;
@@ -281,3 +284,6 @@ bool operator!=(AssetPtr<T_DataType> const& ptr1, AssetPtr<T_DataType> const& pt
 {
 	return !(ptr1 == ptr2);
 }
+
+
+} // namespace et

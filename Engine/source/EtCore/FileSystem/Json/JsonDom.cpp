@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "JSONdom.h"
 
+
+namespace et {
+namespace core {
+
+
 JSON::String* JSON::Value::str()
 {
 	if (GetType() == JSON_String)return static_cast<JSON::String*>(this); return nullptr;
@@ -127,3 +132,7 @@ bool JSON::ApplyBoolValue(JSON::Object* obj, bool &val, const std::string &name)
 	}
 	return false;
 }
+
+
+} // namespace core
+} // namespace et

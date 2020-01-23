@@ -11,13 +11,13 @@ void AudioManager::Initialize()
 	m_Device = alcOpenDevice(NULL);
 	if (!m_Device)
 	{
-		LOG("Unable to create openAL device", Error);
+		LOG("Unable to create openAL device", core::LogLevel::Error);
 		return;
 	}
 	ALboolean enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
 	if (enumeration == AL_FALSE)
 	{
-		LOG("OpenAL enumeration not supported", Warning);
+		LOG("OpenAL enumeration not supported", core::LogLevel::Warning);
 	}
 
 	ListAudioDevices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
@@ -27,7 +27,7 @@ void AudioManager::Initialize()
 	m_Device = alcOpenDevice(defaultDeviceName);
 	if (!m_Device) 
 	{
-		LOG("Unable to open default openAL device", Error);
+		LOG("Unable to open default openAL device", core::LogLevel::Error);
 		return;
 	}
 	ALCenum error;
@@ -37,13 +37,13 @@ void AudioManager::Initialize()
 	m_Context = alcCreateContext(m_Device, NULL);
 	if (!alcMakeContextCurrent(m_Context))
 	{
-		LOG("OpenAL failed to make default context", Error);
+		LOG("OpenAL failed to make default context", core::LogLevel::Error);
 		return;
 	}
 	error = alGetError();				
 	if (error != AL_NO_ERROR) 
 	{
-		LOG("OpenAL failed to make default context", Error);
+		LOG("OpenAL failed to make default context", core::LogLevel::Error);
 		return;
 	}
 	LOG("OpenAL loaded\n");
@@ -66,7 +66,7 @@ bool AudioManager::TestALError(std::string error)
 		default:
 			alErrorString = "Unknown error code";break;
 		}
-		LOG(error + " : " + alErrorString, Error);
+		LOG(error + " : " + alErrorString, core::LogLevel::Error);
 		return true;							
 	}
 	return false;
@@ -82,7 +82,7 @@ void AudioManager::MakeContextCurrent()
 {
 	if (!alcMakeContextCurrent(m_Context))
 	{
-		LOG("OpenAL failed to make default context", Error);
+		LOG("OpenAL failed to make default context", core::LogLevel::Error);
 	}
 }
 

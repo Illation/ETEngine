@@ -41,13 +41,13 @@ private:
 //
 // Loadable Environment Map
 //
-class EnvironmentMapAsset final : public Asset<EnvironmentMap, false>
+class EnvironmentMapAsset final : public core::Asset<EnvironmentMap, false>
 {
 	DECLARE_FORCED_LINKING()
 public:
 	// Construct destruct
 	//---------------------
-	EnvironmentMapAsset() : Asset<EnvironmentMap, false>() {}
+	EnvironmentMapAsset() : core::Asset<EnvironmentMap, false>() {}
 	virtual ~EnvironmentMapAsset() = default;
 
 	// Asset overrides
@@ -61,7 +61,7 @@ public:
 	int32 m_IrradianceRes = 32;
 	int32 m_RadianceRes = 1024;
 
-	RTTR_ENABLE(Asset<EnvironmentMap, false>)
+	RTTR_ENABLE(core::Asset<EnvironmentMap, false>)
 };
 
 

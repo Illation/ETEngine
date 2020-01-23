@@ -99,17 +99,17 @@ public:
 //
 // Asset data to load a scene
 //
-class SceneDescriptorAsset final : public Asset<SceneDescriptor, false>
+class SceneDescriptorAsset final : public core::Asset<SceneDescriptor, false>
 {
 	// definitions
 	//-------------
 	DECLARE_FORCED_LINKING()
-	RTTR_ENABLE(Asset<SceneDescriptor, false>)
+	RTTR_ENABLE(core::Asset<SceneDescriptor, false>)
 
 	// Construct destruct
 	//---------------------
 public:
-	SceneDescriptorAsset() : Asset<SceneDescriptor, false>() {}
+	SceneDescriptorAsset() : core::Asset<SceneDescriptor, false>() {}
 	virtual ~SceneDescriptorAsset() = default;
 
 	// Asset interface

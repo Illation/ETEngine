@@ -43,7 +43,7 @@ PlaylistComponent* PlaylistComponentDesc::MakeData()
 
 	for (std::string const& track : tracks)
 	{
-		ret->tracks.push_back(ResourceManager::Instance()->GetAssetData<fw::AudioData>(GetHash(track)));
+		ret->tracks.push_back(core::ResourceManager::Instance()->GetAssetData<fw::AudioData>(GetHash(track)));
 	}
 
 	return ret;

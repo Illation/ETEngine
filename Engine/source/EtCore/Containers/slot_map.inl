@@ -1,6 +1,7 @@
 #pragma once
 
 
+namespace et {
 namespace core {
 
 
@@ -428,4 +429,4 @@ void slot_map<TType>::reserve(size_type const new_cap)
 
 
 } // namespace core
-
+} // namespace et

@@ -28,13 +28,13 @@ int main(int argc, char *argv[])
 	et::demo::ForceLinking(); // makes sure the linker doesn't ignore reflection only data
 
 	// pass compiled data into core libraries so that core systems have access to it
-	FileUtil::SetCompiledData(GetCompiledData_compiled_package());
+	et::core::FileUtil::SetCompiledData(GetCompiledData_compiled_package());
 
 	// working dir
 	if (argc > 0)
 	{
 		// all engine files are seen as relative to the executable path by default, so it needs to be set
-		FileUtil::SetExecutablePath(argv[0]);
+		et::core::FileUtil::SetExecutablePath(argv[0]);
 	}
 	else
 	{

@@ -4,8 +4,10 @@
 
 
 // forward decl
-class I_Package;
-class Directory;
+namespace et { namespace core {
+	class I_Package;
+	class Directory;
+} }
 
 
 namespace et {
@@ -17,14 +19,14 @@ namespace edit {
 //
 // Resource manager implementation that uses packages
 //
-class FileResourceManager : public ResourceManager
+class FileResourceManager : public core::ResourceManager
 {
 	// Definitions
 	//---------------------
 	static constexpr char s_ResourceDirRelPath[] = "resources/";
 
 public:
-	friend class ResourceManager;
+	friend class core::ResourceManager;
 
 	// Construct destruct
 	//---------------------
@@ -40,27 +42,27 @@ protected:
 	//---------------------
 public:
 
-	bool GetLoadData(I_Asset const* const asset, std::vector<uint8>& outData) const override;
+	bool GetLoadData(core::I_Asset const* const asset, std::vector<uint8>& outData) const override;
 
 	void Flush() override;
 
 	// utility
 	//---------------------
 protected:
-	I_Asset* GetAssetInternal(T_Hash const assetId, std::type_info const& type, bool const reportErrors) override;
+	core::I_Asset* GetAssetInternal(T_Hash const assetId, std::type_info const& type, bool const reportErrors) override;
 
-	void InitDb(AssetDatabase& db, Directory*& dir, std::string const& path);
+	void InitDb(core::AssetDatabase& db, core::Directory*& dir, std::string const& path);
 
-	bool IsEngineResource(I_Asset const* const asset) const;
+	bool IsEngineResource(core::I_Asset const* const asset) const;
 
 	// Data
 	///////
 
-	AssetDatabase m_ProjectDb;
-	Directory* m_ProjectDir = nullptr;
+	core::AssetDatabase m_ProjectDb;
+	core::Directory* m_ProjectDir = nullptr;
 
-	AssetDatabase m_EngineDb;
-	Directory* m_EngineDir = nullptr;
+	core::AssetDatabase m_EngineDb;
+	core::Directory* m_EngineDir = nullptr;
 };
 
 

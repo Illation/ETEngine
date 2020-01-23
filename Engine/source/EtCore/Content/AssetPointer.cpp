@@ -2,6 +2,9 @@
 #include "AssetPointer.h"
 
 
+namespace et {
+
+
 //=========================
 // Abstract asset pointer
 //=========================
@@ -12,7 +15,7 @@
 //
 // Creates a new pointer to this asset. If the first reference was created, the asset is loaded
 //
-I_AssetPtr::I_AssetPtr(I_Asset* asset)
+I_AssetPtr::I_AssetPtr(core::I_Asset* asset)
 	: m_Asset(asset)
 {
 	if (m_Asset != nullptr) // having asset pointers point to null is valid
@@ -101,3 +104,6 @@ bool operator==(std::nullptr_t, I_AssetPtr const& ptr)
 {
 	return ptr.is_null();
 }
+
+
+} // namespace et

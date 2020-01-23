@@ -3,6 +3,10 @@
 #include <stdint.h>
 #include <cassert>
 
+
+namespace et {
+
+
 //Integers
 typedef std::int8_t		int8;
 typedef std::int16_t	int16;
@@ -20,3 +24,6 @@ typedef float float32;
 
 static_assert (sizeof(double) == 8, "compiler uses unexpected size for double precision floats, 64 bit assumed");
 typedef double float64;
+
+
+} // namespace et

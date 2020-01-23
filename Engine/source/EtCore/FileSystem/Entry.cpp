@@ -11,6 +11,10 @@
 #include <EtCore/FileSystem/Facade/FileAccessFlags.h>
 
 
+namespace et {
+namespace core {
+
+
 //======================
 // Entry
 //======================
@@ -504,3 +508,7 @@ Entry* Directory::GetMountedChildRecursive(std::string& path) const
 	// we found the final entry
 	return childEntry;
 }
+
+
+} // namespace core
+} // namespace et

@@ -5,6 +5,9 @@
 #include "TickManager.h"
 
 
+namespace et {
+namespace core {
+
 
 //===================================
 // realtime tick triggerer interface
@@ -51,3 +54,6 @@ void I_RealTimeTickTriggerer::UnRegisterAsTriggerer()
 	TickManager::GetInstance()->UnregisterRealTimeTriggerer(this);
 }
 
+
+} // namespace core
+} // namespace et

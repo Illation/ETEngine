@@ -6,6 +6,10 @@
 #include <EtCore/FileSystem/Entry.h>
 
 
+namespace et {
+namespace core {
+
+
 //=====================
 // File Package
 //=====================
@@ -170,3 +174,7 @@ void FilePackage::LoadFileList()
 		pkgEntry.offset = offset + nextChunkSize;
 	}
 }
+
+
+} // namespace core
+} // namespace et

@@ -27,8 +27,8 @@ LightControlSystem::LightControlSystem()
 void LightControlSystem::Process(fw::ComponentRange<LightControlSystemView>& range)
 {
 	// common vars
-	InputManager* const input = InputManager::GetInstance();
-	float const dt = ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime();
+	core::InputManager* const input = core::InputManager::GetInstance();
+	float const dt = core::ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime();
 
 	// since input is likely to be rarer than the entity count in the range, we check it once and iterate multiple times
 	

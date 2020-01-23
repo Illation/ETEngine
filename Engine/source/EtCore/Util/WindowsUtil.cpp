@@ -10,6 +10,10 @@
 #include <windows.h>
 
 
+namespace et {
+namespace core {
+
+
 //---------------------
 // DisplayError
 //
@@ -73,3 +77,7 @@ void GetExecutablePathName(std::string& outPath)
 
 	outPath = std::string(ownPth);
 }
+
+
+} // namespace core
+} // namespace et

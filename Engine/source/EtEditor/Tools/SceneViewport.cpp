@@ -85,7 +85,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 			// other clicks (left) we navigate
 			m_Editor->SetNavigatingViewport(this);
 			fw::UnifiedScene::Instance().GetEcs().GetComponent<EditorCameraComponent>(m_Camera).isEnabled = true;
-			InputManager::GetInstance()->OnMousePressed(code);
+			core::InputManager::GetInstance()->OnMousePressed(code);
 		}
 		return true;
 	};
@@ -95,7 +95,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	glArea->add_events(Gdk::BUTTON_RELEASE_MASK);
 	auto mouseReleasedCallback = [this](GdkEventButton* evnt) -> bool
 	{
-		InputManager::GetInstance()->OnMouseReleased(GtkUtil::GetButtonFromGtk(evnt->button));
+		core::InputManager::GetInstance()->OnMouseReleased(GtkUtil::GetButtonFromGtk(evnt->button));
 		fw::UnifiedScene::Instance().GetEcs().GetComponent<EditorCameraComponent>(m_Camera).isEnabled = false;
 		m_Editor->SetNavigatingViewport(nullptr);
 		return true;
@@ -110,7 +110,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 		ivec2 pos = etm::vecCast<int32>(dvec2(evnt->x, evnt->y));
 		pos = pos - ivec2(glArea->get_allocation().get_x(), glArea->get_allocation().get_y());
 
-		InputManager::GetInstance()->OnMouseMoved(pos);
+		core::InputManager::GetInstance()->OnMouseMoved(pos);
 		return false;
 	};
 	glArea->signal_motion_notify_event().connect(mouseMotionCallback, false);
@@ -143,7 +143,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 			}
 		}
 
-		InputManager::GetInstance()->SetMouseWheelDelta(etm::vecCast<int32>(delta));
+		core::InputManager::GetInstance()->SetMouseWheelDelta(etm::vecCast<int32>(delta));
 		return false;
 	};
 	glArea->signal_scroll_event().connect(scrollCallback, false);
@@ -258,11 +258,11 @@ bool SceneViewport::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
 {
 	if (pressed)
 	{
-		InputManager::GetInstance()->OnKeyPressed(GtkUtil::GetKeyFromGtk(evnt->keyval));
+		core::InputManager::GetInstance()->OnKeyPressed(GtkUtil::GetKeyFromGtk(evnt->keyval));
 	}
 	else
 	{
-		InputManager::GetInstance()->OnKeyReleased(GtkUtil::GetKeyFromGtk(evnt->keyval));
+		core::InputManager::GetInstance()->OnKeyReleased(GtkUtil::GetKeyFromGtk(evnt->keyval));
 	}
 
 	return true;

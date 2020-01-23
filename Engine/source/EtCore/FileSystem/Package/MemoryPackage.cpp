@@ -5,6 +5,10 @@
 #include <EtCore/FileSystem/FileUtil.h>
 
 
+namespace et {
+namespace core {
+
+
 //=====================
 // Memory Package
 //=====================
@@ -132,3 +136,7 @@ void MemoryPackage::InitFileListFromData()
 		pkgEntry.content = m_Data + offset;
 	}
 }
+
+
+} // namespace core
+} // namespace et

@@ -1,10 +1,13 @@
 #pragma once
-
 #include <rttr/type>
 
 #include "Asset.h"
 
 #include <EtCore/Hashing/Hash.h>
+
+
+namespace et {
+namespace core {
 
 
 //---------------------------------
@@ -80,3 +83,6 @@ private:
 	bool m_OwnsAssets = true;
 };
 
+
+} // namespace core
+} // namespace et

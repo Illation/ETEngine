@@ -112,7 +112,7 @@ RTTR_REGISTRATION
 		.property("padding", &FontAsset::m_Padding)
 		.property("spread", &FontAsset::m_Spread)
 		.property("highres", &FontAsset::m_HighRes)
-	END_REGISTER_POLYMORPHIC_CLASS(FontAsset, I_Asset);
+	END_REGISTER_POLYMORPHIC_CLASS(FontAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(FontAsset) // force the shader class to be linked as it is only used in reflection
 
@@ -126,7 +126,7 @@ bool FontAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
 	// temp
 	std::vector<uint8> binaryContent = data;
-	std::string extension = FileUtil::ExtractExtension(GetName());
+	std::string extension = core::FileUtil::ExtractExtension(GetName());
 
 	if (extension == "ttf")
 	{
@@ -138,13 +138,13 @@ bool FontAsset::LoadFromMemory(std::vector<uint8> const& data)
 	}
 	else
 	{
-		LOG("FontAsset::LoadFromMemory > Cannot load audio data with this extension! Supported exensions: [.ttf/.fnt]", LogLevel::Warning);
+		LOG("FontAsset::LoadFromMemory > Cannot load audio data with this extension! Supported exensions: [.ttf/.fnt]", core::LogLevel::Warning);
 		return false;
 	}
 
 	if (m_Data == nullptr)
 	{
-		LOG("FontAsset::LoadFromMemory > Loading font failed!", LogLevel::Warning);
+		LOG("FontAsset::LoadFromMemory > Loading font failed!", core::LogLevel::Warning);
 		return false;
 	}
 
@@ -160,11 +160,11 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 {
 	FT_Library ft;
 	if (FT_Init_FreeType(&ft))
-		LOG("FREETYPE: Could not init FreeType Library", Warning);
+		LOG("FREETYPE: Could not init FreeType Library", core::LogLevel::Warning);
 
 	FT_Face face;
 	if (FT_New_Memory_Face(ft, binaryContent.data(), (FT_Long)binaryContent.size(), 0, &face))
-		LOG("FREETYPE: Failed to load font", Warning);
+		LOG("FREETYPE: Failed to load font", core::LogLevel::Warning);
 
 	FT_Set_Pixel_Sizes(face, 0, m_FontSize);
 
@@ -212,7 +212,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 
 		if (FT_Load_Glyph(face, glyphIdx, FT_LOAD_DEFAULT))
 		{
-			LOG("FREETYPE: Failed to load glyph", Warning);
+			LOG("FREETYPE: Failed to load glyph", core::LogLevel::Warning);
 			continue;
 		}
 
@@ -300,7 +300,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 	api->SetViewport(ivec2(0), ivec2(texWidth, texHeight));
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 
-	AssetPtr<ShaderData> computeSdf = ResourceManager::Instance()->GetAssetData<ShaderData>("ComputeGlyphSDF.glsl"_hash);
+	AssetPtr<ShaderData> computeSdf = core::ResourceManager::Instance()->GetAssetData<ShaderData>("ComputeGlyphSDF.glsl"_hash);
 	api->SetShader(computeSdf.get());
 	computeSdf->Upload("uSpread"_hash, static_cast<float>(m_Spread));
 	computeSdf->Upload("uHighRes"_hash, static_cast<float>(m_HighRes));
@@ -323,14 +323,14 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 		uint32 glyphIdx = FT_Get_Char_Index(face, metric->Character);
 		if (FT_Load_Glyph(face, glyphIdx, FT_LOAD_DEFAULT))
 		{
-			LOG("FREETYPE: Failed to load glyph", Warning);
+			LOG("FREETYPE: Failed to load glyph", core::LogLevel::Warning);
 			continue;
 		}
 		if (!(face->glyph->format == FT_GLYPH_FORMAT_BITMAP))
 		{
 			if (FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL))
 			{
-				LOG("FREETYPE: Failed to render glyph", Warning);
+				LOG("FREETYPE: Failed to render glyph", core::LogLevel::Warning);
 				continue;
 			}
 		}
@@ -378,13 +378,13 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 //
 SpriteFont* FontAsset::LoadFnt(const std::vector<uint8>& binaryContent)
 {
-	auto pBinReader = new BinaryReader(); //Prevent memory leaks
+	auto pBinReader = new core::BinaryReader(); //Prevent memory leaks
 	pBinReader->Open(binaryContent);
 
 	if (!pBinReader->Exists())
 	{
 		delete pBinReader;
-		LOG("SpriteFont::Load > Failed to read the assetFile!", Warning);
+		LOG("SpriteFont::Load > Failed to read the assetFile!", core::LogLevel::Warning);
 
 		return nullptr;
 	}
@@ -401,12 +401,12 @@ SpriteFont* FontAsset::LoadFnt(const std::vector<uint8>& binaryContent)
 	}
 	if (!valid)
 	{
-		LOG("Font file header invalid!", Warning);
+		LOG("Font file header invalid!", core::LogLevel::Warning);
 		return nullptr;
 	}
 	if (pBinReader->Read<char>() < 3)
 	{
-		LOG("Font version invalid!", Warning);
+		LOG("Font version invalid!", core::LogLevel::Warning);
 		return nullptr;
 	}
 
@@ -459,7 +459,7 @@ SpriteFont* FontAsset::LoadFnt(const std::vector<uint8>& binaryContent)
 
 	ET_ASSERT(!pn.empty(), "SpriteFont(.fnt): Invalid Font Sprite [Empty]");
 
-	pFont->m_TextureAsset = ResourceManager::Instance()->GetAssetData<TextureData>(GetHash(pn));
+	pFont->m_TextureAsset = core::ResourceManager::Instance()->GetAssetData<TextureData>(GetHash(pn));
 	pFont->m_pTexture = pFont->m_TextureAsset.get();
 	pBinReader->SetBufferPosition(pos + Block2Size);
 	//**********
@@ -478,7 +478,7 @@ SpriteFont* FontAsset::LoadFnt(const std::vector<uint8>& binaryContent)
 
 		if (!(pFont->IsCharValid(charId)))
 		{
-			LOG("SpriteFont::Load > SpriteFont(.fnt): Invalid Character", Warning);
+			LOG("SpriteFont::Load > SpriteFont(.fnt): Invalid Character", core::LogLevel::Warning);
 			pBinReader->SetBufferPosition(posChar + 20);
 		}
 		else

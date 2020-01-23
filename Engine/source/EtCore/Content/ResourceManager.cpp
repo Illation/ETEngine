@@ -4,6 +4,10 @@
 #include "AssetDatabase.h"
 
 
+namespace et {
+namespace core {
+
+
 //===================
 // Resource Manager
 //===================
@@ -54,3 +58,7 @@ void ResourceManager::SetAssetReferences(AssetDatabase&db, T_ReferenceAssetGette
 		}
 	}
 }
+
+
+} // namespace core
+} // namespace et

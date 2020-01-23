@@ -56,8 +56,8 @@ EditorCameraSystem::EditorCameraSystem()
 void EditorCameraSystem::Process(fw::ComponentRange<EditorCameraSystemView>& range) 
 {
 	// common variables
-	InputManager* const input = InputManager::GetInstance();
-	float const dt = ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime();
+	core::InputManager* const input = core::InputManager::GetInstance();
+	float const dt = core::ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime();
 
 	for (EditorCameraSystemView& view : range)
 	{

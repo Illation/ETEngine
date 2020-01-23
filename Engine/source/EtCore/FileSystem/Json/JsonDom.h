@@ -3,6 +3,11 @@
 #include <vector>
 #include <EtCore/Util/AtomicTypes.h>
 
+
+namespace et {
+namespace core {
+
+
 namespace JSON
 {
 	enum ValueType : uint8
@@ -164,3 +169,7 @@ namespace JSON
 		return false;
 	}
 }
+
+
+} // namespace core
+} // namespace et

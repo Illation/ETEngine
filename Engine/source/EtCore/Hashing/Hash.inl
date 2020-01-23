@@ -1,6 +1,9 @@
 #pragma once
 
 
+namespace et {
+
+
 //===================
 // Hash
 //===================
@@ -64,3 +67,6 @@ inline constexpr T_Hash operator"" _hash(char const* const s, size_t const count
 {
 	return detail::hash_gen(s, count);
 }
+
+
+} // namespace et

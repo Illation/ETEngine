@@ -5,6 +5,11 @@
 #include <cctype>
 #include <locale>
 
+
+namespace et {
+namespace core {
+
+
 JSON::Parser::Parser(const std::string &textFile)
 {
 	MoveToNonWhitespace(textFile);
@@ -394,3 +399,7 @@ bool JSON::Parser::CheckEOF(const std::string &textFile)
 	}
 	return false;
 }
+
+
+} // namespace core
+} // namespace et

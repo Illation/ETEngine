@@ -46,7 +46,7 @@ EditorApp::EditorApp()
 { 
 	RegisterAsTriggerer();
 	
-	Logger::Initialize();//Init logger first because all output depends on it from the start
+	core::Logger::Initialize();//Init logger first because all output depends on it from the start
 
 	LOG(FS("E.T.Editor"));
 	LOG(FS("//////////"));
@@ -73,7 +73,7 @@ EditorApp::EditorApp()
 	signal_shutdown().connect(
 		[this]()
 	{
-		InputManager::GetInstance()->Quit();
+		core::InputManager::GetInstance()->Quit();
 		OnActionQuit();
 	});
 }
@@ -83,15 +83,15 @@ EditorApp::EditorApp()
 //
 EditorApp::~EditorApp()
 {
-	PerformanceInfo::DestroyInstance();
-	InputManager::DestroyInstance();
+	core::PerformanceInfo::DestroyInstance();
+	core::InputManager::DestroyInstance();
 
 	EditorConfig::DestroyInstance();
 
-	ResourceManager::DestroyInstance();
+	core::ResourceManager::DestroyInstance();
 
-	Logger::Release();
-	TickManager::GetInstance()->DestroyInstance();
+	core::Logger::Release();
+	core::TickManager::GetInstance()->DestroyInstance();
 }
 
 //---------------------------------
@@ -161,12 +161,12 @@ void EditorApp::on_startup()
 	}
 	catch (const Glib::Error& ex)
 	{
-		LOG("EditorApp::on_startup > " + std::string(ex.what()), LogLevel::Error);
+		LOG("EditorApp::on_startup > " + std::string(ex.what()), core::LogLevel::Error);
 		return;
 	}
 	catch (std::exception const& ex)
 	{
-		LOG("EditorApp::on_startup > " + std::string(ex.what()), LogLevel::Error);
+		LOG("EditorApp::on_startup > " + std::string(ex.what()), core::LogLevel::Error);
 		return;
 	}
 
@@ -177,7 +177,7 @@ void EditorApp::on_startup()
 	}
 	else
 	{
-		LOG("EditorApp::on_startup > No 'appmenu' object in app_menu.ui", LogLevel::Error);
+		LOG("EditorApp::on_startup > No 'appmenu' object in app_menu.ui", core::LogLevel::Error);
 	}
 }
 
@@ -200,11 +200,11 @@ void EditorApp::on_activate()
 	// and therefore the application will stop running.
 	catch (Glib::Error const& ex)
 	{
-		LOG("EditorApp::on_activate > " + std::string(ex.what().c_str()), LogLevel::Error);
+		LOG("EditorApp::on_activate > " + std::string(ex.what().c_str()), core::LogLevel::Error);
 	}
 	catch (std::exception const& ex)
 	{
-		LOG("EditorApp::on_activate > " + std::string(ex.what()), LogLevel::Error);
+		LOG("EditorApp::on_activate > " + std::string(ex.what()), core::LogLevel::Error);
 	}
 }
 
@@ -227,11 +227,11 @@ void EditorApp::InitializeUtilities()
 		}));
 	fw::UnifiedScene::Instance().Init();
 
-	ResourceManager::SetInstance(new FileResourceManager());
+	core::ResourceManager::SetInstance(new FileResourceManager());
 
-	InputManager::GetInstance();
+	core::InputManager::GetInstance();
 
-	PerformanceInfo::GetInstance();
+	core::PerformanceInfo::GetInstance();
 }
 
 //---------------------------------
@@ -241,7 +241,7 @@ void EditorApp::InitializeUtilities()
 //
 bool EditorApp::OnTick()
 {
-	if (!(InputManager::GetInstance()->IsRunning()))
+	if (!(core::InputManager::GetInstance()->IsRunning()))
 	{
 		return false;
 	}
@@ -268,11 +268,11 @@ void EditorApp::OnActionPreferences()
 	}
 	catch (const Glib::Error& ex)
 	{
-		LOG("EditorApp::OnActionPreferences > " + std::string(ex.what()), LogLevel::Error);
+		LOG("EditorApp::OnActionPreferences > " + std::string(ex.what()), core::LogLevel::Error);
 	}
 	catch (const std::exception& ex)
 	{
-		LOG("EditorApp::OnActionPreferences > " + std::string(ex.what()), LogLevel::Error);
+		LOG("EditorApp::OnActionPreferences > " + std::string(ex.what()), core::LogLevel::Error);
 	}
 }
 

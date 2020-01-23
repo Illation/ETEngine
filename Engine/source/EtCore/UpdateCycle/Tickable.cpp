@@ -5,6 +5,10 @@
 #include "TickManager.h"
 
 
+namespace et {
+namespace core {
+
+
 //====================
 // Tickable interface
 //====================
@@ -30,3 +34,6 @@ I_Tickable::~I_Tickable()
 	TickManager::GetInstance()->UnregisterTickable(this);
 }
 
+
+} // namespace core
+} // namespace et

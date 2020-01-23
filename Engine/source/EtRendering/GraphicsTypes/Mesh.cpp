@@ -38,7 +38,7 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 		//-----------------------------------------------------------------------
 		if (!(m_TexCoords.size() == m_Normals.size() && m_Normals.size() == m_Positions.size()))
 		{
-			LOG("Number of texcoords, normals and positions of vertices should match to create tangent space", Warning);
+			LOG("Number of texcoords, normals and positions of vertices should match to create tangent space", core::LogLevel::Warning);
 			return false;
 		}
 
@@ -134,7 +134,7 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 
 		if (!genTangSpaceDefault(&mikkTContext))
 		{
-			LOG("Failed to generate MikkTSpace tangents", Warning);
+			LOG("Failed to generate MikkTSpace tangents", core::LogLevel::Warning);
 			return false;
 		}
 	}
@@ -142,12 +142,12 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 	// validate we have everything we need for bitangents
 	if (tangentInfo.size() < m_Positions.size())
 	{
-		LOG("Mesh Tangent info size doesn't cover all vertices", Warning);
+		LOG("Mesh Tangent info size doesn't cover all vertices", core::LogLevel::Warning);
 	}
 
 	if (!(tangentInfo.size() == m_Normals.size()))
 	{
-		LOG("Mesh Tangent info size doesn't match the number of normals", Warning);
+		LOG("Mesh Tangent info size doesn't match the number of normals", core::LogLevel::Warning);
 		return false;
 	}
 
@@ -431,7 +431,7 @@ MeshSurface const* MeshData::GetSurface(render::Material const* const material) 
 RTTR_REGISTRATION
 {
 	BEGIN_REGISTER_POLYMORPHIC_CLASS(MeshAsset, "mesh asset")
-	END_REGISTER_POLYMORPHIC_CLASS(MeshAsset, I_Asset);
+	END_REGISTER_POLYMORPHIC_CLASS(MeshAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(MeshAsset) // force the shader class to be linked as it is only used in reflection
 
@@ -443,13 +443,13 @@ DEFINE_FORCED_LINKING(MeshAsset) // force the shader class to be linked as it is
 //
 bool MeshAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
-	std::string const extension = FileUtil::ExtractExtension(GetName());
+	std::string const extension = core::FileUtil::ExtractExtension(GetName());
 	MeshDataContainer* meshContainer = nullptr;
 
 	meshContainer = LoadAssimp(data, extension);
 	if (meshContainer == nullptr)
 	{
-		LOG("MeshAsset::LoadFromMemory > Failed to load mesh asset!", LogLevel::Warning);
+		LOG("MeshAsset::LoadFromMemory > Failed to load mesh asset!", core::LogLevel::Warning);
 		return false;
 	}
 
@@ -490,20 +490,20 @@ MeshDataContainer* MeshAsset::LoadAssimp(std::vector<uint8> const& data, std::st
 	aiScene const* const assimpScene = assimpImporter.ReadFileFromMemory(data.data(), data.size(), importFlags, extension.c_str());
 	if (assimpScene == nullptr)
 	{
-		LOG(FS("Loading scene with assimp failed: %s", assimpImporter.GetErrorString()), LogLevel::Warning);
+		LOG(FS("Loading scene with assimp failed: %s", assimpImporter.GetErrorString()), core::LogLevel::Warning);
 		return nullptr;
 	}
 
 	if (!(assimpScene->HasMeshes()))
 	{
-		LOG("Assimp scene found empty!", LogLevel::Warning);
+		LOG("Assimp scene found empty!", core::LogLevel::Warning);
 		return nullptr;
 	}
 
 	aiMesh const* const assimpMesh = assimpScene->mMeshes[0];
 	if (!(assimpMesh->HasPositions()))
 	{
-		LOG("Assimp mesh found empty!", Warning);
+		LOG("Assimp mesh found empty!", core::LogLevel::Warning);
 		return nullptr;
 	}
 
@@ -527,7 +527,7 @@ MeshDataContainer* MeshAsset::LoadAssimp(std::vector<uint8> const& data, std::st
 	}
 	else
 	{
-		LOG("MeshAsset::LoadAssimp > No indices found!", LogLevel::Warning);
+		LOG("MeshAsset::LoadAssimp > No indices found!", core::LogLevel::Warning);
 	}
 
 	// positions
@@ -591,7 +591,7 @@ MeshDataContainer* MeshAsset::LoadAssimp(std::vector<uint8> const& data, std::st
 	{
 		if (!(assimpMesh->mNumUVComponents[0] == 2))
 		{
-			LOG("UV dimensions don't match internal layout!", Warning);
+			LOG("UV dimensions don't match internal layout!", core::LogLevel::Warning);
 		}
 
 		for (size_t i = 0; i < assimpMesh->mNumVertices; i++)
@@ -615,20 +615,20 @@ MeshDataContainer* MeshAsset::LoadGLTF(std::vector<uint8> const& data, std::stri
 	glTF::glTFAsset asset;
 	if (!glTF::ParseGLTFData(data, path, extension, asset))
 	{
-		LOG("failed to load the glTF asset", Warning);
+		LOG("failed to load the glTF asset", core::LogLevel::Warning);
 		return nullptr;
 	}
 
 	std::vector<MeshDataContainer*> containers;
 	if (!glTF::GetMeshContainers(asset, containers))
 	{
-		LOG("failed to construct mesh data containers from glTF", Warning);
+		LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
 		return nullptr;
 	}
 
 	if (containers.size() == 0)
 	{
-		LOG("no mesh data containers found in glTF asset", Warning);
+		LOG("no mesh data containers found in glTF asset", core::LogLevel::Warning);
 		return nullptr;
 	}
 

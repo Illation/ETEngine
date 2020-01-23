@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	// working dir
 	if (argc > 0)
 	{
-		FileUtil::SetExecutablePath(argv[0]);
+		et::core::FileUtil::SetExecutablePath(argv[0]);
 	}
 	else
 	{
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 	// Since this example is running uninstalled, we have to help it find its
 	// schema. This is *not* necessary in a properly installed application.
 	Glib::setenv("GSETTINGS_SCHEMA_DIR", ".", false);
-	Glib::setenv("XDG_DATA_DIRS", FileUtil::GetAbsolutePath("../share/"), false);
+	Glib::setenv("XDG_DATA_DIRS", et::core::FileUtil::GetAbsolutePath("../share/"), false);
 
 	Glib::RefPtr<et::edit::EditorApp> editorApp = et::edit::EditorApp::create();
 
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	// and opening extra views for any files that it is asked to open,
 	// for instance as a command-line parameter.
 	// run() will return when the last window has been closed.
-	int32 result = editorApp->run(argc, argv);
+	et::int32 result = editorApp->run(argc, argv);
 
 	// compiled resources
 	editor_unregister_resource();

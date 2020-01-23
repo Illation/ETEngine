@@ -170,8 +170,8 @@ bool GtkRenderArea::MakeCurrent()
 	}
 	catch (const Gdk::GLError& gle)
 	{
-		LOG("Viewport::MakeCurrent > An error occured making the context current during realize:", LogLevel::Warning);
-		LOG(std::to_string(gle.domain()) + std::string("-") + std::to_string(gle.code()) + std::string("-") + gle.what().raw(), LogLevel::Warning);
+		LOG("Viewport::MakeCurrent > An error occured making the context current during realize:", core::LogLevel::Warning);
+		LOG(std::to_string(gle.domain()) + std::string("-") + std::to_string(gle.code()) + std::string("-") + gle.what().raw(), core::LogLevel::Warning);
 		return false;
 	}
 

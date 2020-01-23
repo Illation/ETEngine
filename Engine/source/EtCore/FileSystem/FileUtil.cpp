@@ -8,6 +8,10 @@
 #endif
 
 
+namespace et {
+namespace core {
+
+
 //==============================
 // File Util
 //==============================
@@ -489,3 +493,7 @@ bool FileUtil::IsAbsolutePath(std::string const& path)
 
 #endif
 }
+
+
+} // namespace core
+} // namespace et

@@ -1,6 +1,10 @@
 #pragma once
 
 
+namespace et {
+namespace core {
+
+
 //---------------------------------
 // reflection
 //
@@ -19,6 +23,9 @@ TEnum EnumFromString(std::string const& value);
 
 }
 
+
+} // namespace core
+} // namespace et
 
 
 #include "ReflectionUtil.inl"

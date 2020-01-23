@@ -51,18 +51,18 @@ inline void SafeDelete(T &pObjectToDelete)
 #include <EtCore/Util/StringUtil.h>
 #include <EtCore/Reflection/ReflectionUtil.h>
 //Working singleton Set
-#define TIME ContextManager::GetInstance()->GetActiveContext()->time
-#define LOG(fmt, ...) Logger::Log(fmt, __VA_ARGS__);
-#define PERFORMANCE PerformanceInfo::GetInstance()
+#define TIME et::core::ContextManager::GetInstance()->GetActiveContext()->time
+#define LOG(fmt, ...) et::core::Logger::Log(fmt, __VA_ARGS__);
+#define PERFORMANCE et::core::PerformanceInfo::GetInstance()
 
 // assertions
 #ifdef ET_SHIPPING
 	#define ET_ASSERT(condition, ...)
 #else
 #ifdef PLATFORM_Win
-	#define ET_ASSERT(condition, ...) Logger::ProcessAssert(condition, __FUNCSIG__, FS(__VA_ARGS__))
+	#define ET_ASSERT(condition, ...) et::core::Logger::ProcessAssert(condition, __FUNCSIG__, FS(__VA_ARGS__))
 #else
-	#define ET_ASSERT(condition, ...) Logger::ProcessAssert(condition, __PRETTY_FUNCTION__, FS(__VA_ARGS__))
+	#define ET_ASSERT(condition, ...) et::core::Logger::ProcessAssert(condition, __PRETTY_FUNCTION__, FS(__VA_ARGS__))
 #endif // PLATFORM_Win
 #endif // ET_SHIPPING
 

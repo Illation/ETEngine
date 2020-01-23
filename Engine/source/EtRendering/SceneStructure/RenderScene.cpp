@@ -280,7 +280,7 @@ void Scene::SetSkyboxMap(T_Hash const assetIdEnvMap)
 	}
 	else
 	{
-		m_Skybox.m_EnvironmentMap = ResourceManager::Instance()->GetAssetData<EnvironmentMap>(assetIdEnvMap);
+		m_Skybox.m_EnvironmentMap = core::ResourceManager::Instance()->GetAssetData<EnvironmentMap>(assetIdEnvMap);
 	}
 }
 
@@ -406,7 +406,7 @@ core::T_SlotId Scene::AddSprite(T_Hash const textureId, T_NodeId const node, vec
 	sprite.first->node = node;
 	sprite.first->pivot = pivot;
 	sprite.first->color = color;
-	sprite.first->texture = ResourceManager::Instance()->GetAssetData<TextureData>(textureId);
+	sprite.first->texture = core::ResourceManager::Instance()->GetAssetData<TextureData>(textureId);
 
 	return sprite.second;
 }
@@ -416,7 +416,7 @@ core::T_SlotId Scene::AddSprite(T_Hash const textureId, T_NodeId const node, vec
 //
 void Scene::UpdateSpriteTexture(core::T_SlotId const spriteId, T_Hash const textureId)
 {
-	m_Sprites[spriteId].texture = ResourceManager::Instance()->GetAssetData<TextureData>(textureId);
+	m_Sprites[spriteId].texture = core::ResourceManager::Instance()->GetAssetData<TextureData>(textureId);
 }
 
 //--------------------------

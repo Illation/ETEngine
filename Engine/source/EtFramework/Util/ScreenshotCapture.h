@@ -2,7 +2,9 @@
 
 
 // forward
-class Directory;
+namespace et { namespace core {
+	class Directory;
+} }
 
 
 namespace et {
@@ -43,7 +45,7 @@ private:
 	// Data
 	///////
 
-	Directory* m_BaseDir = nullptr;
+	core::Directory* m_BaseDir = nullptr;
 	render::Viewport* m_Viewport = nullptr;
 };
 

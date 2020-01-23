@@ -2,6 +2,10 @@
 #include <EtCore/Util/Singleton.h>
 
 
+namespace et {
+namespace core {
+
+
 // forward declarations
 class I_Tickable;
 class I_RealTimeTickTriggerer;
@@ -84,3 +88,6 @@ private:
 	std::vector<Tickable> m_Tickables;
 };
 
+
+} // namespace core
+} // namespace et
