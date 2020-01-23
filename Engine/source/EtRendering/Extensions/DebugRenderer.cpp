@@ -117,7 +117,7 @@ void DebugRenderer::Draw(Camera const& camera)
 
 void DebugRenderer::CheckMetaData(float thickness)
 {
-	if (m_MetaData.size() == 0 || !etm::nearEquals(m_MetaData[m_MetaData.size() - 1].thickness, thickness))
+	if (m_MetaData.size() == 0 || !math::nearEquals(m_MetaData[m_MetaData.size() - 1].thickness, thickness))
 	{
 		m_MetaData.push_back(LineMetaData());
 		m_MetaData[m_MetaData.size() - 1].thickness = thickness;
@@ -153,7 +153,7 @@ void DebugRenderer::DrawGrid(Camera const& camera, float pixelSpacingRad)
 	vec3 camPos = camera.GetPosition();
 		
 	//max draw distance of the grid
-	constexpr float falloffAngle = etm::radians(75.f);
+	constexpr float falloffAngle = math::radians(75.f);
 	float distLimit = sqrt(pow(camera.GetFarPlane(), 2) - camPos.y*camPos.y);
 	float maxDist = std::min(tan(falloffAngle)*std::abs(camPos.y), distLimit);
 
@@ -175,8 +175,8 @@ void DebugRenderer::DrawGrid(Camera const& camera, float pixelSpacingRad)
 	int32 linesDrawn = (int32)(maxDist / (float)spacingLower);
 
 	vec2 floorPos = vec2(camPos.x, camPos.z);//height is 0
-	ivec2 lineIdx = etm::vecCast<int32>((floorPos / (float)spacingLower));
-	vec2 basePos = etm::vecCast<float>(lineIdx) * (float)spacingLower;
+	ivec2 lineIdx = math::vecCast<int32>((floorPos / (float)spacingLower));
+	vec2 basePos = math::vecCast<float>(lineIdx) * (float)spacingLower;
 
 	//Line thickness and alpha
 	constexpr float thicknessHigher = 5;
@@ -198,9 +198,9 @@ void DebugRenderer::DrawGrid(Camera const& camera, float pixelSpacingRad)
 	//lateral (X)
 	for (int32 i = lineIdx.y - linesDrawn; i < lineIdx.y + linesDrawn; ++i)
 	{
-		vec2 pos = etm::vecCast<float>(ivec2(lineIdx.x, i)) * (float)spacingLower;
+		vec2 pos = math::vecCast<float>(ivec2(lineIdx.x, i)) * (float)spacingLower;
 		float lineFalloff = 1 - (abs(pos.y - basePos.y) / maxDist);
-		float  lineDist = sin(etm::PI_DIV2*lineFalloff)*maxDist;
+		float  lineDist = sin(math::PI_DIV2*lineFalloff)*maxDist;
 		vec3 p0 = vec3(pos.x-lineDist, 0, pos.y);
 		vec3 p1 = vec3(pos.x, 0, pos.y);
 		vec3 p2 = vec3(pos.x+lineDist, 0, pos.y);
@@ -239,9 +239,9 @@ void DebugRenderer::DrawGrid(Camera const& camera, float pixelSpacingRad)
 	//depth (Z)
 	for (int32 i = lineIdx.x - linesDrawn; i < lineIdx.x + linesDrawn; ++i)
 	{
-		vec2 pos = etm::vecCast<float>(ivec2(i, lineIdx.y)) * (float)spacingLower;
+		vec2 pos = math::vecCast<float>(ivec2(i, lineIdx.y)) * (float)spacingLower;
 		float lineFalloff = 1 - (abs(pos.x - basePos.x) / maxDist);
-		float  lineDist = sin(etm::PI_DIV2*lineFalloff)*maxDist;
+		float  lineDist = sin(math::PI_DIV2*lineFalloff)*maxDist;
 		vec3 p0 = vec3(pos.x, 0, pos.y - lineDist);
 		vec3 p1 = vec3(pos.x, 0, pos.y);
 		vec3 p2 = vec3(pos.x, 0, pos.y + lineDist);

@@ -75,7 +75,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 		if (code == E_MouseButton::Right)
 		{
 			// on right click we trigger picking 
-			ivec2 pos = etm::vecCast<int32>(dvec2(evnt->x, evnt->y));
+			ivec2 pos = math::vecCast<int32>(dvec2(evnt->x, evnt->y));
 			pos = pos - ivec2(glArea->get_allocation().get_x(), glArea->get_allocation().get_y());
 
 			m_Editor->GetSceneSelection().Pick(pos, m_Viewport.get(), evnt->state & GdkModifierType::GDK_CONTROL_MASK);
@@ -107,7 +107,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	auto mouseMotionCallback = [glArea](GdkEventMotion* evnt) -> bool
 	{
 		// get offset of widget to window position
-		ivec2 pos = etm::vecCast<int32>(dvec2(evnt->x, evnt->y));
+		ivec2 pos = math::vecCast<int32>(dvec2(evnt->x, evnt->y));
 		pos = pos - ivec2(glArea->get_allocation().get_x(), glArea->get_allocation().get_y());
 
 		core::InputManager::GetInstance()->OnMouseMoved(pos);
@@ -121,7 +121,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	auto scrollCallback = [](GdkEventScroll* evnt) -> bool
 	{
 		dvec2 delta(evnt->delta_x, evnt->delta_y);
-		if (etm::isZero(delta))
+		if (math::isZero(delta))
 		{
 			switch (evnt->direction)
 			{
@@ -143,7 +143,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 			}
 		}
 
-		core::InputManager::GetInstance()->SetMouseWheelDelta(etm::vecCast<int32>(delta));
+		core::InputManager::GetInstance()->SetMouseWheelDelta(math::vecCast<int32>(delta));
 		return false;
 	};
 	glArea->signal_scroll_event().connect(scrollCallback, false);

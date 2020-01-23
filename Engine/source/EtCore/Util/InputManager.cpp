@@ -113,7 +113,7 @@ void InputManager::OnMouseReleased(E_MouseButton const button)
 //
 void InputManager::OnMouseMoved(ivec2 const& mousePos)
 {
-	vec2 newMouse = etm::vecCast<float>(mousePos);
+	vec2 newMouse = math::vecCast<float>(mousePos);
 	m_MouseMove = newMouse - m_MousePos;
 	m_MousePos = newMouse;
 }
@@ -125,7 +125,7 @@ void InputManager::OnMouseMoved(ivec2 const& mousePos)
 //
 void InputManager::SetMouseWheelDelta(ivec2 const& mouseWheel)
 {
-	m_MouseWheelDelta = etm::vecCast<float>(mouseWheel);
+	m_MouseWheelDelta = math::vecCast<float>(mouseWheel);
 }
 
 //---------------------------------

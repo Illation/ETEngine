@@ -2,6 +2,10 @@
 
 #include <EtMath/Quaternion.h>
 
+
+using namespace et;
+
+
 TEST_CASE("constructors", "[quat]")
 {
 	SECTION( "default constructor" )
@@ -14,9 +18,9 @@ TEST_CASE("constructors", "[quat]")
 	}
 	SECTION( "eulerian constructor" )
 	{
-		vec3 euler = vec3(etm::PI, 0, 0);
+		vec3 euler = vec3(math::PI, 0, 0);
 		quat testQuat = quat(euler);
-		REQUIRE( etm::nearEqualsV(testQuat.v4, vec4( 1, 0, 0, 0 ), 0.0001f));
+		REQUIRE( math::nearEqualsV(testQuat.v4, vec4( 1, 0, 0, 0 ), 0.0001f));
 	}
 	SECTION( "value constructor" )
 	{
@@ -29,29 +33,29 @@ TEST_CASE("constructors", "[quat]")
 }
 TEST_CASE("axis angles", "[quat]")
 {
-	float angle = etm::PI_DIV4;
-	quat testQuat = quat( etm::normalize( vec3( -1, -1, 1 ) ), angle );
+	float angle = math::PI_DIV4;
+	quat testQuat = quat( math::normalize( vec3( -1, -1, 1 ) ), angle );
 	SECTION( "from axis angle" )
 	{
-		REQUIRE( etm::nearEqualsV( testQuat.v4, vec4( -0.2209424f, -0.2209424f, 0.2209424f, 0.9238795f ), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( testQuat.v4, vec4( -0.2209424f, -0.2209424f, 0.2209424f, 0.9238795f ), 0.0001f ) );
 	}
 	SECTION( "to axis angle" )
 	{
 		vec4 axisAngle = testQuat.ToAxisAngle();
-		REQUIRE( etm::nearEqualsV( axisAngle, vec4( etm::normalize( vec3( -1, -1, 1 ) ), angle ), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( axisAngle, vec4( math::normalize( vec3( -1, -1, 1 ) ), angle ), 0.0001f ) );
 	}
 	SECTION( "use axis angle quat for rotation" )
 	{
 		vec3 initial = vec3( 0, 1, 0 );
-		quat testQuat2 = quat( vec3( 1, 0, 0 ), etm::PI_DIV2 );
+		quat testQuat2 = quat( vec3( 1, 0, 0 ), math::PI_DIV2 );
 		vec3 rotated2 = testQuat2 * initial;
-		REQUIRE( etm::nearEqualsV( rotated2, vec3( 0, 0, 1 ), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( rotated2, vec3( 0, 0, 1 ), 0.0001f ) );
 	}
 }
 TEST_CASE( "quaternion multiplication", "[quat]" )
 {
-	quat R1 = quat( vec3( 0, 0, 1 ), etm::PI_DIV2 );
-	quat R2 = quat( vec3( 0, 1, 0 ), etm::PI_DIV2 );
+	quat R1 = quat( vec3( 0, 0, 1 ), math::PI_DIV2 );
+	quat R2 = quat( vec3( 0, 1, 0 ), math::PI_DIV2 );
 
 	SECTION( "quat mul quat" )
 	{
@@ -60,28 +64,28 @@ TEST_CASE( "quaternion multiplication", "[quat]" )
 		vec3 initial = vec3( 0, 1, 0 );
 		vec3 rotated = testQuat * initial;
 
-		REQUIRE( etm::nearEqualsV( rotated, vec3( 0, 0, 1 ), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( rotated, vec3( 0, 0, 1 ), 0.0001f ) );
 	}
 	SECTION( "inverse" )
 	{
-		quat testQuat = R1 * etm::inverse(R1) * R2;
+		quat testQuat = R1 * math::inverse(R1) * R2;
 
-		REQUIRE( etm::nearEqualsV( R2.v4, testQuat.v4, 0.0001f ) );
+		REQUIRE( math::nearEqualsV( R2.v4, testQuat.v4, 0.0001f ) );
 	}
 	SECTION( "conjugate" )
 	{
-		quat testQuat = R1 * etm::inverse(R1) * R2;
+		quat testQuat = R1 * math::inverse(R1) * R2;
 
-		REQUIRE( etm::nearEqualsV( R2.v4, testQuat.v4, 0.0001f ) );
+		REQUIRE( math::nearEqualsV( R2.v4, testQuat.v4, 0.0001f ) );
 	}
 	SECTION( "inverse" )
 	{
-		REQUIRE( etm::nearEqualsV( etm::inverse(R1).v4, etm::inverseSafe(R1).v4, 0.0001f ) );
+		REQUIRE( math::nearEqualsV( math::inverse(R1).v4, math::inverseSafe(R1).v4, 0.0001f ) );
 	}
 }
 TEST_CASE( "matrix compatibility", "[quat]" )
 {
-	quat R1 = quat( vec3( 0, 0, 1 ), etm::PI_DIV2 );
+	quat R1 = quat( vec3( 0, 0, 1 ), math::PI_DIV2 );
 	mat3 r1m = R1.ToMatrix();
 	mat3 tMat( {	 0, 1, 0,
 					-1, 0, 0,
@@ -89,14 +93,14 @@ TEST_CASE( "matrix compatibility", "[quat]" )
 
 	SECTION( "to mat 3" )
 	{
-		REQUIRE( etm::nearEqualsM( r1m, tMat, 0.00001f ) );
+		REQUIRE( math::nearEqualsM( r1m, tMat, 0.00001f ) );
 	}
 	SECTION( "equal rotation" )
 	{
 		vec3 initV = vec3( 0, 1, 0 );
 		vec3 qRot = R1 * initV;
 		vec3 mRot = r1m * initV;
-		REQUIRE( etm::nearEqualsV( qRot, mRot, 0.0001f ) );
+		REQUIRE( math::nearEqualsV( qRot, mRot, 0.0001f ) );
 	}
 	SECTION("from mat 3")
 	{
@@ -104,6 +108,6 @@ TEST_CASE( "matrix compatibility", "[quat]" )
 		vec3 initV = vec3(0, 1, 0);
 		vec3 qRot = m2q * initV;
 		vec3 mRot = tMat * initV;
-		REQUIRE(etm::nearEqualsV(qRot, mRot, 0.0001f));
+		REQUIRE(math::nearEqualsV(qRot, mRot, 0.0001f));
 	}
 }

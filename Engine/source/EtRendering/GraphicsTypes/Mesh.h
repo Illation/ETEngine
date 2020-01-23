@@ -105,7 +105,7 @@ public:
 	//-----------
 	std::string const& GetName() const { return m_Name; }
 	T_VertexFlags GetSupportedFlags() const { return m_SupportedFlags; }
-	Sphere const& GetBoundingSphere() const { return m_BoundingSphere; }
+	math::Sphere const& GetBoundingSphere() const { return m_BoundingSphere; }
 	size_t GetIndexCount() const { return m_IndexCount; }
 	E_DataType GetIndexDataType() const { return m_IndexDataType; }
 	T_BufferLoc GetVertexBuffer() const { return m_VertexBuffer; }
@@ -121,7 +121,7 @@ private:
 	T_VertexFlags m_SupportedFlags = 0u;
 	E_DataType m_IndexDataType = E_DataType::UInt;
 
-	Sphere m_BoundingSphere;
+	math::Sphere m_BoundingSphere;
 
 	size_t m_VertexCount = 0u;
 	size_t m_IndexCount = 0u;

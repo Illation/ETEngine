@@ -76,16 +76,16 @@ void EditorCameraSystem::Process(fw::ComponentRange<EditorCameraSystemView>& ran
 			move.z -= (input->GetKeyState(E_KbdKey::S) == E_KeyState::Down) ? 1.0f : 0.0f;
 		}
 
-		if (!etm::isZero(move))
+		if (!math::isZero(move))
 		{
-			move = etm::normalize(move);
+			move = math::normalize(move);
 		}
 
 		//Acceleration
 		{
 			vec3 const delta = move - view.camera->movement;
 			float const acc = s_Accelleration * dt;
-			view.camera->movement = view.camera->movement + (delta * etm::Clamp01(acc));
+			view.camera->movement = view.camera->movement + (delta * math::Clamp01(acc));
 		}
 
 		//handle scrolling to change camera speed
@@ -102,7 +102,7 @@ void EditorCameraSystem::Process(fw::ComponentRange<EditorCameraSystemView>& ran
 		float const currSpeed = s_MoveSpeed * view.camera->speedMultiplier;
 
 		//move relative to cameras view space - luckily the camera already has those inverted matrices calculated
-		mat3 const camMat = etm::CreateFromMat4(view.camera->renderCamera->GetViewInv());
+		mat3 const camMat = math::CreateFromMat4(view.camera->renderCamera->GetViewInv());
 		view.transform->SetPosition(view.transform->GetPosition() + camMat * view.camera->movement * currSpeed * dt);
 
 		//Rotate
@@ -110,11 +110,11 @@ void EditorCameraSystem::Process(fw::ComponentRange<EditorCameraSystemView>& ran
 		vec2 const look = view.camera->isEnabled ? input->GetMouseMove() : vec2();
 
 		view.camera->totalYaw += -look.x * s_RotationSpeed;
-		view.camera->totalPitch = etm::Clamp(view.camera->totalPitch, etm::PI_DIV2, -etm::PI_DIV2); // Make sure we can't do a backflip
+		view.camera->totalPitch = math::Clamp(view.camera->totalPitch, math::PI_DIV2, -math::PI_DIV2); // Make sure we can't do a backflip
 		view.camera->totalPitch += -look.y * s_RotationSpeed;
 
 		vec3 const right = view.transform->GetRight();
-		vec3 const horizontalRight = etm::normalize(vec3(right.x, 0, right.z));
+		vec3 const horizontalRight = math::normalize(vec3(right.x, 0, right.z));
 		quat const rot = quat(horizontalRight, view.camera->totalPitch) * quat(vec3::UP, view.camera->totalYaw);
 		view.transform->SetRotation(rot);
 	}

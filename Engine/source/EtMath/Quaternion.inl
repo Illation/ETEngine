@@ -4,7 +4,8 @@
 //////////////////////
 
 
-namespace etm {
+namespace et {
+namespace math {
 	
 
 //====================
@@ -104,8 +105,8 @@ quaternion<T>::quaternion(const matrix<3, 3, T>& rot) //Rotation matrix initiali
 template <typename T>
 inline quaternion<T> operator*(const quaternion<T>& lhs, const quaternion<T>& rhs)
 {
-	const T w = rhs.w*lhs.w - etm::dot(rhs.v, lhs.v);
-	vector<3, T> v = rhs.w*lhs.v + lhs.w*rhs.v + etm::cross(lhs.v, rhs.v);
+	const T w = rhs.w*lhs.w - math::dot(rhs.v, lhs.v);
+	vector<3, T> v = rhs.w*lhs.v + lhs.w*rhs.v + math::cross(lhs.v, rhs.v);
 
 	return quaternion<T>(v.x, v.y, v.z, w);
 }
@@ -134,7 +135,7 @@ inline vector<3, T> operator*(const quaternion<T>& q, const vector<3, T>& vec)
 template <typename T>
 inline quaternion<T> & normalize(quaternion<T>& q)
 {
-	q.v4 = etm::normalize(q.v4);
+	q.v4 = math::normalize(q.v4);
 	return q;
 }
 
@@ -148,7 +149,7 @@ template <typename T>
 inline quaternion<T> inverseSafe(const quaternion<T>& q)
 {
 	auto result = quaternion<T>(-q.x, -q.y, -q.z, q.w);
-	T len2 = etm::lengthSquared(q.v4);
+	T len2 = math::lengthSquared(q.v4);
 	result.v4 = result.v4 * len2;
 
 	return result;
@@ -170,7 +171,7 @@ inline vector<4, T> quaternion<T>::ToAxisAngle() const
 	return result;
 }
 template <class T>
-etm::vector<3, T> etm::quaternion<T>::ToEuler() const
+math::vector<3, T> math::quaternion<T>::ToEuler() const
 {
 	const T qxx(x * x);
 	const T qyy(y * y);
@@ -183,17 +184,17 @@ etm::vector<3, T> etm::quaternion<T>::ToEuler() const
 	return vector<3, T>(pitch, Yaw(), roll);
 }
 template <class T>
-T etm::quaternion<T>::Pitch() const
+T math::quaternion<T>::Pitch() const
 {
 	return atan2(static_cast<T>(2) * (y*z + w * x), w * w - x * x - y * y + z * z);
 }
 template <class T>
-T etm::quaternion<T>::Yaw() const
+T math::quaternion<T>::Yaw() const
 {
-	return asin(etm::Clamp(static_cast<T>(-2) * (x*z - w * y), static_cast<T>(-1), static_cast<T>(1)));
+	return asin(math::Clamp(static_cast<T>(-2) * (x*z - w * y), static_cast<T>(-1), static_cast<T>(1)));
 }
 template <class T>
-T etm::quaternion<T>::Roll() const
+T math::quaternion<T>::Roll() const
 {
 	return atan2(static_cast<T>(2) * (x*y + w * z), w * w + x * x - y * y - z * z);
 }
@@ -218,7 +219,7 @@ inline matrix<3, 3, T> quaternion<T>::ToMatrix() const //#todo implement the rev
 }
 
 template <class T>
-std::string etm::quaternion<T>::ToString() const
+std::string math::quaternion<T>::ToString() const
 {
 	return std::string("[") + std::to_string(x) + ", " + std::to_string(y)
 		+ ", " + std::to_string(z) + " - " + std::to_string(w) + "]";
@@ -230,4 +231,5 @@ std::ostream& operator<<(std::ostream& os, quaternion<T>& vec)
 	return os << vec.ToString();
 }
 
-} // namespace etm
+} // namespace math
+} // namespace et

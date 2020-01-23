@@ -2,6 +2,10 @@
 
 #include <EtMath/Matrix.h>
 
+
+using namespace et;
+
+
 TEST_CASE("Generic matrix functionality", "[matrix]")
 {
 	float in1 = 5.3f;
@@ -59,9 +63,9 @@ TEST_CASE("Generic matrix functionality", "[matrix]")
 		vec3 v2(in4, in5, in6);
 		vec3 v3(in7, in8, in9);
 		mat3 mat(new vec3[3]{ v1, v2, v3 });
-		REQUIRE(etm::nearEqualsV(mat[0], v1));
-		REQUIRE(etm::nearEqualsV(mat[1], v2));
-		REQUIRE(etm::nearEqualsV(mat[2], v3));
+		REQUIRE(math::nearEqualsV(mat[0], v1));
+		REQUIRE(math::nearEqualsV(mat[1], v2));
+		REQUIRE(math::nearEqualsV(mat[2], v3));
 	}
 }
 TEST_CASE( "Matrix operations", "[matrix]" )
@@ -82,7 +86,7 @@ TEST_CASE( "Matrix operations", "[matrix]" )
 						in3, in4 } );
 		mat2 b = mat2( {in5, in6,
 						in7, in8 } );
-		REQUIRE( etm::nearEqualsM( a + b, mat2( {11.1f, 8.5f,
+		REQUIRE( math::nearEqualsM( a + b, mat2( {11.1f, 8.5f,
 											6.2f,  7.2f } ) ) );
 	}
 	SECTION( "- operator" )
@@ -92,7 +96,7 @@ TEST_CASE( "Matrix operations", "[matrix]" )
 		mat2 b = mat2( {in5, in6,
 						in7, in8 } );
 		
-		REQUIRE( etm::nearEqualsM( a - b, mat2( {-0.5f, -6.1f,
+		REQUIRE( math::nearEqualsM( a - b, mat2( {-0.5f, -6.1f,
 											-0.2f, -2.6f } ), 0.00001f ) );
 	}
 	SECTION( "scalar multiplication" )
@@ -101,7 +105,7 @@ TEST_CASE( "Matrix operations", "[matrix]" )
 						in3, in4 } );
 		mat2 b = mat2( {10.6f,	2.4f,
 						6.f,	4.6f } );
-		REQUIRE( etm::nearEqualsM( a * 2.f, b ) );
+		REQUIRE( math::nearEqualsM( a * 2.f, b ) );
 	}
 	SECTION( "vector multiplication" )
 	{
@@ -109,7 +113,7 @@ TEST_CASE( "Matrix operations", "[matrix]" )
 						   -1, 0, 0,
 							0, 0, 1 } );
 		vec3 initial( 1, 0, 0 );
-		REQUIRE( etm::nearEqualsV( transform * initial, vec3( 0, 1, 0 ) ) );
+		REQUIRE( math::nearEqualsV( transform * initial, vec3( 0, 1, 0 ) ) );
 	}
 	SECTION( "transpose" )
 	{
@@ -119,7 +123,7 @@ TEST_CASE( "Matrix operations", "[matrix]" )
 		mat3 b( {	in1, in4, in7,
 					in2, in5, in8,
 					in3, in6, in9 } );
-		REQUIRE( etm::nearEqualsM( etm::transpose( a ), b ) );
+		REQUIRE( math::nearEqualsM( math::transpose( a ), b ) );
 	}
 }
 TEST_CASE( "Specialized matrix functionality", "[matrix]" )
@@ -141,10 +145,10 @@ TEST_CASE( "Specialized matrix functionality", "[matrix]" )
 		vec4 v3( in7, in8, in9, 21.f );
 		vec4 v4( in7, in2, in4, 54.f );
 		mat4 initialMat( new vec4[4]{ v1, v2, v3, v4 } );
-		mat3 mat = etm::CreateFromMat4( initialMat );
-		REQUIRE( etm::nearEqualsV( mat[0], v1.xyz ) );
-		REQUIRE( etm::nearEqualsV( mat[1], v2.xyz ) );
-		REQUIRE( etm::nearEqualsV( mat[2], v3.xyz ) );
+		mat3 mat = math::CreateFromMat4( initialMat );
+		REQUIRE( math::nearEqualsV( mat[0], v1.xyz ) );
+		REQUIRE( math::nearEqualsV( mat[1], v2.xyz ) );
+		REQUIRE( math::nearEqualsV( mat[2], v3.xyz ) );
 	}
 
 	SECTION( "mat3 -> mat4" )
@@ -153,11 +157,11 @@ TEST_CASE( "Specialized matrix functionality", "[matrix]" )
 		vec3 v2( in4, in5, in6 );
 		vec3 v3( in7, in8, in9 );
 		mat3 initialMat( new vec3[3]{ v1, v2, v3 } );
-		mat4 mat = etm::CreateFromMat3( initialMat );
-		REQUIRE( etm::nearEqualsV( mat[0], vec4( v1, 0)));
-		REQUIRE( etm::nearEqualsV( mat[1], vec4( v2, 0)));
-		REQUIRE( etm::nearEqualsV( mat[2], vec4( v3, 0)));
-		REQUIRE( etm::nearEqualsV( mat[3], vec4( 0, 0, 0, 1)));
+		mat4 mat = math::CreateFromMat3( initialMat );
+		REQUIRE( math::nearEqualsV( mat[0], vec4( v1, 0)));
+		REQUIRE( math::nearEqualsV( mat[1], vec4( v2, 0)));
+		REQUIRE( math::nearEqualsV( mat[2], vec4( v3, 0)));
+		REQUIRE( math::nearEqualsV( mat[3], vec4( 0, 0, 0, 1)));
 	}
 
 	SECTION( "lose translation" )
@@ -167,13 +171,13 @@ TEST_CASE( "Specialized matrix functionality", "[matrix]" )
 		vec4 v3( in7, in8, in9, 21.f );
 		vec4 v4( in7, in2, in4, 54.f );
 		mat4 initialMat( new vec4[4]{ v1, v2, v3, v4 } );
-		mat4 mat = etm::DiscardW( initialMat );
-		REQUIRE( etm::nearEqualsV( mat[0], vec4( v1.xyz, 0 ) ) );
-		REQUIRE( etm::nearEqualsV( mat[1], vec4( v2.xyz, 0 ) ) );
-		REQUIRE( etm::nearEqualsV( mat[2], vec4( v3.xyz, 0 ) ) );
-		REQUIRE( etm::nearEqualsV( mat[3], vec4( 0, 0, 0, 1 ) ) );
+		mat4 mat = math::DiscardW( initialMat );
+		REQUIRE( math::nearEqualsV( mat[0], vec4( v1.xyz, 0 ) ) );
+		REQUIRE( math::nearEqualsV( mat[1], vec4( v2.xyz, 0 ) ) );
+		REQUIRE( math::nearEqualsV( mat[2], vec4( v3.xyz, 0 ) ) );
+		REQUIRE( math::nearEqualsV( mat[3], vec4( 0, 0, 0, 1 ) ) );
 
-		REQUIRE( etm::nearEqualsM( mat, etm::CreateFromMat3(etm::CreateFromMat4(initialMat))));
+		REQUIRE( math::nearEqualsM( mat, math::CreateFromMat3(math::CreateFromMat4(initialMat))));
 	}
 
 	SECTION( "mat2 inverse, determinant and multiplication" )
@@ -181,9 +185,9 @@ TEST_CASE( "Specialized matrix functionality", "[matrix]" )
 		vec2 v1( in1, 0.f );
 		vec2 v2( in4, 1.f );
 		mat2 initialMat( new vec2[2]{ v1, v2 } );
-		mat2 inverseMat = etm::inverse( initialMat );
-		REQUIRE( etm::nearEqualsM( mat2(), initialMat * inverseMat) ); //Matrix * inverse = identity
-		REQUIRE( etm::nearEqualsM( initialMat, etm::inverse( inverseMat) ) ); //inverse(inverse) = initial
+		mat2 inverseMat = math::inverse( initialMat );
+		REQUIRE( math::nearEqualsM( mat2(), initialMat * inverseMat) ); //Matrix * inverse = identity
+		REQUIRE( math::nearEqualsM( initialMat, math::inverse( inverseMat) ) ); //inverse(inverse) = initial
 	}
 	SECTION( "mat3 inverse, determinant and multiplication" )
 	{
@@ -191,9 +195,9 @@ TEST_CASE( "Specialized matrix functionality", "[matrix]" )
 		vec3 v2( in4, in5, 0.f );
 		vec3 v3( in7, in8, 1.f );
 		mat3 initialMat( new vec3[3]{ v1, v2, v3 } );
-		mat3 inverseMat = etm::inverse( initialMat );
-		REQUIRE( etm::nearEqualsM( mat3(), initialMat * inverseMat, 0.00001f )); //Matrix * inverse = identity
-		REQUIRE( etm::nearEqualsM( initialMat, etm::inverse( inverseMat ), 0.00001f )); //inverse(inverse) = initial
+		mat3 inverseMat = math::inverse( initialMat );
+		REQUIRE( math::nearEqualsM( mat3(), initialMat * inverseMat, 0.00001f )); //Matrix * inverse = identity
+		REQUIRE( math::nearEqualsM( initialMat, math::inverse( inverseMat ), 0.00001f )); //inverse(inverse) = initial
 	}
 	SECTION( "mat4 inverse and multiplication" )
 	{
@@ -202,9 +206,9 @@ TEST_CASE( "Specialized matrix functionality", "[matrix]" )
 		vec4 v3( in7, in8, in9, 0.f );
 		vec4 v4( in7, in2, in4, 1.f );
 		mat4 initialMat( new vec4[4]{ v1, v2, v3, v4 } );
-		mat4 inverseMat = etm::inverse( initialMat );
-		REQUIRE( etm::nearEqualsM( mat4(), initialMat * inverseMat, 0.00001f ) ); //Matrix * inverse = identity
-		REQUIRE( etm::nearEqualsM( initialMat, etm::inverse( inverseMat), 0.00001f ) ); //inverse(inverse) = initial
+		mat4 inverseMat = math::inverse( initialMat );
+		REQUIRE( math::nearEqualsM( mat4(), initialMat * inverseMat, 0.00001f ) ); //Matrix * inverse = identity
+		REQUIRE( math::nearEqualsM( initialMat, math::inverse( inverseMat), 0.00001f ) ); //inverse(inverse) = initial
 	}
 	SECTION( "mat4 determinant" )
 	{
@@ -214,21 +218,21 @@ TEST_CASE( "Specialized matrix functionality", "[matrix]" )
 		vec4 v4( in7, in2, in4, 1.f );
 
 		mat4 initialMat( new vec4[4]{ v1, v2, v3, v4 } );
-		float det = etm::determinant( initialMat );
+		float det = math::determinant( initialMat );
 		float manualDet =
-			in1 * etm::determinant( mat3( {	in5, in6, 0.f,
+			in1 * math::determinant( mat3( {	in5, in6, 0.f,
 											in8, in9, 0.f,
 											in2, in4, 1.f } ) ) -
-			in2 * etm::determinant( mat3( {	in4, in6, 0.f,
+			in2 * math::determinant( mat3( {	in4, in6, 0.f,
 											in7, in9, 0.f,
 											in7, in4, 1.f } ) ) +
-			in3 * etm::determinant( mat3( {	in4, in5, 0.f,
+			in3 * math::determinant( mat3( {	in4, in5, 0.f,
 											in7, in8, 0.f,
 											in7, in2, 1.f } ) ) -
-			0.f * etm::determinant( mat3( {	in4, in5, in6,
+			0.f * math::determinant( mat3( {	in4, in5, in6,
 											in7, in8, in9,
 											in7, in2, in4 } ) );
 
-		REQUIRE( etm::nearEquals( det, manualDet, 0.00001f ) );
+		REQUIRE( math::nearEquals( det, manualDet, 0.00001f ) );
 	}
 }

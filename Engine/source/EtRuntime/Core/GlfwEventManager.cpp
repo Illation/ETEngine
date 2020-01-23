@@ -57,7 +57,7 @@ void GlfwEventManager::Init(GlfwRenderArea* const renderArea)
 	{
 		UNUSED(window);
 
-		core::InputManager::GetInstance()->OnMouseMoved(etm::vecCast<int32>(dvec2(xpos, ypos)));
+		core::InputManager::GetInstance()->OnMouseMoved(math::vecCast<int32>(dvec2(xpos, ypos)));
 	});
 
 	// Mouse clicking
@@ -81,7 +81,7 @@ void GlfwEventManager::Init(GlfwRenderArea* const renderArea)
 	{
 		UNUSED(window);
 
-		core::InputManager::GetInstance()->SetMouseWheelDelta(etm::vecCast<int32>(dvec2(xoffset, yoffset)));
+		core::InputManager::GetInstance()->SetMouseWheelDelta(math::vecCast<int32>(dvec2(xoffset, yoffset)));
 	});
 
 	// window resizing

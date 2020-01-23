@@ -23,7 +23,7 @@ void OutlineExtension::AddMesh(AssetPtr<MeshData> const mesh, render::T_NodeId c
 	// try finding an outline list with the current color
 	auto listIt = std::find_if(m_Lists.begin(), m_Lists.end(), [this](OutlineList const& list)
 		{
-			return etm::nearEqualsV(list.color, m_Color);
+			return math::nearEqualsV(list.color, m_Color);
 		});
 
 	// create a new one if none was found

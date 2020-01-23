@@ -3,7 +3,8 @@
 ***********************************************************************************
 
 <img align="right" src="https://img.shields.io/github/license/illation/etengine"/>
-<img style="padding-right:10px;" align="right" src="https://img.shields.io/badge/version-0.7.0-green"/>
+<img style="padding-right:10px;" align="right" src="https://img.shields.io/github/commits-since/illation/etengine/v0.6.0?label=%2B"/>
+<img style="padding-right:5px;" align="right" src="https://img.shields.io/github/v/tag/illation/etengine?include_prereleases&label=version&sort=semver"/>
 
 #### Realtime 3D Graphics/Simulation/Game-Engine written in C++ 14.
 
@@ -31,9 +32,10 @@ Rendering is based on modern principals including Physically based Rendering.
 The data driven material system allows for custom shaders and parameter inheritance through material instances (similar to UE4).
 A variety of rendering features aimed at space simulation have been implemented, such as planet terrain generation, atmospheric scattering and Starfields based on real sky data.
 
+#### Modular Architecture
+
 <img align="right" width="450" src="./doc/doc_resources/architectureDiagram.png"/>
 
-#### Modular Architecture
 The project is split into multiple libraries. Low level libraries such as core or rendering can be used independently from high level ones such as the framework.
 Many features have interfaces and implementations, allowing overriding of functionality. If you want to implement your own renderer or support a different file system, you can do that.
 

@@ -71,9 +71,9 @@ void TransformSystem::Compute::Process(ComponentRange<TransformSystem::ComputeVi
 		}
 
 		// this is the local matrix
-		view.transf->m_WorldTransform = etm::scale(view.transf->m_Scale) 
-			* etm::rotate(view.transf->m_Rotation) 
-			* etm::translate(view.transf->m_Position);
+		view.transf->m_WorldTransform = math::scale(view.transf->m_Scale) 
+			* math::rotate(view.transf->m_Rotation) 
+			* math::translate(view.transf->m_Position);
 
 		if (view.parent.IsValid())
 		{
@@ -95,7 +95,7 @@ void TransformSystem::Compute::Process(ComponentRange<TransformSystem::ComputeVi
 		// orientation helpers
 		view.transf->m_Forward = view.transf->m_WorldRotation * vec3::FORWARD;
 		view.transf->m_Right = view.transf->m_WorldRotation * vec3::RIGHT;
-		view.transf->m_Up = etm::cross(view.transf->m_Forward, view.transf->m_Right);
+		view.transf->m_Up = math::cross(view.transf->m_Forward, view.transf->m_Right);
 
 		// update in the rendering scene
 		renderScene.UpdateNode(view.transf->m_NodeId, view.transf->m_WorldTransform);

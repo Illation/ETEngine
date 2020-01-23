@@ -145,7 +145,7 @@ void EntityIdRenderer::OnViewportPreRender(render::T_FbLoc const targetFb)
 	ivec2 const dim = m_ViewportToPickFrom->GetDimensions();
 
 	// if the view size changed since the last pick we need to recreate our rendertarget with the correct size
-	if (!(etm::nearEqualsV(m_LastViewSize, dim)))
+	if (!(math::nearEqualsV(m_LastViewSize, dim)))
 	{
 		DestroyRenderTarget();
 		CreateRenderTarget();
@@ -239,8 +239,8 @@ void EntityIdRenderer::DrawEntity(fw::T_EntityId const entity, render::Camera co
 	// check the cameras frustum
 	MeshData const* const mesh = modelComp.GetMesh().get();
 
-	Sphere const& bv = mesh->GetBoundingSphere();
-	Sphere const instSphere((transfComp.GetWorld() * vec4(bv.pos, 1.f)).xyz, etm::length(transfComp.GetScale()) * bv.radius);
+	math::Sphere const& bv = mesh->GetBoundingSphere();
+	math::Sphere const instSphere((transfComp.GetWorld() * vec4(bv.pos, 1.f)).xyz, math::length(transfComp.GetScale()) * bv.radius);
 
 	if (camera.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
 	{

@@ -221,8 +221,8 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	for (Light const& pointLight : m_RenderScene->GetPointLights())
 	{
 		mat4 const& transform = m_RenderScene->GetNodes()[pointLight.m_NodeId];
-		float const scale = etm::length(etm::decomposeScale(transform));
-		vec3 const pos = etm::decomposePosition(transform);
+		float const scale = math::length(math::decomposeScale(transform));
+		vec3 const pos = math::decomposePosition(transform);
 
 		RenderingSystems::Instance()->GetPointLightVolume().Draw(pos, scale, pointLight.m_Color);
 	}
@@ -333,11 +333,11 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 		for (AtmosphereInstance const& atmoInst : m_RenderScene->GetAtmosphereInstances())
 		{
-			vec3 const pos = etm::decomposePosition(m_RenderScene->GetNodes()[atmoInst.nodeId]);
+			vec3 const pos = math::decomposePosition(m_RenderScene->GetNodes()[atmoInst.nodeId]);
 
 			ET_ASSERT(atmoInst.lightId != core::INVALID_SLOT_ID);
 			Light const& sun = m_RenderScene->GetLight(atmoInst.lightId);
-			vec3 const sunDir = etm::normalize((m_RenderScene->GetNodes()[sun.m_NodeId] * vec4(vec3::FORWARD, 1.f)).xyz);
+			vec3 const sunDir = math::normalize((m_RenderScene->GetNodes()[sun.m_NodeId] * vec4(vec3::FORWARD, 1.f)).xyz);
 
 			m_RenderScene->GetAtmosphere(atmoInst.atmosphereId).Draw(pos, atmoInst.height, atmoInst.groundRadius, sunDir);
 		}
@@ -359,7 +359,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 		vec3 pos, scale;
 		quat rot;
-		etm::decomposeTRS(transform, pos, rot, scale);
+		math::decomposeTRS(transform, pos, rot, scale);
 
 		m_SpriteRenderer.Draw(sprite.texture.get(), pos.xy, sprite.color, sprite.pivot, scale.xy, rot.Roll(), pos.z, scalingMode);
 	}
@@ -387,8 +387,8 @@ void ShadedSceneRenderer::DrawShadow(I_Material const* const nullMaterial)
 		{
 			// #todo: collect a list of transforms and draw this instanced
 			mat4 const& transform = m_RenderScene->GetNodes()[node];
-			Sphere instSphere = Sphere((transform * vec4(mesh.m_BoundingVolume.pos, 1.f)).xyz,
-				etm::length(etm::decomposeScale(transform)) * mesh.m_BoundingVolume.radius);
+			math::Sphere instSphere = math::Sphere((transform * vec4(mesh.m_BoundingVolume.pos, 1.f)).xyz,
+				math::length(math::decomposeScale(transform)) * mesh.m_BoundingVolume.radius);
 
 			if (true) // #todo: light frustum check
 			{
@@ -423,8 +423,8 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 				{
 					// #todo: collect a list of transforms and draw this instanced
 					mat4 const& transform = m_RenderScene->GetNodes()[node];
-					Sphere instSphere = Sphere((transform * vec4(mesh.m_BoundingVolume.pos, 1.f)).xyz, 
-						etm::length(etm::decomposeScale(transform)) * mesh.m_BoundingVolume.radius);
+					math::Sphere instSphere = math::Sphere((transform * vec4(mesh.m_BoundingVolume.pos, 1.f)).xyz, 
+						math::length(math::decomposeScale(transform)) * mesh.m_BoundingVolume.radius);
 
 					if (m_Camera.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
 					{

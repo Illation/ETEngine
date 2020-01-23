@@ -258,7 +258,7 @@ void AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(const std::
 		dvec3 xyz = cie.GetValue(lambda, AtmosphereSettings::kLambdaMin, AtmosphereSettings::kLambdaMax);
 		dvec3 rgb = cie.GetRGB(xyz);
 
-		color = color + (rgb*irradiance / solarRGB * etm::pow((double)lambda / lambdaVec, lambda_power));
+		color = color + (rgb*irradiance / solarRGB * math::pow((double)lambda / lambdaVec, lambda_power));
 	}
 	color = color * (AtmosphereSettings::MAX_LUMINOUS_EFFICACY * dlambda);
 }

@@ -2,39 +2,43 @@
 
 #include <EtMath/Transform.h>
 
+
+using namespace et;
+
+
 TEST_CASE("scale", "[transform]")
 {
 	SECTION("2D scale")
 	{
 		vec2 testVec = vec2( 1, 0 );
-		mat2 scaleMat = etm::scale( vec2( 3 ) );
+		mat2 scaleMat = math::scale( vec2( 3 ) );
 		SECTION("no ref function")
 		{
 			vec2 resultVec = scaleMat * testVec;
-			REQUIRE( etm::nearEqualsV( resultVec, vec2( 3, 0 ), 0.0001f ) );
+			REQUIRE( math::nearEqualsV( resultVec, vec2( 3, 0 ), 0.0001f ) );
 		}
 		SECTION("ref function")
 		{
-			etm::scale( scaleMat, vec2( 0.5 ) );
+			math::scale( scaleMat, vec2( 0.5 ) );
 			vec2 resultVec = scaleMat * testVec;
-			REQUIRE( etm::nearEqualsV( resultVec, vec2( 1.5f, 0 ), 0.0001f ) );
+			REQUIRE( math::nearEqualsV( resultVec, vec2( 1.5f, 0 ), 0.0001f ) );
 		}
 	}
 	//3d vectors create 4x4 matricies
 	SECTION("3D scale")
 	{
 		vec3 testVec = vec3( 1, 0, 0 );
-		mat4 scaleMat = etm::scale( vec3( 3 ) );
+		mat4 scaleMat = math::scale( vec3( 3 ) );
 		SECTION("no ref function")
 		{
 			vec3 resultVec = (scaleMat * vec4(testVec, 0)).xyz;
-			REQUIRE( etm::nearEqualsV( resultVec, vec3( 3, 0, 0 ), 0.0001f ) );
+			REQUIRE( math::nearEqualsV( resultVec, vec3( 3, 0, 0 ), 0.0001f ) );
 		}
 		SECTION("ref function")
 		{
-			etm::scale( scaleMat, vec3( 0.5 ) );
+			math::scale( scaleMat, vec3( 0.5 ) );
 			vec3 resultVec = (scaleMat * vec4(testVec, 0)).xyz;
-			REQUIRE( etm::nearEqualsV( resultVec, vec3( 1.5f, 0, 0 ), 0.0001f ) );
+			REQUIRE( math::nearEqualsV( resultVec, vec3( 1.5f, 0, 0 ), 0.0001f ) );
 		}
 	}
 }
@@ -42,44 +46,44 @@ TEST_CASE("scale", "[transform]")
 TEST_CASE("rotate", "[transform]")
 {
 	vec3 testVec = vec3( 1, 0, 0 );
-	mat4 rotMat = etm::rotate( vec3( 0, 0, 1 ), etm::PI_DIV2 );
+	mat4 rotMat = math::rotate( vec3( 0, 0, 1 ), math::PI_DIV2 );
 	SECTION("from axis angle")
 	{
 		vec3 resultVec = (rotMat * vec4(testVec, 0)).xyz;
-		REQUIRE( etm::nearEqualsV( resultVec, vec3( 0, 1, 0 ), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( resultVec, vec3( 0, 1, 0 ), 0.0001f ) );
 	}
 	SECTION("ref function")
 	{
-		etm::rotate( rotMat, vec3( 0, 0, 1 ), -etm::PI_DIV2 );
+		math::rotate( rotMat, vec3( 0, 0, 1 ), -math::PI_DIV2 );
 		vec3 resultVec = (rotMat * vec4(testVec, 0)).xyz;
-		REQUIRE( etm::nearEqualsV( resultVec, testVec, 0.0001f ) );
+		REQUIRE( math::nearEqualsV( resultVec, testVec, 0.0001f ) );
 	}
 	SECTION( "quaternions" )
 	{
-		quat rotQuat = quat( vec3( 0, 0, 1 ), etm::PI_DIV2 );
+		quat rotQuat = quat( vec3( 0, 0, 1 ), math::PI_DIV2 );
 		SECTION("quaterion rotation compatibility")
 		{
 			vec3 resultVec = (rotMat * vec4(testVec, 0)).xyz;
 			vec3 quatResultVec = rotQuat * testVec;
 
-			REQUIRE( etm::nearEqualsV( resultVec, quatResultVec, 0.0001f ) );
+			REQUIRE( math::nearEqualsV( resultVec, quatResultVec, 0.0001f ) );
 		}
 		SECTION("from quaterion")
 		{
-			mat4 quatRotMat = etm::rotate( rotQuat );
-			REQUIRE( etm::nearEqualsM( quatRotMat, rotMat, 0.0001f ) );
+			mat4 quatRotMat = math::rotate( rotQuat );
+			REQUIRE( math::nearEqualsM( quatRotMat, rotMat, 0.0001f ) );
 
-			REQUIRE( etm::nearEqualsM( rotQuat.ToMatrix(), etm::CreateFromMat4( quatRotMat ), 0.0001f ) );
+			REQUIRE( math::nearEqualsM( rotQuat.ToMatrix(), math::CreateFromMat4( quatRotMat ), 0.0001f ) );
 
 			vec3 resultVec = (quatRotMat * vec4(testVec, 0)).xyz;
-			REQUIRE( etm::nearEqualsV( resultVec, vec3( 0, 1, 0 ), 0.0001f ) );
+			REQUIRE( math::nearEqualsV( resultVec, vec3( 0, 1, 0 ), 0.0001f ) );
 		}
 		SECTION("ref function")
 		{
-			mat4 quatRotMat = etm::rotate( rotQuat );
-			etm::rotate( quatRotMat, etm::inverse( rotQuat ) );
+			mat4 quatRotMat = math::rotate( rotQuat );
+			math::rotate( quatRotMat, math::inverse( rotQuat ) );
 			vec3 resultVec = (quatRotMat * vec4(testVec, 0)).xyz;
-			REQUIRE( etm::nearEqualsV( resultVec, testVec, 0.0001f ) );
+			REQUIRE( math::nearEqualsV( resultVec, testVec, 0.0001f ) );
 		}
 	}
 }
@@ -87,17 +91,17 @@ TEST_CASE("rotate", "[transform]")
 TEST_CASE( "translate", "[transform]" )
 {
 	vec3 testVec = vec3( 1, 0, 0 );
-	mat4 moveMat = etm::translate( vec3( 0, 0, 1 ) );
+	mat4 moveMat = math::translate( vec3( 0, 0, 1 ) );
 	SECTION( "no ref" )
 	{
 		vec3 resultVec = (moveMat * vec4( testVec, 1 )).xyz;
-		REQUIRE( etm::nearEqualsV( resultVec, vec3( 1, 0, 1 ), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( resultVec, vec3( 1, 0, 1 ), 0.0001f ) );
 	}
 	SECTION( "with ref" )
 	{
-		etm::translate( moveMat, vec3( 0, 0, -1 ) );
+		math::translate( moveMat, vec3( 0, 0, -1 ) );
 		vec3 resultVec = (moveMat * vec4( testVec, 0 )).xyz;
-		REQUIRE( etm::nearEqualsV( resultVec, testVec, 0.0001f ) );
+		REQUIRE( math::nearEqualsV( resultVec, testVec, 0.0001f ) );
 	}
 }
 
@@ -106,12 +110,12 @@ TEST_CASE( "complete transform", "[transform]" )
 	vec3 testVec = vec3( 0, 1, 0 );
 
 	vec3 origScale = vec3(3);
-	quat origRot = quat(vec3(0, 0, 1), -etm::PI_DIV2);
+	quat origRot = quat(vec3(0, 0, 1), -math::PI_DIV2);
 	vec3 origTrans = vec3(0, 0, 1);
 
-	mat4 scaleMat = etm::scale(origScale);
-	mat4 rotMat = etm::rotate(origRot);
-	mat4 moveMat = etm::translate(origTrans);
+	mat4 scaleMat = math::scale(origScale);
+	mat4 rotMat = math::rotate(origRot);
+	mat4 moveMat = math::translate(origTrans);
 
 	mat4 transformMat = scaleMat * rotMat * moveMat;
 
@@ -119,7 +123,7 @@ TEST_CASE( "complete transform", "[transform]" )
 	{
 		vec3 resultVec = (transformMat * vec4( testVec, 1 )).xyz;
 
-		REQUIRE( etm::nearEqualsV( resultVec, vec3(3, 0, 1), 0.00001f ) );
+		REQUIRE( math::nearEqualsV( resultVec, vec3(3, 0, 1), 0.00001f ) );
 	}
 
 	SECTION("decompose")
@@ -128,12 +132,12 @@ TEST_CASE( "complete transform", "[transform]" )
 		quat newRot;
 		vec3 newTrans;
 
-		etm::decomposeTRS(transformMat, newTrans, newRot, newScale);
+		math::decomposeTRS(transformMat, newTrans, newRot, newScale);
 
-		REQUIRE(etm::nearEqualsV(origTrans, newTrans, 0.00001f));
-		REQUIRE(etm::nearEqualsV(origScale, newScale, 0.00001f));
+		REQUIRE(math::nearEqualsV(origTrans, newTrans, 0.00001f));
+		REQUIRE(math::nearEqualsV(origScale, newScale, 0.00001f));
 
-		REQUIRE(etm::nearEqualsV(origRot * testVec, newRot * testVec, 0.00001f));
+		REQUIRE(math::nearEqualsV(origRot * testVec, newRot * testVec, 0.00001f));
 	}
 }
 
@@ -145,16 +149,16 @@ TEST_CASE( "look at", "[transform]" )
 	vec3 eyePos = vec3::ZERO;
 
 	vec3 targetPos = vec3( 5.3f, 2.f, 1.2f );
-	vec3 targetVec = etm::normalize(targetPos - eyePos);
+	vec3 targetVec = math::normalize(targetPos - eyePos);
 
-	mat4 lookMat = etm::lookAt( eyePos, targetPos, vec3::UP);
+	mat4 lookMat = math::lookAt( eyePos, targetPos, vec3::UP);
 
-	vec3 resultVec = etm::normalize((etm::inverse(lookMat) * vec4( testVec, 1 )).xyz);
-	vec3 resultUpVec = (etm::inverse(lookMat) * vec4( upTestVec, 1 )).xyz;
+	vec3 resultVec = math::normalize((math::inverse(lookMat) * vec4( testVec, 1 )).xyz);
+	vec3 resultUpVec = (math::inverse(lookMat) * vec4( upTestVec, 1 )).xyz;
 
-	REQUIRE( etm::nearEqualsV( resultVec, targetVec, 0.00001f ) );
-	REQUIRE( etm::dot(resultUpVec, vec3::UP) >= 0 );
-	REQUIRE( etm::nearEquals( etm::determinant( etm::CreateFromMat4( lookMat ) ), 1.f, 0.00001f ) );
+	REQUIRE( math::nearEqualsV( resultVec, targetVec, 0.00001f ) );
+	REQUIRE( math::dot(resultUpVec, vec3::UP) >= 0 );
+	REQUIRE( math::nearEquals( math::determinant( math::CreateFromMat4( lookMat ) ), 1.f, 0.00001f ) );
 }
 
 TEST_CASE( "projection", "[transform]" )
@@ -168,7 +172,7 @@ TEST_CASE( "projection", "[transform]" )
 	{
 		float hw = width / 2;
 		float hh = height / 2;
-		mat4 projMat = etm::orthographic( -hw, hw, hh, -hh, zNear, zFar );
+		mat4 projMat = math::orthographic( -hw, hw, hh, -hh, zNear, zFar );
 
 		vec3 bln = vec3( -hw, -hh, zNear );
 		vec3 tln = vec3( -hw, hh, zNear );
@@ -188,21 +192,21 @@ TEST_CASE( "projection", "[transform]" )
 		vec4 rbrf = projMat * vec4( brf, 1 );
 		vec4 rtrf = projMat * vec4( trf, 1 );
 
-		REQUIRE( etm::nearEqualsV( rbln.xyz, vec3(-1, -1, -1), 0.0001f ) );
-		REQUIRE( etm::nearEqualsV( rtln.xyz, vec3(-1, 1, -1), 0.0001f ) );
-		REQUIRE( etm::nearEqualsV( rbrn.xyz, vec3(1, -1, -1), 0.0001f ) );
-		REQUIRE( etm::nearEqualsV( rtrn.xyz, vec3(1, 1, -1), 0.0001f ) );
-		REQUIRE( etm::nearEqualsV( rblf.xyz, vec3(-1, -1, 1), 0.0001f ) );
-		REQUIRE( etm::nearEqualsV( rtlf.xyz, vec3(-1, 1, 1), 0.0001f ) );
-		REQUIRE( etm::nearEqualsV( rbrf.xyz, vec3(1, -1, 1), 0.0001f ) );
-		REQUIRE( etm::nearEqualsV( rtrf.xyz, vec3(1, 1, 1), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( rbln.xyz, vec3(-1, -1, -1), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( rtln.xyz, vec3(-1, 1, -1), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( rbrn.xyz, vec3(1, -1, -1), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( rtrn.xyz, vec3(1, 1, -1), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( rblf.xyz, vec3(-1, -1, 1), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( rtlf.xyz, vec3(-1, 1, 1), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( rbrf.xyz, vec3(1, -1, 1), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( rtrf.xyz, vec3(1, 1, 1), 0.0001f ) );
 	}
 	SECTION( "perspective" )
 	{
 		float aspect = width / height;
-		float fov = etm::PI_DIV4;
+		float fov = math::PI_DIV4;
 
-		mat4 projMat = etm::perspective( fov, aspect, zNear, zFar );
+		mat4 projMat = math::perspective( fov, aspect, zNear, zFar );
 
 		//Test with frustum corners
 		float yFac = tanf( fov / 2);
@@ -243,13 +247,13 @@ TEST_CASE( "projection", "[transform]" )
 		vec3 nbrf = rbrf.xyz / rbrf.w; 
 		vec3 ntrf = rtrf.xyz / rtrf.w; 
 
-		REQUIRE( etm::nearEqualsV( nbln, vec3( -1, -1, -1 ), 0.0001f ) );
-		REQUIRE( etm::nearEqualsV( ntln, vec3( -1, 1, -1 ), 0.0001f ) );
-		REQUIRE( etm::nearEqualsV( nbrn, vec3( 1, -1, -1 ), 0.0001f ) );
-		REQUIRE( etm::nearEqualsV( ntrn, vec3( 1, 1, -1 ), 0.0001f ) );
-		REQUIRE( etm::nearEqualsV( nblf, vec3( -1, -1, 1 ), 0.0001f ) );
-		REQUIRE( etm::nearEqualsV( ntlf, vec3( -1, 1, 1 ), 0.0001f ) );
-		REQUIRE( etm::nearEqualsV( nbrf, vec3( 1, -1, 1 ), 0.0001f ) );
-		REQUIRE( etm::nearEqualsV( ntrf, vec3( 1, 1, 1 ), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( nbln, vec3( -1, -1, -1 ), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( ntln, vec3( -1, 1, -1 ), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( nbrn, vec3( 1, -1, -1 ), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( ntrn, vec3( 1, 1, -1 ), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( nblf, vec3( -1, -1, 1 ), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( ntlf, vec3( -1, 1, 1 ), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( nbrf, vec3( 1, -1, 1 ), 0.0001f ) );
+		REQUIRE( math::nearEqualsV( ntrf, vec3( 1, 1, 1 ), 0.0001f ) );
 	}
 }

@@ -75,14 +75,14 @@ void Atmosphere::Draw(vec3 const& position, float const height, float const grou
 
 	Camera const& cam = render::ShadedSceneRenderer::GetCurrent()->GetCamera();
 
-	Sphere objSphere = Sphere(position, radius);
+	math::Sphere objSphere = math::Sphere(position, radius);
 	if (cam.GetFrustum().ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
 	{
 		return;
 	}
 
-	//mat4 transform = etm::translate(position)*etm::scale(vec3(icoRadius));
-	mat4 transform = etm::scale(vec3(icoRadius))*etm::translate(position);
+	//mat4 transform = math::translate(position)*math::scale(vec3(icoRadius));
+	mat4 transform = math::scale(vec3(icoRadius))*math::translate(position);
 
 	api->SetShader(m_pShader.get());
 
@@ -95,8 +95,8 @@ void Atmosphere::Draw(vec3 const& position, float const height, float const grou
 	m_Params.Upload(m_pShader.get(), "uAtmosphere");
 	RenderingSystems::Instance()->GetAtmospherPrecompute().GetSettings().UploadTextureSize(m_pShader.get());
 
-	//m_pShader->Upload("uSkySpectralRadToLum"_hash, etm::vecCast<float>(m_SkyColor));
-	//m_pShader->Upload("uSunSpectralRadToLum"_hash, etm::vecCast<float>(m_SunColor));
+	//m_pShader->Upload("uSkySpectralRadToLum"_hash, math::vecCast<float>(m_SkyColor));
+	//m_pShader->Upload("uSunSpectralRadToLum"_hash, math::vecCast<float>(m_SunColor));
 
 	m_pShader->Upload("uTexIrridiance"_hash, static_cast<TextureData const*>(m_TexIrradiance));
 	m_pShader->Upload("uTexInscatter"_hash, static_cast<TextureData const*>(m_TexInscatter));

@@ -115,7 +115,7 @@ void ToolHierachyHandle::Init(EditorToolNode* const owner, bool right, bool top)
 		m_DragState = E_DragState::Start;
 
 		// initial mouse position - coord space doesn't matter as long as threwhold check uses same
-		m_Position = etm::vecCast<int32>(dvec2(evnt->x, evnt->y));
+		m_Position = math::vecCast<int32>(dvec2(evnt->x, evnt->y));
 		m_Owner->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
 		if (m_Neighbour != nullptr)
 		{
@@ -225,8 +225,8 @@ void ToolHierachyHandle::ProcessDrag(GdkEventMotion* const motion)
 		}
 
 		// otherwise check if we surpass the threshold to split the node
-		vec2 const mouseDelta = etm::vecCast<float>(dvec2(motion->x, motion->y)) - etm::vecCast<float>(m_Position);
-		if (etm::length(mouseDelta) > s_SplitThreshold)
+		vec2 const mouseDelta = math::vecCast<float>(dvec2(motion->x, motion->y)) - math::vecCast<float>(m_Position);
+		if (math::length(mouseDelta) > s_SplitThreshold)
 		{
 			if (m_Owner->ContainsPointer())
 			{

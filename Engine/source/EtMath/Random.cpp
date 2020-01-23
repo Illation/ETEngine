@@ -2,7 +2,8 @@
 #include <limits>
 
 
-namespace etm {
+namespace et {
+namespace math {
 
 
 //==========
@@ -103,5 +104,5 @@ int32 Random::RandInt(int32 const min, int32 const max)
 }
 
 
-} // namespace etm
-
+} // namespace math
+} // namespace et

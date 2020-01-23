@@ -4,7 +4,8 @@
 //////////////////////
 
 
-namespace etm {
+namespace et {
+namespace math {
 	
 
 //====================
@@ -42,7 +43,7 @@ matrix<m, n, T>::matrix(const std::initializer_list<T> args)
 }
 
 template <uint8 m, uint8 n, class T>
-matrix<m, n, T>::matrix(const etm::vector<n, T> rowList[m])
+matrix<m, n, T>::matrix(const math::vector<n, T> rowList[m])
 {
 	for (uint8 rowIdx = 0; rowIdx < m; ++rowIdx)
 	{
@@ -52,7 +53,7 @@ matrix<m, n, T>::matrix(const etm::vector<n, T> rowList[m])
 
 
 template <class T>
-etm::matrix<3, 3, T> CreateFromMat4(const matrix<4, 4, T> &lhs)
+math::matrix<3, 3, T> CreateFromMat4(const matrix<4, 4, T> &lhs)
 {
 	matrix<3, 3, T> ret(uninitialized);
 	ret.rows[0] = lhs.rows[0].xyz;
@@ -62,7 +63,7 @@ etm::matrix<3, 3, T> CreateFromMat4(const matrix<4, 4, T> &lhs)
 }
 
 template <class T>
-etm::matrix<4, 4, T> CreateFromMat3(const matrix<3, 3, T> &lhs)
+math::matrix<4, 4, T> CreateFromMat3(const matrix<3, 3, T> &lhs)
 {
 	matrix<4, 4, T> ret(uninitialized);
 	ret.rows[0] = vector<4, T>(lhs.rows[0], 0);
@@ -73,7 +74,7 @@ etm::matrix<4, 4, T> CreateFromMat3(const matrix<3, 3, T> &lhs)
 }
 
 template <class T>
-etm::matrix<4, 4, T> DiscardW(const matrix<4, 4, T> &lhs)
+math::matrix<4, 4, T> DiscardW(const matrix<4, 4, T> &lhs)
 {
 	matrix<4, 4, T> ret(uninitialized);
 	ret.rows[0] = vector<4, T>(lhs.rows[0].xyz, 0);
@@ -120,7 +121,7 @@ bool operator==(const matrix<m, n, T>& lhs, const matrix<m, n, T>& rhs)
 }
 
 template <uint8 m, uint8 n, class T>
-etm::matrix<m, n, T> operator+(const matrix<m, n, T>& lhs, const matrix<m, n, T>& rhs)
+math::matrix<m, n, T> operator+(const matrix<m, n, T>& lhs, const matrix<m, n, T>& rhs)
 {
 	matrix<m, n, T> result;
 	for (uint8 col = 0; col < n; ++col)
@@ -134,7 +135,7 @@ etm::matrix<m, n, T> operator+(const matrix<m, n, T>& lhs, const matrix<m, n, T>
 }
 
 template <uint8 m, uint8 n, class T>
-etm::matrix<m, n, T> operator-(const matrix<m, n, T>& lhs, const matrix<m, n, T>& rhs)
+math::matrix<m, n, T> operator-(const matrix<m, n, T>& lhs, const matrix<m, n, T>& rhs)
 {
 	matrix<m, n, T> result;
 	for (uint8 col = 0; col < n; ++col)
@@ -148,7 +149,7 @@ etm::matrix<m, n, T> operator-(const matrix<m, n, T>& lhs, const matrix<m, n, T>
 }
 
 template <uint8 m, uint8 n, class T>
-etm::matrix<m, m, T>
+math::matrix<m, m, T>
 operator*(const matrix<m, n, T>& lhs, const matrix<n, m, T>& rhs)
 {
 	matrix<m, m, T> result;
@@ -169,7 +170,7 @@ operator*(const matrix<m, n, T>& lhs, const matrix<n, m, T>& rhs)
 }
 
 template <uint8 m, uint8 n, class T>
-etm::vector<m, T>
+math::vector<m, T>
 operator*(const matrix<m, n, T>& lhs, const vector<m, T>& rhs)
 {
 	vector<m, T> result(0);
@@ -182,7 +183,7 @@ operator*(const matrix<m, n, T>& lhs, const vector<m, T>& rhs)
 }
 
 template <uint8 m, uint8 n, class T>
-etm::matrix<m, n, T>
+math::matrix<m, n, T>
 operator*(const matrix<m, n, T>& lhs, const T rhs)
 {
 	matrix<m, n, T> result;
@@ -253,7 +254,7 @@ T determinant(const matrix<4, 4, T>& mat)
 template <class T>
 inline matrix<2, 2, T> inverse(const matrix<2, 2, T>& mat)
 {
-	T detFrac = static_cast<T>(1) / etm::determinant(mat);
+	T detFrac = static_cast<T>(1) / math::determinant(mat);
 
 	matrix<2, 2, T> result({
 		+mat[1][1] * detFrac,
@@ -267,7 +268,7 @@ inline matrix<2, 2, T> inverse(const matrix<2, 2, T>& mat)
 template <class T>
 inline matrix<3, 3, T> inverse(const matrix<3, 3, T>& mat)
 {
-	T detFrac = static_cast<T>(1) / etm::determinant(mat);
+	T detFrac = static_cast<T>(1) / math::determinant(mat);
 
 	matrix<3, 3, T> result({
 		+(mat[1][1] * mat[2][2] - mat[1][2] * mat[2][1]) * detFrac,
@@ -358,4 +359,5 @@ T* valuePtr(matrix<m, n, T>& mat)
 }
 
 
-} // namespace etm
+} // namespace math
+} // namespace et

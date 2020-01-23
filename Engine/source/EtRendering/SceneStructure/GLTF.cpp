@@ -510,22 +510,22 @@ bool glTF::ParseNodesJson(core::JSON::Object* root, std::vector<Node>& nodes)
 		{
 			vec3 trans, scale;
 			quat rot;
-			etm::decomposeTRS(node.matrix, trans, rot, scale);
+			math::decomposeTRS(node.matrix, trans, rot, scale);
 			if (!hasTranslation)node.translation = trans;
-			else if (!etm::nearEqualsV(node.translation, trans, 0.0001f))LOG("inconsistent translation values for node", core::LogLevel::Warning);
+			else if (!math::nearEqualsV(node.translation, trans, 0.0001f))LOG("inconsistent translation values for node", core::LogLevel::Warning);
 			if (!hasRotation)node.rotation = rot;
 			else
 			{
 				//different quaternions can express the same rotation
 				vec3 testVec = vec3(0, 0, 1);
-				if (!etm::nearEqualsV(node.rotation * testVec, rot * testVec, 0.0001f))LOG("inconsistent rotation values for node", core::LogLevel::Warning);
+				if (!math::nearEqualsV(node.rotation * testVec, rot * testVec, 0.0001f))LOG("inconsistent rotation values for node", core::LogLevel::Warning);
 			}
 			if (!hasScale)node.scale = scale;
-			else if (!etm::nearEqualsV(node.scale, scale, 0.0001f))LOG("inconsistent scale values for node", core::LogLevel::Warning);
+			else if (!math::nearEqualsV(node.scale, scale, 0.0001f))LOG("inconsistent scale values for node", core::LogLevel::Warning);
 		}
 		else
 		{
-			node.matrix = etm::scale(node.scale) * etm::rotate(node.rotation) * etm::translate(node.translation);
+			node.matrix = math::scale(node.scale) * math::rotate(node.rotation) * math::translate(node.translation);
 		}
 
 		core::JSON::ApplyIntValue(nodeObj, node.camera, "camera");

@@ -130,13 +130,13 @@ namespace JSON
 	bool ApplyStrValue(JSON::Object* obj, std::string &val, const std::string &name);
 	bool ApplyBoolValue(JSON::Object* obj, bool &val, const std::string &name);
 	template<uint8 n, class T>
-	bool ArrayVector(JSON::Value* val, etm::vector<n, T> &vec)
+	bool ArrayVector(JSON::Value* val, math::vector<n, T> &vec)
 	{
 		if (!(val->GetType() == ValueType::JSON_Array)) return false;
 		JSON::Array* jvec = val->arr();
 		if (jvec && jvec->value.size() >= n)
 		{
-			vec = etm::vector<n, T>();
+			vec = math::vector<n, T>();
 			for (uint8 i = 0; i < n; ++i)
 			{
 				JSON::Number* jnum = (*jvec)[(uint32)i]->num();
@@ -148,13 +148,13 @@ namespace JSON
 		return false;
 	}
 	template<uint8 n, uint8 m, class T>
-	bool ArrayMatrix(JSON::Value* val, etm::matrix<n, m, T> &mat)
+	bool ArrayMatrix(JSON::Value* val, math::matrix<n, m, T> &mat)
 	{
 		if (!(val->GetType() == ValueType::JSON_Array)) return false;
 		JSON::Array* jvec = val->arr();
 		if (jvec && jvec->value.size() >= n * m)
 		{
-			mat = etm::matrix<n, m, T>(etm::uninitialized);
+			mat = math::matrix<n, m, T>(math::uninitialized);
 			for (uint8 i = 0; i < m; ++i)
 			{
 				for (uint8 j = 0; j < n; ++j)

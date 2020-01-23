@@ -71,9 +71,9 @@ void FreeCameraSystem::Process(fw::ComponentRange<FreeCameraSystemView>& range)
 			move.z += (input->GetKeyState(E_KbdKey::W) == E_KeyState::Down) ? 1.0f : 0.0f;
 			move.z -= (input->GetKeyState(E_KbdKey::S) == E_KeyState::Down) ? 1.0f : 0.0f;
 
-			if (!etm::isZero(move))
+			if (!math::isZero(move))
 			{
-				move = etm::normalize(move);
+				move = math::normalize(move);
 				hasMoveInput = true;
 			}
 
@@ -81,7 +81,7 @@ void FreeCameraSystem::Process(fw::ComponentRange<FreeCameraSystemView>& range)
 			{
 				vec3 const delta = move - view.camera->movement;
 				float const acc = s_Accelleration * dt;
-				view.camera->movement = view.camera->movement + (delta * etm::Clamp01(acc));
+				view.camera->movement = view.camera->movement + (delta * math::Clamp01(acc));
 			}
 		}
 
@@ -103,7 +103,7 @@ void FreeCameraSystem::Process(fw::ComponentRange<FreeCameraSystemView>& range)
 
 		// Calculate the view inverse in the same way the camera would do it
 		vec3 const lookAt = view.transform->GetPosition() + view.transform->GetForward();
-		mat3 const camMat = etm::CreateFromMat4(etm::inverse(etm::lookAt(view.transform->GetPosition(), lookAt, view.transform->GetUp())));
+		mat3 const camMat = math::CreateFromMat4(math::inverse(math::lookAt(view.transform->GetPosition(), lookAt, view.transform->GetUp())));
 		vec3 currPos = view.transform->GetPosition() + camMat * view.camera->movement * currSpeed * dt;
 		view.transform->SetPosition(currPos);
 
@@ -112,11 +112,11 @@ void FreeCameraSystem::Process(fw::ComponentRange<FreeCameraSystemView>& range)
 		vec2 const look = (input->GetMouseButton(E_MouseButton::Left) == E_KeyState::Down) ? input->GetMouseMove() : vec2();
 
 		view.camera->totalYaw += -look.x * s_RotationSpeed;
-		view.camera->totalPitch = etm::Clamp(view.camera->totalPitch, etm::PI_DIV2, -etm::PI_DIV2); // Make sure we can't do a backflip
+		view.camera->totalPitch = math::Clamp(view.camera->totalPitch, math::PI_DIV2, -math::PI_DIV2); // Make sure we can't do a backflip
 		view.camera->totalPitch += -look.y * s_RotationSpeed;
 
 		vec3 const right = view.transform->GetRight();
-		vec3 const horizontalRight = etm::normalize(vec3(right.x, 0, right.z));
+		vec3 const horizontalRight = math::normalize(vec3(right.x, 0, right.z));
 		quat const rot = quat(horizontalRight, view.camera->totalPitch) * quat(vec3::UP, view.camera->totalYaw);
 		view.transform->SetRotation(rot);
 	}

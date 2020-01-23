@@ -203,7 +203,7 @@ ivec2 TextRenderer::GetTextSize(std::string const& text, SpriteFont const* const
 		}
 	}
 
-	return etm::vecCast<int32>(ret);
+	return math::vecCast<int32>(ret);
 }
 
 //---------------------------------
@@ -239,7 +239,7 @@ void TextRenderer::Draw()
 		{
 			TextureData const* const fontTex = queued.m_Font->GetAtlas();
 			m_pTextShader->Upload("fontTex"_hash, fontTex);
-			m_pTextShader->Upload("texSize"_hash, etm::vecCast<float>(fontTex->GetResolution())); // #todo: possibly we can just query this in glsl
+			m_pTextShader->Upload("texSize"_hash, math::vecCast<float>(fontTex->GetResolution())); // #todo: possibly we can just query this in glsl
 
 			//Draw the object
 			api->DrawArrays(E_DrawMode::Points, queued.m_BufferStart, queued.m_BufferSize);

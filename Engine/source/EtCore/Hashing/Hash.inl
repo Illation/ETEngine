@@ -17,7 +17,7 @@ namespace detail {
 //
 // FNV-1a 32bit hashing algorithm.
 //
-constexpr T_Hash detail::fnv1a_32(char const* const s, size_t const count)
+constexpr T_Hash fnv1a_32(char const* const s, size_t const count)
 {
 	return ((count ? fnv1a_32(s, count - 1) : 2166136261u) ^ s[count]) * 16777619u;
 }

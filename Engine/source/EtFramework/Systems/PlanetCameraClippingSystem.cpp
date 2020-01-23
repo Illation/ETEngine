@@ -43,7 +43,7 @@ void PlanetCameraLinkSystem::Process(ComponentRange<PlanetCameraLinkSystemView>&
 		float const planetRad = planet->GetRadius();
 
 		float const radius = std::max(planetRad + planet->GetMaxHeight(), planetRad + planetAtmo->GetAtmosphereHeight());
-		float const altitude = etm::distance(planetTransform->GetPosition(), view.cameraTransform->GetPosition()) - planetRad;
+		float const altitude = math::distance(planetTransform->GetPosition(), view.cameraTransform->GetPosition()) - planetRad;
 
 		view.camera->SetFarClippingPlane((sqrtf(powf(planetRad + altitude, 2) - powf(planetRad, 2)) + sqrtf(powf(radius, 2) - powf(planetRad, 2))) * 10);
 		view.camera->SetNearClippingPlane(view.camera->GetFarPlane() * 0.000003f);

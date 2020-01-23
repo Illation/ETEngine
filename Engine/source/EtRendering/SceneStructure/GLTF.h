@@ -29,7 +29,7 @@ namespace glTF
 		std::string copyright;
 	};
 
-	//coordinates: gltf->etm = x, y, -z
+	//coordinates: gltf->math = x, y, -z
 	//the dom will store the coordinates in gltf format
 
 	struct Node
@@ -501,7 +501,7 @@ namespace glTF
 		return true;
 	}
 	template <uint8 n, class T>
-	bool GetAccessorVectorArray(glTFAsset& asset, uint32 idx, std::vector<etm::vector<n, T>>& data, bool convertCoords = false)
+	bool GetAccessorVectorArray(glTFAsset& asset, uint32 idx, std::vector<math::vector<n, T>>& data, bool convertCoords = false)
 	{
 		if (idx >= (uint32)asset.dom.accessors.size())
 		{
@@ -528,7 +528,7 @@ namespace glTF
 		convertCoords &= n > 1;
 		for (uint32 i = 0; i < scalars.size() / n; ++i)
 		{
-			etm::vector<n, T> vec;
+			math::vector<n, T> vec;
 			for (uint32 j = 0; j < n; ++j)
 			{
 				vec[(uint8)j] = scalars[i*(uint32)n + j];

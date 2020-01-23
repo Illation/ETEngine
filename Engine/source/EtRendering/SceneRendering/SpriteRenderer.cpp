@@ -148,16 +148,16 @@ void SpriteRenderer::Draw(TextureData const* tex,
 	{
 		ivec2 viewPos, viewSize;
 		Viewport::GetCurrentApiContext()->GetViewport(viewPos, viewSize);
-		finalScale = scale * etm::vecCast<float>(viewSize);
+		finalScale = scale * math::vecCast<float>(viewSize);
 	}
 	break;
 
 	case E_ScalingMode::Texture:
-		finalScale = scale * etm::vecCast<float>(tex->GetResolution()) / RenderingSystems::Instance()->GetGraphicsSettings().TextureScaleFactor;
+		finalScale = scale * math::vecCast<float>(tex->GetResolution()) / RenderingSystems::Instance()->GetGraphicsSettings().TextureScaleFactor;
 		break;
 
 	case E_ScalingMode::TextureAbs:
-		finalScale = scale * etm::vecCast<float>(tex->GetResolution());
+		finalScale = scale * math::vecCast<float>(tex->GetResolution());
 		break;
 
 	default:

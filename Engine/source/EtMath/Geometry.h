@@ -5,6 +5,11 @@
 
 #include <vector>
 
+
+namespace et {
+namespace math {
+
+
 //------------------------
 // Plane
 //
@@ -25,7 +30,7 @@ struct Plane
 	Plane(vec3 a, vec3 b, vec3 c)
 	{
 		d = a;
-		n = etm::normalize(etm::cross(-b + a, c - a));
+		n = math::normalize(math::cross(-b + a, c - a));
 	}
 	vec3 n;
 	vec3 d;
@@ -52,6 +57,11 @@ struct Sphere
 	float radius;
 };
 
+
 std::vector<vec3> GetIcosahedronPositions(float size = 1);
-std::vector<etm::uint32> GetIcosahedronIndices();//For inverse winding
-std::vector<etm::uint32> GetIcosahedronIndicesBFC();//for uniform winding
+std::vector<math::uint32> GetIcosahedronIndices();//For inverse winding
+std::vector<math::uint32> GetIcosahedronIndicesBFC();//for uniform winding
+
+
+} // namespace math
+} // namespace et

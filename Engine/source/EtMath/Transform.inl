@@ -4,7 +4,8 @@
 //////////////////////
 
 
-namespace etm {
+namespace et {
+namespace math {
 
 
 //====================
@@ -41,7 +42,7 @@ void scale(matrix<4, 4, T>& result, const vector<3, T>& scaleVec)
 }
 
 template <class T>
-etm::matrix<4, 4, T>
+math::matrix<4, 4, T>
 rotate(const quaternion<T>& rotation)
 {
 	matrix<3, 3, T> result = rotation.ToMatrix();
@@ -56,7 +57,7 @@ void rotate(matrix<4, 4, T> &result, const quaternion<T>& rotation)
 }
 
 template <class T>
-etm::matrix<4, 4, T> rotate(const vector<3, T>& axis, const T& angle)
+math::matrix<4, 4, T> rotate(const vector<3, T>& axis, const T& angle)
 {
 	matrix<4, 4, T> result;
 
@@ -87,7 +88,7 @@ void rotate(matrix<4, 4, T> &result, const vector<3, T>& axis, const T& angle)
 }
 
 template <class T>
-etm::matrix<4, 4, T> translate(const vector<3, T>& translation)
+math::matrix<4, 4, T> translate(const vector<3, T>& translation)
 {
 	matrix<4, 4, T> mat;
 	mat[3] = vector<4, T>(translation, static_cast<T>(1));
@@ -107,7 +108,7 @@ void translate(matrix<4, 4, T> &result, const vector<3, T>& translation)
 }
 
 template <class T>
-etm::matrix<4, 4, T> lookAt(const vector<3, T>& position, const vector<3, T>& target, const vector<3, T>& worldUp)
+math::matrix<4, 4, T> lookAt(const vector<3, T>& position, const vector<3, T>& target, const vector<3, T>& worldUp)
 {
 	vector<3, T> forward = normalize(target - position);
 	vector<3, T> right = normalize(cross(worldUp, forward));
@@ -123,7 +124,7 @@ etm::matrix<4, 4, T> lookAt(const vector<3, T>& position, const vector<3, T>& ta
 }
 
 template <class T>
-etm::matrix<4, 4, T>
+math::matrix<4, 4, T>
 orthographic(const T& left, const T& right, const T& top, const T& bottom, const T& nearZ, const T& farZ)
 {
 	matrix<4, 4, T> result;
@@ -140,7 +141,7 @@ orthographic(const T& left, const T& right, const T& top, const T& bottom, const
 }
 
 template <class T>
-etm::matrix<4, 4, T> perspective(const T& fov, const T& aspect, const T& nearZ, const T& farZ)
+math::matrix<4, 4, T> perspective(const T& fov, const T& aspect, const T& nearZ, const T& farZ)
 {
 	assert(std::abs(aspect - ETM_DEFAULT_EPSILON) > static_cast<T>(0));
 	matrix<4, 4, T> result;
@@ -194,4 +195,5 @@ vector<3, T> decomposeScale(matrix<4, 4, T> const& mat)
 }
 
 
-} // namespace etm
+} // namespace math
+} // namespace et

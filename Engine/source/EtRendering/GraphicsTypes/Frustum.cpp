@@ -34,7 +34,7 @@ Frustum::~Frustum()
 void Frustum::SetCullTransform(mat4 objectWorld)
 {
 	m_CullWorld = objectWorld;
-	m_CullInverse = etm::inverse(objectWorld);
+	m_CullInverse = math::inverse(objectWorld);
 }
 
 void Frustum::SetToCamera(Camera const& camera)
@@ -43,7 +43,7 @@ void Frustum::SetToCamera(Camera const& camera)
 
 	m_Forward = camera.GetForward();
 	m_Up = camera.GetUp();
-	m_Right = etm::cross(m_Up, m_Forward);
+	m_Right = math::cross(m_Up, m_Forward);
 
 	m_NearPlane = camera.GetNearPlane();
 	m_FarPlane = camera.GetFarPlane();
@@ -53,7 +53,7 @@ void Frustum::SetToCamera(Camera const& camera)
 void Frustum::Update(Viewport const* const viewport)
 {
 	//calculate generalized relative width and aspect ratio
-	float normHalfWidth = tan(etm::radians(m_FOV));
+	float normHalfWidth = tan(math::radians(m_FOV));
 	float aspectRatio = viewport->GetAspectRatio();
 
 	//calculate width and height for near and far plane
@@ -77,7 +77,7 @@ void Frustum::Update(Viewport const* const viewport)
 	m_Corners.fc = fCenter - m_Up*farHH - m_Right*farHW;
 	m_Corners.fd = fCenter - m_Up*farHH + m_Right*farHW;
 
-	//float yFac = tanf( etm::radians(m_FOV) / 2 );
+	//float yFac = tanf( math::radians(m_FOV) / 2 );
 	//float xFac = yFac*Config::GetInstance()->GetWindow().AspectRatio;
 	//vec3 nCenter = m_Position + m_Forward*m_NearPlane;
 	//vec3 fCenter = m_Position + m_Forward*m_FarPlane;
@@ -99,33 +99,33 @@ void Frustum::Update(Viewport const* const viewport)
 	m_Corners.Transform(m_CullInverse);
 
 	m_PositionObject = (m_CullInverse*vec4(m_Position, 0)).xyz;
-	m_RadInvFOV = 1 / etm::radians(m_FOV);
+	m_RadInvFOV = 1 / math::radians(m_FOV);
 
 	//construct planes
 	m_Planes.clear();
 	//winding in an outside perspective so the cross product creates normals pointing inward
-	m_Planes.push_back(Plane(m_Corners.na, m_Corners.nb, m_Corners.nc));//Near
-	m_Planes.push_back(Plane(m_Corners.fb, m_Corners.fa, m_Corners.fd));//Far 
-	m_Planes.push_back(Plane(m_Corners.fa, m_Corners.na, m_Corners.fc));//Left
-	m_Planes.push_back(Plane(m_Corners.nb, m_Corners.fb, m_Corners.nd));//Right
-	m_Planes.push_back(Plane(m_Corners.fa, m_Corners.fb, m_Corners.na));//Top
-	m_Planes.push_back(Plane(m_Corners.nc, m_Corners.nd, m_Corners.fc));//Bottom
+	m_Planes.push_back(math::Plane(m_Corners.na, m_Corners.nb, m_Corners.nc));//Near
+	m_Planes.push_back(math::Plane(m_Corners.fb, m_Corners.fa, m_Corners.fd));//Far 
+	m_Planes.push_back(math::Plane(m_Corners.fa, m_Corners.na, m_Corners.fc));//Left
+	m_Planes.push_back(math::Plane(m_Corners.nb, m_Corners.fb, m_Corners.nd));//Right
+	m_Planes.push_back(math::Plane(m_Corners.fa, m_Corners.fb, m_Corners.na));//Top
+	m_Planes.push_back(math::Plane(m_Corners.nc, m_Corners.nd, m_Corners.fc));//Bottom
 }
 
 VolumeCheck Frustum::ContainsPoint(const vec3 &point) const
 {
 	for (auto plane : m_Planes)
 	{
-		if (etm::dot(plane.n, point - plane.d) < 0)return VolumeCheck::OUTSIDE;
+		if (math::dot(plane.n, point - plane.d) < 0)return VolumeCheck::OUTSIDE;
 	}
 	return VolumeCheck::CONTAINS;
 }
-VolumeCheck Frustum::ContainsSphere(const Sphere &sphere) const
+VolumeCheck Frustum::ContainsSphere(math::Sphere const& sphere) const
 {
 	VolumeCheck ret = VolumeCheck::CONTAINS;
 	for (auto plane : m_Planes)
 	{
-		float dist = etm::dot(plane.n, sphere.pos - plane.d);
+		float dist = math::dot(plane.n, sphere.pos - plane.d);
 		if (dist < -sphere.radius)return VolumeCheck::OUTSIDE;
 		else if (dist < 0) ret = VolumeCheck::INTERSECT;
 	}
@@ -140,9 +140,9 @@ VolumeCheck Frustum::ContainsTriangle(vec3 &a, vec3 &b, vec3 &c)
 	for (auto plane : m_Planes)
 	{
 		char rejects = 0;
-		if (etm::dot(plane.n, a - plane.d) < 0)rejects++;
-		if (etm::dot(plane.n, b - plane.d) < 0)rejects++;
-		if (etm::dot(plane.n, c - plane.d) < 0)rejects++;
+		if (math::dot(plane.n, a - plane.d) < 0)rejects++;
+		if (math::dot(plane.n, b - plane.d) < 0)rejects++;
+		if (math::dot(plane.n, c - plane.d) < 0)rejects++;
 		// if all three are outside a plane the triangle is outside the frustrum
 		if (rejects >= 3)return VolumeCheck::OUTSIDE;
 		// if at least one is outside the triangle intersects at least one plane
@@ -157,15 +157,15 @@ VolumeCheck Frustum::ContainsTriVolume(vec3 &a, vec3 &b, vec3 &c, float height)
 	for (auto plane : m_Planes)
 	{
 		char rejects = 0;
-		if (etm::dot(plane.n, a - plane.d) < 0)rejects++;
-		if (etm::dot(plane.n, b - plane.d) < 0)rejects++;
-		if (etm::dot(plane.n, c - plane.d) < 0)rejects++;
+		if (math::dot(plane.n, a - plane.d) < 0)rejects++;
+		if (math::dot(plane.n, b - plane.d) < 0)rejects++;
+		if (math::dot(plane.n, c - plane.d) < 0)rejects++;
 		// if all three are outside a plane the triangle is outside the frustrum
 		if (rejects >= 3)
 		{
-			if (etm::dot(plane.n, (a*height) - plane.d) < 0)rejects++;
-			if (etm::dot(plane.n, (b*height) - plane.d) < 0)rejects++;
-			if (etm::dot(plane.n, (c*height) - plane.d) < 0)rejects++;
+			if (math::dot(plane.n, (a*height) - plane.d) < 0)rejects++;
+			if (math::dot(plane.n, (b*height) - plane.d) < 0)rejects++;
+			if (math::dot(plane.n, (c*height) - plane.d) < 0)rejects++;
 			if (rejects >= 6)return VolumeCheck::OUTSIDE;
 			else ret = VolumeCheck::INTERSECT;
 		}

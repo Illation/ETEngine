@@ -111,7 +111,7 @@ AtmosphereParameters::AtmosphereParameters(T_Hash const assetId, dvec3 &skyColor
 	absorption_density = DensityProfile(ozone_density, (float)kLengthUnitInMeters);
 	absorptionExtinction = InterpolatedSpectrum(wavelengths, absorption_extinction, lambdas, (float)kLengthUnitInMeters);
 	groundAlbedo = InterpolatedSpectrum(wavelengths, ground_albedo, lambdas, 1.f);
-	core::JSON::ApplyNumValue(root, mu_s_min, "mu s min"); mu_s_min = cosf(etm::radians(mu_s_min));
+	core::JSON::ApplyNumValue(root, mu_s_min, "mu s min"); mu_s_min = cosf(math::radians(mu_s_min));
 
 	AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(wavelengths, solar_irradiance, -3, skyColor);
 	AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(wavelengths, solar_irradiance, 0, sunColor);

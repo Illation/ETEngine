@@ -44,18 +44,18 @@ ECS_REGISTER_COMPONENT(SwirlyLightComponent);
 //
 SwirlyLightComponent* SwirlyLightComponentDesc::MakeData()
 {
-	etm::Random& random = core::GetGlobalRandom();
+	math::Random& random = core::GetGlobalRandom();
 
 	SwirlyLightComponent* const ret = new SwirlyLightComponent();
 
 	ret->radius1 = random.RandFloat(minRadius, maxRadius);
 	ret->radius2 = random.RandFloat(minRadius, maxRadius);
 
-	ret->angle1 = random.RandFloat(0.f, etm::PI2);
-	ret->angle2 = random.RandFloat(0.f, etm::PI2);
+	ret->angle1 = random.RandFloat(0.f, math::PI2);
+	ret->angle2 = random.RandFloat(0.f, math::PI2);
 
-	ret->timeOffset1 = random.RandFloat(0.f, etm::PI2);
-	ret->timeOffset2 = random.RandFloat(0.f, etm::PI2);
+	ret->timeOffset1 = random.RandFloat(0.f, math::PI2);
+	ret->timeOffset2 = random.RandFloat(0.f, math::PI2);
 
 	ret->timeMult1 = random.RandFloat(minTimeMult, maxTimeMult);
 	ret->timeMult2 = random.RandFloat(maxTimeMult, maxTimeMult);
@@ -70,7 +70,7 @@ SwirlyLightComponent* SwirlyLightComponentDesc::MakeData()
 //
 void SwirlyLightComponentDesc::OnScenePostLoad(fw::EcsController& ecs, fw::T_EntityId const id, SwirlyLightComponent& comp)
 {
-	etm::Random& random = core::GetGlobalRandom();
+	math::Random& random = core::GetGlobalRandom();
 
 	ET_ASSERT(ecs.HasComponent<fw::TransformComponent>(id));
 	fw::TransformComponent& transform = ecs.GetComponent<fw::TransformComponent>(id);

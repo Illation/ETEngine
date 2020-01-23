@@ -4,7 +4,8 @@
 //////////////////////
 
 
-namespace etm {
+namespace et {
+namespace math {
 	
 
 //====================
@@ -67,7 +68,7 @@ inline vector<n, T> vector<n, T>::operator-() const
 }
 
 template <uint8 n, class T>
-std::string etm::vector<n, T>::ToString() const
+std::string math::vector<n, T>::ToString() const
 {
 	std::string ret = "[";
 	for (uint8 i = 0; i < data.size(); ++i)
@@ -137,7 +138,7 @@ inline vector<2, T> vector<2, T>::operator-() const
 }
 
 template <class T>
-std::string etm::vector<2, T>::ToString() const
+std::string math::vector<2, T>::ToString() const
 {
 	return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + "]";
 }
@@ -216,7 +217,7 @@ inline vector<3, T> vector<3, T>::operator-() const
 }
 
 template <class T>
-std::string etm::vector<3, T>::ToString() const
+std::string math::vector<3, T>::ToString() const
 {
 	return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + "]";
 }
@@ -327,7 +328,7 @@ inline vector<4, T> vector<4, T>::operator-() const
 }
 
 template <class T>
-std::string etm::vector<4, T>::ToString() const
+std::string math::vector<4, T>::ToString() const
 {
 	return std::string("[") + std::to_string(x) + ", " + std::to_string(y)
 		+ ", " + std::to_string(z) + ", " + std::to_string(w) + "]";
@@ -524,13 +525,13 @@ T dot(const vector<4, T> &lhs, const vector<4, T> &rhs)
 template <uint8 n, class T>
 T lengthSquared(const vector<n, T> &vec)
 {
-	return etm::dot(vec, vec);
+	return math::dot(vec, vec);
 }
 
 template <uint8 n, class T>
 T length(const vector<n, T> &vec)
 {
-	return sqrt(etm::lengthSquared(vec));
+	return sqrt(math::lengthSquared(vec));
 }
 
 
@@ -653,4 +654,5 @@ T angleSafeAxis(const vector<3, T>& lhs, const vector<3, T>& rhs, vector<3, T> &
 }
 
 
-} // namespace etm
+} // namespace math
+} // namespace et

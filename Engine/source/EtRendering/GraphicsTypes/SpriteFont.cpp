@@ -228,7 +228,7 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 		//Generate atlas coordinates
 		metric->Page = 0;
 		metric->Channel = (uint8)channel;
-		metric->TexCoord = etm::vecCast<float>(startPos[channel]);
+		metric->TexCoord = math::vecCast<float>(startPos[channel]);
 		if (horizontal)
 		{
 			maxPos[channel].y = std::max(maxPos[channel].y, startPos[channel].y + (int32)height);
@@ -342,10 +342,10 @@ SpriteFont* FontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 		pTexture->SetParameters(params);
 
 		ivec2 res = ivec2(metric->Width - m_Padding * 2, metric->Height - m_Padding * 2);
-		api->SetViewport(etm::vecCast<int32>(metric->TexCoord) + ivec2(m_Padding), res);
+		api->SetViewport(math::vecCast<int32>(metric->TexCoord) + ivec2(m_Padding), res);
 		computeSdf->Upload("uTex"_hash, static_cast<TextureData const*>(pTexture));
 		computeSdf->Upload("uChannel"_hash, static_cast<int32>(metric->Channel));
-		computeSdf->Upload("uResolution"_hash, etm::vecCast<float>(res));
+		computeSdf->Upload("uResolution"_hash, math::vecCast<float>(res));
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 
 		delete pTexture;

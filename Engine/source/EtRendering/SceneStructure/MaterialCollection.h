@@ -35,7 +35,7 @@ public:
 		T_ArrayLoc m_VAO;
 		uint32 m_IndexCount;
 		E_DataType m_IndexDataType;
-		Sphere m_BoundingVolume;
+		math::Sphere m_BoundingVolume;
 		std::vector<T_NodeId> m_Instances;
 	};
 

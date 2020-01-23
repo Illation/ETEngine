@@ -1,6 +1,11 @@
 #pragma once
 #include "Geometry.h"
 
+
+namespace et {
+namespace math {
+
+
 //------------------------
 // GetIcosahedronPositions
 //
@@ -9,7 +14,7 @@
 std::vector<vec3> GetIcosahedronPositions(float size)
 {
 	float ratio = (1.f + sqrt(5.f)) / 2.f;
-	float scale = size / etm::length(vec2(ratio, 1.f));
+	float scale = size / math::length(vec2(ratio, 1.f));
 	ratio *= scale;
 
 	std::vector<vec3> ico;
@@ -37,9 +42,9 @@ std::vector<vec3> GetIcosahedronPositions(float size)
 //
 // Indices of the vertices from GetIcosahedronPositions with the front face
 //
-std::vector<etm::uint32> GetIcosahedronIndices()
+std::vector<math::uint32> GetIcosahedronIndices()
 {
-	std::vector<etm::uint32> ret
+	std::vector<math::uint32> ret
 	{
 		1, 3, 8,
 		1, 3, 9,
@@ -75,9 +80,9 @@ std::vector<etm::uint32> GetIcosahedronIndices()
 //
 // Indices of the vertices from GetIcosahedronPositions with the back face
 //
-std::vector<etm::uint32> GetIcosahedronIndicesBFC()
+std::vector<math::uint32> GetIcosahedronIndicesBFC()
 {
-	std::vector<etm::uint32> ret
+	std::vector<math::uint32> ret
 	{
 		1,8,3,
 		1,3,9,
@@ -107,3 +112,7 @@ std::vector<etm::uint32> GetIcosahedronIndicesBFC()
 
 	return ret;
 }
+
+
+} // namespace math
+} // namespace et

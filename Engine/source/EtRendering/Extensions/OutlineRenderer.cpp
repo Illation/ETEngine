@@ -172,7 +172,7 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 	ShaderData const* const shader = mat->GetShader();
 
 	api->SetShader(shader);
-	shader->Upload("uViewSize"_hash, etm::vecCast<float>(dim));
+	shader->Upload("uViewSize"_hash, math::vecCast<float>(dim));
 
 	shader->Upload("uOcclusionFactor"_hash, 0.15f);
 
@@ -189,8 +189,8 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 			{
 				// #todo: collect a list of transforms and draw this instanced
 				mat4 const& transform = nodes[node];
-				Sphere instSphere = Sphere((transform * vec4(mesh.m_BoundingVolume.pos, 1.f)).xyz,
-					etm::length(etm::decomposeScale(transform)) * mesh.m_BoundingVolume.radius);
+				math::Sphere instSphere = math::Sphere((transform * vec4(mesh.m_BoundingVolume.pos, 1.f)).xyz,
+					math::length(math::decomposeScale(transform)) * mesh.m_BoundingVolume.radius);
 
 				if (cam.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
 				{

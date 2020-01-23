@@ -43,7 +43,7 @@ public:
 	void SetCullTransform(mat4 objectWorld);
 
 	VolumeCheck ContainsPoint(const vec3 &point) const;
-	VolumeCheck ContainsSphere(const Sphere &sphere) const;
+	VolumeCheck ContainsSphere(math::Sphere const& sphere) const;
 	VolumeCheck ContainsTriangle(vec3 &a, vec3 &b, vec3 &c);
 	VolumeCheck ContainsTriVolume(vec3 &a, vec3 &b, vec3 &c, float height);
 
@@ -58,7 +58,7 @@ private:
 	mat4 m_CullWorld, m_CullInverse;
 
 	//stuff in the culled objects object space
-	std::vector<Plane> m_Planes;
+	std::vector<math::Plane> m_Planes;
 	FrustumCorners m_Corners;
 	vec3 m_PositionObject;
 

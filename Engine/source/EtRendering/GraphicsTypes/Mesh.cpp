@@ -159,7 +159,7 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 	for (uint32 i = 0; i < tangentInfo.size(); ++i)
 	{
 		m_Tangents.push_back(tangentInfo[i].xyz);
-		m_BiNormals.push_back(etm::cross(m_Normals[i], tangentInfo[i].xyz) * tangentInfo[i].w);
+		m_BiNormals.push_back(math::cross(m_Normals[i], tangentInfo[i].xyz) * tangentInfo[i].w);
 	}
 
 	return true;
@@ -319,11 +319,11 @@ MeshData::MeshData(MeshDataContainer const* const cpuData)
 	float maxRadius = 0.f;
 	for (size_t i = 0u; i < cpuData->m_Positions.size(); i++)
 	{
-		float dist = etm::distanceSquared(center, cpuData->m_Positions[i]);
+		float dist = math::distanceSquared(center, cpuData->m_Positions[i]);
 		if (dist > maxRadius)maxRadius = dist;
 	}
 
-	m_BoundingSphere = Sphere(center, sqrtf(maxRadius));
+	m_BoundingSphere = math::Sphere(center, sqrtf(maxRadius));
 
 	// create interleaved buffer data
 	//--------------------------------

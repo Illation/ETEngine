@@ -84,7 +84,7 @@ void Viewport::Redraw()
 //
 void Viewport::SynchDimensions()
 {
-	OnResize(etm::vecCast<float>(m_Area->GetDimensions()));
+	OnResize(math::vecCast<float>(m_Area->GetDimensions()));
 }
 
 //---------------------------------
@@ -159,7 +159,7 @@ void Viewport::OnResize(vec2 const resolution)
 {
 	MakeCurrent();
 
-	m_Dimensions = etm::vecCast<int32>(resolution);
+	m_Dimensions = math::vecCast<int32>(resolution);
 	m_AspectRatio = resolution.x / resolution.y;
 
 	if (m_Renderer != nullptr)

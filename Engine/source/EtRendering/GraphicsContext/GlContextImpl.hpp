@@ -818,7 +818,7 @@ void GL_CONTEXT_CLASSNAME::SetBlendFunction(E_BlendFactor const sFactor, E_Blend
 //
 void GL_CONTEXT_CLASSNAME::SetViewport(ivec2 const pos, ivec2 const size)
 {
-	if (!(etm::nearEqualsV(m_ViewportPosition, pos) && etm::nearEqualsV(m_ViewportSize, size)))
+	if (!(math::nearEqualsV(m_ViewportPosition, pos) && math::nearEqualsV(m_ViewportSize, size)))
 	{
 		m_ViewportPosition = pos;
 		m_ViewportSize = size;
@@ -844,7 +844,7 @@ void GL_CONTEXT_CLASSNAME::GetViewport(ivec2& pos, ivec2& size)
 //
 void GL_CONTEXT_CLASSNAME::SetClearColor(vec4 const& col)
 {
-	if (!(etm::nearEqualsV(m_ClearColor, col)))
+	if (!(math::nearEqualsV(m_ClearColor, col)))
 	{
 		m_ClearColor = col;
 		glClearColor(col.r, col.g, col.b, col.a);
@@ -982,7 +982,7 @@ void GL_CONTEXT_CLASSNAME::BindBuffer(E_BufferType const target, T_BufferLoc con
 //
 void GL_CONTEXT_CLASSNAME::SetLineWidth(float const lineWidth)
 {
-	if (!etm::nearEquals(m_LineWidth, lineWidth))
+	if (!math::nearEquals(m_LineWidth, lineWidth))
 	{
 		m_LineWidth = lineWidth;
 		glLineWidth(m_LineWidth);
@@ -1346,7 +1346,7 @@ void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, uint8& m
 	}
 
 	// border color
-	if (!etm::nearEqualsV(prev.borderColor, next.borderColor) || force)
+	if (!math::nearEqualsV(prev.borderColor, next.borderColor) || force)
 	{
 		glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, next.borderColor.data.data());
 	}
@@ -1855,19 +1855,19 @@ void GL_CONTEXT_CLASSNAME::PopulateUniform(T_ShaderLoc const program, T_UniformL
 		*static_cast<TextureData const**>(data) = nullptr;
 		return;
 	case E_ParamType::Matrix4x4:
-		glGetUniformfv(program, location, etm::valuePtr(*static_cast<mat4*>(data)));
+		glGetUniformfv(program, location, math::valuePtr(*static_cast<mat4*>(data)));
 		return;
 	case E_ParamType::Matrix3x3:
-		glGetUniformfv(program, location, etm::valuePtr(*static_cast<mat3*>(data)));
+		glGetUniformfv(program, location, math::valuePtr(*static_cast<mat3*>(data)));
 		return;
 	case E_ParamType::Vector4:
-		glGetUniformfv(program, location, etm::valuePtr(*static_cast<vec4*>(data)));
+		glGetUniformfv(program, location, math::valuePtr(*static_cast<vec4*>(data)));
 		return;
 	case E_ParamType::Vector3:
-		glGetUniformfv(program, location, etm::valuePtr(*static_cast<vec3*>(data)));
+		glGetUniformfv(program, location, math::valuePtr(*static_cast<vec3*>(data)));
 		return;
 	case E_ParamType::Vector2:
-		glGetUniformfv(program, location, etm::valuePtr(*static_cast<vec2*>(data)));
+		glGetUniformfv(program, location, math::valuePtr(*static_cast<vec2*>(data)));
 		return;
 	case E_ParamType::UInt:
 		glGetUniformuiv(program, location, static_cast<uint32*>(data));
@@ -1965,7 +1965,7 @@ void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, vec4 const
 //
 void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, mat3 const& data) const
 {
-	glUniformMatrix3fv(location, 1, GL_FALSE, etm::valuePtr(data));
+	glUniformMatrix3fv(location, 1, GL_FALSE, math::valuePtr(data));
 }
 
 //---------------------------------
@@ -1975,7 +1975,7 @@ void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, mat3 const
 //
 void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, mat4 const& data) const
 {
-	glUniformMatrix4fv(location, 1, GL_FALSE, etm::valuePtr(data));
+	glUniformMatrix4fv(location, 1, GL_FALSE, math::valuePtr(data));
 }
 
 //---------------------------------

@@ -4,7 +4,8 @@
 #include "MathUtil.h"
 
 
-namespace etm {
+namespace et {
+namespace math {
 
 
 //---------------------
@@ -44,5 +45,5 @@ private:
 };
 
 
-} // namespace etm
-
+} // namespace math
+} // namespace et

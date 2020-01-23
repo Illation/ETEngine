@@ -106,7 +106,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	for(uint32 i = 0; i < NUM_BLOOM_DOWNSAMPLES; i++)
 	{
 		float resMult = 1.f / (float)std::pow(2, i + 1);
-		ivec2 res = etm::vecCast<int32>(etm::vecCast<float>(dim) * resMult);
+		ivec2 res = math::vecCast<int32>(math::vecCast<float>(dim) * resMult);
 
 		api->BindFramebuffer( m_DownSampleFBO[i] );
 		m_DownSampleTexture[i] = new TextureData(res, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
@@ -169,7 +169,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 		}
 
 		float resMult = 1.f / (float)std::pow(2, i + 1);
-		api->SetViewport(ivec2(0), etm::vecCast<int32>(etm::vecCast<float>(dim) * resMult));
+		api->SetViewport(ivec2(0), math::vecCast<int32>(math::vecCast<float>(dim) * resMult));
 		api->BindFramebuffer(m_DownSampleFBO[i]);
 		if (i > 0)
 		{
@@ -281,7 +281,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 		api->BindFramebuffer(FBO);
 
 		api->SetShader(m_pFXAAShader.get());
-		m_pFXAAShader->Upload("uInverseScreen"_hash, 1.f / etm::vecCast<float>(dim));
+		m_pFXAAShader->Upload("uInverseScreen"_hash, 1.f / math::vecCast<float>(dim));
 		m_pFXAAShader->Upload("texColor"_hash, static_cast<TextureData const*>(m_PingPongTexture[1]));
 
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
@@ -332,7 +332,7 @@ void PostProcessingRenderer::ResizeFBTextures()
 	{
 		//api->BindFramebuffer( m_DownSampleFBO[i] );
 		float resMult = 1.f / (float)std::pow( 2, i + 1 );
-		api->SetViewport(ivec2(0), etm::vecCast<int32>(etm::vecCast<float>(dim) * resMult));
+		api->SetViewport(ivec2(0), math::vecCast<int32>(math::vecCast<float>(dim) * resMult));
 
 		m_DownSampleTexture[i]->Resize(dim);
 		m_DownPingPongTexture[i]->Resize(dim);

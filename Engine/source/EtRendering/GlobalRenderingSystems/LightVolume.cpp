@@ -31,7 +31,7 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 	}
 
 	//Frustum culling
-	Sphere objSphere = Sphere(pos, radius);
+	math::Sphere objSphere = math::Sphere(pos, radius);
 	if (render::ShadedSceneRenderer::GetCurrent()->GetCamera().GetFrustum().ContainsSphere(objSphere) == VolumeCheck::OUTSIDE)
 	{
 		return;
@@ -43,7 +43,7 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 	shader->Upload("Position"_hash, pos); 
 	shader->Upload("Color"_hash, col);
 	shader->Upload("Radius"_hash, radius);
-	shader->Upload("model"_hash, etm::scale(vec3(radius))*etm::translate(pos));
+	shader->Upload("model"_hash, math::scale(vec3(radius))*math::translate(pos));
 
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::IcoSphere<2> >();
 }

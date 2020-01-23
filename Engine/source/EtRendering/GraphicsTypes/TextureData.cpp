@@ -197,7 +197,7 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	}
 
 	render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
-	if (!etm::nearEquals(graphicsSettings.TextureScaleFactor, 1.f))
+	if (!math::nearEquals(graphicsSettings.TextureScaleFactor, 1.f))
 	{
 		if (!m_ForceResolution)
 		{

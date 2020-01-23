@@ -6,7 +6,7 @@ namespace et {
 namespace core {
 
 
-etm::Random& GetGlobalRandom();
+math::Random& GetGlobalRandom();
 
 
 } // namespace core

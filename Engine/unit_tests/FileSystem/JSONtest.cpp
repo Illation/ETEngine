@@ -36,12 +36,12 @@ TEST_CASE("Parse", "[json]")
 	core::JSON::Array* jnumbers = (*(*root)["menu"]->obj())["num \"array"]->arr();
 	REQUIRE((*jnumbers)[0]->GetType() == core::JSON::JSON_Number);
 	std::vector<double> numbers = jnumbers->NumArr();
-	REQUIRE(etm::nearEquals(numbers[0], 10.0) == true);
-	REQUIRE(etm::nearEquals(numbers[1], 3.345) == true);
-	REQUIRE(etm::nearEquals(numbers[2], 2.0e4) == true);
-	REQUIRE(etm::nearEquals(numbers[3], 4.53e-2) == true);
-	REQUIRE(etm::nearEquals(numbers[4], 0.4e12) == true);
-	REQUIRE(etm::nearEquals(numbers[5], -12.43e+3) == true);
+	REQUIRE(math::nearEquals(numbers[0], 10.0) == true);
+	REQUIRE(math::nearEquals(numbers[1], 3.345) == true);
+	REQUIRE(math::nearEquals(numbers[2], 2.0e4) == true);
+	REQUIRE(math::nearEquals(numbers[3], 4.53e-2) == true);
+	REQUIRE(math::nearEquals(numbers[4], 0.4e12) == true);
+	REQUIRE(math::nearEquals(numbers[5], -12.43e+3) == true);
 
 	core::JSON::Array* menu = (*(*(*root)["menu"]->obj())["popup"]->obj())["menuitem"]->arr();
 	REQUIRE((*menu)[0]->GetType() == core::JSON::JSON_Object);

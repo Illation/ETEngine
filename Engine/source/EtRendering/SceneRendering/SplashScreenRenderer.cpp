@@ -80,12 +80,12 @@ void SplashScreenRenderer::OnRender(T_FbLoc const targetFb)
 	ivec2 titleSize = m_TextRenderer.GetTextSize(m_Title, m_SplashTitleFont.get(), titleFontSize);
 	m_TextRenderer.SetColor(vec4(1.f));
 	m_TextRenderer.SetFont(m_SplashTitleFont.get());
-	m_TextRenderer.DrawText(m_Title, etm::vecCast<float>(m_Dimensions / 2 - titleSize / 2), titleFontSize);
+	m_TextRenderer.DrawText(m_Title, math::vecCast<float>(m_Dimensions / 2 - titleSize / 2), titleFontSize);
 
 	m_TextRenderer.SetFont(m_SplashRegFont.get());
 	int16 loadingFontSize = static_cast<int16>(50.f * (static_cast<float>(m_Dimensions.x) / 1440.f));
 	ivec2 loadingSize = m_TextRenderer.GetTextSize(m_Subtitle, m_SplashRegFont.get(), loadingFontSize);
-	m_TextRenderer.DrawText(m_Subtitle, etm::vecCast<float>(m_Dimensions - ivec2(loadingSize.x + 20, 20)), loadingFontSize);
+	m_TextRenderer.DrawText(m_Subtitle, math::vecCast<float>(m_Dimensions - ivec2(loadingSize.x + 20, 20)), loadingFontSize);
 
 	m_SpriteRenderer.Draw();
 	m_TextRenderer.Draw();

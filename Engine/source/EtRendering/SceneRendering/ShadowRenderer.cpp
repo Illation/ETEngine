@@ -44,10 +44,10 @@ void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShado
 	//Calculate light camera matrix
 	//*****************************
 	//view
-	vec3 worldPos = etm::decomposePosition(lightTransform);
+	vec3 worldPos = math::decomposePosition(lightTransform);
 	vec3 lookAt = worldPos - (lightTransform * vec4(vec3::FORWARD, 1.f)).xyz;
 	vec3 upVec = (lightTransform * vec4(vec3::UP, 1.f)).xyz;
-	mat4 lightView = etm::lookAt(worldPos, lookAt, upVec);
+	mat4 lightView = math::lookAt(worldPos, lookAt, upVec);
 
 	//transform frustum into light space
 	FrustumCorners corners = shadowRenderer->GetCamera().GetFrustum().GetCorners();
@@ -87,7 +87,7 @@ void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShado
 		}
 
 		float mult = 0.25f;
-		mat4 lightProjection = etm::orthographic(left*mult, right*mult, bottom*mult, top*mult, zNear, zFar*mult);
+		mat4 lightProjection = math::orthographic(left*mult, right*mult, bottom*mult, top*mult, zNear, zFar*mult);
 
 		//view projection
 		mat4 lightVP = lightView * lightProjection;

@@ -127,7 +127,7 @@ void GtkRenderArea::OnResize(int32 x, int32 y)
 {
 	if (m_OnResize)
 	{
-		m_OnResize(etm::vecCast<float>(ivec2(x, y)));
+		m_OnResize(math::vecCast<float>(ivec2(x, y)));
 	}
 }
 

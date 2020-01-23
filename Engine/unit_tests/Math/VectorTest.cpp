@@ -5,6 +5,9 @@
 #include <EtCore/Util/AtomicTypes.h>
 
 
+using namespace et;
+
+
 TEST_CASE("Generic vector functionality", "[vector]")
 {
 	using namespace et;
@@ -17,7 +20,7 @@ TEST_CASE("Generic vector functionality", "[vector]")
 
 	SECTION("default constructor")
 	{
-		etm::vector<5, int32> vec = etm::vector<5, int32>();
+		math::vector<5, int32> vec = math::vector<5, int32>();
 		REQUIRE(vec[0] == 0);
 		REQUIRE(vec[1] == 0);
 		REQUIRE(vec[2] == 0);
@@ -26,7 +29,7 @@ TEST_CASE("Generic vector functionality", "[vector]")
 	}
 	SECTION("single input constructor")
 	{
-		etm::vector<5, int32> vec = etm::vector<5, int32>(input1);
+		math::vector<5, int32> vec = math::vector<5, int32>(input1);
 		REQUIRE(vec[0] == input1);
 		REQUIRE(vec[1] == input1);
 		REQUIRE(vec[2] == input1);
@@ -35,7 +38,7 @@ TEST_CASE("Generic vector functionality", "[vector]")
 	}
 	SECTION("initializer list constructor")
 	{
-		etm::vector<5, int32> vec = { input1, input2, input3, input4, input5 };
+		math::vector<5, int32> vec = { input1, input2, input3, input4, input5 };
 
 		SECTION("verify initializer list")
 		{
@@ -47,7 +50,7 @@ TEST_CASE("Generic vector functionality", "[vector]")
 		}
 		SECTION("copy constructor")
 		{
-			etm::vector<5, int32> vec2 = etm::vector<5, int32>(vec);
+			math::vector<5, int32> vec2 = math::vector<5, int32>(vec);
 			REQUIRE(vec2[0] == input1);
 			REQUIRE(vec2[1] == input2);
 			REQUIRE(vec2[2] == input3);
@@ -56,7 +59,7 @@ TEST_CASE("Generic vector functionality", "[vector]")
 		}
 		SECTION("negate operator")
 		{
-			etm::vector<5, int32> vec2 = -vec;
+			math::vector<5, int32> vec2 = -vec;
 
 			//original unharmed
 			REQUIRE(vec[0] == input1);
@@ -133,29 +136,29 @@ TEST_CASE("specific vec2 functionality", "[vector]")
 		SECTION("with 0")
 		{
 			vec = vec2(0);
-			REQUIRE(etm::nearEqualsV(etm::perpendicular(vec), vec2(0)) == true);
+			REQUIRE(math::nearEqualsV(math::perpendicular(vec), vec2(0)) == true);
 		}
 		SECTION("with pos pos")
 		{
 			vec = vec2(1, 2);
-			REQUIRE(etm::nearEqualsV(etm::perpendicular(vec), vec2(-2, 1)) == true );
+			REQUIRE(math::nearEqualsV(math::perpendicular(vec), vec2(-2, 1)) == true );
 		}
 		SECTION("with pos neg")
 		{
 			vec = vec2(1, -2);
-			REQUIRE(etm::nearEqualsV(etm::perpendicular(vec), vec2(2, 1)) == true );
+			REQUIRE(math::nearEqualsV(math::perpendicular(vec), vec2(2, 1)) == true );
 		}
 		SECTION("with neg pos")
 		{
 			vec = vec2(-1, 2);
-			REQUIRE(etm::nearEqualsV(etm::perpendicular(vec), vec2(-2, -1)) == true );
+			REQUIRE(math::nearEqualsV(math::perpendicular(vec), vec2(-2, -1)) == true );
 		}
 		SECTION("with neg neg")
 		{
 			vec = vec2(-1, -2);
-			REQUIRE(etm::nearEqualsV(etm::perpendicular(vec), vec2(2, -1)) == true );
+			REQUIRE(math::nearEqualsV(math::perpendicular(vec), vec2(2, -1)) == true );
 		}
-		REQUIRE(etm::dot(vec, etm::perpendicular(vec)) == 0);
+		REQUIRE(math::dot(vec, math::perpendicular(vec)) == 0);
 	}
 	SECTION("signed angle")
 	{
@@ -163,32 +166,32 @@ TEST_CASE("specific vec2 functionality", "[vector]")
 		SECTION("with 0")
 		{
 			a = vec2(0);
-			REQUIRE(etm::nearEquals(etm::angleSigned(a, a), 0.f) == true);
+			REQUIRE(math::nearEquals(math::angleSigned(a, a), 0.f) == true);
 		}
 		SECTION("with same")
 		{
-			REQUIRE(etm::nearEquals(etm::angleSigned(a, a), 0.f) == true);
+			REQUIRE(math::nearEquals(math::angleSigned(a, a), 0.f) == true);
 		}
 		SECTION("with perpendicular")
 		{
-			vec2 b = etm::perpendicular(a);
-			REQUIRE(etm::nearEquals(etm::angleSigned(a, b), etm::PI_DIV2, 1.000001f) == true);
+			vec2 b = math::perpendicular(a);
+			REQUIRE(math::nearEquals(math::angleSigned(a, b), math::PI_DIV2, 1.000001f) == true);
 		}
 		SECTION("with negative sign")
 		{
-			vec2 b = -etm::perpendicular(a);
-			REQUIRE(etm::nearEquals(etm::angleSigned(a, b), -etm::PI_DIV2) == true);
+			vec2 b = -math::perpendicular(a);
+			REQUIRE(math::nearEquals(math::angleSigned(a, b), -math::PI_DIV2) == true);
 		}
 		SECTION("with opposite")
 		{
 			vec2 b = -a;
-			REQUIRE(etm::nearEquals(etm::angleSigned(a, b), etm::PI) == true);
+			REQUIRE(math::nearEquals(math::angleSigned(a, b), math::PI) == true);
 		}
 		SECTION("45 degrees")
 		{
 			a = vec2(1, 0);
 			vec2 b = vec2(10, 10);
-			REQUIRE(etm::nearEquals(etm::angleSigned(a, b), etm::PI*0.25f, 1.000001f) == true);
+			REQUIRE(math::nearEquals(math::angleSigned(a, b), math::PI*0.25f, 1.000001f) == true);
 		}
 	}
 }
@@ -286,8 +289,8 @@ TEST_CASE("specific vec3 functionality", "[vector]")
 		SECTION("with 0")
 		{
 			bVec = vec3(0);
-			vec3 result = etm::cross(bVec, bVec);
-			REQUIRE(etm::nearEqualsV(result, vec3::ZERO));
+			vec3 result = math::cross(bVec, bVec);
+			REQUIRE(math::nearEqualsV(result, vec3::ZERO));
 		}
 		SECTION("with up")
 		{
@@ -305,35 +308,35 @@ TEST_CASE("specific vec3 functionality", "[vector]")
 		{
 			bVec = vec3::RIGHT;
 			vec3 cVec = vec3::UP;
-			vec3 result = etm::cross(bVec, cVec);
-			REQUIRE(etm::nearEqualsV(result, vec3::FORWARD));
-			result = etm::cross(cVec, bVec);
-			REQUIRE(etm::nearEqualsV(result, vec3::BACK));
+			vec3 result = math::cross(bVec, cVec);
+			REQUIRE(math::nearEqualsV(result, vec3::FORWARD));
+			result = math::cross(cVec, bVec);
+			REQUIRE(math::nearEqualsV(result, vec3::BACK));
 		}
 		SECTION("with forward")
 		{
 			bVec = vec3::FORWARD;
 			vec3 cVec = vec3::RIGHT;
-			vec3 result = etm::cross(cVec, bVec);
-			REQUIRE(etm::nearEqualsV(result, vec3::DOWN));
-			result = etm::cross(bVec, cVec);
-			REQUIRE(etm::nearEqualsV(result, vec3::UP));
+			vec3 result = math::cross(cVec, bVec);
+			REQUIRE(math::nearEqualsV(result, vec3::DOWN));
+			result = math::cross(bVec, cVec);
+			REQUIRE(math::nearEqualsV(result, vec3::UP));
 			cVec = vec3::RIGHT * 2.f;
-			result = etm::cross(bVec, cVec);
-			REQUIRE(etm::nearEqualsV(result, vec3::UP * 2.f));
+			result = math::cross(bVec, cVec);
+			REQUIRE(math::nearEqualsV(result, vec3::UP * 2.f));
 			cVec = vec3::UP;
-			result = etm::cross(bVec, cVec);
-			REQUIRE(etm::nearEqualsV(result, vec3::LEFT));
-			result = etm::cross(cVec, bVec);
-			REQUIRE(etm::nearEqualsV(result, vec3::RIGHT));
+			result = math::cross(bVec, cVec);
+			REQUIRE(math::nearEqualsV(result, vec3::LEFT));
+			result = math::cross(cVec, bVec);
+			REQUIRE(math::nearEqualsV(result, vec3::RIGHT));
 		}
 		SECTION("with back")
 		{
 			bVec = vec3::BACK;
 		}
-		vec3 result = etm::cross(vec, bVec);
-		REQUIRE(etm::dot(vec, result) == 0);
-		REQUIRE(etm::dot(bVec, result) == 0);
+		vec3 result = math::cross(vec, bVec);
+		REQUIRE(math::dot(vec, result) == 0);
+		REQUIRE(math::dot(bVec, result) == 0);
 	}
 	SECTION("angle with axis")
 	{
@@ -345,7 +348,7 @@ TEST_CASE("specific vec3 functionality", "[vector]")
 		SECTION("with 0")
 		{
 			b = vec3::ZERO;
-			angle = etm::angleSafeAxis(a, b, axis);
+			angle = math::angleSafeAxis(a, b, axis);
 			REQUIRE(std::isnan(angle));
 			REQUIRE(std::isnan(axis.x));
 			REQUIRE(std::isnan(axis.y));
@@ -354,23 +357,23 @@ TEST_CASE("specific vec3 functionality", "[vector]")
 		SECTION("positive 90 deg")
 		{
 			b = vec3::UP;
-			angle = etm::angleSafeAxis(a, b, axis);
-			REQUIRE(angle == etm::PI_DIV2);
-			REQUIRE(etm::nearEqualsV(axis, vec3::FORWARD));
+			angle = math::angleSafeAxis(a, b, axis);
+			REQUIRE(angle == math::PI_DIV2);
+			REQUIRE(math::nearEqualsV(axis, vec3::FORWARD));
 		}
 		SECTION("negative 90 deg")
 		{
 			b = vec3::DOWN;
-			angle = etm::angleSafeAxis(a, b, axis);
-			REQUIRE(angle == etm::PI_DIV2);
-			REQUIRE(etm::nearEqualsV(axis, vec3::BACK));
+			angle = math::angleSafeAxis(a, b, axis);
+			REQUIRE(angle == math::PI_DIV2);
+			REQUIRE(math::nearEqualsV(axis, vec3::BACK));
 		}
 		SECTION("positive 45 deg")
 		{
 			b = vec3(1, 1, 0);
-			angle = etm::angleSafeAxis(a, b, axis);
-			REQUIRE(angle == etm::PI_DIV4);
-			REQUIRE(etm::nearEqualsV(axis, vec3::FORWARD));
+			angle = math::angleSafeAxis(a, b, axis);
+			REQUIRE(angle == math::PI_DIV4);
+			REQUIRE(math::nearEqualsV(axis, vec3::FORWARD));
 		}
 	}
 }
@@ -539,48 +542,48 @@ TEST_CASE("vector math", "[vector]")
 
 	SECTION("add")
 	{
-		REQUIRE(etm::nearEqualsV(vecA+vecB, vec3(6.5f, 6.6f, 6.5f)));
-		REQUIRE(etm::nearEqualsV(vecA+vecC, vec3(-0.8f, 7.3f, 1.5f), 0.000001f));
-		REQUIRE(etm::nearEqualsV(vecB+vecC, vec3(0.7f, 7.3f, 0.f), 0.000001f));
+		REQUIRE(math::nearEqualsV(vecA+vecB, vec3(6.5f, 6.6f, 6.5f)));
+		REQUIRE(math::nearEqualsV(vecA+vecC, vec3(-0.8f, 7.3f, 1.5f), 0.000001f));
+		REQUIRE(math::nearEqualsV(vecB+vecC, vec3(0.7f, 7.3f, 0.f), 0.000001f));
 	}
 	SECTION("sub")
 	{
-		REQUIRE(etm::nearEqualsV(vecA-vecB, vec3(-1.5f, 0.f, 1.5f)));
-		REQUIRE(etm::nearEqualsV(vecA-vecC, vec3(5.8f, -0.7f, 6.5f), 0.000001f));
-		REQUIRE(etm::nearEqualsV(vecB-vecC, vec3(7.3f, -0.7f, 5.f), 0.000001f));
+		REQUIRE(math::nearEqualsV(vecA-vecB, vec3(-1.5f, 0.f, 1.5f)));
+		REQUIRE(math::nearEqualsV(vecA-vecC, vec3(5.8f, -0.7f, 6.5f), 0.000001f));
+		REQUIRE(math::nearEqualsV(vecB-vecC, vec3(7.3f, -0.7f, 5.f), 0.000001f));
 	}
 	SECTION("mul")
 	{
-		REQUIRE(etm::nearEqualsV(vecA*vecB, vec3(10.f, 10.89f, 10.f), 0.000001f));
-		REQUIRE(etm::nearEqualsV(vecA*vecC, vec3(-8.25f, 13.2f, -10.f), 0.000001f));
-		REQUIRE(etm::nearEqualsV(vecB*vecC, vec3(-13.2f, 13.2f, -6.25f), 0.000001f));
+		REQUIRE(math::nearEqualsV(vecA*vecB, vec3(10.f, 10.89f, 10.f), 0.000001f));
+		REQUIRE(math::nearEqualsV(vecA*vecC, vec3(-8.25f, 13.2f, -10.f), 0.000001f));
+		REQUIRE(math::nearEqualsV(vecB*vecC, vec3(-13.2f, 13.2f, -6.25f), 0.000001f));
 	}
 	SECTION("div")
 	{
-		REQUIRE(etm::nearEqualsV(vecA/vecB, vec3(0.625f, 1.f, 1.6f)));
-		REQUIRE(etm::nearEqualsV(vecA/vecC, vec3(-0.7575757575757576f, 0.825f, -1.6f)));
-		REQUIRE(etm::nearEqualsV(vecB/vecC, vec3(-1.212121212121212f, 0.825f, -1.f)));
+		REQUIRE(math::nearEqualsV(vecA/vecB, vec3(0.625f, 1.f, 1.6f)));
+		REQUIRE(math::nearEqualsV(vecA/vecC, vec3(-0.7575757575757576f, 0.825f, -1.6f)));
+		REQUIRE(math::nearEqualsV(vecB/vecC, vec3(-1.212121212121212f, 0.825f, -1.f)));
 	}
 	SECTION("dot")
 	{
-		REQUIRE(etm::nearEquals(etm::dot(vecA,vecB), 30.89f));
-		REQUIRE(etm::nearEquals(etm::dot(vecA,vecC), -5.05f));
-		REQUIRE(etm::nearEquals(etm::dot(vecB,vecC), -6.25f));
+		REQUIRE(math::nearEquals(math::dot(vecA,vecB), 30.89f));
+		REQUIRE(math::nearEquals(math::dot(vecA,vecC), -5.05f));
+		REQUIRE(math::nearEquals(math::dot(vecB,vecC), -6.25f));
 	}
 	SECTION("dist")//by verifying this works, length and lengthSq must also work
 	{
-		REQUIRE(etm::nearEquals(etm::distance(vecA,vecB), 2.12132f, 0.00001f));
-		REQUIRE(etm::nearEquals(etm::distance(vecA,vecC), 8.739565206576355f, 0.000001f));
-		REQUIRE(etm::nearEquals(etm::distance(vecB,vecC), 8.875809822207774f, 0.000001f));
+		REQUIRE(math::nearEquals(math::distance(vecA,vecB), 2.12132f, 0.00001f));
+		REQUIRE(math::nearEquals(math::distance(vecA,vecC), 8.739565206576355f, 0.000001f));
+		REQUIRE(math::nearEquals(math::distance(vecB,vecC), 8.875809822207774f, 0.000001f));
 	}
 	SECTION("normalize")
 	{
-		REQUIRE(etm::nearEqualsV(etm::normalize(vecA), vec3(0.4342739277195007f, 0.5732415845897409f, 0.6948382843512011f)));
-		REQUIRE(etm::nearEquals(etm::length(etm::normalize(vecA)), 1.f));
-		REQUIRE(etm::nearEqualsV(etm::normalize(vecB), vec3(0.6948382843512011f, 0.5732415845897409f, 0.4342739277195007f)));
-		REQUIRE(etm::nearEquals(etm::length(etm::normalize(vecB)), 1.f));
-		REQUIRE(etm::nearEqualsV(etm::normalize(vecC), vec3(-0.5732415845897409f, 0.6948382843512011f, -0.4342739277195007f)));
-		REQUIRE(etm::nearEquals(etm::length(etm::normalize(vecC)), 1.f));
+		REQUIRE(math::nearEqualsV(math::normalize(vecA), vec3(0.4342739277195007f, 0.5732415845897409f, 0.6948382843512011f)));
+		REQUIRE(math::nearEquals(math::length(math::normalize(vecA)), 1.f));
+		REQUIRE(math::nearEqualsV(math::normalize(vecB), vec3(0.6948382843512011f, 0.5732415845897409f, 0.4342739277195007f)));
+		REQUIRE(math::nearEquals(math::length(math::normalize(vecB)), 1.f));
+		REQUIRE(math::nearEqualsV(math::normalize(vecC), vec3(-0.5732415845897409f, 0.6948382843512011f, -0.4342739277195007f)));
+		REQUIRE(math::nearEquals(math::length(math::normalize(vecC)), 1.f));
 	}
 	//angles already tested by extension of specific vec 3 solution
 }

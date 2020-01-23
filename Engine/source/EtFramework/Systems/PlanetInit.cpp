@@ -22,7 +22,7 @@ namespace fw {
 void PlanetInit::OnComponentAdded(EcsController& controller, PlanetComponent& component, T_EntityId const entity)
 {
 	TransformComponent& transf = controller.GetComponent<TransformComponent>(entity);
-	transf.SetRotation(transf.GetRotation() * quat(vec3(0.0f, 1.0f, 0.0f), etm::radians(270.f)));
+	transf.SetRotation(transf.GetRotation() * quat(vec3(0.0f, 1.0f, 0.0f), math::radians(270.f)));
 
 	component.m_PlanetId = UnifiedScene::Instance().GetRenderScene().AddPlanet(component.m_Params, transf.GetNodeId());
 }

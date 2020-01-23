@@ -198,8 +198,8 @@ void primitives::IcoSphere<level>::Draw()
 template<int32 level>
 void primitives::IcoSphere<level>::Initialize()
 {
-	auto ico = GetIcosahedronPositions(1);
-	auto indices = GetIcosahedronIndicesBFC();
+	auto ico = math::GetIcosahedronPositions(1);
+	auto indices = math::GetIcosahedronIndicesBFC();
 	std::vector<vec3> vertices;
 	for (size_t i = 0; i < indices.size(); i += 3)
 	{
@@ -231,9 +231,9 @@ void primitives::IcoSphere<level>::SubAndPush(std::vector<vec3> &vertices, const
 	if (lev < level)
 	{
 		//find midpoints
-		vec3 A = etm::normalize(b + ((c - b)*0.5f));
-		vec3 B = etm::normalize(c + ((a - c)*0.5f));
-		vec3 C = etm::normalize(a + ((b - a)*0.5f));
+		vec3 A = math::normalize(b + ((c - b)*0.5f));
+		vec3 B = math::normalize(c + ((a - c)*0.5f));
+		vec3 C = math::normalize(a + ((b - a)*0.5f));
 		//Make 4 new triangles
 		int32 nLevel = lev + 1;
 		SubAndPush(vertices, nLevel, B, A, c);

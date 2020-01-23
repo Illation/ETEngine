@@ -126,8 +126,8 @@ void Camera::RecalculateView()
 {
 	vec3 const lookAt = m_Position + m_Forward;
 
-	m_View = etm::lookAt(m_Position, lookAt, m_Up);
-	m_ViewInverse = etm::inverse(m_View);
+	m_View = math::lookAt(m_Position, lookAt, m_Up);
+	m_ViewInverse = math::inverse(m_View);
 }
 
 //----------------------------
@@ -143,7 +143,7 @@ void Camera::RecalculateProjection()
 	//Calculate projection
 	if (m_IsPerspective)
 	{
-		m_Projection = etm::perspective(etm::radians(m_FieldOfView), aspectRatio, m_NearPlane, m_FarPlane);
+		m_Projection = math::perspective(math::radians(m_FieldOfView), aspectRatio, m_NearPlane, m_FarPlane);
 	}
 	else
 	{
@@ -152,7 +152,7 @@ void Camera::RecalculateProjection()
 		float viewWidth = (m_Size > 0) ? m_Size * aspectRatio : dim.x;
 		float viewHeight = (m_Size > 0) ? m_Size : dim.y;
 
-		m_Projection = etm::orthographic(0.f, viewWidth, viewHeight, 0.f, m_NearPlane, m_FarPlane);
+		m_Projection = math::orthographic(0.f, viewWidth, viewHeight, 0.f, m_NearPlane, m_FarPlane);
 	}
 
 	//Calculate parameters to linearize depthbuffer values
@@ -168,11 +168,11 @@ void Camera::RecalculateProjection()
 void Camera::RecalculateDerived()
 {
 	m_ViewProjection = m_View * m_Projection;
-	m_ViewProjectionInverse = etm::inverse(m_ViewProjection);
+	m_ViewProjectionInverse = math::inverse(m_ViewProjection);
 
 	// removes the position component from the view matrix
-	m_StaticViewProjection = etm::DiscardW(m_View) * m_Projection;
-	m_StaticViewProjectionInverse = etm::inverse(m_StaticViewProjection);
+	m_StaticViewProjection = math::DiscardW(m_View) * m_Projection;
+	m_StaticViewProjectionInverse = math::inverse(m_StaticViewProjection);
 
 	// update frustum
 	m_Frustum.SetCullTransform(mat4()); // Frustum will be in world space and objects need to transform themselves

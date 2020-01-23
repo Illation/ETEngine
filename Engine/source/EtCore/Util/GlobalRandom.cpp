@@ -11,9 +11,9 @@ namespace core {
 //
 // Globally uniform random engine ensures consistency
 //
-etm::Random& GetGlobalRandom()
+math::Random& GetGlobalRandom()
 {
-	static etm::Random s_Random(static_cast<uint32>(ContextManager::GetInstance()->GetActiveContext()->time->SystemTimestamp()));
+	static math::Random s_Random(static_cast<uint32>(ContextManager::GetInstance()->GetActiveContext()->time->SystemTimestamp()));
 	return s_Random;
 }
 

@@ -135,7 +135,7 @@ void GlfwRenderArea::SetSize(ivec2 const size)
 {
 	if (m_OnResize)
 	{
-		m_OnResize(etm::vecCast<float>(size));
+		m_OnResize(math::vecCast<float>(size));
 	}
 }
 
