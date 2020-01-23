@@ -131,7 +131,7 @@ __0.7 :__
  
 ## Third Party
 
-For a list of third party libraries and licenses check [HERE](Engine/third_party/Readme.md).
+For a list of third party libraries and licenses check [HERE](Engine/third_party/README.md).
 
 ## Screenshots
 
