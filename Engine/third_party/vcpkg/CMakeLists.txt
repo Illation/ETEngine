@@ -16,7 +16,13 @@ getVcpkgTarget(_vcpkgTarget)
 
 set(_modDir "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg")
 set(_buildDir "../build/${_p}")
-set(_vcpkgExe "${_modDir}/vcpkg.exe")
+if(WIN32)
+    set(_vcpkgExe "${_modDir}/vcpkg.exe")
+    set(_vcpkgBootstrap "${_modDir}/bootstrap-vcpkg.bat")
+else()
+    set(_vcpkgExe "${_modDir}/vcpkg")
+    set(_vcpkgBootstrap "${_modDir}/bootstrap-vcpkg.sh")
+endif()
 set(_tripletDir "${_modDir}/triplets")
 
 # ensure we have a vcpkg exe
@@ -25,13 +31,12 @@ if(NOT EXISTS "${_vcpkgExe}")
     message(STATUS "Bootstrapping VCPKG")
     message(STATUS "--------------------")
     # on other OS we should use the sh script here
-    execute_process(COMMAND ${_modDir}/bootstrap-vcpkg.bat
+    execute_process(COMMAND ${_vcpkgBootstrap}
                     WORKING_DIRECTORY ${_modDir}/
                     RESULT_VARIABLE _bootVcpkgResult)
     if(NOT _bootVcpkgResult EQUAL "0")
         message(FATAL_ERROR "Failed to bootstreap VCPKG")
     endif()
-
 else()
 
 	message(STATUS "Library executable already build: VCPKG")
