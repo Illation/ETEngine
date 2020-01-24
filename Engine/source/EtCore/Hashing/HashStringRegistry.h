@@ -1,6 +1,8 @@
 #pragma once
 #include "Hash.h"
 
+#include <EtCore/Containers/linear_hash_map.h>
+
 
 // enable to detect strings which result in the same hash as they are registered
 #define ET_DETECT_HASHSTRING_COLLISIONS false
@@ -43,7 +45,7 @@ public:
 	///////
 
 private:
-	std::unordered_map<T_Hash, std::string> m_RegisteredHashes;
+	std::unordered_map<T_Hash, std::string> m_RegisteredHashes; // #todo: replace with lin_hash_map for StringHash natvis support
 };
 
 

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "serialization.h"
 
+#include <EtCore/Hashing/HashString.h>
+
 
 namespace et {
 namespace core {
@@ -285,6 +287,33 @@ bool AtomicTypeToJsonValue(rttr::type const& valueType, rttr::variant const& var
 		jString->value = var.to_string();
 		outVal = jString;
 		return true;
+	}
+	else if (valueType == rttr::type::get<HashString>()) // hash string to json - depending on the build we store strings or integers
+	{
+		ET_ASSERT(var.is_type<HashString>());
+		HashString const& hash = var.get_value<HashString>();
+
+#if ET_HASH_STRING_ENABLED
+		char const* const str = hash.GetStringDbg();
+		if (str != nullptr)
+		{
+			ET_ASSERT(hash.Get() == GetHash(str));
+
+			JSON::String* jString = new JSON::String();
+			jString->value = str;
+			outVal = jString;
+			return true;
+		}
+		else
+		{
+#endif
+			JSON::Number* jNum = new JSON::Number();
+			jNum->valueInt = hash.Get();
+			jNum->isInt = true;
+			outVal = jNum;
+#if ET_HASH_STRING_ENABLED
+		}
+#endif
 	}
 
 	// couldn't handle type, return false to indicate that this should be an object or array

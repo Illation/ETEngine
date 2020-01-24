@@ -79,7 +79,7 @@ ModelComponent::ModelComponent(AssetPtr<render::MeshData> const mesh, I_AssetPtr
 //
 ModelComponent* ModelComponentDesc::MakeData()
 {
-	return new ModelComponent(GetHash(mesh), GetHash(material));
+	return new ModelComponent(mesh.Get(), material.Get());
 }
 
 

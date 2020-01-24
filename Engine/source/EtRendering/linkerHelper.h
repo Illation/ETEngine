@@ -1,7 +1,6 @@
 #pragma once
+#include <EtCore/linkerHelper.h>
 
-#include <EtCore/Content/AssetStub.h>
-#include <EtCore/Reflection/registerMath.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/Mesh.h>
 #include <EtRendering/GraphicsTypes/EnvironmentMap.h>
@@ -23,7 +22,8 @@ namespace render {
 //
 void ForceLinking()
 {
-	core::FORCE_LINKING(StubAsset)
+	core::ForceLinking();
+
 	FORCE_LINKING(ShaderAsset)
 	FORCE_LINKING(MeshAsset)
 	FORCE_LINKING(MaterialAsset)
@@ -31,7 +31,6 @@ void ForceLinking()
 	FORCE_LINKING(EnvironmentMapAsset)
 	FORCE_LINKING(FontAsset)
 	FORCE_LINKING(TextureAsset)
-	core::FORCE_LINKING(MathRegistrationLinkEnforcer)
 	FORCE_LINKING(PostProcessingSettings)
 }
 

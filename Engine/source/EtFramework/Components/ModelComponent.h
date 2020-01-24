@@ -74,8 +74,8 @@ public:
 	// Data
 	///////
 
-	std::string mesh;
-	std::string material;
+	core::HashString mesh;
+	core::HashString material;
 };
 
 

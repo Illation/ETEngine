@@ -1,6 +1,8 @@
 #include "stdafx.h"	
 #include "HashString.h"
 
+#include <rttr/type.h>
+
 #include "HashStringRegistry.h"
 
 
@@ -11,6 +13,28 @@ namespace core {
 //=============
 // Hash String
 //=============
+
+
+// reflection
+//------------
+
+RTTR_REGISTRATION
+{
+	rttr::registration::class_<HashString>("hash string");
+
+	// allow serialization / deserialization of hash strings to implicitly convert 
+	rttr::type::register_converter_func([](std::string const& str, bool& ok)->HashString
+		{
+			ok = true;
+			return HashString(str.c_str());
+		});
+	rttr::type::register_converter_func([](T_Hash const hash, bool& ok)->HashString
+		{
+			ok = true;
+			return HashString(hash);
+		});
+}
+DEFINE_FORCED_LINKING(HashString)
 
 
 //------------------------

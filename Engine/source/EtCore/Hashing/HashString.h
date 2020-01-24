@@ -1,13 +1,16 @@
 #pragma once
 #include "Hash.h"
 
+#include <EtCore/Util/LinkerUtils.h>
+
+
 // definitions
 //-------------
 
 #ifdef ET_SHIPPING
-	#define ET_HASH_STRING_ENABLED true
-#else
 	#define ET_HASH_STRING_ENABLED false
+#else
+	#define ET_HASH_STRING_ENABLED true
 #endif
 
 
@@ -22,6 +25,10 @@ namespace core {
 //
 class HashString final
 {
+	// definitions
+	//-------------
+	DECLARE_FORCED_LINKING()
+
 	// construct destruct
 	//--------------------
 public:
