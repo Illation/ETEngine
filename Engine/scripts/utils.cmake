@@ -220,11 +220,19 @@ function(getToolsetTriplet out_triplet)
 		set(_toolset "v${MSVC_TOOLSET_VERSION}")
 	elseif(DEFINED CMAKE_VS_PLATFORM_TOOLSET)
 		set(_toolset "${CMAKE_VS_PLATFORM_TOOLSET}")
+	elseif(UNIX)
+		set(_toolset "")
 	else()
 		message(FATAL_ERROR "Visual studio toolset couldn't be deduced from cmake")
 	endif()
 
-	set(${out_triplet} "${_vcpkgTarget}-${_toolset}${_config}" PARENT_SCOPE)
+	set(_out_triplet "${_vcpkgTarget}")
+	if(NOT "${_toolset}" STREQUAL "")
+		set(_out_triplet "${_out_triplet}-${_toolset}")
+	endif()
+	set(_out_triplet "${_out_triplet}${_config}")
+
+	set(${out_triplet} "${_out_triplet}" PARENT_SCOPE)
 endfunction(getToolsetTriplet)
 
 
