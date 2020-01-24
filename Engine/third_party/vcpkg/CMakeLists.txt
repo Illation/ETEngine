@@ -29,7 +29,7 @@ if(NOT EXISTS "${_vcpkgExe}")
                     WORKING_DIRECTORY ${_modDir}/
                     RESULT_VARIABLE _bootVcpkgResult)
     if(NOT _bootVcpkgResult EQUAL "0")
-        message(FATAL_ERROR "Failed to bootstreap VCPKG")
+        message(FATAL_ERROR "Failed to bootstrap VCPKG")
     endif()
 
 else()
