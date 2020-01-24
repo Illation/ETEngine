@@ -35,8 +35,14 @@ function(getPlatformArch platform_architecture)
 		else() # 32 bit
 			set(${platform_architecture} "x32" PARENT_SCOPE)
 		endif()
-	else()
+	elseif(WIN32)
 		if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)") # 64 bit
+			set(${platform_architecture} "x64" PARENT_SCOPE)
+		else() # 32 bit
+			set(${platform_architecture} "x32" PARENT_SCOPE)
+		endif()
+	else()
+		if(CMAKE_SIZEOF_VOID_P GREATER 4) # 64 bit
 			set(${platform_architecture} "x64" PARENT_SCOPE)
 		else() # 32 bit
 			set(${platform_architecture} "x32" PARENT_SCOPE)
