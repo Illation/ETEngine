@@ -18,6 +18,9 @@ namespace et {
 namespace core {
 
 
+class HashStringRegistry;
+
+
 //------------------------
 // HashString
 //
@@ -28,6 +31,10 @@ class HashString final
 	// definitions
 	//-------------
 	DECLARE_FORCED_LINKING()
+
+#if ET_HASH_STRING_ENABLED
+	static HashStringRegistry* s_GlobalHashStringRegistry;
+#endif
 
 	// construct destruct
 	//--------------------

@@ -29,6 +29,7 @@ endif(MSVC)
 message(STATUS "Adding target: EtEngineDemo")
 add_executable(EtEngineDemo ${projectFiles})
 targetCompileOptions(EtEngineDemo)
+addDebugVisualizers(EtEngineDemo)
 
 # directory stuff
 assign_source_group(${projectFiles})

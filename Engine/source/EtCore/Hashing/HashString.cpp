@@ -37,6 +37,12 @@ RTTR_REGISTRATION
 DEFINE_FORCED_LINKING(HashString)
 
 
+// static - we use this instead of getting the instance multiple times in order to ensure the variable is not optimized away
+#if ET_HASH_STRING_ENABLED
+HashStringRegistry* HashString::s_GlobalHashStringRegistry = &HashStringRegistry::Instance();
+#endif
+
+
 //------------------------
 // HashString::c-tor
 //
@@ -55,7 +61,7 @@ HashString::HashString(char const* const source)
 	: m_Hash(GetHash(source))
 {
 #if ET_HASH_STRING_ENABLED	
-	HashStringRegistry::Instance().Register(m_Hash, source);
+	s_GlobalHashStringRegistry->Register(m_Hash, source);
 #endif
 }
 
@@ -91,7 +97,7 @@ void HashString::Set(char const* const source)
 	m_Hash = GetHash(source);
 
 #if ET_HASH_STRING_ENABLED	
-	HashStringRegistry::Instance().Register(m_Hash, source);
+	s_GlobalHashStringRegistry->Register(m_Hash, source);
 #endif
 }
 
@@ -109,7 +115,7 @@ void HashString::Set(char const* const source)
 //
 char const* HashString::GetStringDbg() const
 {
-	return HashStringRegistry::Instance().GetString(m_Hash);
+	return s_GlobalHashStringRegistry->GetString(m_Hash);
 }
 
 #endif

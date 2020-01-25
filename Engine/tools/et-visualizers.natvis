@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="et::core::HashString">
+    <Expand>
+      <CustomListItems>
+        <Variable Name="buckets" InitialValue="s_GlobalHashStringRegistry->m_RegisteredHashes.m_Buckets._Mypair._Myval2._Myfirst" />
+        <Variable Name="num_buckets" InitialValue="s_GlobalHashStringRegistry->m_RegisteredHashes.m_Buckets._Mypair._Myval2._Mylast - s_GlobalHashStringRegistry->m_RegisteredHashes.m_Buckets._Mypair._Myval2._Myfirst" />
+        <Variable Name="start_bucket" InitialValue="m_Hash % num_buckets" />
+        <Variable Name="i" InitialValue="start_bucket" />
+        <Loop>
+          <If Condition="buckets[i].first == m_Hash">
+            <Item Name="string">buckets[i].second, na</Item>
+            <Break />
+          </If>
+          <Exec>i = (i + 1) % num_buckets</Exec>
+        </Loop>
+      </CustomListItems>
+      <Item Name="hash">m_Hash</Item>
+    </Expand>
+  </Type>
+</AutoVisualizer>

@@ -169,6 +169,15 @@ function(targetCompileOptions _target)
 endfunction(targetCompileOptions)
 
 
+# Debug visualizers
+####################
+function(addDebugVisualizers _target)
+	if (MSVC)
+		target_sources(${_target} PUBLIC ${ENGINE_DIRECTORY_ABS}/tools/et-visualizers.natvis)
+	endif()
+endfunction()
+
+
 # Config defines
 #################
 function(target_definitions)
