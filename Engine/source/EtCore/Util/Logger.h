@@ -1,6 +1,9 @@
 #pragma once
 
+#ifdef PLATFORM_Win
 #include <windows.h>
+#endif
+#include <string>
 
 
 namespace et {
