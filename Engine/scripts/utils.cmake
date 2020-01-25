@@ -152,12 +152,21 @@ function(targetCompileOptions _target)
 		target_compile_options(${_target} PRIVATE "/MP")
 	endif()
 
-	target_compile_options(
-		${_target} PRIVATE 
-		"$<$<CONFIG:Debug>:/D_DEBUG /DET_DEBUG>"
-		"$<$<CONFIG:Develop>:/DET_DEVELOP>"
-		"$<$<CONFIG:Shipping>:/DET_SHIPPING>"
-	)
+	if(MSVC)
+		target_compile_options(
+			${_target} PRIVATE
+			"$<$<CONFIG:Debug>:/D_DEBUG /DET_DEBUG>"
+			"$<$<CONFIG:Develop>:/DET_DEVELOP>"
+			"$<$<CONFIG:Shipping>:/DET_SHIPPING>"
+		)
+	else()
+		target_compile_options(
+			${_target} PRIVATE
+			"$<$<CONFIG:Debug>:-D_DEBUG -DET_DEBUG>"
+			"$<$<CONFIG:Develop>:-DET_DEVELOP>"
+			"$<$<CONFIG:Shipping>:-DET_SHIPPING>"
+		)
+	endif()
 endfunction(targetCompileOptions)
 
 
