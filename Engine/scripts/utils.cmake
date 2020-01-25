@@ -184,6 +184,8 @@ function(target_definitions)
 	# os
 	if (MSVC)
 		add_definitions(-DPLATFORM_Win)
+	else()
+		add_definitions(-DPLATFORM_Linux)
 	endif(MSVC)
 	
 	set(_p )
