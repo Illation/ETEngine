@@ -18,4 +18,11 @@
       <Item Name="hash">m_Hash</Item>
     </Expand>
   </Type>
+
+  <Type Name="et::AssetPtr&lt;*&gt;">
+    <Expand>
+      <Item Name="data">((et::core::RawAsset&lt;$T1&gt;*)m_Asset)->m_Data</Item>
+      <Item Name="asset">m_Asset</Item>
+    </Expand>
+  </Type>
 </AutoVisualizer>
