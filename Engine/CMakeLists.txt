@@ -43,10 +43,9 @@ file(GLOB_RECURSE engineFiles
 	${CMAKE_CURRENT_SOURCE_DIR}/config/* )
 
 message(STATUS "Adding target: General")
-add_custom_target(General ${generalFiles} ${engineFiles})
-#set_target_properties(General PROPERTIES LINKER_LANGUAGE NONE) # we don't build this library
-#assign_source_group(${engineFiles})
-#assignIdeFolder(General Engine/General)
+add_custom_target(General ALL SOURCES ${generalFiles} ${engineFiles})
+assign_source_group(${engineFiles})
+assignIdeFolder(General Engine/General)
 
 
 # all other targets are under source and resources

@@ -115,10 +115,9 @@ function(createProjectGeneral)
 	file(GLOB_RECURSE projectFiles ${PROJECT_DIRECTORY}/resources/*)
 
 	message(STATUS "Adding target: GeneralProject")
-	add_custom_target(GeneralProject ${projectFiles})
-	#set_target_properties(GeneralProject PROPERTIES LINKER_LANGUAGE NONE) # we don't build this library
-	#assign_source_group(${projectFiles})
-	#assignIdeFolder(GeneralProject Project/General)
+	add_custom_target(GeneralProject ALL SOURCES ${projectFiles})
+	assign_source_group(${projectFiles})
+	assignIdeFolder(GeneralProject Project/General)
 
 endfunction(createProjectGeneral)
 
