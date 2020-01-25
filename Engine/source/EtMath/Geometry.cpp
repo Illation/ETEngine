@@ -1,6 +1,6 @@
-#pragma once
 #include "Geometry.h"
 
+#include <cmath>
 
 namespace et {
 namespace math {
