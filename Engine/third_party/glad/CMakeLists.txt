@@ -16,8 +16,14 @@ set(_pythonExe "${CMAKE_CURRENT_SOURCE_DIR}/../vcpkg/vcpkg/downloads/tools/pytho
 get_filename_component(_pythonExe "${_pythonExe}" ABSOLUTE)
 
 if(NOT EXISTS "${_pythonExe}")
-	message(FATAL_ERROR "couldn't find python executable!")
+	find_package(Python COMPONENTS Interpreter)
+	if(Python_FOUND)
+		set(_pythonExe "${Python_EXECUTABLE}")
+	else()
+		message(FATAL_ERROR "couldn't find python executable!")
+	endif()
 endif()
+message(STATUS "Using found python executable '${_pythonExe}'")
 
 set(_incDir "${_buildDir}/include")
 set(_header "${_incDir}/glad/glad.h")
