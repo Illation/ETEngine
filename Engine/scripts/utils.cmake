@@ -121,8 +121,7 @@ function(createProjectGeneral)
 	file(GLOB_RECURSE projectFiles ${PROJECT_DIRECTORY}/resources/*)
 
 	message(STATUS "Adding target: GeneralProject")
-	add_library(GeneralProject ${projectFiles})
-	set_target_properties(GeneralProject PROPERTIES LINKER_LANGUAGE NONE) # we don't build this library
+	add_custom_target(GeneralProject ALL SOURCES ${projectFiles})
 	assign_source_group(${projectFiles})
 	assignIdeFolder(GeneralProject Project/General)
 
@@ -152,12 +151,21 @@ function(targetCompileOptions _target)
 		target_compile_options(${_target} PRIVATE "/MP")
 	endif()
 
-	target_compile_options(
-		${_target} PRIVATE 
-		"$<$<CONFIG:Debug>:/D_DEBUG /DET_DEBUG>"
-		"$<$<CONFIG:Develop>:/DET_DEVELOP>"
-		"$<$<CONFIG:Shipping>:/DET_SHIPPING>"
-	)
+	if(MSVC)
+		target_compile_options(
+			${_target} PRIVATE
+			"$<$<CONFIG:Debug>:/D_DEBUG /DET_DEBUG>"
+			"$<$<CONFIG:Develop>:/DET_DEVELOP>"
+			"$<$<CONFIG:Shipping>:/DET_SHIPPING>"
+		)
+	else()
+		target_compile_options(
+			${_target} PRIVATE
+			"$<$<CONFIG:Debug>:-D_DEBUG -DET_DEBUG>"
+			"$<$<CONFIG:Develop>:-DET_DEVELOP>"
+			"$<$<CONFIG:Shipping>:-DET_SHIPPING>"
+		)
+	endif()
 endfunction(targetCompileOptions)
 
 
