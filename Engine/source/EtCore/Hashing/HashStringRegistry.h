@@ -28,7 +28,7 @@ public:
 	// construct destruct
 	//--------------------
 private:
-	HashStringRegistry() = default;
+	HashStringRegistry();
 public:
 	HashStringRegistry(HashStringRegistry const&) = delete;
 	void operator=(HashStringRegistry const&) = delete;
@@ -36,6 +36,8 @@ public:
 	// functionality
 	//---------------
 	void Register(T_Hash const hash, char const* const str);
+
+	void DbgPrintAll() const;
 
 	// accessors
 	//-----------
@@ -45,7 +47,7 @@ public:
 	///////
 
 private:
-	std::unordered_map<T_Hash, std::string> m_RegisteredHashes; // #todo: replace with lin_hash_map for StringHash natvis support
+	core::lin_hash_map<T_Hash, std::string> m_RegisteredHashes;
 };
 
 

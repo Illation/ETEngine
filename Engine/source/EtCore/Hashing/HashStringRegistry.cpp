@@ -12,6 +12,15 @@ namespace core {
 
 
 //------------------------------
+// HashStringRegistry::c-tor
+//
+// Init hash map - #todo: 16 buckets for now but we should probably find a better bucket count
+//
+HashStringRegistry::HashStringRegistry() 
+	: m_RegisteredHashes(16u, 0u)
+{ }
+
+//------------------------------
 // HashStringRegistry::Instance
 //
 // Global singleton access
@@ -47,6 +56,20 @@ void HashStringRegistry::Register(T_Hash const hash, char const* const str)
 
 	// add the hash pair - emplace doesn't do anything if it was already added previously
 	m_RegisteredHashes.emplace(hash, str);
+}
+
+//---------------------------------
+// HashStringRegistry::DbgPrintAll
+//
+void HashStringRegistry::DbgPrintAll() const
+{
+	LOG("");
+	LOG("Cached hashes:");
+
+	for (std::pair<T_Hash const, std::string> const& pair : m_RegisteredHashes)
+	{
+		LOG(FS("\t[%u] - '%s'", pair.first, pair.second.c_str()));
+	}
 }
 
 //-------------------------------
