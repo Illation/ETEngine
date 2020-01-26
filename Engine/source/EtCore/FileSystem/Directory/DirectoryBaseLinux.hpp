@@ -11,12 +11,12 @@ bool Directory::Mount(bool recursive)
 {
     if(!m_IsMounted)
     {
-        DIR *dp;        
+        DIR *dp;
         dirent *dirp;
 
         if((dp = opendir((GetPath()+m_Filename).c_str())) == NULL)
         {
-			LOG(std::string("linux dir '" + GetPath() + m_Filename + "' failed opening", Error);
+			LOG(std::string("linux dir '" + GetPath() + m_Filename + "' failed opening"), Error);
 			return false;
         }
 
