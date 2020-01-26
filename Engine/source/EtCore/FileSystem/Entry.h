@@ -92,7 +92,7 @@ private:
 class Directory : public Entry
 {
 	friend class File;
-	friend class Directory;
+	//friend class Directory;
 
 public:
     // construct destruct
