@@ -362,7 +362,7 @@ inline vector<n, T> operator+(const T scalar, const vector<n, T> &rhs)
 {
 	vector<n, T> result;
 	for (uint8 i = 0; i < n; ++i)
-		result[i] = lhs[i] + scalar;
+		result[i] = rhs[i] + scalar;
 	return result;
 }
 
