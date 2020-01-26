@@ -39,7 +39,7 @@ DEFINE_FORCED_LINKING(HashString)
 
 // static - we use this instead of getting the instance multiple times in order to ensure the variable is not optimized away
 #if ET_HASH_STRING_ENABLED
-HashStringRegistry* HashString::s_GlobalHashStringRegistry = &HashStringRegistry::Instance();
+HashStringRegistry* const HashString::s_GlobalHashStringRegistry = &HashStringRegistry::Instance();
 #endif
 
 
@@ -61,7 +61,7 @@ HashString::HashString(char const* const source)
 	: m_Hash(GetHash(source))
 {
 #if ET_HASH_STRING_ENABLED	
-	s_GlobalHashStringRegistry->Register(m_Hash, source);
+	HashStringRegistry::Instance().Register(m_Hash, source); // we get the instance here in case of static hash string initialization
 #endif
 }
 

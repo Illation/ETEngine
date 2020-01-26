@@ -1,8 +1,14 @@
 #pragma once
 
 
+// fwd
+namespace et { namespace core {
+	class I_Package;
+} }
+
+
 namespace et {
-namespace fw {
+namespace rt {
 
 
 //------------------
@@ -12,11 +18,14 @@ namespace fw {
 //
 struct BootConfig final
 {
+	static core::HashString const s_FileName;
+	static void LoadFromPackage(BootConfig& cfg, core::I_Package* const pkg);
+
 	core::HashString startScene;
 	std::vector<core::HashString> allScenes;
 };
 
 
-} // namespace fw
+} // namespace rt
 } // namespace et
 

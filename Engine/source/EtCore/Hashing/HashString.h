@@ -33,7 +33,7 @@ class HashString final
 	DECLARE_FORCED_LINKING()
 
 #if ET_HASH_STRING_ENABLED
-	static HashStringRegistry* s_GlobalHashStringRegistry;
+	static HashStringRegistry* const s_GlobalHashStringRegistry;
 #endif
 
 	// construct destruct
