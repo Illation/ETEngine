@@ -27,7 +27,7 @@ bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::vector<uint8> & content )
 bool FILE_BASE::WriteFile( FILE_HANDLE handle, const std::vector<uint8> & content )
 {
     int32 result;
-    result = write( handle, content.data(), content.length() );
+    result = write( handle, content.data(), content.size() );
     return result != -1;
 }
 
