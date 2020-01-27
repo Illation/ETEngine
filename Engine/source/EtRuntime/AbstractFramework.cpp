@@ -160,7 +160,7 @@ void AbstractFramework::Run()
 	std::string const& initScene = fw::Config::GetInstance()->GetStartScene();
 	if (!initScene.empty())
 	{
-		fw::UnifiedScene::Instance().LoadScene(GetHash(initScene + ".json"));
+		fw::UnifiedScene::Instance().LoadScene(core::HashString((initScene + ".json").c_str()));
 	}
 
 	// update

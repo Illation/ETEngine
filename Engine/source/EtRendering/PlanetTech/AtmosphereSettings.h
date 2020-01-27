@@ -29,7 +29,7 @@ struct DensityProfile
 struct AtmosphereParameters
 {
 	AtmosphereParameters() {}
-	AtmosphereParameters(T_Hash const assetId, dvec3 &skyColor, dvec3 &sunColor);
+	AtmosphereParameters(core::HashString const assetId, dvec3 &skyColor, dvec3 &sunColor);
 	void Upload(ShaderData const* const shader, const std::string &varName) const;
 
 	vec3 solarIrradiance;

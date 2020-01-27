@@ -42,7 +42,7 @@ void FrameBuffer::Initialize()
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Load and compile Shaders
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(GetHash(core::FileUtil::ExtractName(m_ShaderFile)));
+	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString(core::FileUtil::ExtractName(m_ShaderFile).c_str()));
 
 	//GetAccessTo shader attributes
 	api->SetShader(m_pShader.get());

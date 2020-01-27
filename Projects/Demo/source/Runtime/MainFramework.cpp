@@ -47,14 +47,14 @@ void MainFramework::OnSystemInit()
 void MainFramework::OnInit()
 {
 	// Fonts
-	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<render::SpriteFont>("Ubuntu-Regular.ttf"_hash);
+	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<render::SpriteFont>(core::HashString("Ubuntu-Regular.ttf"));
 
 	// scenes
 	fw::UnifiedScene& uniScene = fw::UnifiedScene::Instance();
 
-	m_Scenes.push_back(GetHash("EditorScene.json"));
-	m_Scenes.push_back(GetHash("PlanetScene.json"));
-	m_Scenes.push_back(GetHash("PhysicsScene.json"));
+	m_Scenes.push_back(core::HashString("EditorScene.json"));
+	m_Scenes.push_back(core::HashString("PlanetScene.json"));
+	m_Scenes.push_back(core::HashString("PhysicsScene.json"));
 	
 	uniScene.GetEventDispatcher().Register(fw::E_SceneEvent::Activated,
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const evnt)

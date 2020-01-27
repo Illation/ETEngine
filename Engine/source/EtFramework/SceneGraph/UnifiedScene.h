@@ -46,13 +46,12 @@ protected:
 	// functionality
 	//---------------
 public:
-	void LoadScene(T_Hash const assetId);
+	void LoadScene(core::HashString const assetId);
 	void UnloadScene();
 
 	// accessors
 	//-----------
-	T_Hash GetSceneId() const { return m_CurrentScene; }
-	std::string const& GetSceneName() const { return m_SceneName; }
+	core::HashString GetSceneId() const { return m_CurrentScene; }
 	EcsController& GetEcs() { return m_Scene; }
 
 	T_EntityId GetActiveCamera() const { return m_ActiveCamera; }
@@ -72,8 +71,7 @@ private:
 	// Data
 	///////
 
-	T_Hash m_CurrentScene = 0u;
-	std::string m_SceneName;
+	core::HashString m_CurrentScene;
 
 	EcsController m_Scene;
 

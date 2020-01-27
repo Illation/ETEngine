@@ -42,7 +42,7 @@ public:
 
 	// modifiers
 	//-----------
-	void SetAudioData(T_Hash const data) { m_NextTrack = data; }
+	void SetAudioData(core::HashString const data) { m_NextTrack = data; }
 
 	void SetState(E_PlaybackState const state) { m_State = state; }
 	void SetLooping(bool const val) { m_IsLooping = val; }
@@ -52,7 +52,7 @@ public:
 	E_PlaybackState GetState() const { return m_PrevState; }
 	bool IsLooping() const { return m_IsLooping; }
 
-	T_Hash GetTrack() const { return m_NextTrack; }
+	core::HashString GetTrack() const { return m_NextTrack; }
 
 	// Data
 	///////
@@ -63,7 +63,7 @@ private:
 
 	// sfx
 	AssetPtr<AudioData> m_AudioData;
-	T_Hash m_NextTrack = 0u;
+	core::HashString m_NextTrack;
 
 	// sound modifiers (gain = volume / amplitude)
 	float m_Gain = 1.f;
@@ -150,7 +150,7 @@ public:
 	// Data
 	///////
 
-	std::string audioAsset;
+	core::HashString audioAsset;
 
 	bool playOnInit = false;
 	bool loop = false;

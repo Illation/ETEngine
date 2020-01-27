@@ -1,11 +1,13 @@
 #pragma once
 #include <EtCore/Hashing/Hash.h>
+#include <EtCore/Reflection/Registration.h>
 
 #include <rttr/type>
 
 
 namespace et {
 	class I_AssetPtr;
+	REGISTRATION_NS(core);
 }
 
 
@@ -31,11 +33,10 @@ public:
 	struct Reference final
 	{
 	public:
-		Reference(std::string const& name);
+		Reference(HashString const id);
 		~Reference();
 
-		std::string const& GetName() const { return m_Name; }
-		void SetName(std::string const& val) { m_Name = val; }
+		HashString GetId() const { return m_Id; }
 
 		I_AssetPtr* GetAsset() { return m_AssetPtr; }
 		I_AssetPtr const* GetAsset() const { return m_AssetPtr; }
@@ -51,13 +52,11 @@ public:
 		///////
 
 		// reflected
-		std::string m_Name;
+		HashString m_Id;
 
 		// derived
 		I_Asset* m_Asset = nullptr; // pointer to the raw asset, shouldn't be directly used
 		I_AssetPtr* m_AssetPtr = nullptr;
-
-		RTTR_ENABLE()
 	};
 
 	// Construct destruct
@@ -85,17 +84,14 @@ public:
 	std::string const& GetPath() const { return m_Path; }
 	void SetPath(std::string const& val);
 
-	std::string const& GetPackageName() const { return m_PackageName; }
-	void SetPackageName(std::string const& val);
-
-	std::vector<std::string> GetReferenceNames() const;
-	void SetReferenceNames(std::vector<std::string> val);
+	std::vector<HashString> GetReferenceIds() const;
+	void SetReferenceIds(std::vector<HashString> val);
 
 	std::vector<Reference> const& GetReferences() const { return m_References; }
 
-	T_Hash GetId() const { return m_Id; }
-	T_Hash GetPackageId() const { return m_PackageId; }
-	T_Hash GetPackageEntryId() const { return m_PackageEntryId; }
+	HashString GetId() const { return m_Id; }
+	HashString GetPackageId() const { return m_PackageId; }
+	HashString GetPackageEntryId() const { return m_PackageEntryId; }
 
 	uint32 GetRefCount() const { return m_RefCount; }
 
@@ -110,13 +106,12 @@ protected:
 	// reflected
 	std::string m_Name;
 	std::string m_Path;
-	std::string m_PackageName; // an empty package implies that this is a compiled asset
 	std::vector<Reference> m_References; // list of other assets this asset depends on
 
 	// derived
-	T_Hash m_Id;
-	T_Hash m_PackageId;
-	T_Hash m_PackageEntryId;
+	HashString m_Id;
+	HashString m_PackageId;
+	HashString m_PackageEntryId;
 
 	uint32 m_RefCount = 0u;
 
@@ -124,6 +119,7 @@ protected:
 	std::vector<uint8> m_LoadData;
 
 	RTTR_ENABLE()
+	REGISTRATION_FRIEND_NS(core)
 };
 
 //---------------------------------

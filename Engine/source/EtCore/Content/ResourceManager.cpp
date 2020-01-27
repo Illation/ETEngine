@@ -53,7 +53,7 @@ void ResourceManager::SetAssetReferences(AssetDatabase&db, T_ReferenceAssetGette
 		{
 			for (I_Asset::Reference& reference : asset->m_References)
 			{
-				reference.m_Asset = fnc(GetHash(reference.m_Name));
+				reference.m_Asset = fnc(reference.m_Id);
 			}
 		}
 	}

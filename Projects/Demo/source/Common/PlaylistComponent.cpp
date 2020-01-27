@@ -41,9 +41,9 @@ PlaylistComponent* PlaylistComponentDesc::MakeData()
 {
 	PlaylistComponent* const ret = new PlaylistComponent();
 
-	for (std::string const& track : tracks)
+	for (core::HashString const track : tracks)
 	{
-		ret->tracks.push_back(core::ResourceManager::Instance()->GetAssetData<fw::AudioData>(GetHash(track)));
+		ret->tracks.push_back(core::ResourceManager::Instance()->GetAssetData<fw::AudioData>(track));
 	}
 
 	return ret;
@@ -61,7 +61,7 @@ void PlaylistComponentDesc::OnScenePostLoad(fw::EcsController& ecs, fw::T_Entity
 	fw::AudioSourceComponent& source = ecs.GetComponent<fw::AudioSourceComponent>(id);
 
 	// if the source component has no data set we are done
-	T_Hash const sourceTrack = source.GetTrack();
+	core::HashString const sourceTrack = source.GetTrack();
 	if (sourceTrack == 0u)
 	{
 		comp.currentTrack = std::numeric_limits<size_t>::max();

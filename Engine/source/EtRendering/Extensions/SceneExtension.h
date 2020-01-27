@@ -15,7 +15,7 @@ class I_SceneExtension
 public:
 	virtual ~I_SceneExtension() = default;
 
-	virtual T_Hash GetId() const = 0;
+	virtual core::HashString GetId() const = 0;
 };
 
 

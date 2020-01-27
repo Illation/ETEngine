@@ -45,8 +45,8 @@ ECS_REGISTER_COMPONENT(SpawnComponent);
 //
 // load assets from ids
 //
-SpawnComponent::SpawnComponent(T_Hash const meshId,
-	T_Hash const materialId,
+SpawnComponent::SpawnComponent(core::HashString const meshId,
+	core::HashString const materialId,
 	float const s,
 	btCollisionShape* const shape,
 	float const shapeMass,
@@ -121,7 +121,7 @@ SpawnComponentDesc::~SpawnComponentDesc()
 //
 SpawnComponent* SpawnComponentDesc::MakeData()
 {
-	return new SpawnComponent(GetHash(mesh), GetHash(material), scale, shape->MakeBulletCollisionShape(), mass, interval, impulse);
+	return new SpawnComponent(mesh, material, scale, shape->MakeBulletCollisionShape(), mass, interval, impulse);
 }
 
 

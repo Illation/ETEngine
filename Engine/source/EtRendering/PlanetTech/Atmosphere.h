@@ -18,7 +18,7 @@ namespace render {
 //
 struct AtmosphereInstance
 {
-	T_Hash atmosphereId = 0u;
+	core::HashString atmosphereId;
 
 	core::T_SlotId nodeId = core::INVALID_SLOT_ID;
 	core::T_SlotId lightId = core::INVALID_SLOT_ID; // for sun direction, color
@@ -39,9 +39,9 @@ public:
 	Atmosphere() = default;
 	~Atmosphere();
 
-	void Initialize(T_Hash const parameterAssetId);
+	void Initialize(core::HashString const parameterAssetId);
 
-	T_Hash GetId() const { return m_Id; }
+	core::HashString GetId() const { return m_Id; }
 
 	void Draw(vec3 const& position, float const height, float const groundRadius, vec3 const& sunDir) const;
 
@@ -50,7 +50,7 @@ private:
 
 	void GetUniforms();
 
-	T_Hash m_Id = 0u;
+	core::HashString m_Id;
 
 	AtmosphereParameters m_Params;
 	dvec3 m_SkyColor;

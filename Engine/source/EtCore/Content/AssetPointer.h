@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Asset.h"
 
 
@@ -25,7 +24,7 @@ public:
 
 	core::I_Asset const* GetAsset() const { return m_Asset; }
 	inline std::type_info const& GetType() const;
-	inline T_Hash GetId() const;
+	inline core::HashString GetId() const;
 
 	// utility
 	bool is_null() const;

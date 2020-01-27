@@ -42,7 +42,7 @@ namespace cooker {
 
 
 // forward declarations
-void AddPackageToWriter(T_Hash const packageId, std::string const& dbBase, PackageWriter &writer, core::AssetDatabase& db);
+void AddPackageToWriter(core::HashString const packageId, std::string const& dbBase, PackageWriter &writer, core::AssetDatabase& db);
 void CookCompiledPackage(std::string const& dbBase, 
 	std::string const& outPath, 
 	std::string const& resName, 
@@ -131,7 +131,7 @@ int RunCooker(int argc, char *argv[])
 //
 // Gets all assets in a package of that database and adds them to the package writer
 //
-void AddPackageToWriter(T_Hash const packageId, std::string const& dbBase, PackageWriter &writer, core::AssetDatabase& db)
+void AddPackageToWriter(core::HashString const packageId, std::string const& dbBase, PackageWriter &writer, core::AssetDatabase& db)
 {
 	// Loop over files - add them to the writer
 	core::AssetDatabase::T_AssetList assets = db.GetAssetsInPackage(packageId);
@@ -139,9 +139,9 @@ void AddPackageToWriter(T_Hash const packageId, std::string const& dbBase, Packa
 	{
 		std::string const filePath = dbBase + asset->GetPath();
 		std::string const assetName = asset->GetName();
-		T_Hash const id = asset->GetId();
+		core::HashString const id = asset->GetId();
 
-		LOG(assetName + std::string(" [") + std::to_string(id) + std::string("] @: ") + core::FileUtil::GetAbsolutePath(filePath));
+		LOG(assetName + std::string(" [") + std::to_string(id.Get()) + std::string("] @: ") + core::FileUtil::GetAbsolutePath(filePath));
 
 		core::File* assetFile = new core::File(filePath + assetName, nullptr);
 		writer.AddFile(assetFile, dbBase, core::E_CompressionType::Store);
@@ -186,7 +186,7 @@ void CookCompiledPackage(std::string const& dbBase,
 	packageWriter.AddFile(dbFile, dbFile->GetPath(), core::E_CompressionType::Store);
 
 	// add all other compiled files to the package
-	static T_Hash const s_CompiledPackageId = 0u;
+	static core::HashString const s_CompiledPackageId;
 	AddPackageToWriter(s_CompiledPackageId, dbBase, packageWriter, db);
 	AddPackageToWriter(s_CompiledPackageId, engineDbBase, packageWriter, engineDb);
 

@@ -16,7 +16,7 @@ namespace core {
 // Get the data of an asset. Loads the asset if it's not loaded yet
 //
 template <class T_DataType>
-AssetPtr<T_DataType> ResourceManager::GetAssetData(T_Hash const assetId, bool const reportWarnings)
+AssetPtr<T_DataType> ResourceManager::GetAssetData(HashString const assetId, bool const reportWarnings)
 {
 	// Get the asset
 	RawAsset<T_DataType>* asset = static_cast<RawAsset<T_DataType>*>(GetAssetInternal(assetId, typeid(T_DataType), reportWarnings));
@@ -26,7 +26,7 @@ AssetPtr<T_DataType> ResourceManager::GetAssetData(T_Hash const assetId, bool co
 	{
 		if (reportWarnings)
 		{
-			ET_ASSERT(false, "Couldn't find asset with ID '%u'!", assetId);
+			ET_ASSERT(false, "Couldn't find asset with ID '%s'!", assetId.ToStringDbg());
 		}
 
 		return nullptr;

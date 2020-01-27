@@ -23,7 +23,7 @@ private:
 	friend class ResourceManager;
 
 protected:
-	typedef std::function<I_Asset*(T_Hash const)> T_ReferenceAssetGetter;
+	typedef std::function<I_Asset*(HashString const)> T_ReferenceAssetGetter;
 
 public:
 	static constexpr char s_DatabasePath[] = "asset_database.json";
@@ -55,7 +55,7 @@ public:
 	// Managing assets
 	//---------------------
 	template <class T_DataType>
-	AssetPtr<T_DataType> GetAssetData(T_Hash const assetId, bool const reportWarnings = true);
+	AssetPtr<T_DataType> GetAssetData(HashString const assetId, bool const reportWarnings = true);
 
 	// utility
 	//---------------------
@@ -73,7 +73,7 @@ public:
 	virtual void Flush() = 0; 
 
 protected:
-	virtual I_Asset* GetAssetInternal(T_Hash const assetId, std::type_info const& type, bool const reportErrors) = 0;
+	virtual I_Asset* GetAssetInternal(HashString const assetId, std::type_info const& type, bool const reportErrors) = 0;
 
 	// Data
 	///////

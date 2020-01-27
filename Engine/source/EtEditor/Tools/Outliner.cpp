@@ -170,7 +170,7 @@ void Outliner::OnTreeViewRowActivated(Gtk::TreeModel::Path const& path, Gtk::Tre
 		Gtk::TreeModel::Row row = *it;
 
 		Glib::ustring name = row[m_Columns.m_Name];
-		T_Hash id = row[m_Columns.m_Id];
+		fw::T_EntityId id = row[m_Columns.m_Id];
 
 		LOG(FS("Row activated: Name=%s, ID=%u", name.c_str(), id));
 	}
@@ -208,7 +208,7 @@ void Outliner::RefillTreeView()
 	fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
 
 	Gtk::TreeModel::Row row = *(m_TreeModel->append());
-	row[m_Columns.m_Name] = fw::UnifiedScene::Instance().GetSceneName();
+	row[m_Columns.m_Name] = fw::UnifiedScene::Instance().GetSceneId().ToStringDbg();
 	row[m_Columns.m_Id] = fw::INVALID_ENTITY_ID;
 
 	for (fw::T_EntityId const id : ecs.GetEntities())

@@ -102,7 +102,7 @@ void UnifiedScene::OnTick()
 //-------------------------
 // UnifiedScene::LoadScene
 //
-void UnifiedScene::LoadScene(T_Hash const assetId)
+void UnifiedScene::LoadScene(core::HashString const assetId)
 {
 	// preparation
 	//-------------
@@ -127,8 +127,6 @@ void UnifiedScene::LoadScene(T_Hash const assetId)
 	AssetPtr<SceneDescriptor> const sceneDesc = core::ResourceManager::Instance()->GetAssetData<SceneDescriptor>(m_CurrentScene);
 	ET_ASSERT(sceneDesc != nullptr);
 
-	m_SceneName = sceneDesc.GetAsset()->GetName();
-
 	for (EntityDescriptor const& entDesc : sceneDesc->entities)
 	{
 		AddEntity(entDesc, INVALID_ENTITY_ID);
@@ -138,14 +136,14 @@ void UnifiedScene::LoadScene(T_Hash const assetId)
 	EntityLinkResolver::Instance().Clear();
 
 	// render settings
-	if (!(sceneDesc->skybox.empty()))
+	if (!(sceneDesc->skybox.IsEmpty()))
 	{
-		m_RenderScene.SetSkyboxMap(GetHash(sceneDesc->skybox));
+		m_RenderScene.SetSkyboxMap(sceneDesc->skybox);
 	}
 
-	if (!(sceneDesc->starfield.empty()))
+	if (!(sceneDesc->starfield.IsEmpty()))
 	{
-		m_RenderScene.SetStarfield(GetHash(sceneDesc->starfield));
+		m_RenderScene.SetStarfield(sceneDesc->starfield);
 	}
 
 	m_ActiveCamera = sceneDesc->activeCamera.id;
@@ -188,8 +186,8 @@ void UnifiedScene::UnloadScene()
 	m_Scene.RemoveAllEntities();
 
 	// reset rendering
-	m_RenderScene.SetSkyboxMap(0u);
-	m_RenderScene.SetStarfield(0u);
+	m_RenderScene.SetSkyboxMap(core::HashString());
+	m_RenderScene.SetStarfield(core::HashString());
 	m_RenderScene.SetPostProcessingSettings(render::PostProcessingSettings());
 
 	// reset physics
@@ -202,8 +200,7 @@ void UnifiedScene::UnloadScene()
 	m_ActiveCamera = INVALID_ENTITY_ID;
 	m_AudioListener = INVALID_ENTITY_ID;
 
-	m_CurrentScene = 0u;
-	m_SceneName = "";
+	m_CurrentScene.Reset();
 }
 
 //-------------------------

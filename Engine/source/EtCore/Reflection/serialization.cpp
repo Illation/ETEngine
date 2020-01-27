@@ -294,7 +294,7 @@ bool AtomicTypeToJsonValue(rttr::type const& valueType, rttr::variant const& var
 		HashString const& hash = var.get_value<HashString>();
 
 #if ET_HASH_STRING_ENABLED
-		char const* const str = hash.GetStringDbg();
+		char const* const str = hash.GetStoredString();
 		if (str != nullptr)
 		{
 			ET_ASSERT(hash.Get() == GetHash(str));
@@ -311,6 +311,7 @@ bool AtomicTypeToJsonValue(rttr::type const& valueType, rttr::variant const& var
 			jNum->valueInt = hash.Get();
 			jNum->isInt = true;
 			outVal = jNum;
+			return true;
 #if ET_HASH_STRING_ENABLED
 		}
 #endif
@@ -351,7 +352,10 @@ bool ArrayToJsonArray(const rttr::variant_sequential_view& view, JSON::Value*& o
 			rttr::variant wrappedVar = item.extract_wrapped_value();
 			rttr::type valueType = wrappedVar.get_type();
 
-			if (valueType.is_arithmetic() || valueType == rttr::type::get<std::string>() || valueType.is_enumeration())
+			if (valueType.is_arithmetic() 
+				|| (valueType == rttr::type::get<std::string>())
+				|| valueType.is_enumeration() 
+				|| (valueType == rttr::type::get<HashString>()))
 			{
 				if (!AtomicTypeToJsonValue(valueType, wrappedVar, jItem))
 				{

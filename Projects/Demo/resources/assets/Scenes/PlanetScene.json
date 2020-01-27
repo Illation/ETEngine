@@ -159,7 +159,7 @@
       "bloom mult": 0.1
     },
     "audio listener": {
-      "id": -1
+      "id": 4294967295
     },
     "gravity": {
       "x": 0.0,

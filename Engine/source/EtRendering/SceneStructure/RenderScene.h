@@ -76,10 +76,10 @@ public:
 	void UpdateLightColor(T_LightId const lightId, vec3 const& value);
 	void RemoveLight(T_LightId const lightId);
 
-	void SetSkyboxMap(T_Hash const assetIdEnvMap);
+	void SetSkyboxMap(core::HashString const assetIdEnvMap);
 	void SetSkyboxRoughness(float const value) { m_Skybox.m_Roughness = value; }
 
-	void SetStarfield(T_Hash const assetId);
+	void SetStarfield(core::HashString const assetId);
 
 	void SetPostProcessingSettings(PostProcessingSettings const& settings) { m_PostProcessingSettings = settings; }
 
@@ -90,8 +90,8 @@ public:
 	void UpdateAtmosphereLight(core::T_SlotId const atmoId, T_LightId const lightId);
 	void RemoveAtmosphere(core::T_SlotId const atmoId);
 
-	core::T_SlotId AddSprite(T_Hash const textureId, T_NodeId const node, vec2 const pivot, vec4 const& color);
-	void UpdateSpriteTexture(core::T_SlotId const spriteId, T_Hash const textureId);
+	core::T_SlotId AddSprite(core::HashString const textureId, T_NodeId const node, vec2 const pivot, vec4 const& color);
+	void UpdateSpriteTexture(core::T_SlotId const spriteId, core::HashString const textureId);
 	void UpdateSpritePivot(core::T_SlotId const spriteId, vec2 const pivot);
 	void UpdateSpriteColor(core::T_SlotId const spriteId, vec4 const& color);
 	void RemoveSprite(core::T_SlotId const spriteId);
@@ -124,13 +124,13 @@ public:
 	StarField const* GetStarfield() const { return m_Starfield; }
 
 	core::slot_map<AtmosphereInstance> const& GetAtmosphereInstances() const { return m_AtmosphereInstances; }
-	Atmosphere const& GetAtmosphere(T_Hash const atmoId) const;
+	Atmosphere const& GetAtmosphere(core::HashString const atmoId) const;
 
 	core::slot_map<Sprite> const& GetSprites() const { return m_Sprites; }
 
 	PostProcessingSettings const& GetPostProcessingSettings() const { return m_PostProcessingSettings; }
 
-	I_SceneExtension* GetExtension(T_Hash const extensionId) const;
+	I_SceneExtension* GetExtension(core::HashString const extensionId) const;
 
 
 	// utility

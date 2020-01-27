@@ -4,7 +4,6 @@
 #include "AssetPointer.h"
 #include "ResourceManager.h"
 
-#include <rttr/registration>
 #include <EtCore/FileSystem/Package/Package.h>
 
 
@@ -15,14 +14,11 @@ namespace core {
 // reflection
 RTTR_REGISTRATION
 {
-	using namespace rttr;
-
-	registration::class_<I_Asset>("asset")
+	rttr::registration::class_<I_Asset>("asset")
 		.property("name", &I_Asset::GetName, &I_Asset::SetName)
 		.property("path", &I_Asset::GetPath, &I_Asset::SetPath)
-		.property("package", &I_Asset::GetPackageName, &I_Asset::SetPackageName)
-		.property("references", &I_Asset::GetReferenceNames, &I_Asset::SetReferenceNames)
-		;
+		.property("package", &I_Asset::m_PackageId)
+		.property("references", &I_Asset::GetReferenceIds, &I_Asset::SetReferenceIds);
 }
 
 
@@ -36,8 +32,8 @@ RTTR_REGISTRATION
 //
 // Init a reference from a name - don't link the asset yet
 //
-I_Asset::Reference::Reference(std::string const& name) 
-	: m_Name(name)
+I_Asset::Reference::Reference(HashString const id)
+	: m_Id(id)
 { }
 
 //---------------------------------
@@ -104,8 +100,8 @@ I_Asset::~I_Asset()
 void I_Asset::SetName(std::string const& val)
 {
 	m_Name = val;
-	m_Id = GetHash(m_Name);
-	m_PackageEntryId = GetHash(m_Path + m_Name);
+	m_Id = m_Name.c_str();
+	m_PackageEntryId = (m_Path + m_Name).c_str();
 }
 
 //---------------------------------
@@ -116,46 +112,37 @@ void I_Asset::SetName(std::string const& val)
 void I_Asset::SetPath(std::string const& val)
 {
 	m_Path = val;
-	m_PackageEntryId = GetHash(m_Path + m_Name);
+	m_PackageEntryId = (m_Path + m_Name).c_str();
 }
 
 //---------------------------------
-// I_Asset::SetPackageName
-//
-// Sets the name of the package the asset lives in and generates its package ID
-//
-void I_Asset::SetPackageName(std::string const& val)
-{
-	m_PackageName = val;
-	m_PackageId = GetHash(m_PackageName);
-}
-
-//---------------------------------
-// I_Asset::GetReferenceNames
+// I_Asset::GetReferenceIds
 //
 // Extract a vector of strings from the reference list
 //
-std::vector<std::string> I_Asset::GetReferenceNames() const
+std::vector<HashString> I_Asset::GetReferenceIds() const
 {
-	std::vector<std::string> referenceNames;
+	std::vector<HashString> referenceIds;
 	for (Reference const& reference : m_References)
 	{
-		referenceNames.emplace_back(reference.GetName());
+		referenceIds.emplace_back(reference.GetId());
 	}
-	return referenceNames;
+
+	return referenceIds;
 }
 
 //---------------------------------
-// I_Asset::SetReferenceNames
+// I_Asset::SetReferenceIds
 //
 // Create the reference list from a vector of strings
+//  - can't make list a const ref thanks to rttr
 //
-void I_Asset::SetReferenceNames(std::vector<std::string> val)
+void I_Asset::SetReferenceIds(std::vector<HashString> val)
 {
 	m_References.clear();
-	for (std::string const& refName : val)
+	for (HashString const refId : val)
 	{
-		m_References.emplace_back(refName);
+		m_References.emplace_back(refId);
 	}
 }
 
@@ -175,8 +162,10 @@ void I_Asset::Load()
 	// get binary data from the package
 	if (!(ResourceManager::Instance()->GetLoadData(this, m_LoadData)))
 	{
-		LOG("I_Asset::Load > couldn't get data for '" + m_Path + m_Name + std::string("' (") + std::to_string(m_PackageEntryId) 
-			+ std::string(") in package '") + m_PackageName + std::string("'"), LogLevel::Warning);
+		ET_ASSERT(false, "Couldn't get data for '%s' (%i) in package '%s'", 
+			m_PackageEntryId.ToStringDbg(), 
+			m_PackageEntryId.Get(), 
+			m_PackageId.ToStringDbg());
 		return;
 	}
 

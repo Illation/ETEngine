@@ -67,7 +67,7 @@ void SpriteComponent::OnComponentRemoved(EcsController& controller, SpriteCompon
 //------------------------
 // SpriteComponent::c-tor
 //
-SpriteComponent::SpriteComponent(T_Hash const textureAsset, vec2 const& pivot, vec4 const& color)
+SpriteComponent::SpriteComponent(core::HashString const textureAsset, vec2 const& pivot, vec4 const& color)
 	: m_TextureAssetId(textureAsset)
 	, m_Pivot(pivot)
 	, m_Color(color)
@@ -76,7 +76,7 @@ SpriteComponent::SpriteComponent(T_Hash const textureAsset, vec2 const& pivot, v
 //-----------------------------
 // SpriteComponent::SetTexture
 //
-void SpriteComponent::SetTexture(T_Hash const textureAsset)
+void SpriteComponent::SetTexture(core::HashString const textureAsset)
 {
 	m_TextureAssetId = textureAsset;
 	if (m_Id != core::INVALID_SLOT_ID)
@@ -122,7 +122,7 @@ void SpriteComponent::SetColor(vec4 const& color)
 //
 SpriteComponent* SpriteComponentDesc::MakeData()
 {
-	return new SpriteComponent(GetHash(textureAsset), pivot, color);
+	return new SpriteComponent(textureAsset, pivot, color);
 }
 
 

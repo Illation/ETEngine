@@ -28,7 +28,7 @@ void SceneSelection::SetScene()
 		fw::T_SceneEventCallback(std::bind(&SceneSelection::OnSceneEvent, this, std::placeholders::_1, std::placeholders::_2)));
 
 	render::Scene& renderScene = fw::UnifiedScene::Instance().GetRenderScene();
-	render::I_SceneExtension* const ext = renderScene.GetExtension("OutlineExtension"_hash);
+	render::I_SceneExtension* const ext = renderScene.GetExtension(core::HashString("OutlineExtension"));
 	if (ext == nullptr)
 	{
 		m_OutlineExtension = new render::OutlineExtension();

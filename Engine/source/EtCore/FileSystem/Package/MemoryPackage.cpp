@@ -37,7 +37,7 @@ MemoryPackage::MemoryPackage(uint8 const* const data)
 //
 // Get a package entry from a package using its hashed ID
 //
-MemoryPackage::PackageEntry const* MemoryPackage::GetEntry(T_Hash const id) const
+MemoryPackage::PackageEntry const* MemoryPackage::GetEntry(HashString const id) const
 {
 	auto findResult = m_Entries.find(id);
 
@@ -56,7 +56,7 @@ MemoryPackage::PackageEntry const* MemoryPackage::GetEntry(T_Hash const id) cons
 //
 // This makes a copy of the data stored in the entry pointer
 //
-bool MemoryPackage::GetEntryData(T_Hash const id, std::vector<uint8>& outData)
+bool MemoryPackage::GetEntryData(HashString const id, std::vector<uint8>& outData)
 {
 	// try getting the file
 	PackageEntry const* pkgEntry = GetEntry(id);
@@ -82,7 +82,7 @@ void MemoryPackage::InitFileListFromData()
 	size_t offset = sizeof(PkgHeader);
 
 	// read the central directory
-	std::vector<std::pair<T_Hash, uint64>> centralDirectory;
+	std::vector<std::pair<HashString, uint64>> centralDirectory;
 	for (size_t infoIdx = 0u; infoIdx < pkgHeader->numEntries; ++infoIdx)
 	{
 		PkgFileInfo const* info = reinterpret_cast<PkgFileInfo const*>(m_Data + offset);
@@ -92,7 +92,7 @@ void MemoryPackage::InitFileListFromData()
 	}
 
 	// read the files listed
-	for (std::pair<T_Hash, uint64> const& fileInfo : centralDirectory)
+	for (std::pair<HashString, uint64> const& fileInfo : centralDirectory)
 	{
 		// start at the offset from the beginning of the package
 		offset = fileInfo.second;
@@ -110,9 +110,7 @@ void MemoryPackage::InitFileListFromData()
 
 		if (!emplaceIt.second)
 		{
-			LOG("MemoryPackage::InitFileListFromData > Entry list already contains a file with ID [" + std::to_string(entry->fileId)
-				+ std::string("] !"),
-				LogLevel::Warning);
+			ET_ASSERT(false, "Entry list already contains a file with ID [%s] !", entry->fileId.ToStringDbg());
 			continue;
 		}
 

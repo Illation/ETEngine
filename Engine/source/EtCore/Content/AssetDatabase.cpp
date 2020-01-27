@@ -39,7 +39,7 @@ RTTR_REGISTRATION
 void AssetDatabase::PackageDescriptor::SetName(std::string const& val)
 {
 	m_Name = val;
-	m_Id = GetHash(m_Name);
+	m_Id = m_Name.c_str();
 }
 
 
@@ -97,7 +97,7 @@ AssetDatabase::~AssetDatabase()
 //
 // finds all assets that belong to a certain package
 //
-AssetDatabase::T_AssetList AssetDatabase::GetAssetsInPackage(T_Hash const packageId)
+AssetDatabase::T_AssetList AssetDatabase::GetAssetsInPackage(HashString const packageId)
 {
 	T_AssetList outAssets;
 
@@ -122,7 +122,7 @@ AssetDatabase::T_AssetList AssetDatabase::GetAssetsInPackage(T_Hash const packag
 //
 // Get an asset by its ID
 //
-I_Asset* AssetDatabase::GetAsset(T_Hash const assetId, bool const reportErrors) const
+I_Asset* AssetDatabase::GetAsset(HashString const assetId, bool const reportErrors) const
 {
 	// in this version we loop over all caches
 	for (AssetCache const& cache : caches)
@@ -142,7 +142,7 @@ I_Asset* AssetDatabase::GetAsset(T_Hash const assetId, bool const reportErrors) 
 	// didn't find an asset in any cache, return null
 	if (reportErrors)
 	{
-		LOG("AssetDatabase::GetAsset > Couldn't find asset with ID '" + std::to_string(assetId) + std::string("'!"), LogLevel::Warning);
+		ET_ASSERT(false, "Couldn't find asset with ID '%s'!", assetId.ToStringDbg());
 	}
 	return nullptr;
 }
@@ -152,7 +152,7 @@ I_Asset* AssetDatabase::GetAsset(T_Hash const assetId, bool const reportErrors) 
 //
 // Get an asset by its ID and type
 //
-I_Asset* AssetDatabase::GetAsset(T_Hash const assetId, std::type_info const& type, bool const reportErrors) const
+I_Asset* AssetDatabase::GetAsset(HashString const assetId, std::type_info const& type, bool const reportErrors) const
 {
 	// Try finding a cache containing our type
 	auto const foundCacheIt = std::find_if(caches.cbegin(), caches.cend(), [&type](AssetCache const& cache)
@@ -180,7 +180,7 @@ I_Asset* AssetDatabase::GetAsset(T_Hash const assetId, std::type_info const& typ
 	{
 		if (reportErrors)
 		{
-			ET_ASSERT(false, "Couldn't find asset with ID '%u'!", assetId);
+			ET_ASSERT(false, "Couldn't find asset with ID '%s'!", assetId.ToStringDbg());
 		}
 
 		return nullptr;
@@ -273,7 +273,7 @@ void AssetDatabase::Merge(AssetDatabase const& other)
 							return lhPackage.GetId() == rhAsset->GetPackageId();
 						}) != packages.cend() || rhAsset->GetPackageId() == 0u,
 						"Asset merged into DB, but DB doesn't contain package '%s'",
-						rhAsset->GetPackageName().c_str());
+						rhAsset->GetPackageId().ToStringDbg());
 
 					lhCache.cache.emplace_back(rhAsset);
 				}
@@ -285,8 +285,8 @@ void AssetDatabase::Merge(AssetDatabase const& other)
 						rhAsset->GetName().c_str(),
 						(*assetIt)->GetPath().c_str(),
 						rhAsset->GetPath().c_str(),
-						(*assetIt)->GetPackageName().c_str(),
-						rhAsset->GetPackageName().c_str())
+						(*assetIt)->GetPackageId().ToStringDbg(),
+						rhAsset->GetPackageId().ToStringDbg())
 						, LogLevel::Error);
 				}
 			}

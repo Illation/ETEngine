@@ -11,7 +11,7 @@ namespace render {
 class StarField final
 {
 public:
-	StarField(T_Hash const assetId);
+	StarField(core::HashString const assetId);
 	virtual ~StarField();
 
 	void Draw(Camera const& cam) const;

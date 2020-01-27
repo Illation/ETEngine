@@ -39,7 +39,7 @@ private:
 	///////
 
 	size_t m_CurrentScene = 0u;
-	std::vector<T_Hash> m_Scenes;
+	std::vector<core::HashString> m_Scenes;
 
 	AssetPtr<render::SpriteFont> m_DebugFont;
 	bool m_DrawDebugInfo = true;

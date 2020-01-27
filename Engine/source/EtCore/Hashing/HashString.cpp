@@ -1,6 +1,7 @@
 #include "stdafx.h"	
 #include "HashString.h"
 
+#include <iomanip>
 #include <rttr/type.h>
 
 #include "HashStringRegistry.h"
@@ -28,6 +29,11 @@ RTTR_REGISTRATION
 			ok = true;
 			return HashString(str.c_str());
 		});
+	rttr::type::register_converter_func([](int64 const jsonNumber, bool& ok)->HashString // since numbers are stored as int64 in JSON
+		{
+			ok = true;
+			return HashString(static_cast<T_Hash>(jsonNumber));
+		});
 	rttr::type::register_converter_func([](T_Hash const hash, bool& ok)->HashString
 		{
 			ok = true;
@@ -41,6 +47,7 @@ DEFINE_FORCED_LINKING(HashString)
 #if ET_HASH_STRING_ENABLED
 HashStringRegistry* const HashString::s_GlobalHashStringRegistry = &HashStringRegistry::Instance();
 #endif
+std::string HashString::s_LastStringResult = "";
 
 
 //------------------------
@@ -52,6 +59,7 @@ HashString::HashString(T_Hash const val)
 	: m_Hash(val)
 { }
 
+#if ET_HASH_STRING_ENABLED	
 //------------------------
 // HashString::c-tor
 //
@@ -60,10 +68,9 @@ HashString::HashString(T_Hash const val)
 HashString::HashString(char const* const source)
 	: m_Hash(GetHash(source))
 {
-#if ET_HASH_STRING_ENABLED	
 	HashStringRegistry::Instance().Register(m_Hash, source); // we get the instance here in case of static hash string initialization
-#endif
 }
+#endif
 
 //----------------
 // HashString:: = 
@@ -107,18 +114,46 @@ void HashString::Set(char const* const source)
 
 #if ET_HASH_STRING_ENABLED	
 
-//--------------------------
-// HashString::GetStringDbg
+//-----------------------------
+// HashString::GetStoredString
 //
 // in non shipping builds we can acquire a string from the hashed value
 //  this should not be used for logic, only logging purposes and serializing / deserializing non shipping content
 //
-char const* HashString::GetStringDbg() const
+char const* HashString::GetStoredString() const
 {
 	return s_GlobalHashStringRegistry->GetString(m_Hash);
 }
 
 #endif
+
+//--------------------------
+// HashString::GetStringDbg
+//
+// returns either the stored string or a numeric version if the latter is unavailable
+//
+char const* HashString::ToStringDbg() const
+{
+#if ET_HASH_STRING_ENABLED	
+	char const* const str = GetStoredString();
+	if (str != nullptr)
+	{
+		return str;
+	}
+	else
+	{
+#endif
+
+		std::stringstream stream;
+		stream << "0x" << std::setfill('0') << std::setw(sizeof(T_Hash) * 2u) << std::hex << m_Hash; 
+		s_LastStringResult = stream.str();
+		return s_LastStringResult.c_str();
+
+#if ET_HASH_STRING_ENABLED	
+	}
+#endif
+}
+
 
 
 } // namespace core

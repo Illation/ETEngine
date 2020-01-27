@@ -272,9 +272,9 @@ void Scene::RemoveLight(T_LightId const lightId)
 //----------------------
 // Scene::SetSkyboxMap
 //
-void Scene::SetSkyboxMap(T_Hash const assetIdEnvMap)
+void Scene::SetSkyboxMap(core::HashString const assetIdEnvMap)
 {
-	if (assetIdEnvMap == 0u)
+	if (assetIdEnvMap.IsEmpty())
 	{
 		m_Skybox.m_EnvironmentMap = nullptr;
 	}
@@ -287,9 +287,9 @@ void Scene::SetSkyboxMap(T_Hash const assetIdEnvMap)
 //---------------------
 // Scene::SetStarfield
 //
-void Scene::SetStarfield(T_Hash const assetId)
+void Scene::SetStarfield(core::HashString const assetId)
 {
-	if (assetId == 0u)
+	if (assetId.IsEmpty())
 	{
 		if (m_Starfield != nullptr)
 		{
@@ -399,7 +399,7 @@ void Scene::RemoveAtmosphere(core::T_SlotId const atmoId)
 //------------------
 // Scene::AddSprite
 //
-core::T_SlotId Scene::AddSprite(T_Hash const textureId, T_NodeId const node, vec2 const pivot, vec4 const& color)
+core::T_SlotId Scene::AddSprite(core::HashString const textureId, T_NodeId const node, vec2 const pivot, vec4 const& color)
 {
 	auto sprite = m_Sprites.insert(Sprite());
 
@@ -414,7 +414,7 @@ core::T_SlotId Scene::AddSprite(T_Hash const textureId, T_NodeId const node, vec
 //----------------------------
 // Scene::UpdateSpriteTexture
 //
-void Scene::UpdateSpriteTexture(core::T_SlotId const spriteId, T_Hash const textureId)
+void Scene::UpdateSpriteTexture(core::T_SlotId const spriteId, core::HashString const textureId)
 {
 	m_Sprites[spriteId].texture = core::ResourceManager::Instance()->GetAssetData<TextureData>(textureId);
 }
@@ -480,7 +480,7 @@ Light const& Scene::GetLight(T_LightId const lightId) const
 //----------------------
 // Scene::GetAtmosphere
 //
-render::Atmosphere const& Scene::GetAtmosphere(T_Hash const atmoId) const
+render::Atmosphere const& Scene::GetAtmosphere(core::HashString const atmoId) const
 {
 	auto const foundAtmo = std::find_if(m_Atmospheres.cbegin(), m_Atmospheres.cbegin(), [atmoId](std::pair<Atmosphere, uint8> const& atmo)
 	{
@@ -497,7 +497,7 @@ render::Atmosphere const& Scene::GetAtmosphere(T_Hash const atmoId) const
 //
 // Get an extension, if we have it, else null
 //
-render::I_SceneExtension* Scene::GetExtension(T_Hash const extensionId) const
+render::I_SceneExtension* Scene::GetExtension(core::HashString const extensionId) const
 {
 	auto foundIt = std::find_if(m_Extensions.cbegin(), m_Extensions.cend(), [extensionId](I_SceneExtension const* const ext)
 		{

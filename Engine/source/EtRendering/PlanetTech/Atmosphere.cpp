@@ -46,7 +46,7 @@ Atmosphere::~Atmosphere()
 //
 // Load parameters, precalculate look up textures...
 //
-void Atmosphere::Initialize(T_Hash const parameterAssetId)
+void Atmosphere::Initialize(core::HashString const parameterAssetId)
 {
 	m_Id = parameterAssetId;
 
@@ -55,7 +55,7 @@ void Atmosphere::Initialize(T_Hash const parameterAssetId)
 	RenderingSystems::Instance()->GetAtmospherPrecompute().Precalculate(this);
 
 	//Load and compile Shaders
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PostAtmosphere.glsl"_hash);
+	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("PostAtmosphere.glsl"));
 }
 
 //-------------------------
@@ -63,7 +63,7 @@ void Atmosphere::Initialize(T_Hash const parameterAssetId)
 //
 void Atmosphere::Draw(vec3 const& position, float const height, float const groundRadius, vec3 const& sunDir) const
 {
-	ET_ASSERT(m_Id != 0u, "Atmosphere wasn't initialized before drawing");
+	ET_ASSERT(!m_Id.IsEmpty(), "Atmosphere wasn't initialized before drawing");
 	ET_ASSERT(m_TexTransmittance != nullptr, "Atmosphere wasn't precalculated before drawing");
 	ET_ASSERT(m_TexIrradiance != nullptr);
 	ET_ASSERT(m_TexInscatter != nullptr);

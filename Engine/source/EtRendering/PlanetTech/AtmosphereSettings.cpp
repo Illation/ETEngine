@@ -29,7 +29,7 @@ DensityProfileLayer JSONDensityProfile(core::JSON::Object* jlayer)
 	return ret;
 }
 
-AtmosphereParameters::AtmosphereParameters(T_Hash const assetId, dvec3 &skyColor, dvec3 &sunColor)
+AtmosphereParameters::AtmosphereParameters(core::HashString const assetId, dvec3 &skyColor, dvec3 &sunColor)
 {
 	AssetPtr<core::StubData> jsonText = core::ResourceManager::Instance()->GetAssetData<core::StubData>(assetId);
 

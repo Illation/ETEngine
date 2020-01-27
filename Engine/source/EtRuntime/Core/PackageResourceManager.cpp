@@ -36,7 +36,7 @@ void PackageResourceManager::Init()
 
 	// get the raw json string for the asset database from that package
 	std::vector<uint8> rawData;
-	if (!memPkg->GetEntryData(GetHash(s_DatabasePath), rawData))
+	if (!memPkg->GetEntryData(core::HashString(s_DatabasePath), rawData))
 	{
 		LOG("PackageResourceManager::Init > Unable to retrieve database from memory package at '" + std::string(s_DatabasePath) +
 			std::string("'"), core::LogLevel::Error);
@@ -58,7 +58,7 @@ void PackageResourceManager::Init()
 	}
 
 	// Link asset references together
-	SetAssetReferences(m_Database, [this](T_Hash const assetId) { return m_Database.GetAsset(assetId); });
+	SetAssetReferences(m_Database, [this](core::HashString const assetId) { return m_Database.GetAsset(assetId); });
 }
 
 //---------------------------------
@@ -69,7 +69,7 @@ void PackageResourceManager::Init()
 void PackageResourceManager::Deinit()
 {
 	// clear the package list
-	for (std::pair<T_Hash, core::I_Package* >& package : m_Packages)
+	for (std::pair<core::HashString, core::I_Package* >& package : m_Packages)
 	{
 		delete package.second;
 		package.second = nullptr;
@@ -93,8 +93,7 @@ bool PackageResourceManager::GetLoadData(core::I_Asset const* const asset, std::
 	// check the iterator is valid
 	if (foundPackageIt == m_Packages.cend())
 	{
-		LOG(FS("No package (name:'%s', id:'%x') found for asset '%s'", asset->GetPackageName().c_str(), asset->GetPackageId(), asset->GetName().c_str()),
-			core::LogLevel::Warning);
+		LOG(FS("No package (id:'%s') found for asset '%s'", asset->GetPackageId().ToStringDbg(), asset->GetName().c_str()), core::LogLevel::Warning);
 		return false;
 	}
 
@@ -120,7 +119,7 @@ void PackageResourceManager::Flush()
 //
 // Get an asset by it's template type
 //
-core::I_Asset* PackageResourceManager::GetAssetInternal(T_Hash const assetId, std::type_info const& type, bool const reportErrors)
+core::I_Asset* PackageResourceManager::GetAssetInternal(core::HashString const assetId, std::type_info const& type, bool const reportErrors)
 {
 	return m_Database.GetAsset(assetId, type, reportErrors);
 }

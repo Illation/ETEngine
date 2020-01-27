@@ -42,7 +42,7 @@ public:
 
 	// I_SceneExtension interface
 	//----------------------------
-	T_Hash GetId() const override { return "OutlineExtension"_hash; }
+	core::HashString GetId() const override { return core::HashString("OutlineExtension"); }
 
 	// functionality
 	//---------------

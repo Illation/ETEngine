@@ -40,7 +40,7 @@ ECS_REGISTER_COMPONENT(AtmosphereComponent);
 //---------------------------------
 // AtmosphereComponent::c-tor
 //
-AtmosphereComponent::AtmosphereComponent(T_Hash const assetId, float const height, float const groundHeight)
+AtmosphereComponent::AtmosphereComponent(core::HashString const assetId, float const height, float const groundHeight)
 	: m_AssetId(assetId)
 	, m_Height(height)
 	, m_GroundHeight(groundHeight)
@@ -70,7 +70,7 @@ void AtmosphereComponent::SetSunlight(core::T_SlotId const lightId)
 //
 AtmosphereComponent* AtmosphereComponentDesc::MakeData()
 {
-	return new AtmosphereComponent(GetHash(asset), height, groundRadius);
+	return new AtmosphereComponent(asset, height, groundRadius);
 }
 
 //------------------------------------------

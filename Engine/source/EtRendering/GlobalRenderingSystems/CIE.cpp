@@ -13,7 +13,7 @@ namespace render {
 
 void CIE::LoadData()
 {
-	AssetPtr<core::StubData> jsonCieText = core::ResourceManager::Instance()->GetAssetData<core::StubData>("cie.json"_hash);
+	AssetPtr<core::StubData> jsonCieText = core::ResourceManager::Instance()->GetAssetData<core::StubData>(core::HashString("cie.json"));
 
 	core::JSON::Parser parser = core::JSON::Parser(std::string(jsonCieText->GetText(), jsonCieText->GetLength()));
 	core::JSON::Object* root = parser.GetRoot();

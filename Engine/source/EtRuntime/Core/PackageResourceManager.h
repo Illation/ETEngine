@@ -24,7 +24,7 @@ class PackageResourceManager : public core::ResourceManager
 	//---------------------
 public:
 	friend class core::ResourceManager;
-	typedef std::pair<T_Hash, core::I_Package*> T_IndexedPackage;
+	typedef std::pair<core::HashString, core::I_Package*> T_IndexedPackage;
 
 	// Construct destruct
 	//---------------------
@@ -47,7 +47,7 @@ public:
 	// utility
 	//---------------------
 protected:
-	core::I_Asset* GetAssetInternal(T_Hash const assetId, std::type_info const& type, bool const reportErrors) override;
+	core::I_Asset* GetAssetInternal(core::HashString const assetId, std::type_info const& type, bool const reportErrors) override;
 
 	// Data
 	///////

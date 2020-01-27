@@ -13,7 +13,7 @@ namespace et {
 namespace render {
 
 
-StarField::StarField(T_Hash const assetId) 
+StarField::StarField(core::HashString const assetId)
 {
 	AssetPtr<core::StubData> jsonDbText = core::ResourceManager::Instance()->GetAssetData<core::StubData>(assetId);
 
@@ -38,8 +38,8 @@ StarField::StarField(T_Hash const assetId)
 
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("FwdStarField.glsl"_hash);
-	m_pSprite = core::ResourceManager::Instance()->GetAssetData<TextureData>("starSprite.png"_hash);
+	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("FwdStarField.glsl"));
+	m_pSprite = core::ResourceManager::Instance()->GetAssetData<TextureData>(core::HashString("starSprite.png"));
 
 	//Generate buffers and arrays
 	m_VAO = api->CreateVertexArray();

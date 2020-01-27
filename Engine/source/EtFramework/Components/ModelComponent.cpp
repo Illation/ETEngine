@@ -42,7 +42,7 @@ ECS_REGISTER_COMPONENT(ModelComponent);
 //
 // load assets from ids
 //
-ModelComponent::ModelComponent(T_Hash const meshId, T_Hash const materialId)
+ModelComponent::ModelComponent(core::HashString const meshId, core::HashString const materialId)
 {
 	m_Mesh = core::ResourceManager::Instance()->GetAssetData<render::MeshData>(meshId);
 
@@ -79,7 +79,7 @@ ModelComponent::ModelComponent(AssetPtr<render::MeshData> const mesh, I_AssetPtr
 //
 ModelComponent* ModelComponentDesc::MakeData()
 {
-	return new ModelComponent(mesh.Get(), material.Get());
+	return new ModelComponent(mesh, material);
 }
 
 

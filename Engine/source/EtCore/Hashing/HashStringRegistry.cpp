@@ -38,6 +38,11 @@ HashStringRegistry& HashStringRegistry::Instance()
 //
 void HashStringRegistry::Register(T_Hash const hash, char const* const str)
 {
+	if (hash == 0u)
+	{
+		return;
+	}
+
 	// ensure this is a valid hash
 #if ET_VERIFY_HASHSTRING_REGISTRATION	
 	ET_ASSERT(hash == GetHash(str));
@@ -79,6 +84,11 @@ void HashStringRegistry::DbgPrintAll() const
 //
 char const* HashStringRegistry::GetString(T_Hash const hash) const
 {
+	if (hash == 0u)
+	{
+		return nullptr;
+	}
+
 	auto const foundIt = m_RegisteredHashes.find(hash);
 
 	if (foundIt != m_RegisteredHashes.cend())

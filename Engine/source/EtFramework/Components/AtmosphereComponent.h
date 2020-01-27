@@ -25,7 +25,7 @@ class AtmosphereComponent final
 	// construct destruct
 	//--------------------
 public:
-	AtmosphereComponent(T_Hash const assetId, float const height, float const groundHeight);
+	AtmosphereComponent(core::HashString const assetId, float const height, float const groundHeight);
 	~AtmosphereComponent() = default;
 
 	// functionality
@@ -41,7 +41,7 @@ public:
 	///////
 private:
 
-	T_Hash m_AssetId = 0u;
+	core::HashString m_AssetId;
 	float m_Height = 0.f;
 	float m_GroundHeight = 0.f;
 
@@ -74,7 +74,7 @@ public:
 	// Data
 	///////
 
-	std::string asset;
+	core::HashString asset;
 	float height;
 	float groundRadius;
 	EntityLink sun;

@@ -36,7 +36,7 @@ void FileResourceManager::Init()
 	InitDb(m_EngineDb, m_EngineDir, EditorConfig::GetInstance()->GetEnginePath());
 
 	// link databases
-	auto assetGetter = [this](T_Hash const assetId)
+	auto assetGetter = [this](core::HashString const assetId)
 	{
 		core::I_Asset* ret = m_ProjectDb.GetAsset(assetId, false);
 
@@ -112,7 +112,7 @@ void FileResourceManager::Flush()
 //
 // Tries finding the asset in either asset database
 //
-core::I_Asset* FileResourceManager::GetAssetInternal(T_Hash const assetId, std::type_info const& type, bool const reportErrors)
+core::I_Asset* FileResourceManager::GetAssetInternal(core::HashString const assetId, std::type_info const& type, bool const reportErrors)
 {
 	core::I_Asset* ret = m_ProjectDb.GetAsset(assetId, type, false);
 

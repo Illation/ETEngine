@@ -30,8 +30,8 @@ struct SpawnComponent final
 	// construct destruct
 	//--------------------
 public:
-	SpawnComponent(T_Hash const meshId, 
-		T_Hash const materialId, 
+	SpawnComponent(core::HashString const meshId,
+		core::HashString const materialId,
 		float const s, 
 		btCollisionShape* const shape, 
 		float const shapeMass, 
@@ -81,8 +81,8 @@ public:
 	// Data
 	///////
 
-	std::string mesh;
-	std::string material;
+	core::HashString mesh;
+	core::HashString material;
 	float scale = 1.f;
 
 	fw::CollisionShape* shape = nullptr;

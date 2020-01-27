@@ -52,7 +52,7 @@ public:
 	PlaylistComponent* MakeData() override;
 	void OnScenePostLoad(fw::EcsController& ecs, fw::T_EntityId const id, PlaylistComponent& comp);
 
-	std::vector<std::string> tracks;
+	std::vector<core::HashString> tracks;
 };
 
 

@@ -31,7 +31,7 @@ public:
 		std::string const& GetPath() const { return m_Path; }
 		void SetPath(std::string const& val) { m_Path = val; }
 
-		T_Hash GetId() const { return m_Id; }
+		HashString GetId() const { return m_Id; }
 	private:
 		// Data
 		///////
@@ -41,7 +41,7 @@ public:
 		std::string m_Path;
 
 		// derived
-		T_Hash m_Id;
+		HashString m_Id;
 
 		RTTR_ENABLE()
 	};
@@ -62,10 +62,10 @@ public:
 
 	// Accessors
 	//---------------------
-	T_AssetList GetAssetsInPackage(T_Hash const packageId);
+	T_AssetList GetAssetsInPackage(HashString const packageId);
 
-	I_Asset* GetAsset(T_Hash const assetId, bool const reportErrors = true) const;
-	I_Asset* GetAsset(T_Hash const assetId, std::type_info const& type, bool const reportErrors = true) const; // faster option
+	I_Asset* GetAsset(HashString const assetId, bool const reportErrors = true) const;
+	I_Asset* GetAsset(HashString const assetId, std::type_info const& type, bool const reportErrors = true) const; // faster option
 
 	// Functionality
 	//---------------------

@@ -98,7 +98,7 @@ void SceneEditor::InitInternal()
 		listener->OnSceneSet();
 	}
 
-	fw::UnifiedScene::Instance().LoadScene("PhysicsScene.json"_hash);
+	fw::UnifiedScene::Instance().LoadScene(core::HashString("PhysicsScene.json"));
 }
 
 //----------------------------------------------------

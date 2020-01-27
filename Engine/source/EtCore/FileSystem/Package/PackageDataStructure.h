@@ -38,7 +38,7 @@ struct PkgHeader
 //
 struct PkgFileInfo
 {
-	T_Hash fileId;
+	HashString fileId;
 	uint64 offset;
 };
 
@@ -49,7 +49,7 @@ struct PkgFileInfo
 //
 struct PkgEntry
 {
-	T_Hash fileId;
+	HashString fileId;
 	E_CompressionType compressionType;
 	uint16 nameLength;
 	uint64 size;

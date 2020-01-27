@@ -76,7 +76,7 @@ AudioSourceComponent* AudioSourceCompDesc::MakeData()
 {
 	AudioSourceComponent* const comp = new AudioSourceComponent(gain, minGain, maxGain, pitch);
 
-	comp->SetAudioData(GetHash(audioAsset));
+	comp->SetAudioData(audioAsset);
 	comp->SetLooping(loop);
 
 	if (playOnInit)

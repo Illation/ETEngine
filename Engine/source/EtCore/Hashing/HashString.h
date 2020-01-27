@@ -36,12 +36,21 @@ class HashString final
 	static HashStringRegistry* const s_GlobalHashStringRegistry;
 #endif
 
+	static std::string s_LastStringResult;
+
 	// construct destruct
 	//--------------------
 public:
 	HashString() = default;
 	explicit HashString(T_Hash const val);
+#if ET_HASH_STRING_ENABLED
 	explicit HashString(char const* const source);
+#else
+	constexpr explicit HashString(char const* const source) : m_Hash(GetHash(source)) {}
+
+	template <unsigned int TCount>
+	constexpr explicit HashString(char const(&str)[TCount]) : m_Hash(detail::hash_gen(str, TCount)) {}
+#endif
 
 	HashString& operator=(T_Hash const val);
 	HashString& operator=(char const* const source);
@@ -80,8 +89,9 @@ public:
 	// debug
 	//-------
 #if ET_HASH_STRING_ENABLED	
-	char const* GetStringDbg() const;
+	char const* GetStoredString() const;
 #endif
+	char const* ToStringDbg() const;
 
 	// Data
 	///////
@@ -93,3 +103,19 @@ private:
 
 } // namespace core
 } // namespace et
+
+
+namespace std {
+
+//------------------------
+// std::hash<HashString>
+//
+// Allow using a hash string as a key for maps
+//
+template <>
+struct hash<et::core::HashString>
+{
+	std::size_t operator()(et::core::HashString const& hs) const { return static_cast<std::size_t>(hs.Get()); }
+};
+
+} // namespace std

@@ -27,7 +27,7 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 	//Make sure everything is set up
 	if (m_Material == nullptr)
 	{
-		m_Material = core::ResourceManager::Instance()->GetAssetData<render::Material>("M_Light.json"_hash);
+		m_Material = core::ResourceManager::Instance()->GetAssetData<render::Material>(core::HashString("M_Light.json"));
 	}
 
 	//Frustum culling
@@ -56,8 +56,8 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 
 void DirectLightVolume::Initialize()
 {
-	m_Shader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("FwdLightDirectionalShader.glsl"_hash);
-	m_ShaderShadowed = core::ResourceManager::Instance()->GetAssetData<ShaderData>("FwdLightDirectionalShadowShader.glsl"_hash);
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("FwdLightDirectionalShader.glsl"));
+	m_ShaderShadowed = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("FwdLightDirectionalShadowShader.glsl"));
 
 	m_IsInitialized = true;
 }

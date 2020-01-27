@@ -380,7 +380,7 @@ JSON::Number* JSON::Parser::ParseNumber(const std::string & textFile)
 	}
 	std::string numString = textFile.substr(m_ReadIdx, endNumberIdx - m_ReadIdx);
 	double num = std::atof(numString.c_str());
-	int64 numInt = std::stol(numString);
+	int64 numInt = static_cast<int64>(std::stoll(numString));
 	m_ReadIdx = endNumberIdx;
 	JSON::Number* ret = new JSON::Number();
 	ret->value = num;

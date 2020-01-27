@@ -52,10 +52,10 @@ void PostProcessingRenderer::Initialize()
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
 	//Load and compile Shaders
-	m_pDownsampleShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PostDownsample.glsl"_hash);
-	m_pGaussianShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PostGaussian.glsl"_hash);
-	m_pPostProcShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PostProcessing.glsl"_hash);
-	m_pFXAAShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PostFXAA.glsl"_hash);
+	m_pDownsampleShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("PostDownsample.glsl"));
+	m_pGaussianShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("PostGaussian.glsl"));
+	m_pPostProcShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("PostProcessing.glsl"));
+	m_pFXAAShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("PostFXAA.glsl"));
 
 	GenerateFramebuffers();
 }

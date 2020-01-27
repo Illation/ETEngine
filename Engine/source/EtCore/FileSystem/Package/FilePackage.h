@@ -1,6 +1,5 @@
 #pragma once
-
-#include <map>
+#include <unordered_map>
 
 #include "Package.h"
 
@@ -49,15 +48,15 @@ public:
 
 	// utility
 	//--------------
-	PackageEntry const* GetEntry(T_Hash const id) const;
-	bool GetEntryData(T_Hash const id, std::vector<uint8>& outData) override;
+	PackageEntry const* GetEntry(HashString const id) const;
+	bool GetEntryData(HashString const id, std::vector<uint8>& outData) override;
 
 private:
 	void LoadFileList();
 
 	// Data
 	///////
-	std::map<T_Hash, PackageEntry> m_Entries;
+	std::unordered_map<HashString, PackageEntry> m_Entries;
 	File* m_File = nullptr;
 };
 

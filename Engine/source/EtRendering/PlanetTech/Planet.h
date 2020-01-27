@@ -26,12 +26,12 @@ class Atmosphere;
 //
 struct PlanetParams
 {
-	T_Hash texDiffuseId = 0u;
-	T_Hash texDetail1Id = 0u;
-	T_Hash texDetail2Id = 0u;
+	core::HashString texDiffuseId;
+	core::HashString texDetail1Id;
+	core::HashString texDetail2Id;
 
-	T_Hash texHeightId = 0u;
-	T_Hash texHeightDetailId = 0u;
+	core::HashString texHeightId;
+	core::HashString texHeightDetailId;
 
 	float radius = 0.f;
 	float height = 0.f;

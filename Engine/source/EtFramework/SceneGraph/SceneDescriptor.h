@@ -81,8 +81,8 @@ public:
 	std::vector<EntityDescriptor> entities;
 
 	// graphical parameters
-	std::string skybox;
-	std::string starfield;
+	core::HashString skybox;
+	core::HashString starfield;
 	EntityLink activeCamera;
 	render::PostProcessingSettings postprocessing;
 

@@ -62,7 +62,7 @@ FilePackage::~FilePackage()
 //
 // Get a package entry from a package using its hashed ID
 //
-FilePackage::PackageEntry const* FilePackage::GetEntry(T_Hash const id) const
+FilePackage::PackageEntry const* FilePackage::GetEntry(HashString const id) const
 {
 	auto findResult = m_Entries.find(id);
 
@@ -81,7 +81,7 @@ FilePackage::PackageEntry const* FilePackage::GetEntry(T_Hash const id) const
 //
 // This will do a file read from disk
 //
-bool FilePackage::GetEntryData(T_Hash const id, std::vector<uint8>& outData)
+bool FilePackage::GetEntryData(HashString const id, std::vector<uint8>& outData)
 {
 	// try getting the entry
 	PackageEntry const* pkgEntry = GetEntry(id);
@@ -152,8 +152,7 @@ void FilePackage::LoadFileList()
 
 		if (!emplaceIt.second)
 		{
-			LOG("FilePackage::LoadFileList > Entry list already contains a file with ID [" + std::to_string(entry->fileId) + std::string("] !"),
-				LogLevel::Warning);
+			ET_ASSERT(false, "Entry list already contains a file with ID [%s] !", entry->fileId.ToStringDbg());
 			continue;
 		}
 

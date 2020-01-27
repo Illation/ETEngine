@@ -49,7 +49,7 @@ public:
 	// utility
 	//---------------------
 protected:
-	core::I_Asset* GetAssetInternal(T_Hash const assetId, std::type_info const& type, bool const reportErrors) override;
+	core::I_Asset* GetAssetInternal(core::HashString const assetId, std::type_info const& type, bool const reportErrors) override;
 
 	void InitDb(core::AssetDatabase& db, core::Directory*& dir, std::string const& path);
 

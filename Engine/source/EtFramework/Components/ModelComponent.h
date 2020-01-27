@@ -31,7 +31,7 @@ class ModelComponent final
 	// construct destruct
 	//--------------------
 public:
-	ModelComponent(T_Hash const meshId, T_Hash const materialId);
+	ModelComponent(core::HashString const meshId, core::HashString const materialId);
 	ModelComponent(AssetPtr<render::MeshData> const mesh, I_AssetPtr const material);
 	~ModelComponent() = default;
 

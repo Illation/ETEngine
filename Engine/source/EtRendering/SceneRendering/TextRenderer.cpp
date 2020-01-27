@@ -62,7 +62,7 @@ void TextRenderer::Initialize()
 {
 	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
 
-	m_pTextShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>("PostText.glsl"_hash);
+	m_pTextShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("PostText.glsl"));
 
 	//Generate buffers and arrays
 	m_VAO = api->CreateVertexArray();

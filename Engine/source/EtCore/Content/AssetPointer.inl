@@ -27,11 +27,11 @@ inline std::type_info const& I_AssetPtr::GetType() const
 //---------------------------------
 // I_AssetPtr::GetId
 //
-T_Hash I_AssetPtr::GetId() const
+core::HashString I_AssetPtr::GetId() const
 {
 	if (m_Asset == nullptr)
 	{
-		return 0u;
+		return core::HashString();
 	}
 
 	return m_Asset->GetId();

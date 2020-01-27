@@ -30,7 +30,7 @@ public:
 
 	// construct destruct
 	//--------------------
-	SpriteComponent(T_Hash const textureAsset, vec2 const& pivot = vec2(), vec4 const& color = vec4(1.f));
+	SpriteComponent(core::HashString const textureAsset, vec2 const& pivot = vec2(), vec4 const& color = vec4(1.f));
 	~SpriteComponent() = default;
 
 	// accessors
@@ -42,14 +42,14 @@ public:
 	//-----------
 	void SetPivot(vec2 const& pivot);
 	void SetColor(vec4 const& color);
-	void SetTexture(T_Hash const textureAsset);
+	void SetTexture(core::HashString const textureAsset);
 
 	// Data
 	///////
 
 private:
 	core::T_SlotId m_Id = core::INVALID_SLOT_ID;
-	T_Hash m_TextureAssetId;
+	core::HashString m_TextureAssetId;
 	vec2 m_Pivot;
 	vec4 m_Color;
 };
@@ -78,7 +78,7 @@ public:
 	// Data
 	///////
 
-	std::string textureAsset;
+	core::HashString textureAsset;
 	vec2 pivot;
 	vec4 color;
 };
