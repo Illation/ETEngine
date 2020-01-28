@@ -93,11 +93,11 @@ struct vector<3, T>
 		struct
 		{
 			vector<2, T> xy;
-			T _ignored1;
+			T _vec3_ignored_z;
 		};
 		struct
 		{
-			T _ignored1;
+			T _vec3_ignored_x;
 			vector<2, T> yz;
 		};
 	};
@@ -151,30 +151,30 @@ struct vector<4, T>
 		struct
 		{
 			vector<2, T> xy;
-			T _ignored1;
-			T _ignored2;
+			T _vec4_ignored1_z;
+			T _vec4_ignored1_w;
 		};
 		struct
 		{
-			T _ignored1;
+			T _vec4_ignored2_x;
 			vector<2, T> yz;
-			T _ignored2;
+			T _vec4_ignored2_w;
 		};
 		struct
 		{
-			T _ignored1;
-			T _ignored2;
+			T _vec4_ignored3_x;
+			T _vec4_ignored3_y;
 			vector<2, T> zw;
 		};
 		struct
 		{
 			vector<3, T> xyz;
-			T _ignored1;
+			T _vec4_ignored4_w;
 		};
 		struct
 		{
 			vector<3, T> rgb;
-			T _ignored1;
+			T _vec4_ignored_a;
 		};
 	};
 
