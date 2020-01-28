@@ -25,4 +25,28 @@
       <Item Name="asset">m_Asset</Item>
     </Expand>
   </Type>
+
+  <Type Name="et::core::lin_hash_map&lt;*&gt;">
+    <DisplayString>{{ size={m_Size} }}</DisplayString>
+    <Expand>
+      <Item Name="[bucket count]">m_Buckets._Mypair._Myval2._Mylast - m_Buckets._Mypair._Myval2._Myfirst</Item>
+      <Item Name="[invalid key value]">m_EmptyKeyVal</Item>
+      <CustomListItems>
+        <Variable Name="buckets" InitialValue="m_Buckets._Mypair._Myval2._Myfirst" />
+        <Variable Name="invalid_item" InitialValue="m_EmptyKeyVal" />
+        <Variable Name="num_buckets" InitialValue="m_Buckets._Mypair._Myval2._Mylast - m_Buckets._Mypair._Myval2._Myfirst" />
+        <Variable Name="start_bucket" InitialValue="0" />
+        <Variable Name="i" InitialValue="start_bucket" />
+        <Loop>
+          <If Condition="i == num_buckets">
+            <Break />
+          </If>
+          <If Condition="buckets[i].first != invalid_item">
+            <Item Name="[{buckets[i].first}]">buckets[i].second, na</Item>
+          </If>
+          <Exec>i = (i + 1)</Exec>
+        </Loop>
+      </CustomListItems>
+    </Expand>
+  </Type>
 </AutoVisualizer>
