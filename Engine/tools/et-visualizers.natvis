@@ -49,4 +49,24 @@
       </CustomListItems>
     </Expand>
   </Type>
+
+  <Type Name="et::core::slot_map&lt;*&gt;">
+    <DisplayString>{{ size={m_Data._Mypair._Myval2._Mylast - m_Data._Mypair._Myval2._Myfirst} }}</DisplayString>
+    <Expand>
+      <Item Name="[index count]">m_Indices._Mypair._Myval2._Mylast - m_Indices._Mypair._Myval2._Myfirst</Item>
+      <CustomListItems>
+        <Variable Name="data" InitialValue="m_Data._Mypair._Myval2._Myfirst" />
+        <Variable Name="indexPos" InitialValue="m_IndexPositions._Mypair._Myval2._Myfirst" />
+        <Variable Name="num" InitialValue="m_Data._Mypair._Myval2._Mylast - m_Data._Mypair._Myval2._Myfirst" />
+        <Variable Name="i" InitialValue="0" />
+        <Loop>
+          <If Condition="i == num">
+            <Break />
+          </If>
+          <Item Name="[{indexPos[i]}]">data[i], na</Item>
+          <Exec>i = (i + 1)</Exec>
+        </Loop>
+      </CustomListItems>
+    </Expand>
+  </Type>
 </AutoVisualizer>
