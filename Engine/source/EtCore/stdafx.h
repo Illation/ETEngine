@@ -53,7 +53,7 @@ inline void SafeDelete(T &pObjectToDelete)
 #include <EtCore/Reflection/ReflectionUtil.h>
 //Working singleton Set
 #define TIME et::core::ContextManager::GetInstance()->GetActiveContext()->time
-#define LOG(fmt, ...) et::core::Logger::Log(fmt, __VA_ARGS__);
+#define LOG(fmt, ...) et::core::Logger::Log(fmt, __VA_ARGS__)
 #define PERFORMANCE et::core::PerformanceInfo::GetInstance()
 
 // assertions

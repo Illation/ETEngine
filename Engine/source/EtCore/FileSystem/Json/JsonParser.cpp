@@ -325,7 +325,7 @@ JSON::Number* JSON::Parser::ParseNumber(const std::string & textFile)
 	bool isInt = true;
 	while (!m_Completed && !endFound)
 	{
-		if (CheckEOF(textFile))return false;
+		if (CheckEOF(textFile)) return nullptr;
 		char next = textFile[endNumberIdx];
 		switch (stage)
 		{
