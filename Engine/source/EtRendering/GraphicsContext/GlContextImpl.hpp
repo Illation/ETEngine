@@ -569,20 +569,20 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 	//******************
 
 	std::vector<std::string> requiredExtensions = { "GL_ARB_bindless_texture" };
-	std::vector<T_Hash> requiredExtHashes;
+	std::vector<core::HashString> requiredExtHashes;
 	for (std::string const& required : requiredExtensions)
 	{
-		requiredExtHashes.emplace_back(GetHash(required));
+		requiredExtHashes.emplace_back(core::HashString(required.c_str()));
 	}
 
-	std::vector<T_Hash> foundExtensions;
+	std::vector<core::HashString> foundExtensions;
 
 	int32 numExtensions;
 	glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
 	for (int32 i = 0; i < numExtensions; ++i)
 	{
 		GLubyte const* foundExt = glGetStringi(GL_EXTENSIONS, i);
-		foundExtensions.emplace_back(GetHash(reinterpret_cast<char const*>(foundExt)));
+		foundExtensions.emplace_back(core::HashString(reinterpret_cast<char const*>(foundExt)));
 	}
 
 	bool allFound = true;
@@ -590,7 +590,7 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 	LOG("Required extensions:");
 	for (size_t reqIdx = 0u; reqIdx < requiredExtensions.size(); ++ reqIdx)
 	{
-		T_Hash const required = requiredExtHashes[reqIdx];
+		core::HashString const required = requiredExtHashes[reqIdx];
 
 		if (std::find(foundExtensions.cbegin(), foundExtensions.cend(), required) != foundExtensions.cend())
 		{

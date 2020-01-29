@@ -398,7 +398,7 @@ bool ShaderAsset::ReplaceInclude(std::string &line)
 	}
 	firstQ++;
 	std::string path = line.substr(firstQ, lastQ - firstQ);
-	T_Hash const assetId(GetHash(core::FileUtil::ExtractName(path)));
+	core::HashString const assetId(core::FileUtil::ExtractName(path).c_str());
 
 	// Get the stub asset data
 	auto const foundRefIt = std::find_if(GetReferences().cbegin(), GetReferences().cend(), [assetId](Reference const& reference)
@@ -466,7 +466,7 @@ void ShaderAsset::InitUniforms()
 	// hook up shared uniform variables if the shader requires it
 	render::SharedVarController const& sharedVarController = RenderingSystems::Instance()->GetSharedVarController();
 
-	T_Hash const sharedBlockId = GetHash(sharedVarController.GetBlockName());
+	core::HashString const sharedBlockId(sharedVarController.GetBlockName().c_str());
 	auto const foundBlock = std::find(m_Data->m_UniformBlocks.cbegin(), m_Data->m_UniformBlocks.cend(), sharedBlockId);
 
 	if (foundBlock != m_Data->m_UniformBlocks.cend())
@@ -505,7 +505,7 @@ void ShaderAsset::InitUniforms()
 		// create a layout for each
 		for (UniformDescriptor const& uni : unis)
 		{
-			T_Hash const hash = GetHash(uni.name);
+			core::HashString const hash(uni.name.c_str());
 
 			// ensure no hash collisions
 			ET_ASSERT(std::find(m_Data->m_UniformIds.cbegin(), m_Data->m_UniformIds.cend(), hash) == m_Data->m_UniformIds.cend());

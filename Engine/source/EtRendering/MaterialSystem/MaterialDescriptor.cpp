@@ -23,10 +23,10 @@ RTTR_REGISTRATION
 {
 	// base
 	rttr::registration::class_<BaseMaterialParam>("base material param")
-		.property("name", &BaseMaterialParam::GetName, &BaseMaterialParam::SetName);
+		.property("name", &BaseMaterialParam::m_Id);
 
 	// derived
-	REGISTER_DERIVED_PARAM(MaterialParam<std::string>, "texture"); // convert string to texture asset reference
+	REGISTER_DERIVED_PARAM(MaterialParam<core::HashString>, "texture"); // convert hashString to texture asset reference
 	REGISTER_DERIVED_PARAM(MaterialParam<mat4>, "matrix4x4");
 	REGISTER_DERIVED_PARAM(MaterialParam<mat3>, "matrix3x3");
 	REGISTER_DERIVED_PARAM(MaterialParam<vec4>, "vector4D");
@@ -40,21 +40,6 @@ RTTR_REGISTRATION
 	// container
 	rttr::registration::class_<MaterialDescriptor>("material descriptor")
 		.property("parameters", &MaterialDescriptor::parameters);
-}
-
-
-//=========================
-// Base Material Parameter
-//=========================
-
-
-//---------------------------------
-// BaseMaterialParam::SetName
-//
-void BaseMaterialParam::SetName(std::string const& val)
-{
-	m_Name = val;
-	m_Id = GetHash(m_Name);
 }
 
 
@@ -79,14 +64,14 @@ void ConvertDescriptor(T_ParameterBlock const baseParams,
 	ET_ASSERT(shader != nullptr);
 
 	std::vector<UniformParam> const& layout = shader->GetUniformLayout();
-	std::vector<T_Hash> const& ids = shader->GetUniformIds();
+	std::vector<core::HashString> const& ids = shader->GetUniformIds();
 	ET_ASSERT(layout.size() == ids.size());
 
 	// override all 
 	for (size_t paramIdx = 0u; paramIdx < layout.size(); ++paramIdx)
 	{
 		UniformParam const& param = layout[paramIdx];
-		T_Hash const paramId = ids[paramIdx];
+		core::HashString const paramId = ids[paramIdx];
 
 		// try finding the corresponding parameter in the descriptor
 		auto paramIt = std::find_if(desc.parameters.cbegin(), desc.parameters.cend(), [paramId](BaseMaterialParam const* const baseParam)
@@ -108,8 +93,8 @@ void ConvertDescriptor(T_ParameterBlock const baseParams,
 		case E_ParamType::TextureCube:
 		case E_ParamType::TextureShadow:
 			{
-				ET_ASSERT(baseParam->GetType() == typeid(std::string));
-				T_Hash const assetId = GetHash(static_cast<MaterialParam<std::string> const*>(baseParam)->GetData());
+				ET_ASSERT(baseParam->GetType() == typeid(core::HashString));
+				core::HashString const assetId(static_cast<MaterialParam<core::HashString> const*>(baseParam)->GetData());
 
 				auto texIt = std::find_if(textureRefs.cbegin(), textureRefs.cend(), [assetId](AssetPtr<TextureData> const& texture)
 					{

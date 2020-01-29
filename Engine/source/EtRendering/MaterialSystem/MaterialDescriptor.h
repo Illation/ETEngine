@@ -27,6 +27,7 @@ class BaseMaterialParam
 	// definitions
 	//-------------
 	RTTR_ENABLE()
+	REGISTRATION_FRIEND_NS(render)
 
 	// construct destruct
 	//---------------------
@@ -39,19 +40,16 @@ public:
 
 	// funtionality
 	//--------------
-	void SetName(std::string const& val);
 
 	// accessors
 	//-----------
-	std::string const& GetName() const { return m_Name; }
-	T_Hash const GetId() const { return m_Id; }
+	core::HashString const GetId() const { return m_Id; }
 
 	// Data
 	///////
-private:
 
-	std::string m_Name;
-	T_Hash m_Id = 0u;
+private:
+	core::HashString m_Id;
 };
 
 //---------------------------------

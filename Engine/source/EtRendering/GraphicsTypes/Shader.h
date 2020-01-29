@@ -41,7 +41,7 @@ public:
 	std::vector<T_AttributeLocation> const& GetAttributes() const { return m_Attributes; }
 
 	std::vector<render::UniformParam> const& GetUniformLayout() const { return m_UniformLayout; }
-	std::vector<T_Hash> const& GetUniformIds() const { return m_UniformIds; }
+	std::vector<core::HashString> const& GetUniformIds() const { return m_UniformIds; }
 	render::T_ConstParameterBlock GetCurrentUniforms() const { return m_CurrentUniforms; }
 
 	// functionliaty
@@ -70,12 +70,12 @@ private:
 
 	// loose uniforms
 	std::vector<render::UniformParam> m_UniformLayout;
-	std::vector<T_Hash> m_UniformIds;
+	std::vector<core::HashString> m_UniformIds;
 	render::T_ParameterBlock m_CurrentUniforms = nullptr;
 	size_t m_UniformDataSize = 0u;
 
 	// within blocks
-	std::vector<T_Hash> m_UniformBlocks; // addressed by their indices
+	std::vector<core::HashString> m_UniformBlocks; // addressed by their indices
 };
 
 //---------------------------------
