@@ -50,22 +50,17 @@ void MainFramework::OnInit()
 	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<render::SpriteFont>(core::HashString("Ubuntu-Regular.ttf"));
 
 	// scenes
-	fw::UnifiedScene& uniScene = fw::UnifiedScene::Instance();
-
-	m_Scenes.push_back(core::HashString("EditorScene.json"));
-	m_Scenes.push_back(core::HashString("PlanetScene.json"));
-	m_Scenes.push_back(core::HashString("PhysicsScene.json"));
-	
-	uniScene.GetEventDispatcher().Register(fw::E_SceneEvent::Activated,
+	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::Activated,
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const evnt)
 		{
 			UNUSED(flags);
 			UNUSED(evnt);
 
-			// active scene as loaded by user prefs
-			auto foundSceneIt = std::find(m_Scenes.cbegin(), m_Scenes.cend(), fw::UnifiedScene::Instance().GetSceneId());
-			ET_ASSERT(foundSceneIt != m_Scenes.cend());
-			m_CurrentScene = foundSceneIt - m_Scenes.cbegin();
+			// active scene as loaded by boot config
+			std::vector<core::HashString> const& scenes = GetSceneIds();
+			auto foundSceneIt = std::find(scenes.cbegin(), scenes.cend(), fw::UnifiedScene::Instance().GetSceneId());
+			ET_ASSERT(foundSceneIt != scenes.cend());
+			m_CurrentScene = foundSceneIt - scenes.cbegin();
 
 			// set up camera
 			fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
@@ -84,7 +79,7 @@ void MainFramework::OnInit()
 //--------------------------
 // MainFramework::OnTick
 //
-// Demo specific updates indepenent of scene
+// Demo specific updates independent of scene
 //
 void MainFramework::OnTick()
 {
@@ -95,19 +90,21 @@ void MainFramework::OnTick()
 	//-----------------
 	if(input->GetKeyState(E_KbdKey::F3) == E_KeyState::Pressed)
 	{
-		if (--m_CurrentScene >= m_Scenes.size())
+		std::vector<core::HashString> const& scenes = GetSceneIds();
+		if (--m_CurrentScene >= scenes.size())
 		{
-			m_CurrentScene = m_Scenes.size() - 1;
+			m_CurrentScene = scenes.size() - 1;
 		}
 
-		uniScene.LoadScene(m_Scenes[m_CurrentScene]);
+		uniScene.LoadScene(scenes[m_CurrentScene]);
 	}
 
 	if(input->GetKeyState(E_KbdKey::F4) == E_KeyState::Pressed)
 	{
-		m_CurrentScene = (m_CurrentScene + 1) % m_Scenes.size();
+		std::vector<core::HashString> const& scenes = GetSceneIds();
+		m_CurrentScene = (m_CurrentScene + 1) % scenes.size();
 
-		uniScene.LoadScene(m_Scenes[m_CurrentScene]);
+		uniScene.LoadScene(scenes[m_CurrentScene]);
 	}
 
 	// Screenshots

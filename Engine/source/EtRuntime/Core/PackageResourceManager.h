@@ -36,9 +36,13 @@ protected:
 	void Init() override;
 	void Deinit() override;
 
+	// accessors
+	//-----------
+public:
+	core::I_Package* GetRootPackage() const { return m_RootPackage; }
+
 	// functionality
 	//---------------------
-public:
 
 	bool GetLoadData(core::I_Asset const* const asset, std::vector<uint8>& outData) const override;
 
@@ -54,6 +58,7 @@ protected:
 
 	core::AssetDatabase m_Database;
 	std::vector<T_IndexedPackage> m_Packages;
+	core::I_Package* m_RootPackage = nullptr;
 };
 
 

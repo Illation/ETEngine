@@ -14,6 +14,7 @@
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtFramework/linkerHelper.h>
+#include <EtFramework/Config/BootConfig.h>
 
 
 //============
@@ -184,6 +185,10 @@ void CookCompiledPackage(std::string const& dbBase,
 	// load the asset database from the temporary file and add it to the package
 	core::File* dbFile = new core::File(dbName, tempDir);
 	packageWriter.AddFile(dbFile, dbFile->GetPath(), core::E_CompressionType::Store);
+
+	// add the boot config
+	core::File* cfgFile = new core::File(dbBase + fw::BootConfig::s_FileName, nullptr);
+	packageWriter.AddFile(cfgFile, dbBase, core::E_CompressionType::Store);
 
 	// add all other compiled files to the package
 	static core::HashString const s_CompiledPackageId;

@@ -15,6 +15,7 @@
 #include <EtFramework/Physics/PhysicsManager.h>
 #include <EtFramework/Audio/AudioManager.h>
 #include <EtFramework/Components/CameraComponent.h>
+#include <EtFramework/Config/BootConfig.h>
 
 #include <EtRuntime/Core/GlfwEventManager.h>
 #include <EtRuntime/Core/PackageResourceManager.h>
@@ -132,7 +133,12 @@ void AbstractFramework::Run()
 	m_Viewport->Redraw();
 
 	// resources
-	core::ResourceManager::SetInstance(new PackageResourceManager());
+	PackageResourceManager* const pkgResMan = new PackageResourceManager();
+	core::ResourceManager::SetInstance(pkgResMan);
+
+	fw::BootConfig bootCfg;
+	fw::BootConfig::LoadFromPackage(bootCfg, pkgResMan->GetRootPackage());
+	m_Scenes = std::move(bootCfg.allScenes);
 
 	cfg->InitRenderConfig();
 
@@ -152,16 +158,12 @@ void AbstractFramework::Run()
 	m_SceneRenderer = new render::ShadedSceneRenderer(&(fw::UnifiedScene::Instance().GetRenderScene()));
 	m_SceneRenderer->InitRenderingSystems();
 
-	// cause the loop to contine
+	// cause the loop to continue
 	RegisterAsTriggerer();
 
 	// load scene
 	OnInit();
-	std::string const& initScene = fw::Config::GetInstance()->GetStartScene();
-	if (!initScene.empty())
-	{
-		fw::UnifiedScene::Instance().LoadScene(core::HashString((initScene + ".json").c_str()));
-	}
+	fw::UnifiedScene::Instance().LoadScene(bootCfg.startScene);
 
 	// update
 	MainLoop();

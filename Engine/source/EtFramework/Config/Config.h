@@ -68,7 +68,6 @@ public:
 
 		render::GraphicsSettings m_Graphics;
 		Window m_Window;
-		std::string m_StartScene;
 		std::string m_ScreenshotDir;
 
 		RTTR_ENABLE()
@@ -92,7 +91,6 @@ public:
 	Settings::Window const& GetWindow() const { return m_Settings.m_Window; }
 	Settings::Window & GetWindow() { return m_Settings.m_Window; }
 
-	std::string const& GetStartScene() const { return m_Settings.m_StartScene; }
 	std::string const& GetScreenshotDir() const { return m_Settings.m_ScreenshotDir; }
 
 	// initialization

@@ -8,7 +8,7 @@ namespace et { namespace core {
 
 
 namespace et {
-namespace rt {
+namespace fw {
 
 
 //------------------
@@ -18,7 +18,7 @@ namespace rt {
 //
 struct BootConfig final
 {
-	static core::HashString const s_FileName;
+	static std::string const s_FileName; // string for file reading
 	static void LoadFromPackage(BootConfig& cfg, core::I_Package* const pkg);
 
 	core::HashString startScene;
@@ -26,6 +26,6 @@ struct BootConfig final
 };
 
 
-} // namespace rt
+} // namespace fw
 } // namespace et
 

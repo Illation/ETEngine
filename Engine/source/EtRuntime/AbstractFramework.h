@@ -34,6 +34,10 @@ public:
 	AbstractFramework() : core::I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_Framework)) {}
 	virtual ~AbstractFramework();
 
+	// accessors
+	//-----------
+	std::vector<core::HashString> const& GetSceneIds() const { return m_Scenes; }
+
 	// functionality
 	//---------------
 	void Run();
@@ -58,6 +62,8 @@ private:
 	render::Viewport* m_Viewport = nullptr;
 	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
 	render::SplashScreenRenderer* m_SplashScreenRenderer = nullptr;
+
+	std::vector<core::HashString> m_Scenes;
 
 protected:
 	fw::ScreenshotCapture m_ScreenshotCapture;

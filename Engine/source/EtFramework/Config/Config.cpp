@@ -32,8 +32,7 @@ RTTR_REGISTRATION
 		.constructor<>()
 		.property("graphics", &Config::Settings::m_Graphics)
 		.property("window", &Config::Settings::m_Window)
-		.property("start scene", &Config::Settings::m_StartScene)
-		.property("screenshot dir", &Config::Settings::m_ScreenshotDir) ;
+		.property("screenshot dir", &Config::Settings::m_ScreenshotDir);
 }
 
 

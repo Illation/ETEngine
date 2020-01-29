@@ -31,12 +31,12 @@ PackageResourceManager::PackageResourceManager()
 void PackageResourceManager::Init()
 {
 	// Create a new memory package from the data
-	core::MemoryPackage* const memPkg = new core::MemoryPackage(core::FileUtil::GetCompiledData());
-	m_Packages.emplace_back(0u, memPkg);
+	m_RootPackage = new core::MemoryPackage(core::FileUtil::GetCompiledData());
+	m_Packages.emplace_back(0u, m_RootPackage);
 
 	// get the raw json string for the asset database from that package
 	std::vector<uint8> rawData;
-	if (!memPkg->GetEntryData(core::HashString(s_DatabasePath), rawData))
+	if (!m_RootPackage->GetEntryData(core::HashString(s_DatabasePath), rawData))
 	{
 		LOG("PackageResourceManager::Init > Unable to retrieve database from memory package at '" + std::string(s_DatabasePath) +
 			std::string("'"), core::LogLevel::Error);

@@ -1,0 +1,10 @@
+{
+  "boot config": {
+    "start scene": "EditorScene.json",
+    "all scenes": [
+      "EditorScene.json",
+      "PlanetScene.json",
+      "PhysicsScene.json"
+    ]
+  }
+}
