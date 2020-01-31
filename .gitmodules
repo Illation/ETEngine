@@ -27,7 +27,7 @@
 	url = https://github.com/nothings/stb
 [submodule "third_party/vcpkg/vcpkg"]
 	path = Engine/third_party/vcpkg/vcpkg
-	url = https://github.com/Microsoft/vcpkg
+	url = https://github.com/Illation/vcpkg
 [submodule "Engine/third_party/gtk/GTK-for-Windows-Runtime-Environment-Installer"]
 	path = Engine/third_party/gtk/GTK-for-Windows-Runtime-Environment-Installer
 	url = https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer

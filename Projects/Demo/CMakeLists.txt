@@ -19,6 +19,8 @@ message(STATUS "Engine path: ${ENGINE_DIRECTORY_ABS}")
 message(STATUS "Project path: ${PROJECT_DIRECTORY}")
 message(STATUS "//////////////////////////////////////////////////////////////////////////////////////////")
 
+option(ETE_UPDATE_SUBMODULES "Update third party submodules to their latest state" OFF)
+set(ETE_UPDATE_SUBMODULE_PATH "" CACHE STRING "Which submodule to update specifically")
 # Continuous integration doesn't need to build all configurations for libraries
 option(ETE_SINGLE_CONFIG "Build libraries for a single configuration" OFF)
 set(ETE_BUILD_LIB_CONFIG "Debug" CACHE STRING "Which configuration to build the library for in case of a single configuration build")
