@@ -392,7 +392,7 @@ function(editorLinks TARGET)
 		debug ${_dbg}pixman-1d.lib			optimized ${_rel}pixman-1.lib	
 
 		debug ${_dbg}atk-1.0.lib			optimized ${_rel}atk-1.0.lib	 
-		debug ${_dbg}atkmm.lib				optimized ${_rel}atkmm.lib	 
+		debug ${_dbg}atkmm-1.6.lib			optimized ${_rel}atkmm-1.6.lib	 
 		debug ${_dbg}cairomm-1.0.lib		optimized ${_rel}cairomm-1.0.lib	 
 		debug ${_dbg}epoxy.lib				optimized ${_rel}epoxy.lib	 
 		debug ${_dbg}expat.lib				optimized ${_rel}expat.lib	 
@@ -400,7 +400,7 @@ function(editorLinks TARGET)
 		debug ${_dbg}gailutil-3.0.lib		optimized ${_rel}gailutil-3.0.lib	 
 		debug ${_dbg}gdk_pixbuf-2.0.lib		optimized ${_rel}gdk_pixbuf-2.0.lib	 
 		debug ${_dbg}gdk-3.0.lib			optimized ${_rel}gdk-3.0.lib	 
-		debug ${_dbg}gdkmm.lib				optimized ${_rel}gdkmm.lib	 
+		debug ${_dbg}gdkmm-3.0.lib			optimized ${_rel}gdkmm-3.0.lib	 
 		debug ${_dbg}gio-2.0.lib			optimized ${_rel}gio-2.0.lib	 
 		debug ${_dbg}giomm.lib				optimized ${_rel}giomm.lib	 
 		debug ${_dbg}glib-2.0.lib			optimized ${_rel}glib-2.0.lib	 
@@ -409,7 +409,7 @@ function(editorLinks TARGET)
 		debug ${_dbg}gobject-2.0.lib		optimized ${_rel}gobject-2.0.lib	 
 		debug ${_dbg}gthread-2.0.lib		optimized ${_rel}gthread-2.0.lib	 
 		debug ${_dbg}gtk-3.0.lib			optimized ${_rel}gtk-3.0.lib	 
-		debug ${_dbg}gtkmm.lib				optimized ${_rel}gtkmm.lib	 
+		debug ${_dbg}gtkmm-3.0.lib			optimized ${_rel}gtkmm-3.0.lib	 
 		debug ${_dbg}harfbuzz.lib			optimized ${_rel}harfbuzz.lib	 
 		debug ${_dbg}libcharset.lib			optimized ${_rel}libcharset.lib	 
 		debug ${_dbg}libffi.lib				optimized ${_rel}libffi.lib	 
