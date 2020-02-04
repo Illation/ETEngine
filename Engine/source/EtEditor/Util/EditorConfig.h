@@ -50,21 +50,26 @@ private:
 	virtual ~EditorConfig() = default;
 
 
-	// Public interface
-	//-----------------
+	// accessors
+	//-----------
 public:
 	std::string const& GetProjectPath() const { return m_DirPointers.m_ProjectPath; }
 	std::string const& GetEnginePath() const { return m_DirPointers.m_EnginePath; }
 	std::string const& GetEditorUserDir() const { return m_DirPointers.m_EditorUserDir; }
+	core::HashString GetStartScene() const { return m_StartScene; }
 
-	// initialization
+	// functionality
+	//---------------
 	void Initialize();
+	void QueryStartScene();
 
 	// DATA
 	///////
 private:
 
 	DirPointers m_DirPointers;
+
+	core::HashString m_StartScene;
 };
 
 

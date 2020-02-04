@@ -43,6 +43,16 @@ void EditorConfig::Initialize()
 	m_DirPointers.m_EditorUserDir = m_DirPointers.m_ProjectPath + std::string("/user_data/editor/");
 }
 
+//---------------------------------
+// EditorConfig::QueryStartScene
+//
+// Let the user decide what scene to boot into
+//
+void EditorConfig::QueryStartScene()
+{
+
+}
+
 
 } // namespace edit
 } // namespace et
