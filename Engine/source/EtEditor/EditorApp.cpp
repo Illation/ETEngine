@@ -229,6 +229,8 @@ void EditorApp::InitializeUtilities()
 
 	core::ResourceManager::SetInstance(new FileResourceManager());
 
+	EditorConfig::GetInstance()->QueryStartScene();
+
 	core::InputManager::GetInstance();
 
 	core::PerformanceInfo::GetInstance();

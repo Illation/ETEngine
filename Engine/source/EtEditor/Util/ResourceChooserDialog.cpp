@@ -26,14 +26,14 @@ ResourceChooserDialog::ResourceChooserDialog(BaseObjectType* cobject, const Glib
 //---------------------------------
 // ResourceChooserDialog::create
 //
-ResourceChooserDialog* ResourceChooserDialog::create(Gtk::Window& parent)
+ResourceChooserDialog* ResourceChooserDialog::create()
 {
 	// Load the Builder file and instantiate its widgets.
 	Glib::RefPtr<Gtk::Builder> const refBuilder = Gtk::Builder::create_from_resource("/com/leah-lindner/editor/ui/resourceChooser.ui");
 
 	ResourceChooserDialog* dialog = nullptr;
-	refBuilder->get_widget_derived("prefs_dialog", dialog);
-	ET_ASSERT(dialog != nullptr, "No 'prefs_dialog' object in resourceChooser.ui");
+	refBuilder->get_widget_derived("resource_dialog", dialog);
+	ET_ASSERT(dialog != nullptr, "No 'resource_dialog' object in resourceChooser.ui");
 
 	return dialog;
 }

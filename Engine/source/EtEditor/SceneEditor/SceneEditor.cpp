@@ -11,6 +11,7 @@
 
 #include <EtEditor/Rendering/EditorCamera.h>
 #include <EtEditor/Util/GtkUtil.h>
+#include <EtEditor/Util/EditorConfig.h>
 #include <EtEditor/Tools/SceneViewport.h>
 
 
@@ -98,7 +99,7 @@ void SceneEditor::InitInternal()
 		listener->OnSceneSet();
 	}
 
-	fw::UnifiedScene::Instance().LoadScene(core::HashString("PhysicsScene.json"));
+	fw::UnifiedScene::Instance().LoadScene(EditorConfig::GetInstance()->GetStartScene());
 }
 
 //----------------------------------------------------
