@@ -230,10 +230,10 @@ void primitives::IcoSphere<level>::SubAndPush(std::vector<vec3> &vertices, const
 {
 	if (lev < level)
 	{
-		//find midpoints
-		vec3 A = math::normalize((b + c) * 0.5f);
-		vec3 B = math::normalize((c + a) * 0.5f);
-		vec3 C = math::normalize((a + b) * 0.5f);
+		//find normalized midpoints
+		vec3 A = math::normalize(b + c);
+		vec3 B = math::normalize(c + a);
+		vec3 C = math::normalize(a + b);
 		//Make 4 new triangles
 		int32 nLevel = lev + 1;
 		SubAndPush(vertices, nLevel, B, A, c);

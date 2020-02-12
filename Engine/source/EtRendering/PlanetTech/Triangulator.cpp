@@ -69,12 +69,12 @@ void Triangulator::Precalculate()
 	float normMaxHeight = m_Planet->GetMaxHeight() / m_Planet->GetRadius();
 	for (int32 i = 1; i <= m_MaxLevel; i++)
 	{
-		vec3 A = (b + c) * 0.5f;
-		vec3 B = (c + a) * 0.5f;
-		vec3 C = (a + b) * 0.5f;
-		a = math::normalize(A) * m_Planet->GetRadius();
-		b = math::normalize(B) * m_Planet->GetRadius();
-		c = math::normalize(C) * m_Planet->GetRadius();
+		vec3 A = math::normalize(b + c);
+		vec3 B = math::normalize(c + a);
+		vec3 C = math::normalize(a + b);
+		a = A * m_Planet->GetRadius();
+		b = B * m_Planet->GetRadius();
+		c = C * m_Planet->GetRadius();
 		m_HeightMultLUT.push_back(1 / math::dot( math::normalize(a), math::normalize(center)) + normMaxHeight);
 	}
 }
@@ -149,14 +149,10 @@ void Triangulator::RecursiveTriangle(vec3 a, vec3 b, vec3 c, int16 level, bool f
 	//check if subdivision is needed based on camera distance
 	else if (next == SPLIT || next == SPLITCULL)
 	{
-		//find midpoints
-		vec3 A = (b + c) * 0.5f;
-		vec3 B = (c + a) * 0.5f;
-		vec3 C = (a + b) * 0.5f;
-		//make the distance from center larger according to planet radius
-		A = math::normalize(A) * m_Planet->GetRadius();
-		B = math::normalize(B) * m_Planet->GetRadius();
-		C = math::normalize(C) * m_Planet->GetRadius();
+		//find normalized midpoints and scale them to planet radius
+		vec3 A = math::normalize(b + c) * m_Planet->GetRadius();
+		vec3 B = math::normalize(c + a) * m_Planet->GetRadius();
+		vec3 C = math::normalize(a + b) * m_Planet->GetRadius();
 		//Make 4 new triangles
 		int16 nLevel = level + 1;
 		RecursiveTriangle(a, B, C, nLevel, next == SPLITCULL);//Winding is inverted
