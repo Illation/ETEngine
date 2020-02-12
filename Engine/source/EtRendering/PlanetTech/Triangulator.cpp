@@ -123,20 +123,22 @@ TriNext Triangulator::SplitHeuristic(vec3 &a, vec3 &b, vec3 &c, int16 level, boo
 			//check if new splits are allowed
 			if (level >= m_MaxLevel)return TriNext::LEAF;
 			//split according to distance
-			float aDist = math::length(a - m_Frustum.GetPositionOS());
-			float bDist = math::length(b - m_Frustum.GetPositionOS());
-			float cDist = math::length(c - m_Frustum.GetPositionOS());
-			if (std::fminf(aDist, std::fminf(bDist, cDist)) < m_DistanceLUT[level])return TriNext::SPLIT;
+			float aDistSq = math::distanceSquared(a, m_Frustum.GetPositionOS());
+			float bDistSq = math::distanceSquared(b, m_Frustum.GetPositionOS());
+			float cDistSq = math::distanceSquared(c, m_Frustum.GetPositionOS());
+			float splitDistSq = m_DistanceLUT[level] * m_DistanceLUT[level];
+			if (std::fminf(aDistSq, std::fminf(bDistSq, cDistSq)) < splitDistSq) return TriNext::SPLIT;
 			return TriNext::LEAF;
 		}
 	}
 	//check if new splits are allowed
 	if (level >= m_MaxLevel)return TriNext::LEAF;
 	//split according to distance
-	float aDist = math::length(a - m_Frustum.GetPositionOS());
-	float bDist = math::length(b - m_Frustum.GetPositionOS());
-	float cDist = math::length(c - m_Frustum.GetPositionOS());
-	if (std::fminf(aDist, std::fminf(bDist, cDist)) < m_DistanceLUT[level])return TriNext::SPLITCULL;
+	float aDistSq = math::distanceSquared(a, m_Frustum.GetPositionOS());
+	float bDistSq = math::distanceSquared(b, m_Frustum.GetPositionOS());
+	float cDistSq = math::distanceSquared(c, m_Frustum.GetPositionOS());
+	float splitDistSq = m_DistanceLUT[level] * m_DistanceLUT[level];
+	if (std::fminf(aDistSq, std::fminf(bDistSq, cDistSq)) < splitDistSq) return TriNext::SPLITCULL;
 	return TriNext::LEAF;
 }
 
