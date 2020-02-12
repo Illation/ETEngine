@@ -64,7 +64,7 @@ void Triangulator::Precalculate()
 	vec3 b = m_Icosahedron[0].b;
 	vec3 c = m_Icosahedron[0].c;
 	vec3 center = (a + b + c) / 3.f;
-	center = center * m_Planet->GetRadius() / math::length(center);//+maxHeight
+	center = math::normalize(center) * m_Planet->GetRadius();//+maxHeight
 	m_HeightMultLUT.push_back(1 / math::dot( math::normalize(a), math::normalize(center)));
 	float normMaxHeight = m_Planet->GetMaxHeight() / m_Planet->GetRadius();
 	for (int32 i = 1; i <= m_MaxLevel; i++)
@@ -72,9 +72,9 @@ void Triangulator::Precalculate()
 		vec3 A = (b + c) * 0.5f;
 		vec3 B = (c + a) * 0.5f;
 		vec3 C = (a + b) * 0.5f;
-		a = A * m_Planet->GetRadius() / math::length(A);
-		b = B * m_Planet->GetRadius() / math::length(B);
-		c = C * m_Planet->GetRadius() / math::length(C);
+		a = math::normalize(A) * m_Planet->GetRadius();
+		b = math::normalize(B) * m_Planet->GetRadius();
+		c = math::normalize(C) * m_Planet->GetRadius();
 		m_HeightMultLUT.push_back(1 / math::dot( math::normalize(a), math::normalize(center)) + normMaxHeight);
 	}
 }
@@ -154,9 +154,9 @@ void Triangulator::RecursiveTriangle(vec3 a, vec3 b, vec3 c, int16 level, bool f
 		vec3 B = (c + a) * 0.5f;
 		vec3 C = (a + b) * 0.5f;
 		//make the distance from center larger according to planet radius
-		A = A * m_Planet->GetRadius() / math::length(A);
-		B = B * m_Planet->GetRadius() / math::length(B);
-		C = C * m_Planet->GetRadius() / math::length(C);
+		A = math::normalize(A) * m_Planet->GetRadius();
+		B = math::normalize(B) * m_Planet->GetRadius();
+		C = math::normalize(C) * m_Planet->GetRadius();
 		//Make 4 new triangles
 		int16 nLevel = level + 1;
 		RecursiveTriangle(a, B, C, nLevel, next == SPLITCULL);//Winding is inverted
