@@ -69,12 +69,12 @@ void Triangulator::Precalculate()
 	float normMaxHeight = m_Planet->GetMaxHeight() / m_Planet->GetRadius();
 	for (int32 i = 1; i <= m_MaxLevel; i++)
 	{
-		vec3 A = b + ((c - b)*0.5f);
-		vec3 B = c + ((a - c)*0.5f);
-		c = a + ((b - a)*0.5f);
+		vec3 A = (b + c) * 0.5f;
+		vec3 B = (c + a) * 0.5f;
+		vec3 C = (a + b) * 0.5f;
 		a = A * m_Planet->GetRadius() / math::length(A);
 		b = B * m_Planet->GetRadius() / math::length(B);
-		c = c * m_Planet->GetRadius() / math::length(c);
+		c = C * m_Planet->GetRadius() / math::length(C);
 		m_HeightMultLUT.push_back(1 / math::dot( math::normalize(a), math::normalize(center)) + normMaxHeight);
 	}
 }
@@ -150,9 +150,9 @@ void Triangulator::RecursiveTriangle(vec3 a, vec3 b, vec3 c, int16 level, bool f
 	else if (next == SPLIT || next == SPLITCULL)
 	{
 		//find midpoints
-		vec3 A = b + ((c - b)*0.5f);
-		vec3 B = c + ((a - c)*0.5f);
-		vec3 C = a + ((b - a)*0.5f);
+		vec3 A = (b + c) * 0.5f;
+		vec3 B = (c + a) * 0.5f;
+		vec3 C = (a + b) * 0.5f;
 		//make the distance from center larger according to planet radius
 		A = A * m_Planet->GetRadius() / math::length(A);
 		B = B * m_Planet->GetRadius() / math::length(B);
