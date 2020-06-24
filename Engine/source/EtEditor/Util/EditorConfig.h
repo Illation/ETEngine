@@ -11,6 +11,9 @@ namespace et {
 namespace edit {
 
 
+class EditorApp;
+
+
 //---------------------------------
 // EditorConfig
 //

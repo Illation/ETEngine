@@ -1,9 +1,10 @@
 #include <EtFramework/stdafx.h>
 #include "EditorConfig.h"
 
-#include <EtCore/Reflection/Serialization.h>
+#include "ResourceChooserDialog.h"
 
-#include <rttr/registration>
+#include <EtCore/Reflection/Serialization.h>
+#include <EtCore/Reflection/Registration.h>
 
 
 namespace et {
@@ -22,8 +23,7 @@ RTTR_REGISTRATION
 
 	registration::class_<EditorConfig::DirPointers>("dir pointers")
 		.property("project dir path", &EditorConfig::DirPointers::m_ProjectPath)
-		.property("engine dir path", &EditorConfig::DirPointers::m_EnginePath)
-		;
+		.property("engine dir path", &EditorConfig::DirPointers::m_EnginePath);
 }
 
 
@@ -50,7 +50,13 @@ void EditorConfig::Initialize()
 //
 void EditorConfig::QueryStartScene()
 {
+	ResourceChooserDialog* resourceDialog = ResourceChooserDialog::create();
 
+	resourceDialog->signal_hide().connect([resourceDialog]() -> void { delete resourceDialog; });
+
+	resourceDialog->run();
+
+	m_StartScene = core::HashString("PhysicsScene.json");
 }
 
 

@@ -22,7 +22,7 @@ class ResourceChooserDialog : public Gtk::Dialog
 public:
 	ResourceChooserDialog(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& refBuilder);
 
-	static ResourceChooserDialog* create(Gtk::Window& parent);
+	static ResourceChooserDialog* create();
 
 protected:
 
