@@ -628,9 +628,11 @@ function(installEditorDlls TARGET)
 		set(binDir "${baseBinDir}/${configType}_${_p}/${TARGET}/bin")
 
 		set(_vcCfg "")
-		if(("${configType}" STREQUAL "Debug") OR ("${configType}" STREQUAL "Develop"))
+		if("${configType}" STREQUAL "Debug")
 			set(_vcCfg "/debug")
+		endif()
 
+		if(("${configType}" STREQUAL "Debug") OR ("${configType}" STREQUAL "Develop"))
 			# for debug applications we also copy pdbs
 			file(GLOB pdbs ${_vcpkgInstall}${_vcCfg}/bin/*.pdb)
 			foreach(_pdb ${pdbs})
