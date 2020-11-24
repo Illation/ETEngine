@@ -1,51 +1,31 @@
 #pragma once
 
-#include <giomm/settings.h>
-
 #include <glibmm/refptr.h>
 
 #include <gtkmm/builder.h>
 #include <gtkmm/dialog.h>
 #include <gtkmm/fontbutton.h>
 #include <gtkmm/flowbox.h>
-#include <gtkmm/frame.h>
+#include <gtkmm/menubutton.h>
 #include <gtkmm/radiobutton.h>
+#include <gtkmm/searchentry.h>
 #include <gtkmm/treeview.h>
 #include <gtkmm/treestore.h>
 #include <gtkmm/treemodelcolumn.h>
 #include <gtkmm/treemodel.h>
 #include <gtkmm/treeselection.h>
 
+#include <EtEditor/Content/AssetWidget.h>
+
 
 namespace et { namespace core {
 	class Directory;
-	class I_Asset;
 } }
 
 
 namespace et {
 namespace edit {
 
-
-//---------------------------------
-// ResourceChooserDialog
-//
-class AssetWidget final
-{
-public:
-	AssetWidget(core::I_Asset* const asset);
-
-	Gtk::Frame* GetAttachment() const { return m_Attachment; }
-
-	// Data
-	///////
-
-private:
-	core::I_Asset* m_Asset = nullptr; // not using assetptr since we don't want the widget to enforce loading the asset
-
-	Gtk::Frame* m_Attachment = nullptr;
-	bool m_HasPreview = false;
-};
 
 //---------------------------------
 // ResourceChooserDialog
@@ -83,6 +63,7 @@ private:
 	//--------
 	void ResourceGroupToggled();
 	void OnDirectorySelectionChanged();
+	void OnSearchChanged();
 
 	// utility
 	//---------
@@ -113,6 +94,13 @@ private:
 	std::string m_SelectedDirectory;
 	core::Directory* m_BaseDirectory = nullptr;
 	std::vector<AssetWidget> m_FilteredAssets;
+
+	// filter
+	Gtk::MenuButton* m_FilterMenu = nullptr;
+
+	// search
+	Gtk::SearchEntry* m_SearchBar = nullptr;
+	std::string m_SearchTerm;
 };
 
 

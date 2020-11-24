@@ -6,10 +6,6 @@
 
 #include <EtEditor/Content/FileResourceManager.h>
 
-#include <pangomm/layout.h>
-
-#include "GtkUtil.h"
-
 
 namespace et {
 namespace edit {
@@ -49,6 +45,15 @@ ResourceChooserDialog::ResourceChooserDialog(BaseObjectType* cobject, const Glib
 	// area for displaying asset widgets
 	m_RefBuilder->get_widget("resource_view", m_FlowBox);
 	ET_ASSERT(m_FlowBox != nullptr);
+
+	// filtering
+	m_RefBuilder->get_widget("filter", m_FilterMenu);
+	ET_ASSERT(m_FilterMenu != nullptr);
+
+	m_RefBuilder->get_widget("search", m_SearchBar);
+	ET_ASSERT(m_SearchBar != nullptr);
+
+	m_SearchBar->signal_search_changed().connect(sigc::mem_fun(*this, &ResourceChooserDialog::OnSearchChanged));
 
 	// toggle view of engine or project resources
 	m_RefBuilder->get_widget("engine_button", m_EngineButton);
@@ -145,6 +150,16 @@ void ResourceChooserDialog::OnDirectorySelectionChanged()
 	RebuildAssetList();
 }
 
+//-----------------------------------------
+// ResourceChooserDialog::OnSearchChanged
+//
+void ResourceChooserDialog::OnSearchChanged()
+{
+	m_SearchTerm = std::string(m_SearchBar->get_text());
+
+	RebuildAssetList();
+}
+
 //------------------------------------------------
 // ResourceChooserDialog::RebuildDirectoryTree
 //
@@ -199,7 +214,7 @@ void ResourceChooserDialog::RebuildAssetList()
 	ET_ASSERT(resourceMan != nullptr);
 
 	core::AssetDatabase& database = m_ProjectSelected ? resourceMan->GetProjectDatabase() : resourceMan->GetEngineDatabase();
-	std::vector<core::I_Asset*> const filteredAssets = database.GetAssetsMatchingPath(m_SelectedDirectory);
+	std::vector<core::I_Asset*> const filteredAssets = database.GetAssetsMatchingPath(m_SelectedDirectory, m_SearchTerm);
 
 	m_FilteredAssets.clear();
 
@@ -218,37 +233,6 @@ void ResourceChooserDialog::RebuildAssetList()
 	}
 
 	m_FlowBox->show_all_children();
-}
-
-//---------------------------
-// AssetWidget::AssetWidget
-//
-AssetWidget::AssetWidget(core::I_Asset* const asset)
-	: m_Asset(asset)
-{
-	ET_ASSERT(m_Asset != nullptr);
-
-	m_Attachment = Gtk::make_managed<Gtk::Frame>();
-	m_Attachment->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-
-	m_Attachment->set_label(core::FileUtil::RemoveExtension(asset->GetName()).c_str());
-
-	if (m_HasPreview)
-	{
-		// show image
-	}
-	else
-	{
-		Pango::AttrList labelAttributes;
-		labelAttributes.insert(Pango::Attribute::create_attr_scale(2.5f));
-		labelAttributes.insert(Pango::Attribute::create_attr_weight(Pango::WEIGHT_BOLD));
-
-		Gtk::Label* const label = Gtk::make_managed<Gtk::Label>(core::FileUtil::ExtractExtension(asset->GetName()).c_str());
-		label->set_attributes(labelAttributes);
-
-		m_Attachment->add(*label);
-		m_Attachment->set_label_align(0.5f, 0.5f);
-	}
 }
 
 

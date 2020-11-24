@@ -121,10 +121,14 @@ AssetDatabase::T_AssetList AssetDatabase::GetAssetsInPackage(HashString const pa
 // AssetDatabase::GetAssetsMatchingPath
 //
 // finds all assets that are recursively contained in a path
+//  - if searchTerm isn't an empty string, only assets containing the search term will be returned
 //
-AssetDatabase::T_AssetList AssetDatabase::GetAssetsMatchingPath(std::string const& path)
+AssetDatabase::T_AssetList AssetDatabase::GetAssetsMatchingPath(std::string const& path, std::string const& searchTerm)
 {
 	T_AssetList outAssets;
+
+	std::string lowerSearch = searchTerm;
+	std::transform(lowerSearch.begin(), lowerSearch.end(), lowerSearch.begin(), ::tolower);
 
 	// caches for every asset type 
 	for (AssetDatabase::AssetCache& cache : caches)
@@ -134,7 +138,18 @@ AssetDatabase::T_AssetList AssetDatabase::GetAssetsMatchingPath(std::string cons
 		{
 			if (asset->GetPath().rfind(path, 0) == 0)
 			{
-				outAssets.emplace_back(asset);
+				bool matchesSearch = true;
+				if (lowerSearch.length() != 0u)
+				{
+					std::string lowerAsset = asset->GetPath() + asset->GetName();
+					std::transform(lowerAsset.begin(), lowerAsset.end(), lowerAsset.begin(), ::tolower);
+					matchesSearch = (lowerAsset.find(lowerSearch) != std::string::npos);
+				}
+
+				if (matchesSearch)
+				{
+					outAssets.emplace_back(asset);
+				}
 			}
 		}
 	}
