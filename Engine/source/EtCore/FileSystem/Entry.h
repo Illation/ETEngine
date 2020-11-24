@@ -26,7 +26,7 @@ public:
     virtual ~Entry();
 
     std::string GetName() const;
-	std::string GetNameOnly() const { return m_Filename; }
+	std::string const& GetNameOnly() const { return m_Filename; }
 	std::string GetExtension();
     Directory* GetParent(){ return m_Parent; }
     std::string GetPath() const;

@@ -25,6 +25,7 @@ public:
 	static std::string ExtractPath(std::string const& fileName);
 	static std::string ExtractName(std::string const& fileName);
 	static std::string ExtractExtension(std::string const& fileName);
+	static std::string RemoveExtension(std::string const& fileName);
 
 	static void SetExecutablePath(std::string const& path);
 	static std::string const& GetExecutableDir() { return s_ExePath; }

@@ -46,6 +46,14 @@ public:
 
 	void Flush() override;
 
+	// accessors
+	//-----------
+	core::Directory* GetProjectDirectory() const { return m_ProjectDir; }
+	core::Directory* GetEngineDirectory() const { return m_EngineDir; }
+
+	core::AssetDatabase& GetProjectDatabase() { return m_ProjectDb; }
+	core::AssetDatabase& GetEngineDatabase() { return m_EngineDb; }
+
 	// utility
 	//---------------------
 protected:

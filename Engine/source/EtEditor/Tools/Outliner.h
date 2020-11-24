@@ -80,13 +80,13 @@ private:
 
 	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
 
-	Gtk::TreeView* m_TreeView;
+	Gtk::TreeView* m_TreeView = nullptr;
 
 	ModelColumns m_Columns;
 	Glib::RefPtr<Gtk::TreeStore> m_TreeModel;
 	Glib::RefPtr<Gtk::TreeSelection> m_TreeSelection;
 
-	SceneSelection* m_SceneSelection;
+	SceneSelection* m_SceneSelection = nullptr;
 };
 
 

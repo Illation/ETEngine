@@ -63,6 +63,7 @@ public:
 	// Accessors
 	//---------------------
 	T_AssetList GetAssetsInPackage(HashString const packageId);
+	T_AssetList GetAssetsMatchingPath(std::string const& path);
 
 	I_Asset* GetAsset(HashString const assetId, bool const reportErrors = true) const;
 	I_Asset* GetAsset(HashString const assetId, std::type_info const& type, bool const reportErrors = true) const; // faster option

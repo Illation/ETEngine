@@ -185,7 +185,7 @@ void Outliner::OnSelectionChanged()
 {
 	m_SceneSelection->ClearSelection();
 
-	auto onSelectionIteration = [this](const Gtk::TreeModel::iterator& it)
+	auto onSelectionIteration = [this](Gtk::TreeModel::iterator const& it)
 		{
 			fw::T_EntityId const entity = (*it)[m_Columns.m_Id];
 			if (entity != fw::INVALID_ENTITY_ID)

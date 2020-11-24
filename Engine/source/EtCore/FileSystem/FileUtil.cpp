@@ -210,6 +210,23 @@ std::string FileUtil::ExtractExtension(std::string const& fileName)
 }
 
 //---------------------------------
+// FileUtil::RemoveExtension
+//
+// Remove the extension from a filename
+//
+std::string FileUtil::RemoveExtension(std::string const& fileName)
+{
+	std::size_t found = fileName.rfind(".");
+
+	if (found != std::string::npos)
+	{
+		return fileName.substr(0, found);
+	}
+
+	return fileName;
+}
+
+//---------------------------------
 // FileUtil::SetExecutablePath
 //
 // Sets the base path the executable lives in 
@@ -275,7 +292,7 @@ void FileUtil::RemoveExcessPathDelimiters(std::string& path)
 			if (std::find(pathDelimiters.cbegin(), pathDelimiters.cend(), path[idx - 1]) != pathDelimiters.cend())
 			{
 				// remove the current character before moving on to the next
-				path.erase(idx);
+				path.erase(idx, 1);
 			}
 		}
 	}

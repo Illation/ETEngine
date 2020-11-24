@@ -117,6 +117,31 @@ AssetDatabase::T_AssetList AssetDatabase::GetAssetsInPackage(HashString const pa
 	return outAssets;
 }
 
+//--------------------------------------
+// AssetDatabase::GetAssetsMatchingPath
+//
+// finds all assets that are recursively contained in a path
+//
+AssetDatabase::T_AssetList AssetDatabase::GetAssetsMatchingPath(std::string const& path)
+{
+	T_AssetList outAssets;
+
+	// caches for every asset type 
+	for (AssetDatabase::AssetCache& cache : caches)
+	{
+		// every asset per cache
+		for (I_Asset* asset : cache.cache)
+		{
+			if (asset->GetPath().rfind(path, 0) == 0)
+			{
+				outAssets.emplace_back(asset);
+			}
+		}
+	}
+
+	return outAssets;
+}
+
 //---------------------------------
 // AssetDatabase::GetAsset
 //
