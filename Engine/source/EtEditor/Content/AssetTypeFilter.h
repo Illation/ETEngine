@@ -20,7 +20,6 @@ namespace et {
 namespace edit {
 
 
-
 //---------------------------------------
 // AssetTypeFilter
 //
