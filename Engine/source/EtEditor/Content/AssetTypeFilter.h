@@ -32,6 +32,9 @@ class AssetTypeFilter final
 	//-------------
 	struct AssetType final
 	{
+		AssetType() = default;
+
+		rttr::type m_Type = rttr::type::get<std::nullptr_t>();
 		Glib::RefPtr<Gio::MenuItem> m_Item;
 		bool m_IsSelected = false;
 	};
@@ -64,6 +67,7 @@ public:
 	// accessors
 	//-----------
 	bool AreDirectoriesRecursive() const { return m_RecursiveDirectories; }
+	std::vector<rttr::type> const& GetFilteredTypes() const { return m_SelectedTypes; }
 
 	// utility
 	//---------
@@ -75,7 +79,7 @@ private:
 	///////
 
 	bool m_RecursiveDirectories = true;
-	//std::vector<std::type_info const&> m_SelectedTypes;
+	std::vector<rttr::type> m_SelectedTypes;
 
 	std::vector<I_Listener*> m_Listeners;
 
@@ -85,6 +89,7 @@ private:
 	Gtk::Menu* m_Menu = nullptr;
 	Gtk::MenuButton* m_MenuButton = nullptr;
 	Glib::RefPtr<Gio::Menu> m_GMenu;
+	Glib::RefPtr<Gio::Menu> m_TypeSection;
 	std::vector<AssetType> m_Types;
 
 	Glib::RefPtr<Gio::SimpleActionGroup> m_TypeActionGroup;

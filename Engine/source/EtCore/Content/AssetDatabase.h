@@ -49,6 +49,7 @@ public:
 	struct AssetCache final
 	{
 		rttr::type GetType() const;
+		rttr::type GetAssetType() const;
 
 		T_AssetList cache;
 
@@ -63,7 +64,10 @@ public:
 	// Accessors
 	//---------------------
 	T_AssetList GetAssetsInPackage(HashString const packageId);
-	T_AssetList GetAssetsMatchingPath(std::string const& path, bool const recursive, std::string const& searchTerm);
+	T_AssetList GetAssetsMatchingQuery(std::string const& path, 
+		bool const recursive, 
+		std::string const& searchTerm, 
+		std::vector<rttr::type> const& filteredTypes);
 
 	I_Asset* GetAsset(HashString const assetId, bool const reportErrors = true) const;
 	I_Asset* GetAsset(HashString const assetId, rttr::type const type, bool const reportErrors = true) const; // faster option

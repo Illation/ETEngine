@@ -225,9 +225,10 @@ void ResourceChooserDialog::RebuildAssetList()
 	ET_ASSERT(resourceMan != nullptr);
 
 	core::AssetDatabase& database = m_ProjectSelected ? resourceMan->GetProjectDatabase() : resourceMan->GetEngineDatabase();
-	std::vector<core::I_Asset*> const filteredAssets = database.GetAssetsMatchingPath(m_SelectedDirectory, 
+	std::vector<core::I_Asset*> const filteredAssets = database.GetAssetsMatchingQuery(m_SelectedDirectory,
 		m_TypeFilter.AreDirectoriesRecursive(), 
-		m_SearchTerm);
+		m_SearchTerm, 
+		m_TypeFilter.GetFilteredTypes());
 
 	m_FilteredAssets.clear();
 

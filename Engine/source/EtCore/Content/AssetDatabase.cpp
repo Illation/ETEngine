@@ -63,6 +63,20 @@ rttr::type AssetDatabase::AssetCache::GetType() const
 	return rttr::type::get(nullptr);
 }
 
+//--------------------------------------
+// AssetDatabase::AssetCache::GetAssetType
+//
+// Get the asset type of an asset cache
+//
+rttr::type AssetDatabase::AssetCache::GetAssetType() const
+{
+	if (cache.size() > 0)
+	{
+		return rttr::type::get(*(cache[0]));
+	}
+
+	return rttr::type::get(nullptr);
+}
 
 //===================
 // Asset Database
@@ -117,13 +131,18 @@ AssetDatabase::T_AssetList AssetDatabase::GetAssetsInPackage(HashString const pa
 	return outAssets;
 }
 
-//--------------------------------------
-// AssetDatabase::GetAssetsMatchingPath
+//---------------------------------------
+// AssetDatabase::GetAssetsMatchingQuery
 //
-// finds all assets that are recursively contained in a path
+// finds all assets that are contained in a path
+//  - if recursive is enabled assets are also found in subdirectories
 //  - if searchTerm isn't an empty string, only assets containing the search term will be returned
+//  - if filteredTypes isn't empty, only assets of types contained in filtered types are returned
 //
-AssetDatabase::T_AssetList AssetDatabase::GetAssetsMatchingPath(std::string const& path, bool const recursive, std::string const& searchTerm)
+AssetDatabase::T_AssetList AssetDatabase::GetAssetsMatchingQuery(std::string const& path,
+	bool const recursive, 
+	std::string const& searchTerm,
+	std::vector<rttr::type> const& filteredTypes)
 {
 	T_AssetList outAssets;
 
@@ -133,6 +152,15 @@ AssetDatabase::T_AssetList AssetDatabase::GetAssetsMatchingPath(std::string cons
 	// caches for every asset type 
 	for (AssetDatabase::AssetCache& cache : caches)
 	{
+		if (filteredTypes.size() > 0u)
+		{
+			rttr::type const cacheType = cache.GetAssetType();
+			if (std::find(filteredTypes.begin(), filteredTypes.end(), cacheType) == filteredTypes.cend())
+			{
+				continue;
+			}
+		}
+
 		// every asset per cache
 		for (I_Asset* asset : cache.cache)
 		{
