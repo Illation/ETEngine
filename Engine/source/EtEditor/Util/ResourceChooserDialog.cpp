@@ -38,7 +38,7 @@ ResourceChooserDialog* ResourceChooserDialog::create()
 //
 // Settings Dialog default constructor
 //
-ResourceChooserDialog::ResourceChooserDialog(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& refBuilder)
+ResourceChooserDialog::ResourceChooserDialog(BaseObjectType* cobject, Glib::RefPtr<Gtk::Builder> const& refBuilder)
 	: Gtk::Dialog(cobject)
 	, m_RefBuilder(refBuilder)
 {
@@ -47,8 +47,11 @@ ResourceChooserDialog::ResourceChooserDialog(BaseObjectType* cobject, const Glib
 	ET_ASSERT(m_FlowBox != nullptr);
 
 	// filtering
-	m_RefBuilder->get_widget("filter", m_FilterMenu);
-	ET_ASSERT(m_FilterMenu != nullptr);
+	Gtk::MenuButton* filterButton;
+	m_RefBuilder->get_widget("filter", filterButton);
+	ET_ASSERT(filterButton != nullptr);
+	m_TypeFilter.RegisterListener(this); // no need to unregister ourselves because we own it
+	m_TypeFilter.Init(filterButton);
 
 	m_RefBuilder->get_widget("search", m_SearchBar);
 	ET_ASSERT(m_SearchBar != nullptr);
@@ -160,6 +163,14 @@ void ResourceChooserDialog::OnSearchChanged()
 	RebuildAssetList();
 }
 
+//-------------------------------------------------
+// ResourceChooserDialog::OnAssetTypeFilterChanged
+//
+void ResourceChooserDialog::OnAssetTypeFilterChanged()
+{
+	RebuildAssetList();
+}
+
 //------------------------------------------------
 // ResourceChooserDialog::RebuildDirectoryTree
 //
@@ -214,7 +225,9 @@ void ResourceChooserDialog::RebuildAssetList()
 	ET_ASSERT(resourceMan != nullptr);
 
 	core::AssetDatabase& database = m_ProjectSelected ? resourceMan->GetProjectDatabase() : resourceMan->GetEngineDatabase();
-	std::vector<core::I_Asset*> const filteredAssets = database.GetAssetsMatchingPath(m_SelectedDirectory, m_SearchTerm);
+	std::vector<core::I_Asset*> const filteredAssets = database.GetAssetsMatchingPath(m_SelectedDirectory, 
+		m_TypeFilter.AreDirectoriesRecursive(), 
+		m_SearchTerm);
 
 	m_FilteredAssets.clear();
 

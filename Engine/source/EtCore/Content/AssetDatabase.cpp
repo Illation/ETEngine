@@ -123,7 +123,7 @@ AssetDatabase::T_AssetList AssetDatabase::GetAssetsInPackage(HashString const pa
 // finds all assets that are recursively contained in a path
 //  - if searchTerm isn't an empty string, only assets containing the search term will be returned
 //
-AssetDatabase::T_AssetList AssetDatabase::GetAssetsMatchingPath(std::string const& path, std::string const& searchTerm)
+AssetDatabase::T_AssetList AssetDatabase::GetAssetsMatchingPath(std::string const& path, bool const recursive, std::string const& searchTerm)
 {
 	T_AssetList outAssets;
 
@@ -136,7 +136,7 @@ AssetDatabase::T_AssetList AssetDatabase::GetAssetsMatchingPath(std::string cons
 		// every asset per cache
 		for (I_Asset* asset : cache.cache)
 		{
-			if (asset->GetPath().rfind(path, 0) == 0)
+			if ((asset->GetPath().rfind(path, 0) == 0) && (recursive || (asset->GetPath().length() == path.length())))
 			{
 				bool matchesSearch = true;
 				if (lowerSearch.length() != 0u)

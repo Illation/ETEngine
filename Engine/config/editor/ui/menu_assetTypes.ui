@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <menu id="assettypemenu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Recursive Directories</attribute>
+        <attribute name="action">other.recursive</attribute>
+      </item>
+    </section>
+    <section> 
+    </section>
+  </menu>
+</interface>

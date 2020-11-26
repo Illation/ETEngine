@@ -6,7 +6,6 @@
 #include <gtkmm/dialog.h>
 #include <gtkmm/fontbutton.h>
 #include <gtkmm/flowbox.h>
-#include <gtkmm/menubutton.h>
 #include <gtkmm/radiobutton.h>
 #include <gtkmm/searchentry.h>
 #include <gtkmm/treeview.h>
@@ -16,6 +15,7 @@
 #include <gtkmm/treeselection.h>
 
 #include <EtEditor/Content/AssetWidget.h>
+#include <EtEditor/Content/AssetTypeFilter.h>
 
 
 namespace et { namespace core {
@@ -32,7 +32,7 @@ namespace edit {
 //
 // Dialog that allows the user to select a resource
 //
-class ResourceChooserDialog : public Gtk::Dialog
+class ResourceChooserDialog : public Gtk::Dialog, public AssetTypeFilter::I_Listener
 {
 public:
 
@@ -55,7 +55,7 @@ public:
 
 	// construct destruct
 	//--------------------
-	ResourceChooserDialog(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& refBuilder);
+	ResourceChooserDialog(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& refBuilder);                                                       
 
 private:
 
@@ -64,6 +64,7 @@ private:
 	void ResourceGroupToggled();
 	void OnDirectorySelectionChanged();
 	void OnSearchChanged();
+	void OnAssetTypeFilterChanged() override;
 
 	// utility
 	//---------
@@ -96,7 +97,7 @@ private:
 	std::vector<AssetWidget> m_FilteredAssets;
 
 	// filter
-	Gtk::MenuButton* m_FilterMenu = nullptr;
+	AssetTypeFilter m_TypeFilter;
 
 	// search
 	Gtk::SearchEntry* m_SearchBar = nullptr;

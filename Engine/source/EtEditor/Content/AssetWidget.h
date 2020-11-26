@@ -3,7 +3,6 @@
 #include <gtkmm/box.h>
 
 
-
 namespace et { namespace core {
 	class I_Asset;
 } }

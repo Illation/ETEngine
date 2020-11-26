@@ -56,7 +56,7 @@ void EditorConfig::QueryStartScene()
 
 	resourceDialog->run();
 
-	m_StartScene = core::HashString("PhysicsScene.json");
+	m_StartScene = core::HashString("PlanetScene.json");
 }
 
 
