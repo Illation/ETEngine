@@ -98,19 +98,19 @@ bool MaterialInstanceAsset::LoadFromMemory(std::vector<uint8> const& data)
 	{
 		I_AssetPtr const* const rawAssetPtr = reference.GetAsset();
 
-		if (rawAssetPtr->GetType() == typeid(Material))
+		if (rawAssetPtr->GetType() == rttr::type::get<Material>())
 		{
 			ET_ASSERT(materialRef == nullptr && parentRef == nullptr, "Material Instances can only reference one material or parent!");
 			materialRef = *static_cast<AssetPtr<Material> const*>(rawAssetPtr);
 			shader = materialRef->GetShader();
 		}
-		else if (rawAssetPtr->GetType() == typeid(MaterialInstance))
+		else if (rawAssetPtr->GetType() == rttr::type::get<MaterialInstance>())
 		{
 			ET_ASSERT(materialRef == nullptr && parentRef == nullptr, "Material Instances can only reference one material or parent!");
 			parentRef = *static_cast<AssetPtr<MaterialInstance> const*>(rawAssetPtr);
 			shader = parentRef->GetMaterialAsset()->GetShader();
 		}
-		else if (rawAssetPtr->GetType() == typeid(TextureData))
+		else if (rawAssetPtr->GetType() == rttr::type::get<TextureData>())
 		{
 			textureRefs.push_back(*static_cast<AssetPtr<TextureData> const*>(rawAssetPtr));
 		}

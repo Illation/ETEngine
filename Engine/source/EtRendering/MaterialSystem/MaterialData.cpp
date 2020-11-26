@@ -107,12 +107,12 @@ bool MaterialAsset::LoadFromMemory(std::vector<uint8> const& data)
 	{
 		I_AssetPtr const* const rawAssetPtr = reference.GetAsset();
 
-		if (rawAssetPtr->GetType() == typeid(ShaderData))
+		if (rawAssetPtr->GetType() == rttr::type::get<ShaderData>())
 		{
 			ET_ASSERT(shaderRef == nullptr, "Materials cannot reference more than one shader!");
 			shaderRef = *static_cast<AssetPtr<ShaderData> const*>(rawAssetPtr);
 		}
-		else if (rawAssetPtr->GetType() == typeid(TextureData))
+		else if (rawAssetPtr->GetType() == rttr::type::get<TextureData>())
 		{
 			textureRefs.push_back(*static_cast<AssetPtr<TextureData> const*>(rawAssetPtr));
 		}

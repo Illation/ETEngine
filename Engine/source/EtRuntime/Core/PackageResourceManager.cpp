@@ -119,7 +119,7 @@ void PackageResourceManager::Flush()
 //
 // Get an asset by it's template type
 //
-core::I_Asset* PackageResourceManager::GetAssetInternal(core::HashString const assetId, std::type_info const& type, bool const reportErrors)
+core::I_Asset* PackageResourceManager::GetAssetInternal(core::HashString const assetId, rttr::type const type, bool const reportErrors)
 {
 	return m_Database.GetAsset(assetId, type, reportErrors);
 }

@@ -51,7 +51,7 @@ public:
 	// utility
 	//---------------------
 protected:
-	core::I_Asset* GetAssetInternal(core::HashString const assetId, std::type_info const& type, bool const reportErrors) override;
+	core::I_Asset* GetAssetInternal(core::HashString const assetId, rttr::type const type, bool const reportErrors) override;
 
 	// Data
 	///////

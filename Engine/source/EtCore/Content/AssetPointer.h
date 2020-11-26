@@ -23,7 +23,7 @@ public:
 	virtual ~I_AssetPtr();
 
 	core::I_Asset const* GetAsset() const { return m_Asset; }
-	inline std::type_info const& GetType() const;
+	inline rttr::type GetType() const;
 	inline core::HashString GetId() const;
 
 	// utility

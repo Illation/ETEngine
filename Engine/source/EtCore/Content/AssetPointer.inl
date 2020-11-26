@@ -14,11 +14,11 @@ namespace et {
 //
 // Underlying type
 //
-inline std::type_info const& I_AssetPtr::GetType() const
+inline rttr::type I_AssetPtr::GetType() const
 {
 	if (m_Asset == nullptr)
 	{
-		return typeid(std::nullptr_t);
+		return rttr::type::get(nullptr);
 	}
 
 	return m_Asset->GetType();
@@ -212,7 +212,7 @@ T_DataType const* AssetPtr<T_DataType>::get() const
 	if (m_Asset != nullptr)
 	{
 		ET_ASSERT(m_Asset->IsLoaded());
-		ET_ASSERT(m_Asset->GetType() == typeid(T_DataType));
+		ET_ASSERT(m_Asset->GetType() == rttr::type::get<T_DataType>());
 		return static_cast<core::RawAsset<T_DataType>*>(m_Asset)->GetData();
 	}
 

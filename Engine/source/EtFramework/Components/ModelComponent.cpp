@@ -63,7 +63,7 @@ ModelComponent::ModelComponent(AssetPtr<render::MeshData> const mesh, I_AssetPtr
 	: m_Mesh(mesh)
 	, m_Material(material)
 { 
-	ET_ASSERT((m_Material.GetType() == typeid(render::Material)) || (m_Material.GetType() == typeid(render::MaterialInstance)));
+	ET_ASSERT((m_Material.GetType() == rttr::type::get<render::Material>()) || (m_Material.GetType() == rttr::type::get<render::MaterialInstance>()));
 }
 
 

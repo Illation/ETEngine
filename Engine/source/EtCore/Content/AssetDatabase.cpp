@@ -53,14 +53,14 @@ void AssetDatabase::PackageDescriptor::SetName(std::string const& val)
 //
 // Get the type of an asset cache
 //
-std::type_info const& AssetDatabase::AssetCache::GetType() const
+rttr::type AssetDatabase::AssetCache::GetType() const
 {
 	if (cache.size() > 0)
 	{
 		return cache[0]->GetType();
 	}
 
-	return typeid(nullptr);
+	return rttr::type::get(nullptr);
 }
 
 
@@ -192,10 +192,10 @@ I_Asset* AssetDatabase::GetAsset(HashString const assetId, bool const reportErro
 //
 // Get an asset by its ID and type
 //
-I_Asset* AssetDatabase::GetAsset(HashString const assetId, std::type_info const& type, bool const reportErrors) const
+I_Asset* AssetDatabase::GetAsset(HashString const assetId, rttr::type const type, bool const reportErrors) const
 {
 	// Try finding a cache containing our type
-	auto const foundCacheIt = std::find_if(caches.cbegin(), caches.cend(), [&type](AssetCache const& cache)
+	auto const foundCacheIt = std::find_if(caches.cbegin(), caches.cend(), [type](AssetCache const& cache)
 	{
 		return cache.GetType() == type;
 	});
@@ -204,7 +204,7 @@ I_Asset* AssetDatabase::GetAsset(HashString const assetId, std::type_info const&
 	{
 		if (reportErrors)
 		{
-			ET_ASSERT(false, "Couldn't find asset cache of type '%s'!", type.name());
+			ET_ASSERT(false, "Couldn't find asset cache of type '%s'!", type.get_name().data());
 		}
 
 		return nullptr;

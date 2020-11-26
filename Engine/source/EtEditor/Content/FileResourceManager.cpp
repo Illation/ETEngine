@@ -112,7 +112,7 @@ void FileResourceManager::Flush()
 //
 // Tries finding the asset in either asset database
 //
-core::I_Asset* FileResourceManager::GetAssetInternal(core::HashString const assetId, std::type_info const& type, bool const reportErrors)
+core::I_Asset* FileResourceManager::GetAssetInternal(core::HashString const assetId, rttr::type const type, bool const reportErrors)
 {
 	core::I_Asset* ret = m_ProjectDb.GetAsset(assetId, type, false);
 

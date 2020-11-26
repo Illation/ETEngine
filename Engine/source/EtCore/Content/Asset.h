@@ -68,7 +68,7 @@ public:
 
 	// Interface
 	//---------------------
-	virtual std::type_info const& GetType() const = 0;
+	virtual rttr::type GetType() const = 0;
 	virtual bool IsLoaded() const = 0;
 	virtual bool LoadFromMemory(std::vector<uint8> const& data) = 0;
 protected:
@@ -143,7 +143,7 @@ public:
 
 	// Utility
 	//---------------------
-	std::type_info const& GetType() const override { return typeid(T_DataType); }
+	rttr::type GetType() const override { return rttr::type::get<T_DataType>(); }
 	bool IsLoaded() const override { return m_Data != nullptr; }
 
 protected:

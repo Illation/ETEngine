@@ -18,6 +18,8 @@ namespace core {
 // reflection
 RTTR_REGISTRATION
 {
+	rttr::registration::class_<StubData>("stub data");
+
 	BEGIN_REGISTER_POLYMORPHIC_CLASS(StubAsset, "stub asset")
 	END_REGISTER_POLYMORPHIC_CLASS(StubAsset, I_Asset);
 }

@@ -48,7 +48,7 @@ public:
 
 	struct AssetCache final
 	{
-		std::type_info const& GetType() const;
+		rttr::type GetType() const;
 
 		T_AssetList cache;
 
@@ -66,7 +66,7 @@ public:
 	T_AssetList GetAssetsMatchingPath(std::string const& path, bool const recursive, std::string const& searchTerm);
 
 	I_Asset* GetAsset(HashString const assetId, bool const reportErrors = true) const;
-	I_Asset* GetAsset(HashString const assetId, std::type_info const& type, bool const reportErrors = true) const; // faster option
+	I_Asset* GetAsset(HashString const assetId, rttr::type const type, bool const reportErrors = true) const; // faster option
 
 	// Functionality
 	//---------------------
