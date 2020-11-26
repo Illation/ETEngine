@@ -128,7 +128,7 @@ void EntityIdRenderer::OnViewportPreRender(render::T_FbLoc const targetFb)
 
 	I_ViewportRenderer* const viewRenderer = m_ViewportToPickFrom->GetViewportRenderer();
 	ET_ASSERT(viewRenderer != nullptr);
-	if (viewRenderer->GetType() == typeid(render::ShadedSceneRenderer))
+	if (viewRenderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
 	{
 		render::ShadedSceneRenderer* const shadedSceneRenderer = static_cast<render::ShadedSceneRenderer*>(viewRenderer);
 		camera = &(shadedSceneRenderer->GetCamera());

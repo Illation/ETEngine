@@ -54,7 +54,7 @@ void OutlineRenderer::Init(render::T_RenderEventDispatcher* const eventDispatche
 		{
 			UNUSED(flags);
 
-			if (evnt->renderer->GetType() == typeid(render::ShadedSceneRenderer))
+			if (evnt->renderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
 			{
 				render::ShadedSceneRenderer const* const renderer = static_cast<render::ShadedSceneRenderer const*>(evnt->renderer);
 				render::I_SceneExtension const* const ext = renderer->GetScene()->GetExtension(core::HashString("OutlineExtension"));

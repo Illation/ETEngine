@@ -143,7 +143,7 @@ void MainFramework::OnTick()
 	}
 
 	render::I_ViewportRenderer* const viewRenderer = render::Viewport::GetCurrentViewport()->GetViewportRenderer();
-	if (viewRenderer != nullptr && viewRenderer->GetType() == typeid(render::ShadedSceneRenderer))
+	if (viewRenderer != nullptr && viewRenderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
 	{
 		render::ShadedSceneRenderer* const sceneRenderer = static_cast<render::ShadedSceneRenderer*>(viewRenderer);
 

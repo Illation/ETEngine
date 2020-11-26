@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ParameterBlock.h"
+#include "TextureData.h"
 
 
 namespace et {
@@ -41,27 +42,27 @@ size_t GetSize(E_ParamType const type)
 //---------------------------------
 // GetTypeId
 //
-std::type_info const& GetTypeId(E_ParamType const type)
+rttr::type GetTypeId(E_ParamType const type)
 {
 	switch (type)
 	{
-	case E_ParamType::Texture2D: return typeid(TextureData const*);
-	case E_ParamType::Texture3D: return typeid(TextureData const*);
-	case E_ParamType::TextureCube: return typeid(TextureData const*);
-	case E_ParamType::TextureShadow: return typeid(TextureData const*);
-	case E_ParamType::Matrix4x4: return typeid(mat4);
-	case E_ParamType::Matrix3x3: return typeid(mat3);
-	case E_ParamType::Vector4: return typeid(vec4);
-	case E_ParamType::Vector3: return typeid(vec3);
-	case E_ParamType::Vector2: return typeid(vec2);
-	case E_ParamType::UInt: return typeid(uint32);
-	case E_ParamType::Int: return typeid(int32);
-	case E_ParamType::Float: return typeid(float);
-	case E_ParamType::Boolean: return typeid(bool);
+	case E_ParamType::Texture2D: return rttr::type::get<TextureData const*>();
+	case E_ParamType::Texture3D: return rttr::type::get<TextureData const*>();
+	case E_ParamType::TextureCube: return rttr::type::get<TextureData const*>();
+	case E_ParamType::TextureShadow: return rttr::type::get<TextureData const*>();
+	case E_ParamType::Matrix4x4: return rttr::type::get<mat4>();
+	case E_ParamType::Matrix3x3: return rttr::type::get<mat3>();
+	case E_ParamType::Vector4: return rttr::type::get<vec4>();
+	case E_ParamType::Vector3: return rttr::type::get<vec3>();
+	case E_ParamType::Vector2: return rttr::type::get<vec2>();
+	case E_ParamType::UInt: return rttr::type::get<uint32>();
+	case E_ParamType::Int: return rttr::type::get<int32>();
+	case E_ParamType::Float: return rttr::type::get<float>();
+	case E_ParamType::Boolean: return rttr::type::get<bool>();
 	}
 
 	ET_ASSERT(false, "Unhandled parameter type!");
-	return typeid(nullptr);
+	return rttr::type::get<std::nullptr_t>();
 }
 
 //---------------------------------

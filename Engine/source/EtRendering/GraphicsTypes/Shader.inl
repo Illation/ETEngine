@@ -41,7 +41,7 @@ bool ShaderData::Upload(T_Hash const uniform, const TDataType &data, bool const 
 		return true; // no need for API call as the state wouldn't change
 	}
 
-	ET_ASSERT(render::parameters::GetTypeId(param.type) == typeid(TDataType));
+	ET_ASSERT(render::parameters::GetTypeId(param.type) == rttr::type::get<TDataType>());
 
 	Viewport::GetCurrentApiContext()->UploadUniform(param.location, data);
 

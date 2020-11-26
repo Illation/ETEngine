@@ -93,7 +93,7 @@ void ConvertDescriptor(T_ParameterBlock const baseParams,
 		case E_ParamType::TextureCube:
 		case E_ParamType::TextureShadow:
 			{
-				ET_ASSERT(baseParam->GetType() == typeid(core::HashString));
+				ET_ASSERT(baseParam->GetType() == rttr::type::get<core::HashString>());
 				core::HashString const assetId(static_cast<MaterialParam<core::HashString> const*>(baseParam)->GetData());
 
 				auto texIt = std::find_if(textureRefs.cbegin(), textureRefs.cend(), [assetId](AssetPtr<TextureData> const& texture)
@@ -112,47 +112,47 @@ void ConvertDescriptor(T_ParameterBlock const baseParams,
 			break;
 
 		case E_ParamType::Matrix4x4:
-			ET_ASSERT(baseParam->GetType() == typeid(mat4));
+			ET_ASSERT(baseParam->GetType() == rttr::type::get<mat4>());
 			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<mat4> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::Matrix3x3:
-			ET_ASSERT(baseParam->GetType() == typeid(mat3));
+			ET_ASSERT(baseParam->GetType() == rttr::type::get<mat3>());
 			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<mat3> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::Vector4:
-			ET_ASSERT(baseParam->GetType() == typeid(vec4));
+			ET_ASSERT(baseParam->GetType() == rttr::type::get<vec4>());
 			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<vec4> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::Vector3:
-			ET_ASSERT(baseParam->GetType() == typeid(vec3));
+			ET_ASSERT(baseParam->GetType() == rttr::type::get<vec3>());
 			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<vec3> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::Vector2:
-			ET_ASSERT(baseParam->GetType() == typeid(vec2));
+			ET_ASSERT(baseParam->GetType() == rttr::type::get<vec2>());
 			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<vec2> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::UInt:
-			ET_ASSERT(baseParam->GetType() == typeid(uint32));
+			ET_ASSERT(baseParam->GetType() == rttr::type::get<uint32>());
 			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<uint32> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::Int:
-			ET_ASSERT(baseParam->GetType() == typeid(int32));
+			ET_ASSERT(baseParam->GetType() == rttr::type::get<int32>());
 			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<int32> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::Float:
-			ET_ASSERT(baseParam->GetType() == typeid(float));
+			ET_ASSERT(baseParam->GetType() == rttr::type::get<float>());
 			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<float> const*>(baseParam)->GetData());
 			break;
 
 		case E_ParamType::Boolean:
-			ET_ASSERT(baseParam->GetType() == typeid(bool));
+			ET_ASSERT(baseParam->GetType() == rttr::type::get<bool>());
 			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<bool> const*>(baseParam)->GetData());
 			break;
 

@@ -38,7 +38,7 @@ ShadedSceneRenderer* ShadedSceneRenderer::GetCurrent()
 		return nullptr;
 	}
 
-	ET_ASSERT(viewRenderer->GetType() == typeid(ShadedSceneRenderer));
+	ET_ASSERT(viewRenderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>());
 
 	return static_cast<ShadedSceneRenderer*>(viewRenderer);
 }

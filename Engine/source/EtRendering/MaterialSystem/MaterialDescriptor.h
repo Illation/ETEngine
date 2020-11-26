@@ -36,7 +36,7 @@ public:
 
 	// interface
 	//-----------
-	virtual std::type_info const& GetType() const = 0;
+	virtual rttr::type GetType() const = 0;
 
 	// funtionality
 	//--------------
@@ -73,7 +73,7 @@ public:
 
 	// material param interface
 	//--------------------------
-	std::type_info const& GetType() const override { return typeid(TDataType); }
+	rttr::type GetType() const override { return rttr::type::get<TDataType>(); }
 
 	// accessors
 	//-----------

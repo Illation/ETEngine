@@ -33,7 +33,7 @@ public:
 	// Viewport Renderer Interface
 	//-----------------------------
 protected:
-	std::type_info const& GetType() const override { return typeid(SplashScreenRenderer); }
+	rttr::type GetType() const override { return rttr::type::get<SplashScreenRenderer>(); }
 	void OnInit() override {}
 	void OnDeinit() override {}
 	void OnResize(ivec2 const dim) override;

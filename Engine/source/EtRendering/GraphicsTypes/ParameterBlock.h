@@ -37,7 +37,7 @@ namespace parameters {
 
 
 size_t GetSize(E_ParamType const type);
-std::type_info const& GetTypeId(E_ParamType const type);
+rttr::type GetTypeId(E_ParamType const type);
 bool MatchesTexture(E_ParamType const param, E_TextureType const texture);
 
 T_ParameterBlock CreateBlock(size_t const size);
