@@ -6,6 +6,8 @@
 #include <EtCore/Reflection/Serialization.h>
 #include <EtCore/Reflection/Registration.h>
 
+#include <EtFramework/SceneGraph/SceneDescriptor.h>
+
 
 namespace et {
 namespace edit {
@@ -50,13 +52,27 @@ void EditorConfig::Initialize()
 //
 void EditorConfig::QueryStartScene()
 {
-	ResourceChooserDialog* resourceDialog = ResourceChooserDialog::create();
+	ResourceChooserDialog* resourceDialog = ResourceChooserDialog::create(std::vector<rttr::type>({rttr::type::get<fw::SceneDescriptorAsset>()}));
+	resourceDialog->set_title("Please select a Scene...");
 
 	resourceDialog->signal_hide().connect([resourceDialog]() -> void { delete resourceDialog; });
 
-	resourceDialog->run();
+	int32 const response = resourceDialog->run();
+	if (response == Gtk::ResponseType::RESPONSE_ACCEPT)
+	{
+		ET_ASSERT(!(resourceDialog->GetSelectedAssets().empty()));
 
-	m_StartScene = core::HashString("PlanetScene.json");
+		core::I_Asset* const selectedAsset = resourceDialog->GetSelectedAssets()[0];
+		ET_ASSERT(selectedAsset->GetType() == rttr::type::get<fw::SceneDescriptor>());
+		
+		m_StartScene = selectedAsset->GetId();
+	}
+	else
+	{
+		m_StartScene.Reset();
+	}
+
+	resourceDialog->hide();
 }
 
 

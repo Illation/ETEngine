@@ -10,6 +10,7 @@
 #include <EtCore/FileSystem/FileUtil.h>
 
 #include <EtEditor/EditorApp.h>
+#include <EtEditor/Util/EditorConfig.h>
 
 #include <Common/linkerHelper.h>
 
@@ -52,17 +53,24 @@ int main(int argc, char *argv[])
 	Glib::setenv("XDG_DATA_DIRS", et::core::FileUtil::GetAbsolutePath("../share/"), false);
 
 	Glib::RefPtr<et::edit::EditorApp> editorApp = et::edit::EditorApp::create();
+	if (!(et::edit::EditorConfig::GetInstance()->GetStartScene().IsEmpty()))
+	{
+		// Start the application, showing the initial window,
+		// and opening extra views for any files that it is asked to open,
+		// for instance as a command-line parameter.
+		// run() will return when the last window has been closed.
+		et::int32 result = editorApp->run(argc, argv);
 
-	// Start the application, showing the initial window,
-	// and opening extra views for any files that it is asked to open,
-	// for instance as a command-line parameter.
-	// run() will return when the last window has been closed.
-	et::int32 result = editorApp->run(argc, argv);
+		// compiled resources
+		editor_unregister_resource();
 
-	// compiled resources
-	editor_unregister_resource();
-
-	return result;
+		return result;
+	}
+	else
+	{
+		std::cout << "main > Couldn't determine start scene to launch with!" << std::endl;
+		return 2;
+	}
 }
 
 //---------------------------------

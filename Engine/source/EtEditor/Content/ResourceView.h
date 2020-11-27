@@ -51,14 +51,18 @@ public:
 		Gtk::TreeModelColumn<core::Directory*> m_Directory;
 	};
 
+	typedef sigc::signal<void> T_SignalSelectionChanged;
+
 	// construct destruct
 	//--------------------
 	ResourceView();
-	void Init();
+	void Init(std::vector<rttr::type> const& allowedTypes);
 
 	// accessors
 	//-----------
 	Gtk::Widget* GetAttachment() const { return m_Attachment; }
+	std::vector<AssetWidget*> const& GetSelectedAssets() const { return m_SelectedAssets; }
+	T_SignalSelectionChanged GetSelectionChangeSignal() const { return m_SignalSelectionChanged; }
 
 private:
 
@@ -68,6 +72,7 @@ private:
 	void OnDirectorySelectionChanged();
 	void OnSearchChanged();
 	void OnAssetTypeFilterChanged() override;
+	void OnSelectedChildrenChanged();
 
 	// utility
 	//---------
@@ -100,6 +105,7 @@ private:
 	std::string m_SelectedDirectory;
 	core::Directory* m_BaseDirectory = nullptr;
 	std::vector<AssetWidget> m_FilteredAssets;
+	std::vector<AssetWidget*> m_SelectedAssets;
 
 	// filter
 	AssetTypeFilter m_TypeFilter;
@@ -107,6 +113,8 @@ private:
 	// search
 	Gtk::SearchEntry* m_SearchBar = nullptr;
 	std::string m_SearchTerm;
+
+	T_SignalSelectionChanged m_SignalSelectionChanged;
 };
 
 

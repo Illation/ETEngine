@@ -23,6 +23,7 @@ public:
 	AssetWidget(core::I_Asset* const asset);
 
 	Gtk::Widget* GetAttachment() const { return m_Attachment; }
+	core::I_Asset* GetAsset() const { return m_Asset; }
 
 	// Data
 	///////

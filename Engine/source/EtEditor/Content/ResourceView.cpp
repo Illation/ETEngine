@@ -28,8 +28,9 @@ ResourceView::ResourceView()
 // ResourceView::Init
 //
 // Link everything together
+//  - if allowed types is empty every asset type is selectable
 //
-void ResourceView::Init()
+void ResourceView::Init(std::vector<rttr::type> const& allowedTypes)
 {
 	// attachment to parent widget
 	m_RefBuilder->get_widget("resource_viewer", m_Attachment);
@@ -39,12 +40,14 @@ void ResourceView::Init()
 	m_RefBuilder->get_widget("resource_view", m_FlowBox);
 	ET_ASSERT(m_FlowBox != nullptr);
 
+	m_FlowBox->signal_selected_children_changed().connect(sigc::mem_fun(*this, &ResourceView::OnSelectedChildrenChanged));
+
 	// filtering
 	Gtk::MenuButton* filterButton;
 	m_RefBuilder->get_widget("filter", filterButton);
 	ET_ASSERT(filterButton != nullptr);
 	m_TypeFilter.RegisterListener(this); // no need to unregister ourselves because we own it
-	m_TypeFilter.Init(filterButton);
+	m_TypeFilter.Init(filterButton, allowedTypes);
 
 	m_RefBuilder->get_widget("search", m_SearchBar);
 	ET_ASSERT(m_SearchBar != nullptr);
@@ -164,6 +167,28 @@ void ResourceView::OnAssetTypeFilterChanged()
 	RebuildAssetList();
 }
 
+//-------------------------------------------------
+// ResourceView::OnAssetTypeFilterChanged
+//
+void ResourceView::OnSelectedChildrenChanged()
+{
+	std::vector<Gtk::FlowBoxChild*> selectedChildren = m_FlowBox->get_selected_children();
+
+	m_SelectedAssets.clear();
+	for (Gtk::FlowBoxChild* child : selectedChildren)
+	{
+		int32 const childIdx = child->get_index();
+		ET_ASSERT(childIdx < m_FilteredAssets.size());
+
+		AssetWidget& assetWidget = m_FilteredAssets[childIdx];
+		ET_ASSERT(assetWidget.GetAttachment() == child->get_child());
+
+		m_SelectedAssets.push_back(&assetWidget);
+	}
+
+	m_SignalSelectionChanged.emit();
+}
+
 //------------------------------------------------
 // ResourceView::RebuildDirectoryTree
 //
@@ -213,6 +238,20 @@ void ResourceView::RebuildDirectoryTree()
 //
 void ResourceView::RebuildAssetList()
 {
+	m_FilteredAssets.clear();
+
+	// clear flow box
+	for (Gtk::Widget* const child : m_FlowBox->get_children())
+	{
+		m_FlowBox->remove(*child);
+	}
+
+	// if we only allow specific types of assets and no asset types are selected, there will be nothing to populate
+	if (!m_TypeFilter.AreAllTypesAllowed() && m_TypeFilter.GetFilteredTypes().empty())
+	{
+		return;
+	}
+
 	// fetch assets
 	FileResourceManager* const resourceMan = static_cast<FileResourceManager*>(core::ResourceManager::Instance());
 	ET_ASSERT(resourceMan != nullptr);
@@ -222,14 +261,6 @@ void ResourceView::RebuildAssetList()
 		m_TypeFilter.AreDirectoriesRecursive(), 
 		m_SearchTerm, 
 		m_TypeFilter.GetFilteredTypes());
-
-	m_FilteredAssets.clear();
-
-	// clear flow box
-	for (Gtk::Widget* const child : m_FlowBox->get_children())
-	{
-		m_FlowBox->remove(*child);
-	}
 
 	// repopulate
 	for (core::I_Asset* const asset : filteredAssets)

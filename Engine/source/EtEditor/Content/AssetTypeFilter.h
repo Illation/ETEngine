@@ -56,7 +56,7 @@ public:
 	//--------------------
 	AssetTypeFilter() = default;
 
-	void Init(Gtk::MenuButton* const button);
+	void Init(Gtk::MenuButton* const button, std::vector<rttr::type> const& allowedTypes);
 
 	// functionality
 	//---------------
@@ -67,10 +67,12 @@ public:
 	//-----------
 	bool AreDirectoriesRecursive() const { return m_RecursiveDirectories; }
 	std::vector<rttr::type> const& GetFilteredTypes() const { return m_SelectedTypes; }
+	bool AreAllTypesAllowed() const { return m_AllAllowed; }
 
 	// utility
 	//---------
 private:
+	void CalculateSelectedTypes();
 	void NotifyOnChange();
 
 
@@ -79,6 +81,7 @@ private:
 
 	bool m_RecursiveDirectories = true;
 	std::vector<rttr::type> m_SelectedTypes;
+	bool m_AllAllowed = true;
 
 	std::vector<I_Listener*> m_Listeners;
 

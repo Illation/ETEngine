@@ -20,8 +20,12 @@ namespace edit {
 //------------------------
 // AssetTypeFilter::Init
 //
-void AssetTypeFilter::Init(Gtk::MenuButton* const button)
+// if allowed types is empty every asset type is selectable
+//
+void AssetTypeFilter::Init(Gtk::MenuButton* const button, std::vector<rttr::type> const& allowedTypes)
 {
+	m_AllAllowed = allowedTypes.empty();
+
 	// create menu
 	//-------------
 	ET_ASSERT(button != nullptr);
@@ -51,6 +55,8 @@ void AssetTypeFilter::Init(Gtk::MenuButton* const button)
 			continue;
 		}
 
+		bool const isAllowed = (m_AllAllowed || (std::find(allowedTypes.cbegin(), allowedTypes.cend(), derivedType) != allowedTypes.cend()));
+
 		std::string typeName(derivedType.get_name().data());
 		std::string actionName(typeName);
 		std::transform(actionName.begin(), actionName.end(), actionName.begin(), [](char const ch) 
@@ -69,6 +75,7 @@ void AssetTypeFilter::Init(Gtk::MenuButton* const button)
 
 		assetType.m_Type = derivedType;
 		assetType.m_Item = Gio::MenuItem::create(typeName.c_str(), (std::string("type.") + actionName).c_str());
+		assetType.m_IsSelected = (isAllowed && !m_AllAllowed);
 
 		m_TypeSection->append_item(assetType.m_Item);
 
@@ -85,6 +92,12 @@ void AssetTypeFilter::Init(Gtk::MenuButton* const button)
 			NotifyOnChange();
 		};
 		m_TypeActionGroup->add_action_bool(actionName.c_str(), onType, assetType.m_IsSelected);
+
+		if (!isAllowed)
+		{
+			Glib::RefPtr<Gio::SimpleAction> action = Glib::RefPtr<Gio::SimpleAction>::cast_static(m_TypeActionGroup->lookup(actionName.c_str()));
+			action->set_enabled(false);
+		}
 	}
 
 	m_GMenu->append_section("Asset Types", m_TypeSection);
@@ -108,6 +121,9 @@ void AssetTypeFilter::Init(Gtk::MenuButton* const button)
 	// link with button
 	//-------------------
 	m_MenuButton->set_menu(*m_Menu);
+
+	// ensure initial type list is correct
+	CalculateSelectedTypes();
 }
 
 //-----------------------------------
@@ -135,6 +151,19 @@ void AssetTypeFilter::UnregisterListener(I_Listener const* const listener)
 //
 void AssetTypeFilter::NotifyOnChange()
 {
+	CalculateSelectedTypes();
+
+	for (I_Listener* const listener : m_Listeners)
+	{
+		listener->OnAssetTypeFilterChanged();
+	}
+}
+
+//-----------------------------------------
+// AssetTypeFilter::CalculateSelectedTypes
+//
+void AssetTypeFilter::CalculateSelectedTypes()
+{
 	m_SelectedTypes.clear();
 	for (AssetType const& assetType : m_Types)
 	{
@@ -142,11 +171,6 @@ void AssetTypeFilter::NotifyOnChange()
 		{
 			m_SelectedTypes.push_back(assetType.m_Type);
 		}
-	}
-
-	for (I_Listener* const listener : m_Listeners)
-	{
-		listener->OnAssetTypeFilterChanged();
 	}
 }
 
