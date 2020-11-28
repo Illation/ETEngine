@@ -60,6 +60,11 @@ void SceneEditor::RegisterEcsEvents()
 
 	ecs.RegisterOnEntityAdded(fw::T_EntityEventFn([](fw::EcsController& ecs, fw::T_EntityId const entity) -> void
 		{
+			if (ecs.HasComponent(entity, EditorMetaComponent::GetTypeIndex())) 
+			{
+				return; // if the entity was added by duplication it will already have this component
+			}
+
 			EditorMetaComponent comp;
 			comp.name = FS("Entity_%u", entity);
 
