@@ -138,12 +138,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -162,12 +157,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -186,12 +176,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -210,12 +195,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -234,12 +214,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -258,12 +233,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -282,12 +252,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -306,12 +271,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -330,12 +290,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -354,12 +309,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -378,12 +328,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -402,12 +347,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -426,12 +366,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -450,12 +385,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -474,12 +404,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -498,12 +423,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -522,12 +442,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -546,12 +461,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -570,12 +480,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -594,12 +499,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -618,12 +518,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -642,12 +537,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -666,12 +556,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -690,12 +575,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -714,12 +594,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -738,12 +613,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -762,12 +632,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }
@@ -786,12 +651,7 @@
                 "mipmap filter": "Linear",
                 "wrap S": "Repeat",
                 "wrap T": "Repeat",
-                "border color": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "w": 0.0
-                },
+                "border color": [ 0.0, 0.0, 0.0, 0.0 ],
                 "generate mipmaps": true
               }
             }

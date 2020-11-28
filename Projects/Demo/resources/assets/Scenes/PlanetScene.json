@@ -6,22 +6,9 @@
         "components": [
           {
             "transform comp desc": {
-              "position": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": -1747.1
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 1.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              }
+              "position": [ 0.0, 0.0, -1747.1 ],
+              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+              "scale": [ 1.0, 1.0, 1.0 ]
             }
           },
           {
@@ -48,22 +35,9 @@
         "components": [
           {
             "transform comp desc": {
-              "position": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 1.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              }
+              "position": [ 0.0, 0.0, 0.0 ],
+              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+              "scale": [ 1.0, 1.0, 1.0 ]
             }
           },
           {
@@ -101,32 +75,15 @@
         "components": [
           {
             "transform comp desc": {
-              "position": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 1.0
-              },
-              "scale": {
-                "x": 0.1,
-                "y": 0.1,
-                "z": 0.1
-              }
+              "position": [ 0.0, 0.0, 0.0 ],
+              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+              "scale": [ 0.1, 0.1, 0.1 ]
             }
           },
           {
             "light comp desc": {
               "type": "Directional",
-              "color": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
+              "color": [ 1.0, 1.0, 1.0 ],
               "brightness": 283.00,
               "casts shadow": false
             }
@@ -161,10 +118,6 @@
     "audio listener": {
       "id": 4294967295
     },
-    "gravity": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
-    }
+    "gravity": [ 0.0, 0.0, 0.0 ]
   }
 }

@@ -58,6 +58,7 @@ namespace serialization
 	bool ToJsonRecursive(rttr::instance const& inst, JSON::Value*& outJObject, rttr::type const& callingType);
 
 	bool VariantToJsonValue(rttr::variant const& var, JSON::Value*& outVal);
+	bool IsVectorType(rttr::type const type);
 	bool AtomicTypeToJsonValue(rttr::type const& valueType, rttr::variant  const& var, JSON::Value*& outVal);
 	bool ArrayToJsonArray(const rttr::variant_sequential_view& view, JSON::Value*& outVal);
 	bool AssociativeContainerToJsonArray(const rttr::variant_associative_view& view, JSON::Value*& outVal);

@@ -35,7 +35,8 @@ struct quaternion
 		};
 		//Vec4 representation
 		//makes vector like operations easy to implement
-		vector<4, T> v4; 
+		vector<4, T> v4;
+		std::array<T, 4> data;
 	};
 
 	//constructors

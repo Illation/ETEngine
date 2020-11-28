@@ -4,11 +4,7 @@
       {
         "vector3D param": {
           "name": "baseColor",
-          "data": {
-            "x": 0.8,
-            "y": 0.8,
-            "z": 0.8
-          }
+          "data": [ 0.8, 0.8, 0.8 ]
         }
       },
       {

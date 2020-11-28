@@ -142,6 +142,15 @@ bool VariantToJsonValue(rttr::variant const& var, JSON::Value*& outVal)
 }
 
 //---------------------------------
+// IsVectorType
+//
+bool IsVectorType(rttr::type const type)
+{
+	rttr::variant val = type.get_metadata(reflection::E_MetaData::VectorType);
+	return val.is_valid() && val.get_value<bool>();
+}
+
+//---------------------------------
 // AtomicTypeToJsonValue
 //
 // Convert a handful of basic supported "leaf" types to Atomic JSON types. Might have to add more in the future. 
@@ -315,6 +324,29 @@ bool AtomicTypeToJsonValue(rttr::type const& valueType, rttr::variant const& var
 #if ET_HASH_STRING_ENABLED
 		}
 #endif
+	}
+	else if (IsVectorType(valueType))
+	{
+		rttr::array_range<rttr::property> const prop_list = valueType.get_properties();
+		auto prop = *prop_list.begin();
+		ET_ASSERT(prop_list.size() == 1);
+		ET_ASSERT(prop.get_name().to_string() == "data");
+
+		rttr::instance inst(var);
+		rttr::type propValType = prop.get_type();
+		rttr::variant propVar = prop.get_value(inst);
+
+		ET_ASSERT(propValType.is_sequential_container());
+
+		if (ArrayToJsonArray(propVar.create_sequential_view(), outVal))
+		{
+			return true;
+		}
+		else
+		{
+			LOG("VariantToJsonValue > Failed to convert vector type to json array, typeName: '" + valueType.get_name().to_string()
+				+ std::string("'!"), LogLevel::Warning);
+		}
 	}
 
 	// couldn't handle type, return false to indicate that this should be an object or array
@@ -501,7 +533,10 @@ bool ArrayFromJsonRecursive(rttr::variant_sequential_view& view, JSON::Value con
 	}
 	JSON::Array const* const jArr = jVal->arr();
 
-	view.set_size(jArr->value.size());
+	if (view.get_size() != jArr->value.size())
+	{
+		view.set_size(jArr->value.size());
+	}
 	rttr::type const arrayValueType = view.get_rank_type(1);
 
 
@@ -522,13 +557,42 @@ bool ArrayFromJsonRecursive(rttr::variant_sequential_view& view, JSON::Value con
 
 		if (jIndexVal->GetType() == JSON::JSON_Array) // multi dimensional array
 		{
-			auto subArrayView = view.get_value(i).create_sequential_view();
-			if (!ArrayFromJsonRecursive(subArrayView, jIndexVal))
+			if (IsVectorType(localType))
 			{
-				LOG("ArrayFromJsonRecursive > There was an issue deserializing the inner array, index: #" + std::to_string(i)
-					+ std::string(" typeName: '") + localType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
+				rttr::array_range<rttr::property> const prop_list = localType.get_properties();
+				ET_ASSERT(prop_list.size() == 1);
 
-				success = false;
+				auto prop = *prop_list.begin();
+				ET_ASSERT(prop.get_name().to_string() == "data");
+
+				rttr::instance inst(view.get_value(i));
+				rttr::type propValType = prop.get_type();
+				rttr::variant propVar = prop.get_value(inst);
+
+				ET_ASSERT(propValType.is_sequential_container());
+
+				auto subArrayView = propVar.create_sequential_view();
+
+				if ((!ArrayFromJsonRecursive(subArrayView, jIndexVal)) || !propVar.is_valid())
+				{
+					LOG("FromJsonValue > There was an issue deserializing the vectors / matrices sequential view, typeName: '"
+						+ propValType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
+				}
+				else
+				{
+					prop.set_value(inst, propVar);
+				}
+			}
+			else
+			{
+				auto subArrayView = view.get_value(i).create_sequential_view();
+				if (!ArrayFromJsonRecursive(subArrayView, jIndexVal))
+				{
+					LOG("ArrayFromJsonRecursive > There was an issue deserializing the inner array, index: #" + std::to_string(i)
+						+ std::string(" typeName: '") + localType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
+
+					success = false;
+				}
 			}
 		}
 		else if (jIndexVal->GetType() == JSON::JSON_Object) // array of objects
@@ -775,9 +839,35 @@ void FromJsonValue(JSON::Value const* jVal, rttr::type &valueType, rttr::variant
 						+ localType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
 				}
 			}
+			else if (IsVectorType(localType))
+			{
+				rttr::array_range<rttr::property> const prop_list = localType.get_properties();
+				ET_ASSERT(prop_list.size() == 1);
+
+				auto prop = *prop_list.begin();
+				ET_ASSERT(prop.get_name().to_string() == "data");
+
+				rttr::instance inst(var);
+				rttr::type propValType = prop.get_type();
+				rttr::variant propVar = prop.get_value(inst);
+
+				ET_ASSERT(propValType.is_sequential_container());
+
+				auto view = propVar.create_sequential_view();
+
+				if ((!ArrayFromJsonRecursive(view, jVal)) || !propVar.is_valid())
+				{
+					LOG("FromJsonValue > There was an issue deserializing the vectors / matrices sequential view, typeName: '"
+						+ propValType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
+				}
+				else 
+				{
+					prop.set_value(inst, propVar);
+				}
+			}
 			else
 			{
-				LOG("FromJsonValue > Found a JSON value of type array, but the property is not a sequential or associate container, typeName: '"
+				LOG("FromJsonValue > Found a JSON value of type array, but the property is not a sequential or associate container, or vector type: '"
 					+ localType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
 			}
 

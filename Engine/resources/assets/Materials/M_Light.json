@@ -4,21 +4,13 @@
       {
         "vector3D param": {
           "name": "Position",
-          "data": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          }
+          "data": [ 0.0, 0.0, 0.0 ]
         }
       },
       {
         "vector3D param": {
           "name": "Color",
-          "data": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
+          "data": [ 1.0, 1.0, 1.0 ]
         }
       },
       {

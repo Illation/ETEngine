@@ -13,19 +13,10 @@
       "title": "ETEngine Demo",
       "fullscreen": false,
       "resolutions": [
-        {
-          "x": 1280,
-          "y": 720
-        },
-        {
-          "x": 1920,
-          "y": 1080
-        },
-        {
-          "x": 2560,
-          "y": 1440
-        }
-      ],
+        [ 1280, 720 ],
+        [ 1920, 1080 ],
+        [ 2560, 1440 ]
+       ],
       "fullscreen resolution": 2,
       "windowed resolution": 1
     },

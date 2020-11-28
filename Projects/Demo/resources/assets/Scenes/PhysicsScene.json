@@ -6,22 +6,9 @@
         "components": [
           {
             "transform comp desc": {
-              "position": {
-                "x": 0.0,
-                "y": 2.0,
-                "z": -10.0
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 1.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              }
+              "position": [ 0.0, 2.0, -10.0 ],
+              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+              "scale": [ 1.0, 1.0, 1.0 ]
             }
           },
           {
@@ -61,32 +48,15 @@
         "components": [
           {
             "transform comp desc": {
-              "position": {
-                "x": 0.0,
-                "y": 2.0,
-                "z": 0.0
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 1.0
-              },
-              "scale": {
-                "x": 10.0,
-                "y": 10.0,
-                "z": 10.0
-              }
+              "position": [ 0.0, 2.0, 0.0 ],
+              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+              "scale": [ 10.0, 10.0, 10.0 ]
             }
           },
           {
             "light comp desc": {
               "type": "Point",
-              "color": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
+              "color": [ 1.0, 1.0, 1.0 ],
               "brightness": 900.0,
               "casts shadow": false
             }
@@ -129,7 +99,7 @@
             }
           },
           {
-            "controled light comp desc": { }
+            "controled light comp desc": {}
           }
         ],
         "children": [
@@ -138,22 +108,9 @@
             "components": [
               {
                 "transform comp desc": {
-                  "position": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                  },
-                  "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "w": 1.0
-                  },
-                  "scale": {
-                    "x": 0.01,
-                    "y": 0.01,
-                    "z": 0.01
-                  }
+                  "position": [ 0.0, 0.0, 0.0 ],
+                  "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+                  "scale": [ 0.01, 0.01, 0.01 ]
                 }
               },
               {
@@ -172,22 +129,9 @@
         "components": [
           {
             "transform comp desc": {
-              "position": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 1.0
-              },
-              "scale": {
-                "x": 1000.0,
-                "y": 1.0,
-                "z": 1000.0
-              }
+              "position": [ 0.0, 0.0, 0.0 ],
+              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+              "scale": [ 1000.0, 1.0, 1000.0 ]
             }
           },
           {
@@ -202,11 +146,7 @@
               "mass": 0.0,
               "shape": {
                 "box collider shape": {
-                  "half extents": {
-                    "x": 10.0,
-                    "y": 0.01,
-                    "z": 10.0
-                  }
+                  "half extents": [ 10.0, 0.01, 10.0 ]
                 }
               }
             }
@@ -219,22 +159,9 @@
         "components": [
           {
             "transform comp desc": {
-              "position": {
-                "x": 0.0,
-                "y": 0.2,
-                "z": 0.0
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 1.0
-              },
-              "scale": {
-                "x": 9.85,
-                "y": 6.0,
-                "z": 30.0
-              }
+              "position": [ 0.0, 0.2, 0.0 ],
+              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+              "scale": [ 9.85, 6.0, 30.0 ]
             }
           },
           {
@@ -249,11 +176,7 @@
               "mass": 0.2,
               "shape": {
                 "box collider shape": {
-                  "half extents": {
-                    "x": 0.0985,
-                    "y": 0.06,
-                    "z": 0.3
-                  }
+                  "half extents": [ 0.0985, 0.06, 0.3 ]
                 }
               }
             }
@@ -266,22 +189,9 @@
         "components": [
           {
             "transform comp desc": {
-              "position": {
-                "x": 0.0,
-                "y": 0.5,
-                "z": 0.0
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 1.0
-              },
-              "scale": {
-                "x": 9.85,
-                "y": 6.0,
-                "z": 30.0
-              }
+              "position": [ 0.0, 0.5, 0.0 ],
+              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+              "scale": [ 9.85, 6.0, 30.0 ]
             }
           },
           {
@@ -296,11 +206,7 @@
               "mass": 0.2,
               "shape": {
                 "box collider shape": {
-                  "half extents": {
-                    "x": 0.0985,
-                    "y": 0.06,
-                    "z": 0.3
-                  }
+                  "half extents": [ 0.0985, 0.06, 0.3 ]
                 }
               }
             }
@@ -313,22 +219,9 @@
         "components": [
           {
             "transform comp desc": {
-              "position": {
-                "x": 0.0,
-                "y": 0.8,
-                "z": 0.0
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 1.0
-              },
-              "scale": {
-                "x": 9.85,
-                "y": 6.0,
-                "z": 30.0
-              }
+              "position": [ 0.0, 0.8, 0.0 ],
+              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+              "scale": [ 9.85, 6.0, 30.0 ]
             }
           },
           {
@@ -343,11 +236,7 @@
               "mass": 0.2,
               "shape": {
                 "box collider shape": {
-                  "half extents": {
-                    "x": 0.0985,
-                    "y": 0.06,
-                    "z": 0.3
-                  }
+                  "half extents": [ 0.0985, 0.06, 0.3 ]
                 }
               }
             }
@@ -360,22 +249,9 @@
         "components": [
           {
             "transform comp desc": {
-              "position": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 2.0
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 1.0
-              },
-              "scale": {
-                "x": 0.3,
-                "y": 0.3,
-                "z": 0.3
-              }
+              "position": [ 0.0, 1.0, 2.0 ],
+              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+              "scale": [ 0.3, 0.3, 0.3 ]
             }
           },
           {
@@ -420,10 +296,6 @@
     "audio listener": {
       "id": 0
     },
-    "gravity": {
-      "x": 0.0,
-      "y": -0.981,
-      "z": 0.0
-    }
+    "gravity": [ 0.0, -0.981, 0.0 ] 
   }
 }
