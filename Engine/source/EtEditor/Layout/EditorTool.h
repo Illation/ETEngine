@@ -24,6 +24,7 @@ enum class E_EditorTool
 {
 	SceneViewport,
 	Outliner,
+	ResourceBrowser,
 
 	Invalid
 };

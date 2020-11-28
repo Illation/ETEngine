@@ -43,6 +43,9 @@ void ResourceView::Init(std::vector<rttr::type> const& allowedTypes)
 	m_FlowBox->signal_selected_children_changed().connect(sigc::mem_fun(*this, &ResourceView::OnSelectedChildrenChanged));
 
 	// filtering
+	m_RefBuilder->get_widget("toolbar", m_Toolbar); // allows detatching the filter and search options and putting them in a toolbar instead
+	ET_ASSERT(m_Toolbar != nullptr);
+
 	Gtk::MenuButton* filterButton;
 	m_RefBuilder->get_widget("filter", filterButton);
 	ET_ASSERT(filterButton != nullptr);

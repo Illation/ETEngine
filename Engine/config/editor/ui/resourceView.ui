@@ -102,7 +102,7 @@
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="toolbar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
@@ -193,6 +193,7 @@
                     <property name="can_focus">False</property>
                     <property name="valign">start</property>
                     <property name="homogeneous">True</property>
+                    <property name="max_children_per_line">16</property>
                   </object>
                 </child>
               </object>

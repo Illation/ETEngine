@@ -44,6 +44,7 @@ std::string const SceneEditor::s_EditorName("Scene Editor");
 std::string const SceneEditor::s_LayoutName("scene_editor");
 std::vector<E_EditorTool> const SceneEditor::s_SupportedTools = {
 	E_EditorTool::Outliner,
+	E_EditorTool::ResourceBrowser,
 	E_EditorTool::SceneViewport
 	};
 

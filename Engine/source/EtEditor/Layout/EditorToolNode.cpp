@@ -19,6 +19,7 @@
 #include <EtEditor/Util/GtkUtil.h>
 #include <EtEditor/Tools/Outliner.h>
 #include <EtEditor/Tools/SceneViewport.h>
+#include <EtEditor/Tools/ResourceBrowser.h>
 
 
 //====================
@@ -32,6 +33,7 @@ RTTR_REGISTRATION
 	rttr::registration::enumeration<et::edit::E_EditorTool>("E_EditorTool") (
 		rttr::value("SceneViewport", et::edit::E_EditorTool::SceneViewport),
 		rttr::value("Outliner", et::edit::E_EditorTool::Outliner),
+		rttr::value("ResourceBrowser", et::edit::E_EditorTool::ResourceBrowser),
 		rttr::value("Invalid", et::edit::E_EditorTool::Invalid));
 
 	BEGIN_REGISTER_POLYMORPHIC_CLASS(et::edit::EditorToolNode, "editor tool node")
@@ -134,6 +136,10 @@ void EditorToolNode::CreateTool()
 
 	case E_EditorTool::Outliner:
 		m_Tool = std::make_unique<Outliner>();
+		break;
+
+	case E_EditorTool::ResourceBrowser:
+		m_Tool = std::make_unique<ResourceBrowser>();
 		break;
 
 	default:

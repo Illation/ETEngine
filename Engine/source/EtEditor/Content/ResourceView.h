@@ -63,6 +63,7 @@ public:
 	Gtk::Widget* GetAttachment() const { return m_Attachment; }
 	std::vector<AssetWidget*> const& GetSelectedAssets() const { return m_SelectedAssets; }
 	T_SignalSelectionChanged GetSelectionChangeSignal() const { return m_SignalSelectionChanged; }
+	Gtk::Box* GetToolbar() const { return m_Toolbar; }
 
 private:
 
@@ -106,6 +107,9 @@ private:
 	core::Directory* m_BaseDirectory = nullptr;
 	std::vector<AssetWidget> m_FilteredAssets;
 	std::vector<AssetWidget*> m_SelectedAssets;
+
+	// toolbar
+	Gtk::Box* m_Toolbar = nullptr;
 
 	// filter
 	AssetTypeFilter m_TypeFilter;
