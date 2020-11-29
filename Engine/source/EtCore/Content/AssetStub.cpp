@@ -20,8 +20,8 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<StubData>("stub data");
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(StubAsset, "stub asset")
-	END_REGISTER_POLYMORPHIC_CLASS(StubAsset, I_Asset);
+	BEGIN_REGISTER_CLASS(StubAsset, "stub asset")
+	END_REGISTER_CLASS_POLYMORPHIC(StubAsset, I_Asset);
 }
 DEFINE_FORCED_LINKING(StubAsset) // force the asset class to be linked as it is only used in reflection
 

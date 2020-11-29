@@ -15,7 +15,7 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<PlanetComponent>("planet component");
 	
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(PlanetComponentDesc, "planet comp desc")
+	BEGIN_REGISTER_CLASS(PlanetComponentDesc, "planet comp desc")
 		.property("radius", &PlanetComponentDesc::radius)
 		.property("height", &PlanetComponentDesc::height)
 		.property("diffuse texture", &PlanetComponentDesc::texDiffuse)
@@ -23,13 +23,13 @@ RTTR_REGISTRATION
 		.property("detail texture 2", &PlanetComponentDesc::texDetail2)
 		.property("height texture", &PlanetComponentDesc::texHeight)
 		.property("height detail texture", &PlanetComponentDesc::texHeightDetail)
-	END_REGISTER_POLYMORPHIC_CLASS(PlanetComponentDesc, I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(PlanetComponentDesc, I_ComponentDescriptor);
 
 	rttr::registration::class_<PlanetCameraLinkComponent>("planet camera link component");
 	
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(PlanetCameraLinkComponentDesc, "planet camera link comp desc")
+	BEGIN_REGISTER_CLASS(PlanetCameraLinkComponentDesc, "planet camera link comp desc")
 		.property("planet", &PlanetCameraLinkComponentDesc::planet)
-	END_REGISTER_POLYMORPHIC_CLASS(PlanetCameraLinkComponentDesc, I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(PlanetCameraLinkComponentDesc, I_ComponentDescriptor);
 }
 
 ECS_REGISTER_COMPONENT(PlanetComponent);

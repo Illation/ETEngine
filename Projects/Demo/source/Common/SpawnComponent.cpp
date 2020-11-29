@@ -20,7 +20,7 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<SpawnComponent>("spawn component");
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(SpawnComponentDesc, "spawn comp desc")
+	BEGIN_REGISTER_CLASS(SpawnComponentDesc, "spawn comp desc")
 		.property("mesh", &SpawnComponentDesc::mesh)
 		.property("material", &SpawnComponentDesc::material)
 		.property("scale", &SpawnComponentDesc::scale)
@@ -28,7 +28,7 @@ RTTR_REGISTRATION
 		.property("mass", &SpawnComponentDesc::mass)
 		.property("interval", &SpawnComponentDesc::interval)
 		.property("impulse", &SpawnComponentDesc::impulse)
-	END_REGISTER_POLYMORPHIC_CLASS(SpawnComponentDesc, fw::I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(SpawnComponentDesc, fw::I_ComponentDescriptor);
 }
 DEFINE_FORCED_LINKING(SpawnComponentDesc) // force the linker to include this unit
 

@@ -107,12 +107,12 @@ void SpriteFont::SetMetric(FontMetric const& metric, wchar_t const& character)
 // reflection
 RTTR_REGISTRATION
 {
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(FontAsset, "font asset")
+	BEGIN_REGISTER_CLASS(FontAsset, "font asset")
 		.property("size", &FontAsset::m_FontSize)
 		.property("padding", &FontAsset::m_Padding)
 		.property("spread", &FontAsset::m_Spread)
 		.property("highres", &FontAsset::m_HighRes)
-	END_REGISTER_POLYMORPHIC_CLASS(FontAsset, core::I_Asset);
+	END_REGISTER_CLASS_POLYMORPHIC(FontAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(FontAsset) // force the shader class to be linked as it is only used in reflection
 

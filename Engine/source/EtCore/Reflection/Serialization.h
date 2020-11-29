@@ -69,7 +69,7 @@ namespace serialization
 	rttr::variant ExtractValue(JSON::Value const* const jVal, const rttr::type& valueType);
 	bool AssociativeViewFromJsonRecursive(rttr::variant_associative_view& view, JSON::Value const* const jVal);
 	void FromJsonValue(JSON::Value const* jVal, rttr::type &valueType, rttr::variant &var);
-	bool ExtractPointerValueType(rttr::type &inOutValType, JSON::Value const* &inOutJVal);
+	bool ExtractPointerValueType(rttr::type &inOutValType, JSON::Value const* &inOutJVal, bool& isNull);
 	void ObjectFromJsonRecursive(JSON::Value const* const jVal, rttr::instance const &inst, rttr::type &instType);
 
 	void FromJsonRecursive(rttr::instance const inst, JSON::Value const* const jVal);

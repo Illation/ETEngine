@@ -155,11 +155,11 @@ void TextureData::CreateHandle()
 // reflection
 RTTR_REGISTRATION
 {
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(TextureAsset, "texture asset")
+	BEGIN_REGISTER_CLASS(TextureAsset, "texture asset")
 		.property("use SRGB", &TextureAsset::m_UseSrgb)
 		.property("force resolution", &TextureAsset::m_ForceResolution)
 		.property("parameters", &TextureAsset::m_Parameters)
-	END_REGISTER_POLYMORPHIC_CLASS(TextureAsset, core::I_Asset);
+	END_REGISTER_CLASS_POLYMORPHIC(TextureAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(TextureAsset) // force the shader class to be linked as it is only used in reflection
 

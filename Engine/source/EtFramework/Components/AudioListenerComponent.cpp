@@ -15,9 +15,9 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<AudioListenerComponent>("audio listener component");
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(AudioListenerComponentDesc, "audio listener comp desc")
+	BEGIN_REGISTER_CLASS(AudioListenerComponentDesc, "audio listener comp desc")
 		.property("gain", &AudioListenerComponentDesc::gain)
-	END_REGISTER_POLYMORPHIC_CLASS(AudioListenerComponentDesc, I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(AudioListenerComponentDesc, I_ComponentDescriptor);
 }
 
 ECS_REGISTER_COMPONENT(AudioListenerComponent);

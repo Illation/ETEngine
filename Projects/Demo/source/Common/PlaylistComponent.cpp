@@ -20,9 +20,9 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<PlaylistComponent>("playlist component");
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(PlaylistComponentDesc, "playlist comp desc")
+	BEGIN_REGISTER_CLASS(PlaylistComponentDesc, "playlist comp desc")
 		.property("tracks", &PlaylistComponentDesc::tracks)
-	END_REGISTER_POLYMORPHIC_CLASS(PlaylistComponentDesc, fw::I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(PlaylistComponentDesc, fw::I_ComponentDescriptor);
 }
 DEFINE_FORCED_LINKING(PlaylistComponentDesc) // force the linker to include this unit
 

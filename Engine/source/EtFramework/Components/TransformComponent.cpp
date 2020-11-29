@@ -15,11 +15,11 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<TransformComponent>("transform component");
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(TransformComponentDesc, "transform comp desc")
+	BEGIN_REGISTER_CLASS(TransformComponentDesc, "transform comp desc")
 		.property("position", &TransformComponentDesc::position)
 		.property("rotation", &TransformComponentDesc::rotation)
 		.property("scale", &TransformComponentDesc::scale)
-	END_REGISTER_POLYMORPHIC_CLASS(TransformComponentDesc, I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(TransformComponentDesc, I_ComponentDescriptor);
 }
 
 ECS_REGISTER_COMPONENT(TransformComponent);

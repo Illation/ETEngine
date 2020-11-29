@@ -21,12 +21,12 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<AtmosphereComponent>("atmosphere component");
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(AtmosphereComponentDesc, "atmosphere comp desc")
+	BEGIN_REGISTER_CLASS(AtmosphereComponentDesc, "atmosphere comp desc")
 		.property("asset", &AtmosphereComponentDesc::asset)
 		.property("height", &AtmosphereComponentDesc::height)
 		.property("ground radius", &AtmosphereComponentDesc::groundRadius)
 		.property("sun", &AtmosphereComponentDesc::sun)
-	END_REGISTER_POLYMORPHIC_CLASS(AtmosphereComponentDesc, I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(AtmosphereComponentDesc, I_ComponentDescriptor);
 }
 
 ECS_REGISTER_COMPONENT(AtmosphereComponent);

@@ -258,10 +258,26 @@ JSON::Array* JSON::Parser::ParseArray(const std::string & textFile)
 	while (!m_Completed && !parseSuccess && !parseFail)
 	{
 		MoveToNonWhitespace(textFile);
-		if(CheckEOF(textFile))continue;
+		if (CheckEOF(textFile))
+		{
+			continue;
+		}
+
 		Token token = ReadToken(textFile);
-		if(!(token == JT_Delim) && !(token == JT_EndArray) && !(token == JT_Numeric))m_ReadIdx--;
-		if(CheckEOF(textFile))continue;
+		if (token == JT_Null)
+		{
+			m_ReadIdx -= 4;
+		}
+		else if (!(token == JT_Delim) && !(token == JT_EndArray) && !(token == JT_Numeric))
+		{
+			m_ReadIdx--;
+		}
+
+		if (CheckEOF(textFile))
+		{
+			continue;
+		}
+
 		switch (token)
 		{
 		case JT_EndArray:

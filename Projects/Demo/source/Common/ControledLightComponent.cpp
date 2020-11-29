@@ -15,8 +15,8 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<ControledLightComponent>("controled light component");
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(ControledLightComponentDesc, "controled light comp desc")
-	END_REGISTER_POLYMORPHIC_CLASS(ControledLightComponentDesc, fw::I_ComponentDescriptor);
+	BEGIN_REGISTER_CLASS(ControledLightComponentDesc, "controled light comp desc")
+	END_REGISTER_CLASS_POLYMORPHIC(ControledLightComponentDesc, fw::I_ComponentDescriptor);
 }
 DEFINE_FORCED_LINKING(ControledLightComponentDesc) // force the linker to include this unit
 

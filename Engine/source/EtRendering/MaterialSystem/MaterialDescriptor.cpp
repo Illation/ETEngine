@@ -13,9 +13,9 @@ namespace render {
 
 // definition for a parameter deriving from BaseMaterialParam -> registers the type and a convesion function to enable serialized polymorphism
 #define REGISTER_DERIVED_PARAM(TClass, TName)					\
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(TClass, TName " param")	\
+	BEGIN_REGISTER_CLASS(TClass, TName " param")				\
 		.property("data", &TClass::m_Data)						\
-	END_REGISTER_POLYMORPHIC_CLASS(TClass, BaseMaterialParam);			
+	END_REGISTER_CLASS_POLYMORPHIC(TClass, BaseMaterialParam);			
 
 
 // register all the types

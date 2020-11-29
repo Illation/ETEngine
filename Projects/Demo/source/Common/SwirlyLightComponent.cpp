@@ -19,13 +19,13 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<SwirlyLightComponent>("swirly light component");
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(SwirlyLightComponentDesc, "swirly light comp desc")
+	BEGIN_REGISTER_CLASS(SwirlyLightComponentDesc, "swirly light comp desc")
 		.property("min radius", &SwirlyLightComponentDesc::minRadius)
 		.property("max radius", &SwirlyLightComponentDesc::maxRadius)
 		.property("min time mult", &SwirlyLightComponentDesc::minTimeMult)
 		.property("max time mult", &SwirlyLightComponentDesc::maxTimeMult)
 		.property("bounds", &SwirlyLightComponentDesc::bounds)
-	END_REGISTER_POLYMORPHIC_CLASS(SwirlyLightComponentDesc, fw::I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(SwirlyLightComponentDesc, fw::I_ComponentDescriptor);
 }
 DEFINE_FORCED_LINKING(SwirlyLightComponentDesc) // force the linker to include this unit
 

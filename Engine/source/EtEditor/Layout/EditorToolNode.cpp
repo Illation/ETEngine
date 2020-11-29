@@ -36,9 +36,9 @@ RTTR_REGISTRATION
 		rttr::value("ResourceBrowser", et::edit::E_EditorTool::ResourceBrowser),
 		rttr::value("Invalid", et::edit::E_EditorTool::Invalid));
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(et::edit::EditorToolNode, "editor tool node")
+	BEGIN_REGISTER_CLASS(et::edit::EditorToolNode, "editor tool node")
 		.property("type", &et::edit::EditorToolNode::m_Type)
-	END_REGISTER_POLYMORPHIC_CLASS(et::edit::EditorToolNode, et::edit::EditorNode);
+	END_REGISTER_CLASS_POLYMORPHIC(et::edit::EditorToolNode, et::edit::EditorNode);
 }
 
 

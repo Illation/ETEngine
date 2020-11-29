@@ -57,11 +57,11 @@ EnvironmentMap::~EnvironmentMap()
 // reflection
 RTTR_REGISTRATION
 {
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(EnvironmentMapAsset, "environment map asset")
+	BEGIN_REGISTER_CLASS(EnvironmentMapAsset, "environment map asset")
 		.property("Cubemap Resolution", &EnvironmentMapAsset::m_CubemapRes)
 		.property("Irradiance Resolution", &EnvironmentMapAsset::m_IrradianceRes)
 		.property("Radiance Resolution", &EnvironmentMapAsset::m_RadianceRes)
-	END_REGISTER_POLYMORPHIC_CLASS(EnvironmentMapAsset, core::I_Asset);
+	END_REGISTER_CLASS_POLYMORPHIC(EnvironmentMapAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(EnvironmentMapAsset) // force the shader class to be linked as it is only used in reflection
 

@@ -151,8 +151,8 @@ void ShaderData::UploadParameterBlock(render::T_ConstParameterBlock const block)
 // reflection
 RTTR_REGISTRATION
 {
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(ShaderAsset, "shader asset")
-	END_REGISTER_POLYMORPHIC_CLASS(ShaderAsset, core::I_Asset);
+	BEGIN_REGISTER_CLASS(ShaderAsset, "shader asset")
+	END_REGISTER_CLASS_POLYMORPHIC(ShaderAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(ShaderAsset) // force the shader asset class to be linked as it is only used in reflection
 

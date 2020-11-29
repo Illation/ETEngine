@@ -22,13 +22,13 @@ namespace fw {
 
 RTTR_REGISTRATION
 {
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(BoxShape, "box collider shape")
+	BEGIN_REGISTER_CLASS(BoxShape, "box collider shape")
 		.property("half extents", &BoxShape::m_HalfExtents)
-	END_REGISTER_POLYMORPHIC_CLASS(BoxShape, CollisionShape);
+	END_REGISTER_CLASS_POLYMORPHIC(BoxShape, CollisionShape);
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(SphereShape, "sphere collider shape")
+	BEGIN_REGISTER_CLASS(SphereShape, "sphere collider shape")
 		.property("radius", &SphereShape::m_Radius)
-	END_REGISTER_POLYMORPHIC_CLASS(SphereShape, CollisionShape);
+	END_REGISTER_CLASS_POLYMORPHIC(SphereShape, CollisionShape);
 }
 
 DEFINE_FORCED_LINKING(fw::BoxShape) // force the linker to include this unit

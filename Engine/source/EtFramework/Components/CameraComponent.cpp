@@ -18,13 +18,13 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<CameraComponent>("camera component");
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(CameraComponentDesc, "camera comp desc")
+	BEGIN_REGISTER_CLASS(CameraComponentDesc, "camera comp desc")
 		.property("is perspective", &CameraComponentDesc::isPerspective)
 		.property("field of view", &CameraComponentDesc::fieldOfView)
 		.property("ortho size", &CameraComponentDesc::size)
 		.property("near plane", &CameraComponentDesc::nearPlane)
 		.property("far plane", &CameraComponentDesc::farPlane)
-	END_REGISTER_POLYMORPHIC_CLASS(CameraComponentDesc, I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(CameraComponentDesc, I_ComponentDescriptor);
 }
 
 ECS_REGISTER_COMPONENT(CameraComponent);

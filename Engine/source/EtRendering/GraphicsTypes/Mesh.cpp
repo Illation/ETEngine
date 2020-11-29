@@ -430,8 +430,8 @@ MeshSurface const* MeshData::GetSurface(render::Material const* const material) 
 // reflection
 RTTR_REGISTRATION
 {
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(MeshAsset, "mesh asset")
-	END_REGISTER_POLYMORPHIC_CLASS(MeshAsset, core::I_Asset);
+	BEGIN_REGISTER_CLASS(MeshAsset, "mesh asset")
+	END_REGISTER_CLASS_POLYMORPHIC(MeshAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(MeshAsset) // force the shader class to be linked as it is only used in reflection
 

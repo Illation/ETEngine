@@ -20,10 +20,10 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<ModelComponent>("model component");
 	
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(ModelComponentDesc, "model comp desc")
+	BEGIN_REGISTER_CLASS(ModelComponentDesc, "model comp desc")
 		.property("mesh", &ModelComponentDesc::mesh)
 		.property("material", &ModelComponentDesc::material)
-	END_REGISTER_POLYMORPHIC_CLASS(ModelComponentDesc, I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(ModelComponentDesc, I_ComponentDescriptor);
 }
 
 // component registration

@@ -25,9 +25,9 @@ RTTR_REGISTRATION
 		rttr::value("AlphaBlend", Material::E_DrawType::AlphaBlend),
 		rttr::value("Custom", Material::E_DrawType::Custom));
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(MaterialAsset, "material asset")
+	BEGIN_REGISTER_CLASS(MaterialAsset, "material asset")
 		.property("draw type", &MaterialAsset::m_DrawType)
-	END_REGISTER_POLYMORPHIC_CLASS(MaterialAsset, core::I_Asset);
+	END_REGISTER_CLASS_POLYMORPHIC(MaterialAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(MaterialAsset) // force the material asset class to be linked
 

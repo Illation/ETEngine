@@ -4,8 +4,9 @@
 #include <rttr/registration_friend> 
 
 // utility macros to make reflecting polymorphic classes less verbose
+// also necessary for classes functioning as optional objects serialized in pointers
 
-#define BEGIN_REGISTER_POLYMORPHIC_CLASS(TClass, TName)		\
+#define BEGIN_REGISTER_CLASS(TClass, TName)		\
 	rttr::registration::class_<TClass>( TName ).constructor<TClass const&>().constructor<>()(rttr::detail::as_object())
 
 #define REGISTER_POLYMORPHIC_CONVERSION(TDerived, TBase)							\
@@ -15,9 +16,13 @@
 		return new TDerived(derived);												\
 	})
 
-#define END_REGISTER_POLYMORPHIC_CLASS(TDerived, TBase)	\
+#define END_REGISTER_CLASS_POLYMORPHIC(TDerived, TBase)	\
 	;													\
 	REGISTER_POLYMORPHIC_CONVERSION(TDerived, TBase)
+
+#define END_REGISTER_CLASS(TClass)						\
+	;													\
+	REGISTER_POLYMORPHIC_CONVERSION(TClass, TClass)
 
 // allow registering classes with private members within the namespace
 

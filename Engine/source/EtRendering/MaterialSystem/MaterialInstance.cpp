@@ -15,8 +15,8 @@ namespace render {
 // reflection
 RTTR_REGISTRATION
 {
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(MaterialInstanceAsset, "material instance asset")
-	END_REGISTER_POLYMORPHIC_CLASS(MaterialInstanceAsset, core::I_Asset);
+	BEGIN_REGISTER_CLASS(MaterialInstanceAsset, "material instance asset")
+	END_REGISTER_CLASS_POLYMORPHIC(MaterialInstanceAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(MaterialInstanceAsset) // force the material instance asset class to be linked
 

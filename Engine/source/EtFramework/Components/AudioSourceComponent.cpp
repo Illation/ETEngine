@@ -30,7 +30,7 @@ RTTR_REGISTRATION
 
 	rttr::registration::class_<fw::AudioSourceComponent>("audio source 3D component");
 	
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(AudioSourceCompDesc, "audio source comp desc")
+	BEGIN_REGISTER_CLASS(AudioSourceCompDesc, "audio source comp desc")
 		.property("audio asset", &AudioSourceCompDesc::audioAsset)
 		.property("play on init", &AudioSourceCompDesc::playOnInit)
 		.property("loop", &AudioSourceCompDesc::loop)
@@ -39,7 +39,7 @@ RTTR_REGISTRATION
 		.property("max gain", &AudioSourceCompDesc::maxGain)
 		.property("pitch", &AudioSourceCompDesc::pitch)
 		.property("params", &AudioSourceCompDesc::params)
-	END_REGISTER_POLYMORPHIC_CLASS(AudioSourceCompDesc, I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(AudioSourceCompDesc, I_ComponentDescriptor);
 }
 
 ECS_REGISTER_COMPONENT(AudioSourceComponent);

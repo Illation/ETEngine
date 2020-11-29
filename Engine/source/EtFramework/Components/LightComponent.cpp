@@ -19,12 +19,12 @@ RTTR_REGISTRATION
 
 	rttr::registration::class_<LightComponent>("light component");
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(LightComponentDesc, "light comp desc")
+	BEGIN_REGISTER_CLASS(LightComponentDesc, "light comp desc")
 		.property("type", &LightComponentDesc::type)
 		.property("color", &LightComponentDesc::color)
 		.property("brightness", &LightComponentDesc::brightness)
 		.property("casts shadow", &LightComponentDesc::castsShadow)
-	END_REGISTER_POLYMORPHIC_CLASS(LightComponentDesc, I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(LightComponentDesc, I_ComponentDescriptor);
 }
 
 ECS_REGISTER_COMPONENT(LightComponent);

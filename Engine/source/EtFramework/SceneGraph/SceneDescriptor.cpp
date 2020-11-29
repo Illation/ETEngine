@@ -25,8 +25,8 @@ RTTR_REGISTRATION
 		.property("audio listener", &SceneDescriptor::audioListener)
 		.property("gravity", &SceneDescriptor::gravity);
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(SceneDescriptorAsset, "scene descriptor asset")
-	END_REGISTER_POLYMORPHIC_CLASS(SceneDescriptorAsset, core::I_Asset);
+	BEGIN_REGISTER_CLASS(SceneDescriptorAsset, "scene descriptor asset")
+	END_REGISTER_CLASS_POLYMORPHIC(SceneDescriptorAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(SceneDescriptorAsset) // force the asset class to be linked as it is only used in reflection
 

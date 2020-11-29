@@ -47,9 +47,9 @@ AudioData::~AudioData()
 // reflection
 RTTR_REGISTRATION
 {
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(AudioAsset, "audio asset")
+	BEGIN_REGISTER_CLASS(AudioAsset, "audio asset")
 		.property("force mono", &AudioAsset::m_IsMonoForced)
-	END_REGISTER_POLYMORPHIC_CLASS(AudioAsset, core::I_Asset);
+	END_REGISTER_CLASS_POLYMORPHIC(AudioAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(AudioAsset) // force the asset class to be linked as it is only used in reflection
 

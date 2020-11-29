@@ -19,11 +19,11 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<RigidBodyComponent>("rigid body component");
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(RigidBodyComponentDesc, "rigid body comp desc")
+	BEGIN_REGISTER_CLASS(RigidBodyComponentDesc, "rigid body comp desc")
 		.property("is dynamic", &RigidBodyComponentDesc::isDynamic)
 		.property("mass", &RigidBodyComponentDesc::mass)
 		.property("shape", &RigidBodyComponentDesc::shape)
-	END_REGISTER_POLYMORPHIC_CLASS(RigidBodyComponentDesc, I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(RigidBodyComponentDesc, I_ComponentDescriptor);
 }
 
 ECS_REGISTER_COMPONENT(RigidBodyComponent);

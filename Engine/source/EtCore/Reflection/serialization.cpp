@@ -82,7 +82,18 @@ bool VariantToJsonValue(rttr::variant const& var, JSON::Value*& outVal)
 {
 	rttr::type valueType = var.get_type();
 	rttr::type wrappedType = valueType.is_wrapper() ? valueType.get_wrapped_type() : valueType;
+
 	bool isWrapper = wrappedType != valueType;
+
+	if (valueType.is_pointer())
+	{
+		void* val = (isWrapper ? var.extract_wrapped_value() : var).get_value<void*>();
+		if (val == nullptr)
+		{
+			outVal = new JSON::Value();
+			return true;
+		}
+	}
 
 	if (AtomicTypeToJsonValue(wrappedType, isWrapper ? var.extract_wrapped_value() : var, outVal))
 	{
@@ -383,11 +394,22 @@ bool ArrayToJsonArray(const rttr::variant_sequential_view& view, JSON::Value*& o
 		{
 			rttr::variant wrappedVar = item.extract_wrapped_value();
 			rttr::type valueType = wrappedVar.get_type();
+			if (valueType.is_pointer())
+			{
+				void* val = wrappedVar.get_value<void*>();
+				if (val == nullptr)
+				{
+					jItem = new JSON::Value();
+					outArr->value.emplace_back(jItem);
+					continue;
+				}
+			}
 
 			if (valueType.is_arithmetic() 
 				|| (valueType == rttr::type::get<std::string>())
 				|| valueType.is_enumeration() 
-				|| (valueType == rttr::type::get<HashString>()))
+				|| (valueType == rttr::type::get<HashString>())
+				|| IsVectorType(valueType))
 			{
 				if (!AtomicTypeToJsonValue(valueType, wrappedVar, jItem))
 				{
@@ -549,9 +571,16 @@ bool ArrayFromJsonRecursive(rttr::variant_sequential_view& view, JSON::Value con
 		rttr::type localType = arrayValueType;
 
 		// pointers should be wrapped
-		if (!ExtractPointerValueType(localType, jIndexVal))
+		bool isNull;
+		if (!ExtractPointerValueType(localType, jIndexVal, isNull))
 		{
 			success = false;
+			continue;
+		}
+
+		if (isNull)
+		{
+			view.get_value(i) = nullptr;
 			continue;
 		}
 
@@ -672,8 +701,21 @@ rttr::variant ExtractValue(JSON::Value const* const jVal, const rttr::type& valu
 	// if that doesn't work, try an object
 	if (!extractedVal.convert(valueType))
 	{
-		if (jVal->GetType() == JSON::JSON_Object)
+		if ((jVal->GetType() == JSON::JSON_Object) || (jVal->GetType() == JSON::JSON_Null))
 		{
+			JSON::Value const* localJVal = jVal;
+			rttr::type localType = valueType;
+			bool isNull;
+			if (!ExtractPointerValueType(localType, localJVal, isNull))
+			{
+				return rttr::variant();
+			}
+
+			if (isNull)
+			{
+				return nullptr;
+			}
+
 			// find the right constructor for our type
 			rttr::constructor ctor = valueType.get_constructor();
 			for (auto& item : valueType.get_constructors())
@@ -686,13 +728,6 @@ rttr::variant ExtractValue(JSON::Value const* const jVal, const rttr::type& valu
 
 			//use it
 			extractedVal = ctor.invoke();
-
-			JSON::Value const* localJVal = jVal;
-			rttr::type localType = valueType;
-			if (!ExtractPointerValueType(localType, localJVal))
-			{
-				return rttr::variant();
-			}
 
 			// fill the rest of our object
 			ObjectFromJsonRecursive(localJVal, extractedVal, localType);
@@ -810,8 +845,15 @@ bool AssociativeViewFromJsonRecursive(rttr::variant_associative_view& view, JSON
 void FromJsonValue(JSON::Value const* jVal, rttr::type &valueType, rttr::variant &var)
 {
 	rttr::type localType = valueType;
-	if (!ExtractPointerValueType(localType, jVal))
+	bool isNull;
+	if (!ExtractPointerValueType(localType, jVal, isNull))
 	{
+		return;
+	}
+
+	if (isNull)
+	{
+		var = nullptr; 
 		return;
 	}
 
@@ -932,11 +974,20 @@ void FromJsonValue(JSON::Value const* jVal, rttr::type &valueType, rttr::variant
 //
 // Pointer objects are wrapped so that they can indicate their underlying inherited type
 //
-bool ExtractPointerValueType(rttr::type &inOutValType, JSON::Value const* &inOutJVal)
+bool ExtractPointerValueType(rttr::type &inOutValType, JSON::Value const* &inOutJVal, bool& isNull)
 {
+	isNull = false;
+
 	if (inOutValType.is_pointer())
 	{
-		if (inOutJVal->GetType() != JSON::JSON_Object)
+		inOutValType = inOutValType.get_raw_type();
+
+		if (inOutJVal->GetType() == JSON::JSON_Null)
+		{
+			isNull = true;
+			return true;
+		}
+		else if (inOutJVal->GetType() != JSON::JSON_Object)
 		{
 			LOG("ExtractPointerValueType > Expected JSON::Value to be of type object!", LogLevel::Warning);
 			return false;
@@ -947,8 +998,6 @@ bool ExtractPointerValueType(rttr::type &inOutValType, JSON::Value const* &inOut
 
 		// figure out what kind of object we are deserializing
 		std::string internalTypeName = jObj->value[0].first;
-
-		inOutValType = inOutValType.get_raw_type();
 
 		if (inOutValType.get_name().to_string() != internalTypeName)// if it's not a pointer to the base type, check the derived types 
 		{
@@ -972,10 +1021,6 @@ bool ExtractPointerValueType(rttr::type &inOutValType, JSON::Value const* &inOut
 
 		inOutJVal = jObj->value[0].second;
 	}
-	//else
-	//{
-	//	inOutValType = inOutValType.get_derived_type();
-	//}
 
 	return true;
 }
@@ -1020,7 +1065,14 @@ void ObjectFromJsonRecursive(JSON::Value const* const jVal, rttr::instance const
 
 		if (var.is_valid())
 		{
-			prop.set_value(instObject, var);
+			if (var.get_type() != rttr::type::get<std::nullptr_t>())
+			{
+				prop.set_value(instObject, var);
+			}
+			else
+			{
+				prop.set_value(instObject, nullptr);
+			}
 		}
 		else
 		{

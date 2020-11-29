@@ -15,10 +15,10 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<CelestialBodyComponent>("celestial body component");
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(CelestialBodyComponentDesc, "celestial body comp desc")
+	BEGIN_REGISTER_CLASS(CelestialBodyComponentDesc, "celestial body comp desc")
 		.property("rotation speed", &CelestialBodyComponentDesc::rotationSpeed)
 		.property("start rotating", &CelestialBodyComponentDesc::startRotating)
-	END_REGISTER_POLYMORPHIC_CLASS(CelestialBodyComponentDesc, fw::I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(CelestialBodyComponentDesc, fw::I_ComponentDescriptor);
 }
 DEFINE_FORCED_LINKING(CelestialBodyComponentDesc) // force the linker to include this unit
 

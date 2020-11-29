@@ -18,11 +18,11 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<SpriteComponent>("sprite component");
 
-	BEGIN_REGISTER_POLYMORPHIC_CLASS(SpriteComponentDesc, "sprite comp desc")
+	BEGIN_REGISTER_CLASS(SpriteComponentDesc, "sprite comp desc")
 		.property("texture asset", &SpriteComponentDesc::textureAsset)
 		.property("pivot", &SpriteComponentDesc::pivot)
 		.property("color", &SpriteComponentDesc::color)
-	END_REGISTER_POLYMORPHIC_CLASS(SpriteComponentDesc, I_ComponentDescriptor);
+	END_REGISTER_CLASS_POLYMORPHIC(SpriteComponentDesc, I_ComponentDescriptor);
 }
 
 ECS_REGISTER_COMPONENT(SpriteComponent);
