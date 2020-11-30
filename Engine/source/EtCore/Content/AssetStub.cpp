@@ -3,6 +3,7 @@
 #include "AssetStub.h"
 
 #include <EtCore/Reflection/Registration.h>
+#include <EtCore/Content/AssetRegistration.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
 
@@ -18,7 +19,8 @@ namespace core {
 // reflection
 RTTR_REGISTRATION
 {
-	rttr::registration::class_<StubData>("stub data");
+	BEGIN_REGISTER_CLASS_ASSET(StubData, "stub data")
+	END_REGISTER_CLASS(StubData);
 
 	BEGIN_REGISTER_CLASS(StubAsset, "stub asset")
 	END_REGISTER_CLASS_POLYMORPHIC(StubAsset, I_Asset);

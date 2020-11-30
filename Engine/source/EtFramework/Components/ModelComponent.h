@@ -2,13 +2,9 @@
 #include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Containers/slot_map.h>
 
+#include <EtRendering/GraphicsTypes/Mesh.h>
+
 #include <EtFramework/SceneGraph/ComponentDescriptor.h>
-
-
-// fwd
-namespace et { namespace render { 
-	class MeshData;
-} }
 
 
 namespace et {

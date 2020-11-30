@@ -3,6 +3,7 @@
 
 #include "MaterialDescriptor.h"
 
+#include <EtCore/Content/AssetRegistration.h>
 #include <EtCore/Reflection/Registration.h>
 #include <EtCore/Reflection/Serialization.h>
 #include <EtCore/FileSystem/FileUtil.h>
@@ -15,6 +16,9 @@ namespace render {
 // reflection
 RTTR_REGISTRATION
 {
+	BEGIN_REGISTER_CLASS_ASSET(MaterialInstance, "material instance")
+	END_REGISTER_CLASS(MaterialInstance);
+
 	BEGIN_REGISTER_CLASS(MaterialInstanceAsset, "material instance asset")
 	END_REGISTER_CLASS_POLYMORPHIC(MaterialInstanceAsset, core::I_Asset);
 }

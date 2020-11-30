@@ -23,7 +23,8 @@ TEnum EnumFromString(std::string const& value);
 
 enum class E_MetaData
 {
-	VectorType
+	VectorType,
+	AssetType
 };
 
 

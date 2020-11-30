@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SceneDescriptor.h"
 
+#include <EtCore/Content/AssetRegistration.h>
 #include <EtCore/Reflection/Serialization.h>
 
 
@@ -16,14 +17,15 @@ RTTR_REGISTRATION
 		.property("components", &EntityDescriptor::m_Components)
 		.property("children", &EntityDescriptor::m_Children);
 
-	rttr::registration::class_<SceneDescriptor>("scene descriptor")
+	BEGIN_REGISTER_CLASS_ASSET(SceneDescriptor, "scene descriptor")
 		.property("entities", &SceneDescriptor::entities)
 		.property("skybox", &SceneDescriptor::skybox)
 		.property("starfield", &SceneDescriptor::starfield)
 		.property("active camera", &SceneDescriptor::activeCamera)
 		.property("postprocessing", &SceneDescriptor::postprocessing)
 		.property("audio listener", &SceneDescriptor::audioListener)
-		.property("gravity", &SceneDescriptor::gravity);
+		.property("gravity", &SceneDescriptor::gravity)
+	END_REGISTER_CLASS(SceneDescriptor);
 
 	BEGIN_REGISTER_CLASS(SceneDescriptorAsset, "scene descriptor asset")
 	END_REGISTER_CLASS_POLYMORPHIC(SceneDescriptorAsset, core::I_Asset);

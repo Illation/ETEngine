@@ -37,8 +37,6 @@ struct TextureParameters final
 	// depth textures (e.g for shadow mapping)
 	bool isDepthTex = false;
 	E_TextureCompareMode compareMode = E_TextureCompareMode::None;
-
-	RTTR_ENABLE()
 };
 
 

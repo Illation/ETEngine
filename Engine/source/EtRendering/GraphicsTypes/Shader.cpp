@@ -3,7 +3,7 @@
 
 #include <EtCore/Reflection/Registration.h>
 #include <EtCore/FileSystem/FileUtil.h>
-#include <EtCore/Content/AssetPointer.h>
+#include <EtCore/Content/AssetRegistration.h>
 #include <EtCore/Content/AssetStub.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
@@ -151,6 +151,9 @@ void ShaderData::UploadParameterBlock(render::T_ConstParameterBlock const block)
 // reflection
 RTTR_REGISTRATION
 {
+	BEGIN_REGISTER_CLASS_ASSET(ShaderData, "shader data")
+	END_REGISTER_CLASS(ShaderData);
+
 	BEGIN_REGISTER_CLASS(ShaderAsset, "shader asset")
 	END_REGISTER_CLASS_POLYMORPHIC(ShaderAsset, core::I_Asset);
 }

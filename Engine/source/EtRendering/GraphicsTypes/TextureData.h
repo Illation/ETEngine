@@ -8,6 +8,11 @@
 
 
 namespace et {
+	REGISTRATION_NS(render);
+}
+
+
+namespace et {
 namespace render {
 
 
@@ -18,12 +23,18 @@ namespace render {
 //
 class TextureData final
 {
-public:
 	// definitions
+	//-------------
+	REGISTRATION_FRIEND_NS(render)
+
+public:
 	static constexpr uint8 s_NumCubeFaces = 6u;
 
 	// c-tor d-tor
 	//------------
+private:
+	TextureData() = default;
+public:
 	TextureData(ivec2 const res, E_ColorFormat const intern, E_ColorFormat const format, E_DataType const type, int32 const depth = 1);
 	TextureData(E_TextureType const targetType, ivec2 const res);
 	~TextureData();
@@ -54,7 +65,7 @@ private:
 	///////
 
 	// GPU data
-	T_TextureLoc m_Location;
+	T_TextureLoc m_Location = 0u;
 	T_TextureHandle m_Handle = 0u;
 
 	// Resolution
@@ -65,9 +76,9 @@ private:
 	E_TextureType m_TargetType = E_TextureType::Texture2D;
 
 	// Format - #note: these are overridden by cubemaps!
-	E_ColorFormat m_Internal;
-	E_ColorFormat m_Format;
-	E_DataType m_DataType;
+	E_ColorFormat m_Internal = E_ColorFormat::Invalid;
+	E_ColorFormat m_Format = E_ColorFormat::Invalid;
+	E_DataType m_DataType = E_DataType::Invalid;
 
 	TextureParameters m_Parameters;
 };
@@ -81,6 +92,8 @@ private:
 class TextureAsset final : public core::Asset<TextureData, false>
 {
 	DECLARE_FORCED_LINKING()
+	RTTR_ENABLE(core::Asset<TextureData, false>)
+
 public:
 	// Construct destruct
 	//---------------------
@@ -97,8 +110,6 @@ public:
 	bool m_UseSrgb = false;
 	bool m_ForceResolution = false;
 	TextureParameters m_Parameters;
-
-	RTTR_ENABLE(core::Asset<TextureData, false>)
 };
 
 

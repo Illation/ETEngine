@@ -1,6 +1,7 @@
 #pragma once
 #include "TextureData.h"
 
+
 namespace et {
 namespace render {
 
@@ -12,9 +13,12 @@ namespace render {
 //
 class EnvironmentMap final
 {
-public:
+	REGISTRATION_FRIEND_NS(render)
+
 	// construct destruct
 	//--------------------
+	EnvironmentMap() = default;
+public:
 	EnvironmentMap(TextureData* map, TextureData* irradiance, TextureData* radiance);
 	~EnvironmentMap();
 

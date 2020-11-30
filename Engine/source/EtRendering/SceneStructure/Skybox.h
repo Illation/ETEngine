@@ -1,12 +1,11 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
+#include <EtRendering/GraphicsTypes/EnvironmentMap.h>
+
 
 namespace et {
 namespace render {
-
-
-class EnvironmentMap;
 
 
 //----------------------

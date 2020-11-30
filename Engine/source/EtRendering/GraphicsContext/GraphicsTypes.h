@@ -247,7 +247,9 @@ enum class E_ColorFormat : uint8
 	RGBA8,
 	RGBA16f,
 	RGBA32f,
-	SRGB
+	SRGB,
+
+	Invalid
 };
 
 //---------------------------------
@@ -264,7 +266,9 @@ enum class E_DepthFunc : uint8
 	Greater,
 	NotEqual,
 	GEqual,
-	Always
+	Always,
+
+	Invalid
 };
 
 //---------------------------------

@@ -6,6 +6,7 @@
 // utility macros to make reflecting polymorphic classes less verbose
 // also necessary for classes functioning as optional objects serialized in pointers
 
+
 #define BEGIN_REGISTER_CLASS(TClass, TName)		\
 	rttr::registration::class_<TClass>( TName ).constructor<TClass const&>().constructor<>()(rttr::detail::as_object())
 

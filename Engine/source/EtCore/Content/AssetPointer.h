@@ -1,6 +1,8 @@
 #pragma once
 #include "Asset.h"
 
+#include <EtCore/Hashing/Hash.h>
+
 
 namespace et {
 
@@ -12,6 +14,8 @@ namespace et {
 //
 class I_AssetPtr
 {
+	RTTR_ENABLE()
+
 public:
 	I_AssetPtr() = default; 
 	I_AssetPtr(std::nullptr_t) {}
@@ -55,6 +59,8 @@ protected:
 template <class T_DataType>
 class AssetPtr final : public I_AssetPtr
 {
+	RTTR_ENABLE(I_AssetPtr);
+
 public:
 	// default constructor initializes to null
 	AssetPtr() : I_AssetPtr() {} 

@@ -3,6 +3,7 @@
 
 #include "MaterialDescriptor.h"
 
+#include <EtCore/Content/AssetRegistration.h>
 #include <EtCore/Reflection/Serialization.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
@@ -24,6 +25,9 @@ RTTR_REGISTRATION
 		rttr::value("Opaque", Material::E_DrawType::Opaque),
 		rttr::value("AlphaBlend", Material::E_DrawType::AlphaBlend),
 		rttr::value("Custom", Material::E_DrawType::Custom));
+
+	BEGIN_REGISTER_CLASS_ASSET(Material, "material")
+	END_REGISTER_CLASS(Material);
 
 	BEGIN_REGISTER_CLASS(MaterialAsset, "material asset")
 		.property("draw type", &MaterialAsset::m_DrawType)

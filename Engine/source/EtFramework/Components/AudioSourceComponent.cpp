@@ -2,8 +2,6 @@
 #include "AudioSourceComponent.h"
 
 #include <EtCore/Reflection/Registration.h>
-
-#include <EtFramework/Audio/AudioData.h>
 #include <EtFramework/Audio/AudioManager.h>
 #include <EtFramework/Audio/OpenAL_ETM.h>
 

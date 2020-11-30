@@ -1,12 +1,13 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
+#include <EtRendering/GraphicsTypes/Shader.h>
+
 
 namespace et {
 namespace render {
 
 
-class ShaderData;	
 class Planet;
 
 

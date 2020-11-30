@@ -2,6 +2,9 @@
 #include "serialization.h"
 
 #include <EtCore/Hashing/HashString.h>
+#include <EtCore/Content/AssetPointer.h>
+
+#include "registerMath.h"
 
 
 namespace et {
@@ -157,7 +160,16 @@ bool VariantToJsonValue(rttr::variant const& var, JSON::Value*& outVal)
 //
 bool IsVectorType(rttr::type const type)
 {
-	rttr::variant val = type.get_metadata(reflection::E_MetaData::VectorType);
+	rttr::variant val = type.get_metadata(MathMeta::s_VectorType);
+	return val.is_valid() && val.get_value<bool>();
+}
+
+//---------------------------------
+// IsAssetType
+//
+bool IsAssetType(rttr::type const type)
+{
+	rttr::variant val = type.get_metadata(GetHash("AssetType"));
 	return val.is_valid() && val.get_value<bool>();
 }
 
@@ -359,6 +371,19 @@ bool AtomicTypeToJsonValue(rttr::type const& valueType, rttr::variant const& var
 				+ std::string("'!"), LogLevel::Warning);
 		}
 	}
+	else if (IsAssetType(valueType))
+	{
+		I_AssetPtr const ptr = var.get_value<I_AssetPtr>();
+		JSON::String* jString = new JSON::String();
+
+		if (!ptr.is_null())
+		{
+			jString->value = ptr.GetAsset()->GetName();
+		}
+
+		outVal = jString;
+		return true;
+	}
 
 	// couldn't handle type, return false to indicate that this should be an object or array
 	return false;
@@ -409,7 +434,8 @@ bool ArrayToJsonArray(const rttr::variant_sequential_view& view, JSON::Value*& o
 				|| (valueType == rttr::type::get<std::string>())
 				|| valueType.is_enumeration() 
 				|| (valueType == rttr::type::get<HashString>())
-				|| IsVectorType(valueType))
+				|| IsVectorType(valueType)
+				|| IsAssetType(valueType))
 			{
 				if (!AtomicTypeToJsonValue(valueType, wrappedVar, jItem))
 				{

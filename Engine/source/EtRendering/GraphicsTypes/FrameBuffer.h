@@ -1,11 +1,13 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
+#include "Shader.h"
+
+
 namespace et {
 namespace render {
 
 
-class ShaderData;
 class TextureData;
 
 

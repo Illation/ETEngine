@@ -13,8 +13,13 @@ namespace render {
 //
 class MaterialInstance final : public I_Material
 {
+	// definitions
+	//---------------------
+	REGISTRATION_FRIEND_NS(render)
+
 	// Construct destruct
 	//---------------------
+	MaterialInstance() = default;
 public:
 	MaterialInstance(AssetPtr<Material> const material, T_ParameterBlock const params, std::vector<AssetPtr<TextureData>> const& textureRefs);
 	MaterialInstance(AssetPtr<MaterialInstance> const parent, T_ParameterBlock const params, std::vector<AssetPtr<TextureData>> const& textureRefs);

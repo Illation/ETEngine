@@ -64,9 +64,9 @@ void AudioSourceSystem::OnComponentAdded(EcsController& controller, AudioSourceC
 
 	// set the audio track
 	//---------------------
-	if (component.m_NextTrack != 0u)
+	if (component.m_NextTrack != nullptr)
 	{
-		component.m_AudioData = core::ResourceManager::Instance()->GetAssetData<AudioData>(component.m_NextTrack);
+		component.m_AudioData = component.m_NextTrack;
 		alSourcei(component.m_Source, AL_BUFFER, component.m_AudioData->GetHandle());
 		ET_ASSERT(!AudioManager::GetInstance()->TestALError("AL source buffer error"));
 	}
@@ -170,18 +170,18 @@ void AudioSourceSystem::State::Process(ComponentRange<AudioSourceSystem::StateVi
 	for (StateView& view : range)
 	{
 		// audio track changed
-		if (view.source->m_NextTrack != view.source->m_AudioData.GetId())
+		if (view.source->m_NextTrack != view.source->m_AudioData)
 		{
 			alSourceStop(view.source->m_Source);
 			alSourcei(view.source->m_Source, AL_BUFFER, AL_NONE);
 
-			if (view.source->m_NextTrack == 0u)
+			if (view.source->m_NextTrack == nullptr)
 			{
 				view.source->m_AudioData = nullptr;
 			}
 			else
 			{
-				view.source->m_AudioData = core::ResourceManager::Instance()->GetAssetData<AudioData>(view.source->m_NextTrack);
+				view.source->m_AudioData = view.source->m_NextTrack;
 				alSourcei(view.source->m_Source, AL_BUFFER, view.source->m_AudioData->GetHandle());
 
 				if (view.source->m_State == AudioSourceComponent::E_PlaybackState::Playing)

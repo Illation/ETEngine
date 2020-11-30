@@ -3,13 +3,13 @@
 
 #include <EtRendering/GraphicsContext/Viewport.h>
 #include <EtRendering/GraphicsContext/GraphicsTypes.h>
+#include <EtRendering/MaterialSystem/MaterialData.h>
 
 #include <EtFramework/ECS/EntityFwd.h>
 
 
 namespace et { namespace render {
 	class Camera;
-	class Material;
 } }
 
 

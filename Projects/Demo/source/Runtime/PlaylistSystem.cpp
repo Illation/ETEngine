@@ -40,7 +40,7 @@ void PlaylistSystem::Process(fw::ComponentRange<PlaylistSystemView>& range)
 				{
 					view.playlist->currentTrack = 0u;
 
-					view.source->SetAudioData(view.playlist->tracks[view.playlist->currentTrack].GetId());
+					view.source->SetAudioData(view.playlist->tracks[view.playlist->currentTrack]);
 				}
 
 				view.source->SetState(fw::AudioSourceComponent::E_PlaybackState::Playing);
@@ -71,7 +71,7 @@ void PlaylistSystem::Process(fw::ComponentRange<PlaylistSystemView>& range)
 					}
 				}
 
-				view.source->SetAudioData(view.playlist->tracks[view.playlist->currentTrack].GetId());
+				view.source->SetAudioData(view.playlist->tracks[view.playlist->currentTrack]);
 			}
 		}
 	}
@@ -91,7 +91,7 @@ void PlaylistSystem::Process(fw::ComponentRange<PlaylistSystemView>& range)
 					view.playlist->currentTrack = (view.playlist->currentTrack + 1u) % view.playlist->tracks.size();
 				}
 
-				view.source->SetAudioData(view.playlist->tracks[view.playlist->currentTrack].GetId());
+				view.source->SetAudioData(view.playlist->tracks[view.playlist->currentTrack]);
 			}
 		}
 	}

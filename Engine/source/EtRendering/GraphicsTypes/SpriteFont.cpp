@@ -10,7 +10,7 @@
 #include <EtCore/Reflection/Registration.h>
 #include <EtCore/FileSystem/BinaryReader.h>
 #include <EtCore/FileSystem/FileUtil.h>
-#include <EtCore/Content/ResourceManager.h>
+#include <EtCore/Content/AssetRegistration.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
@@ -107,6 +107,9 @@ void SpriteFont::SetMetric(FontMetric const& metric, wchar_t const& character)
 // reflection
 RTTR_REGISTRATION
 {
+	BEGIN_REGISTER_CLASS_ASSET(SpriteFont, "sprite font")
+	END_REGISTER_CLASS(SpriteFont);
+
 	BEGIN_REGISTER_CLASS(FontAsset, "font asset")
 		.property("size", &FontAsset::m_FontSize)
 		.property("padding", &FontAsset::m_Padding)

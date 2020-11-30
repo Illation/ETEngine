@@ -5,8 +5,8 @@
 
 #include <stb/stb_image.h>
 
+#include <EtCore/Content/AssetRegistration.h>
 #include <EtCore/Reflection/Registration.h>
-#include <EtCore/Content/ResourceManager.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
@@ -57,6 +57,9 @@ EnvironmentMap::~EnvironmentMap()
 // reflection
 RTTR_REGISTRATION
 {
+	BEGIN_REGISTER_CLASS_ASSET(EnvironmentMap, "environment map")
+	END_REGISTER_CLASS(EnvironmentMap);
+
 	BEGIN_REGISTER_CLASS(EnvironmentMapAsset, "environment map asset")
 		.property("Cubemap Resolution", &EnvironmentMapAsset::m_CubemapRes)
 		.property("Irradiance Resolution", &EnvironmentMapAsset::m_IrradianceRes)

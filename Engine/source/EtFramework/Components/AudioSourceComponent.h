@@ -3,15 +3,13 @@
 
 #include <EtCore/Content/AssetPointer.h>
 
+#include <EtFramework/Audio/AudioData.h>
 #include <EtFramework/SceneGraph/ComponentDescriptor.h>
 #include <EtFramework/ECS/EcsController.h>
 
 
 namespace et {
 namespace fw {
-
-
-class AudioData;
 
 
 //-----------------------
@@ -42,7 +40,7 @@ public:
 
 	// modifiers
 	//-----------
-	void SetAudioData(core::HashString const data) { m_NextTrack = data; }
+	void SetAudioData(AssetPtr<AudioData> const data) { m_NextTrack = data; }
 
 	void SetState(E_PlaybackState const state) { m_State = state; }
 	void SetLooping(bool const val) { m_IsLooping = val; }
@@ -52,7 +50,7 @@ public:
 	E_PlaybackState GetState() const { return m_PrevState; }
 	bool IsLooping() const { return m_IsLooping; }
 
-	core::HashString GetTrack() const { return m_NextTrack; }
+	core::HashString GetTrack() const { return m_NextTrack.GetId(); }
 
 	// Data
 	///////
@@ -63,7 +61,7 @@ private:
 
 	// sfx
 	AssetPtr<AudioData> m_AudioData;
-	core::HashString m_NextTrack;
+	AssetPtr<AudioData> m_NextTrack;
 
 	// sound modifiers (gain = volume / amplitude)
 	float m_Gain = 1.f;
@@ -150,7 +148,7 @@ public:
 	// Data
 	///////
 
-	core::HashString audioAsset;
+	AssetPtr<AudioData> audioAsset;
 
 	bool playOnInit = false;
 	bool loop = false;

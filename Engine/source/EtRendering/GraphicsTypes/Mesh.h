@@ -5,13 +5,18 @@
 #include <EtCore/Util/LinkerUtils.h>
 
 
+// forward declarations
+namespace et {
+	REGISTRATION_NS(render);
+	namespace render {
+		class MeshData;
+		class Material;
+	}
+}
+
+
 namespace et {
 namespace render {
-
-
-// forward declarations
-class MeshData;
-class Material;
 
 
 //---------------------------------
@@ -95,9 +100,14 @@ private:
 //
 class MeshData final
 {
-public:
+	// definitions
+	//-------------
+	REGISTRATION_FRIEND_NS(render)
+
 	// c-tor d-tor
 	//-------------
+	MeshData() = default;
+public:
 	MeshData(MeshDataContainer const* const cpuData);
 	~MeshData();
 

@@ -9,6 +9,11 @@
 
 
 namespace et {
+	REGISTRATION_NS(render);
+}
+
+
+namespace et {
 namespace render {
 
 
@@ -21,6 +26,8 @@ class Material final : public I_Material
 {
 	// definitions
 	//---------------------
+	REGISTRATION_FRIEND_NS(render)
+
 public:
 	//---------------------------------
 	// E_DrawType
@@ -41,6 +48,9 @@ public:
 
 	// Construct destruct
 	//---------------------
+private:
+	Material() = default;
+public:
 	Material(AssetPtr<ShaderData> const shader, 
 		E_DrawType const drawType,
 		T_ParameterBlock const defaultParameters, 

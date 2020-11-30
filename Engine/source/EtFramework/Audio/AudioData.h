@@ -7,6 +7,11 @@
 
 
 namespace et {
+	REGISTRATION_NS(fw);
+}
+
+
+namespace et {
 namespace fw {
 
 
@@ -17,6 +22,9 @@ namespace fw {
 //
 class AudioData final
 {
+	REGISTRATION_FRIEND_NS(fw)
+
+	AudioData() = default;
 public:
 	AudioData(ALuint handle);
 	virtual ~AudioData();

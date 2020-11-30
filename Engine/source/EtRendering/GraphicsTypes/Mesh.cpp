@@ -7,6 +7,7 @@
 
 #include <ext-mikktspace/mikktspace.h>
 
+#include <EtCore/Content/AssetRegistration.h>
 #include <EtCore/Reflection/Registration.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
@@ -430,6 +431,9 @@ MeshSurface const* MeshData::GetSurface(render::Material const* const material) 
 // reflection
 RTTR_REGISTRATION
 {
+	BEGIN_REGISTER_CLASS_ASSET(MeshData, "mesh data")
+	END_REGISTER_CLASS(MeshData);
+
 	BEGIN_REGISTER_CLASS(MeshAsset, "mesh asset")
 	END_REGISTER_CLASS_POLYMORPHIC(MeshAsset, core::I_Asset);
 }

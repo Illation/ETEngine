@@ -1,12 +1,13 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
+#include <EtRendering/GraphicsTypes/SpriteFont.h>
+
 
 namespace et {
 namespace render {
 
 
-class SpriteFont;
 class ShaderData;
 class ShadedSceneRenderer;
 class SplashScreenRenderer;

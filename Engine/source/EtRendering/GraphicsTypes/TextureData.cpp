@@ -4,6 +4,7 @@
 #include <stb/stb_image.h>
 #include <stb/stb_image_resize.h>
 
+#include <EtCore/Content/AssetRegistration.h>
 #include <EtCore/Reflection/Registration.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
@@ -155,6 +156,9 @@ void TextureData::CreateHandle()
 // reflection
 RTTR_REGISTRATION
 {
+	BEGIN_REGISTER_CLASS_ASSET(TextureData, "texture data")
+	END_REGISTER_CLASS(TextureData);
+
 	BEGIN_REGISTER_CLASS(TextureAsset, "texture asset")
 		.property("use SRGB", &TextureAsset::m_UseSrgb)
 		.property("force resolution", &TextureAsset::m_ForceResolution)

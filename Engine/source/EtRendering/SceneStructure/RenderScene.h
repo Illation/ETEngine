@@ -8,13 +8,13 @@
 #include <EtRendering/PlanetTech/Planet.h>
 #include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
 #include <EtRendering/GraphicsTypes/DirectionalShadowData.h>
+#include <EtRendering/GraphicsTypes/Mesh.h>
 
 
 namespace et {
 namespace render {
 	
 
-class MeshData;
 class StarField;
 
 

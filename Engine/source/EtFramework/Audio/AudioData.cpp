@@ -5,6 +5,7 @@
 
 #include <stb_vorbis.h>
 
+#include <EtCore/Content/AssetRegistration.h>
 #include <EtCore/Reflection/Registration.h>
 #include <EtCore/FileSystem/BinaryReader.h>
 #include <EtCore/FileSystem/FileUtil.h>
@@ -47,6 +48,9 @@ AudioData::~AudioData()
 // reflection
 RTTR_REGISTRATION
 {
+	BEGIN_REGISTER_CLASS_ASSET(AudioData, "audio data")
+	END_REGISTER_CLASS(AudioData);
+
 	BEGIN_REGISTER_CLASS(AudioAsset, "audio asset")
 		.property("force mono", &AudioAsset::m_IsMonoForced)
 	END_REGISTER_CLASS_POLYMORPHIC(AudioAsset, core::I_Asset);

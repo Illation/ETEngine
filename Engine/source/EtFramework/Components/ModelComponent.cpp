@@ -3,8 +3,6 @@
 
 #include <EtCore/Reflection/Registration.h>
 #include <EtCore/Content/ResourceManager.h>
-
-#include <EtRendering/GraphicsTypes/Mesh.h>
 #include <EtRendering/MaterialSystem/MaterialInstance.h>
 #include <EtRendering/MaterialSystem/MaterialData.h>
 

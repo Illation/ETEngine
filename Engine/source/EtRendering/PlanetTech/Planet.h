@@ -12,7 +12,6 @@ namespace render {
 
 
 // forward
-class ShaderData;
 class Frustum;
 class Triangulator;
 class Patch;
