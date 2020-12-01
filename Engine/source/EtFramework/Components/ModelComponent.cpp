@@ -38,26 +38,9 @@ ECS_REGISTER_COMPONENT(ModelComponent);
 //-----------------------
 // ModelComponent::c-tor
 //
-// load assets from ids
-//
-ModelComponent::ModelComponent(core::HashString const meshId, core::HashString const materialId)
-{
-	m_Mesh = core::ResourceManager::Instance()->GetAssetData<render::MeshData>(meshId);
-
-	// Load material
-	m_Material = core::ResourceManager::Instance()->GetAssetData<render::Material>(materialId, false);
-	if (m_Material == nullptr)
-	{
-		m_Material = core::ResourceManager::Instance()->GetAssetData<render::MaterialInstance>(materialId);
-	}
-}
-
-//-----------------------
-// ModelComponent::c-tor
-//
 // Construct from preloaded mesh and material
 //
-ModelComponent::ModelComponent(AssetPtr<render::MeshData> const mesh, I_AssetPtr const material)
+ModelComponent::ModelComponent(AssetPtr<render::MeshData> const mesh, AssetPtr<render::I_Material> const material)
 	: m_Mesh(mesh)
 	, m_Material(material)
 { 

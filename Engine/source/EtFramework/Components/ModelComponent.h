@@ -3,6 +3,7 @@
 #include <EtCore/Containers/slot_map.h>
 
 #include <EtRendering/GraphicsTypes/Mesh.h>
+#include <EtRendering/MaterialSystem/MaterialInterface.h>
 
 #include <EtFramework/SceneGraph/ComponentDescriptor.h>
 
@@ -27,8 +28,7 @@ class ModelComponent final
 	// construct destruct
 	//--------------------
 public:
-	ModelComponent(core::HashString const meshId, core::HashString const materialId);
-	ModelComponent(AssetPtr<render::MeshData> const mesh, I_AssetPtr const material);
+	ModelComponent(AssetPtr<render::MeshData> const mesh, AssetPtr<render::I_Material> const material);
 	~ModelComponent() = default;
 
 	// accessors
@@ -40,7 +40,7 @@ public:
 private:
 
 	AssetPtr<render::MeshData> m_Mesh;
-	I_AssetPtr m_Material;
+	AssetPtr<render::I_Material> m_Material;
 
 	core::T_SlotId m_InstanceId = core::INVALID_SLOT_ID;
 };
@@ -70,8 +70,8 @@ public:
 	// Data
 	///////
 
-	core::HashString mesh;
-	core::HashString material;
+	AssetPtr<render::MeshData> mesh;
+	AssetPtr<render::I_Material> material;
 };
 
 

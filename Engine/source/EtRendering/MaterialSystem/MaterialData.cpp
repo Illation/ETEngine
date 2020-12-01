@@ -26,8 +26,10 @@ RTTR_REGISTRATION
 		rttr::value("AlphaBlend", Material::E_DrawType::AlphaBlend),
 		rttr::value("Custom", Material::E_DrawType::Custom));
 
+	REGISTER_CLASS_ASSET_BASE(I_Material, "material interface");
+
 	BEGIN_REGISTER_CLASS_ASSET(Material, "material")
-	END_REGISTER_CLASS(Material);
+	END_REGISTER_CLASS_POLYMORPHIC(Material, I_Material);
 
 	BEGIN_REGISTER_CLASS(MaterialAsset, "material asset")
 		.property("draw type", &MaterialAsset::m_DrawType)

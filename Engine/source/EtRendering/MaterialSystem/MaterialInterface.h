@@ -16,6 +16,7 @@ class Material;
 //
 class I_Material
 {
+	RTTR_ENABLE()
 public:
 	virtual ~I_Material() = default;
 

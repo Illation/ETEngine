@@ -2,6 +2,8 @@
 #include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Containers/slot_map.h>
 
+#include <EtRendering/MaterialSystem/MaterialInterface.h>
+
 #include <EtFramework/SceneGraph/ComponentDescriptor.h>
 #include <EtFramework/Physics/CollisionShape.h>
 
@@ -30,8 +32,8 @@ struct SpawnComponent final
 	// construct destruct
 	//--------------------
 public:
-	SpawnComponent(core::HashString const meshId,
-		core::HashString const materialId,
+	SpawnComponent(AssetPtr<render::MeshData> const meshPtr,
+		AssetPtr<render::I_Material> const materialPtr,
 		float const s, 
 		btCollisionShape* const shape, 
 		float const shapeMass, 
@@ -45,7 +47,7 @@ public:
 
 	// hold the assets so that they are loaded in already when spawning
 	AssetPtr<render::MeshData> mesh;
-	I_AssetPtr material;
+	AssetPtr<render::I_Material> material;
 	float scale = 1.f;
 
 	btCollisionShape* collisionShape = nullptr;
@@ -81,8 +83,8 @@ public:
 	// Data
 	///////
 
-	core::HashString mesh;
-	core::HashString material;
+	AssetPtr<render::MeshData> mesh;
+	AssetPtr<render::I_Material> material;
 	float scale = 1.f;
 
 	fw::CollisionShape* shape = nullptr;

@@ -3,6 +3,7 @@
 
 #include <EtCore/Hashing/HashString.h>
 #include <EtCore/Content/AssetPointer.h>
+#include <EtCore/Content/AssetRegistration.h>
 
 #include "registerMath.h"
 
@@ -161,15 +162,6 @@ bool VariantToJsonValue(rttr::variant const& var, JSON::Value*& outVal)
 bool IsVectorType(rttr::type const type)
 {
 	rttr::variant val = type.get_metadata(MathMeta::s_VectorType);
-	return val.is_valid() && val.get_value<bool>();
-}
-
-//---------------------------------
-// IsAssetType
-//
-bool IsAssetType(rttr::type const type)
-{
-	rttr::variant val = type.get_metadata(GetHash("AssetType"));
 	return val.is_valid() && val.get_value<bool>();
 }
 
@@ -371,7 +363,7 @@ bool AtomicTypeToJsonValue(rttr::type const& valueType, rttr::variant const& var
 				+ std::string("'!"), LogLevel::Warning);
 		}
 	}
-	else if (IsAssetType(valueType))
+	else if (IsSerializableAssetPointerType(valueType))
 	{
 		I_AssetPtr const ptr = var.get_value<I_AssetPtr>();
 		JSON::String* jString = new JSON::String();
@@ -435,7 +427,7 @@ bool ArrayToJsonArray(const rttr::variant_sequential_view& view, JSON::Value*& o
 				|| valueType.is_enumeration() 
 				|| (valueType == rttr::type::get<HashString>())
 				|| IsVectorType(valueType)
-				|| IsAssetType(valueType))
+				|| IsSerializableAssetPointerType(valueType))
 			{
 				if (!AtomicTypeToJsonValue(valueType, wrappedVar, jItem))
 				{

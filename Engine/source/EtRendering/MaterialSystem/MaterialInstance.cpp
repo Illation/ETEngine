@@ -17,7 +17,7 @@ namespace render {
 RTTR_REGISTRATION
 {
 	BEGIN_REGISTER_CLASS_ASSET(MaterialInstance, "material instance")
-	END_REGISTER_CLASS(MaterialInstance);
+	END_REGISTER_CLASS_POLYMORPHIC(MaterialInstance, I_Material);
 
 	BEGIN_REGISTER_CLASS(MaterialInstanceAsset, "material instance asset")
 	END_REGISTER_CLASS_POLYMORPHIC(MaterialInstanceAsset, core::I_Asset);

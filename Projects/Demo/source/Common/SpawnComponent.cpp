@@ -45,8 +45,8 @@ ECS_REGISTER_COMPONENT(SpawnComponent);
 //
 // load assets from ids
 //
-SpawnComponent::SpawnComponent(core::HashString const meshId,
-	core::HashString const materialId,
+SpawnComponent::SpawnComponent(AssetPtr<render::MeshData> const meshPtr,
+	AssetPtr<render::I_Material> const materialPtr,
 	float const s,
 	btCollisionShape* const shape,
 	float const shapeMass,
@@ -58,16 +58,9 @@ SpawnComponent::SpawnComponent(core::HashString const meshId,
 	, scale(s)
 	, interval(interv)
 	, impulse(imp)
-{
-	mesh = core::ResourceManager::Instance()->GetAssetData<render::MeshData>(meshId);
-
-	// Load material
-	material = core::ResourceManager::Instance()->GetAssetData<render::Material>(materialId, false);
-	if (material == nullptr)
-	{
-		material = core::ResourceManager::Instance()->GetAssetData<render::MaterialInstance>(materialId);
-	}
-}
+	, mesh(meshPtr)
+	, material(materialPtr)
+{ }
 
 
 //============================

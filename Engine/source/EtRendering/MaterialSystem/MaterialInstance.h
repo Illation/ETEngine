@@ -16,6 +16,7 @@ class MaterialInstance final : public I_Material
 	// definitions
 	//---------------------
 	REGISTRATION_FRIEND_NS(render)
+	RTTR_ENABLE(I_Material)
 
 	// Construct destruct
 	//---------------------

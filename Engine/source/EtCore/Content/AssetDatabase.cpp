@@ -3,6 +3,8 @@
 
 #include <rttr/registration>
 
+#include "AssetRegistration.h"
+
 
 namespace et {
 namespace core {
@@ -222,39 +224,57 @@ I_Asset* AssetDatabase::GetAsset(HashString const assetId, bool const reportErro
 //
 I_Asset* AssetDatabase::GetAsset(HashString const assetId, rttr::type const type, bool const reportErrors) const
 {
-	// Try finding a cache containing our type
-	auto const foundCacheIt = std::find_if(caches.cbegin(), caches.cend(), [type](AssetCache const& cache)
+	std::vector<rttr::type> assetTypes;
+	if (!IsAssetDataType(type))
 	{
-		return cache.GetType() == type;
-	});
-
-	if (foundCacheIt == caches.cend())
-	{
-		if (reportErrors)
+		rttr::array_range<rttr::type> derivedTypes = type.get_derived_classes();
+		for (rttr::type const derivedType : derivedTypes)
 		{
-			ET_ASSERT(false, "Couldn't find asset cache of type '%s'!", type.get_name().data());
+			if (IsAssetDataType(derivedType)) // only leaf asset types
+			{
+				assetTypes.push_back(derivedType);
+			}
 		}
 
-		return nullptr;
-	}
-
-	// try finding our asset by its ID in the cache
-	auto const foundAssetIt = std::find_if(foundCacheIt->cache.cbegin(), foundCacheIt->cache.cend(), [assetId](I_Asset const* const asset)
-	{
-		return asset->GetId() == assetId;
-	});
-
-	if (foundAssetIt == foundCacheIt->cache.cend())
-	{
 		if (reportErrors)
 		{
-			ET_ASSERT(false, "Couldn't find asset with ID '%s'!", assetId.ToStringDbg());
+			ET_ASSERT(!assetTypes.empty(), "Couldn't find asset type derived from '%s'!", type.get_name().data());
 		}
-
-		return nullptr;
+	}
+	else
+	{
+		assetTypes.push_back(type);
 	}
 
-	return *foundAssetIt;
+	for (rttr::type const assetType : assetTypes)
+	{
+		// Try finding a cache containing our type
+		auto const foundCacheIt = std::find_if(caches.cbegin(), caches.cend(), [assetType](AssetCache const& cache)
+			{
+				return cache.GetType() == assetType;
+			});
+
+		if (foundCacheIt != caches.cend())
+		{
+			// try finding our asset by its ID in the cache
+			auto const foundAssetIt = std::find_if(foundCacheIt->cache.cbegin(), foundCacheIt->cache.cend(), [assetId](I_Asset const* const asset)
+				{
+					return asset->GetId() == assetId;
+				});
+
+			if (foundAssetIt != foundCacheIt->cache.cend())
+			{
+				return *foundAssetIt;
+			}
+		}
+	}
+
+	if (reportErrors)
+	{
+		ET_ASSERT(false, "Couldn't find asset with ID '%s'!", assetId.ToStringDbg());
+	}
+
+	return nullptr;
 }
 
 //---------------------------------
