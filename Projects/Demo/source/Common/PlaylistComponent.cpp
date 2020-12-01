@@ -13,49 +13,34 @@ namespace et {
 namespace demo {
 
 
+//====================
+// Playlist Component 
+//====================
+
+
 // reflection
 //------------
 
 RTTR_REGISTRATION
 {
-	rttr::registration::class_<PlaylistComponent>("playlist component");
-
-	BEGIN_REGISTER_CLASS(PlaylistComponentDesc, "playlist comp desc")
-		.property("tracks", &PlaylistComponentDesc::tracks)
-	END_REGISTER_CLASS_POLYMORPHIC(PlaylistComponentDesc, fw::I_ComponentDescriptor);
+	BEGIN_REGISTER_CLASS(PlaylistComponent, "playlist component")
+		.property("tracks", &PlaylistComponent::tracks)
+	END_REGISTER_CLASS_POLYMORPHIC(PlaylistComponent, fw::I_ComponentDescriptor);
 }
-DEFINE_FORCED_LINKING(PlaylistComponentDesc) // force the linker to include this unit
+DEFINE_FORCED_LINKING(PlaylistComponent) // force the linker to include this unit
 
 ECS_REGISTER_COMPONENT(PlaylistComponent);
 
 
-//===============================
-// Playlist Component Descriptor
-//===============================
-
-
-//---------------------------------------
-// PlaylistComponentDesc::MakeData
-//
-PlaylistComponent* PlaylistComponentDesc::MakeData()
-{
-	PlaylistComponent* const ret = new PlaylistComponent();
-
-	for (core::HashString const track : tracks)
-	{
-		ret->tracks.push_back(core::ResourceManager::Instance()->GetAssetData<fw::AudioData>(track));
-	}
-
-	return ret;
-}
-
 //-------------------------------------------
-// PlaylistComponentDesc::OnScenePostLoad
+// PlaylistComponent::OnScenePostLoadRoot
 //
 // Determine the current track based on the active track in the source component
 //
-void PlaylistComponentDesc::OnScenePostLoad(fw::EcsController& ecs, fw::T_EntityId const id, PlaylistComponent& comp)
+void PlaylistComponent::OnScenePostLoadRoot(fw::EcsController& ecs, fw::T_EntityId const id, void* const componentData)
 {
+	PlaylistComponent& comp = *static_cast<PlaylistComponent*>(componentData);
+
 	// access source component
 	ET_ASSERT(ecs.HasComponent<fw::AudioSourceComponent>(id));
 	fw::AudioSourceComponent& source = ecs.GetComponent<fw::AudioSourceComponent>(id);

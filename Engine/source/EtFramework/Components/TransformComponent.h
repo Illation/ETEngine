@@ -1,5 +1,6 @@
 #pragma once
 #include <EtCore/Containers/slot_map.h>
+#include <EtCore/Reflection/Registration.h>
 
 #include <EtFramework/SceneGraph/ComponentDescriptor.h>
 
@@ -13,11 +14,13 @@ namespace fw {
 //
 // Component that describes a world translation / rotation / scale, and utility functions to change them - relates to the parent entities transform
 //
-class TransformComponent final 
+class TransformComponent final : public SimpleComponentDescriptor
 {
 	// definitions
 	//-------------
 	ECS_DECLARE_COMPONENT
+
+	RTTR_ENABLE(SimpleComponentDescriptor) // for serialization
 
 	friend class TransformSystem;
 
@@ -41,17 +44,13 @@ public:
 
 	// modifiers
 	//-----------
-	void Translate(float x, float y, float z);
 	void Translate(const vec3& translation );
-	void SetPosition(float x, float y, float z);
 	void SetPosition(const vec3& position);
 
-	void RotateEuler(float x, float y, float z);
 	void RotateEuler(const vec3& eulerAngles);
 	void Rotate(const quat& rotation);
 	void SetRotation(const quat& rotation);
 
-	void SetScale(float x, float y, float z);
 	void SetScale(const vec3& scale);
 
 	// accessors
@@ -100,36 +99,6 @@ private:
 
 	T_TransformChanged m_TransformChanged = E_TransformChanged::None;
 	core::T_SlotId m_NodeId = core::INVALID_SLOT_ID;
-};
-
-
-//---------------------------------
-// TransformComponentDesc
-//
-// Descriptor for serialization and deserialization of transform components
-//
-class TransformComponentDesc final : public ComponentDescriptor<TransformComponent>
-{
-	// definitions
-	//-------------
-	RTTR_ENABLE(ComponentDescriptor<TransformComponent>)
-
-	// construct destruct
-	//--------------------
-public:
-	TransformComponentDesc() : ComponentDescriptor<TransformComponent>() {}
-	~TransformComponentDesc() = default;
-
-	// ComponentDescriptor interface
-	//-------------------------------
-	TransformComponent* MakeData() override;
-
-	// Data
-	///////
-
-	vec3 position;
-	quat rotation;
-	vec3 scale = vec3(1.f);
 };
 
 

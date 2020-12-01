@@ -6,6 +6,11 @@
 
 
 namespace et {
+	REGISTRATION_NS(fw);
+}
+
+
+namespace et {
 namespace fw {
 
 
@@ -14,24 +19,29 @@ namespace fw {
 //
 // Component that causes a sprite to be drawn in the scene
 //
-class SpriteComponent final 
+class SpriteComponent final : public SimpleComponentDescriptor
 {
 	// definitions
 	//-------------
 	ECS_DECLARE_COMPONENT
 
-	friend class SpriteComponent;
+	RTTR_ENABLE(SimpleComponentDescriptor) // for serialization
+	REGISTRATION_FRIEND_NS(fw)
 
-	// init deinit
-	//-------------
-public:
-	static void OnComponentAdded(EcsController& controller, SpriteComponent& component, T_EntityId const entity);
-	static void OnComponentRemoved(EcsController& controller, SpriteComponent& component, T_EntityId const entity);
+	friend class SpriteComponent;
 
 	// construct destruct
 	//--------------------
+	SpriteComponent() = default;
+public:
 	SpriteComponent(core::HashString const textureAsset, vec2 const& pivot = vec2(), vec4 const& color = vec4(1.f));
 	~SpriteComponent() = default;
+
+	// init deinit
+	//-------------
+
+	static void OnComponentAdded(EcsController& controller, SpriteComponent& component, T_EntityId const entity);
+	static void OnComponentRemoved(EcsController& controller, SpriteComponent& component, T_EntityId const entity);
 
 	// accessors
 	//-----------
@@ -52,35 +62,6 @@ private:
 	core::HashString m_TextureAssetId;
 	vec2 m_Pivot;
 	vec4 m_Color;
-};
-
-//---------------------------------
-// SpriteComponentDesc
-//
-// Descriptor for serialization and deserialization of sprite components
-//
-class SpriteComponentDesc final : public ComponentDescriptor<SpriteComponent>
-{
-	// definitions
-	//-------------
-	RTTR_ENABLE(ComponentDescriptor<SpriteComponent>)
-
-	// construct destruct
-	//--------------------
-public:
-	SpriteComponentDesc() : ComponentDescriptor<SpriteComponent>() {}
-	~SpriteComponentDesc() = default;
-
-	// ComponentDescriptor interface
-	//-------------------------------
-	SpriteComponent* MakeData() override;
-
-	// Data
-	///////
-
-	core::HashString textureAsset;
-	vec2 pivot;
-	vec4 color;
 };
 
 

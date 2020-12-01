@@ -13,6 +13,24 @@ namespace et {
 namespace render {
 
 
+//===============
+// Planet Params
+//===============
+	
+
+RTTR_REGISTRATION
+{
+	rttr::registration::class_<PlanetParams>("planet params")
+		.property("radius", &PlanetParams::radius)
+		.property("height", &PlanetParams::height)
+		.property("diffuse texture", &PlanetParams::texDiffuseId)
+		.property("detail texture 1", &PlanetParams::texDetail1Id)
+		.property("detail texture 2", &PlanetParams::texDetail2Id)
+		.property("height texture", &PlanetParams::texHeightId)
+		.property("height detail texture", &PlanetParams::texHeightDetailId);
+}
+
+
 //========
 // Planet
 //========

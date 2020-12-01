@@ -6,7 +6,9 @@
 namespace et { namespace render {
 	class Camera;
 	class Viewport;
-}  namespace fw {
+}
+	REGISTRATION_NS(fw);
+namespace fw {
 	class TransformComponent;
 } }
 
@@ -20,11 +22,14 @@ namespace fw {
 //
 // Component that describes a view into a scene
 //
-class CameraComponent final 
+class CameraComponent final : public SimpleComponentDescriptor
 {
 	// definitions
 	//-------------
 	ECS_DECLARE_COMPONENT
+
+	RTTR_ENABLE(SimpleComponentDescriptor) // for serialization
+	REGISTRATION_FRIEND_NS(fw)
 		
 	// construct destruct
 	//--------------------
@@ -60,38 +65,6 @@ private:
 	// depth 
 	float m_NearPlane = 0.1f;
 	float m_FarPlane = 1000.f;
-};
-
-
-//---------------------------------
-// CameraComponentDesc
-//
-// Descriptor for serialization and deserialization of camera components
-//
-class CameraComponentDesc final : public ComponentDescriptor<CameraComponent>
-{
-	// definitions
-	//-------------
-	RTTR_ENABLE(ComponentDescriptor<CameraComponent>)
-
-	// construct destruct
-	//--------------------
-public:
-	CameraComponentDesc() : ComponentDescriptor<CameraComponent>() {}
-	~CameraComponentDesc() = default;
-
-	// ComponentDescriptor interface
-	//-------------------------------
-	CameraComponent* MakeData() override;
-
-	// Data
-	///////
-
-	bool isPerspective = true;
-	float fieldOfView = 45.f; 
-	float size = 25.f; 
-	float nearPlane = 0.1f;
-	float farPlane = 1000.f;
 };
 
 

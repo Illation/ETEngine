@@ -13,37 +13,15 @@ namespace demo {
 //
 // Describes the movement of celestial bodies, for now rotation speed
 //
-struct CelestialBodyComponent final
+struct CelestialBodyComponent final : public fw::SimpleComponentDescriptor
 {
 	ECS_DECLARE_COMPONENT
+	RTTR_ENABLE(fw::SimpleComponentDescriptor) // for serialization
+	DECLARE_FORCED_LINKING()
 public:
 
 	bool isRotating = false;
 	float rotationSpeed = 1.f;
-};
-
-
-//---------------------------------
-// CelestialBodyComponentDesc
-//
-class CelestialBodyComponentDesc final : public fw::ComponentDescriptor<CelestialBodyComponent>
-{
-	// definitions
-	//-------------
-	RTTR_ENABLE(ComponentDescriptor<CelestialBodyComponent>)
-	DECLARE_FORCED_LINKING()
-
-	// construct destruct
-	//--------------------
-public:
-	CelestialBodyComponentDesc() : ComponentDescriptor<CelestialBodyComponent>() {}
-
-	// ComponentDescriptor interface
-	//-------------------------------
-	CelestialBodyComponent* MakeData() override;
-
-	float rotationSpeed = 1.f;
-	bool startRotating = false;
 };
 
 

@@ -13,32 +13,11 @@ namespace demo {
 //
 // Tag component that marks a light for rotation and brightness controlls
 //
-struct ControledLightComponent final
+struct ControledLightComponent final : public fw::SimpleComponentDescriptor
 {
 	ECS_DECLARE_COMPONENT
-};
-
-
-//---------------------------------
-// ControledLightComponentDesc
-//
-// Serialize / Deserialize
-//
-class ControledLightComponentDesc final : public fw::ComponentDescriptor<ControledLightComponent>
-{
-	// definitions
-	//-------------
-	RTTR_ENABLE(ComponentDescriptor<ControledLightComponent>)
+	RTTR_ENABLE(fw::SimpleComponentDescriptor)
 	DECLARE_FORCED_LINKING()
-
-	// construct destruct
-	//--------------------
-public:
-	ControledLightComponentDesc() : ComponentDescriptor<ControledLightComponent>() {}
-
-	// ComponentDescriptor interface
-	//-------------------------------
-	ControledLightComponent* MakeData() override;
 };
 
 

@@ -5,14 +5,14 @@
         "id": 0,
         "components": [
           {
-            "transform comp desc": {
+            "transform component": {
               "position": [ 0.0, 0.0, -1747.1 ],
               "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
               "scale": [ 1.0, 1.0, 1.0 ]
             }
           },
           {
-            "camera comp desc": {
+            "camera component": {
               "is perspective": true,
               "field of view": 45.0,
               "ortho size": 25.0,
@@ -34,21 +34,23 @@
         "id": 1,
         "components": [
           {
-            "transform comp desc": {
+            "transform component": {
               "position": [ 0.0, 0.0, 0.0 ],
               "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
               "scale": [ 1.0, 1.0, 1.0 ]
             }
           },
           {
-            "planet comp desc": {
-              "radius": 1737.1,
-              "height": 10.7,
-              "diffuse texture": "moon8k.jpg",
-              "detail texture 1": "MoonDetail1.jpg",
-              "detail texture 2": "MoonDetail2.jpg",
-              "height texture": "MoonHeight.jpg",
-              "height detail texture": "MoonHeightDetail1.jpg"
+            "planet component": {
+              "params": {
+                "radius": 1737.1,
+                "height": 10.7,
+                "diffuse texture": "moon8k.jpg",
+                "detail texture 1": "MoonDetail1.jpg",
+                "detail texture 2": "MoonDetail2.jpg",
+                "height texture": "MoonHeight.jpg",
+                "height detail texture": "MoonHeightDetail1.jpg"
+              }
             }
           },
           {
@@ -62,7 +64,7 @@
             }
           },
           {
-            "celestial body comp desc": {
+            "celestial body component": {
               "rotation speed": 0.01,
               "start rotating": false
             }
@@ -74,14 +76,14 @@
         "id": 2,
         "components": [
           {
-            "transform comp desc": {
+            "transform component": {
               "position": [ 0.0, 0.0, 0.0 ],
               "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
               "scale": [ 0.1, 0.1, 0.1 ]
             }
           },
           {
-            "light comp desc": {
+            "light component": {
               "type": "Directional",
               "color": [ 1.0, 1.0, 1.0 ],
               "brightness": 283.00,
@@ -89,7 +91,7 @@
             }
           },
           {
-            "controled light comp desc": {
+            "controled light component": {
 
             }
           }

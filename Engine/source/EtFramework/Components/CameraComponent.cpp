@@ -16,15 +16,13 @@ namespace fw {
 
 RTTR_REGISTRATION
 {
-	rttr::registration::class_<CameraComponent>("camera component");
-
-	BEGIN_REGISTER_CLASS(CameraComponentDesc, "camera comp desc")
-		.property("is perspective", &CameraComponentDesc::isPerspective)
-		.property("field of view", &CameraComponentDesc::fieldOfView)
-		.property("ortho size", &CameraComponentDesc::size)
-		.property("near plane", &CameraComponentDesc::nearPlane)
-		.property("far plane", &CameraComponentDesc::farPlane)
-	END_REGISTER_CLASS_POLYMORPHIC(CameraComponentDesc, I_ComponentDescriptor);
+	BEGIN_REGISTER_CLASS(CameraComponent, "camera component")
+		.property("is perspective", &CameraComponent::m_IsPerspective)
+		.property("field of view", &CameraComponent::m_FieldOfView)
+		.property("ortho size", &CameraComponent::m_Size)
+		.property("near plane", &CameraComponent::m_NearPlane)
+		.property("far plane", &CameraComponent::m_FarPlane)
+	END_REGISTER_CLASS_POLYMORPHIC(CameraComponent, I_ComponentDescriptor);
 }
 
 ECS_REGISTER_COMPONENT(CameraComponent);
@@ -51,39 +49,6 @@ void CameraComponent::PopulateCamera(render::Camera& target, render::Viewport co
 	target.SetViewport(&viewport, true);
 
 	target.Recalculate();
-}
-
-
-//=============================
-// Camera Component Descriptor
-//=============================
-
-
-//-------------------------------
-// CameraComponentDesc::MakeData
-//
-// Create a camera component from a descriptor
-//
-CameraComponent* CameraComponentDesc::MakeData()
-{
-	CameraComponent* const ret = new CameraComponent();
-
-	if (isPerspective)
-	{
-		ret->UseOrthographicProjection();
-	}
-	else
-	{
-		ret->UseOrthographicProjection();
-	}
-
-	ret->SetFieldOfView(fieldOfView);
-	ret->SetOrthoSize(size);
-
-	ret->SetNearClippingPlane(nearPlane);
-	ret->SetFarClippingPlane(farPlane);
-
-	return ret;
 }
 
 

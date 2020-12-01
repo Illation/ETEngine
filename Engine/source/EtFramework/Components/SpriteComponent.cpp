@@ -16,13 +16,11 @@ namespace fw {
 
 RTTR_REGISTRATION
 {
-	rttr::registration::class_<SpriteComponent>("sprite component");
-
-	BEGIN_REGISTER_CLASS(SpriteComponentDesc, "sprite comp desc")
-		.property("texture asset", &SpriteComponentDesc::textureAsset)
-		.property("pivot", &SpriteComponentDesc::pivot)
-		.property("color", &SpriteComponentDesc::color)
-	END_REGISTER_CLASS_POLYMORPHIC(SpriteComponentDesc, I_ComponentDescriptor);
+	BEGIN_REGISTER_CLASS(SpriteComponent, "sprite component")
+		.property("texture asset", &SpriteComponent::m_TextureAssetId)
+		.property("pivot", &SpriteComponent::m_Pivot)
+		.property("color", &SpriteComponent::m_Color)
+	END_REGISTER_CLASS_POLYMORPHIC(SpriteComponent, I_ComponentDescriptor);
 }
 
 ECS_REGISTER_COMPONENT(SpriteComponent);
@@ -107,22 +105,6 @@ void SpriteComponent::SetColor(vec4 const& color)
 	{
 		UnifiedScene::Instance().GetRenderScene().UpdateSpriteColor(m_Id, m_Color);
 	}
-}
-
-
-//=============================
-// Sprite Component Descriptor
-//=============================
-
-
-//-------------------------------
-// SpriteComponentDesc::MakeData
-//
-// Create a sprite component from a descriptor
-//
-SpriteComponent* SpriteComponentDesc::MakeData()
-{
-	return new SpriteComponent(textureAsset, pivot, color);
 }
 
 

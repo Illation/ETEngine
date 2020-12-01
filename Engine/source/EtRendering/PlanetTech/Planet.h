@@ -25,6 +25,8 @@ class Atmosphere;
 //
 struct PlanetParams
 {
+	PlanetParams() = default;
+
 	core::HashString texDiffuseId;
 	core::HashString texDetail1Id;
 	core::HashString texDetail2Id;

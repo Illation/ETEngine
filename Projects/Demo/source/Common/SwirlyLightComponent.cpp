@@ -77,7 +77,7 @@ void SwirlyLightComponentDesc::OnScenePostLoad(fw::EcsController& ecs, fw::T_Ent
 
 	comp.origin = transform.GetPosition();
 
-	transform.Translate(random.RandFloat(-bounds, bounds), random.RandFloat(-bounds, bounds), random.RandFloat(-bounds, bounds));
+	transform.Translate(vec3(random.RandFloat(-bounds, bounds), random.RandFloat(-bounds, bounds), random.RandFloat(-bounds, bounds)));
 }
 
 

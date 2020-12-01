@@ -13,31 +13,14 @@ namespace fw {
 
 RTTR_REGISTRATION
 {
-	rttr::registration::class_<AudioListenerComponent>("audio listener component");
-
-	BEGIN_REGISTER_CLASS(AudioListenerComponentDesc, "audio listener comp desc")
-		.property("gain", &AudioListenerComponentDesc::gain)
-	END_REGISTER_CLASS_POLYMORPHIC(AudioListenerComponentDesc, I_ComponentDescriptor);
+	BEGIN_REGISTER_CLASS(AudioListenerComponent, "audio listener component")
+		.property("gain", &AudioListenerComponent::GetGain, &AudioListenerComponent::SetGain)
+	END_REGISTER_CLASS_POLYMORPHIC(AudioListenerComponent, I_ComponentDescriptor);
 }
+DEFINE_FORCED_LINKING(AudioListenerComponent) // force the linker to include this unit
 
 ECS_REGISTER_COMPONENT(AudioListenerComponent);
 ECS_REGISTER_COMPONENT(ActiveAudioListenerComponent);
-
-
-//=====================================
-// Audio Listener Component Descriptor
-//=====================================
-
-
-//--------------------------------------
-// AudioListenerComponentDesc::MakeData
-//
-// Create a sprite component from a descriptor
-//
-AudioListenerComponent* AudioListenerComponentDesc::MakeData()
-{
-	return new AudioListenerComponent(gain);
-}
 
 
 } // namespace fw

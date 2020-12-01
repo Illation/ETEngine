@@ -31,7 +31,8 @@ public:
 	// interface
 	//-----------
 	virtual T_CompTypeIdx GetType() const = 0;
-	virtual RawComponentPtr MakeRawData() = 0; // has ownership
+	virtual RawComponentPtr MakeRawData() = 0; 
+	virtual bool HasOwnership() const = 0;
 	virtual bool CallScenePostLoad() const = 0;
 	virtual void OnScenePostLoadRoot(EcsController& ecs, T_EntityId const id, void* const componentData) = 0;
 };
@@ -63,11 +64,41 @@ public:
 	{ 
 		OnScenePostLoad(ecs, id, *static_cast<TComponentType*>(componentData)); 
 	}
+	bool HasOwnership() const override { return false; } 
 
 	// interface
 	//-----------
 	virtual TComponentType* MakeData() = 0;
 	virtual void OnScenePostLoad(EcsController&, T_EntityId const, TComponentType&) {}
+};
+
+//---------------------------
+// SimpleComponentDescriptor
+//
+// Descriptor for components that contain their own load data
+//
+class SimpleComponentDescriptor : public I_ComponentDescriptor
+{
+	// definitions
+	//-------------
+	RTTR_ENABLE(I_ComponentDescriptor)
+
+	// construct destruct
+	//--------------------
+public:
+	SimpleComponentDescriptor() : I_ComponentDescriptor() {}
+	virtual ~SimpleComponentDescriptor() = default;
+
+	// I_ComponentDescriptor interface
+	//---------------------------------
+	T_CompTypeIdx GetType() const override { return ComponentRegistry::Instance().GetTypeIdx(rttr::type::get(*this)); }
+	RawComponentPtr MakeRawData() override { return RawComponentPtr(GetType(), reinterpret_cast<void*>(this)); }
+	bool HasOwnership() const override { return true; } 
+
+	// interface
+	//-----------
+	virtual bool CallScenePostLoad() const override { return false; }
+	virtual void OnScenePostLoadRoot(EcsController& ecs, T_EntityId const id, void* const componentData) override {}
 };
 
 

@@ -3,6 +3,11 @@
 
 
 namespace et {
+	REGISTRATION_NS(fw);
+}
+
+
+namespace et {
 namespace fw {
 
 
@@ -11,11 +16,14 @@ namespace fw {
 //
 // Component that lights the scene
 //
-class LightComponent final
+class LightComponent final : public SimpleComponentDescriptor
 {
 	// definitions
 	//-------------
 	ECS_DECLARE_COMPONENT
+
+	RTTR_ENABLE(SimpleComponentDescriptor) // for serialization
+	REGISTRATION_FRIEND_NS(fw)
 
 	friend class LightSystem;
 
@@ -23,11 +31,16 @@ public:
 	enum class E_Type
 	{
 		Point,
-		Directional
+		Directional,
+
+		Invalid
 	};
 
 	// construct destruct
 	//--------------------
+private:
+	LightComponent() = default;
+public:
 	LightComponent(E_Type const type, vec3 const& color = vec3(1.f), float const brightness = 1.f, bool const castsShadow = false);
 	~LightComponent() = default;
 
@@ -49,7 +62,7 @@ private:
 	// Data
 	///////
 
-	E_Type m_Type = LightComponent::E_Type::Directional;
+	E_Type m_Type = LightComponent::E_Type::Invalid;
 	vec3 m_Color;
 	float m_Brightness = 1.f;
 	bool m_CastsShadow = false;
@@ -57,39 +70,6 @@ private:
 	bool m_ColorChanged = false;
 
 	core::T_SlotId m_LightId = core::INVALID_SLOT_ID;
-};
-
-
-//---------------------------------
-// LightComponentDesc
-//
-// Descriptor for serialization and deserialization of light components
-//
-class LightComponentDesc final : public ComponentDescriptor<LightComponent>
-{
-	// definitions
-	//-------------
-	RTTR_ENABLE(ComponentDescriptor<LightComponent>)
-
-	// construct destruct
-	//--------------------
-public:
-	LightComponentDesc() : ComponentDescriptor<LightComponent>() {}
-	~LightComponentDesc() = default;
-
-	// ComponentDescriptor interface
-	//-------------------------------
-	LightComponent* MakeData() override;
-
-	// Data
-	///////
-
-	LightComponent::E_Type type = LightComponent::E_Type::Directional;
-
-	vec3 color;
-	float brightness = 1.f;
-
-	bool castsShadow = false;
 };
 
 

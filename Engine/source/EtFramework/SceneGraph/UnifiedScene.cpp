@@ -219,9 +219,11 @@ void UnifiedScene::AddEntity(EntityDescriptor const& entDesc, T_EntityId const p
 
 	// create a component data list
 	std::vector<RawComponentPtr> components;
+	std::vector<bool> shouldDelete;
 	for (I_ComponentDescriptor* const compDesc : entDesc.GetComponents())
 	{
 		components.push_back(compDesc->MakeRawData());
+		shouldDelete.push_back(!(compDesc->HasOwnership()));
 	}
 
 	// add the components to our new entity
@@ -229,9 +231,13 @@ void UnifiedScene::AddEntity(EntityDescriptor const& entDesc, T_EntityId const p
 	m_Scene.AddComponents(id, std::vector<RawComponentPtr>(components)); 
 
 	// we can now free the memory of our raw component data - this needs to be done manually as we are using void*
-	for (RawComponentPtr& comp : components)
+	ET_ASSERT(components.size() == shouldDelete.size());
+	for (size_t i = 0u; i < components.size(); ++i)
 	{
-		ComponentRegistry::Instance().GetFullDestructor(comp.typeIdx)(comp.data);
+		if (shouldDelete[i])
+		{
+			ComponentRegistry::Instance().GetFullDestructor(components[i].typeIdx)(components[i].data);
+		}
 	}
 
 	components.clear();

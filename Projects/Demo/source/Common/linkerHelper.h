@@ -22,10 +22,10 @@ void ForceLinking()
 	fw::ForceLinking();
 
 	FORCE_LINKING(SpawnComponentDesc)
-	FORCE_LINKING(ControledLightComponentDesc)
+	FORCE_LINKING(ControledLightComponent)
 	FORCE_LINKING(SwirlyLightComponentDesc)
-	FORCE_LINKING(CelestialBodyComponentDesc)
-	FORCE_LINKING(PlaylistComponentDesc)
+	FORCE_LINKING(CelestialBodyComponent)
+	FORCE_LINKING(PlaylistComponent)
 }
 
 

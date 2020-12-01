@@ -11,11 +11,13 @@ namespace fw {
 //
 // Descriptor for serialization and deserialization of sprite components
 //
-class AudioListenerComponent final
+class AudioListenerComponent final : public SimpleComponentDescriptor
 {
 	// definitions
 	//-------------
 	ECS_DECLARE_COMPONENT
+	RTTR_ENABLE(SimpleComponentDescriptor) // for serialization
+	DECLARE_FORCED_LINKING()
 
 	friend class AudioListenerSystem;
 
@@ -49,33 +51,6 @@ private:
 struct ActiveAudioListenerComponent final
 {
 	ECS_DECLARE_COMPONENT
-};
-
-//---------------------------------
-// AudioListenerComponentDesc
-//
-// Descriptor for serialization and deserialization of audio listener components
-//
-class AudioListenerComponentDesc final : public ComponentDescriptor<AudioListenerComponent>
-{
-	// definitions
-	//-------------
-	RTTR_ENABLE(ComponentDescriptor<AudioListenerComponent>)
-
-	// construct destruct
-	//--------------------
-public:
-	AudioListenerComponentDesc() : ComponentDescriptor<AudioListenerComponent>() {}
-	~AudioListenerComponentDesc() = default;
-
-	// ComponentDescriptor interface
-	//-------------------------------
-	AudioListenerComponent* MakeData() override;
-
-	// Data
-	///////
-
-	float gain = 1.f;
 };
 
 

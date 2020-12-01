@@ -17,14 +17,12 @@ RTTR_REGISTRATION
 		rttr::value("Point", LightComponent::E_Type::Point),
 		rttr::value("Directional", LightComponent::E_Type::Directional));
 
-	rttr::registration::class_<LightComponent>("light component");
-
-	BEGIN_REGISTER_CLASS(LightComponentDesc, "light comp desc")
-		.property("type", &LightComponentDesc::type)
-		.property("color", &LightComponentDesc::color)
-		.property("brightness", &LightComponentDesc::brightness)
-		.property("casts shadow", &LightComponentDesc::castsShadow)
-	END_REGISTER_CLASS_POLYMORPHIC(LightComponentDesc, I_ComponentDescriptor);
+	BEGIN_REGISTER_CLASS(LightComponent, "light component")
+		.property("type", &LightComponent::m_Type)
+		.property("color", &LightComponent::m_Color)
+		.property("brightness", &LightComponent::m_Brightness)
+		.property("casts shadow", &LightComponent::m_CastsShadow)
+	END_REGISTER_CLASS_POLYMORPHIC(LightComponent, I_ComponentDescriptor);
 }
 
 ECS_REGISTER_COMPONENT(LightComponent);
@@ -45,22 +43,6 @@ LightComponent::LightComponent(E_Type const type, vec3 const& color, float const
 	, m_CastsShadow(castsShadow)
 {
 	ET_ASSERT((!castsShadow) || (type == E_Type::Directional), "Point light shadows are not supported");
-}
-
-
-//============================
-// Light Component Descriptor
-//============================
-
-
-//------------------------------
-// LightComponentDesc::MakeData
-//
-// Create a light component from a descriptor
-//
-LightComponent* LightComponentDesc::MakeData()
-{
-	return new LightComponent(type, color, brightness, castsShadow);
 }
 
 

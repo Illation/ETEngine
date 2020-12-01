@@ -6,6 +6,11 @@
 
 
 namespace et {
+	REGISTRATION_NS(fw);
+}
+
+
+namespace et {
 namespace fw {
 
 
@@ -14,17 +19,21 @@ namespace fw {
 //
 // Adds planet geometry to an entity
 //
-class PlanetComponent final
+class PlanetComponent final : public SimpleComponentDescriptor
 {
 	// definitions
 	//-------------
 	ECS_DECLARE_COMPONENT
+
+	RTTR_ENABLE(SimpleComponentDescriptor) // for serialization
+	REGISTRATION_FRIEND_NS(fw)
 
 	friend class PlanetInit;
 
 
 	// construct destruct
 	//--------------------
+	PlanetComponent() = default;
 public:
 	PlanetComponent(render::PlanetParams const& params);
 	~PlanetComponent() = default;
@@ -61,42 +70,6 @@ public:
 
 	T_EntityId const planet;
 };
-
-//---------------------------------
-// PlanetComponentDesc
-//
-// Descriptor for serialization and deserialization of planet components
-//
-class PlanetComponentDesc final : public ComponentDescriptor<PlanetComponent>
-{
-	// definitions
-	//-------------
-	RTTR_ENABLE(ComponentDescriptor<PlanetComponent>)
-
-	// construct destruct
-	//--------------------
-public:
-	PlanetComponentDesc() : ComponentDescriptor<PlanetComponent>() {}
-	~PlanetComponentDesc() = default;
-
-	// ComponentDescriptor interface
-	//-------------------------------
-	PlanetComponent* MakeData() override;
-
-	// Data
-	///////
-
-	float radius = 0.f;
-	float height = 0.f;
-
-	std::string texDiffuse;
-	std::string texDetail1;
-	std::string texDetail2;
-
-	std::string texHeight;
-	std::string texHeightDetail;
-};
-
 
 //---------------------------------
 // PlanetCameraLinkComponentDesc

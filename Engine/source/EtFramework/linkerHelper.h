@@ -5,6 +5,7 @@
 #include <EtFramework/Audio/AudioData.h>
 #include <EtFramework/SceneGraph/SceneDescriptor.h>
 #include <EtFramework/Physics/CollisionShape.h>
+#include <EtFramework/Components/AudioListenerComponent.h>
 
 
 namespace et {
@@ -23,6 +24,7 @@ void ForceLinking()
 	FORCE_LINKING(AudioAsset)
 	FORCE_LINKING(SceneDescriptorAsset)
 	FORCE_LINKING(BoxShape)
+	FORCE_LINKING(AudioListenerComponent)
 }
 
 

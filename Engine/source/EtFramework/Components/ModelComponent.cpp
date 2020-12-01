@@ -16,12 +16,10 @@ namespace fw {
 
 RTTR_REGISTRATION
 {
-	rttr::registration::class_<ModelComponent>("model component");
-	
-	BEGIN_REGISTER_CLASS(ModelComponentDesc, "model comp desc")
-		.property("mesh", &ModelComponentDesc::mesh)
-		.property("material", &ModelComponentDesc::material)
-	END_REGISTER_CLASS_POLYMORPHIC(ModelComponentDesc, I_ComponentDescriptor);
+	BEGIN_REGISTER_CLASS(ModelComponent, "model component")
+		.property("mesh", &ModelComponent::m_Mesh)
+		.property("material", &ModelComponent::m_Material)
+	END_REGISTER_CLASS_POLYMORPHIC(ModelComponent, I_ComponentDescriptor);
 }
 
 // component registration
@@ -45,22 +43,6 @@ ModelComponent::ModelComponent(AssetPtr<render::MeshData> const mesh, AssetPtr<r
 	, m_Material(material)
 { 
 	ET_ASSERT((m_Material.GetType() == rttr::type::get<render::Material>()) || (m_Material.GetType() == rttr::type::get<render::MaterialInstance>()));
-}
-
-
-//============================
-// Model Component Descriptor
-//============================
-
-
-//------------------------------
-// ModelComponentDesc::MakeData
-//
-// Create a model component from a descriptor
-//
-ModelComponent* ModelComponentDesc::MakeData()
-{
-	return new ModelComponent(mesh, material);
 }
 
 

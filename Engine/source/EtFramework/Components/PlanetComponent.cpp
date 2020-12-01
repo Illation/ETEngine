@@ -13,17 +13,9 @@ namespace fw {
 
 RTTR_REGISTRATION
 {
-	rttr::registration::class_<PlanetComponent>("planet component");
-	
-	BEGIN_REGISTER_CLASS(PlanetComponentDesc, "planet comp desc")
-		.property("radius", &PlanetComponentDesc::radius)
-		.property("height", &PlanetComponentDesc::height)
-		.property("diffuse texture", &PlanetComponentDesc::texDiffuse)
-		.property("detail texture 1", &PlanetComponentDesc::texDetail1)
-		.property("detail texture 2", &PlanetComponentDesc::texDetail2)
-		.property("height texture", &PlanetComponentDesc::texHeight)
-		.property("height detail texture", &PlanetComponentDesc::texHeightDetail)
-	END_REGISTER_CLASS_POLYMORPHIC(PlanetComponentDesc, I_ComponentDescriptor);
+	BEGIN_REGISTER_CLASS(PlanetComponent, "planet component")
+		.property("params", &PlanetComponent::m_Params)
+	END_REGISTER_CLASS_POLYMORPHIC(PlanetComponent, I_ComponentDescriptor);
 
 	rttr::registration::class_<PlanetCameraLinkComponent>("planet camera link component");
 	
@@ -47,34 +39,6 @@ ECS_REGISTER_COMPONENT(PlanetCameraLinkComponent);
 PlanetComponent::PlanetComponent(render::PlanetParams const& params)
 	: m_Params(params)
 { }
-
-
-//=============================
-// Planet Component Descriptor
-//=============================
-
-
-//-------------------------------
-// PlanetComponentDesc::MakeData
-//
-// Create a planet component from a descriptor
-//
-PlanetComponent* PlanetComponentDesc::MakeData()
-{
-	render::PlanetParams params;
-
-	params.radius = radius;
-	params.height = height;
-
-	params.texDiffuseId = GetHash(texDiffuse);
-	params.texDetail1Id = GetHash(texDetail1);
-	params.texDetail2Id = GetHash(texDetail2);
-
-	params.texHeightId = GetHash(texHeight);
-	params.texHeightDetailId = GetHash(texHeightDetail);
-
-	return new PlanetComponent(params);
-}
 
 
 //=========================================
