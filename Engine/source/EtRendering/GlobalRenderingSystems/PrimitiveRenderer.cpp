@@ -57,14 +57,14 @@ void PrimitiveRenderer::AddGeometry(PrimitiveGeometry* pGeometry)
 //Unit Quad
 primitives::Quad::~Quad()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->DeleteBuffer(m_VBO);
 	api->DeleteVertexArray(m_VAO);
 }
 void primitives::Quad::Draw()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->BindVertexArray(m_VAO);
 	api->DrawArrays(E_DrawMode::TriangleStrip, 0, 4);
@@ -72,7 +72,7 @@ void primitives::Quad::Draw()
 }
 void primitives::Quad::Initialize()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	float quadVertices[] = 
 	{
@@ -97,14 +97,14 @@ void primitives::Quad::Initialize()
 //Unit cube
 primitives::Cube::~Cube()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->DeleteBuffer(m_VBO);
 	api->DeleteVertexArray(m_VAO);
 }
 void primitives::Cube::Draw()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->BindVertexArray(m_VAO);
 	api->DrawArrays(E_DrawMode::Triangles, 0, 36);
@@ -158,7 +158,7 @@ void primitives::Cube::Initialize()
 		-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f // bottom-left        
 	};
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	m_VAO = api->CreateVertexArray();
 	m_VBO = api->CreateBuffer();
@@ -181,7 +181,7 @@ void primitives::Cube::Initialize()
 template<int32 level>
 primitives::IcoSphere<level>::~IcoSphere()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->DeleteBuffer(m_VBO);
 	api->DeleteVertexArray(m_VAO);
@@ -189,7 +189,7 @@ primitives::IcoSphere<level>::~IcoSphere()
 template<int32 level>
 void primitives::IcoSphere<level>::Draw()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->BindVertexArray(m_VAO);
 	api->DrawArrays(E_DrawMode::Triangles, 0, m_NumVerts);
@@ -211,7 +211,7 @@ void primitives::IcoSphere<level>::Initialize()
 	}
 	m_NumVerts = (int32)vertices.size();
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	m_VAO = api->CreateVertexArray();
 	m_VBO = api->CreateBuffer();

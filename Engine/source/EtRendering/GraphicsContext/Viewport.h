@@ -8,7 +8,7 @@ namespace et {
 namespace render {
 
 
-class I_GraphicsApiContext;
+class I_GraphicsContextApi;
 class I_ViewportRenderer;
 class I_RenderArea;
 
@@ -42,7 +42,6 @@ class Viewport final : public core::I_RealTimeTickTriggerer
 	static Viewport* g_CurrentViewport;
 
 public:
-	static I_GraphicsApiContext* GetCurrentApiContext();
 	static Viewport* GetCurrentViewport();
 
 	// construct destruct
@@ -67,7 +66,7 @@ public:
 	// accessors
 	//-----------
 	I_ViewportRenderer* GetViewportRenderer() { return m_Renderer; }
-	I_GraphicsApiContext* GetApiContext() { return m_ApiContext; }
+	I_GraphicsContextApi* GetApiContext() { return m_ApiContext; }
 
 	ivec2 GetDimensions() const { return m_Dimensions; }
 	float GetAspectRatio() const { return m_AspectRatio; }
@@ -76,7 +75,7 @@ public:
 	// callbacks
 	//-----------
 protected:
-	void OnRealize(I_GraphicsApiContext* const api);
+	void OnRealize(I_GraphicsContextApi* const api);
 	void OnUnrealize();
 	void OnResize(vec2 const resolution);
 	void OnRender(T_FbLoc const targetFb);
@@ -94,7 +93,7 @@ private:
 	I_RenderArea* m_Area = nullptr;
 
 	I_ViewportRenderer* m_Renderer = nullptr;
-	I_GraphicsApiContext* m_ApiContext = nullptr; 
+	I_GraphicsContextApi* m_ApiContext = nullptr; 
 
 	ivec2 m_Dimensions;
 	float m_AspectRatio;

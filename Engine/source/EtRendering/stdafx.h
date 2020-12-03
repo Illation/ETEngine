@@ -22,6 +22,7 @@
 #include <EtCore/Util/PerformanceInfo.h>
 #include <EtCore/Hashing/Hash.h>
 
-#include <EtRendering/GraphicsContext/GraphicsApiContext.h>
+#include <EtRendering/GraphicsContext/GraphicsContextApi.h>
+#include <EtRendering/GraphicsContext/ContextHolder.h>
 #include <EtRendering/GraphicsContext/Viewport.h>
 #pragma endregion Includes

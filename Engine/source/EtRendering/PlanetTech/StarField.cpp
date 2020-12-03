@@ -36,7 +36,7 @@ StarField::StarField(core::HashString const assetId)
 		}
 	}
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("FwdStarField.glsl"));
 	m_pSprite = core::ResourceManager::Instance()->GetAssetData<TextureData>(core::HashString("starSprite.png"));
@@ -62,7 +62,7 @@ StarField::StarField(core::HashString const assetId)
 
 StarField::~StarField()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->DeleteVertexArray(m_VAO);
 	api->DeleteBuffer(m_VBO);
@@ -70,7 +70,7 @@ StarField::~StarField()
 
 void StarField::Draw(Camera const& cam) const
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->SetBlendEnabled(true);
 	api->SetBlendEquation(E_BlendEquation::Add);

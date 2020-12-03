@@ -24,7 +24,7 @@ PostProcessingRenderer::~PostProcessingRenderer()
 
 void PostProcessingRenderer::DeleteFramebuffers()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->DeleteRenderBuffers(1, &m_CollectRBO);
 	delete m_CollectTex; m_CollectTex = nullptr;
@@ -49,7 +49,7 @@ void PostProcessingRenderer::DeleteFramebuffers()
 
 void PostProcessingRenderer::Initialize()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//Load and compile Shaders
 	m_pDownsampleShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("PostDownsample.glsl"));
@@ -62,7 +62,7 @@ void PostProcessingRenderer::Initialize()
 
 void PostProcessingRenderer::GenerateFramebuffers()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
@@ -140,11 +140,11 @@ void PostProcessingRenderer::GenerateFramebuffers()
 
 void PostProcessingRenderer::EnableInput()
 {
-	Viewport::GetCurrentApiContext()->BindFramebuffer(m_CollectFBO);
+	ContextHolder::GetRenderContext()->BindFramebuffer(m_CollectFBO);
 }
 void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings const& settings, render::I_OverlayRenderer* const overlayRenderer)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 	render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
@@ -292,7 +292,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 
 void PostProcessingRenderer::ResizeFBTextures()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 

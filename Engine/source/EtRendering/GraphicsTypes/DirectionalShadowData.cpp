@@ -23,7 +23,7 @@ void DirectionalShadowData::Init(ivec2 const resolution)
 {
 	render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//Calculate cascade distances
 	float distMult = graphicsSettings.CSMDrawDistance / powf(2.f, static_cast<float>(graphicsSettings.NumCascades - 1));
@@ -66,7 +66,7 @@ void DirectionalShadowData::Init(ivec2 const resolution)
 //
 void DirectionalShadowData::Destroy()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	for (CascadeData& cascade : m_Cascades)
 	{

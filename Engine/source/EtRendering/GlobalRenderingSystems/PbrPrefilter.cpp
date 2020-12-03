@@ -26,7 +26,7 @@ PbrPrefilter::~PbrPrefilter()
 
 void PbrPrefilter::Precompute(int32 resolution)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	ivec2 logPos = core::Logger::GetCursorPosition();
 	LOG("Precalculating PBR BRDF LUT . . .");
@@ -56,6 +56,9 @@ void PbrPrefilter::Precompute(int32 resolution)
 	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(resolution));
 	api->LinkTextureToFbo2D(0, m_LUT->GetLocation(), 0);
 
+	ivec2 pos, size;
+	api->GetViewport(pos, size);
+
 	api->SetViewport(ivec2(0), ivec2(resolution));
 	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
@@ -64,7 +67,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 	//*************************************************
 	api->BindFramebuffer(0);
 	api->BindRenderbuffer(0);
-	api->SetViewport(ivec2(0), Viewport::GetCurrentViewport()->GetDimensions());
+	api->SetViewport(pos, size);
 
 	api->DeleteRenderBuffers(1, &captureRBO);
 	api->DeleteFramebuffers(1, &captureFBO);
@@ -78,7 +81,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	int32 const irradianceRes, 
 	int32 const radianceRes)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//setup for convoluted irradiance cubemap
 	//***************************************
@@ -123,6 +126,9 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 
 	//render irradiance cubemap
 	//*************************
+
+	ivec2 pos, size;
+	api->GetViewport(pos, size);
 
 	api->SetViewport(ivec2(0), ivec2(irradianceRes));
 	api->BindFramebuffer(captureFBO);
@@ -183,7 +189,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	api->UnbindTexture(source->GetTargetType(), source->GetLocation());
 	api->UnbindTexture(radiance->GetTargetType(), radiance->GetLocation());
 	api->BindFramebuffer(0);
-	api->SetViewport(ivec2(0), Viewport::GetCurrentViewport()->GetDimensions());
+	api->SetViewport(pos, size);
 
 	api->DeleteRenderBuffers(1, &captureRBO);
 	api->DeleteFramebuffers(1, &captureFBO);

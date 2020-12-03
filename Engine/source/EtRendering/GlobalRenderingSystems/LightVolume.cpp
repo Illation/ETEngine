@@ -38,7 +38,7 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 	}
 
 	ShaderData const* const shader = m_Material->GetShader();
-	Viewport::GetCurrentApiContext()->SetShader(shader);
+	ContextHolder::GetRenderContext()->SetShader(shader);
 
 	shader->Upload("Position"_hash, pos); 
 	shader->Upload("Color"_hash, col);
@@ -69,7 +69,7 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 		Initialize();
 	}
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->SetShader(m_Shader.get());
 
@@ -87,7 +87,7 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, render::DirectionalShad
 		Initialize();
 	}
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->SetShader(m_ShaderShadowed.get());
 

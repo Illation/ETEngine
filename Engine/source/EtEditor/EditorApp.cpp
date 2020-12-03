@@ -19,6 +19,9 @@
 #include <EtCore/Util/InputManager.h>
 #include <EtCore/UpdateCycle/TickManager.h>
 
+#include <EtRendering/GraphicsContext/ContextHolder.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
 #include <EtEditor/Content/FileResourceManager.h>
@@ -83,6 +86,8 @@ EditorApp::EditorApp()
 //
 EditorApp::~EditorApp()
 {
+	render::RenderingSystems::RemoveReference();
+
 	core::PerformanceInfo::DestroyInstance();
 	core::InputManager::DestroyInstance();
 
@@ -192,7 +197,15 @@ void EditorApp::on_activate()
 	try
 	{
 		m_AppWindow = CreateMainWindow();
-		m_AppWindow->present();
+		m_AppWindow->present(); 
+
+		// window is realized now create rendering context
+		m_RenderWindow.SetSourceWindow(m_AppWindow);
+		render::ContextHolder::Instance().CreateMainRenderContext(&m_RenderWindow);
+
+		render::RenderingSystems::AddReference();
+
+		// from now on it should be safe to call graphics API functions
 		m_AppWindow->AddEditor(new SceneEditor());
 	}
 	// If create_appwindow() throws an exception (perhaps from Gtk::Builder),

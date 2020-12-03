@@ -9,6 +9,8 @@
 #include <glibmm/refptr.h>
 #include <glibmm/ustring.h>
 
+#include <EtEditor/Rendering/GtkRenderWindow.h>
+
 
 namespace et {
 namespace edit {
@@ -69,6 +71,7 @@ private:
 	CommandlineArguments m_CmdArguments;
 
 	EditorAppWindow* m_AppWindow = nullptr;
+	GtkRenderWindow m_RenderWindow;
 };
 
 

@@ -2,6 +2,9 @@
 #include "GtkRenderArea.h"
 
 #include "EpoxyGlContext.h"
+#include "GtkRenderWindow.h"
+
+#include <EtRendering/GraphicsContext/ContextHolder.h>
 
 
 namespace et {
@@ -12,19 +15,6 @@ namespace edit {
 // Single Context GL Area
 //=========================
 
-
-// static
-SingleContextGlArea::ContextCache* SingleContextGlArea::s_SingleContextCache = nullptr;
-
-
-//---------------------------------
-// SingleContextGlArea::DestroyContext
-//
-void SingleContextGlArea::DestroyContext()
-{
-	delete s_SingleContextCache;
-	s_SingleContextCache = nullptr;
-}
 
 //---------------------------------
 // SingleContextGlArea::c-tor
@@ -50,25 +40,15 @@ SingleContextGlArea::SingleContextGlArea(BaseObjectType* cobject, Glib::RefPtr<G
 //
 Glib::RefPtr<Gdk::GLContext> SingleContextGlArea::OnCreateContext()
 {
-	if (s_SingleContextCache == nullptr)
-	{
-		s_SingleContextCache = new ContextCache();
-		s_SingleContextCache->glibContext = Gtk::GLArea::on_create_context();
-		s_SingleContextCache->apiContext = new render::EpoxyGlContext();
-	}
+	render::GraphicsContext graphicsContext = render::ContextHolder::Instance().GetMainRenderContext();
+	GtkRenderWindow* const renderWindow = static_cast<GtkRenderWindow*>(graphicsContext.GetSourceWindow());
+	ET_ASSERT(renderWindow != nullptr, "Can't create GLarea before open GL context is initialized");
 
-	return s_SingleContextCache->glibContext;
-}
+	set_has_depth_buffer(renderWindow->UseDepthBuffer());
+	set_has_stencil_buffer(renderWindow->UseStencilBuffer());
+	set_double_buffered(renderWindow->UseDoubleBuffering());
 
-//---------------------------------
-// SingleContextGlArea::GetApiContext
-//
-render::I_GraphicsApiContext* SingleContextGlArea::GetApiContext() const
-{
-	ET_ASSERT(s_SingleContextCache != nullptr);
-	ET_ASSERT(s_SingleContextCache->apiContext != nullptr);
-
-	return s_SingleContextCache->apiContext;
+	return renderWindow->GetGdkContext();
 }
 
 
@@ -86,11 +66,6 @@ GtkRenderArea::GtkRenderArea(SingleContextGlArea* const glArea)
 	: I_RenderArea()
 	, m_GlArea(glArea)
 {
-	m_GlArea->set_has_depth_buffer(true);
-	m_GlArea->set_has_stencil_buffer(false);
-	m_GlArea->set_required_version(4, 5);
-	m_GlArea->set_double_buffered(true);
-	m_GlArea->set_use_es(false);
 
 	m_GlArea->signal_realize().connect(sigc::mem_fun(*this, &GtkRenderArea::OnRealize));
 	m_GlArea->signal_unrealize().connect(sigc::mem_fun(*this, &GtkRenderArea::OnUnrealize), false);
@@ -105,7 +80,7 @@ void GtkRenderArea::OnRealize()
 {
 	if (m_OnInit)
 	{
-		m_OnInit(m_GlArea->GetApiContext());
+		m_OnInit(render::ContextHolder::GetRenderContext());
 	}
 }
 
@@ -140,7 +115,7 @@ bool GtkRenderArea::OnRender(const Glib::RefPtr<Gdk::GLContext>& context)
 
 	if (m_OnRender)
 	{
-		m_OnRender(m_GlArea->GetApiContext()->GetActiveFramebuffer());
+		m_OnRender(render::ContextHolder::GetRenderContext()->GetActiveFramebuffer());
 	}
 
 	return true;

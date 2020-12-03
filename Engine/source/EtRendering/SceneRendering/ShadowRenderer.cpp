@@ -39,7 +39,7 @@ void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShado
 {
 	GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//Calculate light camera matrix
 	//*****************************

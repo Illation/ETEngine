@@ -1,6 +1,6 @@
 #include <map>
 
-#include "GraphicsApiContext.h"
+#include "GraphicsContextApi.h"
 
 #ifndef GL_CONTEXT_CLASSNAME
 #error you must declare the name of the class with #define GL_CONTEXT_CLASSNAME YourGlImplementationClassName
@@ -49,7 +49,7 @@ namespace GL_CONTEXT_NS {
 //
 // Wrapper for all graphics API calls, avoids resubmitting api calls by caching some of the state CPU side
 //
-class GL_CONTEXT_CLASSNAME final : public I_GraphicsApiContext
+class GL_CONTEXT_CLASSNAME final : public I_GraphicsContextApi
 {
 	// definitions
 	//-------------
@@ -103,7 +103,7 @@ public:
 
 	// init deinit
 	//--------------
-	GL_CONTEXT_CLASSNAME() : I_GraphicsApiContext() {}
+	GL_CONTEXT_CLASSNAME() : I_GraphicsContextApi() {}
 	~GL_CONTEXT_CLASSNAME();
 
 	//===============================

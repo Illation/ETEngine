@@ -18,17 +18,6 @@ namespace render {
 Viewport* Viewport::g_CurrentViewport = nullptr;
 
 //---------------------------------
-// Viewport::GetCurrentApiContext
-//
-// returns the render state of the current viewport
-//
-I_GraphicsApiContext* Viewport::GetCurrentApiContext()
-{
-	ET_ASSERT(g_CurrentViewport != nullptr);
-	return g_CurrentViewport->GetApiContext();
-}
-
-//---------------------------------
 // Viewport::GetCurrentViewport
 //
 Viewport* Viewport::GetCurrentViewport()
@@ -50,7 +39,7 @@ Viewport::Viewport(I_RenderArea* const area)
 {
 	RegisterAsTriggerer();
 
-	m_Area->SetOnInit(std::function<void(I_GraphicsApiContext* const)>(std::bind(&Viewport::OnRealize, this, std::placeholders::_1)));
+	m_Area->SetOnInit(std::function<void(I_GraphicsContextApi* const)>(std::bind(&Viewport::OnRealize, this, std::placeholders::_1)));
 	m_Area->SetOnDeinit(std::function<void()>(std::bind(&Viewport::OnUnrealize, this)));
 	m_Area->SetOnResize(std::function<void(vec2 const)>(std::bind(&Viewport::OnResize, this, std::placeholders::_1)));
 	m_Area->SetOnRender(std::function<void(T_FbLoc const)>(std::bind(&Viewport::OnRender, this, std::placeholders::_1)));
@@ -112,7 +101,7 @@ void Viewport::SetRenderer(I_ViewportRenderer* renderer)
 //
 // From this point on graphics API functions can be called for this viewport
 //
-void Viewport::OnRealize(I_GraphicsApiContext* const api)
+void Viewport::OnRealize(I_GraphicsContextApi* const api)
 {
 	m_ApiContext = api;
 

@@ -31,7 +31,7 @@ SharedVarController::~SharedVarController()
 //
 void SharedVarController::Init()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	m_BufferLocation = api->CreateBuffer();
 
@@ -47,7 +47,7 @@ void SharedVarController::Init()
 //
 void SharedVarController::Deinit()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->DeleteBuffer(m_BufferLocation);
 }
@@ -57,7 +57,7 @@ void SharedVarController::Deinit()
 //
 void SharedVarController::UpdataData(Camera const& camera, Gbuffer const& gbuffer)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	m_Data.view = camera.GetView();
 	m_Data.viewInv = camera.GetViewInv();

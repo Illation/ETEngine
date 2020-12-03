@@ -183,7 +183,7 @@ MeshSurface::MeshSurface(MeshData const* const mesh, render::Material const* con
 	ET_ASSERT(mesh != nullptr);
 	ET_ASSERT(m_Material != nullptr);
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	// create a new vertex array
 	m_VertexArray = api->CreateVertexArray();
@@ -206,7 +206,7 @@ MeshSurface::MeshSurface(MeshData const* const mesh, render::Material const* con
 //
 MeshSurface::~MeshSurface()
 {
-	Viewport::GetCurrentApiContext()->DeleteVertexArray(m_VertexArray);
+	ContextHolder::GetRenderContext()->DeleteVertexArray(m_VertexArray);
 }
 
 
@@ -379,7 +379,7 @@ MeshData::MeshData(MeshDataContainer const* const cpuData)
 	// copy data to GPU
 	//------------------
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	// vertex buffer
 	m_VertexBuffer = api->CreateBuffer();
@@ -404,7 +404,7 @@ MeshData::MeshData(MeshDataContainer const* const cpuData)
 //
 MeshData::~MeshData()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->DeleteBuffer(m_VertexBuffer);
 	api->DeleteBuffer(m_IndexBuffer);

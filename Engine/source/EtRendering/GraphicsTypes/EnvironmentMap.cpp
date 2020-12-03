@@ -76,7 +76,7 @@ DEFINE_FORCED_LINKING(EnvironmentMapAsset) // force the shader class to be linke
 //
 bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
-	Viewport::GetCurrentApiContext()->SetSeamlessCubemapsEnabled(true);
+	ContextHolder::GetRenderContext()->SetSeamlessCubemapsEnabled(true);
 
 	//load equirectangular texture
 	//****************************
@@ -138,7 +138,7 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 TextureData* EquirectangularToCubeMap(TextureData const* const equiTexture, int32 const resolution)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//Create framebuffer
 	T_FbLoc captureFBO;
@@ -177,6 +177,9 @@ TextureData* EquirectangularToCubeMap(TextureData const* const equiTexture, int3
 	//render the cube
 	//***************
 
+	ivec2 pos, size;
+	api->GetViewport(pos, size);
+
 	api->SetViewport(ivec2(0), ivec2(resolution));
 	api->BindFramebuffer(captureFBO);
 	for (uint8 face = 0; face < 6; ++face)
@@ -194,7 +197,8 @@ TextureData* EquirectangularToCubeMap(TextureData const* const equiTexture, int3
 
 	api->UnbindTexture(equiTexture->GetTargetType(), equiTexture->GetLocation());
 	api->UnbindTexture(envCubeMap->GetTargetType(), envCubeMap->GetLocation());
-	api->SetViewport(ivec2(0), Viewport::GetCurrentViewport()->GetDimensions());
+
+	api->SetViewport(pos, size);
 
 	api->DeleteRenderBuffers(1, &captureRBO);
 	api->DeleteFramebuffers(1, &captureFBO);

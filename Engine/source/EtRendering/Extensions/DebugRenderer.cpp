@@ -13,7 +13,7 @@ namespace render {
 
 DebugRenderer::~DebugRenderer()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->DeleteVertexArray(m_VAO);
 	api->DeleteBuffer(m_VBO);
@@ -23,7 +23,7 @@ DebugRenderer::~DebugRenderer()
 
 void DebugRenderer::Initialize()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("DebugRenderer.glsl"));
 
@@ -54,7 +54,7 @@ void DebugRenderer::Initialize()
 
 void DebugRenderer::UpdateBuffer()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);
@@ -90,7 +90,7 @@ void DebugRenderer::Draw(Camera const& camera)
 		return;
 	}
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->SetShader(m_pShader.get());
 	m_pShader->Upload("uViewProj"_hash, camera.GetViewProj());

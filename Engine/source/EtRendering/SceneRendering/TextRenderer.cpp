@@ -42,7 +42,7 @@ TextRenderer::TextCache::TextCache(std::string const& text, vec2 const pos, vec4
 //
 TextRenderer::~TextRenderer()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
 	{
@@ -60,7 +60,7 @@ TextRenderer::~TextRenderer()
 //
 void TextRenderer::Initialize()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	m_pTextShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("PostText.glsl"));
 
@@ -218,7 +218,7 @@ void TextRenderer::Draw()
 		return;
 	}
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);
@@ -325,7 +325,7 @@ void TextRenderer::UpdateBuffer()
 		}
 	}
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);
@@ -349,7 +349,7 @@ void TextRenderer::UpdateBuffer()
 void TextRenderer::CalculateTransform()
 {
 	ivec2 viewPos, viewSize;
-	Viewport::GetCurrentApiContext()->GetViewport(viewPos, viewSize);
+	ContextHolder::GetRenderContext()->GetViewport(viewPos, viewSize);
 	int32 width = viewSize.x, height = viewSize.y;
 	float scaleX = (width > 0) ? 2.f / width : 0;
 	float scaleY = (height > 0) ? 2.f / height : 0;

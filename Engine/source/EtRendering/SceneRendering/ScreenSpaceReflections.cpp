@@ -18,7 +18,7 @@ namespace render {
 
 ScreenSpaceReflections::~ScreenSpaceReflections()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->DeleteRenderBuffers(1, &m_CollectRBO);
 	SafeDelete(m_CollectTex);
@@ -27,7 +27,7 @@ ScreenSpaceReflections::~ScreenSpaceReflections()
 
 void ScreenSpaceReflections::Initialize()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
 	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("PostScreenSpaceReflections.glsl"));
@@ -54,12 +54,12 @@ void ScreenSpaceReflections::Initialize()
 
 void ScreenSpaceReflections::EnableInput()
 {
-	Viewport::GetCurrentApiContext()->BindFramebuffer(m_CollectFBO);
+	ContextHolder::GetRenderContext()->BindFramebuffer(m_CollectFBO);
 }
 
 void ScreenSpaceReflections::Draw()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->SetShader(m_pShader.get());
 

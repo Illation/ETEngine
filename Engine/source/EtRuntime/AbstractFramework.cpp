@@ -7,6 +7,7 @@
 #include <EtCore/UpdateCycle/TickManager.h>
 
 #include <EtRendering/GraphicsContext/Viewport.h>
+#include <EtRendering/GraphicsContext/ContextHolder.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/SceneRendering/SplashScreenRenderer.h>
 #include <EtRendering/SceneRendering/ShadowRenderer.h>
@@ -33,7 +34,7 @@ namespace rt {
 AbstractFramework::~AbstractFramework()
 {
 	GlfwEventManager::DestroyInstance();
-	m_RenderArea.Uninitialize();
+	m_RenderWindow.GetArea().Uninitialize();
 	SafeDelete(m_Viewport);
 	SafeDelete(m_SceneRenderer);
 
@@ -96,7 +97,7 @@ void AbstractFramework::Run()
 				m_Viewport->SetRenderer(m_SplashScreenRenderer);
 
 				m_Viewport->SetTickDisabled(true);
-				m_RenderArea.Update(); // update manually incase we don't run the game loop before the new scene is activated 
+				m_RenderWindow.GetArea().Update(); // update manually incase we don't run the game loop before the new scene is activated 
 				m_Viewport->SetTickDisabled(false);
 				break;
 
@@ -113,10 +114,10 @@ void AbstractFramework::Run()
 	fw::UnifiedScene::Instance().Init();
 
 	// init rendering target
-	m_Viewport = new render::Viewport(&m_RenderArea);
+	m_Viewport = new render::Viewport(&m_RenderWindow.GetArea());
 	m_SplashScreenRenderer = new render::SplashScreenRenderer();
 	m_Viewport->SetRenderer(m_SplashScreenRenderer);
-	m_RenderArea.Initialize(); // also initializes the viewport and its renderer
+	render::ContextHolder::Instance().CreateMainRenderContext(&m_RenderWindow); // also initializes the viewport and its renderer
 
 	// screenshots
 	std::string const& screenshotDir = cfg->GetScreenshotDir();
@@ -143,7 +144,7 @@ void AbstractFramework::Run()
 	cfg->InitRenderConfig();
 
 	m_SplashScreenRenderer->Init();
-	m_RenderArea.Update();
+	m_RenderWindow.GetArea().Update();
 
 	fw::AudioManager::GetInstance()->Initialize();
 	fw::PhysicsManager::GetInstance()->Initialize();
@@ -152,7 +153,7 @@ void AbstractFramework::Run()
 
 	// init input manager
 	core::InputManager::GetInstance();	
-	GlfwEventManager::GetInstance()->Init(&m_RenderArea);
+	GlfwEventManager::GetInstance()->Init(&m_RenderWindow.GetArea());
 
 	// scene rendering
 	m_SceneRenderer = new render::ShadedSceneRenderer(&(fw::UnifiedScene::Instance().GetRenderScene()));
@@ -194,7 +195,7 @@ void AbstractFramework::MainLoop()
 			*m_Viewport,
 			ecs.GetComponent<fw::TransformComponent>(cam));
 
-		m_RenderArea.Update();
+		m_RenderWindow.GetArea().Update();
 	}
 }
 

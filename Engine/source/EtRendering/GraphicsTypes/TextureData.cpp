@@ -32,7 +32,7 @@ TextureData::TextureData(ivec2 const res, E_ColorFormat const intern, E_ColorFor
 	, m_Depth(depth)
 	, m_TargetType((depth > 1) ? E_TextureType::Texture3D : E_TextureType::Texture2D)
 {
-	m_Location = Viewport::GetCurrentApiContext()->GenerateTexture();
+	m_Location = ContextHolder::GetRenderContext()->GenerateTexture();
 }
 
 //---------------------------------
@@ -47,7 +47,7 @@ TextureData::TextureData(E_TextureType const targetType, ivec2 const res)
 	, m_Format(E_ColorFormat::RGB)
 	, m_DataType(E_DataType::Float)
 {
-	m_Location = Viewport::GetCurrentApiContext()->GenerateTexture();
+	m_Location = ContextHolder::GetRenderContext()->GenerateTexture();
 }
 
 //---------------------------------
@@ -57,7 +57,7 @@ TextureData::TextureData(E_TextureType const targetType, ivec2 const res)
 //
 TextureData::~TextureData()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 	if (m_Handle != 0u)
 	{
 		api->SetTextureHandleResidency(m_Handle, false);
@@ -75,7 +75,7 @@ void TextureData::Build(void* data)
 {
 	ET_ASSERT(m_Handle == 0u, "Shouldn't build after a handle was created!");
 
-	Viewport::GetCurrentApiContext()->SetTextureData(*this, data);
+	ContextHolder::GetRenderContext()->SetTextureData(*this, data);
 }
 
 //---------------------------------
@@ -89,7 +89,7 @@ void TextureData::SetParameters(TextureParameters const& params, bool const forc
 {
 	ET_ASSERT(m_Handle == 0u, "Shouldn't set parameters after a handle was created!");
 
-	Viewport::GetCurrentApiContext()->SetTextureParams(*this, m_MipLevels, m_Parameters, params, force);
+	ContextHolder::GetRenderContext()->SetTextureParams(*this, m_MipLevels, m_Parameters, params, force);
 }
 
 //---------------------------------
@@ -108,7 +108,7 @@ bool TextureData::Resize(ivec2 const& newSize)
 
 	if (regenerate)
 	{
-		I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+		I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 		if (hasHandle)
 		{
@@ -142,7 +142,7 @@ bool TextureData::Resize(ivec2 const& newSize)
 //
 void TextureData::CreateHandle()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	m_Handle = api->GetTextureHandle(m_Location);
 	api->SetTextureHandleResidency(m_Handle, true); // #todo: in the future we should have a system that makes inactive handles non resident after a while

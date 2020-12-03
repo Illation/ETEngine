@@ -119,7 +119,7 @@ void ShadedSceneRenderer::OnResize(ivec2 const dim)
 //
 void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	// Global variables for all rendering systems
 	//********************************************
@@ -377,7 +377,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 //
 void ShadedSceneRenderer::DrawShadow(I_Material const* const nullMaterial)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	// No need to set shaders or upload material parameters as that is the calling functions responsibility
 	for (MaterialCollection::Mesh const& mesh : m_RenderScene->GetShadowCasters().m_Meshes)
@@ -406,7 +406,7 @@ void ShadedSceneRenderer::DrawShadow(I_Material const* const nullMaterial)
 //
 void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCollection> const& collectionGroup)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	for (MaterialCollection const& collection : collectionGroup)
 	{
@@ -444,7 +444,7 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 //
 void ShadedSceneRenderer::DrawOverlays(T_FbLoc const targetFb)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->DebugPushGroup("draw overlays");
 

@@ -5,7 +5,7 @@
 #include <EtFramework/Config/TickOrder.h>
 #include <EtFramework/Util/ScreenshotCapture.h>
 
-#include <EtRuntime/Rendering/GlfwRenderArea.h>
+#include <EtRuntime/Rendering/GlfwRenderWindow.h>
 
 
 // fwd
@@ -58,7 +58,7 @@ private:
 	///////
 
 private:
-	GlfwRenderArea m_RenderArea;
+	GlfwRenderWindow m_RenderWindow;
 	render::Viewport* m_Viewport = nullptr;
 	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
 	render::SplashScreenRenderer* m_SplashScreenRenderer = nullptr;

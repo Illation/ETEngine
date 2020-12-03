@@ -27,7 +27,7 @@ namespace render {
 //
 SpriteRenderer::~SpriteRenderer()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
 	{
@@ -49,7 +49,7 @@ SpriteRenderer::~SpriteRenderer()
 //
 void SpriteRenderer::Initialize()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	m_Shader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("PostSprite.glsl"));
 
@@ -147,7 +147,7 @@ void SpriteRenderer::Draw(TextureData const* tex,
 	case E_ScalingMode::Screen:
 	{
 		ivec2 viewPos, viewSize;
-		Viewport::GetCurrentApiContext()->GetViewport(viewPos, viewSize);
+		ContextHolder::GetRenderContext()->GetViewport(viewPos, viewSize);
 		finalScale = scale * math::vecCast<float>(viewSize);
 	}
 	break;
@@ -198,7 +198,7 @@ void SpriteRenderer::Draw()
 		return;
 	}
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	UpdateBuffer();
 
@@ -257,7 +257,7 @@ void SpriteRenderer::Draw()
 //
 void SpriteRenderer::UpdateBuffer()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);
@@ -297,7 +297,7 @@ void SpriteRenderer::UpdateBuffer()
 void SpriteRenderer::CalculateTransform()
 {
 	ivec2 viewPos, viewSize;
-	Viewport::GetCurrentApiContext()->GetViewport(viewPos, viewSize);
+	ContextHolder::GetRenderContext()->GetViewport(viewPos, viewSize);
 
 	int32 const width = viewSize.x;
 	int32 const height = viewSize.y;

@@ -51,7 +51,7 @@ void EntityIdRenderer::CreateRenderTarget()
 {
 	using namespace render;
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
 	TextureParameters params(false);
@@ -83,7 +83,7 @@ void EntityIdRenderer::DestroyRenderTarget()
 {
 	using namespace render;
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->DeleteRenderBuffers(1, &m_DrawDepth);
 	SafeDelete(m_DrawTex);
@@ -121,7 +121,7 @@ void EntityIdRenderer::OnViewportPreRender(render::T_FbLoc const targetFb)
 {
 	using namespace render;
 
-	I_GraphicsApiContext* const api = m_ViewportToPickFrom->GetApiContext();
+	I_GraphicsContextApi* const api = m_ViewportToPickFrom->GetApiContext();
 
 	// extract the camera from the viewport
 	Camera const* camera = nullptr;
@@ -187,7 +187,7 @@ void EntityIdRenderer::OnViewportPostFlush(render::T_FbLoc const targetFb)
 {
 	using namespace render;
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->BindFramebuffer(m_DrawTarget);
 
@@ -250,7 +250,7 @@ void EntityIdRenderer::DrawEntity(fw::T_EntityId const entity, render::Camera co
 		// upload the color to the material and adraw the entity with it
 		m_Shader->Upload("uColor"_hash, color);
 
-		I_GraphicsApiContext* const api = m_ViewportToPickFrom->GetApiContext();;
+		I_GraphicsContextApi* const api = m_ViewportToPickFrom->GetApiContext();;
 
 		MeshSurface const* surface = modelComp.GetMesh()->GetSurface(m_Material.get());
 

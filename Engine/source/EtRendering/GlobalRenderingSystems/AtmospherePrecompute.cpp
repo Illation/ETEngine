@@ -48,7 +48,7 @@ void AtmospherePrecompute::Init()
 	m_TexDeltaScattering->Build();
 	m_TexDeltaScattering->SetParameters(m_Settings.m_TexParams);
 
-	Viewport::GetCurrentApiContext()->GenFramebuffers(1, &m_FBO);
+	ContextHolder::GetRenderContext()->GenFramebuffers(1, &m_FBO);
 
 	m_IsInitialized = true;
 }
@@ -68,7 +68,7 @@ void AtmospherePrecompute::Unload()//unload textures and fbos needed for precomp
 	delete m_TexDeltaScattering;
 	m_TexDeltaScattering = nullptr;
 
-	Viewport::GetCurrentApiContext()->DeleteFramebuffers(1, &m_FBO);
+	ContextHolder::GetRenderContext()->DeleteFramebuffers(1, &m_FBO);
 	// #todo also unload shaders, extra functionality for content manager
 
 	//assert(glGetError == 0);
@@ -83,7 +83,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		Init();
 	}
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//Precomputation variables
 	atmo->m_Params.Upload(m_pComputeTransmittance.get(), "uAtmosphere");
@@ -235,7 +235,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 
 void AtmospherePrecompute::SetUniforms(ShaderData* shader, TextureData* transmittance, TextureData* scattering, TextureData* irradiance, TextureData* mie)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	shader->Upload("uTexTransmittance"_hash, static_cast<TextureData const*>(transmittance));
 	shader->Upload("uTexScattering"_hash, static_cast<TextureData const*>(scattering));

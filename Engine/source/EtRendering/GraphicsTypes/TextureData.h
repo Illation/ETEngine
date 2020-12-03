@@ -4,7 +4,7 @@
 #include <EtCore/Content/Asset.h>
 #include <EtCore/Util/LinkerUtils.h>
 
-#include <EtRendering/GraphicsContext/GraphicsApiContext.h>
+#include <EtRendering/GraphicsContext/GraphicsContextApi.h>
 
 
 namespace et {

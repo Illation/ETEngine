@@ -104,7 +104,7 @@ void OutlineRenderer::Deinit()
 //
 void OutlineRenderer::CreateRenderTarget()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
 	TextureParameters params(false);
@@ -135,7 +135,7 @@ void OutlineRenderer::CreateRenderTarget()
 //
 void OutlineRenderer::DestroyRenderTarget()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->DeleteRenderBuffers(1, &m_DrawDepth);
 	SafeDelete(m_DrawTex);
@@ -156,7 +156,7 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 		return;
 	}
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
 	api->SetViewport(ivec2(0), dim);

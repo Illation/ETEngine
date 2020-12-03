@@ -18,33 +18,11 @@ namespace edit {
 //
 class SingleContextGlArea final : public Gtk::GLArea
 {
-	// definitions
-	//-------------------
-private:
-	//---------------------------------
-	// SingleContextCache
-	//
-	// Ensures all rendering areas in the editor use the same open GL context
-	//
-	struct ContextCache
-	{
-		Glib::RefPtr<Gdk::GLContext> glibContext;
-		render::I_GraphicsApiContext* apiContext;
-	};
-
-	static ContextCache* s_SingleContextCache;
-
-public:
-	static void DestroyContext();
-
 	// construct destruct
 	//-------------------
+public:
 	SingleContextGlArea();
 	SingleContextGlArea(BaseObjectType* cobject, Glib::RefPtr<Gtk::Builder> const& refBuilder);
-
-	// accessors
-	//-----------
-	render::I_GraphicsApiContext* GetApiContext() const;
 
 	// signals
 	//-----------------------
@@ -76,7 +54,7 @@ protected:
 
 	// Render Area Interface
 	//-----------------------
-	void SetOnInit(std::function<void(render::I_GraphicsApiContext* const)>& callback) override { m_OnInit = callback; }
+	void SetOnInit(std::function<void(render::I_GraphicsContextApi* const)>& callback) override { m_OnInit = callback; }
 	void SetOnDeinit(std::function<void()>& callback) override { m_OnDeinit = callback; }
 	void SetOnResize(std::function<void(vec2 const)>& callback) override { m_OnResize = callback; }
 	void SetOnRender(std::function<void(render::T_FbLoc const)>& callback) override { m_OnRender = callback; }
@@ -89,7 +67,7 @@ protected:
 	// Data
 	///////
 private:
-	std::function<void(render::I_GraphicsApiContext* const)> m_OnInit;
+	std::function<void(render::I_GraphicsContextApi* const)> m_OnInit;
 	std::function<void()> m_OnDeinit;
 	std::function<void(vec2 const)> m_OnResize;
 	std::function<void(render::T_FbLoc const)> m_OnRender;

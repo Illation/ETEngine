@@ -68,7 +68,7 @@ void Atmosphere::Draw(vec3 const& position, float const height, float const grou
 	ET_ASSERT(m_TexIrradiance != nullptr);
 	ET_ASSERT(m_TexInscatter != nullptr);
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	float const radius = groundRadius + height;
 	float const icoRadius = radius / 0.996407747f;//scale up the sphere so the face center reaches the top of the atmosphere

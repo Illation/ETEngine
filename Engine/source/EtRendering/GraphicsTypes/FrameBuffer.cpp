@@ -22,7 +22,7 @@ FrameBuffer::FrameBuffer(std::string shaderFile, E_DataType const format, uint32
 
 FrameBuffer::~FrameBuffer()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
 	{
@@ -39,7 +39,7 @@ FrameBuffer::~FrameBuffer()
 
 void FrameBuffer::Initialize()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//Load and compile Shaders
 	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString(core::FileUtil::ExtractName(m_ShaderFile).c_str()));
@@ -69,12 +69,12 @@ void FrameBuffer::AccessShaderAttributes()
 
 void FrameBuffer::Enable(bool active)
 {
-	Viewport::GetCurrentApiContext()->BindFramebuffer(active ? m_GlFrameBuffer : 0);
+	ContextHolder::GetRenderContext()->BindFramebuffer(active ? m_GlFrameBuffer : 0);
 }
 
 void FrameBuffer::Draw()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->SetDepthEnabled(false);
 	api->SetShader(m_pShader.get());
@@ -87,7 +87,7 @@ void FrameBuffer::Draw()
 
 void FrameBuffer::GenerateFramebufferTextures()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
 	api->BindFramebuffer(m_GlFrameBuffer);
@@ -134,7 +134,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 
 void FrameBuffer::ResizeFramebufferTextures()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
 	ET_ASSERT(m_pTextureVec.size() > 0);

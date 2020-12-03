@@ -25,7 +25,7 @@ void Gbuffer::AccessShaderAttributes()
 
 void Gbuffer::UploadDerivedVariables()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//for position reconstruction
 	render::ShadedSceneRenderer const* const sceneRenderer = render::ShadedSceneRenderer::GetCurrent();

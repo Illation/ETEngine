@@ -17,7 +17,7 @@ namespace rt {
 //
 // Create a Window and an openGL context to draw to the window
 //
-void GlfwRenderArea::Initialize()
+void GlfwRenderArea::Initialize(render::GraphicsContextParams const& params)
 {
 	// Initialize GLFW 
 	//-----------------
@@ -36,19 +36,18 @@ void GlfwRenderArea::Initialize()
 	//-----------------------------------------------
 
 	// Set the OopenGL context attributes before creating the window
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-	// enable double buffering
-	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
-	// Also request a depth buffer
-	glfwWindowHint(GLFW_DEPTH_BITS, 24);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, params.m_VersionMajor);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, params.m_VersionMinor);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, params.m_IsForwardCompatible ? GLFW_OPENGL_CORE_PROFILE : GLFW_OPENGL_COMPAT_PROFILE);
+	glfwWindowHint(GLFW_CLIENT_API, params.m_UseES ? GLFW_OPENGL_ES_API : GLFW_OPENGL_API);
 
-#if defined(GRAPHICS_API_DEBUG)
 	// Request a debug context.
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
-#endif
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, params.m_UseDebugInfo ? GLFW_TRUE : GLFW_FALSE);
+
+	// buffer info
+	glfwWindowHint(GLFW_DOUBLEBUFFER, params.m_DoubleBuffer ? GLFW_TRUE : GLFW_FALSE);
+	glfwWindowHint(GLFW_DEPTH_BITS, params.m_DepthBuffer ? 24 : 0);
+	glfwWindowHint(GLFW_STENCIL_BITS, params.m_StencilBuffer ? 8 : 0);
 
 	fw::Config::Settings::Window const& windowSettings = fw::Config::GetInstance()->GetWindow();
 

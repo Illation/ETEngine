@@ -19,7 +19,7 @@ void Patch::Init(int16 const levels)
 {
 	m_Levels = levels;
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//Shader Init
 	//***********
@@ -117,7 +117,7 @@ void Patch::GenerateGeometry(int16 levels)
 		rowIdx = nextIdx;
 	}
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	// rebind
 	api->BindBuffer(E_BufferType::Vertex, m_VBO);
@@ -129,7 +129,7 @@ void Patch::GenerateGeometry(int16 levels)
 
 void Patch::BindInstances(std::vector<PatchInstance> const& instances)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//update buffer
 	m_NumInstances = (int32)instances.size();
@@ -140,7 +140,7 @@ void Patch::BindInstances(std::vector<PatchInstance> const& instances)
 
 void Patch::UploadDistanceLUT(std::vector<float> const& distances)
 {
-	Viewport::GetCurrentApiContext()->SetShader(m_pPatchShader.get());
+	ContextHolder::GetRenderContext()->SetShader(m_pPatchShader.get());
 	for (size_t i = 0; i < distances.size(); i++)
 	{
 		m_pPatchShader->Upload(GetHash("distanceLUT[" + std::to_string(i) + "]"), distances[i]);
@@ -149,7 +149,7 @@ void Patch::UploadDistanceLUT(std::vector<float> const& distances)
 
 void Patch::Draw(Planet const& planet, mat4 const& transform)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->SetShader(m_pPatchShader.get());
 
@@ -179,7 +179,7 @@ void Patch::Draw(Planet const& planet, mat4 const& transform)
 
 Patch::~Patch()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	api->DeleteVertexArray(m_VAO);
 	api->DeleteBuffer(m_EBO);

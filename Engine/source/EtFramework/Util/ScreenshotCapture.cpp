@@ -82,7 +82,7 @@ void ScreenshotCapture::OnViewportPostFlush(render::T_FbLoc const targetFb)
 	// Make the BYTE array, factor of 3 because it's RBG.
 	uint8* pixels = new uint8[3 * dim.x * dim.y];
 
-	I_GraphicsApiContext* const api = m_Viewport->GetApiContext();
+	I_GraphicsContextApi* const api = m_Viewport->GetApiContext();
 	api->Finish();
 	api->ReadPixels(ivec2(0), dim, E_ColorFormat::RGB, E_DataType::UByte, pixels);
 

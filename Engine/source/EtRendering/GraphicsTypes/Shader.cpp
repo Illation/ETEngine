@@ -38,7 +38,7 @@ ShaderData::ShaderData(T_ShaderLoc const program)
 //
 ShaderData::~ShaderData()
 {
-	Viewport::GetCurrentApiContext()->DeleteProgram(m_ShaderProgram);
+	ContextHolder::GetRenderContext()->DeleteProgram(m_ShaderProgram);
 
 	render::parameters::DestroyBlock(m_CurrentUniforms);
 }
@@ -64,7 +64,7 @@ render::T_ParameterBlock ShaderData::CopyParameterBlock(render::T_ConstParameter
 //
 void ShaderData::UploadParameterBlock(render::T_ConstParameterBlock const block) const
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	for (render::UniformParam const& param : m_UniformLayout)
 	{
@@ -207,7 +207,7 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 	// Combine Shaders into a program
 	//------------------
 
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	T_ShaderLoc const shaderProgram = api->CreateProgram();
 
@@ -259,7 +259,7 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 T_ShaderLoc ShaderAsset::CompileShader(std::string const& shaderSourceStr, E_ShaderType const type)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	T_ShaderLoc shader = api->CreateShader(type);
 
@@ -456,7 +456,7 @@ bool ShaderAsset::ReplaceInclude(std::string &line)
 //
 void ShaderAsset::InitUniforms()
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	// uniform blocks
 	//----------------
@@ -542,7 +542,7 @@ void ShaderAsset::InitUniforms()
 //
 void ShaderAsset::GetAttributes(T_ShaderLoc const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes)
 {
-	I_GraphicsApiContext* const api = Viewport::GetCurrentApiContext();
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	int32 const count = api->GetAttributeCount(shaderProgram);
 	for (int32 attribIdx = 0; attribIdx < count; ++attribIdx)
