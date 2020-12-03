@@ -52,7 +52,17 @@ void EntityIdRenderer::CreateRenderTarget()
 	using namespace render;
 
 	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
-	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
+
+	ivec2 dim;
+	render::Viewport* const vp = Viewport::GetCurrentViewport();
+	if (vp != nullptr)
+	{
+		dim = vp->GetDimensions();
+	}
+	else
+	{
+		api->GetViewport(ivec2(), dim);
+	}
 
 	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Nearest;

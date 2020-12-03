@@ -23,9 +23,6 @@ void Triangulator::Init(Planet* const planet)
 	}
 
 	Precalculate();
-	
-	//First geometry generation
-	GenerateGeometry();
 }
 
 bool Triangulator::Update(mat4 const& transform, Camera const& camera)
