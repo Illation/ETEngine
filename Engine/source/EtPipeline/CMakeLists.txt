@@ -1,17 +1,16 @@
 
 
-#########
-# Editor
-#########
+###########
+# Pipeline
+###########
 
 
 # files
 ###########
 file(GLOB_RECURSE headers ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
-file(GLOB_RECURSE c_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
 
-list (APPEND projectFiles ${headers} ${sources} ${c_sources})
+list (APPEND projectFiles ${headers} ${sources})
 
 # setup
 #########
@@ -19,17 +18,17 @@ target_definitions()
 add_definitions(-D_CONSOLE)
 
 # library
-message(STATUS "Adding target: EtEditor")
-add_library(EtEditor ${projectFiles})
-targetCompileOptions(EtEditor)
+message(STATUS "Adding target: EtPipeline")
+add_library(EtPipeline ${projectFiles})
+targetCompileOptions(EtPipeline)
 
 # directory stuff
 assign_source_group(${projectFiles})
-assignIdeFolder(EtEditor Engine/ContentPipeline)
-libOutputDirectories(EtEditor) 
+assignIdeFolder(EtPipeline Engine/ContentPipeline)
+libOutputDirectories(EtPipeline) 
 
 # linking
-target_link_libraries (EtEditor EtPipeline)
+target_link_libraries (EtPipeline EtFramework EtBuild)
 
 # library includes
 libIncludeDirs()

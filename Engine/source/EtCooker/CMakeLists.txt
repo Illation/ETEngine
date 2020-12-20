@@ -26,11 +26,11 @@ targetCompileOptions(EtCooker)
 
 # directory stuff
 assign_source_group(${projectFiles})
-assignIdeFolder(EtCooker Engine)
+assignIdeFolder(EtCooker Engine/ContentPipeline)
 outputDirectories(EtCooker "")
 
 # linking
-target_link_libraries (EtCooker EtFramework EtBuild)
+target_link_libraries (EtCooker EtPipeline)
 dependancyLinks(EtCooker)
 
 # library includes

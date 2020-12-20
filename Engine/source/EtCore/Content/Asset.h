@@ -8,7 +8,10 @@
 namespace et {
 	class I_AssetPtr;
 	REGISTRATION_NS(core);
-}
+
+	namespace pl {
+		class EditorAssetBase;
+} }
 
 
 namespace et {
@@ -29,6 +32,7 @@ public:
 
 	friend class ResourceManager; 
 	friend class I_AssetPtr;
+	friend class pl::EditorAssetBase;
 
 	struct Reference final
 	{
@@ -44,6 +48,7 @@ public:
 	private:
 		friend class I_Asset;
 		friend class ResourceManager;
+		friend class pl::EditorAssetBase;
 
 		void Ref();
 		void Deref();
