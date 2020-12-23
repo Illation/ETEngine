@@ -44,9 +44,7 @@ namespace serialization
 	bool DeserializeFromJsonString(std::string const& jsonString, T& outObject);
 
 	template<typename T>
-	bool DeserializeFromJson(JSON::Object* const parentObj, T& outObject);
-
-
+	void DeserializeFromJson(JSON::Object* const parentObj, T& outObject);
 
 
 
@@ -72,7 +70,7 @@ namespace serialization
 	bool ExtractPointerValueType(rttr::type &inOutValType, JSON::Value const* &inOutJVal, bool& isNull);
 	void ObjectFromJsonRecursive(JSON::Value const* const jVal, rttr::instance const &inst, rttr::type &instType);
 
-	void FromJsonRecursive(rttr::instance const inst, JSON::Value const* const jVal);
+	void FromJsonRecursive(rttr::instance const inst, JSON::Object const* const parentObj);
 
 } // namespace serialization
 

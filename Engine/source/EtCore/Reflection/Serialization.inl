@@ -184,47 +184,56 @@ bool DeserializeFromJsonString(std::string const& jsonString, T& outObject)
 		return false;
 	}
 
-	return DeserializeFromJson(root, outObject);
+	DeserializeFromJson(root, outObject);
+	
+	return true;
 }
 
 //---------------------------------
 // DeserializeFromJson
 //
 // Create the reflected type from JSON data. 
-// Returns nullptr if deserialization is unsuccsesful. 
 // Assumes parentObj is the parent of the object we are deserializing
 //
 template<typename T>
-bool DeserializeFromJson(JSON::Object* const parentObj, T& outObject)
+void DeserializeFromJson(JSON::Object* const parentObj, T& outObject)
 {
-	// Get the Serialized type from our template typename
-	rttr::type objectType = rttr::type::get<T>();
-	if (!objectType.is_valid())
+	rttr::type const valueType = rttr::type::get<T>();
+	ET_ASSERT(valueType.is_valid());
+
+	// polymorphic
+	rttr::type localType = valueType;
+	bool isNull;
+	JSON::Value const* jVal = parentObj;
+	if (!ExtractPointerValueType(localType, jVal, isNull) || isNull)
 	{
-		LOG("DeserializeFromJson > type is invalid!", Warning);
-		return nullptr;
+		return;
 	}
 
-	// get the name of our type
-	std::string typeName = objectType.get_name().to_string();
-
-	// try finding a json value in its parent by the typename
-	auto foundJObjectIt = std::find_if(parentObj->value.begin(), parentObj->value.end(), [typeName](JSON::Pair const& el)
+	// root value or internal pointer content ?
+	if (localType == valueType)
 	{
-		return el.first == typeName;
-	});
-
-	if (foundJObjectIt == parentObj->value.cend())
+		FromJsonRecursive(outObject, parentObj);
+	}
+	else
 	{
-		LOG("DeserializeFromJson > Couldn't find '" + typeName + std::string("' in provided json object parent!"), Warning);
-		return nullptr;
+		// find the right constructor for our type
+		rttr::constructor ctor = localType.get_constructor();
+		ET_ASSERT(ctor.is_valid(), "Failed to get a valid constructor from type '%s", localType.get_name().data());
+		rttr::variant var = ctor.invoke();
+
+		// deserialize
+		ObjectFromJsonRecursive(jVal, var, localType);
+		ET_ASSERT(var.is_valid());
+
+		if (localType != valueType)
+		{
+			var.convert(rttr::type(valueType));
+		}
+
+		outObject = var.get_value<T>();
 	}
 
-	// try creating an instance from the value
-	FromJsonRecursive(outObject, foundJObjectIt->second);
-
-	// copy construct our return object from the value of the variant
-	return true;
 }
 
 

@@ -1105,11 +1105,25 @@ void ObjectFromJsonRecursive(JSON::Value const* const jVal, rttr::instance const
 //
 // Recursively deserialize JSON values into an object or pointer(the instance)
 //
-void FromJsonRecursive(rttr::instance const inst, JSON::Value const* const jVal) // assumes jVal is a JSON::Object
+void FromJsonRecursive(rttr::instance const inst, JSON::Object const* const parentObj) // assumes jVal is a JSON::Object
 {
 	rttr::type instType = inst.get_type().get_raw_type().is_wrapper() ? inst.get_wrapped_instance().get_derived_type() : inst.get_derived_type();
 
-	ObjectFromJsonRecursive(jVal, inst, instType);
+	// try finding a json value in its parent by the typename
+	ET_ASSERT(parentObj->value.size() == 1u);
+	ET_ASSERT(parentObj->value[0].first == instType.get_name().to_string(),
+		"root json object didn't contain a field corresponding to the deserialized type '%s'",
+		instType.get_name().data());
+
+	// deserialize
+	ObjectFromJsonRecursive(parentObj->value[0].second, inst, instType);
+
+	// do necessary conversions and checks
+	if (!inst.is_valid())
+	{
+		ET_ASSERT(false, "deserializing JSON object failed!");
+		return;
+	}
 }
 
 

@@ -13,8 +13,11 @@
 #include <EtCore/Content/AssetDatabase.h>
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtFramework/linkerHelper.h>
 #include <EtFramework/Config/BootConfig.h>
+#include <EtFramework/linkerHelper.h>
+
+#include <EtPipeline/linkerHelper.h>
+#include <EtPipeline/Content/EditorAssetDatabase.h>
 
 
 //============
@@ -62,7 +65,8 @@ void CookFilePackages(std::string const& dbBase,
 
 int RunCooker(int argc, char *argv[])
 {
-	et::fw::ForceLinking();
+	fw::ForceLinking();
+	pl::ForceLinking();
 
 	// parse arguments
 	//-----------------
@@ -102,6 +106,15 @@ int RunCooker(int argc, char *argv[])
 		LOG("main > unable to deserialize engine database at '" + std::string(engineDbPath) + std::string("'"), core::LogLevel::Error);
 	}
 	std::string engineDbBase = core::FileUtil::ExtractPath(engineDbPath);
+
+	// test
+	//{
+	//	core::Directory* const dir = new core::Directory(core::FileUtil::ExtractPath(engineDbPath), nullptr, true);
+	//	dir->Mount(true);
+
+	//	pl::EditorAssetDatabase engineDb2;
+	//	engineDb2.Init(dir);
+	//}
 
 	if (genCompiledResource)
 	{

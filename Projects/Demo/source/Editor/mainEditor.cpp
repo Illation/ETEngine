@@ -1,6 +1,8 @@
 #include <EtFramework/stdafx.h>
 #include <EtFramework/linkerHelper.h>
 
+#include <EtPipeline/linkerHelper.h>
+
 #include <glibmm/refptr.h>
 #include <glibmm/miscutils.h>
 
@@ -32,6 +34,7 @@ int main(int argc, char *argv[])
 	SetDebuggingOptions();
 
 	et::demo::ForceLinking(); // makes sure the linker doesn't ignore reflection only data
+	et::pl::ForceLinking();
 
 	// working dir
 	if (argc > 0)

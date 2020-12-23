@@ -1,0 +1,14 @@
+{
+  "editable stub asset": {
+    "asset": {
+      "stub asset": {
+        "name": "cie.json",
+        "path": "assets/",
+        "package": "",
+        "references": []
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

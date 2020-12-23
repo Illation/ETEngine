@@ -118,8 +118,8 @@ public:
 
 	// accessors
 	//---------------
-	std::vector<Entry*> GetChildren() { return m_pChildren; }
-	std::vector<Entry*> GetChildrenByExt(std::string ext);
+	std::vector<Entry*> const& GetChildren() { return m_pChildren; }
+	std::vector<Entry*> GetChildrenByExt(std::string const& ext);
 	void GetChildrenRecursive(std::vector<File*>& children);
 
 	Entry* GetMountedChild(std::string const& path) const;

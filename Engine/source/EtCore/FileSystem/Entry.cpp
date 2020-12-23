@@ -394,12 +394,12 @@ bool Directory::Delete()
 //
 // Get all children by file extension
 //
-std::vector<Entry*> Directory::GetChildrenByExt(std::string ext)
+std::vector<Entry*> Directory::GetChildrenByExt(std::string const& ext)
 {
 	std::vector<Entry*> ret;
 	for (auto e : m_pChildren)
 	{
-		if (e->GetExtension() == ext || e->GetType() == Entry::EntryType::ENTRY_DIRECTORY)
+		if (e->GetExtension() == ext)
 		{
 			ret.push_back(e);
 		}

@@ -8,6 +8,44 @@ namespace et {
 namespace pl {
 
 
+//===============
+// Editor Asset
+//===============
+
+
+RTTR_REGISTRATION
+{
+	rttr::registration::class_<EditorAssetBase>("editor asset")
+		.property("asset", &EditorAssetBase::m_Asset)
+		.property("metadata", &EditorAssetBase::m_MetaData)
+		.property("children", &EditorAssetBase::m_ChildAssets);
+}
+
+
+//---------------------------
+// EditorAssetBase::d-tor
+//
+EditorAssetBase::~EditorAssetBase()
+{
+	for (EditorAssetBase* const child : m_ChildAssets)
+	{
+		delete child;
+	}
+
+	Unload();
+
+	delete m_MetaData;
+}
+
+//-----------------------
+// EditorAssetBase::Init
+//
+void EditorAssetBase::Init(core::File* const configFile)
+{
+	m_File = configFile;
+	m_Id = m_Asset->GetId();
+}
+
 //---------------------------
 // EditorAssetBase::Load
 //
