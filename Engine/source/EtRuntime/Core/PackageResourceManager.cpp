@@ -58,7 +58,7 @@ void PackageResourceManager::Init()
 	}
 
 	// Link asset references together
-	SetAssetReferences(m_Database, [this](core::HashString const assetId) { return m_Database.GetAsset(assetId); });
+	SetAssetReferences(&m_Database, [this](core::HashString const assetId) { return m_Database.GetAsset(assetId); });
 }
 
 //---------------------------------

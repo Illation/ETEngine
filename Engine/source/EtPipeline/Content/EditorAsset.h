@@ -37,10 +37,10 @@ public:
 	// accessors
 	//-----------
 	core::HashString GetId() const { return m_Id; }
+	core::I_Asset* GetAsset() { return m_Asset; }
+	core::I_Asset const* GetAsset() const { return m_Asset; }
 
 	virtual rttr::type GetType() const = 0;
-	virtual core::I_Asset* GetAsset() = 0;
-	virtual core::I_Asset const* GetAsset() const = 0;
 
 	// utility
 	//---------
@@ -92,8 +92,6 @@ public:
 	// implementation
 	//----------------
 	rttr::type GetType() const override { return rttr::type::get<TDataType>(); }
-	core::I_Asset* GetAsset() override { return m_Asset; }
-	core::I_Asset const* GetAsset() const override { return m_Asset; }
 
 	// accessors
 	//-----------

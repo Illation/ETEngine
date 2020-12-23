@@ -6,7 +6,7 @@ namespace et {
 namespace core {
 
 
-struct AssetDatabase;
+class I_AssetDatabase;
 
 
 //---------------------------------
@@ -60,7 +60,7 @@ public:
 	// utility
 	//---------------------
 protected:
-	void SetAssetReferences(AssetDatabase&db, T_ReferenceAssetGetter const& fnc) const;
+	void SetAssetReferences(I_AssetDatabase* const db, T_ReferenceAssetGetter const& fnc) const;
 
 	// Interface
 	//---------------------

@@ -2,6 +2,7 @@
 #include <rttr/type>
 
 #include "Asset.h"
+#include "AssetDatabaseInterface.h"
 
 #include <EtCore/Hashing/Hash.h>
 
@@ -15,12 +16,14 @@ namespace core {
 //
 // Container for all assets and package descriptors
 //
-struct AssetDatabase final
+struct AssetDatabase final : public I_AssetDatabase
 {
 public:
 	// Definitions
 	//---------------------
 	typedef std::vector<I_Asset*> T_AssetList;
+
+	static std::vector<rttr::type> GetValidAssetTypes(rttr::type const type, bool const reportErrors);
 
 	class PackageDescriptor final
 	{
@@ -71,6 +74,10 @@ public:
 
 	I_Asset* GetAsset(HashString const assetId, bool const reportErrors = true) const;
 	I_Asset* GetAsset(HashString const assetId, rttr::type const type, bool const reportErrors = true) const; // faster option
+
+	// Interface
+	//-----------
+	void IterateAllAssets(I_AssetDatabase::T_AssetFunc const& func) override;
 
 	// Functionality
 	//---------------------

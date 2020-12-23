@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "EditorAssetDatabase.h"
 
+#include <EtCore/Content/AssetDatabase.h>
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Reflection/Serialization.h>
@@ -56,8 +57,125 @@ void EditorAssetDatabase::Init(core::Directory* const directory)
 {
 	m_Directory = directory;
 	ET_ASSERT(m_Directory != nullptr);
+	ET_ASSERT(m_Directory->IsMounted());
 
 	RecursivePopulateAssets(m_Directory);
+}
+
+//-------------------------------
+// EditorAssetDatabase::GetAsset
+//
+EditorAssetBase* EditorAssetDatabase::GetAsset(core::HashString const assetId, bool const reportErrors) const
+{
+	// in this version we loop over all caches
+	for (T_AssetList const& cache : m_AssetCaches)
+	{
+		// try finding our asset by its ID in the cache
+		auto foundAssetIt = std::find_if(cache.begin(), cache.end(), [assetId](EditorAssetBase* asset)
+			{
+				return asset->GetId() == assetId;
+			});
+
+		if (foundAssetIt != cache.cend())
+		{
+			return *foundAssetIt;
+		}
+	}
+
+	// didn't find an asset in any cache, return null
+	if (reportErrors)
+	{
+		ET_ASSERT(false, "Couldn't find asset with ID '%s'!", assetId.ToStringDbg());
+	}
+
+	return nullptr;
+}
+
+//-------------------------------
+// EditorAssetDatabase::GetAsset
+//
+EditorAssetBase* EditorAssetDatabase::GetAsset(core::HashString const assetId, rttr::type const type, bool const reportErrors) const
+{
+	std::vector<rttr::type> const assetTypes = core::AssetDatabase::GetValidAssetTypes(type, reportErrors);
+
+	for (rttr::type const assetType : assetTypes)
+	{
+		// Try finding a cache containing our type
+		auto const foundCacheIt = FindCacheIt(type);
+		if (foundCacheIt != m_AssetCaches.cend())
+		{
+			// try finding our asset by its ID in the cache
+			auto const foundAssetIt = std::find_if(foundCacheIt->cbegin(), foundCacheIt->cend(), [assetId](EditorAssetBase const* const asset)
+				{
+					return asset->GetId() == assetId;
+				});
+
+			if (foundAssetIt != foundCacheIt->cend())
+			{
+				return *foundAssetIt;
+			}
+		}
+	}
+
+	if (reportErrors)
+	{
+		ET_ASSERT(false, "Couldn't find asset with ID '%s'!", assetId.ToStringDbg());
+	}
+
+	return nullptr;
+}
+
+//---------------------------------------
+// EditorAssetDatabase::IterateAllAssets
+//
+void EditorAssetDatabase::IterateAllAssets(core::I_AssetDatabase::T_AssetFunc const& func)
+{
+	for (T_AssetList& cache : m_AssetCaches)
+	{
+		for (EditorAssetBase* const asset : cache)
+		{
+			func(asset->GetAsset());
+		}
+	}
+}
+
+//-----------------------------
+// EditorAssetDatabase::Flush
+//
+void EditorAssetDatabase::Flush()
+{
+	for (T_AssetList& cache : m_AssetCaches)
+	{
+		for (EditorAssetBase* asset : cache)
+		{
+			if (asset->GetAsset()->GetRefCount() <= 0u && asset->GetAsset()->IsLoaded())
+			{
+				asset->Unload(true);
+			}
+		}
+	}
+}
+
+//----------------------------------
+// EditorAssetDatabase::FindCacheIt
+//
+EditorAssetDatabase::T_CacheList::iterator EditorAssetDatabase::FindCacheIt(rttr::type const type)
+{
+	return std::find_if(m_AssetCaches.begin(), m_AssetCaches.end(), [type](T_AssetList const& cache)
+		{
+			return (EditorAssetDatabase::GetCacheType(cache) == type);
+		});
+}
+
+//----------------------------------
+// EditorAssetDatabase::FindCacheIt
+//
+EditorAssetDatabase::T_CacheList::const_iterator EditorAssetDatabase::FindCacheIt(rttr::type const type) const
+{
+	return std::find_if(m_AssetCaches.cbegin(), m_AssetCaches.cend(), [type](T_AssetList const& cache)
+		{
+			return (EditorAssetDatabase::GetCacheType(cache) == type);
+		});
 }
 
 //----------------------------------------
@@ -65,10 +183,7 @@ void EditorAssetDatabase::Init(core::Directory* const directory)
 //
 EditorAssetDatabase::T_AssetList& EditorAssetDatabase::FindOrCreateCache(rttr::type const type)
 {
-	auto const foundIt = std::find_if(m_AssetCaches.begin(), m_AssetCaches.end(), [type](T_AssetList const& cache)
-		{
-			return (EditorAssetDatabase::GetCacheType(cache) == type);
-		});
+	auto const foundIt = FindCacheIt(type);
 
 	if (foundIt != m_AssetCaches.cend())
 	{

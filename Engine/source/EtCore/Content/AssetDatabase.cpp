@@ -28,6 +28,39 @@ RTTR_REGISTRATION
 }
 
 
+//-----------------------------------
+// AssetDatabase::GetValidAssetTypes
+//
+// Get all asset types that derive from the given type
+//
+std::vector<rttr::type> AssetDatabase::GetValidAssetTypes(rttr::type const type, bool const reportErrors)
+{
+	std::vector<rttr::type> assetTypes;
+	if (!IsAssetDataType(type))
+	{
+		rttr::array_range<rttr::type> derivedTypes = type.get_derived_classes();
+		for (rttr::type const derivedType : derivedTypes)
+		{
+			if (IsAssetDataType(derivedType)) // only leaf asset types
+			{
+				assetTypes.push_back(derivedType);
+			}
+		}
+
+		if (reportErrors)
+		{
+			ET_ASSERT(!assetTypes.empty(), "Couldn't find asset type derived from '%s'!", type.get_name().data());
+		}
+	}
+	else
+	{
+		assetTypes.push_back(type);
+	}
+
+	return assetTypes;
+}
+
+
 //====================
 // Package Descriptor
 //====================
@@ -214,6 +247,7 @@ I_Asset* AssetDatabase::GetAsset(HashString const assetId, bool const reportErro
 	{
 		ET_ASSERT(false, "Couldn't find asset with ID '%s'!", assetId.ToStringDbg());
 	}
+
 	return nullptr;
 }
 
@@ -224,27 +258,7 @@ I_Asset* AssetDatabase::GetAsset(HashString const assetId, bool const reportErro
 //
 I_Asset* AssetDatabase::GetAsset(HashString const assetId, rttr::type const type, bool const reportErrors) const
 {
-	std::vector<rttr::type> assetTypes;
-	if (!IsAssetDataType(type))
-	{
-		rttr::array_range<rttr::type> derivedTypes = type.get_derived_classes();
-		for (rttr::type const derivedType : derivedTypes)
-		{
-			if (IsAssetDataType(derivedType)) // only leaf asset types
-			{
-				assetTypes.push_back(derivedType);
-			}
-		}
-
-		if (reportErrors)
-		{
-			ET_ASSERT(!assetTypes.empty(), "Couldn't find asset type derived from '%s'!", type.get_name().data());
-		}
-	}
-	else
-	{
-		assetTypes.push_back(type);
-	}
+	std::vector<rttr::type> const assetTypes = GetValidAssetTypes(type, reportErrors);
 
 	for (rttr::type const assetType : assetTypes)
 	{
@@ -275,6 +289,20 @@ I_Asset* AssetDatabase::GetAsset(HashString const assetId, rttr::type const type
 	}
 
 	return nullptr;
+}
+
+//---------------------------------
+// AssetDatabase::IterateAllAssets
+//
+void AssetDatabase::IterateAllAssets(I_AssetDatabase::T_AssetFunc const& func)
+{
+	for (AssetCache& cache : caches)
+	{
+		for (I_Asset* asset : cache.cache)
+		{
+			func(asset);
+		}
+	}
 }
 
 //---------------------------------
