@@ -1,0 +1,17 @@
+{
+  "editable shader asset": {
+    "asset": {
+      "shader asset": {
+        "name": "FwdConvBRDFShader.glsl",
+        "path": "assets/Shaders/",
+        "package": "",
+        "references": [
+          "Common.glsl",
+          "CommonPBR.glsl"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

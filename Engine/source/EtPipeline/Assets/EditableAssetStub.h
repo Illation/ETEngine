@@ -1,5 +1,4 @@
 #pragma once
-
 #include <EtCore/Content/AssetStub.h>
 
 #include <EtPipeline/Content/EditorAsset.h>

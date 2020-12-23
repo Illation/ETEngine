@@ -1,0 +1,17 @@
+{
+  "editable shader asset": {
+    "asset": {
+      "shader asset": {
+        "name": "FwdBrdfLutShader.glsl",
+        "path": "assets/Shaders/",
+        "package": "",
+        "references": [
+          "Common.glsl",
+          "CommonPBR.glsl"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

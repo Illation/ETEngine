@@ -1,0 +1,17 @@
+{
+  "editable shader asset": {
+    "asset": {
+      "shader asset": {
+        "name": "DefUberShader.glsl",
+        "path": "assets/Shaders/",
+        "package": "",
+        "references": [
+          "CommonSharedVars.glsl",
+          "CommonDeferred.glsl"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

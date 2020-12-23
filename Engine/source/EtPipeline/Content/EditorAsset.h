@@ -1,5 +1,4 @@
 #pragma once
-
 #include <EtCore/Content/Asset.h>
 
 #include "EditorAssetMeta.h"

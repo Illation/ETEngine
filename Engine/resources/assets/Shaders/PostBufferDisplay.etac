@@ -1,0 +1,16 @@
+{
+  "editable shader asset": {
+    "asset": {
+      "shader asset": {
+        "name": "PostBufferDisplay.glsl",
+        "path": "assets/Shaders/",
+        "package": "",
+        "references": [
+          "Common.glsl"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

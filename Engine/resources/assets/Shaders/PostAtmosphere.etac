@@ -1,0 +1,20 @@
+{
+  "editable shader asset": {
+    "asset": {
+      "shader asset": {
+        "name": "PostAtmosphere.glsl",
+        "path": "assets/Shaders/",
+        "package": "",
+        "references": [
+          "Common.glsl",
+          "CommonAtmosphere.glsl",
+          "CommonSharedVars.glsl",
+          "CommonDeferred.glsl",
+          "CommonPBR.glsl"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

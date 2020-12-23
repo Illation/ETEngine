@@ -1,0 +1,19 @@
+{
+  "editable shader asset": {
+    "asset": {
+      "shader asset": {
+        "name": "ComputeDirectIrradiance.glsl",
+        "path": "assets/Shaders/AtmoPreComp/",
+        "package": "",
+        "references": [
+          "AtmoPrecompVert.glsl",
+          "AtmoPrecompGeo.glsl",
+          "Common.glsl",
+          "CommonAtmosphere.glsl"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

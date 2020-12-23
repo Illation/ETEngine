@@ -1,0 +1,14 @@
+{
+  "editable stub asset": {
+    "asset": {
+      "stub asset": {
+        "name": "CommonDeferred.glsl",
+        "path": "assets/Shaders/",
+        "package": "",
+        "references": []
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

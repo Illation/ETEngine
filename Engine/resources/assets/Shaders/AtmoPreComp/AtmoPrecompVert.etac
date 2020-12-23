@@ -1,0 +1,14 @@
+{
+  "editable stub asset": {
+    "asset": {
+      "stub asset": {
+        "name": "AtmoPrecompVert.glsl",
+        "path": "assets/Shaders/AtmoPreComp/",
+        "package": "",
+        "references": []
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

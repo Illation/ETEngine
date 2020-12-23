@@ -1,0 +1,17 @@
+{
+  "editable shader asset": {
+    "asset": {
+      "shader asset": {
+        "name": "FwdStarField.glsl",
+        "path": "assets/Shaders/",
+        "package": "",
+        "references": [
+          "CommonSharedVars.glsl",
+          "Common.glsl"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

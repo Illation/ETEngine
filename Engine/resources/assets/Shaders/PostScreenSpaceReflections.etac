@@ -1,0 +1,19 @@
+{
+  "editable shader asset": {
+    "asset": {
+      "shader asset": {
+        "name": "PostScreenSpaceReflections.glsl",
+        "path": "assets/Shaders/",
+        "package": "",
+        "references": [
+          "Common.glsl",
+          "CommonSharedVars.glsl",
+          "CommonDeferred.glsl",
+          "CommonPBR.glsl"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

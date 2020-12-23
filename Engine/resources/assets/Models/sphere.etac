@@ -1,0 +1,14 @@
+{
+  "editable mesh asset": {
+    "asset": {
+      "mesh asset": {
+        "name": "sphere.dae",
+        "path": "assets/Models/",
+        "package": "engine_content",
+        "references": []
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

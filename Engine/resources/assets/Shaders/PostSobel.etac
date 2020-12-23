@@ -1,0 +1,14 @@
+{
+  "editable shader asset": {
+    "asset": {
+      "shader asset": {
+        "name": "PostSobel.glsl",
+        "path": "assets/Shaders/",
+        "package": "",
+        "references": []
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

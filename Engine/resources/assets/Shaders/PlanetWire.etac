@@ -1,0 +1,16 @@
+{
+  "editable shader asset": {
+    "asset": {
+      "shader asset": {
+        "name": "PlanetWire.glsl",
+        "path": "assets/Shaders/",
+        "package": "",
+        "references": [
+          "CommonSharedVars.glsl"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

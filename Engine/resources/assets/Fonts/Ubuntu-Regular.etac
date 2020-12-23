@@ -1,0 +1,18 @@
+{
+  "editable font asset": {
+    "asset": {
+      "font asset": {
+        "name": "Ubuntu-Regular.ttf",
+        "path": "assets/Fonts/",
+        "package": "engine_content",
+        "references": [],
+        "size": 42,
+        "padding": 1,
+        "spread": 5,
+        "highres": 32
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}
