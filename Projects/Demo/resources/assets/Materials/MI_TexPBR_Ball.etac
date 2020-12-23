@@ -1,0 +1,21 @@
+{
+  "editable material instance asset": {
+    "asset": {
+      "material instance asset": {
+        "name": "MI_TexPBR_Ball.json",
+        "path": "assets/Materials/",
+        "package": "content1",
+        "references": [
+          "M_TexPBR.json",
+          "greasyMetal_baseCol.png",
+          "greasyMetal_norm.png",
+          "greasyMetal_rough.png",
+          "greasyMetal_metal.png",
+          "mahogany_ao.png"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

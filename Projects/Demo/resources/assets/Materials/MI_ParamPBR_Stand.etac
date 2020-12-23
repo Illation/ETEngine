@@ -1,0 +1,16 @@
+{
+  "editable material instance asset": {
+    "asset": {
+      "material instance asset": {
+        "name": "MI_ParamPBR_Stand.json",
+        "path": "assets/Materials/",
+        "package": "content1",
+        "references": [
+          "M_ParamPBR.json"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

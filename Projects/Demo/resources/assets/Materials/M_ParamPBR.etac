@@ -1,0 +1,17 @@
+{
+  "editable material asset": {
+    "asset": {
+      "material asset": {
+        "name": "M_ParamPBR.json",
+        "path": "assets/Materials/",
+        "package": "content1",
+        "references": [
+          "DefPBRParamShader.glsl"
+        ],
+        "draw type": "Opaque"
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "editable material asset": {
+    "asset": {
+      "material asset": {
+        "name": "M_Emissive.json",
+        "path": "assets/Materials/",
+        "package": "content1",
+        "references": [
+          "FwdEmissiveShader.glsl"
+        ],
+        "draw type": "AlphaBlend"
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

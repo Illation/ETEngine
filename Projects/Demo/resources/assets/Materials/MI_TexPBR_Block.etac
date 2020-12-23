@@ -1,0 +1,21 @@
+{
+  "editable material instance asset": {
+    "asset": {
+      "material instance asset": {
+        "name": "MI_TexPBR_Block.json",
+        "path": "assets/Materials/",
+        "package": "content1",
+        "references": [
+          "M_TexPBR.json",
+          "bamboo_baseCol.png",
+          "bamboo_norm.png",
+          "bamboo_rough.png",
+          "bamboo_metal.png",
+          "bamboo_ao.png"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

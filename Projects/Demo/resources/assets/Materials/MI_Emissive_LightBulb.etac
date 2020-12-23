@@ -1,0 +1,16 @@
+{
+  "editable material instance asset": {
+    "asset": {
+      "material instance asset": {
+        "name": "MI_Emissive_LightBulb.json",
+        "path": "assets/Materials/",
+        "package": "content1",
+        "references": [
+          "M_Emissive.json"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

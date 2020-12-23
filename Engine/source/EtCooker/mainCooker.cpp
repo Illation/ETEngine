@@ -109,11 +109,11 @@ int RunCooker(int argc, char *argv[])
 
 	// test
 	//{
-	//	core::Directory* const dir = new core::Directory(core::FileUtil::ExtractPath(engineDbPath), nullptr, true);
+	//	core::Directory* const dir = new core::Directory(core::FileUtil::ExtractPath(databasePath), nullptr, true);
 	//	dir->Mount(true);
 
-	//	pl::EditorAssetDatabase engineDb2;
-	//	engineDb2.Init(dir);
+	//	pl::EditorAssetDatabase database2;
+	//	database2.Init(dir);
 	//}
 
 	if (genCompiledResource)

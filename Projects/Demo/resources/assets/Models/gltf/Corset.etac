@@ -1,0 +1,14 @@
+{
+  "editable mesh asset": {
+    "asset": {
+      "mesh asset": {
+        "name": "Corset.glb",
+        "path": "assets/Models/gltf/",
+        "package": "content1",
+        "references": []
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

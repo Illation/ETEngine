@@ -1,0 +1,21 @@
+{
+  "editable scene descriptor asset": {
+    "asset": {
+      "scene descriptor asset": {
+        "name": "EditorScene.json",
+        "path": "assets/Scenes/",
+        "package": "content1",
+        "references": [
+          "Ice_Lake_Ref.hdr",
+          "HelmetSettled.dae",
+          "MI_Uber_Kabuto.json",
+          "HelmetStand.dae",
+          "MI_Uber_Floor.json",
+          "Env.dae"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "editable texture asset": {
+    "asset": {
+      "texture asset": {
+        "name": "MoonDetail2.jpg",
+        "path": "assets/Textures/PlanetTextures/",
+        "package": "content1",
+        "references": [],
+        "use SRGB": true,
+        "force resolution": false,
+        "parameters": {
+          "min filter": "Linear",
+          "mag filter": "Linear",
+          "mipmap filter": "Linear",
+          "wrap S": "Repeat",
+          "wrap T": "Repeat",
+          "border color": [ 0.0, 0.0, 0.0, 0.0 ],
+          "generate mipmaps": true
+        }
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

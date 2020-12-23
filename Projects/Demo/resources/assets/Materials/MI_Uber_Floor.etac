@@ -1,0 +1,16 @@
+{
+  "editable material instance asset": {
+    "asset": {
+      "material instance asset": {
+        "name": "MI_Uber_Floor.json",
+        "path": "assets/Materials/",
+        "package": "content1",
+        "references": [
+          "M_UberOpaque.json"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

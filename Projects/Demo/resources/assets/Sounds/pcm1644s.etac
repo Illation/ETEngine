@@ -1,0 +1,15 @@
+{
+  "editable audio asset": {
+    "asset": {
+      "audio asset": {
+        "name": "pcm1644s.wav",
+        "path": "assets/Sounds/",
+        "package": "content1",
+        "references": [],
+        "force mono": true
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

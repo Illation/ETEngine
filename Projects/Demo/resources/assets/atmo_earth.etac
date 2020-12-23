@@ -1,0 +1,14 @@
+{
+  "editable stub asset": {
+    "asset": {
+      "stub asset": {
+        "name": "atmo_earth.json",
+        "path": "assets/",
+        "package": "content1",
+        "references": []
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

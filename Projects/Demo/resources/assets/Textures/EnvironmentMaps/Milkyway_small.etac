@@ -1,0 +1,17 @@
+{
+  "editable environment map asset": {
+    "asset": {
+      "environment map asset": {
+        "name": "Milkyway_small.hdr",
+        "path": "assets/Textures/EnvironmentMaps/",
+        "package": "content1",
+        "references": [],
+        "Cubemap Resolution": 1024,
+        "Irradiance Resolution": 32,
+        "Radiance Resolution": 1024
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

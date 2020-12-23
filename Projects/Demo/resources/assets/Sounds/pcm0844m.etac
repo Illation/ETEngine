@@ -1,0 +1,15 @@
+{
+  "editable audio asset": {
+    "asset": {
+      "audio asset": {
+        "name": "pcm0844m.wav",
+        "path": "assets/Sounds/",
+        "package": "content1",
+        "references": [],
+        "force mono": false
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}
