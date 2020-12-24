@@ -165,7 +165,7 @@ EditorAssetBase* EditorAssetDatabase::GetAsset(core::HashString const assetId, r
 	for (rttr::type const assetType : assetTypes)
 	{
 		// Try finding a cache containing our type
-		auto const foundCacheIt = FindCacheIt(type);
+		auto const foundCacheIt = FindCacheIt(assetType);
 		if (foundCacheIt != m_AssetCaches.cend())
 		{
 			// try finding our asset by its ID in the cache

@@ -20,9 +20,8 @@ I_AssetPtr::I_AssetPtr(core::I_Asset* asset)
 {
 	if (m_Asset != nullptr) // having asset pointers point to null is valid
 	{
-		if (IncrementRefCount())
+		if (IncrementRefCount() && !(m_Asset->IsLoaded()))
 		{
-			ET_ASSERT(!(m_Asset->IsLoaded()));
 			m_Asset->Load();
 		}
 	}
@@ -38,9 +37,8 @@ I_AssetPtr::I_AssetPtr(I_AssetPtr const& copy)
 {
 	if (m_Asset != nullptr) // having asset pointers point to null is valid
 	{
-		if (IncrementRefCount())
+		if (IncrementRefCount() && !(m_Asset->IsLoaded()))
 		{
-			ET_ASSERT(!(m_Asset->IsLoaded()));
 			m_Asset->Load();
 		}
 	}
