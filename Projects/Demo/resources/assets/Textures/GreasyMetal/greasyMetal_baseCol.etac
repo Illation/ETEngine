@@ -2,11 +2,11 @@
   "editable texture asset": {
     "asset": {
       "texture asset": {
-        "name": "bamboo_ao.png",
-        "path": "assets/Textures/Bamboo/",
+        "name": "greasyMetal_baseCol.png",
+        "path": "assets/Textures/GreasyMetal/",
         "package": "content1",
         "references": [],
-        "use SRGB": false,
+        "use SRGB": true,
         "force resolution": false,
         "parameters": {
           "min filter": "Linear",

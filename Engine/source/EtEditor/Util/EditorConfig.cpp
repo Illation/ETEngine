@@ -6,7 +6,8 @@
 #include <EtCore/Reflection/Serialization.h>
 #include <EtCore/Reflection/Registration.h>
 
-#include <EtFramework/SceneGraph/SceneDescriptor.h>
+#include <EtPipeline/Content/EditorAsset.h>
+#include <EtPipeline/Assets/EditableSceneDescriptor.h>
 
 
 namespace et {
@@ -52,7 +53,10 @@ void EditorConfig::Initialize()
 //
 void EditorConfig::QueryStartScene()
 {
-	ResourceChooserDialog* resourceDialog = ResourceChooserDialog::create(std::vector<rttr::type>({rttr::type::get<fw::SceneDescriptorAsset>()}));
+	ResourceChooserDialog* resourceDialog = ResourceChooserDialog::create(std::vector<rttr::type>(
+		{
+			rttr::type::get<pl::EditableSceneDescriptorAsset>()
+		}));
 	resourceDialog->set_title("Please select a Scene...");
 
 	resourceDialog->signal_hide().connect([resourceDialog]() -> void { delete resourceDialog; });
@@ -62,7 +66,7 @@ void EditorConfig::QueryStartScene()
 	{
 		ET_ASSERT(!(resourceDialog->GetSelectedAssets().empty()));
 
-		core::I_Asset* const selectedAsset = resourceDialog->GetSelectedAssets()[0];
+		pl::EditorAssetBase* const selectedAsset = resourceDialog->GetSelectedAssets()[0];
 		ET_ASSERT(selectedAsset->GetType() == rttr::type::get<fw::SceneDescriptor>());
 		
 		m_StartScene = selectedAsset->GetId();

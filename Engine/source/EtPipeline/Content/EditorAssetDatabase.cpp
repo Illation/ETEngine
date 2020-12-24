@@ -33,6 +33,20 @@ rttr::type EditorAssetDatabase::GetCacheType(T_AssetList const& cache)
 	return rttr::type::get<std::nullptr_t>();
 }
 
+//----------------------------------------
+// EditorAssetDatabase::GetCacheAssetType
+//
+rttr::type EditorAssetDatabase::GetCacheAssetType(T_AssetList const& cache)
+{
+	if (!cache.empty())
+	{
+		ET_ASSERT(cache[0] != nullptr);
+		return rttr::type::get(*(cache[0]));
+	}
+
+	return rttr::type::get<std::nullptr_t>();
+}
+
 
 //-----------------------------
 // EditorAssetDatabase::d-tor
@@ -60,6 +74,56 @@ void EditorAssetDatabase::Init(core::Directory* const directory)
 	ET_ASSERT(m_Directory->IsMounted());
 
 	RecursivePopulateAssets(m_Directory);
+}
+
+//---------------------------------------------
+// EditorAssetDatabase::GetAssetsMatchingQuery
+//
+EditorAssetDatabase::T_AssetList EditorAssetDatabase::GetAssetsMatchingQuery(std::string const& path, 
+	bool const recursive, 
+	std::string const& searchTerm, 
+	std::vector<rttr::type> const& filteredTypes)
+{
+	T_AssetList outAssets;
+
+	std::string lowerSearch = searchTerm;
+	std::transform(lowerSearch.begin(), lowerSearch.end(), lowerSearch.begin(), ::tolower);
+
+	// caches for every asset type 
+	for (T_AssetList& cache : m_AssetCaches)
+	{
+		if (filteredTypes.size() > 0u)
+		{
+			rttr::type const cacheType = GetCacheAssetType(cache);
+			if (std::find(filteredTypes.begin(), filteredTypes.end(), cacheType) == filteredTypes.cend())
+			{
+				continue;
+			}
+		}
+
+		// every asset per cache
+		for (EditorAssetBase* const editorAsset : cache)
+		{
+			core::I_Asset const* const asset = editorAsset->GetAsset();
+			if ((asset->GetPath().rfind(path, 0) == 0) && (recursive || (asset->GetPath().length() == path.length())))
+			{
+				bool matchesSearch = true;
+				if (lowerSearch.length() != 0u)
+				{
+					std::string lowerAsset = asset->GetPath() + asset->GetName();
+					std::transform(lowerAsset.begin(), lowerAsset.end(), lowerAsset.begin(), ::tolower);
+					matchesSearch = (lowerAsset.find(lowerSearch) != std::string::npos);
+				}
+
+				if (matchesSearch)
+				{
+					outAssets.emplace_back(editorAsset);
+				}
+			}
+		}
+	}
+
+	return outAssets;
 }
 
 //-------------------------------

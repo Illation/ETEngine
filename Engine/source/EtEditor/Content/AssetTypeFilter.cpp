@@ -5,7 +5,7 @@
 #include <glibmm/object.h>
 #include <gtkmm/menu.h>
 
-#include <EtCore/Content/Asset.h>
+#include <EtPipeline/Content/EditorAsset.h>
 
 
 namespace et {
@@ -42,7 +42,7 @@ void AssetTypeFilter::Init(Gtk::MenuButton* const button, std::vector<rttr::type
 	//------------------------
 	m_TypeActionGroup = Gio::SimpleActionGroup::create();
 
-	rttr::type const baseAssetType = rttr::type::get<core::I_Asset>();
+	rttr::type const baseAssetType = rttr::type::get<pl::EditorAssetBase>();
 	rttr::array_range<rttr::type> derivedTypes = baseAssetType.get_derived_classes();
 
 	Glib::RefPtr<Glib::Object> object2 = m_RefBuilder->get_object("typesection");
@@ -65,9 +65,15 @@ void AssetTypeFilter::Init(Gtk::MenuButton* const button, std::vector<rttr::type
 			});
 
 		size_t const lastSpace = typeName.rfind(' ');
-		if ((lastSpace != std::string::npos) && (typeName.substr(lastSpace + 1) == "asset"))
+		if ((lastSpace != std::string::npos) && (typeName.substr(lastSpace + 1u) == "asset"))
 		{
-			typeName = typeName.substr(0, lastSpace);
+			typeName = typeName.substr(0u, lastSpace);
+		}
+
+		size_t const firstSpace = typeName.find(' ');
+		if ((firstSpace != std::string::npos) && (typeName.substr(0u, firstSpace) == "editable"))
+		{
+			typeName = typeName.substr(firstSpace + 1u);
 		}
 
 		m_Types.push_back(AssetType());

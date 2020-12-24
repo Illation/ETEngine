@@ -5,8 +5,9 @@
 #include <gtkmm/frame.h>
 #include <gtkmm/label.h>
 
-#include <EtCore/Content/Asset.h>
 #include <EtCore/FileSystem/FileUtil.h>
+
+#include <EtPipeline/Content/EditorAsset.h>
 
 #include <EtEditor/Util/GtkUtil.h>
 
@@ -23,7 +24,7 @@ namespace edit {
 //---------------------------
 // AssetWidget::AssetWidget
 //
-AssetWidget::AssetWidget(core::I_Asset* const asset)
+AssetWidget::AssetWidget(pl::EditorAssetBase* const asset)
 	: m_Asset(asset)
 {
 	ET_ASSERT(m_Asset != nullptr);
@@ -34,7 +35,7 @@ AssetWidget::AssetWidget(core::I_Asset* const asset)
 	viewFrame->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
 	viewFrame->set_halign(Gtk::ALIGN_CENTER);
 
-	Gtk::Label* const label = Gtk::make_managed<Gtk::Label>(core::FileUtil::RemoveExtension(asset->GetName()).c_str());
+	Gtk::Label* const label = Gtk::make_managed<Gtk::Label>(core::FileUtil::RemoveExtension(asset->GetAsset()->GetName()).c_str());
 	label->set_margin_top(5);
 	label->set_margin_bottom(5);
 
@@ -52,7 +53,7 @@ AssetWidget::AssetWidget(core::I_Asset* const asset)
 		labelAttributes.insert(Pango::Attribute::create_attr_weight(Pango::WEIGHT_BOLD));
 		labelAttributes.insert(Pango::Attribute::create_attr_foreground_alpha(50000));
 
-		Gtk::Label* const viewLabel = Gtk::make_managed<Gtk::Label>(core::FileUtil::ExtractExtension(asset->GetName()).c_str());
+		Gtk::Label* const viewLabel = Gtk::make_managed<Gtk::Label>(core::FileUtil::ExtractExtension(asset->GetAsset()->GetName()).c_str());
 		viewLabel->set_attributes(labelAttributes);
 		viewLabel->set_margin_top(20);
 		viewLabel->set_margin_bottom(20);

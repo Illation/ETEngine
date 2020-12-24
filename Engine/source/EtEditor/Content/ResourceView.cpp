@@ -4,7 +4,7 @@
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
-#include <EtEditor/Content/FileResourceManager.h>
+#include <EtPipeline/Content/FileResourceManager.h>
 
 
 namespace et {
@@ -197,10 +197,10 @@ void ResourceView::OnSelectedChildrenChanged()
 //
 void ResourceView::RebuildDirectoryTree()
 {
-	FileResourceManager* const resourceMan = static_cast<FileResourceManager*>(core::ResourceManager::Instance());
+	pl::FileResourceManager* const resourceMan = static_cast<pl::FileResourceManager*>(core::ResourceManager::Instance());
 	ET_ASSERT(resourceMan != nullptr);
 
-	m_BaseDirectory = m_ProjectSelected ? resourceMan->GetProjectDirectory() : resourceMan->GetEngineDirectory();
+	m_BaseDirectory = m_ProjectSelected ? resourceMan->GetProjectDatabase().GetDirectory() : resourceMan->GetEngineDatabase().GetDirectory();
 
 	m_TreeModel->clear();
 
@@ -256,17 +256,17 @@ void ResourceView::RebuildAssetList()
 	}
 
 	// fetch assets
-	FileResourceManager* const resourceMan = static_cast<FileResourceManager*>(core::ResourceManager::Instance());
+	pl::FileResourceManager* const resourceMan = static_cast<pl::FileResourceManager*>(core::ResourceManager::Instance());
 	ET_ASSERT(resourceMan != nullptr);
 
-	core::AssetDatabase& database = m_ProjectSelected ? resourceMan->GetProjectDatabase() : resourceMan->GetEngineDatabase();
-	std::vector<core::I_Asset*> const filteredAssets = database.GetAssetsMatchingQuery(m_SelectedDirectory,
+	pl::EditorAssetDatabase& database = m_ProjectSelected ? resourceMan->GetProjectDatabase() : resourceMan->GetEngineDatabase();
+	std::vector<pl::EditorAssetBase*> const filteredAssets = database.GetAssetsMatchingQuery(m_SelectedDirectory,
 		m_TypeFilter.AreDirectoriesRecursive(), 
 		m_SearchTerm, 
 		m_TypeFilter.GetFilteredTypes());
 
 	// repopulate
-	for (core::I_Asset* const asset : filteredAssets)
+	for (pl::EditorAssetBase* const asset : filteredAssets)
 	{
 		m_FilteredAssets.emplace_back(asset);
 		AssetWidget& assetWidget = m_FilteredAssets.back();
