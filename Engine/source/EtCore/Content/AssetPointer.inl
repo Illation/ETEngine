@@ -77,24 +77,6 @@ inline bool I_AssetPtr::DecrementRefCount()
 	return (m_Asset->m_RefCount == 0u);
 }
 
-//---------------------------------
-// I_AssetPtr::Invalidate
-//
-// If this was a valid pointer, decrement the ref count and make sure the asset is null
-//
-inline void I_AssetPtr::Invalidate()
-{
-	if (m_Asset != nullptr)
-	{
-		if (DecrementRefCount())
-		{
-			ET_ASSERT(m_Asset->IsLoaded());
-			m_Asset->Unload(); // Maybe we want to defer this to the resource manager
-		}
-		m_Asset = nullptr;
-	}
-}
-
 
 //=========================
 // Asset Pointer Template

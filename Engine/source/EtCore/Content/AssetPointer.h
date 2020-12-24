@@ -42,7 +42,7 @@ protected:
 	inline bool IncrementRefCount();
 	inline bool DecrementRefCount();
 
-	inline void Invalidate();
+	void Invalidate();
 
 	// Data
 	///////

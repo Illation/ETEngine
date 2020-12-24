@@ -39,7 +39,7 @@ void ResourceManager::DestroyInstance()
 	SafeDelete(s_Instance);
 }
 
-//----------------------------------
+//-------------------------------------
 // ResourceManager::SetAssetReferences
 //
 // Runs the setter function on each asset reference in the DB
@@ -53,6 +53,24 @@ void ResourceManager::SetAssetReferences(I_AssetDatabase* const db, T_ReferenceA
 				reference.m_Asset = fnc(reference.m_Id);
 			}
 		});
+}
+
+//-----------------------------
+// ResourceManager::LoadAsset
+//
+void ResourceManager::LoadAsset(I_Asset* const asset)
+{
+	ET_ASSERT(!(asset->IsLoaded()));
+	asset->Load();
+}
+
+//-------------------------------
+// ResourceManager::UnloadAsset
+//
+void ResourceManager::UnloadAsset(I_Asset* const asset)
+{
+	ET_ASSERT(asset->IsLoaded());
+	asset->Unload();
 }
 
 

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "AssetPointer.h"
 
+#include "ResourceManager.h"
+
 
 namespace et {
 
@@ -22,7 +24,7 @@ I_AssetPtr::I_AssetPtr(core::I_Asset* asset)
 	{
 		if (IncrementRefCount() && !(m_Asset->IsLoaded()))
 		{
-			m_Asset->Load();
+			core::ResourceManager::Instance()->LoadAsset(m_Asset);
 		}
 	}
 }
@@ -39,7 +41,7 @@ I_AssetPtr::I_AssetPtr(I_AssetPtr const& copy)
 	{
 		if (IncrementRefCount() && !(m_Asset->IsLoaded()))
 		{
-			m_Asset->Load();
+			core::ResourceManager::Instance()->LoadAsset(m_Asset);
 		}
 	}
 }
@@ -85,6 +87,23 @@ void I_AssetPtr::swap(I_AssetPtr& other) noexcept
 {
 	ET_ASSERT(m_Asset == nullptr || other.m_Asset == nullptr || GetType() == other.GetType());
 	std::swap(m_Asset, other.m_Asset);
+}
+
+//---------------------------------
+// I_AssetPtr::Invalidate
+//
+// If this was a valid pointer, decrement the ref count and make sure the asset is null
+//
+void I_AssetPtr::Invalidate()
+{
+	if (m_Asset != nullptr)
+	{
+		if (DecrementRefCount())
+		{
+			core::ResourceManager::Instance()->UnloadAsset(m_Asset);
+		}
+		m_Asset = nullptr;
+	}
 }
 
 //---------------------------------

@@ -54,6 +54,32 @@ void FileResourceManager::Init()
 	SetAssetReferences(&m_EngineDb, assetGetter);
 }
 
+//--------------------------------
+// FileResourceManager::LoadAsset
+//
+void FileResourceManager::LoadAsset(core::I_Asset* const asset)
+{
+	ET_ASSERT(!(asset->IsLoaded()));
+
+	EditorAssetBase* const editorAsset = GetEditorAsset(asset);
+	ET_ASSERT(editorAsset != nullptr);
+
+	editorAsset->Load();
+}
+
+//----------------------------------
+// FileResourceManager::UnloadAsset
+//
+void FileResourceManager::UnloadAsset(core::I_Asset* const asset)
+{
+	ET_ASSERT(asset->IsLoaded());
+
+	EditorAssetBase* const editorAsset = GetEditorAsset(asset);
+	ET_ASSERT(editorAsset != nullptr);
+
+	editorAsset->Unload();
+}
+
 //--------------------------------------
 // FileResourceManager::GetLoadData
 //
@@ -106,18 +132,36 @@ void FileResourceManager::Flush()
 //
 core::I_Asset* FileResourceManager::GetAssetInternal(core::HashString const assetId, rttr::type const type, bool const reportErrors)
 {
-	EditorAssetBase* ret = m_ProjectDb.GetAsset(assetId, type, false);
-
+	EditorAssetBase* const ret = GetEditorAsset(assetId, type, reportErrors);
 	if (ret == nullptr)
 	{
-		ret = m_EngineDb.GetAsset(assetId, type, reportErrors); // only log if first search fails
-		if (ret == nullptr)
-		{
-			return nullptr;
-		}
+		return nullptr;
 	}
 
 	return ret->GetAsset();
+}
+
+//-------------------------------------
+// FileResourceManager::GetEditorAsset
+//
+EditorAssetBase* FileResourceManager::GetEditorAsset(core::HashString const assetId, rttr::type const type, bool const reportErrors)
+{
+	EditorAssetBase* const ret = m_ProjectDb.GetAsset(assetId, type, false);
+
+	if (ret == nullptr)
+	{
+		return m_EngineDb.GetAsset(assetId, type, reportErrors); // only log if first search fails
+	}
+
+	return ret;
+}
+
+//-------------------------------------------
+// FileResourceManager::GetEditorAsset
+//
+EditorAssetBase* FileResourceManager::GetEditorAsset(core::I_Asset* const asset, bool const reportErrors)
+{
+	return GetEditorAsset(asset->GetId(), asset->GetType(), reportErrors);
 }
 
 //---------------------------------
