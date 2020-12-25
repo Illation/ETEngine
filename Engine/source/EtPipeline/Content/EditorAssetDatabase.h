@@ -2,11 +2,14 @@
 #include "EditorAsset.h"
 
 #include <EtCore/Content/AssetDatabaseInterface.h>
+#include <EtCore/FileSystem/Package/PackageDescriptor.h>
 
 
 namespace et { namespace core {
 	class Directory;
-} }
+}
+	REGISTRATION_NS(pl)
+}
 
 
 namespace et {
@@ -20,6 +23,8 @@ class EditorAssetDatabase final : public core::I_AssetDatabase
 {
 	// Definitions
 	//---------------------
+	RTTR_ENABLE()
+	REGISTRATION_FRIEND_NS(pl)
 public:
 	typedef std::vector<EditorAssetBase*> T_AssetList;
 private:
@@ -77,6 +82,8 @@ private:
 	///////
 
 	core::Directory* m_Directory = nullptr;
+
+	std::vector<core::PackageDescriptor> m_Packages;
 	T_CacheList m_AssetCaches;
 };
 

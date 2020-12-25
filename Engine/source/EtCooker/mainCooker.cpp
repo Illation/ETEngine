@@ -237,11 +237,11 @@ void CookFilePackages(std::string const& dbBase,
 	core::AssetDatabase& engineDb)
 {
 	// Get a unified list of package descriptors
-	std::vector<core::AssetDatabase::PackageDescriptor> descriptors = db.packages;
-	for (core::AssetDatabase::PackageDescriptor const& desc : engineDb.packages)
+	std::vector<core::PackageDescriptor> descriptors = db.packages;
+	for (core::PackageDescriptor const& desc : engineDb.packages)
 	{
 		// check if there is already a package with the same ID tracked in "descriptors"
-		if (std::find_if(descriptors.cbegin(), descriptors.cend(), [&desc](core::AssetDatabase::PackageDescriptor const& tracked)
+		if (std::find_if(descriptors.cbegin(), descriptors.cend(), [&desc](core::PackageDescriptor const& tracked)
 			{
 				return tracked.GetId() == desc.GetId();
 			}) == descriptors.cend())
@@ -251,7 +251,7 @@ void CookFilePackages(std::string const& dbBase,
 	}
 
 	// each package can have a separate asset list
-	for (core::AssetDatabase::PackageDescriptor const& desc : descriptors)
+	for (core::PackageDescriptor const& desc : descriptors)
 	{
 		PackageWriter packageWriter;
 		std::vector<uint8> packageData;

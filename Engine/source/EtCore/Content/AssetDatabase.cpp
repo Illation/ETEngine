@@ -18,10 +18,6 @@ RTTR_REGISTRATION
 	registration::class_<AssetDatabase::AssetCache>("asset cache")
 		.property("cache", &AssetDatabase::AssetCache::cache);
 
-	registration::class_<AssetDatabase::PackageDescriptor>("package")
-		.property("name", &AssetDatabase::PackageDescriptor::GetName, &AssetDatabase::PackageDescriptor::SetName)
-		.property("path", &AssetDatabase::PackageDescriptor::GetPath, &AssetDatabase::PackageDescriptor::SetPath);
-
 	registration::class_<AssetDatabase>("asset database")
 		.property("packages", &AssetDatabase::packages)
 		.property("caches", &AssetDatabase::caches);
@@ -58,23 +54,6 @@ std::vector<rttr::type> AssetDatabase::GetValidAssetTypes(rttr::type const type,
 	}
 
 	return assetTypes;
-}
-
-
-//====================
-// Package Descriptor
-//====================
-
-
-//---------------------------------
-// AssetDatabase::PackageDescriptor::SetName
-//
-// Sets the name of a package generator and generates its ID
-//
-void AssetDatabase::PackageDescriptor::SetName(std::string const& val)
-{
-	m_Name = val;
-	m_Id = m_Name.c_str();
 }
 
 
@@ -159,60 +138,6 @@ AssetDatabase::T_AssetList AssetDatabase::GetAssetsInPackage(HashString const pa
 			if (asset->GetPackageId() == packageId)
 			{
 				outAssets.emplace_back(asset);
-			}
-		}
-	}
-
-	return outAssets;
-}
-
-//---------------------------------------
-// AssetDatabase::GetAssetsMatchingQuery
-//
-// finds all assets that are contained in a path
-//  - if recursive is enabled assets are also found in subdirectories
-//  - if searchTerm isn't an empty string, only assets containing the search term will be returned
-//  - if filteredTypes isn't empty, only assets of types contained in filtered types are returned
-//
-AssetDatabase::T_AssetList AssetDatabase::GetAssetsMatchingQuery(std::string const& path,
-	bool const recursive, 
-	std::string const& searchTerm,
-	std::vector<rttr::type> const& filteredTypes)
-{
-	T_AssetList outAssets;
-
-	std::string lowerSearch = searchTerm;
-	std::transform(lowerSearch.begin(), lowerSearch.end(), lowerSearch.begin(), ::tolower);
-
-	// caches for every asset type 
-	for (AssetDatabase::AssetCache& cache : caches)
-	{
-		if (filteredTypes.size() > 0u)
-		{
-			rttr::type const cacheType = cache.GetAssetType();
-			if (std::find(filteredTypes.begin(), filteredTypes.end(), cacheType) == filteredTypes.cend())
-			{
-				continue;
-			}
-		}
-
-		// every asset per cache
-		for (I_Asset* asset : cache.cache)
-		{
-			if ((asset->GetPath().rfind(path, 0) == 0) && (recursive || (asset->GetPath().length() == path.length())))
-			{
-				bool matchesSearch = true;
-				if (lowerSearch.length() != 0u)
-				{
-					std::string lowerAsset = asset->GetPath() + asset->GetName();
-					std::transform(lowerAsset.begin(), lowerAsset.end(), lowerAsset.begin(), ::tolower);
-					matchesSearch = (lowerAsset.find(lowerSearch) != std::string::npos);
-				}
-
-				if (matchesSearch)
-				{
-					outAssets.emplace_back(asset);
-				}
 			}
 		}
 	}

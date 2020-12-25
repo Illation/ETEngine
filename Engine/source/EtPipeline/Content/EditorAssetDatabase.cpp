@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "EditorAssetDatabase.h"
 
+#include <rttr/registration>
+
 #include <EtCore/Content/AssetDatabase.h>
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
@@ -14,6 +16,14 @@ namespace pl {
 //=======================
 // Editor Asset Database
 //=======================
+
+
+// reflection
+RTTR_REGISTRATION
+{
+	rttr::registration::class_<EditorAssetDatabase>("editor asset database")
+		.property("packages", &EditorAssetDatabase::m_Packages);
+}
 
 
 // static
@@ -78,6 +88,12 @@ void EditorAssetDatabase::Init(core::Directory* const directory)
 
 //---------------------------------------------
 // EditorAssetDatabase::GetAssetsMatchingQuery
+//
+// finds all assets that are contained in a path
+//  - if recursive is enabled assets are also found in subdirectories
+//  - if searchTerm isn't an empty string, only assets containing the search term will be returned
+//  - if filteredTypes isn't empty, only assets of types contained in filtered types are returned
+//
 //
 EditorAssetDatabase::T_AssetList EditorAssetDatabase::GetAssetsMatchingQuery(std::string const& path, 
 	bool const recursive, 
