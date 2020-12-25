@@ -43,8 +43,6 @@ public:
 
 	// Accessors
 	//---------------------
-	T_AssetList GetAssetsInPackage(HashString const packageId);
-
 	I_Asset* GetAsset(HashString const assetId, bool const reportErrors = true) const;
 	I_Asset* GetAsset(HashString const assetId, rttr::type const type, bool const reportErrors = true) const; // faster option
 
@@ -55,7 +53,6 @@ public:
 	// Functionality
 	//---------------------
 	void Flush();
-	void Merge(AssetDatabase const& other);
 
 	// Data
 	////////

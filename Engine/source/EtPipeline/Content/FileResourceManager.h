@@ -55,8 +55,6 @@ protected:
 	EditorAssetBase* GetEditorAsset(core::HashString const assetId, rttr::type const type, bool const reportErrors);
 	EditorAssetBase* GetEditorAsset(core::I_Asset* const asset, bool const reportErrors = true);
 
-	void InitDb(EditorAssetDatabase& db, std::string const& path);
-
 	bool IsEngineResource(core::I_Asset const* const asset) const;
 
 	// Data

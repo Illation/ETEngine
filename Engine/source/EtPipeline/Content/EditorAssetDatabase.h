@@ -7,6 +7,7 @@
 
 namespace et { namespace core {
 	class Directory;
+	class AssetDatabase;
 }
 	REGISTRATION_NS(pl)
 }
@@ -37,18 +38,25 @@ private:
 	static rttr::type GetCacheType(T_AssetList const& cache);
 	static rttr::type GetCacheAssetType(T_AssetList const& cache);
 
+public:
+	static void InitDb(EditorAssetDatabase& db, std::string const& path);
+
 	// construct destruct
 	//--------------------
-public:
 	EditorAssetDatabase() = default;
 	~EditorAssetDatabase();
 
+private:
 	void Init(core::Directory* const directory);
 
 	// accessors
 	//-----------
+public:
 	core::Directory const* GetDirectory() const { return m_Directory; }
 	core::Directory* GetDirectory() { return m_Directory; }
+
+	T_AssetList GetAssetsInPackage(core::HashString const packageId);
+	std::vector<core::PackageDescriptor> const& GetPackages() const { return m_Packages; }
 
 	T_AssetList GetAssetsMatchingQuery(std::string const& path,
 		bool const recursive,
@@ -65,6 +73,7 @@ public:
 	// Functionality
 	//---------------------
 	void Flush();
+	void PopulateAssetDatabase(core::AssetDatabase& db) const;
 
 	// utility
 	//---------

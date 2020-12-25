@@ -57,6 +57,44 @@ rttr::type EditorAssetDatabase::GetCacheAssetType(T_AssetList const& cache)
 	return rttr::type::get<std::nullptr_t>();
 }
 
+//-----------------------------
+// EditorAssetDatabase::InitDb
+//
+// Initialize a database given a filepath, including all necessary deserialization
+//
+void EditorAssetDatabase::InitDb(EditorAssetDatabase& db, std::string const& path)
+{
+	std::string dirPath = core::FileUtil::ExtractPath(path);
+	std::string fileName = core::FileUtil::ExtractName(path);
+
+	// mount the directory
+	core::Directory* const dir = new core::Directory(dirPath, nullptr, true);
+	dir->Mount(true);
+
+	// find the database file
+	core::Entry* const dbEntry = dir->GetMountedChild(fileName);
+	if (dbEntry != nullptr) // if this is a new project we may not have a database yet
+	{
+		ET_ASSERT(dbEntry->GetType() == core::Entry::ENTRY_FILE);
+
+		core::File* const dbFile = static_cast<core::File*>(dbEntry);
+		dbFile->Open(core::FILE_ACCESS_MODE::Read);
+
+		// deserialize the database from that files content
+		if (!(core::serialization::DeserializeFromJsonString(core::FileUtil::AsText(dbFile->Read()), db)))
+		{
+			LOG(FS("FileResourceManager::Init > unable to deserialize asset DB at '%s'", dbEntry->GetName().c_str()), core::LogLevel::Error);
+		}
+	}
+	else
+	{
+		LOG(FS("No Database file found at '%s'", (dir->GetName() + fileName).c_str()));
+	}
+
+	// --
+	db.Init(dir);
+}
+
 
 //-----------------------------
 // EditorAssetDatabase::d-tor
@@ -84,6 +122,29 @@ void EditorAssetDatabase::Init(core::Directory* const directory)
 	ET_ASSERT(m_Directory->IsMounted());
 
 	RecursivePopulateAssets(m_Directory);
+}
+
+//-----------------------------------------
+// EditorAssetDatabase::GetAssetsInPackage
+//
+EditorAssetDatabase::T_AssetList EditorAssetDatabase::GetAssetsInPackage(core::HashString const packageId)
+{
+	T_AssetList outAssets;
+
+	// caches for every asset type 
+	for (T_AssetList& cache : m_AssetCaches)
+	{
+		// every asset per cache
+		for (EditorAssetBase* const asset : cache)
+		{
+			if (asset->GetAsset()->GetPackageId() == packageId)
+			{
+				outAssets.emplace_back(asset);
+			}
+		}
+	}
+
+	return outAssets;
 }
 
 //---------------------------------------------
@@ -231,6 +292,91 @@ void EditorAssetDatabase::Flush()
 			if (asset->GetAsset()->GetRefCount() <= 0u && asset->GetAsset()->IsLoaded())
 			{
 				asset->Unload(true);
+			}
+		}
+	}
+}
+
+//--------------------------------------------
+// EditorAssetDatabase::PopulateAssetDatabase
+//
+void EditorAssetDatabase::PopulateAssetDatabase(core::AssetDatabase& db) const 
+{
+	// add packages
+	for (core::PackageDescriptor const& desc : m_Packages)
+	{
+		auto packageIt = std::find_if(db.packages.cbegin(), db.packages.cend(), [&desc](core::PackageDescriptor const& lhs)
+			{
+				return lhs.GetId() == desc.GetId();
+			});
+
+		// if the other DB contains a package that this DB doesn't know of, add it
+		if (packageIt == db.packages.cend())
+		{
+			db.packages.emplace_back(desc);
+		}
+		else
+		{
+			// if both have the same package, ensure they agree on its details
+			ET_ASSERT(packageIt->GetPath() == desc.GetPath(),
+				"DBs disagree on paths for package '%s'! this: '%s' - other: '%s'",
+				desc.GetName().c_str(),
+				packageIt->GetPath().c_str(),
+				desc.GetPath().c_str());
+		}
+	}
+
+	// add caches
+	for (T_AssetList const& rhCache : m_AssetCaches)
+	{
+		auto cacheIt = std::find_if(db.caches.begin(), db.caches.end(), [&rhCache](core::AssetDatabase::AssetCache const& lhCache)
+			{
+				return (lhCache.GetType() == GetCacheType(rhCache));
+			});
+
+		if (cacheIt == db.caches.cend())
+		{
+			db.caches.emplace_back();
+			cacheIt = std::prev(db.caches.end());
+		}
+
+		core::AssetDatabase::AssetCache& lhCache = *cacheIt;
+
+		// insert assets
+		for (EditorAssetBase* const editorAsset : rhCache)
+		{
+			core::I_Asset* const rhAsset = editorAsset->GetAsset();
+
+			// Ensure the asset doesn't already exist
+			auto const assetIt = std::find_if(lhCache.cache.cbegin(), lhCache.cache.cend(), [rhAsset](core::I_Asset const* const lhAsset)
+				{
+					return (lhAsset->GetId() == rhAsset->GetId());
+				});
+
+			// if the to merge asset is unique add it
+			if (assetIt == lhCache.cache.cend())
+			{
+				// check we have a package descriptor for the new asset
+				ET_ASSERT(std::find_if(db.packages.cbegin(), db.packages.cend(), [rhAsset](core::PackageDescriptor const& lhPackage)
+				{
+					return lhPackage.GetId() == rhAsset->GetPackageId();
+				}) != db.packages.cend() || rhAsset->GetPackageId() == 0u,
+					"Asset merged into DB, but DB doesn't contain package '%s'",
+					rhAsset->GetPackageId().ToStringDbg());
+
+				lhCache.cache.emplace_back(rhAsset);
+			}
+			else
+			{
+				// if the asset is already included, that's an issue
+				LOG(FS("AssetDatabase::Merge > Asset already contained in this DB! "
+					"Name: '%s', Path: '%s', Merge Path: '%s', Package: '%s', Merge Package: '%s'",
+					rhAsset->GetName().c_str(),
+					(*assetIt)->GetPath().c_str(),
+					rhAsset->GetPath().c_str(),
+					(*assetIt)->GetPackageId().ToStringDbg(),
+					rhAsset->GetPackageId().ToStringDbg()), 
+					core::LogLevel::Error);
 			}
 		}
 	}

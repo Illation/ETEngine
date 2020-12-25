@@ -2,6 +2,8 @@
 #include "FileResourceManager.h"
 
 #include <EtCore/FileSystem/Entry.h>
+#include <EtCore/Reflection/Serialization.h>
+#include <EtCore/FileSystem/FileUtil.h>
 
 
 namespace et {
@@ -30,8 +32,8 @@ FileResourceManager::FileResourceManager(std::string const& projectPath, std::st
 void FileResourceManager::Init()
 {
 	// init databases and file directories unlinked 
-	InitDb(m_ProjectDb, m_ProjectPath);
-	InitDb(m_EngineDb, m_EnginePath);
+	EditorAssetDatabase::InitDb(m_ProjectDb, m_ProjectPath + s_ResourceDirRelPath + s_DatabasePath);
+	EditorAssetDatabase::InitDb(m_EngineDb, m_EnginePath + s_ResourceDirRelPath + s_DatabasePath);
 
 	// link databases
 	auto assetGetter = [this](core::HashString const assetId) -> core::I_Asset*
@@ -162,21 +164,6 @@ EditorAssetBase* FileResourceManager::GetEditorAsset(core::HashString const asse
 EditorAssetBase* FileResourceManager::GetEditorAsset(core::I_Asset* const asset, bool const reportErrors)
 {
 	return GetEditorAsset(asset->GetId(), asset->GetType(), reportErrors);
-}
-
-//---------------------------------
-// FileResourceManager::InitDb
-//
-// Initialize an individual Asset Database
-//
-void FileResourceManager::InitDb(EditorAssetDatabase& db, std::string const& path)
-{
-	// mount the directory
-	core::Directory* const dir = new core::Directory(path + s_ResourceDirRelPath, nullptr, true);
-	dir->Mount(true);
-
-	// --
-	db.Init(dir);
 }
 
 //---------------------------------
