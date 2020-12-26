@@ -51,7 +51,7 @@ void PackageResourceManager::Init()
 	}
 
 	// Create the file packages for all indexed packages
-	for (core::AssetDatabase::PackageDescriptor const& desc : m_Database.packages)
+	for (core::PackageDescriptor const& desc : m_Database.packages)
 	{
 		core::FilePackage* const filePkg = new core::FilePackage(desc.GetPath() + desc.GetName() + core::FilePackage::s_PackageFileExtension);
 		m_Packages.emplace_back(desc.GetId(), filePkg);

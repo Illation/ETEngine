@@ -29,7 +29,7 @@ public:
 
 	// accessors
 	//-----------
-	std::vector<core::I_Asset*> const& GetSelectedAssets() const { return m_SelectedAssets; }
+	std::vector<pl::EditorAssetBase*> const& GetSelectedAssets() const { return m_SelectedAssets; }
 
 	// utility
 	//--------
@@ -47,7 +47,7 @@ private:
 	
 	ResourceView m_View;
 
-	std::vector<core::I_Asset*> m_SelectedAssets;
+	std::vector<pl::EditorAssetBase*> m_SelectedAssets;
 };
 
 

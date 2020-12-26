@@ -2,8 +2,8 @@
   "editable texture asset": {
     "asset": {
       "texture asset": {
-        "name": "greasyMetal_baseCol.png",
-        "path": "assets/Textures/GreasyMetal/",
+        "name": "bamboo_rough.png",
+        "path": "assets/Textures/Bamboo/",
         "package": "content1",
         "references": [],
         "use SRGB": true,

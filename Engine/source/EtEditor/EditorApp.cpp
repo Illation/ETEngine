@@ -24,7 +24,8 @@
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
-#include <EtEditor/Content/FileResourceManager.h>
+#include <EtPipeline/Content/FileResourceManager.h>
+
 #include <EtEditor/Layout/EditorWindow.h>
 #include <EtEditor/Util/SettingsDialog.h>
 #include <EtEditor/Util/EditorConfig.h>
@@ -228,7 +229,8 @@ void EditorApp::on_activate()
 //
 void EditorApp::InitializeUtilities()
 {
-	EditorConfig::GetInstance()->Initialize();
+	EditorConfig* const edConfig = EditorConfig::GetInstance();
+	edConfig->Initialize();
 
 	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::RegisterSystems,
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const eventData)
@@ -240,9 +242,9 @@ void EditorApp::InitializeUtilities()
 		}));
 	fw::UnifiedScene::Instance().Init();
 
-	core::ResourceManager::SetInstance(new FileResourceManager());
+	core::ResourceManager::SetInstance(new pl::FileResourceManager(edConfig->GetProjectPath(), edConfig->GetEnginePath()));
 
-	EditorConfig::GetInstance()->QueryStartScene();
+	edConfig->QueryStartScene();
 
 	core::InputManager::GetInstance();
 

@@ -2,6 +2,8 @@
 #include "FileResourceManager.h"
 
 #include <EtCore/FileSystem/Entry.h>
+#include <EtCore/Reflection/Serialization.h>
+#include <EtCore/FileSystem/FileUtil.h>
 
 
 namespace et {
@@ -30,8 +32,8 @@ FileResourceManager::FileResourceManager(std::string const& projectPath, std::st
 void FileResourceManager::Init()
 {
 	// init databases and file directories unlinked 
-	InitDb(m_ProjectDb, m_ProjectPath);
-	InitDb(m_EngineDb, m_EnginePath);
+	EditorAssetDatabase::InitDb(m_ProjectDb, m_ProjectPath + s_ResourceDirRelPath + s_DatabasePath);
+	EditorAssetDatabase::InitDb(m_EngineDb, m_EnginePath + s_ResourceDirRelPath + s_DatabasePath);
 
 	// link databases
 	auto assetGetter = [this](core::HashString const assetId) -> core::I_Asset*
@@ -52,6 +54,32 @@ void FileResourceManager::Init()
 
 	SetAssetReferences(&m_ProjectDb, assetGetter);
 	SetAssetReferences(&m_EngineDb, assetGetter);
+}
+
+//--------------------------------
+// FileResourceManager::LoadAsset
+//
+void FileResourceManager::LoadAsset(core::I_Asset* const asset)
+{
+	ET_ASSERT(!(asset->IsLoaded()));
+
+	EditorAssetBase* const editorAsset = GetEditorAsset(asset);
+	ET_ASSERT(editorAsset != nullptr);
+
+	editorAsset->Load();
+}
+
+//----------------------------------
+// FileResourceManager::UnloadAsset
+//
+void FileResourceManager::UnloadAsset(core::I_Asset* const asset)
+{
+	ET_ASSERT(asset->IsLoaded());
+
+	EditorAssetBase* const editorAsset = GetEditorAsset(asset);
+	ET_ASSERT(editorAsset != nullptr);
+
+	editorAsset->Unload();
 }
 
 //--------------------------------------
@@ -106,33 +134,36 @@ void FileResourceManager::Flush()
 //
 core::I_Asset* FileResourceManager::GetAssetInternal(core::HashString const assetId, rttr::type const type, bool const reportErrors)
 {
-	EditorAssetBase* ret = m_ProjectDb.GetAsset(assetId, type, false);
-
+	EditorAssetBase* const ret = GetEditorAsset(assetId, type, reportErrors);
 	if (ret == nullptr)
 	{
-		ret = m_EngineDb.GetAsset(assetId, type, reportErrors); // only log if first search fails
-		if (ret == nullptr)
-		{
-			return nullptr;
-		}
+		return nullptr;
 	}
 
 	return ret->GetAsset();
 }
 
-//---------------------------------
-// FileResourceManager::InitDb
+//-------------------------------------
+// FileResourceManager::GetEditorAsset
 //
-// Initialize an individual Asset Database
-//
-void FileResourceManager::InitDb(EditorAssetDatabase& db, std::string const& path)
+EditorAssetBase* FileResourceManager::GetEditorAsset(core::HashString const assetId, rttr::type const type, bool const reportErrors)
 {
-	// mount the directory
-	core::Directory* const dir = new core::Directory(path + s_ResourceDirRelPath, nullptr, true);
-	dir->Mount(true);
+	EditorAssetBase* const ret = m_ProjectDb.GetAsset(assetId, type, false);
 
-	// --
-	db.Init(dir);
+	if (ret == nullptr)
+	{
+		return m_EngineDb.GetAsset(assetId, type, reportErrors); // only log if first search fails
+	}
+
+	return ret;
+}
+
+//-------------------------------------------
+// FileResourceManager::GetEditorAsset
+//
+EditorAssetBase* FileResourceManager::GetEditorAsset(core::I_Asset* const asset, bool const reportErrors)
+{
+	return GetEditorAsset(asset->GetId(), asset->GetType(), reportErrors);
 }
 
 //---------------------------------

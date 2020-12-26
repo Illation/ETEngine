@@ -34,8 +34,11 @@ protected:
 
 	// functionality
 	//---------------------
-public:
 
+	void LoadAsset(core::I_Asset* const asset) override; 
+	void UnloadAsset(core::I_Asset* const asset) override;
+
+public:
 	bool GetLoadData(core::I_Asset const* const asset, std::vector<uint8>& outData) const override;
 
 	void Flush() override;
@@ -49,8 +52,8 @@ public:
 	//---------------------
 protected:
 	core::I_Asset* GetAssetInternal(core::HashString const assetId, rttr::type const type, bool const reportErrors) override;
-
-	void InitDb(EditorAssetDatabase& db, std::string const& path);
+	EditorAssetBase* GetEditorAsset(core::HashString const assetId, rttr::type const type, bool const reportErrors);
+	EditorAssetBase* GetEditorAsset(core::I_Asset* const asset, bool const reportErrors = true);
 
 	bool IsEngineResource(core::I_Asset const* const asset) const;
 

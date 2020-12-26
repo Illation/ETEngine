@@ -21,6 +21,7 @@ class ResourceManager
 private:
 	static ResourceManager* s_Instance;
 	friend class ResourceManager;
+	friend class I_AssetPtr;
 
 protected:
 	typedef std::function<I_Asset*(HashString const)> T_ReferenceAssetGetter;
@@ -66,6 +67,9 @@ protected:
 	//---------------------
 	virtual void Init() = 0;
 	virtual void Deinit() = 0;
+
+	virtual void LoadAsset(I_Asset* const asset); // used by asset pointer
+	virtual void UnloadAsset(I_Asset* const asset);
 
 public:
 	virtual bool GetLoadData(I_Asset const* const asset, std::vector<uint8>& outData) const = 0;

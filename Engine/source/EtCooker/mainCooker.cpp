@@ -46,18 +46,18 @@ namespace cooker {
 
 
 // forward declarations
-void AddPackageToWriter(core::HashString const packageId, std::string const& dbBase, PackageWriter &writer, core::AssetDatabase& db);
+void AddPackageToWriter(core::HashString const packageId, std::string const& dbBase, PackageWriter &writer, pl::EditorAssetDatabase& db);
 void CookCompiledPackage(std::string const& dbBase, 
 	std::string const& outPath, 
 	std::string const& resName, 
-	core::AssetDatabase& db, 
+	pl::EditorAssetDatabase& db, 
 	std::string const& engineDbBase, 
-	core::AssetDatabase& engineDb);
+	pl::EditorAssetDatabase& engineDb);
 void CookFilePackages(std::string const& dbBase, 
 	std::string const& outPath, 
-	core::AssetDatabase& db,
+	pl::EditorAssetDatabase& db,
 	std::string const& engineDbBase,
-	core::AssetDatabase& engineDb);
+	pl::EditorAssetDatabase& engineDb);
 
 
 ////////////////////////////////////////////////////
@@ -93,28 +93,13 @@ int RunCooker(int argc, char *argv[])
 	LOG(FS(" - version: %s", build::Version::s_Name.c_str()));
 	LOG("");
 
-	core::AssetDatabase database;
-	if (!core::serialization::DeserializeFromFile(databasePath, database))
-	{
-		LOG("main > unable to deserialize asset database at '" + std::string(databasePath) + std::string("'"), core::LogLevel::Error);
-	}
+	pl::EditorAssetDatabase database;
+	pl::EditorAssetDatabase::InitDb(database, databasePath);
 	std::string dbBase = core::FileUtil::ExtractPath(databasePath);
 
-	core::AssetDatabase engineDb;
-	if (!core::serialization::DeserializeFromFile(engineDbPath, engineDb))
-	{
-		LOG("main > unable to deserialize engine database at '" + std::string(engineDbPath) + std::string("'"), core::LogLevel::Error);
-	}
+	pl::EditorAssetDatabase engineDb;
+	pl::EditorAssetDatabase::InitDb(engineDb, engineDbPath);
 	std::string engineDbBase = core::FileUtil::ExtractPath(engineDbPath);
-
-	// test
-	//{
-	//	core::Directory* const dir = new core::Directory(core::FileUtil::ExtractPath(databasePath), nullptr, true);
-	//	dir->Mount(true);
-
-	//	pl::EditorAssetDatabase database2;
-	//	database2.Init(dir);
-	//}
 
 	if (genCompiledResource)
 	{
@@ -145,19 +130,20 @@ int RunCooker(int argc, char *argv[])
 //
 // Gets all assets in a package of that database and adds them to the package writer
 //
-void AddPackageToWriter(core::HashString const packageId, std::string const& dbBase, PackageWriter &writer, core::AssetDatabase& db)
+void AddPackageToWriter(core::HashString const packageId, std::string const& dbBase, PackageWriter &writer, pl::EditorAssetDatabase& db)
 {
 	// Loop over files - add them to the writer
-	core::AssetDatabase::T_AssetList assets = db.GetAssetsInPackage(packageId);
-	for (core::I_Asset const* const asset : assets)
+	pl::EditorAssetDatabase::T_AssetList assets = db.GetAssetsInPackage(packageId);
+	for (pl::EditorAssetBase const* const editorAsset : assets)
 	{
+		core::I_Asset const* const asset = editorAsset->GetAsset();
 		std::string const filePath = dbBase + asset->GetPath();
 		std::string const assetName = asset->GetName();
 		core::HashString const id = asset->GetId();
 
 		LOG(assetName + std::string(" [") + std::to_string(id.Get()) + std::string("] @: ") + core::FileUtil::GetAbsolutePath(filePath));
 
-		core::File* assetFile = new core::File(filePath + assetName, nullptr);
+		core::File* const assetFile = new core::File(filePath + assetName, nullptr);
 		writer.AddFile(assetFile, dbBase, core::E_CompressionType::Store);
 	}
 }
@@ -171,9 +157,9 @@ void AddPackageToWriter(core::HashString const packageId, std::string const& dbB
 void CookCompiledPackage(std::string const& dbBase, 
 	std::string const& outPath, 
 	std::string const& resName, 
-	core::AssetDatabase& db,
+	pl::EditorAssetDatabase& db,
 	std::string const& engineDbBase,
-	core::AssetDatabase& engineDb)
+	pl::EditorAssetDatabase& engineDb)
 {
 	// Create a package writer - all file paths will be written relative to our database directory
 	PackageWriter packageWriter;
@@ -188,8 +174,8 @@ void CookCompiledPackage(std::string const& dbBase,
 	core::Directory* tempDir = new core::Directory(s_TempPath, nullptr, true);
 
 	core::AssetDatabase mergeDb(false);
-	mergeDb.Merge(db);
-	mergeDb.Merge(engineDb);
+	db.PopulateAssetDatabase(mergeDb);
+	engineDb.PopulateAssetDatabase(mergeDb);
 	if (!core::serialization::SerializeToFile(tempDbFullPath, mergeDb))
 	{
 		LOG(FS("CookCompiledPackage > Failed to serialize asset database to '%s'", tempDbFullPath.c_str()), core::LogLevel::Error);
@@ -232,16 +218,16 @@ void CookCompiledPackage(std::string const& dbBase,
 //
 void CookFilePackages(std::string const& dbBase, 
 	std::string const& outPath, 
-	core::AssetDatabase& db,
+	pl::EditorAssetDatabase& db,
 	std::string const& engineDbBase,
-	core::AssetDatabase& engineDb)
+	pl::EditorAssetDatabase& engineDb)
 {
 	// Get a unified list of package descriptors
-	std::vector<core::AssetDatabase::PackageDescriptor> descriptors = db.packages;
-	for (core::AssetDatabase::PackageDescriptor const& desc : engineDb.packages)
+	std::vector<core::PackageDescriptor> descriptors = db.GetPackages();
+	for (core::PackageDescriptor const& desc : engineDb.GetPackages())
 	{
 		// check if there is already a package with the same ID tracked in "descriptors"
-		if (std::find_if(descriptors.cbegin(), descriptors.cend(), [&desc](core::AssetDatabase::PackageDescriptor const& tracked)
+		if (std::find_if(descriptors.cbegin(), descriptors.cend(), [&desc](core::PackageDescriptor const& tracked)
 			{
 				return tracked.GetId() == desc.GetId();
 			}) == descriptors.cend())
@@ -251,7 +237,7 @@ void CookFilePackages(std::string const& dbBase,
 	}
 
 	// each package can have a separate asset list
-	for (core::AssetDatabase::PackageDescriptor const& desc : descriptors)
+	for (core::PackageDescriptor const& desc : descriptors)
 	{
 		PackageWriter packageWriter;
 		std::vector<uint8> packageData;
