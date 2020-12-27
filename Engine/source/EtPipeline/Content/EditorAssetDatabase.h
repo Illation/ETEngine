@@ -66,6 +66,8 @@ public:
 	EditorAssetBase* GetAsset(core::HashString const assetId, bool const reportErrors = true) const;
 	EditorAssetBase* GetAsset(core::HashString const assetId, rttr::type const type, bool const reportErrors = true) const; // faster
 
+	bool IsRuntimeAsset(core::I_Asset* const asset) const;
+
 	// Interface
 	//-----------
 	void IterateAllAssets(core::I_AssetDatabase::T_AssetFunc const& func) override;

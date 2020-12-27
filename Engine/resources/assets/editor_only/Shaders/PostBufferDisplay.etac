@@ -2,11 +2,11 @@
   "editable shader asset": {
     "asset": {
       "shader asset": {
-        "name": "FwdIdShader.glsl",
-        "path": "assets/Shaders/",
-        "package": "",
+        "name": "PostBufferDisplay.glsl",
+        "path": "assets/editor_only/Shaders/",
+        "package": "editor_content",
         "references": [
-          "CommonSharedVars.glsl"
+          "Common.glsl"
         ]
       }
     },

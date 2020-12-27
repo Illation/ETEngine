@@ -3,7 +3,8 @@
     "packages": [
       {
         "name": "content1",
-        "path": "content/"
+        "path": "content/",
+        "is runtime": true
       }
     ]
   }

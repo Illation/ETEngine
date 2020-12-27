@@ -3,8 +3,8 @@
     "asset": {
       "shader asset": {
         "name": "EditorComposite.glsl",
-        "path": "assets/Shaders/",
-        "package": "",
+        "path": "assets/editor_only/Shaders/",
+        "package": "editor_content",
         "references": []
       }
     },

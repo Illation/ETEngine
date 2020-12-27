@@ -259,6 +259,11 @@ void CookFilePackages(std::string const& dbBase,
 	// each package can have a separate asset list
 	for (core::PackageDescriptor const& desc : descriptors)
 	{
+		if (!desc.IsRuntime())
+		{
+			continue;
+		}
+
 		PackageWriter packageWriter;
 		std::vector<uint8> packageData;
 

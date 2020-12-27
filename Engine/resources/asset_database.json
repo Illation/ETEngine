@@ -3,7 +3,13 @@
     "packages": [
       {
         "name": "engine_content",
-        "path": "content/"
+        "path": "content/",
+        "is runtime": true
+      },
+      {
+        "name": "editor_content",
+        "path": "",
+        "is runtime": false
       }
     ]
   }
