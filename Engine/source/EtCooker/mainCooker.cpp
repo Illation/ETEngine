@@ -46,7 +46,11 @@ namespace cooker {
 
 
 // forward declarations
-void AddPackageToWriter(core::HashString const packageId, std::string const& dbBase, PackageWriter &writer, pl::EditorAssetDatabase& db);
+void AddPackageToWriter(core::HashString const packageId, 
+	std::string const& dbBase, 
+	PackageWriter &writer, 
+	pl::EditorAssetDatabase& db, 
+	bool const setupRuntime);
 void CookCompiledPackage(std::string const& dbBase, 
 	std::string const& outPath, 
 	std::string const& resName, 
@@ -108,7 +112,11 @@ int RunCooker(int argc, char *argv[])
 			std::cerr << "main > When specifying compiled resource, also specify the resource name in the last arg" << std::endl;
 			return 2;
 		}
+
 		std::string resName(argv[5]);
+
+		database.SetupAllRuntimeAssets();
+		engineDb.SetupAllRuntimeAssets();
 
 		CookCompiledPackage(dbBase, outPath, resName, database, engineDbBase, engineDb);
 	}
@@ -130,21 +138,33 @@ int RunCooker(int argc, char *argv[])
 //
 // Gets all assets in a package of that database and adds them to the package writer
 //
-void AddPackageToWriter(core::HashString const packageId, std::string const& dbBase, PackageWriter &writer, pl::EditorAssetDatabase& db)
+void AddPackageToWriter(core::HashString const packageId, 
+	std::string const& dbBase, 
+	PackageWriter &writer, 
+	pl::EditorAssetDatabase& db, 
+	bool const setupRuntime)
 {
 	// Loop over files - add them to the writer
 	pl::EditorAssetDatabase::T_AssetList assets = db.GetAssetsInPackage(packageId);
-	for (pl::EditorAssetBase const* const editorAsset : assets)
+	for (pl::EditorAssetBase* const editorAsset : assets)
 	{
-		core::I_Asset const* const asset = editorAsset->GetAsset();
-		std::string const filePath = dbBase + asset->GetPath();
-		std::string const assetName = asset->GetName();
-		core::HashString const id = asset->GetId();
+		if (setupRuntime)
+		{
+			editorAsset->SetupRuntimeAssets();
+		}
 
-		LOG(assetName + std::string(" [") + std::to_string(id.Get()) + std::string("] @: ") + core::FileUtil::GetAbsolutePath(filePath));
+		std::vector<core::I_Asset*> const runtimeAssets = editorAsset->GetAllRuntimeAssets();
+		for (core::I_Asset const* const asset : runtimeAssets)
+		{
+			std::string const filePath = dbBase + asset->GetPath();
+			std::string const assetName = asset->GetName();
+			core::HashString const id = asset->GetId();
 
-		core::File* const assetFile = new core::File(filePath + assetName, nullptr);
-		writer.AddFile(assetFile, dbBase, core::E_CompressionType::Store);
+			LOG(assetName + std::string(" [") + std::to_string(id.Get()) + std::string("] @: ") + core::FileUtil::GetAbsolutePath(filePath));
+
+			core::File* const assetFile = new core::File(filePath + assetName, nullptr);
+			writer.AddFile(assetFile, dbBase, core::E_CompressionType::Store);
+		}
 	}
 }
 
@@ -191,8 +211,8 @@ void CookCompiledPackage(std::string const& dbBase,
 
 	// add all other compiled files to the package
 	static core::HashString const s_CompiledPackageId;
-	AddPackageToWriter(s_CompiledPackageId, dbBase, packageWriter, db);
-	AddPackageToWriter(s_CompiledPackageId, engineDbBase, packageWriter, engineDb);
+	AddPackageToWriter(s_CompiledPackageId, dbBase, packageWriter, db, false);
+	AddPackageToWriter(s_CompiledPackageId, engineDbBase, packageWriter, engineDb, false);
 
 	// write our package
 	packageWriter.Write(packageData);
@@ -242,8 +262,8 @@ void CookFilePackages(std::string const& dbBase,
 		PackageWriter packageWriter;
 		std::vector<uint8> packageData;
 
-		AddPackageToWriter(desc.GetId(), dbBase, packageWriter, db);
-		AddPackageToWriter(desc.GetId(), engineDbBase, packageWriter, engineDb);
+		AddPackageToWriter(desc.GetId(), dbBase, packageWriter, db, true);
+		AddPackageToWriter(desc.GetId(), engineDbBase, packageWriter, engineDb, true);
 
 		// write our package
 		packageWriter.Write(packageData);

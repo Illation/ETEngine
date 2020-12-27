@@ -8,11 +8,6 @@ namespace et {
 namespace pl {
 
 
-//===============
-// Editor Asset
-//===============
-
-
 RTTR_REGISTRATION
 {
 	rttr::registration::class_<EditorAssetBase>("editor asset")
@@ -20,6 +15,36 @@ RTTR_REGISTRATION
 		.property("metadata", &EditorAssetBase::m_MetaData)
 		.property("children", &EditorAssetBase::m_ChildAssets);
 }
+
+
+//=====================================
+// Editor Asset :: Runtime Asset Data
+//=====================================
+
+
+//------------------------------------------
+// EditorAssetBase::RuntimeAssetData::c-tor
+//
+EditorAssetBase::RuntimeAssetData::RuntimeAssetData(core::I_Asset* const asset, bool const ownsAsset) 
+	: m_Asset(asset)
+	, m_OwnsAsset(ownsAsset)
+{ }
+
+//------------------------------------------
+// EditorAssetBase::RuntimeAssetData::d-tor
+//
+EditorAssetBase::RuntimeAssetData::~RuntimeAssetData()
+{
+	if (m_OwnsAsset)
+	{
+		delete m_Asset;
+	}
+}
+
+
+//===============
+// Editor Asset
+//===============
 
 
 //---------------------------
@@ -44,6 +69,41 @@ void EditorAssetBase::Init(core::File* const configFile)
 {
 	m_File = configFile;
 	m_Id = m_Asset->GetId();
+}
+
+//--------------------------------------
+// EditorAssetBase::GetAllRuntimeAssets
+//
+// Recursively access runtime assets
+//	
+std::vector<core::I_Asset*> EditorAssetBase::GetAllRuntimeAssets() const
+{
+	ET_ASSERT(m_HasRuntimeAssets);
+
+	std::vector<core::I_Asset*> ret;
+
+	for (EditorAssetBase const* const child : m_ChildAssets)
+	{
+		std::vector<core::I_Asset*> childRet = child->GetAllRuntimeAssets();
+		ret.insert(ret.end(), childRet.begin(), childRet.end());
+	}
+
+	for (RuntimeAssetData const& data : m_RuntimeAssets)
+	{
+		ret.push_back(data.m_Asset);
+	}
+
+	return ret;
+}
+
+//---------------------------------------------
+// EditorAssetBase::SetupRuntimeAssetsInternal
+//
+// Default behavior just uses the same asset as the editor
+//	
+void EditorAssetBase::SetupRuntimeAssetsInternal()
+{
+	m_RuntimeAssets.emplace_back(m_Asset, false);
 }
 
 //---------------------------
@@ -112,6 +172,24 @@ void EditorAssetBase::Unload(bool const force)
 			child->GetAsset()->m_RefCount--; // since we manually incremented, we should also manually decrement
 		}
 	}
+}
+
+//-------------------------------------
+// EditorAssetBase::SetupRuntimeAssets
+//
+// Populate the list of assets that the runtime should be using, with correct IDs and references. Doesn't need to generate the load data
+//
+void EditorAssetBase::SetupRuntimeAssets()
+{
+	ET_ASSERT(!m_HasRuntimeAssets);
+
+	for (EditorAssetBase* const child : m_ChildAssets)
+	{
+		child->SetupRuntimeAssets();
+	}
+
+	SetupRuntimeAssetsInternal();
+	m_HasRuntimeAssets = true;
 }
 
 

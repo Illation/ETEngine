@@ -73,6 +73,7 @@ public:
 	// Functionality
 	//---------------------
 	void Flush();
+	void SetupAllRuntimeAssets();
 	void PopulateAssetDatabase(core::AssetDatabase& db) const;
 
 	// utility

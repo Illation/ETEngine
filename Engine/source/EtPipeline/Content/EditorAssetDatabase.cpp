@@ -300,6 +300,20 @@ void EditorAssetDatabase::Flush()
 //--------------------------------------------
 // EditorAssetDatabase::PopulateAssetDatabase
 //
+void EditorAssetDatabase::SetupAllRuntimeAssets()
+{
+	for (T_AssetList& cache : m_AssetCaches)
+	{
+		for (EditorAssetBase* asset : cache)
+		{
+			asset->SetupRuntimeAssets();
+		}
+	}
+}
+
+//--------------------------------------------
+// EditorAssetDatabase::PopulateAssetDatabase
+//
 void EditorAssetDatabase::PopulateAssetDatabase(core::AssetDatabase& db) const 
 {
 	// add packages
@@ -345,38 +359,41 @@ void EditorAssetDatabase::PopulateAssetDatabase(core::AssetDatabase& db) const
 		// insert assets
 		for (EditorAssetBase* const editorAsset : rhCache)
 		{
-			core::I_Asset* const rhAsset = editorAsset->GetAsset();
 
-			// Ensure the asset doesn't already exist
-			auto const assetIt = std::find_if(lhCache.cache.cbegin(), lhCache.cache.cend(), [rhAsset](core::I_Asset const* const lhAsset)
-				{
-					return (lhAsset->GetId() == rhAsset->GetId());
-				});
-
-			// if the to merge asset is unique add it
-			if (assetIt == lhCache.cache.cend())
+			std::vector<core::I_Asset*> const runtimeAssets = editorAsset->GetAllRuntimeAssets();
+			for (core::I_Asset* const rhAsset : runtimeAssets)
 			{
-				// check we have a package descriptor for the new asset
-				ET_ASSERT(std::find_if(db.packages.cbegin(), db.packages.cend(), [rhAsset](core::PackageDescriptor const& lhPackage)
-				{
-					return lhPackage.GetId() == rhAsset->GetPackageId();
-				}) != db.packages.cend() || rhAsset->GetPackageId() == 0u,
-					"Asset merged into DB, but DB doesn't contain package '%s'",
-					rhAsset->GetPackageId().ToStringDbg());
+				// Ensure the asset doesn't already exist
+				auto const assetIt = std::find_if(lhCache.cache.cbegin(), lhCache.cache.cend(), [rhAsset](core::I_Asset const* const lhAsset)
+					{
+						return (lhAsset->GetId() == rhAsset->GetId());
+					});
 
-				lhCache.cache.emplace_back(rhAsset);
-			}
-			else
-			{
-				// if the asset is already included, that's an issue
-				LOG(FS("AssetDatabase::Merge > Asset already contained in this DB! "
-					"Name: '%s', Path: '%s', Merge Path: '%s', Package: '%s', Merge Package: '%s'",
-					rhAsset->GetName().c_str(),
-					(*assetIt)->GetPath().c_str(),
-					rhAsset->GetPath().c_str(),
-					(*assetIt)->GetPackageId().ToStringDbg(),
-					rhAsset->GetPackageId().ToStringDbg()), 
-					core::LogLevel::Error);
+				// if the to merge asset is unique add it
+				if (assetIt == lhCache.cache.cend())
+				{
+					// check we have a package descriptor for the new asset
+					ET_ASSERT(std::find_if(db.packages.cbegin(), db.packages.cend(), [rhAsset](core::PackageDescriptor const& lhPackage)
+					{
+						return lhPackage.GetId() == rhAsset->GetPackageId();
+					}) != db.packages.cend() || rhAsset->GetPackageId() == 0u,
+						"Asset merged into DB, but DB doesn't contain package '%s'",
+						rhAsset->GetPackageId().ToStringDbg());
+
+					lhCache.cache.emplace_back(rhAsset);
+				}
+				else
+				{
+					// if the asset is already included, that's an issue
+					LOG(FS("AssetDatabase::Merge > Asset already contained in this DB! "
+						"Name: '%s', Path: '%s', Merge Path: '%s', Package: '%s', Merge Package: '%s'",
+						rhAsset->GetName().c_str(),
+						(*assetIt)->GetPath().c_str(),
+						rhAsset->GetPath().c_str(),
+						(*assetIt)->GetPackageId().ToStringDbg(),
+						rhAsset->GetPackageId().ToStringDbg()), 
+						core::LogLevel::Error);
+				}
 			}
 		}
 	}

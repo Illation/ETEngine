@@ -27,6 +27,17 @@ class EditorAssetBase
 	RTTR_ENABLE()
 	REGISTRATION_FRIEND_NS(pl)
 
+protected:
+	struct RuntimeAssetData final
+	{
+		RuntimeAssetData(core::I_Asset* const asset, bool const ownsAsset);
+		~RuntimeAssetData();
+
+		core::I_Asset* m_Asset = nullptr;
+		bool m_OwnsAsset = false;
+		std::vector<uint8> m_GeneratedData;
+	};
+
 	// construct destruct
 	//--------------------
 public:
@@ -37,8 +48,11 @@ public:
 	// accessors
 	//-----------
 	core::HashString GetId() const { return m_Id; }
+
 	core::I_Asset* GetAsset() { return m_Asset; }
 	core::I_Asset const* GetAsset() const { return m_Asset; }
+
+	std::vector<core::I_Asset*> GetAllRuntimeAssets() const;
 
 	virtual rttr::type GetType() const = 0;
 
@@ -47,6 +61,7 @@ public:
 protected:
 	virtual bool LoadFromMemory(std::vector<uint8> const& data) = 0;
 	// virtual bool WriteToMemory(std::vector<uint8>& data) = 0;
+	virtual void SetupRuntimeAssetsInternal();
 	virtual void UnloadInternal() {}
 
 	// functionality
@@ -55,6 +70,7 @@ public:
 	void Load();
 	void Unload(bool const force = false);
 	// void Save
+	void SetupRuntimeAssets(); 
 	// void Generate(build configuration)
 
 
@@ -70,6 +86,9 @@ protected:
 	I_EditorAssetMeta* m_MetaData = nullptr; // can stay null
 
 	std::vector<EditorAssetBase*> m_ChildAssets;
+
+	std::vector<RuntimeAssetData> m_RuntimeAssets;
+	bool m_HasRuntimeAssets = false;
 };
 
 //------------------------
