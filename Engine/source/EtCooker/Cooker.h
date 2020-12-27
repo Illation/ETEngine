@@ -4,31 +4,68 @@
 #include "PackageWriter.h"
 
 
-
 namespace et { 
 namespace cooker {
 
 
-int RunCooker(int argc, char *argv[]);
+//---------
+// Cooker
+//
+// Main class for the cooker program. Essentially all the work can be done by calling Run
+//
+class Cooker final
+{
+	// definitions
+	//-------------
+public:
+	enum class E_ReturnCode
+	{
+		Success = 0,
 
-void AddPackageToWriter(core::HashString const packageId,
-	std::string const& dbBase,
-	PackageWriter &writer,
-	pl::EditorAssetDatabase& db,
-	bool const setupRuntime);
+		InsufficientArguments,
+		MissingResourceName,
+		FailedToSerialize,
+		FailedToCleanup,
+		FailedToWritePackage
+	};
 
-void CookCompiledPackage(std::string const& dbBase,
-	std::string const& outPath,
-	std::string const& resName,
-	pl::EditorAssetDatabase& db,
-	std::string const& engineDbBase,
-	pl::EditorAssetDatabase& engineDb);
+	// construct destruct
+	//--------------------
+	Cooker(int32 const argc, char* const argv[]);
+	~Cooker();
 
-void CookFilePackages(std::string const& dbBase,
-	std::string const& outPath,
-	pl::EditorAssetDatabase& db,
-	std::string const& engineDbBase,
-	pl::EditorAssetDatabase& engineDb);
+	// functionality
+	//---------------
+	void Run();
+
+	// accessors
+	//-----------
+	E_ReturnCode GetReturnCode() const { return m_ReturnCode; }
+
+	// utility
+	//---------
+private:
+	void CookCompiledPackage();
+	void CookFilePackages();
+
+	void AddPackageToWriter(core::HashString const packageId, std::string const& dbPath, PackageWriter &writer, pl::EditorAssetDatabase& db);
+
+	// Data
+	///////
+
+	bool m_GenerateCompiled;
+	std::string m_ResourceName;
+
+	std::string m_OutPath;
+
+	pl::EditorAssetDatabase m_ProjectDb;
+	std::string m_ProjectPath;
+
+	pl::EditorAssetDatabase m_EngineDb;
+	std::string m_EnginePath;
+
+	E_ReturnCode m_ReturnCode = E_ReturnCode::Success;
+};
 
 
 } // namespace cooker

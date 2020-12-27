@@ -14,5 +14,11 @@ int main(int argc, char *argv[])
 {
 	et::demo::ForceLinkingPipeline();
 
-	et::cooker::RunCooker(argc, argv);
+	et::cooker::Cooker cooker(argc, argv);
+	if (cooker.GetReturnCode() == et::cooker::Cooker::E_ReturnCode::Success)
+	{
+		cooker.Run();
+	}
+
+	return static_cast<int>(cooker.GetReturnCode());
 }
