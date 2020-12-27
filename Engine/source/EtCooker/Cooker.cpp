@@ -1,6 +1,6 @@
 #include <EtCore/stdafx.h>
+#include "Cooker.h"
 
-#include "PackageWriter.h"
 #include "CompiledDataGenerator.h"
 
 #include <EtBuild/EngineVersion.h>
@@ -14,10 +14,6 @@
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtFramework/Config/BootConfig.h>
-#include <EtFramework/linkerHelper.h>
-
-#include <EtPipeline/linkerHelper.h>
-#include <EtPipeline/Content/EditorAssetDatabase.h>
 
 
 //============
@@ -25,53 +21,21 @@
 //============
 
 
-namespace et { namespace cooker {
-	int RunCooker(int argc, char *argv[]);
-} }
-
-
-//---------------------------------
-// main
-//
-// Main function for the resource cooker - a simple command line program that compiles resources into a game ready format
-//
-int main(int argc, char *argv[])
-{
-	et::cooker::RunCooker(argc, argv);
-}
-
-
 namespace et {
 namespace cooker {
 
-
-// forward declarations
-void AddPackageToWriter(core::HashString const packageId, 
-	std::string const& dbBase, 
-	PackageWriter &writer, 
-	pl::EditorAssetDatabase& db, 
-	bool const setupRuntime);
-void CookCompiledPackage(std::string const& dbBase, 
-	std::string const& outPath, 
-	std::string const& resName, 
-	pl::EditorAssetDatabase& db, 
-	std::string const& engineDbBase, 
-	pl::EditorAssetDatabase& engineDb);
-void CookFilePackages(std::string const& dbBase, 
-	std::string const& outPath, 
-	pl::EditorAssetDatabase& db,
-	std::string const& engineDbBase,
-	pl::EditorAssetDatabase& engineDb);
 
 
 ////////////////////////////////////////////////////
 
 
+//-----------
+// RunCooker
+//
+// Essentially the main function, the project specific main should do as little work as possible
+//
 int RunCooker(int argc, char *argv[])
 {
-	fw::ForceLinking();
-	pl::ForceLinking();
-
 	// parse arguments
 	//-----------------
 	if (argc < 4)

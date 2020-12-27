@@ -16,6 +16,8 @@
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/Audio/AudioManager.h>
 
+#include <Common/CustomTestAsset.h>
+
 
 namespace et {
 namespace demo {
@@ -74,6 +76,11 @@ void MainFramework::OnInit()
 
 	// audio
 	fw::AudioManager::GetInstance()->SetDistanceModel(AL_INVERSE_DISTANCE);
+
+	AssetPtr<TestData> m_TestAsset = core::ResourceManager::Instance()->GetAssetData<TestData>(core::HashString("test.txt"));
+	ET_ASSERT(m_TestAsset != nullptr);
+
+	LOG(FS("Custom Assets:\n\t%s", m_TestAsset->GetText()));
 }
 
 //--------------------------

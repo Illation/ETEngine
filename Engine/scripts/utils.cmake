@@ -750,7 +750,7 @@ function(installCookResources TARGET)
 	set(_p )
 	getPlatformArch(_p)
 	set(bin_base_dir "${PROJECT_DIRECTORY}/bin/$<CONFIG>_${_p}/")
-	set(cooker_dir "${bin_base_dir}EtCooker/")
+	set(cooker_dir "${bin_base_dir}ProjectCooker/")
 	set(pak_file_dir "${bin_base_dir}${TARGET}/")
 
 	set(resource_name "compiledPackage")
@@ -768,12 +768,12 @@ function(installCookResources TARGET)
 	#-----------------------------------------------------------
 	message(STATUS "Adding target: ${target_name}")
 	add_custom_target(${target_name} 
-		DEPENDS ${deps} EtCooker 
+		DEPENDS ${deps} ProjectCooker 
 		
 		COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file} ; Out directory: ${pak_file_dir}"
 		COMMAND ${CMAKE_COMMAND} -E echo ""
-		COMMAND ${CMAKE_COMMAND} -E echo "${cooker_dir}EtCooker.exe ${res_file} ${res_file_engine} ${pak_file_dir} n"
-		COMMAND ${cooker_dir}EtCooker.exe ${res_file} ${res_file_engine} ${pak_file_dir} n
+		COMMAND ${CMAKE_COMMAND} -E echo "${cooker_dir}ProjectCooker.exe ${res_file} ${res_file_engine} ${pak_file_dir} n"
+		COMMAND ${cooker_dir}ProjectCooker.exe ${res_file} ${res_file_engine} ${pak_file_dir} n
 		COMMAND ${CMAKE_COMMAND} -E echo ""
 		COMMAND ${CMAKE_COMMAND} -E echo ""
 		
@@ -781,6 +781,6 @@ function(installCookResources TARGET)
 
 		VERBATIM
 	)
-	assignIdeFolder(${target_name} Project/Build)
+	assignIdeFolder(${target_name} Project/ContentPipeline)
 
 endfunction(installCookResources)

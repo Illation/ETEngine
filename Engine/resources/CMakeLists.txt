@@ -18,7 +18,7 @@ set(_p )
 getPlatformArch(_p)
 	
 set(bin_base_dir "${PROJECT_DIRECTORY}/bin/$<CONFIG>_${_p}/")
-set(cooker_dir "${bin_base_dir}EtCooker/")
+set(cooker_dir "${bin_base_dir}ProjectCooker/")
 
 set(resource_name "compiled_package")
 set(target_files "${gen_dir}${resource_name}.h" "${gen_dir}${resource_name}.cpp")
@@ -35,12 +35,12 @@ list (APPEND deps ${res_file_engine})
 #-----------------------------------------------------------
 add_custom_command(
     OUTPUT ${target_files}
-    DEPENDS ${deps} EtCooker
+    DEPENDS ${deps} ProjectCooker
 
 	COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file} Engine Source ${res_file_engine} ; Generated Directory: ${gen_dir}"
 	COMMAND ${CMAKE_COMMAND} -E echo ""
-	COMMAND ${CMAKE_COMMAND} -E echo "${cooker_dir}EtCooker.exe ${res_file} ${res_file_engine} ${gen_dir} y ${resource_name}"
-    COMMAND ${cooker_dir}EtCooker.exe ${res_file} ${res_file_engine} ${gen_dir} y ${resource_name}
+	COMMAND ${CMAKE_COMMAND} -E echo "${cooker_dir}ProjectCooker.exe ${res_file} ${res_file_engine} ${gen_dir} y ${resource_name}"
+    COMMAND ${cooker_dir}ProjectCooker.exe ${res_file} ${res_file_engine} ${gen_dir} y ${resource_name}
 	COMMAND ${CMAKE_COMMAND} -E echo ""
 	COMMAND ${CMAKE_COMMAND} -E echo ""
 	

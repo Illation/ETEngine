@@ -24,7 +24,7 @@ targetCompileOptions(DemoEditor)
 
 # directory stuff
 assign_source_group(${projectFiles})
-assignIdeFolder(DemoEditor Project)
+assignIdeFolder(DemoEditor Project/ContentPipeline)
 outputDirectories(DemoEditor "/bin") 
 
 add_dependencies(DemoEditor compile-resources-editor)
@@ -32,7 +32,7 @@ add_dependencies(DemoEditor compile-schemas-editor)
 
 # linking
 message(STATUS "Adding target: DemoEditor")
-target_link_libraries (DemoEditor DemoCommon EtEditor)
+target_link_libraries (DemoEditor DemoPipeline EtEditor)
 dependancyLinks(DemoEditor) 
 editorLinks(DemoEditor)
 

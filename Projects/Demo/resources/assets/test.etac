@@ -1,0 +1,14 @@
+{
+  "editable test asset": {
+    "asset": {
+      "test asset": {
+        "name": "test.txt",
+        "path": "",
+        "package": "content1",
+        "references": []
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

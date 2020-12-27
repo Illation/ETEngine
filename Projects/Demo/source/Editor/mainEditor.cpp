@@ -1,7 +1,4 @@
 #include <EtFramework/stdafx.h>
-#include <EtFramework/linkerHelper.h>
-
-#include <EtPipeline/linkerHelper.h>
 
 #include <glibmm/refptr.h>
 #include <glibmm/miscutils.h>
@@ -14,7 +11,7 @@
 #include <EtEditor/EditorApp.h>
 #include <EtEditor/Util/EditorConfig.h>
 
-#include <Common/linkerHelper.h>
+#include <Pipeline/linkerHelper.h>
 
 
 // forward
@@ -33,8 +30,7 @@ int main(int argc, char *argv[])
 	// Memory leak checks
 	SetDebuggingOptions();
 
-	et::demo::ForceLinking(); // makes sure the linker doesn't ignore reflection only data
-	et::pl::ForceLinking();
+	ForceLinkingPipeline();
 
 	// working dir
 	if (argc > 0)

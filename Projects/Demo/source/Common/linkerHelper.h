@@ -6,6 +6,7 @@
 #include "SwirlyLightComponent.h"
 #include "CelestialBodyComponent.h"
 #include "PlaylistComponent.h"
+#include "CustomTestAsset.h"
 
 
 namespace et {
@@ -26,6 +27,7 @@ void ForceLinking()
 	FORCE_LINKING(SwirlyLightComponentDesc)
 	FORCE_LINKING(CelestialBodyComponent)
 	FORCE_LINKING(PlaylistComponent)
+	FORCE_LINKING(TestAsset)
 }
 
 
