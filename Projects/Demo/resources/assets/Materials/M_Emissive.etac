@@ -3,7 +3,7 @@
     "asset": {
       "material asset": {
         "name": "M_Emissive.json",
-        "path": "assets/Materials/",
+        "path": "Materials/",
         "package": "content1",
         "references": [
           "FwdEmissiveShader.glsl"

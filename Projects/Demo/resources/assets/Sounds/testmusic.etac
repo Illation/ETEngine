@@ -3,7 +3,7 @@
     "asset": {
       "audio asset": {
         "name": "testmusic.ogg",
-        "path": "assets/Sounds/",
+        "path": "Sounds/",
         "package": "content1",
         "references": [],
         "force mono": true

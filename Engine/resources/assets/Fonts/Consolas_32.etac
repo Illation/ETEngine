@@ -3,7 +3,7 @@
     "asset": {
       "font asset": {
         "name": "Consolas_32.fnt",
-        "path": "assets/Fonts/",
+        "path": "Fonts/",
         "package": "engine_content",
         "references": [],
         "size": 42,

@@ -31,6 +31,7 @@ public:
     Directory* GetParent(){ return m_Parent; }
     std::string GetPath() const;
 
+	virtual bool Exists() = 0;
 	virtual bool Delete() = 0;
 
     enum EntryType
@@ -76,6 +77,7 @@ public:
 
 	uint64 GetSize();
 
+	bool Exists() override;
 	bool Delete() override;
 
 private:
@@ -109,9 +111,9 @@ public:
     bool Mount(bool recursive = false);
     void Unmount();
 
-	bool Exists();
 	bool Create();
 
+	bool Exists() override;
 	bool Delete() override;
 
 	void RemoveChild(Entry* child);

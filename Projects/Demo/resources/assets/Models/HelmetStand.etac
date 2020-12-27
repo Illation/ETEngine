@@ -3,7 +3,7 @@
     "asset": {
       "mesh asset": {
         "name": "HelmetStand.dae",
-        "path": "assets/Models/",
+        "path": "Models/",
         "package": "content1",
         "references": []
       }

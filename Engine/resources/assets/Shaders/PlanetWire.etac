@@ -3,7 +3,7 @@
     "asset": {
       "shader asset": {
         "name": "PlanetWire.glsl",
-        "path": "assets/Shaders/",
+        "path": "Shaders/",
         "package": "",
         "references": [
           "CommonSharedVars.glsl"

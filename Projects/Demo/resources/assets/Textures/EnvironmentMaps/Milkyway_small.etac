@@ -3,7 +3,7 @@
     "asset": {
       "environment map asset": {
         "name": "Milkyway_small.hdr",
-        "path": "assets/Textures/EnvironmentMaps/",
+        "path": "Textures/EnvironmentMaps/",
         "package": "content1",
         "references": [],
         "Cubemap Resolution": 1024,

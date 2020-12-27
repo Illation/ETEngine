@@ -3,7 +3,7 @@
     "asset": {
       "texture asset": {
         "name": "Splashscreen.jpg",
-        "path": "assets/Textures/",
+        "path": "Textures/",
         "package": "",
         "references": [],
         "use SRGB": false,

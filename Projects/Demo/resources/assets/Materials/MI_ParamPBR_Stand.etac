@@ -3,7 +3,7 @@
     "asset": {
       "material instance asset": {
         "name": "MI_ParamPBR_Stand.json",
-        "path": "assets/Materials/",
+        "path": "Materials/",
         "package": "content1",
         "references": [
           "M_ParamPBR.json"

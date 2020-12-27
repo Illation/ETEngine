@@ -3,7 +3,7 @@
     "asset": {
       "shader asset": {
         "name": "PostText.glsl",
-        "path": "assets/Shaders/",
+        "path": "Shaders/",
         "package": "",
         "references": []
       }

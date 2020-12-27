@@ -140,6 +140,13 @@ bool FILE_BASE::DeleteFile( const char * pathName )
 	return true;
 }
 
+bool FILE_BASE::Exists(char const* fileName)
+{
+	DWORD dwAttrib = GetFileAttributes(fileName);
+
+	return (dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}
+
 
 } // namespace core
 } // namespace et

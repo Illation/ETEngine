@@ -3,7 +3,7 @@
     "asset": {
       "scene descriptor asset": {
         "name": "PlanetScene.json",
-        "path": "assets/Scenes/",
+        "path": "Scenes/",
         "package": "content1",
         "references": [
           "Milkyway_small.hdr",

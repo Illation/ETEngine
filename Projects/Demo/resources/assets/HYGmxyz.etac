@@ -3,7 +3,7 @@
     "asset": {
       "stub asset": {
         "name": "HYGmxyz.json",
-        "path": "assets/",
+        "path": "",
         "package": "content1",
         "references": []
       }

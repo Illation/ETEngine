@@ -3,7 +3,7 @@
     "asset": {
       "stub asset": {
         "name": "AtmoPrecompGeo.glsl",
-        "path": "assets/Shaders/AtmoPreComp/",
+        "path": "Shaders/AtmoPreComp/",
         "package": "",
         "references": []
       }

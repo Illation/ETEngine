@@ -3,7 +3,7 @@
     "asset": {
       "material instance asset": {
         "name": "MI_Emissive_LightBulb.json",
-        "path": "assets/Materials/",
+        "path": "Materials/",
         "package": "content1",
         "references": [
           "M_Emissive.json"

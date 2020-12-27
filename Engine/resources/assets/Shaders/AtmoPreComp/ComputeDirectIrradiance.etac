@@ -3,7 +3,7 @@
     "asset": {
       "shader asset": {
         "name": "ComputeDirectIrradiance.glsl",
-        "path": "assets/Shaders/AtmoPreComp/",
+        "path": "Shaders/AtmoPreComp/",
         "package": "",
         "references": [
           "AtmoPrecompVert.glsl",

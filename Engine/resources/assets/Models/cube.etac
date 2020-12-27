@@ -3,7 +3,7 @@
     "asset": {
       "mesh asset": {
         "name": "cube.dae",
-        "path": "assets/Models/",
+        "path": "Models/",
         "package": "engine_content",
         "references": []
       }

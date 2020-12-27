@@ -3,7 +3,7 @@
     "asset": {
       "shader asset": {
         "name": "FwdLightDirectionalShader.glsl",
-        "path": "assets/Shaders/",
+        "path": "Shaders/",
         "package": "",
         "references": [
           "Common.glsl",

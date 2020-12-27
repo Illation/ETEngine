@@ -3,7 +3,7 @@
     "asset": {
       "texture asset": {
         "name": "EarthHeight8k.jpg",
-        "path": "assets/Textures/PlanetTextures/",
+        "path": "Textures/PlanetTextures/",
         "package": "content1",
         "references": [],
         "use SRGB": true,

@@ -3,7 +3,7 @@
     "asset": {
       "texture asset": {
         "name": "greasyMetal_norm.png",
-        "path": "assets/Textures/GreasyMetal/",
+        "path": "Textures/GreasyMetal/",
         "package": "content1",
         "references": [],
         "use SRGB": false,

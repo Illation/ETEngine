@@ -3,7 +3,7 @@
     "asset": {
       "scene descriptor asset": {
         "name": "EditorScene.json",
-        "path": "assets/Scenes/",
+        "path": "Scenes/",
         "package": "content1",
         "references": [
           "Ice_Lake_Ref.hdr",

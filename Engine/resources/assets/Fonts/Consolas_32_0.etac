@@ -3,7 +3,7 @@
     "asset": {
       "texture asset": {
         "name": "Consolas_32_0.tga",
-        "path": "assets/Fonts/",
+        "path": "Fonts/",
         "package": "engine_content",
         "references": [],
         "use SRGB": false,

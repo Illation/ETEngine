@@ -3,7 +3,7 @@
     "asset": {
       "texture asset": {
         "name": "kabuto_metal.png",
-        "path": "assets/Textures/Kabuto/",
+        "path": "Textures/Kabuto/",
         "package": "content1",
         "references": [],
         "use SRGB": false,

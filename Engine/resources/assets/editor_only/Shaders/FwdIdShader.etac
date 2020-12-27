@@ -3,7 +3,7 @@
     "asset": {
       "shader asset": {
         "name": "FwdIdShader.glsl",
-        "path": "assets/editor_only/Shaders/",
+        "path": "editor_only/Shaders/",
         "package": "editor_content",
         "references": [
           "CommonSharedVars.glsl"

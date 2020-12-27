@@ -3,7 +3,7 @@
     "asset": {
       "material instance asset": {
         "name": "MI_TexPBR_Ball.json",
-        "path": "assets/Materials/",
+        "path": "Materials/",
         "package": "content1",
         "references": [
           "M_TexPBR.json",

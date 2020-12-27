@@ -3,7 +3,7 @@
     "asset": {
       "material asset": {
         "name": "M_TexPBR.json",
-        "path": "assets/Materials/",
+        "path": "Materials/",
         "package": "content1",
         "references": [
           "DefPBRMetShader.glsl"

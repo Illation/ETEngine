@@ -3,7 +3,7 @@
     "asset": {
       "texture asset": {
         "name": "mahogany_ao.png",
-        "path": "assets/Textures/Mahogany/",
+        "path": "Textures/Mahogany/",
         "package": "content1",
         "references": [],
         "use SRGB": false,

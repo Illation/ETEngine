@@ -3,7 +3,7 @@
     "asset": {
       "shader asset": {
         "name": "DefUberShader.glsl",
-        "path": "assets/Shaders/",
+        "path": "Shaders/",
         "package": "",
         "references": [
           "CommonSharedVars.glsl",

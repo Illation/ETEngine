@@ -3,7 +3,7 @@
     "asset": {
       "font asset": {
         "name": "RobotoCondensed-Regular.ttf",
-        "path": "assets/Fonts/roboto2014/",
+        "path": "Fonts/roboto2014/",
         "package": "engine_content",
         "references": [],
         "size": 42,

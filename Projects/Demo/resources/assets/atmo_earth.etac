@@ -3,7 +3,7 @@
     "asset": {
       "stub asset": {
         "name": "atmo_earth.json",
-        "path": "assets/",
+        "path": "",
         "package": "content1",
         "references": []
       }

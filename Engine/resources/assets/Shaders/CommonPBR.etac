@@ -3,7 +3,7 @@
     "asset": {
       "stub asset": {
         "name": "CommonPBR.glsl",
-        "path": "assets/Shaders/",
+        "path": "Shaders/",
         "package": "",
         "references": []
       }

@@ -146,6 +146,7 @@ void AddPackageToWriter(core::HashString const packageId,
 {
 	// Loop over files - add them to the writer
 	pl::EditorAssetDatabase::T_AssetList assets = db.GetAssetsInPackage(packageId);
+	std::string const baseAssetPath = dbBase + db.GetAssetPath();
 	for (pl::EditorAssetBase* const editorAsset : assets)
 	{
 		if (setupRuntime)
@@ -156,14 +157,14 @@ void AddPackageToWriter(core::HashString const packageId,
 		std::vector<core::I_Asset*> const runtimeAssets = editorAsset->GetAllRuntimeAssets();
 		for (core::I_Asset const* const asset : runtimeAssets)
 		{
-			std::string const filePath = dbBase + asset->GetPath();
+			std::string const filePath = baseAssetPath + asset->GetPath();
 			std::string const assetName = asset->GetName();
 			core::HashString const id = asset->GetId();
 
 			LOG(assetName + std::string(" [") + std::to_string(id.Get()) + std::string("] @: ") + core::FileUtil::GetAbsolutePath(filePath));
 
 			core::File* const assetFile = new core::File(filePath + assetName, nullptr);
-			writer.AddFile(assetFile, dbBase, core::E_CompressionType::Store);
+			writer.AddFile(assetFile, baseAssetPath, core::E_CompressionType::Store);
 		}
 	}
 }

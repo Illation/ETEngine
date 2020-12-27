@@ -22,6 +22,7 @@ namespace pl {
 RTTR_REGISTRATION
 {
 	rttr::registration::class_<EditorAssetDatabase>("editor asset database")
+		.property("root directory", &EditorAssetDatabase::m_RootDirectory)
 		.property("packages", &EditorAssetDatabase::m_Packages);
 }
 
@@ -64,32 +65,28 @@ rttr::type EditorAssetDatabase::GetCacheAssetType(T_AssetList const& cache)
 //
 void EditorAssetDatabase::InitDb(EditorAssetDatabase& db, std::string const& path)
 {
-	std::string dirPath = core::FileUtil::ExtractPath(path);
-	std::string fileName = core::FileUtil::ExtractName(path);
-
-	// mount the directory
-	core::Directory* const dir = new core::Directory(dirPath, nullptr, true);
-	dir->Mount(true);
-
 	// find the database file
-	core::Entry* const dbEntry = dir->GetMountedChild(fileName);
-	if (dbEntry != nullptr) // if this is a new project we may not have a database yet
+	core::File* const dbFile = new core::File(path, nullptr);
+	if (dbFile->Exists()) // if this is a new project we may not have a database yet
 	{
-		ET_ASSERT(dbEntry->GetType() == core::Entry::ENTRY_FILE);
-
-		core::File* const dbFile = static_cast<core::File*>(dbEntry);
 		dbFile->Open(core::FILE_ACCESS_MODE::Read);
 
 		// deserialize the database from that files content
 		if (!(core::serialization::DeserializeFromJsonString(core::FileUtil::AsText(dbFile->Read()), db)))
 		{
-			LOG(FS("FileResourceManager::Init > unable to deserialize asset DB at '%s'", dbEntry->GetName().c_str()), core::LogLevel::Error);
+			LOG(FS("FileResourceManager::Init > unable to deserialize asset DB at '%s'", dbFile->GetName().c_str()), core::LogLevel::Error);
 		}
 	}
 	else
 	{
-		LOG(FS("No Database file found at '%s'", (dir->GetName() + fileName).c_str()));
+		LOG(FS("No Database file found at '%s'", path.c_str()));
 	}
+
+	std::string dirPath = core::FileUtil::ExtractPath(path) + db.GetAssetPath();
+
+	// mount the directory
+	core::Directory* const dir = new core::Directory(dirPath, nullptr, true);
+	dir->Mount(true);
 
 	// --
 	db.Init(dir);

@@ -240,6 +240,14 @@ uint64 File::GetSize()
 }
 
 //---------------------------------
+// File::Exists
+//
+bool File::Exists()
+{
+	return FILE_BASE::Exists((GetPath() + m_Filename).c_str());
+}
+
+//---------------------------------
 // File::Delete
 //
 // Delete the file from the disk

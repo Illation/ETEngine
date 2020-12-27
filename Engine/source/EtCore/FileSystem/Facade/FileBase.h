@@ -29,6 +29,8 @@ public:
 
 	static bool DeleteFile( const char * pathName );
 
+	static bool Exists(char const* fileName);
+
 private:
 #if defined(PLATFORM_Linux)
     #include "FileBaseLinuxMembers.h"

@@ -52,6 +52,7 @@ private:
 	// accessors
 	//-----------
 public:
+	std::string const& GetAssetPath() const { return m_RootDirectory; }
 	core::Directory const* GetDirectory() const { return m_Directory; }
 	core::Directory* GetDirectory() { return m_Directory; }
 
@@ -95,8 +96,11 @@ private:
 
 	core::Directory* m_Directory = nullptr;
 
-	std::vector<core::PackageDescriptor> m_Packages;
 	T_CacheList m_AssetCaches;
+
+	// reflected
+	std::string m_RootDirectory;
+	std::vector<core::PackageDescriptor> m_Packages;
 };
 
 

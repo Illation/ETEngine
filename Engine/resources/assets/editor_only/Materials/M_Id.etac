@@ -3,7 +3,7 @@
     "asset": {
       "material asset": {
         "name": "M_Id.json",
-        "path": "assets/editor_only/Materials/",
+        "path": "editor_only/Materials/",
         "package": "editor_content",
         "references": [
           "FwdIdShader.glsl"

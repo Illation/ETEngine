@@ -3,7 +3,7 @@
     "asset": {
       "texture asset": {
         "name": "sample_texture.png",
-        "path": "assets/Textures/",
+        "path": "Textures/",
         "package": "content1",
         "references": [],
         "use SRGB": false,

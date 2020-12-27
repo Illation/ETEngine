@@ -3,7 +3,7 @@
     "asset": {
       "shader asset": {
         "name": "PostDeferredComposite.glsl",
-        "path": "assets/Shaders/",
+        "path": "Shaders/",
         "package": "",
         "references": [
           "Common.glsl",

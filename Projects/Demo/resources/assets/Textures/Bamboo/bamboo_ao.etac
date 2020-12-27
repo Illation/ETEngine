@@ -3,7 +3,7 @@
     "asset": {
       "texture asset": {
         "name": "bamboo_ao.png",
-        "path": "assets/Textures/Bamboo/",
+        "path": "Textures/Bamboo/",
         "package": "content1",
         "references": [],
         "use SRGB": false,

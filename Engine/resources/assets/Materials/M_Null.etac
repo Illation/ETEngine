@@ -3,7 +3,7 @@
     "asset": {
       "material asset": {
         "name": "M_Null.json",
-        "path": "assets/Materials/",
+        "path": "Materials/",
         "package": "engine_content",
         "references": [
           "FwdNullShader.glsl"

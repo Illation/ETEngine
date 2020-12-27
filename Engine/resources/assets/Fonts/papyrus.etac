@@ -3,7 +3,7 @@
     "asset": {
       "font asset": {
         "name": "papyrus.ttf",
-        "path": "assets/Fonts/",
+        "path": "Fonts/",
         "package": "engine_content",
         "references": [],
         "size": 42,

@@ -3,7 +3,7 @@
     "asset": {
       "mesh asset": {
         "name": "Corset.glb",
-        "path": "assets/Models/gltf/",
+        "path": "Models/gltf/",
         "package": "content1",
         "references": []
       }

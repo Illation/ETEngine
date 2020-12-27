@@ -3,7 +3,7 @@
     "asset": {
       "mesh asset": {
         "name": "monkey.dae",
-        "path": "assets/Models/",
+        "path": "Models/",
         "package": "engine_content",
         "references": []
       }

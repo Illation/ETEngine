@@ -29,6 +29,11 @@ bool FILE_SYSTEM::DeleteFile( const char * pathName )
 
 }
 
+bool FILE_SYSTEM::Exists(char const* fileName)
+{
+	return false;
+}
+
 
 } // namespace core
 } // namespace et

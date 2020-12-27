@@ -3,7 +3,7 @@
     "asset": {
       "material instance asset": {
         "name": "MI_Uber_Kabuto.json",
-        "path": "assets/Materials/",
+        "path": "Materials/",
         "package": "content1",
         "references": [
           "M_UberOpaque.json",

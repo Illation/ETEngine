@@ -3,7 +3,7 @@
     "asset": {
       "audio asset": {
         "name": "pcm0844s.wav",
-        "path": "assets/Sounds/",
+        "path": "Sounds/",
         "package": "content1",
         "references": [],
         "force mono": false
