@@ -20,8 +20,8 @@ namespace pl {
 //
 FileResourceManager::FileResourceManager(std::string const& projectPath, std::string const& enginePath)
 	: ResourceManager()
-	, m_ProjectPath(projectPath)
-	, m_EnginePath(enginePath)
+	, m_ProjectPath(projectPath + s_ResourceDirRelPath)
+	, m_EnginePath(enginePath + s_ResourceDirRelPath)
 { }
 
 //---------------------------------
@@ -32,8 +32,8 @@ FileResourceManager::FileResourceManager(std::string const& projectPath, std::st
 void FileResourceManager::Init()
 {
 	// init databases and file directories unlinked 
-	EditorAssetDatabase::InitDb(m_ProjectDb, m_ProjectPath + s_ResourceDirRelPath + s_DatabasePath);
-	EditorAssetDatabase::InitDb(m_EngineDb, m_EnginePath + s_ResourceDirRelPath + s_DatabasePath);
+	EditorAssetDatabase::InitDb(m_ProjectDb, m_ProjectPath + s_DatabasePath);
+	EditorAssetDatabase::InitDb(m_EngineDb, m_EnginePath + s_DatabasePath);
 
 	// link databases
 	auto assetGetter = [this](core::HashString const assetId) -> core::I_Asset*

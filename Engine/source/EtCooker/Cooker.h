@@ -1,8 +1,12 @@
 #pragma once
 #include <EtPipeline/Content/EditorAssetDatabase.h>
-#include <EtPipeline/Content/ContentBuildConfiguration.h>
 
 #include "PackageWriter.h"
+
+
+namespace et { namespace pl {
+	class FileResourceManager;
+} }
 
 
 namespace et { 
@@ -67,12 +71,8 @@ private:
 
 	std::string m_OutPath;
 
-	pl::EditorAssetDatabase m_ProjectDb;
-	std::string m_ProjectPath;
-
-	pl::EditorAssetDatabase m_EngineDb;
-	std::string m_EnginePath;
-
+	pl::FileResourceManager* m_ResMan = nullptr;
+	
 	E_ReturnCode m_ReturnCode = E_ReturnCode::Success;
 };
 

@@ -48,6 +48,9 @@ public:
 	EditorAssetDatabase& GetProjectDatabase() { return m_ProjectDb; }
 	EditorAssetDatabase& GetEngineDatabase() { return m_EngineDb; }
 
+	std::string const& GetProjectPath() const { return m_ProjectPath; }
+	std::string const& GetEnginePath() const { return m_EnginePath; }
+
 	// utility
 	//---------------------
 protected:

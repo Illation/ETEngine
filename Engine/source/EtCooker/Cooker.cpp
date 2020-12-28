@@ -15,6 +15,8 @@
 
 #include <EtFramework/Config/BootConfig.h>
 
+#include <EtPipeline/Content/FileResourceManager.h>
+
 
 namespace et {
 namespace cooker {
@@ -49,8 +51,8 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 
 	core::FileUtil::SetExecutablePath(argv[0]); // working dir from executable path
 
-	std::string databasePath(argv[1]);
-	std::string engineDbPath(argv[2]);
+	std::string projectPath(argv[1]);
+	std::string enginePath(argv[2]);
 	m_OutPath = argv[3];
 	m_GenerateCompiled = (std::string(argv[4]) == "y");
 
@@ -79,11 +81,8 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 	LOG(FS(" - version: %s", build::Version::s_Name.c_str()));
 	LOG("");
 
-	pl::EditorAssetDatabase::InitDb(m_ProjectDb, databasePath);
-	m_ProjectPath = core::FileUtil::ExtractPath(databasePath);
-
-	pl::EditorAssetDatabase::InitDb(m_EngineDb, engineDbPath);
-	m_EnginePath = core::FileUtil::ExtractPath(engineDbPath);
+	m_ResMan = new pl::FileResourceManager(projectPath, enginePath);
+	core::ResourceManager::SetInstance(m_ResMan);
 
 	// Ensure the generated file directory exists
 	m_TempDir = new core::Directory(s_TempPath, nullptr, true);
@@ -103,6 +102,8 @@ Cooker::~Cooker()
 
 	m_TempDir = nullptr;
 
+	core::ResourceManager::DestroyInstance();
+
 	core::Logger::Release();
 }
 
@@ -115,8 +116,8 @@ void Cooker::Run()
 {
 	if (m_GenerateCompiled)
 	{
-		m_ProjectDb.SetupAllRuntimeAssets();
-		m_EngineDb.SetupAllRuntimeAssets();
+		m_ResMan->GetProjectDatabase().SetupAllRuntimeAssets();
+		m_ResMan->GetEngineDatabase().SetupAllRuntimeAssets();
 
 		CookCompiledPackage();
 	}
@@ -143,8 +144,8 @@ void Cooker::CookCompiledPackage()
 	std::string const tempDbFullPath = s_TempPath + std::string("/") + dbName;
 
 	core::AssetDatabase mergeDb(false);
-	m_ProjectDb.PopulateAssetDatabase(mergeDb);
-	m_EngineDb.PopulateAssetDatabase(mergeDb);
+	m_ResMan->GetProjectDatabase().PopulateAssetDatabase(mergeDb);
+	m_ResMan->GetEngineDatabase().PopulateAssetDatabase(mergeDb);
 	if (!core::serialization::SerializeToFile(tempDbFullPath, mergeDb))
 	{
 		LOG(FS("CookCompiledPackage > Failed to serialize asset database to '%s'", tempDbFullPath.c_str()), core::LogLevel::Error);
@@ -157,13 +158,13 @@ void Cooker::CookCompiledPackage()
 	packageWriter.AddFile(dbFile, dbFile->GetPath(), core::E_CompressionType::Store);
 
 	// add the boot config
-	core::File* cfgFile = new core::File(m_ProjectPath + fw::BootConfig::s_FileName, nullptr);
-	packageWriter.AddFile(cfgFile, m_ProjectPath, core::E_CompressionType::Store);
+	core::File* cfgFile = new core::File(m_ResMan->GetProjectPath() + fw::BootConfig::s_FileName, nullptr);
+	packageWriter.AddFile(cfgFile, m_ResMan->GetProjectPath(), core::E_CompressionType::Store);
 
 	// add all other compiled files to the package
 	static core::HashString const s_CompiledPackageId;
-	AddPackageToWriter(s_CompiledPackageId, m_ProjectPath, packageWriter, m_ProjectDb);
-	AddPackageToWriter(s_CompiledPackageId, m_EnginePath, packageWriter, m_EngineDb);
+	AddPackageToWriter(s_CompiledPackageId, m_ResMan->GetProjectPath(), packageWriter, m_ResMan->GetProjectDatabase());
+	AddPackageToWriter(s_CompiledPackageId, m_ResMan->GetEnginePath(), packageWriter, m_ResMan->GetEngineDatabase());
 
 	// write our package
 	packageWriter.Write(packageData);
@@ -183,8 +184,8 @@ void Cooker::CookCompiledPackage()
 void Cooker::CookFilePackages()
 {
 	// Get a unified list of package descriptors
-	std::vector<core::PackageDescriptor> descriptors = m_ProjectDb.GetPackages();
-	for (core::PackageDescriptor const& desc : m_EngineDb.GetPackages())
+	std::vector<core::PackageDescriptor> descriptors = m_ResMan->GetProjectDatabase().GetPackages();
+	for (core::PackageDescriptor const& desc : m_ResMan->GetEngineDatabase().GetPackages())
 	{
 		// check if there is already a package with the same ID tracked in "descriptors"
 		if (std::find_if(descriptors.cbegin(), descriptors.cend(), [&desc](core::PackageDescriptor const& tracked)
@@ -207,8 +208,8 @@ void Cooker::CookFilePackages()
 		PackageWriter packageWriter;
 		std::vector<uint8> packageData;
 
-		AddPackageToWriter(desc.GetId(), m_ProjectPath, packageWriter, m_ProjectDb);
-		AddPackageToWriter(desc.GetId(), m_EnginePath, packageWriter, m_EngineDb);
+		AddPackageToWriter(desc.GetId(), m_ResMan->GetProjectPath(), packageWriter, m_ResMan->GetProjectDatabase());
+		AddPackageToWriter(desc.GetId(), m_ResMan->GetEnginePath(), packageWriter, m_ResMan->GetEngineDatabase());
 
 		// write our package
 		packageWriter.Write(packageData);
