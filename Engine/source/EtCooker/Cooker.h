@@ -1,5 +1,6 @@
 #pragma once
 #include <EtPipeline/Content/EditorAssetDatabase.h>
+#include <EtPipeline/Content/ContentBuildConfiguration.h>
 
 #include "PackageWriter.h"
 
@@ -17,6 +18,8 @@ class Cooker final
 {
 	// definitions
 	//-------------
+	static std::string const s_TempPath;
+
 public:
 	enum class E_ReturnCode
 	{
@@ -28,6 +31,7 @@ public:
 		FailedToCleanup,
 		FailedToWritePackage
 	};
+
 
 	// construct destruct
 	//--------------------
@@ -53,8 +57,12 @@ private:
 	// Data
 	///////
 
+	pl::BuildConfiguration m_Configuration;
+
 	bool m_GenerateCompiled;
 	std::string m_ResourceName;
+
+	core::Directory* m_TempDir = nullptr;
 
 	std::string m_OutPath;
 

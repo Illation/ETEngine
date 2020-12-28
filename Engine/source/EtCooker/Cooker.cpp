@@ -25,6 +25,10 @@ namespace cooker {
 //============
 
 
+// static
+std::string const Cooker::s_TempPath = "temp";
+
+
 //---------------
 // Cooker::c-tor
 //
@@ -80,6 +84,9 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 
 	pl::EditorAssetDatabase::InitDb(m_EngineDb, engineDbPath);
 	m_EnginePath = core::FileUtil::ExtractPath(engineDbPath);
+
+	// Ensure the generated file directory exists
+	m_TempDir = new core::Directory(s_TempPath, nullptr, true);
 }
 
 //---------------
@@ -87,6 +94,15 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 //
 Cooker::~Cooker()
 {
+	if (!m_TempDir->Delete())
+	{
+		LOG("CookCompiledPackage > Failed to clean up temporary file directory!", core::LogLevel::Error);
+		delete m_TempDir;
+		m_ReturnCode = E_ReturnCode::FailedToCleanup;
+	}
+
+	m_TempDir = nullptr;
+
 	core::Logger::Release();
 }
 
@@ -123,12 +139,8 @@ void Cooker::CookCompiledPackage()
 	std::vector<uint8> packageData;
 
 	// serialize the asset database to a temporary file
-	static std::string const s_TempPath("temp");
 	std::string const dbName(core::ResourceManager::s_DatabasePath);
 	std::string const tempDbFullPath = s_TempPath + std::string("/") + dbName;
-
-	// Ensure the generated file directory exists
-	core::Directory* tempDir = new core::Directory(s_TempPath, nullptr, true);
 
 	core::AssetDatabase mergeDb(false);
 	m_ProjectDb.PopulateAssetDatabase(mergeDb);
@@ -141,7 +153,7 @@ void Cooker::CookCompiledPackage()
 	}
 
 	// load the asset database from the temporary file and add it to the package
-	core::File* dbFile = new core::File(dbName, tempDir);
+	core::File* dbFile = new core::File(dbName, m_TempDir);
 	packageWriter.AddFile(dbFile, dbFile->GetPath(), core::E_CompressionType::Store);
 
 	// add the boot config
@@ -161,14 +173,6 @@ void Cooker::CookCompiledPackage()
 
 	// cleanup
 	packageWriter.RemoveFile(dbFile);
-	if (!tempDir->Delete())
-	{
-		LOG("CookCompiledPackage > Failed to clean up temporary file directory!", core::LogLevel::Error);
-		delete tempDir;
-		m_ReturnCode = E_ReturnCode::FailedToCleanup;
-	}
-
-	tempDir = nullptr;
 }
 
 //-----------------------------
@@ -249,9 +253,10 @@ void Cooker::AddPackageToWriter(core::HashString const packageId, std::string co
 			editorAsset->SetupRuntimeAssets();
 		}
 
-		std::vector<core::I_Asset*> const runtimeAssets = editorAsset->GetAllRuntimeAssets();
-		for (core::I_Asset const* const asset : runtimeAssets)
+		std::vector<pl::EditorAssetBase::RuntimeAssetInfo> const runtimeAssets = editorAsset->GetAllRuntimeAssets();
+		for (pl::EditorAssetBase::RuntimeAssetInfo const& info : runtimeAssets)
 		{
+			core::I_Asset const* const asset = info.m_Asset;
 			std::string const filePath = baseAssetPath + asset->GetPath();
 			std::string const assetName = asset->GetName();
 			core::HashString const id = asset->GetId();

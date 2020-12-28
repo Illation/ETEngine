@@ -16,8 +16,6 @@ list (APPEND projectFiles ${sources} ${headers})
 #########
 target_definitions()
 
-add_definitions(-DUNCOOKED_RESOURCES) 
-
 add_definitions(-D_CONSOLE)
 # executable and dependancies
 message(STATUS "Adding target: ProjectCooker")

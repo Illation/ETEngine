@@ -4,9 +4,9 @@
 #include "FileAccessFlags.h"
 #include "FileAccessMode.h"
 
-#if defined(PLATFORM_Linux)
+#if defined(ET_PLATFORM_LINUX)
 #include "FileBaseLinuxReferences.h"
-#elif defined(PLATFORM_Win)
+#elif defined(ET_PLATFORM_WIN)
 #include "FileBaseWinReferences.h"
 #endif
 
@@ -32,9 +32,9 @@ public:
 	static bool Exists(char const* fileName);
 
 private:
-#if defined(PLATFORM_Linux)
+#if defined(ET_PLATFORM_LINUX)
     #include "FileBaseLinuxMembers.h"
-#elif defined(PLATFORM_Win)
+#elif defined(ET_PLATFORM_WIN)
 
 #endif
 };

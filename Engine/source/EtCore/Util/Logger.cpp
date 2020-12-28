@@ -3,7 +3,7 @@
 
 #include <io.h>
 
-#ifdef PLATFORM_Win
+#ifdef ET_PLATFORM_WIN
 #include "WindowsUtil.h"
 #endif
 
@@ -71,7 +71,7 @@ void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, ivec2 c
 	std::stringstream timestampStream;
 	bool genTimestamp = timestamp || m_FileLogger;
 #ifndef ET_SHIPPING
-#ifdef PLATFORM_Win
+#ifdef ET_PLATFORM_WIN
 	if (IsDebuggerPresent())genTimestamp = true;
 #endif
 #endif
@@ -158,14 +158,14 @@ void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, ivec2 c
 		m_DebugLogger->Log(timestampStream.str());
 	}
 
-#ifdef PLATFORM_Win // on windows we show a message box for errors
+#ifdef ET_PLATFORM_WIN // on windows we show a message box for errors
 	//if error, break
 	if (level == LogLevel::Error)
 	{
 		MessageBox(0, msg.c_str(), "ERROR", 0);
 		abort();
 	}
-#endif // PLATFORM_Win
+#endif // ET_PLATFORM_WIN
 
 #endif // ndef ET_SHIPPING 
 
@@ -186,9 +186,9 @@ void Logger::ProcessAssert(bool const condition, std::string const& caller, std:
 		Log("[ASSERT] " + caller + std::string(" > ") + msg, LogLevel::Warning, true);
 
 		// break but don't exit
-#ifdef PLATFORM_x32
+#ifdef ET_ARCH_X32
 		__asm { int 3 };
-#else // PLATFORM_x64
+#else // ET_ARCH_X64
 		__debugbreak();
 #endif 
 	}
@@ -208,11 +208,11 @@ void Logger::CheckBreak(LogLevel level)
 	{
 #if ET_DEBUG
 
-#ifdef PLATFORM_x32
+#ifdef ET_ARCH_X32
 		__asm { int 3 };
-#else // PLATFORM_x64
+#else // ET_ARCH_X64
 		__debugbreak();
-#endif // PLATFORM_x32
+#endif // ET_ARCH_X32
 
 #else // not debug
 		exit(-1);
@@ -258,14 +258,14 @@ Logger::ConsoleLogger::ConsoleLogger()
 	std::cin.clear();
 
 	m_os = &std::cout;
-#ifdef PLATFORM_Win
+#ifdef ET_PLATFORM_WIN
 	m_ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 #endif
 }
 
 void Logger::ConsoleLogger::SetColor(ConsoleLogger::Color color)
 {
-#ifdef PLATFORM_Win
+#ifdef ET_PLATFORM_WIN
 	switch (color)
 	{
 	case Logger::ConsoleLogger::Color::WHITE:
@@ -289,7 +289,7 @@ void Logger::ConsoleLogger::SetColor(ConsoleLogger::Color color)
 
 void Logger::ConsoleLogger::SetCursorPosition(ivec2 cursorPos)
 {
-#ifdef PLATFORM_Win
+#ifdef ET_PLATFORM_WIN
 	COORD pos;
 	pos.X = static_cast<int16>(cursorPos.x);
 	pos.Y = static_cast<int16>(cursorPos.y);
@@ -300,7 +300,7 @@ void Logger::ConsoleLogger::SetCursorPosition(ivec2 cursorPos)
 
 ivec2 Logger::ConsoleLogger::GetCursorPosition()
 {
-#ifdef PLATFORM_Win
+#ifdef ET_PLATFORM_WIN
 	//CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
 	//if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &bufferInfo))
 	//{
@@ -321,7 +321,7 @@ ivec2 Logger::ConsoleLogger::GetCursorPosition()
 
 void Logger::DebugLogger::Log(const std::string& message)
 {
-#ifdef PLATFORM_Win
+#ifdef ET_PLATFORM_WIN
 	OutputDebugString(message.c_str());
 #endif
 }

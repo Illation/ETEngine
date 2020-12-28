@@ -11,7 +11,7 @@ namespace core {
 // doesn't work anymore, keeping code as an example
 void DebugCopyResourceFiles()
 {
-#ifdef PLATFORM_Win
+#ifdef ET_PLATFORM_WIN
 	if (IsDebuggerPresent())
 	{
 		LOG(execConsoleCommand(FileUtil::GetAbsolutePath("..\\..\\..\\build\\copyResources_windows.bat") 

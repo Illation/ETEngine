@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef PLATFORM_Linux
+#ifdef ET_PLATFORM_LINUX
 #include <time.h>
 #else
 #include <chrono>
@@ -11,7 +11,7 @@ namespace et {
 namespace core {
 
 
-#ifdef PLATFORM_Linux
+#ifdef ET_PLATFORM_LINUX
 	typedef timespec HighResTime;
 	typedef timespec HighResDuration;
 #else
@@ -43,7 +43,7 @@ private:
 	template<typename T>
 	T HRTCast( const HighResDuration &lhs )const
 	{
-	#ifdef PLATFORM_Linux
+	#ifdef ET_PLATFORM_LINUX
 		return (T)lhs.tv_sec + ((T)lhs.tv_nsec / 1000000000);
 	#else
 		return ((T)(std::chrono::duration_cast<std::chrono::nanoseconds>(lhs).count()))*1e-9f;

@@ -379,9 +379,10 @@ void EditorAssetDatabase::PopulateAssetDatabase(core::AssetDatabase& db) const
 		// insert assets
 		for (EditorAssetBase* const editorAsset : rhCache)
 		{
-			std::vector<core::I_Asset*> const runtimeAssets = editorAsset->GetAllRuntimeAssets();
-			for (core::I_Asset* const rhAsset : runtimeAssets)
+			std::vector<EditorAssetBase::RuntimeAssetInfo> const runtimeAssets = editorAsset->GetAllRuntimeAssets();
+			for (EditorAssetBase::RuntimeAssetInfo const& info : runtimeAssets)
 			{
+				core::I_Asset* const rhAsset = info.m_Asset;
 				if (IsRuntimeAsset(rhAsset))
 				{
 					// Ensure the asset doesn't already exist

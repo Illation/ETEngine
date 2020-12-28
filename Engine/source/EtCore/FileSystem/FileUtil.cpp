@@ -3,7 +3,7 @@
 
 #include <limits>
 
-#ifdef PLATFORM_Win
+#ifdef ET_PLATFORM_WIN
 #	include <EtCore/Util/WindowsUtil.h>
 #endif
 
@@ -234,7 +234,7 @@ std::string FileUtil::RemoveExtension(std::string const& fileName)
 void FileUtil::SetExecutablePath(std::string const& inPath)
 {
 	std::string path;
-#ifdef PLATFORM_Win
+#ifdef ET_PLATFORM_WIN
 	GetExecutablePathName(path);
 #else
 	path = inPath;
@@ -494,11 +494,11 @@ std::string FileUtil::GetRelativePath(std::string const& inPath, std::string con
 //
 bool FileUtil::IsAbsolutePath(std::string const& path)
 {
-#if defined(PLATFORM_Linux)
+#if defined(ET_PLATFORM_LINUX)
 
 	return path[0] == '/' || path[0] == '~';
 
-#elif defined(PLATFORM_Win)
+#elif defined(ET_PLATFORM_WIN)
 
 	// if the path has a colon, it's absolute
 	return path.find(":") != std::string::npos;

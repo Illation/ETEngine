@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef PLATFORM_Win
+#ifdef ET_PLATFORM_WIN
 #include <windows.h>
 #endif
 #include <string>
@@ -97,7 +97,7 @@ private:
 		void SetCursorPosition(ivec2 cursorPos) override;
 		ivec2 GetCursorPosition();
 	private:
-#ifdef PLATFORM_Win
+#ifdef ET_PLATFORM_WIN
 		HANDLE m_ConsoleHandle;
 #endif
 	};

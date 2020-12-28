@@ -9,7 +9,7 @@ namespace core {
 std::string execConsoleCommand(std::string const& cmd)
 {
 	//modified version of https://stackoverflow.com/a/35935443/4414168
-#ifdef PLATFORM_Win
+#ifdef ET_PLATFORM_WIN
 
 	// Allocate 1Mo to store the output (final buffer will be sized to actual output)
 	// If output exceeds that size, it will be truncated

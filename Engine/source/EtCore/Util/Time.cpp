@@ -41,20 +41,20 @@ float Time::FPS() const
 }
 uint64 Time::Timestamp() const
 {
-#ifndef PLATFORM_Linux
+#ifndef ET_PLATFORM_LINUX
 	return static_cast<uint64>(std::chrono::duration_cast<std::chrono::nanoseconds>(Diff(begin, Now())).count());
 #endif
 }
 uint64 Time::SystemTimestamp() const
 {
-#ifndef PLATFORM_Linux
+#ifndef ET_PLATFORM_LINUX
 	auto end = Now();
 	return static_cast<uint64>(std::chrono::duration_cast<std::chrono::nanoseconds>(end.time_since_epoch()).count());
 #endif
 }
 
 //Platform abstraction
-#ifdef PLATFORM_Linux
+#ifdef ET_PLATFORM_LINUX
 
 	HighResTime Time::Now()const
 	{

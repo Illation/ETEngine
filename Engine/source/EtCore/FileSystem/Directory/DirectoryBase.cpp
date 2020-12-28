@@ -2,8 +2,8 @@
 
 #include "../Entry.h"
 
-#if defined(PLATFORM_Linux)
+#if defined(ET_PLATFORM_LINUX)
 #include "DirectoryBaseLinux.hpp"
-#elif defined(PLATFORM_Win)
+#elif defined(ET_PLATFORM_WIN)
 #include "DirectoryBaseWindows.hpp"
 #endif

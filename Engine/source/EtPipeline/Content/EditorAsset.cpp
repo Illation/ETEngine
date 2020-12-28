@@ -76,21 +76,21 @@ void EditorAssetBase::Init(core::File* const configFile)
 //
 // Recursively access runtime assets
 //	
-std::vector<core::I_Asset*> EditorAssetBase::GetAllRuntimeAssets() const
+std::vector<EditorAssetBase::RuntimeAssetInfo> EditorAssetBase::GetAllRuntimeAssets() const
 {
 	ET_ASSERT(m_HasRuntimeAssets);
 
-	std::vector<core::I_Asset*> ret;
+	std::vector<RuntimeAssetInfo> ret;
 
 	for (EditorAssetBase const* const child : m_ChildAssets)
 	{
-		std::vector<core::I_Asset*> childRet = child->GetAllRuntimeAssets();
+		std::vector<RuntimeAssetInfo> childRet = child->GetAllRuntimeAssets();
 		ret.insert(ret.end(), childRet.begin(), childRet.end());
 	}
 
 	for (RuntimeAssetData const& data : m_RuntimeAssets)
 	{
-		ret.push_back(data.m_Asset);
+		ret.emplace_back(data);
 	}
 
 	return ret;

@@ -60,11 +60,11 @@ inline void SafeDelete(T &pObjectToDelete)
 #ifdef ET_SHIPPING
 	#define ET_ASSERT(condition, ...)
 #else
-#ifdef PLATFORM_Win
+#ifdef ET_PLATFORM_WIN
 	#define ET_ASSERT(condition, ...) et::core::Logger::ProcessAssert(condition, __FUNCSIG__, FS(__VA_ARGS__))
 #else
 	#define ET_ASSERT(condition, ...) et::core::Logger::ProcessAssert(condition, __PRETTY_FUNCTION__, FS(__VA_ARGS__))
-#endif // PLATFORM_Win
+#endif // ET_PLATFORM_WIN
 #endif // ET_SHIPPING
 
 #pragma endregion Macros

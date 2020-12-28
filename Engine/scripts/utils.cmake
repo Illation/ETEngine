@@ -154,14 +154,16 @@ function(targetCompileOptions _target)
 	if(MSVC)
 		target_compile_options(
 			${_target} PRIVATE
-			"$<$<CONFIG:Debug>:/D_DEBUG /DET_DEBUG>"
+			"$<$<CONFIG:Debug>:/D_DEBUG>"
+			"$<$<CONFIG:Debug>:/DET_DEBUG>"
 			"$<$<CONFIG:Develop>:/DET_DEVELOP>"
 			"$<$<CONFIG:Shipping>:/DET_SHIPPING>"
 		)
 	else()
 		target_compile_options(
 			${_target} PRIVATE
-			"$<$<CONFIG:Debug>:-D_DEBUG -DET_DEBUG>"
+			"$<$<CONFIG:Debug>:-D_DEBUG>"
+			"$<$<CONFIG:Debug>:-DET_DEBUG>"
 			"$<$<CONFIG:Develop>:-DET_DEVELOP>"
 			"$<$<CONFIG:Shipping>:-DET_SHIPPING>"
 		)
@@ -183,9 +185,9 @@ endfunction()
 function(target_definitions)
 	# os
 	if (MSVC)
-		add_definitions(-DPLATFORM_Win)
+		add_definitions(-DET_PLATFORM_WIN)
 	else()
-		add_definitions(-DPLATFORM_Linux)
+		add_definitions(-DET_PLATFORM_LINUX)
 	endif(MSVC)
 	
 	set(_p )
@@ -193,9 +195,9 @@ function(target_definitions)
 	
 	# architecture
 	if("${_p}" MATCHES "x64") # 64 bit
-		add_definitions(-DPLATFORM_x64)
+		add_definitions(-DET_ARCH_X64)
 	 else() 
-		add_definitions(-DPLATFORM_x32)
+		add_definitions(-DET_ARCH_X32)
 	endif()
 endfunction(target_definitions)
 

@@ -2,6 +2,7 @@
 #include <EtCore/Content/Asset.h>
 
 #include "EditorAssetMeta.h"
+#include "ContentBuildConfiguration.h"
 
 namespace et {
 	REGISTRATION_NS(pl);
@@ -36,11 +37,20 @@ protected:
 		core::I_Asset* m_Asset = nullptr;
 		bool m_OwnsAsset = false;
 		std::vector<uint8> m_GeneratedData;
+		bool m_HasGeneratedData = false;
+	};
+
+public:
+	struct RuntimeAssetInfo final
+	{
+		RuntimeAssetInfo(RuntimeAssetData const& rh) : m_Asset(rh.m_Asset), m_HasGeneratedData(rh.m_HasGeneratedData) {}
+
+		core::I_Asset* m_Asset = nullptr;
+		bool m_HasGeneratedData = false;
 	};
 
 	// construct destruct
 	//--------------------
-public:
 	virtual ~EditorAssetBase();
 
 	void Init(core::File* const configFile);
@@ -52,7 +62,7 @@ public:
 	core::I_Asset* GetAsset() { return m_Asset; }
 	core::I_Asset const* GetAsset() const { return m_Asset; }
 
-	std::vector<core::I_Asset*> GetAllRuntimeAssets() const;
+	std::vector<RuntimeAssetInfo> GetAllRuntimeAssets() const;
 
 	virtual rttr::type GetType() const = 0;
 
