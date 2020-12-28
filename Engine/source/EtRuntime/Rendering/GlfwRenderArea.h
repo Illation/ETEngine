@@ -17,13 +17,15 @@ namespace rt {
 //
 class GlfwRenderArea final : public render::I_RenderArea
 {
+	static ivec2 const s_DefaultDimensions;
+
 	// construct destruct
 	//-------------------
 public:
 	GlfwRenderArea() : render::I_RenderArea() {}
 	virtual ~GlfwRenderArea() = default;
 
-	void Initialize(render::GraphicsContextParams const& params);
+	void Initialize(render::GraphicsContextParams const& params, bool const hidden);
 	void Uninitialize();
 
 	// functionality

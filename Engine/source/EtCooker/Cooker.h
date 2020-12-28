@@ -6,6 +6,8 @@
 
 namespace et { namespace pl {
 	class FileResourceManager;
+}  namespace rt {
+	class GlfwRenderWindow;
 } }
 
 
@@ -71,6 +73,7 @@ private:
 
 	std::string m_OutPath;
 
+	rt::GlfwRenderWindow* m_RenderWindow = nullptr;
 	pl::FileResourceManager* m_ResMan = nullptr;
 	
 	E_ReturnCode m_ReturnCode = E_ReturnCode::Success;

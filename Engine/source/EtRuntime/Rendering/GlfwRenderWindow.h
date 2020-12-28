@@ -19,7 +19,7 @@ class GlfwRenderWindow final : public render::RenderWindow
 	// construct destruct
 	//-------------------
 public:
-	GlfwRenderWindow() : render::RenderWindow() {}
+	GlfwRenderWindow(bool const hidden = false) : render::RenderWindow(), m_IsHidden(hidden) {}
 	~GlfwRenderWindow() = default;
 
 	// accessors
@@ -35,6 +35,7 @@ protected:
 	///////
 private:
 
+	bool m_IsHidden;
 	GlfwRenderArea m_Area;
 };
 

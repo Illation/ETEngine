@@ -12,12 +12,16 @@ namespace rt {
 //=====================
 
 
+// static
+ivec2 const GlfwRenderArea::s_DefaultDimensions(512, 512);
+
+
 //---------------------------------
 // GlfwRenderArea::Initialize
 //
 // Create a Window and an openGL context to draw to the window
 //
-void GlfwRenderArea::Initialize(render::GraphicsContextParams const& params)
+void GlfwRenderArea::Initialize(render::GraphicsContextParams const& params, bool const hidden)
 {
 	// Initialize GLFW 
 	//-----------------
@@ -49,18 +53,33 @@ void GlfwRenderArea::Initialize(render::GraphicsContextParams const& params)
 	glfwWindowHint(GLFW_DEPTH_BITS, params.m_DepthBuffer ? 24 : 0);
 	glfwWindowHint(GLFW_STENCIL_BITS, params.m_StencilBuffer ? 8 : 0);
 
-	fw::Config::Settings::Window const& windowSettings = fw::Config::GetInstance()->GetWindow();
-
-	GLFWmonitor* const primaryMonitor = glfwGetPrimaryMonitor();
+	// Determine window settings
 	GLFWmonitor* fullscreenMonitor = nullptr;
-	if (windowSettings.Fullscreen)
+	ivec2 dim;
+	std::string title;
+	
+	if (hidden)
 	{
-		fullscreenMonitor = primaryMonitor;
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+
+		dim = s_DefaultDimensions;
+	}
+	else
+	{
+		fw::Config::Settings::Window const& windowSettings = fw::Config::GetInstance()->GetWindow();
+
+		dim = windowSettings.GetSize();
+		title = windowSettings.Title;
+
+		if (windowSettings.Fullscreen)
+		{
+			GLFWmonitor* const primaryMonitor = glfwGetPrimaryMonitor();
+			fullscreenMonitor = primaryMonitor;
+		}
 	}
 
-	ivec2 const dim = windowSettings.GetSize();
-
-	m_Window = glfwCreateWindow(dim.x, dim.y, windowSettings.Title.c_str(), fullscreenMonitor, nullptr);
+	// Window creation
+	m_Window = glfwCreateWindow(dim.x, dim.y, title.c_str(), fullscreenMonitor, nullptr);
 	if (m_Window == nullptr)
 	{
 		glfwTerminate();
@@ -75,11 +94,12 @@ void GlfwRenderArea::Initialize(render::GraphicsContextParams const& params)
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	SetVSyncEnabled(true);
 
+	ET_ASSERT(m_Context == nullptr);
+	m_Context = new render::GladGlContext();
+	m_Context->Initialize(dim);
+
 	if (m_OnInit)
 	{
-		ET_ASSERT(m_Context == nullptr);
-		m_Context = new render::GladGlContext();
-
 		m_OnInit(m_Context);
 	}
 }

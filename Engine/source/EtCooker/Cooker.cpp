@@ -15,6 +15,8 @@
 
 #include <EtFramework/Config/BootConfig.h>
 
+#include <EtRuntime/Rendering/GlfwRenderWindow.h>
+
 #include <EtPipeline/Content/FileResourceManager.h>
 
 
@@ -81,6 +83,11 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 	LOG(FS(" - version: %s", build::Version::s_Name.c_str()));
 	LOG("");
 
+	// Graphics context
+	m_RenderWindow = new rt::GlfwRenderWindow(true);
+	render::ContextHolder::Instance().CreateMainRenderContext(m_RenderWindow); 
+
+	// resources
 	m_ResMan = new pl::FileResourceManager(projectPath, enginePath);
 	core::ResourceManager::SetInstance(m_ResMan);
 
@@ -103,6 +110,10 @@ Cooker::~Cooker()
 	m_TempDir = nullptr;
 
 	core::ResourceManager::DestroyInstance();
+
+	m_RenderWindow->GetArea().Uninitialize();
+	delete m_RenderWindow;
+	m_RenderWindow = nullptr;
 
 	core::Logger::Release();
 }
