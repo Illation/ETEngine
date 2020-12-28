@@ -253,18 +253,38 @@ void Cooker::AddPackageToWriter(core::HashString const packageId, std::string co
 			editorAsset->SetupRuntimeAssets();
 		}
 
+		editorAsset->Generate(m_Configuration, m_TempDir);
+
 		std::vector<pl::EditorAssetBase::RuntimeAssetInfo> const runtimeAssets = editorAsset->GetAllRuntimeAssets();
 		for (pl::EditorAssetBase::RuntimeAssetInfo const& info : runtimeAssets)
 		{
 			core::I_Asset const* const asset = info.m_Asset;
-			std::string const filePath = baseAssetPath + asset->GetPath();
-			std::string const assetName = asset->GetName();
-			core::HashString const id = asset->GetId();
+			if (info.m_HasGeneratedData)
+			{
+				core::Entry* const genEntry = m_TempDir->GetMountedChild(asset->GetPath() + asset->GetName());
+				if ((genEntry == nullptr) || (genEntry->GetType() == core::Entry::ENTRY_DIRECTORY))
+				{
+					LOG(FS("CookCompiledPackage > Failed to access generated asset file '%s'", 
+						(asset->GetPath() + asset->GetName()).c_str()), 
+						core::LogLevel::Warning);
+					m_ReturnCode = E_ReturnCode::FailedToAccessGeneratedFile;
+					continue;
+				}
 
-			LOG(assetName + std::string(" [") + std::to_string(id.Get()) + std::string("] @: ") + core::FileUtil::GetAbsolutePath(filePath));
+				core::File* const assetFile = static_cast<core::File*>(genEntry);
+				writer.AddFile(assetFile, m_TempDir->GetName(), core::E_CompressionType::Store, false);
+			}
+			else
+			{
+				std::string const filePath = baseAssetPath + asset->GetPath();
+				std::string const assetName = asset->GetName();
+				core::HashString const id = asset->GetId();
 
-			core::File* const assetFile = new core::File(filePath + assetName, nullptr);
-			writer.AddFile(assetFile, baseAssetPath, core::E_CompressionType::Store);
+				LOG(assetName + std::string(" [") + std::to_string(id.Get()) + std::string("] @: ") + core::FileUtil::GetAbsolutePath(filePath));
+
+				core::File* const assetFile = new core::File(filePath + assetName, nullptr);
+				writer.AddFile(assetFile, baseAssetPath, core::E_CompressionType::Store);
+			}
 		}
 	}
 }

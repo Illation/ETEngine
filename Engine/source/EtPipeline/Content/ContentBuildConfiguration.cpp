@@ -21,6 +21,9 @@ RTTR_REGISTRATION
 	rttr::registration::enumeration<et::pl::BuildConfiguration::E_Platform>("E_Platform") (
 		rttr::value("Windows", et::pl::BuildConfiguration::E_Platform::Windows),
 		rttr::value("Linux", et::pl::BuildConfiguration::E_Platform::Linux));
+
+	rttr::registration::enumeration<et::pl::BuildConfiguration::E_GraphicsBackend>("E_GraphicsBackend") (
+		rttr::value("OpenGL", et::pl::BuildConfiguration::E_GraphicsBackend::OpenGL));
 }
 
 //------------------------------

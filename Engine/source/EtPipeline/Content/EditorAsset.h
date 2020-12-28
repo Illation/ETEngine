@@ -8,6 +8,7 @@ namespace et {
 	REGISTRATION_NS(pl);
 	namespace core {
 		class File;
+		class Directory;
 	}
 }
 
@@ -72,6 +73,7 @@ protected:
 	virtual bool LoadFromMemory(std::vector<uint8> const& data) = 0;
 	// virtual bool WriteToMemory(std::vector<uint8>& data) = 0;
 	virtual void SetupRuntimeAssetsInternal();
+	virtual void GenerateInternal(BuildConfiguration const& buildConfig) { UNUSED(buildConfig); }
 	virtual void UnloadInternal() {}
 
 	// functionality
@@ -81,7 +83,7 @@ public:
 	void Unload(bool const force = false);
 	// void Save
 	void SetupRuntimeAssets(); 
-	// void Generate(build configuration)
+	void Generate(BuildConfiguration const& buildConfig, core::Directory* const buildDir);
 
 
 	// Data

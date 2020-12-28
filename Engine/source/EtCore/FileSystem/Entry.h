@@ -118,6 +118,8 @@ public:
 
 	void RemoveChild(Entry* child);
 
+	core::Directory* CreateSubdirectory(std::string& path);
+
 	// accessors
 	//---------------
 	std::vector<Entry*> const& GetChildren() { return m_pChildren; }

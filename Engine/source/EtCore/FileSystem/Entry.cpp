@@ -25,23 +25,35 @@ namespace core {
 //
 // Entry constructor sets up the parent and path members
 //
-Entry::Entry(std::string name, Directory* pParent)
-	: m_Filename(name)
-	, m_Parent(pParent)
+Entry::Entry(std::string name, Directory* parent)
 {
-	if (m_Parent == nullptr)
+	m_Path = FileUtil::ExtractPath(name);
+
+	if (parent == nullptr)
 	{
-		m_Path = FileUtil::ExtractPath(m_Filename);
+		m_Parent = parent;
 		if (!FileUtil::IsAbsolutePath(m_Path))
 		{
 			m_Path = FileUtil::GetAbsolutePath(m_Path);
 		}
 
-		m_Filename = FileUtil::ExtractName(m_Filename);
+		m_Filename = FileUtil::ExtractName(name);
 	}
 	else
 	{
-		m_Path = "/";
+		if (!m_Path.empty() && parent->IsMounted() && parent->Exists())
+		{
+			m_Parent = parent->CreateSubdirectory(m_Path);
+			m_Path = "/";
+
+			m_Filename = FileUtil::ExtractName(name);
+		}
+		else
+		{
+			m_Parent = parent;
+			m_Filename = name;
+			m_Path = "/";
+		}
 	}
 }
 
@@ -321,6 +333,40 @@ Directory::~Directory()
 void Directory::RemoveChild( Entry* child )
 {
 	m_pChildren.erase( std::remove( m_pChildren.begin(), m_pChildren.end(), child ) , m_pChildren.end() );
+}
+
+//---------------------------------
+// Directory::CreateSubdirectory
+//
+// returns leaf subdirectory
+//
+Directory* Directory::CreateSubdirectory(std::string& path)
+{
+	std::string const searchName = FileUtil::SplitFirstDirectory(path);
+	if (searchName.empty())
+	{
+		return this;
+	}
+
+	auto childIt = std::find_if(m_pChildren.begin(), m_pChildren.end(), [&searchName](Entry const* const entry)
+		{
+			return entry->GetNameOnly() == searchName;
+		});
+
+	if (childIt == m_pChildren.cend()) // child not found
+	{
+		m_pChildren.push_back(new Directory(searchName, this, true));
+		childIt = std::prev(m_pChildren.end());
+	}
+
+	Entry* const childEntry = *childIt;
+	if (childEntry->GetType() == Entry::EntryType::ENTRY_FILE)
+	{
+		ET_ASSERT(false, "subdirectory path (%s) contains a file entry (%s)", (GetName() + path).c_str(), childEntry->GetName());
+		return nullptr;
+	}
+
+	return static_cast<Directory*>(childEntry)->CreateSubdirectory(path);
 }
 
 //---------------------------------

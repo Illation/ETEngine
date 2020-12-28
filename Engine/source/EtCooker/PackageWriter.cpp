@@ -20,10 +20,11 @@ namespace cooker {
 //
 // File entry info constructor that assigns all members
 //
-PackageWriter::FileEntryInfo::FileEntryInfo(core::PkgEntry const& lEntry, core::File* const lFile, std::string const& lRelName) 
+PackageWriter::FileEntryInfo::FileEntryInfo(core::PkgEntry const& lEntry, core::File* const lFile, std::string const& lRelName, bool const ownsFile)
 	: entry(lEntry)
 	, file(lFile)
 	, relName(lRelName)
+	, owned(ownsFile)
 { }
 
 
@@ -45,9 +46,9 @@ PackageWriter::~PackageWriter()
 //
 // Add a file to the writer and create a package entry for it - takes ownership
 //
-void PackageWriter::AddFile(core::File* const file, std::string const& rootDir, core::E_CompressionType const compression)
+void PackageWriter::AddFile(core::File* const file, std::string const& rootDir, core::E_CompressionType const compression, bool const ownsFile)
 {
-	m_Files.emplace_back(core::PkgEntry(), file, std::string());
+	m_Files.emplace_back(core::PkgEntry(), file, std::string(), ownsFile);
 	core::PkgEntry& entry = m_Files[m_Files.size() - 1].entry;
 	std::string& relName = m_Files[m_Files.size() - 1].relName;
 
@@ -99,8 +100,11 @@ void PackageWriter::Cleanup()
 		if (entryFile.file->IsOpen())
 		{
 			entryFile.file->Close();
+		}
 
-			// delete the file
+		// delete the file
+		if (entryFile.owned)
+		{
 			delete entryFile.file;
 			entryFile.file = nullptr;
 		}

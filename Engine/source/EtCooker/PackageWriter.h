@@ -23,11 +23,12 @@ public:
 	//------------------
 	struct FileEntryInfo
 	{
-		FileEntryInfo(core::PkgEntry const& lEntry, core::File* const lFile, std::string const& lRelName);
+		FileEntryInfo(core::PkgEntry const& lEntry, core::File* const lFile, std::string const& lRelName, bool const ownsFile);
 
 		core::PkgEntry entry;
 		core::File* file;
 		std::string relName;
+		bool owned;
 	};
 
 	// c-tor d-tor
@@ -37,7 +38,7 @@ public:
 
 	// functionality
 	//------------------
-	void AddFile(core::File* const file, std::string const& rootDir, core::E_CompressionType const compression);
+	void AddFile(core::File* const file, std::string const& rootDir, core::E_CompressionType const compression, bool const ownsFile = true);
 	void RemoveFile(core::File* const file);
 	void Cleanup();
 

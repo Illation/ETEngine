@@ -2,6 +2,7 @@
 #include "EditorAsset.h"
 
 #include <EtCore/Content/ResourceManager.h>
+#include <EtCore/FileSystem/Entry.h>
 
 
 namespace et {
@@ -190,6 +191,50 @@ void EditorAssetBase::SetupRuntimeAssets()
 
 	SetupRuntimeAssetsInternal();
 	m_HasRuntimeAssets = true;
+}
+
+//---------------------------
+// EditorAssetBase::Generate
+//
+// Convert from editor assets to runtime assets and write to files in the build directory
+//
+void EditorAssetBase::Generate(BuildConfiguration const& buildConfig, core::Directory* const buildDir)
+{
+	ET_ASSERT(m_HasRuntimeAssets);
+
+	for (EditorAssetBase* const child : m_ChildAssets)
+	{
+		child->Generate(buildConfig, buildDir);
+	}
+
+	GenerateInternal(buildConfig);
+
+	for (RuntimeAssetData& runtimeData : m_RuntimeAssets)
+	{
+		if (runtimeData.m_HasGeneratedData)
+		{
+			std::string const assetPath = runtimeData.m_Asset->GetPath() + runtimeData.m_Asset->GetName();
+			core::File* const assetFile = new core::File(assetPath, buildDir);
+
+			core::FILE_ACCESS_FLAGS outFlags;
+			outFlags.SetFlags(core::FILE_ACCESS_FLAGS::FLAGS::Create | core::FILE_ACCESS_FLAGS::FLAGS::Exists);
+
+			if (!assetFile->Open(core::FILE_ACCESS_MODE::Write, outFlags))
+			{
+				ET_ASSERT(false, "Failed to open generated asset file for writing at '%s'", assetFile->GetName());
+				continue;
+			}
+
+			// Write the package data
+			assetFile->Write(runtimeData.m_GeneratedData);
+
+			// cleanup
+			assetFile->Close();
+
+			runtimeData.m_GeneratedData.clear();
+			runtimeData.m_GeneratedData.resize(0u);
+		}
+	}
 }
 
 

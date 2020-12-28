@@ -29,7 +29,8 @@ public:
 		MissingResourceName,
 		FailedToSerialize,
 		FailedToCleanup,
-		FailedToWritePackage
+		FailedToWritePackage,
+		FailedToAccessGeneratedFile
 	};
 
 
