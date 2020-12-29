@@ -74,7 +74,10 @@ protected:
 	// virtual bool WriteToMemory(std::vector<uint8>& data) = 0;
 	virtual void SetupRuntimeAssetsInternal();
 	virtual void GenerateInternal(BuildConfiguration const& buildConfig) { UNUSED(buildConfig); }
-	virtual void UnloadInternal() {}
+	virtual void UnloadInternal();
+
+	void* GetRawData() { return m_Asset->GetRawData(); }
+	void SetRawData(void* const data) { m_Asset->SetRawData(data); }
 
 	// functionality
 	//---------------
@@ -129,9 +132,13 @@ public:
 	core::RawAsset<TDataType>* GetRawAsset() { return static_cast<core::RawAsset<TDataType>*>(m_Asset); }
 	core::RawAsset<TDataType> const* GetRawAsset() const { return static_cast<core::RawAsset<TDataType>*>(m_Asset); }
 
+protected:
+	TDataType* GetData() { return static_cast<TDataType*>(GetRawData()); }
+	void SetData(TDataType* const data) { SetRawData(static_cast<void*>(data)); }
+
 	// interface
 	//-----------
-	virtual bool LoadFromMemory(std::vector<uint8> const& data) { return GetRawAsset()->LoadFromMemory(data); } // can be overridden
+	virtual bool LoadFromMemory(std::vector<uint8> const& data) override { return GetRawAsset()->LoadFromMemory(data); } // can be overridden
 };
 
 

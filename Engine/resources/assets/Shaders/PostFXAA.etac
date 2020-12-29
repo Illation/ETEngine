@@ -9,6 +9,8 @@
       }
     },
     "metadata": null,
-    "children": []
+    "children": [],
+    "use geometry": false,
+    "use fragment": true
   }
 }

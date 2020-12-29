@@ -6,12 +6,15 @@
 #include <EtCore/Util/LinkerUtils.h>
 
 
+namespace et { namespace render {
+	class TextureData;
+} namespace pl {
+	class EditableShaderAsset;
+} }
+
+
 namespace et {
 namespace render {
-
-
-// forward
-class TextureData;
 
 
 //---------------------------------
@@ -24,6 +27,7 @@ class ShaderData final
 	// definitions
 	//---------------------
 	friend class ShaderAsset;
+	friend class pl::EditableShaderAsset;
 
 public:
 	typedef std::pair<T_AttribLoc, AttributeDescriptor> T_AttributeLocation;
@@ -85,8 +89,16 @@ private:
 //
 class ShaderAsset final : public core::Asset<ShaderData, false>
 {
+	// definitions
+	//-------------
+	RTTR_ENABLE(core::Asset<ShaderData, false>)
 	DECLARE_FORCED_LINKING()
+
 public:
+	static T_ShaderLoc CompileShader(std::string const& shaderSourceStr, E_ShaderType const type);
+	static void InitUniforms(ShaderData* const data);
+	static void GetAttributes(T_ShaderLoc const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes);
+
 	// Construct destruct
 	//---------------------
 	ShaderAsset() : core::Asset<ShaderData, false>() {}
@@ -99,8 +111,6 @@ public:
 	// Utility
 	//---------------------
 private:
-	T_ShaderLoc CompileShader(std::string const& shaderSourceStr, E_ShaderType const type);
-
 	bool Precompile(std::string &shaderContent, 
 		bool &useGeo, 
 		bool &useFrag, 
@@ -109,11 +119,6 @@ private:
 		std::string &fragSource);
 
 	bool ReplaceInclude(std::string &line);
-
-	void InitUniforms();
-	void GetAttributes(T_ShaderLoc const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes);
-
-	RTTR_ENABLE(core::Asset<ShaderData, false>)
 };
 
 

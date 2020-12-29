@@ -160,6 +160,156 @@ RTTR_REGISTRATION
 DEFINE_FORCED_LINKING(ShaderAsset) // force the shader asset class to be linked as it is only used in reflection
 
 
+// static
+
+//---------------------------------
+// ShaderAsset::CompileShader
+//
+// Compile a glsl shader
+//
+T_ShaderLoc ShaderAsset::CompileShader(std::string const& shaderSourceStr, E_ShaderType const type)
+{
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+
+	T_ShaderLoc shader = api->CreateShader(type);
+
+	//error handling
+	api->CompileShader(shader, shaderSourceStr);
+	if (!(api->IsShaderCompiled(shader)))
+	{
+		std::string sName;
+		switch (type)
+		{
+		case E_ShaderType::Vertex:
+			sName = "vertex";
+			break;
+		case E_ShaderType::Geometry:
+			sName = "geometry";
+			break;
+		case E_ShaderType::Fragment:
+			sName = "fragment";
+			break;
+		default:
+			sName = "invalid type";
+			break;
+		}
+
+		std::string errorInfo;
+		api->GetShaderInfo(shader, errorInfo);
+		ET_ASSERT(false, "ShaderAsset::CompileShader > Compiling %s shader failed: %s", sName.c_str(), errorInfo.c_str());
+	}
+
+	return shader;
+}
+
+//---------------------------------
+// ShaderAsset::InitUniforms
+//
+// Extract shader uniforms from a program
+//
+void ShaderAsset::InitUniforms(ShaderData* const data)
+{
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+
+	// uniform blocks
+	//----------------
+	std::vector<std::string> blockNames = api->GetUniformBlockNames(data->m_ShaderProgram);
+	for (std::string const& blockName : blockNames)
+	{
+		data->m_UniformBlocks.emplace_back(GetHash(blockName));
+	}
+
+	// hook up shared uniform variables if the shader requires it
+	render::SharedVarController const& sharedVarController = RenderingSystems::Instance()->GetSharedVarController();
+
+	core::HashString const sharedBlockId(sharedVarController.GetBlockName().c_str());
+	auto const foundBlock = std::find(data->m_UniformBlocks.cbegin(), data->m_UniformBlocks.cend(), sharedBlockId);
+
+	if (foundBlock != data->m_UniformBlocks.cend())
+	{
+		T_BlockIndex const blockIndex = static_cast<T_BlockIndex>(foundBlock - data->m_UniformBlocks.cbegin());
+		api->SetUniformBlockBinding(data->m_ShaderProgram, blockIndex, sharedVarController.GetBufferBinding());
+	}
+
+	// get all uniforms that are contained by uniform blocsk so we can exclude them
+	std::vector<int32> blockContainedUniIndices;
+	for (T_BlockIndex blockIdx = 0; blockIdx < static_cast<T_BlockIndex>(data->m_UniformBlocks.size()); ++blockIdx)
+	{
+		std::vector<int32> indicesForCurrentBlock = api->GetUniformIndicesForBlock(data->m_ShaderProgram, blockIdx);
+
+		// merge with blockContainedUniIndices
+		blockContainedUniIndices.reserve(blockContainedUniIndices.size() + indicesForCurrentBlock.size());
+		blockContainedUniIndices.insert(blockContainedUniIndices.end(), indicesForCurrentBlock.begin(), indicesForCurrentBlock.end());
+	}
+
+	// default uniform variables
+	//-----------------------------
+	int32 const count = api->GetUniformCount(data->m_ShaderProgram);
+
+	for (int32 uniIdx = 0; uniIdx < count; ++uniIdx)
+	{
+		// skip uniforms contained in blocks
+		if (std::find(blockContainedUniIndices.cbegin(), blockContainedUniIndices.cend(), uniIdx) != blockContainedUniIndices.cend())
+		{
+			continue;
+		}
+
+		// get all descriptors for index (may be more than one if contained by array)
+		std::vector<UniformDescriptor> unis;
+		api->GetActiveUniforms(data->m_ShaderProgram, static_cast<uint32>(uniIdx), unis);
+
+		// create a layout for each
+		for (UniformDescriptor const& uni : unis)
+		{
+			core::HashString const hash(uni.name.c_str());
+
+			// ensure no hash collisions
+			ET_ASSERT(std::find(data->m_UniformIds.cbegin(), data->m_UniformIds.cend(), hash) == data->m_UniformIds.cend());
+
+			data->m_UniformIds.push_back(hash);
+
+			data->m_UniformLayout.push_back(render::UniformParam());
+			render::UniformParam& uniParam = data->m_UniformLayout[data->m_UniformLayout.size() - 1];
+			uniParam.location = uni.location;
+			uniParam.type = uni.type;
+			uniParam.offset = data->m_UniformDataSize;
+
+			data->m_UniformDataSize += render::parameters::GetSize(uni.type);
+		}
+	}
+
+	// allocate parameters
+	data->m_CurrentUniforms = render::parameters::CreateBlock(data->m_UniformDataSize);
+
+	// init defaults
+	for (render::UniformParam const& param : data->m_UniformLayout)
+	{
+		api->PopulateUniform(data->m_ShaderProgram, param.location, param.type, static_cast<void*>(data->m_CurrentUniforms + param.offset));
+	}
+}
+
+//---------------------------------
+// ShaderAsset::GetAttributes
+//
+// Extract the vertex attributes from a program, provided it has a vertex shader
+//
+void ShaderAsset::GetAttributes(T_ShaderLoc const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes)
+{
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+
+	int32 const count = api->GetAttributeCount(shaderProgram);
+	for (int32 attribIdx = 0; attribIdx < count; ++attribIdx)
+	{
+		AttributeDescriptor info;
+		api->GetActiveAttribute(shaderProgram, static_cast<uint32>(attribIdx), info);
+
+		attributes.emplace_back(api->GetAttributeLocation(shaderProgram, info.name), info);
+	}
+}
+
+
+//---------------------------------------------------------------------------------
+
 //---------------------------------
 // ShaderAsset::LoadFromMemory
 //
@@ -245,51 +395,11 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 	// Extract uniform info
 	//------------------
 	api->SetShader(m_Data);
-	InitUniforms();
+	InitUniforms(m_Data);
 	GetAttributes(shaderProgram, m_Data->m_Attributes);
 
 	// all done
 	return true;
-}
-
-//---------------------------------
-// ShaderAsset::CompileShader
-//
-// Compile a glsl shader
-//
-T_ShaderLoc ShaderAsset::CompileShader(std::string const& shaderSourceStr, E_ShaderType const type)
-{
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
-
-	T_ShaderLoc shader = api->CreateShader(type);
-
-	//error handling
-	api->CompileShader(shader, shaderSourceStr);
-	if (!(api->IsShaderCompiled(shader)))
-	{
-		std::string sName;
-		switch (type)
-		{
-		case E_ShaderType::Vertex:
-			sName = "vertex";
-			break;
-		case E_ShaderType::Geometry:
-			sName = "geometry";
-			break;
-		case E_ShaderType::Fragment:
-			sName = "fragment";
-			break;
-		default:
-			sName = "invalid type";
-			break;
-		}
-
-		std::string errorInfo;
-		api->GetShaderInfo(shader, errorInfo);
-		ET_ASSERT(false, "ShaderAsset::CompileShader > Compiling %s shader failed: %s", sName.c_str(), errorInfo.c_str());
-	}
-
-	return shader;
 }
 
 //---------------------------------
@@ -447,111 +557,6 @@ bool ShaderAsset::ReplaceInclude(std::string &line)
 
 	// we're done
 	return true;
-}
-
-//---------------------------------
-// ShaderAsset::InitUniforms
-//
-// Extract shader uniforms from a program
-//
-void ShaderAsset::InitUniforms()
-{
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
-
-	// uniform blocks
-	//----------------
-	std::vector<std::string> blockNames = api->GetUniformBlockNames(m_Data->m_ShaderProgram);
-	for (std::string const& blockName : blockNames)
-	{
-		m_Data->m_UniformBlocks.emplace_back(GetHash(blockName));
-	}
-
-	// hook up shared uniform variables if the shader requires it
-	render::SharedVarController const& sharedVarController = RenderingSystems::Instance()->GetSharedVarController();
-
-	core::HashString const sharedBlockId(sharedVarController.GetBlockName().c_str());
-	auto const foundBlock = std::find(m_Data->m_UniformBlocks.cbegin(), m_Data->m_UniformBlocks.cend(), sharedBlockId);
-
-	if (foundBlock != m_Data->m_UniformBlocks.cend())
-	{
-		T_BlockIndex const blockIndex = static_cast<T_BlockIndex>(foundBlock - m_Data->m_UniformBlocks.cbegin());
-		api->SetUniformBlockBinding(m_Data->m_ShaderProgram, blockIndex, sharedVarController.GetBufferBinding());
-	}
-
-	// get all uniforms that are contained by uniform blocsk so we can exclude them
-	std::vector<int32> blockContainedUniIndices;
-	for (T_BlockIndex blockIdx = 0; blockIdx < static_cast<T_BlockIndex>(m_Data->m_UniformBlocks.size()); ++blockIdx)
-	{
-		std::vector<int32> indicesForCurrentBlock = api->GetUniformIndicesForBlock(m_Data->m_ShaderProgram, blockIdx);
-
-		// merge with blockContainedUniIndices
-		blockContainedUniIndices.reserve(blockContainedUniIndices.size() + indicesForCurrentBlock.size());
-		blockContainedUniIndices.insert(blockContainedUniIndices.end(), indicesForCurrentBlock.begin(), indicesForCurrentBlock.end());
-	}
-
-	// default uniform variables
-	//-----------------------------
-	int32 const count = api->GetUniformCount(m_Data->m_ShaderProgram);
-
-	for (int32 uniIdx = 0; uniIdx < count; ++uniIdx)
-	{
-		// skip uniforms contained in blocks
-		if (std::find(blockContainedUniIndices.cbegin(), blockContainedUniIndices.cend(), uniIdx) != blockContainedUniIndices.cend())
-		{
-			continue;
-		}
-
-		// get all descriptors for index (may be more than one if contained by array)
-		std::vector<UniformDescriptor> unis;
-		api->GetActiveUniforms(m_Data->m_ShaderProgram, static_cast<uint32>(uniIdx), unis);
-
-		// create a layout for each
-		for (UniformDescriptor const& uni : unis)
-		{
-			core::HashString const hash(uni.name.c_str());
-
-			// ensure no hash collisions
-			ET_ASSERT(std::find(m_Data->m_UniformIds.cbegin(), m_Data->m_UniformIds.cend(), hash) == m_Data->m_UniformIds.cend());
-
-			m_Data->m_UniformIds.push_back(hash);
-
-			m_Data->m_UniformLayout.push_back(render::UniformParam());
-			render::UniformParam& uniParam = m_Data->m_UniformLayout[m_Data->m_UniformLayout.size() - 1];
-			uniParam.location = uni.location;
-			uniParam.type = uni.type;
-			uniParam.offset = m_Data->m_UniformDataSize;
-
-			m_Data->m_UniformDataSize += render::parameters::GetSize(uni.type);
-		}
-	}
-
-	// allocate parameters
-	m_Data->m_CurrentUniforms = render::parameters::CreateBlock(m_Data->m_UniformDataSize);
-
-	// init defaults
-	for (render::UniformParam const& param : m_Data->m_UniformLayout)
-	{
-		api->PopulateUniform(m_Data->m_ShaderProgram, param.location, param.type, static_cast<void*>(m_Data->m_CurrentUniforms + param.offset));
-	}
-}
-
-//---------------------------------
-// ShaderAsset::GetAttributes
-//
-// Extract the vertex attributes from a program, provided it has a vertex shader
-//
-void ShaderAsset::GetAttributes(T_ShaderLoc const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes)
-{
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
-
-	int32 const count = api->GetAttributeCount(shaderProgram);
-	for (int32 attribIdx = 0; attribIdx < count; ++attribIdx)
-	{
-		AttributeDescriptor info;
-		api->GetActiveAttribute(shaderProgram, static_cast<uint32>(attribIdx), info);
-
-		attributes.emplace_back(api->GetAttributeLocation(shaderProgram, info.name), info);
-	}
 }
 
 

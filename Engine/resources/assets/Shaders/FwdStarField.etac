@@ -12,6 +12,8 @@
       }
     },
     "metadata": null,
-    "children": []
+    "children": [],
+    "use geometry": true,
+    "use fragment": true
   }
 }

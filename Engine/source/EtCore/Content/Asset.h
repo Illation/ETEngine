@@ -75,9 +75,14 @@ public:
 	//---------------------
 	virtual rttr::type GetType() const = 0;
 	virtual bool IsLoaded() const = 0;
+public:
 	virtual bool LoadFromMemory(std::vector<uint8> const& data) = 0;
 protected:
 	virtual void UnloadInternal() {}
+
+private:
+	virtual void* GetRawData() = 0;
+	virtual void SetRawData(void* const data) = 0;
 
 public:
 
@@ -135,6 +140,8 @@ protected:
 template <class T_DataType>
 class RawAsset : public I_Asset
 {
+	friend class pl::EditorAssetBase;
+
 public:
 	// Construct destruct
 	//---------------------
@@ -150,9 +157,12 @@ public:
 	//---------------------
 	rttr::type GetType() const override { return rttr::type::get<T_DataType>(); }
 	bool IsLoaded() const override { return m_Data != nullptr; }
-
 protected:
 	void UnloadInternal() override;
+
+private:
+	void* GetRawData() override { return static_cast<void*>(m_Data); }
+	void SetRawData(void* const data) override { m_Data = static_cast<T_DataType*>(data); }
 
 public:
 	T_DataType const* GetData() const { return m_Data; }

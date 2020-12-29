@@ -107,6 +107,17 @@ void EditorAssetBase::SetupRuntimeAssetsInternal()
 	m_RuntimeAssets.emplace_back(m_Asset, false);
 }
 
+//---------------------------------
+// EditorAssetBase::UnloadInternal
+//
+void EditorAssetBase::UnloadInternal()
+{
+	if (m_Asset != nullptr)
+	{
+		m_Asset->UnloadInternal();
+	}
+}
+
 //---------------------------
 // EditorAssetBase::Load
 //
