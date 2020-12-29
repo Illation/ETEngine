@@ -48,7 +48,7 @@ void SwirlyLightSystem::Process(fw::ComponentRange<SwirlyLightSystemView>& range
 		view.transf->SetPosition(pos);
 
 		// update light brightness
-		view.light->SetBrightness(view.light->GetBrightness() + std::cosf(view.swirly->angle1) * 3.5f);
+		view.light->SetBrightness(std::max(view.light->GetBrightness() + std::cosf(view.swirly->angle1) * 3.5f, 0.f));
 	}
 }
 

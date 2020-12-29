@@ -363,19 +363,6 @@ void EditorAssetDatabase::PopulateAssetDatabase(core::AssetDatabase& db) const
 	// add caches
 	for (T_AssetList const& rhCache : m_AssetCaches)
 	{
-		auto cacheIt = std::find_if(db.caches.begin(), db.caches.end(), [&rhCache](core::AssetDatabase::AssetCache const& lhCache)
-			{
-				return (lhCache.GetType() == GetCacheType(rhCache));
-			});
-
-		if (cacheIt == db.caches.cend())
-		{
-			db.caches.emplace_back();
-			cacheIt = std::prev(db.caches.end());
-		}
-
-		core::AssetDatabase::AssetCache& lhCache = *cacheIt;
-
 		// insert assets
 		for (EditorAssetBase* const editorAsset : rhCache)
 		{
@@ -385,6 +372,19 @@ void EditorAssetDatabase::PopulateAssetDatabase(core::AssetDatabase& db) const
 				core::I_Asset* const rhAsset = info.m_Asset;
 				if (IsRuntimeAsset(rhAsset))
 				{
+					auto cacheIt = std::find_if(db.caches.begin(), db.caches.end(), [&rhAsset](core::AssetDatabase::AssetCache const& lhCache)
+						{
+							return (lhCache.GetType() == rhAsset->GetType());
+						});
+
+					if (cacheIt == db.caches.cend())
+					{
+						db.caches.emplace_back();
+						cacheIt = std::prev(db.caches.end());
+					}
+
+					core::AssetDatabase::AssetCache& lhCache = *cacheIt;
+
 					// Ensure the asset doesn't already exist
 					auto const assetIt = std::find_if(lhCache.cache.cbegin(), lhCache.cache.cend(), [rhAsset](core::I_Asset const* const lhAsset)
 						{

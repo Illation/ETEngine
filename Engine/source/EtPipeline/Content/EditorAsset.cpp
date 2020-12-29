@@ -31,17 +31,6 @@ EditorAssetBase::RuntimeAssetData::RuntimeAssetData(core::I_Asset* const asset, 
 	, m_OwnsAsset(ownsAsset)
 { }
 
-//------------------------------------------
-// EditorAssetBase::RuntimeAssetData::d-tor
-//
-EditorAssetBase::RuntimeAssetData::~RuntimeAssetData()
-{
-	if (m_OwnsAsset)
-	{
-		delete m_Asset;
-	}
-}
-
 
 //===============
 // Editor Asset
@@ -61,6 +50,14 @@ EditorAssetBase::~EditorAssetBase()
 	Unload();
 
 	delete m_MetaData;
+
+	for (RuntimeAssetData& data : m_RuntimeAssets)
+	{
+		if (data.m_OwnsAsset)
+		{
+			delete data.m_Asset;
+		}
+	}
 }
 
 //-----------------------
@@ -213,13 +210,60 @@ void EditorAssetBase::Generate(BuildConfiguration const& buildConfig, core::Dire
 {
 	ET_ASSERT(m_HasRuntimeAssets);
 
+	// recursively generate for children
+	//-----------------------------------
 	for (EditorAssetBase* const child : m_ChildAssets)
 	{
 		child->Generate(buildConfig, buildDir);
 	}
 
-	GenerateInternal(buildConfig);
+	// create asset data
+	//-------------------
+	core::I_Asset* const asset = GetAsset();
 
+	if (GenerateRequiresReferences())
+	{
+		for (core::I_Asset::Reference& reference : asset->m_References)
+		{
+			reference.Ref();
+		}
+	}
+
+	if (GenerateRequiresLoadData())
+	{
+		if (!(core::ResourceManager::Instance()->GetLoadData(asset, asset->m_LoadData)))
+		{
+			ET_ASSERT(false, "Couldn't get data for '%s' (%i) in package '%s'",
+				asset->GetPackageEntryId().ToStringDbg(),
+				asset->GetPackageEntryId().Get(),
+				asset->GetPackageId().ToStringDbg());
+			return;
+		}
+	}
+
+	bool const success = GenerateInternal(buildConfig);
+
+	if (GenerateRequiresLoadData())
+	{
+		asset->m_LoadData.clear();
+	}
+
+	if (GenerateRequiresReferences())
+	{
+		for (core::I_Asset::Reference& reference : asset->m_References)
+		{
+			reference.Deref();
+		}
+	}
+
+	if (!success)
+	{
+		ET_ASSERT(false, "Failed to generate runtime data for asset '%s'", asset->GetName());
+		return;
+	}
+
+	// write to files
+	//----------------
 	for (RuntimeAssetData& runtimeData : m_RuntimeAssets)
 	{
 		if (runtimeData.m_HasGeneratedData)

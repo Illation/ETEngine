@@ -161,6 +161,9 @@ DEFINE_FORCED_LINKING(ShaderAsset) // force the shader asset class to be linked 
 
 
 // static
+std::string const ShaderAsset::s_MainExtension("glsl");
+std::string const ShaderAsset::s_GeoExtension("geo");
+std::string const ShaderAsset::s_FragExtension("frag");
 
 //---------------------------------
 // ShaderAsset::CompileShader
@@ -200,6 +203,65 @@ T_ShaderLoc ShaderAsset::CompileShader(std::string const& shaderSourceStr, E_Sha
 	}
 
 	return shader;
+}
+
+//-------------------------
+// ShaderAsset::LinkShader
+//
+// Compile and link shader sources into a shader program
+//
+T_ShaderLoc ShaderAsset::LinkShader(std::string const& vert, std::string const& geo, std::string const& frag, I_GraphicsContextApi* const api)
+{
+	// Compile
+	//------------------
+	T_ShaderLoc const vertexShader = CompileShader(vert, E_ShaderType::Vertex);
+
+	T_ShaderLoc geoShader = 0;
+	if (!geo.empty())
+	{
+		geoShader = CompileShader(geo, E_ShaderType::Geometry);
+	}
+
+	T_ShaderLoc fragmentShader = 0;
+	if (!frag.empty())
+	{
+		fragmentShader = CompileShader(frag, E_ShaderType::Fragment);
+	}
+
+	// Combine Shaders into a program
+	//------------------
+
+	T_ShaderLoc const shaderProgram = api->CreateProgram();
+
+	api->AttachShader(shaderProgram, vertexShader);
+
+	if (!geo.empty())
+	{
+		api->AttachShader(shaderProgram, geoShader);
+	}
+
+	if (!frag.empty())
+	{
+		api->AttachShader(shaderProgram, fragmentShader);
+		api->BindFragmentDataLocation(shaderProgram, 0, "outColor");
+	}
+
+	api->LinkProgram(shaderProgram);
+
+	// Delete shader objects now that we have a program
+	api->DeleteShader(vertexShader);
+
+	if (!geo.empty())
+	{
+		api->DeleteShader(geoShader);
+	}
+
+	if (!frag.empty())
+	{
+		api->DeleteShader(fragmentShader);
+	}
+
+	return shaderProgram;
 }
 
 //---------------------------------
@@ -319,75 +381,44 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
 	// Extract the shader text from binary data
 	//------------------------
-	std::string shaderContent = core::FileUtil::AsText(data);
-	if (shaderContent.size() == 0)
-	{
-		LOG("ShaderAsset::LoadFromMemory > Empty shader file!", core::LogLevel::Warning);
-		return false;
-	}
+	std::string vertSource = core::FileUtil::AsText(data);
+	ET_ASSERT(!vertSource.empty());
+	
+	// Load shader sources
+	//---------------------
+	auto extractSourceFromStub = [](I_AssetPtr const* const rawAssetPtr, std::string& source)
+		{
+			ET_ASSERT(rawAssetPtr->GetType() == rttr::type::get<core::StubData>(), 
+				"Asset reference found at path %s is not of type StubData", 
+				rawAssetPtr->GetId().ToStringDbg());
 
-	// Precompile
-	//--------------------
-	bool useGeo = false;
-	bool useFrag = false;
-	std::string vertSource;
+			AssetPtr<core::StubData> stubPtr = *static_cast<AssetPtr<core::StubData> const*>(rawAssetPtr);
+
+			// extract the shader string
+			source.assign(stubPtr->GetText(), stubPtr->GetLength());
+			ET_ASSERT(!source.empty());
+		};
+
 	std::string geoSource;
 	std::string fragSource;
-	if (!Precompile(shaderContent, useGeo, useFrag, vertSource, geoSource, fragSource))
+	for (core::I_Asset::Reference const& ref : GetReferences())
 	{
-		return false;
+		I_AssetPtr const* const rawAssetPtr = ref.GetAsset();
+		std::string const ext = core::FileUtil::ExtractExtension(rawAssetPtr->GetAsset()->GetName());
+		if (ext == s_GeoExtension)
+		{
+			extractSourceFromStub(rawAssetPtr, geoSource);
+		}
+		else if (ext == s_FragExtension)
+		{
+			extractSourceFromStub(rawAssetPtr, fragSource);
+		}
 	}
-
+	
 	// Compile
 	//------------------
-	T_ShaderLoc const vertexShader = CompileShader(vertSource, E_ShaderType::Vertex);
-
-	T_ShaderLoc geoShader = 0;
-	if (useGeo)
-	{
-		geoShader = CompileShader(geoSource, E_ShaderType::Geometry);
-	}
-
-	T_ShaderLoc fragmentShader = 0;
-	if (useFrag)
-	{
-		fragmentShader = CompileShader(fragSource, E_ShaderType::Fragment);
-	}
-
-	// Combine Shaders into a program
-	//------------------
-
 	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
-
-	T_ShaderLoc const shaderProgram = api->CreateProgram();
-
-	api->AttachShader(shaderProgram, vertexShader);
-
-	if (useGeo)
-	{
-		api->AttachShader(shaderProgram, geoShader);
-	}
-
-	if (useFrag)
-	{
-		api->AttachShader(shaderProgram, fragmentShader);
-		api->BindFragmentDataLocation(shaderProgram, 0, "outColor");
-	}
-
-	api->LinkProgram(shaderProgram);
-
-	// Delete shader objects now that we have a program
-	api->DeleteShader(vertexShader);
-
-	if (useGeo)
-	{
-		api->DeleteShader(geoShader);
-	}
-
-	if (useFrag)
-	{
-		api->DeleteShader(fragmentShader);
-	}
+	T_ShaderLoc const shaderProgram = LinkShader(vertSource, geoSource, fragSource, api);
 
 	// Create shader data
 	m_Data = new ShaderData(shaderProgram);
@@ -399,163 +430,6 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 	GetAttributes(shaderProgram, m_Data->m_Attributes);
 
 	// all done
-	return true;
-}
-
-//---------------------------------
-// ShaderAsset::Precompile
-//
-// Precompile a .glsl file into multiple shader strings that can be compiled on their own
-//
-bool ShaderAsset::Precompile(std::string &shaderContent, 
-	bool &useGeo, 
-	bool &useFrag, 
-	std::string &vertSource, 
-	std::string &geoSource, 
-	std::string &fragSource)
-{
-	enum ParseState {
-		INIT,
-		VERT,
-		GEO,
-		FRAG
-	} state = ParseState::INIT;
-
-	std::string extractedLine;
-	while (core::FileUtil::ParseLine(shaderContent, extractedLine))
-	{
-		//Includes
-		if (extractedLine.find("#include") != std::string::npos)
-		{
-			if (!(ReplaceInclude(extractedLine)))
-			{
-				LOG(std::string("ShaderAsset::Precompile > Replacing include at '") + extractedLine + "' failed!", core::LogLevel::Warning);
-				return false;
-			}
-		}
-
-		//Precompile types
-		switch (state)
-		{
-		case INIT:
-			if (extractedLine.find("<VERTEX>") != std::string::npos)
-			{
-				state = ParseState::VERT;
-			}
-			if (extractedLine.find("<GEOMETRY>") != std::string::npos)
-			{
-				useGeo = true;
-				state = ParseState::GEO;
-			}
-			if (extractedLine.find("<FRAGMENT>") != std::string::npos)
-			{
-				state = ParseState::FRAG;
-				useFrag = true;
-			}
-			break;
-		case VERT:
-			if (extractedLine.find("</VERTEX>") != std::string::npos)
-			{
-				state = ParseState::INIT;
-				break;
-			}
-			vertSource += extractedLine;
-			vertSource += "\n";
-			break;
-		case GEO:
-			if (extractedLine.find("</GEOMETRY>") != std::string::npos)
-			{
-				state = ParseState::INIT;
-				break;
-			}
-			geoSource += extractedLine;
-			geoSource += "\n";
-			break;
-		case FRAG:
-			if (extractedLine.find("</FRAGMENT>") != std::string::npos)
-			{
-				state = ParseState::INIT;
-				break;
-			}
-			else if (extractedLine.find("#disable") != std::string::npos)
-			{
-				useFrag = false;
-				state = ParseState::INIT;
-				break;
-			}
-			fragSource += extractedLine;
-			fragSource += "\n";
-			break;
-		}
-	}
-
-	return true;
-}
-
-//---------------------------------
-// ShaderAsset::ReplaceInclude
-//
-// Include another shader asset inline
-//
-bool ShaderAsset::ReplaceInclude(std::string &line)
-{
-	// Get the asset ID
-	uint32 firstQ = (uint32)line.find("\"");
-	uint32 lastQ = (uint32)line.rfind("\"");
-	if ((firstQ == std::string::npos) ||
-		(lastQ == std::string::npos) ||
-		lastQ <= firstQ)
-	{
-		LOG(std::string("ShaderAsset::ReplaceInclude > Replacing include line '") + line + "' failed", core::LogLevel::Warning);
-		return false;
-	}
-	firstQ++;
-	std::string path = line.substr(firstQ, lastQ - firstQ);
-	core::HashString const assetId(core::FileUtil::ExtractName(path).c_str());
-
-	// Get the stub asset data
-	auto const foundRefIt = std::find_if(GetReferences().cbegin(), GetReferences().cend(), [assetId](Reference const& reference)
-	{
-		ET_ASSERT(reference.GetAsset() != nullptr);
-		return reference.GetAsset()->GetAsset()->GetId() == assetId;
-	});
-
-	if (foundRefIt == GetReferences().cend())
-	{
-		LOG(std::string("ShaderAsset::ReplaceInclude > Asset at path '") + path + "' not found in references!", core::LogLevel::Warning);
-		return false;
-	}
-	I_AssetPtr const* const rawAssetPtr = foundRefIt->GetAsset();
-	ET_ASSERT(rawAssetPtr->GetType() == rttr::type::get<core::StubData>(), "Asset reference found at path %s is not of type StubData", path);
-	AssetPtr<core::StubData> stubPtr = *static_cast<AssetPtr<core::StubData> const*>(rawAssetPtr);
-
-	// extract the shader string
-	std::string shaderContent(stubPtr->GetText(), stubPtr->GetLength());
-	if (shaderContent.size() == 0)
-	{
-		LOG(std::string("ShaderAsset::ReplaceInclude > Shader string extracted from stub data at'") + path + "' was empty!", core::LogLevel::Warning);
-		return false;
-	}
-
-	// replace the original line with the included shader
-	line = "";
-	std::string extractedLine;
-	while (core::FileUtil::ParseLine(shaderContent, extractedLine))
-	{
-		//Includes
-		if (extractedLine.find("#include") != std::string::npos)
-		{
-			if (!(ReplaceInclude(extractedLine)))
-			{
-				LOG(std::string("ShaderAsset::ReplaceInclude > Replacing include at '") + extractedLine + "' failed!", core::LogLevel::Warning);
-				return false;
-			}
-		}
-
-		line += extractedLine + "\n";
-	}
-
-	// we're done
 	return true;
 }
 

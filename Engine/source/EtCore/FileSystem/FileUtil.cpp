@@ -145,11 +145,23 @@ std::vector<std::string> FileUtil::ParseLines(std::string raw)
 //
 std::string FileUtil::ExtractPath(std::string const& fileName)
 {
+	// if the string ends with a delimiter we treat the last directory as the name
+	if (fileName.empty())
+	{
+		return fileName;
+	}
+
+	size_t pos = fileName.size() - 1;
+	while (std::find(pathDelimiters.cbegin(), pathDelimiters.cend(), fileName[pos]) != pathDelimiters.cend())
+	{
+		--pos;
+	}
+
 	// Get the last path delimiter
 	size_t closestIdx = 0u;
 	for (char const token : pathDelimiters)
 	{
-		size_t index = fileName.rfind(token);
+		size_t index = fileName.rfind(token, pos);
 		if (index != std::string::npos && index > closestIdx)
 		{
 			closestIdx = index;
@@ -172,11 +184,23 @@ std::string FileUtil::ExtractPath(std::string const& fileName)
 //
 std::string FileUtil::ExtractName(std::string const& fileName)
 {
+	// if the string ends with a delimiter we treat the last directory as the name
+	if (fileName.empty())
+	{
+		return fileName;
+	}
+
+	size_t pos = fileName.size() - 1;
+	while (std::find(pathDelimiters.cbegin(), pathDelimiters.cend(), fileName[pos]) != pathDelimiters.cend())
+	{
+		--pos;
+	}
+
 	// Get the last path delimiter
 	size_t closestIdx = 0u;
 	for (char const token : pathDelimiters)
 	{
-		size_t index = fileName.rfind(token);
+		size_t index = fileName.rfind(token, pos);
 		if (index != std::string::npos && index > closestIdx)
 		{
 			closestIdx = index;

@@ -38,7 +38,7 @@ bool EditableShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 	std::string shaderContent = core::FileUtil::AsText(data);
 	if (shaderContent.size() == 0)
 	{
-		LOG("ShaderAsset::LoadFromMemory > Empty shader file!", core::LogLevel::Warning);
+		LOG("EditableShaderAsset::LoadFromMemory > Empty shader file!", core::LogLevel::Warning);
 		return false;
 	}
 
@@ -54,54 +54,8 @@ bool EditableShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	// Compile
 	//------------------
-	render::T_ShaderLoc const vertexShader = render::ShaderAsset::CompileShader(vertSource, render::E_ShaderType::Vertex);
-
-	render::T_ShaderLoc geoShader = 0;
-	if (m_UseGeometry)
-	{
-		geoShader = render::ShaderAsset::CompileShader(geoSource, render::E_ShaderType::Geometry);
-	}
-
-	render::T_ShaderLoc fragmentShader = 0;
-	if (m_UseFragment)
-	{
-		fragmentShader = render::ShaderAsset::CompileShader(fragSource, render::E_ShaderType::Fragment);
-	}
-
-	// Combine Shaders into a program
-	//------------------
-
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
-
-	render::T_ShaderLoc const shaderProgram = api->CreateProgram();
-
-	api->AttachShader(shaderProgram, vertexShader);
-
-	if (m_UseGeometry)
-	{
-		api->AttachShader(shaderProgram, geoShader);
-	}
-
-	if (m_UseFragment)
-	{
-		api->AttachShader(shaderProgram, fragmentShader);
-		api->BindFragmentDataLocation(shaderProgram, 0, "outColor");
-	}
-
-	api->LinkProgram(shaderProgram);
-
-	// Delete shader objects now that we have a program
-	api->DeleteShader(vertexShader);
-
-	if (m_UseGeometry)
-	{
-		api->DeleteShader(geoShader);
-	}
-
-	if (m_UseFragment)
-	{
-		api->DeleteShader(fragmentShader);
-	}
+	render::T_ShaderLoc const shaderProgram = render::ShaderAsset::LinkShader(vertSource, geoSource, fragSource, api);
 
 	// Create shader data
 	SetData(new render::ShaderData(shaderProgram));
@@ -120,18 +74,101 @@ bool EditableShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 //-------------------------------------------------
 // EditableShaderAsset::SetupRuntimeAssetsInternal
 //
-//void EditableShaderAsset::SetupRuntimeAssetsInternal()
-//{
-//
-//}
+void EditableShaderAsset::SetupRuntimeAssetsInternal()
+{
+	render::ShaderAsset* const mainAsset = new render::ShaderAsset(*static_cast<render::ShaderAsset*>(m_Asset));
+	ET_ASSERT(core::FileUtil::ExtractExtension(mainAsset->GetName()) == render::ShaderAsset::s_MainExtension);
+
+	m_RuntimeAssets.emplace_back(mainAsset, true);
+
+	std::vector<core::HashString> references;
+
+	if (m_UseFragment || m_UseGeometry)
+	{
+		std::string const baseName = core::FileUtil::RemoveExtension(mainAsset->GetName());
+		std::string const& path = mainAsset->GetPath();
+		core::HashString const package = mainAsset->GetPackageId();
+
+		if (m_UseGeometry)
+		{
+			core::StubAsset* const geoAsset = new core::StubAsset();
+			geoAsset->SetName(baseName + "." + render::ShaderAsset::s_GeoExtension);
+			geoAsset->SetPath(path);
+			geoAsset->SetPackageId(package);
+
+			m_RuntimeAssets.emplace_back(geoAsset, true);
+			references.push_back(geoAsset->GetId());
+		}
+
+		if (m_UseFragment)
+		{
+			core::StubAsset* const fragAsset = new core::StubAsset();
+			fragAsset->SetName(baseName + "." + render::ShaderAsset::s_FragExtension);
+			fragAsset->SetPath(path);
+			fragAsset->SetPackageId(package);
+
+			m_RuntimeAssets.emplace_back(fragAsset, true);
+			references.push_back(fragAsset->GetId());
+		}
+	}
+
+	mainAsset->SetReferenceIds(references);
+}
 
 //-------------------------------------
 // EditableShaderAsset::LoadFromMemory
 //
-//void EditableShaderAsset::GenerateInternal(BuildConfiguration const& buildConfig)
-//{
-//
-//}
+bool EditableShaderAsset::GenerateInternal(BuildConfiguration const& buildConfig)
+{
+	UNUSED(buildConfig);
+
+	// Extract the shader text from binary data
+	//------------------------
+	std::string shaderContent = core::FileUtil::AsText(m_Asset->GetLoadData());
+	if (shaderContent.size() == 0)
+	{
+		LOG("EditableShaderAsset::GenerateInternal > Empty shader file!", core::LogLevel::Warning);
+		return false;
+	}
+
+	// Precompile
+	//--------------------
+	std::string vertSource;
+	std::string geoSource;
+	std::string fragSource;
+	if (!Precompile(shaderContent, vertSource, geoSource, fragSource))
+	{
+		return false;
+	}
+
+	// Write Data
+	//--------------------
+	for (RuntimeAssetData& data : m_RuntimeAssets)
+	{
+		data.m_HasGeneratedData = true;
+
+		std::string const ext = core::FileUtil::ExtractExtension(data.m_Asset->GetName());
+		if (ext == render::ShaderAsset::s_MainExtension)
+		{
+			data.m_GeneratedData = core::FileUtil::FromText(vertSource);
+		}
+		else if (ext == render::ShaderAsset::s_GeoExtension)
+		{
+			data.m_GeneratedData = core::FileUtil::FromText(geoSource);
+		}
+		else if (ext == render::ShaderAsset::s_FragExtension)
+		{
+			data.m_GeneratedData = core::FileUtil::FromText(fragSource);
+		}
+		else 
+		{
+			ET_ASSERT(false, "unexpected file extension");
+			data.m_HasGeneratedData = false;
+		}
+	}
+
+	return true;
+}
 
 //---------------------------------
 // EditableShaderAsset::Precompile

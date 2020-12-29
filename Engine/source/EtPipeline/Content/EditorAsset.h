@@ -33,7 +33,6 @@ protected:
 	struct RuntimeAssetData final
 	{
 		RuntimeAssetData(core::I_Asset* const asset, bool const ownsAsset);
-		~RuntimeAssetData();
 
 		core::I_Asset* m_Asset = nullptr;
 		bool m_OwnsAsset = false;
@@ -67,15 +66,20 @@ public:
 
 	virtual rttr::type GetType() const = 0;
 
-	// utility
-	//---------
+	// interface
+	//-----------
 protected:
 	virtual bool LoadFromMemory(std::vector<uint8> const& data) = 0;
 	// virtual bool WriteToMemory(std::vector<uint8>& data) = 0;
 	virtual void SetupRuntimeAssetsInternal();
-	virtual void GenerateInternal(BuildConfiguration const& buildConfig) { UNUSED(buildConfig); }
+	virtual bool GenerateInternal(BuildConfiguration const& buildConfig) { UNUSED(buildConfig); return true; }
 	virtual void UnloadInternal();
 
+	virtual bool GenerateRequiresLoadData() const { return false; }
+	virtual bool GenerateRequiresReferences() const { return false; }
+
+	// utility
+	//---------
 	void* GetRawData() { return m_Asset->GetRawData(); }
 	void SetRawData(void* const data) { m_Asset->SetRawData(data); }
 

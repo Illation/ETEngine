@@ -30,7 +30,7 @@ namespace cooker {
 
 
 // static
-std::string const Cooker::s_TempPath = "temp";
+std::string const Cooker::s_TempPath = "temp/";
 
 
 //---------------
@@ -93,6 +93,7 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 
 	// Ensure the generated file directory exists
 	m_TempDir = new core::Directory(s_TempPath, nullptr, true);
+	m_TempDir->Mount(true);
 }
 
 //---------------
@@ -152,7 +153,7 @@ void Cooker::CookCompiledPackage()
 
 	// serialize the asset database to a temporary file
 	std::string const dbName(core::ResourceManager::s_DatabasePath);
-	std::string const tempDbFullPath = s_TempPath + std::string("/") + dbName;
+	std::string const tempDbFullPath = s_TempPath + dbName;
 
 	core::AssetDatabase mergeDb(false);
 	m_ResMan->GetProjectDatabase().PopulateAssetDatabase(mergeDb);

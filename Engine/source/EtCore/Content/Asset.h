@@ -101,9 +101,12 @@ public:
 
 	HashString GetId() const { return m_Id; }
 	HashString GetPackageId() const { return m_PackageId; }
+	void SetPackageId(HashString const id) { m_PackageId = id; }
 	HashString GetPackageEntryId() const { return m_PackageEntryId; }
 
 	uint32 GetRefCount() const { return m_RefCount; }
+
+	std::vector<uint8> const& GetLoadData() const { return m_LoadData; }
 
 	void Load();
 	void Unload(bool const force = false);
@@ -116,11 +119,11 @@ protected:
 	// reflected
 	std::string m_Name;
 	std::string m_Path;
+	HashString m_PackageId;
 	std::vector<Reference> m_References; // list of other assets this asset depends on
 
 	// derived
 	HashString m_Id;
-	HashString m_PackageId;
 	HashString m_PackageEntryId;
 
 	uint32 m_RefCount = 0u;
