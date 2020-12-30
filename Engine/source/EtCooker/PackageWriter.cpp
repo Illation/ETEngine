@@ -4,6 +4,7 @@
 
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/IO/BinaryWriter.h>
 
 
 namespace et {
@@ -150,21 +151,19 @@ void PackageWriter::Write(std::vector<uint8>& data)
 
 	// now we know the total size of the package file will be our offset, so we can initialize our data vector starting with the right size
 	//---------------------------
-	data = std::vector<uint8>(static_cast<size_t>(offset), 0u);
-	uint8* raw = data.data();
+	core::BinaryWriter writer(data);
+	writer.FormatBuffer(static_cast<size_t>(offset), 0u);
 
 	// finally we can write our data to the vector
 	//---------------------------
 
 	// header
-	memcpy(raw, &header, sizeof(core::PkgHeader));
-	offset = sizeof(core::PkgHeader);	// we can reuse it now that our vector has bin initialized
+	writer.Write(header);
 
 	// central dir
 	for (core::PkgFileInfo const& info : fileInfos)
 	{
-		memcpy(raw + offset, &info, sizeof(core::PkgFileInfo));
-		offset += sizeof(core::PkgFileInfo);
+		writer.Write(info);
 	}
 
 	// files
@@ -172,14 +171,12 @@ void PackageWriter::Write(std::vector<uint8>& data)
 	{
 		FileEntryInfo& entryFile = m_Files[entryIndex];
 
-		if (offset != fileInfos[entryIndex].offset)
-		{
-			LOG("PackageWriter::Write > Entry offset doesn't match expected offset - " + entryFile.relName, core::LogLevel::Error);
-		}
+		ET_ASSERT(writer.GetBufferPosition() == fileInfos[entryIndex].offset, 
+			"Entry offset doesn't match expected offset - %s", 
+			entryFile.relName.c_str());
 
 		// copy the entry
-		memcpy(raw + offset, &entryFile.entry, sizeof(core::PkgEntry));
-		offset += sizeof(core::PkgEntry);
+		writer.Write(entryFile.entry);
 
 		// copy the file name string
 		if (entryFile.entry.nameLength != entryFile.relName.size())
@@ -187,8 +184,7 @@ void PackageWriter::Write(std::vector<uint8>& data)
 			LOG("PackageWriter::Write > Entry name length doesn't match file name length - " + entryFile.relName, core::LogLevel::Error);
 		}
 
-		memcpy(raw + offset, entryFile.relName.c_str(), entryFile.entry.nameLength);
-		offset += entryFile.entry.nameLength;
+		writer.WriteData(reinterpret_cast<uint8 const*>(entryFile.relName.data()), entryFile.entry.nameLength);
 
 		// copy the file content
 		std::vector<uint8> fileContent = entryFile.file->Read();
@@ -198,8 +194,7 @@ void PackageWriter::Write(std::vector<uint8>& data)
 			LOG("PackageWriter::Write > Entry size doesn't match read file contents size - " + entryFile.relName, core::LogLevel::Error);
 		}
 
-		memcpy(raw + offset, fileContent.data(), entryFile.entry.size);
-		offset += entryFile.entry.size;
+		writer.WriteData(fileContent.data(), entryFile.entry.size);
 	}
 }
 

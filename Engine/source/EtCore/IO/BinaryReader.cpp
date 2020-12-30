@@ -18,14 +18,6 @@ size_t const BinaryReader::s_InvalidBufferPos = std::numeric_limits<size_t>::max
 
 
 //---------------------
-// BinaryReader::d-tor
-//
-BinaryReader::~BinaryReader(void)
-{
-	Close();
-}
-
-//---------------------
 // BinaryReader::Open
 //
 void BinaryReader::Open(std::vector<uint8> const& binaryContent, size_t const start, size_t const count)

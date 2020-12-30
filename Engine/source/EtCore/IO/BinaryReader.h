@@ -10,7 +10,7 @@ namespace core {
 //
 // Utility class for parsing binary content
 //
-class BinaryReader
+class BinaryReader final
 {
 	// definitions
 	//-------------
@@ -20,7 +20,7 @@ public:
 	// construct destruct
 	//--------------------
 	BinaryReader() = default;
-	~BinaryReader();
+	~BinaryReader() = default;
 
 	BinaryReader(BinaryReader const& rhs) = delete;
 	BinaryReader& operator=(BinaryReader const& rhs) = delete;
