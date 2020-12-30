@@ -3,7 +3,7 @@
 
 #include <EtBuild/EngineVersion.h>
 
-#include <EtCore/Util/PerformanceInfo.h>
+#include <EtCore/UpdateCycle/PerformanceInfo.h>
 #include <EtCore/UpdateCycle/TickManager.h>
 
 #include <EtRendering/GraphicsContext/Viewport.h>

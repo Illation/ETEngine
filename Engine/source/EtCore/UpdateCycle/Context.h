@@ -1,6 +1,7 @@
 #pragma once
-#include "Singleton.h"
 #include "Time.h"
+
+#include <EtCore/Util/Singleton.h>
 
 
 namespace et {

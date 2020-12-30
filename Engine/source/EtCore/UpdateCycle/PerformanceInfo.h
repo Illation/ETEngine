@@ -1,5 +1,5 @@
 #pragma once
-#include "Singleton.h"
+#include <EtCore/Util/Singleton.h>
 
 
 namespace et {

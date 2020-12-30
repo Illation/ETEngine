@@ -6,9 +6,9 @@
 #include <stb_vorbis.h>
 
 #include <EtCore/Content/AssetRegistration.h>
-#include <EtCore/Reflection/Registration.h>
-#include <EtCore/FileSystem/BinaryReader.h>
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/IO/BinaryReader.h>
+#include <EtCore/Reflection/Registration.h>
 
 
 namespace et {
@@ -158,7 +158,7 @@ bool AudioAsset::LoadWavFile(AudioBufferData &bufferData, std::vector<uint8> con
 	for (uint8 i = 0; i < 4; i++)subChunk2ID += pBinReader->Read<char>();
 	if (subChunk2ID != "data") EXIT_FALSE;
 	uint32 subChunk2Size = pBinReader->Read<uint32>();
-	uint32 bufferPos = (uint32)pBinReader->GetBufferPosition();
+	uint32 bufferPos = static_cast<uint32>(pBinReader->GetBufferPosition());
 
 	delete pBinReader;
 	pBinReader = nullptr;
@@ -171,6 +171,7 @@ bool AudioAsset::LoadWavFile(AudioBufferData &bufferData, std::vector<uint8> con
 			LOG("Unexpected end of wav files binary content", core::LogLevel::Warning);
 			return false;
 		}
+
 		data[i] = binaryContent[i + bufferPos];
 	}
 

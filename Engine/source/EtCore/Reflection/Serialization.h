@@ -4,9 +4,9 @@
 
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
-#include <EtCore/FileSystem/Json/JsonDom.h>
-#include <EtCore/FileSystem/Json/JsonParser.h>
-#include <EtCore/FileSystem/Json/JsonWriter.h>
+#include <EtCore/IO/JsonDom.h>
+#include <EtCore/IO/JsonParser.h>
+#include <EtCore/IO/JsonWriter.h>
 
 
 namespace et {

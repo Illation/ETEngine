@@ -3,7 +3,7 @@
 
 #include <btBulletDynamicsCommon.h>
 
-#include <EtCore/Util/Context.h>
+#include <EtCore/UpdateCycle/Context.h>
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtFramework/Physics/BulletETM.h>

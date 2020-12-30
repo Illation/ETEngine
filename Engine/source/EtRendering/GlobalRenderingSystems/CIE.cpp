@@ -4,7 +4,7 @@
 
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Content/AssetStub.h>
-#include <EtCore/FileSystem/Json/JsonParser.h>
+#include <EtCore/IO/JsonParser.h>
 
 
 namespace et {

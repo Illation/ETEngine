@@ -7,7 +7,7 @@
 
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
-#include <EtCore/FileSystem/Json/JsonParser.h>
+#include <EtCore/IO/JsonParser.h>
 
 
 using namespace et;

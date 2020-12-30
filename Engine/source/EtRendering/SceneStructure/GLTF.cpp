@@ -3,9 +3,9 @@
 
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
-#include <EtCore/FileSystem/BinaryReader.h>
-#include <EtCore/FileSystem/Json/JsonParser.h>
-#include <EtCore/FileSystem/Json/JsonDom.h>
+#include <EtCore/IO/BinaryReader.h>
+#include <EtCore/IO/JsonParser.h>
+#include <EtCore/IO/JsonDom.h>
 
 #include <EtRendering/GraphicsTypes/Mesh.h>
 
@@ -226,19 +226,25 @@ bool glTF::ParseGLBHeader(core::BinaryReader* pBinReader, Header &header)
 
 bool glTF::ParseGLBChunk(core::BinaryReader* pBinReader, Chunk &chunk)
 {
-	if (!(pBinReader->GetBufferPosition() % 4 == 0))//Make sure 4 byte alignement is respected
+	if (pBinReader->GetBufferPosition() % 4u != 0u)//Make sure 4 byte alignment is respected
 	{
 		LOG("Expected binary buffer position for glb to be 4 byte aligned", core::LogLevel::Warning);
-		pBinReader->SetBufferPosition(((pBinReader->GetBufferPosition() / 4) + 1) * 4);
+		pBinReader->SetBufferPosition(((pBinReader->GetBufferPosition() / 4u) + 1u) * 4u);
 	}
+
 	chunk.chunkLength = pBinReader->Read<uint32>();
 	chunk.chunkType = static_cast<Chunk::ChunkType>(pBinReader->Read<uint32>());
 	chunk.chunkData.reserve(chunk.chunkLength);
-	for (uint32 i = 0; i < chunk.chunkLength; i++) chunk.chunkData.push_back(pBinReader->Read<uint8>());
-	if (!(pBinReader->GetBufferPosition() % 4 == 0))//Make sure 4 byte alignement is respected
+	for (uint32 i = 0; i < chunk.chunkLength; i++)
 	{
-		pBinReader->SetBufferPosition(((pBinReader->GetBufferPosition() / 4) + 1) * 4);
+		chunk.chunkData.push_back(pBinReader->Read<uint8>());
 	}
+
+	if (pBinReader->GetBufferPosition() % 4u != 0u)//Make sure 4 byte alignment is respected
+	{
+		pBinReader->SetBufferPosition(((pBinReader->GetBufferPosition() / 4u) + 1u) * 4u);
+	}
+
 	return true;
 }
 
@@ -1222,12 +1228,14 @@ bool glTF::OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, core::BinaryRe
 		LOG("BufferView index out of range", core::LogLevel::Warning);
 		return false;
 	}
+
 	BufferView& view = asset.dom.bufferViews[viewIdx];
 	if (view.buffer >= (uint32)asset.dom.buffers.size())
 	{
 		LOG("Buffer index out of range", core::LogLevel::Warning);
 		return false;
 	}
+
 	Buffer& buffer = asset.dom.buffers[view.buffer];
 	if (buffer.uri.type == URI::URI_UNEVALUATED)
 	{
@@ -1237,6 +1245,7 @@ bool glTF::OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, core::BinaryRe
 			return false;
 		}
 	}
+
 	if (buffer.uri.type == URI::URI_NONE)
 	{
 		if (view.buffer >= (uint32)asset.dataChunks.size())
@@ -1244,17 +1253,20 @@ bool glTF::OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, core::BinaryRe
 			LOG("No data chunk loaded for glb buffer", core::LogLevel::Warning);
 			return false;
 		}
-		pViewReader->Open(asset.dataChunks[view.buffer].chunkData, (uint32)view.byteOffset, (uint32)view.byteLength);
+
+		pViewReader->Open(asset.dataChunks[view.buffer].chunkData, static_cast<size_t>(view.byteOffset), static_cast<size_t>(view.byteLength));
 	}
 	else
 	{
-		pViewReader->Open(buffer.uri.binData, (uint32)view.byteOffset, (uint32)view.byteLength);
+		pViewReader->Open(buffer.uri.binData, static_cast<size_t>(view.byteOffset), static_cast<size_t>(view.byteLength));
 	}
+
 	if (!pViewReader->Exists())
 	{
 		LOG("glTF Failed to read the buffer view!", core::LogLevel::Warning);
 		return false;
 	}
+
 	return true;
 }
 
@@ -1299,8 +1311,15 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 	}
 
 	uint32 stride = (view.byteStride == -1) ? (uint32)elSize : view.byteStride;
-	if (!(stride % compSize == 0)) LOG("Accessors byte stride needs to be a multiple of the component size", core::LogLevel::Warning);
-	if(accessor.byteOffset+stride*(accessor.count-1)+elSize > view.byteLength)LOG("Accessors doesn't fit buffer view", core::LogLevel::Warning);
+	if (!(stride % compSize == 0))
+	{
+		LOG("Accessors byte stride needs to be a multiple of the component size", core::LogLevel::Warning);
+	}
+
+	if ((accessor.byteOffset + stride * (accessor.count - 1) + elSize) > view.byteLength) 
+	{
+		LOG("Accessors doesn't fit buffer view", core::LogLevel::Warning);
+	}
 
 	core::BinaryReader* pViewReader = new core::BinaryReader();
 	if (!OpenBufferViewReader(asset, accessor.bufferView, pViewReader))
@@ -1310,9 +1329,11 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 		return false;
 	}
 
-	for (uint32 i = accessor.byteOffset; i < accessor.byteOffset + stride * accessor.count; i+=stride)
+	for (uint64 i = static_cast<uint64>(accessor.byteOffset); 
+		i < static_cast<uint64>(accessor.byteOffset + stride) * accessor.count; 
+		i += static_cast<uint64>(stride))
 	{
-		pViewReader->SetBufferPosition(i);
+		pViewReader->SetBufferPosition(static_cast<size_t>(i));
 		for (uint32 j = 0; j < elSize; ++j)
 		{
 			data.push_back(pViewReader->Read<uint8>());

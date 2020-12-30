@@ -4,6 +4,7 @@
 
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Entry.h>
+#include <EtCore/IO/BinaryReader.h>
 
 
 namespace et {
@@ -109,7 +110,11 @@ void FilePackage::LoadFileList()
 	uint64 nextChunkSize = static_cast<uint64>(sizeof(PkgHeader));
 	std::vector<uint8> readBinData(std::move(m_File->ReadChunk(offset, nextChunkSize)));
 	offset += nextChunkSize;
-	PkgHeader const pkgHeader(*reinterpret_cast<PkgHeader const*>(readBinData.data()));
+
+	BinaryReader binReader;
+	binReader.Open(readBinData);
+
+	PkgHeader const pkgHeader(binReader.Read<PkgHeader>()); // if the header ever contains more than the entry count we should read as a reference
 
 	// read the central directory
 	//----------------------------
@@ -117,16 +122,13 @@ void FilePackage::LoadFileList()
 	// read the entire data chunk for the central directory from the file
 	nextChunkSize = static_cast<uint64>(sizeof(PkgFileInfo)) * pkgHeader.numEntries;
 	readBinData = std::move(m_File->ReadChunk(offset, nextChunkSize));
+	binReader.Open(readBinData);
 
 	// map into that read data
-	offset = 0u;
 	std::vector<PkgFileInfo> centralDirectory;
 	for (size_t infoIdx = 0u; infoIdx < pkgHeader.numEntries; ++infoIdx)
 	{
-		PkgFileInfo const* info = reinterpret_cast<PkgFileInfo const*>(readBinData.data() + static_cast<size_t>(offset));
-		offset += static_cast<uint64>(sizeof(PkgFileInfo));
-
-		centralDirectory.emplace_back(*info);
+		centralDirectory.emplace_back(binReader.ReadRef<PkgFileInfo>());
 	}
 
 	// read the files listed
@@ -139,31 +141,32 @@ void FilePackage::LoadFileList()
 		readBinData = std::move(m_File->ReadChunk(offset, nextChunkSize));
 		offset += nextChunkSize;
 
-		PkgEntry const* entry = reinterpret_cast<PkgEntry const*>(readBinData.data());
+		binReader.Open(readBinData);
+		PkgEntry const& entry = binReader.ReadRef<PkgEntry>();
 
 		// get and validate the fileId
 
-		ET_ASSERT(entry->fileId == fileInfo.fileId,
+		ET_ASSERT(entry.fileId == fileInfo.fileId,
 			"File ID didn't match file info from central directory! Expected [%x] - found [%x]",
-			fileInfo.fileId, entry->fileId);
+			fileInfo.fileId, entry.fileId);
 
 		// Create our package file in the map and edit it after to avoid unnecessary file copying
-		auto emplaceIt = m_Entries.try_emplace(entry->fileId, PackageEntry());
+		auto emplaceIt = m_Entries.try_emplace(entry.fileId, PackageEntry());
 
 		if (!emplaceIt.second)
 		{
-			ET_ASSERT(false, "Entry list already contains a file with ID [%s] !", entry->fileId.ToStringDbg());
+			ET_ASSERT(false, "Entry list already contains a file with ID [%s] !", entry.fileId.ToStringDbg());
 			continue;
 		}
 
 		PackageEntry& pkgEntry = emplaceIt.first->second;
 
 		// read the const size variables from the package file
-		pkgEntry.compressionType = entry->compressionType;
-		pkgEntry.size = entry->size;
+		pkgEntry.compressionType = entry.compressionType;
+		pkgEntry.size = entry.size;
 
 		// read the file name and split 
-		nextChunkSize = static_cast<uint64>(entry->nameLength);
+		nextChunkSize = static_cast<uint64>(entry.nameLength);
 		std::string fullName = FileUtil::AsText(m_File->ReadChunk(offset, nextChunkSize));
 
 		pkgEntry.fileName = FileUtil::ExtractName(fullName);

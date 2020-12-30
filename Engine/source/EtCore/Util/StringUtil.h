@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <cstdio>
+#include <inttypes.h>
 
 // from https://stackoverflow.com/questions/2342162/stdstring-formatting-like-sprintf
 
@@ -35,5 +36,15 @@ std::string string_format(char const* format = nullptr, Args ... args)
 } // namespace core
 } // namespace et
 
+
+#ifdef ET_ARCH_X32
+#	define ET_FMT_SIZET "%u"
+#else 
+#ifdef ET_ARCH_X64
+#	define ET_FMT_SIZET "%" PRIu64
+#else
+#	pragma message ( "no definition for formatting size_t" )
+#endif
+#endif
 
 #define FS(...) et::core::string_format(__VA_ARGS__)

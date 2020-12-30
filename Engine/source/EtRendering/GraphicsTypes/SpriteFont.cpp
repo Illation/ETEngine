@@ -7,10 +7,10 @@
 #include <ft2build.h>
 #include <freetype/freetype.h>
 
-#include <EtCore/Reflection/Registration.h>
-#include <EtCore/FileSystem/BinaryReader.h>
-#include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/AssetRegistration.h>
+#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/IO/BinaryReader.h>
+#include <EtCore/Reflection/Registration.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
@@ -420,9 +420,9 @@ SpriteFont* FontAsset::LoadFnt(const std::vector<uint8>& binaryContent)
 	//**********
 	pBinReader->Read<char>();
 	auto Block0Size = pBinReader->Read<int32>();
-	int32 pos = pBinReader->GetBufferPosition();
+	size_t pos = pBinReader->GetBufferPosition();
 	pFont->m_FontSize = pBinReader->Read<int16>();
-	pBinReader->SetBufferPosition(pos + 14);
+	pBinReader->SetBufferPosition(pos + 14u);
 	std::string fn;
 	char cur = pBinReader->Read<char>();
 	while (cur != '\0')
@@ -431,21 +431,21 @@ SpriteFont* FontAsset::LoadFnt(const std::vector<uint8>& binaryContent)
 		cur = pBinReader->Read<char>();
 	}
 	pFont->m_FontName = fn;
-	pBinReader->SetBufferPosition(pos + Block0Size);
+	pBinReader->SetBufferPosition(pos + static_cast<size_t>(Block0Size));
 	//**********
 	// BLOCK 1 *
 	//**********
 	pBinReader->Read<char>();
 	auto Block1Size = pBinReader->Read<int32>();
 	pos = pBinReader->GetBufferPosition();
-	pBinReader->SetBufferPosition(pos + 4);
+	pBinReader->SetBufferPosition(pos + 4u);
 	uint16 const texWidth = pBinReader->Read<uint16>();
 	uint16 const texHeight = pBinReader->Read<uint16>();
 	uint16 const pagecount = pBinReader->Read<uint16>();
 
 	ET_ASSERT(pagecount == 1u, "SpriteFont(.fnt): Only one texture per font allowed");
 
-	pBinReader->SetBufferPosition(pos + Block1Size);
+	pBinReader->SetBufferPosition(pos + static_cast<size_t>(Block1Size));
 	//**********
 	// BLOCK 2 *
 	//**********
@@ -464,7 +464,7 @@ SpriteFont* FontAsset::LoadFnt(const std::vector<uint8>& binaryContent)
 
 	pFont->m_TextureAsset = core::ResourceManager::Instance()->GetAssetData<TextureData>(core::HashString(pn.c_str()));
 	pFont->m_pTexture = pFont->m_TextureAsset.get();
-	pBinReader->SetBufferPosition(pos + Block2Size);
+	pBinReader->SetBufferPosition(pos + static_cast<size_t>(Block2Size));
 	//**********
 	// BLOCK 3 *
 	//**********
@@ -476,13 +476,13 @@ SpriteFont* FontAsset::LoadFnt(const std::vector<uint8>& binaryContent)
 
 	for (int32 i = 0; i < numChars; i++)
 	{
-		int32 const posChar = pBinReader->GetBufferPosition();
+		size_t const posChar = pBinReader->GetBufferPosition();
 		wchar_t const charId = (wchar_t)(pBinReader->Read<uint32>());
 
 		if (!(pFont->IsCharValid(charId)))
 		{
 			LOG("SpriteFont::Load > SpriteFont(.fnt): Invalid Character", core::LogLevel::Warning);
-			pBinReader->SetBufferPosition(posChar + 20);
+			pBinReader->SetBufferPosition(posChar + 20u);
 		}
 		else
 		{
@@ -507,7 +507,7 @@ SpriteFont* FontAsset::LoadFnt(const std::vector<uint8>& binaryContent)
 			default: metric->Channel = 4; break;
 			}
 			metric->TexCoord = vec2(static_cast<float>(xPos) / static_cast<float>(texWidth), static_cast<float>(yPos) / static_cast<float>(texHeight));
-			pBinReader->SetBufferPosition(posChar + 20);
+			pBinReader->SetBufferPosition(posChar + 20u);
 		}
 	}
 
