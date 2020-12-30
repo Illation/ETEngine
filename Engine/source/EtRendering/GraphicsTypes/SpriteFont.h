@@ -4,11 +4,15 @@
 #include <EtCore/Content/AssetPointer.h>
 
 
+namespace et { namespace render {
+	class TextRenderer;
+} namespace pl {
+	class EditableFontAsset;
+} }
+
+
 namespace et {
 namespace render {
-
-
-class TextRenderer;
 
 
 //---------------------------------
@@ -57,6 +61,7 @@ private:
 	friend class TextRenderer;
 	friend class FontLoader;
 	friend class FontAsset;
+	friend class pl::EditableFontAsset;
 
 public:
 	static bool IsCharValid(const wchar_t& character);

@@ -2,7 +2,7 @@
   "editable font asset": {
     "asset": {
       "font asset": {
-        "name": "Consolas_32.fnt",
+        "name": "IBMPlexMono.ttf",
         "path": "Fonts/",
         "package": "engine_content",
         "references": [],

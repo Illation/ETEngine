@@ -27,7 +27,7 @@ private:
 
 private:
 
-	float m_RegFPSTimer = 10;
+	float m_RegFPSTimer = 10.f;
 	int32 m_RegularFPS = 0;
 
 	float m_FrameMS = 0;

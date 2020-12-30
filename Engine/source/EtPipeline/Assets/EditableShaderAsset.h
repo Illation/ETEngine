@@ -31,6 +31,7 @@ public:
 	//-----------
 protected:
 	bool LoadFromMemory(std::vector<uint8> const& data) override;
+
 	void SetupRuntimeAssetsInternal() override;
 	bool GenerateInternal(BuildConfiguration const& buildConfig) override;
 

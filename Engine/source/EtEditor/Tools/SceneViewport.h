@@ -5,6 +5,7 @@
 #include <gdk/gdk.h>
 
 #include <EtRendering/GraphicsContext/Viewport.h>
+#include <EtRendering/GraphicsTypes/SpriteFont.h>
 #include <EtRendering/Extensions/OutlineRenderer.h>
 
 #include <EtFramework/SceneGraph/SceneEvents.h>
@@ -75,6 +76,9 @@ private:
 	fw::T_SceneEventCallbackId m_SceneInitCallback = fw::T_SceneEventDispatcher::INVALID_ID;
 
 	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
+
+	AssetPtr<render::SpriteFont> m_DebugFont;
+	bool m_DrawDebugInfo = true;
 
 	bool m_IsInitialized = false;
 };

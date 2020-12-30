@@ -20,6 +20,16 @@ public:
 	//---------------------
 	EditableFontAsset() : EditorAsset<render::SpriteFont>() {}
 	virtual ~EditableFontAsset() = default;
+
+	// interface
+	//-----------
+protected:
+	bool LoadFromMemory(std::vector<uint8> const& data) override;
+
+	// utility
+	//---------
+private:
+	render::SpriteFont* LoadTtf(std::vector<uint8> const& binaryContent);
 };
 
 

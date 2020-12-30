@@ -52,7 +52,7 @@ private:
 
 	HighResTime begin;
 	HighResTime last;
-	float m_DeltaTime;
+	float m_DeltaTime = 0.f;
 };
 
 

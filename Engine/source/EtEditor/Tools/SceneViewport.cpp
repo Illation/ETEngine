@@ -3,6 +3,8 @@
 
 #include <gtkmm/builder.h>
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
@@ -54,6 +56,8 @@ SceneViewport::~SceneViewport()
 void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 {
 	m_Editor = static_cast<SceneEditor*>(editor);
+
+	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<render::SpriteFont>(core::HashString("IBMPlexMono.ttf"));
 
 	// Find the GL Area widget that is responsible for rendering the scene
 	SingleContextGlArea* glArea = nullptr;
@@ -249,6 +253,16 @@ void SceneViewport::OnEditorTick()
 	ecs.GetComponent<fw::CameraComponent>(m_Camera).PopulateCamera(m_SceneRenderer->GetCamera(), 
 		*m_Viewport, 
 		ecs.GetComponent<fw::TransformComponent>(m_Camera));
+
+	if (m_DrawDebugInfo)
+	{
+		render::TextRenderer& textRenderer = m_SceneRenderer->GetTextRenderer();
+
+		textRenderer.SetFont(m_DebugFont.get());
+		textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
+		std::string outString = FS("FPS: %i", core::PerformanceInfo::GetInstance()->GetRegularFPS());
+		textRenderer.DrawText(outString, vec2(10, 32), 22);
+	}
 }
 
 //------------------------------------
