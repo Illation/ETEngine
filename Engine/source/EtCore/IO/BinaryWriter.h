@@ -26,11 +26,13 @@ public:
 	//---------------
 	void SetBufferPosition(size_t const pos);
 
-	void FormatBuffer(size_t const size, uint8 const data);
+	void FormatBuffer(size_t const size, uint8 const data = 0u);
+	void IncreaseBufferSize(size_t const size, uint8 const data = 0u);
 
 	template <typename TDataType>
 	void Write(TDataType const& data);
 	void WriteData(uint8 const* const data, size_t const size);
+	void WriteNullString(std::string const& str);
 
 	// accessors
 	//-----------

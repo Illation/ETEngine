@@ -157,16 +157,14 @@ void MainFramework::OnTick()
 		if (m_DrawDebugInfo)
 		{
 			render::TextRenderer& textRenderer = sceneRenderer->GetTextRenderer();
-
 			textRenderer.SetFont(m_DebugFont.get());
+
 			textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
-			std::string outString = "FPS: " + std::to_string(PERFORMANCE->GetRegularFPS());
-			textRenderer.DrawText(outString, vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 1));
+			textRenderer.DrawText(FS("FPS: %i", PERFORMANCE->GetRegularFPS()), vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 1));
+
 			textRenderer.SetColor(vec4(1, 1, 1, 1));
-			outString = "Frame ms: " + std::to_string(PERFORMANCE->GetFrameMS());
-			textRenderer.DrawText(outString, vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 2));
-			outString = "Draw Calls: " + std::to_string(PERFORMANCE->m_PrevDrawCalls);
-			textRenderer.DrawText(outString, vec2(20, 100 + (m_DebugFont->GetFontSize()*1.1f) * 3));
+			textRenderer.DrawText(FS("Frame ms: %f", PERFORMANCE->GetFrameMS()), vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 2));
+			textRenderer.DrawText(FS("Draw Calls: %u", PERFORMANCE->m_PrevDrawCalls), vec2(20, 100 + (m_DebugFont->GetFontSize()*1.1f) * 3));
 		}
 
 		if (m_DrawFontAtlas)

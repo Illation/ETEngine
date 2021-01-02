@@ -53,7 +53,7 @@ std::string BinaryReader::ReadString()
 
 	ET_ASSERT(m_BufferPosition + stringLength < m_BufferStart + m_BufferSize);
 
-	uint* const* const data = m_BinData->data() + m_BufferPosition;
+	uint8 const* const data = m_BinData->data() + m_BufferPosition;
 	m_BufferPosition += stringLength;
 
 	return std::string(reinterpret_cast<char const*>(data), stringLength);

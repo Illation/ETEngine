@@ -40,6 +40,14 @@ void BinaryWriter::FormatBuffer(size_t const size, uint8 const data)
 	m_BinData->assign(size, data);
 }
 
+//----------------------------------
+// BinaryWriter::IncreaseBufferSize
+//
+void BinaryWriter::IncreaseBufferSize(size_t const size, uint8 const data)
+{
+	m_BinData->resize(m_BinData->size() + size, data);
+}
+
 //-------------------------
 // BinaryWriter::WriteData
 //
@@ -48,6 +56,15 @@ void BinaryWriter::WriteData(uint8 const* const data, size_t const size)
 	ET_ASSERT(m_BufferPosition + size <= m_BinData->size());
 	memcpy(m_BinData->data() + m_BufferPosition, data, size);
 	m_BufferPosition += size;
+}
+
+//-------------------------------
+// BinaryWriter::WriteNullString
+//
+void BinaryWriter::WriteNullString(std::string const& str)
+{
+	WriteData(reinterpret_cast<uint8 const*>(str.data()), str.size());
+	Write<uint8>(0u);
 }
 
 

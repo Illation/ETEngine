@@ -13,6 +13,8 @@
 #include <EtCore/Content/AssetDatabase.h>
 #include <EtCore/Content/ResourceManager.h>
 
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+
 #include <EtFramework/Config/BootConfig.h>
 
 #include <EtRuntime/Rendering/GlfwRenderWindow.h>
@@ -44,8 +46,8 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 	//-----------------
 	if (argc < 4)
 	{
-		std::cerr 
-			<< "Cooker::c-tor > Not enough arguments, exiting! Usage: EtCooker.exe <database path> <out path> <create compiled resource [y/n]>" 
+		std::cerr
+			<< "Cooker::c-tor > Not enough arguments, exiting! Usage: EtCooker.exe <database path> <out path> <create compiled resource [y/n]>"
 			<< std::endl;
 		m_ReturnCode = E_ReturnCode::InsufficientArguments;
 		return;
@@ -85,11 +87,14 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 
 	// Graphics context
 	m_RenderWindow = new rt::GlfwRenderWindow(true);
-	render::ContextHolder::Instance().CreateMainRenderContext(m_RenderWindow); 
+	render::ContextHolder::Instance().CreateMainRenderContext(m_RenderWindow);
 
 	// resources
 	m_ResMan = new pl::FileResourceManager(projectPath, enginePath);
 	core::ResourceManager::SetInstance(m_ResMan);
+
+	// needed for some asset conversions
+	render::RenderingSystems::AddReference();
 
 	// Ensure the generated file directory exists
 	m_TempDir = new core::Directory(s_TempPath, nullptr, true);
@@ -101,6 +106,8 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 //
 Cooker::~Cooker()
 {
+	render::RenderingSystems::RemoveReference();
+
 	if (!m_TempDir->Delete())
 	{
 		LOG("CookCompiledPackage > Failed to clean up temporary file directory!", core::LogLevel::Error);
@@ -277,12 +284,14 @@ void Cooker::AddPackageToWriter(core::HashString const packageId, std::string co
 				core::Entry* const genEntry = m_TempDir->GetMountedChild(asset->GetPath() + asset->GetName());
 				if ((genEntry == nullptr) || (genEntry->GetType() == core::Entry::ENTRY_DIRECTORY))
 				{
-					LOG(FS("CookCompiledPackage > Failed to access generated asset file '%s'", 
-						(asset->GetPath() + asset->GetName()).c_str()), 
+					LOG(FS("CookCompiledPackage > Failed to access generated asset file '%s'",
+						(asset->GetPath() + asset->GetName()).c_str()),
 						core::LogLevel::Warning);
 					m_ReturnCode = E_ReturnCode::FailedToAccessGeneratedFile;
 					continue;
 				}
+
+				LOG(FS("%s [%u] @: %s", asset->GetId().ToStringDbg(), asset->GetId().Get(), genEntry->GetName().c_str()));
 
 				core::File* const assetFile = static_cast<core::File*>(genEntry);
 				writer.AddFile(assetFile, m_TempDir->GetName(), core::E_CompressionType::Store, false);
@@ -293,7 +302,7 @@ void Cooker::AddPackageToWriter(core::HashString const packageId, std::string co
 				std::string const assetName = asset->GetName();
 				core::HashString const id = asset->GetId();
 
-				LOG(assetName + std::string(" [") + std::to_string(id.Get()) + std::string("] @: ") + core::FileUtil::GetAbsolutePath(filePath));
+				LOG(FS("%s [%u] @: %s", id.ToStringDbg(), id.Get(), core::FileUtil::GetAbsolutePath(filePath).c_str()));
 
 				core::File* const assetFile = new core::File(filePath + assetName, nullptr);
 				writer.AddFile(assetFile, baseAssetPath, core::E_CompressionType::Store);
