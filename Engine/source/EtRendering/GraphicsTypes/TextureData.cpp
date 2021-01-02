@@ -162,6 +162,7 @@ RTTR_REGISTRATION
 	BEGIN_REGISTER_CLASS(TextureAsset, "texture asset")
 		.property("use SRGB", &TextureAsset::m_UseSrgb)
 		.property("force resolution", &TextureAsset::m_ForceResolution)
+		.property("required channels", &TextureAsset::m_RequiredChannels)
 		.property("parameters", &TextureAsset::m_Parameters)
 	END_REGISTER_CLASS_POLYMORPHIC(TextureAsset, core::I_Asset);
 }
@@ -180,12 +181,17 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	stbi_set_flip_vertically_on_load(false);
 	int32 width = 0;
 	int32 height = 0;
-	int32 channels = 0;
+	int32 fileChannels = 0;
 
-	static int32 const s_TargetNumChannels = 3; // for now we only support opaque textures
+	int32 channels = static_cast<int32>(m_RequiredChannels);
 
 	// option to load 16 bit texture
-	uint8* bits = stbi_load_from_memory(data.data(), static_cast<int32>(data.size()), &width, &height, &channels, s_TargetNumChannels);
+	uint8* bits = stbi_load_from_memory(data.data(), static_cast<int32>(data.size()), &width, &height, &fileChannels, channels);
+
+	if (channels == 0)
+	{
+		channels = fileChannels;
+	}
 
 	if (bits == nullptr)
 	{
@@ -200,10 +206,10 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 		return false;
 	}
 
-	render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
-	if (!math::nearEquals(graphicsSettings.TextureScaleFactor, 1.f))
+	if (!m_ForceResolution)
 	{
-		if (!m_ForceResolution)
+		render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
+		if (!math::nearEquals(graphicsSettings.TextureScaleFactor, 1.f))
 		{
 			// resize
 			int32 const outWidth = static_cast<int32>(static_cast<float>(width) * graphicsSettings.TextureScaleFactor);
@@ -221,9 +227,54 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	// convert data type
 	// check number of channels
+	E_ColorFormat format;
+	E_ColorFormat internalFmt;
+	switch (channels)
+	{
+	case 1:
+		format = E_ColorFormat::Red;
+		ET_ASSERT(!m_UseSrgb);
+		internalFmt = E_ColorFormat::R8;
+		break;
+
+	case 2:
+		format = E_ColorFormat::RG;
+		ET_ASSERT(!m_UseSrgb);
+		internalFmt = E_ColorFormat::RG8;
+		break;
+
+	case 3:
+		format = E_ColorFormat::RGB;
+		if (m_UseSrgb)
+		{
+			internalFmt = E_ColorFormat::SRGB8;
+		}
+		else
+		{
+			internalFmt = E_ColorFormat::RGB8;
+		}
+		break;
+
+	case 4:
+		format = E_ColorFormat::RGBA;
+		if (m_UseSrgb)
+		{
+			internalFmt = E_ColorFormat::SRGBA8;
+		}
+		else
+		{
+			internalFmt = E_ColorFormat::RGBA8;
+		}
+		break;
+
+	default:
+		ET_ASSERT(false, "unhandled texture channel count");
+		stbi_image_free(bits);
+		return false;
+	}
 
 	//Upload to GPU
-	m_Data = new TextureData(ivec2(width, height), (m_UseSrgb ? E_ColorFormat::SRGB : E_ColorFormat::RGB), E_ColorFormat::RGB, E_DataType::UByte);
+	m_Data = new TextureData(ivec2(width, height), internalFmt, format, E_DataType::UByte);
 	m_Data->Build((void*)bits);
 	m_Data->SetParameters(m_Parameters);
 

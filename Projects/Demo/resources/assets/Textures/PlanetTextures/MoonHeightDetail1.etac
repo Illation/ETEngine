@@ -6,8 +6,9 @@
         "path": "Textures/PlanetTextures/",
         "package": "content1",
         "references": [],
-        "use SRGB": true,
+        "use SRGB": false,
         "force resolution": false,
+        "required channels": 0,
         "parameters": {
           "min filter": "Linear",
           "mag filter": "Linear",

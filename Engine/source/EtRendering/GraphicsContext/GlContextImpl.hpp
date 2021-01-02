@@ -222,12 +222,15 @@ GLenum ConvColorFormat(E_ColorFormat const fmt)
 	case E_ColorFormat::Depth24:		return GL_DEPTH_COMPONENT24;
 
 	case E_ColorFormat::R8:				return GL_R8;
+	case E_ColorFormat::RG8:			return GL_RG8;
 	case E_ColorFormat::RG16f:			return GL_RG16F;
+	case E_ColorFormat::RGB8:			return GL_RGB8;
 	case E_ColorFormat::RGB16f:			return GL_RGB16F;
 	case E_ColorFormat::RGBA8:			return GL_RGBA8;
 	case E_ColorFormat::RGBA16f:		return GL_RGBA16F;
 	case E_ColorFormat::RGBA32f:		return GL_RGBA32F;
-	case E_ColorFormat::SRGB:			return GL_SRGB;
+	case E_ColorFormat::SRGB8:			return GL_SRGB8;
+	case E_ColorFormat::SRGBA8:			return GL_SRGB8_ALPHA8;
 	}
 
 	ET_ASSERT(true, "Unhandled color format!");

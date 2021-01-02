@@ -8,6 +8,7 @@
         "references": [],
         "use SRGB": false,
         "force resolution": false,
+        "required channels": 3,
         "parameters": {
           "min filter": "Linear",
           "mag filter": "Linear",

@@ -109,6 +109,7 @@ public:
 public:
 	bool m_UseSrgb = false;
 	bool m_ForceResolution = false;
+	uint8 m_RequiredChannels = 0u;
 	TextureParameters m_Parameters;
 };
 

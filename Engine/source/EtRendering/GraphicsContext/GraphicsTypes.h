@@ -242,12 +242,15 @@ enum class E_ColorFormat : uint8
 	Depth24,
 
 	R8,
+	RG8,
 	RG16f,
+	RGB8,
 	RGB16f,
 	RGBA8,
 	RGBA16f,
 	RGBA32f,
-	SRGB,
+	SRGB8,
+	SRGBA8,
 
 	Invalid
 };
