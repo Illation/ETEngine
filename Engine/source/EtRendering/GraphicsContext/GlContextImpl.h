@@ -197,6 +197,7 @@ public:
 		bool const force) override;
 	T_TextureHandle GetTextureHandle(T_TextureLoc const texLoc) const override;
 	void SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const override;
+	void GetTextureData(TextureData const& texture, E_ColorFormat const format, E_DataType const dataType, void* const data) override;
 
 	T_ShaderLoc CreateShader(E_ShaderType const type) const override;
 	T_ShaderLoc CreateProgram() const override;

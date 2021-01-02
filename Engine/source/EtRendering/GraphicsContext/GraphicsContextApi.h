@@ -115,6 +115,7 @@ public:
 		bool const force) = 0;
 	virtual T_TextureHandle GetTextureHandle(T_TextureLoc const texLoc) const = 0;
 	virtual void SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const = 0;
+	virtual void GetTextureData(TextureData const& texture, E_ColorFormat const format, E_DataType const dataType, void* const data) = 0;
 
 	virtual T_ShaderLoc CreateShader(E_ShaderType const type) const = 0;
 	virtual T_ShaderLoc CreateProgram() const = 0;

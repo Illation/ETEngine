@@ -1411,6 +1411,19 @@ void GL_CONTEXT_CLASSNAME::SetTextureHandleResidency(T_TextureHandle const handl
 	}
 }
 
+//--------------------------------------
+// GlContext::GetTextureData
+//
+// Get the pixels from a texture
+//
+void GL_CONTEXT_CLASSNAME::GetTextureData(TextureData const& texture, E_ColorFormat const format, E_DataType const dataType, void* const data)
+{
+	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
+	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
+
+	glGetTexImage(target, 0, GL_CONTEXT_NS::ConvColorFormat(format), GL_CONTEXT_NS::ConvDataType(dataType), data);
+}
+
 //---------------------------------
 // GlContext::CreateShader
 //
