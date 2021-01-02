@@ -34,6 +34,7 @@ add_dependencies(DemoEditor compile-schemas-editor)
 message(STATUS "Adding target: DemoEditor")
 target_link_libraries (DemoEditor DemoPipeline EtEditor)
 dependancyLinks(DemoEditor) 
+cookerLinks(DemoEditor)
 editorLinks(DemoEditor)
 
 # library includes

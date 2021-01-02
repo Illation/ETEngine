@@ -203,9 +203,9 @@ render::SpriteFont* EditableFontAsset::LoadTtf(const std::vector<uint8>& binaryC
 				uint32 prevIdx = FT_Get_Char_Index(face, previous);
 				FT_Get_Kerning(face, prevIdx, glyphIdx, FT_KERNING_DEFAULT, &delta);
 
-				if (delta.x || delta.y)
+				if (delta.x) // we ignore vertical kerning because the BMF format doesn't support it
 				{
-					metric->Kerning[static_cast<wchar_t>(previous)] = vec2((float)delta.x / 64.f, (float)delta.y / 64.f);
+					metric->Kerning[static_cast<wchar_t>(previous)] = vec2((float)delta.x / render::FontAsset::s_KerningAdjustment, 0.f); 
 				}
 			}
 		}
@@ -410,32 +410,32 @@ bool EditableFontAsset::GenerateBinFontData(std::vector<uint8>& data, render::Sp
 
 	static size_t const s_BlockHeaderSize = 5u;
 	auto const writeBlockHeader = [](core::BinaryWriter& binWriter, uint8 const id, uint32 const size)
-	{
-		binWriter.Write(id);
-		binWriter.Write(size);
-	};
+		{
+			binWriter.Write(id);
+			binWriter.Write(size);
+		};
 
 	static size_t const s_CharacterSize = 20u;
 
 	static size_t const s_KerningPairSize = 10u;
 	struct KerningPair
 	{
-		KerningPair(wchar_t const first, wchar_t const second, uint16 const amount)
+		KerningPair(wchar_t const first, wchar_t const second, int16 const amount)
 			: m_First(static_cast<uint32>(first)), m_Second(static_cast<uint32>(second)), m_Amount(amount)
 		{ }
 
 		uint32 m_First;
 		uint32 m_Second;
-		uint16 m_Amount;
+		int16 m_Amount;
 	};
 
 	// can't write directly because compiler might change sizes of structs
 	auto const writeKerningPair = [](core::BinaryWriter& binWriter, KerningPair const& pair)
-	{
-		binWriter.Write(pair.m_First);
-		binWriter.Write(pair.m_Second);
-		binWriter.Write(pair.m_Amount);
-	};
+		{
+			binWriter.Write(pair.m_First);
+			binWriter.Write(pair.m_Second);
+			binWriter.Write(pair.m_Amount);
+		};
 
 	// Determine block sizes
 	//-----------------------
@@ -460,7 +460,7 @@ bool EditableFontAsset::GenerateBinFontData(std::vector<uint8>& data, render::Sp
 			metrics.push_back(metric);
 			for (auto const& el : metric.Kerning)
 			{
-				kerningPairs.emplace_back(metric.Character, el.first, static_cast<uint16>(el.second.x));
+				kerningPairs.emplace_back(metric.Character, el.first, static_cast<int16>(el.second.x * render::FontAsset::s_KerningAdjustment));
 			}
 		}
 	}

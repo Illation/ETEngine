@@ -114,9 +114,13 @@ private:
 //
 class FontAsset final : public core::Asset<SpriteFont, false>
 {
+	// definitions
+	//-------------
 	RTTR_ENABLE(core::Asset<SpriteFont, false>)
-		DECLARE_FORCED_LINKING()
+	DECLARE_FORCED_LINKING()
 public:
+	static float const s_KerningAdjustment;
+
 	// Construct destruct
 	//---------------------
 	FontAsset() : core::Asset<SpriteFont, false>() {}

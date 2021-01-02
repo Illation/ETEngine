@@ -113,6 +113,10 @@ RTTR_REGISTRATION
 DEFINE_FORCED_LINKING(FontAsset) // force the shader class to be linked as it is only used in reflection
 
 
+// static
+float const FontAsset::s_KerningAdjustment = 64.f;
+
+
 //---------------------------------
 // TextureAsset::LoadFromMemory
 //
@@ -157,16 +161,16 @@ SpriteFont* FontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 	SpriteFont* pFont = new SpriteFont();
 
 	auto const readBlockHeader = [&binReader](uint8 const block, int32& blockSize) -> bool
-	{
-		if (binReader.Read<uint8>() != block)
 		{
-			ET_ASSERT(false, "invalid block %u header");
-			return false;
-		}
+			if (binReader.Read<uint8>() != block)
+			{
+				ET_ASSERT(false, "invalid block %u header");
+				return false;
+			}
 
-		blockSize = binReader.Read<int32>();
-		return true;
-	};
+			blockSize = binReader.Read<int32>();
+			return true;
+		};
 
 	//**********
 	// BLOCK 1 *
@@ -282,6 +286,38 @@ SpriteFont* FontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 
 			metric->TexCoord = vec2(static_cast<float>(xPos) / static_cast<float>(texWidth), static_cast<float>(yPos) / static_cast<float>(texHeight));
 			binReader.SetBufferPosition(posChar + 20u);
+		}
+	}
+
+	binReader.SetBufferPosition(pos + static_cast<size_t>(block4Size));
+
+	//**********
+	// BLOCK 5 *
+	//**********
+	if (binReader.GetBufferPosition() < binReader.GetBufferSize())
+	{
+		int32 block5Size;
+		if (!readBlockHeader(5u, block5Size))
+		{
+			return nullptr;
+		}
+
+		int32 const numKerningPairs = block5Size / 10;
+		
+		pFont->m_UseKerning = true;
+
+		for (int32 i = 0; i < numKerningPairs; i++)
+		{
+			wchar_t const first = static_cast<wchar_t>(binReader.Read<uint32>());
+			wchar_t const second = static_cast<wchar_t>(binReader.Read<uint32>());
+			int16 const amount = binReader.Read<int16>();
+
+			FontMetric& metric = pFont->GetMetric(first);
+			if (metric.IsValid)
+			{
+				ET_ASSERT(metric.Kerning.find(second) == metric.Kerning.cend());
+				metric.Kerning[second] = vec2(static_cast<float>(amount) / s_KerningAdjustment, 0.f);
+			}
 		}
 	}
 

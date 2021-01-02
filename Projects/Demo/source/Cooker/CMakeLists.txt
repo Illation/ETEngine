@@ -30,6 +30,7 @@ outputDirectories(ProjectCooker "")
 # linking
 target_link_libraries (ProjectCooker EtCooker DemoPipeline)
 dependancyLinks(ProjectCooker)
+cookerLinks(ProjectCooker)
 
 # library includes
 libIncludeDirs()

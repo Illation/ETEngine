@@ -361,14 +361,25 @@ function(dependancyLinks TARGET)
 
 		debug ${_alBuild}/Debug/OpenAL32.lib						optimized ${_alBuild}/Release/OpenAL32.lib
 
-		debug ${_vcpkgInstall}/debug/lib/zlibd.lib					optimized ${_vcpkgInstall}/lib/zlib.lib
-		debug ${_vcpkgInstall}/debug/lib/freetyped.lib				optimized ${_vcpkgInstall}/lib/freetype.lib	)
+		debug ${_vcpkgInstall}/debug/lib/zlibd.lib					optimized ${_vcpkgInstall}/lib/zlib.lib)
 
 	if (MSVC)
 		target_link_libraries(${TARGET} opengl32.lib)
 	endif(MSVC)
 
 endfunction(dependancyLinks)
+
+# link to all cooker dependencies
+###################################
+function(cookerLinks TARGET)
+	
+	set(_vcpkgInstall )
+	getVcpkgInstallDir(_vcpkgInstall)
+
+	target_link_libraries (${TARGET} 		
+		debug ${_vcpkgInstall}/debug/lib/freetyped.lib				optimized ${_vcpkgInstall}/lib/freetype.lib	)
+
+endfunction(cookerLinks)
 
 
 # link to all editor dependencies
@@ -429,8 +440,15 @@ endfunction(editorLinks)
 
 # place a list of all libraries built by vcpkg
 ####################################################
-function(getVcpkgLibs out_list)
-	set (${out_list} "freetype" "bz2" "libpng16" "zlib" "zlibd" PARENT_SCOPE)
+function(getVcpkgLibs out_list target_type)
+	set(_libs )
+	if (NOT "${target_type}" STREQUAL "no_runtime")
+		list (APPEND _libs "bz2" "libpng16" "zlib" "zlibd")
+	endif()
+	if (NOT "${target_type}" STREQUAL "runtime")
+		list (APPEND _libs "freetype")
+	endif()
+	set (${out_list} ${_libs} PARENT_SCOPE)
 endfunction(getVcpkgLibs)
 
 
@@ -496,7 +514,7 @@ function(copyDllCommand _target)
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
 	set(vcpkg_libs )
-	getVcpkgLibs(vcpkg_libs)
+	getVcpkgLibs(vcpkg_libs default)
 
 	set(_alBuild )
 	getOpenAlBuildDir(_alBuild)
@@ -572,7 +590,7 @@ function(installDlls TARGET _suffix)
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
 	set(vcpkg_libs )
-	getVcpkgLibs(vcpkg_libs)
+	getVcpkgLibs(vcpkg_libs runtime)
 
 	set(_alBuild )
 	getOpenAlBuildDir(_alBuild)
@@ -624,6 +642,8 @@ function(installEditorDlls TARGET)
 	
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
+	set(vcpkg_libs )
+	getVcpkgLibs(vcpkg_libs no_runtime)
 
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
 
@@ -640,11 +660,25 @@ function(installEditorDlls TARGET)
 			foreach(_pdb ${pdbs})
 				install(FILES ${_pdb} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
 			endforeach()
+			
+			# for debug applications we also copy pdbs
+			file(GLOB more_pdbs ${_vcpkgInstall}${_vcCfg}/bin/*.pdb)
+			getMatchingFiles("${vcpkg_libs}" "${pdbs}" more_pdbs)
+			foreach(_pdb ${more_pdbs})
+				install(FILES ${_pdb} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
+			endforeach()
 		endif()
 
 		# copy dlls for all libraries		
 		file(GLOB dlls ${_vcpkgInstall}${_vcCfg}/bin/*.dll)
 		foreach(_dll ${dlls})
+			install(FILES ${_dll} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
+		endforeach()
+
+		# copy dlls for all libraries		
+		file(GLOB more_dlls ${_vcpkgInstall}${_vcCfg}/bin/*.dll)
+		getMatchingFiles("${vcpkg_libs}" "${dlls}" more_dlls)
+		foreach(_dll ${more_dlls})
 			install(FILES ${_dll} CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
 		endforeach()
 

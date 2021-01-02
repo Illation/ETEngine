@@ -36,6 +36,7 @@ public:
 	// accessors
 	//-----------
 	size_t GetBufferPosition() const;
+	size_t GetBufferSize() const { return m_BufferSize; }
 	bool Exists() const { return (m_BinData != nullptr); }
 
 	template<typename TDataType>
