@@ -4,11 +4,13 @@
 #include <EtCore/Content/AssetPointer.h>
 
 
-namespace et { namespace render {
-	class TextRenderer;
+namespace et {
+namespace render {
+class TextRenderer;
 } namespace pl {
-	class EditableFontAsset;
-} }
+class EditableFontAsset;
+}
+}
 
 
 namespace et {
@@ -112,7 +114,8 @@ private:
 //
 class FontAsset final : public core::Asset<SpriteFont, false>
 {
-	DECLARE_FORCED_LINKING()
+	RTTR_ENABLE(core::Asset<SpriteFont, false>)
+		DECLARE_FORCED_LINKING()
 public:
 	// Construct destruct
 	//---------------------
@@ -124,18 +127,7 @@ public:
 	bool LoadFromMemory(std::vector<uint8> const& data) override;
 
 private:
-	SpriteFont* LoadTtf(const std::vector<uint8>& binaryContent);
-	SpriteFont* LoadFnt(const std::vector<uint8>& binaryContent);
-
-	// Data
-	///////
-public:
-	uint32 m_FontSize = 42u;
-	uint32 m_Padding = 1u;
-	uint32 m_Spread = 5u;
-	uint32 m_HighRes = 32u;
-
-	RTTR_ENABLE(core::Asset<SpriteFont, false>)
+	SpriteFont* LoadFnt(std::vector<uint8> const& binaryContent);
 };
 
 

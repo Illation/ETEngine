@@ -5,14 +5,14 @@
         "name": "Roboto-Bold.ttf",
         "path": "Fonts/roboto2014/",
         "package": "engine_content",
-        "references": [],
-        "size": 42,
-        "padding": 1,
-        "spread": 5,
-        "highres": 32
+        "references": []
       }
     },
     "metadata": null,
-    "children": []
+    "children": [],
+    "size": 42,
+    "padding": 1,
+    "spread": 5,
+    "highres": 32
   }
 }
