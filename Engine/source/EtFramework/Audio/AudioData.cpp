@@ -25,7 +25,7 @@ namespace fw {
 //
 // Construct audio data from a handle
 //
-AudioData::AudioData(ALuint handle) 
+AudioData::AudioData(ALuint handle)
 	: m_Buffer(handle)
 { }
 
@@ -120,48 +120,67 @@ bool AudioAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 bool AudioAsset::LoadWavFile(AudioBufferData &bufferData, std::vector<uint8> const& binaryContent)
 {
-	auto pBinReader = new core::BinaryReader();
-
-#define EXIT_FALSE {delete pBinReader;return false;}
-
-	pBinReader->Open(binaryContent);
-	if (!pBinReader->Exists()) EXIT_FALSE;
+	core::BinaryReader binReader;
+	binReader.Open(binaryContent);
+	if (!binReader.Exists())
+	{
+		return false;
+	}
 
 	//Read RIFF chunk descriptor
 	std::string chunkID;
-	for (uint8 i = 0; i < 4; i++)chunkID += pBinReader->Read<char>();
-	if (chunkID != "RIFF") EXIT_FALSE;
-	pBinReader->Read<uint32>();//chunk size
+	for (uint8 i = 0; i < 4; i++)chunkID += binReader.Read<char>();
+	if (chunkID != "RIFF")
+	{
+		return false;
+	}
+
+	binReader.Read<uint32>();//chunk size
 	std::string format;
-	for (uint8 i = 0; i < 4; i++)format += pBinReader->Read<char>();
-	if (format != "WAVE") EXIT_FALSE;
+	for (uint8 i = 0; i < 4; i++)format += binReader.Read<char>();
+	if (format != "WAVE")
+	{
+		return false;
+	}
 
 	//Read fmt subchunk
 	std::string subChunk1ID;
-	for (uint8 i = 0; i < 4; i++)subChunk1ID += pBinReader->Read<char>();
-	if (subChunk1ID != "fmt ") EXIT_FALSE;
-	if (pBinReader->Read<uint32>() != 16) EXIT_FALSE;//SubChunk1Size
-	uint16 audioFormat = pBinReader->Read<uint16>();
+	for (uint8 i = 0; i < 4; i++)subChunk1ID += binReader.Read<char>();
+	if (subChunk1ID != "fmt ")
+	{
+		return false;
+	}
+
+	if (binReader.Read<uint32>() != 16)
+	{
+		return false;
+	}
+
+	uint16 audioFormat = binReader.Read<uint16>();
 	if (audioFormat != 1)
 	{
 		LOG(std::string("Only uncompressed wave files are supported, audio format is: ") + std::to_string(audioFormat), core::LogLevel::Warning);
-		EXIT_FALSE;
+		return false;
 	}
-	uint16 numChannels = pBinReader->Read<uint16>();
-	uint32 sampleRate = pBinReader->Read<uint32>();
-	pBinReader->Read<uint32>();//byte rate
-	pBinReader->Read<uint16>();//block align
-	uint16 bitsPerSample = pBinReader->Read<uint16>();
+
+	uint16 numChannels = binReader.Read<uint16>();
+	uint32 sampleRate = binReader.Read<uint32>();
+	binReader.Read<uint32>();//byte rate
+	binReader.Read<uint16>();//block align
+	uint16 bitsPerSample = binReader.Read<uint16>();
 
 	//Read data subchunk
 	std::string subChunk2ID;
-	for (uint8 i = 0; i < 4; i++)subChunk2ID += pBinReader->Read<char>();
-	if (subChunk2ID != "data") EXIT_FALSE;
-	uint32 subChunk2Size = pBinReader->Read<uint32>();
-	uint32 bufferPos = static_cast<uint32>(pBinReader->GetBufferPosition());
+	for (uint8 i = 0; i < 4; i++)subChunk2ID += binReader.Read<char>();
+	if (subChunk2ID != "data")
+	{
+		return false;
+	}
 
-	delete pBinReader;
-	pBinReader = nullptr;
+	uint32 subChunk2Size = binReader.Read<uint32>();
+	uint32 bufferPos = static_cast<uint32>(binReader.GetBufferPosition());
+
+	binReader.Close();
 
 	uint8* data = new uint8[subChunk2Size];
 	for (uint32 i = 0; i < subChunk2Size; ++i)
@@ -183,18 +202,24 @@ bool AudioAsset::LoadWavFile(AudioBufferData &bufferData, std::vector<uint8> con
 		{
 		case 8:bufferData.format = AL_FORMAT_MONO8; break;
 		case 16:bufferData.format = AL_FORMAT_MONO16; break;
-		default: LOG(std::string("only 8 and 16 bit formats are supported by openAL, bitSize: ") + std::to_string(bitsPerSample), core::LogLevel::Warning); EXIT_FALSE;
+		default:
+			LOG(std::string("only 8 and 16 bit formats are supported by openAL, bitSize: ") + std::to_string(bitsPerSample), core::LogLevel::Warning);
+			return false;
 		} break;
+
 	case 2:
 		switch (bitsPerSample)
 		{
 		case 8:bufferData.format = AL_FORMAT_STEREO8; break;
 		case 16:bufferData.format = AL_FORMAT_STEREO16; break;
-		default: LOG(std::string("only 8 and 16 bit formats are supported by openAL, bitSize: ") + std::to_string(bitsPerSample), core::LogLevel::Warning); EXIT_FALSE;
+		default:
+			LOG(std::string("only 8 and 16 bit formats are supported by openAL, bitSize: ") + std::to_string(bitsPerSample), core::LogLevel::Warning);
+			return false;
 		} break;
+
 	default:
 		LOG(std::string("Only mono and stereo supported by openAL, numChannels: ") + std::to_string(numChannels), core::LogLevel::Warning);
-		EXIT_FALSE;
+		return false;
 	}
 	bufferData.data = data;
 	bufferData.size = subChunk2Size;
@@ -270,17 +295,17 @@ void AudioAsset::ConvertToMono(AudioBufferData &bufferData)
 	switch (bufferData.format)
 	{
 	case AL_FORMAT_STEREO8:
-		{
-			ConvertToMono<int8>(bufferData);
-			bufferData.format = AL_FORMAT_MONO8;
-		}
-		break;
+	{
+		ConvertToMono<int8>(bufferData);
+		bufferData.format = AL_FORMAT_MONO8;
+	}
+	break;
 	case AL_FORMAT_STEREO16:
-		{
-			ConvertToMono<int16>(bufferData);
-			bufferData.format = AL_FORMAT_MONO16;
-		}
-		break;
+	{
+		ConvertToMono<int16>(bufferData);
+		bufferData.format = AL_FORMAT_MONO16;
+	}
+	break;
 	}
 }
 

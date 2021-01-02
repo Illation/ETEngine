@@ -57,7 +57,7 @@ bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
 		{
 			if (DecodeBase64(dataString, uri.binData))
 			{
-				uri.path = uri.path.substr(0, dataPos); 
+				uri.path = uri.path.substr(0, dataPos);
 				std::string(uri.path).swap(uri.path);//free that memory
 				return true;
 			}
@@ -99,9 +99,9 @@ bool glTF::DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded)
 	{
 		if (!IsBase64(encoded[i]))return false;
 
-		char_array_4[i%4] = static_cast<uint8>(Base64Mime.find(encoded[i]));
+		char_array_4[i % 4] = static_cast<uint8>(Base64Mime.find(encoded[i]));
 		++i;
-		if (i%4 == 0) 
+		if (i % 4 == 0)
 		{
 			char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
 			char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
@@ -114,12 +114,12 @@ bool glTF::DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded)
 		}
 	}
 
-	if (i%4) 
+	if (i % 4)
 	{
 		char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
 		char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
 
-		for (uint32 j = 0; (j < i%4 - 1); j++) decoded.push_back(char_array_3[j]);
+		for (uint32 j = 0; (j < i % 4 - 1); j++) decoded.push_back(char_array_3[j]);
 	}
 
 	return true;
@@ -131,7 +131,7 @@ bool glTF::ParseGLTFData(const std::vector<uint8>& binaryContent, const std::str
 	asset.basePath = path;
 
 	std::string lowerExt;
-	for(char val : extension)
+	for (char val : extension)
 	{
 		if (val >= 'A' && val <= 'Z')
 			lowerExt.push_back(val - ('A' - 'a'));
@@ -139,110 +139,108 @@ bool glTF::ParseGLTFData(const std::vector<uint8>& binaryContent, const std::str
 	}
 	if (lowerExt == "glb")
 	{
-		auto pBinReader = new core::BinaryReader();
-		pBinReader->Open(binaryContent);
-		if (!pBinReader->Exists())
+		core::BinaryReader binReader;
+		binReader.Open(binaryContent);
+		if (!binReader.Exists())
 		{
-			delete pBinReader;
 			LOG("glTF Failed to read the assetFile!", core::LogLevel::Warning);
 			return false;
 		}
 
 		//Parse Header
-		if (!ParseGLBHeader(pBinReader, asset.header))
+		if (!ParseGLBHeader(&binReader, asset.header))
 		{
-			delete pBinReader;
 			return false;
 		}
 
 		//Parse structured Json
 		Chunk jsonChunk = Chunk();
-		if (!ParseGLBChunk(pBinReader, jsonChunk))
+		if (!ParseGLBChunk(&binReader, jsonChunk))
 		{
-			delete pBinReader;
 			LOG("glTF failed to read json chunk from glb!", core::LogLevel::Warning);
 			return false;
 		}
+
 		if (!(jsonChunk.chunkType == Chunk::ChunkType::JSON))
 		{
-			delete pBinReader;
 			LOG("expected chunk type to be JSON", core::LogLevel::Warning);
 			return false;
 		}
+
 		core::JSON::Parser parser = core::JSON::Parser(core::FileUtil::AsText(jsonChunk.chunkData));
 		core::JSON::Object* root = parser.GetRoot();
 		if (root == nullptr)return false;
 		if (!glTF::ParseGlTFJson(root, asset.dom))return false;
 
 		//Parse binary chunks
-		while ((uint32)pBinReader->GetBufferPosition() < asset.header.length)
+		while ((uint32)binReader.GetBufferPosition() < asset.header.length)
 		{
 			asset.dataChunks.push_back(Chunk());
-			if (!ParseGLBChunk(pBinReader, asset.dataChunks[asset.dataChunks.size()-1]))
+			if (!ParseGLBChunk(&binReader, asset.dataChunks[asset.dataChunks.size() - 1]))
 			{
-				delete pBinReader;
 				LOG("glTF failed to read binary chunk from glb!", core::LogLevel::Warning);
 				return false;
 			}
+
 			if (!(asset.dataChunks[asset.dataChunks.size() - 1].chunkType == Chunk::ChunkType::BIN))
 			{
-				delete pBinReader;
 				LOG("expected chunk type to be BIN", core::LogLevel::Warning);
 				return false;
 			}
 		}
-		delete pBinReader;
+
 		return true;
 	}
 	else if (lowerExt == "gltf")
 	{
 		core::JSON::Parser parser = core::JSON::Parser(core::FileUtil::AsText(binaryContent));
 		core::JSON::Object* root = parser.GetRoot();
-		if(root == nullptr)return false;
-		if(!glTF::ParseGlTFJson(root, asset.dom))return false;
+		if (root == nullptr)return false;
+		if (!glTF::ParseGlTFJson(root, asset.dom))return false;
 		return true;
 	}
+
 	LOG("Unrecognized glTF extension", core::LogLevel::Warning);
 	return false;
 }
 
-bool glTF::ParseGLBHeader(core::BinaryReader* pBinReader, Header &header)
+bool glTF::ParseGLBHeader(core::BinaryReader* binReader, Header &header)
 {
-	header.magic = pBinReader->Read<uint32>();
+	header.magic = binReader->Read<uint32>();
 	if (!(header.magic == *reinterpret_cast<uint32*>("glTF")))
 	{
 		LOG("invalid glb file header!", core::LogLevel::Warning);
 		return false;
 	}
-	header.version = pBinReader->Read<uint32>();
+	header.version = binReader->Read<uint32>();
 	if (!(header.version == 2))
 	{
 		LOG("invalid glb file header version!", core::LogLevel::Warning);
 		return false;
 	}
-	header.length = pBinReader->Read<uint32>();
+	header.length = binReader->Read<uint32>();
 	return true;
 }
 
-bool glTF::ParseGLBChunk(core::BinaryReader* pBinReader, Chunk &chunk)
+bool glTF::ParseGLBChunk(core::BinaryReader* binReader, Chunk &chunk)
 {
-	if (pBinReader->GetBufferPosition() % 4u != 0u)//Make sure 4 byte alignment is respected
+	if (binReader->GetBufferPosition() % 4u != 0u)//Make sure 4 byte alignment is respected
 	{
 		LOG("Expected binary buffer position for glb to be 4 byte aligned", core::LogLevel::Warning);
-		pBinReader->SetBufferPosition(((pBinReader->GetBufferPosition() / 4u) + 1u) * 4u);
+		binReader->SetBufferPosition(((binReader->GetBufferPosition() / 4u) + 1u) * 4u);
 	}
 
-	chunk.chunkLength = pBinReader->Read<uint32>();
-	chunk.chunkType = static_cast<Chunk::ChunkType>(pBinReader->Read<uint32>());
+	chunk.chunkLength = binReader->Read<uint32>();
+	chunk.chunkType = static_cast<Chunk::ChunkType>(binReader->Read<uint32>());
 	chunk.chunkData.reserve(chunk.chunkLength);
 	for (uint32 i = 0; i < chunk.chunkLength; i++)
 	{
-		chunk.chunkData.push_back(pBinReader->Read<uint8>());
+		chunk.chunkData.push_back(binReader->Read<uint8>());
 	}
 
-	if (pBinReader->GetBufferPosition() % 4u != 0u)//Make sure 4 byte alignment is respected
+	if (binReader->GetBufferPosition() % 4u != 0u)//Make sure 4 byte alignment is respected
 	{
-		pBinReader->SetBufferPosition(((pBinReader->GetBufferPosition() / 4u) + 1u) * 4u);
+		binReader->SetBufferPosition(((binReader->GetBufferPosition() / 4u) + 1u) * 4u);
 	}
 
 	return true;
@@ -344,8 +342,8 @@ bool glTF::ParseAssetJson(core::JSON::Object* root, Asset& asset)
 	if (!assetVal)return false;
 	if (!(assetVal->GetType() == core::JSON::ValueType::JSON_Object)) return false;
 	core::JSON::Object* assetObj = assetVal->obj();
-	
-	if(!core::JSON::ApplyStrValue(assetObj, asset.version, "version")) return false;
+
+	if (!core::JSON::ApplyStrValue(assetObj, asset.version, "version")) return false;
 	core::JSON::ApplyStrValue(assetObj, asset.minVersion, "minVersion");
 	core::JSON::ApplyStrValue(assetObj, asset.generator, "generator");
 	core::JSON::ApplyStrValue(assetObj, asset.copyright, "copyright");
@@ -508,7 +506,7 @@ bool glTF::ParseNodesJson(core::JSON::Object* root, std::vector<Node>& nodes)
 		core::JSON::Value* matrixVal = (*nodeObj)["matrix"];
 		if (matrixVal)
 		{
-			if(!core::JSON::ArrayMatrix(matrixVal, node.matrix))return false;
+			if (!core::JSON::ArrayMatrix(matrixVal, node.matrix))return false;
 			hasMatrix = true;
 		}
 
@@ -710,16 +708,16 @@ bool glTF::ParseAccessorsJson(core::JSON::Object* root, std::vector<Accessor>& a
 			if (!(sparseVal->GetType() == JSON::ValueType::JSON_Object)) return false;
 			JSON::Object* sparseObj = sparseVal->obj();
 
-			accessors[accessors.size()-1].sparse = new Accessor::Sparse();
+			accessors[accessors.size() - 1].sparse = new Accessor::Sparse();
 			Accessor::Sparse* sparse = accessors[accessors.size() - 1].sparse;
 
-			if(!JSON::ApplyIntValue(sparseObj, sparse->count, "count"))return false;
+			if (!JSON::ApplyIntValue(sparseObj, sparse->count, "count"))return false;
 
 			JSON::Value* indicesVal = (*sparseObj)["indices"];
 			if (!indicesVal)return false;
 			if (!(indicesVal->GetType() == JSON::ValueType::JSON_Object)) return false;
 			JSON::Object* indicesObj = indicesVal->obj();
-			if(!JSON::ApplyIntValue(indicesObj, sparse->indices.bufferView, "bufferView"))return false;
+			if (!JSON::ApplyIntValue(indicesObj, sparse->indices.bufferView, "bufferView"))return false;
 			JSON::ApplyIntValue(indicesObj, sparse->indices.byteOffset, "byteOffset");
 			if (!JSON::ApplyIntValue(indicesObj, sparse->indices.componentType, "componentType"))return false;
 
@@ -751,8 +749,8 @@ bool glTF::ParseBufferViewsJson(core::JSON::Object* root, std::vector<BufferView
 
 		BufferView view;
 
-		if(!JSON::ApplyIntValue(bufferViewObj, view.buffer, "buffer"))return false;
-		if(!JSON::ApplyIntValue(bufferViewObj, view.byteLength, "byteLength"))return false;
+		if (!JSON::ApplyIntValue(bufferViewObj, view.buffer, "buffer"))return false;
+		if (!JSON::ApplyIntValue(bufferViewObj, view.byteLength, "byteLength"))return false;
 		JSON::ApplyIntValue(bufferViewObj, view.byteOffset, "byteOffset");
 		JSON::ApplyIntValue(bufferViewObj, view.byteStride, "byteStride");
 		JSON::ApplyIntValue(bufferViewObj, view.target, "target");
@@ -891,7 +889,7 @@ bool glTF::ParseMaterialsJson(core::JSON::Object* root, std::vector<Material>& m
 		JSON::Object* materialObj = materialVal->obj();
 
 		materials.push_back(Material());
-		Material* material = &materials[materials.size()-1];
+		Material* material = &materials[materials.size() - 1];
 
 		JSON::ApplyStrValue(materialObj, material->name, "name");
 
@@ -992,7 +990,7 @@ bool glTF::ParsePbrMetallicRoughnessJson(core::JSON::Object* pbrObj, Material::P
 	}
 
 	JSON::ApplyNumValue(pbrObj, pbr->metallicFactor, "metallicFactor");
-	
+
 	JSON::ApplyNumValue(pbrObj, pbr->roughnessFactor, "roughnessFactor");
 
 	JSON::Value* metallicRoughnessTextureVal = (*pbrObj)["metallicRoughnessTexture"];
@@ -1297,7 +1295,7 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 
 	uint8 compSize = ComponentTypes[accessor.componentType];
 	uint8 compsPerEl = AccessorTypes[accessor.type].first;
-	uint8 elSize = compSize*compsPerEl;
+	uint8 elSize = compSize * compsPerEl;
 
 	//Validation
 	if (!(accessor.byteOffset % compSize == 0)) LOG("Accessors byte offset needs to be a multiple of the component size", core::LogLevel::Warning);
@@ -1316,7 +1314,7 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 		LOG("Accessors byte stride needs to be a multiple of the component size", core::LogLevel::Warning);
 	}
 
-	if ((accessor.byteOffset + stride * (accessor.count - 1) + elSize) > view.byteLength) 
+	if ((accessor.byteOffset + stride * (accessor.count - 1) + elSize) > view.byteLength)
 	{
 		LOG("Accessors doesn't fit buffer view", core::LogLevel::Warning);
 	}
@@ -1329,8 +1327,8 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 		return false;
 	}
 
-	for (uint64 i = static_cast<uint64>(accessor.byteOffset); 
-		i < static_cast<uint64>(accessor.byteOffset + stride) * accessor.count; 
+	for (uint64 i = static_cast<uint64>(accessor.byteOffset);
+		i < static_cast<uint64>(accessor.byteOffset + stride) * accessor.count;
 		i += static_cast<uint64>(stride))
 	{
 		pViewReader->SetBufferPosition(static_cast<size_t>(i));
@@ -1389,7 +1387,7 @@ bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& 
 			}
 			if (primitive.attributes.position != -1)
 			{
-				if(!GetAccessorVectorArray(asset, primitive.attributes.position, pMesh->m_Positions, true))
+				if (!GetAccessorVectorArray(asset, primitive.attributes.position, pMesh->m_Positions, true))
 				{
 					delete pMesh;
 					for (auto pEl : meshContainers)delete pEl;
@@ -1428,7 +1426,7 @@ bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& 
 			//Normal and tangent info
 			if (primitive.attributes.normal != -1)
 			{
-				if(!GetAccessorVectorArray(asset, primitive.attributes.normal, pMesh->m_Normals, true))
+				if (!GetAccessorVectorArray(asset, primitive.attributes.normal, pMesh->m_Normals, true))
 				{
 					delete pMesh;
 					for (auto pEl : meshContainers)delete pEl;
@@ -1456,7 +1454,7 @@ bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& 
 			//Shading
 			if (primitive.attributes.color0 != -1)
 			{
-				if(!GetAccessorVectorArray(asset, primitive.attributes.color0, pMesh->m_Colors, true))
+				if (!GetAccessorVectorArray(asset, primitive.attributes.color0, pMesh->m_Colors, true))
 				{
 					delete pMesh;
 					for (auto pEl : meshContainers)delete pEl;
