@@ -6,7 +6,7 @@
 #include <EtCore/Content/AssetDatabase.h>
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
-#include <EtCore/Reflection/Serialization.h>
+#include <EtCore/Reflection/JsonDeserializer.h>
 
 
 namespace et {
@@ -72,7 +72,8 @@ void EditorAssetDatabase::InitDb(EditorAssetDatabase& db, std::string const& pat
 		dbFile->Open(core::FILE_ACCESS_MODE::Read);
 
 		// deserialize the database from that files content
-		if (!(core::serialization::DeserializeFromJsonString(core::FileUtil::AsText(dbFile->Read()), db)))
+		core::JsonDeserializer deserializer;
+		if (!(deserializer.DeserializeFromData(dbFile->Read(), db)))
 		{
 			LOG(FS("FileResourceManager::Init > unable to deserialize asset DB at '%s'", dbFile->GetName().c_str()), core::LogLevel::Error);
 		}
@@ -81,6 +82,8 @@ void EditorAssetDatabase::InitDb(EditorAssetDatabase& db, std::string const& pat
 	{
 		LOG(FS("No Database file found at '%s'", path.c_str()));
 	}
+
+	delete dbFile;
 
 	std::string dirPath = core::FileUtil::ExtractPath(path) + db.GetAssetPath();
 
@@ -499,13 +502,14 @@ void EditorAssetDatabase::AddAsset(core::File* const configFile)
 		return;
 	}
 
-	std::string const content(core::FileUtil::AsText(configFile->Read()));
+	std::vector<uint8> const content(configFile->Read());
 
 	configFile->Close();
 
 	EditorAssetBase* asset = nullptr;
 
-	if (!core::serialization::DeserializeFromJsonString(content, asset))
+	core::JsonDeserializer deserializer;
+	if (!deserializer.DeserializeFromData(content, asset))
 	{
 		ET_ASSERT(false, "failed to deserizlize asset config '%s'", configFile->GetName());
 		return;

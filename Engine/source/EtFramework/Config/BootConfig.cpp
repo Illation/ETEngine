@@ -1,10 +1,9 @@
 #include "stdafx.h"
 #include "BootConfig.h"
 
-#include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Package/Package.h>
 #include <EtCore/Reflection/Registration.h>
-#include <EtCore/Reflection/Serialization.h>
+#include <EtCore/Reflection/JsonDeserializer.h>
 
 
 namespace et {
@@ -44,7 +43,8 @@ void BootConfig::LoadFromPackage(BootConfig& cfg, core::I_Package* const pkg)
 	}
 
 	// convert that data to a string and deserialize it as json
-	if (!core::serialization::DeserializeFromJsonString(core::FileUtil::AsText(rawData), cfg))
+	core::JsonDeserializer deserializer;
+	if (!deserializer.DeserializeFromData(rawData, cfg))
 	{
 		ET_ASSERT(false, "Failed to deserialize boot config at '%s'!", s_FileName);
 	}

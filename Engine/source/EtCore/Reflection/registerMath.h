@@ -17,6 +17,8 @@ class MathRegistrationLinkEnforcer
 	DECLARE_FORCED_LINKING()
 };
 
+bool IsVectorType(rttr::type const type);
+
 
 } // namespace core
 } // namespace et

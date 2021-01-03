@@ -4,8 +4,7 @@
 #include "MaterialDescriptor.h"
 
 #include <EtCore/Content/AssetRegistration.h>
-#include <EtCore/Reflection/Serialization.h>
-#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/Reflection/JsonDeserializer.h>
 
 
 namespace et {
@@ -99,7 +98,8 @@ Material::~Material()
 bool MaterialAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
 	MaterialDescriptor descriptor;
-	if (!(core::serialization::DeserializeFromJsonString(core::FileUtil::AsText(data), descriptor)))
+	core::JsonDeserializer deserializer;
+	if (!deserializer.DeserializeFromData(data, descriptor))
 	{
 		LOG("MaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor", core::LogLevel::Warning);
 		return false;

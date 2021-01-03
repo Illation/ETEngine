@@ -1,5 +1,12 @@
 #pragma once
 
+#include <EtCore/FileSystem/Entry.h>
+#include <EtCore/FileSystem/FileUtil.h>
+
+#include "JsonSerializer.h"
+#include "JsonDeserializer.h"
+
+
 // Inline functions
 //////////////////////
 
@@ -28,25 +35,10 @@ bool SerializeToFile(std::string const& filePath, T const& serialObject)
 	if (ext == "json")
 	{
 		// first convert to the json document object model
-		JSON::Object* root = static_cast<JSON::Object*>(SerializeToJson(serialObject));
-		if (root)
+		JsonSerializer serializer;
+		if (serializer.SerializeToData(serialObject, fileContent))
 		{
-			// then write it to a string
-			JSON::Writer writer(false);
-			if (writer.Write(root))
-			{
-				// convert that string to a byte array
-				fileContent = FileUtil::FromText(writer.GetResult()); // #todo this shouldn't copy twice, pass content byte vector as reference
-				serializeSuccess = true;
-			}
-			else
-			{
-				LOG("SerializeToFile > unable to write JSON DOM to string", Warning);
-			}
-		}
-		else
-		{
-			LOG("SerializeToFile > unable to serialize object to JSON DOM!", Warning);
+			serializeSuccess = true;
 		}
 	}
 	else
@@ -76,36 +68,6 @@ bool SerializeToFile(std::string const& filePath, T const& serialObject)
 	return serializeSuccess;
 }
 
-//---------------------------------
-// SerializeToJson
-//
-// Create a JSON::Object from the templated type using reflection data. Returns nullptr if serialization is unsuccsesful.
-//
-template<typename T>
-JSON::Value* SerializeToJson(T const& serialObject)
-{
-	rttr::instance inst(serialObject);
-	if (!inst.is_valid())
-	{
-		LOG("SerializeToJson > Couldn't create a valid instance from the object to serialize!", Warning);
-		return nullptr;
-	}
-
-	JSON::Value* outObject = nullptr;
-
-	if (ToJsonRecursive(inst, outObject, rttr::type::get(serialObject)))
-	{
-		JSON::Object* root = new JSON::Object();
-
-		root->value.emplace_back(inst.get_type().get_name().to_string(), outObject);
-
-		return static_cast<JSON::Value*>(root);
-	}
-
-	SafeDelete(outObject);
-	return nullptr;
-}
-
 
 //---------------------------------
 // DeserializeFromJson
@@ -126,7 +88,7 @@ bool DeserializeFromFile(std::string const& filePath, T& outObject)
 
 	// extract the necessary information
 	std::string const ext(file->GetExtension());
-	std::string const content(FileUtil::AsText(file->Read()));
+	std::vector<uint8> const content(file->Read());
 
 	// We can now close the file again
 	SafeDelete(file);
@@ -134,106 +96,12 @@ bool DeserializeFromFile(std::string const& filePath, T& outObject)
 	// for now json is the only supported format
 	if (ext == "json")
 	{		
-		return DeserializeFromJsonString(content, outObject);
+		JsonDeserializer deserializer;
+		return deserializer.DeserializeFromData(content, outObject);
 	}
 
 	LOG("DeserializeFromFile > File type '" + ext + std::string("' not supported!"), Warning);
 	return false;
-}
-
-//---------------------------------
-// DeserializeFromJsonResource
-//
-// Create the reflected type from a json string that is compiled into the app
-// Returns nullptr if deserialization is unsuccsesful. 
-//
-template<typename T>
-bool DeserializeFromJsonResource(std::string const& resourcePath, T& outObject)
-{
-	// get binary data from compiled resource
-	std::vector<uint8> data;
-	if (!FileUtil::GetCompiledResource(resourcePath, data))
-	{
-		LOG("DeserializeFromJsonResource > couldn't get data from resource '" + resourcePath + std::string("'"), LogLevel::Warning);
-		return false;
-	}
-
-	// read binary resource into a string
-	std::string const content(FileUtil::AsText(data));
-
-	return DeserializeFromJsonString(content, outObject);
-}
-
-//---------------------------------
-// DeserializeFromJsonString
-//
-// Create the reflected type from a json string
-// Returns nullptr if deserialization is unsuccsesful. 
-//
-template<typename T>
-bool DeserializeFromJsonString(std::string const& jsonString, T& outObject)
-{
-	// Read the string into a json parser
-	JSON::Parser parser = JSON::Parser(jsonString);
-
-	// if we don't have a root object parsing json was unsuccesful
-	JSON::Object* root = parser.GetRoot();
-	if (!root)
-	{
-		LOG("DeserializeFromJsonString > unable to parse string to JSON!", Warning);
-		return false;
-	}
-
-	DeserializeFromJson(root, outObject);
-	
-	return true;
-}
-
-//---------------------------------
-// DeserializeFromJson
-//
-// Create the reflected type from JSON data. 
-// Assumes parentObj is the parent of the object we are deserializing
-//
-template<typename T>
-void DeserializeFromJson(JSON::Object* const parentObj, T& outObject)
-{
-	rttr::type const valueType = rttr::type::get<T>();
-	ET_ASSERT(valueType.is_valid());
-
-	// polymorphic
-	rttr::type localType = valueType;
-	bool isNull;
-	JSON::Value const* jVal = parentObj;
-	if (!ExtractPointerValueType(localType, jVal, isNull) || isNull)
-	{
-		return;
-	}
-
-	// root value or internal pointer content ?
-	if (localType == valueType)
-	{
-		FromJsonRecursive(outObject, parentObj);
-	}
-	else
-	{
-		// find the right constructor for our type
-		rttr::constructor ctor = localType.get_constructor();
-		ET_ASSERT(ctor.is_valid(), "Failed to get a valid constructor from type '%s", localType.get_name().data());
-		rttr::variant var = ctor.invoke();
-
-		// deserialize
-		ObjectFromJsonRecursive(jVal, var, localType);
-		ET_ASSERT(var.is_valid());
-
-		if (localType != valueType)
-		{
-			var.convert(rttr::type(valueType));
-		}
-
-		outObject = var.get_value<T>();
-	}
-
 }
 
 

@@ -38,5 +38,15 @@ RTTR_REGISTRATION
 DEFINE_FORCED_LINKING(MathRegistrationLinkEnforcer) // force the linker to include this unit
 
 
+//---------------------------------
+// IsVectorType
+//
+bool IsVectorType(rttr::type const type)
+{
+	rttr::variant val = type.get_metadata(MathMeta::s_VectorType);
+	return val.is_valid() && val.get_value<bool>();
+}
+
+
 } // namespace core
 } // namespace et

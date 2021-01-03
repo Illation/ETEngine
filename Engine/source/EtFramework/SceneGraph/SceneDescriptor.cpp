@@ -2,7 +2,7 @@
 #include "SceneDescriptor.h"
 
 #include <EtCore/Content/AssetRegistration.h>
-#include <EtCore/Reflection/Serialization.h>
+#include <EtCore/Reflection/JsonDeserializer.h>
 
 
 namespace et {
@@ -97,7 +97,8 @@ bool SceneDescriptorAsset::LoadFromMemory(std::vector<uint8> const& data)
 	m_Data = new SceneDescriptor();
 
 	// convert that data to a string and deserialize it as json
-	if (!core::serialization::DeserializeFromJsonString(core::FileUtil::AsText(data), *m_Data))
+	core::JsonDeserializer deserializer;
+	if (!deserializer.DeserializeFromData(data, *m_Data))
 	{
 		LOG("SceneDescriptorAsset::LoadFromMemory > Failed to deserialize descriptor!", core::LogLevel::Warning);
 		delete m_Data;
