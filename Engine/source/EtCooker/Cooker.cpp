@@ -10,6 +10,7 @@
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/Package/FilePackage.h>
 #include <EtCore/Reflection/Serialization.h>
+#include <EtCore/Reflection/TypeInfoRegistry.h>
 #include <EtCore/Content/AssetDatabase.h>
 #include <EtCore/Content/ResourceManager.h>
 
@@ -76,6 +77,8 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 	//------------
 	core::Logger::Initialize();
 	core::Logger::StartFileLogging("cooker.log");
+
+	core::TypeInfoRegistry::Instance().Initialize(); 
 
 	ET_ASSERT(m_GenerateCompiled || (std::string(argv[4]) == "n"), "Expected argument 4 to be either 'y' or 'n'!");
 

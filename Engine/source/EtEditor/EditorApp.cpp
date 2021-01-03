@@ -18,6 +18,7 @@
 #include <EtCore/Util/Commands.h>
 #include <EtCore/Util/InputManager.h>
 #include <EtCore/UpdateCycle/TickManager.h>
+#include <EtCore/Reflection/TypeInfoRegistry.h>
 
 #include <EtRendering/GraphicsContext/ContextHolder.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
@@ -57,6 +58,8 @@ EditorApp::EditorApp()
 	LOG("");
 	LOG(FS(" - version: %s", et::build::Version::s_Name.c_str()));
 	LOG("");
+
+	core::TypeInfoRegistry::Instance().Initialize(); // this needs to be initialized ASAP because serialization depends on it
 
 	InitializeUtilities();
 

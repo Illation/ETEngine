@@ -5,6 +5,7 @@
 
 #include <EtCore/UpdateCycle/PerformanceInfo.h>
 #include <EtCore/UpdateCycle/TickManager.h>
+#include <EtCore/Reflection/TypeInfoRegistry.h>
 
 #include <EtRendering/GraphicsContext/Viewport.h>
 #include <EtRendering/GraphicsContext/ContextHolder.h>
@@ -70,6 +71,8 @@ void AbstractFramework::Run()
 	LOG("");
 	LOG(FS(" - version: %s", et::build::Version::s_Name.c_str()));
 	LOG("");
+
+	core::TypeInfoRegistry::Instance().Initialize(); // this needs to be initialized ASAP because serialization depends on it
 
 	fw::Config* const cfg = fw::Config::GetInstance();
 	cfg->Initialize();
