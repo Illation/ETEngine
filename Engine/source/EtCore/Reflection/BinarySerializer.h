@@ -35,6 +35,7 @@ private:
 
 	// general
 	bool WriteVariant(rttr::variant const& var);
+	bool WriteBasicVariant(rttr::variant const& var, TypeInfo const& ti);
 
 	// atomic
 	bool WriteArithmeticType(rttr::type const type, rttr::variant const& var);
@@ -43,9 +44,12 @@ private:
 	void WriteHash(HashString const hash);
 
 	// complex
-	bool WriteSequentialContainer(rttr::variant_sequential_view const& view);
+	bool WriteSequentialContainer(rttr::variant_sequential_view const& view, bool const writeCount);
 	bool WriteAssociativeContainer(rttr::variant_associative_view const& view);
 	bool WriteObject(rttr::instance const& inst, TypeInfo const& ti);
+
+	// other
+	bool IsBasic(rttr::type const type) const;
 
 	// Data
 	///////

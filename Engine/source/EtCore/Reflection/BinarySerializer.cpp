@@ -114,13 +114,58 @@ bool BinarySerializer::WriteVariant(rttr::variant const& var)
 		return true;
 
 	case TypeInfo::E_Kind::ContainerSequential:
-		return WriteSequentialContainer(var.create_sequential_view());
+		return WriteSequentialContainer(var.create_sequential_view(), true);
 
 	case TypeInfo::E_Kind::ContainerAssociative:
 		return WriteAssociativeContainer(var.create_associative_view());
 
 	case TypeInfo::E_Kind::Class:
 		return WriteObject(inst, ti);
+	}
+
+	ET_ASSERT(false, "unhandled variant type '%s'", ti.m_Id.ToStringDbg());
+	return false;
+}
+
+//-------------------------------------
+// BinarySerializer::WriteBasicVariant
+//
+// For non polymorphic or wrapped types where the TI is already known. 
+//
+bool BinarySerializer::WriteBasicVariant(rttr::variant const& var, TypeInfo const& ti)
+{
+	// handle different variant kinds
+	switch (ti.m_Kind)
+	{
+	case TypeInfo::E_Kind::Arithmetic:
+		return WriteArithmeticType(ti.m_Type, var);
+
+	case TypeInfo::E_Kind::Enumeration:
+		return WriteArithmeticType(ti.m_Type.get_enumeration().get_underlying_type(), var);
+
+	case TypeInfo::E_Kind::Vector:
+		return WriteVectorType(ti.m_Type, var);
+
+	case TypeInfo::E_Kind::String:
+		WriteString(var.to_string());
+		return true;
+
+	case TypeInfo::E_Kind::Hash:
+		WriteHash(var.get_value<HashString>());
+		return true;
+
+	case TypeInfo::E_Kind::AssetPointer:
+		WriteHash(var.get_value<I_AssetPtr>().GetId());
+		return true;
+
+	case TypeInfo::E_Kind::ContainerSequential:
+		return WriteSequentialContainer(var.create_sequential_view(), true);
+
+	case TypeInfo::E_Kind::ContainerAssociative:
+		return WriteAssociativeContainer(var.create_associative_view());
+
+	case TypeInfo::E_Kind::Class:
+		return WriteObject(rttr::instance(var), ti);
 	}
 
 	ET_ASSERT(false, "unhandled variant type '%s'", ti.m_Id.ToStringDbg());
@@ -216,9 +261,8 @@ bool BinarySerializer::WriteVectorType(rttr::type const type, rttr::variant cons
 	rttr::type const propValType = prop.get_type();
 	rttr::variant const propVar = prop.get_value(inst);
 
-	// #todo: make this more effective by only writing contents instead of container header with size
 	ET_ASSERT(propValType.is_sequential_container());
-	return WriteSequentialContainer(propVar.create_sequential_view());
+	return WriteSequentialContainer(propVar.create_sequential_view(), false);
 }
 
 //-------------------------------
@@ -262,18 +306,44 @@ void BinarySerializer::WriteHash(HashString const hash)
 //--------------------------------------------
 // BinarySerializer::WriteSequentialContainer
 //
-bool BinarySerializer::WriteSequentialContainer(rttr::variant_sequential_view const& view)
+bool BinarySerializer::WriteSequentialContainer(rttr::variant_sequential_view const& view, bool const writeCount)
 {
 	uint64 const itemCount = static_cast<uint64>(view.get_size());
-	m_Writer->IncreaseBufferSize(sizeof(itemCount));
-	m_Writer->Write(itemCount);
-
-	for (size_t idx = 0u; idx < static_cast<size_t>(itemCount); ++idx)
+	if (writeCount)
 	{
-		if (!WriteVariant(view.get_value(idx)))
+		m_Writer->IncreaseBufferSize(sizeof(itemCount));
+		m_Writer->Write(itemCount);
+	}
+
+	rttr::type const itemType = view.get_value_type();
+	if (IsBasic(itemType))
+	{
+		TypeInfo const& ti = TypeInfoRegistry::Instance().GetTypeInfo(itemType);
+
+		for (size_t idx = 0u; idx < static_cast<size_t>(itemCount); ++idx)
 		{
-			ET_ASSERT(false, "Failed to write element of sequential container type '%s' at index " ET_FMT_SIZET, view.get_type().get_name().data(), idx);
-			return false;
+			if (!WriteBasicVariant(view.get_value(idx), ti))
+			{
+				ET_ASSERT(false,
+					"Failed to write basic element of sequential container type '%s' at index " ET_FMT_SIZET,
+					view.get_type().get_name().data(),
+					idx);
+				return false;
+			}
+		}
+	}
+	else
+	{
+		for (size_t idx = 0u; idx < static_cast<size_t>(itemCount); ++idx)
+		{
+			if (!WriteVariant(view.get_value(idx)))
+			{
+				ET_ASSERT(false, 
+					"Failed to write element of sequential container type '%s' at index " ET_FMT_SIZET, 
+					view.get_type().get_name().data(), 
+					idx);
+				return false;
+			}
 		}
 	}
 
@@ -289,31 +359,114 @@ bool BinarySerializer::WriteAssociativeContainer(rttr::variant_associative_view 
 	m_Writer->IncreaseBufferSize(sizeof(itemCount));
 	m_Writer->Write(itemCount);
 
-	if (view.is_key_only_type())
+	rttr::type const keyType = view.get_key_type();
+	if (IsBasic(keyType))
 	{
-		for (auto& item : view)
+		TypeInfo const& keyTi = TypeInfoRegistry::Instance().GetTypeInfo(keyType);
+
+		if (view.is_key_only_type())
 		{
-			if (!WriteVariant(item.first))
+			for (auto& item : view)
 			{
-				ET_ASSERT(false, "Failed to write element of key only associative container type '%s'", view.get_type().get_name().data());
-				return false;
+				if (!WriteBasicVariant(item.first, keyTi))
+				{
+					ET_ASSERT(false, "Failed to write element of key only associative container type '%s'", view.get_type().get_name().data());
+					return false;
+				}
+			}
+		}
+		else
+		{
+			rttr::type const valueType = view.get_value_type();
+			if (IsBasic(valueType))
+			{
+				TypeInfo const& valueTi = TypeInfoRegistry::Instance().GetTypeInfo(valueType);
+
+				for (auto& item : view)
+				{
+					if (!WriteBasicVariant(item.first, keyTi))
+					{
+						ET_ASSERT(false, "Failed to write key of associative container type '%s'", view.get_type().get_name().data());
+						return false;
+					}
+
+					if (!WriteBasicVariant(item.second, valueTi))
+					{
+						ET_ASSERT(false, "Failed to write basic value of associative container type '%s'", view.get_type().get_name().data());
+						return false;
+					}
+				}
+			}
+			else
+			{
+				for (auto& item : view)
+				{
+					if (!WriteBasicVariant(item.first, keyTi))
+					{
+						ET_ASSERT(false, "Failed to write key of associative container type '%s'", view.get_type().get_name().data());
+						return false;
+					}
+
+					if (!WriteVariant(item.second))
+					{
+						ET_ASSERT(false, "Failed to write value of associative container type '%s'", view.get_type().get_name().data());
+						return false;
+					}
+				}
 			}
 		}
 	}
 	else
 	{
-		for (auto& item : view)
+		if (view.is_key_only_type())
 		{
-			if (!WriteVariant(item.first))
+			for (auto& item : view)
 			{
-				ET_ASSERT(false, "Failed to write key of associative container type '%s'", view.get_type().get_name().data());
-				return false;
+				if (!WriteVariant(item.first))
+				{
+					ET_ASSERT(false, "Failed to write element of key only associative container type '%s'", view.get_type().get_name().data());
+					return false;
+				}
 			}
-
-			if (!WriteVariant(item.second))
+		}
+		else
+		{
+			rttr::type const valueType = view.get_value_type();
+			if (IsBasic(valueType))
 			{
-				ET_ASSERT(false, "Failed to write value of associative container type '%s'", view.get_type().get_name().data());
-				return false;
+				TypeInfo const& valueTi = TypeInfoRegistry::Instance().GetTypeInfo(valueType);
+
+				for (auto& item : view)
+				{
+					if (!WriteVariant(item.first))
+					{
+						ET_ASSERT(false, "Failed to write key of associative container type '%s'", view.get_type().get_name().data());
+						return false;
+					}
+
+					if (!WriteBasicVariant(item.second, valueTi))
+					{
+						ET_ASSERT(false, "Failed to write basic value of associative container type '%s'", view.get_type().get_name().data());
+						return false;
+					}
+				}
+			}
+			else
+			{
+				for (auto& item : view)
+				{
+					if (!WriteVariant(item.first))
+					{
+						ET_ASSERT(false, "Failed to write key of associative container type '%s'", view.get_type().get_name().data());
+						return false;
+					}
+
+					if (!WriteVariant(item.second))
+					{
+						ET_ASSERT(false, "Failed to write value of associative container type '%s'", view.get_type().get_name().data());
+						return false;
+					}
+				}
 			}
 		}
 	}
@@ -366,6 +519,14 @@ bool BinarySerializer::WriteObject(rttr::instance const& inst, TypeInfo const& t
 	}
 
 	return true;
+}
+
+//---------------------------
+// BinarySerializer::IsBasic
+//
+bool BinarySerializer::IsBasic(rttr::type const type) const
+{
+	return (!type.is_pointer() && !type.is_wrapper());
 }
 
 
