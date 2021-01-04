@@ -7,6 +7,7 @@
 #include <EtCore/Content/AssetPointer.h>
 
 #include "TypeInfoRegistry.h"
+#include "BinaryFormat.h"
 
 
 namespace et {
@@ -44,11 +45,9 @@ bool BinarySerializer::SerializeRoot(rttr::variant const& var, std::vector<uint8
 	m_Writer = new BinaryWriter(outData);
 
 	// File Header
-	static std::string const s_Header = "ETBIN";
+	m_Writer->IncreaseBufferSize(EtBin::s_Header.size() + build::Version::s_Name.size() + 1u + sizeof(uint8));
 
-	m_Writer->IncreaseBufferSize(s_Header.size() + build::Version::s_Name.size() + 1u + sizeof(uint8));
-
-	m_Writer->WriteString(s_Header);
+	m_Writer->WriteString(EtBin::s_Header);
 	m_Writer->WriteNullString(build::Version::s_Name);
 	m_Writer->Write<uint8>(m_IsVerbose ? 1u : 0u);
 

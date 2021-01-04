@@ -17,7 +17,7 @@ namespace core {
 // JsonDeserializer::DeserializeFromData
 //
 // Create the reflected type from a json string (provided as a data vector)
-// Returns nullptr if deserialization is unsuccsesful. 
+// Returns false if deserialization is unsuccsesful. 
 //
 template<typename T>
 bool JsonDeserializer::DeserializeFromData(std::vector<uint8> const& data, T& outObject)
