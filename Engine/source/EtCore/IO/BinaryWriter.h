@@ -33,6 +33,7 @@ public:
 	void Write(TDataType const& data);
 	void WriteData(uint8 const* const data, size_t const size);
 	void WriteNullString(std::string const& str);
+	void WriteString(std::string const& str); // no terminator
 
 	// accessors
 	//-----------

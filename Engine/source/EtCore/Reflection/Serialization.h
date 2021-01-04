@@ -16,7 +16,7 @@ namespace serialization
 	//----------------
 
 	template<typename T>
-	bool SerializeToFile(std::string const& filePath, T const& serialObject);
+	bool SerializeToFile(std::string const& filePath, T const& serialObject, bool const verbose);
 
 	// Deserialization
 	//-----------------

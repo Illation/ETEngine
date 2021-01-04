@@ -45,8 +45,6 @@ bool JsonSerializer::ToJsonRecursive(const rttr::instance& inst, JSON::Value*& o
 		appendJObject = keyVal.second->obj();
 	}
 
-	rttr::instance instObj = inst.get_type().get_raw_type().is_wrapper() ? inst.get_wrapped_instance() : inst;
-
 	rttr::array_range<rttr::property> const propList = inst.get_derived_type().get_properties();
 
 	bool allPropertiesSerialized = true;
@@ -135,25 +133,6 @@ bool JsonSerializer::VariantToJsonValue(rttr::variant const& var, JSON::Value*& 
 
 			return false;
 		}
-		//if (!(wrappedType.get_properties().empty())) // try converting the variant to a JSON object
-		//{
-		//}
-		//else // if that fails, try converting it to a string
-		//{
-		//	bool stringConversionSuccess = false;
-		//	std::string text = var.to_string(&stringConversionSuccess);
-
-		//	if (!stringConversionSuccess)
-		//	{
-		//		LOG("VariantToJsonValue > Failed to convert variant to JSON string, result: '" + text + std::string("' typeName: '")
-		//			+ wrappedType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
-
-		//		return false;
-		//	}
-
-		//	outVal = new JSON::String();
-		//	outVal->str()->value = text;
-		//}
 	}
 
 	return true;

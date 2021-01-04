@@ -5,6 +5,7 @@
 
 #include "JsonSerializer.h"
 #include "JsonDeserializer.h"
+#include "BinarySerializer.h"
 
 
 // Inline functions
@@ -23,7 +24,7 @@ namespace serialization {
 // Write a file from the templated type using reflection data. Returns false if serialization is unsuccsesful.
 //
 template<typename T>
-bool SerializeToFile(std::string const& filePath, T const& serialObject)
+bool SerializeToFile(std::string const& filePath, T const& serialObject, bool const verbose)
 {
 	// Open the file
 	File* file = new File(filePath, nullptr);
@@ -34,8 +35,15 @@ bool SerializeToFile(std::string const& filePath, T const& serialObject)
 	std::vector<uint8> fileContent;
 	if (ext == "json")
 	{
-		// first convert to the json document object model
-		JsonSerializer serializer;
+		JsonSerializer serializer(verbose);
+		if (serializer.SerializeToData(serialObject, fileContent))
+		{
+			serializeSuccess = true;
+		}
+	}
+	else if (ext == "etbin")
+	{
+		BinarySerializer serializer(verbose);
 		if (serializer.SerializeToData(serialObject, fileContent))
 		{
 			serializeSuccess = true;

@@ -102,6 +102,8 @@ void Config::Initialize()
 	if (core::serialization::DeserializeFromFile(GetUserDirPath() + s_ConfigFileRelativePath, settings))
 	{
 		m_Settings = settings;
+
+		//core::serialization::SerializeToFile(GetUserDirPath() + "./config.etbin", m_Settings, true);
 	}
 	else
 	{
@@ -134,7 +136,7 @@ void Config::InitRenderConfig()
 //
 void Config::Save()
 {
-	if (!core::serialization::SerializeToFile(GetUserDirPath() + s_ConfigFileRelativePath, m_Settings))
+	if (!core::serialization::SerializeToFile(GetUserDirPath() + s_ConfigFileRelativePath, m_Settings, true))
 	{
 		LOG("Config::Save > unable to serialize settings to config file", core::LogLevel::Warning);
 	}

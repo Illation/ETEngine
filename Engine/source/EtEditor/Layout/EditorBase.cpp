@@ -94,7 +94,7 @@ void EditorBase::SaveLayout()
 {
 	std::string const layoutPath = FS("%slayouts/%s.json", EditorConfig::GetInstance()->GetEditorUserDir().c_str(), GetLayoutName().c_str());
 
-	if (!core::serialization::SerializeToFile(layoutPath, m_NodeHierachy))
+	if (!core::serialization::SerializeToFile(layoutPath, m_NodeHierachy, true))
 	{
 		LOG(FS("EditorBase::SaveLayout > unable to save the layout to: %s", layoutPath.c_str()), core::LogLevel::Warning);
 	}

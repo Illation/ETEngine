@@ -6,52 +6,6 @@ namespace et {
 namespace core {
 
 
-//===========
-// Type Info
-//===========
-
-
-//-------------------------------
-// TypeInfo::PropertyInfo::c-tor
-//
-TypeInfo::PropertyInfo::PropertyInfo(rttr::property const prop)
-	: m_Id(prop.get_name().data())
-	, m_Property(prop)
-{ }
-
-//-----------------
-// TypeInfo::c-tor
-//
-TypeInfo::TypeInfo(rttr::type const type)
-	: m_Id(type.get_name().data())
-	, m_Type(type)
-{
-	rttr::array_range<rttr::property> const properties = m_Type.get_properties();
-	for (rttr::property const prop : properties)
-	{
-		m_Properties.emplace_back(prop);
-	}
-}
-
-//-------------------------
-// TypeInfo::GetProperties
-//
-rttr::property const* TypeInfo::GetProperty(HashString const id) const
-{
-	auto const foundIt = std::find_if(m_Properties.cbegin(), m_Properties.cend(), [id](PropertyInfo const& info)
-		{
-			return (info.m_Id == id);
-		});
-
-	if (foundIt == m_Properties.cend())
-	{
-		return nullptr;
-	}
-
-	return &(foundIt->m_Property);
-}
-
-
 //====================
 // Type Info Registry
 //====================
@@ -125,7 +79,7 @@ void TypeInfoRegistry::DbgPrintAll() const
 		LOG(FS("type: %s", ti.m_Id.ToStringDbg()));
 		for (TypeInfo::PropertyInfo const& myProp : ti.m_Properties)
 		{
-			LOG(FS("\tproperty: %s", myProp.m_Id.ToStringDbg()));
+			LOG(FS("\tproperty [%s]: %s", myProp.m_Id.ToStringDbg(), myProp.m_IsSerializable ? "RW" : "R_"));
 		}
 	}
 }

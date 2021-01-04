@@ -168,7 +168,7 @@ void Cooker::CookCompiledPackage()
 	core::AssetDatabase mergeDb(false);
 	m_ResMan->GetProjectDatabase().PopulateAssetDatabase(mergeDb);
 	m_ResMan->GetEngineDatabase().PopulateAssetDatabase(mergeDb);
-	if (!core::serialization::SerializeToFile(tempDbFullPath, mergeDb))
+	if (!core::serialization::SerializeToFile(tempDbFullPath, mergeDb, false))
 	{
 		LOG(FS("CookCompiledPackage > Failed to serialize asset database to '%s'", tempDbFullPath.c_str()), core::LogLevel::Error);
 		m_ReturnCode = E_ReturnCode::FailedToSerialize;

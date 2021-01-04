@@ -63,8 +63,18 @@ void BinaryWriter::WriteData(uint8 const* const data, size_t const size)
 //
 void BinaryWriter::WriteNullString(std::string const& str)
 {
-	WriteData(reinterpret_cast<uint8 const*>(str.data()), str.size());
+	WriteString(str);
 	Write<uint8>(0u);
+}
+
+//---------------------------
+// BinaryWriter::WriteString
+//
+// Write a string where the reader must know the size already
+//
+void BinaryWriter::WriteString(std::string const& str)
+{
+	WriteData(reinterpret_cast<uint8 const*>(str.data()), str.size());
 }
 
 
