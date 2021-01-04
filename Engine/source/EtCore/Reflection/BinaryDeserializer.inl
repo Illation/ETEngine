@@ -19,7 +19,7 @@ namespace core {
 template<typename TDataType>
 bool BinaryDeserializer::DeserializeFromData(std::vector<uint8> const& data, TDataType& outObject)
 {
-	rttr::variant deserializedValue;
+	rttr::variant deserializedValue = outObject;
 	if (DeserializeRoot(deserializedValue, rttr::type::get<TDataType>(), data))
 	{
 		if (deserializedValue.is_type<TDataType>())

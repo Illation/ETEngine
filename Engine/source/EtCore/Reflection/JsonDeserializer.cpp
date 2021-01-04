@@ -119,7 +119,7 @@ bool JsonDeserializer::ArrayFromJsonRecursive(rttr::variant_sequential_view& vie
 
 				if ((!ArrayFromJsonRecursive(subArrayView, jIndexVal)) || !propVar.is_valid())
 				{
-					LOG("FromJsonValue > There was an issue deserializing the vectors / matrices sequential view, typeName: '"
+					LOG("ArrayFromJsonRecursive > There was an issue deserializing the vectors / matrices sequential view, typeName: '"
 						+ propValType.get_name().to_string() + std::string("'!"), LogLevel::Warning);
 				}
 				else

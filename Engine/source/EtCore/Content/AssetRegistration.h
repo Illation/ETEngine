@@ -4,6 +4,12 @@
 // utility macros and functions that allow correct serialization of asset pointers
 
 #define REGISTER_ASSET_CONVERSION(TClass)																										\
+	rttr::type::register_converter_func([](et::core::HashString const id, bool& ok) -> et::AssetPtr<TClass>										\
+	{																																			\
+		et::AssetPtr<TClass> const retVal = et::core::ResourceManager::Instance()->GetAssetData<TClass>(id);									\
+		ok = (retVal != nullptr);																												\
+		return retVal;																															\
+	});																																			\
 	rttr::type::register_converter_func([](std::string const& id, bool& ok) -> et::AssetPtr<TClass>												\
 	{																																			\
 		et::AssetPtr<TClass> const retVal = et::core::ResourceManager::Instance()->GetAssetData<TClass>(et::core::HashString(id.c_str()));		\

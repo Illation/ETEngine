@@ -91,7 +91,7 @@ bool BinaryDeserializer::ReadVariant(rttr::variant& var, rttr::type const callin
 			return false;
 		}
 
-		rttr::variant innerVar;
+		rttr::variant innerVar = var;
 		if (!ReadBasicVariant(innerVar, *ti))
 		{
 			ET_ASSERT(false, "failed to read inner type '%s' of pointer type '%s'", ti->m_Type.get_name().data(), callingType.get_name().data());
@@ -122,34 +122,274 @@ bool BinaryDeserializer::ReadBasicVariant(rttr::variant& var, TypeInfo const& ti
 	switch (ti.m_Kind)
 	{
 	case TypeInfo::E_Kind::Arithmetic:
-		return false;
+		return ReadArithmeticType(var, ti.m_Type);
 
 	case TypeInfo::E_Kind::Enumeration:
+		if (ReadArithmeticType(var, ti.m_Type.get_enumeration().get_underlying_type()))
+		{
+			if (var.convert(ti.m_Type))
+			{
+				return true;
+			}
+		}
+
 		return false;
 
 	case TypeInfo::E_Kind::Vector:
 		return false;
 
 	case TypeInfo::E_Kind::String:
-		return false;
+		var = m_Reader.ReadNullString();
+		return true;
 
 	case TypeInfo::E_Kind::Hash:
-		return false;
+		ReadHash(var);
+		return true;
 
 	case TypeInfo::E_Kind::AssetPointer:
+		ReadHash(var);
+		if (var.convert(ti.m_Type))
+		{
+			return true;
+		}
+
 		return false;
 
 	case TypeInfo::E_Kind::ContainerSequential:
-		return false;
+		return ReadSequentialContainer(var);
 
 	case TypeInfo::E_Kind::ContainerAssociative:
-		return false;
+		return ReadAssociativeContainer(var);
 
 	case TypeInfo::E_Kind::Class:
-		return false;
+		return ReadObject(var, ti);
 	}
 
 	ET_ASSERT(false, "unhandled variant type '%s'", ti.m_Id.ToStringDbg());
+	return false;
+}
+
+//----------------------------------------
+// BinaryDeserializer::ReadArithmeticType
+//
+bool BinaryDeserializer::ReadArithmeticType(rttr::variant& var, rttr::type const type)
+{
+	if (type == rttr::type::get<bool>())
+	{
+		var = (m_Reader.Read<uint8>() != 0u);
+	}
+	else if (type == rttr::type::get<char>())
+	{
+		var = static_cast<char>(m_Reader.Read<uint8>());
+	}
+	else if (type == rttr::type::get<int8>())
+	{
+		var = m_Reader.Read<int8>();
+	}
+	else if (type == rttr::type::get<int16>())
+	{
+		var = m_Reader.Read<int16>();
+	}
+	else if (type == rttr::type::get<int32>())
+	{
+		var = m_Reader.Read<int32>();
+	}
+	else if (type == rttr::type::get<int64>())
+	{
+		var = m_Reader.Read<int64>();
+	}
+	else if (type == rttr::type::get<uint8>())
+	{
+		var = m_Reader.Read<uint8>();
+	}
+	else if (type == rttr::type::get<uint16>())
+	{
+		var = m_Reader.Read<uint16>();
+	}
+	else if (type == rttr::type::get<uint32>())
+	{
+		var = m_Reader.Read<uint32>();
+	}
+	else if (type == rttr::type::get<uint64>())
+	{
+		var = m_Reader.Read<uint64>();
+	}
+	else if (type == rttr::type::get<float>())
+	{
+		var = m_Reader.Read<float>();
+	}
+	else if (type == rttr::type::get<double>())
+	{
+		var = m_Reader.Read<double>();
+	}
+	else
+	{
+		ET_ASSERT(false, "unhandled arithmetic type '%s'", type.get_name().data());
+		return false;
+	}
+
+	return true;
+}
+
+//------------------------------
+// BinaryDeserializer::ReadHash
+//
+void BinaryDeserializer::ReadHash(rttr::variant& var)
+{
+	if (m_IsVerbose)
+	{
+		if (m_Reader.Read<uint8>() != 0)
+		{
+			var = HashString(m_Reader.ReadNullString().c_str());
+		}
+	}
+
+	var = HashString(m_Reader.Read<T_Hash>());
+}
+
+//---------------------------------------------
+// BinaryDeserializer::ReadSequentialContainer
+//
+bool BinaryDeserializer::ReadSequentialContainer(rttr::variant& var)
+{
+	rttr::variant_sequential_view view = var.create_sequential_view();
+	
+	// ensure the container has the correct size
+	size_t const count = static_cast<size_t>(m_Reader.Read<uint64>());
+	if (view.get_size() != count)
+	{
+		view.set_size(count);
+	}
+
+	rttr::type const valueType = view.get_value_type();
+
+	for (size_t idx = 0u; idx < count; ++idx)
+	{
+		rttr::variant elementVar = view.get_value(idx);
+		if (!ReadVariant(elementVar, valueType))
+		{
+			ET_ASSERT(false,
+				"Failed to read element from sequential container (type: %s) at index [" ET_FMT_SIZET "]",
+				view.get_type().get_name().data(),
+				idx);
+			return false;
+		}
+
+		if (!view.set_value(idx, elementVar))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+//----------------------------------------------
+// BinaryDeserializer::ReadAssociativeContainer
+//
+bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
+{
+	rttr::variant_associative_view view = var.create_associative_view();
+
+	size_t const count = static_cast<size_t>(m_Reader.Read<uint64>());
+
+	rttr::type const keyType = view.get_key_type();
+	if (view.is_key_only_type())
+	{
+		for (size_t idx = 0u; idx < count; ++idx)
+		{
+			rttr::variant key;
+			if (!ReadVariant(key, keyType))
+			{
+				ET_ASSERT(false,
+					"Failed to read element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					view.get_type().get_name().data(),
+					idx);
+				return false;
+			}
+
+			if (!key.convert(keyType))
+			{
+				ET_ASSERT(false,
+					"Failed to convert element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					view.get_type().get_name().data(),
+					idx);
+				return false;
+			}
+
+			if (!view.insert(key).second)
+			{
+				ET_ASSERT(false,
+					"Failed to insert element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					view.get_type().get_name().data(),
+					idx);
+				return false;
+			}
+		}
+	}
+	else
+	{
+		rttr::type const valueType = view.get_value_type();
+
+		for (size_t idx = 0u; idx < count; ++idx)
+		{
+			rttr::variant key; 
+			if (!ReadVariant(key, keyType))
+			{
+				ET_ASSERT(false,
+					"Failed to read key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					view.get_type().get_name().data(),
+					idx);
+				return false;
+			}
+
+			if (!key.convert(keyType))
+			{
+				ET_ASSERT(false,
+					"Failed to convert key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					view.get_type().get_name().data(),
+					idx);
+				return false;
+			}
+
+			rttr::variant value; // not setting this from existing data might cause a problem in the future if there are nested containers
+			if (!ReadVariant(value, valueType))
+			{
+				ET_ASSERT(false,
+					"Failed to read value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					view.get_type().get_name().data(),
+					idx);
+				return false;
+			}
+
+			if (!value.convert(valueType))
+			{
+				ET_ASSERT(false,
+					"Failed to convert value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					view.get_type().get_name().data(),
+					idx);
+				return false;
+			}
+
+			if (!view.insert(key, value).second)
+			{
+				ET_ASSERT(false,
+					"Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					view.get_type().get_name().data(),
+					idx);
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+//--------------------------------
+// BinaryDeserializer::ReadObject
+//
+bool BinaryDeserializer::ReadObject(rttr::variant& var, TypeInfo const& ti)
+{
 	return false;
 }
 

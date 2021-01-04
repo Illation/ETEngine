@@ -37,6 +37,15 @@ private:
 	bool ReadVariant(rttr::variant& var, rttr::type const callingType);
 	bool ReadBasicVariant(rttr::variant& var, TypeInfo const& ti);
 
+	// atomic
+	bool ReadArithmeticType(rttr::variant& var, rttr::type const type);
+	void ReadHash(rttr::variant& var);
+
+	// complex
+	bool ReadSequentialContainer(rttr::variant& var);
+	bool ReadAssociativeContainer(rttr::variant& var);
+	bool ReadObject(rttr::variant& var, TypeInfo const& ti);
+
 	// Data
 	///////
 
