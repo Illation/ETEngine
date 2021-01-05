@@ -84,23 +84,23 @@ bool BinaryDeserializer::ReadVariant(rttr::variant& var, rttr::type const callin
 			return false;
 		}
 
-		rttr::constructor copyCtor = ti->m_Type.get_constructor({ti->m_Type});
-		if (!copyCtor.is_valid())
+		// call default constructor for our type -> it will be constructed on the heap
+		rttr::constructor defCtor = ti->m_Type.get_constructor();
+		if (!defCtor.is_valid())
 		{
 			ET_ASSERT(false, "no valid default constructor found for serialized type '%s'", ti->m_Type.get_name().data());
 			return false;
 		}
 
-		rttr::variant innerVar = var;
-		if (!ReadBasicVariant(innerVar, *ti))
+		var = defCtor.invoke();
+
+		if (!ReadBasicVariant(var, *ti))
 		{
 			ET_ASSERT(false, "failed to read inner type '%s' of pointer type '%s'", ti->m_Type.get_name().data(), callingType.get_name().data());
 			return false;
 		}
 
-		// call copy constructor for our type -> it will be constructed on the heap
-		var = copyCtor.invoke(innerVar);
-
+		// convert from inner type to pointer type
 		if (!var.convert(callingType))
 		{
 			ET_ASSERT(false, "failed to convert inner type '%s' to pointer type '%s'", ti->m_Type.get_name().data(), callingType.get_name().data());
@@ -342,8 +342,8 @@ bool BinaryDeserializer::ReadSequentialContainer(rttr::variant& var)
 
 	for (size_t idx = 0u; idx < count; ++idx)
 	{
-		rttr::variant elementVar = view.get_value(idx);
-		if (!ReadVariant(elementVar, valueType))
+		rttr::variant elementVar = view.get_value(idx).extract_wrapped_value();
+		if (!ReadVariant(elementVar, valueType) || !elementVar.is_valid())
 		{
 			ET_ASSERT(false,
 				"Failed to read element from sequential container (type: %s) at index [" ET_FMT_SIZET "]",
@@ -352,8 +352,17 @@ bool BinaryDeserializer::ReadSequentialContainer(rttr::variant& var)
 			return false;
 		}
 
+		if (elementVar.get_type() != valueType)
+		{
+			elementVar.convert(valueType);
+		}
+
 		if (!view.set_value(idx, elementVar))
 		{
+			ET_ASSERT(false,
+				"Failed to set value in sequential container (type: %s) at index [" ET_FMT_SIZET "]",
+				view.get_type().get_name().data(),
+				idx);
 			return false;
 		}
 	}
