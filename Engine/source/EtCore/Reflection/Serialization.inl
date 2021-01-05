@@ -6,6 +6,7 @@
 #include "JsonSerializer.h"
 #include "JsonDeserializer.h"
 #include "BinarySerializer.h"
+#include "BinaryDeserializer.h"
 
 
 // Inline functions
@@ -105,6 +106,11 @@ bool DeserializeFromFile(std::string const& filePath, T& outObject)
 	if (ext == "json")
 	{		
 		JsonDeserializer deserializer;
+		return deserializer.DeserializeFromData(content, outObject);
+	}
+	else if (ext == "etbin")
+	{
+		BinaryDeserializer deserializer;
 		return deserializer.DeserializeFromData(content, outObject);
 	}
 

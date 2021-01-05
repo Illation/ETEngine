@@ -44,6 +44,8 @@ public:
 	template<typename TDataType>
 	TDataType const& ReadRef();
 
+	void ReadData(uint8* const data, size_t const size);
+
 	template<typename TStringLengthType>
 	std::string ReadString();
 	std::string ReadString(size_t const size);

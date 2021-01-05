@@ -92,6 +92,18 @@ size_t BinaryReader::GetBufferPosition() const
 	return m_BufferPosition - m_BufferStart;
 }
 
+//------------------------
+// BinaryReader::ReadData
+//
+void BinaryReader::ReadData(uint8* const data, size_t const size)
+{
+	ET_ASSERT(Exists(), "BinaryReader doesn't exist! Unable to read binary data...");
+	ET_ASSERT(m_BufferPosition + size < m_BufferStart + m_BufferSize);
+
+	memcpy(data, m_BinData->data() + m_BufferPosition, size);
+	m_BufferPosition += size;
+}
+
 //--------------------------
 // BinaryReader::ReadString
 //
@@ -119,7 +131,7 @@ std::string BinaryReader::ReadNullString()
 		!= m_BinData->cbegin() + m_BufferStart + m_BufferSize);
 
 	std::string const ret(reinterpret_cast<char const*>(m_BinData->data() + m_BufferPosition));
-	m_BufferPosition += ret.size();
+	m_BufferPosition += ret.size() + 1u;
 
 	return ret;
 }

@@ -136,7 +136,7 @@ bool BinaryDeserializer::ReadBasicVariant(rttr::variant& var, TypeInfo const& ti
 		return false;
 
 	case TypeInfo::E_Kind::Vector:
-		return false;
+		return ReadVectorType(var, ti.m_Id);
 
 	case TypeInfo::E_Kind::String:
 		var = m_Reader.ReadNullString();
@@ -225,6 +225,83 @@ bool BinaryDeserializer::ReadArithmeticType(rttr::variant& var, rttr::type const
 	else
 	{
 		ET_ASSERT(false, "unhandled arithmetic type '%s'", type.get_name().data());
+		return false;
+	}
+
+	return true;
+}
+
+//------------------------------------
+// BinaryDeserializer::ReadVectorType
+//
+bool BinaryDeserializer::ReadVectorType(rttr::variant& var, HashString const typeId)
+{
+	switch (typeId.Get()) // switching through type ID is less safe but should allow for better optimizations
+	{
+	case "vec2"_hash:
+		var = ReadVector<2, float>();
+		break;
+	case "vec3"_hash:
+		var = ReadVector<3, float>();
+		break;
+	case "vec4"_hash:
+		var = ReadVector<4, float>();
+		break;
+	case "ivec2"_hash:
+		var = ReadVector<2, int32>();
+		break;
+	case "ivec3"_hash:
+		var = ReadVector<3, int32>();
+		break;
+	case "ivec4"_hash:
+		var = ReadVector<4, int32>();
+		break;
+	case "dvec2"_hash:
+		var = ReadVector<2, double>();
+		break;
+	case "dvec3"_hash:
+		var = ReadVector<3, double>();
+		break;
+	case "dvec4"_hash:
+		var = ReadVector<4, double>();
+		break;
+
+	case "mat2"_hash:
+		var = ReadMatrix<2, 2, float>();
+		break;
+	case "mat3"_hash:
+		var = ReadMatrix<3, 3, float>();
+		break;
+	case "mat4"_hash:
+		var = ReadMatrix<4, 4, float>();
+		break;
+	case "dmat2"_hash:
+		var = ReadMatrix<2, 2, double>();
+		break;
+	case "dmat3"_hash:
+		var = ReadMatrix<3, 3, double>();
+		break;
+	case "dmat4"_hash:
+		var = ReadMatrix<4, 4, double>();
+		break;
+
+	case "quat"_hash:
+	{
+		quat q;
+		m_Reader.ReadData(reinterpret_cast<uint8*>(q.data.data()), sizeof(float) * 4u);
+		var = q;
+		break;
+	}
+	case "quatd"_hash:
+	{
+		quatd qd;
+		m_Reader.ReadData(reinterpret_cast<uint8*>(qd.data.data()), sizeof(double) * 4u);
+		var = qd;
+		break;
+	}
+
+	default:
+		ET_ASSERT(false, "unhandled vector type - id '%s'", typeId.ToStringDbg());
 		return false;
 	}
 
@@ -390,7 +467,57 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 //
 bool BinaryDeserializer::ReadObject(rttr::variant& var, TypeInfo const& ti)
 {
-	return false;
+	uint16 const propCount = m_Reader.Read<uint16>();
+
+	if (propCount > 0u)
+	{
+		rttr::instance inst(var);
+
+		for (uint16 propIdx = 0u; propIdx < propCount; ++propIdx)
+		{
+			// get property from ID
+			HashString const propId(m_Reader.Read<T_Hash>());
+			rttr::property const* const propPtr = ti.GetProperty(propId);
+			if (propPtr == nullptr)
+			{
+				ET_ASSERT(false, "Couldn't get property with ID '%s' from type '%s'", propId.ToStringDbg(), ti.m_Type.get_name().data());
+				return false;
+			}
+
+			rttr::property const prop = *propPtr;
+			rttr::type const propType = prop.get_type();
+
+			// read current value so the property variant has type info on it
+			rttr::variant propVar = prop.get_value(inst);
+			if (!propVar)
+			{
+				ET_ASSERT(false, "Couldn't get property value '%s' from instance of type '%s'", propId.ToStringDbg(), ti.m_Type.get_name().data());
+				return false;
+			}
+
+			// read serialized value
+			if (!ReadVariant(propVar, propType) || !propVar.is_valid())
+			{
+				ET_ASSERT(false, "Couldn't read property value '%s' - type '%s' - deserializing type '%s'", 
+					propId.ToStringDbg(), 
+					propType.get_name().data(),
+					ti.m_Type.get_name().data());
+				return false;
+			}
+
+			// apply to instance
+			if (propVar.get_type() == rttr::type::get<std::nullptr_t>())
+			{
+				prop.set_value(inst, nullptr);
+			}
+			else
+			{
+				prop.set_value(inst, propVar);
+			}
+		}
+	}
+
+	return true;
 }
 
 

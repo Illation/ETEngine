@@ -39,12 +39,20 @@ private:
 
 	// atomic
 	bool ReadArithmeticType(rttr::variant& var, rttr::type const type);
+	bool ReadVectorType(rttr::variant& var, HashString const typeId);
 	void ReadHash(rttr::variant& var);
 
 	// complex
 	bool ReadSequentialContainer(rttr::variant& var);
 	bool ReadAssociativeContainer(rttr::variant& var);
 	bool ReadObject(rttr::variant& var, TypeInfo const& ti);
+
+	// misc
+	template <uint8 n, class T>
+	math::vector<n, T> ReadVector();
+
+	template <uint8 m, uint8 n, class T>
+	math::matrix<m, n, T> ReadMatrix();
 
 	// Data
 	///////

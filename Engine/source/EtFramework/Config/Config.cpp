@@ -104,6 +104,11 @@ void Config::Initialize()
 		m_Settings = settings;
 
 		//core::serialization::SerializeToFile(GetUserDirPath() + "./config.etbin", m_Settings, true);
+		//Settings settings2;
+		//if (core::serialization::DeserializeFromFile(GetUserDirPath() + "./config.etbin", settings2))
+		//{
+		//	m_Settings = settings2;
+		//}
 	}
 	else
 	{
