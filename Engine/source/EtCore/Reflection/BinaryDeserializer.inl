@@ -19,12 +19,24 @@ namespace core {
 template<typename TDataType>
 bool BinaryDeserializer::DeserializeFromData(std::vector<uint8> const& data, TDataType& outObject)
 {
+	// if this is a non pointer object we can deserialize directly into an instance, avoiding copying data
+	rttr::type const callingType = rttr::type::get<TDataType>();
+	if (TypeInfo::IsBasic(callingType))
+	{
+		TypeInfo const& ti = TypeInfoRegistry::Instance().GetTypeInfo(callingType);
+		if (ti.m_Kind == TypeInfo::E_Kind::Class)
+		{
+			return DeserializeRoot(rttr::instance(outObject), ti, data);
+		}
+	}
+
+	// in all other cases we will deserialize a copied variant
 	rttr::variant deserializedValue = outObject;
-	if (DeserializeRoot(deserializedValue, rttr::type::get<TDataType>(), data))
+	if (DeserializeRoot(deserializedValue, callingType, data))
 	{
 		if (deserializedValue.is_type<TDataType>())
 		{
-			outObject = deserializedValue.get_value<TDataType>(); // check that we don't loose data after the variant goes out of scope
+			outObject = deserializedValue.get_value<TDataType>(); 
 			return true;
 		}
 		else if (deserializedValue.convert(outObject))

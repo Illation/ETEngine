@@ -70,9 +70,6 @@ bool BinarySerializer::WriteVariant(rttr::variant const& var)
 		return WriteVariant(var.extract_wrapped_value());
 	}
 
-	rttr::instance const inst(var);
-	TypeInfo const& ti = TypeInfoRegistry::Instance().GetTypeInfo(inst.get_derived_type());
-
 	// for pointers, write either null or the derived type ID
 	if (valueType.is_pointer())
 	{
@@ -85,45 +82,53 @@ bool BinarySerializer::WriteVariant(rttr::variant const& var)
 			return true;
 		}
 
+		rttr::instance const inst(var);
+		TypeInfo const& ti = TypeInfoRegistry::Instance().GetTypeInfo(inst.get_derived_type());
+
 		m_Writer->Write(ti.m_Id.Get());
-	}
 
-	// handle different variant kinds
-	switch (ti.m_Kind)
+		// specialization of "WriteBasicVariant" because we already have an instance
+		switch (ti.m_Kind)
+		{
+		case TypeInfo::E_Kind::Arithmetic:
+			return WriteArithmeticType(ti.m_Type, var);
+
+		case TypeInfo::E_Kind::Enumeration:
+			return WriteArithmeticType(ti.m_Type.get_enumeration().get_underlying_type(), var);
+
+		case TypeInfo::E_Kind::Vector:
+			return WriteVectorType(ti.m_Type, var);
+
+		case TypeInfo::E_Kind::String:
+			WriteString(var.to_string());
+			return true;
+
+		case TypeInfo::E_Kind::Hash:
+			WriteHash(var.get_value<HashString>());
+			return true;
+
+		case TypeInfo::E_Kind::AssetPointer:
+			WriteHash(var.get_value<I_AssetPtr>().GetId());
+			return true;
+
+		case TypeInfo::E_Kind::ContainerSequential:
+			return WriteSequentialContainer(var.create_sequential_view(), true);
+
+		case TypeInfo::E_Kind::ContainerAssociative:
+			return WriteAssociativeContainer(var.create_associative_view());
+
+		case TypeInfo::E_Kind::Class:
+			return WriteObject(inst, ti);
+		}
+
+		ET_ASSERT(false, "unhandled variant type '%s'", ti.m_Id.ToStringDbg());
+		return false;
+	}
+	else
 	{
-	case TypeInfo::E_Kind::Arithmetic:
-		return WriteArithmeticType(ti.m_Type, var);
-
-	case TypeInfo::E_Kind::Enumeration:
-		return WriteArithmeticType(ti.m_Type.get_enumeration().get_underlying_type(), var);
-
-	case TypeInfo::E_Kind::Vector:
-		return WriteVectorType(ti.m_Type, var);
-
-	case TypeInfo::E_Kind::String:
-		WriteString(var.to_string());
-		return true;
-
-	case TypeInfo::E_Kind::Hash:
-		WriteHash(var.get_value<HashString>());
-		return true;
-
-	case TypeInfo::E_Kind::AssetPointer:
-		WriteHash(var.get_value<I_AssetPtr>().GetId());
-		return true;
-
-	case TypeInfo::E_Kind::ContainerSequential:
-		return WriteSequentialContainer(var.create_sequential_view(), true);
-
-	case TypeInfo::E_Kind::ContainerAssociative:
-		return WriteAssociativeContainer(var.create_associative_view());
-
-	case TypeInfo::E_Kind::Class:
-		return WriteObject(inst, ti);
+		TypeInfo const& ti = TypeInfoRegistry::Instance().GetTypeInfo(valueType);
+		return WriteBasicVariant(var, ti);
 	}
-
-	ET_ASSERT(false, "unhandled variant type '%s'", ti.m_Id.ToStringDbg());
-	return false;
 }
 
 //-------------------------------------
@@ -315,7 +320,7 @@ bool BinarySerializer::WriteSequentialContainer(rttr::variant_sequential_view co
 	}
 
 	rttr::type const itemType = view.get_value_type();
-	if (IsBasic(itemType))
+	if (TypeInfo::IsBasic(itemType))
 	{
 		TypeInfo const& ti = TypeInfoRegistry::Instance().GetTypeInfo(itemType);
 
@@ -359,7 +364,7 @@ bool BinarySerializer::WriteAssociativeContainer(rttr::variant_associative_view 
 	m_Writer->Write(itemCount);
 
 	rttr::type const keyType = view.get_key_type();
-	if (IsBasic(keyType))
+	if (TypeInfo::IsBasic(keyType))
 	{
 		TypeInfo const& keyTi = TypeInfoRegistry::Instance().GetTypeInfo(keyType);
 
@@ -377,7 +382,7 @@ bool BinarySerializer::WriteAssociativeContainer(rttr::variant_associative_view 
 		else
 		{
 			rttr::type const valueType = view.get_value_type();
-			if (IsBasic(valueType))
+			if (TypeInfo::IsBasic(valueType))
 			{
 				TypeInfo const& valueTi = TypeInfoRegistry::Instance().GetTypeInfo(valueType);
 
@@ -431,7 +436,7 @@ bool BinarySerializer::WriteAssociativeContainer(rttr::variant_associative_view 
 		else
 		{
 			rttr::type const valueType = view.get_value_type();
-			if (IsBasic(valueType))
+			if (TypeInfo::IsBasic(valueType))
 			{
 				TypeInfo const& valueTi = TypeInfoRegistry::Instance().GetTypeInfo(valueType);
 
@@ -518,14 +523,6 @@ bool BinarySerializer::WriteObject(rttr::instance const& inst, TypeInfo const& t
 	}
 
 	return true;
-}
-
-//---------------------------
-// BinarySerializer::IsBasic
-//
-bool BinarySerializer::IsBasic(rttr::type const type) const
-{
-	return (!type.is_pointer() && !type.is_wrapper());
 }
 
 

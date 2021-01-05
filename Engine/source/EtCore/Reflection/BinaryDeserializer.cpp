@@ -3,7 +3,6 @@
 
 #include <EtBuild/EngineVersion.h>
 
-#include "TypeInfoRegistry.h"
 #include "BinaryFormat.h"
 
 
@@ -19,7 +18,48 @@ namespace core {
 //-------------------------------------
 // BinaryDeserializer::DeserializeRoot
 //
+// For any type
+//
 bool BinaryDeserializer::DeserializeRoot(rttr::variant& var, rttr::type const callingType, std::vector<uint8> const& data)
+{
+	if (!InitFromHeader(data, callingType))
+	{
+		return false;
+	}
+
+	// main deserialization
+	bool const success = ReadVariant(var, callingType);
+
+	// cleanup
+	m_Reader.Close();
+	return success;
+}
+
+//-------------------------------------
+// BinaryDeserializer::DeserializeRoot
+//
+// For deserializing a non pointer object
+//
+bool BinaryDeserializer::DeserializeRoot(rttr::instance& inst, TypeInfo const& ti, std::vector<uint8>const& data)
+{
+	if (!InitFromHeader(data, ti.m_Type))
+	{
+		return false;
+	}
+
+	// main deserialization
+	uint16 const propCount = m_Reader.Read<uint16>();
+	bool const success = ReadObjectProperties(inst, ti, propCount);
+
+	// cleanup
+	m_Reader.Close();
+	return success;
+}
+
+//------------------------------------
+// BinaryDeserializer::InitFromHeader
+//
+bool BinaryDeserializer::InitFromHeader(std::vector<uint8> const& data, rttr::type const callingType)
 {
 	// setup
 	m_Reader.Open(data);
@@ -41,12 +81,7 @@ bool BinaryDeserializer::DeserializeRoot(rttr::variant& var, rttr::type const ca
 
 	m_IsVerbose = (m_Reader.Read<uint8>() != 0u);
 
-	// main deserialization
-	bool const success = ReadVariant(var, callingType);
-
-	// cleanup
-	m_Reader.Close();
-	return success;
+	return true;
 }
 
 //---------------------------------
@@ -318,6 +353,7 @@ void BinaryDeserializer::ReadHash(rttr::variant& var)
 		if (m_Reader.Read<uint8>() != 0)
 		{
 			var = HashString(m_Reader.ReadNullString().c_str());
+			return;
 		}
 	}
 
@@ -480,55 +516,64 @@ bool BinaryDeserializer::ReadObject(rttr::variant& var, TypeInfo const& ti)
 
 	if (propCount > 0u)
 	{
-		rttr::instance inst(var);
-
-		for (uint16 propIdx = 0u; propIdx < propCount; ++propIdx)
-		{
-			// get property from ID
-			HashString const propId(m_Reader.Read<T_Hash>());
-			rttr::property const* const propPtr = ti.GetProperty(propId);
-			if (propPtr == nullptr)
-			{
-				ET_ASSERT(false, "Couldn't get property with ID '%s' from type '%s'", propId.ToStringDbg(), ti.m_Type.get_name().data());
-				return false;
-			}
-
-			rttr::property const prop = *propPtr;
-			rttr::type const propType = prop.get_type();
-
-			// read current value so the property variant has type info on it
-			rttr::variant propVar = prop.get_value(inst);
-			if (!propVar)
-			{
-				ET_ASSERT(false, "Couldn't get property value '%s' from instance of type '%s'", propId.ToStringDbg(), ti.m_Type.get_name().data());
-				return false;
-			}
-
-			// read serialized value
-			if (!ReadVariant(propVar, propType) || !propVar.is_valid())
-			{
-				ET_ASSERT(false, "Couldn't read property value '%s' - type '%s' - deserializing type '%s'", 
-					propId.ToStringDbg(), 
-					propType.get_name().data(),
-					ti.m_Type.get_name().data());
-				return false;
-			}
-
-			// apply to instance
-			if (propVar.get_type() == rttr::type::get<std::nullptr_t>())
-			{
-				prop.set_value(inst, nullptr);
-			}
-			else
-			{
-				prop.set_value(inst, propVar);
-			}
-		}
+		return ReadObjectProperties(rttr::instance(var), ti, propCount);
 	}
 
 	return true;
 }
 
+//------------------------------------------
+// BinaryDeserializer::ReadObjectProperties
+//
+// read properties on an existing object instance
+//
+bool BinaryDeserializer::ReadObjectProperties(rttr::instance& inst, TypeInfo const& ti, uint16 const propCount)
+{
+	for (uint16 propIdx = 0u; propIdx < propCount; ++propIdx)
+	{
+		// get property from ID
+		HashString const propId(m_Reader.Read<T_Hash>());
+		rttr::property const* const propPtr = ti.GetProperty(propId);
+		if (propPtr == nullptr)
+		{
+			ET_ASSERT(false, "Couldn't get property with ID '%s' from type '%s'", propId.ToStringDbg(), ti.m_Type.get_name().data());
+			return false;
+		}
+
+		rttr::property const prop = *propPtr;
+		rttr::type const propType = prop.get_type();
+
+		// read current value so the property variant has type info on it
+		rttr::variant propVar = prop.get_value(inst);
+		if (!propVar)
+		{
+			ET_ASSERT(false, "Couldn't get property value '%s' from instance of type '%s'", propId.ToStringDbg(), ti.m_Type.get_name().data());
+			return false;
+		}
+
+		// read serialized value
+		if (!ReadVariant(propVar, propType) || !propVar.is_valid())
+		{
+			ET_ASSERT(false, "Couldn't read property value '%s' - type '%s' - deserializing type '%s'",
+				propId.ToStringDbg(),
+				propType.get_name().data(),
+				ti.m_Type.get_name().data());
+			return false;
+		}
+
+		// apply to instance
+		if (propVar.get_type() == rttr::type::get<std::nullptr_t>())
+		{
+			prop.set_value(inst, nullptr);
+		}
+		else
+		{
+			prop.set_value(inst, propVar);
+		}
+	}
+
+	return true;
+}
 
 } // namespace core
 } // namespace et

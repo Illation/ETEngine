@@ -98,7 +98,7 @@ size_t BinaryReader::GetBufferPosition() const
 void BinaryReader::ReadData(uint8* const data, size_t const size)
 {
 	ET_ASSERT(Exists(), "BinaryReader doesn't exist! Unable to read binary data...");
-	ET_ASSERT(m_BufferPosition + size < m_BufferStart + m_BufferSize);
+	ET_ASSERT(m_BufferPosition + size <= m_BufferStart + m_BufferSize);
 
 	memcpy(data, m_BinData->data() + m_BufferPosition, size);
 	m_BufferPosition += size;
@@ -110,7 +110,7 @@ void BinaryReader::ReadData(uint8* const data, size_t const size)
 std::string BinaryReader::ReadString(size_t const size)
 {
 	ET_ASSERT(Exists(), "BinaryReader doesn't exist! Unable to read binary data...");
-	ET_ASSERT(m_BufferPosition + size < m_BufferStart + m_BufferSize);
+	ET_ASSERT(m_BufferPosition + size <= m_BufferStart + m_BufferSize);
 
 	uint8 const* const data = m_BinData->data() + m_BufferPosition;
 	m_BufferPosition += size;

@@ -48,9 +48,6 @@ private:
 	bool WriteAssociativeContainer(rttr::variant_associative_view const& view);
 	bool WriteObject(rttr::instance const& inst, TypeInfo const& ti);
 
-	// other
-	bool IsBasic(rttr::type const type) const;
-
 	// Data
 	///////
 

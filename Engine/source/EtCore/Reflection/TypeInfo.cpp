@@ -24,6 +24,14 @@ TypeInfo::PropertyInfo::PropertyInfo(rttr::property const prop)
 	, m_IsSerializable(!prop.get_metadata("NO_SERIALIZE"))
 { }
 
+//-------------------
+// TypeInfo::IsBasic
+//
+bool TypeInfo::IsBasic(rttr::type const type)
+{
+	return (!type.is_pointer() && !type.is_wrapper());
+}
+
 //-----------------
 // TypeInfo::c-tor
 //

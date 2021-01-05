@@ -175,16 +175,6 @@ void Cooker::CookCompiledPackage()
 		return;
 	}
 
-	//std::string const binFullPath = s_TempPath + "asset_database.etbin";
-	//if (core::serialization::SerializeToFile(binFullPath, mergeDb, false))
-	//{
-	//	core::AssetDatabase binDb;
-	//	if (core::serialization::DeserializeFromFile(binFullPath, binDb))
-	//	{
-	//		LOG("Yay");
-	//	}
-	//}
-
 	// load the asset database from the temporary file and add it to the package
 	core::File* dbFile = new core::File(dbName, m_TempDir);
 	packageWriter.AddFile(dbFile, dbFile->GetPath(), core::E_CompressionType::Store);

@@ -39,6 +39,10 @@ struct TypeInfo final
 		Undefined
 	};
 
+	// static utility
+	//----------------
+	static bool IsBasic(rttr::type const type);
+
 	// functionality
 	//---------------
 	TypeInfo(rttr::type const type);
