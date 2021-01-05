@@ -157,10 +157,10 @@ bool BinaryDeserializer::ReadBasicVariant(rttr::variant& var, TypeInfo const& ti
 	switch (ti.m_Kind)
 	{
 	case TypeInfo::E_Kind::Arithmetic:
-		return ReadArithmeticType(var, ti.m_Type);
+		return ReadArithmeticType(var, ti.m_Id);
 
 	case TypeInfo::E_Kind::Enumeration:
-		if (ReadArithmeticType(var, ti.m_Type.get_enumeration().get_underlying_type()))
+		if (ReadArithmeticType(var, TypeInfoRegistry::Instance().GetTypeInfo(ti.m_Type.get_enumeration().get_underlying_type()).m_Id))
 		{
 			if (var.convert(ti.m_Type))
 			{
@@ -207,59 +207,52 @@ bool BinaryDeserializer::ReadBasicVariant(rttr::variant& var, TypeInfo const& ti
 //----------------------------------------
 // BinaryDeserializer::ReadArithmeticType
 //
-bool BinaryDeserializer::ReadArithmeticType(rttr::variant& var, rttr::type const type)
+bool BinaryDeserializer::ReadArithmeticType(rttr::variant& var, HashString const typeId)
 {
-	if (type == rttr::type::get<bool>())
+	switch (typeId.Get()) // switching through type ID is less safe but should allow for better optimizations
 	{
+	case "bool"_hash:
 		var = (m_Reader.Read<uint8>() != 0u);
-	}
-	else if (type == rttr::type::get<char>())
-	{
+		break;
+	case "char"_hash:
 		var = static_cast<char>(m_Reader.Read<uint8>());
-	}
-	else if (type == rttr::type::get<int8>())
-	{
+		break;
+
+	case "signedchar"_hash:
 		var = m_Reader.Read<int8>();
-	}
-	else if (type == rttr::type::get<int16>())
-	{
+		break;
+	case "short"_hash:
 		var = m_Reader.Read<int16>();
-	}
-	else if (type == rttr::type::get<int32>())
-	{
+		break;
+	case "int"_hash:
 		var = m_Reader.Read<int32>();
-	}
-	else if (type == rttr::type::get<int64>())
-	{
+		break;
+	case "__int64"_hash:
 		var = m_Reader.Read<int64>();
-	}
-	else if (type == rttr::type::get<uint8>())
-	{
+		break;
+
+	case "unsignedchar"_hash:
 		var = m_Reader.Read<uint8>();
-	}
-	else if (type == rttr::type::get<uint16>())
-	{
+		break;
+	case "unsignedshort"_hash:
 		var = m_Reader.Read<uint16>();
-	}
-	else if (type == rttr::type::get<uint32>())
-	{
+		break;
+	case "unsignedint"_hash:
 		var = m_Reader.Read<uint32>();
-	}
-	else if (type == rttr::type::get<uint64>())
-	{
+		break;
+	case "unsigned__int64"_hash:
 		var = m_Reader.Read<uint64>();
-	}
-	else if (type == rttr::type::get<float>())
-	{
+		break;
+
+	case "float"_hash:
 		var = m_Reader.Read<float>();
-	}
-	else if (type == rttr::type::get<double>())
-	{
+		break;
+	case "double"_hash:
 		var = m_Reader.Read<double>();
-	}
-	else
-	{
-		ET_ASSERT(false, "unhandled arithmetic type '%s'", type.get_name().data());
+		break;
+
+	default:
+		ET_ASSERT(false, "unhandled arithmetic type - id '%s'", typeId.ToStringDbg());
 		return false;
 	}
 
@@ -374,32 +367,65 @@ bool BinaryDeserializer::ReadSequentialContainer(rttr::variant& var)
 		view.set_size(count);
 	}
 
-	rttr::type const valueType = view.get_value_type();
-
-	for (size_t idx = 0u; idx < count; ++idx)
+	if (count == 0)
 	{
-		rttr::variant elementVar = view.get_value(idx).extract_wrapped_value();
-		if (!ReadVariant(elementVar, valueType) || !elementVar.is_valid())
-		{
-			ET_ASSERT(false,
-				"Failed to read element from sequential container (type: %s) at index [" ET_FMT_SIZET "]",
-				view.get_type().get_name().data(),
-				idx);
-			return false;
-		}
+		return true;
+	}
 
-		if (elementVar.get_type() != valueType)
-		{
-			elementVar.convert(valueType);
-		}
+	rttr::type const valueType = view.get_value_type();
+	if (TypeInfo::IsBasic(valueType))
+	{
+		// for basic types we can fetch type info once instead of for every array element
+		TypeInfo const& valueTi = TypeInfoRegistry::Instance().GetTypeInfo(valueType);
 
-		if (!view.set_value(idx, elementVar))
+		for (size_t idx = 0u; idx < count; ++idx)
 		{
-			ET_ASSERT(false,
-				"Failed to set value in sequential container (type: %s) at index [" ET_FMT_SIZET "]",
-				view.get_type().get_name().data(),
-				idx);
-			return false;
+			rttr::variant elementVar = view.get_value(idx).extract_wrapped_value();
+			if (!ReadBasicVariant(elementVar, valueTi) || !elementVar.is_valid())
+			{
+				ET_ASSERT(false,
+					"Failed to read element from sequential container (type: %s) at index [" ET_FMT_SIZET "]",
+					view.get_type().get_name().data(),
+					idx);
+				return false;
+			}
+
+			ET_ASSERT(elementVar.get_type() == valueType);
+
+			if (!view.set_value(idx, elementVar))
+			{
+				ET_ASSERT(false,
+					"Failed to set value in sequential container (type: %s) at index [" ET_FMT_SIZET "]",
+					view.get_type().get_name().data(),
+					idx);
+				return false;
+			}
+		}
+	}
+	else
+	{
+		for (size_t idx = 0u; idx < count; ++idx)
+		{
+			rttr::variant elementVar = view.get_value(idx).extract_wrapped_value();
+			if (!ReadVariant(elementVar, valueType) || !elementVar.is_valid())
+			{
+				ET_ASSERT(false,
+					"Failed to read element from sequential container (type: %s) at index [" ET_FMT_SIZET "]",
+					view.get_type().get_name().data(),
+					idx);
+				return false;
+			}
+
+			ET_ASSERT(elementVar.get_type() == valueType);
+
+			if (!view.set_value(idx, elementVar))
+			{
+				ET_ASSERT(false,
+					"Failed to set value in sequential container (type: %s) at index [" ET_FMT_SIZET "]",
+					view.get_type().get_name().data(),
+					idx);
+				return false;
+			}
 		}
 	}
 
@@ -412,94 +438,236 @@ bool BinaryDeserializer::ReadSequentialContainer(rttr::variant& var)
 bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 {
 	rttr::variant_associative_view view = var.create_associative_view();
+	view.clear();
 
 	size_t const count = static_cast<size_t>(m_Reader.Read<uint64>());
+	if (count == 0)
+	{
+		return true;
+	}
 
 	rttr::type const keyType = view.get_key_type();
-	if (view.is_key_only_type())
+	if (TypeInfo::IsBasic(keyType))
 	{
-		for (size_t idx = 0u; idx < count; ++idx)
+		TypeInfo const& keyTi = TypeInfoRegistry::Instance().GetTypeInfo(keyType);
+
+		if (view.is_key_only_type())
 		{
-			rttr::variant key;
-			if (!ReadVariant(key, keyType))
+			for (size_t idx = 0u; idx < count; ++idx)
 			{
-				ET_ASSERT(false,
-					"Failed to read element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
-					view.get_type().get_name().data(),
-					idx);
-				return false;
-			}
+				rttr::variant key;
+				if (!ReadBasicVariant(key, keyTi))
+				{
+					ET_ASSERT(false,
+						"Failed to read basic element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						view.get_type().get_name().data(),
+						idx);
+					return false;
+				}
 
-			if (!key.convert(keyType))
-			{
-				ET_ASSERT(false,
-					"Failed to convert element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
-					view.get_type().get_name().data(),
-					idx);
-				return false;
-			}
+				ET_ASSERT(key.get_type() == keyType);
 
-			if (!view.insert(key).second)
+				if (!view.insert(key).second)
+				{
+					ET_ASSERT(false,
+						"Failed to insert element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						view.get_type().get_name().data(),
+						idx);
+					return false;
+				}
+			}
+		}
+		else
+		{
+			rttr::type const valueType = view.get_value_type();
+			if (TypeInfo::IsBasic(valueType))
 			{
-				ET_ASSERT(false,
-					"Failed to insert element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
-					view.get_type().get_name().data(),
-					idx);
-				return false;
+				TypeInfo const& valueTi = TypeInfoRegistry::Instance().GetTypeInfo(valueType);
+
+				for (size_t idx = 0u; idx < count; ++idx)
+				{
+					rttr::variant key;
+					if (!ReadBasicVariant(key, keyTi))
+					{
+						ET_ASSERT(false,
+							"Failed to read basic key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+							view.get_type().get_name().data(),
+							idx);
+						return false;
+					}
+
+					ET_ASSERT(key.get_type() == keyType);
+
+					rttr::variant value; // not setting this from existing data might cause a problem in the future if there are nested containers
+					if (!ReadBasicVariant(value, valueTi))
+					{
+						ET_ASSERT(false,
+							"Failed to read basic value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+							view.get_type().get_name().data(),
+							idx);
+						return false;
+					}
+
+					ET_ASSERT(value.get_type() == valueType);
+
+					if (!view.insert(key, value).second)
+					{
+						ET_ASSERT(false,
+							"Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+							view.get_type().get_name().data(),
+							idx);
+						return false;
+					}
+				}
+			}
+			else
+			{
+				for (size_t idx = 0u; idx < count; ++idx)
+				{
+					rttr::variant key;
+					if (!ReadBasicVariant(key, keyTi))
+					{
+						ET_ASSERT(false,
+							"Failed to read basic key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+							view.get_type().get_name().data(),
+							idx);
+						return false;
+					}
+
+					ET_ASSERT(key.get_type() == keyType);
+
+					rttr::variant value; // not setting this from existing data might cause a problem in the future if there are nested containers
+					if (!ReadVariant(value, valueType))
+					{
+						ET_ASSERT(false,
+							"Failed to read value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+							view.get_type().get_name().data(),
+							idx);
+						return false;
+					}
+
+					ET_ASSERT(value.get_type() == valueType);
+
+					if (!view.insert(key, value).second)
+					{
+						ET_ASSERT(false,
+							"Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+							view.get_type().get_name().data(),
+							idx);
+						return false;
+					}
+				}
 			}
 		}
 	}
 	else
 	{
-		rttr::type const valueType = view.get_value_type();
-
-		for (size_t idx = 0u; idx < count; ++idx)
+		if (view.is_key_only_type())
 		{
-			rttr::variant key; 
-			if (!ReadVariant(key, keyType))
+			for (size_t idx = 0u; idx < count; ++idx)
 			{
-				ET_ASSERT(false,
-					"Failed to read key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
-					view.get_type().get_name().data(),
-					idx);
-				return false;
-			}
+				rttr::variant key;
+				if (!ReadVariant(key, keyType))
+				{
+					ET_ASSERT(false,
+						"Failed to read element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						view.get_type().get_name().data(),
+						idx);
+					return false;
+				}
 
-			if (!key.convert(keyType))
-			{
-				ET_ASSERT(false,
-					"Failed to convert key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
-					view.get_type().get_name().data(),
-					idx);
-				return false;
-			}
+				ET_ASSERT(key.get_type() == keyType);
 
-			rttr::variant value; // not setting this from existing data might cause a problem in the future if there are nested containers
-			if (!ReadVariant(value, valueType))
-			{
-				ET_ASSERT(false,
-					"Failed to read value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
-					view.get_type().get_name().data(),
-					idx);
-				return false;
+				if (!view.insert(key).second)
+				{
+					ET_ASSERT(false,
+						"Failed to insert element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						view.get_type().get_name().data(),
+						idx);
+					return false;
+				}
 			}
-
-			if (!value.convert(valueType))
+		}
+		else
+		{
+			rttr::type const valueType = view.get_value_type();
+			if (TypeInfo::IsBasic(valueType))
 			{
-				ET_ASSERT(false,
-					"Failed to convert value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
-					view.get_type().get_name().data(),
-					idx);
-				return false;
+				TypeInfo const& valueTi = TypeInfoRegistry::Instance().GetTypeInfo(valueType);
+
+				for (size_t idx = 0u; idx < count; ++idx)
+				{
+					rttr::variant key;
+					if (!ReadVariant(key, keyType))
+					{
+						ET_ASSERT(false,
+							"Failed to read key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+							view.get_type().get_name().data(),
+							idx);
+						return false;
+					}
+
+					ET_ASSERT(key.get_type() == keyType);
+
+					rttr::variant value; // not setting this from existing data might cause a problem in the future if there are nested containers
+					if (!ReadBasicVariant(value, valueTi))
+					{
+						ET_ASSERT(false,
+							"Failed to read basic value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+							view.get_type().get_name().data(),
+							idx);
+						return false;
+					}
+
+					ET_ASSERT(value.get_type() == valueType);
+
+					if (!view.insert(key, value).second)
+					{
+						ET_ASSERT(false,
+							"Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+							view.get_type().get_name().data(),
+							idx);
+						return false;
+					}
+				}
 			}
-
-			if (!view.insert(key, value).second)
+			else
 			{
-				ET_ASSERT(false,
-					"Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
-					view.get_type().get_name().data(),
-					idx);
-				return false;
+				for (size_t idx = 0u; idx < count; ++idx)
+				{
+					rttr::variant key;
+					if (!ReadVariant(key, keyType))
+					{
+						ET_ASSERT(false,
+							"Failed to read key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+							view.get_type().get_name().data(),
+							idx);
+						return false;
+					}
+
+					ET_ASSERT(key.get_type() == keyType);
+
+					rttr::variant value; // not setting this from existing data might cause a problem in the future if there are nested containers
+					if (!ReadVariant(value, valueType))
+					{
+						ET_ASSERT(false,
+							"Failed to read value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+							view.get_type().get_name().data(),
+							idx);
+						return false;
+					}
+
+					ET_ASSERT(value.get_type() == valueType);
+
+					if (!view.insert(key, value).second)
+					{
+						ET_ASSERT(false,
+							"Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+							view.get_type().get_name().data(),
+							idx);
+						return false;
+					}
+				}
 			}
 		}
 	}

@@ -37,7 +37,7 @@ private:
 	bool ReadBasicVariant(rttr::variant& var, TypeInfo const& ti);
 
 	// atomic
-	bool ReadArithmeticType(rttr::variant& var, rttr::type const type);
+	bool ReadArithmeticType(rttr::variant& var, HashString const typeId);
 	bool ReadVectorType(rttr::variant& var, HashString const typeId);
 	void ReadHash(rttr::variant& var);
 
