@@ -22,6 +22,8 @@ class FileResourceManager : public core::ResourceManager
 public:
 	friend class core::ResourceManager;
 
+	static constexpr char s_DatabasePath[] = "asset_database.json";
+
 	// Construct destruct
 	//---------------------
 	FileResourceManager(std::string const& projectPath, std::string const& enginePath);

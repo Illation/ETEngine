@@ -26,12 +26,9 @@ private:
 protected:
 	typedef std::function<I_Asset*(HashString const)> T_ReferenceAssetGetter;
 
-public:
-	static constexpr char s_DatabasePath[] = "asset_database.json";
-
 	// Singleton
 	//---------------------
-
+public:
 	static void SetInstance(ResourceManager* const instance);
 	static void DestroyInstance();
 

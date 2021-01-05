@@ -682,7 +682,7 @@ bool BinaryDeserializer::ReadObject(rttr::variant& var, TypeInfo const& ti)
 {
 	uint16 const propCount = m_Reader.Read<uint16>();
 
-	if (propCount > 0u)
+	if (propCount > 0u) // no need to create an instance if there are no properties to read
 	{
 		return ReadObjectProperties(rttr::instance(var), ti, propCount);
 	}
@@ -742,6 +742,7 @@ bool BinaryDeserializer::ReadObjectProperties(rttr::instance& inst, TypeInfo con
 
 	return true;
 }
+
 
 } // namespace core
 } // namespace et

@@ -19,6 +19,7 @@
 #include <EtFramework/Config/BootConfig.h>
 
 #include <EtRuntime/Rendering/GlfwRenderWindow.h>
+#include <EtRuntime/Core/PackageResourceManager.h>
 
 #include <EtPipeline/Content/FileResourceManager.h>
 
@@ -162,7 +163,7 @@ void Cooker::CookCompiledPackage()
 	std::vector<uint8> packageData;
 
 	// serialize the asset database to a temporary file
-	std::string const dbName(core::ResourceManager::s_DatabasePath);
+	std::string const dbName(rt::PackageResourceManager::s_DatabasePath);
 	std::string const tempDbFullPath = s_TempPath + dbName;
 
 	core::AssetDatabase mergeDb(false);

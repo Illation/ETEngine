@@ -326,7 +326,7 @@ bool BinarySerializer::WriteSequentialContainer(rttr::variant_sequential_view co
 
 		for (size_t idx = 0u; idx < static_cast<size_t>(itemCount); ++idx)
 		{
-			if (!WriteBasicVariant(view.get_value(idx), ti))
+			if (!WriteBasicVariant(view.get_value(idx).extract_wrapped_value(), ti))
 			{
 				ET_ASSERT(false,
 					"Failed to write basic element of sequential container type '%s' at index " ET_FMT_SIZET,
@@ -340,7 +340,7 @@ bool BinarySerializer::WriteSequentialContainer(rttr::variant_sequential_view co
 	{
 		for (size_t idx = 0u; idx < static_cast<size_t>(itemCount); ++idx)
 		{
-			if (!WriteVariant(view.get_value(idx)))
+			if (!WriteVariant(view.get_value(idx).extract_wrapped_value()))
 			{
 				ET_ASSERT(false, 
 					"Failed to write element of sequential container type '%s' at index " ET_FMT_SIZET, 

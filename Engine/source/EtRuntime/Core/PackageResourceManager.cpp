@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "PackageResourceManager.h"
 
-#include <EtCore/Reflection/JsonDeserializer.h>
+#include <EtCore/Reflection/BinaryDeserializer.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Package/MemoryPackage.h>
 #include <EtCore/FileSystem/Package/FilePackage.h>
@@ -44,7 +44,7 @@ void PackageResourceManager::Init()
 	}
 
 	// convert that data to a string and deserialize it as json
-	core::JsonDeserializer deserializer;
+	core::BinaryDeserializer deserializer;
 	if (!deserializer.DeserializeFromData(rawData, m_Database))
 	{
 		LOG("PackageResourceManager::Init > unable to deserialize asset database at '" + std::string(s_DatabasePath) + std::string("'"), 

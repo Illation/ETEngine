@@ -26,6 +26,8 @@ public:
 	friend class core::ResourceManager;
 	typedef std::pair<core::HashString, core::I_Package*> T_IndexedPackage;
 
+	static constexpr char s_DatabasePath[] = "asset_database.etbin";
+
 	// Construct destruct
 	//---------------------
 	PackageResourceManager();
