@@ -5,7 +5,7 @@
 
 
 namespace et {
-REGISTRATION_NS(pl);
+	REGISTRATION_NS(pl);
 }
 
 
@@ -19,8 +19,8 @@ namespace pl {
 class EditableFontAsset final : public EditorAsset<render::SpriteFont>
 {
 	RTTR_ENABLE(EditorAsset<render::SpriteFont>)
-		REGISTRATION_FRIEND_NS(pl)
-		DECLARE_FORCED_LINKING()
+	REGISTRATION_FRIEND_NS(pl)
+	DECLARE_FORCED_LINKING()
 
 	static std::string const s_FontFileExt;
 	static std::string const s_TextureFileExt;

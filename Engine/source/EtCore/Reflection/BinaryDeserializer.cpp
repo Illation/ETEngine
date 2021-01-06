@@ -416,7 +416,8 @@ bool BinaryDeserializer::ReadSequentialContainer(rttr::variant& var)
 				return false;
 			}
 
-			ET_ASSERT(elementVar.get_type() == valueType);
+			rttr::type const varType = elementVar.get_type();
+			ET_ASSERT(varType == valueType);
 
 			if (!view.set_value(idx, elementVar))
 			{

@@ -81,6 +81,7 @@ class PlanetCameraLinkComponentDesc final : public ComponentDescriptor<PlanetCam
 	// definitions
 	//-------------
 	RTTR_ENABLE(ComponentDescriptor<PlanetCameraLinkComponent>)
+	DECLARE_FORCED_LINKING()
 
 	// construct destruct
 	//--------------------

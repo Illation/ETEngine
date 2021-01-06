@@ -59,6 +59,7 @@ class AtmosphereComponentDesc final : public ComponentDescriptor<AtmosphereCompo
 	// definitions
 	//-------------
 	RTTR_ENABLE(ComponentDescriptor<AtmosphereComponent, true>)
+	DECLARE_FORCED_LINKING()
 
 	// construct destruct
 	//--------------------

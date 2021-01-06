@@ -27,6 +27,8 @@ RTTR_REGISTRATION
 
 ECS_REGISTER_COMPONENT(LightComponent);
 
+DEFINE_FORCED_LINKING(LightComponentLinkEnforcer)
+
 
 //=================
 // Light Component 

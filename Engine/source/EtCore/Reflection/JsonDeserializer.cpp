@@ -8,6 +8,7 @@
 #include <EtCore/Content/AssetRegistration.h>
 
 #include "registerMath.h"
+#include "TypeInfoRegistry.h"
 
 
 namespace et {
@@ -512,22 +513,26 @@ bool JsonDeserializer::ExtractPointerValueType(rttr::type &inOutValType, JSON::V
 		ET_ASSERT(jObj->value.size() == 1u, "Expected pointer JSON object to have exactly one internal value!");
 
 		// figure out what kind of object we are deserializing
-		std::string internalTypeName = jObj->value[0].first;
+		std::string const& classTypeName(inOutValType.get_name().to_string());
+		std::string const& internalTypeName = jObj->value[0].first;
 
-		if (inOutValType.get_name().to_string() != internalTypeName)// if it's not a pointer to the base type, check the derived types 
+		if (classTypeName != internalTypeName)// if it's not a pointer to the base type, check the derived types 
 		{
 			// get all derived types
 			rttr::array_range<rttr::type> derivedTypes = inOutValType.get_derived_classes();
 
 			// try finding our internal type in that list
 			auto foundTypeIt = std::find_if(derivedTypes.begin(), derivedTypes.end(), [&internalTypeName](rttr::type const& el)
-			{
-				return el.get_name().to_string() == internalTypeName;
-			});
+				{
+					return el.get_name().to_string() == internalTypeName;
+				});
 
 			if (foundTypeIt == derivedTypes.cend())
 			{
-				LOG("ExtractPointerValueType > Pointers internal type doesn't derive from class type!", LogLevel::Warning);
+				LOG(FS("ExtractPointerValueType > Pointers internal type (%s) doesn't derive from class type (%s)!", 
+					internalTypeName.c_str(), 
+					classTypeName.c_str()), 
+					LogLevel::Warning);
 				return false;
 			}
 

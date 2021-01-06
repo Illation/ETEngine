@@ -27,6 +27,8 @@ RTTR_REGISTRATION
 ECS_REGISTER_COMPONENT(PlanetComponent);
 ECS_REGISTER_COMPONENT(PlanetCameraLinkComponent);
 
+DEFINE_FORCED_LINKING(PlanetCameraLinkComponentDesc)
+
 
 //==================
 // Planet Component 

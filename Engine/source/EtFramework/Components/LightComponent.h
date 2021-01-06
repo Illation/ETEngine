@@ -72,6 +72,11 @@ private:
 	core::T_SlotId m_LightId = core::INVALID_SLOT_ID;
 };
 
+class LightComponentLinkEnforcer
+{
+	DECLARE_FORCED_LINKING()
+};
+
 
 } // namespace fw
 } // namespace et

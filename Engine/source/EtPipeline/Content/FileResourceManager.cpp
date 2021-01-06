@@ -61,12 +61,15 @@ void FileResourceManager::Init()
 //
 void FileResourceManager::LoadAsset(core::I_Asset* const asset)
 {
-	ET_ASSERT(!(asset->IsLoaded()));
+	if (m_IsLoadEnabled)
+	{
+		ET_ASSERT(!(asset->IsLoaded()));
 
-	EditorAssetBase* const editorAsset = GetEditorAsset(asset);
-	ET_ASSERT(editorAsset != nullptr);
+		EditorAssetBase* const editorAsset = GetEditorAsset(asset);
+		ET_ASSERT(editorAsset != nullptr);
 
-	editorAsset->Load();
+		editorAsset->Load();
+	}
 }
 
 //----------------------------------
@@ -74,12 +77,13 @@ void FileResourceManager::LoadAsset(core::I_Asset* const asset)
 //
 void FileResourceManager::UnloadAsset(core::I_Asset* const asset)
 {
-	ET_ASSERT(asset->IsLoaded());
+	if (asset->IsLoaded())
+	{
+		EditorAssetBase* const editorAsset = GetEditorAsset(asset);
+		ET_ASSERT(editorAsset != nullptr);
 
-	EditorAssetBase* const editorAsset = GetEditorAsset(asset);
-	ET_ASSERT(editorAsset != nullptr);
-
-	editorAsset->Unload();
+		editorAsset->Unload();
+	}
 }
 
 //--------------------------------------

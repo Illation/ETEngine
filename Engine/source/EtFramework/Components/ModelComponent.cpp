@@ -22,6 +22,8 @@ RTTR_REGISTRATION
 	END_REGISTER_CLASS_POLYMORPHIC(ModelComponent, I_ComponentDescriptor);
 }
 
+DEFINE_FORCED_LINKING(ModelComponent)
+
 // component registration
 //------------------------
 

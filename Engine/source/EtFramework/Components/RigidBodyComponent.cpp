@@ -26,6 +26,8 @@ RTTR_REGISTRATION
 	END_REGISTER_CLASS_POLYMORPHIC(RigidBodyComponentDesc, I_ComponentDescriptor);
 }
 
+DEFINE_FORCED_LINKING(RigidBodyComponentDesc)
+
 ECS_REGISTER_COMPONENT(RigidBodyComponent);
 
 

@@ -70,6 +70,7 @@ class RigidBodyComponentDesc final : public ComponentDescriptor<RigidBodyCompone
 	// definitions
 	//-------------
 	RTTR_ENABLE(ComponentDescriptor<RigidBodyComponent>)
+	DECLARE_FORCED_LINKING()
 
 	// construct destruct
 	//--------------------

@@ -44,6 +44,7 @@ public:
 	bool GetLoadData(core::I_Asset const* const asset, std::vector<uint8>& outData) const override;
 
 	void Flush() override;
+	void SetLoadEnabled(bool const val) { m_IsLoadEnabled = val; } // DANGERZONE - allow disabling asset load during data generation
 
 	// accessors
 	//-----------
@@ -52,6 +53,8 @@ public:
 
 	std::string const& GetProjectPath() const { return m_ProjectPath; }
 	std::string const& GetEnginePath() const { return m_EnginePath; }
+
+	bool IsLoadEnabled() const { return m_IsLoadEnabled; } 
 
 	// utility
 	//---------------------
@@ -70,6 +73,8 @@ protected:
 
 	std::string m_EnginePath;
 	EditorAssetDatabase m_EngineDb;
+
+	bool m_IsLoadEnabled = true;
 };
 
 

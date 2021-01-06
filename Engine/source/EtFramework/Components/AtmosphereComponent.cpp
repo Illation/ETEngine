@@ -31,6 +31,8 @@ RTTR_REGISTRATION
 
 ECS_REGISTER_COMPONENT(AtmosphereComponent);
 
+DEFINE_FORCED_LINKING(AtmosphereComponentDesc)
+
 
 //======================
 // Atmosphere Component 

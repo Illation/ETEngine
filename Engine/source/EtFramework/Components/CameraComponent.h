@@ -30,6 +30,7 @@ class CameraComponent final : public SimpleComponentDescriptor
 
 	RTTR_ENABLE(SimpleComponentDescriptor) // for serialization
 	REGISTRATION_FRIEND_NS(fw)
+	DECLARE_FORCED_LINKING()
 		
 	// construct destruct
 	//--------------------

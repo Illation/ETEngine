@@ -26,6 +26,7 @@ RTTR_REGISTRATION
 }
 
 ECS_REGISTER_COMPONENT(CameraComponent);
+DEFINE_FORCED_LINKING(CameraComponent)
 
 
 //==================
