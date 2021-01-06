@@ -10,7 +10,9 @@
 
 namespace et {
 	REGISTRATION_NS(render);
-}
+namespace render {
+	class MaterialDescriptor;
+} }
 
 
 namespace et {
@@ -67,6 +69,7 @@ public:
 	//---------------------
 	ShaderData const* GetShader() const { return m_Shader.get(); }
 	AssetPtr<ShaderData> GetShaderAsset() const { return m_Shader; }
+
 	E_DrawType GetDrawType() const { return m_DrawType; }
 
 	T_VertexFlags GetLayoutFlags() const { return m_LayoutFlags; }
@@ -104,9 +107,13 @@ class MaterialAsset final : public core::Asset<Material, false>
 	RTTR_ENABLE(core::Asset<Material, false>)
 	DECLARE_FORCED_LINKING()
 
+public:
+	static Material* CreateMaterial(std::vector<I_Asset::Reference> const& references, 
+		MaterialDescriptor const& descriptor, 
+		Material::E_DrawType const drawType);
+
 	// Construct destruct
 	//---------------------
-public:
 	MaterialAsset() : core::Asset<Material, false>() {}
 	virtual ~MaterialAsset() = default;
 

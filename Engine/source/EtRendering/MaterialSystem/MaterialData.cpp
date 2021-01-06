@@ -4,7 +4,7 @@
 #include "MaterialDescriptor.h"
 
 #include <EtCore/Content/AssetRegistration.h>
-#include <EtCore/Reflection/JsonDeserializer.h>
+#include <EtCore/Reflection/BinaryDeserializer.h>
 
 
 namespace et {
@@ -90,26 +90,20 @@ Material::~Material()
 //================
 
 
-//---------------------------------
-// MaterialAsset::LoadFromMemory
+//-------------------------------
+// MaterialAsset::CreateMaterial
 //
-// Load shader data from binary asset content
+// Create a material from a descriptor and a set of asset references
 //
-bool MaterialAsset::LoadFromMemory(std::vector<uint8> const& data)
+Material* MaterialAsset::CreateMaterial(std::vector<I_Asset::Reference> const& references, 
+	MaterialDescriptor const& descriptor, 
+	Material::E_DrawType const drawType)
 {
-	MaterialDescriptor descriptor;
-	core::JsonDeserializer deserializer;
-	if (!deserializer.DeserializeFromData(data, descriptor))
-	{
-		LOG("MaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor", core::LogLevel::Warning);
-		return false;
-	}
-
 	// extract the shader and texture references
 	std::vector<AssetPtr<TextureData>> textureRefs;
 	AssetPtr<ShaderData> shaderRef;
 
-	for (I_Asset::Reference const& reference : GetReferences())
+	for (I_Asset::Reference const& reference : references)
 	{
 		I_AssetPtr const* const rawAssetPtr = reference.GetAsset();
 
@@ -131,7 +125,7 @@ bool MaterialAsset::LoadFromMemory(std::vector<uint8> const& data)
 	if (shaderRef == nullptr)
 	{
 		LOG("MaterialAsset::LoadFromMemory > Materials must reference a shader!", core::LogLevel::Warning);
-		return false;
+		return nullptr;
 	}
 
 	// convert to a parameter block
@@ -143,8 +137,26 @@ bool MaterialAsset::LoadFromMemory(std::vector<uint8> const& data)
 	}
 
 	// Create the material
-	m_Data = new Material(shaderRef, m_DrawType, params, textureRefs);
-	return true;
+	return new Material(shaderRef, drawType, params, textureRefs);
+}
+
+//---------------------------------
+// MaterialAsset::LoadFromMemory
+//
+// Load material data from binary asset content
+//
+bool MaterialAsset::LoadFromMemory(std::vector<uint8> const& data)
+{
+	MaterialDescriptor descriptor;
+	core::BinaryDeserializer deserializer;
+	if (!deserializer.DeserializeFromData(data, descriptor))
+	{
+		LOG("MaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor", core::LogLevel::Warning);
+		return false;
+	}
+
+	m_Data = CreateMaterial(GetReferences(), descriptor, m_DrawType);
+	return (m_Data != nullptr);
 }
 
 

@@ -5,7 +5,7 @@
 
 #include <EtCore/Content/AssetRegistration.h>
 #include <EtCore/Reflection/Registration.h>
-#include <EtCore/Reflection/JsonDeserializer.h>
+#include <EtCore/Reflection/BinaryDeserializer.h>
 
 
 namespace et {
@@ -77,28 +77,21 @@ MaterialInstance::~MaterialInstance()
 //=========================
 
 
-//---------------------------------------
-// MaterialInstanceAsset::LoadFromMemory
+//-----------------------------------------------
+// MaterialInstanceAsset::CreateMaterialInstance
 //
-// Load material instance data from binary asset content
+// Create material instance from material descriptor and asset references
 //
-bool MaterialInstanceAsset::LoadFromMemory(std::vector<uint8> const& data)
+MaterialInstance* MaterialInstanceAsset::CreateMaterialInstance(std::vector<core::I_Asset::Reference> const& references, 
+	MaterialDescriptor const& descriptor)
 {
-	MaterialDescriptor descriptor;
-	core::JsonDeserializer deserializer;
-	if (!deserializer.DeserializeFromData(data, descriptor))
-	{
-		LOG("MaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor", core::LogLevel::Warning);
-		return false;
-	}
-
 	// extract the material or parent and texture references
 	std::vector<AssetPtr<TextureData>> textureRefs;
 	AssetPtr<Material> materialRef;
 	AssetPtr<MaterialInstance> parentRef;
 	ShaderData const* shader;
 
-	for (I_Asset::Reference const& reference : GetReferences())
+	for (core::I_Asset::Reference const& reference : references)
 	{
 		I_AssetPtr const* const rawAssetPtr = reference.GetAsset();
 
@@ -127,7 +120,7 @@ bool MaterialInstanceAsset::LoadFromMemory(std::vector<uint8> const& data)
 	if ((materialRef == nullptr) && (parentRef == nullptr))
 	{
 		LOG("MaterialAsset::LoadFromMemory > Material instances must reference a material or parent instance!", core::LogLevel::Warning);
-		return false;
+		return nullptr;
 	}
 
 	// override the parents parameters with the parameter descriptor
@@ -140,14 +133,31 @@ bool MaterialInstanceAsset::LoadFromMemory(std::vector<uint8> const& data)
 	// Create the material instance
 	if (parentRef != nullptr)
 	{
-		m_Data = new MaterialInstance(parentRef, params, textureRefs);
+		return new MaterialInstance(parentRef, params, textureRefs);
 	}
 	else
 	{
-		m_Data = new MaterialInstance(materialRef, params, textureRefs);
+		return new MaterialInstance(materialRef, params, textureRefs);
+	}
+}
+
+//---------------------------------------
+// MaterialInstanceAsset::LoadFromMemory
+//
+// Load material instance data from binary asset content
+//
+bool MaterialInstanceAsset::LoadFromMemory(std::vector<uint8> const& data)
+{
+	MaterialDescriptor descriptor;
+	core::BinaryDeserializer deserializer;
+	if (!deserializer.DeserializeFromData(data, descriptor))
+	{
+		LOG("MaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor", core::LogLevel::Warning);
+		return false;
 	}
 
-	return true;
+	m_Data = CreateMaterialInstance(GetReferences(), descriptor);
+	return (m_Data != nullptr);
 }
 
 

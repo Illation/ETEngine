@@ -9,7 +9,7 @@ namespace et {
 namespace pl {
 	
 
-//---------------------------------
+//--------------------------------
 // EditableMaterialAsset
 //
 class EditableMaterialAsset final : public EditorAsset<render::Material>
@@ -21,10 +21,18 @@ public:
 	//---------------------
 	EditableMaterialAsset() : EditorAsset<render::Material>() {}
 	virtual ~EditableMaterialAsset() = default;
+
+	// interface
+	//-----------
+protected:
+	bool LoadFromMemory(std::vector<uint8> const& data) override;
+
+	bool GenerateInternal(BuildConfiguration const& buildConfig) override;
+	bool GenerateRequiresLoadData() const override { return true; }
 };
 
 
-//---------------------------------
+//--------------------------------
 // EditableMaterialInstanceAsset
 //
 class EditableMaterialInstanceAsset final : public EditorAsset<render::MaterialInstance>
@@ -35,6 +43,14 @@ public:
 	//---------------------
 	EditableMaterialInstanceAsset() : EditorAsset<render::MaterialInstance>() {}
 	virtual ~EditableMaterialInstanceAsset() = default;
+
+	// interface
+	//-----------
+protected:
+	bool LoadFromMemory(std::vector<uint8> const& data) override;
+
+	bool GenerateInternal(BuildConfiguration const& buildConfig) override;
+	bool GenerateRequiresLoadData() const override { return true; }
 };
 
 

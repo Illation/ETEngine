@@ -64,9 +64,11 @@ class MaterialInstanceAsset final : public core::Asset<MaterialInstance, false>
 	RTTR_ENABLE(core::Asset<MaterialInstance, false>)
 	DECLARE_FORCED_LINKING()
 
+public:
+	static MaterialInstance* CreateMaterialInstance(std::vector<core::I_Asset::Reference> const& references, MaterialDescriptor const& descriptor);
+
 	// Construct destruct
 	//---------------------
-public:
 	MaterialInstanceAsset() : core::Asset<MaterialInstance, false>() {}
 	virtual ~MaterialInstanceAsset() = default;
 
