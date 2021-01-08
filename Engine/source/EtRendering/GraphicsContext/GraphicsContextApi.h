@@ -107,7 +107,8 @@ public:
 
 	virtual T_TextureLoc GenerateTexture() const = 0;
 	virtual void DeleteTexture(T_TextureLoc& texLoc) = 0;
-	virtual void SetTextureData(TextureData& texture, void* data) = 0;
+	virtual void UploadTextureData(TextureData& texture, void const* const data, E_ColorFormat const layout, E_DataType const dataType) = 0;
+	virtual void AllocateTextureStorage(TextureData& texture) = 0;
 	virtual void SetTextureParams(TextureData const& texture, 
 		uint8& mipLevels, 
 		TextureParameters& prev, 

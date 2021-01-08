@@ -14,9 +14,8 @@ namespace et {
 namespace render {
 
 
-FrameBuffer::FrameBuffer(std::string shaderFile, E_DataType const format, uint32 numTargets)
+FrameBuffer::FrameBuffer(std::string shaderFile, uint32 numTargets)
 	: m_ShaderFile(shaderFile)
-	, m_Format(format)
 	, m_NumTargets(numTargets)
 { }
 
@@ -101,8 +100,8 @@ void FrameBuffer::GenerateFramebufferTextures()
 	//Depth buffer
 	if (m_CaptureDepth)
 	{
-		TextureData* depthMap = new TextureData(dim, E_ColorFormat::Depth24, E_ColorFormat::Depth, E_DataType::Float);
-		depthMap->Build();
+		TextureData* depthMap = new TextureData(E_ColorFormat::Depth24, dim);
+		depthMap->AllocateStorage();
 		api->LinkTextureToFboDepth(depthMap->GetLocation());
 		depthMap->SetParameters(params);
 		depthMap->CreateHandle();
@@ -112,8 +111,8 @@ void FrameBuffer::GenerateFramebufferTextures()
 	//Color buffers
 	for (uint32 i = 0; i < m_NumTargets; i++)
 	{
-		TextureData* colorBuffer = new TextureData(dim, E_ColorFormat::RGBA16f, E_ColorFormat::RGBA, m_Format);
-		colorBuffer->Build();
+		TextureData* colorBuffer = new TextureData(E_ColorFormat::RGBA16f, dim);
+		colorBuffer->AllocateStorage();
 		api->LinkTextureToFbo2D(i, colorBuffer->GetLocation(), 0);
 		colorBuffer->SetParameters(params, true);
 		colorBuffer->CreateHandle();

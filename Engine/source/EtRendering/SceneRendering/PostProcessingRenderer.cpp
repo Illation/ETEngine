@@ -75,8 +75,8 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	//Generate texture and fbo and rbo as initial postprocessing target
 	api->GenFramebuffers(1, &m_CollectFBO);
 	api->BindFramebuffer(m_CollectFBO);
-	m_CollectTex = new TextureData(dim, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
-	m_CollectTex->Build();
+	m_CollectTex = new TextureData(E_ColorFormat::RGB16f, dim);
+	m_CollectTex->AllocateStorage();
 	m_CollectTex->SetParameters(params);
 	//Render Buffer for depth and stencil
 	api->GenRenderBuffers(1, &m_CollectRBO);
@@ -91,8 +91,8 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	api->BindFramebuffer(m_HDRoutFBO);
 	for(uint32 i = 0; i < 2; i++)
 	{
-		m_ColorBuffers[i] = new TextureData(dim, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
-		m_ColorBuffers[i]->Build();
+		m_ColorBuffers[i] = new TextureData(E_ColorFormat::RGB16f, dim);
+		m_ColorBuffers[i]->AllocateStorage();
 		m_ColorBuffers[i]->SetParameters(params, true);
 		// attach texture to framebuffer
 		api->LinkTextureToFbo2D(i, m_ColorBuffers[i]->GetLocation(), 0);
@@ -109,14 +109,14 @@ void PostProcessingRenderer::GenerateFramebuffers()
 		ivec2 res = math::vecCast<int32>(math::vecCast<float>(dim) * resMult);
 
 		api->BindFramebuffer( m_DownSampleFBO[i] );
-		m_DownSampleTexture[i] = new TextureData(res, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
-		m_DownSampleTexture[i]->Build();
+		m_DownSampleTexture[i] = new TextureData(E_ColorFormat::RGB16f, res);
+		m_DownSampleTexture[i]->AllocateStorage();
 		m_DownSampleTexture[i]->SetParameters(params, true);
 		api->LinkTextureToFbo2D(0, m_DownSampleTexture[i]->GetLocation(), 0);
 
 		api->BindFramebuffer( m_DownPingPongFBO[i] );
-		m_DownPingPongTexture[i] = new TextureData(res, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
-		m_DownPingPongTexture[i]->Build();
+		m_DownPingPongTexture[i] = new TextureData(E_ColorFormat::RGB16f, res);
+		m_DownPingPongTexture[i]->AllocateStorage();
 		m_DownPingPongTexture[i]->SetParameters(params, true);
 		api->LinkTextureToFbo2D(0, m_DownPingPongTexture[i]->GetLocation(), 0);
 	}
@@ -126,8 +126,8 @@ void PostProcessingRenderer::GenerateFramebuffers()
 	for(uint32 i = 0; i < 2; i++)
 	{
 		api->BindFramebuffer( m_PingPongFBO[i] );
-		m_PingPongTexture[i] = new TextureData(dim, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
-		m_PingPongTexture[i]->Build();
+		m_PingPongTexture[i] = new TextureData(E_ColorFormat::RGB16f, dim);
+		m_PingPongTexture[i]->AllocateStorage();
 		m_PingPongTexture[i]->SetParameters(params, true);
 		api->LinkTextureToFbo2D(0, m_PingPongTexture[i]->GetLocation(), 0);
 	}

@@ -14,7 +14,7 @@ class TextureData;
 class FrameBuffer
 {
 public:
-	FrameBuffer(std::string shaderFile, E_DataType const format, uint32 numTargets = 1);
+	FrameBuffer(std::string shaderFile, uint32 numTargets = 1);
 	virtual ~FrameBuffer();
 
 	void Initialize();
@@ -40,7 +40,6 @@ private:
 	void ResizeFramebufferTextures();
 
 	std::string m_ShaderFile;
-	E_DataType m_Format;
 	uint32 m_NumTargets = 1;
 
 	T_FbLoc m_GlFrameBuffer;

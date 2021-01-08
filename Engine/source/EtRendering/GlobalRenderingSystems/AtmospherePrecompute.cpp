@@ -30,22 +30,21 @@ void AtmospherePrecompute::Init()
 	m_pComputeMultipleScattering = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("ComputeMultipleScattering.glsl"));
 
 	//Computation textures
-	m_TexDeltaIrradiance = new TextureData(ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H),
-		m_Settings.INTERNAL2D, m_Settings.FORMAT, E_DataType::Float);
-	m_TexDeltaIrradiance->Build();
+	m_TexDeltaIrradiance = new TextureData(m_Settings.INTERNAL2D, ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
+	m_TexDeltaIrradiance->AllocateStorage();
 	m_TexDeltaIrradiance->SetParameters(m_Settings.m_TexParams);
 
-	m_TexDeltaRayleigh = new TextureData(m_Settings.m_ScatteringTexDim.xy, m_Settings.INTERNAL3D, m_Settings.FORMAT, E_DataType::Float, m_Settings.m_ScatteringTexDim.z);
-	m_TexDeltaRayleigh->Build();
+	m_TexDeltaRayleigh = new TextureData(m_Settings.INTERNAL3D, m_Settings.m_ScatteringTexDim.xy, m_Settings.m_ScatteringTexDim.z);
+	m_TexDeltaRayleigh->AllocateStorage();
 	m_TexDeltaRayleigh->SetParameters(m_Settings.m_TexParams);
 	m_TexDeltaMultipleScattering = m_TexDeltaRayleigh; //Multiple scattering and rayleigh share same gpu texture space
 
-	m_TexDeltaMie = new TextureData(m_Settings.m_ScatteringTexDim.xy, m_Settings.INTERNAL3D, m_Settings.FORMAT, E_DataType::Float, m_Settings.m_ScatteringTexDim.z);
-	m_TexDeltaMie->Build();
+	m_TexDeltaMie = new TextureData(m_Settings.INTERNAL3D, m_Settings.m_ScatteringTexDim.xy, m_Settings.m_ScatteringTexDim.z);
+	m_TexDeltaMie->AllocateStorage();
 	m_TexDeltaMie->SetParameters(m_Settings.m_TexParams);
 
-	m_TexDeltaScattering = new TextureData(m_Settings.m_ScatteringTexDim.xy, m_Settings.INTERNAL3D, m_Settings.FORMAT, E_DataType::Float, m_Settings.m_ScatteringTexDim.z);
-	m_TexDeltaScattering->Build();
+	m_TexDeltaScattering = new TextureData(m_Settings.INTERNAL3D, m_Settings.m_ScatteringTexDim.xy, m_Settings.m_ScatteringTexDim.z);
+	m_TexDeltaScattering->AllocateStorage();
 	m_TexDeltaScattering->SetParameters(m_Settings.m_TexParams);
 
 	ContextHolder::GetRenderContext()->GenFramebuffers(1, &m_FBO);
@@ -106,18 +105,16 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	bool blend = false; //Same here
 
 	//Specific texture initialization
-	atmo->m_TexTransmittance = new TextureData(ivec2(m_Settings.TRANSMITTANCE_W, m_Settings.TRANSMITTANCE_H),
-		m_Settings.INTERNAL2D, m_Settings.FORMAT, E_DataType::Float);
-	atmo->m_TexTransmittance->Build();
+	atmo->m_TexTransmittance = new TextureData(m_Settings.INTERNAL2D, ivec2(m_Settings.TRANSMITTANCE_W, m_Settings.TRANSMITTANCE_H));
+	atmo->m_TexTransmittance->AllocateStorage();
 	atmo->m_TexTransmittance->SetParameters(m_Settings.m_TexParams);
-	atmo->m_TexIrradiance = new TextureData(ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H),
-		m_Settings.INTERNAL2D, m_Settings.FORMAT, E_DataType::Float);
-	atmo->m_TexIrradiance->Build();
+
+	atmo->m_TexIrradiance = new TextureData(m_Settings.INTERNAL2D, ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
+	atmo->m_TexIrradiance->AllocateStorage();
 	atmo->m_TexIrradiance->SetParameters(m_Settings.m_TexParams);
 
-	atmo->m_TexInscatter = new TextureData(m_Settings.m_ScatteringTexDim.xy,
-		m_Settings.INTERNAL3D, m_Settings.FORMAT, E_DataType::Float, m_Settings.m_ScatteringTexDim.z);
-	atmo->m_TexInscatter->Build();
+	atmo->m_TexInscatter = new TextureData(m_Settings.INTERNAL3D, m_Settings.m_ScatteringTexDim.xy, m_Settings.m_ScatteringTexDim.z);
+	atmo->m_TexInscatter->AllocateStorage();
 	atmo->m_TexInscatter->SetParameters(m_Settings.m_TexParams);
 
 	api->SetBlendEquation(E_BlendEquation::Add);

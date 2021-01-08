@@ -35,8 +35,8 @@ public:
 private:
 	TextureData() = default;
 public:
-	TextureData(ivec2 const res, E_ColorFormat const intern, E_ColorFormat const format, E_DataType const type, int32 const depth = 1);
-	TextureData(E_TextureType const targetType, ivec2 const res);
+	TextureData(E_ColorFormat const storageFormat, ivec2 const res, int32 const depth = 1);
+	TextureData(E_TextureType const targetType, E_ColorFormat const storageFormat, ivec2 const res, int32 const depth = 1);
 	~TextureData();
 
 	// Accessors
@@ -46,16 +46,14 @@ public:
 	ivec2 GetResolution() const { return m_Resolution; }
 	int32 GetNumMipLevels() const { return m_MipLevels; }
 
-	E_ColorFormat GetInternalFormat() const { return m_Internal; }
-	E_ColorFormat GetFormat() const { return m_Format; }
-	E_DataType GetDataType() const { return m_DataType; }
-
+	E_ColorFormat GetStorageFormat() const { return m_StorageFormat; }
 	E_TextureType GetTargetType() const { return m_TargetType; }
 	int32 GetDepth() const { return m_Depth; }
 
 	// Functionality
 	//--------------
-	void Build(void* data = nullptr);
+	void UploadData(void const* const data, E_ColorFormat const layout, E_DataType const dataType); // upload an image
+	void AllocateStorage(); // create storage on the GPU with the storage format - for framebuffers
 	void SetParameters(TextureParameters const& params, bool const force = false);
 	bool Resize(ivec2 const& newSize);
 	void CreateHandle();
@@ -68,18 +66,14 @@ private:
 	T_TextureLoc m_Location = 0u;
 	T_TextureHandle m_Handle = 0u;
 
-	// Resolution
+	// Storage info
+	E_TextureType m_TargetType = E_TextureType::Texture2D;
+	E_ColorFormat m_StorageFormat = E_ColorFormat::Invalid;
 	ivec2 m_Resolution;
 	int32 m_Depth = 1; // a (default) value of 1 implies a 2D texture
-
 	uint8 m_MipLevels = 0u;
-	E_TextureType m_TargetType = E_TextureType::Texture2D;
 
-	// Format - #note: these are overridden by cubemaps!
-	E_ColorFormat m_Internal = E_ColorFormat::Invalid;
-	E_ColorFormat m_Format = E_ColorFormat::Invalid;
-	E_DataType m_DataType = E_DataType::Invalid;
-
+	// misc
 	TextureParameters m_Parameters;
 };
 

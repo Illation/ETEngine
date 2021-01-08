@@ -102,8 +102,8 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 		return false;
 	}
 
-	TextureData hdrTexture(ivec2(width, height), E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
-	hdrTexture.Build((void*)hdrFloats);
+	TextureData hdrTexture(E_ColorFormat::RGB16f, ivec2(width, height));
+	hdrTexture.UploadData(static_cast<void const*>(hdrFloats), E_ColorFormat::RGB, E_DataType::Float);
 
 	// we have our equirectangular texture on the GPU so we can clean up the load data on the CPU
 	stbi_image_free(hdrFloats);
@@ -152,8 +152,8 @@ TextureData* EquirectangularToCubeMap(TextureData const* const equiTexture, int3
 	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, captureRBO);
 
 	//Preallocate memory for cubemap
-	TextureData* const envCubeMap = new TextureData(E_TextureType::CubeMap, ivec2(resolution));
-	envCubeMap->Build();
+	TextureData* const envCubeMap = new TextureData(E_TextureType::CubeMap, E_ColorFormat::RGB16f, ivec2(resolution));
+	envCubeMap->AllocateStorage();
 
 	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Linear;

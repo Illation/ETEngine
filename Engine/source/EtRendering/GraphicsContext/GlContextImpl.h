@@ -33,6 +33,7 @@ namespace GL_CONTEXT_NS {
 	GLenum ConvBlendEquation(E_BlendEquation const equ);
 	GLenum ConvBlendFactor(E_BlendFactor const fac);
 	GLenum ConvColorFormat(E_ColorFormat const fmt);
+	void DeriveLayoutAndType(E_ColorFormat const storageFmt, GLenum& colorLayout, GLenum& dataType);
 	GLenum ConvFilter(E_TextureFilterMode const filter);
 	GLenum ConvMinFilter(E_TextureFilterMode const minFilter, E_TextureFilterMode const mipFilter, bool const useMip);
 	GLenum ConvWrapMode(E_TextureWrapMode const wrap);
@@ -189,7 +190,8 @@ public:
 
 	T_TextureLoc GenerateTexture() const override;
 	void DeleteTexture(T_TextureLoc& texLoc) override;
-	void SetTextureData(TextureData& texture, void* data) override;
+	void UploadTextureData(TextureData& texture, void const* const data, E_ColorFormat const layout, E_DataType const dataType) override;
+	void AllocateTextureStorage(TextureData& texture) override;
 	void SetTextureParams(TextureData const& texture, 
 		uint8& mipLevels, 
 		TextureParameters& prev, 

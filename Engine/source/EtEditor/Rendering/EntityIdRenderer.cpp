@@ -73,8 +73,8 @@ void EntityIdRenderer::CreateRenderTarget()
 	//Generate texture and fbo and rbo as initial postprocessing target
 	api->GenFramebuffers(1, &m_DrawTarget);
 	api->BindFramebuffer(m_DrawTarget);
-	m_DrawTex = new TextureData(dim, E_ColorFormat::RGBA8, E_ColorFormat::RGBA, E_DataType::UByte);
-	m_DrawTex->Build();
+	m_DrawTex = new TextureData(E_ColorFormat::RGBA8, dim);
+	m_DrawTex->AllocateStorage();
 	m_DrawTex->SetParameters(params);
 	api->LinkTextureToFbo2D(0, m_DrawTex->GetLocation(), 0);
 

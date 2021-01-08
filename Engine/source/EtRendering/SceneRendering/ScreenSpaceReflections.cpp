@@ -41,8 +41,8 @@ void ScreenSpaceReflections::Initialize()
 	//Generate texture and fbo and rbo as initial postprocessing target
 	api->GenFramebuffers(1, &m_CollectFBO);
 	api->BindFramebuffer(m_CollectFBO);
-	m_CollectTex = new TextureData(dim, E_ColorFormat::RGB16f, E_ColorFormat::RGB, E_DataType::Float);
-	m_CollectTex->Build();
+	m_CollectTex = new TextureData(E_ColorFormat::RGB16f, dim);
+	m_CollectTex->AllocateStorage();
 	m_CollectTex->SetParameters(params);
 
 	//Render Buffer for depth and stencil

@@ -277,12 +277,8 @@ render::SpriteFont* EditableFontAsset::LoadTtf(const std::vector<uint8>& binaryC
 	render::TextureParameters params;
 	PopulateTextureParams(params);
 
-	render::TextureData* const texture = new render::TextureData(ivec2(texWidth, texHeight),
-		render::E_ColorFormat::RGBA16f,
-		render::E_ColorFormat::RGBA,
-		render::E_DataType::Float);
-
-	texture->Build();
+	render::TextureData* const texture = new render::TextureData(render::E_ColorFormat::RGBA16f, ivec2(texWidth, texHeight));
+	texture->AllocateStorage();
 	texture->SetParameters(params);
 	pFont->m_pTexture = texture;
 
@@ -342,8 +338,8 @@ render::SpriteFont* EditableFontAsset::LoadTtf(const std::vector<uint8>& binaryC
 
 		uint32 width = face->glyph->bitmap.width;
 		uint32 height = face->glyph->bitmap.rows;
-		auto pTexture = new render::TextureData(ivec2(width, height), render::E_ColorFormat::R8, render::E_ColorFormat::Red, render::E_DataType::UByte);
-		pTexture->Build(face->glyph->bitmap.buffer);
+		auto pTexture = new render::TextureData(render::E_ColorFormat::R8, ivec2(width, height));
+		pTexture->UploadData(face->glyph->bitmap.buffer, render::E_ColorFormat::Red, render::E_DataType::UByte);
 		pTexture->SetParameters(params);
 
 		ivec2 res = ivec2(metric->Width - m_Padding * 2, metric->Height - m_Padding * 2);

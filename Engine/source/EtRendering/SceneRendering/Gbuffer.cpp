@@ -14,7 +14,7 @@ namespace render {
 
 
 Gbuffer::Gbuffer(bool demo):
-	FrameBuffer(demo ? "Shaders/PostBufferDisplay.glsl" : "Shaders/PostDeferredComposite.glsl", E_DataType::Float, 2)
+	FrameBuffer(demo ? "Shaders/PostBufferDisplay.glsl" : "Shaders/PostDeferredComposite.glsl", 2)
 {
 	m_CaptureDepth = true;
 }

@@ -83,9 +83,8 @@ void SpriteRenderer::Initialize()
 	CalculateTransform();
 
 	//Create empty dummy texture
-	m_EmptyTex = new TextureData(ivec2(1), E_ColorFormat::RGB, E_ColorFormat::RGB, E_DataType::Float);
-
-	m_EmptyTex->Build((void*)(vec4(1).data.data()));
+	m_EmptyTex = new TextureData(E_ColorFormat::RGB, ivec2(1));
+	m_EmptyTex->UploadData(reinterpret_cast<void const*>(vec4(1).data.data()), E_ColorFormat::RGB, E_DataType::Float);
 
 	TextureParameters params;
 	m_EmptyTex->SetParameters(params);

@@ -24,13 +24,11 @@ namespace render {
 //
 // Create the texture and generate a new GPU texture resource
 //
-TextureData::TextureData(ivec2 const res, E_ColorFormat const intern, E_ColorFormat const format, E_DataType const type, int32 const depth)
-	: m_Resolution(res)
-	, m_Internal(intern)
-	, m_Format(format)
-	, m_DataType(type)
+TextureData::TextureData(E_ColorFormat const storageFormat, ivec2 const res, int32 const depth)
+	: m_TargetType((depth > 1) ? E_TextureType::Texture3D : E_TextureType::Texture2D)
+	, m_StorageFormat(storageFormat)
+	, m_Resolution(res)
 	, m_Depth(depth)
-	, m_TargetType((depth > 1) ? E_TextureType::Texture3D : E_TextureType::Texture2D)
 {
 	m_Location = ContextHolder::GetRenderContext()->GenerateTexture();
 }
@@ -40,12 +38,11 @@ TextureData::TextureData(ivec2 const res, E_ColorFormat const intern, E_ColorFor
 //
 // Create a texture of a specific type with a preexisting handle
 //
-TextureData::TextureData(E_TextureType const targetType, ivec2 const res)
+TextureData::TextureData(E_TextureType const targetType, E_ColorFormat const storageFormat, ivec2 const res, int32 const depth)
 	: m_TargetType(targetType)
+	, m_StorageFormat(storageFormat)
 	, m_Resolution(res)
-	, m_Internal(E_ColorFormat::RGB)
-	, m_Format(E_ColorFormat::RGB)
-	, m_DataType(E_DataType::Float)
+	, m_Depth(depth)
 {
 	m_Location = ContextHolder::GetRenderContext()->GenerateTexture();
 }
@@ -67,15 +64,25 @@ TextureData::~TextureData()
 }
 
 //---------------------------------
-// TextureData::Build
+// TextureData::UploadData
 //
-// send the data to the GPU location. Can be initialized without any image data
+// Send an image bitmap to the GPU location
 //
-void TextureData::Build(void* data)
+void TextureData::UploadData(void const* const data, E_ColorFormat const layout, E_DataType const dataType)
 {
-	ET_ASSERT(m_Handle == 0u, "Shouldn't build after a handle was created!");
+	ET_ASSERT(m_Handle == 0u, "Shouldn't upload data after a handle was created!");
+	ContextHolder::GetRenderContext()->UploadTextureData(*this, data, layout, dataType);
+}
 
-	ContextHolder::GetRenderContext()->SetTextureData(*this, data);
+//---------------------------------
+// TextureData::AllocateStorage
+//
+// Allocate empty texture storage at the GPU location. The actual texture data is assumed to be generated
+//
+void TextureData::AllocateStorage()
+{
+	ET_ASSERT(m_Handle == 0u, "Shouldn't upload data after a handle was created!");
+	ContextHolder::GetRenderContext()->AllocateTextureStorage(*this);
 }
 
 //---------------------------------
@@ -120,7 +127,7 @@ bool TextureData::Resize(ivec2 const& newSize)
 		m_Location = api->GenerateTexture();
 	}
 
-	Build();
+	AllocateStorage();
 
 	if (regenerate)
 	{
@@ -227,43 +234,43 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	// convert data type
 	// check number of channels
-	E_ColorFormat format;
-	E_ColorFormat internalFmt;
+	E_ColorFormat layout;
+	E_ColorFormat storageFormat;
 	switch (channels)
 	{
 	case 1:
-		format = E_ColorFormat::Red;
+		layout = E_ColorFormat::Red;
 		ET_ASSERT(!m_UseSrgb);
-		internalFmt = E_ColorFormat::R8;
+		storageFormat = E_ColorFormat::R8;
 		break;
 
 	case 2:
-		format = E_ColorFormat::RG;
+		layout = E_ColorFormat::RG;
 		ET_ASSERT(!m_UseSrgb);
-		internalFmt = E_ColorFormat::RG8;
+		storageFormat = E_ColorFormat::RG8;
 		break;
 
 	case 3:
-		format = E_ColorFormat::RGB;
+		layout = E_ColorFormat::RGB;
 		if (m_UseSrgb)
 		{
-			internalFmt = E_ColorFormat::SRGB8;
+			storageFormat = E_ColorFormat::SRGB8;
 		}
 		else
 		{
-			internalFmt = E_ColorFormat::RGB8;
+			storageFormat = E_ColorFormat::RGB8;
 		}
 		break;
 
 	case 4:
-		format = E_ColorFormat::RGBA;
+		layout = E_ColorFormat::RGBA;
 		if (m_UseSrgb)
 		{
-			internalFmt = E_ColorFormat::SRGBA8;
+			storageFormat = E_ColorFormat::SRGBA8;
 		}
 		else
 		{
-			internalFmt = E_ColorFormat::RGBA8;
+			storageFormat = E_ColorFormat::RGBA8;
 		}
 		break;
 
@@ -274,8 +281,8 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	}
 
 	//Upload to GPU
-	m_Data = new TextureData(ivec2(width, height), internalFmt, format, E_DataType::UByte);
-	m_Data->Build((void*)bits);
+	m_Data = new TextureData(storageFormat, ivec2(width, height));
+	m_Data->UploadData(reinterpret_cast<void const*>(bits), layout, E_DataType::UByte);
 	m_Data->SetParameters(m_Parameters);
 
 	m_Data->CreateHandle();

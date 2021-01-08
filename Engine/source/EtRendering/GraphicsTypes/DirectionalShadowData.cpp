@@ -36,8 +36,8 @@ void DirectionalShadowData::Init(ivec2 const resolution)
 		cascade.distance = static_cast<float>((cascadeIdx + 1) ^ 2) * distMult;
 
 		// Create depth texture
-		cascade.texture = new TextureData(resolution, E_ColorFormat::Depth, E_ColorFormat::Depth, E_DataType::Float);
-		cascade.texture->Build();
+		cascade.texture = new TextureData(E_ColorFormat::Depth, resolution);
+		cascade.texture->AllocateStorage();
 
 		TextureParameters params(false, true);
 		params.wrapS = E_TextureWrapMode::ClampToEdge;

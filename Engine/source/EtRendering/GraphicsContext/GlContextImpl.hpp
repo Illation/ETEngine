@@ -28,7 +28,7 @@ GLenum ConvTextureType(E_TextureType const type)
 	case E_TextureType::CubeMap:	return GL_TEXTURE_CUBE_MAP;
 	}
 
-	ET_ASSERT(true, "Unhandled texture type!");
+	ET_ASSERT(false, "Unhandled texture type!");
 	return GL_NONE;
 }
 
@@ -50,7 +50,7 @@ GLenum ConvDataType(E_DataType const type)
 	case E_DataType::Double: return GL_DOUBLE;
 	}
 
-	ET_ASSERT(true, "Unhandled data type!");
+	ET_ASSERT(false, "Unhandled data type!");
 	return GL_NONE;
 }
 
@@ -69,7 +69,7 @@ GLenum ConvShaderType(E_ShaderType const type)
 	case E_ShaderType::Fragment:				return GL_FRAGMENT_SHADER;
 	}
 
-	ET_ASSERT(true, "Unhandled shader type!");
+	ET_ASSERT(false, "Unhandled shader type!");
 	return GL_NONE;
 }
 
@@ -90,7 +90,7 @@ GLenum ConvDrawMode(E_DrawMode const mode)
 	case E_DrawMode::Patches:		return GL_PATCHES;
 	}
 
-	ET_ASSERT(true, "Unhandled draw mode!");
+	ET_ASSERT(false, "Unhandled draw mode!");
 	return GL_NONE;
 }
 
@@ -108,7 +108,7 @@ GLenum ConvBufferType(E_BufferType const type)
 	case E_BufferType::Uniform:	return GL_UNIFORM_BUFFER;
 	}
 
-	ET_ASSERT(true, "Unhandled buffer type!");
+	ET_ASSERT(false, "Unhandled buffer type!");
 	return GL_NONE;
 }
 
@@ -123,7 +123,7 @@ GLenum ConvUsageHint(E_UsageHint const hint)
 	case E_UsageHint::Dynamic:	return GL_DYNAMIC_DRAW;
 	}
 
-	ET_ASSERT(true, "Unhandled usage hint!");
+	ET_ASSERT(false, "Unhandled usage hint!");
 	return GL_NONE;
 }
 
@@ -139,7 +139,7 @@ GLenum ConvAccessMode(E_AccessMode const mode)
 	case E_AccessMode::ReadWrite:	return GL_READ_WRITE;
 	}
 
-	ET_ASSERT(true, "Unhandled access mode!");
+	ET_ASSERT(false, "Unhandled access mode!");
 	return GL_NONE;
 }
 
@@ -155,7 +155,7 @@ GLenum ConvFaceCullMode(E_FaceCullMode const mode)
 	case E_FaceCullMode::FrontBack:	return GL_FRONT_AND_BACK;
 	}
 
-	ET_ASSERT(true, "Unhandled access mode!");
+	ET_ASSERT(false, "Unhandled access mode!");
 	return GL_NONE;
 }
 
@@ -173,7 +173,7 @@ GLenum ConvBlendEquation(E_BlendEquation const equ)
 	case E_BlendEquation::Max:		return GL_MAX;
 	}
 
-	ET_ASSERT(true, "Unhandled blend equation!");
+	ET_ASSERT(false, "Unhandled blend equation!");
 	return GL_NONE;
 }
 
@@ -200,7 +200,7 @@ GLenum ConvBlendFactor(E_BlendFactor const fac)
 	case E_BlendFactor::OneMinusConstAlpha:		return GL_ONE_MINUS_CONSTANT_ALPHA;
 	}
 
-	ET_ASSERT(true, "Unhandled blend factor!");
+	ET_ASSERT(false, "Unhandled blend factor!");
 	return GL_NONE;
 }
 
@@ -251,8 +251,78 @@ GLenum ConvColorFormat(E_ColorFormat const fmt)
 	//case E_ColorFormat::BC7_SRGBA:		return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
 	}
 
-	ET_ASSERT(true, "Unhandled color format!");
+	ET_ASSERT(false, "Unhandled color format!");
 	return GL_NONE;
+}
+
+//---------------------
+// DeriveLayoutAndType
+//
+// get upload enums based on storage format for uploading null data
+//
+void DeriveLayoutAndType(E_ColorFormat const storageFmt, GLenum& colorLayout, GLenum& dataType)
+{
+	switch (storageFmt)
+	{
+	case E_ColorFormat::DepthStencil:
+		colorLayout = GL_DEPTH_STENCIL;
+		dataType = GL_UNSIGNED_BYTE;
+		return;
+
+	case E_ColorFormat::Depth:
+	case E_ColorFormat::Depth24:
+		colorLayout = GL_DEPTH_COMPONENT;
+		dataType = GL_UNSIGNED_BYTE;
+		return;
+
+	case E_ColorFormat::Red:
+	case E_ColorFormat::R8:	
+		colorLayout = GL_RED;
+		dataType = GL_UNSIGNED_BYTE;
+		return;
+
+	case E_ColorFormat::RG8:
+	case E_ColorFormat::RG:	
+		colorLayout = GL_RG;
+		dataType = GL_UNSIGNED_BYTE;
+		return;
+
+	case E_ColorFormat::RG16f:
+		colorLayout = GL_RG;
+		dataType = GL_HALF_FLOAT;
+		return;
+
+	case E_ColorFormat::RGB:
+	case E_ColorFormat::RGB8:
+	case E_ColorFormat::SRGB8:
+		colorLayout = GL_RGB;
+		dataType = GL_UNSIGNED_BYTE;
+		return;
+
+	case E_ColorFormat::RGB16f:
+		colorLayout = GL_RGB;
+		dataType = GL_HALF_FLOAT;
+		return;
+
+	case E_ColorFormat::RGBA:
+	case E_ColorFormat::RGBA8:
+	case E_ColorFormat::SRGBA8:
+		colorLayout = GL_RGBA;
+		dataType = GL_UNSIGNED_BYTE;
+		return;
+
+	case E_ColorFormat::RGBA16f:
+		colorLayout = GL_RGBA;
+		dataType = GL_HALF_FLOAT;
+		return;
+
+	case E_ColorFormat::RGBA32f:
+		colorLayout = GL_RGBA;
+		dataType = GL_FLOAT;
+		return;
+	}
+
+	ET_ASSERT(false, "Unhandled color format!");
 }
 
 //---------------------------------
@@ -268,7 +338,7 @@ GLenum ConvFilter(E_TextureFilterMode const filter)
 	case E_TextureFilterMode::Linear:  return GL_LINEAR;
 	}
 
-	ET_ASSERT(true, "Unhandled texture filter mode!");
+	ET_ASSERT(false, "Unhandled texture filter mode!");
 	return GL_NONE;
 }
 
@@ -290,7 +360,7 @@ GLenum ConvMinFilter(E_TextureFilterMode const minFilter, E_TextureFilterMode co
 			case E_TextureFilterMode::Linear:  return GL_NEAREST_MIPMAP_LINEAR;
 
 			default:
-				ET_ASSERT(true, "Unhandled texture filter mode!");
+				ET_ASSERT(false, "Unhandled texture filter mode!");
 				break;
 			}
 			break;
@@ -302,13 +372,13 @@ GLenum ConvMinFilter(E_TextureFilterMode const minFilter, E_TextureFilterMode co
 			case E_TextureFilterMode::Linear: return GL_LINEAR_MIPMAP_LINEAR;
 
 			default:
-				ET_ASSERT(true, "Unhandled texture filter mode!");
+				ET_ASSERT(false, "Unhandled texture filter mode!");
 				break;
 			}
 			break;
 
 		default:
-			ET_ASSERT(true, "Unhandled texture filter mode!");
+			ET_ASSERT(false, "Unhandled texture filter mode!");
 			break;
 		}
 		return 0;
@@ -333,7 +403,7 @@ GLenum ConvWrapMode(E_TextureWrapMode const wrap)
 	case E_TextureWrapMode::Repeat:				return GL_REPEAT;
 	}
 
-	ET_ASSERT(true, "Unhandled texture wrap mode!");
+	ET_ASSERT(false, "Unhandled texture wrap mode!");
 	return 0;
 }
 
@@ -350,7 +420,7 @@ GLenum ConvCompareMode(E_TextureCompareMode const comp)
 	case E_TextureCompareMode::None:				return GL_NONE;
 	}
 
-	ET_ASSERT(true, "Unhandled texture compare mode!");
+	ET_ASSERT(false, "Unhandled texture compare mode!");
 	return 0;
 }
 
@@ -371,7 +441,7 @@ GLenum ConvDepthFunction(E_DepthFunc const func)
 	case E_DepthFunc::Always:	return GL_ALWAYS;
 	}
 
-	ET_ASSERT(true, "Unhandled depth function!");
+	ET_ASSERT(false, "Unhandled depth function!");
 	return 0;
 }
 
@@ -397,7 +467,7 @@ E_ParamType ParseParamType(GLenum const param)
 	case GL_BOOL:				return E_ParamType::Boolean;
 	}
 
-	ET_ASSERT(true, "Unhandled GLenum parameter type!");
+	ET_ASSERT(false, "Unhandled GLenum parameter type!");
 	return E_ParamType::Invalid;
 }
 
@@ -1278,26 +1348,23 @@ void GL_CONTEXT_CLASSNAME::DeleteTexture(T_TextureLoc& texLoc)
 }
 
 //---------------------------------
-// GlContext::SetTextureData
+// GlContext::UploadTextureData
 //
 // upload a textures bits to its GPU location
 //
-void GL_CONTEXT_CLASSNAME::SetTextureData(TextureData& texture, void* data)
+void GL_CONTEXT_CLASSNAME::UploadTextureData(TextureData& texture, void const* const data, E_ColorFormat const layout, E_DataType const dataType)
 {
 	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
+	ivec2 const res = texture.GetResolution();
+	GLint const intFmt = static_cast<GLint>(GL_CONTEXT_NS::ConvColorFormat(texture.GetStorageFormat()));
+	ET_ASSERT(layout <= E_ColorFormat::RGBA, "Texture format can't specify data sizes!");
 
 	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
-
-	ivec2 const res = texture.GetResolution();
-
-	GLint const intFmt = static_cast<GLint>(GL_CONTEXT_NS::ConvColorFormat(texture.GetInternalFormat()));
-	E_ColorFormat format = texture.GetFormat();
-	ET_ASSERT(format <= E_ColorFormat::RGBA, "Texture format can't specify data sizes!");
 
 	switch (texture.GetTargetType())
 	{
 	case E_TextureType::Texture2D:
-		glTexImage2D(target, 0, intFmt, res.x, res.y, 0, GL_CONTEXT_NS::ConvColorFormat(format), GL_CONTEXT_NS::ConvDataType(texture.GetDataType()), data);
+		glTexImage2D(target, 0, intFmt, res.x, res.y, 0, GL_CONTEXT_NS::ConvColorFormat(layout), GL_CONTEXT_NS::ConvDataType(dataType), data);
 		break;
 
 	case E_TextureType::Texture3D:
@@ -1308,18 +1375,51 @@ void GL_CONTEXT_CLASSNAME::SetTextureData(TextureData& texture, void* data)
 			res.y, 
 			texture.GetDepth(), 
 			0, 
-			GL_CONTEXT_NS::ConvColorFormat(format), 
-			GL_CONTEXT_NS::ConvDataType(texture.GetDataType()), 
+			GL_CONTEXT_NS::ConvColorFormat(layout),
+			GL_CONTEXT_NS::ConvDataType(dataType),
 			data);
+		break;
+
+	default:
+		ET_ASSERT(false, "Unsupported texture type for uploading texture data");
+		break;
+	}
+}
+
+//---------------------------------
+// GlContext::AllocateTextureStorage
+//
+// upload a textures bits to its GPU location
+//
+void GL_CONTEXT_CLASSNAME::AllocateTextureStorage(TextureData& texture)
+{
+	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
+
+	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
+
+	ivec2 const res = texture.GetResolution();
+
+	E_ColorFormat const storageFmt = texture.GetStorageFormat();
+	GLint const intFmt = static_cast<GLint>(GL_CONTEXT_NS::ConvColorFormat(storageFmt));
+
+	GLenum colorLayout, dataType;
+	GL_CONTEXT_NS::DeriveLayoutAndType(storageFmt, colorLayout, dataType);
+
+	switch (texture.GetTargetType())
+	{
+	case E_TextureType::Texture2D:
+		glTexImage2D(target, 0, intFmt, res.x, res.y, 0, colorLayout, dataType, nullptr);
+		break;
+
+	case E_TextureType::Texture3D:
+		glTexImage3D(target, 0, intFmt, res.x, res.y, texture.GetDepth(), 0, colorLayout, dataType, nullptr);
 		break;
 
 	case E_TextureType::CubeMap:
 		ET_ASSERT(res.x == res.y);
-		ET_ASSERT(data == nullptr, "directly uploading data to a cubemap is not currently supported");
-
 		for (uint8 face = 0u; face < TextureData::s_NumCubeFaces; ++face)
 		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, GL_RGB16F, res.x, res.y, 0, GL_RGB, GL_FLOAT, nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, intFmt, res.x, res.y, 0, colorLayout, dataType, nullptr);
 		}
 
 		break;

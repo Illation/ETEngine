@@ -45,8 +45,8 @@ void PbrPrefilter::Precompute(int32 resolution)
 	//Shader
 	api->SetShader(core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("FwdBrdfLutShader.glsl")).get());
 
-	m_LUT = new TextureData(ivec2(resolution), E_ColorFormat::RG16f, E_ColorFormat::RG, E_DataType::Float);
-	m_LUT->Build();
+	m_LUT = new TextureData(E_ColorFormat::RG16f, ivec2(resolution));
+	m_LUT->AllocateStorage();
 	TextureParameters params(false);
 	params.wrapS = E_TextureWrapMode::ClampToEdge;
 	params.wrapT = E_TextureWrapMode::ClampToEdge;
@@ -100,8 +100,8 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, captureRBO);
 
 	//texture
-	irradiance = new TextureData(E_TextureType::CubeMap, ivec2(irradianceRes));
-	irradiance->Build();
+	irradiance = new TextureData(E_TextureType::CubeMap, E_ColorFormat::RGB16f, ivec2(irradianceRes));
+	irradiance->AllocateStorage();
 
 	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Linear;
@@ -146,8 +146,8 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 
 	//setup radiance
 	//**************
-	radiance = new TextureData(E_TextureType::CubeMap, ivec2(radianceRes));
-	radiance->Build();
+	radiance = new TextureData(E_TextureType::CubeMap, E_ColorFormat::RGB16f, ivec2(radianceRes));
+	radiance->AllocateStorage();
 	params.genMipMaps = true;
 	radiance->SetParameters(params);
 
