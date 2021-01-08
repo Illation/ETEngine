@@ -28,7 +28,7 @@ assignIdeFolder(unit_tests Engine/UnitTests)
 outputDirectories(unit_tests "")
 
 # linking
-target_link_libraries (unit_tests EtFramework)
+target_link_libraries (unit_tests EtFramework EtPipeline)
 dependancyLinks(unit_tests)
 
 # library includes

@@ -11,7 +11,7 @@
 
 
 namespace et {
-namespace render {
+namespace pl {
 
 
 bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
@@ -1342,14 +1342,14 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 	return true;
 }
 
-bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& meshContainers)
+bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<render::MeshDataContainer*>& meshContainers)
 {
 	for (const Mesh& mesh : asset.dom.meshes)
 	{
 		if (mesh.primitives.size() > 1)LOG("Currently ETEngine meshes only support one primitive", core::LogLevel::Warning);
 		for (const Primitive& primitive : mesh.primitives)
 		{
-			MeshDataContainer* pMesh = new MeshDataContainer();
+			render::MeshDataContainer* pMesh = new render::MeshDataContainer();
 			pMesh->m_Name = mesh.name;
 
 			//Basic positions
@@ -1480,5 +1480,5 @@ bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& 
 }
 
 
-} // namespace render
+} // namespace pl
 } // namespace et

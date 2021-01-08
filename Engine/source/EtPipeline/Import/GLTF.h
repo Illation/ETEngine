@@ -2,26 +2,21 @@
 #include <EtCore/IO/JsonDom.h>
 
 
-namespace et {
-namespace core {
-class BinaryReader;
-}
-}
+namespace et { namespace core {
+	class BinaryReader;
+} namespace render {
+	struct MeshDataContainer;
+} }
 
 
 namespace et {
-namespace render {
-
-
-struct MeshDataContainer;
+namespace pl {
 
 namespace glTF
 {
 static const float minVersion = 2.0;
 static const float maxVersion = 2.0;
-static const std::vector<std::string> supportedExtensions
-{
-};
+static const std::vector<std::string> supportedExtensions { };
 
 struct Asset
 {
@@ -544,9 +539,9 @@ bool GetAccessorVectorArray(glTFAsset& asset, uint32 idx, std::vector<math::vect
 	return true;
 }
 
-bool GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& meshContainers);
+bool GetMeshContainers(glTFAsset& asset, std::vector<render::MeshDataContainer*>& meshContainers);
 }
 
 
-} // namespace render
+} // namespace pl
 } // namespace et

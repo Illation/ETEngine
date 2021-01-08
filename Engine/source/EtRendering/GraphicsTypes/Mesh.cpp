@@ -11,7 +11,6 @@
 #include <EtCore/Reflection/Registration.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
-#include <EtRendering/SceneStructure/GLTF.h>
 #include <EtRendering/MaterialSystem/MaterialData.h>
 
 
@@ -607,46 +606,6 @@ MeshDataContainer* MeshAsset::LoadAssimp(std::vector<uint8> const& data, std::st
 	}
 
 	return meshData;
-}
-
-//---------------------------------
-// MeshAsset::LoadGLTF
-//
-// Convert a gltf asset to a CPU side MeshDataContainer
-//
-MeshDataContainer* MeshAsset::LoadGLTF(std::vector<uint8> const& data, std::string const& path, std::string const& extension)
-{
-	glTF::glTFAsset asset;
-	if (!glTF::ParseGLTFData(data, path, extension, asset))
-	{
-		LOG("failed to load the glTF asset", core::LogLevel::Warning);
-		return nullptr;
-	}
-
-	std::vector<MeshDataContainer*> containers;
-	if (!glTF::GetMeshContainers(asset, containers))
-	{
-		LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
-		return nullptr;
-	}
-
-	if (containers.size() == 0)
-	{
-		LOG("no mesh data containers found in glTF asset", core::LogLevel::Warning);
-		return nullptr;
-	}
-
-	MeshDataContainer* ret = containers[0];
-
-	if (containers.size() > 1)
-	{
-		for (size_t i = 1u; i < containers.size(); ++i)
-		{
-			delete containers[i];
-		}
-	}
-
-	return ret;
 }
 
 

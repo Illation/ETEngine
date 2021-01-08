@@ -20,6 +20,17 @@ public:
 	//---------------------
 	EditableMeshAsset() : EditorAsset<render::MeshData>() {}
 	virtual ~EditableMeshAsset() = default;
+
+	// interface
+	//-----------
+protected:
+	bool LoadFromMemory(std::vector<uint8> const& data) override;
+
+	// utility
+	//---------
+private:
+	render::MeshDataContainer* LoadAssimp(std::vector<uint8> const& data, std::string const& extension);
+	render::MeshDataContainer* LoadGLTF(std::vector<uint8> const& data, std::string const& path, std::string const& extension);
 };
 
 

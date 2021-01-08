@@ -150,6 +150,7 @@ private:
 //
 class MeshAsset final : public core::Asset<MeshData, false>
 {
+	RTTR_ENABLE(core::Asset<MeshData, false>)
 	DECLARE_FORCED_LINKING()
 public:
 	// Construct destruct
@@ -161,13 +162,6 @@ public:
 	//---------------------
 	bool LoadFromMemory(std::vector<uint8> const& data) override;
 	MeshDataContainer* LoadAssimp(std::vector<uint8> const& data, std::string const& extension);
-	MeshDataContainer* LoadGLTF(std::vector<uint8> const& data, std::string const& path, std::string const& extension);
-
-	// Data
-	///////
-public:
-
-	RTTR_ENABLE(core::Asset<MeshData, false>)
 };
 
 

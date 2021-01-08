@@ -7,11 +7,11 @@
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/IO/JsonParser.h>
 
-#include <EtRendering/SceneStructure/GLTF.h>
+#include <EtPipeline/Import/GLTF.h>
 
 
 using namespace et;
-using namespace et::render;
+using namespace et::pl;
 
 
 TEST_CASE("Decode Base64", "[gltf]")
