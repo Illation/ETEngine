@@ -14,6 +14,11 @@ assimp redistributes:
 - license: [zlib](https://www.ambiera.com/irrxml/license.html)
 
 
+## bc7enc
+
+- license: [MIT / Public Domain](https://github.com/richgel999/bc7enc/blob/master/LICENSE)
+
+
 ## Bullet
 - source: [https://github.com/bulletphysics/bullet3](https://github.com/bulletphysics/bullet3/tree/66fc3a9ce94cbf9793898d9ebb11dec587670ada)
 - license: [zlib](https://github.com/bulletphysics/bullet3/blob/master/LICENSE.txt)

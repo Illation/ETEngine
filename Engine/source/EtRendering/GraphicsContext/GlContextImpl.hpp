@@ -1,6 +1,8 @@
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 
+#include <iomanip>
+
 
 namespace et {
 namespace render {
@@ -231,6 +233,22 @@ GLenum ConvColorFormat(E_ColorFormat const fmt)
 	case E_ColorFormat::RGBA32f:		return GL_RGBA32F;
 	case E_ColorFormat::SRGB8:			return GL_SRGB8;
 	case E_ColorFormat::SRGBA8:			return GL_SRGB8_ALPHA8;
+
+	// disable compressed formats for now
+	//case E_ColorFormat::BC1_RGB:			return GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+	//case E_ColorFormat::BC1_RGBA:			return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+	//case E_ColorFormat::BC1_SRGB:			return GL_COMPRESSED_SRGB_S3TC_DXT1_EXT;
+	//case E_ColorFormat::BC1_SRGBA:		return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT;
+	//case E_ColorFormat::BC3_RGBA:			return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+	//case E_ColorFormat::BC3_SRGBA:		return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT;
+	//case E_ColorFormat::BC4_Red:			return GL_COMPRESSED_RED_RGTC1;
+	//case E_ColorFormat::BC4_Red_Signed:	return GL_COMPRESSED_SIGNED_RED_RGTC1;
+	//case E_ColorFormat::BC5_RG:			return GL_COMPRESSED_RG_RGTC2;
+	//case E_ColorFormat::BC5_RG_Signed:	return GL_COMPRESSED_SIGNED_RG_RGTC2;
+	//case E_ColorFormat::BC6H_RGB_Signed:	return GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT;
+	//case E_ColorFormat::BC6H_RGB_Unsigned:return GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT;
+	//case E_ColorFormat::BC7_RGBA:			return GL_COMPRESSED_RGBA_BPTC_UNORM;
+	//case E_ColorFormat::BC7_SRGBA:		return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
 	}
 
 	ET_ASSERT(true, "Unhandled color format!");
@@ -571,7 +589,13 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 	// Check extensions
 	//******************
 
-	std::vector<std::string> requiredExtensions = { "GL_ARB_bindless_texture" };
+	std::vector<std::string> requiredExtensions = { 
+		"GL_ARB_bindless_texture", 
+		"GL_EXT_texture_sRGB", 
+		"GL_EXT_texture_compression_s3tc",
+		"GL_ARB_texture_compression_rgtc",
+		"GL_ARB_texture_compression_bptc" };
+
 	std::vector<core::HashString> requiredExtHashes;
 	for (std::string const& required : requiredExtensions)
 	{

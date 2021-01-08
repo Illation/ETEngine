@@ -252,6 +252,28 @@ enum class E_ColorFormat : uint8
 	SRGB8,
 	SRGBA8,
 
+	// compressed
+	BC1_RGB, // aka DXT 1
+	BC1_RGBA, // aka DXT 1 + Alpha Mask
+	BC1_SRGB, // aka DXT 1 sRGB
+	BC1_SRGBA, // aka DXT 1 sRGB + Alpha Mask
+
+	BC3_RGBA, // aka DXT 5
+	BC3_SRGBA, // aka DXT 5 sRGB
+
+	BC4_Red, // height maps / masks
+	BC4_Red_Signed, // height maps / masks
+
+	BC5_RG, // normal maps
+	BC5_RG_Signed, // normal maps
+
+	// BC6H_RGB_Signed, // <- #todo: add encoder library for this format
+	// BC6H_RGB_Unsigned, //  ^
+
+	BC7_RGBA, // only when targeting modern GPUs
+	BC7_SRGBA, // ^ but sRGB
+
+	//-----------
 	Invalid
 };
 
