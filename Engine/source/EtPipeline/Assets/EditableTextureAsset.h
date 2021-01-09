@@ -20,6 +20,11 @@ public:
 	//---------------------
 	EditableTextureAsset() : EditorAsset<render::TextureData>() {}
 	virtual ~EditableTextureAsset() = default;
+
+	// interface
+	//-----------
+protected:
+	bool LoadFromMemory(std::vector<uint8> const& data) override;
 };
 
 
