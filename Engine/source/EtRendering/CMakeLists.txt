@@ -24,7 +24,7 @@ assign_source_group(${projectFiles})
 assignIdeFolder(EtRendering Engine)
 libOutputDirectories(EtRendering)
 
-target_link_libraries (EtRendering NothingsStb MikkTSpace EtMath EtCore)
+target_link_libraries (EtRendering NothingsStb EtMath EtCore)
 
 # library includes
 libIncludeDirs()

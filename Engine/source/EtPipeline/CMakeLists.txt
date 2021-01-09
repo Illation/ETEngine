@@ -28,7 +28,7 @@ assignIdeFolder(EtPipeline Engine/ContentPipeline)
 libOutputDirectories(EtPipeline) 
 
 # linking
-target_link_libraries (EtPipeline EtFramework EtBuild bc7enc)
+target_link_libraries (EtPipeline EtFramework EtBuild bc7enc MikkTSpace)
 
 # library includes
 libIncludeDirs()

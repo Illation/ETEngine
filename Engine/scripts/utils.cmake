@@ -338,11 +338,6 @@ function(dependancyLinks TARGET)
 	set(_rttrBuild )
 	getRttrBuildDir(_rttrBuild)
 
-	set(_assimpBuild )
-	getAssimpBuildDir(_assimpBuild)
-	file(GLOB _assimpDebugLib ${_assimpBuild}/code/Debug/*.lib)		# assimp defines the toolset in the lib name, so we just glob it
-	file(GLOB _assimpReleaseLib ${_assimpBuild}/code/Release/*.lib)
-
 	set(_alBuild )
 	getOpenAlBuildDir(_alBuild)
 
@@ -355,9 +350,6 @@ function(dependancyLinks TARGET)
 		debug ${_bulletBuild}/lib/Debug/BulletDynamics_Debug.lib	optimized ${_bulletBuild}/lib/Release/BulletDynamics.lib
 		debug ${_bulletBuild}/lib/Debug/BulletCollision_Debug.lib	optimized ${_bulletBuild}/lib/Release/BulletCollision.lib
 		debug ${_bulletBuild}/lib/Debug/LinearMath_Debug.lib		optimized ${_bulletBuild}/lib/Release/LinearMath.lib 
-
-		debug ${_assimpDebugLib}									optimized ${_assimpReleaseLib} 
-		debug ${_assimpBuild}/contrib/irrXML/Debug/IrrXMLd.lib		optimized ${_assimpBuild}/contrib/irrXML/Release/IrrXML.lib
 
 		debug ${_alBuild}/Debug/OpenAL32.lib						optimized ${_alBuild}/Release/OpenAL32.lib
 
@@ -376,8 +368,16 @@ function(cookerLinks TARGET)
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
 
+	set(_assimpBuild )
+	getAssimpBuildDir(_assimpBuild)
+	file(GLOB _assimpDebugLib ${_assimpBuild}/code/Debug/*.lib)		# assimp defines the toolset in the lib name, so we just glob it
+	file(GLOB _assimpReleaseLib ${_assimpBuild}/code/Release/*.lib)
+
 	target_link_libraries (${TARGET} 		
-		debug ${_vcpkgInstall}/debug/lib/freetyped.lib				optimized ${_vcpkgInstall}/lib/freetype.lib	)
+		debug ${_vcpkgInstall}/debug/lib/freetyped.lib				optimized ${_vcpkgInstall}/lib/freetype.lib	
+
+		debug ${_assimpDebugLib}									optimized ${_assimpReleaseLib} 
+		debug ${_assimpBuild}/contrib/irrXML/Debug/IrrXMLd.lib		optimized ${_assimpBuild}/contrib/irrXML/Release/IrrXML.lib)
 
 endfunction(cookerLinks)
 
