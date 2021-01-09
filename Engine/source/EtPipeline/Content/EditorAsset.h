@@ -72,7 +72,7 @@ protected:
 	virtual bool LoadFromMemory(std::vector<uint8> const& data) = 0;
 	// virtual bool WriteToMemory(std::vector<uint8>& data) = 0;
 	virtual void SetupRuntimeAssetsInternal();
-	virtual bool GenerateInternal(BuildConfiguration const& buildConfig) { UNUSED(buildConfig); return true; }
+	virtual bool GenerateInternal(BuildConfiguration const& buildConfig, std::string const& dbPath);
 	virtual void UnloadInternal();
 
 	virtual bool GenerateRequiresLoadData() const { return false; }
@@ -90,7 +90,7 @@ public:
 	void Unload(bool const force = false);
 	// void Save
 	void SetupRuntimeAssets(); 
-	void Generate(BuildConfiguration const& buildConfig, core::Directory* const buildDir);
+	void Generate(BuildConfiguration const& buildConfig, core::Directory* const buildDir, std::string const& dbPath);
 
 
 	// Data

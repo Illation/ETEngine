@@ -45,11 +45,17 @@ public:
 	TDataType const& ReadRef();
 
 	void ReadData(uint8* const data, size_t const size);
+	uint8 const* GetCurrentDataPointer() const;
 
 	template<typename TStringLengthType>
 	std::string ReadString();
 	std::string ReadString(size_t const size);
 	std::string ReadNullString();
+
+	template <uint8 n, class T>
+	math::vector<n, T> ReadVector();
+	template <uint8 m, uint8 n, class T>
+	math::matrix<m, n, T> ReadMatrix();
 
 
 	// Data

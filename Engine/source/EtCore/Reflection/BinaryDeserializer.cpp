@@ -267,50 +267,50 @@ bool BinaryDeserializer::ReadVectorType(rttr::variant& var, HashString const typ
 	switch (typeId.Get()) // switching through type ID is less safe but should allow for better optimizations
 	{
 	case "vec2"_hash:
-		var = ReadVector<2, float>();
+		var = m_Reader.ReadVector<2, float>();
 		break;
 	case "vec3"_hash:
-		var = ReadVector<3, float>();
+		var = m_Reader.ReadVector<3, float>();
 		break;
 	case "vec4"_hash:
-		var = ReadVector<4, float>();
+		var = m_Reader.ReadVector<4, float>();
 		break;
 	case "ivec2"_hash:
-		var = ReadVector<2, int32>();
+		var = m_Reader.ReadVector<2, int32>();
 		break;
 	case "ivec3"_hash:
-		var = ReadVector<3, int32>();
+		var = m_Reader.ReadVector<3, int32>();
 		break;
 	case "ivec4"_hash:
-		var = ReadVector<4, int32>();
+		var = m_Reader.ReadVector<4, int32>();
 		break;
 	case "dvec2"_hash:
-		var = ReadVector<2, double>();
+		var = m_Reader.ReadVector<2, double>();
 		break;
 	case "dvec3"_hash:
-		var = ReadVector<3, double>();
+		var = m_Reader.ReadVector<3, double>();
 		break;
 	case "dvec4"_hash:
-		var = ReadVector<4, double>();
+		var = m_Reader.ReadVector<4, double>();
 		break;
 
 	case "mat2"_hash:
-		var = ReadMatrix<2, 2, float>();
+		var = m_Reader.ReadMatrix<2, 2, float>();
 		break;
 	case "mat3"_hash:
-		var = ReadMatrix<3, 3, float>();
+		var = m_Reader.ReadMatrix<3, 3, float>();
 		break;
 	case "mat4"_hash:
-		var = ReadMatrix<4, 4, float>();
+		var = m_Reader.ReadMatrix<4, 4, float>();
 		break;
 	case "dmat2"_hash:
-		var = ReadMatrix<2, 2, double>();
+		var = m_Reader.ReadMatrix<2, 2, double>();
 		break;
 	case "dmat3"_hash:
-		var = ReadMatrix<3, 3, double>();
+		var = m_Reader.ReadMatrix<3, 3, double>();
 		break;
 	case "dmat4"_hash:
-		var = ReadMatrix<4, 4, double>();
+		var = m_Reader.ReadMatrix<4, 4, double>();
 		break;
 
 	case "quat"_hash:

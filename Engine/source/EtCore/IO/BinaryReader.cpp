@@ -43,6 +43,10 @@ void BinaryReader::Open(std::vector<uint8> const& binaryContent, size_t const st
 		ET_ASSERT(false, "Count '" ET_FMT_SIZET "' is larger than content size '" ET_FMT_SIZET "'", count, binaryContent.size() - start);
 		return;
 	}
+	else
+	{
+		m_BufferSize = count;
+	}
 
 	m_BufferPosition = m_BufferStart;
 
@@ -102,6 +106,17 @@ void BinaryReader::ReadData(uint8* const data, size_t const size)
 
 	memcpy(data, m_BinData->data() + m_BufferPosition, size);
 	m_BufferPosition += size;
+}
+
+//-------------------------------------
+// BinaryReader::GetCurrentDataPointer
+//
+uint8 const* BinaryReader::GetCurrentDataPointer() const
+{
+	ET_ASSERT(Exists(), "BinaryReader doesn't exist! Unable to read binary data...");
+	ET_ASSERT(m_BufferPosition < m_BufferStart + m_BufferSize);
+
+	return m_BinData->data() + m_BufferPosition;
 }
 
 //--------------------------

@@ -279,7 +279,7 @@ void Cooker::AddPackageToWriter(core::HashString const packageId, std::string co
 			editorAsset->SetupRuntimeAssets();
 		}
 
-		editorAsset->Generate(m_Configuration, m_TempDir);
+		editorAsset->Generate(m_Configuration, m_TempDir, baseAssetPath);
 
 		std::vector<pl::EditorAssetBase::RuntimeAssetInfo> const runtimeAssets = editorAsset->GetAllRuntimeAssets();
 		for (pl::EditorAssetBase::RuntimeAssetInfo const& info : runtimeAssets)

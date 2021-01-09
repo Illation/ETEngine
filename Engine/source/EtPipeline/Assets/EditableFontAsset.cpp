@@ -88,9 +88,10 @@ void EditableFontAsset::SetupRuntimeAssetsInternal()
 //-------------------------------------
 // EditableFontAsset::GenerateInternal
 //
-bool EditableFontAsset::GenerateInternal(BuildConfiguration const& buildConfig)
+bool EditableFontAsset::GenerateInternal(BuildConfiguration const& buildConfig, std::string const& dbPath)
 {
 	UNUSED(buildConfig);
+	UNUSED(dbPath);
 
 	// Load the font from TTF
 	//------------------------

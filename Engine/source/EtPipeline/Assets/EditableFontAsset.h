@@ -36,7 +36,7 @@ protected:
 	bool LoadFromMemory(std::vector<uint8> const& data) override;
 
 	void SetupRuntimeAssetsInternal() override;
-	bool GenerateInternal(BuildConfiguration const& buildConfig) override;
+	bool GenerateInternal(BuildConfiguration const& buildConfig, std::string const& dbPath) override;
 
 	bool GenerateRequiresLoadData() const override { return true; }
 

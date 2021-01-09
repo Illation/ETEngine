@@ -59,6 +59,28 @@ std::string BinaryReader::ReadString()
 	return std::string(reinterpret_cast<char const*>(data), stringLength);
 }
 
+//------------------------------
+// BinaryReader::ReadVector
+//
+template <uint8 n, class T>
+math::vector<n, T> BinaryReader::ReadVector()
+{
+	math::vector<n, T> ret;
+	ReadData(reinterpret_cast<uint8*>(ret.data.data()), sizeof(T) * n);
+	return ret;
+}
+
+//------------------------------
+// BinaryReader::ReadMatrix
+//
+template <uint8 m, uint8 n, class T>
+math::matrix<m, n, T> BinaryReader::ReadMatrix()
+{
+	math::matrix<m, n, T> ret;
+	ReadData(reinterpret_cast<uint8*>(ret.data), sizeof(T) * m * n);
+	return ret;
+}
+
 
 } // namespace core
 } // namespace et

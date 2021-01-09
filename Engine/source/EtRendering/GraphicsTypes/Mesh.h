@@ -27,6 +27,8 @@ namespace render {
 struct MeshDataContainer final
 {
 	bool ConstructTangentSpace(std::vector<vec4>& tangentInfo);
+	T_VertexFlags GetFlags() const;
+	math::Sphere GetBoundingSphere() const;
 
 	size_t m_VertexCount = 0u;
 
@@ -103,17 +105,17 @@ class MeshData final
 	// definitions
 	//-------------
 	REGISTRATION_FRIEND_NS(render)
+	friend class MeshAsset;
 
 	// c-tor d-tor
 	//-------------
-	MeshData() = default;
+	MeshData();
 public:
 	MeshData(MeshDataContainer const* const cpuData);
 	~MeshData();
 
 	// accessors
 	//-----------
-	std::string const& GetName() const { return m_Name; }
 	T_VertexFlags GetSupportedFlags() const { return m_SupportedFlags; }
 	math::Sphere const& GetBoundingSphere() const { return m_BoundingSphere; }
 	size_t GetIndexCount() const { return m_IndexCount; }
@@ -125,8 +127,6 @@ public:
 	// Data
 	///////
 private:
-
-	std::string m_Name;
 
 	T_VertexFlags m_SupportedFlags = 0u;
 	E_DataType m_IndexDataType = E_DataType::UInt;
@@ -153,6 +153,9 @@ class MeshAsset final : public core::Asset<MeshData, false>
 	RTTR_ENABLE(core::Asset<MeshData, false>)
 	DECLARE_FORCED_LINKING()
 public:
+
+	static std::string const s_Header;
+
 	// Construct destruct
 	//---------------------
 	MeshAsset() : core::Asset<MeshData, false>() {}
@@ -161,7 +164,6 @@ public:
 	// Asset overrides
 	//---------------------
 	bool LoadFromMemory(std::vector<uint8> const& data) override;
-	MeshDataContainer* LoadAssimp(std::vector<uint8> const& data, std::string const& extension);
 };
 
 

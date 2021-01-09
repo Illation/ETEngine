@@ -27,7 +27,7 @@ public:
 protected:
 	bool LoadFromMemory(std::vector<uint8> const& data) override;
 
-	bool GenerateInternal(BuildConfiguration const& buildConfig) override;
+	bool GenerateInternal(BuildConfiguration const& buildConfig, std::string const& dbPath) override;
 	bool GenerateRequiresLoadData() const override { return true; }
 };
 
@@ -49,7 +49,7 @@ public:
 protected:
 	bool LoadFromMemory(std::vector<uint8> const& data) override;
 
-	bool GenerateInternal(BuildConfiguration const& buildConfig) override;
+	bool GenerateInternal(BuildConfiguration const& buildConfig, std::string const& dbPath) override;
 	bool GenerateRequiresLoadData() const override { return true; }
 };
 

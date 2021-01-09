@@ -1,15 +1,13 @@
 #include "stdafx.h"
 #include "Mesh.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>  
-#include <assimp/postprocess.h>
-
 #include <ext-mikktspace/mikktspace.h>
+
+#include <EtBuild/EngineVersion.h>
 
 #include <EtCore/Content/AssetRegistration.h>
 #include <EtCore/Reflection/Registration.h>
-#include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/IO/BinaryReader.h>
 
 #include <EtRendering/MaterialSystem/MaterialData.h>
 
@@ -165,6 +163,71 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 	return true;
 }
 
+//-----------------------------
+// MeshDataContainer::GetFlags
+//
+T_VertexFlags MeshDataContainer::GetFlags() const
+{
+	T_VertexFlags outFlags = 0u;
+
+	if (m_Positions.size() == m_VertexCount)
+	{
+		outFlags |= E_VertexFlag::POSITION;
+	}
+
+	if (m_Normals.size() == m_VertexCount)
+	{
+		outFlags |= E_VertexFlag::NORMAL;
+	}
+
+	if (m_BiNormals.size() == m_VertexCount)
+	{
+		outFlags |= E_VertexFlag::BINORMAL;
+	}
+
+	if (m_Tangents.size() == m_VertexCount)
+	{
+		outFlags |= E_VertexFlag::TANGENT;
+	}
+
+	if (m_Colors.size() == m_VertexCount)
+	{
+		outFlags |= E_VertexFlag::COLOR;
+	}
+
+	if (m_TexCoords.size() == m_VertexCount)
+	{
+		outFlags |= E_VertexFlag::TEXCOORD;
+	}
+
+	return outFlags;
+}
+
+//--------------------------------------
+// MeshDataContainer::GetBoundingSphere
+//
+math::Sphere MeshDataContainer::GetBoundingSphere() const
+{
+	vec3 center = vec3(0);
+	for (size_t i = 0u; i < m_Positions.size(); i++)
+	{
+		center = center + m_Positions[i];
+	}
+
+	float rcp = 1.f / static_cast<float>(m_Positions.size());
+	center = center * rcp;
+
+	// greatest distance from center
+	float maxRadius = 0.f;
+	for (size_t i = 0u; i < m_Positions.size(); i++)
+	{
+		float dist = math::distanceSquared(center, m_Positions[i]);
+		if (dist > maxRadius)maxRadius = dist;
+	}
+
+	return math::Sphere(center, sqrtf(maxRadius));
+}
+
 
 //==============
 // Mesh Surface
@@ -260,13 +323,18 @@ MeshSurface const* SurfaceContainer::GetSurface(MeshData const* const mesh, rend
 //---------------------------------
 // MeshData::c-tor
 //
+MeshData::MeshData()
+	: m_Surfaces(new SurfaceContainer())
+{ }
+
+//---------------------------------
+// MeshData::c-tor
+//
 // Construct Mesh data from vertex data
 //
 MeshData::MeshData(MeshDataContainer const* const cpuData)
 {
 	ET_ASSERT(cpuData != nullptr);
-
-	m_Name = cpuData->m_Name;
 
 	m_IndexCount = cpuData->m_Indices.size();
 	m_VertexCount = cpuData->m_VertexCount;
@@ -276,54 +344,10 @@ MeshData::MeshData(MeshDataContainer const* const cpuData)
 	m_Surfaces = new SurfaceContainer();
 
 	// derive flags from data sizes
-	//------------------------------
-	if (cpuData->m_Positions.size() == m_VertexCount)
-	{
-		m_SupportedFlags |= E_VertexFlag::POSITION;
-	}
-	if (cpuData->m_Normals.size() == m_VertexCount)
-	{
-		m_SupportedFlags |= E_VertexFlag::NORMAL;
-	}
-	if (cpuData->m_BiNormals.size() == m_VertexCount)
-	{
-		m_SupportedFlags |= E_VertexFlag::BINORMAL;
-	}
-	if (cpuData->m_Tangents.size() == m_VertexCount)
-	{
-		m_SupportedFlags |= E_VertexFlag::TANGENT;
-	}
-	if (cpuData->m_Colors.size() == m_VertexCount)
-	{
-		m_SupportedFlags |= E_VertexFlag::COLOR;
-	}
-	if (cpuData->m_TexCoords.size() == m_VertexCount)
-	{
-		m_SupportedFlags |= E_VertexFlag::TEXCOORD;
-	}
-
+	m_SupportedFlags = cpuData->GetFlags();
+	
 	// calculate bounding sphere
-	//---------------------------
-
-	// get center
-	vec3 center = vec3(0);
-	for (size_t i = 0u; i < cpuData->m_Positions.size(); i++)
-	{
-		center = center + cpuData->m_Positions[i];
-	}
-
-	float rcp = 1.f / static_cast<float>(cpuData->m_Positions.size());
-	center = center * rcp;
-
-	// greatest distance from center
-	float maxRadius = 0.f;
-	for (size_t i = 0u; i < cpuData->m_Positions.size(); i++)
-	{
-		float dist = math::distanceSquared(center, cpuData->m_Positions[i]);
-		if (dist > maxRadius)maxRadius = dist;
-	}
-
-	m_BoundingSphere = math::Sphere(center, sqrtf(maxRadius));
+	m_BoundingSphere = cpuData->GetBoundingSphere();
 
 	// create interleaved buffer data
 	//--------------------------------
@@ -408,7 +432,7 @@ MeshData::~MeshData()
 	api->DeleteBuffer(m_VertexBuffer);
 	api->DeleteBuffer(m_IndexBuffer);
 
-	SafeDelete(m_Surfaces);
+	delete m_Surfaces;
 }
 
 //---------------------------------
@@ -439,6 +463,10 @@ RTTR_REGISTRATION
 DEFINE_FORCED_LINKING(MeshAsset) // force the shader class to be linked as it is only used in reflection
 
 
+// static
+std::string const MeshAsset::s_Header("ETMESH");
+
+
 //---------------------------------
 // MeshAsset::LoadFromMemory
 //
@@ -446,166 +474,62 @@ DEFINE_FORCED_LINKING(MeshAsset) // force the shader class to be linked as it is
 //
 bool MeshAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
-	std::string const extension = core::FileUtil::ExtractExtension(GetName());
-	MeshDataContainer* meshContainer = nullptr;
+	m_Data = new MeshData();
 
-	meshContainer = LoadAssimp(data, extension);
-	if (meshContainer == nullptr)
+	core::BinaryReader reader;
+	reader.Open(data);
+	ET_ASSERT(reader.Exists());
+
+	// read header
+	//-------------
+	if (reader.ReadString(s_Header.size()) != s_Header)
 	{
-		LOG("MeshAsset::LoadFromMemory > Failed to load mesh asset!", core::LogLevel::Warning);
+		ET_ASSERT(false, "Incorrect binary mesh file header");
 		return false;
 	}
 
-	if (meshContainer->m_Name.empty())
+	std::string const writerVersion = reader.ReadNullString();
+	if (writerVersion != build::Version::s_Name)
 	{
-		meshContainer->m_Name = GetName();
+		LOG(FS("Mesh data was writter by a different engine version: %s", writerVersion.c_str()));
 	}
 
-	m_Data = new MeshData(meshContainer);
+	// read mesh info
+	//----------------
+	uint64 const indexCount = reader.Read<uint64>();
+	m_Data->m_IndexCount = static_cast<size_t>(indexCount);
 
-	SafeDelete(meshContainer);
+	uint64 const vertexCount = reader.Read<uint64>();
+	m_Data->m_VertexCount = static_cast<size_t>(vertexCount);
+
+	m_Data->m_IndexDataType = reader.Read<E_DataType>();
+	m_Data->m_SupportedFlags = reader.Read<T_VertexFlags>();
+	m_Data->m_BoundingSphere.pos = reader.ReadVector<3, float>();
+	m_Data->m_BoundingSphere.radius = reader.Read<float>();
+
+	uint64 const iBufferSize = indexCount * static_cast<uint64>(render::DataTypeInfo::GetTypeSize(m_Data->m_IndexDataType));
+	uint64 const vBufferSize = vertexCount * static_cast<uint64>(render::AttributeDescriptor::GetVertexSize(m_Data->m_SupportedFlags));
+
+	// setup buffers
+	//---------------
+	uint8 const* const indexData = reader.GetCurrentDataPointer();
+	reader.MoveBufferPosition(static_cast<size_t>(iBufferSize));
+
+	uint8 const* const vertexData = reader.GetCurrentDataPointer();
+
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+
+	// vertex buffer
+	m_Data->m_VertexBuffer = api->CreateBuffer();
+	api->BindBuffer(E_BufferType::Vertex, m_Data->m_VertexBuffer);
+	api->SetBufferData(E_BufferType::Vertex, static_cast<int64>(vBufferSize), reinterpret_cast<void const*>(vertexData), E_UsageHint::Static);
+
+	// index buffer 
+	m_Data->m_IndexBuffer = api->CreateBuffer();
+	api->BindBuffer(E_BufferType::Index, m_Data->m_IndexBuffer);
+	api->SetBufferData(E_BufferType::Index, static_cast<int64>(iBufferSize), reinterpret_cast<void const*>(indexData), E_UsageHint::Static);
+
 	return true;
-}
-
-//---------------------------------
-// MeshAsset::LoadAssimp
-//
-// Convert assimp mesh to a CPU side MeshDataContainer
-//
-MeshDataContainer* MeshAsset::LoadAssimp(std::vector<uint8> const& data, std::string const& extension)
-{
-	// load the mesh data into an assimp scene and do all necessary conversions
-	//--------------------------------------------------------------------------
-
-	Assimp::Importer assimpImporter;
-
-	uint32 importFlags =
-		aiProcess_CalcTangentSpace |
-		aiProcess_Triangulate |
-		aiProcess_JoinIdenticalVertices |
-		aiProcess_GenSmoothNormals |
-		aiProcess_PreTransformVertices |
-		aiProcess_ImproveCacheLocality |
-		aiProcess_FlipUVs |
-		aiProcess_OptimizeMeshes |
-		aiProcess_MakeLeftHanded;
-
-	aiScene const* const assimpScene = assimpImporter.ReadFileFromMemory(data.data(), data.size(), importFlags, extension.c_str());
-	if (assimpScene == nullptr)
-	{
-		LOG(FS("Loading scene with assimp failed: %s", assimpImporter.GetErrorString()), core::LogLevel::Warning);
-		return nullptr;
-	}
-
-	if (!(assimpScene->HasMeshes()))
-	{
-		LOG("Assimp scene found empty!", core::LogLevel::Warning);
-		return nullptr;
-	}
-
-	aiMesh const* const assimpMesh = assimpScene->mMeshes[0];
-	if (!(assimpMesh->HasPositions()))
-	{
-		LOG("Assimp mesh found empty!", core::LogLevel::Warning);
-		return nullptr;
-	}
-
-
-	// start with minumum mesh data
-	//------------------------------
-
-	MeshDataContainer* meshData = new MeshDataContainer();
-	meshData->m_Name = assimpMesh->mName.C_Str();
-	meshData->m_VertexCount = assimpMesh->mNumVertices;
-
-	// indices
-	if (assimpMesh->mNumFaces > 0)
-	{
-		for (size_t i = 0; i < assimpMesh->mNumFaces; i++)
-		{
-			meshData->m_Indices.push_back(static_cast<uint32>(assimpMesh->mFaces[i].mIndices[0]));
-			meshData->m_Indices.push_back(static_cast<uint32>(assimpMesh->mFaces[i].mIndices[1]));
-			meshData->m_Indices.push_back(static_cast<uint32>(assimpMesh->mFaces[i].mIndices[2]));
-		}
-	}
-	else
-	{
-		LOG("MeshAsset::LoadAssimp > No indices found!", core::LogLevel::Warning);
-	}
-
-	// positions
-	if (assimpMesh->mNumVertices > 0)
-	{
-		for (size_t i = 0; i < assimpMesh->mNumVertices; i++)
-		{
-			meshData->m_Positions.push_back(vec3(
-				assimpMesh->mVertices[i].x,
-				assimpMesh->mVertices[i].y,
-				assimpMesh->mVertices[i].z));
-		}
-	}
-
-	// everything else is optional
-	//-----------------------------
-
-	// normals
-	if (assimpMesh->HasNormals())
-	{
-		for (size_t i = 0; i < assimpMesh->mNumVertices; i++)
-		{
-			meshData->m_Normals.push_back(vec3(
-				assimpMesh->mNormals[i].x,
-				assimpMesh->mNormals[i].y,
-				assimpMesh->mNormals[i].z));
-		}
-	}
-
-	// tangent space
-	if (assimpMesh->HasTangentsAndBitangents())
-	{
-		for (size_t i = 0; i < assimpMesh->mNumVertices; i++)
-		{
-			meshData->m_Tangents.push_back(vec3(
-				assimpMesh->mTangents[i].x,
-				assimpMesh->mTangents[i].y,
-				assimpMesh->mTangents[i].z));
-			meshData->m_BiNormals.push_back(vec3(
-				assimpMesh->mBitangents[i].x,
-				assimpMesh->mBitangents[i].y,
-				assimpMesh->mBitangents[i].z));
-		}
-	}
-
-	// vertex colors
-	if (assimpMesh->HasVertexColors(0))
-	{
-		for (size_t i = 0; i < assimpMesh->mNumVertices; i++)
-		{
-			meshData->m_Colors.push_back(vec4(
-				assimpMesh->mColors[0][i].r,
-				assimpMesh->mColors[0][i].g,
-				assimpMesh->mColors[0][i].b,
-				assimpMesh->mColors[0][i].a));
-		}
-	}
-
-	// tex coords
-	if (assimpMesh->HasTextureCoords(0))
-	{
-		if (!(assimpMesh->mNumUVComponents[0] == 2))
-		{
-			LOG("UV dimensions don't match internal layout!", core::LogLevel::Warning);
-		}
-
-		for (size_t i = 0; i < assimpMesh->mNumVertices; i++)
-		{
-			meshData->m_TexCoords.push_back(vec2(
-				assimpMesh->mTextureCoords[0][i].x,
-				assimpMesh->mTextureCoords[0][i].y));
-		}
-	}
-
-	return meshData;
 }
 
 

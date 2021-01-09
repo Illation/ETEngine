@@ -104,6 +104,18 @@ void EditorAssetBase::SetupRuntimeAssetsInternal()
 	m_RuntimeAssets.emplace_back(m_Asset, false);
 }
 
+//-----------------------------------
+// EditorAssetBase::GenerateInternal
+//
+// Default behavior doesn't generate data -> we just use the editor asset data in the package
+//	
+bool EditorAssetBase::GenerateInternal(BuildConfiguration const& buildConfig, std::string const& dbPath)
+{
+	UNUSED(buildConfig); 
+	UNUSED(dbPath); 
+	return true;
+}
+
 //---------------------------------
 // EditorAssetBase::UnloadInternal
 //
@@ -206,7 +218,7 @@ void EditorAssetBase::SetupRuntimeAssets()
 //
 // Convert from editor assets to runtime assets and write to files in the build directory
 //
-void EditorAssetBase::Generate(BuildConfiguration const& buildConfig, core::Directory* const buildDir)
+void EditorAssetBase::Generate(BuildConfiguration const& buildConfig, core::Directory* const buildDir, std::string const& dbPath)
 {
 	ET_ASSERT(m_HasRuntimeAssets);
 
@@ -214,7 +226,7 @@ void EditorAssetBase::Generate(BuildConfiguration const& buildConfig, core::Dire
 	//-----------------------------------
 	for (EditorAssetBase* const child : m_ChildAssets)
 	{
-		child->Generate(buildConfig, buildDir);
+		child->Generate(buildConfig, buildDir, dbPath);
 	}
 
 	// create asset data
@@ -241,7 +253,7 @@ void EditorAssetBase::Generate(BuildConfiguration const& buildConfig, core::Dire
 		}
 	}
 
-	bool const success = GenerateInternal(buildConfig);
+	bool const success = GenerateInternal(buildConfig, dbPath);
 
 	if (GenerateRequiresLoadData())
 	{

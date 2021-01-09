@@ -47,12 +47,6 @@ private:
 	bool ReadObject(rttr::variant& var, TypeInfo const& ti);
 	bool ReadObjectProperties(rttr::instance& inst, TypeInfo const& ti, uint16 const propCount);
 
-	// misc
-	template <uint8 n, class T>
-	math::vector<n, T> ReadVector();
-
-	template <uint8 m, uint8 n, class T>
-	math::matrix<m, n, T> ReadMatrix();
 
 	// Data
 	///////

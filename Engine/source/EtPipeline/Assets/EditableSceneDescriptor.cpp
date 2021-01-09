@@ -48,8 +48,10 @@ bool EditableSceneDescriptorAsset::LoadFromMemory(std::vector<uint8> const& data
 //------------------------------------------------
 // EditableSceneDescriptorAsset::GenerateInternal
 //
-bool EditableSceneDescriptorAsset::GenerateInternal(BuildConfiguration const& buildConfig)
+bool EditableSceneDescriptorAsset::GenerateInternal(BuildConfiguration const& buildConfig, std::string const& dbPath)
 {
+	UNUSED(dbPath);
+
 	ET_ASSERT(m_RuntimeAssets.size() == 1u);
 	m_RuntimeAssets[0].m_HasGeneratedData = true; // we set this to true either way because we don't want to write json to the package if generation fails
 

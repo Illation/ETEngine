@@ -10,8 +10,8 @@ namespace core {
 //=====================
 
 
-//---------------------------------------
-// JsonDeserializer::DeserializeFromData
+//-----------------------------------------
+// BinaryDeserializer::DeserializeFromData
 //
 // Create the reflected type from an etbin file (provided as a data vector)
 // Returns false if deserialization is unsuccsesful. 
@@ -46,28 +46,6 @@ bool BinaryDeserializer::DeserializeFromData(std::vector<uint8> const& data, TDa
 	}
 
 	return false;
-}
-
-//------------------------------
-// JsonDeserializer::ReadVector
-//
-template <uint8 n, class T>
-math::vector<n, T> BinaryDeserializer::ReadVector()
-{
-	math::vector<n, T> ret;
-	m_Reader.ReadData(reinterpret_cast<uint8*>(ret.data.data()), sizeof(T) * n);
-	return ret;
-}
-
-//------------------------------
-// JsonDeserializer::ReadMatrix
-//
-template <uint8 m, uint8 n, class T>
-math::matrix<m, n, T> BinaryDeserializer::ReadMatrix()
-{
-	math::matrix<m, n, T> ret;
-	m_Reader.ReadData(reinterpret_cast<uint8*>(ret.data), sizeof(T) * m * n);
-	return ret;
 }
 
 

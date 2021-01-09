@@ -7,7 +7,10 @@
 
 #include <ext-mikktspace/mikktspace.h>
 
+#include <EtBuild/EngineVersion.h>
+
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/IO/BinaryWriter.h>
 
 #include <EtPipeline/Import/GLTF.h>
 
@@ -55,6 +58,115 @@ bool EditableMeshAsset::LoadFromMemory(std::vector<uint8> const& data)
 	SetData(new render::MeshData(meshContainer));
 
 	delete meshContainer;
+	return true;
+}
+
+//-------------------------------------
+// EditableMeshAsset::GenerateInternal
+//
+bool EditableMeshAsset::GenerateInternal(BuildConfiguration const& buildConfig, std::string const& dbPath)
+{
+	ET_ASSERT(m_RuntimeAssets.size() == 1u);
+	m_RuntimeAssets[0].m_HasGeneratedData = true; 
+
+	// load intermediate data format
+	//-------------------------------
+	std::string const extension = core::FileUtil::ExtractExtension(m_Asset->GetName());
+	render::MeshDataContainer* meshContainer = nullptr;
+	if (extension == "gltf")
+	{
+		meshContainer = LoadGLTF(m_Asset->GetLoadData(), dbPath + m_Asset->GetPath(), extension);
+	}
+	else
+	{
+		meshContainer = LoadAssimp(m_Asset->GetLoadData(), extension);
+	}
+
+	if (meshContainer == nullptr)
+	{
+		ET_ASSERT(false, "Failed to load mesh container");
+		return false;
+	}
+
+	// fetch info so we can calculate file size
+	//-------------------------------------------
+	uint64 const indexCount = static_cast<uint64>(meshContainer->m_Indices.size());
+	uint64 const vertexCount = static_cast<uint64>(meshContainer->m_VertexCount);
+
+	// #todo: might be okay to store index buffer with 16bits per index
+	render::E_DataType const indexDataType = render::E_DataType::UInt;
+	render::T_VertexFlags const flags = meshContainer->GetFlags();
+	math::Sphere const boundingSphere = meshContainer->GetBoundingSphere();
+
+	size_t const iBufferSize = indexCount * static_cast<size_t>(render::DataTypeInfo::GetTypeSize(indexDataType));
+	size_t const vBufferSize = vertexCount * static_cast<size_t>(render::AttributeDescriptor::GetVertexSize(flags));
+
+	// init binary writer
+	//--------------------
+	core::BinaryWriter binWriter(m_RuntimeAssets[0].m_GeneratedData);
+	binWriter.FormatBuffer(render::MeshAsset::s_Header.size() +
+		build::Version::s_Name.size() + 1u + 
+		sizeof(uint64) + // index count
+		sizeof(uint64) + // vertex count
+		sizeof(render::E_DataType) +
+		sizeof(render::T_VertexFlags) +
+		sizeof(float) * 4u + // bounding sphere - pos (3) + radius (1)
+		iBufferSize +
+		vBufferSize);
+
+	// write header
+	//--------------
+	binWriter.WriteString(render::MeshAsset::s_Header);
+	binWriter.WriteNullString(build::Version::s_Name);
+
+	binWriter.Write(indexCount);
+	binWriter.Write(vertexCount);
+
+	binWriter.Write(indexDataType);
+	binWriter.Write(flags);
+	binWriter.WriteVector(boundingSphere.pos);
+	binWriter.Write(boundingSphere.radius);
+
+	// writer indices
+	//----------------
+	// we just assume index data type will be the same as what is in the mesh container for now.. in the future we might have to convert
+	binWriter.WriteData(reinterpret_cast<uint8 const*>(meshContainer->m_Indices.data()), iBufferSize);
+
+	// write vertices
+	//----------------
+	for (size_t vertIdx = 0u; vertIdx < static_cast<size_t>(vertexCount); vertIdx++)
+	{
+		if (flags & render::E_VertexFlag::POSITION)
+		{
+			binWriter.WriteVector(meshContainer->m_Positions[vertIdx]);
+		}
+
+		if (flags & render::E_VertexFlag::NORMAL)
+		{
+			binWriter.WriteVector(meshContainer->m_Normals[vertIdx]);
+		}
+
+		if (flags & render::E_VertexFlag::BINORMAL)
+		{
+			binWriter.WriteVector(meshContainer->m_BiNormals[vertIdx]);
+		}
+
+		if (flags & render::E_VertexFlag::TANGENT)
+		{
+			binWriter.WriteVector(meshContainer->m_Tangents[vertIdx]);
+		}
+
+		if (flags & render::E_VertexFlag::COLOR)
+		{
+			binWriter.WriteVector(meshContainer->m_Colors[vertIdx]);
+		}
+
+		if (flags & render::E_VertexFlag::TEXCOORD)
+		{
+			binWriter.WriteVector(meshContainer->m_TexCoords[vertIdx]);
+		}
+	}
+
 	return true;
 }
 

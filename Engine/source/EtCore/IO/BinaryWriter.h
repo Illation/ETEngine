@@ -31,7 +31,12 @@ public:
 
 	template <typename TDataType>
 	void Write(TDataType const& data);
+
+	template <uint8 n, class T>
+	void WriteVector(math::vector<n, T> const& vec);
+
 	void WriteData(uint8 const* const data, size_t const size);
+
 	void WriteNullString(std::string const& str);
 	void WriteString(std::string const& str); // no terminator
 

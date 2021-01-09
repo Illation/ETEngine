@@ -1328,7 +1328,7 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 	}
 
 	for (uint64 i = static_cast<uint64>(accessor.byteOffset);
-		i < static_cast<uint64>(accessor.byteOffset + stride) * accessor.count;
+		i < static_cast<uint64>(accessor.byteOffset) + (stride * accessor.count);
 		i += static_cast<uint64>(stride))
 	{
 		pViewReader->SetBufferPosition(static_cast<size_t>(i));

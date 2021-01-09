@@ -118,9 +118,10 @@ void EditableShaderAsset::SetupRuntimeAssetsInternal()
 //-------------------------------------
 // EditableShaderAsset::LoadFromMemory
 //
-bool EditableShaderAsset::GenerateInternal(BuildConfiguration const& buildConfig)
+bool EditableShaderAsset::GenerateInternal(BuildConfiguration const& buildConfig, std::string const& dbPath)
 {
 	UNUSED(buildConfig);
+	UNUSED(dbPath);
 
 	// Extract the shader text from binary data
 	//------------------------
