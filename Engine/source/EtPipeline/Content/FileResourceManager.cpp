@@ -131,6 +131,23 @@ void FileResourceManager::Flush()
 	m_EngineDb.Flush();
 }
 
+//----------------------------
+// FileResourceManager::GetDB
+//
+// Return the DB the asset is in
+//
+EditorAssetDatabase const* FileResourceManager::GetDB(core::I_Asset const* const asset) const
+{
+	if (IsEngineResource(asset))
+	{
+		return &m_EngineDb;
+	}
+	else
+	{
+		return &m_ProjectDb;
+	}
+}
+
 //-------------------------------------------
 // FileResourceManager::GetAssetInternal
 //

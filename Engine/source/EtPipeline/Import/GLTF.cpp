@@ -9,6 +9,8 @@
 
 #include <EtRendering/GraphicsTypes/Mesh.h>
 
+#include "MeshDataContainer.h"
+
 
 namespace et {
 namespace pl {
@@ -1342,15 +1344,14 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 	return true;
 }
 
-bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<render::MeshDataContainer*>& meshContainers)
+bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& meshContainers)
 {
 	for (const Mesh& mesh : asset.dom.meshes)
 	{
 		if (mesh.primitives.size() > 1)LOG("Currently ETEngine meshes only support one primitive", core::LogLevel::Warning);
 		for (const Primitive& primitive : mesh.primitives)
 		{
-			render::MeshDataContainer* pMesh = new render::MeshDataContainer();
-			pMesh->m_Name = mesh.name;
+			MeshDataContainer* pMesh = new MeshDataContainer();
 
 			//Basic positions
 			if (primitive.indices == -1)

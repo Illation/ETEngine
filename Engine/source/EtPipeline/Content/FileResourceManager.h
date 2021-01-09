@@ -56,6 +56,8 @@ public:
 
 	bool IsLoadEnabled() const { return m_IsLoadEnabled; } 
 
+	EditorAssetDatabase const* GetDB(core::I_Asset const* const asset) const;
+
 	// utility
 	//---------------------
 protected:

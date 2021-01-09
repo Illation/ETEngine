@@ -5,14 +5,15 @@
 #include <assimp/scene.h>  
 #include <assimp/postprocess.h>
 
-#include <ext-mikktspace/mikktspace.h>
-
 #include <EtBuild/EngineVersion.h>
 
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/FileSystem/Entry.h>
 #include <EtCore/IO/BinaryWriter.h>
 
 #include <EtPipeline/Import/GLTF.h>
+#include <EtPipeline/Import/MeshDataContainer.h>
+#include <EtPipeline/Content/FileResourceManager.h>
 
 
 namespace et {
@@ -41,23 +42,106 @@ DEFINE_FORCED_LINKING(EditableMeshAsset) // force the asset class to be linked a
 bool EditableMeshAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
 	std::string const extension = core::FileUtil::ExtractExtension(m_Asset->GetName());
-	render::MeshDataContainer* meshContainer = nullptr;
+	MeshDataContainer* meshContainer = nullptr;
 
-	meshContainer = LoadAssimp(data, extension);
+	if (extension == "gltf")
+	{
+		EditorAssetDatabase const* const db = static_cast<FileResourceManager*>(core::ResourceManager::Instance())->GetDB(m_Asset);
+		ET_ASSERT(db != nullptr);
+
+		meshContainer = LoadGLTF(data, db->GetDirectory()->GetName() + db->GetAssetPath(), extension);
+	}
+	else 
+	{
+		meshContainer = LoadAssimp(data, extension);
+	}
+
 	if (meshContainer == nullptr)
 	{
 		LOG("MeshAsset::LoadFromMemory > Failed to load mesh asset!", core::LogLevel::Warning);
 		return false;
 	}
 
-	if (meshContainer->m_Name.empty())
+	render::MeshData* const meshData = new render::MeshData();
+	meshData->m_IndexCount = meshContainer->m_Indices.size();
+	meshData->m_VertexCount = meshContainer->m_VertexCount;
+	ET_ASSERT(meshData->m_VertexCount > 0u, "Expected mesh to have vertices!");
+
+	meshData->m_SupportedFlags = meshContainer->GetFlags();
+	meshData->m_BoundingSphere = meshContainer->GetBoundingSphere();
+
+	uint16 const vertexSize = render::AttributeDescriptor::GetVertexSize(meshData->m_SupportedFlags);
+	size_t const bufferSize = meshData->m_VertexCount * static_cast<size_t>(vertexSize);
+	uint8* interleaved = new uint8[bufferSize];
+
+	// fill interleaved buffer with vertex data
+	for (size_t vertIdx = 0u; vertIdx < meshData->m_VertexCount; vertIdx++)
 	{
-		meshContainer->m_Name = m_Asset->GetName();
+		size_t offset = vertIdx * vertexSize;
+
+		if (meshData->m_SupportedFlags & render::E_VertexFlag::POSITION)
+		{
+			memcpy(interleaved + offset, &(meshContainer->m_Positions[vertIdx]), sizeof(vec3));
+			offset += sizeof(vec3);
+		}
+
+		if (meshData->m_SupportedFlags & render::E_VertexFlag::NORMAL)
+		{
+			memcpy(interleaved + offset, &(meshContainer->m_Normals[vertIdx]), sizeof(vec3));
+			offset += sizeof(vec3);
+		}
+
+		if (meshData->m_SupportedFlags & render::E_VertexFlag::BINORMAL)
+		{
+			memcpy(interleaved + offset, &(meshContainer->m_BiNormals[vertIdx]), sizeof(vec3));
+			offset += sizeof(vec3);
+		}
+
+		if (meshData->m_SupportedFlags & render::E_VertexFlag::TANGENT)
+		{
+			memcpy(interleaved + offset, &(meshContainer->m_Tangents[vertIdx]), sizeof(vec3));
+			offset += sizeof(vec3);
+		}
+
+		if (meshData->m_SupportedFlags & render::E_VertexFlag::COLOR)
+		{
+			memcpy(interleaved + offset, &(meshContainer->m_Colors[vertIdx].xyz), sizeof(vec3));
+			offset += sizeof(vec3);
+		}
+
+		if (meshData->m_SupportedFlags & render::E_VertexFlag::TEXCOORD)
+		{
+			memcpy(interleaved + offset, &(meshContainer->m_TexCoords[vertIdx]), sizeof(vec2));
+			offset += sizeof(vec2);
+		}
 	}
 
-	SetData(new render::MeshData(meshContainer));
+	// copy data to GPU
+	//------------------
 
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+
+	// vertex buffer
+	meshData->m_VertexBuffer = api->CreateBuffer();
+	api->BindBuffer(render::E_BufferType::Vertex, meshData->m_VertexBuffer);
+	api->SetBufferData(render::E_BufferType::Vertex, bufferSize, interleaved, render::E_UsageHint::Static);
+
+	// index buffer - #todo: might be okay to store index buffer with 16bits per index
+	meshData->m_IndexBuffer = api->CreateBuffer();
+	api->BindBuffer(render::E_BufferType::Index, meshData->m_IndexBuffer);
+	api->SetBufferData(render::E_BufferType::Index, 
+		sizeof(uint32) * meshContainer->m_Indices.size(), 
+		meshContainer->m_Indices.data(), 
+		render::E_UsageHint::Static);
+
+	// free CPU side data
+	//--------------------
 	delete meshContainer;
+	delete[] interleaved;
+
+	// done
+	//------
+	SetData(meshData);
 	return true;
 }
 
@@ -72,7 +156,7 @@ bool EditableMeshAsset::GenerateInternal(BuildConfiguration const& buildConfig, 
 	// load intermediate data format
 	//-------------------------------
 	std::string const extension = core::FileUtil::ExtractExtension(m_Asset->GetName());
-	render::MeshDataContainer* meshContainer = nullptr;
+	MeshDataContainer* meshContainer = nullptr;
 	if (extension == "gltf")
 	{
 		meshContainer = LoadGLTF(m_Asset->GetLoadData(), dbPath + m_Asset->GetPath(), extension);
@@ -175,7 +259,7 @@ bool EditableMeshAsset::GenerateInternal(BuildConfiguration const& buildConfig, 
 //
 // Convert assimp mesh to a CPU side MeshDataContainer
 //
-render::MeshDataContainer* EditableMeshAsset::LoadAssimp(std::vector<uint8> const& data, std::string const& extension)
+MeshDataContainer* EditableMeshAsset::LoadAssimp(std::vector<uint8> const& data, std::string const& extension)
 {
 	// load the mesh data into an assimp scene and do all necessary conversions
 	//--------------------------------------------------------------------------
@@ -217,8 +301,7 @@ render::MeshDataContainer* EditableMeshAsset::LoadAssimp(std::vector<uint8> cons
 	// start with minumum mesh data
 	//------------------------------
 
-	render::MeshDataContainer* meshData = new render::MeshDataContainer();
-	meshData->m_Name = assimpMesh->mName.C_Str();
+	MeshDataContainer* meshData = new MeshDataContainer();
 	meshData->m_VertexCount = assimpMesh->mNumVertices;
 
 	// indices
@@ -316,7 +399,7 @@ render::MeshDataContainer* EditableMeshAsset::LoadAssimp(std::vector<uint8> cons
 //
 // Convert a gltf asset to a CPU side MeshDataContainer
 //
-render::MeshDataContainer* EditableMeshAsset::LoadGLTF(std::vector<uint8> const& data, std::string const& path, std::string const& extension)
+MeshDataContainer* EditableMeshAsset::LoadGLTF(std::vector<uint8> const& data, std::string const& path, std::string const& extension)
 {
 	glTF::glTFAsset asset;
 	if (!glTF::ParseGLTFData(data, path, extension, asset))
@@ -325,7 +408,7 @@ render::MeshDataContainer* EditableMeshAsset::LoadGLTF(std::vector<uint8> const&
 		return nullptr;
 	}
 
-	std::vector<render::MeshDataContainer*> containers;
+	std::vector<MeshDataContainer*> containers;
 	if (!glTF::GetMeshContainers(asset, containers))
 	{
 		LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
@@ -338,7 +421,7 @@ render::MeshDataContainer* EditableMeshAsset::LoadGLTF(std::vector<uint8> const&
 		return nullptr;
 	}
 
-	render::MeshDataContainer* ret = containers[0];
+	MeshDataContainer* const ret = containers[0];
 
 	if (containers.size() > 1)
 	{

@@ -4,6 +4,11 @@
 #include <EtPipeline/Content/EditorAsset.h>
 
 
+namespace et { namespace pl {
+	struct MeshDataContainer;
+} }
+
+
 namespace et {
 namespace pl {
 	
@@ -32,8 +37,8 @@ protected:
 	// utility
 	//---------
 private:
-	render::MeshDataContainer* LoadAssimp(std::vector<uint8> const& data, std::string const& extension);
-	render::MeshDataContainer* LoadGLTF(std::vector<uint8> const& data, std::string const& path, std::string const& extension);
+	MeshDataContainer* LoadAssimp(std::vector<uint8> const& data, std::string const& extension);
+	MeshDataContainer* LoadGLTF(std::vector<uint8> const& data, std::string const& path, std::string const& extension);
 };
 
 

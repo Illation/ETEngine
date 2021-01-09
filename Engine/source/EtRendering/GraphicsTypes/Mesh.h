@@ -8,41 +8,16 @@
 // forward declarations
 namespace et {
 	REGISTRATION_NS(render);
-	namespace render {
-		class MeshData;
-		class Material;
-	}
-}
+namespace render {
+	class MeshData;
+	class Material;
+} namespace pl {
+	class EditableMeshAsset;
+} }
 
 
 namespace et {
 namespace render {
-
-
-//---------------------------------
-// MeshDataContainer
-//
-// CPU side vertex and index data
-//
-struct MeshDataContainer final
-{
-	bool ConstructTangentSpace(std::vector<vec4>& tangentInfo);
-	T_VertexFlags GetFlags() const;
-	math::Sphere GetBoundingSphere() const;
-
-	size_t m_VertexCount = 0u;
-
-	std::vector<vec3> m_Positions;
-	std::vector<vec3> m_Normals;
-	std::vector<vec3> m_BiNormals;
-	std::vector<vec3> m_Tangents;
-	std::vector<vec4> m_Colors;
-	std::vector<vec2> m_TexCoords;
-
-	std::vector<uint32> m_Indices;
-
-	std::string m_Name;
-};
 
 
 //---------------------------------
@@ -106,12 +81,12 @@ class MeshData final
 	//-------------
 	REGISTRATION_FRIEND_NS(render)
 	friend class MeshAsset;
+	friend class pl::EditableMeshAsset;
 
 	// c-tor d-tor
 	//-------------
 	MeshData();
 public:
-	MeshData(MeshDataContainer const* const cpuData);
 	~MeshData();
 
 	// accessors
