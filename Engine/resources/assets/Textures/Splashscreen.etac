@@ -7,7 +7,7 @@
         "package": "",
         "references": [],
         "use SRGB": false,
-        "force resolution": false,
+        "force resolution": true,
         "required channels": 0,
         "parameters": {
           "min filter": "Linear",
@@ -21,6 +21,11 @@
       }
     },
     "metadata": null,
-    "children": []
+    "children": [],
+    "sRGB setting": "None",
+    "supports alpha": false,
+    "max size": 0,
+    "compression setting": "UI",
+    "compression quality": "Medium"
   }
 }

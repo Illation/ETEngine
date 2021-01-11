@@ -8,6 +8,7 @@
         "references": [],
         "use SRGB": true,
         "force resolution": false,
+        "required channels": 0,
         "parameters": {
           "min filter": "Linear",
           "mag filter": "Linear",
@@ -20,6 +21,11 @@
       }
     },
     "metadata": null,
-    "children": []
+    "children": [],
+    "sRGB setting": "OnLoad",
+    "supports alpha": false,
+    "max size": 0,
+    "compression setting": "Default",
+    "compression quality": "Medium"
   }
 }

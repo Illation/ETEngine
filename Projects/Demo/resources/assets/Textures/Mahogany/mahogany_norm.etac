@@ -21,6 +21,11 @@
       }
     },
     "metadata": null,
-    "children": []
+    "children": [],
+    "sRGB setting": "None",
+    "supports alpha": false,
+    "max size": 0,
+    "compression setting": "Default",
+    "compression quality": "Medium"
   }
 }

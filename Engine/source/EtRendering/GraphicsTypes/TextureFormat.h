@@ -6,6 +6,12 @@ namespace et {
 namespace render {
 
 
+//------------------------------------------
+class TextureFormatRegistrationLinkEnforcer
+{
+	DECLARE_FORCED_LINKING()
+};
+
 //-----------------------
 // E_CompressionSetting
 //
@@ -27,6 +33,8 @@ enum class E_CompressionSetting : uint8
 	// CompressedHDR, // BC6H - not supported currently
 	BC7 // High quality version of default when targeting modern GPUs
 };
+
+bool RequiresCompression(E_CompressionSetting const setting);
 
 //---------------
 // E_SrgbSetting
