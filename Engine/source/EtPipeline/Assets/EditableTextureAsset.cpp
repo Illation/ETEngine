@@ -43,13 +43,16 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
 	render::TextureAsset const* const textureAsset = static_cast<render::TextureAsset const*>(m_Asset);
 
+	ET_ASSERT((m_Srgb != render::E_SrgbSetting::None) == textureAsset->m_UseSrgb);
+	render::E_ColorFormat outputFormat = GetOutputFormat(m_CompressionSetting, m_SupportAlpha, m_Srgb != render::E_SrgbSetting::None);
+	bool const requiresCompression = render::RequiresCompression(m_CompressionSetting);
+	int32 channels = requiresCompression ? 4u : GetInputChannelCount(outputFormat);
+
 	// check image format
 	stbi_set_flip_vertically_on_load(false);
 	int32 width = 0;
 	int32 height = 0;
 	int32 fileChannels = 0;
-
-	int32 channels = static_cast<int32>(textureAsset->m_RequiredChannels);
 
 	// option to load 16 bit texture
 	uint8* bits = stbi_load_from_memory(data.data(), static_cast<int32>(data.size()), &width, &height, &fileChannels, channels);
@@ -91,10 +94,17 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	}
 	else
 	{
-		ET_ASSERT(!render::RequiresCompression(m_CompressionSetting), "texture '%s' forces resolution but requires compression", m_Id.ToStringDbg());
+		ET_ASSERT(!requiresCompression, "texture '%s' forces resolution but requires compression", m_Id.ToStringDbg());
 	}
 
-	ET_ASSERT((m_Srgb != render::E_SrgbSetting::None) == textureAsset->m_UseSrgb);
+	if (requiresCompression)
+	{
+		uint32 const blocksX = width / 4;
+		uint32 const blocksY = height / 4;
+
+		std::vector<T_Block8> packedImage8(blocksX * blocksY);
+		std::vector<Block16> packedImage16(blocksX * blocksY);
+	}
 
 	// convert data type
 	// check number of channels
@@ -187,6 +197,151 @@ int32 EditableTextureAsset::GetPow2Size(int32 const width, int32 const height, b
 	}
 
 	return power;
+}
+
+//---------------------------------------
+// EditableTextureAsset::GetOutputFormat
+//
+render::E_ColorFormat EditableTextureAsset::GetOutputFormat(render::E_CompressionSetting const setting, bool const supportAlpha, bool const useSrgb) const
+{
+	switch (setting)
+	{
+	case render::E_CompressionSetting::Default:
+		if (useSrgb)
+		{
+			if (supportAlpha)
+			{
+				return render::E_ColorFormat::BC3_SRGBA;
+			}
+
+			return render::E_ColorFormat::BC1_SRGB; 
+		}
+
+		if (supportAlpha)
+		{
+			return render::E_ColorFormat::BC3_RGBA;
+		}
+
+		return render::E_ColorFormat::BC1_RGB; // in the future we might allow for one bit alpha
+
+	case render::E_CompressionSetting::NormalMap:
+		ET_ASSERT(!supportAlpha);
+		ET_ASSERT(!useSrgb);
+		return render::E_ColorFormat::BC5_RG;
+
+	case render::E_CompressionSetting::GrayScale:
+		ET_ASSERT(!supportAlpha);
+		if (useSrgb)
+		{
+			return render::E_ColorFormat::SRGB8;
+		}
+
+		return render::E_ColorFormat::R8;
+
+	case render::E_CompressionSetting::DisplacementMap:
+		ET_ASSERT(!supportAlpha);
+		ET_ASSERT(!useSrgb);
+		return render::E_ColorFormat::R8; // in the future maybe also support R16, but there is no point now because we load 8 bits
+
+	case render::E_CompressionSetting::VectorDisplacementMap:
+		ET_ASSERT(!supportAlpha);
+		ET_ASSERT(!useSrgb);
+		return render::E_ColorFormat::RGB8;
+
+	case render::E_CompressionSetting::HDR:
+		ET_ASSERT(!supportAlpha);
+		ET_ASSERT(!useSrgb);
+		return render::E_ColorFormat::RGB16f;
+
+	case render::E_CompressionSetting::UI:
+		ET_ASSERT(supportAlpha);
+		if (useSrgb)
+		{
+			return render::E_ColorFormat::SRGBA8;
+		}
+
+		return render::E_ColorFormat::RGBA8;
+
+	case render::E_CompressionSetting::Alpha:
+		ET_ASSERT(!useSrgb);
+		return render::E_ColorFormat::BC4_Red; // signed?
+
+	case render::E_CompressionSetting::SdfFont:
+		ET_ASSERT(!useSrgb);
+		ET_ASSERT(supportAlpha);
+		return render::E_ColorFormat::RGBA8; 
+
+	case render::E_CompressionSetting::BC7:
+		ET_ASSERT(supportAlpha);
+		if (useSrgb)
+		{
+			return render::E_ColorFormat::BC7_SRGBA;
+		}
+
+		return render::E_ColorFormat::BC7_RGBA;
+	}
+}
+
+//--------------------------------------------
+// EditableTextureAsset::GetInputChannelCount
+//
+uint8 EditableTextureAsset::GetInputChannelCount(render::E_ColorFormat const format) const
+{
+	switch (format)
+	{
+	case render::E_ColorFormat::R8:
+	case render::E_ColorFormat::BC4_Red:
+		return 1u;
+
+	case render::E_ColorFormat::BC5_RG:
+		return 2u;
+
+	case render::E_ColorFormat::RGB8:
+	case render::E_ColorFormat::SRGB8:
+	case render::E_ColorFormat::RGB16f:
+	case render::E_ColorFormat::BC1_RGB:
+	case render::E_ColorFormat::BC1_SRGB:
+		return 3u;
+
+	case render::E_ColorFormat::RGBA8:
+	case render::E_ColorFormat::SRGBA8:
+	case render::E_ColorFormat::BC3_RGBA:
+	case render::E_ColorFormat::BC3_SRGBA:
+	case render::E_ColorFormat::BC7_RGBA:
+	case render::E_ColorFormat::BC7_SRGBA:
+		return 4u;
+
+	default: 
+		ET_ASSERT(false, "unhandled color format");
+		return 0u;
+	}
+}
+
+//-----------------------------------
+// EditableTextureAsset::GetBlock4x4
+//
+// Get a block for compression from bitmap. X and Y are block coordinates, not bitmap coordinates
+// Assumes input pixels are 4 channels
+// outBlock should be an array of 16 elements
+//
+void EditableTextureAsset::GetBlock4x4(uint8 const* const pixels, 
+	int32 const width, 
+	int32 const height, 
+	uint16 const blockX, 
+	uint16 const blockY, 
+	ColorU8* const outBlock)
+{
+	UNUSED(width);
+	UNUSED(height);
+	ET_ASSERT((blockX * 4 + 4) <= width);
+	ET_ASSERT((blockY * 4 + 4) <= height);
+
+	for (uint32_t y = 0; y < 4; y++)
+	{
+		memcpy(reinterpret_cast<void*>(outBlock + y * 4), 
+			reinterpret_cast<void const*>(pixels[(blockY * 4 + y) + (blockX * 4)]), 
+			4 * sizeof(ColorU8));
+	}
 }
 
 

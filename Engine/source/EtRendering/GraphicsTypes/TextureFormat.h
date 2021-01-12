@@ -25,7 +25,7 @@ enum class E_CompressionSetting : uint8
 	NormalMap, // BC5
 	GrayScale, // R8 or sRGB
 	DisplacementMap, // R8 / R16
-	VectorDisplacementMap, // RGB7
+	VectorDisplacementMap, // RGB8
 	HDR, // RGB16F
 	UI, // RGBA8 / sRGBA8
 	Alpha, // BC4
