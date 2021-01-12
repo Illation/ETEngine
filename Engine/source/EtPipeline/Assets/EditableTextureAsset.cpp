@@ -2,7 +2,6 @@
 #include "EditableTextureAsset.h"
 
 #include <stb/stb_image.h>
-#include <stb/stb_image_resize.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
@@ -43,53 +42,31 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
 	render::TextureAsset const* const textureAsset = static_cast<render::TextureAsset const*>(m_Asset);
 
+	// settings
 	ET_ASSERT((m_Srgb != render::E_SrgbSetting::None) == textureAsset->m_UseSrgb);
 	render::E_ColorFormat outputFormat = GetOutputFormat(m_CompressionSetting, m_SupportAlpha, m_Srgb != render::E_SrgbSetting::None);
 	bool const requiresCompression = render::RequiresCompression(m_CompressionSetting);
-	int32 channels = requiresCompression ? 4u : GetInputChannelCount(outputFormat);
 
-	// check image format
-	stbi_set_flip_vertically_on_load(false);
-	int32 width = 0;
-	int32 height = 0;
-	int32 fileChannels = 0;
-
-	// option to load 16 bit texture
-	uint8* bits = stbi_load_from_memory(data.data(), static_cast<int32>(data.size()), &width, &height, &fileChannels, channels);
-
-	if (channels == 0)
+	// Load
+	RasterImage image;
+	if (!LoadImage(image, data))
 	{
-		channels = fileChannels;
-	}
-
-	if (bits == nullptr)
-	{
-		LOG("TextureAsset::LoadFromMemory > Failed to load texture bytes from data!", core::LogLevel::Warning);
+		ET_ASSERT(false, "Failed to load image from data");
 		return false;
 	}
 
-	if ((width == 0) || (height == 0))
-	{
-		LOG("TextureAsset::LoadFromMemory > Image is too small to display!", core::LogLevel::Warning);
-		stbi_image_free(bits);
-		return false;
-	}
+	uint32 width = image.GetWidth();
+	uint32 height = image.GetHeight();
 
 	// resize the texture to an appropriate format
-	int32 const size = GetPow2Size(width, height, true);
 	if (!(textureAsset->m_ForceResolution))
 	{
+		uint32 const size = GetPow2Size(width, height, true);
 		if ((width != size) || (height != size))
 		{
-			// resize
-			uint8* outBits = new uint8[size * size * channels];
-
-			stbir_resize_uint8(bits, width, height, 0, outBits, size, size, 0, channels);
-
-			stbi_image_free(bits);
-			bits = outBits;
-			width = size;
-			height = size;
+			image.Resize(size, size);
+			width = image.GetWidth();
+			height = image.GetHeight();
 		}
 	}
 	else
@@ -97,74 +74,61 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 		ET_ASSERT(!requiresCompression, "texture '%s' forces resolution but requires compression", m_Id.ToStringDbg());
 	}
 
-	if (requiresCompression)
-	{
-		uint32 const blocksX = width / 4;
-		uint32 const blocksY = height / 4;
+	// generate mipmaps here in the future
 
-		std::vector<T_Block8> packedImage8(blocksX * blocksY);
-		std::vector<Block16> packedImage16(blocksX * blocksY);
-	}
+	//if (requiresCompression)
+	//{
+	//	uint32 const blocksX = width / 4;
+	//	uint32 const blocksY = height / 4;
 
-	// convert data type
-	// check number of channels
-	render::E_ColorFormat layout;
-	render::E_ColorFormat storageFormat;
-	switch (channels)
-	{
-	case 1:
-		layout = render::E_ColorFormat::Red;
-		ET_ASSERT(m_Srgb != render::E_SrgbSetting::OnLoad);
-		storageFormat = render::E_ColorFormat::R8;
-		break;
+	//	std::vector<Block8> packedImage8(blocksX * blocksY);
+	//	std::vector<Block16> packedImage16(blocksX * blocksY);
+	//}
+	//else
+	//{
+	//	// swizzle(2, 1, 0, 3)
+	//}
 
-	case 2:
-		layout = render::E_ColorFormat::RG;
-		ET_ASSERT(m_Srgb != render::E_SrgbSetting::OnLoad);
-		storageFormat = render::E_ColorFormat::RG8;
-		break;
-
-	case 3:
-		layout = render::E_ColorFormat::RGB;
-		if (m_Srgb == render::E_SrgbSetting::OnLoad)
-		{
-			storageFormat = render::E_ColorFormat::SRGB8;
-		}
-		else
-		{
-			storageFormat = render::E_ColorFormat::RGB8;
-		}
-		break;
-
-	case 4:
-		layout = render::E_ColorFormat::RGBA;
-		if (m_Srgb == render::E_SrgbSetting::OnLoad)
-		{
-			storageFormat = render::E_ColorFormat::SRGBA8;
-		}
-		else
-		{
-			storageFormat = render::E_ColorFormat::RGBA8;
-		}
-		break;
-
-	default:
-		ET_ASSERT(false, "unhandled texture channel count");
-		stbi_image_free(bits);
-		return false;
-	}
+	// temp
+	render::E_ColorFormat const layout = render::E_ColorFormat::RGBA;
+	render::E_ColorFormat const storageFormat = (m_Srgb == render::E_SrgbSetting::OnLoad) ? render::E_ColorFormat::SRGBA8 : render::E_ColorFormat::RGBA8;
 
 	//Upload to GPU
-	render::TextureData* const texture = new render::TextureData(storageFormat, ivec2(width, height));
-	texture->UploadData(reinterpret_cast<void const*>(bits), layout, render::E_DataType::UByte);
-
-	stbi_image_free(bits);
-	bits = nullptr;
+	render::TextureData* const texture = new render::TextureData(storageFormat, ivec2(static_cast<int32>(width), static_cast<int32>(height)));
+	texture->UploadData(reinterpret_cast<void const*>(image.GetPixels()), layout, render::E_DataType::UByte);
 
 	texture->SetParameters(textureAsset->m_Parameters);
 	texture->CreateHandle();
 
+	// done
 	SetData(texture);
+	return true;
+}
+
+//---------------------------------
+// EditableTextureAsset::LoadImage
+//
+bool EditableTextureAsset::LoadImage(RasterImage& image, std::vector<uint8> const& data) const
+{
+	// check image format
+	stbi_set_flip_vertically_on_load(false);
+	int32 width = 0;
+	int32 height = 0;
+	int32 fileChannels = 0;
+
+	// option to load 16 bit texture
+	uint8* const pixels = stbi_load_from_memory(data.data(), static_cast<int32>(data.size()), &width, &height, &fileChannels, RasterImage::s_NumChannels);
+	if ((pixels == nullptr) || (width == 0) || (height == 0))
+	{
+		return false;
+	}
+
+	image.SetSize(static_cast<uint32>(width), static_cast<uint32>(height));
+	image.AllocatePixels();
+	image.SetPixels(reinterpret_cast<RasterImage::ColorU8 const*>(pixels));
+
+	stbi_image_free(pixels);
+	 
 	return true;
 }
 
@@ -173,12 +137,12 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 // Return the nearest power of two of the larger edge, clamped to the max size and adjusted by graphics settings
 //
-int32 EditableTextureAsset::GetPow2Size(int32 const width, int32 const height, bool adjustByGraphicsSettings) const
+uint32 EditableTextureAsset::GetPow2Size(uint32 const width, uint32 const height, bool adjustByGraphicsSettings) const
 {
-	int32 size = std::max(width, height);
+	uint32 size = std::max(width, height);
 	if (m_MaxSize != 0u)
 	{
-		size = std::min(static_cast<int32>(m_MaxSize), size);
+		size = std::min(static_cast<uint32>(m_MaxSize), size);
 	}
 
 	if (adjustByGraphicsSettings)
@@ -186,17 +150,11 @@ int32 EditableTextureAsset::GetPow2Size(int32 const width, int32 const height, b
 		render::GraphicsSettings const& graphicsSettings = render::RenderingSystems::Instance()->GetGraphicsSettings();
 		if (!math::nearEquals(graphicsSettings.TextureScaleFactor, 1.f))
 		{
-			size = static_cast<int32>(static_cast<float>(size) * graphicsSettings.TextureScaleFactor);
+			size = static_cast<uint32>(static_cast<float>(size) * graphicsSettings.TextureScaleFactor);
 		}
 	}
 
-	int32 power = 1;
-	while (power < size)
-	{
-		power *= 2;
-	}
-
-	return power;
+	return RasterImage::GetClosestPowerOf2(size);
 }
 
 //---------------------------------------
@@ -280,6 +238,9 @@ render::E_ColorFormat EditableTextureAsset::GetOutputFormat(render::E_Compressio
 
 		return render::E_ColorFormat::BC7_RGBA;
 	}
+
+	ET_ASSERT(false, "unhandled compression setting");
+	return render::E_ColorFormat::Invalid;
 }
 
 //--------------------------------------------
@@ -314,33 +275,6 @@ uint8 EditableTextureAsset::GetInputChannelCount(render::E_ColorFormat const for
 	default: 
 		ET_ASSERT(false, "unhandled color format");
 		return 0u;
-	}
-}
-
-//-----------------------------------
-// EditableTextureAsset::GetBlock4x4
-//
-// Get a block for compression from bitmap. X and Y are block coordinates, not bitmap coordinates
-// Assumes input pixels are 4 channels
-// outBlock should be an array of 16 elements
-//
-void EditableTextureAsset::GetBlock4x4(uint8 const* const pixels, 
-	int32 const width, 
-	int32 const height, 
-	uint16 const blockX, 
-	uint16 const blockY, 
-	ColorU8* const outBlock)
-{
-	UNUSED(width);
-	UNUSED(height);
-	ET_ASSERT((blockX * 4 + 4) <= width);
-	ET_ASSERT((blockY * 4 + 4) <= height);
-
-	for (uint32_t y = 0; y < 4; y++)
-	{
-		memcpy(reinterpret_cast<void*>(outBlock + y * 4), 
-			reinterpret_cast<void const*>(pixels[(blockY * 4 + y) + (blockX * 4)]), 
-			4 * sizeof(ColorU8));
 	}
 }
 
