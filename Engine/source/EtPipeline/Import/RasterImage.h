@@ -17,7 +17,7 @@ class RasterImage final
 	// definitions
 	//-------------
 public:
-	static int32 const s_NumChannels;
+	static uint32 const s_NumChannels;
 
 	//---------------------------------------------
 	// Helper struct for an 8 bit color / pixel

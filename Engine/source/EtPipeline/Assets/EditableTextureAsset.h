@@ -15,21 +15,6 @@ namespace et {
 namespace pl {
 
 
-//---------------------------------------------
-// 8 byte compressed block
-struct Block8
-{
-	uint64 m_Val;
-};
-
-//---------------------------------------------
-// 16 byte compressed block
-struct Block16
-{
-	uint64 m_Val[2];
-};
-
-
 //---------------------------------
 // EditableTextureAsset
 //
@@ -64,6 +49,8 @@ private:
 	uint32 GetPow2Size(uint32 const width, uint32 const height, bool adjustByGraphicsSettings) const;
 	render::E_ColorFormat GetOutputFormat(render::E_CompressionSetting const setting, bool const supportAlpha, bool const useSrgb) const;
 	uint8 GetInputChannelCount(render::E_ColorFormat const format) const;
+	uint8 GetBlockByteCount(render::E_ColorFormat const format) const;
+	bool CompressImage(RasterImage const& image, render::E_ColorFormat const format, std::vector<uint8>& outData) const;
 
 
 	// Data

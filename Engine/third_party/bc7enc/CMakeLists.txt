@@ -7,7 +7,8 @@
 
 set (sources 
 	${CMAKE_CURRENT_SOURCE_DIR}/bc7enc/bc7enc.c
-	${CMAKE_CURRENT_SOURCE_DIR}/bc7enc/bc7decomp.cpp )
+	${CMAKE_CURRENT_SOURCE_DIR}/bc7enc/bc7decomp.cpp 
+	${CMAKE_CURRENT_SOURCE_DIR}/rbgcx_implementation.cpp)
 	
 set (headers 
 	${CMAKE_CURRENT_SOURCE_DIR}/bc7enc/bc7enc.h
@@ -24,3 +25,5 @@ targetCompileOptions(bc7enc)
 assign_source_group(${projectFiles})
 assignIdeFolder(bc7enc Engine/3rdParty)
 libOutputDirectories(bc7enc)
+
+target_include_directories (bc7enc PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

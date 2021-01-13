@@ -3,6 +3,11 @@
 
 #include <stb/stb_image.h>
 
+#include <bc7enc/rgbcx.h>
+#include <bc7enc/bc7enc.h>
+//#include "../bc7enc/bc7enc/rgbcx.h"
+//#include "../bc7enc/bc7enc/bc7enc.h"
+
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
@@ -76,28 +81,44 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	// generate mipmaps here in the future
 
-	//if (requiresCompression)
-	//{
-	//	uint32 const blocksX = width / 4;
-	//	uint32 const blocksY = height / 4;
+	render::TextureData* texture = nullptr;
+	if (requiresCompression)
+	{
+		// #todo: handle mip map levels
 
-	//	std::vector<Block8> packedImage8(blocksX * blocksY);
-	//	std::vector<Block16> packedImage16(blocksX * blocksY);
-	//}
-	//else
-	//{
-	//	// swizzle(2, 1, 0, 3)
-	//}
+		std::vector<uint8> compressedData;
+		if (!CompressImage(image, outputFormat, compressedData))
+		{
+			ET_ASSERT(false, "Failed to compress image");
+			return false;
+		}
 
-	// temp
-	render::E_ColorFormat const layout = render::E_ColorFormat::RGBA;
-	render::E_ColorFormat const storageFormat = (m_Srgb == render::E_SrgbSetting::OnLoad) ? render::E_ColorFormat::SRGBA8 : render::E_ColorFormat::RGBA8;
+		texture = new render::TextureData(outputFormat, ivec2(static_cast<int32>(width), static_cast<int32>(height)));
+		texture->UploadCompressed(reinterpret_cast<void const*>(compressedData.data()), compressedData.size());
 
-	//Upload to GPU
-	render::TextureData* const texture = new render::TextureData(storageFormat, ivec2(static_cast<int32>(width), static_cast<int32>(height)));
-	texture->UploadData(reinterpret_cast<void const*>(image.GetPixels()), layout, render::E_DataType::UByte);
+		render::TextureParameters params = textureAsset->m_Parameters;
+		params.genMipMaps = false; // not supported for compressed textures
 
-	texture->SetParameters(textureAsset->m_Parameters);
+		texture->SetParameters(params);
+	}
+	else
+	{
+		// for runtime data generation we would convert to a more convenient to load layout, and potentially remove certain channels
+		// image.swizzle(2u, 1u, 0u, 3u);
+		// image.GetPixels(GetInputChannelCount(outputFormat));
+
+		// temp
+		render::E_ColorFormat const layout = render::E_ColorFormat::RGBA;
+		render::E_ColorFormat const storageFormat = 
+			(m_Srgb == render::E_SrgbSetting::OnLoad) ? render::E_ColorFormat::SRGBA8 : render::E_ColorFormat::RGBA8;
+
+		//Upload to GPU
+		texture = new render::TextureData(storageFormat, ivec2(static_cast<int32>(width), static_cast<int32>(height)));
+		texture->UploadData(reinterpret_cast<void const*>(image.GetPixels()), layout, render::E_DataType::UByte);
+
+		texture->SetParameters(textureAsset->m_Parameters);
+	}
+
 	texture->CreateHandle();
 
 	// done
@@ -117,7 +138,12 @@ bool EditableTextureAsset::LoadImage(RasterImage& image, std::vector<uint8> cons
 	int32 fileChannels = 0;
 
 	// option to load 16 bit texture
-	uint8* const pixels = stbi_load_from_memory(data.data(), static_cast<int32>(data.size()), &width, &height, &fileChannels, RasterImage::s_NumChannels);
+	uint8* const pixels = stbi_load_from_memory(data.data(), 
+		static_cast<int32>(data.size()), 
+		&width, 
+		&height, 
+		&fileChannels, 
+		static_cast<int32>(RasterImage::s_NumChannels));
 	if ((pixels == nullptr) || (width == 0) || (height == 0))
 	{
 		return false;
@@ -162,7 +188,11 @@ uint32 EditableTextureAsset::GetPow2Size(uint32 const width, uint32 const height
 //
 render::E_ColorFormat EditableTextureAsset::GetOutputFormat(render::E_CompressionSetting const setting, bool const supportAlpha, bool const useSrgb) const
 {
-	switch (setting)
+	// hack for now because normal maps are broken
+	render::E_CompressionSetting const settingOverride = (setting == render::E_CompressionSetting::NormalMap) ? 
+		render::E_CompressionSetting::Default : setting;
+
+	switch (settingOverride)
 	{
 	case render::E_CompressionSetting::Default:
 		if (useSrgb)
@@ -276,6 +306,219 @@ uint8 EditableTextureAsset::GetInputChannelCount(render::E_ColorFormat const for
 		ET_ASSERT(false, "unhandled color format");
 		return 0u;
 	}
+}
+
+//-----------------------------------------
+// EditableTextureAsset::GetBlockByteCount
+//
+uint8 EditableTextureAsset::GetBlockByteCount(render::E_ColorFormat const format) const
+{
+	switch (format)
+	{
+	case render::E_ColorFormat::BC1_RGB:
+	case render::E_ColorFormat::BC1_RGBA:
+	case render::E_ColorFormat::BC1_SRGB:
+	case render::E_ColorFormat::BC1_SRGBA:
+
+	case render::E_ColorFormat::BC4_Red:
+	case render::E_ColorFormat::BC4_Red_Signed:
+		return 8u;
+
+	case render::E_ColorFormat::BC3_RGBA:
+	case render::E_ColorFormat::BC3_SRGBA:
+
+	case render::E_ColorFormat::BC5_RG:
+	case render::E_ColorFormat::BC5_RG_Signed:
+
+	case render::E_ColorFormat::BC7_RGBA:
+	case render::E_ColorFormat::BC7_SRGBA:
+		return 16u;
+
+	default:
+		ET_ASSERT(false, "unhandled color format");
+		return 0u;
+	}
+}
+
+//-------------------------------------
+// EditableTextureAsset::CompressImage
+//
+// #todo: in the future we should really be using multiple threads
+//
+bool EditableTextureAsset::CompressImage(RasterImage const& image, render::E_ColorFormat const format, std::vector<uint8>& outData) const
+{
+	//---------------------------------------------
+	// 8 byte compressed block
+	struct Block8
+	{
+		uint64 m_Val;
+	};
+
+	//---------------------------------------------
+	// 16 byte compressed block
+	struct Block16
+	{
+		uint64 m_Val[2];
+	};
+
+	static uint8 const s_Bc45Channel0 = 0u;
+	static uint8 const s_Bc45Channel1 = 1u;
+
+	uint32 const blocksX = image.GetWidth() / 4;
+	uint32 const blocksY = image.GetHeight() / 4;
+
+	bool use3Color;
+	uint32 qualityLevel;
+	switch (m_CompressionQuality)
+	{
+	case E_CompressionQuality::Low:
+		use3Color = false;
+		qualityLevel = 0;
+		break;
+
+	case E_CompressionQuality::Medium:
+		use3Color = false;
+		qualityLevel = 5;
+		break;
+
+	case E_CompressionQuality::High:
+		use3Color = true;
+		qualityLevel = 11;
+		break;
+
+	case E_CompressionQuality::Ultra:
+		use3Color = true;
+		qualityLevel = 18;
+		break;
+	}
+
+	uint8 const byteCount = GetBlockByteCount(format);
+	switch (byteCount)
+	{
+	case 8u:
+	{
+		rgbcx::init(rgbcx::bc1_approx_mode::cBC1Ideal); // in the future we can make this platform dependent
+
+		outData.resize(blocksX * blocksY * sizeof(Block8));
+		Block8* const packedImage = reinterpret_cast<Block8*>(outData.data());
+
+		for (uint32 blockX = 0u; blockX < blocksX; ++blockX)
+		{
+			for (uint32 blockY = 0u; blockY < blocksY; ++blockY)
+			{
+				RasterImage::ColorU8 blockPixels[16u];
+				image.GetBlock(blockX, blockY, 4u, 4u, blockPixels);
+
+				Block8* compressedBlock = &packedImage[blockX + blockY * blocksX];
+
+				switch (format)
+				{
+				case render::E_ColorFormat::BC1_RGB:
+				case render::E_ColorFormat::BC1_SRGB:
+				//case render::E_ColorFormat::BC1_RGBA:
+				//case render::E_ColorFormat::BC1_SRGBA:
+					rgbcx::encode_bc1(qualityLevel, compressedBlock, &blockPixels[0].m_Channels[0], use3Color, !m_SupportAlpha);
+					break;
+
+				case render::E_ColorFormat::BC4_Red:
+					//case render::E_ColorFormat::BC4_Red_Signed:
+					rgbcx::encode_bc4(compressedBlock, &blockPixels[0].m_Channels[s_Bc45Channel0], RasterImage::s_NumChannels);
+					break;
+
+				default:
+					ET_ASSERT(false, "unhandled 8 byte block type");
+					return false;
+				}
+			}
+		}
+	}
+	break;
+
+	case 16u:
+	{
+		bc7enc_compress_block_params bc7PackParams;
+
+		switch (format)
+		{
+		case render::E_ColorFormat::BC7_RGBA:
+		case render::E_ColorFormat::BC7_SRGBA:
+			bc7enc_compress_block_init();
+
+			bc7enc_compress_block_params_init(&bc7PackParams);
+			switch (m_CompressionQuality)
+			{
+			case E_CompressionQuality::Low:
+				bc7PackParams.m_uber_level = 0;
+				break;
+
+			case E_CompressionQuality::Medium:
+				bc7PackParams.m_uber_level = 2;
+				break;
+
+			case E_CompressionQuality::High:
+				bc7PackParams.m_uber_level = 3;
+				break;
+
+			case E_CompressionQuality::Ultra:
+				bc7PackParams.m_uber_level = 4;
+				break;
+			}
+
+			bc7PackParams.m_max_partitions_mode = BC7ENC_MAX_PARTITIONS1 /
+				(static_cast<uint8>(E_CompressionQuality::Ultra) - static_cast<uint8>(m_CompressionQuality) + 1u);
+
+			break;
+
+		default:
+			rgbcx::init(); // don't care what mode since we're not compresssing to BC1
+			break;
+		}
+
+		outData.resize(blocksX * blocksY * sizeof(Block16));
+		Block16* const packedImage = reinterpret_cast<Block16*>(outData.data());
+
+
+		for (uint32 blockX = 0u; blockX < blocksX; ++blockX)
+		{
+			for (uint32 blockY = 0u; blockY < blocksY; ++blockY)
+			{
+				RasterImage::ColorU8 blockPixels[16u];
+				image.GetBlock(blockX, blockY, 4u, 4u, blockPixels);
+
+				Block16* compressedBlock = &packedImage[blockX + blockY * blocksX];
+
+				switch (format)
+				{
+				case render::E_ColorFormat::BC3_RGBA:
+				case render::E_ColorFormat::BC3_SRGBA:
+					rgbcx::encode_bc3(qualityLevel, compressedBlock, &blockPixels[0].m_Channels[0]);
+					break;
+
+				case render::E_ColorFormat::BC5_RG:
+					//case render::E_ColorFormat::BC5_RG_Signed:
+					rgbcx::encode_bc5(compressedBlock, &blockPixels[0].m_Channels[0], s_Bc45Channel0, s_Bc45Channel1, RasterImage::s_NumChannels);
+					break;
+
+				case render::E_ColorFormat::BC7_RGBA:
+				case render::E_ColorFormat::BC7_SRGBA:
+					bc7enc_compress_block(compressedBlock, reinterpret_cast<void const*>(blockPixels), &bc7PackParams);
+					break;
+
+				default:
+					ET_ASSERT(false, "unhandled 16 byte block type");
+					return false;
+				}
+			}
+		}
+	}
+	break;
+
+	default:
+		ET_ASSERT(false, "unhandled block byte count");
+		return false;
+	}
+
+	return true;
 }
 
 

@@ -75,6 +75,17 @@ void TextureData::UploadData(void const* const data, E_ColorFormat const layout,
 }
 
 //---------------------------------
+// TextureData::UploadCompressed
+//
+// Send a compressed image to the GPU location, matching the codec specified for the internal storage format
+//
+void TextureData::UploadCompressed(void const* const data, size_t const size)
+{
+	ET_ASSERT(m_Handle == 0u, "Shouldn't upload data after a handle was created!");
+	ContextHolder::GetRenderContext()->UploadCompressedTextureData(*this, data, size);
+}
+
+//---------------------------------
 // TextureData::AllocateStorage
 //
 // Allocate empty texture storage at the GPU location. The actual texture data is assumed to be generated

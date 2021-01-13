@@ -230,6 +230,7 @@ enum class E_BlendFactor : uint8
 //
 enum class E_ColorFormat : uint8
 {
+	// base formats / layouts
 	Depth,
 	DepthStencil,
 
@@ -238,7 +239,11 @@ enum class E_ColorFormat : uint8
 	RGB,
 	RGBA,
 
-	// only for internal formats
+	// swizzled layouts
+	BGR,
+	BGRA,
+
+	// only for storage formats
 	Depth24,
 
 	R8,

@@ -221,6 +221,9 @@ GLenum ConvColorFormat(E_ColorFormat const fmt)
 	case E_ColorFormat::RGB:			return GL_RGB;
 	case E_ColorFormat::RGBA:			return GL_RGBA;
 
+	case E_ColorFormat::BGR:			return GL_BGR;
+	case E_ColorFormat::BGRA:			return GL_BGRA;
+
 	case E_ColorFormat::Depth24:		return GL_DEPTH_COMPONENT24;
 
 	case E_ColorFormat::R8:				return GL_R8;
@@ -234,21 +237,20 @@ GLenum ConvColorFormat(E_ColorFormat const fmt)
 	case E_ColorFormat::SRGB8:			return GL_SRGB8;
 	case E_ColorFormat::SRGBA8:			return GL_SRGB8_ALPHA8;
 
-	// disable compressed formats for now
-	//case E_ColorFormat::BC1_RGB:			return GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-	//case E_ColorFormat::BC1_RGBA:			return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-	//case E_ColorFormat::BC1_SRGB:			return GL_COMPRESSED_SRGB_S3TC_DXT1_EXT;
-	//case E_ColorFormat::BC1_SRGBA:		return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT;
-	//case E_ColorFormat::BC3_RGBA:			return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-	//case E_ColorFormat::BC3_SRGBA:		return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT;
-	//case E_ColorFormat::BC4_Red:			return GL_COMPRESSED_RED_RGTC1;
-	//case E_ColorFormat::BC4_Red_Signed:	return GL_COMPRESSED_SIGNED_RED_RGTC1;
-	//case E_ColorFormat::BC5_RG:			return GL_COMPRESSED_RG_RGTC2;
-	//case E_ColorFormat::BC5_RG_Signed:	return GL_COMPRESSED_SIGNED_RG_RGTC2;
+	case E_ColorFormat::BC1_RGB:		return GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+	case E_ColorFormat::BC1_RGBA:		return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+	case E_ColorFormat::BC1_SRGB:		return GL_COMPRESSED_SRGB_S3TC_DXT1_EXT;
+	case E_ColorFormat::BC1_SRGBA:		return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT;
+	case E_ColorFormat::BC3_RGBA:		return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+	case E_ColorFormat::BC3_SRGBA:		return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT;
+	case E_ColorFormat::BC4_Red:		return GL_COMPRESSED_RED_RGTC1;
+	case E_ColorFormat::BC4_Red_Signed:	return GL_COMPRESSED_SIGNED_RED_RGTC1;
+	case E_ColorFormat::BC5_RG:			return GL_COMPRESSED_RG_RGTC2;
+	case E_ColorFormat::BC5_RG_Signed:	return GL_COMPRESSED_SIGNED_RG_RGTC2;
 	//case E_ColorFormat::BC6H_RGB_Signed:	return GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT;
 	//case E_ColorFormat::BC6H_RGB_Unsigned:return GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT;
-	//case E_ColorFormat::BC7_RGBA:			return GL_COMPRESSED_RGBA_BPTC_UNORM;
-	//case E_ColorFormat::BC7_SRGBA:		return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
+	case E_ColorFormat::BC7_RGBA:		return GL_COMPRESSED_RGBA_BPTC_UNORM;
+	case E_ColorFormat::BC7_SRGBA:		return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
 	}
 
 	ET_ASSERT(false, "Unhandled color format!");
@@ -1357,7 +1359,7 @@ void GL_CONTEXT_CLASSNAME::UploadTextureData(TextureData& texture, void const* c
 	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
 	ivec2 const res = texture.GetResolution();
 	GLint const intFmt = static_cast<GLint>(GL_CONTEXT_NS::ConvColorFormat(texture.GetStorageFormat()));
-	ET_ASSERT(layout <= E_ColorFormat::RGBA, "Texture format can't specify data sizes!");
+	ET_ASSERT(layout <= E_ColorFormat::BGRA, "Texture layout can't specify storage format!"); // possibly the enum should be split
 
 	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
 
@@ -1382,6 +1384,32 @@ void GL_CONTEXT_CLASSNAME::UploadTextureData(TextureData& texture, void const* c
 
 	default:
 		ET_ASSERT(false, "Unsupported texture type for uploading texture data");
+		break;
+	}
+}
+
+
+//----------------------------------------
+// GlContext::UploadCompressedTextureData
+//
+// upload a textures bits to its GPU location
+//
+void GL_CONTEXT_CLASSNAME::UploadCompressedTextureData(TextureData& texture, void const* const data, size_t const size)
+{
+	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
+	ivec2 const res = texture.GetResolution();
+	GLint const intFmt = static_cast<GLint>(GL_CONTEXT_NS::ConvColorFormat(texture.GetStorageFormat()));
+
+	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
+
+	switch (texture.GetTargetType())
+	{
+	case E_TextureType::Texture2D:
+		glCompressedTexImage2D(target, 0, intFmt, res.x, res.y, 0, static_cast<int32>(size), data);
+		break;
+
+	default:
+		ET_ASSERT(false, "Unsupported texture type for uploading compressed texture data");
 		break;
 	}
 }

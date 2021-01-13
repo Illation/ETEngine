@@ -31,7 +31,7 @@ RasterImage::ColorU8::ColorU8(uint8 const red, uint8 const green, uint8 const bl
 
 
 // static
-int32 const RasterImage::s_NumChannels = 4;
+uint32 const RasterImage::s_NumChannels = 4;
 
 //---------------------------------
 // RasterImage::GetClosestPowerOf2
@@ -86,7 +86,15 @@ void RasterImage::SetPixels(ColorU8 const* const pixels)
 void RasterImage::Resize(uint32 const width, uint32 const height)
 {
 	uint8* outPixels = new uint8[width * height * s_NumChannels];
-	stbir_resize_uint8(reinterpret_cast<uint8 const*>(m_Pixels.data()), m_Width, m_Height, 0, outPixels, width, height, 0, s_NumChannels);
+	stbir_resize_uint8(reinterpret_cast<uint8 const*>(m_Pixels.data()), 
+		m_Width, 
+		m_Height, 
+		0, 
+		outPixels, 
+		width, 
+		height, 
+		0, 
+		static_cast<int32>(s_NumChannels));
 
 	m_Width = width;
 	m_Height = height;
