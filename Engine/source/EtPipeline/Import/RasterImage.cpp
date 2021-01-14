@@ -152,10 +152,10 @@ void RasterImage::GenerateMipChain()
 			// set average
 			m_MipChild->SetPixel(x, y, 
 				ColorU8(
-					static_cast<uint8>((static_cast<uint16>(pixels[0][0]) * static_cast<uint16>(pixels[1][0]) * static_cast<uint16>(pixels[2][0]) * static_cast<uint16>(pixels[3][0])) / 4u), 
-					static_cast<uint8>((static_cast<uint16>(pixels[0][1]) * static_cast<uint16>(pixels[1][1]) * static_cast<uint16>(pixels[2][1]) * static_cast<uint16>(pixels[3][1])) / 4u),
-					static_cast<uint8>((static_cast<uint16>(pixels[0][2]) * static_cast<uint16>(pixels[1][2]) * static_cast<uint16>(pixels[2][2]) * static_cast<uint16>(pixels[3][2])) / 4u),
-					static_cast<uint8>((static_cast<uint16>(pixels[0][3]) * static_cast<uint16>(pixels[1][3]) * static_cast<uint16>(pixels[2][3]) * static_cast<uint16>(pixels[3][3])) / 4u)
+					static_cast<uint8>((static_cast<uint16>(pixels[0][0]) + static_cast<uint16>(pixels[1][0]) + static_cast<uint16>(pixels[2][0]) + static_cast<uint16>(pixels[3][0])) >> 2u), 
+					static_cast<uint8>((static_cast<uint16>(pixels[0][1]) + static_cast<uint16>(pixels[1][1]) + static_cast<uint16>(pixels[2][1]) + static_cast<uint16>(pixels[3][1])) >> 2u),
+					static_cast<uint8>((static_cast<uint16>(pixels[0][2]) + static_cast<uint16>(pixels[1][2]) + static_cast<uint16>(pixels[2][2]) + static_cast<uint16>(pixels[3][2])) >> 2u),
+					static_cast<uint8>((static_cast<uint16>(pixels[0][3]) + static_cast<uint16>(pixels[1][3]) + static_cast<uint16>(pixels[2][3]) + static_cast<uint16>(pixels[3][3])) >> 2u)
 				));
 		}
 	}
@@ -184,6 +184,23 @@ std::vector<uint8> RasterImage::GetPixels(uint8 const numChannels) const
 	}
 
 	return outPixels;
+}
+
+//-------------------------------
+// RasterImage::GetMipLevelCount
+//
+uint8 RasterImage::GetMipLevelCount() const
+{
+	uint8 ret = 0u;
+
+	RasterImage const* mipImage = m_MipChild;
+	while (mipImage != nullptr)
+	{
+		++ret;
+		mipImage = mipImage->GetMipChild();
+	}
+
+	return ret;
 }
 
 

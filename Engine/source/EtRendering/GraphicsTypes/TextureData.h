@@ -53,7 +53,7 @@ public:
 	// Functionality
 	//--------------
 	void UploadData(void const* const data, E_ColorFormat const layout, E_DataType const dataType); // upload an image
-	void UploadCompressed(void const* const data, size_t const size);
+	void UploadCompressed(void const* const data, size_t const size, int32 const mipLevel);
 	void AllocateStorage(); // create storage on the GPU with the storage format - for framebuffers
 	void SetParameters(TextureParameters const& params, bool const force = false);
 	bool Resize(ivec2 const& newSize);

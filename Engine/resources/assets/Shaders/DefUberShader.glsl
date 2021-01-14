@@ -31,6 +31,7 @@
 <FRAGMENT>
   #version 330 core
 
+  #include "Common.glsl"
   #include "CommonDeferred.glsl"
 
   in vec3 Position;
@@ -72,8 +73,7 @@
     vec3 binorm = normalize(cross(tang, norm));
     mat3 localAxis = mat3(tang, binorm, norm);
 
-    vec3 normSample = ((texture(uTexNormal, Texcoord).rgb)*2)-vec3(1, 1, 1);
-    norm = localAxis*normalize(normSample);
+	norm = localAxis * sampleNormal(uTexNormal, Texcoord);
     return normalize(norm);
   }
 

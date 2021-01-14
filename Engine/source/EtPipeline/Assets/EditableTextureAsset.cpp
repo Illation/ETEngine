@@ -5,8 +5,6 @@
 
 #include <bc7enc/rgbcx.h>
 #include <bc7enc/bc7enc.h>
-//#include "../bc7enc/bc7enc/rgbcx.h"
-//#include "../bc7enc/bc7enc/bc7enc.h"
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
@@ -79,25 +77,39 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 		ET_ASSERT(!requiresCompression, "texture '%s' forces resolution but requires compression", m_Id.ToStringDbg());
 	}
 
-	// generate mipmaps here in the future
+	render::TextureParameters const& params = textureAsset->m_Parameters;
 
 	render::TextureData* texture = nullptr;
 	if (requiresCompression)
 	{
-		// #todo: handle mip map levels
-
-		std::vector<uint8> compressedData;
-		if (!CompressImage(image, outputFormat, compressedData))
+		if (params.genMipMaps)
 		{
-			ET_ASSERT(false, "Failed to compress image");
-			return false;
+			image.GenerateMipChain();
 		}
 
 		texture = new render::TextureData(outputFormat, ivec2(static_cast<int32>(width), static_cast<int32>(height)));
-		texture->UploadCompressed(reinterpret_cast<void const*>(compressedData.data()), compressedData.size());
+		RasterImage const* mipImage = &image;
+		int32 mipLevel = 0;
 
-		render::TextureParameters params = textureAsset->m_Parameters;
-		params.genMipMaps = false; // not supported for compressed textures
+		while (mipImage != nullptr)
+		{
+			if (mipImage->GetWidth() < 4u) // can't compress a mipmap smaller than the block size
+			{
+				break;
+			}
+
+			std::vector<uint8> compressedData;
+			if (!CompressImage(*mipImage, outputFormat, compressedData))
+			{
+				ET_ASSERT(false, "Failed to compress image");
+				return false;
+			}
+
+			texture->UploadCompressed(reinterpret_cast<void const*>(compressedData.data()), compressedData.size(), mipLevel);
+
+			++mipLevel;
+			mipImage = mipImage->GetMipChild();
+		}
 
 		texture->SetParameters(params);
 	}
@@ -116,7 +128,7 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 		texture = new render::TextureData(storageFormat, ivec2(static_cast<int32>(width), static_cast<int32>(height)));
 		texture->UploadData(reinterpret_cast<void const*>(image.GetPixels()), layout, render::E_DataType::UByte);
 
-		texture->SetParameters(textureAsset->m_Parameters);
+		texture->SetParameters(params);
 	}
 
 	texture->CreateHandle();
@@ -188,11 +200,7 @@ uint32 EditableTextureAsset::GetPow2Size(uint32 const width, uint32 const height
 //
 render::E_ColorFormat EditableTextureAsset::GetOutputFormat(render::E_CompressionSetting const setting, bool const supportAlpha, bool const useSrgb) const
 {
-	// hack for now because normal maps are broken
-	render::E_CompressionSetting const settingOverride = (setting == render::E_CompressionSetting::NormalMap) ? 
-		render::E_CompressionSetting::Default : setting;
-
-	switch (settingOverride)
+	switch (setting)
 	{
 	case render::E_CompressionSetting::Default:
 		if (useSrgb)

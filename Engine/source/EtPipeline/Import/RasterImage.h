@@ -62,6 +62,7 @@ public:
 	inline void GetBlock(uint32 const blockX, uint32 const blockY, uint32 const blockWidth, uint32 const blockHeight, ColorU8* const outBlock) const;
 
 	RasterImage const* GetMipChild() const { return m_MipChild; }
+	uint8 GetMipLevelCount() const;
 
 
 	// Data

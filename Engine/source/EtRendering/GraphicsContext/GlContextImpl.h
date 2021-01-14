@@ -191,7 +191,7 @@ public:
 	T_TextureLoc GenerateTexture() const override;
 	void DeleteTexture(T_TextureLoc& texLoc) override;
 	void UploadTextureData(TextureData& texture, void const* const data, E_ColorFormat const layout, E_DataType const dataType) override;
-	void UploadCompressedTextureData(TextureData& texture, void const* const data, size_t const size) override;
+	void UploadCompressedTextureData(TextureData& texture, void const* const data, size_t const size, int32 const mipLevel) override;
 	void AllocateTextureStorage(TextureData& texture) override;
 	void SetTextureParams(TextureData const& texture, 
 		uint8& mipLevels, 

@@ -1394,10 +1394,10 @@ void GL_CONTEXT_CLASSNAME::UploadTextureData(TextureData& texture, void const* c
 //
 // upload a textures bits to its GPU location
 //
-void GL_CONTEXT_CLASSNAME::UploadCompressedTextureData(TextureData& texture, void const* const data, size_t const size)
+void GL_CONTEXT_CLASSNAME::UploadCompressedTextureData(TextureData& texture, void const* const data, size_t const size, int32 const mipLevel)
 {
 	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
-	ivec2 const res = texture.GetResolution();
+	ivec2 res = texture.GetResolution() / (1 << mipLevel);
 	GLint const intFmt = static_cast<GLint>(GL_CONTEXT_NS::ConvColorFormat(texture.GetStorageFormat()));
 
 	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
@@ -1405,7 +1405,7 @@ void GL_CONTEXT_CLASSNAME::UploadCompressedTextureData(TextureData& texture, voi
 	switch (texture.GetTargetType())
 	{
 	case E_TextureType::Texture2D:
-		glCompressedTexImage2D(target, 0, intFmt, res.x, res.y, 0, static_cast<int32>(size), data);
+		glCompressedTexImage2D(target, mipLevel, intFmt, res.x, res.y, 0, static_cast<int32>(size), data);
 		break;
 
 	default:
@@ -1517,10 +1517,17 @@ void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, uint8& m
 	//-----------------------------
 	if ((!prev.genMipMaps && next.genMipMaps) || (next.genMipMaps && force) || (next.genMipMaps && (mipLevels == 0u)))
 	{
-		glGenerateMipmap(target);
-		ivec2 const res = texture.GetResolution();
-		float const largerRes = static_cast<float>(std::max(res.x, res.y));
-		mipLevels = 1u + static_cast<uint8>(floor(log10(largerRes) / log10(2.f)));
+		if (texture.GetStorageFormat() <= E_ColorFormat::SRGBA8) // temp, #todo: remove
+		{
+			glGenerateMipmap(target);
+			ivec2 const res = texture.GetResolution();
+			float const largerRes = static_cast<float>(std::max(res.x, res.y));
+			mipLevels = 1u + static_cast<uint8>(floor(log10(largerRes) / log10(2.f)));
+		}
+	}
+	else if (next.genMipMaps && (texture.GetStorageFormat() > E_ColorFormat::SRGBA8))
+	{
+		glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, static_cast<int32>(mipLevels));
 	}
 
 	prev = next;

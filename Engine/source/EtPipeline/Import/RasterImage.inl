@@ -19,7 +19,7 @@ namespace pl {
 //
 uint8& RasterImage::ColorU8::operator[](uint8 const i)
 {
-	ET_ASSERT(i < 4u);
+	ET_ASSERT_PARANOID(i < 4u);
 	return m_Channels[i];
 }
 
@@ -28,7 +28,7 @@ uint8& RasterImage::ColorU8::operator[](uint8 const i)
 //
 uint8 RasterImage::ColorU8::operator[](uint8 const i) const
 {
-	ET_ASSERT(i < 4u);
+	ET_ASSERT_PARANOID(i < 4u);
 	return m_Channels[i];
 }
 
@@ -70,7 +70,7 @@ RasterImage::ColorU8 const* RasterImage::GetPixels() const
 //
 void RasterImage::SetPixel(uint32 const x, uint32 const y, ColorU8 const pixel)
 {
-	ET_ASSERT((x < m_Width) && (y < m_Height));
+	ET_ASSERT_PARANOID((x < m_Width) && (y < m_Height));
 	m_Pixels[x + (m_Width * y)] = pixel;
 }
 
@@ -81,7 +81,7 @@ void RasterImage::SetPixel(uint32 const x, uint32 const y, ColorU8 const pixel)
 //
 RasterImage::ColorU8 const& RasterImage::At(uint32 const x, uint32 const y) const
 {
-	ET_ASSERT((x < m_Width) && (y < m_Height));
+	ET_ASSERT_PARANOID((x < m_Width) && (y < m_Height));
 	return m_Pixels[x + (m_Width * y)];
 }
 
@@ -90,8 +90,8 @@ RasterImage::ColorU8 const& RasterImage::At(uint32 const x, uint32 const y) cons
 //
 void RasterImage::GetBlock(uint32 const blockX, uint32 const blockY, uint32 const blockWidth, uint32 const blockHeight, ColorU8* const outBlock) const
 {
-	ET_ASSERT((blockX * blockWidth + blockWidth) <= m_Width);
-	ET_ASSERT((blockY * blockHeight + blockHeight) <= m_Height);
+	ET_ASSERT_PARANOID((blockX * blockWidth + blockWidth) <= m_Width);
+	ET_ASSERT_PARANOID((blockY * blockHeight + blockHeight) <= m_Height);
 
 	for (uint32 y = 0u; y < blockHeight; y++)
 	{

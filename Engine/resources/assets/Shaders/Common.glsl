@@ -26,3 +26,11 @@ const float CANDELA = LUMEN / STERADIAN;
 const float KILOCANDELA = 1000.0 * CANDELA;
 const float CD_PER_SQUARE_METER = CANDELA / M2;
 const float KCD_PER_SQUARE_METER = KILOCANDELA / M2;
+
+// normal maps compressed with BC5 only store x and y, z is reconstructed
+vec3 sampleNormal(in sampler2D tex, in vec2 texcoord)
+{
+	vec3 texel = (vec3(texture(tex, texcoord).rg, 0) * 2.0) - vec3(1.0);
+	texel.z = sqrt(1.0 - texel.x * texel.x - texel.y * texel.y);
+	return texel; // no need to normalize as deriving z normalizes automatically
+}

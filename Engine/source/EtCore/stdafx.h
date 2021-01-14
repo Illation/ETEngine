@@ -58,13 +58,22 @@ inline void SafeDelete(T &pObjectToDelete)
 
 // assertions
 #ifdef ET_SHIPPING
-	#define ET_ASSERT(condition, ...)
+#	define ET_ASSERT(condition, ...)
 #else
 #ifdef ET_PLATFORM_WIN
-	#define ET_ASSERT(condition, ...) et::core::Logger::ProcessAssert(condition, __FUNCSIG__, FS(__VA_ARGS__))
+#	define ET_ASSERT(condition, ...) et::core::Logger::ProcessAssert(condition, __FUNCSIG__, FS(__VA_ARGS__))
 #else
-	#define ET_ASSERT(condition, ...) et::core::Logger::ProcessAssert(condition, __PRETTY_FUNCTION__, FS(__VA_ARGS__))
+#	define ET_ASSERT(condition, ...) et::core::Logger::ProcessAssert(condition, __PRETTY_FUNCTION__, FS(__VA_ARGS__))
 #endif // ET_PLATFORM_WIN
 #endif // ET_SHIPPING
+
+// for performance critical code
+#define ET_PARANOID_ASSERTS_ENABLED 0
+
+#if ET_PARANOID_ASSERTS_ENABLED
+#	define ET_ASSERT_PARANOID(condition, ...) ET_ASSERT(condition, __VA_ARGS__)
+#else
+#	define ET_ASSERT_PARANOID(condition, ...)
+#endif
 
 #pragma endregion Macros

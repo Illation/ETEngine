@@ -79,10 +79,12 @@ void TextureData::UploadData(void const* const data, E_ColorFormat const layout,
 //
 // Send a compressed image to the GPU location, matching the codec specified for the internal storage format
 //
-void TextureData::UploadCompressed(void const* const data, size_t const size)
+void TextureData::UploadCompressed(void const* const data, size_t const size, int32 const mipLevel)
 {
+	m_MipLevels = std::max(static_cast<uint8>(mipLevel), m_MipLevels);
+
 	ET_ASSERT(m_Handle == 0u, "Shouldn't upload data after a handle was created!");
-	ContextHolder::GetRenderContext()->UploadCompressedTextureData(*this, data, size);
+	ContextHolder::GetRenderContext()->UploadCompressedTextureData(*this, data, size, mipLevel);
 }
 
 //---------------------------------
