@@ -34,3 +34,6 @@
 [submodule "Engine/third_party/bc7enc/bc7enc"]
 	path = Engine/third_party/bc7enc/bc7enc
 	url = https://github.com/richgel999/bc7enc
+[submodule "Engine/third_party/convectionKernels/ConvectionKernels"]
+	path = Engine/third_party/convectionKernels/ConvectionKernels
+	url = https://github.com/elasota/ConvectionKernels

@@ -16,6 +16,7 @@ assimp redistributes:
 
 ## bc7enc
 
+- source: [https://github.com/richgel999/bc7enc](https://github.com/richgel999/bc7enc/tree/ffcc3a085f7345dee94ed5ee8a7427dbd06ac7b7)
 - license: [MIT / Public Domain](https://github.com/richgel999/bc7enc/blob/master/LICENSE)
 
 
@@ -27,6 +28,11 @@ assimp redistributes:
 ## Catch 2
 - source: [https://github.com/catchorg/Catch2](https://github.com/catchorg/Catch2/tree/af8b2538a62db34b3cec10ceb74e3d29bd06e37f)
 - license: [boost](https://github.com/catchorg/Catch2/blob/master/LICENSE.txt)
+
+
+## ConvectionKernels
+- source: [https://github.com/elasota/ConvectionKernels](https://github.com/elasota/ConvectionKernels/tree/2f06a14b4ceb6c5234231f002154c4e4765c713b)
+- license: [MIT](https://github.com/elasota/ConvectionKernels/blob/master/LICENSE.txt)
 
 
 ## glad

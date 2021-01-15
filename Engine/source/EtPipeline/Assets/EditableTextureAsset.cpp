@@ -6,6 +6,8 @@
 #include <bc7enc/rgbcx.h>
 #include <bc7enc/bc7enc.h>
 
+#include <ConvectionKernels/ConvectionKernels.h>
+
 #include <EtBuild/EngineVersion.h>
 
 #include <EtCore/IO/BinaryWriter.h>
