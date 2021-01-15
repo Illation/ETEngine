@@ -48,14 +48,16 @@ public:
 	inline void SetPixel(uint32 const x, uint32 const y, ColorU8 const pixel);
 	void Resize(uint32 const width, uint32 const height);
 	void Swizzle(uint8 const r, uint8 const g, uint8 const b, uint8 const a);
-	void GenerateMipChain();
+	void GenerateMipChain(uint32 const smallestSize);
 
 	// acccessors
 	//------------
 	uint32 GetWidth() const { return m_Width; }
 	uint32 GetHeight() const { return m_Height; }
+	inline uint32 GetByteCount() const;
 
 	inline ColorU8 const* GetPixels() const;
+	inline ColorU8* GetPixels();
 	std::vector<uint8> GetPixels(uint8 const numChannels) const;
 
 	inline ColorU8 const& At(uint32 const x, uint32 const y) const;

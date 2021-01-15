@@ -12,50 +12,90 @@ RTTR_REGISTRATION
 {
 	using namespace rttr;
 
-	registration::enumeration<E_CompressionSetting>("E_CompressionSetting") (
-		value("Default", E_CompressionSetting::Default),
-		value("NormalMap", E_CompressionSetting::NormalMap),
-		value("GrayScale", E_CompressionSetting::GrayScale),
-		value("DisplacementMap", E_CompressionSetting::DisplacementMap),
-		value("VectorDisplacementMap", E_CompressionSetting::VectorDisplacementMap),
-		value("HDR", E_CompressionSetting::HDR),
-		value("UI", E_CompressionSetting::UI),
-		value("Alpha", E_CompressionSetting::Alpha),
-		value("SdfFont", E_CompressionSetting::SdfFont),
-		value("BC7", E_CompressionSetting::BC7));
-
-	registration::enumeration<E_SrgbSetting>("E_SrgbSetting") (
-		value("None", E_SrgbSetting::None),
-		value("OnLoad", E_SrgbSetting::OnLoad));
+	registration::enumeration<TextureFile::E_Srgb>("E_SrgbSetting") (
+		value("None", TextureFile::E_Srgb::None),
+		value("OnLoad", TextureFile::E_Srgb::OnLoad));
 }
 
-DEFINE_FORCED_LINKING(TextureFormatRegistrationLinkEnforcer) // force the linker to include this unit
+DEFINE_FORCED_LINKING(TextureFile) // force the linker to include this unit
+
+// static
+std::string const TextureFile::s_Header("ETTEX");
+size_t const TextureFile::s_BlockPixelCount = 16u;
 
 
-//-----------------------
-// RequiresCompression
+//---------------------------------
+// TextureFile::IsCompressedFormat
 //
-bool RequiresCompression(E_CompressionSetting const setting)
+bool TextureFile::IsCompressedFormat(E_ColorFormat const format)
 {
-	switch (setting)
+	switch (format)
 	{
-	case E_CompressionSetting::Default:
-	case E_CompressionSetting::NormalMap:
-	case E_CompressionSetting::Alpha:
-	case E_CompressionSetting::BC7:
-		return true;
+	case E_ColorFormat::BC1_RGB:
+	case E_ColorFormat::BC1_RGBA:
+	case E_ColorFormat::BC1_SRGB:
+	case E_ColorFormat::BC1_SRGBA:
 
-	case E_CompressionSetting::GrayScale:
-	case E_CompressionSetting::DisplacementMap:
-	case E_CompressionSetting::VectorDisplacementMap:
-	case E_CompressionSetting::HDR:
-	case E_CompressionSetting::UI:
-	case E_CompressionSetting::SdfFont:
-		return false;
+	case E_ColorFormat::BC3_RGBA:
+	case E_ColorFormat::BC3_SRGBA:
+
+	case E_ColorFormat::BC4_Red:
+	case E_ColorFormat::BC4_Red_Signed:
+
+	case E_ColorFormat::BC5_RG:
+	case E_ColorFormat::BC5_RG_Signed:
+
+	//case E_ColorFormat::BC6H_RGB_Signed:
+	//case E_ColorFormat::BC6H_RGB_Unsigned:
+
+	case E_ColorFormat::BC7_RGBA:
+	case E_ColorFormat::BC7_SRGBA:
+		return true;
 	}
 
-	ET_ASSERT(false, "unhandled compression setting '%s'", core::reflection::EnumString(setting).c_str());
 	return false;
+}
+
+//----------------------------------
+// TextureFile::GetBlockByteCount
+//
+uint8 TextureFile::GetBlockByteCount(render::E_ColorFormat const format)
+{
+	switch (format)
+	{
+	case render::E_ColorFormat::BC1_RGB:
+	case render::E_ColorFormat::BC1_RGBA:
+	case render::E_ColorFormat::BC1_SRGB:
+	case render::E_ColorFormat::BC1_SRGBA:
+
+	case render::E_ColorFormat::BC4_Red:
+	case render::E_ColorFormat::BC4_Red_Signed:
+		return 8u;
+
+	case render::E_ColorFormat::BC3_RGBA:
+	case render::E_ColorFormat::BC3_SRGBA:
+
+	case render::E_ColorFormat::BC5_RG:
+	case render::E_ColorFormat::BC5_RG_Signed:
+
+	case render::E_ColorFormat::BC7_RGBA:
+	case render::E_ColorFormat::BC7_SRGBA:
+		return 16u;
+
+	default:
+		ET_ASSERT(false, "unhandled color format");
+		return 0u;
+	}
+}
+
+//--------------------------------
+// TextureFile::GetCompressedSize
+//
+// Size in bytes of a (single level) texture
+//
+size_t TextureFile::GetCompressedSize(uint32 const width, uint32 const height, E_ColorFormat const storageFormat)
+{
+	return static_cast<size_t>((width * height) / TextureFile::s_BlockPixelCount) * static_cast<size_t>(GetBlockByteCount(storageFormat));
 }
 
 

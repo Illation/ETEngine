@@ -4,11 +4,9 @@
       "texture asset": {
         "name": "Splashscreen.jpg",
         "path": "Textures/",
-        "package": "",
+        "package": "engine_content",
         "references": [],
-        "use SRGB": false,
         "force resolution": true,
-        "required channels": 0,
         "parameters": {
           "min filter": "Linear",
           "mag filter": "Linear",
@@ -16,7 +14,7 @@
           "wrap S": "Repeat",
           "wrap T": "Repeat",
           "border color": [ 0.0, 0.0, 0.0, 0.0 ],
-          "generate mipmaps": true
+          "generate mipmaps": false
         }
       }
     },
@@ -25,6 +23,7 @@
     "sRGB setting": "None",
     "supports alpha": false,
     "max size": 0,
+    "use mipmaps": false,
     "compression setting": "UI",
     "compression quality": "Medium"
   }

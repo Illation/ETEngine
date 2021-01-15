@@ -6,9 +6,7 @@
         "path": "Textures/Kabuto/",
         "package": "content1",
         "references": [],
-        "use SRGB": true,
         "force resolution": false,
-        "required channels": 0,
         "parameters": {
           "min filter": "Linear",
           "mag filter": "Linear",
@@ -25,6 +23,7 @@
     "sRGB setting": "OnLoad",
     "supports alpha": false,
     "max size": 0,
+    "use mipmaps": true,
     "compression setting": "Default",
     "compression quality": "Medium"
   }

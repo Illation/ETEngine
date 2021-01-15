@@ -85,6 +85,8 @@ void RasterImage::SetPixels(ColorU8 const* const pixels)
 //
 void RasterImage::Resize(uint32 const width, uint32 const height)
 {
+	ET_ASSERT(m_MipChild == nullptr, "resizing while there is already a generated mip chain is not supported");
+
 	uint8* outPixels = new uint8[width * height * s_NumChannels];
 	stbir_resize_uint8(reinterpret_cast<uint8 const*>(m_Pixels.data()), 
 		m_Width, 
@@ -118,6 +120,11 @@ void RasterImage::Swizzle(uint8 const r, uint8 const g, uint8 const b, uint8 con
 		pixel[2] = tmp[b];
 		pixel[3] = tmp[a];
 	}
+
+	if (m_MipChild != nullptr)
+	{
+		m_MipChild->Swizzle(r, g, b, a);
+	}
 }
 
 //-------------------------------
@@ -126,13 +133,13 @@ void RasterImage::Swizzle(uint8 const r, uint8 const g, uint8 const b, uint8 con
 // Create mip maps until we reach a certain level
 //  we don't use the resize function here, as we don't need fancy filters and don't want to copy loads of memory around
 //
-void RasterImage::GenerateMipChain()
+void RasterImage::GenerateMipChain(uint32 const smallestSize)
 {
 	ET_ASSERT(m_MipChild == nullptr, "mip chain already exists");
 	ET_ASSERT(m_Width == m_Height, "only square textures are supported for mip maps");
 	ET_ASSERT(GetClosestPowerOf2(m_Width) == m_Width, "textures should be a power of 2");
 
-	if (m_Width <= 1)
+	if (m_Width <= smallestSize)
 	{
 		return;
 	}
@@ -160,7 +167,7 @@ void RasterImage::GenerateMipChain()
 		}
 	}
 
-	m_MipChild->GenerateMipChain();
+	m_MipChild->GenerateMipChain(smallestSize);
 }
 
 //------------------------

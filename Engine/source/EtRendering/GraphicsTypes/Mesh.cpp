@@ -183,7 +183,7 @@ bool MeshAsset::LoadFromMemory(std::vector<uint8> const& data)
 	std::string const writerVersion = reader.ReadNullString();
 	if (writerVersion != build::Version::s_Name)
 	{
-		LOG(FS("Mesh data was writter by a different engine version: %s", writerVersion.c_str()));
+		LOG(FS("Mesh data was written by a different engine version: %s", writerVersion.c_str()));
 	}
 
 	// read mesh info

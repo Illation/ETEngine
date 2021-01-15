@@ -12,6 +12,10 @@
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
+#include <EtPipeline/Import/RasterImage.h>
+
+#include "EditableTextureAsset.h"
+
 
 namespace et {
 namespace pl {
@@ -37,7 +41,7 @@ DEFINE_FORCED_LINKING(EditableFontAsset) // force the asset class to be linked a
 
 // static
 std::string const EditableFontAsset::s_FontFileExt("ttf");
-std::string const EditableFontAsset::s_TextureFileExt("tga");
+std::string const EditableFontAsset::s_TextureFileExt("ettex");
 
 
 //-------------------------------------
@@ -76,7 +80,6 @@ void EditableFontAsset::SetupRuntimeAssetsInternal()
 	textureAsset->SetPath(mainAsset->GetPath());
 	textureAsset->SetPackageId(mainAsset->GetPackageId());
 
-	textureAsset->m_UseSrgb = false;
 	textureAsset->m_ForceResolution = true;
 	PopulateTextureParams(textureAsset->m_Parameters);
 
@@ -594,31 +597,25 @@ bool EditableFontAsset::GenerateBinFontData(std::vector<uint8>& data, render::Sp
 //
 bool EditableFontAsset::GenerateTextureData(std::vector<uint8>& data, render::TextureData const* const texture)
 {
-	// Make the BYTE array, factor of 4 because it's RBGA
+	// Prepare raster image with correct size
 	ivec2 const dim = texture->GetResolution();
-	uint8* pixels = new uint8[4u * dim.x * dim.y];
+	RasterImage image(dim.x, dim.y);
+	image.AllocatePixels();
 
 	// read pixels from GPU
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
-	api->GetTextureData(*texture, render::E_ColorFormat::RGBA, render::E_DataType::UByte, pixels);
+	api->GetTextureData(*texture, render::E_ColorFormat::RGBA, render::E_DataType::UByte, reinterpret_cast<void*>(image.GetPixels()));
 
 	// convert to output format
-	stbi_flip_vertically_on_write(false);
-	bool success = stbi_write_tga_to_func([](void* context, void* data, int size)
-		{
-			std::vector<uint8>& outData = *reinterpret_cast<std::vector<uint8>*>(context);
-			uint8* const fmtData = reinterpret_cast<uint8*>(data);
-			outData.insert(outData.end(), &fmtData[0], &fmtData[size]);
-		},
-		&data,
-		dim.x,
-		dim.y,
-		4,
-		pixels);
-
-	// free resources
-	delete[] pixels;
-	return success;
+	return EditableTextureAsset::WriteTextureFile(data, 
+		image, 
+		EditableTextureAsset::E_CompressionSetting::SdfFont,
+		EditableTextureAsset::E_CompressionQuality::Ultra,
+		true,
+		render::TextureFile::E_Srgb::None,
+		0u,
+		true,
+		false);
 }
 
 

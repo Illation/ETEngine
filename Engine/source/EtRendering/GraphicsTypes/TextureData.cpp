@@ -1,13 +1,15 @@
 #include "stdafx.h"
 #include "TextureData.h"
 
-#include <stb/stb_image.h>
-#include <stb/stb_image_resize.h>
+#include <EtBuild/EngineVersion.h>
 
 #include <EtCore/Content/AssetRegistration.h>
 #include <EtCore/Reflection/Registration.h>
+#include <EtCore/IO/BinaryReader.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+
+#include "TextureFormat.h"
 
 
 namespace et {
@@ -180,9 +182,7 @@ RTTR_REGISTRATION
 	END_REGISTER_CLASS(TextureData);
 
 	BEGIN_REGISTER_CLASS(TextureAsset, "texture asset")
-		.property("use SRGB", &TextureAsset::m_UseSrgb)
 		.property("force resolution", &TextureAsset::m_ForceResolution)
-		.property("required channels", &TextureAsset::m_RequiredChannels)
 		.property("parameters", &TextureAsset::m_Parameters)
 	END_REGISTER_CLASS_POLYMORPHIC(TextureAsset, core::I_Asset);
 }
@@ -196,112 +196,83 @@ DEFINE_FORCED_LINKING(TextureAsset) // force the shader class to be linked as it
 //
 bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
-	// check image format
+	core::BinaryReader reader;
+	reader.Open(data);
+	ET_ASSERT(reader.Exists());
 
-	stbi_set_flip_vertically_on_load(false);
-	int32 width = 0;
-	int32 height = 0;
-	int32 fileChannels = 0;
-
-	int32 channels = static_cast<int32>(m_RequiredChannels);
-
-	// option to load 16 bit texture
-	uint8* bits = stbi_load_from_memory(data.data(), static_cast<int32>(data.size()), &width, &height, &fileChannels, channels);
-
-	if (channels == 0)
+	// read header
+	//-------------
+	if (reader.ReadString(TextureFile::s_Header.size()) != TextureFile::s_Header)
 	{
-		channels = fileChannels;
-	}
-
-	if (bits == nullptr)
-	{
-		LOG("TextureAsset::LoadFromMemory > Failed to load texture bytes from data!", core::LogLevel::Warning);
+		ET_ASSERT(false, "Incorrect texture file header");
 		return false;
 	}
 
-	if ((width == 0) || (height == 0))
+	std::string const writerVersion = reader.ReadNullString();
+	if (writerVersion != build::Version::s_Name)
 	{
-		LOG("TextureAsset::LoadFromMemory > Image is too small to display!", core::LogLevel::Warning);
-		stbi_image_free(bits);
+		LOG(FS("Texture data was written by a different engine version: %s", writerVersion.c_str()));
+	}
+
+	// read texture info
+	//-------------------
+	E_TextureType const targetType = reader.Read<E_TextureType>();
+	if (targetType != E_TextureType::Texture2D)
+	{
+		ET_ASSERT(false, "Only 2D texture assets are currently supported!");
 		return false;
 	}
 
-	if (!m_ForceResolution)
+	uint16 const width = reader.Read<uint16>();
+	uint16 const height = reader.Read<uint16>();
+
+	uint16 const layers = reader.Read<uint16>();
+	ET_ASSERT(((targetType != E_TextureType::Texture3D) && (layers == 1u)) || (layers > 0u));
+
+	uint8 const mipCount = reader.Read<uint8>();
+
+	E_ColorFormat const storageFormat = reader.Read<E_ColorFormat>();
+	bool const isCompressed = TextureFile::IsCompressedFormat(storageFormat);
+
+	E_DataType const dataType = reader.Read<E_DataType>();
+	ET_ASSERT(!isCompressed || dataType == E_DataType::Invalid);
+	E_ColorFormat const layout = reader.Read<E_ColorFormat>();
+	ET_ASSERT(!isCompressed || layout == E_ColorFormat::Invalid);
+
+	// #todo: respect GraphicsSetting texture resizing by only loading lower mip levels
+
+	// Upload to GPU
+	//---------------
+	m_Data = new TextureData(targetType, storageFormat, ivec2(static_cast<int32>(width), static_cast<int32>(height)), static_cast<int32>(layers));
+
+	uint8 const* dataPointer = reader.GetCurrentDataPointer();
+	if (isCompressed)
 	{
-		render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
-		if (!math::nearEquals(graphicsSettings.TextureScaleFactor, 1.f))
+		size_t mipSize = TextureFile::GetCompressedSize(static_cast<uint32>(width), static_cast<uint32>(height), storageFormat);
+		int32 mipLevel = 0;
+		for (;;)
 		{
-			// resize
-			int32 const outWidth = static_cast<int32>(static_cast<float>(width) * graphicsSettings.TextureScaleFactor);
-			int32 const outHeight = static_cast<int32>(static_cast<float>(height) * graphicsSettings.TextureScaleFactor);
-			uint8* outBits = new uint8[outWidth * outHeight * channels];
+			m_Data->UploadCompressed(reinterpret_cast<void const*>(dataPointer), mipSize, mipLevel);
 
-			stbir_resize_uint8(bits, width, height, 0, outBits, outWidth, outHeight, 0, channels);
+			if (mipLevel == static_cast<int32>(mipCount))
+			{
+				break;
+			}
 
-			stbi_image_free(bits);
-			bits = outBits;
-			width = outWidth;
-			height = outHeight;
+			reader.MoveBufferPosition(mipSize);
+			mipSize /= 4u;
+
+			dataPointer = reader.GetCurrentDataPointer();
+			++mipLevel;
 		}
 	}
-
-	// convert data type
-	// check number of channels
-	E_ColorFormat layout;
-	E_ColorFormat storageFormat;
-	switch (channels)
+	else
 	{
-	case 1:
-		layout = E_ColorFormat::Red;
-		ET_ASSERT(!m_UseSrgb);
-		storageFormat = E_ColorFormat::R8;
-		break;
-
-	case 2:
-		layout = E_ColorFormat::RG;
-		ET_ASSERT(!m_UseSrgb);
-		storageFormat = E_ColorFormat::RG8;
-		break;
-
-	case 3:
-		layout = E_ColorFormat::RGB;
-		if (m_UseSrgb)
-		{
-			storageFormat = E_ColorFormat::SRGB8;
-		}
-		else
-		{
-			storageFormat = E_ColorFormat::RGB8;
-		}
-		break;
-
-	case 4:
-		layout = E_ColorFormat::RGBA;
-		if (m_UseSrgb)
-		{
-			storageFormat = E_ColorFormat::SRGBA8;
-		}
-		else
-		{
-			storageFormat = E_ColorFormat::RGBA8;
-		}
-		break;
-
-	default:
-		ET_ASSERT(false, "unhandled texture channel count");
-		stbi_image_free(bits);
-		return false;
+		m_Data->UploadData(dataPointer, layout, dataType); // #todo: load mip levels for uncompressed textures, instead of letting parameters generate them
 	}
 
-	//Upload to GPU
-	m_Data = new TextureData(storageFormat, ivec2(width, height));
-	m_Data->UploadData(reinterpret_cast<void const*>(bits), layout, E_DataType::UByte);
 	m_Data->SetParameters(m_Parameters);
-
 	m_Data->CreateHandle();
-
-	stbi_image_free(bits);
-	bits = nullptr;
 
 	return true;
 }

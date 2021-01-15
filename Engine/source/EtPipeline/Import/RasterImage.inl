@@ -51,16 +51,37 @@ void RasterImage::AllocatePixels()
 //----------------------
 // RasterImage::SetSize
 //
+// Make sure to reallocate pixels after setting size
+//
 void RasterImage::SetSize(uint32 const width, uint32 const height)
 {
+	ET_ASSERT(m_MipChild == nullptr, "setting size while there is already a generated mip chain is not supported");
+
 	m_Width = width;
 	m_Height = height;
+}
+
+//---------------------------
+// RasterImage::GetByteCount
+//
+uint32 RasterImage::GetByteCount() const
+{
+	ET_ASSERT(sizeof(ColorU8) == 4u);
+	return m_Width * m_Height * sizeof(ColorU8);
 }
 
 //------------------------
 // RasterImage::GetPixels
 //
 RasterImage::ColorU8 const* RasterImage::GetPixels() const
+{
+	return m_Pixels.data();
+}
+
+//------------------------
+// RasterImage::GetPixels
+//
+RasterImage::ColorU8* RasterImage::GetPixels() 
 {
 	return m_Pixels.data();
 }
