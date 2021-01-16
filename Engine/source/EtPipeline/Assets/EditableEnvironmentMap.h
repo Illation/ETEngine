@@ -20,6 +20,11 @@ public:
 	//---------------------
 	EditableEnvironmentMapAsset() : EditorAsset<render::EnvironmentMap>() {}
 	virtual ~EditableEnvironmentMapAsset() = default;
+
+	// interface
+	//-----------
+protected:
+	bool LoadFromMemory(std::vector<uint8> const& data) override;
 };
 
 
