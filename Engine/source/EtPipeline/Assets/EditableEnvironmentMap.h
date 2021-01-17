@@ -2,6 +2,12 @@
 #include <EtRendering/GraphicsTypes/EnvironmentMap.h>
 
 #include <EtPipeline/Content/EditorAsset.h>
+#include <EtPipeline/Import/TextureCompression.h>
+
+
+namespace et {
+	REGISTRATION_NS(pl);
+}
 
 
 namespace et {
@@ -15,6 +21,7 @@ class EditableEnvironmentMapAsset final : public EditorAsset<render::Environment
 {
 	DECLARE_FORCED_LINKING()
 	RTTR_ENABLE(EditorAsset<render::EnvironmentMap>)
+	REGISTRATION_FRIEND_NS(pl)
 public:
 	// Construct destruct
 	//---------------------
@@ -25,6 +32,12 @@ public:
 	//-----------
 protected:
 	bool LoadFromMemory(std::vector<uint8> const& data) override;
+
+	// Data
+	///////
+
+	bool m_IsCompressed = false; // use BC6H
+	TextureCompression::E_Quality m_CompressionQuality = TextureCompression::E_Quality::Medium;
 };
 
 

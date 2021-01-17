@@ -21,6 +21,8 @@ namespace pl {
 RTTR_REGISTRATION
 {
 	BEGIN_REGISTER_CLASS(EditableEnvironmentMapAsset, "editable environment map asset")
+		.property("is compressed", &EditableEnvironmentMapAsset::m_IsCompressed)
+		.property("compression quality", &EditableEnvironmentMapAsset::m_CompressionQuality)
 	END_REGISTER_CLASS_POLYMORPHIC(EditableEnvironmentMapAsset, EditorAssetBase);
 }
 DEFINE_FORCED_LINKING(EditableEnvironmentMapAsset) // force the asset class to be linked as it is only used in reflection
@@ -39,7 +41,7 @@ bool EditableEnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	//load equirectangular texture
 	//****************************
-	std::string extension = core::FileUtil::ExtractExtension(envMapAsset->GetName());
+	std::string const extension = core::FileUtil::ExtractExtension(envMapAsset->GetName());
 	ET_ASSERT(extension == "hdr", "Expected HDR file format!");
 
 	stbi_set_flip_vertically_on_load(true);

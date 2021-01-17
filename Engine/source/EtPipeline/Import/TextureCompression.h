@@ -1,0 +1,73 @@
+#pragma once
+#include "RasterImage.h"
+
+#include <EtRendering/GraphicsTypes/TextureFormat.h>
+
+
+namespace et {
+namespace pl {
+
+
+//------------------------------
+// TextureCompression
+//
+// Utility class for compression functionality
+//
+class TextureCompression final
+{
+public:
+
+	//-----------------------------------------
+	enum class E_Quality : uint8
+	{
+		Low,
+		Medium,
+		High,
+		Ultra
+	};
+
+	//-----------------------
+	// E_CompressionSetting
+	//
+	// Combined with channel count will ultimately define the GPU storage format and the disc storage format
+	//
+	enum class E_Setting : uint8
+	{
+		Invalid = 0,
+
+		Default, // BC1 or BC3 depending on alpha channel - sRGB option, but masks shouldn't use it
+		NormalMap, // BC5
+		GrayScale, // R8 or sRGB
+		DisplacementMap, // R8 / R16
+		VectorDisplacementMap, // RGB8
+		HDR, // RGB16F
+		UI, // RGBA8 / sRGBA8
+		Alpha, // BC4
+		SdfFont, // RGBA8 for channel usage - could make single channel in future
+		// CompressedHDR, // BC6H - not supported currently
+		BC7 // High quality version of default when targeting modern GPUs
+	};
+
+	static bool WriteTextureFile(std::vector<uint8>& outFileData,
+		RasterImage& source,
+		E_Setting const compressionSetting,
+		E_Quality const compressionQuality,
+		bool const supportsAlpha,
+		render::TextureFile::E_Srgb const srgb,
+		uint16 const maxSize,
+		bool const forceResolution,
+		bool const useMipMaps);
+
+	static uint32 GetPow2Size(uint32 const width, uint32 const height, uint16 const maxSize, bool adjustByGraphicsSettings);
+	static render::E_ColorFormat GetOutputFormat(E_Setting const setting, bool const supportAlpha, bool const useSrgb);
+	static uint8 GetInputChannelCount(render::E_ColorFormat const format);
+	static bool CompressImage(RasterImage const& image,
+		render::E_ColorFormat const format,
+		E_Quality const compressionQuality,
+		std::vector<uint8>& outData);
+};
+
+
+} // namespace pl
+} // namespace et
+

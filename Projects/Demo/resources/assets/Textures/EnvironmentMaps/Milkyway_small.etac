@@ -12,6 +12,8 @@
       }
     },
     "metadata": null,
-    "children": []
+    "children": [],
+    "is compressed": true,
+    "compression quality": "Medium"
   }
 }

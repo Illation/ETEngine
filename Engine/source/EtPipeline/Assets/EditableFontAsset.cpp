@@ -12,9 +12,7 @@
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
-#include <EtPipeline/Import/RasterImage.h>
-
-#include "EditableTextureAsset.h"
+#include <EtPipeline/Import/TextureCompression.h>
 
 
 namespace et {
@@ -607,10 +605,10 @@ bool EditableFontAsset::GenerateTextureData(std::vector<uint8>& data, render::Te
 	api->GetTextureData(*texture, render::E_ColorFormat::RGBA, render::E_DataType::UByte, reinterpret_cast<void*>(image.GetPixels()));
 
 	// convert to output format
-	return EditableTextureAsset::WriteTextureFile(data, 
+	return TextureCompression::WriteTextureFile(data,
 		image, 
-		EditableTextureAsset::E_CompressionSetting::SdfFont,
-		EditableTextureAsset::E_CompressionQuality::Ultra,
+		TextureCompression::E_Setting::SdfFont,
+		TextureCompression::E_Quality::Ultra,
 		true,
 		render::TextureFile::E_Srgb::None,
 		0u,
