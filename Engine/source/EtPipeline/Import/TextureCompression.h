@@ -15,6 +15,9 @@ namespace pl {
 //
 class TextureCompression final
 {
+	typedef void(*T_GetBlock4x4Fn)(void const* const, uint32 const, uint32 const, void* const); // imageData, blockX, blockY, buffer
+	static size_t const s_PixelBufferSize;
+
 public:
 
 	//-----------------------------------------
@@ -48,6 +51,7 @@ public:
 		BC7 // High quality version of default when targeting modern GPUs
 	};
 
+	// write to file
 	static bool WriteTextureFile(std::vector<uint8>& outFileData,
 		RasterImage& source,
 		E_Setting const compressionSetting,
@@ -58,10 +62,20 @@ public:
 		bool const forceResolution,
 		bool const useMipMaps);
 
+	// utility
 	static uint32 GetPow2Size(uint32 const width, uint32 const height, uint16 const maxSize, bool adjustByGraphicsSettings);
 	static render::E_ColorFormat GetOutputFormat(E_Setting const setting, bool const supportAlpha, bool const useSrgb);
 	static uint8 GetInputChannelCount(render::E_ColorFormat const format);
-	static bool CompressImage(RasterImage const& image,
+
+	// Generic compressor
+	static bool CompressImage(void const* const sourceData, 
+		uint32 const blockCount, 
+		render::E_ColorFormat const format,
+		E_Quality const compressionQuality,
+		std::vector<uint8>& outData);
+
+	// For U8 source data
+	static bool CompressImageU8(RasterImage const& image,
 		render::E_ColorFormat const format,
 		E_Quality const compressionQuality,
 		std::vector<uint8>& outData);

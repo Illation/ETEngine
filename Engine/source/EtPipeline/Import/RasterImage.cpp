@@ -193,6 +193,40 @@ std::vector<uint8> RasterImage::GetPixels(uint8 const numChannels) const
 	return outPixels;
 }
 
+//--------------------------------
+// RasterImage::RearrangeInBlocks
+//
+// Map the pixels in a way so that blocks are sequential
+// optimized for squential write and unordered read
+//
+void RasterImage::RearrangeInBlocks(uint32 const blockWidth, uint32 const blockHeight, ColorU8* const outBlocks) const
+{
+	ET_ASSERT(m_Width % blockWidth == 0u);
+	ET_ASSERT(m_Height % blockHeight == 0u);
+
+	uint32 const blocksX = m_Width / blockWidth;
+	uint32 const blocksY = m_Height / blockHeight;
+
+	uint32 writeAddress = 0u;
+	for (uint32 blockY = 0u; blockY < blocksY; ++blockY)
+	{
+		uint32 const yOffset = blockY * blockHeight;
+		for (uint32 blockX = 0u; blockX < blocksX; ++blockX)
+		{
+			uint32 const x = blockX * blockWidth;
+			for (uint32 blockRow = 0u; blockRow < blockHeight; blockRow++)
+			{
+				uint32 const readAddress = x + (m_Width * (yOffset + blockRow));
+				memcpy(reinterpret_cast<void*>(&outBlocks[writeAddress]),
+					reinterpret_cast<void const*>(&m_Pixels[readAddress]),
+					blockWidth * sizeof(ColorU8));
+
+				writeAddress += blockWidth;
+			}
+		}
+	}
+}
+
 //-------------------------------
 // RasterImage::GetMipLevelCount
 //

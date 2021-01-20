@@ -119,7 +119,7 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 		while (mipImage != nullptr)
 		{
 			std::vector<uint8> compressedData;
-			if (!TextureCompression::CompressImage(*mipImage, outputFormat, m_CompressionQuality, compressedData))
+			if (!TextureCompression::CompressImageU8(*mipImage, outputFormat, m_CompressionQuality, compressedData))
 			{
 				ET_ASSERT(false, "Failed to compress image");
 				return false;

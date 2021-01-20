@@ -62,6 +62,7 @@ public:
 
 	inline ColorU8 const& At(uint32 const x, uint32 const y) const;
 	inline void GetBlock(uint32 const blockX, uint32 const blockY, uint32 const blockWidth, uint32 const blockHeight, ColorU8* const outBlock) const;
+	void RearrangeInBlocks(uint32 const blockWidth, uint32 const blockHeight, ColorU8* const outBlocks) const;
 
 	RasterImage const* GetMipChild() const { return m_MipChild; }
 	uint8 GetMipLevelCount() const;
