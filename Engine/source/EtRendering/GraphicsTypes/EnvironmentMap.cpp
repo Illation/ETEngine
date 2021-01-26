@@ -76,8 +76,6 @@ DEFINE_FORCED_LINKING(EnvironmentMapAsset) // force the shader class to be linke
 //
 bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
-	ContextHolder::GetRenderContext()->SetSeamlessCubemapsEnabled(true);
-
 	//load equirectangular texture
 	//****************************
 	std::string extension = core::FileUtil::ExtractExtension(GetName());

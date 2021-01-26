@@ -202,7 +202,7 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	// read header
 	//-------------
-	if (reader.ReadString(TextureFile::s_Header.size()) != TextureFile::s_Header)
+	if (reader.ReadString(TextureFormat::s_Header.size()) != TextureFormat::s_Header)
 	{
 		ET_ASSERT(false, "Incorrect texture file header");
 		return false;
@@ -232,7 +232,7 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	uint8 const mipCount = reader.Read<uint8>();
 
 	E_ColorFormat const storageFormat = reader.Read<E_ColorFormat>();
-	bool const isCompressed = TextureFile::IsCompressedFormat(storageFormat);
+	bool const isCompressed = TextureFormat::IsCompressedFormat(storageFormat);
 
 	E_DataType const dataType = reader.Read<E_DataType>();
 	ET_ASSERT(!isCompressed || dataType == E_DataType::Invalid);
@@ -248,7 +248,7 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	uint8 const* dataPointer = reader.GetCurrentDataPointer();
 	if (isCompressed)
 	{
-		size_t mipSize = TextureFile::GetCompressedSize(static_cast<uint32>(width), static_cast<uint32>(height), storageFormat);
+		size_t mipSize = TextureFormat::GetCompressedSize(static_cast<uint32>(width), static_cast<uint32>(height), storageFormat);
 		int32 mipLevel = 0;
 		for (;;)
 		{

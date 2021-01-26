@@ -272,8 +272,8 @@ enum class E_ColorFormat : uint8
 	BC5_RG, // normal maps
 	BC5_RG_Signed, // normal maps
 
-	// BC6H_RGB_Signed, // <- #todo: add encoder library for this format
-	// BC6H_RGB_Unsigned, //  ^
+	BC6H_RGB, // HDR 
+	BC6H_RGB_Signed, // HDR 
 
 	BC7_RGBA, // only when targeting modern GPUs
 	BC7_SRGBA, // ^ but sRGB

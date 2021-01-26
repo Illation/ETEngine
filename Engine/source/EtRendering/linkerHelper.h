@@ -32,7 +32,7 @@ void ForceLinking()
 	FORCE_LINKING(EnvironmentMapAsset)
 	FORCE_LINKING(FontAsset)
 	FORCE_LINKING(TextureAsset)
-	FORCE_LINKING(TextureFile)
+	FORCE_LINKING(TextureFormat)
 	FORCE_LINKING(PostProcessingSettings)
 }
 

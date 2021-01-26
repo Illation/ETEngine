@@ -40,8 +40,6 @@ public:
 	virtual void SetStencilEnabled(bool const enabled) = 0;
 	virtual void SetCullEnabled(bool const enabled) = 0;
 
-	virtual void SetSeamlessCubemapsEnabled(bool const enabled) = 0;
-
 	virtual void SetFaceCullingMode(E_FaceCullMode const cullMode) = 0;
 	virtual void SetBlendEquation(E_BlendEquation const equation) = 0;
 	virtual void SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor) = 0;
@@ -117,7 +115,11 @@ public:
 		bool const force) = 0;
 	virtual T_TextureHandle GetTextureHandle(T_TextureLoc const texLoc) const = 0;
 	virtual void SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const = 0;
-	virtual void GetTextureData(TextureData const& texture, E_ColorFormat const format, E_DataType const dataType, void* const data) = 0;
+	virtual void GetTextureData(TextureData const& texture,
+		uint8 const mipLevel,
+		E_ColorFormat const format,
+		E_DataType const dataType,
+		void* const data) = 0;
 
 	virtual T_ShaderLoc CreateShader(E_ShaderType const type) const = 0;
 	virtual T_ShaderLoc CreateProgram() const = 0;

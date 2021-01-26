@@ -33,6 +33,9 @@ public:
 protected:
 	bool LoadFromMemory(std::vector<uint8> const& data) override;
 
+private:
+	void CompressHDRCube(render::TextureData*& cubeMap) const;
+
 	// Data
 	///////
 

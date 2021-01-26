@@ -6,14 +6,16 @@
 
 #include <EtCore/Reflection/Registration.h>
 #include <EtCore/Content/Asset.h>
+#include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Util/LinkerUtils.h>
 
 #include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
+#include <EtRendering/GraphicsTypes/EnvironmentMap.h>
 
 
 namespace et {
 	REGISTRATION_NS(fw)
-}
+} 
 
 
 namespace et {
@@ -81,7 +83,7 @@ public:
 	std::vector<EntityDescriptor> entities;
 
 	// graphical parameters
-	core::HashString skybox;
+	AssetPtr<render::EnvironmentMap> skybox;
 	core::HashString starfield;
 	EntityLink activeCamera;
 	render::PostProcessingSettings postprocessing;

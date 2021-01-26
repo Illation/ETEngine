@@ -122,8 +122,6 @@ public:
 	void SetStencilEnabled(bool const enabled) override;
 	void SetCullEnabled(bool const enabled) override;
 
-	void SetSeamlessCubemapsEnabled(bool const enabled) override;
-
 	void SetFaceCullingMode(E_FaceCullMode const cullMode) override;
 	void SetBlendEquation(E_BlendEquation const equation) override;
 	void SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor) override;
@@ -200,7 +198,11 @@ public:
 		bool const force) override;
 	T_TextureHandle GetTextureHandle(T_TextureLoc const texLoc) const override;
 	void SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const override;
-	void GetTextureData(TextureData const& texture, E_ColorFormat const format, E_DataType const dataType, void* const data) override;
+	void GetTextureData(TextureData const& texture, 
+		uint8 const mipLevel, 
+		E_ColorFormat const format, 
+		E_DataType const dataType, 
+		void* const data) override;
 
 	T_ShaderLoc CreateShader(E_ShaderType const type) const override;
 	T_ShaderLoc CreateProgram() const override;
@@ -320,8 +322,6 @@ private:
 	E_FaceCullMode m_CullFaceMode = E_FaceCullMode::Back;
 	
 	bool m_StencilTestEnabled = false;
-
-	bool m_SeamlessCubemapsEnabled = false;
 
 	bool m_BlendEnabled = false;
 	bool m_IndividualBlend = false;

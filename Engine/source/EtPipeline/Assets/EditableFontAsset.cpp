@@ -602,7 +602,7 @@ bool EditableFontAsset::GenerateTextureData(std::vector<uint8>& data, render::Te
 
 	// read pixels from GPU
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
-	api->GetTextureData(*texture, render::E_ColorFormat::RGBA, render::E_DataType::UByte, reinterpret_cast<void*>(image.GetPixels()));
+	api->GetTextureData(*texture, 0u, render::E_ColorFormat::RGBA, render::E_DataType::UByte, reinterpret_cast<void*>(image.GetPixels()));
 
 	// convert to output format
 	return TextureCompression::WriteTextureFile(data,
@@ -610,7 +610,7 @@ bool EditableFontAsset::GenerateTextureData(std::vector<uint8>& data, render::Te
 		TextureCompression::E_Setting::SdfFont,
 		TextureCompression::E_Quality::Ultra,
 		true,
-		render::TextureFile::E_Srgb::None,
+		render::TextureFormat::E_Srgb::None,
 		0u,
 		true,
 		false);

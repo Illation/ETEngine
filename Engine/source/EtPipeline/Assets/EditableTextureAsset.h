@@ -46,7 +46,7 @@ protected:
 	///////
 
 private:
-	render::TextureFile::E_Srgb m_Srgb = render::TextureFile::E_Srgb::None;
+	render::TextureFormat::E_Srgb m_Srgb = render::TextureFormat::E_Srgb::None;
 
 	bool m_SupportAlpha = true;
 	uint16 m_MaxSize = 0u;

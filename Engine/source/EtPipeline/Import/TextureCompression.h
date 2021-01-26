@@ -47,7 +47,7 @@ public:
 		UI, // RGBA8 / sRGBA8
 		Alpha, // BC4
 		SdfFont, // RGBA8 for channel usage - could make single channel in future
-		// CompressedHDR, // BC6H - not supported currently
+		CompressedHDR, // BC6H - not supported currently
 		BC7 // High quality version of default when targeting modern GPUs
 	};
 
@@ -57,7 +57,7 @@ public:
 		E_Setting const compressionSetting,
 		E_Quality const compressionQuality,
 		bool const supportsAlpha,
-		render::TextureFile::E_Srgb const srgb,
+		render::TextureFormat::E_Srgb const srgb,
 		uint16 const maxSize,
 		bool const forceResolution,
 		bool const useMipMaps);
@@ -65,7 +65,6 @@ public:
 	// utility
 	static uint32 GetPow2Size(uint32 const width, uint32 const height, uint16 const maxSize, bool adjustByGraphicsSettings);
 	static render::E_ColorFormat GetOutputFormat(E_Setting const setting, bool const supportAlpha, bool const useSrgb);
-	static uint8 GetInputChannelCount(render::E_ColorFormat const format);
 
 	// Generic compressor
 	static bool CompressImage(void const* const sourceData, 

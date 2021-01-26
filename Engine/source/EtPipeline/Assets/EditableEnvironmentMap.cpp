@@ -7,6 +7,8 @@
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
+#include <EtPipeline/Import/CompressedCube.h>
+
 
 namespace et {
 namespace pl {
@@ -36,8 +38,6 @@ DEFINE_FORCED_LINKING(EditableEnvironmentMapAsset) // force the asset class to b
 bool EditableEnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
 	render::EnvironmentMapAsset const* const envMapAsset = static_cast<render::EnvironmentMapAsset const*>(m_Asset);
-
-	render::ContextHolder::GetRenderContext()->SetSeamlessCubemapsEnabled(true);
 
 	//load equirectangular texture
 	//****************************
@@ -75,7 +75,7 @@ bool EditableEnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 	params.wrapT = render::E_TextureWrapMode::ClampToEdge;
 	hdrTexture.SetParameters(params);
 
-	render::TextureData* const envCubemap = render::EquirectangularToCubeMap(&hdrTexture, envMapAsset->m_CubemapRes);
+	render::TextureData* envCubemap = render::EquirectangularToCubeMap(&hdrTexture, envMapAsset->m_CubemapRes);
 
 	render::TextureData* irradianceMap = nullptr;
 	render::TextureData* radianceMap = nullptr;
@@ -84,8 +84,55 @@ bool EditableEnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 		envMapAsset->m_IrradianceRes, 
 		envMapAsset->m_RadianceRes);
 
+	//if (m_IsCompressed)
+	//{
+	//	CompressHDRCube(envCubemap);
+	//	CompressHDRCube(irradianceMap);
+	//	CompressHDRCube(radianceMap);
+	//}
+
 	SetData(new render::EnvironmentMap(envCubemap, irradianceMap, radianceMap));
 	return true;
+}
+
+//----------------------------------------------
+// EditableEnvironmentMapAsset::CompressHDRCube
+//
+// Convert a cubemap into a BC6H compressed cubemap
+//
+void EditableEnvironmentMapAsset::CompressHDRCube(render::TextureData*& cubeMap) const
+{
+	// temp tex pointer
+	render::TextureData* const compressedTex = new render::TextureData(render::E_TextureType::CubeMap, 
+		render::E_ColorFormat::BC6H_RGB, 
+		cubeMap->GetResolution());
+
+	// cache parameters
+	render::TextureParameters params = cubeMap->GetParameters();
+
+	// compress the cube map at all mip levels
+	CompressedCube const cpuCube(*cubeMap, m_CompressionQuality);
+
+	// delete old cubemap
+	delete cubeMap;
+
+	// upload new compressed data
+	CompressedCube const* cubeMip = &cpuCube;
+	int32 mipLevel = 0;
+	while (cubeMip != nullptr)
+	{
+		compressedTex->UploadCompressed(reinterpret_cast<void const*>(cubeMip->GetCompressedData().data()), cubeMip->GetCompressedData().size(), mipLevel);
+
+		++mipLevel;
+		cubeMip = cubeMip->GetChildMip();
+	}
+
+	// upload params
+	params.genMipMaps = false; // we already uploaded the mip maps
+	compressedTex->SetParameters(params);
+
+	// replace old pointer
+	cubeMap = compressedTex;
 }
 
 

@@ -49,6 +49,7 @@ public:
 	E_ColorFormat GetStorageFormat() const { return m_StorageFormat; }
 	E_TextureType GetTargetType() const { return m_TargetType; }
 	int32 GetDepth() const { return m_Depth; }
+	TextureParameters const& GetParameters() const { return m_Parameters; }
 
 	// Functionality
 	//--------------

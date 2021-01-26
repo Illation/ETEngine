@@ -1,5 +1,6 @@
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/GraphicsTypes/TextureFormat.h>
 
 #include <iomanip>
 
@@ -213,44 +214,44 @@ GLenum ConvColorFormat(E_ColorFormat const fmt)
 {
 	switch (fmt)
 	{
-	case E_ColorFormat::Depth:			return GL_DEPTH_COMPONENT;
-	case E_ColorFormat::DepthStencil:	return GL_DEPTH_STENCIL;
+	case E_ColorFormat::Depth:				return GL_DEPTH_COMPONENT;
+	case E_ColorFormat::DepthStencil:		return GL_DEPTH_STENCIL;
 
-	case E_ColorFormat::Red:			return GL_RED;
-	case E_ColorFormat::RG:				return GL_RG;
-	case E_ColorFormat::RGB:			return GL_RGB;
-	case E_ColorFormat::RGBA:			return GL_RGBA;
+	case E_ColorFormat::Red:				return GL_RED;
+	case E_ColorFormat::RG:					return GL_RG;
+	case E_ColorFormat::RGB:				return GL_RGB;
+	case E_ColorFormat::RGBA:				return GL_RGBA;
 
-	case E_ColorFormat::BGR:			return GL_BGR;
-	case E_ColorFormat::BGRA:			return GL_BGRA;
+	case E_ColorFormat::BGR:				return GL_BGR;
+	case E_ColorFormat::BGRA:				return GL_BGRA;
 
-	case E_ColorFormat::Depth24:		return GL_DEPTH_COMPONENT24;
+	case E_ColorFormat::Depth24:			return GL_DEPTH_COMPONENT24;
 
-	case E_ColorFormat::R8:				return GL_R8;
-	case E_ColorFormat::RG8:			return GL_RG8;
-	case E_ColorFormat::RG16f:			return GL_RG16F;
-	case E_ColorFormat::RGB8:			return GL_RGB8;
-	case E_ColorFormat::RGB16f:			return GL_RGB16F;
-	case E_ColorFormat::RGBA8:			return GL_RGBA8;
-	case E_ColorFormat::RGBA16f:		return GL_RGBA16F;
-	case E_ColorFormat::RGBA32f:		return GL_RGBA32F;
-	case E_ColorFormat::SRGB8:			return GL_SRGB8;
-	case E_ColorFormat::SRGBA8:			return GL_SRGB8_ALPHA8;
+	case E_ColorFormat::R8:					return GL_R8;
+	case E_ColorFormat::RG8:				return GL_RG8;
+	case E_ColorFormat::RG16f:				return GL_RG16F;
+	case E_ColorFormat::RGB8:				return GL_RGB8;
+	case E_ColorFormat::RGB16f:				return GL_RGB16F;
+	case E_ColorFormat::RGBA8:				return GL_RGBA8;
+	case E_ColorFormat::RGBA16f:			return GL_RGBA16F;
+	case E_ColorFormat::RGBA32f:			return GL_RGBA32F;
+	case E_ColorFormat::SRGB8:				return GL_SRGB8;
+	case E_ColorFormat::SRGBA8:				return GL_SRGB8_ALPHA8;
 
-	case E_ColorFormat::BC1_RGB:		return GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-	case E_ColorFormat::BC1_RGBA:		return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-	case E_ColorFormat::BC1_SRGB:		return GL_COMPRESSED_SRGB_S3TC_DXT1_EXT;
-	case E_ColorFormat::BC1_SRGBA:		return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT;
-	case E_ColorFormat::BC3_RGBA:		return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-	case E_ColorFormat::BC3_SRGBA:		return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT;
-	case E_ColorFormat::BC4_Red:		return GL_COMPRESSED_RED_RGTC1;
-	case E_ColorFormat::BC4_Red_Signed:	return GL_COMPRESSED_SIGNED_RED_RGTC1;
-	case E_ColorFormat::BC5_RG:			return GL_COMPRESSED_RG_RGTC2;
-	case E_ColorFormat::BC5_RG_Signed:	return GL_COMPRESSED_SIGNED_RG_RGTC2;
-	//case E_ColorFormat::BC6H_RGB_Signed:	return GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT;
-	//case E_ColorFormat::BC6H_RGB_Unsigned:return GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT;
-	case E_ColorFormat::BC7_RGBA:		return GL_COMPRESSED_RGBA_BPTC_UNORM;
-	case E_ColorFormat::BC7_SRGBA:		return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
+	case E_ColorFormat::BC1_RGB:			return GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+	case E_ColorFormat::BC1_RGBA:			return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+	case E_ColorFormat::BC1_SRGB:			return GL_COMPRESSED_SRGB_S3TC_DXT1_EXT;
+	case E_ColorFormat::BC1_SRGBA:			return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT;
+	case E_ColorFormat::BC3_RGBA:			return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+	case E_ColorFormat::BC3_SRGBA:			return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT;
+	case E_ColorFormat::BC4_Red:			return GL_COMPRESSED_RED_RGTC1;
+	case E_ColorFormat::BC4_Red_Signed:		return GL_COMPRESSED_SIGNED_RED_RGTC1;
+	case E_ColorFormat::BC5_RG:				return GL_COMPRESSED_RG_RGTC2;
+	case E_ColorFormat::BC5_RG_Signed:		return GL_COMPRESSED_SIGNED_RG_RGTC2;
+	case E_ColorFormat::BC6H_RGB:			return GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT;
+	case E_ColorFormat::BC6H_RGB_Signed:	return GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT;
+	case E_ColorFormat::BC7_RGBA:			return GL_COMPRESSED_RGBA_BPTC_UNORM;
+	case E_ColorFormat::BC7_SRGBA:			return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
 	}
 
 	ET_ASSERT(false, "Unhandled color format!");
@@ -733,6 +734,11 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 		{ E_BufferType::Uniform, 0 }
 	};
 
+	// cubemaps
+	//**********
+
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
 	// debugging
 	//***********
 
@@ -856,14 +862,6 @@ void GL_CONTEXT_CLASSNAME::SetStencilEnabled(bool const enabled)
 void GL_CONTEXT_CLASSNAME::SetCullEnabled(bool const enabled)
 {
 	EnOrDisAble(m_CullFaceEnabled, enabled, GL_CULL_FACE);
-}
-
-//---------------------------------
-// GlContext::SetSeamlessCubemapsEnabled
-//
-void GL_CONTEXT_CLASSNAME::SetSeamlessCubemapsEnabled(bool const enabled)
-{
-	EnOrDisAble(m_SeamlessCubemapsEnabled, enabled, GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
 
 //---------------------------------
@@ -1408,6 +1406,18 @@ void GL_CONTEXT_CLASSNAME::UploadCompressedTextureData(TextureData& texture, voi
 		glCompressedTexImage2D(target, mipLevel, intFmt, res.x, res.y, 0, static_cast<int32>(size), data);
 		break;
 
+	case E_TextureType::CubeMap:
+	{
+		size_t const faceSize = size / TextureData::s_NumCubeFaces;
+		for (uint8 face = 0u; face < TextureData::s_NumCubeFaces; ++face)
+		{
+			void const* const faceData = reinterpret_cast<void const*>(reinterpret_cast<uint8 const*>(data) + (faceSize * static_cast<size_t>(face)));
+			glCompressedTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, mipLevel, intFmt, res.x, res.y, 0, faceSize, faceData);
+		}
+
+		break;
+	}
+
 	default:
 		ET_ASSERT(false, "Unsupported texture type for uploading compressed texture data");
 		break;
@@ -1574,13 +1584,42 @@ void GL_CONTEXT_CLASSNAME::SetTextureHandleResidency(T_TextureHandle const handl
 // GlContext::GetTextureData
 //
 // Get the pixels from a texture
+//  - for cubemaps the pixels are simply stored sequential
 //
-void GL_CONTEXT_CLASSNAME::GetTextureData(TextureData const& texture, E_ColorFormat const format, E_DataType const dataType, void* const data)
+void GL_CONTEXT_CLASSNAME::GetTextureData(TextureData const& texture,
+	uint8 const mipLevel, 
+	E_ColorFormat const format, 
+	E_DataType const dataType, 
+	void* const data)
 {
 	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
 	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
 
-	glGetTexImage(target, 0, GL_CONTEXT_NS::ConvColorFormat(format), GL_CONTEXT_NS::ConvDataType(dataType), data);
+	GLenum const glLayout = GL_CONTEXT_NS::ConvColorFormat(format);
+	GLenum const glDataType = GL_CONTEXT_NS::ConvDataType(dataType);
+
+	if (texture.GetTargetType() == E_TextureType::CubeMap)
+	{
+		ivec2 res = texture.GetResolution();
+		res = res / (1 << static_cast<int32>(mipLevel));
+		size_t const offset = static_cast<size_t>(DataTypeInfo::GetTypeSize(dataType)) * 
+			static_cast<size_t>(TextureFormat::GetChannelCount(format)) *
+			static_cast<size_t>(res.x) *
+			static_cast<size_t>(res.y);
+
+		for (uint8 face = 0u; face < TextureData::s_NumCubeFaces; ++face)
+		{
+			glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 
+				static_cast<int32>(mipLevel), 
+				glLayout, 
+				glDataType, 
+				reinterpret_cast<void*>(reinterpret_cast<uint8*>(data) + (offset * static_cast<size_t>(face))));
+		}
+	}
+	else
+	{
+		glGetTexImage(target, static_cast<int32>(mipLevel), glLayout, glDataType, data);
+	}
 }
 
 //---------------------------------

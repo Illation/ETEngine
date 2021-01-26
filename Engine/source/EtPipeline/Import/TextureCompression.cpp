@@ -55,7 +55,7 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 	E_Setting const compressionSetting,
 	E_Quality const compressionQuality,
 	bool const supportsAlpha,
-	render::TextureFile::E_Srgb const srgb,
+	render::TextureFormat::E_Srgb const srgb,
 	uint16 const maxSize,
 	bool const forceResolution,
 	bool const useMipMaps)
@@ -65,9 +65,9 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 
 	// settings
 	//-----------
-	render::E_ColorFormat const storageFormat = GetOutputFormat(compressionSetting, supportsAlpha, srgb != render::TextureFile::E_Srgb::None);
-	bool const requiresCompression = render::TextureFile::IsCompressedFormat(storageFormat);
-	uint8 const requiredChannels = GetInputChannelCount(storageFormat);
+	render::E_ColorFormat const storageFormat = GetOutputFormat(compressionSetting, supportsAlpha, srgb != render::TextureFormat::E_Srgb::None);
+	bool const requiresCompression = render::TextureFormat::IsCompressedFormat(storageFormat);
+	uint8 const requiredChannels = render::TextureFormat::GetChannelCount(storageFormat);
 
 	// resize the texture to an appropriate format
 	//----------------------------------------------
@@ -106,7 +106,7 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 	size_t mipSize = 0;
 	if (requiresCompression)
 	{
-		mipSize = render::TextureFile::GetCompressedSize(width, height, storageFormat);
+		mipSize = render::TextureFormat::GetCompressedSize(width, height, storageFormat);
 	}
 	else
 	{
@@ -123,7 +123,7 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 	// init binary writer
 	//--------------------
 	core::BinaryWriter binWriter(outFileData);
-	binWriter.FormatBuffer(render::TextureFile::s_Header.size() +
+	binWriter.FormatBuffer(render::TextureFormat::s_Header.size() +
 		build::Version::s_Name.size() + 1u +
 		sizeof(render::E_TextureType) +
 		sizeof(uint16) + // width 
@@ -137,7 +137,7 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 
 	// write header
 	//--------------
-	binWriter.WriteString(render::TextureFile::s_Header);
+	binWriter.WriteString(render::TextureFormat::s_Header);
 	binWriter.WriteNullString(build::Version::s_Name);
 
 	binWriter.Write(render::E_TextureType::Texture2D); // only supported format for now
@@ -338,6 +338,11 @@ render::E_ColorFormat TextureCompression::GetOutputFormat(E_Setting const settin
 		ET_ASSERT(supportAlpha);
 		return render::E_ColorFormat::RGBA8;
 
+	case E_Setting::CompressedHDR:
+		ET_ASSERT(!useSrgb);
+		ET_ASSERT(!supportAlpha);
+		return render::E_ColorFormat::BC6H_RGB;
+
 	case E_Setting::BC7:
 		ET_ASSERT(supportAlpha);
 		if (useSrgb)
@@ -350,41 +355,6 @@ render::E_ColorFormat TextureCompression::GetOutputFormat(E_Setting const settin
 
 	ET_ASSERT(false, "unhandled compression setting");
 	return render::E_ColorFormat::Invalid;
-}
-
-//--------------------------------------------
-// TextureCompression::GetInputChannelCount
-//
-uint8 TextureCompression::GetInputChannelCount(render::E_ColorFormat const format)
-{
-	switch (format)
-	{
-	case render::E_ColorFormat::R8:
-	case render::E_ColorFormat::BC4_Red:
-		return 1u;
-
-	case render::E_ColorFormat::BC5_RG:
-		return 2u;
-
-	case render::E_ColorFormat::RGB8:
-	case render::E_ColorFormat::SRGB8:
-	case render::E_ColorFormat::RGB16f:
-	case render::E_ColorFormat::BC1_RGB:
-	case render::E_ColorFormat::BC1_SRGB:
-		return 3u;
-
-	case render::E_ColorFormat::RGBA8:
-	case render::E_ColorFormat::SRGBA8:
-	case render::E_ColorFormat::BC3_RGBA:
-	case render::E_ColorFormat::BC3_SRGBA:
-	case render::E_ColorFormat::BC7_RGBA:
-	case render::E_ColorFormat::BC7_SRGBA:
-		return 4u;
-
-	default:
-		ET_ASSERT(false, "unhandled color format");
-		return 0u;
-	}
 }
 
 //-------------------------------------
@@ -527,6 +497,50 @@ bool TextureCompression::CompressImage(void const* const sourceData,
 			uint8 const* const blockPixels = reinterpret_cast<uint8 const*>(sourceData) + (blockIdx * 4u * 16u); // channel count * pixels per block
 			Block16* compressedBlock = &packedImage[blockIdx];
 			rgbcx::encode_bc5(compressedBlock, blockPixels, s_Bc45Channel0, s_Bc45Channel1, RasterImage::s_NumChannels);
+		}
+
+		break;
+	}
+
+	case render::E_ColorFormat::BC6H_RGB:
+	//case render::E_ColorFormat::BC6H_RGB:
+	{
+		cvtt::Options options;
+		switch (compressionQuality)
+		{
+		case E_Quality::Low:
+			options.flags = cvtt::Flags::Fastest;
+			options.refineRoundsBC6H = 1;
+			options.seedPoints = 1;
+			break;
+
+		case E_Quality::Medium:
+			options.flags = cvtt::Flags::Default;
+			options.refineRoundsBC6H = 2;
+			options.seedPoints = 2;
+			break;
+
+		case E_Quality::High:
+			options.flags = cvtt::Flags::Better;
+			options.refineRoundsBC6H = 3;
+			options.seedPoints = 3;
+			break;
+
+		case E_Quality::Ultra:
+			options.flags = cvtt::Flags::Ultra;
+			options.refineRoundsBC6H = 3;
+			options.seedPoints = 4;
+			break;
+		}
+
+		outData.resize(blockCount * sizeof(Block16));
+		Block16* const packedImage = reinterpret_cast<Block16*>(outData.data());
+
+		for (uint32 blockIdx = 0u; blockIdx < blockCount; blockIdx += cvtt::NumParallelBlocks)
+		{
+			uint8 const* const blockPixels = reinterpret_cast<uint8 const*>(sourceData) + (blockIdx * 4u * 16u); // channel count * pixels per block
+			Block16* compressedBlock = &packedImage[blockIdx];
+			cvtt::Kernels::EncodeBC6HU(reinterpret_cast<uint8*>(compressedBlock), reinterpret_cast<cvtt::PixelBlockF16 const*>(blockPixels), options);
 		}
 
 		break;

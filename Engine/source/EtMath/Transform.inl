@@ -159,6 +159,25 @@ math::matrix<4, 4, T> perspective(const T& fov, const T& aspect, const T& nearZ,
 	return result;
 }
 
+//template <class T>
+//math::matrix<4, 4, T> perspectiveMetal(const T& fov, const T& aspect, const T& nearZ, const T& farZ)
+//{
+//	assert(std::abs(aspect - ETM_DEFAULT_EPSILON) > static_cast<T>(0));
+//	math::matrix<4, 4, T> result;
+//
+//	T const tanHalfFov = tan(fov / static_cast<T>(2));
+//
+//	result[0][0] = static_cast<T>(1) / (aspect * tanHalfFov);
+//	result[1][1] = static_cast<T>(1) / (tanHalfFov);
+//	result[2][3] = static_cast<T>(1);
+//
+//	result[2][2] = ((farZ + nearZ) / ((farZ - nearZ) * static_cast<T>(2)) + static_cast<T>(0.5));
+//	result[3][2] = (-farZ * nearZ) / (farZ - nearZ);
+//	result[3][3] = 0;
+//
+//	return result;
+//}
+
 template <class T>
 void decomposeTRS(const matrix<4, 4, T>& mat, vector<3, T>& translation, quaternion<T>& rotation, vector<3, T>& scaleVec)
 {

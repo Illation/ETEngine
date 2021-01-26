@@ -136,9 +136,9 @@ void UnifiedScene::LoadScene(core::HashString const assetId)
 	EntityLinkResolver::Instance().Clear();
 
 	// render settings
-	if (!(sceneDesc->skybox.IsEmpty()))
+	if (sceneDesc->skybox != nullptr)
 	{
-		m_RenderScene.SetSkyboxMap(sceneDesc->skybox);
+		m_RenderScene.SetSkyboxMap(sceneDesc->skybox.GetId());
 	}
 
 	if (!(sceneDesc->starfield.IsEmpty()))

@@ -74,8 +74,8 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	render::E_ColorFormat outputFormat = TextureCompression::GetOutputFormat(
 		m_CompressionSetting, 
 		m_SupportAlpha, 
-		m_Srgb != render::TextureFile::E_Srgb::None);
-	bool const requiresCompression = render::TextureFile::IsCompressedFormat(outputFormat);
+		m_Srgb != render::TextureFormat::E_Srgb::None);
+	bool const requiresCompression = render::TextureFormat::IsCompressedFormat(outputFormat);
 
 	// Load
 	RasterImage image;
@@ -135,7 +135,7 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	{
 		// #note: for now we cheat a bit with the storage format, but we should probably convert correctly for a more accurate representation in editor
 		render::E_ColorFormat const storageFormat = 
-			(m_Srgb == render::TextureFile::E_Srgb::OnLoad) ? render::E_ColorFormat::SRGBA8 : render::E_ColorFormat::RGBA8;
+			(m_Srgb == render::TextureFormat::E_Srgb::OnLoad) ? render::E_ColorFormat::SRGBA8 : render::E_ColorFormat::RGBA8;
 
 		//Upload to GPU
 		texture = new render::TextureData(storageFormat, ivec2(static_cast<int32>(width), static_cast<int32>(height)));

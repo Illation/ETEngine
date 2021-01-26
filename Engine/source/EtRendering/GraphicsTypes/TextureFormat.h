@@ -6,13 +6,13 @@ namespace render {
 
 
 //-------------
-// TextureFile
+// TextureFormat
 //
 // Custom file format for storing compressed textures
 //  - for now we will assume that textures are always encoded in the same format as the GPU expects the data to be when uploading
 //  - in the future we might want to store uncompressed textures in formats like jpg/png/tga
 //
-struct TextureFile
+struct TextureFormat
 {
 	DECLARE_FORCED_LINKING()
 
@@ -33,6 +33,7 @@ public:
 	static bool IsCompressedFormat(E_ColorFormat const format);
 	static uint8 GetBlockByteCount(render::E_ColorFormat const format);
 	static size_t GetCompressedSize(uint32 const width, uint32 const height, E_ColorFormat const storageFormat);
+	static uint8 GetChannelCount(render::E_ColorFormat const format);
 
 	// File layout
 	/*******************************
