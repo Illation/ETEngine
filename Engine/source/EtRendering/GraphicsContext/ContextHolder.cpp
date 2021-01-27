@@ -55,7 +55,7 @@ void ContextHolder::CreateMainRenderContext(RenderWindow* const window)
 	params.m_DepthBuffer = true;
 	params.m_StencilBuffer = false;
 
-#if defined(GRAPHICS_API_DEBUG)
+#if defined(ET_GRAPHICS_API_DEBUG)
 	params.m_UseDebugInfo = true;
 #else
 	params.m_UseDebugInfo = false;

@@ -2,8 +2,8 @@
 
 #define NOMINMAX
 
-//#define GRAPHICS_API_DEBUG
-//#define GRAPHICS_API_VERBOSE
+//#define ET_GRAPHICS_API_DEBUG
+//#define ET_GRAPHICS_API_VERBOSE
 
 #pragma region
 //C RunTime Header Files

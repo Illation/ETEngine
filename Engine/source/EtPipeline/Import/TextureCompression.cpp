@@ -538,7 +538,7 @@ bool TextureCompression::CompressImage(void const* const sourceData,
 
 		for (uint32 blockIdx = 0u; blockIdx < blockCount; blockIdx += cvtt::NumParallelBlocks)
 		{
-			uint8 const* const blockPixels = reinterpret_cast<uint8 const*>(sourceData) + (blockIdx * 4u * 16u); // channel count * pixels per block
+			uint8 const* const blockPixels = reinterpret_cast<uint8 const*>(sourceData) + (2 * blockIdx * 4u * 16u); // channel count * pixels per block
 			Block16* compressedBlock = &packedImage[blockIdx];
 			cvtt::Kernels::EncodeBC6HU(reinterpret_cast<uint8*>(compressedBlock), reinterpret_cast<cvtt::PixelBlockF16 const*>(blockPixels), options);
 		}

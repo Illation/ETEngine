@@ -84,12 +84,12 @@ bool EditableEnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 		envMapAsset->m_IrradianceRes, 
 		envMapAsset->m_RadianceRes);
 
-	//if (m_IsCompressed)
-	//{
-	//	CompressHDRCube(envCubemap);
-	//	CompressHDRCube(irradianceMap);
-	//	CompressHDRCube(radianceMap);
-	//}
+	if (m_IsCompressed)
+	{
+		CompressHDRCube(envCubemap);
+		CompressHDRCube(irradianceMap);
+		CompressHDRCube(radianceMap);
+	}
 
 	SetData(new render::EnvironmentMap(envCubemap, irradianceMap, radianceMap));
 	return true;
@@ -128,7 +128,7 @@ void EditableEnvironmentMapAsset::CompressHDRCube(render::TextureData*& cubeMap)
 	}
 
 	// upload params
-	params.genMipMaps = false; // we already uploaded the mip maps
+	//params.genMipMaps = false; // we already uploaded the mip maps
 	compressedTex->SetParameters(params);
 
 	// replace old pointer
