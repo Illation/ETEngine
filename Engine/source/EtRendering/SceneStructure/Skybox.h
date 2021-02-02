@@ -15,7 +15,7 @@ namespace render {
 //
 struct Skybox
 {
-	float m_Roughness = 0.15f;
+	float m_Roughness = 0.2f;
 	AssetPtr<EnvironmentMap> m_EnvironmentMap;
 };
 

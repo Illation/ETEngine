@@ -1350,10 +1350,14 @@ void GL_CONTEXT_CLASSNAME::DeleteTexture(T_TextureLoc& texLoc)
 //
 // upload a textures bits to its GPU location
 //
-void GL_CONTEXT_CLASSNAME::UploadTextureData(TextureData& texture, void const* const data, E_ColorFormat const layout, E_DataType const dataType)
+void GL_CONTEXT_CLASSNAME::UploadTextureData(TextureData& texture, 
+	void const* const data, 
+	E_ColorFormat const layout, 
+	E_DataType const dataType, 
+	int32 const mipLevel)
 {
 	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
-	ivec2 const res = texture.GetResolution();
+	ivec2 res = texture.GetResolution() / (1 << mipLevel);
 	GLint const intFmt = static_cast<GLint>(GL_CONTEXT_NS::ConvColorFormat(texture.GetStorageFormat()));
 	ET_ASSERT(layout <= E_ColorFormat::BGRA, "Texture layout can't specify storage format!"); // possibly the enum should be split
 
@@ -1362,12 +1366,12 @@ void GL_CONTEXT_CLASSNAME::UploadTextureData(TextureData& texture, void const* c
 	switch (texture.GetTargetType())
 	{
 	case E_TextureType::Texture2D:
-		glTexImage2D(target, 0, intFmt, res.x, res.y, 0, GL_CONTEXT_NS::ConvColorFormat(layout), GL_CONTEXT_NS::ConvDataType(dataType), data);
+		glTexImage2D(target, mipLevel, intFmt, res.x, res.y, 0, GL_CONTEXT_NS::ConvColorFormat(layout), GL_CONTEXT_NS::ConvDataType(dataType), data);
 		break;
 
 	case E_TextureType::Texture3D:
 		glTexImage3D(target, 
-			0, 
+			mipLevel,
 			intFmt, 
 			res.x, 
 			res.y, 
@@ -1377,6 +1381,28 @@ void GL_CONTEXT_CLASSNAME::UploadTextureData(TextureData& texture, void const* c
 			GL_CONTEXT_NS::ConvDataType(dataType),
 			data);
 		break;
+
+	case E_TextureType::CubeMap:
+	{
+		size_t const faceSize = static_cast<size_t>(DataTypeInfo::GetTypeSize(dataType)) *
+			static_cast<size_t>(TextureFormat::GetChannelCount(layout)) *
+			static_cast<size_t>(res.x) *
+			static_cast<size_t>(res.y);
+		for (uint8 face = 0u; face < TextureData::s_NumCubeFaces; ++face)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 
+				mipLevel, 
+				intFmt, 
+				res.x, 
+				res.y, 
+				0, 
+				GL_CONTEXT_NS::ConvColorFormat(layout), 
+				GL_CONTEXT_NS::ConvDataType(dataType), 
+				reinterpret_cast<void const*>(reinterpret_cast<uint8 const*>(data) + (faceSize * static_cast<size_t>(face))));
+		}
+
+		break;
+	}
 
 	default:
 		ET_ASSERT(false, "Unsupported texture type for uploading texture data");
@@ -1467,7 +1493,7 @@ void GL_CONTEXT_CLASSNAME::AllocateTextureStorage(TextureData& texture)
 //
 // Update parameters on a texture
 //
-void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, uint8& mipLevels, TextureParameters& prev, TextureParameters const& next, bool const force)
+void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, TextureParameters& prev, TextureParameters const& next, bool const force)
 {
 	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
 	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
@@ -1521,24 +1547,29 @@ void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, uint8& m
 		glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, GL_CONTEXT_NS::ConvCompareMode(next.compareMode));//shadow map comp mode
 	}
 
-	// generate mip maps if we must
-	//-----------------------------
-	if ((!prev.genMipMaps && next.genMipMaps) || (next.genMipMaps && force) || (next.genMipMaps && (mipLevels == 0u)))
+	// max mip level incase mips where manually uploaded
+	//---------------------------------------------------
+	if (next.genMipMaps && (next.mipFilter == E_TextureFilterMode::Linear) && (texture.GetNumMipLevels() > 0u))
 	{
-		if (texture.GetStorageFormat() <= E_ColorFormat::SRGBA8) // temp, #todo: remove
-		{
-			glGenerateMipmap(target);
-			ivec2 const res = texture.GetResolution();
-			float const largerRes = static_cast<float>(std::max(res.x, res.y));
-			mipLevels = 1u + static_cast<uint8>(floor(log10(largerRes) / log10(2.f)));
-		}
-	}
-	else if (next.genMipMaps && (texture.GetStorageFormat() > E_ColorFormat::SRGBA8))
-	{
-		glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, static_cast<int32>(mipLevels));
+		glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, static_cast<int32>(texture.GetNumMipLevels()));
 	}
 
 	prev = next;
+}
+
+//---------------------------------
+// GlContext::GenerateMipMaps
+//
+void GL_CONTEXT_CLASSNAME::GenerateMipMaps(TextureData const& texture, uint8& mipLevels)
+{
+	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
+	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
+
+	glGenerateMipmap(target);
+
+	ivec2 const res = texture.GetResolution();
+	float const largerRes = static_cast<float>(std::max(res.x, res.y));
+	mipLevels = 1u + static_cast<uint8>(floor(log10(largerRes) / log10(2.f)));
 }
 
 //---------------------------------

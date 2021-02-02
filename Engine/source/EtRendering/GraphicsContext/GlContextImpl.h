@@ -188,14 +188,18 @@ public:
 
 	T_TextureLoc GenerateTexture() const override;
 	void DeleteTexture(T_TextureLoc& texLoc) override;
-	void UploadTextureData(TextureData& texture, void const* const data, E_ColorFormat const layout, E_DataType const dataType) override;
+	void UploadTextureData(TextureData& texture, 
+		void const* const data, 
+		E_ColorFormat const layout, 
+		E_DataType const dataType, 
+		int32 const mipLevel) override;
 	void UploadCompressedTextureData(TextureData& texture, void const* const data, size_t const size, int32 const mipLevel) override;
 	void AllocateTextureStorage(TextureData& texture) override;
 	void SetTextureParams(TextureData const& texture, 
-		uint8& mipLevels, 
 		TextureParameters& prev, 
 		TextureParameters const& next, 
 		bool const force) override;
+	void GenerateMipMaps(TextureData const& texture, uint8& mipLevels) override;
 	T_TextureHandle GetTextureHandle(T_TextureLoc const texLoc) const override;
 	void SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const override;
 	void GetTextureData(TextureData const& texture, 

@@ -39,7 +39,6 @@ DEFINE_FORCED_LINKING(EditableFontAsset) // force the asset class to be linked a
 
 // static
 std::string const EditableFontAsset::s_FontFileExt("ttf");
-std::string const EditableFontAsset::s_TextureFileExt("ettex");
 
 
 //-------------------------------------
@@ -74,7 +73,7 @@ void EditableFontAsset::SetupRuntimeAssetsInternal()
 	m_RuntimeAssets.emplace_back(mainAsset, true);
 
 	render::TextureAsset* const textureAsset = new render::TextureAsset();
-	textureAsset->SetName(core::FileUtil::RemoveExtension(mainAsset->GetName()) + "." + s_TextureFileExt);
+	textureAsset->SetName(core::FileUtil::RemoveExtension(mainAsset->GetName()) + "." + render::TextureFormat::s_TextureFileExt);
 	textureAsset->SetPath(mainAsset->GetPath());
 	textureAsset->SetPackageId(mainAsset->GetPackageId());
 
@@ -111,7 +110,7 @@ bool EditableFontAsset::GenerateInternal(BuildConfiguration const& buildConfig, 
 		{
 			fontData = &data;
 		}
-		else if (ext == s_TextureFileExt)
+		else if (ext == render::TextureFormat::s_TextureFileExt)
 		{
 			textureData = &data;
 		}
@@ -341,7 +340,7 @@ render::SpriteFont* EditableFontAsset::LoadTtf(const std::vector<uint8>& binaryC
 		uint32 width = face->glyph->bitmap.width;
 		uint32 height = face->glyph->bitmap.rows;
 		auto pTexture = new render::TextureData(render::E_ColorFormat::R8, ivec2(width, height));
-		pTexture->UploadData(face->glyph->bitmap.buffer, render::E_ColorFormat::Red, render::E_DataType::UByte);
+		pTexture->UploadData(face->glyph->bitmap.buffer, render::E_ColorFormat::Red, render::E_DataType::UByte, 0u);
 		pTexture->SetParameters(params);
 
 		ivec2 res = ivec2(metric->Width - m_Padding * 2, metric->Height - m_Padding * 2);

@@ -23,7 +23,6 @@ class EditableFontAsset final : public EditorAsset<render::SpriteFont>
 	DECLARE_FORCED_LINKING()
 
 	static std::string const s_FontFileExt;
-	static std::string const s_TextureFileExt;
 public:
 	// Construct destruct
 	//---------------------

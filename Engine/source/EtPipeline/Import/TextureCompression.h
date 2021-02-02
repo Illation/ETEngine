@@ -1,6 +1,8 @@
 #pragma once
 #include "RasterImage.h"
 
+#include <EtCore/IO/BinaryWriter.h>
+
 #include <EtRendering/GraphicsTypes/TextureFormat.h>
 
 
@@ -52,6 +54,13 @@ public:
 	};
 
 	// write to file
+	static void WriteTextureHeader(core::BinaryWriter& binWriter, 
+		size_t const bufferSize,
+		render::E_TextureType const textureType,
+		uint32 const width, 
+		uint32 const height, 
+		uint8 const mipCount, 
+		render::E_ColorFormat const storageFormat);
 	static bool WriteTextureFile(std::vector<uint8>& outFileData,
 		RasterImage& source,
 		E_Setting const compressionSetting,

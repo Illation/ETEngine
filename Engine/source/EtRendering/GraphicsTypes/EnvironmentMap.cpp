@@ -3,11 +3,12 @@
 
 #include "Shader.h"
 
-#include <stb/stb_image.h>
+#include <EtBuild/EngineVersion.h>
 
 #include <EtCore/Content/AssetRegistration.h>
 #include <EtCore/Reflection/Registration.h>
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/IO/BinaryReader.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
@@ -37,15 +38,30 @@ EnvironmentMap::EnvironmentMap(TextureData* map, TextureData* irradiance, Textur
 }
 
 //---------------------------------
+// EnvironmentMap::c-tor
+//
+// asset pointer version in order to hold references
+//
+EnvironmentMap::EnvironmentMap(AssetPtr<TextureData> map, AssetPtr<TextureData> irradiance, AssetPtr<TextureData> radiance)
+	: m_MapAsset(map)
+	, m_IrradianceAsset(irradiance)
+	, m_RadianceAsset(radiance)
+{
+	ET_ASSERT(m_RadianceAsset != nullptr);
+	ET_ASSERT(m_RadianceAsset->GetNumMipLevels() > 2);
+	m_NumMipMaps = m_RadianceAsset->GetNumMipLevels() - 2;
+}
+
+//---------------------------------
 // EnvironmentMap::d-tor
 //
 // Destroy the owned textures
 //
 EnvironmentMap::~EnvironmentMap()
 {
-	SafeDelete(m_Map);
-	SafeDelete(m_Irradiance);
-	SafeDelete(m_Radiance);
+	delete m_Map;
+	delete m_Irradiance;
+	delete m_Radiance;
 }
 
 
@@ -61,12 +77,12 @@ RTTR_REGISTRATION
 	END_REGISTER_CLASS(EnvironmentMap);
 
 	BEGIN_REGISTER_CLASS(EnvironmentMapAsset, "environment map asset")
-		.property("Cubemap Resolution", &EnvironmentMapAsset::m_CubemapRes)
-		.property("Irradiance Resolution", &EnvironmentMapAsset::m_IrradianceRes)
-		.property("Radiance Resolution", &EnvironmentMapAsset::m_RadianceRes)
 	END_REGISTER_CLASS_POLYMORPHIC(EnvironmentMapAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(EnvironmentMapAsset) // force the shader class to be linked as it is only used in reflection
+
+
+std::string const EnvironmentMapAsset::s_Header("ETENV");
 
 
 //---------------------------------
@@ -76,49 +92,56 @@ DEFINE_FORCED_LINKING(EnvironmentMapAsset) // force the shader class to be linke
 //
 bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
-	//load equirectangular texture
-	//****************************
-	std::string extension = core::FileUtil::ExtractExtension(GetName());
-	ET_ASSERT(extension == "hdr", "Expected HDR file format!");
+	core::BinaryReader reader;
+	reader.Open(data);
+	ET_ASSERT(reader.Exists());
 
-	stbi_set_flip_vertically_on_load(true);
-	int32 width = 0;
-	int32 height = 0;
-	int32 channels = 0;
-	float* hdrFloats = stbi_loadf_from_memory(data.data(), static_cast<int32>(data.size()), &width, &height, &channels, 0);
-
-	if (hdrFloats == nullptr)
+	// read header
+	//-------------
+	if (reader.ReadString(s_Header.size()) != s_Header)
 	{
-		LOG("EnvironmentMapAsset::LoadFromMemory > Failed to load hdr floats from data!", core::LogLevel::Warning);
+		ET_ASSERT(false, "Incorrect binary environment map file header");
 		return false;
 	}
 
-	if ((width == 0) || (height == 0))
+	std::string const writerVersion = reader.ReadNullString();
+	if (writerVersion != build::Version::s_Name)
 	{
-		LOG("EnvironmentMapAsset::LoadFromMemory > Image is too small to display!", core::LogLevel::Warning);
-		stbi_image_free(hdrFloats);
+		LOG(FS("Environment map was written by a different engine version: %s", writerVersion.c_str()));
+	}
+
+	core::HashString const envId(reader.Read<T_Hash>());
+	core::HashString const irradianceId(reader.Read<T_Hash>());
+	core::HashString const radianceId(reader.Read<T_Hash>());
+	reader.Close();
+
+	AssetPtr<TextureData> map;
+	AssetPtr<TextureData> irradiance;
+	AssetPtr<TextureData> radiance;
+
+	for (core::I_Asset::Reference const& ref : GetReferences())
+	{
+		if (ref.GetId() == envId)
+		{
+			map = *static_cast<AssetPtr<TextureData> const*>(ref.GetAsset());
+		}
+		else if (ref.GetId() == irradianceId)
+		{
+			irradiance = *static_cast<AssetPtr<TextureData> const*>(ref.GetAsset());
+		}
+		else if (ref.GetId() == radianceId)
+		{
+			radiance = *static_cast<AssetPtr<TextureData> const*>(ref.GetAsset());
+		}
+	}
+
+	if ((map == nullptr) || (irradiance == nullptr) || (radiance == nullptr))
+	{
+		ET_ASSERT(false, "Failed to load all texture dependencies");
 		return false;
 	}
 
-	TextureData hdrTexture(E_ColorFormat::RGB16f, ivec2(width, height));
-	hdrTexture.UploadData(static_cast<void const*>(hdrFloats), E_ColorFormat::RGB, E_DataType::Float);
-
-	// we have our equirectangular texture on the GPU so we can clean up the load data on the CPU
-	stbi_image_free(hdrFloats);
-	hdrFloats = nullptr;
-
-	TextureParameters params(false);
-	params.wrapS = E_TextureWrapMode::ClampToEdge;
-	params.wrapT = E_TextureWrapMode::ClampToEdge;
-	hdrTexture.SetParameters(params);
-
-	TextureData* const envCubemap = EquirectangularToCubeMap(&hdrTexture, m_CubemapRes);
-
-	TextureData* irradianceMap = nullptr;
-	TextureData* radianceMap = nullptr;
-	PbrPrefilter::PrefilterCube(envCubemap, irradianceMap, radianceMap, m_CubemapRes, m_IrradianceRes, m_RadianceRes);
-
-	m_Data = new EnvironmentMap(envCubemap, irradianceMap, radianceMap);
+	m_Data = new EnvironmentMap(map, irradiance, radiance);
 
 	return true;
 }
@@ -153,12 +176,9 @@ TextureData* EquirectangularToCubeMap(TextureData const* const equiTexture, int3
 	TextureData* const envCubeMap = new TextureData(E_TextureType::CubeMap, E_ColorFormat::RGB16f, ivec2(resolution));
 	envCubeMap->AllocateStorage();
 
-	TextureParameters params(false);
-	params.minFilter = E_TextureFilterMode::Linear;
-	params.magFilter = E_TextureFilterMode::Linear;
-	params.wrapS = E_TextureWrapMode::ClampToEdge;
-	params.wrapT = E_TextureWrapMode::ClampToEdge;
-	params.wrapR = E_TextureWrapMode::ClampToEdge;
+	TextureParameters params;
+	PbrPrefilter::PopulateCubeTextureParams(params);
+	params.genMipMaps = false;
 
 	envCubeMap->SetParameters(params);
 
@@ -192,6 +212,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const equiTexture, int3
 
 	params.genMipMaps = true;
 	envCubeMap->SetParameters(params);
+	envCubeMap->GenerateMipMaps();
 
 	api->UnbindTexture(equiTexture->GetTargetType(), equiTexture->GetLocation());
 	api->UnbindTexture(envCubeMap->GetTargetType(), envCubeMap->GetLocation());

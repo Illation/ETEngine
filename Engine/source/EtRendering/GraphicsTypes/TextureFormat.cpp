@@ -20,6 +20,7 @@ RTTR_REGISTRATION
 DEFINE_FORCED_LINKING(TextureFormat) // force the linker to include this unit
 
 // static
+std::string const TextureFormat::s_TextureFileExt("ettex");
 std::string const TextureFormat::s_Header("ETTEX");
 size_t const TextureFormat::s_BlockPixelCount = 16u;
 

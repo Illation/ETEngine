@@ -17,6 +17,8 @@ public:
 		int32 const irradianceRes, 
 		int32 const radianceRes);
 
+	static void PopulateCubeTextureParams(render::TextureParameters& params);
+
 	TextureData* GetLUT();
 private:
 	friend class RenderingSystems;

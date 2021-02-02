@@ -105,14 +105,18 @@ public:
 
 	virtual T_TextureLoc GenerateTexture() const = 0;
 	virtual void DeleteTexture(T_TextureLoc& texLoc) = 0;
-	virtual void UploadTextureData(TextureData& texture, void const* const data, E_ColorFormat const layout, E_DataType const dataType) = 0;
+	virtual void UploadTextureData(TextureData& texture, 
+		void const* const data, 
+		E_ColorFormat const layout, 
+		E_DataType const dataType, 
+		int32 const mipLevel) = 0;
 	virtual void UploadCompressedTextureData(TextureData& texture, void const* const data, size_t const size, int32 const mipLevel) = 0;
 	virtual void AllocateTextureStorage(TextureData& texture) = 0;
 	virtual void SetTextureParams(TextureData const& texture, 
-		uint8& mipLevels, 
 		TextureParameters& prev, 
 		TextureParameters const& next, 
 		bool const force) = 0;
+	virtual void GenerateMipMaps(TextureData const& texture, uint8& mipLevels) = 0;
 	virtual T_TextureHandle GetTextureHandle(T_TextureLoc const texLoc) const = 0;
 	virtual void SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const = 0;
 	virtual void GetTextureData(TextureData const& texture,

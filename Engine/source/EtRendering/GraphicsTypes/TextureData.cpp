@@ -70,10 +70,12 @@ TextureData::~TextureData()
 //
 // Send an image bitmap to the GPU location
 //
-void TextureData::UploadData(void const* const data, E_ColorFormat const layout, E_DataType const dataType)
+void TextureData::UploadData(void const* const data, E_ColorFormat const layout, E_DataType const dataType, int32 const mipLevel)
 {
+	m_MipLevels = std::max(static_cast<uint8>(mipLevel), m_MipLevels);
+
 	ET_ASSERT(m_Handle == 0u, "Shouldn't upload data after a handle was created!");
-	ContextHolder::GetRenderContext()->UploadTextureData(*this, data, layout, dataType);
+	ContextHolder::GetRenderContext()->UploadTextureData(*this, data, layout, dataType, mipLevel);
 }
 
 //---------------------------------
@@ -111,7 +113,19 @@ void TextureData::SetParameters(TextureParameters const& params, bool const forc
 {
 	ET_ASSERT(m_Handle == 0u, "Shouldn't set parameters after a handle was created!");
 
-	ContextHolder::GetRenderContext()->SetTextureParams(*this, m_MipLevels, m_Parameters, params, force);
+	ContextHolder::GetRenderContext()->SetTextureParams(*this, m_Parameters, params, force);
+}
+
+//---------------------------------
+// TextureData::GenerateMipMaps
+//
+// (on GPU)
+//
+void TextureData::GenerateMipMaps()
+{
+	ET_ASSERT(m_Handle == 0u, "Shouldn't generate mip maps after a handle was created!");
+
+	ContextHolder::GetRenderContext()->GenerateMipMaps(*this, m_MipLevels);
 }
 
 //---------------------------------
@@ -170,6 +184,7 @@ void TextureData::CreateHandle()
 	api->SetTextureHandleResidency(m_Handle, true); // #todo: in the future we should have a system that makes inactive handles non resident after a while
 }
 
+
 //===================
 // Texture Asset
 //===================
@@ -217,9 +232,9 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	// read texture info
 	//-------------------
 	E_TextureType const targetType = reader.Read<E_TextureType>();
-	if (targetType != E_TextureType::Texture2D)
+	if (!((targetType == E_TextureType::Texture2D) || (targetType == E_TextureType::CubeMap)))
 	{
-		ET_ASSERT(false, "Only 2D texture assets are currently supported!");
+		ET_ASSERT(false, "Only 2D texture assets and cubemaps are currently supported!");
 		return false;
 	}
 
@@ -249,6 +264,11 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	if (isCompressed)
 	{
 		size_t mipSize = TextureFormat::GetCompressedSize(static_cast<uint32>(width), static_cast<uint32>(height), storageFormat);
+		if (targetType == E_TextureType::CubeMap)
+		{
+			mipSize *= TextureData::s_NumCubeFaces;
+		}
+
 		int32 mipLevel = 0;
 		for (;;)
 		{
@@ -268,11 +288,36 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	}
 	else
 	{
-		m_Data->UploadData(dataPointer, layout, dataType); // #todo: load mip levels for uncompressed textures, instead of letting parameters generate them
+		size_t const pixelSize = static_cast<size_t>(TextureFormat::GetChannelCount(layout)) * static_cast<size_t>(DataTypeInfo::GetTypeSize(dataType));
+		size_t mipSize = pixelSize * static_cast<size_t>(width) * static_cast<size_t>(height);
+		if (targetType == E_TextureType::CubeMap)
+		{
+			mipSize *= TextureData::s_NumCubeFaces;
+		}
+
+		int32 mipLevel = 0;
+		for (;;)
+		{
+			m_Data->UploadData(reinterpret_cast<void const*>(dataPointer), layout, dataType, mipLevel);
+
+			if (mipLevel == static_cast<int32>(mipCount))
+			{
+				break;
+			}
+
+			reader.MoveBufferPosition(mipSize);
+			mipSize /= 4u;
+
+			dataPointer = reader.GetCurrentDataPointer();
+			++mipLevel;
+		}
 	}
 
 	m_Data->SetParameters(m_Parameters);
-	m_Data->CreateHandle();
+	if (targetType != E_TextureType::CubeMap)
+	{
+		m_Data->CreateHandle();
+	}
 
 	return true;
 }

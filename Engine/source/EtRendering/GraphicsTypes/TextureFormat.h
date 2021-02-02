@@ -27,6 +27,7 @@ public:
 		OnLoad
 	};
 
+	static std::string const s_TextureFileExt;
 	static std::string const s_Header; 
 	static size_t const s_BlockPixelCount; // 16
 

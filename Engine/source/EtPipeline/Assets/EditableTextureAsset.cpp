@@ -139,7 +139,7 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 		//Upload to GPU
 		texture = new render::TextureData(storageFormat, ivec2(static_cast<int32>(width), static_cast<int32>(height)));
-		texture->UploadData(reinterpret_cast<void const*>(image.GetPixels()), render::E_ColorFormat::RGBA, render::E_DataType::UByte);
+		texture->UploadData(reinterpret_cast<void const*>(image.GetPixels()), render::E_ColorFormat::RGBA, render::E_DataType::UByte, 0u);
 	}
 
 	texture->SetParameters(textureAsset->m_Parameters);

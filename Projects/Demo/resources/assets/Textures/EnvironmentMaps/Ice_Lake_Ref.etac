@@ -5,15 +5,15 @@
         "name": "Ice_Lake_Ref.hdr",
         "path": "Textures/EnvironmentMaps/",
         "package": "content1",
-        "references": [],
-        "Cubemap Resolution": 1024,
-        "Irradiance Resolution": 32,
-        "Radiance Resolution": 1024
+        "references": []
       }
     },
     "metadata": null,
     "children": [],
-    "is compressed": true,
-    "compression quality": "Low"
+    "is compressed": false,
+    "compression quality": "Low",
+    "Cubemap Resolution": 512,
+    "Irradiance Resolution": 32,
+    "Radiance Resolution": 512
   }
 }

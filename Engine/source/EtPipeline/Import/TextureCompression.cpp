@@ -8,8 +8,6 @@
 
 #include <EtBuild/EngineVersion.h>
 
-#include <EtCore/IO/BinaryWriter.h>
-
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
@@ -46,6 +44,46 @@ RTTR_REGISTRATION
 
 size_t const TextureCompression::s_PixelBufferSize = 16u * 4u * 2u; // numPixels * numChannels * biggestSourceDataSize (16bit int or half float)
 
+
+//----------------------------------------
+// TextureCompression::WriteTextureHeader
+//
+// Also formats the buffer to the correct size
+//
+void TextureCompression::WriteTextureHeader(core::BinaryWriter& binWriter,
+	size_t const bufferSize,
+	render::E_TextureType const textureType,
+	uint32 const width,
+	uint32 const height,
+	uint8 const mipCount,
+	render::E_ColorFormat const storageFormat)
+{
+	binWriter.FormatBuffer(render::TextureFormat::s_Header.size() +
+		build::Version::s_Name.size() + 1u +
+		sizeof(render::E_TextureType) +
+		sizeof(uint16) + // width 
+		sizeof(uint16) + // height 
+		sizeof(uint16) + // layers 
+		sizeof(uint8) + // mip count
+		sizeof(render::E_ColorFormat) + // gpu storage format
+		sizeof(render::E_ColorFormat) + // layout
+		sizeof(render::E_DataType) +
+		bufferSize);
+
+	// write header
+	//--------------
+	binWriter.WriteString(render::TextureFormat::s_Header);
+	binWriter.WriteNullString(build::Version::s_Name);
+
+	binWriter.Write(textureType); 
+
+	binWriter.Write(static_cast<uint16>(width));
+	binWriter.Write(static_cast<uint16>(height));
+	binWriter.Write<uint16>(1u);
+	binWriter.Write(mipCount);
+
+	binWriter.Write(storageFormat);
+}
 
 //--------------------------------------
 // TextureCompression::LoadFromMemory
@@ -101,7 +139,7 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 
 	// precalculate buffer size
 	//--------------------------
-	// this currently does not take cube maps or 3D textures into account
+	// this is only for 2D textures - cubemap implementation in "EditableEnvironmentMap.cpp"
 
 	size_t mipSize = 0;
 	if (requiresCompression)
@@ -120,34 +158,10 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 		bufferSize += mipSize;
 	}
 
-	// init binary writer
-	//--------------------
+	// header
+	//--------
 	core::BinaryWriter binWriter(outFileData);
-	binWriter.FormatBuffer(render::TextureFormat::s_Header.size() +
-		build::Version::s_Name.size() + 1u +
-		sizeof(render::E_TextureType) +
-		sizeof(uint16) + // width 
-		sizeof(uint16) + // height 
-		sizeof(uint16) + // layers 
-		sizeof(uint8) + // mip count
-		sizeof(render::E_ColorFormat) + // gpu storage format
-		sizeof(render::E_ColorFormat) + // layout
-		sizeof(render::E_DataType) +
-		bufferSize);
-
-	// write header
-	//--------------
-	binWriter.WriteString(render::TextureFormat::s_Header);
-	binWriter.WriteNullString(build::Version::s_Name);
-
-	binWriter.Write(render::E_TextureType::Texture2D); // only supported format for now
-
-	binWriter.Write(static_cast<uint16>(width));
-	binWriter.Write(static_cast<uint16>(height));
-	binWriter.Write<uint16>(1u);
-	binWriter.Write(mipCount);
-
-	binWriter.Write(storageFormat);
+	WriteTextureHeader(binWriter, bufferSize, render::E_TextureType::Texture2D, width, height, mipCount, storageFormat);
 
 	if (requiresCompression)
 	{
@@ -186,7 +200,6 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 	// write image data per level
 	//----------------------------
 	RasterImage const* mipImage = &source;
-	int32 mipLevel = 0;
 	while (mipImage != nullptr)
 	{
 		if (requiresCompression)
@@ -225,7 +238,6 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 		}
 
 		// "recurse"
-		++mipLevel;
 		mipImage = mipImage->GetMipChild();
 	}
 

@@ -103,12 +103,9 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	irradiance = new TextureData(E_TextureType::CubeMap, E_ColorFormat::RGB16f, ivec2(irradianceRes));
 	irradiance->AllocateStorage();
 
-	TextureParameters params(false);
-	params.minFilter = E_TextureFilterMode::Linear;
-	params.magFilter = E_TextureFilterMode::Linear;
-	params.wrapS = E_TextureWrapMode::ClampToEdge;
-	params.wrapT = E_TextureWrapMode::ClampToEdge;
-	params.wrapR = E_TextureWrapMode::ClampToEdge;
+	TextureParameters params;
+	PopulateCubeTextureParams(params);
+	params.genMipMaps = false;
 
 	irradiance->SetParameters(params);
 
@@ -150,6 +147,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	radiance->AllocateStorage();
 	params.genMipMaps = true;
 	radiance->SetParameters(params);
+	radiance->GenerateMipMaps();
 
 	//Shader
 	AssetPtr<ShaderData> radianceShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("FwdConvRadianceShader.glsl"));
@@ -203,6 +201,21 @@ TextureData* PbrPrefilter::GetLUT()
 	}
 
 	return m_LUT;
+}
+
+//-----------------------------------------
+// PbrPrefilter::PopulateCubeTextureParams
+//
+// Parameters for environment map cube maps
+//
+void PbrPrefilter::PopulateCubeTextureParams(render::TextureParameters& params)
+{
+	params.minFilter = E_TextureFilterMode::Linear;
+	params.magFilter = E_TextureFilterMode::Linear;
+	params.wrapS = E_TextureWrapMode::ClampToEdge;
+	params.wrapT = E_TextureWrapMode::ClampToEdge;
+	params.wrapR = E_TextureWrapMode::ClampToEdge;
+	params.genMipMaps = true;
 }
 
 

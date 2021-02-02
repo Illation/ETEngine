@@ -84,10 +84,11 @@ void SpriteRenderer::Initialize()
 
 	//Create empty dummy texture
 	m_EmptyTex = new TextureData(E_ColorFormat::RGB, ivec2(1));
-	m_EmptyTex->UploadData(reinterpret_cast<void const*>(vec4(1).data.data()), E_ColorFormat::RGB, E_DataType::Float);
+	m_EmptyTex->UploadData(reinterpret_cast<void const*>(vec4(1).data.data()), E_ColorFormat::RGB, E_DataType::Float, 0u);
 
 	TextureParameters params;
 	m_EmptyTex->SetParameters(params);
+	m_EmptyTex->GenerateMipMaps();
 
 	m_VPCallbackId = Viewport::GetCurrentViewport()->GetEventDispatcher().Register(render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
 		[this](render::T_ViewportEventFlags const, render::ViewportEventData const* const) -> void
