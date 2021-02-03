@@ -6,7 +6,7 @@
         "path": "editor_only/Shaders/",
         "package": "editor_content",
         "references": [
-          "CommonSharedVars.glsl"
+          "Shaders/CommonSharedVars.glsl"
         ]
       }
     },

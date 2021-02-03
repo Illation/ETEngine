@@ -1,7 +1,7 @@
 <VERTEX>
 	#version 330 core
 
-	#include "CommonSharedVars.glsl"
+	#include "Shaders/CommonSharedVars.glsl"
 
 	//Patch
 	layout (location = 0) in vec2 pos;
@@ -89,7 +89,7 @@
 <FRAGMENT>
 	#version 330 core
 	
-	#include "CommonDeferred.glsl"
+	#include "Shaders/CommonDeferred.glsl"
 	
 	in vec3 Tex3;
 	in vec3 Normal;

@@ -10,7 +10,7 @@
       {
         "texture param": {
           "name": "uTexBaseColor",
-          "data": "kabuto_baseColor.png"
+          "data": "Textures/Kabuto/kabuto_baseColor.png"
         }
       },
       {
@@ -22,7 +22,7 @@
       {
         "texture param": {
           "name": "uTexNormal",
-          "data": "kabuto_normal.png"
+          "data": "Textures/Kabuto/kabuto_normal.png"
         }
       },
       {
@@ -34,7 +34,7 @@
       {
         "texture param": {
           "name": "uTexMetallicRoughness",
-          "data": "kabuto_metallic_roughness.png"
+          "data": "Textures/Kabuto/kabuto_metallic_roughness.png"
         }
       },
       {
@@ -46,7 +46,7 @@
       {
         "texture param": {
           "name": "uTexOcclusion",
-          "data": "kabuto_ao.png"
+          "data": "Textures/Kabuto/kabuto_ao.png"
         }
       }
     ]

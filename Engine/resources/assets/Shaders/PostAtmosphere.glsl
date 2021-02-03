@@ -1,6 +1,6 @@
 <VERTEX>
 	#version 330 core
-	#include "CommonSharedVars.glsl"
+	#include "Shaders/CommonSharedVars.glsl"
 	
 	in vec3 position;
 	
@@ -19,10 +19,10 @@
 <FRAGMENT>
 	#version 330 core
 	
-	#include "Common.glsl"
-	#include "CommonDeferred.glsl"
-	#include "CommonPBR.glsl"
-	#include "CommonAtmosphere.glsl"
+	#include "Shaders/Common.glsl"
+	#include "Shaders/CommonDeferred.glsl"
+	#include "Shaders/CommonPBR.glsl"
+	#include "Shaders/CommonAtmosphere.glsl"
 	
 	in vec4 Texcoord;
 	

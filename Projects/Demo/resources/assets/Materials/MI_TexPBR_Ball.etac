@@ -6,12 +6,12 @@
         "path": "Materials/",
         "package": "content1",
         "references": [
-          "M_TexPBR.json",
-          "greasyMetal_baseCol.png",
-          "greasyMetal_norm.png",
-          "greasyMetal_rough.png",
-          "greasyMetal_metal.png",
-          "mahogany_ao.png"
+          "Materials/M_TexPBR.json",
+          "Textures/GreasyMetal/greasyMetal_baseCol.png",
+          "Textures/GreasyMetal/greasyMetal_norm.png",
+          "Textures/GreasyMetal/greasyMetal_rough.png",
+          "Textures/GreasyMetal/greasyMetal_metal.png",
+          "Textures/Mahogany/mahogany_ao.png"
         ]
       }
     },

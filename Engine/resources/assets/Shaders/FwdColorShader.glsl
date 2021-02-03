@@ -1,6 +1,6 @@
 <VERTEX>
 	#version 330 core
-	#include "CommonSharedVars.glsl"
+	#include "Shaders/CommonSharedVars.glsl"
 	
 	in vec3 position;
 	
@@ -15,7 +15,7 @@
 <FRAGMENT>
 	#version 330 core
 
-	#include "CommonDeferred.glsl"	
+	#include "Shaders/CommonDeferred.glsl"	
 
 	layout (location = 0) out vec4 outColor;
 	

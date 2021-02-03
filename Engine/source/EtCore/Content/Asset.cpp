@@ -100,7 +100,8 @@ I_Asset::~I_Asset()
 void I_Asset::SetName(std::string const& val)
 {
 	m_Name = val;
-	m_Id = m_Name.c_str();
+	//m_Id = m_Name.c_str();
+	m_Id = (m_Path + m_Name).c_str();
 	m_PackageEntryId = (m_Path + m_Name).c_str();
 }
 
@@ -112,6 +113,7 @@ void I_Asset::SetName(std::string const& val)
 void I_Asset::SetPath(std::string const& val)
 {
 	m_Path = val;
+	m_Id = (m_Path + m_Name).c_str();
 	m_PackageEntryId = (m_Path + m_Name).c_str();
 }
 

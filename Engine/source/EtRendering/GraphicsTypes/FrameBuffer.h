@@ -27,8 +27,7 @@ public:
 
 protected:
 
-	virtual void AccessShaderAttributes();
-
+	virtual void AccessShaderAttributes() {}
 	virtual void UploadDerivedVariables() {}
 
 	AssetPtr<ShaderData> m_pShader;

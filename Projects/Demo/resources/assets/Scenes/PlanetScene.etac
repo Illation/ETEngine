@@ -6,13 +6,13 @@
         "path": "Scenes/",
         "package": "content1",
         "references": [
-          "Milkyway_small.hdr",
+          "Textures/EnvironmentMaps/Milkyway_small.hdr",
           "HYGmxyz.json",
-          "moon8k.jpg",
-          "MoonHeight.jpg",
-          "MoonDetail1.jpg",
-          "MoonDetail2.jpg",
-          "MoonHeightDetail1.jpg",
+          "Textures/PlanetTextures/moon8k.jpg",
+          "Textures/PlanetTextures/MoonHeight.jpg",
+          "Textures/PlanetTextures/MoonDetail1.jpg",
+          "Textures/PlanetTextures/MoonDetail2.jpg",
+          "Textures/PlanetTextures/MoonHeightDetail1.jpg",
           "atmo_earth.json"
         ]
       }

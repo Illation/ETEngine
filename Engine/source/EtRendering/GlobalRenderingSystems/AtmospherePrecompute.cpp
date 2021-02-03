@@ -22,12 +22,18 @@ void AtmospherePrecompute::Init()
 {
 	m_Settings = AtmosphereSettings();
 
-	m_pComputeTransmittance = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("ComputeTransmittance.glsl"));
-	m_pComputeDirectIrradiance = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("ComputeDirectIrradiance.glsl"));
-	m_pComputeSingleScattering = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("ComputeSingleScattering.glsl"));
-	m_pComputeScatteringDensity = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("ComputeScatteringDensity.glsl"));
-	m_pComputeIndirectIrradiance = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("ComputeIndirectIrradiance.glsl"));
-	m_pComputeMultipleScattering = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("ComputeMultipleScattering.glsl"));
+	m_pComputeTransmittance = core::ResourceManager::Instance()->GetAssetData<ShaderData>(
+		core::HashString("Shaders/AtmoPreComp/ComputeTransmittance.glsl"));
+	m_pComputeDirectIrradiance = core::ResourceManager::Instance()->GetAssetData<ShaderData>(
+		core::HashString("Shaders/AtmoPreComp/ComputeDirectIrradiance.glsl"));
+	m_pComputeSingleScattering = core::ResourceManager::Instance()->GetAssetData<ShaderData>(
+		core::HashString("Shaders/AtmoPreComp/ComputeSingleScattering.glsl"));
+	m_pComputeScatteringDensity = core::ResourceManager::Instance()->GetAssetData<ShaderData>(
+		core::HashString("Shaders/AtmoPreComp/ComputeScatteringDensity.glsl"));
+	m_pComputeIndirectIrradiance = core::ResourceManager::Instance()->GetAssetData<ShaderData>(
+		core::HashString("Shaders/AtmoPreComp/ComputeIndirectIrradiance.glsl"));
+	m_pComputeMultipleScattering = core::ResourceManager::Instance()->GetAssetData<ShaderData>(
+		core::HashString("Shaders/AtmoPreComp/ComputeMultipleScattering.glsl"));
 
 	//Computation textures
 	m_TexDeltaIrradiance = new TextureData(m_Settings.INTERNAL2D, ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));

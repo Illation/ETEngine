@@ -49,7 +49,7 @@ void MainFramework::OnSystemInit()
 void MainFramework::OnInit()
 {
 	// Fonts
-	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<render::SpriteFont>(core::HashString("Ubuntu-Regular.ttf"));
+	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<render::SpriteFont>(core::HashString("Fonts/Ubuntu-Regular.ttf"));
 
 	// scenes
 	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::Activated,

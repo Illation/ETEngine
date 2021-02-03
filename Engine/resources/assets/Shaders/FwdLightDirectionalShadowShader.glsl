@@ -1,6 +1,6 @@
 <VERTEX>
 	#version 330 core
-	#include "CommonSharedVars.glsl"
+	#include "Shaders/CommonSharedVars.glsl"
 	layout (location = 0) in vec3 pos;
 	layout (location = 1) in vec2 texCoords;
 
@@ -17,9 +17,9 @@
 <FRAGMENT>
 	#version 330 core
 	
-	#include "Common.glsl"
-	#include "CommonDeferred.glsl"
-	#include "CommonPBR.glsl"
+	#include "Shaders/Common.glsl"
+	#include "Shaders/CommonDeferred.glsl"
+	#include "Shaders/CommonPBR.glsl"
 	
 	in vec2 TexCoords;
 	in vec3 ViewRay;

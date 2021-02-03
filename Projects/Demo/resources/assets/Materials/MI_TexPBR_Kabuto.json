@@ -4,31 +4,31 @@
       {
         "texture param": {
           "name": "texBaseColor",
-          "data": "kabuto_baseColor.png"
+          "data": "Textures/Kabuto/kabuto_baseColor.png"
         }
       },
       {
         "texture param": {
           "name": "texNormal",
-          "data": "kabuto_normal.png"
+          "data": "Textures/Kabuto/kabuto_normal.png"
         }
       },
       {
         "texture param": {
           "name": "texRoughness",
-          "data": "kabuto_roughness.png"
+          "data": "Textures/Kabuto/kabuto_roughness.png"
         }
       },
       {
         "texture param": {
           "name": "texMetalness",
-          "data": "kabuto_metal.png"
+          "data": "Textures/Kabuto/kabuto_metal.png"
         }
       },
       {
         "texture param": {
           "name": "texAO",
-          "data": "kabuto_ao.png"
+          "data": "Textures/Kabuto/kabuto_ao.png"
         }
       }
     ]

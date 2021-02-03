@@ -6,10 +6,10 @@
         "path": "Shaders/AtmoPreComp/",
         "package": "",
         "references": [
-          "AtmoPrecompVert.glsl",
-          "AtmoPrecompGeo.glsl",
-          "Common.glsl",
-          "CommonAtmosphere.glsl"
+          "Shaders/AtmoPreComp/AtmoPrecompVert.glsl",
+          "Shaders/AtmoPreComp/AtmoPrecompGeo.glsl",
+          "Shaders/Common.glsl",
+          "Shaders/CommonAtmosphere.glsl"
         ]
       }
     },

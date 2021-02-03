@@ -8,12 +8,11 @@ namespace render {
 class Gbuffer : public FrameBuffer
 {
 public:
-	Gbuffer(bool demo = false);
+	Gbuffer();
 	virtual ~Gbuffer() = default;
 	
 private:
-	void AccessShaderAttributes();
-	void UploadDerivedVariables();
+	void UploadDerivedVariables() override;
 };
 
 

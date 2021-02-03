@@ -6,7 +6,7 @@
         "path": "Shaders/",
         "package": "",
         "references": [
-          "Common.glsl"
+          "Shaders/Common.glsl"
         ]
       }
     },

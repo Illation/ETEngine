@@ -6,12 +6,12 @@
         "path": "Materials/",
         "package": "content1",
         "references": [
-          "M_TexPBR.json",
-          "mahogany_baseCol.png",
-          "mahogany_norm.png",
-          "mahogany_rough.png",
-          "bamboo_metal.png",
-          "mahogany_ao.png"
+          "Materials/M_TexPBR.json",
+          "Textures/Mahogany/mahogany_baseCol.png",
+          "Textures/Mahogany/mahogany_norm.png",
+          "Textures/Mahogany/mahogany_rough.png",
+          "Textures/Bamboo/bamboo_metal.png",
+          "Textures/Mahogany/mahogany_ao.png"
         ]
       }
     },

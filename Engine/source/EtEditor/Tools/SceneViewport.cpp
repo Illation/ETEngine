@@ -57,7 +57,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 {
 	m_Editor = static_cast<SceneEditor*>(editor);
 
-	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<render::SpriteFont>(core::HashString("IBMPlexMono.ttf"));
+	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<render::SpriteFont>(core::HashString("Fonts/IBMPlexMono.ttf"));
 
 	// Find the GL Area widget that is responsible for rendering the scene
 	SingleContextGlArea* glArea = nullptr;

@@ -35,8 +35,8 @@
           },
           {
             "model component": {
-              "mesh": "HelmetSettled.dae",
-              "material": "MI_Uber_Kabuto.json"
+              "mesh": "Models/HelmetSettled.dae",
+              "material": "Materials/MI_Uber_Kabuto.json"
             }
           }
         ],
@@ -54,8 +54,8 @@
           },
           {
             "model component": {
-              "mesh": "HelmetStand.dae",
-              "material": "MI_Uber_Floor.json"
+              "mesh": "Models/HelmetStand.dae",
+              "material": "Materials/MI_Uber_Floor.json"
             }
           }
         ],
@@ -73,8 +73,8 @@
           },
           {
             "model component": {
-              "mesh": "Env.dae",
-              "material": "MI_Uber_Floor.json"
+              "mesh": "Models/Env.dae",
+              "material": "Materials/MI_Uber_Floor.json"
             }
           }
         ],
@@ -107,7 +107,7 @@
         "children": []
       }
     ],
-    "skybox": "Ice_Lake_Ref.hdr",
+    "skybox": "Textures/EnvironmentMaps/Ice_Lake_Ref.hdr",
     "starfield": "",
     "active camera": {
       "id": 1

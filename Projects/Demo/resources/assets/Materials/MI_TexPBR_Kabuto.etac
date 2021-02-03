@@ -6,12 +6,12 @@
         "path": "Materials/",
         "package": "content1",
         "references": [
-          "M_TexPBR.json",
-          "kabuto_baseColor.png",
-          "kabuto_normal.png",
-          "kabuto_roughness.png",
-          "kabuto_metal.png",
-          "kabuto_ao.png"
+          "Materials/M_TexPBR.json",
+          "Textures/Kabuto/kabuto_baseColor.png",
+          "Textures/Kabuto/kabuto_normal.png",
+          "Textures/Kabuto/kabuto_roughness.png",
+          "Textures/Kabuto/kabuto_metal.png",
+          "Textures/Kabuto/kabuto_ao.png"
         ]
       }
     },

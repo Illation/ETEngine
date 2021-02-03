@@ -1,6 +1,6 @@
 <VERTEX>
 	#version 330 core
-	#include "CommonSharedVars.glsl"
+	#include "Shaders/CommonSharedVars.glsl"
 	
 	layout (location = 0) in vec3 position;
 	

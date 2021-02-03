@@ -38,8 +38,8 @@ EntityIdRenderer::~EntityIdRenderer()
 //
 void EntityIdRenderer::Initialize()
 {
-	m_Shader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("FwdIdShader.glsl"));
-	m_Material = core::ResourceManager::Instance()->GetAssetData<render::Material>(core::HashString("M_Id.json"));
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("editor_only/Shaders/FwdIdShader.glsl"));
+	m_Material = core::ResourceManager::Instance()->GetAssetData<render::Material>(core::HashString("editor_only/Materials/M_Id.json"));
 
 	CreateRenderTarget();
 }

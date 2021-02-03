@@ -6,9 +6,9 @@
         "path": "Shaders/",
         "package": "",
         "references": [
-          "Common.glsl",
-          "CommonSharedVars.glsl",
-          "CommonDeferred.glsl"
+          "Shaders/Common.glsl",
+          "Shaders/CommonSharedVars.glsl",
+          "Shaders/CommonDeferred.glsl"
         ]
       }
     },

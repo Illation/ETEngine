@@ -6,7 +6,7 @@
         "path": "Materials/",
         "package": "engine_content",
         "references": [
-          "DefUberShader.glsl"
+          "Shaders/DefUberShader.glsl"
         ],
         "draw type": "Opaque"
       }

@@ -6,7 +6,7 @@
         "path": "Materials/",
         "package": "engine_content",
         "references": [
-          "FwdColorShader.glsl"
+          "Shaders/FwdColorShader.glsl"
         ],
         "draw type": "Custom"
       }

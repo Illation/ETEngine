@@ -38,8 +38,8 @@ StarField::StarField(core::HashString const assetId)
 
 	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("FwdStarField.glsl"));
-	m_pSprite = core::ResourceManager::Instance()->GetAssetData<TextureData>(core::HashString("starSprite.png"));
+	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/FwdStarField.glsl"));
+	m_pSprite = core::ResourceManager::Instance()->GetAssetData<TextureData>(core::HashString("Textures/starSprite.png"));
 
 	//Generate buffers and arrays
 	m_VAO = api->CreateVertexArray();

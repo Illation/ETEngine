@@ -274,7 +274,7 @@ bool EditableShaderAsset::ReplaceInclude(std::string &line)
 	}
 	firstQ++;
 	std::string path = line.substr(firstQ, lastQ - firstQ);
-	core::HashString const assetId(core::FileUtil::ExtractName(path).c_str());
+	core::HashString const assetId(path.c_str());
 
 	// Get the stub asset data
 	std::vector<core::I_Asset::Reference> const& refs = m_Asset->GetReferences();
@@ -286,7 +286,7 @@ bool EditableShaderAsset::ReplaceInclude(std::string &line)
 
 	if (foundRefIt == refs.cend())
 	{
-		LOG(std::string("ShaderAsset::ReplaceInclude > Asset at path '") + path + "' not found in references!", core::LogLevel::Warning);
+		ET_ASSERT(false, "Asset at path '%s' not found in references!", path.c_str());
 		return false;
 	}
 

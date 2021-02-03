@@ -6,12 +6,12 @@
         "path": "Scenes/",
         "package": "content1",
         "references": [
-          "Ice_Lake_Ref.hdr",
-          "HelmetSettled.dae",
-          "MI_Uber_Kabuto.json",
-          "HelmetStand.dae",
-          "MI_Uber_Floor.json",
-          "Env.dae"
+          "Textures/EnvironmentMaps/Ice_Lake_Ref.hdr",
+          "Models/HelmetSettled.dae",
+          "Materials/MI_Uber_Kabuto.json",
+          "Models/HelmetStand.dae",
+          "Materials/MI_Uber_Floor.json",
+          "Models/Env.dae"
         ]
       }
     },

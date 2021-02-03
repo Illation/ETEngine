@@ -22,7 +22,7 @@ vec3 reconstructPosition(vec3 viewRay, vec3 camPosition, float depth, float proj
 	return camPosition + viewRay * linearDepth;
 }
 
-#include "CommonSharedVars.glsl"
+#include "Shaders/CommonSharedVars.glsl"
 
 #define UNPACK_DEPTH(texCoord)		\
 texture(texGBufferA, texCoord).r	\

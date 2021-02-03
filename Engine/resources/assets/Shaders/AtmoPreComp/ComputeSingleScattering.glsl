@@ -1,14 +1,14 @@
 <VERTEX>
-	#include "AtmoPrecompVert.glsl"
+	#include "Shaders/AtmoPreComp/AtmoPrecompVert.glsl"
 </VERTEX>
 <GEOMETRY>
-	#include "AtmoPrecompGeo.glsl"
+	#include "Shaders/AtmoPreComp/AtmoPrecompGeo.glsl"
 </GEOMETRY>
 <FRAGMENT>
 	#version 330 core
 	
-	#include "../Common.glsl"
-	#include "../CommonAtmosphere.glsl"
+	#include "Shaders/Common.glsl"
+	#include "Shaders/CommonAtmosphere.glsl"
 
 	layout(location = 0) out vec3 delta_rayleigh;
     layout(location = 1) out vec3 delta_mie;

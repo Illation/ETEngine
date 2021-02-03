@@ -1,6 +1,6 @@
 <VERTEX>
 	#version 330 core
-	#include "CommonSharedVars.glsl"
+	#include "Shaders/CommonSharedVars.glsl"
 	layout (location = 0) in vec3 pos;
 	layout (location = 1) in vec2 texCoords;
 	
@@ -17,9 +17,9 @@
 <FRAGMENT>
 	#version 330 core
 	
-	#include "Common.glsl"
-	#include "CommonDeferred.glsl"
-	#include "CommonPBR.glsl"
+	#include "Shaders/Common.glsl"
+	#include "Shaders/CommonDeferred.glsl"
+	#include "Shaders/CommonPBR.glsl"
 	
 	in vec2 Texcoord;
 	in vec3 ViewRay;
@@ -27,10 +27,10 @@
 	layout (location = 0) out vec4 outColor;
 	
 	//uniform samplerCube texEnvironment;
-	uniform samplerCube texIrradiance;
-	uniform samplerCube texEnvRadiance;
-	uniform sampler2D   texBRDFLUT;  
-	uniform float MAX_REFLECTION_LOD = 4.0;
+	uniform samplerCube uTexIrradiance;
+	uniform samplerCube uTexRadiance;
+	uniform float		uMaxReflectionLod = 4.0;
+	uniform sampler2D   uTexBrdfLut;  
 	
 	void main()
 	{
@@ -47,17 +47,17 @@
 		vec3 refl = reflect(-viewDir, norm);
 		//refl.x = -refl.x;
 
-		vec3 radianceColor = textureLod(texEnvRadiance, refl,  rough * MAX_REFLECTION_LOD).rgb;
+		vec3 radianceColor = textureLod(uTexRadiance, refl,  rough * uMaxReflectionLod).rgb;
 		
 		vec3 F        = FresnelSchlickRoughness(max(dot(norm, viewDir), 0.0), F0, rough);
 		
 		vec3 kS = F;
 		vec3 kD = (1.0 - kS) * (1-metal);
 		
-		vec3 irradiance = texture(texIrradiance, norm).rgb;
+		vec3 irradiance = texture(uTexIrradiance, norm).rgb;
 		vec3 diffuse    = irradiance * baseCol;
 		
-		vec2 envBRDF  = texture(texBRDFLUT, vec2(max(dot(norm, viewDir), 0.0), rough)).rg;
+		vec2 envBRDF  = texture(uTexBrdfLut, vec2(max(dot(norm, viewDir), 0.0), rough)).rg;
 		vec3 specular = radianceColor * (F * envBRDF.x + envBRDF.y);
 		
 		vec3 ambient    = (kD * diffuse + specular) * ao; 

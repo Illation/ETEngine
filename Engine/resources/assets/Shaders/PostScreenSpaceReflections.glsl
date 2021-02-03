@@ -1,6 +1,6 @@
 <VERTEX>
 	#version 330 core
-	#include "CommonSharedVars.glsl"
+	#include "Shaders/CommonSharedVars.glsl"
 
 	layout (location = 0) in vec3 pos;
 	layout (location = 1) in vec2 texCoords;
@@ -19,9 +19,9 @@
 	//source modified from http://imanolfotia.com/blog/update/2017/03/11/ScreenSpaceReflections.html
 	#version 400 core
 
-	#include "Common.glsl"
-	#include "CommonDeferred.glsl"
-	#include "CommonPBR.glsl"
+	#include "Shaders/Common.glsl"
+	#include "Shaders/CommonDeferred.glsl"
+	#include "Shaders/CommonPBR.glsl"
 	
 	noperspective in vec2 Texcoord;
 	in vec3 ViewRay;

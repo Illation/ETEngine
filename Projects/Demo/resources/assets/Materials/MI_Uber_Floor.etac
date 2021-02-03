@@ -6,7 +6,7 @@
         "path": "Materials/",
         "package": "content1",
         "references": [
-          "M_UberOpaque.json"
+          "Materials/M_UberOpaque.json"
         ]
       }
     },

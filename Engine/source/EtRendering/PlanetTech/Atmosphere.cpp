@@ -55,7 +55,7 @@ void Atmosphere::Initialize(core::HashString const parameterAssetId)
 	RenderingSystems::Instance()->GetAtmospherPrecompute().Precalculate(this);
 
 	//Load and compile Shaders
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("PostAtmosphere.glsl"));
+	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/PostAtmosphere.glsl"));
 }
 
 //-------------------------

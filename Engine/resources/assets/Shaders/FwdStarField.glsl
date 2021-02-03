@@ -18,7 +18,7 @@
 </VERTEX>
 <GEOMETRY>
 	#version 400 core
-	#include "CommonSharedVars.glsl"
+	#include "Shaders/CommonSharedVars.glsl"
 	
 	layout(points, invocations = 1) in;
 	layout(triangle_strip, max_vertices=4) out;
@@ -81,7 +81,7 @@
 </GEOMETRY>
 <FRAGMENT>
 	#version 400 core
-	#include "Common.glsl"
+	#include "Shaders/Common.glsl"
 	
 	in GSO 
 	{

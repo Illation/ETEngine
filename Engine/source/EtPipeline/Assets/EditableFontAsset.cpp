@@ -139,7 +139,7 @@ bool EditableFontAsset::GenerateInternal(BuildConfiguration const& buildConfig, 
 		return false;
 	}
 
-	if (!GenerateBinFontData(fontData->m_GeneratedData, font, textureData->m_Asset->GetName()))
+	if (!GenerateBinFontData(fontData->m_GeneratedData, font, textureData->m_Asset->GetPath() + textureData->m_Asset->GetName()))
 	{
 		ET_ASSERT(false, "failed to generate font data");
 		return false;
@@ -302,7 +302,8 @@ render::SpriteFont* EditableFontAsset::LoadTtf(const std::vector<uint8>& binaryC
 	api->SetViewport(ivec2(0), ivec2(texWidth, texHeight));
 	api->Clear(render::E_ClearFlag::Color | render::E_ClearFlag::Depth);
 
-	AssetPtr<render::ShaderData> computeSdf = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("ComputeGlyphSDF.glsl"));
+	AssetPtr<render::ShaderData> computeSdf = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(
+		core::HashString("Shaders/ComputeGlyphSDF.glsl"));
 	api->SetShader(computeSdf.get());
 	computeSdf->Upload("uSpread"_hash, static_cast<float>(m_Spread));
 	computeSdf->Upload("uHighRes"_hash, static_cast<float>(m_HighRes));

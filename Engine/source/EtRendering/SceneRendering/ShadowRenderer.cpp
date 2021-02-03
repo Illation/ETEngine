@@ -27,7 +27,7 @@ namespace render {
 //
 void ShadowRenderer::Initialize()
 {
-	m_Shader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("FwdNullShader.glsl"));
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/FwdNullShader.glsl"));
 }
 
 //---------------------------------

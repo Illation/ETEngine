@@ -185,7 +185,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const equiTexture, int3
 	std::vector<mat4> captureViews = CubeCaptureViews();
 
 	//Get the shader
-	AssetPtr<ShaderData> equiCubeShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("FwdEquiCubeShader.glsl"));
+	AssetPtr<ShaderData> equiCubeShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/FwdEquiCubeShader.glsl"));
 
 	// convert HDR equirectangular environment map to cubemap equivalent
 	api->SetShader(equiCubeShader.get());

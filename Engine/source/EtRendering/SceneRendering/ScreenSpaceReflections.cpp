@@ -30,7 +30,7 @@ void ScreenSpaceReflections::Initialize()
 	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
 
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("PostScreenSpaceReflections.glsl"));
+	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/PostScreenSpaceReflections.glsl"));
 
 	TextureParameters params(false);
 	params.minFilter = E_TextureFilterMode::Linear;

@@ -86,7 +86,7 @@ void ShadedSceneRenderer::InitRenderingSystems()
 
 	m_ClearColor = vec3(200.f / 255.f, 114.f / 255.f, 200.f / 255.f)*0.0f;
 
-	m_SkyboxShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("FwdSkyboxShader.glsl"));
+	m_SkyboxShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/FwdSkyboxShader.glsl"));
 
 	m_IsInitialized = true;
 }

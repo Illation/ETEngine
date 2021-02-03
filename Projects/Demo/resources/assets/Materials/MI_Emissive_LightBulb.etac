@@ -6,7 +6,7 @@
         "path": "Materials/",
         "package": "content1",
         "references": [
-          "M_Emissive.json"
+          "Materials/M_Emissive.json"
         ]
       }
     },

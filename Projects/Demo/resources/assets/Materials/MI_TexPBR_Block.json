@@ -4,31 +4,31 @@
       {
         "texture param": {
           "name": "texBaseColor",
-          "data": "bamboo_baseCol.png"
+          "data": "Textures/Bamboo/bamboo_baseCol.png"
         }
       },
       {
         "texture param": {
           "name": "texNormal",
-          "data": "bamboo_norm.png"
+          "data": "Textures/Bamboo/bamboo_norm.png"
         }
       },
       {
         "texture param": {
           "name": "texRoughness",
-          "data": "bamboo_rough.png"
+          "data": "Textures/Bamboo/bamboo_rough.png"
         }
       },
       {
         "texture param": {
           "name": "texMetalness",
-          "data": "bamboo_metal.png"
+          "data": "Textures/Bamboo/bamboo_metal.png"
         }
       },
       {
         "texture param": {
           "name": "texAO",
-          "data": "bamboo_ao.png"
+          "data": "Textures/Bamboo/bamboo_ao.png"
         }
       }
     ]

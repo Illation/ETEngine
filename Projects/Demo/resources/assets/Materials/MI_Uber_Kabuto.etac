@@ -6,11 +6,11 @@
         "path": "Materials/",
         "package": "content1",
         "references": [
-          "M_UberOpaque.json",
-          "kabuto_baseColor.png",
-          "kabuto_normal.png",
-          "kabuto_metallic_roughness.png",
-          "kabuto_ao.png"
+          "Materials/M_UberOpaque.json",
+          "Textures/Kabuto/kabuto_baseColor.png",
+          "Textures/Kabuto/kabuto_normal.png",
+          "Textures/Kabuto/kabuto_metallic_roughness.png",
+          "Textures/Kabuto/kabuto_ao.png"
         ]
       }
     },

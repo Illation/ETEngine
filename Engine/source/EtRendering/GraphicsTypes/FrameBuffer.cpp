@@ -41,7 +41,7 @@ void FrameBuffer::Initialize()
 	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	//Load and compile Shaders
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString(core::FileUtil::ExtractName(m_ShaderFile).c_str()));
+	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString(m_ShaderFile.c_str()));
 
 	//GetAccessTo shader attributes
 	api->SetShader(m_pShader.get());
@@ -59,11 +59,6 @@ void FrameBuffer::Initialize()
 		{
 			ResizeFramebufferTextures();
 		}));
-}
-
-void FrameBuffer::AccessShaderAttributes()
-{
-	m_pShader->Upload("texFramebuffer"_hash, 0);
 }
 
 void FrameBuffer::Enable(bool active)

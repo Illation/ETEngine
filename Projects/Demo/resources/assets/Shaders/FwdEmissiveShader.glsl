@@ -1,6 +1,6 @@
 <VERTEX>
 	#version 330 core
-	#include "CommonSharedVars.glsl"
+	#include "Shaders/CommonSharedVars.glsl"
 	
 	in vec3 position;
 	in vec3 normal;
@@ -31,7 +31,7 @@
 <FRAGMENT>
 	#version 330 core
 	
-	#include "Common.glsl"
+	#include "Shaders/Common.glsl"
 	
 	in vec3 Position;
 	in vec3 Normal;

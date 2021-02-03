@@ -14,8 +14,8 @@
 <FRAGMENT>
 	#version 330 core
 	
-	#include "Common.glsl"
-	#include "CommonPBR.glsl"
+	#include "Shaders/Common.glsl"
+	#include "Shaders/CommonPBR.glsl"
 	
 	layout (location = 0) out vec2 outColor;
 	in vec2 TexCoords;

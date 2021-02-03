@@ -6,8 +6,8 @@
         "path": "Shaders/",
         "package": "",
         "references": [
-          "Common.glsl",
-          "CommonPBR.glsl"
+          "Shaders/Common.glsl",
+          "Shaders/CommonPBR.glsl"
         ]
       }
     },

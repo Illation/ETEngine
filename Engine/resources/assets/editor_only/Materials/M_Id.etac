@@ -6,7 +6,7 @@
         "path": "editor_only/Materials/",
         "package": "editor_content",
         "references": [
-          "FwdIdShader.glsl"
+          "editor_only/Shaders/FwdIdShader.glsl"
         ],
         "draw type": "Custom"
       }

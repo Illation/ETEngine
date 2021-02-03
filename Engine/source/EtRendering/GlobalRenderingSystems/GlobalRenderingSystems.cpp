@@ -122,8 +122,8 @@ void RenderingSystems::Initialize()
 	m_Cie.LoadData();
 	m_PbrPrefilter.Precompute(m_GraphicsSettings.PbrBrdfLutSize);
 
-	m_NullMaterial = core::ResourceManager::Instance()->GetAssetData<Material>(core::HashString("M_Null.json"));
-	m_ColorMaterial = core::ResourceManager::Instance()->GetAssetData<Material>(core::HashString("M_Color.json"));
+	m_NullMaterial = core::ResourceManager::Instance()->GetAssetData<Material>(core::HashString("Materials/M_Null.json"));
+	m_ColorMaterial = core::ResourceManager::Instance()->GetAssetData<Material>(core::HashString("Materials/M_Color.json"));
 
 	m_Patch.Init(4);
 }

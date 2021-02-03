@@ -27,8 +27,8 @@
           },
           {
             "spawn comp desc": {
-              "mesh": "sphere.dae",
-              "material": "MI_TexPBR_Ball.json",
+              "mesh": "Models/sphere.dae",
+              "material": "Materials/MI_TexPBR_Ball.json",
               "scale": 0.2,
               "shape": {
                 "sphere collider shape": {
@@ -63,7 +63,7 @@
           },
           {
             "audio source comp desc": {
-              "audio asset": "Disfigure-Blank.ogg",
+              "audio asset": "Sounds/Disfigure-Blank.ogg",
               "play on init": true,
               "loop": true,
               "gain": 1.0,
@@ -84,8 +84,8 @@
           {
             "playlist component": {
               "tracks": [
-                "Disfigure-Blank.ogg",
-                "testmusic.ogg"
+                "Sounds/Disfigure-Blank.ogg",
+                "Sounds/testmusic.ogg"
               ]
             }
           },
@@ -115,8 +115,8 @@
               },
               {
                 "model component": {
-                  "mesh": "sphere.dae",
-                  "material": "MI_Emissive_LightBulb.json"
+                  "mesh": "Models/sphere.dae",
+                  "material": "Materials/MI_Emissive_LightBulb.json"
                 }
               }
             ],
@@ -136,8 +136,8 @@
           },
           {
             "model component": {
-              "mesh": "cube.dae",
-              "material": "MI_TexPBR_Floor.json"
+              "mesh": "Models/cube.dae",
+              "material": "Materials/MI_TexPBR_Floor.json"
             }
           },
           {
@@ -166,8 +166,8 @@
           },
           {
             "model component": {
-              "mesh": "cube.dae",
-              "material": "MI_TexPBR_Block.json"
+              "mesh": "Models/cube.dae",
+              "material": "Materials/MI_TexPBR_Block.json"
             }
           },
           {
@@ -196,8 +196,8 @@
           },
           {
             "model component": {
-              "mesh": "cube.dae",
-              "material": "MI_TexPBR_Block.json"
+              "mesh": "Models/cube.dae",
+              "material": "Materials/MI_TexPBR_Block.json"
             }
           },
           {
@@ -226,8 +226,8 @@
           },
           {
             "model component": {
-              "mesh": "cube.dae",
-              "material": "MI_TexPBR_Block.json"
+              "mesh": "Models/cube.dae",
+              "material": "Materials/MI_TexPBR_Block.json"
             }
           },
           {
@@ -256,8 +256,8 @@
           },
           {
             "model component": {
-              "mesh": "HelmetSettled.dae",
-              "material": "MI_Uber_Kabuto.json"
+              "mesh": "Models/HelmetSettled.dae",
+              "material": "Materials/MI_Uber_Kabuto.json"
             }
           },
           {
@@ -275,7 +275,7 @@
         "children": []
       }
     ],
-    "skybox": "Ice_Lake_Ref.hdr",
+    "skybox": "Textures/EnvironmentMaps/Ice_Lake_Ref.hdr",
     "starfield": "",
     "active camera": {
       "id": 0
@@ -296,6 +296,6 @@
     "audio listener": {
       "id": 0
     },
-    "gravity": [ 0.0, -0.981, 0.0 ] 
+    "gravity": [ 0.0, -0.981, 0.0 ]
   }
 }

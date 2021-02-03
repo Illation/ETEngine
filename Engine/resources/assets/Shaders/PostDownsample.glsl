@@ -11,7 +11,7 @@
 </VERTEX>
 <FRAGMENT>
 	#version 330 core
-	#include "Common.glsl"
+	#include "Shaders/Common.glsl"
 	in vec2 Texcoord;
 	layout (location = 0) out vec4 brightColor;
 	uniform sampler2D texColor;

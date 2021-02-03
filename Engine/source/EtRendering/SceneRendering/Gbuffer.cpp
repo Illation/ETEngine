@@ -13,14 +13,10 @@ namespace et {
 namespace render {
 
 
-Gbuffer::Gbuffer(bool demo):
-	FrameBuffer(demo ? "Shaders/PostBufferDisplay.glsl" : "Shaders/PostDeferredComposite.glsl", 2)
+Gbuffer::Gbuffer():
+	FrameBuffer("Shaders/PostDeferredComposite.glsl", 2)
 {
 	m_CaptureDepth = true;
-}
-
-void Gbuffer::AccessShaderAttributes()
-{
 }
 
 void Gbuffer::UploadDerivedVariables()
@@ -33,14 +29,13 @@ void Gbuffer::UploadDerivedVariables()
 	AssetPtr<EnvironmentMap> envMap = sceneRenderer->GetScene()->GetSkybox().m_EnvironmentMap;
 	if (envMap != nullptr)
 	{
-		m_pShader->Upload("texIrradiance"_hash, envMap->GetIrradiance());
-		m_pShader->Upload("texEnvRadiance"_hash, envMap->GetRadiance());
-
-		m_pShader->Upload("MAX_REFLECTION_LOD"_hash, static_cast<float>(envMap->GetNumMipMaps()));
+		m_pShader->Upload("uTexIrradiance"_hash, envMap->GetIrradiance());
+		m_pShader->Upload("uTexRadiance"_hash, envMap->GetRadiance());
+		m_pShader->Upload("uMaxReflectionLod"_hash, static_cast<float>(envMap->GetNumMipMaps()));
 	}
 
-	TextureData const* lut = RenderingSystems::Instance()->GetPbrPrefilter().GetLUT();
-	m_pShader->Upload("texBRDFLUT"_hash, lut);
+	TextureData const* const lut = RenderingSystems::Instance()->GetPbrPrefilter().GetLUT();
+	m_pShader->Upload("uTexBrdfLut"_hash, lut);
 }
 
 

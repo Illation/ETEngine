@@ -25,7 +25,7 @@ void DebugRenderer::Initialize()
 {
 	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("DebugRenderer.glsl"));
+	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/DebugRenderer.glsl"));
 
 	api->SetShader(m_pShader.get());
 

@@ -45,11 +45,11 @@
               "params": {
                 "radius": 1737.1,
                 "height": 10.7,
-                "diffuse texture": "moon8k.jpg",
-                "detail texture 1": "MoonDetail1.jpg",
-                "detail texture 2": "MoonDetail2.jpg",
-                "height texture": "MoonHeight.jpg",
-                "height detail texture": "MoonHeightDetail1.jpg"
+                "diffuse texture": "Textures/PlanetTextures/moon8k.jpg",
+                "detail texture 1": "Textures/PlanetTextures/MoonDetail1.jpg",
+                "detail texture 2": "Textures/PlanetTextures/MoonDetail2.jpg",
+                "height texture": "Textures/PlanetTextures/MoonHeight.jpg",
+                "height detail texture": "Textures/PlanetTextures/MoonHeightDetail1.jpg"
               }
             }
           },
@@ -99,7 +99,7 @@
         "children": []
       }
     ],
-    "skybox": "Milkyway_small.hdr",
+    "skybox": "Textures/EnvironmentMaps/Milkyway_small.hdr",
     "starfield": "HYGmxyz.json",
     "active camera": {
       "id": 0

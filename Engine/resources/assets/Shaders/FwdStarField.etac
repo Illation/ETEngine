@@ -6,8 +6,8 @@
         "path": "Shaders/",
         "package": "",
         "references": [
-          "CommonSharedVars.glsl",
-          "Common.glsl"
+          "Shaders/CommonSharedVars.glsl",
+          "Shaders/Common.glsl"
         ]
       }
     },

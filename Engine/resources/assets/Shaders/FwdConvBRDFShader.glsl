@@ -16,8 +16,8 @@
 <FRAGMENT>
 	#version 330 core
 	
-	#include "Common.glsl"
-	#include "CommonPBR.glsl"
+	#include "Shaders/Common.glsl"
+	#include "Shaders/CommonPBR.glsl"
 	
 	layout (location = 0) out vec4 outColor;
 	in vec3 localPos;

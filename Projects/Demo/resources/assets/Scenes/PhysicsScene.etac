@@ -6,17 +6,17 @@
         "path": "Scenes/",
         "package": "content1",
         "references": [
-          "Ice_Lake_Ref.hdr",
-          "HelmetSettled.dae",
-          "MI_Uber_Kabuto.json",
-          "Disfigure-Blank.ogg",
-          "testmusic.ogg",
-          "sphere.dae",
-          "MI_Emissive_LightBulb.json",
-          "MI_TexPBR_Ball.json",
-          "cube.dae",
-          "MI_TexPBR_Floor.json",
-          "MI_TexPBR_Block.json"
+          "Textures/EnvironmentMaps/Ice_Lake_Ref.hdr",
+          "Models/HelmetSettled.dae",
+          "Materials/MI_Uber_Kabuto.json",
+          "Sounds/Disfigure-Blank.ogg",
+          "Sounds/testmusic.ogg",
+          "Models/sphere.dae",
+          "Materials/MI_Emissive_LightBulb.json",
+          "Materials/MI_TexPBR_Ball.json",
+          "Models/cube.dae",
+          "Materials/MI_TexPBR_Floor.json",
+          "Materials/MI_TexPBR_Block.json"
         ]
       }
     },

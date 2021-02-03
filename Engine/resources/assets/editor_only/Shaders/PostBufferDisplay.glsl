@@ -12,8 +12,8 @@
 <FRAGMENT>
 	#version 330 core
 	
-	#include "Common.glsl"
-	#include "CommonSharedVars.glsl"
+	#include "Shaders/Common.glsl"
+	#include "Shaders/CommonSharedVars.glsl"
 	
 	in vec2 Texcoord;
 	

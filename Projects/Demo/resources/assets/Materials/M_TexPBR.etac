@@ -6,7 +6,7 @@
         "path": "Materials/",
         "package": "content1",
         "references": [
-          "DefPBRMetShader.glsl"
+          "Shaders/DefPBRMetShader.glsl"
         ],
         "draw type": "Opaque"
       }

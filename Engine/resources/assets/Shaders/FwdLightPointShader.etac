@@ -6,10 +6,10 @@
         "path": "Shaders/",
         "package": "",
         "references": [
-          "Common.glsl",
-          "CommonSharedVars.glsl",
-          "CommonDeferred.glsl",
-          "CommonPBR.glsl"
+          "Shaders/Common.glsl",
+          "Shaders/CommonSharedVars.glsl",
+          "Shaders/CommonDeferred.glsl",
+          "Shaders/CommonPBR.glsl"
         ]
       }
     },
