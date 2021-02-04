@@ -37,30 +37,28 @@
 		//Extract data from G-Buffer
 		float alpha = 1.0;
 		UNPACK_GBUFFER(Texcoord, ViewRay)
-		
-		//precalculations	
-		vec3 F0 = vec3(0.04);//for dielectric materials use this simplified constant
-		F0 		= mix(F0, baseCol, metal);//for metal we should use the albedo value
-		
+
 		//View dir and reflection
 		vec3 viewDir = -normalize(ViewRay);
 		vec3 refl = reflect(-viewDir, norm);
-		//refl.x = -refl.x;
-
-		vec3 radianceColor = textureLod(uTexRadiance, refl,  rough * uMaxReflectionLod).rgb;
 		
-		vec3 F        = FresnelSchlickRoughness(max(dot(norm, viewDir), 0.0), F0, rough);
+		//precalculations	
+		vec3 F0 = vec3(0.04);//for dielectric materials use this simplified constant
+		F0 = mix(F0, baseCol, metal);//for metal we should use the albedo value
+		
+		vec3 F = FresnelSchlickRoughness(max(dot(norm, viewDir), 0.0), F0, rough);
 		
 		vec3 kS = F;
-		vec3 kD = (1.0 - kS) * (1-metal);
+		vec3 kD = (1.0 - kS) * (1.0-metal);
 		
 		vec3 irradiance = texture(uTexIrradiance, norm).rgb;
-		vec3 diffuse    = irradiance * baseCol;
-		
+		vec3 diffuse = irradiance * baseCol;
+
+		vec3 radianceColor = textureLod(uTexRadiance, refl, rough * uMaxReflectionLod).rgb;
 		vec2 envBRDF  = texture(uTexBrdfLut, vec2(max(dot(norm, viewDir), 0.0), rough)).rg;
 		vec3 specular = radianceColor * (F * envBRDF.x + envBRDF.y);
 		
-		vec3 ambient    = (kD * diffuse + specular) * ao; 
+		vec3 ambient = (kD * diffuse + specular) * ao; 
 		
 		//clean up
 		vec3 finalCol = max(ambient, 0.0);		

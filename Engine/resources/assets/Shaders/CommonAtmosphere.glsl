@@ -382,15 +382,15 @@ void GetRMuMuSNuFromScatteringTextureUvwz(in AtmosphereParameters atmosphere, in
 
 	nu = ClampCosine(uvwz.x * 2.0 - 1.0);
 }
-void GetRMuMuSNuFromScatteringTextureFragCoord( in AtmosphereParameters atmosphere, in vec3 gl_frag_coord,
+void GetRMuMuSNuFromScatteringTextureFragCoord( in AtmosphereParameters atmosphere, in vec3 fragCoord,
 	out float r, out float mu, out float mu_s, out float nu, out bool ray_r_mu_intersects_ground) 
 {
 	vec4 scatteringTexSize = vec4( uTexScatteringNuSize - 1, uTexScatteringMuSSize,
 		uTexScatteringMuSize, uTexScatteringRSize);
 	float frag_coord_nu =
-	floor(gl_frag_coord.x / float(uTexScatteringMuSSize));
-	float frag_coord_mu_s = mod(gl_frag_coord.x, float(uTexScatteringMuSSize));
-	vec4 uvwz = vec4(frag_coord_nu, frag_coord_mu_s, gl_frag_coord.y, gl_frag_coord.z) / scatteringTexSize;
+	floor(fragCoord.x / float(uTexScatteringMuSSize));
+	float frag_coord_mu_s = mod(fragCoord.x, float(uTexScatteringMuSSize));
+	vec4 uvwz = vec4(frag_coord_nu, frag_coord_mu_s, fragCoord.y, fragCoord.z) / scatteringTexSize;
 	GetRMuMuSNuFromScatteringTextureUvwz( atmosphere, uvwz, r, mu, mu_s, nu, ray_r_mu_intersects_ground);
 	// Clamp nu to its valid range of values, given mu and mu_s.
 	nu = clamp(nu, mu * mu_s - sqrt((1.0 - mu * mu) * (1.0 - mu_s * mu_s)),
@@ -398,14 +398,14 @@ void GetRMuMuSNuFromScatteringTextureFragCoord( in AtmosphereParameters atmosphe
 }
 
 void ComputeSingleScatteringTexture(in AtmosphereParameters atmosphere,
-	in sampler2D transmittance_texture, in vec3 gl_frag_coord, out vec3 rayleigh, out vec3 mie) 
+	in sampler2D transmittance_texture, in vec3 fragCoord, out vec3 rayleigh, out vec3 mie)
 {
 	float r;
 	float mu;
 	float mu_s;
 	float nu;
 	bool ray_r_mu_intersects_ground;
-	GetRMuMuSNuFromScatteringTextureFragCoord(atmosphere, gl_frag_coord, r, mu, mu_s, nu, ray_r_mu_intersects_ground);
+	GetRMuMuSNuFromScatteringTextureFragCoord(atmosphere, fragCoord, r, mu, mu_s, nu, ray_r_mu_intersects_ground);
 	ComputeSingleScattering(atmosphere, transmittance_texture, r, mu, mu_s, nu, ray_r_mu_intersects_ground, rayleigh, mie);
 }
 

@@ -89,6 +89,7 @@ void EditableEnvironmentMapAsset::SetupRuntimeAssetsInternal()
 	irradianceAsset->SetPackageId(mainAsset->GetPackageId());
 	irradianceAsset->m_ForceResolution = true;
 	render::PbrPrefilter::PopulateCubeTextureParams(irradianceAsset->m_Parameters);
+	irradianceAsset->m_Parameters.genMipMaps = false;
 	m_RuntimeAssets.emplace_back(irradianceAsset, true);
 
 	render::TextureAsset* const radianceAsset = new render::TextureAsset();

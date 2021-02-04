@@ -34,12 +34,12 @@
 		mu = d == 0.0 * 1.0 ? float(1.0) : (H * H - rho * rho - d * d) / (2.0 * r * d);
 		mu = ClampCosine(mu);
 	}
-	vec3 ComputeTransmittanceToTopAtmosphereBoundaryTexture( in AtmosphereParameters atmosphere, in vec2 gl_frag_coord) 
+	vec3 ComputeTransmittanceToTopAtmosphereBoundaryTexture( in AtmosphereParameters atmosphere, in vec2 fragCoord) 
 	{
 		vec2 texTransmittanceSize = vec2(uTexTransmittanceW, uTexTransmittanceH);
 		float r;
 		float mu;
-		GetRMuFromTransmittanceTextureUv( atmosphere, gl_frag_coord / texTransmittanceSize, r, mu);
+		GetRMuFromTransmittanceTextureUv( atmosphere, fragCoord / texTransmittanceSize, r, mu);
 		return ComputeTransmittanceToTopAtmosphereBoundary(atmosphere, r, mu);
 	}
 
