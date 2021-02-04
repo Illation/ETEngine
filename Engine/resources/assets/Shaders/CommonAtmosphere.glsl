@@ -562,26 +562,26 @@ void GetRMuSFromIrradianceTextureUv(in AtmosphereParameters atmosphere, in vec2 
 }
 vec3 ComputeScatteringDensityTexture( in AtmosphereParameters atmosphere, in sampler2D transmittance_texture,
     in sampler3D single_rayleigh_scattering_texture, in sampler3D single_mie_scattering_texture,
-    in sampler3D multiple_scattering_texture, in sampler2D irradiance_texture, in vec3 gl_frag_coord, int scattering_order) 
+    in sampler3D multiple_scattering_texture, in sampler2D irradiance_texture, in vec3 fragCoord, int scattering_order) 
 {
 	float r;
 	float mu;
 	float mu_s;
 	float nu;
 	bool ray_r_mu_intersects_ground;
-	GetRMuMuSNuFromScatteringTextureFragCoord(atmosphere, gl_frag_coord, r, mu, mu_s, nu, ray_r_mu_intersects_ground);
+	GetRMuMuSNuFromScatteringTextureFragCoord(atmosphere, fragCoord, r, mu, mu_s, nu, ray_r_mu_intersects_ground);
 	return ComputeScatteringDensity(atmosphere, transmittance_texture, single_rayleigh_scattering_texture, 
 		single_mie_scattering_texture, multiple_scattering_texture, irradiance_texture, r, mu, mu_s, nu, scattering_order);
 }
 
 vec3 ComputeMultipleScatteringTexture( in AtmosphereParameters atmosphere, in sampler2D transmittance_texture,
-    in sampler3D scattering_density_texture, in vec3 gl_frag_coord, out float nu) 
+    in sampler3D scattering_density_texture, in vec3 fragCoord, out float nu)
 {
   float r;
   float mu;
   float mu_s;
   bool ray_r_mu_intersects_ground;
-  GetRMuMuSNuFromScatteringTextureFragCoord(atmosphere, gl_frag_coord, r, mu, mu_s, nu, ray_r_mu_intersects_ground);
+  GetRMuMuSNuFromScatteringTextureFragCoord(atmosphere, fragCoord, r, mu, mu_s, nu, ray_r_mu_intersects_ground);
   return ComputeMultipleScattering(atmosphere, transmittance_texture,
       scattering_density_texture, r, mu, mu_s, nu, ray_r_mu_intersects_ground);
 }
@@ -641,20 +641,20 @@ vec2 GetIrradianceTextureUvFromRMuS(in AtmosphereParameters atmosphere, float r,
 
 vec2 IRRADIANCE_TEXTURE_SIZE = vec2(uTexIrradianceW, uTexIrradianceH);
 
-vec3 ComputeDirectIrradianceTexture( in AtmosphereParameters atmosphere, in sampler2D transmittance_texture, in vec2 gl_frag_coord) 
+vec3 ComputeDirectIrradianceTexture( in AtmosphereParameters atmosphere, in sampler2D transmittance_texture, in vec2 fragCoord)
 {
 	float r;
 	float mu_s;
-	GetRMuSFromIrradianceTextureUv( atmosphere, gl_frag_coord / IRRADIANCE_TEXTURE_SIZE, r, mu_s);
+	GetRMuSFromIrradianceTextureUv( atmosphere, fragCoord / IRRADIANCE_TEXTURE_SIZE, r, mu_s);
 	return ComputeDirectIrradiance(atmosphere, transmittance_texture, r, mu_s);
 }
 vec3 ComputeIndirectIrradianceTexture( in AtmosphereParameters atmosphere,
     in sampler3D single_rayleigh_scattering_texture, in sampler3D single_mie_scattering_texture,
-    in sampler3D multiple_scattering_texture, in vec2 gl_frag_coord, int scattering_order) 
+    in sampler3D multiple_scattering_texture, in vec2 fragCoord, int scattering_order)
 {
 	float r;
 	float mu_s;
-	GetRMuSFromIrradianceTextureUv( atmosphere, gl_frag_coord / IRRADIANCE_TEXTURE_SIZE, r, mu_s);
+	GetRMuSFromIrradianceTextureUv( atmosphere, fragCoord / IRRADIANCE_TEXTURE_SIZE, r, mu_s);
 	return ComputeIndirectIrradiance(atmosphere, single_rayleigh_scattering_texture, single_mie_scattering_texture,
 		multiple_scattering_texture, r, mu_s, scattering_order);
 }
