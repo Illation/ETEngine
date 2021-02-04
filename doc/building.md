@@ -27,6 +27,11 @@ The -H and -B options specify an out of source build in the **build/** folder, w
     cd build
 	cmake -G "Your preferred generator [and architecture]" ..
 
+##### Known issues:
+
+ * For building gtkmm, vcpkg requires you have the english language pack installed:
+https://github.com/microsoft/vcpkg/issues/3842
+
 
 ### Third party libraries
 
