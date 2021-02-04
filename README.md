@@ -60,7 +60,7 @@ The work in progress editor will allow for easy editing, and control the workflo
 For visual studio 2017:
 
     git clone https://github.com/Illation/ETEngine
-    cd etengine/Projects/Demo
+    cd ETEngine/Projects/Demo
     cmake -G "Visual Studio 15 2017 Win64" -H. -Bbuild
     cmake --build build --target all --config Develop
     cmake --build build --target install

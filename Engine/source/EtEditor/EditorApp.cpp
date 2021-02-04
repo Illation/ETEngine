@@ -31,6 +31,7 @@
 #include <EtEditor/Util/SettingsDialog.h>
 #include <EtEditor/Util/EditorConfig.h>
 #include <EtEditor/SceneEditor/SceneEditor.h>
+#include <EtEditor/Content/Importer.h>
 
 
 namespace et {
@@ -90,6 +91,8 @@ EditorApp::EditorApp()
 //
 EditorApp::~EditorApp()
 {
+	ImporterBase::DestroyImporters();
+
 	render::RenderingSystems::RemoveReference();
 
 	core::PerformanceInfo::DestroyInstance();
@@ -252,6 +255,8 @@ void EditorApp::InitializeUtilities()
 	core::InputManager::GetInstance();
 
 	core::PerformanceInfo::GetInstance();
+
+	ImporterBase::RegisterImporters();
 }
 
 //---------------------------------
