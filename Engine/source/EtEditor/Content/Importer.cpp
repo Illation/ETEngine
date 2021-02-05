@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "Importer.h"
 
+#include <gtkmm/button.h>
+#include <gtkmm/dialog.h>
+
 #include <EtCore/FileSystem/FileUtil.h>
 
 #include "GltfImporter.h"
@@ -77,6 +80,45 @@ void ImporterBase::DestroyImporters()
 	}
 
 	s_Importers.clear();
+}
+
+//-----------------------------------------
+// ImporterBase::GetAllSupportedExtensions
+//
+std::vector<std::string const*> ImporterBase::GetAllSupportedExtensions()
+{
+	std::vector<std::string const*> ret;
+
+	for (ImporterBase* const importer : s_Importers)
+	{
+		for (std::string const& ext : importer->GetExensions())
+		{
+			ret.push_back(&ext);
+		}
+	}
+
+	return ret;
+}
+
+//-------------------
+// ImporterBase::Run
+//
+E_ImportResult ImporterBase::Run(std::string const& filePath) const
+{
+	E_ImportResult result = E_ImportResult::Cancelled;
+	Gtk::Dialog dialog(Glib::ustring(GetTitle()), Gtk::DIALOG_DESTROY_WITH_PARENT | Gtk::DIALOG_MODAL);
+
+	Gtk::Button* const importBtn = dialog.add_button("Import", Gtk::ResponseType::RESPONSE_ACCEPT);
+	dialog.add_button("Cancel", Gtk::ResponseType::RESPONSE_CANCEL);
+
+	int32 const response = dialog.run();
+	if (response == Gtk::ResponseType::RESPONSE_ACCEPT)
+	{
+		result = E_ImportResult::Failed;
+	}
+
+	dialog.hide();
+	return result;
 }
 
 

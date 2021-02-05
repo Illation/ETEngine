@@ -22,6 +22,9 @@ public:
 	// importer interface
 	//--------------------
 	rttr::type GetType() const override { return rttr::type::get(*this); }
+	char const* GetTitle() const override {
+		return "GLTF Importer";
+	}
 };
 
 
