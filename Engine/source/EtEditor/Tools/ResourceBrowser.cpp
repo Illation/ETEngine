@@ -88,16 +88,65 @@ void ResourceBrowser::OnDropDataReceived(Glib::RefPtr<Gdk::DragContext> const& c
 
 	if ((selectionData.get_length() >= 0) && (selectionData.get_data_type() == s_DropFileType))
 	{
+		struct ImportGroup
+		{
+			ImportGroup(ImporterBase* const rhs) : m_Importer(rhs) {}
+
+			ImporterBase* const m_Importer;
+			std::vector<std::string> m_Paths;
+		};
+
+		std::vector<ImportGroup> importGroups;
+
 		std::vector<Glib::ustring> const uris = selectionData.get_uris();
 		for (Glib::ustring const& uri : uris)
 		{
 			if (uri.find(s_UriFile) == 0u)
 			{
 				std::string const path(uri.substr(s_UriFile.size()));
-				ImporterBase const* const importer = ImporterBase::GetImporter(path);
+				ImporterBase* const importer = ImporterBase::GetImporter(path);
 				if (importer != nullptr)
 				{
-					E_ImportResult const res = importer->Run(path);
+					auto foundGroup = std::find_if(importGroups.begin(), importGroups.end(), [importer](ImportGroup const& importGroup)
+						{
+							return (importGroup.m_Importer == importer);
+						});
+
+					if (foundGroup == importGroups.cend())
+					{
+						importGroups.emplace_back(importer);
+						foundGroup = std::prev(importGroups.end());
+					}
+
+					foundGroup->m_Paths.push_back(path);
+				}
+				else
+				{
+					LOG(FS("No valid importer for file '%s' found!", path.c_str()));
+				}
+			}
+			else
+			{
+				LOG(FS("Unsupported uri type '%s'", uri.c_str()));
+			}
+		}
+
+		if (!importGroups.empty())
+		{
+			Gtk::Window* const parent = dynamic_cast<Gtk::Window*>(m_View.GetAttachment()->get_toplevel());
+			if (parent == nullptr)
+			{
+				ET_ASSERT(false, "Couldn't import file as there is no parent window for the resource browser");
+				context->drag_finish(dropFinished, false, time);
+				return;
+			}
+
+			for (ImportGroup const& importGroup : importGroups)
+			{
+				E_ImportAll importAll = (importGroup.m_Paths.size() > 1u) ? E_ImportAll::False : E_ImportAll::Disabled;
+				for (std::string const& path : importGroup.m_Paths)
+				{
+					E_ImportResult const res = importGroup.m_Importer->Run(path, m_View.GetSelectedDirectory(), *parent, importAll);
 					switch (res)
 					{
 					case E_ImportResult::Cancelled:
@@ -112,14 +161,6 @@ void ResourceBrowser::OnDropDataReceived(Glib::RefPtr<Gdk::DragContext> const& c
 						break;
 					}
 				}
-				else
-				{
-					LOG(FS("No valid importer for file '%s' found!", path.c_str()));
-				}
-			}
-			else
-			{
-				LOG(FS("Unsupported uri type '%s'", uri.c_str()));
 			}
 		}
 	}

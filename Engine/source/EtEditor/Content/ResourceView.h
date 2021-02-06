@@ -61,6 +61,7 @@ public:
 	// accessors
 	//-----------
 	Gtk::Widget* GetAttachment() const { return m_Attachment; }
+	std::string const& GetSelectedDirectory() const { return m_SelectedDirectory; }
 	std::vector<AssetWidget*> const& GetSelectedAssets() const { return m_SelectedAssets; }
 	T_SignalSelectionChanged GetSelectionChangeSignal() const { return m_SignalSelectionChanged; }
 	Gtk::Box* GetToolbar() const { return m_Toolbar; }
