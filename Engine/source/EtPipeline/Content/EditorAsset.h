@@ -92,6 +92,8 @@ public:
 	void SetupRuntimeAssets(); 
 	void Generate(BuildConfiguration const& buildConfig, core::Directory* const buildDir, std::string const& dbPath);
 
+	void SetAsset(core::I_Asset* const asset) { ET_ASSERT(asset->GetType() == GetType()); m_Asset = asset; }
+
 
 	// Data
 	///////

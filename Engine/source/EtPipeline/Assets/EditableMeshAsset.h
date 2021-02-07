@@ -21,6 +21,10 @@ class EditableMeshAsset final : public EditorAsset<render::MeshData>
 	DECLARE_FORCED_LINKING()
 	RTTR_ENABLE(EditorAsset<render::MeshData>)
 public:
+	static std::string const s_EtMeshExt;
+
+	static void WriteToEtMesh(MeshDataContainer const* const meshContainer, std::vector<uint8>& outData);
+
 	// Construct destruct
 	//---------------------
 	EditableMeshAsset() : EditorAsset<render::MeshData>() {}
@@ -38,7 +42,6 @@ protected:
 	//---------
 private:
 	MeshDataContainer* LoadAssimp(std::vector<uint8> const& data, std::string const& extension);
-	MeshDataContainer* LoadGLTF(std::vector<uint8> const& data, std::string const& path, std::string const& extension);
 };
 
 

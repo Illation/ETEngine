@@ -1,10 +1,17 @@
 #include "stdafx.h"
 #include "GltfImporter.h"
 
+#include "GLTF.h"
+
 #include <gtkmm/label.h>
 #include <gtkmm/checkbutton.h>
 #include <gtkmm/separator.h>
 #include <gtkmm/box.h>
+
+#include <EtCore/FileSystem/FileUtil.h>
+
+#include <EtPipeline/Assets/EditableMeshAsset.h>
+#include <EtPipeline/Import/MeshDataContainer.h>
 
 #include <EtEditor/Util/GtkUtil.h>
 
@@ -95,15 +102,49 @@ void GltfImporter::SetupOptions(Gtk::Frame* const frame, T_SensitiveFn& sensitiv
 //----------------------
 // GltfImporter::Import
 //
-bool GltfImporter::Import(std::vector<uint8> const& importData, std::string const& dirPath, std::string const& outDirectory) const
+bool GltfImporter::Import(std::vector<uint8> const& importData, std::string const& filePath, std::vector<pl::EditorAssetBase*>& outAssets) const
 {
-	UNUSED(importData);
-	UNUSED(dirPath);
-	UNUSED(outDirectory);
+	glTF::glTFAsset glTfAsset;
+	if (!glTF::ParseGLTFData(importData, core::FileUtil::ExtractPath(filePath), core::FileUtil::ExtractExtension(filePath), glTfAsset))
+	{
+		LOG("failed to load the glTF asset", core::LogLevel::Warning);
+		return false;
+	}
 
-	LOG(FS("GltfImporter::Import - not implemented!"), core::LogLevel::Warning);
+	if (m_ImportMeshes)
+	{
+		std::vector<pl::MeshDataContainer*> containers;
+		if (!glTF::GetMeshContainers(glTfAsset, containers, m_CalculateTangentSpace))
+		{
+			LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+			return false;
+		}
 
-	return false;
+		for (pl::MeshDataContainer* const meshContainer : containers)
+		{
+			pl::EditableMeshAsset* const editableMeshAsset = new pl::EditableMeshAsset();
+			outAssets.push_back(editableMeshAsset);
+
+			render::MeshAsset* const meshAsset = new render::MeshAsset();
+			editableMeshAsset->SetAsset(meshAsset);
+
+			pl::EditableMeshAsset::WriteToEtMesh(meshContainer, meshAsset->GetLoadData());
+			if (containers.size() == 1u)
+			{
+				meshAsset->SetName(core::FileUtil::RemoveExtension(core::FileUtil::ExtractName(filePath)) + "." + pl::EditableMeshAsset::s_EtMeshExt);
+			}
+			else
+			{
+				meshAsset->SetName(meshContainer->m_Name + "." + pl::EditableMeshAsset::s_EtMeshExt);
+			}
+
+			delete meshContainer;
+		}
+
+		containers.clear();
+	}
+	
+	return true;
 }
 
 

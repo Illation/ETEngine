@@ -40,6 +40,9 @@ void ResourceView::Init(std::vector<rttr::type> const& allowedTypes)
 	m_RefBuilder->get_widget("resource_view", m_FlowBox);
 	ET_ASSERT(m_FlowBox != nullptr);
 
+	m_RefBuilder->get_widget("asset_area", m_AssetArea);
+	ET_ASSERT(m_AssetArea != nullptr);
+
 	m_FlowBox->signal_selected_children_changed().connect(sigc::mem_fun(*this, &ResourceView::OnSelectedChildrenChanged));
 
 	// filtering
@@ -88,6 +91,25 @@ void ResourceView::Init(std::vector<rttr::type> const& allowedTypes)
 	m_TreeView->append_column("Directory", m_Columns.m_Name);
 
 	RebuildDirectoryTree();
+}
+
+//-------------------------
+// ResourceView::Rebuild
+//
+// Update which assets are shown
+//
+void ResourceView::Rebuild()
+{
+	std::string const selectedDir = m_SelectedDirectory;
+
+	RebuildDirectoryTree(); // this triggers rebuild asset list
+
+	Gtk::TreeModel::Children children = m_TreeModel->children();
+	auto row = RecursiveGetDirectory(m_BaseDirectory->GetName() + selectedDir, children);
+	if (row)
+	{
+		m_TreeSelection->select(row);
+	}
 }
 
 //------------------------------------------------
@@ -274,6 +296,33 @@ void ResourceView::RebuildAssetList()
 	}
 
 	m_FlowBox->show_all_children();
+}
+
+//------------------------------------------------
+// ResourceView::RecursiveGetDirectory
+//
+Gtk::TreeModel::Row ResourceView::RecursiveGetDirectory(std::string const dir, Gtk::TreeModel::Children const& children) const 
+{
+	for (Gtk::TreeModel::Children::iterator it = children.begin(); it != children.end(); ++it)
+	{
+		Gtk::TreeModel::Row row = *it;
+
+		core::Directory const* const rowDir = row[m_Columns.m_Directory];
+		std::string rowDirPath(rowDir->GetName());
+		core::FileUtil::RemoveExcessPathDelimiters(rowDirPath);
+		if (rowDirPath == dir)
+		{
+			return row;
+		}
+
+		row = RecursiveGetDirectory(dir, it->children());
+		if (row)
+		{
+			return row;
+		}
+	}
+
+	return *(children.end());
 }
 
 

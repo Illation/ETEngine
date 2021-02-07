@@ -2,8 +2,8 @@
   "editable mesh asset": {
     "asset": {
       "mesh asset": {
-        "name": "Corset.glb",
-        "path": "Models/gltf/",
+        "name": "Box.etmc",
+        "path": "Models/",
         "package": "content1",
         "references": []
       }

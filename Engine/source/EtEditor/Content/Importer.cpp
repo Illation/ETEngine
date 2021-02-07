@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Importer.h"
 
+#include "GltfImporter.h"
+
 #include <gtkmm/button.h>
 #include <gtkmm/dialog.h>
 #include <gtkmm/label.h>
@@ -8,7 +10,8 @@
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
-#include "GltfImporter.h"
+#include <EtPipeline/Content/FileResourceManager.h>
+
 #include <EtEditor/Util/GtkUtil.h>
 
 
@@ -106,7 +109,11 @@ std::vector<std::string const*> ImporterBase::GetAllSupportedExtensions()
 //-------------------
 // ImporterBase::Run
 //
-E_ImportResult ImporterBase::Run(std::string const& filePath, std::string const& outDirectory, Gtk::Window& parent, E_ImportAll& importAll) 
+E_ImportResult ImporterBase::Run(std::string const& filePath, 
+	std::string const& outDirectory, 
+	bool const isProjectDb, 
+	Gtk::Window& parent, 
+	E_ImportAll& importAll)
 {
 	E_ImportResult result = E_ImportResult::Cancelled;
 	bool runImport = false;
@@ -189,8 +196,54 @@ E_ImportResult ImporterBase::Run(std::string const& filePath, std::string const&
 			importData = importFile.Read();
 		}
 
-		if (Import(importData, filePath, outDirectory))
+		std::vector<pl::EditorAssetBase*> importedAssets;
+		if (Import(importData, filePath, importedAssets))
 		{
+			pl::FileResourceManager* const resourceMan = static_cast<pl::FileResourceManager*>(core::ResourceManager::Instance());
+			pl::EditorAssetDatabase& db = isProjectDb ? resourceMan->GetProjectDatabase() : resourceMan->GetEngineDatabase();
+			std::vector<core::PackageDescriptor> const& packages = db.GetPackages();
+
+			for (pl::EditorAssetBase* const asset : importedAssets)
+			{
+				asset->GetAsset()->SetPath(outDirectory);
+				if (!packages.empty()) // #todo: in the future either show package option or have a default package setting
+				{
+					asset->GetAsset()->SetPackageId(packages[0].GetId()); 
+				}
+
+				core::File* const dataFile = new core::File(asset->GetAsset()->GetPath() + asset->GetAsset()->GetName(), db.GetDirectory());
+				if (dataFile->Exists())
+				{
+					ET_ASSERT(false, "Reimporting existing assets is currently not supported! File: %s", dataFile->GetName());
+					delete dataFile;
+					return E_ImportResult::Failed;
+				}
+
+				core::FILE_ACCESS_FLAGS outFlags;
+				outFlags.SetFlags(core::FILE_ACCESS_FLAGS::FLAGS::Create | core::FILE_ACCESS_FLAGS::FLAGS::Exists);
+				if (!dataFile->Open(core::FILE_ACCESS_MODE::Write, outFlags))
+				{
+					ET_ASSERT(false, "Failed to open imported asset file for writing at '%s'", dataFile->GetName());
+					delete dataFile;
+					return E_ImportResult::Failed;
+				}
+
+				// Write the package data
+				std::vector<uint8>& importData = asset->GetAsset()->GetLoadData();
+				dataFile->Write(importData);
+
+				// cleanup
+				dataFile->Close();
+
+				importData.clear();
+				importData.resize(0u);
+
+				// Add new asset to AssetDb, create ETAC file
+				db.RegisterNewAsset(asset);
+			}
+
+			importedAssets.clear();
+
 			result = E_ImportResult::Succeeded;
 		}
 		else

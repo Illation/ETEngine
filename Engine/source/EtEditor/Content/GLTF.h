@@ -10,7 +10,7 @@ namespace et { namespace core {
 
 
 namespace et {
-namespace pl {
+namespace edit {
 
 namespace glTF
 {
@@ -539,9 +539,9 @@ bool GetAccessorVectorArray(glTFAsset& asset, uint32 idx, std::vector<math::vect
 	return true;
 }
 
-bool GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& meshContainers);
+bool GetMeshContainers(glTFAsset& asset, std::vector<pl::MeshDataContainer*>& meshContainers, bool const calculateTangentSpace);
 }
 
 
-} // namespace pl
+} // namespace edit
 } // namespace et

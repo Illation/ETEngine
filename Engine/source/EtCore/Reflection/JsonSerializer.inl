@@ -63,13 +63,21 @@ JSON::Value* JsonSerializer::Serialize(TDataType const& serialObject)
 
 	JSON::Value* outObject = nullptr;
 
-	if (ToJsonRecursive(inst, outObject, rttr::type::get(serialObject)))
+	rttr::type const callingType = rttr::type::get(serialObject);
+	if (ToJsonRecursive(inst, outObject, callingType))
 	{
-		JSON::Object* root = new JSON::Object();
+		if (callingType.is_pointer())
+		{
+			return outObject;
+		}
+		else
+		{
+			JSON::Object* root = new JSON::Object();
 
-		root->value.emplace_back(inst.get_type().get_name().to_string(), outObject);
+			root->value.emplace_back(inst.get_type().get_name().to_string(), outObject);
 
-		return static_cast<JSON::Value*>(root);
+			return static_cast<JSON::Value*>(root);
+		}
 	}
 
 	delete outObject;

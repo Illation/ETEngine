@@ -107,6 +107,7 @@ public:
 	uint32 GetRefCount() const { return m_RefCount; }
 
 	std::vector<uint8> const& GetLoadData() const { return m_LoadData; }
+	std::vector<uint8>& GetLoadData() { return m_LoadData; }
 
 	void Load();
 	void Unload(bool const force = false);

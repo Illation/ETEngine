@@ -62,10 +62,15 @@ public:
 	//-----------
 	Gtk::Widget* GetAttachment() const { return m_Attachment; }
 	std::string const& GetSelectedDirectory() const { return m_SelectedDirectory; }
+	bool IsProjectSelected() const { return m_ProjectSelected; }
 	std::vector<AssetWidget*> const& GetSelectedAssets() const { return m_SelectedAssets; }
 	T_SignalSelectionChanged GetSelectionChangeSignal() const { return m_SignalSelectionChanged; }
 	Gtk::Box* GetToolbar() const { return m_Toolbar; }
-	Gtk::Widget* GetAssetArea() const { return m_FlowBox; }
+	Gtk::Widget* GetAssetArea() const { return m_AssetArea; }
+
+	// functionality
+	//---------------
+	void Rebuild();
 
 private:
 
@@ -81,6 +86,7 @@ private:
 	//---------
 	void RebuildDirectoryTree();
 	void RebuildAssetList();
+	Gtk::TreeModel::Row RecursiveGetDirectory(std::string const dir, Gtk::TreeModel::Children const& children) const;
 
 
 	// Data
@@ -91,6 +97,7 @@ private:
 
 	// resource view
 	Gtk::FlowBox* m_FlowBox = nullptr;
+	Gtk::Widget* m_AssetArea = nullptr;
 
 	// engine / project resources
 	Gtk::RadioButton* m_EngineButton = nullptr;

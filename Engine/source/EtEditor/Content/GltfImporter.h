@@ -27,7 +27,7 @@ public:
 	virtual bool HasOptions() const { return true; }
 	virtual void SetupOptions(Gtk::Frame* const frame, T_SensitiveFn& sensitiveFn);
 
-	bool Import(std::vector<uint8> const& importData, std::string const& dirPath, std::string const& outDirectory) const override;
+	bool Import(std::vector<uint8> const& importData, std::string const& dirPath, std::vector<pl::EditorAssetBase*>& outAssets) const override;
 
 	// Data
 	///////

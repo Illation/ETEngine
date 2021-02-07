@@ -16,6 +16,8 @@ struct MeshDataContainer final
 	render::T_VertexFlags GetFlags() const;
 	math::Sphere GetBoundingSphere() const;
 
+	std::string m_Name;
+
 	size_t m_VertexCount = 0u;
 
 	std::vector<vec3> m_Positions;

@@ -160,16 +160,14 @@ std::string const MeshAsset::s_Header("ETMESH");
 
 
 //---------------------------------
-// MeshAsset::LoadFromMemory
+// MeshAsset::ReadEtMesh
 //
 // Load mesh data from binary asset content, and place it on the GPU
 //
-bool MeshAsset::LoadFromMemory(std::vector<uint8> const& data)
+bool MeshAsset::ReadEtMesh(MeshData* const meshData, std::vector<uint8> const& loadData)
 {
-	m_Data = new MeshData();
-
 	core::BinaryReader reader;
-	reader.Open(data);
+	reader.Open(loadData);
 	ET_ASSERT(reader.Exists());
 
 	// read header
@@ -189,18 +187,18 @@ bool MeshAsset::LoadFromMemory(std::vector<uint8> const& data)
 	// read mesh info
 	//----------------
 	uint64 const indexCount = reader.Read<uint64>();
-	m_Data->m_IndexCount = static_cast<size_t>(indexCount);
+	meshData->m_IndexCount = static_cast<size_t>(indexCount);
 
 	uint64 const vertexCount = reader.Read<uint64>();
-	m_Data->m_VertexCount = static_cast<size_t>(vertexCount);
+	meshData->m_VertexCount = static_cast<size_t>(vertexCount);
 
-	m_Data->m_IndexDataType = reader.Read<E_DataType>();
-	m_Data->m_SupportedFlags = reader.Read<T_VertexFlags>();
-	m_Data->m_BoundingSphere.pos = reader.ReadVector<3, float>();
-	m_Data->m_BoundingSphere.radius = reader.Read<float>();
+	meshData->m_IndexDataType = reader.Read<E_DataType>();
+	meshData->m_SupportedFlags = reader.Read<T_VertexFlags>();
+	meshData->m_BoundingSphere.pos = reader.ReadVector<3, float>();
+	meshData->m_BoundingSphere.radius = reader.Read<float>();
 
-	uint64 const iBufferSize = indexCount * static_cast<uint64>(render::DataTypeInfo::GetTypeSize(m_Data->m_IndexDataType));
-	uint64 const vBufferSize = vertexCount * static_cast<uint64>(render::AttributeDescriptor::GetVertexSize(m_Data->m_SupportedFlags));
+	uint64 const iBufferSize = indexCount * static_cast<uint64>(render::DataTypeInfo::GetTypeSize(meshData->m_IndexDataType));
+	uint64 const vBufferSize = vertexCount * static_cast<uint64>(render::AttributeDescriptor::GetVertexSize(meshData->m_SupportedFlags));
 
 	// setup buffers
 	//---------------
@@ -212,14 +210,31 @@ bool MeshAsset::LoadFromMemory(std::vector<uint8> const& data)
 	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	// vertex buffer
-	m_Data->m_VertexBuffer = api->CreateBuffer();
-	api->BindBuffer(E_BufferType::Vertex, m_Data->m_VertexBuffer);
+	meshData->m_VertexBuffer = api->CreateBuffer();
+	api->BindBuffer(E_BufferType::Vertex, meshData->m_VertexBuffer);
 	api->SetBufferData(E_BufferType::Vertex, static_cast<int64>(vBufferSize), reinterpret_cast<void const*>(vertexData), E_UsageHint::Static);
 
 	// index buffer 
-	m_Data->m_IndexBuffer = api->CreateBuffer();
-	api->BindBuffer(E_BufferType::Index, m_Data->m_IndexBuffer);
+	meshData->m_IndexBuffer = api->CreateBuffer();
+	api->BindBuffer(E_BufferType::Index, meshData->m_IndexBuffer);
 	api->SetBufferData(E_BufferType::Index, static_cast<int64>(iBufferSize), reinterpret_cast<void const*>(indexData), E_UsageHint::Static);
+
+	return true;
+}
+
+//---------------------------------
+// MeshAsset::LoadFromMemory
+//
+bool MeshAsset::LoadFromMemory(std::vector<uint8> const& data)
+{
+	m_Data = new MeshData();
+	if (!ReadEtMesh(m_Data, data))
+	{
+		delete m_Data;
+		m_Data = nullptr;
+
+		return false;
+	}
 
 	return true;
 }

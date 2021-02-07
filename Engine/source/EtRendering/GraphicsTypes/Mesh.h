@@ -131,6 +131,8 @@ public:
 
 	static std::string const s_Header;
 
+	static bool ReadEtMesh(MeshData* const meshData, std::vector<uint8> const& loadData);
+
 	// Construct destruct
 	//---------------------
 	MeshAsset() : core::Asset<MeshData, false>() {}

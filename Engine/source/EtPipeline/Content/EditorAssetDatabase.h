@@ -78,6 +78,7 @@ public:
 	void Flush();
 	void SetupAllRuntimeAssets();
 	void PopulateAssetDatabase(core::AssetDatabase& db) const;
+	void RegisterNewAsset(EditorAssetBase* const asset);
 
 	// utility
 	//---------

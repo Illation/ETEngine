@@ -146,7 +146,12 @@ void ResourceBrowser::OnDropDataReceived(Glib::RefPtr<Gdk::DragContext> const& c
 				E_ImportAll importAll = (importGroup.m_Paths.size() > 1u) ? E_ImportAll::False : E_ImportAll::Disabled;
 				for (std::string const& path : importGroup.m_Paths)
 				{
-					E_ImportResult const res = importGroup.m_Importer->Run(path, m_View.GetSelectedDirectory(), *parent, importAll);
+					E_ImportResult const res = importGroup.m_Importer->Run(path, 
+						m_View.GetSelectedDirectory(), 
+						m_View.IsProjectSelected(), 
+						*parent, 
+						importAll);
+
 					switch (res)
 					{
 					case E_ImportResult::Cancelled:
@@ -158,6 +163,7 @@ void ResourceBrowser::OnDropDataReceived(Glib::RefPtr<Gdk::DragContext> const& c
 					case E_ImportResult::Succeeded:
 						LOG(FS("Import succeeded for file '%s'", path.c_str()));
 						dropFinished = true;
+						m_View.Rebuild();
 						break;
 					}
 				}

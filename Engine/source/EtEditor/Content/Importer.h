@@ -2,6 +2,8 @@
 #include <gtkmm/frame.h>
 #include <gtkmm/window.h>
 
+#include <EtPipeline/Content/EditorAsset.h>
+
 
 namespace et {
 namespace edit {
@@ -63,7 +65,7 @@ public:
 protected:
 	virtual bool HasOptions() const { return false; }
 	virtual void SetupOptions(Gtk::Frame* const frame, T_SensitiveFn& sensitiveFn) { UNUSED(frame); UNUSED(sensitiveFn); }
-	virtual bool Import(std::vector<uint8> const& importData, std::string const& filePath, std::string const& outDirectory) const = 0;
+	virtual bool Import(std::vector<uint8> const& importData, std::string const& filePath, std::vector<pl::EditorAssetBase*>& outAssets) const = 0;
 
 	// accessors
 	//-----------
@@ -72,7 +74,7 @@ public:
 
 	// functionality
 	//---------------
-	E_ImportResult Run(std::string const& filePath, std::string const& outDirectory, Gtk::Window& parent, E_ImportAll& importAll);
+	E_ImportResult Run(std::string const& filePath, std::string const& outDirectory, bool const isProjectDb, Gtk::Window& parent, E_ImportAll& importAll);
 
 
 	// Data

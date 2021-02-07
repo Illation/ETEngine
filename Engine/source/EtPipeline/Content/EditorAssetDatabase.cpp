@@ -7,6 +7,7 @@
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Reflection/JsonDeserializer.h>
+#include <EtCore/Reflection/JsonSerializer.h>
 
 
 namespace et {
@@ -423,6 +424,52 @@ void EditorAssetDatabase::PopulateAssetDatabase(core::AssetDatabase& db) const
 			}
 		}
 	}
+}
+
+//---------------------------------------
+// EditorAssetDatabase::RegisterNewAsset
+//
+void EditorAssetDatabase::RegisterNewAsset(EditorAssetBase* const asset)
+{
+	std::vector<uint8> serializedData;
+
+	core::JsonSerializer serializer;
+	if (!serializer.SerializeToData(asset, serializedData))
+	{
+		ET_ASSERT(false, "failed to deserizlize asset config '%s'", asset->GetAsset()->GetName());
+		return;
+	}
+
+	std::string const etacFn(core::FileUtil::RemoveExtension(asset->GetAsset()->GetPath() + asset->GetAsset()->GetName()) + "." + s_AssetContentFileExt);
+	core::File* const contentFile = new core::File(etacFn, m_Directory);
+	if (contentFile->Exists())
+	{
+		ET_ASSERT(false, "Failed to register new asset because asset content already existed! File: %s", contentFile->GetName());
+		delete contentFile;
+		return;
+	}
+
+	core::FILE_ACCESS_FLAGS outFlags;
+	outFlags.SetFlags(core::FILE_ACCESS_FLAGS::FLAGS::Create | core::FILE_ACCESS_FLAGS::FLAGS::Exists);
+	if (!contentFile->Open(core::FILE_ACCESS_MODE::Write, outFlags))
+	{
+		ET_ASSERT(false, "Failed to open asset content file for writing '%s'", contentFile->GetName());
+		delete contentFile;
+		return;
+	}
+
+	// Write the package data
+	contentFile->Write(serializedData);
+
+	// cleanup
+	contentFile->Close();
+
+	asset->Init(contentFile);
+
+	T_AssetList& cache = FindOrCreateCache(asset->GetType());
+	cache.push_back(asset);
+
+	LOG(FS("Added asset '%s' to '%s' cache!", asset->GetId().ToStringDbg(), EditorAssetDatabase::GetCacheType(cache).get_name().data()));
 }
 
 //----------------------------------

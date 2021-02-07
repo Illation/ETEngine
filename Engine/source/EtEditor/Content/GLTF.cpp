@@ -9,11 +9,11 @@
 
 #include <EtRendering/GraphicsTypes/Mesh.h>
 
-#include "MeshDataContainer.h"
+#include <EtPipeline/Import/MeshDataContainer.h>
 
 
 namespace et {
-namespace pl {
+namespace edit {
 
 
 bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
@@ -1344,14 +1344,14 @@ bool glTF::GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& dat
 	return true;
 }
 
-bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& meshContainers)
+bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<pl::MeshDataContainer*>& meshContainers, bool const calculateTangentSpace)
 {
 	for (const Mesh& mesh : asset.dom.meshes)
 	{
 		if (mesh.primitives.size() > 1)LOG("Currently ETEngine meshes only support one primitive", core::LogLevel::Warning);
 		for (const Primitive& primitive : mesh.primitives)
 		{
-			MeshDataContainer* pMesh = new MeshDataContainer();
+			pl::MeshDataContainer* pMesh = new pl::MeshDataContainer();
 
 			//Basic positions
 			if (primitive.indices == -1)
@@ -1446,9 +1446,13 @@ bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& 
 						return false;
 					}
 				}
-				if (!pMesh->ConstructTangentSpace(tangentInfo))
+
+				if (calculateTangentSpace)
 				{
-					LOG("ETEngine failed to construct the tangent space for this mesh", core::LogLevel::Warning);
+					if (!pMesh->ConstructTangentSpace(tangentInfo))
+					{
+						LOG("ETEngine failed to construct the tangent space for this mesh", core::LogLevel::Warning);
+					}
 				}
 			}
 
@@ -1474,6 +1478,8 @@ bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& 
 				LOG("ETEngine currently doesn't support weights for meshes", core::LogLevel::Warning);
 			}
 
+			pMesh->m_Name = mesh.name;
+
 			meshContainers.push_back(pMesh);
 		}
 	}
@@ -1481,5 +1487,5 @@ bool glTF::GetMeshContainers(glTFAsset& asset, std::vector<MeshDataContainer*>& 
 }
 
 
-} // namespace pl
+} // namespace edit
 } // namespace et
