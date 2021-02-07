@@ -69,8 +69,10 @@ if(NOT EXISTS "${_toolsetTriplet}")
 
 	get_filename_component(_compilerRoot ${CMAKE_MAKE_PROGRAM} DIRECTORY)
 	get_filename_component(_currentName ${_compilerRoot} NAME)
-	while(NOT ${_currentName} MATCHES ".*MSBuild$")
+	string(TOLOWER ${_currentName} _currentName)
+	while(NOT ${_currentName} MATCHES ".*msbuild$")
 		get_filename_component(_currentName ${_compilerRoot} NAME)
+		string(TOLOWER ${_currentName} _currentName)
 		get_filename_component(_compilerRoot ${_compilerRoot}/.. ABSOLUTE)
 	endwhile()
 
