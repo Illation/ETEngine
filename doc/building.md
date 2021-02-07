@@ -31,6 +31,7 @@ The -H and -B options specify an out of source build in the **build/** folder, w
 
  * For building gtkmm, vcpkg requires you have the english language pack installed:
 https://github.com/microsoft/vcpkg/issues/3842
+ * Don't clone recursive, submodule download is handled automatically during project generation
 
 
 ### Third party libraries
