@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<root boolvalue="true" falsevalue="false" nullvalue="0">
+  <menu id="&#x66;ile">
+    <popup>
+      <menuitem value="New" onclick="CreateNewDoc()"/>
+      <menuitem value="Open" onclick="OpenDoc()">lol</menuitem>
+      <menuitem value="Close" onclick="CloseDoc()"></menuitem>
+      <menuitem value="Save" onclick="SaveDoc()"/>
+    </popup>
+    <numarray test="&quot;">10 3.345 2e4 4.53E-2 0.4e12 -&#49;2.43e+3</numarray>
+  </menu>
+</root>
