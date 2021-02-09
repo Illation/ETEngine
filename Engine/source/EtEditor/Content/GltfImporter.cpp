@@ -9,6 +9,7 @@
 #include <gtkmm/box.h>
 
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/IO/BinaryReader.h>
 
 #include <EtPipeline/Assets/EditableMeshAsset.h>
 #include <EtPipeline/Import/MeshDataContainer.h>
@@ -114,11 +115,167 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 	if (m_ImportMeshes)
 	{
 		std::vector<pl::MeshDataContainer*> containers;
-		if (!glTF::GetMeshContainers(glTfAsset, containers, m_CalculateTangentSpace))
+		auto const cleanupFn = [&containers]()
+			{
+				for (pl::MeshDataContainer* const container : containers)
+				{
+					delete container;
+				}
+			};
+
+		// extract mesh containers from GLTF assets
+		//------------------------------------------
+		for (const glTF::Mesh& mesh : glTfAsset.dom.meshes)
 		{
-			LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
-			return false;
+			if (mesh.primitives.size() > 1u)
+			{
+				LOG("Currently ETEngine meshes only support one primitive", core::LogLevel::Warning);
+			}
+
+			for (const glTF::Primitive& primitive : mesh.primitives)
+			{
+				pl::MeshDataContainer* const meshContainer = new pl::MeshDataContainer();
+
+				//Basic positions
+				if (primitive.indices == -1)
+				{
+					LOG("ETEngine only supports indexed draw for meshes", core::LogLevel::Warning);
+					continue;
+				}
+				else
+				{
+					if (primitive.indices >= (int32)glTfAsset.dom.accessors.size())
+					{
+						delete meshContainer;
+						cleanupFn();
+						LOG("failed to construct mesh data containers from glTF - Accessor index out of range", core::LogLevel::Warning);
+						return false;
+					}
+
+					glTF::Accessor& accessor = glTfAsset.dom.accessors[primitive.indices];
+					if (accessor.type != glTF::Type::SCALAR)
+					{
+						delete meshContainer;
+						cleanupFn();
+						LOG("failed to construct mesh data containers from glTF - Index accessor must be SCALAR", core::LogLevel::Warning);
+						return false;
+					}
+
+					if (!glTF::GetAccessorScalarArray(glTfAsset, primitive.indices, meshContainer->m_Indices))
+					{
+						delete meshContainer;
+						cleanupFn();
+						LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+						return false;
+					}
+				}
+
+				if (primitive.attributes.position != -1)
+				{
+					if (!glTF::GetAccessorVectorArray(glTfAsset, primitive.attributes.position, meshContainer->m_Positions, true))
+					{
+						delete meshContainer;
+						cleanupFn();
+						LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+						return false;
+					}
+
+					meshContainer->m_VertexCount = meshContainer->m_Positions.size();
+				}
+
+				//Texcoords before normals in case tangents need to be generated
+				if (primitive.attributes.texcoord0 != -1)
+				{
+					if (!glTF::GetAccessorVectorArray(glTfAsset, primitive.attributes.texcoord0, meshContainer->m_TexCoords))
+					{
+						delete meshContainer;
+						cleanupFn();
+						LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+						return false;
+					}
+
+					if (primitive.attributes.texcoord1 != -1)
+					{
+						LOG("ETEngine currently supports only one set of texture coordinates for meshes", core::LogLevel::Warning);
+					}
+				}
+				else if (primitive.attributes.texcoord1 != -1)
+				{
+					if (!glTF::GetAccessorVectorArray(glTfAsset, primitive.attributes.texcoord1, meshContainer->m_TexCoords))
+					{
+						delete meshContainer;
+						cleanupFn();
+						LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+						return false;
+					}
+				}
+
+				//Normal and tangent info
+				if (primitive.attributes.normal != -1)
+				{
+					if (!glTF::GetAccessorVectorArray(glTfAsset, primitive.attributes.normal, meshContainer->m_Normals, true))
+					{
+						delete meshContainer;
+						cleanupFn();
+						LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+						return false;
+					}
+
+					std::vector<vec4> tangentInfo;
+					if (primitive.attributes.tangent != -1)
+					{
+						if (!glTF::GetAccessorVectorArray(glTfAsset, primitive.attributes.tangent, tangentInfo, true))
+						{
+							delete meshContainer;
+							cleanupFn();
+							LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+							return false;
+						}
+					}
+
+					if (m_CalculateTangentSpace)
+					{
+						if (!meshContainer->ConstructTangentSpace(tangentInfo))
+						{
+							LOG("ETEngine failed to construct the tangent space for this mesh", core::LogLevel::Warning);
+						}
+					}
+				}
+
+				//Shading
+				if (primitive.attributes.color0 != -1)
+				{
+					if (!glTF::GetAccessorVectorArray(glTfAsset, primitive.attributes.color0, meshContainer->m_Colors, true))
+					{
+						delete meshContainer;
+						cleanupFn();
+						LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+						return false;
+					}
+				}
+
+				//Animation
+				if (m_IncludeSkeletalData)
+				{
+					if (primitive.attributes.joints0 != -1)
+					{
+						LOG("ETEngine currently doesn't support joints for meshes", core::LogLevel::Warning);
+					}
+
+					if (primitive.attributes.weights0 != -1)
+					{
+						LOG("ETEngine currently doesn't support weights for meshes", core::LogLevel::Warning);
+					}
+				}
+
+				meshContainer->m_Name = mesh.name;
+
+				containers.push_back(meshContainer);
+			}
 		}
+
+		// convert mesh containers to mesh assets
+		//----------------------------------------
 
 		for (pl::MeshDataContainer* const meshContainer : containers)
 		{

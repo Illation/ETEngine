@@ -4,9 +4,7 @@
 
 namespace et { namespace core {
 	class BinaryReader;
-} namespace pl {
-	struct MeshDataContainer;
-} }
+}  }
 
 
 namespace et {
@@ -539,9 +537,8 @@ bool GetAccessorVectorArray(glTFAsset& asset, uint32 idx, std::vector<math::vect
 	return true;
 }
 
-bool GetMeshContainers(glTFAsset& asset, std::vector<pl::MeshDataContainer*>& meshContainers, bool const calculateTangentSpace);
-}
 
+} // namespace glTF
 
 } // namespace edit
 } // namespace et
