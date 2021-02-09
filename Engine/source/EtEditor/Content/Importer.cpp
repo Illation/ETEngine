@@ -9,6 +9,7 @@
 
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/IO/Uri.h>
 
 #include <EtPipeline/Content/FileResourceManager.h>
 
@@ -109,11 +110,7 @@ std::vector<std::string const*> ImporterBase::GetAllSupportedExtensions()
 //-------------------
 // ImporterBase::Run
 //
-E_ImportResult ImporterBase::Run(std::string const& filePath, 
-	std::string const& outDirectory, 
-	bool const isProjectDb, 
-	Gtk::Window& parent, 
-	E_ImportAll& importAll)
+E_ImportResult ImporterBase::Run(core::URI& uri, std::string const& outDirectory, bool const isProjectDb, Gtk::Window& parent, E_ImportAll& importAll)
 {
 	E_ImportResult result = E_ImportResult::Cancelled;
 	bool runImport = false;
@@ -141,8 +138,8 @@ E_ImportResult ImporterBase::Run(std::string const& filePath,
 		dialog.add_button("Cancel", Gtk::ResponseType::RESPONSE_CANCEL);
 
 		// general tool UI
-		Gtk::Label* const fileLabel = Gtk::make_managed<Gtk::Label>(Glib::ustring(core::FileUtil::ExtractName(filePath)));
-		fileLabel->set_tooltip_text(filePath);
+		Gtk::Label* const fileLabel = Gtk::make_managed<Gtk::Label>(Glib::ustring(core::FileUtil::ExtractName(uri.GetPath())));
+		fileLabel->set_tooltip_text(uri.GetPath());
 		content->pack_start(*fileLabel, false, true, 3u);
 
 		// custom tool options
@@ -184,21 +181,17 @@ E_ImportResult ImporterBase::Run(std::string const& filePath,
 	//--------------
 	if (runImport)
 	{
-		std::vector<uint8> importData;
+		if (!uri.Evaluate())
 		{
-			core::File importFile(filePath, nullptr);
-			if (!importFile.Open(core::FILE_ACCESS_MODE::Read))
-			{
-				ET_ASSERT(false, "failed to open import file '%s'", filePath.c_str());
-				return E_ImportResult::Failed;
-			}
-
-			importData = importFile.Read();
+			ET_ASSERT(false, "failed to open import file '%s'", uri.GetPath().c_str());
+			return E_ImportResult::Failed;
 		}
 
 		std::vector<pl::EditorAssetBase*> importedAssets;
-		if (Import(importData, filePath, importedAssets))
+		if (Import(uri.GetEvaluatedData(), uri.GetPath(), importedAssets))
 		{
+			uri.ClearEvaluatedData();
+
 			pl::FileResourceManager* const resourceMan = static_cast<pl::FileResourceManager*>(core::ResourceManager::Instance());
 			pl::EditorAssetDatabase& db = isProjectDb ? resourceMan->GetProjectDatabase() : resourceMan->GetEngineDatabase();
 			std::vector<core::PackageDescriptor> const& packages = db.GetPackages();
@@ -248,6 +241,8 @@ E_ImportResult ImporterBase::Run(std::string const& filePath,
 		}
 		else
 		{
+			uri.ClearEvaluatedData();
+
 			result = E_ImportResult::Failed;
 		}
 	}

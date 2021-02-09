@@ -5,6 +5,11 @@
 #include <EtPipeline/Content/EditorAsset.h>
 
 
+namespace et { namespace core {
+	class URI;
+} }
+
+
 namespace et {
 namespace edit {
 
@@ -74,7 +79,7 @@ public:
 
 	// functionality
 	//---------------
-	E_ImportResult Run(std::string const& filePath, std::string const& outDirectory, bool const isProjectDb, Gtk::Window& parent, E_ImportAll& importAll);
+	E_ImportResult Run(core::URI& uri, std::string const& outDirectory, bool const isProjectDb, Gtk::Window& parent, E_ImportAll& importAll);
 
 
 	// Data

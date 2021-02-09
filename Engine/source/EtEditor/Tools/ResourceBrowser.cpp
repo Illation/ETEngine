@@ -4,6 +4,7 @@
 #include <gtkmm/frame.h>
 
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/IO/Uri.h>
 
 #include <EtEditor/Content/Importer.h>
 
@@ -18,7 +19,6 @@ namespace edit {
 
 
 std::string const ResourceBrowser::s_DropFileType("text/uri-list");
-std::string const ResourceBrowser::s_UriFile("file:///");
 
 
 //------------------------
@@ -93,18 +93,18 @@ void ResourceBrowser::OnDropDataReceived(Glib::RefPtr<Gdk::DragContext> const& c
 			ImportGroup(ImporterBase* const rhs) : m_Importer(rhs) {}
 
 			ImporterBase* const m_Importer;
-			std::vector<std::string> m_Paths;
+			std::vector<core::URI> m_Uris;
 		};
 
 		std::vector<ImportGroup> importGroups;
 
 		std::vector<Glib::ustring> const uris = selectionData.get_uris();
-		for (Glib::ustring const& uri : uris)
+		for (Glib::ustring const& uriStr : uris)
 		{
-			if (uri.find(s_UriFile) == 0u)
+			core::URI uri(uriStr);
+			if (uri.CanEvaluate())
 			{
-				std::string const path(uri.substr(s_UriFile.size()));
-				ImporterBase* const importer = ImporterBase::GetImporter(path);
+				ImporterBase* const importer = ImporterBase::GetImporter(uri.GetPath());
 				if (importer != nullptr)
 				{
 					auto foundGroup = std::find_if(importGroups.begin(), importGroups.end(), [importer](ImportGroup const& importGroup)
@@ -118,16 +118,16 @@ void ResourceBrowser::OnDropDataReceived(Glib::RefPtr<Gdk::DragContext> const& c
 						foundGroup = std::prev(importGroups.end());
 					}
 
-					foundGroup->m_Paths.push_back(path);
+					foundGroup->m_Uris.push_back(uri);
 				}
 				else
 				{
-					LOG(FS("No valid importer for file '%s' found!", path.c_str()));
+					LOG(FS("No valid importer for file '%s' found!", uri.GetPath().c_str()));
 				}
 			}
 			else
 			{
-				LOG(FS("Unsupported uri type '%s'", uri.c_str()));
+				LOG(FS("Unsupported uri type for file '%s'", uri.GetPath().c_str()));
 			}
 		}
 
@@ -141,12 +141,12 @@ void ResourceBrowser::OnDropDataReceived(Glib::RefPtr<Gdk::DragContext> const& c
 				return;
 			}
 
-			for (ImportGroup const& importGroup : importGroups)
+			for (ImportGroup& importGroup : importGroups)
 			{
-				E_ImportAll importAll = (importGroup.m_Paths.size() > 1u) ? E_ImportAll::False : E_ImportAll::Disabled;
-				for (std::string const& path : importGroup.m_Paths)
+				E_ImportAll importAll = (importGroup.m_Uris.size() > 1u) ? E_ImportAll::False : E_ImportAll::Disabled;
+				for (core::URI& uri : importGroup.m_Uris)
 				{
-					E_ImportResult const res = importGroup.m_Importer->Run(path, 
+					E_ImportResult const res = importGroup.m_Importer->Run(uri,
 						m_View.GetSelectedDirectory(), 
 						m_View.IsProjectSelected(), 
 						*parent, 
@@ -155,13 +155,13 @@ void ResourceBrowser::OnDropDataReceived(Glib::RefPtr<Gdk::DragContext> const& c
 					switch (res)
 					{
 					case E_ImportResult::Cancelled:
-						LOG(FS("Import cancelled for file '%s'", path.c_str()));
+						LOG(FS("Import cancelled for file '%s'", uri.GetPath().c_str()));
 						break;
 					case E_ImportResult::Failed:
-						LOG(FS("Import failed for file '%s'", path.c_str()));
+						LOG(FS("Import failed for file '%s'", uri.GetPath().c_str()));
 						break;
 					case E_ImportResult::Succeeded:
-						LOG(FS("Import succeeded for file '%s'", path.c_str()));
+						LOG(FS("Import succeeded for file '%s'", uri.GetPath().c_str()));
 						dropFinished = true;
 						m_View.Rebuild();
 						break;

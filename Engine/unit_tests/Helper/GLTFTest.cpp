@@ -13,43 +13,9 @@
 using namespace et;
 
 
-TEST_CASE("Decode Base64", "[gltf]")
-{
-	std::string base64 = "VGVzdFRleHQ=";
-	std::string expected = "TestText";
-	std::vector<uint8> decoded;
-	REQUIRE(edit::glTF::DecodeBase64(base64, decoded) == true);
-	REQUIRE(expected == core::FileUtil::AsText(decoded));
-}
+std::string const fileName = "Box.gltf";
+std::string const glbFileName = "Corset.glb";
 
-std::string fileName = "Box.gltf";
-std::string glbFileName = "Corset.glb";
-
-TEST_CASE("Evaluate URI", "[gltf]")
-{
-	std::string ext;
-
-	std::string baseDir = global::g_UnitTestDir + "Helper/";
-
-	edit::glTF::URI embedded;
-	embedded.path = "data:application/octet-stream;base64,AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAvwAAAL8AAAA/AAAAPwAAAL8AAAA/AAAAvwAAAD8AAAA/AAAAPwAAAD8AAAA/AAAAPwAAAL8AAAA/AAAAvwAAAL8AAAA/AAAAPwAAAL8AAAC/AAAAvwAAAL8AAAC/AAAAPwAAAD8AAAA/AAAAPwAAAL8AAAA/AAAAPwAAAD8AAAC/AAAAPwAAAL8AAAC/AAAAvwAAAD8AAAA/AAAAPwAAAD8AAAA/AAAAvwAAAD8AAAC/AAAAPwAAAD8AAAC/AAAAvwAAAL8AAAA/AAAAvwAAAD8AAAA/AAAAvwAAAL8AAAC/AAAAvwAAAD8AAAC/AAAAvwAAAL8AAAC/AAAAvwAAAD8AAAC/AAAAPwAAAL8AAAC/AAAAPwAAAD8AAAC/AAABAAIAAwACAAEABAAFAAYABwAGAAUACAAJAAoACwAKAAkADAANAA4ADwAOAA0AEAARABIAEwASABEAFAAVABYAFwAWABUA";
-	REQUIRE(edit::glTF::EvaluateURI(embedded, baseDir) == true);
-	REQUIRE(embedded.type == edit::glTF::URI::URI_DATA);
-
-	edit::glTF::URI binary;
-	binary.path = "Box0.bin";
-	REQUIRE(edit::glTF::EvaluateURI(binary, baseDir) == true);
-	REQUIRE(binary.type == edit::glTF::URI::URI_FILE);
-
-	bool is_equal = false;
-	if (embedded.binData.size() < binary.binData.size())
-		is_equal = std::equal(embedded.binData.begin(), embedded.binData.end(), binary.binData.begin());
-	else
-		is_equal = std::equal(binary.binData.begin(), binary.binData.end(), embedded.binData.begin());
-
-	REQUIRE(is_equal == true);
-	REQUIRE(embedded.binData.size() == binary.binData.size());
-}
 
 TEST_CASE("Parse GLTF json", "[gltf]")
 {

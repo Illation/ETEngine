@@ -14,117 +14,6 @@ namespace et {
 namespace edit {
 
 
-bool glTF::EvaluateURI(URI& uri, const std::string& basePath)
-{
-	if (uri.path.size() == 0)
-	{
-		uri.type = URI::URI_NONE;
-		return true;
-	}
-	if (uri.path.substr(0, 5) == "data:")
-	{
-		uri.type = URI::URI_DATA;
-
-		auto dataPos = uri.path.find(',');
-		if (dataPos == std::string::npos)
-		{
-			LOG("couldn't find data uri data", core::LogLevel::Warning);
-			return false;
-		}
-
-		std::string mediatype = uri.path.substr(5, dataPos - 5);
-		auto paramPos = mediatype.find(';');
-		if (paramPos == std::string::npos)
-		{
-			LOG("couldn't find data uri mediatype parameter", core::LogLevel::Warning);
-			return false;
-		}
-		std::string parameter = mediatype.substr(paramPos + 1);
-		mediatype = mediatype.substr(0, paramPos);
-
-		auto subtypePos = mediatype.find('/');
-		if (subtypePos == std::string::npos)
-		{
-			LOG("couldn't find data uri mediatype subtype", core::LogLevel::Warning);
-			return false;
-		}
-		uri.ext = mediatype.substr(subtypePos + 1);
-		mediatype = mediatype.substr(0, subtypePos);
-
-		std::string dataString = uri.path.substr(dataPos + 1);
-
-		if (parameter == "base64")
-		{
-			if (DecodeBase64(dataString, uri.binData))
-			{
-				uri.path = uri.path.substr(0, dataPos);
-				std::string(uri.path).swap(uri.path);//free that memory
-				return true;
-			}
-		}
-
-		return false;
-	}
-	else
-	{
-		core::Directory* pDir = new core::Directory(basePath, nullptr);
-		core::File* input = new core::File(uri.path, pDir);
-		if (!input->Open(core::FILE_ACCESS_MODE::Read))
-		{
-			LOG(std::string("Unable to open external glTF asset") + uri.path, core::LogLevel::Warning);
-			return false;
-		}
-		uri.binData = input->Read();
-		uri.ext = input->GetExtension();
-		delete input;
-		input = nullptr;
-		delete pDir;
-		pDir = nullptr;
-		if (uri.binData.size() == 0)
-		{
-			LOG(std::string("external glTF asset is empty") + uri.path, core::LogLevel::Warning);
-		}
-		uri.type = URI::URI_FILE;
-		return true;
-	}
-}
-
-bool glTF::DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded)
-{
-	auto in_len = encoded.size();
-	uint32 i = 0;
-	uint8 char_array_4[4], char_array_3[3];
-
-	while (in_len-- && (encoded[i] != '='))
-	{
-		if (!IsBase64(encoded[i]))return false;
-
-		char_array_4[i % 4] = static_cast<uint8>(Base64Mime.find(encoded[i]));
-		++i;
-		if (i % 4 == 0)
-		{
-			char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
-			char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
-			char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
-
-			for (uint32 j = 0; j < 3; j++)
-			{
-				decoded.push_back(char_array_3[j]);
-			}
-		}
-	}
-
-	if (i % 4)
-	{
-		char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
-		char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
-
-		for (uint32 j = 0; (j < i % 4 - 1); j++) decoded.push_back(char_array_3[j]);
-	}
-
-	return true;
-}
-
 bool glTF::ParseGLTFData(const std::vector<uint8>& binaryContent, const std::string path, const std::string& extension, glTFAsset& asset)
 {
 	asset = glTFAsset();
@@ -779,8 +668,21 @@ bool glTF::ParseBuffersJson(core::JSON::Object* root, std::vector<Buffer>& buffe
 
 		Buffer buffer;
 
-		JSON::ApplyStrValue(bufferObj, buffer.uri.path, "uri");
-		if (!JSON::ApplyIntValue(bufferObj, buffer.byteLength, "byteLength"))return false;
+		JSON::Value const* const jval = (*bufferObj)["uri"];
+		if (jval)
+		{
+			JSON::String const* const jstr = jval->str();
+			if (jstr)
+			{
+				buffer.uri.SetPath(jstr->value);
+			}
+		}
+
+		if (!JSON::ApplyIntValue(bufferObj, buffer.byteLength, "byteLength"))
+		{
+			return false;
+		}
+
 		JSON::ApplyStrValue(bufferObj, buffer.name, "name");
 
 		buffers.push_back(buffer);
@@ -833,7 +735,16 @@ bool glTF::ParseImagesJson(core::JSON::Object* root, std::vector<Image>& images)
 
 		Image image;
 
-		JSON::ApplyStrValue(imageObj, image.uri.path, "uri");
+		JSON::Value const* const jval = (*imageObj)["uri"];
+		if (jval)
+		{
+			JSON::String const* const jstr = jval->str();
+			if (jstr)
+			{
+				image.uri.SetPath(jstr->value);
+			}
+		}
+
 		JSON::ApplyIntValue(imageObj, image.bufferView, "bufferView");
 		JSON::ApplyStrValue(imageObj, image.mimeType, "mimeType");
 		JSON::ApplyStrValue(imageObj, image.name, "name");
@@ -1235,18 +1146,18 @@ bool glTF::OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, core::BinaryRe
 	}
 
 	Buffer& buffer = asset.dom.buffers[view.buffer];
-	if (buffer.uri.type == URI::URI_UNEVALUATED)
+	if (!buffer.uri.IsEvaluated())
 	{
-		if (!EvaluateURI(buffer.uri, asset.basePath))
+		if (!buffer.uri.Evaluate(asset.basePath))
 		{
 			LOG("Failed to evaluate buffer URI", core::LogLevel::Warning);
 			return false;
 		}
 	}
 
-	if (buffer.uri.type == URI::URI_NONE)
+	if (buffer.uri.GetType() == core::URI::E_Type::None)
 	{
-		if (view.buffer >= (uint32)asset.dataChunks.size())
+		if (view.buffer >= static_cast<uint32>(asset.dataChunks.size()))
 		{
 			LOG("No data chunk loaded for glb buffer", core::LogLevel::Warning);
 			return false;
@@ -1256,7 +1167,7 @@ bool glTF::OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, core::BinaryRe
 	}
 	else
 	{
-		pViewReader->Open(buffer.uri.binData, static_cast<size_t>(view.byteOffset), static_cast<size_t>(view.byteLength));
+		pViewReader->Open(buffer.uri.GetEvaluatedData(), static_cast<size_t>(view.byteOffset), static_cast<size_t>(view.byteLength));
 	}
 
 	if (!pViewReader->Exists())

@@ -1,5 +1,6 @@
 #pragma once
 #include <EtCore/IO/JsonDom.h>
+#include <EtCore/IO/Uri.h>
 
 
 namespace et { namespace core {
@@ -79,24 +80,10 @@ struct Mesh
 	std::vector<float> weights;
 };
 
-struct URI
-{
-	std::string path;
-	std::vector<uint8> binData;
-	std::string ext;
-	enum Type : uint8
-	{
-		URI_UNEVALUATED,
-		URI_FILE,
-		URI_DATA,
-		URI_NONE
-	} type = URI_UNEVALUATED;
-};
-
 struct Buffer
 {
 	uint64 byteLength = 0;
-	URI uri;
+	core::URI uri;
 	std::string name;
 };
 
@@ -193,7 +180,7 @@ struct Texture
 
 struct Image
 {
-	URI uri;
+	core::URI uri;
 	int32 bufferView = -1;
 	std::string mimeType;
 	std::string name;
@@ -397,15 +384,6 @@ struct glTFAsset
 	std::vector<Chunk> dataChunks;
 	std::string basePath;
 };
-
-static const std::string Base64Mime = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-static inline bool IsBase64(unsigned char c)
-{
-	return (isalnum(c) || (c == '+') || (c == '/'));
-}
-
-bool EvaluateURI(URI& uri, const std::string& basePath);
-bool DecodeBase64(const std::string& encoded, std::vector<uint8>& decoded);
 
 //Unify GLTF and GLB
 bool ParseGLTFData(const std::vector<uint8>& binaryContent, const std::string path, const std::string& extension, glTFAsset& asset);

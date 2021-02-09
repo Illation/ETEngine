@@ -18,7 +18,6 @@ class ResourceBrowser final : public I_EditorTool
 	// definitions
 	//-------------
 	static std::string const s_DropFileType;
-	static std::string const s_UriFile;
 
 public:
 	// construct destruct
