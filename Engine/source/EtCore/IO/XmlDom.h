@@ -25,6 +25,10 @@ struct Attribute
 //
 struct Element
 {
+	Attribute const* GetAttribute(T_Hash const id) const;
+	Element const* GetFirstChild(T_Hash const id) const;
+	Element const* GetFirstChild(T_Hash const id, size_t& pos) const;
+
 	core::HashString m_Name;
 	std::vector<Attribute> m_Attributes;
 
