@@ -66,7 +66,7 @@ For visual studio 2017:
 
     git clone https://github.com/Illation/ETEngine
     cd ETEngine/Projects/Demo
-    cmake -G "Visual Studio 15 2017 Win64" -H. -Bbuild
+    cmake -G "Visual Studio 15 2017 Win64" -S . -B build
     cmake --build build --target all --config Develop
     cmake --build build --target install
     cmake --build build --target cook-installed-resources-EtEngineDemo
