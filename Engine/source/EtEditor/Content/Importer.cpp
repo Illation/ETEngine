@@ -2,6 +2,7 @@
 #include "Importer.h"
 
 #include "GltfImporter.h"
+#include "ColladaImporter.h"
 
 #include <gtkmm/button.h>
 #include <gtkmm/dialog.h>
@@ -53,6 +54,7 @@ void ImporterBase::RegisterImporter(ImporterBase* const importer)
 void ImporterBase::RegisterImporters()
 {
 	RegisterImporter(new GltfImporter());
+	RegisterImporter(new ColladaImporter());
 	// others
 }
 
