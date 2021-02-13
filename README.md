@@ -5,6 +5,7 @@
 <img align="right" src="https://img.shields.io/github/license/illation/etengine"/>
 <img style="padding-right:10px;" align="right" src="https://img.shields.io/github/commits-since/illation/etengine/v0.7.0?label=%2B"/>
 <img style="padding-right:5px;" align="right" src="https://img.shields.io/github/v/tag/illation/etengine?include_prereleases&label=version&sort=semver"/>
+<a href="https://discord.gg/PZc37qPwVC"><img align="right" alt="Discord" src="https://img.shields.io/discord/809026517249294366"></a>
 
 #### Realtime 3D Graphics/Simulation/Game-Engine written in C++ 14.
 
@@ -16,6 +17,10 @@ __E.T.__ stands for "extra terrestial" due to the goal for this technology to go
 
 This project is under active development, and while a wide range of features are implemented and the overall architecture is approaching a cohesive state, many of the planned improvements are likely to touch a large crossection of the codebase.
 Therefore, while breaking changes are usually implemented in separate branches, the interface on the master branch changes relatively frequently.
+
+***********************************************************************************
+
+Discuss it on [Discord](https://discord.gg/PZc37qPwVC)!
 
 ***********************************************************************************
 
@@ -61,7 +66,7 @@ For visual studio 2017:
 
     git clone https://github.com/Illation/ETEngine
     cd ETEngine/Projects/Demo
-    cmake -G "Visual Studio 15 2017 Win64" -H. -Bbuild
+    cmake -G "Visual Studio 15 2017 Win64" -S . -B build
     cmake --build build --target all --config Develop
     cmake --build build --target install
     cmake --build build --target cook-installed-resources-EtEngineDemo

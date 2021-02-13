@@ -4,7 +4,7 @@
 ### TLDR
 
     cd Projects/Demo
-    cmake -G "Visual Studio 15 2017 Win64" -H. -Bbuild
+    cmake -G "Visual Studio 15 2017 Win64" -S . -B build
     cmake --build build --target all --config Develop
 	cmake --build build --target install
 	cmake --build build --target cook-installed-resources-EtEngineDemo
@@ -20,7 +20,7 @@ In order to build the project, you need to generate the project files with CMake
 
 Start by opening a terminal and navigating to the project root folder (**Projects/Demo/**), then execute:
 
-    cmake -G "Visual Studio 15 2017 Win64" -H. -Bbuild
+    cmake -G "Visual Studio 15 2017 Win64" -S . -B build
 
 The -H and -B options specify an out of source build in the **build/** folder, which is recommended required. You could alternatively do this
 
@@ -46,7 +46,7 @@ If you need to rebuild one of these third party libraries, simply delete the bui
 By default, each library is build for both Debug and Release configurations. If you want to accelerate the process by only building for one of these configurations,
 you can turn the CMake option **ETE_SINGLE_CONFIG** on, and specify **ETE_BUILD_LIB_CONFIG** to your desired configuration. For example:
 
-    cmake -G "Visual Studio 15 2017 Win64" -DETE_SINGLE_CONFIG=ON -DETE_BUILD_LIB_CONFIG=Release -H. -Bbuild
+    cmake -G "Visual Studio 15 2017 Win64" -DETE_SINGLE_CONFIG=ON -DETE_BUILD_LIB_CONFIG=Release -S . -B build
 
 
 ### Creating a new Project
@@ -56,7 +56,7 @@ You can keep your projects outside of the engine repositiory.
 If you wish to create an external project instead of compiling the Demo project, copy the demo projects folder to your desired location. 
 To generate the project files, you will need to provide the cmake script with the project location. This can be done with the **ENGINE_DIRECTORY** argument, like so:
 
-    cmake -G "Visual Studio 15 2017 Win64" -DENGINE_DIRECTORY="path/to/engine/repo/Engine" -H. -Bbuild
+    cmake -G "Visual Studio 15 2017 Win64" -DENGINE_DIRECTORY="path/to/engine/repo/Engine" -S . -B build
 
 
 ### Building the project
