@@ -112,18 +112,6 @@ void CompressedCube::CompressFromTexture(render::TextureData const& cubeMap,
 
 						writeAddress += s_UncompressedBlockRow;
 					}
-					//for (uint32 blockRow = s_BlockDim - 1u; blockRow < s_BlockDim; blockRow--)
-					//{
-					//	uint32 const readAddress = x + (rowLength * (yOffset + blockRow));
-					//	for (uint32 blockColumn = 0u; blockColumn < s_BlockDim; blockColumn++)
-					//	{
-					//		memcpy(reinterpret_cast<void*>(faceBlockPixels + writeAddress + (s_UncompressedPixelSize * blockColumn)),
-					//			reinterpret_cast<void const*>(facePixels + readAddress + (s_UncompressedPixelSize * ((s_BlockDim - 1u) - blockColumn))),
-					//			s_UncompressedPixelSize);
-					//	}
-
-					//	writeAddress += s_UncompressedBlockRow;
-					//}
 				}
 			}
 		}
