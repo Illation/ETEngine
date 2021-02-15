@@ -35,11 +35,8 @@ public:
 private:
 	// asset types
 	bool m_ImportMeshes = true;
-	bool m_ImportMaterials = false;
-	bool m_ImportTextures = false;
 	bool m_ImportSkeletons = false;
 	bool m_ImportAnimations = false;
-	bool m_ImportTemplates = false;
 
 	// mesh options
 	bool m_CalculateTangentSpace = true;

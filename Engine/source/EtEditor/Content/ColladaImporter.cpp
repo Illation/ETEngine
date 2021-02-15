@@ -6,13 +6,12 @@
 #include <gtkmm/separator.h>
 #include <gtkmm/box.h>
 
-#include <EtCore/FileSystem/FileUtil.h>
-#include <EtCore/IO/XmlParser.h>
-
 #include <EtPipeline/Assets/EditableMeshAsset.h>
 #include <EtPipeline/Import/MeshDataContainer.h>
 
 #include <EtEditor/Util/GtkUtil.h>
+
+#include "ColladaParser.h"
 
 
 namespace et {
@@ -71,11 +70,8 @@ void ColladaImporter::SetupOptions(Gtk::Frame* const frame, T_SensitiveFn& sensi
 	std::vector<Gtk::CheckButton*> assetButtons;
 
 	assetButtons.push_back(makeOptionFn("Import Meshes", m_ImportMeshes, true));
-	assetButtons.push_back(makeOptionFn("Import Materials", m_ImportMaterials, false));
-	assetButtons.push_back(makeOptionFn("Import Textures", m_ImportTextures, false));
 	assetButtons.push_back(makeOptionFn("Import Skeletons", m_ImportSkeletons, false));
 	assetButtons.push_back(makeOptionFn("Import Animations", m_ImportAnimations, false));
-	assetButtons.push_back(makeOptionFn("Import Templates", m_ImportTemplates, false));
 
 	for (Gtk::CheckButton* const checkButton : assetButtons)
 	{
@@ -102,10 +98,45 @@ void ColladaImporter::SetupOptions(Gtk::Frame* const frame, T_SensitiveFn& sensi
 //
 bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string const& filePath, std::vector<pl::EditorAssetBase*>& outAssets) const
 {
-	core::XML::Parser const parser(core::FileUtil::AsText(importData));
+	UNUSED(importData);
 
-	LOG("Not implemented", core::LogLevel::Warning);
-	return false;
+	// read the barebones document
+	ColladaParser const parser(importData);
+	if (!parser.IsValid())
+	{
+		LOG("Collada parser didn't complete due to invalid document", core::LogLevel::Warning);
+		return false;
+	}
+	
+	// read components
+	if (m_ImportMeshes)
+	{
+		parser.IterateGeometries([](core::XML::Element const& geometryEl, dae::Asset const& asset)
+		{
+			core::XML::Element const* const meshEl = geometryEl.GetFirstChild("mesh"_hash);
+			if (meshEl == nullptr)
+			{
+				return; // for now we only support mesh geometries
+			}
+
+			core::XML::Element const* primitive = meshEl->GetFirstChild("triangles"_hash);
+			if (primitive == nullptr)
+			{
+				primitive = meshEl->GetFirstChild("polylist"_hash);
+				if (primitive == nullptr)
+				{
+					return; // for now we only support triangle or polylist meshes
+				}
+			}
+
+			if (ColladaParser::GetPrimitiveCount(*meshEl) > 1u)
+			{
+				LOG("COLLADA mesh had more than one primitive, ignoring subsequent occurances!", core::Warning);
+			}
+		});
+	}
+
+	return true;
 }
 
 
