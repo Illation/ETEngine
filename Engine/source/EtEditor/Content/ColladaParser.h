@@ -40,6 +40,13 @@ public:
 	// static functionality
 	//----------------------
 	static size_t GetPrimitiveCount(core::XML::Element const& meshEl);
+	static void ReadSourceList(std::vector<dae::Source>& sources, core::XML::Element const& parent);
+	static bool ReadAccessor(dae::Accessor& accessor, core::XML::Element const& accessorEl);
+	static void ReadInputList(std::vector<dae::Input>& inputs, core::XML::Element const& parent, bool const isShared);
+	static dae::E_Semantic ReadSemantic(std::string const& semantic);
+
+	template <typename TDataType>
+	static void ParseArray(std::vector<TDataType>& vec, core::XML::Element const& el);
 
 	// utility
 	//---------
@@ -63,3 +70,6 @@ private:
 
 } // namespace edit
 } // namespace et
+
+
+#include "ColladaParser.inl"

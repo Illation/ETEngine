@@ -246,6 +246,339 @@ size_t ColladaParser::GetPrimitiveCount(core::XML::Element const& meshEl)
 	return count;
 }
 
+//-------------------------------
+// ColladaParser::ReadSourceList
+//
+void ColladaParser::ReadSourceList(std::vector<dae::Source>& sources, core::XML::Element const& parent)
+{
+	static size_t const s_SourceHash = "source"_hash;
+	static size_t const s_AccessorHash = "accessor"_hash;
+
+	size_t pos = 0u;
+	core::XML::Element const* sourceEl = parent.GetFirstChild(s_SourceHash, pos);
+	while (sourceEl != nullptr)
+	{
+		core::XML::Attribute const* const idAttrib = sourceEl->GetAttribute("id"_hash);
+		if (idAttrib == nullptr)
+		{
+			// next lib - source is inaccessible so it is of no use to us
+			sourceEl = parent.GetFirstChild(s_SourceHash, ++pos);
+			continue;
+		}
+
+		if (sourceEl->m_Children.size() < 1u)
+		{
+			// next lib - no source data / not enough room for source + common
+			sourceEl = parent.GetFirstChild(s_SourceHash, ++pos);
+			continue;
+		}
+
+		size_t elIdx = 0u;
+		if (sourceEl->m_Children[0u].m_Name == "asset"_hash)
+		{
+			LOG("Collada data source has asset override, which is currently not supported and may cause problems", core::Warning);
+			elIdx++;
+
+			if (sourceEl->m_Children.size() < 2u)
+			{
+				// next lib - no source data + room for common accessor
+				sourceEl = parent.GetFirstChild(s_SourceHash, ++pos);
+				continue;
+			}
+		}
+
+		// find source and accessor elements
+		dae::Source::E_Type sourceType;
+		core::XML::Element const* dataEl = nullptr;
+		core::XML::Element const* accessorEl = nullptr;
+		switch (sourceEl->m_Children[elIdx].m_Name.Get())
+		{
+		case "IDREF_array"_hash:
+			dataEl = &sourceEl->m_Children[elIdx];
+			sourceType = dae::Source::E_Type::IDREF;
+			break;
+
+		case "Name_array"_hash:
+			dataEl = &sourceEl->m_Children[elIdx];
+			sourceType = dae::Source::E_Type::Name;
+			break;
+
+		case "bool_array"_hash:
+			dataEl = &sourceEl->m_Children[elIdx];
+			sourceType = dae::Source::E_Type::Bool;
+			break;
+
+		case "float_array"_hash:
+			dataEl = &sourceEl->m_Children[elIdx];
+			sourceType = dae::Source::E_Type::Float;
+			break;
+
+		case "int_array"_hash:
+			dataEl = &sourceEl->m_Children[elIdx];
+			sourceType = dae::Source::E_Type::Int;
+			break;
+
+		case "technique_common"_hash:
+		{
+			sourceType = dae::Source::E_Type::None;
+			accessorEl = sourceEl->m_Children[elIdx].GetFirstChild(s_AccessorHash);
+		}
+
+		default:
+			// next lib - no supported source data
+			LOG(FS("Expected data source or accessor, found '%s'.", sourceEl->m_Children[elIdx].m_Name.ToStringDbg()), core::Warning);
+			sourceEl = parent.GetFirstChild(s_SourceHash, ++pos);
+			continue;
+		}
+
+		if (accessorEl == nullptr)
+		{
+			elIdx++;
+			if ((sourceEl->m_Children.size() > elIdx) && (sourceEl->m_Children[elIdx].m_Name == "technique_common"_hash))
+			{
+				accessorEl = sourceEl->m_Children[elIdx].GetFirstChild(s_AccessorHash);
+			}
+			else if (dataEl == nullptr)
+			{
+				// we have neither data nor accessor so this source is useless to us
+				sourceEl = parent.GetFirstChild(s_SourceHash, ++pos);
+				continue;
+			}
+		}
+
+		// data ID
+		core::HashString dataId;
+		if (dataEl != nullptr)
+		{
+			core::XML::Attribute const* const dataIdAttrib = dataEl->GetAttribute("id"_hash);
+			if (dataIdAttrib != nullptr)
+			{
+				dataId = core::HashString(dataIdAttrib->m_Value.c_str());
+			}
+		}
+
+		// accessor
+		dae::Accessor* accessor = nullptr;
+		if (accessorEl != nullptr)
+		{
+			dae::Accessor temp;
+			if (ReadAccessor(temp, *accessorEl))
+			{
+				accessor = new dae::Accessor(temp);
+			}
+		}
+
+		// we now know this source has all the info we need and therfore add it to the list
+		sources.emplace_back(core::HashString(idAttrib->m_Value.c_str()), dataId, sourceType, accessor, *sourceEl);
+				
+		// next lib
+		sourceEl = parent.GetFirstChild(s_SourceHash, ++pos);
+	}
+}
+
+//-----------------------------
+// ColladaParser::ReadAccessor
+//
+bool ColladaParser::ReadAccessor(dae::Accessor& accessor, core::XML::Element const& accessorEl)
+{
+	ET_ASSERT(accessorEl.m_Name == "accessor"_hash);
+
+	// required attributes
+	core::XML::Attribute const* const countAttrib = accessorEl.GetAttribute("count"_hash);
+	if (countAttrib == nullptr)
+	{
+		LOG("Invalid accessor found, no count attribute was present");
+		return false;
+	}
+
+	accessor.m_Count = static_cast<size_t>(std::stoul(countAttrib->m_Value));
+
+	// optional attributes
+	core::XML::Attribute const* const offset = accessorEl.GetAttribute("offset"_hash);
+	if (offset != nullptr)
+	{
+		accessor.m_Offset = static_cast<size_t>(std::stoul(offset->m_Value));
+	}
+
+	core::XML::Attribute const* const stride = accessorEl.GetAttribute("stride"_hash);
+	if (stride != nullptr)
+	{
+		accessor.m_Stride = static_cast<size_t>(std::stoul(stride->m_Value));
+	}
+
+	core::XML::Attribute const* const source = accessorEl.GetAttribute("source"_hash);
+	if (source != nullptr)
+	{
+		if (!(source->m_Value.empty()) && source->m_Value[0] == '#')
+		{
+			accessor.m_SourceDataId = core::HashString(source->m_Value.substr(1u).c_str());
+		}
+		else
+		{
+			LOG(FS("Expected accessor source attribute to be a URI fragment starting with #, source: '%s'", source->m_Value.c_str()), core::Warning);
+		}
+	}
+
+	// children
+	static size_t const s_ParamHash = "param"_hash;
+
+	size_t pos = 0u;
+	core::XML::Element const* paramEl = accessorEl.GetFirstChild(s_ParamHash, pos);
+	while (paramEl != nullptr)
+	{
+		dae::Accessor::Param param;
+
+		core::XML::Attribute const* const name = paramEl->GetAttribute("name"_hash);
+		if (name != nullptr)
+		{
+			param.m_IsNamed = !(name->m_Value.empty());
+		}
+
+		core::XML::Attribute const* const type = paramEl->GetAttribute("type"_hash);
+		if (type == nullptr)
+		{
+			LOG("Accessor has invalid parameter without type, skipping parameter", core::Warning);
+			paramEl = accessorEl.GetFirstChild(s_ParamHash, ++pos);
+			continue;
+		}
+
+		switch (GetHash(type->m_Value))
+		{
+		case "name"_hash:
+			param.m_Type = dae::Accessor::E_ParamType::Name;
+			break;
+
+		case "float"_hash:
+			param.m_Type = dae::Accessor::E_ParamType::Float;
+			break;
+
+		case "float4x4"_hash:
+			param.m_Type = dae::Accessor::E_ParamType::Float4x4;
+			break;
+
+		default:
+			LOG(FS("Unrecognized parameter type '%s', skipping parameter", type->m_Value.c_str()), core::Warning);
+			paramEl = accessorEl.GetFirstChild(s_ParamHash, ++pos);
+			continue;
+		}
+
+		accessor.m_Parameters.push_back(param);
+
+		// next param
+		paramEl = accessorEl.GetFirstChild(s_ParamHash, ++pos);
+	}
+
+	return true;
+}
+
+//------------------------------
+// ColladaParser::ReadInputList
+//
+void ColladaParser::ReadInputList(std::vector<dae::Input>& inputs, core::XML::Element const& parent, bool const isShared)
+{
+	static size_t const s_InputHash = "input"_hash;
+
+	size_t pos = 0u;
+	core::XML::Element const* inputEl = parent.GetFirstChild(s_InputHash, pos);
+	while (inputEl != nullptr)
+	{
+		dae::Input input;
+
+		core::XML::Attribute const* const semantic = inputEl->GetAttribute("semantic"_hash);
+		if (semantic == nullptr)
+		{
+			LOG("Input is missing semantic, skipping", core::Warning);
+			inputEl = parent.GetFirstChild(s_InputHash, ++pos);
+			continue;
+		}
+
+		input.m_Semantic = ReadSemantic(semantic->m_Value);
+		if (input.m_Semantic == dae::E_Semantic::Invalid)
+		{
+			LOG(FS("Failed to read semantic '%s', skipping input", semantic->m_Value.c_str()), core::Warning);
+			inputEl = parent.GetFirstChild(s_InputHash, ++pos);
+			continue;
+		}
+
+		// source points to an accessor
+		core::XML::Attribute const* const source = inputEl->GetAttribute("source"_hash);
+		if (source == nullptr)
+		{
+			LOG("Input is missing source, skipping", core::Warning);
+			inputEl = parent.GetFirstChild(s_InputHash, ++pos);
+			continue;
+		}
+		else if ((source->m_Value.empty()) || (source->m_Value[0] != '#'))
+		{
+			LOG(FS("Expected input source attribute to be a URI fragment starting with #, source: '%s'", source->m_Value.c_str()), core::Warning);
+			inputEl = parent.GetFirstChild(s_InputHash, ++pos);
+			continue;
+		}
+
+		input.m_Source = core::HashString(source->m_Value.substr(1u).c_str());
+
+		// following attributes don't exist on unshared inputs
+		if (isShared)
+		{
+			core::XML::Attribute const* const offset = inputEl->GetAttribute("offset"_hash);
+			if (offset == nullptr)
+			{
+				LOG("Shared input is missing offset, skipping", core::Warning);
+				inputEl = parent.GetFirstChild(s_InputHash, ++pos);
+				continue;
+			}
+
+			input.m_Offset = static_cast<size_t>(std::stoul(offset->m_Value));
+
+			core::XML::Attribute const* const set = inputEl->GetAttribute("set"_hash);
+			if (set != nullptr)
+			{
+				input.m_Set = static_cast<size_t>(std::stoul(set->m_Value));
+			}
+		}
+
+		inputs.push_back(input);
+
+		// next lib
+		inputEl = parent.GetFirstChild(s_InputHash, ++pos);
+	}
+}
+
+//-----------------------------
+// ColladaParser::ReadSemantic
+//
+dae::E_Semantic ColladaParser::ReadSemantic(std::string const& semantic)
+{
+	switch (GetHash(semantic))
+	{
+	case "BINORMAL"_hash:			return dae::E_Semantic::Binormal;
+	case "COLOR"_hash:				return dae::E_Semantic::Color;
+	case "CONTINUITY"_hash:			return dae::E_Semantic::Continuity;
+	case "IMAGE"_hash:				return dae::E_Semantic::Image;
+	case "INPUT"_hash:				return dae::E_Semantic::Input;
+	case "IN_TANGENT"_hash:			return dae::E_Semantic::InTangent;
+	case "INTERPOLATION"_hash:		return dae::E_Semantic::Interpolation;
+	case "INV_BIND_MATRIX"_hash:	return dae::E_Semantic::InvBindMatrix;
+	case "JOINT"_hash:				return dae::E_Semantic::Joint;
+	case "LINEAR_STEPS"_hash:		return dae::E_Semantic::LinearSteps;
+	case "MORPH_TARGET"_hash:		return dae::E_Semantic::MorphTarget;
+	case "MORPH_WEIGHT"_hash:		return dae::E_Semantic::MorphWeight;
+	case "NORMAL"_hash:				return dae::E_Semantic::Normal;
+	case "OUTPUT"_hash:				return dae::E_Semantic::Output;
+	case "OUT_TANGENT"_hash:		return dae::E_Semantic::OutTangent;
+	case "POSITION"_hash:			return dae::E_Semantic::Position;
+	case "TANGENT"_hash:			return dae::E_Semantic::Tangent;
+	case "TEXBINORMAL"_hash:		return dae::E_Semantic::TexBiNormal;
+	case "TEXCOORD"_hash:			return dae::E_Semantic::Texcoord;
+	case "TEXTANGENT"_hash:			return dae::E_Semantic::TexTangent;
+	case "UV"_hash:					return dae::E_Semantic::UV;
+	case "VERTEX"_hash:				return dae::E_Semantic::Vertex;
+	case "WEIGHT"_hash:				return dae::E_Semantic::Weight;
+	}
+
+	return dae::E_Semantic::Invalid;
+}
+
 
 } // namespace edit
 } // namespace et

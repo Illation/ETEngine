@@ -113,10 +113,26 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 	{
 		parser.IterateGeometries([](core::XML::Element const& geometryEl, dae::Asset const& asset)
 		{
+			// ensure we have all the relevant XML elements
+			//----------------------------------------------
 			core::XML::Element const* const meshEl = geometryEl.GetFirstChild("mesh"_hash);
 			if (meshEl == nullptr)
 			{
 				return; // for now we only support mesh geometries
+			}
+
+			core::XML::Element const* const verticesEl = meshEl->GetFirstChild("vertices"_hash);
+			if (verticesEl == nullptr)
+			{
+				LOG("Expected COLLADA mesh to have vertices element!", core::Warning);
+				return;
+			}
+
+			core::XML::Attribute const* const vertexIdAttrib = verticesEl->GetAttribute("id"_hash);
+			if (vertexIdAttrib == nullptr)
+			{
+				LOG("Expected COLLADA vertices to have id attribute!", core::Warning);
+				return;
 			}
 
 			core::XML::Element const* primitive = meshEl->GetFirstChild("triangles"_hash);
@@ -133,6 +149,120 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 			{
 				LOG("COLLADA mesh had more than one primitive, ignoring subsequent occurances!", core::Warning);
 			}
+
+			core::XML::Element const* const primitiveArrayEl = primitive->GetFirstChild("p"_hash);
+			if (primitiveArrayEl == nullptr)
+			{
+				LOG("Expected COLLADA primitive to have a 'p' element!", core::Warning);
+				return;
+			}
+
+			// setup dataflow
+			//----------------
+	
+			std::vector<dae::Source> sources;
+			ColladaParser::ReadSourceList(sources, *meshEl);
+
+			struct ResolvedInput
+			{
+				dae::Input m_Input;
+				dae::Accessor const* m_Accessor;
+				dae::Source const* m_Source;
+			};
+
+			std::vector<ResolvedInput> resolvedInputs;
+			size_t maxInputOffset = 0u;
+
+			{
+				auto resolveInputFn = [&](ResolvedInput& input) -> bool
+				{
+					// accessor from input
+					auto const foundAccessorSourceIt = std::find_if(sources.cbegin(), sources.cend(), [&input](dae::Source const& source)
+						{
+							return (source.m_Id == input.m_Input.m_Source);
+						});
+
+					if ((foundAccessorSourceIt == sources.cend()) || (foundAccessorSourceIt->m_CommonAccessor == nullptr))
+					{
+						LOG(FS("Failed to find accessor '%s' for input", input.m_Input.m_Source.ToStringDbg()), core::Warning);
+						return false;
+					}
+
+					input.m_Accessor = foundAccessorSourceIt->m_CommonAccessor;
+
+					// source from accessor
+					auto const foundSourceIt = std::find_if(sources.begin(), sources.end(), [&input](dae::Source const& source)
+						{
+							return (source.m_DataId == input.m_Accessor->m_SourceDataId);
+						});
+
+					if (foundSourceIt == sources.cend())
+					{
+						LOG(FS("Failed to find source '%s' for accessor", input.m_Accessor->m_SourceDataId.ToStringDbg()), core::Warning);
+						return false;
+					}
+
+					input.m_Source = &(*foundSourceIt);
+					// parse source;
+
+					if (input.m_Input.m_Offset > maxInputOffset)
+					{
+						maxInputOffset = input.m_Input.m_Offset;
+					}
+
+					resolvedInputs.push_back(input);
+					return true;
+				};
+
+				std::vector<dae::Input> vertexInputs;
+				ColladaParser::ReadInputList(vertexInputs, *verticesEl, false);
+
+				std::vector<dae::Input> primitiveInputs;
+				ColladaParser::ReadInputList(primitiveInputs, *primitive, true);
+
+				core::HashString const verticesId(vertexIdAttrib->m_Value.c_str());
+				for (dae::Input const& input : primitiveInputs)
+				{
+					ET_ASSERT(input.m_Semantic != dae::E_Semantic::Invalid);
+
+					if (input.m_Semantic == dae::E_Semantic::Vertex)
+					{
+						if (input.m_Source != verticesId)
+						{
+							LOG("Expected VERTEX input to use vertices as source", core::Warning);
+							return;
+						}
+
+						for (dae::Input const& vertexInput : vertexInputs)
+						{
+							ResolvedInput resolvedInput;
+							resolvedInput.m_Input = vertexInput;
+							resolvedInput.m_Input.m_Offset = input.m_Offset;
+							resolvedInput.m_Input.m_Set = input.m_Set;
+
+							if (!resolveInputFn(resolvedInput))
+							{
+								return;
+							}
+						}
+					}
+					else
+					{
+						ResolvedInput resolvedInput;
+						resolvedInput.m_Input = input;
+
+						if (!resolveInputFn(resolvedInput))
+						{
+							return;
+						}
+					}
+				}
+			}
+
+			// read sources
+			//--------------
+			std::vector<size_t> indices;
+			ColladaParser::ParseArray(indices, *primitiveArrayEl);
 		});
 	}
 
