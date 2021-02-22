@@ -65,6 +65,7 @@ inline vector<n, T> vector<n, T>::operator-() const
 	{
 		result[i] = -data[i];
 	}
+
 	return result;
 }
 
@@ -73,7 +74,10 @@ std::string math::vector<n, T>::ToString() const
 {
 	std::string ret = "[";
 	for (uint8 i = 0; i < data.size(); ++i)
+	{
 		ret += (i == data.size() - 1) ? (data[i]) : (data[i] + ", ");
+	}
+
 	return ret + "]";
 }
 
@@ -600,7 +604,20 @@ inline vector<n, T> vecCast(const vector<n, T2> &vec)
 	{
 		ret[i] = static_cast<T>(vec[i]);
 	}
+
 	return ret;
+}
+
+template <uint8 n, class T>
+inline vector<n, T> swizzle(vector<n, T> const& vec, vector<n, int32> const& indices) 
+{
+	vector<n, T> result;
+	for (uint8 i = 0; i < n; ++i)
+	{
+		result[indices[i]] = vec[i];
+	}
+
+	return result;
 }
 
 

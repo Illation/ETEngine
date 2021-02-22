@@ -6,6 +6,8 @@
 #include <gtkmm/separator.h>
 #include <gtkmm/box.h>
 
+#include <EtCore/FileSystem/FileUtil.h>
+
 #include <EtPipeline/Assets/EditableMeshAsset.h>
 #include <EtPipeline/Import/MeshDataContainer.h>
 
@@ -111,159 +113,275 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 	// read components
 	if (m_ImportMeshes)
 	{
-		parser.IterateGeometries([](core::XML::Element const& geometryEl, dae::Asset const& asset)
+		std::vector<pl::MeshDataContainer> containers;
+
+		parser.IterateGeometries([this, &containers](core::XML::Element const& geometryEl, dae::Asset const& asset)
 		{
-			// ensure we have all the relevant XML elements
-			//----------------------------------------------
-			core::XML::Element const* const meshEl = geometryEl.GetFirstChild("mesh"_hash);
+			core::XML::Element const* const meshEl = ColladaParser::GetMeshElFromGeometry(geometryEl);
 			if (meshEl == nullptr)
 			{
 				return; // for now we only support mesh geometries
 			}
 
-			core::XML::Element const* const verticesEl = meshEl->GetFirstChild("vertices"_hash);
-			if (verticesEl == nullptr)
+			// read mesh and ensure we can use it
+			//------------------------------------
+			dae::Mesh mesh;
+			if (!ColladaParser::ReadMesh(mesh, *meshEl))
 			{
-				LOG("Expected COLLADA mesh to have vertices element!", core::Warning);
 				return;
 			}
 
-			core::XML::Attribute const* const vertexIdAttrib = verticesEl->GetAttribute("id"_hash);
-			if (vertexIdAttrib == nullptr)
+			// make sure it's a triangulated mesh
+			for (uint8 const vcount : mesh.m_VertexCounts)
 			{
-				LOG("Expected COLLADA vertices to have id attribute!", core::Warning);
-				return;
-			}
-
-			core::XML::Element const* primitive = meshEl->GetFirstChild("triangles"_hash);
-			if (primitive == nullptr)
-			{
-				primitive = meshEl->GetFirstChild("polylist"_hash);
-				if (primitive == nullptr)
+				if (vcount != 3u)
 				{
-					return; // for now we only support triangle or polylist meshes
+					LOG(FS("Only triangulated meshes are supported, found face with [%u] vertices!", vcount), core::Warning);
+					return;
 				}
 			}
 
-			if (ColladaParser::GetPrimitiveCount(*meshEl) > 1u)
+			// figure out which inputs we actually want to use
+			std::vector<size_t> inputIndices;
+			for (size_t inputIdx = 0u; inputIdx < mesh.m_ResolvedInputs.size(); ++inputIdx)
 			{
-				LOG("COLLADA mesh had more than one primitive, ignoring subsequent occurances!", core::Warning);
-			}
-
-			core::XML::Element const* const primitiveArrayEl = primitive->GetFirstChild("p"_hash);
-			if (primitiveArrayEl == nullptr)
-			{
-				LOG("Expected COLLADA primitive to have a 'p' element!", core::Warning);
-				return;
-			}
-
-			// setup dataflow
-			//----------------
-	
-			std::vector<dae::Source> sources;
-			ColladaParser::ReadSourceList(sources, *meshEl);
-
-			struct ResolvedInput
-			{
-				dae::Input m_Input;
-				dae::Accessor const* m_Accessor;
-				dae::Source const* m_Source;
-			};
-
-			std::vector<ResolvedInput> resolvedInputs;
-			size_t maxInputOffset = 0u;
-
-			{
-				auto resolveInputFn = [&](ResolvedInput& input) -> bool
+				switch (mesh.m_ResolvedInputs[inputIdx].m_Input.m_Semantic)
 				{
-					// accessor from input
-					auto const foundAccessorSourceIt = std::find_if(sources.cbegin(), sources.cend(), [&input](dae::Source const& source)
+				case dae::E_Semantic::Position:
+				case dae::E_Semantic::Normal:
+				case dae::E_Semantic::Binormal:
+				case dae::E_Semantic::Tangent:
+				case dae::E_Semantic::Color:
+				case dae::E_Semantic::Texcoord:
+					auto foundIt = std::find_if(inputIndices.begin(), inputIndices.end(), [inputIdx, &mesh](size_t const idx)
 						{
-							return (source.m_Id == input.m_Input.m_Source);
+							return (mesh.m_ResolvedInputs[idx].m_Input.m_Semantic == mesh.m_ResolvedInputs[inputIdx].m_Input.m_Semantic);
 						});
 
-					if ((foundAccessorSourceIt == sources.cend()) || (foundAccessorSourceIt->m_CommonAccessor == nullptr))
+					if (foundIt == inputIndices.cend())
 					{
-						LOG(FS("Failed to find accessor '%s' for input", input.m_Input.m_Source.ToStringDbg()), core::Warning);
-						return false;
+						inputIndices.push_back(inputIdx);
+					}
+					else if (mesh.m_ResolvedInputs[*foundIt].m_Input.m_Set > mesh.m_ResolvedInputs[inputIdx].m_Input.m_Set)
+					{
+						*foundIt = inputIdx;
 					}
 
-					input.m_Accessor = foundAccessorSourceIt->m_CommonAccessor;
+					break;
+				}
+			}
 
-					// source from accessor
-					auto const foundSourceIt = std::find_if(sources.begin(), sources.end(), [&input](dae::Source const& source)
-						{
-							return (source.m_DataId == input.m_Accessor->m_SourceDataId);
-						});
+			// create mesh container
+			//-----------------------
+			containers.emplace_back();
+			pl::MeshDataContainer& meshContainer = containers[containers.size() - 1u];
 
-					if (foundSourceIt == sources.cend())
+			size_t usedSet = dae::Input::s_InvalidIndex;
+			size_t const increment = mesh.m_MaxInputOffset + 1u;
+			for (size_t const inputIdx : inputIndices)
+			{
+				ET_ASSERT(mesh.m_ResolvedInputs[inputIdx].m_Accessor != nullptr);
+				ET_ASSERT(mesh.m_ResolvedInputs[inputIdx].m_Source != nullptr);
+
+				dae::Input const& input = mesh.m_ResolvedInputs[inputIdx].m_Input;
+				dae::Accessor const& accessor = *mesh.m_ResolvedInputs[inputIdx].m_Accessor;
+				dae::Source& source = *mesh.m_ResolvedInputs[inputIdx].m_Source;
+
+				// validate input sets
+				if (usedSet == dae::Input::s_InvalidIndex)
+				{
+					usedSet = input.m_Set;
+				}
+				else
+				{
+					if ((input.m_Set != dae::Input::s_InvalidIndex) && (input.m_Set != usedSet))
 					{
-						LOG(FS("Failed to find source '%s' for accessor", input.m_Accessor->m_SourceDataId.ToStringDbg()), core::Warning);
-						return false;
+						LOG(FS("COLLADA using multiple input sets: [" ET_FMT_SIZET "], [" ET_FMT_SIZET "]", usedSet, input.m_Set), core::Warning);
 					}
+				}
 
-					input.m_Source = &(*foundSourceIt);
-					// parse source;
+				// validate data types
+				if (source.m_Type != dae::Source::E_Type::Float)
+				{
+					LOG("COLLADA geometry source was not made of floats, can't access data", core::Warning);
+					containers.pop_back();
+					return;
+				}
 
-					if (input.m_Input.m_Offset > maxInputOffset)
+				for (dae::Accessor::Param const& param : accessor.m_Parameters)
+				{
+					if (param.m_Type != dae::Accessor::E_ParamType::Float)
 					{
-						maxInputOffset = input.m_Input.m_Offset;
+						LOG("COLLADA geometry accessor parameters where not made of floats, can't access data", core::Warning);
+						containers.pop_back();
+						return;
 					}
+				}
 
-					resolvedInputs.push_back(input);
-					return true;
+				// ensure the source data is parsed
+				if (!source.m_IsResolved)
+				{
+					if (!ColladaParser::ResolveSource(source))
+					{
+						LOG(FS("Failed to resolve COLLADA source '%s'r", source.m_Id.ToStringDbg()), core::Warning);
+						containers.pop_back();
+						return;
+					}
+				}
+
+				// access data
+				auto const getVecFn = [&meshContainer, &input]() -> std::vector<vec3>&
+				{
+					switch (input.m_Semantic)
+					{
+					case dae::E_Semantic::Position: return meshContainer.m_Positions;
+					case dae::E_Semantic::Normal: return meshContainer.m_Normals;
+					case dae::E_Semantic::Binormal: return meshContainer.m_BiNormals;
+					case dae::E_Semantic::Tangent: return meshContainer.m_Tangents;
+		
+					default:
+						ET_ASSERT(false, "Unhandled input semantic");
+						return *reinterpret_cast<std::vector<vec3>*>(nullptr);
+					}
 				};
 
-				std::vector<dae::Input> vertexInputs;
-				ColladaParser::ReadInputList(vertexInputs, *verticesEl, false);
-
-				std::vector<dae::Input> primitiveInputs;
-				ColladaParser::ReadInputList(primitiveInputs, *primitive, true);
-
-				core::HashString const verticesId(vertexIdAttrib->m_Value.c_str());
-				for (dae::Input const& input : primitiveInputs)
+				switch (input.m_Semantic)
 				{
-					ET_ASSERT(input.m_Semantic != dae::E_Semantic::Invalid);
-
-					if (input.m_Semantic == dae::E_Semantic::Vertex)
+				case dae::E_Semantic::Position:
+				case dae::E_Semantic::Normal:
+				case dae::E_Semantic::Binormal:
+				case dae::E_Semantic::Tangent:
+				{
+					// coordinate conversion
+					ivec3 axisIndices = asset.Get3DIndices();
+					vec3 multiplier = asset.Get3DAxisMultipliers();
+					if (input.m_Semantic == dae::E_Semantic::Position)
 					{
-						if (input.m_Source != verticesId)
+						multiplier = multiplier * asset.m_UnitToMeter;
+					}
+
+					std::vector<vec3>& vec = getVecFn();
+					for (size_t idx = input.m_Offset; idx < mesh.m_PrimitiveIndices.size(); idx += increment)
+					{
+						size_t const accessorIdx = mesh.m_PrimitiveIndices[idx];
+						if (accessorIdx >= accessor.m_Count)
 						{
-							LOG("Expected VERTEX input to use vertices as source", core::Warning);
+							LOG("COLLADA failed to read vector from accessor, index out of bounds", core::Warning);
+							containers.pop_back();
 							return;
 						}
 
-						for (dae::Input const& vertexInput : vertexInputs)
-						{
-							ResolvedInput resolvedInput;
-							resolvedInput.m_Input = vertexInput;
-							resolvedInput.m_Input.m_Offset = input.m_Offset;
-							resolvedInput.m_Input.m_Set = input.m_Set;
-
-							if (!resolveInputFn(resolvedInput))
-							{
-								return;
-							}
-						}
+						vec.push_back(math::swizzle(accessor.ReadVector<3>(source, accessorIdx) * multiplier, axisIndices));
 					}
-					else
-					{
-						ResolvedInput resolvedInput;
-						resolvedInput.m_Input = input;
+				}
+				break;
 
-						if (!resolveInputFn(resolvedInput))
+				case dae::E_Semantic::Color:
+				{
+					std::vector<vec4>& vec = meshContainer.m_Colors;
+					for (size_t idx = input.m_Offset; idx < mesh.m_PrimitiveIndices.size(); idx += increment)
+					{
+						size_t const accessorIdx = mesh.m_PrimitiveIndices[idx];
+						if (accessorIdx >= accessor.m_Count)
 						{
+							LOG("COLLADA failed to read vector from accessor, index out of bounds", core::Warning);
+							containers.pop_back();
 							return;
 						}
+
+						vec.push_back(accessor.ReadVector<4>(source, accessorIdx));
 					}
+				}
+				break;
+
+				case dae::E_Semantic::Texcoord:
+				{
+					std::vector<vec2>& vec = meshContainer.m_TexCoords;
+					for (size_t idx = input.m_Offset; idx < mesh.m_PrimitiveIndices.size(); idx += increment)
+					{
+						size_t const accessorIdx = mesh.m_PrimitiveIndices[idx];
+						if (accessorIdx >= accessor.m_Count)
+						{
+							LOG("COLLADA failed to read vector from accessor, index out of bounds", core::Warning);
+							containers.pop_back();
+							return;
+						}
+
+						vec2 tc = accessor.ReadVector<2>(source, accessorIdx);
+						tc.y = 1.f - tc.y; // we need to flip texcoords for rendering in this engine
+						vec.push_back(tc);
+					}
+				}
+				break;
+
+				default:
+					ET_ASSERT(false, "Unhandled input semantic");
 				}
 			}
 
-			// read sources
-			//--------------
-			std::vector<size_t> indices;
-			ColladaParser::ParseArray(indices, *primitiveArrayEl);
+			// other container data
+			//----------------------
+			meshContainer.m_Name = ColladaParser::GetLibraryElementName(geometryEl);
+			meshContainer.m_VertexCount = meshContainer.m_Positions.size();
+
+			// generate index buffer - this should later be optimized by removing duplicates
+			meshContainer.m_Indices.reserve(meshContainer.m_VertexCount);
+			for (size_t idx = 0; idx < meshContainer.m_VertexCount; ++idx)
+			{
+				meshContainer.m_Indices.push_back(idx);
+			}
+
+			// derived tangent space
+			if (m_CalculateTangentSpace && (meshContainer.m_Normals.size() == meshContainer.m_VertexCount))
+			{
+				if (meshContainer.m_Tangents.empty() && meshContainer.m_BiNormals.empty())
+				{
+					std::vector<vec4> tangentVec;
+					meshContainer.ConstructTangentSpace(tangentVec);
+				}
+				else if (meshContainer.m_Tangents.empty() && (meshContainer.m_BiNormals.size() == meshContainer.m_VertexCount))
+				{
+					meshContainer.m_Tangents.reserve(meshContainer.m_VertexCount);
+					for (size_t idx = 0u; idx < meshContainer.m_VertexCount; ++idx)
+					{
+						meshContainer.m_Tangents.push_back(-math::cross(meshContainer.m_Normals[idx], meshContainer.m_BiNormals[idx]));
+					}
+				}
+				else if (meshContainer.m_BiNormals.empty() && (meshContainer.m_Tangents.size() == meshContainer.m_VertexCount))
+				{
+					meshContainer.m_BiNormals.reserve(meshContainer.m_VertexCount);
+					for (size_t idx = 0u; idx < meshContainer.m_VertexCount; ++idx)
+					{
+						meshContainer.m_BiNormals.push_back(math::cross(meshContainer.m_Normals[idx], meshContainer.m_Tangents[idx]));
+					}
+				}
+			}
 		});
+
+
+		// convert mesh containers to mesh assets
+		//----------------------------------------
+
+		for (pl::MeshDataContainer const& meshContainer : containers)
+		{
+			pl::EditableMeshAsset* const editableMeshAsset = new pl::EditableMeshAsset();
+			outAssets.push_back(editableMeshAsset);
+
+			render::MeshAsset* const meshAsset = new render::MeshAsset();
+			editableMeshAsset->SetAsset(meshAsset);
+
+			pl::EditableMeshAsset::WriteToEtMesh(&meshContainer, meshAsset->GetLoadData());
+			if (containers.size() == 1u)
+			{
+				meshAsset->SetName(core::FileUtil::RemoveExtension(core::FileUtil::ExtractName(filePath)) + "." + pl::EditableMeshAsset::s_EtMeshExt);
+			}
+			else
+			{
+				meshAsset->SetName(meshContainer.m_Name + "." + pl::EditableMeshAsset::s_EtMeshExt);
+			}
+		}
+
+		containers.clear();
 	}
 
 	return true;

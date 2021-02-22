@@ -195,8 +195,7 @@ void ColladaParser::ReadLibraries(std::vector<dae::Library>& libraries,
 		if (lib.m_Elements.empty())
 		{
 			LOG(FS("Expected library to have at least one element (type '%s')", core::HashString(elementName).ToStringDbg()), core::Warning);
-			m_IsValid = false;
-			return;
+			libraries.pop_back();
 		}
 
 		// next lib
@@ -219,8 +218,30 @@ void ColladaParser::IterateLibraries(std::vector<dae::Library> const& libs, T_Pe
 	}
 }
 
-//---------------------------------
-// ColladaParser::IterateLibraries
+//--------------------------------------
+// ColladaParser::GetLibraryElementName
+//
+std::string const& ColladaParser::GetLibraryElementName(core::XML::Element const& libraryEl)
+{
+	static std::string const s_EmptyName;
+
+	core::XML::Attribute const* attrib = libraryEl.GetAttribute("name"_hash);
+	if (attrib != nullptr)
+	{
+		return attrib->m_Value;
+	}
+
+	attrib = libraryEl.GetAttribute("id"_hash);
+	if (attrib != nullptr)
+	{
+		return attrib->m_Value;
+	}
+
+	return s_EmptyName;
+}
+
+//----------------------------------
+// ColladaParser::GetPrimitiveCount
 //
 size_t ColladaParser::GetPrimitiveCount(core::XML::Element const& meshEl)
 {
@@ -369,11 +390,126 @@ void ColladaParser::ReadSourceList(std::vector<dae::Source>& sources, core::XML:
 		}
 
 		// we now know this source has all the info we need and therfore add it to the list
-		sources.emplace_back(core::HashString(idAttrib->m_Value.c_str()), dataId, sourceType, accessor, *sourceEl);
+		sources.emplace_back(core::HashString(idAttrib->m_Value.c_str()), dataId, sourceType, accessor, *dataEl);
 				
 		// next lib
 		sourceEl = parent.GetFirstChild(s_SourceHash, ++pos);
 	}
+}
+
+//------------------------------
+// ColladaParser::ResolveSource
+//
+bool ColladaParser::ResolveSource(dae::Source& source)
+{
+	ET_ASSERT(source.m_Type != dae::Source::E_Type::None);
+	ET_ASSERT(source.m_DataEl != nullptr);
+
+	source.m_TypeSize = dae::Source::GetTypeSize(source.m_Type);
+	size_t const typeSize = static_cast<size_t>(source.m_TypeSize);
+
+	core::XML::Attribute const* const countAttrib = source.m_DataEl->GetAttribute("count"_hash);
+	if (countAttrib == nullptr)
+	{
+		LOG("Expected sources data element to have count element");
+		return false;
+	}
+
+	size_t const count = static_cast<size_t>(std::stoul(countAttrib->m_Value));
+	source.m_Buffer.resize(count * typeSize);
+
+	std::stringstream stream(source.m_DataEl->m_Value);
+	size_t idx = 0u;
+
+	switch (source.m_Type)
+	{
+	case dae::Source::E_Type::IDREF:
+	case dae::Source::E_Type::Name:
+	{
+		std::string val;
+		while (stream >> val)
+		{
+			if (idx > count)
+			{
+				LOG("source element count exceeded declared count", core::Warning);
+				return false;
+			}
+
+			core::HashString const hashVal(val.c_str());
+			memcpy(source.m_Buffer.data() + (idx * typeSize), &hashVal, typeSize);
+
+			++idx;
+		}
+	}
+	break;
+
+	case dae::Source::E_Type::Bool:
+	{
+		bool val;
+		while (stream >> val)
+		{
+			if (idx > count)
+			{
+				LOG("source element count exceeded declared count", core::Warning);
+				return false;
+			}
+
+			memcpy(source.m_Buffer.data() + (idx * typeSize), &val, typeSize);
+
+			++idx;
+		}
+	}
+	break;
+
+	case dae::Source::E_Type::Float:
+	{
+		float val;
+		while (stream >> val)
+		{
+			if (idx > count)
+			{
+				LOG("source element count exceeded declared count", core::Warning);
+				return false;
+			}
+
+			memcpy(source.m_Buffer.data() + (idx * typeSize), &val, typeSize);
+
+			++idx;
+		}
+	}
+	break;
+
+	case dae::Source::E_Type::Int:
+	{
+		int64 val;
+		while (stream >> val)
+		{
+			if (idx > count)
+			{
+				LOG("source element count exceeded declared count", core::Warning);
+				return false;
+			}
+
+			memcpy(source.m_Buffer.data() + (idx * typeSize), &val, typeSize);
+
+			++idx;
+		}
+	}
+	break;
+
+	default:
+		ET_ASSERT(false, "unhandled source type");
+		return false;
+	}
+
+	if (idx != count)
+	{
+		LOG("source element count didn't match declared count", core::Warning);
+	}
+
+	source.m_IsResolved = true;
+
+	return true;
 }
 
 //-----------------------------
@@ -577,6 +713,198 @@ dae::E_Semantic ColladaParser::ReadSemantic(std::string const& semantic)
 	}
 
 	return dae::E_Semantic::Invalid;
+}
+
+//--------------------------------------
+// ColladaParser::GetMeshElFromGeometry
+//
+core::XML::Element const* ColladaParser::GetMeshElFromGeometry(core::XML::Element const& geometryEl)
+{
+	return geometryEl.GetFirstChild("mesh"_hash);
+}
+
+//-------------------------
+// ColladaParser::ReadMesh
+//
+bool ColladaParser::ReadMesh(dae::Mesh& mesh, core::XML::Element const& meshEl)
+{
+	// ensure we have all the relevant XML elements
+	//----------------------------------------------
+	core::XML::Element const* const verticesEl = meshEl.GetFirstChild("vertices"_hash);
+	if (verticesEl == nullptr)
+	{
+		LOG("Expected COLLADA mesh to have vertices element!", core::Warning);
+		return false;
+	}
+
+	core::XML::Attribute const* const vertexIdAttrib = verticesEl->GetAttribute("id"_hash);
+	if (vertexIdAttrib == nullptr)
+	{
+		LOG("Expected COLLADA vertices to have id attribute!", core::Warning);
+		return false;
+	}
+
+	core::XML::Element const* vcount = nullptr;
+	core::XML::Element const* primitive = meshEl.GetFirstChild("triangles"_hash);
+	if (primitive == nullptr)
+	{
+		primitive = meshEl.GetFirstChild("polylist"_hash);
+		if (primitive == nullptr)
+		{
+			return false; // for now we only support triangle or polylist meshes
+		}
+		else
+		{
+			vcount = primitive->GetFirstChild("vcount"_hash);
+			if (vcount == nullptr)
+			{
+				LOG("Expected COLLADA polylist to have vcount element!"); // this is allowed by spec but we don't know default vcounts so can't parse
+				return false;
+			}
+		}
+	}
+
+	if (GetPrimitiveCount(meshEl) > 1u)
+	{
+		LOG("COLLADA mesh had more than one primitive, ignoring subsequent occurances!", core::Warning);
+	}
+
+	core::XML::Element const* const primitiveArrayEl = primitive->GetFirstChild("p"_hash);
+	if (primitiveArrayEl == nullptr)
+	{
+		LOG("Expected COLLADA primitive to have a 'p' element!", core::Warning);
+		return false;
+	}
+
+	core::XML::Attribute const* const primCountAttrib = primitive->GetAttribute("count"_hash);
+	if (primCountAttrib == nullptr)
+	{
+		LOG("Expected COLLADA primitive to have a 'count' attribute!", core::Warning);
+		return false;
+	}
+
+	// setup dataflow
+	//----------------
+	mesh.m_FaceCount = static_cast<size_t>(std::stoul(primCountAttrib->m_Value));
+
+	ReadSourceList(mesh.m_Sources, meshEl);
+
+	{
+		auto resolveInputFn = [&mesh](dae::ResolvedInput& input) -> bool
+		{
+			// accessor from input
+			auto const foundAccessorSourceIt = std::find_if(mesh.m_Sources.cbegin(), mesh.m_Sources.cend(), [&input](dae::Source const& source)
+				{
+					return (source.m_Id == input.m_Input.m_Source);
+				});
+
+			if ((foundAccessorSourceIt == mesh.m_Sources.cend()) || (foundAccessorSourceIt->m_CommonAccessor == nullptr))
+			{
+				LOG(FS("Failed to find accessor '%s' for input", input.m_Input.m_Source.ToStringDbg()), core::Warning);
+				return false;
+			}
+
+			input.m_Accessor = foundAccessorSourceIt->m_CommonAccessor;
+
+			// source from accessor
+			auto const foundSourceIt = std::find_if(mesh.m_Sources.begin(), mesh.m_Sources.end(), [&input](dae::Source const& source)
+				{
+					return (source.m_DataId == input.m_Accessor->m_SourceDataId);
+				});
+
+			if (foundSourceIt == mesh.m_Sources.cend())
+			{
+				LOG(FS("Failed to find source '%s' for accessor", input.m_Accessor->m_SourceDataId.ToStringDbg()), core::Warning);
+				return false;
+			}
+
+			input.m_Source = &(*foundSourceIt);
+
+			if (input.m_Input.m_Offset > mesh.m_MaxInputOffset)
+			{
+				mesh.m_MaxInputOffset = input.m_Input.m_Offset;
+			}
+
+			mesh.m_ResolvedInputs.push_back(input);
+			return true;
+		};
+
+		std::vector<dae::Input> vertexInputs;
+		ReadInputList(vertexInputs, *verticesEl, false);
+
+		std::vector<dae::Input> primitiveInputs;
+		ReadInputList(primitiveInputs, *primitive, true);
+
+		core::HashString const verticesId(vertexIdAttrib->m_Value.c_str());
+		for (dae::Input const& input : primitiveInputs)
+		{
+			ET_ASSERT(input.m_Semantic != dae::E_Semantic::Invalid);
+
+			if (input.m_Semantic == dae::E_Semantic::Vertex)
+			{
+				if (input.m_Source != verticesId)
+				{
+					LOG("Expected VERTEX input to use vertices as source", core::Warning);
+					return false;
+				}
+
+				for (dae::Input const& vertexInput : vertexInputs)
+				{
+					dae::ResolvedInput resolvedInput;
+					resolvedInput.m_Input = vertexInput;
+					resolvedInput.m_Input.m_Offset = input.m_Offset;
+					resolvedInput.m_Input.m_Set = input.m_Set;
+
+					if (!resolveInputFn(resolvedInput))
+					{
+						return false;
+					}
+				}
+			}
+			else
+			{
+				dae::ResolvedInput resolvedInput;
+				resolvedInput.m_Input = input;
+
+				if (!resolveInputFn(resolvedInput))
+				{
+					return false;
+				}
+			}
+		}
+	}
+
+	ParseArray(mesh.m_PrimitiveIndices, *primitiveArrayEl);
+
+	if (vcount != nullptr)
+	{
+		ParseArrayU8(mesh.m_VertexCounts, *vcount);
+		if (mesh.m_VertexCounts.size() != mesh.m_FaceCount)
+		{
+			LOG(FS("Expected vcount array size [" ET_FMT_SIZET "] to be the same as mesh face count [" ET_FMT_SIZET "]", 
+				mesh.m_VertexCounts.size(), 
+				mesh.m_FaceCount), 
+				core::Warning);
+		}
+	}
+
+	return true;
+}
+
+//-----------------------------
+// ColladaParser::ParseArrayU8
+//
+// Needs specialization because ParseArray would interpret uint8 as a char
+//
+void ColladaParser::ParseArrayU8(std::vector<uint8>& vec, core::XML::Element const& el)
+{
+	std::stringstream stream(el.m_Value);
+
+	uint16 val;
+	while (stream >> val)
+	{
+		vec.push_back(static_cast<uint8>(val));
+	}
 }
 
 

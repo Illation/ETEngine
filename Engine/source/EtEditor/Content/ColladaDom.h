@@ -19,12 +19,21 @@ namespace dae { // COLLADA
 //
 struct Asset final
 {
+	// definitions
+	//-------------
 	enum class E_Axis : uint8
 	{
 		X,
 		Y,
 		Z
 	};
+
+	// accessors for coordinate system conversion
+	ivec3 Get3DIndices() const;
+	vec3 Get3DAxisMultipliers() const;
+
+	// Data
+	///////
 
 	core::XML::Element const* m_Element = nullptr; // not owned
 	float m_UnitToMeter = 1.f;
@@ -65,6 +74,8 @@ struct Document final
 	std::string m_VisualSceneUrl; // extracted from instance_visual_scene in scene
 };
 
+struct Source;
+
 //----------
 // Accessor
 //
@@ -87,6 +98,11 @@ struct Accessor
 		bool m_IsNamed = false;
 		E_ParamType m_Type;
 	};
+
+	// functionality
+	//---------------
+	template <uint8 n>
+	math::vector<n, float> ReadVector(Source const& source, size_t const idx) const;
 
 	// Data
 	///////
@@ -120,14 +136,21 @@ struct Source final
 		None
 	};
 
+	static uint8 GetTypeSize(E_Type const type);
+
 	// construct destruct
 	//--------------------
-	Source(core::HashString const id, core::HashString const dataId, E_Type const type, Accessor const* const accessor, core::XML::Element const& el);
+	Source(core::HashString const id, core::HashString const dataId, E_Type const type, Accessor const* const accessor, core::XML::Element const& dataEl);
 	Source(Source const& other);
 	Source& operator=(Source const& other);
 	Source(Source&& other);
 	Source& operator=(Source&& other);
 	~Source();
+
+	// accessors
+	//-----------
+	template <typename TDataType>
+	TDataType Read(size_t const idx) const; // unsafe, ensure TDataType matches E_Type
 
 	// Data
 	///////
@@ -136,12 +159,13 @@ struct Source final
 	core::HashString m_DataId;
 
 	E_Type m_Type;
+	uint8 m_TypeSize = 0u;
 	std::vector<uint8> m_Buffer;
 
 	Accessor const* m_CommonAccessor = nullptr;
 
-	core::XML::Element const* m_Element; // not owned
-	bool m_IsParsed = false;
+	core::XML::Element const* m_DataEl; // not owned
+	bool m_IsResolved = false;
 };
 
 //------------
@@ -202,6 +226,32 @@ struct Input final
 	size_t m_Set = s_InvalidIndex;
 };
 
+//---------------
+// ResolvedInput
+//
+struct ResolvedInput
+{
+	dae::Input m_Input;
+	dae::Accessor const* m_Accessor;
+	dae::Source* m_Source;
+};
+
+//------
+// Mesh
+//
+// currently only supports a single primitive
+//
+struct Mesh
+{
+	std::vector<dae::Source> m_Sources;
+
+	std::vector<ResolvedInput> m_ResolvedInputs;
+	size_t m_MaxInputOffset = 0u;
+
+	size_t m_FaceCount;
+	std::vector<size_t> m_PrimitiveIndices;
+	std::vector<uint8> m_VertexCounts; // in case of polylist
+};
 
 
 } // namespace dae
@@ -209,3 +259,5 @@ struct Input final
 } // namespace edit
 } // namespace et
 
+
+#include "ColladaDom.inl"

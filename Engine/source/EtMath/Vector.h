@@ -28,20 +28,20 @@ template <uint8 n, class T>
 struct vector
 {
 public:
-	//members
+	// members
 	std::array<T, n> data;
 
-	//constructors
+	// constructors
 	vector();
 	vector(const T &rhs);
 	vector(const std::initializer_list<T> args);
 
-	//operators
+	// operators
 	T operator[] (const uint8 index) const;
 	T& operator[] (const uint8 index);
 	vector<n, T> operator-() const;
 
-	//string conversion
+	// string conversion
 	std::string ToString() const;
 	operator std::string() const { return ToString(); }
 };
@@ -315,6 +315,9 @@ T* valuePtr( vector<n, T>& vec );
 
 template<typename T, uint8 n, typename T2>
 vector<n, T> vecCast(const vector<n, T2> &vec);
+
+template<uint8 n, typename T>
+vector<n, T> swizzle(vector<n, T> const& vec, vector<n, int32> const& indices);
 
 //dimension specific operations
 //*****************************

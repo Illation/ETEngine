@@ -127,6 +127,19 @@ void URI::SetPath(std::string const& path)
 		ET_ASSERT(false, "Unsupported URI type");
 		return;
 	}
+
+	// replace spaces
+	size_t foundIdx = m_Path.length();
+	while (true)
+	{
+		foundIdx = m_Path.rfind("%20", foundIdx);
+		if (foundIdx == std::string::npos)
+		{
+			break;
+		}
+
+		m_Path.replace(foundIdx, 3u, 1u, ' ');
+	}
 }
 
 //---------------

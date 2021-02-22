@@ -102,7 +102,10 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 			MikkTSpaceData* const userData = static_cast<MikkTSpaceData*>(context->m_pUserData);
 
 			uint32 const idx = faceIdx * 3u + vertIdx;
-			userData->tangents.resize(idx);
+			if (idx >= userData->tangents.size())
+			{
+				userData->tangents.resize(idx + 1u);
+			}
 
 			vec4& info = userData->tangents[idx];
 

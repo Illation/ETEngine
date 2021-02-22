@@ -8,20 +8,88 @@ namespace edit {
 namespace dae {
 
 
+//========
+// Asset
+//========
+
+
+//---------------------
+// Asset::Get3DIndices
+//
+// based on up axis, how to index 3D vector components to convert into the engines coordinate system
+//
+ivec3 Asset::Get3DIndices() const
+{
+	switch (m_UpAxis)
+	{
+	case E_Axis::X: return ivec3(1, 0, 2);
+	case E_Axis::Z: return ivec3(0, 2, 1);
+
+	default:
+		ET_ASSERT(false, "unhandled axis");
+	case E_Axis::Y: return ivec3(0, 1, 2);
+	}
+}
+
+//-----------------------------
+// Asset::Get3DAxisMultipliers
+//
+// based on up axis, inversion of vector coordinates
+//
+vec3 Asset::Get3DAxisMultipliers() const
+{
+	switch (m_UpAxis)
+	{
+	case E_Axis::X: return vec3(-1.f, 1.f, -1.f);
+	case E_Axis::Z: return vec3(1.f, 1.f, 1.f);
+
+	default:
+		ET_ASSERT(false, "unhandled axis");
+	case E_Axis::Y: return vec3(1.f, 1.f, -1.f);
+	}
+}
+
+
 //=========
 // Source
 //=========
 
 
+//---------------------
+// Source::GetTypeSize
+//
+// in bytes
+//
+uint8 Source::GetTypeSize(E_Type const type) 
+{
+	switch (type)
+	{
+	case E_Type::IDREF: 
+	case E_Type::Name: 
+		return sizeof(core::HashString);
+
+	case E_Type::Bool: return sizeof(bool);
+	case E_Type::Float: return sizeof(float);
+	case E_Type::Int: return sizeof(int64);
+	}
+
+	ET_ASSERT(false, "unhandled type");
+	return 0u;
+}
+
 //---------------
 // Source::c-tor
 //
-Source::Source(core::HashString const id, core::HashString const dataId, E_Type const type, Accessor const* const accessor, core::XML::Element const& el) 
-	: m_Id(id), 
-	m_DataId(dataId), 
-	m_Type(type), 
-	m_CommonAccessor(accessor), 
-	m_Element(&el)
+Source::Source(core::HashString const id, 
+	core::HashString const dataId, 
+	E_Type const type, 
+	Accessor const* const accessor, 
+	core::XML::Element const& dataEl)
+	: m_Id(id)
+	, m_DataId(dataId)
+	, m_Type(type)
+	, m_CommonAccessor(accessor)
+	, m_DataEl(&dataEl)
 { }
 
 //---------------
@@ -52,8 +120,8 @@ Source& Source::operator=(Source const& other)
 		m_CommonAccessor = nullptr;
 	}
 
-	m_Element = other.m_Element;
-	m_IsParsed = other.m_IsParsed;
+	m_DataEl = other.m_DataEl;
+	m_IsResolved = other.m_IsResolved;
 	
 	return *this;
 }
@@ -79,8 +147,8 @@ Source& Source::operator=(Source&& other)
 	m_CommonAccessor = other.m_CommonAccessor;
 	other.m_CommonAccessor = nullptr;
 
-	m_Element = other.m_Element;
-	m_IsParsed = other.m_IsParsed;
+	m_DataEl = other.m_DataEl;
+	m_IsResolved = other.m_IsResolved;
 
 	return *this;
 }
