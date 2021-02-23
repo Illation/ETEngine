@@ -39,6 +39,8 @@ public:
 
 	// static functionality
 	//----------------------
+	static core::HashString GetInstanceUrl(core::XML::Element const& instanceEl);
+	static core::HashString GetElementId(core::XML::Element const& libraryEl);
 	static std::string const& GetLibraryElementName(core::XML::Element const& libraryEl);
 	static size_t GetPrimitiveCount(core::XML::Element const& meshEl);
 	static void ReadSourceList(std::vector<dae::Source>& sources, core::XML::Element const& parent);
@@ -48,6 +50,9 @@ public:
 	static dae::E_Semantic ReadSemantic(std::string const& semantic);
 	static core::XML::Element const* GetMeshElFromGeometry(core::XML::Element const& geometryEl);
 	static bool ReadMesh(dae::Mesh& mesh, core::XML::Element const& meshEl);
+	static void ReadNode(dae::Node& node, core::XML::Element const& nodeEl);
+	static void ReadScene(dae::VisualScene& scene, core::XML::Element const& sceneEl);
+	static bool ReadTransform(mat4& mat, core::XML::Element const& transformEl);
 
 	template <typename TDataType>
 	static void ParseArray(std::vector<TDataType>& vec, core::XML::Element const& el);

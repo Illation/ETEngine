@@ -55,6 +55,41 @@ struct Library final
 };
 
 //--------------------------
+// Instance
+//
+struct Instance 
+{
+	// definitions
+	//-------------
+private:
+	static std::vector<core::HashString> const s_XmlIds; // same order as type
+
+public:
+	enum class E_Type : uint8
+	{
+		VisualScene,
+		Node,
+		Geometry,
+
+		None
+	};
+
+	static E_Type GetTypeFromXmlId(core::HashString const id);
+	static core::HashString GetXmlIdFromType(E_Type const type);
+
+	// construct destruct
+	//--------------------
+	Instance(E_Type const type = E_Type::None) : m_Type(type) {}
+	Instance(E_Type const type, core::HashString const url) : m_Type(type), m_Url(url) {}
+
+	// Data
+	///////
+
+	E_Type m_Type;
+	core::HashString m_Url;
+};
+
+//--------------------------
 // Document
 //
 // Root Collada document
@@ -71,7 +106,7 @@ struct Document final
 	std::vector<Library> m_NodeLibraries;
 	std::vector<Library> m_VisualSceneLibraries;
 
-	std::string m_VisualSceneUrl; // extracted from instance_visual_scene in scene
+	Instance m_VisualSceneInstance; 
 };
 
 struct Source;
@@ -157,6 +192,8 @@ struct Source final
 
 	core::HashString m_Id;
 	core::HashString m_DataId;
+
+	// asset ignored for now
 
 	E_Type m_Type;
 	uint8 m_TypeSize = 0u;
@@ -251,6 +288,37 @@ struct Mesh
 	size_t m_FaceCount;
 	std::vector<size_t> m_PrimitiveIndices;
 	std::vector<uint8> m_VertexCounts; // in case of polylist
+};
+
+//------
+// Node
+//
+struct Node
+{
+	bool GetGeometryTransform(mat4& base, core::HashString const geometryId) const;
+
+	// Data
+	///////
+
+	core::HashString m_Id;
+
+	// asset ignored
+	
+	mat4 m_Transform; // in collada coordinate system
+	std::vector<Instance> m_Instances;
+	std::vector<Node> m_Children;
+};
+
+//-------------
+// VisualScene
+//
+struct VisualScene
+{
+	core::HashString m_Id;
+
+	// asset ignored
+
+	std::vector<Node> m_Nodes;
 };
 
 

@@ -40,6 +40,7 @@ private:
 
 	// mesh options
 	bool m_CalculateTangentSpace = true;
+	bool m_PreTransformVertices = true;
 	bool m_RemoveDuplicateVertices = false;
 	bool m_IncludeSkeletalData = false;
 };

@@ -89,6 +89,7 @@ void ColladaImporter::SetupOptions(Gtk::Frame* const frame, T_SensitiveFn& sensi
 	vbox->pack_start(*Gtk::make_managed<Gtk::Separator>(Gtk::ORIENTATION_HORIZONTAL), false, true, 3u);
 	vbox->pack_start(*Gtk::make_managed<Gtk::Label>("Mesh options"), false, true, 3u);
 	makeOptionFn("Calculate Tangent Space", m_CalculateTangentSpace, true);
+	makeOptionFn("Pre Transform Vertices", m_PreTransformVertices, true);
 	makeOptionFn("Remove duplicate vertices", m_RemoveDuplicateVertices, false);
 	makeOptionFn("Include Skeletal data", m_IncludeSkeletalData, false);
 
@@ -113,9 +114,25 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 	// read components
 	if (m_ImportMeshes)
 	{
-		std::vector<pl::MeshDataContainer> containers;
+		std::vector<dae::Node> nodes;
+		std::vector<dae::VisualScene> scenes;
+		if (m_PreTransformVertices)
+		{
+			parser.IterateNodes([&nodes](core::XML::Element const& nodeEl, dae::Asset const&)
+			{
+				nodes.emplace_back();
+				ColladaParser::ReadNode(nodes[nodes.size() - 1u], nodeEl);
+			});
 
-		parser.IterateGeometries([this, &containers](core::XML::Element const& geometryEl, dae::Asset const& asset)
+			parser.IterateVisualScenes([&scenes](core::XML::Element const& sceneEl, dae::Asset const&)
+			{
+				scenes.emplace_back();
+				ColladaParser::ReadScene(scenes[scenes.size() - 1u], sceneEl);
+			});
+		}
+
+		std::vector<pl::MeshDataContainer> containers;
+		parser.IterateGeometries([this, &containers, &nodes, &scenes](core::XML::Element const& geometryEl, dae::Asset const& asset)
 		{
 			core::XML::Element const* const meshEl = ColladaParser::GetMeshElFromGeometry(geometryEl);
 			if (meshEl == nullptr)
@@ -169,6 +186,50 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 
 					break;
 				}
+			}
+
+			// figure out transform of the mesh
+			//----------------------------------
+			mat4 meshTransform;
+			bool hasTransform = false;
+			if (m_PreTransformVertices)
+			{
+				core::HashString const meshId = ColladaParser::GetElementId(geometryEl);
+				if (!meshId.IsEmpty())
+				{
+					for (dae::Node const& node : nodes)
+					{
+						if (node.GetGeometryTransform(meshTransform, meshId))
+						{
+							hasTransform = true;
+							break;
+						}
+					}
+
+					for (dae::VisualScene const& scene : scenes)
+					{
+						if (hasTransform)
+						{
+							break;
+						}
+
+						for (dae::Node const& node : scene.m_Nodes)
+						{
+							if (node.GetGeometryTransform(meshTransform, meshId))
+							{
+								hasTransform = true;
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			mat3 stationary;
+			if (hasTransform)
+			{
+				meshTransform = math::inverse(meshTransform);
+				stationary = math::CreateFromMat4(meshTransform);
 			}
 
 			// create mesh container
@@ -248,17 +309,10 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 				switch (input.m_Semantic)
 				{
 				case dae::E_Semantic::Position:
-				case dae::E_Semantic::Normal:
-				case dae::E_Semantic::Binormal:
-				case dae::E_Semantic::Tangent:
 				{
 					// coordinate conversion
 					ivec3 axisIndices = asset.Get3DIndices();
-					vec3 multiplier = asset.Get3DAxisMultipliers();
-					if (input.m_Semantic == dae::E_Semantic::Position)
-					{
-						multiplier = multiplier * asset.m_UnitToMeter;
-					}
+					vec3 multiplier = asset.Get3DAxisMultipliers() * asset.m_UnitToMeter;
 
 					std::vector<vec3>& vec = getVecFn();
 					for (size_t idx = input.m_Offset; idx < mesh.m_PrimitiveIndices.size(); idx += increment)
@@ -271,7 +325,43 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 							return;
 						}
 
-						vec.push_back(math::swizzle(accessor.ReadVector<3>(source, accessorIdx) * multiplier, axisIndices));
+						vec3 inVec = accessor.ReadVector<3>(source, accessorIdx);
+						if (hasTransform)
+						{
+							inVec = (meshTransform * vec4(inVec, 1.f)).xyz;
+						}
+
+						vec.push_back(math::swizzle(inVec * multiplier, axisIndices));
+					}
+				}
+				break;
+
+				case dae::E_Semantic::Normal:
+				case dae::E_Semantic::Binormal:
+				case dae::E_Semantic::Tangent:
+				{
+					// coordinate conversion
+					ivec3 axisIndices = asset.Get3DIndices();
+					vec3 multiplier = asset.Get3DAxisMultipliers();
+
+					std::vector<vec3>& vec = getVecFn();
+					for (size_t idx = input.m_Offset; idx < mesh.m_PrimitiveIndices.size(); idx += increment)
+					{
+						size_t const accessorIdx = mesh.m_PrimitiveIndices[idx];
+						if (accessorIdx >= accessor.m_Count)
+						{
+							LOG("COLLADA failed to read vector from accessor, index out of bounds", core::Warning);
+							containers.pop_back();
+							return;
+						}
+
+						vec3 inVec = accessor.ReadVector<3>(source, accessorIdx);
+						if (hasTransform)
+						{
+							inVec = stationary * inVec;
+						}
+
+						vec.push_back(math::swizzle(inVec * multiplier, axisIndices));
 					}
 				}
 				break;

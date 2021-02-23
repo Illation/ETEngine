@@ -83,17 +83,16 @@ ColladaParser::ColladaParser(std::vector<uint8> const& colladaData)
 	core::XML::Element const* const sceneEl = root.GetFirstChild("scene"_hash);
 	if (sceneEl != nullptr)
 	{
-		core::XML::Element const* const visualSceneEl = sceneEl->GetFirstChild("instance_visual_scene"_hash);
+		core::XML::Element const* const visualSceneEl = sceneEl->GetFirstChild(dae::Instance::GetXmlIdFromType(dae::Instance::E_Type::VisualScene).Get());
 		if (visualSceneEl != nullptr)
 		{
-			core::XML::Attribute const* const urlAttrib = visualSceneEl->GetAttribute("url"_hash);
-			if (urlAttrib != nullptr)
+			m_Document.m_VisualSceneInstance.m_Url = GetInstanceUrl(*visualSceneEl);
+			if (!m_Document.m_VisualSceneInstance.m_Url.IsEmpty())
 			{
-				m_Document.m_VisualSceneUrl = urlAttrib->m_Value;
+				m_Document.m_VisualSceneInstance.m_Type = dae::Instance::E_Type::VisualScene;
 			}
 			else
 			{
-				LOG("instance_visual_scene was present in collada document but didn't have a URL", core::Warning);
 				m_IsValid = false;
 				return;
 			}
@@ -216,6 +215,43 @@ void ColladaParser::IterateLibraries(std::vector<dae::Library> const& libs, T_Pe
 			perElFn(*el, asset);
 		}
 	}
+}
+
+//-------------------------------
+// ColladaParser::GetInstanceUrl
+//
+core::HashString ColladaParser::GetInstanceUrl(core::XML::Element const& instanceEl)
+{
+	core::XML::Attribute const* attrib = instanceEl.GetAttribute("url"_hash);
+	if (attrib != nullptr)
+	{
+		if ((attrib->m_Value.size() > 1u) && (attrib->m_Value[0] == '#'))
+		{
+			return core::HashString(attrib->m_Value.substr(1u).c_str());
+		}
+
+		LOG(FS("Instance '%s' didn't have a fragment type URL", instanceEl.m_Name.ToStringDbg()), core::Warning);
+	}
+	else
+	{
+		LOG(FS("Instance '%s' didn't have a URL", instanceEl.m_Name.ToStringDbg()), core::Warning);
+	}
+
+	return core::HashString();
+}
+
+//-----------------------------
+// ColladaParser::GetElementId
+//
+core::HashString ColladaParser::GetElementId(core::XML::Element const& libraryEl)
+{
+	core::XML::Attribute const* attrib = libraryEl.GetAttribute("id"_hash);
+	if (attrib != nullptr)
+	{
+		return core::HashString(attrib->m_Value.c_str());
+	}
+
+	return core::HashString();
 }
 
 //--------------------------------------
@@ -889,6 +925,184 @@ bool ColladaParser::ReadMesh(dae::Mesh& mesh, core::XML::Element const& meshEl)
 	}
 
 	return true;
+}
+
+//-------------------------
+// ColladaParser::ReadNode
+//
+void ColladaParser::ReadNode(dae::Node& node, core::XML::Element const& nodeEl)
+{
+	// id
+	node.m_Id = GetElementId(nodeEl);
+
+	// asset
+	size_t pos = 0u;
+	if (nodeEl.GetFirstChild("asset"_hash) != nullptr)
+	{
+		LOG("Collada node has asset override, which is currently not supported and may cause problems", core::Warning);
+		++pos;
+	}
+
+	// transform
+	while (ReadTransform(node.m_Transform, nodeEl.m_Children[pos]))
+	{
+		++pos;
+	}
+
+	// instances
+	auto const readInstancesFn = [&node, &nodeEl, &pos](dae::Instance::E_Type const type)
+	{
+		core::HashString const typeId = dae::Instance::GetXmlIdFromType(type);
+
+		core::XML::Element const* instanceEl = nodeEl.GetFirstChild(typeId.Get(), pos);
+		while (instanceEl != nullptr)
+		{
+			core::HashString const url = GetInstanceUrl(*instanceEl);
+			if (!url.IsEmpty())
+			{
+				node.m_Instances.emplace_back(type, url);
+			}
+
+			// next instance
+			instanceEl = nodeEl.GetFirstChild(typeId.Get(), ++pos);
+		}
+	};
+
+	readInstancesFn(dae::Instance::E_Type::Geometry);
+	readInstancesFn(dae::Instance::E_Type::Node);
+
+	// child nodes
+	static T_Hash const s_NodeType = "node"_hash;
+	core::XML::Element const* childEl = nodeEl.GetFirstChild(s_NodeType, pos);
+	while (childEl != nullptr)
+	{
+		node.m_Children.emplace_back();
+		ReadNode(node.m_Children[node.m_Children.size() - 1u], *childEl);
+		
+		// next instance
+		childEl = nodeEl.GetFirstChild(s_NodeType, ++pos);
+	}
+}
+
+//--------------------------
+// ColladaParser::ReadScene
+//
+void ColladaParser::ReadScene(dae::VisualScene& scene, core::XML::Element const& sceneEl)
+{
+	// id
+	scene.m_Id = GetElementId(sceneEl);
+
+	// asset
+	size_t pos = 0u;
+	if (sceneEl.GetFirstChild("asset"_hash) != nullptr)
+	{
+		LOG("Collada scene has asset override, which is currently not supported and may cause problems", core::Warning);
+		++pos;
+	}
+
+	// nodes
+	static T_Hash const s_NodeType = "node"_hash;
+	core::XML::Element const* childEl = sceneEl.GetFirstChild(s_NodeType, pos);
+	while (childEl != nullptr)
+	{
+		scene.m_Nodes.emplace_back();
+		ReadNode(scene.m_Nodes[scene.m_Nodes.size() - 1u], *childEl);
+
+		// next instance
+		childEl = sceneEl.GetFirstChild(s_NodeType, ++pos);
+	}
+}
+
+//------------------------------
+// ColladaParser::ReadTransform
+//
+// Read transform elements, return true if the element was a transform element, and multiply into matrix
+//
+bool ColladaParser::ReadTransform(mat4& mat, core::XML::Element const& transformEl)
+{
+	switch (transformEl.m_Name.Get())
+	{
+	case "lookat"_hash:
+	{
+		std::vector<float> values;
+		ParseArray(values, transformEl);
+		if (values.size() != 9u)
+		{
+			LOG(FS("lookat transform expected 9 values, found " ET_FMT_SIZET, values.size()), core::Warning);
+			return true;
+		}
+
+		mat = mat * math::lookAt(vec3(values[0], values[1], values[2]), vec3(values[3], values[4], values[5]), vec3(values[6], values[7], values[8]));
+	}
+	return true;
+
+	case "matrix"_hash:
+	{
+		std::vector<float> values;
+		ParseArray(values, transformEl);
+		if (values.size() != 16u)
+		{
+			LOG(FS("matrix transform expected 16 values, found " ET_FMT_SIZET, values.size()), core::Warning);
+			return true;
+		}
+
+		mat = mat * mat4({values[0], values[1], values[2], values[3],
+			values[4], values[5], values[6], values[7],
+			values[8], values[9], values[10], values[11],
+			values[12], values[13], values[14], values[15]});
+	}
+	return true;
+
+	case "rotate"_hash:
+	{
+		std::vector<float> values;
+		ParseArray(values, transformEl);
+		if (values.size() != 4u)
+		{
+			LOG(FS("rotation transform expected 4 values, found " ET_FMT_SIZET, values.size()), core::Warning);
+			return true;
+		}
+
+		math::rotate(mat, vec3(values[0], values[1], values[2]), math::radians(values[3]));
+	}
+	return true;
+
+	case "scale"_hash:
+	{
+		std::vector<float> values;
+		ParseArray(values, transformEl);
+		if (values.size() != 3u)
+		{
+			LOG(FS("scale transform expected 3 values, found " ET_FMT_SIZET, values.size()), core::Warning);
+			return true;
+		}
+
+		math::scale(mat, vec3(values[0], values[1], values[2]));
+	}
+	return true;
+
+	case "skew"_hash:
+	{
+		LOG("COLLADA Skew transform was found but is currently not supported", core::Warning);
+	}
+	return true;
+
+	case "translate"_hash:
+	{
+		std::vector<float> values;
+		ParseArray(values, transformEl);
+		if (values.size() != 3u)
+		{
+			LOG(FS("translation transform expected 3 values, found " ET_FMT_SIZET, values.size()), core::Warning);
+			return true;
+		}
+
+		math::translate(mat, vec3(values[0], values[1], values[2]));
+	}
+	return true;
+	}
+
+	return false;
 }
 
 //-----------------------------

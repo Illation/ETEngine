@@ -50,6 +50,47 @@ vec3 Asset::Get3DAxisMultipliers() const
 }
 
 
+//===========
+// Instance
+//===========
+
+
+std::vector<core::HashString> const Instance::s_XmlIds = std::vector<core::HashString>({
+	core::HashString("instance_visual_scene"),
+	core::HashString("instance_node"),
+	core::HashString("instance_geometry") });
+
+
+//----------------------------
+// Instance::GetTypeFromXmlId
+//
+Instance::E_Type Instance::GetTypeFromXmlId(core::HashString const id)
+{
+	auto const foundIt = std::find(s_XmlIds.cbegin(), s_XmlIds.cend(), id);
+	if (foundIt != s_XmlIds.cend())
+	{
+		return static_cast<E_Type>(foundIt - s_XmlIds.cbegin());
+	}
+
+	return E_Type::None;
+}
+
+//----------------------------
+// Instance::GetXmlIdFromType
+//
+core::HashString Instance::GetXmlIdFromType(E_Type const type)
+{
+	size_t const typeIdx = static_cast<size_t>(type);
+	if (typeIdx < s_XmlIds.size())
+	{
+		return s_XmlIds[typeIdx];
+	}
+
+	ET_ASSERT(false, "unhandled type");
+	return core::HashString();
+}
+
+
 //=========
 // Source
 //=========
@@ -170,6 +211,39 @@ Source::~Source()
 
 size_t const Input::s_InvalidIndex = std::numeric_limits<size_t>::max();
 
+
+//=======
+// Node
+//=======
+
+
+//----------------------------
+// Node::GetGeometryTransform
+//
+// recursively find a node with the given geometry instance and calculate a transformation matrix
+//
+bool Node::GetGeometryTransform(mat4& base, core::HashString const geometryId) const
+{
+	if (std::find_if(m_Instances.cbegin(), m_Instances.cend(), [geometryId](Instance const& inst)
+		{
+			return ((inst.m_Type == Instance::E_Type::Geometry) && (inst.m_Url == geometryId));
+		}) != m_Instances.cend())
+	{
+		base = m_Transform;
+		return true;
+	}
+
+	for (Node const& child : m_Children)
+	{
+		if (child.GetGeometryTransform(base, geometryId))
+		{
+			base = m_Transform * base;
+			return true;
+		}
+	}
+
+	return false;
+}
 
 
 } // namespace dae
