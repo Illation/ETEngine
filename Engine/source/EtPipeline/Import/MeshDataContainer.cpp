@@ -13,6 +13,162 @@ namespace pl {
 //=====================
 
 
+size_t const MeshDataContainer::s_InvalidIndex = std::numeric_limits<size_t>::max();
+
+
+//--------------------------------------------
+// MeshDataContainer::RemoveDuplicateVertices
+//
+void MeshDataContainer::RemoveDuplicateVertices()
+{
+	// setup
+	MeshDataContainer temp;
+	render::T_VertexFlags const localFlags = GetFlags();
+
+	temp.m_Positions.reserve(m_Positions.size());
+	temp.m_Normals.reserve(m_Normals.size());
+	temp.m_BiNormals.reserve(m_BiNormals.size());
+	temp.m_Tangents.reserve(m_Tangents.size());
+	temp.m_Colors.reserve(m_Colors.size());
+	temp.m_TexCoords.reserve(m_TexCoords.size());
+
+	temp.m_Indices.reserve(m_Indices.size());
+
+	// iterate all vertices
+	for (size_t idx = 0u; idx < m_Indices.size(); ++idx)
+	{
+		size_t index = static_cast<size_t>(m_Indices[idx]);
+
+		size_t foundIdx = temp.GetVertexIdx(*this, index);
+		if (foundIdx != s_InvalidIndex) // add existing index
+		{
+			temp.m_Indices.push_back(static_cast<uint32>(foundIdx));
+		}
+		else // or copy new vertex and index that
+		{
+			if (localFlags & render::E_VertexFlag::POSITION) 
+			{
+				temp.m_Positions.push_back(m_Positions[index]);
+			}
+
+			if (localFlags & render::E_VertexFlag::NORMAL) 
+			{
+				temp.m_Normals.push_back(m_Normals[index]);
+			}
+
+			if (localFlags & render::E_VertexFlag::BINORMAL) 
+			{
+				temp.m_BiNormals.push_back(m_BiNormals[index]);
+			}
+
+			if (localFlags & render::E_VertexFlag::TANGENT)
+			{
+				temp.m_Tangents.push_back(m_Tangents[index]);
+			}
+
+			if (localFlags & render::E_VertexFlag::COLOR) 
+			{
+				temp.m_Colors.push_back(m_Colors[index]);
+			}
+
+			if (localFlags & render::E_VertexFlag::TEXCOORD) 
+			{
+				temp.m_TexCoords.push_back(m_TexCoords[index]);
+			}
+
+			temp.m_Indices.push_back(temp.m_VertexCount++);
+		}
+	}
+
+	// swap into this
+	m_VertexCount = temp.m_VertexCount;
+
+	m_Positions.swap(temp.m_Positions);
+	m_Normals.swap(temp.m_Normals);
+	m_BiNormals.swap(temp.m_BiNormals);
+	m_Tangents.swap(temp.m_Tangents);
+	m_Colors.swap(temp.m_Colors);
+	m_TexCoords.swap(temp.m_TexCoords);
+
+	m_Indices.swap(temp.m_Indices);
+}
+
+//--------------------------------
+// MeshDataContainer::Triangulate
+//
+// Discard lines and points
+// keep triangles
+// triangulate quads
+// return false if ngons are found
+//
+bool MeshDataContainer::Triangulate(std::vector<uint8> const& vcounts)
+{
+	// setup
+	ET_ASSERT(m_Positions.size() == m_VertexCount);
+
+	std::vector<uint32> tempIndices;
+	tempIndices.reserve(m_Indices.size());
+
+	// iterate faces
+	size_t idx = 0u; // index into original index buffer
+	for (uint8 const vcount : vcounts)
+	{
+		if (vcount < 3u)
+		{
+			idx += static_cast<size_t>(vcount); // #todo: remove unreferenced vertices in a second step
+			continue;
+		}
+
+		if (vcount == 3u)
+		{
+			for (size_t i = idx; i < idx + static_cast<size_t>(vcount); ++i)
+			{
+				tempIndices.push_back(m_Indices[i]);
+			}
+		}
+		else if (vcount == 4u)
+		{
+			uint32 a = m_Indices[idx];
+			uint32 b = m_Indices[idx + 1u];
+			uint32 c = m_Indices[idx + 2u];
+			uint32 d = m_Indices[idx + 3u];
+
+			// split along the shorter edge
+			if (math::distanceSquared(m_Positions[a], m_Positions[c]) >= math::distanceSquared(m_Positions[b], m_Positions[d]))
+			{
+				tempIndices.push_back(a);
+				tempIndices.push_back(b);
+				tempIndices.push_back(d);
+
+				tempIndices.push_back(b);
+				tempIndices.push_back(c);
+				tempIndices.push_back(d);
+			}
+			else
+			{
+				tempIndices.push_back(a);
+				tempIndices.push_back(b);
+				tempIndices.push_back(c);
+
+				tempIndices.push_back(a);
+				tempIndices.push_back(c);
+				tempIndices.push_back(d);
+			}
+		}
+		else
+		{
+			LOG("Triangulation of NGons is currently not supported, aborting", core::Warning);
+			return false;
+		}
+
+		idx += static_cast<size_t>(vcount);
+	}
+
+	// swap into this
+	m_Indices.swap(tempIndices);
+	return true;
+}
+
 //-------------------------------------------
 // MeshDataContainer::ConstructTangentSpace
 //
@@ -53,7 +209,7 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 		mikkTInterface.m_getNormal = [](const SMikkTSpaceContext* context, float normal[3], const int faceIdx, const int vertIdx)
 		{
 			MeshDataContainer *userData = static_cast<MikkTSpaceData*>(context->m_pUserData)->dataContainer;
-			vec3 &vertexNormal = userData->m_Normals[faceIdx * 3 + vertIdx];
+			vec3 &vertexNormal = userData->m_Normals[userData->m_Indices[faceIdx * 3 + vertIdx]];
 
 			for (uint8 i = 0; i < 3; ++i)
 			{
@@ -68,7 +224,7 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 			return static_cast<int>(userData->m_Indices.size() / 3);
 		};
 
-		mikkTInterface.m_getNumVerticesOfFace = [](const SMikkTSpaceContext* context, const int faceIdx)
+		mikkTInterface.m_getNumVerticesOfFace = [](SMikkTSpaceContext const*, int const)
 		{
 			return 3;
 		};
@@ -89,7 +245,7 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 		mikkTInterface.m_getTexCoord = [](const SMikkTSpaceContext* context, float uv[2], const int faceIdx, const int vertIdx)
 		{
 			MeshDataContainer *userData = static_cast<MikkTSpaceData*>(context->m_pUserData)->dataContainer;
-			vec2 &texCoord = userData->m_TexCoords[faceIdx * 3 + vertIdx];
+			vec2 &texCoord = userData->m_TexCoords[userData->m_Indices[faceIdx * 3 + vertIdx]];
 
 			uv[0] = texCoord[0];
 			uv[1] = texCoord[1];
@@ -138,17 +294,39 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 		LOG("Mesh Tangent info size doesn't cover all vertices", core::LogLevel::Warning);
 	}
 
+	// generate binormals from tangents and emplace both in the MeshDataContainer
+	//----------------------------------------------------------------------------
+	ET_ASSERT(m_Tangents.empty());
+	ET_ASSERT(m_BiNormals.empty());
+
+	// if we use an index buffer and tangents are generated, tangents wont be properly indexed
 	if (!(tangentInfo.size() == m_Normals.size()))
 	{
+		if (tangentInfo.size() == m_Indices.size())
+		{
+			std::vector<bool> hasTangent(m_VertexCount, false); // not very classy, suggestions welcome
+			m_Tangents.resize(m_VertexCount);
+			m_BiNormals.resize(m_VertexCount);
+
+			for (size_t idx = 0u; idx < m_Indices.size(); ++idx)
+			{
+				uint32 const index = m_Indices[idx];
+
+				if (!hasTangent[index])
+				{
+					m_Tangents[index] = tangentInfo[idx].xyz;
+					m_BiNormals[index] = math::cross(m_Normals[index], tangentInfo[idx].xyz) * tangentInfo[idx].w;
+					hasTangent[index] = true;
+				}
+			}
+
+			return true;
+		}
+
 		LOG("Mesh Tangent info size doesn't match the number of normals", core::LogLevel::Warning);
 		return false;
 	}
 
-	ET_ASSERT(m_Tangents.empty());
-	ET_ASSERT(m_BiNormals.empty());
-
-	// generate binormals from tangents and emplace both in the MeshDataContainer
-	//----------------------------------------------------------------------------
 	for (uint32 i = 0; i < tangentInfo.size(); ++i)
 	{
 		m_Tangents.push_back(tangentInfo[i].xyz);
@@ -221,6 +399,54 @@ math::Sphere MeshDataContainer::GetBoundingSphere() const
 	}
 
 	return math::Sphere(center, sqrtf(maxRadius));
+}
+
+//---------------------------------
+// MeshDataContainer::GetVertexIdx
+//
+// return the index of a matching local vertex, or s_InvalidIndex if none was found
+//
+size_t MeshDataContainer::GetVertexIdx(MeshDataContainer const& other, size_t const index) const
+{
+	render::T_VertexFlags const localFlags = GetFlags();
+	ET_ASSERT_PARANOID(localFlags == other.GetFlags());
+
+	for (size_t localIdx = 0u; localIdx < m_VertexCount; ++localIdx)
+	{
+		if ((localFlags & render::E_VertexFlag::POSITION) && (!math::nearEqualsV(m_Positions[localIdx], other.m_Positions[index])))
+		{
+			continue;
+		}
+
+		if ((localFlags & render::E_VertexFlag::NORMAL) && (!math::nearEqualsV(m_Normals[localIdx], other.m_Normals[index])))
+		{
+			continue;
+		}
+
+		if ((localFlags & render::E_VertexFlag::BINORMAL) && (!math::nearEqualsV(m_BiNormals[localIdx], other.m_BiNormals[index])))
+		{
+			continue;
+		}
+
+		if ((localFlags & render::E_VertexFlag::TANGENT) && (!math::nearEqualsV(m_Tangents[localIdx], other.m_Tangents[index])))
+		{
+			continue;
+		}
+
+		if ((localFlags & render::E_VertexFlag::COLOR) && (!math::nearEqualsV(m_Colors[localIdx], other.m_Colors[index])))
+		{
+			continue;
+		}
+
+		if ((localFlags & render::E_VertexFlag::TEXCOORD) && (!math::nearEqualsV(m_TexCoords[localIdx], other.m_TexCoords[index])))
+		{
+			continue;
+		}
+
+		return localIdx;
+	}
+
+	return s_InvalidIndex;
 }
 
 

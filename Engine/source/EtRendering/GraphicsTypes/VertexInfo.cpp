@@ -60,7 +60,7 @@ std::map<E_VertexFlag, AttributeDescriptor const> const AttributeDescriptor::s_V
 	{ E_VertexFlag::NORMAL,		{ "normal",		E_DataType::Float, 3 } },
 	{ E_VertexFlag::BINORMAL,	{ "binormal",	E_DataType::Float, 3 } },
 	{ E_VertexFlag::TANGENT,	{ "tangent",	E_DataType::Float, 3 } },
-	{ E_VertexFlag::COLOR,		{ "color",		E_DataType::Float, 3 } },
+	{ E_VertexFlag::COLOR,		{ "color",		E_DataType::Float, 4 } },
 	{ E_VertexFlag::TEXCOORD,	{ "texcoord",	E_DataType::Float, 2 } }
 };
 

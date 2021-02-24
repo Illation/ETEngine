@@ -932,8 +932,23 @@ bool ColladaParser::ReadMesh(dae::Mesh& mesh, core::XML::Element const& meshEl)
 //
 void ColladaParser::ReadNode(dae::Node& node, core::XML::Element const& nodeEl)
 {
-	// id
-	node.m_Id = GetElementId(nodeEl);
+	// id, name
+	core::XML::Attribute const* const nameAttrib = nodeEl.GetAttribute("name"_hash);
+	if (nameAttrib != nullptr)
+	{
+		node.m_Name = nameAttrib->m_Value;
+	}
+
+	core::XML::Attribute const* const idAttrib = nodeEl.GetAttribute("id"_hash);
+	if (idAttrib != nullptr)
+	{
+		if (nameAttrib == nullptr)
+		{
+			node.m_Name = idAttrib->m_Value;
+		}
+
+		node.m_Id = core::HashString(idAttrib->m_Value.c_str());
+	}
 
 	// asset
 	size_t pos = 0u;

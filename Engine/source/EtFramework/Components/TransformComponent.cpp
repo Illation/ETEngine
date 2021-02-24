@@ -31,7 +31,7 @@ ECS_REGISTER_COMPONENT(TransformComponent);
 //-------------------------------
 // TransformComponent::Translate
 //
-void TransformComponent::Translate(const vec3& translation)
+void TransformComponent::Translate(vec3 const& translation)
 {
 	m_TransformChanged |= E_TransformChanged::Translation;
 	m_Position = m_Position + translation;
@@ -40,16 +40,25 @@ void TransformComponent::Translate(const vec3& translation)
 //---------------------------------
 // TransformComponent::SetPosition
 //
-void TransformComponent::SetPosition(const vec3& position)
+void TransformComponent::SetPosition(vec3 const& position)
 {
 	m_TransformChanged |= E_TransformChanged::Translation;
 	m_Position = position;
 }
 
+//--------------------------------------
+// TransformComponent::SetWorldPosition
+//
+void TransformComponent::SetWorldPosition(vec3 const& position)
+{
+	m_TransformChanged |= E_TransformChanged::Translation;
+	m_Position = (m_WorldPosition - m_Position) + position;
+}
+
 //---------------------------------
 // TransformComponent::RotateEuler
 //
-void TransformComponent::RotateEuler(const vec3& eulerAngles)
+void TransformComponent::RotateEuler(vec3 const& eulerAngles)
 {
 	m_TransformChanged |= E_TransformChanged::Rotation;
 
@@ -59,7 +68,7 @@ void TransformComponent::RotateEuler(const vec3& eulerAngles)
 //----------------------------
 // TransformComponent::Rotate
 //
-void TransformComponent::Rotate(const quat& rotation)
+void TransformComponent::Rotate(quat const& rotation)
 {
 	m_TransformChanged |= E_TransformChanged::Rotation;
 
@@ -69,17 +78,27 @@ void TransformComponent::Rotate(const quat& rotation)
 //---------------------------------
 // TransformComponent::SetRotation
 //
-void TransformComponent::SetRotation(const quat& rotation)
+void TransformComponent::SetRotation(quat const& rotation)
 {
 	m_TransformChanged |= E_TransformChanged::Rotation;
 
 	m_Rotation = rotation;
 }
 
+//--------------------------------------
+// TransformComponent::SetWorldRotation
+//
+void TransformComponent::SetWorldRotation(quat const& rotation)
+{
+	m_TransformChanged |= E_TransformChanged::Rotation;
+
+	m_Rotation = (m_WorldRotation * math::inverse(m_Rotation)) * rotation; // should use inverse safe ? is quaterion always normalized ?
+}
+
 //------------------------------
 // TransformComponent::SetScale
 //
-void TransformComponent::SetScale(const vec3& scale)
+void TransformComponent::SetScale(vec3 const& scale)
 {
 	m_TransformChanged |= E_TransformChanged::Scale;
 	m_Scale = scale;

@@ -48,7 +48,7 @@
         "components": [
           {
             "transform component": {
-              "position": [ 0.0, 2.0, 0.0 ],
+              "position": [ 0.0, 3.0, 0.0 ],
               "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
               "scale": [ 10.0, 10.0, 10.0 ]
             }
@@ -249,14 +249,14 @@
         "components": [
           {
             "transform component": {
-              "position": [ 0.0, 1.0, 2.0 ],
+              "position": [ 0.0, 3.35, 2.0 ],
               "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
               "scale": [ 0.3, 0.3, 0.3 ]
             }
           },
           {
             "model component": {
-              "mesh": "Models/HelmetSettled.dae",
+              "mesh": "Models/HelmetSettled.etmc",
               "material": "Materials/MI_Uber_Kabuto.json"
             }
           },
@@ -267,6 +267,49 @@
               "shape": {
                 "sphere collider shape": {
                   "radius": 0.6
+                }
+              }
+            }
+          }
+        ],
+        "children": []
+      },
+      {
+        "id": 8,
+        "components": [
+          {
+            "transform component": {
+              "position": [ 0.0, 3.35, 2.0 ],
+              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+              "scale": [ 0.3, 0.3, 0.3 ]
+            }
+          },
+          {
+            "model component": {
+              "mesh": "Models/HelmetStand.dae",
+              "material": "Materials/MI_Uber_Floor.json"
+            }
+          }
+        ],
+        "children": []
+      },
+      {
+        "id": 9,
+        "components": [
+          {
+            "transform component": {
+              "position": [ 0.0, 1.55, 2.0 ],
+              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+              "scale": [ 0.3, 0.3, 0.3 ]
+            }
+          },
+          {
+            "rigid body comp desc": {
+              "is dynamic": false,
+              "mass": 0.0,
+              "shape": {
+                "box collider shape": {
+                  "half extents": [ 0.4, 0.9, 0.4 ]
                 }
               }
             }

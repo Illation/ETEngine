@@ -35,44 +35,6 @@
           },
           {
             "model component": {
-              "mesh": "Models/HelmetSettled.dae",
-              "material": "Materials/MI_Uber_Kabuto.json"
-            }
-          }
-        ],
-        "children": []
-      },
-      {
-        "id": 2,
-        "components": [
-          {
-            "transform component": {
-              "position": [ 0.0, 0.0, 0.0 ],
-              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
-              "scale": [ 1.0, 1.0, 1.0 ]
-            }
-          },
-          {
-            "model component": {
-              "mesh": "Models/HelmetStand.dae",
-              "material": "Materials/MI_Uber_Floor.json"
-            }
-          }
-        ],
-        "children": []
-      },
-      {
-        "id": 3,
-        "components": [
-          {
-            "transform component": {
-              "position": [ 0.0, 0.0, 0.0 ],
-              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
-              "scale": [ 1.0, 1.0, 1.0 ]
-            }
-          },
-          {
-            "model component": {
               "mesh": "Models/Env.dae",
               "material": "Materials/MI_Uber_Floor.json"
             }
@@ -81,7 +43,7 @@
         "children": []
       },
       {
-        "id": 4,
+        "id": 2,
         "components": [
           {
             "transform component": {
@@ -105,6 +67,58 @@
           }
         ],
         "children": []
+      },
+      {
+        "id": 3,
+        "components": [
+          {
+            "transform component": {
+              "position": [ 0.0, 1.5, 0.0 ],
+              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+              "scale": [ 1.0, 1.0, 1.0 ]
+            }
+          }
+        ],
+        "children": [
+          {
+            "id": 4,
+            "components": [
+              {
+                "transform component": {
+                  "position": [ 0.0, 0.0, 0.0 ],
+                  "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+                  "scale": [ 1.0, 1.0, 1.0 ]
+                }
+              },
+              {
+                "model component": {
+                  "mesh": "Models/Rocket.etmc",
+                  "material": "Materials/MI_Uber_ICBM.json"
+                }
+              }
+            ],
+            "children": []
+          },
+          {
+            "id": 5,
+            "components": [
+              {
+                "transform component": {
+                  "position": [ 0.0, 0.0, 0.0 ],
+                  "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+                  "scale": [ 1.0, 1.0, 1.0 ]
+                }
+              },
+              {
+                "model component": {
+                  "mesh": "Models/RocketEngine.etmc",
+                  "material": "Materials/MI_Uber_ICBM.json"
+                }
+              }
+            ],
+            "children": []
+          }
+        ]
       }
     ],
     "skybox": "Textures/EnvironmentMaps/Ice_Lake_Ref.hdr",

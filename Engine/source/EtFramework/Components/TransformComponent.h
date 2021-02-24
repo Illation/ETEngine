@@ -44,14 +44,16 @@ public:
 
 	// modifiers
 	//-----------
-	void Translate(const vec3& translation );
-	void SetPosition(const vec3& position);
+	void Translate(vec3 const& translation);
+	void SetPosition(vec3 const& position);
+	void SetWorldPosition(vec3 const& position);
 
-	void RotateEuler(const vec3& eulerAngles);
-	void Rotate(const quat& rotation);
-	void SetRotation(const quat& rotation);
+	void RotateEuler(vec3 const& eulerAngles);
+	void Rotate(quat const& rotation);
+	void SetRotation(quat const& rotation);
+	void SetWorldRotation(quat const& rotation);
 
-	void SetScale(const vec3& scale);
+	void SetScale(vec3 const& scale);
 
 	// accessors
 	//-----------

@@ -295,12 +295,13 @@ struct Mesh
 //
 struct Node
 {
-	bool GetGeometryTransform(mat4& base, core::HashString const geometryId) const;
+	bool GetGeometryTransformName(mat4& base, std::string& name, core::HashString const geometryId) const;
 
 	// Data
 	///////
 
 	core::HashString m_Id;
+	std::string m_Name;
 
 	// asset ignored
 	

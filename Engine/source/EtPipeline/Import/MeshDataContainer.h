@@ -12,9 +12,25 @@ namespace pl {
 //
 struct MeshDataContainer final
 {
+	// definitions
+	//-------------
+	static size_t const s_InvalidIndex;
+
+	// functionality
+	//---------------
+	void RemoveDuplicateVertices();
+	bool Triangulate(std::vector<uint8> const& vcounts);
 	bool ConstructTangentSpace(std::vector<vec4>& tangentInfo);
+
+	// accessors
+	//-----------
 	render::T_VertexFlags GetFlags() const;
 	math::Sphere GetBoundingSphere() const;
+
+	size_t GetVertexIdx(MeshDataContainer const& other, size_t const index) const;
+
+	// Data
+	///////
 
 	std::string m_Name;
 

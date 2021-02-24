@@ -217,12 +217,13 @@ size_t const Input::s_InvalidIndex = std::numeric_limits<size_t>::max();
 //=======
 
 
-//----------------------------
-// Node::GetGeometryTransform
+//--------------------------------
+// Node::GetGeometryTransformName
 //
 // recursively find a node with the given geometry instance and calculate a transformation matrix
+// also outputs the nodes name
 //
-bool Node::GetGeometryTransform(mat4& base, core::HashString const geometryId) const
+bool Node::GetGeometryTransformName(mat4& base, std::string& name, core::HashString const geometryId) const
 {
 	if (std::find_if(m_Instances.cbegin(), m_Instances.cend(), [geometryId](Instance const& inst)
 		{
@@ -230,12 +231,13 @@ bool Node::GetGeometryTransform(mat4& base, core::HashString const geometryId) c
 		}) != m_Instances.cend())
 	{
 		base = m_Transform;
+		name = m_Name;
 		return true;
 	}
 
 	for (Node const& child : m_Children)
 	{
-		if (child.GetGeometryTransform(base, geometryId))
+		if (child.GetGeometryTransformName(base, name, geometryId))
 		{
 			base = m_Transform * base;
 			return true;

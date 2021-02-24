@@ -1,0 +1,18 @@
+{
+  "editable material instance asset": {
+    "asset": {
+      "material instance asset": {
+        "name": "MI_Uber_ICBM.json",
+        "path": "Materials/",
+        "package": "content1",
+        "references": [
+          "Materials/M_UberOpaque.json",
+          "Textures/ICBM/AO.png",
+          "Textures/ICBM/Normal.png"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

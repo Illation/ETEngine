@@ -90,7 +90,7 @@ void ColladaImporter::SetupOptions(Gtk::Frame* const frame, T_SensitiveFn& sensi
 	vbox->pack_start(*Gtk::make_managed<Gtk::Label>("Mesh options"), false, true, 3u);
 	makeOptionFn("Calculate Tangent Space", m_CalculateTangentSpace, true);
 	makeOptionFn("Pre Transform Vertices", m_PreTransformVertices, true);
-	makeOptionFn("Remove duplicate vertices", m_RemoveDuplicateVertices, false);
+	makeOptionFn("Remove duplicate vertices", m_RemoveDuplicateVertices, true);
 	makeOptionFn("Include Skeletal data", m_IncludeSkeletalData, false);
 
 	vbox->pack_start(*Gtk::make_managed<Gtk::Separator>(Gtk::ORIENTATION_HORIZONTAL), false, true, 3u);
@@ -116,20 +116,17 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 	{
 		std::vector<dae::Node> nodes;
 		std::vector<dae::VisualScene> scenes;
-		if (m_PreTransformVertices)
-		{
-			parser.IterateNodes([&nodes](core::XML::Element const& nodeEl, dae::Asset const&)
+		parser.IterateNodes([&nodes](core::XML::Element const& nodeEl, dae::Asset const&)
 			{
 				nodes.emplace_back();
 				ColladaParser::ReadNode(nodes[nodes.size() - 1u], nodeEl);
 			});
 
-			parser.IterateVisualScenes([&scenes](core::XML::Element const& sceneEl, dae::Asset const&)
+		parser.IterateVisualScenes([&scenes](core::XML::Element const& sceneEl, dae::Asset const&)
 			{
 				scenes.emplace_back();
 				ColladaParser::ReadScene(scenes[scenes.size() - 1u], sceneEl);
 			});
-		}
 
 		std::vector<pl::MeshDataContainer> containers;
 		parser.IterateGeometries([this, &containers, &nodes, &scenes](core::XML::Element const& geometryEl, dae::Asset const& asset)
@@ -146,16 +143,6 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 			if (!ColladaParser::ReadMesh(mesh, *meshEl))
 			{
 				return;
-			}
-
-			// make sure it's a triangulated mesh
-			for (uint8 const vcount : mesh.m_VertexCounts)
-			{
-				if (vcount != 3u)
-				{
-					LOG(FS("Only triangulated meshes are supported, found face with [%u] vertices!", vcount), core::Warning);
-					return;
-				}
 			}
 
 			// figure out which inputs we actually want to use
@@ -191,33 +178,34 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 			// figure out transform of the mesh
 			//----------------------------------
 			mat4 meshTransform;
-			bool hasTransform = false;
-			if (m_PreTransformVertices)
+			bool hasNode = false;
+			std::string nodeName;
+
 			{
 				core::HashString const meshId = ColladaParser::GetElementId(geometryEl);
 				if (!meshId.IsEmpty())
 				{
 					for (dae::Node const& node : nodes)
 					{
-						if (node.GetGeometryTransform(meshTransform, meshId))
+						if (node.GetGeometryTransformName(meshTransform, nodeName, meshId))
 						{
-							hasTransform = true;
+							hasNode = true;
 							break;
 						}
 					}
 
 					for (dae::VisualScene const& scene : scenes)
 					{
-						if (hasTransform)
+						if (hasNode)
 						{
 							break;
 						}
 
 						for (dae::Node const& node : scene.m_Nodes)
 						{
-							if (node.GetGeometryTransform(meshTransform, meshId))
+							if (node.GetGeometryTransformName(meshTransform, nodeName, meshId))
 							{
-								hasTransform = true;
+								hasNode = true;
 								break;
 							}
 						}
@@ -226,11 +214,13 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 			}
 
 			mat3 stationary;
-			if (hasTransform)
+			if (hasNode)
 			{
 				meshTransform = math::inverse(meshTransform);
 				stationary = math::CreateFromMat4(meshTransform);
 			}
+
+			bool const useTransform = hasNode && m_PreTransformVertices;
 
 			// create mesh container
 			//-----------------------
@@ -326,7 +316,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 						}
 
 						vec3 inVec = accessor.ReadVector<3>(source, accessorIdx);
-						if (hasTransform)
+						if (useTransform)
 						{
 							inVec = (meshTransform * vec4(inVec, 1.f)).xyz;
 						}
@@ -356,7 +346,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 						}
 
 						vec3 inVec = accessor.ReadVector<3>(source, accessorIdx);
-						if (hasTransform)
+						if (useTransform)
 						{
 							inVec = stationary * inVec;
 						}
@@ -411,7 +401,15 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 
 			// other container data
 			//----------------------
-			meshContainer.m_Name = ColladaParser::GetLibraryElementName(geometryEl);
+			if (!nodeName.empty())
+			{
+				meshContainer.m_Name = nodeName;
+			}
+			else
+			{
+				meshContainer.m_Name = ColladaParser::GetLibraryElementName(geometryEl);
+			}
+
 			meshContainer.m_VertexCount = meshContainer.m_Positions.size();
 
 			// generate index buffer - this should later be optimized by removing duplicates
@@ -419,6 +417,21 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 			for (size_t idx = 0; idx < meshContainer.m_VertexCount; ++idx)
 			{
 				meshContainer.m_Indices.push_back(idx);
+			}
+
+			if (m_RemoveDuplicateVertices)
+			{
+				meshContainer.RemoveDuplicateVertices();
+			}
+
+			if (!mesh.m_VertexCounts.empty())
+			{
+				if (!meshContainer.Triangulate(mesh.m_VertexCounts))
+				{
+					LOG("Failed to triangulate collada mesh, skipping", core::Warning);
+					containers.pop_back();
+					return;
+				}
 			}
 
 			// derived tangent space
