@@ -2,7 +2,7 @@
   "editable mesh asset": {
     "asset": {
       "mesh asset": {
-        "name": "cube.dae",
+        "name": "cube.etmc",
         "path": "Models/",
         "package": "engine_content",
         "references": []

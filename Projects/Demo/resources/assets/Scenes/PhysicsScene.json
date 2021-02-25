@@ -27,7 +27,7 @@
           },
           {
             "spawn comp desc": {
-              "mesh": "Models/sphere.dae",
+              "mesh": "Models/sphere.etmc",
               "material": "Materials/MI_TexPBR_Ball.json",
               "scale": 0.2,
               "shape": {
@@ -115,7 +115,7 @@
               },
               {
                 "model component": {
-                  "mesh": "Models/sphere.dae",
+                  "mesh": "Models/sphere.etmc",
                   "material": "Materials/MI_Emissive_LightBulb.json"
                 }
               }
@@ -136,7 +136,7 @@
           },
           {
             "model component": {
-              "mesh": "Models/cube.dae",
+              "mesh": "Models/cube.etmc",
               "material": "Materials/MI_TexPBR_Floor.json"
             }
           },
@@ -166,7 +166,7 @@
           },
           {
             "model component": {
-              "mesh": "Models/cube.dae",
+              "mesh": "Models/cube.etmc",
               "material": "Materials/MI_TexPBR_Block.json"
             }
           },
@@ -196,7 +196,7 @@
           },
           {
             "model component": {
-              "mesh": "Models/cube.dae",
+              "mesh": "Models/cube.etmc",
               "material": "Materials/MI_TexPBR_Block.json"
             }
           },
@@ -226,7 +226,7 @@
           },
           {
             "model component": {
-              "mesh": "Models/cube.dae",
+              "mesh": "Models/cube.etmc",
               "material": "Materials/MI_TexPBR_Block.json"
             }
           },
@@ -286,7 +286,7 @@
           },
           {
             "model component": {
-              "mesh": "Models/HelmetStand.dae",
+              "mesh": "Models/HelmetStand.etmc",
               "material": "Materials/MI_Uber_Floor.json"
             }
           }

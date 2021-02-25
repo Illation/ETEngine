@@ -2,7 +2,7 @@
   "editable mesh asset": {
     "asset": {
       "mesh asset": {
-        "name": "HelmetStand.dae",
+        "name": "HelmetStand.etmc",
         "path": "Models/",
         "package": "content1",
         "references": []

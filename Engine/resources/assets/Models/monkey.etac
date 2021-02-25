@@ -2,7 +2,7 @@
   "editable mesh asset": {
     "asset": {
       "mesh asset": {
-        "name": "monkey.dae",
+        "name": "monkey.etmc",
         "path": "Models/",
         "package": "engine_content",
         "references": []

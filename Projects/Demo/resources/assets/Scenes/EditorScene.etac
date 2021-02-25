@@ -7,10 +7,8 @@
         "package": "content1",
         "references": [
           "Textures/EnvironmentMaps/Ice_Lake_Ref.hdr",
-          "Materials/MI_Uber_Kabuto.json",
-          "Models/HelmetStand.dae",
           "Materials/MI_Uber_Floor.json",
-          "Models/Env.dae",
+          "Models/Env.etmc",
           "Models/Rocket.etmc",
           "Models/RocketEngine.etmc",
           "Materials/MI_Uber_ICBM.json"

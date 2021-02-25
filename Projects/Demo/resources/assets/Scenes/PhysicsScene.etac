@@ -9,14 +9,14 @@
           "Textures/EnvironmentMaps/Ice_Lake_Ref.hdr",
           "Models/HelmetSettled.etmc",
           "Materials/MI_Uber_Kabuto.json",
-          "Models/HelmetStand.dae",
+          "Models/HelmetStand.etmc",
           "Materials/MI_Uber_Floor.json",
           "Sounds/Disfigure-Blank.ogg",
           "Sounds/testmusic.ogg",
-          "Models/sphere.dae",
+          "Models/sphere.etmc",
           "Materials/MI_Emissive_LightBulb.json",
           "Materials/MI_TexPBR_Ball.json",
-          "Models/cube.dae",
+          "Models/cube.etmc",
           "Materials/MI_TexPBR_Floor.json",
           "Materials/MI_TexPBR_Block.json"
         ]

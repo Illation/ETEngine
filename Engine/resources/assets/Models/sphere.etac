@@ -2,7 +2,7 @@
   "editable mesh asset": {
     "asset": {
       "mesh asset": {
-        "name": "sphere.dae",
+        "name": "sphere.etmc",
         "path": "Models/",
         "package": "engine_content",
         "references": []
