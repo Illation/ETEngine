@@ -2,24 +2,6 @@
   "material descriptor": {
     "parameters": [
       {
-        "vector3D param": {
-          "name": "uBaseColor",
-          "data": [ 0.7, 0.7, 0.7 ]
-        }
-      },
-      {
-        "float param": {
-          "name": "uRoughness",
-          "data": 0.2
-        }
-      },
-      {
-        "float param": {
-          "name": "uMetallic",
-          "data": 0.0
-        }
-      },
-      {
         "boolean param": {
           "name": "uUseBaseColTex",
           "data": true
@@ -28,7 +10,7 @@
       {
         "texture param": {
           "name": "uTexBaseColor",
-          "data": "Textures/ICBM/AO.png"
+          "data": "Textures/ICBM/BaseCol.png"
         }
       },
       {
@@ -41,6 +23,18 @@
         "texture param": {
           "name": "uTexNormal",
           "data": "Textures/ICBM/Normal.png"
+        }
+      },
+      {
+        "boolean param": {
+          "name": "uUseMetallicRoughnessTex",
+          "data": true
+        }
+      },
+      {
+        "texture param": {
+          "name": "uTexMetallicRoughness",
+          "data": "Textures/ICBM/MetallicRoughness.png"
         }
       },
       {

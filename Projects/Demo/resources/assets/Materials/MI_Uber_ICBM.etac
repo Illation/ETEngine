@@ -8,7 +8,9 @@
         "references": [
           "Materials/M_UberOpaque.json",
           "Textures/ICBM/AO.png",
-          "Textures/ICBM/Normal.png"
+          "Textures/ICBM/Normal.png",
+          "Textures/ICBM/BaseCol.png",
+          "Textures/ICBM/MetallicRoughness.png"
         ]
       }
     },
