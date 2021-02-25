@@ -2,18 +2,6 @@
 
 
 
-## Assimp
-
-- source: [https://github.com/assimp/assimp](https://github.com/assimp/assimp/tree/d672ae21d03c4fbe5c9b441ec2ba25004f0c282c)
-- license: [3-clause BSD](https://github.com/assimp/assimp/blob/master/LICENSE)
-
-assimp redistributes:
-
-#### irrXML
-
-- license: [zlib](https://www.ambiera.com/irrxml/license.html)
-
-
 ## bc7enc
 
 - source: [https://github.com/richgel999/bc7enc](https://github.com/richgel999/bc7enc/tree/ffcc3a085f7345dee94ed5ee8a7427dbd06ac7b7)
@@ -93,9 +81,6 @@ Vcpkg is used to build and obtain sources of other libraries. It also downloads 
 
 Libraries used by the runtime engine are:
 
-#### freetype
-FreeType License - https://www.freetype.org/license.html
-
 #### libpng
 LibPng License - http://www.libpng.org/pub/png/src/libpng-LICENSE.txt
 
@@ -107,7 +92,7 @@ bzip2 license - https://sourceware.org/bzip2/
 
 ------------------------------------------------------------
 
-Other libraries, which will be used by the editor are:
+Other libraries, which are used by the editor are:
 
 #### atk
 GNU LGPL License - https://developer.gnome.org/atk/
@@ -129,6 +114,9 @@ MIT - https://github.com/libexpat/libexpat/blob/master/expat/COPYING
 
 #### fontconfig
 MIT - https://www.freedesktop.org/wiki/Software/fontconfig/
+
+#### freetype
+FreeType License - https://www.freetype.org/license.html
 
 #### gdk-pixbuf
 GNU LGPL License - https://github.com/GNOME/gdk-pixbuf/blob/master/COPYING

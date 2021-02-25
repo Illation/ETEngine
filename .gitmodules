@@ -1,6 +1,3 @@
-[submodule "third_party/assimp/assimp"]
-	path = Engine/third_party/assimp/assimp
-	url = https://github.com/assimp/assimp
 [submodule "third_party/bullet/bullet3"]
 	path = Engine/third_party/bullet/bullet3
 	url = https://github.com/bulletphysics/bullet3

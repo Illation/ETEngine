@@ -289,18 +289,7 @@ function(getRttrBuildDir rttr_build)
 endfunction(getRttrBuildDir)
 
 
-# rttr output directory
-##########################
-function(getAssimpBuildDir assimp_build)
-
-	set(_p )
-	getPlatformArch(_p)
-
-	set(${assimp_build} "${ENGINE_DIRECTORY_ABS}/third_party/assimp/build/${_p}" PARENT_SCOPE)
-endfunction(getAssimpBuildDir)
-
-
-# rttr output directory
+# openal output directory
 ##########################
 function(getOpenAlBuildDir openal_build)
 
@@ -311,7 +300,7 @@ function(getOpenAlBuildDir openal_build)
 endfunction(getOpenAlBuildDir)
 
 
-# rttr output directory
+# flfw output directory
 ##########################
 function(getGlfwBuildDir glfw_build)
 
@@ -368,16 +357,8 @@ function(cookerLinks TARGET)
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
 
-	set(_assimpBuild )
-	getAssimpBuildDir(_assimpBuild)
-	file(GLOB _assimpDebugLib ${_assimpBuild}/code/Debug/*.lib)		# assimp defines the toolset in the lib name, so we just glob it
-	file(GLOB _assimpReleaseLib ${_assimpBuild}/code/Release/*.lib)
-
 	target_link_libraries (${TARGET} 		
-		debug ${_vcpkgInstall}/debug/lib/freetyped.lib				optimized ${_vcpkgInstall}/lib/freetype.lib	
-
-		debug ${_assimpDebugLib}									optimized ${_assimpReleaseLib} 
-		debug ${_assimpBuild}/contrib/irrXML/Debug/IrrXMLd.lib		optimized ${_assimpBuild}/contrib/irrXML/Release/IrrXML.lib)
+		debug ${_vcpkgInstall}/debug/lib/freetyped.lib				optimized ${_vcpkgInstall}/lib/freetype.lib)
 
 endfunction(cookerLinks)
 
@@ -463,17 +444,12 @@ function(libIncludeDirs)
 	set(_rttrBuild )
 	getRttrBuildDir(_rttrBuild)
 	include_directories("${_rttrBuild}/install/include/")	
-	
-	set(_assimpBuild )
-	getAssimpBuildDir(_assimpBuild)
-	include_directories("${_assimpBuild}/include/")	
-	
+		
 	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/stb")
 	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/mikkt")
 	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/glad/gl-bindings/include")
 	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/bullet/bullet3/src")
 	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/openal/openal-soft/include")
-	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/assimp/assimp/include")
 	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/glfw/glfw/include")
 
 endfunction(libIncludeDirs)

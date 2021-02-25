@@ -31,7 +31,6 @@ endif()
 #---------------
 
 add_subdirectory (glfw)
-add_subdirectory (assimp)
 add_subdirectory (bullet)
 add_subdirectory (rttr)
 add_subdirectory (openal)
