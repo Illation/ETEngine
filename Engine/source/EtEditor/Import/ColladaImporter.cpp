@@ -9,11 +9,11 @@
 #include <EtCore/FileSystem/FileUtil.h>
 
 #include <EtPipeline/Assets/EditableMeshAsset.h>
-#include <EtPipeline/Import/MeshDataContainer.h>
 
 #include <EtEditor/Util/GtkUtil.h>
 
 #include "ColladaParser.h"
+#include "MeshDataContainer.h"
 
 
 namespace et {
@@ -128,7 +128,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 				ColladaParser::ReadScene(scenes[scenes.size() - 1u], sceneEl);
 			});
 
-		std::vector<pl::MeshDataContainer> containers;
+		std::vector<MeshDataContainer> containers;
 		parser.IterateGeometries([this, &containers, &nodes, &scenes](core::XML::Element const& geometryEl, dae::Asset const& asset)
 		{
 			core::XML::Element const* const meshEl = ColladaParser::GetMeshElFromGeometry(geometryEl);
@@ -225,7 +225,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 			// create mesh container
 			//-----------------------
 			containers.emplace_back();
-			pl::MeshDataContainer& meshContainer = containers[containers.size() - 1u];
+			MeshDataContainer& meshContainer = containers[containers.size() - 1u];
 
 			size_t usedSet = dae::Input::s_InvalidIndex;
 			size_t const increment = mesh.m_MaxInputOffset + 1u;
@@ -465,7 +465,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 		// convert mesh containers to mesh assets
 		//----------------------------------------
 
-		for (pl::MeshDataContainer const& meshContainer : containers)
+		for (MeshDataContainer const& meshContainer : containers)
 		{
 			pl::EditableMeshAsset* const editableMeshAsset = new pl::EditableMeshAsset();
 			outAssets.push_back(editableMeshAsset);
@@ -473,7 +473,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 			render::MeshAsset* const meshAsset = new render::MeshAsset();
 			editableMeshAsset->SetAsset(meshAsset);
 
-			pl::EditableMeshAsset::WriteToEtMesh(&meshContainer, meshAsset->GetLoadData());
+			meshContainer.WriteToEtMesh(meshAsset->GetLoadData());
 			if (containers.size() == 1u)
 			{
 				meshAsset->SetName(core::FileUtil::RemoveExtension(core::FileUtil::ExtractName(filePath)) + "." + pl::EditableMeshAsset::s_EtMeshExt);

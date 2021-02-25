@@ -31,7 +31,7 @@
 #include <EtEditor/Util/SettingsDialog.h>
 #include <EtEditor/Util/EditorConfig.h>
 #include <EtEditor/SceneEditor/SceneEditor.h>
-#include <EtEditor/Content/Importer.h>
+#include <EtEditor/Import/Importer.h>
 
 
 namespace et {

@@ -3,9 +3,15 @@
 
 #include <ext-mikktspace/mikktspace.h>
 
+#include <EtBuild/EngineVersion.h>
+
+#include <EtCore/IO/BinaryWriter.h>
+
+#include <EtRendering/GraphicsTypes/Mesh.h>
+
 
 namespace et {
-namespace pl {
+namespace edit {
 
 
 //=====================
@@ -336,6 +342,93 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 	return true;
 }
 
+//----------------------------------
+// MeshDataContainer::WriteToEtMesh
+//
+// write into to EtMesh file
+//
+void MeshDataContainer::WriteToEtMesh(std::vector<uint8>& outData) const
+{
+	// fetch info so we can calculate file size
+	//-------------------------------------------
+	uint64 const indexCount = static_cast<uint64>(m_Indices.size());
+	uint64 const vertexCount = static_cast<uint64>(m_VertexCount);
+
+	// #todo: might be okay to store index buffer with 16bits per index
+	render::E_DataType const indexDataType = render::E_DataType::UInt;
+	render::T_VertexFlags const flags = GetFlags();
+	math::Sphere const boundingSphere = GetBoundingSphere();
+
+	size_t const iBufferSize = indexCount * static_cast<size_t>(render::DataTypeInfo::GetTypeSize(indexDataType));
+	size_t const vBufferSize = vertexCount * static_cast<size_t>(render::AttributeDescriptor::GetVertexSize(flags));
+
+	// init binary writer
+	//--------------------
+	core::BinaryWriter binWriter(outData);
+	binWriter.FormatBuffer(render::MeshAsset::s_Header.size() +
+		build::Version::s_Name.size() + 1u +
+		sizeof(uint64) + // index count
+		sizeof(uint64) + // vertex count
+		sizeof(render::E_DataType) +
+		sizeof(render::T_VertexFlags) +
+		sizeof(float) * 4u + // bounding sphere - pos (3) + radius (1)
+		iBufferSize +
+		vBufferSize);
+
+	// write header
+	//--------------
+	binWriter.WriteString(render::MeshAsset::s_Header);
+	binWriter.WriteNullString(build::Version::s_Name);
+
+	binWriter.Write(indexCount);
+	binWriter.Write(vertexCount);
+
+	binWriter.Write(indexDataType);
+	binWriter.Write(flags);
+	binWriter.WriteVector(boundingSphere.pos);
+	binWriter.Write(boundingSphere.radius);
+
+	// writer indices
+	//----------------
+	// we just assume index data type will be the same as what is in the mesh container for now.. in the future we might have to convert
+	binWriter.WriteData(reinterpret_cast<uint8 const*>(m_Indices.data()), iBufferSize);
+
+	// write vertices
+	//----------------
+	for (size_t vertIdx = 0u; vertIdx < static_cast<size_t>(vertexCount); vertIdx++)
+	{
+		if (flags & render::E_VertexFlag::POSITION)
+		{
+			binWriter.WriteVector(m_Positions[vertIdx]);
+		}
+
+		if (flags & render::E_VertexFlag::NORMAL)
+		{
+			binWriter.WriteVector(m_Normals[vertIdx]);
+		}
+
+		if (flags & render::E_VertexFlag::BINORMAL)
+		{
+			binWriter.WriteVector(m_BiNormals[vertIdx]);
+		}
+
+		if (flags & render::E_VertexFlag::TANGENT)
+		{
+			binWriter.WriteVector(m_Tangents[vertIdx]);
+		}
+
+		if (flags & render::E_VertexFlag::COLOR)
+		{
+			binWriter.WriteVector(m_Colors[vertIdx]);
+		}
+
+		if (flags & render::E_VertexFlag::TEXCOORD)
+		{
+			binWriter.WriteVector(m_TexCoords[vertIdx]);
+		}
+	}
+}
+
 //-----------------------------
 // MeshDataContainer::GetFlags
 //
@@ -450,6 +543,6 @@ size_t MeshDataContainer::GetVertexIdx(MeshDataContainer const& other, size_t co
 }
 
 
-} // namespace pl
+} // namespace edit
 } // namespace et
 

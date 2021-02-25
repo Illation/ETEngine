@@ -181,7 +181,8 @@ bool MeshAsset::ReadEtMesh(MeshData* const meshData, std::vector<uint8> const& l
 	std::string const writerVersion = reader.ReadNullString();
 	if (writerVersion != build::Version::s_Name)
 	{
-		LOG(FS("Mesh data was written by a different engine version: %s", writerVersion.c_str()));
+		// right now there are no older file formats that are not supported
+		// LOG(FS("Mesh data was written by a different engine version: %s", writerVersion.c_str()));
 	}
 
 	// read mesh info

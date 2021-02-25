@@ -6,7 +6,7 @@
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/IO/Uri.h>
 
-#include <EtEditor/Content/Importer.h>
+#include <EtEditor/Import/Importer.h>
 
 
 namespace et {

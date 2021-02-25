@@ -2,7 +2,7 @@
 
 
 namespace et {
-namespace pl {
+namespace edit {
 
 
 //---------------------------------
@@ -21,6 +21,8 @@ struct MeshDataContainer final
 	void RemoveDuplicateVertices();
 	bool Triangulate(std::vector<uint8> const& vcounts);
 	bool ConstructTangentSpace(std::vector<vec4>& tangentInfo);
+
+	void WriteToEtMesh(std::vector<uint8>& outData) const;
 
 	// accessors
 	//-----------
@@ -47,5 +49,5 @@ struct MeshDataContainer final
 };
 
 
-} // namespace pl
+} // namespace edit
 } // namespace et

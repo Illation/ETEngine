@@ -2,6 +2,7 @@
 #include "GltfImporter.h"
 
 #include "GLTF.h"
+#include "MeshDataContainer.h"
 
 #include <gtkmm/label.h>
 #include <gtkmm/checkbutton.h>
@@ -12,7 +13,6 @@
 #include <EtCore/IO/BinaryReader.h>
 
 #include <EtPipeline/Assets/EditableMeshAsset.h>
-#include <EtPipeline/Import/MeshDataContainer.h>
 
 #include <EtEditor/Util/GtkUtil.h>
 
@@ -114,10 +114,10 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 
 	if (m_ImportMeshes)
 	{
-		std::vector<pl::MeshDataContainer*> containers;
+		std::vector<MeshDataContainer*> containers;
 		auto const cleanupFn = [&containers]()
 			{
-				for (pl::MeshDataContainer* const container : containers)
+				for (MeshDataContainer* const container : containers)
 				{
 					delete container;
 				}
@@ -134,7 +134,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 
 			for (const glTF::Primitive& primitive : mesh.primitives)
 			{
-				pl::MeshDataContainer* const meshContainer = new pl::MeshDataContainer();
+				MeshDataContainer* const meshContainer = new MeshDataContainer();
 
 				//Basic positions
 				if (primitive.indices == -1)
@@ -277,7 +277,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 		// convert mesh containers to mesh assets
 		//----------------------------------------
 
-		for (pl::MeshDataContainer* const meshContainer : containers)
+		for (MeshDataContainer* const meshContainer : containers)
 		{
 			pl::EditableMeshAsset* const editableMeshAsset = new pl::EditableMeshAsset();
 			outAssets.push_back(editableMeshAsset);
@@ -285,7 +285,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 			render::MeshAsset* const meshAsset = new render::MeshAsset();
 			editableMeshAsset->SetAsset(meshAsset);
 
-			pl::EditableMeshAsset::WriteToEtMesh(meshContainer, meshAsset->GetLoadData());
+			meshContainer->WriteToEtMesh(meshAsset->GetLoadData());
 			if (containers.size() == 1u)
 			{
 				meshAsset->SetName(core::FileUtil::RemoveExtension(core::FileUtil::ExtractName(filePath)) + "." + pl::EditableMeshAsset::s_EtMeshExt);
