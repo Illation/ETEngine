@@ -29,6 +29,8 @@ class Parser final
 	static constexpr char s_EntityEnd = ';';
 	static constexpr char s_NumericEntity = '#';
 	static constexpr char s_HexEntity = 'x';
+	static constexpr char s_Exclamation = '!';
+	static constexpr char s_Dash = '-';
 
 public:
 	Parser(std::string const& sourceText);
@@ -42,6 +44,7 @@ public:
 	//---------
 private:
 	void MoveToNonWhitespace(std::string const& sourceText);
+	void SkipComment(std::string const& sourceText);
 	std::string ReadName(std::string const& sourceText);
 	char ReadEntity(std::string const& sourceText);
 	std::string ReadAttributeContent(std::string const& sourceText);

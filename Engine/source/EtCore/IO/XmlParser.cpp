@@ -19,6 +19,8 @@ namespace XML {
 Parser::Parser(std::string const& sourceText)
 {
 	MoveToNonWhitespace(sourceText);
+	SkipComment(sourceText);
+
 
 	if ((m_ReadIdx < sourceText.size()) && (sourceText[m_ReadIdx++] == s_TagOpen))
 	{
@@ -155,6 +157,7 @@ Parser::Parser(std::string const& sourceText)
 
 			// now move on to content start
 			MoveToNonWhitespace(sourceText);
+			SkipComment(sourceText);
 			if ((m_ReadIdx > sourceText.size()) || (sourceText[m_ReadIdx++] != s_TagOpen))
 			{
 				LOG(FS("Expected '%c' token, parsing XML failed", s_TagOpen), Warning);
@@ -201,6 +204,64 @@ void Parser::MoveToNonWhitespace(std::string const& sourceText)
 	}
 
 	m_ReadIdx = static_cast<size_t>(it - sourceText.cbegin());
+}
+
+//---------------------
+// Parser::SkipComment
+//
+void Parser::SkipComment(std::string const& sourceText)
+{
+	// find out if we are inside a comment
+	if (sourceText[m_ReadIdx] != s_TagOpen)
+	{
+		return;
+	}
+
+	if (sourceText[m_ReadIdx + 1u] != s_Exclamation)
+	{
+		return;
+	}
+
+	if (sourceText[m_ReadIdx + 2u] != s_Dash)
+	{
+		return;
+	}
+
+	if (sourceText[m_ReadIdx + 3u] != s_Dash)
+	{
+		return;
+	}
+
+	// we're in a comment, skip to the end of it
+	m_ReadIdx += 4u;
+	while (m_ReadIdx < sourceText.size())
+	{
+		if (sourceText[m_ReadIdx++] != s_Dash)
+		{
+			continue;
+		}
+
+		if (sourceText.size() < m_ReadIdx + 2u)
+		{
+			LOG("XML file wasn't long enough to exit comment, exiting", Warning);
+			return;
+		}
+
+		if (sourceText[m_ReadIdx++] != s_Dash)
+		{
+			continue;
+		}
+
+		if (sourceText[m_ReadIdx++] == s_TagClose)
+		{
+			MoveToNonWhitespace(sourceText);
+			SkipComment(sourceText); // there could be a second comment after the first, so we keep recurssively skipping comments until no more where found
+			return;
+		}
+	}
+
+	LOG("XML reached end of document before exiting comment", Warning);
+	return;
 }
 
 //--------------------
@@ -374,7 +435,7 @@ void Parser::ReadElement(std::string const& sourceText, Element& el)
 {
 	el.m_Name = core::HashString(ReadName(sourceText).c_str());
 
-	MoveToNonWhitespace(sourceText); MoveToNonWhitespace(sourceText);
+	MoveToNonWhitespace(sourceText); 
 	while (m_ReadIdx < sourceText.size())
 	{
 		// empty element end
@@ -401,6 +462,8 @@ void Parser::ReadElement(std::string const& sourceText, Element& el)
 
 			size_t const cachedPos = m_ReadIdx;
 			MoveToNonWhitespace(sourceText);
+			SkipComment(sourceText);
+
 			if (sourceText[m_ReadIdx++] != s_TagOpen) // leaf element gets string filled in
 			{
 				el.m_Value = sourceText.substr(cachedPos, m_ReadIdx - cachedPos);
@@ -462,6 +525,7 @@ void Parser::ReadElement(std::string const& sourceText, Element& el)
 				el.m_Children.push_back(child);
 
 				MoveToNonWhitespace(sourceText);
+				SkipComment(sourceText);
 				if ((m_ReadIdx >= sourceText.size()) || (sourceText[m_ReadIdx++] != s_TagOpen))
 				{
 					LOG("Expected opening tag after reading child", Warning);
