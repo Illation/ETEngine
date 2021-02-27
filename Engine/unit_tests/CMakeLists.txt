@@ -21,6 +21,7 @@ add_definitions(-D_CONSOLE)
 message(STATUS "Adding target: unit_tests")
 add_executable(unit_tests ${projectFiles})
 targetCompileOptions(unit_tests)
+addDebugVisualizers(unit_tests)
 
 # directory stuff
 assign_source_group(${projectFiles})

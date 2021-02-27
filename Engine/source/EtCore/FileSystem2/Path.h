@@ -58,6 +58,8 @@ public:
 	std::string GetExtension() const;
 	core::HashString GetExtensionId() const;
 
+	std::string GetParentPath() const;
+
 	E_Type GetType() const { return m_Type; }
 	bool IsFile() const; // or directory
 

@@ -68,8 +68,9 @@ Path::Path(std::string const& inPath)
 		volumeDelim++;
 		ET_ASSERT(IsDelim(inPath[volumeDelim]), "Relative paths specifiying volumes are not supported");
 
+		m_Impl += inPath.substr(0u, volumeDelim) + s_Delimiters[0];
 		volumeDelim++;
-		m_Impl += inPath.substr(0u, volumeDelim).c_str();
+
 		m_Components.emplace_back(0u, static_cast<uint16>(volumeDelim), m_Impl);
 
 		readPos = volumeDelim;
@@ -79,19 +80,17 @@ Path::Path(std::string const& inPath)
 	if (IsDelim(inPath[readPos]))
 	{
 		m_Type = E_Type::Absolute;
-		readPos++;
 
 		m_Impl += s_Delimiters[0];
-		m_Components.emplace_back(static_cast<uint16>(readPos), 1u, m_Impl);
+		m_Components.emplace_back(static_cast<uint16>(readPos++), 1u, m_Impl);
 	}
 #ifdef ET_PLATFORM_LINUX
 	else if (inPath(readPos) == '~')
 	{
 		m_Type = E_Type::Absolute;
-		readPos++;
 
 		m_Impl += '~';
-		m_Components.emplace_back(static_cast<uint16>(readPos), 1u, m_Impl);
+		m_Components.emplace_back(static_cast<uint16>(readPos++), 1u, m_Impl);
 	}
 #endif
 	else
@@ -118,6 +117,8 @@ Path::Path(std::string const& inPath)
 			size_t const writePos = m_Impl.size();
 			m_Impl += inPath.substr(lastStart, length) + s_Delimiters[0];
 			m_Components.emplace_back(static_cast<uint16>(writePos), static_cast<uint16>(length + 1u), m_Impl);
+
+			lastStart = readPos + 1u;
 		}
 
 		++readPos;
@@ -125,8 +126,7 @@ Path::Path(std::string const& inPath)
 
 	// read name and extension
 	//-------------------------
-	ET_ASSERT(!m_Impl.empty());
-	if (m_Impl[m_Impl.size() - 1u] == s_Delimiters[0])
+	if (!m_Impl.empty() && IsDelim(inPath[readPos - 1u]))
 	{
 		m_Id.Set(m_Impl.c_str());
 		return;
@@ -149,10 +149,13 @@ Path::Path(std::string const& inPath)
 
 			writePos += length + 1u;
 			m_HasExtension = true;
+
+			readPos--;
+			break;
 		}
 	}
 
-	m_Components.emplace_back(static_cast<uint16>(writePos), static_cast<uint16>(inPath.size() - readPos) - 1u, m_Impl);
+	m_Components.emplace_back(static_cast<uint16>(writePos), static_cast<uint16>(inPath.size() - readPos), m_Impl);
 }
 
 // accessors
@@ -171,6 +174,11 @@ std::string Path::GetName() const
 		Component const& fileComp = m_Components[m_Components.size() - 2u];
 
 		return m_Impl.substr(fileComp.m_Start);
+	}
+
+	if (m_Impl.empty())
+	{
+		return s_InvalidString;
 	}
 
 	ET_ASSERT(!m_Components.empty());
@@ -193,6 +201,11 @@ std::string Path::GetRawName() const
 		return m_Impl.substr(fileComp.m_Start, fileComp.m_Length);
 	}
 
+	if (m_Impl.empty())
+	{
+		return s_InvalidString;
+	}
+
 	ET_ASSERT(!m_Components.empty());
 	return m_Impl.substr(m_Components[m_Components.size() - 1u].m_Start);
 }
@@ -208,7 +221,11 @@ et::core::HashString Path::GetRawNameId() const
 		return m_Components[m_Components.size() - 2u].m_Hash;
 	}
 
-	ET_ASSERT(!m_Components.empty());
+	if (m_Components.empty())
+	{
+		return core::HashString();
+	}
+
 	return m_Components[m_Components.size() - 1u].m_Hash;
 }
 
@@ -240,12 +257,32 @@ et::core::HashString Path::GetExtensionId() const
 	return core::HashString();
 }
 
+//---------------------
+// Path::GetParentPath
+//
+std::string Path::GetParentPath() const
+{
+	size_t const size = m_Components.size();
+	size_t const offset = m_HasExtension ? 3u : 2u;
+	if (size >= offset)
+	{
+		Component const& comp = m_Components[size - offset];
+		return m_Impl.substr(0u, comp.m_Start + comp.m_Length);
+	}
+
+	return s_InvalidString;
+}
+
 //--------------
 // Path::IsFile
 //
 bool Path::IsFile() const
 {
-	ET_ASSERT(!m_Impl.empty());
+	if (m_Impl.empty())
+	{
+		return false;
+	}
+	
 	return (m_Impl[m_Impl.size() - 1u] != s_Delimiters[0u]);
 }
 
@@ -254,9 +291,9 @@ bool Path::IsFile() const
 //
 std::string Path::GetVolume() const
 {
-	if (m_Type != E_Type::Relative)
+	if (!m_Impl.empty() && (m_Type != E_Type::Relative))
 	{
-		return m_Impl.substr(m_Components[0u].m_Start + m_Components[0u].m_Length);
+		return m_Impl.substr(0u, m_Components[0u].m_Start + m_Components[0u].m_Length);
 	}
 
 	return s_InvalidString;
@@ -267,7 +304,7 @@ std::string Path::GetVolume() const
 //
 et::core::HashString Path::GetVolumeId() const
 {
-	if (m_Type != E_Type::Relative)
+	if (!m_Impl.empty() && (m_Type != E_Type::Relative))
 	{
 		return m_Components[0].m_Hash;
 	}
