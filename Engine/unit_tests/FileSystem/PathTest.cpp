@@ -14,7 +14,7 @@ TEST_CASE("path_create_absolute_volume", "[filesystem]")
 {
 #ifdef ET_PLATFORM_WIN
 
-	core::Path const p1("C:\\some\\dir\\name.ext");
+	core::Path const p1("C:\\some\\./dir\\name.ext");
 
 	REQUIRE(p1.Get() == "C:/some/dir/name.ext");
 	REQUIRE(p1.GetId() == "C:/some/dir/name.ext"_hash);
@@ -42,6 +42,8 @@ TEST_CASE("path_create_absolute_volume", "[filesystem]")
 
 #endif
 
+	REQUIRE(p1.HasParentPath());
+
 	REQUIRE(p1.GetName() == "name.ext");
 
 	REQUIRE(p1.GetRawName() == "name");
@@ -54,12 +56,13 @@ TEST_CASE("path_create_absolute_volume", "[filesystem]")
 
 TEST_CASE("path_create_absolute", "[filesystem]")
 {
-	core::Path const p1("/some/dir/name.ext");
+	core::Path const p1("/some/./dir/name.ext");
 
 	REQUIRE(p1.Get() == "/some/dir/name.ext");
 	REQUIRE(p1.GetId() == "/some/dir/name.ext"_hash);
 
 	REQUIRE(p1.GetParentPath() == "/some/dir/");
+	REQUIRE(p1.HasParentPath());
 
 	REQUIRE(p1.GetVolume() == "/");
 	REQUIRE(p1.GetVolumeId() == "/"_hash);
@@ -84,6 +87,7 @@ TEST_CASE("path_create_relative", "[filesystem]")
 	REQUIRE(p1.GetId() == "some/dir/name.ext"_hash);
 
 	REQUIRE(p1.GetParentPath() == "some/dir/");
+	REQUIRE(p1.HasParentPath());
 
 	REQUIRE(p1.GetVolume() == "");
 	REQUIRE(p1.GetVolumeId().IsEmpty());
@@ -108,6 +112,7 @@ TEST_CASE("path_create_relative_noext", "[filesystem]")
 	REQUIRE(p1.GetId() == "some/dir/name"_hash);
 
 	REQUIRE(p1.GetParentPath() == "some/dir/");
+	REQUIRE(p1.HasParentPath());
 
 	REQUIRE(p1.GetVolume() == "");
 	REQUIRE(p1.GetVolumeId().IsEmpty());
@@ -132,6 +137,7 @@ TEST_CASE("path_create_dir_relative", "[filesystem]")
 	REQUIRE(p1.GetId() == "some/dir/"_hash);
 
 	REQUIRE(p1.GetParentPath() == "some/");
+	REQUIRE(p1.HasParentPath());
 
 	REQUIRE(p1.GetVolume() == "");
 	REQUIRE(p1.GetVolumeId().IsEmpty());
@@ -156,6 +162,7 @@ TEST_CASE("path_create_relative_name", "[filesystem]")
 	REQUIRE(p1.GetId() == "name.ext"_hash);
 
 	REQUIRE(p1.GetParentPath() == "");
+	REQUIRE(!p1.HasParentPath());
 
 	REQUIRE(p1.GetVolume() == "");
 	REQUIRE(p1.GetVolumeId().IsEmpty());
@@ -180,6 +187,7 @@ TEST_CASE("path_create_relative_name_noext", "[filesystem]")
 	REQUIRE(p1.GetId() == "name"_hash);
 
 	REQUIRE(p1.GetParentPath() == "");
+	REQUIRE(!p1.HasParentPath());
 
 	REQUIRE(p1.GetVolume() == "");
 	REQUIRE(p1.GetVolumeId().IsEmpty());
@@ -204,6 +212,7 @@ TEST_CASE("path_create_empty", "[filesystem]")
 	REQUIRE(p1.GetId().IsEmpty());
 
 	REQUIRE(p1.GetParentPath() == "");
+	REQUIRE(!p1.HasParentPath());
 
 	REQUIRE(p1.GetVolume() == "");
 	REQUIRE(p1.GetVolumeId().IsEmpty());

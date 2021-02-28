@@ -18,9 +18,9 @@ class Path
 	{
 		Component(uint16 const start, uint16 const length, std::string const& inPath);
 
-		uint16 const m_Start;
-		uint16 const m_Length;
-		core::HashString const m_Hash;
+		uint16 m_Start;
+		uint16 m_Length;
+		HashString m_Hash;
 	};
 
 	static std::string const s_InvalidString;
@@ -48,31 +48,37 @@ public:
 	// accessors
 	//-----------
 	std::string const& Get() const { return m_Impl; }
-	core::HashString GetId() const { return m_Id; }
+	HashString GetId() const { return m_Id; }
 
 	std::string GetName() const;
 
 	std::string GetRawName() const;
-	core::HashString GetRawNameId() const;
+	HashString GetRawNameId() const;
 
 	std::string GetExtension() const;
-	core::HashString GetExtensionId() const;
+	HashString GetExtensionId() const;
 
 	std::string GetParentPath() const;
+	bool HasParentPath() const;
 
 	E_Type GetType() const { return m_Type; }
 	bool IsFile() const; // or directory
 
 	std::string GetVolume() const;
-	core::HashString GetVolumeId() const;
+	HashString GetVolumeId() const;
+
+	// utility
+	//---------
+private: 
+	bool IsThis(Component const& comp);
+	bool IsParent(Component const& comp);
 
 
 	// Data
 	///////
 
-private: 
 	std::string m_Impl;
-	core::HashString m_Id;
+	HashString m_Id;
 
 	std::vector<Component> m_Components;
 

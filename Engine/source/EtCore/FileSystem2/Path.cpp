@@ -115,7 +115,38 @@ Path::Path(std::string const& inPath)
 
 			size_t const length = readPos - lastStart;
 			size_t const writePos = m_Impl.size();
-			m_Impl += inPath.substr(lastStart, length) + s_Delimiters[0];
+			std::string const addition = inPath.substr(lastStart, length);
+			if (addition == ".")
+			{
+				++readPos;
+				lastStart = readPos;
+				continue;
+			}
+			else if ((addition == ".."))
+			{
+				if (m_Components.size() > 1u)
+				{
+					Component const& prev = m_Components[m_Components.size() - 2u];
+					m_Impl = m_Impl.substr(0, prev.m_Start + prev.m_Length);
+					m_Components.pop_back();
+					++readPos;
+					lastStart = readPos;
+					continue;
+				}
+
+				ET_ASSERT(m_Type == E_Type::Relative, "Can't go up a directory on first absolute path component");
+
+				if (m_Components.size() == 1u)
+				{
+					m_Impl.clear();
+					m_Components.clear();
+					++readPos;
+					lastStart = readPos;
+					continue;
+				}
+			}
+
+			m_Impl += addition + s_Delimiters[0];
 			m_Components.emplace_back(static_cast<uint16>(writePos), static_cast<uint16>(length + 1u), m_Impl);
 
 			lastStart = readPos + 1u;
@@ -134,7 +165,49 @@ Path::Path(std::string const& inPath)
 
 	// either way the last part of the implementation and ID will be the rest of the input string
 	size_t writePos = m_Impl.size();
-	m_Impl += inPath.substr(lastStart);
+	std::string const addition = inPath.substr(lastStart);
+	if (addition == ".")
+	{
+		if (m_Components.empty())
+		{
+			m_Impl = "./";
+			m_Components.emplace_back(0u, 2u, m_Impl);
+		}
+
+		m_Id.Set(m_Impl.c_str());
+		return;
+	}
+	else if ((addition == ".."))
+	{
+		if (m_Components.size() > 1u)
+		{
+			Component const& prev = m_Components[m_Components.size() - 2u];
+			m_Impl = m_Impl.substr(0, prev.m_Start + prev.m_Length);
+			m_Components.pop_back();
+
+			m_Id.Set(m_Impl.c_str());
+			return;
+		}
+
+		ET_ASSERT(m_Type == E_Type::Relative, "Can't go up a directory on first absolute path component");
+
+		if (m_Components.size() == 1u)
+		{
+			m_Impl = "./";
+			m_Components[0] = Component(0u, 2u, m_Impl);
+
+			m_Id.Set(m_Impl.c_str());
+			return;
+		}
+
+		m_Impl = "../";
+		m_Components[0] = Component(0u, 3u, m_Impl);
+
+		m_Id.Set(m_Impl.c_str());
+		return;
+	}
+
+	m_Impl += addition;
 	m_Id.Set(m_Impl.c_str());
 
 	// might have to split components however
@@ -213,7 +286,7 @@ std::string Path::GetRawName() const
 //--------------------
 // Path::GetRawNameId
 //
-et::core::HashString Path::GetRawNameId() const
+HashString Path::GetRawNameId() const
 {
 	if (m_HasExtension)
 	{
@@ -223,7 +296,7 @@ et::core::HashString Path::GetRawNameId() const
 
 	if (m_Components.empty())
 	{
-		return core::HashString();
+		return HashString();
 	}
 
 	return m_Components[m_Components.size() - 1u].m_Hash;
@@ -246,7 +319,7 @@ std::string Path::GetExtension() const
 //----------------------
 // Path::GetExtensionId
 //
-et::core::HashString Path::GetExtensionId() const
+HashString Path::GetExtensionId() const
 {
 	if (m_HasExtension)
 	{
@@ -254,7 +327,7 @@ et::core::HashString Path::GetExtensionId() const
 		return m_Components[m_Components.size() - 1u].m_Hash;
 	}
 
-	return core::HashString();
+	return HashString();
 }
 
 //---------------------
@@ -271,6 +344,14 @@ std::string Path::GetParentPath() const
 	}
 
 	return s_InvalidString;
+}
+
+//---------------------
+// Path::HasParentPath
+//
+bool Path::HasParentPath() const
+{
+	return m_Components.size() >= (m_HasExtension ? 3u : 2u);
 }
 
 //--------------
@@ -302,14 +383,30 @@ std::string Path::GetVolume() const
 //-------------------
 // Path::GetVolumeId
 //
-et::core::HashString Path::GetVolumeId() const
+HashString Path::GetVolumeId() const
 {
 	if (!m_Impl.empty() && (m_Type != E_Type::Relative))
 	{
 		return m_Components[0].m_Hash;
 	}
 
-	return core::HashString();
+	return HashString();
+}
+
+//--------------
+// Path::IsThis
+//
+bool Path::IsThis(Component const& comp)
+{
+	return ((comp.m_Hash == "./"_hash) || (comp.m_Hash == "."_hash));
+}
+
+//----------------
+// Path::IsParent
+//
+bool Path::IsParent(Component const& comp)
+{
+	return ((comp.m_Hash == "../"_hash) || (comp.m_Hash == ".."_hash));
 }
 
 
