@@ -29,6 +29,8 @@ class Path
 	// static functionality
 	//----------------------
 	static bool IsDelim(char const c);
+	static bool IsThis(Component const& comp);
+	static bool IsParent(Component const& comp);
 
 public:
 	enum class E_Type : uint8
@@ -44,6 +46,15 @@ public:
 	//--------------------
 	Path() = default;
 	Path(std::string const& inPath);
+	Path(Path const& base, std::string const& inPath);
+	Path(Path const& base, Path const& other);
+
+	// functionality
+	//---------------
+	void Append(Path const& other);
+	void PopFront();
+	void PopBack();
+	void MakeRelative(Path const& relativeTo);
 
 	// accessors
 	//-----------
@@ -69,9 +80,11 @@ public:
 
 	// utility
 	//---------
+	void Swap(Path& other);
+
 private: 
-	bool IsThis(Component const& comp);
-	bool IsParent(Component const& comp);
+	void ConstructComponentsAndName(size_t const startPos, std::string const& inPath);
+	size_t GetParentMoveComponentCount() const;
 
 
 	// Data
