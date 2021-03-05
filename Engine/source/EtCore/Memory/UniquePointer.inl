@@ -49,9 +49,9 @@ template <typename TDataType>
 template <typename TOtherType>
 UniquePtr<TDataType>& UniquePtr<TDataType>::operator=(Create<TOtherType>&& create)
 {
-	UniquePtr<TDataType> tmp;
+	UniquePtr<TDataType> tmp; 
 	tmp.m_Ptr = create.Release();
-	tmp.Swap(*this);
+	tmp.Swap(*this); // since we swap our current pointer, when temp goes out of scope the memory for what was our data is freed
 	return *this;
 }
 
@@ -114,6 +114,10 @@ UniquePtr<TDataType>& UniquePtr<TDataType>::operator=(UniquePtr<TOtherType>&& mo
 	tmp.Swap(*this);
 	return *this;
 }
+
+
+// destroy
+/////////////
 
 //---------------------------------
 // UniquePtr::d-tor
@@ -205,7 +209,7 @@ template <typename TDataType>
 TDataType& UniquePtr<TDataType>::operator*() const
 {
 	ET_ASSERT(m_Ptr != nullptr);
-	return *get();
+	return *Get();
 }
 
 
@@ -229,7 +233,7 @@ bool operator==(std::nullptr_t, UniquePtr<TDataType> const& ptr)
 template <typename TDataType>
 bool operator==(UniquePtr<TDataType> const& ptr1, UniquePtr<TDataType> const& ptr2)
 {
-	return (ptr1.get() == ptr2.get());
+	return (ptr1.Get() == ptr2.Get());
 }
 
 template <typename TDataType>

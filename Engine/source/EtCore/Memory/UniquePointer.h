@@ -13,6 +13,12 @@ namespace et {
 template <typename TDataType>
 class UniquePtr final 
 {
+	template <typename>
+	friend class UniquePtr;
+
+	template <typename>
+	friend class Ptr;
+
 public:
 	// default constructor initializes to null
 	UniquePtr() = default;

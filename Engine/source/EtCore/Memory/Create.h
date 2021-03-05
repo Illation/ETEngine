@@ -18,6 +18,7 @@ public:
 	template<typename... Args>
 	Create(Args&&... args) // Construct from arguments - eventually this should be the only place we allocate heap memory across the engine
 	{
+		// exceptions are not handled for performance reasons
 		m_Ptr = new TDataType(std::forward<Args>(args)...);
 	}
 
