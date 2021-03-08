@@ -23,6 +23,18 @@ Ptr<TDataType> Ptr<TDataType>::CreateFromRaw(TDataType* const raw)
 	return ret;
 }
 
+//-----------------
+// Ptr::StaticCast
+//
+template <typename TDataType>
+template <typename TOtherType>
+Ptr<TDataType> Ptr<TDataType>::StaticCast(Ptr<TOtherType> const& from)
+{
+	Ptr ret;
+	ret.m_Ptr = static_cast<TDataType*>(from.m_Ptr);
+	return ret;
+}
+
 
 // From nullptr
 ////////////////

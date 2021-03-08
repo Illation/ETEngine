@@ -9,6 +9,22 @@ namespace et {
 //================
 
 
+// static functionality
+////////////////////////
+
+//-----------------------
+// UniquePtr::StaticCast
+//
+template <typename TDataType>
+template <typename TOtherType>
+UniquePtr<TDataType> UniquePtr<TDataType>::StaticCast(UniquePtr<TOtherType>&& from)
+{
+	UniquePtr ret;
+	ret.m_Ptr = static_cast<TDataType*>(from.Release());
+	return ret;
+}
+
+
 // From nullptr
 ////////////////
 

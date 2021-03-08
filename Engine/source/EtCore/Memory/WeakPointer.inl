@@ -9,6 +9,28 @@ namespace et {
 //==============
 
 
+// static functionality
+////////////////////////
+
+//-----------------------
+// WeakPtr::StaticCast
+//
+template <typename TDataType>
+template <typename TOtherType>
+WeakPtr<TDataType> WeakPtr<TDataType>::StaticCast(WeakPtr<TOtherType> const& from)
+{
+	WeakPtr ret;
+	ret.m_Ptr = static_cast<TDataType*>(from.Get());
+	ret.m_RefCount = from.m_RefCount;
+	if (ret.m_RefCount != nullptr)
+	{
+		++(ret.m_RefCount->m_WeakReferences);
+	}
+
+	return ret;
+}
+
+
 // From nullptr
 ////////////////
 

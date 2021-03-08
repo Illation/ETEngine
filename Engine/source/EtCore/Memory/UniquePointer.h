@@ -20,6 +20,10 @@ class UniquePtr final
 	friend class Ptr;
 
 public:
+	// static functionality
+	template <typename TOtherType>
+	static UniquePtr StaticCast(UniquePtr<TOtherType>&& from);
+
 	// default constructor initializes to null
 	UniquePtr() = default;
 

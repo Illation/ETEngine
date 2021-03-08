@@ -20,6 +20,10 @@ class WeakPtr final
 	friend class Ptr;
 
 public:
+	// static functionality
+	template <typename TOtherType>
+	static WeakPtr StaticCast(WeakPtr<TOtherType> const& from);
+
 	// default constructor initializes to null
 	WeakPtr() = default;
 

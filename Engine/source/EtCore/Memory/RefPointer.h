@@ -26,6 +26,10 @@ class RefPtr final
 	friend class Ptr;
 
 public:
+	// static functionality
+	template <typename TOtherType>
+	static RefPtr StaticCast(RefPtr<TOtherType> const& from);
+
 	// default constructor initializes to null
 	RefPtr() = default;
 

@@ -9,6 +9,28 @@ namespace et {
 //=============
 
 
+// static functionality
+////////////////////////
+
+//-----------------------
+// RefPtr::StaticCast
+//
+template <typename TDataType>
+template <typename TOtherType>
+RefPtr<TDataType> RefPtr<TDataType>::StaticCast(RefPtr<TOtherType> const& from)
+{
+	RefPtr ret;
+	ret.m_Ptr = static_cast<TDataType*>(from.Get());
+	ret.m_RefCount = from.m_RefCount;
+	if (ret.m_RefCount != nullptr)
+	{
+		++(ret.m_RefCount->m_References);
+	}
+
+	return ret;
+}
+
+
 // From nullptr
 ////////////////
 

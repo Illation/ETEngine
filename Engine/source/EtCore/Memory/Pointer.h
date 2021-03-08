@@ -22,6 +22,9 @@ public:
 	// static functionality
 	static Ptr CreateFromRaw(TDataType* const raw);
 
+	template <typename TOtherType>
+	static Ptr StaticCast(Ptr<TOtherType> const& from);
+
 	// default constructor initializes to null
 	Ptr() = default;
 

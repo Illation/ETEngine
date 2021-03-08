@@ -143,6 +143,13 @@ TEST_CASE("unique", "[pointer_framework]")
 		REQUIRE(TestClass::GetInstanceCount() == 2u);
 		REQUIRE(!(t1->IsDerived()));
 		REQUIRE(t2->IsDerived());
+
+		// upcast
+		UniquePtr<DerivedClass> t2_2 = UniquePtr<DerivedClass>::StaticCast(std::move(t2));
+		REQUIRE(t2 == nullptr);
+		REQUIRE(t2_2 != nullptr);
+		REQUIRE(t2_2->GetData() == 2u);
+		REQUIRE(t2_2->IsDerived());
 	}
 
 	REQUIRE(TestClass::GetInstanceCount() == 0u);
@@ -189,6 +196,35 @@ TEST_CASE("ref", "[pointer_framework]")
 		REQUIRE(TestClass::GetInstanceCount() == 2u);
 		REQUIRE(!(t1->IsDerived()));
 		REQUIRE(t2->IsDerived());
+
+		// upcast
+		RefPtr<DerivedClass> t2_2 = RefPtr<DerivedClass>::StaticCast(t2);
+		REQUIRE(t2 != nullptr);
+		REQUIRE(t2_2 != nullptr);
+		REQUIRE(t2_2->GetData() == 2u);
+		REQUIRE(t2_2->IsDerived());
+
+		t2 = nullptr;
+		REQUIRE(TestClass::GetInstanceCount() == 2u);
+		REQUIRE(t2 == nullptr);
+		REQUIRE(t2_2 != nullptr);
+		REQUIRE(t2_2->GetData() == 2u);
+
+		t2_2 = nullptr;
+		REQUIRE(TestClass::GetInstanceCount() == 1u);
+		REQUIRE(t2_2 == nullptr);
+
+		RefPtr<DerivedClass> t1_2 = RefPtr<DerivedClass>::StaticCast(t1);
+		REQUIRE(t1 != nullptr);
+		REQUIRE(t1_2 != nullptr);
+		REQUIRE(t1_2->GetData() == 2u);
+		REQUIRE(t1_2->IsDerived());
+
+		t1_2 = nullptr;
+		REQUIRE(TestClass::GetInstanceCount() == 1u);
+		REQUIRE(t1_2 == nullptr);
+		REQUIRE(t1 != nullptr);
+		REQUIRE(t1->GetData() == 2u);
 	}
 
 	REQUIRE(TestClass::GetInstanceCount() == 0u);
@@ -514,6 +550,37 @@ TEST_CASE("weak", "[pointer_framework]")
 		REQUIRE(!(weak5->IsDerived()));
 		REQUIRE(weak6->IsDerived());
 		REQUIRE(weak7->IsDerived());
+
+		// upcast
+		WeakPtr<DerivedClass> weak2_2 = WeakPtr<DerivedClass>::StaticCast(weak2);
+		REQUIRE(weak2 != nullptr);
+		REQUIRE(weak2_2 != nullptr);
+		REQUIRE(weak2_2->GetData() == 2u);
+		REQUIRE(weak2_2->IsDerived());
+
+		weak2 = nullptr;
+		REQUIRE(TestClass::GetInstanceCount() == 3u);
+		REQUIRE(weak2_2 != nullptr);
+		REQUIRE(weak2_2->GetData() == 2u);
+
+		t2 = nullptr;
+		REQUIRE(TestClass::GetInstanceCount() == 2u);
+		REQUIRE(weak2 == nullptr);
+		REQUIRE(weak2_2 == nullptr);
+		weak2_2 = nullptr;
+		REQUIRE(weak2_2 == nullptr);
+
+		WeakPtr<DerivedClass> weak4_2 = WeakPtr<DerivedClass>::StaticCast(weak4);
+		REQUIRE(weak4 != nullptr);
+		REQUIRE(weak4_2 != nullptr);
+		REQUIRE(weak4_2->GetData() == 2u);
+		REQUIRE(weak4_2->IsDerived());
+
+		weak4_2 = nullptr;
+		REQUIRE(TestClass::GetInstanceCount() == 2u);
+		REQUIRE(weak4_2 == nullptr);
+		REQUIRE(weak4 != nullptr);
+		REQUIRE(weak4->GetData() == 2u);
 	}
 
 	REQUIRE(TestClass::GetInstanceCount() == 0u);
@@ -560,6 +627,7 @@ TEST_CASE("pointer_wrapper", "[pointer_framework]")
 
 		REQUIRE(t1 != nullptr);
 		REQUIRE(t1->GetData() == 3u);
+		REQUIRE(p1->GetData() == 3u);
 
 		t1 = nullptr;
 		REQUIRE(TestClass::GetInstanceCount() == 0u);
@@ -568,6 +636,161 @@ TEST_CASE("pointer_wrapper", "[pointer_framework]")
 		REQUIRE(p1 != nullptr);
 		REQUIRE(p2 != nullptr);
 		REQUIRE(p3 != nullptr);
+	}
+
+	REQUIRE(TestClass::GetInstanceCount() == 0u);
+
+	// creating from unique
+	{
+		UniquePtr<TestClass> t1 = Create<TestClass>(3u);
+		REQUIRE(TestClass::GetInstanceCount() == 1u);
+		REQUIRE(t1->GetData() == 3u);
+
+		Ptr<TestClass> p1 = t1;
+		Ptr<TestClass> p2(t1);
+		REQUIRE(t1 != nullptr);
+		REQUIRE(p1 == t1);
+		REQUIRE(p1 == p2);
+		REQUIRE(p1->GetData() == 3u);
+	}
+
+	REQUIRE(TestClass::GetInstanceCount() == 0u);
+
+	// creating from ref and weak
+	{
+		RefPtr<TestClass> t1 = Create<TestClass>(3u);
+		REQUIRE(TestClass::GetInstanceCount() == 1u);
+		REQUIRE(t1->GetData() == 3u);
+
+		Ptr<TestClass> p1 = t1;
+		Ptr<TestClass> p2(t1);
+		REQUIRE(t1 != nullptr);
+		REQUIRE(p1 == t1);
+		REQUIRE(p1 == p2);
+		REQUIRE(p1->GetData() == 3u);
+
+		WeakPtr<TestClass> weak = t1;
+		REQUIRE(TestClass::GetInstanceCount() == 1u);
+		REQUIRE(weak->GetData() == 3u);
+
+		Ptr<TestClass> p3 = weak;
+		Ptr<TestClass> p4(weak);
+		REQUIRE(weak != nullptr);
+		REQUIRE(p3 == t1);
+		REQUIRE(p3 == p4);
+		REQUIRE(p3->GetData() == 3u);
+		REQUIRE(p4 == weak);
+
+		weak == nullptr;
+		REQUIRE(p3 != nullptr);
+		REQUIRE(p4 != nullptr);
+		REQUIRE(p3 == t1);
+		REQUIRE(p3 == p4);
+		REQUIRE(p3->GetData() == 3u);
+	}
+
+	REQUIRE(TestClass::GetInstanceCount() == 0u);
+
+	// copying
+	{
+		RefPtr<TestClass> t1 = Create<TestClass>(3u);
+		REQUIRE(TestClass::GetInstanceCount() == 1u);
+		REQUIRE(t1->GetData() == 3u);
+
+		Ptr<TestClass> p1 = t1;
+		Ptr<TestClass> p2(p1);
+		Ptr<TestClass> p3 = p1;
+		REQUIRE(t1 != nullptr);
+		REQUIRE(p1 == t1);
+		REQUIRE(p1 == p2);
+		REQUIRE(p1 == p3);
+		REQUIRE(p1->GetData() == 3u);
+	}
+
+	REQUIRE(TestClass::GetInstanceCount() == 0u);
+
+	// moving
+	{
+		RefPtr<TestClass> t1 = Create<TestClass>(3u);
+		REQUIRE(TestClass::GetInstanceCount() == 1u);
+		REQUIRE(t1->GetData() == 3u);
+
+		Ptr<TestClass> p1 = t1;
+		Ptr<TestClass> p2(std::move(p1));
+		REQUIRE(t1 != nullptr);
+		REQUIRE(p1 == nullptr);
+		REQUIRE(p1 != p2);
+		REQUIRE(p2 == t1);
+		REQUIRE(p2->GetData() == 3u);
+
+		Ptr<TestClass> p3 = std::move(p2);
+		REQUIRE(p2 == nullptr);
+		REQUIRE(p3 == t1);
+		REQUIRE(p3->GetData() == 3u);
+	}
+
+	REQUIRE(TestClass::GetInstanceCount() == 0u);
+
+	// polymorphic
+	{
+		RefPtr<TestClass> t1 = Create<TestClass>(2u);
+		RefPtr<TestClass> t2 = Create<DerivedClass>(2u);
+		RefPtr<DerivedClass> t3 = Create<DerivedClass>(2u);
+		REQUIRE(TestClass::GetInstanceCount() == 3u);
+		REQUIRE(!(t1->IsDerived()));
+		REQUIRE(t2->IsDerived());
+		REQUIRE(t3->IsDerived());
+
+		// derived from ref
+		Ptr<TestClass> p1 = t1;
+		Ptr<TestClass> p2 = t2;
+		Ptr<DerivedClass> p3 = t3;
+		Ptr<TestClass> p4 = t3;
+		REQUIRE(TestClass::GetInstanceCount() == 3u);
+		REQUIRE(!(p1->IsDerived()));
+		REQUIRE(p2->IsDerived());
+		REQUIRE(p3->IsDerived());
+		REQUIRE(p4->IsDerived());
+
+		// derived from weak
+		Ptr<TestClass> p5 = p1;
+		Ptr<TestClass> p6 = p2;
+		Ptr<TestClass> p7 = p3;
+		REQUIRE(TestClass::GetInstanceCount() == 3u);
+		REQUIRE(!(p5->IsDerived()));
+		REQUIRE(p6->IsDerived());
+		REQUIRE(p7->IsDerived());
+
+		// upcast
+		Ptr<DerivedClass> p2_2 = Ptr<DerivedClass>::StaticCast(p2);
+		REQUIRE(p2 != nullptr);
+		REQUIRE(p2_2 != nullptr);
+		REQUIRE(p2_2->GetData() == 2u);
+		REQUIRE(p2_2->IsDerived());
+
+		p2 = nullptr;
+		REQUIRE(TestClass::GetInstanceCount() == 3u);
+		REQUIRE(p2_2 != nullptr);
+		REQUIRE(p2_2->GetData() == 2u);
+
+		t2 = nullptr;
+		REQUIRE(TestClass::GetInstanceCount() == 2u);
+		REQUIRE(p2 == nullptr);
+		REQUIRE(p2_2 != nullptr); // but not safe to use...
+		p2_2 = nullptr;
+		REQUIRE(p2_2 == nullptr);
+
+		Ptr<DerivedClass> p4_2 = Ptr<DerivedClass>::StaticCast(p4);
+		REQUIRE(p4 != nullptr);
+		REQUIRE(p4_2 != nullptr);
+		REQUIRE(p4_2->GetData() == 2u);
+		REQUIRE(p4_2->IsDerived());
+
+		p4_2 = nullptr;
+		REQUIRE(TestClass::GetInstanceCount() == 2u);
+		REQUIRE(p4_2 == nullptr);
+		REQUIRE(p4 != nullptr);
+		REQUIRE(p4->GetData() == 2u);
 	}
 
 	REQUIRE(TestClass::GetInstanceCount() == 0u);
