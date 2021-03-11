@@ -39,7 +39,7 @@ bool EditorBase::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
 //
 Gtk::Frame* EditorBase::GetRoot()
 {
-	return m_NodeHierachy.root->GetAttachment();
+	return m_NodeHierachy.m_Root->GetAttachment();
 }
 
 //---------------------------------
@@ -57,10 +57,10 @@ void EditorBase::Init(Gtk::Frame* const parent)
 		LOG(FS("Failed to deserialize layout file for '%s' at: %s", GetName().c_str(), layoutPath.c_str()), core::LogLevel::Warning);
 	}
 
-	ET_ASSERT(m_NodeHierachy.root != nullptr);
+	ET_ASSERT(m_NodeHierachy.m_Root != nullptr);
 
 	// initialize the tools and gtk widgets based on the loaded hierachy
-	m_NodeHierachy.root->Init(this, parent, nullptr);
+	m_NodeHierachy.m_Root->Init(this, parent, nullptr, m_NodeHierachy.m_Root);
 
 	// once the widget sizes are available, adjust the sizes of widgets based on what the layout loaded
 	auto allocateCallback = [this](Gtk::Allocation& allocation)
@@ -103,7 +103,7 @@ void EditorBase::SaveLayout()
 //---------------------------------
 // EditorBase::QueueNodeForSplit
 //
-void EditorBase::QueueNodeForSplit(EditorToolNode* const node)
+void EditorBase::QueueNodeForSplit(WeakPtr<EditorToolNode> const& node)
 {
 	m_QueuedSplits.emplace_back(node);
 }
@@ -111,7 +111,7 @@ void EditorBase::QueueNodeForSplit(EditorToolNode* const node)
 //---------------------------------
 // EditorBase::QueueNodeForCollapse
 //
-void EditorBase::QueueNodeForCollapse(EditorToolNode* const node)
+void EditorBase::QueueNodeForCollapse(WeakPtr<EditorToolNode> const& node)
 {
 	m_QueuedCollapse.emplace_back(node);
 }
@@ -128,9 +128,9 @@ void EditorBase::OnAllocationAvailable()
 		return;
 	}
 
-	if (!m_NodeHierachy.root->IsLeaf())
+	if (!m_NodeHierachy.m_Root->IsLeaf())
 	{
-		static_cast<EditorSplitNode*>(m_NodeHierachy.root)->AdjustLayout();
+		RefPtr<EditorSplitNode>::StaticCast(m_NodeHierachy.m_Root)->AdjustLayout();
 	}
 }
 
@@ -141,16 +141,18 @@ void EditorBase::OnAllocationAvailable()
 //
 void EditorBase::ProcessLayoutChanges()
 {
-	for (EditorToolNode* const node : m_QueuedSplits)
+	for (WeakPtr<EditorToolNode> const& node : m_QueuedSplits)
 	{
 		m_NodeHierachy.SplitNode(node, this);
 	}
+
 	m_QueuedSplits.clear();
 
-	for (EditorToolNode* const node : m_QueuedCollapse)
+	for (WeakPtr<EditorToolNode> const& node : m_QueuedCollapse)
 	{
 		m_NodeHierachy.CollapseNode(node, this);
 	}
+
 	m_QueuedCollapse.clear();
 }
 

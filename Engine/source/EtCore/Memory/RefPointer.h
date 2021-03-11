@@ -5,6 +5,12 @@
 
 
 namespace et {
+	template <typename>
+	class WeakPtr;
+}
+
+
+namespace et {
 
 
 //--------
@@ -52,6 +58,12 @@ public:
 	template <typename TOtherType>
 	RefPtr& operator=(RefPtr<TOtherType> const& copy);
 
+	// copy from weak pointer
+	template <typename TOtherType>
+	RefPtr(WeakPtr<TOtherType> const& weak);
+	template <typename TOtherType>
+	RefPtr& operator=(WeakPtr<TOtherType> const& weak);
+
 	// Moving from other refptr
 	template <typename TOtherType>
 	RefPtr(RefPtr<TOtherType>&& moving);
@@ -94,23 +106,23 @@ private:
 //-------------
 
 
-template <class TDataType>
+template <typename TDataType>
 bool operator == (RefPtr<TDataType> const& ptr, std::nullptr_t);
 
-template <class TDataType>
+template <typename TDataType>
 bool operator == (std::nullptr_t, RefPtr<TDataType> const& ptr);
 
-template <class TDataType>
-bool operator == (RefPtr<TDataType> const& ptr1, RefPtr<TDataType> const& ptr2);
+template <typename TDataType, typename TOtherType>
+bool operator == (RefPtr<TDataType> const& ptr1, RefPtr<TOtherType> const& ptr2);
 
-template <class TDataType>
+template <typename TDataType>
 bool operator != (RefPtr<TDataType> const& ptr, std::nullptr_t);
 
-template <class TDataType>
+template <typename TDataType>
 bool operator != (std::nullptr_t, RefPtr<TDataType> const& ptr);
 
-template <class TDataType>
-bool operator != (RefPtr<TDataType> const& ptr1, RefPtr<TDataType> const& ptr2);
+template <typename TDataType, typename TOtherType>
+bool operator != (RefPtr<TDataType> const& ptr1, RefPtr<TOtherType> const& ptr2);
 
 
 } // namespace et

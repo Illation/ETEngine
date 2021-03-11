@@ -44,8 +44,8 @@ public:
 	void Init(Gtk::Frame* const parent);
 	void SaveLayout();
 
-	void QueueNodeForSplit(EditorToolNode* const node);
-	void QueueNodeForCollapse(EditorToolNode* const node);
+	void QueueNodeForSplit(WeakPtr<EditorToolNode> const& node);
+	void QueueNodeForCollapse(WeakPtr<EditorToolNode> const& node);
 
 	// utility
 	//---------
@@ -60,8 +60,8 @@ protected:
 	EditorNodeHierachy m_NodeHierachy;
 
 private:
-	std::vector<EditorToolNode*> m_QueuedSplits;
-	std::vector<EditorToolNode*> m_QueuedCollapse;
+	std::vector<WeakPtr<EditorToolNode>> m_QueuedSplits;
+	std::vector<WeakPtr<EditorToolNode>> m_QueuedCollapse;
 
 	bool m_HasInitialSize = false;
 };

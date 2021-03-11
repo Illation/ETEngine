@@ -59,7 +59,7 @@ public:
 
 	// functionality
 	//---------------
-	void Init(EditorToolNode* const owner, bool right, bool top);
+	void Init(WeakPtr<EditorToolNode> const owner, bool right, bool top);
 private:
 	void SetCornerImage();
 
@@ -69,8 +69,8 @@ private:
 	// Data
 	///////
 
-	EditorToolNode* m_Owner = nullptr;
-	EditorToolNode* m_Neighbour = nullptr;
+	WeakPtr<EditorToolNode> m_Owner;
+	WeakPtr<EditorToolNode> m_Neighbour;
 
 	bool m_IsRightAligned = false;
 	bool m_IsTopAligned = false;

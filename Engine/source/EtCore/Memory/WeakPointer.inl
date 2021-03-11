@@ -343,20 +343,20 @@ bool operator==(std::nullptr_t, WeakPtr<TDataType> const& ptr)
 	return ptr.IsNull();
 }
 
-template <typename TDataType>
-bool operator==(WeakPtr<TDataType> const& ptr1, WeakPtr<TDataType> const& ptr2)
+template <typename TDataType, typename TOtherType>
+bool operator==(WeakPtr<TDataType> const& ptr1, WeakPtr<TOtherType> const& ptr2)
 {
 	return (ptr1.Get() == ptr2.Get());
 }
 
-template <typename TDataType>
-bool operator==(WeakPtr<TDataType> const& ptr1, RefPtr<TDataType> const& ptr2)
+template <typename TDataType, typename TOtherType>
+bool operator==(WeakPtr<TDataType> const& ptr1, RefPtr<TOtherType> const& ptr2)
 {
 	return (ptr1.Get() == ptr2.Get());
 }
 
-template <typename TDataType>
-bool operator==(RefPtr<TDataType> const& ptr1, WeakPtr<TDataType> const& ptr2)
+template <typename TDataType, typename TOtherType>
+bool operator==(RefPtr<TDataType> const& ptr1, WeakPtr<TOtherType> const& ptr2)
 {
 	return (ptr1.Get() == ptr2.Get());
 }
@@ -373,23 +373,48 @@ bool operator!=(std::nullptr_t, WeakPtr<TDataType> const& ptr)
 	return !ptr.IsNull();
 }
 
-template <typename TDataType>
-bool operator!=(WeakPtr<TDataType> const& ptr1, WeakPtr<TDataType> const& ptr2)
+template <typename TDataType, typename TOtherType>
+bool operator!=(WeakPtr<TDataType> const& ptr1, WeakPtr<TOtherType> const& ptr2)
 {
 	return !(ptr1 == ptr2);
 }
 
-template <typename TDataType>
-bool operator!=(WeakPtr<TDataType> const& ptr1, RefPtr<TDataType> const& ptr2)
+template <typename TDataType, typename TOtherType>
+bool operator!=(WeakPtr<TDataType> const& ptr1, RefPtr<TOtherType> const& ptr2)
 {
 	return !(ptr1 == ptr2);
 }
 
-template <typename TDataType>
-bool operator!=(RefPtr<TDataType> const& ptr1, WeakPtr<TDataType> const& ptr2)
+template <typename TDataType, typename TOtherType>
+bool operator!=(RefPtr<TDataType> const& ptr1, WeakPtr<TOtherType> const& ptr2)
 {
 	return !(ptr1 == ptr2);
 }
 
 
 } // namespace et
+
+
+// REFLECTION
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+namespace rttr {
+
+
+template<typename TDataType>
+struct wrapper_mapper<et::WeakPtr<TDataType>>
+{
+	using wrapped_type = TDataType * ;
+	using type = et::WeakPtr<TDataType>;
+
+	static RTTR_INLINE wrapped_type get(type const& obj)
+	{
+		return obj.Get();
+	}
+
+	// can't create	
+};
+
+
+} // namespace rttr

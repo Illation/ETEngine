@@ -1,4 +1,6 @@
 #pragma once
+#include <rttr/wrapper_mapper.h>
+
 #include "Create.h"
 
 
@@ -76,23 +78,23 @@ private:
 //-------------
 
 
-template <class TDataType>
+template <typename TDataType>
 bool operator == (UniquePtr<TDataType> const& ptr, std::nullptr_t);
 
-template <class TDataType>
+template <typename TDataType>
 bool operator == (std::nullptr_t, UniquePtr<TDataType> const& ptr);
 
-template <class TDataType>
-bool operator == (UniquePtr<TDataType> const& ptr1, UniquePtr<TDataType> const& ptr2);
+template <typename TDataType, typename TOtherType>
+bool operator == (UniquePtr<TDataType> const& ptr1, UniquePtr<TOtherType> const& ptr2);
 
-template <class TDataType>
+template <typename TDataType>
 bool operator != (UniquePtr<TDataType> const& ptr, std::nullptr_t);
 
-template <class TDataType>
+template <typename TDataType>
 bool operator != (std::nullptr_t, UniquePtr<TDataType> const& ptr);
 
-template <class TDataType>
-bool operator != (UniquePtr<TDataType> const& ptr1, UniquePtr<TDataType> const& ptr2);
+template <typename TDataType, typename TOtherType>
+bool operator != (UniquePtr<TDataType> const& ptr1, UniquePtr<TOtherType> const& ptr2);
 
 
 } // namespace et

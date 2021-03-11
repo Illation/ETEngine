@@ -40,8 +40,8 @@ public:
 	// functionality
 	//----------------
 	void SetHeaderMenuFlipTarget(bool const top);
-	void SplitNode(EditorToolNode* const node, EditorBase* const editor);
-	void CollapseNode(EditorToolNode* const node, EditorBase* const editor);
+	void SplitNode(WeakPtr<EditorToolNode> const& node, EditorBase* const editor);
+	void CollapseNode(WeakPtr<EditorToolNode> const& node, EditorBase* const editor);
 
 	// accessors
 	//-----------
@@ -50,7 +50,7 @@ public:
 	// Data
 	///////
 
-	EditorNode* root = nullptr;
+	RefPtr<EditorNode> m_Root;
 
 private:
 	Glib::RefPtr<Gtk::Builder> m_RefBuilder;

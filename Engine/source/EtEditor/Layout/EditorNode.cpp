@@ -28,10 +28,11 @@ RTTR_REGISTRATION
 //---------------------------------
 // EditorNode::Init
 //
-void EditorNode::Init(EditorBase* const editor, Gtk::Frame* const attachment, EditorSplitNode* const parent)
+void EditorNode::Init(EditorBase* const editor, Gtk::Frame* const attachment, WeakPtr<EditorSplitNode> const& parent, WeakPtr<EditorNode> const& self)
 { 
 	m_Attachment = attachment;
 	m_Parent = parent;
+	m_ThisWeak = self;
 
 	InitInternal(editor);
 }

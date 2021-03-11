@@ -35,11 +35,11 @@ public:
 
 	// functionality
 	//----------------
-	void Init(EditorBase* const editor, Gtk::Frame* const attachment, EditorSplitNode* const parent);
+	void Init(EditorBase* const editor, Gtk::Frame* const attachment, WeakPtr<EditorSplitNode> const& parent, WeakPtr<EditorNode> const& self);
 	Gtk::Frame* UnlinkAttachment();
 
 	Gtk::Frame* GetAttachment() const { return m_Attachment; }
-	EditorSplitNode* GetParent() const { return m_Parent; }
+	WeakPtr<EditorSplitNode> const& GetParent() const { return m_Parent; }
 
 	// accessors
 	//-----------
@@ -55,7 +55,8 @@ protected:
 	///////
 
 	Gtk::Frame* m_Attachment = nullptr;
-	EditorSplitNode* m_Parent = nullptr;
+	WeakPtr<EditorSplitNode> m_Parent;
+	WeakPtr<EditorNode> m_ThisWeak; // #todo: temp - intrusive refcount can fix this
 };
 
 

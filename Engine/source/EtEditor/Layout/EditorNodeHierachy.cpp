@@ -28,7 +28,7 @@ RTTR_REGISTRATION
 	using namespace rttr;
 
 	registration::class_<EditorNodeHierachy>("editor node hierachy")
-		.property("root", &EditorNodeHierachy::root);
+		.property("root", &EditorNodeHierachy::m_Root);
 }
 
 
@@ -67,7 +67,7 @@ void EditorNodeHierachy::SetHeaderMenuFlipTarget(bool const top)
 //---------------------------------
 // EditorNodeHierachy::SplitNode
 //
-void EditorNodeHierachy::SplitNode(EditorToolNode* const node, EditorBase* const editor)
+void EditorNodeHierachy::SplitNode(WeakPtr<EditorToolNode> const& node, EditorBase* const editor)
 {
 	bool const horizontal = node->GetFeedback().GetState() == ToolNodeFeedback::E_State::HSplit;
 	float const splitFrac = static_cast<float>(node->GetFeedback().GetSplitPos())
@@ -75,39 +75,43 @@ void EditorNodeHierachy::SplitNode(EditorToolNode* const node, EditorBase* const
 
 	node->SetFeedbackState(ToolNodeFeedback::E_State::Inactive);
 
-	EditorSplitNode* const split = new EditorSplitNode();
+	WeakPtr<EditorSplitNode> const parent = node->GetParent();
+	RefPtr<EditorSplitNode> const split = Create<EditorSplitNode>();
 
 	// find the pointer in the tree referencing our node
-	if (node->GetParent() == nullptr)
+	if (parent == nullptr)
 	{
-		ET_ASSERT(node == root);
-		root = split;
+		ET_ASSERT(node == m_Root);
+		m_Root = split;
+		split->m_ThisWeak = m_Root;
 	}
 	else
 	{
-		if (node == node->GetParent()->GetChild1())
+		if (node == parent->GetChild1())
 		{
-			node->GetParent()->m_Child1 = split;
+			parent->m_Child1 = split;
+			split->m_ThisWeak = parent->m_Child1;
 		}
 		else
 		{
-			ET_ASSERT(node == node->GetParent()->GetChild2());
-			node->GetParent()->m_Child2 = split;
+			ET_ASSERT(node == parent->GetChild2());
+			parent->m_Child2 = split;
+			split->m_ThisWeak = parent->m_Child2;
 		}
 	}
 
 	// assign the basic information that would otherwise be provided by reflection
-	EditorToolNode* const splitTool = new EditorToolNode();
+	RefPtr<EditorToolNode> const splitTool = Create<EditorToolNode>();
 	splitTool->m_Type = node->GetType();
 
 	split->m_IsHorizontal = horizontal;
 	split->m_SplitRatio = splitFrac;
 	split->m_Child1 = node;
-	split->m_Child2 = splitTool;
+	split->m_Child2 = std::move(splitTool);
 
 	// emulate node intialization
 	split->m_Attachment = node->UnlinkAttachment();
-	split->m_Parent = node->GetParent();
+	split->m_Parent = parent;
 	split->InitInternal(editor);
 
 	// mark UI as dirty
@@ -126,16 +130,16 @@ void EditorNodeHierachy::SplitNode(EditorToolNode* const node, EditorBase* const
 //----------------------------------
 // EditorNodeHierachy::CollapseNode
 //
-void EditorNodeHierachy::CollapseNode(EditorToolNode* const node, EditorBase* const editor)
+void EditorNodeHierachy::CollapseNode(WeakPtr<EditorToolNode> const& node, EditorBase* const editor)
 {
-	EditorSplitNode* splitToDelete = node->GetParent();
+	RefPtr<EditorSplitNode> splitToDelete = node->GetParent(); // ensure we hold the reference, for now
 	ET_ASSERT(splitToDelete != nullptr);
 
 	// destroy the tool first in case its destruction relies on being attached to the window (such as open GL contexts etc)
 	node->DestroyTool();
 
 	// find the node that doesn't collapse
-	EditorNode* survivingNode = nullptr;
+	RefPtr<EditorNode> survivingNode;
 	if (node == splitToDelete->GetChild1())
 	{
 		survivingNode = splitToDelete->GetChild2();
@@ -151,19 +155,22 @@ void EditorNodeHierachy::CollapseNode(EditorToolNode* const node, EditorBase* co
 	// attatch the surviving node to the parent of the collapsing split node
 	if (splitToDelete->GetParent() == nullptr)
 	{
-		ET_ASSERT(splitToDelete == root);
-		root = survivingNode;
+		ET_ASSERT(splitToDelete == m_Root);
+		m_Root = survivingNode;
+		survivingNode->m_ThisWeak = m_Root;
 	}
 	else
 	{
 		if (splitToDelete == splitToDelete->GetParent()->GetChild1())
 		{
 			splitToDelete->GetParent()->m_Child1 = survivingNode;
+			survivingNode->m_ThisWeak = splitToDelete->GetParent()->m_Child1;
 		}
 		else
 		{
 			ET_ASSERT(splitToDelete == splitToDelete->GetParent()->GetChild2());
 			splitToDelete->GetParent()->m_Child2 = survivingNode;
+			survivingNode->m_ThisWeak = splitToDelete->GetParent()->m_Child2;
 		}
 	}
 
@@ -172,7 +179,7 @@ void EditorNodeHierachy::CollapseNode(EditorToolNode* const node, EditorBase* co
 	survivingNode->m_Attachment = splitToDelete->UnlinkAttachment();
 	survivingNode->m_Parent = splitToDelete->GetParent();
 
-	SafeDelete(splitToDelete);
+	splitToDelete = nullptr; // should be the last reference and memory would be cleared
 
 	// reattach the tool nodes UI
 	survivingNode->InitInternal(editor);
