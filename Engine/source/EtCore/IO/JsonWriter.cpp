@@ -51,34 +51,37 @@ bool Writer::WriteObject(Object const* const jObj)
 	// write the pairs
 	bool allPairsSucceeded = true;
 	size_t pairIndex = 0;
-	while (true)
+	if (!(jObj->value.empty()))
 	{
-		// Write the pair
-		if (!WritePair(jObj->value[pairIndex]))
+		while (true)
 		{
-			LOG("JSON::Writer::WriteObject > Failed to write pair.", LogLevel::Warning);
-			allPairsSucceeded = false;
-		}
+			// Write the pair
+			if (!WritePair(jObj->value[pairIndex]))
+			{
+				LOG("JSON::Writer::WriteObject > Failed to write pair.", LogLevel::Warning);
+				allPairsSucceeded = false;
+			}
 
-		// check if there will be a successor
-		++pairIndex;
-		bool isNotLast = pairIndex < jObj->value.size();
+			// check if there will be a successor
+			++pairIndex;
+			bool isNotLast = pairIndex < jObj->value.size();
 
-		// write delimiter
-		if (isNotLast)
-		{
-			m_JsonString += s_Delimiter;
-		}
+			// write delimiter
+			if (isNotLast)
+			{
+				m_JsonString += s_Delimiter;
+			}
 
-		// write newline
-		if (!m_Compact)
-		{
-			m_JsonString += s_NewLine;
-		}
+			// write newline
+			if (!m_Compact)
+			{
+				m_JsonString += s_NewLine;
+			}
 
-		if (!isNotLast)
-		{
-			break;
+			if (!isNotLast)
+			{
+				break;
+			}
 		}
 	}
 
