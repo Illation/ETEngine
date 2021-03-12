@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TypeInfoRegistry.h"
+
 
 namespace et { namespace core { namespace JSON {
 	struct Value;
@@ -29,20 +31,29 @@ public:
 	bool DeserializeFromData(std::vector<uint8> const& data, T& outObject);
 
 	template<typename TDataType>
-	void Deserialize(JSON::Object* const parentObj, TDataType& outObject);
+	bool Deserialize(JSON::Object* const parentObj, TDataType& outObject);
 
 	// utility 
 	//---------
 private:
-	rttr::variant ExtractBasicTypes(JSON::Value const* const jVal);
-	bool ArrayFromJsonRecursive(rttr::variant_sequential_view& view, JSON::Value const* const jVal);
-	rttr::variant ExtractValue(JSON::Value const* const jVal, const rttr::type& valueType);
-	bool AssociativeViewFromJsonRecursive(rttr::variant_associative_view& view, JSON::Value const* const jVal);
-	void FromJsonValue(JSON::Value const* jVal, rttr::type &valueType, rttr::variant &var);
-	bool ExtractPointerValueType(rttr::type &inOutValType, JSON::Value const* &inOutJVal, bool& isNull);
-	void ObjectFromJsonRecursive(JSON::Value const* const jVal, rttr::instance const &inst, rttr::type &instType);
+	bool DeserializeRoot(rttr::variant& var, rttr::type const callingType, JSON::Object const* const parentObj);
+	bool DeserializeRoot(rttr::instance& inst, TypeInfo const& ti, JSON::Object const* const parentObj);
 
-	void FromJsonRecursive(rttr::instance const inst, JSON::Object const* const parentObj);
+	// general
+	bool ReadVariant(rttr::variant& var, rttr::type const callingType, JSON::Value const* const jVal);
+	bool ReadBasicVariant(rttr::variant& var, TypeInfo const& ti, JSON::Value const* const jVal);
+
+	// atomic
+	bool ReadArithmeticType(rttr::variant& var, HashString const typeId, JSON::Value const* const jVal);
+	bool ReadEnum(rttr::variant& var, rttr::type const enumType, JSON::Value const* const jVal);
+	bool ReadVectorType(rttr::variant& var, TypeInfo const& ti, JSON::Value const* const jVal);
+	bool ReadHash(rttr::variant& var, JSON::Value const* const jVal);
+
+	// complex
+	bool ReadSequentialContainer(rttr::variant& var, JSON::Value const* const jVal);
+	bool ReadAssociativeContainer(rttr::variant& var, JSON::Value const* const jVal);
+	bool ReadObject(rttr::variant& var, TypeInfo const& ti, JSON::Value const* const jVal);
+	bool ReadObjectProperties(rttr::instance& inst, TypeInfo const& ti, JSON::Object const* const jObj);
 };
 
 

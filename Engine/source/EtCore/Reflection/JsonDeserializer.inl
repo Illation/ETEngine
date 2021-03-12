@@ -33,9 +33,7 @@ bool JsonDeserializer::DeserializeFromData(std::vector<uint8> const& data, T& ou
 		return false;
 	}
 
-	Deserialize(root, outObject);
-
-	return true;
+	return Deserialize(root, outObject);
 }
 
 //-----------------------------
@@ -44,43 +42,35 @@ bool JsonDeserializer::DeserializeFromData(std::vector<uint8> const& data, T& ou
 // Create a JSON::Object from the templated type using reflection data. Returns nullptr if serialization is unsuccsesful.
 //
 template<typename TDataType>
-void JsonDeserializer::Deserialize(JSON::Object* const parentObj, TDataType& outObject)
+bool JsonDeserializer::Deserialize(JSON::Object* const parentObj, TDataType& outObject)
 {
-	rttr::type const valueType = rttr::type::get<TDataType>();
-	ET_ASSERT(valueType.is_valid());
-
-	// polymorphic
-	rttr::type localType = valueType;
-	bool isNull;
-	JSON::Value const* jVal = parentObj;
-	if (!ExtractPointerValueType(localType, jVal, isNull) || isNull)
+	// if this is a non pointer object we can deserialize directly into an instance, avoiding copying data
+	rttr::type const callingType = rttr::type::get<TDataType>();
+	if (TypeInfo::IsBasic(callingType))
 	{
-		return;
-	}
-
-	// root value or internal pointer content ?
-	if (localType == valueType)
-	{
-		FromJsonRecursive(outObject, parentObj);
-	}
-	else
-	{
-		// find the right constructor for our type
-		rttr::constructor ctor = localType.get_constructor();
-		ET_ASSERT(ctor.is_valid(), "Failed to get a valid constructor from type '%s", localType.get_name().data());
-		rttr::variant var = ctor.invoke();
-
-		// deserialize
-		ObjectFromJsonRecursive(jVal, var, localType);
-		ET_ASSERT(var.is_valid());
-
-		if (localType != valueType)
+		TypeInfo const& ti = TypeInfoRegistry::Instance().GetTypeInfo(callingType);
+		if (ti.m_Kind == TypeInfo::E_Kind::Class)
 		{
-			var.convert(rttr::type(valueType));
+			return DeserializeRoot(rttr::instance(outObject), ti, parentObj);
 		}
-
-		outObject = var.get_value<TDataType>();
 	}
+
+	// in all other cases we will deserialize a copied variant
+	rttr::variant deserializedValue = outObject;
+	if (DeserializeRoot(deserializedValue, callingType, parentObj))
+	{
+		if (deserializedValue.is_type<TDataType>())
+		{
+			outObject = deserializedValue.get_value<TDataType>();
+			return true;
+		}
+		else if (deserializedValue.convert(outObject))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 
