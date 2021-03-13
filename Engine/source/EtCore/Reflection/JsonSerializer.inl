@@ -54,34 +54,22 @@ bool JsonSerializer::SerializeToData(TDataType const& serialObject, std::vector<
 template<typename TDataType>
 JSON::Value* JsonSerializer::Serialize(TDataType const& serialObject)
 {
-	rttr::instance inst(serialObject);
-	if (!inst.is_valid())
+	rttr::variant var(serialObject);
+	if (!var.is_valid())
 	{
-		LOG("SerializeToJson > Couldn't create a valid instance from the object to serialize!", Warning);
+		ET_ASSERT(false, "couldn't get valid instance from serialObject");
 		return nullptr;
 	}
 
-	JSON::Value* outObject = nullptr;
-
-	rttr::type const callingType = rttr::type::get(serialObject);
-	if (ToJsonRecursive(inst, outObject, callingType))
+	JSON::Value* outVal = nullptr;
+	if (!SerializeRoot(var, outVal))
 	{
-		if (callingType.is_pointer())
-		{
-			return outObject;
-		}
-		else
-		{
-			JSON::Object* root = new JSON::Object();
-
-			root->value.emplace_back(inst.get_type().get_name().to_string(), outObject);
-
-			return static_cast<JSON::Value*>(root);
-		}
+		ET_ASSERT(false, "Failed to serialize to JSON");
+		delete outVal;
+		return nullptr;
 	}
 
-	delete outObject;
-	return nullptr;
+	return outVal;
 }
 
 
