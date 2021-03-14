@@ -3,7 +3,11 @@
 
 namespace et { namespace core { namespace JSON {
 	struct Value;
-} } }
+}
+	struct TypeInfo;
+} 
+	class I_AssetPtr;
+}
 
 
 namespace et {
@@ -33,12 +37,24 @@ public:
 	// utility 
 	//---------
 private:
-	bool ToJsonRecursive(rttr::instance const& inst, JSON::Value*& outJObject, rttr::type const& callingType);
+	bool SerializeRoot(rttr::variant const& var, JSON::Value*& outVal);
 
-	bool VariantToJsonValue(rttr::variant const& var, JSON::Value*& outVal);
-	bool AtomicTypeToJsonValue(rttr::type const& valueType, rttr::variant const& var, JSON::Value*& outVal);
-	bool ArrayToJsonArray(const rttr::variant_sequential_view& view, JSON::Value*& outVal);
-	bool AssociativeContainerToJsonArray(const rttr::variant_associative_view& view, JSON::Value*& outVal);
+	// general
+	bool WriteVariant(rttr::variant const& var, JSON::Value*& outVal);
+	bool WriteBasicVariant(rttr::variant const& var, TypeInfo const& ti, JSON::Value*& outVal);
+
+	// atomic
+	bool WriteArithmeticType(rttr::type const type, rttr::variant const& var, JSON::Value*& outVal);
+	bool WriteVectorType(rttr::type const type, rttr::variant const& var, JSON::Value*& outVal);
+	bool WriteEnum(rttr::variant const& var, JSON::Value*& outVal);
+	void WriteAssetPtr(I_AssetPtr const& ptr, JSON::Value*& outVal);
+	void WriteString(std::string const& str, JSON::Value*& outVal);
+	void WriteHash(HashString const hash, JSON::Value*& outVal);
+
+	// complex
+	bool WriteSequentialContainer(rttr::variant_sequential_view const& view, JSON::Value*& outVal);
+	bool WriteAssociativeContainer(rttr::variant_associative_view const& view, JSON::Value*& outVal);
+	bool WriteObject(rttr::instance const& inst, TypeInfo const& ti, JSON::Value*& outVal);
 
 	// Data
 	///////
