@@ -152,34 +152,35 @@ void EditorNodeHierachy::CollapseNode(WeakPtr<EditorToolNode> const& node, Edito
 		splitToDelete->m_Child1 = nullptr;
 	}
 
+	survivingNode->m_ThisWeak = survivingNode;
+
 	// attatch the surviving node to the parent of the collapsing split node
-	if (splitToDelete->GetParent() == nullptr)
+	RefPtr<EditorSplitNode> survivingParent = splitToDelete->GetParent();
+	if (survivingParent == nullptr)
 	{
 		ET_ASSERT(splitToDelete == m_Root);
 		m_Root = survivingNode;
-		survivingNode->m_ThisWeak = m_Root;
 	}
 	else
 	{
 		if (splitToDelete == splitToDelete->GetParent()->GetChild1())
 		{
-			splitToDelete->GetParent()->m_Child1 = survivingNode;
-			survivingNode->m_ThisWeak = splitToDelete->GetParent()->m_Child1;
+			survivingParent->m_Child1 = survivingNode;
 		}
 		else
 		{
 			ET_ASSERT(splitToDelete == splitToDelete->GetParent()->GetChild2());
-			splitToDelete->GetParent()->m_Child2 = survivingNode;
-			survivingNode->m_ThisWeak = splitToDelete->GetParent()->m_Child2;
+			survivingParent->m_Child2 = survivingNode;
 		}
 	}
 
 	// provide the newly attached node with the splits base ui elements
 	survivingNode->UnlinkAttachment();
 	survivingNode->m_Attachment = splitToDelete->UnlinkAttachment();
-	survivingNode->m_Parent = splitToDelete->GetParent();
 
 	splitToDelete = nullptr; // should be the last reference and memory would be cleared
+
+	survivingNode->m_Parent = survivingParent; // for some reason this needs to happen after invalidating splitToDelete
 
 	// reattach the tool nodes UI
 	survivingNode->InitInternal(editor);
