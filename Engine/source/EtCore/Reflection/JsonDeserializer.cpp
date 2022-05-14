@@ -57,7 +57,23 @@ bool JsonDeserializer::ReadVariant(rttr::variant& var, rttr::type const callingT
 {
 	if (callingType.is_wrapper())
 	{
-		return ReadVariant(var, callingType.get_wrapped_type(), jVal);
+		if (!ReadVariant(var, callingType.get_wrapped_type(), jVal))
+		{
+			ET_ASSERT(false, "Failed to read wrapped variant content");
+			return false;
+		}
+
+		// convert from inner type to pointer type
+		if (!var.convert(callingType))
+		{
+			ET_ASSERT(false, 
+				"failed to convert inner type '%s' to wrapper type '%s'", 
+				callingType.get_wrapped_type().get_name().data(), 
+				callingType.get_name().data());
+			return false;
+		}
+
+		return true;
 	}
 
 	if (callingType.is_pointer())

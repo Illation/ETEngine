@@ -1,4 +1,5 @@
 #pragma once
+#include "WeakPointer.h"
 
 
 namespace et {
@@ -146,6 +147,51 @@ RefPtr<TDataType>& RefPtr<TDataType>::operator=(RefPtr<TOtherType> const& copy)
 	std::swap(m_Ptr, tempPtr);
 
 	m_RefCount = copy.m_RefCount;
+	if (m_RefCount != nullptr)
+	{
+		++(m_RefCount->m_References);
+	}
+
+	return *this;
+}
+
+
+// copy from weak pointer
+//////////////////////////
+
+//---------------------------------
+// RefPtr::c-tor
+//
+// copy from weak and increment the refcount
+// Version supporting derived classes
+//
+template <typename TDataType>
+template <typename TOtherType>
+RefPtr<TDataType>::RefPtr(WeakPtr<TOtherType> const& weak)
+	: m_RefCount(weak.m_RefCount)
+{
+	TDataType* tempPtr = weak.m_Ptr;
+	std::swap(m_Ptr, tempPtr);
+	if (m_RefCount != nullptr)
+	{
+		++(m_RefCount->m_References);
+	}
+}
+
+//---------------------------------
+// RefPtr::operator=
+//
+// Copy assignment from weak - increment refcount
+// Version supporting derived classes
+//
+template <typename TDataType>
+template <typename TOtherType>
+RefPtr<TDataType>& RefPtr<TDataType>::operator=(WeakPtr<TOtherType> const& weak)
+{
+	TDataType* tempPtr = weak.m_Ptr;
+	std::swap(m_Ptr, tempPtr);
+
+	m_RefCount = weak.m_RefCount;
 	if (m_RefCount != nullptr)
 	{
 		++(m_RefCount->m_References);
@@ -383,8 +429,8 @@ bool operator==(std::nullptr_t, RefPtr<TDataType> const& ptr)
 	return ptr.IsNull();
 }
 
-template <typename TDataType>
-bool operator==(RefPtr<TDataType> const& ptr1, RefPtr<TDataType> const& ptr2)
+template <typename TDataType, typename TOtherType>
+bool operator==(RefPtr<TDataType> const& ptr1, RefPtr<TOtherType> const& ptr2)
 {
 	return (ptr1.Get() == ptr2.Get());
 }
@@ -401,11 +447,39 @@ bool operator!=(std::nullptr_t, RefPtr<TDataType> const& ptr)
 	return !ptr.IsNull();
 }
 
-template <typename TDataType>
-bool operator!=(RefPtr<TDataType> const& ptr1, RefPtr<TDataType> const& ptr2)
+template <typename TDataType, typename TOtherType>
+bool operator!=(RefPtr<TDataType> const& ptr1, RefPtr<TOtherType> const& ptr2)
 {
 	return !(ptr1 == ptr2);
 }
 
 
 } // namespace et
+
+
+// REFLECTION
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+namespace rttr {
+
+
+template<typename TDataType>
+struct wrapper_mapper<et::RefPtr<TDataType>>
+{
+	using wrapped_type = TDataType*;
+	using type = et::RefPtr<TDataType>;
+
+	static RTTR_INLINE wrapped_type get(type const& obj)
+	{
+		return obj.Get();
+	}
+
+	static RTTR_INLINE type create(wrapped_type const& t)
+	{
+		return type(et::Create<TDataType>(t));
+	}
+};
+
+
+} // namespace rttr

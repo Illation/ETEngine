@@ -21,6 +21,7 @@ public:
 		// exceptions are not handled for performance reasons
 		m_Ptr = new TDataType(std::forward<Args>(args)...);
 	}
+	Create(TDataType* rawPtr) : m_Ptr(rawPtr) {} // this version is for reflection to work and otherwise not to be used
 
 	Create(Create const&) = delete;
 	Create& operator=(Create const&) = delete;

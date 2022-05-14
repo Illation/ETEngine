@@ -48,8 +48,8 @@ public:
 	// accessors
 	//-----------
 	bool IsHorizontal() const { return m_IsHorizontal; }
-	EditorNode* GetChild1() const { return m_Child1; }
-	EditorNode* GetChild2() const { return m_Child2; }
+	RefPtr<EditorNode> GetChild1() const { return m_Child1; }
+	RefPtr<EditorNode> GetChild2() const { return m_Child2; }
 
 	// Data
 	///////
@@ -60,8 +60,8 @@ private:
 	float m_SplitRatio = 0.5f;
 	bool m_IsHorizontal = true;
 
-	EditorNode* m_Child1 = nullptr;
-	EditorNode* m_Child2 = nullptr;
+	RefPtr<EditorNode> m_Child1;
+	RefPtr<EditorNode> m_Child2;
 
 	bool m_LayoutAdjusted = false;
 };

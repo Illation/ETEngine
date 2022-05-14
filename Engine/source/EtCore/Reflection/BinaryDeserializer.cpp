@@ -91,7 +91,23 @@ bool BinaryDeserializer::ReadVariant(rttr::variant& var, rttr::type const callin
 {
 	if (callingType.is_wrapper())
 	{
-		return ReadVariant(var, callingType.get_wrapped_type());
+		if (!ReadVariant(var, callingType.get_wrapped_type()))
+		{
+			ET_ASSERT(false, "Failed to read wrapped variant content");
+			return false;
+		}
+
+		// convert from inner type to pointer type
+		if (!var.convert(callingType))
+		{
+			ET_ASSERT(false,
+				"failed to convert inner type '%s' to wrapper type '%s'",
+				callingType.get_wrapped_type().get_name().data(),
+				callingType.get_name().data());
+			return false;
+		}
+
+		return true;
 	}
 
 	if (callingType.is_pointer()) // we need to allocate pointer types on the heap

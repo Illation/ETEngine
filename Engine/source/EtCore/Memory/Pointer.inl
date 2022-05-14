@@ -369,3 +369,28 @@ bool operator!=(WeakPtr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2)
 
 
 } // namespace et
+
+
+// REFLECTION
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+namespace rttr {
+
+
+template<typename TDataType>
+struct wrapper_mapper<et::Ptr<TDataType>>
+{
+	using wrapped_type = TDataType * ;
+	using type = et::Ptr<TDataType>;
+
+	static RTTR_INLINE wrapped_type get(type const& obj)
+	{
+		return obj.Get();
+	}
+
+	// can't create	
+};
+
+
+} // namespace rttr

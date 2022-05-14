@@ -51,6 +51,7 @@ inline void SafeDelete(T &pObjectToDelete)
 #include <EtCore/Util/StringUtil.h>
 #include <EtCore/Hashing/HashString.h>
 #include <EtCore/Reflection/ReflectionUtil.h>
+
 //Working singleton Set
 #define TIME et::core::ContextManager::GetInstance()->GetActiveContext()->time
 #define LOG(fmt, ...) et::core::Logger::Log(fmt, __VA_ARGS__)
@@ -75,5 +76,7 @@ inline void SafeDelete(T &pObjectToDelete)
 #else
 #	define ET_ASSERT_PARANOID(condition, ...)
 #endif
+
+#include <EtCore/Memory/Pointer.h>
 
 #pragma endregion Macros

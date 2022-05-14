@@ -14,6 +14,9 @@ template <typename TDataType>
 class WeakPtr final
 {
 	template <typename>
+	friend class RefPtr;
+
+	template <typename>
 	friend class WeakPtr;
 
 	template <typename>
@@ -82,35 +85,35 @@ private:
 //-------------
 
 
-template <class TDataType>
+template <typename TDataType>
 bool operator == (WeakPtr<TDataType> const& ptr, std::nullptr_t);
 
-template <class TDataType>
+template <typename TDataType>
 bool operator == (std::nullptr_t, WeakPtr<TDataType> const& ptr);
 
-template <class TDataType>
-bool operator == (WeakPtr<TDataType> const& ptr1, WeakPtr<TDataType> const& ptr2);
+template <typename TDataType, typename TOtherType>
+bool operator == (WeakPtr<TDataType> const& ptr1, WeakPtr<TOtherType> const& ptr2);
 
-template <class TDataType>
-bool operator == (WeakPtr<TDataType> const& ptr1, RefPtr<TDataType> const& ptr2);
+template <typename TDataType, typename TOtherType>
+bool operator == (WeakPtr<TDataType> const& ptr1, RefPtr<TOtherType> const& ptr2);
 
-template <class TDataType>
-bool operator == (RefPtr<TDataType> const& ptr1, WeakPtr<TDataType> const& ptr2);
+template <typename TDataType, typename TOtherType>
+bool operator == (RefPtr<TDataType> const& ptr1, WeakPtr<TOtherType> const& ptr2);
 
-template <class TDataType>
+template <typename TDataType>
 bool operator != (WeakPtr<TDataType> const& ptr, std::nullptr_t);
 
-template <class TDataType>
+template <typename TDataType>
 bool operator != (std::nullptr_t, WeakPtr<TDataType> const& ptr);
 
-template <class TDataType>
-bool operator != (WeakPtr<TDataType> const& ptr1, WeakPtr<TDataType> const& ptr2);
+template <typename TDataType, typename TOtherType>
+bool operator != (WeakPtr<TDataType> const& ptr1, WeakPtr<TOtherType> const& ptr2);
 
-template <class TDataType>
-bool operator != (WeakPtr<TDataType> const& ptr1, RefPtr<TDataType> const& ptr2);
+template <typename TDataType, typename TOtherType>
+bool operator != (WeakPtr<TDataType> const& ptr1, RefPtr<TOtherType> const& ptr2);
 
-template <class TDataType>
-bool operator != (RefPtr<TDataType> const& ptr1, WeakPtr<TDataType> const& ptr2);
+template <typename TDataType, typename TOtherType>
+bool operator != (RefPtr<TDataType> const& ptr1, WeakPtr<TOtherType> const& ptr2);
 
 
 } // namespace et

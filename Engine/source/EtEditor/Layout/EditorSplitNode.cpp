@@ -35,16 +35,14 @@ namespace edit {
 //---------------------------------
 // EditorSplitNode::d-tor
 //
+// in case of collapsing, the surviving child should be set to nullptr in the split before calling the destructor
+//
 EditorSplitNode::~EditorSplitNode()
 {
 	if (m_Paned == nullptr)
 	{
 		return;
 	}
-
-	// in case of collapsing, the surviving child should be set to nullptr in the split before calling the destructor
-	SafeDelete(m_Child1);
-	SafeDelete(m_Child2);
 
 	// if this nodes UI is unlinked from its attachment, we need to manually delete the UI
 	if (m_Paned->get_parent() == nullptr)
@@ -75,8 +73,8 @@ void EditorSplitNode::InitInternal(EditorBase* const editor)
 	m_Paned->pack2(*childFrame2, true, true);
 
 	// init the child widgets
-	m_Child1->Init(editor, childFrame1, this);
-	m_Child2->Init(editor, childFrame2, this);
+	m_Child1->Init(editor, childFrame1, WeakPtr<EditorSplitNode>::StaticCast(m_ThisWeak), m_Child1);
+	m_Child2->Init(editor, childFrame2, WeakPtr<EditorSplitNode>::StaticCast(m_ThisWeak), m_Child2);
 }
 
 //---------------------------------
@@ -108,12 +106,12 @@ void EditorSplitNode::AdjustLayout()
 	// propagate this to children
 	if (!(m_Child1->IsLeaf()))
 	{
-		static_cast<EditorSplitNode*>(m_Child1)->AdjustLayout();
+		RefPtr<EditorSplitNode>::StaticCast(m_Child1)->AdjustLayout();
 	}
 
 	if (!(m_Child2->IsLeaf()))
 	{
-		static_cast<EditorSplitNode*>(m_Child2)->AdjustLayout();
+		RefPtr<EditorSplitNode>::StaticCast(m_Child2)->AdjustLayout();
 	}
 
 	m_LayoutAdjusted = true;
@@ -153,12 +151,12 @@ void EditorSplitNode::ReinitHierachyHandles()
 {
 	if (m_Child1->IsLeaf())
 	{
-		static_cast<EditorToolNode*>(m_Child1)->InitHierachyUI();
+		RefPtr<EditorToolNode>::StaticCast(m_Child1)->InitHierachyUI();
 	}
 
 	if (m_Child2->IsLeaf())
 	{
-		static_cast<EditorToolNode*>(m_Child2)->InitHierachyUI();
+		RefPtr<EditorToolNode>::StaticCast(m_Child2)->InitHierachyUI();
 	}
 }
 

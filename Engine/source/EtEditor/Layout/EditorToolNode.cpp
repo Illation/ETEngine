@@ -68,7 +68,7 @@ EditorToolNode::~EditorToolNode()
 
 	if (m_Overlay != nullptr && m_Overlay->get_parent() != nullptr)
 	{
-		delete m_Overlay; // should also delete other managed wdigets
+		delete m_Overlay; // will delete managed child widgets
 	}
 
 	if (m_ToolbarEventBox != nullptr && !m_IsToolbarVisible)
@@ -92,8 +92,9 @@ void EditorToolNode::InitInternal(EditorBase* const editor)
 
 	if (!reinit)
 	{
-		m_Overlay = Gtk::make_managed<Gtk::Overlay>();
+		m_Overlay = new Gtk::Overlay(); // not managed because it will be removed when reordering splits
 	}
+
 	m_Attachment->add(*m_Overlay);
 
 	if (reinit)
@@ -231,7 +232,7 @@ void EditorToolNode::CreateToolbar()
 
 	auto onCollapse = [this]()
 	{
-		m_Editor->QueueNodeForCollapse(this);
+		m_Editor->QueueNodeForCollapse(WeakPtr<EditorToolNode>::StaticCast(m_ThisWeak));
 	};
 	m_ToolbarActionGroup->add_action("collapse", onCollapse);
 
@@ -239,7 +240,7 @@ void EditorToolNode::CreateToolbar()
 	{
 		m_Feedback.SetState(ToolNodeFeedback::E_State::HSplit);
 		m_Feedback.SetSplitPosition(m_Overlay->get_allocated_width() / 2);
-		m_Editor->QueueNodeForSplit(this);
+		m_Editor->QueueNodeForSplit(WeakPtr<EditorToolNode>::StaticCast(m_ThisWeak));
 	};
 	m_ToolbarActionGroup->add_action("hsplit", onHSplit);
 
@@ -247,7 +248,7 @@ void EditorToolNode::CreateToolbar()
 	{
 		m_Feedback.SetState(ToolNodeFeedback::E_State::VSplit);
 		m_Feedback.SetSplitPosition(m_Overlay->get_allocated_height() / 2);
-		m_Editor->QueueNodeForSplit(this);
+		m_Editor->QueueNodeForSplit(WeakPtr<EditorToolNode>::StaticCast(m_ThisWeak));
 	};
 	m_ToolbarActionGroup->add_action("vsplit", onVSplit);
 
@@ -436,19 +437,19 @@ void EditorToolNode::ReorderToolbar()
 void EditorToolNode::InitHierachyUI()
 {
 	// overlays for splitting and colapsing tools
-	m_Handle1.Init(this, false, m_IsToolbarTop);
-	m_Handle2.Init(this, true, !m_IsToolbarTop);
+	m_Handle1.Init(WeakPtr<EditorToolNode>::StaticCast(m_ThisWeak), false, m_IsToolbarTop);
+	m_Handle2.Init(WeakPtr<EditorToolNode>::StaticCast(m_ThisWeak), true, !m_IsToolbarTop);
 
 	// set the feedback border to determine arrow directions
 	if (m_Parent != nullptr)
 	{
 		if (m_Parent->IsHorizontal())
 		{
-			m_Feedback.SetBorder((m_Parent->GetChild1() == this) ? ToolNodeFeedback::E_Border::Right : ToolNodeFeedback::E_Border::Left);
+			m_Feedback.SetBorder((m_Parent->GetChild1() == m_ThisWeak) ? ToolNodeFeedback::E_Border::Right : ToolNodeFeedback::E_Border::Left);
 		}
 		else
 		{
-			m_Feedback.SetBorder((m_Parent->GetChild1() == this) ? ToolNodeFeedback::E_Border::Bottom : ToolNodeFeedback::E_Border::Top);
+			m_Feedback.SetBorder((m_Parent->GetChild1() == m_ThisWeak) ? ToolNodeFeedback::E_Border::Bottom : ToolNodeFeedback::E_Border::Top);
 		}
 	}
 }

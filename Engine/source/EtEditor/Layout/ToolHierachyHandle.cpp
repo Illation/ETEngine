@@ -47,7 +47,7 @@ float const ToolHierachyHandle::s_SplitThreshold = 20.f;
 //-------------------------------------
 // ToolHierachyHandle::Init
 //
-void ToolHierachyHandle::Init(EditorToolNode* const owner, bool right, bool top)
+void ToolHierachyHandle::Init(WeakPtr<EditorToolNode> const owner, bool right, bool top)
 {
 	// set internals
 	ET_ASSERT(owner != nullptr);
@@ -60,10 +60,10 @@ void ToolHierachyHandle::Init(EditorToolNode* const owner, bool right, bool top)
 
 	// find any neighbouring nodes
 	m_Neighbour = nullptr;
-	EditorSplitNode* const parentSplit = m_Owner->GetParent();
+	EditorSplitNode* const parentSplit = m_Owner->GetParent().Get();
 	if (parentSplit != nullptr)
 	{
-		EditorNode* testNeighbour = nullptr;
+		WeakPtr<EditorNode> testNeighbour;
 
 		// figure out which node to check based on our alignment and parent split orientation
 		if (parentSplit->IsHorizontal())
@@ -93,7 +93,7 @@ void ToolHierachyHandle::Init(EditorToolNode* const owner, bool right, bool top)
 		ET_ASSERT(testNeighbour != nullptr);
 		if (testNeighbour != m_Owner && testNeighbour->IsLeaf())
 		{
-			m_Neighbour = static_cast<EditorToolNode*>(testNeighbour);
+			m_Neighbour = WeakPtr<EditorToolNode>::StaticCast(testNeighbour);
 		}
 	}
 

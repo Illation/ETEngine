@@ -246,8 +246,8 @@ bool operator==(std::nullptr_t, UniquePtr<TDataType> const& ptr)
 	return ptr.IsNull();
 }
 
-template <typename TDataType>
-bool operator==(UniquePtr<TDataType> const& ptr1, UniquePtr<TDataType> const& ptr2)
+template <typename TDataType, typename TOtherType>
+bool operator==(UniquePtr<TDataType> const& ptr1, UniquePtr<TOtherType> const& ptr2)
 {
 	return (ptr1.Get() == ptr2.Get());
 }
@@ -264,11 +264,39 @@ bool operator!=(std::nullptr_t, UniquePtr<TDataType> const& ptr)
 	return !ptr.IsNull();
 }
 
-template <typename TDataType>
-bool operator!=(UniquePtr<TDataType> const& ptr1, UniquePtr<TDataType> const& ptr2)
+template <typename TDataType, typename TOtherType>
+bool operator!=(UniquePtr<TDataType> const& ptr1, UniquePtr<TOtherType> const& ptr2)
 {
 	return !(ptr1 == ptr2);
 }
 
 
 } // namespace et
+
+
+// REFLECTION
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+namespace rttr {
+
+
+template<typename TDataType>
+struct wrapper_mapper<et::UniquePtr<TDataType>>
+{
+	using wrapped_type = TDataType * ;
+	using type = et::UniquePtr<TDataType>;
+
+	static RTTR_INLINE wrapped_type get(type const& obj)
+	{
+		return obj.Get();
+	}
+
+	static RTTR_INLINE type create(wrapped_type const& t)
+	{
+		return type(et::Create<TDataType>(t));
+	}
+};
+
+
+} // namespace rttr
