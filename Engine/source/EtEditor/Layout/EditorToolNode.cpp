@@ -68,7 +68,7 @@ EditorToolNode::~EditorToolNode()
 
 	if (m_Overlay != nullptr && m_Overlay->get_parent() != nullptr)
 	{
-		delete m_Overlay; // should also delete other managed wdigets
+		delete m_Overlay; // will delete managed child widgets
 	}
 
 	if (m_ToolbarEventBox != nullptr && !m_IsToolbarVisible)
@@ -92,7 +92,7 @@ void EditorToolNode::InitInternal(EditorBase* const editor)
 
 	if (!reinit)
 	{
-		m_Overlay = Gtk::make_managed<Gtk::Overlay>();
+		m_Overlay = new Gtk::Overlay(); // not managed because it will be removed when reordering splits
 	}
 
 	m_Attachment->add(*m_Overlay);
