@@ -158,6 +158,7 @@ function(targetCompileOptions _target)
 			"$<$<CONFIG:Debug>:/DET_DEBUG>"
 			"$<$<CONFIG:Develop>:/DET_DEVELOP>"
 			"$<$<CONFIG:Shipping>:/DET_SHIPPING>"
+			"/DRMLUI_STATIC_LIB"
 		)
 	else()
 		target_compile_options(
@@ -166,6 +167,7 @@ function(targetCompileOptions _target)
 			"$<$<CONFIG:Debug>:-DET_DEBUG>"
 			"$<$<CONFIG:Develop>:-DET_DEVELOP>"
 			"$<$<CONFIG:Shipping>:-DET_SHIPPING>"
+			"-DRMLUI_STATIC_LIB"
 		)
 	endif()
 endfunction(targetCompileOptions)
@@ -278,6 +280,17 @@ function(getBulletBuildDir bullet_build)
 endfunction(getBulletBuildDir)
 
 
+# rmlui output directory
+##########################
+function(getRmlUiBuildDir rmlui_build)
+
+	set(_p )
+	getPlatformArch(_p)
+
+	set(${rmlui_build} "${ENGINE_DIRECTORY_ABS}/third_party/rmlui/build/${_p}" PARENT_SCOPE)
+endfunction(getRmlUiBuildDir)
+
+
 # rttr output directory
 ##########################
 function(getRttrBuildDir rttr_build)
@@ -300,7 +313,7 @@ function(getOpenAlBuildDir openal_build)
 endfunction(getOpenAlBuildDir)
 
 
-# flfw output directory
+# glfw output directory
 ##########################
 function(getGlfwBuildDir glfw_build)
 
@@ -330,6 +343,9 @@ function(dependancyLinks TARGET)
 	set(_alBuild )
 	getOpenAlBuildDir(_alBuild)
 
+	set(_rmluiBuild )
+	getRmlUiBuildDir(_rmluiBuild)
+
 	# separate debug and release libs
 	target_link_libraries (${TARGET} 		
 		debug ${_glfwBuild}/src/Debug/glfw3.lib						optimized ${_glfwBuild}/src/Debug/glfw3.lib
@@ -341,6 +357,9 @@ function(dependancyLinks TARGET)
 		debug ${_bulletBuild}/lib/Debug/LinearMath_Debug.lib		optimized ${_bulletBuild}/lib/Release/LinearMath.lib 
 
 		debug ${_alBuild}/Debug/OpenAL32.lib						optimized ${_alBuild}/Release/OpenAL32.lib
+
+		debug ${_rmluiBuild}/Debug/RmlCore.lib						optimized ${_rmluiBuild}/Release/RmlCore.lib
+		debug ${_rmluiBuild}/Debug/RmlDebugger.lib
 
 		debug ${_vcpkgInstall}/debug/lib/zlibd.lib					optimized ${_vcpkgInstall}/lib/zlib.lib)
 
@@ -451,6 +470,7 @@ function(libIncludeDirs)
 	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/bullet/bullet3/src")
 	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/openal/openal-soft/include")
 	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/glfw/glfw/include")
+	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/rmlui/RmlUi/Include")
 
 endfunction(libIncludeDirs)
 
@@ -495,6 +515,9 @@ function(copyDllCommand _target)
 	set(_alBuild )
 	getOpenAlBuildDir(_alBuild)
 
+	set(_rmluiBuild )
+	getRmlUiBuildDir(_rmluiBuild)
+
 	# where the lib files live
 	set(_cfg "Release") 
 	set(_vcCfg "")
@@ -517,6 +540,18 @@ function(copyDllCommand _target)
 			POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_alBuild}/Debug/OpenAL32.pdb" $<TARGET_FILE_DIR:${_target}>
 			COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_alBuild}/Debug/OpenAL32.pdb" 
+		)
+
+		add_custom_command(TARGET ${_target} 
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_rmluiBuild}/Debug/RmlCore.pdb" $<TARGET_FILE_DIR:${_target}>
+			COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_rmluiBuild}/Debug/RmlCore.pdb" 
+		)
+
+		add_custom_command(TARGET ${_target} 
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_rmluiBuild}/Debug/RmlDebugger.pdb" $<TARGET_FILE_DIR:${_target}>
+			COMMAND ${CMAKE_COMMAND} -E echo "Copying ${_rmluiBuild}/Debug/RmlDebugger.pdb" 
 		)
 	endif()
 	
@@ -571,6 +606,9 @@ function(installDlls TARGET _suffix)
 	set(_alBuild )
 	getOpenAlBuildDir(_alBuild)
 
+	set(_rmluiBuild )
+	getRmlUiBuildDir(_rmluiBuild)
+
 	foreach(configType ${CMAKE_CONFIGURATION_TYPES})
 
 		set(binDir "${baseBinDir}/${configType}_${_p}/${TARGET}${_suffix}")
@@ -590,6 +628,9 @@ function(installDlls TARGET _suffix)
 			endforeach()
 			
 			install(FILES ${_alBuild}/Debug/OpenAL32.pdb CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
+			
+			install(FILES ${_rmluiBuild}/Debug/RmlCore.pdb CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
+			install(FILES ${_rmluiBuild}/Debug/RmlDebugger.pdb CONFIGURATIONS ${configType} DESTINATION ${binDir}/)
 		endif()
 
 		# copy dlls for all libraries		

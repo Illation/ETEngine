@@ -2,8 +2,8 @@
 /Engine/third_party/openal/build/
 /Engine/third_party/bullet/build/
 /Engine/third_party/rttr/build/
-/Engine/third_party/assimp/build/
 /Engine/third_party/glfw/build/
+/Engine/third_party/rmlui/build/
 
 /Engine/source/EtBuild/EngineVersion.cpp
 
