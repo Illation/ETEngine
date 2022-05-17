@@ -1,16 +1,21 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <EtRendering/GraphicsTypes/SpriteFont.h>
+#include <EtGui/Content/SpriteFont.h>
+
+
+namespace et { namespace rt {
+	class SplashScreenRenderer;
+} namespace render {
+	class ShaderData;
+} }
 
 
 namespace et {
-namespace render {
+namespace gui {
 
 
-class ShaderData;
-class ShadedSceneRenderer;
-class SplashScreenRenderer;
+class GuiRenderer;
 
 
 //---------------------------------
@@ -23,9 +28,8 @@ class TextRenderer final
 	// definitions 
 	//-------------
 private:
-	friend class render::ShadedSceneRenderer;
-	friend class render::SplashScreenRenderer;
-	friend class UIPortal;
+	friend class rt::SplashScreenRenderer;
+	friend class GuiRenderer;
 
 	//---------------------------------
 	// TextRenderer::TextVertex
@@ -74,7 +78,7 @@ private:
 	//
 	struct QueuedFont
 	{
-		SpriteFont const* m_Font = nullptr;
+		Ptr<SpriteFont const> m_Font;
 
 		int32 m_BufferStart = 0;
 		int32 m_BufferSize = 0;
@@ -93,7 +97,7 @@ private:
 	// functionality
 	//---------------
 public:
-	void SetFont(SpriteFont const* const font);
+	void SetFont(Ptr<SpriteFont const> const font);
 	void SetColor(vec4 const& color) { m_Color = color; }
 	void DrawText(std::string const& text, vec2 const pos, int16 fontSize = 0);//fontSize 0 means using the fonts default size
 	void OnWindowResize();
@@ -115,7 +119,7 @@ private:
 
 	bool m_bUseKerning = true;
 
-	AssetPtr<ShaderData> m_pTextShader;
+	AssetPtr<render::ShaderData> m_pTextShader;
 	std::vector<QueuedFont> m_QueuedFonts;
 
 	uint32 m_BufferSize = 500;
@@ -124,12 +128,12 @@ private:
 	vec4 m_Color = vec4(0, 0, 0, 1);
 	size_t m_ActiveFontIdx;
 
-	T_ArrayLoc m_VAO;
-	T_BufferLoc m_VBO;
+	render::T_ArrayLoc m_VAO;
+	render::T_BufferLoc m_VBO;
 
 	render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
 };
 
 
-} // namespace render
+} // namespace gui
 } // namespace et

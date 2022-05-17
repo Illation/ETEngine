@@ -12,6 +12,12 @@
 #include <EtFramework/Physics/PhysicsWorld.h>
 
 
+// fwd
+namespace et { namespace gui {
+	class GuiExtension;
+} }
+
+
 namespace et {
 namespace fw {
 
@@ -58,6 +64,7 @@ public:
 	T_EntityId GetAudioListener() const { return m_AudioListener; }
 
 	render::Scene& GetRenderScene() { return m_RenderScene; }
+	gui::GuiExtension* GetGuiExtension() { return m_GuiExtension.Get(); }
 	PhysicsWorld& GetPhysicsWorld() { return m_PhysicsWorld; }
 
 	T_SceneEventDispatcher& GetEventDispatcher() { return m_EventDispatcher; }
@@ -80,6 +87,8 @@ private:
 	T_EntityId m_AudioListener = INVALID_ENTITY_ID;
 
 	render::Scene m_RenderScene;
+	Ptr<gui::GuiExtension> m_GuiExtension;
+
 	PhysicsWorld m_PhysicsWorld;
 
 	T_SceneEventDispatcher m_EventDispatcher;

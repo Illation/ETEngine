@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "PostProcessingRenderer.h"
 
-#include "OverlayRenderer.h"
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/GraphicsTypes/Shader.h>
@@ -142,7 +140,8 @@ void PostProcessingRenderer::EnableInput()
 {
 	ContextHolder::GetRenderContext()->BindFramebuffer(m_CollectFBO);
 }
-void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings const& settings, render::I_OverlayRenderer* const overlayRenderer)
+
+void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings const& settings, std::function<void(T_FbLoc const)>& onDrawOverlaysFn)
 {
 	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
@@ -268,10 +267,7 @@ void PostProcessingRenderer::Draw(T_FbLoc const FBO, PostProcessingSettings cons
 	api->DebugPopGroup(); // bloom + tonemapping
 
 	// Make sure text and sprites get antialiased by drawing them before FXAA
-	if (overlayRenderer != nullptr)
-	{
-		overlayRenderer->DrawOverlays(currentFb); 
-	}
+	onDrawOverlaysFn(currentFb);
 
 	// FXAA
 	if (graphicsSettings.UseFXAA)

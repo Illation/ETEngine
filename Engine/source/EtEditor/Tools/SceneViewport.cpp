@@ -57,7 +57,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 {
 	m_Editor = static_cast<SceneEditor*>(editor);
 
-	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<render::SpriteFont>(core::HashString("Fonts/IBMPlexMono.ttf"));
+	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<gui::SpriteFont>(core::HashString("Fonts/IBMPlexMono.ttf"));
 
 	// Find the GL Area widget that is responsible for rendering the scene
 	SingleContextGlArea* glArea = nullptr;
@@ -184,6 +184,7 @@ void SceneViewport::OnDeinit()
 	m_Editor->UnregisterListener(this);
 
 	m_OutlineRenderer.Deinit();
+	m_GuiRenderer.Deinit();
 	SafeDelete(m_SceneRenderer);
 	m_Viewport->SetRenderer(nullptr);
 
@@ -238,7 +239,8 @@ void SceneViewport::OnSceneSet()
 	}
 
 	m_SceneRenderer->InitRenderingSystems();
-	m_OutlineRenderer.Init(&(m_SceneRenderer->GetEventDispatcher()));
+	m_GuiRenderer.Init(ToPtr(&(m_SceneRenderer->GetEventDispatcher())));
+	m_OutlineRenderer.Init(ToPtr(&(m_SceneRenderer->GetEventDispatcher())));
 
 	m_IsInitialized = true;
 }
@@ -256,9 +258,9 @@ void SceneViewport::OnEditorTick()
 
 	if (m_DrawDebugInfo)
 	{
-		render::TextRenderer& textRenderer = m_SceneRenderer->GetTextRenderer();
+		gui::TextRenderer& textRenderer = m_GuiRenderer.GetTextRenderer();
 
-		textRenderer.SetFont(m_DebugFont.get());
+		textRenderer.SetFont(m_DebugFont);
 		textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
 		std::string outString = FS("FPS: %i", core::PerformanceInfo::GetInstance()->GetRegularFPS());
 		textRenderer.DrawText(outString, vec2(10, 32), 22);

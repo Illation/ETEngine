@@ -73,9 +73,6 @@ void ShadedSceneRenderer::InitRenderingSystems()
 {
 	RenderingSystems::AddReference();
 
-	m_TextRenderer.Initialize();
-	m_SpriteRenderer.Initialize();
-
 	m_ShadowRenderer.Initialize();
 	m_PostProcessing.Initialize();
 
@@ -350,23 +347,23 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 	api->DebugPopGroup(); // forward render pass
 
-	// add scene sprites before the overlay pass
+	// Post Scene rendering
 	api->DebugPushGroup("post processing pass");
-	SpriteRenderer::E_ScalingMode const scalingMode = SpriteRenderer::E_ScalingMode::Texture;
-	for (Sprite const& sprite : m_RenderScene->GetSprites())
-	{
-		mat4 const& transform = m_RenderScene->GetNodes()[sprite.node];
 
-		vec3 pos, scale;
-		quat rot;
-		math::decomposeTRS(transform, pos, rot, scale);
-
-		m_SpriteRenderer.Draw(sprite.texture.get(), pos.xy, sprite.color, sprite.pivot, scale.xy, rot.Roll(), pos.z, scalingMode);
-	}
+	api->DebugPushGroup("extensions");
+	m_Events.Notify(E_RenderEvent::RenderWorldGUI, new RenderEventData(this, targetFb));
+	api->DebugPopGroup(); // extensions
 
 	// post processing
 	api->SetCullEnabled(false);
-	m_PostProcessing.Draw(targetFb, m_RenderScene->GetPostProcessingSettings(), this);
+	m_PostProcessing.Draw(targetFb, m_RenderScene->GetPostProcessingSettings(), 
+		std::function<void(T_FbLoc const)>([this, api](T_FbLoc const targetFb)
+		{
+			api->DebugPushGroup("overlay extensions");
+			m_Events.Notify(E_RenderEvent::RenderOverlay, new RenderEventData(this, targetFb));
+			api->DebugPopGroup(); // overlay extensions
+		}));
+
 	api->DebugPopGroup(); // post processing pass
 }
 
@@ -435,27 +432,6 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 			}
 		}
 	}
-}
-
-//-----------------------------------
-// ShadedSceneRenderer::DrawOverlays
-//
-// Post scene things which should be drawn to the viewport before anti aliasing
-//
-void ShadedSceneRenderer::DrawOverlays(T_FbLoc const targetFb)
-{
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
-
-	api->DebugPushGroup("draw overlays");
-
-	m_SpriteRenderer.Draw();
-	m_TextRenderer.Draw();
-
-	api->DebugPushGroup("extensions");
-	m_Events.Notify(E_RenderEvent::RenderOutlines, new RenderEventData(this, targetFb));
-	api->DebugPopGroup(); // extensions
-
-	api->DebugPopGroup(); // draw overlays
 }
 
 

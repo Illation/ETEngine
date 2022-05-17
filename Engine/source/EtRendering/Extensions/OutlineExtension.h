@@ -22,6 +22,8 @@ class MeshData;
 class OutlineExtension final : public render::I_SceneExtension
 {
 public:
+	static core::HashString const s_ExtensionId;
+
 	//---------------------------------
 	// OutlineExtension::OutlineList
 	//
@@ -42,7 +44,7 @@ public:
 
 	// I_SceneExtension interface
 	//----------------------------
-	core::HashString GetId() const override { return core::HashString("OutlineExtension"); }
+	core::HashString GetId() const override { return s_ExtensionId; }
 
 	// functionality
 	//---------------

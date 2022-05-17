@@ -1,19 +1,18 @@
 #include "stdafx.h"
 #include "SpriteFont.h"
 
-#include "TextureData.h"
-#include "Shader.h"
-
 #include <EtCore/Content/AssetRegistration.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/IO/BinaryReader.h>
 #include <EtCore/Reflection/Registration.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
 
 
 namespace et {
-namespace render {
+namespace gui {
 
 
 //=============
@@ -45,6 +44,39 @@ vec2 FontMetric::GetKerningVec(wchar_t previous) const
 
 
 //---------------------------------
+// SpriteFont::c-tor
+//
+SpriteFont::SpriteFont(SpriteFont const& other)
+{
+	*this = other;
+}
+
+//---------------------------------
+// SpriteFont::perator=
+//
+// deep copy due to unique ptr
+//
+SpriteFont& SpriteFont::operator=(SpriteFont const& other)
+{
+	m_FontName = other.m_FontName;
+	m_FontSize = other.m_FontSize;
+
+	std::copy(std::begin(other.m_CharTable), std::end(other.m_CharTable), std::begin(m_CharTable));
+	m_CharacterCount = other.m_CharacterCount;
+	m_CharacterSpacing = other.m_CharacterSpacing;
+	m_UseKerning = other.m_UseKerning;
+
+	if (other.m_Texture != nullptr)
+	{
+		m_Texture = Create<render::TextureData>(*other.m_Texture);
+	}
+
+	m_TextureAsset = other.m_TextureAsset;
+
+	return *this;
+}
+
+//---------------------------------
 // SpriteFont::IsCharValid
 //
 // Checks if a character is in the range of drawable characters
@@ -52,19 +84,6 @@ vec2 FontMetric::GetKerningVec(wchar_t previous) const
 bool SpriteFont::IsCharValid(const wchar_t& character)
 {
 	return ((character >= s_MinCharId) && (character <= s_MaxCharId));
-}
-
-//---------------------------------
-// SpriteFont::d-tor
-//
-// Destroy the texture data if it was not loaded from the resource managegr
-//
-SpriteFont::~SpriteFont()
-{
-	if (m_TextureAsset == nullptr)
-	{
-		SafeDelete(m_pTexture);
-	}
 }
 
 //---------------------------------
@@ -94,7 +113,6 @@ void SpriteFont::SetMetric(FontMetric const& metric, wchar_t const& character)
 {
 	m_CharTable[character - s_MinCharId] = metric;
 }
-
 
 //===================
 // Font Asset
@@ -158,7 +176,7 @@ SpriteFont* FontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 		return nullptr;
 	}
 
-	SpriteFont* pFont = new SpriteFont();
+	SpriteFont* font = new SpriteFont();
 
 	auto const readBlockHeader = [&binReader](uint8 const block, int32& blockSize) -> bool
 		{
@@ -183,10 +201,10 @@ SpriteFont* FontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 
 	size_t pos = binReader.GetBufferPosition();
 
-	pFont->m_FontSize = binReader.Read<int16>();
+	font->m_FontSize = binReader.Read<int16>();
 	binReader.SetBufferPosition(pos + 14u);
 
-	pFont->m_FontName = binReader.ReadNullString();
+	font->m_FontName = binReader.ReadNullString();
 
 	binReader.SetBufferPosition(pos + static_cast<size_t>(block1Size));
 
@@ -227,10 +245,8 @@ SpriteFont* FontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 	std::string const pn = binReader.ReadNullString();
 	ET_ASSERT(!pn.empty(), "SpriteFont(.fnt): Invalid Font Sprite [Empty]");
 
-	pFont->m_TextureAsset = core::ResourceManager::Instance()->GetAssetData<TextureData>(core::HashString(pn.c_str()));
-	pFont->m_pTexture = pFont->m_TextureAsset.get();
-
-	ET_ASSERT(pFont->m_pTexture->GetResolution() == ivec2(static_cast<int32>(texWidth), static_cast<int32>(texHeight)));
+	font->m_TextureAsset = core::ResourceManager::Instance()->GetAssetData<render::TextureData>(core::HashString(pn.c_str()));
+	ET_ASSERT(font->m_TextureAsset->GetResolution() == ivec2(static_cast<int32>(texWidth), static_cast<int32>(texHeight)));
 
 	binReader.SetBufferPosition(pos + static_cast<size_t>(block3Size));
 
@@ -246,21 +262,21 @@ SpriteFont* FontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 	pos = binReader.GetBufferPosition();
 
 	auto numChars = block4Size / 20;
-	pFont->m_CharacterCount = numChars;
+	font->m_CharacterCount = numChars;
 
 	for (int32 i = 0; i < numChars; i++)
 	{
 		size_t const posChar = binReader.GetBufferPosition();
 		wchar_t const charId = (wchar_t)(binReader.Read<uint32>());
 
-		if (!(pFont->IsCharValid(charId)))
+		if (!(font->IsCharValid(charId)))
 		{
 			LOG("SpriteFont::Load > SpriteFont(.fnt): Invalid Character", core::LogLevel::Warning);
 			binReader.SetBufferPosition(posChar + 20u);
 		}
 		else
 		{
-			auto metric = &(pFont->GetMetric(charId));
+			auto metric = &(font->GetMetric(charId));
 			metric->IsValid = true;
 			metric->Character = charId;
 			auto xPos = binReader.Read<uint16>();
@@ -304,7 +320,7 @@ SpriteFont* FontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 
 		int32 const numKerningPairs = block5Size / 10;
 		
-		pFont->m_UseKerning = true;
+		font->m_UseKerning = true;
 
 		for (int32 i = 0; i < numKerningPairs; i++)
 		{
@@ -312,7 +328,7 @@ SpriteFont* FontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 			wchar_t const second = static_cast<wchar_t>(binReader.Read<uint32>());
 			int16 const amount = binReader.Read<int16>();
 
-			FontMetric& metric = pFont->GetMetric(first);
+			FontMetric& metric = font->GetMetric(first);
 			if (metric.IsValid)
 			{
 				ET_ASSERT(metric.Kerning.find(second) == metric.Kerning.cend());
@@ -321,9 +337,9 @@ SpriteFont* FontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 		}
 	}
 
-	return pFont;
+	return font;
 }
 
 
-} // namespace render
+} // namespace gui
 } // namespace et

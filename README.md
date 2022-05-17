@@ -20,7 +20,12 @@ Therefore, while breaking changes are usually implemented in separate branches, 
 
 ***********************************************************************************
 
-Discuss it on [Discord](https://discord.gg/PZc37qPwVC)!
+<img align="left" style="padding-right:10px;" src="./doc/etengine_logo.png" alt="PBR" width="10%"/>
+</br>
+
+#### Discuss it on [Discord](https://discord.gg/PZc37qPwVC)!
+
+</br>
 
 ***********************************************************************************
 

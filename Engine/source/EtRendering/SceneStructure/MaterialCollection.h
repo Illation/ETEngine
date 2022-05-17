@@ -1,7 +1,8 @@
 #pragma once
+#include "NodeIdFwd.h"
+
 #include <EtMath/Geometry.h>
 
-#include <EtCore/Containers/slot_map.h>
 #include <EtCore/Content/AssetPointer.h>
 
 #include <EtRendering/GraphicsContext/GraphicsTypes.h>
@@ -13,7 +14,6 @@ namespace render {
 
 class ShaderData;
 class I_Material;
-typedef core::slot_map<mat4>::id_type T_NodeId;
 
 
 //----------------------

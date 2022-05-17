@@ -50,7 +50,7 @@ bool EditableFontAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	// Create shader data
 	SetData(LoadTtf(data));
-	render::SpriteFont* const fontData = GetData();
+	gui::SpriteFont* const fontData = GetData();
 
 	if (fontData == nullptr)
 	{
@@ -67,7 +67,7 @@ bool EditableFontAsset::LoadFromMemory(std::vector<uint8> const& data)
 void EditableFontAsset::SetupRuntimeAssetsInternal()
 {
 	// #todo: replace file extension with bmf once assets aren't referenced with load data name
-	render::FontAsset* const mainAsset = new render::FontAsset(*static_cast<render::FontAsset*>(m_Asset));
+	gui::FontAsset* const mainAsset = new gui::FontAsset(*static_cast<gui::FontAsset*>(m_Asset));
 	ET_ASSERT(core::FileUtil::ExtractExtension(mainAsset->GetName()) == s_FontFileExt);
 
 	m_RuntimeAssets.emplace_back(mainAsset, true);
@@ -95,7 +95,7 @@ bool EditableFontAsset::GenerateInternal(BuildConfiguration const& buildConfig, 
 
 	// Load the font from TTF
 	//------------------------
-	render::SpriteFont* const font = LoadTtf(m_Asset->GetLoadData());
+	gui::SpriteFont* const font = LoadTtf(m_Asset->GetLoadData());
 
 	// Write Data
 	//--------------------
@@ -153,7 +153,7 @@ bool EditableFontAsset::GenerateInternal(BuildConfiguration const& buildConfig, 
 //
 // Rasterizes a ttf font into a SDF texture and generates SpriteFont data from it
 //
-render::SpriteFont* EditableFontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
+gui::SpriteFont* EditableFontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 {
 	FT_Library ft;
 	if (FT_Init_FreeType(&ft))
@@ -169,12 +169,12 @@ render::SpriteFont* EditableFontAsset::LoadTtf(const std::vector<uint8>& binaryC
 
 	FT_Set_Pixel_Sizes(face, 0, m_FontSize);
 
-	render::SpriteFont* pFont = new render::SpriteFont();
-	pFont->m_FontSize = static_cast<int16>(m_FontSize);
-	pFont->m_FontName = std::string(face->family_name) + " - " + face->style_name;
-	pFont->m_CharacterCount = face->num_glyphs;
+	gui::SpriteFont* font = new gui::SpriteFont();
+	font->m_FontSize = static_cast<int16>(m_FontSize);
+	font->m_FontName = std::string(face->family_name) + " - " + face->style_name;
+	font->m_CharacterCount = face->num_glyphs;
 
-	pFont->m_UseKerning = FT_HAS_KERNING(face) != 0;
+	font->m_UseKerning = FT_HAS_KERNING(face) != 0;
 
 	//Atlasing helper variables
 	ivec2 startPos[4] = { ivec2(0), ivec2(0), ivec2(0), ivec2(0) };
@@ -187,17 +187,17 @@ render::SpriteFont* EditableFontAsset::LoadTtf(const std::vector<uint8>& binaryC
 	uint32 totPadding = m_Padding + m_Spread;
 
 	//Load individual character metrics
-	std::map<int32, render::FontMetric*> characters;
-	for (int32 c = 0; c < render::SpriteFont::s_CharCount - 1; c++)
+	std::map<int32, gui::FontMetric*> characters;
+	for (int32 c = 0; c < gui::SpriteFont::s_CharCount - 1; c++)
 	{
-		render::FontMetric* metric = &(pFont->GetMetric(static_cast<wchar_t>(c)));
+		gui::FontMetric* metric = &(font->GetMetric(static_cast<wchar_t>(c)));
 		metric->Character = static_cast<wchar_t>(c);
 
 		uint32 glyphIdx = FT_Get_Char_Index(face, c);
 
-		if (pFont->m_UseKerning && glyphIdx)
+		if (font->m_UseKerning && glyphIdx)
 		{
-			for (int32 previous = 0; previous < render::SpriteFont::s_CharCount - 1; previous++)
+			for (int32 previous = 0; previous < gui::SpriteFont::s_CharCount - 1; previous++)
 			{
 				FT_Vector delta;
 
@@ -206,7 +206,7 @@ render::SpriteFont* EditableFontAsset::LoadTtf(const std::vector<uint8>& binaryC
 
 				if (delta.x) // we ignore vertical kerning because the BMF format doesn't support it
 				{
-					metric->Kerning[static_cast<wchar_t>(previous)] = vec2((float)delta.x / render::FontAsset::s_KerningAdjustment, 0.f); 
+					metric->Kerning[static_cast<wchar_t>(previous)] = vec2((float)delta.x / gui::FontAsset::s_KerningAdjustment, 0.f);
 				}
 			}
 		}
@@ -278,10 +278,12 @@ render::SpriteFont* EditableFontAsset::LoadTtf(const std::vector<uint8>& binaryC
 	render::TextureParameters params;
 	PopulateTextureParams(params);
 
-	render::TextureData* const texture = new render::TextureData(render::E_ColorFormat::RGBA16f, ivec2(texWidth, texHeight));
-	texture->AllocateStorage();
-	texture->SetParameters(params);
-	pFont->m_pTexture = texture;
+	{
+		UniquePtr<render::TextureData> texture = Create<render::TextureData>(render::E_ColorFormat::RGBA16f, ivec2(texWidth, texHeight));
+		texture->AllocateStorage();
+		texture->SetParameters(params);
+		font->m_Texture = std::move(texture);
+	}
 
 	render::T_FbLoc captureFBO;
 	render::T_RbLoc captureRBO;
@@ -294,7 +296,7 @@ render::SpriteFont* EditableFontAsset::LoadTtf(const std::vector<uint8>& binaryC
 
 	api->SetRenderbufferStorage(render::E_RenderBufferFormat::Depth24, ivec2(texWidth, texHeight));
 	api->LinkRenderbufferToFbo(render::E_RenderBufferFormat::Depth24, captureRBO);
-	api->LinkTextureToFbo2D(0, pFont->m_pTexture->GetLocation(), 0);
+	api->LinkTextureToFbo2D(0, font->m_Texture->GetLocation(), 0);
 
 	ivec2 vpPos, vpSize;
 	api->GetViewport(vpPos, vpSize);
@@ -371,7 +373,7 @@ render::SpriteFont* EditableFontAsset::LoadTtf(const std::vector<uint8>& binaryC
 	api->DeleteRenderBuffers(1, &captureRBO);
 	api->DeleteFramebuffers(1, &captureFBO);
 
-	return pFont;
+	return font;
 }
 
 //------------------------------------------
@@ -401,7 +403,7 @@ void EditableFontAsset::PopulateTextureParams(render::TextureParameters& params)
 //
 // Font asset descriptor written in this file format: http://www.angelcode.com/products/bmfont/doc/file_format.html
 //
-bool EditableFontAsset::GenerateBinFontData(std::vector<uint8>& data, render::SpriteFont const* const font, std::string const& atlasName)
+bool EditableFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::SpriteFont const* const font, std::string const& atlasName)
 {
 	// struct definitions
 	//--------------------
@@ -448,17 +450,17 @@ bool EditableFontAsset::GenerateBinFontData(std::vector<uint8>& data, render::Sp
 
 	// 4, 5
 
-	std::vector<render::FontMetric> metrics;
+	std::vector<gui::FontMetric> metrics;
 	std::vector<KerningPair> kerningPairs;
-	for (size_t charIdx = 0u; charIdx < render::SpriteFont::s_CharCount; ++charIdx)
+	for (size_t charIdx = 0u; charIdx < gui::SpriteFont::s_CharCount; ++charIdx)
 	{
-		render::FontMetric const& metric = font->m_CharTable[charIdx];
+		gui::FontMetric const& metric = font->m_CharTable[charIdx];
 		if (metric.IsValid)
 		{
 			metrics.push_back(metric);
 			for (auto const& el : metric.Kerning)
 			{
-				kerningPairs.emplace_back(metric.Character, el.first, static_cast<int16>(el.second.x * render::FontAsset::s_KerningAdjustment));
+				kerningPairs.emplace_back(metric.Character, el.first, static_cast<int16>(el.second.x * gui::FontAsset::s_KerningAdjustment));
 			}
 		}
 	}
@@ -535,7 +537,7 @@ bool EditableFontAsset::GenerateBinFontData(std::vector<uint8>& data, render::Sp
 	//---------
 	writeBlockHeader(binWriter, 4u, block4Size);
 
-	for (render::FontMetric const& metric : metrics)
+	for (gui::FontMetric const& metric : metrics)
 	{
 		binWriter.Write(static_cast<uint32>(metric.Character)); // id
 

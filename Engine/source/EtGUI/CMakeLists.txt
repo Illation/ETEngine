@@ -1,8 +1,8 @@
 
 
-####################
-# Framework Library
-####################
+#########################
+# User Interface Library
+#########################
 
 
 # files in this library
@@ -15,19 +15,19 @@ precompiled_headers(${sources})
 target_definitions()
 
 # library and dependancies
-message(STATUS "Adding target: EtFramework")
-add_library(EtFramework ${projectFiles})
-targetCompileOptions(EtFramework)
+message(STATUS "Adding target: EtGUI")
+add_library(EtGUI ${projectFiles})
+targetCompileOptions(EtGUI)
 
 assign_source_group(${projectFiles})
-assignIdeFolder(EtFramework Engine)
-libOutputDirectories(EtFramework)
+assignIdeFolder(EtGUI Engine)
+libOutputDirectories(EtGUI)
 
-target_link_libraries (EtFramework NothingsStb EtGUI EtRendering EtMath EtCore)
+target_link_libraries (EtGUI EtRendering EtMath EtCore)
 
 # library includes
 libIncludeDirs()
 
 # general include dirs
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/..")
-target_include_directories (EtFramework PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories (EtGUI PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

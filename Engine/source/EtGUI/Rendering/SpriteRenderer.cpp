@@ -9,7 +9,7 @@
 
 
 namespace et {
-namespace render {
+namespace gui {
 
 
 //====================
@@ -27,21 +27,15 @@ namespace render {
 //
 SpriteRenderer::~SpriteRenderer()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
 	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
 	{
-		Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
+		render::Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
 	}
 
 	api->DeleteVertexArray(m_VAO);
 	api->DeleteBuffer(m_VBO);
-
-	m_Sprites.clear();
-	m_Textures.clear();
-
-	delete m_EmptyTex; 
-	m_EmptyTex = nullptr;
 }
 
 //---------------------------------
@@ -49,9 +43,9 @@ SpriteRenderer::~SpriteRenderer()
 //
 void SpriteRenderer::Initialize()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
-	m_Shader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/PostSprite.glsl"));
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostSprite.glsl"));
 
 	//Generate buffers and arrays
 	m_VAO = api->CreateVertexArray();
@@ -59,10 +53,10 @@ void SpriteRenderer::Initialize()
 
 	//bind
 	api->BindVertexArray(m_VAO);
-	api->BindBuffer(E_BufferType::Vertex, m_VBO);
+	api->BindBuffer(render::E_BufferType::Vertex, m_VBO);
 
 	//set data and attributes
-	api->SetBufferData(E_BufferType::Vertex, m_BufferSize, nullptr, E_UsageHint::Dynamic);
+	api->SetBufferData(render::E_BufferType::Vertex, m_BufferSize, nullptr, render::E_UsageHint::Dynamic);
 
 	//input layout
 	api->SetVertexAttributeArrayEnabled(0, true);
@@ -71,26 +65,27 @@ void SpriteRenderer::Initialize()
 	api->SetVertexAttributeArrayEnabled(3, true);
 
 	int32 const vertSize = sizeof(SpriteVertex);
-	api->DefineVertexAttribIPointer(0, 1, E_DataType::UInt, vertSize, offsetof(SpriteVertex, TextureId));
-	api->DefineVertexAttributePointer(1, 4, E_DataType::Float, false, vertSize, offsetof(SpriteVertex, TransformData));
-	api->DefineVertexAttributePointer(2, 4, E_DataType::Float, false, vertSize, offsetof(SpriteVertex, TransformData2));
-	api->DefineVertexAttributePointer(3, 4, E_DataType::Float, false, vertSize, offsetof(SpriteVertex, Color));
+	api->DefineVertexAttribIPointer(0, 1, render::E_DataType::UInt, vertSize, offsetof(SpriteVertex, TextureId));
+	api->DefineVertexAttributePointer(1, 4, render::E_DataType::Float, false, vertSize, offsetof(SpriteVertex, TransformData));
+	api->DefineVertexAttributePointer(2, 4, render::E_DataType::Float, false, vertSize, offsetof(SpriteVertex, TransformData2));
+	api->DefineVertexAttributePointer(3, 4, render::E_DataType::Float, false, vertSize, offsetof(SpriteVertex, Color));
 
 	//unbind
-	api->BindBuffer(E_BufferType::Vertex, 0);
+	api->BindBuffer(render::E_BufferType::Vertex, 0);
 	api->BindVertexArray(0);
 
 	CalculateTransform();
 
 	//Create empty dummy texture
-	m_EmptyTex = new TextureData(E_ColorFormat::RGB, ivec2(1));
-	m_EmptyTex->UploadData(reinterpret_cast<void const*>(vec4(1).data.data()), E_ColorFormat::RGB, E_DataType::Float, 0u);
+	m_EmptyTex = Create<render::TextureData>(render::E_ColorFormat::RGB, ivec2(1));
+	m_EmptyTex->UploadData(reinterpret_cast<void const*>(vec4(1).data.data()), render::E_ColorFormat::RGB, render::E_DataType::Float, 0u);
 
-	TextureParameters params;
+	render::TextureParameters params;
 	m_EmptyTex->SetParameters(params);
 	m_EmptyTex->GenerateMipMaps();
 
-	m_VPCallbackId = Viewport::GetCurrentViewport()->GetEventDispatcher().Register(render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
+	m_VPCallbackId = render::Viewport::GetCurrentViewport()->GetEventDispatcher().Register(
+		render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
 		[this](render::T_ViewportEventFlags const, render::ViewportEventData const* const) -> void
 		{
 			OnWindowResize();
@@ -106,7 +101,7 @@ void SpriteRenderer::Initialize()
 //
 // Places a new Sprite in the Draw queue for later rendering, sets up its vertex data
 //
-void SpriteRenderer::Draw(TextureData const* tex,
+void SpriteRenderer::Draw(Ptr<render::TextureData const> tex,
 	vec2 const& position,
 	vec4 const& color,
 	vec2 const& pivot,
@@ -147,13 +142,13 @@ void SpriteRenderer::Draw(TextureData const* tex,
 	case E_ScalingMode::Screen:
 	{
 		ivec2 viewPos, viewSize;
-		ContextHolder::GetRenderContext()->GetViewport(viewPos, viewSize);
+		render::ContextHolder::GetRenderContext()->GetViewport(viewPos, viewSize);
 		finalScale = scale * math::vecCast<float>(viewSize);
 	}
 	break;
 
 	case E_ScalingMode::Texture:
-		finalScale = scale * math::vecCast<float>(tex->GetResolution()) / RenderingSystems::Instance()->GetGraphicsSettings().TextureScaleFactor;
+		finalScale = scale * math::vecCast<float>(tex->GetResolution()) / render::RenderingSystems::Instance()->GetGraphicsSettings().TextureScaleFactor;
 		break;
 
 	case E_ScalingMode::TextureAbs:
@@ -168,7 +163,7 @@ void SpriteRenderer::Draw(TextureData const* tex,
 	vertex.TransformData2 = vec4(pivot, finalScale);
 	vertex.Color = color;
 
-	if (tex->GetTargetType() == E_TextureType::Texture3D)
+	if (tex->GetTargetType() == render::E_TextureType::Texture3D)
 	{
 		m_Layer = layer;
 	}
@@ -198,7 +193,7 @@ void SpriteRenderer::Draw()
 		return;
 	}
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
 	UpdateBuffer();
 
@@ -220,8 +215,8 @@ void SpriteRenderer::Draw()
 			continue;
 		}
 
-		TextureData const* const texData = m_Textures[m_Sprites[i].TextureId];
-		if (texData->GetTargetType() == E_TextureType::Texture2D)
+		render::TextureData const* const texData = m_Textures[m_Sprites[i].TextureId].Get();
+		if (texData->GetTargetType() == render::E_TextureType::Texture2D)
 		{
 			m_Shader->Upload("uDraw3D"_hash, false);
 			m_Shader->Upload("uTexture"_hash, texData);
@@ -234,7 +229,7 @@ void SpriteRenderer::Draw()
 		}
 
 		//Draw
-		api->DrawArrays(E_DrawMode::Points, batchOffset, batchSize);
+		api->DrawArrays(render::E_DrawMode::Points, batchOffset, batchSize);
 
 		batchOffset += batchSize;
 		batchSize = 1;
@@ -257,13 +252,13 @@ void SpriteRenderer::Draw()
 //
 void SpriteRenderer::UpdateBuffer()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);
 
 	//Send the vertex buffer again
-	api->BindBuffer(E_BufferType::Vertex, m_VBO);
+	api->BindBuffer(render::E_BufferType::Vertex, m_VBO);
 
 	bool bufferResize = m_Sprites.size() * sizeof( SpriteVertex ) > m_BufferSize;
 	if(!m_VBO || bufferResize) //first creation or resize
@@ -273,17 +268,17 @@ void SpriteRenderer::UpdateBuffer()
 			m_BufferSize = (uint32)m_Sprites.size() * sizeof( SpriteVertex );
 		}
 
-		api->SetBufferData(E_BufferType::Vertex, m_BufferSize, m_Sprites.data(), E_UsageHint::Dynamic);
+		api->SetBufferData(render::E_BufferType::Vertex, m_BufferSize, m_Sprites.data(), render::E_UsageHint::Dynamic);
 	}
 	else
 	{
-		void* p = api->MapBuffer(E_BufferType::Vertex, E_AccessMode::Write);
+		void* p = api->MapBuffer(render::E_BufferType::Vertex, render::E_AccessMode::Write);
 		memcpy( p, m_Sprites.data(), m_Sprites.size() * sizeof( SpriteVertex ) );
-		api->UnmapBuffer(E_BufferType::Vertex);
+		api->UnmapBuffer(render::E_BufferType::Vertex);
 	}
 
 
-	api->BindBuffer(E_BufferType::Vertex, 0);
+	api->BindBuffer(render::E_BufferType::Vertex, 0);
 
 	//Done Modifying
 	api->BindVertexArray(0);
@@ -297,7 +292,7 @@ void SpriteRenderer::UpdateBuffer()
 void SpriteRenderer::CalculateTransform()
 {
 	ivec2 viewPos, viewSize;
-	ContextHolder::GetRenderContext()->GetViewport(viewPos, viewSize);
+	render::ContextHolder::GetRenderContext()->GetViewport(viewPos, viewSize);
 
 	int32 const width = viewSize.x;
 	int32 const height = viewSize.y;
@@ -313,5 +308,5 @@ void SpriteRenderer::CalculateTransform()
 }
 
 
-} // namespace render
+} // namespace gui
 } // namespace et

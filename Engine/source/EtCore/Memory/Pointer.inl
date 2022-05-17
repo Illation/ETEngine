@@ -146,6 +146,30 @@ Ptr<TDataType>& Ptr<TDataType>::operator=(WeakPtr<TOtherType> const& weak)
 }
 
 
+// From Asset
+//////////////
+
+//---------------------------------
+// Ptr::c-tor
+//
+template <typename TDataType>
+template <typename TOtherType>
+Ptr<TDataType>::Ptr(AssetPtr<TOtherType> const& asset)
+	: m_Ptr(asset.get())
+{ }
+
+//---------------------------------
+// Ptr::operator=
+//
+template <typename TDataType>
+template <typename TOtherType>
+Ptr<TDataType>& Ptr<TDataType>::operator=(AssetPtr<TOtherType> const& asset)
+{
+	m_Ptr = asset.get();
+	return *this;
+}
+
+
 // move from refptr
 ////////////////////
 
@@ -313,6 +337,18 @@ bool operator==(WeakPtr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2)
 	return (ptr1.Get() == ptr2.Get());
 }
 
+template <typename TDataType, typename TOtherType>
+bool operator==(Ptr<TDataType> const& ptr1, AssetPtr<TOtherType> const& ptr2)
+{
+	return (ptr1.Get() == ptr2.get());
+}
+
+template <typename TDataType, typename TOtherType>
+bool operator==(AssetPtr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2)
+{
+	return (ptr1.get() == ptr2.Get());
+}
+
 template <typename TDataType>
 bool operator!=(Ptr<TDataType> const& ptr, std::nullptr_t)
 {
@@ -363,6 +399,18 @@ bool operator!=(Ptr<TDataType> const& ptr1, WeakPtr<TOtherType> const& ptr2)
 
 template <typename TDataType, typename TOtherType>
 bool operator!=(WeakPtr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2)
+{
+	return !(ptr1 == ptr2);
+}
+
+template <typename TDataType, typename TOtherType>
+bool operator!=(Ptr<TDataType> const& ptr1, AssetPtr<TOtherType> const& ptr2)
+{
+	return !(ptr1 == ptr2);
+}
+
+template <typename TDataType, typename TOtherType>
+bool operator!=(AssetPtr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2)
 {
 	return !(ptr1 == ptr2);
 }

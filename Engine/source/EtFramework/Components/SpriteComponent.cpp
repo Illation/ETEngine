@@ -3,6 +3,8 @@
 
 #include <EtCore/Reflection/Registration.h>
 
+#include <EtGUI/GuiExtension.h>
+
 #include <EtFramework/Components/TransformComponent.h>
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
@@ -40,7 +42,7 @@ void SpriteComponent::OnComponentAdded(EcsController& controller, SpriteComponen
 {
 	ET_ASSERT(component.m_Id == core::INVALID_SLOT_ID);
 
-	component.m_Id = UnifiedScene::Instance().GetRenderScene().AddSprite(component.m_TextureAssetId, 
+	component.m_Id = UnifiedScene::Instance().GetGuiExtension()->AddSprite(component.m_TextureAssetId,
 		controller.GetComponent<TransformComponent>(entity).GetNodeId(), 
 		component.m_Pivot,
 		component.m_Color);
@@ -58,7 +60,7 @@ void SpriteComponent::OnComponentRemoved(EcsController& controller, SpriteCompon
 
 	if (component.m_Id != core::INVALID_SLOT_ID)
 	{
-		UnifiedScene::Instance().GetRenderScene().RemoveSprite(component.m_Id);
+		UnifiedScene::Instance().GetGuiExtension()->RemoveSprite(component.m_Id);
 	}
 }
 
@@ -79,7 +81,7 @@ void SpriteComponent::SetTexture(core::HashString const textureAsset)
 	m_TextureAssetId = textureAsset;
 	if (m_Id != core::INVALID_SLOT_ID)
 	{
-		UnifiedScene::Instance().GetRenderScene().UpdateSpriteTexture(m_Id, m_TextureAssetId);
+		UnifiedScene::Instance().GetGuiExtension()->UpdateSpriteTexture(m_Id, m_TextureAssetId);
 	}
 }
 
@@ -91,7 +93,7 @@ void SpriteComponent::SetPivot(vec2 const& pivot)
 	m_Pivot = pivot;
 	if (m_Id != core::INVALID_SLOT_ID)
 	{
-		UnifiedScene::Instance().GetRenderScene().UpdateSpritePivot(m_Id, m_Pivot);
+		UnifiedScene::Instance().GetGuiExtension()->UpdateSpritePivot(m_Id, m_Pivot);
 	}
 }
 
@@ -103,7 +105,7 @@ void SpriteComponent::SetColor(vec4 const& color)
 	m_Color = color;
 	if (m_Id != core::INVALID_SLOT_ID)
 	{
-		UnifiedScene::Instance().GetRenderScene().UpdateSpriteColor(m_Id, m_Color);
+		UnifiedScene::Instance().GetGuiExtension()->UpdateSpriteColor(m_Id, m_Color);
 	}
 }
 

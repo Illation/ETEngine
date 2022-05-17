@@ -5,8 +5,10 @@
 #include <gdk/gdk.h>
 
 #include <EtRendering/GraphicsContext/Viewport.h>
-#include <EtRendering/GraphicsTypes/SpriteFont.h>
 #include <EtRendering/Extensions/OutlineRenderer.h>
+
+#include <EtGUI/Rendering/GuiRenderer.h>
+#include <EtGUI/Content/SpriteFont.h>
 
 #include <EtFramework/SceneGraph/SceneEvents.h>
 
@@ -71,13 +73,14 @@ private:
 	render::I_RenderArea* m_RenderArea = nullptr;
 
 	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
+	gui::GuiRenderer m_GuiRenderer;
 	render::OutlineRenderer m_OutlineRenderer;
 
 	fw::T_SceneEventCallbackId m_SceneInitCallback = fw::T_SceneEventDispatcher::INVALID_ID;
 
 	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
 
-	AssetPtr<render::SpriteFont> m_DebugFont;
+	AssetPtr<gui::SpriteFont> m_DebugFont;
 	bool m_DrawDebugInfo = true;
 
 	bool m_IsInitialized = false;

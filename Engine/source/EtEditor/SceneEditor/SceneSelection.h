@@ -77,7 +77,7 @@ private:
 	EntityIdRenderer m_IdRenderer;
 	bool m_IsIdRendererInitialized = false;
 
-	render::OutlineExtension* m_OutlineExtension = nullptr;
+	Ptr<render::OutlineExtension> m_OutlineExtension;
 };
 
 

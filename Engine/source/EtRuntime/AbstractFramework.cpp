@@ -10,7 +10,6 @@
 #include <EtRendering/GraphicsContext/Viewport.h>
 #include <EtRendering/GraphicsContext/ContextHolder.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
-#include <EtRendering/SceneRendering/SplashScreenRenderer.h>
 #include <EtRendering/SceneRendering/ShadowRenderer.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
@@ -19,6 +18,7 @@
 #include <EtFramework/Components/CameraComponent.h>
 #include <EtFramework/Config/BootConfig.h>
 
+#include <EtRuntime/Rendering/SplashScreenRenderer.h>
 #include <EtRuntime/Core/GlfwEventManager.h>
 #include <EtRuntime/Core/PackageResourceManager.h>
 
@@ -37,6 +37,8 @@ AbstractFramework::~AbstractFramework()
 	GlfwEventManager::DestroyInstance();
 	m_RenderWindow.GetArea().Uninitialize();
 	SafeDelete(m_Viewport);
+
+	m_GuiRenderer.Deinit();
 	SafeDelete(m_SceneRenderer);
 
 	fw::UnifiedScene::Instance().UnloadScene();
@@ -118,7 +120,7 @@ void AbstractFramework::Run()
 
 	// init rendering target
 	m_Viewport = new render::Viewport(&m_RenderWindow.GetArea());
-	m_SplashScreenRenderer = new render::SplashScreenRenderer();
+	m_SplashScreenRenderer = new rt::SplashScreenRenderer();
 	m_Viewport->SetRenderer(m_SplashScreenRenderer);
 	render::ContextHolder::Instance().CreateMainRenderContext(&m_RenderWindow); // also initializes the viewport and its renderer
 
@@ -161,6 +163,7 @@ void AbstractFramework::Run()
 	// scene rendering
 	m_SceneRenderer = new render::ShadedSceneRenderer(&(fw::UnifiedScene::Instance().GetRenderScene()));
 	m_SceneRenderer->InitRenderingSystems();
+	m_GuiRenderer.Init(ToPtr(&(m_SceneRenderer->GetEventDispatcher())));
 
 	// cause the loop to continue
 	RegisterAsTriggerer();

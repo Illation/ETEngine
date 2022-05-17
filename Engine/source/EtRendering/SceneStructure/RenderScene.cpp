@@ -22,17 +22,6 @@ namespace render {
 
 
 //----------------------
-// Scene::d-tor
-//
-Scene::~Scene()
-{
-	for (I_SceneExtension* const ext : m_Extensions)
-	{
-		delete ext;
-	}
-}
-
-//----------------------
 // Scene::AddNode
 //
 // Add a transformation to the scene
@@ -396,61 +385,16 @@ void Scene::RemoveAtmosphere(core::T_SlotId const atmoId)
 	m_AtmosphereInstances.erase(atmoId);
 }
 
-//------------------
-// Scene::AddSprite
-//
-core::T_SlotId Scene::AddSprite(core::HashString const textureId, T_NodeId const node, vec2 const pivot, vec4 const& color)
-{
-	auto sprite = m_Sprites.insert(Sprite());
-
-	sprite.first->node = node;
-	sprite.first->pivot = pivot;
-	sprite.first->color = color;
-	sprite.first->texture = core::ResourceManager::Instance()->GetAssetData<TextureData>(textureId);
-
-	return sprite.second;
-}
-
-//----------------------------
-// Scene::UpdateSpriteTexture
-//
-void Scene::UpdateSpriteTexture(core::T_SlotId const spriteId, core::HashString const textureId)
-{
-	m_Sprites[spriteId].texture = core::ResourceManager::Instance()->GetAssetData<TextureData>(textureId);
-}
-
-//--------------------------
-// Scene::UpdateSpritePivot
-//
-void Scene::UpdateSpritePivot(core::T_SlotId const spriteId, vec2 const pivot)
-{
-	m_Sprites[spriteId].pivot = pivot;
-}
-
-//--------------------------
-// Scene::UpdateSpriteColor
-//
-void Scene::UpdateSpriteColor(core::T_SlotId const spriteId, vec4 const& color)
-{
-	m_Sprites[spriteId].color = color;
-}
-
-//---------------------
-// Scene::RemoveSprite
-//
-void Scene::RemoveSprite(core::T_SlotId const spriteId)
-{
-	m_Sprites.erase(spriteId);
-}
-
 //---------------------
 // Scene::AddExtension
 //
-void Scene::AddExtension(I_SceneExtension* const ext)
+// Takes ownership
+//
+void Scene::AddExtension(UniquePtr<I_SceneExtension>& ext)
 {
 	ET_ASSERT(GetExtension(ext->GetId()) == nullptr, "Extension was already added!");
 
-	m_Extensions.emplace_back(ext);
+	m_Extensions.emplace_back(std::move(ext));
 }
 
 //-----------------
@@ -499,7 +443,7 @@ render::Atmosphere const& Scene::GetAtmosphere(core::HashString const atmoId) co
 //
 render::I_SceneExtension* Scene::GetExtension(core::HashString const extensionId) const
 {
-	auto foundIt = std::find_if(m_Extensions.cbegin(), m_Extensions.cend(), [extensionId](I_SceneExtension const* const ext)
+	auto foundIt = std::find_if(m_Extensions.cbegin(), m_Extensions.cend(), [extensionId](UniquePtr<I_SceneExtension> const& ext)
 		{
 			return ext->GetId() == extensionId;
 		});
@@ -509,7 +453,7 @@ render::I_SceneExtension* Scene::GetExtension(core::HashString const extensionId
 		return nullptr;
 	}
 
-	return *foundIt;
+	return (*foundIt).Get();
 }
 
 //--------------------------

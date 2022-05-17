@@ -3,13 +3,14 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/GraphicsTypes/SpriteFont.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 
+#include <EtGUI/Content/SpriteFont.h>
+
 
 namespace et {
-namespace render {
+namespace gui {
 
 
 //=============================
@@ -42,11 +43,11 @@ TextRenderer::TextCache::TextCache(std::string const& text, vec2 const pos, vec4
 //
 TextRenderer::~TextRenderer()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
 	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
 	{
-		Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
+		render::Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
 	}
 
 	api->DeleteVertexArray(m_VAO);
@@ -60,9 +61,9 @@ TextRenderer::~TextRenderer()
 //
 void TextRenderer::Initialize()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
-	m_pTextShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/PostText.glsl"));
+	m_pTextShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostText.glsl"));
 
 	//Generate buffers and arrays
 	m_VAO = api->CreateVertexArray();
@@ -71,10 +72,10 @@ void TextRenderer::Initialize()
 
 	//bind
 	api->BindVertexArray(m_VAO);
-	api->BindBuffer(E_BufferType::Vertex, m_VBO);
+	api->BindBuffer(render::E_BufferType::Vertex, m_VBO);
 
 	//set data and attributes
-	api->SetBufferData(E_BufferType::Vertex, m_BufferSize, nullptr, E_UsageHint::Dynamic);
+	api->SetBufferData(render::E_BufferType::Vertex, m_BufferSize, nullptr, render::E_UsageHint::Dynamic);
 
 	//input layout
 
@@ -86,20 +87,21 @@ void TextRenderer::Initialize()
 	api->SetVertexAttributeArrayEnabled(5, true);
 
 	int32 const vertSize = sizeof(TextVertex);
-	api->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, vertSize, offsetof(TextVertex, Position));
-	api->DefineVertexAttributePointer(1, 4, E_DataType::Float, false, vertSize, offsetof(TextVertex, Color));
-	api->DefineVertexAttributePointer(2, 2, E_DataType::Float, false, vertSize, offsetof(TextVertex, TexCoord));
-	api->DefineVertexAttributePointer(3, 2, E_DataType::Float, false, vertSize, offsetof(TextVertex, CharacterDimension));
-	api->DefineVertexAttributePointer(4, 1, E_DataType::Float, false, vertSize, offsetof(TextVertex, SizeMult));
-	api->DefineVertexAttribIPointer(5, 1, E_DataType::UInt, vertSize, offsetof(TextVertex, ChannelId));
+	api->DefineVertexAttributePointer(0, 3, render::E_DataType::Float, false, vertSize, offsetof(TextVertex, Position));
+	api->DefineVertexAttributePointer(1, 4, render::E_DataType::Float, false, vertSize, offsetof(TextVertex, Color));
+	api->DefineVertexAttributePointer(2, 2, render::E_DataType::Float, false, vertSize, offsetof(TextVertex, TexCoord));
+	api->DefineVertexAttributePointer(3, 2, render::E_DataType::Float, false, vertSize, offsetof(TextVertex, CharacterDimension));
+	api->DefineVertexAttributePointer(4, 1, render::E_DataType::Float, false, vertSize, offsetof(TextVertex, SizeMult));
+	api->DefineVertexAttribIPointer(5, 1, render::E_DataType::UInt, vertSize, offsetof(TextVertex, ChannelId));
 
 	//unbind
-	api->BindBuffer(E_BufferType::Vertex, 0);
+	api->BindBuffer(render::E_BufferType::Vertex, 0);
 	api->BindVertexArray(0);
 
 	CalculateTransform();
 
-	m_VPCallbackId = Viewport::GetCurrentViewport()->GetEventDispatcher().Register(render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
+	m_VPCallbackId = render::Viewport::GetCurrentViewport()->GetEventDispatcher().Register(
+		render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
 		[this](render::T_ViewportEventFlags const, render::ViewportEventData const* const) -> void
 		{
 			OnWindowResize();
@@ -111,7 +113,7 @@ void TextRenderer::Initialize()
 //
 // Sets the active font and adds it to the queue if it's not there yet
 //
-void TextRenderer::SetFont(SpriteFont const* const font)
+void TextRenderer::SetFont(Ptr<SpriteFont const> const font)
 {
 	auto foundIt = std::find_if(m_QueuedFonts.begin(), m_QueuedFonts.end(), [font](QueuedFont const& queued)
 		{
@@ -218,7 +220,7 @@ void TextRenderer::Draw()
 		return;
 	}
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);
@@ -237,12 +239,12 @@ void TextRenderer::Draw()
 	{
 		if (queued.m_IsAddedToRenderer)
 		{
-			TextureData const* const fontTex = queued.m_Font->GetAtlas();
+			render::TextureData const* const fontTex = queued.m_Font->GetAtlas();
 			m_pTextShader->Upload("fontTex"_hash, fontTex);
 			m_pTextShader->Upload("texSize"_hash, math::vecCast<float>(fontTex->GetResolution())); // #todo: possibly we can just query this in glsl
 
 			//Draw the object
-			api->DrawArrays(E_DrawMode::Points, queued.m_BufferStart, queued.m_BufferSize);
+			api->DrawArrays(render::E_DrawMode::Points, queued.m_BufferStart, queued.m_BufferSize);
 
 			queued.m_IsAddedToRenderer = false;
 		}
@@ -325,15 +327,15 @@ void TextRenderer::UpdateBuffer()
 		}
 	}
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);
 
 	//Send the vertex buffer again
-	api->BindBuffer(E_BufferType::Vertex, m_VBO);
-	api->SetBufferData(E_BufferType::Vertex, static_cast<uint32>(tVerts.size() * sizeof(TextVertex)), tVerts.data(), E_UsageHint::Dynamic);
-	api->BindBuffer(E_BufferType::Vertex, 0);
+	api->BindBuffer(render::E_BufferType::Vertex, m_VBO);
+	api->SetBufferData(render::E_BufferType::Vertex, static_cast<uint32>(tVerts.size() * sizeof(TextVertex)), tVerts.data(), render::E_UsageHint::Dynamic);
+	api->BindBuffer(render::E_BufferType::Vertex, 0);
 
 	//Done Modifying
 	api->BindVertexArray(0);
@@ -349,7 +351,7 @@ void TextRenderer::UpdateBuffer()
 void TextRenderer::CalculateTransform()
 {
 	ivec2 viewPos, viewSize;
-	ContextHolder::GetRenderContext()->GetViewport(viewPos, viewSize);
+	render::ContextHolder::GetRenderContext()->GetViewport(viewPos, viewSize);
 	int32 width = viewSize.x, height = viewSize.y;
 	float scaleX = (width > 0) ? 2.f / width : 0;
 	float scaleY = (height > 0) ? 2.f / height : 0;
@@ -362,5 +364,5 @@ void TextRenderer::CalculateTransform()
 }
 
 
-} // namespace render
+} // namespace gui
 } // namespace et

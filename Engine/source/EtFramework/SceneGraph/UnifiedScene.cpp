@@ -6,6 +6,8 @@
 #include <EtCore/UpdateCycle/Context.h>
 #include <EtCore/Content/ResourceManager.h>
 
+#include <EtGUI/GuiExtension.h>
+
 #include <EtFramework/Physics/BulletETM.h>
 #include <EtFramework/Systems/TransformSystem.h>
 #include <EtFramework/Systems/RigidBodySystem.h>
@@ -46,6 +48,13 @@ UnifiedScene& UnifiedScene::Instance()
 //
 void UnifiedScene::Init()
 {
+	// render scene
+	{
+		UniquePtr<gui::GuiExtension> guiExt = Create<gui::GuiExtension>();
+		m_GuiExtension = ToPtr(guiExt.Get());
+		m_RenderScene.AddExtension(UniquePtr<render::I_SceneExtension>::StaticCast(std::move(guiExt)));
+	}
+
 	// component init / deinint
 	m_Scene.RegisterOnComponentAdded(T_CompEventFn<TransformComponent>(TransformSystem::OnComponentAdded));
 	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<TransformComponent>(TransformSystem::OnComponentRemoved));

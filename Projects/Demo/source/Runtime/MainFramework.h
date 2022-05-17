@@ -6,7 +6,7 @@
 #include <EtRuntime/AbstractFramework.h>
 
 
-namespace et { namespace render {
+namespace et { namespace gui {
 	class SpriteFont;
 } }
 
@@ -40,7 +40,7 @@ private:
 
 	size_t m_CurrentScene = 0u;
 
-	AssetPtr<render::SpriteFont> m_DebugFont;
+	AssetPtr<gui::SpriteFont> m_DebugFont;
 	bool m_DrawDebugInfo = true;
 	bool m_DrawFontAtlas = false;
 };

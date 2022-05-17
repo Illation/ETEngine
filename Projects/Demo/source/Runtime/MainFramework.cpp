@@ -9,9 +9,10 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/GraphicsTypes/SpriteFont.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+
+#include <EtGUI/Content/SpriteFont.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/Audio/AudioManager.h>
@@ -49,7 +50,7 @@ void MainFramework::OnSystemInit()
 void MainFramework::OnInit()
 {
 	// Fonts
-	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<render::SpriteFont>(core::HashString("Fonts/Ubuntu-Regular.ttf"));
+	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<gui::SpriteFont>(core::HashString("Fonts/Ubuntu-Regular.ttf"));
 
 	// scenes
 	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::Activated,
@@ -149,15 +150,12 @@ void MainFramework::OnTick()
 		m_DrawFontAtlas = !m_DrawFontAtlas;
 	}
 
-	render::I_ViewportRenderer* const viewRenderer = render::Viewport::GetCurrentViewport()->GetViewportRenderer();
-	if (viewRenderer != nullptr && viewRenderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
+	if (m_DebugFont != nullptr)
 	{
-		render::ShadedSceneRenderer* const sceneRenderer = static_cast<render::ShadedSceneRenderer*>(viewRenderer);
-
 		if (m_DrawDebugInfo)
 		{
-			render::TextRenderer& textRenderer = sceneRenderer->GetTextRenderer();
-			textRenderer.SetFont(m_DebugFont.get());
+			gui::TextRenderer& textRenderer = m_GuiRenderer.GetTextRenderer();
+			textRenderer.SetFont(m_DebugFont);
 
 			textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
 			textRenderer.DrawText(FS("FPS: %i", PERFORMANCE->GetRegularFPS()), vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 1));
@@ -169,8 +167,8 @@ void MainFramework::OnTick()
 
 		if (m_DrawFontAtlas)
 		{
-			render::SpriteRenderer::E_ScalingMode const scalingMode = render::SpriteRenderer::E_ScalingMode::TextureAbs;
-			sceneRenderer->GetSpriteRenderer().Draw(m_DebugFont->GetAtlas(), vec2(1000, 0), vec4(1), vec2(0), vec2(1), 0, 0, scalingMode);
+			gui::SpriteRenderer::E_ScalingMode const scalingMode = gui::SpriteRenderer::E_ScalingMode::TextureAbs;
+			m_GuiRenderer.GetSpriteRenderer().Draw(ToPtr(m_DebugFont->GetAtlas()), vec2(1000, 0), vec4(1), vec2(0), vec2(1), 0, 0, scalingMode);
 		}
 	}
 }

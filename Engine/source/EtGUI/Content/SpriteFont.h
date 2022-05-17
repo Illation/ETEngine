@@ -1,20 +1,16 @@
 #pragma once
-#include "TextureData.h"
-
 #include <EtCore/Content/AssetPointer.h>
 
+#include <EtRendering/GraphicsTypes/TextureData.h>
 
-namespace et {
-namespace render {
-class TextRenderer;
-} namespace pl {
-class EditableFontAsset;
-}
-}
+
+namespace et { namespace pl {
+	class EditableFontAsset;
+} }
 
 
 namespace et {
-namespace render {
+namespace gui {
 
 
 //---------------------------------
@@ -75,11 +71,14 @@ public:
 	// construct destruct
 	//--------------------
 	SpriteFont() = default;
-	~SpriteFont();
+	~SpriteFont() = default;
+
+	SpriteFont(SpriteFont const& other);
+	SpriteFont& operator=(SpriteFont const& other);
 
 	// accessors
-	//-----------
-	TextureData const* GetAtlas() const { return m_pTexture; }
+	//-----------j
+	render::TextureData const* GetAtlas() const { return (m_TextureAsset != nullptr) ? m_TextureAsset.get() : m_Texture.Get(); }
 	int16 GetFontSize() const { return m_FontSize; }
 	FontMetric const& GetMetric(wchar_t const& character) const;
 
@@ -103,8 +102,8 @@ private:
 	bool m_UseKerning = false;
 
 	// sprite info
-	TextureData const* m_pTexture = nullptr;
-	AssetPtr<TextureData> m_TextureAsset;
+	UniquePtr<render::TextureData const> m_Texture; // editor
+	AssetPtr<render::TextureData> m_TextureAsset; // runtime
 };
 
 //---------------------------------
@@ -135,5 +134,5 @@ private:
 };
 
 
-} // namespace render
+} // namespace gui
 } // namespace et

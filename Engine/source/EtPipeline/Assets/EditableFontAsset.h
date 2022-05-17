@@ -1,5 +1,5 @@
 #pragma once
-#include <EtRendering/GraphicsTypes/SpriteFont.h>
+#include <EtGUI/Content/SpriteFont.h>
 
 #include <EtPipeline/Content/EditorAsset.h>
 
@@ -16,9 +16,9 @@ namespace pl {
 //---------------------------------
 // EditableFontAsset
 //
-class EditableFontAsset final : public EditorAsset<render::SpriteFont>
+class EditableFontAsset final : public EditorAsset<gui::SpriteFont>
 {
-	RTTR_ENABLE(EditorAsset<render::SpriteFont>)
+	RTTR_ENABLE(EditorAsset<gui::SpriteFont>)
 	REGISTRATION_FRIEND_NS(pl)
 	DECLARE_FORCED_LINKING()
 
@@ -26,7 +26,7 @@ class EditableFontAsset final : public EditorAsset<render::SpriteFont>
 public:
 	// Construct destruct
 	//---------------------
-	EditableFontAsset() : EditorAsset<render::SpriteFont>() {}
+	EditableFontAsset() : EditorAsset<gui::SpriteFont>() {}
 	virtual ~EditableFontAsset() = default;
 
 	// interface
@@ -42,11 +42,11 @@ protected:
 	// utility
 	//---------
 private:
-	render::SpriteFont* LoadTtf(std::vector<uint8> const& binaryContent);
+	gui::SpriteFont* LoadTtf(std::vector<uint8> const& binaryContent);
 
 	void PopulateTextureParams(render::TextureParameters& params) const;
 
-	bool GenerateBinFontData(std::vector<uint8>& data, render::SpriteFont const* const font, std::string const& atlasName);
+	bool GenerateBinFontData(std::vector<uint8>& data, gui::SpriteFont const* const font, std::string const& atlasName);
 	bool GenerateTextureData(std::vector<uint8>& data, render::TextureData const* const texture);
 
 	// Data

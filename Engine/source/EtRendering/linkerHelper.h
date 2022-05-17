@@ -4,7 +4,6 @@
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/Mesh.h>
 #include <EtRendering/GraphicsTypes/EnvironmentMap.h>
-#include <EtRendering/GraphicsTypes/SpriteFont.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/TextureFormat.h>
 #include <EtRendering/MaterialSystem/MaterialData.h>
@@ -30,7 +29,6 @@ void ForceLinking()
 	FORCE_LINKING(MaterialAsset)
 	FORCE_LINKING(MaterialInstanceAsset)
 	FORCE_LINKING(EnvironmentMapAsset)
-	FORCE_LINKING(FontAsset)
 	FORCE_LINKING(TextureAsset)
 	FORCE_LINKING(TextureFormat)
 	FORCE_LINKING(PostProcessingSettings)

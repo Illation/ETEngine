@@ -1,6 +1,6 @@
 #pragma once
 
-#include <EtRendering/linkerHelper.h>
+#include <EtGUI/linkerHelper.h>
 
 #include <EtFramework/Audio/AudioData.h>
 #include <EtFramework/SceneGraph/SceneDescriptor.h>
@@ -25,7 +25,7 @@ namespace fw {
 //
 void ForceLinking()
 {
-	render::ForceLinking();
+	gui::ForceLinking();
 
 	FORCE_LINKING(AudioAsset)
 	FORCE_LINKING(SceneDescriptorAsset)

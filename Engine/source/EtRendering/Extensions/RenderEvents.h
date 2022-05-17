@@ -22,7 +22,8 @@ enum E_RenderEvent : T_RenderEventFlags
 	RenderDeferred	= 1 << 0,
 	RenderLights	= 1 << 1,
 	RenderForward	= 1 << 2,
-	RenderOutlines	= 1 << 3,
+	RenderWorldGUI	= 1 << 3,
+	RenderOverlay	= 1 << 4,
 
 	All = 0xFF
 };

@@ -36,7 +36,7 @@ OutlineRenderer::~OutlineRenderer()
 //---------------------------------
 // OutlineRenderer::Init
 //
-void OutlineRenderer::Init(render::T_RenderEventDispatcher* const eventDispatcher)
+void OutlineRenderer::Init(Ptr<render::T_RenderEventDispatcher> const eventDispatcher)
 {
 	m_SobelShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/PostSobel.glsl"));
 
@@ -49,7 +49,7 @@ void OutlineRenderer::Init(render::T_RenderEventDispatcher* const eventDispatche
 		}));
 
 	m_EventDispatcher = eventDispatcher;
-	m_CallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RenderOutlines, render::T_RenderEventCallback(
+	m_CallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RenderOverlay, render::T_RenderEventCallback(
 		[this](render::T_RenderEventFlags const flags, render::RenderEventData const* const evnt) -> void
 		{
 			UNUSED(flags);
@@ -57,7 +57,7 @@ void OutlineRenderer::Init(render::T_RenderEventDispatcher* const eventDispatche
 			if (evnt->renderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
 			{
 				render::ShadedSceneRenderer const* const renderer = static_cast<render::ShadedSceneRenderer const*>(evnt->renderer);
-				render::I_SceneExtension const* const ext = renderer->GetScene()->GetExtension(core::HashString("OutlineExtension"));
+				render::I_SceneExtension const* const ext = renderer->GetScene()->GetExtension(OutlineExtension::s_ExtensionId);
 				if (ext == nullptr)
 				{
 					LOG("render scene does not have an outline extension");

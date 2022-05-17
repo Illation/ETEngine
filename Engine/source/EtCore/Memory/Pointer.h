@@ -3,6 +3,8 @@
 #include "RefPointer.h"
 #include "WeakPointer.h"
 
+#include <EtCore/Content/AssetPointer.h>
+
 
 namespace et {
 
@@ -58,6 +60,12 @@ public:
 	Ptr(WeakPtr<TOtherType> const& weak);
 	template <typename TOtherType>
 	Ptr& operator=(WeakPtr<TOtherType> const& weak);
+
+	// from Asset
+	template <typename TOtherType>
+	Ptr(AssetPtr<TOtherType> const& asset);
+	template <typename TOtherType>
+	Ptr& operator=(AssetPtr<TOtherType> const& asset);
 
 	// Moving
 	Ptr(Ptr&& moving);
@@ -119,6 +127,12 @@ bool operator == (Ptr<TDataType> const& ptr1, WeakPtr<TOtherType> const& ptr2);
 template <typename TDataType, typename TOtherType>
 bool operator == (WeakPtr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2);
 
+template <typename TDataType, typename TOtherType>
+bool operator == (Ptr<TDataType> const& ptr1, AssetPtr<TOtherType> const& ptr2);
+
+template <typename TDataType, typename TOtherType>
+bool operator == (AssetPtr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2);
+
 template <typename TDataType>
 bool operator != (Ptr<TDataType> const& ptr, std::nullptr_t);
 
@@ -145,6 +159,12 @@ bool operator != (Ptr<TDataType> const& ptr1, WeakPtr<TOtherType> const& ptr2);
 
 template <typename TDataType, typename TOtherType>
 bool operator != (WeakPtr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2);
+
+template <typename TDataType, typename TOtherType>
+bool operator != (Ptr<TDataType> const& ptr1, AssetPtr<TOtherType> const& ptr2);
+
+template <typename TDataType, typename TOtherType>
+bool operator != (AssetPtr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2);
 
 
 // other utility
