@@ -18,12 +18,10 @@ __E.T.__ stands for "extra terrestial" due to the goal for this technology to go
 This project is under active development, and while a wide range of features are implemented and the overall architecture is approaching a cohesive state, many of the planned improvements are likely to touch a large crossection of the codebase.
 Therefore, while breaking changes are usually implemented in separate branches, the interface on the master branch changes relatively frequently.
 
-***********************************************************************************
-
-<img align="left" style="padding-right:10px;" src="./doc/etengine_logo.png" alt="PBR" width="10%"/>
 </br>
+<img align="left" style="padding-right:10px; " src="./doc/etengine_logo.png" alt="PBR" width="8%"/>
 
-#### Discuss it on [Discord](https://discord.gg/PZc37qPwVC)!
+### Discuss it on [Discord](https://discord.gg/PZc37qPwVC)!
 
 </br>
 
