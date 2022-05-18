@@ -302,6 +302,18 @@ bool operator==(Ptr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2)
 }
 
 template <typename TDataType, typename TOtherType>
+bool operator==(Ptr<TDataType> const& ptr1, TOtherType* const ptr2)
+{
+	return (ptr1.Get() == ptr2);
+}
+
+template <typename TDataType, typename TOtherType>
+bool operator==(TDataType* const ptr1, Ptr<TOtherType> const& ptr2)
+{
+	return (ptr1 == ptr2.Get());
+}
+
+template <typename TDataType, typename TOtherType>
 bool operator==(Ptr<TDataType> const& ptr1, UniquePtr<TOtherType> const& ptr2)
 {
 	return (ptr1.Get() == ptr2.Get());
@@ -363,6 +375,18 @@ bool operator!=(std::nullptr_t, Ptr<TDataType> const& ptr)
 
 template <typename TDataType, typename TOtherType>
 bool operator!=(Ptr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2)
+{
+	return !(ptr1 == ptr2);
+}
+
+template <typename TDataType, typename TOtherType>
+bool operator!=(Ptr<TDataType> const& ptr1, TOtherType* const ptr2)
+{
+	return !(ptr1 == ptr2);
+}
+
+template <typename TDataType, typename TOtherType>
+bool operator!=(TDataType* const ptr1, Ptr<TOtherType> const& ptr2)
 {
 	return !(ptr1 == ptr2);
 }
@@ -442,3 +466,23 @@ struct wrapper_mapper<et::Ptr<TDataType>>
 
 
 } // namespace rttr
+
+
+// HASHING
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+namespace std {
+
+
+template<typename TDataType>
+struct hash<et::Ptr<TDataType>>
+{
+	std::size_t operator()(const et::Ptr<TDataType>& obj) const
+	{
+		return reinterpret_cast<size_t>(obj.Get());
+	}
+};
+
+
+} // namespace std

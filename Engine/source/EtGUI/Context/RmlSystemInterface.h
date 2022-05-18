@@ -14,9 +14,13 @@ namespace gui {
 class RmlSystemInterface final : public Rml::SystemInterface
 {
 public:
+	// construct destruct
+	//--------------------
 	RmlSystemInterface() : Rml::SystemInterface() {}
 	~RmlSystemInterface() = default;
 
+	// interface implementation
+	//--------------------------
 	double GetElapsedTime() override;
 	bool LogMessage(Rml::Log::Type type, const Rml::String& message) override;
 };

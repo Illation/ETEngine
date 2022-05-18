@@ -110,6 +110,15 @@ template <typename TDataType, typename TOtherType>
 bool operator == (Ptr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2);
 
 template <typename TDataType, typename TOtherType>
+bool operator == (Ptr<TDataType> const& ptr1, TOtherType* const ptr2);
+
+template <typename TDataType, typename TOtherType>
+bool operator == (TDataType* const ptr1, Ptr<TOtherType> const& ptr2);
+
+template <typename TDataType, typename TOtherType>
+bool operator == (Ptr<TDataType> const& ptr1, TOtherType const* const ptr2);
+
+template <typename TDataType, typename TOtherType>
 bool operator == (Ptr<TDataType> const& ptr1, UniquePtr<TOtherType> const& ptr2);
 
 template <typename TDataType, typename TOtherType>
@@ -141,6 +150,12 @@ bool operator != (std::nullptr_t, Ptr<TDataType> const& ptr);
 
 template <typename TDataType, typename TOtherType>
 bool operator != (Ptr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2);
+
+template <typename TDataType, typename TOtherType>
+bool operator != (Ptr<TDataType> const& ptr1, TOtherType* const ptr2);
+
+template <typename TDataType, typename TOtherType>
+bool operator != (TDataType* const ptr1, Ptr<TOtherType> const& ptr2);
 
 template <typename TDataType, typename TOtherType>
 bool operator != (Ptr<TDataType> const& ptr1, UniquePtr<TOtherType> const& ptr2);

@@ -75,7 +75,24 @@ void GuiRenderer::Init(Ptr<render::T_RenderEventDispatcher> const eventDispatche
 		[this](render::T_RenderEventFlags const flags, render::RenderEventData const* const evnt) -> void
 		{
 			UNUSED(flags);
-			DrawOverlay(evnt->targetFb);
+
+			if (evnt->renderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
+			{
+				render::ShadedSceneRenderer const* const renderer = static_cast<render::ShadedSceneRenderer const*>(evnt->renderer);
+				render::I_SceneExtension const* const ext = renderer->GetScene()->GetExtension(GuiExtension::s_ExtensionId);
+				if (ext == nullptr)
+				{
+					LOG("render scene does not have a GUI extension");
+					return;
+				}
+
+				GuiExtension const* const guiExt = static_cast<GuiExtension const*>(ext);
+				DrawOverlay(evnt->targetFb, *guiExt);
+			}
+			else
+			{
+				ET_ASSERT(true, "Cannot retrieve GUI info from unhandled renderer!");
+			}
 		}));
 
 	m_IsInitialized = true;
@@ -129,13 +146,20 @@ void GuiRenderer::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension const
 //
 // Draw UI from the extension that goes on top of everything else
 //
-void GuiRenderer::DrawOverlay(render::T_FbLoc const targetFb)
+void GuiRenderer::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension const& guiExt)
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 	api->BindFramebuffer(targetFb);
 
 	m_SpriteRenderer.Draw();
 	m_TextRenderer.Draw();
+
+	ContextContainer::T_Contexts const& contexts = guiExt.GetContextContainer().GetContexts(render::Viewport::GetCurrentViewport());
+	for (Context const& context : contexts)
+	{
+		// render the context
+		UNUSED(context);
+	}
 }
 
 

@@ -33,7 +33,7 @@ public:
 	// functionality
 	//---------------
 	void DrawInWorld(render::T_FbLoc const targetFb, GuiExtension const& guiExt, core::slot_map<mat4> const& nodes);
-	void DrawOverlay(render::T_FbLoc const targetFb);
+	void DrawOverlay(render::T_FbLoc const targetFb, GuiExtension const& guiExt);
 
 	// accessors
 	//-----------

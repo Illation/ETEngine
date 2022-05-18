@@ -5,6 +5,8 @@
 #include <EtRendering/Extensions/SceneExtension.h>
 #include <EtRendering/SceneStructure/NodeIdFwd.h>
 
+#include <EtGUI/Context/ContextContainer.h>
+
 
 namespace et { namespace rendering {
 	class TextureData;
@@ -60,12 +62,16 @@ public:
 	//-----------
 	core::slot_map<Sprite> const& GetSprites() const { return m_Sprites; }
 
+	ContextContainer& GetContextContainer() { return m_ContextContainer; }
+	ContextContainer const& GetContextContainer() const { return m_ContextContainer; }
+
 
 	// Data
 	///////
 
 private:
 	core::slot_map<Sprite> m_Sprites;
+	ContextContainer m_ContextContainer;
 };
 
 
