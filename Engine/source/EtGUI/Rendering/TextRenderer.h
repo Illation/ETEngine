@@ -93,6 +93,7 @@ private:
 	~TextRenderer();
 
 	void Initialize();
+	void Deinit();
 
 	// functionality
 	//---------------
@@ -117,9 +118,11 @@ private:
 	// Data
 	///////
 
+	bool m_IsInitialized = false;
+
 	bool m_bUseKerning = true;
 
-	AssetPtr<render::ShaderData> m_pTextShader;
+	AssetPtr<render::ShaderData> m_TextShader;
 	std::vector<QueuedFont> m_QueuedFonts;
 
 	uint32 m_BufferSize = 500;

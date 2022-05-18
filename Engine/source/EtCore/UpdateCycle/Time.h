@@ -30,6 +30,13 @@ public:
 	void Update();
 
 	float GetTime() const;
+	template<typename TDataType>
+	float GetTime() const
+	{
+		auto end = Now();
+		return HRTCast<TDataType>(Diff(begin, end));
+	}
+
 	float DeltaTime() const;
 	float FPS() const;
 	uint64 Timestamp() const; // milliseconds

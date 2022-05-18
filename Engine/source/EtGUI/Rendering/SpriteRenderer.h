@@ -67,6 +67,7 @@ private:
 public:
 
 	void Initialize();
+	void Deinit();
 
 	// Functionality
 	//---------------
@@ -93,6 +94,8 @@ private:
 
 	// Data
 	///////
+
+	bool m_IsInitialized = false;
 
 	//Vertices
 	std::vector<SpriteVertex> m_Sprites;

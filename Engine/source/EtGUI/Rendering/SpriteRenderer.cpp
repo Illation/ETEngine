@@ -27,15 +27,10 @@ namespace gui {
 //
 SpriteRenderer::~SpriteRenderer()
 {
-	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
-
-	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
+	if (m_IsInitialized)
 	{
-		render::Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
+		Deinit();
 	}
-
-	api->DeleteVertexArray(m_VAO);
-	api->DeleteBuffer(m_VBO);
 }
 
 //---------------------------------
@@ -90,6 +85,29 @@ void SpriteRenderer::Initialize()
 		{
 			OnWindowResize();
 		}));
+
+	m_IsInitialized = true;
+}
+
+//---------------------------------
+// SpriteRenderer::Deinit
+//
+void SpriteRenderer::Deinit()
+{
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+
+	m_Shader = nullptr;
+	m_EmptyTex = nullptr;
+
+	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
+	{
+		render::Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
+	}
+
+	api->DeleteVertexArray(m_VAO);
+	api->DeleteBuffer(m_VBO);
+
+	m_IsInitialized = false;
 }
 
 

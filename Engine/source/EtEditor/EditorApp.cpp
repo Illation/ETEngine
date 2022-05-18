@@ -23,6 +23,8 @@
 #include <EtRendering/GraphicsContext/ContextHolder.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
+#include <EtGUI/Context/RmlGlobal.h>
+
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
 #include <EtPipeline/Content/FileResourceManager.h>
@@ -93,6 +95,7 @@ EditorApp::~EditorApp()
 {
 	ImporterBase::DestroyImporters();
 
+	gui::RmlGlobal::Destroy();
 	render::RenderingSystems::RemoveReference();
 
 	core::PerformanceInfo::DestroyInstance();

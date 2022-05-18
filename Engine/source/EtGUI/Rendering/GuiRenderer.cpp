@@ -4,6 +4,8 @@
 #include <EtRendering/SceneStructure/RenderScene.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 
+#include <EtGUI/Context/RmlGlobal.h>
+
 
 namespace et {
 namespace gui {
@@ -34,6 +36,10 @@ void GuiRenderer::Init(Ptr<render::T_RenderEventDispatcher> const eventDispatche
 	//-------------------------
 	m_TextRenderer.Initialize();
 	m_SpriteRenderer.Initialize();
+
+	// Rml UI
+	//--------
+	m_RmlGlobal = RmlGlobal::GetInstance(); // might initialize RML if this is the first GUI renderer
 
 	// render events
 	//---------------
@@ -80,6 +86,11 @@ void GuiRenderer::Init(Ptr<render::T_RenderEventDispatcher> const eventDispatche
 //
 void GuiRenderer::Deinit()
 {
+	m_RmlGlobal = nullptr;
+
+	m_SpriteRenderer.Deinit();
+	m_TextRenderer.Deinit();
+
 	if (m_EventDispatcher != nullptr)
 	{
 		m_EventDispatcher->Unregister(m_WorldCallbackId);

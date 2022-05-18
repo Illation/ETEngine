@@ -11,6 +11,9 @@ namespace et {
 namespace gui {
 
 
+class RmlGlobal;
+
+
 //---------------------------------
 // GuiRenderer
 //
@@ -51,6 +54,9 @@ private:
 	// basic renderers
 	TextRenderer m_TextRenderer;
 	SpriteRenderer m_SpriteRenderer;
+
+	// Rml UI rendering
+	RefPtr<RmlGlobal> m_RmlGlobal;
 };
 
 

@@ -360,6 +360,20 @@ TDataType& RefPtr<TDataType>::operator*() const
 	return *Get();
 }
 
+//---------------------------------
+// RefPtr::GetRefCount
+//
+template <typename TDataType>
+int32 RefPtr<TDataType>::GetRefCount() const
+{
+	if (m_RefCount != nullptr)
+	{
+		return m_RefCount->m_References;
+	}
+
+	return 0;
+}
+
 
 // private
 ///////////

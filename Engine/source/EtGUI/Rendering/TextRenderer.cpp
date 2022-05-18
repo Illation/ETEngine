@@ -43,15 +43,10 @@ TextRenderer::TextCache::TextCache(std::string const& text, vec2 const pos, vec4
 //
 TextRenderer::~TextRenderer()
 {
-	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
-
-	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
+	if (m_IsInitialized)
 	{
-		render::Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
+		Deinit();
 	}
-
-	api->DeleteVertexArray(m_VAO);
-	api->DeleteBuffer(m_VBO);
 }
 
 //---------------------------------
@@ -63,7 +58,7 @@ void TextRenderer::Initialize()
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
-	m_pTextShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostText.glsl"));
+	m_TextShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostText.glsl"));
 
 	//Generate buffers and arrays
 	m_VAO = api->CreateVertexArray();
@@ -106,6 +101,28 @@ void TextRenderer::Initialize()
 		{
 			OnWindowResize();
 		}));
+
+	m_IsInitialized = true;
+}
+
+//------------------------
+// TextRenderer::Deinit
+//
+void TextRenderer::Deinit()
+{
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+
+	m_TextShader = nullptr;
+
+	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
+	{
+		render::Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
+	}
+
+	api->DeleteVertexArray(m_VAO);
+	api->DeleteBuffer(m_VBO);
+
+	m_IsInitialized = false;
 }
 
 //---------------------------------
@@ -229,8 +246,8 @@ void TextRenderer::Draw()
 
 	//Enable this objects shader
 	CalculateTransform();
-	api->SetShader(m_pTextShader.get());
-	m_pTextShader->Upload("transform"_hash, m_Transform);
+	api->SetShader(m_TextShader.get());
+	m_TextShader->Upload("transform"_hash, m_Transform);
 
 	//Bind Object vertex array
 	api->BindVertexArray(m_VAO);
@@ -240,8 +257,8 @@ void TextRenderer::Draw()
 		if (queued.m_IsAddedToRenderer)
 		{
 			render::TextureData const* const fontTex = queued.m_Font->GetAtlas();
-			m_pTextShader->Upload("fontTex"_hash, fontTex);
-			m_pTextShader->Upload("texSize"_hash, math::vecCast<float>(fontTex->GetResolution())); // #todo: possibly we can just query this in glsl
+			m_TextShader->Upload("fontTex"_hash, fontTex);
+			m_TextShader->Upload("texSize"_hash, math::vecCast<float>(fontTex->GetResolution())); // #todo: possibly we can just query this in glsl
 
 			//Draw the object
 			api->DrawArrays(render::E_DrawMode::Points, queued.m_BufferStart, queued.m_BufferSize);

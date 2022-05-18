@@ -12,6 +12,8 @@
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/SceneRendering/ShadowRenderer.h>
 
+#include <EtGUI/Context/RmlGlobal.h>
+
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/Physics/PhysicsManager.h>
 #include <EtFramework/Audio/AudioManager.h>
@@ -34,14 +36,16 @@ namespace rt {
 //
 AbstractFramework::~AbstractFramework()
 {
+	fw::UnifiedScene::Instance().UnloadScene();
+
+	m_GuiRenderer.Deinit();
+	gui::RmlGlobal::Destroy();
+	SafeDelete(m_SceneRenderer);
+	m_Viewport->SetRenderer(nullptr);
+
 	GlfwEventManager::DestroyInstance();
 	m_RenderWindow.GetArea().Uninitialize();
 	SafeDelete(m_Viewport);
-
-	m_GuiRenderer.Deinit();
-	SafeDelete(m_SceneRenderer);
-
-	fw::UnifiedScene::Instance().UnloadScene();
 
 	fw::PhysicsManager::DestroyInstance();
 	fw::AudioManager::DestroyInstance();
