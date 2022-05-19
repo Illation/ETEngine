@@ -87,6 +87,7 @@ public:
 	core::HashString starfield;
 	EntityLink activeCamera;
 	render::PostProcessingSettings postprocessing;
+	core::HashString screenGui;
 
 	// audio parameters
 	EntityLink audioListener;

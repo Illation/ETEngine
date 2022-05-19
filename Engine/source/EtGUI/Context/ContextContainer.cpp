@@ -21,13 +21,13 @@ ContextContainer::T_Contexts const ContextContainer::s_EmptyContexts;
 //
 // May create a new context list and bind for viewport resize events
 //
-core::T_SlotId ContextContainer::CreateContext(Ptr<render::Viewport> const viewport)
+T_ContextId ContextContainer::CreateContext(Ptr<render::Viewport> const viewport)
 {
 	auto const ret = m_Contexts.insert(ContextData());
 
 	std::pair<T_ViewportContexts::iterator, bool> found = m_ViewportContexts.try_emplace(viewport, PerViewport());
 	PerViewport& perVp = found.first->second;
-	if (!found.second)
+	if (found.second)
 	{
 		perVp.m_VPCallbackId = viewport->GetEventDispatcher().Register(render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
 			[this](render::T_ViewportEventFlags const, render::ViewportEventData const* const data) -> void
@@ -53,9 +53,28 @@ core::T_SlotId ContextContainer::CreateContext(Ptr<render::Viewport> const viewp
 //------------------------------------
 // ContextContainer::SetContextActive
 //
-void ContextContainer::SetContextActive(core::T_SlotId const contextId, bool const isActive)
+void ContextContainer::SetContextActive(T_ContextId const id, bool const isActive)
 {
-	GetContext(contextId).SetActive(isActive);
+	GetContext(id).SetActive(isActive);
+}
+
+//-------------------------------------
+// ContextContainer::SetLoadedDocument
+//
+void ContextContainer::SetLoadedDocument(T_ContextId const id, core::HashString const documentId)
+{
+	Context& context = GetContext(id);
+	if (documentId.IsEmpty())
+	{
+		if (context.IsDocumentLoaded())
+		{
+			context.UnloadDocument();
+		}
+	}
+	else if (!context.IsDocumentLoaded())
+	{
+		context.LoadDocument(documentId);
+	}
 }
 
 //----------------------------------
@@ -63,9 +82,9 @@ void ContextContainer::SetContextActive(core::T_SlotId const contextId, bool con
 //
 // will delete the last PerViewport data and event bindings
 //
-void ContextContainer::DestroyContext(core::T_SlotId const contextId)
+void ContextContainer::DestroyContext(T_ContextId const id)
 {
-	ContextData& ctxData = m_Contexts[contextId];
+	ContextData& ctxData = m_Contexts[id];
 
 	T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
 	ET_ASSERT(found != m_ViewportContexts.cend());
@@ -80,7 +99,7 @@ void ContextContainer::DestroyContext(core::T_SlotId const contextId)
 		found->second.m_Contexts.erase(ctxData.m_Context);
 	}
 
-	m_Contexts.erase(contextId);
+	m_Contexts.erase(id);
 }
 
 //---------------------------------
@@ -113,9 +132,9 @@ ContextContainer::T_Contexts const& ContextContainer::GetContexts(render::Viewpo
 //----------------------------------
 // ContextContainer::GetContext
 //
-Context& ContextContainer::GetContext(core::T_SlotId const contextId)
+Context& ContextContainer::GetContext(T_ContextId const id)
 {
-	ContextData& ctxData = m_Contexts[contextId];
+	ContextData& ctxData = m_Contexts[id];
 	T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
 	ET_ASSERT(found != m_ViewportContexts.cend());
 	return found->second.m_Contexts[ctxData.m_Context];

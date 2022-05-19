@@ -35,6 +35,22 @@ void Context::SetDimensions(ivec2 const dimensions)
 	m_Context->SetDimensions(Rml::Vector2i(dimensions.x, dimensions.y));
 }
 
+//-----------------------
+// Context::LoadDocument
+//
+void Context::LoadDocument(core::HashString const documentId)
+{
+	m_Document = documentId;
+}
+
+//-------------------------
+// Context::UnloadDocument
+//
+void Context::UnloadDocument()
+{
+	m_Document.Reset();
+}
+
 //----------------
 // Context::d-tor
 //

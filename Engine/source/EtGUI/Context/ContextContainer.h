@@ -56,9 +56,10 @@ public:
 
 	// functionality
 	//---------------
-	core::T_SlotId CreateContext(Ptr<render::Viewport> const viewport);
-	void SetContextActive(core::T_SlotId const contextId, bool const isActive);
-	void DestroyContext(core::T_SlotId const contextId);
+	T_ContextId CreateContext(Ptr<render::Viewport> const viewport);
+	void SetContextActive(T_ContextId const id, bool const isActive);
+	void SetLoadedDocument(T_ContextId const id, core::HashString const documentId);
+	void DestroyContext(T_ContextId const id);
 
 	// accessors
 	//-----------
@@ -68,7 +69,7 @@ public:
 	// utility
 	//---------
 private:
-	Context& GetContext(core::T_SlotId const contextId);
+	Context& GetContext(T_ContextId const id);
 	void OnViewportResize(render::Viewport const* const vp, ivec2 const dim);
 
 	// Data

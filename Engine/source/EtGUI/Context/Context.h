@@ -33,9 +33,13 @@ public:
 	void SetActive(bool const isActive) { m_Active = isActive; }
 	void SetDimensions(ivec2 const dimensions);
 
+	void LoadDocument(core::HashString const documentId);
+	void UnloadDocument();
+
 	// accessors
 	//-----------
 	bool IsActive() const { return m_Active; }
+	bool IsDocumentLoaded() const { return !m_Document.IsEmpty(); }
 
 	// Data
 	///////
@@ -43,6 +47,7 @@ public:
 private:
 	Ptr<Rml::Context> m_Context;
 	bool m_Active = true;
+	core::HashString m_Document; // # temp
 };
 
 

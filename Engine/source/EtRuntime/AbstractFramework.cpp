@@ -40,12 +40,13 @@ AbstractFramework::~AbstractFramework()
 
 	m_GuiRenderer.Deinit();
 	gui::RmlGlobal::Destroy();
-	SafeDelete(m_SceneRenderer);
+	m_SceneRenderer = nullptr;
+	m_SplashScreenRenderer = nullptr;
 	m_Viewport->SetRenderer(nullptr);
 
 	GlfwEventManager::DestroyInstance();
 	m_RenderWindow.GetArea().Uninitialize();
-	SafeDelete(m_Viewport);
+	m_Viewport = nullptr;
 
 	fw::PhysicsManager::DestroyInstance();
 	fw::AudioManager::DestroyInstance();
@@ -84,7 +85,8 @@ void AbstractFramework::Run()
 	cfg->Initialize();
 
 	// init unified scene, systems etc
-	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::RegisterSystems,
+	fw::UnifiedScene& unifiedScene = fw::UnifiedScene::Instance();
+	unifiedScene.GetEventDispatcher().Register(fw::E_SceneEvent::RegisterSystems,
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const eventData)
 		{
 			UNUSED(flags);
@@ -95,7 +97,7 @@ void AbstractFramework::Run()
 
 	// ensure we show the splash screen every time the scene switches
 	// Callback ID not required as we destroy the scene manager here before destroying this class
-	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::SceneSwitch | fw::E_SceneEvent::Activated,
+	unifiedScene.GetEventDispatcher().Register(fw::E_SceneEvent::SceneSwitch | fw::E_SceneEvent::Activated,
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const evnt)
 		{
 			UNUSED(evnt);
@@ -103,7 +105,7 @@ void AbstractFramework::Run()
 			switch (static_cast<fw::E_SceneEvent>(flags))
 			{
 			case fw::E_SceneEvent::SceneSwitch:
-				m_Viewport->SetRenderer(m_SplashScreenRenderer);
+				m_Viewport->SetRenderer(m_SplashScreenRenderer.Get());
 
 				m_Viewport->SetTickDisabled(true);
 				m_RenderWindow.GetArea().Update(); // update manually incase we don't run the game loop before the new scene is activated 
@@ -111,7 +113,7 @@ void AbstractFramework::Run()
 				break;
 
 			case fw::E_SceneEvent::Activated:
-				m_Viewport->SetRenderer(m_SceneRenderer); // update will happen anyway during the loop
+				m_Viewport->SetRenderer(m_SceneRenderer.Get()); // update will happen anyway during the loop
 				break;
 
 			default:
@@ -120,12 +122,12 @@ void AbstractFramework::Run()
 			}
 		}));
 
-	fw::UnifiedScene::Instance().Init();
+	unifiedScene.Init();
 
 	// init rendering target
-	m_Viewport = new render::Viewport(&m_RenderWindow.GetArea());
-	m_SplashScreenRenderer = new rt::SplashScreenRenderer();
-	m_Viewport->SetRenderer(m_SplashScreenRenderer);
+	m_Viewport = Create<render::Viewport>(&m_RenderWindow.GetArea());
+	m_SplashScreenRenderer = Create<rt::SplashScreenRenderer>();
+	m_Viewport->SetRenderer(m_SplashScreenRenderer.Get());
 	render::ContextHolder::Instance().CreateMainRenderContext(&m_RenderWindow); // also initializes the viewport and its renderer
 
 	// screenshots
@@ -165,16 +167,20 @@ void AbstractFramework::Run()
 	GlfwEventManager::GetInstance()->Init(&m_RenderWindow.GetArea());
 
 	// scene rendering
-	m_SceneRenderer = new render::ShadedSceneRenderer(&(fw::UnifiedScene::Instance().GetRenderScene()));
+	m_SceneRenderer = Create<render::ShadedSceneRenderer>(&(unifiedScene.GetRenderScene()));
 	m_SceneRenderer->InitRenderingSystems();
+
+	// ui rendering
 	m_GuiRenderer.Init(ToPtr(&(m_SceneRenderer->GetEventDispatcher())));
+	m_GuiContext = unifiedScene.GetGuiExtension()->GetContextContainer().CreateContext(m_Viewport);
+	unifiedScene.SetScreenGuiContext(m_GuiContext);
 
 	// cause the loop to continue
 	RegisterAsTriggerer();
 
 	// load scene
 	OnInit();
-	fw::UnifiedScene::Instance().LoadScene(bootCfg.startScene);
+	unifiedScene.LoadScene(bootCfg.startScene);
 
 	// update
 	MainLoop();

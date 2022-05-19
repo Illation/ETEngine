@@ -27,7 +27,7 @@ namespace fw {
 //
 // Combines all scene subsystems (ecs, rendering, physics) into a single globally accessible class, which manages update, loading, unloading and events
 //
-class UnifiedScene : public  core::I_Tickable
+class UnifiedScene : public core::I_Tickable
 {
 	// static access
 	//---------------
@@ -54,6 +54,8 @@ protected:
 public:
 	void LoadScene(core::HashString const assetId);
 	void UnloadScene();
+
+	void SetScreenGuiContext(gui::T_ContextId const id) { m_ScreenGuiContext = id; }
 
 	// accessors
 	//-----------
@@ -88,6 +90,7 @@ private:
 
 	render::Scene m_RenderScene;
 	Ptr<gui::GuiExtension> m_GuiExtension;
+	gui::T_ContextId m_ScreenGuiContext = gui::INVALID_CONTEXT_ID;
 
 	PhysicsWorld m_PhysicsWorld;
 

@@ -61,14 +61,16 @@ private:
 
 private:
 	GlfwRenderWindow m_RenderWindow;
-	render::Viewport* m_Viewport = nullptr;
+	UniquePtr<render::Viewport> m_Viewport;
 
-	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
+	UniquePtr<render::ShadedSceneRenderer> m_SceneRenderer;
+	UniquePtr<rt::SplashScreenRenderer> m_SplashScreenRenderer;
+
 protected:
 	gui::GuiRenderer m_GuiRenderer;
 private:
+	gui::T_ContextId m_GuiContext = gui::INVALID_CONTEXT_ID;
 
-	rt::SplashScreenRenderer* m_SplashScreenRenderer = nullptr;
 
 	std::vector<core::HashString> m_Scenes;
 

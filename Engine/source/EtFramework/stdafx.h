@@ -1,7 +1,7 @@
 #pragma once
 
 #pragma region
-#include <EtRendering/stdafx.h>
+#include <EtGUI/stdafx.h>
 #include <EtCore/Util/InputManager.h>
 
 #include <EtFramework/Components/TransformComponent.h>

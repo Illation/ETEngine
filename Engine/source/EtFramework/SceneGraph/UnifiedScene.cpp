@@ -160,6 +160,12 @@ void UnifiedScene::LoadScene(core::HashString const assetId)
 
 	m_RenderScene.SetPostProcessingSettings(sceneDesc->postprocessing);
 
+	// GUI
+	if (m_ScreenGuiContext != gui::INVALID_CONTEXT_ID)
+	{
+		m_GuiExtension->GetContextContainer().SetLoadedDocument(m_ScreenGuiContext, sceneDesc->screenGui);
+	}
+
 	// audio settings
 	m_AudioListener = sceneDesc->audioListener.id;
 	if (m_AudioListener != INVALID_ENTITY_ID)
@@ -198,6 +204,12 @@ void UnifiedScene::UnloadScene()
 	m_RenderScene.SetSkyboxMap(core::HashString());
 	m_RenderScene.SetStarfield(core::HashString());
 	m_RenderScene.SetPostProcessingSettings(render::PostProcessingSettings());
+
+	// reset gui
+	if (m_ScreenGuiContext != gui::INVALID_CONTEXT_ID)
+	{
+		m_GuiExtension->GetContextContainer().SetLoadedDocument(m_ScreenGuiContext, core::HashString());
+	}
 
 	// reset physics
 	m_PhysicsWorld.Deinit();
