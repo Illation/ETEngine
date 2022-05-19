@@ -3,7 +3,7 @@
 
 #include <rttr/registration>
 
-#include <EtCore/Util/InputManager.h>
+#include <EtCore/Input/InputManager.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/Physics/PhysicsManager.h>

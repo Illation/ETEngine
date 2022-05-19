@@ -1,6 +1,6 @@
 #pragma once
 
-#include <EtCore/Util/InputManager.h>
+#include <EtCore/Input/KeyCodes.h>
 
 
 namespace Gtk {

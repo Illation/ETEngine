@@ -16,7 +16,7 @@
 #include <EtBuild/EngineVersion.h>
 
 #include <EtCore/Util/Commands.h>
-#include <EtCore/Util/InputManager.h>
+#include <EtCore/Input/InputManager.h>
 #include <EtCore/UpdateCycle/TickManager.h>
 #include <EtCore/Reflection/TypeInfoRegistry.h>
 

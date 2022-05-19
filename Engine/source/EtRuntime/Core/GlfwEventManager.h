@@ -6,6 +6,7 @@
 
 #include <EtCore/UpdateCycle/Tickable.h>
 #include <EtCore/Util/Singleton.h>
+#include <EtCore/Input/RawInputProvider.h>
 
 #include <EtFramework/Config/TickOrder.h>
 
@@ -33,7 +34,11 @@ public:
 	GlfwEventManager() : core::I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_GlfwEventManager)) {}
 	virtual ~GlfwEventManager();
 
-	void Init(GlfwRenderArea* const renderArea);
+	void Init(Ptr<GlfwRenderArea> const renderArea);
+
+	// accessors
+	//-----------
+	core::RawInputProvider& GetInputProvider() { return m_InputProvider; }
 
 	// modify state
 	//--------------
@@ -49,9 +54,9 @@ private:
 	// Data 
 	/////////
 
-	// Cursors
 	std::map<core::E_CursorShape, GLFWcursor*> m_CursorMap;
-	GlfwRenderArea* m_RenderArea = nullptr;
+	Ptr<GlfwRenderArea> m_RenderArea;
+	core::RawInputProvider m_InputProvider;
 };
 
 

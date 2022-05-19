@@ -162,9 +162,11 @@ void AbstractFramework::Run()
 
 	core::PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
 
-	// init input manager
-	core::InputManager::GetInstance();	
-	GlfwEventManager::GetInstance()->Init(&m_RenderWindow.GetArea());
+	// init input 
+	core::InputManager* const inputMan = core::InputManager::GetInstance();
+	GlfwEventManager& glfwMan = *GlfwEventManager::GetInstance();
+	glfwMan.Init(ToPtr(&m_RenderWindow.GetArea()));
+	glfwMan.GetInputProvider().RegisterListener(ToPtr(inputMan));
 
 	// scene rendering
 	m_SceneRenderer = Create<render::ShadedSceneRenderer>(&(unifiedScene.GetRenderScene()));

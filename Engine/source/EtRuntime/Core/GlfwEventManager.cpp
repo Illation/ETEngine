@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GlfwEventManager.h"
 
-#include <EtCore/Util/InputManager.h>
+#include <EtCore/Input/InputManager.h>
 
 
 namespace et {
@@ -31,74 +31,97 @@ GlfwEventManager::~GlfwEventManager()
 // Register for all events we may be interested in
 // Init all possible cursors, and register as a cursor manager with the input manager
 //
-void GlfwEventManager::Init(GlfwRenderArea* const renderArea)
+void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 {
 	m_RenderArea = renderArea;
 
 	// Register for keyboard events
-	glfwSetKeyCallback(renderArea->GetWindow(), [](GLFWwindow* const window, int32 const key, int32 const scancode, int32 const action, int32 const mods)
-	{
-		UNUSED(window);
-		UNUSED(scancode);
-		UNUSED(mods);
+	glfwSetKeyCallback(renderArea->GetWindow(), 
+		[](GLFWwindow* const window, int32 const key, int32 const scancode, int32 const action, int32 const mods)
+		{
+			UNUSED(window);
+			UNUSED(scancode);
+			UNUSED(mods);
 
-		if (action == GLFW_PRESS)
-		{
-			core::InputManager::GetInstance()->OnKeyPressed(static_cast<E_KbdKey>(key));
-		}
-		else if (action == GLFW_RELEASE)
-		{
-			core::InputManager::GetInstance()->OnKeyReleased(static_cast<E_KbdKey>(key));
-		}
-	});
+			core::RawInputProvider& inputProvider = GlfwEventManager::GetInstance()->GetInputProvider();
+			if (action == GLFW_PRESS)
+			{
+				inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([key](core::I_RawInputListener& listener)
+					{
+						return listener.ProcessKeyPressed(static_cast<E_KbdKey>(key));
+					}));
+			}
+			else if (action == GLFW_RELEASE)
+			{
+				inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([key](core::I_RawInputListener& listener)
+					{
+						return listener.ProcessKeyReleased(static_cast<E_KbdKey>(key));
+					}));
+			}
+		});
 
 	// mouse motion #todo: support raw mouse motion
 	glfwSetCursorPosCallback(renderArea->GetWindow(), [](GLFWwindow* const window, double const xpos, double const ypos)
-	{
-		UNUSED(window);
+		{
+			UNUSED(window);
 
-		core::InputManager::GetInstance()->OnMouseMoved(math::vecCast<int32>(dvec2(xpos, ypos)));
-	});
+			core::RawInputProvider& inputProvider = GlfwEventManager::GetInstance()->GetInputProvider();
+			inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([xpos, ypos](core::I_RawInputListener& listener)
+				{
+					return listener.ProcessMouseMove(math::vecCast<int32>(dvec2(xpos, ypos)));
+				}));
+		});
 
 	// Mouse clicking
 	glfwSetMouseButtonCallback(renderArea->GetWindow(), [](GLFWwindow* const window, int32 const button, int32 const action, int32 const mods)
-	{
-		UNUSED(window);
-		UNUSED(mods);
+		{
+			UNUSED(window);
+			UNUSED(mods);
 
-		if (action == GLFW_PRESS)
-		{
-			core::InputManager::GetInstance()->OnMousePressed(GetButtonFromGlfw(button));
-		}
-		else if (action == GLFW_RELEASE)
-		{
-			core::InputManager::GetInstance()->OnMouseReleased(GetButtonFromGlfw(button));
-		}
-	});
+			core::RawInputProvider& inputProvider = GlfwEventManager::GetInstance()->GetInputProvider();
+			if (action == GLFW_PRESS)
+			{
+				inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([button](core::I_RawInputListener& listener)
+					{
+						return listener.ProcessMousePressed(GetButtonFromGlfw(button));
+					}));
+			}
+			else if (action == GLFW_RELEASE)
+			{
+				inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([button](core::I_RawInputListener& listener)
+					{
+						return listener.ProcessMouseReleased(GetButtonFromGlfw(button));
+					}));
+			}
+		});
 
 	// scrolling
 	glfwSetScrollCallback(renderArea->GetWindow(), [](GLFWwindow* const window, double const xoffset, double const yoffset)
-	{
-		UNUSED(window);
+		{
+			UNUSED(window);
 
-		core::InputManager::GetInstance()->SetMouseWheelDelta(math::vecCast<int32>(dvec2(xoffset, yoffset)));
-	});
+			core::RawInputProvider& inputProvider = GlfwEventManager::GetInstance()->GetInputProvider();
+			inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([xoffset, yoffset](core::I_RawInputListener& listener)
+				{
+					return listener.ProcessMouseWheelDelta(math::vecCast<int32>(dvec2(xoffset, yoffset)));
+				}));
+		});
 
 	// window resizing
 	glfwSetWindowSizeCallback(renderArea->GetWindow(), [](GLFWwindow* const window, int32 const width, int32 const height)
-	{
-		UNUSED(window);
+		{
+			UNUSED(window);
 
-		GlfwRenderArea* const renderArea = static_cast<GlfwRenderArea*>(glfwGetWindowUserPointer(window));
+			GlfwRenderArea* const renderArea = static_cast<GlfwRenderArea*>(glfwGetWindowUserPointer(window));
 
-		renderArea->SetSize(ivec2(width, height));
-	});
+			renderArea->SetSize(ivec2(width, height));
+		});
 
 	// window closing
 	glfwSetWindowCloseCallback(renderArea->GetWindow(), [](GLFWwindow* const window)
-	{
-		core::InputManager::GetInstance()->Quit();
-	});
+		{
+			core::InputManager::GetInstance()->Quit();
+		});
 
 	m_CursorMap[core::E_CursorShape::Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 	m_CursorMap[core::E_CursorShape::IBeam] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);

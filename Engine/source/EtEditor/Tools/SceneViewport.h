@@ -4,6 +4,8 @@
 #include <glibmm/refptr.h>
 #include <gdk/gdk.h>
 
+#include <EtCore/Input/RawInputProvider.h>
+
 #include <EtRendering/GraphicsContext/Viewport.h>
 #include <EtRendering/Extensions/OutlineRenderer.h>
 
@@ -75,6 +77,8 @@ private:
 	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
 	gui::GuiRenderer m_GuiRenderer;
 	render::OutlineRenderer m_OutlineRenderer;
+
+	core::RawInputProvider m_InputProvider;
 
 	fw::T_SceneEventCallbackId m_SceneInitCallback = fw::T_SceneEventDispatcher::INVALID_ID;
 

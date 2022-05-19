@@ -71,6 +71,8 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 
 	// hook up events
 
+	m_InputProvider.RegisterListener(ToPtr(core::InputManager::GetInstance()));
+
 	// mouse click
 	glArea->add_events(Gdk::BUTTON_PRESS_MASK);
 	auto mousePressedCallback = [this, glArea](GdkEventButton* evnt) -> bool
@@ -89,8 +91,13 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 			// other clicks (left) we navigate
 			m_Editor->SetNavigatingViewport(this);
 			fw::UnifiedScene::Instance().GetEcs().GetComponent<EditorCameraComponent>(m_Camera).isEnabled = true;
-			core::InputManager::GetInstance()->OnMousePressed(code);
+
+			m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([code](core::I_RawInputListener& listener)
+				{
+					return listener.ProcessMousePressed(code);
+				}));
 		}
+
 		return true;
 	};
 	glArea->signal_button_press_event().connect(mousePressedCallback, false);
@@ -99,7 +106,11 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	glArea->add_events(Gdk::BUTTON_RELEASE_MASK);
 	auto mouseReleasedCallback = [this](GdkEventButton* evnt) -> bool
 	{
-		core::InputManager::GetInstance()->OnMouseReleased(GtkUtil::GetButtonFromGtk(evnt->button));
+		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([evnt](core::I_RawInputListener& listener)
+			{
+				return listener.ProcessMouseReleased(GtkUtil::GetButtonFromGtk(evnt->button));
+			}));
+
 		fw::UnifiedScene::Instance().GetEcs().GetComponent<EditorCameraComponent>(m_Camera).isEnabled = false;
 		m_Editor->SetNavigatingViewport(nullptr);
 		return true;
@@ -108,13 +119,17 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 
 	// mouse moved
 	glArea->add_events(Gdk::POINTER_MOTION_MASK);
-	auto mouseMotionCallback = [glArea](GdkEventMotion* evnt) -> bool
+	auto mouseMotionCallback = [glArea, this](GdkEventMotion* evnt) -> bool
 	{
 		// get offset of widget to window position
 		ivec2 pos = math::vecCast<int32>(dvec2(evnt->x, evnt->y));
 		pos = pos - ivec2(glArea->get_allocation().get_x(), glArea->get_allocation().get_y());
 
-		core::InputManager::GetInstance()->OnMouseMoved(pos);
+		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([pos](core::I_RawInputListener& listener)
+			{
+				return listener.ProcessMouseMove(pos);
+			}));
+
 		return false;
 	};
 	glArea->signal_motion_notify_event().connect(mouseMotionCallback, false);
@@ -122,7 +137,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	// mouse scrolled
 	glArea->add_events(Gdk::SMOOTH_SCROLL_MASK);
 	glArea->add_events(Gdk::SCROLL_MASK);
-	auto scrollCallback = [](GdkEventScroll* evnt) -> bool
+	auto scrollCallback = [this](GdkEventScroll* evnt) -> bool
 	{
 		dvec2 delta(evnt->delta_x, evnt->delta_y);
 		if (math::isZero(delta))
@@ -147,7 +162,11 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 			}
 		}
 
-		core::InputManager::GetInstance()->SetMouseWheelDelta(math::vecCast<int32>(delta));
+		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([delta](core::I_RawInputListener& listener)
+			{
+				return listener.ProcessMouseWheelDelta(math::vecCast<int32>(delta));
+			}));
+
 		return false;
 	};
 	glArea->signal_scroll_event().connect(scrollCallback, false);
@@ -274,11 +293,17 @@ bool SceneViewport::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
 {
 	if (pressed)
 	{
-		core::InputManager::GetInstance()->OnKeyPressed(GtkUtil::GetKeyFromGtk(evnt->keyval));
+		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([evnt](core::I_RawInputListener& listener)
+			{
+				return listener.ProcessKeyPressed(GtkUtil::GetKeyFromGtk(evnt->keyval));
+			}));
 	}
 	else
 	{
-		core::InputManager::GetInstance()->OnKeyReleased(GtkUtil::GetKeyFromGtk(evnt->keyval));
+		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([evnt](core::I_RawInputListener& listener)
+			{
+				return listener.ProcessKeyReleased(GtkUtil::GetKeyFromGtk(evnt->keyval));
+			}));
 	}
 
 	return true;
