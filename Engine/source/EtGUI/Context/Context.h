@@ -1,4 +1,6 @@
 #pragma once
+#include <EtCore/Input/KeyCodes.h>
+
 #include <EtRendering/GraphicsContext/ViewportEvents.h>
 
 
@@ -35,6 +37,14 @@ public:
 
 	void LoadDocument(core::HashString const documentId);
 	void UnloadDocument();
+
+	// #todo: retrieve modifier states as well
+	bool ProcessKeyPressed(E_KbdKey const key);
+	bool ProcessKeyReleased(E_KbdKey const key);
+	bool ProcessMousePressed(E_MouseButton const button);
+	bool ProcessMouseReleased(E_MouseButton const button);
+	bool ProcessMouseMove(ivec2 const& mousePos);
+	bool ProcessMouseWheelDelta(ivec2 const& mouseWheel);
 
 	// accessors
 	//-----------

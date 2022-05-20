@@ -44,7 +44,7 @@ SceneViewport::~SceneViewport()
 		OnDeinit();
 	}
 
-	m_Viewport.reset(nullptr);
+	m_Viewport = nullptr;
 	SafeDelete(m_RenderArea);
 }
 
@@ -67,7 +67,8 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 
 	// create a viewport from the area
 	m_RenderArea = new GtkRenderArea(glArea);
-	m_Viewport = std::make_unique<render::Viewport>(m_RenderArea);
+	m_Viewport = Create<render::Viewport>(m_RenderArea);
+	m_Viewport->SetInputProvider(ToPtr(&m_InputProvider));
 
 	// hook up events
 
@@ -84,7 +85,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 			ivec2 pos = math::vecCast<int32>(dvec2(evnt->x, evnt->y));
 			pos = pos - ivec2(glArea->get_allocation().get_x(), glArea->get_allocation().get_y());
 
-			m_Editor->GetSceneSelection().Pick(pos, m_Viewport.get(), evnt->state & GdkModifierType::GDK_CONTROL_MASK);
+			m_Editor->GetSceneSelection().Pick(pos, m_Viewport.Get(), evnt->state & GdkModifierType::GDK_CONTROL_MASK);
 		}
 		else
 		{

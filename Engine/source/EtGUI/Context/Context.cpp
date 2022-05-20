@@ -2,6 +2,7 @@
 #include "Context.h"
 
 #include "RmlGlobal.h"
+#include "RmlUtil.h"
 
 #include <RmlUi/Core/Core.h>
 #include <RmlUi/Core/Context.h>
@@ -15,6 +16,17 @@ namespace gui {
 // Context 
 //=========
 
+
+//----------------
+// Context::d-tor
+//
+Context::~Context()
+{
+	if (RmlGlobal::IsInitialized() && (m_Context != nullptr))
+	{
+		Rml::RemoveContext(m_Context->GetName());
+	}
+}
 
 //---------------
 // Context::Init
@@ -51,15 +63,54 @@ void Context::UnloadDocument()
 	m_Document.Reset();
 }
 
-//----------------
-// Context::d-tor
+//--------------------------------
+// Context::ProcessKeyPressed
 //
-Context::~Context()
+// #todo: Convert key events to text events for RML
+//
+bool Context::ProcessKeyPressed(E_KbdKey const key)
 {
-	if (RmlGlobal::IsInitialized() && (m_Context != nullptr))
-	{
-		Rml::RemoveContext(m_Context->GetName());
-	}
+	return !(m_Context->ProcessKeyDown(RmlUtil::GetRmlKeyId(key), 0));
+}
+
+//---------------------------------
+// Context::ProcessKeyReleased
+//
+bool Context::ProcessKeyReleased(E_KbdKey const key)
+{
+	return !(m_Context->ProcessKeyUp(RmlUtil::GetRmlKeyId(key), 0));
+}
+
+//----------------------------------
+// Context::ProcessMousePressed
+//
+bool Context::ProcessMousePressed(E_MouseButton const button)
+{
+	return !(m_Context->ProcessMouseButtonDown(RmlUtil::GetRmlButtonIndex(button), 0));
+}
+
+//-----------------------------------
+// Context::ProcessMouseReleased
+//
+bool Context::ProcessMouseReleased(E_MouseButton const button)
+{
+	return !(m_Context->ProcessMouseButtonUp(RmlUtil::GetRmlButtonIndex(button), 0));
+}
+
+//-------------------------------
+// Context::ProcessMouseMove
+//
+bool Context::ProcessMouseMove(ivec2 const& mousePos)
+{
+	return !(m_Context->ProcessMouseMove(mousePos.x, mousePos.y, 0));
+}
+
+//-------------------------------------
+// Context::ProcessMouseWheelDelta
+//
+bool Context::ProcessMouseWheelDelta(ivec2 const& mouseWheel)
+{
+	return (!m_Context->ProcessMouseWheel(static_cast<float>(mouseWheel.y), 0));
 }
 
 

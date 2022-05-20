@@ -165,6 +165,7 @@ void AbstractFramework::Run()
 	// init input 
 	core::InputManager* const inputMan = core::InputManager::GetInstance();
 	GlfwEventManager& glfwMan = *GlfwEventManager::GetInstance();
+	m_Viewport->SetInputProvider(ToPtr(&glfwMan.GetInputProvider()));
 	glfwMan.Init(ToPtr(&m_RenderWindow.GetArea()));
 	glfwMan.GetInputProvider().RegisterListener(ToPtr(inputMan));
 

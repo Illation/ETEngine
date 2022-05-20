@@ -16,7 +16,7 @@ namespace fw {
 //
 // Captures the content of a viewport and outputs it to an image file
 //
-class ScreenshotCapture final : public render::I_ViewportListener
+class ScreenshotCapture final
 {
 	// construct destruct
 	//---------------------
@@ -30,16 +30,10 @@ public:
 	//----------------
 	void Take(render::Viewport* const viewport);
 
-	// Viewport Listener interface
-	//-----------------------------
-protected:
-
-	void OnViewportPreRender(render::T_FbLoc const) override {}
-	void OnViewportPostFlush(render::T_FbLoc const targetFb) override;
-
 	// utility
 	//----------
 private:
+	void OnViewportPostFlush(render::T_FbLoc const targetFb);
 	std::string GetFileName();
 
 	// Data
@@ -47,6 +41,7 @@ private:
 
 	core::Directory* m_BaseDir = nullptr;
 	render::Viewport* m_Viewport = nullptr;
+	render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
 };
 
 

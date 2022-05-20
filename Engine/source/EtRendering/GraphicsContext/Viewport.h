@@ -4,6 +4,12 @@
 #include "ViewportEvents.h"
 
 
+// fwd
+namespace et { namespace core {
+	class RawInputProvider;
+} }
+
+
 namespace et {
 namespace render {
 
@@ -11,22 +17,6 @@ namespace render {
 class I_GraphicsContextApi;
 class I_ViewportRenderer;
 class I_RenderArea;
-
-
-//---------------------------------
-// I_ViewportListener
-//
-// Interface that can react to viewport events
-//
-class I_ViewportListener
-{
-public:
-
-	virtual ~I_ViewportListener() = default;
-
-	virtual void OnViewportPreRender(T_FbLoc const targetFb) = 0;
-	virtual void OnViewportPostFlush(T_FbLoc const targetFb) = 0;
-};
 
 
 //---------------------------------
@@ -56,21 +46,22 @@ public:
 	void SetRenderer(I_ViewportRenderer* renderer);
 	void SetActive(bool const val) { m_IsActive = val; }
 	void SetTickDisabled(bool const val) { m_TickDisabled = val; }
+	void SetInputProvider(Ptr<core::RawInputProvider> const input) { m_InputProvider = input; }
 private:
 	void Render(T_FbLoc const targetFb);
 
-public:
-	void RegisterListener(I_ViewportListener* const listener);
-	void UnregisterListener(I_ViewportListener* const listener);
-
 	// accessors
 	//-----------
+public:
 	I_ViewportRenderer* GetViewportRenderer() { return m_Renderer; }
 	I_GraphicsContextApi* GetApiContext() { return m_ApiContext; }
 
 	ivec2 GetDimensions() const { return m_Dimensions; }
 	float GetAspectRatio() const { return m_AspectRatio; }
-	render::T_ViewportEventDispatcher& GetEventDispatcher() { return m_Events; }
+
+	T_ViewportEventDispatcher& GetEventDispatcher() { return m_Events; }
+
+	core::RawInputProvider* GetInputProvider() { return m_InputProvider.Get(); }
 
 	// callbacks
 	//-----------
@@ -91,8 +82,8 @@ public:
 private:
 
 	I_RenderArea* m_Area = nullptr;
-
 	I_ViewportRenderer* m_Renderer = nullptr;
+
 	I_GraphicsContextApi* m_ApiContext = nullptr; 
 
 	ivec2 m_Dimensions;
@@ -103,8 +94,9 @@ private:
 
 	bool m_TickDisabled = false;
 
-	std::vector<I_ViewportListener*> m_Listeners; // #todo: use the event dispatcher instead
-	render::T_ViewportEventDispatcher m_Events;
+	T_ViewportEventDispatcher m_Events;
+
+	Ptr<core::RawInputProvider> m_InputProvider;
 };
 
 

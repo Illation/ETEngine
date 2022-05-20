@@ -2,6 +2,7 @@
 #include "Context.h"
 
 #include <EtCore/Containers/slot_map.h>
+#include <EtCore/Input/RawInputListener.h>
 
 
 // fwd
@@ -38,10 +39,25 @@ private:
 		core::T_SlotId m_Context;
 	};
 
-	struct PerViewport
+	//---------------------------------
+	// PerViewport
+	//
+	// Contains all contexts associated with a specific viewport
+	//
+	struct PerViewport final : public core::I_RawInputListener
 	{
 		PerViewport() = default;
 
+		// interface
+		int8 GetPriority() const override { return 1; }
+		bool ProcessKeyPressed(E_KbdKey const key) override;
+		bool ProcessKeyReleased(E_KbdKey const key) override;
+		bool ProcessMousePressed(E_MouseButton const button) override;
+		bool ProcessMouseReleased(E_MouseButton const button) override;
+		bool ProcessMouseMove(ivec2 const& mousePos) override;
+		bool ProcessMouseWheelDelta(ivec2 const& mouseWheel) override;
+
+		// data
 		T_Contexts m_Contexts;
 		render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
 	};

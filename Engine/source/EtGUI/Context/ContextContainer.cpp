@@ -1,11 +1,133 @@
 #include "stdafx.h"
 #include "ContextContainer.h"
 
+#include <EtCore/Input/RawInputProvider.h>
+
 #include <EtRendering/GraphicsContext/Viewport.h>
 
 
 namespace et {
 namespace gui {
+
+
+//===================================
+// Context Container :: Per Viewport
+//===================================
+
+
+//--------------------------------
+// PerViewport::ProcessKeyPressed
+//
+bool ContextContainer::PerViewport::ProcessKeyPressed(E_KbdKey const key)
+{
+	for (Context& context : m_Contexts)
+	{
+		if (context.IsActive() && context.IsDocumentLoaded())
+		{
+			if (context.ProcessKeyPressed(key))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+//---------------------------------
+// PerViewport::ProcessKeyReleased
+//
+bool ContextContainer::PerViewport::ProcessKeyReleased(E_KbdKey const key)
+{
+	for (Context& context : m_Contexts)
+	{
+		if (context.IsActive() && context.IsDocumentLoaded())
+		{
+			if (context.ProcessKeyReleased(key))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+//----------------------------------
+// PerViewport::ProcessMousePressed
+//
+bool ContextContainer::PerViewport::ProcessMousePressed(E_MouseButton const button)
+{
+	for (Context& context : m_Contexts)
+	{
+		if (context.IsActive() && context.IsDocumentLoaded())
+		{
+			if (context.ProcessMousePressed(button))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+//-----------------------------------
+// PerViewport::ProcessMouseReleased
+//
+bool ContextContainer::PerViewport::ProcessMouseReleased(E_MouseButton const button)
+{
+	for (Context& context : m_Contexts)
+	{
+		if (context.IsActive() && context.IsDocumentLoaded())
+		{
+			if (context.ProcessMouseReleased(button))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+//-------------------------------
+// PerViewport::ProcessMouseMove
+//
+bool ContextContainer::PerViewport::ProcessMouseMove(ivec2 const& mousePos)
+{
+	for (Context& context : m_Contexts)
+	{
+		if (context.IsActive() && context.IsDocumentLoaded())
+		{
+			if (context.ProcessMouseMove(mousePos))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+//-------------------------------------
+// PerViewport::ProcessMouseWheelDelta
+//
+bool ContextContainer::PerViewport::ProcessMouseWheelDelta(ivec2 const& mouseWheel)
+{
+	for (Context& context : m_Contexts)
+	{
+		if (context.IsActive() && context.IsDocumentLoaded())
+		{
+			if (context.ProcessMouseWheelDelta(mouseWheel))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
 
 
 //===================
@@ -34,6 +156,12 @@ T_ContextId ContextContainer::CreateContext(Ptr<render::Viewport> const viewport
 			{
 				OnViewportResize(data->viewport, data->size);
 			}));
+
+		core::RawInputProvider* const inputProvider = viewport->GetInputProvider();
+		if (inputProvider != nullptr)
+		{
+			inputProvider->RegisterListener(ToPtr(&perVp));
+		}
 	}
 	else
 	{
@@ -90,6 +218,12 @@ void ContextContainer::DestroyContext(T_ContextId const id)
 	ET_ASSERT(found != m_ViewportContexts.cend());
 	if (found->second.m_Contexts.size() == 1u)
 	{
+		core::RawInputProvider* const inputProvider = ctxData.m_Viewport->GetInputProvider();
+		if (inputProvider != nullptr)
+		{
+			inputProvider->UnregisterListener(&(found->second));
+		}
+
 		ET_ASSERT(found->second.m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID);
 		ctxData.m_Viewport->GetEventDispatcher().Unregister(found->second.m_VPCallbackId);
 		m_ViewportContexts.erase(found);
