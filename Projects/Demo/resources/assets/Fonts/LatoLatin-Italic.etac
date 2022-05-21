@@ -1,0 +1,15 @@
+{
+  "editable freetype font asset": {
+    "asset": {
+      "freetype font asset": {
+        "name": "LatoLatin-Italic.ttf",
+        "path": "Fonts/",
+        "package": "content1",
+        "references": [],
+        "is fallback": false
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

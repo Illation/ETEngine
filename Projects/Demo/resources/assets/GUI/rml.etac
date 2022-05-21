@@ -1,0 +1,14 @@
+{
+  "editable gui document asset": {
+    "asset": {
+      "gui document asset": {
+        "name": "rml.rcss",
+        "path": "GUI/",
+        "package": "content1",
+        "references": []
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

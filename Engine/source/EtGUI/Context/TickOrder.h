@@ -1,9 +1,8 @@
 #pragma once
-#include <EtGUI/Context/TickOrder.h>
 
 
 namespace et {
-namespace fw {
+namespace gui {
 
 
 //---------------------------------
@@ -13,13 +12,12 @@ namespace fw {
 //
 enum class E_TickOrder : uint32
 {
-	TICK_SceneManager = static_cast<E_TickOrder>(gui::E_TickOrder::COUNT),
-	TICK_Framework,
-	TICK_GlfwEventManager,
+	TICK_ContextContainer,
 
 	COUNT
 };
 
 
-} // namespace fw
+} // namespace gui
 } // namespace et
+

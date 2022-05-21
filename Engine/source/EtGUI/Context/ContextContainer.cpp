@@ -139,6 +139,23 @@ ContextContainer::T_Contexts const ContextContainer::s_EmptyContexts;
 
 
 //---------------------------------
+// ContextContainer::OnTick
+//
+void ContextContainer::OnTick()
+{
+	for (auto& el : m_ViewportContexts)
+	{
+		for (Context& context : el.second.m_Contexts)
+		{
+			if (context.IsActive() && context.IsDocumentLoaded())
+			{
+				context.Update();
+			}
+		}
+	}
+}
+
+//---------------------------------
 // ContextContainer::CreateContext
 //
 // May create a new context list and bind for viewport resize events
