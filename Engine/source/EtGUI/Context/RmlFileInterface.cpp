@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "RmlFileInterface.h"
 
-#include <EtCore/Content/ResourceManager.h>
+#include <stdio.h>
 
-#include <EtGUI/Content/GuiDocument.h>
+#include <EtCore/Content/ResourceManager.h>
 
 
 namespace et {
@@ -52,7 +52,12 @@ void RmlFileInterface::Close(Rml::FileHandle file)
 //
 size_t RmlFileInterface::Read(void* buffer, size_t size, Rml::FileHandle file)
 {
-	return 0u;
+	File& fileImpl = m_Files[file];
+	size_t const bytesToRead = std::min(size, fileImpl.m_Asset->GetLength() - fileImpl.m_ReadPos);
+
+	memcpy(buffer, reinterpret_cast<void const*>(fileImpl.m_Asset->GetText() + fileImpl.m_ReadPos), bytesToRead);
+	fileImpl.m_ReadPos += bytesToRead;
+	return bytesToRead;
 }
 
 //------------------------------------
@@ -60,7 +65,31 @@ size_t RmlFileInterface::Read(void* buffer, size_t size, Rml::FileHandle file)
 //
 bool RmlFileInterface::Seek(Rml::FileHandle file, long offset, int origin)
 {
-	return false;
+	File& fileImpl = m_Files[file];
+
+	long pos;
+	switch (origin)
+	{
+	case SEEK_SET:
+		pos = 0;
+		break;
+	case SEEK_CUR:
+		pos = static_cast<long>(fileImpl.m_ReadPos);
+		break;
+	case SEEK_END:
+		pos = static_cast<long>(fileImpl.m_Asset->GetLength());
+		break;
+	}
+
+	pos += offset;
+
+	if ((pos < 0) || (pos > fileImpl.m_Asset->GetLength()))
+	{
+		return false;
+	}
+
+	fileImpl.m_ReadPos = static_cast<size_t>(pos);
+	return true;
 }
 
 //------------------------------------
@@ -68,7 +97,8 @@ bool RmlFileInterface::Seek(Rml::FileHandle file, long offset, int origin)
 //
 size_t RmlFileInterface::Tell(Rml::FileHandle file)
 {
-	return 0u;
+	File& fileImpl = m_Files[file];
+	return fileImpl.m_ReadPos;
 }
 
 

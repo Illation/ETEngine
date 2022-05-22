@@ -88,8 +88,8 @@ void Context::LoadDocument(core::HashString const documentId)
 	
 	core::I_Asset const* const asset = guiDocument.GetAsset();
 
-	m_Document = ToPtr(m_Context->LoadDocumentFromMemory(Rml::String(guiDocument->GetText(), guiDocument->GetLength()), 
-		asset->GetPath() + asset->GetName()));
+	Rml::String const docText(guiDocument->GetText(), guiDocument->GetLength());
+	m_Document = ToPtr(m_Context->LoadDocumentFromMemory(docText, asset->GetPath() + asset->GetName()));
 
 	if (m_Active)
 	{

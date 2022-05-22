@@ -1,13 +1,13 @@
 #pragma once
 #include <RmlUi/Core/FileInterface.h>
 
+#include <EtCore/Content/AssetPointer.h>
+
+#include <EtGUI/Content/GuiDocument.h>
+
 
 namespace et {
 namespace gui {
-
-
-// fwd
-class GuiDocument;
 
 
 //---------------------------------

@@ -139,7 +139,7 @@
       "bloom threshold": 10.0,
       "bloom mult": 0.1
     },
-    "screen GUI": "",
+    "screen GUI": "GUI/hello_world.rml",
     "audio listener": {
       "id": 4294967295
     },
