@@ -10,11 +10,15 @@
 // fwd
 namespace Rml {
 	class Context;
+	class ElementDocument;
 }
 
 
 namespace et {
 namespace gui {
+
+
+class GuiDocument;
 
 
 //---------------------------------
@@ -35,11 +39,13 @@ public:
 
 	// functionality
 	//---------------
-	void SetActive(bool const isActive) { m_Active = isActive; }
+	void SetActive(bool const isActive);
 	void SetDimensions(ivec2 const dimensions);
 
 	void LoadDocument(core::HashString const documentId);
 	void UnloadDocument();
+
+	void Update();
 
 	bool ProcessKeyPressed(Rml::Input::KeyIdentifier const key, int32 const rmlModifier);
 	bool ProcessKeyReleased(Rml::Input::KeyIdentifier const key, int32 const rmlModifier);
@@ -52,7 +58,7 @@ public:
 	// accessors
 	//-----------
 	bool IsActive() const { return m_Active; }
-	bool IsDocumentLoaded() const { return !m_Document.IsEmpty(); }
+	bool IsDocumentLoaded() const { return (m_Document != nullptr); }
 
 	// Data
 	///////
@@ -60,7 +66,7 @@ public:
 private:
 	Ptr<Rml::Context> m_Context;
 	bool m_Active = true;
-	core::HashString m_Document; // # temp
+	Ptr<Rml::ElementDocument> m_Document; 
 };
 
 

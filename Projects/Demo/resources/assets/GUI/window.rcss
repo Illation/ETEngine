@@ -1,0 +1,36 @@
+body {
+	font-family: LatoLatin;
+	font-size: 18px;
+	color: #02475e;
+	background: #fefecc;
+	text-align: center;
+	padding: 2em 1em;
+	position: absolute;
+	border: 2px #ccc;
+	width: 500px;
+	height: 200px;
+	margin: auto;
+}
+		
+h1 {
+	color: #f6470a;
+	font-size: 1.5em;
+	font-weight: bold;
+	margin-bottom: 0.7em;
+}
+		
+p { 
+	margin: 0.7em 0;
+}
+		
+input.text {
+	background-color: #fff;
+	color: #555;
+	border: 2px #999;
+	padding: 5px;
+	tab-index: auto;
+	cursor: text;
+	box-sizing: border-box;
+	width: 200px;
+	font-size: 0.9em;
+}

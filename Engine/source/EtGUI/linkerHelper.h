@@ -1,6 +1,8 @@
 #pragma once
 #include <EtRendering/linkerHelper.h>
 
+#include <EtGUI/Content/FreetypeFont.h>
+#include <EtGUI/Content/GuiDocument.h>
 #include <EtGUI/Content/SpriteFont.h>
 
 
@@ -18,6 +20,8 @@ void ForceLinking()
 	render::ForceLinking();
 
 	FORCE_LINKING(FontAsset)
+	FORCE_LINKING(FreetypeFontAsset)
+	FORCE_LINKING(GuiDocumentAsset)
 }
 
 

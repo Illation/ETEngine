@@ -5,6 +5,12 @@
 
 #include <RmlUi/Core/Core.h>
 #include <RmlUi/Core/Context.h>
+#include <RmlUi/Core/ElementDocument.h>
+
+#include <EtCore/Content/AssetPointer.h>
+#include <EtCore/Content/ResourceManager.h>
+
+#include <EtGUI/Content/GuiDocument.h>
 
 
 namespace et {
@@ -38,6 +44,28 @@ void Context::Init(std::string const& name, ivec2 const dimensions)
 	ET_ASSERT(m_Context != nullptr, "Failed to create RmlUi context");
 }
 
+//--------------------
+// Context::SetActive
+//
+void Context::SetActive(bool const isActive)
+{
+	if (m_Active != isActive)
+	{
+		m_Active = isActive;
+		if (IsDocumentLoaded())
+		{
+			if (m_Active)
+			{
+				m_Document->Show();
+			}
+			else
+			{
+				m_Document->Hide();
+			}
+		}
+	}
+}
+
 //------------------------
 // Context::SetDimensions
 //
@@ -51,7 +79,23 @@ void Context::SetDimensions(ivec2 const dimensions)
 //
 void Context::LoadDocument(core::HashString const documentId)
 {
-	m_Document = documentId;
+	ET_ASSERT(!IsDocumentLoaded());
+
+	// this should automatically load all fonts referenced by the document into RML
+	AssetPtr<GuiDocument> guiDocument = core::ResourceManager::Instance()->GetAssetData<GuiDocument>(documentId); 
+	ET_ASSERT(guiDocument != nullptr);
+	
+	core::I_Asset const* const asset = guiDocument.GetAsset();
+
+	Rml::String const docText(guiDocument->GetText(), guiDocument->GetLength());
+	m_Document = ToPtr(m_Context->LoadDocumentFromMemory(docText, asset->GetPath() + asset->GetName()));
+
+	if (m_Active)
+	{
+		m_Document->Show();
+	}
+
+	// we can let the guiDocument go out of scope because Rml now has it in memory
 }
 
 //-------------------------
@@ -59,7 +103,16 @@ void Context::LoadDocument(core::HashString const documentId)
 //
 void Context::UnloadDocument()
 {
-	m_Document.Reset();
+	m_Document->Close();
+	m_Document = nullptr;
+}
+
+//-------------------------
+// Context::UnloadDocument
+//
+void Context::Update()
+{
+	m_Context->Update();
 }
 
 //--------------------------------

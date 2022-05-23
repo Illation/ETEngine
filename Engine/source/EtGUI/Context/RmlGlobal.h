@@ -1,5 +1,6 @@
 #pragma once
 #include "RmlSystemInterface.h"
+#include "RmlFileInterface.h"
 
 #include <EtGUI/Rendering/RmlRenderInterface.h>
 
@@ -41,6 +42,7 @@ private:
 	///////
 	
 	RmlSystemInterface m_SystemInterface;
+	RmlFileInterface m_FileInterface;
 	RmlRenderInterface m_RenderInterface;
 };
 

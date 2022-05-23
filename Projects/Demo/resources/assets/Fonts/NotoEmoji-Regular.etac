@@ -1,0 +1,15 @@
+{
+  "editable freetype font asset": {
+    "asset": {
+      "freetype font asset": {
+        "name": "NotoEmoji-Regular.ttf",
+        "path": "Fonts/",
+        "package": "content1",
+        "references": [],
+        "is fallback": true
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

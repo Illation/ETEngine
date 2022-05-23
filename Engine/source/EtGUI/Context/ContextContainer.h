@@ -1,8 +1,10 @@
 #pragma once
 #include "Context.h"
+#include "TickOrder.h"
 
 #include <EtCore/Containers/slot_map.h>
 #include <EtCore/Input/RawInputListener.h>
+#include <EtCore/UpdateCycle/Tickable.h>
 
 
 // fwd
@@ -20,7 +22,7 @@ namespace gui {
 //
 // Root data storage for a collection of UI contexts
 //
-class ContextContainer 
+class ContextContainer : public core::I_Tickable
 {
 	// definitions
 	//-------------
@@ -67,11 +69,20 @@ private:
 	// construct destruct
 	//--------------------
 public:
-	ContextContainer() = default;
+	ContextContainer() : I_Tickable(static_cast<uint32>(E_TickOrder::TICK_ContextContainer)) {}
+	ContextContainer(ContextContainer const&) = delete;
+	void operator=(ContextContainer const&) = delete;
+
 	~ContextContainer() = default;
+
+	// tickable interface
+	//--------------------
+protected:
+	void OnTick() override;
 
 	// functionality
 	//---------------
+public:
 	T_ContextId CreateContext(Ptr<render::Viewport> const viewport);
 	void SetContextActive(T_ContextId const id, bool const isActive);
 	void SetLoadedDocument(T_ContextId const id, core::HashString const documentId);
