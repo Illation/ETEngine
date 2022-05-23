@@ -64,6 +64,19 @@ void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 			}
 		});
 
+	// Register for text events
+	glfwSetCharCallback(renderArea->GetWindow(),
+		[](GLFWwindow* const window, uint32 const codepoint)
+		{
+			UNUSED(window);
+
+			GlfwEventManager::GetInstance()->GetInputProvider().IterateListeners(core::RawInputProvider::T_EventFn(
+				[codepoint](core::I_RawInputListener& listener)
+				{
+					return listener.ProcessTextInput(static_cast<core::Character>(codepoint));
+				}));
+		});
+
 	// Mouse clicking
 	glfwSetMouseButtonCallback(renderArea->GetWindow(), [](GLFWwindow* const window, int32 const button, int32 const action, int32 const mods)
 		{
@@ -138,8 +151,6 @@ void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 	m_CursorMap[core::E_CursorShape::SizeWE] = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
 	m_CursorMap[core::E_CursorShape::SizeNS] = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
 	m_CursorMap[core::E_CursorShape::Hand] = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
-
-	core::InputManager::GetInstance()->RegisterCursorShapeManager(this);
 }
 
 //----------------------------
@@ -149,15 +160,24 @@ void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 //
 bool GlfwEventManager::OnCursorResize(core::E_CursorShape const shape)
 {
-	auto it = m_CursorMap.find(shape);
-	if (it != m_CursorMap.end())
+	if (shape == core::E_CursorShape::None)
 	{
-		glfwSetCursor(m_RenderArea->GetWindow(), it->second);
+		glfwSetInputMode(m_RenderArea->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		return true;
 	}
+	else
+	{
+		glfwSetInputMode(m_RenderArea->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		auto it = m_CursorMap.find(shape);
+		if (it != m_CursorMap.end())
+		{
+			glfwSetCursor(m_RenderArea->GetWindow(), it->second);
+			return true;
+		}
 
-	LOG("INPUT::OnCursorResize > Shape not found", core::LogLevel::Warning);
-	return false;
+		LOG("INPUT::OnCursorResize > Shape not found", core::LogLevel::Warning);
+		return false;
+	}
 }
 
 //----------------------------

@@ -163,7 +163,9 @@ void UnifiedScene::LoadScene(core::HashString const assetId)
 	// GUI
 	if (m_ScreenGuiContext != gui::INVALID_CONTEXT_ID)
 	{
-		m_GuiExtension->GetContextContainer().SetLoadedDocument(m_ScreenGuiContext, sceneDesc->screenGui);
+		m_LoadedGuiDocument = sceneDesc->screenGui;
+		m_EventDispatcher.Notify(E_SceneEvent::PreLoadScreenGUI, new SceneEventGUIData(this, m_LoadedGuiDocument, true));
+		m_GuiExtension->GetContextContainer().SetLoadedDocument(m_ScreenGuiContext, m_LoadedGuiDocument);
 	}
 
 	// audio settings
@@ -208,6 +210,8 @@ void UnifiedScene::UnloadScene()
 	// reset gui
 	if (m_ScreenGuiContext != gui::INVALID_CONTEXT_ID)
 	{
+		m_EventDispatcher.Notify(E_SceneEvent::PreLoadScreenGUI, new SceneEventGUIData(this, m_LoadedGuiDocument, false));
+		m_LoadedGuiDocument.Reset();
 		m_GuiExtension->GetContextContainer().SetLoadedDocument(m_ScreenGuiContext, core::HashString());
 	}
 

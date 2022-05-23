@@ -7,6 +7,7 @@
 #include <EtCore/UpdateCycle/Tickable.h>
 #include <EtCore/Util/Singleton.h>
 #include <EtCore/Input/RawInputProvider.h>
+#include <EtCore/Util/CursorShapes.h>
 
 #include <EtFramework/Config/TickOrder.h>
 

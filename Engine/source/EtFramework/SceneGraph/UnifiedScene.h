@@ -67,6 +67,7 @@ public:
 
 	render::Scene& GetRenderScene() { return m_RenderScene; }
 	gui::GuiExtension* GetGuiExtension() { return m_GuiExtension.Get(); }
+	gui::T_ContextId GetScreenGuiContext() { return m_ScreenGuiContext; }
 	PhysicsWorld& GetPhysicsWorld() { return m_PhysicsWorld; }
 
 	T_SceneEventDispatcher& GetEventDispatcher() { return m_EventDispatcher; }
@@ -89,8 +90,10 @@ private:
 	T_EntityId m_AudioListener = INVALID_ENTITY_ID;
 
 	render::Scene m_RenderScene;
+
 	Ptr<gui::GuiExtension> m_GuiExtension;
 	gui::T_ContextId m_ScreenGuiContext = gui::INVALID_CONTEXT_ID;
+	core::HashString m_LoadedGuiDocument;
 
 	PhysicsWorld m_PhysicsWorld;
 

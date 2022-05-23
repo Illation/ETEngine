@@ -3,6 +3,8 @@
 
 #include <EtCore/Content/AssetPointer.h>
 
+#include <EtFramework/SceneGraph/SceneEvents.h>
+
 #include <EtRuntime/AbstractFramework.h>
 
 
@@ -22,6 +24,12 @@ namespace demo {
 //
 class MainFramework final : public rt::AbstractFramework
 {
+	struct GuiData
+	{
+		bool m_ShowText = true;
+		std::string m_Animal = "dog";
+	};
+
 	// construct destruct
 	//--------------------
 public:
@@ -35,6 +43,12 @@ private:
 	void OnInit() override;
 	void OnTick() override;
 
+	// utility
+	//---------
+	void OnSceneActivated();
+	void PreLoadGUI(fw::SceneEventGUIData const* const evnt);
+
+
 	// Data
 	///////
 
@@ -43,6 +57,8 @@ private:
 	AssetPtr<gui::SpriteFont> m_DebugFont;
 	bool m_DrawDebugInfo = true;
 	bool m_DrawFontAtlas = false;
+
+	GuiData m_GuiData;
 };
 
 

@@ -33,6 +33,8 @@ public:
 
 	virtual bool ProcessMouseMove(ivec2 const& mousePos, T_KeyModifierFlags const modifiers) = 0;
 	virtual bool ProcessMouseWheelDelta(ivec2 const& mouseWheel, T_KeyModifierFlags const modifiers) = 0;
+
+	virtual bool ProcessTextInput(Character const character) = 0;
 };
 
 

@@ -41,7 +41,16 @@ class FreetypeFontAsset final : public core::Asset<FreetypeFont, false>
 	DECLARE_FORCED_LINKING()
 	RTTR_ENABLE(core::Asset<FreetypeFont, false>)
 
-	static std::vector<core::HashString> s_LoadedFonts;
+	struct LoadedFontData
+	{
+		LoadedFontData() = default;
+		LoadedFontData(core::HashString const id, std::vector<uint8> const& data) : m_Id(id), m_Data(data) {}
+
+		core::HashString m_Id;
+		std::vector<uint8> m_Data; // RmlUi requires the font data to stay in memory until after the library is shut down
+	};
+
+	static std::vector<LoadedFontData> s_LoadedFonts;
 
 public:
 	// Construct destruct

@@ -74,6 +74,22 @@ void Context::SetDimensions(ivec2 const dimensions)
 	m_Context->SetDimensions(Rml::Vector2i(dimensions.x, dimensions.y));
 }
 
+//--------------------------
+// Context::CreateDataModel
+//
+Rml::DataModelConstructor Context::CreateDataModel(std::string const& modelName)
+{
+	return m_Context->CreateDataModel(modelName);
+}
+
+//---------------------------
+// Context::DestroyDataModel
+//
+bool Context::DestroyDataModel(std::string const& modelName)
+{
+	return m_Context->RemoveDataModel(modelName);
+}
+
 //-----------------------
 // Context::LoadDocument
 //

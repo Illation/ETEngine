@@ -13,6 +13,7 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 #include <EtGUI/Content/SpriteFont.h>
+#include <EtGUI/GuiExtension.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/Audio/AudioManager.h>
@@ -53,26 +54,17 @@ void MainFramework::OnInit()
 	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<gui::SpriteFont>(core::HashString("Fonts/Ubuntu-Regular.ttf"));
 
 	// scenes
-	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::Activated,
+	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::Activated | fw::E_SceneEvent::PreLoadScreenGUI,
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const evnt)
-		{
-			UNUSED(flags);
-			UNUSED(evnt);
-
-			// active scene as loaded by boot config
-			std::vector<core::HashString> const& scenes = GetSceneIds();
-			auto foundSceneIt = std::find(scenes.cbegin(), scenes.cend(), fw::UnifiedScene::Instance().GetSceneId());
-			ET_ASSERT(foundSceneIt != scenes.cend());
-			m_CurrentScene = foundSceneIt - scenes.cbegin();
-
-			// set up camera
-			fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
-			fw::T_EntityId const camEnt = fw::UnifiedScene::Instance().GetActiveCamera();
-
-			ET_ASSERT(camEnt != fw::INVALID_ENTITY_ID);
-			ET_ASSERT(!ecs.HasComponent<FreeCameraComponent>(camEnt));
-
-			ecs.AddComponents(camEnt, FreeCameraComponent());
+			{
+			if (static_cast<fw::E_SceneEvent>(flags) == fw::E_SceneEvent::Activated)
+			{
+				OnSceneActivated();
+			}
+			else if (static_cast<fw::E_SceneEvent>(flags) == fw::E_SceneEvent::PreLoadScreenGUI)
+			{
+				PreLoadGUI(static_cast<fw::SceneEventGUIData const*>(evnt));
+			}
 		}));
 
 	// audio
@@ -169,6 +161,56 @@ void MainFramework::OnTick()
 		{
 			gui::SpriteRenderer::E_ScalingMode const scalingMode = gui::SpriteRenderer::E_ScalingMode::TextureAbs;
 			m_GuiRenderer.GetSpriteRenderer().Draw(ToPtr(m_DebugFont->GetAtlas()), vec2(1000, 0), vec4(1), vec2(0), vec2(1), 0, 0, scalingMode);
+		}
+	}
+}
+
+//---------------------------------
+// MainFramework::OnSceneActivated
+//
+// Keep track of current scene for switching and set up the camera
+//
+void MainFramework::OnSceneActivated()
+{
+	// active scene as loaded by boot config
+	std::vector<core::HashString> const& scenes = GetSceneIds();
+	auto foundSceneIt = std::find(scenes.cbegin(), scenes.cend(), fw::UnifiedScene::Instance().GetSceneId());
+	ET_ASSERT(foundSceneIt != scenes.cend());
+	m_CurrentScene = foundSceneIt - scenes.cbegin();
+
+	// set up camera
+	fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
+	fw::T_EntityId const camEnt = fw::UnifiedScene::Instance().GetActiveCamera();
+
+	ET_ASSERT(camEnt != fw::INVALID_ENTITY_ID);
+	ET_ASSERT(!ecs.HasComponent<FreeCameraComponent>(camEnt));
+
+	ecs.AddComponents(camEnt, FreeCameraComponent());
+}
+
+//---------------------------
+// MainFramework::PreLoadGUI
+//
+// Ensure we are set up with the right UI data models
+//
+void MainFramework::PreLoadGUI(fw::SceneEventGUIData const* const evnt)
+{
+	if (evnt->guiDocumentId == "GUI/hello_world.rml"_hash)
+	{
+		gui::ContextContainer& guiContainer = evnt->scene->GetGuiExtension()->GetContextContainer();
+		gui::T_ContextId const context = evnt->scene->GetScreenGuiContext();
+
+		if (evnt->isLoading)
+		{
+			if (Rml::DataModelConstructor constructor = guiContainer.CreateDataModel(context, "animals"))
+			{
+				constructor.Bind("show_text", &m_GuiData.m_ShowText);
+				constructor.Bind("animal", &m_GuiData.m_Animal);
+			}
+		}
+		else
+		{
+			guiContainer.DestroyDataModel(context, "animals");
 		}
 	}
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <RmlUi/Core/Input.h>
 #include <RmlUi/Core/Types.h>
+#include <RmlUi/Core/DataModelHandle.h>
 
 #include <EtCore/Input/KeyCodes.h>
 
@@ -41,6 +42,9 @@ public:
 	//---------------
 	void SetActive(bool const isActive);
 	void SetDimensions(ivec2 const dimensions);
+
+	Rml::DataModelConstructor CreateDataModel(std::string const& modelName);
+	bool DestroyDataModel(std::string const& modelName);
 
 	void LoadDocument(core::HashString const documentId);
 	void UnloadDocument();

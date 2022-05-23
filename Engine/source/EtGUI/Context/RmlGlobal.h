@@ -37,10 +37,15 @@ private:
 	RmlGlobal();
 	~RmlGlobal();
 
+	// functionality
+	//---------------
+public:
+	void SetCursorShapeManager(Ptr<core::I_CursorShapeManager> const cursorMan);
 
 	// Data
 	///////
 	
+private:
 	RmlSystemInterface m_SystemInterface;
 	RmlFileInterface m_FileInterface;
 	RmlRenderInterface m_RenderInterface;

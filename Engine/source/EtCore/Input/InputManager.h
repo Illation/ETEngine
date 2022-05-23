@@ -11,34 +11,6 @@ namespace core {
 
 
 //---------------------------------
-// E_MouseButton
-//
-// Types of mouse buttons
-//
-enum class E_CursorShape : uint8 
-{
-	Arrow,
-	IBeam,
-	Crosshair,
-	Hand,
-	SizeWE,
-	SizeNS
-};
-
-//---------------------------------
-// I_CursorShapeManager
-//
-// Interface class that can reshape the cursor
-//
-class I_CursorShapeManager
-{
-public:
-	virtual ~I_CursorShapeManager() = default;
-
-	virtual bool OnCursorResize(E_CursorShape const shape) = 0; // should return true on success
-};
-
-//---------------------------------
 // InputManager
 //
 // Input Manager class 
@@ -74,9 +46,6 @@ public:
 
 	// modify state
 	//-----------
-	void RegisterCursorShapeManager(I_CursorShapeManager* const shapeManager);
-	void SetCursorShape(E_CursorShape const shape);
-
 	void Quit() { m_IsRunning = false; }
 
 	// Raw Input Listener interface
@@ -87,6 +56,7 @@ public:
 	bool ProcessMouseReleased(E_MouseButton const button, T_KeyModifierFlags const) override;
 	bool ProcessMouseMove(ivec2 const& mousePos, T_KeyModifierFlags const) override;
 	bool ProcessMouseWheelDelta(ivec2 const& mouseWheel, T_KeyModifierFlags const) override;
+	bool ProcessTextInput(Character const) override { return false; }
 
 	// Utility
 	//-------------
@@ -106,10 +76,6 @@ private:
 	vec2 m_MouseWheelDelta;
 
 	std::array<E_KeyState, E_MouseButton::COUNT> m_MouseButtons;
-
-	// if set, will take responsibility for changing the cursor shape
-	I_CursorShapeManager* m_CursorShapeManager = nullptr;
-	E_CursorShape m_CurrentCursorShape = E_CursorShape::Arrow;
 };
 
 

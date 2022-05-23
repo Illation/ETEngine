@@ -58,6 +58,7 @@ private:
 		bool ProcessMouseReleased(E_MouseButton const button, core::T_KeyModifierFlags const modifiers) override;
 		bool ProcessMouseMove(ivec2 const& mousePos, core::T_KeyModifierFlags const modifiers) override;
 		bool ProcessMouseWheelDelta(ivec2 const& mouseWheel, core::T_KeyModifierFlags const modifiers) override;
+		bool ProcessTextInput(core::Character const character) override;
 
 		// data
 		T_Contexts m_Contexts;
@@ -85,6 +86,8 @@ protected:
 public:
 	T_ContextId CreateContext(Ptr<render::Viewport> const viewport);
 	void SetContextActive(T_ContextId const id, bool const isActive);
+	Rml::DataModelConstructor CreateDataModel(T_ContextId const id, std::string const& modelName);
+	bool DestroyDataModel(T_ContextId const id, std::string const& modelName);
 	void SetLoadedDocument(T_ContextId const id, core::HashString const documentId);
 	void DestroyContext(T_ContextId const id);
 

@@ -26,20 +26,10 @@ bool ContextContainer::PerViewport::ProcessKeyPressed(E_KbdKey const key, core::
 	if (rmlKey != Rml::Input::KeyIdentifier::KI_UNKNOWN)
 	{
 		int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
-		Rml::Character const character = RmlUtil::GetCharacterCode(rmlKey, mods);
-
 		for (Context& context : m_Contexts)
 		{
 			if (context.IsActive() && context.IsDocumentLoaded())
 			{
-				if (character != Rml::Character::Null) // try text input first - #todo: also provide text input periodically when a key is held down
-				{
-					if (context.ProcessTextInput(character))
-					{
-						return true;
-					}
-				}
-
 				if (context.ProcessKeyPressed(rmlKey, mods))
 				{
 					return true;
@@ -163,6 +153,25 @@ bool ContextContainer::PerViewport::ProcessMouseWheelDelta(ivec2 const& mouseWhe
 	return false;
 }
 
+//---------------------------------
+// PerViewport::ProcessTextInput
+//
+bool ContextContainer::PerViewport::ProcessTextInput(core::Character const character)
+{
+	for (Context& context : m_Contexts)
+	{
+		if (context.IsActive() && context.IsDocumentLoaded())
+		{
+			if (context.ProcessTextInput(static_cast<Rml::Character>(character)))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 
 //===================
 // Context Container
@@ -235,6 +244,22 @@ T_ContextId ContextContainer::CreateContext(Ptr<render::Viewport> const viewport
 void ContextContainer::SetContextActive(T_ContextId const id, bool const isActive)
 {
 	GetContext(id).SetActive(isActive);
+}
+
+//------------------------------------
+// ContextContainer::CreateDataModel
+//
+Rml::DataModelConstructor ContextContainer::CreateDataModel(T_ContextId const id, std::string const& modelName)
+{
+	return GetContext(id).CreateDataModel(modelName);
+}
+
+//------------------------------------
+// ContextContainer::DestroyDataModel
+//
+bool ContextContainer::DestroyDataModel(T_ContextId const id, std::string const& modelName)
+{
+	return GetContext(id).DestroyDataModel(modelName);
 }
 
 //-------------------------------------

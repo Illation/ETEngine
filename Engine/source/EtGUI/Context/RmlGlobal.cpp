@@ -78,6 +78,14 @@ RmlGlobal::~RmlGlobal()
 	LOG("RmlUi shut down\n");
 }
 
+//----------------------------------
+// RmlGlobal::SetCursorShapeManager
+//
+void RmlGlobal::SetCursorShapeManager(Ptr<core::I_CursorShapeManager> const cursorMan)
+{
+	m_SystemInterface.SetCursorShapeManager(cursorMan);
+}
+
 
 } // namespace gui
 } // namespace et

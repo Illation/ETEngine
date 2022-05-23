@@ -301,10 +301,17 @@ bool SceneViewport::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
 	core::T_KeyModifierFlags const mods = GtkUtil::GetModifiersFromGtk(evnt->state);
 	if (pressed)
 	{
-		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([key, mods](core::I_RawInputListener& listener)
+		core::Character const character = static_cast<core::Character>(gdk_keyval_to_unicode(evnt->keyval));
+		if (!m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([character](core::I_RawInputListener& listener)
 			{
-				return listener.ProcessKeyPressed(key, mods);
-			}));
+				return listener.ProcessTextInput(character);
+			})))
+		{
+			m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([key, mods](core::I_RawInputListener& listener)
+				{
+					return listener.ProcessKeyPressed(key, mods);
+				}));
+		}
 	}
 	else
 	{

@@ -55,7 +55,7 @@ DEFINE_FORCED_LINKING(FreetypeFontAsset) // force the asset class to be linked a
 
 
 // static
-std::vector<core::HashString> FreetypeFontAsset::s_LoadedFonts;
+std::vector<FreetypeFontAsset::LoadedFontData> FreetypeFontAsset::s_LoadedFonts;
 
 
 //-----------------------------------
@@ -66,15 +66,21 @@ std::vector<core::HashString> FreetypeFontAsset::s_LoadedFonts;
 bool FreetypeFontAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
 	// Since RML stores fonts persistently we make sure we only use the loading constructor once
-	bool const isLoaded = std::find(s_LoadedFonts.cbegin(), s_LoadedFonts.cend(), GetId()) != s_LoadedFonts.cend();
+	bool const isLoaded = std::find_if(s_LoadedFonts.cbegin(), s_LoadedFonts.cend(), 
+		[this](LoadedFontData const& lh) 
+		{ 
+			return lh.m_Id == GetId(); 
+		}) != s_LoadedFonts.cend();
+
 	if (isLoaded)
 	{
 		m_Data = new FreetypeFont();
 	}
 	else
 	{
-		s_LoadedFonts.push_back(GetId());
-		m_Data = new FreetypeFont(data, m_IsFallbackFont);
+		s_LoadedFonts.emplace_back(GetId(), data);
+		std::vector<uint8> const& storedData = s_LoadedFonts.back().m_Data;
+		m_Data = new FreetypeFont(storedData, m_IsFallbackFont);
 	}
 
 	// all done

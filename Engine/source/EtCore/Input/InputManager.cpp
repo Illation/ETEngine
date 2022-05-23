@@ -61,36 +61,6 @@ E_KeyState InputManager::GetMouseButton(E_MouseButton const button)
 }
 
 //---------------------------------
-// InputManager::RegisterCursorShapeManager
-//
-// Sets the object that changes the cursor shape
-//
-void InputManager::RegisterCursorShapeManager(I_CursorShapeManager* const shapeManager)
-{
-	ET_ASSERT(shapeManager != nullptr);
-	m_CursorShapeManager = shapeManager;
-}
-
-//---------------------------------
-// InputManager::SetCursorShape
-//
-// Request changing the cursor shape
-//
-void InputManager::SetCursorShape(E_CursorShape const shape)
-{
-	if (shape != m_CurrentCursorShape)
-	{
-		m_CurrentCursorShape = shape;
-
-		ET_ASSERT(m_CursorShapeManager != nullptr, "Attempted changing the cursor shape but no I_CursorShapeManager was registered!");
-		if (!(m_CursorShapeManager->OnCursorResize(shape)))
-		{
-			LOG("InputManager::SetCursorShape > Failed to change the cursor shape!", LogLevel::Warning);
-		}
-	}
-}
-
-//---------------------------------
 // InputManager::ProcessKeyPressed
 //
 bool InputManager::ProcessKeyPressed(E_KbdKey const key, T_KeyModifierFlags const)

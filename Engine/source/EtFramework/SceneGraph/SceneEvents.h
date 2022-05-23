@@ -19,10 +19,11 @@ enum E_SceneEvent : T_SceneEventFlags
 {
 	Invalid = 0,
 
-	SceneSwitch		= 1 << 0,
-	Deactivated		= 1 << 1,
-	Activated		= 1 << 2,
-	RegisterSystems	= 1 << 3,
+	SceneSwitch			= 1 << 0,
+	Deactivated			= 1 << 1,
+	Activated			= 1 << 2,
+	RegisterSystems		= 1 << 3,
+	PreLoadScreenGUI	= 1 << 4,
 
 	All = 0xFF
 };
@@ -39,6 +40,25 @@ public:
 	virtual ~SceneEventData() = default;
 
 	UnifiedScene* scene = nullptr;
+};
+
+//---------------------------
+// SceneEventGUIData
+//
+// Scene event for PreLoadScreenGUI
+//
+struct SceneEventGUIData : public SceneEventData
+{
+public:
+	SceneEventGUIData(UnifiedScene* const uniScene, core::HashString const docId, bool const loading)
+		: SceneEventData(uniScene), 
+		guiDocumentId(docId), 
+		isLoading(loading) 
+	{}
+	virtual ~SceneEventGUIData() = default;
+
+	core::HashString const guiDocumentId;
+	bool const isLoading; // when false the document is unloading
 };
 
 
