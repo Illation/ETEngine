@@ -39,6 +39,7 @@ public:
 	// accessors
 	//-----------
 	core::RawInputProvider& GetInputProvider() { return m_InputProvider; }
+	core::T_KeyModifierFlags GetCurrentModifiers() const { return m_CurrentModifiers; }
 
 	// modify state
 	//--------------
@@ -46,6 +47,7 @@ protected:
 	bool OnCursorResize(core::E_CursorShape const shape) override;
 private:
 	void OnTick() override; // call before all GUI ticks
+	void SetCurrentModifiers(core::T_KeyModifierFlags const mods) { m_CurrentModifiers = mods; }
 
 	// utility
 	//--------------
@@ -57,6 +59,7 @@ private:
 	std::map<core::E_CursorShape, GLFWcursor*> m_CursorMap;
 	Ptr<GlfwRenderArea> m_RenderArea;
 	core::RawInputProvider m_InputProvider;
+	core::T_KeyModifierFlags m_CurrentModifiers;
 };
 
 

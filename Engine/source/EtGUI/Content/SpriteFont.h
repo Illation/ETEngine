@@ -77,7 +77,7 @@ public:
 	SpriteFont& operator=(SpriteFont const& other);
 
 	// accessors
-	//-----------j
+	//-----------
 	render::TextureData const* GetAtlas() const { return (m_TextureAsset != nullptr) ? m_TextureAsset.get() : m_Texture.Get(); }
 	int16 GetFontSize() const { return m_FontSize; }
 	FontMetric const& GetMetric(wchar_t const& character) const;

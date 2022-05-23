@@ -1,4 +1,7 @@
 #pragma once
+#include <RmlUi/Core/Input.h>
+#include <RmlUi/Core/Types.h>
+
 #include <EtCore/Input/KeyCodes.h>
 
 #include <EtRendering/GraphicsContext/ViewportEvents.h>
@@ -38,13 +41,13 @@ public:
 	void LoadDocument(core::HashString const documentId);
 	void UnloadDocument();
 
-	// #todo: retrieve modifier states as well
-	bool ProcessKeyPressed(E_KbdKey const key);
-	bool ProcessKeyReleased(E_KbdKey const key);
-	bool ProcessMousePressed(E_MouseButton const button);
-	bool ProcessMouseReleased(E_MouseButton const button);
-	bool ProcessMouseMove(ivec2 const& mousePos);
-	bool ProcessMouseWheelDelta(ivec2 const& mouseWheel);
+	bool ProcessKeyPressed(Rml::Input::KeyIdentifier const key, int32 const rmlModifier);
+	bool ProcessKeyReleased(Rml::Input::KeyIdentifier const key, int32 const rmlModifier);
+	bool ProcessMousePressed(int32 const button, int32 const rmlModifier);
+	bool ProcessMouseReleased(int32 const button, int32 const rmlModifier);
+	bool ProcessMouseMove(ivec2 const& mousePos, int32 const rmlModifier);
+	bool ProcessMouseWheelDelta(ivec2 const& mouseWheel, int32 const rmlModifier);
+	bool ProcessTextInput(Rml::Character const character);
 
 	// accessors
 	//-----------

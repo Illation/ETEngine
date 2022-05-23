@@ -93,9 +93,10 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 			m_Editor->SetNavigatingViewport(this);
 			fw::UnifiedScene::Instance().GetEcs().GetComponent<EditorCameraComponent>(m_Camera).isEnabled = true;
 
-			m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([code](core::I_RawInputListener& listener)
+			core::T_KeyModifierFlags const mods = GtkUtil::GetModifiersFromGtk(evnt->state);
+			m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([code, mods](core::I_RawInputListener& listener)
 				{
-					return listener.ProcessMousePressed(code);
+					return listener.ProcessMousePressed(code, mods);
 				}));
 		}
 
@@ -107,9 +108,11 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	glArea->add_events(Gdk::BUTTON_RELEASE_MASK);
 	auto mouseReleasedCallback = [this](GdkEventButton* evnt) -> bool
 	{
-		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([evnt](core::I_RawInputListener& listener)
+		E_MouseButton const code = GtkUtil::GetButtonFromGtk(evnt->button);
+		core::T_KeyModifierFlags const mods = GtkUtil::GetModifiersFromGtk(evnt->state);
+		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([code, mods](core::I_RawInputListener& listener)
 			{
-				return listener.ProcessMouseReleased(GtkUtil::GetButtonFromGtk(evnt->button));
+				return listener.ProcessMouseReleased(code, mods);
 			}));
 
 		fw::UnifiedScene::Instance().GetEcs().GetComponent<EditorCameraComponent>(m_Camera).isEnabled = false;
@@ -126,9 +129,10 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 		ivec2 pos = math::vecCast<int32>(dvec2(evnt->x, evnt->y));
 		pos = pos - ivec2(glArea->get_allocation().get_x(), glArea->get_allocation().get_y());
 
-		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([pos](core::I_RawInputListener& listener)
+		core::T_KeyModifierFlags const mods = GtkUtil::GetModifiersFromGtk(evnt->state);
+		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([pos, mods](core::I_RawInputListener& listener)
 			{
-				return listener.ProcessMouseMove(pos);
+				return listener.ProcessMouseMove(pos, mods);
 			}));
 
 		return false;
@@ -163,9 +167,10 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 			}
 		}
 
-		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([delta](core::I_RawInputListener& listener)
+		core::T_KeyModifierFlags const mods = GtkUtil::GetModifiersFromGtk(evnt->state);
+		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([delta, mods](core::I_RawInputListener& listener)
 			{
-				return listener.ProcessMouseWheelDelta(math::vecCast<int32>(delta));
+				return listener.ProcessMouseWheelDelta(math::vecCast<int32>(delta), mods);
 			}));
 
 		return false;
@@ -292,18 +297,20 @@ void SceneViewport::OnEditorTick()
 //
 bool SceneViewport::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
 {
+	E_KbdKey const key = GtkUtil::GetKeyFromGtk(evnt->keyval);
+	core::T_KeyModifierFlags const mods = GtkUtil::GetModifiersFromGtk(evnt->state);
 	if (pressed)
 	{
-		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([evnt](core::I_RawInputListener& listener)
+		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([key, mods](core::I_RawInputListener& listener)
 			{
-				return listener.ProcessKeyPressed(GtkUtil::GetKeyFromGtk(evnt->keyval));
+				return listener.ProcessKeyPressed(key, mods);
 			}));
 	}
 	else
 	{
-		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([evnt](core::I_RawInputListener& listener)
+		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([key, mods](core::I_RawInputListener& listener)
 			{
-				return listener.ProcessKeyReleased(GtkUtil::GetKeyFromGtk(evnt->keyval));
+				return listener.ProcessKeyReleased(key, mods);
 			}));
 	}
 

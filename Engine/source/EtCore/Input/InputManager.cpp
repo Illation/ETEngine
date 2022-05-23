@@ -93,7 +93,7 @@ void InputManager::SetCursorShape(E_CursorShape const shape)
 //---------------------------------
 // InputManager::ProcessKeyPressed
 //
-bool InputManager::ProcessKeyPressed(E_KbdKey const key)
+bool InputManager::ProcessKeyPressed(E_KbdKey const key, T_KeyModifierFlags const)
 {
 	m_KeyStates[key] = E_KeyState::Pressed;
 	return true;
@@ -102,7 +102,7 @@ bool InputManager::ProcessKeyPressed(E_KbdKey const key)
 //----------------------------------
 // InputManager::ProcessKeyReleased
 //
-bool InputManager::ProcessKeyReleased(E_KbdKey const key)
+bool InputManager::ProcessKeyReleased(E_KbdKey const key, T_KeyModifierFlags const)
 {
 	m_KeyStates[key] = E_KeyState::Released;
 	return true;
@@ -111,7 +111,7 @@ bool InputManager::ProcessKeyReleased(E_KbdKey const key)
 //-----------------------------------
 // InputManager::ProcessMousePressed
 //
-bool InputManager::ProcessMousePressed(E_MouseButton const button)
+bool InputManager::ProcessMousePressed(E_MouseButton const button, T_KeyModifierFlags const)
 {
 	m_MouseButtons[button] = E_KeyState::Pressed;
 	return true;
@@ -120,7 +120,7 @@ bool InputManager::ProcessMousePressed(E_MouseButton const button)
 //------------------------------------
 // InputManager::ProcessMouseReleased
 //
-bool InputManager::ProcessMouseReleased(E_MouseButton const button)
+bool InputManager::ProcessMouseReleased(E_MouseButton const button, T_KeyModifierFlags const)
 {
 	m_MouseButtons[button] = E_KeyState::Released;
 	return true;
@@ -129,7 +129,7 @@ bool InputManager::ProcessMouseReleased(E_MouseButton const button)
 //--------------------------------
 // InputManager::ProcessMouseMove
 //
-bool InputManager::ProcessMouseMove(ivec2 const& mousePos)
+bool InputManager::ProcessMouseMove(ivec2 const& mousePos, T_KeyModifierFlags const)
 {
 	vec2 newMouse = math::vecCast<float>(mousePos);
 	m_MouseMove = newMouse - m_MousePos;
@@ -140,7 +140,7 @@ bool InputManager::ProcessMouseMove(ivec2 const& mousePos)
 //--------------------------------------
 // InputManager::ProcessMouseWheelDelta
 //
-bool InputManager::ProcessMouseWheelDelta(ivec2 const& mouseWheel)
+bool InputManager::ProcessMouseWheelDelta(ivec2 const& mouseWheel, T_KeyModifierFlags const)
 {
 	m_MouseWheelDelta = math::vecCast<float>(mouseWheel);
 	return true;

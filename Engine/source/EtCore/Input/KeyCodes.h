@@ -149,6 +149,20 @@ enum class E_KbdKey : uint32
 };
 
 //---------------------------------
+// E_MouseButton
+//
+// Types of mouse buttons
+//
+enum E_MouseButton : uint8
+{
+	Left,
+	Center,
+	Right,
+
+	COUNT
+};
+
+//---------------------------------
 // E_KeyState
 //
 // Reflects the state of a keyboard key in a simplistic way - pressed and released are only valid for one frame
@@ -161,19 +175,29 @@ enum E_KeyState
 	Pressed
 };
 
-//---------------------------------
-// E_MouseButton
-//
-// Types of mouse buttons
-//
-enum E_MouseButton : uint8
-{
-	Left,
-	Center,		
-	Right,	
 
-	COUNT
+namespace core {
+
+//---------------------------
+// E_KeyModifier
+//
+// Bitfield for any key modifiers that may be pressed
+//
+typedef uint8 T_KeyModifierFlags;
+enum E_KeyModifier : T_KeyModifierFlags
+{
+	KM_Invalid = 0,
+
+	KM_Shift = 1 << 0,
+	KM_Control = 1 << 1,
+	KM_Alt = 1 << 2,
+	KM_Super = 1 << 3,
+	KM_CapsLock = 1 << 4,
+	KM_NumLock = 1 << 5,
+
+	VP_All = 0xFF
 };
 
 
+} // namespace core
 } // namespace et

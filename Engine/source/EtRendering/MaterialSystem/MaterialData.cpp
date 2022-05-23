@@ -151,7 +151,7 @@ bool MaterialAsset::LoadFromMemory(std::vector<uint8> const& data)
 	core::BinaryDeserializer deserializer;
 	if (!deserializer.DeserializeFromData(data, descriptor))
 	{
-		LOG("MaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor", core::LogLevel::Warning);
+		LOG("MaterialAsset::LoadFromMemory > Failed to deserialize data from a binary format into a material descriptor", core::LogLevel::Warning);
 		return false;
 	}
 

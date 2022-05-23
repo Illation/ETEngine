@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "ContextContainer.h"
 
+#include "RmlUtil.h"
+
 #include <EtCore/Input/RawInputProvider.h>
 
 #include <EtRendering/GraphicsContext/Viewport.h>
@@ -18,15 +20,30 @@ namespace gui {
 //--------------------------------
 // PerViewport::ProcessKeyPressed
 //
-bool ContextContainer::PerViewport::ProcessKeyPressed(E_KbdKey const key)
+bool ContextContainer::PerViewport::ProcessKeyPressed(E_KbdKey const key, core::T_KeyModifierFlags const modifiers)
 {
-	for (Context& context : m_Contexts)
+	Rml::Input::KeyIdentifier const rmlKey = RmlUtil::GetRmlKeyId(key);
+	if (rmlKey != Rml::Input::KeyIdentifier::KI_UNKNOWN)
 	{
-		if (context.IsActive() && context.IsDocumentLoaded())
+		int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
+		Rml::Character const character = RmlUtil::GetCharacterCode(rmlKey, mods);
+
+		for (Context& context : m_Contexts)
 		{
-			if (context.ProcessKeyPressed(key))
+			if (context.IsActive() && context.IsDocumentLoaded())
 			{
-				return true;
+				if (character != Rml::Character::Null) // try text input first - #todo: also provide text input periodically when a key is held down
+				{
+					if (context.ProcessTextInput(character))
+					{
+						return true;
+					}
+				}
+
+				if (context.ProcessKeyPressed(rmlKey, mods))
+				{
+					return true;
+				}
 			}
 		}
 	}
@@ -37,15 +54,20 @@ bool ContextContainer::PerViewport::ProcessKeyPressed(E_KbdKey const key)
 //---------------------------------
 // PerViewport::ProcessKeyReleased
 //
-bool ContextContainer::PerViewport::ProcessKeyReleased(E_KbdKey const key)
+bool ContextContainer::PerViewport::ProcessKeyReleased(E_KbdKey const key, core::T_KeyModifierFlags const modifiers)
 {
-	for (Context& context : m_Contexts)
+	Rml::Input::KeyIdentifier const rmlKey = RmlUtil::GetRmlKeyId(key);
+	if (rmlKey != Rml::Input::KeyIdentifier::KI_UNKNOWN)
 	{
-		if (context.IsActive() && context.IsDocumentLoaded())
+		int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
+		for (Context& context : m_Contexts)
 		{
-			if (context.ProcessKeyReleased(key))
+			if (context.IsActive() && context.IsDocumentLoaded())
 			{
-				return true;
+				if (context.ProcessKeyReleased(rmlKey, mods))
+				{
+					return true;
+				}
 			}
 		}
 	}
@@ -56,15 +78,20 @@ bool ContextContainer::PerViewport::ProcessKeyReleased(E_KbdKey const key)
 //----------------------------------
 // PerViewport::ProcessMousePressed
 //
-bool ContextContainer::PerViewport::ProcessMousePressed(E_MouseButton const button)
+bool ContextContainer::PerViewport::ProcessMousePressed(E_MouseButton const button, core::T_KeyModifierFlags const modifiers)
 {
-	for (Context& context : m_Contexts)
+	int32 const rmlButton = RmlUtil::GetRmlButtonIndex(button);
+	if (rmlButton != -1)
 	{
-		if (context.IsActive() && context.IsDocumentLoaded())
+		int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
+		for (Context& context : m_Contexts)
 		{
-			if (context.ProcessMousePressed(button))
+			if (context.IsActive() && context.IsDocumentLoaded())
 			{
-				return true;
+				if (context.ProcessMousePressed(rmlButton, mods))
+				{
+					return true;
+				}
 			}
 		}
 	}
@@ -75,15 +102,20 @@ bool ContextContainer::PerViewport::ProcessMousePressed(E_MouseButton const butt
 //-----------------------------------
 // PerViewport::ProcessMouseReleased
 //
-bool ContextContainer::PerViewport::ProcessMouseReleased(E_MouseButton const button)
+bool ContextContainer::PerViewport::ProcessMouseReleased(E_MouseButton const button, core::T_KeyModifierFlags const modifiers)
 {
-	for (Context& context : m_Contexts)
+	int32 const rmlButton = RmlUtil::GetRmlButtonIndex(button);
+	if (rmlButton != -1)
 	{
-		if (context.IsActive() && context.IsDocumentLoaded())
+		int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
+		for (Context& context : m_Contexts)
 		{
-			if (context.ProcessMouseReleased(button))
+			if (context.IsActive() && context.IsDocumentLoaded())
 			{
-				return true;
+				if (context.ProcessMouseReleased(rmlButton, mods))
+				{
+					return true;
+				}
 			}
 		}
 	}
@@ -94,13 +126,14 @@ bool ContextContainer::PerViewport::ProcessMouseReleased(E_MouseButton const but
 //-------------------------------
 // PerViewport::ProcessMouseMove
 //
-bool ContextContainer::PerViewport::ProcessMouseMove(ivec2 const& mousePos)
+bool ContextContainer::PerViewport::ProcessMouseMove(ivec2 const& mousePos, core::T_KeyModifierFlags const modifiers)
 {
+	int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
 	for (Context& context : m_Contexts)
 	{
 		if (context.IsActive() && context.IsDocumentLoaded())
 		{
-			if (context.ProcessMouseMove(mousePos))
+			if (context.ProcessMouseMove(mousePos, mods))
 			{
 				return true;
 			}
@@ -113,13 +146,14 @@ bool ContextContainer::PerViewport::ProcessMouseMove(ivec2 const& mousePos)
 //-------------------------------------
 // PerViewport::ProcessMouseWheelDelta
 //
-bool ContextContainer::PerViewport::ProcessMouseWheelDelta(ivec2 const& mouseWheel)
+bool ContextContainer::PerViewport::ProcessMouseWheelDelta(ivec2 const& mouseWheel, core::T_KeyModifierFlags const modifiers)
 {
+	int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
 	for (Context& context : m_Contexts)
 	{
 		if (context.IsActive() && context.IsDocumentLoaded())
 		{
-			if (context.ProcessMouseWheelDelta(mouseWheel))
+			if (context.ProcessMouseWheelDelta(mouseWheel, mods))
 			{
 				return true;
 			}

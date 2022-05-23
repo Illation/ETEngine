@@ -41,21 +41,49 @@ void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 		{
 			UNUSED(window);
 			UNUSED(scancode);
-			UNUSED(mods);
 
-			core::RawInputProvider& inputProvider = GlfwEventManager::GetInstance()->GetInputProvider();
+			GlfwEventManager* const inst = GlfwEventManager::GetInstance();
+
+			core::T_KeyModifierFlags const modifiers = static_cast<core::T_KeyModifierFlags>(mods);
+			inst->SetCurrentModifiers(mods);
+
+			core::RawInputProvider& inputProvider = inst->GetInputProvider();
 			if (action == GLFW_PRESS)
 			{
-				inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([key](core::I_RawInputListener& listener)
+				inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([key, modifiers](core::I_RawInputListener& listener)
 					{
-						return listener.ProcessKeyPressed(static_cast<E_KbdKey>(key));
+						return listener.ProcessKeyPressed(static_cast<E_KbdKey>(key), modifiers);
 					}));
 			}
 			else if (action == GLFW_RELEASE)
 			{
-				inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([key](core::I_RawInputListener& listener)
+				inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([key, modifiers](core::I_RawInputListener& listener)
 					{
-						return listener.ProcessKeyReleased(static_cast<E_KbdKey>(key));
+						return listener.ProcessKeyReleased(static_cast<E_KbdKey>(key), modifiers);
+					}));
+			}
+		});
+
+	// Mouse clicking
+	glfwSetMouseButtonCallback(renderArea->GetWindow(), [](GLFWwindow* const window, int32 const button, int32 const action, int32 const mods)
+		{
+			UNUSED(window);
+
+			core::T_KeyModifierFlags const modifiers = static_cast<core::T_KeyModifierFlags>(mods);
+
+			core::RawInputProvider& inputProvider = GlfwEventManager::GetInstance()->GetInputProvider();
+			if (action == GLFW_PRESS)
+			{
+				inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([button, modifiers](core::I_RawInputListener& listener)
+					{
+						return listener.ProcessMousePressed(GetButtonFromGlfw(button), modifiers);
+					}));
+			}
+			else if (action == GLFW_RELEASE)
+			{
+				inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([button, modifiers](core::I_RawInputListener& listener)
+					{
+						return listener.ProcessMouseReleased(GetButtonFromGlfw(button), modifiers);
 					}));
 			}
 		});
@@ -65,34 +93,13 @@ void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 		{
 			UNUSED(window);
 
-			core::RawInputProvider& inputProvider = GlfwEventManager::GetInstance()->GetInputProvider();
-			inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([xpos, ypos](core::I_RawInputListener& listener)
+			GlfwEventManager* const inst = GlfwEventManager::GetInstance();
+			core::T_KeyModifierFlags const mods = inst->GetCurrentModifiers();
+			core::RawInputProvider& inputProvider = inst->GetInputProvider();
+			inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([xpos, ypos, mods](core::I_RawInputListener& listener)
 				{
-					return listener.ProcessMouseMove(math::vecCast<int32>(dvec2(xpos, ypos)));
+					return listener.ProcessMouseMove(math::vecCast<int32>(dvec2(xpos, ypos)), mods);
 				}));
-		});
-
-	// Mouse clicking
-	glfwSetMouseButtonCallback(renderArea->GetWindow(), [](GLFWwindow* const window, int32 const button, int32 const action, int32 const mods)
-		{
-			UNUSED(window);
-			UNUSED(mods);
-
-			core::RawInputProvider& inputProvider = GlfwEventManager::GetInstance()->GetInputProvider();
-			if (action == GLFW_PRESS)
-			{
-				inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([button](core::I_RawInputListener& listener)
-					{
-						return listener.ProcessMousePressed(GetButtonFromGlfw(button));
-					}));
-			}
-			else if (action == GLFW_RELEASE)
-			{
-				inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([button](core::I_RawInputListener& listener)
-					{
-						return listener.ProcessMouseReleased(GetButtonFromGlfw(button));
-					}));
-			}
 		});
 
 	// scrolling
@@ -100,10 +107,12 @@ void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 		{
 			UNUSED(window);
 
-			core::RawInputProvider& inputProvider = GlfwEventManager::GetInstance()->GetInputProvider();
-			inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([xoffset, yoffset](core::I_RawInputListener& listener)
+			GlfwEventManager* const inst = GlfwEventManager::GetInstance();
+			core::T_KeyModifierFlags const mods = inst->GetCurrentModifiers();
+			core::RawInputProvider& inputProvider = inst->GetInputProvider();
+			inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([xoffset, yoffset, mods](core::I_RawInputListener& listener)
 				{
-					return listener.ProcessMouseWheelDelta(math::vecCast<int32>(dvec2(xoffset, yoffset)));
+					return listener.ProcessMouseWheelDelta(math::vecCast<int32>(dvec2(xoffset, yoffset)), mods);
 				}));
 		});
 

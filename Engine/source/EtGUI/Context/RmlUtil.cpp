@@ -172,6 +172,353 @@ Rml::Input::KeyIdentifier RmlUtil::GetRmlKeyId(E_KbdKey const key)
 	}
 }
 
+//---------------------------------
+// RmlUtil::GetRmlModifierFlags
+//
+// Convert Engine modifier flags to Rml modifier flags
+//
+int32 RmlUtil::GetRmlModifierFlags(core::T_KeyModifierFlags const mods)
+{
+	int ret = 0;
+
+	if (mods & core::E_KeyModifier::KM_Shift)
+	{
+		ret |= Rml::Input::KeyModifier::KM_SHIFT;
+	}
+
+	if (mods & core::E_KeyModifier::KM_Control)
+	{
+		ret |= Rml::Input::KeyModifier::KM_CTRL;
+	}
+
+	if (mods & core::E_KeyModifier::KM_Alt)
+	{
+		ret |= Rml::Input::KeyModifier::KM_ALT;
+	}
+
+	if (mods & core::E_KeyModifier::KM_Super)
+	{
+		ret |= Rml::Input::KeyModifier::KM_META;
+	}
+
+	if (mods & core::E_KeyModifier::KM_CapsLock)
+	{
+		ret |= Rml::Input::KeyModifier::KM_CAPSLOCK;
+	}
+
+	if (mods & core::E_KeyModifier::KM_NumLock)
+	{
+		ret |= Rml::Input::KeyModifier::KM_NUMLOCK;
+	}
+
+	return ret;
+}
+
+//---------------------------------
+// RmlUtil::GetCharacterCode
+//
+// Generate a Unicode character based on the Key and Modifier State
+//  - based on shell sample from Rml repo
+//
+Rml::Character RmlUtil::GetCharacterCode(Rml::Input::KeyIdentifier const key, int32 const modifierState)
+{
+	// preset conversions
+	//--------------------
+	static char s_AsciiMap[4][51] =
+	{
+		// shift off and capslock off
+		{
+			0,
+			' ',
+			'0',
+			'1',
+			'2',
+			'3',
+			'4',
+			'5',
+			'6',
+			'7',
+			'8',
+			'9',
+			'a',
+			'b',
+			'c',
+			'd',
+			'e',
+			'f',
+			'g',
+			'h',
+			'i',
+			'j',
+			'k',
+			'l',
+			'm',
+			'n',
+			'o',
+			'p',
+			'q',
+			'r',
+			's',
+			't',
+			'u',
+			'v',
+			'w',
+			'x',
+			'y',
+			'z',
+			';',
+			'=',
+			',',
+			'-',
+			'.',
+			'/',
+			'`',
+			'[',
+			'\\',
+			']',
+			'\'',
+			0,
+			0
+		},
+
+		// shift on and capslock off
+		{
+			0,
+			' ',
+			')',
+			'!',
+			'@',
+			'#',
+			'$',
+			'%',
+			'^',
+			'&',
+			'*',
+			'(',
+			'A',
+			'B',
+			'C',
+			'D',
+			'E',
+			'F',
+			'G',
+			'H',
+			'I',
+			'J',
+			'K',
+			'L',
+			'M',
+			'N',
+			'O',
+			'P',
+			'Q',
+			'R',
+			'S',
+			'T',
+			'U',
+			'V',
+			'W',
+			'X',
+			'Y',
+			'Z',
+			':',
+			'+',
+			'<',
+			'_',
+			'>',
+			'?',
+			'~',
+			'{',
+			'|',
+			'}',
+			'"',
+			0,
+			0
+		},
+
+		// shift off and capslock on
+		{
+			0,
+			' ',
+			'1',
+			'2',
+			'3',
+			'4',
+			'5',
+			'6',
+			'7',
+			'8',
+			'9',
+			'0',
+			'A',
+			'B',
+			'C',
+			'D',
+			'E',
+			'F',
+			'G',
+			'H',
+			'I',
+			'J',
+			'K',
+			'L',
+			'M',
+			'N',
+			'O',
+			'P',
+			'Q',
+			'R',
+			'S',
+			'T',
+			'U',
+			'V',
+			'W',
+			'X',
+			'Y',
+			'Z',
+			';',
+			'=',
+			',',
+			'-',
+			'.',
+			'/',
+			'`',
+			'[',
+			'\\',
+			']',
+			'\'',
+			0,
+			0
+		},
+
+		// shift on and capslock on
+		{
+			0,
+			' ',
+			')',
+			'!',
+			'@',
+			'#',
+			'$',
+			'%',
+			'^',
+			'&',
+			'*',
+			'(',
+			'a',
+			'b',
+			'c',
+			'd',
+			'e',
+			'f',
+			'g',
+			'h',
+			'i',
+			'j',
+			'k',
+			'l',
+			'm',
+			'n',
+			'o',
+			'p',
+			'q',
+			'r',
+			's',
+			't',
+			'u',
+			'v',
+			'w',
+			'x',
+			'y',
+			'z',
+			':',
+			'+',
+			'<',
+			'_',
+			'>',
+			'?',
+			'~',
+			'{',
+			'|',
+			'}',
+			'"',
+			0,
+			0
+		}
+	};
+
+	static char s_KeypadMap[2][18] =
+	{
+		// numlock off
+		{
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			'\n',
+			'*',
+			'+',
+			0,
+			'-',
+			0,
+			'/',
+			'='
+		},
+
+		// numlock on
+		{
+			'0',
+			'1',
+			'2',
+			'3',
+			'4',
+			'5',
+			'6',
+			'7',
+			'8',
+			'9',
+			'\n',
+			'*',
+			'+',
+			0,
+			'-',
+			'.',
+			'/',
+			'='
+		}
+	};
+
+	// implementation
+	//----------------
+
+	if (key <= Rml::Input::KI_OEM_102) // Check if we have a keycode capable of generating characters on the main keyboard 
+	{
+		// generate index into keymap based on modifier state
+		int32 asciiMapIdx = 0u;
+		asciiMapIdx |= (modifierState & Rml::Input::KM_SHIFT); // generates 1 or 0
+		asciiMapIdx |= (modifierState & Rml::Input::KM_CAPSLOCK) >> 3; // generates 2^4 (or 0) so we shift over to 2^1
+
+		return static_cast<Rml::Character>(s_AsciiMap[asciiMapIdx][key]);
+	}
+	else if (key <= Rml::Input::KI_OEM_NEC_EQUAL) // Check if we have a keycode from the numeric keypad.
+	{
+		int32 const keyMapIdx = (modifierState & Rml::Input::KM_NUMLOCK) >> 5; // generates 2^5 (or 0) so we shift over to 2^0
+		return static_cast<Rml::Character>(s_KeypadMap[keyMapIdx][key - Rml::Input::KI_NUMPAD0]);
+	}
+	else if (key == Rml::Input::KI_RETURN)
+	{
+		return static_cast<Rml::Character>('\n');
+	}
+
+	return Rml::Character::Null;
+}
+
 
 } // namespace gui
 } // namespace et

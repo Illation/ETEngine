@@ -24,15 +24,15 @@ public:
 	virtual int8 GetPriority() const { return 0; }
 
 	// keyboard
-	virtual bool ProcessKeyPressed(E_KbdKey const key) = 0;
-	virtual bool ProcessKeyReleased(E_KbdKey const key) = 0;
+	virtual bool ProcessKeyPressed(E_KbdKey const key, T_KeyModifierFlags const modifiers) = 0;
+	virtual bool ProcessKeyReleased(E_KbdKey const key, T_KeyModifierFlags const modifiers) = 0;
 
 	// mouse
-	virtual bool ProcessMousePressed(E_MouseButton const button) = 0;
-	virtual bool ProcessMouseReleased(E_MouseButton const button) = 0;
+	virtual bool ProcessMousePressed(E_MouseButton const button, T_KeyModifierFlags const modifiers) = 0;
+	virtual bool ProcessMouseReleased(E_MouseButton const button, T_KeyModifierFlags const modifiers) = 0;
 
-	virtual bool ProcessMouseMove(ivec2 const& mousePos) = 0;
-	virtual bool ProcessMouseWheelDelta(ivec2 const& mouseWheel) = 0;
+	virtual bool ProcessMouseMove(ivec2 const& mousePos, T_KeyModifierFlags const modifiers) = 0;
+	virtual bool ProcessMouseWheelDelta(ivec2 const& mouseWheel, T_KeyModifierFlags const modifiers) = 0;
 };
 
 

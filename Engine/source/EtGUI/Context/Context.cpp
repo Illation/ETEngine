@@ -2,7 +2,6 @@
 #include "Context.h"
 
 #include "RmlGlobal.h"
-#include "RmlUtil.h"
 
 #include <RmlUi/Core/Core.h>
 #include <RmlUi/Core/Context.h>
@@ -66,51 +65,57 @@ void Context::UnloadDocument()
 //--------------------------------
 // Context::ProcessKeyPressed
 //
-// #todo: Convert key events to text events for RML
-//
-bool Context::ProcessKeyPressed(E_KbdKey const key)
+bool Context::ProcessKeyPressed(Rml::Input::KeyIdentifier const key, int32 const rmlModifier)
 {
-	return !(m_Context->ProcessKeyDown(RmlUtil::GetRmlKeyId(key), 0));
+	return !(m_Context->ProcessKeyDown(key, rmlModifier));
 }
 
 //---------------------------------
 // Context::ProcessKeyReleased
 //
-bool Context::ProcessKeyReleased(E_KbdKey const key)
+bool Context::ProcessKeyReleased(Rml::Input::KeyIdentifier const key, int32 const rmlModifier)
 {
-	return !(m_Context->ProcessKeyUp(RmlUtil::GetRmlKeyId(key), 0));
+	return !(m_Context->ProcessKeyUp(key, rmlModifier));
 }
 
 //----------------------------------
 // Context::ProcessMousePressed
 //
-bool Context::ProcessMousePressed(E_MouseButton const button)
+bool Context::ProcessMousePressed(int32 const button, int32 const rmlModifier)
 {
-	return !(m_Context->ProcessMouseButtonDown(RmlUtil::GetRmlButtonIndex(button), 0));
+	return !(m_Context->ProcessMouseButtonDown(button, rmlModifier));
 }
 
 //-----------------------------------
 // Context::ProcessMouseReleased
 //
-bool Context::ProcessMouseReleased(E_MouseButton const button)
+bool Context::ProcessMouseReleased(int32 const button, int32 const rmlModifier)
 {
-	return !(m_Context->ProcessMouseButtonUp(RmlUtil::GetRmlButtonIndex(button), 0));
+	return !(m_Context->ProcessMouseButtonUp(button, rmlModifier));
 }
 
 //-------------------------------
 // Context::ProcessMouseMove
 //
-bool Context::ProcessMouseMove(ivec2 const& mousePos)
+bool Context::ProcessMouseMove(ivec2 const& mousePos, int32 const rmlModifier)
 {
-	return !(m_Context->ProcessMouseMove(mousePos.x, mousePos.y, 0));
+	return !(m_Context->ProcessMouseMove(mousePos.x, mousePos.y, rmlModifier));
 }
 
 //-------------------------------------
 // Context::ProcessMouseWheelDelta
 //
-bool Context::ProcessMouseWheelDelta(ivec2 const& mouseWheel)
+bool Context::ProcessMouseWheelDelta(ivec2 const& mouseWheel, int32 const rmlModifier)
 {
-	return (!m_Context->ProcessMouseWheel(static_cast<float>(mouseWheel.y), 0));
+	return !(m_Context->ProcessMouseWheel(static_cast<float>(mouseWheel.y), rmlModifier));
+}
+
+//-------------------------------------
+// Context::ProcessTextInput
+//
+bool Context::ProcessTextInput(Rml::Character const character)
+{
+	return !(m_Context->ProcessTextInput(character));
 }
 
 

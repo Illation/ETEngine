@@ -81,12 +81,12 @@ public:
 
 	// Raw Input Listener interface
 	//------------------------------
-	bool ProcessKeyPressed(E_KbdKey const key) override;
-	bool ProcessKeyReleased(E_KbdKey const key) override;
-	bool ProcessMousePressed(E_MouseButton const button) override;
-	bool ProcessMouseReleased(E_MouseButton const button) override;
-	bool ProcessMouseMove(ivec2 const& mousePos) override;
-	bool ProcessMouseWheelDelta(ivec2 const& mouseWheel) override;
+	bool ProcessKeyPressed(E_KbdKey const key, T_KeyModifierFlags const) override;
+	bool ProcessKeyReleased(E_KbdKey const key, T_KeyModifierFlags const) override;
+	bool ProcessMousePressed(E_MouseButton const button, T_KeyModifierFlags const) override;
+	bool ProcessMouseReleased(E_MouseButton const button, T_KeyModifierFlags const) override;
+	bool ProcessMouseMove(ivec2 const& mousePos, T_KeyModifierFlags const) override;
+	bool ProcessMouseWheelDelta(ivec2 const& mouseWheel, T_KeyModifierFlags const) override;
 
 	// Utility
 	//-------------
