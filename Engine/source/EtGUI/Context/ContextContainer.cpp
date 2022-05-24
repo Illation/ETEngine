@@ -238,6 +238,37 @@ T_ContextId ContextContainer::CreateContext(Ptr<render::Viewport> const viewport
 	return ret.second;
 }
 
+//----------------------------------
+// ContextContainer::DestroyContext
+//
+// will delete the last PerViewport data and event bindings
+//
+void ContextContainer::DestroyContext(T_ContextId const id)
+{
+	ContextData& ctxData = m_Contexts[id];
+
+	T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
+	ET_ASSERT(found != m_ViewportContexts.cend());
+	if (found->second.m_Contexts.size() == 1u)
+	{
+		core::RawInputProvider* const inputProvider = ctxData.m_Viewport->GetInputProvider();
+		if (inputProvider != nullptr)
+		{
+			inputProvider->UnregisterListener(&(found->second));
+		}
+
+		ET_ASSERT(found->second.m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID);
+		ctxData.m_Viewport->GetEventDispatcher().Unregister(found->second.m_VPCallbackId);
+		m_ViewportContexts.erase(found);
+	}
+	else
+	{
+		found->second.m_Contexts.erase(ctxData.m_Context);
+	}
+
+	m_Contexts.erase(id);
+}
+
 //------------------------------------
 // ContextContainer::SetContextActive
 //
@@ -281,37 +312,6 @@ void ContextContainer::SetLoadedDocument(T_ContextId const id, core::HashString 
 	}
 }
 
-//----------------------------------
-// ContextContainer::DestroyContext
-//
-// will delete the last PerViewport data and event bindings
-//
-void ContextContainer::DestroyContext(T_ContextId const id)
-{
-	ContextData& ctxData = m_Contexts[id];
-
-	T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
-	ET_ASSERT(found != m_ViewportContexts.cend());
-	if (found->second.m_Contexts.size() == 1u)
-	{
-		core::RawInputProvider* const inputProvider = ctxData.m_Viewport->GetInputProvider();
-		if (inputProvider != nullptr)
-		{
-			inputProvider->UnregisterListener(&(found->second));
-		}
-
-		ET_ASSERT(found->second.m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID);
-		ctxData.m_Viewport->GetEventDispatcher().Unregister(found->second.m_VPCallbackId);
-		m_ViewportContexts.erase(found);
-	}
-	else
-	{
-		found->second.m_Contexts.erase(ctxData.m_Context);
-	}
-
-	m_Contexts.erase(id);
-}
-
 //---------------------------------
 // ContextContainer::GetContexts
 //
@@ -337,6 +337,14 @@ ContextContainer::T_Contexts const& ContextContainer::GetContexts(render::Viewpo
 	}
 
 	return found->second.m_Contexts;
+}
+
+//----------------------------------
+// ContextContainer::GetContext
+//
+Rml::ElementDocument* ContextContainer::GetDocument(T_ContextId const id)
+{
+	return GetContext(id).GetDocument();
 }
 
 //----------------------------------

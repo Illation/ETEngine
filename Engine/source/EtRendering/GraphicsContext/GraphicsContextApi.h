@@ -39,10 +39,13 @@ public:
 	virtual void SetBlendEnabled(std::vector<bool> const& blendBuffers) = 0;
 	virtual void SetStencilEnabled(bool const enabled) = 0;
 	virtual void SetCullEnabled(bool const enabled) = 0;
+	virtual void SetScissorEnabled(bool const enabled) = 0;
 
 	virtual void SetFaceCullingMode(E_FaceCullMode const cullMode) = 0;
 	virtual void SetBlendEquation(E_BlendEquation const equation) = 0;
 	virtual void SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor) = 0;
+
+	virtual void SetScissor(ivec2 const pos, ivec2 const size) = 0;
 
 	virtual void SetViewport(ivec2 const pos, ivec2 const size) = 0;
 	virtual void GetViewport(ivec2& pos, ivec2& size) = 0;

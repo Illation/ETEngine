@@ -121,10 +121,13 @@ public:
 	void SetBlendEnabled(std::vector<bool> const& blendBuffers) override;
 	void SetStencilEnabled(bool const enabled) override;
 	void SetCullEnabled(bool const enabled) override;
+	void SetScissorEnabled(bool const enabled) override;
 
 	void SetFaceCullingMode(E_FaceCullMode const cullMode) override;
 	void SetBlendEquation(E_BlendEquation const equation) override;
 	void SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor) override;
+
+	void SetScissor(ivec2 const pos, ivec2 const size) override;
 
 	void SetViewport(ivec2 const pos, ivec2 const size) override;
 	void GetViewport(ivec2& pos, ivec2& size) override;
@@ -335,8 +338,12 @@ private:
 	E_BlendFactor m_BlendFuncSFactor = E_BlendFactor::One;
 	E_BlendFactor m_BlendFuncDFactor = E_BlendFactor::Zero;
 
+	bool m_ScissorEnabled = false;
+	ivec2 m_ScissorPosition = ivec2(0);
+	ivec2 m_ScissorSize; // initialize with values used during context creation
+
 	ivec2 m_ViewportPosition = ivec2(0);
-	ivec2 m_ViewportSize; //initialize with values used during context creation
+	ivec2 m_ViewportSize; // initialize with values used during context creation
 
 	vec4 m_ClearColor = vec4(0);
 

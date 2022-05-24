@@ -34,3 +34,15 @@ input.text {
 	width: 200px;
 	font-size: 0.9em;
 }
+		
+input.checkbox {
+	background-color: #fff;
+	color: #555;
+	border: 2px #999;
+	padding: 5px;
+	tab-index: auto;
+	cursor: text;
+	box-sizing: border-box;
+	width: 200px;
+	font-size: 0.9em;
+}

@@ -131,6 +131,14 @@ void Context::Update()
 	m_Context->Update();
 }
 
+//-------------------------
+// Context::UnloadDocument
+//
+void Context::Render()
+{
+	m_Context->Render();
+}
+
 //--------------------------------
 // Context::ProcessKeyPressed
 //

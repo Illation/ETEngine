@@ -29,6 +29,12 @@ RmlRenderInterface::RmlRenderInterface()
 	m_GeneratedParameters.wrapS = render::E_TextureWrapMode::ClampToEdge;
 	m_GeneratedParameters.wrapT = render::E_TextureWrapMode::ClampToEdge;
 	m_GeneratedParameters.borderColor = vec4(0.f);
+
+	std::vector<uint8> emptyTexData({
+		255, 255, 255, 255,    255, 255, 255, 255,
+		255, 255, 255, 255,    255, 255, 255, 255
+		});
+	m_EmptyWhiteTex2x2 = GenTextureInternal(reinterpret_cast<void const*>(emptyTexData.data()), ivec2(2));
 }
 
 //-------------------------------------
@@ -62,10 +68,18 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 
 		geometry.m_Texture = foundIt->second.Get();
 	}
+	else
+	{
+		geometry.m_Texture = m_EmptyWhiteTex2x2;
+	}
 
 	// create buffers
-	int64 const iBufferSize = static_cast<int64>(numIndices * sizeof(int32));
+	int64 const iBufferSize = static_cast<int64>(numIndices * sizeof(uint32));
 	int64 const vBufferSize = static_cast<int64>(numVertices * sizeof(Rml::Vertex));
+
+	// create a new vertex array and input layout
+	geometry.m_VertexArray = m_GraphicsContext->CreateVertexArray();
+	m_GraphicsContext->BindVertexArray(geometry.m_VertexArray);
 
 	geometry.m_VertexBuffer = m_GraphicsContext->CreateBuffer();
 	m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, geometry.m_VertexBuffer);
@@ -74,11 +88,15 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 	geometry.m_IndexBuffer = m_GraphicsContext->CreateBuffer();
 	m_GraphicsContext->BindBuffer(render::E_BufferType::Index, geometry.m_IndexBuffer);
 	m_GraphicsContext->SetBufferData(render::E_BufferType::Index, iBufferSize, reinterpret_cast<void const*>(indices), render::E_UsageHint::Static);
+	
+	m_GraphicsContext->SetVertexAttributeArrayEnabled(0, true);
+	m_GraphicsContext->SetVertexAttributeArrayEnabled(1, true);
+	m_GraphicsContext->SetVertexAttributeArrayEnabled(2, true);
 
-	// create a new vertex array and input layout
-	geometry.m_VertexArray = m_GraphicsContext->CreateVertexArray();
-	m_GraphicsContext->BindVertexArray(geometry.m_VertexArray);
-	//AttributeDescriptor::DefineAttributeArray(mesh->GetSupportedFlags(), m_Material->GetLayoutFlags(), m_Material->GetAttributeLocations());
+	int32 const vertSize = sizeof(Rml::Vertex);
+	m_GraphicsContext->DefineVertexAttributePointer(0, 2, render::E_DataType::Float, false, vertSize, offsetof(Rml::Vertex, position));
+	m_GraphicsContext->DefineVertexAttributePointer(1, 4, render::E_DataType::UByte, true, vertSize, offsetof(Rml::Vertex, colour));
+	m_GraphicsContext->DefineVertexAttributePointer(2, 2, render::E_DataType::Float, false, vertSize, offsetof(Rml::Vertex, tex_coord));
 
 	// done
 	m_GraphicsContext->BindVertexArray(0u);
@@ -91,7 +109,46 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 //
 void RmlRenderInterface::RenderCompiledGeometry(Rml::CompiledGeometryHandle geometry, Rml::Vector2f const& translation)
 {
+	// the geometry in question
+	T_Geometries::const_iterator const foundIt = m_Geometries.find(geometry);
+	ET_ASSERT(foundIt != m_Geometries.cend());
 
+	Geometry const& geo = foundIt->second;
+
+	// scissor rectangle
+	if (m_IsScissorEnabled)
+	{
+		if (m_HasTransform)
+		{
+			ET_ASSERT(false, "Transformed scissor regions are currently not implemented");
+			// #todo: transformed scissor region
+			// m_GraphicsContext->SetScissorEnabled(false);
+			// draw rectangle with scissor dimensions into stencil buffer
+			// use stencil buffer to reject pixels outside of rectangle
+			return;
+		}
+		else
+		{
+			m_GraphicsContext->SetScissorEnabled(true);
+			m_GraphicsContext->SetScissor(m_ScissorPos, m_ScissorSize);
+		}
+	}
+	else
+	{
+		m_GraphicsContext->SetScissorEnabled(false);
+	}
+
+	// what to draw
+	m_GraphicsContext->BindVertexArray(geo.m_VertexArray); // this should be unbound at the end of rendering a context
+
+	// update shader parameters - shader should already be set
+	ET_ASSERT(m_Shader != nullptr);
+	m_Shader->Upload("uTranslation"_hash, vec2(translation.x, translation.y));
+	m_Shader->Upload("uTransform"_hash, m_CurrentTransform);
+	m_Shader->Upload("uTexture"_hash, geo.m_Texture.Get());
+
+	// draw
+	m_GraphicsContext->DrawElements(render::E_DrawMode::Triangles, geo.m_NumIndices, render::E_DataType::UInt, 0);
 }
 
 //---------------------------------------------
@@ -117,7 +174,7 @@ void RmlRenderInterface::ReleaseCompiledGeometry(Rml::CompiledGeometryHandle geo
 //
 void RmlRenderInterface::EnableScissorRegion(bool enable)
 {
-	UNUSED(enable);
+	m_IsScissorEnabled = enable;
 }
 
 //--------------------------------------
@@ -127,10 +184,8 @@ void RmlRenderInterface::EnableScissorRegion(bool enable)
 //
 void RmlRenderInterface::SetScissorRegion(int32 x, int32 y, int32 width, int32 height)
 {
-	UNUSED(x);
-	UNUSED(y);
-	UNUSED(width);
-	UNUSED(height);
+	m_ScissorPos = ivec2(x, y);
+	m_ScissorSize = ivec2(width, height);
 }
 
 //---------------------------------
@@ -161,12 +216,8 @@ bool RmlRenderInterface::LoadTexture(Rml::TextureHandle& textureHandle, Rml::Vec
 //
 bool RmlRenderInterface::GenerateTexture(Rml::TextureHandle& textureHandle, Rml::byte const* source, Rml::Vector2i const& sourceDimensions)
 {
-	UniquePtr<render::TextureData> tex = Create<render::TextureData>(render::E_ColorFormat::RGBA8, ivec2(sourceDimensions.x, sourceDimensions.y));
-	tex->UploadData(reinterpret_cast<void const*>(source), render::E_ColorFormat::RGBA, render::E_DataType::UByte, 0u);
-	tex->SetParameters(m_GeneratedParameters);
-	tex->GenerateMipMaps();
-
-	std::pair<T_Textures::iterator, bool> res = m_Textures.emplace(++m_LastTextureHandle, std::move(tex));
+	std::pair<T_Textures::iterator, bool> res = m_Textures.emplace(++m_LastTextureHandle, 
+		std::move(GenTextureInternal(reinterpret_cast<void const*>(source), ivec2(sourceDimensions.x, sourceDimensions.y))));
 	ET_ASSERT(res.second);
 
 	textureHandle = res.first->first;
@@ -200,6 +251,19 @@ void RmlRenderInterface::SetTransform(Rml::Matrix4f const* transform)
 		m_CurrentTransform = mat4();
 		m_HasTransform = false;
 	}
+}
+
+//----------------------------------------
+// RmlRenderInterface::GenTextureInternal
+//
+UniquePtr<render::TextureData> RmlRenderInterface::GenTextureInternal(void const* data, ivec2 dimensions)
+{
+	UniquePtr<render::TextureData> tex = Create<render::TextureData>(render::E_ColorFormat::RGBA8, dimensions);
+	tex->UploadData(data, render::E_ColorFormat::RGBA, render::E_DataType::UByte, 0u);
+	tex->SetParameters(m_GeneratedParameters);
+	tex->GenerateMipMaps();
+
+	return std::move(tex);
 }
 
 

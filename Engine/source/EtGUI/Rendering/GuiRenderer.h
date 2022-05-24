@@ -33,7 +33,7 @@ public:
 	// functionality
 	//---------------
 	void DrawInWorld(render::T_FbLoc const targetFb, GuiExtension const& guiExt, core::slot_map<mat4> const& nodes);
-	void DrawOverlay(render::T_FbLoc const targetFb, GuiExtension const& guiExt);
+	void DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiExt);
 
 	// accessors
 	//-----------
@@ -57,6 +57,7 @@ private:
 
 	// Rml UI rendering
 	RefPtr<RmlGlobal> m_RmlGlobal;
+	AssetPtr<render::ShaderData> m_RmlShader;
 };
 
 

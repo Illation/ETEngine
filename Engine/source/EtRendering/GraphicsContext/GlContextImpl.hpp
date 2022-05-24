@@ -643,6 +643,7 @@ GL_CONTEXT_CLASSNAME::~GL_CONTEXT_CLASSNAME()
 void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 {
 	m_ViewportSize = dimensions;
+	m_ScissorSize = dimensions;
 
 	if (m_IsInitialized)
 	{
@@ -863,6 +864,14 @@ void GL_CONTEXT_CLASSNAME::SetCullEnabled(bool const enabled)
 }
 
 //---------------------------------
+// GlContext::SetCullEnabled
+//
+void GL_CONTEXT_CLASSNAME::SetScissorEnabled(bool const enabled)
+{
+	EnOrDisAble(m_ScissorEnabled, enabled, GL_SCISSOR_TEST);
+}
+
+//---------------------------------
 // GlContext::SetFaceCullingMode
 //
 // Set the culling mode (front back neither...)
@@ -903,6 +912,21 @@ void GL_CONTEXT_CLASSNAME::SetBlendFunction(E_BlendFactor const sFactor, E_Blend
 		m_BlendFuncSFactor = sFactor;
 		m_BlendFuncDFactor = dFactor;
 		glBlendFunc(GL_CONTEXT_NS::ConvBlendFactor(sFactor), GL_CONTEXT_NS::ConvBlendFactor(dFactor));
+	}
+}
+
+//---------------------------------
+// GlContext::SetScissor
+//
+// Set the dimensions of the scissor rectangle
+//
+void GL_CONTEXT_CLASSNAME::SetScissor(ivec2 const pos, ivec2 const size)
+{
+	if (!(math::nearEqualsV(m_ScissorPosition, pos) && math::nearEqualsV(m_ScissorSize, size)))
+	{
+		m_ScissorPosition = pos;
+		m_ScissorSize = size;
+		glScissor(pos.x, pos.y, size.x, size.y);
 	}
 }
 

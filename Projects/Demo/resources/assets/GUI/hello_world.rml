@@ -9,5 +9,6 @@
 	<p>Hello <span id="world">world</span>!</p>
 	<p data-if="show_text">The quick brown fox jumps over the lazy {{animal}}.</p>
 	<input type="text" data-value="animal"/>
+	<!-- <input type="checkbox" data-value="show_text"/> -->
 </body>
 </rml>

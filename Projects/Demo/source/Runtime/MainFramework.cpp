@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "MainFramework.h"
 
 #include "SpawnSystem.h"
@@ -6,6 +6,8 @@
 #include "SwirlyLightSystem.h"
 #include "CelestialBodySystem.h"
 #include "PlaylistSystem.h"
+
+#include <RmlUi/Core/ElementDocument.h>
 
 #include <EtCore/Content/ResourceManager.h>
 
@@ -28,6 +30,10 @@ namespace demo {
 //================
 // Main Framework
 //================
+
+
+// static
+core::HashString const MainFramework::s_HelloWorldGuiId("GUI/hello_world.rml");
 
 
 //-----------------------------
@@ -54,18 +60,23 @@ void MainFramework::OnInit()
 	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<gui::SpriteFont>(core::HashString("Fonts/Ubuntu-Regular.ttf"));
 
 	// scenes
-	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::Activated | fw::E_SceneEvent::PreLoadScreenGUI,
+	fw::UnifiedScene::Instance().GetEventDispatcher().Register(
+		fw::E_SceneEvent::Activated | fw::E_SceneEvent::PreLoadScreenGUI | fw::E_SceneEvent::PostLoadScreenGUI,
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const evnt)
 			{
-			if (static_cast<fw::E_SceneEvent>(flags) == fw::E_SceneEvent::Activated)
-			{
-				OnSceneActivated();
-			}
-			else if (static_cast<fw::E_SceneEvent>(flags) == fw::E_SceneEvent::PreLoadScreenGUI)
-			{
-				PreLoadGUI(static_cast<fw::SceneEventGUIData const*>(evnt));
-			}
-		}));
+				if (static_cast<fw::E_SceneEvent>(flags) == fw::E_SceneEvent::Activated)
+				{
+					OnSceneActivated();
+				}
+				else if (static_cast<fw::E_SceneEvent>(flags) == fw::E_SceneEvent::PreLoadScreenGUI)
+				{
+					PreLoadGUI(static_cast<fw::SceneEventPreLoadGUIData const*>(evnt));
+				}
+				else if (static_cast<fw::E_SceneEvent>(flags) == fw::E_SceneEvent::PostLoadScreenGUI)
+				{
+					PostLoadGUI(static_cast<fw::SceneEventGUIData const*>(evnt));
+				}
+			}));
 
 	// audio
 	fw::AudioManager::GetInstance()->SetDistanceModel(AL_INVERSE_DISTANCE);
@@ -193,9 +204,9 @@ void MainFramework::OnSceneActivated()
 //
 // Ensure we are set up with the right UI data models
 //
-void MainFramework::PreLoadGUI(fw::SceneEventGUIData const* const evnt)
+void MainFramework::PreLoadGUI(fw::SceneEventPreLoadGUIData const* const evnt)
 {
-	if (evnt->guiDocumentId == "GUI/hello_world.rml"_hash)
+	if (evnt->guiDocumentId == s_HelloWorldGuiId)
 	{
 		gui::ContextContainer& guiContainer = evnt->scene->GetGuiExtension()->GetContextContainer();
 		gui::T_ContextId const context = evnt->scene->GetScreenGuiContext();
@@ -211,6 +222,28 @@ void MainFramework::PreLoadGUI(fw::SceneEventGUIData const* const evnt)
 		else
 		{
 			guiContainer.DestroyDataModel(context, "animals");
+		}
+	}
+}
+
+//---------------------------
+// MainFramework::PreLoadGUI
+//
+void MainFramework::PostLoadGUI(fw::SceneEventGUIData const* const evnt)
+{
+	if (evnt->guiDocumentId == s_HelloWorldGuiId)
+	{
+		gui::ContextContainer& guiContainer = evnt->scene->GetGuiExtension()->GetContextContainer();
+		gui::T_ContextId const context = evnt->scene->GetScreenGuiContext();
+
+		Rml::ElementDocument* const doc = guiContainer.GetDocument(context);
+		ET_ASSERT(doc != nullptr);
+
+		Rml::Element* const element = doc->GetElementById("world");
+		if (element != nullptr)
+		{
+			element->SetInnerRML(reinterpret_cast<const char*>(u8"🌍"));
+			element->SetProperty("font-size", "1.5em");
 		}
 	}
 }

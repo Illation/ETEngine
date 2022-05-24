@@ -85,16 +85,21 @@ protected:
 	//---------------
 public:
 	T_ContextId CreateContext(Ptr<render::Viewport> const viewport);
+	void DestroyContext(T_ContextId const id);
+
 	void SetContextActive(T_ContextId const id, bool const isActive);
+
 	Rml::DataModelConstructor CreateDataModel(T_ContextId const id, std::string const& modelName);
 	bool DestroyDataModel(T_ContextId const id, std::string const& modelName);
+
 	void SetLoadedDocument(T_ContextId const id, core::HashString const documentId);
-	void DestroyContext(T_ContextId const id);
 
 	// accessors
 	//-----------
 	T_Contexts& GetContexts(render::Viewport const* const vp);
 	T_Contexts const& GetContexts(render::Viewport const* const vp) const;
+
+	Rml::ElementDocument* GetDocument(T_ContextId const id);
 
 	// utility
 	//---------

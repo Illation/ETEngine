@@ -1,0 +1,16 @@
+{
+  "editable shader asset": {
+    "asset": {
+      "shader asset": {
+        "name": "PostRmlUi.glsl",
+        "path": "Shaders/",
+        "package": "",
+        "references": []
+      }
+    },
+    "metadata": null,
+    "children": [],
+    "use geometry": false,
+    "use fragment": true
+  }
+}

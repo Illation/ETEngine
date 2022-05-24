@@ -5,6 +5,7 @@
 
 #include <EtRendering/GraphicsContext/GraphicsTypes.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
 
 
 namespace et {
@@ -12,9 +13,9 @@ namespace gui {
 
 
 //---------------------------------
-// RmlSystemInterface
+// RmlRenderInterface
 //
-// Implementation of RmlUi's system interface
+// Implementation of RmlUi's render interface
 //
 class RmlRenderInterface final : public Rml::RenderInterface
 {
@@ -62,6 +63,7 @@ public:
 	// functionality
 	//---------------
 	void SetGraphicsContext(Ptr<render::I_GraphicsContextApi> const graphicsContext) { m_GraphicsContext = graphicsContext; }
+	void SetShader(AssetPtr<render::ShaderData> const& shader) { m_Shader = shader; }
 
 	// interface implementation
 	//--------------------------
@@ -90,12 +92,18 @@ public:
 	// transform
 	void SetTransform(Rml::Matrix4f const* transform) override;
 
+	// utility
+	//---------
+private:
+	UniquePtr<render::TextureData> GenTextureInternal(void const* data, ivec2 dimensions);
+
 
 	// Data
 	///////
 
-private:
 	Ptr<render::I_GraphicsContextApi> m_GraphicsContext;
+
+	AssetPtr<render::ShaderData> m_Shader;
 
 	T_Geometries m_Geometries;
 	Rml::CompiledGeometryHandle m_LastGeometryHandle = s_InvalidGeometry;
@@ -103,6 +111,12 @@ private:
 	T_Textures m_Textures;
 	Rml::TextureHandle m_LastTextureHandle = s_InvalidTexture;
 	render::TextureParameters m_GeneratedParameters;
+
+	UniquePtr<render::TextureData> m_EmptyWhiteTex2x2;
+
+	bool m_IsScissorEnabled = false;
+	ivec2 m_ScissorPos;
+	ivec2 m_ScissorSize;
 
 	mat4 m_CurrentTransform;
 	bool m_HasTransform = false;

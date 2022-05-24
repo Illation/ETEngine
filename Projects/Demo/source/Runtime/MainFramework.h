@@ -24,6 +24,8 @@ namespace demo {
 //
 class MainFramework final : public rt::AbstractFramework
 {
+	static core::HashString const s_HelloWorldGuiId;
+
 	struct GuiData
 	{
 		bool m_ShowText = true;
@@ -46,7 +48,8 @@ private:
 	// utility
 	//---------
 	void OnSceneActivated();
-	void PreLoadGUI(fw::SceneEventGUIData const* const evnt);
+	void PreLoadGUI(fw::SceneEventPreLoadGUIData const* const evnt);
+	void PostLoadGUI(fw::SceneEventGUIData const* const evnt);
 
 
 	// Data

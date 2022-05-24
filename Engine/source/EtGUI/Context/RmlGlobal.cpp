@@ -94,6 +94,14 @@ void RmlGlobal::SetGraphicsContext(Ptr<render::I_GraphicsContextApi> const graph
 	m_RenderInterface.SetGraphicsContext(graphicsContext);
 }
 
+//----------------------------------
+// RmlGlobal::SetGraphicsContext
+//
+void RmlGlobal::SetRIShader(AssetPtr<render::ShaderData> const shader)
+{
+	m_RenderInterface.SetShader(shader);
+}
+
 
 } // namespace gui
 } // namespace et

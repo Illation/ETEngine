@@ -1,8 +1,11 @@
 #include "stdafx.h"
 #include "GuiRenderer.h"
 
+#include <EtCore/Content/ResourceManager.h>
+
 #include <EtRendering/SceneStructure/RenderScene.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
+#include <EtRendering/GraphicsTypes/Shader.h>
 
 #include <EtGUI/Context/RmlGlobal.h>
 
@@ -40,6 +43,7 @@ void GuiRenderer::Init(Ptr<render::T_RenderEventDispatcher> const eventDispatche
 	// Rml UI
 	//--------
 	m_RmlGlobal = RmlGlobal::GetInstance(); // might initialize RML if this is the first GUI renderer
+	m_RmlShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUi.glsl"));
 
 	// render events
 	//---------------
@@ -79,14 +83,14 @@ void GuiRenderer::Init(Ptr<render::T_RenderEventDispatcher> const eventDispatche
 			if (evnt->renderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
 			{
 				render::ShadedSceneRenderer const* const renderer = static_cast<render::ShadedSceneRenderer const*>(evnt->renderer);
-				render::I_SceneExtension const* const ext = renderer->GetScene()->GetExtension(GuiExtension::s_ExtensionId);
+				render::I_SceneExtension* const ext = renderer->GetScene()->GetExtension(GuiExtension::s_ExtensionId);
 				if (ext == nullptr)
 				{
 					LOG("render scene does not have a GUI extension");
 					return;
 				}
 
-				GuiExtension const* const guiExt = static_cast<GuiExtension const*>(ext);
+				GuiExtension* const guiExt = static_cast<GuiExtension*>(ext);
 				DrawOverlay(evnt->targetFb, *guiExt);
 			}
 			else
@@ -146,7 +150,7 @@ void GuiRenderer::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension const
 //
 // Draw UI from the extension that goes on top of everything else
 //
-void GuiRenderer::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension const& guiExt)
+void GuiRenderer::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiExt)
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 	api->BindFramebuffer(targetFb);
@@ -154,12 +158,43 @@ void GuiRenderer::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension const
 	m_SpriteRenderer.Draw();
 	m_TextRenderer.Draw();
 
-	ContextContainer::T_Contexts const& contexts = guiExt.GetContextContainer().GetContexts(render::Viewport::GetCurrentViewport());
-	for (Context const& context : contexts)
+	// RmlUi
+	//--------
+	api->DebugPushGroup("RmlUi");
+
+	RmlGlobal::GetInstance()->SetGraphicsContext(ToPtr(api));
+	render::Viewport const* const viewport = render::Viewport::GetCurrentViewport();
+
+	// set shader
+	api->SetShader(m_RmlShader.get());
+	RmlGlobal::GetInstance()->SetRIShader(m_RmlShader);
+
+	// general shader parameters -> might need to be done per context in the future
+	vec2 const viewDim = math::vecCast<float>(viewport->GetDimensions());
+	mat4 viewProjection = math::orthographic(0.f, viewDim.x, viewDim.y, 0.f, -10000.f, 10000.f) * math::scale(vec3(1.f, -1.f, 1.f)); // vertically flip
+	m_RmlShader->Upload("uViewProjection"_hash, viewProjection);
+
+	// pipeline state
+	api->SetBlendEnabled(true);
+	api->SetBlendFunction(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::OneMinusSourceAlpha);
+	api->SetCullEnabled(false);
+	api->SetDepthEnabled(false);
+
+	// render each context
+	ContextContainer::T_Contexts& contexts = guiExt.GetContextContainer().GetContexts(viewport);
+	for (Context& context : contexts)
 	{
-		// render the context
-		UNUSED(context);
+		if (context.IsActive() && context.IsDocumentLoaded())
+		{
+			context.Render();
+		}
 	}
+
+	// reset pipeline state
+	api->SetBlendEnabled(false);
+	api->BindVertexArray(0);
+
+	api->DebugPopGroup(); // RmlUi
 }
 
 

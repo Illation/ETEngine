@@ -50,6 +50,7 @@ public:
 	void UnloadDocument();
 
 	void Update();
+	void Render();
 
 	bool ProcessKeyPressed(Rml::Input::KeyIdentifier const key, int32 const rmlModifier);
 	bool ProcessKeyReleased(Rml::Input::KeyIdentifier const key, int32 const rmlModifier);
@@ -63,6 +64,7 @@ public:
 	//-----------
 	bool IsActive() const { return m_Active; }
 	bool IsDocumentLoaded() const { return (m_Document != nullptr); }
+	Rml::ElementDocument* GetDocument() { return m_Document.Get(); }
 
 	// Data
 	///////
