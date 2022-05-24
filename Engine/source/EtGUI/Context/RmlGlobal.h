@@ -41,6 +41,7 @@ private:
 	//---------------
 public:
 	void SetCursorShapeManager(Ptr<core::I_CursorShapeManager> const cursorMan);
+	void SetGraphicsContext(Ptr<render::I_GraphicsContextApi> const graphicsContext);
 
 	// Data
 	///////

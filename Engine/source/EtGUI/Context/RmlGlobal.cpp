@@ -86,6 +86,14 @@ void RmlGlobal::SetCursorShapeManager(Ptr<core::I_CursorShapeManager> const curs
 	m_SystemInterface.SetCursorShapeManager(cursorMan);
 }
 
+//----------------------------------
+// RmlGlobal::SetGraphicsContext
+//
+void RmlGlobal::SetGraphicsContext(Ptr<render::I_GraphicsContextApi> const graphicsContext)
+{
+	m_RenderInterface.SetGraphicsContext(graphicsContext);
+}
+
 
 } // namespace gui
 } // namespace et
