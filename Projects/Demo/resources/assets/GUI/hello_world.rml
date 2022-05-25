@@ -5,10 +5,10 @@
 	<link type="text/rcss" href="window.rcss"/>
 </head>
 <body data-model="animals">
-	<h1>RmlUi</h1>
-	<p>Hello <span id="world">world</span>!</p>
-	<p data-if="show_text">The quick brown fox jumps over the lazy {{animal}}.</p>
+	<h1>Hello <span id="world">world</span>!</h1>
+	<p>Press 'U' to toggle UI</p>
 	<input type="text" data-value="animal"/>
-	<!-- <input type="checkbox" data-value="show_text"/> -->
+	<label> Show Text:<input type="checkbox" data-value="show_text" checked/></label>
+	<p data-if="show_text">The quick brown fox jumps over the lazy {{animal}}.</p>
 </body>
 </rml>

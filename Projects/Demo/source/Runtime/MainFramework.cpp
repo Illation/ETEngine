@@ -141,6 +141,14 @@ void MainFramework::OnTick()
 		renderScene.SetPostProcessingSettings(ppSettings);
 	}
 
+	// GUI
+	//-----
+	if ((uniScene.GetScreenGuiContext() != gui::INVALID_CONTEXT_ID) && (input->GetKeyState(E_KbdKey::U) == E_KeyState::Pressed))
+	{
+		m_ShowGui = !m_ShowGui;
+		uniScene.GetGuiExtension()->GetContextContainer().SetContextActive(uniScene.GetScreenGuiContext(), m_ShowGui);
+	}
+
 	// debug info
 	//------------
 	if (input->GetKeyState(E_KbdKey::H) == E_KeyState::Pressed)

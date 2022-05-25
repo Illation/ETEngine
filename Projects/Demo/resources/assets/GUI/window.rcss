@@ -1,22 +1,39 @@
+@spritesheet theme 
+{
+	src: textures/greySheet.png;
+	
+	/* For high dpi screens, designates the scaling it is intended to be shown at. */
+	resolution: 1x; 
+	
+	checkbox: 147px 433px 38px 36px;
+	checkbox-hover: 146px 432px 38px 36px;
+	checkbox-active: 147px 433px 38px 36px;
+	checkbox-checked: 147px 469px 38px 36px;
+	checkbox-checked-hover: 146px 468px 38px 36px;
+	checkbox-checked-active: 147px 469px 38px 36px;
+}
+
 body {
 	font-family: LatoLatin;
 	font-size: 18px;
-	color: #02475e;
-	background: #fefecc;
+	color: #211522;
+	background: #d3b1c2;
 	text-align: center;
 	padding: 2em 1em;
 	position: absolute;
-	border: 2px #ccc;
+	border: 2px #c197d2;
 	width: 500px;
 	height: 200px;
 	margin: auto;
+	border-radius: 3px;
 }
 		
 h1 {
-	color: #f6470a;
+	color: #613659;
 	font-size: 1.5em;
 	font-weight: bold;
 	margin-bottom: 0.7em;
+	font-effect: glow(2dp 4dp 2dp 3dp #8f5c5ca4);
 }
 		
 p { 
@@ -26,7 +43,8 @@ p {
 input.text {
 	background-color: #fff;
 	color: #555;
-	border: 2px #999;
+	border: 2px #c197d2;
+	border-radius: 10px;
 	padding: 5px;
 	tab-index: auto;
 	cursor: text;
@@ -34,15 +52,47 @@ input.text {
 	width: 200px;
 	font-size: 0.9em;
 }
-		
-input.checkbox {
-	background-color: #fff;
-	color: #555;
-	border: 2px #999;
-	padding: 5px;
-	tab-index: auto;
-	cursor: text;
-	box-sizing: border-box;
-	width: 200px;
-	font-size: 0.9em;
+
+input,
+select,
+dataselect
+{
+	margin-left: 20dp;
+	margin-right: 20dp;
+}
+
+input.radio,
+input.checkbox
+{
+	width: 38dp;
+	height: 36dp;
+
+	vertical-align: -7dp;
+	
+	decorator: image(checkbox);
+}
+
+input.checkbox:hover
+{
+	decorator: image(checkbox-hover);
+}
+
+input.checkbox:active
+{
+	decorator: image(checkbox-active);
+}
+
+input.checkbox:checked
+{
+	decorator: image(checkbox-checked);
+}
+
+input.checkbox:checked:hover
+{
+	decorator: image(checkbox-checked-hover);
+}
+
+input.checkbox:checked:active
+{
+	decorator: image(checkbox-checked-active);
 }

@@ -62,6 +62,7 @@ private:
 	bool m_DrawFontAtlas = false;
 
 	GuiData m_GuiData;
+	bool m_ShowGui = true;
 };
 
 
