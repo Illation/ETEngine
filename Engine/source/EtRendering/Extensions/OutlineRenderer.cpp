@@ -49,7 +49,7 @@ void OutlineRenderer::Init(Ptr<render::T_RenderEventDispatcher> const eventDispa
 		}));
 
 	m_EventDispatcher = eventDispatcher;
-	m_CallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RenderOverlay, render::T_RenderEventCallback(
+	m_CallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RE_RenderOverlay, render::T_RenderEventCallback(
 		[this](render::T_RenderEventFlags const flags, render::RenderEventData const* const evnt) -> void
 		{
 			UNUSED(flags);
@@ -166,7 +166,7 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 	api->BindFramebuffer(m_DrawTarget);
 
 	api->SetClearColor(vec4(vec3(0.f), 1.f));
-	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
+	api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
 
 	render::Material const* const mat = RenderingSystems::Instance()->GetColorMaterial();
 	ShaderData const* const shader = mat->GetShader();

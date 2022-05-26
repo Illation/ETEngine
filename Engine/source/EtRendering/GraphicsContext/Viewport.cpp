@@ -196,7 +196,7 @@ void Viewport::Render(T_FbLoc const targetFb)
 	{
 		// Draw pink to indicate that no renderer is attached
 		m_ApiContext->SetClearColor(vec4(0.55f, 0.075f, 0.2f, 1.f));
-		m_ApiContext->Clear(E_ClearFlag::Color);
+		m_ApiContext->Clear(E_ClearFlag::CF_Color);
 	}
 
 	m_ApiContext->Flush();

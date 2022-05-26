@@ -17,15 +17,15 @@ class I_ViewportRenderer;
 typedef uint8 T_RenderEventFlags;
 enum E_RenderEvent : T_RenderEventFlags
 {
-	Invalid = 0,
+	RE_Invalid = 0,
 
-	RenderDeferred	= 1 << 0,
-	RenderLights	= 1 << 1,
-	RenderForward	= 1 << 2,
-	RenderWorldGUI	= 1 << 3,
-	RenderOverlay	= 1 << 4,
+	RE_RenderDeferred	= 1 << 0,
+	RE_RenderLights	= 1 << 1,
+	RE_RenderForward	= 1 << 2,
+	RE_RenderWorldGUI	= 1 << 3,
+	RE_RenderOverlay	= 1 << 4,
 
-	All = 0xFF
+	RE_All = 0xFF
 };
 
 

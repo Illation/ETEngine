@@ -41,9 +41,18 @@ public:
 	virtual void SetCullEnabled(bool const enabled) = 0;
 	virtual void SetScissorEnabled(bool const enabled) = 0;
 
+	virtual void SetColorMask(T_ColorFlags const flags) = 0;
+	virtual void SetDepthMask(bool const flag) = 0;
+	virtual void SetStencilMask(uint32 const mask) = 0;
+
 	virtual void SetFaceCullingMode(E_FaceCullMode const cullMode) = 0;
 	virtual void SetBlendEquation(E_BlendEquation const equation) = 0;
 	virtual void SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor) = 0;
+
+	virtual void SetDepthFunction(E_DepthFunc const func) = 0;
+
+	virtual void SetStencilFunction(T_StencilFunc const func, int32 const reference, uint32 const mask) = 0;
+	virtual void SetStencilOperation(E_StencilOp const sFail, E_StencilOp const dFail, E_StencilOp const dsPass) = 0;
 
 	virtual void SetScissor(ivec2 const pos, ivec2 const size) = 0;
 
@@ -203,8 +212,6 @@ public:
 	virtual void CopyDepthReadToDrawFbo(ivec2 const source, ivec2 const target) const = 0;
 
 	virtual void SetPixelUnpackAlignment(int32 const val) const = 0;
-
-	virtual void SetDepthFunction(E_DepthFunc const func) const = 0;
 
 	virtual void ReadPixels(ivec2 const pos, ivec2 const size, E_ColorFormat const format, E_DataType const type, void* data) const = 0;
 

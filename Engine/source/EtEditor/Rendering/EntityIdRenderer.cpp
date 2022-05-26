@@ -183,7 +183,7 @@ void EntityIdRenderer::OnViewportPreRender(render::T_FbLoc const targetFb)
 	vec4 invalidCol;
 	GetIdColor(fw::INVALID_ENTITY_ID, invalidCol);
 	api->SetClearColor(invalidCol);
-	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
+	api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
 
 	api->SetShader(m_Shader.get());
 

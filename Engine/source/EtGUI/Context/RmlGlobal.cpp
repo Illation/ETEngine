@@ -102,6 +102,14 @@ void RmlGlobal::SetRIShader(AssetPtr<render::ShaderData> const shader)
 	m_RenderInterface.SetShader(shader);
 }
 
+//----------------------------------
+// RmlGlobal::SetRIViewDimensions
+//
+void RmlGlobal::SetRIView(ivec2 const dim, mat4 const& viewProj)
+{
+	m_RenderInterface.SetView(dim, viewProj);
+}
+
 
 } // namespace gui
 } // namespace et

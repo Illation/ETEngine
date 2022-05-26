@@ -3,6 +3,8 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+
 
 namespace et {
 namespace gui {
@@ -120,22 +122,65 @@ void RmlRenderInterface::RenderCompiledGeometry(Rml::CompiledGeometryHandle geom
 	{
 		if (m_HasTransform)
 		{
-			ET_ASSERT(false, "Transformed scissor regions are currently not implemented");
-			// #todo: transformed scissor region
-			// m_GraphicsContext->SetScissorEnabled(false);
-			// draw rectangle with scissor dimensions into stencil buffer
-			// use stencil buffer to reject pixels outside of rectangle
-			return;
+			// no real scissor rectangle needed
+			m_GraphicsContext->SetScissorEnabled(false);
+			m_GraphicsContext->SetStencilEnabled(true);
+
+			// avoid redrawing stencil buffer
+			if (!(math::nearEqualsV(m_ScissorPos, m_LastScissorPos) 
+				&& math::nearEqualsV(m_ScissorSize, m_LastScissorSize) 
+				&& math::nearEqualsM(m_CurrentTransform, m_LastTransform)))
+			{
+				m_LastScissorPos = m_ScissorPos;
+				m_LastScissorSize = m_ScissorSize;
+				m_LastTransform = m_CurrentTransform;
+
+				// clear stencil buffer
+				m_GraphicsContext->SetStencilMask(0xFFFFFFFFu);
+				m_GraphicsContext->Clear(render::E_ClearFlag::CF_Stencil);
+
+				// fill stencil buffer
+				m_GraphicsContext->SetColorMask(render::E_ColorFlag::CF_None);
+				m_GraphicsContext->SetDepthMask(false);
+				m_GraphicsContext->SetStencilFunction(render::T_StencilFunc::Never, 1, 0xFFFFFFFFu);
+				m_GraphicsContext->SetStencilOperation(render::E_StencilOp::Replace, render::E_StencilOp::Keep, render::E_StencilOp::Keep);
+
+				if (m_NullShader == nullptr)
+				{
+					m_NullShader = render::RenderingSystems::Instance()->GetNullMaterial()->GetShaderAsset();
+				}
+
+				m_GraphicsContext->SetShader(m_NullShader.get());
+
+				mat4 quadTransform = math::translate(vec3(1.f, 1.f, 0.f)) * math::scale(vec3(0.5f, 0.5f, 1.f)) * // move to 0/0/0
+					math::scale(vec3(math::vecCast<float>(m_ScissorSize), 0.f)) * math::translate(vec3(math::vecCast<float>(m_ScissorPos), 0.f)); // rec 
+				quadTransform = quadTransform * m_CurrentTransform; // apply transform to scissor rectangle
+				m_NullShader->Upload("model"_hash, quadTransform);
+
+				m_NullShader->Upload("worldViewProj"_hash, m_ViewProj); // convert from UI to screen coordinates and perform vertical flip
+
+				render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
+
+				// reset for normal rendering
+				m_GraphicsContext->SetShader(m_Shader.get());
+
+				m_GraphicsContext->SetColorMask(render::E_ColorFlag::CF_All);
+				m_GraphicsContext->SetDepthMask(true);
+				m_GraphicsContext->SetStencilMask(0u);
+				m_GraphicsContext->SetStencilFunction(render::T_StencilFunc::Equal, 1, 0xFFFFFFFFu);
+			}
 		}
 		else
 		{
 			m_GraphicsContext->SetScissorEnabled(true);
-			m_GraphicsContext->SetScissor(m_ScissorPos, m_ScissorSize);
+			m_GraphicsContext->SetStencilEnabled(false);
+			m_GraphicsContext->SetScissor(ivec2(m_ScissorPos.x, m_ViewDimensions.y - (m_ScissorPos.y + m_ScissorSize.y)), m_ScissorSize);
 		}
 	}
 	else
 	{
 		m_GraphicsContext->SetScissorEnabled(false);
+		m_GraphicsContext->SetStencilEnabled(false);
 	}
 
 	// what to draw

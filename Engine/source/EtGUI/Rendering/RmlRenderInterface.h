@@ -64,6 +64,7 @@ public:
 	//---------------
 	void SetGraphicsContext(Ptr<render::I_GraphicsContextApi> const graphicsContext) { m_GraphicsContext = graphicsContext; }
 	void SetShader(AssetPtr<render::ShaderData> const& shader) { m_Shader = shader; }
+	void SetView(ivec2 const dim, mat4 const& viewProj) { m_ViewDimensions = dim; m_ViewProj = viewProj; }
 
 	// interface implementation
 	//--------------------------
@@ -102,8 +103,11 @@ private:
 	///////
 
 	Ptr<render::I_GraphicsContextApi> m_GraphicsContext;
+	ivec2 m_ViewDimensions;
+	mat4 m_ViewProj;
 
 	AssetPtr<render::ShaderData> m_Shader;
+	AssetPtr<render::ShaderData> m_NullShader;
 
 	T_Geometries m_Geometries;
 	Rml::CompiledGeometryHandle m_LastGeometryHandle = s_InvalidGeometry;
@@ -120,6 +124,10 @@ private:
 
 	mat4 m_CurrentTransform;
 	bool m_HasTransform = false;
+
+	ivec2 m_LastScissorPos; // to avoid repeating the same stencil rendering for transformed scissor
+	ivec2 m_LastScissorSize;
+	mat4 m_LastTransform;
 };
 
 

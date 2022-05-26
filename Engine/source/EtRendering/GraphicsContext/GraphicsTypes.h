@@ -133,9 +133,9 @@ enum class E_DrawMode : uint8
 typedef uint8 T_ClearFlags;
 enum E_ClearFlag : T_ClearFlags
 {
-	Color = 1 << 0,
-	Depth = 1 << 1,
-	Stencil = 1 << 2
+	CF_Color = 1 << 0,
+	CF_Depth = 1 << 1,
+	CF_Stencil = 1 << 2
 };
 
 //---------------------------------
@@ -283,6 +283,24 @@ enum class E_ColorFormat : uint8
 };
 
 //---------------------------------
+// E_ClearFlags
+//
+// Which buffers should be reset
+//
+typedef uint8 T_ColorFlags;
+enum E_ColorFlag : T_ColorFlags
+{
+	CF_None = 0,
+
+	CF_Red		= 1 << 0,
+	CF_Green	= 1 << 1,
+	CF_Blue	= 1 << 2,
+	CF_Alpha	= 1 << 3,
+
+	CF_All = 0xFF
+};
+
+//---------------------------------
 // E_DepthFunc
 //
 // How to compare depth values
@@ -297,6 +315,27 @@ enum class E_DepthFunc : uint8
 	NotEqual,
 	GEqual,
 	Always,
+
+	Invalid
+};
+
+typedef E_DepthFunc T_StencilFunc;
+
+//---------------------------------
+// E_StencilOp
+//
+// What to do depending on the stencil test
+//
+enum class E_StencilOp : uint8
+{
+	Keep,
+	Zero,
+	Replace,
+	Increment,
+	IncrementWrap,
+	Decrement,
+	DecrementWrap,
+	Invert,
 
 	Invalid
 };

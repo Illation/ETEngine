@@ -302,7 +302,7 @@ gui::SpriteFont* EditableFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 	api->GetViewport(vpPos, vpSize);
 
 	api->SetViewport(ivec2(0), ivec2(texWidth, texHeight));
-	api->Clear(render::E_ClearFlag::Color | render::E_ClearFlag::Depth);
+	api->Clear(render::E_ClearFlag::CF_Color | render::E_ClearFlag::CF_Depth);
 
 	AssetPtr<render::ShaderData> computeSdf = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(
 		core::HashString("Shaders/ComputeGlyphSDF.glsl"));

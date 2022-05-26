@@ -40,6 +40,11 @@ public:
 	TextRenderer& GetTextRenderer() { return m_TextRenderer; }
 	SpriteRenderer& GetSpriteRenderer() { return m_SpriteRenderer; }
 
+	// utility
+	//---------
+	void GenerateFramebuffer(ivec2 const dim);
+	void DeleteFramebuffer();
+
 	// Data
 	///////
 
@@ -52,12 +57,20 @@ private:
 	render::T_RenderEventCallbackId m_OverlayCallbackId = render::T_RenderEventDispatcher::INVALID_ID;
 
 	// basic renderers
+	//-----------------
 	TextRenderer m_TextRenderer;
 	SpriteRenderer m_SpriteRenderer;
 
 	// Rml UI rendering
+	//--------------------
 	RefPtr<RmlGlobal> m_RmlGlobal;
 	AssetPtr<render::ShaderData> m_RmlShader;
+	AssetPtr<render::ShaderData> m_RmlBlitShader;
+
+	// target
+	render::T_FbLoc m_RmlFb;
+	render::T_RbLoc m_RmlRbo;
+	UniquePtr<render::TextureData> m_RmlTex;
 };
 
 

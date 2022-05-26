@@ -153,7 +153,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 	api->DebugPushGroup("clear previous pass");
 	api->SetClearColor(vec4(m_ClearColor, 1.f));
-	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
+	api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
 	api->DebugPopGroup();
 
 	// draw terrains
@@ -181,7 +181,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->DebugPopGroup();
 
 	api->DebugPushGroup("extensions");
-	m_Events.Notify(E_RenderEvent::RenderDeferred, new RenderEventData(this, m_GBuffer.Get()));
+	m_Events.Notify(E_RenderEvent::RE_RenderDeferred, new RenderEventData(this, m_GBuffer.Get()));
 	api->DebugPopGroup();
 
 	api->DebugPopGroup();
@@ -261,7 +261,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->DebugPopGroup(); // light volumes
 
 	api->DebugPushGroup("extensions");
-	m_Events.Notify(E_RenderEvent::RenderLights, new RenderEventData(this, m_SSR.GetTargetFBO()));
+	m_Events.Notify(E_RenderEvent::RE_RenderLights, new RenderEventData(this, m_SSR.GetTargetFBO()));
 	api->DebugPopGroup(); 
 
 	// draw SSR
@@ -315,7 +315,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->DebugPopGroup();
 
 	api->DebugPushGroup("extensions");
-	m_Events.Notify(E_RenderEvent::RenderForward, new RenderEventData(this, m_PostProcessing.GetTargetFBO()));
+	m_Events.Notify(E_RenderEvent::RE_RenderForward, new RenderEventData(this, m_PostProcessing.GetTargetFBO()));
 	api->DebugPopGroup();
 	
 	// draw atmospheres
@@ -351,7 +351,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->DebugPushGroup("post processing pass");
 
 	api->DebugPushGroup("extensions");
-	m_Events.Notify(E_RenderEvent::RenderWorldGUI, new RenderEventData(this, targetFb));
+	m_Events.Notify(E_RenderEvent::RE_RenderWorldGUI, new RenderEventData(this, targetFb));
 	api->DebugPopGroup(); // extensions
 
 	// post processing
@@ -360,7 +360,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 		std::function<void(T_FbLoc const)>([this, api](T_FbLoc const targetFb)
 		{
 			api->DebugPushGroup("overlay extensions");
-			m_Events.Notify(E_RenderEvent::RenderOverlay, new RenderEventData(this, targetFb));
+			m_Events.Notify(E_RenderEvent::RE_RenderOverlay, new RenderEventData(this, targetFb));
 			api->DebugPopGroup(); // overlay extensions
 		}));
 

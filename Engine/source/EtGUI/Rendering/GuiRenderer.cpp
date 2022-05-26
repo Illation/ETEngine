@@ -6,6 +6,7 @@
 #include <EtRendering/SceneStructure/RenderScene.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 #include <EtGUI/Context/RmlGlobal.h>
 
@@ -44,13 +45,14 @@ void GuiRenderer::Init(Ptr<render::T_RenderEventDispatcher> const eventDispatche
 	//--------
 	m_RmlGlobal = RmlGlobal::GetInstance(); // might initialize RML if this is the first GUI renderer
 	m_RmlShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUi.glsl"));
+	m_RmlBlitShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUiBlit.glsl"));
 
 	// render events
 	//---------------
 	m_EventDispatcher = eventDispatcher;
 
 	// In World
-	m_WorldCallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RenderWorldGUI, render::T_RenderEventCallback(
+	m_WorldCallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RE_RenderWorldGUI, render::T_RenderEventCallback(
 		[this](render::T_RenderEventFlags const flags, render::RenderEventData const* const evnt) -> void
 		{
 			UNUSED(flags);
@@ -75,7 +77,7 @@ void GuiRenderer::Init(Ptr<render::T_RenderEventDispatcher> const eventDispatche
 		}));
 
 	// Overlay
-	m_OverlayCallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RenderOverlay, render::T_RenderEventCallback(
+	m_OverlayCallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RE_RenderOverlay, render::T_RenderEventCallback(
 		[this](render::T_RenderEventFlags const flags, render::RenderEventData const* const evnt) -> void
 		{
 			UNUSED(flags);
@@ -107,6 +109,8 @@ void GuiRenderer::Init(Ptr<render::T_RenderEventDispatcher> const eventDispatche
 //
 void GuiRenderer::Deinit()
 {
+	DeleteFramebuffer();
+
 	m_RmlGlobal = nullptr;
 
 	m_SpriteRenderer.Deinit();
@@ -163,16 +167,30 @@ void GuiRenderer::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiE
 	api->DebugPushGroup("RmlUi");
 
 	RmlGlobal::GetInstance()->SetGraphicsContext(ToPtr(api));
+
 	render::Viewport const* const viewport = render::Viewport::GetCurrentViewport();
+
+	// Set target framebuffer
+	ivec2 const iViewDim = viewport->GetDimensions();
+	if ((m_RmlTex == nullptr) || !math::nearEqualsV(m_RmlTex->GetResolution(), iViewDim))
+	{
+		GenerateFramebuffer(iViewDim);
+	}
+
+	api->BindFramebuffer(m_RmlFb);
+
+	api->SetClearColor(vec4(0.f));
+	api->Clear(render::E_ClearFlag::CF_Color);
 
 	// set shader
 	api->SetShader(m_RmlShader.get());
 	RmlGlobal::GetInstance()->SetRIShader(m_RmlShader);
 
 	// general shader parameters -> might need to be done per context in the future
-	vec2 const viewDim = math::vecCast<float>(viewport->GetDimensions());
-	mat4 viewProjection = math::orthographic(0.f, viewDim.x, viewDim.y, 0.f, -10000.f, 10000.f) * math::scale(vec3(1.f, -1.f, 1.f)); // vertically flip
+	vec2 const viewDim = math::vecCast<float>(iViewDim);
+	mat4 const viewProjection = math::orthographic(0.f, viewDim.x, viewDim.y, 0.f, -10000.f, 10000.f) * math::scale(vec3(1.f, -1.f, 1.f)); // v flip
 	m_RmlShader->Upload("uViewProjection"_hash, viewProjection);
+	RmlGlobal::GetInstance()->SetRIView(iViewDim, viewProjection);
 
 	// pipeline state
 	api->SetBlendEnabled(true);
@@ -190,11 +208,61 @@ void GuiRenderer::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiE
 		}
 	}
 
+	// blit results to target framebuffer - this can also be used in the future to transform the UI into viewspace
+	api->BindFramebuffer(targetFb);
+
+	api->SetShader(m_RmlBlitShader.get());
+	m_RmlBlitShader->Upload("uTexture"_hash, static_cast<render::TextureData const*>(m_RmlTex.Get()));
+	render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
+
 	// reset pipeline state
 	api->SetBlendEnabled(false);
-	api->BindVertexArray(0);
 
 	api->DebugPopGroup(); // RmlUi
+}
+
+//----------------------------------
+// GuiRenderer::GenerateFramebuffer
+//
+void GuiRenderer::GenerateFramebuffer(ivec2 const dim)
+{
+	DeleteFramebuffer();
+
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+
+	api->GenFramebuffers(1, &m_RmlFb);
+	api->BindFramebuffer(m_RmlFb);
+
+	// target texture
+	m_RmlTex = Create<render::TextureData>(render::E_ColorFormat::RGBA16f, dim);
+	m_RmlTex->AllocateStorage();
+	m_RmlTex->SetParameters(render::TextureParameters(false));
+
+	//Render Buffer for depth and stencil
+	api->GenRenderBuffers(1, &m_RmlRbo);
+	api->BindRenderbuffer(m_RmlRbo);
+	api->SetRenderbufferStorage(render::E_RenderBufferFormat::Depth24_Stencil8, dim);
+
+	// link it all together
+	api->LinkRenderbufferToFbo(render::E_RenderBufferFormat::Depth24_Stencil8, m_RmlRbo);
+	api->LinkTextureToFbo2D(0, m_RmlTex->GetLocation(), 0);
+
+	api->BindFramebuffer(0u);
+}
+
+//--------------------------------
+// GuiRenderer::DeleteFramebuffer
+//
+void GuiRenderer::DeleteFramebuffer()
+{
+	if (m_RmlTex != nullptr)
+	{
+		render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+
+		api->DeleteRenderBuffers(1, &m_RmlRbo);
+		m_RmlTex = nullptr;
+		api->DeleteFramebuffers(1, &m_RmlFb);
+	}
 }
 
 

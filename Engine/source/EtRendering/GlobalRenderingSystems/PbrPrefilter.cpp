@@ -60,7 +60,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 	api->GetViewport(pos, size);
 
 	api->SetViewport(ivec2(0), ivec2(resolution));
-	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
+	api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
 	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
 
 	//Reset render settings and return generated texture
@@ -133,7 +133,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	{
 		irradianceShader->Upload("view"_hash, captureViews[face]);
 		api->LinkCubeMapFaceToFbo2D(face, irradiance->GetLocation(), 0);
-		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
+		api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
 
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
 	}
@@ -176,7 +176,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 			radianceShader->Upload("view"_hash, captureViews[faceIdx]);
 			api->LinkCubeMapFaceToFbo2D(faceIdx, radiance->GetLocation(), mip);
 
-			api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
+			api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
 			RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
 		}
 	}
