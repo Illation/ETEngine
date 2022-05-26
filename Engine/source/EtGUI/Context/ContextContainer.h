@@ -31,7 +31,7 @@ public:
 
 private:
 
-	static T_Contexts const s_EmptyContexts;
+	static T_Contexts s_EmptyContexts;
 
 	struct ContextData
 	{

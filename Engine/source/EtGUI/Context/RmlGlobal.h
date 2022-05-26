@@ -2,6 +2,7 @@
 #include "RmlSystemInterface.h"
 #include "RmlFileInterface.h"
 
+#include <EtGUI/Rendering/RmlFontEngineInterface.h>
 #include <EtGUI/Rendering/RmlRenderInterface.h>
 
 
@@ -51,6 +52,7 @@ public:
 private:
 	RmlSystemInterface m_SystemInterface;
 	RmlFileInterface m_FileInterface;
+	RmlFontEngineInterface m_FontEngineInterface;
 	RmlRenderInterface m_RenderInterface;
 };
 

@@ -61,6 +61,7 @@ RmlGlobal::RmlGlobal()
 {
 	Rml::SetSystemInterface(&m_SystemInterface);
 	Rml::SetFileInterface(&m_FileInterface);
+	//Rml::SetFontEngineInterface(&m_FontEngineInterface);
 	Rml::SetRenderInterface(&m_RenderInterface);
 
 	Rml::Initialise();

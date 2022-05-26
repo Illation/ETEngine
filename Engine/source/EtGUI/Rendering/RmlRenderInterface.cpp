@@ -140,7 +140,6 @@ void RmlRenderInterface::RenderCompiledGeometry(Rml::CompiledGeometryHandle geom
 				m_GraphicsContext->Clear(render::E_ClearFlag::CF_Stencil);
 
 				// fill stencil buffer
-				m_GraphicsContext->SetColorMask(render::E_ColorFlag::CF_None);
 				m_GraphicsContext->SetDepthMask(false);
 				m_GraphicsContext->SetStencilFunction(render::T_StencilFunc::Never, 1, 0xFFFFFFFFu);
 				m_GraphicsContext->SetStencilOperation(render::E_StencilOp::Replace, render::E_StencilOp::Keep, render::E_StencilOp::Keep);
@@ -164,7 +163,6 @@ void RmlRenderInterface::RenderCompiledGeometry(Rml::CompiledGeometryHandle geom
 				// reset for normal rendering
 				m_GraphicsContext->SetShader(m_Shader.get());
 
-				m_GraphicsContext->SetColorMask(render::E_ColorFlag::CF_All);
 				m_GraphicsContext->SetDepthMask(true);
 				m_GraphicsContext->SetStencilMask(0u);
 				m_GraphicsContext->SetStencilFunction(render::T_StencilFunc::Equal, 1, 0xFFFFFFFFu);

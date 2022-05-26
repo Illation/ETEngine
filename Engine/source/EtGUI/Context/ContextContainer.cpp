@@ -178,7 +178,7 @@ bool ContextContainer::PerViewport::ProcessTextInput(core::Character const chara
 //===================
 
 
-ContextContainer::T_Contexts const ContextContainer::s_EmptyContexts;
+ContextContainer::T_Contexts ContextContainer::s_EmptyContexts;
 
 
 //---------------------------------
@@ -320,7 +320,10 @@ void ContextContainer::SetLoadedDocument(T_ContextId const id, core::HashString 
 ContextContainer::T_Contexts& ContextContainer::GetContexts(render::Viewport const* const vp) 
 {
 	T_ViewportContexts::iterator found = m_ViewportContexts.find(ToPtr(vp));
-	ET_ASSERT(found != m_ViewportContexts.cend());
+	if (found == m_ViewportContexts.cend())
+	{
+		return s_EmptyContexts;
+	}
 
 	return found->second.m_Contexts;
 }
