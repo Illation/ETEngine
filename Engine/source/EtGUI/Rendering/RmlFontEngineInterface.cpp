@@ -31,7 +31,7 @@ bool RmlFontEngineInterface::LoadFontFace(Rml::String const& fileName, bool cons
 //--------------------------------------
 // RmlFontEngineInterface::LoadFontFace
 //
-bool RmlFontEngineInterface::LoadFontFace(byte const* const data, 
+bool RmlFontEngineInterface::LoadFontFace(Rml::byte const* const data, 
 	int32 const dataSize, 
 	Rml::String const& family, 
 	Rml::Style::FontStyle const style, 

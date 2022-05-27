@@ -18,6 +18,9 @@ typedef std::uint16_t	uint16;
 typedef std::uint32_t	uint32;
 typedef std::uint64_t	uint64;
 
+// characters
+typedef char32_t char32;
+
 // float
 static_assert (sizeof(float) == 4, "compiler uses unexpected size for single precision floats, 32 bit assumed");
 typedef float float32;

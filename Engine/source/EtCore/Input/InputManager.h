@@ -56,7 +56,7 @@ public:
 	bool ProcessMouseReleased(E_MouseButton const button, T_KeyModifierFlags const) override;
 	bool ProcessMouseMove(ivec2 const& mousePos, T_KeyModifierFlags const) override;
 	bool ProcessMouseWheelDelta(ivec2 const& mouseWheel, T_KeyModifierFlags const) override;
-	bool ProcessTextInput(Character const) override { return false; }
+	bool ProcessTextInput(E_Character const) override { return false; }
 
 	// Utility
 	//-------------

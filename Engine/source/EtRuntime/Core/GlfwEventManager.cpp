@@ -73,7 +73,7 @@ void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 			GlfwEventManager::GetInstance()->GetInputProvider().IterateListeners(core::RawInputProvider::T_EventFn(
 				[codepoint](core::I_RawInputListener& listener)
 				{
-					return listener.ProcessTextInput(static_cast<core::Character>(codepoint));
+					return listener.ProcessTextInput(static_cast<core::E_Character>(codepoint));
 				}));
 		});
 

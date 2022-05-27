@@ -156,7 +156,7 @@ bool ContextContainer::PerViewport::ProcessMouseWheelDelta(ivec2 const& mouseWhe
 //---------------------------------
 // PerViewport::ProcessTextInput
 //
-bool ContextContainer::PerViewport::ProcessTextInput(core::Character const character)
+bool ContextContainer::PerViewport::ProcessTextInput(core::E_Character const character)
 {
 	for (Context& context : m_Contexts)
 	{

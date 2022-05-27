@@ -58,7 +58,7 @@ private:
 		bool ProcessMouseReleased(E_MouseButton const button, core::T_KeyModifierFlags const modifiers) override;
 		bool ProcessMouseMove(ivec2 const& mousePos, core::T_KeyModifierFlags const modifiers) override;
 		bool ProcessMouseWheelDelta(ivec2 const& mouseWheel, core::T_KeyModifierFlags const modifiers) override;
-		bool ProcessTextInput(core::Character const character) override;
+		bool ProcessTextInput(core::E_Character const character) override;
 
 		// data
 		T_Contexts m_Contexts;

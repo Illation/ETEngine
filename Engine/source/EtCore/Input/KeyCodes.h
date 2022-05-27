@@ -200,7 +200,7 @@ enum E_KeyModifier : T_KeyModifierFlags
 
 
 // Unicode code point
-enum class Character : char32_t { Null, Replacement = 0xfffd };
+enum class E_Character : char32 { Null, Replacement = 0xfffd };
 
 
 } // namespace core

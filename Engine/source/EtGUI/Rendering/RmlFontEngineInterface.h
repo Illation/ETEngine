@@ -1,6 +1,10 @@
 #pragma once
 #include <RmlUi/Core/FontEngineInterface.h>
 
+#include <EtCore/Content/AssetPointer.h>
+
+#include <EtGUI/Content/SdfFont.h>
+
 
 namespace et {
 namespace gui {
@@ -18,6 +22,29 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 	static Rml::FontFaceHandle const s_InvalidFont;
 	static Rml::FontEffectsHandle const s_InvalidEffects;
 
+	struct FontFace
+	{
+		core::HashString m_Family;
+		int32 m_Version = 0;
+
+		Rml::Style::FontStyle m_Style = Rml::Style::FontStyle::Normal;
+		Rml::Style::FontWeight m_Weight = Rml::Style::FontWeight::Auto;
+		int32 m_Size = 0;
+		AssetPtr<SdfFont> m_Font;
+	};
+
+	typedef std::vector<FontFace> T_FontFaces;
+
+	struct FontFamily
+	{
+		std::string m_Name;
+		std::vector<size_t> m_FaceIndices;
+		std::vector<AssetPtr<SdfFont>> m_UniqueAssets;
+	};
+
+	typedef std::unordered_map<core::HashString, FontFamily> T_FontFamilies;
+	typedef std::unordered_map<Rml::FontFaceHandle, size_t> T_FontFaceMap;
+
 	// construct destruct
 	//--------------------
 public:
@@ -27,7 +54,7 @@ public:
 	// interface
 	//-----------
 	bool LoadFontFace(Rml::String const& fileName, bool const fallbackFace, Rml::Style::FontWeight const weight) override;
-	bool LoadFontFace(byte const* const data, 
+	bool LoadFontFace(Rml::byte const* const data, 
 		int32 const dataSize, 
 		Rml::String const& family, 
 		Rml::Style::FontStyle const style,
@@ -62,6 +89,11 @@ public:
 	int32 GetVersion(Rml::FontFaceHandle const faceHandle) override;
 
 	void ReleaseFontResources() override;
+
+	// Data
+	///////
+
+private:
 };
 
 
