@@ -218,7 +218,11 @@ SdfFont* SdfFontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 
 	pos = binReader.GetBufferPosition();
 
-	binReader.SetBufferPosition(pos + 4u);
+	font->m_LineHeight = binReader.Read<uint16>();
+	font->m_Baseline = binReader.Read<uint16>();
+	font->m_Underline = binReader.Read<int16>();
+	font->m_UnderlineThickness = binReader.Read<float>();
+	
 	uint16 const texWidth = binReader.Read<uint16>();
 	uint16 const texHeight = binReader.Read<uint16>();
 

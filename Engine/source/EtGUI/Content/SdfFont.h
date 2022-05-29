@@ -106,12 +106,20 @@ public:
 
 	// accessors
 	//-----------
+	std::string const& GetFamily() const { return m_FontFamily; }
 	int16 GetFontSize() const { return m_FontSize; }
 	bool IsBold() const { return m_Flags & E_Flags::F_Bold; }
 	bool IsItalic() const { return m_Flags & E_Flags::F_Italic; }
 
-	render::TextureData const* GetAtlas() const { return (m_TextureAsset != nullptr) ? m_TextureAsset.get() : m_Texture.Get(); }
+	uint16 GetLineHeight() const { return m_LineHeight; }
+	uint16 GetBaseline() const { return m_Baseline; }
+	int16 GetUnderline() const { return m_Underline; }
+	float GetUnderlineThickness() const { return m_UnderlineThickness; }
+
 	Metric const* const GetMetric(char32 const character) const;
+	bool UseKerning() const { return m_UseKerning; }
+
+	render::TextureData const* GetAtlas() const { return (m_TextureAsset != nullptr) ? m_TextureAsset.get() : m_Texture.Get(); }
 
 
 	// utility
@@ -127,11 +135,16 @@ private:
 	int16 m_FontSize = 0; // default size this sdf was generated from
 	T_Flags m_Flags = E_Flags::F_None;
 
+	uint16 m_LineHeight = 0u;
+	uint16 m_Baseline = 0u;
+	int16 m_Underline = 0;
+	float m_UnderlineThickness = 0.f;
+
 	// character info
 	std::vector<Charset> m_CharSets;
 	bool m_UseKerning = false;
 
-	// sprite info
+	// texture info
 	UniquePtr<render::TextureData const> m_Texture; // editor
 	AssetPtr<render::TextureData> m_TextureAsset; // runtime
 };

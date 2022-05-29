@@ -1,5 +1,6 @@
 #pragma once
 #include <RmlUi/Core/FontEngineInterface.h>
+#include <RmlUi/Core/Texture.h>
 
 #include <EtCore/Content/AssetPointer.h>
 
@@ -22,28 +23,59 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 	static Rml::FontFaceHandle const s_InvalidFont;
 	static Rml::FontEffectsHandle const s_InvalidEffects;
 
+	//---------------------------------
+	// FontFace
+	//
+	// An instance of a font family that links specific style, weight and size with a font asset
+	//
 	struct FontFace
 	{
-		core::HashString m_Family;
-		int32 m_Version = 0;
+		FontFace(core::HashString const familyId, Rml::Style::FontStyle const style, Rml::Style::FontWeight const weight, int32 const size);
 
-		Rml::Style::FontStyle m_Style = Rml::Style::FontStyle::Normal;
-		Rml::Style::FontWeight m_Weight = Rml::Style::FontWeight::Auto;
-		int32 m_Size = 0;
+		void SetAsset(AssetPtr<SdfFont> const asset, Rml::Texture const texture);
+
+		core::HashString const m_FamilyId;
+		Rml::Style::FontStyle const m_Style = Rml::Style::FontStyle::Normal;
+		Rml::Style::FontWeight const m_Weight = Rml::Style::FontWeight::Auto;
+		int32 const m_Size = 0;
+
+		T_Hash const m_Hash;
+
+		// asset dependent variables
 		AssetPtr<SdfFont> m_Font;
+		Rml::Texture m_Texture;
+		int32 m_Version = -1;
+
+		float m_Multiplier;
+
+		int32 m_XHeight;
+		int32 m_LineHeight;
+		int32 m_Baseline;
+		int32 m_Underline;
+		float m_UnderlineThickness;
 	};
 
 	typedef std::vector<FontFace> T_FontFaces;
 
+	//---------------------------------
+	// FontFamily
+	//
+	// A collection of font assets and faces belonging to the same font
+	//
 	struct FontFamily
 	{
+		FontFamily() = default;
+		FontFamily(std::string const& name) : m_Name(name) {}
+
+		AssetPtr<SdfFont> GetBestAsset(FontFace const& face, Rml::Texture& outTexture) const;
+
 		std::string m_Name;
-		std::vector<size_t> m_FaceIndices;
+		std::vector<size_t> m_FaceIndices; // faces can be addressed by index because they are never reordered
 		std::vector<AssetPtr<SdfFont>> m_UniqueAssets;
+		std::vector<Rml::Texture> m_AssetTextures;
 	};
 
 	typedef std::unordered_map<core::HashString, FontFamily> T_FontFamilies;
-	typedef std::unordered_map<Rml::FontFaceHandle, size_t> T_FontFaceMap;
 
 	// construct destruct
 	//--------------------
@@ -56,12 +88,12 @@ public:
 	bool LoadFontFace(Rml::String const& fileName, bool const fallbackFace, Rml::Style::FontWeight const weight) override;
 	bool LoadFontFace(Rml::byte const* const data, 
 		int32 const dataSize, 
-		Rml::String const& family, 
+		Rml::String const& familyName,
 		Rml::Style::FontStyle const style,
 		Rml::Style::FontWeight const weight, 
 		bool const fallbackFace) override;
 
-	Rml::FontFaceHandle GetFontFaceHandle(Rml::String const& family, 
+	Rml::FontFaceHandle GetFontFaceHandle(Rml::String const& familyName,
 		Rml::Style::FontStyle const style, 
 		Rml::Style::FontWeight const weight, 
 		int32 const size) override;
@@ -90,10 +122,20 @@ public:
 
 	void ReleaseFontResources() override;
 
+
+	// utility
+	//---------
+private:
+	FontFamily& FindOrCreateFamily(std::string const& familyName);
+	FontFace& GetFace(Rml::FontFaceHandle const faceHandle);
+
+
 	// Data
 	///////
 
-private:
+	T_FontFamilies m_Families;
+
+	T_FontFaces m_Faces;
 };
 
 

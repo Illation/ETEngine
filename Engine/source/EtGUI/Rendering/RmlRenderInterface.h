@@ -114,8 +114,8 @@ private:
 
 	T_Textures m_Textures;
 	Rml::TextureHandle m_LastTextureHandle = s_InvalidTexture;
-	render::TextureParameters m_GeneratedParameters;
 
+	render::TextureParameters m_GeneratedParameters;
 	UniquePtr<render::TextureData> m_EmptyWhiteTex2x2;
 
 	bool m_IsScissorEnabled = false;

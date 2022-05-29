@@ -190,6 +190,14 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 		font->m_Flags |= gui::SdfFont::E_Flags::F_Bold;
 	}
 
+	font->m_LineHeight = static_cast<uint16>(face->size->metrics.height >> 6);
+	font->m_Baseline = font->m_LineHeight - static_cast<uint16>(face->size->metrics.ascender >> 6);
+
+	static float const s_ScaleFactor = 1.f;
+	font->m_Underline = static_cast<int32>(FT_MulFix(face->underline_position, face->size->metrics.y_scale) * s_ScaleFactor / float(1 << 6));
+	font->m_UnderlineThickness = FT_MulFix(face->underline_thickness, face->size->metrics.y_scale) * s_ScaleFactor / float(1 << 6);
+	font->m_UnderlineThickness = std::max(font->m_UnderlineThickness, 1.0f);
+
 	font->m_UseKerning = FT_HAS_KERNING(face) != 0;
 
 	// Atlassing helper variables
@@ -426,7 +434,10 @@ void EditableSdfFontAsset::PopulateTextureParams(render::TextureParameters& para
 // EditableSdfFontAsset::GenerateBinFontData
 //
 // Font asset descriptor written in this file format: http://www.angelcode.com/products/bmfont/doc/file_format.html
-//  - format modification: each metric contains a byte indicating if the metric is valid or not after the character ID
+//  - format modifications: 
+//    * each metric contains a byte indicating if the metric is valid or not after the character ID
+//	  * added int16 to block 2 for Underline position
+//	  * added float to block 2 for Underline thickness
 //
 bool EditableSdfFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::SdfFont const* const font, std::string const& atlasName)
 {
@@ -468,7 +479,7 @@ bool EditableSdfFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::Sd
 	uint32 const block1Size = static_cast<uint32>(14u + font->m_FontFamily.size() + 1u); // +1 because string is null terminated
 
 	// 2
-	uint32 const block2Size = 15u;
+	uint32 const block2Size = 21u;
 
 	// 3
 	uint32 const block3Size = static_cast<uint32>(atlasName.size() + 1u); // +1 because string is null terminated
@@ -538,8 +549,10 @@ bool EditableSdfFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::Sd
 	//---------
 	writeBlockHeader(binWriter, 2u, block2Size);
 
-	binWriter.Write<uint16>(0u); // lineHeight
-	binWriter.Write<uint16>(0u); // base
+	binWriter.Write<uint16>(font->m_LineHeight); 
+	binWriter.Write<uint16>(font->m_Baseline); 
+	binWriter.Write<int16>(font->m_Underline);  // non-standard
+	binWriter.Write<float>(font->m_UnderlineThickness); // non-standard
 
 	ivec2 const res = font->GetAtlas()->GetResolution();
 	binWriter.Write(static_cast<uint16>(res.x)); // scaleW
@@ -564,7 +577,7 @@ bool EditableSdfFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::Sd
 	for (gui::SdfFont::Metric const& metric : metrics)
 	{
 		binWriter.Write(static_cast<uint32>(metric.m_Character)); // id
-		binWriter.Write(static_cast<uint8>(metric.m_IsValid)); // is valid
+		binWriter.Write(static_cast<uint8>(metric.m_IsValid)); // non-standard
 
 		ivec2 pos = math::vecCast<int32>(metric.m_TexCoord * math::vecCast<float>(res));
 		binWriter.Write(static_cast<uint16>(pos.x)); // x
