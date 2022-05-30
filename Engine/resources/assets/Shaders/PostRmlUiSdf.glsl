@@ -5,7 +5,7 @@
 	layout (location = 0) in vec2 vPosition;
 	layout (location = 1) in vec4 vColor; 
 	layout (location = 2) in vec2 vTexCoord;
-
+	
 	layout (location = 3) in uint vChannel;
 
 	uniform vec2 uTranslation;
@@ -26,7 +26,7 @@
 	{
 		outputs.color = vColor;
 		outputs.texCoord = vTexCoord;
-		outputs.channel = vChannel
+		outputs.channel = vChannel;
 
 		vec4 pos = uTransform * vec4(vPosition + uTranslation, 0.0, 1.0);
 		gl_Position = uViewProjection * pos;

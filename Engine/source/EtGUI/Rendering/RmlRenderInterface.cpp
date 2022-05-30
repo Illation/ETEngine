@@ -5,6 +5,8 @@
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
+#include <EtGUI/Context/RmlUtil.h>
+
 
 namespace et {
 namespace gui {
@@ -40,6 +42,17 @@ RmlRenderInterface::RmlRenderInterface()
 }
 
 //-------------------------------------
+// RmlRenderInterface::SetShader
+//
+void RmlRenderInterface::SetShader(AssetPtr<render::ShaderData> const& shader, AssetPtr<render::ShaderData> const& textShader)
+{
+	m_Shader = shader;
+	m_TextShader = textShader;
+}
+
+
+
+//-------------------------------------
 // RmlRenderInterface::CompileGeometry
 //
 // Store some geometry for later rendering - implementing this means we don't use the simple RenderGeometry() method
@@ -59,8 +72,6 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 
 	// transferred data
 	Geometry& geometry = res.first->second;
-	geometry.m_NumVertices = numVertices;
-	geometry.m_NumIndices = numIndices;
 
 	// texture
 	if (textureHandle != 0u)
@@ -69,10 +80,24 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 		ET_ASSERT(foundIt != m_Textures.cend());
 
 		geometry.m_Texture = foundIt->second.Get();
+		geometry.m_IsText = foundIt->second.IsFont();
 	}
 	else
 	{
 		geometry.m_Texture = m_EmptyWhiteTex2x2;
+	}
+
+	geometry.m_NumIndices = numIndices;
+
+	int32 const numChars = numIndices / 6;
+	if (geometry.m_IsText)
+	{
+		ET_ASSERT(numChars * 6 == numIndices);
+		geometry.m_NumVertices = numChars * 4;
+	}
+	else
+	{
+		geometry.m_NumVertices = numVertices;
 	}
 
 	// create buffers
@@ -83,13 +108,13 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 	geometry.m_VertexArray = m_GraphicsContext->CreateVertexArray();
 	m_GraphicsContext->BindVertexArray(geometry.m_VertexArray);
 
-	geometry.m_VertexBuffer = m_GraphicsContext->CreateBuffer();
-	m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, geometry.m_VertexBuffer);
-	m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex, vBufferSize, reinterpret_cast<void const*>(vertices), render::E_UsageHint::Static);
-
 	geometry.m_IndexBuffer = m_GraphicsContext->CreateBuffer();
 	m_GraphicsContext->BindBuffer(render::E_BufferType::Index, geometry.m_IndexBuffer);
 	m_GraphicsContext->SetBufferData(render::E_BufferType::Index, iBufferSize, reinterpret_cast<void const*>(indices), render::E_UsageHint::Static);
+
+	geometry.m_VertexBuffer = m_GraphicsContext->CreateBuffer();
+	m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, geometry.m_VertexBuffer);
+	m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex, vBufferSize, reinterpret_cast<void const*>(vertices), render::E_UsageHint::Static);
 	
 	m_GraphicsContext->SetVertexAttributeArrayEnabled(0, true);
 	m_GraphicsContext->SetVertexAttributeArrayEnabled(1, true);
@@ -99,6 +124,20 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 	m_GraphicsContext->DefineVertexAttributePointer(0, 2, render::E_DataType::Float, false, vertSize, offsetof(Rml::Vertex, position));
 	m_GraphicsContext->DefineVertexAttributePointer(1, 4, render::E_DataType::UByte, true, vertSize, offsetof(Rml::Vertex, colour));
 	m_GraphicsContext->DefineVertexAttributePointer(2, 2, render::E_DataType::Float, false, vertSize, offsetof(Rml::Vertex, tex_coord));
+
+	// for text geometry we enable a second vertex buffer holding the text specific vertex data
+	if (geometry.m_IsText)
+	{
+		geometry.m_VertexBufferText = m_GraphicsContext->CreateBuffer();
+		m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, geometry.m_VertexBufferText);
+		m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex, 
+			static_cast<int64>(numChars), 
+			reinterpret_cast<void const*>(reinterpret_cast<uint8 const*>(vertices) + static_cast<size_t>(vBufferSize)),
+			render::E_UsageHint::Static);
+
+		m_GraphicsContext->SetVertexAttributeArrayEnabled(3, true);
+		m_GraphicsContext->DefineVertexAttribIPointer(3, 1, render::E_DataType::UByte, 1, 0);
+	}
 
 	// done
 	m_GraphicsContext->BindVertexArray(0u);
@@ -161,8 +200,6 @@ void RmlRenderInterface::RenderCompiledGeometry(Rml::CompiledGeometryHandle geom
 				render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
 
 				// reset for normal rendering
-				m_GraphicsContext->SetShader(m_Shader.get());
-
 				m_GraphicsContext->SetDepthMask(true);
 				m_GraphicsContext->SetStencilMask(0u);
 				m_GraphicsContext->SetStencilFunction(render::T_StencilFunc::Equal, 1, 0xFFFFFFFFu);
@@ -185,10 +222,22 @@ void RmlRenderInterface::RenderCompiledGeometry(Rml::CompiledGeometryHandle geom
 	m_GraphicsContext->BindVertexArray(geo.m_VertexArray); // this should be unbound at the end of rendering a context
 
 	// update shader parameters - shader should already be set
-	ET_ASSERT(m_Shader != nullptr);
-	m_Shader->Upload("uTranslation"_hash, vec2(translation.x, translation.y));
-	m_Shader->Upload("uTransform"_hash, m_CurrentTransform);
-	m_Shader->Upload("uTexture"_hash, geo.m_Texture.Get());
+	render::ShaderData const* shader = nullptr;
+	if (geo.m_IsText)
+	{
+		shader = m_TextShader.get();
+	}
+	else
+	{
+		shader = m_Shader.get();
+	}
+
+	ET_ASSERT(shader != nullptr);
+	m_GraphicsContext->SetShader(shader);
+
+	shader->Upload("uTranslation"_hash, vec2(translation.x, translation.y));
+	shader->Upload("uTransform"_hash, m_CurrentTransform);
+	shader->Upload("uTexture"_hash, geo.m_Texture.Get());
 
 	// draw
 	m_GraphicsContext->DrawElements(render::E_DrawMode::Triangles, geo.m_NumIndices, render::E_DataType::UInt, 0);
@@ -203,6 +252,11 @@ void RmlRenderInterface::ReleaseCompiledGeometry(Rml::CompiledGeometryHandle geo
 	ET_ASSERT(foundIt != m_Geometries.cend());
 
 	Geometry& geo = foundIt->second;
+	if (geo.m_IsText)
+	{
+		m_GraphicsContext->DeleteBuffer(geo.m_VertexBufferText);
+	}
+
 	m_GraphicsContext->DeleteBuffer(geo.m_VertexBuffer);
 	m_GraphicsContext->DeleteBuffer(geo.m_IndexBuffer);
 	m_GraphicsContext->DeleteVertexArray(geo.m_VertexArray);
@@ -238,18 +292,29 @@ bool RmlRenderInterface::LoadTexture(Rml::TextureHandle& textureHandle, Rml::Vec
 {
 	core::HashString const assetId(source.c_str());
 
-	AssetPtr<render::TextureData> texture = core::ResourceManager::Instance()->GetAssetData<render::TextureData>(assetId);
-	if (texture == nullptr)
+	std::pair<T_Textures::iterator, bool> res;
+
+	AssetPtr<SdfFont> const font = core::ResourceManager::Instance()->GetAssetData<SdfFont>(assetId, false);
+	if (font != nullptr)
 	{
-		textureHandle = s_InvalidTexture;
-		return false;
+		res = m_Textures.emplace(++m_LastTextureHandle, font);
+		textureDimensions = RmlUtil::ToRml(font->GetAtlas()->GetResolution());
+	}
+	else
+	{
+		AssetPtr<render::TextureData> texture = core::ResourceManager::Instance()->GetAssetData<render::TextureData>(assetId);
+		if (texture == nullptr)
+		{
+			textureHandle = s_InvalidTexture;
+			return false;
+		}
+
+		res = m_Textures.emplace(++m_LastTextureHandle, texture);
+		textureDimensions = RmlUtil::ToRml(texture->GetResolution());
 	}
 
-	std::pair<T_Textures::iterator, bool> res = m_Textures.emplace(++m_LastTextureHandle, texture);
 	ET_ASSERT(res.second);
-
 	textureHandle = res.first->first;
-	textureDimensions = Rml::Vector2i(texture->GetResolution().x, texture->GetResolution().y);
 
 	return true;
 }

@@ -129,7 +129,10 @@ bool RmlFontEngineInterface::LoadFontFace(Rml::String const& fileName, bool cons
 	}
 
 	FontFamily& family = FindOrCreateFamily(font->GetFamily());
-	ET_ASSERT(std::find(family.m_UniqueAssets.cbegin(), family.m_UniqueAssets.cend(), font) == family.m_UniqueAssets.cend());
+	if (std::find(family.m_UniqueAssets.cbegin(), family.m_UniqueAssets.cend(), font) != family.m_UniqueAssets.cend())
+	{
+		return true;
+	}
 
 	Rml::Texture texture;
 	texture.Set(fileName); // render interface will grab the texture from the font asset - this also allows us to know to use the text shader
@@ -184,10 +187,16 @@ Rml::FontFaceHandle RmlFontEngineInterface::GetFontFaceHandle(Rml::String const&
 	int32 const size)
 {
 	FontFace face(core::HashString(familyName.c_str()), style, weight, size);
-	ET_ASSERT(std::find_if(m_Faces.cbegin(), m_Faces.cend(), [&face](FontFace const& lh) // we assume each handle is only retrieved once
+
+	auto const foundFaceIt = std::find_if(m_Faces.cbegin(), m_Faces.cend(), [&face](FontFace const& lh) // we assume each handle is only retrieved once
 		{
 			return (lh.m_Hash != face.m_Hash);
-		}) == m_Faces.cend());
+		});
+
+	if (foundFaceIt != m_Faces.cend())
+	{
+		return static_cast<Rml::FontFaceHandle>(foundFaceIt - m_Faces.cbegin()) + 1;
+	}
 
 	size_t const faceIdx = m_Faces.size();
 
@@ -369,7 +378,7 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 
 		prevChar = charId;
 
-		stringWidth += (metric->m_AdvanceX + kerning.x) * face.m_Multiplier;
+		stringWidth += kerning.x * face.m_Multiplier;
 
 		// indices, counter clockwise winding
 		indices.push_back(static_cast<int32>(vIndex));
@@ -395,21 +404,24 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 		channels[vIndex] = metric->m_Channel;
 		Rml::Vertex& v4 = vertices[vIndex++];
 
-		v1.position = Rml::Vector2f(pos.x, pos.y + charDimScaled.y);
+		v1.position = Rml::Vector2f(charPos.x, charPos.y + charDimScaled.y);
 		v1.colour = col;
 		v1.tex_coord = Rml::Vector2f(metric->m_TexCoord.x, metric->m_TexCoord.y + charDimTexture.y);
 
-		v2.position = Rml::Vector2f(pos.x + charDimScaled.x, pos.y + charDimScaled.y);
+		v2.position = Rml::Vector2f(charPos.x + charDimScaled.x, charPos.y + charDimScaled.y);
 		v2.colour = col;
 		v2.tex_coord = Rml::Vector2f(metric->m_TexCoord.x + charDimTexture.x, metric->m_TexCoord.y + charDimTexture.y);
 
-		v3.position = Rml::Vector2f(pos.x, pos.y);
+		v3.position = Rml::Vector2f(charPos.x, charPos.y);
 		v3.colour = col;
 		v3.tex_coord = Rml::Vector2f(metric->m_TexCoord.x, metric->m_TexCoord.y);
 
-		v4.position = Rml::Vector2f(pos.x + charDimScaled.x, pos.y);
+		v4.position = Rml::Vector2f(charPos.x + charDimScaled.x, charPos.y);
 		v4.colour = col;
 		v4.tex_coord = Rml::Vector2f(metric->m_TexCoord.x + charDimTexture.x, metric->m_TexCoord.y);
+
+		// advance
+		stringWidth += metric->m_AdvanceX * face.m_Multiplier;
 	}
 
 	return static_cast<int32>(stringWidth);

@@ -43,7 +43,7 @@ private:
 public:
 	void SetCursorShapeManager(Ptr<core::I_CursorShapeManager> const cursorMan);
 	void SetGraphicsContext(Ptr<render::I_GraphicsContextApi> const graphicsContext);
-	void SetRIShader(AssetPtr<render::ShaderData> const shader);
+	void SetRIShader(AssetPtr<render::ShaderData> const shader, AssetPtr<render::ShaderData> const textShader);
 	void SetRIView(ivec2 const dim, mat4 const& viewProj);
 
 	// Data

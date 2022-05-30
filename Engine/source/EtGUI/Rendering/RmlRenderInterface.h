@@ -7,6 +7,8 @@
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
 
+#include <EtGUI/Content/SdfFont.h>
+
 
 namespace et {
 namespace gui {
@@ -27,13 +29,15 @@ class RmlRenderInterface final : public Rml::RenderInterface
 		Geometry() = default;
 
 		render::T_ArrayLoc m_VertexArray = 0u;
-		render::T_BufferLoc m_VertexBuffer = 0u;
 		render::T_BufferLoc m_IndexBuffer = 0u;
+		render::T_BufferLoc m_VertexBuffer = 0u;
+		render::T_BufferLoc m_VertexBufferText = 0u;
 
 		int32 m_NumVertices = 0;
 		int32 m_NumIndices = 0;
 
 		Ptr<render::TextureData const> m_Texture;
+		bool m_IsText = false;
 	};
 
 	typedef std::unordered_map<Rml::CompiledGeometryHandle, Geometry> T_Geometries;
@@ -43,12 +47,24 @@ class RmlRenderInterface final : public Rml::RenderInterface
 	{
 		Texture() = default;
 		Texture(AssetPtr<render::TextureData> const& asset) : m_Asset(asset) {}
+		Texture(AssetPtr<SdfFont> const& fontAsset) : m_Font(fontAsset) {}
 		Texture(UniquePtr<render::TextureData>&& generated) : m_Generated(std::move(generated)) {}
 
-		Ptr<render::TextureData const> Get() const { return ToPtr((m_Asset != nullptr) ? m_Asset.get() : m_Generated.Get()); }
+		Ptr<render::TextureData const> Get() const 
+		{ 
+			if (m_Font != nullptr)
+			{
+				return ToPtr(m_Font->GetAtlas());
+			}
+
+			return ToPtr((m_Asset != nullptr) ? m_Asset.get() : m_Generated.Get()); 
+		}
+
+		bool IsFont() const { return m_Font != nullptr; }
 		
 	private:
 		AssetPtr<render::TextureData> m_Asset;
+		AssetPtr<SdfFont> m_Font;
 		UniquePtr<render::TextureData> m_Generated;
 	};
 
@@ -63,7 +79,7 @@ public:
 	// functionality
 	//---------------
 	void SetGraphicsContext(Ptr<render::I_GraphicsContextApi> const graphicsContext) { m_GraphicsContext = graphicsContext; }
-	void SetShader(AssetPtr<render::ShaderData> const& shader) { m_Shader = shader; }
+	void SetShader(AssetPtr<render::ShaderData> const& shader, AssetPtr<render::ShaderData> const& textShader);
 	void SetView(ivec2 const dim, mat4 const& viewProj) { m_ViewDimensions = dim; m_ViewProj = viewProj; }
 
 	// interface implementation
@@ -107,6 +123,7 @@ private:
 	mat4 m_ViewProj;
 
 	AssetPtr<render::ShaderData> m_Shader;
+	AssetPtr<render::ShaderData> m_TextShader;
 	AssetPtr<render::ShaderData> m_NullShader;
 
 	T_Geometries m_Geometries;

@@ -6,6 +6,8 @@
 
 #include <stb/stb_image_write.h>
 
+#include <cctype>
+
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/IO/BinaryWriter.h>
@@ -33,7 +35,7 @@ RTTR_REGISTRATION
 		.property("end", &EditableSdfFontAsset::Charset::m_End)
 	END_REGISTER_CLASS(EditableSdfFontAsset::Charset);
 
-	BEGIN_REGISTER_CLASS(EditableSdfFontAsset, "editable font asset")
+	BEGIN_REGISTER_CLASS(EditableSdfFontAsset, "editable sdf font asset")
 		.property("size", &EditableSdfFontAsset::m_FontSize)
 		.property("padding", &EditableSdfFontAsset::m_Padding)
 		.property("spread", &EditableSdfFontAsset::m_Spread)
@@ -179,6 +181,11 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 	gui::SdfFont* const font = new gui::SdfFont();
 	font->m_FontSize = static_cast<int16>(m_FontSize);
 	font->m_FontFamily = std::string(face->family_name);
+	std::transform(font->m_FontFamily.begin(), font->m_FontFamily.end(), font->m_FontFamily.begin(),
+		[](unsigned char c)
+		{
+			return std::tolower(c);
+		});
 
 	if (face->style_flags & FT_STYLE_FLAG_ITALIC)
 	{

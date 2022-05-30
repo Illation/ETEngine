@@ -86,7 +86,7 @@ SdfFont::Metric const* const SdfFont::GetMetric(char32 const character) const
 	{
 		if ((character >= set.m_Start) && (character <= set.m_End))
 		{
-			return &set.m_Characters[character - set.m_End];
+			return &set.m_Characters[character - set.m_Start];
 		}
 	}
 
@@ -104,7 +104,7 @@ SdfFont::Metric* const SdfFont::GetMetric(char32 const character)
 	{
 		if ((character >= set.m_Start) && (character <= set.m_End))
 		{
-			return &set.m_Characters[character - set.m_End];
+			return &set.m_Characters[character - set.m_Start];
 		}
 	}
 
@@ -124,6 +124,7 @@ RTTR_REGISTRATION
 	END_REGISTER_CLASS(SdfFont);
 
 	BEGIN_REGISTER_CLASS(SdfFontAsset, "sdf font asset")
+		.property("is fallback", &SdfFontAsset::m_IsFallbackFont)
 	END_REGISTER_CLASS_POLYMORPHIC(SdfFontAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(SdfFontAsset) // force the shader class to be linked as it is only used in reflection
@@ -201,7 +202,7 @@ SdfFont* SdfFontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 
 	font->m_FontSize = binReader.Read<int16>();
 	font->m_Flags = binReader.Read<uint8>();
-	binReader.SetBufferPosition(pos + 13u);
+	binReader.SetBufferPosition(pos + 14u);
 
 	font->m_FontFamily = binReader.ReadNullString();
 
@@ -267,22 +268,25 @@ SdfFont* SdfFontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 	static size_t const s_PerMetricBytes = 21u;
 	size_t const numChars = static_cast<size_t>(block4Size) / s_PerMetricBytes;
 
-	char32 lastCharId = std::numeric_limits<char32>::max() - 1u; // make sure the first charset is created
+	char32 lastCharId = 0; 
 	for (size_t i = 0; i < numChars; i++)
 	{
 		size_t const posChar = binReader.GetBufferPosition();
 		char32 const charId = static_cast<char32>(binReader.Read<uint32>());
 
-		if (charId != lastCharId + 1)
+		if (font->m_CharSets.empty())
 		{
-			if (!(font->m_CharSets.empty()))
-			{
-				font->m_CharSets.back().m_End = lastCharId;
-			}
-
 			font->m_CharSets.push_back(SdfFont::Charset());
 			font->m_CharSets.back().m_Start = charId;
 		}
+		else if (charId != lastCharId + 1) 
+		{
+			font->m_CharSets.back().m_End = lastCharId;
+			font->m_CharSets.push_back(SdfFont::Charset());
+			font->m_CharSets.back().m_Start = charId;
+		}
+
+		lastCharId = charId;
 
 		font->m_CharSets.back().m_Characters.push_back(SdfFont::Metric());
 		SdfFont::Metric& metric = font->m_CharSets.back().m_Characters.back();
@@ -318,7 +322,7 @@ SdfFont* SdfFontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 			}
 
 			metric.m_TexCoord = vec2(static_cast<float>(xPos) / static_cast<float>(texWidth), static_cast<float>(yPos) / static_cast<float>(texHeight));
-			binReader.SetBufferPosition(posChar + 20u);
+			binReader.SetBufferPosition(posChar + s_PerMetricBytes);
 		}
 	}
 

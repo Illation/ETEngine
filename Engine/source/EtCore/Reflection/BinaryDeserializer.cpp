@@ -233,6 +233,9 @@ bool BinaryDeserializer::ReadArithmeticType(rttr::variant& var, HashString const
 	case "char"_hash:
 		var = static_cast<char>(m_Reader.Read<uint8>());
 		break;
+	case "char32_t"_hash:
+		var = static_cast<char32>(m_Reader.Read<uint32>());
+		break;
 
 	case "signedchar"_hash:
 		var = m_Reader.Read<int8>();

@@ -201,6 +201,10 @@ bool JsonSerializer::WriteArithmeticType(rttr::type const type, rttr::variant co
 	{
 		jNum->valueInt = static_cast<int64>(var.to_uint8());
 	}
+	else if (type == rttr::type::get<char32>())
+	{
+		jNum->valueInt = static_cast<char32>(var.to_uint32());
+	}
 	else if (type == rttr::type::get<int8>())
 	{
 		jNum->valueInt = static_cast<int64>(var.to_int8());

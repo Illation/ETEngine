@@ -45,6 +45,7 @@ void GuiRenderer::Init(Ptr<render::T_RenderEventDispatcher> const eventDispatche
 	//--------
 	m_RmlGlobal = RmlGlobal::GetInstance(); // might initialize RML if this is the first GUI renderer
 	m_RmlShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUi.glsl"));
+	m_RmlSdfShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUiSdf.glsl"));
 	m_RmlBlitShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUiBlit.glsl"));
 
 	// render events
@@ -182,15 +183,19 @@ void GuiRenderer::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiE
 	api->SetClearColor(vec4(0.f));
 	api->Clear(render::E_ClearFlag::CF_Color);
 
-	// set shader
-	api->SetShader(m_RmlShader.get());
-	RmlGlobal::GetInstance()->SetRIShader(m_RmlShader);
-
-	// general shader parameters -> might need to be done per context in the future
+	// view projection matrix
 	vec2 const viewDim = math::vecCast<float>(iViewDim);
 	mat4 const viewProjection = math::orthographic(0.f, viewDim.x, viewDim.y, 0.f, -10000.f, 10000.f) * math::scale(vec3(1.f, -1.f, 1.f)); // v flip
-	m_RmlShader->Upload("uViewProjection"_hash, viewProjection);
 	RmlGlobal::GetInstance()->SetRIView(iViewDim, viewProjection);
+
+	// set shaders
+	api->SetShader(m_RmlSdfShader.get());
+	m_RmlSdfShader->Upload("uViewProjection"_hash, viewProjection);
+
+	api->SetShader(m_RmlShader.get());
+	m_RmlShader->Upload("uViewProjection"_hash, viewProjection);
+
+	RmlGlobal::GetInstance()->SetRIShader(m_RmlShader, m_RmlSdfShader);
 
 	// pipeline state
 	api->SetBlendEnabled(true);

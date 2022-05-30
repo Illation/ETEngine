@@ -65,6 +65,7 @@ private:
 	//--------------------
 	RefPtr<RmlGlobal> m_RmlGlobal;
 	AssetPtr<render::ShaderData> m_RmlShader;
+	AssetPtr<render::ShaderData> m_RmlSdfShader;
 	AssetPtr<render::ShaderData> m_RmlBlitShader;
 
 	// target

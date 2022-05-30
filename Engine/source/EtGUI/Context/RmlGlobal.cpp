@@ -61,7 +61,7 @@ RmlGlobal::RmlGlobal()
 {
 	Rml::SetSystemInterface(&m_SystemInterface);
 	Rml::SetFileInterface(&m_FileInterface);
-	//Rml::SetFontEngineInterface(&m_FontEngineInterface);
+	Rml::SetFontEngineInterface(&m_FontEngineInterface);
 	Rml::SetRenderInterface(&m_RenderInterface);
 
 	Rml::Initialise();
@@ -98,9 +98,9 @@ void RmlGlobal::SetGraphicsContext(Ptr<render::I_GraphicsContextApi> const graph
 //----------------------------------
 // RmlGlobal::SetGraphicsContext
 //
-void RmlGlobal::SetRIShader(AssetPtr<render::ShaderData> const shader)
+void RmlGlobal::SetRIShader(AssetPtr<render::ShaderData> const shader, AssetPtr<render::ShaderData> const textShader)
 {
-	m_RenderInterface.SetShader(shader);
+	m_RenderInterface.SetShader(shader, textShader);
 }
 
 //----------------------------------

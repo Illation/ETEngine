@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "GuiDocument.h"
 
+#include "SdfFont.h"
+
+#include <RmlUi/Core/Core.h>
+
 #include <EtCore/Content/AssetRegistration.h>
 
 
@@ -36,6 +40,17 @@ bool GuiDocumentAsset::LoadFromMemory(std::vector<uint8> const& data)
 	m_Data = new GuiDocument();
 	m_Data->m_Text = reinterpret_cast<char const*>(data.data());
 	m_Data->m_Length = data.size();
+
+	for (core::I_Asset::Reference const& reference : GetReferences())
+	{
+		I_AssetPtr const* const rawAssetPtr = reference.GetAsset();
+
+		if (rawAssetPtr->GetType() == rttr::type::get<SdfFont>())
+		{
+			SdfFontAsset const* const fontAsset = static_cast<SdfFontAsset const*>(rawAssetPtr->GetAsset());
+			Rml::LoadFontFace(fontAsset->GetPath() + fontAsset->GetName(), fontAsset->m_IsFallbackFont);
+		}
+	}
 
 	// all done
 	return true;

@@ -174,6 +174,11 @@ public:
 
 private:
 	SdfFont* LoadFnt(std::vector<uint8> const& binaryContent);
+
+	// Data
+	///////
+public:
+	bool m_IsFallbackFont = false;
 };
 
 
