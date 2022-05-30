@@ -14,7 +14,7 @@
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
-#include <EtGUI/Content/SpriteFont.h>
+#include <EtGUI/Content/SdfFont.h>
 #include <EtGUI/GuiExtension.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
@@ -57,7 +57,7 @@ void MainFramework::OnSystemInit()
 void MainFramework::OnInit()
 {
 	// Fonts
-	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<gui::SpriteFont>(core::HashString("Fonts/Ubuntu-Regular.ttf"));
+	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<gui::SdfFont>(core::HashString("Fonts/Ubuntu-Regular.ttf"));
 
 	// scenes
 	fw::UnifiedScene::Instance().GetEventDispatcher().Register(

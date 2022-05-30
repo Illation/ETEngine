@@ -6,7 +6,7 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 
-#include <EtGUI/Content/SpriteFont.h>
+#include <EtGUI/Content/SdfFont.h>
 
 
 namespace et {
@@ -32,8 +32,8 @@ void SplashScreenRenderer::Init()
 
 	// #todo: make these customizable
 	m_SplashBackgroundTex = core::ResourceManager::Instance()->GetAssetData<render::TextureData>(core::HashString("Textures/Splashscreen.jpg"));
-	m_SplashTitleFont = core::ResourceManager::Instance()->GetAssetData<gui::SpriteFont>(core::HashString("Fonts/roboto2014/Roboto-Bold.ttf"));
-	m_SplashRegFont = core::ResourceManager::Instance()->GetAssetData<gui::SpriteFont>(core::HashString("Fonts/roboto2014/RobotoCondensed-Regular.ttf"));
+	m_SplashTitleFont = core::ResourceManager::Instance()->GetAssetData<gui::SdfFont>(core::HashString("Fonts/roboto2014/Roboto-Bold.ttf"));
+	m_SplashRegFont = core::ResourceManager::Instance()->GetAssetData<gui::SdfFont>(core::HashString("Fonts/roboto2014/RobotoCondensed-Regular.ttf"));
 
 	m_Title = "E   T   E N G I N E";
 	m_Subtitle = "LOADING";

@@ -116,7 +116,7 @@ public:
 	int16 GetUnderline() const { return m_Underline; }
 	float GetUnderlineThickness() const { return m_UnderlineThickness; }
 
-	Metric const* const GetMetric(char32 const character) const;
+	Metric const* const GetValidMetric(char32 const character) const;
 	bool UseKerning() const { return m_UseKerning; }
 
 	render::TextureData const* GetAtlas() const { return (m_TextureAsset != nullptr) ? m_TextureAsset.get() : m_Texture.Get(); }

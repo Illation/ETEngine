@@ -1,7 +1,7 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <EtGui/Content/SpriteFont.h>
+#include <EtGui/Content/SdfFont.h>
 
 
 namespace et { namespace rt {
@@ -78,7 +78,7 @@ private:
 	//
 	struct QueuedFont
 	{
-		Ptr<SpriteFont const> m_Font;
+		Ptr<SdfFont const> m_Font;
 
 		int32 m_BufferStart = 0;
 		int32 m_BufferSize = 0;
@@ -98,14 +98,14 @@ private:
 	// functionality
 	//---------------
 public:
-	void SetFont(Ptr<SpriteFont const> const font);
+	void SetFont(Ptr<SdfFont const> const font);
 	void SetColor(vec4 const& color) { m_Color = color; }
 	void DrawText(std::string const& text, vec2 const pos, int16 fontSize = 0);//fontSize 0 means using the fonts default size
 	void OnWindowResize();
 
 	// accessors
 	//-----------
-	ivec2 GetTextSize(std::string const& text, SpriteFont const* const font, int16 fontSize = 0) const;
+	ivec2 GetTextSize(std::string const& text, SdfFont const* const font, int16 fontSize = 0) const;
 
 	// utility
 	//---------

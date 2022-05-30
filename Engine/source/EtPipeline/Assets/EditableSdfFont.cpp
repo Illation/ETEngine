@@ -221,15 +221,32 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 	std::unordered_map<char32, gui::SdfFont::Metric*> characters;
 	for (Charset const& charset : m_CharSets)
 	{
-		font->m_CharSets.push_back(gui::SdfFont::Charset(charset.m_Start, charset.m_End));
-		font->m_CharSets.back().m_Characters.resize(charset.m_End - charset.m_Start + 1);
+		bool hasCharset = false; // for trimming the charset to the smallest possible range
+		char32 lastValidChar = static_cast<char32>(-1);
 
 		for (char32 character = charset.m_Start; character <= charset.m_End; ++character)
 		{
+			uint32 glyphIdx = FT_Get_Char_Index(face, static_cast<FT_ULong>(character));
+			if ((glyphIdx == 0) && (character != 0)) // we want to make sure we render a glyph for the null character
+			{
+				if (hasCharset)
+				{
+					font->GetMetric(character)->m_Character = character;
+				}
+
+				continue;
+			}
+
+			lastValidChar = character;
+			if (!hasCharset)
+			{
+				font->m_CharSets.push_back(gui::SdfFont::Charset(character, charset.m_End));
+				font->m_CharSets.back().m_Characters.resize(charset.m_End - character + 1);
+				hasCharset = true;
+			}
+
 			gui::SdfFont::Metric* const metric = font->GetMetric(character);
 			metric->m_Character = character;
-
-			uint32 glyphIdx = FT_Get_Char_Index(face, static_cast<FT_ULong>(character));
 
 			if (font->m_UseKerning && glyphIdx)
 			{
@@ -252,7 +269,7 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 
 			if (FT_Load_Glyph(face, glyphIdx, FT_LOAD_DEFAULT))
 			{
-				LOG("FREETYPE: Failed to load glyph", core::LogLevel::Warning);
+				ET_ASSERT(false, "FREETYPE: Failed to load glyph");
 				continue;
 			}
 
@@ -306,6 +323,13 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 			metric->m_IsValid = true;
 
 			characters[character] = metric;
+		}
+
+		if (hasCharset)
+		{
+			gui::SdfFont::Charset& genSet = font->m_CharSets.back();
+			genSet.m_End = lastValidChar;
+			genSet.m_Characters.resize(genSet.m_End - genSet.m_Start + 1);
 		}
 	}
 

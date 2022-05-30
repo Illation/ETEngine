@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "RmlFontEngineInterface.h"
 
+#include <RmlUi/Core/StringUtilities.h>
+
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtGUI/Context/RmlUtil.h>
@@ -41,7 +43,7 @@ void RmlFontEngineInterface::FontFace::SetAsset(AssetPtr<SdfFont> const asset, R
 
 	m_Multiplier = static_cast<float>(m_Size) / static_cast<float>(m_Font->GetFontSize());
 
-	SdfFont::Metric const* const xMetric = m_Font->GetMetric(static_cast<char32>('x'));
+	SdfFont::Metric const* const xMetric = m_Font->GetValidMetric(static_cast<char32>('x'));
 	ET_ASSERT(xMetric != nullptr);
 	m_XHeight = static_cast<int32>(m_Multiplier * static_cast<float>(xMetric->m_Height));
 
@@ -277,21 +279,24 @@ float RmlFontEngineInterface::GetUnderline(Rml::FontFaceHandle const faceHandle,
 //----------------------------------------
 // RmlFontEngineInterface::GetStringWidth
 //
-int32 RmlFontEngineInterface::GetStringWidth(Rml::FontFaceHandle const faceHandle, Rml::String const& string, Rml::Character const priorCharacter)
+int32 RmlFontEngineInterface::GetStringWidth(Rml::FontFaceHandle const faceHandle, Rml::String const& utf8String, Rml::Character const priorCharacter)
 {
 	FontFace const& face = GetFace(faceHandle);
 
-	float ret = 0.f;
+	float stringWidth = 0.f;
 
 	char32 prevChar = static_cast<char32>(priorCharacter);
-	for (char32 const charId : string)
+	for (auto itString = Rml::StringIteratorU8(utf8String); itString; ++itString)
 	{
-		SdfFont::Metric const* metric = face.m_Font->GetMetric(charId);
+		char32 const charId = static_cast<char32>(*itString);
+
+		SdfFont::Metric const* metric = face.m_Font->GetValidMetric(charId);
 		if (metric == nullptr)
 		{
 			// here we should go to fallback font
-			LOG(FS("FontEngine::GetStringWidth > Font '%s' doesn't support char %c", face.m_Font.GetId().ToStringDbg(), charId), core::LogLevel::Warning);
-			metric = face.m_Font->GetMetric(' ');
+			LOG(FS("FontEngine::GetStringWidth > Font '%s' doesn't support char '%#010x'", face.m_Font.GetId().ToStringDbg(), charId), 
+				core::LogLevel::Warning);
+			metric = face.m_Font->GetValidMetric(0);
 			ET_ASSERT(metric != nullptr);
 		}
 
@@ -303,10 +308,10 @@ int32 RmlFontEngineInterface::GetStringWidth(Rml::FontFaceHandle const faceHandl
 
 		prevChar = charId;
 
-		ret += (metric->m_AdvanceX + kerning) * face.m_Multiplier;
+		stringWidth += (metric->m_AdvanceX + static_cast<float>(metric->m_Width) + static_cast<float>(metric->m_OffsetX) + kerning) * face.m_Multiplier;
 	}
 
-	return static_cast<int32>(ret);
+	return static_cast<int32>(stringWidth);
 }
 
 //----------------------------------------
@@ -314,7 +319,7 @@ int32 RmlFontEngineInterface::GetStringWidth(Rml::FontFaceHandle const faceHandl
 //
 int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandle, 
 	Rml::FontEffectsHandle const effectsHandle, 
-	Rml::String const& string, 
+	Rml::String const& utf8String,
 	Rml::Vector2f const& position, 
 	Rml::Colourb const& colour, 
 	float const opacity, 
@@ -339,15 +344,18 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 	std::vector<Rml::Vertex>& vertices = geometry.GetVertices();
 	std::vector<int32>& indices = geometry.GetIndices();
 
-	indices.reserve(string.size() * 6);
+	size_t const numCharacters = Rml::StringUtilities::LengthUTF8(utf8String);
+	indices.reserve(numCharacters * 6);
 
 	// Since RmlUi defines a preset vertex layout we're going to have to do some memory magic to also pass the channel indices to the render interface
-	size_t const vCountBase = string.size() * 4; // doubles as byte size of channel indices because they are 1 byte each
+	size_t const vCountBase = numCharacters * 4; // doubles as byte size of channel indices because they are 1 byte each
 	size_t const channelVCount = (vCountBase + sizeof(Rml::Vertex) - 1) / sizeof(Rml::Vertex);
 
 	vertices.resize(vCountBase + channelVCount); // append enough vertices to provide a block of memory that we can repurpose for filling in the channels
 
 	uint8* const channels = reinterpret_cast<uint8*>(&vertices[vCountBase]);
+
+	Rml::Colourb col(colour.red, colour.green, colour.blue, static_cast<Rml::byte>(static_cast<float>(colour.alpha) * opacity));
 
 	// fill in geometry
 	//------------------
@@ -358,14 +366,17 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 
 	float stringWidth = 0.f; // ret
 	char32 prevChar = 0;
-	for (char32 const charId : string)
+	for (auto itString = Rml::StringIteratorU8(utf8String); itString; ++itString)
 	{
-		SdfFont::Metric const* metric = face.m_Font->GetMetric(charId);
+		char32 const charId = static_cast<char32>(*itString);
+
+		SdfFont::Metric const* metric = face.m_Font->GetValidMetric(charId);
 		if (metric == nullptr)
 		{
 			// here we should go to fallback font
-			LOG(FS("FontEngine::GenerateString > Font '%s' doesn't support char %c", face.m_Font.GetId().ToStringDbg(), charId), core::LogLevel::Warning);
-			metric = face.m_Font->GetMetric(' ');
+			LOG(FS("FontEngine::GenerateString > Font '%s' doesn't support char '%#010x'", face.m_Font.GetId().ToStringDbg(), charId), 
+				core::LogLevel::Warning);
+			metric = face.m_Font->GetValidMetric(0);
 			ET_ASSERT(metric != nullptr);
 		}
 
@@ -393,7 +404,6 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 		vec2 const charDim(static_cast<float>(metric->m_Width), static_cast<float>(metric->m_Height));
 		vec2 const charDimScaled = charDim * face.m_Multiplier;
 		vec2 const charDimTexture = charDim / texDim;
-		Rml::Colourb col = (colour.red, colour.green, colour.blue, static_cast<Rml::byte>(static_cast<float>(colour.alpha) * opacity));
 
 		channels[vIndex] = metric->m_Channel;
 		Rml::Vertex& v1 = vertices[vIndex++];
@@ -421,7 +431,7 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 		v4.tex_coord = Rml::Vector2f(metric->m_TexCoord.x + charDimTexture.x, metric->m_TexCoord.y);
 
 		// advance
-		stringWidth += metric->m_AdvanceX * face.m_Multiplier;
+		stringWidth += (metric->m_AdvanceX + charDim.x + static_cast<float>(metric->m_OffsetX)) * face.m_Multiplier;
 	}
 
 	return static_cast<int32>(stringWidth);

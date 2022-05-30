@@ -11,10 +11,10 @@
     },
     "metadata": null,
     "children": [],
-    "size": 30,
+    "size": 64,
     "padding": 1,
-    "spread": 5,
-    "highres": 32,
+    "spread": 15,
+    "highres": 64,
     "char sets": [
       {
         "start": 0,

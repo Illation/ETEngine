@@ -108,11 +108,11 @@ public:
 
 	float GetUnderline(Rml::FontFaceHandle const faceHandle, float& outThickness) override;
 
-	int32 GetStringWidth(Rml::FontFaceHandle const faceHandle, Rml::String const& string, Rml::Character const priorCharacter) override;
+	int32 GetStringWidth(Rml::FontFaceHandle const faceHandle, Rml::String const& utf8String, Rml::Character const priorCharacter) override;
 
 	int32 GenerateString(Rml::FontFaceHandle const faceHandle,
 		Rml::FontEffectsHandle const effectsHandle, 
-		Rml::String const& string, 
+		Rml::String const& utf8String,
 		Rml::Vector2f const& position,
 		Rml::Colourb const& colour, 
 		float const opacity, 

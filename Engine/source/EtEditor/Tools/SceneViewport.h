@@ -10,7 +10,7 @@
 #include <EtRendering/Extensions/OutlineRenderer.h>
 
 #include <EtGUI/Rendering/GuiRenderer.h>
-#include <EtGUI/Content/SpriteFont.h>
+#include <EtGUI/Content/SdfFont.h>
 
 #include <EtFramework/SceneGraph/SceneEvents.h>
 
@@ -84,7 +84,7 @@ private:
 
 	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
 
-	AssetPtr<gui::SpriteFont> m_DebugFont;
+	AssetPtr<gui::SdfFont> m_DebugFont;
 	bool m_DrawDebugInfo = true;
 
 	bool m_IsInitialized = false;

@@ -101,8 +101,8 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 	}
 
 	// create buffers
-	int64 const iBufferSize = static_cast<int64>(numIndices * sizeof(uint32));
-	int64 const vBufferSize = static_cast<int64>(numVertices * sizeof(Rml::Vertex));
+	int64 const iBufferSize = static_cast<int64>(geometry.m_NumIndices * sizeof(uint32));
+	int64 const vBufferSize = static_cast<int64>(geometry.m_NumVertices * sizeof(Rml::Vertex));
 
 	// create a new vertex array and input layout
 	geometry.m_VertexArray = m_GraphicsContext->CreateVertexArray();
@@ -128,10 +128,12 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 	// for text geometry we enable a second vertex buffer holding the text specific vertex data
 	if (geometry.m_IsText)
 	{
+		int64 const bufferSize = static_cast<int64>(geometry.m_NumVertices * sizeof(uint8));
+
 		geometry.m_VertexBufferText = m_GraphicsContext->CreateBuffer();
 		m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, geometry.m_VertexBufferText);
 		m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex, 
-			static_cast<int64>(numChars), 
+			bufferSize,
 			reinterpret_cast<void const*>(reinterpret_cast<uint8 const*>(vertices) + static_cast<size_t>(vBufferSize)),
 			render::E_UsageHint::Static);
 

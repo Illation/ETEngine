@@ -1,0 +1,82 @@
+{
+  "FileVersion": 2,
+  "Id": "49c8421d-6b15-3c95-abcd-20aa1cf5cc51",
+  "Items": [
+    {
+      "Id": "fd4f85bb-59a7-4185-86b4-c9ffe574bf3d",
+      "Command": "$(SolutionDir)/../"
+    },
+    {
+      "Id": "ab174a14-dd09-4d02-ba6e-b57945369115",
+      "Command": "$(SolutionDir)/../../../Engine/"
+    },
+    {
+      "Id": "09eb37fc-eae2-425f-99e5-c0456d47a3a5",
+      "Command": "",
+      "ExclusiveMode": true,
+      "Items": [
+        {
+          "Id": "92b55e9a-53fe-4c3f-a533-c337077c0044",
+          "Command": "Compiled",
+          "Items": [
+            {
+              "Id": "6d45e6ad-a625-4b5e-afc8-8a5291ebe405",
+              "Command": "$(SolutionDir)/../source/Runtime/_generated/"
+            },
+            {
+              "Id": "8f67d210-04fc-4d78-8a42-ef58d73c050c",
+              "Command": "y"
+            },
+            {
+              "Id": "c8fcc831-1131-4518-9d88-6fcfe5f00efd",
+              "Command": "compiled_package"
+            }
+          ]
+        },
+        {
+          "Id": "b3345ce2-d273-4631-bd22-6908b0bb7a79",
+          "Command": "Packaged",
+          "Items": [
+            {
+              "Id": "c0fc4eb2-4f4d-4f64-a8aa-01e66c671144",
+              "Command": "",
+              "ProjectConfig": "Debug",
+              "Items": [
+                {
+                  "Id": "0eb5038b-f50c-43a4-98b2-cbc7ba216998",
+                  "Command": "$(SolutionDir)/../bin/Debug_x64/EtEngineDemo/"
+                }
+              ]
+            },
+            {
+              "Id": "be21d1b0-09b6-447d-9396-aed476a8b7a2",
+              "Command": "",
+              "ProjectConfig": "Develop",
+              "Items": [
+                {
+                  "Id": "072c0394-5ea8-4c8f-86db-6813d8a9162a",
+                  "Command": "$(SolutionDir)/../bin/Develop_x64/EtEngineDemo/"
+                }
+              ]
+            },
+            {
+              "Id": "2257fb02-301f-4e2b-b955-970090178f2e",
+              "Command": "",
+              "ProjectConfig": "Shipping",
+              "Items": [
+                {
+                  "Id": "0e89a780-f6f2-40b6-b054-ad0fc4b2fc2e",
+                  "Command": "$(SolutionDir)/../bin/Shipping_x64/EtEngineDemo/"
+                }
+              ]
+            },
+            {
+              "Id": "5217b5b8-fc18-4f8a-9f6f-8fb89014d9c7",
+              "Command": "n"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

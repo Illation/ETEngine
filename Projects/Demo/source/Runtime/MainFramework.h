@@ -9,7 +9,7 @@
 
 
 namespace et { namespace gui {
-	class SpriteFont;
+	class SdfFont;
 } }
 
 
@@ -57,7 +57,7 @@ private:
 
 	size_t m_CurrentScene = 0u;
 
-	AssetPtr<gui::SpriteFont> m_DebugFont;
+	AssetPtr<gui::SdfFont> m_DebugFont;
 	bool m_DrawDebugInfo = true;
 	bool m_DrawFontAtlas = false;
 

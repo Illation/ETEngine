@@ -6,8 +6,6 @@
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 
-#include <EtGUI/Content/SpriteFont.h>
-
 
 namespace et {
 namespace gui {
@@ -130,7 +128,7 @@ void TextRenderer::Deinit()
 //
 // Sets the active font and adds it to the queue if it's not there yet
 //
-void TextRenderer::SetFont(Ptr<SpriteFont const> const font)
+void TextRenderer::SetFont(Ptr<SdfFont const> const font)
 {
 	auto foundIt = std::find_if(m_QueuedFonts.begin(), m_QueuedFonts.end(), [font](QueuedFont const& queued)
 		{
@@ -183,7 +181,7 @@ void TextRenderer::OnWindowResize()
 //
 // Returns the theoretical dimensions of a text that would be drawn
 //
-ivec2 TextRenderer::GetTextSize(std::string const& text, SpriteFont const* const font, int16 fontSize) const
+ivec2 TextRenderer::GetTextSize(std::string const& text, SdfFont const* const font, int16 fontSize) const
 {
 	if (fontSize <= 0)
 	{
@@ -193,28 +191,28 @@ ivec2 TextRenderer::GetTextSize(std::string const& text, SpriteFont const* const
 	float sizeMult = (float)fontSize / (float)font->GetFontSize();
 	vec2 ret(0.f);
 
-	for (auto charId : text)
+	char32 previous = 0;
+	for (char32 const charId : text)
 	{
-		char previous = 0;
-		if (SpriteFont::IsCharValid(charId) && font->GetMetric(charId).IsValid)
+		SdfFont::Metric const* const metric = font->GetValidMetric(charId);
+		if (metric != nullptr)
 		{
-			FontMetric const& metric = font->GetMetric(charId);
-
 			vec2 kerningVec = 0;
-			if (font->m_UseKerning)
+			if (font->UseKerning())
 			{
-				kerningVec = metric.GetKerningVec(static_cast<wchar_t>(previous));
+				kerningVec = metric->GetKerningVec(static_cast<wchar_t>(previous));
 			}
+
 			previous = charId;
 
-			ret.x += (metric.AdvanceX + kerningVec.x) * sizeMult;
+			ret.x += (metric->m_AdvanceX + kerningVec.x) * sizeMult;
 
 			if (charId == ' ')
 			{
 				continue;
 			}
 
-			ret.y = std::max(ret.y, (static_cast<float>(metric.Height) + static_cast<float>(metric.OffsetY) + kerningVec.y) * sizeMult);
+			ret.y = std::max(ret.y, (static_cast<float>(metric->m_Height) + static_cast<float>(metric->m_OffsetY) + kerningVec.y) * sizeMult);
 		}
 		else
 		{
@@ -292,50 +290,45 @@ void TextRenderer::UpdateBuffer()
 				float const sizeMult = static_cast<float>(cache.Size) / static_cast<float>(queued.m_Font->GetFontSize());
 
 				float totalAdvanceX = 0.f;
-				char previous = 0;
-				for (char const charId : cache.Text)
+				char32 previous = 0;
+				for (char32 const charId : cache.Text)
 				{
-					if (!SpriteFont::IsCharValid(charId))
-					{
-						LOG(FS("TextRenderer::UpdateBuffer > char '%c' not supported for current font", charId), core::LogLevel::Warning);
-						continue;
-					}
-
-					FontMetric const& metric = queued.m_Font->GetMetric(charId);
-					if (!metric.IsValid)
+					SdfFont::Metric const* const metric = queued.m_Font->GetValidMetric(charId);
+					if (metric == nullptr)
 					{
 						LOG(FS("TextRenderer::UpdateBuffer > char '%c' doesn't have a valid metric", charId), core::LogLevel::Warning);
 						continue;
 					}
 
 					vec2 kerningVec = 0;
-					if (queued.m_Font->m_UseKerning && m_bUseKerning)
+					if (queued.m_Font->UseKerning() && m_bUseKerning)
 					{
-						kerningVec = metric.GetKerningVec(static_cast<wchar_t>(previous)) * sizeMult;
+						kerningVec = metric->GetKerningVec(static_cast<wchar_t>(previous)) * sizeMult;
 					}
+
 					previous = charId;
 
 					totalAdvanceX += kerningVec.x;
 
 					if (charId == ' ')
 					{
-						totalAdvanceX += metric.AdvanceX;
+						totalAdvanceX += metric->m_AdvanceX;
 						continue;
 					}
 
 					tVerts.push_back(TextVertex());
 					TextVertex& vText = tVerts[tVerts.size()-1];
 
-					vText.Position.x = cache.Position.x + (totalAdvanceX + metric.OffsetX)*sizeMult;
-					vText.Position.y = cache.Position.y + (kerningVec.y + metric.OffsetY)*sizeMult;
+					vText.Position.x = cache.Position.x + (totalAdvanceX + metric->m_OffsetX)*sizeMult;
+					vText.Position.y = cache.Position.y + (kerningVec.y + metric->m_OffsetY)*sizeMult;
 					vText.Position.z = 0;
 					vText.Color = cache.Color;
-					vText.TexCoord = metric.TexCoord;
-					vText.CharacterDimension = vec2(metric.Width, metric.Height);
+					vText.TexCoord = metric->m_TexCoord;
+					vText.CharacterDimension = vec2(metric->m_Width, metric->m_Height);
 					vText.SizeMult = sizeMult;
-					vText.ChannelId = metric.Channel;
+					vText.ChannelId = metric->m_Channel;
 
-					totalAdvanceX += metric.AdvanceX;
+					totalAdvanceX += metric->m_AdvanceX;
 				}
 			}
 

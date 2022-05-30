@@ -57,9 +57,9 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 
 	core::FileUtil::SetExecutablePath(argv[0]); // working dir from executable path
 
-	std::string projectPath(argv[1]);
-	std::string enginePath(argv[2]);
-	m_OutPath = argv[3];
+	std::string projectPath(core::FileUtil::GetAbsolutePath(argv[1]));
+	std::string enginePath(core::FileUtil::GetAbsolutePath(argv[2]));
+	m_OutPath = core::FileUtil::GetAbsolutePath(argv[3]);
 	m_GenerateCompiled = (std::string(argv[4]) == "y");
 
 	if (m_GenerateCompiled)

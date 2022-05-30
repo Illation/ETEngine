@@ -76,17 +76,23 @@ SdfFont& SdfFont::operator=(SdfFont const& other)
 }
 
 //---------------------------------
-// SdfFont::GetMetric
+// SdfFont::GetValidMetric
 //
-// Access the metrics for a particular character
+// Access the metrics for a particular character, if it is valid
 //
-SdfFont::Metric const* const SdfFont::GetMetric(char32 const character) const
+SdfFont::Metric const* const SdfFont::GetValidMetric(char32 const character) const
 {
 	for (Charset const& set : m_CharSets)
 	{
 		if ((character >= set.m_Start) && (character <= set.m_End))
 		{
-			return &set.m_Characters[character - set.m_Start];
+			Metric const& metric = set.m_Characters[character - set.m_Start];
+			if (metric.m_IsValid)
+			{
+				return &metric;
+			}
+
+			return nullptr;
 		}
 	}
 
@@ -247,7 +253,7 @@ SdfFont* SdfFontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 	pos = binReader.GetBufferPosition();
 
 	std::string const pn = binReader.ReadNullString();
-	ET_ASSERT(!pn.empty(), "SpriteFont(.fnt): Invalid Font Sprite [Empty]");
+	ET_ASSERT(!pn.empty(), "SdfFont(.fnt): Invalid Font Sprite [Empty]");
 
 	font->m_TextureAsset = core::ResourceManager::Instance()->GetAssetData<render::TextureData>(core::HashString(pn.c_str()));
 	ET_ASSERT(font->m_TextureAsset->GetResolution() == ivec2(static_cast<int32>(texWidth), static_cast<int32>(texHeight)));

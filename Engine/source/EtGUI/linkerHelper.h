@@ -3,7 +3,6 @@
 
 #include <EtGUI/Content/FreetypeFont.h>
 #include <EtGUI/Content/GuiDocument.h>
-#include <EtGUI/Content/SpriteFont.h>
 #include <EtGUI/Content/SdfFont.h>
 
 
@@ -20,7 +19,6 @@ void ForceLinking()
 {
 	render::ForceLinking();
 
-	FORCE_LINKING(FontAsset)
 	FORCE_LINKING(SdfFontAsset)
 	FORCE_LINKING(FreetypeFontAsset)
 	FORCE_LINKING(GuiDocumentAsset)

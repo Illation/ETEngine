@@ -53,8 +53,8 @@ private:
 	std::string m_Subtitle;
 
 	AssetPtr<render::TextureData> m_SplashBackgroundTex;
-	AssetPtr<gui::SpriteFont> m_SplashTitleFont;
-	AssetPtr<gui::SpriteFont> m_SplashRegFont;
+	AssetPtr<gui::SdfFont> m_SplashTitleFont;
+	AssetPtr<gui::SdfFont> m_SplashRegFont;
 
 	// scene rendering
 	ivec2 m_Dimensions;

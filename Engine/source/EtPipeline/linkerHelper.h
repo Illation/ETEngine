@@ -2,7 +2,6 @@
 #include <EtPipeline/Assets/EditableAssetStub.h>
 #include <EtPipeline/Assets/EditableAudioAsset.h>
 #include <EtPipeline/Assets/EditableEnvironmentMap.h>
-#include <EtPipeline/Assets/EditableFontAsset.h>
 #include <EtPipeline/Assets/EditableSdfFont.h>
 #include <EtPipeline/Assets/EditableFreetypeFont.h>
 #include <EtPipeline/Assets/EditableGuiDocument.h>
@@ -28,7 +27,6 @@ void ForceLinking()
 	FORCE_LINKING(EditableAudioAsset)
 	FORCE_LINKING(EditableSceneDescriptorAsset)
 	FORCE_LINKING(EditableEnvironmentMapAsset)
-	FORCE_LINKING(EditableFontAsset)
 	FORCE_LINKING(EditableSdfFontAsset)
 	FORCE_LINKING(EditableFreetypeFontAsset)
 	FORCE_LINKING(EditableGuiDocumentAsset)
