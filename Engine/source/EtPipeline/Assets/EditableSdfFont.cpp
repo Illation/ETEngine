@@ -226,7 +226,7 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 
 		for (char32 character = charset.m_Start; character <= charset.m_End; ++character)
 		{
-			uint32 glyphIdx = FT_Get_Char_Index(face, static_cast<FT_ULong>(character));
+			uint32 const glyphIdx = FT_Get_Char_Index(face, static_cast<FT_ULong>(character));
 			if ((glyphIdx == 0) && (character != 0)) // we want to make sure we render a glyph for the null character
 			{
 				if (hasCharset)
@@ -273,13 +273,14 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 				continue;
 			}
 
+			// for the SDF we pad out the glyph bitmaps, this needs to be accounted for in the positioning for the characters
 			uint32 const width = face->glyph->bitmap.width + totPadding * 2;
 			uint32 const height = face->glyph->bitmap.rows + totPadding * 2;
 
 			metric->m_Width = static_cast<uint16>(width);
 			metric->m_Height = static_cast<uint16>(height);
-			metric->m_OffsetX = static_cast<int16>(face->glyph->bitmap_left) + static_cast<int16>(totPadding);
-			metric->m_OffsetY = -static_cast<int16>(face->glyph->bitmap_top) + static_cast<int16>(totPadding);
+			metric->m_OffsetX = static_cast<int16>(face->glyph->bitmap_left) - static_cast<int16>(totPadding);
+			metric->m_OffsetY = -(static_cast<int16>(face->glyph->bitmap_top) + static_cast<int16>(totPadding));
 			metric->m_AdvanceX = static_cast<float>(face->glyph->advance.x) / 64.f;
 
 			// Generate atlas coordinates
@@ -349,6 +350,8 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 		font->m_Texture = std::move(texture);
 	}
 
+	font->m_SdfSize = m_Spread;
+
 	render::T_FbLoc captureFBO;
 	render::T_RbLoc captureRBO;
 
@@ -410,7 +413,7 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 		texture->UploadData(face->glyph->bitmap.buffer, render::E_ColorFormat::Red, render::E_DataType::UByte, 0u);
 		texture->SetParameters(params);
 
-		ivec2 const res = ivec2(metric.m_Width - m_Padding * 2, metric.m_Height - m_Padding * 2);
+		ivec2 const res = ivec2(metric.m_Width, metric.m_Height) - ivec2(m_Padding * 2);
 		api->SetViewport(math::vecCast<int32>(metric.m_TexCoord) + ivec2(m_Padding), res);
 		computeSdf->Upload("uTex"_hash, static_cast<render::TextureData const*>(texture.Get()));
 		computeSdf->Upload("uChannel"_hash, static_cast<int32>(metric.m_Channel));
@@ -469,6 +472,7 @@ void EditableSdfFontAsset::PopulateTextureParams(render::TextureParameters& para
 //    * each metric contains a byte indicating if the metric is valid or not after the character ID
 //	  * added int16 to block 2 for Underline position
 //	  * added float to block 2 for Underline thickness
+//	  * added float to block 2 for Sdf Size
 //
 bool EditableSdfFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::SdfFont const* const font, std::string const& atlasName)
 {
@@ -510,7 +514,7 @@ bool EditableSdfFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::Sd
 	uint32 const block1Size = static_cast<uint32>(14u + font->m_FontFamily.size() + 1u); // +1 because string is null terminated
 
 	// 2
-	uint32 const block2Size = 21u;
+	uint32 const block2Size = 25u;
 
 	// 3
 	uint32 const block3Size = static_cast<uint32>(atlasName.size() + 1u); // +1 because string is null terminated
@@ -594,6 +598,7 @@ bool EditableSdfFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::Sd
 	binWriter.Write<uint8>(0u); // redChnl
 	binWriter.Write<uint8>(0u); // greenChnl
 	binWriter.Write<uint8>(0u); // blueChnl
+	binWriter.Write(font->m_SdfSize); // non-standard
 
 	// Block 3
 	//---------

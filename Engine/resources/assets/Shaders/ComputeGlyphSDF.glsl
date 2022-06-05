@@ -33,17 +33,19 @@
 		bool local = texture(uTex, Texcoord).r > 0.5; //local value
 
 		//get closest opposite
-		vec2 startPos = Texcoord - (vec2(uSpread) / uResolution);
-		vec2 delta = vec2(1 / (uSpread * uHighRes * 2));
-		float closest = uSpread;
-		for(int y = 0; y < int(uSpread * uHighRes * 2); ++y)
+		int samplePixCount = int(uSpread * uHighRes);
+		vec2 delta = vec2(1 / float(samplePixCount));
+		delta.x *= uResolution.y / uResolution.x;
+		delta.y *= uResolution.x / uResolution.y;
+
+		float closest = length(vec2(uSpread));
+		for(int y = -samplePixCount; y <= samplePixCount; ++y)
 		{
-			for(int x = 0; x < int(uSpread * uHighRes * 2); ++x)
+			for(int x = -samplePixCount; x <= samplePixCount; ++x)
 			{
-				vec2 samplePos = startPos + vec2(x, y) * delta;
-				vec2 diff = (Texcoord-samplePos)*uResolution;
-				diff.x *= uResolution.x/uResolution.y;
-				float dist = length(diff);
+				vec2 offset = vec2(x, y) * delta;
+				vec2 samplePos = Texcoord + offset;
+				float dist = length(offset * uResolution);
 				if(dist < closest)
 				{
 					bool sampled = texture(uTex, samplePos).r > 0.5;
@@ -56,7 +58,7 @@
 		}
 
 		//normalize between 0 and 1
-		float diff = closest / (uSpread * 2);
+		float diff = closest / (length(vec2(uSpread)) * 2);
 		float val = 0.5 + (local ? diff : -diff);
 
 		//apply to output color

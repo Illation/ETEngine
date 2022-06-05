@@ -121,6 +121,8 @@ public:
 
 	render::TextureData const* GetAtlas() const { return (m_TextureAsset != nullptr) ? m_TextureAsset.get() : m_Texture.Get(); }
 
+	float GetSdfSize() const { return m_SdfSize; }
+
 
 	// utility
 	//---------
@@ -147,6 +149,8 @@ private:
 	// texture info
 	UniquePtr<render::TextureData const> m_Texture; // editor
 	AssetPtr<render::TextureData> m_TextureAsset; // runtime
+
+	float m_SdfSize = 0.f;
 };
 
 //---------------------------------

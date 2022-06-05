@@ -53,6 +53,8 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 		int32 m_Baseline;
 		int32 m_Underline;
 		float m_UnderlineThickness;
+
+		float m_SdfSize;
 	};
 
 	typedef std::vector<FontFace> T_FontFaces;

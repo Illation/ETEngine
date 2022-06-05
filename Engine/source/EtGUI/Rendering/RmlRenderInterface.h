@@ -37,7 +37,7 @@ class RmlRenderInterface final : public Rml::RenderInterface
 		int32 m_NumIndices = 0;
 
 		Ptr<render::TextureData const> m_Texture;
-		bool m_IsText = false;
+		AssetPtr<SdfFont> m_Font;
 	};
 
 	typedef std::unordered_map<Rml::CompiledGeometryHandle, Geometry> T_Geometries;
@@ -60,7 +60,7 @@ class RmlRenderInterface final : public Rml::RenderInterface
 			return ToPtr((m_Asset != nullptr) ? m_Asset.get() : m_Generated.Get()); 
 		}
 
-		bool IsFont() const { return m_Font != nullptr; }
+		AssetPtr<SdfFont> GetFont() const { return m_Font; }
 		
 	private:
 		AssetPtr<render::TextureData> m_Asset;

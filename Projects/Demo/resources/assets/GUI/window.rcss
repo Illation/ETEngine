@@ -27,10 +27,10 @@ body {
 	margin: auto;
 	border-radius: 3px;
 
-	perspective: 1000px;
+	/* perspective: 1000px;
 	perspective-origin: 20px 50%;
 	transform: rotateX(10deg) skew(-10deg, 15deg) translateZ(100px);
-	transform-origin: left top 0;
+	transform-origin: left top 0; */
 }
 		
 h1 {

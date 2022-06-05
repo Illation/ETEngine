@@ -80,7 +80,7 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 		ET_ASSERT(foundIt != m_Textures.cend());
 
 		geometry.m_Texture = foundIt->second.Get();
-		geometry.m_IsText = foundIt->second.IsFont();
+		geometry.m_Font = foundIt->second.GetFont();
 	}
 	else
 	{
@@ -90,7 +90,7 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 	geometry.m_NumIndices = numIndices;
 
 	int32 const numChars = numIndices / 6;
-	if (geometry.m_IsText)
+	if (geometry.m_Font != nullptr)
 	{
 		ET_ASSERT(numChars * 6 == numIndices);
 		geometry.m_NumVertices = numChars * 4;
@@ -126,7 +126,7 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 	m_GraphicsContext->DefineVertexAttributePointer(2, 2, render::E_DataType::Float, false, vertSize, offsetof(Rml::Vertex, tex_coord));
 
 	// for text geometry we enable a second vertex buffer holding the text specific vertex data
-	if (geometry.m_IsText)
+	if (geometry.m_Font != nullptr)
 	{
 		int64 const bufferSize = static_cast<int64>(geometry.m_NumVertices * sizeof(uint8));
 
@@ -225,7 +225,7 @@ void RmlRenderInterface::RenderCompiledGeometry(Rml::CompiledGeometryHandle geom
 
 	// update shader parameters - shader should already be set
 	render::ShaderData const* shader = nullptr;
-	if (geo.m_IsText)
+	if (geo.m_Font != nullptr)
 	{
 		shader = m_TextShader.get();
 	}
@@ -241,6 +241,13 @@ void RmlRenderInterface::RenderCompiledGeometry(Rml::CompiledGeometryHandle geom
 	shader->Upload("uTransform"_hash, m_CurrentTransform);
 	shader->Upload("uTexture"_hash, geo.m_Texture.Get());
 
+	if (geo.m_Font != nullptr)
+	{
+		//shader->Upload("uSdfSize"_hash, geo.m_Font->GetSdfSize());
+		shader->Upload("uThreshold"_hash, 0.5f);
+		shader->Upload("uUseAntiAliasing"_hash, true);
+	}
+
 	// draw
 	m_GraphicsContext->DrawElements(render::E_DrawMode::Triangles, geo.m_NumIndices, render::E_DataType::UInt, 0);
 }
@@ -254,7 +261,7 @@ void RmlRenderInterface::ReleaseCompiledGeometry(Rml::CompiledGeometryHandle geo
 	ET_ASSERT(foundIt != m_Geometries.cend());
 
 	Geometry& geo = foundIt->second;
-	if (geo.m_IsText)
+	if (geo.m_Font != nullptr)
 	{
 		m_GraphicsContext->DeleteBuffer(geo.m_VertexBufferText);
 	}

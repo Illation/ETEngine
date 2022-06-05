@@ -51,6 +51,8 @@ void RmlFontEngineInterface::FontFace::SetAsset(AssetPtr<SdfFont> const asset, R
 	m_Baseline = static_cast<int32>(m_Multiplier * static_cast<float>(m_Font->GetBaseline()));
 	m_Underline = static_cast<int32>(m_Multiplier * static_cast<float>(m_Font->GetUnderline()));
 	m_UnderlineThickness = static_cast<int32>(m_Multiplier * static_cast<float>(m_Font->GetUnderlineThickness()));
+
+	m_SdfSize = m_Multiplier * m_Font->GetSdfSize();
 }
 
 
@@ -192,7 +194,7 @@ Rml::FontFaceHandle RmlFontEngineInterface::GetFontFaceHandle(Rml::String const&
 
 	auto const foundFaceIt = std::find_if(m_Faces.cbegin(), m_Faces.cend(), [&face](FontFace const& lh) // we assume each handle is only retrieved once
 		{
-			return (lh.m_Hash != face.m_Hash);
+			return (lh.m_Hash == face.m_Hash);
 		});
 
 	if (foundFaceIt != m_Faces.cend())
@@ -308,7 +310,7 @@ int32 RmlFontEngineInterface::GetStringWidth(Rml::FontFaceHandle const faceHandl
 
 		prevChar = charId;
 
-		stringWidth += (metric->m_AdvanceX + static_cast<float>(metric->m_Width) + static_cast<float>(metric->m_OffsetX) + kerning) * face.m_Multiplier;
+		stringWidth += (metric->m_AdvanceX + kerning) * face.m_Multiplier;
 	}
 
 	return static_cast<int32>(stringWidth);
@@ -339,8 +341,6 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 
 	geometry.SetTexture(&face.m_Texture);
 
-	vec2 const texDim = math::vecCast<float>(face.m_Font->GetAtlas()->GetResolution());
-
 	std::vector<Rml::Vertex>& vertices = geometry.GetVertices();
 	std::vector<int32>& indices = geometry.GetIndices();
 
@@ -361,6 +361,8 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 	//------------------
 
 	vec2 const pos = RmlUtil::ToEtm(position);
+
+	vec2 const texDim = math::vecCast<float>(face.m_Font->GetAtlas()->GetResolution());
 
 	size_t vIndex = 0u;
 
@@ -400,10 +402,16 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 		indices.push_back(static_cast<int32>(vIndex + 3));
 
 		// vertices
-		vec2 const charPos(pos.x + (stringWidth + metric->m_OffsetX) * face.m_Multiplier, pos.y + (kerning.y + metric->m_OffsetY) * face.m_Multiplier);
+		vec2 charPos(	pos.x + stringWidth + metric->m_OffsetX * face.m_Multiplier,
+							pos.y + (kerning.y + metric->m_OffsetY) * face.m_Multiplier);
 		vec2 const charDim(static_cast<float>(metric->m_Width), static_cast<float>(metric->m_Height));
-		vec2 const charDimScaled = charDim * face.m_Multiplier;
-		vec2 const charDimTexture = charDim / texDim;
+		vec2 charDimScaled = charDim * face.m_Multiplier;
+
+		vec2 const texCoord = metric->m_TexCoord;
+		vec2 const charDimTexture = (charDim / texDim);
+
+		charPos = charPos + vec2(face.m_SdfSize) * 0.5f;
+		charDimScaled = charDimScaled - vec2(face.m_SdfSize);//
 
 		channels[vIndex] = metric->m_Channel;
 		Rml::Vertex& v1 = vertices[vIndex++];
@@ -416,22 +424,22 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 
 		v1.position = Rml::Vector2f(charPos.x, charPos.y + charDimScaled.y);
 		v1.colour = col;
-		v1.tex_coord = Rml::Vector2f(metric->m_TexCoord.x, metric->m_TexCoord.y + charDimTexture.y);
+		v1.tex_coord = Rml::Vector2f(texCoord.x, texCoord.y + charDimTexture.y);
 
 		v2.position = Rml::Vector2f(charPos.x + charDimScaled.x, charPos.y + charDimScaled.y);
 		v2.colour = col;
-		v2.tex_coord = Rml::Vector2f(metric->m_TexCoord.x + charDimTexture.x, metric->m_TexCoord.y + charDimTexture.y);
+		v2.tex_coord = Rml::Vector2f(texCoord.x + charDimTexture.x, texCoord.y + charDimTexture.y);
 
 		v3.position = Rml::Vector2f(charPos.x, charPos.y);
 		v3.colour = col;
-		v3.tex_coord = Rml::Vector2f(metric->m_TexCoord.x, metric->m_TexCoord.y);
+		v3.tex_coord = Rml::Vector2f(texCoord.x, texCoord.y);
 
 		v4.position = Rml::Vector2f(charPos.x + charDimScaled.x, charPos.y);
 		v4.colour = col;
-		v4.tex_coord = Rml::Vector2f(metric->m_TexCoord.x + charDimTexture.x, metric->m_TexCoord.y);
+		v4.tex_coord = Rml::Vector2f(texCoord.x + charDimTexture.x, texCoord.y);
 
 		// advance
-		stringWidth += (metric->m_AdvanceX + charDim.x + static_cast<float>(metric->m_OffsetX)) * face.m_Multiplier;
+		stringWidth += metric->m_AdvanceX * face.m_Multiplier;
 	}
 
 	return static_cast<int32>(stringWidth);

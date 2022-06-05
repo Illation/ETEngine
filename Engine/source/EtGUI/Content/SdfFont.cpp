@@ -239,6 +239,9 @@ SdfFont* SdfFontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 		ET_ASSERT(false, "Only one page per font supported, this font has %u", pagecount);
 	}
 
+	binReader.MoveBufferPosition(5u); // skip some stuff
+	font->m_SdfSize = binReader.Read<float>();
+
 	binReader.SetBufferPosition(pos + static_cast<size_t>(block2Size));
 
 	//**********
