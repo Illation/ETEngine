@@ -227,7 +227,9 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 		for (char32 character = charset.m_Start; character <= charset.m_End; ++character)
 		{
 			uint32 const glyphIdx = FT_Get_Char_Index(face, static_cast<FT_ULong>(character));
-			if ((glyphIdx == 0) && (character != 0)) // we want to make sure we render a glyph for the null character
+			if ((glyphIdx == 0) 
+				&& (character != 0) // we want to make sure we render a glyph for the null character
+				&& (character != static_cast<char32>('x'))) // fonts should have a metric for lower case x
 			{
 				if (hasCharset)
 				{

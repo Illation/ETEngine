@@ -84,7 +84,7 @@ void MainFramework::OnInit()
 	AssetPtr<TestData> m_TestAsset = core::ResourceManager::Instance()->GetAssetData<TestData>(core::HashString("test.txt"));
 	ET_ASSERT(m_TestAsset != nullptr);
 
-	LOG(FS("Custom Assets:\n\t%s", m_TestAsset->GetText()));
+	LOG(FS("Custom Assets:\n\t%s", std::string(m_TestAsset->GetText(), m_TestAsset->GetLength()).c_str()));
 }
 
 //--------------------------

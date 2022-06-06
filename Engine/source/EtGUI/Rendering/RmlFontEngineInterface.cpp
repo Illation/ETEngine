@@ -2,6 +2,7 @@
 #include "RmlFontEngineInterface.h"
 
 #include <RmlUi/Core/StringUtilities.h>
+#include <RmlUi/Core/FontEffect.h>
 
 #include <EtCore/Content/ResourceManager.h>
 
@@ -35,11 +36,27 @@ RmlFontEngineInterface::FontFace::FontFace(core::HashString const familyId,
 //--------------------------------------------
 // RmlFontEngineInterface::FontFace::SetAsset
 //
-void RmlFontEngineInterface::FontFace::SetAsset(AssetPtr<SdfFont> const asset, Rml::Texture const texture)
+void RmlFontEngineInterface::FontFace::SetAsset(FontFamily const& family, 
+	size_t const assetIdx, 
+	RmlFontEngineInterface::T_FallbackFonts const& fallbackFonts)
 {
-	m_Font = asset;
-	m_Texture = texture;
+	m_Font = family.m_UniqueAssets[assetIdx];
+	m_Texture = family.m_AssetTextures[assetIdx];
 	m_Version++;
+
+	m_NextFallbackFaceIdx = s_InvalidIdx; // reset the fallback face
+	auto const foundFallbackIt = std::find_if(fallbackFonts.cbegin(), fallbackFonts.cend(), [this, assetIdx](FallbackFont const& lhs)
+		{
+			return ((lhs.m_FamilyId == m_FamilyId) && (lhs.m_AssetIdx == assetIdx));
+		});
+	if (foundFallbackIt != fallbackFonts.cend())
+	{
+		m_FallbackIdx = static_cast<size_t>(foundFallbackIt - fallbackFonts.cbegin());
+	}
+	else
+	{
+		m_FallbackIdx = s_InvalidIdx;
+	}
 
 	m_Multiplier = static_cast<float>(m_Size) / static_cast<float>(m_Font->GetFontSize());
 
@@ -64,9 +81,9 @@ void RmlFontEngineInterface::FontFace::SetAsset(AssetPtr<SdfFont> const asset, R
 //--------------------------------------------------
 // RmlFontEngineInterface::FontFamily::GetBestAsset
 //
-AssetPtr<SdfFont> RmlFontEngineInterface::FontFamily::GetBestAsset(FontFace const& face, Rml::Texture& outTexture) const
+size_t RmlFontEngineInterface::FontFamily::GetBestAsset(RmlFontEngineInterface::FontFace const& face) const
 {
-	AssetPtr<SdfFont> bestMatch;
+	size_t bestMatch = s_InvalidIdx;
 	uint32 bestScore = 0u;
 
 	for (size_t assetIdx = 0u; assetIdx < m_UniqueAssets.size(); ++assetIdx)
@@ -96,12 +113,11 @@ AssetPtr<SdfFont> RmlFontEngineInterface::FontFamily::GetBestAsset(FontFace cons
 		if (currentScore > bestScore)
 		{
 			bestScore = currentScore;
-			bestMatch = asset;
-			outTexture = m_AssetTextures[assetIdx];
+			bestMatch = assetIdx;
 		}
 	}
 
-	ET_ASSERT(bestMatch != nullptr);
+	ET_ASSERT(bestMatch != s_InvalidIdx);
 	return bestMatch;
 }
 
@@ -115,14 +131,16 @@ AssetPtr<SdfFont> RmlFontEngineInterface::FontFamily::GetBestAsset(FontFace cons
 Rml::FontEffectsHandle const RmlFontEngineInterface::s_InvalidEffects = 0u;
 Rml::FontFaceHandle const RmlFontEngineInterface::s_InvalidFont = 0u;
 
+size_t const RmlFontEngineInterface::s_InvalidIdx = std::numeric_limits<size_t>::max();
+size_t const RmlFontEngineInterface::s_NoIdx = RmlFontEngineInterface::s_InvalidIdx - 1;
+
 
 //--------------------------------------
 // RmlFontEngineInterface::LoadFontFace
 //
 bool RmlFontEngineInterface::LoadFontFace(Rml::String const& fileName, bool const fallbackFace, Rml::Style::FontWeight const weight)
 {
-	UNUSED(fallbackFace); // will need to be handled internally
-	UNUSED(weight); // can entirely be ignored since the weights are already generated in the assest
+	UNUSED(weight); // can entirely be ignored since the weights are already generated in the asset
 
 	core::HashString const assetId(fileName.c_str());
 
@@ -132,9 +150,17 @@ bool RmlFontEngineInterface::LoadFontFace(Rml::String const& fileName, bool cons
 		return false;
 	}
 
-	FontFamily& family = FindOrCreateFamily(font->GetFamily());
-	if (std::find(family.m_UniqueAssets.cbegin(), family.m_UniqueAssets.cend(), font) != family.m_UniqueAssets.cend())
+	core::HashString familyId;
+	FontFamily& family = FindOrCreateFamily(font->GetFamily(), familyId);
+
+	auto const assetIt = std::find(family.m_UniqueAssets.cbegin(), family.m_UniqueAssets.cend(), font);
+	if (assetIt != family.m_UniqueAssets.cend())
 	{
+		if (fallbackFace)
+		{
+			AddFallbackFont(familyId, static_cast<size_t>(assetIt - family.m_UniqueAssets.cbegin()));
+		}
+
 		return true;
 	}
 
@@ -142,15 +168,17 @@ bool RmlFontEngineInterface::LoadFontFace(Rml::String const& fileName, bool cons
 	texture.Set(fileName); // render interface will grab the texture from the font asset - this also allows us to know to use the text shader
 	family.m_UniqueAssets.push_back(std::move(font));
 	family.m_AssetTextures.push_back(texture);
+	if (fallbackFace)
+	{
+		AddFallbackFont(familyId, family.m_UniqueAssets.size() - 1);
+	}
 
 	for (size_t const faceIdx : family.m_FaceIndices)
 	{
 		ET_ASSERT(faceIdx < m_Faces.size());
 		FontFace& face = m_Faces[faceIdx];
 
-		Rml::Texture bestTex;
-		AssetPtr<SdfFont> const bestAsset = family.GetBestAsset(face, bestTex);
-		face.SetAsset(bestAsset, bestTex);
+		face.SetAsset(family, family.GetBestAsset(face), m_FallbackFonts);
 	}
 
 	return true;
@@ -192,7 +220,7 @@ Rml::FontFaceHandle RmlFontEngineInterface::GetFontFaceHandle(Rml::String const&
 {
 	FontFace face(core::HashString(familyName.c_str()), style, weight, size);
 
-	auto const foundFaceIt = std::find_if(m_Faces.cbegin(), m_Faces.cend(), [&face](FontFace const& lh) // we assume each handle is only retrieved once
+	auto const foundFaceIt = std::find_if(m_Faces.cbegin(), m_Faces.cend(), [&face](FontFace const& lh) 
 		{
 			return (lh.m_Hash == face.m_Hash);
 		});
@@ -201,8 +229,6 @@ Rml::FontFaceHandle RmlFontEngineInterface::GetFontFaceHandle(Rml::String const&
 	{
 		return static_cast<Rml::FontFaceHandle>(foundFaceIt - m_Faces.cbegin()) + 1;
 	}
-
-	size_t const faceIdx = m_Faces.size();
 
 	// find family
 	T_FontFamilies::iterator const foundFamilyIt = m_Families.find(face.m_FamilyId);
@@ -213,11 +239,10 @@ Rml::FontFaceHandle RmlFontEngineInterface::GetFontFaceHandle(Rml::String const&
 	}
 
 	FontFamily& family = foundFamilyIt->second;
+	size_t const faceIdx = m_Faces.size();
 	family.m_FaceIndices.push_back(faceIdx);
 
-	Rml::Texture bestTex;
-	AssetPtr<SdfFont> const bestAsset = family.GetBestAsset(face, bestTex);
-	face.SetAsset(bestAsset, bestTex);
+	face.SetAsset(family, family.GetBestAsset(face), m_FallbackFonts);
 
 	// add to face list
 	m_Faces.push_back(face);
@@ -230,7 +255,11 @@ Rml::FontFaceHandle RmlFontEngineInterface::GetFontFaceHandle(Rml::String const&
 Rml::FontEffectsHandle RmlFontEngineInterface::PrepareFontEffects(Rml::FontFaceHandle const faceHandle, Rml::FontEffectList const& fontEffects)
 {
 	UNUSED(faceHandle);
-	UNUSED(fontEffects);
+
+	for (std::shared_ptr<Rml::FontEffect const> const& effect : fontEffects)
+	{
+		//LOG(typeid(*effect).name());
+	}
 
 	return s_InvalidEffects;
 }
@@ -283,7 +312,7 @@ float RmlFontEngineInterface::GetUnderline(Rml::FontFaceHandle const faceHandle,
 //
 int32 RmlFontEngineInterface::GetStringWidth(Rml::FontFaceHandle const faceHandle, Rml::String const& utf8String, Rml::Character const priorCharacter)
 {
-	FontFace const& face = GetFace(faceHandle);
+	FontFace& face = GetFace(faceHandle);
 
 	float stringWidth = 0.f;
 
@@ -292,25 +321,18 @@ int32 RmlFontEngineInterface::GetStringWidth(Rml::FontFaceHandle const faceHandl
 	{
 		char32 const charId = static_cast<char32>(*itString);
 
-		SdfFont::Metric const* metric = face.m_Font->GetValidMetric(charId);
-		if (metric == nullptr)
-		{
-			// here we should go to fallback font
-			LOG(FS("FontEngine::GetStringWidth > Font '%s' doesn't support char '%#010x'", face.m_Font.GetId().ToStringDbg(), charId), 
-				core::LogLevel::Warning);
-			metric = face.m_Font->GetValidMetric(0);
-			ET_ASSERT(metric != nullptr);
-		}
+		FontFace const* glyphFace = nullptr;
+		SdfFont::Metric const& metric = GetMetric(face, charId, glyphFace);
 
 		float kerning = 0.f;
-		if (face.m_Font->UseKerning())
+		if (glyphFace->m_Font->UseKerning())
 		{
-			kerning = metric->GetKerningVec(prevChar).x;
+			kerning = metric.GetKerningVec(prevChar).x;
 		}
 
 		prevChar = charId;
 
-		stringWidth += (metric->m_AdvanceX + kerning) * face.m_Multiplier;
+		stringWidth += (metric.m_AdvanceX + kerning) * glyphFace->m_Multiplier;
 	}
 
 	return static_cast<int32>(stringWidth);
@@ -329,117 +351,149 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 {
 	UNUSED(effectsHandle);
 
-	FontFace const& face = GetFace(faceHandle);
+	FontFace& inFace = GetFace(faceHandle);
 
 	outGeometry = Rml::GeometryList();
 
-	// set up geometry
-	//-----------------
-
-	outGeometry.push_back(Rml::Geometry());
-	Rml::Geometry& geometry = outGeometry.back();
-
-	geometry.SetTexture(&face.m_Texture);
-
-	std::vector<Rml::Vertex>& vertices = geometry.GetVertices();
-	std::vector<int32>& indices = geometry.GetIndices();
-
-	size_t const numCharacters = Rml::StringUtilities::LengthUTF8(utf8String);
-	indices.reserve(numCharacters * 6);
-
-	// Since RmlUi defines a preset vertex layout we're going to have to do some memory magic to also pass the channel indices to the render interface
-	size_t const vCountBase = numCharacters * 4; // doubles as byte size of channel indices because they are 1 byte each
-	size_t const channelVCount = (vCountBase + sizeof(Rml::Vertex) - 1) / sizeof(Rml::Vertex);
-
-	vertices.resize(vCountBase + channelVCount); // append enough vertices to provide a block of memory that we can repurpose for filling in the channels
-
-	uint8* const channels = reinterpret_cast<uint8*>(&vertices[vCountBase]);
-
-	Rml::Colourb col(colour.red, colour.green, colour.blue, static_cast<Rml::byte>(static_cast<float>(colour.alpha) * opacity));
-
-	// fill in geometry
-	//------------------
-
-	vec2 const pos = RmlUtil::ToEtm(position);
-
-	vec2 const texDim = math::vecCast<float>(face.m_Font->GetAtlas()->GetResolution());
-
-	size_t vIndex = 0u;
-
 	float stringWidth = 0.f; // ret
+
+	// Sort text into glyphs per unique font face texture
+	//----------------------------------------------------
+
+	struct PerGlyph
+	{
+		PerGlyph(FontFace const& face, SdfFont::Metric const& metric, vec2 const pos) : m_Face(face), m_Metric(metric), m_Pos(pos) {}
+
+		FontFace const& m_Face;
+		SdfFont::Metric const& m_Metric;
+		vec2 const m_Pos;
+	};
+
+	typedef std::pair<Rml::Texture, std::vector<PerGlyph>> T_PerTexture;
+
+	std::vector<T_PerTexture> textureGlyphs;
+
 	char32 prevChar = 0;
 	for (auto itString = Rml::StringIteratorU8(utf8String); itString; ++itString)
 	{
 		char32 const charId = static_cast<char32>(*itString);
 
-		SdfFont::Metric const* metric = face.m_Font->GetValidMetric(charId);
-		if (metric == nullptr)
-		{
-			// here we should go to fallback font
-			LOG(FS("FontEngine::GenerateString > Font '%s' doesn't support char '%#010x'", face.m_Font.GetId().ToStringDbg(), charId), 
-				core::LogLevel::Warning);
-			metric = face.m_Font->GetValidMetric(0);
-			ET_ASSERT(metric != nullptr);
-		}
+		FontFace const* glyphFace = nullptr;
+		SdfFont::Metric const& metric = GetMetric(inFace, charId, glyphFace);
 
-		// basic positioning
 		vec2 kerning;
-		if (face.m_Font->UseKerning())
+		if (glyphFace->m_Font->UseKerning())
 		{
-			kerning = metric->GetKerningVec(prevChar);
+			kerning = metric.GetKerningVec(prevChar);
 		}
 
 		prevChar = charId;
 
-		stringWidth += kerning.x * face.m_Multiplier;
+		stringWidth += kerning.x * glyphFace->m_Multiplier;
 
-		// indices, counter clockwise winding
-		indices.push_back(static_cast<int32>(vIndex));
-		indices.push_back(static_cast<int32>(vIndex + 2));
-		indices.push_back(static_cast<int32>(vIndex + 1));
-		indices.push_back(static_cast<int32>(vIndex + 1));
-		indices.push_back(static_cast<int32>(vIndex + 2));
-		indices.push_back(static_cast<int32>(vIndex + 3));
+		// insert glyph to its correlated container
+		vec2 const pos(stringWidth, kerning.y * glyphFace->m_Multiplier);
+		auto const foundIt = std::find_if(textureGlyphs.begin(), textureGlyphs.end(), [glyphFace](T_PerTexture const& lh)
+			{
+				return (lh.first == glyphFace->m_Texture);
+			});
+		if (foundIt == textureGlyphs.cend())
+		{
+			textureGlyphs.emplace_back(glyphFace->m_Texture, std::vector<PerGlyph>({ PerGlyph(*glyphFace, metric, pos) }));
+		}
+		else
+		{
+			foundIt->second.emplace_back(*glyphFace, metric, pos);
+		}
 
-		// vertices
-		vec2 charPos(	pos.x + stringWidth + metric->m_OffsetX * face.m_Multiplier,
-							pos.y + (kerning.y + metric->m_OffsetY) * face.m_Multiplier);
-		vec2 const charDim(static_cast<float>(metric->m_Width), static_cast<float>(metric->m_Height));
-		vec2 charDimScaled = charDim * face.m_Multiplier;
+		stringWidth += metric.m_AdvanceX * glyphFace->m_Multiplier;
+	}
 
-		vec2 const texCoord = metric->m_TexCoord;
-		vec2 const charDimTexture = (charDim / texDim);
+	// set up geometry per glyph texture
+	//-----------------------------------
 
-		charPos = charPos + vec2(face.m_SdfSize) * 0.5f;
-		charDimScaled = charDimScaled - vec2(face.m_SdfSize);//
+	vec2 const pos = RmlUtil::ToEtm(position);
 
-		channels[vIndex] = metric->m_Channel;
-		Rml::Vertex& v1 = vertices[vIndex++];
-		channels[vIndex] = metric->m_Channel;
-		Rml::Vertex& v2 = vertices[vIndex++];
-		channels[vIndex] = metric->m_Channel;
-		Rml::Vertex& v3 = vertices[vIndex++];
-		channels[vIndex] = metric->m_Channel;
-		Rml::Vertex& v4 = vertices[vIndex++];
+	for (T_PerTexture const& perTexPair : textureGlyphs)
+	{
+		outGeometry.push_back(Rml::Geometry());
+		Rml::Geometry& geometry = outGeometry.back();
 
-		v1.position = Rml::Vector2f(charPos.x, charPos.y + charDimScaled.y);
-		v1.colour = col;
-		v1.tex_coord = Rml::Vector2f(texCoord.x, texCoord.y + charDimTexture.y);
+		std::vector<Rml::Vertex>& vertices = geometry.GetVertices();
+		std::vector<int32>& indices = geometry.GetIndices();
 
-		v2.position = Rml::Vector2f(charPos.x + charDimScaled.x, charPos.y + charDimScaled.y);
-		v2.colour = col;
-		v2.tex_coord = Rml::Vector2f(texCoord.x + charDimTexture.x, texCoord.y + charDimTexture.y);
+		std::vector<PerGlyph> const& glyphs = perTexPair.second;
 
-		v3.position = Rml::Vector2f(charPos.x, charPos.y);
-		v3.colour = col;
-		v3.tex_coord = Rml::Vector2f(texCoord.x, texCoord.y);
+		size_t const numCharacters = glyphs.size();
+		ET_ASSERT(numCharacters > 0u);
+		indices.reserve(numCharacters * 6);
 
-		v4.position = Rml::Vector2f(charPos.x + charDimScaled.x, charPos.y);
-		v4.colour = col;
-		v4.tex_coord = Rml::Vector2f(texCoord.x + charDimTexture.x, texCoord.y);
+		geometry.SetTexture(&glyphs[0u].m_Face.m_Texture); // set from the font face pointer because the perTexPair memory will go out of scope
 
-		// advance
-		stringWidth += metric->m_AdvanceX * face.m_Multiplier;
+		// Since RmlUi defines a preset vertex layout we're going to have to do some memory magic to also pass the channel indices to the render interface
+		size_t const vCountBase = numCharacters * 4; // doubles as byte size of channel indices because they are 1 byte each
+		size_t const channelVCount = (vCountBase + sizeof(Rml::Vertex) - 1) / sizeof(Rml::Vertex);
+
+		// append enough vertices to provide a block of memory that we can repurpose for filling in the channels
+		vertices.resize(vCountBase + channelVCount); 
+
+		uint8* const channels = reinterpret_cast<uint8*>(&vertices[vCountBase]);
+
+		Rml::Colourb col(colour.red, colour.green, colour.blue, static_cast<Rml::byte>(static_cast<float>(colour.alpha) * opacity));
+
+		// fill in geometry
+		//------------------
+
+		vec2 const texDim = math::vecCast<float>(glyphs[0u].m_Face.m_Font->GetAtlas()->GetResolution());
+
+		size_t vIndex = 0u;
+
+		for (PerGlyph const& glyph : glyphs)
+		{
+			// indices, counter clockwise winding
+			indices.push_back(static_cast<int32>(vIndex));
+			indices.push_back(static_cast<int32>(vIndex + 2));
+			indices.push_back(static_cast<int32>(vIndex + 1));
+			indices.push_back(static_cast<int32>(vIndex + 1));
+			indices.push_back(static_cast<int32>(vIndex + 2));
+			indices.push_back(static_cast<int32>(vIndex + 3));
+
+			// vertices
+			vec2 charPos(pos + glyph.m_Pos + vec2(glyph.m_Metric.m_OffsetX, glyph.m_Metric.m_OffsetY) * glyph.m_Face.m_Multiplier);
+			vec2 const charDim(static_cast<float>(glyph.m_Metric.m_Width), static_cast<float>(glyph.m_Metric.m_Height));
+			vec2 charDimScaled = charDim * glyph.m_Face.m_Multiplier;
+
+			vec2 const texCoord = glyph.m_Metric.m_TexCoord;
+			vec2 const charDimTexture = (charDim / texDim);
+
+			charPos = charPos + vec2(glyph.m_Face.m_SdfSize) * 0.5f;
+			charDimScaled = charDimScaled - vec2(glyph.m_Face.m_SdfSize);//
+
+			channels[vIndex] = glyph.m_Metric.m_Channel;
+			Rml::Vertex& v1 = vertices[vIndex++];
+			channels[vIndex] = glyph.m_Metric.m_Channel;
+			Rml::Vertex& v2 = vertices[vIndex++];
+			channels[vIndex] = glyph.m_Metric.m_Channel;
+			Rml::Vertex& v3 = vertices[vIndex++];
+			channels[vIndex] = glyph.m_Metric.m_Channel;
+			Rml::Vertex& v4 = vertices[vIndex++];
+
+			v1.position = Rml::Vector2f(charPos.x, charPos.y + charDimScaled.y);
+			v1.colour = col;
+			v1.tex_coord = Rml::Vector2f(texCoord.x, texCoord.y + charDimTexture.y);
+
+			v2.position = Rml::Vector2f(charPos.x + charDimScaled.x, charPos.y + charDimScaled.y);
+			v2.colour = col;
+			v2.tex_coord = Rml::Vector2f(texCoord.x + charDimTexture.x, texCoord.y + charDimTexture.y);
+
+			v3.position = Rml::Vector2f(charPos.x, charPos.y);
+			v3.colour = col;
+			v3.tex_coord = Rml::Vector2f(texCoord.x, texCoord.y);
+
+			v4.position = Rml::Vector2f(charPos.x + charDimScaled.x, charPos.y);
+			v4.colour = col;
+			v4.tex_coord = Rml::Vector2f(texCoord.x + charDimTexture.x, texCoord.y);
+		}
 	}
 
 	return static_cast<int32>(stringWidth);
@@ -466,17 +520,17 @@ void RmlFontEngineInterface::ReleaseFontResources()
 //----------------------------------------------
 // RmlFontEngineInterface::FindOrCreateFamily
 //
-RmlFontEngineInterface::FontFamily& RmlFontEngineInterface::FindOrCreateFamily(std::string const& familyName)
+RmlFontEngineInterface::FontFamily& RmlFontEngineInterface::FindOrCreateFamily(std::string const& familyName, core::HashString& outFamilyId)
 {
-	core::HashString const familyId(familyName.c_str());
+	outFamilyId = core::HashString(familyName.c_str());
 
-	T_FontFamilies::iterator const foundIt = m_Families.find(familyId);
+	T_FontFamilies::iterator const foundIt = m_Families.find(outFamilyId);
 	if (foundIt != m_Families.cend())
 	{
 		return foundIt->second;
 	}
 
-	auto const res = m_Families.emplace(familyId, familyName);
+	auto const res = m_Families.emplace(outFamilyId, familyName);
 	ET_ASSERT(res.second);
 
 	return res.first->second;
@@ -492,6 +546,113 @@ RmlFontEngineInterface::FontFace& RmlFontEngineInterface::GetFace(Rml::FontFaceH
 
 	ET_ASSERT(m_Faces.size() > faceIdx);
 	return m_Faces[faceIdx];
+}
+
+//----------------------------------------------
+// RmlFontEngineInterface::GetMetric
+//
+// Get the glyph metric from the face, or a fallback face if it couldn't be found. Sets outFace to the face the metric was found in
+//
+SdfFont::Metric const& RmlFontEngineInterface::GetMetric(RmlFontEngineInterface::FontFace& inFace, 
+	char32 const charId, 
+	RmlFontEngineInterface::FontFace const*& outFace)
+{
+	
+	FontFace* currentFace = &inFace;
+	while (currentFace != nullptr)
+	{
+		SdfFont::Metric const* metric = currentFace->m_Font->GetValidMetric(charId);
+		if (metric != nullptr)
+		{
+			outFace = currentFace;
+			return *metric;
+		}
+
+		currentFace = GetFallbackFace(*currentFace);
+	}
+
+	LOG(FS("FontEngine::GetMetric > Font '%s' doesn't support char '%#010x', and no fallbacks where found", inFace.m_Font.GetId().ToStringDbg(), charId),
+		core::LogLevel::Warning);
+
+	SdfFont::Metric const* metric = inFace.m_Font->GetValidMetric(0);
+	ET_ASSERT(metric != nullptr); // every font should contain a default character for 0
+
+	outFace = &inFace;
+	return *metric;
+}
+
+//----------------------------------------------
+// RmlFontEngineInterface::AddFallbackFont
+//
+void RmlFontEngineInterface::AddFallbackFont(core::HashString const familyId, size_t const assetIdx)
+{
+	FallbackFont const fnt(familyId, assetIdx);
+	if (std::find_if(m_FallbackFonts.cbegin(), m_FallbackFonts.cend(), [&fnt](FallbackFont const& lhs)
+		{
+			return ((lhs.m_FamilyId == fnt.m_FamilyId) && (lhs.m_AssetIdx == fnt.m_AssetIdx));
+		}) != m_FallbackFonts.cend())
+	{
+		m_FallbackFonts.push_back(fnt);
+	}
+}
+
+//----------------------------------------------
+// RmlFontEngineInterface::GetFallbackFace
+//
+// Lazy fetch the next face in the fallback chain, or nullptr if this is the last face
+//
+RmlFontEngineInterface::FontFace* RmlFontEngineInterface::GetFallbackFace(RmlFontEngineInterface::FontFace& face)
+{
+	if (face.m_NextFallbackFaceIdx == s_InvalidIdx) // lazy compute the pointer to the next face in the fallback chain
+	{
+		size_t const nextFallbackIdx = (face.m_FallbackIdx == s_InvalidIdx) ? 0u : face.m_FallbackIdx + 1;
+		if (nextFallbackIdx >= m_FallbackFonts.size())
+		{
+			face.m_NextFallbackFaceIdx = s_NoIdx; // there are no further faces in the fallback chain
+		}
+		else // find or generate a font face for this particular fallback font
+		{
+			FallbackFont const& fallbackFont = m_FallbackFonts[nextFallbackIdx];
+
+			// derive the specific SdfFont asset from the fallback font
+			T_FontFamilies::iterator const foundFamilyIt = m_Families.find(fallbackFont.m_FamilyId);
+			ET_ASSERT(foundFamilyIt != m_Families.cend());
+			FontFamily& family = foundFamilyIt->second;
+
+			AssetPtr<SdfFont> const asset = family.m_UniqueAssets[fallbackFont.m_AssetIdx];
+
+			FontFace newFace(fallbackFont.m_FamilyId, face.m_Style, face.m_Weight, face.m_Size);
+			auto const foundFaceIt = std::find_if(m_Faces.cbegin(), m_Faces.cend(), [&newFace, asset](FontFace const& lh)
+				{
+					return ((lh.m_Hash == newFace.m_Hash) && (lh.m_Font == asset));
+				});
+
+			if (foundFaceIt != m_Faces.cend()) 
+			{
+				// if we have a FontFace with the parameters AND specific asset matching the fallback font we don't need a new one
+				ET_ASSERT(foundFaceIt->m_FallbackIdx == nextFallbackIdx); // should be assigned to this fallback font
+				face.m_NextFallbackFaceIdx = static_cast<size_t>(foundFaceIt - m_Faces.cbegin());
+			}
+			else // otherwise we create a new font face for that family with the specific asset in the fallback font
+			{
+				newFace.SetAsset(family, fallbackFont.m_AssetIdx, m_FallbackFonts);
+
+				face.m_NextFallbackFaceIdx = m_Faces.size();
+				family.m_FaceIndices.push_back(face.m_NextFallbackFaceIdx);
+
+				// add to face list
+				m_Faces.push_back(newFace);
+			}
+		}
+	}
+
+	if (face.m_NextFallbackFaceIdx == s_NoIdx)
+	{
+		return nullptr;
+	}
+
+	ET_ASSERT(m_Faces.size() > face.m_NextFallbackFaceIdx);
+	return &m_Faces[face.m_NextFallbackFaceIdx];
 }
 
 

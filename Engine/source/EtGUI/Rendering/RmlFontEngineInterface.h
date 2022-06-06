@@ -23,6 +23,26 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 	static Rml::FontFaceHandle const s_InvalidFont;
 	static Rml::FontEffectsHandle const s_InvalidEffects;
 
+	static size_t const s_InvalidIdx;
+	static size_t const s_NoIdx;
+
+	struct FontFamily;
+
+	//---------------------------------
+	// FallbackFont
+	//
+	// points into a font family to allow deriving a fallback face
+	//
+	struct FallbackFont
+	{
+		FallbackFont(core::HashString const familyId, size_t const assetIdx) : m_FamilyId(familyId), m_AssetIdx(assetIdx) {}
+
+		core::HashString m_FamilyId;
+		size_t const m_AssetIdx;
+	};
+
+	typedef std::vector<FallbackFont> T_FallbackFonts;
+
 	//---------------------------------
 	// FontFace
 	//
@@ -32,7 +52,7 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 	{
 		FontFace(core::HashString const familyId, Rml::Style::FontStyle const style, Rml::Style::FontWeight const weight, int32 const size);
 
-		void SetAsset(AssetPtr<SdfFont> const asset, Rml::Texture const texture);
+		void SetAsset(FontFamily const& family, size_t const assetIdx, T_FallbackFonts const& fallbackFonts);
 
 		core::HashString const m_FamilyId;
 		Rml::Style::FontStyle const m_Style = Rml::Style::FontStyle::Normal;
@@ -45,6 +65,8 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 		AssetPtr<SdfFont> m_Font;
 		Rml::Texture m_Texture;
 		int32 m_Version = -1;
+		size_t m_FallbackIdx = s_InvalidIdx; // the index of the fallback font list that this face belongs to
+		size_t m_NextFallbackFaceIdx = s_InvalidIdx; // points to another FontFace - forming a linked list of faces - computed on demand
 
 		float m_Multiplier;
 
@@ -69,7 +91,7 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 		FontFamily() = default;
 		FontFamily(std::string const& name) : m_Name(name) {}
 
-		AssetPtr<SdfFont> GetBestAsset(FontFace const& face, Rml::Texture& outTexture) const;
+		size_t GetBestAsset(FontFace const& face) const;
 
 		std::string m_Name;
 		std::vector<size_t> m_FaceIndices; // faces can be addressed by index because they are never reordered
@@ -78,6 +100,7 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 	};
 
 	typedef std::unordered_map<core::HashString, FontFamily> T_FontFamilies;
+
 
 	// construct destruct
 	//--------------------
@@ -128,14 +151,20 @@ public:
 	// utility
 	//---------
 private:
-	FontFamily& FindOrCreateFamily(std::string const& familyName);
+	FontFamily& FindOrCreateFamily(std::string const& familyName, core::HashString& outFamilyId);
 	FontFace& GetFace(Rml::FontFaceHandle const faceHandle);
+
+	SdfFont::Metric const& GetMetric(FontFace& inFace, char32 const charId, FontFace const*& outFace);
+
+	void AddFallbackFont(core::HashString const familyId, size_t const assetIdx);
+	FontFace* GetFallbackFace(FontFace& face);
 
 
 	// Data
 	///////
 
 	T_FontFamilies m_Families;
+	T_FallbackFonts m_FallbackFonts;
 
 	T_FontFaces m_Faces;
 };
