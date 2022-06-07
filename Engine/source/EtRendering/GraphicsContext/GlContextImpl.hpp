@@ -971,11 +971,34 @@ void GL_CONTEXT_CLASSNAME::SetBlendEquation(E_BlendEquation const equation)
 //
 void GL_CONTEXT_CLASSNAME::SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor)
 {
-	if (!(m_BlendFuncSFactor == sFactor && m_BlendFuncDFactor == dFactor))
+	if (!(m_BlendFuncSFactor == sFactor && m_BlendFuncSFactorAlpha == sFactor &&
+		m_BlendFuncDFactor == dFactor && m_BlendFuncDFactorAlpha == dFactor))
 	{
 		m_BlendFuncSFactor = sFactor;
+		m_BlendFuncSFactorAlpha = sFactor;
 		m_BlendFuncDFactor = dFactor;
+		m_BlendFuncDFactorAlpha = dFactor;
 		glBlendFunc(GL_CONTEXT_NS::ConvBlendFactor(sFactor), GL_CONTEXT_NS::ConvBlendFactor(dFactor));
+	}
+}
+
+//-------------------------------------
+// GlContext::SetBlendFunctionSeparate
+//
+// Set the function we use to blend pixels - with separate functions for alpha and RGB
+//
+void GL_CONTEXT_CLASSNAME::SetBlendFunctionSeparate(E_BlendFactor const sRGB, E_BlendFactor const sAlpha, 
+	E_BlendFactor const dRGB, E_BlendFactor const dAlpha)
+{
+	if (!(m_BlendFuncSFactor == sRGB && m_BlendFuncSFactorAlpha == sAlpha &&
+		m_BlendFuncDFactor == dRGB && m_BlendFuncDFactorAlpha == dAlpha))
+	{
+		m_BlendFuncSFactor = sRGB;
+		m_BlendFuncSFactorAlpha = sAlpha;
+		m_BlendFuncDFactor = dRGB;
+		m_BlendFuncDFactorAlpha = dAlpha;
+		glBlendFuncSeparate(GL_CONTEXT_NS::ConvBlendFactor(sRGB), GL_CONTEXT_NS::ConvBlendFactor(dRGB), 
+			GL_CONTEXT_NS::ConvBlendFactor(sAlpha), GL_CONTEXT_NS::ConvBlendFactor(dAlpha));
 	}
 }
 

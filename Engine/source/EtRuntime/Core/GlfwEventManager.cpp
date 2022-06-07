@@ -154,11 +154,11 @@ void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 }
 
 //----------------------------
-// GlfwEventManager::OnCursorResize
+// GlfwEventManager::SetCursorShape
 //
 // Change the cursor currently used
 //
-bool GlfwEventManager::OnCursorResize(core::E_CursorShape const shape)
+bool GlfwEventManager::SetCursorShape(core::E_CursorShape const shape)
 {
 	if (shape == core::E_CursorShape::None)
 	{
@@ -175,9 +175,25 @@ bool GlfwEventManager::OnCursorResize(core::E_CursorShape const shape)
 			return true;
 		}
 
-		LOG("INPUT::OnCursorResize > Shape not found", core::LogLevel::Warning);
+		LOG("INPUT::SetCursorShape > Shape not found", core::LogLevel::Warning);
 		return false;
 	}
+}
+
+//------------------------------------
+// GlfwEventManager::SetClipboardText
+//
+void GlfwEventManager::SetClipboardText(std::string const& textUtf8)
+{
+	glfwSetClipboardString(m_RenderArea->GetWindow(), textUtf8.c_str());
+}
+
+//------------------------------------
+// GlfwEventManager::GetClipboardText
+//
+void GlfwEventManager::GetClipboardText(std::string& outTextUtf8)
+{
+	outTextUtf8 = glfwGetClipboardString(m_RenderArea->GetWindow());
 }
 
 //----------------------------

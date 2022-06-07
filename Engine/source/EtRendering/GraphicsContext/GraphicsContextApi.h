@@ -48,6 +48,7 @@ public:
 	virtual void SetFaceCullingMode(E_FaceCullMode const cullMode) = 0;
 	virtual void SetBlendEquation(E_BlendEquation const equation) = 0;
 	virtual void SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor) = 0;
+	virtual void SetBlendFunctionSeparate(E_BlendFactor const sRGB, E_BlendFactor const sAlpha, E_BlendFactor const dRGB, E_BlendFactor const dAlpha) = 0;
 
 	virtual void SetDepthFunction(E_DepthFunc const func) = 0;
 

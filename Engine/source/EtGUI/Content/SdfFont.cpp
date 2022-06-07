@@ -208,7 +208,8 @@ SdfFont* SdfFontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 
 	font->m_FontSize = binReader.Read<int16>();
 	font->m_Flags = binReader.Read<uint8>();
-	binReader.SetBufferPosition(pos + 14u);
+	font->m_Weight = static_cast<SdfFont::E_Weight>(binReader.Read<uint16>());
+	binReader.SetBufferPosition(pos + 16u);
 
 	font->m_FontFamily = binReader.ReadNullString();
 

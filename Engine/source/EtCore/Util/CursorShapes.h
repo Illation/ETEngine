@@ -31,7 +31,7 @@ class I_CursorShapeManager
 public:
 	virtual ~I_CursorShapeManager() = default;
 
-	virtual bool OnCursorResize(E_CursorShape const shape) = 0; // should return true on success
+	virtual bool SetCursorShape(E_CursorShape const shape) = 0; // should return true on success
 };
 
 

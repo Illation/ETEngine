@@ -131,6 +131,7 @@ public:
 	void SetFaceCullingMode(E_FaceCullMode const cullMode) override;
 	void SetBlendEquation(E_BlendEquation const equation) override;
 	void SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor) override;
+	void SetBlendFunctionSeparate(E_BlendFactor const sRGB, E_BlendFactor const sAlpha, E_BlendFactor const dRGB, E_BlendFactor const dAlpha) override;
 
 	void SetDepthFunction(E_DepthFunc const func) override;
 
@@ -349,7 +350,9 @@ private:
 	E_BlendEquation m_BlendEquationRGB = E_BlendEquation::Add;
 	E_BlendEquation m_BlendEquationAlpha = E_BlendEquation::Add;
 	E_BlendFactor m_BlendFuncSFactor = E_BlendFactor::One;
+	E_BlendFactor m_BlendFuncSFactorAlpha = E_BlendFactor::One;
 	E_BlendFactor m_BlendFuncDFactor = E_BlendFactor::Zero;
+	E_BlendFactor m_BlendFuncDFactorAlpha = E_BlendFactor::Zero;
 
 	E_DepthFunc m_DepthFunc = E_DepthFunc::Less;
 

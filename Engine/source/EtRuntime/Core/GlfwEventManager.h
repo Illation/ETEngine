@@ -4,10 +4,11 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include <EtCore/Input/RawInputProvider.h>
 #include <EtCore/UpdateCycle/Tickable.h>
 #include <EtCore/Util/Singleton.h>
-#include <EtCore/Input/RawInputProvider.h>
 #include <EtCore/Util/CursorShapes.h>
+#include <EtCore/Util/ClipboardControllerInterface.h>
 
 #include <EtFramework/Config/TickOrder.h>
 
@@ -23,7 +24,10 @@ namespace rt {
 //
 // Responsible for passing GLFW events to the input manager
 //
-class GlfwEventManager : public core::Singleton<GlfwEventManager>, public core::I_Tickable, public core::I_CursorShapeManager
+class GlfwEventManager : public core::Singleton<GlfwEventManager>, 
+	public core::I_Tickable, 
+	public core::I_CursorShapeManager, 
+	public core::I_ClipboardController
 {
 private:
 	// definitions
@@ -45,9 +49,14 @@ public:
 	// modify state
 	//--------------
 protected:
-	bool OnCursorResize(core::E_CursorShape const shape) override;
+	bool SetCursorShape(core::E_CursorShape const shape) override;
+
+	void SetClipboardText(std::string const& textUtf8) override;
+	void GetClipboardText(std::string& outTextUtf8) override;
+
 private:
 	void OnTick() override; // call before all GUI ticks
+
 	void SetCurrentModifiers(core::T_KeyModifierFlags const mods) { m_CurrentModifiers = mods; }
 
 	// utility

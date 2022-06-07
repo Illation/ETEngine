@@ -200,7 +200,8 @@ void GuiRenderer::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiE
 	// pipeline state
 	api->SetBlendEnabled(true);
 	api->SetBlendEquation(render::E_BlendEquation::Add);
-	api->SetBlendFunction(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::OneMinusSourceAlpha);
+	api->SetBlendFunctionSeparate(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::One, // alpha channel always adds preventing gaps in the fb
+		render::E_BlendFactor::OneMinusSourceAlpha, render::E_BlendFactor::One);
 	api->SetCullEnabled(false);
 	api->SetDepthEnabled(false);
 
@@ -216,6 +217,7 @@ void GuiRenderer::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiE
 
 	// blit results to target framebuffer - this can also be used in the future to transform the UI into viewspace
 	api->BindFramebuffer(targetFb);
+	api->SetBlendFunction(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::OneMinusSourceAlpha);
 
 	api->SetShader(m_RmlBlitShader.get());
 	m_RmlBlitShader->Upload("uTexture"_hash, static_cast<render::TextureData const*>(m_RmlTex.Get()));
@@ -240,7 +242,7 @@ void GuiRenderer::GenerateFramebuffer(ivec2 const dim)
 	api->BindFramebuffer(m_RmlFb);
 
 	// target texture
-	m_RmlTex = Create<render::TextureData>(render::E_ColorFormat::RGBA16f, dim);
+	m_RmlTex = Create<render::TextureData>(render::E_ColorFormat::RGBA8, dim); // non float fb prevents alpha from exceeding 1
 	m_RmlTex->AllocateStorage();
 	m_RmlTex->SetParameters(render::TextureParameters(false));
 

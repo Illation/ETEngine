@@ -103,12 +103,7 @@ size_t RmlFontEngineInterface::FontFamily::GetBestAsset(RmlFontEngineInterface::
 		currentScore += static_cast<uint32>(30 - std::min(30, std::abs(static_cast<int32>(asset->GetFontSize()) - face.m_Size)));
 
 		// and finally we can fetch the asset based on if it's bold or not (very easy to generate 
-		Rml::Style::FontWeight const currentWeight = asset->IsItalic() ? Rml::Style::FontWeight::Bold : Rml::Style::FontWeight::Normal;
-		if (currentWeight == face.m_Weight)
-		{
-			currentScore += 9u; // this could be a bit more sophisticated by making this relative to the weight difference
-		}
-
+		currentScore += static_cast<uint32>(9 - std::min(9, std::abs(static_cast<int32>(asset->GetWeight()) - static_cast<int32>(face.m_Weight)) / 100));
 
 		if (currentScore > bestScore)
 		{

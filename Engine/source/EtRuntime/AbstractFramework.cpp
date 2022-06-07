@@ -178,6 +178,7 @@ void AbstractFramework::Run()
 	m_GuiContext = unifiedScene.GetGuiExtension()->GetContextContainer().CreateContext(m_Viewport);
 	unifiedScene.SetScreenGuiContext(m_GuiContext);
 	gui::RmlGlobal::GetInstance()->SetCursorShapeManager(ToPtr(&glfwMan));
+	gui::RmlGlobal::GetInstance()->SetClipboardController(ToPtr(&glfwMan));
 
 	// cause the loop to continue
 	RegisterAsTriggerer();

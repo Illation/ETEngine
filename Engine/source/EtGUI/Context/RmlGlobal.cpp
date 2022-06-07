@@ -87,6 +87,14 @@ void RmlGlobal::SetCursorShapeManager(Ptr<core::I_CursorShapeManager> const curs
 	m_SystemInterface.SetCursorShapeManager(cursorMan);
 }
 
+//-----------------------------------
+// RmlGlobal::SetClipboardController
+//
+void RmlGlobal::SetClipboardController(Ptr<core::I_ClipboardController> const clipboardController)
+{
+	m_SystemInterface.SetClipboardController(clipboardController);
+}
+
 //----------------------------------
 // RmlGlobal::SetGraphicsContext
 //

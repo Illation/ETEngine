@@ -30,6 +30,18 @@ private:
 public:
 
 	//---------------------------------
+	// E_Weight
+	//
+	// Any definite value in the range [1,1000] is valid
+	//
+	enum class E_Weight : uint16
+	{
+		Auto = 0, 
+		Normal = 400, 
+		Bold = 700
+	}; 
+
+	//---------------------------------
 	// E_Flags
 	//
 	// General info about the font face
@@ -42,7 +54,7 @@ public:
 		F_Smooth		= 1 << 0, // unused
 		F_Unicode		= 1 << 1, // unused
 		F_Italic		= 1 << 2,
-		F_Bold			= 1 << 3,
+		F_Bold			= 1 << 3, // unused
 		F_FixedHeight	= 1 << 4, // unused
 
 		F_All = 0xFF
@@ -108,8 +120,8 @@ public:
 	//-----------
 	std::string const& GetFamily() const { return m_FontFamily; }
 	int16 GetFontSize() const { return m_FontSize; }
-	bool IsBold() const { return m_Flags & E_Flags::F_Bold; }
 	bool IsItalic() const { return m_Flags & E_Flags::F_Italic; }
+	E_Weight GetWeight() const { return m_Weight; }
 
 	uint16 GetLineHeight() const { return m_LineHeight; }
 	uint16 GetBaseline() const { return m_Baseline; }
@@ -136,6 +148,7 @@ private:
 	std::string m_FontFamily;
 	int16 m_FontSize = 0; // default size this sdf was generated from
 	T_Flags m_Flags = E_Flags::F_None;
+	E_Weight m_Weight = E_Weight::Auto;
 
 	uint16 m_LineHeight = 0u;
 	uint16 m_Baseline = 0u;

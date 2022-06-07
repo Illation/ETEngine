@@ -2,7 +2,9 @@
 #include "EditableSdfFont.h"
 
 #include <ft2build.h>
-#include <freetype/freetype.h>
+#include FT_FREETYPE_H
+#include FT_MULTIPLE_MASTERS_H
+#include FT_TRUETYPE_TABLES_H
 
 #include <stb/stb_image_write.h>
 
@@ -164,6 +166,7 @@ bool EditableSdfFontAsset::GenerateInternal(BuildConfiguration const& buildConfi
 //
 gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryContent)
 {
+	// init
 	FT_Library ft;
 	if (FT_Init_FreeType(&ft))
 	{
@@ -176,6 +179,78 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 		LOG("FREETYPE: Failed to load font", core::LogLevel::Warning);
 	}
 
+	// parse variations
+	struct FontVariation
+	{
+		uint16 m_Weight = 0;
+		uint16 m_Width = 0;
+		int32 m_NamedInstanceIdx = -1;
+	};
+
+	std::vector<FontVariation> variations;
+	{
+		FT_MM_Var* var = nullptr;
+		if (FT_Get_MM_Var(face, &var))
+		{
+			LOG("FREETYPE: Failed to get MM var", core::LogLevel::Warning);
+		}
+		else
+		{
+			auto const conv16Fn = [](int32 const fx) -> int32
+				{
+					return fx / 0x10000;
+				};
+
+			uint32 axisIdxWeight = 0u;
+			uint32 axisIdxWidth = 1u;
+
+			size_t const axisCount = static_cast<size_t>(var->num_axis);
+			for (size_t idx = 0u; idx < axisCount; ++idx)
+			{
+				switch (var->axis[idx].tag)
+				{
+				case 0x77676874: // 'wght'
+					axisIdxWeight = idx;
+					break;
+				case 0x77647468: // 'wdth'
+					axisIdxWidth = idx;
+					break;
+				}
+			}
+
+			if (axisCount > 0u)
+			{
+				for (uint32 idx = 0u; idx < var->num_namedstyles; ++idx)
+				{
+					uint16 const weight = (axisIdxWeight < axisCount) ? static_cast<uint16>(conv16Fn(var->namedstyle[idx].coords[axisIdxWeight])) : 0u;
+					uint16 const width = (axisIdxWeight < axisCount) ? static_cast<uint16>(conv16Fn(var->namedstyle[idx].coords[axisIdxWidth])) : 0u;
+					int32 const namedInstanceIdxIdx = static_cast<int32>(idx + 1u);
+
+					variations.push_back(FontVariation{
+							weight == 0u ? 400u : weight,
+							width == 0u ? 100u : width,
+							namedInstanceIdxIdx
+						});
+				}
+			}
+
+			std::sort(variations.begin(), variations.end(), [](FontVariation const& a, FontVariation const& b)
+				{
+					if (a.m_Weight == b.m_Weight)
+					{
+						return a.m_Width < b.m_Width;
+					}
+
+					return a.m_Weight < b.m_Weight;
+				});
+
+#			if FREETYPE_MAJOR >= 2 && FREETYPE_MINOR >= 9
+				FT_Done_MM_Var(ft, var);
+#			endif
+		}
+	}
+
+	// parse basic font parameters
 	FT_Set_Pixel_Sizes(face, 0, m_FontSize);
 
 	gui::SdfFont* const font = new gui::SdfFont();
@@ -192,9 +267,16 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 		font->m_Flags |= gui::SdfFont::E_Flags::F_Italic;
 	}
 
-	if (face->style_flags & FT_STYLE_FLAG_BOLD)
 	{
-		font->m_Flags |= gui::SdfFont::E_Flags::F_Bold;
+		TT_OS2* const fontTable = static_cast<TT_OS2*>(FT_Get_Sfnt_Table(face, FT_SFNT_OS2));
+		if ((fontTable != nullptr) && (fontTable->usWeightClass != 0))
+		{
+			font->m_Weight = static_cast<gui::SdfFont::E_Weight>(fontTable->usWeightClass);
+		}
+		else
+		{
+			font->m_Weight = (face->style_flags & FT_STYLE_FLAG_BOLD) ? gui::SdfFont::E_Weight::Bold : gui::SdfFont::E_Weight::Normal;
+		}
 	}
 
 	font->m_LineHeight = static_cast<uint16>(face->size->metrics.height >> 6);
@@ -472,6 +554,7 @@ void EditableSdfFontAsset::PopulateTextureParams(render::TextureParameters& para
 // Font asset descriptor written in this file format: http://www.angelcode.com/products/bmfont/doc/file_format.html
 //  - format modifications: 
 //    * each metric contains a byte indicating if the metric is valid or not after the character ID
+//	  * added uint16 to block 1 for precise font weight
 //	  * added int16 to block 2 for Underline position
 //	  * added float to block 2 for Underline thickness
 //	  * added float to block 2 for Sdf Size
@@ -513,7 +596,7 @@ bool EditableSdfFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::Sd
 	// Determine block sizes
 	//-----------------------
 	// 1
-	uint32 const block1Size = static_cast<uint32>(14u + font->m_FontFamily.size() + 1u); // +1 because string is null terminated
+	uint32 const block1Size = static_cast<uint32>(16u + font->m_FontFamily.size() + 1u); // +1 because string is null terminated
 
 	// 2
 	uint32 const block2Size = 25u;
@@ -567,6 +650,7 @@ bool EditableSdfFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::Sd
 
 	binWriter.Write<int16>(font->GetFontSize());
 	binWriter.Write<uint8>(font->m_Flags); 
+	binWriter.Write(static_cast<uint16>(font->m_Weight)); // non standard
 	binWriter.Write<uint8>(0u); // charSet
 	binWriter.Write<uint16>(0u); // stretchH
 	binWriter.Write<uint8>(0u); // aa

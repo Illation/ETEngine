@@ -70,41 +70,63 @@ void RmlSystemInterface::SetMouseCursor(Rml::String const& cursor_name)
 		{
 		case "text"_hash:
 		case "vertical-text"_hash:
-			m_CursorShapeManager->OnCursorResize(core::E_CursorShape::IBeam);
+			m_CursorShapeManager->SetCursorShape(core::E_CursorShape::IBeam);
 			break;
 
 		case "crosshair"_hash:
-			m_CursorShapeManager->OnCursorResize(core::E_CursorShape::Crosshair);
+			m_CursorShapeManager->SetCursorShape(core::E_CursorShape::Crosshair);
 			break;
 
 		case "grab"_hash:
 		case "grabbing"_hash:
-			m_CursorShapeManager->OnCursorResize(core::E_CursorShape::Hand);
+			m_CursorShapeManager->SetCursorShape(core::E_CursorShape::Hand);
 			break;
 
 		case "ew-resize"_hash:
 		case "e-resize"_hash:
 		case "w-resize"_hash:
 		case "col-resize"_hash:
-			m_CursorShapeManager->OnCursorResize(core::E_CursorShape::SizeWE);
+			m_CursorShapeManager->SetCursorShape(core::E_CursorShape::SizeWE);
 			break;
 
 		case "ns-resize"_hash:
 		case "n-resize"_hash:
 		case "s-resize"_hash:
 		case "row-resize"_hash:
-			m_CursorShapeManager->OnCursorResize(core::E_CursorShape::SizeNS);
+			m_CursorShapeManager->SetCursorShape(core::E_CursorShape::SizeNS);
 			break;
 
 		case "none"_hash:
-			m_CursorShapeManager->OnCursorResize(core::E_CursorShape::None);
+			m_CursorShapeManager->SetCursorShape(core::E_CursorShape::None);
 			break;
 
 		case "pointer"_hash:
 		default:
-			m_CursorShapeManager->OnCursorResize(core::E_CursorShape::Arrow);
+			m_CursorShapeManager->SetCursorShape(core::E_CursorShape::Arrow);
 			break;
 		}
+	}
+}
+
+//--------------------------------------
+// RmlSystemInterface::SetClipboardText
+//
+void RmlSystemInterface::SetClipboardText(Rml::String const& text)
+{
+	if (m_ClipboardController != nullptr)
+	{
+		m_ClipboardController->SetClipboardText(text);
+	}
+}
+
+//--------------------------------------
+// RmlSystemInterface::GetClipboardText
+//
+void RmlSystemInterface::GetClipboardText(Rml::String& outText)
+{
+	if (m_ClipboardController != nullptr)
+	{
+		m_ClipboardController->GetClipboardText(outText);
 	}
 }
 
