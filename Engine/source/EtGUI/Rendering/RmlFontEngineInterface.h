@@ -50,13 +50,13 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 	//
 	struct FontFace
 	{
-		FontFace(core::HashString const familyId, Rml::Style::FontStyle const style, Rml::Style::FontWeight const weight, int32 const size);
+		FontFace(core::HashString const familyId, Rml::Style::FontStyle const style, SdfFont::E_Weight const weight, int32 const size);
 
 		void SetAsset(FontFamily const& family, size_t const assetIdx, T_FallbackFonts const& fallbackFonts);
 
 		core::HashString const m_FamilyId;
 		Rml::Style::FontStyle const m_Style = Rml::Style::FontStyle::Normal;
-		Rml::Style::FontWeight const m_Weight = Rml::Style::FontWeight::Auto;
+		SdfFont::E_Weight const m_Weight = SdfFont::E_Weight::Auto;
 		int32 const m_Size = 0;
 
 		T_Hash const m_Hash;
@@ -77,6 +77,7 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 		float m_UnderlineThickness;
 
 		float m_SdfSize;
+		float m_SdfThreshold = 0.5;
 	};
 
 	typedef std::vector<FontFace> T_FontFaces;

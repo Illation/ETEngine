@@ -60,7 +60,13 @@ SdfFont& SdfFont::operator=(SdfFont const& other)
 {
 	m_FontFamily = other.m_FontFamily;
 	m_FontSize = other.m_FontSize;
-	m_Flags = other.m_Flags;
+	m_IsItalic = other.m_IsItalic;
+	m_Weight = other.m_Weight;
+
+	m_LineHeight = other.m_LineHeight;
+	m_Baseline = other.m_Baseline;
+	m_Underline = other.m_Underline;
+	m_UnderlineThickness = other.m_UnderlineThickness;
 
 	std::copy(std::begin(other.m_CharSets), std::end(other.m_CharSets), std::begin(m_CharSets));
 	m_UseKerning = other.m_UseKerning;
@@ -71,6 +77,8 @@ SdfFont& SdfFont::operator=(SdfFont const& other)
 	}
 
 	m_TextureAsset = other.m_TextureAsset;
+
+	m_SdfSize = other.m_SdfSize;
 
 	return *this;
 }
@@ -207,7 +215,7 @@ SdfFont* SdfFontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 	size_t pos = binReader.GetBufferPosition();
 
 	font->m_FontSize = binReader.Read<int16>();
-	font->m_Flags = binReader.Read<uint8>();
+	font->m_IsItalic = binReader.Read<uint8>() & 1u << 2; // italic flag at bit 2
 	font->m_Weight = static_cast<SdfFont::E_Weight>(binReader.Read<uint16>());
 	binReader.SetBufferPosition(pos + 16u);
 
@@ -242,6 +250,7 @@ SdfFont* SdfFontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 
 	binReader.MoveBufferPosition(5u); // skip some stuff
 	font->m_SdfSize = binReader.Read<float>();
+	font->m_ThresholdPerWeight = binReader.Read<float>();
 
 	binReader.SetBufferPosition(pos + static_cast<size_t>(block2Size));
 

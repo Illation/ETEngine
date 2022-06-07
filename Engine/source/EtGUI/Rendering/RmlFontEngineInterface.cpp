@@ -23,7 +23,7 @@ namespace gui {
 //
 RmlFontEngineInterface::FontFace::FontFace(core::HashString const familyId,
 	Rml::Style::FontStyle const style, 
-	Rml::Style::FontWeight const weight, 
+	SdfFont::E_Weight const weight,
 	int32 const size
 )
 	: m_FamilyId(familyId)
@@ -70,6 +70,7 @@ void RmlFontEngineInterface::FontFace::SetAsset(FontFamily const& family,
 	m_UnderlineThickness = static_cast<int32>(m_Multiplier * static_cast<float>(m_Font->GetUnderlineThickness()));
 
 	m_SdfSize = m_Multiplier * m_Font->GetSdfSize();
+	m_SdfThreshold = 0.5f + (static_cast<float>(m_Font->GetWeight()) - static_cast<float>(m_Weight)) * m_Font->GetThresholdPerWeight();
 }
 
 
@@ -213,7 +214,7 @@ Rml::FontFaceHandle RmlFontEngineInterface::GetFontFaceHandle(Rml::String const&
 	Rml::Style::FontWeight const weight, 
 	int32 const size)
 {
-	FontFace face(core::HashString(familyName.c_str()), style, weight, size);
+	FontFace face(core::HashString(familyName.c_str()), style, static_cast<SdfFont::E_Weight>(weight), size);
 
 	auto const foundFaceIt = std::find_if(m_Faces.cbegin(), m_Faces.cend(), [&face](FontFace const& lh) 
 		{

@@ -3,7 +3,6 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include FT_MULTIPLE_MASTERS_H
 #include FT_TRUETYPE_TABLES_H
 
 #include <stb/stb_image_write.h>
@@ -42,6 +41,7 @@ RTTR_REGISTRATION
 		.property("padding", &EditableSdfFontAsset::m_Padding)
 		.property("spread", &EditableSdfFontAsset::m_Spread)
 		.property("highres", &EditableSdfFontAsset::m_HighRes)
+		.property("EM per 100 weight", &EditableSdfFontAsset::m_EmPer100Weight)
 		.property("char sets", &EditableSdfFontAsset::m_CharSets)
 	END_REGISTER_CLASS_POLYMORPHIC(EditableSdfFontAsset, EditorAssetBase);
 }
@@ -179,77 +179,6 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 		LOG("FREETYPE: Failed to load font", core::LogLevel::Warning);
 	}
 
-	// parse variations
-	struct FontVariation
-	{
-		uint16 m_Weight = 0;
-		uint16 m_Width = 0;
-		int32 m_NamedInstanceIdx = -1;
-	};
-
-	std::vector<FontVariation> variations;
-	{
-		FT_MM_Var* var = nullptr;
-		if (FT_Get_MM_Var(face, &var))
-		{
-			LOG("FREETYPE: Failed to get MM var", core::LogLevel::Warning);
-		}
-		else
-		{
-			auto const conv16Fn = [](int32 const fx) -> int32
-				{
-					return fx / 0x10000;
-				};
-
-			uint32 axisIdxWeight = 0u;
-			uint32 axisIdxWidth = 1u;
-
-			size_t const axisCount = static_cast<size_t>(var->num_axis);
-			for (size_t idx = 0u; idx < axisCount; ++idx)
-			{
-				switch (var->axis[idx].tag)
-				{
-				case 0x77676874: // 'wght'
-					axisIdxWeight = idx;
-					break;
-				case 0x77647468: // 'wdth'
-					axisIdxWidth = idx;
-					break;
-				}
-			}
-
-			if (axisCount > 0u)
-			{
-				for (uint32 idx = 0u; idx < var->num_namedstyles; ++idx)
-				{
-					uint16 const weight = (axisIdxWeight < axisCount) ? static_cast<uint16>(conv16Fn(var->namedstyle[idx].coords[axisIdxWeight])) : 0u;
-					uint16 const width = (axisIdxWeight < axisCount) ? static_cast<uint16>(conv16Fn(var->namedstyle[idx].coords[axisIdxWidth])) : 0u;
-					int32 const namedInstanceIdxIdx = static_cast<int32>(idx + 1u);
-
-					variations.push_back(FontVariation{
-							weight == 0u ? 400u : weight,
-							width == 0u ? 100u : width,
-							namedInstanceIdxIdx
-						});
-				}
-			}
-
-			std::sort(variations.begin(), variations.end(), [](FontVariation const& a, FontVariation const& b)
-				{
-					if (a.m_Weight == b.m_Weight)
-					{
-						return a.m_Width < b.m_Width;
-					}
-
-					return a.m_Weight < b.m_Weight;
-				});
-
-#			if FREETYPE_MAJOR >= 2 && FREETYPE_MINOR >= 9
-				FT_Done_MM_Var(ft, var);
-#			endif
-		}
-	}
-
 	// parse basic font parameters
 	FT_Set_Pixel_Sizes(face, 0, m_FontSize);
 
@@ -262,10 +191,7 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 			return std::tolower(c);
 		});
 
-	if (face->style_flags & FT_STYLE_FLAG_ITALIC)
-	{
-		font->m_Flags |= gui::SdfFont::E_Flags::F_Italic;
-	}
+	font->m_IsItalic = (face->style_flags & FT_STYLE_FLAG_ITALIC);
 
 	{
 		TT_OS2* const fontTable = static_cast<TT_OS2*>(FT_Get_Sfnt_Table(face, FT_SFNT_OS2));
@@ -418,6 +344,14 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 		}
 	}
 
+	font->m_SdfSize = m_Spread;
+	float const thresholdEm = (static_cast<float>(m_Spread) * 2.f) / static_cast<float>(m_FontSize);
+	font->m_ThresholdPerWeight = (m_EmPer100Weight / thresholdEm) * 0.01f;
+
+
+	// render the atlas
+	//------------------
+
 	int32 const texWidth = std::max(std::max(maxPos[0].x, maxPos[1].x), std::max(maxPos[2].x, maxPos[3].x));
 	int32 const texHeight = std::max(std::max(maxPos[0].y, maxPos[1].y), std::max(maxPos[2].y, maxPos[3].y));
 
@@ -433,8 +367,6 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 		texture->SetParameters(params);
 		font->m_Texture = std::move(texture);
 	}
-
-	font->m_SdfSize = m_Spread;
 
 	render::T_FbLoc captureFBO;
 	render::T_RbLoc captureRBO;
@@ -599,7 +531,7 @@ bool EditableSdfFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::Sd
 	uint32 const block1Size = static_cast<uint32>(16u + font->m_FontFamily.size() + 1u); // +1 because string is null terminated
 
 	// 2
-	uint32 const block2Size = 25u;
+	uint32 const block2Size = 29u;
 
 	// 3
 	uint32 const block3Size = static_cast<uint32>(atlasName.size() + 1u); // +1 because string is null terminated
@@ -649,7 +581,7 @@ bool EditableSdfFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::Sd
 	writeBlockHeader(binWriter, 1u, block1Size);
 
 	binWriter.Write<int16>(font->GetFontSize());
-	binWriter.Write<uint8>(font->m_Flags); 
+	binWriter.Write<uint8>(font->m_IsItalic ? 1u << 2 : 0u);  // italic flag at bit 2
 	binWriter.Write(static_cast<uint16>(font->m_Weight)); // non standard
 	binWriter.Write<uint8>(0u); // charSet
 	binWriter.Write<uint16>(0u); // stretchH
@@ -685,6 +617,7 @@ bool EditableSdfFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::Sd
 	binWriter.Write<uint8>(0u); // greenChnl
 	binWriter.Write<uint8>(0u); // blueChnl
 	binWriter.Write(font->m_SdfSize); // non-standard
+	binWriter.Write(font->m_ThresholdPerWeight); // non-standard
 
 	// Block 3
 	//---------

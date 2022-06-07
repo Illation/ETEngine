@@ -65,6 +65,7 @@ private:
 	uint32 m_Padding = 1u;
 	uint32 m_Spread = 5u;
 	uint32 m_HighRes = 32u;
+	float m_EmPer100Weight = 0.01f;
 	std::vector<Charset> m_CharSets;
 };
 

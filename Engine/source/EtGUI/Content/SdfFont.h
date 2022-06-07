@@ -42,25 +42,6 @@ public:
 	}; 
 
 	//---------------------------------
-	// E_Flags
-	//
-	// General info about the font face
-	//
-	typedef uint8 T_Flags;
-	enum E_Flags : T_Flags
-	{
-		F_None = 0,
-
-		F_Smooth		= 1 << 0, // unused
-		F_Unicode		= 1 << 1, // unused
-		F_Italic		= 1 << 2,
-		F_Bold			= 1 << 3, // unused
-		F_FixedHeight	= 1 << 4, // unused
-
-		F_All = 0xFF
-	};
-
-	//---------------------------------
 	// Metric
 	//
 	// Information about positioning of individual characters in a font
@@ -120,7 +101,7 @@ public:
 	//-----------
 	std::string const& GetFamily() const { return m_FontFamily; }
 	int16 GetFontSize() const { return m_FontSize; }
-	bool IsItalic() const { return m_Flags & E_Flags::F_Italic; }
+	bool IsItalic() const { return m_IsItalic; }
 	E_Weight GetWeight() const { return m_Weight; }
 
 	uint16 GetLineHeight() const { return m_LineHeight; }
@@ -134,6 +115,7 @@ public:
 	render::TextureData const* GetAtlas() const { return (m_TextureAsset != nullptr) ? m_TextureAsset.get() : m_Texture.Get(); }
 
 	float GetSdfSize() const { return m_SdfSize; }
+	float GetThresholdPerWeight() const { return m_ThresholdPerWeight; }
 
 
 	// utility
@@ -147,7 +129,7 @@ private:
 	// font info
 	std::string m_FontFamily;
 	int16 m_FontSize = 0; // default size this sdf was generated from
-	T_Flags m_Flags = E_Flags::F_None;
+	bool m_IsItalic = false;
 	E_Weight m_Weight = E_Weight::Auto;
 
 	uint16 m_LineHeight = 0u;
@@ -164,6 +146,7 @@ private:
 	AssetPtr<render::TextureData> m_TextureAsset; // runtime
 
 	float m_SdfSize = 0.f;
+	float m_ThresholdPerWeight = 0.f; // modify the sdf rendering threshold based on the width differential
 };
 
 //---------------------------------

@@ -244,7 +244,7 @@ void RmlRenderInterface::RenderCompiledGeometry(Rml::CompiledGeometryHandle geom
 	if (geo.m_Font != nullptr)
 	{
 		//shader->Upload("uSdfSize"_hash, geo.m_Font->GetSdfSize());
-		shader->Upload("uThreshold"_hash, 0.50f);
+		shader->Upload("uThreshold"_hash, 0.5f);
 		shader->Upload("uUseAntiAliasing"_hash, true);
 	}
 
