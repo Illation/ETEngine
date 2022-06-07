@@ -199,6 +199,7 @@ void GuiRenderer::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiE
 
 	// pipeline state
 	api->SetBlendEnabled(true);
+	api->SetBlendEquation(render::E_BlendEquation::Add);
 	api->SetBlendFunction(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::OneMinusSourceAlpha);
 	api->SetCullEnabled(false);
 	api->SetDepthEnabled(false);

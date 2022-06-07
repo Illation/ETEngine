@@ -152,12 +152,13 @@ public:
 	//---------
 private:
 	FontFamily& FindOrCreateFamily(std::string const& familyName, core::HashString& outFamilyId);
+	size_t GetFaceIdx(Rml::FontFaceHandle const faceHandle) const;
 	FontFace& GetFace(Rml::FontFaceHandle const faceHandle);
 
-	SdfFont::Metric const& GetMetric(FontFace& inFace, char32 const charId, FontFace const*& outFace);
+	SdfFont::Metric const& GetMetric(size_t const faceIdx, char32 const charId, FontFace const*& outFace);
 
 	void AddFallbackFont(core::HashString const familyId, size_t const assetIdx);
-	FontFace* GetFallbackFace(FontFace& face);
+	size_t GetFallbackFaceIdx(size_t const faceIdx);
 
 
 	// Data

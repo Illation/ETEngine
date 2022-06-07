@@ -312,7 +312,7 @@ float RmlFontEngineInterface::GetUnderline(Rml::FontFaceHandle const faceHandle,
 //
 int32 RmlFontEngineInterface::GetStringWidth(Rml::FontFaceHandle const faceHandle, Rml::String const& utf8String, Rml::Character const priorCharacter)
 {
-	FontFace& face = GetFace(faceHandle);
+	size_t const faceIdx = GetFaceIdx(faceHandle);
 
 	float stringWidth = 0.f;
 
@@ -322,7 +322,7 @@ int32 RmlFontEngineInterface::GetStringWidth(Rml::FontFaceHandle const faceHandl
 		char32 const charId = static_cast<char32>(*itString);
 
 		FontFace const* glyphFace = nullptr;
-		SdfFont::Metric const& metric = GetMetric(face, charId, glyphFace);
+		SdfFont::Metric const& metric = GetMetric(faceIdx, charId, glyphFace);
 
 		float kerning = 0.f;
 		if (glyphFace->m_Font->UseKerning())
@@ -351,7 +351,7 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 {
 	UNUSED(effectsHandle);
 
-	FontFace& inFace = GetFace(faceHandle);
+	size_t const faceIdx = GetFaceIdx(faceHandle);
 
 	outGeometry = Rml::GeometryList();
 
@@ -379,7 +379,7 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 		char32 const charId = static_cast<char32>(*itString);
 
 		FontFace const* glyphFace = nullptr;
-		SdfFont::Metric const& metric = GetMetric(inFace, charId, glyphFace);
+		SdfFont::Metric const& metric = GetMetric(faceIdx, charId, glyphFace);
 
 		vec2 kerning;
 		if (glyphFace->m_Font->UseKerning())
@@ -537,15 +537,23 @@ RmlFontEngineInterface::FontFamily& RmlFontEngineInterface::FindOrCreateFamily(s
 }
 
 //----------------------------------------------
-// RmlFontEngineInterface::GetFace
+// RmlFontEngineInterface::GetFaceIdx
 //
-RmlFontEngineInterface::FontFace& RmlFontEngineInterface::GetFace(Rml::FontFaceHandle const faceHandle)
+size_t RmlFontEngineInterface::GetFaceIdx(Rml::FontFaceHandle const faceHandle) const
 {
 	ET_ASSERT(faceHandle != s_InvalidFont);
 	size_t const faceIdx = faceHandle - 1;
 
 	ET_ASSERT(m_Faces.size() > faceIdx);
-	return m_Faces[faceIdx];
+	return faceIdx;
+}
+
+//----------------------------------------------
+// RmlFontEngineInterface::GetFace
+//
+RmlFontEngineInterface::FontFace& RmlFontEngineInterface::GetFace(Rml::FontFaceHandle const faceHandle)
+{
+	return m_Faces[GetFaceIdx(faceHandle)];
 }
 
 //----------------------------------------------
@@ -553,31 +561,28 @@ RmlFontEngineInterface::FontFace& RmlFontEngineInterface::GetFace(Rml::FontFaceH
 //
 // Get the glyph metric from the face, or a fallback face if it couldn't be found. Sets outFace to the face the metric was found in
 //
-SdfFont::Metric const& RmlFontEngineInterface::GetMetric(RmlFontEngineInterface::FontFace& inFace, 
-	char32 const charId, 
-	RmlFontEngineInterface::FontFace const*& outFace)
+SdfFont::Metric const& RmlFontEngineInterface::GetMetric(size_t const faceIdx, char32 const charId, RmlFontEngineInterface::FontFace const*& outFace)
 {
-	
-	FontFace* currentFace = &inFace;
-	while (currentFace != nullptr)
+	size_t currentFaceIdx = faceIdx;
+	while (currentFaceIdx != s_InvalidIdx)
 	{
-		SdfFont::Metric const* metric = currentFace->m_Font->GetValidMetric(charId);
+		SdfFont::Metric const* metric = m_Faces[currentFaceIdx].m_Font->GetValidMetric(charId);
 		if (metric != nullptr)
 		{
-			outFace = currentFace;
+			outFace = &m_Faces[currentFaceIdx];
 			return *metric;
 		}
 
-		currentFace = GetFallbackFace(*currentFace);
+		currentFaceIdx = GetFallbackFaceIdx(currentFaceIdx);
 	}
 
-	LOG(FS("FontEngine::GetMetric > Font '%s' doesn't support char '%#010x', and no fallbacks where found", inFace.m_Font.GetId().ToStringDbg(), charId),
-		core::LogLevel::Warning);
+	LOG(FS("FontEngine::GetMetric > Font '%s' doesn't support char '%#010x', and no fallbacks where found", 
+		m_Faces[faceIdx].m_Font.GetId().ToStringDbg(), charId), core::LogLevel::Warning);
 
-	SdfFont::Metric const* metric = inFace.m_Font->GetValidMetric(0);
+	SdfFont::Metric const* metric = m_Faces[faceIdx].m_Font->GetValidMetric(0);
 	ET_ASSERT(metric != nullptr); // every font should contain a default character for 0
 
-	outFace = &inFace;
+	outFace = &m_Faces[faceIdx];
 	return *metric;
 }
 
@@ -590,7 +595,7 @@ void RmlFontEngineInterface::AddFallbackFont(core::HashString const familyId, si
 	if (std::find_if(m_FallbackFonts.cbegin(), m_FallbackFonts.cend(), [&fnt](FallbackFont const& lhs)
 		{
 			return ((lhs.m_FamilyId == fnt.m_FamilyId) && (lhs.m_AssetIdx == fnt.m_AssetIdx));
-		}) != m_FallbackFonts.cend())
+		}) == m_FallbackFonts.cend())
 	{
 		m_FallbackFonts.push_back(fnt);
 	}
@@ -601,14 +606,15 @@ void RmlFontEngineInterface::AddFallbackFont(core::HashString const familyId, si
 //
 // Lazy fetch the next face in the fallback chain, or nullptr if this is the last face
 //
-RmlFontEngineInterface::FontFace* RmlFontEngineInterface::GetFallbackFace(RmlFontEngineInterface::FontFace& face)
+size_t RmlFontEngineInterface::GetFallbackFaceIdx(size_t const faceIdx)
 {
+	FontFace const& face = m_Faces[faceIdx];
 	if (face.m_NextFallbackFaceIdx == s_InvalidIdx) // lazy compute the pointer to the next face in the fallback chain
 	{
 		size_t const nextFallbackIdx = (face.m_FallbackIdx == s_InvalidIdx) ? 0u : face.m_FallbackIdx + 1;
 		if (nextFallbackIdx >= m_FallbackFonts.size())
 		{
-			face.m_NextFallbackFaceIdx = s_NoIdx; // there are no further faces in the fallback chain
+			m_Faces[faceIdx].m_NextFallbackFaceIdx = s_NoIdx; // there are no further faces in the fallback chain
 		}
 		else // find or generate a font face for this particular fallback font
 		{
@@ -631,28 +637,31 @@ RmlFontEngineInterface::FontFace* RmlFontEngineInterface::GetFallbackFace(RmlFon
 			{
 				// if we have a FontFace with the parameters AND specific asset matching the fallback font we don't need a new one
 				ET_ASSERT(foundFaceIt->m_FallbackIdx == nextFallbackIdx); // should be assigned to this fallback font
-				face.m_NextFallbackFaceIdx = static_cast<size_t>(foundFaceIt - m_Faces.cbegin());
+				m_Faces[faceIdx].m_NextFallbackFaceIdx = static_cast<size_t>(foundFaceIt - m_Faces.cbegin());
 			}
 			else // otherwise we create a new font face for that family with the specific asset in the fallback font
 			{
 				newFace.SetAsset(family, fallbackFont.m_AssetIdx, m_FallbackFonts);
+				size_t const newIdx = m_Faces.size();
 
-				face.m_NextFallbackFaceIdx = m_Faces.size();
-				family.m_FaceIndices.push_back(face.m_NextFallbackFaceIdx);
+				family.m_FaceIndices.push_back(newIdx);
 
 				// add to face list
-				m_Faces.push_back(newFace);
+				m_Faces.push_back(newFace); // invalidates face ref access with []operator from here
+
+				m_Faces[faceIdx].m_NextFallbackFaceIdx = newIdx;
 			}
 		}
 	}
 
-	if (face.m_NextFallbackFaceIdx == s_NoIdx)
+	size_t const nextFallback = m_Faces[faceIdx].m_NextFallbackFaceIdx;
+	if (nextFallback == s_NoIdx)
 	{
-		return nullptr;
+		return s_InvalidIdx;
 	}
 
-	ET_ASSERT(m_Faces.size() > face.m_NextFallbackFaceIdx);
-	return &m_Faces[face.m_NextFallbackFaceIdx];
+	ET_ASSERT(m_Faces.size() > nextFallback);
+	return nextFallback;
 }
 
 
