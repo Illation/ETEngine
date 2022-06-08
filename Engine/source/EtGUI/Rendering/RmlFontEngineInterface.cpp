@@ -7,6 +7,7 @@
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtGUI/Context/RmlUtil.h>
+#include "FontParameters.h"
 
 
 namespace et {
@@ -353,19 +354,18 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 
 	float stringWidth = 0.f; // ret
 
-	// Sort text into glyphs per unique font face texture
-	//----------------------------------------------------
+	// Sort text into glyphs per unique font face 
+	//--------------------------------------------
 
 	struct PerGlyph
 	{
-		PerGlyph(FontFace const& face, SdfFont::Metric const& metric, vec2 const pos) : m_Face(face), m_Metric(metric), m_Pos(pos) {}
+		PerGlyph(SdfFont::Metric const& metric, vec2 const pos) : m_Metric(metric), m_Pos(pos) {}
 
-		FontFace const& m_Face;
 		SdfFont::Metric const& m_Metric;
 		vec2 const m_Pos;
 	};
 
-	typedef std::pair<Rml::Texture, std::vector<PerGlyph>> T_PerTexture;
+	typedef std::pair<FontFace const*, std::vector<PerGlyph>> T_PerTexture;
 
 	std::vector<T_PerTexture> textureGlyphs;
 
@@ -391,15 +391,15 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 		vec2 const pos(stringWidth, kerning.y * glyphFace->m_Multiplier);
 		auto const foundIt = std::find_if(textureGlyphs.begin(), textureGlyphs.end(), [glyphFace](T_PerTexture const& lh)
 			{
-				return (lh.first == glyphFace->m_Texture);
+				return (lh.first == glyphFace);
 			});
 		if (foundIt == textureGlyphs.cend())
 		{
-			textureGlyphs.emplace_back(glyphFace->m_Texture, std::vector<PerGlyph>({ PerGlyph(*glyphFace, metric, pos) }));
+			textureGlyphs.emplace_back(glyphFace, std::vector<PerGlyph>({ PerGlyph(metric, pos) }));
 		}
 		else
 		{
-			foundIt->second.emplace_back(*glyphFace, metric, pos);
+			foundIt->second.emplace_back(metric, pos);
 		}
 
 		stringWidth += metric.m_AdvanceX * glyphFace->m_Multiplier;
@@ -418,29 +418,34 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 		std::vector<Rml::Vertex>& vertices = geometry.GetVertices();
 		std::vector<int32>& indices = geometry.GetIndices();
 
+		FontFace const* glyphFace = perTexPair.first;
 		std::vector<PerGlyph> const& glyphs = perTexPair.second;
 
 		size_t const numCharacters = glyphs.size();
 		ET_ASSERT(numCharacters > 0u);
 		indices.reserve(numCharacters * 6);
 
-		geometry.SetTexture(&glyphs[0u].m_Face.m_Texture); // set from the font face pointer because the perTexPair memory will go out of scope
+		geometry.SetTexture(&glyphFace->m_Texture); // set from the font face pointer because the perTexPair memory will go out of scope
 
 		// Since RmlUi defines a preset vertex layout we're going to have to do some memory magic to also pass the channel indices to the render interface
 		size_t const vCountBase = numCharacters * 4; // doubles as byte size of channel indices because they are 1 byte each
+		size_t const paramVCount = FontParameters::GetVCount();
 		size_t const channelVCount = (vCountBase + sizeof(Rml::Vertex) - 1) / sizeof(Rml::Vertex);
 
 		// append enough vertices to provide a block of memory that we can repurpose for filling in the channels
-		vertices.resize(vCountBase + channelVCount); 
+		vertices.resize(vCountBase + paramVCount + channelVCount); 
 
-		uint8* const channels = reinterpret_cast<uint8*>(&vertices[vCountBase]);
+		FontParameters& params = *reinterpret_cast<FontParameters*>(&vertices[vCountBase]);
+		uint8* const channels = reinterpret_cast<uint8*>(&vertices[vCountBase + paramVCount]);
+
+		params.m_SdfThreshold = glyphFace->m_SdfThreshold;
 
 		Rml::Colourb col(colour.red, colour.green, colour.blue, static_cast<Rml::byte>(static_cast<float>(colour.alpha) * opacity));
 
 		// fill in geometry
 		//------------------
 
-		vec2 const texDim = math::vecCast<float>(glyphs[0u].m_Face.m_Font->GetAtlas()->GetResolution());
+		vec2 const texDim = math::vecCast<float>(glyphFace->m_Font->GetAtlas()->GetResolution());
 
 		size_t vIndex = 0u;
 
@@ -455,15 +460,15 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 			indices.push_back(static_cast<int32>(vIndex + 3));
 
 			// vertices
-			vec2 charPos(pos + glyph.m_Pos + vec2(glyph.m_Metric.m_OffsetX, glyph.m_Metric.m_OffsetY) * glyph.m_Face.m_Multiplier);
+			vec2 charPos(pos + glyph.m_Pos + vec2(glyph.m_Metric.m_OffsetX, glyph.m_Metric.m_OffsetY) * glyphFace->m_Multiplier);
 			vec2 const charDim(static_cast<float>(glyph.m_Metric.m_Width), static_cast<float>(glyph.m_Metric.m_Height));
-			vec2 charDimScaled = charDim * glyph.m_Face.m_Multiplier;
+			vec2 charDimScaled = charDim * glyphFace->m_Multiplier;
 
 			vec2 const texCoord = glyph.m_Metric.m_TexCoord;
 			vec2 const charDimTexture = (charDim / texDim);
 
-			charPos = charPos + vec2(glyph.m_Face.m_SdfSize) * 0.5f;
-			charDimScaled = charDimScaled - vec2(glyph.m_Face.m_SdfSize);//
+			charPos = charPos + vec2(glyphFace->m_SdfSize) * 0.5f;
+			charDimScaled = charDimScaled - vec2(glyphFace->m_SdfSize);
 
 			channels[vIndex] = glyph.m_Metric.m_Channel;
 			Rml::Vertex& v1 = vertices[vIndex++];

@@ -9,6 +9,8 @@
 
 #include <EtGUI/Content/SdfFont.h>
 
+#include "FontParameters.h"
+
 
 namespace et {
 namespace gui {
@@ -38,6 +40,7 @@ class RmlRenderInterface final : public Rml::RenderInterface
 
 		Ptr<render::TextureData const> m_Texture;
 		AssetPtr<SdfFont> m_Font;
+		FontParameters m_FontParams;
 	};
 
 	typedef std::unordered_map<Rml::CompiledGeometryHandle, Geometry> T_Geometries;

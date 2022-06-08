@@ -15,6 +15,7 @@
     "padding": 1,
     "spread": 8,
     "highres": 64,
+    "EM per 100 weight": 0.007,
     "char sets": [
       {
         "start": 0,

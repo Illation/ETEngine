@@ -128,13 +128,17 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 	// for text geometry we enable a second vertex buffer holding the text specific vertex data
 	if (geometry.m_Font != nullptr)
 	{
+		uint8 const* dataPtr = reinterpret_cast<uint8 const*>(vertices) + static_cast<size_t>(vBufferSize);
+		geometry.m_FontParams = *reinterpret_cast<FontParameters const*>(dataPtr);
+		dataPtr += FontParameters::GetVCount() * vertSize;
+
 		int64 const bufferSize = static_cast<int64>(geometry.m_NumVertices * sizeof(uint8));
 
 		geometry.m_VertexBufferText = m_GraphicsContext->CreateBuffer();
 		m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, geometry.m_VertexBufferText);
 		m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex, 
 			bufferSize,
-			reinterpret_cast<void const*>(reinterpret_cast<uint8 const*>(vertices) + static_cast<size_t>(vBufferSize)),
+			reinterpret_cast<void const*>(dataPtr),
 			render::E_UsageHint::Static);
 
 		m_GraphicsContext->SetVertexAttributeArrayEnabled(3, true);
@@ -244,7 +248,7 @@ void RmlRenderInterface::RenderCompiledGeometry(Rml::CompiledGeometryHandle geom
 	if (geo.m_Font != nullptr)
 	{
 		//shader->Upload("uSdfSize"_hash, geo.m_Font->GetSdfSize());
-		shader->Upload("uThreshold"_hash, 0.5f);
+		shader->Upload("uThreshold"_hash, geo.m_FontParams.m_SdfThreshold);
 		shader->Upload("uUseAntiAliasing"_hash, true);
 	}
 
