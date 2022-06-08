@@ -68,7 +68,7 @@ void RmlFontEngineInterface::FontFace::SetAsset(FontFamily const& family,
 	m_LineHeight = static_cast<int32>(m_Multiplier * static_cast<float>(m_Font->GetLineHeight()));
 	m_Baseline = static_cast<int32>(m_Multiplier * static_cast<float>(m_Font->GetBaseline()));
 	m_Underline = static_cast<int32>(m_Multiplier * static_cast<float>(m_Font->GetUnderline()));
-	m_UnderlineThickness = static_cast<int32>(m_Multiplier * static_cast<float>(m_Font->GetUnderlineThickness()));
+	m_UnderlineThickness = m_Multiplier * static_cast<float>(m_Font->GetUnderlineThickness());
 
 	m_SdfSize = m_Multiplier * m_Font->GetSdfSize();
 	m_SdfThreshold = 0.5f + (static_cast<float>(m_Font->GetWeight()) - static_cast<float>(m_Weight)) * m_Font->GetThresholdPerWeight();

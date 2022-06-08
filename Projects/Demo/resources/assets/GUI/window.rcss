@@ -45,6 +45,14 @@ p {
 	margin: 0.7em 0;
 }
 		
+#phrase { 
+	font-style: italic;
+}
+		
+#animal { 
+	text-decoration: underline;
+}
+		
 input.text {
 	background-color: #fff;
 	color: #555;

@@ -9,6 +9,6 @@
 	<p>Press 'U' to toggle UI</p>
 	<input type="text" data-value="animal"/>
 	<label> Show Text:<input type="checkbox" data-value="show_text" checked/></label>
-	<p data-if="show_text">The quick brown fox jumps over the lazy {{animal}}.</p>
+	<p id="phrase" data-if="show_text">The quick brown fox jumps over the lazy <span id="animal"> {{animal}}</span>.</p>
 </body>
 </rml>
