@@ -138,12 +138,13 @@ bool ContextContainer::PerViewport::ProcessMouseMove(ivec2 const& mousePos, core
 //
 bool ContextContainer::PerViewport::ProcessMouseWheelDelta(ivec2 const& mouseWheel, core::T_KeyModifierFlags const modifiers)
 {
+	ivec2 const delta(mouseWheel.x, -mouseWheel.y);
 	int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
 	for (Context& context : m_Contexts)
 	{
 		if (context.IsActive() && context.IsDocumentLoaded())
 		{
-			if (context.ProcessMouseWheelDelta(mouseWheel, mods))
+			if (context.ProcessMouseWheelDelta(delta, mods))
 			{
 				return true;
 			}

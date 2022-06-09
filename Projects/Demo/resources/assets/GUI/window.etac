@@ -4,7 +4,7 @@
       "gui document asset": {
         "name": "window.rcss",
         "path": "GUI/",
-        "package": "content1",
+        "package": "",
         "references": [
           "SdfFonts/LatoLatin-Italic.ttf",
           "SdfFonts/LatoLatin-Regular.ttf"

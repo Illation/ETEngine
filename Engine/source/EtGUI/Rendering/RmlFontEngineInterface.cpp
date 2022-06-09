@@ -311,7 +311,7 @@ int32 RmlFontEngineInterface::GetStringWidth(Rml::FontFaceHandle const faceHandl
 {
 	size_t const faceIdx = GetFaceIdx(faceHandle);
 
-	float stringWidth = 0.f;
+	int32 stringWidth = 0;
 
 	char32 prevChar = static_cast<char32>(priorCharacter);
 	for (auto itString = Rml::StringIteratorU8(utf8String); itString; ++itString)
@@ -329,10 +329,10 @@ int32 RmlFontEngineInterface::GetStringWidth(Rml::FontFaceHandle const faceHandl
 
 		prevChar = charId;
 
-		stringWidth += (metric.m_AdvanceX + kerning) * glyphFace->m_Multiplier;
+		stringWidth += static_cast<int32>(((metric.m_AdvanceX + kerning) * glyphFace->m_Multiplier) + 0.5f);
 	}
 
-	return static_cast<int32>(stringWidth);
+	return stringWidth;
 }
 
 //----------------------------------------
@@ -352,7 +352,7 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 
 	outGeometry = Rml::GeometryList();
 
-	float stringWidth = 0.f; // ret
+	int32 stringWidth = 0; // ret
 
 	// Sort text into glyphs per unique font face 
 	//--------------------------------------------
@@ -385,10 +385,11 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 
 		prevChar = charId;
 
-		stringWidth += kerning.x * glyphFace->m_Multiplier;
+		float width = static_cast<float>(stringWidth);
+		width += kerning.x * glyphFace->m_Multiplier; // casting back and forth to have consistency with GetStringWidth function
 
 		// insert glyph to its correlated container
-		vec2 const pos(stringWidth, kerning.y * glyphFace->m_Multiplier);
+		vec2 const pos(width, kerning.y * glyphFace->m_Multiplier);
 		auto const foundIt = std::find_if(textureGlyphs.begin(), textureGlyphs.end(), [glyphFace](T_PerTexture const& lh)
 			{
 				return (lh.first == glyphFace);
@@ -402,7 +403,8 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 			foundIt->second.emplace_back(metric, pos);
 		}
 
-		stringWidth += metric.m_AdvanceX * glyphFace->m_Multiplier;
+		width += metric.m_AdvanceX * glyphFace->m_Multiplier;
+		stringWidth = static_cast<int32>(width + 0.5f); // rounding properly
 	}
 
 	// set up geometry per glyph texture
@@ -497,7 +499,7 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 		}
 	}
 
-	return static_cast<int32>(stringWidth);
+	return stringWidth;
 }
 
 //------------------------------------
