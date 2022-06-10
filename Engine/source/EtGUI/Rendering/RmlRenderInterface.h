@@ -33,14 +33,14 @@ class RmlRenderInterface final : public Rml::RenderInterface
 		render::T_ArrayLoc m_VertexArray = 0u;
 		render::T_BufferLoc m_IndexBuffer = 0u;
 		render::T_BufferLoc m_VertexBuffer = 0u;
-		render::T_BufferLoc m_VertexBufferText = 0u;
+		render::T_BufferLoc m_VertexBufferInstances = 0u;
 
 		int32 m_NumVertices = 0;
 		int32 m_NumIndices = 0;
+		uint32 m_InstanceCount = 1u;
 
 		Ptr<render::TextureData const> m_Texture;
 		AssetPtr<SdfFont> m_Font;
-		FontParameters m_FontParams;
 	};
 
 	typedef std::unordered_map<Rml::CompiledGeometryHandle, Geometry> T_Geometries;
@@ -89,7 +89,7 @@ public:
 	//--------------------------
 
 	// doesn't need to be handled because we compile geometry
-	void RenderGeometry(Rml::Vertex*, int32, int32*, int32, Rml::TextureHandle, Rml::Vector2f const&) override {} 
+	void RenderGeometry(Rml::Vertex*, int32, int32*, int32, Rml::TextureHandle, Rml::Vector2f const&) override { ET_ASSERT(false, "uncompiled geometry"); }
 
 	// geometry
 	Rml::CompiledGeometryHandle CompileGeometry(Rml::Vertex* vertices,

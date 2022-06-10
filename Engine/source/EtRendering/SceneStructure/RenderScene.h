@@ -57,7 +57,6 @@ class Scene final
 public:
 	typedef core::slot_map<MeshInstance>::id_type T_InstanceId;
 
-
 	// functionality
 	//-------------
 	T_NodeId AddNode(mat4 const& transform);
@@ -86,7 +85,7 @@ public:
 	void RemoveAtmosphere(core::T_SlotId const atmoId);
 
 	void AddExtension(UniquePtr<I_SceneExtension>& ext);
-
+	void ClearExtensions();
 
 	// accessors
 	//-------------

@@ -1,34 +1,49 @@
 <VERTEX>
 	#version 400 core
 	
-	//in
+	// inputs
+	//--------
+	// per vertex
 	layout (location = 0) in vec2 vPosition;
-	layout (location = 1) in vec4 vColor; 
-	layout (location = 2) in vec2 vTexCoord;
+	layout (location = 1) in vec2 vTexCoord;
+	layout (location = 2) in uint vChannel;
 
-	layout (location = 3) in uint vChannel;
+	// per instance
+	layout (location = 3) in vec2  iOffset;
+	layout (location = 4) in vec4  iColor;
+	layout (location = 5) in float iSdfThreshold;
+	layout (location = 6) in float iMinThreshold;
+	layout (location = 7) in uint  iIsBlurred;
 
+	// per drawcall
 	uniform vec2 uTranslation;
 	uniform mat4 uTransform;
 
 	uniform mat4 uViewProjection;
 
-	//out
+	// out
 	out VSO
 	{
-	    vec4 color;
 	    vec2 texCoord;
-		
 		flat uint channel;
+
+	    vec4 color;
+		float sdfThreshold;
+		float minThreshold;
+		flat bool isBlurred;
 	} outputs;
 	
 	void main()
 	{
-		outputs.color = vColor;
 		outputs.texCoord = vTexCoord;
 		outputs.channel = vChannel;
 
-		vec4 pos = uTransform * vec4(vPosition + uTranslation, 0.0, 1.0);
+		outputs.color = iColor;
+		outputs.sdfThreshold = iSdfThreshold;
+		outputs.minThreshold = iMinThreshold;
+		outputs.isBlurred = iIsBlurred > 0 ? true : false;
+
+		vec4 pos = uTransform * vec4(vPosition + uTranslation + iOffset, 0.0, 1.0);
 		gl_Position = uViewProjection * pos;
 	}
 </VERTEX>
@@ -38,15 +53,17 @@
 	// in
 	in VSO
 	{
-	    vec4 color;
 	    vec2 texCoord;
-		
 		flat uint channel;
+
+	    vec4 color;
+		float sdfThreshold;
+		float minThreshold;
+		flat bool isBlurred;
 	} inputs;
 
 	uniform sampler2D uTexture;
 
-	uniform float uThreshold = 0.5;
 	uniform float uSdfSize = 0.0;
 	uniform bool uUseAntiAliasing = true;
 
@@ -64,26 +81,35 @@
 	{
 		float distVal = texture(uTexture, inputs.texCoord)[inputs.channel];
 
-		if (uUseAntiAliasing)
+		if (inputs.isBlurred)
 		{
-    		// float screenPxDistance = screenPxRange()*(distVal - 0.5);
-    		// float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
-
-			float dist = uThreshold - distVal;
-			vec2 ddist = vec2(dFdx(dist), dFdy(dist));
-			float pixelDist = dist / length(ddist);
-			float opacity = clamp(0.5 - pixelDist, 0.0, 1.0);
-
+			float opacity = max(distVal - inputs.minThreshold, 0.0) / (1.0 - inputs.minThreshold);
+			opacity = min(opacity / inputs.sdfThreshold, 1.0);
 			outColor = vec4(inputs.color.rgb, inputs.color.a * opacity);
 		}
 		else
 		{
-			if (distVal < uThreshold)
+			if (uUseAntiAliasing)
 			{
-				discard;
-			}
+				// float screenPxDistance = screenPxRange()*(distVal - 0.5);
+				// float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
 
-			outColor = inputs.color;
+				float dist = inputs.sdfThreshold - distVal;
+				vec2 ddist = vec2(dFdx(dist), dFdy(dist));
+				float pixelDist = dist / length(ddist);
+				float opacity = clamp(0.5 - pixelDist, 0.0, 1.0);
+
+				outColor = vec4(inputs.color.rgb, inputs.color.a * opacity);
+			}
+			else
+			{
+				if (distVal < inputs.sdfThreshold)
+				{
+					discard;
+				}
+
+				outColor = inputs.color;
+			}
 		}
 	} 
 </FRAGMENT>

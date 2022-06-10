@@ -13,22 +13,21 @@ namespace gui {
 //
 struct TextLayer
 {
-	ivec2 m_Offset;
+	vec2 m_Offset;
 
 	vec4 m_Color = vec4(1.f); // ignored on main layer
 
-	// thresholds are offset from the base offset based on the font weight
+	// thresholds are offset from the base offset based on the font weight - between -0.5 and +0.5
 	float m_SdfThreshold = 0.f; // double as max threshold
 	float m_MinThreshold = 0.f; // for blurred text
 
 	bool m_IsBlurred = false;
-	bool m_IsMainLayer = false;
 };
 
 //----------------------------------------
 // FontParameters
 //
-// Additional parameters for rendering Sdf Font text
+// Additional parameters for rendering Sdf Font text, can be used to build an instance buffer
 //
 struct FontParameters
 {
@@ -39,8 +38,9 @@ struct FontParameters
 
 	float m_SdfThreshold = 0.5f; // base, may be offset by layers
 	size_t m_LayerCount = 0u;
+	size_t m_MainLayerIdx = 0u;
 	vec4 m_MainLayerColor = vec4(1.f);
-	Ptr<TextLayer> m_Layers;
+	Ptr<TextLayer const> m_Layers;
 };
 
 //---------------------------------

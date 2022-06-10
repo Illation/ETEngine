@@ -39,6 +39,9 @@ AbstractFramework::~AbstractFramework()
 	fw::UnifiedScene::Instance().UnloadScene();
 
 	m_GuiRenderer.Deinit();
+
+	fw::UnifiedScene::Instance().Deinit();
+
 	gui::RmlGlobal::Destroy();
 	m_SceneRenderer = nullptr;
 	m_SplashScreenRenderer = nullptr;
@@ -204,6 +207,7 @@ void AbstractFramework::MainLoop()
 		{
 			return;
 		}
+
 		TriggerTick(); // this will probably tick the scene manager, editor, framework etc
 
 		//****

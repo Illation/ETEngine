@@ -74,6 +74,7 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 	Geometry& geometry = res.first->second;
 
 	// texture
+	//---------
 	if (textureHandle != 0u)
 	{
 		T_Textures::iterator const foundIt = m_Textures.find(textureHandle);
@@ -87,62 +88,102 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 		geometry.m_Texture = m_EmptyWhiteTex2x2;
 	}
 
-	geometry.m_NumIndices = numIndices;
-
-	int32 const numChars = numIndices / 6;
-	if (geometry.m_Font != nullptr)
-	{
-		ET_ASSERT(numChars * 6 == numIndices);
-		geometry.m_NumVertices = numChars * 4;
-	}
-	else
-	{
-		geometry.m_NumVertices = numVertices;
-	}
-
-	// create buffers
-	int64 const iBufferSize = static_cast<int64>(geometry.m_NumIndices * sizeof(uint32));
-	int64 const vBufferSize = static_cast<int64>(geometry.m_NumVertices * sizeof(Rml::Vertex));
-
-	// create a new vertex array and input layout
+	// create a new vertex array and input layout with vertex and index buffers
+	//--------------------------------------------------------------------------
 	geometry.m_VertexArray = m_GraphicsContext->CreateVertexArray();
 	m_GraphicsContext->BindVertexArray(geometry.m_VertexArray);
+
+	// index buffer is the same for generic and text geometry
+	geometry.m_NumIndices = numIndices;
+	int64 const iBufferSize = static_cast<int64>(geometry.m_NumIndices * sizeof(uint32));
 
 	geometry.m_IndexBuffer = m_GraphicsContext->CreateBuffer();
 	m_GraphicsContext->BindBuffer(render::E_BufferType::Index, geometry.m_IndexBuffer);
 	m_GraphicsContext->SetBufferData(render::E_BufferType::Index, iBufferSize, reinterpret_cast<void const*>(indices), render::E_UsageHint::Static);
 
+	// the vertex data needs to be treated differently depending on if it's generic or for text
 	geometry.m_VertexBuffer = m_GraphicsContext->CreateBuffer();
 	m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, geometry.m_VertexBuffer);
-	m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex, vBufferSize, reinterpret_cast<void const*>(vertices), render::E_UsageHint::Static);
-	
-	m_GraphicsContext->SetVertexAttributeArrayEnabled(0, true);
-	m_GraphicsContext->SetVertexAttributeArrayEnabled(1, true);
-	m_GraphicsContext->SetVertexAttributeArrayEnabled(2, true);
 
-	int32 const vertSize = sizeof(Rml::Vertex);
-	m_GraphicsContext->DefineVertexAttributePointer(0, 2, render::E_DataType::Float, false, vertSize, offsetof(Rml::Vertex, position));
-	m_GraphicsContext->DefineVertexAttributePointer(1, 4, render::E_DataType::UByte, true, vertSize, offsetof(Rml::Vertex, colour));
-	m_GraphicsContext->DefineVertexAttributePointer(2, 2, render::E_DataType::Float, false, vertSize, offsetof(Rml::Vertex, tex_coord));
-
-	// for text geometry we enable a second vertex buffer holding the text specific vertex data
-	if (geometry.m_Font != nullptr)
+	if (geometry.m_Font == nullptr)
 	{
-		uint8 const* dataPtr = reinterpret_cast<uint8 const*>(vertices) + static_cast<size_t>(vBufferSize);
-		geometry.m_FontParams = *reinterpret_cast<FontParameters const*>(dataPtr);
-		dataPtr += FontParameters::GetVCount() * vertSize;
+		geometry.m_NumVertices = numVertices;
 
-		int64 const bufferSize = static_cast<int64>(geometry.m_NumVertices * sizeof(uint8));
+		int32 const vertSize = sizeof(Rml::Vertex);
+		int64 const vBufferSize = static_cast<int64>(geometry.m_NumVertices * vertSize);
+		m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex, vBufferSize, reinterpret_cast<void const*>(vertices), render::E_UsageHint::Static);
 
-		geometry.m_VertexBufferText = m_GraphicsContext->CreateBuffer();
-		m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, geometry.m_VertexBufferText);
-		m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex, 
-			bufferSize,
-			reinterpret_cast<void const*>(dataPtr),
+		m_GraphicsContext->SetVertexAttributeArrayEnabled(0, true);
+		m_GraphicsContext->SetVertexAttributeArrayEnabled(1, true);
+		m_GraphicsContext->SetVertexAttributeArrayEnabled(2, true);
+
+		m_GraphicsContext->DefineVertexAttributePointer(0, 2, render::E_DataType::Float, false, vertSize, offsetof(Rml::Vertex, position));
+		m_GraphicsContext->DefineVertexAttributePointer(1, 4, render::E_DataType::UByte, true, vertSize, offsetof(Rml::Vertex, colour));
+		m_GraphicsContext->DefineVertexAttributePointer(2, 2, render::E_DataType::Float, false, vertSize, offsetof(Rml::Vertex, tex_coord));
+	}
+	else
+	{
+		// reconvert stored geometry data from how it was packed into Rml::Vertices in the font engine interface
+		int32 const numChars = numIndices / 6;
+		ET_ASSERT(numChars * 6 == numIndices);
+		geometry.m_NumVertices = numChars * 4;
+
+		uint8 const* dataPtr = reinterpret_cast<uint8 const*>(vertices);
+		FontParameters const& fontParams = *reinterpret_cast<FontParameters const*>(dataPtr);
+		dataPtr += FontParameters::GetVCount() * sizeof(Rml::Vertex);
+
+		// vertex buffer
+		int32 const vertSize = sizeof(TextVertex);
+		int64 const bufferSize = static_cast<int64>(geometry.m_NumVertices * vertSize);
+		m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex, bufferSize, reinterpret_cast<void const*>(dataPtr), render::E_UsageHint::Static);
+
+		m_GraphicsContext->SetVertexAttributeArrayEnabled(0, true);
+		m_GraphicsContext->SetVertexAttributeArrayEnabled(1, true);
+		m_GraphicsContext->SetVertexAttributeArrayEnabled(2, true);
+
+		m_GraphicsContext->DefineVertexAttributePointer(0, 2, render::E_DataType::Float, false, vertSize, offsetof(TextVertex, m_Position));
+		m_GraphicsContext->DefineVertexAttributePointer(1, 2, render::E_DataType::Float, false, vertSize, offsetof(TextVertex, m_TexCoord));
+		m_GraphicsContext->DefineVertexAttribIPointer(2, 1, render::E_DataType::UByte, vertSize, offsetof(TextVertex, m_Channel));
+
+		// setup instance buffer
+		geometry.m_InstanceCount = fontParams.m_LayerCount;
+		std::vector<TextLayer> layerInstances;
+		layerInstances.reserve(fontParams.m_LayerCount);
+		for (size_t layerIdx = 0u; layerIdx < fontParams.m_LayerCount; ++layerIdx)
+		{
+			layerInstances.push_back(fontParams.m_Layers.Get()[layerIdx]);
+			TextLayer& inst = layerInstances.back();
+			if (layerIdx == fontParams.m_MainLayerIdx)
+			{
+				inst.m_Color = fontParams.m_MainLayerColor;
+			}
+
+			inst.m_SdfThreshold = math::Clamp01(inst.m_SdfThreshold + fontParams.m_SdfThreshold);
+			inst.m_MinThreshold = math::Clamp01(inst.m_MinThreshold + fontParams.m_SdfThreshold);
+		}
+
+		geometry.m_VertexBufferInstances = m_GraphicsContext->CreateBuffer();
+		m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, geometry.m_VertexBufferInstances);
+		m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex,
+			layerInstances.size() * sizeof(TextLayer),
+			layerInstances.data(),
 			render::E_UsageHint::Static);
 
 		m_GraphicsContext->SetVertexAttributeArrayEnabled(3, true);
-		m_GraphicsContext->DefineVertexAttribIPointer(3, 1, render::E_DataType::UByte, 1, 0);
+		m_GraphicsContext->SetVertexAttributeArrayEnabled(4, true);
+		m_GraphicsContext->SetVertexAttributeArrayEnabled(5, true);
+		m_GraphicsContext->SetVertexAttributeArrayEnabled(6, true);
+		m_GraphicsContext->SetVertexAttributeArrayEnabled(7, true);
+		m_GraphicsContext->DefineVertexAttributePointer(3, 2, render::E_DataType::Float, false, sizeof(TextLayer), offsetof(TextLayer, m_Offset));
+		m_GraphicsContext->DefineVertexAttributePointer(4, 4, render::E_DataType::Float, false, sizeof(TextLayer), offsetof(TextLayer, m_Color));
+		m_GraphicsContext->DefineVertexAttributePointer(5, 1, render::E_DataType::Float, false, sizeof(TextLayer), offsetof(TextLayer, m_SdfThreshold));
+		m_GraphicsContext->DefineVertexAttributePointer(6, 1, render::E_DataType::Float, false, sizeof(TextLayer), offsetof(TextLayer, m_MinThreshold));
+		m_GraphicsContext->DefineVertexAttribIPointer(7, 1, render::E_DataType::UByte, sizeof(TextLayer), offsetof(TextLayer, m_IsBlurred));
+		m_GraphicsContext->DefineVertexAttribDivisor(3, 1);
+		m_GraphicsContext->DefineVertexAttribDivisor(4, 1);
+		m_GraphicsContext->DefineVertexAttribDivisor(5, 1);
+		m_GraphicsContext->DefineVertexAttribDivisor(6, 1);
+		m_GraphicsContext->DefineVertexAttribDivisor(7, 1);
 	}
 
 	// done
@@ -245,15 +286,18 @@ void RmlRenderInterface::RenderCompiledGeometry(Rml::CompiledGeometryHandle geom
 	shader->Upload("uTransform"_hash, m_CurrentTransform);
 	shader->Upload("uTexture"_hash, geo.m_Texture.Get());
 
+	// draw differently depending on if we are handling text or not
 	if (geo.m_Font != nullptr)
 	{
 		//shader->Upload("uSdfSize"_hash, geo.m_Font->GetSdfSize());
-		shader->Upload("uThreshold"_hash, geo.m_FontParams.m_SdfThreshold);
 		shader->Upload("uUseAntiAliasing"_hash, true);
-	}
 
-	// draw
-	m_GraphicsContext->DrawElements(render::E_DrawMode::Triangles, geo.m_NumIndices, render::E_DataType::UInt, 0);
+		m_GraphicsContext->DrawElementsInstanced(render::E_DrawMode::Triangles, geo.m_NumIndices, render::E_DataType::UInt, 0, geo.m_InstanceCount);
+	}
+	else
+	{
+		m_GraphicsContext->DrawElements(render::E_DrawMode::Triangles, geo.m_NumIndices, render::E_DataType::UInt, 0);
+	}
 }
 
 //---------------------------------------------
@@ -267,7 +311,7 @@ void RmlRenderInterface::ReleaseCompiledGeometry(Rml::CompiledGeometryHandle geo
 	Geometry& geo = foundIt->second;
 	if (geo.m_Font != nullptr)
 	{
-		m_GraphicsContext->DeleteBuffer(geo.m_VertexBufferText);
+		m_GraphicsContext->DeleteBuffer(geo.m_VertexBufferInstances);
 	}
 
 	m_GraphicsContext->DeleteBuffer(geo.m_VertexBuffer);

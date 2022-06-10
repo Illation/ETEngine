@@ -95,6 +95,15 @@ void UnifiedScene::Init()
 }
 
 //----------------------
+// UnifiedScene::Deinit
+//
+void UnifiedScene::Deinit()
+{
+	m_RenderScene.ClearExtensions();
+	m_GuiExtension = nullptr;
+}
+
+//----------------------
 // UnifiedScene::OnTick
 //
 void UnifiedScene::OnTick()

@@ -23,12 +23,10 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 	// definitions
 	//-------------
 	static Rml::FontFaceHandle const s_InvalidFont;
-	static Rml::FontEffectsHandle const s_InvalidEffects;
+	static Rml::FontEffectsHandle const s_DefaultEffects;
 
 	static size_t const s_InvalidIdx;
 	static size_t const s_NoIdx;
-
-	struct FontFamily;
 
 	//---------------------------------
 	// FallbackFont
@@ -54,23 +52,22 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 	{
 		FontFace(core::HashString const familyId, Rml::Style::FontStyle const style, SdfFont::E_Weight const weight, int32 const size);
 
-		void SetAsset(FontFamily const& family, size_t const assetIdx, T_FallbackFonts const& fallbackFonts);
-
+		// immutable member vars
 		core::HashString const m_FamilyId;
 		Rml::Style::FontStyle const m_Style = Rml::Style::FontStyle::Normal;
 		SdfFont::E_Weight const m_Weight = SdfFont::E_Weight::Auto;
 		int32 const m_Size = 0;
 
-		T_Hash const m_Hash;
+		T_Hash const m_Hash; // computed from immutable vars
 
-		// asset dependent variables
+		// asset dependent member vars
 		AssetPtr<SdfFont> m_Font;
 		Rml::Texture m_Texture;
 		int32 m_Version = -1;
 		size_t m_FallbackIdx = s_InvalidIdx; // the index of the fallback font list that this face belongs to
 		size_t m_NextFallbackFaceIdx = s_InvalidIdx; // points to another FontFace - forming a linked list of faces - computed on demand
 
-		float m_Multiplier;
+		float m_Multiplier = 1.f; // initialize to 1 so there is a previous value when the asset is set
 
 		int32 m_XHeight;
 		int32 m_LineHeight;
@@ -80,6 +77,8 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 
 		float m_SdfSize;
 		float m_SdfThreshold = 0.5;
+
+		std::vector<size_t> m_LayerConfigurations;
 	};
 
 	typedef std::vector<FontFace> T_FontFaces;
@@ -94,8 +93,6 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 		FontFamily() = default;
 		FontFamily(std::string const& name) : m_Name(name) {}
 
-		size_t GetBestAsset(FontFace const& face) const;
-
 		std::string m_Name;
 		std::vector<size_t> m_FaceIndices; // faces can be addressed by index because they are never reordered
 		std::vector<AssetPtr<SdfFont>> m_UniqueAssets;
@@ -105,17 +102,19 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 	typedef std::unordered_map<core::HashString, FontFamily> T_FontFamilies;
 
 	//---------------------------------
-	// LayerContainer
+	// LayerConfiguration
 	//
 	// A set of text layers containing parameters to render the font with
 	//
-	struct LayerContainer
+	struct LayerConfiguration
 	{
 		std::vector<TextLayer> m_Layers;
-		T_Hash m_Hash;
+		T_Hash m_Hash = 0u;
+		size_t m_FaceIndex = s_InvalidIdx; // which font face this was generated for
+		size_t m_MainLayerIdx = s_InvalidIdx;
 	};
 
-	typedef std::vector<LayerContainer> T_LayerContainers; // font effect handle is idx + 1
+	typedef std::vector<LayerConfiguration> T_LayerConfigurations; // font effect handle is idx + 1
 
 
 	// construct destruct
@@ -170,13 +169,20 @@ private:
 	FontFamily& FindOrCreateFamily(std::string const& familyName, core::HashString& outFamilyId);
 	size_t GetFaceIdx(Rml::FontFaceHandle const faceHandle) const;
 	FontFace& GetFace(Rml::FontFaceHandle const faceHandle);
+	void SetFaceAsset(FontFace& face, FontFamily const& family, size_t const assetIdx);
+	size_t GetBestAssetForFace(FontFamily const& family, FontFace const& face) const;
 
-	SdfFont::Metric const& GetMetric(size_t const faceIdx, char32 const charId, FontFace const*& outFace);
+	SdfFont::Metric const& GetMetric(size_t const faceIdx, char32 const charId, FontFace*& outFace);
 
 	void AddFallbackFont(core::HashString const familyId, size_t const assetIdx);
 	size_t GetFallbackFaceIdx(size_t const faceIdx);
 
+	LayerConfiguration const& GetLayerConfiguration(Rml::FontEffectsHandle const effectsHandle) const;
 	T_Hash GetLayerHash(std::vector<TextLayer> const& layers) const;
+	TextLayer const& GetDefaultLayer() const;
+	LayerConfiguration const& GetFallbackLayerConfig(LayerConfiguration const& inConfig, FontFace& fallbackFace);
+	void ConvertLayerForNewFace(TextLayer& layer, float const prevSdfSize, float const newSdfSize);
+	bool HasExistingLayerConfig(LayerConfiguration const& layerConfig, size_t& outConfigIdx);
 
 
 	// Data
@@ -187,7 +193,7 @@ private:
 
 	T_FontFaces m_Faces;
 
-	T_LayerContainers m_LayerContainers;
+	T_LayerConfigurations m_LayerConfigurations;
 };
 
 

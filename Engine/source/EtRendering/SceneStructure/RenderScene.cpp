@@ -397,6 +397,14 @@ void Scene::AddExtension(UniquePtr<I_SceneExtension>& ext)
 	m_Extensions.emplace_back(std::move(ext));
 }
 
+//------------------------
+// Scene::ClearExtensions
+//
+void Scene::ClearExtensions()
+{
+	m_Extensions.clear();
+}
+
 //-----------------
 // Scene::GetLight
 //

@@ -117,6 +117,10 @@ void GuiRenderer::Deinit()
 	m_SpriteRenderer.Deinit();
 	m_TextRenderer.Deinit();
 
+	m_RmlShader = nullptr;
+	m_RmlBlitShader = nullptr;
+	m_RmlSdfShader = nullptr;
+
 	if (m_EventDispatcher != nullptr)
 	{
 		m_EventDispatcher->Unregister(m_WorldCallbackId);

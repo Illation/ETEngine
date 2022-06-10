@@ -43,6 +43,7 @@ public:
 	void operator=(UnifiedScene const&) = delete;
 
 	void Init();
+	void Deinit();
 
 	// tickable interface
 	//--------------------
