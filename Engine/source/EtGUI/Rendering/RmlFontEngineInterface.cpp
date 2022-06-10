@@ -7,7 +7,9 @@
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtGUI/Context/RmlUtil.h>
+
 #include "FontParameters.h"
+#include "FontEffects.h"
 
 
 namespace et {
@@ -133,6 +135,20 @@ size_t const RmlFontEngineInterface::s_NoIdx = RmlFontEngineInterface::s_Invalid
 
 
 //--------------------------------------
+// RmlFontEngineInterface::c-tor
+//
+RmlFontEngineInterface::RmlFontEngineInterface() 
+	: Rml::FontEngineInterface()
+{
+	// create default font effect layers - so an invalid font effect handle points to the default font layers
+	m_LayerContainers.push_back(LayerContainer());
+	LayerContainer& container = m_LayerContainers.back();
+	container.m_Layers.push_back(TextLayer());
+	container.m_Layers.back().m_IsMainLayer = true;
+	container.m_Hash = GetLayerHash(container.m_Layers);
+}
+
+//--------------------------------------
 // RmlFontEngineInterface::LoadFontFace
 //
 bool RmlFontEngineInterface::LoadFontFace(Rml::String const& fileName, bool const fallbackFace, Rml::Style::FontWeight const weight)
@@ -251,14 +267,55 @@ Rml::FontFaceHandle RmlFontEngineInterface::GetFontFaceHandle(Rml::String const&
 //
 Rml::FontEffectsHandle RmlFontEngineInterface::PrepareFontEffects(Rml::FontFaceHandle const faceHandle, Rml::FontEffectList const& fontEffects)
 {
-	UNUSED(faceHandle);
-
-	for (std::shared_ptr<Rml::FontEffect const> const& effect : fontEffects)
+	if (fontEffects.empty()) // if there are no effects we refer to the default layer container
 	{
-		//LOG(typeid(*effect).name());
+		return s_InvalidEffects;
 	}
 
-	return s_InvalidEffects;
+	FontFace const& face = GetFace(faceHandle);
+
+	// figure out what layers we need from these effects
+	std::vector<TextLayer> textLayers;
+	for (std::shared_ptr<Rml::FontEffect const> const& effect : fontEffects)
+	{
+		rttr::type const effectType = rttr::type::get(*effect);
+		if (effectType.is_derived_from<FontEffectBase>())
+		{
+			FontEffectBase const* const effectBase = static_cast<FontEffectBase const*>(effect.get());
+			TextLayer layer;
+			effectBase->GetTextLayer(face.m_Font.get(), face.m_Multiplier, layer);
+			textLayers.push_back(layer);
+		}
+		else
+		{
+			LOG(FS("/tFont effect '%s' is not supported by SDF font engine", effectType.get_name().data()));
+		}
+	}
+
+	if (textLayers.empty()) // again go to default because we had no valid effects
+	{
+		return s_InvalidEffects;
+	}
+
+	T_Hash layersHash = GetLayerHash(textLayers);
+
+	auto const foundIt = std::find_if(m_LayerContainers.begin(), m_LayerContainers.end(), [layersHash](LayerContainer const& container)
+		{
+			return container.m_Hash == layersHash;
+		});
+	if (foundIt != m_LayerContainers.end())
+	{
+		return foundIt - m_LayerContainers.begin();
+	}
+
+	size_t const ret = m_LayerContainers.size();
+	 
+	m_LayerContainers.push_back(LayerContainer());
+	LayerContainer& container = m_LayerContainers.back();
+	container.m_Hash = layersHash;
+	container.m_Layers = std::move(textLayers);
+
+	return static_cast<Rml::FontEffectsHandle>(ret);
 }
 
 //---------------------------------
@@ -411,6 +468,7 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 	//-----------------------------------
 
 	vec2 const pos = RmlUtil::ToEtm(position);
+	Rml::Colourb col(colour.red, colour.green, colour.blue, static_cast<Rml::byte>(static_cast<float>(colour.alpha) * opacity));
 
 	for (T_PerTexture const& perTexPair : textureGlyphs)
 	{
@@ -441,8 +499,6 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 		uint8* const channels = reinterpret_cast<uint8*>(&vertices[vCountBase + paramVCount]);
 
 		params.m_SdfThreshold = glyphFace->m_SdfThreshold;
-
-		Rml::Colourb col(colour.red, colour.green, colour.blue, static_cast<Rml::byte>(static_cast<float>(colour.alpha) * opacity));
 
 		// fill in geometry
 		//------------------
@@ -665,6 +721,14 @@ size_t RmlFontEngineInterface::GetFallbackFaceIdx(size_t const faceIdx)
 
 	ET_ASSERT(m_Faces.size() > nextFallback);
 	return nextFallback;
+}
+
+//--------------------------------------
+// RmlFontEngineInterface::GetLayerHash
+//
+T_Hash RmlFontEngineInterface::GetLayerHash(std::vector<TextLayer> const& layers) const
+{
+	return GetDataHash(reinterpret_cast<uint8 const*>(layers.data()), layers.size() * sizeof(TextLayer));
 }
 
 

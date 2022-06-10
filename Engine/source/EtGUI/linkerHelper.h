@@ -4,6 +4,7 @@
 #include <EtGUI/Content/FreetypeFont.h>
 #include <EtGUI/Content/GuiDocument.h>
 #include <EtGUI/Content/SdfFont.h>
+#include <EtGUI/Rendering/FontEffects.h>
 
 
 namespace et {

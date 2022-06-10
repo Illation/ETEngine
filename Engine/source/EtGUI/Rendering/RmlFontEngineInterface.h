@@ -6,6 +6,8 @@
 
 #include <EtGUI/Content/SdfFont.h>
 
+#include "FontParameters.h"
+
 
 namespace et {
 namespace gui {
@@ -102,11 +104,24 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 
 	typedef std::unordered_map<core::HashString, FontFamily> T_FontFamilies;
 
+	//---------------------------------
+	// LayerContainer
+	//
+	// A set of text layers containing parameters to render the font with
+	//
+	struct LayerContainer
+	{
+		std::vector<TextLayer> m_Layers;
+		T_Hash m_Hash;
+	};
+
+	typedef std::vector<LayerContainer> T_LayerContainers; // font effect handle is idx + 1
+
 
 	// construct destruct
 	//--------------------
 public:
-	RmlFontEngineInterface() : Rml::FontEngineInterface() {}
+	RmlFontEngineInterface();
 	~RmlFontEngineInterface() = default;
 
 	// interface
@@ -161,6 +176,8 @@ private:
 	void AddFallbackFont(core::HashString const familyId, size_t const assetIdx);
 	size_t GetFallbackFaceIdx(size_t const faceIdx);
 
+	T_Hash GetLayerHash(std::vector<TextLayer> const& layers) const;
+
 
 	// Data
 	///////
@@ -169,6 +186,8 @@ private:
 	T_FallbackFonts m_FallbackFonts;
 
 	T_FontFaces m_Faces;
+
+	T_LayerContainers m_LayerContainers;
 };
 
 
