@@ -76,7 +76,8 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 		float m_UnderlineThickness;
 
 		float m_SdfSize;
-		float m_SdfThreshold = 0.5;
+		float m_SdfThreshold = 0.5f; // based on font weight offsets
+		float m_EffectMultiplier = 1.f; // How much an effect should move the threshold per pixel based on the size of the SDF
 
 		std::vector<size_t> m_LayerConfigurations;
 	};
@@ -177,11 +178,12 @@ private:
 	void AddFallbackFont(core::HashString const familyId, size_t const assetIdx);
 	size_t GetFallbackFaceIdx(size_t const faceIdx);
 
+	size_t GetLayerConfigIdx(Rml::FontEffectsHandle const effectsHandle) const;
 	LayerConfiguration const& GetLayerConfiguration(Rml::FontEffectsHandle const effectsHandle) const;
 	T_Hash GetLayerHash(std::vector<TextLayer> const& layers) const;
 	TextLayer const& GetDefaultLayer() const;
-	LayerConfiguration const& GetFallbackLayerConfig(LayerConfiguration const& inConfig, FontFace& fallbackFace);
-	void ConvertLayerForNewFace(TextLayer& layer, float const prevSdfSize, float const newSdfSize);
+	size_t GetFallbackLayerConfigIdx(size_t const inConfigIdx, FontFace& fallbackFace);
+	void ConvertLayerForNewFace(TextLayer& layer, float const prevMultiplier, float const newMultiplier);
 	bool HasExistingLayerConfig(LayerConfiguration const& layerConfig, size_t& outConfigIdx);
 
 

@@ -4,6 +4,7 @@
 
 #include <EtGUI/Rendering/RmlFontEngineInterface.h>
 #include <EtGUI/Rendering/RmlRenderInterface.h>
+#include <EtGUI/Rendering/FontEffects.h>
 
 
 namespace et {
@@ -56,6 +57,11 @@ private:
 	RmlFileInterface m_FileInterface;
 	RmlFontEngineInterface m_FontEngineInterface;
 	RmlRenderInterface m_RenderInterface;
+
+	FontEffectGlow::Instancer m_GlowInstancer;
+	FontEffectOutline::Instancer m_OutlineInstancer;
+	FontEffectShadow::Instancer m_ShadowInstancer;
+	FontEffectBlur::Instancer m_BlurInstancer;
 };
 
 

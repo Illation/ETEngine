@@ -17,7 +17,8 @@ struct TextLayer
 
 	vec4 m_Color = vec4(1.f); // ignored on main layer
 
-	// thresholds are offset from the base offset based on the font weight - between -0.5 and +0.5
+	// thresholds are offset from the base offset based on the font weight 
+	//  - typically between -0.5 and +0.5 but automatically clipped so the range may be exceeded
 	float m_SdfThreshold = 0.f; // double as max threshold
 	float m_MinThreshold = 0.f; // for blurred text
 

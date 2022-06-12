@@ -146,7 +146,8 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 		m_GraphicsContext->DefineVertexAttribIPointer(2, 1, render::E_DataType::UByte, vertSize, offsetof(TextVertex, m_Channel));
 
 		// setup instance buffer
-		geometry.m_InstanceCount = fontParams.m_LayerCount;
+		ET_ASSERT(fontParams.m_LayerCount > 0u);
+		geometry.m_InstanceCount = static_cast<uint64>(fontParams.m_LayerCount);
 		std::vector<TextLayer> layerInstances;
 		layerInstances.reserve(fontParams.m_LayerCount);
 		for (size_t layerIdx = 0u; layerIdx < fontParams.m_LayerCount; ++layerIdx)

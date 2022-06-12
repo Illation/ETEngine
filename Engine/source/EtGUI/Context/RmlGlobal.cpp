@@ -65,6 +65,19 @@ RmlGlobal::RmlGlobal()
 	Rml::SetRenderInterface(&m_RenderInterface);
 
 	Rml::Initialise();
+
+	m_GlowInstancer.Init();
+	Rml::Factory::RegisterFontEffectInstancer("glow", &m_GlowInstancer);
+
+	m_OutlineInstancer.Init();
+	Rml::Factory::RegisterFontEffectInstancer("outline", &m_OutlineInstancer);
+
+	m_ShadowInstancer.Init();
+	Rml::Factory::RegisterFontEffectInstancer("shadow", &m_ShadowInstancer);
+
+	m_BlurInstancer.Init();
+	Rml::Factory::RegisterFontEffectInstancer("blur", &m_BlurInstancer);
+
 	LOG("RmlUi loaded\n");
 }
 

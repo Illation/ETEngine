@@ -197,8 +197,8 @@ Rml::FontEffectsHandle RmlFontEngineInterface::PrepareFontEffects(Rml::FontFaceH
 	// figure out what layers we need from these effects
 	for (std::shared_ptr<Rml::FontEffect const> const& effect : fontEffects)
 	{
-		rttr::type const effectType = rttr::type::get(*effect);
-		if (effectType.is_derived_from<FontEffectBase>())
+		FontEffectBase const* const effectBase = dynamic_cast<FontEffectBase const*>(effect.get()); 
+		if (effectBase != nullptr) // for safety, in case the Rml effect implementations are not overridden
 		{
 			if ((newConfig.m_MainLayerIdx == s_InvalidIdx) && (effect->GetLayer() == Rml::FontEffect::Layer::Front))
 			{
@@ -208,12 +208,13 @@ Rml::FontEffectsHandle RmlFontEngineInterface::PrepareFontEffects(Rml::FontFaceH
 
 			FontEffectBase const* const effectBase = static_cast<FontEffectBase const*>(effect.get());
 			TextLayer layer;
-			effectBase->GetTextLayer(face.m_Font.get(), face.m_Multiplier, layer);
+			effectBase->PrepareTextLayer(face.m_EffectMultiplier, layer);
 			newConfig.m_Layers.push_back(layer);
 		}
 		else
 		{
-			LOG(FS("/tFont effect '%s' is not supported by SDF font engine", effectType.get_name().data()));
+			// typeid contains more accurate type name for unregistered types
+			LOG(FS("/tFont effect '%s' is not supported by SDF font engine", typeid(*effect).name())); 
 		}
 	}
 
@@ -334,8 +335,7 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 	Rml::GeometryList& outGeometry)
 {
 	size_t const faceIdx = GetFaceIdx(faceHandle);
-
-	LayerConfiguration const& layerConfig = GetLayerConfiguration(effectsHandle);
+	size_t const layerConfigIdx = GetLayerConfigIdx(effectsHandle);
 
 	outGeometry = Rml::GeometryList();
 
@@ -354,11 +354,11 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 
 	struct PerFace
 	{
-		PerFace(FontFace const* const face, LayerConfiguration const& layerConfig, PerGlyph const& initialGlyph) 
-			: m_Face(face), m_LayerConfig(layerConfig), m_Glyphs({ initialGlyph }) {}
+		PerFace(FontFace const* const face, size_t const layerConfigIdx, PerGlyph const& initialGlyph)
+			: m_Face(face), m_LayerConfigIdx(layerConfigIdx), m_Glyphs({ initialGlyph }) {}
 
 		FontFace const* const m_Face;
-		LayerConfiguration const& m_LayerConfig;
+		size_t const m_LayerConfigIdx;
 
 		std::vector<PerGlyph> m_Glyphs;
 	};
@@ -393,9 +393,9 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 		if (foundIt == faceGlyphs.cend())
 		{
 			// converting the default effects handle isn't necessary because it will only ever result in more effects that are the same
-			LayerConfiguration const& faceLayerConfig = ((glyphFace == &m_Faces[faceIdx]) || effectsHandle == s_DefaultEffects) ?  
-				layerConfig : GetFallbackLayerConfig(layerConfig, *glyphFace);
-			faceGlyphs.emplace_back(glyphFace, faceLayerConfig, PerGlyph(metric, pos));
+			size_t const faceLayerConfigIdx = ((glyphFace == &m_Faces[faceIdx]) || effectsHandle == s_DefaultEffects) ?  
+				layerConfigIdx : GetFallbackLayerConfigIdx(layerConfigIdx, *glyphFace);
+			faceGlyphs.emplace_back(glyphFace, faceLayerConfigIdx, PerGlyph(metric, pos));
 		}
 		else
 		{
@@ -441,10 +441,11 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 		FontParameters& params = *reinterpret_cast<FontParameters*>(&vertices[0]);
 		TextVertex* const textVertices = reinterpret_cast<TextVertex*>(&vertices[paramVCount]);
 
+		LayerConfiguration const& layerConfig = m_LayerConfigurations[perFace.m_LayerConfigIdx];
 		params.m_SdfThreshold = perFace.m_Face->m_SdfThreshold;
-		params.m_LayerCount = perFace.m_LayerConfig.m_Layers.size();
-		params.m_Layers = ToPtr(perFace.m_LayerConfig.m_Layers.data());
-		params.m_MainLayerIdx = perFace.m_LayerConfig.m_MainLayerIdx;
+		params.m_LayerCount = layerConfig.m_Layers.size();
+		params.m_Layers = ToPtr(layerConfig.m_Layers.data());
+		params.m_MainLayerIdx = layerConfig.m_MainLayerIdx;
 		params.m_MainLayerColor = colF;
 
 		// fill in geometry
@@ -562,6 +563,11 @@ RmlFontEngineInterface::FontFace& RmlFontEngineInterface::GetFace(Rml::FontFaceH
 //
 void RmlFontEngineInterface::SetFaceAsset(FontFace& face, FontFamily const& family, size_t const assetIdx) 
 {
+	if (family.m_UniqueAssets[assetIdx] == face.m_Font)
+	{
+		return;
+	}
+
 	face.m_Font = family.m_UniqueAssets[assetIdx];
 	face.m_Texture = family.m_AssetTextures[assetIdx];
 	face.m_Version++;
@@ -591,9 +597,12 @@ void RmlFontEngineInterface::SetFaceAsset(FontFace& face, FontFamily const& fami
 	face.m_Underline = static_cast<int32>(face.m_Multiplier * static_cast<float>(face.m_Font->GetUnderline()));
 	face.m_UnderlineThickness = face.m_Multiplier * static_cast<float>(face.m_Font->GetUnderlineThickness());
 
-	float const prevSdfSize = face.m_SdfSize;
 	face.m_SdfSize = face.m_Multiplier * face.m_Font->GetSdfSize();
 	face.m_SdfThreshold = 0.5f + (static_cast<float>(face.m_Font->GetWeight()) - static_cast<float>(face.m_Weight)) * face.m_Font->GetThresholdPerWeight();
+
+	float const prevMultiplier = face.m_EffectMultiplier;
+	float const invSdfSize = (1.f / face.m_Multiplier) / face.m_Font->GetSdfSize();
+	face.m_EffectMultiplier = 0.5f / face.m_SdfSize;
 
 	// convert asset dependent text layer variables
 	for (size_t const configIdx : face.m_LayerConfigurations)
@@ -601,7 +610,7 @@ void RmlFontEngineInterface::SetFaceAsset(FontFace& face, FontFamily const& fami
 		LayerConfiguration& config = m_LayerConfigurations[configIdx];
 		for (TextLayer& layer : config.m_Layers)
 		{
-			ConvertLayerForNewFace(layer, prevSdfSize, face.m_SdfSize);
+			ConvertLayerForNewFace(layer, prevMultiplier, face.m_EffectMultiplier);
 		}
 	}
 }
@@ -752,14 +761,22 @@ size_t RmlFontEngineInterface::GetFallbackFaceIdx(size_t const faceIdx)
 	return nextFallback;
 }
 
+//-------------------------------------------
+// RmlFontEngineInterface::GetLayerConfigIdx
+//
+size_t RmlFontEngineInterface::GetLayerConfigIdx(Rml::FontEffectsHandle const effectsHandle) const
+{
+	size_t const layerIdx = static_cast<size_t>(effectsHandle);
+	ET_ASSERT(layerIdx < m_LayerConfigurations.size());
+	return layerIdx;
+}
+
 //-----------------------------------------------
 // RmlFontEngineInterface::GetLayerConfiguration
 //
 RmlFontEngineInterface::LayerConfiguration const& RmlFontEngineInterface::GetLayerConfiguration(Rml::FontEffectsHandle const effectsHandle) const
 {
-	size_t const layerIdx = static_cast<size_t>(effectsHandle);
-	ET_ASSERT(layerIdx < m_LayerConfigurations.size());
-	return m_LayerConfigurations[layerIdx];
+	return m_LayerConfigurations[GetLayerConfigIdx(effectsHandle)];
 }
 
 //--------------------------------------
@@ -779,18 +796,18 @@ TextLayer const& RmlFontEngineInterface::GetDefaultLayer() const
 {
 	LayerConfiguration const& defaultConfig = GetLayerConfiguration(s_DefaultEffects);
 
-	ET_ASSERT(!defaultConfig.m_Layers.size() == 1u);
+	ET_ASSERT(defaultConfig.m_Layers.size() == 1u);
 	return defaultConfig.m_Layers[0];
 }
 
-//------------------------------------------------
-// RmlFontEngineInterface::GetFallbackLayerConfig
+//---------------------------------------------------
+// RmlFontEngineInterface::GetFallbackLayerConfigIdx
 //
 // find or generate a new layer configuration for a fallback face from an existing layer configuration that was made for a different font face
 //
-RmlFontEngineInterface::LayerConfiguration const& RmlFontEngineInterface::GetFallbackLayerConfig(LayerConfiguration const& inConfig, 
-	FontFace& fallbackFace)
+size_t RmlFontEngineInterface::GetFallbackLayerConfigIdx(size_t const inConfigIdx, FontFace& fallbackFace)
 {
+	LayerConfiguration const& inConfig = m_LayerConfigurations[inConfigIdx];
 	FontFace const& inFace = m_Faces[inConfig.m_FaceIndex];
 
 	// convert from existing layer configuration
@@ -798,7 +815,7 @@ RmlFontEngineInterface::LayerConfiguration const& RmlFontEngineInterface::GetFal
 	for (TextLayer const& inLayer : inConfig.m_Layers)
 	{
 		newConfig.m_Layers.push_back(inLayer);
-		ConvertLayerForNewFace(newConfig.m_Layers.back(), inFace.m_SdfSize, fallbackFace.m_SdfSize);
+		ConvertLayerForNewFace(newConfig.m_Layers.back(), inFace.m_EffectMultiplier, fallbackFace.m_EffectMultiplier);
 	}
 
 	newConfig.m_MainLayerIdx = inConfig.m_MainLayerIdx;
@@ -811,7 +828,7 @@ RmlFontEngineInterface::LayerConfiguration const& RmlFontEngineInterface::GetFal
 		size_t existingIdx;
 		if (HasExistingLayerConfig(newConfig, existingIdx))
 		{
-			return m_LayerConfigurations[existingIdx];
+			return existingIdx;
 		}
 	}
 
@@ -820,19 +837,19 @@ RmlFontEngineInterface::LayerConfiguration const& RmlFontEngineInterface::GetFal
 	m_LayerConfigurations.push_back(std::move(newConfig));
 	fallbackFace.m_LayerConfigurations.push_back(newConfigIdx); // register with the face in case it's asset changes
 
-	return m_LayerConfigurations.back();
+	return newConfigIdx;
 }
 
 //------------------------------------------------
 // RmlFontEngineInterface::ConvertLayerForNewFace
 //
 // convert font face dependent TextLayer data for a new font face
-//  - since the sdf size includes the multiplier this accounts for both sdf and multiplier changes
+//  - this works based on the internal thresholds being normalized around 0
 //
-void RmlFontEngineInterface::ConvertLayerForNewFace(TextLayer& layer, float const prevSdfSize, float const newSdfSize)
+void RmlFontEngineInterface::ConvertLayerForNewFace(TextLayer& layer, float const prevMultiplier, float const newMultiplier)
 {
-	layer.m_MinThreshold = (layer.m_MinThreshold / prevSdfSize) * newSdfSize;
-	layer.m_SdfThreshold = (layer.m_SdfThreshold / prevSdfSize) * newSdfSize;
+	layer.m_MinThreshold = (layer.m_MinThreshold / prevMultiplier) * newMultiplier;
+	layer.m_SdfThreshold = (layer.m_SdfThreshold / prevMultiplier) * newMultiplier;
 }
 
 //------------------------------------------------
