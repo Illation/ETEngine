@@ -2,6 +2,7 @@
 #include "Context.h"
 
 #include "RmlGlobal.h"
+#include "GuiDocument.h"
 
 #include <RmlUi/Core/Core.h>
 #include <RmlUi/Core/Context.h>
@@ -9,8 +10,6 @@
 
 #include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Content/ResourceManager.h>
-
-#include <EtGUI/Content/GuiDocument.h>
 
 
 namespace et {

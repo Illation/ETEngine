@@ -7,9 +7,8 @@
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
 
-#include <EtGUI/Content/SdfFont.h>
-
-#include "FontParameters.h"
+#include <EtGUI/Fonts/SdfFont.h>
+#include <EtGUI/Fonts/FontParameters.h>
 
 
 namespace et {
@@ -21,7 +20,7 @@ namespace gui {
 //
 // Implementation of RmlUi's render interface
 //
-class RmlRenderInterface final : public Rml::RenderInterface
+class RmlRenderer final : public Rml::RenderInterface
 {
 	// definitions
 	//-------------
@@ -76,8 +75,8 @@ class RmlRenderInterface final : public Rml::RenderInterface
 	// construct destruct
 	//--------------------
 public:
-	RmlRenderInterface();
-	~RmlRenderInterface() = default;
+	RmlRenderer();
+	~RmlRenderer() = default;
 
 	// functionality
 	//---------------

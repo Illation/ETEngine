@@ -4,8 +4,7 @@
 
 #include <EtCore/Content/AssetPointer.h>
 
-#include <EtGUI/Content/SdfFont.h>
-
+#include "SdfFont.h"
 #include "FontParameters.h"
 
 
@@ -14,11 +13,11 @@ namespace gui {
 
 
 //---------------------------------
-// RmlFontEngineInterface
+// FontEngine
 //
 // Font engine implementation for SDF fonts
 //
-class RmlFontEngineInterface final : public Rml::FontEngineInterface
+class FontEngine final : public Rml::FontEngineInterface
 {
 	// definitions
 	//-------------
@@ -121,8 +120,8 @@ class RmlFontEngineInterface final : public Rml::FontEngineInterface
 	// construct destruct
 	//--------------------
 public:
-	RmlFontEngineInterface();
-	~RmlFontEngineInterface() = default;
+	FontEngine();
+	~FontEngine() = default;
 
 	// interface
 	//-----------

@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "GuiDocument.h"
 
-#include "SdfFont.h"
-
 #include <RmlUi/Core/Core.h>
 
 #include <EtCore/Content/AssetRegistration.h>
+
+#include <EtGUI/Fonts/SdfFont.h>
 
 
 namespace et {

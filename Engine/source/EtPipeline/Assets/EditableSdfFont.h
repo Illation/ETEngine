@@ -1,5 +1,5 @@
 #pragma once
-#include <EtGUI/Content/SdfFont.h>
+#include <EtGUI/Fonts/SdfFont.h>
 
 #include <EtPipeline/Content/EditorAsset.h>
 

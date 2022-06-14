@@ -1,7 +1,7 @@
 {
-  "editable freetype font asset": {
+  "editable sdf font asset": {
     "asset": {
-      "freetype font asset": {
+      "sdf font asset": {
         "name": "NotoEmoji-Regular.ttf",
         "path": "Fonts/",
         "package": "content1",
@@ -10,6 +10,29 @@
       }
     },
     "metadata": null,
-    "children": []
+    "children": [],
+    "size": 32,
+    "padding": 1,
+    "spread": 6,
+    "highres": 32,
+    "EM per 100 weight": 0.002,
+    "char sets": [
+      {
+        "start": 0,
+        "end": 255
+      },
+      {
+        "start": 126980,
+        "end": 127569
+      },
+      {
+        "start": 127744,
+        "end": 129782
+      },
+      {
+        "start": 8205,
+        "end": 12953
+      }
+    ]
   }
 }

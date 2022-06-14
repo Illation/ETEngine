@@ -6,8 +6,8 @@
         "path": "GUI/",
         "package": "",
         "references": [
-          "SdfFonts/LatoLatin-Italic.ttf",
-          "SdfFonts/LatoLatin-Regular.ttf"
+          "Fonts/LatoLatin-Italic.ttf",
+          "Fonts/LatoLatin-Regular.ttf"
         ]
       }
     },

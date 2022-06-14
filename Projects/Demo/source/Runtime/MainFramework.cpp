@@ -14,7 +14,7 @@
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
-#include <EtGUI/Content/SdfFont.h>
+#include <EtGUI/Fonts/SdfFont.h>
 #include <EtGUI/GuiExtension.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>

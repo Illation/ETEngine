@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "RmlFontEngineInterface.h"
+#include "FontEngine.h"
 
 #include <RmlUi/Core/StringUtilities.h>
 #include <RmlUi/Core/FontEffect.h>
@@ -22,13 +22,9 @@ namespace gui {
 
 
 //-----------------------------------------
-// RmlFontEngineInterface::FontFace::c-tor
+// FontEngine::FontFace::c-tor
 //
-RmlFontEngineInterface::FontFace::FontFace(core::HashString const familyId,
-	Rml::Style::FontStyle const style, 
-	SdfFont::E_Weight const weight,
-	int32 const size
-)
+FontEngine::FontFace::FontFace(core::HashString const familyId, Rml::Style::FontStyle const style, SdfFont::E_Weight const weight, int32 const size)
 	: m_FamilyId(familyId)
 	, m_Style(style)
 	, m_Weight(weight)
@@ -37,23 +33,23 @@ RmlFontEngineInterface::FontFace::FontFace(core::HashString const familyId,
 { }
 
 
-//===========================
-// RML Font Engine Interface
-//===========================
+//=============
+// Font Engine 
+//=============
 
 
 // static
-Rml::FontEffectsHandle const RmlFontEngineInterface::s_DefaultEffects = 0u;
-Rml::FontFaceHandle const RmlFontEngineInterface::s_InvalidFont = 0u;
+Rml::FontEffectsHandle const FontEngine::s_DefaultEffects = 0u;
+Rml::FontFaceHandle const FontEngine::s_InvalidFont = 0u;
 
-size_t const RmlFontEngineInterface::s_InvalidIdx = std::numeric_limits<size_t>::max();
-size_t const RmlFontEngineInterface::s_NoIdx = RmlFontEngineInterface::s_InvalidIdx - 1;
+size_t const FontEngine::s_InvalidIdx = std::numeric_limits<size_t>::max();
+size_t const FontEngine::s_NoIdx = FontEngine::s_InvalidIdx - 1;
 
 
 //--------------------------------------
-// RmlFontEngineInterface::c-tor
+// FontEngine::c-tor
 //
-RmlFontEngineInterface::RmlFontEngineInterface() 
+FontEngine::FontEngine() 
 	: Rml::FontEngineInterface()
 {
 	// create default font effect layers - so an invalid font effect handle points to the default font layers
@@ -66,9 +62,9 @@ RmlFontEngineInterface::RmlFontEngineInterface()
 }
 
 //--------------------------------------
-// RmlFontEngineInterface::LoadFontFace
+// FontEngine::LoadFontFace
 //
-bool RmlFontEngineInterface::LoadFontFace(Rml::String const& fileName, bool const fallbackFace, Rml::Style::FontWeight const weight)
+bool FontEngine::LoadFontFace(Rml::String const& fileName, bool const fallbackFace, Rml::Style::FontWeight const weight)
 {
 	UNUSED(weight); // can entirely be ignored since the weights are already generated in the asset
 
@@ -115,9 +111,9 @@ bool RmlFontEngineInterface::LoadFontFace(Rml::String const& fileName, bool cons
 }
 
 //--------------------------------------
-// RmlFontEngineInterface::LoadFontFace
+// FontEngine::LoadFontFace
 //
-bool RmlFontEngineInterface::LoadFontFace(Rml::byte const* const data, 
+bool FontEngine::LoadFontFace(Rml::byte const* const data, 
 	int32 const dataSize, 
 	Rml::String const& familyName,
 	Rml::Style::FontStyle const style, 
@@ -141,9 +137,9 @@ bool RmlFontEngineInterface::LoadFontFace(Rml::byte const* const data,
 }
 
 //-------------------------------------------
-// RmlFontEngineInterface::GetFontFaceHandle
+// FontEngine::GetFontFaceHandle
 //
-Rml::FontFaceHandle RmlFontEngineInterface::GetFontFaceHandle(Rml::String const& familyName, 
+Rml::FontFaceHandle FontEngine::GetFontFaceHandle(Rml::String const& familyName, 
 	Rml::Style::FontStyle const style, 
 	Rml::Style::FontWeight const weight, 
 	int32 const size)
@@ -180,9 +176,9 @@ Rml::FontFaceHandle RmlFontEngineInterface::GetFontFaceHandle(Rml::String const&
 }
 
 //--------------------------------------------
-// RmlFontEngineInterface::PrepareFontEffects
+// FontEngine::PrepareFontEffects
 //
-Rml::FontEffectsHandle RmlFontEngineInterface::PrepareFontEffects(Rml::FontFaceHandle const faceHandle, Rml::FontEffectList const& fontEffects)
+Rml::FontEffectsHandle FontEngine::PrepareFontEffects(Rml::FontFaceHandle const faceHandle, Rml::FontEffectList const& fontEffects)
 {
 	if (fontEffects.empty()) // if there are no effects we refer to the default layer configuration
 	{
@@ -250,41 +246,41 @@ Rml::FontEffectsHandle RmlFontEngineInterface::PrepareFontEffects(Rml::FontFaceH
 }
 
 //---------------------------------
-// RmlFontEngineInterface::GetSize
+// FontEngine::GetSize
 //
-int32 RmlFontEngineInterface::GetSize(Rml::FontFaceHandle const faceHandle)
+int32 FontEngine::GetSize(Rml::FontFaceHandle const faceHandle)
 {
 	return GetFace(faceHandle).m_Size;
 }
 
 //------------------------------------
-// RmlFontEngineInterface::GetXHeight
+// FontEngine::GetXHeight
 //
-int32 RmlFontEngineInterface::GetXHeight(Rml::FontFaceHandle const faceHandle)
+int32 FontEngine::GetXHeight(Rml::FontFaceHandle const faceHandle)
 {
 	return GetFace(faceHandle).m_XHeight;
 }
 
 //---------------------------------------
-// RmlFontEngineInterface::GetLineHeight
+// FontEngine::GetLineHeight
 //
-int32 RmlFontEngineInterface::GetLineHeight(Rml::FontFaceHandle const faceHandle)
+int32 FontEngine::GetLineHeight(Rml::FontFaceHandle const faceHandle)
 {
 	return GetFace(faceHandle).m_LineHeight;
 }
 
 //-------------------------------------
-// RmlFontEngineInterface::GetBaseline
+// FontEngine::GetBaseline
 //
-int32 RmlFontEngineInterface::GetBaseline(Rml::FontFaceHandle const faceHandle)
+int32 FontEngine::GetBaseline(Rml::FontFaceHandle const faceHandle)
 {
 	return GetFace(faceHandle).m_Baseline;
 }
 
 //--------------------------------------
-// RmlFontEngineInterface::GetUnderline
+// FontEngine::GetUnderline
 //
-float RmlFontEngineInterface::GetUnderline(Rml::FontFaceHandle const faceHandle, float& outThickness)
+float FontEngine::GetUnderline(Rml::FontFaceHandle const faceHandle, float& outThickness)
 {
 	FontFace const& face = GetFace(faceHandle);
 
@@ -293,9 +289,9 @@ float RmlFontEngineInterface::GetUnderline(Rml::FontFaceHandle const faceHandle,
 }
 
 //----------------------------------------
-// RmlFontEngineInterface::GetStringWidth
+// FontEngine::GetStringWidth
 //
-int32 RmlFontEngineInterface::GetStringWidth(Rml::FontFaceHandle const faceHandle, Rml::String const& utf8String, Rml::Character const priorCharacter)
+int32 FontEngine::GetStringWidth(Rml::FontFaceHandle const faceHandle, Rml::String const& utf8String, Rml::Character const priorCharacter)
 {
 	size_t const faceIdx = GetFaceIdx(faceHandle);
 
@@ -324,9 +320,9 @@ int32 RmlFontEngineInterface::GetStringWidth(Rml::FontFaceHandle const faceHandl
 }
 
 //----------------------------------------
-// RmlFontEngineInterface::GenerateString
+// FontEngine::GenerateString
 //
-int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandle, 
+int32 FontEngine::GenerateString(Rml::FontFaceHandle const faceHandle, 
 	Rml::FontEffectsHandle const effectsHandle, 
 	Rml::String const& utf8String,
 	Rml::Vector2f const& position, 
@@ -502,17 +498,17 @@ int32 RmlFontEngineInterface::GenerateString(Rml::FontFaceHandle const faceHandl
 }
 
 //------------------------------------
-// RmlFontEngineInterface::GetVersion
+// FontEngine::GetVersion
 //
-int32 RmlFontEngineInterface::GetVersion(Rml::FontFaceHandle const faceHandle)
+int32 FontEngine::GetVersion(Rml::FontFaceHandle const faceHandle)
 {
 	return GetFace(faceHandle).m_Version;
 }
 
 //----------------------------------------------
-// RmlFontEngineInterface::ReleaseFontResources
+// FontEngine::ReleaseFontResources
 //
-void RmlFontEngineInterface::ReleaseFontResources()
+void FontEngine::ReleaseFontResources()
 {
 	m_Faces.clear();
 	m_Families.clear();
@@ -520,9 +516,9 @@ void RmlFontEngineInterface::ReleaseFontResources()
 
 
 //----------------------------------------------
-// RmlFontEngineInterface::FindOrCreateFamily
+// FontEngine::FindOrCreateFamily
 //
-RmlFontEngineInterface::FontFamily& RmlFontEngineInterface::FindOrCreateFamily(std::string const& familyName, core::HashString& outFamilyId)
+FontEngine::FontFamily& FontEngine::FindOrCreateFamily(std::string const& familyName, core::HashString& outFamilyId)
 {
 	outFamilyId = core::HashString(familyName.c_str());
 
@@ -539,9 +535,9 @@ RmlFontEngineInterface::FontFamily& RmlFontEngineInterface::FindOrCreateFamily(s
 }
 
 //----------------------------------------------
-// RmlFontEngineInterface::GetFaceIdx
+// FontEngine::GetFaceIdx
 //
-size_t RmlFontEngineInterface::GetFaceIdx(Rml::FontFaceHandle const faceHandle) const
+size_t FontEngine::GetFaceIdx(Rml::FontFaceHandle const faceHandle) const
 {
 	ET_ASSERT(faceHandle != s_InvalidFont);
 	size_t const faceIdx = faceHandle - 1;
@@ -551,17 +547,17 @@ size_t RmlFontEngineInterface::GetFaceIdx(Rml::FontFaceHandle const faceHandle) 
 }
 
 //----------------------------------------------
-// RmlFontEngineInterface::GetFace
+// FontEngine::GetFace
 //
-RmlFontEngineInterface::FontFace& RmlFontEngineInterface::GetFace(Rml::FontFaceHandle const faceHandle)
+FontEngine::FontFace& FontEngine::GetFace(Rml::FontFaceHandle const faceHandle)
 {
 	return m_Faces[GetFaceIdx(faceHandle)];
 }
 
 //----------------------------------------------
-// RmlFontEngineInterface::SetFaceAsset
+// FontEngine::SetFaceAsset
 //
-void RmlFontEngineInterface::SetFaceAsset(FontFace& face, FontFamily const& family, size_t const assetIdx) 
+void FontEngine::SetFaceAsset(FontFace& face, FontFamily const& family, size_t const assetIdx) 
 {
 	if (family.m_UniqueAssets[assetIdx] == face.m_Font)
 	{
@@ -616,9 +612,9 @@ void RmlFontEngineInterface::SetFaceAsset(FontFace& face, FontFamily const& fami
 }
 
 //----------------------------------------------
-// RmlFontEngineInterface::GetBestAssetForFace
+// FontEngine::GetBestAssetForFace
 //
-size_t RmlFontEngineInterface::GetBestAssetForFace(FontFamily const& family, FontFace const& face) const
+size_t FontEngine::GetBestAssetForFace(FontFamily const& family, FontFace const& face) const
 {
 	size_t bestMatch = s_InvalidIdx;
 	uint32 bestScore = 0u;
@@ -654,11 +650,11 @@ size_t RmlFontEngineInterface::GetBestAssetForFace(FontFamily const& family, Fon
 }
 
 //----------------------------------------------
-// RmlFontEngineInterface::GetMetric
+// FontEngine::GetMetric
 //
 // Get the glyph metric from the face, or a fallback face if it couldn't be found. Sets outFace to the face the metric was found in
 //
-SdfFont::Metric const& RmlFontEngineInterface::GetMetric(size_t const faceIdx, char32 const charId, RmlFontEngineInterface::FontFace*& outFace)
+SdfFont::Metric const& FontEngine::GetMetric(size_t const faceIdx, char32 const charId, FontEngine::FontFace*& outFace)
 {
 	size_t currentFaceIdx = faceIdx;
 	while (currentFaceIdx != s_InvalidIdx)
@@ -684,9 +680,9 @@ SdfFont::Metric const& RmlFontEngineInterface::GetMetric(size_t const faceIdx, c
 }
 
 //----------------------------------------------
-// RmlFontEngineInterface::AddFallbackFont
+// FontEngine::AddFallbackFont
 //
-void RmlFontEngineInterface::AddFallbackFont(core::HashString const familyId, size_t const assetIdx)
+void FontEngine::AddFallbackFont(core::HashString const familyId, size_t const assetIdx)
 {
 	FallbackFont const fnt(familyId, assetIdx);
 	if (std::find_if(m_FallbackFonts.cbegin(), m_FallbackFonts.cend(), [&fnt](FallbackFont const& lhs)
@@ -699,11 +695,11 @@ void RmlFontEngineInterface::AddFallbackFont(core::HashString const familyId, si
 }
 
 //----------------------------------------------
-// RmlFontEngineInterface::GetFallbackFace
+// FontEngine::GetFallbackFace
 //
 // Lazy fetch the next face in the fallback chain, or nullptr if this is the last face
 //
-size_t RmlFontEngineInterface::GetFallbackFaceIdx(size_t const faceIdx)
+size_t FontEngine::GetFallbackFaceIdx(size_t const faceIdx)
 {
 	FontFace const& face = m_Faces[faceIdx];
 	if (face.m_NextFallbackFaceIdx == s_InvalidIdx) // lazy compute the pointer to the next face in the fallback chain
@@ -762,9 +758,9 @@ size_t RmlFontEngineInterface::GetFallbackFaceIdx(size_t const faceIdx)
 }
 
 //-------------------------------------------
-// RmlFontEngineInterface::GetLayerConfigIdx
+// FontEngine::GetLayerConfigIdx
 //
-size_t RmlFontEngineInterface::GetLayerConfigIdx(Rml::FontEffectsHandle const effectsHandle) const
+size_t FontEngine::GetLayerConfigIdx(Rml::FontEffectsHandle const effectsHandle) const
 {
 	size_t const layerIdx = static_cast<size_t>(effectsHandle);
 	ET_ASSERT(layerIdx < m_LayerConfigurations.size());
@@ -772,27 +768,27 @@ size_t RmlFontEngineInterface::GetLayerConfigIdx(Rml::FontEffectsHandle const ef
 }
 
 //-----------------------------------------------
-// RmlFontEngineInterface::GetLayerConfiguration
+// FontEngine::GetLayerConfiguration
 //
-RmlFontEngineInterface::LayerConfiguration const& RmlFontEngineInterface::GetLayerConfiguration(Rml::FontEffectsHandle const effectsHandle) const
+FontEngine::LayerConfiguration const& FontEngine::GetLayerConfiguration(Rml::FontEffectsHandle const effectsHandle) const
 {
 	return m_LayerConfigurations[GetLayerConfigIdx(effectsHandle)];
 }
 
 //--------------------------------------
-// RmlFontEngineInterface::GetLayerHash
+// FontEngine::GetLayerHash
 //
-T_Hash RmlFontEngineInterface::GetLayerHash(std::vector<TextLayer> const& layers) const
+T_Hash FontEngine::GetLayerHash(std::vector<TextLayer> const& layers) const
 {
 	return GetDataHash(reinterpret_cast<uint8 const*>(layers.data()), layers.size() * sizeof(TextLayer));
 }
 
 //-----------------------------------------
-// RmlFontEngineInterface::GetDefaultLayer
+// FontEngine::GetDefaultLayer
 //
 // stored at index 0, because those are the default layers for text without effects
 //
-TextLayer const& RmlFontEngineInterface::GetDefaultLayer() const
+TextLayer const& FontEngine::GetDefaultLayer() const
 {
 	LayerConfiguration const& defaultConfig = GetLayerConfiguration(s_DefaultEffects);
 
@@ -801,11 +797,11 @@ TextLayer const& RmlFontEngineInterface::GetDefaultLayer() const
 }
 
 //---------------------------------------------------
-// RmlFontEngineInterface::GetFallbackLayerConfigIdx
+// FontEngine::GetFallbackLayerConfigIdx
 //
 // find or generate a new layer configuration for a fallback face from an existing layer configuration that was made for a different font face
 //
-size_t RmlFontEngineInterface::GetFallbackLayerConfigIdx(size_t const inConfigIdx, FontFace& fallbackFace)
+size_t FontEngine::GetFallbackLayerConfigIdx(size_t const inConfigIdx, FontFace& fallbackFace)
 {
 	LayerConfiguration const& inConfig = m_LayerConfigurations[inConfigIdx];
 	FontFace const& inFace = m_Faces[inConfig.m_FaceIndex];
@@ -841,23 +837,23 @@ size_t RmlFontEngineInterface::GetFallbackLayerConfigIdx(size_t const inConfigId
 }
 
 //------------------------------------------------
-// RmlFontEngineInterface::ConvertLayerForNewFace
+// FontEngine::ConvertLayerForNewFace
 //
 // convert font face dependent TextLayer data for a new font face
 //  - this works based on the internal thresholds being normalized around 0
 //
-void RmlFontEngineInterface::ConvertLayerForNewFace(TextLayer& layer, float const prevMultiplier, float const newMultiplier)
+void FontEngine::ConvertLayerForNewFace(TextLayer& layer, float const prevMultiplier, float const newMultiplier)
 {
 	layer.m_MinThreshold = (layer.m_MinThreshold / prevMultiplier) * newMultiplier;
 	layer.m_SdfThreshold = (layer.m_SdfThreshold / prevMultiplier) * newMultiplier;
 }
 
 //------------------------------------------------
-// RmlFontEngineInterface::HasExistingLayerConfig
+// FontEngine::HasExistingLayerConfig
 //
 // return true if there already is a present layer configuration matching the passed one
 //
-bool RmlFontEngineInterface::HasExistingLayerConfig(LayerConfiguration const& layerConfig, size_t& outConfigIdx)
+bool FontEngine::HasExistingLayerConfig(LayerConfiguration const& layerConfig, size_t& outConfigIdx)
 {
 	// check if we already have a set of layers matching this configuration, and return a handle of that
 	auto const foundIt = std::find_if(m_LayerConfigurations.begin(), m_LayerConfigurations.end(),

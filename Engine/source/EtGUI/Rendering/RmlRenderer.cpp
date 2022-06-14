@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "RmlRenderInterface.h"
+#include "RmlRenderer.h"
 
 #include <EtCore/Content/ResourceManager.h>
 
@@ -17,14 +17,14 @@ namespace gui {
 //======================
 
 // static
-Rml::CompiledGeometryHandle const RmlRenderInterface::s_InvalidGeometry = 0u;
-Rml::TextureHandle const RmlRenderInterface::s_InvalidTexture = 0u;
+Rml::CompiledGeometryHandle const RmlRenderer::s_InvalidGeometry = 0u;
+Rml::TextureHandle const RmlRenderer::s_InvalidTexture = 0u;
 
 
 //-------------------------------------
 // RmlRenderInterface::c-tor
 //
-RmlRenderInterface::RmlRenderInterface() 
+RmlRenderer::RmlRenderer() 
 	: Rml::RenderInterface()
 {
 	m_GeneratedParameters.minFilter = render::E_TextureFilterMode::Linear;
@@ -44,7 +44,7 @@ RmlRenderInterface::RmlRenderInterface()
 //-------------------------------------
 // RmlRenderInterface::SetShader
 //
-void RmlRenderInterface::SetShader(AssetPtr<render::ShaderData> const& shader, AssetPtr<render::ShaderData> const& textShader)
+void RmlRenderer::SetShader(AssetPtr<render::ShaderData> const& shader, AssetPtr<render::ShaderData> const& textShader)
 {
 	m_Shader = shader;
 	m_TextShader = textShader;
@@ -57,7 +57,7 @@ void RmlRenderInterface::SetShader(AssetPtr<render::ShaderData> const& shader, A
 //
 // Store some geometry for later rendering - implementing this means we don't use the simple RenderGeometry() method
 //
-Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* vertices,
+Rml::CompiledGeometryHandle RmlRenderer::CompileGeometry(Rml::Vertex* vertices,
 	int32 numVertices, 
 	int32* indices, 
 	int32 numIndices, 
@@ -196,7 +196,7 @@ Rml::CompiledGeometryHandle RmlRenderInterface::CompileGeometry(Rml::Vertex* ver
 //--------------------------------------------
 // RmlRenderInterface::RenderCompiledGeometry
 //
-void RmlRenderInterface::RenderCompiledGeometry(Rml::CompiledGeometryHandle geometry, Rml::Vector2f const& translation)
+void RmlRenderer::RenderCompiledGeometry(Rml::CompiledGeometryHandle geometry, Rml::Vector2f const& translation)
 {
 	// the geometry in question
 	T_Geometries::const_iterator const foundIt = m_Geometries.find(geometry);
@@ -304,7 +304,7 @@ void RmlRenderInterface::RenderCompiledGeometry(Rml::CompiledGeometryHandle geom
 //---------------------------------------------
 // RmlRenderInterface::ReleaseCompiledGeometry
 //
-void RmlRenderInterface::ReleaseCompiledGeometry(Rml::CompiledGeometryHandle geometry)
+void RmlRenderer::ReleaseCompiledGeometry(Rml::CompiledGeometryHandle geometry)
 {
 	T_Geometries::iterator const foundIt = m_Geometries.find(geometry);
 	ET_ASSERT(foundIt != m_Geometries.cend());
@@ -327,7 +327,7 @@ void RmlRenderInterface::ReleaseCompiledGeometry(Rml::CompiledGeometryHandle geo
 //
 // Called by RmlUi when it wants to enable or disable scissoring to clip content
 //
-void RmlRenderInterface::EnableScissorRegion(bool enable)
+void RmlRenderer::EnableScissorRegion(bool enable)
 {
 	m_IsScissorEnabled = enable;
 }
@@ -337,7 +337,7 @@ void RmlRenderInterface::EnableScissorRegion(bool enable)
 //
 // Called by RmlUi when it wants to change the scissor region
 //
-void RmlRenderInterface::SetScissorRegion(int32 x, int32 y, int32 width, int32 height)
+void RmlRenderer::SetScissorRegion(int32 x, int32 y, int32 width, int32 height)
 {
 	m_ScissorPos = ivec2(x, y);
 	m_ScissorSize = ivec2(width, height);
@@ -346,7 +346,7 @@ void RmlRenderInterface::SetScissorRegion(int32 x, int32 y, int32 width, int32 h
 //---------------------------------
 // RmlRenderInterface::LoadTexture
 //
-bool RmlRenderInterface::LoadTexture(Rml::TextureHandle& textureHandle, Rml::Vector2i& textureDimensions, Rml::String const& source)
+bool RmlRenderer::LoadTexture(Rml::TextureHandle& textureHandle, Rml::Vector2i& textureDimensions, Rml::String const& source)
 {
 	core::HashString const assetId(source.c_str());
 
@@ -380,7 +380,7 @@ bool RmlRenderInterface::LoadTexture(Rml::TextureHandle& textureHandle, Rml::Vec
 //-------------------------------------
 // RmlRenderInterface::GenerateTexture
 //
-bool RmlRenderInterface::GenerateTexture(Rml::TextureHandle& textureHandle, Rml::byte const* source, Rml::Vector2i const& sourceDimensions)
+bool RmlRenderer::GenerateTexture(Rml::TextureHandle& textureHandle, Rml::byte const* source, Rml::Vector2i const& sourceDimensions)
 {
 	std::pair<T_Textures::iterator, bool> res = m_Textures.emplace(++m_LastTextureHandle, 
 		std::move(GenTextureInternal(reinterpret_cast<void const*>(source), ivec2(sourceDimensions.x, sourceDimensions.y))));
@@ -394,7 +394,7 @@ bool RmlRenderInterface::GenerateTexture(Rml::TextureHandle& textureHandle, Rml:
 //------------------------------------
 // RmlRenderInterface::ReleaseTexture
 //
-void RmlRenderInterface::ReleaseTexture(Rml::TextureHandle textureHandle)
+void RmlRenderer::ReleaseTexture(Rml::TextureHandle textureHandle)
 {
 	size_t const erased = m_Textures.erase(textureHandle);
 	ET_ASSERT(erased == 1u);
@@ -403,7 +403,7 @@ void RmlRenderInterface::ReleaseTexture(Rml::TextureHandle textureHandle)
 //----------------------------------
 // RmlRenderInterface::SetTransform
 //
-void RmlRenderInterface::SetTransform(Rml::Matrix4f const* transform)
+void RmlRenderer::SetTransform(Rml::Matrix4f const* transform)
 {
 	if (transform != nullptr)
 	{
@@ -422,7 +422,7 @@ void RmlRenderInterface::SetTransform(Rml::Matrix4f const* transform)
 //----------------------------------------
 // RmlRenderInterface::GenTextureInternal
 //
-UniquePtr<render::TextureData> RmlRenderInterface::GenTextureInternal(void const* data, ivec2 dimensions)
+UniquePtr<render::TextureData> RmlRenderer::GenTextureInternal(void const* data, ivec2 dimensions)
 {
 	UniquePtr<render::TextureData> tex = Create<render::TextureData>(render::E_ColorFormat::RGBA8, dimensions);
 	tex->UploadData(data, render::E_ColorFormat::RGBA, render::E_DataType::UByte, 0u);

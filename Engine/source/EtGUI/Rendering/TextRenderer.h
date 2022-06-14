@@ -1,7 +1,7 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <EtGui/Content/SdfFont.h>
+#include <EtGui/Fonts/SdfFont.h>
 
 
 namespace et { namespace rt {

@@ -1,5 +1,5 @@
 #pragma once
-#include <EtGUI/Content/GuiDocument.h>
+#include <EtGUI/Context/GuiDocument.h>
 
 #include <EtPipeline/Content/EditorAsset.h>
 

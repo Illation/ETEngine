@@ -61,8 +61,8 @@ RmlGlobal::RmlGlobal()
 {
 	Rml::SetSystemInterface(&m_SystemInterface);
 	Rml::SetFileInterface(&m_FileInterface);
-	Rml::SetFontEngineInterface(&m_FontEngineInterface);
-	Rml::SetRenderInterface(&m_RenderInterface);
+	Rml::SetFontEngineInterface(&m_FontEngine);
+	Rml::SetRenderInterface(&m_Renderer);
 
 	Rml::Initialise();
 
@@ -113,7 +113,7 @@ void RmlGlobal::SetClipboardController(Ptr<core::I_ClipboardController> const cl
 //
 void RmlGlobal::SetGraphicsContext(Ptr<render::I_GraphicsContextApi> const graphicsContext)
 {
-	m_RenderInterface.SetGraphicsContext(graphicsContext);
+	m_Renderer.SetGraphicsContext(graphicsContext);
 }
 
 //----------------------------------
@@ -121,7 +121,7 @@ void RmlGlobal::SetGraphicsContext(Ptr<render::I_GraphicsContextApi> const graph
 //
 void RmlGlobal::SetRIShader(AssetPtr<render::ShaderData> const shader, AssetPtr<render::ShaderData> const textShader)
 {
-	m_RenderInterface.SetShader(shader, textShader);
+	m_Renderer.SetShader(shader, textShader);
 }
 
 //----------------------------------
@@ -129,7 +129,7 @@ void RmlGlobal::SetRIShader(AssetPtr<render::ShaderData> const shader, AssetPtr<
 //
 void RmlGlobal::SetRIView(ivec2 const dim, mat4 const& viewProj)
 {
-	m_RenderInterface.SetView(dim, viewProj);
+	m_Renderer.SetView(dim, viewProj);
 }
 
 

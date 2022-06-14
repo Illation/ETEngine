@@ -10,7 +10,7 @@
 #include <EtRendering/Extensions/OutlineRenderer.h>
 
 #include <EtGUI/Rendering/GuiRenderer.h>
-#include <EtGUI/Content/SdfFont.h>
+#include <EtGUI/Fonts/SdfFont.h>
 
 #include <EtFramework/SceneGraph/SceneEvents.h>
 

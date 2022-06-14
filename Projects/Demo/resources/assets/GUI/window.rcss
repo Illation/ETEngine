@@ -220,7 +220,7 @@ h1 {
 	font-size: 1.5em;
 	font-weight: bold;
 	margin-bottom: 0.7em;
-	font-effect: glow(2dp 4dp 2dp 3dp #6d4067a4);
+	font-effect: glow(2dp 4dp 2dp 3dp #8a4056);
 }
 		
 p { 
@@ -257,7 +257,7 @@ panel#font_effects
 	font-size: 16dp;
 	font-weight: bold;
 
-	font-effect: glow(1dp 1dp 1dp 1dp #1117);
+	font-effect: glow(1dp 1dp 1dp 1dp #8a4056);
 	color: #ffffff;
 }
 #font_effects .glow
@@ -268,9 +268,10 @@ panel#font_effects
 {
 	font-effect: glow(3dp 1dp #ffffff);
 }
-#font_effects .glow_blurry
+#font_effects .glow_rainbow
 {
-	font-effect: glow(2dp 7dp #ffffff);
+	color: #ffffff;
+	font-effect: glow(1dp 5dp 0dp 3dp #ff555590), glow(1dp 5dp -2.5dp -2dp #55ff5590), glow(1dp 5dp 2.5dp -2dp #5555ff90);
 }
 #font_effects .glow_shadow
 {

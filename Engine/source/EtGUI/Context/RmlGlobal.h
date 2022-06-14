@@ -2,9 +2,9 @@
 #include "RmlSystemInterface.h"
 #include "RmlFileInterface.h"
 
-#include <EtGUI/Rendering/RmlFontEngineInterface.h>
-#include <EtGUI/Rendering/RmlRenderInterface.h>
-#include <EtGUI/Rendering/FontEffects.h>
+#include <EtGUI/Fonts/FontEngine.h>
+#include <EtGUI/Fonts/FontEffects.h>
+#include <EtGUI/Rendering/RmlRenderer.h>
 
 
 namespace et {
@@ -55,8 +55,8 @@ public:
 private:
 	RmlSystemInterface m_SystemInterface;
 	RmlFileInterface m_FileInterface;
-	RmlFontEngineInterface m_FontEngineInterface;
-	RmlRenderInterface m_RenderInterface;
+	FontEngine m_FontEngine;
+	RmlRenderer m_Renderer;
 
 	FontEffectGlow::Instancer m_GlowInstancer;
 	FontEffectOutline::Instancer m_OutlineInstancer;

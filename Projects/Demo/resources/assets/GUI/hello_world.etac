@@ -8,7 +8,7 @@
         "references": [
           "GUI/window.rcss",
           "GUI/rml.rcss",
-          "SdfFonts/NotoEmoji-Regular.ttf"
+          "Fonts/NotoEmoji-Regular.ttf"
         ]
       }
     },

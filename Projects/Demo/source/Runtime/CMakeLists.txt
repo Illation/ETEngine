@@ -41,7 +41,6 @@ add_dependencies(EtEngineDemo cook-compiled-resources)
 # linking
 target_link_libraries (EtEngineDemo DemoCommon EtRuntime)
 dependancyLinks(EtEngineDemo)
-cookerLinks(EtEngineDemo) # temporary until freetype is replaced with sprite fonts in rmlUi implementation
 
 # library includes
 libIncludeDirs()

@@ -3,7 +3,7 @@
 
 #include <EtCore/Content/AssetPointer.h>
 
-#include <EtGUI/Content/GuiDocument.h>
+#include <EtGUI/Context/GuiDocument.h>
 
 
 namespace et {

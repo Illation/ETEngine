@@ -6,7 +6,7 @@
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 
-#include <EtGUI/Content/SdfFont.h>
+#include <EtGUI/Fonts/SdfFont.h>
 
 
 namespace et {
