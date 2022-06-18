@@ -23,6 +23,7 @@ struct BootConfig final
 
 	core::HashString startScene;
 	std::vector<core::HashString> allScenes;
+	core::HashString splashGui;
 };
 
 

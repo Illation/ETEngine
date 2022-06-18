@@ -1,14 +1,8 @@
 #pragma once
 #include <EtRendering/GraphicsContext/ViewportRenderer.h>
 
-#include <EtGUI/Rendering/SpriteRenderer.h>
-#include <EtGUI/Rendering/TextRenderer.h>
-
-
-// fwd
-namespace et { namespace render {
-	class TextureData;
-} }
+#include <EtGUI/Context/Context.h>
+#include <EtGUI/Rendering/GuiRenderer.h>
 
 
 namespace et {
@@ -33,6 +27,8 @@ public:
 	void Init();
 	void Deinit();
 
+	void SetGuiDocument(core::HashString const documentId);
+
 	// Viewport Renderer Interface
 	//-----------------------------
 protected:
@@ -49,18 +45,8 @@ protected:
 private:
 	bool m_IsInitialized = false;
 
-	std::string m_Title;
-	std::string m_Subtitle;
-
-	AssetPtr<render::TextureData> m_SplashBackgroundTex;
-	AssetPtr<gui::SdfFont> m_SplashTitleFont;
-	AssetPtr<gui::SdfFont> m_SplashRegFont;
-
-	// scene rendering
-	ivec2 m_Dimensions;
-
-	gui::TextRenderer m_TextRenderer;
-	gui::SpriteRenderer m_SpriteRenderer;
+	gui::Context m_GuiContext;
+	gui::GuiRenderer m_GuiRenderer;
 };
 
 

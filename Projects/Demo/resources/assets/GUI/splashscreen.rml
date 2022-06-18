@@ -1,0 +1,45 @@
+<rml>
+<head>
+	<title>Hello world</title>
+	<link type="text/rcss" href="rml.rcss"/>
+	<style>
+		body
+		{
+			decorator: image("textures/Splashscreen.jpg");
+			color: #ffffff;
+			font-effect: outline(4dp #000000);
+			width: 100%;
+			height: 100%;
+		}
+
+		h1
+		{
+			font-family: roboto;
+			font-size: 200px;
+			font-weight: bold;
+			text-align: center;
+			position: relative;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+		p
+		{
+			font-family: "roboto condensed";
+			font-size: 60px;
+			position: relative;
+		}
+
+		span
+		{
+			position: absolute;
+			bottom: 0;
+			right: 0;
+		}
+	</style>
+</head>
+<body>
+	<h1>E T ENGINE</h1>
+	<p><span>LOADING</span></p>
+</body>
+</rml>

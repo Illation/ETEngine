@@ -4,15 +4,15 @@
       "sdf font asset": {
         "name": "Roboto-Bold.ttf",
         "path": "Fonts/roboto2014/",
-        "package": "engine_content",
+        "package": "content1",
         "references": []
       }
     },
     "metadata": null,
     "children": [],
-    "size": 64,
+    "size": 32,
     "padding": 1,
-    "spread": 5,
+    "spread": 6,
     "highres": 64,
     "char sets": [
       {

@@ -5,6 +5,7 @@
       "Scenes/EditorScene.json",
       "Scenes/PlanetScene.json",
       "Scenes/PhysicsScene.json"
-    ]
+    ],
+    "splash screen GUI": "GUI/splashscreen.rml"
   }
 }

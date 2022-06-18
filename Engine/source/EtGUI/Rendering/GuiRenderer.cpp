@@ -3,8 +3,6 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/SceneStructure/RenderScene.h>
-#include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
@@ -15,97 +13,23 @@ namespace et {
 namespace gui {
 
 
-//===============
+//==============
 // GUI Renderer
-//===============
+//==============
 
 
-//---------------------------------
-// GuiRenderer::d-tor
-//
-GuiRenderer::~GuiRenderer()
-{
-	if (m_IsInitialized)
-	{
-		Deinit();
-	}
-}
-
-//---------------------------------
+//----------------------------------
 // GuiRenderer::Init
 //
-void GuiRenderer::Init(Ptr<render::T_RenderEventDispatcher> const eventDispatcher)
+void GuiRenderer::Init()
 {
-	// basic rendering systems
-	//-------------------------
-	m_TextRenderer.Initialize();
-	m_SpriteRenderer.Initialize();
-
-	// Rml UI
-	//--------
 	m_RmlGlobal = RmlGlobal::GetInstance(); // might initialize RML if this is the first GUI renderer
 	m_RmlShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUi.glsl"));
 	m_RmlSdfShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUiSdf.glsl"));
 	m_RmlBlitShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUiBlit.glsl"));
-
-	// render events
-	//---------------
-	m_EventDispatcher = eventDispatcher;
-
-	// In World
-	m_WorldCallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RE_RenderWorldGUI, render::T_RenderEventCallback(
-		[this](render::T_RenderEventFlags const flags, render::RenderEventData const* const evnt) -> void
-		{
-			UNUSED(flags);
-
-			if (evnt->renderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
-			{
-				render::ShadedSceneRenderer const* const renderer = static_cast<render::ShadedSceneRenderer const*>(evnt->renderer);
-				render::I_SceneExtension const* const ext = renderer->GetScene()->GetExtension(GuiExtension::s_ExtensionId);
-				if (ext == nullptr)
-				{
-					LOG("render scene does not have a GUI extension");
-					return;
-				}
-
-				GuiExtension const* const guiExt = static_cast<GuiExtension const*>(ext);
-				DrawInWorld(evnt->targetFb, *guiExt, renderer->GetScene()->GetNodes());
-			}
-			else
-			{
-				ET_ASSERT(true, "Cannot retrieve GUI info from unhandled renderer!");
-			}
-		}));
-
-	// Overlay
-	m_OverlayCallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RE_RenderOverlay, render::T_RenderEventCallback(
-		[this](render::T_RenderEventFlags const flags, render::RenderEventData const* const evnt) -> void
-		{
-			UNUSED(flags);
-
-			if (evnt->renderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
-			{
-				render::ShadedSceneRenderer const* const renderer = static_cast<render::ShadedSceneRenderer const*>(evnt->renderer);
-				render::I_SceneExtension* const ext = renderer->GetScene()->GetExtension(GuiExtension::s_ExtensionId);
-				if (ext == nullptr)
-				{
-					LOG("render scene does not have a GUI extension");
-					return;
-				}
-
-				GuiExtension* const guiExt = static_cast<GuiExtension*>(ext);
-				DrawOverlay(evnt->targetFb, *guiExt);
-			}
-			else
-			{
-				ET_ASSERT(true, "Cannot retrieve GUI info from unhandled renderer!");
-			}
-		}));
-
-	m_IsInitialized = true;
 }
 
-//---------------------------------
+//----------------------------------
 // GuiRenderer::Deinit
 //
 void GuiRenderer::Deinit()
@@ -114,66 +38,21 @@ void GuiRenderer::Deinit()
 
 	m_RmlGlobal = nullptr;
 
-	m_SpriteRenderer.Deinit();
-	m_TextRenderer.Deinit();
-
 	m_RmlShader = nullptr;
 	m_RmlBlitShader = nullptr;
 	m_RmlSdfShader = nullptr;
-
-	if (m_EventDispatcher != nullptr)
-	{
-		m_EventDispatcher->Unregister(m_WorldCallbackId);
-		m_EventDispatcher->Unregister(m_OverlayCallbackId);
-		m_EventDispatcher = nullptr;
-	}
-
-	m_IsInitialized = false;
 }
 
-//---------------------------------
-// GuiRenderer::DrawInWorld
+//----------------------------------
+// GuiRenderer::RenderContexts
 //
-// Draw UI from the extension that sits within the world
+// Render a list of contexts to the target framebuffer
 //
-void GuiRenderer::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension const& guiExt, core::slot_map<mat4> const& nodes)
+void GuiRenderer::RenderContexts(render::Viewport const* const viewport, render::T_FbLoc const targetFb, Context* const contexts, size_t const count)
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
-	api->BindFramebuffer(targetFb);
-
-	SpriteRenderer::E_ScalingMode const scalingMode = SpriteRenderer::E_ScalingMode::Texture;
-	for (GuiExtension::Sprite const& sprite : guiExt.GetSprites())
-	{
-		mat4 const& transform = nodes[sprite.node];
-
-		vec3 pos, scale;
-		quat rot;
-		math::decomposeTRS(transform, pos, rot, scale);
-
-		m_SpriteRenderer.Draw(sprite.texture, pos.xy, sprite.color, sprite.pivot, scale.xy, rot.Roll(), pos.z, scalingMode);
-	}
-}
-
-//---------------------------------
-// GuiRenderer::DrawOverlay
-//
-// Draw UI from the extension that goes on top of everything else
-//
-void GuiRenderer::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiExt)
-{
-	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
-	api->BindFramebuffer(targetFb);
-
-	m_SpriteRenderer.Draw();
-	m_TextRenderer.Draw();
-
-	// RmlUi
-	//--------
-	api->DebugPushGroup("RmlUi");
 
 	RmlGlobal::GetInstance()->SetGraphicsContext(ToPtr(api));
-
-	render::Viewport const* const viewport = render::Viewport::GetCurrentViewport();
 
 	// Set target framebuffer
 	ivec2 const iViewDim = viewport->GetDimensions();
@@ -210,9 +89,9 @@ void GuiRenderer::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiE
 	api->SetDepthEnabled(false);
 
 	// render each context
-	ContextContainer::T_Contexts& contexts = guiExt.GetContextContainer().GetContexts(viewport);
-	for (Context& context : contexts)
+	for (size_t cIdx = 0u; cIdx < count; ++cIdx)
 	{
+		Context& context = contexts[cIdx];
 		if (context.IsActive() && context.IsDocumentLoaded())
 		{
 			context.Render();
@@ -229,8 +108,6 @@ void GuiRenderer::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiE
 
 	// reset pipeline state
 	api->SetBlendEnabled(false);
-
-	api->DebugPopGroup(); // RmlUi
 }
 
 //----------------------------------

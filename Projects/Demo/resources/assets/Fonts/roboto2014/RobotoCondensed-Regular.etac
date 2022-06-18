@@ -4,16 +4,16 @@
       "sdf font asset": {
         "name": "RobotoCondensed-Regular.ttf",
         "path": "Fonts/roboto2014/",
-        "package": "engine_content",
+        "package": "content1",
         "references": []
       }
     },
     "metadata": null,
     "children": [],
-    "size": 42,
+    "size": 32,
     "padding": 1,
-    "spread": 5,
-    "highres": 32,
+    "spread": 6,
+    "highres": 64,
     "char sets": [
       {
         "start": 0,

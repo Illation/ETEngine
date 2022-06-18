@@ -17,7 +17,7 @@ class RmlGlobal;
 //---------------------------------
 // GuiRenderer
 //
-// Renderer that renders objects in the GUI extension
+// Renders RmlUI contexts
 //
 class GuiRenderer final
 {
@@ -25,20 +25,13 @@ public:
 	// construct destruct
 	//--------------------
 	GuiRenderer() = default;
-	~GuiRenderer();
 
-	void Init(Ptr<render::T_RenderEventDispatcher> const eventDispatcher);
+	void Init();
 	void Deinit();
 
 	// functionality
 	//---------------
-	void DrawInWorld(render::T_FbLoc const targetFb, GuiExtension const& guiExt, core::slot_map<mat4> const& nodes);
-	void DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiExt);
-
-	// accessors
-	//-----------
-	TextRenderer& GetTextRenderer() { return m_TextRenderer; }
-	SpriteRenderer& GetSpriteRenderer() { return m_SpriteRenderer; }
+	void RenderContexts(render::Viewport const* const viewport, render::T_FbLoc const targetFb, Context* const contexts, size_t const count);
 
 	// utility
 	//---------
@@ -49,20 +42,6 @@ public:
 	///////
 
 private:
-	bool m_IsInitialized = false;
-
-	// render event hooks
-	Ptr<render::T_RenderEventDispatcher> m_EventDispatcher;
-	render::T_RenderEventCallbackId m_WorldCallbackId = render::T_RenderEventDispatcher::INVALID_ID;
-	render::T_RenderEventCallbackId m_OverlayCallbackId = render::T_RenderEventDispatcher::INVALID_ID;
-
-	// basic renderers
-	//-----------------
-	TextRenderer m_TextRenderer;
-	SpriteRenderer m_SpriteRenderer;
-
-	// Rml UI rendering
-	//--------------------
 	RefPtr<RmlGlobal> m_RmlGlobal;
 	AssetPtr<render::ShaderData> m_RmlShader;
 	AssetPtr<render::ShaderData> m_RmlSdfShader;

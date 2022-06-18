@@ -9,7 +9,7 @@
 #include <EtRendering/GraphicsContext/Viewport.h>
 #include <EtRendering/Extensions/OutlineRenderer.h>
 
-#include <EtGUI/Rendering/GuiRenderer.h>
+#include <EtGUI/Rendering/SceneRendererGUI.h>
 #include <EtGUI/Fonts/SdfFont.h>
 
 #include <EtFramework/SceneGraph/SceneEvents.h>
@@ -75,7 +75,7 @@ private:
 	render::I_RenderArea* m_RenderArea = nullptr;
 
 	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
-	gui::GuiRenderer m_GuiRenderer;
+	gui::SceneRendererGUI m_GuiRenderer;
 	render::OutlineRenderer m_OutlineRenderer;
 
 	core::RawInputProvider m_InputProvider;

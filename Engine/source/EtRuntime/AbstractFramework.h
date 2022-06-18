@@ -2,7 +2,7 @@
 #include <EtCore/UpdateCycle/RealTimeTickTriggerer.h>
 #include <EtCore/UpdateCycle/Tickable.h>
 
-#include <EtGUI/Rendering/GuiRenderer.h>
+#include <EtGUI/Rendering/SceneRendererGUI.h>
 
 #include <EtFramework/Config/TickOrder.h>
 #include <EtFramework/Util/ScreenshotCapture.h>
@@ -67,7 +67,7 @@ private:
 	UniquePtr<rt::SplashScreenRenderer> m_SplashScreenRenderer;
 
 protected:
-	gui::GuiRenderer m_GuiRenderer;
+	gui::SceneRendererGUI m_GuiRenderer;
 private:
 	gui::T_ContextId m_GuiContext = gui::INVALID_CONTEXT_ID;
 

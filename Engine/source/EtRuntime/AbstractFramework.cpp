@@ -158,6 +158,7 @@ void AbstractFramework::Run()
 	cfg->InitRenderConfig();
 
 	m_SplashScreenRenderer->Init();
+	m_SplashScreenRenderer->SetGuiDocument(bootCfg.splashGui);
 	m_RenderWindow.GetArea().Update();
 
 	fw::AudioManager::GetInstance()->Initialize();

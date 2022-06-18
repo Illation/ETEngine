@@ -13,7 +13,7 @@ namespace et {
 namespace gui {
 
 
-class GuiRenderer;
+class SceneRendererGUI;
 
 
 //---------------------------------
@@ -27,7 +27,7 @@ private:
 	// Definitions
 	//--------------------------
 	friend class rt::SplashScreenRenderer;
-	friend class GuiRenderer;
+	friend class SceneRendererGUI;
 
 	//---------------------------------
 	// SpriteRenderer::SpriteVertex

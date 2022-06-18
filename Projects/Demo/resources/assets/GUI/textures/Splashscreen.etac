@@ -3,8 +3,8 @@
     "asset": {
       "texture asset": {
         "name": "Splashscreen.jpg",
-        "path": "Textures/",
-        "package": "engine_content",
+        "path": "GUI/textures/",
+        "package": "content1",
         "references": [],
         "force resolution": true,
         "parameters": {
