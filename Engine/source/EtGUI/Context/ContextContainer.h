@@ -94,12 +94,21 @@ public:
 
 	void SetLoadedDocument(T_ContextId const id, core::HashString const documentId);
 
+#ifdef ET_DEBUG
+	void SetDebugContext(T_ContextId const id);
+	void SetDebuggerVisible(bool const isVisible);
+#endif
+
 	// accessors
 	//-----------
 	T_Contexts& GetContexts(render::Viewport const* const vp);
 	T_Contexts const& GetContexts(render::Viewport const* const vp) const;
 
 	Rml::ElementDocument* GetDocument(T_ContextId const id);
+
+#ifdef ET_DEBUG
+	bool IsDebuggerVisible() const { return m_IsDebuggerVisible; }
+#endif
 
 	// utility
 	//---------
@@ -113,6 +122,11 @@ private:
 private:
 	core::slot_map<ContextData> m_Contexts;
 	T_ViewportContexts m_ViewportContexts;
+
+#ifdef ET_DEBUG
+	T_ContextId m_DebuggerContext = INVALID_CONTEXT_ID;
+	bool m_IsDebuggerVisible = false;
+#endif
 };
 
 

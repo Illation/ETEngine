@@ -166,6 +166,7 @@ public:
 	// utility
 	//---------
 private:
+	bool LoadFontFaceInternal(AssetPtr<SdfFont> const font, std::string const& familyName, bool const fallbackFace, std::string const& fileName);
 	FontFamily& FindOrCreateFamily(std::string const& familyName, core::HashString& outFamilyId);
 	size_t GetFaceIdx(Rml::FontFaceHandle const faceHandle) const;
 	FontFace& GetFace(Rml::FontFaceHandle const faceHandle);

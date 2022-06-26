@@ -209,7 +209,7 @@ void SceneViewport::OnDeinit()
 	m_Editor->UnregisterListener(this);
 
 	m_OutlineRenderer.Deinit();
-	m_GuiRenderer.Deinit();
+	m_SceneGuiRenderer.Deinit();
 	SafeDelete(m_SceneRenderer);
 	m_Viewport->SetRenderer(nullptr);
 
@@ -264,7 +264,7 @@ void SceneViewport::OnSceneSet()
 	}
 
 	m_SceneRenderer->InitRenderingSystems();
-	m_GuiRenderer.Init(ToPtr(&(m_SceneRenderer->GetEventDispatcher())));
+	m_SceneGuiRenderer.Init(ToPtr(&(m_SceneRenderer->GetEventDispatcher())));
 	m_OutlineRenderer.Init(ToPtr(&(m_SceneRenderer->GetEventDispatcher())));
 
 	m_IsInitialized = true;
@@ -283,7 +283,7 @@ void SceneViewport::OnEditorTick()
 
 	if (m_DrawDebugInfo)
 	{
-		gui::TextRenderer& textRenderer = m_GuiRenderer.GetTextRenderer();
+		gui::TextRenderer& textRenderer = m_SceneGuiRenderer.GetTextRenderer();
 
 		textRenderer.SetFont(m_DebugFont);
 		textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));

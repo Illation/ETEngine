@@ -97,6 +97,14 @@ void MainFramework::OnTick()
 	fw::UnifiedScene& uniScene = fw::UnifiedScene::Instance();
 	core::InputManager* const input = core::InputManager::GetInstance();
 
+#ifdef ET_DEBUG
+	if (input->GetKeyState(E_KbdKey::F8) == E_KeyState::Pressed) // #todo: toggle this with a console command in the future
+	{
+		gui::ContextContainer& contextContainer = fw::UnifiedScene::Instance().GetGuiExtension()->GetContextContainer();
+		contextContainer.SetDebuggerVisible(!contextContainer.IsDebuggerVisible());
+	}
+#endif
+
 	// Scene switching
 	//-----------------
 	if(input->GetKeyState(E_KbdKey::F3) == E_KeyState::Pressed)

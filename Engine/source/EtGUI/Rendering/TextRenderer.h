@@ -21,7 +21,11 @@ class SceneRendererGUI;
 //---------------------------------
 // TextRenderer
 //
-// Draws sprite fonts in an efficient manner
+////////////////
+// DEPRECATED
+////////////////
+//
+// #todo: replace with an imgui
 //
 class TextRenderer final 
 {

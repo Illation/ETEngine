@@ -76,7 +76,7 @@ class RmlRenderer final : public Rml::RenderInterface
 	//--------------------
 public:
 	RmlRenderer();
-	~RmlRenderer() = default;
+	~RmlRenderer();
 
 	// functionality
 	//---------------
@@ -87,15 +87,20 @@ public:
 	// interface implementation
 	//--------------------------
 
-	// doesn't need to be handled because we compile geometry
-	void RenderGeometry(Rml::Vertex*, int32, int32*, int32, Rml::TextureHandle, Rml::Vector2f const&) override { ET_ASSERT(false, "uncompiled geometry"); }
-
 	// geometry
+	void RenderGeometry(Rml::Vertex* vertices,
+		int32 numVertices,
+		int32* indices,
+		int32 numIndices,
+		Rml::TextureHandle textureHandle,
+		Rml::Vector2f const& translation) override;
+
 	Rml::CompiledGeometryHandle CompileGeometry(Rml::Vertex* vertices,
 		int32 numVertices, 
 		int32* indices, 
 		int32 numIndices, 
 		Rml::TextureHandle textureHandle) override;
+
 	void RenderCompiledGeometry(Rml::CompiledGeometryHandle geometry, Rml::Vector2f const& translation) override;
 	void ReleaseCompiledGeometry(Rml::CompiledGeometryHandle geometry) override;
 
@@ -115,28 +120,42 @@ public:
 	//---------
 private:
 	UniquePtr<render::TextureData> GenTextureInternal(void const* data, ivec2 dimensions);
+	void SetGenericInputLayout(render::I_GraphicsContextApi* const api) const;
+	void SetupScissorRectangle();
 
 
 	// Data
 	///////
 
+	// general
 	Ptr<render::I_GraphicsContextApi> m_GraphicsContext;
 	ivec2 m_ViewDimensions;
 	mat4 m_ViewProj;
 
+	// shaders
 	AssetPtr<render::ShaderData> m_Shader;
 	AssetPtr<render::ShaderData> m_TextShader;
 	AssetPtr<render::ShaderData> m_NullShader;
 
+	// compiled geometries
 	T_Geometries m_Geometries;
 	Rml::CompiledGeometryHandle m_LastGeometryHandle = s_InvalidGeometry;
 
+	// immediate geometry
+	render::T_ArrayLoc m_VertexArray = 0;
+	int64 m_VertexBufferSize = 50;
+	render::T_BufferLoc m_VertexBuffer = 0;
+	int64 m_IndexBufferSize = 50;
+	render::T_BufferLoc m_IndexBuffer = 0;
+
+	// textures
 	T_Textures m_Textures;
 	Rml::TextureHandle m_LastTextureHandle = s_InvalidTexture;
 
 	render::TextureParameters m_GeneratedParameters;
 	UniquePtr<render::TextureData> m_EmptyWhiteTex2x2;
 
+	// scissoring and transforms
 	bool m_IsScissorEnabled = false;
 	ivec2 m_ScissorPos;
 	ivec2 m_ScissorSize;

@@ -76,38 +76,7 @@ bool FontEngine::LoadFontFace(Rml::String const& fileName, bool const fallbackFa
 		return false;
 	}
 
-	core::HashString familyId;
-	FontFamily& family = FindOrCreateFamily(font->GetFamily(), familyId);
-
-	auto const assetIt = std::find(family.m_UniqueAssets.cbegin(), family.m_UniqueAssets.cend(), font);
-	if (assetIt != family.m_UniqueAssets.cend())
-	{
-		if (fallbackFace)
-		{
-			AddFallbackFont(familyId, static_cast<size_t>(assetIt - family.m_UniqueAssets.cbegin()));
-		}
-
-		return true;
-	}
-
-	Rml::Texture texture;
-	texture.Set(fileName); // render interface will grab the texture from the font asset - this also allows us to know to use the text shader
-	family.m_UniqueAssets.push_back(std::move(font));
-	family.m_AssetTextures.push_back(texture);
-	if (fallbackFace)
-	{
-		AddFallbackFont(familyId, family.m_UniqueAssets.size() - 1);
-	}
-
-	for (size_t const faceIdx : family.m_FaceIndices)
-	{
-		ET_ASSERT(faceIdx < m_Faces.size());
-		FontFace& face = m_Faces[faceIdx];
-
-		SetFaceAsset(face, family, GetBestAssetForFace(family, face));
-	}
-
-	return true;
+	return LoadFontFaceInternal(font, font->GetFamily(), fallbackFace, fileName);
 }
 
 //--------------------------------------
@@ -124,12 +93,18 @@ bool FontEngine::LoadFontFace(Rml::byte const* const data,
 	UNUSED(dataSize);
 	UNUSED(style);
 	UNUSED(weight);
-	UNUSED(fallbackFace);
 
-	if (familyName == "rmlui-debugger-font") // exception for the debugger font
+	// exception for the debugger font
+	static std::string const s_DebugFntFamilyName("rmlui-debugger-font");
+	if (familyName == s_DebugFntFamilyName) 
 	{
-		ET_ASSERT(false, "Loading debug font from data is not supported");
-		return false;
+		AssetPtr<gui::SdfFont> const debugFont = core::ResourceManager::Instance()->GetAssetData<gui::SdfFont>(core::HashString("Fonts/IBMPlexMono.ttf"));
+		ET_ASSERT(debugFont != nullptr);
+
+		core::I_Asset const* const fntAsset = debugFont.GetAsset();
+		std::string const fileName = fntAsset->GetPath() + fntAsset->GetName();
+
+		return LoadFontFaceInternal(debugFont, s_DebugFntFamilyName, fallbackFace, fileName);
 	}
 
 	ET_ASSERT(false, "Loading Sdf fonts from data is not supported");
@@ -514,6 +489,45 @@ void FontEngine::ReleaseFontResources()
 	m_Families.clear();
 }
 
+
+//----------------------------------------------
+// FontEngine::LoadFontFaceInternal
+//
+bool FontEngine::LoadFontFaceInternal(AssetPtr<SdfFont> const font, std::string const& familyName, bool const fallbackFace, std::string const& fileName)
+{
+	core::HashString familyId;
+	FontFamily& family = FindOrCreateFamily(familyName, familyId);
+
+	auto const assetIt = std::find(family.m_UniqueAssets.cbegin(), family.m_UniqueAssets.cend(), font);
+	if (assetIt != family.m_UniqueAssets.cend())
+	{
+		if (fallbackFace)
+		{
+			AddFallbackFont(familyId, static_cast<size_t>(assetIt - family.m_UniqueAssets.cbegin()));
+		}
+
+		return true;
+	}
+
+	Rml::Texture texture;
+	texture.Set(fileName); // render interface will grab the texture from the font asset - this also allows us to know to use the text shader
+	family.m_UniqueAssets.push_back(std::move(font));
+	family.m_AssetTextures.push_back(texture);
+	if (fallbackFace)
+	{
+		AddFallbackFont(familyId, family.m_UniqueAssets.size() - 1);
+	}
+
+	for (size_t const faceIdx : family.m_FaceIndices)
+	{
+		ET_ASSERT(faceIdx < m_Faces.size());
+		FontFace& face = m_Faces[faceIdx];
+
+		SetFaceAsset(face, family, GetBestAssetForFace(family, face));
+	}
+
+	return true;
+}
 
 //----------------------------------------------
 // FontEngine::FindOrCreateFamily

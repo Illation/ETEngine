@@ -75,7 +75,7 @@ private:
 	render::I_RenderArea* m_RenderArea = nullptr;
 
 	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
-	gui::SceneRendererGUI m_GuiRenderer;
+	gui::SceneRendererGUI m_SceneGuiRenderer;
 	render::OutlineRenderer m_OutlineRenderer;
 
 	core::RawInputProvider m_InputProvider;

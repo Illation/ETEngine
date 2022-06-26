@@ -34,11 +34,43 @@ RmlRenderer::RmlRenderer()
 	m_GeneratedParameters.wrapT = render::E_TextureWrapMode::ClampToEdge;
 	m_GeneratedParameters.borderColor = vec4(0.f);
 
+	// default white texture
 	std::vector<uint8> emptyTexData({
 		255, 255, 255, 255,    255, 255, 255, 255,
 		255, 255, 255, 255,    255, 255, 255, 255
 		});
 	m_EmptyWhiteTex2x2 = GenTextureInternal(reinterpret_cast<void const*>(emptyTexData.data()), ivec2(2));
+
+	// immediate vertex buffer
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+
+	m_VertexArray = api->CreateVertexArray();
+	api->BindVertexArray(m_VertexArray);
+
+	m_VertexBuffer = api->CreateBuffer();
+	api->BindBuffer(render::E_BufferType::Vertex, m_VertexBuffer);
+	api->SetBufferData(render::E_BufferType::Vertex, m_VertexBufferSize, nullptr, render::E_UsageHint::Dynamic);
+
+	SetGenericInputLayout(api);
+
+	m_IndexBuffer = api->CreateBuffer();
+	api->BindBuffer(render::E_BufferType::Vertex, m_IndexBuffer);
+	api->SetBufferData(render::E_BufferType::Vertex, m_IndexBufferSize, nullptr, render::E_UsageHint::Dynamic);
+
+	api->BindBuffer(render::E_BufferType::Vertex, 0);
+	api->BindVertexArray(0);
+}
+
+//-------------------------------------
+// RmlRenderInterface::d-tor
+//
+RmlRenderer::~RmlRenderer()
+{
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+
+	api->DeleteBuffer(m_IndexBuffer);
+	api->DeleteBuffer(m_VertexBuffer);
+	api->DeleteVertexArray(m_VertexArray);
 }
 
 //-------------------------------------
@@ -51,6 +83,83 @@ void RmlRenderer::SetShader(AssetPtr<render::ShaderData> const& shader, AssetPtr
 }
 
 
+//-------------------------------------
+// RmlRenderInterface::RenderGeometry
+//
+// for rendering geometry immediately to the screen 
+//  - this function should only be used in rare circumstances, as normally compiled geometry is more efficient
+//  - this only handles generic geometry, text geometry is assumed to always be compiled
+//
+void RmlRenderer::RenderGeometry(Rml::Vertex* vertices,
+	int32 numVertices,
+	int32* indices,
+	int32 numIndices,
+	Rml::TextureHandle textureHandle,
+	Rml::Vector2f const& translation)
+{
+	// predraw scissor / stencil region
+	//----------------------------------
+	SetupScissorRectangle();
+
+	// update vertex and index buffers
+	//---------------------------------
+	m_GraphicsContext->BindVertexArray(m_VertexArray);
+
+	m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, m_VertexBuffer);
+	int64 const vbSize = sizeof(Rml::Vertex) * static_cast<int64>(numVertices);
+	if (vbSize > m_VertexBufferSize)
+	{
+		m_VertexBufferSize = vbSize;
+		m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex, vbSize, reinterpret_cast<void const*>(vertices), render::E_UsageHint::Dynamic);
+	}
+	else
+	{
+		void* p = m_GraphicsContext->MapBuffer(render::E_BufferType::Vertex, render::E_AccessMode::Write);
+		memcpy(p, vertices, static_cast<size_t>(vbSize));
+		m_GraphicsContext->UnmapBuffer(render::E_BufferType::Vertex);
+	}
+
+	m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, 0u);
+
+	m_GraphicsContext->BindBuffer(render::E_BufferType::Index, m_IndexBuffer);
+	int64 const ibSize = sizeof(int32) * static_cast<int64>(numIndices);
+	if (ibSize > m_IndexBufferSize)
+	{
+		m_IndexBufferSize = ibSize;
+		m_GraphicsContext->SetBufferData(render::E_BufferType::Index, ibSize, reinterpret_cast<void const*>(indices), render::E_UsageHint::Dynamic);
+	}
+	else
+	{
+		void* p = m_GraphicsContext->MapBuffer(render::E_BufferType::Index, render::E_AccessMode::Write);
+		memcpy(p, indices, static_cast<size_t>(ibSize));
+		m_GraphicsContext->UnmapBuffer(render::E_BufferType::Index);
+	}
+
+	// setup shading parameters and draw
+	//-----------------------------------
+	m_GraphicsContext->SetShader(m_Shader.get());
+
+	m_Shader->Upload("uTranslation"_hash, vec2(translation.x, translation.y));
+	m_Shader->Upload("uTransform"_hash, m_CurrentTransform);
+
+	if (textureHandle != 0u)
+	{
+		T_Textures::iterator const foundIt = m_Textures.find(textureHandle);
+		ET_ASSERT(foundIt != m_Textures.cend());
+
+		m_Shader->Upload("uTexture"_hash, static_cast<render::TextureData const*>(foundIt->second.Get().Get()));
+	}
+	else
+	{
+		m_Shader->Upload("uTexture"_hash, static_cast<render::TextureData const*>(m_EmptyWhiteTex2x2.Get()));
+	}
+
+	m_GraphicsContext->DrawElements(render::E_DrawMode::Triangles, static_cast<uint32>(numIndices), render::E_DataType::UInt, 0);
+
+	// done
+	//------
+	m_GraphicsContext->BindVertexArray(0u);
+}
 
 //-------------------------------------
 // RmlRenderInterface::CompileGeometry
@@ -113,13 +222,7 @@ Rml::CompiledGeometryHandle RmlRenderer::CompileGeometry(Rml::Vertex* vertices,
 		int64 const vBufferSize = static_cast<int64>(geometry.m_NumVertices * vertSize);
 		m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex, vBufferSize, reinterpret_cast<void const*>(vertices), render::E_UsageHint::Static);
 
-		m_GraphicsContext->SetVertexAttributeArrayEnabled(0, true);
-		m_GraphicsContext->SetVertexAttributeArrayEnabled(1, true);
-		m_GraphicsContext->SetVertexAttributeArrayEnabled(2, true);
-
-		m_GraphicsContext->DefineVertexAttributePointer(0, 2, render::E_DataType::Float, false, vertSize, offsetof(Rml::Vertex, position));
-		m_GraphicsContext->DefineVertexAttributePointer(1, 4, render::E_DataType::UByte, true, vertSize, offsetof(Rml::Vertex, colour));
-		m_GraphicsContext->DefineVertexAttributePointer(2, 2, render::E_DataType::Float, false, vertSize, offsetof(Rml::Vertex, tex_coord));
+		SetGenericInputLayout(m_GraphicsContext.Get());
 	}
 	else
 	{
@@ -205,66 +308,7 @@ void RmlRenderer::RenderCompiledGeometry(Rml::CompiledGeometryHandle geometry, R
 	Geometry const& geo = foundIt->second;
 
 	// scissor rectangle
-	if (m_IsScissorEnabled)
-	{
-		if (m_HasTransform)
-		{
-			// no real scissor rectangle needed
-			m_GraphicsContext->SetScissorEnabled(false);
-			m_GraphicsContext->SetStencilEnabled(true);
-
-			// avoid redrawing stencil buffer
-			if (!(math::nearEqualsV(m_ScissorPos, m_LastScissorPos) 
-				&& math::nearEqualsV(m_ScissorSize, m_LastScissorSize) 
-				&& math::nearEqualsM(m_CurrentTransform, m_LastTransform)))
-			{
-				m_LastScissorPos = m_ScissorPos;
-				m_LastScissorSize = m_ScissorSize;
-				m_LastTransform = m_CurrentTransform;
-
-				// clear stencil buffer
-				m_GraphicsContext->SetStencilMask(0xFFFFFFFFu);
-				m_GraphicsContext->Clear(render::E_ClearFlag::CF_Stencil);
-
-				// fill stencil buffer
-				m_GraphicsContext->SetDepthMask(false);
-				m_GraphicsContext->SetStencilFunction(render::T_StencilFunc::Never, 1, 0xFFFFFFFFu);
-				m_GraphicsContext->SetStencilOperation(render::E_StencilOp::Replace, render::E_StencilOp::Keep, render::E_StencilOp::Keep);
-
-				if (m_NullShader == nullptr)
-				{
-					m_NullShader = render::RenderingSystems::Instance()->GetNullMaterial()->GetShaderAsset();
-				}
-
-				m_GraphicsContext->SetShader(m_NullShader.get());
-
-				mat4 quadTransform = math::translate(vec3(1.f, 1.f, 0.f)) * math::scale(vec3(0.5f, 0.5f, 1.f)) * // move to 0/0/0
-					math::scale(vec3(math::vecCast<float>(m_ScissorSize), 0.f)) * math::translate(vec3(math::vecCast<float>(m_ScissorPos), 0.f)); // rec 
-				quadTransform = quadTransform * m_CurrentTransform; // apply transform to scissor rectangle
-				m_NullShader->Upload("model"_hash, quadTransform);
-
-				m_NullShader->Upload("worldViewProj"_hash, m_ViewProj); // convert from UI to screen coordinates and perform vertical flip
-
-				render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
-
-				// reset for normal rendering
-				m_GraphicsContext->SetDepthMask(true);
-				m_GraphicsContext->SetStencilMask(0u);
-				m_GraphicsContext->SetStencilFunction(render::T_StencilFunc::Equal, 1, 0xFFFFFFFFu);
-			}
-		}
-		else
-		{
-			m_GraphicsContext->SetScissorEnabled(true);
-			m_GraphicsContext->SetStencilEnabled(false);
-			m_GraphicsContext->SetScissor(ivec2(m_ScissorPos.x, m_ViewDimensions.y - (m_ScissorPos.y + m_ScissorSize.y)), m_ScissorSize);
-		}
-	}
-	else
-	{
-		m_GraphicsContext->SetScissorEnabled(false);
-		m_GraphicsContext->SetStencilEnabled(false);
-	}
+	SetupScissorRectangle();
 
 	// what to draw
 	m_GraphicsContext->BindVertexArray(geo.m_VertexArray); // this should be unbound at the end of rendering a context
@@ -430,6 +474,87 @@ UniquePtr<render::TextureData> RmlRenderer::GenTextureInternal(void const* data,
 	tex->GenerateMipMaps();
 
 	return std::move(tex);
+}
+
+//-------------------------------------------
+// RmlRenderInterface::SetGenericInputLayout
+//
+void RmlRenderer::SetGenericInputLayout(render::I_GraphicsContextApi* const api) const
+{
+	api->SetVertexAttributeArrayEnabled(0, true);
+	api->SetVertexAttributeArrayEnabled(1, true);
+	api->SetVertexAttributeArrayEnabled(2, true);
+
+	api->DefineVertexAttributePointer(0, 2, render::E_DataType::Float, false, sizeof(Rml::Vertex), offsetof(Rml::Vertex, position));
+	api->DefineVertexAttributePointer(1, 4, render::E_DataType::UByte, true, sizeof(Rml::Vertex), offsetof(Rml::Vertex, colour));
+	api->DefineVertexAttributePointer(2, 2, render::E_DataType::Float, false, sizeof(Rml::Vertex), offsetof(Rml::Vertex, tex_coord));
+}
+
+//-------------------------------------------
+// RmlRenderInterface::SetupScissorRectangle
+//
+void RmlRenderer::SetupScissorRectangle()
+{
+	if (m_IsScissorEnabled)
+	{
+		if (m_HasTransform)
+		{
+			// no real scissor rectangle needed
+			m_GraphicsContext->SetScissorEnabled(false);
+			m_GraphicsContext->SetStencilEnabled(true);
+
+			// avoid redrawing stencil buffer
+			if (!(math::nearEqualsV(m_ScissorPos, m_LastScissorPos)
+				&& math::nearEqualsV(m_ScissorSize, m_LastScissorSize)
+				&& math::nearEqualsM(m_CurrentTransform, m_LastTransform)))
+			{
+				m_LastScissorPos = m_ScissorPos;
+				m_LastScissorSize = m_ScissorSize;
+				m_LastTransform = m_CurrentTransform;
+
+				// clear stencil buffer
+				m_GraphicsContext->SetStencilMask(0xFFFFFFFFu);
+				m_GraphicsContext->Clear(render::E_ClearFlag::CF_Stencil);
+
+				// fill stencil buffer
+				m_GraphicsContext->SetDepthMask(false);
+				m_GraphicsContext->SetStencilFunction(render::T_StencilFunc::Never, 1, 0xFFFFFFFFu);
+				m_GraphicsContext->SetStencilOperation(render::E_StencilOp::Replace, render::E_StencilOp::Keep, render::E_StencilOp::Keep);
+
+				if (m_NullShader == nullptr)
+				{
+					m_NullShader = render::RenderingSystems::Instance()->GetNullMaterial()->GetShaderAsset();
+				}
+
+				m_GraphicsContext->SetShader(m_NullShader.get());
+
+				mat4 quadTransform = math::translate(vec3(1.f, 1.f, 0.f)) * math::scale(vec3(0.5f, 0.5f, 1.f)) * // move to 0/0/0
+					math::scale(vec3(math::vecCast<float>(m_ScissorSize), 0.f)) * math::translate(vec3(math::vecCast<float>(m_ScissorPos), 0.f)); // rec 
+				quadTransform = quadTransform * m_CurrentTransform; // apply transform to scissor rectangle
+				m_NullShader->Upload("model"_hash, quadTransform);
+
+				m_NullShader->Upload("worldViewProj"_hash, m_ViewProj); // convert from UI to screen coordinates and perform vertical flip
+
+				render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
+
+				// reset for normal rendering
+				m_GraphicsContext->SetDepthMask(true);
+				m_GraphicsContext->SetStencilMask(0u);
+				m_GraphicsContext->SetStencilFunction(render::T_StencilFunc::Equal, 1, 0xFFFFFFFFu);
+			}
+		}
+		else
+		{
+			m_GraphicsContext->SetScissorEnabled(true);
+			m_GraphicsContext->SetStencilEnabled(false);
+			m_GraphicsContext->SetScissor(ivec2(m_ScissorPos.x, m_ViewDimensions.y - (m_ScissorPos.y + m_ScissorSize.y)), m_ScissorSize);
+		}
+	}
+	else
+	{
+		m_GraphicsContext->SetScissorEnabled(false);
+		m_GraphicsContext->SetStencilEnabled(false);
+	}
 }
 
 

@@ -7,6 +7,10 @@
 
 #include <EtRendering/GraphicsContext/Viewport.h>
 
+#ifdef ET_DEBUG
+#	include <RmlUi/Debugger.h>
+#endif
+
 
 namespace et {
 namespace gui {
@@ -312,6 +316,53 @@ void ContextContainer::SetLoadedDocument(T_ContextId const id, core::HashString 
 		context.LoadDocument(documentId);
 	}
 }
+
+#ifdef ET_DEBUG
+
+//-------------------------------------
+// ContextContainer::SetDebugContext
+//
+void ContextContainer::SetDebugContext(T_ContextId const id)
+{
+	if (id == m_DebuggerContext)
+	{
+		return;
+	}
+
+	if (id == INVALID_CONTEXT_ID)
+	{
+		Rml::Debugger::Shutdown();
+	}
+	else
+	{
+		Rml::Context* const context = GetContext(id).GetImpl();
+		if (m_DebuggerContext == INVALID_CONTEXT_ID)
+		{
+			Rml::Debugger::Initialise(context);
+			Rml::Debugger::SetVisible(m_IsDebuggerVisible);
+		}
+		else
+		{
+			Rml::Debugger::SetContext(context);
+		}
+	}
+
+	m_DebuggerContext = id;
+}
+
+//--------------------------------------
+// ContextContainer::SetDebuggerVisible
+//
+void ContextContainer::SetDebuggerVisible(bool const isVisible)
+{
+	m_IsDebuggerVisible = isVisible;
+	if (m_DebuggerContext != INVALID_CONTEXT_ID)
+	{
+		Rml::Debugger::SetVisible(m_IsDebuggerVisible);
+	}
+}
+
+#endif
 
 //---------------------------------
 // ContextContainer::GetContexts
