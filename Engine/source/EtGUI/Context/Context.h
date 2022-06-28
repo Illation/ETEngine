@@ -63,6 +63,7 @@ public:
 	// accessors
 	//-----------
 	bool IsActive() const { return m_Active; }
+	ivec2 GetDimensions() const;
 	bool IsDocumentLoaded() const { return (m_Document != nullptr); }
 	Rml::ElementDocument* GetDocument() { return m_Document.Get(); }
 	Rml::Context* GetImpl() { return m_Context.Get(); }

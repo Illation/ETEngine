@@ -18,7 +18,8 @@
           "Materials/MI_TexPBR_Ball.json",
           "Models/cube.etmc",
           "Materials/MI_TexPBR_Floor.json",
-          "Materials/MI_TexPBR_Block.json"
+          "Materials/MI_TexPBR_Block.json",
+          "GUI/hello_world.rml"
         ]
       }
     },

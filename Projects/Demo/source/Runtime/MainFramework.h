@@ -3,6 +3,8 @@
 
 #include <EtCore/Content/AssetPointer.h>
 
+#include <EtGUI/Context/DataModel.h>
+
 #include <EtFramework/SceneGraph/SceneEvents.h>
 
 #include <EtRuntime/AbstractFramework.h>
@@ -26,7 +28,7 @@ class MainFramework final : public rt::AbstractFramework
 {
 	static core::HashString const s_HelloWorldGuiId;
 
-	struct GuiData
+	struct GuiData : public gui::I_DataModel
 	{
 		bool m_ShowText = true;
 		std::string m_Animal = "dog";

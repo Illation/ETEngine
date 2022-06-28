@@ -351,7 +351,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->DebugPushGroup("post processing pass");
 
 	api->DebugPushGroup("extensions");
-	m_Events.Notify(E_RenderEvent::RE_RenderWorldGUI, new RenderEventData(this, targetFb));
+	m_Events.Notify(E_RenderEvent::RE_RenderWorldGUI, new RenderEventData(this, m_PostProcessing.GetTargetFBO()));
 	api->DebugPopGroup(); // extensions
 
 	// post processing

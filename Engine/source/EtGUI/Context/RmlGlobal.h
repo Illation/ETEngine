@@ -1,6 +1,7 @@
 #pragma once
 #include "RmlSystemInterface.h"
 #include "RmlFileInterface.h"
+#include "DataModelFactory.h"
 
 #include <EtGUI/Fonts/FontEngine.h>
 #include <EtGUI/Fonts/FontEffects.h>
@@ -49,6 +50,10 @@ public:
 	void SetRIShader(AssetPtr<render::ShaderData> const shader, AssetPtr<render::ShaderData> const textShader);
 	void SetRIView(ivec2 const dim, mat4 const& viewProj);
 
+	// accessors
+	//-----------
+	DataModelFactory& GetDataModelFactory() { return m_DataModelFactory; }
+
 	// Data
 	///////
 	
@@ -62,6 +67,8 @@ private:
 	FontEffectOutline::Instancer m_OutlineInstancer;
 	FontEffectShadow::Instancer m_ShadowInstancer;
 	FontEffectBlur::Instancer m_BlurInstancer;
+
+	DataModelFactory m_DataModelFactory;
 };
 
 

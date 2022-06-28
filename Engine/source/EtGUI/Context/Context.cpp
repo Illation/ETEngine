@@ -3,6 +3,7 @@
 
 #include "RmlGlobal.h"
 #include "GuiDocument.h"
+#include "RmlUtil.h"
 
 #include <RmlUi/Core/Core.h>
 #include <RmlUi/Core/Context.h>
@@ -192,6 +193,15 @@ bool Context::ProcessMouseWheelDelta(ivec2 const& mouseWheel, int32 const rmlMod
 bool Context::ProcessTextInput(Rml::Character const character)
 {
 	return !(m_Context->ProcessTextInput(character));
+}
+
+//-------------------------------------
+// Context::ProcessTextInput
+//
+ivec2 Context::GetDimensions() const
+{
+	ET_ASSERT(m_Context != nullptr);
+	return RmlUtil::ToEtm(m_Context->GetDimensions());
 }
 
 

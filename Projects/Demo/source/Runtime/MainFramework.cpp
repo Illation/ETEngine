@@ -16,6 +16,7 @@
 
 #include <EtGUI/Fonts/SdfFont.h>
 #include <EtGUI/GuiExtension.h>
+#include <EtGUI/Context/RmlGlobal.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/Audio/AudioManager.h>
@@ -77,6 +78,16 @@ void MainFramework::OnInit()
 					PostLoadGUI(static_cast<fw::SceneEventGUIData const*>(evnt));
 				}
 			}));
+
+	// gui
+	gui::RmlGlobal::GetInstance()->GetDataModelFactory().RegisterInstancer("animals", gui::DataModelFactory::T_InstanceFn(
+		[](Rml::DataModelConstructor modelConstructor) -> RefPtr<gui::I_DataModel>
+		{
+			RefPtr<GuiData> ret = Create<GuiData>();
+			modelConstructor.Bind("show_text", &ret->m_ShowText);
+			modelConstructor.Bind("animal", &ret->m_Animal);
+			return std::move(ret);
+		}));
 
 	// audio
 	fw::AudioManager::GetInstance()->SetDistanceModel(AL_INVERSE_DISTANCE);

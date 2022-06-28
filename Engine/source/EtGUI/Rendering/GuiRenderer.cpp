@@ -34,8 +34,6 @@ void GuiRenderer::Init()
 //
 void GuiRenderer::Deinit()
 {
-	DeleteFramebuffer();
-
 	m_RmlGlobal = nullptr;
 
 	m_RmlShader = nullptr;
@@ -48,25 +46,20 @@ void GuiRenderer::Deinit()
 //
 // Render a list of contexts to the target framebuffer
 //
-void GuiRenderer::RenderContexts(render::Viewport const* const viewport, render::T_FbLoc const targetFb, Context* const contexts, size_t const count)
+void GuiRenderer::RenderContexts(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context* const contexts, size_t const count)
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
 	RmlGlobal::GetInstance()->SetGraphicsContext(ToPtr(api));
 
 	// Set target framebuffer
-	ivec2 const iViewDim = viewport->GetDimensions();
-	if ((m_RmlTex == nullptr) || !math::nearEqualsV(m_RmlTex->GetResolution(), iViewDim))
-	{
-		GenerateFramebuffer(iViewDim);
-	}
-
-	api->BindFramebuffer(m_RmlFb);
+	api->BindFramebuffer(renderTarget.GetFramebuffer());
 
 	api->SetClearColor(vec4(0.f));
 	api->Clear(render::E_ClearFlag::CF_Color);
 
 	// view projection matrix
+	ivec2 const iViewDim = renderTarget.GetDimensions();
 	vec2 const viewDim = math::vecCast<float>(iViewDim);
 	mat4 const viewProjection = math::orthographic(0.f, viewDim.x, viewDim.y, 0.f, -10000.f, 10000.f) * math::scale(vec3(1.f, -1.f, 1.f)); // v flip
 	RmlGlobal::GetInstance()->SetRIView(iViewDim, viewProjection);
@@ -103,55 +96,11 @@ void GuiRenderer::RenderContexts(render::Viewport const* const viewport, render:
 	api->SetBlendFunction(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::OneMinusSourceAlpha);
 
 	api->SetShader(m_RmlBlitShader.get());
-	m_RmlBlitShader->Upload("uTexture"_hash, static_cast<render::TextureData const*>(m_RmlTex.Get()));
+	m_RmlBlitShader->Upload("uTexture"_hash, renderTarget.GetTexture());
 	render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
 
 	// reset pipeline state
 	api->SetBlendEnabled(false);
-}
-
-//----------------------------------
-// GuiRenderer::GenerateFramebuffer
-//
-void GuiRenderer::GenerateFramebuffer(ivec2 const dim)
-{
-	DeleteFramebuffer();
-
-	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
-
-	api->GenFramebuffers(1, &m_RmlFb);
-	api->BindFramebuffer(m_RmlFb);
-
-	// target texture
-	m_RmlTex = Create<render::TextureData>(render::E_ColorFormat::RGBA8, dim); // non float fb prevents alpha from exceeding 1
-	m_RmlTex->AllocateStorage();
-	m_RmlTex->SetParameters(render::TextureParameters(false));
-
-	//Render Buffer for depth and stencil
-	api->GenRenderBuffers(1, &m_RmlRbo);
-	api->BindRenderbuffer(m_RmlRbo);
-	api->SetRenderbufferStorage(render::E_RenderBufferFormat::Depth24_Stencil8, dim);
-
-	// link it all together
-	api->LinkRenderbufferToFbo(render::E_RenderBufferFormat::Depth24_Stencil8, m_RmlRbo);
-	api->LinkTextureToFbo2D(0, m_RmlTex->GetLocation(), 0);
-
-	api->BindFramebuffer(0u);
-}
-
-//--------------------------------
-// GuiRenderer::DeleteFramebuffer
-//
-void GuiRenderer::DeleteFramebuffer()
-{
-	if (m_RmlTex != nullptr)
-	{
-		render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
-
-		api->DeleteRenderBuffers(1, &m_RmlRbo);
-		m_RmlTex = nullptr;
-		api->DeleteFramebuffers(1, &m_RmlFb);
-	}
 }
 
 

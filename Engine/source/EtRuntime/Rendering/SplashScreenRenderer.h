@@ -46,6 +46,7 @@ private:
 	bool m_IsInitialized = false;
 
 	gui::Context m_GuiContext;
+	gui::ContextRenderTarget m_ContextRenderTarget;
 	gui::GuiRenderer m_GuiRenderer;
 };
 

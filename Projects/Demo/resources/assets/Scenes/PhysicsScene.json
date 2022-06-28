@@ -316,6 +316,27 @@
           }
         ],
         "children": []
+      },
+      {
+        "id": 10,
+        "components": [
+          {
+            "transform component": {
+              "position": [ 0.0, 1.55, 1.0 ],
+              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+              "scale": [ 0.01, 0.01, 0.01 ]
+            }
+          },
+          {
+            "gui canvas component": {
+              "GUI document asset": "GUI/hello_world.rml",
+              "data model": "animals",
+              "dimensions": [1280, 720],
+              "is active": true
+            }
+          }
+        ],
+        "children": []
       }
     ],
     "skybox": "Textures/EnvironmentMaps/Ice_Lake_Ref.hdr",

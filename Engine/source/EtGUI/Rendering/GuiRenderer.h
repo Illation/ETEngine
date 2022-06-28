@@ -1,6 +1,5 @@
 #pragma once
-#include "TextRenderer.h"
-#include "SpriteRenderer.h"
+#include "ContextRenderTarget.h"
 
 #include <EtGUI/GuiExtension.h>
 
@@ -31,12 +30,8 @@ public:
 
 	// functionality
 	//---------------
-	void RenderContexts(render::Viewport const* const viewport, render::T_FbLoc const targetFb, Context* const contexts, size_t const count);
+	void RenderContexts(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context* const contexts, size_t const count);
 
-	// utility
-	//---------
-	void GenerateFramebuffer(ivec2 const dim);
-	void DeleteFramebuffer();
 
 	// Data
 	///////
@@ -46,11 +41,6 @@ private:
 	AssetPtr<render::ShaderData> m_RmlShader;
 	AssetPtr<render::ShaderData> m_RmlSdfShader;
 	AssetPtr<render::ShaderData> m_RmlBlitShader;
-
-	// target
-	render::T_FbLoc m_RmlFb;
-	render::T_RbLoc m_RmlRbo;
-	UniquePtr<render::TextureData> m_RmlTex;
 };
 
 

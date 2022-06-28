@@ -85,7 +85,8 @@ void SplashScreenRenderer::OnRender(render::T_FbLoc const targetFb)
 	m_GuiContext.Update();
 
 	render::Viewport const* const viewport = render::Viewport::GetCurrentViewport();
-	m_GuiRenderer.RenderContexts(viewport, targetFb, &m_GuiContext, 1u);
+	m_ContextRenderTarget.UpdateForDimensions(viewport->GetDimensions());
+	m_GuiRenderer.RenderContexts(targetFb, m_ContextRenderTarget, &m_GuiContext, 1u);
 }
 
 

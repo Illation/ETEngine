@@ -2,6 +2,7 @@
 #include "ContextContainer.h"
 
 #include "RmlUtil.h"
+#include "RmlGlobal.h"
 
 #include <EtCore/Input/RawInputProvider.h>
 
@@ -191,6 +192,7 @@ ContextContainer::T_Contexts ContextContainer::s_EmptyContexts;
 //
 void ContextContainer::OnTick()
 {
+	// screen contexts
 	for (auto& el : m_ViewportContexts)
 	{
 		for (Context& context : el.second.m_Contexts)
@@ -201,12 +203,23 @@ void ContextContainer::OnTick()
 			}
 		}
 	}
+
+	// world contexts
+	for (WorldContext& worldContext : m_WorldContexts)
+	{
+		Context& context = worldContext.m_Context;
+		if (context.IsActive() && context.IsDocumentLoaded())
+		{
+			context.Update();
+		}
+	}
 }
 
 //---------------------------------
 // ContextContainer::CreateContext
 //
-// May create a new context list and bind for viewport resize events
+// Create a screenspace GUI context attached to a specific viewport
+//  - may create a new context list and bind for viewport resize events
 //
 T_ContextId ContextContainer::CreateContext(Ptr<render::Viewport> const viewport)
 {
@@ -243,6 +256,27 @@ T_ContextId ContextContainer::CreateContext(Ptr<render::Viewport> const viewport
 	return ret.second;
 }
 
+//---------------------------------
+// ContextContainer::CreateContext
+//
+// Create a worldspace context
+//
+T_ContextId ContextContainer::CreateContext(core::T_SlotId const nodeId, ivec2 const dimensions)
+{
+	auto const ret = m_Contexts.insert(ContextData());
+
+	auto const worldContext = m_WorldContexts.insert(WorldContext());
+
+	ContextData& ctxData = *ret.first;
+	ctxData.m_Viewport = nullptr;
+	ctxData.m_Context = worldContext.second;
+
+	worldContext.first->m_Context.Init(std::to_string(ret.second), dimensions);
+	worldContext.first->m_NodeId = nodeId;
+
+	return ret.second;
+}
+
 //----------------------------------
 // ContextContainer::DestroyContext
 //
@@ -252,23 +286,30 @@ void ContextContainer::DestroyContext(T_ContextId const id)
 {
 	ContextData& ctxData = m_Contexts[id];
 
-	T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
-	ET_ASSERT(found != m_ViewportContexts.cend());
-	if (found->second.m_Contexts.size() == 1u)
+	if (ctxData.m_Viewport != nullptr)
 	{
-		core::RawInputProvider* const inputProvider = ctxData.m_Viewport->GetInputProvider();
-		if (inputProvider != nullptr)
+		T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
+		ET_ASSERT(found != m_ViewportContexts.cend());
+		if (found->second.m_Contexts.size() == 1u)
 		{
-			inputProvider->UnregisterListener(&(found->second));
-		}
+			core::RawInputProvider* const inputProvider = ctxData.m_Viewport->GetInputProvider();
+			if (inputProvider != nullptr)
+			{
+				inputProvider->UnregisterListener(&(found->second));
+			}
 
-		ET_ASSERT(found->second.m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID);
-		ctxData.m_Viewport->GetEventDispatcher().Unregister(found->second.m_VPCallbackId);
-		m_ViewportContexts.erase(found);
+			ET_ASSERT(found->second.m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID);
+			ctxData.m_Viewport->GetEventDispatcher().Unregister(found->second.m_VPCallbackId);
+			m_ViewportContexts.erase(found);
+		}
+		else
+		{
+			found->second.m_Contexts.erase(ctxData.m_Context);
+		}
 	}
 	else
 	{
-		found->second.m_Contexts.erase(ctxData.m_Context);
+		m_WorldContexts.erase(ctxData.m_Context);
 	}
 
 	m_Contexts.erase(id);
@@ -288,6 +329,14 @@ void ContextContainer::SetContextActive(T_ContextId const id, bool const isActiv
 Rml::DataModelConstructor ContextContainer::CreateDataModel(T_ContextId const id, std::string const& modelName)
 {
 	return GetContext(id).CreateDataModel(modelName);
+}
+
+//------------------------------------
+// ContextContainer::CreateDataModel
+//
+RefPtr<I_DataModel> ContextContainer::InstantiateDataModel(T_ContextId const id, core::HashString const modelId)
+{
+	return std::move(RmlGlobal::GetInstance()->GetDataModelFactory().CreateModel(GetContext(id), modelId));
 }
 
 //------------------------------------
@@ -383,14 +432,16 @@ ContextContainer::T_Contexts& ContextContainer::GetContexts(render::Viewport con
 //---------------------------------
 // ContextContainer::GetContexts
 //
-ContextContainer::T_Contexts const& ContextContainer::GetContexts(render::Viewport const* const vp) const
+ContextContainer::T_Contexts& ContextContainer::GetContexts(render::Viewport const* const vp, ContextRenderTarget*& renderTarget)
 {
-	T_ViewportContexts::const_iterator const found = m_ViewportContexts.find(ToPtr(vp));
+	T_ViewportContexts::iterator found = m_ViewportContexts.find(ToPtr(vp));
 	if (found == m_ViewportContexts.cend())
 	{
+		renderTarget = nullptr;
 		return s_EmptyContexts;
 	}
 
+	renderTarget = &(found->second.m_RenderTarget);
 	return found->second.m_Contexts;
 }
 
@@ -408,9 +459,17 @@ Rml::ElementDocument* ContextContainer::GetDocument(T_ContextId const id)
 Context& ContextContainer::GetContext(T_ContextId const id)
 {
 	ContextData& ctxData = m_Contexts[id];
-	T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
-	ET_ASSERT(found != m_ViewportContexts.cend());
-	return found->second.m_Contexts[ctxData.m_Context];
+
+	if (ctxData.m_Viewport != nullptr)
+	{
+		T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
+		ET_ASSERT(found != m_ViewportContexts.cend());
+		return found->second.m_Contexts[ctxData.m_Context];
+	}
+	else
+	{
+		return m_WorldContexts[ctxData.m_Context].m_Context;
+	}
 }
 
 //------------------------------------

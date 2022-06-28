@@ -49,14 +49,14 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 			if (evnt->renderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
 			{
 				render::ShadedSceneRenderer const* const renderer = static_cast<render::ShadedSceneRenderer const*>(evnt->renderer);
-				render::I_SceneExtension const* const ext = renderer->GetScene()->GetExtension(GuiExtension::s_ExtensionId);
+				render::I_SceneExtension* const ext = renderer->GetScene()->GetExtension(GuiExtension::s_ExtensionId);
 				if (ext == nullptr)
 				{
 					LOG("render scene does not have a GUI extension");
 					return;
 				}
 
-				GuiExtension const* const guiExt = static_cast<GuiExtension const*>(ext);
+				GuiExtension* const guiExt = static_cast<GuiExtension*>(ext);
 				DrawInWorld(evnt->targetFb, *guiExt, renderer->GetScene()->GetNodes());
 			}
 			else
@@ -117,7 +117,7 @@ void SceneRendererGUI::Deinit()
 //
 // Draw UI from the extension that sits within the world
 //
-void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension const& guiExt, core::slot_map<mat4> const& nodes)
+void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension& guiExt, core::slot_map<mat4> const& nodes)
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 	api->BindFramebuffer(targetFb);
@@ -133,6 +133,25 @@ void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension 
 
 		m_SpriteRenderer.Draw(sprite.texture, pos.xy, sprite.color, sprite.pivot, scale.xy, rot.Roll(), pos.z, scalingMode);
 	}
+
+	// RmlUi
+	//--------
+	api->DebugPushGroup("RmlUi");
+
+	for (ContextContainer::WorldContext& worldContext : guiExt.GetContextContainer().GetWorldContexts())
+	{
+		if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+		{
+			ivec2 const contextDim = worldContext.m_Context.GetDimensions();
+			worldContext.m_RenderTarget.UpdateForDimensions(contextDim);
+
+			mat4 const transform = nodes[worldContext.m_NodeId] * math::scale(vec3(math::vecCast<float>(contextDim), 1.f));
+
+			m_GuiRenderer.RenderContexts(targetFb, worldContext.m_RenderTarget, &worldContext.m_Context, 1u);
+		}
+	}
+
+	api->DebugPopGroup(); // RmlUi
 }
 
 //---------------------------------
@@ -153,8 +172,10 @@ void SceneRendererGUI::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension&
 	api->DebugPushGroup("RmlUi");
 
 	render::Viewport const* const viewport = render::Viewport::GetCurrentViewport();
-	ContextContainer::T_Contexts& contexts = guiExt.GetContextContainer().GetContexts(viewport);
-	m_GuiRenderer.RenderContexts(viewport, targetFb, contexts.data(), contexts.size());
+	ContextRenderTarget* renderTarget;
+	ContextContainer::T_Contexts& contexts = guiExt.GetContextContainer().GetContexts(viewport, renderTarget);
+	renderTarget->UpdateForDimensions(viewport->GetDimensions());
+	m_GuiRenderer.RenderContexts(targetFb, *renderTarget, contexts.data(), contexts.size());
 
 	api->DebugPopGroup(); // RmlUi
 }
