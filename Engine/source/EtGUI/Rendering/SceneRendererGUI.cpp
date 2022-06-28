@@ -147,7 +147,7 @@ void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension&
 
 			mat4 const transform = nodes[worldContext.m_NodeId] * math::scale(vec3(math::vecCast<float>(contextDim), 1.f));
 
-			m_GuiRenderer.RenderContexts(targetFb, worldContext.m_RenderTarget, &worldContext.m_Context, 1u);
+			m_GuiRenderer.RenderWorldContext(targetFb, worldContext.m_RenderTarget, worldContext.m_Context, transform);
 		}
 	}
 

@@ -27,6 +27,7 @@ void GuiRenderer::Init()
 	m_RmlShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUi.glsl"));
 	m_RmlSdfShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUiSdf.glsl"));
 	m_RmlBlitShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUiBlit.glsl"));
+	m_RmlBlit3DShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUiBlit3D.glsl"));
 }
 
 //----------------------------------
@@ -50,6 +51,66 @@ void GuiRenderer::RenderContexts(render::T_FbLoc const targetFb, ContextRenderTa
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
+	SetupContextRendering(api, renderTarget);
+
+	// render each context
+	for (size_t cIdx = 0u; cIdx < count; ++cIdx)
+	{
+		if (contexts[cIdx].IsActive() && contexts[cIdx].IsDocumentLoaded())
+		{
+			contexts[cIdx].Render();
+		}
+	}
+
+	// blit results to target framebuffer 
+	api->BindFramebuffer(targetFb);
+	api->SetBlendFunction(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::OneMinusSourceAlpha);
+
+	api->SetShader(m_RmlBlitShader.get());
+	m_RmlBlitShader->Upload("uTexture"_hash, renderTarget.GetTexture());
+	render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
+
+	// reset pipeline state
+	api->SetBlendEnabled(false);
+}
+
+//----------------------------------
+// GuiRenderer::RenderWorldContext
+//
+// Render a 3D world context
+//
+void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context& context, mat4 const& transform)
+{
+	if (!(context.IsActive() && context.IsDocumentLoaded()))
+	{
+		return;
+	}
+
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+
+	SetupContextRendering(api, renderTarget);
+	context.Render();
+
+	// blit results to target framebuffer 
+	api->BindFramebuffer(targetFb);
+	api->SetBlendFunction(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::OneMinusSourceAlpha);
+
+	api->SetShader(m_RmlBlit3DShader.get());
+	m_RmlBlit3DShader->Upload("uTexture"_hash, renderTarget.GetTexture());
+	m_RmlBlit3DShader->Upload("uTransform"_hash, transform);
+	render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
+
+	// reset pipeline state
+	api->SetBlendEnabled(false);
+}
+
+//------------------------------------
+// GuiRenderer::SetupContextRendering
+//
+// Prepare device for rendering UI contexts
+//
+void GuiRenderer::SetupContextRendering(render::I_GraphicsContextApi* const api, ContextRenderTarget &renderTarget)
+{
 	RmlGlobal::GetInstance()->SetGraphicsContext(ToPtr(api));
 
 	// Set target framebuffer
@@ -80,27 +141,6 @@ void GuiRenderer::RenderContexts(render::T_FbLoc const targetFb, ContextRenderTa
 		render::E_BlendFactor::OneMinusSourceAlpha, render::E_BlendFactor::One);
 	api->SetCullEnabled(false);
 	api->SetDepthEnabled(false);
-
-	// render each context
-	for (size_t cIdx = 0u; cIdx < count; ++cIdx)
-	{
-		Context& context = contexts[cIdx];
-		if (context.IsActive() && context.IsDocumentLoaded())
-		{
-			context.Render();
-		}
-	}
-
-	// blit results to target framebuffer - this can also be used in the future to transform the UI into viewspace
-	api->BindFramebuffer(targetFb);
-	api->SetBlendFunction(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::OneMinusSourceAlpha);
-
-	api->SetShader(m_RmlBlitShader.get());
-	m_RmlBlitShader->Upload("uTexture"_hash, renderTarget.GetTexture());
-	render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
-
-	// reset pipeline state
-	api->SetBlendEnabled(false);
 }
 
 
