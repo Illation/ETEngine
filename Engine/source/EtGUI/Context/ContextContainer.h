@@ -82,6 +82,7 @@ public:
 		Context m_Context;
 		ContextRenderTarget m_RenderTarget;
 		core::T_SlotId m_NodeId;
+		bool m_IsDepthEnabled = true;
 	};
 
 	typedef core::slot_map<WorldContext> T_WorldContexts;
@@ -107,6 +108,8 @@ public:
 	void DestroyContext(T_ContextId const id);
 
 	void SetContextActive(T_ContextId const id, bool const isActive);
+
+	void SetDepthTestEnabled(T_ContextId const id, bool const depthEnabled);
 
 	Rml::DataModelConstructor CreateDataModel(T_ContextId const id, std::string const& modelName);
 	RefPtr<I_DataModel> InstantiateDataModel(T_ContextId const id, core::HashString const modelId);

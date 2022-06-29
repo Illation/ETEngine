@@ -66,6 +66,8 @@ void GuiRenderer::RenderContexts(render::T_FbLoc const targetFb, ContextRenderTa
 	api->BindFramebuffer(targetFb);
 	api->SetBlendFunction(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::OneMinusSourceAlpha);
 
+	api->SetViewport(ivec2(0), render::Viewport::GetCurrentViewport()->GetDimensions());
+
 	api->SetShader(m_RmlBlitShader.get());
 	m_RmlBlitShader->Upload("uTexture"_hash, renderTarget.GetTexture());
 	render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
@@ -79,7 +81,11 @@ void GuiRenderer::RenderContexts(render::T_FbLoc const targetFb, ContextRenderTa
 //
 // Render a 3D world context
 //
-void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context& context, mat4 const& transform)
+void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb, 
+	ContextRenderTarget& renderTarget, 
+	Context& context, 
+	mat4 const& transform,
+	bool const enableDepth)
 {
 	if (!(context.IsActive() && context.IsDocumentLoaded()))
 	{
@@ -95,6 +101,9 @@ void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb, ContextRend
 	api->BindFramebuffer(targetFb);
 	api->SetBlendFunction(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::OneMinusSourceAlpha);
 
+	api->SetDepthEnabled(enableDepth);
+	api->SetViewport(ivec2(0), render::Viewport::GetCurrentViewport()->GetDimensions());
+
 	api->SetShader(m_RmlBlit3DShader.get());
 	m_RmlBlit3DShader->Upload("uTexture"_hash, renderTarget.GetTexture());
 	m_RmlBlit3DShader->Upload("uTransform"_hash, transform);
@@ -102,6 +111,7 @@ void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb, ContextRend
 
 	// reset pipeline state
 	api->SetBlendEnabled(false);
+	api->SetDepthEnabled(false);
 }
 
 //------------------------------------
@@ -135,6 +145,7 @@ void GuiRenderer::SetupContextRendering(render::I_GraphicsContextApi* const api,
 	RmlGlobal::GetInstance()->SetRIShader(m_RmlShader, m_RmlSdfShader);
 
 	// pipeline state
+	api->SetViewport(ivec2(0), iViewDim);
 	api->SetBlendEnabled(true);
 	api->SetBlendEquation(render::E_BlendEquation::Add);
 	api->SetBlendFunctionSeparate(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::One, // alpha channel always adds preventing gaps in the fb

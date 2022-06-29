@@ -324,7 +324,7 @@
             "transform component": {
               "position": [ 0.0, 1.55, 1.0 ],
               "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
-              "scale": [ 0.01, 0.01, 0.01 ]
+              "scale": [ 0.001, 0.001, 0.001 ]
             }
           },
           {
@@ -332,7 +332,8 @@
               "GUI document asset": "GUI/hello_world.rml",
               "data model": "animals",
               "dimensions": [1280, 720],
-              "is active": true
+              "is active": true,
+              "depth test enabled": true
             }
           }
         ],

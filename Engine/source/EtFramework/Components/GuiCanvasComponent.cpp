@@ -24,6 +24,7 @@ RTTR_REGISTRATION
 		.property("data model", &GuiCanvasComponent::m_DataModelId)
 		.property("dimensions", &GuiCanvasComponent::m_Dimensions)
 		.property("is active", &GuiCanvasComponent::m_IsActive)
+		.property("depth test enabled", &GuiCanvasComponent::m_EnableDepthTest)
 	END_REGISTER_CLASS_POLYMORPHIC(GuiCanvasComponent, I_ComponentDescriptor);
 }
 
@@ -54,6 +55,7 @@ void GuiCanvasComponent::OnComponentAdded(EcsController& controller, GuiCanvasCo
 
 	contextContainer.SetContextActive(component.m_Id, component.m_IsActive);
 	contextContainer.SetLoadedDocument(component.m_Id, component.m_GuiDocumentId);
+	contextContainer.SetDepthTestEnabled(component.m_Id, component.m_EnableDepthTest);
 }
 
 //--------------------------------------
@@ -116,6 +118,18 @@ void GuiCanvasComponent::SetActive(bool const isActive)
 	if (m_Id != core::INVALID_SLOT_ID)
 	{
 		UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().SetContextActive(m_Id, isActive);
+	}
+}
+
+//-----------------------------------------
+// GuiCanvasComponent::SetDepthTestEnabled
+//
+void GuiCanvasComponent::SetDepthTestEnabled(bool const depthTest)
+{
+	m_EnableDepthTest = depthTest;
+	if (m_Id != core::INVALID_SLOT_ID)
+	{
+		UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().SetDepthTestEnabled(m_Id, m_EnableDepthTest);
 	}
 }
 

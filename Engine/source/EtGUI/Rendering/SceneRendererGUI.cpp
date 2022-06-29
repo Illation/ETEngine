@@ -145,9 +145,9 @@ void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension&
 			ivec2 const contextDim = worldContext.m_Context.GetDimensions();
 			worldContext.m_RenderTarget.UpdateForDimensions(contextDim);
 
-			mat4 const transform = nodes[worldContext.m_NodeId] * math::scale(vec3(math::vecCast<float>(contextDim), 1.f));
+			mat4 const transform = math::scale(vec3(math::vecCast<float>(contextDim), 1.f)) * nodes[worldContext.m_NodeId];
 
-			m_GuiRenderer.RenderWorldContext(targetFb, worldContext.m_RenderTarget, worldContext.m_Context, transform);
+			m_GuiRenderer.RenderWorldContext(targetFb, worldContext.m_RenderTarget, worldContext.m_Context, transform, worldContext.m_IsDepthEnabled);
 		}
 	}
 

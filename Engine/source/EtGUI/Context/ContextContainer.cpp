@@ -323,6 +323,19 @@ void ContextContainer::SetContextActive(T_ContextId const id, bool const isActiv
 	GetContext(id).SetActive(isActive);
 }
 
+//---------------------------------------
+// ContextContainer::SetDepthTestEnabled
+//
+// if false a world context will render in front of everything else
+//
+void ContextContainer::SetDepthTestEnabled(T_ContextId const id, bool const depthEnabled)
+{
+	ContextData& ctxData = m_Contexts[id];
+	ET_ASSERT(ctxData.m_Viewport == nullptr, "Depth testing is only applicable on World contexts");
+
+	m_WorldContexts[ctxData.m_Context].m_IsDepthEnabled = depthEnabled;
+}
+
 //------------------------------------
 // ContextContainer::CreateDataModel
 //

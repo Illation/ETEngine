@@ -31,7 +31,11 @@ public:
 	// functionality
 	//---------------
 	void RenderContexts(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context* const contexts, size_t const count);
-	void RenderWorldContext(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context& contexts, mat4 const& transform);
+	void RenderWorldContext(render::T_FbLoc const targetFb, 
+		ContextRenderTarget& renderTarget, 
+		Context& contexts, 
+		mat4 const& transform, 
+		bool const enableDepth);
 
 	// utility
 	//---------

@@ -51,11 +51,13 @@ public:
 	gui::I_DataModel* GetDataModel() { return m_DataModel.Get(); }
 	ivec2 GetDimensions() const { return m_Dimensions; }
 	bool IsActive() const { return m_IsActive; }
+	bool IsDepthTestEnabled() const { return m_EnableDepthTest; }
 
 	// modifiers
 	//-----------
 	void SetDocument(core::HashString const guiDocId);
 	void SetActive(bool const isActive);
+	void SetDepthTestEnabled(bool const depthTest);
 
 	// Data
 	///////
@@ -68,6 +70,7 @@ private:
 	core::HashString m_DataModelId;
 	ivec2 m_Dimensions;
 	bool m_IsActive = true;
+	bool m_EnableDepthTest = true;
 };
 
 
