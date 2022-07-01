@@ -120,7 +120,8 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 	// Global variables for all rendering systems
 	//********************************************
-	RenderingSystems::Instance()->GetSharedVarController().UpdataData(m_Camera, m_GBuffer);
+	Camera const& camera = GetCamera();
+	RenderingSystems::Instance()->GetSharedVarController().UpdataData(camera, m_GBuffer);
 
 	//Shadow Mapping
 	//**************
@@ -162,7 +163,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	Patch& patch = RenderingSystems::Instance()->GetPatch();
 	for (Planet& planet : m_RenderScene->GetTerrains())
 	{
-		if (planet.GetTriangulator().Update(m_RenderScene->GetNodes()[planet.GetNodeId()], m_Camera))
+		if (planet.GetTriangulator().Update(m_RenderScene->GetNodes()[planet.GetNodeId()], camera))
 		{
 			planet.GetTriangulator().GenerateGeometry();
 		}
@@ -304,7 +305,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	StarField const* const starfield = m_RenderScene->GetStarfield();
 	if (starfield != nullptr)
 	{
-		starfield->Draw(m_Camera);
+		starfield->Draw(camera);
 	}
 	api->DebugPopGroup();
 
@@ -367,6 +368,14 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->DebugPopGroup(); // post processing pass
 }
 
+//--------------------------------
+// ShadedSceneRenderer::GetCamera
+//
+Camera const& ShadedSceneRenderer::GetCamera() const
+{
+	return m_RenderScene->GetCameras()[m_CameraId];
+}
+
 //---------------------------------
 // ShadedSceneRenderer::DrawShadow
 //
@@ -405,6 +414,8 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 {
 	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
+	Camera const& camera = GetCamera();
+
 	for (MaterialCollection const& collection : collectionGroup)
 	{
 		api->SetShader(collection.m_Shader.get());
@@ -423,7 +434,7 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 					math::Sphere instSphere = math::Sphere((transform * vec4(mesh.m_BoundingVolume.pos, 1.f)).xyz, 
 						math::length(math::decomposeScale(transform)) * mesh.m_BoundingVolume.radius);
 
-					if (m_Camera.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
+					if (camera.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
 					{
 						collection.m_Shader->Upload("model"_hash, transform);
 						api->DrawElements(E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);

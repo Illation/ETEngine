@@ -26,6 +26,7 @@ private:
 	friend class Create<RmlGlobal>;
 
 	static RefPtr<RmlGlobal> s_Instance;
+	static DataModelFactory s_DataModelFactory;
 
 	// singleton access
 	//------------------
@@ -33,6 +34,8 @@ public:
 	static RefPtr<RmlGlobal> GetInstance();
 	static void Destroy();
 	static bool IsInitialized();
+
+	static DataModelFactory& GetDataModelFactory() { return s_DataModelFactory; }
 
 	// construct destruct
 	//--------------------
@@ -50,10 +53,6 @@ public:
 	void SetRIShader(AssetPtr<render::ShaderData> const shader, AssetPtr<render::ShaderData> const textShader);
 	void SetRIView(ivec2 const dim, mat4 const& viewProj);
 
-	// accessors
-	//-----------
-	DataModelFactory& GetDataModelFactory() { return m_DataModelFactory; }
-
 	// Data
 	///////
 	
@@ -67,8 +66,6 @@ private:
 	FontEffectOutline::Instancer m_OutlineInstancer;
 	FontEffectShadow::Instancer m_ShadowInstancer;
 	FontEffectBlur::Instancer m_BlurInstancer;
-
-	DataModelFactory m_DataModelFactory;
 };
 
 

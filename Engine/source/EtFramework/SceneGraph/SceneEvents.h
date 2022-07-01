@@ -25,6 +25,7 @@ enum E_SceneEvent : T_SceneEventFlags
 	RegisterSystems		= 1 << 3,
 	PreLoadScreenGUI	= 1 << 4,
 	PostLoadScreenGUI	= 1 << 5,
+	ActiveCameraChanged = 1 << 6,
 
 	All = 0xFF
 };

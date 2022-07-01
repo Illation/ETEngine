@@ -8,6 +8,7 @@
 #include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
 #include <EtRendering/GraphicsTypes/DirectionalShadowData.h>
 #include <EtRendering/GraphicsTypes/Mesh.h>
+#include <EtRendering/GraphicsTypes/Camera.h>
 
 
 namespace et {
@@ -63,6 +64,9 @@ public:
 	void UpdateNode(T_NodeId const node, mat4 const& transform);
 	void RemoveNode(T_NodeId const node);
 
+	core::T_SlotId AddCamera();
+	void RemoveCamera(core::T_SlotId const cameraId);
+
 	T_InstanceId AddInstance(I_Material const* const material, AssetPtr<MeshData> const mesh, T_NodeId const node);
 	void RemoveInstance(T_InstanceId const instance);
 
@@ -90,6 +94,9 @@ public:
 	// accessors
 	//-------------
 	core::slot_map<mat4> const& GetNodes() const { return m_Nodes; }
+
+	Camera& GetCamera(core::T_SlotId const cameraId);
+	core::slot_map<Camera> const& GetCameras() const { return m_Cameras; }
 
 	core::slot_map<Planet> const& GetTerrains() const { return m_Terrains; }
 	core::slot_map<Planet>& GetTerrains() { return m_Terrains; }
@@ -137,6 +144,8 @@ private:
 	// accessible render data
 	//------------------------
 	core::slot_map<mat4> m_Nodes;
+
+	core::slot_map<Camera> m_Cameras;
 
 	core::slot_map<Planet> m_Terrains;
 	core::slot_map<MaterialCollection> m_OpaqueRenderables;

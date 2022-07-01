@@ -35,6 +35,7 @@ public:
 		ContextRenderTarget& renderTarget, 
 		Context& contexts, 
 		mat4 const& transform, 
+		vec4 const& color,
 		bool const enableDepth);
 
 	// utility

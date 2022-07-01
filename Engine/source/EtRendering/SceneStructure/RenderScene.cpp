@@ -52,6 +52,26 @@ void Scene::RemoveNode(T_NodeId const node)
 }
 
 //----------------------
+// Scene::AddCamera
+//
+// Add a default camera to the scene.. the camera parameters should be updated by accessing the non-const reference to it after
+//
+core::T_SlotId Scene::AddCamera()
+{
+	return m_Cameras.insert(Camera()).second;
+}
+
+//----------------------
+// Scene::RemoveCamera
+//
+// Remove the camera from the scene
+//
+void Scene::RemoveCamera(core::T_SlotId const cameraId)
+{
+	m_Cameras.erase(cameraId);
+}
+
+//----------------------
 // Scene::AddInstance
 //
 // Adds a drawable mesh to the scene
@@ -403,6 +423,14 @@ void Scene::AddExtension(UniquePtr<I_SceneExtension>& ext)
 void Scene::ClearExtensions()
 {
 	m_Extensions.clear();
+}
+
+//-----------------
+// Scene::GetLight
+//
+Camera& Scene::GetCamera(core::T_SlotId const cameraId)
+{
+	return m_Cameras[cameraId];
 }
 
 //-----------------

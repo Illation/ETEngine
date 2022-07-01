@@ -41,6 +41,18 @@ bool ContextContainer::PerViewport::ProcessKeyPressed(E_KbdKey const key, core::
 				}
 			}
 		}
+
+		for (core::T_SlotId const worldContextId : m_EventWorldContexts)
+		{
+			WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
+			if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+			{
+				if (worldContext.m_Context.ProcessKeyPressed(rmlKey, mods))
+				{
+					return true;
+				}
+			}
+		}
 	}
 
 	return false;
@@ -60,6 +72,18 @@ bool ContextContainer::PerViewport::ProcessKeyReleased(E_KbdKey const key, core:
 			if (context.IsActive() && context.IsDocumentLoaded())
 			{
 				if (context.ProcessKeyReleased(rmlKey, mods))
+				{
+					return true;
+				}
+			}
+		}
+
+		for (core::T_SlotId const worldContextId : m_EventWorldContexts)
+		{
+			WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
+			if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+			{
+				if (worldContext.m_Context.ProcessKeyReleased(rmlKey, mods))
 				{
 					return true;
 				}
@@ -89,6 +113,18 @@ bool ContextContainer::PerViewport::ProcessMousePressed(E_MouseButton const butt
 				}
 			}
 		}
+
+		for (core::T_SlotId const worldContextId : m_EventWorldContexts)
+		{
+			WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
+			if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+			{
+				if (worldContext.m_Context.ProcessMousePressed(rmlButton, mods))
+				{
+					return true;
+				}
+			}
+		}
 	}
 
 	return false;
@@ -108,6 +144,18 @@ bool ContextContainer::PerViewport::ProcessMouseReleased(E_MouseButton const but
 			if (context.IsActive() && context.IsDocumentLoaded())
 			{
 				if (context.ProcessMouseReleased(rmlButton, mods))
+				{
+					return true;
+				}
+			}
+		}
+
+		for (core::T_SlotId const worldContextId : m_EventWorldContexts)
+		{
+			WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
+			if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+			{
+				if (worldContext.m_Context.ProcessMouseReleased(rmlButton, mods))
 				{
 					return true;
 				}
@@ -135,6 +183,67 @@ bool ContextContainer::PerViewport::ProcessMouseMove(ivec2 const& mousePos, core
 		}
 	}
 
+	render::Scene const* const renderScene = m_ContextContainer->GetRenderScene();
+	for (core::T_SlotId const worldContextId : m_EventWorldContexts)
+	{
+		WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
+		if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+		{
+			render::Camera const& camera = renderScene->GetCameras()[worldContext.m_EventCameraId];
+			if (camera.GetViewport() == m_Viewport)
+			{
+				// transform the cursor into a world space ray from the camera through the near plane
+				vec4 ndcMouse(((math::vecCast<float>(mousePos) * 2.f) / math::vecCast<float>(m_Viewport->GetDimensions())) - vec2(1.f), -1.f, 1.f);
+				ndcMouse.y = -ndcMouse.y;
+				vec4 rayEye = math::inverse(camera.GetProj()) * ndcMouse;
+				//rayEye = vec4(rayEye.xy, -1.f, 0.f);
+				vec4 const worldSpaceMouse = camera.GetViewInv() * rayEye;
+				//vec4 const worldSpaceMouse = camera.GetViewProjInv() * ndcMouse;
+
+				vec3 const r0 = camera.GetPosition();
+				vec3 const rayDir = math::normalize(worldSpaceMouse.xyz - r0);
+
+				// construct a rectangle on a plane from the contexts transform and dimensions
+				vec2 const contextDim = math::vecCast<float>(worldContext.m_Context.GetDimensions());
+				mat4 const transform = math::scale(vec3(contextDim, 1.f))
+					* renderScene->GetNodes()[worldContext.m_NodeId];
+				mat4 const orientation = math::DiscardW(transform);
+
+				vec3 xTF = (orientation * vec4(vec3::RIGHT, 1.f)).xyz; // horizontal edge of the context rectangle
+				vec3 yTF = (orientation * vec4(vec3::DOWN, 1.f)).xyz; // vertical edge of the context rectangle
+				vec3 p0 = math::decomposePosition(transform) + (xTF * 0.5f) + (yTF * 0.5f); // top left corner of the rectangle
+				vec3 pN = math::normalize(math::cross(xTF, yTF)); // rectangle plane normal
+
+				// intersect the ray with the plane
+				float dDotN = math::dot(rayDir, pN);
+				if (!math::nearEquals(dDotN, 0.f))
+				{
+					//float pD = math::dot(pN, p0);
+					//vec3 const intersection = (pD - math::dot(pN, r0)) / dDotN;
+					float const a = math::dot(p0 - r0, pN) / dDotN;
+					vec3 const intersection = r0 + (rayDir * a); // where the mouse hits the infinite plane
+
+					// now project the difference vector of the intersection and rectangle origin onto the rectangle edges
+					vec3 const p0p = intersection - p0;
+					float const qx = math::dot(p0p, xTF) / math::lengthSquared(xTF);
+					float const qy = math::dot(p0p, yTF) / math::lengthSquared(yTF);
+					LOG(FS("screen: %s r0 %s rD %s intersection %s projection: %s", 
+						mousePos.ToString().c_str(), 
+						rayEye.ToString().c_str(),
+						rayDir.ToString().c_str(),
+						intersection.ToString().c_str(),
+						vec2(qx, qy).ToString().c_str()));
+
+					ivec2 const contextMousePos = math::vecCast<int32>(vec2(qx, qy) * contextDim);
+					if (worldContext.m_Context.ProcessMouseMove(contextMousePos, mods))
+					{
+						return true;
+					}
+				}
+			}
+		}
+	}
+
 	return false;
 }
 
@@ -156,6 +265,18 @@ bool ContextContainer::PerViewport::ProcessMouseWheelDelta(ivec2 const& mouseWhe
 		}
 	}
 
+	for (core::T_SlotId const worldContextId : m_EventWorldContexts)
+	{
+		WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
+		if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+		{
+			if (worldContext.m_Context.ProcessMouseWheelDelta(delta, mods))
+			{
+				return true;
+			}
+		}
+	}
+
 	return false;
 }
 
@@ -169,6 +290,18 @@ bool ContextContainer::PerViewport::ProcessTextInput(core::E_Character const cha
 		if (context.IsActive() && context.IsDocumentLoaded())
 		{
 			if (context.ProcessTextInput(static_cast<Rml::Character>(character)))
+			{
+				return true;
+			}
+		}
+	}
+
+	for (core::T_SlotId const worldContextId : m_EventWorldContexts)
+	{
+		WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
+		if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+		{
+			if (worldContext.m_Context.ProcessTextInput(static_cast<Rml::Character>(character)))
 			{
 				return true;
 			}
@@ -225,27 +358,7 @@ T_ContextId ContextContainer::CreateContext(Ptr<render::Viewport> const viewport
 {
 	auto const ret = m_Contexts.insert(ContextData());
 
-	std::pair<T_ViewportContexts::iterator, bool> found = m_ViewportContexts.try_emplace(viewport, PerViewport());
-	PerViewport& perVp = found.first->second;
-	if (found.second)
-	{
-		perVp.m_VPCallbackId = viewport->GetEventDispatcher().Register(render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
-			[this](render::T_ViewportEventFlags const, render::ViewportEventData const* const data) -> void
-			{
-				OnViewportResize(data->viewport, data->size);
-			}));
-
-		core::RawInputProvider* const inputProvider = viewport->GetInputProvider();
-		if (inputProvider != nullptr)
-		{
-			inputProvider->RegisterListener(ToPtr(&perVp));
-		}
-	}
-	else
-	{
-		ET_ASSERT(perVp.m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID);
-	}
-
+	PerViewport& perVp = FindOrCreatePerViewport(viewport);
 	auto const context = perVp.m_Contexts.insert(Context());
 
 	ContextData& ctxData = *ret.first;
@@ -290,17 +403,9 @@ void ContextContainer::DestroyContext(T_ContextId const id)
 	{
 		T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
 		ET_ASSERT(found != m_ViewportContexts.cend());
-		if (found->second.m_Contexts.size() == 1u)
+		if ((found->second.m_Contexts.size() == 1u) && (found->second.m_EventWorldContexts.empty()))
 		{
-			core::RawInputProvider* const inputProvider = ctxData.m_Viewport->GetInputProvider();
-			if (inputProvider != nullptr)
-			{
-				inputProvider->UnregisterListener(&(found->second));
-			}
-
-			ET_ASSERT(found->second.m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID);
-			ctxData.m_Viewport->GetEventDispatcher().Unregister(found->second.m_VPCallbackId);
-			m_ViewportContexts.erase(found);
+			ErasePerViewport(ctxData.m_Viewport.Get(), found);
 		}
 		else
 		{
@@ -321,6 +426,62 @@ void ContextContainer::DestroyContext(T_ContextId const id)
 void ContextContainer::SetContextActive(T_ContextId const id, bool const isActive)
 {
 	GetContext(id).SetActive(isActive);
+}
+
+//----------------------------------
+// ContextContainer::SetEventCamera
+//
+// for 3D contexts set the camera we receive events from
+// 
+void ContextContainer::SetEventCamera(T_ContextId const id, core::T_SlotId const cameraId)
+{
+	ContextData& ctxData = m_Contexts[id];
+	ET_ASSERT(ctxData.m_Viewport == nullptr, "Context event camera is only applicable on World contexts");
+
+	WorldContext& worldContext = m_WorldContexts[ctxData.m_Context];
+	if (worldContext.m_EventCameraId != cameraId)
+	{
+		if (worldContext.m_EventCameraId != core::INVALID_SLOT_ID)
+		{
+			render::Camera const& cam = m_RenderScene->GetCameras()[worldContext.m_EventCameraId];
+			ET_ASSERT(cam.GetViewport() != nullptr);
+
+			T_ViewportContexts::iterator found = m_ViewportContexts.find(cam.GetViewport());
+			ET_ASSERT(found != m_ViewportContexts.cend());
+			if ((found->second.m_EventWorldContexts.size() == 1u) && (found->second.m_Contexts.empty()))
+			{
+				ErasePerViewport(ctxData.m_Viewport.Get(), found);
+			}
+			else
+			{
+				found->second.m_EventWorldContexts.erase(ctxData.m_Context);
+			}
+		}
+
+		worldContext.m_EventCameraId = cameraId;
+
+		if (worldContext.m_EventCameraId != core::INVALID_SLOT_ID)
+		{
+			render::Camera const& cam = m_RenderScene->GetCameras()[worldContext.m_EventCameraId];
+			ET_ASSERT(cam.GetViewport() != nullptr);
+
+			PerViewport& perVp = FindOrCreatePerViewport(cam.GetViewport());
+			perVp.m_EventWorldContexts.insert(ctxData.m_Context);
+		}
+	}
+}
+
+//-----------------------------------
+// ContextContainer::SetContextColor
+//
+// for 3D contexts the colour all UI will be multiplied with
+//
+void ContextContainer::SetContextColor(T_ContextId const id, vec4 const& color)
+{
+	ContextData& ctxData = m_Contexts[id];
+	ET_ASSERT(ctxData.m_Viewport == nullptr, "Context color is only applicable on World contexts");
+
+	m_WorldContexts[ctxData.m_Context].m_Color = color;
 }
 
 //---------------------------------------
@@ -349,7 +510,7 @@ Rml::DataModelConstructor ContextContainer::CreateDataModel(T_ContextId const id
 //
 RefPtr<I_DataModel> ContextContainer::InstantiateDataModel(T_ContextId const id, core::HashString const modelId)
 {
-	return std::move(RmlGlobal::GetInstance()->GetDataModelFactory().CreateModel(GetContext(id), modelId));
+	return std::move(RmlGlobal::GetDataModelFactory().CreateModel(GetContext(id), modelId));
 }
 
 //------------------------------------
@@ -495,6 +656,54 @@ void ContextContainer::OnViewportResize(render::Viewport const* const vp, ivec2 
 	{
 		context.SetDimensions(dim);
 	}
+}
+
+//-------------------------------------------
+// ContextContainer::FindOrCreatePerViewport
+//
+ContextContainer::PerViewport& ContextContainer::FindOrCreatePerViewport(Ptr<render::Viewport> const viewport)
+{
+	std::pair<T_ViewportContexts::iterator, bool> found = m_ViewportContexts.try_emplace(viewport, PerViewport());
+	PerViewport& perVp = found.first->second;
+	if (found.second)
+	{
+		perVp.m_Viewport = viewport;
+		perVp.m_ContextContainer = ToPtr(this);
+
+		perVp.m_VPCallbackId = viewport->GetEventDispatcher().Register(render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
+			[this](render::T_ViewportEventFlags const, render::ViewportEventData const* const data) -> void
+			{
+				OnViewportResize(data->viewport, data->size);
+			}));
+
+		core::RawInputProvider* const inputProvider = viewport->GetInputProvider();
+		if (inputProvider != nullptr)
+		{
+			inputProvider->RegisterListener(ToPtr(&perVp));
+		}
+	}
+	else
+	{
+		ET_ASSERT(perVp.m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID);
+	}
+
+	return found.first->second;
+}
+
+//------------------------------------
+// ContextContainer::ErasePerViewport
+//
+void ContextContainer::ErasePerViewport(render::Viewport* const vp, T_ViewportContexts::iterator const it)
+{
+	core::RawInputProvider* const inputProvider = vp->GetInputProvider();
+	if (inputProvider != nullptr)
+	{
+		inputProvider->UnregisterListener(&(it->second));
+	}
+
+	ET_ASSERT(it->second.m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID);
+	vp->GetEventDispatcher().Unregister(it->second.m_VPCallbackId);
+	m_ViewportContexts.erase(it);
 }
 
 

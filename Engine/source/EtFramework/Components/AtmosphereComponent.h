@@ -70,7 +70,7 @@ public:
 	// ComponentDescriptor interface
 	//-------------------------------
 	AtmosphereComponent* MakeData() override;
-	void OnScenePostLoad(EcsController& ecs, T_EntityId const id, AtmosphereComponent& comp);
+	void OnScenePostLoad(EcsController& ecs, T_EntityId const id, AtmosphereComponent& comp) override;
 
 	// Data
 	///////

@@ -7,6 +7,8 @@
 #include <EtCore/Input/RawInputListener.h>
 #include <EtCore/UpdateCycle/Tickable.h>
 
+#include <EtRendering/SceneStructure/RenderScene.h>
+
 #include <EtGUI/Rendering/ContextRenderTarget.h>
 
 
@@ -64,9 +66,14 @@ private:
 		bool ProcessTextInput(core::E_Character const character) override;
 
 		// data
+		Ptr<render::Viewport const> m_Viewport;
+
 		T_Contexts m_Contexts;
 		ContextRenderTarget m_RenderTarget;
+
+		Ptr<ContextContainer> m_ContextContainer;
 		render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
+		std::unordered_set<core::T_SlotId> m_EventWorldContexts;
 	};
 
 	typedef std::unordered_map<Ptr<render::Viewport const>, PerViewport> T_ViewportContexts;
@@ -82,6 +89,8 @@ public:
 		Context m_Context;
 		ContextRenderTarget m_RenderTarget;
 		core::T_SlotId m_NodeId;
+		core::T_SlotId m_EventCameraId = core::INVALID_SLOT_ID;
+		vec4 m_Color = vec4(1.f);
 		bool m_IsDepthEnabled = true;
 	};
 
@@ -94,6 +103,10 @@ public:
 	void operator=(ContextContainer const&) = delete;
 
 	~ContextContainer() = default;
+
+	// init
+	//------
+	void SetRenderScene(Ptr<render::Scene const> const renderScene) { m_RenderScene = renderScene; }
 
 	// tickable interface
 	//--------------------
@@ -109,6 +122,8 @@ public:
 
 	void SetContextActive(T_ContextId const id, bool const isActive);
 
+	void SetEventCamera(T_ContextId const id, core::T_SlotId const cameraId);
+	void SetContextColor(T_ContextId const id, vec4 const& color);
 	void SetDepthTestEnabled(T_ContextId const id, bool const depthEnabled);
 
 	Rml::DataModelConstructor CreateDataModel(T_ContextId const id, std::string const& modelName);
@@ -130,6 +145,8 @@ public:
 
 	Rml::ElementDocument* GetDocument(T_ContextId const id);
 
+	render::Scene const* GetRenderScene() const { return m_RenderScene.Get(); }
+
 #ifdef ET_DEBUG
 	bool IsDebuggerVisible() const { return m_IsDebuggerVisible; }
 #endif
@@ -139,6 +156,8 @@ public:
 private:
 	Context& GetContext(T_ContextId const id);
 	void OnViewportResize(render::Viewport const* const vp, ivec2 const dim);
+	PerViewport& FindOrCreatePerViewport(Ptr<render::Viewport> const viewport);
+	void ErasePerViewport(render::Viewport* const vp, T_ViewportContexts::iterator const it);
 
 	// Data
 	///////
@@ -148,6 +167,8 @@ private:
 
 	T_ViewportContexts m_ViewportContexts;
 	T_WorldContexts m_WorldContexts;
+
+	Ptr<render::Scene const> m_RenderScene;
 
 #ifdef ET_DEBUG
 	T_ContextId m_DebuggerContext = INVALID_CONTEXT_ID;

@@ -98,7 +98,7 @@ void Camera::SetClippingPlanes(float const nearPlane, float const farPlane, bool
 //----------------------------
 // Camera::SetViewport
 //
-void Camera::SetViewport(Viewport const* const viewport, bool const deferRecalculation)
+void Camera::SetViewport(Ptr<Viewport> const viewport, bool const deferRecalculation)
 {
 	m_Viewport = viewport;
 
@@ -135,7 +135,10 @@ void Camera::RecalculateView()
 //
 void Camera::RecalculateProjection()
 {
-	ET_ASSERT(m_Viewport != nullptr);
+	if (m_Viewport == nullptr)
+	{
+		return;
+	}
 
 	// Maybe camera should be linked to a specific viewport instead of getting the current one
 	float const aspectRatio = m_Viewport->GetAspectRatio();
@@ -167,6 +170,11 @@ void Camera::RecalculateProjection()
 //
 void Camera::RecalculateDerived()
 {
+	if (m_Viewport == nullptr)
+	{
+		return;
+	}
+
 	m_ViewProjection = m_View * m_Projection;
 	m_ViewProjectionInverse = math::inverse(m_ViewProjection);
 
@@ -177,7 +185,7 @@ void Camera::RecalculateDerived()
 	// update frustum
 	m_Frustum.SetCullTransform(mat4()); // Frustum will be in world space and objects need to transform themselves
 	m_Frustum.SetToCamera(*this);
-	m_Frustum.Update(m_Viewport);
+	m_Frustum.Update(m_Viewport.Get());
 }
 
 

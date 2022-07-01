@@ -35,7 +35,7 @@ public:
 
 	void SetClippingPlanes(float const nearPlane, float const farPlane, bool const deferRecalculation = false);
 
-	void SetViewport(Viewport const* const viewport, bool const deferRecalculation = false);
+	void SetViewport(Ptr<Viewport> const viewport, bool const deferRecalculation = false);
 
 	// accessors
 	//-----------
@@ -44,6 +44,8 @@ public:
 	vec3 const& GetUp() const { return m_Up; }
 
 	float GetFOV() const { return m_FieldOfView; }
+
+	Ptr<Viewport> GetViewport() const { return m_Viewport; }
 
 	float GetNearPlane() const { return m_NearPlane; }
 	float GetFarPlane() const { return m_FarPlane; }
@@ -86,7 +88,7 @@ private:
 	float m_FieldOfView = 45.f; // angle of perspective camera in degrees
 	float m_Size = 25.f; // width of orthographic camera
 
-	Viewport const* m_Viewport = nullptr; // aspect ratio of projection matrix
+	Ptr<Viewport> m_Viewport; // aspect ratio of projection matrix
 
 	// depth 
 	float m_NearPlane = 1.f;

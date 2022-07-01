@@ -3,11 +3,11 @@
 
 #include <EtCore/Content/AssetPointer.h>
 
-#include <EtGUI/Context/DataModel.h>
-
 #include <EtFramework/SceneGraph/SceneEvents.h>
 
 #include <EtRuntime/AbstractFramework.h>
+
+#include <Common/DemoUI.h>
 
 
 namespace et { namespace gui {
@@ -26,14 +26,6 @@ namespace demo {
 //
 class MainFramework final : public rt::AbstractFramework
 {
-	static core::HashString const s_HelloWorldGuiId;
-
-	struct GuiData : public gui::I_DataModel
-	{
-		bool m_ShowText = true;
-		std::string m_Animal = "dog";
-	};
-
 	// construct destruct
 	//--------------------
 public:
@@ -63,7 +55,7 @@ private:
 	bool m_DrawDebugInfo = true;
 	bool m_DrawFontAtlas = false;
 
-	GuiData m_GuiData;
+	DemoUI::GuiData m_GuiData;
 	bool m_ShowGui = true;
 };
 

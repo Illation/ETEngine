@@ -322,17 +322,21 @@
         "components": [
           {
             "transform component": {
-              "position": [ 0.0, 1.55, 1.0 ],
-              "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
-              "scale": [ 0.001, 0.001, 0.001 ]
+              "position": [ -2.5, 2.0, 1.0 ],
+              "rotation": [ 0.0, -0.2, 0.0, 1.0 ],
+              "scale": [ 0.003, 0.003, 0.003 ]
             }
           },
           {
             "gui canvas component": {
+              "is active": true,
               "GUI document asset": "GUI/hello_world.rml",
               "data model": "animals",
-              "dimensions": [1280, 720],
-              "is active": true,
+              "event camera": {
+                "id": 0
+              },
+              "dimensions": [ 1280, 720 ],
+              "color": [ 5.0, 5.0, 5.0, 1.0 ],
               "depth test enabled": true
             }
           }

@@ -100,11 +100,9 @@ void AbstractFramework::Run()
 
 	// ensure we show the splash screen every time the scene switches
 	// Callback ID not required as we destroy the scene manager here before destroying this class
-	unifiedScene.GetEventDispatcher().Register(fw::E_SceneEvent::SceneSwitch | fw::E_SceneEvent::Activated,
+	unifiedScene.GetEventDispatcher().Register(fw::E_SceneEvent::SceneSwitch | fw::E_SceneEvent::Activated | fw::E_SceneEvent::ActiveCameraChanged,
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const evnt)
 		{
-			UNUSED(evnt);
-
 			switch (static_cast<fw::E_SceneEvent>(flags))
 			{
 			case fw::E_SceneEvent::SceneSwitch:
@@ -118,6 +116,14 @@ void AbstractFramework::Run()
 			case fw::E_SceneEvent::Activated:
 				m_Viewport->SetRenderer(m_SceneRenderer.Get()); // update will happen anyway during the loop
 				break;
+
+			case fw::E_SceneEvent::ActiveCameraChanged:
+			{
+				fw::CameraComponent& camera = evnt->scene->GetEcs().GetComponent<fw::CameraComponent>(evnt->scene->GetActiveCamera());
+				camera.SetViewport(ToPtr(m_Viewport.Get()));
+				m_SceneRenderer->SetCamera(camera.GetId());
+				break;
+			}
 
 			default:
 				ET_ASSERT(true, "Unexpected scene event type!");
@@ -219,13 +225,6 @@ void AbstractFramework::MainLoop()
 
 		//****
 		//DRAW
-
-		fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
-		fw::T_EntityId cam = fw::UnifiedScene::Instance().GetActiveCamera();
-
-		ecs.GetComponent<fw::CameraComponent>(cam).PopulateCamera(m_SceneRenderer->GetCamera(),
-			*m_Viewport,
-			ecs.GetComponent<fw::TransformComponent>(cam));
 
 		m_RenderWindow.GetArea().Update();
 	}

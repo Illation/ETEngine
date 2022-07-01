@@ -51,6 +51,8 @@ void GuiRenderer::RenderContexts(render::T_FbLoc const targetFb, ContextRenderTa
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
+	api->DebugPushGroup("RmlUi Overlays");
+
 	SetupContextRendering(api, renderTarget);
 
 	// render each context
@@ -58,7 +60,9 @@ void GuiRenderer::RenderContexts(render::T_FbLoc const targetFb, ContextRenderTa
 	{
 		if (contexts[cIdx].IsActive() && contexts[cIdx].IsDocumentLoaded())
 		{
+			api->DebugPushGroup("Overlay Context");
 			contexts[cIdx].Render();
+			api->DebugPopGroup();
 		}
 	}
 
@@ -74,6 +78,7 @@ void GuiRenderer::RenderContexts(render::T_FbLoc const targetFb, ContextRenderTa
 
 	// reset pipeline state
 	api->SetBlendEnabled(false);
+	api->DebugPopGroup();
 }
 
 //----------------------------------
@@ -85,6 +90,7 @@ void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb,
 	ContextRenderTarget& renderTarget, 
 	Context& context, 
 	mat4 const& transform,
+	vec4 const& color,
 	bool const enableDepth)
 {
 	if (!(context.IsActive() && context.IsDocumentLoaded()))
@@ -94,8 +100,13 @@ void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb,
 
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
+	api->DebugPushGroup("RmlUi 3D Context");
+
 	SetupContextRendering(api, renderTarget);
+
+	api->DebugPushGroup("Context elements");
 	context.Render();
+	api->DebugPopGroup();
 
 	// blit results to target framebuffer 
 	api->BindFramebuffer(targetFb);
@@ -107,11 +118,14 @@ void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb,
 	api->SetShader(m_RmlBlit3DShader.get());
 	m_RmlBlit3DShader->Upload("uTexture"_hash, renderTarget.GetTexture());
 	m_RmlBlit3DShader->Upload("uTransform"_hash, transform);
+	m_RmlBlit3DShader->Upload("uColor"_hash, color);
 	render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
 
 	// reset pipeline state
 	api->SetBlendEnabled(false);
 	api->SetDepthEnabled(false);
+
+	api->DebugPopGroup();
 }
 
 //------------------------------------

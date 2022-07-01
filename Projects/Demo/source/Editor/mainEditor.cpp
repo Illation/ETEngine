@@ -13,6 +13,8 @@
 
 #include <Pipeline/linkerHelper.h>
 
+#include <Common/DemoUI.h>
+
 
 // forward
 void SetDebuggingOptions();
@@ -54,6 +56,7 @@ int main(int argc, char *argv[])
 	Glib::RefPtr<et::edit::EditorApp> editorApp = et::edit::EditorApp::create();
 	if (!(et::edit::EditorConfig::GetInstance()->GetStartScene().IsEmpty()))
 	{
+		et::demo::DemoUI::SetupDataModels();
 		// Start the application, showing the initial window,
 		// and opening extra views for any files that it is asked to open,
 		// for instance as a command-line parameter.

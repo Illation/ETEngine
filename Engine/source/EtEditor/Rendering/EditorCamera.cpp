@@ -6,6 +6,7 @@
 #include <EtRendering/GraphicsTypes/Camera.h>
 
 #include <EtFramework/Systems/TransformSystem.h>
+#include <EtFramework/SceneGraph/UnifiedScene.h>
 
 
 namespace et {
@@ -58,6 +59,7 @@ void EditorCameraSystem::Process(fw::ComponentRange<EditorCameraSystemView>& ran
 	// common variables
 	core::InputManager* const input = core::InputManager::GetInstance();
 	float const dt = core::ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime();
+	render::Scene const& renderScene = fw::UnifiedScene::Instance().GetRenderScene();
 
 	for (EditorCameraSystemView& view : range)
 	{
@@ -102,7 +104,8 @@ void EditorCameraSystem::Process(fw::ComponentRange<EditorCameraSystemView>& ran
 		float const currSpeed = s_MoveSpeed * view.camera->speedMultiplier;
 
 		//move relative to cameras view space - luckily the camera already has those inverted matrices calculated
-		mat3 const camMat = math::CreateFromMat4(view.camera->renderCamera->GetViewInv());
+		render::Camera const& renderCam = renderScene.GetCameras()[view.baseCamera->GetId()];
+		mat3 const camMat = math::CreateFromMat4(renderCam.GetViewInv());
 		view.transform->SetPosition(view.transform->GetPosition() + camMat * view.camera->movement * currSpeed * dt);
 
 		//Rotate

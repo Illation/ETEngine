@@ -275,12 +275,6 @@ void SceneViewport::OnSceneSet()
 //
 void SceneViewport::OnEditorTick()
 {
-	fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
-
-	ecs.GetComponent<fw::CameraComponent>(m_Camera).PopulateCamera(m_SceneRenderer->GetCamera(), 
-		*m_Viewport, 
-		ecs.GetComponent<fw::TransformComponent>(m_Camera));
-
 	if (m_DrawDebugInfo)
 	{
 		gui::TextRenderer& textRenderer = m_SceneGuiRenderer.GetTextRenderer();
@@ -332,9 +326,10 @@ void SceneViewport::InitCamera()
 	fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
 	fw::T_EntityId const camEnt = fw::UnifiedScene::Instance().GetActiveCamera();
 
-	EditorCameraComponent edCamComp;
-	edCamComp.renderCamera = &m_SceneRenderer->GetCamera();
-	m_Camera = ecs.DuplicateEntity(camEnt, edCamComp);
+	m_Camera = ecs.DuplicateEntity(camEnt, EditorCameraComponent());
+	fw::CameraComponent& camera = ecs.GetComponent<fw::CameraComponent>(m_Camera);
+	camera.SetViewport(ToPtr(m_Viewport.Get()));
+	m_SceneRenderer->SetCamera(camera.GetId());
 
 	if (ecs.HasComponent<fw::AudioListenerComponent>(camEnt))
 	{

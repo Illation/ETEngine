@@ -57,6 +57,7 @@ public:
 	void UnloadScene();
 
 	void SetScreenGuiContext(gui::T_ContextId const id) { m_ScreenGuiContext = id; }
+	void SetActiveCamera(T_EntityId const cameraId);
 
 	// accessors
 	//-----------

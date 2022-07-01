@@ -31,6 +31,8 @@ class CameraComponent final : public SimpleComponentDescriptor
 	RTTR_ENABLE(SimpleComponentDescriptor) // for serialization
 	REGISTRATION_FRIEND_NS(fw)
 	DECLARE_FORCED_LINKING()
+
+	friend class CameraSyncSystem;
 		
 	// construct destruct
 	//--------------------
@@ -40,6 +42,8 @@ public:
 
 	// accessors
 	//-----------
+	core::T_SlotId GetId() const { return m_Id; }
+
 	float GetFieldOfView() const { return m_FieldOfView; }
 	float GetFarPlane() const { return m_FarPlane; }
 
@@ -53,12 +57,16 @@ public:
 	void UsePerspectiveProjection() { m_IsPerspective = true; }
 	void UseOrthographicProjection() { m_IsPerspective = false; }
 
-	void PopulateCamera(render::Camera& target, render::Viewport const& viewport, TransformComponent const& tfComp) const;
+	void SetViewport(Ptr<render::Viewport> const viewport);
 
 	// Data
 	///////
 
 private:
+	core::T_SlotId m_Id = core::INVALID_SLOT_ID;
+
+	Ptr<render::Viewport> m_Viewport;
+
 	bool m_IsPerspective = true;
 	float m_FieldOfView = 45.f; // angle of perspective camera in degrees
 	float m_Size = 25.f; // width of orthographic camera

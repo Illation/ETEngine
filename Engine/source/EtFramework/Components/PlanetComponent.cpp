@@ -55,7 +55,7 @@ PlanetComponent::PlanetComponent(render::PlanetParams const& params)
 //
 PlanetCameraLinkComponent* PlanetCameraLinkComponentDesc::MakeData()
 {
-	return new PlanetCameraLinkComponent(planet.id);
+	return new PlanetCameraLinkComponent(planet.GetId());
 }
 
 

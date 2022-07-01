@@ -20,11 +20,12 @@
 
 	in vec2 Texcoord;
 	uniform sampler2D uTexture;
+	uniform vec4 uColor;
 
 	out vec4 outColor;
 	
 	void main()
 	{
-		outColor = texture(uTexture, Texcoord);
+		outColor = texture(uTexture, Texcoord) * uColor;
 	}
 </FRAGMENT>

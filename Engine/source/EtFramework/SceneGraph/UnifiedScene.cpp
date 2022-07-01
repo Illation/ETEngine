@@ -12,6 +12,7 @@
 #include <EtFramework/Systems/TransformSystem.h>
 #include <EtFramework/Systems/RigidBodySystem.h>
 #include <EtFramework/Systems/LightSystem.h>
+#include <EtFramework/Systems/CameraSyncSystem.h>
 #include <EtFramework/Systems/ModelInit.h>
 #include <EtFramework/Systems/PlanetInit.h>
 #include <EtFramework/Systems/AtmosphereInit.h>
@@ -53,6 +54,7 @@ void UnifiedScene::Init()
 	{
 		UniquePtr<gui::GuiExtension> guiExt = Create<gui::GuiExtension>();
 		m_GuiExtension = ToPtr(guiExt.Get());
+		m_GuiExtension->GetContextContainer().SetRenderScene(ToPtr(&m_RenderScene));
 		m_RenderScene.AddExtension(UniquePtr<render::I_SceneExtension>::StaticCast(std::move(guiExt)));
 	}
 
@@ -62,6 +64,9 @@ void UnifiedScene::Init()
 
 	m_Scene.RegisterOnComponentAdded(T_CompEventFn<LightComponent>(LightSystem::OnComponentAdded));
 	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<LightComponent>(LightSystem::OnComponentRemoved));
+
+	m_Scene.RegisterOnComponentAdded(T_CompEventFn<CameraComponent>(CameraSyncSystem::OnComponentAdded));
+	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<CameraComponent>(CameraSyncSystem::OnComponentRemoved));
 
 	m_Scene.RegisterOnComponentAdded(T_CompEventFn<ModelComponent>(ModelInit::OnComponentAdded));
 	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<ModelComponent>(ModelInit::OnComponentRemoved));
@@ -88,6 +93,7 @@ void UnifiedScene::Init()
 	m_Scene.RegisterSystem<RigidBodySystem>();
 	m_Scene.RegisterSystem<TransformSystem::Compute>();
 	m_Scene.RegisterSystem<AudioSourceSystem::Translate>();
+	m_Scene.RegisterSystem<CameraSyncSystem>();
 	m_Scene.RegisterSystem<TransformSystem::Reset>();
 	m_Scene.RegisterSystem<AudioSourceSystem::State>();
 	m_Scene.RegisterSystem<AudioListenerSystem>();
@@ -168,8 +174,7 @@ void UnifiedScene::LoadScene(core::HashString const assetId)
 		m_RenderScene.SetStarfield(sceneDesc->starfield);
 	}
 
-	m_ActiveCamera = sceneDesc->activeCamera.id;
-	ET_ASSERT(m_ActiveCamera != INVALID_ENTITY_ID);
+	SetActiveCamera(sceneDesc->activeCamera.GetId());
 
 	m_RenderScene.SetPostProcessingSettings(sceneDesc->postprocessing);
 
@@ -183,7 +188,7 @@ void UnifiedScene::LoadScene(core::HashString const assetId)
 	}
 
 	// audio settings
-	m_AudioListener = sceneDesc->audioListener.id;
+	m_AudioListener = sceneDesc->audioListener.GetId();
 	if (m_AudioListener != INVALID_ENTITY_ID)
 	{
 		ET_ASSERT(m_Scene.HasComponent<AudioListenerComponent>(m_AudioListener));
@@ -240,6 +245,16 @@ void UnifiedScene::UnloadScene()
 	m_AudioListener = INVALID_ENTITY_ID;
 
 	m_CurrentScene.Reset();
+}
+
+//-------------------------------
+// UnifiedScene::SetActiveCamera
+//
+void UnifiedScene::SetActiveCamera(T_EntityId const cameraId)
+{
+	m_ActiveCamera = cameraId;
+	ET_ASSERT(m_ActiveCamera != INVALID_ENTITY_ID);
+	m_EventDispatcher.Notify(E_SceneEvent::ActiveCameraChanged, new SceneEventData(this));
 }
 
 //-------------------------
@@ -302,7 +317,14 @@ void UnifiedScene::PostLoadEntity(EntityDescriptor const& entDesc, T_EntityId co
 		if (compDesc->CallScenePostLoad())
 		{
 			void* const rawComp = m_Scene.GetComponentData(id, compDesc->GetType());
-			compDesc->OnScenePostLoadRoot(m_Scene, id, rawComp);
+			if (compDesc->HasOwnership())
+			{
+				static_cast<I_ComponentDescriptor*>(rawComp)->OnScenePostLoadRoot(m_Scene, id, rawComp);
+			}
+			else
+			{
+				compDesc->OnScenePostLoadRoot(m_Scene, id, rawComp);
+			}
 		}
 	}
 

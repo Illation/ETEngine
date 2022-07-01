@@ -16,7 +16,6 @@
 
 #include <EtGUI/Fonts/SdfFont.h>
 #include <EtGUI/GuiExtension.h>
-#include <EtGUI/Context/RmlGlobal.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/Audio/AudioManager.h>
@@ -31,10 +30,6 @@ namespace demo {
 //================
 // Main Framework
 //================
-
-
-// static
-core::HashString const MainFramework::s_HelloWorldGuiId("GUI/hello_world.rml");
 
 
 //-----------------------------
@@ -80,14 +75,7 @@ void MainFramework::OnInit()
 			}));
 
 	// gui
-	gui::RmlGlobal::GetInstance()->GetDataModelFactory().RegisterInstancer("animals", gui::DataModelFactory::T_InstanceFn(
-		[](Rml::DataModelConstructor modelConstructor) -> RefPtr<gui::I_DataModel>
-		{
-			RefPtr<GuiData> ret = Create<GuiData>();
-			modelConstructor.Bind("show_text", &ret->m_ShowText);
-			modelConstructor.Bind("animal", &ret->m_Animal);
-			return std::move(ret);
-		}));
+	DemoUI::SetupDataModels();
 
 	// audio
 	fw::AudioManager::GetInstance()->SetDistanceModel(AL_INVERSE_DISTANCE);
@@ -233,7 +221,7 @@ void MainFramework::OnSceneActivated()
 //
 void MainFramework::PreLoadGUI(fw::SceneEventPreLoadGUIData const* const evnt)
 {
-	if (evnt->guiDocumentId == s_HelloWorldGuiId)
+	if (evnt->guiDocumentId == DemoUI::s_HelloWorldGuiId)
 	{
 		gui::ContextContainer& guiContainer = evnt->scene->GetGuiExtension()->GetContextContainer();
 		gui::T_ContextId const context = evnt->scene->GetScreenGuiContext();
@@ -258,7 +246,7 @@ void MainFramework::PreLoadGUI(fw::SceneEventPreLoadGUIData const* const evnt)
 //
 void MainFramework::PostLoadGUI(fw::SceneEventGUIData const* const evnt)
 {
-	if (evnt->guiDocumentId == s_HelloWorldGuiId)
+	if (evnt->guiDocumentId == DemoUI::s_HelloWorldGuiId)
 	{
 		gui::ContextContainer& guiContainer = evnt->scene->GetGuiExtension()->GetContextContainer();
 		gui::T_ContextId const context = evnt->scene->GetScreenGuiContext();

@@ -14,6 +14,7 @@ namespace gui {
 
 
 RefPtr<RmlGlobal> RmlGlobal::s_Instance = nullptr;
+DataModelFactory RmlGlobal::s_DataModelFactory;
 
 
 //------------------------

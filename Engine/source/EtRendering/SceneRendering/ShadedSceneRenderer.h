@@ -36,6 +36,10 @@ public:
 
 	void InitRenderingSystems();
 
+	// functionality
+	//---------------
+	void SetCamera(core::T_SlotId const cameraId) { m_CameraId = cameraId; }
+
 	// Viewport Renderer Interface
 	//-----------------------------
 protected:
@@ -48,15 +52,12 @@ protected:
 	// Shadow Renderer Interface
 	//-----------------------------
 public:
+	Camera const& GetCamera() const override;
 	void DrawShadow(I_Material const* const nullMaterial) override;
-
-	Camera const& GetCamera() const override { return m_Camera; }
 
 	// accessors
 	//--------------
 public:
-	Camera& GetCamera() { return m_Camera; }
-
 	Gbuffer& GetGBuffer() { return m_GBuffer; }
 	Gbuffer const& GetGBuffer() const { return m_GBuffer; }
 
@@ -78,7 +79,7 @@ private:
 	vec3 m_ClearColor;
 	ivec2 m_Dimensions;
 
-	Camera m_Camera;
+	core::T_SlotId m_CameraId = core::INVALID_SLOT_ID;
 
 	render::Scene* m_RenderScene = nullptr;
 
