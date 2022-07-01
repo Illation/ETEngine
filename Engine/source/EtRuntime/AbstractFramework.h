@@ -68,10 +68,8 @@ private:
 
 protected:
 	gui::SceneRendererGUI m_GuiRenderer;
+
 private:
-	gui::T_ContextId m_GuiContext = gui::INVALID_CONTEXT_ID;
-
-
 	std::vector<core::HashString> m_Scenes;
 
 protected:

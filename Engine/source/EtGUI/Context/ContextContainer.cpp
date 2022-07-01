@@ -47,9 +47,12 @@ bool ContextContainer::PerViewport::ProcessKeyPressed(E_KbdKey const key, core::
 			WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
 			if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
 			{
-				if (worldContext.m_Context.ProcessKeyPressed(rmlKey, mods))
+				if (m_ContextContainer->GetRenderScene()->GetCameras()[worldContext.m_EventCameraId].GetViewport() == m_Viewport)
 				{
-					return true;
+					if (worldContext.m_Context.ProcessKeyPressed(rmlKey, mods))
+					{
+						return true;
+					}
 				}
 			}
 		}
@@ -83,9 +86,12 @@ bool ContextContainer::PerViewport::ProcessKeyReleased(E_KbdKey const key, core:
 			WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
 			if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
 			{
-				if (worldContext.m_Context.ProcessKeyReleased(rmlKey, mods))
+				if (m_ContextContainer->GetRenderScene()->GetCameras()[worldContext.m_EventCameraId].GetViewport() == m_Viewport)
 				{
-					return true;
+					if (worldContext.m_Context.ProcessKeyReleased(rmlKey, mods))
+					{
+						return true;
+					}
 				}
 			}
 		}
@@ -119,9 +125,12 @@ bool ContextContainer::PerViewport::ProcessMousePressed(E_MouseButton const butt
 			WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
 			if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
 			{
-				if (worldContext.m_Context.ProcessMousePressed(rmlButton, mods))
+				if (m_ContextContainer->GetRenderScene()->GetCameras()[worldContext.m_EventCameraId].GetViewport() == m_Viewport)
 				{
-					return true;
+					if (worldContext.m_Context.ProcessMousePressed(rmlButton, mods))
+					{
+						return true;
+					}
 				}
 			}
 		}
@@ -155,9 +164,12 @@ bool ContextContainer::PerViewport::ProcessMouseReleased(E_MouseButton const but
 			WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
 			if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
 			{
-				if (worldContext.m_Context.ProcessMouseReleased(rmlButton, mods))
+				if (m_ContextContainer->GetRenderScene()->GetCameras()[worldContext.m_EventCameraId].GetViewport() == m_Viewport)
 				{
-					return true;
+					if (worldContext.m_Context.ProcessMouseReleased(rmlButton, mods))
+					{
+						return true;
+					}
 				}
 			}
 		}
@@ -192,49 +204,33 @@ bool ContextContainer::PerViewport::ProcessMouseMove(ivec2 const& mousePos, core
 			render::Camera const& camera = renderScene->GetCameras()[worldContext.m_EventCameraId];
 			if (camera.GetViewport() == m_Viewport)
 			{
-				// transform the cursor into a world space ray from the camera through the near plane
-				vec4 ndcMouse(((math::vecCast<float>(mousePos) * 2.f) / math::vecCast<float>(m_Viewport->GetDimensions())) - vec2(1.f), -1.f, 1.f);
-				ndcMouse.y = -ndcMouse.y;
-				vec4 rayEye = math::inverse(camera.GetProj()) * ndcMouse;
-				//rayEye = vec4(rayEye.xy, -1.f, 0.f);
-				vec4 const worldSpaceMouse = camera.GetViewInv() * rayEye;
-				//vec4 const worldSpaceMouse = camera.GetViewProjInv() * ndcMouse;
-
-				vec3 const r0 = camera.GetPosition();
-				vec3 const rayDir = math::normalize(worldSpaceMouse.xyz - r0);
+				vec2 const contextDim = math::vecCast<float>(worldContext.m_Context.GetDimensions());
 
 				// construct a rectangle on a plane from the contexts transform and dimensions
-				vec2 const contextDim = math::vecCast<float>(worldContext.m_Context.GetDimensions());
-				mat4 const transform = math::scale(vec3(contextDim, 1.f))
-					* renderScene->GetNodes()[worldContext.m_NodeId];
+				mat4 const transform = math::scale(vec3(contextDim, 1.f)) * renderScene->GetNodes()[worldContext.m_NodeId];
 				mat4 const orientation = math::DiscardW(transform);
 
-				vec3 xTF = (orientation * vec4(vec3::RIGHT, 1.f)).xyz; // horizontal edge of the context rectangle
-				vec3 yTF = (orientation * vec4(vec3::DOWN, 1.f)).xyz; // vertical edge of the context rectangle
-				vec3 p0 = math::decomposePosition(transform) + (xTF * 0.5f) + (yTF * 0.5f); // top left corner of the rectangle
-				vec3 pN = math::normalize(math::cross(xTF, yTF)); // rectangle plane normal
+				vec3 const xTF = (orientation * vec4(vec3::RIGHT, 1.f)).xyz; // horizontal edge of the context rectangle
+				vec3 const yTF = (orientation * vec4(vec3::DOWN, 1.f)).xyz; // vertical edge of the context rectangle
+				// plane with determinant (p0) in top left corner
+				math::Plane const plane(math::normalize(math::cross(xTF, yTF)), math::decomposePosition(transform) + (xTF * -0.5f) + (yTF * -0.5f));
+
+				// convert mouse pos into a ray from the camera
+				vec3 const rayDir = math::normalize(
+					camera.ProjectIntoWorldSpace(math::vecCast<float>(mousePos) / math::vecCast<float>(m_Viewport->GetDimensions()), 0.f) 
+					- camera.GetPosition());
 
 				// intersect the ray with the plane
-				float dDotN = math::dot(rayDir, pN);
-				if (!math::nearEquals(dDotN, 0.f))
+				vec3 intersection;
+				if (math::GetIntersection(plane, camera.GetPosition(), rayDir, intersection))
 				{
-					//float pD = math::dot(pN, p0);
-					//vec3 const intersection = (pD - math::dot(pN, r0)) / dDotN;
-					float const a = math::dot(p0 - r0, pN) / dDotN;
-					vec3 const intersection = r0 + (rayDir * a); // where the mouse hits the infinite plane
-
 					// now project the difference vector of the intersection and rectangle origin onto the rectangle edges
-					vec3 const p0p = intersection - p0;
-					float const qx = math::dot(p0p, xTF) / math::lengthSquared(xTF);
-					float const qy = math::dot(p0p, yTF) / math::lengthSquared(yTF);
-					LOG(FS("screen: %s r0 %s rD %s intersection %s projection: %s", 
-						mousePos.ToString().c_str(), 
-						rayEye.ToString().c_str(),
-						rayDir.ToString().c_str(),
-						intersection.ToString().c_str(),
-						vec2(qx, qy).ToString().c_str()));
+					vec3 const p0p = intersection - plane.d;
+					float const qx = math::vecProjectionFactor(p0p, xTF);
+					float const qy = math::vecProjectionFactor(p0p, yTF);
 
 					ivec2 const contextMousePos = math::vecCast<int32>(vec2(qx, qy) * contextDim);
+
 					if (worldContext.m_Context.ProcessMouseMove(contextMousePos, mods))
 					{
 						return true;
@@ -270,9 +266,12 @@ bool ContextContainer::PerViewport::ProcessMouseWheelDelta(ivec2 const& mouseWhe
 		WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
 		if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
 		{
-			if (worldContext.m_Context.ProcessMouseWheelDelta(delta, mods))
+			if (m_ContextContainer->GetRenderScene()->GetCameras()[worldContext.m_EventCameraId].GetViewport() == m_Viewport)
 			{
-				return true;
+				if (worldContext.m_Context.ProcessMouseWheelDelta(delta, mods))
+				{
+					return true;
+				}
 			}
 		}
 	}

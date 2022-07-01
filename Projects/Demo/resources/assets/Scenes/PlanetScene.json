@@ -117,7 +117,6 @@
       "bloom threshold": 10.0,
       "bloom mult": 0.1
     },
-    "screen GUI": "",
     "audio listener": {
       "id": 4294967295
     },

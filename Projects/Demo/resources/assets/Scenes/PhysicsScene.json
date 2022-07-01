@@ -329,10 +329,11 @@
           },
           {
             "gui canvas component": {
+              "render mode": "World Space",
               "is active": true,
               "GUI document asset": "GUI/hello_world.rml",
               "data model": "animals",
-              "event camera": {
+              "camera": {
                 "id": 0
               },
               "dimensions": [ 1280, 720 ],
@@ -362,7 +363,6 @@
       "bloom threshold": 10.0,
       "bloom mult": 0.1
     },
-    "screen GUI": "",
     "audio listener": {
       "id": 0
     },

@@ -12,6 +12,7 @@
 #include <EtFramework/Components/ModelComponent.h>
 #include <EtFramework/Components/PlanetComponent.h>
 #include <EtFramework/Components/RigidBodyComponent.h>
+#include <EtFramework/Components/GuiCanvasComponent.h>
 
 
 namespace et {
@@ -37,6 +38,7 @@ void ForceLinking()
 	FORCE_LINKING(ModelComponent)
 	FORCE_LINKING(PlanetCameraLinkComponentDesc)
 	FORCE_LINKING(RigidBodyComponentDesc)
+	FORCE_LINKING(GuiCanvasComponentLinkEnforcer)
 }
 
 

@@ -122,8 +122,6 @@ void UnifiedScene::OnTick()
 	{
 		m_Scene.Process();
 		m_PhysicsWorld.Update();
-
-		// update camera in render scene
 	}
 }
 
@@ -134,6 +132,8 @@ void UnifiedScene::LoadScene(core::HashString const assetId)
 {
 	// preparation
 	//-------------
+
+	m_IsSceneLoaded = false;
 
 	// notification before beginning the process so systems can prepare (splash screen, loading bar, timer etc)
 	m_EventDispatcher.Notify(E_SceneEvent::SceneSwitch, new SceneEventData(this));
@@ -178,15 +178,6 @@ void UnifiedScene::LoadScene(core::HashString const assetId)
 
 	m_RenderScene.SetPostProcessingSettings(sceneDesc->postprocessing);
 
-	// GUI
-	if (m_ScreenGuiContext != gui::INVALID_CONTEXT_ID)
-	{
-		m_LoadedGuiDocument = sceneDesc->screenGui;
-		m_EventDispatcher.Notify(E_SceneEvent::PreLoadScreenGUI, new SceneEventPreLoadGUIData(this, m_LoadedGuiDocument, true));
-		m_GuiExtension->GetContextContainer().SetLoadedDocument(m_ScreenGuiContext, m_LoadedGuiDocument);
-		m_EventDispatcher.Notify(E_SceneEvent::PostLoadScreenGUI, new SceneEventGUIData(this, m_LoadedGuiDocument));
-	}
-
 	// audio settings
 	m_AudioListener = sceneDesc->audioListener.GetId();
 	if (m_AudioListener != INVALID_ENTITY_ID)
@@ -204,6 +195,8 @@ void UnifiedScene::LoadScene(core::HashString const assetId)
 		PostLoadEntity(entDesc, INVALID_ENTITY_ID);
 	}
 
+	m_IsSceneLoaded = true;
+
 	// done loading
 	//--------------
 	m_EventDispatcher.Notify(E_SceneEvent::Activated, new SceneEventData(this));
@@ -215,6 +208,8 @@ void UnifiedScene::LoadScene(core::HashString const assetId)
 //
 void UnifiedScene::UnloadScene()
 {
+	m_IsSceneLoaded = false;
+
 	// notification first
 	m_EventDispatcher.Notify(E_SceneEvent::Deactivated, new SceneEventData(this));
 
@@ -225,14 +220,6 @@ void UnifiedScene::UnloadScene()
 	m_RenderScene.SetSkyboxMap(core::HashString());
 	m_RenderScene.SetStarfield(core::HashString());
 	m_RenderScene.SetPostProcessingSettings(render::PostProcessingSettings());
-
-	// reset gui
-	if (m_ScreenGuiContext != gui::INVALID_CONTEXT_ID)
-	{
-		m_EventDispatcher.Notify(E_SceneEvent::PreLoadScreenGUI, new SceneEventPreLoadGUIData(this, m_LoadedGuiDocument, false));
-		m_LoadedGuiDocument.Reset();
-		m_GuiExtension->GetContextContainer().SetLoadedDocument(m_ScreenGuiContext, core::HashString());
-	}
 
 	// reset physics
 	m_PhysicsWorld.Deinit();

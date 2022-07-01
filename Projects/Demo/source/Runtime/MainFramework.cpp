@@ -45,6 +45,7 @@ void MainFramework::OnSystemInit()
 	ecs.RegisterSystem<SwirlyLightSystem>();
 	ecs.RegisterSystem<CelestialBodySystem>();
 	ecs.RegisterSystem<PlaylistSystem>();
+	ecs.RegisterSystem<DemoUISystem>();
 }
 
 //--------------------------
@@ -56,22 +57,12 @@ void MainFramework::OnInit()
 	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<gui::SdfFont>(core::HashString("Fonts/Ubuntu-Regular.ttf"));
 
 	// scenes
-	fw::UnifiedScene::Instance().GetEventDispatcher().Register(
-		fw::E_SceneEvent::Activated | fw::E_SceneEvent::PreLoadScreenGUI | fw::E_SceneEvent::PostLoadScreenGUI,
+	fw::UnifiedScene::Instance().GetEventDispatcher().Register( fw::E_SceneEvent::Activated, 
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const evnt)
 			{
-				if (static_cast<fw::E_SceneEvent>(flags) == fw::E_SceneEvent::Activated)
-				{
-					OnSceneActivated();
-				}
-				else if (static_cast<fw::E_SceneEvent>(flags) == fw::E_SceneEvent::PreLoadScreenGUI)
-				{
-					PreLoadGUI(static_cast<fw::SceneEventPreLoadGUIData const*>(evnt));
-				}
-				else if (static_cast<fw::E_SceneEvent>(flags) == fw::E_SceneEvent::PostLoadScreenGUI)
-				{
-					PostLoadGUI(static_cast<fw::SceneEventGUIData const*>(evnt));
-				}
+				UNUSED(flags);
+				UNUSED(evnt);
+				OnSceneActivated();
 			}));
 
 	// gui
@@ -95,14 +86,6 @@ void MainFramework::OnTick()
 {
 	fw::UnifiedScene& uniScene = fw::UnifiedScene::Instance();
 	core::InputManager* const input = core::InputManager::GetInstance();
-
-#ifdef ET_DEBUG
-	if (input->GetKeyState(E_KbdKey::F8) == E_KeyState::Pressed) // #todo: toggle this with a console command in the future
-	{
-		gui::ContextContainer& contextContainer = fw::UnifiedScene::Instance().GetGuiExtension()->GetContextContainer();
-		contextContainer.SetDebuggerVisible(!contextContainer.IsDebuggerVisible());
-	}
-#endif
 
 	// Scene switching
 	//-----------------
@@ -146,14 +129,6 @@ void MainFramework::OnTick()
 		LOG(FS("Exposure: %f", ppSettings.exposure));
 
 		renderScene.SetPostProcessingSettings(ppSettings);
-	}
-
-	// GUI
-	//-----
-	if ((uniScene.GetScreenGuiContext() != gui::INVALID_CONTEXT_ID) && (input->GetKeyState(E_KbdKey::U) == E_KeyState::Pressed))
-	{
-		m_ShowGui = !m_ShowGui;
-		uniScene.GetGuiExtension()->GetContextContainer().SetContextActive(uniScene.GetScreenGuiContext(), m_ShowGui);
 	}
 
 	// debug info
@@ -212,55 +187,27 @@ void MainFramework::OnSceneActivated()
 	ET_ASSERT(!ecs.HasComponent<FreeCameraComponent>(camEnt));
 
 	ecs.AddComponents(camEnt, FreeCameraComponent());
-}
 
-//---------------------------
-// MainFramework::PreLoadGUI
-//
-// Ensure we are set up with the right UI data models
-//
-void MainFramework::PreLoadGUI(fw::SceneEventPreLoadGUIData const* const evnt)
-{
-	if (evnt->guiDocumentId == DemoUI::s_HelloWorldGuiId)
-	{
-		gui::ContextContainer& guiContainer = evnt->scene->GetGuiExtension()->GetContextContainer();
-		gui::T_ContextId const context = evnt->scene->GetScreenGuiContext();
-
-		if (evnt->isLoading)
+	// do fancy stuff with our GUI
+	ecs.ProcessViewOneShot(fw::T_OneShotProcess<CanvasView>([](fw::ComponentRange<CanvasView>& range)
 		{
-			if (Rml::DataModelConstructor constructor = guiContainer.CreateDataModel(context, "animals"))
+			gui::ContextContainer& guiContainer = fw::UnifiedScene::Instance().GetGuiExtension()->GetContextContainer();
+			for (CanvasView& view : range)
 			{
-				constructor.Bind("show_text", &m_GuiData.m_ShowText);
-				constructor.Bind("animal", &m_GuiData.m_Animal);
+				if (view.canvas->GetGuiDocumentId() == DemoUI::s_HelloWorldGuiId)
+				{
+					Rml::ElementDocument* const doc = guiContainer.GetDocument(view.canvas->GetId());
+					ET_ASSERT(doc != nullptr);
+
+					Rml::Element* const element = doc->GetElementById("world");
+					if (element != nullptr)
+					{
+						element->SetInnerRML(reinterpret_cast<const char*>(u8"🌍"));
+						element->SetProperty("font-size", "1.5em");
+					}
+				}
 			}
-		}
-		else
-		{
-			guiContainer.DestroyDataModel(context, "animals");
-		}
-	}
-}
-
-//---------------------------
-// MainFramework::PreLoadGUI
-//
-void MainFramework::PostLoadGUI(fw::SceneEventGUIData const* const evnt)
-{
-	if (evnt->guiDocumentId == DemoUI::s_HelloWorldGuiId)
-	{
-		gui::ContextContainer& guiContainer = evnt->scene->GetGuiExtension()->GetContextContainer();
-		gui::T_ContextId const context = evnt->scene->GetScreenGuiContext();
-
-		Rml::ElementDocument* const doc = guiContainer.GetDocument(context);
-		ET_ASSERT(doc != nullptr);
-
-		Rml::Element* const element = doc->GetElementById("world");
-		if (element != nullptr)
-		{
-			element->SetInnerRML(reinterpret_cast<const char*>(u8"🌍"));
-			element->SetProperty("font-size", "1.5em");
-		}
-	}
+		}));
 }
 
 

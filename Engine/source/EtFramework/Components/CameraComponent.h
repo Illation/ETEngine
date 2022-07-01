@@ -44,6 +44,8 @@ public:
 	//-----------
 	core::T_SlotId GetId() const { return m_Id; }
 
+	Ptr<render::Viewport> GetViewport() const { return m_Viewport; }
+
 	float GetFieldOfView() const { return m_FieldOfView; }
 	float GetFarPlane() const { return m_FarPlane; }
 

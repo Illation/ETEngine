@@ -584,6 +584,20 @@ T angleSafeUnsigned(const vector<n, T>& lhs, const vector<n, T>& rhs)
 	return angleFastUnsigned(normalize(lhs), normalize(rhs));
 }
 
+
+template <uint8 n, class T>
+T vecProjectionFactor(vector<n, T> const& source, vector<n, T> const& target)
+{
+	return dot(source, target) / lengthSquared(target);
+}
+
+template <uint8 n, class T>
+vector<n, T> vecProjection(vector<n, T> const& source, vector<n, T> const& target)
+{
+	return target * vecProjectionFactor(source, target);
+}
+
+
 template<uint8 n, typename T>
 T const* valuePtr(vector<n, T> const& vec)
 {

@@ -262,11 +262,14 @@ vector<n, T> operator/(const vector<n, T> &lhs, const vector<n, T> &rhs); //hada
 template <uint8 n, class T>
 bool nearEqualsV(const vector<n, T> &lhs, const vector<n, T> &rhs, const T epsilon = ETM_DEFAULT_EPSILON_T );
 
+
 template <uint8 n, class T>
 bool isZero(const vector<n, T> &lhs, const T epsilon = static_cast<T>(0));
 
+
 template <uint8 n, class T>
 bool operator==(const vector<n, T> &lhs, const vector<n, T> &rhs);
+
 
 template <uint8 n, class T>
 T dot(const vector<n, T> &lhs, const vector<n, T> &rhs);
@@ -281,8 +284,10 @@ T dot(const vector<3, T> &lhs, const vector<3, T> &rhs);
 template <class T>
 T dot(const vector<4, T> &lhs, const vector<4, T> &rhs);
 
+
 template <uint8 n, class T>
 T lengthSquared(const vector<n, T> &vec);
+
 template <uint8 n, class T>
 T length(const vector<n, T> &vec);
 
@@ -292,11 +297,14 @@ T distance(const vector<n, T> &lhs, const vector<n, T> &rhs);
 template <uint8 n, class T>
 T distanceSquared(const vector<n, T> &lhs, const vector<n, T> &rhs);
 
+
 template <uint8 n, class T>
 vector<n, T> normalize(const vector<n, T> &vec);
 
+
 template <uint8 n, class T>
 vector<n, T> pow(const vector<n, T> &vec, T exponent);
+
 
 //Vectors need to be prenormalized
 //if input vectors are zero it will generate NaN
@@ -306,6 +314,15 @@ T angleFastUnsigned(const vector<n, T>& lhs, const vector<n, T>& rhs);
 template <uint8 n, class T>
 T angleSafeUnsigned(const vector<n, T>& lhs, const vector<n, T>& rhs);
 
+
+// project source vector onto target vector
+template <uint8 n, class T>
+T vecProjectionFactor(vector<n, T> const& source, vector<n, T> const& target);
+
+template <uint8 n, class T>
+vector<n, T> vecProjection(vector<n, T> const& source, vector<n, T> const& target);
+
+
 //access to array for the graphics api
 template<uint8 n, typename T>
 T const* valuePtr( vector<n, T> const& vec );
@@ -313,8 +330,10 @@ T const* valuePtr( vector<n, T> const& vec );
 template<uint8 n, typename T>
 T* valuePtr( vector<n, T>& vec );
 
+
 template<typename T, uint8 n, typename T2>
 vector<n, T> vecCast(const vector<n, T2> &vec);
+
 
 template<uint8 n, typename T>
 vector<n, T> swizzle(vector<n, T> const& vec, vector<n, int32> const& indices);

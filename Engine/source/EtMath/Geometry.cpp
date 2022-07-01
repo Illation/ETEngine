@@ -113,6 +113,27 @@ std::vector<math::uint32> GetIcosahedronIndicesBFC()
 	return ret;
 }
 
+//------------------------
+// GetIntersection
+//
+// Ray - Plane intersection - only returns true in the forward direction
+//
+bool GetIntersection(Plane const& plane, vec3 const& rayPos, vec3 const& rayDirNorm, vec3& hitPos)
+{
+	float const dDotN = dot(rayDirNorm, plane.n);
+	if (!nearEquals(dDotN, 0.f))
+	{
+		float const rayDist = dot(plane.d - rayPos, plane.n) / dDotN;
+		if (rayDist >= 0.f)
+		{
+			hitPos = rayPos + (rayDirNorm * rayDist);
+			return true;
+		}
+	}
+
+	return false;
+}
+
 
 } // namespace math
 } // namespace et

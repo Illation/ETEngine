@@ -170,7 +170,7 @@ void AbstractFramework::Run()
 	fw::AudioManager::GetInstance()->Initialize();
 	fw::PhysicsManager::GetInstance()->Initialize();
 
-	core::PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
+	core::PerformanceInfo::GetInstance(); // Initialize performance measurement #todo: disable for shipped project?
 
 	// init input 
 	core::InputManager* const inputMan = core::InputManager::GetInstance();
@@ -185,16 +185,8 @@ void AbstractFramework::Run()
 
 	// ui rendering
 	m_GuiRenderer.Init(ToPtr(&(m_SceneRenderer->GetEventDispatcher())));
-	gui::ContextContainer& contextContainer = unifiedScene.GetGuiExtension()->GetContextContainer();
-	m_GuiContext = contextContainer.CreateContext(m_Viewport);
-	unifiedScene.SetScreenGuiContext(m_GuiContext);
 	gui::RmlGlobal::GetInstance()->SetCursorShapeManager(ToPtr(&glfwMan));
 	gui::RmlGlobal::GetInstance()->SetClipboardController(ToPtr(&glfwMan));
-
-#ifdef ET_DEBUG
-	contextContainer.SetDebugContext(m_GuiContext);
-	contextContainer.SetDebuggerVisible(false);
-#endif
 
 	// cause the loop to continue
 	RegisterAsTriggerer();

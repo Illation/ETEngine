@@ -13,6 +13,20 @@ namespace demo {
 //=========
 
 
+//--------------------------
+// DemoUISystem::Process
+//
+void DemoUISystem::Process(fw::ComponentRange<CanvasView>& range)
+{
+	if (core::InputManager::GetInstance()->GetKeyState(E_KbdKey::U) == E_KeyState::Pressed)
+	{
+		for (CanvasView& view : range)
+		{
+			view.canvas->SetActive(!view.canvas->IsActive());
+		}
+	}
+}
+
 // static
 core::HashString const DemoUI::s_HelloWorldGuiId("GUI/hello_world.rml");
 

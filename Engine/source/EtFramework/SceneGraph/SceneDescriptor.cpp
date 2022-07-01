@@ -23,7 +23,6 @@ RTTR_REGISTRATION
 		.property("starfield", &SceneDescriptor::starfield)
 		.property("active camera", &SceneDescriptor::activeCamera)
 		.property("postprocessing", &SceneDescriptor::postprocessing)
-		.property("screen GUI", &SceneDescriptor::screenGui)
 		.property("audio listener", &SceneDescriptor::audioListener)
 		.property("gravity", &SceneDescriptor::gravity)
 	END_REGISTER_CLASS(SceneDescriptor);

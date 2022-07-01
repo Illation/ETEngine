@@ -99,6 +99,11 @@ public:
 };
 
 
+// for running a "system" once
+template <typename TViewType>
+using T_OneShotProcess = std::function<void(ComponentRange<TViewType>&)>;
+
+
 } // namespace fw
 } // namespace et
 

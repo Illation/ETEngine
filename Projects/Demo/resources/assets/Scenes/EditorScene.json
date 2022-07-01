@@ -119,6 +119,23 @@
             "children": []
           }
         ]
+      },
+      {
+        "id": 6,
+        "components": [
+          {
+            "gui canvas component": {
+              "render mode": "Screen Space Overlay",
+              "is active": true,
+              "GUI document asset": "GUI/hello_world.rml",
+              "data model": "animals",
+              "camera": {
+                "id": 1
+              }
+            }
+          }
+        ],
+        "children": []
       }
     ],
     "skybox": "Textures/EnvironmentMaps/Ice_Lake_Ref.hdr",
@@ -139,7 +156,6 @@
       "bloom threshold": 10.0,
       "bloom mult": 0.1
     },
-    "screen GUI": "GUI/hello_world.rml",
     "audio listener": {
       "id": 4294967295
     },

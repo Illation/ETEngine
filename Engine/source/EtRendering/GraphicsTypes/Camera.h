@@ -58,10 +58,13 @@ public:
 	mat4 const& GetView() const { return m_View; }
 	mat4 const& GetProj() const { return m_Projection; }
 	mat4 const& GetViewInv() const { return m_ViewInverse; }
+	mat4 const& GetProjInv() const { return m_ProjectionInverse; }
 	mat4 const& GetViewProj() const { return m_ViewProjection; }
 	mat4 const& GetViewProjInv() const { return m_ViewProjectionInverse; }
 	mat4 const& GetStatViewProj() const { return m_StaticViewProjection; }
 	mat4 const& GetStatViewProjInv() const { return m_StaticViewProjectionInverse; }
+
+	vec3 ProjectIntoWorldSpace(vec2 const screenSpaceNormalized, float const depth) const;
 
 	// utility
 	//----------
@@ -109,6 +112,7 @@ private:
 	mat4 m_ViewInverse;
 
 	mat4 m_Projection;
+	mat4 m_ProjectionInverse;
 
 	mat4 m_ViewProjection;
 	mat4 m_ViewProjectionInverse;

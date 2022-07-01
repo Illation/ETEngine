@@ -42,8 +42,6 @@ private:
 	// utility
 	//---------
 	void OnSceneActivated();
-	void PreLoadGUI(fw::SceneEventPreLoadGUIData const* const evnt);
-	void PostLoadGUI(fw::SceneEventGUIData const* const evnt);
 
 
 	// Data

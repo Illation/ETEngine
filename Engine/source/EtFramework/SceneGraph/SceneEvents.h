@@ -23,8 +23,6 @@ enum E_SceneEvent : T_SceneEventFlags
 	Deactivated			= 1 << 1,
 	Activated			= 1 << 2,
 	RegisterSystems		= 1 << 3,
-	PreLoadScreenGUI	= 1 << 4,
-	PostLoadScreenGUI	= 1 << 5,
 	ActiveCameraChanged = 1 << 6,
 
 	All = 0xFF
@@ -42,40 +40,6 @@ public:
 	virtual ~SceneEventData() = default;
 
 	UnifiedScene* scene = nullptr;
-};
-
-//---------------------------
-// SceneEventGUIData
-//
-// Scene event for PostLoadScreenGUI
-//
-struct SceneEventGUIData : public SceneEventData
-{
-public:
-	SceneEventGUIData(UnifiedScene* const uniScene, core::HashString const docId)
-		: SceneEventData(uniScene)
-		, guiDocumentId(docId)
-	{}
-	virtual ~SceneEventGUIData() = default;
-
-	core::HashString const guiDocumentId;
-};
-
-//---------------------------
-// SceneEventPreLoadGUIData
-//
-// Scene event for PreLoadScreenGUI
-//
-struct SceneEventPreLoadGUIData : public SceneEventGUIData
-{
-public:
-	SceneEventPreLoadGUIData(UnifiedScene* const uniScene, core::HashString const docId, bool const loading)
-		: SceneEventGUIData(uniScene, docId)
-		, isLoading(loading) 
-	{}
-	virtual ~SceneEventPreLoadGUIData() = default;
-
-	bool const isLoading; // when false the document is unloading
 };
 
 

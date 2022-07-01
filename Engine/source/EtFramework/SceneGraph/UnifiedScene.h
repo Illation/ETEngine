@@ -56,11 +56,11 @@ public:
 	void LoadScene(core::HashString const assetId);
 	void UnloadScene();
 
-	void SetScreenGuiContext(gui::T_ContextId const id) { m_ScreenGuiContext = id; }
 	void SetActiveCamera(T_EntityId const cameraId);
 
 	// accessors
 	//-----------
+	bool IsSceneLoaded() const { return m_IsSceneLoaded; }
 	core::HashString GetSceneId() const { return m_CurrentScene; }
 	EcsController& GetEcs() { return m_Scene; }
 
@@ -69,7 +69,6 @@ public:
 
 	render::Scene& GetRenderScene() { return m_RenderScene; }
 	gui::GuiExtension* GetGuiExtension() { return m_GuiExtension.Get(); }
-	gui::T_ContextId GetScreenGuiContext() { return m_ScreenGuiContext; }
 	PhysicsWorld& GetPhysicsWorld() { return m_PhysicsWorld; }
 
 	T_SceneEventDispatcher& GetEventDispatcher() { return m_EventDispatcher; }
@@ -84,6 +83,7 @@ private:
 	///////
 
 	core::HashString m_CurrentScene;
+	bool m_IsSceneLoaded = false;
 
 	EcsController m_Scene;
 
@@ -94,8 +94,6 @@ private:
 	render::Scene m_RenderScene;
 
 	Ptr<gui::GuiExtension> m_GuiExtension;
-	gui::T_ContextId m_ScreenGuiContext = gui::INVALID_CONTEXT_ID;
-	core::HashString m_LoadedGuiDocument;
 
 	PhysicsWorld m_PhysicsWorld;
 

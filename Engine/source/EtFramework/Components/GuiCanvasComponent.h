@@ -18,7 +18,7 @@ namespace fw {
 //---------------------------------
 // GuiCanvasComponent
 //
-// In world Canvas provides a surface to draw UI on
+// Provides a surface to place GUI documents in
 //
 class GuiCanvasComponent final : public SimpleComponentDescriptor
 {
@@ -29,11 +29,25 @@ class GuiCanvasComponent final : public SimpleComponentDescriptor
 	RTTR_ENABLE(SimpleComponentDescriptor) // for serialization
 	REGISTRATION_FRIEND_NS(fw)
 
+public:
+	//---------------------------------
+	// E_RenderMode
+	//
+	enum class E_RenderMode 
+	{
+		ScreenSpaceOverlay, // the canvas is rendered on top of everything after post processing is applied
+		WorldSpace, // the canvas is rendered into the world before post processing is applied
+
+		Invalid
+	};
+
 	// construct destruct
 	//--------------------
+private:
 	GuiCanvasComponent() = default;
 public:
-	GuiCanvasComponent(core::HashString const guiDocId, 
+	GuiCanvasComponent(E_RenderMode const renderMode,
+		core::HashString const guiDocId, 
 		core::HashString const dataModelId, 
 		ivec2 const dimensions, 
 		vec4 const& color = vec4(1.f),
@@ -54,40 +68,56 @@ public:
 
 	// accessors
 	//-----------
+	gui::T_ContextId GetId() const { return m_Id; }
 	gui::I_DataModel const* GetDataModel() const { return m_DataModel.Get(); }
 	gui::I_DataModel* GetDataModel() { return m_DataModel.Get(); }
+	E_RenderMode GetRenderMode() const { return m_RenderMode; }
+	bool IsActive() const { return m_IsActive; }
+	core::HashString GetGuiDocumentId() const { return m_GuiDocumentId; }
+
+	// for world space contexts
 	ivec2 GetDimensions() const { return m_Dimensions; }
 	vec4 const& GetColor() const { return m_Color; }
-	bool IsActive() const { return m_IsActive; }
 	bool IsDepthTestEnabled() const { return m_EnableDepthTest; }
 
 	// modifiers
 	//-----------
-	void SetDocument(core::HashString const guiDocId);
-	void SetEventCamera(T_EntityId const cameraEntity);
-	void SetColor(vec4 const& color);
 	void SetActive(bool const isActive);
+	void SetDocument(core::HashString const guiDocId);
+
+	// for world space contexts
+	void SetCamera(T_EntityId const cameraEntity);
+	void SetColor(vec4 const& color);
 	void SetDepthTestEnabled(bool const depthTest);
 
 	// utility
 	//-----------
 private:
-	void UpdateEventCamera();
+	void InitForScreenSpace(EcsController const& ecs);
+	void UpdateCamera();
 
 	// Data
 	///////
 
-	core::T_SlotId m_Id = core::INVALID_SLOT_ID;
+	gui::T_ContextId m_Id = gui::INVALID_CONTEXT_ID;
 	RefPtr<gui::I_DataModel> m_DataModel;
 
 	// reflected
+	E_RenderMode m_RenderMode = E_RenderMode::Invalid;
+	bool m_IsActive = true;
 	core::HashString m_GuiDocumentId;
 	core::HashString m_DataModelId;
-	EntityLink m_EventCamera;
+	EntityLink m_Camera; // for screenspace canvases defines the viewport to render to, for worldspace canvases defines where the events are coming from
+
+	// for world space contexts
 	ivec2 m_Dimensions;
 	vec4 m_Color = vec4(1.f);
-	bool m_IsActive = true;
 	bool m_EnableDepthTest = true;
+};
+
+class GuiCanvasComponentLinkEnforcer final
+{
+	DECLARE_FORCED_LINKING()
 };
 
 
