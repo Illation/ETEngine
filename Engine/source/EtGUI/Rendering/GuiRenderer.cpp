@@ -47,7 +47,7 @@ void GuiRenderer::Deinit()
 //
 // Render a list of contexts to the target framebuffer
 //
-void GuiRenderer::RenderContexts(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context* const contexts, size_t const count)
+void GuiRenderer::RenderContext(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context& context)
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
@@ -55,16 +55,10 @@ void GuiRenderer::RenderContexts(render::T_FbLoc const targetFb, ContextRenderTa
 
 	SetupContextRendering(api, renderTarget);
 
-	// render each context
-	for (size_t cIdx = 0u; cIdx < count; ++cIdx)
-	{
-		if (contexts[cIdx].IsActive() && contexts[cIdx].IsDocumentLoaded())
-		{
-			api->DebugPushGroup("Overlay Context");
-			contexts[cIdx].Render();
-			api->DebugPopGroup();
-		}
-	}
+	// render context elements
+	api->DebugPushGroup("Overlay Context");
+	context.Render();
+	api->DebugPopGroup();
 
 	// blit results to target framebuffer 
 	api->BindFramebuffer(targetFb);
@@ -93,7 +87,7 @@ void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb,
 	vec4 const& color,
 	bool const enableDepth)
 {
-	if (!(context.IsActive() && context.IsDocumentLoaded()))
+	if (!context.HasActiveDocuments())
 	{
 		return;
 	}

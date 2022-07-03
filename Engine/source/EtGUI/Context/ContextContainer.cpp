@@ -31,21 +31,18 @@ bool ContextContainer::PerViewport::ProcessKeyPressed(E_KbdKey const key, core::
 	if (rmlKey != Rml::Input::KeyIdentifier::KI_UNKNOWN)
 	{
 		int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
-		for (Context& context : m_Contexts)
+		if (m_Context.HasActiveDocuments())
 		{
-			if (context.IsActive() && context.IsDocumentLoaded())
+			if (m_Context.ProcessKeyPressed(rmlKey, mods))
 			{
-				if (context.ProcessKeyPressed(rmlKey, mods))
-				{
-					return true;
-				}
+				return true;
 			}
 		}
 
 		for (core::T_SlotId const worldContextId : m_EventWorldContexts)
 		{
 			WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
-			if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+			if (worldContext.m_Context.HasActiveDocuments())
 			{
 				if (m_ContextContainer->GetRenderScene()->GetCameras()[worldContext.m_EventCameraId].GetViewport() == m_Viewport)
 				{
@@ -70,21 +67,18 @@ bool ContextContainer::PerViewport::ProcessKeyReleased(E_KbdKey const key, core:
 	if (rmlKey != Rml::Input::KeyIdentifier::KI_UNKNOWN)
 	{
 		int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
-		for (Context& context : m_Contexts)
+		if (m_Context.HasActiveDocuments())
 		{
-			if (context.IsActive() && context.IsDocumentLoaded())
+			if (m_Context.ProcessKeyReleased(rmlKey, mods))
 			{
-				if (context.ProcessKeyReleased(rmlKey, mods))
-				{
-					return true;
-				}
+				return true;
 			}
 		}
 
 		for (core::T_SlotId const worldContextId : m_EventWorldContexts)
 		{
 			WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
-			if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+			if (worldContext.m_Context.HasActiveDocuments())
 			{
 				if (m_ContextContainer->GetRenderScene()->GetCameras()[worldContext.m_EventCameraId].GetViewport() == m_Viewport)
 				{
@@ -109,21 +103,18 @@ bool ContextContainer::PerViewport::ProcessMousePressed(E_MouseButton const butt
 	if (rmlButton != -1)
 	{
 		int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
-		for (Context& context : m_Contexts)
+		if (m_Context.HasActiveDocuments())
 		{
-			if (context.IsActive() && context.IsDocumentLoaded())
+			if (m_Context.ProcessMousePressed(rmlButton, mods))
 			{
-				if (context.ProcessMousePressed(rmlButton, mods))
-				{
-					return true;
-				}
+				return true;
 			}
 		}
 
 		for (core::T_SlotId const worldContextId : m_EventWorldContexts)
 		{
 			WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
-			if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+			if (worldContext.m_Context.HasActiveDocuments())
 			{
 				if (m_ContextContainer->GetRenderScene()->GetCameras()[worldContext.m_EventCameraId].GetViewport() == m_Viewport)
 				{
@@ -148,21 +139,18 @@ bool ContextContainer::PerViewport::ProcessMouseReleased(E_MouseButton const but
 	if (rmlButton != -1)
 	{
 		int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
-		for (Context& context : m_Contexts)
+		if (m_Context.HasActiveDocuments())
 		{
-			if (context.IsActive() && context.IsDocumentLoaded())
+			if (m_Context.ProcessMouseReleased(rmlButton, mods))
 			{
-				if (context.ProcessMouseReleased(rmlButton, mods))
-				{
-					return true;
-				}
+				return true;
 			}
 		}
 
 		for (core::T_SlotId const worldContextId : m_EventWorldContexts)
 		{
 			WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
-			if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+			if (worldContext.m_Context.HasActiveDocuments())
 			{
 				if (m_ContextContainer->GetRenderScene()->GetCameras()[worldContext.m_EventCameraId].GetViewport() == m_Viewport)
 				{
@@ -184,14 +172,11 @@ bool ContextContainer::PerViewport::ProcessMouseReleased(E_MouseButton const but
 bool ContextContainer::PerViewport::ProcessMouseMove(ivec2 const& mousePos, core::T_KeyModifierFlags const modifiers)
 {
 	int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
-	for (Context& context : m_Contexts)
+	if (m_Context.HasActiveDocuments())
 	{
-		if (context.IsActive() && context.IsDocumentLoaded())
+		if (m_Context.ProcessMouseMove(mousePos, mods))
 		{
-			if (context.ProcessMouseMove(mousePos, mods))
-			{
-				return true;
-			}
+			return true;
 		}
 	}
 
@@ -199,7 +184,7 @@ bool ContextContainer::PerViewport::ProcessMouseMove(ivec2 const& mousePos, core
 	for (core::T_SlotId const worldContextId : m_EventWorldContexts)
 	{
 		WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
-		if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+		if (worldContext.m_Context.HasActiveDocuments())
 		{
 			render::Camera const& camera = renderScene->GetCameras()[worldContext.m_EventCameraId];
 			if (camera.GetViewport() == m_Viewport)
@@ -250,21 +235,18 @@ bool ContextContainer::PerViewport::ProcessMouseWheelDelta(ivec2 const& mouseWhe
 {
 	ivec2 const delta(mouseWheel.x, -mouseWheel.y);
 	int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
-	for (Context& context : m_Contexts)
+	if (m_Context.HasActiveDocuments())
 	{
-		if (context.IsActive() && context.IsDocumentLoaded())
+		if (m_Context.ProcessMouseWheelDelta(delta, mods))
 		{
-			if (context.ProcessMouseWheelDelta(delta, mods))
-			{
-				return true;
-			}
+			return true;
 		}
 	}
 
 	for (core::T_SlotId const worldContextId : m_EventWorldContexts)
 	{
 		WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
-		if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+		if (worldContext.m_Context.HasActiveDocuments())
 		{
 			if (m_ContextContainer->GetRenderScene()->GetCameras()[worldContext.m_EventCameraId].GetViewport() == m_Viewport)
 			{
@@ -284,21 +266,18 @@ bool ContextContainer::PerViewport::ProcessMouseWheelDelta(ivec2 const& mouseWhe
 //
 bool ContextContainer::PerViewport::ProcessTextInput(core::E_Character const character)
 {
-	for (Context& context : m_Contexts)
+	if (m_Context.HasActiveDocuments())
 	{
-		if (context.IsActive() && context.IsDocumentLoaded())
+		if (m_Context.ProcessTextInput(static_cast<Rml::Character>(character)))
 		{
-			if (context.ProcessTextInput(static_cast<Rml::Character>(character)))
-			{
-				return true;
-			}
+			return true;
 		}
 	}
 
 	for (core::T_SlotId const worldContextId : m_EventWorldContexts)
 	{
 		WorldContext& worldContext = m_ContextContainer->GetWorldContexts()[worldContextId];
-		if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+		if (worldContext.m_Context.HasActiveDocuments())
 		{
 			if (worldContext.m_Context.ProcessTextInput(static_cast<Rml::Character>(character)))
 			{
@@ -316,9 +295,6 @@ bool ContextContainer::PerViewport::ProcessTextInput(core::E_Character const cha
 //===================
 
 
-ContextContainer::T_Contexts ContextContainer::s_EmptyContexts;
-
-
 //---------------------------------
 // ContextContainer::OnTick
 //
@@ -327,12 +303,9 @@ void ContextContainer::OnTick()
 	// screen contexts
 	for (auto& el : m_ViewportContexts)
 	{
-		for (Context& context : el.second.m_Contexts)
+		if (el.second.m_Context.HasActiveDocuments())
 		{
-			if (context.IsActive() && context.IsDocumentLoaded())
-			{
-				context.Update();
-			}
+			el.second.m_Context.Update();
 		}
 	}
 
@@ -340,7 +313,7 @@ void ContextContainer::OnTick()
 	for (WorldContext& worldContext : m_WorldContexts)
 	{
 		Context& context = worldContext.m_Context;
-		if (context.IsActive() && context.IsDocumentLoaded())
+		if (context.HasActiveDocuments())
 		{
 			context.Update();
 		}
@@ -358,13 +331,13 @@ T_ContextId ContextContainer::CreateContext(Ptr<render::Viewport> const viewport
 	auto const ret = m_Contexts.insert(ContextData());
 
 	PerViewport& perVp = FindOrCreatePerViewport(viewport);
-	auto const context = perVp.m_Contexts.insert(Context());
+	auto const context = perVp.m_Documents.insert(core::HashString());
 
 	ContextData& ctxData = *ret.first;
 	ctxData.m_Viewport = viewport;
 	ctxData.m_Context = context.second;
 
-	context.first->Init(std::to_string(ret.second), viewport->GetDimensions());
+	perVp.m_Context.Init(std::to_string(ret.second), viewport->GetDimensions());
 	return ret.second;
 }
 
@@ -402,13 +375,13 @@ void ContextContainer::DestroyContext(T_ContextId const id)
 	{
 		T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
 		ET_ASSERT(found != m_ViewportContexts.cend());
-		if ((found->second.m_Contexts.size() == 1u) && (found->second.m_EventWorldContexts.empty()))
+		if ((found->second.m_Documents.size() == 1u) && (found->second.m_EventWorldContexts.empty()))
 		{
 			ErasePerViewport(ctxData.m_Viewport.Get(), found);
 		}
 		else
 		{
-			found->second.m_Contexts.erase(ctxData.m_Context);
+			found->second.m_Documents.erase(ctxData.m_Context);
 		}
 	}
 	else
@@ -424,7 +397,19 @@ void ContextContainer::DestroyContext(T_ContextId const id)
 //
 void ContextContainer::SetContextActive(T_ContextId const id, bool const isActive)
 {
-	GetContext(id).SetActive(isActive);
+	ContextData& ctxData = m_Contexts[id];
+
+	if (ctxData.m_Viewport != nullptr)
+	{
+		T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
+		ET_ASSERT(found != m_ViewportContexts.cend());
+		found->second.m_Context.SetDocumentActive(found->second.m_Documents[ctxData.m_Context], isActive);
+	}
+	else
+	{
+		Context& context = m_WorldContexts[ctxData.m_Context].m_Context;
+		context.SetDocumentActive(context.GetDocumentId(0u), isActive);
+	}
 }
 
 //----------------------------------
@@ -447,7 +432,7 @@ void ContextContainer::SetEventCamera(T_ContextId const id, core::T_SlotId const
 
 			T_ViewportContexts::iterator found = m_ViewportContexts.find(cam.GetViewport());
 			ET_ASSERT(found != m_ViewportContexts.cend());
-			if ((found->second.m_EventWorldContexts.size() == 1u) && (found->second.m_Contexts.empty()))
+			if ((found->second.m_EventWorldContexts.size() == 1u) && (found->second.m_Documents.empty()))
 			{
 				ErasePerViewport(ctxData.m_Viewport.Get(), found);
 			}
@@ -499,14 +484,6 @@ void ContextContainer::SetDepthTestEnabled(T_ContextId const id, bool const dept
 //------------------------------------
 // ContextContainer::CreateDataModel
 //
-Rml::DataModelConstructor ContextContainer::CreateDataModel(T_ContextId const id, std::string const& modelName)
-{
-	return GetContext(id).CreateDataModel(modelName);
-}
-
-//------------------------------------
-// ContextContainer::CreateDataModel
-//
 RefPtr<I_DataModel> ContextContainer::InstantiateDataModel(T_ContextId const id, core::HashString const modelId)
 {
 	return std::move(RmlGlobal::GetDataModelFactory().CreateModel(GetContext(id), modelId));
@@ -525,17 +502,40 @@ bool ContextContainer::DestroyDataModel(T_ContextId const id, std::string const&
 //
 void ContextContainer::SetLoadedDocument(T_ContextId const id, core::HashString const documentId)
 {
-	Context& context = GetContext(id);
-	if (documentId.IsEmpty())
+	ContextData& ctxData = m_Contexts[id];
+
+	if (ctxData.m_Viewport != nullptr)
 	{
-		if (context.IsDocumentLoaded())
+		T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
+		ET_ASSERT(found != m_ViewportContexts.cend());
+		if (documentId.IsEmpty())
 		{
-			context.UnloadDocument();
+			if (!found->second.m_Documents[ctxData.m_Context].IsEmpty())
+			{
+				found->second.m_Context.UnloadDocument(found->second.m_Documents[ctxData.m_Context]);
+				found->second.m_Documents[ctxData.m_Context].Reset();
+			}
+		}
+		else if (found->second.m_Documents[ctxData.m_Context].IsEmpty())
+		{
+			found->second.m_Context.LoadDocument(documentId);
+			found->second.m_Documents[ctxData.m_Context] = documentId;
 		}
 	}
-	else if (!context.IsDocumentLoaded())
+	else
 	{
-		context.LoadDocument(documentId);
+		Context& context = m_WorldContexts[ctxData.m_Context].m_Context;
+		if (documentId.IsEmpty())
+		{
+			if (context.GetDocumentCount() > 0u)
+			{
+				context.UnloadDocument(context.GetDocumentId(0));
+			}
+		}
+		else if (context.GetDocumentCount() == 0u)
+		{
+			context.LoadDocument(documentId);
+		}
 	}
 }
 
@@ -591,31 +591,31 @@ void ContextContainer::SetDebuggerVisible(bool const isVisible)
 //
 // All contexts assigned to a viewport
 //
-ContextContainer::T_Contexts& ContextContainer::GetContexts(render::Viewport const* const vp) 
+Context* ContextContainer::GetContext(render::Viewport const* const vp) 
 {
 	T_ViewportContexts::iterator found = m_ViewportContexts.find(ToPtr(vp));
 	if (found == m_ViewportContexts.cend())
 	{
-		return s_EmptyContexts;
+		return nullptr;
 	}
 
-	return found->second.m_Contexts;
+	return &(found->second.m_Context);
 }
 
 //---------------------------------
 // ContextContainer::GetContexts
 //
-ContextContainer::T_Contexts& ContextContainer::GetContexts(render::Viewport const* const vp, ContextRenderTarget*& renderTarget)
+Context* ContextContainer::GetContext(render::Viewport const* const vp, ContextRenderTarget*& renderTarget)
 {
 	T_ViewportContexts::iterator found = m_ViewportContexts.find(ToPtr(vp));
 	if (found == m_ViewportContexts.cend())
 	{
 		renderTarget = nullptr;
-		return s_EmptyContexts;
+		return nullptr;
 	}
 
 	renderTarget = &(found->second.m_RenderTarget);
-	return found->second.m_Contexts;
+	return &(found->second.m_Context);
 }
 
 //----------------------------------
@@ -623,7 +623,18 @@ ContextContainer::T_Contexts& ContextContainer::GetContexts(render::Viewport con
 //
 Rml::ElementDocument* ContextContainer::GetDocument(T_ContextId const id)
 {
-	return GetContext(id).GetDocument();
+	ContextData& ctxData = m_Contexts[id];
+	if (ctxData.m_Viewport != nullptr)
+	{
+		T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
+		ET_ASSERT(found != m_ViewportContexts.cend());
+		return found->second.m_Context.GetDocument(found->second.m_Documents[ctxData.m_Context]);
+	}
+	else
+	{
+		Context& context = m_WorldContexts[ctxData.m_Context].m_Context;
+		return context.GetDocument(context.GetDocumentId(0u));
+	}
 }
 
 //----------------------------------
@@ -637,7 +648,7 @@ Context& ContextContainer::GetContext(T_ContextId const id)
 	{
 		T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
 		ET_ASSERT(found != m_ViewportContexts.cend());
-		return found->second.m_Contexts[ctxData.m_Context];
+		return found->second.m_Context;
 	}
 	else
 	{
@@ -650,11 +661,7 @@ Context& ContextContainer::GetContext(T_ContextId const id)
 //
 void ContextContainer::OnViewportResize(render::Viewport const* const vp, ivec2 const dim)
 {
-	T_Contexts& contexts = GetContexts(vp);
-	for (Context& context : contexts)
-	{
-		context.SetDimensions(dim);
-	}
+	GetContext(vp)->SetDimensions(dim);
 }
 
 //-------------------------------------------

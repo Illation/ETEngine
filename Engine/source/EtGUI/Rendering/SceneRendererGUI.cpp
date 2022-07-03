@@ -138,7 +138,7 @@ void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension&
 	//-------------------
 	for (ContextContainer::WorldContext& worldContext : guiExt.GetContextContainer().GetWorldContexts())
 	{
-		if (worldContext.m_Context.IsActive() && worldContext.m_Context.IsDocumentLoaded())
+		if (worldContext.m_Context.HasActiveDocuments())
 		{
 			ivec2 const contextDim = worldContext.m_Context.GetDimensions();
 			worldContext.m_RenderTarget.UpdateForDimensions(contextDim);
@@ -173,11 +173,11 @@ void SceneRendererGUI::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension&
 	//----------------
 	render::Viewport const* const viewport = render::Viewport::GetCurrentViewport();
 	ContextRenderTarget* renderTarget;
-	ContextContainer::T_Contexts& contexts = guiExt.GetContextContainer().GetContexts(viewport, renderTarget);
-	if (contexts.size() > 0u)
+	Context* const context = guiExt.GetContextContainer().GetContext(viewport, renderTarget);
+	if ((context != nullptr) && context->HasActiveDocuments())
 	{
 		renderTarget->UpdateForDimensions(viewport->GetDimensions());
-		m_GuiRenderer.RenderContexts(targetFb, *renderTarget, contexts.data(), contexts.size());
+		m_GuiRenderer.RenderContext(targetFb, *renderTarget, *context);
 	}
 }
 

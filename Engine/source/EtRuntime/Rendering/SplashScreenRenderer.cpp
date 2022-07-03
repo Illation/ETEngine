@@ -48,12 +48,12 @@ void SplashScreenRenderer::SetGuiDocument(core::HashString const documentId)
 {
 	if (documentId.IsEmpty())
 	{
-		if (m_GuiContext.IsDocumentLoaded())
+		if (m_GuiContext.GetDocumentCount() > 0u)
 		{
-			m_GuiContext.UnloadDocument();
+			m_GuiContext.UnloadDocument(m_GuiContext.GetDocumentId(0u));
 		}
 	}
-	else if (!m_GuiContext.IsDocumentLoaded())
+	else if (m_GuiContext.GetDocumentCount() == 0u)
 	{
 		m_GuiContext.LoadDocument(documentId);
 	}
@@ -77,7 +77,7 @@ void SplashScreenRenderer::OnResize(ivec2 const dim)
 //
 void SplashScreenRenderer::OnRender(render::T_FbLoc const targetFb)
 {
-	if (!m_IsInitialized || !m_GuiContext.IsDocumentLoaded())
+	if (!m_IsInitialized || !m_GuiContext.HasActiveDocuments())
 	{
 		return;
 	}
@@ -86,7 +86,7 @@ void SplashScreenRenderer::OnRender(render::T_FbLoc const targetFb)
 
 	render::Viewport const* const viewport = render::Viewport::GetCurrentViewport();
 	m_ContextRenderTarget.UpdateForDimensions(viewport->GetDimensions());
-	m_GuiRenderer.RenderContexts(targetFb, m_ContextRenderTarget, &m_GuiContext, 1u);
+	m_GuiRenderer.RenderContext(targetFb, m_ContextRenderTarget, m_GuiContext);
 }
 
 

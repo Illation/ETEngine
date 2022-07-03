@@ -85,8 +85,8 @@ void GuiCanvasComponent::OnComponentAdded(EcsController& controller, GuiCanvasCo
 			component.m_DataModel = std::move(contextContainer.InstantiateDataModel(component.m_Id, component.m_DataModelId));
 		}
 
-		contextContainer.SetContextActive(component.m_Id, component.m_IsActive);
 		contextContainer.SetLoadedDocument(component.m_Id, component.m_GuiDocumentId);
+		contextContainer.SetContextActive(component.m_Id, component.m_IsActive);
 		contextContainer.SetContextColor(component.m_Id, component.m_Color);
 		contextContainer.SetDepthTestEnabled(component.m_Id, component.m_EnableDepthTest);
 	}
@@ -222,8 +222,8 @@ void GuiCanvasComponent::InitForScreenSpace(EcsController const& ecs)
 			m_DataModel = std::move(contextContainer.InstantiateDataModel(m_Id, m_DataModelId));
 		}
 
-		contextContainer.SetContextActive(m_Id, m_IsActive);
 		contextContainer.SetLoadedDocument(m_Id, m_GuiDocumentId);
+		contextContainer.SetContextActive(m_Id, m_IsActive);
 	}
 }
 

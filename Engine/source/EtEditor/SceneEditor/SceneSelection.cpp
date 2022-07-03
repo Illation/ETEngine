@@ -66,16 +66,7 @@ void SceneSelection::UnregisterListener(I_SceneSelectionListener const* const li
 		return;
 	}
 
-	// swap and remove - the order of the listener list doesn't matter
-	if (m_Listeners.size() > 1u)
-	{
-		std::iter_swap(listenerIt, std::prev(m_Listeners.end()));
-		m_Listeners.pop_back();
-	}
-	else
-	{
-		m_Listeners.clear();
-	}
+	core::RemoveSwap(m_Listeners, listenerIt); // the order of the listener list doesn't matter
 }
 
 //----------------------------------------------------

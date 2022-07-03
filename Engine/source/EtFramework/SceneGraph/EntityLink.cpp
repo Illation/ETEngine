@@ -164,16 +164,7 @@ void EntityLinkResolver::UnregisterLink(EntityLink* const link)
 		return;
 	}
 
-	// remove it
-	if (foundIt->second.size() > 1u)
-	{
-		std::iter_swap(foundLink, std::prev(foundIt->second.end()));
-		foundIt->second.pop_back();
-	}
-	else
-	{
-		foundIt->second.clear();
-	}
+	core::RemoveSwap(foundIt->second, foundLink);
 }
 
 //---------------------------

@@ -30,6 +30,17 @@ class GuiDocument;
 //
 class Context
 {
+	struct Document final
+	{
+		Document(core::HashString const id, Ptr<Rml::ElementDocument> const doc) : m_Id(id), m_Document(doc) {}
+
+		core::HashString m_Id;
+		Ptr<Rml::ElementDocument> m_Document;
+		bool m_IsActive = true;
+	};
+
+	typedef std::vector<Document> T_Documents;
+
 public:
 	// construct destruct
 	//--------------------
@@ -40,14 +51,14 @@ public:
 
 	// functionality
 	//---------------
-	void SetActive(bool const isActive);
 	void SetDimensions(ivec2 const dimensions);
 
 	Rml::DataModelConstructor CreateDataModel(std::string const& modelName);
 	bool DestroyDataModel(std::string const& modelName);
 
 	void LoadDocument(core::HashString const documentId);
-	void UnloadDocument();
+	void UnloadDocument(core::HashString const documentId);
+	void SetDocumentActive(core::HashString const id, bool const isActive);
 
 	void Update();
 	void Render();
@@ -62,19 +73,28 @@ public:
 
 	// accessors
 	//-----------
-	bool IsActive() const { return m_Active; }
 	ivec2 GetDimensions() const;
-	bool IsDocumentLoaded() const { return (m_Document != nullptr); }
-	Rml::ElementDocument* GetDocument() { return m_Document.Get(); }
 	Rml::Context* GetImpl() { return m_Context.Get(); }
+
+	bool HasActiveDocuments() const { return m_ActiveDocuments > 0; }
+	bool IsDocumentActive(core::HashString const id) const;
+	Rml::ElementDocument* GetDocument(core::HashString const id);
+	size_t GetDocumentCount() const { return m_Documents.size(); }
+	core::HashString GetDocumentId(size_t const docIdx) const { return m_Documents[docIdx].m_Id; }
+
+	// utility
+	//---------
+private:
+	T_Documents::iterator GetDoc(core::HashString const id);
+	T_Documents::const_iterator GetDoc(core::HashString const id) const;
+
 
 	// Data
 	///////
 
-private:
 	Ptr<Rml::Context> m_Context;
-	bool m_Active = true;
-	Ptr<Rml::ElementDocument> m_Document; 
+	T_Documents m_Documents;
+	size_t m_ActiveDocuments = 0u;
 };
 
 

@@ -36,8 +36,6 @@ public:
 
 private:
 
-	static T_Contexts s_EmptyContexts;
-
 	struct ContextData
 	{
 		ContextData() = default;
@@ -68,7 +66,8 @@ private:
 		// data
 		Ptr<render::Viewport const> m_Viewport;
 
-		T_Contexts m_Contexts;
+		Context m_Context;
+		core::slot_map<core::HashString> m_Documents;
 		ContextRenderTarget m_RenderTarget;
 
 		Ptr<ContextContainer> m_ContextContainer;
@@ -126,7 +125,6 @@ public:
 	void SetContextColor(T_ContextId const id, vec4 const& color);
 	void SetDepthTestEnabled(T_ContextId const id, bool const depthEnabled);
 
-	Rml::DataModelConstructor CreateDataModel(T_ContextId const id, std::string const& modelName);
 	RefPtr<I_DataModel> InstantiateDataModel(T_ContextId const id, core::HashString const modelId);
 	bool DestroyDataModel(T_ContextId const id, std::string const& modelName);
 
@@ -139,8 +137,8 @@ public:
 
 	// accessors
 	//-----------
-	T_Contexts& GetContexts(render::Viewport const* const vp);
-	T_Contexts& GetContexts(render::Viewport const* const vp, ContextRenderTarget*& renderTarget);
+	Context* GetContext(render::Viewport const* const vp);
+	Context* GetContext(render::Viewport const* const vp, ContextRenderTarget*& renderTarget);
 	T_WorldContexts& GetWorldContexts() { return m_WorldContexts; }
 
 	Rml::ElementDocument* GetDocument(T_ContextId const id);

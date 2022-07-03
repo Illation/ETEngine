@@ -387,15 +387,7 @@ void Scene::RemoveAtmosphere(core::T_SlotId const atmoId)
 
 	if (foundAtmo->second == 1u)
 	{
-		if (m_Atmospheres.size() > 1u)
-		{
-			std::iter_swap(foundAtmo, std::prev(m_Atmospheres.end()));
-			m_Atmospheres.pop_back();
-		}
-		else
-		{
-			m_Atmospheres.clear();
-		}
+		core::RemoveSwap(m_Atmospheres, foundAtmo);
 	}
 	else
 	{

@@ -30,7 +30,7 @@ public:
 
 	// functionality
 	//---------------
-	void RenderContexts(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context* const contexts, size_t const count);
+	void RenderContext(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context& contexts);
 	void RenderWorldContext(render::T_FbLoc const targetFb, 
 		ContextRenderTarget& renderTarget, 
 		Context& contexts, 
