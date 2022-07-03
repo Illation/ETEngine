@@ -140,6 +140,18 @@ void GuiCanvasComponent::OnScenePostLoad(EcsController& ecs, T_EntityId const id
 }
 
 //---------------------------------
+// GuiCanvasComponent::SetActive
+//
+void GuiCanvasComponent::SetActive(bool const isActive)
+{
+	m_IsActive = isActive;
+	if (m_Id != gui::INVALID_CONTEXT_ID)
+	{
+		UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().SetContextActive(m_Id, isActive);
+	}
+}
+
+//---------------------------------
 // GuiCanvasComponent::SetDocument
 //
 void GuiCanvasComponent::SetDocument(core::HashString const guiDocId)
@@ -150,6 +162,7 @@ void GuiCanvasComponent::SetDocument(core::HashString const guiDocId)
 		UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().SetLoadedDocument(m_Id, guiDocId);
 	}
 }
+
 
 //------------------------------------
 // GuiCanvasComponent::SetCamera
@@ -170,21 +183,9 @@ void GuiCanvasComponent::SetCamera(T_EntityId const cameraEntity)
 void GuiCanvasComponent::SetColor(vec4 const& color)
 {
 	m_Color = color;
-	if (m_Id != gui::INVALID_CONTEXT_ID)
+	if ((m_Id != gui::INVALID_CONTEXT_ID) && (m_RenderMode == E_RenderMode::WorldSpace))
 	{
 		UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().SetContextColor(m_Id, m_Color);
-	}
-}
-
-//---------------------------------
-// GuiCanvasComponent::SetActive
-//
-void GuiCanvasComponent::SetActive(bool const isActive)
-{
-	m_IsActive = isActive;
-	if (m_Id != gui::INVALID_CONTEXT_ID)
-	{
-		UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().SetContextActive(m_Id, isActive);
 	}
 }
 
@@ -194,11 +195,12 @@ void GuiCanvasComponent::SetActive(bool const isActive)
 void GuiCanvasComponent::SetDepthTestEnabled(bool const depthTest)
 {
 	m_EnableDepthTest = depthTest;
-	if (m_Id != gui::INVALID_CONTEXT_ID)
+	if ((m_Id != gui::INVALID_CONTEXT_ID) && (m_RenderMode == E_RenderMode::WorldSpace))
 	{
 		UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().SetDepthTestEnabled(m_Id, m_EnableDepthTest);
 	}
 }
+
 
 //----------------------------------------
 // GuiCanvasComponent::InitForScreenSpace
@@ -210,18 +212,19 @@ void GuiCanvasComponent::InitForScreenSpace(EcsController const& ecs)
 	ET_ASSERT(m_Camera.GetId() != INVALID_ENTITY_ID);
 	ET_ASSERT(ecs.HasComponent<CameraComponent>(m_Camera.GetId()));
 	CameraComponent const& camera = ecs.GetComponent<CameraComponent>(m_Camera.GetId());
-	ET_ASSERT(camera.GetViewport() != nullptr);
-
-	gui::ContextContainer& contextContainer = UnifiedScene::Instance().GetGuiExtension()->GetContextContainer();
-
-	m_Id = contextContainer.CreateContext(camera.GetViewport());
-	if (!m_DataModelId.IsEmpty())
+	if (camera.GetViewport() != nullptr)
 	{
-		m_DataModel = std::move(contextContainer.InstantiateDataModel(m_Id, m_DataModelId));
-	}
+		gui::ContextContainer& contextContainer = UnifiedScene::Instance().GetGuiExtension()->GetContextContainer();
 
-	contextContainer.SetContextActive(m_Id, m_IsActive);
-	contextContainer.SetLoadedDocument(m_Id, m_GuiDocumentId);
+		m_Id = contextContainer.CreateContext(camera.GetViewport());
+		if (!m_DataModelId.IsEmpty())
+		{
+			m_DataModel = std::move(contextContainer.InstantiateDataModel(m_Id, m_DataModelId));
+		}
+
+		contextContainer.SetContextActive(m_Id, m_IsActive);
+		contextContainer.SetLoadedDocument(m_Id, m_GuiDocumentId);
+	}
 }
 
 //---------------------------------------
@@ -240,13 +243,14 @@ void GuiCanvasComponent::UpdateCamera()
 		ET_ASSERT(ecs.HasComponent<CameraComponent>(m_Camera.GetId()));
 		CameraComponent const& eventCamera = ecs.GetComponent<CameraComponent>(m_Camera.GetId());
 
-		ET_ASSERT(m_Camera.GetId() != core::INVALID_SLOT_ID);
-		uniScene.GetGuiExtension()->GetContextContainer().SetEventCamera(m_Id, eventCamera.GetId());
+		if (eventCamera.GetViewport() != nullptr)
+		{
+			uniScene.GetGuiExtension()->GetContextContainer().SetEventCamera(m_Id, eventCamera.GetId());
+			return;
+		}
 	}
-	else
-	{
-		uniScene.GetGuiExtension()->GetContextContainer().SetEventCamera(m_Id, core::INVALID_SLOT_ID);
-	}
+
+	uniScene.GetGuiExtension()->GetContextContainer().SetEventCamera(m_Id, core::INVALID_SLOT_ID);
 }
 
 

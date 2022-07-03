@@ -55,6 +55,7 @@ public:
 	};
 
 	static void SetupDataModels();
+	static void OnSceneActivated();
 };
 
 

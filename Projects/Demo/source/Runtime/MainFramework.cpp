@@ -7,15 +7,12 @@
 #include "CelestialBodySystem.h"
 #include "PlaylistSystem.h"
 
-#include <RmlUi/Core/ElementDocument.h>
-
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 #include <EtGUI/Fonts/SdfFont.h>
-#include <EtGUI/GuiExtension.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/Audio/AudioManager.h>
@@ -63,6 +60,7 @@ void MainFramework::OnInit()
 				UNUSED(flags);
 				UNUSED(evnt);
 				OnSceneActivated();
+				DemoUI::OnSceneActivated();
 			}));
 
 	// gui
@@ -187,27 +185,6 @@ void MainFramework::OnSceneActivated()
 	ET_ASSERT(!ecs.HasComponent<FreeCameraComponent>(camEnt));
 
 	ecs.AddComponents(camEnt, FreeCameraComponent());
-
-	// do fancy stuff with our GUI
-	ecs.ProcessViewOneShot(fw::T_OneShotProcess<CanvasView>([](fw::ComponentRange<CanvasView>& range)
-		{
-			gui::ContextContainer& guiContainer = fw::UnifiedScene::Instance().GetGuiExtension()->GetContextContainer();
-			for (CanvasView& view : range)
-			{
-				if (view.canvas->GetGuiDocumentId() == DemoUI::s_HelloWorldGuiId)
-				{
-					Rml::ElementDocument* const doc = guiContainer.GetDocument(view.canvas->GetId());
-					ET_ASSERT(doc != nullptr);
-
-					Rml::Element* const element = doc->GetElementById("world");
-					if (element != nullptr)
-					{
-						element->SetInnerRML(reinterpret_cast<const char*>(u8"🌍"));
-						element->SetProperty("font-size", "1.5em");
-					}
-				}
-			}
-		}));
 }
 
 

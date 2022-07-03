@@ -1,7 +1,12 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "DemoUI.h"
 
+#include <RmlUi/Core/ElementDocument.h>
+
 #include <EtGUI/Context/RmlGlobal.h>
+#include <EtGUI/GuiExtension.h>
+
+#include <EtFramework/SceneGraph/UnifiedScene.h>
 
 
 namespace et {
@@ -45,6 +50,34 @@ void DemoUI::SetupDataModels()
 			modelConstructor.Bind("show_text", &ret->m_ShowText);
 			modelConstructor.Bind("animal", &ret->m_Animal);
 			return std::move(ret);
+		}));
+}
+
+//--------------------------
+// DemoUI::OnSceneActivated
+//
+// Modify some UI elements to look nicer
+//
+void DemoUI::OnSceneActivated()
+{
+	fw::UnifiedScene::Instance().GetEcs().ProcessViewOneShot(fw::T_OneShotProcess<CanvasView>([](fw::ComponentRange<CanvasView>& range)
+		{
+			gui::ContextContainer& guiContainer = fw::UnifiedScene::Instance().GetGuiExtension()->GetContextContainer();
+			for (CanvasView& view : range)
+			{
+				if (view.canvas->GetGuiDocumentId() == DemoUI::s_HelloWorldGuiId)
+				{
+					Rml::ElementDocument* const doc = guiContainer.GetDocument(view.canvas->GetId());
+					ET_ASSERT(doc != nullptr);
+
+					Rml::Element* const element = doc->GetElementById("world");
+					if (element != nullptr)
+					{
+						element->SetInnerRML(reinterpret_cast<const char*>(u8"🌍"));
+						element->SetProperty("font-size", "1.5em");
+					}
+				}
+			}
 		}));
 }
 

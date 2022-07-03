@@ -179,19 +179,15 @@ void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, ivec2 c
 //
 // break on non shipping builds
 //
-void Logger::ProcessAssert(bool const condition, std::string const& caller, std::string const& msg)
+bool Logger::ProcessAssert(bool const condition, std::string const& caller, std::string const& msg)
 {
 	if (!condition)
 	{
 		Log("[ASSERT] " + caller + std::string(" > ") + msg, LogLevel::Warning, true);
-
-		// break but don't exit
-#ifdef ET_ARCH_X32
-		__asm { int 3 };
-#else // ET_ARCH_X64
-		__debugbreak();
-#endif 
+		return true;
 	}
+
+	return false;
 }
 
 #endif // ET_SHIPPING

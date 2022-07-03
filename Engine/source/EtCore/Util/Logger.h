@@ -26,7 +26,7 @@ public:
 		bool timestamp = false, ivec2 cursorPos = ivec2(-1));
 
 #ifndef ET_SHIPPING
-	static void ProcessAssert(bool const condition, std::string const& caller, std::string const& msg = std::string());
+	static bool ProcessAssert(bool const condition, std::string const& caller, std::string const& msg = std::string());
 #endif
 
 	static ivec2 GetCursorPosition();
