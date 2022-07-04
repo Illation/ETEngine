@@ -156,6 +156,6 @@ For a list of third party libraries and licenses check [HERE](Engine/third_party
 #### Render Pipeline; Physics
 
 <img align="right" src="./screenshots/DeferredBloom.jpg" alt="Lights with deferred rendering and Bloom" width="48%"/>
-<img src="./screenshots/PBR.jpg" alt="PBR and IBL" width="48%"/>
+<img src="./screenshots/3DUI.jpg" alt="3D UI Rendering and PBR" width="48%"/>
 
 ![](./screenshots/BulletPhysics.jpg)
