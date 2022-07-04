@@ -6,10 +6,12 @@
 		body
 		{
 			decorator: image("textures/Splashscreen.jpg");
+			image-color: #dadada;
 			color: #ffffff;
-			font-effect: outline(4dp #000000);
+			font-effect: glow(0dp 20dp 5dp 5dp #000000B0);
 			width: 100%;
 			height: 100%;
+			white-space: pre;
 		}
 
 		h1
@@ -18,28 +20,31 @@
 			font-size: 200px;
 			font-weight: bold;
 			text-align: center;
-			position: relative;
+			position: absolute;
+			left: 50%;
 			top: 50%;
-			transform: translateY(-50%);
+			transform: translate(-50%, -50%);
+		}
+
+		div
+		{
+			position: relative;
+			height: 100%;
 		}
 
 		p
 		{
 			font-family: "roboto condensed";
 			font-size: 60px;
-			position: relative;
-		}
-
-		span
-		{
 			position: absolute;
 			bottom: 0;
 			right: 0;
+			margin: 10px;
 		}
 	</style>
 </head>
 <body>
 	<h1>E T ENGINE</h1>
-	<p><span>LOADING</span></p>
+	<div><p>LOADING</p></div>
 </body>
 </rml>

@@ -39,6 +39,7 @@ void GuiRenderer::Deinit()
 
 	m_RmlShader = nullptr;
 	m_RmlBlitShader = nullptr;
+	m_RmlBlit3DShader = nullptr;
 	m_RmlSdfShader = nullptr;
 }
 

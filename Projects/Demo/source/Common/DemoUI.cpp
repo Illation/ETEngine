@@ -62,12 +62,11 @@ void DemoUI::OnSceneActivated()
 {
 	fw::UnifiedScene::Instance().GetEcs().ProcessViewOneShot(fw::T_OneShotProcess<CanvasView>([](fw::ComponentRange<CanvasView>& range)
 		{
-			gui::ContextContainer& guiContainer = fw::UnifiedScene::Instance().GetGuiExtension()->GetContextContainer();
 			for (CanvasView& view : range)
 			{
 				if (view.canvas->GetGuiDocumentId() == DemoUI::s_HelloWorldGuiId)
 				{
-					Rml::ElementDocument* const doc = guiContainer.GetDocument(view.canvas->GetId());
+					Rml::ElementDocument* const doc = view.canvas->GetDocument();
 					ET_ASSERT(doc != nullptr);
 
 					Rml::Element* const element = doc->GetElementById("world");

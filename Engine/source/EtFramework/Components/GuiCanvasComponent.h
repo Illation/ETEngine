@@ -9,6 +9,9 @@
 namespace et {
 REGISTRATION_NS(fw);
 }
+namespace Rml {
+	class ElementDocument;
+}
 
 
 namespace et {
@@ -68,12 +71,13 @@ public:
 
 	// accessors
 	//-----------
-	gui::T_ContextId GetId() const { return m_Id; }
 	gui::I_DataModel const* GetDataModel() const { return m_DataModel.Get(); }
 	gui::I_DataModel* GetDataModel() { return m_DataModel.Get(); }
 	E_RenderMode GetRenderMode() const { return m_RenderMode; }
 	bool IsActive() const { return m_IsActive; }
 	core::HashString GetGuiDocumentId() const { return m_GuiDocumentId; }
+	Rml::ElementDocument* GetDocument();
+	Rml::ElementDocument const* GetDocument() const;
 
 	// for world space contexts
 	ivec2 GetDimensions() const { return m_Dimensions; }

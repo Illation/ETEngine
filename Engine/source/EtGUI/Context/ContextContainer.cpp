@@ -27,6 +27,11 @@ namespace gui {
 //
 bool ContextContainer::PerViewport::ProcessKeyPressed(E_KbdKey const key, core::T_KeyModifierFlags const modifiers)
 {
+	if (!m_ContextContainer->IsInputEnabled())
+	{
+		return false;
+	}
+
 	Rml::Input::KeyIdentifier const rmlKey = RmlUtil::GetRmlKeyId(key);
 	if (rmlKey != Rml::Input::KeyIdentifier::KI_UNKNOWN)
 	{
@@ -63,6 +68,11 @@ bool ContextContainer::PerViewport::ProcessKeyPressed(E_KbdKey const key, core::
 //
 bool ContextContainer::PerViewport::ProcessKeyReleased(E_KbdKey const key, core::T_KeyModifierFlags const modifiers)
 {
+	if (!m_ContextContainer->IsInputEnabled())
+	{
+		return false;
+	}
+
 	Rml::Input::KeyIdentifier const rmlKey = RmlUtil::GetRmlKeyId(key);
 	if (rmlKey != Rml::Input::KeyIdentifier::KI_UNKNOWN)
 	{
@@ -99,6 +109,11 @@ bool ContextContainer::PerViewport::ProcessKeyReleased(E_KbdKey const key, core:
 //
 bool ContextContainer::PerViewport::ProcessMousePressed(E_MouseButton const button, core::T_KeyModifierFlags const modifiers)
 {
+	if (!m_ContextContainer->IsInputEnabled())
+	{
+		return false;
+	}
+
 	int32 const rmlButton = RmlUtil::GetRmlButtonIndex(button);
 	if (rmlButton != -1)
 	{
@@ -135,6 +150,11 @@ bool ContextContainer::PerViewport::ProcessMousePressed(E_MouseButton const butt
 //
 bool ContextContainer::PerViewport::ProcessMouseReleased(E_MouseButton const button, core::T_KeyModifierFlags const modifiers)
 {
+	if (!m_ContextContainer->IsInputEnabled())
+	{
+		return false;
+	}
+
 	int32 const rmlButton = RmlUtil::GetRmlButtonIndex(button);
 	if (rmlButton != -1)
 	{
@@ -171,6 +191,11 @@ bool ContextContainer::PerViewport::ProcessMouseReleased(E_MouseButton const but
 //
 bool ContextContainer::PerViewport::ProcessMouseMove(ivec2 const& mousePos, core::T_KeyModifierFlags const modifiers)
 {
+	if (!m_ContextContainer->IsInputEnabled())
+	{
+		return false;
+	}
+
 	int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
 	if (m_Context.HasActiveDocuments())
 	{
@@ -233,6 +258,11 @@ bool ContextContainer::PerViewport::ProcessMouseMove(ivec2 const& mousePos, core
 //
 bool ContextContainer::PerViewport::ProcessMouseWheelDelta(ivec2 const& mouseWheel, core::T_KeyModifierFlags const modifiers)
 {
+	if (!m_ContextContainer->IsInputEnabled())
+	{
+		return false;
+	}
+
 	ivec2 const delta(mouseWheel.x, -mouseWheel.y);
 	int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
 	if (m_Context.HasActiveDocuments())
@@ -266,6 +296,11 @@ bool ContextContainer::PerViewport::ProcessMouseWheelDelta(ivec2 const& mouseWhe
 //
 bool ContextContainer::PerViewport::ProcessTextInput(core::E_Character const character)
 {
+	if (!m_ContextContainer->IsInputEnabled())
+	{
+		return false;
+	}
+
 	if (m_Context.HasActiveDocuments())
 	{
 		if (m_Context.ProcessTextInput(static_cast<Rml::Character>(character)))
@@ -336,6 +371,7 @@ T_ContextId ContextContainer::CreateContext(Ptr<render::Viewport> const viewport
 	ContextData& ctxData = *ret.first;
 	ctxData.m_Viewport = viewport;
 	ctxData.m_Context = context.second;
+	ctxData.m_IsViewportContext = true;
 
 	perVp.m_Context.Init(std::to_string(ret.second), viewport->GetDimensions());
 	return ret.second;
@@ -355,6 +391,7 @@ T_ContextId ContextContainer::CreateContext(core::T_SlotId const nodeId, ivec2 c
 	ContextData& ctxData = *ret.first;
 	ctxData.m_Viewport = nullptr;
 	ctxData.m_Context = worldContext.second;
+	ctxData.m_IsViewportContext = false;
 
 	worldContext.first->m_Context.Init(std::to_string(ret.second), dimensions);
 	worldContext.first->m_NodeId = nodeId;
@@ -371,7 +408,7 @@ void ContextContainer::DestroyContext(T_ContextId const id)
 {
 	ContextData& ctxData = m_Contexts[id];
 
-	if (ctxData.m_Viewport != nullptr)
+	if (ctxData.m_IsViewportContext)
 	{
 		T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
 		ET_ASSERT(found != m_ViewportContexts.cend());
@@ -386,6 +423,7 @@ void ContextContainer::DestroyContext(T_ContextId const id)
 	}
 	else
 	{
+		SetEventCamera(id, core::INVALID_SLOT_ID);
 		m_WorldContexts.erase(ctxData.m_Context);
 	}
 
@@ -399,7 +437,7 @@ void ContextContainer::SetContextActive(T_ContextId const id, bool const isActiv
 {
 	ContextData& ctxData = m_Contexts[id];
 
-	if (ctxData.m_Viewport != nullptr)
+	if (ctxData.m_IsViewportContext)
 	{
 		T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
 		ET_ASSERT(found != m_ViewportContexts.cend());
@@ -420,17 +458,14 @@ void ContextContainer::SetContextActive(T_ContextId const id, bool const isActiv
 void ContextContainer::SetEventCamera(T_ContextId const id, core::T_SlotId const cameraId)
 {
 	ContextData& ctxData = m_Contexts[id];
-	ET_ASSERT(ctxData.m_Viewport == nullptr, "Context event camera is only applicable on World contexts");
+	ET_ASSERT(!ctxData.m_IsViewportContext, "Context event camera is only applicable on World contexts");
 
 	WorldContext& worldContext = m_WorldContexts[ctxData.m_Context];
 	if (worldContext.m_EventCameraId != cameraId)
 	{
 		if (worldContext.m_EventCameraId != core::INVALID_SLOT_ID)
 		{
-			render::Camera const& cam = m_RenderScene->GetCameras()[worldContext.m_EventCameraId];
-			ET_ASSERT(cam.GetViewport() != nullptr);
-
-			T_ViewportContexts::iterator found = m_ViewportContexts.find(cam.GetViewport());
+			T_ViewportContexts::iterator found = m_ViewportContexts.find(ctxData.m_Viewport);
 			ET_ASSERT(found != m_ViewportContexts.cend());
 			if ((found->second.m_EventWorldContexts.size() == 1u) && (found->second.m_Documents.empty()))
 			{
@@ -440,6 +475,8 @@ void ContextContainer::SetEventCamera(T_ContextId const id, core::T_SlotId const
 			{
 				found->second.m_EventWorldContexts.erase(ctxData.m_Context);
 			}
+
+			ctxData.m_Viewport = nullptr;
 		}
 
 		worldContext.m_EventCameraId = cameraId;
@@ -451,6 +488,8 @@ void ContextContainer::SetEventCamera(T_ContextId const id, core::T_SlotId const
 
 			PerViewport& perVp = FindOrCreatePerViewport(cam.GetViewport());
 			perVp.m_EventWorldContexts.insert(ctxData.m_Context);
+
+			ctxData.m_Viewport = cam.GetViewport();
 		}
 	}
 }
@@ -463,7 +502,7 @@ void ContextContainer::SetEventCamera(T_ContextId const id, core::T_SlotId const
 void ContextContainer::SetContextColor(T_ContextId const id, vec4 const& color)
 {
 	ContextData& ctxData = m_Contexts[id];
-	ET_ASSERT(ctxData.m_Viewport == nullptr, "Context color is only applicable on World contexts");
+	ET_ASSERT(!ctxData.m_IsViewportContext, "Context color is only applicable on World contexts");
 
 	m_WorldContexts[ctxData.m_Context].m_Color = color;
 }
@@ -476,7 +515,7 @@ void ContextContainer::SetContextColor(T_ContextId const id, vec4 const& color)
 void ContextContainer::SetDepthTestEnabled(T_ContextId const id, bool const depthEnabled)
 {
 	ContextData& ctxData = m_Contexts[id];
-	ET_ASSERT(ctxData.m_Viewport == nullptr, "Depth testing is only applicable on World contexts");
+	ET_ASSERT(!ctxData.m_IsViewportContext, "Depth testing is only applicable on World contexts");
 
 	m_WorldContexts[ctxData.m_Context].m_IsDepthEnabled = depthEnabled;
 }
@@ -504,7 +543,7 @@ void ContextContainer::SetLoadedDocument(T_ContextId const id, core::HashString 
 {
 	ContextData& ctxData = m_Contexts[id];
 
-	if (ctxData.m_Viewport != nullptr)
+	if (ctxData.m_IsViewportContext)
 	{
 		T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
 		ET_ASSERT(found != m_ViewportContexts.cend());
@@ -624,7 +663,7 @@ Context* ContextContainer::GetContext(render::Viewport const* const vp, ContextR
 Rml::ElementDocument* ContextContainer::GetDocument(T_ContextId const id)
 {
 	ContextData& ctxData = m_Contexts[id];
-	if (ctxData.m_Viewport != nullptr)
+	if (ctxData.m_IsViewportContext)
 	{
 		T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
 		ET_ASSERT(found != m_ViewportContexts.cend());
@@ -644,7 +683,7 @@ Context& ContextContainer::GetContext(T_ContextId const id)
 {
 	ContextData& ctxData = m_Contexts[id];
 
-	if (ctxData.m_Viewport != nullptr)
+	if (ctxData.m_IsViewportContext)
 	{
 		T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
 		ET_ASSERT(found != m_ViewportContexts.cend());

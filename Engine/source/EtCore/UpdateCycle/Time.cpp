@@ -6,91 +6,69 @@ namespace et {
 namespace core {
 
 
+//======
+// Time
+//======
+
+
+//---------------------
+// Time::c-tor
+//
 Time::Time()
 {
 	Start();
 }
 
-Time::~Time()
-{}
-
+//---------------------
+// Time::Start
+//
+// Begin elapsing time
+//
 void Time::Start()
 {
-	begin = Now();
-	last = begin;
-}
-void Time::Update()
-{
-	auto end = Now();
-	m_DeltaTime = HRTCast<float>( Diff( last, end ) );
-	last = end;
+	m_Begin = HighResTime::Now();
+	m_Last = m_Begin;
 }
 
+//---------------------
+// Time::Update
+//
+// Update elapsed time
+//
+void Time::Update()
+{
+	HighResTime const end = HighResTime::Now();
+	m_DeltaTime = (end - m_Last).Cast<float>();
+	m_Last = end;
+}
+
+//---------------------
+// Time::GetTime
+//
+// Total elapsed time
+//
 float Time::GetTime() const
 {
-	auto end = Now();
-	return HRTCast<float>( Diff( begin, end ) );
+	return GetTime<float>();
 }
-float Time::DeltaTime() const
-{
-	return m_DeltaTime;
-}
+
+//---------------------
+// Time::FPS
+//
 float Time::FPS() const
 {
 	return (1.f / m_DeltaTime);
 }
+
+//---------------------
+// Time::Timestamp
+//
+// uint containing the time in nanoseconds since the game started
+//
 uint64 Time::Timestamp() const
 {
-#ifndef ET_PLATFORM_LINUX
-	return static_cast<uint64>(std::chrono::duration_cast<std::chrono::nanoseconds>(Diff(begin, Now())).count());
-#endif
+	return (m_Last - m_Begin).NanoSeconds();
 }
-uint64 Time::SystemTimestamp() const
-{
-#ifndef ET_PLATFORM_LINUX
-	auto end = Now();
-	return static_cast<uint64>(std::chrono::duration_cast<std::chrono::nanoseconds>(end.time_since_epoch()).count());
-#endif
-}
-
-//Platform abstraction
-#ifdef ET_PLATFORM_LINUX
-
-	HighResTime Time::Now()const
-	{
-		HighResTime ret;
-		clock_gettime( CLOCK_PROCESS_CPUTIME_ID, &ret );
-		return ret;
-	}
-	HighResDuration Time::Diff( const HighResTime &start, const HighResTime &end )const
-	{
-		HighResDuration ret;
-		auto nsecDiff = end.tv_nsec - start.tv_nsec;
-		if(nsecDiff < 0)
-		{
-			ret.tv_sec = end.tv_sec - start.tv_sec - 1;
-			ret.tv_nsec = 1000000000 + nsecDiff;
-		}
-		else
-		{
-			ret.tv_sec = end.tv_sec - start.tv_sec;
-			ret.tv_nsec = nsecDiff;
-		}
-		return ret;
-	}
-
-#else
-
-	HighResTime Time::Now()const
-	{
-		return std::chrono::high_resolution_clock::now();
-	}
-	HighResDuration Time::Diff( const HighResTime &start, const HighResTime &end )const
-	{
-		return end - start;
-	}
-
-#endif
 
 
 } // namespace core

@@ -42,6 +42,7 @@ private:
 
 		Ptr<render::Viewport> m_Viewport;
 		core::T_SlotId m_Context;
+		bool m_IsViewportContext = false;
 	};
 
 	//---------------------------------
@@ -130,6 +131,8 @@ public:
 
 	void SetLoadedDocument(T_ContextId const id, core::HashString const documentId);
 
+	void SetInputEnabled(bool const enabled) { m_IsInputEnabled = enabled; }
+
 #ifdef ET_DEBUG
 	void SetDebugContext(T_ContextId const id);
 	void SetDebuggerVisible(bool const isVisible);
@@ -144,6 +147,8 @@ public:
 	Rml::ElementDocument* GetDocument(T_ContextId const id);
 
 	render::Scene const* GetRenderScene() const { return m_RenderScene.Get(); }
+
+	bool IsInputEnabled() const { return m_IsInputEnabled; }
 
 #ifdef ET_DEBUG
 	bool IsDebuggerVisible() const { return m_IsDebuggerVisible; }
@@ -167,6 +172,8 @@ private:
 	T_WorldContexts m_WorldContexts;
 
 	Ptr<render::Scene const> m_RenderScene;
+
+	bool m_IsInputEnabled = true;
 
 #ifdef ET_DEBUG
 	T_ContextId m_DebuggerContext = INVALID_CONTEXT_ID;

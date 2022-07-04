@@ -13,7 +13,7 @@ namespace core {
 //
 math::Random& GetGlobalRandom()
 {
-	static math::Random s_Random(static_cast<uint32>(ContextManager::GetInstance()->GetActiveContext()->time->SystemTimestamp()));
+	static math::Random s_Random(static_cast<uint32>(HighResTime::Now().SinceEpoch().NanoSeconds()));
 	return s_Random;
 }
 

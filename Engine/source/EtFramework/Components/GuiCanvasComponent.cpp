@@ -140,6 +140,32 @@ void GuiCanvasComponent::OnScenePostLoad(EcsController& ecs, T_EntityId const id
 }
 
 //---------------------------------
+// GuiCanvasComponent::GetDocument
+//
+Rml::ElementDocument* GuiCanvasComponent::GetDocument() 
+{
+	if (m_Id == gui::INVALID_CONTEXT_ID)
+	{
+		return nullptr;
+	}
+
+	return UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().GetDocument(m_Id);
+}
+
+//---------------------------------
+// GuiCanvasComponent::GetDocument
+//
+Rml::ElementDocument const* GuiCanvasComponent::GetDocument() const
+{
+	if (m_Id == gui::INVALID_CONTEXT_ID)
+	{
+		return nullptr;
+	}
+
+	return UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().GetDocument(m_Id);
+}
+
+//---------------------------------
 // GuiCanvasComponent::SetActive
 //
 void GuiCanvasComponent::SetActive(bool const isActive)
