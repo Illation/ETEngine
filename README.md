@@ -18,9 +18,12 @@ __E.T.__ stands for "extra terrestial" due to the goal for this technology to go
 This project is under active development, and while a wide range of features are implemented and the overall architecture is approaching a cohesive state, many of the planned improvements are likely to touch a large crossection of the codebase.
 Therefore, while breaking changes are usually implemented in separate branches, the interface on the master branch changes relatively frequently.
 
-***********************************************************************************
+</br>
+<img align="left" style="padding-right:10px; " src="./doc/etengine_logo.png" alt="PBR" width="8%"/>
 
-Discuss it on [Discord](https://discord.gg/PZc37qPwVC)!
+### Discuss it on [Discord](https://discord.gg/PZc37qPwVC)!
+
+</br>
 
 ***********************************************************************************
 
@@ -153,6 +156,6 @@ For a list of third party libraries and licenses check [HERE](Engine/third_party
 #### Render Pipeline; Physics
 
 <img align="right" src="./screenshots/DeferredBloom.jpg" alt="Lights with deferred rendering and Bloom" width="48%"/>
-<img src="./screenshots/PBR.jpg" alt="PBR and IBL" width="48%"/>
+<img src="./screenshots/3DUI.jpg" alt="3D UI Rendering and PBR" width="48%"/>
 
 ![](./screenshots/BulletPhysics.jpg)

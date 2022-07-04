@@ -6,9 +6,16 @@
 #include <EtRendering/GraphicsTypes/Camera.h>
 #include <EtRendering/GraphicsContext/Viewport.h>
 
+#include <EtFramework/SceneGraph/UnifiedScene.h>
+
 
 namespace et {
 namespace fw {
+
+
+//==================
+// Camera Component 
+//==================
 
 
 // reflection
@@ -29,27 +36,18 @@ ECS_REGISTER_COMPONENT(CameraComponent);
 DEFINE_FORCED_LINKING(CameraComponent)
 
 
-//==================
-// Camera Component 
-//==================
-
-
 //---------------------------------
-// CameraComponent::PopulateCamera
+// CameraComponent::SetViewport
 //
-// fill out a render camera from the component
+// Update viewport on render camera immediately for loading order purposes
 //
-void CameraComponent::PopulateCamera(render::Camera& target, render::Viewport const& viewport, TransformComponent const& tfComp) const
+void CameraComponent::SetViewport(Ptr<render::Viewport> const viewport)
 {
-	target.SetTransformation(tfComp.GetPosition(), tfComp.GetForward(), tfComp.GetUp(), true);
-
-	target.SetIsPerspective(true, true); // #todo: support ortho cameras
-	target.SetFieldOfView(m_FieldOfView, true);
-	target.SetSize(m_Size, true);
-	target.SetClippingPlanes(m_NearPlane, m_FarPlane, true);
-	target.SetViewport(&viewport, true);
-
-	target.Recalculate();
+	m_Viewport = viewport;
+	if (m_Id != core::INVALID_SLOT_ID)
+	{
+		fw::UnifiedScene::Instance().GetRenderScene().GetCamera(m_Id).SetViewport(viewport, true);
+	}
 }
 
 

@@ -1,11 +1,8 @@
 #pragma once
 #include "ShadowRenderer.h"
-#include "OverlayRenderer.h"
 #include "Gbuffer.h"
 #include "ScreenSpaceReflections.h"
 #include "PostProcessingRenderer.h"
-#include "TextRenderer.h"
-#include "SpriteRenderer.h"
 
 #include <EtRendering/GraphicsTypes/Camera.h>
 #include <EtRendering/GraphicsContext/ViewportRenderer.h>
@@ -25,7 +22,7 @@ class MaterialCollection;
 //
 // Renders a Scene to the viewport
 //
-class ShadedSceneRenderer final : public I_ViewportRenderer, public I_ShadowRenderer, public I_OverlayRenderer
+class ShadedSceneRenderer final : public I_ViewportRenderer, public I_ShadowRenderer
 {
 	// GlobalAccess
 	//---------------
@@ -39,6 +36,10 @@ public:
 
 	void InitRenderingSystems();
 
+	// functionality
+	//---------------
+	void SetCamera(core::T_SlotId const cameraId) { m_CameraId = cameraId; }
+
 	// Viewport Renderer Interface
 	//-----------------------------
 protected:
@@ -51,26 +52,16 @@ protected:
 	// Shadow Renderer Interface
 	//-----------------------------
 public:
+	Camera const& GetCamera() const override;
 	void DrawShadow(I_Material const* const nullMaterial) override;
-
-	Camera const& GetCamera() const override { return m_Camera; }
-
-	// Overlay Renderer Interface
-	//-----------------------------
-	void DrawOverlays(T_FbLoc const targetFb) override;
 
 	// accessors
 	//--------------
 public:
-	Camera& GetCamera() { return m_Camera; }
-
 	Gbuffer& GetGBuffer() { return m_GBuffer; }
 	Gbuffer const& GetGBuffer() const { return m_GBuffer; }
 
 	render::Scene const* GetScene() const { return m_RenderScene; }
-
-	TextRenderer& GetTextRenderer() { return m_TextRenderer; }
-	SpriteRenderer& GetSpriteRenderer() { return m_SpriteRenderer; }
 
 	T_RenderEventDispatcher& GetEventDispatcher() { return m_Events; }
 
@@ -88,7 +79,7 @@ private:
 	vec3 m_ClearColor;
 	ivec2 m_Dimensions;
 
-	Camera m_Camera;
+	core::T_SlotId m_CameraId = core::INVALID_SLOT_ID;
 
 	render::Scene* m_RenderScene = nullptr;
 
@@ -98,9 +89,6 @@ private:
 	PostProcessingRenderer m_PostProcessing;
 
 	AssetPtr<ShaderData> m_SkyboxShader;
-
-	TextRenderer m_TextRenderer;
-	SpriteRenderer m_SpriteRenderer;
 
 	T_RenderEventDispatcher m_Events;
 };

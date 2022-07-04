@@ -22,7 +22,7 @@ namespace edit {
 //
 // Renders all entities to the scene using an ID as a color
 //
-class EntityIdRenderer final : public render::I_ViewportListener
+class EntityIdRenderer final
 {
 public:	
 	// construct destruct
@@ -45,17 +45,13 @@ private:
 	//---------------
 public:
 	void Pick(ivec2 const pixel, render::Viewport* const viewport, std::function<void(fw::T_EntityId const)>& onEntityPicked);
-	
-	// Viewport Listener interface
-	//-----------------------------
-protected:
-
-	void OnViewportPreRender(render::T_FbLoc const targetFb) override;
-	void OnViewportPostFlush(render::T_FbLoc const targetFb) override;
 
 	// Utility
 	//---------
 private:
+	void OnViewportPreRender(render::T_FbLoc const targetFb);
+	void OnViewportPostFlush(render::T_FbLoc const targetFb);
+
 	void DrawEntity(fw::T_EntityId const entity, render::Camera const& camera) const;
 	void GetIdColor(fw::T_EntityId const id, vec4& col) const;
 
@@ -74,6 +70,7 @@ private:
 
 	ivec2 m_PixelToPick;
 	render::Viewport* m_ViewportToPickFrom = nullptr;
+	render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
 	std::function<void(fw::T_EntityId const)> m_OnEntityPicked;
 };
 

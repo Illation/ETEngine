@@ -2,6 +2,8 @@
 #include <EtCore/UpdateCycle/RealTimeTickTriggerer.h>
 #include <EtCore/UpdateCycle/Tickable.h>
 
+#include <EtGUI/Rendering/SceneRendererGUI.h>
+
 #include <EtFramework/Config/TickOrder.h>
 #include <EtFramework/Util/ScreenshotCapture.h>
 
@@ -59,10 +61,15 @@ private:
 
 private:
 	GlfwRenderWindow m_RenderWindow;
-	render::Viewport* m_Viewport = nullptr;
-	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
-	render::SplashScreenRenderer* m_SplashScreenRenderer = nullptr;
+	UniquePtr<render::Viewport> m_Viewport;
 
+	UniquePtr<render::ShadedSceneRenderer> m_SceneRenderer;
+	UniquePtr<rt::SplashScreenRenderer> m_SplashScreenRenderer;
+
+protected:
+	gui::SceneRendererGUI m_GuiRenderer;
+
+private:
 	std::vector<core::HashString> m_Scenes;
 
 protected:

@@ -1,7 +1,7 @@
 {
-  "editable font asset": {
+  "editable sdf font asset": {
     "asset": {
-      "font asset": {
+      "sdf font asset": {
         "name": "Ubuntu-Regular.ttf",
         "path": "Fonts/",
         "package": "engine_content",
@@ -10,9 +10,16 @@
     },
     "metadata": null,
     "children": [],
-    "size": 42,
+    "size": 32,
     "padding": 1,
-    "spread": 5,
-    "highres": 32
+    "spread": 6,
+    "highres": 64,
+    "EM per 100 weight": 0.007,
+    "char sets": [
+      {
+        "start": 0,
+        "end": 255
+      }
+    ]
   }
 }

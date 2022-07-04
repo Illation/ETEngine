@@ -1,0 +1,17 @@
+{
+  "editable gui document asset": {
+    "asset": {
+      "gui document asset": {
+        "name": "window.rcss",
+        "path": "GUI/",
+        "package": "",
+        "references": [
+          "Fonts/LatoLatin-Italic.ttf",
+          "Fonts/LatoLatin-Regular.ttf"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

@@ -3,6 +3,8 @@
 #include "RefPointer.h"
 #include "WeakPointer.h"
 
+#include <EtCore/Content/AssetPointer.h>
+
 
 namespace et {
 
@@ -59,6 +61,12 @@ public:
 	template <typename TOtherType>
 	Ptr& operator=(WeakPtr<TOtherType> const& weak);
 
+	// from Asset
+	template <typename TOtherType>
+	Ptr(AssetPtr<TOtherType> const& asset);
+	template <typename TOtherType>
+	Ptr& operator=(AssetPtr<TOtherType> const& asset);
+
 	// Moving
 	Ptr(Ptr&& moving);
 	Ptr& operator=(Ptr&& moving);
@@ -102,6 +110,15 @@ template <typename TDataType, typename TOtherType>
 bool operator == (Ptr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2);
 
 template <typename TDataType, typename TOtherType>
+bool operator == (Ptr<TDataType> const& ptr1, TOtherType* const ptr2);
+
+template <typename TDataType, typename TOtherType>
+bool operator == (TDataType* const ptr1, Ptr<TOtherType> const& ptr2);
+
+template <typename TDataType, typename TOtherType>
+bool operator == (Ptr<TDataType> const& ptr1, TOtherType const* const ptr2);
+
+template <typename TDataType, typename TOtherType>
 bool operator == (Ptr<TDataType> const& ptr1, UniquePtr<TOtherType> const& ptr2);
 
 template <typename TDataType, typename TOtherType>
@@ -119,6 +136,12 @@ bool operator == (Ptr<TDataType> const& ptr1, WeakPtr<TOtherType> const& ptr2);
 template <typename TDataType, typename TOtherType>
 bool operator == (WeakPtr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2);
 
+template <typename TDataType, typename TOtherType>
+bool operator == (Ptr<TDataType> const& ptr1, AssetPtr<TOtherType> const& ptr2);
+
+template <typename TDataType, typename TOtherType>
+bool operator == (AssetPtr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2);
+
 template <typename TDataType>
 bool operator != (Ptr<TDataType> const& ptr, std::nullptr_t);
 
@@ -127,6 +150,12 @@ bool operator != (std::nullptr_t, Ptr<TDataType> const& ptr);
 
 template <typename TDataType, typename TOtherType>
 bool operator != (Ptr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2);
+
+template <typename TDataType, typename TOtherType>
+bool operator != (Ptr<TDataType> const& ptr1, TOtherType* const ptr2);
+
+template <typename TDataType, typename TOtherType>
+bool operator != (TDataType* const ptr1, Ptr<TOtherType> const& ptr2);
 
 template <typename TDataType, typename TOtherType>
 bool operator != (Ptr<TDataType> const& ptr1, UniquePtr<TOtherType> const& ptr2);
@@ -145,6 +174,12 @@ bool operator != (Ptr<TDataType> const& ptr1, WeakPtr<TOtherType> const& ptr2);
 
 template <typename TDataType, typename TOtherType>
 bool operator != (WeakPtr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2);
+
+template <typename TDataType, typename TOtherType>
+bool operator != (Ptr<TDataType> const& ptr1, AssetPtr<TOtherType> const& ptr2);
+
+template <typename TDataType, typename TOtherType>
+bool operator != (AssetPtr<TDataType> const& ptr1, Ptr<TOtherType> const& ptr2);
 
 
 // other utility

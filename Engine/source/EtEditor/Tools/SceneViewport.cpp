@@ -44,7 +44,7 @@ SceneViewport::~SceneViewport()
 		OnDeinit();
 	}
 
-	m_Viewport.reset(nullptr);
+	m_Viewport = nullptr;
 	SafeDelete(m_RenderArea);
 }
 
@@ -57,7 +57,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 {
 	m_Editor = static_cast<SceneEditor*>(editor);
 
-	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<render::SpriteFont>(core::HashString("Fonts/IBMPlexMono.ttf"));
+	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<gui::SdfFont>(core::HashString("Fonts/IBMPlexMono.ttf"));
 
 	// Find the GL Area widget that is responsible for rendering the scene
 	SingleContextGlArea* glArea = nullptr;
@@ -67,9 +67,12 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 
 	// create a viewport from the area
 	m_RenderArea = new GtkRenderArea(glArea);
-	m_Viewport = std::make_unique<render::Viewport>(m_RenderArea);
+	m_Viewport = Create<render::Viewport>(m_RenderArea);
+	m_Viewport->SetInputProvider(ToPtr(&m_InputProvider));
 
 	// hook up events
+
+	m_InputProvider.RegisterListener(ToPtr(core::InputManager::GetInstance()));
 
 	// mouse click
 	glArea->add_events(Gdk::BUTTON_PRESS_MASK);
@@ -82,15 +85,21 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 			ivec2 pos = math::vecCast<int32>(dvec2(evnt->x, evnt->y));
 			pos = pos - ivec2(glArea->get_allocation().get_x(), glArea->get_allocation().get_y());
 
-			m_Editor->GetSceneSelection().Pick(pos, m_Viewport.get(), evnt->state & GdkModifierType::GDK_CONTROL_MASK);
+			m_Editor->GetSceneSelection().Pick(pos, m_Viewport.Get(), evnt->state & GdkModifierType::GDK_CONTROL_MASK);
 		}
 		else
 		{
 			// other clicks (left) we navigate
 			m_Editor->SetNavigatingViewport(this);
 			fw::UnifiedScene::Instance().GetEcs().GetComponent<EditorCameraComponent>(m_Camera).isEnabled = true;
-			core::InputManager::GetInstance()->OnMousePressed(code);
+
+			core::T_KeyModifierFlags const mods = GtkUtil::GetModifiersFromGtk(evnt->state);
+			m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([code, mods](core::I_RawInputListener& listener)
+				{
+					return listener.ProcessMousePressed(code, mods);
+				}));
 		}
+
 		return true;
 	};
 	glArea->signal_button_press_event().connect(mousePressedCallback, false);
@@ -99,7 +108,13 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	glArea->add_events(Gdk::BUTTON_RELEASE_MASK);
 	auto mouseReleasedCallback = [this](GdkEventButton* evnt) -> bool
 	{
-		core::InputManager::GetInstance()->OnMouseReleased(GtkUtil::GetButtonFromGtk(evnt->button));
+		E_MouseButton const code = GtkUtil::GetButtonFromGtk(evnt->button);
+		core::T_KeyModifierFlags const mods = GtkUtil::GetModifiersFromGtk(evnt->state);
+		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([code, mods](core::I_RawInputListener& listener)
+			{
+				return listener.ProcessMouseReleased(code, mods);
+			}));
+
 		fw::UnifiedScene::Instance().GetEcs().GetComponent<EditorCameraComponent>(m_Camera).isEnabled = false;
 		m_Editor->SetNavigatingViewport(nullptr);
 		return true;
@@ -108,13 +123,18 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 
 	// mouse moved
 	glArea->add_events(Gdk::POINTER_MOTION_MASK);
-	auto mouseMotionCallback = [glArea](GdkEventMotion* evnt) -> bool
+	auto mouseMotionCallback = [glArea, this](GdkEventMotion* evnt) -> bool
 	{
 		// get offset of widget to window position
 		ivec2 pos = math::vecCast<int32>(dvec2(evnt->x, evnt->y));
 		pos = pos - ivec2(glArea->get_allocation().get_x(), glArea->get_allocation().get_y());
 
-		core::InputManager::GetInstance()->OnMouseMoved(pos);
+		core::T_KeyModifierFlags const mods = GtkUtil::GetModifiersFromGtk(evnt->state);
+		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([pos, mods](core::I_RawInputListener& listener)
+			{
+				return listener.ProcessMouseMove(pos, mods);
+			}));
+
 		return false;
 	};
 	glArea->signal_motion_notify_event().connect(mouseMotionCallback, false);
@@ -122,7 +142,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	// mouse scrolled
 	glArea->add_events(Gdk::SMOOTH_SCROLL_MASK);
 	glArea->add_events(Gdk::SCROLL_MASK);
-	auto scrollCallback = [](GdkEventScroll* evnt) -> bool
+	auto scrollCallback = [this](GdkEventScroll* evnt) -> bool
 	{
 		dvec2 delta(evnt->delta_x, evnt->delta_y);
 		if (math::isZero(delta))
@@ -147,7 +167,12 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 			}
 		}
 
-		core::InputManager::GetInstance()->SetMouseWheelDelta(math::vecCast<int32>(delta));
+		core::T_KeyModifierFlags const mods = GtkUtil::GetModifiersFromGtk(evnt->state);
+		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([delta, mods](core::I_RawInputListener& listener)
+			{
+				return listener.ProcessMouseWheelDelta(math::vecCast<int32>(delta), mods);
+			}));
+
 		return false;
 	};
 	glArea->signal_scroll_event().connect(scrollCallback, false);
@@ -184,6 +209,7 @@ void SceneViewport::OnDeinit()
 	m_Editor->UnregisterListener(this);
 
 	m_OutlineRenderer.Deinit();
+	m_SceneGuiRenderer.Deinit();
 	SafeDelete(m_SceneRenderer);
 	m_Viewport->SetRenderer(nullptr);
 
@@ -238,7 +264,8 @@ void SceneViewport::OnSceneSet()
 	}
 
 	m_SceneRenderer->InitRenderingSystems();
-	m_OutlineRenderer.Init(&(m_SceneRenderer->GetEventDispatcher()));
+	m_SceneGuiRenderer.Init(ToPtr(&(m_SceneRenderer->GetEventDispatcher())));
+	m_OutlineRenderer.Init(ToPtr(&(m_SceneRenderer->GetEventDispatcher())));
 
 	m_IsInitialized = true;
 }
@@ -248,17 +275,11 @@ void SceneViewport::OnSceneSet()
 //
 void SceneViewport::OnEditorTick()
 {
-	fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
-
-	ecs.GetComponent<fw::CameraComponent>(m_Camera).PopulateCamera(m_SceneRenderer->GetCamera(), 
-		*m_Viewport, 
-		ecs.GetComponent<fw::TransformComponent>(m_Camera));
-
 	if (m_DrawDebugInfo)
 	{
-		render::TextRenderer& textRenderer = m_SceneRenderer->GetTextRenderer();
+		gui::TextRenderer& textRenderer = m_SceneGuiRenderer.GetTextRenderer();
 
-		textRenderer.SetFont(m_DebugFont.get());
+		textRenderer.SetFont(m_DebugFont);
 		textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
 		std::string outString = FS("FPS: %i", core::PerformanceInfo::GetInstance()->GetRegularFPS());
 		textRenderer.DrawText(outString, vec2(10, 32), 22);
@@ -270,13 +291,28 @@ void SceneViewport::OnEditorTick()
 //
 bool SceneViewport::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
 {
+	E_KbdKey const key = GtkUtil::GetKeyFromGtk(evnt->keyval);
+	core::T_KeyModifierFlags const mods = GtkUtil::GetModifiersFromGtk(evnt->state);
 	if (pressed)
 	{
-		core::InputManager::GetInstance()->OnKeyPressed(GtkUtil::GetKeyFromGtk(evnt->keyval));
+		core::E_Character const character = static_cast<core::E_Character>(gdk_keyval_to_unicode(evnt->keyval));
+		if (!m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([character](core::I_RawInputListener& listener)
+			{
+				return listener.ProcessTextInput(character);
+			})))
+		{
+			m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([key, mods](core::I_RawInputListener& listener)
+				{
+					return listener.ProcessKeyPressed(key, mods);
+				}));
+		}
 	}
 	else
 	{
-		core::InputManager::GetInstance()->OnKeyReleased(GtkUtil::GetKeyFromGtk(evnt->keyval));
+		m_InputProvider.IterateListeners(core::RawInputProvider::T_EventFn([key, mods](core::I_RawInputListener& listener)
+			{
+				return listener.ProcessKeyReleased(key, mods);
+			}));
 	}
 
 	return true;
@@ -290,9 +326,10 @@ void SceneViewport::InitCamera()
 	fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
 	fw::T_EntityId const camEnt = fw::UnifiedScene::Instance().GetActiveCamera();
 
-	EditorCameraComponent edCamComp;
-	edCamComp.renderCamera = &m_SceneRenderer->GetCamera();
-	m_Camera = ecs.DuplicateEntity(camEnt, edCamComp);
+	m_Camera = ecs.DuplicateEntity(camEnt, EditorCameraComponent());
+	fw::CameraComponent& camera = ecs.GetComponent<fw::CameraComponent>(m_Camera);
+	camera.SetViewport(ToPtr(m_Viewport.Get()));
+	m_SceneRenderer->SetCamera(camera.GetId());
 
 	if (ecs.HasComponent<fw::AudioListenerComponent>(camEnt))
 	{

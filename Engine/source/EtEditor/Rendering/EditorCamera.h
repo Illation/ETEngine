@@ -29,7 +29,6 @@ struct EditorCameraComponent final
 public:
 	// set by editor
 	bool isEnabled = false;
-	render::Camera const* renderCamera = nullptr;
 
 	// inherent
 	vec3 movement;
@@ -51,11 +50,12 @@ struct EditorCameraSystemView final : public fw::ComponentView
 	{
 		Declare(camera);
 		Declare(transform);
-		Include<fw::CameraComponent>();
+		Declare(baseCamera);
 	}
 
 	WriteAccess<EditorCameraComponent> camera;
 	WriteAccess<fw::TransformComponent> transform;
+	ReadAccess<fw::CameraComponent> baseCamera;
 };
 
 //---------------------------

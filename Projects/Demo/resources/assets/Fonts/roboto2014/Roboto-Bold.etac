@@ -1,0 +1,24 @@
+{
+  "editable sdf font asset": {
+    "asset": {
+      "sdf font asset": {
+        "name": "Roboto-Bold.ttf",
+        "path": "Fonts/roboto2014/",
+        "package": "content1",
+        "references": []
+      }
+    },
+    "metadata": null,
+    "children": [],
+    "size": 32,
+    "padding": 1,
+    "spread": 6,
+    "highres": 64,
+    "char sets": [
+      {
+        "start": 0,
+        "end": 255
+      }
+    ]
+  }
+}

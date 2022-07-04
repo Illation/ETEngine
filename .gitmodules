@@ -34,3 +34,6 @@
 [submodule "Engine/third_party/convectionKernels/ConvectionKernels"]
 	path = Engine/third_party/convectionKernels/ConvectionKernels
 	url = https://github.com/elasota/ConvectionKernels
+[submodule "Engine/third_party/rmlui/RmlUi"]
+	path = Engine/third_party/rmlui/RmlUi
+	url = https://github.com/mikke89/RmlUi.git

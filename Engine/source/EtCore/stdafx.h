@@ -47,35 +47,17 @@ inline void SafeDelete(T &pObjectToDelete)
 #include <EtCore/UpdateCycle/Context.h>
 #include <EtCore/UpdateCycle/Time.h>
 #include <EtCore/Util/Logger.h>
+#include <EtCore/Util/Assert.h>
 #include <EtCore/UpdateCycle/PerformanceInfo.h>
 #include <EtCore/Util/StringUtil.h>
 #include <EtCore/Hashing/HashString.h>
 #include <EtCore/Reflection/ReflectionUtil.h>
+#include <EtCore/Containers/VectorUtil.h>
 
 //Working singleton Set
 #define TIME et::core::ContextManager::GetInstance()->GetActiveContext()->time
 #define LOG(fmt, ...) et::core::Logger::Log(fmt, __VA_ARGS__)
 #define PERFORMANCE et::core::PerformanceInfo::GetInstance()
-
-// assertions
-#ifdef ET_SHIPPING
-#	define ET_ASSERT(condition, ...)
-#else
-#ifdef ET_PLATFORM_WIN
-#	define ET_ASSERT(condition, ...) et::core::Logger::ProcessAssert(condition, __FUNCSIG__, FS(__VA_ARGS__))
-#else
-#	define ET_ASSERT(condition, ...) et::core::Logger::ProcessAssert(condition, __PRETTY_FUNCTION__, FS(__VA_ARGS__))
-#endif // ET_PLATFORM_WIN
-#endif // ET_SHIPPING
-
-// for performance critical code
-#define ET_PARANOID_ASSERTS_ENABLED 0
-
-#if ET_PARANOID_ASSERTS_ENABLED
-#	define ET_ASSERT_PARANOID(condition, ...) ET_ASSERT(condition, __VA_ARGS__)
-#else
-#	define ET_ASSERT_PARANOID(condition, ...)
-#endif
 
 #include <EtCore/Memory/Pointer.h>
 

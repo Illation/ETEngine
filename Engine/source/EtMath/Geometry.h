@@ -62,6 +62,9 @@ std::vector<vec3> GetIcosahedronPositions(float size = 1);
 std::vector<math::uint32> GetIcosahedronIndices();//For inverse winding
 std::vector<math::uint32> GetIcosahedronIndicesBFC();//for uniform winding
 
+// intersections
+bool GetIntersection(Plane const& plane, vec3 const& rayPos, vec3 const& rayDirNorm, vec3& hitPos);
+
 
 } // namespace math
 } // namespace et

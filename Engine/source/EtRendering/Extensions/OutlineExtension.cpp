@@ -15,6 +15,9 @@ namespace render {
 //====================
 
 
+core::HashString const OutlineExtension::s_ExtensionId("OutlineExtension");
+
+
 //---------------------------------
 // OutlineExtension::AddMesh
 //

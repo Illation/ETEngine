@@ -316,6 +316,33 @@
           }
         ],
         "children": []
+      },
+      {
+        "id": 10,
+        "components": [
+          {
+            "transform component": {
+              "position": [ -2.5, 2.0, 1.0 ],
+              "rotation": [ 0.0, -0.2, 0.0, 1.0 ],
+              "scale": [ 0.003, 0.003, 0.003 ]
+            }
+          },
+          {
+            "gui canvas component": {
+              "render mode": "World Space",
+              "is active": true,
+              "GUI document asset": "GUI/hello_world.rml",
+              "data model": "animals",
+              "camera": {
+                "id": 0
+              },
+              "dimensions": [ 1280, 720 ],
+              "color": [ 5.0, 5.0, 5.0, 1.0 ],
+              "depth test enabled": true
+            }
+          }
+        ],
+        "children": []
       }
     ],
     "skybox": "Textures/EnvironmentMaps/Ice_Lake_Ref.hdr",

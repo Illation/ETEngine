@@ -191,6 +191,11 @@ bool BinarySerializer::WriteArithmeticType(rttr::type const type, rttr::variant 
 		m_Writer->IncreaseBufferSize(sizeof(uint8));
 		m_Writer->Write(var.to_uint8());
 	}
+	else if (type == rttr::type::get<char32>())
+	{
+		m_Writer->IncreaseBufferSize(sizeof(uint32));
+		m_Writer->Write(var.to_uint32());
+	}
 	else if (type == rttr::type::get<int8>())
 	{
 		m_Writer->IncreaseBufferSize(sizeof(int8));

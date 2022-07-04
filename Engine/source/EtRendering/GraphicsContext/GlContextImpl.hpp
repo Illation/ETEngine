@@ -428,9 +428,11 @@ GLenum ConvCompareMode(E_TextureCompareMode const comp)
 }
 
 //---------------------------------
-// ConvDepthFunction
+// ConvDepthStencilFunction
 //
-GLenum ConvDepthFunction(E_DepthFunc const func)
+// Also valid for T_StencilFunc
+//
+GLenum ConvDepthStencilFunction(E_DepthFunc const func)
 {
 	switch (func)
 	{
@@ -442,6 +444,27 @@ GLenum ConvDepthFunction(E_DepthFunc const func)
 	case E_DepthFunc::NotEqual:	return GL_NOTEQUAL;
 	case E_DepthFunc::GEqual:	return GL_GEQUAL;
 	case E_DepthFunc::Always:	return GL_ALWAYS;
+	}
+
+	ET_ASSERT(false, "Unhandled depth/stencil function!");
+	return 0;
+}
+
+//---------------------------------
+// ConvDepthStencilFunction
+//
+GLenum ConvStencilOp(E_StencilOp const op)
+{
+	switch (op)
+	{
+	case E_StencilOp::Keep:				return GL_KEEP;
+	case E_StencilOp::Zero:				return GL_ZERO;
+	case E_StencilOp::Replace:			return GL_REPLACE;
+	case E_StencilOp::Increment:		return GL_INCR;
+	case E_StencilOp::IncrementWrap:	return GL_INCR_WRAP;
+	case E_StencilOp::Decrement:		return GL_DECR;
+	case E_StencilOp::DecrementWrap:	return GL_DECR_WRAP;
+	case E_StencilOp::Invert:			return GL_INVERT;
 	}
 
 	ET_ASSERT(false, "Unhandled depth function!");
@@ -643,6 +666,7 @@ GL_CONTEXT_CLASSNAME::~GL_CONTEXT_CLASSNAME()
 void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 {
 	m_ViewportSize = dimensions;
+	m_ScissorSize = dimensions;
 
 	if (m_IsInitialized)
 	{
@@ -863,6 +887,55 @@ void GL_CONTEXT_CLASSNAME::SetCullEnabled(bool const enabled)
 }
 
 //---------------------------------
+// GlContext::SetCullEnabled
+//
+void GL_CONTEXT_CLASSNAME::SetScissorEnabled(bool const enabled)
+{
+	EnOrDisAble(m_ScissorEnabled, enabled, GL_SCISSOR_TEST);
+}
+
+//---------------------------------
+// GlContext::SetColorMask
+//
+void GL_CONTEXT_CLASSNAME::SetColorMask(T_ColorFlags const flags)
+{
+	if (flags != m_ColorMask)
+	{
+		m_ColorMask = flags;
+
+		bool const r = flags & E_ColorFlag::CF_Red;
+		bool const g = flags & E_ColorFlag::CF_Green;
+		bool const b = flags & E_ColorFlag::CF_Blue;
+		bool const a = flags & E_ColorFlag::CF_Alpha;
+		glColorMask(r, g, b, a);
+	}
+}
+
+//---------------------------------
+// GlContext::SetDepthMask
+//
+void GL_CONTEXT_CLASSNAME::SetDepthMask(bool const flag)
+{
+	if (flag != m_DepthMask)
+	{
+		m_DepthMask = flag;
+		glDepthMask(flag);
+	}
+}
+
+//---------------------------------
+// GlContext::SetStencilMask
+//
+void GL_CONTEXT_CLASSNAME::SetStencilMask(uint32 const mask)
+{
+	if (mask != m_StencilMask)
+	{
+		m_StencilMask = mask;
+		glStencilMask(mask);
+	}
+}
+
+//---------------------------------
 // GlContext::SetFaceCullingMode
 //
 // Set the culling mode (front back neither...)
@@ -898,11 +971,95 @@ void GL_CONTEXT_CLASSNAME::SetBlendEquation(E_BlendEquation const equation)
 //
 void GL_CONTEXT_CLASSNAME::SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor)
 {
-	if (!(m_BlendFuncSFactor == sFactor && m_BlendFuncDFactor == dFactor))
+	if (!(m_BlendFuncSFactor == sFactor && m_BlendFuncSFactorAlpha == sFactor &&
+		m_BlendFuncDFactor == dFactor && m_BlendFuncDFactorAlpha == dFactor))
 	{
 		m_BlendFuncSFactor = sFactor;
+		m_BlendFuncSFactorAlpha = sFactor;
 		m_BlendFuncDFactor = dFactor;
+		m_BlendFuncDFactorAlpha = dFactor;
 		glBlendFunc(GL_CONTEXT_NS::ConvBlendFactor(sFactor), GL_CONTEXT_NS::ConvBlendFactor(dFactor));
+	}
+}
+
+//-------------------------------------
+// GlContext::SetBlendFunctionSeparate
+//
+// Set the function we use to blend pixels - with separate functions for alpha and RGB
+//
+void GL_CONTEXT_CLASSNAME::SetBlendFunctionSeparate(E_BlendFactor const sRGB, E_BlendFactor const sAlpha, 
+	E_BlendFactor const dRGB, E_BlendFactor const dAlpha)
+{
+	if (!(m_BlendFuncSFactor == sRGB && m_BlendFuncSFactorAlpha == sAlpha &&
+		m_BlendFuncDFactor == dRGB && m_BlendFuncDFactorAlpha == dAlpha))
+	{
+		m_BlendFuncSFactor = sRGB;
+		m_BlendFuncSFactorAlpha = sAlpha;
+		m_BlendFuncDFactor = dRGB;
+		m_BlendFuncDFactorAlpha = dAlpha;
+		glBlendFuncSeparate(GL_CONTEXT_NS::ConvBlendFactor(sRGB), GL_CONTEXT_NS::ConvBlendFactor(dRGB), 
+			GL_CONTEXT_NS::ConvBlendFactor(sAlpha), GL_CONTEXT_NS::ConvBlendFactor(dAlpha));
+	}
+}
+
+//---------------------------------
+// GlContext::SetDepthFunction
+//
+// How to compare depth values
+//
+void GL_CONTEXT_CLASSNAME::SetDepthFunction(E_DepthFunc const func) 
+{
+	if (m_DepthFunc != func)
+	{
+		m_DepthFunc = func;
+		glDepthFunc(GL_CONTEXT_NS::ConvDepthStencilFunction(func));
+	}
+}
+
+//---------------------------------
+// GlContext::SetStencilFunction
+//
+// How to compare stencil values
+//
+void GL_CONTEXT_CLASSNAME::SetStencilFunction(T_StencilFunc const func, int32 const reference, uint32 const mask)
+{
+	if (!((func == m_StencilFunc) && (reference == m_StencilRef) && (mask == m_StencilFuncMask)))
+	{
+		m_StencilFunc = func;
+		m_StencilRef = reference;
+		m_StencilFuncMask = mask;
+		glStencilFunc(GL_CONTEXT_NS::ConvDepthStencilFunction(func), reference, mask);
+	}
+}
+
+//---------------------------------
+// GlContext::SetStencilOperation
+//
+// What to do when the stencil test passes or fails
+//
+void GL_CONTEXT_CLASSNAME::SetStencilOperation(E_StencilOp const sFail, E_StencilOp const dFail, E_StencilOp const dsPass)
+{
+	if (!((sFail == m_StencilSFail) && (dFail == m_StencilDFail) && (dsPass == m_StencilDSPass)))
+	{
+		m_StencilSFail = sFail;
+		m_StencilDFail = dFail;
+		m_StencilDSPass = dsPass;
+		glStencilOp(GL_CONTEXT_NS::ConvStencilOp(sFail), GL_CONTEXT_NS::ConvStencilOp(dFail), GL_CONTEXT_NS::ConvStencilOp(dsPass));
+	}
+}
+
+//---------------------------------
+// GlContext::SetScissor
+//
+// Set the dimensions of the scissor rectangle
+//
+void GL_CONTEXT_CLASSNAME::SetScissor(ivec2 const pos, ivec2 const size)
+{
+	if (!(math::nearEqualsV(m_ScissorPosition, pos) && math::nearEqualsV(m_ScissorSize, size)))
+	{
+		m_ScissorPosition = pos;
+		m_ScissorSize = size;
+		glScissor(pos.x, pos.y, size.x, size.y);
 	}
 }
 
@@ -1164,17 +1321,17 @@ void GL_CONTEXT_CLASSNAME::Clear(T_ClearFlags const mask) const
 {
 	GLbitfield field = 0;
 
-	if (mask & E_ClearFlag::Color)
+	if (mask & E_ClearFlag::CF_Color)
 	{
 		field |= GL_COLOR_BUFFER_BIT;
 	}
 
-	if (mask & E_ClearFlag::Depth)
+	if (mask & E_ClearFlag::CF_Depth)
 	{
 		field |= GL_DEPTH_BUFFER_BIT;
 	}
 
-	if (mask & E_ClearFlag::Stencil)
+	if (mask & E_ClearFlag::CF_Stencil)
 	{
 		field |= GL_STENCIL_BUFFER_BIT;
 	}
@@ -2433,16 +2590,6 @@ void GL_CONTEXT_CLASSNAME::CopyDepthReadToDrawFbo(ivec2 const source, ivec2 cons
 void GL_CONTEXT_CLASSNAME::SetPixelUnpackAlignment(int32 const val) const
 {
 	glPixelStorei(GL_UNPACK_ALIGNMENT, val);
-}
-
-//---------------------------------
-// GlContext::SetDepthFunction
-//
-// How to compare depth values
-//
-void GL_CONTEXT_CLASSNAME::SetDepthFunction(E_DepthFunc const func) const
-{
-	glDepthFunc(GL_CONTEXT_NS::ConvDepthFunction(func));
 }
 
 //---------------------------------

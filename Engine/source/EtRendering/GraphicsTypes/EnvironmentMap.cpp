@@ -204,7 +204,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const equiTexture, int3
 	{
 		equiCubeShader->Upload("view"_hash, captureViews[face]);
 		api->LinkCubeMapFaceToFbo2D(face, envCubeMap->GetLocation(), 0);
-		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
+		api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
 
 		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
 	}

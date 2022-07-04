@@ -16,12 +16,14 @@
 #include <EtBuild/EngineVersion.h>
 
 #include <EtCore/Util/Commands.h>
-#include <EtCore/Util/InputManager.h>
+#include <EtCore/Input/InputManager.h>
 #include <EtCore/UpdateCycle/TickManager.h>
 #include <EtCore/Reflection/TypeInfoRegistry.h>
 
 #include <EtRendering/GraphicsContext/ContextHolder.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+
+#include <EtGUI/Context/RmlGlobal.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
@@ -93,6 +95,7 @@ EditorApp::~EditorApp()
 {
 	ImporterBase::DestroyImporters();
 
+	gui::RmlGlobal::Destroy();
 	render::RenderingSystems::RemoveReference();
 
 	core::PerformanceInfo::DestroyInstance();

@@ -3,11 +3,15 @@
 
 #include <EtCore/Content/AssetPointer.h>
 
+#include <EtFramework/SceneGraph/SceneEvents.h>
+
 #include <EtRuntime/AbstractFramework.h>
 
+#include <Common/DemoUI.h>
 
-namespace et { namespace render {
-	class SpriteFont;
+
+namespace et { namespace gui {
+	class SdfFont;
 } }
 
 
@@ -35,14 +39,22 @@ private:
 	void OnInit() override;
 	void OnTick() override;
 
+	// utility
+	//---------
+	void OnSceneActivated();
+
+
 	// Data
 	///////
 
 	size_t m_CurrentScene = 0u;
 
-	AssetPtr<render::SpriteFont> m_DebugFont;
+	AssetPtr<gui::SdfFont> m_DebugFont;
 	bool m_DrawDebugInfo = true;
 	bool m_DrawFontAtlas = false;
+
+	DemoUI::GuiData m_GuiData;
+	bool m_ShowGui = true;
 };
 
 

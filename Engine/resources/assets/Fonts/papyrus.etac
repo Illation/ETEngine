@@ -1,7 +1,7 @@
 {
-  "editable font asset": {
+  "editable sdf font asset": {
     "asset": {
-      "font asset": {
+      "sdf font asset": {
         "name": "papyrus.ttf",
         "path": "Fonts/",
         "package": "engine_content",
@@ -13,6 +13,12 @@
     "size": 42,
     "padding": 1,
     "spread": 5,
-    "highres": 32
+    "highres": 32,
+    "char sets": [
+      {
+        "start": 0,
+        "end": 255
+      }
+    ]
   }
 }

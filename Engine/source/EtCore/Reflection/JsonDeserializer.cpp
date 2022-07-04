@@ -209,6 +209,9 @@ bool JsonDeserializer::ReadArithmeticType(rttr::variant& var, HashString const t
 	case "char"_hash:
 		var = static_cast<char>(jVal->num()->valueInt);
 		break;
+	case "char32_t"_hash:
+		var = static_cast<char32>(jVal->num()->isInt ? jVal->num()->valueInt : jVal->num()->value);
+		break;
 
 	case "signedchar"_hash:
 		var = static_cast<int8>(jVal->num()->isInt ? jVal->num()->valueInt : jVal->num()->value);

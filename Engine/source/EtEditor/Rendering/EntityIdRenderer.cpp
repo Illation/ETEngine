@@ -114,7 +114,18 @@ void EntityIdRenderer::Pick(ivec2 const pixel, render::Viewport* const viewport,
 		m_ViewportToPickFrom = viewport;
 		m_OnEntityPicked = onEntityPicked;
 
-		m_ViewportToPickFrom->RegisterListener(this);
+		m_VPCallbackId = m_ViewportToPickFrom->GetEventDispatcher().Register(render::E_ViewportEvent::VP_PreRender | render::E_ViewportEvent::VP_PostFlush,
+			render::T_ViewportEventCallback([this](render::T_ViewportEventFlags const flags, render::ViewportEventData const* const data) -> void
+			{
+				if (flags & render::E_ViewportEvent::VP_PreRender)
+				{
+					OnViewportPreRender(data->targetFb);
+				}
+				else
+				{
+					OnViewportPostFlush(data->targetFb);
+				}
+			}));
 	}
 	else
 	{
@@ -172,7 +183,7 @@ void EntityIdRenderer::OnViewportPreRender(render::T_FbLoc const targetFb)
 	vec4 invalidCol;
 	GetIdColor(fw::INVALID_ENTITY_ID, invalidCol);
 	api->SetClearColor(invalidCol);
-	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
+	api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
 
 	api->SetShader(m_Shader.get());
 
@@ -222,7 +233,7 @@ void EntityIdRenderer::OnViewportPostFlush(render::T_FbLoc const targetFb)
 
 	m_OnEntityPicked(pickedID);
 
-	m_ViewportToPickFrom->UnregisterListener(this);
+	m_ViewportToPickFrom->GetEventDispatcher().Unregister(m_VPCallbackId);
 	m_ViewportToPickFrom = nullptr;
 }
 

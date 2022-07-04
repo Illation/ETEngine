@@ -5,6 +5,11 @@
 
 
 namespace et {
+REGISTRATION_NS(fw);
+}
+
+
+namespace et {
 namespace fw {
 
 
@@ -18,6 +23,7 @@ struct EntityLink final
 	// definitions
 	//---------------
 	RTTR_ENABLE()
+	REGISTRATION_FRIEND_NS(fw)
 public:
 
 	// construct destruct
@@ -30,12 +36,16 @@ public:
 	// get / set for serialization
 	//-----------------------------
 	void SetDeserializedId(T_EntityId const val);
-	T_EntityId GetId() const { return id; }
+	void SetId(T_EntityId const val) { m_Id = val; m_IsResolved = true; }
+	T_EntityId GetId() const { return m_Id; }
+	bool IsResolved() const { return m_IsResolved; }
 
 	// Data
 	///////
 
-	T_EntityId id = INVALID_ENTITY_ID;
+private:
+	T_EntityId m_Id = INVALID_ENTITY_ID;
+	bool m_IsResolved = false;
 };
 
 //--------------------

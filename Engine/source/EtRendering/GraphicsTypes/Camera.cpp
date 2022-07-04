@@ -98,7 +98,7 @@ void Camera::SetClippingPlanes(float const nearPlane, float const farPlane, bool
 //----------------------------
 // Camera::SetViewport
 //
-void Camera::SetViewport(Viewport const* const viewport, bool const deferRecalculation)
+void Camera::SetViewport(Ptr<Viewport> const viewport, bool const deferRecalculation)
 {
 	m_Viewport = viewport;
 
@@ -107,6 +107,22 @@ void Camera::SetViewport(Viewport const* const viewport, bool const deferRecalcu
 		RecalculateProjection();
 		RecalculateDerived();
 	}
+}
+
+//----------------------------
+// Camera::SetViewport
+//
+// input vector should range from 0 to 1 with 0 being in the top left corner
+// depth of 0 is at the near plane, 1 at the far plane
+//
+vec3 Camera::ProjectIntoWorldSpace(vec2 const screenSpaceNorm, float const depth) const
+{
+	vec2 const ndcPos(screenSpaceNorm.x * 2.f - 1.f, -(screenSpaceNorm.y * 2.f - 1.f));
+
+	vec4 const viewPosH = m_ProjectionInverse * vec4(ndcPos, (2.f * depth) - 1.f, 1.f);
+	vec3 const viewPos = viewPosH.xyz / viewPosH.w;
+
+	return (m_ViewInverse * vec4(viewPos, 1.f)).xyz;
 }
 
 //----------------------------
@@ -135,7 +151,10 @@ void Camera::RecalculateView()
 //
 void Camera::RecalculateProjection()
 {
-	ET_ASSERT(m_Viewport != nullptr);
+	if (m_Viewport == nullptr)
+	{
+		return;
+	}
 
 	// Maybe camera should be linked to a specific viewport instead of getting the current one
 	float const aspectRatio = m_Viewport->GetAspectRatio();
@@ -155,6 +174,8 @@ void Camera::RecalculateProjection()
 		m_Projection = math::orthographic(0.f, viewWidth, viewHeight, 0.f, m_NearPlane, m_FarPlane);
 	}
 
+	m_ProjectionInverse = math::inverse(m_Projection);
+
 	//Calculate parameters to linearize depthbuffer values
 	m_DepthProjectionA = m_FarPlane / (m_FarPlane - m_NearPlane);
 	m_DepthProjectionB = (-m_FarPlane * m_NearPlane) / (m_FarPlane - m_NearPlane);
@@ -167,6 +188,11 @@ void Camera::RecalculateProjection()
 //
 void Camera::RecalculateDerived()
 {
+	if (m_Viewport == nullptr)
+	{
+		return;
+	}
+
 	m_ViewProjection = m_View * m_Projection;
 	m_ViewProjectionInverse = math::inverse(m_ViewProjection);
 
@@ -177,7 +203,7 @@ void Camera::RecalculateDerived()
 	// update frustum
 	m_Frustum.SetCullTransform(mat4()); // Frustum will be in world space and objects need to transform themselves
 	m_Frustum.SetToCamera(*this);
-	m_Frustum.Update(m_Viewport);
+	m_Frustum.Update(m_Viewport.Get());
 }
 
 

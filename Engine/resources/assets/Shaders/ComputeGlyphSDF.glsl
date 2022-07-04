@@ -8,11 +8,15 @@
 	uniform float uSpread;
 	void main()
 	{
-		Texcoord = texCoords;
-		vec2 adjustment = vec2(uSpread*2)/uResolution;
-		Texcoord -= vec2(0.5);
-		Texcoord *= vec2(1)+adjustment;
+		vec2 spread = vec2(uSpread);
+		spread.x *= max(uResolution.y / uResolution.x, 1.0);
+		spread.y *= max(uResolution.x / uResolution.y, 1.0);
+		vec2 adjustment = ((spread*2) + uResolution) / uResolution;
+		
+		Texcoord = texCoords - vec2(0.5);
+		Texcoord *= adjustment;
 		Texcoord += vec2(0.5);
+
 		gl_Position = vec4(pos, 1.0);
 	}
 </VERTEX>
@@ -33,17 +37,24 @@
 		bool local = texture(uTex, Texcoord).r > 0.5; //local value
 
 		//get closest opposite
-		vec2 startPos = Texcoord - (vec2(uSpread) / uResolution);
-		vec2 delta = vec2(1 / (uSpread * uHighRes * 2));
-		float closest = uSpread;
-		for(int y = 0; y < int(uSpread * uHighRes * 2); ++y)
+		int samplePixCount = int(uSpread * uHighRes);
+
+		vec2 adjustment;
+		adjustment.x = uResolution.x / uResolution.y;
+		adjustment.y = uResolution.y / uResolution.x;
+
+		vec2 delta = vec2(1 / float(samplePixCount)) * min(adjustment, vec2(1.0));
+		float ratio = min(uResolution.x, uResolution.y) / max(uResolution.x, uResolution.y);
+		adjustment = max(adjustment, vec2(1.0)) * ratio;
+
+		float closest = length(vec2(uSpread));
+		for(int y = -samplePixCount; y <= samplePixCount; ++y)
 		{
-			for(int x = 0; x < int(uSpread * uHighRes * 2); ++x)
+			for(int x = -samplePixCount; x <= samplePixCount; ++x)
 			{
-				vec2 samplePos = startPos + vec2(x, y) * delta;
-				vec2 diff = (Texcoord-samplePos)*uResolution;
-				diff.x *= uResolution.x/uResolution.y;
-				float dist = length(diff);
+				vec2 offset = vec2(x, y) * delta;
+				vec2 samplePos = Texcoord + offset;
+				float dist = length(offset * adjustment * uResolution);
 				if(dist < closest)
 				{
 					bool sampled = texture(uTex, samplePos).r > 0.5;
@@ -56,7 +67,7 @@
 		}
 
 		//normalize between 0 and 1
-		float diff = closest / (uSpread * 2);
+		float diff = closest / (length(vec2(uSpread)) * 2);
 		float val = 0.5 + (local ? diff : -diff);
 
 		//apply to output color

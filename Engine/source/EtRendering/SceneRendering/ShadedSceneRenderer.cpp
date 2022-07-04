@@ -73,9 +73,6 @@ void ShadedSceneRenderer::InitRenderingSystems()
 {
 	RenderingSystems::AddReference();
 
-	m_TextRenderer.Initialize();
-	m_SpriteRenderer.Initialize();
-
 	m_ShadowRenderer.Initialize();
 	m_PostProcessing.Initialize();
 
@@ -123,7 +120,8 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 	// Global variables for all rendering systems
 	//********************************************
-	RenderingSystems::Instance()->GetSharedVarController().UpdataData(m_Camera, m_GBuffer);
+	Camera const& camera = GetCamera();
+	RenderingSystems::Instance()->GetSharedVarController().UpdataData(camera, m_GBuffer);
 
 	//Shadow Mapping
 	//**************
@@ -156,7 +154,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 	api->DebugPushGroup("clear previous pass");
 	api->SetClearColor(vec4(m_ClearColor, 1.f));
-	api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
+	api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
 	api->DebugPopGroup();
 
 	// draw terrains
@@ -165,7 +163,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	Patch& patch = RenderingSystems::Instance()->GetPatch();
 	for (Planet& planet : m_RenderScene->GetTerrains())
 	{
-		if (planet.GetTriangulator().Update(m_RenderScene->GetNodes()[planet.GetNodeId()], m_Camera))
+		if (planet.GetTriangulator().Update(m_RenderScene->GetNodes()[planet.GetNodeId()], camera))
 		{
 			planet.GetTriangulator().GenerateGeometry();
 		}
@@ -184,7 +182,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->DebugPopGroup();
 
 	api->DebugPushGroup("extensions");
-	m_Events.Notify(E_RenderEvent::RenderDeferred, new RenderEventData(this, m_GBuffer.Get()));
+	m_Events.Notify(E_RenderEvent::RE_RenderDeferred, new RenderEventData(this, m_GBuffer.Get()));
 	api->DebugPopGroup();
 
 	api->DebugPopGroup();
@@ -264,7 +262,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->DebugPopGroup(); // light volumes
 
 	api->DebugPushGroup("extensions");
-	m_Events.Notify(E_RenderEvent::RenderLights, new RenderEventData(this, m_SSR.GetTargetFBO()));
+	m_Events.Notify(E_RenderEvent::RE_RenderLights, new RenderEventData(this, m_SSR.GetTargetFBO()));
 	api->DebugPopGroup(); 
 
 	// draw SSR
@@ -307,7 +305,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	StarField const* const starfield = m_RenderScene->GetStarfield();
 	if (starfield != nullptr)
 	{
-		starfield->Draw(m_Camera);
+		starfield->Draw(camera);
 	}
 	api->DebugPopGroup();
 
@@ -318,7 +316,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->DebugPopGroup();
 
 	api->DebugPushGroup("extensions");
-	m_Events.Notify(E_RenderEvent::RenderForward, new RenderEventData(this, m_PostProcessing.GetTargetFBO()));
+	m_Events.Notify(E_RenderEvent::RE_RenderForward, new RenderEventData(this, m_PostProcessing.GetTargetFBO()));
 	api->DebugPopGroup();
 	
 	// draw atmospheres
@@ -350,24 +348,32 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 	api->DebugPopGroup(); // forward render pass
 
-	// add scene sprites before the overlay pass
+	// Post Scene rendering
 	api->DebugPushGroup("post processing pass");
-	SpriteRenderer::E_ScalingMode const scalingMode = SpriteRenderer::E_ScalingMode::Texture;
-	for (Sprite const& sprite : m_RenderScene->GetSprites())
-	{
-		mat4 const& transform = m_RenderScene->GetNodes()[sprite.node];
 
-		vec3 pos, scale;
-		quat rot;
-		math::decomposeTRS(transform, pos, rot, scale);
-
-		m_SpriteRenderer.Draw(sprite.texture.get(), pos.xy, sprite.color, sprite.pivot, scale.xy, rot.Roll(), pos.z, scalingMode);
-	}
+	api->DebugPushGroup("extensions");
+	m_Events.Notify(E_RenderEvent::RE_RenderWorldGUI, new RenderEventData(this, m_PostProcessing.GetTargetFBO()));
+	api->DebugPopGroup(); // extensions
 
 	// post processing
 	api->SetCullEnabled(false);
-	m_PostProcessing.Draw(targetFb, m_RenderScene->GetPostProcessingSettings(), this);
+	m_PostProcessing.Draw(targetFb, m_RenderScene->GetPostProcessingSettings(), 
+		std::function<void(T_FbLoc const)>([this, api](T_FbLoc const targetFb)
+		{
+			api->DebugPushGroup("overlay extensions");
+			m_Events.Notify(E_RenderEvent::RE_RenderOverlay, new RenderEventData(this, targetFb));
+			api->DebugPopGroup(); // overlay extensions
+		}));
+
 	api->DebugPopGroup(); // post processing pass
+}
+
+//--------------------------------
+// ShadedSceneRenderer::GetCamera
+//
+Camera const& ShadedSceneRenderer::GetCamera() const
+{
+	return m_RenderScene->GetCameras()[m_CameraId];
 }
 
 //---------------------------------
@@ -408,6 +414,8 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 {
 	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
+	Camera const& camera = GetCamera();
+
 	for (MaterialCollection const& collection : collectionGroup)
 	{
 		api->SetShader(collection.m_Shader.get());
@@ -426,7 +434,7 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 					math::Sphere instSphere = math::Sphere((transform * vec4(mesh.m_BoundingVolume.pos, 1.f)).xyz, 
 						math::length(math::decomposeScale(transform)) * mesh.m_BoundingVolume.radius);
 
-					if (m_Camera.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
+					if (camera.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
 					{
 						collection.m_Shader->Upload("model"_hash, transform);
 						api->DrawElements(E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
@@ -435,27 +443,6 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 			}
 		}
 	}
-}
-
-//-----------------------------------
-// ShadedSceneRenderer::DrawOverlays
-//
-// Post scene things which should be drawn to the viewport before anti aliasing
-//
-void ShadedSceneRenderer::DrawOverlays(T_FbLoc const targetFb)
-{
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
-
-	api->DebugPushGroup("draw overlays");
-
-	m_SpriteRenderer.Draw();
-	m_TextRenderer.Draw();
-
-	api->DebugPushGroup("extensions");
-	m_Events.Notify(E_RenderEvent::RenderOutlines, new RenderEventData(this, targetFb));
-	api->DebugPopGroup(); // extensions
-
-	api->DebugPopGroup(); // draw overlays
 }
 
 

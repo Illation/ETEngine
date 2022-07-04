@@ -23,7 +23,7 @@ assign_source_group(${projectFiles})
 assignIdeFolder(EtFramework Engine)
 libOutputDirectories(EtFramework)
 
-target_link_libraries (EtFramework NothingsStb EtRendering EtMath EtCore)
+target_link_libraries (EtFramework NothingsStb EtGUI EtRendering EtMath EtCore)
 
 # library includes
 libIncludeDirs()

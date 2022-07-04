@@ -1,7 +1,6 @@
 #pragma once
 #include "RenderSceneFwd.h"
 #include "Skybox.h"
-#include "Sprite.h"
 
 #include <EtRendering/Extensions/SceneExtension.h>
 #include <EtRendering/PlanetTech/Atmosphere.h>
@@ -9,6 +8,7 @@
 #include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
 #include <EtRendering/GraphicsTypes/DirectionalShadowData.h>
 #include <EtRendering/GraphicsTypes/Mesh.h>
+#include <EtRendering/GraphicsTypes/Camera.h>
 
 
 namespace et {
@@ -58,16 +58,14 @@ class Scene final
 public:
 	typedef core::slot_map<MeshInstance>::id_type T_InstanceId;
 
-	// construct destruct
-	//--------------------
-	~Scene();
-
-
 	// functionality
 	//-------------
 	T_NodeId AddNode(mat4 const& transform);
 	void UpdateNode(T_NodeId const node, mat4 const& transform);
 	void RemoveNode(T_NodeId const node);
+
+	core::T_SlotId AddCamera();
+	void RemoveCamera(core::T_SlotId const cameraId);
 
 	T_InstanceId AddInstance(I_Material const* const material, AssetPtr<MeshData> const mesh, T_NodeId const node);
 	void RemoveInstance(T_InstanceId const instance);
@@ -90,18 +88,15 @@ public:
 	void UpdateAtmosphereLight(core::T_SlotId const atmoId, T_LightId const lightId);
 	void RemoveAtmosphere(core::T_SlotId const atmoId);
 
-	core::T_SlotId AddSprite(core::HashString const textureId, T_NodeId const node, vec2 const pivot, vec4 const& color);
-	void UpdateSpriteTexture(core::T_SlotId const spriteId, core::HashString const textureId);
-	void UpdateSpritePivot(core::T_SlotId const spriteId, vec2 const pivot);
-	void UpdateSpriteColor(core::T_SlotId const spriteId, vec4 const& color);
-	void RemoveSprite(core::T_SlotId const spriteId);
-
-	void AddExtension(I_SceneExtension* const ext);
-
+	void AddExtension(UniquePtr<I_SceneExtension>& ext);
+	void ClearExtensions();
 
 	// accessors
 	//-------------
 	core::slot_map<mat4> const& GetNodes() const { return m_Nodes; }
+
+	Camera& GetCamera(core::T_SlotId const cameraId);
+	core::slot_map<Camera> const& GetCameras() const { return m_Cameras; }
 
 	core::slot_map<Planet> const& GetTerrains() const { return m_Terrains; }
 	core::slot_map<Planet>& GetTerrains() { return m_Terrains; }
@@ -125,8 +120,6 @@ public:
 
 	core::slot_map<AtmosphereInstance> const& GetAtmosphereInstances() const { return m_AtmosphereInstances; }
 	Atmosphere const& GetAtmosphere(core::HashString const atmoId) const;
-
-	core::slot_map<Sprite> const& GetSprites() const { return m_Sprites; }
 
 	PostProcessingSettings const& GetPostProcessingSettings() const { return m_PostProcessingSettings; }
 
@@ -152,6 +145,8 @@ private:
 	//------------------------
 	core::slot_map<mat4> m_Nodes;
 
+	core::slot_map<Camera> m_Cameras;
+
 	core::slot_map<Planet> m_Terrains;
 	core::slot_map<MaterialCollection> m_OpaqueRenderables;
 
@@ -169,11 +164,9 @@ private:
 	core::slot_map<AtmosphereInstance> m_AtmosphereInstances; // map into atmospheres - #todo: make atmosphere lists contain their instances
 	std::vector<std::pair<Atmosphere, uint8>> m_Atmospheres; // < renderable atmosphere | refcount >
 
-	core::slot_map<Sprite> m_Sprites;
-
 	PostProcessingSettings m_PostProcessingSettings;
 
-	std::vector<I_SceneExtension*> m_Extensions;
+	std::vector<UniquePtr<I_SceneExtension>> m_Extensions;
 };
 
 

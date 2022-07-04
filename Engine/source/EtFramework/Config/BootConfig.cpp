@@ -20,7 +20,8 @@ RTTR_REGISTRATION
 {
 	rttr::registration::class_<BootConfig>("boot config")
 		.property("start scene", &BootConfig::startScene)
-		.property("all scenes", &BootConfig::allScenes);
+		.property("all scenes", &BootConfig::allScenes)
+		.property("splash screen GUI", &BootConfig::splashGui);
 }
 
 

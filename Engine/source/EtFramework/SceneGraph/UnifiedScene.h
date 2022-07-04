@@ -12,6 +12,12 @@
 #include <EtFramework/Physics/PhysicsWorld.h>
 
 
+// fwd
+namespace et { namespace gui {
+	class GuiExtension;
+} }
+
+
 namespace et {
 namespace fw {
 
@@ -21,7 +27,7 @@ namespace fw {
 //
 // Combines all scene subsystems (ecs, rendering, physics) into a single globally accessible class, which manages update, loading, unloading and events
 //
-class UnifiedScene : public  core::I_Tickable
+class UnifiedScene : public core::I_Tickable
 {
 	// static access
 	//---------------
@@ -37,6 +43,7 @@ public:
 	void operator=(UnifiedScene const&) = delete;
 
 	void Init();
+	void Deinit();
 
 	// tickable interface
 	//--------------------
@@ -49,8 +56,11 @@ public:
 	void LoadScene(core::HashString const assetId);
 	void UnloadScene();
 
+	void SetActiveCamera(T_EntityId const cameraId);
+
 	// accessors
 	//-----------
+	bool IsSceneLoaded() const { return m_IsSceneLoaded; }
 	core::HashString GetSceneId() const { return m_CurrentScene; }
 	EcsController& GetEcs() { return m_Scene; }
 
@@ -58,6 +68,7 @@ public:
 	T_EntityId GetAudioListener() const { return m_AudioListener; }
 
 	render::Scene& GetRenderScene() { return m_RenderScene; }
+	gui::GuiExtension* GetGuiExtension() { return m_GuiExtension.Get(); }
 	PhysicsWorld& GetPhysicsWorld() { return m_PhysicsWorld; }
 
 	T_SceneEventDispatcher& GetEventDispatcher() { return m_EventDispatcher; }
@@ -72,6 +83,7 @@ private:
 	///////
 
 	core::HashString m_CurrentScene;
+	bool m_IsSceneLoaded = false;
 
 	EcsController m_Scene;
 
@@ -80,6 +92,9 @@ private:
 	T_EntityId m_AudioListener = INVALID_ENTITY_ID;
 
 	render::Scene m_RenderScene;
+
+	Ptr<gui::GuiExtension> m_GuiExtension;
+
 	PhysicsWorld m_PhysicsWorld;
 
 	T_SceneEventDispatcher m_EventDispatcher;

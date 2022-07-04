@@ -4,14 +4,11 @@
 #include "EntityFwd.h"
 #include "RawComponentPointer.h"
 #include "System.h"
+#include "Archetype.h"
 
 
 namespace et {
 namespace fw {
-
-
-// fwd
-class Archetype;
 
 
 //---------------
@@ -119,6 +116,9 @@ public:
 	void RegisterSystem(Args... args);
 	template<typename TSystemType>
 	void UnregisterSystem();
+
+	template<typename TViewType>
+	void ProcessViewOneShot(T_OneShotProcess<TViewType> const& processFn);
 
 	// accessors
 	//-----------

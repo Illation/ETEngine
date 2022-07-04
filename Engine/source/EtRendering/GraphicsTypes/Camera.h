@@ -35,7 +35,7 @@ public:
 
 	void SetClippingPlanes(float const nearPlane, float const farPlane, bool const deferRecalculation = false);
 
-	void SetViewport(Viewport const* const viewport, bool const deferRecalculation = false);
+	void SetViewport(Ptr<Viewport> const viewport, bool const deferRecalculation = false);
 
 	// accessors
 	//-----------
@@ -44,6 +44,8 @@ public:
 	vec3 const& GetUp() const { return m_Up; }
 
 	float GetFOV() const { return m_FieldOfView; }
+
+	Ptr<Viewport> GetViewport() const { return m_Viewport; }
 
 	float GetNearPlane() const { return m_NearPlane; }
 	float GetFarPlane() const { return m_FarPlane; }
@@ -56,10 +58,13 @@ public:
 	mat4 const& GetView() const { return m_View; }
 	mat4 const& GetProj() const { return m_Projection; }
 	mat4 const& GetViewInv() const { return m_ViewInverse; }
+	mat4 const& GetProjInv() const { return m_ProjectionInverse; }
 	mat4 const& GetViewProj() const { return m_ViewProjection; }
 	mat4 const& GetViewProjInv() const { return m_ViewProjectionInverse; }
 	mat4 const& GetStatViewProj() const { return m_StaticViewProjection; }
 	mat4 const& GetStatViewProjInv() const { return m_StaticViewProjectionInverse; }
+
+	vec3 ProjectIntoWorldSpace(vec2 const screenSpaceNormalized, float const depth) const;
 
 	// utility
 	//----------
@@ -86,7 +91,7 @@ private:
 	float m_FieldOfView = 45.f; // angle of perspective camera in degrees
 	float m_Size = 25.f; // width of orthographic camera
 
-	Viewport const* m_Viewport = nullptr; // aspect ratio of projection matrix
+	Ptr<Viewport> m_Viewport; // aspect ratio of projection matrix
 
 	// depth 
 	float m_NearPlane = 1.f;
@@ -107,6 +112,7 @@ private:
 	mat4 m_ViewInverse;
 
 	mat4 m_Projection;
+	mat4 m_ProjectionInverse;
 
 	mat4 m_ViewProjection;
 	mat4 m_ViewProjectionInverse;

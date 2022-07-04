@@ -10,8 +10,9 @@
 #include <EtRendering/GraphicsContext/Viewport.h>
 #include <EtRendering/GraphicsContext/ContextHolder.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
-#include <EtRendering/SceneRendering/SplashScreenRenderer.h>
 #include <EtRendering/SceneRendering/ShadowRenderer.h>
+
+#include <EtGUI/Context/RmlGlobal.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 #include <EtFramework/Physics/PhysicsManager.h>
@@ -19,6 +20,7 @@
 #include <EtFramework/Components/CameraComponent.h>
 #include <EtFramework/Config/BootConfig.h>
 
+#include <EtRuntime/Rendering/SplashScreenRenderer.h>
 #include <EtRuntime/Core/GlfwEventManager.h>
 #include <EtRuntime/Core/PackageResourceManager.h>
 
@@ -34,12 +36,20 @@ namespace rt {
 //
 AbstractFramework::~AbstractFramework()
 {
+	fw::UnifiedScene::Instance().UnloadScene();
+
+	m_GuiRenderer.Deinit();
+
+	fw::UnifiedScene::Instance().Deinit();
+
+	gui::RmlGlobal::Destroy();
+	m_SceneRenderer = nullptr;
+	m_SplashScreenRenderer = nullptr;
+	m_Viewport->SetRenderer(nullptr);
+
 	GlfwEventManager::DestroyInstance();
 	m_RenderWindow.GetArea().Uninitialize();
-	SafeDelete(m_Viewport);
-	SafeDelete(m_SceneRenderer);
-
-	fw::UnifiedScene::Instance().UnloadScene();
+	m_Viewport = nullptr;
 
 	fw::PhysicsManager::DestroyInstance();
 	fw::AudioManager::DestroyInstance();
@@ -78,7 +88,8 @@ void AbstractFramework::Run()
 	cfg->Initialize();
 
 	// init unified scene, systems etc
-	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::RegisterSystems,
+	fw::UnifiedScene& unifiedScene = fw::UnifiedScene::Instance();
+	unifiedScene.GetEventDispatcher().Register(fw::E_SceneEvent::RegisterSystems,
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const eventData)
 		{
 			UNUSED(flags);
@@ -89,15 +100,13 @@ void AbstractFramework::Run()
 
 	// ensure we show the splash screen every time the scene switches
 	// Callback ID not required as we destroy the scene manager here before destroying this class
-	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::SceneSwitch | fw::E_SceneEvent::Activated,
+	unifiedScene.GetEventDispatcher().Register(fw::E_SceneEvent::SceneSwitch | fw::E_SceneEvent::Activated | fw::E_SceneEvent::ActiveCameraChanged,
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const evnt)
 		{
-			UNUSED(evnt);
-
 			switch (static_cast<fw::E_SceneEvent>(flags))
 			{
 			case fw::E_SceneEvent::SceneSwitch:
-				m_Viewport->SetRenderer(m_SplashScreenRenderer);
+				m_Viewport->SetRenderer(m_SplashScreenRenderer.Get());
 
 				m_Viewport->SetTickDisabled(true);
 				m_RenderWindow.GetArea().Update(); // update manually incase we don't run the game loop before the new scene is activated 
@@ -105,8 +114,16 @@ void AbstractFramework::Run()
 				break;
 
 			case fw::E_SceneEvent::Activated:
-				m_Viewport->SetRenderer(m_SceneRenderer); // update will happen anyway during the loop
+				m_Viewport->SetRenderer(m_SceneRenderer.Get()); // update will happen anyway during the loop
 				break;
+
+			case fw::E_SceneEvent::ActiveCameraChanged:
+			{
+				fw::CameraComponent& camera = evnt->scene->GetEcs().GetComponent<fw::CameraComponent>(evnt->scene->GetActiveCamera());
+				camera.SetViewport(ToPtr(m_Viewport.Get()));
+				m_SceneRenderer->SetCamera(camera.GetId());
+				break;
+			}
 
 			default:
 				ET_ASSERT(true, "Unexpected scene event type!");
@@ -114,12 +131,12 @@ void AbstractFramework::Run()
 			}
 		}));
 
-	fw::UnifiedScene::Instance().Init();
+	unifiedScene.Init();
 
 	// init rendering target
-	m_Viewport = new render::Viewport(&m_RenderWindow.GetArea());
-	m_SplashScreenRenderer = new render::SplashScreenRenderer();
-	m_Viewport->SetRenderer(m_SplashScreenRenderer);
+	m_Viewport = Create<render::Viewport>(&m_RenderWindow.GetArea());
+	m_SplashScreenRenderer = Create<rt::SplashScreenRenderer>();
+	m_Viewport->SetRenderer(m_SplashScreenRenderer.Get());
 	render::ContextHolder::Instance().CreateMainRenderContext(&m_RenderWindow); // also initializes the viewport and its renderer
 
 	// screenshots
@@ -147,27 +164,36 @@ void AbstractFramework::Run()
 	cfg->InitRenderConfig();
 
 	m_SplashScreenRenderer->Init();
+	m_SplashScreenRenderer->SetGuiDocument(bootCfg.splashGui);
 	m_RenderWindow.GetArea().Update();
 
 	fw::AudioManager::GetInstance()->Initialize();
 	fw::PhysicsManager::GetInstance()->Initialize();
 
-	core::PerformanceInfo::GetInstance(); // Initialize performance measurment #todo: disable for shipped project?
+	core::PerformanceInfo::GetInstance(); // Initialize performance measurement #todo: disable for shipped project?
 
-	// init input manager
-	core::InputManager::GetInstance();	
-	GlfwEventManager::GetInstance()->Init(&m_RenderWindow.GetArea());
+	// init input 
+	core::InputManager* const inputMan = core::InputManager::GetInstance();
+	GlfwEventManager& glfwMan = *GlfwEventManager::GetInstance();
+	m_Viewport->SetInputProvider(ToPtr(&glfwMan.GetInputProvider()));
+	glfwMan.Init(ToPtr(&m_RenderWindow.GetArea()));
+	glfwMan.GetInputProvider().RegisterListener(ToPtr(inputMan));
 
 	// scene rendering
-	m_SceneRenderer = new render::ShadedSceneRenderer(&(fw::UnifiedScene::Instance().GetRenderScene()));
+	m_SceneRenderer = Create<render::ShadedSceneRenderer>(&(unifiedScene.GetRenderScene()));
 	m_SceneRenderer->InitRenderingSystems();
+
+	// ui rendering
+	m_GuiRenderer.Init(ToPtr(&(m_SceneRenderer->GetEventDispatcher())));
+	gui::RmlGlobal::GetInstance()->SetCursorShapeManager(ToPtr(&glfwMan));
+	gui::RmlGlobal::GetInstance()->SetClipboardController(ToPtr(&glfwMan));
 
 	// cause the loop to continue
 	RegisterAsTriggerer();
 
 	// load scene
 	OnInit();
-	fw::UnifiedScene::Instance().LoadScene(bootCfg.startScene);
+	unifiedScene.LoadScene(bootCfg.startScene);
 
 	// update
 	MainLoop();
@@ -186,17 +212,11 @@ void AbstractFramework::MainLoop()
 		{
 			return;
 		}
+
 		TriggerTick(); // this will probably tick the scene manager, editor, framework etc
 
 		//****
 		//DRAW
-
-		fw::EcsController& ecs = fw::UnifiedScene::Instance().GetEcs();
-		fw::T_EntityId cam = fw::UnifiedScene::Instance().GetActiveCamera();
-
-		ecs.GetComponent<fw::CameraComponent>(cam).PopulateCamera(m_SceneRenderer->GetCamera(),
-			*m_Viewport,
-			ecs.GetComponent<fw::TransformComponent>(cam));
 
 		m_RenderWindow.GetArea().Update();
 	}

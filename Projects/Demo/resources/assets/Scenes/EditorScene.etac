@@ -11,7 +11,8 @@
           "Models/Env.etmc",
           "Models/Rocket.etmc",
           "Models/RocketEngine.etmc",
-          "Materials/MI_Uber_ICBM.json"
+          "Materials/MI_Uber_ICBM.json",
+          "GUI/hello_world.rml"
         ]
       }
     },

@@ -1,0 +1,18 @@
+{
+  "editable shader asset": {
+    "asset": {
+      "shader asset": {
+        "name": "PostRmlUiBlit3D.glsl",
+        "path": "Shaders/",
+        "package": "",
+        "references": [
+          "Shaders/CommonSharedVars.glsl"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": [],
+    "use geometry": false,
+    "use fragment": true
+  }
+}

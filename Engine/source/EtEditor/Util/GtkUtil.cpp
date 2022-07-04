@@ -2,6 +2,7 @@
 #include "GtkUtil.h"
 
 #include <gdk/gdkkeysyms.h>
+#include <gdk/gdk.h>
 
 
 namespace et {
@@ -171,6 +172,49 @@ E_KbdKey GtkUtil::GetKeyFromGtk(uint32 const keyCode)
 
 	default: return E_KbdKey::Invalid;
 	}
+}
+
+//---------------------------------
+// GtkUtil::GetModifiersFromGtk
+//
+// Convert GTK modifier bitmask to the corresponding input manager version
+//
+core::T_KeyModifierFlags GtkUtil::GetModifiersFromGtk(uint32 const modifierState)
+{
+	core::T_KeyModifierFlags ret = 0u;
+
+	if (modifierState & GdkModifierType::GDK_SHIFT_MASK)
+	{
+		ret |= core::E_KeyModifier::KM_Shift;
+	}
+
+	if (modifierState & GdkModifierType::GDK_CONTROL_MASK)
+	{
+		ret |= core::E_KeyModifier::KM_Control;
+	}
+
+	if (modifierState & GdkModifierType::GDK_MOD1_MASK)
+	{
+		ret |= core::E_KeyModifier::KM_Alt;
+	}
+
+	if (modifierState & GdkModifierType::GDK_SUPER_MASK)
+	{
+		ret |= core::E_KeyModifier::KM_Super;
+	}
+
+	if (modifierState & GdkModifierType::GDK_LOCK_MASK)
+	{
+		ret |= core::E_KeyModifier::KM_CapsLock;
+	}
+
+	// no clearly defined mask for Num Lock
+	//if (modifierState & GdkModifierType)
+	//{
+	//	ret |= core::E_KeyModifier::KM_NumLock;
+	//}
+
+	return ret;
 }
 
 

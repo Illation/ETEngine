@@ -99,7 +99,7 @@ void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShado
 		//Set Framebuffer
 		api->BindFramebuffer(cascades[i].fbo);
 		//Clear Framebuffer
-		api->Clear(E_ClearFlag::Color | E_ClearFlag::Depth);
+		api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
 
 		api->SetShader(m_Shader.get());
 		m_Shader->Upload("worldViewProj"_hash, lightVP);

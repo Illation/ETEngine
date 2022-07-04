@@ -87,6 +87,7 @@ public:
 	TDataType* Get() const;
 	TDataType* operator->() const;
 	TDataType& operator*() const;
+	int32 GetRefCount() const;
 
 	// private functionality
 private:

@@ -42,13 +42,14 @@ EntityLink::EntityLink(EntityLink const& other)
 //
 EntityLink& EntityLink::operator=(EntityLink const& other)
 {
-	if (id != INVALID_ENTITY_ID)
+	if (m_Id != INVALID_ENTITY_ID)
 	{
 		EntityLinkResolver::Instance().UnregisterLink(this);
 	}
 
-	id = other.id;
-	if (id != INVALID_ENTITY_ID)
+	m_Id = other.m_Id;
+	m_IsResolved = other.m_IsResolved;
+	if (m_Id != INVALID_ENTITY_ID)
 	{
 		EntityLinkResolver::Instance().RegisterLink(this);
 	}
@@ -63,7 +64,7 @@ EntityLink& EntityLink::operator=(EntityLink const& other)
 //
 EntityLink::~EntityLink()
 {
-	if (id != INVALID_ENTITY_ID)
+	if (m_Id != INVALID_ENTITY_ID)
 	{
 		EntityLinkResolver::Instance().UnregisterLink(this);
 	}
@@ -76,8 +77,8 @@ EntityLink::~EntityLink()
 //
 void EntityLink::SetDeserializedId(T_EntityId const val)
 {
-	id = val;
-	if (id != INVALID_ENTITY_ID)
+	m_Id = val;
+	if (m_Id != INVALID_ENTITY_ID)
 	{
 		EntityLinkResolver::Instance().RegisterLink(this);
 	}
@@ -115,7 +116,10 @@ void EntityLinkResolver::OnEntityIdAssigned(T_EntityId const serialized, T_Entit
 	{
 		for (EntityLink* const link : foundIt->second)
 		{
-			link->id = assigned;
+			if (!link->IsResolved())
+			{
+				link->SetId(assigned);
+			}
 		}
 	}
 }
@@ -127,12 +131,12 @@ void EntityLinkResolver::OnEntityIdAssigned(T_EntityId const serialized, T_Entit
 //
 void EntityLinkResolver::RegisterLink(EntityLink* const link)
 {
-	auto const foundIt = m_RegisteredLinks.find(link->id);
+	auto const foundIt = m_RegisteredLinks.find(link->GetId());
 
 	// if we don't have a list of entities for the serialized id yet, create a new one
 	if (foundIt == m_RegisteredLinks.cend())
 	{
-		auto res = m_RegisteredLinks.emplace(link->id, std::vector<EntityLink*>({ link }));
+		auto res = m_RegisteredLinks.emplace(link->GetId(), std::vector<EntityLink*>({ link }));
 		ET_ASSERT(res.second);
 	}
 	else // otherwise just add ours
@@ -147,7 +151,7 @@ void EntityLinkResolver::RegisterLink(EntityLink* const link)
 void EntityLinkResolver::UnregisterLink(EntityLink* const link)
 {
 	// find the list of links for the id
-	auto const foundIt = m_RegisteredLinks.find(link->id);
+	auto const foundIt = m_RegisteredLinks.find(link->GetId());
 	if (foundIt == m_RegisteredLinks.cend())
 	{
 		return;
@@ -160,16 +164,7 @@ void EntityLinkResolver::UnregisterLink(EntityLink* const link)
 		return;
 	}
 
-	// remove it
-	if (foundIt->second.size() > 1u)
-	{
-		std::iter_swap(foundLink, std::prev(foundIt->second.end()));
-		foundIt->second.pop_back();
-	}
-	else
-	{
-		foundIt->second.clear();
-	}
+	core::RemoveSwap(foundIt->second, foundLink);
 }
 
 //---------------------------

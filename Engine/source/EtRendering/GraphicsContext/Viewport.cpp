@@ -32,7 +32,7 @@ Viewport* Viewport::GetCurrentViewport()
 //---------------------------------
 // Viewport::c-tor
 //
-// Construct a viewport from a glArea
+// Construct a viewport from an area and optionally providing the input provider associated with the viewport
 //
 Viewport::Viewport(I_RenderArea* const area)
 	: m_Area(area)
@@ -189,63 +189,18 @@ void Viewport::Render(T_FbLoc const targetFb)
 {
 	if (m_Renderer != nullptr)
 	{
-		for (I_ViewportListener* const listener : m_Listeners)
-		{
-			listener->OnViewportPreRender(targetFb);
-		}
-
+		m_Events.Notify(render::E_ViewportEvent::VP_PreRender, new render::ViewportEventData(this, targetFb));
 		m_Renderer->OnRender(targetFb);
 	}
 	else
 	{
 		// Draw pink to indicate that no renderer is attached
 		m_ApiContext->SetClearColor(vec4(0.55f, 0.075f, 0.2f, 1.f));
-		m_ApiContext->Clear(E_ClearFlag::Color);
+		m_ApiContext->Clear(E_ClearFlag::CF_Color);
 	}
 
 	m_ApiContext->Flush();
-
-	for (I_ViewportListener* const listener : m_Listeners)
-	{
-		listener->OnViewportPostFlush(targetFb);
-	}
-}
-
-//---------------------------------
-// Viewport::RegisterListener
-//
-void Viewport::RegisterListener(I_ViewportListener* const listener)
-{
-	ET_ASSERT(std::find(m_Listeners.cbegin(), m_Listeners.cend(), listener) == m_Listeners.cend(), "Listener already registered!");
-
-	m_Listeners.emplace_back(listener);
-}
-
-//---------------------------------
-// Viewport::UnregisterListener
-//
-void Viewport::UnregisterListener(I_ViewportListener* const listener)
-{
-	// try finding the listener
-	auto listenerIt = std::find(m_Listeners.begin(), m_Listeners.end(), listener);
-
-	// it should have been found
-	if (listenerIt == m_Listeners.cend())
-	{
-		LOG("Viewport::UnregisterListener > Listener not found", core::LogLevel::Warning);
-		return;
-	}
-
-	// swap and remove - the order of the listener list doesn't matter
-	if (m_Listeners.size() > 1u)
-	{
-		std::iter_swap(listenerIt, std::prev(m_Listeners.end()));
-		m_Listeners.pop_back();
-	}
-	else
-	{
-		m_Listeners.clear();
-	}
+	m_Events.Notify(render::E_ViewportEvent::VP_PostFlush, new render::ViewportEventData(this, targetFb));
 }
 
 //---------------------------------

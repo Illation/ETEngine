@@ -1,0 +1,19 @@
+{
+  "editable gui document asset": {
+    "asset": {
+      "gui document asset": {
+        "name": "splashscreen.rml",
+        "path": "GUI/",
+        "package": "",
+        "references": [
+          "GUI/window.rcss",
+          "GUI/rml.rcss",
+          "Fonts/roboto2014/Roboto-Bold.ttf",
+          "Fonts/roboto2014/RobotoCondensed-Regular.ttf"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

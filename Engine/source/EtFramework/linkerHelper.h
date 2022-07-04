@@ -1,6 +1,6 @@
 #pragma once
 
-#include <EtRendering/linkerHelper.h>
+#include <EtGUI/linkerHelper.h>
 
 #include <EtFramework/Audio/AudioData.h>
 #include <EtFramework/SceneGraph/SceneDescriptor.h>
@@ -12,6 +12,7 @@
 #include <EtFramework/Components/ModelComponent.h>
 #include <EtFramework/Components/PlanetComponent.h>
 #include <EtFramework/Components/RigidBodyComponent.h>
+#include <EtFramework/Components/GuiCanvasComponent.h>
 
 
 namespace et {
@@ -25,7 +26,7 @@ namespace fw {
 //
 void ForceLinking()
 {
-	render::ForceLinking();
+	gui::ForceLinking();
 
 	FORCE_LINKING(AudioAsset)
 	FORCE_LINKING(SceneDescriptorAsset)
@@ -37,6 +38,7 @@ void ForceLinking()
 	FORCE_LINKING(ModelComponent)
 	FORCE_LINKING(PlanetCameraLinkComponentDesc)
 	FORCE_LINKING(RigidBodyComponentDesc)
+	FORCE_LINKING(GuiCanvasComponentLinkEnforcer)
 }
 
 

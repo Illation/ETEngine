@@ -3,7 +3,10 @@
 
 #include <EtCore/Reflection/Registration.h>
 
+#include <EtGUI/GuiExtension.h>
+
 #include <EtFramework/Systems/TransformSystem.h>
+#include <EtFramework/SceneGraph/UnifiedScene.h>
 
 
 namespace et {
@@ -55,6 +58,8 @@ void FreeCameraSystem::Process(fw::ComponentRange<FreeCameraSystemView>& range)
 	core::InputManager* const input = core::InputManager::GetInstance();
 	float const dt = core::ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime();
 
+	bool hasInput = false;
+
 	for (FreeCameraSystemView& view : range)
 	{
 		// movement direction
@@ -88,6 +93,8 @@ void FreeCameraSystem::Process(fw::ComponentRange<FreeCameraSystemView>& range)
 		//handle scrolling to change camera speed
 		if (hasMoveInput || input->GetMouseButton(E_MouseButton::Left) == E_KeyState::Down)
 		{
+			hasInput = true;
+
 			float const scroll = input->GetMouseWheelDelta().y;
 			if (scroll > 0.0f)
 			{
@@ -120,6 +127,9 @@ void FreeCameraSystem::Process(fw::ComponentRange<FreeCameraSystemView>& range)
 		quat const rot = quat(horizontalRight, view.camera->totalPitch) * quat(vec3::UP, view.camera->totalYaw);
 		view.transform->SetRotation(rot);
 	}
+
+	// ensure we don't loose input when we mouse over a GUI context while dragging the camera
+	fw::UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().SetInputEnabled(!hasInput);
 }
 
 

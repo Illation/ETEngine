@@ -38,7 +38,8 @@ namespace GL_CONTEXT_NS {
 	GLenum ConvMinFilter(E_TextureFilterMode const minFilter, E_TextureFilterMode const mipFilter, bool const useMip);
 	GLenum ConvWrapMode(E_TextureWrapMode const wrap);
 	GLenum ConvCompareMode(E_TextureCompareMode const comp);
-	GLenum ConvDepthFunction(E_DepthFunc const func);
+	GLenum ConvDepthStencilFunction(E_DepthFunc const func);
+	GLenum ConvStencilOp(E_StencilOp const op);
 
 	E_ParamType ParseParamType(GLenum const param);
 
@@ -121,10 +122,23 @@ public:
 	void SetBlendEnabled(std::vector<bool> const& blendBuffers) override;
 	void SetStencilEnabled(bool const enabled) override;
 	void SetCullEnabled(bool const enabled) override;
+	void SetScissorEnabled(bool const enabled) override;
+
+	void SetColorMask(T_ColorFlags const flags) override;
+	void SetDepthMask(bool const flag) override;
+	void SetStencilMask(uint32 const mask) override;
 
 	void SetFaceCullingMode(E_FaceCullMode const cullMode) override;
 	void SetBlendEquation(E_BlendEquation const equation) override;
 	void SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor) override;
+	void SetBlendFunctionSeparate(E_BlendFactor const sRGB, E_BlendFactor const sAlpha, E_BlendFactor const dRGB, E_BlendFactor const dAlpha) override;
+
+	void SetDepthFunction(E_DepthFunc const func) override;
+
+	void SetStencilFunction(T_StencilFunc const func, int32 const reference, uint32 const mask) override;
+	void SetStencilOperation(E_StencilOp const sFail, E_StencilOp const dFail, E_StencilOp const dsPass) override;
+
+	void SetScissor(ivec2 const pos, ivec2 const size) override;
 
 	void SetViewport(ivec2 const pos, ivec2 const size) override;
 	void GetViewport(ivec2& pos, ivec2& size) override;
@@ -283,8 +297,6 @@ public:
 
 	void SetPixelUnpackAlignment(int32 const val) const override;
 
-	void SetDepthFunction(E_DepthFunc const func) const override;
-
 	void ReadPixels(ivec2 const pos, ivec2 const size, E_ColorFormat const format, E_DataType const type, void* data) const override;
 
 	void DebugPushGroup(std::string const& message, bool const isThirdParty = false) const override;
@@ -330,13 +342,33 @@ private:
 	bool m_BlendEnabled = false;
 	bool m_IndividualBlend = false;
 	std::vector<bool> m_BlendEnabledIndexed;
+
+	T_ColorFlags m_ColorMask = E_ColorFlag::CF_All;
+	bool m_DepthMask = true;
+	uint32 m_StencilMask = 0xFFFFFFFFu;
+
 	E_BlendEquation m_BlendEquationRGB = E_BlendEquation::Add;
 	E_BlendEquation m_BlendEquationAlpha = E_BlendEquation::Add;
 	E_BlendFactor m_BlendFuncSFactor = E_BlendFactor::One;
+	E_BlendFactor m_BlendFuncSFactorAlpha = E_BlendFactor::One;
 	E_BlendFactor m_BlendFuncDFactor = E_BlendFactor::Zero;
+	E_BlendFactor m_BlendFuncDFactorAlpha = E_BlendFactor::Zero;
+
+	E_DepthFunc m_DepthFunc = E_DepthFunc::Less;
+
+	T_StencilFunc m_StencilFunc = T_StencilFunc::Always;
+	int32 m_StencilRef = 0;
+	uint32 m_StencilFuncMask = 0xFFFFFFFFu;
+	E_StencilOp m_StencilSFail = E_StencilOp::Keep;
+	E_StencilOp m_StencilDFail = E_StencilOp::Keep;
+	E_StencilOp m_StencilDSPass = E_StencilOp::Keep;
+
+	bool m_ScissorEnabled = false;
+	ivec2 m_ScissorPosition = ivec2(0);
+	ivec2 m_ScissorSize; // initialize with values used during context creation
 
 	ivec2 m_ViewportPosition = ivec2(0);
-	ivec2 m_ViewportSize; //initialize with values used during context creation
+	ivec2 m_ViewportSize; // initialize with values used during context creation
 
 	vec4 m_ClearColor = vec4(0);
 

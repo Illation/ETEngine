@@ -98,7 +98,12 @@ public:
 	// interface
 	//-----------
 	virtual bool CallScenePostLoad() const override { return false; }
-	virtual void OnScenePostLoadRoot(EcsController& ecs, T_EntityId const id, void* const componentData) override {}
+	void OnScenePostLoadRoot(EcsController& ecs, T_EntityId const id, void* const componentData) override 
+	{
+		UNUSED(componentData);
+		OnScenePostLoad(ecs, id);
+	}
+	virtual void OnScenePostLoad(EcsController&, T_EntityId const) {}
 };
 
 

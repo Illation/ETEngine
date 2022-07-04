@@ -4,9 +4,13 @@
 #include <glibmm/refptr.h>
 #include <gdk/gdk.h>
 
+#include <EtCore/Input/RawInputProvider.h>
+
 #include <EtRendering/GraphicsContext/Viewport.h>
-#include <EtRendering/GraphicsTypes/SpriteFont.h>
 #include <EtRendering/Extensions/OutlineRenderer.h>
+
+#include <EtGUI/Rendering/SceneRendererGUI.h>
+#include <EtGUI/Fonts/SdfFont.h>
 
 #include <EtFramework/SceneGraph/SceneEvents.h>
 
@@ -67,17 +71,20 @@ private:
 	SceneEditor* m_Editor;
 
 	fw::T_EntityId m_Camera = fw::INVALID_ENTITY_ID;
-	std::unique_ptr<render::Viewport> m_Viewport;
+	UniquePtr<render::Viewport> m_Viewport;
 	render::I_RenderArea* m_RenderArea = nullptr;
 
 	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
+	gui::SceneRendererGUI m_SceneGuiRenderer;
 	render::OutlineRenderer m_OutlineRenderer;
+
+	core::RawInputProvider m_InputProvider;
 
 	fw::T_SceneEventCallbackId m_SceneInitCallback = fw::T_SceneEventDispatcher::INVALID_ID;
 
 	Glib::RefPtr<Gtk::Builder> m_RefBuilder;
 
-	AssetPtr<render::SpriteFont> m_DebugFont;
+	AssetPtr<gui::SdfFont> m_DebugFont;
 	bool m_DrawDebugInfo = true;
 
 	bool m_IsInitialized = false;

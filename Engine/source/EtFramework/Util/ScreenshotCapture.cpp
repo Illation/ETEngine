@@ -55,7 +55,11 @@ void ScreenshotCapture::Take(render::Viewport* const viewport)
 	{
 		m_Viewport = viewport;
 
-		m_Viewport->RegisterListener(this);
+		m_VPCallbackId = m_Viewport->GetEventDispatcher().Register(render::E_ViewportEvent::VP_PostFlush,
+			render::T_ViewportEventCallback([this](render::T_ViewportEventFlags const, render::ViewportEventData const* const data) -> void
+				{
+					OnViewportPostFlush(data->targetFb);
+				}));
 	}
 	else
 	{
@@ -99,7 +103,7 @@ void ScreenshotCapture::OnViewportPostFlush(render::T_FbLoc const targetFb)
 	// Free resources
 	delete[] pixels;
 
-	m_Viewport->UnregisterListener(this);
+	m_Viewport->GetEventDispatcher().Unregister(m_VPCallbackId);
 	m_Viewport = nullptr;
 }
 

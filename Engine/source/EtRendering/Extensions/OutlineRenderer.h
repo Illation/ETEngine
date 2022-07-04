@@ -25,7 +25,7 @@ public:
 	OutlineRenderer() = default;
 	~OutlineRenderer();
 
-	void Init(render::T_RenderEventDispatcher* const eventDispatcher);
+	void Init(Ptr<render::T_RenderEventDispatcher> const eventDispatcher);
 	void Deinit();
 
 	// Functionality
@@ -51,7 +51,7 @@ private:
 
 	AssetPtr<ShaderData> m_SobelShader;
 
-	render::T_RenderEventDispatcher* m_EventDispatcher = nullptr;
+	Ptr<render::T_RenderEventDispatcher> m_EventDispatcher;
 	render::T_RenderEventCallbackId m_CallbackId = render::T_RenderEventDispatcher::INVALID_ID;
 
 	render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;

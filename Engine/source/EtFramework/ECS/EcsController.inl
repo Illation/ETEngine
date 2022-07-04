@@ -209,6 +209,28 @@ bool EcsController::IsSystemRegistered() const
 		}) != m_Systems.cend());
 }
 
+//---------------------------------
+// EcsController::UnregisterSystem
+//
+// Remove the system from the update graph
+//
+template<typename TViewType>
+void EcsController::ProcessViewOneShot(T_OneShotProcess<TViewType> const& processFn)
+{
+	ComponentSignature const signature = SignatureFromView<TViewType>();
+	for (ArchetypeContainer& hierarchyLevel : m_HierachyLevels)
+	{
+		for (std::pair<T_Hash const, Archetype*>& arch : hierarchyLevel.archetypes)
+		{
+			// go layer wise to ensure correct hierachy dependency resolution
+			if ((arch.second->GetSize() > 0u) && arch.second->GetSignature().Contains(signature))
+			{
+				processFn(ComponentRange<TViewType>(this, arch.second, 0u, arch.second->GetSize()));
+			}
+		}
+	}
+}
+
 
 } // namespace fw
 } // namespace et

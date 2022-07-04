@@ -1,60 +1,52 @@
 #pragma once
-
-#ifdef ET_PLATFORM_LINUX
-#include <time.h>
-#else
-#include <chrono>
-#endif
+#include "HighResTime.h"
 
 
 namespace et {
 namespace core {
 
 
-#ifdef ET_PLATFORM_LINUX
-	typedef timespec HighResTime;
-	typedef timespec HighResDuration;
-#else
-	typedef std::chrono::steady_clock::time_point HighResTime;
-	typedef std::chrono::duration<int64, std::nano> HighResDuration;
-#endif
-
-
-class Time 
+//---------------
+// Time
+//
+// Tracks elapsed time for smooth update cycles
+//
+class Time final
 {
+	// construct destruct
+	//--------------------
 public:
 	Time();
-	~Time();
+	~Time() = default;
 
+	// functionality
+	//---------------
 	void Start();
 	void Update();
 
+	// accessors
+	//-----------
 	float GetTime() const;
-	float DeltaTime() const;
+	template<typename TDataType>
+	TDataType GetTime() const;
+
+	float DeltaTime() const { return m_DeltaTime; }
 	float FPS() const;
-	uint64 Timestamp() const; // milliseconds
-	uint64 SystemTimestamp() const; // milliseconds
+	uint64 Timestamp() const; 
+
+
+	// Data
+	///////
 
 private:
-	//Platform abstraction
-	HighResTime Now()const;
-	HighResDuration Diff( const HighResTime &start, const HighResTime &end )const;
-
-	template<typename T>
-	T HRTCast( const HighResDuration &lhs )const
-	{
-	#ifdef ET_PLATFORM_LINUX
-		return (T)lhs.tv_sec + ((T)lhs.tv_nsec / 1000000000);
-	#else
-		return ((T)(std::chrono::duration_cast<std::chrono::nanoseconds>(lhs).count()))*1e-9f;
-	#endif
-	}
-
-	HighResTime begin;
-	HighResTime last;
+	HighResTime m_Begin;
+	HighResTime m_Last;
 	float m_DeltaTime = 0.f;
 };
 
 
 } // namespace core
 } // namespace et
+
+
+#include "Time.inl"
