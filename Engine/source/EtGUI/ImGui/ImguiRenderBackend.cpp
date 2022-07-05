@@ -87,7 +87,7 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
 	// recreate the VAO every frame to allow multiple graphics api contexts
-	render::T_ArrayLoc const vertexArrayObject = api->CreateVertexArray();
+	render::T_ArrayLoc vertexArrayObject = api->CreateVertexArray();
 	SetupRenderState(drawData, fbScale, vertexArrayObject);
 
 	// project scissor / clipping rectangles into framebuffer space
@@ -127,9 +127,29 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 			{
 				vec2 const clipMin((vec2(pcmd->ClipRect.x, pcmd->ClipRect.y) - clipOffset) * clipScale);
 				vec2 const clipMax((vec2(pcmd->ClipRect.z, pcmd->ClipRect.w) - clipOffset) * clipScale);
+				if ((clipMax.x <= clipMin.x) || (clipMax.y <= clipMin.y))
+				{
+					continue;
+				}
+
+				api->SetScissor(ivec2(static_cast<int32>(clipMin.x), static_cast<int32>(fbScale.y - clipMax.y)),
+					math::vecCast<int32>(clipMax - clipMin));
+
+				// bind texture, draw
+				//render::T_TextureUnit const unit = api->BindTexture(render::E_TextureType::Texture2D, static_cast<render::T_TextureLoc>(pcmd->GetTexID()));
+				api->DrawElements(render::E_DrawMode::Triangles, 
+					pcmd->ElemCount, 
+					sizeof(ImDrawIdx) == 2 ? render::E_DataType::UShort : render::E_DataType::UInt,
+					static_cast<void const*>(pcmd->IdxOffset * sizeof(ImDrawIdx)))
 			}
 		}
 	}
+
+	// delete temporary vertex array
+	api->DeleteVertexArray(vertexArrayObject);	
+
+	// clean up state
+	api->SetScissorEnabled(false);
 }
 
 
