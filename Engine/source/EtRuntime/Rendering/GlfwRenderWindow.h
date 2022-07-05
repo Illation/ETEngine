@@ -1,6 +1,6 @@
 #pragma once
 
-#include <EtRendering/GraphicsContext/GraphicsContext.h>
+#include <EtRendering/GraphicsContext/RenderWindow.h>
 
 #include "GlfwRenderArea.h"
 
@@ -30,6 +30,10 @@ public:
 	//-------------------------
 protected:
 	render::I_GraphicsContextApi* CreateContext(render::GraphicsContextParams const& params) override;
+	void SetCursorPos(ivec2 const pos) override;
+
+	ivec2 GetDimensions() const override;
+	bool HasFocus() const override;
 
 	// Data
 	///////

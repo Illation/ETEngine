@@ -54,6 +54,11 @@ This project dynamically links to openAl soft.
 - license: [MIT](https://github.com/mikke89/RmlUi/blob/master/LICENSE.txt)
 
 
+## Dear ImGui
+- source: [https://github.com/ocornut/imgui](https://github.com/ocornut/imgui)
+- license: [MIT](https://github.com/ocornut/imgui/blob/master/LICENSE.txt)
+
+
 ## RTTR
 - source: [https://github.com/rttrorg/rttr](https://github.com/rttrorg/rttr/tree/34c4d0e889fb0fe721638975835e2505c1957539)
 - license: [MIT](https://github.com/rttrorg/rttr/blob/master/LICENSE.txt)

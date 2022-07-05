@@ -99,6 +99,32 @@ render::I_GraphicsContextApi* GtkRenderWindow::CreateContext(render::GraphicsCon
 	return m_Context;
 }
 
+//---------------------------------
+// GtkRenderWindow::SetCursorPos
+//
+void GtkRenderWindow::SetCursorPos(ivec2 const pos)
+{
+	ET_ASSERT(false, "not supported");
+}
+
+//---------------------------------
+// GtkRenderWindow::GetDimensions
+//
+ivec2 GtkRenderWindow::GetDimensions() const
+{
+	ivec2 ret;
+	m_Source->get_size(ret.x, ret.y);
+	return ret;
+}
+
+//---------------------------------
+// GtkRenderWindow::HasFocus
+//
+bool GtkRenderWindow::HasFocus() const
+{
+	return m_Source->has_toplevel_focus();
+}
+
 
 } // namespace edit
 } // namespace et
