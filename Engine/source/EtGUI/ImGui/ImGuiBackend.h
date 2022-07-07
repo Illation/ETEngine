@@ -1,7 +1,7 @@
 #pragma once
 #include <imgui/imgui.h>
 
-#ifndef IMGUI_DISABLE
+#if ET_IMGUI_ENABLED
 
 #include "ImguiPlatformBackend.h"
 #include "ImguiRenderBackend.h"
@@ -36,7 +36,14 @@ public:
 	//--------------------
 private:
 	void OnTick() override; 
+
+	// functionality
+	//---------------
 	void Render();
+
+	// utility
+	//---------
+	void SetupStyle();
 
 
 	// Data
@@ -55,4 +62,4 @@ private:
 } // namespace et
 
 
-#endif // ndef IMGUI_DISABLE
+#endif // ET_IMGUI_ENABLED

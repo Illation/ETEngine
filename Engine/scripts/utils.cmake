@@ -170,6 +170,8 @@ function(targetCompileOptions _target)
 			"-DRMLUI_STATIC_LIB"
 		)
 	endif()
+
+	target_compile_definitions(${_target} PRIVATE "-DIMGUI_USER_CONFIG=<imconfig.h>")
 endfunction(targetCompileOptions)
 
 

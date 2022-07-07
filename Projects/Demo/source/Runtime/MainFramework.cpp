@@ -129,6 +129,8 @@ void MainFramework::OnTick()
 
 	// debug UI
 	//----------
+#	ifndef IMGUI_DISABLE
+
 	if (input->GetKeyState(E_KbdKey::H) == E_KeyState::Pressed)
 	{
 		m_DrawDebugInfo = !m_DrawDebugInfo;
@@ -136,16 +138,18 @@ void MainFramework::OnTick()
 
 	if (m_DrawDebugInfo)
 	{
-		ImGuiWindowFlags const window_flags = ImGuiWindowFlags_AlwaysAutoResize
-			| ImGuiWindowFlags_NoSavedSettings
-			| ImGuiWindowFlags_NoFocusOnAppearing
-			| ImGuiWindowFlags_NoNav
-			| ImGuiWindowFlags_NoMove;
+		ImGuiWindowFlags const window_flags = 
+			ImGuiWindowFlags_NoDecoration |
+			ImGuiWindowFlags_AlwaysAutoResize | 
+			ImGuiWindowFlags_NoSavedSettings | 
+			ImGuiWindowFlags_NoFocusOnAppearing | 
+			ImGuiWindowFlags_NoNav | 
+			ImGuiWindowFlags_NoMove;
 
 		float const PAD = 10.0f;
 		ImGuiViewport const* const viewport = ImGui::GetMainViewport();
-		ImVec2 work_pos = viewport->WorkPos; // Use work area to avoid menu-bar/task-bar, if any!
-		ImGui::SetNextWindowPos(ImVec2(work_pos.x + PAD, work_pos.y + PAD), ImGuiCond_Always, ImVec2(0.f, 0.f));
+		// Use work area to avoid menu-bar/task-bar, if any!
+		ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + PAD, viewport->WorkPos.y + PAD), ImGuiCond_Always, ImVec2(0.f, 0.f));
 		ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
 
 		if (ImGui::Begin("Debug Info:", &m_DrawDebugInfo, window_flags))
@@ -168,6 +172,8 @@ void MainFramework::OnTick()
 	{
 		ImGui::ShowDemoWindow(&m_DrawDemoWindow);
 	}
+
+#	endif
 }
 
 //---------------------------------

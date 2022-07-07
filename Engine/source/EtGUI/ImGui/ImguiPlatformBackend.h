@@ -1,7 +1,7 @@
 #pragma once
 #include <imgui/imgui.h>
 
-#ifndef IMGUI_DISABLE
+#if ET_IMGUI_ENABLED
 
 #include <EtCore/Input/RawInputListener.h>
 #include <EtCore/Util/CursorShapes.h>
@@ -69,13 +69,14 @@ private:
 	///////
 
 	Ptr<core::I_CursorShapeManager> m_CursorShapeManager;
+	core::E_CursorShape m_LastCursorShape;
+
 	Ptr<core::I_ClipboardController> m_ClipboardController;
+	std::string m_LastClipboardText;
 
 	Ptr<render::Viewport> m_Viewport;
 
 	vec2 m_LastValidMousePos;
-
-	std::string m_LastClipboardText;
 };
 
 
@@ -83,4 +84,4 @@ private:
 } // namespace et
 
 
-#endif // ndef IMGUI_DISABLE
+#endif // ET_IMGUI_ENABLED

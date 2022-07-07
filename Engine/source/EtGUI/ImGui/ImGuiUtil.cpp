@@ -2,7 +2,7 @@
 #include "ImGuiUtil.h"
 
 
-#ifndef IMGUI_DISABLE
+#if ET_IMGUI_ENABLED
 
 
 namespace et {
@@ -150,6 +150,36 @@ ImGuiKey GetKey(E_KbdKey const key)
 	}
 }
 
+//----------------
+// GetCursorShape
+//
+core::E_CursorShape GetCursorShape(ImGuiMouseCursor const cursor)
+{
+	switch (cursor)
+	{
+	case ImGuiMouseCursor_None: return core::E_CursorShape::None;
+
+	case ImGuiMouseCursor_TextInput: return core::E_CursorShape::IBeam;
+
+		// #todo: would be nice to get better cursor shapes for these
+	case ImGuiMouseCursor_ResizeAll:
+	case ImGuiMouseCursor_ResizeNESW:
+	case ImGuiMouseCursor_ResizeNWSE:
+	case ImGuiMouseCursor_NotAllowed:
+		return core::E_CursorShape::Crosshair;
+
+	case ImGuiMouseCursor_Hand: return core::E_CursorShape::Hand;
+
+	case ImGuiMouseCursor_ResizeEW: return core::E_CursorShape::SizeWE;
+
+	case ImGuiMouseCursor_ResizeNS: return core::E_CursorShape::SizeNS;
+
+	case ImGuiMouseCursor_Arrow:
+	default:
+		return core::E_CursorShape::Arrow;
+	}
+}
+
 //-------------
 // ToImgui
 //
@@ -173,4 +203,4 @@ et::vec2 ToEtm(ImVec2 const& rhs)
 } // namespace et
 
 
-#endif // ndef IMGUI_DISABLE
+#endif // ET_IMGUI_ENABLED

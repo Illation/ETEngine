@@ -12,7 +12,7 @@ namespace gui {
 //
 enum class E_TickOrder : uint32
 {
-	TICK_ContextContainer,
+	TICK_GuiExtension,
 
 	COUNT
 };

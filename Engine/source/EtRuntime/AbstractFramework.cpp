@@ -39,7 +39,7 @@ namespace rt {
 //
 AbstractFramework::AbstractFramework() 
 	: core::I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_Framework))
-#ifndef IMGUI_DISABLE
+#if ET_IMGUI_ENABLED
 	, m_ImguiBackend(static_cast<uint32>(fw::E_TickOrder::TICK_ImguiBackend))
 #endif
 { }
@@ -215,7 +215,7 @@ void AbstractFramework::Run()
 	OnInit();
 	unifiedScene.LoadScene(bootCfg.startScene);
 
-#ifndef IMGUI_DISABLE
+#if ET_IMGUI_ENABLED
 	m_ImguiBackend.Init(ToPtr(&glfwMan), ToPtr(&glfwMan), ToPtr(m_Viewport.Get()));
 #endif
 

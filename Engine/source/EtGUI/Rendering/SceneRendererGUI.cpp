@@ -32,8 +32,6 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 {
 	// basic rendering systems
 	//-------------------------
-	m_TextRenderer.Initialize();
-	m_SpriteRenderer.Initialize();
 	m_GuiRenderer.Init();
 
 	// render events
@@ -82,7 +80,7 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 				}
 
 				GuiExtension* const guiExt = static_cast<GuiExtension*>(ext);
-				DrawOverlay(evnt->targetFb, *guiExt, renderer->GetScene()->GetNodes());
+				DrawOverlay(evnt->targetFb, *guiExt);
 			}
 			else
 			{
@@ -99,8 +97,6 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 void SceneRendererGUI::Deinit()
 {
 	m_GuiRenderer.Deinit();
-	m_SpriteRenderer.Deinit();
-	m_TextRenderer.Deinit();
 
 	if (m_EventDispatcher != nullptr)
 	{
@@ -122,21 +118,9 @@ void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension&
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 	api->BindFramebuffer(targetFb);
 
-	SpriteRenderer::E_ScalingMode const scalingMode = SpriteRenderer::E_ScalingMode::Texture;
-	for (GuiExtension::Sprite const& sprite : guiExt.GetSprites())
-	{
-		mat4 const& transform = nodes[sprite.node];
-
-		vec3 pos, scale;
-		quat rot;
-		math::decomposeTRS(transform, pos, rot, scale);
-
-		m_SpriteRenderer.Draw(sprite.texture, pos.xy, sprite.color, sprite.pivot, scale.xy, rot.Roll(), pos.z, scalingMode);
-	}
-
 	// RmlUi 3D contexts
 	//-------------------
-	for (ContextContainer::WorldContext& worldContext : guiExt.GetContextContainer().GetWorldContexts())
+	for (GuiExtension::WorldContext& worldContext : guiExt.GetWorldContexts())
 	{
 		if (worldContext.m_Context.HasActiveDocuments())
 		{
@@ -161,19 +145,16 @@ void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension&
 //
 // Draw UI from the extension that goes on top of everything else
 //
-void SceneRendererGUI::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiExt, core::slot_map<mat4> const& nodes)
+void SceneRendererGUI::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiExt)
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 	api->BindFramebuffer(targetFb);
-
-	m_SpriteRenderer.Draw();
-	m_TextRenderer.Draw();
 
 	// RmlUi overlays
 	//----------------
 	render::Viewport const* const viewport = render::Viewport::GetCurrentViewport();
 	ContextRenderTarget* renderTarget;
-	Context* const context = guiExt.GetContextContainer().GetContext(viewport, renderTarget);
+	Context* const context = guiExt.GetContext(viewport, renderTarget);
 	if ((context != nullptr) && context->HasActiveDocuments())
 	{
 		renderTarget->UpdateForDimensions(viewport->GetDimensions());

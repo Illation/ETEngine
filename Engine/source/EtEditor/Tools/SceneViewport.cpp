@@ -271,22 +271,6 @@ void SceneViewport::OnSceneSet()
 }
 
 //------------------------------------
-// SceneViewport::OnEditorTick
-//
-void SceneViewport::OnEditorTick()
-{
-	if (m_DrawDebugInfo)
-	{
-		gui::TextRenderer& textRenderer = m_SceneGuiRenderer.GetTextRenderer();
-
-		textRenderer.SetFont(m_DebugFont);
-		textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
-		std::string outString = FS("FPS: %i", core::PerformanceInfo::GetInstance()->GetRegularFPS());
-		textRenderer.DrawText(outString, vec2(10, 32), 22);
-	}
-}
-
-//------------------------------------
 // SceneViewport::OnKeyEvent
 //
 bool SceneViewport::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)

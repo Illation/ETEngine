@@ -54,7 +54,7 @@ public:
 	//---------------------------------
 	void OnShown();
 	void OnSceneSet();
-	void OnEditorTick();
+	void OnEditorTick() {}
 
 	// functionality
 	//----------------

@@ -1,7 +1,7 @@
 #pragma once
 #include <imgui/imgui.h>
 
-#ifndef IMGUI_DISABLE
+#if ET_IMGUI_ENABLED
 
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
@@ -62,4 +62,4 @@ private:
 } // namespace et
 
 
-#endif // ndef IMGUI_DISABLE
+#endif // ET_IMGUI_ENABLED

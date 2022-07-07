@@ -15,6 +15,7 @@
 namespace et { namespace render {
 	class Viewport;
 	class ShadedSceneRenderer;
+} namespace rt {
 	class SplashScreenRenderer;
 } }
 
@@ -67,7 +68,7 @@ private:
 	UniquePtr<render::ShadedSceneRenderer> m_SceneRenderer;
 	UniquePtr<rt::SplashScreenRenderer> m_SplashScreenRenderer;
 
-#ifndef IMGUI_DISABLE
+#if ET_IMGUI_ENABLED
 	gui::ImGuiBackend m_ImguiBackend;
 #endif
 

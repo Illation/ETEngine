@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ImguiRenderBackend.h"
 
-#ifndef IMGUI_DISABLE
+#if ET_IMGUI_ENABLED
 
 #include "ImGuiUtil.h"
 
@@ -296,4 +296,4 @@ void ImguiRenderBackend::DestroyFontsTexture()
 } // namespace et
 
 
-#endif // ndef IMGUI_DISABLE
+#endif // ET_IMGUI_ENABLED

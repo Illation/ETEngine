@@ -42,6 +42,9 @@
 
 #ifdef ET_SHIPPING
 #	define IMGUI_DISABLE                                     // Disable everything: all headers and source files will be empty.
+#	define ET_IMGUI_ENABLED false
+#else
+#	define ET_IMGUI_ENABLED true
 #endif // ET_SHIPPING
 
 //#define IMGUI_DISABLE_DEMO_WINDOWS                        // Disable demo windows: ShowDemoWindow()/ShowStyleEditor() will be empty.

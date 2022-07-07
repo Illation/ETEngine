@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ImguiPlatformBackend.h"
 
-#ifndef IMGUI_DISABLE
+#if ET_IMGUI_ENABLED
 
 #include "ImGuiUtil.h"
 
@@ -204,41 +204,11 @@ void ImguiPlatformBackend::UpdateMouseCursor()
 		return;
 	}
 
-	ImGuiMouseCursor const cursor = ImGui::GetMouseCursor();
-	switch (cursor)
+	core::E_CursorShape const cursor = ImguiUtil::GetCursorShape(ImGui::GetMouseCursor());
+	if (cursor != m_LastCursorShape)
 	{
-	case ImGuiMouseCursor_None:
-		m_CursorShapeManager->SetCursorShape(core::E_CursorShape::None);
-		break;
-
-	case ImGuiMouseCursor_TextInput:
-		m_CursorShapeManager->SetCursorShape(core::E_CursorShape::IBeam);
-		break;
-
-		// #todo: would be nice to get better cursor shapes for these
-	case ImGuiMouseCursor_ResizeAll:
-	case ImGuiMouseCursor_ResizeNESW:
-	case ImGuiMouseCursor_ResizeNWSE:
-	case ImGuiMouseCursor_NotAllowed:
-		m_CursorShapeManager->SetCursorShape(core::E_CursorShape::Crosshair);
-		break;
-
-	case ImGuiMouseCursor_Hand:
-		m_CursorShapeManager->SetCursorShape(core::E_CursorShape::Hand);
-		break;
-
-	case ImGuiMouseCursor_ResizeEW:
-		m_CursorShapeManager->SetCursorShape(core::E_CursorShape::SizeWE);
-		break;
-
-	case ImGuiMouseCursor_ResizeNS:
-		m_CursorShapeManager->SetCursorShape(core::E_CursorShape::SizeNS);
-		break;
-
-	case ImGuiMouseCursor_Arrow:
-	default:
-		m_CursorShapeManager->SetCursorShape(core::E_CursorShape::Arrow);
-		break;
+		m_CursorShapeManager->SetCursorShape(cursor);
+		m_LastCursorShape = cursor;
 	}
 }
 
@@ -259,5 +229,5 @@ void ImguiPlatformBackend::UpdateKeyModifiers(core::T_KeyModifierFlags const mod
 } // namespace et
 
 
-#endif // ndef IMGUI_DISABLE
+#endif // ET_IMGUI_ENABLED
 

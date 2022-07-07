@@ -24,7 +24,6 @@ target_definitions()
 message(STATUS "Adding target: imgui")
 add_library(imgui ${projectFiles})
 targetCompileOptions(imgui)
-target_compile_definitions(imgui PRIVATE "-DIMGUI_USER_CONFIG=<imconfig.h>")
 
 assign_source_group(${projectFiles})
 assignIdeFolder(imgui Engine/3rdParty)
