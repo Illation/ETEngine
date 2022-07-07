@@ -85,7 +85,7 @@ void ImguiPlatformBackend::Update()
 {
 	ImGuiIO& io = ImGui::GetIO();
 
-	io.DisplaySize = ImguiUtil::ToImgui(math::vecCast<float>(m_Viewport->GetDimensions()));
+	io.DisplaySize = math::vecCast<float>(m_Viewport->GetDimensions());
 	io.DisplayFramebufferScale = ImVec2(1.f, 1.f); // if we want to support dynamic framebuffer rescaling we need to take that into account here
 
 	io.DeltaTime = core::ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime();

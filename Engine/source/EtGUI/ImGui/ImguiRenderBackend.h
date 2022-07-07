@@ -55,6 +55,9 @@ private:
 
 	render::T_BufferLoc m_VertexBuffer = 0u;
 	render::T_BufferLoc m_IndexBuffer = 0u;
+
+	int64 m_VertexBufferSize = 0;
+	int64 m_IndexBufferSize = 0;
 };
 
 

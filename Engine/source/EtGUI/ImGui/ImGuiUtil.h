@@ -19,13 +19,6 @@ ImGuiKey GetKey(E_KbdKey const key);
 core::E_CursorShape GetCursorShape(ImGuiMouseCursor const cursor);
 
 
-// Converting et::math types to Rml counterparts
-ImVec2 ToImgui(vec2 const& rhs);
-
-// Converting et::math types from Rml counterparts
-vec2 ToEtm(ImVec2 const& rhs);
-
-
 } // namespace ImguiUtil
 
 } // namespace gui

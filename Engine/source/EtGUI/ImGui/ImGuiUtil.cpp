@@ -180,22 +180,6 @@ core::E_CursorShape GetCursorShape(ImGuiMouseCursor const cursor)
 	}
 }
 
-//-------------
-// ToImgui
-//
-ImVec2 ToImgui(vec2 const& rhs)
-{
-	return ImVec2(rhs.x, rhs.y);
-}
-
-//-------------
-// ToEtm
-//
-et::vec2 ToEtm(ImVec2 const& rhs)
-{
-	return vec2(rhs.x, rhs.y);
-}
-
 
 } // namespace ImguiUtil
 

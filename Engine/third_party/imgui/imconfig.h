@@ -140,4 +140,4 @@ namespace ImGui
 namespace et { namespace render {
 	class TextureData;
 } }
-#define ImTextureID et::render::TextureData*
+#define ImTextureID et::render::TextureData const*

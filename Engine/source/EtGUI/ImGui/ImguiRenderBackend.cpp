@@ -3,8 +3,6 @@
 
 #if ET_IMGUI_ENABLED
 
-#include "ImGuiUtil.h"
-
 #include <EtCore/Content/ResourceManager.h>
 
 
@@ -69,7 +67,7 @@ void ImguiRenderBackend::Update()
 //
 void ImguiRenderBackend::Render(ImDrawData* const drawData)
 {
-	ivec2 const fbScale = math::vecCast<int32>(ImguiUtil::ToEtm(drawData->DisplaySize) * ImguiUtil::ToEtm(drawData->FramebufferScale));
+	ivec2 const fbScale = math::vecCast<int32>(vec2(drawData->DisplaySize) * vec2(drawData->FramebufferScale));
 	if ((fbScale.x <= 0) || (fbScale.y <= 0))
 	{
 		return;
@@ -84,8 +82,8 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 	SetupRenderState(drawData, fbScale, vertexArrayObject);
 
 	// project scissor / clipping rectangles into framebuffer space
-	vec2 const clipOffset = ImguiUtil::ToEtm(drawData->DisplayPos);
-	vec2 const clipScale = ImguiUtil::ToEtm(drawData->FramebufferScale);
+	vec2 const clipOffset(drawData->DisplayPos);
+	vec2 const clipScale(drawData->FramebufferScale);
 
 	// render command lists
 	for (int32 n = 0; n < drawData->CmdListsCount; n++)
@@ -93,20 +91,35 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 		ImDrawList const* const cmdList = drawData->CmdLists[n];
 
 		// Upload vertex/index buffers
-		size_t const vtxBufferSize = static_cast<size_t>(cmdList->VtxBuffer.Size) * sizeof(ImDrawVert);
-		size_t const idxBufferSize = static_cast<size_t>(cmdList->IdxBuffer.Size) * sizeof(ImDrawIdx);
+		int64 const vbSize = static_cast<int64>(cmdList->VtxBuffer.Size) * sizeof(ImDrawVert);
+		void const* vtxData = reinterpret_cast<void const*>(cmdList->VtxBuffer.Data);
+		if (vbSize > m_VertexBufferSize)
+		{
+			m_VertexBufferSize = vbSize;
+			api->SetBufferData(render::E_BufferType::Vertex, vbSize, vtxData, render::E_UsageHint::Stream);
+		}
+		else
+		{
+			void* const p = api->MapBuffer(render::E_BufferType::Vertex, render::E_AccessMode::Write);
+			memcpy(p, vtxData, static_cast<size_t>(vbSize));
+			api->UnmapBuffer(render::E_BufferType::Vertex);
+		}
 
-		// #todo: Set subdata of the vertex buffer where possible
-		api->SetBufferData(render::E_BufferType::Vertex, 
-			static_cast<int64>(vtxBufferSize), 
-			reinterpret_cast<void const*>(cmdList->VtxBuffer.Data), 
-			render::E_UsageHint::Stream);
+		int64 const ibSize = static_cast<int64>(cmdList->IdxBuffer.Size) * sizeof(ImDrawIdx);
+		void const* idxData = reinterpret_cast<void const*>(cmdList->IdxBuffer.Data);
+		if (ibSize > m_IndexBufferSize)
+		{
+			m_IndexBufferSize = ibSize;
+			api->SetBufferData(render::E_BufferType::Index, ibSize, idxData, render::E_UsageHint::Stream);
+		}
+		else
+		{
+			void* const p = api->MapBuffer(render::E_BufferType::Index, render::E_AccessMode::Write);
+			memcpy(p, idxData, static_cast<size_t>(ibSize));
+			api->UnmapBuffer(render::E_BufferType::Index);
+		}
 
-		api->SetBufferData(render::E_BufferType::Index, 
-			static_cast<int64>(idxBufferSize), 
-			reinterpret_cast<void const*>(cmdList->IdxBuffer.Data), 
-			render::E_UsageHint::Stream);
-
+		// execute commands
 		for (int32 cmdIdx = 0; cmdIdx < cmdList->CmdBuffer.Size; cmdIdx++)
 		{
 			ImDrawCmd const* const pcmd = &cmdList->CmdBuffer[cmdIdx];
@@ -136,7 +149,7 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 					math::vecCast<int32>(clipMax - clipMin));
 
 				// bind texture, draw
-				m_Shader->Upload("uTexture"_hash, static_cast<render::TextureData const*>(pcmd->GetTexID()));
+				m_Shader->Upload("uTexture"_hash, pcmd->GetTexID());
 				api->DrawElements(render::E_DrawMode::Triangles,
 					pcmd->ElemCount,
 					sizeof(ImDrawIdx) == 2 ? render::E_DataType::UShort : render::E_DataType::UInt,
