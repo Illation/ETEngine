@@ -1,7 +1,11 @@
 #include "stdafx.h"
 #include "ImguiRenderBackend.h"
 
-#if ET_IMGUI_ENABLED
+#ifndef IMGUI_DISABLE
+
+#include "ImGuiUtil.h"
+
+#include <EtCore/Content/ResourceManager.h>
 
 
 namespace et {
@@ -34,19 +38,6 @@ void ImguiRenderBackend::Init()
 	ET_ASSERT(io.BackendRendererUserData == nullptr);
 	io.BackendRendererUserData = static_cast<void*>(this);
 	io.BackendRendererName = "imgui_impl_etengine";
-
-	uint32 const glVersion = 450u;
-
-#if false
-	if (glVersion >= 320u)
-	{
-		io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
-	}
-#endif
-
-	char const* const glslVersion = "#version 130";
-
-	m_HasClipOrigin = (glVersion >= 450u);
 }
 
 //----------------------------------
@@ -86,6 +77,8 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
+	api->DebugPushGroup("ImGui");
+
 	// recreate the VAO every frame to allow multiple graphics api contexts
 	render::T_ArrayLoc vertexArrayObject = api->CreateVertexArray();
 	SetupRenderState(drawData, fbScale, vertexArrayObject);
@@ -103,11 +96,18 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 		size_t const vtxBufferSize = static_cast<size_t>(cmdList->VtxBuffer.Size) * sizeof(ImDrawVert);
 		size_t const idxBufferSize = static_cast<size_t>(cmdList->IdxBuffer.Size) * sizeof(ImDrawIdx);
 
-		api->SetBufferData(render::E_BufferType::Vertex, static_cast<int64>(vtxBufferSize), reinterpret_cast<void const*>(cmdList->VtxBuffer.Data));
-		api->SetBufferData(render::E_BufferType::Index, static_cast<int64>(idxBufferSize), reinterpret_cast<void const*>(cmdList->IdxBuffer.Data));
+		// #todo: Set subdata of the vertex buffer where possible
+		api->SetBufferData(render::E_BufferType::Vertex, 
+			static_cast<int64>(vtxBufferSize), 
+			reinterpret_cast<void const*>(cmdList->VtxBuffer.Data), 
+			render::E_UsageHint::Stream);
 
+		api->SetBufferData(render::E_BufferType::Index, 
+			static_cast<int64>(idxBufferSize), 
+			reinterpret_cast<void const*>(cmdList->IdxBuffer.Data), 
+			render::E_UsageHint::Stream);
 
-		for (int32 cmdIdx = 0; cmdIdx > cmdList->CmdBuffer.Size; cmdIdx++)
+		for (int32 cmdIdx = 0; cmdIdx < cmdList->CmdBuffer.Size; cmdIdx++)
 		{
 			ImDrawCmd const* const pcmd = &cmdList->CmdBuffer[cmdIdx];
 			if (pcmd->UserCallback != nullptr)
@@ -136,20 +136,159 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 					math::vecCast<int32>(clipMax - clipMin));
 
 				// bind texture, draw
-				//render::T_TextureUnit const unit = api->BindTexture(render::E_TextureType::Texture2D, static_cast<render::T_TextureLoc>(pcmd->GetTexID()));
-				api->DrawElements(render::E_DrawMode::Triangles, 
-					pcmd->ElemCount, 
+				m_Shader->Upload("uTexture"_hash, static_cast<render::TextureData const*>(pcmd->GetTexID()));
+				api->DrawElements(render::E_DrawMode::Triangles,
+					pcmd->ElemCount,
 					sizeof(ImDrawIdx) == 2 ? render::E_DataType::UShort : render::E_DataType::UInt,
-					static_cast<void const*>(pcmd->IdxOffset * sizeof(ImDrawIdx)))
+					(void*)static_cast<intptr_t>(pcmd->IdxOffset * sizeof(ImDrawIdx)));
 			}
 		}
 	}
 
 	// delete temporary vertex array
 	api->DeleteVertexArray(vertexArrayObject);	
+	api->BindVertexArray(0u);
 
 	// clean up state
 	api->SetScissorEnabled(false);
+	api->SetBlendEnabled(false);
+
+	api->DebugPopGroup();
+}
+
+//-----------------------------------------
+// ImguiRenderBackend::CreateDeviceObjects
+//
+bool ImguiRenderBackend::CreateDeviceObjects()
+{
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostGenericUi.glsl"));
+
+	m_VertexBuffer = api->CreateBuffer();
+	m_IndexBuffer = api->CreateBuffer();
+
+	CreateFontsTexture();
+
+	return true;
+}
+
+//------------------------------------------
+// ImguiRenderBackend::DestroyDeviceObjects
+//
+void ImguiRenderBackend::DestroyDeviceObjects()
+{
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+
+	if (m_VertexBuffer != 0u)
+	{
+		api->DeleteBuffer(m_VertexBuffer);
+	}
+
+	if (m_IndexBuffer != 0u)
+	{
+		api->DeleteBuffer(m_IndexBuffer);
+	}
+
+	m_Shader = nullptr;
+
+	DestroyFontsTexture();
+}
+
+//--------------------------------------
+// ImguiRenderBackend::SetupRenderState
+//
+void ImguiRenderBackend::SetupRenderState(ImDrawData* const drawData, ivec2 const fbScale, render::T_ArrayLoc const vao)
+{
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+
+	// Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, polygon fill
+	api->SetBlendEnabled(true);
+	api->SetBlendEquation(render::E_BlendEquation::Add);
+	api->SetBlendFunctionSeparate(render::E_BlendFactor::SourceAlpha, 
+		render::E_BlendFactor::One, 
+		render::E_BlendFactor::OneMinusSourceAlpha,
+		render::E_BlendFactor::OneMinusSourceAlpha);
+	api->SetCullEnabled(false);
+	api->SetDepthEnabled(false);
+	api->SetStencilEnabled(false);
+	api->SetScissorEnabled(true);
+
+	// Setup viewport, orthographic projection matrix
+	api->SetViewport(ivec2(), fbScale);
+
+	float const L = drawData->DisplayPos.x;
+	float const R = drawData->DisplayPos.x + drawData->DisplaySize.x;
+	float const T = drawData->DisplayPos.y;
+	float const B = drawData->DisplayPos.y + drawData->DisplaySize.y;
+
+	mat4 const orthoProjection(math::orthographic(L, R, T, B, 1.f, -1.f));
+
+	api->SetShader(m_Shader.get());
+	m_Shader->Upload("uViewProjection"_hash, orthoProjection);
+	m_Shader->Upload("uTransform"_hash, mat4()); // identity matrix
+	m_Shader->Upload("uTranslation"_hash, vec2()); // no translation needed for imgui
+
+	// vertex array setup
+	api->BindVertexArray(vao);
+
+	api->BindBuffer(render::E_BufferType::Vertex, m_VertexBuffer);
+	api->BindBuffer(render::E_BufferType::Index, m_IndexBuffer);
+
+	api->SetVertexAttributeArrayEnabled(0, true);
+	api->SetVertexAttributeArrayEnabled(1, true);
+	api->SetVertexAttributeArrayEnabled(2, true);
+
+	// the order for ImDrawVert and Rml::Vertex uvs and colors are flipped
+	api->DefineVertexAttributePointer(0, 2, render::E_DataType::Float, false, sizeof(ImDrawVert), offsetof(ImDrawVert, pos));
+	api->DefineVertexAttributePointer(2, 2, render::E_DataType::Float, false, sizeof(ImDrawVert), offsetof(ImDrawVert, uv)); 
+	api->DefineVertexAttributePointer(1, 4, render::E_DataType::UByte, true, sizeof(ImDrawVert), offsetof(ImDrawVert, col));
+}
+
+//----------------------------------------
+// ImguiRenderBackend::CreateFontsTexture
+//
+bool ImguiRenderBackend::CreateFontsTexture()
+{
+	ImGuiIO& io = ImGui::GetIO();
+
+	// Build texture atlas
+	uint8* pixels;
+	ivec2 dimensions;
+	io.Fonts->GetTexDataAsRGBA32(&pixels, &dimensions.x, &dimensions.y); 
+	// could get as Alpha8 to save texture space but it would work worse with generic shader
+
+	render::TextureParameters texParams;
+	texParams.minFilter = render::E_TextureFilterMode::Linear;
+	texParams.magFilter = render::E_TextureFilterMode::Linear;
+	texParams.mipFilter = render::E_TextureFilterMode::Nearest;
+	texParams.wrapS = render::E_TextureWrapMode::ClampToEdge;
+	texParams.wrapT = render::E_TextureWrapMode::ClampToEdge;
+	texParams.borderColor = vec4(0.f);
+	texParams.genMipMaps = false;
+
+	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+	api->SetPixelUnpackAlignment(0);
+
+	m_FontTexture = Create<render::TextureData>(render::E_ColorFormat::RGBA8, dimensions);
+	m_FontTexture->UploadData(pixels, render::E_ColorFormat::RGBA, render::E_DataType::UByte, 0u);
+	m_FontTexture->SetParameters(texParams);
+
+	// Store our identifier
+	io.Fonts->SetTexID(m_FontTexture.Get());
+
+	api->SetPixelUnpackAlignment(4);
+
+	return true;
+}
+
+//-----------------------------------------
+// ImguiRenderBackend::DestroyFontsTexture
+//
+void ImguiRenderBackend::DestroyFontsTexture()
+{
+	m_FontTexture = nullptr;
+	ImGui::GetIO().Fonts->SetTexID(nullptr);
 }
 
 
@@ -157,4 +296,4 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 } // namespace et
 
 
-#endif // ET_IMGUI_ENABLED
+#endif // ndef IMGUI_DISABLE

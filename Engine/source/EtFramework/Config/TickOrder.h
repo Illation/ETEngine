@@ -15,6 +15,7 @@ enum class E_TickOrder : uint32
 {
 	TICK_SceneManager = static_cast<E_TickOrder>(gui::E_TickOrder::COUNT),
 	TICK_Framework,
+	TICK_ImguiBackend,
 	TICK_GlfwEventManager,
 
 	COUNT

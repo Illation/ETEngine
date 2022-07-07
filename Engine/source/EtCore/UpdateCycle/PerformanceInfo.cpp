@@ -31,7 +31,7 @@ void PerformanceInfo::Update()
 			m_RegularFPS = (int32)context->time->FPS();
 		}
 
-		m_FrameMS = (context->time->GetTime() - m_FrameMSStart)*1000;
+		m_FrameMS = context->time->DeltaTime() *1000;
 	}
 }
 void PerformanceInfo::StartFrameTimer()

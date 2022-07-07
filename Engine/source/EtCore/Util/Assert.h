@@ -1,11 +1,9 @@
 #pragma once
 #include <EtCore/Util/Logger.h>
 
-#ifdef ET_ARCH_X32																								
-#	define ET_BREAK()	__asm { int 3 }																							
-#else																											
-#	define ET_BREAK()	__debugbreak()		
-#endif	
+#include "CommonMacros.h"
+#include "StringUtil.h"
+
 
 #ifndef ET_SHIPPING
 #ifdef ET_PLATFORM_WIN

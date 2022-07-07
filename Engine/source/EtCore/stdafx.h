@@ -35,10 +35,6 @@ inline void SafeDelete(T &pObjectToDelete)
 }
 #pragma endregion Templates
 
-//platform independent utility to suppress unused parameter warnings from https://stackoverflow.com/questions/4851075
-// use expression as sub-expression,
-// then make type of full expression int, discard result
-#define UNUSED(x) (void)(x)
 
 #pragma warning(disable : 4201) //nameless struct union - used in math library
 
@@ -47,9 +43,10 @@ inline void SafeDelete(T &pObjectToDelete)
 #include <EtCore/UpdateCycle/Context.h>
 #include <EtCore/UpdateCycle/Time.h>
 #include <EtCore/Util/Logger.h>
+#include <EtCore/Util/StringUtil.h>
+#include <EtCore/Util/CommonMacros.h>
 #include <EtCore/Util/Assert.h>
 #include <EtCore/UpdateCycle/PerformanceInfo.h>
-#include <EtCore/Util/StringUtil.h>
 #include <EtCore/Hashing/HashString.h>
 #include <EtCore/Reflection/ReflectionUtil.h>
 #include <EtCore/Containers/VectorUtil.h>

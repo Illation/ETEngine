@@ -122,6 +122,7 @@ GLenum ConvUsageHint(E_UsageHint const hint)
 	{
 	case E_UsageHint::Static:	return GL_STATIC_DRAW;
 	case E_UsageHint::Dynamic:	return GL_DYNAMIC_DRAW;
+	case E_UsageHint::Stream:	return GL_STREAM_DRAW;
 	}
 
 	ET_ASSERT(false, "Unhandled usage hint!");

@@ -1,8 +1,11 @@
 #include "stdafx.h"
 #include "ImguiPlatformBackend.h"
+
+#ifndef IMGUI_DISABLE
+
 #include "ImGuiUtil.h"
 
-#if ET_IMGUI_ENABLED
+#include <EtCore/Input/RawInputProvider.h>
 
 
 namespace et {
@@ -19,40 +22,30 @@ namespace gui {
 //
 // Backend data stored in io.BackendPlatformUserData to allow support for multiple Dear ImGui contexts
 //
-static ImguiPlatformBackend* ImguiPlatformBackend::AccessFromIO()
+ImguiPlatformBackend* ImguiPlatformBackend::AccessFromIO()
 {
 	return ImGui::GetCurrentContext() ? static_cast<ImguiPlatformBackend*>(ImGui::GetIO().BackendPlatformUserData) : nullptr;
 }
 
 
-//-----------------------------
-// ImguiPlatformBackend::c-tor
-//
-ImguiPlatformBackend::ImguiPlatformBackend(Ptr<core::RawInputProvider> const inputProvider, 
-	Ptr<core::I_CursorShapeManager> const cursorManager, 
-	Ptr<core::I_ClipboardController> const clipboardController,
-	Ptr<render::Viewport> const viewport,
-	Ptr<render::RenderWindow> const window
-) 
-	: m_InputProvider(inputProvider)
-	, m_CursorShapeManager(cursorManager)
-	, m_ClipboardController(clipboardController)
-	, m_Viewport(viewport)
-	, m_Window(window)
-{ }
-
 //----------------------------
 // ImguiPlatformBackend::Init
 //
-void ImguiPlatformBackend::Init()
+void ImguiPlatformBackend::Init(Ptr<core::I_CursorShapeManager> const cursorManager,
+	Ptr<core::I_ClipboardController> const clipboardController,
+	Ptr<render::Viewport> const viewport)
 {
+	m_CursorShapeManager = cursorManager;
+	m_ClipboardController = clipboardController;
+	m_Viewport = viewport;
+
 	ImGuiIO& io = ImGui::GetIO();
 
 	ET_ASSERT(io.BackendPlatformUserData == nullptr);
 	io.BackendPlatformUserData = static_cast<void*>(this);
 	io.BackendPlatformName = "imgui_impl_etengine";
 	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;         // We can honor GetMouseCursor() values (optional)
-	io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;          // We can honor io.WantSetMousePos requests (optional, rarely used)
+	//io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;          // We can honor io.WantSetMousePos requests (optional, rarely used)
 
 	io.SetClipboardTextFn = [](void* userData, const char* text)
 		{
@@ -69,8 +62,7 @@ void ImguiPlatformBackend::Init()
 
 	io.ClipboardUserData = static_cast<void*>(this);
 
-	ET_ASSERT(m_InputProvider != nullptr);
-	m_InputProvider->RegisterListener(ToPtr(this));
+	m_Viewport->GetInputProvider()->RegisterListener(ToPtr(this));
 }
 
 //------------------------------
@@ -83,7 +75,7 @@ void ImguiPlatformBackend::Deinit()
 	io.BackendPlatformName = nullptr;
 	io.BackendPlatformUserData = nullptr;
 
-	m_InputProvider->UnregisterListener(this);
+	m_Viewport->GetInputProvider()->UnregisterListener(this);
 }
 
 //------------------------------
@@ -93,17 +85,12 @@ void ImguiPlatformBackend::Update()
 {
 	ImGuiIO& io = ImGui::GetIO();
 
-	vec2 const viewSize = math::vecCast<float>(m_Viewport->GetDimensions());
-	vec2 const windowSize = math::vecCast<float>(m_Window->GetDimensions());
-	io.DisplaySize = ToImgui(windowSize);
-	if ((windowSize.x > 0.f) && (windowSize.y > 0.f))
-	{
-		io.DisplayFramebufferScale = ToImgui(viewSize / windowSize);
-	}
+	io.DisplaySize = ImguiUtil::ToImgui(math::vecCast<float>(m_Viewport->GetDimensions()));
+	io.DisplayFramebufferScale = ImVec2(1.f, 1.f); // if we want to support dynamic framebuffer rescaling we need to take that into account here
 
 	io.DeltaTime = core::ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime();
 
-	UpdateMouseData();
+	//UpdateMouseData(); // the imgui implementation for glfw here sets the mouse pos and updates the last valid mouse pos
 	UpdateMouseCursor();
 
 	// #todo: this is where we would update gamepads too
@@ -205,22 +192,6 @@ bool ImguiPlatformBackend::ProcessTextInput(core::E_Character const character)
 }
 
 
-//---------------------------------------
-// ImguiPlatformBackend::UpdateMouseData
-//
-void ImguiPlatformBackend::UpdateMouseData()
-{
-	ImGuiIO& io = ImGui::GetIO();
-
-	if (m_Window->HasFocus())
-	{
-		if (io.WantSetMousePos)
-		{
-			m_Window->SetCursorPos(math::vecCast<int32>(ToEtm(io.MousePos)));
-		}
-	}
-}
-
 //-----------------------------------------
 // ImguiPlatformBackend::UpdateMouseCursor
 //
@@ -288,5 +259,5 @@ void ImguiPlatformBackend::UpdateKeyModifiers(core::T_KeyModifierFlags const mod
 } // namespace et
 
 
-#endif // ET_IMGUI_ENABLED
+#endif // ndef IMGUI_DISABLE
 

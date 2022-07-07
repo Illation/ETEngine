@@ -159,7 +159,7 @@ void EntityIdRenderer::OnViewportPreRender(render::T_FbLoc const targetFb)
 	}
 	else
 	{
-		ET_ASSERT(true, "Can't find camera foro current view renderer");
+		ET_ASSERT(true, "Can't find camera for current view renderer");
 		return;
 	}
 

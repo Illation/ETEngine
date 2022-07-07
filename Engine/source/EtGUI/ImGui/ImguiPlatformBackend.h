@@ -1,7 +1,7 @@
 #pragma once
-#include "ImGui.h"
+#include <imgui/imgui.h>
 
-#if ET_IMGUI_ENABLED
+#ifndef IMGUI_DISABLE
 
 #include <EtCore/Input/RawInputListener.h>
 #include <EtCore/Util/CursorShapes.h>
@@ -29,18 +29,20 @@ public:
 
 	// construct destruct
 	//--------------------
-	ImguiPlatformBackend(Ptr<core::RawInputProvider> const inputProvider,
-		Ptr<core::I_CursorShapeManager> const cursorManager,
-		Ptr<core::I_ClipboardController> const clipboardController,
-		Ptr<render::Viewport> const viewport,
-		Ptr<render::RenderWindow> const window);
+	ImguiPlatformBackend() : core::I_RawInputListener() {}
 
-	void Init();
+	void Init(Ptr<core::I_CursorShapeManager> const cursorManager,
+		Ptr<core::I_ClipboardController> const clipboardController,
+		Ptr<render::Viewport> const viewport);
 	void Deinit();
 
 	// functionality
 	//---------------
 	void Update();
+
+	// accessors
+	//-----------
+	render::Viewport* GetViewport() { return m_Viewport.Get(); }
 
 	// interface
 	//-----------
@@ -59,7 +61,6 @@ protected:
 	// utility
 	//---------
 private:
-	void UpdateMouseData();
 	void UpdateMouseCursor();
 	void UpdateKeyModifiers(core::T_KeyModifierFlags const modifiers) const;
 
@@ -67,13 +68,10 @@ private:
 	// Data
 	///////
 
-	Ptr<core::RawInputProvider> m_InputProvider;
-
 	Ptr<core::I_CursorShapeManager> m_CursorShapeManager;
 	Ptr<core::I_ClipboardController> m_ClipboardController;
 
 	Ptr<render::Viewport> m_Viewport;
-	Ptr<render::RenderWindow> m_Window;
 
 	vec2 m_LastValidMousePos;
 
@@ -85,4 +83,4 @@ private:
 } // namespace et
 
 
-#endif // ET_IMGUI_ENABLED
+#endif // ndef IMGUI_DISABLE

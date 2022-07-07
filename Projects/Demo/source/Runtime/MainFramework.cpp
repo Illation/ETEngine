@@ -6,18 +6,19 @@
 #include "SwirlyLightSystem.h"
 #include "CelestialBodySystem.h"
 #include "PlaylistSystem.h"
+#include "FreeCamera.h"
 
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
-#include <EtGUI/Fonts/SdfFont.h>
-
 #include <EtFramework/SceneGraph/UnifiedScene.h>
+#include <EtFramework/SceneGraph/SceneEvents.h>
 #include <EtFramework/Audio/AudioManager.h>
 
 #include <Common/CustomTestAsset.h>
+#include <Common/DemoUI.h>
 
 
 namespace et {
@@ -50,9 +51,6 @@ void MainFramework::OnSystemInit()
 //
 void MainFramework::OnInit()
 {
-	// Fonts
-	m_DebugFont = core::ResourceManager::Instance()->GetAssetData<gui::SdfFont>(core::HashString("Fonts/Ubuntu-Regular.ttf"));
-
 	// scenes
 	fw::UnifiedScene::Instance().GetEventDispatcher().Register( fw::E_SceneEvent::Activated, 
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const evnt)
@@ -129,38 +127,46 @@ void MainFramework::OnTick()
 		renderScene.SetPostProcessingSettings(ppSettings);
 	}
 
-	// debug info
-	//------------
+	// debug UI
+	//----------
 	if (input->GetKeyState(E_KbdKey::H) == E_KeyState::Pressed)
 	{
 		m_DrawDebugInfo = !m_DrawDebugInfo;
 	}
 
-	if (input->GetKeyState(E_KbdKey::J) == E_KeyState::Pressed)
+	if (m_DrawDebugInfo)
 	{
-		m_DrawFontAtlas = !m_DrawFontAtlas;
+		ImGuiWindowFlags const window_flags = ImGuiWindowFlags_AlwaysAutoResize
+			| ImGuiWindowFlags_NoSavedSettings
+			| ImGuiWindowFlags_NoFocusOnAppearing
+			| ImGuiWindowFlags_NoNav
+			| ImGuiWindowFlags_NoMove;
+
+		float const PAD = 10.0f;
+		ImGuiViewport const* const viewport = ImGui::GetMainViewport();
+		ImVec2 work_pos = viewport->WorkPos; // Use work area to avoid menu-bar/task-bar, if any!
+		ImGui::SetNextWindowPos(ImVec2(work_pos.x + PAD, work_pos.y + PAD), ImGuiCond_Always, ImVec2(0.f, 0.f));
+		ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+
+		if (ImGui::Begin("Debug Info:", &m_DrawDebugInfo, window_flags))
+		{
+			ImGui::Text(FS("FPS: %i", PERFORMANCE->GetRegularFPS()).c_str());
+			ImGui::Text(FS("Frame ms: %f", PERFORMANCE->GetFrameMS()).c_str());
+			ImGui::Separator();
+			ImGui::Text(FS("Draw Calls: %u", PERFORMANCE->m_PrevDrawCalls).c_str());
+		}
+
+		ImGui::End();
 	}
 
-	if (m_DebugFont != nullptr)
+	if (input->GetKeyState(E_KbdKey::J) == E_KeyState::Pressed)
 	{
-		if (m_DrawDebugInfo)
-		{
-			gui::TextRenderer& textRenderer = m_GuiRenderer.GetTextRenderer();
-			textRenderer.SetFont(m_DebugFont);
+		m_DrawDemoWindow = !m_DrawDemoWindow;
+	}
 
-			textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
-			textRenderer.DrawText(FS("FPS: %i", PERFORMANCE->GetRegularFPS()), vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 1));
-
-			textRenderer.SetColor(vec4(1, 1, 1, 1));
-			textRenderer.DrawText(FS("Frame ms: %f", PERFORMANCE->GetFrameMS()), vec2(20, 20 + (m_DebugFont->GetFontSize()*1.1f) * 2));
-			textRenderer.DrawText(FS("Draw Calls: %u", PERFORMANCE->m_PrevDrawCalls), vec2(20, 100 + (m_DebugFont->GetFontSize()*1.1f) * 3));
-		}
-
-		if (m_DrawFontAtlas)
-		{
-			gui::SpriteRenderer::E_ScalingMode const scalingMode = gui::SpriteRenderer::E_ScalingMode::TextureAbs;
-			m_GuiRenderer.GetSpriteRenderer().Draw(ToPtr(m_DebugFont->GetAtlas()), vec2(1000, 0), vec4(1), vec2(0), vec2(1), 0, 0, scalingMode);
-		}
+	if (m_DrawDemoWindow)
+	{
+		ImGui::ShowDemoWindow(&m_DrawDemoWindow);
 	}
 }
 

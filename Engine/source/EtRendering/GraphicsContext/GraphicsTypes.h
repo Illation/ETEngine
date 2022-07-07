@@ -158,7 +158,8 @@ enum class E_BufferType : uint8
 enum class E_UsageHint : uint8
 {
 	Static,
-	Dynamic
+	Dynamic,
+	Stream
 };
 
 //---------------------------------

@@ -2,7 +2,7 @@
 #include "ImGuiBackend.h"
 
 
-#if ET_IMGUI_ENABLED
+#ifndef IMGUI_DISABLE
 
 
 namespace et {
@@ -17,7 +17,9 @@ namespace gui {
 //--------------------
 // ImGuiBackend::Init
 //
-void ImGuiBackend::Init(ImguiPlatformBackend& platformBackend, ImguiRenderBackend& renderBackend)
+void ImGuiBackend::Init(Ptr<core::I_CursorShapeManager> const cursorManager,
+	Ptr<core::I_ClipboardController> const clipboardController,
+	Ptr<render::Viewport> const viewport)
 {
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -31,8 +33,25 @@ void ImGuiBackend::Init(ImguiPlatformBackend& platformBackend, ImguiRenderBacken
 	//ImGui::StyleColorsClassic();
 
 	// Setup Platform/Renderer backends
-	platformBackend.Init();
-	renderBackend.Init();
+	m_PlatformBackend.Init(cursorManager, clipboardController, viewport);
+	m_RenderBackend.Init();
+
+	m_VPCallbackId = viewport->GetEventDispatcher().Register(render::E_ViewportEvent::VP_PostFlush | render::E_ViewportEvent::VP_NewRenderer,
+		render::T_ViewportEventCallback([this](render::T_ViewportEventFlags const flags, render::ViewportEventData const* const data) -> void
+			{
+				UNUSED(data); // can access targetFb here
+				if (flags & render::E_ViewportEvent::VP_NewRenderer)
+				{
+					if (!m_HasFrame)
+					{
+						OnTick();
+					}
+				}
+				else
+				{
+					Render();
+				}
+			}));
 }
 
 //----------------------
@@ -40,19 +59,22 @@ void ImGuiBackend::Init(ImguiPlatformBackend& platformBackend, ImguiRenderBacken
 //
 void ImGuiBackend::Deinit()
 {
-	ImguiRenderBackend::AccessFromIO()->Deinit();
-	ImguiPlatformBackend::AccessFromIO()->Deinit();
+	m_PlatformBackend.GetViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
+
+	m_RenderBackend.Deinit();
+	m_PlatformBackend.Deinit();
 	ImGui::DestroyContext();
 }
 
-//------------------------
-// ImGuiBackend::NewFrame
+//----------------------
+// ImGuiBackend::OnTick
 //
-void ImGuiBackend::NewFrame()
+void ImGuiBackend::OnTick()
 {
-	ImguiPlatformBackend::AccessFromIO()->Update();
-	ImguiRenderBackend::AccessFromIO()->Update();
+	m_PlatformBackend.Update();
+	m_RenderBackend.Update();
 	ImGui::NewFrame();
+	m_HasFrame = true;
 }
 
 //----------------------
@@ -60,8 +82,14 @@ void ImGuiBackend::NewFrame()
 //
 void ImGuiBackend::Render()
 {
+	if (!m_HasFrame)
+	{
+		return;
+	}
+
+	m_HasFrame = false;
 	ImGui::Render();
-	ImguiRenderBackend::AccessFromIO()->Render(ImGui::GetDrawData());
+	m_RenderBackend.Render(ImGui::GetDrawData());
 }
 
 
@@ -69,4 +97,4 @@ void ImGuiBackend::Render()
 } // namespace et
 
 
-#endif // ET_IMGUI_ENABLED
+#endif // ndef IMGUI_DISABLE

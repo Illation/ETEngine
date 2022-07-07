@@ -29,6 +29,21 @@ namespace et {
 namespace rt {
 
 
+//====================
+// Abstract Framework
+//====================
+
+
+//----------------------------
+// AbstractFramework::c-tor
+//
+AbstractFramework::AbstractFramework() 
+	: core::I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_Framework))
+#ifndef IMGUI_DISABLE
+	, m_ImguiBackend(static_cast<uint32>(fw::E_TickOrder::TICK_ImguiBackend))
+#endif
+{ }
+
 //----------------------------
 // AbstractFramework::d-tor
 //
@@ -37,6 +52,10 @@ namespace rt {
 AbstractFramework::~AbstractFramework()
 {
 	fw::UnifiedScene::Instance().UnloadScene();
+
+#if ET_IMGUI_ENABLED
+	m_ImguiBackend.Deinit();
+#endif
 
 	m_GuiRenderer.Deinit();
 
@@ -135,6 +154,7 @@ void AbstractFramework::Run()
 
 	// init rendering target
 	m_Viewport = Create<render::Viewport>(&m_RenderWindow.GetArea());
+	m_Viewport->SetTickDisabled(true);
 	m_SplashScreenRenderer = Create<rt::SplashScreenRenderer>();
 	m_Viewport->SetRenderer(m_SplashScreenRenderer.Get());
 	render::ContextHolder::Instance().CreateMainRenderContext(&m_RenderWindow); // also initializes the viewport and its renderer
@@ -194,6 +214,12 @@ void AbstractFramework::Run()
 	// load scene
 	OnInit();
 	unifiedScene.LoadScene(bootCfg.startScene);
+
+#ifndef IMGUI_DISABLE
+	m_ImguiBackend.Init(ToPtr(&glfwMan), ToPtr(&glfwMan), ToPtr(m_Viewport.Get()));
+#endif
+
+	m_Viewport->SetTickDisabled(false);
 
 	// update
 	MainLoop();

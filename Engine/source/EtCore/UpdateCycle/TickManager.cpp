@@ -57,13 +57,21 @@ void TickManager::TriggerRealTime(I_RealTimeTickTriggerer* const triggerer)
 		{
 			EndTick();
 
-			for (T_RealTimeTriggerer& rt : triggerersCopy)
+			for (T_RealTimeTriggerer& rt : m_RealTimeTriggerers)
 			{
 				rt.second = false;
 			}
 
 			Tick();
 		}
+
+		// we need to find this triggerer again in the original list to ensure the value is set in a useful way
+		findResult = std::find_if(m_RealTimeTriggerers.begin(), m_RealTimeTriggerers.end(), [triggerer](T_RealTimeTriggerer const& rt)
+			{
+				return rt.first == triggerer;
+			});
+
+		ET_ASSERT(findResult != m_RealTimeTriggerers.cend());
 		findResult->second = true;
 	}
 }
@@ -101,6 +109,7 @@ void TickManager::TriggerDefault(I_DefaultTickTriggerer* const triggerer)
 
 			Tick();
 		}
+
 		findResult->second = true;
 	}
 }

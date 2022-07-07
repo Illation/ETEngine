@@ -1,10 +1,14 @@
 #pragma once
-#include "ImGui.h"
+#include <imgui/imgui.h>
 
-#if ET_IMGUI_ENABLED
+#ifndef IMGUI_DISABLE
 
 #include "ImguiPlatformBackend.h"
 #include "ImguiRenderBackend.h"
+
+#include <EtCore/UpdateCycle/Tickable.h>
+
+#include <EtRendering/GraphicsContext/ViewportEvents.h>
 
 
 namespace et {
@@ -16,18 +20,34 @@ namespace gui {
 //
 // Responsible for handling events and drawing the imgui to the GPU
 //
-class ImGuiBackend final
+class ImGuiBackend final : public core::I_Tickable
 {
 	// construct destruct
 	//--------------------
 public:
-	static void Init(ImguiPlatformBackend& platformBackend, ImguiRenderBackend& renderBackend);
-	static void Deinit();
+	ImGuiBackend(uint32 const priority) : core::I_Tickable(priority) {}
 
-	// functionality
-	//---------------
-	static void NewFrame();
-	static void Render();
+	void Init(Ptr<core::I_CursorShapeManager> const cursorManager,
+		Ptr<core::I_ClipboardController> const clipboardController,
+		Ptr<render::Viewport> const viewport);
+	void Deinit();
+
+	// tickable interface
+	//--------------------
+private:
+	void OnTick() override; 
+	void Render();
+
+
+	// Data
+	///////
+
+	bool m_HasFrame = false;
+
+	ImguiPlatformBackend m_PlatformBackend;
+	ImguiRenderBackend m_RenderBackend;
+
+	render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
 };
 
 
@@ -35,4 +55,4 @@ public:
 } // namespace et
 
 
-#endif // ET_IMGUI_ENABLED
+#endif // ndef IMGUI_DISABLE

@@ -1,7 +1,10 @@
 #pragma once
-#include "ImGui.h"
+#include <imgui/imgui.h>
 
-#if ET_IMGUI_ENABLED
+#ifndef IMGUI_DISABLE
+
+#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRendering/GraphicsTypes/TextureData.h>
 
 
 namespace et {
@@ -35,7 +38,7 @@ public:
 	// utility
 	//---------
 private:
-	void CreateDeviceObjects();
+	bool CreateDeviceObjects();
 	void DestroyDeviceObjects();
 
 	void SetupRenderState(ImDrawData* const drawData, ivec2 const fbScale, render::T_ArrayLoc const vao);
@@ -50,14 +53,8 @@ private:
 	UniquePtr<render::TextureData> m_FontTexture;
 	AssetPtr<render::ShaderData> m_Shader;
 
-	render::T_ArrayLoc m_Vbo = 0u;
-	render::T_BufferLoc m_Elements = 0u;
-
-	size_t m_VertexBufferSize = 0u;
-	size_t m_IndexBufferSize = 0u;
-
-	bool m_HasClipOrigin = false;
-	bool m_UseBufferSubData = false;
+	render::T_BufferLoc m_VertexBuffer = 0u;
+	render::T_BufferLoc m_IndexBuffer = 0u;
 };
 
 
@@ -65,4 +62,4 @@ private:
 } // namespace et
 
 
-#endif // ET_IMGUI_ENABLED
+#endif // ndef IMGUI_DISABLE

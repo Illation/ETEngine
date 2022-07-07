@@ -2,7 +2,7 @@
   "editable shader asset": {
     "asset": {
       "shader asset": {
-        "name": "PostRmlUi.glsl",
+        "name": "PostGenericUi.glsl",
         "path": "Shaders/",
         "package": "",
         "references": []

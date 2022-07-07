@@ -3,6 +3,7 @@
 #include <EtCore/UpdateCycle/Tickable.h>
 
 #include <EtGUI/Rendering/SceneRendererGUI.h>
+#include <EtGUI/ImGui/ImGuiBackend.h>
 
 #include <EtFramework/Config/TickOrder.h>
 #include <EtFramework/Util/ScreenshotCapture.h>
@@ -33,7 +34,7 @@ class AbstractFramework : public core::I_RealTimeTickTriggerer, public core::I_T
 	// construct destruct
 	//--------------------
 public:
-	AbstractFramework() : core::I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_Framework)) {}
+	AbstractFramework();
 	virtual ~AbstractFramework();
 
 	// accessors
@@ -65,6 +66,10 @@ private:
 
 	UniquePtr<render::ShadedSceneRenderer> m_SceneRenderer;
 	UniquePtr<rt::SplashScreenRenderer> m_SplashScreenRenderer;
+
+#ifndef IMGUI_DISABLE
+	gui::ImGuiBackend m_ImguiBackend;
+#endif
 
 protected:
 	gui::SceneRendererGUI m_GuiRenderer;

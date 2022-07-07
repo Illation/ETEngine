@@ -1,9 +1,6 @@
 #pragma once
 
-#ifdef ET_PLATFORM_WIN
-#include <windows.h>
-#endif
-#include <string>
+#include "CommonMacros.h"
 
 
 namespace et {

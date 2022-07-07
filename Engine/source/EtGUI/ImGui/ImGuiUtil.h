@@ -1,8 +1,10 @@
 #pragma once
-#include "ImGui.h"
+#include <imgui/imgui.h>
 
 
-#if ET_IMGUI_ENABLED
+#ifndef IMGUI_DISABLE
+
+#include <EtCore/Input/KeyCodes.h>
 
 
 namespace et {
@@ -28,4 +30,4 @@ vec2 ToEtm(ImVec2 const& rhs);
 } // namespace et
 
 
-#endif // ET_IMGUI_ENABLED
+#endif // ndef IMGUI_DISABLE

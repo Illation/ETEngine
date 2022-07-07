@@ -2,7 +2,7 @@
 #include "ImGuiUtil.h"
 
 
-#if ET_IMGUI_ENABLED
+#ifndef IMGUI_DISABLE
 
 
 namespace et {
@@ -173,4 +173,4 @@ et::vec2 ToEtm(ImVec2 const& rhs)
 } // namespace et
 
 
-#endif // ET_IMGUI_ENABLED
+#endif // ndef IMGUI_DISABLE
