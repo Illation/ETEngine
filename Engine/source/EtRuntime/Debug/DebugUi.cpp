@@ -20,24 +20,24 @@ namespace rt {
 //
 void DebugUi::OnTick()
 {
-	core::InputManager* const input = core::InputManager::GetInstance();
-
-	if (input->GetKeyState(E_KbdKey::H) == E_KeyState::Pressed)
-	{
-		m_DrawDebugInfo = !m_DrawDebugInfo;
-	}
-
+	// basic debug info
 	DrawDebugInfo();
 
 	// Demo Window
-	if (input->GetKeyState(E_KbdKey::J) == E_KeyState::Pressed)
+	if (m_DebugConsole.DrawImguiDemoEnabled())
 	{
-		m_DrawDemoWindow = !m_DrawDemoWindow;
+		ImGui::ShowDemoWindow(nullptr);
 	}
 
-	if (m_DrawDemoWindow)
+	// debug console
+	if (core::InputManager::GetInstance()->GetKeyState(m_ConsoleToggleKey) == E_KeyState::Pressed)
 	{
-		ImGui::ShowDemoWindow(&m_DrawDemoWindow);
+		m_DebugConsoleEnabled = !m_DebugConsoleEnabled;
+	}
+
+	if (m_DebugConsoleEnabled)
+	{
+		m_DebugConsole.Draw();
 	}
 }
 
@@ -46,11 +46,14 @@ void DebugUi::OnTick()
 //
 void DebugUi::DrawDebugInfo()
 {
+	bool const drawDebugInfo = m_DebugConsole.DrawDebugInfoEnabled();
+
 	ImGuiWindowFlags const overlayFlags =
 		ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_AlwaysAutoResize |
 		ImGuiWindowFlags_NoSavedSettings |
 		ImGuiWindowFlags_NoFocusOnAppearing |
+		ImGuiWindowFlags_NoBringToFrontOnFocus |
 		ImGuiWindowFlags_NoNav |
 		ImGuiWindowFlags_NoMove;
 
@@ -68,7 +71,7 @@ void DebugUi::DrawDebugInfo()
 	{
 		ImGui::TextColored(vec4(0.5f, 9.f, 0.5f, 0.6f), 
 			"%sE.T.Engine - %s", 
-			m_DrawDebugInfo ? "" : FS("%i FPS - ", PERFORMANCE->GetRegularFPS()).c_str(), 
+			drawDebugInfo ? "" : FS("%i FPS - ", PERFORMANCE->GetRegularFPS()).c_str(),
 			et::build::Version::s_Name.c_str());
 	}
 
@@ -78,12 +81,12 @@ void DebugUi::DrawDebugInfo()
 	// Debug info
 	//------------
 
-	if (m_DrawDebugInfo)
+	if (drawDebugInfo)
 	{
 		ImGui::SetNextWindowPos(vec2(viewport->WorkPos) + pad, ImGuiCond_Always, ImVec2(0.f, 0.f));
 		ImGui::SetNextWindowBgAlpha(0.35f);
 
-		if (ImGui::Begin("Debug Info:", &m_DrawDebugInfo, overlayFlags))
+		if (ImGui::Begin("Debug Info:", nullptr, overlayFlags))
 		{
 			ImGui::Text("FPS: %i", PERFORMANCE->GetRegularFPS());
 			ImGui::Text("Frame ms: %f", PERFORMANCE->GetFrameMS());
