@@ -36,11 +36,6 @@ private:
 	///////
 
 	size_t m_CurrentScene = 0u;
-
-#	ifndef IMGUI_DISABLE
-	bool m_DrawDebugInfo = true;
-	bool m_DrawDemoWindow = false;
-#	endif
 };
 
 

@@ -8,6 +8,7 @@
 #include <EtFramework/Config/TickOrder.h>
 #include <EtFramework/Util/ScreenshotCapture.h>
 
+#include <EtRuntime/Debug/DebugUi.h>
 #include <EtRuntime/Rendering/GlfwRenderWindow.h>
 
 
@@ -58,6 +59,7 @@ protected:
 private:
 	void MainLoop();
 
+
 	// Data
 	///////
 
@@ -70,6 +72,8 @@ private:
 
 #if ET_IMGUI_ENABLED
 	gui::ImGuiBackend m_ImguiBackend;
+
+	DebugUi m_DebugUi;
 #endif
 
 protected:

@@ -188,6 +188,8 @@ void AbstractFramework::Run()
 	m_RenderWindow.GetArea().Update();
 
 	fw::AudioManager::GetInstance()->Initialize();
+	fw::AudioManager::GetInstance()->SetDistanceModel(AL_INVERSE_DISTANCE);
+
 	fw::PhysicsManager::GetInstance()->Initialize();
 
 	core::PerformanceInfo::GetInstance(); // Initialize performance measurement #todo: disable for shipped project?
