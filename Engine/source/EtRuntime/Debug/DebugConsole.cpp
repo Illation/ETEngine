@@ -3,6 +3,8 @@
 
 #if ET_IMGUI_ENABLED
 
+#include <EtCore/Util/DebugCommandController.h>
+
 
 namespace et {
 namespace rt {
@@ -12,6 +14,30 @@ namespace rt {
 // Debug Console
 //===============
 
+
+//---------------------
+// DebugConsole::c-tpr
+//
+DebugConsole::DebugConsole()
+{
+	core::dbg::CommandController::Instance().AddCommand(core::dbg::Command("clear", "Clear the console"), core::dbg::T_CommandFn(
+		[this](core::dbg::Command const& command, std::string const& parameters) -> core::dbg::E_CommandRes
+		{
+			UNUSED(command);
+			UNUSED(parameters);
+			ClearLog();
+			return core::dbg::E_CommandRes::Success;
+		}));
+
+	core::dbg::CommandController::Instance().AddCommand(core::dbg::Command("list_commands", "List all possible commands"), core::dbg::T_CommandFn(
+		[this](core::dbg::Command const& command, std::string const& parameters) -> core::dbg::E_CommandRes
+		{
+			UNUSED(command);
+			UNUSED(parameters);
+			ListCommands();
+			return core::dbg::E_CommandRes::Success;
+		}));
+}
 
 //--------------------
 // DebugConsole::Draw
@@ -133,22 +159,22 @@ void DebugConsole::DrawConsole()
 		ImGui::Text(s_CommandString.c_str());
 		ImGui::SameLine();
 
+		ImGuiInputTextFlags const inputFlags = 
+			ImGuiInputTextFlags_EnterReturnsTrue |
+			ImGuiInputTextFlags_CallbackResize |
+			ImGuiInputTextFlags_CallbackHistory |
+			ImGuiInputTextFlags_CallbackCompletion;
+
 		bool reclaimFocus = false;
 		ImGui::PushItemWidth(-1.f);
-		if (ImGui::InputText("Input", &m_InputText[0], m_InputText.capacity(), 
-			ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackResize | ImGuiInputTextFlags_CallbackHistory,
-			[](ImGuiInputTextCallbackData* const callbackData) -> int32
+		if (ImGui::InputText("Input", &m_InputText[0], m_InputText.capacity(), inputFlags, [](ImGuiInputTextCallbackData* const callbackData) -> int32
 			{
 				return static_cast<DebugConsole*>(callbackData->UserData)->TextCallback(callbackData);
 			}, this))
 		{
 			m_LogLines.emplace_back(s_CommandString + m_InputText);
-			m_History.push_back(m_InputText); // #todo: keep history unique
-			m_HistoryPos = -1;
+			ExecuteCommand();
 
-			m_InputText.clear();
-
-			m_ScrollToBottom = true;
 			reclaimFocus = true;
 		}
 
@@ -176,6 +202,55 @@ int32 DebugConsole::TextCallback(ImGuiInputTextCallbackData* const callbackData)
 		m_InputText.resize(callbackData->BufTextLen);
 		callbackData->Buf = &m_InputText[0];
 		break;
+
+	case ImGuiInputTextFlags_CallbackCompletion:
+	{
+		// Locate beginning of current word
+		const char* word_end = callbackData->Buf + callbackData->CursorPos;
+		const char* word_start = word_end;
+		while (word_start > callbackData->Buf)
+		{
+			const char c = word_start[-1];
+			if (c == ' ' || c == '\t' || c == ',' || c == ';')
+				break;
+			word_start--;
+		}
+
+
+		core::dbg::CommandController const& comController = core::dbg::CommandController::Instance();
+
+		// list of candidates
+		std::string const currentWord(word_start, static_cast<int>(word_end - word_start));
+		std::vector<core::dbg::CommandIdInfo> candidates;
+		for (core::dbg::CommandIdInfo const& info : comController.GetCommandInfoSet())
+		{
+			if (info.m_Name.rfind(currentWord, 0) == 0) // starts with
+			{ 
+				candidates.push_back(info);
+			}
+		}
+
+		if (candidates.empty())
+		{
+			m_LogLines.emplace_back(FS("No match for %s", currentWord), vec4(1.f, 1.f, 0.5f, 1.f));
+		}
+		else if (candidates.size() == 1u)
+		{
+			callbackData->DeleteChars((int)(word_start - callbackData->Buf), (int)(word_end - word_start));
+			callbackData->InsertChars(callbackData->CursorPos, &candidates[0].m_Name[0]);
+			callbackData->InsertChars(callbackData->CursorPos, " ");
+		}
+		else
+		{
+			m_LogLines.emplace_back("Possible matches");
+			for (core::dbg::CommandIdInfo const& info : candidates)
+			{
+				m_LogLines.emplace_back(FS("\t%s", info.m_Name.c_str()));
+			}
+		}
+
+		break;
+	}
 
 	case ImGuiInputTextFlags_CallbackHistory:
 	{
@@ -223,6 +298,54 @@ int32 DebugConsole::TextCallback(ImGuiInputTextCallbackData* const callbackData)
 void DebugConsole::ClearLog()
 {
 	m_LogLines.clear();
+}
+
+//----------------------------
+// DebugConsole::ClearLog
+//
+void DebugConsole::ListCommands()
+{
+	core::dbg::CommandController const& comController = core::dbg::CommandController::Instance();
+	for (core::dbg::CommandIdInfo const& info : comController.GetCommandInfoSet())
+	{
+		m_LogLines.emplace_back(FS("\t%s", info.m_Name.c_str()));
+	}
+}
+
+//------------------------------
+// DebugConsole::ExecuteCommand
+//
+void DebugConsole::ExecuteCommand()
+{
+	m_History.push_back(m_InputText); // #todo: keep history unique
+	m_HistoryPos = -1;
+
+	core::dbg::E_CommandRes const res = core::dbg::CommandController::Instance().ExecuteCommand(m_InputText);
+	switch (res)
+	{
+	case core::dbg::E_CommandRes::Success:
+		m_LogLines.emplace_back("Success", vec4(0.5f, 1.f, 0.5f, 1.f));
+		break;
+
+	case core::dbg::E_CommandRes::Error:
+		m_LogLines.emplace_back("Error", vec4(1.f, 0.5f, 0.5f, 1.f));
+		break;
+
+	case core::dbg::E_CommandRes::IncorrecParameters:
+		m_LogLines.emplace_back("Incorrect paramters", vec4(1.f, 1.f, 0.5f, 1.f));
+		break;
+
+	case core::dbg::E_CommandRes::NotFound:
+		m_LogLines.emplace_back("Command not found", vec4(1.f, 1.f, 0.5f, 1.f));
+		break;
+
+	default:
+		ET_ASSERT(false, "unhandled command result");
+	}
+
+	m_InputText.clear();
+
+	m_ScrollToBottom = true;
 }
 
 

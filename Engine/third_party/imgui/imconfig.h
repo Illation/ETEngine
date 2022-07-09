@@ -20,6 +20,7 @@
 #include <EtCore/Util/AtomicTypes.h>
 #include <EtCore/Util/Assert.h>
 #include <EtCore/Util/CommonMacros.h>
+#include <EtCore/Util/DebugUtilFwd.h>
 
 //---- Define assertion handler. Defaults to calling assert().
 // If your macro uses multiple statements, make sure is enclosed in a 'do { .. } while (0)' block so it can be used as a single statement.
@@ -40,11 +41,11 @@
 //---- Disable all of Dear ImGui or don't implement standard windows/tools.
 // It is very strongly recommended to NOT disable the demo windows and debug tool during development. They are extremely useful in day to day work. Please read comments in imgui_demo.cpp.
 
-#ifdef ET_SHIPPING
+#if ET_DBG_UTIL_ENABLED
+#	define ET_IMGUI_ENABLED true
+#else
 #	define IMGUI_DISABLE                                     // Disable everything: all headers and source files will be empty.
 #	define ET_IMGUI_ENABLED false
-#else
-#	define ET_IMGUI_ENABLED true
 #endif // ET_SHIPPING
 
 //#define IMGUI_DISABLE_DEMO_WINDOWS                        // Disable demo windows: ShowDemoWindow()/ShowStyleEditor() will be empty.

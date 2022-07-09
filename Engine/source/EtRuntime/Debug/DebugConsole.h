@@ -27,7 +27,7 @@ class DebugConsole
 	// construct destruct
 	//--------------------
 public:
-	DebugConsole() = default;
+	DebugConsole();
 	virtual ~DebugConsole() = default;
 
 	// functionality
@@ -48,6 +48,8 @@ private:
 	int32 TextCallback(ImGuiInputTextCallbackData* const callbackData);
 
 	void ClearLog();
+	void ListCommands();
+	void ExecuteCommand();
 
 
 	// Data
