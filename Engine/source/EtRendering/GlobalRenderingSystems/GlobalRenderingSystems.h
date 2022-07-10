@@ -8,6 +8,8 @@
 #include "LightVolume.h"
 #include "SharedVarController.h"
 
+#include <EtCore/Util/DebugUtilFwd.h>
+
 #include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/PlanetTech/Patch.h>
 
@@ -68,6 +70,10 @@ public:
 	Material const* GetNullMaterial() const { return m_NullMaterial.get(); }
 	Material const* GetColorMaterial() const { return m_ColorMaterial.get(); }
 
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	bool IsFrustumFrozen() const { return m_IsFrustumFrozen; }
+#endif
+
 	// Data
 	///////
 private:
@@ -90,6 +96,11 @@ private:
 
 	AssetPtr<Material> m_NullMaterial;
 	AssetPtr<Material> m_ColorMaterial;
+
+	// debug
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	bool m_IsFrustumFrozen = false;
+#endif
 };
 
 

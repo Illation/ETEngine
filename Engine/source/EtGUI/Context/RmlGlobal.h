@@ -2,6 +2,7 @@
 #include "RmlSystemInterface.h"
 #include "RmlFileInterface.h"
 #include "DataModelFactory.h"
+#include "RmlDebug.h"
 
 #include <EtGUI/Fonts/FontEngine.h>
 #include <EtGUI/Fonts/FontEffects.h>
@@ -66,6 +67,10 @@ private:
 	FontEffectOutline::Instancer m_OutlineInstancer;
 	FontEffectShadow::Instancer m_ShadowInstancer;
 	FontEffectBlur::Instancer m_BlurInstancer;
+
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
+	RmlDebug m_Debug;
+#endif
 };
 
 

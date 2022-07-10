@@ -3,8 +3,14 @@
 
 #include "Planet.h"
 
+#include <EtCore/Util/DebugUtilFwd.h>
+
 #include <EtRendering/GraphicsTypes/Frustum.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+#	include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#endif
 
 
 namespace et {
@@ -32,10 +38,14 @@ bool Triangulator::Update(mat4 const& transform, Camera const& camera)
 
 	//Frustum update
 	m_Frustum.SetCullTransform(transform);
-	if (!m_LockFrustum)
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	if (!(RenderingSystems::Instance()->IsFrustumFrozen()))
 	{
+#endif
 		m_Frustum.SetToCamera(camera);
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 	}
+#endif
 
 	m_Frustum.Update(Viewport::GetCurrentViewport());
 

@@ -1,6 +1,6 @@
 #include <imgui/imgui.h>
 
-#if ET_CT_IMGUI
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 
 
 namespace et {

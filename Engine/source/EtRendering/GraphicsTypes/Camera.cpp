@@ -1,6 +1,12 @@
 #include "stdafx.h"
 #include "Camera.h"
 
+#include <EtCore/Util/DebugUtilFwd.h>
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+#	include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#endif
+
 
 namespace et {
 namespace render {
@@ -202,7 +208,16 @@ void Camera::RecalculateDerived()
 
 	// update frustum
 	m_Frustum.SetCullTransform(mat4()); // Frustum will be in world space and objects need to transform themselves
-	m_Frustum.SetToCamera(*this);
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	if (!(RenderingSystems::Instance()->IsFrustumFrozen()))
+	{ 
+#endif
+		m_Frustum.SetToCamera(*this);
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	}
+#endif
+
 	m_Frustum.Update(m_Viewport.Get());
 }
 
