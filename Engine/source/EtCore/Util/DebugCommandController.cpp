@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "DebugCommandController.h"
 
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 
-#if ET_DBG_UTIL_ENABLED
+#include <cctype>
+#include <locale>
 
 
 namespace et {
@@ -16,6 +18,9 @@ namespace dbg {
 //==========================
 
 
+// static
+std::string const CommandController::s_HelpRequestParm("-h");
+
 //-----------------------------
 // CommandController::Instance
 //
@@ -26,6 +31,7 @@ CommandController& CommandController::Instance()
 	static CommandController instance;
 	return instance;
 }
+
 
 //-------------------------------
 // CommandController::AddCommand
@@ -42,9 +48,10 @@ void CommandController::AddCommand(Command const& cmd, T_CommandFn const& fn)
 //-----------------------------------
 // CommandController::ExecuteCommand
 //
-E_CommandRes CommandController::ExecuteCommand(std::string const& commandString) const
+E_CommandRes CommandController::ExecuteCommand(std::string const& commandString, core::HashString& commandId) const
 {
-	core::HashString commandId;
+	// parse command ID
+	commandId.Reset();
 	size_t const separator = commandString.find(' ');
 	bool hasParameters = false;
 	if (separator == std::string::npos)
@@ -60,14 +67,37 @@ E_CommandRes CommandController::ExecuteCommand(std::string const& commandString)
 		}
 	}
 
+	// find the relevant command
 	T_StoredCommands::const_iterator const cmdIt = GetCommandIt(commandId);
 	if (cmdIt == m_Commands.cend())
 	{
 		return E_CommandRes::NotFound;
 	}
 
+	// get the parameters
 	std::string const parameters(hasParameters ? commandString.substr(separator + 1u) : "");
 
+	// check if we need to print the help string
+	if (hasParameters)
+	{
+		bool matches = true;
+		size_t i = 0u;
+		for (; i < s_HelpRequestParm.size(); ++i)
+		{
+			if (i >= parameters.size() || (parameters[i] != s_HelpRequestParm[i]))
+			{
+				matches = false;
+				break;
+			}
+		}
+
+		if (matches && ((i >= parameters.size()) || (std::isspace(parameters[i]))))
+		{
+			return E_CommandRes::PrintHelp;
+		}
+	}
+
+	// exectue the command
 	StoredCommand const& cmd = cmdIt->second;
 	return cmd.m_CommandFn(cmd.m_Command, parameters);
 }
@@ -101,4 +131,4 @@ CommandController::T_StoredCommands::const_iterator CommandController::GetComman
 } // namespace et
 
 
-#endif // ET_DBG_UTIL_ENABLED
+#endif // ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)

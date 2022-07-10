@@ -66,7 +66,7 @@ FontEngine::FontEngine()
 //
 bool FontEngine::LoadFontFace(Rml::String const& fileName, bool const fallbackFace, Rml::Style::FontWeight const weight)
 {
-	UNUSED(weight); // can entirely be ignored since the weights are already generated in the asset
+	ET_UNUSED(weight); // can entirely be ignored since the weights are already generated in the asset
 
 	core::HashString const assetId(fileName.c_str());
 
@@ -89,10 +89,10 @@ bool FontEngine::LoadFontFace(Rml::byte const* const data,
 	Rml::Style::FontWeight const weight, 
 	bool const fallbackFace)
 {
-	UNUSED(data);
-	UNUSED(dataSize);
-	UNUSED(style);
-	UNUSED(weight);
+	ET_UNUSED(data);
+	ET_UNUSED(dataSize);
+	ET_UNUSED(style);
+	ET_UNUSED(weight);
 
 	// exception for the debugger font
 	static std::string const s_DebugFntFamilyName("rmlui-debugger-font");

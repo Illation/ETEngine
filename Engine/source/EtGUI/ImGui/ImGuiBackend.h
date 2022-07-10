@@ -1,7 +1,7 @@
 #pragma once
 #include <imgui/imgui.h>
 
-#if ET_IMGUI_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 
 #include "ImguiPlatformBackend.h"
 #include "ImguiRenderBackend.h"
@@ -62,4 +62,4 @@ private:
 } // namespace et
 
 
-#endif // ET_IMGUI_ENABLED
+#endif // ET_CT_IS_ENABLED(ET_CT_IMGUI)

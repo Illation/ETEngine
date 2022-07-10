@@ -34,8 +34,8 @@ void PlanetInit::OnComponentAdded(EcsController& controller, PlanetComponent& co
 //
 void PlanetInit::OnComponentRemoved(EcsController& controller, PlanetComponent& component, T_EntityId const entity)
 {
-	UNUSED(controller);
-	UNUSED(entity);
+	ET_UNUSED(controller);
+	ET_UNUSED(entity);
 
 	if (component.m_PlanetId != core::INVALID_SLOT_ID)
 	{

@@ -2,7 +2,7 @@
 #include "Assert.h"
 
 
-#if ET_ASSERT_ENABLED
+#if ET_CT_ASSERT
 
 namespace et {
 namespace detail {
@@ -32,4 +32,4 @@ bool ProcessAssert(bool const condition, std::string const& caller, std::string 
 } // namespace et
 
 
-#endif // ET_ASSERT_ENABLED
+#endif // ET_CT_ASSERT

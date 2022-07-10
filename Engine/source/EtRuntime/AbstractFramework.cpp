@@ -39,7 +39,7 @@ namespace rt {
 //
 AbstractFramework::AbstractFramework() 
 	: core::I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_Framework))
-#if ET_IMGUI_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 	, m_ImguiBackend(static_cast<uint32>(fw::E_TickOrder::TICK_ImguiBackend))
 #endif
 { }
@@ -53,7 +53,7 @@ AbstractFramework::~AbstractFramework()
 {
 	fw::UnifiedScene::Instance().UnloadScene();
 
-#if ET_IMGUI_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 	m_ImguiBackend.Deinit();
 #endif
 
@@ -111,8 +111,8 @@ void AbstractFramework::Run()
 	unifiedScene.GetEventDispatcher().Register(fw::E_SceneEvent::RegisterSystems,
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const eventData)
 		{
-			UNUSED(flags);
-			UNUSED(eventData);
+			ET_UNUSED(flags);
+			ET_UNUSED(eventData);
 
 			OnSystemInit();
 		}));
@@ -217,7 +217,7 @@ void AbstractFramework::Run()
 	OnInit();
 	unifiedScene.LoadScene(bootCfg.startScene);
 
-#if ET_IMGUI_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 	m_ImguiBackend.Init(ToPtr(&glfwMan), ToPtr(&glfwMan), ToPtr(m_Viewport.Get()));
 #endif
 

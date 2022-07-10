@@ -2,7 +2,7 @@
 #include "ImGuiBackend.h"
 
 
-#if ET_IMGUI_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 
 
 namespace et {
@@ -37,7 +37,7 @@ void ImGuiBackend::Init(Ptr<core::I_CursorShapeManager> const cursorManager,
 	m_VPCallbackId = viewport->GetEventDispatcher().Register(render::E_ViewportEvent::VP_PostFlush | render::E_ViewportEvent::VP_NewRenderer,
 		render::T_ViewportEventCallback([this](render::T_ViewportEventFlags const flags, render::ViewportEventData const* const data) -> void
 			{
-				UNUSED(data); // can access targetFb here
+				ET_UNUSED(data); // can access targetFb here
 				if (flags & render::E_ViewportEvent::VP_NewRenderer)
 				{
 					if (!m_HasFrame)
@@ -202,4 +202,4 @@ void ImGuiBackend::SetupStyle()
 } // namespace et
 
 
-#endif // ET_IMGUI_ENABLED
+#endif // ET_CT_IS_ENABLED(ET_CT_IMGUI)

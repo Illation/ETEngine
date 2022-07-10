@@ -37,8 +37,8 @@ void AtmosphereInit::OnComponentAdded(EcsController& controller, AtmosphereCompo
 //
 void AtmosphereInit::OnComponentRemoved(EcsController& controller, AtmosphereComponent& component, T_EntityId const entity)
 {
-	UNUSED(controller);
-	UNUSED(entity);
+	ET_UNUSED(controller);
+	ET_UNUSED(entity);
 
 	if (component.m_RenderId != core::INVALID_SLOT_ID)
 	{

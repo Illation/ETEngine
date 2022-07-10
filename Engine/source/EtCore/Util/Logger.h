@@ -51,7 +51,7 @@ private:
 			(*m_os) << message;
 			m_os->flush();
 		}
-		virtual void SetCursorPosition(ivec2 cursorPos) { UNUSED(cursorPos); }
+		virtual void SetCursorPosition(ivec2 cursorPos) { ET_UNUSED(cursorPos); }
 	};
 
 	class FileLogger : public AbstractLogger

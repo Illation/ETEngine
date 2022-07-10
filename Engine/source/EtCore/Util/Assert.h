@@ -9,9 +9,9 @@
 //====================
 
 #ifdef ET_SHIPPING
-#	define ET_ASSERT_ENABLED false
+#	define ET_CT_ASSERT ET_DISABLED
 #else
-#	define ET_ASSERT_ENABLED true
+#	define ET_CT_ASSERT ET_ENABLED
 #endif // ET_SHIPPING
 
 
@@ -20,7 +20,7 @@
 //=================
 
 
-#if ET_ASSERT_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_ASSERT)
 
 namespace et { namespace detail {
 	bool ProcessAssert(bool const condition, std::string const& caller, std::string const& msg);
@@ -47,7 +47,7 @@ namespace et { namespace detail {
 	while (false)\
 	__pragma(warning(pop))
 
-#endif // ET_ASSERT_ENABLED
+#endif // ET_CT_ASSERT
 
 
 
@@ -55,11 +55,11 @@ namespace et { namespace detail {
 //=================
 
 
-#if ET_ASSERT_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_ASSERT)
 #	define ET_ASSERT(condition, ...) ET_ASSERT_IMPL(condition, __VA_ARGS__)
 #else
 #	define ET_ASSERT(condition, ...)
-#endif // ET_ASSERT_ENABLED
+#endif // ET_CT_ASSERT
 
 // for performance critical code
 #define ET_PARANOID_ASSERTS_ENABLED false

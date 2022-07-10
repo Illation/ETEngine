@@ -51,7 +51,7 @@ void FontEffectGlow::Instancer::Init()
 //
 std::shared_ptr<Rml::FontEffect> FontEffectGlow::Instancer::InstanceFontEffect(Rml::String const& name, Rml::PropertyDictionary const& properties)
 {
-	UNUSED(name);
+	ET_UNUSED(name);
 
 	int32 const widthOutline = properties.GetProperty(m_IdWidthOutline)->Get<int32>();
 	int32 widthBlur = properties.GetProperty(m_IdWidthBlur)->Get<int32>();
@@ -144,7 +144,7 @@ void FontEffectOutline::Instancer::Init()
 //
 std::shared_ptr<Rml::FontEffect> FontEffectOutline::Instancer::InstanceFontEffect(Rml::String const& name, Rml::PropertyDictionary const& properties)
 {
-	UNUSED(name);
+	ET_UNUSED(name);
 
 	float const width= properties.GetProperty(m_IdWidth)->Get<float>();
 	Rml::Colourb const color = properties.GetProperty(m_IdColor)->Get<Rml::Colourb>();
@@ -219,7 +219,7 @@ void FontEffectShadow::Instancer::Init()
 //
 std::shared_ptr<Rml::FontEffect> FontEffectShadow::Instancer::InstanceFontEffect(Rml::String const& name, Rml::PropertyDictionary const& properties)
 {
-	UNUSED(name);
+	ET_UNUSED(name);
 
 	ivec2 offset;
 	offset.x = properties.GetProperty(m_IdOffsetX)->Get<int32>();
@@ -259,7 +259,7 @@ bool FontEffectShadow::Init(ivec2 const offset)
 //
 void FontEffectShadow::PrepareTextLayer(float const faceMultiplier, TextLayer& outLayer) const
 {
-	UNUSED(faceMultiplier);
+	ET_UNUSED(faceMultiplier);
 
 	outLayer.m_Offset = math::vecCast<float>(m_Offset);
 	GetColor(outLayer.m_Color);
@@ -291,7 +291,7 @@ void FontEffectBlur::Instancer::Init()
 //
 std::shared_ptr<Rml::FontEffect> FontEffectBlur::Instancer::InstanceFontEffect(Rml::String const& name, Rml::PropertyDictionary const& properties)
 {
-	UNUSED(name);
+	ET_UNUSED(name);
 
 	float const width = properties.GetProperty(m_IdWidth)->Get<float>();
 	Rml::Colourb const color = properties.GetProperty(m_IdColor)->Get<Rml::Colourb>();

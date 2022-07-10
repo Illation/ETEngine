@@ -70,7 +70,7 @@ private:
 	UniquePtr<render::ShadedSceneRenderer> m_SceneRenderer;
 	UniquePtr<rt::SplashScreenRenderer> m_SplashScreenRenderer;
 
-#if ET_IMGUI_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 	gui::ImGuiBackend m_ImguiBackend;
 
 	DebugUi m_DebugUi;

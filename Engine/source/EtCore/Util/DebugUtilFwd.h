@@ -1,8 +1,8 @@
 #pragma once
 
 #ifdef ET_SHIPPING
-#	define ET_DBG_UTIL_ENABLED false
+#	define ET_CT_DBG_UTIL ET_DISABLED
 #else
-#	define ET_DBG_UTIL_ENABLED true
+#	define ET_CT_DBG_UTIL ET_ENABLED
 #endif // ET_SHIPPING
 

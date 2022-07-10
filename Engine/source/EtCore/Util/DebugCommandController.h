@@ -1,7 +1,7 @@
 #pragma once
 #include "DebugUtilFwd.h"
 
-#if ET_DBG_UTIL_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 
 
 namespace et {
@@ -21,7 +21,8 @@ enum class E_CommandRes: uint8
 	Error,
 	IncorrecParameters,
 
-	NotFound // returned by controller not user
+	NotFound, // returned by controller not user
+	PrintHelp
 };
 
 //--------------------
@@ -110,6 +111,8 @@ class CommandController final
 
 public:
 
+	static std::string const s_HelpRequestParm;
+
 	// static
 	//--------
 	static CommandController& Instance();
@@ -127,7 +130,7 @@ public:
 	//---------------
 	void AddCommand(Command const& cmd, T_CommandFn const& fn);
 
-	E_CommandRes ExecuteCommand(std::string const& commandString) const;
+	E_CommandRes ExecuteCommand(std::string const& commandString, core::HashString& commandId) const;
 
 	// accessors
 	//-----------
@@ -154,4 +157,4 @@ private:
 } // namespace et
 
 
-#endif // ET_DBG_UTIL_ENABLED
+#endif // ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)

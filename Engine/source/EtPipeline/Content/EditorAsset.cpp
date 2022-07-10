@@ -111,8 +111,8 @@ void EditorAssetBase::SetupRuntimeAssetsInternal()
 //	
 bool EditorAssetBase::GenerateInternal(BuildConfiguration const& buildConfig, std::string const& dbPath)
 {
-	UNUSED(buildConfig); 
-	UNUSED(dbPath); 
+	ET_UNUSED(buildConfig); 
+	ET_UNUSED(dbPath); 
 	return true;
 }
 

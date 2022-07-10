@@ -397,7 +397,7 @@ T_EntityEventId EcsController::RegisterOnEntityAdded(T_EntityEventFn& fn)
 	return m_EntityEvents.Register(detail::E_EcsEvent::Added, detail::T_EntityEventCallbackInternal(
 		[this, fn](detail::T_EcsEvent const flags, detail::EntityEventData const* const evnt) -> void
 		{
-			UNUSED(flags);
+			ET_UNUSED(flags);
 			fn(*evnt->controller, evnt->entity);
 		}));
 }
@@ -410,7 +410,7 @@ T_EntityEventId EcsController::RegisterOnEntityRemoved(T_EntityEventFn& fn)
 	return m_EntityEvents.Register(detail::E_EcsEvent::Removed, detail::T_EntityEventCallbackInternal(
 		[this, fn](detail::T_EcsEvent const flags, detail::EntityEventData const* const evnt) -> void
 		{
-			UNUSED(flags);
+			ET_UNUSED(flags);
 			fn(*evnt->controller, evnt->entity);
 		}));
 }

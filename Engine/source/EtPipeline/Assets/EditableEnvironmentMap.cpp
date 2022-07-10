@@ -108,8 +108,8 @@ void EditableEnvironmentMapAsset::SetupRuntimeAssetsInternal()
 //
 bool EditableEnvironmentMapAsset::GenerateInternal(BuildConfiguration const& buildConfig, std::string const& dbPath)
 {
-	UNUSED(buildConfig);
-	UNUSED(dbPath);
+	ET_UNUSED(buildConfig);
+	ET_UNUSED(dbPath);
 
 	auto const endsWithFn = [](std::string const& fullString, std::string const& ending)
 		{

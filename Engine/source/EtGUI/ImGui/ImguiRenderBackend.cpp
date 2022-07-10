@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ImguiRenderBackend.h"
 
-#if ET_IMGUI_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 
 #include <EtCore/Content/ResourceManager.h>
 
@@ -309,4 +309,4 @@ void ImguiRenderBackend::DestroyFontsTexture()
 } // namespace et
 
 
-#endif // ET_IMGUI_ENABLED
+#endif // ET_CT_IS_ENABLED(ET_CT_IMGUI)

@@ -244,8 +244,8 @@ void EditorApp::InitializeUtilities()
 	fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::RegisterSystems,
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const eventData)
 		{
-			UNUSED(flags);
-			UNUSED(eventData);
+			ET_UNUSED(flags);
+			ET_UNUSED(eventData);
 
 			SceneEditor::RegisterEcsEvents();
 		}));

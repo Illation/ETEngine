@@ -31,7 +31,7 @@ SingleContextGlArea::SingleContextGlArea()
 SingleContextGlArea::SingleContextGlArea(BaseObjectType* cobject, Glib::RefPtr<Gtk::Builder> const& refBuilder)
 	: Gtk::GLArea(cobject)
 {
-	UNUSED(refBuilder);
+	ET_UNUSED(refBuilder);
 	signal_create_context().connect(sigc::mem_fun(*this, &SingleContextGlArea::OnCreateContext), false);
 }
 
@@ -111,7 +111,7 @@ void GtkRenderArea::OnResize(int32 x, int32 y)
 //
 bool GtkRenderArea::OnRender(const Glib::RefPtr<Gdk::GLContext>& context)
 {
-	UNUSED(context);
+	ET_UNUSED(context);
 
 	if (m_OnRender)
 	{

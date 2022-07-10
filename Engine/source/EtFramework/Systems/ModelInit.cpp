@@ -37,8 +37,8 @@ void ModelInit::OnComponentAdded(EcsController& controller, ModelComponent& comp
 //
 void ModelInit::OnComponentRemoved(EcsController& controller, ModelComponent& component, T_EntityId const entity)
 {
-	UNUSED(controller);
-	UNUSED(entity);
+	ET_UNUSED(controller);
+	ET_UNUSED(entity);
 
 	UnifiedScene::Instance().GetRenderScene().RemoveInstance(component.m_InstanceId);
 }

@@ -58,8 +58,8 @@ void RigidBodySystem::OnComponentAdded(EcsController& controller, RigidBodyCompo
 //
 void RigidBodySystem::OnComponentRemoved(EcsController& controller, RigidBodyComponent& component, T_EntityId const entity)
 {
-	UNUSED(controller);
-	UNUSED(entity);
+	ET_UNUSED(controller);
+	ET_UNUSED(entity);
 
 	UnifiedScene::Instance().GetPhysicsWorld().GetWorld()->removeRigidBody(component.m_Body);
 

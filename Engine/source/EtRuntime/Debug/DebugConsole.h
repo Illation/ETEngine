@@ -1,6 +1,6 @@
 #include <imgui/imgui.h>
 
-#if ET_IMGUI_ENABLED
+#if ET_CT_IMGUI
 
 
 namespace et {
@@ -16,12 +16,22 @@ class DebugConsole
 {
 	// definitions
 	//-------------
+	static std::string const s_CommandString;
+
 	struct LogLine final
 	{
 		LogLine(std::string const& text, vec4 const& col = vec4(1.f)) : m_Text(text), m_Color(col) {}
 
 		std::string m_Text;
 		vec4 m_Color;
+	};
+
+	struct HistoryLine final
+	{
+		HistoryLine(std::string const& text, core::HashString const id) : m_Text(text), m_Id(id) {}
+
+		std::string m_Text;
+		core::HashString m_Id;
 	};
 
 	// construct destruct
@@ -64,11 +74,12 @@ private:
 	std::string m_InputText;
 
 	int32 m_HistoryPos = -1;
-	std::vector<std::string> m_History;
+	std::vector<HistoryLine> m_History;
+	std::string m_PreHistoryText;
 };
 
 
 } // namespace rt
 } // namespace et
 
-#endif // ET_IMGUI_ENABLED
+#endif // ET_CT_IS_ENABLED(ET_CT_IMGUI)

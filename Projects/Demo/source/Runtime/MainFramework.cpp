@@ -51,8 +51,8 @@ void MainFramework::OnInit()
 	fw::UnifiedScene::Instance().GetEventDispatcher().Register( fw::E_SceneEvent::Activated, 
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const evnt)
 			{
-				UNUSED(flags);
-				UNUSED(evnt);
+				ET_UNUSED(flags);
+				ET_UNUSED(evnt);
 				OnSceneActivated();
 				DemoUI::OnSceneActivated();
 			}));

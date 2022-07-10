@@ -2,7 +2,7 @@
 #include "ImGuiUtil.h"
 
 
-#if ET_IMGUI_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 
 
 namespace et {
@@ -187,4 +187,4 @@ core::E_CursorShape GetCursorShape(ImGuiMouseCursor const cursor)
 } // namespace et
 
 
-#endif // ET_IMGUI_ENABLED
+#endif // ET_CT_IS_ENABLED(ET_CT_IMGUI)

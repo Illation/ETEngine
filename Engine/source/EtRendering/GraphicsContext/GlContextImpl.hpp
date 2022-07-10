@@ -772,10 +772,10 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 
 	auto glLogCallback = [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 		{
-			UNUSED(source);
-			UNUSED(id);
-			UNUSED(length);
-			UNUSED(userParam);
+			ET_UNUSED(source);
+			ET_UNUSED(id);
+			ET_UNUSED(length);
+			ET_UNUSED(userParam);
 
 			core::LogLevel level = core::LogLevel::Info;
 			switch (type)

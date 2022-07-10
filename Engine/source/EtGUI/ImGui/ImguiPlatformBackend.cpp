@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ImguiPlatformBackend.h"
 
-#if ET_IMGUI_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 
 #include "ImGuiUtil.h"
 
@@ -229,5 +229,5 @@ void ImguiPlatformBackend::UpdateKeyModifiers(core::T_KeyModifierFlags const mod
 } // namespace et
 
 
-#endif // ET_IMGUI_ENABLED
+#endif // ET_CT_IS_ENABLED(ET_CT_IMGUI)
 

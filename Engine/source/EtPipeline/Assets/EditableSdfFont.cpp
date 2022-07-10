@@ -101,8 +101,8 @@ void EditableSdfFontAsset::SetupRuntimeAssetsInternal()
 //
 bool EditableSdfFontAsset::GenerateInternal(BuildConfiguration const& buildConfig, std::string const& dbPath)
 {
-	UNUSED(buildConfig);
-	UNUSED(dbPath);
+	ET_UNUSED(buildConfig);
+	ET_UNUSED(dbPath);
 
 	// Load the font from TTF
 	//------------------------

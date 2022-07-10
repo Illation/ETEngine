@@ -41,12 +41,12 @@
 //---- Disable all of Dear ImGui or don't implement standard windows/tools.
 // It is very strongly recommended to NOT disable the demo windows and debug tool during development. They are extremely useful in day to day work. Please read comments in imgui_demo.cpp.
 
-#if ET_DBG_UTIL_ENABLED
-#	define ET_IMGUI_ENABLED true
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+#	define ET_CT_IMGUI ET_ENABLED
 #else
 #	define IMGUI_DISABLE                                     // Disable everything: all headers and source files will be empty.
-#	define ET_IMGUI_ENABLED false
-#endif // ET_SHIPPING
+#	define ET_CT_IMGUI ET_DISABLED
+#endif // ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 
 //#define IMGUI_DISABLE_DEMO_WINDOWS                        // Disable demo windows: ShowDemoWindow()/ShowStyleEditor() will be empty.
 //#define IMGUI_DISABLE_DEBUG_TOOLS                         // Disable metrics/debugger and other debug tools: ShowMetricsWindow(), ShowDebugLogWindow() and ShowStackToolWindow() will be empty (this was called IMGUI_DISABLE_METRICS_WINDOW before 1.88).

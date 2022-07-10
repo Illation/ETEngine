@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DebugConsole.h"
 
-#if ET_IMGUI_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 
 #include <EtCore/Util/DebugCommandController.h>
 
@@ -15,25 +15,33 @@ namespace rt {
 //===============
 
 
+// static
+std::string const DebugConsole::s_CommandString(" > ");
+
+
 //---------------------
-// DebugConsole::c-tpr
+// DebugConsole::c-tor
+//
+// Add console control commands
 //
 DebugConsole::DebugConsole()
 {
-	core::dbg::CommandController::Instance().AddCommand(core::dbg::Command("clear", "Clear the console"), core::dbg::T_CommandFn(
-		[this](core::dbg::Command const& command, std::string const& parameters) -> core::dbg::E_CommandRes
+	core::dbg::CommandController& cmdController = core::dbg::CommandController::Instance();
+
+	cmdController.AddCommand(core::dbg::Command("clear_console", "Clear the console"), core::dbg::T_CommandFn(
+		[this](core::dbg::Command const& command, std::string const& parameters) 
 		{
-			UNUSED(command);
-			UNUSED(parameters);
+			ET_UNUSED(command);
+			ET_UNUSED(parameters);
 			ClearLog();
 			return core::dbg::E_CommandRes::Success;
 		}));
 
-	core::dbg::CommandController::Instance().AddCommand(core::dbg::Command("list_commands", "List all possible commands"), core::dbg::T_CommandFn(
-		[this](core::dbg::Command const& command, std::string const& parameters) -> core::dbg::E_CommandRes
+	cmdController.AddCommand(core::dbg::Command("list_commands", "List all possible commands"), core::dbg::T_CommandFn(
+		[this](core::dbg::Command const& command, std::string const& parameters) 
 		{
-			UNUSED(command);
-			UNUSED(parameters);
+			ET_UNUSED(command);
+			ET_UNUSED(parameters);
 			ListCommands();
 			return core::dbg::E_CommandRes::Success;
 		}));
@@ -155,7 +163,6 @@ void DebugConsole::DrawConsole()
 
 		// Input Field
 		//-------------
-		static std::string const s_CommandString(" > ");
 		ImGui::Text(s_CommandString.c_str());
 		ImGui::SameLine();
 
@@ -172,9 +179,7 @@ void DebugConsole::DrawConsole()
 				return static_cast<DebugConsole*>(callbackData->UserData)->TextCallback(callbackData);
 			}, this))
 		{
-			m_LogLines.emplace_back(s_CommandString + m_InputText);
 			ExecuteCommand();
-
 			reclaimFocus = true;
 		}
 
@@ -206,21 +211,26 @@ int32 DebugConsole::TextCallback(ImGuiInputTextCallbackData* const callbackData)
 	case ImGuiInputTextFlags_CallbackCompletion:
 	{
 		// Locate beginning of current word
-		const char* word_end = callbackData->Buf + callbackData->CursorPos;
-		const char* word_start = word_end;
-		while (word_start > callbackData->Buf)
+		char const* wordEnd = callbackData->Buf + callbackData->CursorPos;
+		char const* wordStart = wordEnd;
+		while (wordStart > callbackData->Buf)
 		{
-			const char c = word_start[-1];
+			char const c = wordStart[-1];
 			if (c == ' ' || c == '\t' || c == ',' || c == ';')
+			{
 				break;
-			word_start--;
+			}
+
+			wordStart--;
 		}
+
+		int32 const length = static_cast<int32>(wordEnd - wordStart);
 
 
 		core::dbg::CommandController const& comController = core::dbg::CommandController::Instance();
 
 		// list of candidates
-		std::string const currentWord(word_start, static_cast<int>(word_end - word_start));
+		std::string const currentWord(wordStart, length);
 		std::vector<core::dbg::CommandIdInfo> candidates;
 		for (core::dbg::CommandIdInfo const& info : comController.GetCommandInfoSet())
 		{
@@ -236,16 +246,51 @@ int32 DebugConsole::TextCallback(ImGuiInputTextCallbackData* const callbackData)
 		}
 		else if (candidates.size() == 1u)
 		{
-			callbackData->DeleteChars((int)(word_start - callbackData->Buf), (int)(word_end - word_start));
+			callbackData->DeleteChars(static_cast<int32>(wordStart - callbackData->Buf), length);
 			callbackData->InsertChars(callbackData->CursorPos, &candidates[0].m_Name[0]);
-			callbackData->InsertChars(callbackData->CursorPos, " ");
+			callbackData->InsertChars(callbackData->CursorPos, "");
 		}
 		else
 		{
+			// Multiple matches. Complete as much as we can..
+			// So inputing "C"+Tab will complete to "CL" then display "CLEAR" and "CLASSIFY" as matches.
+			int32 matchLength = length;
+			for (;;)
+			{
+				int c = 0;
+				bool allCandidatesMatch = true;
+				for (size_t i = 0u; i < candidates.size() && allCandidatesMatch; i++)
+				{
+					if (i == 0)
+					{
+						c = toupper(candidates[i].m_Name[matchLength]);
+					}
+					else if (c == 0 || c != toupper(candidates[i].m_Name[matchLength]))
+					{
+						allCandidatesMatch = false;
+					}
+				}
+
+				if (!allCandidatesMatch)
+				{
+					break;
+				}
+
+				matchLength++;
+			}
+
+			if (matchLength > 0)
+			{
+				char* const firstChar = &candidates[0].m_Name[0];
+				callbackData->DeleteChars(static_cast<int32>(wordStart - callbackData->Buf), length);
+				callbackData->InsertChars(callbackData->CursorPos, firstChar, firstChar + matchLength);
+			}
+
+			// list possible matches
 			m_LogLines.emplace_back("Possible matches");
 			for (core::dbg::CommandIdInfo const& info : candidates)
 			{
-				m_LogLines.emplace_back(FS("\t%s", info.m_Name.c_str()));
+				m_LogLines.emplace_back(FS("\t- %s", info.m_Name.c_str()));
 			}
 		}
 
@@ -259,6 +304,7 @@ int32 DebugConsole::TextCallback(ImGuiInputTextCallbackData* const callbackData)
 		{
 			if (m_HistoryPos == -1)
 			{
+				m_PreHistoryText = m_InputText;
 				m_HistoryPos = static_cast<int32>(m_History.size()) - 1;
 			}
 			else if (m_HistoryPos > 0)
@@ -277,10 +323,9 @@ int32 DebugConsole::TextCallback(ImGuiInputTextCallbackData* const callbackData)
 			}
 		}
 
-		// #todo: remember the input text when no history item is selected
 		if (prevHistoryPos != m_HistoryPos)
 		{
-			char const* const historyStr = (m_HistoryPos >= 0) ? m_History[m_HistoryPos].c_str() : "";
+			char const* const historyStr = (m_HistoryPos >= 0) ? m_History[m_HistoryPos].m_Text.c_str() : m_PreHistoryText.c_str();
 			callbackData->DeleteChars(0, callbackData->BufTextLen);
 			callbackData->InsertChars(0, historyStr);
 		}
@@ -306,6 +351,7 @@ void DebugConsole::ClearLog()
 void DebugConsole::ListCommands()
 {
 	core::dbg::CommandController const& comController = core::dbg::CommandController::Instance();
+	m_LogLines.emplace_back("All commands");
 	for (core::dbg::CommandIdInfo const& info : comController.GetCommandInfoSet())
 	{
 		m_LogLines.emplace_back(FS("\t%s", info.m_Name.c_str()));
@@ -317,10 +363,32 @@ void DebugConsole::ListCommands()
 //
 void DebugConsole::ExecuteCommand()
 {
-	m_History.push_back(m_InputText); // #todo: keep history unique
+	// log the command
+	m_LogLines.emplace_back(s_CommandString + m_InputText, vec4(1.f, 0.5f, 1.f, 1.f));
+
+	// update command history
+	core::HashString const historyId(m_InputText.c_str());
+	auto const foundIt = std::find_if(m_History.cbegin(), m_History.cend(), [historyId](HistoryLine const& line)
+		{
+			return (line.m_Id == historyId);
+		});
+
+	if (foundIt != m_History.cend()) // if the input text is already in the history, we just move that history to the end
+	{
+		m_History.erase(foundIt);
+	}
+
+	m_History.emplace_back(m_InputText, historyId);
+	m_PreHistoryText.clear();
 	m_HistoryPos = -1;
 
-	core::dbg::E_CommandRes const res = core::dbg::CommandController::Instance().ExecuteCommand(m_InputText);
+	// execute the command
+	core::dbg::CommandController const& comController = core::dbg::CommandController::Instance();
+
+	core::HashString commandId;
+	core::dbg::E_CommandRes const res = comController.ExecuteCommand(m_InputText, commandId);
+
+	// print the result
 	switch (res)
 	{
 	case core::dbg::E_CommandRes::Success:
@@ -339,12 +407,20 @@ void DebugConsole::ExecuteCommand()
 		m_LogLines.emplace_back("Command not found", vec4(1.f, 1.f, 0.5f, 1.f));
 		break;
 
+	case core::dbg::E_CommandRes::PrintHelp:
+	{
+		core::dbg::Command const* const cmd = comController.GetCommand(commandId);
+		ET_ASSERT(cmd != nullptr);
+		m_LogLines.emplace_back(cmd->m_Usage);
+		break;
+	}
+
 	default:
 		ET_ASSERT(false, "unhandled command result");
 	}
 
+	// reset 
 	m_InputText.clear();
-
 	m_ScrollToBottom = true;
 }
 
@@ -352,5 +428,5 @@ void DebugConsole::ExecuteCommand()
 } // namespace rt
 } // namespace et
 
-#endif // ET_IMGUI_ENABLED
+#endif // ET_CT_IS_ENABLED(ET_CT_IMGUI)
 

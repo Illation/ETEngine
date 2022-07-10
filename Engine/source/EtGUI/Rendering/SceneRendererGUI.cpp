@@ -42,7 +42,7 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 	m_WorldCallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RE_RenderWorldGUI, render::T_RenderEventCallback(
 		[this](render::T_RenderEventFlags const flags, render::RenderEventData const* const evnt) -> void
 		{
-			UNUSED(flags);
+			ET_UNUSED(flags);
 
 			if (evnt->renderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
 			{
@@ -67,7 +67,7 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 	m_OverlayCallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RE_RenderOverlay, render::T_RenderEventCallback(
 		[this](render::T_RenderEventFlags const flags, render::RenderEventData const* const evnt) -> void
 		{
-			UNUSED(flags);
+			ET_UNUSED(flags);
 
 			if (evnt->renderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
 			{

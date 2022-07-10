@@ -106,8 +106,8 @@ void GuiCanvasComponent::OnComponentAdded(EcsController& controller, GuiCanvasCo
 //
 void GuiCanvasComponent::OnComponentRemoved(EcsController& controller, GuiCanvasComponent& component, T_EntityId const entity)
 {
-	UNUSED(controller);
-	UNUSED(entity);
+	ET_UNUSED(controller);
+	ET_UNUSED(entity);
 
 	if (component.m_Id != gui::INVALID_CONTEXT_ID)
 	{
@@ -128,7 +128,7 @@ void GuiCanvasComponent::OnComponentRemoved(EcsController& controller, GuiCanvas
 //
 void GuiCanvasComponent::OnScenePostLoad(EcsController& ecs, T_EntityId const id)
 {
-	UNUSED(id);
+	ET_UNUSED(id);
 	if (m_RenderMode == E_RenderMode::WorldSpace)
 	{
 		UpdateCamera();

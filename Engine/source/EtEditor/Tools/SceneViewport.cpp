@@ -254,8 +254,8 @@ void SceneViewport::OnSceneSet()
 		m_SceneInitCallback = fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::Activated,
 			fw::T_SceneEventCallback( [this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const eventData)
 			{
-				UNUSED(flags);
-				UNUSED(eventData);
+				ET_UNUSED(flags);
+				ET_UNUSED(eventData);
 
 				InitCamera();
 

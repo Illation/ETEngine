@@ -113,7 +113,7 @@ T_CompEventId EcsController::RegisterOnComponentAdded(T_CompEventFn<TComponentTy
 	return m_ComponentEvents[TComponentType::GetTypeIndex()].Register(detail::E_EcsEvent::Added, detail::T_ComponentEventCallbackInternal(
 		[this, fn](detail::T_EcsEvent const flags, detail::ComponentEventData const* const evnt) -> void
 		{
-			UNUSED(flags);
+			ET_UNUSED(flags);
 			fn(*evnt->controller, *static_cast<TComponentType*>(evnt->component), evnt->entity);
 		}));
 }
@@ -129,7 +129,7 @@ T_CompEventId EcsController::RegisterOnComponentRemoved(T_CompEventFn<TComponent
 	return m_ComponentEvents[TComponentType::GetTypeIndex()].Register(detail::E_EcsEvent::Removed, detail::T_ComponentEventCallbackInternal(
 		[this, fn](detail::T_EcsEvent const flags, detail::ComponentEventData const* const evnt) -> void
 		{
-			UNUSED(flags);
+			ET_UNUSED(flags);
 			fn(*evnt->controller, *static_cast<TComponentType*>(evnt->component), evnt->entity);
 		}));
 }
