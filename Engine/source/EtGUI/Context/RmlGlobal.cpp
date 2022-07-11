@@ -28,6 +28,10 @@ RefPtr<RmlGlobal> RmlGlobal::GetInstance()
 	if (s_Instance == nullptr)
 	{
 		s_Instance = Create<RmlGlobal>();
+
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
+		s_Instance->m_Debug.Init(ToPtr(&s_Instance->m_Renderer), ToPtr(&s_Instance->m_FontEngine));
+#endif
 	}
 
 	return s_Instance;

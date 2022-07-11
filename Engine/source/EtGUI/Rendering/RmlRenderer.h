@@ -1,6 +1,8 @@
 #pragma once
 #include <RmlUi/Core/RenderInterface.h>
 
+#include <imconfig.h>
+
 #include <EtCore/Content/AssetPointer.h>
 
 #include <EtRendering/GraphicsContext/GraphicsTypes.h>
@@ -63,6 +65,16 @@ class RmlRenderer final : public Rml::RenderInterface
 		}
 
 		AssetPtr<SdfFont> GetFont() const { return m_Font; }
+
+		core::HashString GetId() const 
+		{
+			if (m_Font != nullptr)
+			{
+				return m_Font.GetId();
+			}
+
+			return (m_Asset != nullptr) ? m_Asset.GetId() : core::HashString("Generated");
+		}
 		
 	private:
 		AssetPtr<render::TextureData> m_Asset;
@@ -71,6 +83,10 @@ class RmlRenderer final : public Rml::RenderInterface
 	};
 
 	typedef std::unordered_map<Rml::TextureHandle, Texture> T_Textures;
+
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
+	friend class RmlDebug;
+#endif
 
 	// construct destruct
 	//--------------------

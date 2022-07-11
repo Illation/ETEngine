@@ -2,6 +2,8 @@
 #include <RmlUi/Core/FontEngineInterface.h>
 #include <RmlUi/Core/Texture.h>
 
+#include <imconfig.h>
+
 #include <EtCore/Content/AssetPointer.h>
 
 #include "SdfFont.h"
@@ -115,6 +117,10 @@ class FontEngine final : public Rml::FontEngineInterface
 	};
 
 	typedef std::vector<LayerConfiguration> T_LayerConfigurations; // font effect handle is idx + 1
+
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
+	friend class RmlDebug;
+#endif
 
 
 	// construct destruct

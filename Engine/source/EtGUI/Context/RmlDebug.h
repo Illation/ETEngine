@@ -10,6 +10,10 @@ namespace et {
 namespace gui {
 
 
+class RmlRenderer;
+class FontEngine;
+
+
 //---------------------------------
 // RmlDebug
 //
@@ -19,18 +23,30 @@ class RmlDebug final : public core::I_Tickable
 {
 public:
 	RmlDebug(); // it doesn't matter when we tick
+	void Init(Ptr<RmlRenderer const> const renderer, Ptr<FontEngine const> const fontEngine);
 
 	// interface
 	//-----------
 protected:
 	void OnTick() override;
 
+	// utility
+	//-----------
+private:
+	void ShowContextUI();
+	void ShowRenderingUI();
+
+	void AddOpaqueImage(render::TextureData const* const texture, vec2 const maxScale);
+	vec2 GetScale(vec2 const inScale, vec2 const maxScale) const;
+
 
 	// Data
 	///////
-private:
 
 	bool m_IsVisible = false;
+
+	Ptr<RmlRenderer const> m_Renderer;
+	Ptr<FontEngine const> m_FontEngine;
 };
 
 

@@ -400,7 +400,7 @@ void DebugConsole::ExecuteCommand()
 		break;
 
 	case core::dbg::E_CommandRes::IncorrecParameters:
-		m_LogLines.emplace_back("Incorrect paramters", vec4(1.f, 1.f, 0.5f, 1.f));
+		m_LogLines.emplace_back("Incorrect parameters", vec4(1.f, 1.f, 0.5f, 1.f));
 		break;
 
 	case core::dbg::E_CommandRes::NotFound:
