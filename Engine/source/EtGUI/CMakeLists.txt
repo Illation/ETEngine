@@ -23,7 +23,7 @@ assign_source_group(${projectFiles})
 assignIdeFolder(EtGUI Engine)
 libOutputDirectories(EtGUI)
 
-target_link_libraries (EtGUI EtRendering EtMath EtCore)
+target_link_libraries (EtGUI EtRendering EtMath EtCore imgui)
 
 # library includes
 libIncludeDirs()

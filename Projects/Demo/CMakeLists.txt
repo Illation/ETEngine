@@ -12,6 +12,7 @@ cmake_minimum_required (VERSION 3.15.0)
 set(ENGINE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../Engine" CACHE STRING "Path to engine root")
 get_filename_component(ENGINE_DIRECTORY_ABS "${ENGINE_DIRECTORY}" ABSOLUTE CACHE)
 get_filename_component(ENGINE_REPO_DIR "${ENGINE_DIRECTORY}/.." ABSOLUTE CACHE)
+get_filename_component(ENGINE_SOURCE_DIR "${ENGINE_DIRECTORY}/source" ABSOLUTE CACHE)
 get_filename_component(PROJECT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE CACHE)
 
 message(STATUS "//////////////////////////////////////////////////////////////////////////////////////////")

@@ -92,7 +92,7 @@ AudioSourceComponent* AudioSourceCompDesc::MakeData()
 //
 void AudioSourceCompDesc::OnScenePostLoad(EcsController& ecs, T_EntityId const id, AudioSourceComponent& comp)
 {
-	UNUSED(comp);
+	ET_UNUSED(comp);
 
 	if (ecs.HasComponent<AudioSource3DComponent>(id))
 	{

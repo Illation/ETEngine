@@ -20,6 +20,7 @@ enum E_ViewportEvent : T_ViewportEventFlags
 	VP_Resized		= 1 << 0,
 	VP_PreRender	= 1 << 1,
 	VP_PostFlush	= 1 << 2,
+	VP_NewRenderer	= 1 << 3,
 
 	VP_All = 0xFF
 };
@@ -31,6 +32,7 @@ enum E_ViewportEvent : T_ViewportEventFlags
 struct ViewportEventData final
 {
 public:
+	ViewportEventData(Viewport const* const v) : viewport(v) {}
 	ViewportEventData(Viewport const* const v, ivec2 const s) : viewport(v), size(s) {}
 	ViewportEventData(Viewport const* const v, T_FbLoc const fb) : viewport(v), targetFb(fb) {}
 	virtual ~ViewportEventData() = default;

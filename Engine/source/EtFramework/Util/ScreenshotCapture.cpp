@@ -77,7 +77,7 @@ void ScreenshotCapture::OnViewportPostFlush(render::T_FbLoc const targetFb)
 {
 	using namespace render;
 
-	UNUSED(targetFb); // this should already be the current framebuffer
+	ET_UNUSED(targetFb); // this should already be the current framebuffer
 
 	std::string filename = GetFileName();
 

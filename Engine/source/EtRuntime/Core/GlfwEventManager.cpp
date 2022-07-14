@@ -39,8 +39,8 @@ void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 	glfwSetKeyCallback(renderArea->GetWindow(), 
 		[](GLFWwindow* const window, int32 const key, int32 const scancode, int32 const action, int32 const mods)
 		{
-			UNUSED(window);
-			UNUSED(scancode);
+			ET_UNUSED(window);
+			ET_UNUSED(scancode);
 
 			GlfwEventManager* const inst = GlfwEventManager::GetInstance();
 
@@ -68,7 +68,7 @@ void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 	glfwSetCharCallback(renderArea->GetWindow(),
 		[](GLFWwindow* const window, uint32 const codepoint)
 		{
-			UNUSED(window);
+			ET_UNUSED(window);
 
 			GlfwEventManager::GetInstance()->GetInputProvider().IterateListeners(core::RawInputProvider::T_EventFn(
 				[codepoint](core::I_RawInputListener& listener)
@@ -80,7 +80,7 @@ void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 	// Mouse clicking
 	glfwSetMouseButtonCallback(renderArea->GetWindow(), [](GLFWwindow* const window, int32 const button, int32 const action, int32 const mods)
 		{
-			UNUSED(window);
+			ET_UNUSED(window);
 
 			core::T_KeyModifierFlags const modifiers = static_cast<core::T_KeyModifierFlags>(mods);
 
@@ -104,7 +104,7 @@ void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 	// mouse motion #todo: support raw mouse motion
 	glfwSetCursorPosCallback(renderArea->GetWindow(), [](GLFWwindow* const window, double const xpos, double const ypos)
 		{
-			UNUSED(window);
+			ET_UNUSED(window);
 
 			GlfwEventManager* const inst = GlfwEventManager::GetInstance();
 			core::T_KeyModifierFlags const mods = inst->GetCurrentModifiers();
@@ -118,7 +118,7 @@ void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 	// scrolling
 	glfwSetScrollCallback(renderArea->GetWindow(), [](GLFWwindow* const window, double const xoffset, double const yoffset)
 		{
-			UNUSED(window);
+			ET_UNUSED(window);
 
 			GlfwEventManager* const inst = GlfwEventManager::GetInstance();
 			core::T_KeyModifierFlags const mods = inst->GetCurrentModifiers();
@@ -132,7 +132,7 @@ void GlfwEventManager::Init(Ptr<GlfwRenderArea> const renderArea)
 	// window resizing
 	glfwSetWindowSizeCallback(renderArea->GetWindow(), [](GLFWwindow* const window, int32 const width, int32 const height)
 		{
-			UNUSED(window);
+			ET_UNUSED(window);
 
 			GlfwRenderArea* const renderArea = static_cast<GlfwRenderArea*>(glfwGetWindowUserPointer(window));
 

@@ -3,10 +3,12 @@
 #include <EtCore/UpdateCycle/Tickable.h>
 
 #include <EtGUI/Rendering/SceneRendererGUI.h>
+#include <EtGUI/ImGui/ImGuiBackend.h>
 
 #include <EtFramework/Config/TickOrder.h>
 #include <EtFramework/Util/ScreenshotCapture.h>
 
+#include <EtRuntime/Debug/DebugUi.h>
 #include <EtRuntime/Rendering/GlfwRenderWindow.h>
 
 
@@ -14,6 +16,7 @@
 namespace et { namespace render {
 	class Viewport;
 	class ShadedSceneRenderer;
+} namespace rt {
 	class SplashScreenRenderer;
 } }
 
@@ -33,7 +36,7 @@ class AbstractFramework : public core::I_RealTimeTickTriggerer, public core::I_T
 	// construct destruct
 	//--------------------
 public:
-	AbstractFramework() : core::I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_Framework)) {}
+	AbstractFramework();
 	virtual ~AbstractFramework();
 
 	// accessors
@@ -56,6 +59,7 @@ protected:
 private:
 	void MainLoop();
 
+
 	// Data
 	///////
 
@@ -65,6 +69,13 @@ private:
 
 	UniquePtr<render::ShadedSceneRenderer> m_SceneRenderer;
 	UniquePtr<rt::SplashScreenRenderer> m_SplashScreenRenderer;
+	core::HashString m_SplashScreenGui;
+
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
+	gui::ImGuiBackend m_ImguiBackend;
+
+	DebugUi m_DebugUi;
+#endif
 
 protected:
 	gui::SceneRendererGUI m_GuiRenderer;

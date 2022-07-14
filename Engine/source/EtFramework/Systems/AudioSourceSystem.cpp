@@ -79,8 +79,8 @@ void AudioSourceSystem::OnComponentAdded(EcsController& controller, AudioSourceC
 //
 void AudioSourceSystem::OnComponentRemoved(EcsController& controller, AudioSourceComponent& component, T_EntityId const entity)
 {
-	UNUSED(controller);
-	UNUSED(entity);
+	ET_UNUSED(controller);
+	ET_UNUSED(entity);
 
 	alDeleteSources(1, &component.m_Source);
 	ET_ASSERT(!AudioManager::GetInstance()->TestALError("AL delete sources error"));

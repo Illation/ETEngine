@@ -30,6 +30,7 @@ namespace GL_CONTEXT_NS {
 	GLenum ConvUsageHint(E_UsageHint const hint);
 	GLenum ConvAccessMode(E_AccessMode const mode);
 	GLenum ConvFaceCullMode(E_FaceCullMode const mode);
+	GLenum ConvPolygonMode(E_PolygonMode const mode);
 	GLenum ConvBlendEquation(E_BlendEquation const equ);
 	GLenum ConvBlendFactor(E_BlendFactor const fac);
 	GLenum ConvColorFormat(E_ColorFormat const fmt);
@@ -129,6 +130,8 @@ public:
 	void SetStencilMask(uint32 const mask) override;
 
 	void SetFaceCullingMode(E_FaceCullMode const cullMode) override;
+	void SetPolygonMode(E_FaceCullMode const cullMode, E_PolygonMode const mode) override;
+
 	void SetBlendEquation(E_BlendEquation const equation) override;
 	void SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor) override;
 	void SetBlendFunctionSeparate(E_BlendFactor const sRGB, E_BlendFactor const sAlpha, E_BlendFactor const dRGB, E_BlendFactor const dAlpha) override;
@@ -336,6 +339,7 @@ private:
 
 	bool m_CullFaceEnabled = false;
 	E_FaceCullMode m_CullFaceMode = E_FaceCullMode::Back;
+	std::vector<E_PolygonMode> m_PolygonMode; // one for each face cull mode
 	
 	bool m_StencilTestEnabled = false;
 

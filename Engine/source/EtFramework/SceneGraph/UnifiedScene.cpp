@@ -19,7 +19,6 @@
 #include <EtFramework/Systems/AudioListenerSystem.h>
 #include <EtFramework/Systems/AudioSourceSystem.h>
 #include <EtFramework/Systems/PlanetCameraClippingSystem.h>
-#include <EtFramework/Components/SpriteComponent.h>
 #include <EtFramework/Components/GuiCanvasComponent.h>
 
 
@@ -54,7 +53,7 @@ void UnifiedScene::Init()
 	{
 		UniquePtr<gui::GuiExtension> guiExt = Create<gui::GuiExtension>();
 		m_GuiExtension = ToPtr(guiExt.Get());
-		m_GuiExtension->GetContextContainer().SetRenderScene(ToPtr(&m_RenderScene));
+		m_GuiExtension->SetRenderScene(ToPtr(&m_RenderScene));
 		m_RenderScene.AddExtension(UniquePtr<render::I_SceneExtension>::StaticCast(std::move(guiExt)));
 	}
 
@@ -79,9 +78,6 @@ void UnifiedScene::Init()
 
 	m_Scene.RegisterOnComponentAdded(T_CompEventFn<RigidBodyComponent>(RigidBodySystem::OnComponentAdded));
 	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<RigidBodyComponent>(RigidBodySystem::OnComponentRemoved));
-
-	m_Scene.RegisterOnComponentAdded(T_CompEventFn<SpriteComponent>(SpriteComponent::OnComponentAdded));
-	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<SpriteComponent>(SpriteComponent::OnComponentRemoved));
 
 	m_Scene.RegisterOnComponentAdded(T_CompEventFn<GuiCanvasComponent>(GuiCanvasComponent::OnComponentAdded));
 	m_Scene.RegisterOnComponentRemoved(T_CompEventFn<GuiCanvasComponent>(GuiCanvasComponent::OnComponentRemoved));

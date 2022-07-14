@@ -16,3 +16,5 @@ add_library(NothingsStb ${projectFiles})
 assign_source_group(${projectFiles})
 assignIdeFolder(NothingsStb Engine/3rdParty)
 libOutputDirectories(NothingsStb)
+
+target_include_directories (NothingsStb PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

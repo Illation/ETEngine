@@ -158,7 +158,8 @@ enum class E_BufferType : uint8
 enum class E_UsageHint : uint8
 {
 	Static,
-	Dynamic
+	Dynamic,
+	Stream
 };
 
 //---------------------------------
@@ -187,7 +188,21 @@ enum class E_FaceCullMode : uint8
 {
 	Front,
 	Back,
-	FrontBack
+	FrontBack,
+
+	COUNT
+};
+
+//---------------------------------
+// E_PolygonMode
+//
+// How polygons should be filled
+//
+enum class E_PolygonMode : uint8
+{
+	Point,
+	Line,
+	Fill
 };
 
 //---------------------------------

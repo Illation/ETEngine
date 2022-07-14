@@ -155,7 +155,7 @@ public:
 
 	// Interface
 	//---------------------
-	virtual bool LoadFromMemory(std::vector<uint8> const& data) { UNUSED(data); return false; }
+	virtual bool LoadFromMemory(std::vector<uint8> const& data) { ET_UNUSED(data); return false; }
 
 	// Utility
 	//---------------------
@@ -194,7 +194,7 @@ public:
 
 	// Interface
 	//---------------------
-	virtual bool LoadFromMemory(std::vector<uint8> const& data) override { UNUSED(data); return false; }
+	virtual bool LoadFromMemory(std::vector<uint8> const& data) override { ET_UNUSED(data); return false; }
 
 protected:
 	RTTR_ENABLE(RawAsset<T_DataType>)

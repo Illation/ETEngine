@@ -31,8 +31,8 @@ CameraSyncSystem::CameraSyncSystem()
 //
 void CameraSyncSystem::OnComponentAdded(EcsController& controller, CameraComponent& component, T_EntityId const entity)
 {
-	UNUSED(controller);
-	UNUSED(entity);
+	ET_UNUSED(controller);
+	ET_UNUSED(entity);
 
 	component.m_Id = UnifiedScene::Instance().GetRenderScene().AddCamera();
 }
@@ -44,8 +44,8 @@ void CameraSyncSystem::OnComponentAdded(EcsController& controller, CameraCompone
 //
 void CameraSyncSystem::OnComponentRemoved(EcsController& controller, CameraComponent& component, T_EntityId const entity)
 {
-	UNUSED(controller);
-	UNUSED(entity);
+	ET_UNUSED(controller);
+	ET_UNUSED(entity);
 
 	UnifiedScene::Instance().GetRenderScene().RemoveCamera(component.m_Id);
 }

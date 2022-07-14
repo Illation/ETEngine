@@ -24,7 +24,6 @@ void SplashScreenRenderer::Init()
 	render::RenderingSystems::AddReference();
 
 	m_GuiRenderer.Init(); 
-	m_GuiContext.Init("SplashScreen GUI Context", render::Viewport::GetCurrentViewport()->GetDimensions());
 
 	m_IsInitialized = true;
 }
@@ -51,10 +50,12 @@ void SplashScreenRenderer::SetGuiDocument(core::HashString const documentId)
 		if (m_GuiContext.GetDocumentCount() > 0u)
 		{
 			m_GuiContext.UnloadDocument(m_GuiContext.GetDocumentId(0u));
+			m_GuiContext.Deinit();
 		}
 	}
 	else if (m_GuiContext.GetDocumentCount() == 0u)
 	{
+		m_GuiContext.Init("SplashScreen GUI Context", render::Viewport::GetCurrentViewport()->GetDimensions());
 		m_GuiContext.LoadDocument(documentId);
 	}
 }

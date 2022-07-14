@@ -5,6 +5,10 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+#	include <EtCore/Util/DebugCommandController.h>
+#endif
+
 
 namespace et {
 namespace render {
@@ -126,6 +130,10 @@ void RenderingSystems::Initialize()
 	m_ColorMaterial = core::ResourceManager::Instance()->GetAssetData<Material>(core::HashString("Materials/M_Color.json"));
 
 	m_Patch.Init(4);
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	m_DebugVars.Init();
+#endif
 }
 
 

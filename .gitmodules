@@ -37,3 +37,6 @@
 [submodule "Engine/third_party/rmlui/RmlUi"]
 	path = Engine/third_party/rmlui/RmlUi
 	url = https://github.com/mikke89/RmlUi.git
+[submodule "Engine/third_party/imgui/imgui"]
+	path = Engine/third_party/imgui/imgui
+	url = https://github.com/ocornut/imgui

@@ -18,7 +18,7 @@ struct FrustumCorners
 {
 	//Utility to transform frustum into any objects space
 	//Useful for complex frustum culling operations
-	void Transform(mat4 space);
+	void Transform(mat4 const& space);
 	//near plane
 	vec3 na;
 	vec3 nb; 
@@ -40,7 +40,7 @@ public:
 	void Update(Viewport const* const viewport);
 
 	void SetToCamera(Camera const& camera);
-	void SetCullTransform(mat4 objectWorld);
+	void SetCullTransform(mat4 const& objectWorld);
 
 	VolumeCheck ContainsPoint(const vec3 &point) const;
 	VolumeCheck ContainsSphere(math::Sphere const& sphere) const;

@@ -69,7 +69,7 @@ public:
 	virtual char const* GetTitle() const = 0;
 protected:
 	virtual bool HasOptions() const { return false; }
-	virtual void SetupOptions(Gtk::Frame* const frame, T_SensitiveFn& sensitiveFn) { UNUSED(frame); UNUSED(sensitiveFn); }
+	virtual void SetupOptions(Gtk::Frame* const frame, T_SensitiveFn& sensitiveFn) { ET_UNUSED(frame); ET_UNUSED(sensitiveFn); }
 	virtual bool Import(std::vector<uint8> const& importData, std::string const& filePath, std::vector<pl::EditorAssetBase*>& outAssets) const = 0;
 
 	// accessors

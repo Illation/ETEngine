@@ -12,6 +12,7 @@
 	layout (location = 4) in vec3 r;
 	layout (location = 5) in vec3 s;
 	//Morph calculation
+	uniform vec3 uCamPos;
 	uniform float radius;
 	uniform float morphRange;
 	uniform float distanceLUT[32];
@@ -71,7 +72,7 @@
 		//initial position
 		vec3 TriPos = a + r*pos.x + s*pos.y;
 		//morph factor
-		float dist = length(TriPos-camPos);
+		float dist = length(TriPos-uCamPos);
 		float mPerc = morphFac(dist, level);
 		//morph
 		TriPos += mPerc*(r*morph.x + s*morph.y);
@@ -104,6 +105,7 @@
 	uniform sampler2D texDetail2;
 	uniform sampler2D texHeightDetail;
 	
+	uniform vec3 uCamPos;
 	uniform float maxHeight = 10.7f;
 	
 	float height(vec2 uv, sampler2D tex)
@@ -141,7 +143,7 @@
 		vec3 detail1 = texture(texDetail1, detailUV).rgb;
 		vec3 detail2 = texture(texDetail2, uv*tileStretch*700).rgb;
 		
-		float dist = length(TriPos-camPos);
+		float dist = length(TriPos-uCamPos);
 		vec3 mix1 = detail1*dif;
 		float craterAmount = 1-clamp(dif.r-0.5f, 0, 1);
 		float detail = craterAmount*clamp((dist-1000)/3000, 0, 1);

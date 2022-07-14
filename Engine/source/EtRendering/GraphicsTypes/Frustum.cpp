@@ -8,7 +8,7 @@ namespace et {
 namespace render {
 
 
-void FrustumCorners::Transform(mat4 space)
+void FrustumCorners::Transform(mat4 const& space)
 {
 	//move corners of the near plane
 	na = (space*vec4(na, 0)).xyz;
@@ -31,7 +31,7 @@ Frustum::~Frustum()
 }
 
 //create transforms to prevent transforming every triangle into world space
-void Frustum::SetCullTransform(mat4 objectWorld)
+void Frustum::SetCullTransform(mat4 const& objectWorld)
 {
 	m_CullWorld = objectWorld;
 	m_CullInverse = math::inverse(objectWorld);
@@ -77,25 +77,6 @@ void Frustum::Update(Viewport const* const viewport)
 	m_Corners.fc = fCenter - m_Up*farHH - m_Right*farHW;
 	m_Corners.fd = fCenter - m_Up*farHH + m_Right*farHW;
 
-	//float yFac = tanf( math::radians(m_FOV) / 2 );
-	//float xFac = yFac*Config::GetInstance()->GetWindow().AspectRatio;
-	//vec3 nCenter = m_Position + m_Forward*m_NearPlane;
-	//vec3 fCenter = m_Position + m_Forward*m_FarPlane;
-	//vec3 nearHW = m_Right*m_FarPlane*xFac;
-	//vec3 nearHH = m_Up*m_FarPlane*yFac;
-	//vec3 farHW = m_Right*m_FarPlane*xFac;
-	//vec3 farHH = m_Up*m_FarPlane*yFac;
-
-	////construct corners of the near plane in the culled objects world space
-	//m_Corners.na = nCenter + nearHH - nearHW;
-	//m_Corners.nb = nCenter + nearHH + nearHW;
-	//m_Corners.nc = nCenter - nearHH - nearHW;
-	//m_Corners.nd = nCenter - nearHH + nearHW;
-	////construct corners of the far plane
-	//m_Corners.fa = fCenter + farHH - farHW;
-	//m_Corners.fb = fCenter + farHH + farHW;
-	//m_Corners.fc = fCenter - farHH - farHW;
-	//m_Corners.fd = fCenter - farHH + farHW;
 	m_Corners.Transform(m_CullInverse);
 
 	m_PositionObject = (m_CullInverse*vec4(m_Position, 0)).xyz;

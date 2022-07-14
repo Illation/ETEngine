@@ -94,6 +94,8 @@ void Viewport::SetRenderer(I_ViewportRenderer* renderer)
 	{
 		OnRealize(m_ApiContext);
 	}
+
+	m_Events.Notify(render::E_ViewportEvent::VP_NewRenderer, new render::ViewportEventData(this));
 }
 
 //---------------------------------

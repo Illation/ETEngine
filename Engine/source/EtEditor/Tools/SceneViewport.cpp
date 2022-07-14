@@ -254,8 +254,8 @@ void SceneViewport::OnSceneSet()
 		m_SceneInitCallback = fw::UnifiedScene::Instance().GetEventDispatcher().Register(fw::E_SceneEvent::Activated,
 			fw::T_SceneEventCallback( [this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const eventData)
 			{
-				UNUSED(flags);
-				UNUSED(eventData);
+				ET_UNUSED(flags);
+				ET_UNUSED(eventData);
 
 				InitCamera();
 
@@ -268,22 +268,6 @@ void SceneViewport::OnSceneSet()
 	m_OutlineRenderer.Init(ToPtr(&(m_SceneRenderer->GetEventDispatcher())));
 
 	m_IsInitialized = true;
-}
-
-//------------------------------------
-// SceneViewport::OnEditorTick
-//
-void SceneViewport::OnEditorTick()
-{
-	if (m_DrawDebugInfo)
-	{
-		gui::TextRenderer& textRenderer = m_SceneGuiRenderer.GetTextRenderer();
-
-		textRenderer.SetFont(m_DebugFont);
-		textRenderer.SetColor(vec4(1, 0.3f, 0.3f, 1));
-		std::string outString = FS("FPS: %i", core::PerformanceInfo::GetInstance()->GetRegularFPS());
-		textRenderer.DrawText(outString, vec2(10, 32), 22);
-	}
 }
 
 //------------------------------------

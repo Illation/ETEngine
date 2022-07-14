@@ -1,9 +1,6 @@
 #pragma once
 
-#ifdef ET_PLATFORM_WIN
-#include <windows.h>
-#endif
-#include <string>
+#include "CommonMacros.h"
 
 
 namespace et {
@@ -24,10 +21,6 @@ class Logger
 public:
 	static void Log(const std::string& msg, LogLevel level = LogLevel::Info,
 		bool timestamp = false, ivec2 cursorPos = ivec2(-1));
-
-#ifndef ET_SHIPPING
-	static bool ProcessAssert(bool const condition, std::string const& caller, std::string const& msg = std::string());
-#endif
 
 	static ivec2 GetCursorPosition();
 
@@ -58,7 +51,7 @@ private:
 			(*m_os) << message;
 			m_os->flush();
 		}
-		virtual void SetCursorPosition(ivec2 cursorPos) { UNUSED(cursorPos); }
+		virtual void SetCursorPosition(ivec2 cursorPos) { ET_UNUSED(cursorPos); }
 	};
 
 	class FileLogger : public AbstractLogger

@@ -77,18 +77,18 @@ void GuiCanvasComponent::OnComponentAdded(EcsController& controller, GuiCanvasCo
 	{
 		ET_ASSERT(component.m_Id == gui::INVALID_CONTEXT_ID);
 
-		gui::ContextContainer& contextContainer = UnifiedScene::Instance().GetGuiExtension()->GetContextContainer();
+		gui::GuiExtension& guiExt = *UnifiedScene::Instance().GetGuiExtension();
 
-		component.m_Id = contextContainer.CreateContext(controller.GetComponent<TransformComponent>(entity).GetNodeId(), component.m_Dimensions);
+		component.m_Id = guiExt.CreateContext(controller.GetComponent<TransformComponent>(entity).GetNodeId(), component.m_Dimensions);
 		if (!component.m_DataModelId.IsEmpty())
 		{
-			component.m_DataModel = std::move(contextContainer.InstantiateDataModel(component.m_Id, component.m_DataModelId));
+			component.m_DataModel = std::move(guiExt.InstantiateDataModel(component.m_Id, component.m_DataModelId));
 		}
 
-		contextContainer.SetLoadedDocument(component.m_Id, component.m_GuiDocumentId);
-		contextContainer.SetContextActive(component.m_Id, component.m_IsActive);
-		contextContainer.SetContextColor(component.m_Id, component.m_Color);
-		contextContainer.SetDepthTestEnabled(component.m_Id, component.m_EnableDepthTest);
+		guiExt.SetLoadedDocument(component.m_Id, component.m_GuiDocumentId);
+		guiExt.SetContextActive(component.m_Id, component.m_IsActive);
+		guiExt.SetContextColor(component.m_Id, component.m_Color);
+		guiExt.SetDepthTestEnabled(component.m_Id, component.m_EnableDepthTest);
 	}
 	else if (component.m_RenderMode == E_RenderMode::ScreenSpaceOverlay)
 	{
@@ -106,20 +106,20 @@ void GuiCanvasComponent::OnComponentAdded(EcsController& controller, GuiCanvasCo
 //
 void GuiCanvasComponent::OnComponentRemoved(EcsController& controller, GuiCanvasComponent& component, T_EntityId const entity)
 {
-	UNUSED(controller);
-	UNUSED(entity);
+	ET_UNUSED(controller);
+	ET_UNUSED(entity);
 
 	if (component.m_Id != gui::INVALID_CONTEXT_ID)
 	{
-		gui::ContextContainer& contextContainer = UnifiedScene::Instance().GetGuiExtension()->GetContextContainer();
+		gui::GuiExtension& guiExt = *UnifiedScene::Instance().GetGuiExtension();
 		if (!component.m_DataModelId.IsEmpty())
 		{
 			std::string modelName;
 			gui::RmlGlobal::GetDataModelFactory().GetModelName(component.m_DataModelId, modelName);
-			contextContainer.DestroyDataModel(component.m_Id, modelName);
+			guiExt.DestroyDataModel(component.m_Id, modelName);
 		}
 
-		contextContainer.DestroyContext(component.m_Id);
+		guiExt.DestroyContext(component.m_Id);
 	}
 }
 
@@ -128,7 +128,7 @@ void GuiCanvasComponent::OnComponentRemoved(EcsController& controller, GuiCanvas
 //
 void GuiCanvasComponent::OnScenePostLoad(EcsController& ecs, T_EntityId const id)
 {
-	UNUSED(id);
+	ET_UNUSED(id);
 	if (m_RenderMode == E_RenderMode::WorldSpace)
 	{
 		UpdateCamera();
@@ -149,7 +149,7 @@ Rml::ElementDocument* GuiCanvasComponent::GetDocument()
 		return nullptr;
 	}
 
-	return UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().GetDocument(m_Id);
+	return UnifiedScene::Instance().GetGuiExtension()->GetDocument(m_Id);
 }
 
 //---------------------------------
@@ -162,7 +162,7 @@ Rml::ElementDocument const* GuiCanvasComponent::GetDocument() const
 		return nullptr;
 	}
 
-	return UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().GetDocument(m_Id);
+	return UnifiedScene::Instance().GetGuiExtension()->GetDocument(m_Id);
 }
 
 //---------------------------------
@@ -173,7 +173,7 @@ void GuiCanvasComponent::SetActive(bool const isActive)
 	m_IsActive = isActive;
 	if (m_Id != gui::INVALID_CONTEXT_ID)
 	{
-		UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().SetContextActive(m_Id, isActive);
+		UnifiedScene::Instance().GetGuiExtension()->SetContextActive(m_Id, isActive);
 	}
 }
 
@@ -185,7 +185,7 @@ void GuiCanvasComponent::SetDocument(core::HashString const guiDocId)
 	m_GuiDocumentId = guiDocId;
 	if (m_Id != gui::INVALID_CONTEXT_ID)
 	{
-		UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().SetLoadedDocument(m_Id, guiDocId);
+		UnifiedScene::Instance().GetGuiExtension()->SetLoadedDocument(m_Id, guiDocId);
 	}
 }
 
@@ -211,7 +211,7 @@ void GuiCanvasComponent::SetColor(vec4 const& color)
 	m_Color = color;
 	if ((m_Id != gui::INVALID_CONTEXT_ID) && (m_RenderMode == E_RenderMode::WorldSpace))
 	{
-		UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().SetContextColor(m_Id, m_Color);
+		UnifiedScene::Instance().GetGuiExtension()->SetContextColor(m_Id, m_Color);
 	}
 }
 
@@ -223,7 +223,7 @@ void GuiCanvasComponent::SetDepthTestEnabled(bool const depthTest)
 	m_EnableDepthTest = depthTest;
 	if ((m_Id != gui::INVALID_CONTEXT_ID) && (m_RenderMode == E_RenderMode::WorldSpace))
 	{
-		UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().SetDepthTestEnabled(m_Id, m_EnableDepthTest);
+		UnifiedScene::Instance().GetGuiExtension()->SetDepthTestEnabled(m_Id, m_EnableDepthTest);
 	}
 }
 
@@ -240,16 +240,16 @@ void GuiCanvasComponent::InitForScreenSpace(EcsController const& ecs)
 	CameraComponent const& camera = ecs.GetComponent<CameraComponent>(m_Camera.GetId());
 	if (camera.GetViewport() != nullptr)
 	{
-		gui::ContextContainer& contextContainer = UnifiedScene::Instance().GetGuiExtension()->GetContextContainer();
+		gui::GuiExtension& guiExt = *UnifiedScene::Instance().GetGuiExtension();
 
-		m_Id = contextContainer.CreateContext(camera.GetViewport());
+		m_Id = guiExt.CreateContext(camera.GetViewport());
 		if (!m_DataModelId.IsEmpty())
 		{
-			m_DataModel = std::move(contextContainer.InstantiateDataModel(m_Id, m_DataModelId));
+			m_DataModel = std::move(guiExt.InstantiateDataModel(m_Id, m_DataModelId));
 		}
 
-		contextContainer.SetLoadedDocument(m_Id, m_GuiDocumentId);
-		contextContainer.SetContextActive(m_Id, m_IsActive);
+		guiExt.SetLoadedDocument(m_Id, m_GuiDocumentId);
+		guiExt.SetContextActive(m_Id, m_IsActive);
 	}
 }
 
@@ -271,12 +271,12 @@ void GuiCanvasComponent::UpdateCamera()
 
 		if (eventCamera.GetViewport() != nullptr)
 		{
-			uniScene.GetGuiExtension()->GetContextContainer().SetEventCamera(m_Id, eventCamera.GetId());
+			uniScene.GetGuiExtension()->SetEventCamera(m_Id, eventCamera.GetId());
 			return;
 		}
 	}
 
-	uniScene.GetGuiExtension()->GetContextContainer().SetEventCamera(m_Id, core::INVALID_SLOT_ID);
+	uniScene.GetGuiExtension()->SetEventCamera(m_Id, core::INVALID_SLOT_ID);
 }
 
 

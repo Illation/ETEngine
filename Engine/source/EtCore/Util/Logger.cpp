@@ -172,26 +172,6 @@ void Logger::Log(const std::string& msg, LogLevel level, bool timestamp, ivec2 c
 	CheckBreak(level);
 }
 
-#ifndef ET_SHIPPING
-
-//-----------------------
-// Logger::ProcessAssert
-//
-// break on non shipping builds
-//
-bool Logger::ProcessAssert(bool const condition, std::string const& caller, std::string const& msg)
-{
-	if (!condition)
-	{
-		Log("[ASSERT] " + caller + std::string(" > ") + msg, LogLevel::Warning, true);
-		return true;
-	}
-
-	return false;
-}
-
-#endif // ET_SHIPPING
-
 
 //-----------------------
 // Logger::CheckBreak
@@ -203,13 +183,7 @@ void Logger::CheckBreak(LogLevel level)
 	if ((m_BreakBitField&level) == level)
 	{
 #if ET_DEBUG
-
-#ifdef ET_ARCH_X32
-		__asm { int 3 };
-#else // ET_ARCH_X64
-		__debugbreak();
-#endif // ET_ARCH_X32
-
+		ET_BREAK();
 #else // not debug
 		exit(-1);
 #endif // ET_DEBUG

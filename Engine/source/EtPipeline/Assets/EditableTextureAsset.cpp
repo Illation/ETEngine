@@ -155,8 +155,8 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 bool EditableTextureAsset::GenerateInternal(BuildConfiguration const& buildConfig, std::string const& dbPath)
 {
-	UNUSED(buildConfig);
-	UNUSED(dbPath);
+	ET_UNUSED(buildConfig);
+	ET_UNUSED(dbPath);
 
 	ET_ASSERT(m_RuntimeAssets.size() == 1u);
 	m_RuntimeAssets[0].m_HasGeneratedData = true; 

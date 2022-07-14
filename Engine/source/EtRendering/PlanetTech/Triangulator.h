@@ -52,7 +52,6 @@ public:
 	bool Update(mat4 const& transform, Camera const& camera);
 	void GenerateGeometry();
 
-	bool IsFrustumLocked() { return m_LockFrustum; }
 	Frustum& GetFrustum() { return m_Frustum; }
 	Frustum const& GetFrustum() const { return m_Frustum; }
 
@@ -79,7 +78,6 @@ private:
 
 	Planet* m_Planet = nullptr;
 	Frustum m_Frustum;
-	bool m_LockFrustum = false;
 
 	std::vector<PatchInstance> m_Positions;
 };

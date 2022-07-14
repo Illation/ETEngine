@@ -129,7 +129,7 @@ void FreeCameraSystem::Process(fw::ComponentRange<FreeCameraSystemView>& range)
 	}
 
 	// ensure we don't loose input when we mouse over a GUI context while dragging the camera
-	fw::UnifiedScene::Instance().GetGuiExtension()->GetContextContainer().SetInputEnabled(!hasInput);
+	fw::UnifiedScene::Instance().GetGuiExtension()->SetInputEnabled(!hasInput);
 }
 
 

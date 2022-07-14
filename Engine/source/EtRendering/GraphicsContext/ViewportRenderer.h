@@ -20,7 +20,7 @@ public:
 	virtual rttr::type GetType() const = 0;
 	virtual void OnInit() {}
 	virtual void OnDeinit() {}
-	virtual void OnResize(ivec2 const dim) { UNUSED(dim); }
+	virtual void OnResize(ivec2 const dim) { ET_UNUSED(dim); }
 	virtual void OnRender(T_FbLoc const targetFb) {}
 };
 

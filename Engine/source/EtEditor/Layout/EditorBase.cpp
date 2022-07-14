@@ -28,8 +28,8 @@ namespace edit {
 //
 bool EditorBase::OnKeyEvent(bool const pressed, GdkEventKey* const evnt)
 {
-	UNUSED(pressed);
-	UNUSED(evnt);
+	ET_UNUSED(pressed);
+	ET_UNUSED(evnt);
 
 	return false;
 }
@@ -65,7 +65,7 @@ void EditorBase::Init(Gtk::Frame* const parent)
 	// once the widget sizes are available, adjust the sizes of widgets based on what the layout loaded
 	auto allocateCallback = [this](Gtk::Allocation& allocation)
 	{
-		UNUSED(allocation);
+		ET_UNUSED(allocation);
 
 		m_HasInitialSize = true;
 	};

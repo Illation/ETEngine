@@ -22,8 +22,8 @@ namespace fw {
 //
 void TransformSystem::OnComponentAdded(EcsController& controller, TransformComponent& component, T_EntityId const entity)
 {
-	UNUSED(controller);
-	UNUSED(entity);
+	ET_UNUSED(controller);
+	ET_UNUSED(entity);
 
 	component.m_NodeId = UnifiedScene::Instance().GetRenderScene().AddNode(component.GetWorld());
 }
@@ -35,8 +35,8 @@ void TransformSystem::OnComponentAdded(EcsController& controller, TransformCompo
 //
 void TransformSystem::OnComponentRemoved(EcsController& controller, TransformComponent& component, T_EntityId const entity)
 {
-	UNUSED(controller);
-	UNUSED(entity);
+	ET_UNUSED(controller);
+	ET_UNUSED(entity);
 
 	UnifiedScene::Instance().GetRenderScene().RemoveNode(component.GetNodeId());
 }

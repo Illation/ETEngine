@@ -1,14 +1,14 @@
 #include "stdafx.h"
-#include "GraphicsContext.h"
+#include "RenderWindow.h"
 
 
 namespace et {
 namespace render {
 
 
-//==================
-// Window interface
-//==================
+//===============
+// Render Window
+//===============
 
 
 //---------------------------------

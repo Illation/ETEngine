@@ -259,18 +259,18 @@ TEST_CASE("controller component construction, component events", "[ecs]")
 
 	auto onAdded = [&counter2](fw::EcsController& controller, TestRefCountComp& comp, fw::T_EntityId const entity) -> void
 	{
-		UNUSED(controller);
-		UNUSED(comp);
-		UNUSED(entity);
+		ET_UNUSED(controller);
+		ET_UNUSED(comp);
+		ET_UNUSED(entity);
 
 		++counter2;
 	};
 
 	auto onRemoved = [&counter2](fw::EcsController& controller, TestRefCountComp& comp, fw::T_EntityId const entity) -> void
 	{
-		UNUSED(controller);
-		UNUSED(comp);
-		UNUSED(entity);
+		ET_UNUSED(controller);
+		ET_UNUSED(comp);
+		ET_UNUSED(entity);
 
 		--counter2;
 	};

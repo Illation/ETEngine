@@ -1,18 +1,6 @@
 #pragma once
-#include "FreeCamera.h"
-
-#include <EtCore/Content/AssetPointer.h>
-
-#include <EtFramework/SceneGraph/SceneEvents.h>
 
 #include <EtRuntime/AbstractFramework.h>
-
-#include <Common/DemoUI.h>
-
-
-namespace et { namespace gui {
-	class SdfFont;
-} }
 
 
 namespace et {
@@ -48,13 +36,6 @@ private:
 	///////
 
 	size_t m_CurrentScene = 0u;
-
-	AssetPtr<gui::SdfFont> m_DebugFont;
-	bool m_DrawDebugInfo = true;
-	bool m_DrawFontAtlas = false;
-
-	DemoUI::GuiData m_GuiData;
-	bool m_ShowGui = true;
 };
 
 

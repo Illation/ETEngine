@@ -32,8 +32,6 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 {
 	// basic rendering systems
 	//-------------------------
-	m_TextRenderer.Initialize();
-	m_SpriteRenderer.Initialize();
 	m_GuiRenderer.Init();
 
 	// render events
@@ -44,7 +42,7 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 	m_WorldCallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RE_RenderWorldGUI, render::T_RenderEventCallback(
 		[this](render::T_RenderEventFlags const flags, render::RenderEventData const* const evnt) -> void
 		{
-			UNUSED(flags);
+			ET_UNUSED(flags);
 
 			if (evnt->renderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
 			{
@@ -57,7 +55,7 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 				}
 
 				GuiExtension* const guiExt = static_cast<GuiExtension*>(ext);
-				DrawInWorld(evnt->targetFb, *guiExt, renderer->GetScene()->GetNodes());
+				DrawInWorld(evnt->targetFb, renderer->Get3DPolyMode(), *guiExt, renderer->GetScene()->GetNodes());
 			}
 			else
 			{
@@ -69,7 +67,7 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 	m_OverlayCallbackId = m_EventDispatcher->Register(render::E_RenderEvent::RE_RenderOverlay, render::T_RenderEventCallback(
 		[this](render::T_RenderEventFlags const flags, render::RenderEventData const* const evnt) -> void
 		{
-			UNUSED(flags);
+			ET_UNUSED(flags);
 
 			if (evnt->renderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
 			{
@@ -82,7 +80,7 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 				}
 
 				GuiExtension* const guiExt = static_cast<GuiExtension*>(ext);
-				DrawOverlay(evnt->targetFb, *guiExt, renderer->GetScene()->GetNodes());
+				DrawOverlay(evnt->targetFb, renderer->Get3DPolyMode(), *guiExt);
 			}
 			else
 			{
@@ -99,8 +97,6 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 void SceneRendererGUI::Deinit()
 {
 	m_GuiRenderer.Deinit();
-	m_SpriteRenderer.Deinit();
-	m_TextRenderer.Deinit();
 
 	if (m_EventDispatcher != nullptr)
 	{
@@ -117,26 +113,17 @@ void SceneRendererGUI::Deinit()
 //
 // Draw UI from the extension that sits within the world
 //
-void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension& guiExt, core::slot_map<mat4> const& nodes)
+void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, 
+	render::E_PolygonMode const polyMode,
+	GuiExtension& guiExt, 
+	core::slot_map<mat4> const& nodes)
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 	api->BindFramebuffer(targetFb);
 
-	SpriteRenderer::E_ScalingMode const scalingMode = SpriteRenderer::E_ScalingMode::Texture;
-	for (GuiExtension::Sprite const& sprite : guiExt.GetSprites())
-	{
-		mat4 const& transform = nodes[sprite.node];
-
-		vec3 pos, scale;
-		quat rot;
-		math::decomposeTRS(transform, pos, rot, scale);
-
-		m_SpriteRenderer.Draw(sprite.texture, pos.xy, sprite.color, sprite.pivot, scale.xy, rot.Roll(), pos.z, scalingMode);
-	}
-
 	// RmlUi 3D contexts
 	//-------------------
-	for (ContextContainer::WorldContext& worldContext : guiExt.GetContextContainer().GetWorldContexts())
+	for (GuiExtension::WorldContext& worldContext : guiExt.GetWorldContexts())
 	{
 		if (worldContext.m_Context.HasActiveDocuments())
 		{
@@ -151,7 +138,8 @@ void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension&
 				worldContext.m_Context, 
 				transform, 
 				worldContext.m_Color, 
-				worldContext.m_IsDepthEnabled);
+				worldContext.m_IsDepthEnabled,
+				polyMode);
 		}
 	}
 }
@@ -161,23 +149,20 @@ void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension&
 //
 // Draw UI from the extension that goes on top of everything else
 //
-void SceneRendererGUI::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiExt, core::slot_map<mat4> const& nodes)
+void SceneRendererGUI::DrawOverlay(render::T_FbLoc const targetFb, render::E_PolygonMode const polyMode, GuiExtension& guiExt)
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 	api->BindFramebuffer(targetFb);
-
-	m_SpriteRenderer.Draw();
-	m_TextRenderer.Draw();
 
 	// RmlUi overlays
 	//----------------
 	render::Viewport const* const viewport = render::Viewport::GetCurrentViewport();
 	ContextRenderTarget* renderTarget;
-	Context* const context = guiExt.GetContextContainer().GetContext(viewport, renderTarget);
+	Context* const context = guiExt.GetContext(viewport, renderTarget);
 	if ((context != nullptr) && context->HasActiveDocuments())
 	{
 		renderTarget->UpdateForDimensions(viewport->GetDimensions());
-		m_GuiRenderer.RenderContext(targetFb, *renderTarget, *context);
+		m_GuiRenderer.RenderContext(targetFb, *renderTarget, *context, polyMode);
 	}
 }
 

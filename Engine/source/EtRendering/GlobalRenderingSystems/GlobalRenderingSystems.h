@@ -7,6 +7,7 @@
 #include "CIE.h"
 #include "LightVolume.h"
 #include "SharedVarController.h"
+#include "RenderDebugVars.h"
 
 #include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/PlanetTech/Patch.h>
@@ -68,6 +69,10 @@ public:
 	Material const* GetNullMaterial() const { return m_NullMaterial.get(); }
 	Material const* GetColorMaterial() const { return m_ColorMaterial.get(); }
 
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	DebugVars const& GetDebugVars() const { return m_DebugVars; }
+#endif
+
 	// Data
 	///////
 private:
@@ -90,6 +95,10 @@ private:
 
 	AssetPtr<Material> m_NullMaterial;
 	AssetPtr<Material> m_ColorMaterial;
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	DebugVars m_DebugVars;
+#endif
 };
 
 

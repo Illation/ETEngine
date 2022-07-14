@@ -109,7 +109,7 @@ Gtk::Widget* Outliner::GetToolbarContent()
 //
 void Outliner::OnSceneEvent(fw::E_SceneEvent const eventType, fw::SceneEventData const* const eventData)
 {
-	UNUSED(eventData);
+	ET_UNUSED(eventData);
 
 	switch (eventType)
 	{
@@ -162,7 +162,7 @@ void Outliner::OnEntitySelectionCleared()
 //
 void Outliner::OnTreeViewRowActivated(Gtk::TreeModel::Path const& path, Gtk::TreeViewColumn* const column)
 {
-	UNUSED(column);
+	ET_UNUSED(column);
 
 	Gtk::TreeModel::iterator const it = m_TreeModel->get_iter(path);
 	if (it)

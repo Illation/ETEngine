@@ -28,6 +28,10 @@ RefPtr<RmlGlobal> RmlGlobal::GetInstance()
 	if (s_Instance == nullptr)
 	{
 		s_Instance = Create<RmlGlobal>();
+
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
+		s_Instance->m_Debug.Init(ToPtr(&s_Instance->m_Renderer), ToPtr(&s_Instance->m_FontEngine));
+#endif
 	}
 
 	return s_Instance;
@@ -132,6 +136,17 @@ void RmlGlobal::SetRIView(ivec2 const dim, mat4 const& viewProj)
 {
 	m_Renderer.SetView(dim, viewProj);
 }
+
+
+#if ET_CT_IS_ENABLED(ET_CT_RML_DEBUGGER)
+//----------------------------------
+// RmlGlobal::OnContextDestroyed
+//
+void RmlGlobal::OnContextDestroyed(Rml::Context const* const context)
+{
+	m_Debug.OnContextDestroyed(context);
+}
+#endif
 
 
 } // namespace gui

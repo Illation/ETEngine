@@ -24,7 +24,7 @@ namespace gui {
 void GuiRenderer::Init()
 {
 	m_RmlGlobal = RmlGlobal::GetInstance(); // might initialize RML if this is the first GUI renderer
-	m_RmlShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUi.glsl"));
+	m_GenericShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostGenericUi.glsl"));
 	m_RmlSdfShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUiSdf.glsl"));
 	m_RmlBlitShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUiBlit.glsl"));
 	m_RmlBlit3DShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUiBlit3D.glsl"));
@@ -37,7 +37,7 @@ void GuiRenderer::Deinit()
 {
 	m_RmlGlobal = nullptr;
 
-	m_RmlShader = nullptr;
+	m_GenericShader = nullptr;
 	m_RmlBlitShader = nullptr;
 	m_RmlBlit3DShader = nullptr;
 	m_RmlSdfShader = nullptr;
@@ -48,7 +48,7 @@ void GuiRenderer::Deinit()
 //
 // Render a list of contexts to the target framebuffer
 //
-void GuiRenderer::RenderContext(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context& context)
+void GuiRenderer::RenderContext(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context& context, render::E_PolygonMode const polyMode)
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
@@ -56,10 +56,14 @@ void GuiRenderer::RenderContext(render::T_FbLoc const targetFb, ContextRenderTar
 
 	SetupContextRendering(api, renderTarget);
 
+	api->SetPolygonMode(render::E_FaceCullMode::FrontBack, polyMode);
+
 	// render context elements
 	api->DebugPushGroup("Overlay Context");
 	context.Render();
 	api->DebugPopGroup();
+
+	api->SetPolygonMode(render::E_FaceCullMode::FrontBack, render::E_PolygonMode::Fill);
 
 	// blit results to target framebuffer 
 	api->BindFramebuffer(targetFb);
@@ -86,7 +90,8 @@ void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb,
 	Context& context, 
 	mat4 const& transform,
 	vec4 const& color,
-	bool const enableDepth)
+	bool const enableDepth,
+	render::E_PolygonMode const polyMode)
 {
 	if (!context.HasActiveDocuments())
 	{
@@ -97,11 +102,15 @@ void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb,
 
 	api->DebugPushGroup("RmlUi 3D Context");
 
+	api->SetPolygonMode(render::E_FaceCullMode::FrontBack, polyMode);
+
 	SetupContextRendering(api, renderTarget);
 
 	api->DebugPushGroup("Context elements");
 	context.Render();
 	api->DebugPopGroup();
+
+	api->SetPolygonMode(render::E_FaceCullMode::FrontBack, render::E_PolygonMode::Fill);
 
 	// blit results to target framebuffer 
 	api->BindFramebuffer(targetFb);
@@ -148,10 +157,10 @@ void GuiRenderer::SetupContextRendering(render::I_GraphicsContextApi* const api,
 	api->SetShader(m_RmlSdfShader.get());
 	m_RmlSdfShader->Upload("uViewProjection"_hash, viewProjection);
 
-	api->SetShader(m_RmlShader.get());
-	m_RmlShader->Upload("uViewProjection"_hash, viewProjection);
+	api->SetShader(m_GenericShader.get());
+	m_GenericShader->Upload("uViewProjection"_hash, viewProjection);
 
-	RmlGlobal::GetInstance()->SetRIShader(m_RmlShader, m_RmlSdfShader);
+	RmlGlobal::GetInstance()->SetRIShader(m_GenericShader, m_RmlSdfShader);
 
 	// pipeline state
 	api->SetViewport(ivec2(0), iViewDim);

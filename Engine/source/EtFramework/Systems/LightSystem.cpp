@@ -47,8 +47,8 @@ void LightSystem::OnComponentAdded(EcsController& controller, LightComponent& co
 //
 void LightSystem::OnComponentRemoved(EcsController& controller, LightComponent& component, T_EntityId const entity)
 {
-	UNUSED(controller);
-	UNUSED(entity);
+	ET_UNUSED(controller);
+	ET_UNUSED(entity);
 
 	UnifiedScene::Instance().GetRenderScene().RemoveLight(component.m_LightId);
 }

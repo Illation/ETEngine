@@ -29,6 +29,21 @@ namespace et {
 namespace rt {
 
 
+//====================
+// Abstract Framework
+//====================
+
+
+//----------------------------
+// AbstractFramework::c-tor
+//
+AbstractFramework::AbstractFramework() 
+	: core::I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_Framework))
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
+	, m_ImguiBackend(static_cast<uint32>(fw::E_TickOrder::TICK_ImguiBackend))
+#endif
+{ }
+
 //----------------------------
 // AbstractFramework::d-tor
 //
@@ -37,6 +52,10 @@ namespace rt {
 AbstractFramework::~AbstractFramework()
 {
 	fw::UnifiedScene::Instance().UnloadScene();
+
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
+	m_ImguiBackend.Deinit();
+#endif
 
 	m_GuiRenderer.Deinit();
 
@@ -57,7 +76,9 @@ AbstractFramework::~AbstractFramework()
 	core::InputManager::DestroyInstance();
 	core::ContextManager::DestroyInstance();
 
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 	core::PerformanceInfo::DestroyInstance();
+#endif
 	
 	core::ResourceManager::DestroyInstance();
 
@@ -92,8 +113,8 @@ void AbstractFramework::Run()
 	unifiedScene.GetEventDispatcher().Register(fw::E_SceneEvent::RegisterSystems,
 		fw::T_SceneEventCallback([this](fw::T_SceneEventFlags const flags, fw::SceneEventData const* const eventData)
 		{
-			UNUSED(flags);
-			UNUSED(eventData);
+			ET_UNUSED(flags);
+			ET_UNUSED(eventData);
 
 			OnSystemInit();
 		}));
@@ -106,6 +127,7 @@ void AbstractFramework::Run()
 			switch (static_cast<fw::E_SceneEvent>(flags))
 			{
 			case fw::E_SceneEvent::SceneSwitch:
+				m_SplashScreenRenderer->SetGuiDocument(m_SplashScreenGui);
 				m_Viewport->SetRenderer(m_SplashScreenRenderer.Get());
 
 				m_Viewport->SetTickDisabled(true);
@@ -115,6 +137,7 @@ void AbstractFramework::Run()
 
 			case fw::E_SceneEvent::Activated:
 				m_Viewport->SetRenderer(m_SceneRenderer.Get()); // update will happen anyway during the loop
+				m_SplashScreenRenderer->SetGuiDocument(core::HashString());
 				break;
 
 			case fw::E_SceneEvent::ActiveCameraChanged:
@@ -135,6 +158,7 @@ void AbstractFramework::Run()
 
 	// init rendering target
 	m_Viewport = Create<render::Viewport>(&m_RenderWindow.GetArea());
+	m_Viewport->SetTickDisabled(true);
 	m_SplashScreenRenderer = Create<rt::SplashScreenRenderer>();
 	m_Viewport->SetRenderer(m_SplashScreenRenderer.Get());
 	render::ContextHolder::Instance().CreateMainRenderContext(&m_RenderWindow); // also initializes the viewport and its renderer
@@ -164,13 +188,18 @@ void AbstractFramework::Run()
 	cfg->InitRenderConfig();
 
 	m_SplashScreenRenderer->Init();
+	m_SplashScreenGui = bootCfg.splashGui;
 	m_SplashScreenRenderer->SetGuiDocument(bootCfg.splashGui);
 	m_RenderWindow.GetArea().Update();
 
 	fw::AudioManager::GetInstance()->Initialize();
+	fw::AudioManager::GetInstance()->SetDistanceModel(AL_INVERSE_DISTANCE);
+
 	fw::PhysicsManager::GetInstance()->Initialize();
 
-	core::PerformanceInfo::GetInstance(); // Initialize performance measurement #todo: disable for shipped project?
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	core::PerformanceInfo::GetInstance(); 
+#endif
 
 	// init input 
 	core::InputManager* const inputMan = core::InputManager::GetInstance();
@@ -194,6 +223,12 @@ void AbstractFramework::Run()
 	// load scene
 	OnInit();
 	unifiedScene.LoadScene(bootCfg.startScene);
+
+#if ET_CT_IS_ENABLED(ET_CT_IMGUI)
+	m_ImguiBackend.Init(ToPtr(&glfwMan), ToPtr(&glfwMan), ToPtr(m_Viewport.Get()));
+#endif
+
+	m_Viewport->SetTickDisabled(false);
 
 	// update
 	MainLoop();

@@ -48,6 +48,7 @@ public:
 	~Context();
 
 	void Init(std::string const& name, ivec2 const dimensions);
+	void Deinit();
 
 	// functionality
 	//---------------

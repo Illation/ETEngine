@@ -1,4 +1,6 @@
 <VERTEX>
+	// This shader works for both basic RmlUI rendering and all of imgui
+
 	#version 400 core
 	
 	//in
@@ -6,8 +8,8 @@
 	layout (location = 1) in vec4 vColor; 
 	layout (location = 2) in vec2 vTexCoord;
 
-	uniform vec2 uTranslation;
-	uniform mat4 uTransform;
+	uniform vec2 uTranslation; // not used for imgui
+	uniform mat4 uTransform; // not used for imgui
 
 	uniform mat4 uViewProjection;
 

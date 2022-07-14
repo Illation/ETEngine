@@ -101,7 +101,7 @@ void ColladaImporter::SetupOptions(Gtk::Frame* const frame, T_SensitiveFn& sensi
 //
 bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string const& filePath, std::vector<pl::EditorAssetBase*>& outAssets) const
 {
-	UNUSED(importData);
+	ET_UNUSED(importData);
 
 	// read the barebones document
 	ColladaParser const parser(importData);

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "TickManager.h"
+#include "PerformanceInfo.h"
 
 #include "Tickable.h"
 #include "RealTimeTickTriggerer.h"
@@ -57,13 +58,21 @@ void TickManager::TriggerRealTime(I_RealTimeTickTriggerer* const triggerer)
 		{
 			EndTick();
 
-			for (T_RealTimeTriggerer& rt : triggerersCopy)
+			for (T_RealTimeTriggerer& rt : m_RealTimeTriggerers)
 			{
 				rt.second = false;
 			}
 
 			Tick();
 		}
+
+		// we need to find this triggerer again in the original list to ensure the value is set in a useful way
+		findResult = std::find_if(m_RealTimeTriggerers.begin(), m_RealTimeTriggerers.end(), [triggerer](T_RealTimeTriggerer const& rt)
+			{
+				return rt.first == triggerer;
+			});
+
+		ET_ASSERT(findResult != m_RealTimeTriggerers.cend());
 		findResult->second = true;
 	}
 }
@@ -101,6 +110,7 @@ void TickManager::TriggerDefault(I_DefaultTickTriggerer* const triggerer)
 
 			Tick();
 		}
+
 		findResult->second = true;
 	}
 }
@@ -256,7 +266,10 @@ void TickManager::Tick()
 	{
 		// start new frame timer and performance
 		context->time->Update();
-		PERFORMANCE->StartFrameTimer();
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+		PerformanceInfo::GetInstance()->StartFrameTimer();
+#endif
 	}
 
 	// tick all objects
@@ -277,7 +290,9 @@ void TickManager::Tick()
 void TickManager::EndTick()
 {
 	// update performance info
-	PERFORMANCE->Update();
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	PerformanceInfo::GetInstance()->Update();
+#endif
 }
 
 

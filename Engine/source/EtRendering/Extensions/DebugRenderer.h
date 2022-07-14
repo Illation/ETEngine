@@ -1,5 +1,10 @@
 #pragma once
+#include <EtCore/Util/DebugUtilFwd.h>
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+
 #include <EtCore/Content/AssetPointer.h>
+
 
 namespace et {
 namespace render {
@@ -8,10 +13,17 @@ namespace render {
 class Camera;
 
 
+//----------------
+// DebugRenderer
+//
+// Draw lines in 3D for non shipping builds
+//
 class DebugRenderer final
 {
+	// definitions
+	//-------------
 private:
-	friend class SceneRenderer;
+	friend class ShadedSceneRenderer;
 
 	struct LineVertex
 	{
@@ -26,11 +38,15 @@ private:
 		uint32 size = 0;
 	};
 
+	// contruct destruct
+	//-------------------
 	DebugRenderer() = default;
 	~DebugRenderer();
 
 	void Initialize();
 
+	// functionality
+	//---------------
 public:
 	void DrawLine(vec3 start, vec3 end, vec4 col = vec4(1), float thickness = 1);
 	void DrawLine(vec3 start, vec4 startCol, vec3 end, vec4 endCol, float thickness = 1);
@@ -38,9 +54,16 @@ public:
 	void DrawGrid(Camera const& camera, float pixelSpacingRad = math::radians(75));
 
 private:
+	void Draw(Camera const& camera); // actually render to GPU
+
+	// utility
+	//---------
 	void UpdateBuffer();
-	void Draw(Camera const& camera);
 	void CheckMetaData(float thickness);
+
+
+	// Data
+	///////
 
 	//Linebuffer
 	std::vector<LineVertex> m_Lines;
@@ -52,9 +75,11 @@ private:
 	std::vector<LineMetaData> m_MetaData;
 
 	//Shader and its uniforms
-	AssetPtr<ShaderData> m_pShader;
+	AssetPtr<ShaderData> m_Shader;
 };
 
 
 } // namespace render
 } // namespace et
+
+#endif // ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)

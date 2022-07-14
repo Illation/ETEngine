@@ -14,6 +14,16 @@ namespace et {
 namespace render {
 
 
+// reflection
+//////////////
+RTTR_REGISTRATION
+{
+	rttr::registration::enumeration<E_RenderMode>("E_RenderMode") (
+		rttr::value("Shaded", E_RenderMode::Shaded),
+		rttr::value("Wireframe", E_RenderMode::Wireframe));
+}
+
+
 //=======================
 // Shaded Scene Renderer
 //=======================
@@ -84,6 +94,10 @@ void ShadedSceneRenderer::InitRenderingSystems()
 	m_ClearColor = vec3(200.f / 255.f, 114.f / 255.f, 200.f / 255.f)*0.0f;
 
 	m_SkyboxShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/FwdSkyboxShader.glsl"));
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	m_DebugRenderer.Initialize();
+#endif
 
 	m_IsInitialized = true;
 }
@@ -157,6 +171,10 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
 	api->DebugPopGroup();
 
+	// fill mode
+	E_PolygonMode const polyMode = Get3DPolyMode();
+	api->SetPolygonMode(E_FaceCullMode::FrontBack, polyMode);
+
 	// draw terrains
 	api->DebugPushGroup("terrains");
 	api->SetCullEnabled(false);
@@ -184,6 +202,8 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->DebugPushGroup("extensions");
 	m_Events.Notify(E_RenderEvent::RE_RenderDeferred, new RenderEventData(this, m_GBuffer.Get()));
 	api->DebugPopGroup();
+
+	api->SetPolygonMode(E_FaceCullMode::FrontBack, E_PolygonMode::Fill);
 
 	api->DebugPopGroup();
 
@@ -284,6 +304,8 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->DebugPushGroup("forward render pass");
 	api->SetDepthEnabled(true);
 
+	api->SetPolygonMode(E_FaceCullMode::FrontBack, polyMode);
+
 	// draw skybox
 	api->DebugPushGroup("skybox");
 	Skybox const& skybox = m_RenderScene->GetSkybox();
@@ -321,7 +343,11 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	
 	// draw atmospheres
 	api->DebugPushGroup("atmospheres");
-	if (m_RenderScene->GetAtmosphereInstances().size() > 0u)
+	if ((m_RenderScene->GetAtmosphereInstances().size() > 0u)
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+		&& !RenderingSystems::Instance()->GetDebugVars().AtmospheresHidden()
+#endif
+		)
 	{
 		api->SetFaceCullingMode(E_FaceCullMode::Front);
 		api->SetDepthEnabled(false);
@@ -346,6 +372,8 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	}
 	api->DebugPopGroup();
 
+	api->SetPolygonMode(E_FaceCullMode::FrontBack, E_PolygonMode::Fill);
+
 	api->DebugPopGroup(); // forward render pass
 
 	// Post Scene rendering
@@ -355,9 +383,19 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	m_Events.Notify(E_RenderEvent::RE_RenderWorldGUI, new RenderEventData(this, m_PostProcessing.GetTargetFBO()));
 	api->DebugPopGroup(); // extensions
 
+	// debug stuff
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	api->DebugPushGroup("debug");
+
+	DrawDebugVisualizations();
+	m_DebugRenderer.Draw(camera);
+
+	api->DebugPopGroup(); // debug
+#endif
+
 	// post processing
 	api->SetCullEnabled(false);
-	m_PostProcessing.Draw(targetFb, m_RenderScene->GetPostProcessingSettings(), 
+	m_PostProcessing.Draw(targetFb, GetPostProcessingSettings(), 
 		std::function<void(T_FbLoc const)>([this, api](T_FbLoc const targetFb)
 		{
 			api->DebugPushGroup("overlay extensions");
@@ -405,6 +443,44 @@ void ShadedSceneRenderer::DrawShadow(I_Material const* const nullMaterial)
 	}
 }
 
+//------------------------------------
+// ShadedSceneRenderer::Get3DPolyMode
+//
+// What poly mode to use for 3D rendering based on the render mode
+//
+E_PolygonMode ShadedSceneRenderer::Get3DPolyMode() const
+{
+	E_RenderMode renderMode = m_RenderMode;
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	RenderingSystems::Instance()->GetDebugVars().OverrideMode(renderMode);
+#endif
+
+	return (renderMode == E_RenderMode::Wireframe) ? E_PolygonMode::Line : E_PolygonMode::Fill;
+}
+
+//------------------------------------------------
+// ShadedSceneRenderer::GetPostProcessingSettings
+//
+// For wireframe rendering we override post processing settings
+//
+PostProcessingSettings const& ShadedSceneRenderer::GetPostProcessingSettings()
+{
+	E_RenderMode renderMode = m_RenderMode;
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	RenderingSystems::Instance()->GetDebugVars().OverrideMode(renderMode);
+#endif
+
+	if (renderMode == E_RenderMode::Shaded)
+	{
+		return m_RenderScene->GetPostProcessingSettings();
+	}
+
+	m_OverrideSettings = m_RenderScene->GetPostProcessingSettings();
+	m_OverrideSettings.bloomMult = 0.f;
+	m_OverrideSettings.exposure *= 5.f;
+	return m_OverrideSettings;
+}
+
 //--------------------------------------------------
 // ShadedSceneRenderer::DrawMaterialCollectionGroup
 //
@@ -431,7 +507,7 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 				{
 					// #todo: collect a list of transforms and draw this instanced
 					mat4 const& transform = m_RenderScene->GetNodes()[node];
-					math::Sphere instSphere = math::Sphere((transform * vec4(mesh.m_BoundingVolume.pos, 1.f)).xyz, 
+					math::Sphere instSphere = math::Sphere((transform * vec4(mesh.m_BoundingVolume.pos, 1.f)).xyz,
 						math::length(math::decomposeScale(transform)) * mesh.m_BoundingVolume.radius);
 
 					if (camera.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
@@ -444,6 +520,39 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 		}
 	}
 }
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+
+//--------------------------------------------------
+// ShadedSceneRenderer::DrawDebugVisualizations
+//
+void ShadedSceneRenderer::DrawDebugVisualizations()
+{
+	// Debug visualization for where the camera frustum was when it was frozen
+	if (RenderingSystems::Instance()->GetDebugVars().IsFrustumFrozen())
+	{
+		FrustumCorners const& corners = GetCamera().GetFrustum().GetCorners();
+
+		vec4 const lineCol(vec3(10.f), 1.f);
+
+		m_DebugRenderer.DrawLine(corners.na, corners.nb, lineCol);
+		m_DebugRenderer.DrawLine(corners.nd, corners.nb, lineCol);
+		m_DebugRenderer.DrawLine(corners.nd, corners.nc, lineCol);
+		m_DebugRenderer.DrawLine(corners.na, corners.nc, lineCol);
+
+		m_DebugRenderer.DrawLine(corners.fa, corners.fb, lineCol);
+		m_DebugRenderer.DrawLine(corners.fd, corners.fb, lineCol);
+		m_DebugRenderer.DrawLine(corners.fd, corners.fc, lineCol);
+		m_DebugRenderer.DrawLine(corners.fa, corners.fc, lineCol);
+
+		m_DebugRenderer.DrawLine(corners.na, corners.fa, lineCol);
+		m_DebugRenderer.DrawLine(corners.nb, corners.fb, lineCol);
+		m_DebugRenderer.DrawLine(corners.nc, corners.fc, lineCol);
+		m_DebugRenderer.DrawLine(corners.nd, corners.fd, lineCol);
+	}
+}
+
+#endif // ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 
 
 } // namespace render

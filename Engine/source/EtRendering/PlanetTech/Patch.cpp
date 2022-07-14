@@ -157,7 +157,7 @@ void Patch::Draw(Planet const& planet, mat4 const& transform)
 	m_pPatchShader->Upload("model"_hash, transform);
 
 	//Set other uniforms here too!
-	vec3 camPos = planet.GetTriangulator().GetFrustum().GetPositionOS();
+	m_pPatchShader->Upload("uCamPos"_hash, planet.GetTriangulator().GetFrustum().GetPositionOS()); // can't use the shared camera because we need OS pos
 	m_pPatchShader->Upload("radius"_hash, planet.GetRadius());
 	m_pPatchShader->Upload("morphRange"_hash, m_MorphRange);
 

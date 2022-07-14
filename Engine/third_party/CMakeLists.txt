@@ -30,16 +30,22 @@ endif()
 # Add them
 #---------------
 
+# prebuilt libraries
 add_subdirectory (glfw)
 add_subdirectory (bullet)
 add_subdirectory (rttr)
 add_subdirectory (openal)
+add_subdirectory (rmlui)
 if(WIN32)
 	add_subdirectory (vcpkg)
 endif()
+
+# generated libraries
+add_subdirectory (glad)
+
+# integrated libraries
 add_subdirectory (stb)
 add_subdirectory (mikkt)
-add_subdirectory (glad)
 add_subdirectory (bc7enc)
 add_subdirectory (convectionKernels)
-add_subdirectory (rmlui)
+add_subdirectory (imgui)
