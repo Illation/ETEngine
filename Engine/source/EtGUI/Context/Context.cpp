@@ -4,6 +4,7 @@
 #include "RmlGlobal.h"
 #include "GuiDocument.h"
 #include "RmlUtil.h"
+#include "RmlDebuggerFwd.h"
 
 #include <RmlUi/Core/Core.h>
 #include <RmlUi/Core/Context.h>
@@ -27,10 +28,7 @@ namespace gui {
 //
 Context::~Context()
 {
-	if (RmlGlobal::IsInitialized() && (m_Context != nullptr))
-	{
-		Rml::RemoveContext(m_Context->GetName());
-	}
+	Deinit();
 }
 
 //---------------
@@ -42,6 +40,25 @@ void Context::Init(std::string const& name, ivec2 const dimensions)
 
 	m_Context = ToPtr(Rml::CreateContext(name.c_str(), Rml::Vector2i(dimensions.x, dimensions.y)));
 	ET_ASSERT(m_Context != nullptr, "Failed to create RmlUi context");
+}
+
+//-----------------
+// Context::Deinit
+//
+void Context::Deinit()
+{
+	if (RmlGlobal::IsInitialized() && (m_Context != nullptr))
+	{
+		Rml::RemoveContext(m_Context->GetName());
+
+#if ET_CT_IS_ENABLED(ET_CT_RML_DEBUGGER)
+		RmlGlobal::GetInstance()->OnContextDestroyed(m_Context.Get());
+#endif
+	}
+
+	m_Context = nullptr;
+	m_ActiveDocuments = 0u;
+	m_Documents.clear();
 }
 
 //------------------------

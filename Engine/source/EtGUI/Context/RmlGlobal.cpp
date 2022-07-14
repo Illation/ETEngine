@@ -138,6 +138,17 @@ void RmlGlobal::SetRIView(ivec2 const dim, mat4 const& viewProj)
 }
 
 
+#if ET_CT_IS_ENABLED(ET_CT_RML_DEBUGGER)
+//----------------------------------
+// RmlGlobal::OnContextDestroyed
+//
+void RmlGlobal::OnContextDestroyed(Rml::Context const* const context)
+{
+	m_Debug.OnContextDestroyed(context);
+}
+#endif
+
+
 } // namespace gui
 } // namespace et
 

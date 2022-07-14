@@ -46,15 +46,12 @@ inline void SafeDelete(T &pObjectToDelete)
 #include <EtCore/Util/StringUtil.h>
 #include <EtCore/Util/CommonMacros.h>
 #include <EtCore/Util/Assert.h>
-#include <EtCore/UpdateCycle/PerformanceInfo.h>
 #include <EtCore/Hashing/HashString.h>
 #include <EtCore/Reflection/ReflectionUtil.h>
 #include <EtCore/Containers/VectorUtil.h>
 
-//Working singleton Set
-#define TIME et::core::ContextManager::GetInstance()->GetActiveContext()->time
+#define TIME et::core::ContextManager::GetInstance()->GetActiveContext()->time // #todo: refactor and remove macro
 #define LOG(fmt, ...) et::core::Logger::Log(fmt, __VA_ARGS__)
-#define PERFORMANCE et::core::PerformanceInfo::GetInstance()
 
 #include <EtCore/Memory/Pointer.h>
 

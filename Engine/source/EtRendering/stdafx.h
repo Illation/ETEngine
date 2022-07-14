@@ -19,7 +19,6 @@
 
 #pragma region
 #include <EtCore/stdafx.h>
-#include <EtCore/UpdateCycle/PerformanceInfo.h>
 #include <EtCore/Hashing/Hash.h>
 
 #include <EtRendering/GraphicsContext/GraphicsContextApi.h>

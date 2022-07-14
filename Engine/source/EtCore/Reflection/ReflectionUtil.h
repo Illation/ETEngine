@@ -20,6 +20,9 @@ std::string EnumString(TEnum const value);
 template<typename TEnum>
 TEnum EnumFromString(std::string const& value);
 
+template<typename TEnum>
+bool EnumFromStringSafe(std::string const& value, TEnum& outEnum);
+
 
 enum class E_MetaData
 {

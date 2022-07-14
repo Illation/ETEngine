@@ -48,7 +48,7 @@ void GuiRenderer::Deinit()
 //
 // Render a list of contexts to the target framebuffer
 //
-void GuiRenderer::RenderContext(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context& context)
+void GuiRenderer::RenderContext(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context& context, render::E_PolygonMode const polyMode)
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 
@@ -56,10 +56,14 @@ void GuiRenderer::RenderContext(render::T_FbLoc const targetFb, ContextRenderTar
 
 	SetupContextRendering(api, renderTarget);
 
+	api->SetPolygonMode(render::E_FaceCullMode::FrontBack, polyMode);
+
 	// render context elements
 	api->DebugPushGroup("Overlay Context");
 	context.Render();
 	api->DebugPopGroup();
+
+	api->SetPolygonMode(render::E_FaceCullMode::FrontBack, render::E_PolygonMode::Fill);
 
 	// blit results to target framebuffer 
 	api->BindFramebuffer(targetFb);
@@ -86,7 +90,8 @@ void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb,
 	Context& context, 
 	mat4 const& transform,
 	vec4 const& color,
-	bool const enableDepth)
+	bool const enableDepth,
+	render::E_PolygonMode const polyMode)
 {
 	if (!context.HasActiveDocuments())
 	{
@@ -97,11 +102,15 @@ void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb,
 
 	api->DebugPushGroup("RmlUi 3D Context");
 
+	api->SetPolygonMode(render::E_FaceCullMode::FrontBack, polyMode);
+
 	SetupContextRendering(api, renderTarget);
 
 	api->DebugPushGroup("Context elements");
 	context.Render();
 	api->DebugPopGroup();
+
+	api->SetPolygonMode(render::E_FaceCullMode::FrontBack, render::E_PolygonMode::Fill);
 
 	// blit results to target framebuffer 
 	api->BindFramebuffer(targetFb);

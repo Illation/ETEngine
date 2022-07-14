@@ -7,8 +7,6 @@
 
 #include <EtCore/UpdateCycle/Tickable.h>
 
-#include <EtFramework/Config/TickOrder.h>
-
 
 namespace et {
 namespace rt {
@@ -22,8 +20,7 @@ class DebugUi final : public core::I_Tickable
 	// construct destruct
 	//--------------------
 public:
-	// we'll just reuse the framework tick, it doesn't really matter when we receive the tick as long as it's within the tick order
-	DebugUi() : core::I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_Framework)) {} 
+	DebugUi(); 
 
 	// interface
 	//-----------

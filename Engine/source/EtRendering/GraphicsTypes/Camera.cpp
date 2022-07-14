@@ -210,7 +210,7 @@ void Camera::RecalculateDerived()
 	m_Frustum.SetCullTransform(mat4()); // Frustum will be in world space and objects need to transform themselves
 
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
-	if (!(RenderingSystems::Instance()->IsFrustumFrozen()))
+	if (!(RenderingSystems::Instance()->GetDebugVars().IsFrustumFrozen()))
 	{ 
 #endif
 		m_Frustum.SetToCamera(*this);

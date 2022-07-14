@@ -1,17 +1,12 @@
 #include "stdafx.h"
 #include "PerformanceInfo.h"
 
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+
 
 namespace et {
 namespace core {
 
-
-PerformanceInfo::PerformanceInfo()
-{
-}
-PerformanceInfo::~PerformanceInfo()
-{
-}
 
 void PerformanceInfo::Update()
 {
@@ -34,6 +29,7 @@ void PerformanceInfo::Update()
 		m_FrameMS = context->time->DeltaTime() *1000;
 	}
 }
+
 void PerformanceInfo::StartFrameTimer()
 {
 	m_FrameMSStart = TIME->GetTime();
@@ -42,3 +38,6 @@ void PerformanceInfo::StartFrameTimer()
 
 } // namespace core
 } // namespace et
+
+
+#endif // ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)

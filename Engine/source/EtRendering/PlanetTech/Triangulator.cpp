@@ -39,7 +39,7 @@ bool Triangulator::Update(mat4 const& transform, Camera const& camera)
 	//Frustum update
 	m_Frustum.SetCullTransform(transform);
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
-	if (!(RenderingSystems::Instance()->IsFrustumFrozen()))
+	if (!(RenderingSystems::Instance()->GetDebugVars().IsFrustumFrozen()))
 	{
 #endif
 		m_Frustum.SetToCamera(camera);

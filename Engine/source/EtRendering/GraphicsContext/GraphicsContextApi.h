@@ -46,6 +46,8 @@ public:
 	virtual void SetStencilMask(uint32 const mask) = 0;
 
 	virtual void SetFaceCullingMode(E_FaceCullMode const cullMode) = 0;
+	virtual void SetPolygonMode(E_FaceCullMode const cullMode, E_PolygonMode const mode) = 0;
+
 	virtual void SetBlendEquation(E_BlendEquation const equation) = 0;
 	virtual void SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor) = 0;
 	virtual void SetBlendFunctionSeparate(E_BlendFactor const sRGB, E_BlendFactor const sAlpha, E_BlendFactor const dRGB, E_BlendFactor const dAlpha) = 0;

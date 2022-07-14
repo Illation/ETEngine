@@ -1,3 +1,6 @@
+
+#include <EtCore/UpdateCycle/PerformanceInfo.h>
+
 #include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/TextureFormat.h>
@@ -157,9 +160,26 @@ GLenum ConvFaceCullMode(E_FaceCullMode const mode)
 	case E_FaceCullMode::FrontBack:	return GL_FRONT_AND_BACK;
 	}
 
-	ET_ASSERT(false, "Unhandled access mode!");
+	ET_ASSERT(false, "Unhandled cull mode!");
 	return GL_NONE;
 }
+
+//---------------------------------
+// ConvFaceCullMode
+//
+GLenum ConvPolygonMode(E_PolygonMode const mode)
+{
+	switch (mode)
+	{
+	case E_PolygonMode::Point:		return GL_POINT;
+	case E_PolygonMode::Line:		return GL_LINE;
+	case E_PolygonMode::Fill:		return GL_FILL;
+	}
+
+	ET_ASSERT(false, "Unhandled polygon mode!");
+	return GL_NONE;
+}
+
 
 //---------------------------------
 // ConvBlendEquation
@@ -759,6 +779,10 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 		{ E_BufferType::Uniform, 0 }
 	};
 
+	// polygon modes
+	//***************
+	m_PolygonMode.resize(static_cast<size_t>(E_FaceCullMode::COUNT), E_PolygonMode::Fill);
+
 	// cubemaps
 	//**********
 
@@ -947,6 +971,21 @@ void GL_CONTEXT_CLASSNAME::SetFaceCullingMode(E_FaceCullMode const cullMode)
 	{
 		m_CullFaceMode = cullMode;
 		glCullFace(GL_CONTEXT_NS::ConvFaceCullMode(m_CullFaceMode));
+	}
+}
+
+//---------------------------
+// GlContext::SetPolygonMode
+//
+// Set how to fill triangles
+//
+void GL_CONTEXT_CLASSNAME::SetPolygonMode(E_FaceCullMode const cullMode, E_PolygonMode const mode)
+{
+	size_t const modeIdx(static_cast<size_t>(cullMode));
+	if (m_PolygonMode[modeIdx] != mode)
+	{
+		m_PolygonMode[modeIdx] = mode;
+		glPolygonMode(GL_CONTEXT_NS::ConvFaceCullMode(cullMode), GL_CONTEXT_NS::ConvPolygonMode(mode));
 	}
 }
 
@@ -1268,7 +1307,10 @@ T_FbLoc GL_CONTEXT_CLASSNAME::GetActiveFramebuffer()
 void GL_CONTEXT_CLASSNAME::DrawArrays(E_DrawMode const mode, uint32 const first, uint32 const count)
 {
 	glDrawArrays(GL_CONTEXT_NS::ConvDrawMode(mode), first, count);
-	PERFORMANCE->m_DrawCalls++;
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	core::PerformanceInfo::GetInstance()->m_DrawCalls++;
+#endif
 }
 
 //---------------------------------
@@ -1279,7 +1321,10 @@ void GL_CONTEXT_CLASSNAME::DrawArrays(E_DrawMode const mode, uint32 const first,
 void GL_CONTEXT_CLASSNAME::DrawElements(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices)
 {
 	glDrawElements(GL_CONTEXT_NS::ConvDrawMode(mode), count, GL_CONTEXT_NS::ConvDataType(type), indices);
-	PERFORMANCE->m_DrawCalls++;
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	core::PerformanceInfo::GetInstance()->m_DrawCalls++;
+#endif
 }
 
 //---------------------------------
@@ -1290,7 +1335,10 @@ void GL_CONTEXT_CLASSNAME::DrawElements(E_DrawMode const mode, uint32 const coun
 void GL_CONTEXT_CLASSNAME::DrawElementsInstanced(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices, uint32 const prims)
 {
 	glDrawElementsInstanced(GL_CONTEXT_NS::ConvDrawMode(mode), count, GL_CONTEXT_NS::ConvDataType(type), indices, prims);
-	PERFORMANCE->m_DrawCalls++;
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	core::PerformanceInfo::GetInstance()->m_DrawCalls++;
+#endif
 }
 
 //---------------------------------

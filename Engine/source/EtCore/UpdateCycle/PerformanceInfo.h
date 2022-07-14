@@ -1,4 +1,8 @@
 #pragma once
+#include <EtCore/Util/DebugUtilFwd.h>
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+
 #include <EtCore/Util/Singleton.h>
 
 
@@ -6,17 +10,16 @@ namespace et {
 namespace core {
 
 
-class PerformanceInfo : public Singleton<PerformanceInfo>
+class PerformanceInfo final : public Singleton<PerformanceInfo>
 {
 public:
-	PerformanceInfo();
-	virtual ~PerformanceInfo();
+	PerformanceInfo() = default;
 
 	uint32 m_DrawCalls = 0;
 	uint32 m_PrevDrawCalls = 0;
 
-	int32 GetRegularFPS() { return m_RegularFPS; }
-	float GetFrameMS() { return m_FrameMS; }
+	int32 GetRegularFPS() const { return m_RegularFPS; }
+	float GetFrameMS() const { return m_FrameMS; }
 
 private:
 	friend class TickManager;
@@ -37,3 +40,6 @@ private:
 
 } // namespace core
 } // namespace et
+
+
+#endif // ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)

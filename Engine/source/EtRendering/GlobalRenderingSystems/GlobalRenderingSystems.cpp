@@ -131,18 +131,8 @@ void RenderingSystems::Initialize()
 
 	m_Patch.Init(4);
 
-	// some rendering debug commands
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
-	core::dbg::CommandController& cmdController = core::dbg::CommandController::Instance();
-
-	cmdController.AddCommand(core::dbg::Command("render_toggle_freeze_frustum", "Freeze camera frustums in their current position"), 
-		core::dbg::T_CommandFn([this](core::dbg::Command const& command, std::string const& parameters)
-		{
-			ET_UNUSED(command);
-			ET_UNUSED(parameters);
-			m_IsFrustumFrozen = !m_IsFrustumFrozen;
-			return core::dbg::E_CommandRes::Success;
-		}));
+	m_DebugVars.Init();
 #endif
 }
 

@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "DebugRenderer.h"
 
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+
 #include <EtCore/Content/ResourceManager.h>
 
 #include <EtRendering/GraphicsTypes/Shader.h>
@@ -11,6 +14,14 @@ namespace et {
 namespace render {
 
 
+//================
+// Debug Renderer
+//================
+
+
+//----------------------
+// DebugRenderer::c-tor
+//
 DebugRenderer::~DebugRenderer()
 {
 	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
@@ -21,13 +32,16 @@ DebugRenderer::~DebugRenderer()
 	m_MetaData.clear();
 }
 
+//---------------------------
+// DebugRenderer::Initialize
+//
 void DebugRenderer::Initialize()
 {
 	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/DebugRenderer.glsl"));
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/DebugRenderer.glsl"));
 
-	api->SetShader(m_pShader.get());
+	api->SetShader(m_Shader.get());
 
 	//Generate buffers and arrays
 	m_VAO = api->CreateVertexArray();
@@ -52,104 +66,32 @@ void DebugRenderer::Initialize()
 	api->BindVertexArray(0);
 }
 
-void DebugRenderer::UpdateBuffer()
-{
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
-	//Bind Object vertex array
-	api->BindVertexArray(m_VAO);
-
-	//Send the vertex buffer again
-	api->BindBuffer(E_BufferType::Vertex, m_VBO);
-
-	bool bufferResize = m_Lines.size() * sizeof(LineVertex) > m_BufferSize;
-	if (!m_VBO || bufferResize) //first creation or resize
-	{
-		if (bufferResize)
-		{
-			m_BufferSize = (uint32)m_Lines.size() * sizeof(LineVertex);
-		}
-
-		api->SetBufferData(E_BufferType::Vertex, m_BufferSize, m_Lines.data(), E_UsageHint::Dynamic);
-	}
-	else
-	{
-		void* p = api->MapBuffer(E_BufferType::Vertex, E_AccessMode::Write);
-		memcpy(p, m_Lines.data(), sizeof(LineVertex)*m_Lines.size());
-		api->UnmapBuffer(E_BufferType::Vertex);
-	}
-
-
-	api->BindBuffer(E_BufferType::Vertex, 0);
-}
-
-void DebugRenderer::Draw(Camera const& camera)
-{
-	if (m_Lines.size() <= 0)
-	{
-		return;
-	}
-
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
-
-	api->SetShader(m_pShader.get());
-	m_pShader->Upload("uViewProj"_hash, camera.GetViewProj());
-
-	UpdateBuffer();
-	
-	api->SetBlendEnabled(true);
-	api->SetBlendEquation(E_BlendEquation::Add);
-	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::Zero);
-
-	for (const auto& meta : m_MetaData)
-	{
-		api->SetLineWidth(meta.thickness);
-		api->DrawArrays(E_DrawMode::Lines, meta.start, meta.size);
-	}
-
-	api->BindVertexArray(0);
-
-	api->SetBlendEnabled(false);
-
-	m_Lines.clear();
-	m_MetaData.clear();
-}
-
-void DebugRenderer::CheckMetaData(float thickness)
-{
-	if (m_MetaData.size() == 0 || !math::nearEquals(m_MetaData[m_MetaData.size() - 1].thickness, thickness))
-	{
-		m_MetaData.push_back(LineMetaData());
-		m_MetaData[m_MetaData.size() - 1].thickness = thickness;
-		if (m_MetaData.size() > 1)
-		{
-			m_MetaData[m_MetaData.size() - 1].start = m_MetaData[m_MetaData.size() - 2].start + m_MetaData[m_MetaData.size() - 2].size;
-		}
-	}
-	m_MetaData[m_MetaData.size() - 1].size += sizeof(LineVertex) * 2;
-}
-
+//------------------------------
+// DebugRenderer::CheckMetaData
+//
 void DebugRenderer::DrawLine(vec3 start, vec3 end, vec4 col /*= vec4(1)*/, float thickness /*= 1*/)
 {
-#if defined(ET_DEBUG)
 	CheckMetaData(thickness);
 	m_Lines.push_back(LineVertex(start, col));
 	m_Lines.push_back(LineVertex(end, col));
-#endif
 }
 
+//-------------------------
+// DebugRenderer::DrawLine
+//
 void DebugRenderer::DrawLine(vec3 start, vec4 startCol, vec3 end, vec4 endCol, float thickness /*= 1*/)
 {
-#if defined(ET_DEBUG)
 	CheckMetaData(thickness);
 	m_Lines.push_back(LineVertex(start, startCol));
 	m_Lines.push_back(LineVertex(end, endCol));
-#endif
 }
 
+//-------------------------
+// DebugRenderer::DrawGrid
+//
 void DebugRenderer::DrawGrid(Camera const& camera, float pixelSpacingRad)
 {
-#if defined(ET_DEBUG)
 	vec3 camPos = camera.GetPosition();
 		
 	//max draw distance of the grid
@@ -293,9 +235,96 @@ void DebugRenderer::DrawGrid(Camera const& camera, float pixelSpacingRad)
 	meta.size = (uint32)thickLines.size() * sizeof(LineVertex);
 	m_MetaData.push_back(meta);
 	m_Lines.insert(m_Lines.end(), thickLines.begin(), thickLines.end());
-#endif
+}
+
+//---------------------
+// DebugRenderer::Draw
+//
+void DebugRenderer::Draw(Camera const& camera)
+{
+	if (m_Lines.size() <= 0)
+	{
+		return;
+	}
+
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+
+	api->SetShader(m_Shader.get());
+	m_Shader->Upload("uViewProj"_hash, camera.GetViewProj());
+
+	UpdateBuffer();
+
+	api->SetBlendEnabled(true);
+	api->SetBlendEquation(E_BlendEquation::Add);
+	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::Zero);
+
+	for (const auto& meta : m_MetaData)
+	{
+		api->SetLineWidth(meta.thickness);
+		api->DrawArrays(E_DrawMode::Lines, meta.start, meta.size);
+	}
+
+	api->BindVertexArray(0);
+
+	api->SetBlendEnabled(false);
+
+	m_Lines.clear();
+	m_MetaData.clear();
+}
+
+//-----------------------------
+// DebugRenderer::UpdateBuffer
+//
+void DebugRenderer::UpdateBuffer()
+{
+	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+
+	//Bind Object vertex array
+	api->BindVertexArray(m_VAO);
+
+	//Send the vertex buffer again
+	api->BindBuffer(E_BufferType::Vertex, m_VBO);
+
+	bool bufferResize = m_Lines.size() * sizeof(LineVertex) > m_BufferSize;
+	if (!m_VBO || bufferResize) //first creation or resize
+	{
+		if (bufferResize)
+		{
+			m_BufferSize = (uint32)m_Lines.size() * sizeof(LineVertex);
+		}
+
+		api->SetBufferData(E_BufferType::Vertex, m_BufferSize, m_Lines.data(), E_UsageHint::Dynamic);
+	}
+	else
+	{
+		void* p = api->MapBuffer(E_BufferType::Vertex, E_AccessMode::Write);
+		memcpy(p, m_Lines.data(), sizeof(LineVertex)*m_Lines.size());
+		api->UnmapBuffer(E_BufferType::Vertex);
+	}
+
+
+	api->BindBuffer(E_BufferType::Vertex, 0);
+}
+
+//------------------------------
+// DebugRenderer::CheckMetaData
+//
+void DebugRenderer::CheckMetaData(float thickness)
+{
+	if (m_MetaData.size() == 0 || !math::nearEquals(m_MetaData[m_MetaData.size() - 1].thickness, thickness))
+	{
+		m_MetaData.push_back(LineMetaData());
+		m_MetaData[m_MetaData.size() - 1].thickness = thickness;
+		if (m_MetaData.size() > 1)
+		{
+			m_MetaData[m_MetaData.size() - 1].start = m_MetaData[m_MetaData.size() - 2].start + m_MetaData[m_MetaData.size() - 2].size;
+		}
+	}
+	m_MetaData[m_MetaData.size() - 1].size += sizeof(LineVertex) * 2;
 }
 
 
 } // namespace render
 } // namespace et
+
+#endif // ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)

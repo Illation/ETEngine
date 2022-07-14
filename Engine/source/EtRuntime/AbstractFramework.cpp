@@ -76,7 +76,9 @@ AbstractFramework::~AbstractFramework()
 	core::InputManager::DestroyInstance();
 	core::ContextManager::DestroyInstance();
 
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 	core::PerformanceInfo::DestroyInstance();
+#endif
 	
 	core::ResourceManager::DestroyInstance();
 
@@ -125,6 +127,7 @@ void AbstractFramework::Run()
 			switch (static_cast<fw::E_SceneEvent>(flags))
 			{
 			case fw::E_SceneEvent::SceneSwitch:
+				m_SplashScreenRenderer->SetGuiDocument(m_SplashScreenGui);
 				m_Viewport->SetRenderer(m_SplashScreenRenderer.Get());
 
 				m_Viewport->SetTickDisabled(true);
@@ -134,6 +137,7 @@ void AbstractFramework::Run()
 
 			case fw::E_SceneEvent::Activated:
 				m_Viewport->SetRenderer(m_SceneRenderer.Get()); // update will happen anyway during the loop
+				m_SplashScreenRenderer->SetGuiDocument(core::HashString());
 				break;
 
 			case fw::E_SceneEvent::ActiveCameraChanged:
@@ -184,6 +188,7 @@ void AbstractFramework::Run()
 	cfg->InitRenderConfig();
 
 	m_SplashScreenRenderer->Init();
+	m_SplashScreenGui = bootCfg.splashGui;
 	m_SplashScreenRenderer->SetGuiDocument(bootCfg.splashGui);
 	m_RenderWindow.GetArea().Update();
 
@@ -192,7 +197,9 @@ void AbstractFramework::Run()
 
 	fw::PhysicsManager::GetInstance()->Initialize();
 
-	core::PerformanceInfo::GetInstance(); // Initialize performance measurement #todo: disable for shipped project?
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	core::PerformanceInfo::GetInstance(); 
+#endif
 
 	// init input 
 	core::InputManager* const inputMan = core::InputManager::GetInstance();

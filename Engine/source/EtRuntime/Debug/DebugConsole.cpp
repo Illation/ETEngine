@@ -45,6 +45,15 @@ DebugConsole::DebugConsole()
 			ListCommands();
 			return core::dbg::E_CommandRes::Success;
 		}));
+
+	cmdController.AddCommand(core::dbg::Command("toggle_debug_info", "Show information about the amount of draw calls"), core::dbg::T_CommandFn(
+		[this](core::dbg::Command const& command, std::string const& parameters)
+		{
+			ET_UNUSED(command);
+			ET_UNUSED(parameters);
+			m_DrawDebugInfo = !m_DrawDebugInfo;
+			return core::dbg::E_CommandRes::Success;
+		}));
 }
 
 //--------------------

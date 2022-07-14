@@ -55,7 +55,7 @@ This project dynamically links to openAl soft.
 
 
 ## Dear ImGui
-- source: [https://github.com/ocornut/imgui](https://github.com/ocornut/imgui)
+- source: [https://github.com/ocornut/imgui](https://github.com/ocornut/imgui/tree/467a1cd4a583edd55db310c82e2823692616e108)
 - license: [MIT](https://github.com/ocornut/imgui/blob/master/LICENSE.txt)
 
 

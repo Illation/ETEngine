@@ -69,6 +69,7 @@ private:
 
 	UniquePtr<render::ShadedSceneRenderer> m_SceneRenderer;
 	UniquePtr<rt::SplashScreenRenderer> m_SplashScreenRenderer;
+	core::HashString m_SplashScreenGui;
 
 #if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 	gui::ImGuiBackend m_ImguiBackend;

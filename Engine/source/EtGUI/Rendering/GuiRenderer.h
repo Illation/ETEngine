@@ -30,13 +30,18 @@ public:
 
 	// functionality
 	//---------------
-	void RenderContext(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context& contexts);
+	void RenderContext(render::T_FbLoc const targetFb, 
+		ContextRenderTarget& renderTarget, 
+		Context& contexts, 
+		render::E_PolygonMode const polyMode = render::E_PolygonMode::Fill);
+
 	void RenderWorldContext(render::T_FbLoc const targetFb, 
 		ContextRenderTarget& renderTarget, 
 		Context& contexts, 
 		mat4 const& transform, 
 		vec4 const& color,
-		bool const enableDepth);
+		bool const enableDepth,
+		render::E_PolygonMode const polyMode = render::E_PolygonMode::Fill);
 
 	// utility
 	//---------

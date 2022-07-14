@@ -149,11 +149,6 @@ public:
 
 	void SetInputEnabled(bool const enabled) { m_IsInputEnabled = enabled; }
 
-#ifdef ET_DEBUG
-	void SetDebugContext(T_ContextId const id);
-	void SetDebuggerVisible(bool const isVisible);
-#endif
-
 	// accessors
 	//-----------
 	Context* GetContext(render::Viewport const* const vp);
@@ -165,10 +160,6 @@ public:
 	render::Scene const* GetRenderScene() const { return m_RenderScene.Get(); }
 
 	bool IsInputEnabled() const { return m_IsInputEnabled; }
-
-#ifdef ET_DEBUG
-	bool IsDebuggerVisible() const { return m_IsDebuggerVisible; }
-#endif
 
 	// utility
 	//---------
@@ -190,11 +181,6 @@ private:
 	Ptr<render::Scene const> m_RenderScene;
 
 	bool m_IsInputEnabled = true;
-
-#ifdef ET_DEBUG
-	T_ContextId m_DebuggerContext = INVALID_CONTEXT_ID;
-	bool m_IsDebuggerVisible = false;
-#endif
 };
 
 

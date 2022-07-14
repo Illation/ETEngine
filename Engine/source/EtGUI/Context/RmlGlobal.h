@@ -54,6 +54,11 @@ public:
 	void SetRIShader(AssetPtr<render::ShaderData> const shader, AssetPtr<render::ShaderData> const textShader);
 	void SetRIView(ivec2 const dim, mat4 const& viewProj);
 
+
+#if ET_CT_IS_ENABLED(ET_CT_RML_DEBUGGER)
+	void OnContextDestroyed(Rml::Context const* const context);
+#endif
+
 	// Data
 	///////
 	

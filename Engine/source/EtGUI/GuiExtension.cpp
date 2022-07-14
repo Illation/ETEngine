@@ -578,53 +578,6 @@ void GuiExtension::SetLoadedDocument(T_ContextId const id, core::HashString cons
 	}
 }
 
-#ifdef ET_DEBUG
-
-//-------------------------------------
-// GuiExtension::SetDebugContext
-//
-void GuiExtension::SetDebugContext(T_ContextId const id)
-{
-	if (id == m_DebuggerContext)
-	{
-		return;
-	}
-
-	if (id == INVALID_CONTEXT_ID)
-	{
-		Rml::Debugger::Shutdown();
-	}
-	else
-	{
-		Rml::Context* const context = GetContext(id).GetImpl();
-		if (m_DebuggerContext == INVALID_CONTEXT_ID)
-		{
-			Rml::Debugger::Initialise(context);
-			Rml::Debugger::SetVisible(m_IsDebuggerVisible);
-		}
-		else
-		{
-			Rml::Debugger::SetContext(context);
-		}
-	}
-
-	m_DebuggerContext = id;
-}
-
-//--------------------------------------
-// GuiExtension::SetDebuggerVisible
-//
-void GuiExtension::SetDebuggerVisible(bool const isVisible)
-{
-	m_IsDebuggerVisible = isVisible;
-	if (m_DebuggerContext != INVALID_CONTEXT_ID)
-	{
-		Rml::Debugger::SetVisible(m_IsDebuggerVisible);
-	}
-}
-
-#endif
-
 //---------------------------------
 // GuiExtension::GetContexts
 //

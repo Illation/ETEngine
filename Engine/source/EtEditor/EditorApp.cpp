@@ -18,6 +18,7 @@
 #include <EtCore/Util/Commands.h>
 #include <EtCore/Input/InputManager.h>
 #include <EtCore/UpdateCycle/TickManager.h>
+#include <EtCore/UpdateCycle/PerformanceInfo.h>
 #include <EtCore/Reflection/TypeInfoRegistry.h>
 
 #include <EtRendering/GraphicsContext/ContextHolder.h>
@@ -98,7 +99,9 @@ EditorApp::~EditorApp()
 	gui::RmlGlobal::Destroy();
 	render::RenderingSystems::RemoveReference();
 
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 	core::PerformanceInfo::DestroyInstance();
+#endif
 	core::InputManager::DestroyInstance();
 
 	EditorConfig::DestroyInstance();
@@ -257,7 +260,9 @@ void EditorApp::InitializeUtilities()
 
 	core::InputManager::GetInstance();
 
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 	core::PerformanceInfo::GetInstance();
+#endif
 
 	ImporterBase::RegisterImporters();
 }

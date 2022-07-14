@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "TickManager.h"
+#include "PerformanceInfo.h"
 
 #include "Tickable.h"
 #include "RealTimeTickTriggerer.h"
@@ -265,7 +266,10 @@ void TickManager::Tick()
 	{
 		// start new frame timer and performance
 		context->time->Update();
-		PERFORMANCE->StartFrameTimer();
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+		PerformanceInfo::GetInstance()->StartFrameTimer();
+#endif
 	}
 
 	// tick all objects
@@ -286,7 +290,9 @@ void TickManager::Tick()
 void TickManager::EndTick()
 {
 	// update performance info
-	PERFORMANCE->Update();
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	PerformanceInfo::GetInstance()->Update();
+#endif
 }
 
 

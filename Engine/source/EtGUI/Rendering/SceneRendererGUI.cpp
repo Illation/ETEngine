@@ -55,7 +55,7 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 				}
 
 				GuiExtension* const guiExt = static_cast<GuiExtension*>(ext);
-				DrawInWorld(evnt->targetFb, *guiExt, renderer->GetScene()->GetNodes());
+				DrawInWorld(evnt->targetFb, renderer->Get3DPolyMode(), *guiExt, renderer->GetScene()->GetNodes());
 			}
 			else
 			{
@@ -80,7 +80,7 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 				}
 
 				GuiExtension* const guiExt = static_cast<GuiExtension*>(ext);
-				DrawOverlay(evnt->targetFb, *guiExt);
+				DrawOverlay(evnt->targetFb, renderer->Get3DPolyMode(), *guiExt);
 			}
 			else
 			{
@@ -113,7 +113,10 @@ void SceneRendererGUI::Deinit()
 //
 // Draw UI from the extension that sits within the world
 //
-void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension& guiExt, core::slot_map<mat4> const& nodes)
+void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, 
+	render::E_PolygonMode const polyMode,
+	GuiExtension& guiExt, 
+	core::slot_map<mat4> const& nodes)
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 	api->BindFramebuffer(targetFb);
@@ -135,7 +138,8 @@ void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension&
 				worldContext.m_Context, 
 				transform, 
 				worldContext.m_Color, 
-				worldContext.m_IsDepthEnabled);
+				worldContext.m_IsDepthEnabled,
+				polyMode);
 		}
 	}
 }
@@ -145,7 +149,7 @@ void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, GuiExtension&
 //
 // Draw UI from the extension that goes on top of everything else
 //
-void SceneRendererGUI::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension& guiExt)
+void SceneRendererGUI::DrawOverlay(render::T_FbLoc const targetFb, render::E_PolygonMode const polyMode, GuiExtension& guiExt)
 {
 	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
 	api->BindFramebuffer(targetFb);
@@ -158,7 +162,7 @@ void SceneRendererGUI::DrawOverlay(render::T_FbLoc const targetFb, GuiExtension&
 	if ((context != nullptr) && context->HasActiveDocuments())
 	{
 		renderTarget->UpdateForDimensions(viewport->GetDimensions());
-		m_GuiRenderer.RenderContext(targetFb, *renderTarget, *context);
+		m_GuiRenderer.RenderContext(targetFb, *renderTarget, *context, polyMode);
 	}
 }
 

@@ -5,6 +5,12 @@
 
 #include <EtBuild/EngineVersion.h>
 
+#include <EtCore/UpdateCycle/PerformanceInfo.h>
+
+#include <EtGUI/ImGui/ImGuiUtil.h>
+
+#include <EtFramework/Config/TickOrder.h>
+
 
 namespace et {
 namespace rt {
@@ -14,6 +20,15 @@ namespace rt {
 // Debug UI
 //==========
 
+
+//-------------------------
+// DebugUi::c-tor
+//
+// we'll just reuse the framework tick, it doesn't really matter when we receive the tick as long as it's within the tick order
+//
+DebugUi::DebugUi() 
+	: core::I_Tickable(static_cast<uint32>(fw::E_TickOrder::TICK_Framework))
+{ }
 
 //-------------------------
 // DebugUi::OnTick
@@ -30,7 +45,7 @@ void DebugUi::OnTick()
 	}
 
 	// debug console
-	if (core::InputManager::GetInstance()->GetKeyState(m_ConsoleToggleKey) == E_KeyState::Pressed)
+	if (ImGui::IsKeyPressed(gui::ImguiUtil::GetKey(m_ConsoleToggleKey)))
 	{
 		m_DebugConsoleEnabled = !m_DebugConsoleEnabled;
 	}
@@ -71,7 +86,7 @@ void DebugUi::DrawDebugInfo()
 	{
 		ImGui::TextColored(vec4(0.5f, 9.f, 0.5f, 0.6f), 
 			"%sE.T.Engine - %s", 
-			drawDebugInfo ? "" : FS("%i FPS - ", PERFORMANCE->GetRegularFPS()).c_str(),
+			drawDebugInfo ? "" : FS("%i FPS - ", core::PerformanceInfo::GetInstance()->GetRegularFPS()).c_str(),
 			et::build::Version::s_Name.c_str());
 	}
 
@@ -88,10 +103,12 @@ void DebugUi::DrawDebugInfo()
 
 		if (ImGui::Begin("Debug Info:", nullptr, overlayFlags))
 		{
-			ImGui::Text("FPS: %i", PERFORMANCE->GetRegularFPS());
-			ImGui::Text("Frame ms: %f", PERFORMANCE->GetFrameMS());
+			core::PerformanceInfo const* const perfInfo = core::PerformanceInfo::GetInstance();
+
+			ImGui::Text("FPS: %i", perfInfo->GetRegularFPS());
+			ImGui::Text("Frame ms: %f", perfInfo->GetFrameMS());
 			ImGui::Separator();
-			ImGui::Text("Draw Calls: %u", PERFORMANCE->m_PrevDrawCalls);
+			ImGui::Text("Draw Calls: %u", perfInfo->m_PrevDrawCalls);
 		}
 
 		ImGui::End();

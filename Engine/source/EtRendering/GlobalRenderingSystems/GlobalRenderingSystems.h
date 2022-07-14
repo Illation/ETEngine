@@ -7,8 +7,7 @@
 #include "CIE.h"
 #include "LightVolume.h"
 #include "SharedVarController.h"
-
-#include <EtCore/Util/DebugUtilFwd.h>
+#include "RenderDebugVars.h"
 
 #include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/PlanetTech/Patch.h>
@@ -71,7 +70,7 @@ public:
 	Material const* GetColorMaterial() const { return m_ColorMaterial.get(); }
 
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
-	bool IsFrustumFrozen() const { return m_IsFrustumFrozen; }
+	DebugVars const& GetDebugVars() const { return m_DebugVars; }
 #endif
 
 	// Data
@@ -97,9 +96,8 @@ private:
 	AssetPtr<Material> m_NullMaterial;
 	AssetPtr<Material> m_ColorMaterial;
 
-	// debug
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
-	bool m_IsFrustumFrozen = false;
+	DebugVars m_DebugVars;
 #endif
 };
 
