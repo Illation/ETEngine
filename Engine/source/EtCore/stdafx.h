@@ -46,6 +46,7 @@ inline void SafeDelete(T &pObjectToDelete)
 #include <EtCore/Util/StringUtil.h>
 #include <EtCore/Util/CommonMacros.h>
 #include <EtCore/Util/Assert.h>
+#include <EtCore/Trace/Trace.h>
 #include <EtCore/Hashing/HashString.h>
 #include <EtCore/Reflection/ReflectionUtil.h>
 #include <EtCore/Containers/VectorUtil.h>

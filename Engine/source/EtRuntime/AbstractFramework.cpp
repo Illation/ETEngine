@@ -84,6 +84,7 @@ AbstractFramework::~AbstractFramework()
 
 	core::TickManager::DestroyInstance();
 
+	core::TraceService::Destroy();
 	core::Logger::Release();
 }
 
@@ -95,13 +96,14 @@ AbstractFramework::~AbstractFramework()
 void AbstractFramework::Run()
 {
 	core::Logger::Initialize();//Init logger first because all output depends on it from the start
-	//Logger::StartFileLogging("debug_log.log");
+	core::TraceService::Initialize();
+	//core::TraceService::Instance()->StartFileLogging("debug_log.log");
 
-	LOG(FS("E.T.Engine"));
-	LOG(FS("//////////"));
-	LOG("");
-	LOG(FS(" - version: %s", et::build::Version::s_Name.c_str()));
-	LOG("");
+	ET_LOG_I(ET_CTX_RUNTIME, "E.T.Engine");
+	ET_LOG_I(ET_CTX_RUNTIME, "//////////");
+	ET_LOG_I(ET_CTX_RUNTIME, "");
+	ET_LOG_I(ET_CTX_RUNTIME, " - version: %s", et::build::Version::s_Name.c_str());
+	ET_LOG_I(ET_CTX_RUNTIME, "");
 
 	core::TypeInfoRegistry::Instance().Initialize(); // this needs to be initialized ASAP because serialization depends on it
 

@@ -14,6 +14,7 @@
 #define ET_DISABLED 0
 
 #define ET_CT_IS_ENABLED(x) ET_CAT(0, x)
+#define ET_CT_IS_DISABLED(x) !ET_CT_IS_ENABLED(x)
 
 
 //platform independent utility to suppress unused parameter warnings from https://stackoverflow.com/questions/4851075
