@@ -174,7 +174,7 @@ bool URI::Evaluate(std::string const& basePath)
 		size_t const dataPos = m_Path.find(',');
 		if (dataPos == std::string::npos)
 		{
-			LOG("couldn't find data uri data", core::LogLevel::Warning);
+			ET_TRACE_W(ET_CTX_CORE, "couldn't find data uri data");
 			return false;
 		}
 
@@ -182,7 +182,7 @@ bool URI::Evaluate(std::string const& basePath)
 		size_t const paramPos = mediatype.find(';');
 		if (paramPos == std::string::npos)
 		{
-			LOG("couldn't find data uri mediatype parameter", core::LogLevel::Warning);
+			ET_TRACE_W(ET_CTX_CORE, "couldn't find data uri mediatype parameter");
 			return false;
 		}
 
@@ -192,7 +192,7 @@ bool URI::Evaluate(std::string const& basePath)
 		size_t const subtypePos = mediatype.find('/');
 		if (subtypePos == std::string::npos)
 		{
-			LOG("couldn't find data uri mediatype subtype", core::LogLevel::Warning);
+			ET_TRACE_W(ET_CTX_CORE, "couldn't find data uri mediatype subtype");
 			return false;
 		}
 

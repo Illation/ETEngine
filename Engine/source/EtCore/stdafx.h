@@ -57,3 +57,8 @@ inline void SafeDelete(T &pObjectToDelete)
 #include <EtCore/Memory/Pointer.h>
 
 #pragma endregion Macros
+
+
+namespace et {
+	ET_DEFINE_TRACE_CTX(ET_CTX_CORE);
+}

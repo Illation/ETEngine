@@ -74,7 +74,7 @@ void LightControlSystem::Process(fw::ComponentRange<LightControlSystemView>& ran
 			float const b = view.light->GetBrightness();
 			float const nB = b * 4.f;
 			view.light->SetBrightness(b - (nB - b) * dt);
-			LOG("Linear: " + std::to_string(view.light->GetBrightness()));
+			ET_TRACE_I(ET_CTX_DEMO, "Linear: %f", view.light->GetBrightness());
 		}
 	}
 
@@ -85,7 +85,7 @@ void LightControlSystem::Process(fw::ComponentRange<LightControlSystemView>& ran
 			float const b = view.light->GetBrightness();
 			float const nB = b * 4.f;
 			view.light->SetBrightness(b + (nB - b) * dt);
-			LOG("Linear: " + std::to_string(view.light->GetBrightness()));
+			ET_TRACE_I(ET_CTX_DEMO, "Linear: %f", view.light->GetBrightness());
 		}
 	}
 }

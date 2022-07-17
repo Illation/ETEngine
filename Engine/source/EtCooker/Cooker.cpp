@@ -77,17 +77,18 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 	// Init stuff
 	//------------
 	core::Logger::Initialize();
-	core::Logger::StartFileLogging("cooker.log");
+	core::TraceService::Initialize();
+	core::TraceService::Instance()->StartFileLogging("cooker.log");
 
 	core::TypeInfoRegistry::Instance().Initialize(); 
 
 	ET_ASSERT(m_GenerateCompiled || (std::string(argv[4]) == "n"), "Expected argument 4 to be either 'y' or 'n'!");
 
-	LOG(FS("E.T.Cooker"));
-	LOG(FS("//////////"));
-	LOG("");
-	LOG(FS(" - version: %s", build::Version::s_Name.c_str()));
-	LOG("");
+	ET_LOG_I(ET_CTX_COOKER, "E.T.Cooker");
+	ET_LOG_I(ET_CTX_COOKER, "//////////");
+	ET_LOG_I(ET_CTX_COOKER, "");
+	ET_LOG_I(ET_CTX_COOKER, " - version: %s", build::Version::s_Name.c_str());
+	ET_LOG_I(ET_CTX_COOKER, "");
 
 	// Graphics context
 	m_RenderWindow = new rt::GlfwRenderWindow(true);
@@ -114,7 +115,7 @@ Cooker::~Cooker()
 
 	if (!m_TempDir->Delete())
 	{
-		LOG("CookCompiledPackage > Failed to clean up temporary file directory!", core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_COOKER, "CookCompiledPackage > Failed to clean up temporary file directory!");
 		delete m_TempDir;
 		m_ReturnCode = E_ReturnCode::FailedToCleanup;
 	}
@@ -127,6 +128,7 @@ Cooker::~Cooker()
 	delete m_RenderWindow;
 	m_RenderWindow = nullptr;
 
+	core::TraceService::Destroy();
 	core::Logger::Release();
 }
 
@@ -173,7 +175,7 @@ void Cooker::CookCompiledPackage()
 	bool const isVerbose = (m_Configuration.m_Configuration != pl::BuildConfiguration::E_Configuration::Shipping);
 	if (!core::serialization::SerializeToFile(tempDbFullPath, mergeDb, isVerbose))
 	{
-		LOG(FS("CookCompiledPackage > Failed to serialize asset database to '%s'", tempDbFullPath.c_str()), core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_COOKER, "CookCompiledPackage > Failed to serialize asset database to '%s'", tempDbFullPath.c_str());
 		m_ReturnCode = E_ReturnCode::FailedToSerialize;
 		return;
 	}
@@ -248,7 +250,7 @@ void Cooker::CookFilePackages()
 		outFlags.SetFlags(core::FILE_ACCESS_FLAGS::FLAGS::Create | core::FILE_ACCESS_FLAGS::FLAGS::Exists);
 		if (!outFile->Open(core::FILE_ACCESS_MODE::Write, outFlags))
 		{
-			LOG("CookFilePackages > Failed to open file " + outFile->GetName(), core::LogLevel::Warning);
+			ET_LOG_E(ET_CTX_COOKER, "CookFilePackages > Failed to open file '%s'", outFile->GetName());
 			m_ReturnCode = E_ReturnCode::FailedToWritePackage;
 			continue;
 		}
@@ -290,14 +292,14 @@ void Cooker::AddPackageToWriter(core::HashString const packageId, std::string co
 				core::Entry* const genEntry = m_TempDir->GetMountedChild(asset->GetPath() + asset->GetName());
 				if ((genEntry == nullptr) || (genEntry->GetType() == core::Entry::ENTRY_DIRECTORY))
 				{
-					LOG(FS("CookCompiledPackage > Failed to access generated asset file '%s'",
-						(asset->GetPath() + asset->GetName()).c_str()),
-						core::LogLevel::Warning);
+					ET_LOG_E(ET_CTX_COOKER, 
+						"CookCompiledPackage > Failed to access generated asset file '%s'", 
+						(asset->GetPath() + asset->GetName()).c_str());
 					m_ReturnCode = E_ReturnCode::FailedToAccessGeneratedFile;
 					continue;
 				}
 
-				LOG(FS("%s [%u] @: %s", asset->GetId().ToStringDbg(), asset->GetId().Get(), genEntry->GetName().c_str()));
+				ET_LOG_I(ET_CTX_COOKER, "%s [%u] @: %s", asset->GetId().ToStringDbg(), asset->GetId().Get(), genEntry->GetName().c_str());
 
 				core::File* const assetFile = static_cast<core::File*>(genEntry);
 				writer.AddFile(assetFile, m_TempDir->GetName(), core::E_CompressionType::Store, false);
@@ -308,7 +310,7 @@ void Cooker::AddPackageToWriter(core::HashString const packageId, std::string co
 				std::string const assetName = asset->GetName();
 				core::HashString const id = asset->GetId();
 
-				LOG(FS("%s [%u] @: %s", id.ToStringDbg(), id.Get(), core::FileUtil::GetAbsolutePath(filePath).c_str()));
+				ET_LOG_I(ET_CTX_COOKER, "%s [%u] @: %s", id.ToStringDbg(), id.Get(), core::FileUtil::GetAbsolutePath(filePath).c_str());
 
 				core::File* const assetFile = new core::File(filePath + assetName, nullptr);
 				writer.AddFile(assetFile, baseAssetPath, core::E_CompressionType::Store);

@@ -2,6 +2,7 @@
 #include <EtPipeline/Content/EditorAssetDatabase.h>
 
 #include "PackageWriter.h"
+#include "CookerFwd.h"
 
 
 namespace et { namespace pl {

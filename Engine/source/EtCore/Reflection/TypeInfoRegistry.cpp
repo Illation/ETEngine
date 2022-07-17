@@ -76,10 +76,10 @@ void TypeInfoRegistry::DbgPrintAll() const
 	{
 		TypeInfo const& ti = el.second;
 
-		LOG(FS("type: %s", ti.m_Id.ToStringDbg()));
+		ET_TRACE_I(ET_CTX_CORE, "type: %s", ti.m_Id.ToStringDbg());
 		for (TypeInfo::PropertyInfo const& myProp : ti.m_Properties)
 		{
-			LOG(FS("\tproperty [%s]: %s", myProp.m_Id.ToStringDbg(), myProp.m_IsSerializable ? "RW" : "R_"));
+			ET_TRACE_I(ET_CTX_CORE, "\tproperty [%s]: %s", myProp.m_Id.ToStringDbg(), myProp.m_IsSerializable ? "RW" : "R_");
 		}
 	}
 }

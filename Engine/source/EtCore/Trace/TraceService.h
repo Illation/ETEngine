@@ -113,10 +113,3 @@ struct ctx final\
 
 // should be registered once in some source file - watch out for linker optimizing this away
 #define ET_REGISTER_TRACE_CTX(ctx) et::core::T_TraceContext const ctx::s_Id(et::core::TraceService::GetContextContainer().RegisterContext(#ctx))
-
-
-
-// we will use this to declare the trace context for the core library
-namespace et {
-	ET_DEFINE_TRACE_CTX(ET_CTX_CORE);
-}

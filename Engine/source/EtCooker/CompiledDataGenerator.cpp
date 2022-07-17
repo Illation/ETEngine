@@ -1,6 +1,8 @@
 #include "CompiledDataGenerator.h"
 #include <EtFramework/stdafx.h>
 
+#include "CookerFwd.h"
+
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
@@ -31,7 +33,7 @@ void GenerateCompilableResource(std::vector<uint8> const& data, std::string cons
 	header->Open(core::FILE_ACCESS_MODE::Write, outFlags);
 	if (!(header->Write(core::FileUtil::FromText(generator_detail::GetHeaderString(name, compiledDataName)))))
 	{
-		LOG("GenerateCompilableResource > Couldn't write header file", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_COOKER, "GenerateCompilableResource > Couldn't write header file");
 	}
 
 	// cleanup header
@@ -44,7 +46,7 @@ void GenerateCompilableResource(std::vector<uint8> const& data, std::string cons
 	source->Open(core::FILE_ACCESS_MODE::Write, outFlags);
 	if (!(source->Write(core::FileUtil::FromText(generator_detail::GetSourceString(data, name, compiledDataName)))))
 	{
-		LOG("GenerateCompilableResource > Couldn't write source file", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_COOKER, "GenerateCompilableResource > Couldn't write source file");
 	}
 
 	// cleanup source

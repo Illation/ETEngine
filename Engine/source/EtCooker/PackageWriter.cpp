@@ -1,6 +1,7 @@
 #include "stdafx.h"
-
 #include "PackageWriter.h"
+
+#include "CookerFwd.h"
 
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
@@ -63,7 +64,7 @@ void PackageWriter::AddFile(core::File* const file, std::string const& rootDir, 
 	// try opening the file for now, so that we can get the size, keep it open for copying content later
 	if (!file->Open(core::FILE_ACCESS_MODE::Read))
 	{
-		LOG("PackageWriter::AddFile > unable to open file '" + relName + std::string("'!"), core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_COOKER, "PackageWriter::AddFile > unable to open file '%s'!", relName.c_str());
 		return;
 	}
 
@@ -181,7 +182,7 @@ void PackageWriter::Write(std::vector<uint8>& data)
 		// copy the file name string
 		if (entryFile.entry.nameLength != entryFile.relName.size())
 		{
-			LOG("PackageWriter::Write > Entry name length doesn't match file name length - " + entryFile.relName, core::LogLevel::Error);
+			ET_LOG_E(ET_CTX_COOKER, "PackageWriter::Write > Entry name length doesn't match file name length - '%s'", entryFile.relName.c_str());
 		}
 
 		writer.WriteData(reinterpret_cast<uint8 const*>(entryFile.relName.data()), entryFile.entry.nameLength);
@@ -191,7 +192,7 @@ void PackageWriter::Write(std::vector<uint8>& data)
 
 		if (entryFile.entry.size != static_cast<uint64>(fileContent.size()))
 		{
-			LOG("PackageWriter::Write > Entry size doesn't match read file contents size - " + entryFile.relName, core::LogLevel::Error);
+			ET_LOG_E(ET_CTX_COOKER, "PackageWriter::Write > Entry size doesn't match read file contents size - '%s'", entryFile.relName.c_str());
 		}
 
 		writer.WriteData(fileContent.data(), entryFile.entry.size);

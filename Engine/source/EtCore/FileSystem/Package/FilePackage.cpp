@@ -37,7 +37,7 @@ FilePackage::FilePackage(std::string const& path)
 	openFlags.SetFlags(FILE_ACCESS_FLAGS::FLAGS::Exists);
 	if (!m_File->Open(FILE_ACCESS_MODE::Read, openFlags))
 	{
-		LOG("FilePackage::FilePackage > unable to open file '" + path + std::string("'!"), LogLevel::Error);
+		ET_TRACE_E(ET_CTX_CORE, "FilePackage::FilePackage > unable to open file '%s'!", path.c_str());
 		return;
 	}
 

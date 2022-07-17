@@ -174,7 +174,7 @@ void I_Asset::Load()
 	// let the asset load from binary data
 	if (!LoadFromMemory(m_LoadData))
 	{
-		LOG("I_Asset::Load > Failed loading asset from memory, name: '" + m_Name + std::string("'"), LogLevel::Warning);
+		ET_TRACE_E(ET_CTX_CORE, "I_Asset::Load > Failed loading asset from memory, name: '%s'", m_Name.c_str());
 	}
 
 	if (!m_IsPersistent)

@@ -4,6 +4,14 @@
 #include <EtCore/Util/StringUtil.h>
 
 
+// Trace vs just logs
+#ifdef ET_SHIPPING
+#	define ET_CT_TRACE ET_DISABLED
+#else
+#	define ET_CT_TRACE ET_ENABLED
+#endif
+
+
 // Logging is always enabled, even in release builds
 
 #define ET_LOG(context, level, timestamp, ...) et::core::TraceService::Instance()->Trace(context::s_Id, level, timestamp, FS(__VA_ARGS__))

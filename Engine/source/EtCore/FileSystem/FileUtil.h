@@ -20,8 +20,6 @@ public:
 	static bool ParseLine(std::string &input, std::string &extractedLine);
 	static std::vector<std::string> ParseLines(std::string raw);
 
-	static bool GetCompiledResource(std::string const& path, std::vector<uint8>& data);
-
 	static std::string ExtractPath(std::string const& fileName);
 	static std::string ExtractName(std::string const& fileName);
 	static std::string ExtractExtension(std::string const& fileName);

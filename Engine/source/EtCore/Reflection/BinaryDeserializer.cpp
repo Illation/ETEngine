@@ -76,7 +76,10 @@ bool BinaryDeserializer::InitFromHeader(std::vector<uint8> const& data, rttr::ty
 	std::string const writerVersion = m_Reader.ReadNullString();
 	if (writerVersion != build::Version::s_Name)
 	{
-		LOG(FS("etbin was written by a different engine version: %s - calling type '%s'", writerVersion.c_str(), callingType.get_name().data()));
+		ET_TRACE_W(ET_CTX_CORE, 
+			"etbin was written by a different engine version: %s - calling type '%s'", 
+			writerVersion.c_str(), 
+			callingType.get_name().data());
 	}
 
 	m_IsVerbose = (m_Reader.Read<uint8>() != 0u);

@@ -35,12 +35,12 @@ bool JsonSerializer::SerializeToData(TDataType const& serialObject, std::vector<
 		}
 		else
 		{
-			LOG("JsonSerializer::SerializeToData > unable to write JSON DOM to string", Warning);
+			ET_TRACE_W(ET_CTX_CORE, "JsonSerializer::SerializeToData > unable to write JSON DOM to string");
 		}
 	}
 	else
 	{
-		LOG("JsonSerializer::SerializeToData > unable to serialize object to JSON DOM!", Warning);
+		ET_TRACE_W(ET_CTX_CORE, "JsonSerializer::SerializeToData > unable to serialize object to JSON DOM!");
 	}
 
 	return false;

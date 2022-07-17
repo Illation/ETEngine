@@ -16,7 +16,7 @@ bool Directory::Mount(bool recursive)
 
         if((dp = opendir((GetPath()+m_Filename).c_str())) == NULL)
         {
-			LOG(std::string("linux dir '" + GetPath() + m_Filename + "' failed opening"), Error);
+			ET_TRACE_E(ET_CTX_CORE, "linux dir '%s' failed opening", (GetPath() + m_Filename).c_str());
 			return false;
         }
 

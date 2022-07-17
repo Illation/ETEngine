@@ -18,7 +18,8 @@ JSON::Parser::Parser(const std::string &textFile)
 		m_Root = ParseObject(textFile);
 		return;
 	}
-	LOG("Expected '{' token, parsing JSON failed", Warning);
+
+	ET_TRACE_W(ET_CTX_CORE, "Expected '{' token, parsing JSON failed");
 }
 
 JSON::Parser::~Parser()
@@ -97,7 +98,7 @@ JSON::Object* JSON::Parser::ParseObject(const std::string & textFile)
 		case JT_EndObject:
 			if(prevDelim)
 			{
-				LOG("Expected a new Key Value pair after delimiter", Warning);
+				ET_TRACE_W(ET_CTX_CORE, "Expected a new Key Value pair after delimiter");
 				parseFail = true;
 				continue;
 			}
@@ -107,7 +108,7 @@ JSON::Object* JSON::Parser::ParseObject(const std::string & textFile)
 		{
 			if (prevPair)
 			{
-				LOG("Expected a delimiter before new key value pair", Warning);
+				ET_TRACE_W(ET_CTX_CORE, "Expected a delimiter before new key value pair");
 				parseFail = true;
 				continue;
 			}
@@ -125,7 +126,7 @@ JSON::Object* JSON::Parser::ParseObject(const std::string & textFile)
 		case JT_Delim:
 			if (!prevPair)
 			{
-				LOG("Expected a new Key Value pair before delimiter", Warning);
+				ET_TRACE_W(ET_CTX_CORE, "Expected a new Key Value pair before delimiter");
 				parseFail = true;
 				continue;
 			}
@@ -140,7 +141,7 @@ JSON::Object* JSON::Parser::ParseObject(const std::string & textFile)
 	if (!parseSuccess)
 	{
 		delete ret;
-		LOG("Couldn't successfully parse object", Warning);
+		ET_TRACE_W(ET_CTX_CORE, "Couldn't successfully parse object");
 		return nullptr;
 	}
 	return ret;
@@ -198,7 +199,7 @@ JSON::Value* JSON::Parser::ParseValue(const std::string & textFile)
 		return new JSON::Value();
 	}
 
-	LOG("Couldn't successfully parse value, unexpected token", Warning);
+	ET_TRACE_W(ET_CTX_CORE, "Couldn't successfully parse value, unexpected token");
 	return nullptr;
 }
 
@@ -236,7 +237,7 @@ bool JSON::Parser::ParseString(const std::string & textFile, std::string &parsed
 			} 
 			break;
 			default:
-				LOG("unexpected symbol after escape character while parsing string", Warning);
+				ET_TRACE_W(ET_CTX_CORE, "unexpected symbol after escape character while parsing string");
 				return false;
 			}
 		}
@@ -283,7 +284,7 @@ JSON::Array* JSON::Parser::ParseArray(const std::string & textFile)
 		case JT_EndArray:
 			if(prevDelim)
 			{
-				LOG("Expected a new Key Value pair after delimiter", Warning);
+				ET_TRACE_W(ET_CTX_CORE, "Expected a new Key Value pair after delimiter");
 				parseFail = true;
 				continue;
 			}
@@ -292,7 +293,7 @@ JSON::Array* JSON::Parser::ParseArray(const std::string & textFile)
 		case JT_Delim:
 			if (!prevVal)
 			{
-				LOG("Expected a new Key Value pair before delimiter", Warning);
+				ET_TRACE_W(ET_CTX_CORE, "Expected a new Key Value pair before delimiter");
 				parseFail = true;
 				continue;
 			}
@@ -311,8 +312,11 @@ JSON::Array* JSON::Parser::ParseArray(const std::string & textFile)
 					continue;
 				}
 			}
-			else 
-				LOG("Expected a delimiter before new Key Value pair", Warning);
+			else
+			{
+				ET_TRACE_W(ET_CTX_CORE, "Expected a delimiter before new Key Value pair");
+			}
+
 			parseFail = true;
 			continue;
 		}
@@ -320,7 +324,7 @@ JSON::Array* JSON::Parser::ParseArray(const std::string & textFile)
 	if (!parseSuccess)
 	{
 		delete ret;
-		LOG("Couldn't successfully parse array", Warning);
+		ET_TRACE_W(ET_CTX_CORE, "Couldn't successfully parse array");
 		return nullptr;
 	}
 	return ret;
@@ -410,7 +414,7 @@ bool JSON::Parser::CheckEOF(const std::string &textFile)
 	if (m_Completed || m_ReadIdx >= (uint32)textFile.size())
 	{
 		m_Completed = true;
-		LOG("Reached end of file unexpected", Warning);
+		ET_TRACE_W(ET_CTX_CORE, "Reached end of file unexpected");
 		return true;
 	}
 	return false;

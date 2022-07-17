@@ -18,7 +18,7 @@ bool Writer::Write(Object const* const rootObj)
 {
 	if (rootObj == nullptr)
 	{
-		LOG("JSON::Writer::Write > Failed to write JSON to string, root object was null", LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_CORE, "JSON::Writer::Write > Failed to write JSON to string, root object was null");
 		return false;
 	}
 
@@ -35,7 +35,7 @@ bool Writer::WriteObject(Object const* const jObj)
 {
 	if (jObj == nullptr)
 	{
-		LOG("JSON::Writer::WriteObject > Failed to write Object to string, object was null", LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_CORE, "JSON::Writer::WriteObject > Failed to write Object to string, object was null");
 		return false;
 	}
 
@@ -58,7 +58,7 @@ bool Writer::WriteObject(Object const* const jObj)
 			// Write the pair
 			if (!WritePair(jObj->value[pairIndex]))
 			{
-				LOG("JSON::Writer::WriteObject > Failed to write pair.", LogLevel::Warning);
+				ET_TRACE_W(ET_CTX_CORE, "JSON::Writer::WriteObject > Failed to write pair.");
 				allPairsSucceeded = false;
 			}
 
@@ -132,7 +132,7 @@ bool Writer::WriteValue(Value const* const jVal)
 {
 	if (jVal == nullptr)
 	{
-		LOG("JSON::Writer::WriteObject > Failed to write value to string, value was null", LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_CORE, "JSON::Writer::WriteObject > Failed to write value to string, value was null");
 		return false;
 	}
 
@@ -170,7 +170,7 @@ bool Writer::WriteNumber(Number const* const jNum)
 {
 	if (jNum == nullptr)
 	{
-		LOG("JSON::Writer::WriteNumber > Failed to write json number to string, number object was null", LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_CORE, "JSON::Writer::WriteNumber > Failed to write json number to string, number object was null");
 		return false;
 	}
 
@@ -248,7 +248,7 @@ bool Writer::WriteArray(Array const* const jArray)
 {
 	if (jArray == nullptr)
 	{
-		LOG("JSON::Writer::WriteArray > Failed to write json array to string, array object was null", LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_CORE, "JSON::Writer::WriteArray > Failed to write json array to string, array object was null");
 		return false;
 	}
 
@@ -293,7 +293,7 @@ bool Writer::WriteArray(Array const* const jArray)
 		// Write the pair
 		if (!WriteValue(jArray->value[idx]))
 		{
-			LOG("JSON::Writer::WriteArray > Failed to write value at index #" + std::to_string(idx) + std::string("!"), LogLevel::Warning);
+			ET_TRACE_W(ET_CTX_CORE, "JSON::Writer::WriteArray > Failed to write value at index #"ET_FMT_SIZET"!", idx);
 			allValuesSucceeded = false;
 		}
 

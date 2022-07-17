@@ -32,7 +32,7 @@ Parser::Parser(std::string const& sourceText)
 			++m_ReadIdx;
 			if (ReadName(sourceText) != "xml")
 			{
-				LOG("Expected declaration to start with 'xml', parsing XML failed", Warning);
+				ET_TRACE_E(ET_CTX_CORE, "Expected declaration to start with 'xml', parsing XML failed");
 				return;
 			}
 
@@ -44,7 +44,7 @@ Parser::Parser(std::string const& sourceText)
 				{
 					if (sourceText[++m_ReadIdx] != s_TagClose)
 					{
-						LOG(FS("Expected '%c' at end of declaration, parsing XML failed", s_TagClose), Warning);
+						ET_TRACE_E(ET_CTX_CORE, "Expected '%c' at end of declaration, parsing XML failed", s_TagClose);
 						return;
 					}
 
@@ -129,7 +129,7 @@ Parser::Parser(std::string const& sourceText)
 						break;
 
 					default:
-						LOG(FS("Unrecognized encoding '%s' declared, parsing XML failed", encoding.c_str()), Warning);
+						ET_TRACE_W(ET_CTX_CORE, "Unrecognized encoding '%s' declared, parsing XML failed", encoding.c_str());
 						return;
 					}
 				}
@@ -148,7 +148,7 @@ Parser::Parser(std::string const& sourceText)
 				}
 				else 
 				{
-					LOG("Unhandled declaration attribute, parsing XML failed", Warning);
+					ET_TRACE_E(ET_CTX_CORE, "Unhandled declaration attribute, parsing XML failed");
 					return;
 				}
 
@@ -160,7 +160,7 @@ Parser::Parser(std::string const& sourceText)
 			SkipComment(sourceText);
 			if ((m_ReadIdx > sourceText.size()) || (sourceText[m_ReadIdx++] != s_TagOpen))
 			{
-				LOG(FS("Expected '%c' token, parsing XML failed", s_TagOpen), Warning);
+				ET_TRACE_E(ET_CTX_CORE, "Expected '%c' token, parsing XML failed", s_TagOpen);
 				return;
 			}
 		}
@@ -170,7 +170,7 @@ Parser::Parser(std::string const& sourceText)
 
 		if (m_Document.m_Encoding != Document::E_Enconding::UTF_8)
 		{
-			LOG("Currently only UTF-8 encoding is supported, aborting XML parsing", Warning);
+			ET_TRACE_E(ET_CTX_CORE, "Currently only UTF-8 encoding is supported, aborting XML parsing");
 			return;
 		}
 
@@ -178,7 +178,7 @@ Parser::Parser(std::string const& sourceText)
 		return;
 	}
 
-	LOG(FS("Expected '%c' token, parsing XML failed", s_TagOpen), Warning);
+	ET_TRACE_E(ET_CTX_CORE, "Expected '%c' token, parsing XML failed", s_TagOpen);
 }
 
 //-----------------------------
@@ -243,7 +243,7 @@ void Parser::SkipComment(std::string const& sourceText)
 
 		if (sourceText.size() < m_ReadIdx + 2u)
 		{
-			LOG("XML file wasn't long enough to exit comment, exiting", Warning);
+			ET_TRACE_E(ET_CTX_CORE, "XML file wasn't long enough to exit comment, exiting");
 			return;
 		}
 
@@ -260,7 +260,7 @@ void Parser::SkipComment(std::string const& sourceText)
 		}
 	}
 
-	LOG("XML reached end of document before exiting comment", Warning);
+	ET_TRACE_E(ET_CTX_CORE, "XML reached end of document before exiting comment");
 	return;
 }
 
@@ -315,7 +315,7 @@ char Parser::ReadEntity(std::string const& sourceText)
 
 	if (m_ReadIdx + 3u >= sourceText.size())
 	{
-		LOG("Source text is too short to read an entity, aborting!", Warning);
+		ET_TRACE_E(ET_CTX_CORE, "Source text is too short to read an entity, aborting!");
 		return 0u;
 	}
 
@@ -344,7 +344,7 @@ char Parser::ReadEntity(std::string const& sourceText)
 			++m_ReadIdx;
 			if (m_ReadIdx >= sourceText.size())
 			{
-				LOG("Source text is too short to read an entity, aborting!", Warning);
+				ET_TRACE_E(ET_CTX_CORE, "Source text is too short to read an entity, aborting!");
 				return 0u;
 			}
 
@@ -368,7 +368,7 @@ char Parser::ReadEntity(std::string const& sourceText)
 		case "gt"_hash: return s_TagClose;
 
 		default:
-			LOG("Unsupported named entity", Warning);
+			ET_TRACE_W(ET_CTX_CORE, "Unsupported named entity");
 			return 0u;
 		}
 		
@@ -394,14 +394,14 @@ std::string Parser::ReadAttributeContent(std::string const& sourceText)
 	MoveToNonWhitespace(sourceText);
 	if ((m_ReadIdx >= sourceText.size()) || (sourceText[m_ReadIdx++] != s_Equal))
 	{
-		LOG(FS("Expected attribute starting with '%c'", s_Equal), Warning);
+		ET_TRACE_W(ET_CTX_CORE, "Expected attribute starting with '%c'", s_Equal);
 		return "";
 	}
 
 	MoveToNonWhitespace(sourceText);
 	if ((m_ReadIdx >= sourceText.size()) || (sourceText[m_ReadIdx++] != s_Quote))
 	{
-		LOG(FS("Expected attribute starting with '%c'", s_Quote), Warning);
+		ET_TRACE_W(ET_CTX_CORE, "Expected attribute starting with '%c'", s_Quote);
 		return "";
 	}
 
@@ -443,13 +443,13 @@ void Parser::ReadElement(std::string const& sourceText, Element& el)
 		{
 			if (++m_ReadIdx >= sourceText.size())
 			{
-				LOG("Source text is too short to read an element, aborting!", Warning);
+				ET_TRACE_E(ET_CTX_CORE, "Source text is too short to read an element, aborting!");
 				return;
 			}
 
 			if (sourceText[m_ReadIdx] != s_TagClose)
 			{
-				LOG(FS("Expected '%c' at end of declaration, parsing XML failed", s_TagClose), Warning);
+				ET_TRACE_E(ET_CTX_CORE, "Expected '%c' at end of declaration, parsing XML failed", s_TagClose);
 				return;
 			}
 
@@ -471,7 +471,7 @@ void Parser::ReadElement(std::string const& sourceText, Element& el)
 				{
 					if (m_ReadIdx >= sourceText.size())
 					{
-						LOG("Source text ended early!", Warning);
+						ET_TRACE_E(ET_CTX_CORE, "Source text ended early!");
 						return;
 					}
 
@@ -492,26 +492,26 @@ void Parser::ReadElement(std::string const& sourceText, Element& el)
 
 				if (sourceText[m_ReadIdx++] != s_EndElement)
 				{
-					LOG("Source text ended early!", Warning);
+					ET_TRACE_E(ET_CTX_CORE, "Source text ended early!");
 					return;
 				}
 
 				MoveToNonWhitespace(sourceText);
 				if (m_ReadIdx >= sourceText.size())
 				{
-					LOG("Source text is too short to read an element, aborting!", Warning);
+					ET_TRACE_E(ET_CTX_CORE, "Source text is too short to read an element, aborting!");
 					return;
 				}
 
 				if (core::HashString(ReadName(sourceText).c_str()) != el.m_Name)
 				{
-					LOG("Incorrect element closure!", Warning);
+					ET_TRACE_W(ET_CTX_CORE, "Incorrect element closure!");
 				}
 
 				MoveToNonWhitespace(sourceText);
 				if ((m_ReadIdx >= sourceText.size()) || (sourceText[m_ReadIdx++] != s_TagClose))
 				{
-					LOG(FS("Incorrect element closure, expected '%c'", s_TagClose), Warning);
+					ET_TRACE_W(ET_CTX_CORE, "Incorrect element closure, expected '%c'", s_TagClose);
 				}
 
 				return;
@@ -528,7 +528,7 @@ void Parser::ReadElement(std::string const& sourceText, Element& el)
 				SkipComment(sourceText);
 				if ((m_ReadIdx >= sourceText.size()) || (sourceText[m_ReadIdx++] != s_TagOpen))
 				{
-					LOG("Expected opening tag after reading child", Warning);
+					ET_TRACE_E(ET_CTX_CORE, "Expected opening tag after reading child");
 					return;
 				}
 			}
@@ -537,25 +537,25 @@ void Parser::ReadElement(std::string const& sourceText, Element& el)
 			MoveToNonWhitespace(sourceText);
 			if (m_ReadIdx >= sourceText.size())
 			{
-				LOG("Source text is too short to read an element, aborting!", Warning);
+				ET_TRACE_E(ET_CTX_CORE, "Source text is too short to read an element, aborting!");
 				return;
 			}
 
 			if (core::HashString(ReadName(sourceText).c_str()) != el.m_Name)
 			{
-				LOG("Incorrect element closure!", Warning);
+				ET_TRACE_W(ET_CTX_CORE, "Incorrect element closure!");
 			}
 
 			MoveToNonWhitespace(sourceText);
 			if (m_ReadIdx >= sourceText.size())
 			{
-				LOG("Source text is too short to read an element, aborting!", Warning);
+				ET_TRACE_E(ET_CTX_CORE, "Source text is too short to read an element, aborting!");
 				return;
 			}
 
 			if (sourceText[m_ReadIdx++] != s_TagClose)
 			{
-				LOG(FS("Incorrect element closure, expected '%c'", s_TagClose), Warning);
+				ET_TRACE_W(ET_CTX_CORE, "Incorrect element closure, expected '%c'", s_TagClose);
 			}
 
 			return;
@@ -571,7 +571,7 @@ void Parser::ReadElement(std::string const& sourceText, Element& el)
 		MoveToNonWhitespace(sourceText);
 	}
 
-	LOG("Reading element ended unexpectedly!", Warning);
+	ET_TRACE_W(ET_CTX_CORE, "Reading element ended unexpectedly!");
 }
 
 

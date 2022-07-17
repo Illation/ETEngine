@@ -152,9 +152,10 @@ bool File::Open(FILE_ACCESS_MODE mode, FILE_ACCESS_FLAGS flags)
 	m_Handle = FILE_BASE::Open( path.c_str(), flags, mode);
 	if (m_Handle == FILE_HANDLE_INVALID) 
 	{
-		LOG("Opening File failed", Error);
+		ET_TRACE_E(ET_CTX_CORE, "Opening File failed");
 		return false;
 	}
+
 	m_IsOpen = true;
 	//If we created this file new and have a parent that doesn't know about it, add to parent
 	if(m_Parent)
@@ -179,7 +180,7 @@ std::vector<uint8> File::Read()
 	std::vector<uint8> content;
 	if(!FILE_BASE::ReadFile(m_Handle, content, GetSize()))
 	{
-		LOG("File::Read > Reading File failed", Error);
+		ET_TRACE_E(ET_CTX_CORE, "File::Read > Reading File failed");
 	}
 
 	return content;
@@ -200,7 +201,7 @@ std::vector<uint8> File::ReadChunk(uint64 const offset, uint64 const numBytes)
 	std::vector<uint8> content;
 	if (!FILE_BASE::ReadFile(m_Handle, content, numBytes, offset))
 	{
-		LOG("File::ReadChunk > Reading file failed", Error);
+		ET_TRACE_E(ET_CTX_CORE, "File::ReadChunk > Reading file failed");
 	}
 
 	return content;
@@ -215,9 +216,10 @@ bool File::Write(const std::vector<uint8> &lhs)
 {
 	if ( !FILE_BASE::WriteFile(m_Handle, lhs) )
 	{
-		LOG("Writing File failed", Error);
+		ET_TRACE_E(ET_CTX_CORE, "Writing File failed");
         return false;
     }
+
 	return true;
 }
 
@@ -244,7 +246,7 @@ uint64 File::GetSize()
 	int64 size;
 	if (!FILE_BASE::GetEntrySize(m_Handle, size))
 	{
-		LOG("Getting File size failed", Error);
+		ET_TRACE_E(ET_CTX_CORE, "Getting File size failed");
 		return std::numeric_limits<uint64>::max();
 	}
 
@@ -273,7 +275,7 @@ bool File::Delete()
 
 	if(m_IsOpen)
 	{
-		LOG("Couldn't delete file because it failed to close", Error);
+		ET_TRACE_E(ET_CTX_CORE, "Couldn't delete file because it failed to close");
 		return false;
 	}
 
@@ -482,7 +484,7 @@ void Directory::GetChildrenRecursive(std::vector<File*>& children)
 			break;
 
 		default:
-			LOG("Directory::GetChildrenRecursive > Unhandled entry type: " + child->GetName(), LogLevel::Warning);
+			ET_TRACE_W(ET_CTX_CORE, "Directory::GetChildrenRecursive > Unhandled entry type: '%s'", child->GetName().c_str());
 			break;
 		}
 	}

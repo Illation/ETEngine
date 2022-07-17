@@ -56,6 +56,7 @@ EditorApp::EditorApp()
 	RegisterAsTriggerer();
 	
 	core::Logger::Initialize();//Init logger first because all output depends on it from the start
+	core::TraceService::Initialize();
 
 	LOG(FS("E.T.Editor"));
 	LOG(FS("//////////"));
@@ -108,6 +109,7 @@ EditorApp::~EditorApp()
 
 	core::ResourceManager::DestroyInstance();
 
+	core::TraceService::Destroy();
 	core::Logger::Release();
 	core::TickManager::GetInstance()->DestroyInstance();
 }

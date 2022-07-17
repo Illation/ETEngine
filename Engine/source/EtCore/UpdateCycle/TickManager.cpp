@@ -133,7 +133,7 @@ void TickManager::RegisterRealTimeTriggerer(I_RealTimeTickTriggerer* const trigg
 	}
 	else
 	{
-		LOG("TickManager::RegisterRealTimeTriggerer > RealTime triggerer already registered!", LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_CORE, "TickManager::RegisterRealTimeTriggerer > RealTime triggerer already registered!");
 	}
 }
 
@@ -155,7 +155,7 @@ void TickManager::RegisterDefaultTriggerer(I_DefaultTickTriggerer* const trigger
 	}
 	else
 	{
-		LOG("TickManager::RegisterDefaultTriggerer > Default triggerer already registered!", LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_CORE, "TickManager::RegisterDefaultTriggerer > Default triggerer already registered!");
 	}
 }
 
@@ -173,7 +173,7 @@ void TickManager::RegisterTickable(I_Tickable* const tickableObject, uint32 cons
 	{
 		if ((*it).tickable == tickableObject)
 		{
-			LOG("TickManager::RegisterTickable > object already registered!", LogLevel::Warning);
+			ET_TRACE_W(ET_CTX_CORE, "TickManager::RegisterTickable > object already registered!");
 			return;
 		}
 
@@ -246,7 +246,7 @@ void TickManager::UnregisterTickable(I_Tickable* const tickableObject)
 
 	if (findResult == m_Tickables.cend())
 	{
-		LOG("TickManager::UnregisterTickable > attempted to remove a non registered object", LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_CORE, "TickManager::UnregisterTickable > attempted to remove a non registered object");
 		return;
 	}
 

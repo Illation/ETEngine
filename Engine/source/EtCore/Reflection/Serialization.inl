@@ -52,7 +52,7 @@ bool SerializeToFile(std::string const& filePath, T const& serialObject, bool co
 	}
 	else
 	{
-		LOG("SerializeToFile > File type '" + ext + std::string("' not supported!"), Warning);
+		ET_TRACE_W(ET_CTX_CORE, "SerializeToFile > File type '%s' not supported!", ext.c_str());
 	}
 
 	// write the content to the file
@@ -62,13 +62,13 @@ bool SerializeToFile(std::string const& filePath, T const& serialObject, bool co
 		outFlags.SetFlags(FILE_ACCESS_FLAGS::FLAGS::Create | FILE_ACCESS_FLAGS::FLAGS::Exists); // create a new file or overwrite the existing one
 		if (!file->Open(FILE_ACCESS_MODE::Write, outFlags))
 		{
-			LOG("SerializeToFile > unable to open file '" + filePath + std::string("' for writing!"), Warning);
+			ET_TRACE_W(ET_CTX_CORE, "SerializeToFile > unable to open file '%s' for writing!", filePath.c_str());
 			serializeSuccess = false;
 		}
 
 		if (serializeSuccess && !file->Write(fileContent))
 		{
-			LOG("SerializeToFile > Writing content to file failed!", Warning);
+			ET_TRACE_W(ET_CTX_CORE, "SerializeToFile > Writing content to file failed!");
 			serializeSuccess = false;
 		}
 	}
@@ -91,7 +91,7 @@ bool DeserializeFromFile(std::string const& filePath, T& outObject)
 	File* file = new File(filePath, nullptr);
 	if (!file->Open(FILE_ACCESS_MODE::Read))
 	{
-		LOG("DeserializeFromFile > unable to open file '" + filePath + std::string("'!"), Warning);
+		ET_TRACE_W(ET_CTX_CORE, "DeserializeFromFile > unable to open file '%s'!", filePath.c_str());
 		return false;
 	}
 
@@ -114,7 +114,7 @@ bool DeserializeFromFile(std::string const& filePath, T& outObject)
 		return deserializer.DeserializeFromData(content, outObject);
 	}
 
-	LOG("DeserializeFromFile > File type '" + ext + std::string("' not supported!"), Warning);
+	ET_TRACE_W(ET_CTX_CORE, "DeserializeFromFile > File type '%s' not supported!", ext.c_str());
 	return false;
 }
 

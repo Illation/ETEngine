@@ -16,11 +16,3 @@
 #else
 #	define ET_CT_TRACE_VERBOSE ET_DISABLED
 #endif
-
-
-// Trace vs just logs
-#ifdef ET_SHIPPING
-#	define ET_CT_TRACE ET_DISABLED
-#else
-#	define ET_CT_TRACE ET_ENABLED
-#endif

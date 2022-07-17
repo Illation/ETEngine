@@ -29,7 +29,7 @@ bool JsonDeserializer::DeserializeFromData(std::vector<uint8> const& data, T& ou
 	JSON::Object* root = parser.GetRoot();
 	if (!root)
 	{
-		LOG("DeserializeFromData > unable to parse string to JSON!", Warning);
+		ET_TRACE_W(ET_CTX_CORE, "DeserializeFromData > unable to parse string to JSON!");
 		return false;
 	}
 

@@ -68,12 +68,12 @@ void HashStringRegistry::Register(T_Hash const hash, char const* const str)
 //
 void HashStringRegistry::DbgPrintAll() const
 {
-	LOG("");
-	LOG("Cached hashes:");
+	ET_TRACE_I(ET_CTX_CORE, "");
+	ET_TRACE_I(ET_CTX_CORE, "Cached hashes:");
 
 	for (std::pair<T_Hash const, std::string> const& pair : m_RegisteredHashes)
 	{
-		LOG(FS("\t[%u] - '%s'", pair.first, pair.second.c_str()));
+		ET_TRACE_I(ET_CTX_CORE, "\t[%u] - '%s'", pair.first, pair.second.c_str());
 	}
 }
 

@@ -64,7 +64,7 @@ void MainFramework::OnInit()
 	AssetPtr<TestData> m_TestAsset = core::ResourceManager::Instance()->GetAssetData<TestData>(core::HashString("test.txt"));
 	ET_ASSERT(m_TestAsset != nullptr);
 
-	LOG(FS("Custom Assets:\n\t%s", std::string(m_TestAsset->GetText(), m_TestAsset->GetLength()).c_str()));
+	ET_TRACE_I(ET_CTX_DEMO, "Custom Assets:\n\t%s", std::string(m_TestAsset->GetText(), m_TestAsset->GetLength()).c_str());
 }
 
 //--------------------------
@@ -116,7 +116,7 @@ void MainFramework::OnTick()
 		float const newExp = ppSettings.exposure * 4.f;
 		ppSettings.exposure += (newExp - ppSettings.exposure) * TIME->DeltaTime() * (up ? 1.f : -1.f);
 
-		LOG(FS("Exposure: %f", ppSettings.exposure));
+		ET_TRACE_I(ET_CTX_DEMO, "Exposure: %f", ppSettings.exposure);
 
 		renderScene.SetPostProcessingSettings(ppSettings);
 	}
