@@ -11,13 +11,14 @@ void AudioManager::Initialize()
 	m_Device = alcOpenDevice(NULL);
 	if (!m_Device)
 	{
-		LOG("Unable to create openAL device", core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_FRAMEWORK, "Unable to create openAL device");
 		return;
 	}
+
 	ALboolean enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
 	if (enumeration == AL_FALSE)
 	{
-		LOG("OpenAL enumeration not supported", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_FRAMEWORK, "OpenAL enumeration not supported");
 	}
 
 	ListAudioDevices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
@@ -27,26 +28,27 @@ void AudioManager::Initialize()
 	m_Device = alcOpenDevice(defaultDeviceName);
 	if (!m_Device) 
 	{
-		LOG("Unable to open default openAL device", core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_FRAMEWORK, "Unable to open default openAL device");
 		return;
 	}
-	ALCenum error;
 
-	LOG(std::string("Chosen device: ") + alcGetString(m_Device, ALC_DEVICE_SPECIFIER));
+	ET_LOG_I(ET_CTX_FRAMEWORK, "Chosen device: %s", alcGetString(m_Device, ALC_DEVICE_SPECIFIER));
 
 	m_Context = alcCreateContext(m_Device, NULL);
 	if (!alcMakeContextCurrent(m_Context))
 	{
-		LOG("OpenAL failed to make default context", core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_FRAMEWORK, "OpenAL failed to make default context");
 		return;
 	}
-	error = alGetError();				
+
+	ALCenum error = alGetError();
 	if (error != AL_NO_ERROR) 
 	{
-		LOG("OpenAL failed to make default context", core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_FRAMEWORK, "OpenAL failed to make default context");
 		return;
 	}
-	LOG("OpenAL loaded\n");
+	
+	ET_LOG_I(ET_CTX_FRAMEWORK, "OpenAL loaded\n");
 }
 
 bool AudioManager::TestALError(std::string error)
@@ -66,7 +68,8 @@ bool AudioManager::TestALError(std::string error)
 		default:
 			alErrorString = "Unknown error code";break;
 		}
-		LOG(error + " : " + alErrorString, core::LogLevel::Error);
+
+		ET_TRACE_E(ET_CTX_FRAMEWORK, "%s : %s", error.c_str(), alErrorString.c_str());
 		return true;							
 	}
 	return false;
@@ -82,7 +85,7 @@ void AudioManager::MakeContextCurrent()
 {
 	if (!alcMakeContextCurrent(m_Context))
 	{
-		LOG("OpenAL failed to make default context", core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_FRAMEWORK, "OpenAL failed to make context current");
 	}
 }
 
@@ -99,10 +102,10 @@ void AudioManager::ListAudioDevices(const ALCchar *devices)
 	const ALCchar *device = devices, *next = devices + 1;
 	size_t len = 0;
 
-	LOG("OpenAL device list:");
+	ET_LOG_I(ET_CTX_FRAMEWORK, "OpenAL device list:");
 	while (device && *device != '\0' && next && *next != '\0') 
 	{
-		LOG(std::string("\t")+device);
+		ET_LOG_I(ET_CTX_FRAMEWORK, "\t%s", device);
 		len = strlen(device);
 		device += (len + 1);
 		next += (len + 2);

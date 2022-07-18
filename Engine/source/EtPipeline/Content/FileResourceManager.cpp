@@ -5,6 +5,8 @@
 #include <EtCore/Reflection/Serialization.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
+#include <EtPipeline/PipelineCtx.h>
+
 
 namespace et {
 namespace pl {
@@ -102,8 +104,7 @@ bool FileResourceManager::GetLoadData(core::I_Asset const* const asset, std::vec
 	// make sure we have a valid asset
 	if ((dbEntry == nullptr) || (dbEntry->GetType() == core::Entry::ENTRY_DIRECTORY))
 	{
-		LOG(FS("Asset '%s' not found at location: %s", asset->GetName().c_str(), (searchDir->GetName() + asset->GetPath()).c_str()), 
-			core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_PIPELINE, "Asset '%s' not found at location: %s", asset->GetName().c_str(), (searchDir->GetName() + asset->GetPath()).c_str());
 		return false;
 	}
 
@@ -111,7 +112,7 @@ bool FileResourceManager::GetLoadData(core::I_Asset const* const asset, std::vec
 	core::File* const dbFile = static_cast<core::File*>(dbEntry);
 	if (!(dbFile->Open(core::FILE_ACCESS_MODE::Read)))
 	{
-		LOG(FS("Failed to open file '%s'", dbFile->GetName()), core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_PIPELINE, "Failed to open file '%s'", dbFile->GetName());
 		return false;
 	}
 

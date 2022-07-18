@@ -6,6 +6,8 @@
 
 #include <EtRendering/MaterialSystem/MaterialDescriptor.h>
 
+#include <EtPipeline/PipelineCtx.h>
+
 
 namespace et {
 namespace pl {
@@ -24,7 +26,7 @@ bool ConvertMaterialDescriptorToBinary(std::vector<uint8> const& jsonData, Build
 	core::JsonDeserializer deserializer;
 	if (!deserializer.DeserializeFromData(jsonData, descriptor))
 	{
-		LOG("ConvertMaterialDescriptorToBinary > Failed to deserialize descriptor from json!", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_PIPELINE, "ConvertMaterialDescriptorToBinary > Failed to deserialize descriptor from json!");
 		return false;
 	}
 
@@ -34,7 +36,7 @@ bool ConvertMaterialDescriptorToBinary(std::vector<uint8> const& jsonData, Build
 	if (!serializer.SerializeToData(descriptor, binData))
 	{
 		binData.clear();
-		LOG("ConvertMaterialDescriptorToBinary > Failed to serialize descriptor to binary!", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_PIPELINE, "ConvertMaterialDescriptorToBinary > Failed to serialize descriptor to binary!");
 		return false;
 	}
 
@@ -68,7 +70,7 @@ bool EditableMaterialAsset::LoadFromMemory(std::vector<uint8> const& data)
 	core::JsonDeserializer deserializer;
 	if (!deserializer.DeserializeFromData(data, descriptor))
 	{
-		LOG("EditableMaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor", core::LogLevel::Warning);
+		ET_LOG_E(ET_CTX_PIPELINE, "EditableMaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor");
 		return false;
 	}
 
@@ -107,7 +109,7 @@ bool EditableMaterialInstanceAsset::LoadFromMemory(std::vector<uint8> const& dat
 	core::JsonDeserializer deserializer;
 	if (!deserializer.DeserializeFromData(data, descriptor))
 	{
-		LOG("EditableMaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor", core::LogLevel::Warning);
+		ET_LOG_E(ET_CTX_PIPELINE, "EditableMaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into an instance descriptor");
 		return false;
 	}
 

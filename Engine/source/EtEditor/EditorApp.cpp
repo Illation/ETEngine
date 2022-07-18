@@ -58,11 +58,11 @@ EditorApp::EditorApp()
 	core::Logger::Initialize();//Init logger first because all output depends on it from the start
 	core::TraceService::Initialize();
 
-	LOG(FS("E.T.Editor"));
-	LOG(FS("//////////"));
-	LOG("");
-	LOG(FS(" - version: %s", et::build::Version::s_Name.c_str()));
-	LOG("");
+	ET_LOG_I(ET_CTX_EDITOR, "E.T.Editor");
+	ET_LOG_I(ET_CTX_EDITOR, "//////////");
+	ET_LOG_I(ET_CTX_EDITOR, "");
+	ET_LOG_I(ET_CTX_EDITOR, " - version: %s", et::build::Version::s_Name.c_str());
+	ET_LOG_I(ET_CTX_EDITOR, "");
 
 	core::TypeInfoRegistry::Instance().Initialize(); // this needs to be initialized ASAP because serialization depends on it
 
@@ -181,12 +181,12 @@ void EditorApp::on_startup()
 	}
 	catch (const Glib::Error& ex)
 	{
-		LOG("EditorApp::on_startup > " + std::string(ex.what()), core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_EDITOR, "EditorApp::on_startup > %s", ex.what().data());
 		return;
 	}
 	catch (std::exception const& ex)
 	{
-		LOG("EditorApp::on_startup > " + std::string(ex.what()), core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_EDITOR, "EditorApp::on_startup > %s", ex.what());
 		return;
 	}
 
@@ -197,7 +197,7 @@ void EditorApp::on_startup()
 	}
 	else
 	{
-		LOG("EditorApp::on_startup > No 'appmenu' object in app_menu.ui", core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_EDITOR, "EditorApp::on_startup > No 'appmenu' object in app_menu.ui");
 	}
 }
 
@@ -228,11 +228,11 @@ void EditorApp::on_activate()
 	// and therefore the application will stop running.
 	catch (Glib::Error const& ex)
 	{
-		LOG("EditorApp::on_activate > " + std::string(ex.what().c_str()), core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_EDITOR, "EditorApp::on_activate > %s", ex.what().c_str());
 	}
 	catch (std::exception const& ex)
 	{
-		LOG("EditorApp::on_activate > " + std::string(ex.what()), core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_EDITOR, "EditorApp::on_activate > %s", ex.what());
 	}
 }
 
@@ -303,11 +303,11 @@ void EditorApp::OnActionPreferences()
 	}
 	catch (const Glib::Error& ex)
 	{
-		LOG("EditorApp::OnActionPreferences > " + std::string(ex.what()), core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_EDITOR, "EditorApp::OnActionPreferences > %s", ex.what().data());
 	}
 	catch (const std::exception& ex)
 	{
-		LOG("EditorApp::OnActionPreferences > " + std::string(ex.what()), core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_EDITOR, "EditorApp::OnActionPreferences > %s", ex.what());
 	}
 }
 

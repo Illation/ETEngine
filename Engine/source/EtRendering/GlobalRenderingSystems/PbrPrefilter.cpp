@@ -29,7 +29,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
 	ivec2 logPos = core::Logger::GetCursorPosition();
-	LOG("Precalculating PBR BRDF LUT . . .");
+	ET_TRACE_I(ET_CTX_RENDER, "Precalculating PBR BRDF LUT . . .");
 	//setup BRDF look up table
 	//************************
 	//Create framebuffer
@@ -71,7 +71,7 @@ void PbrPrefilter::Precompute(int32 resolution)
 
 	api->DeleteRenderBuffers(1, &captureRBO);
 	api->DeleteFramebuffers(1, &captureFBO);
-	LOG("Precalculating PBR BRDF LUT . . . . . . DONE", core::LogLevel::Info, false, logPos);
+	ET_TRACE_V(ET_CTX_RENDER, "Completed precalculating PPBR BRDF LUT");
 }
 
 void PbrPrefilter::PrefilterCube(TextureData const* const source, 

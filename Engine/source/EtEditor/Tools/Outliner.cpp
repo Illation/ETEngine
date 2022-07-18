@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <EtEditor/stdafx.h>
 #include "Outliner.h"
 
 #include <gtkmm/treeviewcolumn.h>
@@ -172,7 +172,7 @@ void Outliner::OnTreeViewRowActivated(Gtk::TreeModel::Path const& path, Gtk::Tre
 		Glib::ustring name = row[m_Columns.m_Name];
 		fw::T_EntityId id = row[m_Columns.m_Id];
 
-		LOG(FS("Row activated: Name=%s, ID=%u", name.c_str(), id));
+		ET_LOG_V(ET_CTX_EDITOR, "Row activated: Name=%s, ID=%u", name.c_str(), id);
 	}
 }
 

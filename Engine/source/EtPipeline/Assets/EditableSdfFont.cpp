@@ -15,6 +15,7 @@
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
+#include <EtPipeline/PipelineCtx.h>
 #include <EtPipeline/Import/TextureCompression.h>
 
 
@@ -65,7 +66,7 @@ bool EditableSdfFontAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	if (fontData == nullptr)
 	{
-		LOG("EditableSdfFontAsset::LoadFromMemory > Loading font failed!", core::LogLevel::Warning);
+		ET_LOG_E(ET_CTX_PIPELINE, "EditableSdfFontAsset::LoadFromMemory > Loading font failed!");
 		return false;
 	}
 
@@ -170,13 +171,13 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 	FT_Library ft;
 	if (FT_Init_FreeType(&ft))
 	{
-		LOG("FREETYPE: Could not init FreeType Library", core::LogLevel::Warning);
+		ET_LOG_E(ET_CTX_PIPELINE, "FREETYPE: Could not init FreeType Library");
 	}
 
 	FT_Face face;
 	if (FT_New_Memory_Face(ft, binaryContent.data(), (FT_Long)binaryContent.size(), 0, &face))
 	{
-		LOG("FREETYPE: Failed to load font", core::LogLevel::Warning);
+		ET_LOG_E(ET_CTX_PIPELINE, "FREETYPE: Failed to load font");
 	}
 
 	// parse basic font parameters
@@ -410,7 +411,7 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 		uint32 const glyphIdx = FT_Get_Char_Index(face, metric.m_Character);
 		if (FT_Load_Glyph(face, glyphIdx, FT_LOAD_DEFAULT))
 		{
-			LOG("FREETYPE: Failed to load glyph", core::LogLevel::Warning);
+			ET_LOG_W(ET_CTX_PIPELINE, "FREETYPE: Failed to load glyph");
 			continue;
 		}
 
@@ -418,7 +419,7 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 		{
 			if (FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL))
 			{
-				LOG("FREETYPE: Failed to render glyph", core::LogLevel::Warning);
+				ET_LOG_W(ET_CTX_PIPELINE, "FREETYPE: Failed to render glyph");
 				continue;
 			}
 		}

@@ -1,6 +1,4 @@
 #pragma once
-#include <EtCore/Util/Logger.h>
-
 #include "CommonMacros.h"
 #include "StringUtil.h"
 
@@ -62,9 +60,9 @@ namespace et { namespace detail {
 #endif // ET_CT_ASSERT
 
 // for performance critical code
-#define ET_PARANOID_ASSERTS_ENABLED false
+#define ET_CT_PARANOID_ASSERTS ET_DISABLED
 
-#if ET_PARANOID_ASSERTS_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_PARANOID_ASSERTS)
 #	define ET_ASSERT_PARANOID(condition, ...) ET_ASSERT(condition, __VA_ARGS__)
 #else
 #	define ET_ASSERT_PARANOID(condition, ...)

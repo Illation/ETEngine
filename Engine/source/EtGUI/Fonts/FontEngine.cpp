@@ -185,7 +185,7 @@ Rml::FontEffectsHandle FontEngine::PrepareFontEffects(Rml::FontFaceHandle const 
 		else
 		{
 			// typeid contains more accurate type name for unregistered types
-			LOG(FS("/tFont effect '%s' is not supported by SDF font engine", typeid(*effect).name())); 
+			ET_TRACE_W(ET_CTX_GUI, "/tFont effect '%s' is not supported by SDF font engine", typeid(*effect).name());
 		}
 	}
 
@@ -683,8 +683,8 @@ SdfFont::Metric const& FontEngine::GetMetric(size_t const faceIdx, char32 const 
 		currentFaceIdx = GetFallbackFaceIdx(currentFaceIdx);
 	}
 
-	LOG(FS("FontEngine::GetMetric > Font '%s' doesn't support char '%#010x', and no fallbacks where found", 
-		m_Faces[faceIdx].m_Font.GetId().ToStringDbg(), charId), core::LogLevel::Warning);
+	ET_TRACE_W(ET_CTX_GUI, "FontEngine::GetMetric > Font '%s' doesn't support char '%#010x', and no fallbacks where found",
+		m_Faces[faceIdx].m_Font.GetId().ToStringDbg(), charId);
 
 	SdfFont::Metric const* metric = m_Faces[faceIdx].m_Font->GetValidMetric(0);
 	ET_ASSERT(metric != nullptr); // every font should contain a default character for 0

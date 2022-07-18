@@ -1,10 +1,20 @@
 #include "stdafx.h"
 #include "Assert.h"
 
+#if ET_CT_IS_ENABLED(ET_CT_ASSERT)
 
-#if ET_CT_ASSERT
+#include <EtCore/Trace/Trace.h>
+
+#ifdef ET_PLATFORM_WIN
+#	include <EtCore/Util/WindowsUtil.h>
+#endif
+
 
 namespace et {
+
+	ET_DEFINE_TRACE_CTX(ET_CTX_ASSERT);
+	ET_REGISTER_TRACE_CTX(ET_CTX_ASSERT);
+
 namespace detail {
 
 
@@ -20,7 +30,15 @@ bool ProcessAssert(bool const condition, std::string const& caller, std::string 
 {
 	if (!condition)
 	{
-		core::Logger::Log("[ASSERT] " + caller + std::string(" > ") + msg, core::LogLevel::Warning, true);
+		ET_TRACE_W(ET_CTX_ASSERT, "%s > %s", caller.c_str(), msg.c_str());
+
+#ifdef ET_PLATFORM_WIN  // #todo: platform make debugger checks and message boxes platform independent
+		if (!IsDebuggerPresent())
+		{
+			MessageBox(0, msg.c_str(), "ASSERT", 0);
+		}
+#endif // ET_PLATFORM_WIN
+
 		return true;
 	}
 

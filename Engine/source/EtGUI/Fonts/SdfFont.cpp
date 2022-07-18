@@ -159,7 +159,7 @@ bool SdfFontAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	if (m_Data == nullptr)
 	{
-		LOG("FontAsset::LoadFromMemory > Loading font failed!", core::LogLevel::Warning);
+		ET_LOG_E(ET_CTX_GUI, "FontAsset::LoadFromMemory > Loading font failed!");
 		return false;
 	}
 
@@ -179,13 +179,13 @@ SdfFont* SdfFontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 
 	if (binReader.ReadString(3u) != "BMF")
 	{
-		LOG("Font file header invalid!", core::LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_GUI, "Font file header invalid!");
 		return nullptr;
 	}
 
 	if (binReader.Read<int8>() < 3)
 	{
-		LOG("Font version invalid!", core::LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_GUI, "Font version invalid!");
 		return nullptr;
 	}
 

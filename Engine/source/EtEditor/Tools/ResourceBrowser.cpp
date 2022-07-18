@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <EtEditor/stdafx.h>
 #include "ResourceBrowser.h"
 
 #include <gtkmm/frame.h>
@@ -122,12 +122,12 @@ void ResourceBrowser::OnDropDataReceived(Glib::RefPtr<Gdk::DragContext> const& c
 				}
 				else
 				{
-					LOG(FS("No valid importer for file '%s' found!", uri.GetPath().c_str()));
+					ET_LOG_W(ET_CTX_EDITOR, "No valid importer for file '%s' found!", uri.GetPath().c_str());
 				}
 			}
 			else
 			{
-				LOG(FS("Unsupported uri type for file '%s'", uri.GetPath().c_str()));
+				ET_LOG_W(ET_CTX_EDITOR, "Unsupported uri type for file '%s'", uri.GetPath().c_str());
 			}
 		}
 
@@ -155,13 +155,13 @@ void ResourceBrowser::OnDropDataReceived(Glib::RefPtr<Gdk::DragContext> const& c
 					switch (res)
 					{
 					case E_ImportResult::Cancelled:
-						LOG(FS("Import cancelled for file '%s'", uri.GetPath().c_str()));
+						ET_LOG_I(ET_CTX_EDITOR, "Import cancelled for file '%s'", uri.GetPath().c_str());
 						break;
 					case E_ImportResult::Failed:
-						LOG(FS("Import failed for file '%s'", uri.GetPath().c_str()));
+						ET_LOG_E(ET_CTX_EDITOR, "Import failed for file '%s'", uri.GetPath().c_str());
 						break;
 					case E_ImportResult::Succeeded:
-						LOG(FS("Import succeeded for file '%s'", uri.GetPath().c_str()));
+						ET_LOG_I(ET_CTX_EDITOR, "Import succeeded for file '%s'", uri.GetPath().c_str());
 						dropFinished = true;
 						m_View.Rebuild();
 						break;
@@ -172,7 +172,7 @@ void ResourceBrowser::OnDropDataReceived(Glib::RefPtr<Gdk::DragContext> const& c
 	}
 	else
 	{
-		LOG(FS("Unsupported drop data '%s'", selectionData.get_data_as_string().c_str()));
+		ET_LOG_I(ET_CTX_EDITOR, "Unsupported drop data '%s'", selectionData.get_data_as_string().c_str());
 	}
 
 	context->drag_finish(dropFinished, false, time);

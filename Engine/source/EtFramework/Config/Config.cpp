@@ -54,10 +54,9 @@ ivec2 Config::Settings::Window::GetSize() const
 		return Resolutions[resIdx];
 	}
 
-	LOG(FS("Settings::Window::DeriveSettings > Invalid resolution index in '%s' mode: %u",
+	ET_LOG_W(ET_CTX_FRAMEWORK, "Settings::Window::DeriveSettings > Invalid resolution index in '%s' mode: %u",
 		(Fullscreen ? "fullscreen" : "windowed"),
-		(Fullscreen ? FullscreenRes : WindowedRes)),
-		core::LogLevel::Warning);
+		(Fullscreen ? FullscreenRes : WindowedRes));
 
 	return ivec2();
 }
@@ -94,7 +93,7 @@ void Config::Initialize()
 	}
 	else
 	{
-		LOG("Config::Initialize > unable to deserialize pointer to user directory!", core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_FRAMEWORK, "Config::Initialize > unable to deserialize pointer to user directory!");
 	}
 
 	// try deserializing settings
@@ -105,7 +104,7 @@ void Config::Initialize()
 	}
 	else
 	{
-		LOG("Config::Initialize > unable to deserialize config file to settings, using defaults", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_FRAMEWORK, "Config::Initialize > unable to deserialize config file to settings, using defaults");
 	}
 }
 
@@ -136,7 +135,7 @@ void Config::Save()
 {
 	if (!core::serialization::SerializeToFile(GetUserDirPath() + s_ConfigFileRelativePath, m_Settings, true))
 	{
-		LOG("Config::Save > unable to serialize settings to config file", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_FRAMEWORK, "Config::Save > unable to serialize settings to config file");
 	}
 }
 

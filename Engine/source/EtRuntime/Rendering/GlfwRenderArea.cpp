@@ -27,13 +27,13 @@ void GlfwRenderArea::Initialize(render::GraphicsContextParams const& params, boo
 	//-----------------
 	if (!glfwInit())
 	{
-		LOG("Couldn't initialize GLFW!", core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_RUNTIME, "Couldn't initialize GLFW!");
 	}
 
 	// error callback
 	glfwSetErrorCallback([](int32 const code, char const* const description)
 		{
-			LOG(FS("GLFW error [%i]: %s", code, description), core::LogLevel::Warning);
+			ET_TRACE_W(ET_CTX_RUNTIME, "GLFW error [%i]: %s", code, description);
 		});
 
 	// Create Window and openGL context in one place
@@ -83,7 +83,7 @@ void GlfwRenderArea::Initialize(render::GraphicsContextParams const& params, boo
 	if (m_Window == nullptr)
 	{
 		glfwTerminate();
-		LOG("Failed to create window with GLFW!", core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_RUNTIME, "Failed to create window with GLFW!");
 	}
 
 	glfwSetWindowUserPointer(m_Window, this);

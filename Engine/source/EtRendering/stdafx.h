@@ -2,8 +2,6 @@
 
 #define NOMINMAX
 
-//#define ET_GRAPHICS_API_DEBUG
-//#define ET_GRAPHICS_API_VERBOSE
 
 #pragma region
 //C RunTime Header Files
@@ -25,3 +23,11 @@
 #include <EtRendering/GraphicsContext/ContextHolder.h>
 #include <EtRendering/GraphicsContext/Viewport.h>
 #pragma endregion Includes
+
+
+namespace et {
+	ET_DEFINE_TRACE_CTX(ET_CTX_RENDER);
+}
+
+#define ET_CT_RHI_DEBUG ET_DISABLED
+#define ET_CT_RHI_VERBOSE ET_DISABLED

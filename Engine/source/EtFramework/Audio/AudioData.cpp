@@ -80,13 +80,13 @@ bool AudioAsset::LoadFromMemory(std::vector<uint8> const& data)
 	}
 	else
 	{
-		LOG("AudioAsset::LoadFromMemory > Cannot load audio data with this extension! Supported exensions: [.wav/.ogg]", core::LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_FRAMEWORK, "AudioAsset::LoadFromMemory > Cannot load audio data with this extension! Supported exensions: [.wav/.ogg]");
 		return false;
 	}
 
 	if (!dataLoaded)
 	{
-		LOG("AudioAsset::LoadFromMemory > Failed to load audio buffer data!", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_FRAMEWORK, "AudioAsset::LoadFromMemory > Failed to load audio buffer data!");
 		return false;
 	}
 
@@ -101,7 +101,7 @@ bool AudioAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	if (AudioManager::GetInstance()->TestALError("Audio Loader alBufferData error"))
 	{
-		LOG("AudioAsset::LoadFromMemory > Failed - open AL error!", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_FRAMEWORK, "AudioAsset::LoadFromMemory > Failed - open AL error!");
 		return false;
 	}
 
@@ -159,7 +159,7 @@ bool AudioAsset::LoadWavFile(AudioBufferData &bufferData, std::vector<uint8> con
 	uint16 audioFormat = binReader.Read<uint16>();
 	if (audioFormat != 1)
 	{
-		LOG(std::string("Only uncompressed wave files are supported, audio format is: ") + std::to_string(audioFormat), core::LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_FRAMEWORK, "Only uncompressed wave files are supported, audio format is: %u", static_cast<uint32>(audioFormat));
 		return false;
 	}
 
@@ -187,7 +187,7 @@ bool AudioAsset::LoadWavFile(AudioBufferData &bufferData, std::vector<uint8> con
 	{
 		if (i + bufferPos >= (uint32)binaryContent.size())
 		{
-			LOG("Unexpected end of wav files binary content", core::LogLevel::Warning);
+			ET_TRACE_W(ET_CTX_FRAMEWORK, "Unexpected end of wav files binary content");
 			return false;
 		}
 
@@ -203,7 +203,7 @@ bool AudioAsset::LoadWavFile(AudioBufferData &bufferData, std::vector<uint8> con
 		case 8:bufferData.format = AL_FORMAT_MONO8; break;
 		case 16:bufferData.format = AL_FORMAT_MONO16; break;
 		default:
-			LOG(std::string("only 8 and 16 bit formats are supported by openAL, bitSize: ") + std::to_string(bitsPerSample), core::LogLevel::Warning);
+			ET_TRACE_W(ET_CTX_FRAMEWORK, "only 8 and 16 bit formats are supported by openAL, bitSize: %u", static_cast<uint16>(bitsPerSample));
 			return false;
 		} break;
 
@@ -213,12 +213,12 @@ bool AudioAsset::LoadWavFile(AudioBufferData &bufferData, std::vector<uint8> con
 		case 8:bufferData.format = AL_FORMAT_STEREO8; break;
 		case 16:bufferData.format = AL_FORMAT_STEREO16; break;
 		default:
-			LOG(std::string("only 8 and 16 bit formats are supported by openAL, bitSize: ") + std::to_string(bitsPerSample), core::LogLevel::Warning);
+			ET_TRACE_W(ET_CTX_FRAMEWORK, "only 8 and 16 bit formats are supported by openAL, bitSize: %u", static_cast<uint16>(bitsPerSample));
 			return false;
 		} break;
 
 	default:
-		LOG(std::string("Only mono and stereo supported by openAL, numChannels: ") + std::to_string(numChannels), core::LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_FRAMEWORK, "Only mono and stereo supported by openAL, numChannels: %u", static_cast<uint16>(numChannels));
 		return false;
 	}
 	bufferData.data = data;
@@ -252,7 +252,7 @@ bool AudioAsset::LoadOggFile(AudioBufferData &bufferData, std::vector<uint8> con
 	case 1:bufferData.format = AL_FORMAT_MONO16; break;
 	case 2:bufferData.format = AL_FORMAT_STEREO16; break;
 	default:
-		LOG(std::string("Only mono and stereo supported by openAL, numChannels: ") + std::to_string(info.channels), core::LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_FRAMEWORK, "Only mono and stereo supported by openAL, numChannels: %i", info.channels);
 		stb_vorbis_close(vorbis);
 		return false;
 	}

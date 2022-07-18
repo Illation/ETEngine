@@ -16,4 +16,8 @@ static constexpr T_ContextId INVALID_CONTEXT_ID = core::INVALID_SLOT_ID;
 } // namespace gui
 } // namespace et
 
+namespace et {
+	ET_DEFINE_TRACE_CTX(ET_CTX_GUI);
+}
+
 #pragma endregion Definitions

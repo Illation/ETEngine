@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <EtEditor/stdafx.h>
 #include "SceneSelection.h"
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
@@ -62,7 +62,7 @@ void SceneSelection::UnregisterListener(I_SceneSelectionListener const* const li
 	// it should have been found
 	if (listenerIt == m_Listeners.cend())
 	{
-		LOG("SceneSelection::UnregisterListener > Listener not found", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "SceneSelection::UnregisterListener > Listener not found");
 		return;
 	}
 

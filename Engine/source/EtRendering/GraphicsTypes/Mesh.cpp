@@ -182,7 +182,7 @@ bool MeshAsset::ReadEtMesh(MeshData* const meshData, std::vector<uint8> const& l
 	if (writerVersion != build::Version::s_Name)
 	{
 		// right now there are no older file formats that are not supported
-		// LOG(FS("Mesh data was written by a different engine version: %s", writerVersion.c_str()));
+		//ET_TRACE_W(ET_CTX_RENDER, "Mesh data was written by a different engine version: %s", writerVersion.c_str());
 	}
 
 	// read mesh info

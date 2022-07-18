@@ -83,7 +83,7 @@ RmlGlobal::RmlGlobal()
 	m_BlurInstancer.Init();
 	Rml::Factory::RegisterFontEffectInstancer("blur", &m_BlurInstancer);
 
-	LOG("RmlUi loaded\n");
+	ET_LOG_I(ET_CTX_GUI, "RmlUi loaded\n");
 }
 
 //----------------------
@@ -94,7 +94,7 @@ RmlGlobal::RmlGlobal()
 RmlGlobal::~RmlGlobal()
 {
 	Rml::Shutdown();
-	LOG("RmlUi shut down\n");
+	ET_LOG_I(ET_CTX_GUI, "RmlUi shut down\n");
 }
 
 //----------------------------------

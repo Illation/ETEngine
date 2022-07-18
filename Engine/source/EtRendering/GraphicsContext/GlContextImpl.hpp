@@ -9,6 +9,9 @@
 
 
 namespace et {
+
+	ET_REGISTER_TRACE_CTX(ET_CTX_OPENGL);
+
 namespace render {
 
 
@@ -676,7 +679,7 @@ void GL_CONTEXT_CLASSNAME::TextureUnitCache::OnTextureDelete(T_TextureLoc const 
 //
 GL_CONTEXT_CLASSNAME::~GL_CONTEXT_CLASSNAME()
 {
-	LOG("OpenGL unloaded");
+	ET_LOG_I(ET_CTX_RENDER, "OpenGL unloaded");
 }
 
 //---------------------------------
@@ -697,12 +700,12 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 	// Info
 	//******
 
-	LOG("OpenGL loaded");
-	LOG("");
-	LOG(FS("Vendor:   %s", glGetString(GL_VENDOR)));
-	LOG(FS("Renderer: %s", glGetString(GL_RENDERER)));
-	LOG(FS("Version:  %s", glGetString(GL_VERSION)));
-	LOG("");
+	ET_LOG_I(ET_CTX_RENDER, "OpenGL loaded");
+	ET_LOG_I(ET_CTX_RENDER, "");
+	ET_LOG_I(ET_CTX_RENDER, "Vendor:   %s", glGetString(GL_VENDOR));
+	ET_LOG_I(ET_CTX_RENDER, "Renderer: %s", glGetString(GL_RENDERER));
+	ET_LOG_I(ET_CTX_RENDER, "Version:  %s", glGetString(GL_VERSION));
+	ET_LOG_I(ET_CTX_RENDER, "");
 
 	// Check extensions
 	//******************
@@ -732,14 +735,14 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 
 	bool allFound = true;
 
-	LOG("Required extensions:");
+	ET_LOG_I(ET_CTX_RENDER, "Required extensions:");
 	for (size_t reqIdx = 0u; reqIdx < requiredExtensions.size(); ++ reqIdx)
 	{
 		core::HashString const required = requiredExtHashes[reqIdx];
 
 		if (std::find(foundExtensions.cbegin(), foundExtensions.cend(), required) != foundExtensions.cend())
 		{
-			LOG(FS("\t%s - found", requiredExtensions[reqIdx].c_str()));
+			ET_LOG_I(ET_CTX_RENDER, "\t%s - found", requiredExtensions[reqIdx].c_str());
 
 			if (required == "GL_ARB_bindless_texture"_hash)
 			{
@@ -748,16 +751,16 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 		}
 		else
 		{
-			LOG(FS("\t%s - not found", requiredExtensions[reqIdx].c_str()), core::LogLevel::Warning);
+			ET_LOG_W(ET_CTX_RENDER, "\t%s - not found", requiredExtensions[reqIdx].c_str());
 			allFound = false;
 		}
 	}
 
-	LOG("");
+	ET_LOG_I(ET_CTX_RENDER, "");
 
 	if (!allFound)
 	{
-		LOG("Not all required OpenGL extensions are available on this device! Try updating your graphics card drivers!", core::LogLevel::Warning);
+		ET_LOG_E(ET_CTX_RENDER, "Not all required OpenGL extensions are available on this device! Try updating your graphics card drivers!");
 	}
 
 	// texture units
@@ -792,7 +795,7 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 	//***********
 
 	// potentially hook up opengl to the logger
-#if defined(ET_GRAPHICS_API_VERBOSE)
+#if ET_CT_IS_ENABLED(ET_CT_RHI_VERBOSE)
 
 	auto glLogCallback = [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 		{
@@ -801,27 +804,26 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 			ET_UNUSED(length);
 			ET_UNUSED(userParam);
 
-			core::LogLevel level = core::LogLevel::Info;
+			core::E_TraceLevel level = core::E_TraceLevel::TL_Info;
 			switch (type)
 			{
 			case GL_DEBUG_TYPE_ERROR:
-				level = core::LogLevel::Error;
+				level = core::E_TraceLevel::TL_Error;
 				break;
 			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-				level = core::LogLevel::Warning;
+				level = core::E_TraceLevel::TL_Warning;
 				break;
 			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-				level = core::LogLevel::Warning;
+				level = core::E_TraceLevel::TL_Warning;
 				break;
 			}
 
 			if (severity == GL_DEBUG_SEVERITY_HIGH)
 			{
-				level = core::LogLevel::Error;
+				level = core::E_TraceLevel::TL_Fatal;
 			}
 
-			LOG(message, level);
-			LOG("");
+			ET_TRACE(ET_CTX_OPENGL, level, false, message);
 		};
 
 	glEnable(GL_DEBUG_OUTPUT);
@@ -2273,7 +2275,7 @@ void GL_CONTEXT_CLASSNAME::GetActiveAttribute(T_ShaderLoc const program, uint32 
 		break;
 
 	default:
-		LOG(FS("unknown attribute type '%u'", type), core::LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_RENDER, "unknown attribute type '%u'", type);
 		return;
 	}
 }

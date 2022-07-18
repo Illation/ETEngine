@@ -214,7 +214,7 @@ void Viewport::MakeCurrent()
 {
 	if (!(m_Area->MakeCurrent()))
 	{
-		LOG("Viewport::MakeCurrent > An error occured making the context current during realize!", core::LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_RENDER, "Viewport::MakeCurrent > An error occured making the context current during realize!");
 	}
 
 	g_CurrentViewport = this;

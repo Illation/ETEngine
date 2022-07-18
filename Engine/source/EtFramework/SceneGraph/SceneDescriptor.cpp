@@ -100,7 +100,7 @@ bool SceneDescriptorAsset::LoadFromMemory(std::vector<uint8> const& data)
 	core::BinaryDeserializer deserializer;
 	if (!deserializer.DeserializeFromData(data, *m_Data))
 	{
-		LOG("SceneDescriptorAsset::LoadFromMemory > Failed to deserialize descriptor!", core::LogLevel::Warning);
+		ET_LOG_E(ET_CTX_FRAMEWORK, "SceneDescriptorAsset::LoadFromMemory > Failed to deserialize descriptor!");
 		delete m_Data;
 		m_Data = nullptr;
 		return false;

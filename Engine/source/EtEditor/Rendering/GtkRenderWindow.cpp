@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <EtEditor/stdafx.h>
 #include "GtkRenderWindow.h"
 
 #include "EpoxyGlContext.h"
@@ -76,17 +76,17 @@ render::I_GraphicsContextApi* GtkRenderWindow::CreateContext(render::GraphicsCon
 
 	m_GdkContext->make_current(); // not calling this function can apparently kill a computer...
 
-	LOG("\nGDK GLContext settings:");
+	ET_LOG_I(ET_CTX_EDITOR, "\nGDK GLContext settings:");
 
 	int major, minor;
 	m_GdkContext->get_version(major, minor);
-	LOG(FS("\tversion %i %i", major, minor));
-	LOG(FS("\tis_legacy %s", m_GdkContext->is_legacy() ? "true" : "false"));
-	LOG(FS("\tuse_es %s", m_GdkContext->get_use_es() ? "true" : "false"));
-	LOG(FS("\tforward_compatible %s", m_GdkContext->get_forward_compatible() ? "true" : "false"));
-	LOG(FS("\tdebug_enabled %s", m_GdkContext->get_debug_enabled() ? "true" : "false"));
+	ET_LOG_I(ET_CTX_EDITOR, "\tversion %i %i", major, minor);
+	ET_LOG_I(ET_CTX_EDITOR, "\tis_legacy %s", m_GdkContext->is_legacy() ? "true" : "false");
+	ET_LOG_I(ET_CTX_EDITOR, "\tuse_es %s", m_GdkContext->get_use_es() ? "true" : "false");
+	ET_LOG_I(ET_CTX_EDITOR, "\tforward_compatible %s", m_GdkContext->get_forward_compatible() ? "true" : "false");
+	ET_LOG_I(ET_CTX_EDITOR, "\tdebug_enabled %s", m_GdkContext->get_debug_enabled() ? "true" : "false");
 
-	LOG("");
+	ET_LOG_I(ET_CTX_EDITOR, "");
 
 	m_Context = new render::EpoxyGlContext();
 

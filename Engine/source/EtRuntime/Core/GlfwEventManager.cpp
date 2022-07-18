@@ -175,7 +175,7 @@ bool GlfwEventManager::SetCursorShape(core::E_CursorShape const shape)
 			return true;
 		}
 
-		LOG("INPUT::SetCursorShape > Shape not found", core::LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_RUNTIME, "INPUT::SetCursorShape > Shape not found");
 		return false;
 	}
 }

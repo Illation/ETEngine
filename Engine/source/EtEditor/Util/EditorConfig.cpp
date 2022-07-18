@@ -1,4 +1,4 @@
-#include <EtFramework/stdafx.h>
+#include <EtEditor/stdafx.h>
 #include "EditorConfig.h"
 
 #include "ResourceChooserDialog.h"
@@ -40,7 +40,7 @@ void EditorConfig::Initialize()
 	// try deserializing the user directory path
 	if (!(core::serialization::DeserializeFromFile(s_PointerPath, m_DirPointers)))
 	{
-		LOG("EditorConfig::Initialize > unable to deserialize directory pointers!", core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_EDITOR, "EditorConfig::Initialize > unable to deserialize directory pointers!");
 	}
 
 	m_DirPointers.m_EditorUserDir = m_DirPointers.m_ProjectPath + std::string("/user_data/editor/");

@@ -38,8 +38,7 @@ void PackageResourceManager::Init()
 	std::vector<uint8> rawData;
 	if (!m_RootPackage->GetEntryData(core::HashString(s_DatabasePath), rawData))
 	{
-		LOG("PackageResourceManager::Init > Unable to retrieve database from memory package at '" + std::string(s_DatabasePath) +
-			std::string("'"), core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_RUNTIME, "PackageResourceManager::Init > Unable to retrieve database from memory package at '%s'", s_DatabasePath);
 		return;
 	}
 
@@ -47,8 +46,7 @@ void PackageResourceManager::Init()
 	core::BinaryDeserializer deserializer;
 	if (!deserializer.DeserializeFromData(rawData, m_Database))
 	{
-		LOG("PackageResourceManager::Init > unable to deserialize asset database at '" + std::string(s_DatabasePath) + std::string("'"), 
-			core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_RUNTIME, "PackageResourceManager::Init > unable to deserialize asset database at '%s'", s_DatabasePath);
 	}
 
 	// Create the file packages for all indexed packages
@@ -75,6 +73,7 @@ void PackageResourceManager::Deinit()
 		delete package.second;
 		package.second = nullptr;
 	}
+
 	m_Packages.clear();
 }
 
@@ -94,7 +93,7 @@ bool PackageResourceManager::GetLoadData(core::I_Asset const* const asset, std::
 	// check the iterator is valid
 	if (foundPackageIt == m_Packages.cend())
 	{
-		LOG(FS("No package (id:'%s') found for asset '%s'", asset->GetPackageId().ToStringDbg(), asset->GetName().c_str()), core::LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_RUNTIME, "No package (id:'%s') found for asset '%s'", asset->GetPackageId().ToStringDbg(), asset->GetName().c_str());
 		return false;
 	}
 

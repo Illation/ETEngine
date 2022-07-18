@@ -107,7 +107,7 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 	std::string const writerVersion = reader.ReadNullString();
 	if (writerVersion != build::Version::s_Name)
 	{
-		LOG(FS("Environment map was written by a different engine version: %s", writerVersion.c_str()));
+		ET_TRACE_W(ET_CTX_RENDER, "Environment map was written by a different engine version: %s", writerVersion.c_str());
 	}
 
 	core::HashString const envId(reader.Read<T_Hash>());

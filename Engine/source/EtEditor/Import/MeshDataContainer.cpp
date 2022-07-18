@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <EtEditor/stdafx.h>
 #include "MeshDataContainer.h"
 
 #include <ext-mikktspace/mikktspace.h>
@@ -163,7 +163,7 @@ bool MeshDataContainer::Triangulate(std::vector<uint8> const& vcounts)
 		}
 		else
 		{
-			LOG("Triangulation of NGons is currently not supported, aborting", core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "Triangulation of NGons is currently not supported, aborting");
 			return false;
 		}
 
@@ -190,7 +190,7 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 		//-----------------------------------------------------------------------
 		if (!(m_TexCoords.size() == m_Normals.size() && m_Normals.size() == m_Positions.size()))
 		{
-			LOG("Number of texcoords, normals and positions of vertices should match to create tangent space", core::LogLevel::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "Number of texcoords, normals and positions of vertices should match to create tangent space");
 			return false;
 		}
 
@@ -289,7 +289,7 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 
 		if (!genTangSpaceDefault(&mikkTContext))
 		{
-			LOG("Failed to generate MikkTSpace tangents", core::LogLevel::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "Failed to generate MikkTSpace tangents");
 			return false;
 		}
 	}
@@ -297,7 +297,7 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 	// validate we have everything we need for bitangents
 	if (tangentInfo.size() < m_Positions.size())
 	{
-		LOG("Mesh Tangent info size doesn't cover all vertices", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Mesh Tangent info size doesn't cover all vertices");
 	}
 
 	// generate binormals from tangents and emplace both in the MeshDataContainer
@@ -329,7 +329,7 @@ bool MeshDataContainer::ConstructTangentSpace(std::vector<vec4>& tangentInfo)
 			return true;
 		}
 
-		LOG("Mesh Tangent info size doesn't match the number of normals", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Mesh Tangent info size doesn't match the number of normals");
 		return false;
 	}
 

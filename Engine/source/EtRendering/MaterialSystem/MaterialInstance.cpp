@@ -119,7 +119,7 @@ MaterialInstance* MaterialInstanceAsset::CreateMaterialInstance(std::vector<core
 
 	if ((materialRef == nullptr) && (parentRef == nullptr))
 	{
-		LOG("MaterialAsset::LoadFromMemory > Material instances must reference a material or parent instance!", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_RENDER, "MaterialAsset::LoadFromMemory > Material instances must reference a material or parent instance!");
 		return nullptr;
 	}
 
@@ -152,7 +152,7 @@ bool MaterialInstanceAsset::LoadFromMemory(std::vector<uint8> const& data)
 	core::BinaryDeserializer deserializer;
 	if (!deserializer.DeserializeFromData(data, descriptor))
 	{
-		LOG("MaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_RENDER, "MaterialAsset::LoadFromMemory > Failed to deserialize data from a JSON format into a material descriptor");
 		return false;
 	}
 

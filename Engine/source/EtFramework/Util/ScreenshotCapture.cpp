@@ -63,7 +63,7 @@ void ScreenshotCapture::Take(render::Viewport* const viewport)
 	}
 	else
 	{
-		LOG("ScreenshotCapture::Take > some system is already taking a capture of a viewport!", core::LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_FRAMEWORK, "ScreenshotCapture::Take > some system is already taking a capture of a viewport!");
 	}
 }
 
@@ -93,11 +93,11 @@ void ScreenshotCapture::OnViewportPostFlush(render::T_FbLoc const targetFb)
 	stbi_flip_vertically_on_write(true);
 	if (stbi_write_jpg(filename.c_str(), dim.x, dim.y, 3, pixels, 90) != 0)
 	{	
-		LOG("Screenshot saved to: " + filename);
+		ET_LOG_I(ET_CTX_FRAMEWORK, "Screenshot saved to: %s", filename.c_str());
 	}
 	else
 	{
-		LOG("Failed to save Screenshot to: " + filename, core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_FRAMEWORK, "Failed to save Screenshot to: %s", filename.c_str());
 	}
 
 	// Free resources
@@ -116,7 +116,7 @@ std::string ScreenshotCapture::GetFileName()
 {
 	if (!m_BaseDir->Mount(true))
 	{
-		LOG("Failed to mount screenshot directory", core::LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_FRAMEWORK, "Failed to mount screenshot directory");
 		return "";
 	}
 

@@ -132,7 +132,7 @@ void PostProcessingRenderer::GenerateFramebuffers()
 
 	if (!(api->IsFramebufferComplete()))
 	{
-		LOG("Framebuffer::Initialize > FAILED!", core::LogLevel::Error);
+		ET_LOG_E(ET_CTX_RENDER, "Framebuffer::Initialize > FAILED!");
 	}
 }
 

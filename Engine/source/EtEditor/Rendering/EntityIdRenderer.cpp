@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <EtEditor/stdafx.h>
 #include "EntityIdRenderer.h"
 
 #include <EtCore/Content/ResourceManager.h>
@@ -129,7 +129,7 @@ void EntityIdRenderer::Pick(ivec2 const pixel, render::Viewport* const viewport,
 	}
 	else
 	{
-		LOG("EntityIdRenderer::Pick > some system is already picking for a viewport this frame!", core::LogLevel::Warning);
+		ET_TRACE_W(ET_CTX_EDITOR, "EntityIdRenderer::Pick > some system is already picking for a viewport this frame!");
 	}
 }
 

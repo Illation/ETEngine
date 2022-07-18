@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <EtEditor/stdafx.h>
 #include "GtkRenderArea.h"
 
 #include "EpoxyGlContext.h"
@@ -145,8 +145,8 @@ bool GtkRenderArea::MakeCurrent()
 	}
 	catch (const Gdk::GLError& gle)
 	{
-		LOG("Viewport::MakeCurrent > An error occured making the context current during realize:", core::LogLevel::Warning);
-		LOG(std::to_string(gle.domain()) + std::string("-") + std::to_string(gle.code()) + std::string("-") + gle.what().raw(), core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Viewport::MakeCurrent > An error occured making the context current during realize:");
+		ET_LOG_W(ET_CTX_EDITOR, "%s-%s-%s", std::to_string(gle.domain()).c_str(), std::to_string(gle.code()).c_str(), gle.what().c_str());
 		return false;
 	}
 

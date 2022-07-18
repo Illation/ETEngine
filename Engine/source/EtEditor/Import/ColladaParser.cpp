@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <EtEditor/stdafx.h>
 #include "ColladaParser.h"
 
 #include <EtCore/FileSystem/FileUtil.h>
@@ -30,7 +30,7 @@ ColladaParser::ColladaParser(std::vector<uint8> const& colladaData)
 	core::XML::Element const& root = m_Xml.GetDocument().m_Root;
 	if (root.m_Name != "COLLADA"_hash)
 	{
-		LOG("Root element was not COLLADA, aborting", core::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Root element was not COLLADA, aborting");
 		m_IsValid = false;
 		return;
 	}
@@ -43,23 +43,23 @@ ColladaParser::ColladaParser(std::vector<uint8> const& colladaData)
 
 		if (version < s_MinVersion)
 		{
-			LOG(FS("Collada document version was smaller than min, assets might be parsed incorrectly. Found '%s', supported '%f'",
+			ET_LOG_W(ET_CTX_EDITOR, 
+				"Collada document version was smaller than min, assets might be parsed incorrectly. Found '%s', supported '%f'",
 				m_Document.m_Version.c_str(),
-				s_MinVersion), 
-				core::Warning);
+				s_MinVersion);
 		}
 
 		if (version > s_MaxVersion)
 		{
-			LOG(FS("Collada document version was greater than max, assets might be parsed incorrectly. Found '%s', supported '%f'",
+			ET_LOG_W(ET_CTX_EDITOR, 
+				"Collada document version was greater than max, assets might be parsed incorrectly. Found '%s', supported '%f'",
 				m_Document.m_Version.c_str(),
-				s_MaxVersion),
-				core::Warning);
+				s_MaxVersion);
 		}
 	}
 	else
 	{
-		LOG("Expected COLLADA document to have version attribute in root element", core::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Expected COLLADA document to have version attribute in root element");
 		m_IsValid = false;
 		return;
 	}
@@ -150,7 +150,7 @@ void ColladaParser::ReadAsset(dae::Asset& asset, core::XML::Element const& asset
 			break;
 
 		default:
-			LOG(FS("unrecognized up axis '%s' in collada asset", upEl->m_Value.c_str()), core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "unrecognized up axis '%s' in collada asset", upEl->m_Value.c_str());
 			m_IsValid = false;
 			break;
 		}
@@ -193,7 +193,7 @@ void ColladaParser::ReadLibraries(std::vector<dae::Library>& libraries,
 
 		if (lib.m_Elements.empty())
 		{
-			LOG(FS("Expected library to have at least one element (type '%s')", core::HashString(elementName).ToStringDbg()), core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "Expected library to have at least one element (type '%s')", core::HashString(elementName).ToStringDbg());
 			libraries.pop_back();
 		}
 
@@ -230,11 +230,11 @@ core::HashString ColladaParser::GetInstanceUrl(core::XML::Element const& instanc
 			return core::HashString(attrib->m_Value.substr(1u).c_str());
 		}
 
-		LOG(FS("Instance '%s' didn't have a fragment type URL", instanceEl.m_Name.ToStringDbg()), core::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Instance '%s' didn't have a fragment type URL", instanceEl.m_Name.ToStringDbg());
 	}
 	else
 	{
-		LOG(FS("Instance '%s' didn't have a URL", instanceEl.m_Name.ToStringDbg()), core::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Instance '%s' didn't have a URL", instanceEl.m_Name.ToStringDbg());
 	}
 
 	return core::HashString();
@@ -333,7 +333,7 @@ void ColladaParser::ReadSourceList(std::vector<dae::Source>& sources, core::XML:
 		size_t elIdx = 0u;
 		if (sourceEl->m_Children[0u].m_Name == "asset"_hash)
 		{
-			LOG("Collada data source has asset override, which is currently not supported and may cause problems", core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "Collada data source has asset override, which is currently not supported and may cause problems");
 			elIdx++;
 
 			if (sourceEl->m_Children.size() < 2u)
@@ -383,7 +383,7 @@ void ColladaParser::ReadSourceList(std::vector<dae::Source>& sources, core::XML:
 
 		default:
 			// next lib - no supported source data
-			LOG(FS("Expected data source or accessor, found '%s'.", sourceEl->m_Children[elIdx].m_Name.ToStringDbg()), core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "Expected data source or accessor, found '%s'.", sourceEl->m_Children[elIdx].m_Name.ToStringDbg());
 			sourceEl = parent.GetFirstChild(s_SourceHash, ++pos);
 			continue;
 		}
@@ -447,7 +447,7 @@ bool ColladaParser::ResolveSource(dae::Source& source)
 	core::XML::Attribute const* const countAttrib = source.m_DataEl->GetAttribute("count"_hash);
 	if (countAttrib == nullptr)
 	{
-		LOG("Expected sources data element to have count element");
+		ET_LOG_W(ET_CTX_EDITOR, "Expected sources data element to have count element");
 		return false;
 	}
 
@@ -467,7 +467,7 @@ bool ColladaParser::ResolveSource(dae::Source& source)
 		{
 			if (idx > count)
 			{
-				LOG("source element count exceeded declared count", core::Warning);
+				ET_LOG_W(ET_CTX_EDITOR, "source element count exceeded declared count");
 				return false;
 			}
 
@@ -486,7 +486,7 @@ bool ColladaParser::ResolveSource(dae::Source& source)
 		{
 			if (idx > count)
 			{
-				LOG("source element count exceeded declared count", core::Warning);
+				ET_LOG_W(ET_CTX_EDITOR, "source element count exceeded declared count");
 				return false;
 			}
 
@@ -504,7 +504,7 @@ bool ColladaParser::ResolveSource(dae::Source& source)
 		{
 			if (idx > count)
 			{
-				LOG("source element count exceeded declared count", core::Warning);
+				ET_LOG_W(ET_CTX_EDITOR, "source element count exceeded declared count");
 				return false;
 			}
 
@@ -522,7 +522,7 @@ bool ColladaParser::ResolveSource(dae::Source& source)
 		{
 			if (idx > count)
 			{
-				LOG("source element count exceeded declared count", core::Warning);
+				ET_LOG_W(ET_CTX_EDITOR, "source element count exceeded declared count");
 				return false;
 			}
 
@@ -540,7 +540,7 @@ bool ColladaParser::ResolveSource(dae::Source& source)
 
 	if (idx != count)
 	{
-		LOG("source element count didn't match declared count", core::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "source element count didn't match declared count");
 	}
 
 	source.m_IsResolved = true;
@@ -559,7 +559,7 @@ bool ColladaParser::ReadAccessor(dae::Accessor& accessor, core::XML::Element con
 	core::XML::Attribute const* const countAttrib = accessorEl.GetAttribute("count"_hash);
 	if (countAttrib == nullptr)
 	{
-		LOG("Invalid accessor found, no count attribute was present");
+		ET_LOG_W(ET_CTX_EDITOR, "Invalid accessor found, no count attribute was present");
 		return false;
 	}
 
@@ -587,7 +587,7 @@ bool ColladaParser::ReadAccessor(dae::Accessor& accessor, core::XML::Element con
 		}
 		else
 		{
-			LOG(FS("Expected accessor source attribute to be a URI fragment starting with #, source: '%s'", source->m_Value.c_str()), core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "Expected accessor source attribute to be a URI fragment starting with #, source: '%s'", source->m_Value.c_str());
 		}
 	}
 
@@ -609,7 +609,7 @@ bool ColladaParser::ReadAccessor(dae::Accessor& accessor, core::XML::Element con
 		core::XML::Attribute const* const type = paramEl->GetAttribute("type"_hash);
 		if (type == nullptr)
 		{
-			LOG("Accessor has invalid parameter without type, skipping parameter", core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "Accessor has invalid parameter without type, skipping parameter");
 			paramEl = accessorEl.GetFirstChild(s_ParamHash, ++pos);
 			continue;
 		}
@@ -629,7 +629,7 @@ bool ColladaParser::ReadAccessor(dae::Accessor& accessor, core::XML::Element con
 			break;
 
 		default:
-			LOG(FS("Unrecognized parameter type '%s', skipping parameter", type->m_Value.c_str()), core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "Unrecognized parameter type '%s', skipping parameter", type->m_Value.c_str());
 			paramEl = accessorEl.GetFirstChild(s_ParamHash, ++pos);
 			continue;
 		}
@@ -659,7 +659,7 @@ void ColladaParser::ReadInputList(std::vector<dae::Input>& inputs, core::XML::El
 		core::XML::Attribute const* const semantic = inputEl->GetAttribute("semantic"_hash);
 		if (semantic == nullptr)
 		{
-			LOG("Input is missing semantic, skipping", core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "Input is missing semantic, skipping");
 			inputEl = parent.GetFirstChild(s_InputHash, ++pos);
 			continue;
 		}
@@ -667,7 +667,7 @@ void ColladaParser::ReadInputList(std::vector<dae::Input>& inputs, core::XML::El
 		input.m_Semantic = ReadSemantic(semantic->m_Value);
 		if (input.m_Semantic == dae::E_Semantic::Invalid)
 		{
-			LOG(FS("Failed to read semantic '%s', skipping input", semantic->m_Value.c_str()), core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "Failed to read semantic '%s', skipping input", semantic->m_Value.c_str());
 			inputEl = parent.GetFirstChild(s_InputHash, ++pos);
 			continue;
 		}
@@ -676,13 +676,13 @@ void ColladaParser::ReadInputList(std::vector<dae::Input>& inputs, core::XML::El
 		core::XML::Attribute const* const source = inputEl->GetAttribute("source"_hash);
 		if (source == nullptr)
 		{
-			LOG("Input is missing source, skipping", core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "Input is missing source, skipping");
 			inputEl = parent.GetFirstChild(s_InputHash, ++pos);
 			continue;
 		}
 		else if ((source->m_Value.empty()) || (source->m_Value[0] != '#'))
 		{
-			LOG(FS("Expected input source attribute to be a URI fragment starting with #, source: '%s'", source->m_Value.c_str()), core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "Expected input source attribute to be a URI fragment starting with #, source: '%s'", source->m_Value.c_str());
 			inputEl = parent.GetFirstChild(s_InputHash, ++pos);
 			continue;
 		}
@@ -695,7 +695,7 @@ void ColladaParser::ReadInputList(std::vector<dae::Input>& inputs, core::XML::El
 			core::XML::Attribute const* const offset = inputEl->GetAttribute("offset"_hash);
 			if (offset == nullptr)
 			{
-				LOG("Shared input is missing offset, skipping", core::Warning);
+				ET_LOG_W(ET_CTX_EDITOR, "Shared input is missing offset, skipping");
 				inputEl = parent.GetFirstChild(s_InputHash, ++pos);
 				continue;
 			}
@@ -769,14 +769,14 @@ bool ColladaParser::ReadMesh(dae::Mesh& mesh, core::XML::Element const& meshEl)
 	core::XML::Element const* const verticesEl = meshEl.GetFirstChild("vertices"_hash);
 	if (verticesEl == nullptr)
 	{
-		LOG("Expected COLLADA mesh to have vertices element!", core::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Expected COLLADA mesh to have vertices element!");
 		return false;
 	}
 
 	core::XML::Attribute const* const vertexIdAttrib = verticesEl->GetAttribute("id"_hash);
 	if (vertexIdAttrib == nullptr)
 	{
-		LOG("Expected COLLADA vertices to have id attribute!", core::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Expected COLLADA vertices to have id attribute!");
 		return false;
 	}
 
@@ -794,7 +794,8 @@ bool ColladaParser::ReadMesh(dae::Mesh& mesh, core::XML::Element const& meshEl)
 			vcount = primitive->GetFirstChild("vcount"_hash);
 			if (vcount == nullptr)
 			{
-				LOG("Expected COLLADA polylist to have vcount element!"); // this is allowed by spec but we don't know default vcounts so can't parse
+				// this is allowed by spec but we don't know default vcounts so can't parse
+				ET_LOG_W(ET_CTX_EDITOR, "Expected COLLADA polylist to have vcount element!");
 				return false;
 			}
 		}
@@ -802,20 +803,20 @@ bool ColladaParser::ReadMesh(dae::Mesh& mesh, core::XML::Element const& meshEl)
 
 	if (GetPrimitiveCount(meshEl) > 1u)
 	{
-		LOG("COLLADA mesh had more than one primitive, ignoring subsequent occurances!", core::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "COLLADA mesh had more than one primitive, ignoring subsequent occurances!");
 	}
 
 	core::XML::Element const* const primitiveArrayEl = primitive->GetFirstChild("p"_hash);
 	if (primitiveArrayEl == nullptr)
 	{
-		LOG("Expected COLLADA primitive to have a 'p' element!", core::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Expected COLLADA primitive to have a 'p' element!");
 		return false;
 	}
 
 	core::XML::Attribute const* const primCountAttrib = primitive->GetAttribute("count"_hash);
 	if (primCountAttrib == nullptr)
 	{
-		LOG("Expected COLLADA primitive to have a 'count' attribute!", core::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Expected COLLADA primitive to have a 'count' attribute!");
 		return false;
 	}
 
@@ -836,7 +837,7 @@ bool ColladaParser::ReadMesh(dae::Mesh& mesh, core::XML::Element const& meshEl)
 
 			if ((foundAccessorSourceIt == mesh.m_Sources.cend()) || (foundAccessorSourceIt->m_CommonAccessor == nullptr))
 			{
-				LOG(FS("Failed to find accessor '%s' for input", input.m_Input.m_Source.ToStringDbg()), core::Warning);
+				ET_LOG_W(ET_CTX_EDITOR, "Failed to find accessor '%s' for input", input.m_Input.m_Source.ToStringDbg());
 				return false;
 			}
 
@@ -850,7 +851,7 @@ bool ColladaParser::ReadMesh(dae::Mesh& mesh, core::XML::Element const& meshEl)
 
 			if (foundSourceIt == mesh.m_Sources.cend())
 			{
-				LOG(FS("Failed to find source '%s' for accessor", input.m_Accessor->m_SourceDataId.ToStringDbg()), core::Warning);
+				ET_LOG_W(ET_CTX_EDITOR, "Failed to find source '%s' for accessor", input.m_Accessor->m_SourceDataId.ToStringDbg());
 				return false;
 			}
 
@@ -880,7 +881,7 @@ bool ColladaParser::ReadMesh(dae::Mesh& mesh, core::XML::Element const& meshEl)
 			{
 				if (input.m_Source != verticesId)
 				{
-					LOG("Expected VERTEX input to use vertices as source", core::Warning);
+					ET_LOG_W(ET_CTX_EDITOR, "Expected VERTEX input to use vertices as source");
 					return false;
 				}
 
@@ -917,10 +918,10 @@ bool ColladaParser::ReadMesh(dae::Mesh& mesh, core::XML::Element const& meshEl)
 		ParseArrayU8(mesh.m_VertexCounts, *vcount);
 		if (mesh.m_VertexCounts.size() != mesh.m_FaceCount)
 		{
-			LOG(FS("Expected vcount array size [" ET_FMT_SIZET "] to be the same as mesh face count [" ET_FMT_SIZET "]", 
-				mesh.m_VertexCounts.size(), 
-				mesh.m_FaceCount), 
-				core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, 
+				"Expected vcount array size [" ET_FMT_SIZET "] to be the same as mesh face count [" ET_FMT_SIZET "]",
+				mesh.m_VertexCounts.size(),
+				mesh.m_FaceCount);
 		}
 	}
 
@@ -954,7 +955,7 @@ void ColladaParser::ReadNode(dae::Node& node, core::XML::Element const& nodeEl)
 	size_t pos = 0u;
 	if (nodeEl.GetFirstChild("asset"_hash) != nullptr)
 	{
-		LOG("Collada node has asset override, which is currently not supported and may cause problems", core::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Collada node has asset override, which is currently not supported and may cause problems");
 		++pos;
 	}
 
@@ -1011,7 +1012,7 @@ void ColladaParser::ReadScene(dae::VisualScene& scene, core::XML::Element const&
 	size_t pos = 0u;
 	if (sceneEl.GetFirstChild("asset"_hash) != nullptr)
 	{
-		LOG("Collada scene has asset override, which is currently not supported and may cause problems", core::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Collada scene has asset override, which is currently not supported and may cause problems");
 		++pos;
 	}
 
@@ -1043,7 +1044,7 @@ bool ColladaParser::ReadTransform(mat4& mat, core::XML::Element const& transform
 		ParseArray(values, transformEl);
 		if (values.size() != 9u)
 		{
-			LOG(FS("lookat transform expected 9 values, found " ET_FMT_SIZET, values.size()), core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "lookat transform expected 9 values, found " ET_FMT_SIZET, values.size());
 			return true;
 		}
 
@@ -1057,7 +1058,7 @@ bool ColladaParser::ReadTransform(mat4& mat, core::XML::Element const& transform
 		ParseArray(values, transformEl);
 		if (values.size() != 16u)
 		{
-			LOG(FS("matrix transform expected 16 values, found " ET_FMT_SIZET, values.size()), core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "matrix transform expected 16 values, found " ET_FMT_SIZET, values.size());
 			return true;
 		}
 
@@ -1074,7 +1075,7 @@ bool ColladaParser::ReadTransform(mat4& mat, core::XML::Element const& transform
 		ParseArray(values, transformEl);
 		if (values.size() != 4u)
 		{
-			LOG(FS("rotation transform expected 4 values, found " ET_FMT_SIZET, values.size()), core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "rotation transform expected 4 values, found " ET_FMT_SIZET, values.size());
 			return true;
 		}
 
@@ -1088,7 +1089,7 @@ bool ColladaParser::ReadTransform(mat4& mat, core::XML::Element const& transform
 		ParseArray(values, transformEl);
 		if (values.size() != 3u)
 		{
-			LOG(FS("scale transform expected 3 values, found " ET_FMT_SIZET, values.size()), core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "scale transform expected 3 values, found " ET_FMT_SIZET, values.size());
 			return true;
 		}
 
@@ -1098,7 +1099,7 @@ bool ColladaParser::ReadTransform(mat4& mat, core::XML::Element const& transform
 
 	case "skew"_hash:
 	{
-		LOG("COLLADA Skew transform was found but is currently not supported", core::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "COLLADA Skew transform was found but is currently not supported");
 	}
 	return true;
 
@@ -1108,7 +1109,7 @@ bool ColladaParser::ReadTransform(mat4& mat, core::XML::Element const& transform
 		ParseArray(values, transformEl);
 		if (values.size() != 3u)
 		{
-			LOG(FS("translation transform expected 3 values, found " ET_FMT_SIZET, values.size()), core::Warning);
+			ET_LOG_W(ET_CTX_EDITOR, "translation transform expected 3 values, found " ET_FMT_SIZET, values.size());
 			return true;
 		}
 

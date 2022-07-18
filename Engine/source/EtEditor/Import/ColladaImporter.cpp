@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <EtEditor/stdafx.h>
 #include "ColladaImporter.h"
 
 #include <gtkmm/label.h>
@@ -107,7 +107,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 	ColladaParser const parser(importData);
 	if (!parser.IsValid())
 	{
-		LOG("Collada parser didn't complete due to invalid document", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Collada parser didn't complete due to invalid document");
 		return false;
 	}
 	
@@ -247,14 +247,14 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 				{
 					if ((input.m_Set != dae::Input::s_InvalidIndex) && (input.m_Set != usedSet))
 					{
-						LOG(FS("COLLADA using multiple input sets: [" ET_FMT_SIZET "], [" ET_FMT_SIZET "]", usedSet, input.m_Set), core::Warning);
+						ET_LOG_W(ET_CTX_EDITOR, "COLLADA using multiple input sets: [" ET_FMT_SIZET "], [" ET_FMT_SIZET "]", usedSet, input.m_Set);
 					}
 				}
 
 				// validate data types
 				if (source.m_Type != dae::Source::E_Type::Float)
 				{
-					LOG("COLLADA geometry source was not made of floats, can't access data", core::Warning);
+					ET_LOG_W(ET_CTX_EDITOR, "COLLADA geometry source was not made of floats, can't access data");
 					containers.pop_back();
 					return;
 				}
@@ -263,7 +263,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 				{
 					if (param.m_Type != dae::Accessor::E_ParamType::Float)
 					{
-						LOG("COLLADA geometry accessor parameters where not made of floats, can't access data", core::Warning);
+						ET_LOG_W(ET_CTX_EDITOR, "COLLADA geometry accessor parameters where not made of floats, can't access data");
 						containers.pop_back();
 						return;
 					}
@@ -274,7 +274,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 				{
 					if (!ColladaParser::ResolveSource(source))
 					{
-						LOG(FS("Failed to resolve COLLADA source '%s'r", source.m_Id.ToStringDbg()), core::Warning);
+						ET_LOG_W(ET_CTX_EDITOR, "Failed to resolve COLLADA source '%s'r", source.m_Id.ToStringDbg());
 						containers.pop_back();
 						return;
 					}
@@ -310,7 +310,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 						size_t const accessorIdx = mesh.m_PrimitiveIndices[idx];
 						if (accessorIdx >= accessor.m_Count)
 						{
-							LOG("COLLADA failed to read vector from accessor, index out of bounds", core::Warning);
+							ET_LOG_W(ET_CTX_EDITOR, "COLLADA failed to read vector from accessor, index out of bounds");
 							containers.pop_back();
 							return;
 						}
@@ -340,7 +340,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 						size_t const accessorIdx = mesh.m_PrimitiveIndices[idx];
 						if (accessorIdx >= accessor.m_Count)
 						{
-							LOG("COLLADA failed to read vector from accessor, index out of bounds", core::Warning);
+							ET_LOG_W(ET_CTX_EDITOR, "COLLADA failed to read vector from accessor, index out of bounds");
 							containers.pop_back();
 							return;
 						}
@@ -364,7 +364,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 						size_t const accessorIdx = mesh.m_PrimitiveIndices[idx];
 						if (accessorIdx >= accessor.m_Count)
 						{
-							LOG("COLLADA failed to read vector from accessor, index out of bounds", core::Warning);
+							ET_LOG_W(ET_CTX_EDITOR, "COLLADA failed to read vector from accessor, index out of bounds");
 							containers.pop_back();
 							return;
 						}
@@ -382,7 +382,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 						size_t const accessorIdx = mesh.m_PrimitiveIndices[idx];
 						if (accessorIdx >= accessor.m_Count)
 						{
-							LOG("COLLADA failed to read vector from accessor, index out of bounds", core::Warning);
+							ET_LOG_W(ET_CTX_EDITOR, "COLLADA failed to read vector from accessor, index out of bounds");
 							containers.pop_back();
 							return;
 						}
@@ -428,7 +428,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 			{
 				if (!meshContainer.Triangulate(mesh.m_VertexCounts))
 				{
-					LOG("Failed to triangulate collada mesh, skipping", core::Warning);
+					ET_LOG_W(ET_CTX_EDITOR, "Failed to triangulate collada mesh, skipping");
 					containers.pop_back();
 					return;
 				}

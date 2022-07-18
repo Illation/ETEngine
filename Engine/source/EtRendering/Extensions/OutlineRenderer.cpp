@@ -60,7 +60,7 @@ void OutlineRenderer::Init(Ptr<render::T_RenderEventDispatcher> const eventDispa
 				render::I_SceneExtension const* const ext = renderer->GetScene()->GetExtension(OutlineExtension::s_ExtensionId);
 				if (ext == nullptr)
 				{
-					LOG("render scene does not have an outline extension");
+					ET_TRACE_V(ET_CTX_RENDER, "render scene does not have an outline extension");
 					return;
 				}
 

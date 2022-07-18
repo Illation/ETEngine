@@ -7,6 +7,8 @@
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
+#include <EtPipeline/PipelineCtx.h>
+
 
 namespace et {
 namespace pl {
@@ -38,7 +40,7 @@ bool EditableShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 	std::string shaderContent = core::FileUtil::AsText(data);
 	if (shaderContent.size() == 0)
 	{
-		LOG("EditableShaderAsset::LoadFromMemory > Empty shader file!", core::LogLevel::Warning);
+		ET_LOG_E(ET_CTX_PIPELINE, "EditableShaderAsset::LoadFromMemory > Empty shader file!");
 		return false;
 	}
 
@@ -128,7 +130,7 @@ bool EditableShaderAsset::GenerateInternal(BuildConfiguration const& buildConfig
 	std::string shaderContent = core::FileUtil::AsText(m_Asset->GetLoadData());
 	if (shaderContent.size() == 0)
 	{
-		LOG("EditableShaderAsset::GenerateInternal > Empty shader file!", core::LogLevel::Warning);
+		ET_LOG_E(ET_CTX_PIPELINE, "EditableShaderAsset::GenerateInternal > Empty shader file!");
 		return false;
 	}
 
@@ -193,7 +195,7 @@ bool EditableShaderAsset::Precompile(std::string &shaderContent, std::string &ve
 		{
 			if (!(ReplaceInclude(extractedLine)))
 			{
-				LOG(std::string("ShaderAsset::Precompile > Replacing include at '") + extractedLine + "' failed!", core::LogLevel::Warning);
+				ET_LOG_W(ET_CTX_PIPELINE, "ShaderAsset::Precompile > Replacing include at '%s' failed!", extractedLine.c_str());
 				return false;
 			}
 		}
@@ -269,9 +271,10 @@ bool EditableShaderAsset::ReplaceInclude(std::string &line)
 		(lastQ == std::string::npos) ||
 		lastQ <= firstQ)
 	{
-		LOG(std::string("ShaderAsset::ReplaceInclude > Replacing include line '") + line + "' failed", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_PIPELINE, "ShaderAsset::ReplaceInclude > Replacing include line '%s' failed", line.c_str());
 		return false;
 	}
+
 	firstQ++;
 	std::string path = line.substr(firstQ, lastQ - firstQ);
 	core::HashString const assetId(path.c_str());
@@ -298,7 +301,7 @@ bool EditableShaderAsset::ReplaceInclude(std::string &line)
 	std::string shaderContent(stubPtr->GetText(), stubPtr->GetLength());
 	if (shaderContent.size() == 0)
 	{
-		LOG(std::string("ShaderAsset::ReplaceInclude > Shader string extracted from stub data at'") + path + "' was empty!", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_PIPELINE, "ShaderAsset::ReplaceInclude > Shader string extracted from stub data at '%s' was empty!", path.c_str());
 		return false;
 	}
 
@@ -312,7 +315,7 @@ bool EditableShaderAsset::ReplaceInclude(std::string &line)
 		{
 			if (!(ReplaceInclude(extractedLine)))
 			{
-				LOG(std::string("ShaderAsset::ReplaceInclude > Replacing include at '") + extractedLine + "' failed!", core::LogLevel::Warning);
+				ET_LOG_W(ET_CTX_PIPELINE, "ShaderAsset::ReplaceInclude > Replacing include at '%s' failed!", extractedLine.c_str());
 				return false;
 			}
 		}

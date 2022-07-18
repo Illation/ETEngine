@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <EtEditor/stdafx.h>
 #include "EditorBase.h"
 
 #include "EditorSplitNode.h"
@@ -54,7 +54,7 @@ void EditorBase::Init(Gtk::Frame* const parent)
 
 	if (!(core::serialization::DeserializeFromFile(layoutPath, m_NodeHierachy)))
 	{
-		LOG(FS("Failed to deserialize layout file for '%s' at: %s", GetName().c_str(), layoutPath.c_str()), core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "Failed to deserialize layout file for '%s' at: %s", GetName().c_str(), layoutPath.c_str());
 	}
 
 	ET_ASSERT(m_NodeHierachy.m_Root != nullptr);
@@ -96,7 +96,7 @@ void EditorBase::SaveLayout()
 
 	if (!core::serialization::SerializeToFile(layoutPath, m_NodeHierachy, true))
 	{
-		LOG(FS("EditorBase::SaveLayout > unable to save the layout to: %s", layoutPath.c_str()), core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "EditorBase::SaveLayout > unable to save the layout to: %s", layoutPath.c_str());
 	}
 }
 

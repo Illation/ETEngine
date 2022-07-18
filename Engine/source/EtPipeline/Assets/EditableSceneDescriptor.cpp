@@ -4,6 +4,7 @@
 #include <EtCore/Reflection/JsonDeserializer.h>
 #include <EtCore/Reflection/BinarySerializer.h>
 
+#include <EtPipeline/PipelineCtx.h>
 #include <EtPipeline/Content/FileResourceManager.h>
 
 
@@ -36,7 +37,7 @@ bool EditableSceneDescriptorAsset::LoadFromMemory(std::vector<uint8> const& data
 	core::JsonDeserializer deserializer;
 	if (!deserializer.DeserializeFromData(data, *sceneDesc))
 	{
-		LOG("EditableSceneDescriptorAsset::LoadFromMemory > Failed to deserialize descriptor!", core::LogLevel::Warning);
+		ET_LOG_E(ET_CTX_PIPELINE, "EditableSceneDescriptorAsset::LoadFromMemory > Failed to deserialize descriptor!");
 		delete sceneDesc;
 		return false;
 	}
@@ -70,7 +71,7 @@ bool EditableSceneDescriptorAsset::GenerateInternal(BuildConfiguration const& bu
 	core::JsonDeserializer deserializer;
 	if (!deserializer.DeserializeFromData(loadData, sceneDesc))
 	{
-		LOG("EditableSceneDescriptorAsset::GenerateInternal > Failed to deserialize descriptor from json!", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_PIPELINE, "EditableSceneDescriptorAsset::GenerateInternal > Failed to deserialize descriptor from json!");
 
 		if (wasEnabled)
 		{
@@ -90,7 +91,7 @@ bool EditableSceneDescriptorAsset::GenerateInternal(BuildConfiguration const& bu
 	if (!serializer.SerializeToData(sceneDesc, writeData))
 	{
 		writeData.clear();
-		LOG("EditableSceneDescriptorAsset::GenerateInternal > Failed to serialize descriptor to binary!", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_PIPELINE, "EditableSceneDescriptorAsset::GenerateInternal > Failed to serialize descriptor to binary!");
 
 		if (wasEnabled)
 		{

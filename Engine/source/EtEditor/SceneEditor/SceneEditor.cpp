@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <EtEditor/stdafx.h>
 #include "SceneEditor.h"
 
 #include <rttr/registration>
@@ -155,7 +155,7 @@ void SceneEditor::UnregisterListener(I_SceneEditorListener const* const listener
 	// it should have been found
 	if (listenerIt == m_Listeners.cend())
 	{
-		LOG("SceneEditor::UnregisterListener > Listener not found", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "SceneEditor::UnregisterListener > Listener not found");
 		return;
 	}
 

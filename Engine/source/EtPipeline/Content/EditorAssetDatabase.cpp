@@ -9,6 +9,8 @@
 #include <EtCore/Reflection/JsonDeserializer.h>
 #include <EtCore/Reflection/JsonSerializer.h>
 
+#include <EtPipeline/PipelineCtx.h>
+
 
 namespace et {
 namespace pl {
@@ -76,12 +78,12 @@ void EditorAssetDatabase::InitDb(EditorAssetDatabase& db, std::string const& pat
 		core::JsonDeserializer deserializer;
 		if (!(deserializer.DeserializeFromData(dbFile->Read(), db)))
 		{
-			LOG(FS("FileResourceManager::Init > unable to deserialize asset DB at '%s'", dbFile->GetName().c_str()), core::LogLevel::Error);
+			ET_LOG_E(ET_CTX_PIPELINE, "FileResourceManager::Init > unable to deserialize asset DB at '%s'", dbFile->GetName().c_str());
 		}
 	}
 	else
 	{
-		LOG(FS("No Database file found at '%s'", path.c_str()));
+		ET_LOG_E(ET_CTX_PIPELINE, "No Database file found at '%s'", path.c_str());
 	}
 
 	delete dbFile;
@@ -411,14 +413,13 @@ void EditorAssetDatabase::PopulateAssetDatabase(core::AssetDatabase& db) const
 					else
 					{
 						// if the asset is already included, that's an issue
-						LOG(FS("AssetDatabase::Merge > Asset already contained in this DB! "
+						ET_LOG_E(ET_CTX_PIPELINE, "AssetDatabase::Merge > Asset already contained in this DB! "
 							"Name: '%s', Path: '%s', Merge Path: '%s', Package: '%s', Merge Package: '%s'",
 							rhAsset->GetName().c_str(),
 							(*assetIt)->GetPath().c_str(),
 							rhAsset->GetPath().c_str(),
 							(*assetIt)->GetPackageId().ToStringDbg(),
-							rhAsset->GetPackageId().ToStringDbg()), 
-							core::LogLevel::Error);
+							rhAsset->GetPackageId().ToStringDbg());
 					}
 				}
 			}
@@ -469,7 +470,7 @@ void EditorAssetDatabase::RegisterNewAsset(EditorAssetBase* const asset)
 	T_AssetList& cache = FindOrCreateCache(asset->GetType());
 	cache.push_back(asset);
 
-	LOG(FS("Added asset '%s' to '%s' cache!", asset->GetId().ToStringDbg(), EditorAssetDatabase::GetCacheType(cache).get_name().data()));
+	ET_LOG_I(ET_CTX_PIPELINE, "Added asset '%s' to '%s' cache!", asset->GetId().ToStringDbg(), EditorAssetDatabase::GetCacheType(cache).get_name().data());
 }
 
 //----------------------------------
@@ -568,7 +569,7 @@ void EditorAssetDatabase::AddAsset(core::File* const configFile)
 	T_AssetList& cache = FindOrCreateCache(asset->GetType());
 	cache.push_back(asset);
 
-	LOG(FS("Added asset '%s' to '%s' cache!", asset->GetId().ToStringDbg(), EditorAssetDatabase::GetCacheType(cache).get_name().data()));
+	ET_LOG_V(ET_CTX_PIPELINE, "Added asset '%s' to '%s' cache!", asset->GetId().ToStringDbg(), EditorAssetDatabase::GetCacheType(cache).get_name().data());
 }
 
 

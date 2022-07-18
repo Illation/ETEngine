@@ -6,6 +6,10 @@ namespace et {
 namespace gui {
 
 
+ET_DEFINE_TRACE_CTX(ET_CTX_RMLUI);
+ET_REGISTER_TRACE_CTX(ET_CTX_RMLUI);
+	
+
 //======================
 // RML System Interface
 //======================
@@ -26,36 +30,49 @@ double RmlSystemInterface::GetElapsedTime()
 //
 bool RmlSystemInterface::LogMessage(Rml::Log::Type type, Rml::String const& message)
 {
-	core::LogLevel level = core::LogLevel::Info;
+	core::E_TraceLevel level = core::E_TraceLevel::TL_Info;
+	bool trace = true;
+	bool ret = true;
 	switch (type)
 	{
 	case Rml::Log::Type::LT_ALWAYS:
+		trace = false;
 	case Rml::Log::Type::LT_INFO:
 	default:
-		level = core::LogLevel::Info;
+		level = core::E_TraceLevel::TL_Info;
 		break;
 
 	case Rml::Log::Type::LT_WARNING:
-		level = core::LogLevel::Warning;
+		level = core::E_TraceLevel::TL_Warning;
 		break;
 
 	case Rml::Log::Type::LT_ERROR:
-		level = core::LogLevel::Error;
+		level = core::E_TraceLevel::TL_Error;
+		ret = false;
 		break;
 
 	case Rml::Log::Type::LT_ASSERT:
-		level = core::LogLevel::FixMe;
+		level = core::E_TraceLevel::TL_Warning;
+#if ET_CT_IS_ENABLED(ET_CT_ASSERT)
+		ret = false;
+#endif
 		break;
 
 	case Rml::Log::Type::LT_DEBUG:
-		level = core::LogLevel::Verbose;
+		level = core::E_TraceLevel::TL_Verbose;
 		break;
 	}
 
+	if (trace)
+	{
+		ET_TRACE(ET_CTX_RMLUI, level, false, message.c_str());
+	}
+	else
+	{
+		ET_LOG(ET_CTX_RMLUI, level, false, message.c_str());
+	}
 
-	core::Logger::Log(message.c_str(), level);
-
-	return true;
+	return ret;
 }
 
 //------------------------------------

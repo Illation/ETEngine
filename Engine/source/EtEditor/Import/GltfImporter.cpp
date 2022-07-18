@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <EtEditor/stdafx.h>
 #include "GltfImporter.h"
 
 #include "GLTF.h"
@@ -108,7 +108,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 	glTF::glTFAsset glTfAsset;
 	if (!glTF::ParseGLTFData(importData, core::FileUtil::ExtractPath(filePath), core::FileUtil::ExtractExtension(filePath), glTfAsset))
 	{
-		LOG("failed to load the glTF asset", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_EDITOR, "failed to load the glTF asset");
 		return false;
 	}
 
@@ -129,7 +129,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 		{
 			if (mesh.primitives.size() > 1u)
 			{
-				LOG("Currently ETEngine meshes only support one primitive", core::LogLevel::Warning);
+				ET_LOG_W(ET_CTX_EDITOR, "Currently ETEngine meshes only support one primitive");
 			}
 
 			for (const glTF::Primitive& primitive : mesh.primitives)
@@ -139,7 +139,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 				//Basic positions
 				if (primitive.indices == -1)
 				{
-					LOG("ETEngine only supports indexed draw for meshes", core::LogLevel::Warning);
+					ET_LOG_W(ET_CTX_EDITOR, "ETEngine only supports indexed draw for meshes");
 					continue;
 				}
 				else
@@ -148,7 +148,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 					{
 						delete meshContainer;
 						cleanupFn();
-						LOG("failed to construct mesh data containers from glTF - Accessor index out of range", core::LogLevel::Warning);
+						ET_LOG_W(ET_CTX_EDITOR, "failed to construct mesh data containers from glTF - Accessor index out of range");
 						return false;
 					}
 
@@ -157,7 +157,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 					{
 						delete meshContainer;
 						cleanupFn();
-						LOG("failed to construct mesh data containers from glTF - Index accessor must be SCALAR", core::LogLevel::Warning);
+						ET_LOG_W(ET_CTX_EDITOR, "failed to construct mesh data containers from glTF - Index accessor must be SCALAR");
 						return false;
 					}
 
@@ -165,7 +165,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 					{
 						delete meshContainer;
 						cleanupFn();
-						LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+						ET_LOG_W(ET_CTX_EDITOR, "failed to construct mesh data containers from glTF");
 						return false;
 					}
 				}
@@ -176,7 +176,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 					{
 						delete meshContainer;
 						cleanupFn();
-						LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+						ET_LOG_W(ET_CTX_EDITOR, "failed to construct mesh data containers from glTF");
 						return false;
 					}
 
@@ -190,13 +190,13 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 					{
 						delete meshContainer;
 						cleanupFn();
-						LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+						ET_LOG_W(ET_CTX_EDITOR, "failed to construct mesh data containers from glTF");
 						return false;
 					}
 
 					if (primitive.attributes.texcoord1 != -1)
 					{
-						LOG("ETEngine currently supports only one set of texture coordinates for meshes", core::LogLevel::Warning);
+						ET_LOG_W(ET_CTX_EDITOR, "ETEngine currently supports only one set of texture coordinates for meshes");
 					}
 				}
 				else if (primitive.attributes.texcoord1 != -1)
@@ -205,7 +205,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 					{
 						delete meshContainer;
 						cleanupFn();
-						LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+						ET_LOG_W(ET_CTX_EDITOR, "failed to construct mesh data containers from glTF");
 						return false;
 					}
 				}
@@ -217,7 +217,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 					{
 						delete meshContainer;
 						cleanupFn();
-						LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+						ET_LOG_W(ET_CTX_EDITOR, "failed to construct mesh data containers from glTF");
 						return false;
 					}
 
@@ -228,7 +228,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 						{
 							delete meshContainer;
 							cleanupFn();
-							LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+							ET_LOG_W(ET_CTX_EDITOR, "failed to construct mesh data containers from glTF");
 							return false;
 						}
 					}
@@ -237,7 +237,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 					{
 						if (!meshContainer->ConstructTangentSpace(tangentInfo))
 						{
-							LOG("ETEngine failed to construct the tangent space for this mesh", core::LogLevel::Warning);
+							ET_LOG_W(ET_CTX_EDITOR, "ETEngine failed to construct the tangent space for this mesh");
 						}
 					}
 				}
@@ -249,7 +249,7 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 					{
 						delete meshContainer;
 						cleanupFn();
-						LOG("failed to construct mesh data containers from glTF", core::LogLevel::Warning);
+						ET_LOG_W(ET_CTX_EDITOR, "failed to construct mesh data containers from glTF");
 						return false;
 					}
 				}
@@ -259,12 +259,12 @@ bool GltfImporter::Import(std::vector<uint8> const& importData, std::string cons
 				{
 					if (primitive.attributes.joints0 != -1)
 					{
-						LOG("ETEngine currently doesn't support joints for meshes", core::LogLevel::Warning);
+						ET_LOG_W(ET_CTX_EDITOR, "ETEngine currently doesn't support joints for meshes");
 					}
 
 					if (primitive.attributes.weights0 != -1)
 					{
-						LOG("ETEngine currently doesn't support weights for meshes", core::LogLevel::Warning);
+						ET_LOG_W(ET_CTX_EDITOR, "ETEngine currently doesn't support weights for meshes");
 					}
 				}
 

@@ -124,7 +124,7 @@ Material* MaterialAsset::CreateMaterial(std::vector<I_Asset::Reference> const& r
 
 	if (shaderRef == nullptr)
 	{
-		LOG("MaterialAsset::LoadFromMemory > Materials must reference a shader!", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_RENDER, "MaterialAsset::LoadFromMemory > Materials must reference a shader!");
 		return nullptr;
 	}
 
@@ -151,7 +151,7 @@ bool MaterialAsset::LoadFromMemory(std::vector<uint8> const& data)
 	core::BinaryDeserializer deserializer;
 	if (!deserializer.DeserializeFromData(data, descriptor))
 	{
-		LOG("MaterialAsset::LoadFromMemory > Failed to deserialize data from a binary format into a material descriptor", core::LogLevel::Warning);
+		ET_LOG_W(ET_CTX_RENDER, "MaterialAsset::LoadFromMemory > Failed to deserialize data from a binary format into a material descriptor");
 		return false;
 	}
 

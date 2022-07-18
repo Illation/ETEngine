@@ -8,3 +8,7 @@
 #include <EtFramework/Config/Config.h>
 
 #pragma endregion Includes
+
+namespace et {
+	ET_DEFINE_TRACE_CTX(ET_CTX_FRAMEWORK);
+}

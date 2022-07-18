@@ -50,7 +50,7 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 				render::I_SceneExtension* const ext = renderer->GetScene()->GetExtension(GuiExtension::s_ExtensionId);
 				if (ext == nullptr)
 				{
-					LOG("render scene does not have a GUI extension");
+					ET_TRACE_V(ET_CTX_GUI, "render scene does not have a GUI extension");
 					return;
 				}
 
@@ -75,7 +75,7 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 				render::I_SceneExtension* const ext = renderer->GetScene()->GetExtension(GuiExtension::s_ExtensionId);
 				if (ext == nullptr)
 				{
-					LOG("render scene does not have a GUI extension");
+					ET_TRACE_V(ET_CTX_GUI, "render scene does not have a GUI extension");
 					return;
 				}
 
