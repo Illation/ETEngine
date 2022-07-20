@@ -534,7 +534,7 @@ bool ColladaParser::ResolveSource(dae::Source& source)
 	break;
 
 	default:
-		ET_ASSERT(false, "unhandled source type");
+		ET_ERROR("unhandled source type");
 		return false;
 	}
 

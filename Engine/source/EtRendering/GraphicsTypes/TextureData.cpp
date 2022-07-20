@@ -219,7 +219,7 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	//-------------
 	if (reader.ReadString(TextureFormat::s_Header.size()) != TextureFormat::s_Header)
 	{
-		ET_ASSERT(false, "Incorrect texture file header");
+		ET_WARNING("Incorrect texture file header");
 		return false;
 	}
 
@@ -234,7 +234,7 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	E_TextureType const targetType = reader.Read<E_TextureType>();
 	if (!((targetType == E_TextureType::Texture2D) || (targetType == E_TextureType::CubeMap)))
 	{
-		ET_ASSERT(false, "Only 2D texture assets and cubemaps are currently supported!");
+		ET_WARNING("Only 2D texture assets and cubemaps are currently supported!");
 		return false;
 	}
 

@@ -65,7 +65,7 @@ void PlaylistComponent::OnScenePostLoadRoot(fw::EcsController& ecs, fw::T_Entity
 	}
 	else
 	{
-		ET_ASSERT(false, "playlist doesn't include track set on the source component!");
+		ET_WARNING("playlist doesn't include track set on the source component!");
 		comp.currentTrack = std::numeric_limits<size_t>::max();
 	}
 }

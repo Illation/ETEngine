@@ -26,7 +26,7 @@ AssetPtr<T_DataType> ResourceManager::GetAssetData(HashString const assetId, boo
 	{
 		if (reportWarnings)
 		{
-			ET_ASSERT(false, "Couldn't find asset with ID '%s'!", assetId.ToStringDbg());
+			ET_WARNING("Couldn't find asset with ID '%s'!", assetId.ToStringDbg());
 		}
 
 		return nullptr;

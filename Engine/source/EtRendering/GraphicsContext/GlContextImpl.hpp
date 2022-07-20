@@ -35,7 +35,7 @@ GLenum ConvTextureType(E_TextureType const type)
 	case E_TextureType::CubeMap:	return GL_TEXTURE_CUBE_MAP;
 	}
 
-	ET_ASSERT(false, "Unhandled texture type!");
+	ET_ERROR("Unhandled texture type!");
 	return GL_NONE;
 }
 
@@ -57,7 +57,7 @@ GLenum ConvDataType(E_DataType const type)
 	case E_DataType::Double: return GL_DOUBLE;
 	}
 
-	ET_ASSERT(false, "Unhandled data type!");
+	ET_ERROR("Unhandled data type!");
 	return GL_NONE;
 }
 
@@ -76,7 +76,7 @@ GLenum ConvShaderType(E_ShaderType const type)
 	case E_ShaderType::Fragment:				return GL_FRAGMENT_SHADER;
 	}
 
-	ET_ASSERT(false, "Unhandled shader type!");
+	ET_ERROR("Unhandled shader type!");
 	return GL_NONE;
 }
 
@@ -97,7 +97,7 @@ GLenum ConvDrawMode(E_DrawMode const mode)
 	case E_DrawMode::Patches:		return GL_PATCHES;
 	}
 
-	ET_ASSERT(false, "Unhandled draw mode!");
+	ET_ERROR("Unhandled draw mode!");
 	return GL_NONE;
 }
 
@@ -115,7 +115,7 @@ GLenum ConvBufferType(E_BufferType const type)
 	case E_BufferType::Uniform:	return GL_UNIFORM_BUFFER;
 	}
 
-	ET_ASSERT(false, "Unhandled buffer type!");
+	ET_ERROR("Unhandled buffer type!");
 	return GL_NONE;
 }
 
@@ -131,7 +131,7 @@ GLenum ConvUsageHint(E_UsageHint const hint)
 	case E_UsageHint::Stream:	return GL_STREAM_DRAW;
 	}
 
-	ET_ASSERT(false, "Unhandled usage hint!");
+	ET_ERROR("Unhandled usage hint!");
 	return GL_NONE;
 }
 
@@ -147,7 +147,7 @@ GLenum ConvAccessMode(E_AccessMode const mode)
 	case E_AccessMode::ReadWrite:	return GL_READ_WRITE;
 	}
 
-	ET_ASSERT(false, "Unhandled access mode!");
+	ET_ERROR("Unhandled access mode!");
 	return GL_NONE;
 }
 
@@ -163,7 +163,7 @@ GLenum ConvFaceCullMode(E_FaceCullMode const mode)
 	case E_FaceCullMode::FrontBack:	return GL_FRONT_AND_BACK;
 	}
 
-	ET_ASSERT(false, "Unhandled cull mode!");
+	ET_ERROR("Unhandled cull mode!");
 	return GL_NONE;
 }
 
@@ -179,7 +179,7 @@ GLenum ConvPolygonMode(E_PolygonMode const mode)
 	case E_PolygonMode::Fill:		return GL_FILL;
 	}
 
-	ET_ASSERT(false, "Unhandled polygon mode!");
+	ET_ERROR("Unhandled polygon mode!");
 	return GL_NONE;
 }
 
@@ -198,7 +198,7 @@ GLenum ConvBlendEquation(E_BlendEquation const equ)
 	case E_BlendEquation::Max:		return GL_MAX;
 	}
 
-	ET_ASSERT(false, "Unhandled blend equation!");
+	ET_ERROR("Unhandled blend equation!");
 	return GL_NONE;
 }
 
@@ -225,7 +225,7 @@ GLenum ConvBlendFactor(E_BlendFactor const fac)
 	case E_BlendFactor::OneMinusConstAlpha:		return GL_ONE_MINUS_CONSTANT_ALPHA;
 	}
 
-	ET_ASSERT(false, "Unhandled blend factor!");
+	ET_ERROR("Unhandled blend factor!");
 	return GL_NONE;
 }
 
@@ -278,7 +278,7 @@ GLenum ConvColorFormat(E_ColorFormat const fmt)
 	case E_ColorFormat::BC7_SRGBA:			return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
 	}
 
-	ET_ASSERT(false, "Unhandled color format!");
+	ET_ERROR("Unhandled color format!");
 	return GL_NONE;
 }
 
@@ -349,7 +349,7 @@ void DeriveLayoutAndType(E_ColorFormat const storageFmt, GLenum& colorLayout, GL
 		return;
 	}
 
-	ET_ASSERT(false, "Unhandled color format!");
+	ET_ERROR("Unhandled color format!");
 }
 
 //---------------------------------
@@ -365,7 +365,7 @@ GLenum ConvFilter(E_TextureFilterMode const filter)
 	case E_TextureFilterMode::Linear:  return GL_LINEAR;
 	}
 
-	ET_ASSERT(false, "Unhandled texture filter mode!");
+	ET_ERROR("Unhandled texture filter mode!");
 	return GL_NONE;
 }
 
@@ -387,7 +387,7 @@ GLenum ConvMinFilter(E_TextureFilterMode const minFilter, E_TextureFilterMode co
 			case E_TextureFilterMode::Linear:  return GL_NEAREST_MIPMAP_LINEAR;
 
 			default:
-				ET_ASSERT(false, "Unhandled texture filter mode!");
+				ET_ERROR("Unhandled texture filter mode!");
 				break;
 			}
 			break;
@@ -399,13 +399,13 @@ GLenum ConvMinFilter(E_TextureFilterMode const minFilter, E_TextureFilterMode co
 			case E_TextureFilterMode::Linear: return GL_LINEAR_MIPMAP_LINEAR;
 
 			default:
-				ET_ASSERT(false, "Unhandled texture filter mode!");
+				ET_ERROR("Unhandled texture filter mode!");
 				break;
 			}
 			break;
 
 		default:
-			ET_ASSERT(false, "Unhandled texture filter mode!");
+			ET_ERROR("Unhandled texture filter mode!");
 			break;
 		}
 		return 0;
@@ -430,7 +430,7 @@ GLenum ConvWrapMode(E_TextureWrapMode const wrap)
 	case E_TextureWrapMode::Repeat:				return GL_REPEAT;
 	}
 
-	ET_ASSERT(false, "Unhandled texture wrap mode!");
+	ET_ERROR("Unhandled texture wrap mode!");
 	return 0;
 }
 
@@ -447,7 +447,7 @@ GLenum ConvCompareMode(E_TextureCompareMode const comp)
 	case E_TextureCompareMode::None:				return GL_NONE;
 	}
 
-	ET_ASSERT(false, "Unhandled texture compare mode!");
+	ET_ERROR("Unhandled texture compare mode!");
 	return 0;
 }
 
@@ -470,7 +470,7 @@ GLenum ConvDepthStencilFunction(E_DepthFunc const func)
 	case E_DepthFunc::Always:	return GL_ALWAYS;
 	}
 
-	ET_ASSERT(false, "Unhandled depth/stencil function!");
+	ET_ERROR("Unhandled depth/stencil function!");
 	return 0;
 }
 
@@ -491,7 +491,7 @@ GLenum ConvStencilOp(E_StencilOp const op)
 	case E_StencilOp::Invert:			return GL_INVERT;
 	}
 
-	ET_ASSERT(false, "Unhandled depth function!");
+	ET_ERROR("Unhandled depth function!");
 	return 0;
 }
 
@@ -517,7 +517,7 @@ E_ParamType ParseParamType(GLenum const param)
 	case GL_BOOL:				return E_ParamType::Boolean;
 	}
 
-	ET_ASSERT(false, "Unhandled GLenum parameter type!");
+	ET_ERROR("Unhandled GLenum parameter type!");
 	return E_ParamType::Invalid;
 }
 
@@ -1613,7 +1613,7 @@ void GL_CONTEXT_CLASSNAME::UploadTextureData(TextureData& texture,
 	}
 
 	default:
-		ET_ASSERT(false, "Unsupported texture type for uploading texture data");
+		ET_ERROR("Unsupported texture type for uploading texture data");
 		break;
 	}
 }
@@ -1651,7 +1651,7 @@ void GL_CONTEXT_CLASSNAME::UploadCompressedTextureData(TextureData& texture, voi
 	}
 
 	default:
-		ET_ASSERT(false, "Unsupported texture type for uploading compressed texture data");
+		ET_ERROR("Unsupported texture type for uploading compressed texture data");
 		break;
 	}
 }

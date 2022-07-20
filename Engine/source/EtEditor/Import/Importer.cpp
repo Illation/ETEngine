@@ -44,7 +44,7 @@ void ImporterBase::RegisterImporter(ImporterBase* const importer)
 	}
 	else
 	{
-		ET_ASSERT(false, "importer of type '%s' already registered", importerType.get_name().data());
+		ET_WARNING("importer of type '%s' already registered", importerType.get_name().data());
 	}
 }
 
@@ -185,7 +185,7 @@ E_ImportResult ImporterBase::Run(core::URI& uri, std::string const& outDirectory
 	{
 		if (!uri.Evaluate())
 		{
-			ET_ASSERT(false, "failed to open import file '%s'", uri.GetPath().c_str());
+			ET_WARNING("failed to open import file '%s'", uri.GetPath().c_str());
 			return E_ImportResult::Failed;
 		}
 
@@ -209,7 +209,7 @@ E_ImportResult ImporterBase::Run(core::URI& uri, std::string const& outDirectory
 				core::File* const dataFile = new core::File(asset->GetAsset()->GetPath() + asset->GetAsset()->GetName(), db.GetDirectory());
 				if (dataFile->Exists())
 				{
-					ET_ASSERT(false, "Reimporting existing assets is currently not supported! File: %s", dataFile->GetName());
+					ET_WARNING("Reimporting existing assets is currently not supported! File: %s", dataFile->GetName());
 					delete dataFile;
 					return E_ImportResult::Failed;
 				}
@@ -218,7 +218,7 @@ E_ImportResult ImporterBase::Run(core::URI& uri, std::string const& outDirectory
 				outFlags.SetFlags(core::FILE_ACCESS_FLAGS::FLAGS::Create | core::FILE_ACCESS_FLAGS::FLAGS::Exists);
 				if (!dataFile->Open(core::FILE_ACCESS_MODE::Write, outFlags))
 				{
-					ET_ASSERT(false, "Failed to open imported asset file for writing at '%s'", dataFile->GetName());
+					ET_WARNING("Failed to open imported asset file for writing at '%s'", dataFile->GetName());
 					delete dataFile;
 					return E_ImportResult::Failed;
 				}

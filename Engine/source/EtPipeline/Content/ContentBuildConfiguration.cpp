@@ -42,7 +42,7 @@ BuildConfiguration::BuildConfiguration()
 #ifdef ET_SHIPPING
 	m_Configuration = E_Configuration::Shipping;
 #else
-	ET_ASSERT(false, "No configuration preprocessor defined");
+	ET_ERROR("No configuration preprocessor defined");
 #endif
 #endif
 #endif
@@ -53,7 +53,7 @@ BuildConfiguration::BuildConfiguration()
 #ifdef ET_ARCH_X64
 	m_Architecture = E_Architecture::x64;
 #else
-	ET_ASSERT(false, "No architecture preprocessor defined");
+	ET_ERROR("No architecture preprocessor defined");
 #endif
 #endif
 
@@ -63,7 +63,7 @@ BuildConfiguration::BuildConfiguration()
 #ifdef ET_PLATFORM_LINUX
 	m_Platform = E_Platform::Linux;
 #else
-	ET_ASSERT(false, "No platform preprocessor defined");
+	ET_ERROR("No platform preprocessor defined");
 #endif
 #endif
 }

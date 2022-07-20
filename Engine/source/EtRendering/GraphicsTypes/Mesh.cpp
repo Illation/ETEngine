@@ -174,7 +174,7 @@ bool MeshAsset::ReadEtMesh(MeshData* const meshData, std::vector<uint8> const& l
 	//-------------
 	if (reader.ReadString(s_Header.size()) != s_Header)
 	{
-		ET_ASSERT(false, "Incorrect binary mesh file header");
+		ET_WARNING("Incorrect binary mesh file header");
 		return false;
 	}
 

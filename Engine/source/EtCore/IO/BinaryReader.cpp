@@ -26,7 +26,7 @@ void BinaryReader::Open(std::vector<uint8> const& binaryContent, size_t const st
 
 	if (start >= binaryContent.size())
 	{
-		ET_ASSERT(false, "Start position '" ET_FMT_SIZET "' is larger than buffer size '" ET_FMT_SIZET "'", start, binaryContent.size());
+		ET_ERROR("Start position '" ET_FMT_SIZET "' is larger than buffer size '" ET_FMT_SIZET "'", start, binaryContent.size());
 		return;
 	}
 	else
@@ -40,7 +40,7 @@ void BinaryReader::Open(std::vector<uint8> const& binaryContent, size_t const st
 	}
 	else if (start + count > (uint32)binaryContent.size())
 	{
-		ET_ASSERT(false, "Count '" ET_FMT_SIZET "' is larger than content size '" ET_FMT_SIZET "'", count, binaryContent.size() - start);
+		ET_ERROR("Count '" ET_FMT_SIZET "' is larger than content size '" ET_FMT_SIZET "'", count, binaryContent.size() - start);
 		return;
 	}
 	else

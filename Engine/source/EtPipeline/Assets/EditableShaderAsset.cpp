@@ -165,7 +165,7 @@ bool EditableShaderAsset::GenerateInternal(BuildConfiguration const& buildConfig
 		}
 		else 
 		{
-			ET_ASSERT(false, "unexpected file extension");
+			ET_ERROR("unexpected file extension");
 			data.m_HasGeneratedData = false;
 		}
 	}
@@ -289,7 +289,7 @@ bool EditableShaderAsset::ReplaceInclude(std::string &line)
 
 	if (foundRefIt == refs.cend())
 	{
-		ET_ASSERT(false, "Asset at path '%s' not found in references!", path.c_str());
+		ET_WARNING("Asset at path '%s' not found in references!", path.c_str());
 		return false;
 	}
 

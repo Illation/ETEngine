@@ -145,7 +145,7 @@ I_Asset* AssetDatabase::GetAsset(HashString const assetId, bool const reportErro
 	// didn't find an asset in any cache, return null
 	if (reportErrors)
 	{
-		ET_ASSERT(false, "Couldn't find asset with ID '%s'!", assetId.ToStringDbg());
+		ET_WARNING("Couldn't find asset with ID '%s'!", assetId.ToStringDbg());
 	}
 
 	return nullptr;
@@ -185,7 +185,7 @@ I_Asset* AssetDatabase::GetAsset(HashString const assetId, rttr::type const type
 
 	if (reportErrors)
 	{
-		ET_ASSERT(false, "Couldn't find asset with ID '%s'!", assetId.ToStringDbg());
+		ET_WARNING("Couldn't find asset with ID '%s'!", assetId.ToStringDbg());
 	}
 
 	return nullptr;

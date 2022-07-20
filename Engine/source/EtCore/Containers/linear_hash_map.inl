@@ -125,7 +125,7 @@ LIN_HASH_MAP_TN::mapped_type& LIN_HASH_MAP_T::at(key_type const& key)
 		return it->second;
 	}
 
-	ET_ASSERT(false, "out of range");
+	ET_WARNING("out of range");
 	return *static_cast<mapped_type*>(nullptr);
 }
 
@@ -141,7 +141,7 @@ LIN_HASH_MAP_TN::mapped_type const& LIN_HASH_MAP_T::at( key_type const& key) con
 		return it->second;
 	}
 
-	ET_ASSERT(false, "out of range");
+	ET_WARNING("out of range");
 	return *static_cast<mapped_type const*>(nullptr);
 }
 

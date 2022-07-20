@@ -35,7 +35,7 @@ size_t GetSize(E_ParamType const type)
 	case E_ParamType::Boolean: return sizeof(bool);
 	}
 
-	ET_ASSERT(false, "Unhandled parameter type!");
+	ET_ERROR("Unhandled parameter type!");
 	return 0u;
 }
 
@@ -61,7 +61,7 @@ rttr::type GetTypeId(E_ParamType const type)
 	case E_ParamType::Boolean: return rttr::type::get<bool>();
 	}
 
-	ET_ASSERT(false, "Unhandled parameter type!");
+	ET_ERROR("Unhandled parameter type!");
 	return rttr::type::get<std::nullptr_t>();
 }
 

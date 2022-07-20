@@ -114,7 +114,7 @@ void URI::SetPath(std::string const& path)
 		if (path.substr(colonPos + 1u, 3u) != "///")
 		{
 			m_Type = URI::E_Type::Invalid;
-			ET_ASSERT(false, "Only files on local host are currently supported!");
+			ET_ERROR("Only files on local host are currently supported!");
 			return;
 		}
 
@@ -124,7 +124,7 @@ void URI::SetPath(std::string const& path)
 	else
 	{
 		m_Type = URI::E_Type::Invalid;
-		ET_ASSERT(false, "Unsupported URI type");
+		ET_ERROR("Unsupported URI type");
 		return;
 	}
 
@@ -163,7 +163,7 @@ bool URI::Evaluate(std::string const& basePath)
 	switch (m_Type)
 	{
 	case E_Type::Invalid:
-		ET_ASSERT(false, "Can't evaluate invalid URI");
+		ET_WARNING("Can't evaluate invalid URI");
 		return false;
 
 	case E_Type::None:
@@ -220,7 +220,7 @@ bool URI::Evaluate(std::string const& basePath)
 			core::File* const input = new core::File(m_Path, dir);
 			if (!input->Open(core::FILE_ACCESS_MODE::Read))
 			{
-				ET_ASSERT(false, "Failed to evaluate URI from file '%s'", m_Path.c_str());
+				ET_WARNING("Failed to evaluate URI from file '%s'", m_Path.c_str());
 				return false;
 			}
 
@@ -240,7 +240,7 @@ bool URI::Evaluate(std::string const& basePath)
 			core::File importFile(m_Path, nullptr);
 			if (!importFile.Open(core::FILE_ACCESS_MODE::Read))
 			{
-				ET_ASSERT(false, "Failed to evaluate URI from file '%s'", m_Path.c_str());
+				ET_WARNING("Failed to evaluate URI from file '%s'", m_Path.c_str());
 				return false;
 			}
 
@@ -252,7 +252,7 @@ bool URI::Evaluate(std::string const& basePath)
 	}
 
 	default:
-		ET_ASSERT(false, "Unsupported URI type!");
+		ET_WARNING("Unsupported URI type!");
 		return false;
 	}
 }

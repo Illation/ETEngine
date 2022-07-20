@@ -128,32 +128,32 @@ bool EditableSdfFontAsset::GenerateInternal(BuildConfiguration const& buildConfi
 		}
 		else
 		{
-			ET_ASSERT(false, "unexpected file extension");
+			ET_ERROR("unexpected file extension");
 			data.m_HasGeneratedData = false;
 		}
 	}
 
 	if (fontData == nullptr)
 	{
-		ET_ASSERT(false, "couldn't find font runtime asset data");
+		ET_ERROR("couldn't find font runtime asset data");
 		return false;
 	}
 
 	if (textureData == nullptr)
 	{
-		ET_ASSERT(false, "couldn't find texture runtime asset data");
+		ET_ERROR("couldn't find texture runtime asset data");
 		return false;
 	}
 
 	if (!GenerateTextureData(textureData->m_GeneratedData, font->GetAtlas()))
 	{
-		ET_ASSERT(false, "failed to generate texture data");
+		ET_ERROR("failed to generate texture data");
 		return false;
 	}
 
 	if (!GenerateBinFontData(fontData->m_GeneratedData, font, textureData->m_Asset->GetPath() + textureData->m_Asset->GetName()))
 	{
-		ET_ASSERT(false, "failed to generate font data");
+		ET_ERROR("failed to generate font data");
 		return false;
 	}
 
@@ -280,7 +280,7 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 
 			if (FT_Load_Glyph(face, glyphIdx, FT_LOAD_DEFAULT))
 			{
-				ET_ASSERT(false, "FREETYPE: Failed to load glyph");
+				ET_WARNING("FREETYPE: Failed to load glyph");
 				continue;
 			}
 
@@ -666,7 +666,7 @@ bool EditableSdfFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::Sd
 			break;
 
 		default:
-			ET_ASSERT(false, "undefined channel (%u) for character %c", metric.m_Channel, metric.m_Character);
+			ET_ERROR("undefined channel (%u) for character %c", metric.m_Channel, metric.m_Character);
 			return false;
 		}
 	}

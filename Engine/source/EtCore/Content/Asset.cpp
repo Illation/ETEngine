@@ -164,7 +164,7 @@ void I_Asset::Load()
 	// get binary data from the package
 	if (!(ResourceManager::Instance()->GetLoadData(this, m_LoadData)))
 	{
-		ET_ASSERT(false, "Couldn't get data for '%s' (%i) in package '%s'", 
+		ET_ERROR("Couldn't get data for '%s' (%i) in package '%s'",
 			m_PackageEntryId.ToStringDbg(), 
 			m_PackageEntryId.Get(), 
 			m_PackageId.ToStringDbg());

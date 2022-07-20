@@ -123,7 +123,7 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 	{
 		if (requiresCompression)
 		{
-			ET_ASSERT(false, "texture forces resolution but requires compression");
+			ET_WARNING("texture forces resolution but requires compression");
 			return false;
 		}
 	}
@@ -192,7 +192,7 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 			break;
 
 		default:
-			ET_ASSERT(false, "unexpected channel count");
+			ET_ERROR("unexpected channel count");
 			return false;
 		}
 	}
@@ -207,7 +207,7 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 			std::vector<uint8> compressedData;
 			if (!CompressImageU8(*mipImage, storageFormat, compressionQuality, compressedData))
 			{
-				ET_ASSERT(false, "Failed to compress image");
+				ET_WARNING("Failed to compress image");
 				return false;
 			}
 
@@ -232,7 +232,7 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 			break;
 
 			default:
-				ET_ASSERT(false, "unexpected channel count");
+				ET_WARNING("unexpected channel count");
 				return false;
 			}
 		}
@@ -365,7 +365,7 @@ render::E_ColorFormat TextureCompression::GetOutputFormat(E_Setting const settin
 		return render::E_ColorFormat::BC7_RGBA;
 	}
 
-	ET_ASSERT(false, "unhandled compression setting");
+	ET_ERROR("unhandled compression setting");
 	return render::E_ColorFormat::Invalid;
 }
 
@@ -414,7 +414,7 @@ bool TextureCompression::CompressImage(void const* const sourceData,
 				return 18u;
 
 			default:
-				ET_ASSERT(false, "unhandled compression quality");
+				ET_ERROR("unhandled compression quality");
 				return 0u;
 			}
 		};
@@ -601,7 +601,7 @@ bool TextureCompression::CompressImage(void const* const sourceData,
 	}
 
 	default:
-		ET_ASSERT(false, "unhandled compressed format");
+		ET_ERROR("unhandled compressed format");
 		return false;
 	}
 

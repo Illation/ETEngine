@@ -151,7 +151,7 @@ void EditorAssetBase::Load()
 	// get binary data from the package
 	if (!(core::ResourceManager::Instance()->GetLoadData(asset, asset->m_LoadData)))
 	{
-		ET_ASSERT(false, "Couldn't get data for '%s' (%i) in package '%s'",
+		ET_WARNING("Couldn't get data for '%s' (%i) in package '%s'",
 			asset->GetPackageEntryId().ToStringDbg(),
 			asset->GetPackageEntryId().Get(),
 			asset->GetPackageId().ToStringDbg());
@@ -161,7 +161,7 @@ void EditorAssetBase::Load()
 	// let the asset load from binary data
 	if (!LoadFromMemory(asset->m_LoadData))
 	{
-		ET_ASSERT(false, "Failed Loading editor asset from memory, id: '%s'", m_Id.ToStringDbg());
+		ET_ERROR("Failed Loading editor asset from memory, id: '%s'", m_Id.ToStringDbg());
 	}
 
 	if (!(asset->m_IsPersistent))
@@ -245,7 +245,7 @@ void EditorAssetBase::Generate(BuildConfiguration const& buildConfig, core::Dire
 	{
 		if (!(core::ResourceManager::Instance()->GetLoadData(asset, asset->m_LoadData)))
 		{
-			ET_ASSERT(false, "Couldn't get data for '%s' (%i) in package '%s'",
+			ET_ERROR("Couldn't get data for '%s' (%i) in package '%s'",
 				asset->GetPackageEntryId().ToStringDbg(),
 				asset->GetPackageEntryId().Get(),
 				asset->GetPackageId().ToStringDbg());
@@ -270,7 +270,7 @@ void EditorAssetBase::Generate(BuildConfiguration const& buildConfig, core::Dire
 
 	if (!success)
 	{
-		ET_ASSERT(false, "Failed to generate runtime data for asset '%s'", asset->GetName());
+		ET_ERROR("Failed to generate runtime data for asset '%s'", asset->GetName());
 		return;
 	}
 
@@ -288,7 +288,7 @@ void EditorAssetBase::Generate(BuildConfiguration const& buildConfig, core::Dire
 
 			if (!assetFile->Open(core::FILE_ACCESS_MODE::Write, outFlags))
 			{
-				ET_ASSERT(false, "Failed to open generated asset file for writing at '%s'", assetFile->GetName());
+				ET_WARNING("Failed to open generated asset file for writing at '%s'", assetFile->GetName());
 				continue;
 			}
 

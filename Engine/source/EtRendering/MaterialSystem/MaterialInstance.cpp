@@ -113,7 +113,7 @@ MaterialInstance* MaterialInstanceAsset::CreateMaterialInstance(std::vector<core
 		}
 		else
 		{
-			ET_ASSERT(false, "unhandled reference type!");
+			ET_ERROR("unhandled reference type!");
 		}
 	}
 

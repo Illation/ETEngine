@@ -39,7 +39,7 @@ void BootConfig::LoadFromPackage(BootConfig& cfg, core::I_Package* const pkg)
 	std::vector<uint8> rawData;
 	if (!pkg->GetEntryData(core::HashString(s_FileName.c_str()), rawData))
 	{
-		ET_ASSERT(false, "Failed to load boot config from package!");
+		ET_ERROR("Failed to load boot config from package!");
 		return;
 	}
 
@@ -47,7 +47,7 @@ void BootConfig::LoadFromPackage(BootConfig& cfg, core::I_Package* const pkg)
 	core::JsonDeserializer deserializer;
 	if (!deserializer.DeserializeFromData(rawData, cfg))
 	{
-		ET_ASSERT(false, "Failed to deserialize boot config at '%s'!", s_FileName);
+		ET_ERROR("Failed to deserialize boot config at '%s'!", s_FileName);
 	}
 }
 

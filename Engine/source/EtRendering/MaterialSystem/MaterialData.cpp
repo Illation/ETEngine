@@ -118,7 +118,7 @@ Material* MaterialAsset::CreateMaterial(std::vector<I_Asset::Reference> const& r
 		}
 		else
 		{
-			ET_ASSERT(false, "unhandled reference type!");
+			ET_ERROR("unhandled reference type!");
 		}
 	}
 

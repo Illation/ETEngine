@@ -21,7 +21,7 @@ bool BinarySerializer::SerializeToData(TDataType const& serialObject, std::vecto
 	rttr::variant var(serialObject);
 	if (!var.is_valid())
 	{
-		ET_ASSERT(false, "couldn't get valid instance from serialObject");
+		ET_ERROR("couldn't get valid instance from serialObject");
 		return false;
 	}
 

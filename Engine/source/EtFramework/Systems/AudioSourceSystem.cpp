@@ -230,7 +230,7 @@ void AudioSourceSystem::State::Process(ComponentRange<AudioSourceSystem::StateVi
 				break;
 
 			default:
-				ET_ASSERT(false, "unhandled source state!");
+				ET_ERROR("unhandled source state!");
 				break;
 			}
 

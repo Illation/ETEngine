@@ -121,7 +121,7 @@ bool BinarySerializer::WriteVariant(rttr::variant const& var)
 			return WriteObject(inst, ti);
 		}
 
-		ET_ASSERT(false, "unhandled variant type '%s'", ti.m_Id.ToStringDbg());
+		ET_ERROR("unhandled variant type '%s'", ti.m_Id.ToStringDbg());
 		return false;
 	}
 	else
@@ -172,7 +172,7 @@ bool BinarySerializer::WriteBasicVariant(rttr::variant const& var, TypeInfo cons
 		return WriteObject(rttr::instance(var), ti);
 	}
 
-	ET_ASSERT(false, "unhandled variant type '%s'", ti.m_Id.ToStringDbg());
+	ET_ERROR("unhandled variant type '%s'", ti.m_Id.ToStringDbg());
 	return false;
 }
 
@@ -248,7 +248,7 @@ bool BinarySerializer::WriteArithmeticType(rttr::type const type, rttr::variant 
 	}
 	else
 	{
-		ET_ASSERT(false, "unhandled arithmetic type '%s'", type.get_name().data());
+		ET_ERROR("unhandled arithmetic type '%s'", type.get_name().data());
 		return false;
 	}
 
@@ -337,8 +337,7 @@ bool BinarySerializer::WriteSequentialContainer(rttr::variant_sequential_view co
 		{
 			if (!WriteBasicVariant(view.get_value(idx).extract_wrapped_value(), ti))
 			{
-				ET_ASSERT(false,
-					"Failed to write basic element of sequential container type '%s' at index " ET_FMT_SIZET,
+				ET_WARNING("Failed to write basic element of sequential container type '%s' at index " ET_FMT_SIZET,
 					view.get_type().get_name().data(),
 					idx);
 				return false;
@@ -351,10 +350,7 @@ bool BinarySerializer::WriteSequentialContainer(rttr::variant_sequential_view co
 		{
 			if (!WriteVariant(view.get_value(idx).extract_wrapped_value()))
 			{
-				ET_ASSERT(false, 
-					"Failed to write element of sequential container type '%s' at index " ET_FMT_SIZET, 
-					view.get_type().get_name().data(), 
-					idx);
+				ET_WARNING("Failed to write element of sequential container type '%s' at index " ET_FMT_SIZET, view.get_type().get_name().data(), idx);
 				return false;
 			}
 		}
@@ -383,7 +379,7 @@ bool BinarySerializer::WriteAssociativeContainer(rttr::variant_associative_view 
 			{
 				if (!WriteBasicVariant(item.first, keyTi))
 				{
-					ET_ASSERT(false, "Failed to write element of key only associative container type '%s'", view.get_type().get_name().data());
+					ET_WARNING("Failed to write element of key only associative container type '%s'", view.get_type().get_name().data());
 					return false;
 				}
 			}
@@ -399,13 +395,13 @@ bool BinarySerializer::WriteAssociativeContainer(rttr::variant_associative_view 
 				{
 					if (!WriteBasicVariant(item.first, keyTi))
 					{
-						ET_ASSERT(false, "Failed to write key of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write key of associative container type '%s'", view.get_type().get_name().data());
 						return false;
 					}
 
 					if (!WriteBasicVariant(item.second, valueTi))
 					{
-						ET_ASSERT(false, "Failed to write basic value of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write basic value of associative container type '%s'", view.get_type().get_name().data());
 						return false;
 					}
 				}
@@ -416,13 +412,13 @@ bool BinarySerializer::WriteAssociativeContainer(rttr::variant_associative_view 
 				{
 					if (!WriteBasicVariant(item.first, keyTi))
 					{
-						ET_ASSERT(false, "Failed to write key of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write key of associative container type '%s'", view.get_type().get_name().data());
 						return false;
 					}
 
 					if (!WriteVariant(item.second))
 					{
-						ET_ASSERT(false, "Failed to write value of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write value of associative container type '%s'", view.get_type().get_name().data());
 						return false;
 					}
 				}
@@ -437,7 +433,7 @@ bool BinarySerializer::WriteAssociativeContainer(rttr::variant_associative_view 
 			{
 				if (!WriteVariant(item.first))
 				{
-					ET_ASSERT(false, "Failed to write element of key only associative container type '%s'", view.get_type().get_name().data());
+					ET_WARNING("Failed to write element of key only associative container type '%s'", view.get_type().get_name().data());
 					return false;
 				}
 			}
@@ -453,13 +449,13 @@ bool BinarySerializer::WriteAssociativeContainer(rttr::variant_associative_view 
 				{
 					if (!WriteVariant(item.first))
 					{
-						ET_ASSERT(false, "Failed to write key of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write key of associative container type '%s'", view.get_type().get_name().data());
 						return false;
 					}
 
 					if (!WriteBasicVariant(item.second, valueTi))
 					{
-						ET_ASSERT(false, "Failed to write basic value of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write basic value of associative container type '%s'", view.get_type().get_name().data());
 						return false;
 					}
 				}
@@ -470,13 +466,13 @@ bool BinarySerializer::WriteAssociativeContainer(rttr::variant_associative_view 
 				{
 					if (!WriteVariant(item.first))
 					{
-						ET_ASSERT(false, "Failed to write key of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write key of associative container type '%s'", view.get_type().get_name().data());
 						return false;
 					}
 
 					if (!WriteVariant(item.second))
 					{
-						ET_ASSERT(false, "Failed to write value of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write value of associative container type '%s'", view.get_type().get_name().data());
 						return false;
 					}
 				}
@@ -518,7 +514,7 @@ bool BinarySerializer::WriteObject(rttr::instance const& inst, TypeInfo const& t
 		if (!propVal)
 		{
 			// handle nullptr here?
-			ET_ASSERT(false, "failed to get value for property '%s' in type '%s'", prop.m_Id.ToStringDbg(), ti.m_Id.ToStringDbg());
+			ET_WARNING("failed to get value for property '%s' in type '%s'", prop.m_Id.ToStringDbg(), ti.m_Id.ToStringDbg());
 			return false;
 		}
 
@@ -526,7 +522,7 @@ bool BinarySerializer::WriteObject(rttr::instance const& inst, TypeInfo const& t
 
 		if (!WriteVariant(propVal))
 		{
-			ET_ASSERT(false, "failed to write property '%s' in type '%s'", prop.m_Id.ToStringDbg(), ti.m_Id.ToStringDbg());
+			ET_WARNING("failed to write property '%s' in type '%s'", prop.m_Id.ToStringDbg(), ti.m_Id.ToStringDbg());
 			return false;
 		}
 	}

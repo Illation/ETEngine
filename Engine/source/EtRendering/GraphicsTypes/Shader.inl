@@ -28,7 +28,7 @@ bool ShaderData::Upload(T_Hash const uniform, const TDataType &data, bool const 
 	{
 		if (reportWarnings)
 		{
-			ET_ASSERT(false, "Couldn't find uniform!");
+			ET_WARNING("Couldn't find uniform!");
 		}
 
 		return false;
@@ -66,7 +66,7 @@ bool ShaderData::Upload<TextureData const*>(T_Hash const uniform, TextureData co
 	{
 		if (reportWarnings)
 		{
-			ET_ASSERT(false, "Couldn't find uniform!");
+			ET_WARNING("Couldn't find uniform!");
 		}
 
 		return false;
@@ -84,7 +84,7 @@ bool ShaderData::Upload<TextureData const*>(T_Hash const uniform, TextureData co
 	//		return true; // no need for API call as the state wouldn't change
 	//	}
 
-	//	ET_ASSERT(false, "Uploading bindless textures is not yet supported!");
+	//	ET_WARNING("Uploading bindless textures is not yet supported!");
 	//	// #todo: upload bindless texture handle
 	//}
 	//else

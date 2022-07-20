@@ -68,7 +68,7 @@ bool BinaryDeserializer::InitFromHeader(std::vector<uint8> const& data, rttr::ty
 	// read header
 	if (m_Reader.ReadString(EtBin::s_Header.size()) != EtBin::s_Header)
 	{
-		ET_ASSERT(false, "Incorrect header for ETBIN file");
+		ET_WARNING("Incorrect header for ETBIN file");
 		m_Reader.Close();
 		return false;
 	}
@@ -96,15 +96,14 @@ bool BinaryDeserializer::ReadVariant(rttr::variant& var, rttr::type const callin
 	{
 		if (!ReadVariant(var, callingType.get_wrapped_type()))
 		{
-			ET_ASSERT(false, "Failed to read wrapped variant content");
+			ET_WARNING("Failed to read wrapped variant content");
 			return false;
 		}
 
 		// convert from inner type to pointer type
 		if (!var.convert(callingType))
 		{
-			ET_ASSERT(false,
-				"failed to convert inner type '%s' to wrapper type '%s'",
+			ET_WARNING("failed to convert inner type '%s' to wrapper type '%s'",
 				callingType.get_wrapped_type().get_name().data(),
 				callingType.get_name().data());
 			return false;
@@ -125,16 +124,13 @@ bool BinaryDeserializer::ReadVariant(rttr::variant& var, rttr::type const callin
 		TypeInfo const* const ti = TypeInfoRegistry::Instance().GetTypeInfo(typeId);
 		if (ti == nullptr)
 		{
-			ET_ASSERT(false, "Couldn't get type info from ID '%s'", typeId.ToStringDbg());
+			ET_WARNING("Couldn't get type info from ID '%s'", typeId.ToStringDbg());
 			return false;
 		}
 
 		if (!(ti->m_Type.is_derived_from(callingType)))
 		{
-			ET_ASSERT(false, 
-				"Serialized type '%s' doesn't derive from calling type '%s'", 
-				ti->m_Type.get_name().data(), 
-				callingType.get_name().data());
+			ET_WARNING("Serialized type '%s' doesn't derive from calling type '%s'", ti->m_Type.get_name().data(), callingType.get_name().data());
 			return false;
 		}
 
@@ -142,7 +138,7 @@ bool BinaryDeserializer::ReadVariant(rttr::variant& var, rttr::type const callin
 		rttr::constructor defCtor = ti->m_Type.get_constructor();
 		if (!defCtor.is_valid())
 		{
-			ET_ASSERT(false, "no valid default constructor found for serialized type '%s'", ti->m_Type.get_name().data());
+			ET_WARNING("no valid default constructor found for serialized type '%s'", ti->m_Type.get_name().data());
 			return false;
 		}
 
@@ -150,14 +146,14 @@ bool BinaryDeserializer::ReadVariant(rttr::variant& var, rttr::type const callin
 
 		if (!ReadBasicVariant(var, *ti))
 		{
-			ET_ASSERT(false, "failed to read inner type '%s' of pointer type '%s'", ti->m_Type.get_name().data(), callingType.get_name().data());
+			ET_WARNING("failed to read inner type '%s' of pointer type '%s'", ti->m_Type.get_name().data(), callingType.get_name().data());
 			return false;
 		}
 
 		// convert from inner type to pointer type
 		if (!var.convert(callingType))
 		{
-			ET_ASSERT(false, "failed to convert inner type '%s' to pointer type '%s'", ti->m_Type.get_name().data(), callingType.get_name().data());
+			ET_WARNING("failed to convert inner type '%s' to pointer type '%s'", ti->m_Type.get_name().data(), callingType.get_name().data());
 			return false;
 		}
 
@@ -219,7 +215,7 @@ bool BinaryDeserializer::ReadBasicVariant(rttr::variant& var, TypeInfo const& ti
 		return ReadObject(var, ti);
 	}
 
-	ET_ASSERT(false, "unhandled variant type '%s'", ti.m_Id.ToStringDbg());
+	ET_ERROR("unhandled variant type '%s'", ti.m_Id.ToStringDbg());
 	return false;
 }
 
@@ -274,7 +270,7 @@ bool BinaryDeserializer::ReadArithmeticType(rttr::variant& var, HashString const
 		break;
 
 	default:
-		ET_ASSERT(false, "unhandled arithmetic type - id '%s'", typeId.ToStringDbg());
+		ET_ERROR("unhandled arithmetic type - id '%s'", typeId.ToStringDbg());
 		return false;
 	}
 
@@ -351,7 +347,7 @@ bool BinaryDeserializer::ReadVectorType(rttr::variant& var, HashString const typ
 	}
 
 	default:
-		ET_ASSERT(false, "unhandled vector type - id '%s'", typeId.ToStringDbg());
+		ET_ERROR("unhandled vector type - id '%s'", typeId.ToStringDbg());
 		return false;
 	}
 
@@ -405,8 +401,7 @@ bool BinaryDeserializer::ReadSequentialContainer(rttr::variant& var)
 			rttr::variant elementVar = view.get_value(idx).extract_wrapped_value();
 			if (!ReadBasicVariant(elementVar, valueTi) || !elementVar.is_valid())
 			{
-				ET_ASSERT(false,
-					"Failed to read element from sequential container (type: %s) at index [" ET_FMT_SIZET "]",
+				ET_WARNING("Failed to read element from sequential container (type: %s) at index [" ET_FMT_SIZET "]",
 					view.get_type().get_name().data(),
 					idx);
 				return false;
@@ -416,10 +411,7 @@ bool BinaryDeserializer::ReadSequentialContainer(rttr::variant& var)
 
 			if (!view.set_value(idx, elementVar))
 			{
-				ET_ASSERT(false,
-					"Failed to set value in sequential container (type: %s) at index [" ET_FMT_SIZET "]",
-					view.get_type().get_name().data(),
-					idx);
+				ET_WARNING("Failed to set value in sequential container (type: %s) at index [" ET_FMT_SIZET "]", view.get_type().get_name().data(), idx);
 				return false;
 			}
 		}
@@ -431,8 +423,7 @@ bool BinaryDeserializer::ReadSequentialContainer(rttr::variant& var)
 			rttr::variant elementVar = view.get_value(idx).extract_wrapped_value();
 			if (!ReadVariant(elementVar, valueType) || !elementVar.is_valid())
 			{
-				ET_ASSERT(false,
-					"Failed to read element from sequential container (type: %s) at index [" ET_FMT_SIZET "]",
+				ET_WARNING("Failed to read element from sequential container (type: %s) at index [" ET_FMT_SIZET "]",
 					view.get_type().get_name().data(),
 					idx);
 				return false;
@@ -443,10 +434,7 @@ bool BinaryDeserializer::ReadSequentialContainer(rttr::variant& var)
 
 			if (!view.set_value(idx, elementVar))
 			{
-				ET_ASSERT(false,
-					"Failed to set value in sequential container (type: %s) at index [" ET_FMT_SIZET "]",
-					view.get_type().get_name().data(),
-					idx);
+				ET_WARNING("Failed to set value in sequential container (type: %s) at index [" ET_FMT_SIZET "]", view.get_type().get_name().data(), idx);
 				return false;
 			}
 		}
@@ -481,8 +469,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 				rttr::variant key;
 				if (!ReadBasicVariant(key, keyTi))
 				{
-					ET_ASSERT(false,
-						"Failed to read basic element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					ET_WARNING("Failed to read basic element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
 						view.get_type().get_name().data(),
 						idx);
 					return false;
@@ -492,8 +479,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 
 				if (!view.insert(key).second)
 				{
-					ET_ASSERT(false,
-						"Failed to insert element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					ET_WARNING("Failed to insert element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
 						view.get_type().get_name().data(),
 						idx);
 					return false;
@@ -512,8 +498,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 					rttr::variant key;
 					if (!ReadBasicVariant(key, keyTi))
 					{
-						ET_ASSERT(false,
-							"Failed to read basic key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read basic key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -524,8 +509,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 					rttr::variant value; // not setting this from existing data might cause a problem in the future if there are nested containers
 					if (!ReadBasicVariant(value, valueTi))
 					{
-						ET_ASSERT(false,
-							"Failed to read basic value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read basic value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -535,8 +519,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 
 					if (!view.insert(key, value).second)
 					{
-						ET_ASSERT(false,
-							"Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -550,8 +533,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 					rttr::variant key;
 					if (!ReadBasicVariant(key, keyTi))
 					{
-						ET_ASSERT(false,
-							"Failed to read basic key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read basic key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -562,8 +544,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 					rttr::variant value; // not setting this from existing data might cause a problem in the future if there are nested containers
 					if (!ReadVariant(value, valueType))
 					{
-						ET_ASSERT(false,
-							"Failed to read value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -573,8 +554,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 
 					if (!view.insert(key, value).second)
 					{
-						ET_ASSERT(false,
-							"Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -592,8 +572,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 				rttr::variant key;
 				if (!ReadVariant(key, keyType))
 				{
-					ET_ASSERT(false,
-						"Failed to read element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					ET_WARNING("Failed to read element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
 						view.get_type().get_name().data(),
 						idx);
 					return false;
@@ -603,8 +582,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 
 				if (!view.insert(key).second)
 				{
-					ET_ASSERT(false,
-						"Failed to insert element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					ET_WARNING("Failed to insert element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
 						view.get_type().get_name().data(),
 						idx);
 					return false;
@@ -623,8 +601,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 					rttr::variant key;
 					if (!ReadVariant(key, keyType))
 					{
-						ET_ASSERT(false,
-							"Failed to read key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -635,8 +612,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 					rttr::variant value; // not setting this from existing data might cause a problem in the future if there are nested containers
 					if (!ReadBasicVariant(value, valueTi))
 					{
-						ET_ASSERT(false,
-							"Failed to read basic value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read basic value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -646,8 +622,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 
 					if (!view.insert(key, value).second)
 					{
-						ET_ASSERT(false,
-							"Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -661,8 +636,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 					rttr::variant key;
 					if (!ReadVariant(key, keyType))
 					{
-						ET_ASSERT(false,
-							"Failed to read key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -673,8 +647,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 					rttr::variant value; // not setting this from existing data might cause a problem in the future if there are nested containers
 					if (!ReadVariant(value, valueType))
 					{
-						ET_ASSERT(false,
-							"Failed to read value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -684,8 +657,7 @@ bool BinaryDeserializer::ReadAssociativeContainer(rttr::variant& var)
 
 					if (!view.insert(key, value).second)
 					{
-						ET_ASSERT(false,
-							"Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -727,7 +699,7 @@ bool BinaryDeserializer::ReadObjectProperties(rttr::instance& inst, TypeInfo con
 		rttr::property const* const propPtr = ti.GetProperty(propId);
 		if (propPtr == nullptr)
 		{
-			ET_ASSERT(false, "Couldn't get property with ID '%s' from type '%s'", propId.ToStringDbg(), ti.m_Type.get_name().data());
+			ET_WARNING("Couldn't get property with ID '%s' from type '%s'", propId.ToStringDbg(), ti.m_Type.get_name().data());
 			return false;
 		}
 
@@ -738,14 +710,14 @@ bool BinaryDeserializer::ReadObjectProperties(rttr::instance& inst, TypeInfo con
 		rttr::variant propVar = prop.get_value(inst);
 		if (!propVar)
 		{
-			ET_ASSERT(false, "Couldn't get property value '%s' from instance of type '%s'", propId.ToStringDbg(), ti.m_Type.get_name().data());
+			ET_WARNING("Couldn't get property value '%s' from instance of type '%s'", propId.ToStringDbg(), ti.m_Type.get_name().data());
 			return false;
 		}
 
 		// read serialized value
 		if (!ReadVariant(propVar, propType) || !propVar.is_valid())
 		{
-			ET_ASSERT(false, "Couldn't read property value '%s' - type '%s' - deserializing type '%s'",
+			ET_WARNING("Couldn't read property value '%s' - type '%s' - deserializing type '%s'",
 				propId.ToStringDbg(),
 				propType.get_name().data(),
 				ti.m_Type.get_name().data());

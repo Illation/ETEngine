@@ -26,7 +26,7 @@ ivec3 Asset::Get3DIndices() const
 	case E_Axis::Z: return ivec3(0, 2, 1);
 
 	default:
-		ET_ASSERT(false, "unhandled axis");
+		ET_ERROR("unhandled axis");
 	case E_Axis::Y: return ivec3(0, 1, 2);
 	}
 }
@@ -44,7 +44,7 @@ vec3 Asset::Get3DAxisMultipliers() const
 	case E_Axis::Z: return vec3(1.f, 1.f, 1.f);
 
 	default:
-		ET_ASSERT(false, "unhandled axis");
+		ET_ERROR("unhandled axis");
 	case E_Axis::Y: return vec3(1.f, 1.f, -1.f);
 	}
 }
@@ -86,7 +86,7 @@ core::HashString Instance::GetXmlIdFromType(E_Type const type)
 		return s_XmlIds[typeIdx];
 	}
 
-	ET_ASSERT(false, "unhandled type");
+	ET_ERROR("unhandled type");
 	return core::HashString();
 }
 
@@ -114,7 +114,7 @@ uint8 Source::GetTypeSize(E_Type const type)
 	case E_Type::Int: return sizeof(int64);
 	}
 
-	ET_ASSERT(false, "unhandled type");
+	ET_ERROR("unhandled type");
 	return 0u;
 }
 

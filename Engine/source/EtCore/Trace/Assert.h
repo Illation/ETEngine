@@ -108,6 +108,7 @@ namespace et { namespace detail {
 //=================
 
 
+// to check some state before relying on it
 #if ET_CT_IS_ENABLED(ET_CT_ASSERT)
 #	define ET_ASSERT(condition, ...) ET_ASSERT_IMPL(condition, __VA_ARGS__)
 #else
@@ -115,6 +116,7 @@ namespace et { namespace detail {
 #endif 
 
 
+// usually disabled checks for performance critical code
 #if ET_CT_IS_ENABLED(ET_CT_PARANOID_ASSERTS)
 #	define ET_ASSERT_PARANOID(condition, ...) ET_ASSERT_IMPL(condition, __VA_ARGS__)
 #else
@@ -122,6 +124,7 @@ namespace et { namespace detail {
 #endif 
 
 
+// for probably recoverable problems
 #if ET_CT_IS_ENABLED(ET_CT_WARNING)
 #	define ET_WARNING(...) ET_REPORT_IMPL(et::core::E_TraceLevel::TL_Warning, __VA_ARGS__)
 #else
@@ -129,6 +132,7 @@ namespace et { namespace detail {
 #endif 
 
 
+// for possibly breaking problems
 #if ET_CT_IS_ENABLED(ET_CT_ERROR)
 #	define ET_ERROR(...) ET_REPORT_IMPL(et::core::E_TraceLevel::TL_Error, __VA_ARGS__)
 #else
@@ -136,6 +140,7 @@ namespace et { namespace detail {
 #endif 
 
 
+// for breaking problems that make it better to crash the app than allowing it to keep running
 #if ET_CT_IS_ENABLED(ET_CT_FATAL)
 #	define ET_FATAL(...) ET_REPORT_IMPL(et::core::E_TraceLevel::TL_Fatal, __VA_ARGS__)
 #else

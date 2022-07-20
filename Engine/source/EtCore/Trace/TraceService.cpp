@@ -42,7 +42,7 @@ std::string const& TraceService::ContextContainer::GetContextName(T_TraceContext
 	auto const foundIt = m_Contexts.find(hash);
 	if (foundIt == m_Contexts.cend())
 	{
-		ET_ASSERT(false, "invalid trace context name!");
+		ET_WARNING("invalid trace context name!");
 		return s_InvalidContextName;
 	}
 
@@ -211,7 +211,7 @@ void TraceService::Trace(T_TraceContext const context, E_TraceLevel const level,
 		break;
 
 	default:
-		ET_ASSERT(false, "Unhandled trace level");
+		ET_ERROR("Unhandled trace level");
 		break;
 	}
 

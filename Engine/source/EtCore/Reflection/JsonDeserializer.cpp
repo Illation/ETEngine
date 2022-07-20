@@ -43,7 +43,7 @@ bool JsonDeserializer::DeserializeRoot(rttr::instance& inst, TypeInfo const& ti,
 	rttr::type instType = inst.get_type().get_raw_type().is_wrapper() ? inst.get_wrapped_instance().get_derived_type() : inst.get_derived_type();
 	if (parentObj->value[0].first != instType.get_name().to_string())
 	{
-		ET_ASSERT(false, "Expected object instance type to match the serialized value type");
+		ET_WARNING("Expected object instance type to match the serialized value type");
 		return false;
 	}
 
@@ -59,15 +59,14 @@ bool JsonDeserializer::ReadVariant(rttr::variant& var, rttr::type const callingT
 	{
 		if (!ReadVariant(var, callingType.get_wrapped_type(), jVal))
 		{
-			ET_ASSERT(false, "Failed to read wrapped variant content");
+			ET_WARNING("Failed to read wrapped variant content");
 			return false;
 		}
 
 		// convert from inner type to pointer type
 		if (!var.convert(callingType))
 		{
-			ET_ASSERT(false, 
-				"failed to convert inner type '%s' to wrapper type '%s'", 
+			ET_WARNING("failed to convert inner type '%s' to wrapper type '%s'", 
 				callingType.get_wrapped_type().get_name().data(), 
 				callingType.get_name().data());
 			return false;
@@ -85,7 +84,7 @@ bool JsonDeserializer::ReadVariant(rttr::variant& var, rttr::type const callingT
 		}
 		else if (jVal->GetType() != JSON::JSON_Object)
 		{
-			ET_ASSERT(false, "Expected JSON::Value representing a pointer to be of type Object (with a single internal value denoting the type");
+			ET_WARNING("Expected JSON::Value representing a pointer to be of type Object (with a single internal value denoting the type");
 			return false;
 		}
 
@@ -98,16 +97,13 @@ bool JsonDeserializer::ReadVariant(rttr::variant& var, rttr::type const callingT
 		TypeInfo const* const ti = TypeInfoRegistry::Instance().GetTypeInfo(typeId);
 		if (ti == nullptr)
 		{
-			ET_ASSERT(false, "Couldn't get type info from ID '%s'", typeId.ToStringDbg());
+			ET_WARNING("Couldn't get type info from ID '%s'", typeId.ToStringDbg());
 			return false;
 		}
 
 		if (!(ti->m_Type.is_derived_from(callingType)))
 		{
-			ET_ASSERT(false,
-				"Serialized type '%s' doesn't derive from calling type '%s'",
-				ti->m_Type.get_name().data(),
-				callingType.get_name().data());
+			ET_WARNING("Serialized type '%s' doesn't derive from calling type '%s'", ti->m_Type.get_name().data(), callingType.get_name().data());
 			return false;
 		}
 
@@ -115,7 +111,7 @@ bool JsonDeserializer::ReadVariant(rttr::variant& var, rttr::type const callingT
 		rttr::constructor defCtor = ti->m_Type.get_constructor();
 		if (!defCtor.is_valid())
 		{
-			ET_ASSERT(false, "no valid default constructor found for serialized type '%s'", ti->m_Type.get_name().data());
+			ET_WARNING("no valid default constructor found for serialized type '%s'", ti->m_Type.get_name().data());
 			return false;
 		}
 
@@ -124,14 +120,14 @@ bool JsonDeserializer::ReadVariant(rttr::variant& var, rttr::type const callingT
 		// deserialize the object content into newly allocated memory
 		if (!ReadBasicVariant(var, *ti, jObj->value[0].second))
 		{
-			ET_ASSERT(false, "failed to read inner type '%s' of pointer type '%s'", ti->m_Type.get_name().data(), callingType.get_name().data());
+			ET_WARNING("failed to read inner type '%s' of pointer type '%s'", ti->m_Type.get_name().data(), callingType.get_name().data());
 			return false;
 		}
 
 		// convert from inner type to pointer type
 		if (!var.convert(callingType))
 		{
-			ET_ASSERT(false, "failed to convert inner type '%s' to pointer type '%s'", ti->m_Type.get_name().data(), callingType.get_name().data());
+			ET_WARNING("failed to convert inner type '%s' to pointer type '%s'", ti->m_Type.get_name().data(), callingType.get_name().data());
 			return false;
 		}
 
@@ -186,7 +182,7 @@ bool JsonDeserializer::ReadBasicVariant(rttr::variant& var, TypeInfo const& ti, 
 		return ReadObject(var, ti, jVal);
 	}
 
-	ET_ASSERT(false, "unhandled variant type '%s'", ti.m_Id.ToStringDbg());
+	ET_ERROR("unhandled variant type '%s'", ti.m_Id.ToStringDbg());
 	return false;
 }
 
@@ -247,7 +243,7 @@ bool JsonDeserializer::ReadArithmeticType(rttr::variant& var, HashString const t
 		break;
 
 	default:
-		ET_ASSERT(false, "unhandled arithmetic type - id '%s'", typeId.ToStringDbg());
+		ET_ERROR("unhandled arithmetic type - id '%s'", typeId.ToStringDbg());
 		return false;
 	}
 
@@ -293,7 +289,7 @@ bool JsonDeserializer::ReadVectorType(rttr::variant& var, TypeInfo const& ti, JS
 	rttr::variant propVar = prop->get_value(inst);
 	if (!ReadSequentialContainer(propVar, jVal) || !propVar.is_valid())
 	{
-		ET_ASSERT(false, "There was an issue deserializing the vectors / matrices sequential view, typeName: '%s'!", ti.m_Id.ToStringDbg());
+		ET_WARNING("There was an issue deserializing the vectors / matrices sequential view, typeName: '%s'!", ti.m_Id.ToStringDbg());
 		return false;
 	}
 
@@ -361,8 +357,7 @@ bool JsonDeserializer::ReadSequentialContainer(rttr::variant& var, JSON::Value c
 			rttr::variant elementVar = view.get_value(idx).extract_wrapped_value();
 			if (!ReadBasicVariant(elementVar, valueTi, jArr->value[idx]) || !elementVar.is_valid())
 			{
-				ET_ASSERT(false,
-					"Failed to read element from sequential container (type: %s) at index [" ET_FMT_SIZET "]",
+				ET_WARNING("Failed to read element from sequential container (type: %s) at index [" ET_FMT_SIZET "]",
 					view.get_type().get_name().data(),
 					idx);
 				return false;
@@ -372,10 +367,7 @@ bool JsonDeserializer::ReadSequentialContainer(rttr::variant& var, JSON::Value c
 
 			if (!view.set_value(idx, elementVar))
 			{
-				ET_ASSERT(false,
-					"Failed to set value in sequential container (type: %s) at index [" ET_FMT_SIZET "]",
-					view.get_type().get_name().data(),
-					idx);
+				ET_WARNING("Failed to set value in sequential container (type: %s) at index [" ET_FMT_SIZET "]", view.get_type().get_name().data(), idx);
 				return false;
 			}
 		}
@@ -387,8 +379,7 @@ bool JsonDeserializer::ReadSequentialContainer(rttr::variant& var, JSON::Value c
 			rttr::variant elementVar = view.get_value(idx).extract_wrapped_value();
 			if (!ReadVariant(elementVar, valueType, jArr->value[idx]) || !elementVar.is_valid())
 			{
-				ET_ASSERT(false,
-					"Failed to read element from sequential container (type: %s) at index [" ET_FMT_SIZET "]",
+				ET_WARNING("Failed to read element from sequential container (type: %s) at index [" ET_FMT_SIZET "]",
 					view.get_type().get_name().data(),
 					idx);
 				return false;
@@ -399,10 +390,7 @@ bool JsonDeserializer::ReadSequentialContainer(rttr::variant& var, JSON::Value c
 
 			if (!view.set_value(idx, elementVar))
 			{
-				ET_ASSERT(false,
-					"Failed to set value in sequential container (type: %s) at index [" ET_FMT_SIZET "]",
-					view.get_type().get_name().data(),
-					idx);
+				ET_WARNING("Failed to set value in sequential container (type: %s) at index [" ET_FMT_SIZET "]", view.get_type().get_name().data(), idx);
 				return false;
 			}
 		}
@@ -432,7 +420,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 			JSON::Value const* const jVal = jArr->value[idx];
 			if (jVal->GetType() != JSON::JSON_Object)
 			{
-				ET_ASSERT(false, "Expected associative container elements to be JSON objects");
+				ET_WARNING("Expected associative container elements to be JSON objects");
 				return false;
 			}
 
@@ -446,7 +434,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 
 			if (jKeyIt == jObj->value.cend())
 			{
-				ET_ASSERT(false, "Failed to find key in sequential container at index " ET_FMT_SIZET, idx);
+				ET_WARNING("Failed to find key in sequential container at index " ET_FMT_SIZET, idx);
 				return false;
 			}
 
@@ -460,7 +448,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 
 			if (jValIt == jObj->value.cend())
 			{
-				ET_ASSERT(false, "Failed to find value in sequential container at index " ET_FMT_SIZET, idx);
+				ET_WARNING("Failed to find value in sequential container at index " ET_FMT_SIZET, idx);
 				return false;
 			}
 
@@ -481,8 +469,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 				rttr::variant key;
 				if (!ReadBasicVariant(key, keyTi, jArr->value[idx]))
 				{
-					ET_ASSERT(false,
-						"Failed to read basic element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					ET_WARNING("Failed to read basic element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
 						view.get_type().get_name().data(),
 						idx);
 					return false;
@@ -492,8 +479,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 
 				if (!view.insert(key).second)
 				{
-					ET_ASSERT(false,
-						"Failed to insert element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					ET_WARNING("Failed to insert element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
 						view.get_type().get_name().data(),
 						idx);
 					return false;
@@ -519,8 +505,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 					rttr::variant key;
 					if (!ReadBasicVariant(key, keyTi, jKeyEl))
 					{
-						ET_ASSERT(false,
-							"Failed to read basic key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read basic key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -531,8 +516,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 					rttr::variant value; // not setting this from existing data might cause a problem in the future if there are nested containers
 					if (!ReadBasicVariant(value, valueTi, jValEl))
 					{
-						ET_ASSERT(false,
-							"Failed to read basic value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read basic value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -542,8 +526,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 
 					if (!view.insert(key, value).second)
 					{
-						ET_ASSERT(false,
-							"Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -564,8 +547,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 					rttr::variant key;
 					if (!ReadBasicVariant(key, keyTi, jKeyEl))
 					{
-						ET_ASSERT(false,
-							"Failed to read basic key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read basic key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -576,8 +558,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 					rttr::variant value; // not setting this from existing data might cause a problem in the future if there are nested containers
 					if (!ReadVariant(value, valueType, jValEl))
 					{
-						ET_ASSERT(false,
-							"Failed to read value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -587,8 +568,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 
 					if (!view.insert(key, value).second)
 					{
-						ET_ASSERT(false,
-							"Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -606,8 +586,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 				rttr::variant key;
 				if (!ReadVariant(key, keyType, jArr->value[idx]))
 				{
-					ET_ASSERT(false,
-						"Failed to read element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					ET_WARNING("Failed to read element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
 						view.get_type().get_name().data(),
 						idx);
 					return false;
@@ -617,8 +596,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 
 				if (!view.insert(key).second)
 				{
-					ET_ASSERT(false,
-						"Failed to insert element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
+					ET_WARNING("Failed to insert element from key only associative container (type: %s) at index [" ET_FMT_SIZET "]",
 						view.get_type().get_name().data(),
 						idx);
 					return false;
@@ -644,8 +622,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 					rttr::variant key;
 					if (!ReadVariant(key, keyType, jKeyEl))
 					{
-						ET_ASSERT(false,
-							"Failed to read key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -656,8 +633,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 					rttr::variant value; // not setting this from existing data might cause a problem in the future if there are nested containers
 					if (!ReadBasicVariant(value, valueTi, jValEl))
 					{
-						ET_ASSERT(false,
-							"Failed to read basic value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read basic value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -667,8 +643,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 
 					if (!view.insert(key, value).second)
 					{
-						ET_ASSERT(false,
-							"Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -689,8 +664,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 					rttr::variant key;
 					if (!ReadVariant(key, keyType, jKeyEl))
 					{
-						ET_ASSERT(false,
-							"Failed to read key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read key from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -701,8 +675,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 					rttr::variant value; // not setting this from existing data might cause a problem in the future if there are nested containers
 					if (!ReadVariant(value, valueType, jValEl))
 					{
-						ET_ASSERT(false,
-							"Failed to read value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to read value from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -712,8 +685,7 @@ bool JsonDeserializer::ReadAssociativeContainer(rttr::variant& var, JSON::Value 
 
 					if (!view.insert(key, value).second)
 					{
-						ET_ASSERT(false,
-							"Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
+						ET_WARNING("Failed to insert keyval pair from associative container (type: %s) at index [" ET_FMT_SIZET "]",
 							view.get_type().get_name().data(),
 							idx);
 						return false;
@@ -754,7 +726,7 @@ bool JsonDeserializer::ReadObjectProperties(rttr::instance& inst, TypeInfo const
 		rttr::property const* const propPtr = ti.GetProperty(propId);
 		if (propPtr == nullptr)
 		{
-			ET_ASSERT(false, "Couldn't get property with ID '%s' from type '%s'", propId.ToStringDbg(), ti.m_Type.get_name().data());
+			ET_WARNING("Couldn't get property with ID '%s' from type '%s'", propId.ToStringDbg(), ti.m_Type.get_name().data());
 			return false;
 		}
 
@@ -765,14 +737,14 @@ bool JsonDeserializer::ReadObjectProperties(rttr::instance& inst, TypeInfo const
 		rttr::variant propVar = prop.get_value(inst);
 		if (!propVar)
 		{
-			ET_ASSERT(false, "Couldn't get property value '%s' from instance of type '%s'", propId.ToStringDbg(), ti.m_Type.get_name().data());
+			ET_WARNING("Couldn't get property value '%s' from instance of type '%s'", propId.ToStringDbg(), ti.m_Type.get_name().data());
 			return false;
 		}
 
 		// read serialized value
 		if (!ReadVariant(propVar, propType, el.second) || !propVar.is_valid())
 		{
-			ET_ASSERT(false, "Couldn't read property value '%s' - type '%s' - deserializing type '%s'",
+			ET_WARNING("Couldn't read property value '%s' - type '%s' - deserializing type '%s'",
 				propId.ToStringDbg(),
 				propType.get_name().data(),
 				ti.m_Type.get_name().data());

@@ -268,10 +268,7 @@ void EditorToolNode::CreateToolbar()
 	}
 	else
 	{
-		ET_ASSERT(false, // warning
-			"Current tool type '%s' is not supported by editor '%s'", 
-			core::reflection::EnumString(m_Type).c_str(), 
-			m_Editor->GetName().c_str());
+		ET_ERROR("Current tool type '%s' is not supported by editor '%s'", core::reflection::EnumString(m_Type).c_str(), m_Editor->GetName().c_str());
 	}
 
 	// button to unhide the toolbar

@@ -103,7 +103,7 @@ void ConvertDescriptor(T_ParameterBlock const baseParams,
 
 				if (texIt == textureRefs.cend())
 				{
-					ET_ASSERT(false, "Unreferenced texture parameter!");
+					ET_ERROR("Unreferenced texture parameter!");
 					break;
 				}
 
@@ -157,7 +157,7 @@ void ConvertDescriptor(T_ParameterBlock const baseParams,
 			break;
 
 		default:
-			ET_ASSERT(false, "Unhandled parameter type");
+			ET_ERROR("Unhandled parameter type");
 			break;
 		}
 	}

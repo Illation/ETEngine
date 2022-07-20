@@ -35,7 +35,7 @@ bool JsonSerializer::SerializeRoot(rttr::variant const& var, JSON::Value*& outVa
 		root->value.emplace_back(var.get_type().get_name().to_string(), nullptr);
 		if (!WriteVariant(var, root->value[0].second))
 		{
-			ET_ASSERT(false, "Failed to write root json content");
+			ET_WARNING("Failed to write root json content");
 			delete root;
 			return false;
 		}
@@ -111,7 +111,7 @@ bool JsonSerializer::WriteVariant(rttr::variant const& var, JSON::Value*& outVal
 			return WriteObject(inst, ti, outVal->obj()->value[0].second);
 		}
 
-		ET_ASSERT(false, "unhandled variant type '%s'", ti.m_Id.ToStringDbg());
+		ET_ERROR("unhandled variant type '%s'", ti.m_Id.ToStringDbg());
 		return false;
 	}
 	else
@@ -160,7 +160,7 @@ bool JsonSerializer::WriteBasicVariant(rttr::variant const& var, TypeInfo const&
 		return WriteObject(rttr::instance(var), ti, outVal);
 	}
 
-	ET_ASSERT(false, "unhandled variant type '%s'", ti.m_Id.ToStringDbg());
+	ET_ERROR("unhandled variant type '%s'", ti.m_Id.ToStringDbg());
 	return false;
 }
 
@@ -241,7 +241,7 @@ bool JsonSerializer::WriteArithmeticType(rttr::type const type, rttr::variant co
 	{
 		delete jNum;
 
-		ET_ASSERT(false, "unhandled arithmetic type '%s'", type.get_name().data());
+		ET_ERROR("unhandled arithmetic type '%s'", type.get_name().data());
 		outVal = new JSON::Value(); // return true because it's definitly an arithmetic type but make it null
 		return false;
 	}
@@ -297,7 +297,7 @@ bool JsonSerializer::WriteEnum(rttr::variant const& var, JSON::Value*& outVal)
 	}
 
 	// That failed too
-	ET_ASSERT(false, "failed to convert enum to string or int, type: %s", var.get_type().get_name().to_string().c_str());
+	ET_WARNING("failed to convert enum to string or int, type: %s", var.get_type().get_name().to_string().c_str());
 	outVal = new JSON::Value();
 	return false;
 }
@@ -371,8 +371,7 @@ bool JsonSerializer::WriteSequentialContainer(rttr::variant_sequential_view cons
 			JSON::Value* jItem = nullptr;
 			if (!WriteBasicVariant(view.get_value(idx).extract_wrapped_value(), ti, jItem))
 			{
-				ET_ASSERT(false,
-					"Failed to write basic element of sequential container type '%s' at index " ET_FMT_SIZET,
+				ET_WARNING("Failed to write basic element of sequential container type '%s' at index " ET_FMT_SIZET,
 					view.get_type().get_name().data(),
 					idx);
 				delete outArr;
@@ -389,10 +388,7 @@ bool JsonSerializer::WriteSequentialContainer(rttr::variant_sequential_view cons
 			JSON::Value* jItem = nullptr;
 			if (!WriteVariant(view.get_value(idx).extract_wrapped_value(), jItem))
 			{
-				ET_ASSERT(false,
-					"Failed to write element of sequential container type '%s' at index " ET_FMT_SIZET,
-					view.get_type().get_name().data(),
-					idx);
+				ET_WARNING("Failed to write element of sequential container type '%s' at index " ET_FMT_SIZET, view.get_type().get_name().data(), idx);
 				delete outArr;
 				return false;
 			}
@@ -427,7 +423,7 @@ bool JsonSerializer::WriteAssociativeContainer(rttr::variant_associative_view co
 				JSON::Value* jItem = nullptr;
 				if (!WriteBasicVariant(item.first, keyTi, jItem))
 				{
-					ET_ASSERT(false, "Failed to write element of key only associative container type '%s'", view.get_type().get_name().data());
+					ET_WARNING("Failed to write element of key only associative container type '%s'", view.get_type().get_name().data());
 					delete outArr;
 					return false;
 				}
@@ -450,7 +446,7 @@ bool JsonSerializer::WriteAssociativeContainer(rttr::variant_associative_view co
 
 					if (!WriteBasicVariant(item.first, keyTi, jObj->value[0].second))
 					{
-						ET_ASSERT(false, "Failed to write key of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write key of associative container type '%s'", view.get_type().get_name().data());
 						delete jObj;
 						delete outArr;
 						return false;
@@ -458,7 +454,7 @@ bool JsonSerializer::WriteAssociativeContainer(rttr::variant_associative_view co
 
 					if (!WriteBasicVariant(item.second, valueTi, jObj->value[1].second))
 					{
-						ET_ASSERT(false, "Failed to write basic value of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write basic value of associative container type '%s'", view.get_type().get_name().data());
 						delete jObj;
 						delete outArr;
 						return false;
@@ -477,7 +473,7 @@ bool JsonSerializer::WriteAssociativeContainer(rttr::variant_associative_view co
 
 					if (!WriteBasicVariant(item.first, keyTi, jObj->value[0].second))
 					{
-						ET_ASSERT(false, "Failed to write key of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write key of associative container type '%s'", view.get_type().get_name().data());
 						delete jObj;
 						delete outArr;
 						return false;
@@ -485,7 +481,7 @@ bool JsonSerializer::WriteAssociativeContainer(rttr::variant_associative_view co
 
 					if (!WriteVariant(item.second, jObj->value[1].second))
 					{
-						ET_ASSERT(false, "Failed to write value of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write value of associative container type '%s'", view.get_type().get_name().data());
 						delete jObj;
 						delete outArr;
 						return false;
@@ -505,7 +501,7 @@ bool JsonSerializer::WriteAssociativeContainer(rttr::variant_associative_view co
 				JSON::Value* jItem = nullptr;
 				if (!WriteVariant(item.first, jItem))
 				{
-					ET_ASSERT(false, "Failed to write element of key only associative container type '%s'", view.get_type().get_name().data());
+					ET_WARNING("Failed to write element of key only associative container type '%s'", view.get_type().get_name().data());
 					delete outArr;
 					return false;
 				}
@@ -528,7 +524,7 @@ bool JsonSerializer::WriteAssociativeContainer(rttr::variant_associative_view co
 
 					if (!WriteVariant(item.first, jObj->value[0].second))
 					{
-						ET_ASSERT(false, "Failed to write key of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write key of associative container type '%s'", view.get_type().get_name().data());
 						delete jObj;
 						delete outArr;
 						return false;
@@ -536,7 +532,7 @@ bool JsonSerializer::WriteAssociativeContainer(rttr::variant_associative_view co
 
 					if (!WriteBasicVariant(item.second, valueTi, jObj->value[1].second))
 					{
-						ET_ASSERT(false, "Failed to write basic value of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write basic value of associative container type '%s'", view.get_type().get_name().data());
 						delete jObj;
 						delete outArr;
 						return false;
@@ -555,7 +551,7 @@ bool JsonSerializer::WriteAssociativeContainer(rttr::variant_associative_view co
 
 					if (!WriteVariant(item.first, jObj->value[0].second))
 					{
-						ET_ASSERT(false, "Failed to write key of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write key of associative container type '%s'", view.get_type().get_name().data());
 						delete jObj;
 						delete outArr;
 						return false;
@@ -563,7 +559,7 @@ bool JsonSerializer::WriteAssociativeContainer(rttr::variant_associative_view co
 
 					if (!WriteVariant(item.second, jObj->value[1].second))
 					{
-						ET_ASSERT(false, "Failed to write value of associative container type '%s'", view.get_type().get_name().data());
+						ET_WARNING("Failed to write value of associative container type '%s'", view.get_type().get_name().data());
 						delete jObj;
 						delete outArr;
 						return false;
@@ -598,7 +594,7 @@ bool JsonSerializer::WriteObject(rttr::instance const& inst, TypeInfo const& ti,
 		if (!propVal)
 		{
 			// handle nullptr here?
-			ET_ASSERT(false, "failed to get value for property '%s' in type '%s'", prop.m_Id.ToStringDbg(), ti.m_Id.ToStringDbg());
+			ET_WARNING("failed to get value for property '%s' in type '%s'", prop.m_Id.ToStringDbg(), ti.m_Id.ToStringDbg());
 			delete jObj;
 			return false;
 		}
@@ -606,7 +602,7 @@ bool JsonSerializer::WriteObject(rttr::instance const& inst, TypeInfo const& ti,
 		JSON::Pair keyVal = std::make_pair(prop.m_Property.get_name().to_string(), nullptr);
 		if (!WriteVariant(propVal, keyVal.second))
 		{
-			ET_ASSERT(false, "failed to write property '%s' in type '%s'", prop.m_Id.ToStringDbg(), ti.m_Id.ToStringDbg());
+			ET_WARNING("failed to write property '%s' in type '%s'", prop.m_Id.ToStringDbg(), ti.m_Id.ToStringDbg());
 			delete jObj;
 			return false;
 		}

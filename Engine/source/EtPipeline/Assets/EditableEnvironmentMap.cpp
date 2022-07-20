@@ -152,7 +152,7 @@ bool EditableEnvironmentMapAsset::GenerateInternal(BuildConfiguration const& bui
 		}
 		else
 		{
-			ET_ASSERT(false, "unexpected asset name '%s'", name.c_str());
+			ET_ERROR("unexpected asset name '%s'", name.c_str());
 			data.m_HasGeneratedData = false;
 		}
 	}
@@ -176,7 +176,7 @@ bool EditableEnvironmentMapAsset::GenerateInternal(BuildConfiguration const& bui
 	//----------
 	if (!GenerateTextureData(envData->m_GeneratedData, envCubemap))
 	{
-		ET_ASSERT(false, "failed to generate base map data");
+		ET_WARNING("failed to generate base map data");
 		delete envCubemap;
 		delete irradianceMap;
 		delete radianceMap;
@@ -185,7 +185,7 @@ bool EditableEnvironmentMapAsset::GenerateInternal(BuildConfiguration const& bui
 
 	if (!GenerateTextureData(irradianceData->m_GeneratedData, irradianceMap))
 	{
-		ET_ASSERT(false, "failed to generate irradiance map data");
+		ET_WARNING("failed to generate irradiance map data");
 		delete envCubemap;
 		delete irradianceMap;
 		delete radianceMap;
@@ -194,7 +194,7 @@ bool EditableEnvironmentMapAsset::GenerateInternal(BuildConfiguration const& bui
 
 	if (!GenerateTextureData(radianceData->m_GeneratedData, radianceMap))
 	{
-		ET_ASSERT(false, "failed to generate radiance map data");
+		ET_WARNING("failed to generate radiance map data");
 		delete envCubemap;
 		delete irradianceMap;
 		delete radianceMap;
@@ -233,13 +233,13 @@ bool EditableEnvironmentMapAsset::CreateTextures(std::vector<uint8> const& data,
 
 	if (hdrFloats == nullptr)
 	{
-		ET_ASSERT(false, "Failed to load hdr floats from data!");
+		ET_WARNING("Failed to load hdr floats from data!");
 		return false;
 	}
 
 	if ((width == 0) || (height == 0))
 	{
-		ET_ASSERT(false, "Image is too small to display!");
+		ET_WARNING("Image is too small to display!");
 		stbi_image_free(hdrFloats);
 		return false;
 	}

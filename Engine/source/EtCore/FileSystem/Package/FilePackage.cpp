@@ -155,7 +155,7 @@ void FilePackage::LoadFileList()
 
 		if (!emplaceIt.second)
 		{
-			ET_ASSERT(false, "Entry list already contains a file with ID [%s] !", entry.fileId.ToStringDbg());
+			ET_WARNING("Entry list already contains a file with ID [%s] !", entry.fileId.ToStringDbg());
 			continue;
 		}
 

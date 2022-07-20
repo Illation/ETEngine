@@ -195,7 +195,7 @@ SdfFont* SdfFontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 		{
 			if (binReader.Read<uint8>() != block)
 			{
-				ET_ASSERT(false, "invalid block %u header");
+				ET_ERROR("invalid block %u header");
 				return false;
 			}
 
@@ -245,7 +245,7 @@ SdfFont* SdfFontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 	uint16 const pagecount = binReader.Read<uint16>();
 	if (pagecount != 1u)
 	{
-		ET_ASSERT(false, "Only one page per font supported, this font has %u", pagecount);
+		ET_WARNING("Only one page per font supported, this font has %u", pagecount);
 	}
 
 	binReader.MoveBufferPosition(5u); // skip some stuff
@@ -336,7 +336,7 @@ SdfFont* SdfFontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 			case 8: metric.m_Channel = 3; break;
 			default:
 				metric.m_Channel = 4;
-				ET_ASSERT(false, "undefined channel for character %c", charId);
+				ET_ERROR("undefined channel for character %c", charId);
 				break;
 			}
 

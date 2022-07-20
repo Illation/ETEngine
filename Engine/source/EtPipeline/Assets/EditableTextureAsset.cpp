@@ -81,7 +81,7 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	RasterImage image;
 	if (!LoadImage(image, data))
 	{
-		ET_ASSERT(false, "Failed to load image from data");
+		ET_WARNING("Failed to load image from data");
 		return false;
 	}
 
@@ -121,7 +121,7 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 			std::vector<uint8> compressedData;
 			if (!TextureCompression::CompressImageU8(*mipImage, outputFormat, m_CompressionQuality, compressedData))
 			{
-				ET_ASSERT(false, "Failed to compress image");
+				ET_WARNING("Failed to compress image");
 				return false;
 			}
 
@@ -167,7 +167,7 @@ bool EditableTextureAsset::GenerateInternal(BuildConfiguration const& buildConfi
 	RasterImage image;
 	if (!LoadImage(image, m_Asset->GetLoadData()))
 	{
-		ET_ASSERT(false, "Failed to load image from data");
+		ET_ERROR("Failed to load image from data");
 		return false;
 	}
 
@@ -182,7 +182,7 @@ bool EditableTextureAsset::GenerateInternal(BuildConfiguration const& buildConfi
 		textureAsset->m_ForceResolution,
 		m_UseMipMaps))
 	{
-		ET_ASSERT(false, "Failed to write texture to file");
+		ET_ERROR("Failed to write texture to file");
 		return false;
 	}
 

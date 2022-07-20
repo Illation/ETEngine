@@ -136,7 +136,7 @@ void ResourceBrowser::OnDropDataReceived(Glib::RefPtr<Gdk::DragContext> const& c
 			Gtk::Window* const parent = dynamic_cast<Gtk::Window*>(m_View.GetAttachment()->get_toplevel());
 			if (parent == nullptr)
 			{
-				ET_ASSERT(false, "Couldn't import file as there is no parent window for the resource browser");
+				ET_WARNING("Couldn't import file as there is no parent window for the resource browser");
 				context->drag_finish(dropFinished, false, time);
 				return;
 			}

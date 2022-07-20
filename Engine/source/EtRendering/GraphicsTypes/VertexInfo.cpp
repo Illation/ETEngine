@@ -40,7 +40,7 @@ uint16 DataTypeInfo::GetTypeSize(E_DataType const dataType)
 
 	if (typeIt == s_DataTypes.cend())
 	{
-		ET_ASSERT(false, "Data type not implemented!");
+		ET_ERROR("Data type not implemented!");
 		return 0u;
 	}
 

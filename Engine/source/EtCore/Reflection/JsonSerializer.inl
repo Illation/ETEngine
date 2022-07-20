@@ -57,14 +57,14 @@ JSON::Value* JsonSerializer::Serialize(TDataType const& serialObject)
 	rttr::variant var(serialObject);
 	if (!var.is_valid())
 	{
-		ET_ASSERT(false, "couldn't get valid instance from serialObject");
+		ET_WARNING("couldn't get valid instance from serialObject");
 		return nullptr;
 	}
 
 	JSON::Value* outVal = nullptr;
 	if (!SerializeRoot(var, outVal))
 	{
-		ET_ASSERT(false, "Failed to serialize to JSON");
+		ET_WARNING("Failed to serialize to JSON");
 		delete outVal;
 		return nullptr;
 	}

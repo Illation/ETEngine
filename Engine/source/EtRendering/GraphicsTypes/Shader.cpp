@@ -133,7 +133,7 @@ void ShaderData::UploadParameterBlock(render::T_ConstParameterBlock const block)
 			break;
 
 		default:
-			ET_ASSERT(false, "Unhandled parameter type");
+			ET_ERROR("Unhandled parameter type");
 			break;
 		}
 	}
@@ -199,7 +199,7 @@ T_ShaderLoc ShaderAsset::CompileShader(std::string const& shaderSourceStr, E_Sha
 
 		std::string errorInfo;
 		api->GetShaderInfo(shader, errorInfo);
-		ET_ASSERT(false, "ShaderAsset::CompileShader > Compiling %s shader failed: %s", sName.c_str(), errorInfo.c_str());
+		ET_ERROR("ShaderAsset::CompileShader > Compiling %s shader failed: %s", sName.c_str(), errorInfo.c_str());
 	}
 
 	return shader;

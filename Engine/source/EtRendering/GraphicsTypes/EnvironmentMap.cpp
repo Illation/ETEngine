@@ -100,7 +100,7 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 	//-------------
 	if (reader.ReadString(s_Header.size()) != s_Header)
 	{
-		ET_ASSERT(false, "Incorrect binary environment map file header");
+		ET_WARNING("Incorrect binary environment map file header");
 		return false;
 	}
 
@@ -137,7 +137,7 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	if ((map == nullptr) || (irradiance == nullptr) || (radiance == nullptr))
 	{
-		ET_ASSERT(false, "Failed to load all texture dependencies");
+		ET_WARNING("Failed to load all texture dependencies");
 		return false;
 	}
 

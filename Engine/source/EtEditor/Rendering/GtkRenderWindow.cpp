@@ -38,12 +38,12 @@ render::I_GraphicsContextApi* GtkRenderWindow::CreateContext(render::GraphicsCon
 	}
 	catch (Gdk::GLError const& ex)
 	{
-		ET_ASSERT(false, " > create > %s", ex.what().c_str());
+		ET_WARNING(" > create > %s", ex.what().c_str());
 		return nullptr;
 	}
 	catch (std::exception const& ex)
 	{
-		ET_ASSERT(false, " > create > %s", ex.what());
+		ET_WARNING(" > create > %s", ex.what());
 		return nullptr;
 	}
 
@@ -65,12 +65,12 @@ render::I_GraphicsContextApi* GtkRenderWindow::CreateContext(render::GraphicsCon
 	}
 	catch (Gdk::GLError const& ex)
 	{
-		ET_ASSERT(false, " > realize > %s", ex.what().c_str());
+		ET_WARNING(" > realize > %s", ex.what().c_str());
 		return nullptr;
 	}
 	catch (std::exception const& ex)
 	{
-		ET_ASSERT(false, " > realize > %s", ex.what());
+		ET_WARNING(" > realize > %s", ex.what());
 		return nullptr;
 	}
 
@@ -104,7 +104,7 @@ render::I_GraphicsContextApi* GtkRenderWindow::CreateContext(render::GraphicsCon
 //
 void GtkRenderWindow::SetCursorPos(ivec2 const pos)
 {
-	ET_ASSERT(false, "not supported");
+	ET_WARNING("not supported");
 }
 
 //---------------------------------

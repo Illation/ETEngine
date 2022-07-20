@@ -87,7 +87,7 @@ uint8 TextureFormat::GetBlockByteCount(E_ColorFormat const format)
 		return 16u;
 
 	default:
-		ET_ASSERT(false, "unhandled color format");
+		ET_ERROR("unhandled color format");
 		return 0u;
 	}
 }
@@ -156,7 +156,7 @@ uint8 TextureFormat::GetChannelCount(E_ColorFormat const format)
 		return 4u;
 
 	default:
-		ET_ASSERT(false, "unhandled color format");
+		ET_ERROR("unhandled color format");
 		return 0u;
 	}
 }

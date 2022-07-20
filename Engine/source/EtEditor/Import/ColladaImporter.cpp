@@ -291,7 +291,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 					case dae::E_Semantic::Tangent: return meshContainer.m_Tangents;
 		
 					default:
-						ET_ASSERT(false, "Unhandled input semantic");
+						ET_ERROR("Unhandled input semantic");
 						return *reinterpret_cast<std::vector<vec3>*>(nullptr);
 					}
 				};
@@ -395,7 +395,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 				break;
 
 				default:
-					ET_ASSERT(false, "Unhandled input semantic");
+					ET_ERROR("Unhandled input semantic");
 				}
 			}
 

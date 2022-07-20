@@ -107,7 +107,7 @@ bool FontEngine::LoadFontFace(Rml::byte const* const data,
 		return LoadFontFaceInternal(debugFont, s_DebugFntFamilyName, fallbackFace, fileName);
 	}
 
-	ET_ASSERT(false, "Loading Sdf fonts from data is not supported");
+	ET_ERROR("Loading Sdf fonts from data is not supported");
 	return false;
 }
 
@@ -135,7 +135,7 @@ Rml::FontFaceHandle FontEngine::GetFontFaceHandle(Rml::String const& familyName,
 	T_FontFamilies::iterator const foundFamilyIt = m_Families.find(face.m_FamilyId);
 	if (foundFamilyIt == m_Families.cend())
 	{
-		ET_ASSERT(false, "Family '%s' couldn't be found, failed to create handle", familyName.c_str());
+		ET_ERROR("Family '%s' couldn't be found, failed to create handle", familyName.c_str());
 		return s_InvalidFont;
 	}
 

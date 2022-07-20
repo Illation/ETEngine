@@ -425,7 +425,7 @@ void DebugConsole::ExecuteCommand()
 	}
 
 	default:
-		ET_ASSERT(false, "unhandled command result");
+		ET_WARNING("unhandled command result");
 	}
 
 	// reset 
