@@ -54,7 +54,7 @@ struct CommandIdInfo
 	CommandIdInfo(std::string const& name, core::HashString const id) : m_Name(name), m_Id(id) {}
 
 	bool operator==(CommandIdInfo const& rhs) const { return m_Id == rhs.m_Id; }
-	bool operator<(CommandIdInfo const& rhs) const { return m_Id < rhs.m_Id; }
+	bool operator<(CommandIdInfo const& rhs) const { return m_Name < rhs.m_Name; }
 
 	std::string m_Name;
 	core::HashString m_Id;
@@ -87,7 +87,7 @@ namespace core {
 
 namespace dbg {
 
-typedef std::unordered_set<CommandIdInfo> T_CommandInfoSet;
+typedef std::set<CommandIdInfo> T_CommandInfoSet;
 
 
 //--------------------

@@ -2,6 +2,7 @@
 #include <io.h>
 
 #include "TraceFwd.h"
+#include "TraceEvents.h"
 
 #include <EtCore/Memory/Create.h>
 #include <EtCore/Memory/RefPointer.h>
@@ -28,6 +29,8 @@ private:
 	static RefPtr<TraceService> s_Instance;
 
 public:
+
+	typedef std::function<void(T_TraceContext const context, E_TraceLevel const level, std::string const& msg)> T_CallbackFn;
 
 	//-------------------
 	// ContextContainer
@@ -66,6 +69,8 @@ public:
 
 	void EnableDate(bool const enabled) { m_AddDate = enabled; }
 
+	T_TraceCallbackId RegisterListener(T_TraceLevel const flags, T_TraceCallbackFn& callback);
+	void UnregisterListener(T_TraceCallbackId& callbackId);
 
 	// Data
 	///////
@@ -80,6 +85,8 @@ private:
 	UniquePtr<std::ofstream> m_FileStream;
 
 	bool m_AddDate;
+
+	T_TraceEventDispatcher m_EventDispatcher;
 };
 
 

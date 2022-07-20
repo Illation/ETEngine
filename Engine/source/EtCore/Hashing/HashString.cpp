@@ -44,7 +44,7 @@ DEFINE_FORCED_LINKING(HashString)
 
 
 // static - we use this instead of getting the instance multiple times in order to ensure the variable is not optimized away
-#if ET_HASH_STRING_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_HASH_STRING_ENABLED)
 HashStringRegistry* const HashString::s_GlobalHashStringRegistry = &HashStringRegistry::Instance();
 #endif
 std::string HashString::s_LastStringResult = "";
@@ -59,7 +59,7 @@ HashString::HashString(T_Hash const val)
 	: m_Hash(val)
 { }
 
-#if ET_HASH_STRING_ENABLED	
+#if ET_CT_IS_ENABLED(ET_CT_HASH_STRING_ENABLED)
 //------------------------
 // HashString::c-tor
 //
@@ -103,7 +103,7 @@ void HashString::Set(char const* const source)
 {
 	m_Hash = GetHash(source);
 
-#if ET_HASH_STRING_ENABLED	
+#if ET_CT_IS_ENABLED(ET_CT_HASH_STRING_ENABLED)
 	s_GlobalHashStringRegistry->Register(m_Hash, source);
 #endif
 }
@@ -112,7 +112,7 @@ void HashString::Set(char const* const source)
 // debug
 ///////////
 
-#if ET_HASH_STRING_ENABLED	
+#if ET_CT_IS_ENABLED(ET_CT_HASH_STRING_ENABLED)
 
 //-----------------------------
 // HashString::GetStoredString
@@ -134,7 +134,7 @@ char const* HashString::GetStoredString() const
 //
 char const* HashString::ToStringDbg() const
 {
-#if ET_HASH_STRING_ENABLED	
+#if ET_CT_IS_ENABLED(ET_CT_HASH_STRING_ENABLED)
 	char const* const str = GetStoredString();
 	if (str != nullptr)
 	{
@@ -149,7 +149,7 @@ char const* HashString::ToStringDbg() const
 		s_LastStringResult = stream.str();
 		return s_LastStringResult.c_str();
 
-#if ET_HASH_STRING_ENABLED	
+#if ET_CT_IS_ENABLED(ET_CT_HASH_STRING_ENABLED)
 	}
 #endif
 }

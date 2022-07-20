@@ -9,8 +9,10 @@ namespace render {
 //
 enum class E_RenderMode : uint8
 {
-	Shaded,
-	Wireframe
+	Shaded = 0u,
+	Wireframe,
+
+	COUNT
 };
 
 

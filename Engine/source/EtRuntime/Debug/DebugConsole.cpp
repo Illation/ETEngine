@@ -46,6 +46,18 @@ DebugConsole::DebugConsole()
 			return core::dbg::E_CommandRes::Success;
 		}));
 
+	cmdController.AddCommand(core::dbg::Command("help", "Show info about the debug console"), core::dbg::T_CommandFn(
+		[this](core::dbg::Command const& command, std::string const& parameters)
+		{
+			ET_UNUSED(command);
+			ET_UNUSED(parameters);
+			ET_LOG_I(ET_CTX_RUNTIME, "Enter 'list_commands' to show all commands");
+			ET_LOG_I(ET_CTX_RUNTIME, "Press tab to autocomplete a command");
+			ET_LOG_I(ET_CTX_RUNTIME, "Use Up and Down arrow keys to go backwards and forwards in the command history");
+			ET_LOG_I(ET_CTX_RUNTIME, "Enter a command with '%s' to print help for a command", core::dbg::CommandController::s_HelpRequestParm.c_str());
+			return core::dbg::E_CommandRes::Success;
+		}));
+
 	cmdController.AddCommand(core::dbg::Command("toggle_debug_info", "Show information about the amount of draw calls"), core::dbg::T_CommandFn(
 		[this](core::dbg::Command const& command, std::string const& parameters)
 		{
@@ -360,10 +372,10 @@ void DebugConsole::ClearLog()
 void DebugConsole::ListCommands()
 {
 	core::dbg::CommandController const& comController = core::dbg::CommandController::Instance();
-	m_LogLines.emplace_back("All commands");
+	ET_TRACE_I(ET_CTX_RUNTIME, "All commands:");
 	for (core::dbg::CommandIdInfo const& info : comController.GetCommandInfoSet())
 	{
-		m_LogLines.emplace_back(FS("\t%s", info.m_Name.c_str()));
+		ET_TRACE_I(ET_CTX_RUNTIME, "\t%s", info.m_Name.c_str());
 	}
 }
 
@@ -394,8 +406,30 @@ void DebugConsole::ExecuteCommand()
 	// execute the command
 	core::dbg::CommandController const& comController = core::dbg::CommandController::Instance();
 
+	core::T_TraceCallbackId callbackId = core::TraceService::Instance()->RegisterListener(core::E_TraceLevel::TL_All, core::T_TraceCallbackFn(
+		[this](core::T_TraceLevel const level, core::TraceEventData const* const evnt)
+		{
+			vec4 col(1.f);
+			switch (level)
+			{
+			case core::E_TraceLevel::TL_Error:
+			case core::E_TraceLevel::TL_Fatal:
+				col = vec4(1.f, 0.5f, 0.5f, 1.f);
+				break;
+
+			case core::E_TraceLevel::TL_Warning:
+				col = vec4(1.f, 1.f, 0.5f, 1.f);
+				break;
+			}
+
+			m_LogLines.emplace_back(evnt->m_Message, col);
+		}));
+
 	core::HashString commandId;
 	core::dbg::E_CommandRes const res = comController.ExecuteCommand(m_InputText, commandId);
+
+	core::TraceService::Instance()->UnregisterListener(callbackId);
+	ET_ASSERT(callbackId == core::T_TraceEventDispatcher::INVALID_ID);
 
 	// print the result
 	switch (res)

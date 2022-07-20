@@ -25,7 +25,7 @@ namespace core {
 // validate verbosity
 //
 BinarySerializer::BinarySerializer(bool const isVerbose)
-#if ET_HASH_STRING_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_HASH_STRING_ENABLED)
 	: m_IsVerbose(isVerbose)
 {}
 #else
@@ -292,7 +292,7 @@ void BinarySerializer::WriteHash(HashString const hash)
 	{
 		m_Writer->IncreaseBufferSize(sizeof(uint8)); // we store a bool determining if an int or a string should be read
 
-#if ET_HASH_STRING_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_HASH_STRING_ENABLED)
 		char const* const str = hash.GetStoredString();
 		if (str != nullptr)
 		{
@@ -307,7 +307,7 @@ void BinarySerializer::WriteHash(HashString const hash)
 		{
 #endif
 			m_Writer->Write<uint8>(0u);
-#if ET_HASH_STRING_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_HASH_STRING_ENABLED)
 		}
 #endif
 	}

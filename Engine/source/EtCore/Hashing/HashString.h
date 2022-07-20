@@ -8,9 +8,9 @@
 //-------------
 
 #ifdef ET_SHIPPING
-	#define ET_HASH_STRING_ENABLED false
+	#define ET_CT_HASH_STRING_ENABLED ET_DISABLED
 #else
-	#define ET_HASH_STRING_ENABLED true
+	#define ET_CT_HASH_STRING_ENABLED ET_ENABLED
 #endif
 
 
@@ -32,7 +32,7 @@ class HashString final
 	//-------------
 	DECLARE_FORCED_LINKING()
 
-#if ET_HASH_STRING_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_HASH_STRING_ENABLED)
 	static HashStringRegistry* const s_GlobalHashStringRegistry;
 #endif
 
@@ -43,7 +43,7 @@ class HashString final
 public:
 	HashString() = default;
 	explicit HashString(T_Hash const val);
-#if ET_HASH_STRING_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_HASH_STRING_ENABLED)
 	explicit HashString(char const* const source);
 #else
 	constexpr explicit HashString(char const* const source) : m_Hash(GetHash(source)) {}
@@ -88,7 +88,7 @@ public:
 
 	// debug
 	//-------
-#if ET_HASH_STRING_ENABLED	
+#if ET_CT_IS_ENABLED(ET_CT_HASH_STRING_ENABLED)
 	char const* GetStoredString() const;
 #endif
 	char const* ToStringDbg() const;

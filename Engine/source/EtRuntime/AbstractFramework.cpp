@@ -6,6 +6,9 @@
 #include <EtCore/UpdateCycle/PerformanceInfo.h>
 #include <EtCore/UpdateCycle/TickManager.h>
 #include <EtCore/Reflection/TypeInfoRegistry.h>
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+#	include <EtCore/Hashing/HashStringRegistry.h>
+#endif
 
 #include <EtRendering/GraphicsContext/Viewport.h>
 #include <EtRendering/GraphicsContext/ContextHolder.h>
@@ -199,6 +202,7 @@ void AbstractFramework::Run()
 
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 	core::PerformanceInfo::GetInstance(); 
+	core::HashStringRegistry::Instance().InitDebugCommands();
 #endif
 
 	// init input 

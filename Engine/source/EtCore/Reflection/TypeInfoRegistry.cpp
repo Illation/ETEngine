@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "TypeInfoRegistry.h"
 
+#include <EtCore/Util/DebugCommandController.h>
+
 
 namespace et {
 namespace core {
@@ -40,6 +42,17 @@ void TypeInfoRegistry::Initialize()
 			ET_ASSERT(result2.second, "already had an access for type '%s'", myType.get_name().data());
 		}
 	}
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	dbg::CommandController::Instance().AddCommand(dbg::Command("core_print_all_types", "Print all reflected types"),
+		dbg::T_CommandFn([this](dbg::Command const& command, std::string const& parameters)
+			{
+				ET_UNUSED(command);
+				ET_UNUSED(parameters);
+				DbgPrintAll();
+				return dbg::E_CommandRes::Success;
+			}));
+#endif
 }
 
 //-------------------------------

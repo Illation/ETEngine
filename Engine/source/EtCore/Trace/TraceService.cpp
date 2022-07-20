@@ -20,12 +20,12 @@ namespace core {
 //
 T_TraceContext TraceService::ContextContainer::RegisterContext(std::string const& name)
 {
-	T_TraceContext const ret = GetHash(name);
+	T_TraceContext const ret(name.c_str());
 
 	if (m_Contexts.find(ret) != m_Contexts.cend())
 	{
 		ET_BREAK(); // Can't reliably use asserts because contexts will be registered before asserts are initialized
-		return 0u;
+		return T_TraceContext();
 	}
 
 	m_Contexts.emplace(ret, name);
@@ -277,6 +277,10 @@ void TraceService::Trace(T_TraceContext const context, E_TraceLevel const level,
 	}
 #endif
 #endif
+
+	// events
+	//--------
+	m_EventDispatcher.Notify(static_cast<T_TraceLevel>(level), new TraceEventData(context, msg));
 }
 
 //--------------------------------
@@ -302,6 +306,22 @@ void TraceService::StopFileLogging()
 		m_FileStream->close();
 		m_FileStream = nullptr;
 	}
+}
+
+//--------------------------------
+// TraceService::RegisterListener
+//
+T_TraceCallbackId TraceService::RegisterListener(T_TraceLevel const flags, T_TraceCallbackFn& callback)
+{
+	return m_EventDispatcher.Register(flags, callback);
+}
+
+//----------------------------------
+// TraceService::UnregisterListener
+//
+void TraceService::UnregisterListener(T_TraceCallbackId& callbackId)
+{
+	m_EventDispatcher.Unregister(callbackId);
 }
 
 

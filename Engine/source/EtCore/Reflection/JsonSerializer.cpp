@@ -331,7 +331,7 @@ void JsonSerializer::WriteString(std::string const& str, JSON::Value*& outVal)
 //
 void JsonSerializer::WriteHash(HashString const hash, JSON::Value*& outVal)
 {
-#if ET_HASH_STRING_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_HASH_STRING_ENABLED)
 	char const* const str = hash.GetStoredString();
 	if (m_IsVerbose && str != nullptr)
 	{
@@ -348,7 +348,7 @@ void JsonSerializer::WriteHash(HashString const hash, JSON::Value*& outVal)
 		jNum->valueInt = static_cast<int64>(hash.Get());
 		jNum->isInt = true;
 		outVal = jNum;
-#if ET_HASH_STRING_ENABLED
+#if ET_CT_IS_ENABLED(ET_CT_HASH_STRING_ENABLED)
 	}
 #endif
 }

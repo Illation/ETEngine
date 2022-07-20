@@ -38,6 +38,12 @@ void DebugVars::Init()
 					return core::dbg::E_CommandRes::Success;
 				}
 
+				ET_TRACE_W(ET_CTX_RENDER, "Invalid render mode, valid modes:");
+				for (uint8 modeIdx = 0u; modeIdx < static_cast<uint8>(E_RenderMode::COUNT); ++modeIdx)
+				{
+					ET_TRACE_I(ET_CTX_RENDER, "\t%s", core::reflection::EnumString(static_cast<E_RenderMode>(modeIdx)).c_str());
+				}
+
 				return core::dbg::E_CommandRes::IncorrecParameters;
 			}));
 
