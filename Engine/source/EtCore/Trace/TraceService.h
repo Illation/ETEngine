@@ -3,7 +3,6 @@
 
 #include "TraceFwd.h"
 
-#include <EtCore/Hashing/Hash.h>
 #include <EtCore/Memory/Create.h>
 #include <EtCore/Memory/RefPointer.h>
 #include <EtCore/Memory/Pointer.h>
@@ -11,22 +10,6 @@
 
 namespace et {
 namespace core {
-
-
-//--------------
-// E_TraceLevel
-//
-typedef uint8 T_TraceLevel;
-enum E_TraceLevel : T_TraceLevel
-{
-	TL_Verbose	= 1u << 0,
-	TL_Info		= 1u << 1,
-	TL_Warning	= 1u << 2,
-	TL_Error	= 1u << 3,
-	TL_Fatal	= 1u << 5
-};
-
-typedef T_Hash T_TraceContext;
 
 
 //--------------

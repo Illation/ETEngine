@@ -1,7 +1,7 @@
 #include <EtEditor/stdafx.h>
 #include "GltfImporter.h"
 
-#include "GLTF.h"
+#include "GltfParser.h"
 #include "MeshDataContainer.h"
 
 #include <gtkmm/label.h>

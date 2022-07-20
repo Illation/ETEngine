@@ -7,7 +7,7 @@
 
 # files
 ###########
-file(GLOB_RECURSE headers ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
+file(GLOB_RECURSE headers ${CMAKE_CURRENT_SOURCE_DIR}/*.h ${CMAKE_CURRENT_SOURCE_DIR}/*.inl)
 file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE c_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
 

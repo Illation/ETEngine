@@ -5,7 +5,6 @@
 
 #include <EtBuild/EngineVersion.h>
 
-#include <EtCore/Util/Logger.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/Package/FilePackage.h>
@@ -76,7 +75,6 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 
 	// Init stuff
 	//------------
-	core::Logger::Initialize();
 	core::TraceService::Initialize();
 	core::TraceService::Instance()->StartFileLogging("cooker.log");
 
@@ -129,7 +127,6 @@ Cooker::~Cooker()
 	m_RenderWindow = nullptr;
 
 	core::TraceService::Destroy();
-	core::Logger::Release();
 }
 
 //-------------

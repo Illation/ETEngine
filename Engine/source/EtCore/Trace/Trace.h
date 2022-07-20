@@ -20,7 +20,6 @@
 #define ET_LOG_I(context, ...) ET_LOG(context, et::core::E_TraceLevel::TL_Info, false, __VA_ARGS__)
 #define ET_LOG_W(context, ...) ET_LOG(context, et::core::E_TraceLevel::TL_Warning, false, __VA_ARGS__)
 #define ET_LOG_E(context, ...) ET_LOG(context, et::core::E_TraceLevel::TL_Error, false, __VA_ARGS__)
-#define ET_LOG_F(context, ...) ET_LOG(context, et::core::E_TraceLevel::TL_Fatal, false, __VA_ARGS__)
 
 
 // trace code can be disabled at compile time
@@ -33,7 +32,6 @@
 #define ET_TRACE_I(context, ...) ET_LOG_I(context, __VA_ARGS__)
 #define ET_TRACE_W(context, ...) ET_LOG_W(context, __VA_ARGS__)
 #define ET_TRACE_E(context, ...) ET_LOG_E(context, __VA_ARGS__)
-#define ET_TRACE_F(context, ...) ET_LOG_F(context, __VA_ARGS__)
 
 #else
 
@@ -43,6 +41,5 @@
 #define ET_TRACE_I(context, ...) 
 #define ET_TRACE_W(context, ...) 
 #define ET_TRACE_E(context, ...) 
-#define ET_TRACE_F(context, ...) 
 
 #endif // ET_CT_IS_ENABLED(ET_CT_TRACE)

@@ -85,7 +85,6 @@ AbstractFramework::~AbstractFramework()
 	core::TickManager::DestroyInstance();
 
 	core::TraceService::Destroy();
-	core::Logger::Release();
 }
 
 //------------------------
@@ -95,8 +94,7 @@ AbstractFramework::~AbstractFramework()
 //
 void AbstractFramework::Run()
 {
-	core::Logger::Initialize();//Init logger first because all output depends on it from the start
-	core::TraceService::Initialize();
+	core::TraceService::Initialize(); // Init trace first because all output depends on it from the start
 	//core::TraceService::Instance()->StartFileLogging("debug_log.log");
 
 	ET_LOG_I(ET_CTX_RUNTIME, "E.T.Engine");

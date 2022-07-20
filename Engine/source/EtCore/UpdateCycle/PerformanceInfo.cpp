@@ -32,7 +32,7 @@ void PerformanceInfo::Update()
 
 void PerformanceInfo::StartFrameTimer()
 {
-	m_FrameMSStart = TIME->GetTime();
+	m_FrameMSStart = ContextManager::GetInstance()->GetActiveContext()->time->GetTime();
 }
 
 

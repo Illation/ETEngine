@@ -50,7 +50,7 @@ void PhysicsWorld::Update()
 {
 	if (!m_pWorld) return;
 
-	m_pWorld->stepSimulation(TIME->DeltaTime(), m_MaxSubsteps);
+	m_pWorld->stepSimulation(core::ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime(), m_MaxSubsteps);
 }
 
 

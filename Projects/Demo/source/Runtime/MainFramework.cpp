@@ -74,6 +74,8 @@ void MainFramework::OnInit()
 //
 void MainFramework::OnTick()
 {
+	float const dt = core::ContextManager::GetInstance()->GetActiveContext()->time->DeltaTime();
+
 	fw::UnifiedScene& uniScene = fw::UnifiedScene::Instance();
 	core::InputManager* const input = core::InputManager::GetInstance();
 
@@ -114,7 +116,7 @@ void MainFramework::OnTick()
 		render::PostProcessingSettings ppSettings = renderScene.GetPostProcessingSettings();
 
 		float const newExp = ppSettings.exposure * 4.f;
-		ppSettings.exposure += (newExp - ppSettings.exposure) * TIME->DeltaTime() * (up ? 1.f : -1.f);
+		ppSettings.exposure += (newExp - ppSettings.exposure) * dt * (up ? 1.f : -1.f);
 
 		ET_TRACE_I(ET_CTX_DEMO, "Exposure: %f", ppSettings.exposure);
 

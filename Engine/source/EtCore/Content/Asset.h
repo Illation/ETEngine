@@ -1,7 +1,7 @@
 #pragma once
 #include <EtCore/Hashing/HashString.h>
 #include <EtCore/Reflection/Registration.h>
-#include <EtCore/Util/Assert.h>
+#include <EtCore/Trace/Assert.h>
 
 #include <rttr/type>
 

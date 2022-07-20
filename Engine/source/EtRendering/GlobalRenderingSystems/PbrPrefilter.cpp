@@ -28,7 +28,6 @@ void PbrPrefilter::Precompute(int32 resolution)
 {
 	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
 
-	ivec2 logPos = core::Logger::GetCursorPosition();
 	ET_TRACE_I(ET_CTX_RENDER, "Precalculating PBR BRDF LUT . . .");
 	//setup BRDF look up table
 	//************************

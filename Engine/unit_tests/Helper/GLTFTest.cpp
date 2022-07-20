@@ -7,7 +7,7 @@
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/IO/JsonParser.h>
 
-#include <EtEditor/Import/GLTF.h>
+#include <EtEditor/Import/GltfParser.h>
 
 
 using namespace et;

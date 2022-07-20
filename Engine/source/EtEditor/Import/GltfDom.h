@@ -1,5 +1,4 @@
 #pragma once
-#include <EtCore/IO/JsonDom.h>
 #include <EtCore/IO/Uri.h>
 
 
@@ -11,8 +10,9 @@ namespace et { namespace core {
 namespace et {
 namespace edit {
 
-namespace glTF
-{
+namespace glTF {
+
+
 static const float minVersion = 2.0;
 static const float maxVersion = 2.0;
 static const std::vector<std::string> supportedExtensions { };
@@ -106,6 +106,7 @@ enum class ComponentType : uint32
 	UNSIGNED_INT = 5125,
 	FLOAT = 5126
 };
+
 static std::map<ComponentType, uint8> ComponentTypes
 {
 	{ ComponentType::BYTE,			 1 },
@@ -120,6 +121,7 @@ enum class Type
 {
 	SCALAR, VEC2, VEC3, VEC4, MAT2, MAT3, MAT4
 };
+
 static std::map<Type, std::pair<uint8, std::string>> AccessorTypes
 {
 	{ Type::SCALAR,	{ 1, "SCALAR" } },
@@ -130,6 +132,7 @@ static std::map<Type, std::pair<uint8, std::string>> AccessorTypes
 	{ Type::MAT3,	{ 9, "MAT3" } },
 	{ Type::MAT4,	{ 16, "MAT4" } }
 };
+
 struct Accessor
 {
 	int32 bufferView = -1;
@@ -196,12 +199,14 @@ enum class Filter : int32
 	NEAREST_MIPMAP_LINEAR = 9986,
 	LINEAR_MIPMAP_LINEAR = 9987
 };
+
 enum class WrappingMode : uint32
 {
 	CLAMP_TO_EDGE = 33071,
 	MIRRORED_REPEAT = 33648,
 	REPEAT = 10497
 };
+
 struct Sampler
 {
 	Filter magFilter = Filter::UNDEFINED;
@@ -218,6 +223,7 @@ static const std::map<AlphaMode, std::string> AlphaModes
 	{ AlphaMode::GLTF_MASK, "MASK" },
 	{ AlphaMode::GLTF_BLEND, "BLEND" }
 };
+
 struct Material
 {
 	struct TextureInfo
@@ -281,6 +287,7 @@ struct Camera
 		float znear = 0;
 	}*orthographic = nullptr;
 };
+
 static const std::map<Camera::Type, std::string> CameraTypes
 {
 	{ Camera::Type::PERSPECTIVE, "perspective" },
@@ -319,6 +326,7 @@ struct Animation
 	};
 	std::vector<Sampler> samplers;
 };
+
 static const std::map<Animation::Channel::Target::Path, std::string> ChannelTargetPaths
 {
 	{ Animation::Channel::Target::Path::TRANSLATION, "translation" },
@@ -326,6 +334,7 @@ static const std::map<Animation::Channel::Target::Path, std::string> ChannelTarg
 	{ Animation::Channel::Target::Path::SCALE, "scale" },
 	{ Animation::Channel::Target::Path::WEIGHTS, "weights" }
 };
+
 static const std::map<Animation::Sampler::Interpolation, std::string> SamplerInterpolations
 {
 	{ Animation::Sampler::Interpolation::LINEAR, "LINEAR" },
@@ -385,138 +394,21 @@ struct glTFAsset
 	std::string basePath;
 };
 
-//Unify GLTF and GLB
-bool ParseGLTFData(const std::vector<uint8>& binaryContent, const std::string path, const std::string& extension, glTFAsset& asset);
-
-bool ParseGLBHeader(core::BinaryReader* pBinReader, Header &header);
-bool ParseGLBChunk(core::BinaryReader* pBinReader, Chunk &header);
-
-bool ParseGlTFJson(core::JSON::Object* json, Dom& dom);
-
-bool ParseAssetJson(core::JSON::Object* root, Asset& asset);
-bool ParseExtensionsJson(core::JSON::Object* root, Dom& dom);
-bool ParseSceneJson(core::JSON::Object* root, Dom& dom);
-bool ParseScenesJson(core::JSON::Object* root, std::vector<Scene>& scenes);
-bool ParseNodesJson(core::JSON::Object* root, std::vector<Node>& nodes);
-bool ParseMeshesJson(core::JSON::Object* root, std::vector<Mesh>& meshes);
-bool ParsePrimitiveJson(core::JSON::Object* primitiveObj, Primitive& primitive);
-bool ParseAccessorsJson(core::JSON::Object* root, std::vector<Accessor>& accessors);
-bool ParseBufferViewsJson(core::JSON::Object* root, std::vector<BufferView>& bufferViews);
-bool ParseBuffersJson(core::JSON::Object* root, std::vector<Buffer>& buffers);
-bool ParseTexturesJson(core::JSON::Object* root, std::vector<Texture>& textures);
-bool ParseImagesJson(core::JSON::Object* root, std::vector<Image>& images);
-bool ParseSamplersJson(core::JSON::Object* root, std::vector<Sampler>& samplers);
-bool ParseMaterialsJson(core::JSON::Object* root, std::vector<Material>& materials);
-bool ParsePbrMetallicRoughnessJson(core::JSON::Object* pbrObj, Material::PbrMetallicRoughness* pbr);
-bool ParseTextureInfoJson(core::JSON::Object* textureInfo, Material::TextureInfo* info);
-bool ParseCamerasJson(core::JSON::Object* root, std::vector<Camera>& cameras);
-bool ParseSkinsJson(core::JSON::Object* root, std::vector<Skin>& skins);
-bool ParseAnimationsJson(core::JSON::Object* root, std::vector<Animation>& animations);
-
 void LogGLTFVersionSupport();
 
 bool OpenBufferViewReader(glTFAsset& asset, uint32 viewIdx, core::BinaryReader* pViewReader);
 bool GetAccessorData(glTFAsset& asset, uint32 idx, std::vector<uint8>& data);
+
 template<typename T>
-bool GetAccessorScalarArray(glTFAsset& asset, uint32 idx, std::vector<T>& data)
-{
-	if (idx >= (uint32)asset.dom.accessors.size())
-	{
-		LOG("Accessor index out of range", core::LogLevel::Warning);
-		return false;
-	}
-
-	Accessor& accessor = asset.dom.accessors[idx];
-	uint8 compsPerEl = AccessorTypes[accessor.type].first;
-	std::vector<uint8> accessorData;
-	if (!GetAccessorData(asset, idx, accessorData))
-	{
-		LOG("Unable to get accessor data", core::LogLevel::Warning);
-	}
-
-	core::BinaryReader binReader;
-	binReader.Open(accessorData);
-	if (!(binReader.Exists()))
-	{
-		LOG("Unable to convert accessor data", core::LogLevel::Warning);
-		return false;
-	}
-
-	for (uint32 i = 0; i < accessor.count * compsPerEl; ++i)
-	{
-		if (binReader.GetBufferPosition() >= (int32)accessorData.size())
-		{
-			LOG("Binary reader out of range", core::LogLevel::Warning);
-			return false;
-		}
-
-		switch (accessor.componentType)
-		{
-		case ComponentType::BYTE:
-			data.push_back(static_cast<T>(binReader.Read<int8>()));
-			break;
-		case ComponentType::UNSIGNED_BYTE:
-			data.push_back(static_cast<T>(binReader.Read<uint8>()));
-			break;
-		case ComponentType::SHORT:
-			data.push_back(static_cast<T>(binReader.Read<int16>()));
-			break;
-		case ComponentType::UNSIGNED_SHORT:
-			data.push_back(static_cast<T>(binReader.Read<uint16>()));
-			break;
-		case ComponentType::UNSIGNED_INT:
-			data.push_back(static_cast<T>(binReader.Read<uint32>()));
-			break;
-		case ComponentType::FLOAT:
-			data.push_back(static_cast<T>(binReader.Read<float>()));
-			break;
-		}
-	}
-
-	return true;
-}
+bool GetAccessorScalarArray(glTFAsset& asset, uint32 idx, std::vector<T>& data);
 
 template <uint8 n, class T>
-bool GetAccessorVectorArray(glTFAsset& asset, uint32 idx, std::vector<math::vector<n, T>>& data, bool convertCoords = false)
-{
-	if (idx >= (uint32)asset.dom.accessors.size())
-	{
-		LOG("Accessor index out of range", core::LogLevel::Warning);
-		return false;
-	}
-	Accessor& accessor = asset.dom.accessors[idx];
-	uint8 compsPerEl = AccessorTypes[accessor.type].first;
-	if (compsPerEl != n)
-	{
-		LOG("Accessor type mismatch with vector size", core::LogLevel::Warning);
-		return false;
-	}
-	std::vector<T> scalars;
-	if (!GetAccessorScalarArray(asset, idx, scalars))
-	{
-		LOG("Unable to get accessor scalar array for vector array", core::LogLevel::Warning);
-		return false;
-	}
-	if (convertCoords && n != 3)
-	{
-		LOG("Converting coordinates of a non-3D vector", core::LogLevel::Warning);
-	}
-	convertCoords &= n > 1;
-	for (uint32 i = 0; i < scalars.size() / n; ++i)
-	{
-		math::vector<n, T> vec;
-		for (uint32 j = 0; j < n; ++j)
-		{
-			vec[(uint8)j] = scalars[i*(uint32)n + j];
-		}
-		if (convertCoords)vec[1] = -vec[1];
-		data.push_back(vec);
-	}
-	return true;
-}
+bool GetAccessorVectorArray(glTFAsset& asset, uint32 idx, std::vector<math::vector<n, T>>& data, bool convertCoords = false);
 
 
 } // namespace glTF
 
 } // namespace edit
 } // namespace et
+
+#include "GltfDom.inl"

@@ -50,7 +50,7 @@ void DisplayError(LPTSTR lpszFunction)
 		dw,
 		lpMsgBuf)))
 	{
-		ET_LOG_F(ET_CTX_CORE, "Unable to output error code");
+		ET_FATAL("Unable to output error code");
 	}
 
 	ET_LOG_E(ET_CTX_CORE, (LPCTSTR)lpDisplayBuf);

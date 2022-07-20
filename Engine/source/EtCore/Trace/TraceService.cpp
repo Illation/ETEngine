@@ -231,12 +231,6 @@ void TraceService::Trace(T_TraceContext const context, E_TraceLevel const level,
 #ifdef ET_PLATFORM_WIN
 	switch (level)
 	{
-	case E_TraceLevel::TL_Verbose:
-	case E_TraceLevel::TL_Info:
-	default:
-		SetConsoleTextAttribute(m_ConsoleHandle, 15); // White
-		break;
-
 	case E_TraceLevel::TL_Warning:
 		SetConsoleTextAttribute(m_ConsoleHandle, 14); // Yellow
 		break;
@@ -244,6 +238,12 @@ void TraceService::Trace(T_TraceContext const context, E_TraceLevel const level,
 	case E_TraceLevel::TL_Error:
 	case E_TraceLevel::TL_Fatal:
 		SetConsoleTextAttribute(m_ConsoleHandle, 12); // Red
+		break;
+
+	case E_TraceLevel::TL_Verbose:
+	case E_TraceLevel::TL_Info:
+	default:
+		SetConsoleTextAttribute(m_ConsoleHandle, 15); // White
 		break;
 	}
 #endif
@@ -277,31 +277,6 @@ void TraceService::Trace(T_TraceContext const context, E_TraceLevel const level,
 	}
 #endif
 #endif
-
-	// On error
-	//----------
-	static T_TraceLevel const s_BreakBitField = TL_Error | TL_Fatal;
-	if (level & s_BreakBitField)
-	{
-#ifdef ET_PLATFORM_WIN // on windows we show a message box for errors
-		if (IsDebuggerPresent())
-		{
-			ET_BREAK();
-		}
-		else
-		{
-			MessageBox(0, msg.c_str(), "ERROR", 0);
-		}
-#else
-		ET_BREAK();
-#endif // ET_PLATFORM_WIN
-	}
-
-	// crash out of the program before we do more damage
-	if (level & TL_Fatal) 
-	{
-		exit(-1);
-	}
 }
 
 //--------------------------------
