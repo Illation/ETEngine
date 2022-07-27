@@ -27,6 +27,9 @@ assignIdeFolder(EtCore Engine)
 libOutputDirectories(EtCore)
 
 target_link_libraries (EtCore EtMath)
+if (MSVC)
+	target_link_libraries (EtCore ws2_32.lib)
+endif(MSVC)
 
 # library includes
 libIncludeDirs()
