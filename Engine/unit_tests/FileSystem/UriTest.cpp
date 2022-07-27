@@ -4,6 +4,7 @@
 #include <mainTesting.h>
 
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/IO/Base64.h>
 #include <EtCore/IO/Uri.h>
 
 
@@ -14,9 +15,13 @@ TEST_CASE("Decode Base64", "[uri]")
 {
 	std::string base64 = "VGVzdFRleHQ=";
 	std::string expected = "TestText";
+
 	std::vector<uint8> decoded;
-	REQUIRE(core::URI::DecodeBase64(base64, decoded) == true);
+	REQUIRE(core::base64::Decode(base64, decoded) == true);
 	REQUIRE(expected == core::FileUtil::AsText(decoded));
+
+	std::string encoded = core::base64::Encode(core::FileUtil::FromText(expected));
+	REQUIRE(encoded == base64);
 }
 
 TEST_CASE("Evaluate URI", "[uri]")

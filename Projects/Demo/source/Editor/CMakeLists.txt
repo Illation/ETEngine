@@ -29,6 +29,7 @@ outputDirectories(DemoEditor "/bin")
 
 add_dependencies(DemoEditor compile-resources-editor)
 add_dependencies(DemoEditor compile-schemas-editor)
+add_dependencies(DemoEditor EtTraceServer)
 
 # linking
 message(STATUS "Adding target: DemoEditor")

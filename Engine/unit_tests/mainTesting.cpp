@@ -9,6 +9,7 @@
 
 #include <EtCore/Util/AtomicTypes.h>
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/Trace/TraceService.h>
 
 
 std::string global::g_UnitTestDir = std::string();
@@ -39,7 +40,13 @@ int main(int argc, char* argv[])
 		return 2;
 	}
 
-	int result = Catch::Session().run(argc, argv);
+	Catch::Session session;
+
+	et::core::TraceService::Initialize();
+
+	int result = session.run(argc, argv);
+
+	et::core::TraceService::Destroy();
 
 	return result;
 }

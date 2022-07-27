@@ -26,7 +26,7 @@ targetCompileOptions(EtEditor)
 
 # directory stuff
 assign_source_group(${projectFiles})
-assignIdeFolder(EtEditor Engine/ContentPipeline)
+assignIdeFolder(EtEditor Engine/Tools)
 libOutputDirectories(EtEditor) 
 
 # linking

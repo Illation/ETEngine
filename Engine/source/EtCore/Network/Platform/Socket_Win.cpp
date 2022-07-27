@@ -63,7 +63,7 @@ int32 ToWinSock(E_Protocol const protocol)
 //
 int32 ToWinSock(E_AddressFlags const flags)
 {
-	int32 ret;
+	int32 ret = 0;
 
 	if (static_cast<T_AddressFlags>(flags) & E_AddressFlags::AF_Passive)
 	{
@@ -77,29 +77,38 @@ int32 ToWinSock(E_AddressFlags const flags)
 //
 // returns the address length
 //
-int32 ToWinSock(Endpoint const& ep, sockaddr& addr)
+int32 ToWinSock(Endpoint const& ep, sockaddr_storage& addr)
 {
+	memset(&addr, 0, sizeof(addr));
+
 	switch (ep.m_Address.m_Family)
 	{
 	case E_AddressFamily::InterNetwork:
 	{
-		sockaddr_in& addrIn = *reinterpret_cast<sockaddr_in*>(&addr);
+		sockaddr_in addrIn;
 		memset(&addrIn, 0, sizeof(addrIn));
+
 		addrIn.sin_family = AF_INET;
 		addrIn.sin_addr.S_un.S_addr = static_cast<u_long>(ep.m_Address.m_Ip4.m_Address);
 		addrIn.sin_port = ep.m_Port;
+
+		addr = *reinterpret_cast<sockaddr_storage*>(&addrIn);
 		return sizeof(addrIn);
 	}
 
 	case E_AddressFamily::InterNetwork6:
 	{
-		sockaddr_in6& addrIn = *reinterpret_cast<sockaddr_in6*>(&addr);
+		sockaddr_in6 addrIn;
 		memset(&addrIn, 0, sizeof(addrIn));
+
 		addrIn.sin6_family = AF_INET6;
 		std::copy(std::begin(ep.m_Address.m_Ip6.m_Bytes), std::end(ep.m_Address.m_Ip6.m_Bytes), std::begin(addrIn.sin6_addr.u.Byte));
 		addrIn.sin6_port = ep.m_Port;
+
 		// flowinfo not set
 		// scope not set
+
+		addr = *reinterpret_cast<sockaddr_storage*>(&addrIn);
 		return sizeof(addrIn);
 	}
 	}
@@ -112,7 +121,7 @@ int32 ToWinSock(Endpoint const& ep, sockaddr& addr)
 //
 SHORT ToWinSock(E_PollEvent const pollEvent)
 {
-	SHORT ret;
+	SHORT ret = 0;
 
 	if (static_cast<T_PollEvent>(pollEvent) & E_PollEvent::PE_In)
 	{
@@ -223,7 +232,7 @@ void ToEndpoint(sockaddr const& addr, Endpoint& outEndpoint)
 //
 T_PollEvent ToPollEvent(SHORT const pollEvent)
 {
-	T_PollEvent ret;
+	T_PollEvent ret = E_PollEvent::PE_None;
 
 	if (pollEvent & POLLIN)
 	{
@@ -264,10 +273,50 @@ T_PollEvent ToPollEvent(SHORT const pollEvent)
 //========
 
 
+static size_t s_Instances;
+
+
+//-----------------------------
+// I_Socket::IncrementUseCount
+//
+void I_Socket::IncrementUseCount()
+{
+	if (s_Instances++ == 0u)
+	{
+		WSADATA wsaData;
+		if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+		{
+			ET_ERROR("Failed to initialize WinSock, error code: %i", WSAGetLastError());
+		}
+		else
+		{
+			ET_TRACE_I(ET_CTX_CORE, "WinSock initialized");
+		}
+	}
+}
+
+//-----------------------------
+// I_Socket::DecrementUseCount
+//
+void I_Socket::DecrementUseCount()
+{
+	if (--s_Instances == 0u)
+	{
+		if (WSACleanup() != 0)
+		{
+			ET_ERROR("Failed to deinitialize WinSock, error code: %i", WSAGetLastError());
+		}
+		else
+		{
+			ET_TRACE_I(ET_CTX_CORE, "WinSock deinitialized");
+		}
+	}
+}
+
 //------------------
 // I_Socket::Create
 //
-// Instatiate a linux socket
+// Instatiate a Windows socket
 //
 RefPtr<I_Socket> I_Socket::Create(E_AddressFamily const family, E_SocketType const type, E_Protocol const protocol)
 {
@@ -279,6 +328,14 @@ RefPtr<I_Socket> I_Socket::Create(E_AddressFamily const family, E_SocketType con
 	}
 
 	return et::Create<WindowsSocket>(socketHandle);
+}
+
+//--------------------
+// I_Socket::PortNtoH
+//
+int32 I_Socket::PortNtoH(T_Port const port)
+{
+	return static_cast<int32>(ntohs(port));
 }
 
 //----------------------------
@@ -375,10 +432,6 @@ int32 I_Socket::Poll(std::vector<PollDesc>& pollDescriptors, int32 const timeout
 //================
 
 
-// static
-size_t WindowsSocket::s_Instances = 0u;
-
-
 //----------------------
 // WindowsSocket::c-tor
 //
@@ -386,18 +439,7 @@ WindowsSocket::WindowsSocket(SOCKET const handle)
 	: I_Socket()
 	, m_Handle(handle)
 {
-	if (s_Instances++ == 0u)
-	{
-		WSADATA wsaData;
-		if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-		{
-			ET_ERROR("Failed to initialize WinSock, error code: %i", WSAGetLastError());
-		}
-		else
-		{
-			ET_TRACE_I(ET_CTX_CORE, "WinSock initialized");
-		}
-	}
+	IncrementUseCount();
 }
 
 //----------------------
@@ -410,17 +452,7 @@ WindowsSocket::~WindowsSocket()
 		ET_ERROR("Error closing Win Socket!");
 	}
 
-	if (--s_Instances == 0u)
-	{
-		if (WSACleanup() != 0)
-		{
-			ET_ERROR("Failed to deinitialize WinSock, error code: %i", WSAGetLastError());
-		}
-		else
-		{
-			ET_TRACE_I(ET_CTX_CORE, "WinSock deinitialized");
-		}
-	}
+	DecrementUseCount();
 }
 
 //------------------------
@@ -428,9 +460,9 @@ WindowsSocket::~WindowsSocket()
 //
 bool WindowsSocket::Connect(Endpoint const& endpoint)
 {
-	sockaddr addr;
+	sockaddr_storage addr;
 	int32 const addrLength = ToWinSock(endpoint, addr);
-	if (connect(m_Handle, &addr, addrLength) == SOCKET_ERROR)
+	if (connect(m_Handle, reinterpret_cast<sockaddr const*>(&addr), addrLength) == SOCKET_ERROR)
 	{
 		ET_ERROR("Failed to connect socket to address: %i", WSAGetLastError());
 		return false;
@@ -444,9 +476,9 @@ bool WindowsSocket::Connect(Endpoint const& endpoint)
 //
 bool WindowsSocket::Bind(Endpoint const& endpoint)
 {
-	sockaddr addr;
+	sockaddr_storage addr;
 	int32 const addrLength = ToWinSock(endpoint, addr);
-	if (bind(m_Handle, &addr, addrLength) == SOCKET_ERROR)
+	if (bind(m_Handle, reinterpret_cast<sockaddr const*>(&addr), addrLength) == SOCKET_ERROR)
 	{
 		ET_ERROR("Failed to bind socket to address: %i", WSAGetLastError());
 		return false;
@@ -550,6 +582,24 @@ void WindowsSocket::SetBlocking(bool const blocking)
 	{
 		ET_ERROR("Failed to set blocking mode: %i", WSAGetLastError());
 	}
+}
+
+//----------------------------
+// WindowsSocket::GetPeerName
+//
+bool WindowsSocket::GetPeerName(Endpoint& outEndpoint) const
+{
+	sockaddr_storage addr;
+	socklen_t addrlen = sizeof(addr);
+
+	if (getpeername(m_Handle, reinterpret_cast<sockaddr*>(&addr), &addrlen) == SOCKET_ERROR)
+	{
+		ET_ERROR("Couldn't get peer name: %i", WSAGetLastError());
+		return false;
+	}
+
+	ToEndpoint(*reinterpret_cast<sockaddr*>(&addr), outEndpoint);
+	return true;
 }
 
 

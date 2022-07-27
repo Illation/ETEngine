@@ -24,7 +24,7 @@ targetCompileOptions(EtCooker)
 
 # directory stuff
 assign_source_group(${projectFiles})
-assignIdeFolder(EtCooker Engine/ContentPipeline)
+assignIdeFolder(EtCooker Engine/Tools)
 libOutputDirectories(EtCooker)
 
 # linking

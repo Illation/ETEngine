@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Uri.h"
 
+#include "Base64.h"
+
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/FileSystem/Entry.h>
 
@@ -15,56 +17,9 @@ namespace core {
 
 
 // static
-std::string const URI::s_Base64Mime("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 std::string const URI::s_UriFile("file");
 std::string const URI::s_UriData("data");
 
-
-//-------------------
-// URI::DecodeBase64
-//
-// Convert a Base64 string into regular bytes
-//
-bool URI::DecodeBase64(std::string const& encoded, std::vector<uint8>& decoded)
-{
-	size_t in_len = encoded.size();
-	uint32 i = 0;
-	uint8 char_array_4[4], char_array_3[3];
-
-	while (in_len-- && (encoded[i] != '='))
-	{
-		if (!IsBase64(encoded[i]))
-		{
-			return false;
-		}
-
-		char_array_4[i % 4] = static_cast<uint8>(s_Base64Mime.find(encoded[i]));
-		if (++i % 4 == 0)
-		{
-			char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
-			char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
-			char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
-
-			for (uint32 j = 0; j < 3; j++)
-			{
-				decoded.push_back(char_array_3[j]);
-			}
-		}
-	}
-
-	if (i % 4)
-	{
-		char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
-		char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
-
-		for (uint32 j = 0; (j < i % 4 - 1); j++)
-		{
-			decoded.push_back(char_array_3[j]);
-		}
-	}
-
-	return true;
-}
 
 //------------
 // URI::c-tor
@@ -202,7 +157,7 @@ bool URI::Evaluate(std::string const& basePath)
 		std::string const dataString = m_Path.substr(dataPos + 1u);
 		if (parameter == "base64")
 		{
-			if (DecodeBase64(dataString, m_BinData))
+			if (base64::Decode(dataString, m_BinData))
 			{
 				m_Path = m_Path.substr(0u, dataPos);
 				std::string(m_Path).swap(m_Path);//free that memory

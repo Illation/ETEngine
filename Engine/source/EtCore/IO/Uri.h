@@ -15,10 +15,8 @@ class URI
 {
 	// definitions
 	//-------------
-	static std::string const s_Base64Mime;
 	static std::string const s_UriFile;
 	static std::string const s_UriData;
-	static inline bool IsBase64(unsigned char c) { return (isalnum(c) || (c == '+') || (c == '/')); }
 
 public:
 	enum class E_Type : uint8
@@ -30,10 +28,6 @@ public:
 
 		Invalid
 	};
-
-	// static functionality
-	//----------------------
-	static bool DecodeBase64(std::string const& encoded, std::vector<uint8>& decoded);
 
 	// construct destruct
 	//--------------------

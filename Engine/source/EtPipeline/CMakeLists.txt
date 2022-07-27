@@ -24,7 +24,7 @@ targetCompileOptions(EtPipeline)
 
 # directory stuff
 assign_source_group(${projectFiles})
-assignIdeFolder(EtPipeline Engine/ContentPipeline)
+assignIdeFolder(EtPipeline Engine/Tools)
 libOutputDirectories(EtPipeline) 
 
 # linking

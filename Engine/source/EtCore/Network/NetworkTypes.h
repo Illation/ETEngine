@@ -117,7 +117,7 @@ struct SocketAddress final
 struct Endpoint final
 {
 	SocketAddress m_Address;
-	T_Port m_Port = 0u;
+	T_Port m_Port = 0u; // in network byte order - use PortNtoH
 };
 
 //-------------
@@ -142,6 +142,8 @@ class I_Socket;
 typedef uint8 T_PollEvent;
 enum E_PollEvent : T_PollEvent
 {
+	PE_None = 0,
+
 	// inputs
 	PE_In				= 1 << 0,
 	PE_Out				= 1 << 1,
@@ -151,6 +153,8 @@ enum E_PollEvent : T_PollEvent
 	PE_Error			= 1 << 3,
 	PE_Disconnected		= 1 << 4,
 	PE_InvalidSocket	= 1 << 5,
+
+	PE_All = 0xFF
 };
 
 //----------

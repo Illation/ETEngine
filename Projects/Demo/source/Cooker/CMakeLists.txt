@@ -27,6 +27,8 @@ assign_source_group(${projectFiles})
 assignIdeFolder(ProjectCooker Project/ContentPipeline)
 outputDirectories(ProjectCooker "")
 
+add_dependencies(ProjectCooker EtTraceServer)
+
 # linking
 target_link_libraries (ProjectCooker EtCooker DemoPipeline)
 dependancyLinks(ProjectCooker)

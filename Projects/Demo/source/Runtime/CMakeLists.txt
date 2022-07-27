@@ -37,6 +37,7 @@ assignIdeFolder(EtEngineDemo Project)
 outputDirectories(EtEngineDemo "")
 
 add_dependencies(EtEngineDemo cook-compiled-resources)
+add_dependencies(EtEngineDemo EtTraceServer)
 
 # linking
 target_link_libraries (EtEngineDemo DemoCommon EtRuntime)

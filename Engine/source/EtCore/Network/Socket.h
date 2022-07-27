@@ -19,8 +19,15 @@ class I_Socket
 	// static
 	//--------
 public:
+	// Init / Deinit socket library before using other socket functions
+	static void IncrementUseCount(); 
+	static void DecrementUseCount(); 
+
+	// Per platform socket factory
 	static RefPtr<I_Socket> Create(E_AddressFamily const family, E_SocketType const type, E_Protocol const protocol);
 
+	// Utility functions
+	static int32 PortNtoH(T_Port const port);
 	static std::string GetAddressString(SocketAddress const& addr);
 	static std::vector<AddressInfo> GetAddressInfo(char const* const address, 
 		char const* const port, 
@@ -51,6 +58,10 @@ public:
 
 	virtual void SetAddressReuseEnabled(bool const enabled) = 0;
 	virtual void SetBlocking(bool const blocking) = 0;
+
+	// accessors
+	//-----------
+	virtual bool GetPeerName(Endpoint& outEndpoint) const = 0;
 };
 
 

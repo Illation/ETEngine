@@ -20,10 +20,6 @@ namespace network {
 //
 class WindowsSocket final : public I_Socket
 {
-	// definitions
-	//-------------
-	static size_t s_Instances;
-
 	// construct destruct
 	//--------------------
 public:
@@ -33,6 +29,7 @@ public:
 	// socket interface
 	//------------------
 public:
+	// functionality
 	bool Connect(Endpoint const& endpoint) override;
 	bool Bind(Endpoint const& endpoint) override;
 	bool Listen(int32 const backlog) override;
@@ -45,7 +42,10 @@ public:
 	void SetBlocking(bool const blocking) override;
 
 	// accessors
-	//-----------
+	bool GetPeerName(Endpoint& outEndpoint) const override;
+
+	// utility
+	//---------
 	SOCKET GetImpl() const { return m_Handle; }
 
 
