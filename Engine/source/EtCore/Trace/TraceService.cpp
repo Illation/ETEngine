@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "TraceService.h"
 
-#ifdef ET_PLATFORM_WIN
-#	include <EtCore/Util/WindowsUtil.h>
-#endif
+#include "ConsoleTraceHandler.h"
+#include "DebugOutputTraceHandler.h"
 
 
 namespace et {
@@ -61,10 +60,10 @@ RefPtr<TraceService> TraceService::s_Instance = nullptr;
 //--------------------------
 // TraceService::Initialize
 //
-void TraceService::Initialize()
+void TraceService::Initialize(bool const addDefaultHandlers)
 {
 	ET_ASSERT(!IsInitialized());
-	s_Instance = Create<TraceService>();
+	s_Instance = Create<TraceService>(addDefaultHandlers);
 }
 
 //---------------------------
@@ -96,51 +95,15 @@ TraceService::ContextContainer& TraceService::GetContextContainer()
 	return s_ContextContainer;
 }
 
-//---------------------
-// TraceService::c-tor
+//----------------------------
+// TraceService::TraceService
 //
-TraceService::TraceService()
+TraceService::TraceService(bool const addDefaultHandlers)
 {
-	// Check if we already have a console attached
-	//if (!_isatty(_fileno(stdout)))
-	//{
-	//	// if not, create one
-	//	if (!AllocConsole())
-	//	{
-	//		std::cout << "Warning: Could not attach to console" << std::endl;
-	//		CheckBreak(Error);
-	//		return;
-	//	}
-	//}
-
-	// Redirect the CRT standard input, output, and error handles to the console
-	FILE* coutPtr;
-	freopen_s(&coutPtr, "CONIN$", "r", stdin);
-	freopen_s(&coutPtr, "CONOUT$", "w", stdout);
-	freopen_s(&coutPtr, "CONOUT$", "w", stderr);
-
-	//Clear the error state for each of the C++ standard stream objects. We need to do this, as
-	//attempts to access the standard streams before they refer to a valid target will cause the
-	//iostream objects to enter an error state. In versions of Visual Studio after 2005, this seems
-	//to always occur during startup regardless of whether anything has been read from or written to
-	//the console or not.
-	std::wcout.clear();
-	std::cout.clear();
-	std::wcerr.clear();
-	std::cerr.clear();
-	std::wcin.clear();
-	std::cin.clear();
-	std::cin.clear();
-
-	m_OutStream = ToPtr(&std::cout);
-}
-
-//---------------------
-// TraceService::d-tor
-//
-TraceService::~TraceService()
-{
-	StopFileLogging();
+	AddHandler<core::ConsoleTraceHandler>();
+#if ET_CT_IS_ENABLED(ET_CT_TRACE_DBG_OUT)
+	AddHandler<core::DebugOutputTraceHandler>();
+#endif
 }
 
 //---------------------
@@ -157,23 +120,12 @@ void TraceService::Trace(T_TraceContext const context, E_TraceLevel const level,
 	}
 #endif
 
-	// Generate complete message
-	//---------------------------
-
-	// timestamp
-	std::stringstream timestampStream;
-	bool genTimestamp = timestamp || (m_FileStream != nullptr);
-#if ET_CT_IS_ENABLED(ET_CT_TRACE_DBG_OUT)
-#ifdef ET_PLATFORM_WIN
-	if (IsDebuggerPresent())
+	// generate timestamp
+	//--------------------
+	std::string timestampStr;
+	if (timestamp)
 	{
-		genTimestamp = true;
-	}
-#endif
-#endif
-
-	if (genTimestamp)
-	{
+		std::stringstream timestampStream;
 		SYSTEMTIME st;
 		GetSystemTime(&st);
 
@@ -184,128 +136,20 @@ void TraceService::Trace(T_TraceContext const context, E_TraceLevel const level,
 		}
 
 		timestampStream << st.wHour << "." << st.wMinute << "." << st.wSecond << ":" << st.wMilliseconds << "]";
+
+		timestampStr += timestampStream.str();
 	}
 
-	std::stringstream stream;
-
-	// trace level
-	switch (level)
-	{
-	case E_TraceLevel::TL_Verbose:
-		stream << "[VERBOSE] ";
-		break;
-
-	case E_TraceLevel::TL_Info:
-		break;
-
-	case E_TraceLevel::TL_Warning:
-		stream << "[WARNING] ";
-		break;
-
-	case E_TraceLevel::TL_Error:
-		stream << "[ERROR] ";
-		break;
-
-	case E_TraceLevel::TL_Fatal:
-		stream << "[FATAL] ";
-		break;
-
-	default:
-		ET_ERROR("Unhandled trace level");
-		break;
-	}
-
-	// the context
-	stream << "[" << GetContextContainer().GetContextName(context) << "] ";
-
-	// the message
-	stream << msg;
-	stream << "\n";
-
-	timestampStream << stream.str();
-
-	// Write to console
-	//------------------
-
-	// text color
-#ifdef ET_PLATFORM_WIN
-	switch (level)
-	{
-	case E_TraceLevel::TL_Warning:
-		SetConsoleTextAttribute(m_ConsoleHandle, 14); // Yellow
-		break;
-
-	case E_TraceLevel::TL_Error:
-	case E_TraceLevel::TL_Fatal:
-		SetConsoleTextAttribute(m_ConsoleHandle, 12); // Red
-		break;
-
-	case E_TraceLevel::TL_Verbose:
-	case E_TraceLevel::TL_Info:
-	default:
-		SetConsoleTextAttribute(m_ConsoleHandle, 15); // White
-		break;
-	}
-#endif
-
-	if (timestamp)
-	{
-		*m_OutStream << timestampStream.str();
-	}
-	else
-	{
-		*m_OutStream << stream.str();
-	}
-
-	m_OutStream->flush();
-
-	// Write to file
-	//---------------
-	if (m_FileStream != nullptr)
-	{
-		*m_FileStream << timestampStream.str();
-		m_FileStream->flush();
-	}
-
-	// Write to debug out
+	// handle the message
 	//--------------------
-#if ET_CT_IS_ENABLED(ET_CT_TRACE_DBG_OUT)
-#ifdef ET_PLATFORM_WIN
-	if (IsDebuggerPresent())
+	for (UniquePtr<I_TraceHandler>& handler : m_Handlers)
 	{
-		OutputDebugString(timestampStream.str().c_str());
+		handler->OnTraceMessage(context, level, timestampStr, msg);
 	}
-#endif
-#endif
 
 	// events
 	//--------
 	m_EventDispatcher.Notify(static_cast<T_TraceLevel>(level), new TraceEventData(context, msg));
-}
-
-//--------------------------------
-// TraceService::StartFileLogging
-//
-void TraceService::StartFileLogging(std::string const& fileName)
-{
-	if (m_FileStream != nullptr)
-	{
-		m_FileStream->close();
-	}
-
-	m_FileStream = Create<std::ofstream>(fileName.c_str());
-}
-
-//-------------------------------
-// TraceService::StopFileLogging
-//
-void TraceService::StopFileLogging()
-{
-	if (m_FileStream != nullptr)
-	{
-		m_FileStream->close();
-		m_FileStream = nullptr;
-	}
 }
 
 //--------------------------------

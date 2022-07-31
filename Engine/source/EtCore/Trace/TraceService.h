@@ -3,6 +3,7 @@
 
 #include "TraceFwd.h"
 #include "TraceEvents.h"
+#include "TraceHandlerInterface.h"
 
 #include <EtCore/Memory/Create.h>
 #include <EtCore/Memory/RefPointer.h>
@@ -28,6 +29,8 @@ private:
 
 	static RefPtr<TraceService> s_Instance;
 
+	typedef std::vector<UniquePtr<I_TraceHandler>> T_Handlers;
+
 public:
 
 	typedef std::function<void(T_TraceContext const context, E_TraceLevel const level, std::string const& msg)> T_CallbackFn;
@@ -47,7 +50,7 @@ public:
 	// singleton access
 	//------------------
 	static RefPtr<TraceService> Instance() { return s_Instance; }
-	static void Initialize();
+	static void Initialize(bool const addDefaultHandlers);
 	static void Destroy();
 	static bool IsInitialized();
 
@@ -56,37 +59,39 @@ public:
 	// construct destruct
 	//--------------------
 private:
-	TraceService();
-	~TraceService();
+	TraceService(bool const addDefaultHandlers);
+	~TraceService() = default;
 
 	// functionality
 	//---------------
 public:
 	void Trace(T_TraceContext const context, E_TraceLevel const level, bool const timestamp, std::string const& msg);
 
-	void StartFileLogging(std::string const& fileName);
-	void StopFileLogging();
-
 	void EnableDate(bool const enabled) { m_AddDate = enabled; }
+
+	template <typename THandler>
+	bool HasHandler() const;
+	template <typename THandler, typename... Args>
+	bool AddHandler(Args&&... args);
+	template <typename THandler>
+	void RemoveHandler();
 
 	T_TraceCallbackId RegisterListener(T_TraceLevel const flags, T_TraceCallbackFn& callback);
 	void UnregisterListener(T_TraceCallbackId& callbackId);
 
+	// utility
+	//---------
+private:
+	inline T_Handlers::const_iterator GetHandlerIt(rttr::type const handlerType) const;
+
+
 	// Data
 	///////
 
-private:
-
-	Ptr<std::ostream> m_OutStream;
-#ifdef ET_PLATFORM_WIN
-	HANDLE m_ConsoleHandle;
-#endif
-
-	UniquePtr<std::ofstream> m_FileStream;
+	std::vector<UniquePtr<I_TraceHandler>> m_Handlers;
+	T_TraceEventDispatcher m_EventDispatcher;
 
 	bool m_AddDate;
-
-	T_TraceEventDispatcher m_EventDispatcher;
 };
 
 
@@ -103,3 +108,6 @@ struct ctx final\
 
 // should be registered once in some source file - watch out for linker optimizing this away
 #define ET_REGISTER_TRACE_CTX(ctx) et::core::T_TraceContext const ctx::s_Id(et::core::TraceService::GetContextContainer().RegisterContext(#ctx))
+
+
+#include "TraceService.inl"

@@ -12,6 +12,7 @@
 #include <EtCore/Reflection/TypeInfoRegistry.h>
 #include <EtCore/Content/AssetDatabase.h>
 #include <EtCore/Content/ResourceManager.h>
+#include <EtCore/Trace/FileTraceHandler.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
@@ -75,8 +76,8 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 
 	// Init stuff
 	//------------
-	core::TraceService::Initialize();
-	core::TraceService::Instance()->StartFileLogging("cooker.log");
+	core::TraceService::Initialize(true); 
+	core::TraceService::Instance()->AddHandler<core::FileTraceHandler>("cooker.log");
 
 	core::TypeInfoRegistry::Instance().Initialize(); 
 

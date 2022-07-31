@@ -31,8 +31,7 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 
 	// Init stuff
 	//------------
-	core::TraceService::Initialize();
-	core::TraceService::Instance()->StartFileLogging("cooker.log");
+	core::TraceService::Initialize(true);
 
 	core::TypeInfoRegistry::Instance().Initialize(); 
 

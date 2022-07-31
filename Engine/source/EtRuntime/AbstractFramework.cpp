@@ -97,9 +97,11 @@ AbstractFramework::~AbstractFramework()
 //
 void AbstractFramework::Run()
 {
-	core::TraceService::Initialize(); // Init trace first because all output depends on it from the start
-	//core::TraceService::Instance()->StartFileLogging("debug_log.log");
+	// init trace handling
+	core::TraceService::Initialize(true); // Init trace first because all output depends on it from the start
+	//core::TraceService::Instance()->AddHandler<core::FileTraceHandler>("debug_log.log");
 
+	// now we can print
 	ET_LOG_I(ET_CTX_RUNTIME, "E.T.Engine");
 	ET_LOG_I(ET_CTX_RUNTIME, "//////////");
 	ET_LOG_I(ET_CTX_RUNTIME, "");

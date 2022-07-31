@@ -9,6 +9,7 @@
 
 #include <EtCore/Util/AtomicTypes.h>
 #include <EtCore/FileSystem/FileUtil.h>
+#include <EtCore/Reflection/ReflectionUtil.h>
 #include <EtCore/Trace/TraceService.h>
 
 
@@ -42,7 +43,7 @@ int main(int argc, char* argv[])
 
 	Catch::Session session;
 
-	et::core::TraceService::Initialize();
+	et::core::TraceService::Initialize(true);
 
 	int result = session.run(argc, argv);
 
