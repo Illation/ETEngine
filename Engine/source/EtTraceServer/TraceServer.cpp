@@ -7,6 +7,7 @@
 #include <EtCore/Trace/TracePackage.h>
 #include <EtCore/Trace/ConsoleTraceHandler.h>
 #include <EtCore/Trace/DebugOutputTraceHandler.h>
+#include <EtCore/Network/NetworkUtil.h>
 
 
 namespace et {
@@ -48,8 +49,12 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 	ET_LOG_I(ET_CTX_TRACE, " - version: %s", build::Version::s_Name.c_str());
 	ET_LOG_I(ET_CTX_TRACE, "");
 
+	m_Time.Start();
+
 	// Setup Socket
 	//--------------
+
+	m_ReturnCode = E_ReturnCode::ErrorListening;
 
 	core::network::I_Socket::IncrementUseCount(); // Init network library
 
@@ -90,9 +95,8 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 		ET_FATAL("Listener socket couldn't listen!");
 	}
 
-	m_PollDescriptors.push_back(core::network::PollDesc());
-	m_PollDescriptors.back().m_Socket = m_ListenerSocket;
-	m_PollDescriptors.back().m_InFlags = core::network::E_PollEvent::PE_In;
+	m_ReturnCode = E_ReturnCode::Success;
+	m_PollDescriptors.push_back(core::network::PollDesc(m_ListenerSocket, core::network::E_PollEvent::PE_In));
 
 	ET_LOG_I(ET_CTX_TRACE, "Listening for connections @ '%s:%i'",
 		core::network::I_Socket::GetAddressString(listenerEp.m_Address).c_str(),
@@ -117,38 +121,35 @@ void TraceServer::Run()
 {
 	for (;;)
 	{
-		int32 const pollCount = core::network::I_Socket::Poll(m_PollDescriptors, -1);
+		// we periodically check in even if there are no new events so we can remove stale clients
+		int32 const pollCount = core::network::I_Socket::Poll(m_PollDescriptors, TraceClient::s_SetupTimeout); 
 		if (pollCount == -1)
 		{
+			m_ReturnCode = E_ReturnCode::ErrorDuringExecution;
 			ET_FATAL("Polling failed!");
 		}
 
-		std::vector<core::network::PollDesc> pollDescriptorsCopy = m_PollDescriptors;
+		m_Time.Update();
+		uint64 const timestampMs = m_Time.Timestamp() / 1000;
+
+		core::network::T_PollDescs pollDescriptorsCopy = m_PollDescriptors;
 		for (core::network::PollDesc const& pollDesc : pollDescriptorsCopy)
 		{
 			if (pollDesc.m_Events & core::network::E_PollEvent::PE_Disconnected)
 			{
 				ET_ASSERT(pollDesc.m_Socket != m_ListenerSocket);
 
-				core::network::Endpoint remoteEp;
-				pollDesc.m_Socket->GetPeerName(remoteEp);
-				ET_LOG_I(ET_CTX_TRACE, "%s:%i Disconnected",
-					core::network::I_Socket::GetAddressString(remoteEp.m_Address).c_str(),
-					core::network::I_Socket::PortNtoH(remoteEp.m_Port));
-
-				m_PollDescriptors[&pollDesc - &pollDescriptorsCopy.front()] = m_PollDescriptors.back();
-				m_PollDescriptors.pop_back();
-
-				continue;
-			}
-
-			if (!(pollDesc.m_Events & core::network::E_PollEvent::PE_In))
-			{
+				RemoveClient(pollDesc.m_Socket.Get());
 				continue;
 			}
 
 			if (pollDesc.m_Socket == m_ListenerSocket)
 			{
+				if (!(pollDesc.m_Events & core::network::E_PollEvent::PE_In))
+				{
+					continue;
+				}
+
 				core::network::Endpoint remoteEp;
 				bool wouldBlock;
 				RefPtr<core::network::I_Socket> newSocket = m_ListenerSocket->Accept(remoteEp, wouldBlock);
@@ -158,62 +159,126 @@ void TraceServer::Run()
 				}
 				else
 				{
-					m_PollDescriptors.push_back(core::network::PollDesc());
-					m_PollDescriptors.back().m_Socket = newSocket;
-					m_PollDescriptors.back().m_InFlags = core::network::E_PollEvent::PE_In;
-
-					ET_LOG_I(ET_CTX_TRACE, "New connection from '%s:%i'", 
-						core::network::I_Socket::GetAddressString(remoteEp.m_Address).c_str(),
-						core::network::I_Socket::PortNtoH(remoteEp.m_Port));
+					TraceClient const& client = AddClient(newSocket, timestampMs);
 				}
 			}
 			else
 			{
-				char buf[256];
-				int32 const numBytes = pollDesc.m_Socket->Receive(buf, sizeof(buf));
-
-				if (numBytes < 0)
+				TraceClient& client = GetClient(pollDesc.m_Socket.Get());
+				if (client.GetState() == TraceClient::E_State::Invalid)
 				{
-					ET_ERROR("Error receiving data");
+					RemoveClient(pollDesc.m_Socket.Get());
+					continue;
 				}
-				else if (numBytes == 0)
+
+				if (!(pollDesc.m_Events & core::network::E_PollEvent::PE_In))
 				{
-					core::network::Endpoint remoteEp;
-					pollDesc.m_Socket->GetPeerName(remoteEp);
-					ET_LOG_I(ET_CTX_TRACE, "%s:%i Disconnected",
-						core::network::I_Socket::GetAddressString(remoteEp.m_Address).c_str(),
-						core::network::I_Socket::PortNtoH(remoteEp.m_Port));
-
-					m_PollDescriptors[&pollDesc - &pollDescriptorsCopy.front()] = m_PollDescriptors.back();
-					m_PollDescriptors.pop_back();
-				}
-				else
-				{
-					core::network::Endpoint remoteEp;
-					pollDesc.m_Socket->GetPeerName(remoteEp);
-					std::string const message(FS("%s:%i: %s", 
-						core::network::I_Socket::GetAddressString(remoteEp.m_Address).c_str(),
-						core::network::I_Socket::PortNtoH(remoteEp.m_Port), 
-						std::string(buf, numBytes).c_str()));
-
-					ET_LOG_I(ET_CTX_TRACE, "Received message: %s", message.c_str());
-
-					for (core::network::PollDesc const& innerDesc : m_PollDescriptors)
+					if ((client.GetState() != TraceClient::E_State::Ready) && ((timestampMs - client.GetTimestamp()) >= TraceClient::s_SetupTimeout))
 					{
-						if ((innerDesc.m_Socket != m_ListenerSocket) && (innerDesc.m_Socket != pollDesc.m_Socket))
-						{
-							if (!innerDesc.m_Socket->Send(message.c_str(), static_cast<int32>(message.size())))
-							{
-								ET_ERROR("Error sending data");
-							}
-						}
+						ET_WARNING("%s took too long to setup, removing...", client.GetName().c_str());
+						RemoveClient(pollDesc.m_Socket.Get());
 					}
+
+					continue;
 				}
+
+				ReceiveData(client, timestampMs);
 			}
 		}
 	}
 }
 
+//--------------------------
+// TraceServer::ReceiveData
+//
+void TraceServer::ReceiveData(TraceClient& client, uint64 const timestamp)
+{
+	static std::vector<uint8> s_HeaderBuffer(core::TracePackage::GetHeaderSize());
 
-} // namespace cooker
+	size_t bytesReceived;
+	if (!core::network::ReceiveAllBytes(client.GetSocket(), s_HeaderBuffer, bytesReceived))
+	{
+		if (bytesReceived == 0)
+		{
+			RemoveClient(client.GetSocket());
+		}
+		else
+		{
+			ET_ERROR("Error receiving data");
+		}
+	}
+	else
+	{
+		uint16 packageSize = 0u;
+		core::TracePackage::E_Type const packageType = core::TracePackage::ReadHeader(s_HeaderBuffer, packageSize);
+
+		std::vector<uint8> packageBuffer;
+		if (packageSize > 0u)
+		{
+			packageBuffer.resize(static_cast<size_t>(packageSize));
+			if (!core::network::ReceiveAllBytes(client.GetSocket(), packageBuffer, bytesReceived))
+			{
+				ET_WARNING("Failed to receive package data!");
+				return;
+			}
+		}
+
+		client.HandleTracePackage(packageType, packageBuffer, timestamp);
+	}
+}
+
+//------------------------
+// TraceServer::AddClient
+//
+TraceClient& TraceServer::AddClient(RefPtr<core::network::I_Socket> const socket, uint64 const timestamp)
+{
+	ET_ASSERT(m_PollDescriptors.size() == m_Clients.size() + 1u);
+	m_PollDescriptors.emplace_back(socket, core::network::E_PollEvent::PE_In);
+	m_Clients.emplace_back(socket, timestamp);
+
+	ET_LOG_I(ET_CTX_TRACE, "New connection from '%s'", m_Clients.back().GetName().c_str());
+
+	return m_Clients.back();
+}
+
+//---------------------------
+// TraceServer::RemoveClient
+//
+void TraceServer::RemoveClient(core::network::I_Socket const* const socket)
+{
+	T_Clients::iterator const clientIt = GetClientIt(socket);
+	ET_ASSERT(clientIt != m_Clients.cend());
+
+	core::network::T_PollDescs::iterator const pollIt = m_PollDescriptors.begin() + ((clientIt - m_Clients.begin()) + 1u);
+	ET_ASSERT(pollIt->m_Socket.Get() == clientIt->GetSocket());
+
+	ET_LOG_I(ET_CTX_TRACE, "%s Disconnected", clientIt->GetName().c_str());
+
+	core::RemoveSwap(m_Clients, clientIt);
+	core::RemoveSwap(m_PollDescriptors, pollIt);
+}
+
+//------------------------
+// TraceServer::GetClient
+//
+TraceClient& TraceServer::GetClient(core::network::I_Socket const* const socket)
+{
+	T_Clients::iterator const clientIt = GetClientIt(socket);
+	ET_ASSERT(clientIt != m_Clients.cend());
+	return *clientIt;
+}
+
+//--------------------------
+// TraceServer::GetClientIt
+//
+TraceServer::T_Clients::iterator TraceServer::GetClientIt(core::network::I_Socket const* const socket)
+{
+	return std::find_if(m_Clients.begin(), m_Clients.end(), [socket](TraceClient const& client)
+		{
+			return (client.GetSocket() == socket);
+		});
+}
+
+
+} // namespace trace
 } // namespace et

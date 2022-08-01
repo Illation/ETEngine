@@ -34,6 +34,7 @@ public:
 	};
 
 	static std::string const s_TraceServerPort;
+	static std::string const s_ProtocolVersion;
 
 	// write functions - output in network byte order
 	//------------------------------------------------

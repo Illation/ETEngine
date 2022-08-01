@@ -162,10 +162,15 @@ enum E_PollEvent : T_PollEvent
 //
 struct PollDesc final
 {
+	PollDesc() = default;
+	PollDesc(RefPtr<I_Socket> const socket, T_PollEvent const inFlags) : m_Socket(socket), m_InFlags(inFlags) {}
+
 	RefPtr<I_Socket> m_Socket;
-	T_PollEvent m_InFlags;
-	T_PollEvent m_Events;
+	T_PollEvent m_InFlags = E_PollEvent::PE_None;
+	T_PollEvent m_Events = E_PollEvent::PE_None;
 };
+
+typedef std::vector<PollDesc> T_PollDescs;
 
 
 } // namespace network

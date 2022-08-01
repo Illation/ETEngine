@@ -2,6 +2,7 @@
 #include "NetworkTraceHandler.h"
 
 #include <EtCore/Network/Socket.h>
+#include <EtCore/Network/NetworkUtil.h>
 
 
 namespace et {
@@ -13,6 +14,10 @@ namespace core {
 //=======================
 
 
+// static
+int32 const NetworkTraceHandler::s_Timeout = 500; // ms
+
+
 //----------------------------
 // NetworkTraceHandler::d-tor
 //
@@ -20,7 +25,7 @@ namespace core {
 //
 NetworkTraceHandler::~NetworkTraceHandler()
 {
-	core::network::I_Socket::DecrementUseCount(); // Might deinitit socket library if we're not using it elsewhere
+	core::network::I_Socket::DecrementUseCount(); // Might deinit socket library if we're not using it elsewhere
 }
 
 //---------------------------------
@@ -86,6 +91,13 @@ bool NetworkTraceHandler::Initialize()
 	TracePackage::E_Type packageType = TracePackage::E_Type::Invalid;
 	std::vector<uint8> packageBuffer;
 
+	// let the server know we speak the same language
+	if (!network::SendAllBytes(m_Socket.Get(), TracePackage::WriteConnectionAcknowledged()))
+	{
+		ET_LOG_W(ET_CTX_CORE, "Error sending connection acknowledge package!");
+		return false;
+	}
+
 	// acknowledge
 	packageType = ReceivePackage(packageBuffer);
 	if (packageType != TracePackage::E_Type::ConnectionAcknowledged)
@@ -117,48 +129,44 @@ void NetworkTraceHandler::OnTraceMessage(T_TraceContext const context, E_TraceLe
 {
 }
 
-//--------------------------------------
-// NetworkTraceHandler::ReceiveAllBytes
-//
-// use formated buffer size for byte count
-//
-bool NetworkTraceHandler::ReceiveAllBytes(std::vector<uint8>& buffer) const
-{
-	int32 bytesLeft = static_cast<int32>(buffer.size());
-
-	while (bytesLeft >= 0)
-	{
-		int32 const received = m_Socket->Receive(reinterpret_cast<char*>(&buffer[0]), bytesLeft);
-		if (received < 0)
-		{
-			ET_LOG_W(ET_CTX_CORE, "Error receiving bytes from trace server!");
-			break;
-		}
-
-		bytesLeft -= received;
-	}
-
-	return (bytesLeft == 0);
-}
-
 //-------------------------------------
 // NetworkTraceHandler::ReceivePackage
 //
 TracePackage::E_Type NetworkTraceHandler::ReceivePackage(std::vector<uint8>& buffer)
 {
-	static std::vector<uint8> headerBuffer(TracePackage::GetHeaderSize());
+	static std::vector<uint8> s_HeaderBuffer(TracePackage::GetHeaderSize());
 
-	if (!ReceiveAllBytes(headerBuffer))
+	// first poll for network events so we can timeout if we don't receive anything
+	network::T_PollDescs pollDescriptors;
+	pollDescriptors.push_back(network::PollDesc(m_Socket, network::E_PollEvent::PE_In));
+	int32 const pollCount = network::I_Socket::Poll(pollDescriptors, s_Timeout);
+
+	if (pollCount != 1)
+	{
+		ET_LOG_W(ET_CTX_CORE, "Failed to poll for events on socket!");
+		return TracePackage::E_Type::Invalid;
+	}
+
+	if (!(pollDescriptors.back().m_Events & core::network::E_PollEvent::PE_In))
+	{
+		ET_LOG_W(ET_CTX_CORE, "Didn't have package data to receive on the socket!");
+		return TracePackage::E_Type::Invalid;
+	}
+
+	// now we can receive the header in order to figure out how many more bytes we need
+	size_t bytesReceived;
+	if (!network::ReceiveAllBytes(m_Socket.Get(), s_HeaderBuffer, bytesReceived))
 	{
 		ET_LOG_W(ET_CTX_CORE, "Failed to receive header data!");
 		return TracePackage::E_Type::Invalid;
 	}
 
 	uint16 packageSize = 0u;
-	TracePackage::E_Type const packageType = TracePackage::ReadHeader(headerBuffer, packageSize);
+	TracePackage::E_Type const packageType = TracePackage::ReadHeader(s_HeaderBuffer, packageSize);
 
+	// finally we can receive the package data
 	buffer.resize(static_cast<size_t>(packageSize));
-	if (!ReceiveAllBytes(buffer))
+	if (!network::ReceiveAllBytes(m_Socket.Get(), buffer, bytesReceived))
 	{
 		ET_LOG_W(ET_CTX_CORE, "Failed to receive buffer data!");
 		buffer.clear();

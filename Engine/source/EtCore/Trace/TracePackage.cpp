@@ -15,6 +15,23 @@ namespace core {
 //===============
 
 
+// reflection
+//////////////
+RTTR_REGISTRATION
+{
+	rttr::registration::enumeration<TracePackage::E_Type>("TracePackageType") (
+		rttr::value("Invalid", TracePackage::E_Type::Invalid),
+		rttr::value("ConnectionAcknowledged", TracePackage::E_Type::ConnectionAcknowledged),
+		rttr::value("ClientName", TracePackage::E_Type::ClientName),
+		rttr::value("HasClient", TracePackage::E_Type::HasClient),
+		rttr::value("ContextName", TracePackage::E_Type::ContextName),
+		rttr::value("ContextsDone", TracePackage::E_Type::ContextsDone),
+		rttr::value("InitSuccess", TracePackage::E_Type::InitSuccess),
+		rttr::value("InitFailed", TracePackage::E_Type::InitFailed),
+		rttr::value("TraceMessage", TracePackage::E_Type::TraceMessage));
+}
+
+
 // Utility 
 //*********
 
@@ -54,6 +71,7 @@ std::vector<uint8> WriteBasicStringPackage(TracePackage::E_Type const type, std:
 
 // static
 std::string const TracePackage::s_TraceServerPort("6984"); // ET
+std::string const TracePackage::s_ProtocolVersion("v1.0"); 
 
 
 //-------------------------------------------
@@ -61,7 +79,8 @@ std::string const TracePackage::s_TraceServerPort("6984"); // ET
 //
 std::vector<uint8> TracePackage::WriteConnectionAcknowledged()
 {
-	return WriteBasicStringPackage(E_Type::ConnectionAcknowledged, s_ConnectionAcknowledgedStr);
+	std::string const packageStr = s_ConnectionAcknowledgedStr + s_ProtocolVersion;
+	return WriteBasicStringPackage(E_Type::ConnectionAcknowledged, packageStr);
 }
 
 //-----------------------------
@@ -91,7 +110,22 @@ TracePackage::E_Type TracePackage::ReadHeader(std::vector<uint8> const& inBuffer
 //
 bool TracePackage::ReadConnectionAcknowledged(std::vector<uint8> const& inBuffer)
 {
-	return (FileUtil::AsText(inBuffer) == s_ConnectionAcknowledgedStr);
+	std::string const receivedStr = FileUtil::AsText(inBuffer);
+	if ((receivedStr.size() < s_ConnectionAcknowledgedStr.size()) || 
+		(receivedStr.substr(0, s_ConnectionAcknowledgedStr.size()) != s_ConnectionAcknowledgedStr))
+	{
+		ET_LOG_W(ET_CTX_CORE, "Mismatching connection acknowledged ID, received '%s'!", receivedStr.c_str());
+		return false;
+	}
+
+	std::string const versionStr = receivedStr.substr(s_ConnectionAcknowledgedStr.size());
+	if (versionStr != s_ProtocolVersion)
+	{
+		ET_LOG_W(ET_CTX_CORE, "Mismatching protocol version, expected '%s', received '%s'!", s_ProtocolVersion.c_str(), versionStr.c_str());
+		return false;
+	}
+
+	return true;
 }
 
 

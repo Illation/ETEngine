@@ -36,7 +36,7 @@ public:
 		T_AddressFlags const flags = E_AddressFlags::AF_None,
 		E_Protocol const protocol = E_Protocol::Any);
 
-	static int32 Poll(std::vector<PollDesc>& pollDescriptors, int32 const timeout);
+	static int32 Poll(T_PollDescs& pollDescriptors, int32 const timeout); // timeout in ms, or -1 for infinity
 
 	static std::string GetHostName(); 
 	static void GetHostByName(std::vector<SocketAddress>& outAddresses, std::string const& hostName);

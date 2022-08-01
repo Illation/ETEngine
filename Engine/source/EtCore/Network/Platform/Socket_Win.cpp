@@ -402,7 +402,7 @@ std::vector<AddressInfo> I_Socket::GetAddressInfo(char const* const address,
 //----------------
 // I_Socket::Poll
 //
-int32 I_Socket::Poll(std::vector<PollDesc>& pollDescriptors, int32 const timeout)
+int32 I_Socket::Poll(T_PollDescs& pollDescriptors, int32 const timeout)
 {
 	std::vector<pollfd> pfds;
 	pfds.reserve(pollDescriptors.size());

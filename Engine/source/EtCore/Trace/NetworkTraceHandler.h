@@ -16,23 +16,29 @@ namespace network {
 //---------------------
 // NetworkTraceHandler
 //
-// Sends trace messages to a seperately running TraceServer process over the network
+// Sends trace messages to a separately running TraceServer process over the network
 //
 class NetworkTraceHandler : public I_TraceHandler
 {
+	// definitions
+	//-------------
 	RTTR_ENABLE(I_TraceHandler)
 
+	static int32 const s_Timeout;
+
+	// construct destruct
+	//--------------------
 public:
 	virtual ~NetworkTraceHandler(); 
 
+	// interface
+	//-----------
 	virtual bool Initialize() override;
 	virtual void OnTraceMessage(T_TraceContext const context, E_TraceLevel const level, std::string const& timestamp, std::string const& message) override;
 
 	// utility
 	//---------
 private:
-	bool ReceiveAllBytes(std::vector<uint8>& buffer) const;
-
 	TracePackage::E_Type ReceivePackage(std::vector<uint8>& buffer);
 
 
