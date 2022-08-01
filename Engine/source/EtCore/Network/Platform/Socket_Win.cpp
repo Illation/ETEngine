@@ -426,6 +426,62 @@ int32 I_Socket::Poll(std::vector<PollDesc>& pollDescriptors, int32 const timeout
 	return ret;
 }
 
+//-----------------------
+// I_Socket::GetHostName
+//
+std::string I_Socket::GetHostName()
+{
+	char szBuffer[1024];
+	if (gethostname(szBuffer, sizeof(szBuffer)) == SOCKET_ERROR)
+	{
+		ET_ERROR("Failed to get host name: %i", WSAGetLastError());
+	}
+
+	return std::string(szBuffer);
+}
+
+//-------------------------
+// I_Socket::GetHostByName
+//
+void I_Socket::GetHostByName(std::vector<SocketAddress>& outAddresses, std::string const& hostName)
+{
+	struct hostent *host = gethostbyname(hostName.c_str());
+	if (host == nullptr)
+	{
+		ET_ERROR("Failed to get host name: %i", WSAGetLastError());
+	}
+
+	if (host->h_addr_list[0] == nullptr)
+	{
+		ET_ERROR("No Address");
+	}
+
+	if (host->h_addrtype == AF_INET)
+	{
+		size_t i = 0u;
+		while (host->h_addr_list[i] != nullptr)
+		{
+			outAddresses.push_back(SocketAddress());
+			outAddresses.back().m_Family = E_AddressFamily::InterNetwork;
+			outAddresses.back().m_Ip4 = *reinterpret_cast<IpAddress4 const*>(host->h_addr_list[i++]);
+		}
+	}
+	else if (host->h_addrtype == AF_INET6)
+	{
+		size_t i = 0u;
+		while (host->h_addr_list[i] != nullptr)
+		{
+			outAddresses.push_back(SocketAddress());
+			outAddresses.back().m_Family = E_AddressFamily::InterNetwork6;
+			outAddresses.back().m_Ip6 = *reinterpret_cast<IpAddress6 const*>(host->h_addr_list[i++]);
+		}
+	}
+	else
+	{
+		ET_ERROR("Unhandled address family");
+	}
+}
+
 
 //================
 // Windows Socket
@@ -464,7 +520,7 @@ bool WindowsSocket::Connect(Endpoint const& endpoint)
 	int32 const addrLength = ToWinSock(endpoint, addr);
 	if (connect(m_Handle, reinterpret_cast<sockaddr const*>(&addr), addrLength) == SOCKET_ERROR)
 	{
-		ET_ERROR("Failed to connect socket to address: %i", WSAGetLastError());
+		ET_LOG_W(ET_CTX_CORE, "Failed to connect socket to address: %i", WSAGetLastError());
 		return false;
 	}
 
@@ -480,7 +536,7 @@ bool WindowsSocket::Bind(Endpoint const& endpoint)
 	int32 const addrLength = ToWinSock(endpoint, addr);
 	if (bind(m_Handle, reinterpret_cast<sockaddr const*>(&addr), addrLength) == SOCKET_ERROR)
 	{
-		ET_ERROR("Failed to bind socket to address: %i", WSAGetLastError());
+		ET_LOG_W(ET_CTX_CORE, "Failed to bind socket to address: %i", WSAGetLastError());
 		return false;
 	}
 
@@ -494,7 +550,7 @@ bool WindowsSocket::Listen(int32 const backlog)
 {
 	if (listen(m_Handle, backlog) == SOCKET_ERROR)
 	{
-		ET_ERROR("Failed to listen with socket: %i", WSAGetLastError());
+		ET_LOG_W(ET_CTX_CORE, "Failed to listen with socket: %i", WSAGetLastError());
 		return false;
 	}
 

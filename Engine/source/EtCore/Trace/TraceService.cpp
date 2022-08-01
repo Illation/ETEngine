@@ -3,6 +3,7 @@
 
 #include "ConsoleTraceHandler.h"
 #include "DebugOutputTraceHandler.h"
+#include "NetworkTraceHandler.h"
 
 
 namespace et {
@@ -63,7 +64,11 @@ RefPtr<TraceService> TraceService::s_Instance = nullptr;
 void TraceService::Initialize(bool const addDefaultHandlers)
 {
 	ET_ASSERT(!IsInitialized());
-	s_Instance = Create<TraceService>(addDefaultHandlers);
+	s_Instance = Create<TraceService>();
+	if (addDefaultHandlers)
+	{
+		s_Instance->SetupDefaultHandlers();
+	}
 }
 
 //---------------------------
@@ -95,15 +100,27 @@ TraceService::ContextContainer& TraceService::GetContextContainer()
 	return s_ContextContainer;
 }
 
-//----------------------------
-// TraceService::TraceService
+//------------------------------------
+// TraceService::SetupDefaultHandlers
 //
-TraceService::TraceService(bool const addDefaultHandlers)
+// Try to setup a network trace but otherwise fallback to a console trace
+//
+void TraceService::SetupDefaultHandlers()
 {
-	AddHandler<core::ConsoleTraceHandler>();
+	AddHandler<ConsoleTraceHandler>(); // this handler is safe so it can serve to process trace messages until the network trace handler is initialized
+
 #if ET_CT_IS_ENABLED(ET_CT_TRACE_DBG_OUT)
-	AddHandler<core::DebugOutputTraceHandler>();
+	AddHandler<DebugOutputTraceHandler>();
 #endif
+
+	if (AddHandler<NetworkTraceHandler>())
+	{
+		RemoveHandler<ConsoleTraceHandler>();
+	}
+	else
+	{
+		ET_WARNING("Couldn't setup a network tracehandler, falling back to console trace handler!");
+	}
 }
 
 //---------------------

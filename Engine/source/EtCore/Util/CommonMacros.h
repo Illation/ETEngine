@@ -30,6 +30,6 @@
 #ifdef ET_ARCH_X32																								
 #	define ET_BREAK()	__asm { int 3 }																							
 #else																											
-#	define ET_BREAK()	__debugbreak()		
+#	define ET_BREAK()	if (IsDebuggerPresent()) __debugbreak()		
 #endif	
 

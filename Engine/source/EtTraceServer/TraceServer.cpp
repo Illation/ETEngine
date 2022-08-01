@@ -4,6 +4,9 @@
 #include <EtBuild/EngineVersion.h>
 
 #include <EtCore/Reflection/TypeInfoRegistry.h>
+#include <EtCore/Trace/TracePackage.h>
+#include <EtCore/Trace/ConsoleTraceHandler.h>
+#include <EtCore/Trace/DebugOutputTraceHandler.h>
 
 
 namespace et {
@@ -31,7 +34,11 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 
 	// Init stuff
 	//------------
-	core::TraceService::Initialize(true);
+	core::TraceService::Initialize(false);
+	core::TraceService::Instance()->AddHandler<core::ConsoleTraceHandler>();
+#if ET_CT_IS_ENABLED(ET_CT_TRACE_DBG_OUT)
+	core::TraceService::Instance()->AddHandler<core::DebugOutputTraceHandler>();
+#endif
 
 	core::TypeInfoRegistry::Instance().Initialize(); 
 
@@ -47,8 +54,8 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 	core::network::I_Socket::IncrementUseCount(); // Init network library
 
 	std::vector<core::network::AddressInfo> addresses = core::network::I_Socket::GetAddressInfo(nullptr,
-		s_Port.c_str(),
-		core::network::E_AddressFamily::Unspecified,
+		core::TracePackage::s_TraceServerPort.c_str(),
+		core::network::E_AddressFamily::InterNetwork,
 		core::network::E_SocketType::Stream,
 		core::network::E_AddressFlags::AF_Passive);
 

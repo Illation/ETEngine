@@ -45,7 +45,7 @@ bool TraceService::AddHandler(Args&&... args)
 template <typename THandler>
 void TraceService::RemoveHandler()
 {
-	T_Handlers::const_iterator const foundHandlerIt = GetHandlerIt(rttr::get_type<THandler>());
+	T_Handlers::const_iterator const foundHandlerIt = GetHandlerIt(rttr::type::get<THandler>());
 	if (foundHandlerIt != m_Handlers.cend())
 	{
 		m_Handlers.erase(foundHandlerIt);

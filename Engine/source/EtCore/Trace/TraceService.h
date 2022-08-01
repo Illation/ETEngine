@@ -59,11 +59,13 @@ public:
 	// construct destruct
 	//--------------------
 private:
-	TraceService(bool const addDefaultHandlers);
+	TraceService() = default;
 	~TraceService() = default;
 
 	// functionality
 	//---------------
+	void SetupDefaultHandlers();
+
 public:
 	void Trace(T_TraceContext const context, E_TraceLevel const level, bool const timestamp, std::string const& msg);
 

@@ -12,7 +12,11 @@
 #include <EtCore/Reflection/TypeInfoRegistry.h>
 #include <EtCore/Content/AssetDatabase.h>
 #include <EtCore/Content/ResourceManager.h>
+
+#include <EtCore/Trace/ConsoleTraceHandler.h>
+#include <EtCore/Trace/DebugOutputTraceHandler.h>
 #include <EtCore/Trace/FileTraceHandler.h>
+#include <EtCore/Trace/NetworkTraceHandler.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
@@ -76,8 +80,23 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 
 	// Init stuff
 	//------------
-	core::TraceService::Initialize(true); 
-	core::TraceService::Instance()->AddHandler<core::FileTraceHandler>("cooker.log");
+	core::TraceService::Initialize(false); 
+
+	core::TraceService::Instance()->AddHandler<core::FileTraceHandler>("cooker.log"); // File trace first in case network trace fails
+	core::TraceService::Instance()->AddHandler<core::ConsoleTraceHandler>();
+
+#if ET_CT_IS_ENABLED(ET_CT_TRACE_DBG_OUT)
+	core::TraceService::Instance()->AddHandler<core::DebugOutputTraceHandler>();
+#endif
+
+	//if (core::TraceService::Instance()->AddHandler<core::NetworkTraceHandler>())
+	//{
+	//	core::TraceService::Instance()->RemoveHandler<core::ConsoleTraceHandler>();
+	//}
+	//else
+	//{
+	//	ET_WARNING("Couldn't setup a network tracehandler, falling back to console trace handler!");
+	//}
 
 	core::TypeInfoRegistry::Instance().Initialize(); 
 

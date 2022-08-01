@@ -38,6 +38,9 @@ public:
 
 	static int32 Poll(std::vector<PollDesc>& pollDescriptors, int32 const timeout);
 
+	static std::string GetHostName(); 
+	static void GetHostByName(std::vector<SocketAddress>& outAddresses, std::string const& hostName);
+
 	// construct destruct
 	//--------------------
 protected:
