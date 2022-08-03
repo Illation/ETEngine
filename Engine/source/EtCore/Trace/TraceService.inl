@@ -40,7 +40,7 @@ THandler* TraceService::GetHandler()
 // Add a message handler if it can initialize, otherwise return false
 //
 template <typename THandler, typename... Args>
-bool TraceService::AddHandler(Args&&... args)
+THandler* TraceService::AddHandler(Args&&... args)
 {
 	ET_ASSERT(!HasHandler<THandler>());
 	UniquePtr<I_TraceHandler> handler = Create<THandler>(std::forward<Args>(args)...);
@@ -48,10 +48,10 @@ bool TraceService::AddHandler(Args&&... args)
 	if (handler->Initialize())
 	{
 		m_Handlers.push_back(std::move(handler));
-		return true;
+		return static_cast<THandler*>(m_Handlers.back().Get());
 	}
 
-	return false;
+	return nullptr;
 }
 
 //-----------------------------

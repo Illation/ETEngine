@@ -21,15 +21,29 @@ namespace core {
 ConsoleTraceHandler::~ConsoleTraceHandler()
 {
 #ifdef ET_PLATFORM_WIN
-	// Close the streams - otherwise console won't close
-	fclose(m_StdInPtr.Get());
-	fclose(m_StdOutPtr.Get());
-	fclose(m_StdErrPtr.Get());
-
 	// Close the console
-	if (FreeConsole() == false)
+	if (!m_HadConsoleWindow)
 	{
-		DisplayError(TEXT("ConsoleTraceHandler::d-tor"));
+		// Close the streams - otherwise console won't close
+		if (m_StdInPtr != nullptr)
+		{
+			fclose(m_StdInPtr.Get());
+		}
+
+		if (m_StdOutPtr != nullptr)
+		{
+			fclose(m_StdOutPtr.Get());
+		}
+
+		if (m_StdErrPtr != nullptr)
+		{
+			fclose(m_StdErrPtr.Get());
+		}
+
+		if (FreeConsole() == false)
+		{
+			DisplayError(TEXT("ConsoleTraceHandler::d-tor"));
+		}
 	}
 #endif
 }
@@ -43,9 +57,18 @@ bool ConsoleTraceHandler::Initialize()
 {
 #ifdef ET_PLATFORM_WIN
 	// On Windows we don't start the engine as a console application, so we need to open it
-	if (AllocConsole() == false)
+	if (GetConsoleWindow() == NULL)
 	{
-		DisplayError(TEXT("ConsoleTraceHandler::Initialize"));
+		m_HadConsoleWindow = false;
+		if (AllocConsole() == false)
+		{
+			DisplayError(TEXT("ConsoleTraceHandler::Initialize"));
+			return false;
+		}
+	}
+	else
+	{
+		m_HadConsoleWindow = true;
 	}
 
 	// Redirect the CRT standard input, output, and error handles to the console

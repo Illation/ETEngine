@@ -20,7 +20,12 @@ target_definitions()
 add_definitions(-D_CONSOLE)
 # executable and dependancies
 message(STATUS "Adding target: EtTraceServer")
-add_executable(EtTraceServer ${projectFiles})
+if (MSVC)
+	add_executable(EtTraceServer WIN32 ${projectFiles})
+else()
+	add_executable(EtTraceServer ${projectFiles})
+endif()
+
 targetCompileOptions(EtTraceServer)
 addDebugVisualizers(EtTraceServer)
 

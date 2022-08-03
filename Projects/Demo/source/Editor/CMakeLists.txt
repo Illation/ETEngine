@@ -19,7 +19,13 @@ target_definitions()
 add_definitions(-D_CONSOLE)
 
 # executable and dependancies
-add_executable(DemoEditor ${projectFiles})
+message(STATUS "Adding target: DemoEditor")
+if (MSVC)
+	add_executable(DemoEditor WIN32 ${projectFiles})
+else()
+	add_executable(DemoEditor ${projectFiles})
+endif()
+
 targetCompileOptions(DemoEditor)
 
 # directory stuff
@@ -32,7 +38,6 @@ add_dependencies(DemoEditor compile-schemas-editor)
 add_dependencies(DemoEditor EtTraceServer)
 
 # linking
-message(STATUS "Adding target: DemoEditor")
 target_link_libraries (DemoEditor DemoPipeline EtEditor)
 dependancyLinks(DemoEditor) 
 cookerLinks(DemoEditor)

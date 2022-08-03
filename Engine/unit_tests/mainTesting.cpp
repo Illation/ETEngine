@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
 	Catch::Session session;
 
 	et::core::TraceService::Initialize();
-	et::core::TraceService::Instance()->SetupDefaultHandlers("ET unit tests");
+	et::core::TraceService::Instance()->SetupDefaultHandlers("ET unit tests", true); // #todo: redirect std output from tests
 
 	int result = session.run(argc, argv);
 

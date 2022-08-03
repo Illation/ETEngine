@@ -4,6 +4,14 @@
 
 #include <EtTraceServer/TraceServer.h>
 
+#ifdef ET_PLATFORM_WIN
+#	ifndef WIN32_LEAN_AND_MEAN
+#		define WIN32_LEAN_AND_MEAN
+#	endif
+#	include <windows.h>
+#	include <EtCore/Util/WindowsUtil.h>
+#endif
+
 
 
 //---------------------------------
@@ -23,3 +31,16 @@ int main(int argc, char *argv[])
 
 	return static_cast<int>(traceServer.GetReturnCode());
 }
+
+#ifdef ET_PLATFORM_WIN
+//---------------------------------
+// WinMain
+//
+// On windows this will be our entry point instead - reroute to the regular main function
+//
+int APIENTRY WinMain(HINSTANCE, HINSTANCE, PSTR, int)
+{
+	std::vector<char*> argv = et::core::GetCommandlineArgV();
+	return main(static_cast<int>(argv.size()), &argv[0]);
+}
+#endif

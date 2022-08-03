@@ -33,6 +33,7 @@ private:
 	Ptr<FILE> m_StdOutPtr;
 	Ptr<FILE> m_StdErrPtr;
 	HANDLE m_ConsoleHandle;
+	bool m_HadConsoleWindow = false;
 #endif
 };
 

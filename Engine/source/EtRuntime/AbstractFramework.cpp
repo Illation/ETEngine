@@ -100,8 +100,11 @@ void AbstractFramework::Run()
 {
 	// init trace handling
 	core::TraceService::Initialize(); // Init trace first because all output depends on it from the start
-	core::TraceService::Instance()->SetupDefaultHandlers("ET Engine Instance");
-	//core::TraceService::Instance()->AddHandler<core::FileTraceHandler>("debug_log.log");
+#ifdef ET_SHIPPING
+	core::TraceService::Instance()->AddHandler<core::FileTraceHandler>("debug_log.log");
+#else
+	core::TraceService::Instance()->SetupDefaultHandlers("ET Engine Instance", true);
+#endif
 
 	// now we can print
 	ET_LOG_I(ET_CTX_RUNTIME, "E.T.Engine");

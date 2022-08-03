@@ -83,20 +83,7 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 	core::TraceService::Initialize(); 
 
 	core::TraceService::Instance()->AddHandler<core::FileTraceHandler>("cooker.log"); // File trace first in case network trace fails
-	core::TraceService::Instance()->AddHandler<core::ConsoleTraceHandler>();
-
-#if ET_CT_IS_ENABLED(ET_CT_TRACE_DBG_OUT)
-	core::TraceService::Instance()->AddHandler<core::DebugOutputTraceHandler>();
-#endif
-
-	//if (core::TraceService::Instance()->AddHandler<core::NetworkTraceHandler>())
-	//{
-	//	core::TraceService::Instance()->RemoveHandler<core::ConsoleTraceHandler>();
-	//}
-	//else
-	//{
-	//	ET_WARNING("Couldn't setup a network tracehandler, falling back to console trace handler!");
-	//}
+	core::TraceService::Instance()->SetupDefaultHandlers(FS("ET Cooker (%s)", m_GenerateCompiled ? "Compiled" : "Package"), false);
 
 	core::TypeInfoRegistry::Instance().Initialize(); 
 

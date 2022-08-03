@@ -32,10 +32,11 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 	// Init stuff
 	//------------
 	core::TraceService::Initialize();
-	core::TraceService::Instance()->AddHandler<core::ConsoleTraceHandler>();
 #if ET_CT_IS_ENABLED(ET_CT_TRACE_DBG_OUT)
 	core::TraceService::Instance()->AddHandler<core::DebugOutputTraceHandler>();
 #endif
+	core::TraceService::Instance()->AddHandler<core::ConsoleTraceHandler>();
+
 
 	core::TypeInfoRegistry::Instance().Initialize(); 
 

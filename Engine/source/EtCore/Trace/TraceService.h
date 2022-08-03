@@ -61,7 +61,7 @@ public:
 	void EnableDate(bool const enabled) { m_AddDate = enabled; }
 
 	// handlers
-	void SetupDefaultHandlers(std::string const& traceClientName);
+	void SetupDefaultHandlers(std::string const& traceClientName, bool const canBreak);
 
 	template <typename THandler>
 	bool HasHandler() const;
@@ -70,7 +70,7 @@ public:
 	THandler* GetHandler();
 
 	template <typename THandler, typename... Args>
-	bool AddHandler(Args&&... args);
+	THandler* AddHandler(Args&&... args);
 
 	template <typename THandler>
 	void RemoveHandler();

@@ -4,6 +4,7 @@
 #include "ConsoleTraceHandler.h"
 #include "DebugOutputTraceHandler.h"
 #include "NetworkTraceHandler.h"
+#include "MemoryTraceHandler.h"
 
 
 namespace et {
@@ -107,22 +108,58 @@ void TraceService::Trace(T_TraceContext const context, E_TraceLevel const level,
 //
 // Try to setup a network trace but otherwise fallback to a console trace
 //
-void TraceService::SetupDefaultHandlers(std::string const& traceClientName)
+void TraceService::SetupDefaultHandlers(std::string const& traceClientName, bool const canBreak)
 {
-	AddHandler<ConsoleTraceHandler>(); // this handler is safe so it can serve to process trace messages until the network trace handler is initialized
+	// this handler is safe so it can serve to process trace messages until the network trace handler is initialized
+	MemoryTraceHandler* const memoryHandler = AddHandler<MemoryTraceHandler>();
+	if (canBreak)
+	{
+		ET_ASSERT(memoryHandler != nullptr);
+	}
 
 #if ET_CT_IS_ENABLED(ET_CT_TRACE_DBG_OUT)
 	AddHandler<DebugOutputTraceHandler>();
 #endif
 
-	if (AddHandler<NetworkTraceHandler>(traceClientName))
+	ET_TRACE_I(ET_CTX_CORE, "Start recording early trace relay...");
+
+	NetworkTraceHandler* const networkHandler = AddHandler<NetworkTraceHandler>(traceClientName);
+	if (networkHandler != nullptr)
 	{
-		RemoveHandler<ConsoleTraceHandler>();
+		memoryHandler->Relay(networkHandler);
 	}
 	else
 	{
-		ET_WARNING("Couldn't setup a network tracehandler, falling back to console trace handler!");
+		if (canBreak)
+		{
+			ET_WARNING("Couldn't setup a network tracehandler, falling back to console trace handler!");
+		}
+		else
+		{
+			ET_LOG_W(ET_CTX_CORE, "Couldn't setup a network tracehandler, falling back to console trace handler!");
+		}
+
+		ConsoleTraceHandler* const consoleHandler = AddHandler<ConsoleTraceHandler>();
+		if (consoleHandler == nullptr)
+		{
+			if (canBreak)
+			{
+				ET_WARNING("Couldn't setup a console tracehandler!");
+			}
+			else
+			{
+				ET_LOG_W(ET_CTX_CORE, "Couldn't setup a console tracehandler!");
+			}
+		}
+		else
+		{
+			memoryHandler->Relay(consoleHandler);
+		}
 	}
+
+	RemoveHandler<MemoryTraceHandler>();
+
+	ET_TRACE_I(ET_CTX_CORE, "End of trace relay.");
 }
 
 //--------------------------------
