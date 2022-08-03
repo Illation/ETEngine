@@ -80,7 +80,7 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 
 	// Init stuff
 	//------------
-	core::TraceService::Initialize(false); 
+	core::TraceService::Initialize(); 
 
 	core::TraceService::Instance()->AddHandler<core::FileTraceHandler>("cooker.log"); // File trace first in case network trace fails
 	core::TraceService::Instance()->AddHandler<core::ConsoleTraceHandler>();

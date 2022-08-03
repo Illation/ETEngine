@@ -28,9 +28,6 @@ public:
 		Error
 	};
 
-	static std::string const s_Port;
-
-
 	// construct destruct
 	//--------------------
 	TraceServer(int32 const argc, char* const argv[]);

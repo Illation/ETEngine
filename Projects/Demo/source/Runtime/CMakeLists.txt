@@ -20,14 +20,14 @@ list (APPEND projectFiles ${headers} ${sources} ${c_sources})
 #########
 target_definitions()
 
-add_definitions(-D_CONSOLE)
-if (MSVC)
-	add_definitions(-DWinmain)
-endif(MSVC)
-
 # executable and dependancies
 message(STATUS "Adding target: EtEngineDemo")
-add_executable(EtEngineDemo ${projectFiles})
+if (MSVC)
+	add_executable(EtEngineDemo WIN32 ${projectFiles})
+else()
+	add_executable(EtEngineDemo ${projectFiles})
+endif()
+
 targetCompileOptions(EtEngineDemo)
 addDebugVisualizers(EtEngineDemo)
 

@@ -10,46 +10,6 @@ namespace et {
 namespace core {
 
 
-//====================================
-// Trace Service :: Context Container
-//====================================
-
-
-//-----------------------------------
-// ContextContainer::RegisterContext
-//
-T_TraceContext TraceService::ContextContainer::RegisterContext(std::string const& name)
-{
-	T_TraceContext const ret(name.c_str());
-
-	if (m_Contexts.find(ret) != m_Contexts.cend())
-	{
-		ET_BREAK(); // Can't reliably use asserts because contexts will be registered before asserts are initialized
-		return T_TraceContext();
-	}
-
-	m_Contexts.emplace(ret, name);
-	return ret;
-}
-
-//----------------------------------
-// ContextContainer::GetContextName
-//
-std::string const& TraceService::ContextContainer::GetContextName(T_TraceContext const hash)
-{
-	static std::string const s_InvalidContextName = "invalid_trace_context";
-
-	auto const foundIt = m_Contexts.find(hash);
-	if (foundIt == m_Contexts.cend())
-	{
-		ET_WARNING("invalid trace context name!");
-		return s_InvalidContextName;
-	}
-
-	return foundIt->second;
-}
-
-
 //===============
 // Trace Service
 //===============
@@ -61,14 +21,10 @@ RefPtr<TraceService> TraceService::s_Instance = nullptr;
 //--------------------------
 // TraceService::Initialize
 //
-void TraceService::Initialize(bool const addDefaultHandlers)
+void TraceService::Initialize()
 {
 	ET_ASSERT(!IsInitialized());
 	s_Instance = Create<TraceService>();
-	if (addDefaultHandlers)
-	{
-		s_Instance->SetupDefaultHandlers();
-	}
 }
 
 //---------------------------
@@ -91,36 +47,13 @@ bool TraceService::IsInitialized()
 	return (s_Instance != nullptr);
 }
 
-//-----------------------------
-// TraceService::IsInitialized
+//-----------------------------------
+// TraceService::GetContextContainer
 //
-TraceService::ContextContainer& TraceService::GetContextContainer()
+TraceContextContainer& TraceService::GetContextContainer()
 {
-	static ContextContainer s_ContextContainer;
+	static TraceContextContainer s_ContextContainer;
 	return s_ContextContainer;
-}
-
-//------------------------------------
-// TraceService::SetupDefaultHandlers
-//
-// Try to setup a network trace but otherwise fallback to a console trace
-//
-void TraceService::SetupDefaultHandlers()
-{
-	AddHandler<ConsoleTraceHandler>(); // this handler is safe so it can serve to process trace messages until the network trace handler is initialized
-
-#if ET_CT_IS_ENABLED(ET_CT_TRACE_DBG_OUT)
-	AddHandler<DebugOutputTraceHandler>();
-#endif
-
-	if (AddHandler<NetworkTraceHandler>())
-	{
-		RemoveHandler<ConsoleTraceHandler>();
-	}
-	else
-	{
-		ET_WARNING("Couldn't setup a network tracehandler, falling back to console trace handler!");
-	}
 }
 
 //---------------------
@@ -167,6 +100,29 @@ void TraceService::Trace(T_TraceContext const context, E_TraceLevel const level,
 	// events
 	//--------
 	m_EventDispatcher.Notify(static_cast<T_TraceLevel>(level), new TraceEventData(context, msg));
+}
+
+//------------------------------------
+// TraceService::SetupDefaultHandlers
+//
+// Try to setup a network trace but otherwise fallback to a console trace
+//
+void TraceService::SetupDefaultHandlers(std::string const& traceClientName)
+{
+	AddHandler<ConsoleTraceHandler>(); // this handler is safe so it can serve to process trace messages until the network trace handler is initialized
+
+#if ET_CT_IS_ENABLED(ET_CT_TRACE_DBG_OUT)
+	AddHandler<DebugOutputTraceHandler>();
+#endif
+
+	if (AddHandler<NetworkTraceHandler>(traceClientName))
+	{
+		RemoveHandler<ConsoleTraceHandler>();
+	}
+	else
+	{
+		ET_WARNING("Couldn't setup a network tracehandler, falling back to console trace handler!");
+	}
 }
 
 //--------------------------------

@@ -20,6 +20,21 @@ bool TraceService::HasHandler() const
 }
 
 //--------------------------
+// TraceService::HasHandler
+//
+template <typename THandler>
+THandler* TraceService::GetHandler()
+{
+	T_Handlers::iterator const foundHandlerIt = GetHandlerIt(rttr::type::get<THandler>());
+	if (foundHandlerIt == m_Handlers.cend())
+	{
+		return nullptr;
+	}
+
+	return static_cast<THandler*>((*foundHandlerIt).Get());
+}
+
+//--------------------------
 // TraceService::AddHandler
 //
 // Add a message handler if it can initialize, otherwise return false
@@ -45,11 +60,23 @@ bool TraceService::AddHandler(Args&&... args)
 template <typename THandler>
 void TraceService::RemoveHandler()
 {
-	T_Handlers::const_iterator const foundHandlerIt = GetHandlerIt(rttr::type::get<THandler>());
+	T_Handlers::iterator foundHandlerIt = GetHandlerIt(rttr::type::get<THandler>());
 	if (foundHandlerIt != m_Handlers.cend())
 	{
+		*foundHandlerIt = nullptr;
 		m_Handlers.erase(foundHandlerIt);
 	}
+}
+
+//----------------------------------
+// TraceService::GetHandlerIt
+//
+TraceService::T_Handlers::iterator TraceService::GetHandlerIt(rttr::type const handlerType) 
+{
+	return std::find_if(m_Handlers.begin(), m_Handlers.end(), [handlerType](UniquePtr<I_TraceHandler> const& handler)
+		{
+			return (rttr::type::get(*handler) == handlerType);
+		});
 }
 
 //----------------------------------
@@ -59,7 +86,7 @@ TraceService::T_Handlers::const_iterator TraceService::GetHandlerIt(rttr::type c
 {
 	return std::find_if(m_Handlers.cbegin(), m_Handlers.cend(), [handlerType](UniquePtr<I_TraceHandler> const& handler)
 		{
-			return (rttr::type::get(handler.Get()) == handlerType);
+			return (rttr::type::get(*handler) == handlerType);
 		});
 }
 

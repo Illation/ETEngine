@@ -55,7 +55,8 @@ EditorApp::EditorApp()
 { 
 	RegisterAsTriggerer();
 	
-	core::TraceService::Initialize(true); // Init trace first because all output depends on it from the start
+	core::TraceService::Initialize(); // Init trace first because all output depends on it from the start
+	core::TraceService::Instance()->SetupDefaultHandlers("ET Editor");
 
 	ET_LOG_I(ET_CTX_EDITOR, "E.T.Editor");
 	ET_LOG_I(ET_CTX_EDITOR, "//////////");

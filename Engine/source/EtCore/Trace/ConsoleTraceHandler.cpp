@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "ConsoleTraceHandler.h"
 
+#include <EtCore/Util/WindowsUtil.h>
+
 
 namespace et {
 namespace core {
@@ -18,7 +20,18 @@ namespace core {
 //
 ConsoleTraceHandler::~ConsoleTraceHandler()
 {
+#ifdef ET_PLATFORM_WIN
+	// Close the streams - otherwise console won't close
+	fclose(m_StdInPtr.Get());
+	fclose(m_StdOutPtr.Get());
+	fclose(m_StdErrPtr.Get());
 
+	// Close the console
+	if (FreeConsole() == false)
+	{
+		DisplayError(TEXT("ConsoleTraceHandler::d-tor"));
+	}
+#endif
 }
 
 //---------------------------------
@@ -28,29 +41,26 @@ ConsoleTraceHandler::~ConsoleTraceHandler()
 //
 bool ConsoleTraceHandler::Initialize()
 {
-	// Check if we already have a console attached
-	//if (!_isatty(_fileno(stdout)))
-	//{
-	//	// if not, create one
-	//	if (!AllocConsole())
-	//	{
-	//		std::cout << "Warning: Could not attach to console" << std::endl;
-	//		CheckBreak(Error);
-	//		return;
-	//	}
-	//}
+#ifdef ET_PLATFORM_WIN
+	// On Windows we don't start the engine as a console application, so we need to open it
+	if (AllocConsole() == false)
+	{
+		DisplayError(TEXT("ConsoleTraceHandler::Initialize"));
+	}
 
 	// Redirect the CRT standard input, output, and error handles to the console
 	FILE* coutPtr;
-	freopen_s(&coutPtr, "CONIN$", "r", stdin);
-	freopen_s(&coutPtr, "CONOUT$", "w", stdout);
-	freopen_s(&coutPtr, "CONOUT$", "w", stderr);
 
-	//Clear the error state for each of the C++ standard stream objects. We need to do this, as
-	//attempts to access the standard streams before they refer to a valid target will cause the
-	//iostream objects to enter an error state. In versions of Visual Studio after 2005, this seems
-	//to always occur during startup regardless of whether anything has been read from or written to
-	//the console or not.
+	freopen_s(&coutPtr, "CONIN$", "r", stdin);
+	m_StdInPtr = ToPtr(coutPtr);
+
+	freopen_s(&coutPtr, "CONOUT$", "w", stdout);
+	m_StdOutPtr = ToPtr(coutPtr);
+
+	freopen_s(&coutPtr, "CONOUT$", "w", stderr);
+	m_StdErrPtr = ToPtr(coutPtr);
+
+	// clear error states on streams in case they where used before the console was allocated	
 	std::wcout.clear();
 	std::cout.clear();
 	std::wcerr.clear();
@@ -58,6 +68,10 @@ bool ConsoleTraceHandler::Initialize()
 	std::wcin.clear();
 	std::cin.clear();
 	std::cin.clear();
+
+	// handle so we can change the text colour
+	m_ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+#endif
 
 	m_OutStream = ToPtr(&std::cout);
 

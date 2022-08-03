@@ -29,6 +29,9 @@ private:
 	Ptr<std::ostream> m_OutStream;
 
 #ifdef ET_PLATFORM_WIN
+	Ptr<FILE> m_StdInPtr;
+	Ptr<FILE> m_StdOutPtr;
+	Ptr<FILE> m_StdErrPtr;
 	HANDLE m_ConsoleHandle;
 #endif
 };

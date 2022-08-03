@@ -31,22 +31,23 @@ std::string I_TraceHandler::BuildBasicMessage(T_TraceContext const context,
 	switch (level)
 	{
 	case E_TraceLevel::TL_Verbose:
-		stream << "[VERBOSE] ";
+		stream << "[V] ";
 		break;
 
 	case E_TraceLevel::TL_Info:
+		stream << "[I] ";
 		break;
 
 	case E_TraceLevel::TL_Warning:
-		stream << "[WARNING] ";
+		stream << "[W] ";
 		break;
 
 	case E_TraceLevel::TL_Error:
-		stream << "[ERROR] ";
+		stream << "[E] ";
 		break;
 
 	case E_TraceLevel::TL_Fatal:
-		stream << "[FATAL] ";
+		stream << "[F] ";
 		break;
 
 	default:

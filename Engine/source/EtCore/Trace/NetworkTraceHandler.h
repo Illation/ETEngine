@@ -29,12 +29,17 @@ class NetworkTraceHandler : public I_TraceHandler
 	// construct destruct
 	//--------------------
 public:
+	NetworkTraceHandler(std::string const& traceClientName) : m_TraceClientName(traceClientName) {}
 	virtual ~NetworkTraceHandler(); 
 
 	// interface
 	//-----------
 	virtual bool Initialize() override;
 	virtual void OnTraceMessage(T_TraceContext const context, E_TraceLevel const level, std::string const& timestamp, std::string const& message) override;
+
+	// functionality
+	//---------------
+	void UpdateClientName(std::string const& traceClientName);
 
 	// utility
 	//---------
@@ -46,6 +51,7 @@ private:
 	///////
 
 	RefPtr<network::I_Socket> m_Socket;
+	std::string m_TraceClientName;
 };
 
 

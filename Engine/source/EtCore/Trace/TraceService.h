@@ -4,6 +4,7 @@
 #include "TraceFwd.h"
 #include "TraceEvents.h"
 #include "TraceHandlerInterface.h"
+#include "TraceContextContainer.h"
 
 #include <EtCore/Memory/Create.h>
 #include <EtCore/Memory/RefPointer.h>
@@ -35,26 +36,14 @@ public:
 
 	typedef std::function<void(T_TraceContext const context, E_TraceLevel const level, std::string const& msg)> T_CallbackFn;
 
-	//-------------------
-	// ContextContainer
-	//
-	struct ContextContainer
-	{
-		T_TraceContext RegisterContext(std::string const& name);
-		std::string const& GetContextName(T_TraceContext const hash);
-
-	private:
-		std::unordered_map<T_TraceContext, std::string> m_Contexts;
-	};
-
 	// singleton access
 	//------------------
 	static RefPtr<TraceService> Instance() { return s_Instance; }
-	static void Initialize(bool const addDefaultHandlers);
+	static void Initialize();
 	static void Destroy();
 	static bool IsInitialized();
 
-	static ContextContainer& GetContextContainer();
+	static TraceContextContainer& GetContextContainer();
 
 	// construct destruct
 	//--------------------
@@ -64,26 +53,36 @@ private:
 
 	// functionality
 	//---------------
-	void SetupDefaultHandlers();
-
 public:
+	// trace
 	void Trace(T_TraceContext const context, E_TraceLevel const level, bool const timestamp, std::string const& msg);
 
+	// options
 	void EnableDate(bool const enabled) { m_AddDate = enabled; }
+
+	// handlers
+	void SetupDefaultHandlers(std::string const& traceClientName);
 
 	template <typename THandler>
 	bool HasHandler() const;
+
+	template <typename THandler>
+	THandler* GetHandler();
+
 	template <typename THandler, typename... Args>
 	bool AddHandler(Args&&... args);
+
 	template <typename THandler>
 	void RemoveHandler();
 
+	// listeners
 	T_TraceCallbackId RegisterListener(T_TraceLevel const flags, T_TraceCallbackFn& callback);
 	void UnregisterListener(T_TraceCallbackId& callbackId);
 
 	// utility
 	//---------
 private:
+	inline T_Handlers::iterator GetHandlerIt(rttr::type const handlerType);
 	inline T_Handlers::const_iterator GetHandlerIt(rttr::type const handlerType) const;
 
 

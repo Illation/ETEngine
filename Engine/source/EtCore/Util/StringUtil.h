@@ -32,6 +32,8 @@ std::string string_format(char const* format = nullptr, Args ... args)
 	return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
 }
 
+std::vector<std::string> SeparateByWhitespace(std::string const& inStr);
+
 
 } // namespace core
 } // namespace et

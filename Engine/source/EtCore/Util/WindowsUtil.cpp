@@ -82,6 +82,25 @@ void GetExecutablePathName(std::string& outPath)
 	outPath = std::string(ownPth);
 }
 
+//---------------------------------
+// GetCommandlineArgV
+//
+// convert the WinMain style command line into regular c++ entry point arguments
+//
+std::vector<char*> GetCommandlineArgV()
+{
+	// static so that we don't loose the memory of the char* - this only needs to be called once
+	static std::vector<std::string> separatedCmdLine = SeparateByWhitespace(GetCommandLine()); 
+
+	std::vector<char*> argv;
+	for (std::string& el : separatedCmdLine)
+	{
+		argv.push_back(&el[0]);
+	}
+
+	return argv;
+}
+
 
 } // namespace core
 } // namespace et

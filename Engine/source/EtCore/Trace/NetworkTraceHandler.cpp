@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "NetworkTraceHandler.h"
 
+#include "TraceService.h"
+
 #include <EtCore/Network/Socket.h>
 #include <EtCore/Network/NetworkUtil.h>
 
@@ -112,6 +114,54 @@ bool NetworkTraceHandler::Initialize()
 		return false;
 	}
 
+	// a bit about us
+	std::vector<std::string> contextNames = TraceService::GetContextContainer().GetAllContextNames();
+
+	if (!network::SendAllBytes(m_Socket.Get(), TracePackage::WriteClientInfo(m_TraceClientName, static_cast<uint16>(contextNames.size()))))
+	{
+		ET_LOG_W(ET_CTX_CORE, "Error sending client info package!");
+		return false;
+	}
+
+	// wait for server response
+	packageType = ReceivePackage(packageBuffer);
+	if (packageType != TracePackage::E_Type::HasClient)
+	{
+		ET_LOG_W(ET_CTX_CORE, "Expected server to confirm client info!");
+		return false;
+	}
+	else
+	{
+		ET_ASSERT(packageBuffer.size() == 0u);
+	}
+
+	// now send all of the context names
+	for (std::string const& contextName : contextNames)
+	{
+		if (!network::SendAllBytes(m_Socket.Get(), TracePackage::WriteContextName(contextName)))
+		{
+			ET_LOG_W(ET_CTX_CORE, "Error sending context name package!");
+			return false;
+		}
+	}
+
+	if (!network::SendAllBytes(m_Socket.Get(), TracePackage::WriteContextsDone()))
+	{
+		ET_LOG_W(ET_CTX_CORE, "Error sending context name package!");
+		return false;
+	}
+
+	// wait for server response again - we should now be fully set up
+	packageType = ReceivePackage(packageBuffer);
+	if (packageType != TracePackage::E_Type::InitSuccess)
+	{
+		ET_LOG_W(ET_CTX_CORE, "Expected server to confirm successful initialization!");
+		return false;
+	}
+	else
+	{
+		ET_ASSERT(packageBuffer.size() == 0u);
+	}
 
 	// Done
 	//------
@@ -127,6 +177,57 @@ bool NetworkTraceHandler::Initialize()
 //
 void NetworkTraceHandler::OnTraceMessage(T_TraceContext const context, E_TraceLevel const level, std::string const& timestamp, std::string const& message)
 {
+	if (m_Socket == nullptr)
+	{
+		return;
+	}
+
+	// Check socket status
+	network::T_PollDescs pollDescriptors;
+	pollDescriptors.push_back(network::PollDesc(m_Socket, network::E_PollEvent::PE_Out));
+	int32 const pollCount = network::I_Socket::Poll(pollDescriptors, 0); // don't block at all
+	if (pollCount == -1)
+	{
+		ET_WARNING("Error polling on trace socket!");
+	}
+
+	if (pollDescriptors.back().m_Events & core::network::E_PollEvent::PE_Disconnected)
+	{
+		m_Socket = nullptr;
+		ET_WARNING("Trace server closed the connection!");
+		return;
+	}
+
+	// now send the message
+	if (!network::SendAllBytes(m_Socket.Get(), TracePackage::WriteTraceMessage(context.Get(), level, timestamp, message)))
+	{
+		ET_WARNING("Error sending trace message!");
+	}
+}
+
+//---------------------------------------
+// NetworkTraceHandler::UpdateClientName
+//
+// This can be useful if we need to initialize the trace handler before having a good client name available
+//
+void NetworkTraceHandler::UpdateClientName(std::string const& traceClientName)
+{
+	m_TraceClientName = traceClientName;
+	if (!network::SendAllBytes(m_Socket.Get(), TracePackage::WriteUpdateClientName(traceClientName)))
+	{
+		ET_LOG_W(ET_CTX_CORE, "Error sending context name package!");
+	}
+
+	// server should let us know that it got the new client name
+	std::vector<uint8> packageBuffer;
+	if (ReceivePackage(packageBuffer) != TracePackage::E_Type::InitSuccess)
+	{
+		ET_LOG_W(ET_CTX_CORE, "Expected server to confirm successful initialization!");
+	}
+	else
+	{
+		ET_ASSERT(packageBuffer.size() == 0u);
+	}
 }
 
 //-------------------------------------

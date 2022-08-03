@@ -6,6 +6,7 @@
 #include <EtCore/UpdateCycle/PerformanceInfo.h>
 #include <EtCore/UpdateCycle/TickManager.h>
 #include <EtCore/Reflection/TypeInfoRegistry.h>
+#include <EtCore/Trace/NetworkTraceHandler.h>
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 #	include <EtCore/Hashing/HashStringRegistry.h>
 #endif
@@ -98,7 +99,8 @@ AbstractFramework::~AbstractFramework()
 void AbstractFramework::Run()
 {
 	// init trace handling
-	core::TraceService::Initialize(true); // Init trace first because all output depends on it from the start
+	core::TraceService::Initialize(); // Init trace first because all output depends on it from the start
+	core::TraceService::Instance()->SetupDefaultHandlers("ET Engine Instance");
 	//core::TraceService::Instance()->AddHandler<core::FileTraceHandler>("debug_log.log");
 
 	// now we can print
@@ -110,8 +112,15 @@ void AbstractFramework::Run()
 
 	core::TypeInfoRegistry::Instance().Initialize(); // this needs to be initialized ASAP because serialization depends on it
 
+	// now we can deserialize the configuration
 	fw::Config* const cfg = fw::Config::GetInstance();
 	cfg->Initialize();
+
+	core::NetworkTraceHandler* const netTraceHandler = core::TraceService::Instance()->GetHandler<core::NetworkTraceHandler>();
+	if (netTraceHandler != nullptr)
+	{
+		netTraceHandler->UpdateClientName(cfg->GetWindow().Title);
+	}
 
 	// init unified scene, systems etc
 	fw::UnifiedScene& unifiedScene = fw::UnifiedScene::Instance();

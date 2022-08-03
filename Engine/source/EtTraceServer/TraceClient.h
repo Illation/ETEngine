@@ -1,6 +1,7 @@
 #pragma once
 #include <EtCore/Network/Socket.h>
 #include <EtCore/Trace/TracePackage.h>
+#include <EtCore/Trace/TraceContextContainer.h>
 
 
 namespace et {
@@ -51,6 +52,7 @@ public:
 	// utility
 	//---------
 private:
+	void HandleTraceMessage(std::vector<uint8> const& packageData);
 
 
 	// Data
@@ -59,8 +61,13 @@ private:
 	RefPtr<core::network::I_Socket> m_Socket;
 	core::network::Endpoint m_Endpoint;
 
+	std::string m_Name;
+
 	E_State m_State = E_State::InitialConnection;
 	uint64 m_Timestamp = 0u; // in milliseconds - update whenever state changes
+
+	size_t m_ExpectedContextCount = 0u;
+	core::TraceContextContainer m_ContextContainer;
 };
 
 

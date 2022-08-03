@@ -7,6 +7,7 @@
 
 #include "mainTesting.h"
 
+#include <EtCore/Trace/Assert.h>
 #include <EtCore/Util/AtomicTypes.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Reflection/ReflectionUtil.h>
@@ -43,7 +44,8 @@ int main(int argc, char* argv[])
 
 	Catch::Session session;
 
-	et::core::TraceService::Initialize(true);
+	et::core::TraceService::Initialize();
+	et::core::TraceService::Instance()->SetupDefaultHandlers("ET unit tests");
 
 	int result = session.run(argc, argv);
 

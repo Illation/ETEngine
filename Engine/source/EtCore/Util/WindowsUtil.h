@@ -12,6 +12,8 @@ void DisplayError(LPTSTR lpszFunction);
 
 void GetExecutablePathName(std::string& outPath);
 
+std::vector<char*> GetCommandlineArgV();
+
 
 } // namespace core
 } // namespace et

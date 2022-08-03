@@ -3,6 +3,14 @@
 
 #include <iostream>
 
+#ifdef ET_PLATFORM_WIN
+#	ifndef WIN32_LEAN_AND_MEAN
+#		define WIN32_LEAN_AND_MEAN
+#	endif
+#	include <windows.h>
+#	include <EtCore/Util/WindowsUtil.h>
+#endif
+
 #include <EtCore/FileSystem/FileUtil.h>
 
 #include <Common/linkerHelper.h>
@@ -51,6 +59,19 @@ int main(int argc, char *argv[])
 	delete pFW;
 	return 0;
 }
+
+#ifdef ET_PLATFORM_WIN
+//---------------------------------
+// WinMain
+//
+// On windows this will be our entry point instead - reroute to the regular main function
+//
+int APIENTRY WinMain(HINSTANCE, HINSTANCE, PSTR, int)
+{
+	std::vector<char*> argv = et::core::GetCommandlineArgV();
+	return main(static_cast<int>(argv.size()), &argv[0]);
+}
+#endif
 
 //---------------------------------
 // SetDebuggingOptions

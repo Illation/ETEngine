@@ -19,10 +19,6 @@ namespace trace {
 //==================
 
 
-// static
-std::string const TraceServer::s_Port("3491");
-
-
 //--------------------
 // TraceServer::c-tor
 //
@@ -35,7 +31,7 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 
 	// Init stuff
 	//------------
-	core::TraceService::Initialize(false);
+	core::TraceService::Initialize();
 	core::TraceService::Instance()->AddHandler<core::ConsoleTraceHandler>();
 #if ET_CT_IS_ENABLED(ET_CT_TRACE_DBG_OUT)
 	core::TraceService::Instance()->AddHandler<core::DebugOutputTraceHandler>();
@@ -175,7 +171,7 @@ void TraceServer::Run()
 				{
 					if ((client.GetState() != TraceClient::E_State::Ready) && ((timestampMs - client.GetTimestamp()) >= TraceClient::s_SetupTimeout))
 					{
-						ET_WARNING("%s took too long to setup, removing...", client.GetName().c_str());
+						ET_LOG_W(ET_CTX_TRACE, "%s took too long to setup, removing...", client.GetName().c_str());
 						RemoveClient(pollDesc.m_Socket.Get());
 					}
 
