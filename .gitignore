@@ -5,6 +5,8 @@
 /Engine/third_party/glfw/build/
 /Engine/third_party/rmlui/build/
 
+/Engine/tools/bin/
+
 /Engine/source/EtBuild/EngineVersion.cpp
 
 /Projects/Demo/bin/

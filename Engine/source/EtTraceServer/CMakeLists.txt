@@ -32,7 +32,7 @@ addDebugVisualizers(EtTraceServer)
 # directory stuff
 assign_source_group(${projectFiles})
 assignIdeFolder(EtTraceServer Engine/Tools)
-outputDirectories(EtTraceServer "")
+outputDirectoriesTools(EtTraceServer "")
 
 # linking
 target_link_libraries(EtTraceServer EtCore EtBuild)
@@ -45,3 +45,4 @@ libIncludeDirs()
 include_directories("${ENGINE_DIRECTORY_ABS}/source")
 
 copyDllCommand(EtTraceServer)
+copyToolCommand(EtTraceServer)

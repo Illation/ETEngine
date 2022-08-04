@@ -14,6 +14,8 @@ void GetExecutablePathName(std::string& outPath);
 
 std::vector<char*> GetCommandlineArgV();
 
+void LaunchExecutable(std::string const& path);
+
 
 } // namespace core
 } // namespace et

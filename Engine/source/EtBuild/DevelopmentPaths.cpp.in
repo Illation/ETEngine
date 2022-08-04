@@ -1,0 +1,21 @@
+// file configured automatically by CMake
+
+#include "DevelopmentPaths.h"
+
+
+#ifndef ET_SHIPPING
+
+namespace et {
+namespace build {
+
+
+std::string const DevelopmentPaths::s_EngineDirectory = "@ENGINE_DIRECTORY_ABS@";
+
+std::string const DevelopmentPaths::s_TraceServerName = "@BUILD_TRACESERVER_NAME@";
+std::string const DevelopmentPaths::s_TraceServerDirectory = "@BUILD_TRACESERVER_DIR@/";
+
+
+} // namespace build
+} // namespace et
+
+#endif // ndef ET_SHIPPING

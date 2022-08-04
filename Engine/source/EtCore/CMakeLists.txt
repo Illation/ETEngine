@@ -26,7 +26,7 @@ assignIdeFolder(EtCore Engine)
 
 libOutputDirectories(EtCore)
 
-target_link_libraries (EtCore EtMath)
+target_link_libraries (EtCore EtMath EtBuild)
 if (MSVC)
 	target_link_libraries (EtCore ws2_32.lib)
 endif(MSVC)

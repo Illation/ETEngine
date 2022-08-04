@@ -31,6 +31,7 @@ outputDirectories(unit_tests "")
 # linking
 target_link_libraries (unit_tests EtFramework EtEditor)
 dependancyLinks(unit_tests)
+addToolDependency(unit_tests EtTraceServer)
 
 # library includes
 libIncludeDirs()

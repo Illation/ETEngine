@@ -44,7 +44,9 @@ public:
 	// utility
 	//---------
 private:
+	bool TryConnect();
 	TracePackage::E_Type ReceivePackage(std::vector<uint8>& buffer);
+	bool GetServerExePath(std::string& outPath) const;
 
 
 	// Data

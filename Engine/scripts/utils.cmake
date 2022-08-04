@@ -68,6 +68,87 @@ function(outputDirectories TARGET _suffix)
 endfunction(outputDirectories)
 
 
+# tool output functions
+########################
+function(getToolOutputDir TARGET outDir)
+
+	set(_p )
+	getPlatformArch(_p)
+
+	set(${outDir} "${PROJECT_DIRECTORY}/bin/tools/${_p}/${TARGET}" PARENT_SCOPE)
+
+endfunction(getToolOutputDir)
+
+########################
+function(outputDirectoriesTools TARGET _suffix)
+
+	set(_outDir)
+	getToolOutputDir(${TARGET} _outDir)
+
+	foreach(_c ${CMAKE_CONFIGURATION_TYPES})
+		string(TOUPPER ${_c} _C)
+
+		set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${_C} ${_outDir})
+		set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_NAME_${_C} ${TARGET}_${_c}${_suffix})
+	endforeach()
+
+endfunction(outputDirectoriesTools)
+
+########################
+function(getToolCopyDir TARGET outDir)
+
+	set(_p )
+	getPlatformArch(_p)
+
+	set(${outDir} "${ENGINE_DIRECTORY_ABS}/tools/bin/${_p}/${TARGET}" PARENT_SCOPE)
+
+endfunction(getToolCopyDir)
+
+########################
+function(getToolCopyTargetName TARGET outName)
+
+	set(${outName} "try-copy-tool-${TARGET}" PARENT_SCOPE)
+
+endfunction(getToolCopyTargetName)
+
+########################
+function(copyToolCommand TARGET)
+
+	set(_toolDir)
+	getToolOutputDir(${TARGET} _toolDir)
+
+	set(_copyDir)
+	getToolCopyDir(${TARGET} _copyDir)
+
+	set(_target_name)
+	getToolCopyTargetName(${TARGET} _target_name)
+
+	# the command list that will run - for installing resources
+	#-----------------------------------------------------------
+	message(STATUS "Adding target: ${_target_name}")
+	add_custom_target(${_target_name} 
+		DEPENDS ${deps} ${TARGET} 
+		
+		COMMAND ${CMAKE_COMMAND} -E echo "copy_directory ${_toolDir} ${_copyDir}"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory ${_toolDir} ${_copyDir} || (exit 0) # return true either way in case the tool is running during copy attempt
+
+		VERBATIM
+	)
+	assignIdeFolder(${_target_name} Engine/Build)
+
+endfunction(copyToolCommand)
+
+########################
+function(addToolDependency TARGET TOOL_TARGET)
+
+	set(_copy_target_name)
+	getToolCopyTargetName(${TOOL_TARGET} _copy_target_name)
+
+	add_dependencies(${TARGET} ${_copy_target_name})
+
+endfunction(addToolDependency)
+
+
 # output dir for libraries
 ############################
 function(libOutputDirectories TARGET)

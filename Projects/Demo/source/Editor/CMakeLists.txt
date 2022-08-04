@@ -35,7 +35,7 @@ outputDirectories(DemoEditor "/bin")
 
 add_dependencies(DemoEditor compile-resources-editor)
 add_dependencies(DemoEditor compile-schemas-editor)
-add_dependencies(DemoEditor EtTraceServer)
+addToolDependency(DemoEditor EtTraceServer)
 
 # linking
 target_link_libraries (DemoEditor DemoPipeline EtEditor)

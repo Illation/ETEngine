@@ -1,11 +1,17 @@
 
 
-###########################
-# Version number deduction
-###########################
+#############################################
+# Making Build arguments available in source
+#############################################
 
 # generate the version source file
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/EngineVersion.cpp.in ${CMAKE_CURRENT_SOURCE_DIR}/EngineVersion.cpp)
+
+# generate the development paths source file
+set(BUILD_TRACESERVER_NAME EtTraceServer)
+set(BUILD_TRACESERVER_DIR)
+getToolCopyDir(EtTraceServer BUILD_TRACESERVER_DIR)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/DevelopmentPaths.cpp.in ${CMAKE_CURRENT_SOURCE_DIR}/DevelopmentPaths.cpp)
 
 # files in this library
 file(GLOB_RECURSE headers ${CMAKE_CURRENT_SOURCE_DIR}/*.h ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp.in)

@@ -3,8 +3,15 @@
 
 #include "TraceService.h"
 
+#include <EtBuild/DevelopmentPaths.h>
+
+#include <EtCore/FileSystem/Entry.h>
 #include <EtCore/Network/Socket.h>
 #include <EtCore/Network/NetworkUtil.h>
+
+#ifdef ET_PLATFORM_WINDOWS
+#include <EtCore/Util/WindowsUtil.h>
+#endif
 
 
 namespace et {
@@ -39,78 +46,30 @@ bool NetworkTraceHandler::Initialize()
 {
 	core::network::I_Socket::IncrementUseCount(); // Init network library if it hasn't already happened
 
-	// get the server network address
-	//--------------------------------
-	std::vector<network::SocketAddress> localAddresses; // we assume the trace server is running on localhost
-	network::I_Socket::GetHostByName(localAddresses, network::I_Socket::GetHostName());
-
-	// try to set up a connection with the server
-	//--------------------------------------------
-	network::Endpoint serverEp;
-	for (network::SocketAddress const& localhost : localAddresses)
+	// Connect to the server
+	bool hasConnected = TryConnect();
+	if (!hasConnected)
 	{
-		std::vector<network::AddressInfo> addresses = network::I_Socket::GetAddressInfo(network::I_Socket::GetAddressString(localhost).c_str(),
-			TracePackage::s_TraceServerPort.c_str(),
-			network::E_AddressFamily::Unspecified,
-			network::E_SocketType::Stream);
-
-		for (network::AddressInfo const& info : addresses)
+		// if we couldn't connect on the first try the trace server might not be running, try launching it and connect again
+		std::string traceServerExePath;
+		if (GetServerExePath(traceServerExePath))
 		{
-			m_Socket = network::I_Socket::Create(info.m_Endpoint.m_Address.m_Family, info.m_SocketType, info.m_Protocol);
-			if (m_Socket == nullptr)
-			{
-				continue;
-			}
+			ET_TRACE_I(ET_CTX_CORE, "Attempting to launch trace server after failed connection attempt");
 
-			ET_LOG_I(ET_CTX_CORE, "Attempting connection @ '%s:%i'",
-				network::I_Socket::GetAddressString(info.m_Endpoint.m_Address).c_str(),
-				network::I_Socket::PortNtoH(info.m_Endpoint.m_Port));
-			if (!m_Socket->Connect(info.m_Endpoint))
-			{
-				m_Socket = nullptr;
-				continue;
-			}
-
-			serverEp = info.m_Endpoint;
-			break;
+#ifdef ET_PLATFORM_WINDOWS
+			LaunchExecutable(traceServerExePath);
+			hasConnected = TryConnect();
+#endif
+		}
+		else
+		{
+			return false;
 		}
 	}
 
-	if (m_Socket == nullptr)
+	if (!hasConnected)
 	{
-		ET_LOG_W(ET_CTX_CORE, "Failed to connect to trace server!");
-		return false;
-	}
-
-	ET_LOG_I(ET_CTX_CORE, "Connected to trace server @ '%s:%i'",
-		network::I_Socket::GetAddressString(serverEp.m_Address).c_str(),
-		network::I_Socket::PortNtoH(serverEp.m_Port));
-
-
-	// Setup the connection
-	//----------------------
-
-	TracePackage::E_Type packageType = TracePackage::E_Type::Invalid;
-	std::vector<uint8> packageBuffer;
-
-	// let the server know we speak the same language
-	if (!network::SendAllBytes(m_Socket.Get(), TracePackage::WriteConnectionAcknowledged()))
-	{
-		ET_LOG_W(ET_CTX_CORE, "Error sending connection acknowledge package!");
-		return false;
-	}
-
-	// acknowledge
-	packageType = ReceivePackage(packageBuffer);
-	if (packageType != TracePackage::E_Type::ConnectionAcknowledged)
-	{
-		ET_LOG_W(ET_CTX_CORE, "Expected to receive connection acknowledge package!");
-		return false;
-	}
-
-	if (!TracePackage::ReadConnectionAcknowledged(packageBuffer))
-	{
-		ET_LOG_W(ET_CTX_CORE, "Connection acknowledged package had incorrect data!");
+		ET_TRACE_W(ET_CTX_CORE, "Couldn't connect to trace server after launching!");
 		return false;
 	}
 
@@ -124,7 +83,8 @@ bool NetworkTraceHandler::Initialize()
 	}
 
 	// wait for server response
-	packageType = ReceivePackage(packageBuffer);
+	std::vector<uint8> packageBuffer;
+	TracePackage::E_Type packageType = ReceivePackage(packageBuffer);
 	if (packageType != TracePackage::E_Type::HasClient)
 	{
 		ET_LOG_W(ET_CTX_CORE, "Expected server to confirm client info!");
@@ -277,6 +237,129 @@ TracePackage::E_Type NetworkTraceHandler::ReceivePackage(std::vector<uint8>& buf
 	return packageType;
 }
 
+//---------------------------------
+// NetworkTraceHandler::TryConnect
+//
+// See if we can open a connection to the trace server and validate matching protocols
+//
+bool NetworkTraceHandler::TryConnect()
+{
+	// get the server network address
+	//--------------------------------
+	std::vector<network::SocketAddress> localAddresses; // we assume the trace server is running on localhost
+	network::I_Socket::GetHostByName(localAddresses, network::I_Socket::GetHostName());
+
+	// try to set up a connection with the server
+	//--------------------------------------------
+	network::Endpoint serverEp;
+	for (network::SocketAddress const& localhost : localAddresses)
+	{
+		std::vector<network::AddressInfo> addresses = network::I_Socket::GetAddressInfo(network::I_Socket::GetAddressString(localhost).c_str(),
+			TracePackage::s_TraceServerPort.c_str(),
+			network::E_AddressFamily::Unspecified,
+			network::E_SocketType::Stream);
+
+		for (network::AddressInfo const& info : addresses)
+		{
+			m_Socket = network::I_Socket::Create(info.m_Endpoint.m_Address.m_Family, info.m_SocketType, info.m_Protocol);
+			if (m_Socket == nullptr)
+			{
+				continue;
+			}
+
+			ET_LOG_I(ET_CTX_CORE, "Attempting connection @ '%s:%i'",
+				network::I_Socket::GetAddressString(info.m_Endpoint.m_Address).c_str(),
+				network::I_Socket::PortNtoH(info.m_Endpoint.m_Port));
+			if (!m_Socket->Connect(info.m_Endpoint))
+			{
+				m_Socket = nullptr;
+				continue;
+			}
+
+			serverEp = info.m_Endpoint;
+			break;
+		}
+	}
+
+	if (m_Socket == nullptr)
+	{
+		ET_LOG_W(ET_CTX_CORE, "Failed to connect to trace server!");
+		return false;
+	}
+
+	ET_LOG_I(ET_CTX_CORE, "Connected to trace server @ '%s:%i'",
+		network::I_Socket::GetAddressString(serverEp.m_Address).c_str(),
+		network::I_Socket::PortNtoH(serverEp.m_Port));
+
+
+	// Setup the connection
+	//----------------------
+
+	TracePackage::E_Type packageType = TracePackage::E_Type::Invalid;
+	std::vector<uint8> packageBuffer;
+
+	// let the server know we speak the same language
+	if (!network::SendAllBytes(m_Socket.Get(), TracePackage::WriteConnectionAcknowledged()))
+	{
+		ET_LOG_W(ET_CTX_CORE, "Error sending connection acknowledge package!");
+		return false;
+	}
+
+	// acknowledge
+	packageType = ReceivePackage(packageBuffer);
+	if (packageType != TracePackage::E_Type::ConnectionAcknowledged)
+	{
+		ET_LOG_W(ET_CTX_CORE, "Expected to receive connection acknowledge package!");
+		return false;
+	}
+
+	if (!TracePackage::ReadConnectionAcknowledged(packageBuffer))
+	{
+		ET_LOG_W(ET_CTX_CORE, "Connection acknowledged package had incorrect data!");
+		return false;
+	}
+}
+
+//-----------------------------------
+// NetworkTraceHandler::GetServerExe
+//
+bool NetworkTraceHandler::GetServerExePath(std::string& outPath) const
+{
+#ifdef ET_SHIPPING
+	return false;
+#else
+
+	static std::vector<std::string> const s_Suffixes({ "_Debug", "_Develop", "_Shipping" }); // #todo: make this less magic
+	static std::string const s_ExeSuffix =
+#ifdef ET_PLATFORM_WIN
+		".exe";
+#else
+		"";
+#endif
+
+	Directory toolDir(build::DevelopmentPaths::s_TraceServerDirectory, nullptr);
+	toolDir.Mount();
+
+	std::vector<Entry*> const& entries = toolDir.GetChildren();
+	for (Entry* const entry : entries)
+	{
+		if (entry->GetType() == Entry::ENTRY_FILE)
+		{
+			for (std::string const& suffix : s_Suffixes)
+			{
+				if (entry->GetNameOnly() == build::DevelopmentPaths::s_TraceServerName + suffix + s_ExeSuffix)
+				{
+					outPath = entry->GetName();
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+
+#endif
+}
 
 
 } // namespace core
