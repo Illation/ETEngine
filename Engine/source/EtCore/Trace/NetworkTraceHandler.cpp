@@ -9,7 +9,7 @@
 #include <EtCore/Network/Socket.h>
 #include <EtCore/Network/NetworkUtil.h>
 
-#ifdef ET_PLATFORM_WINDOWS
+#ifdef ET_PLATFORM_WIN
 #include <EtCore/Util/WindowsUtil.h>
 #endif
 
@@ -56,7 +56,7 @@ bool NetworkTraceHandler::Initialize()
 		{
 			ET_TRACE_I(ET_CTX_CORE, "Attempting to launch trace server after failed connection attempt");
 
-#ifdef ET_PLATFORM_WINDOWS
+#ifdef ET_PLATFORM_WIN
 			LaunchExecutable(traceServerExePath);
 			hasConnected = TryConnect();
 #endif
@@ -249,6 +249,7 @@ bool NetworkTraceHandler::TryConnect()
 	std::vector<network::SocketAddress> localAddresses; // we assume the trace server is running on localhost
 	network::I_Socket::GetHostByName(localAddresses, network::I_Socket::GetHostName());
 
+
 	// try to set up a connection with the server
 	//--------------------------------------------
 	network::Endpoint serverEp;
@@ -318,6 +319,8 @@ bool NetworkTraceHandler::TryConnect()
 		ET_LOG_W(ET_CTX_CORE, "Connection acknowledged package had incorrect data!");
 		return false;
 	}
+
+	return true;
 }
 
 //-----------------------------------
