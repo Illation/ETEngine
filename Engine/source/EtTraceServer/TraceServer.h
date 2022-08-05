@@ -22,6 +22,7 @@ public:
 	{
 		Success = 0,
 
+		TraceServerAlreadyRunning,
 		ErrorListening,
 		ErrorDuringExecution,
 

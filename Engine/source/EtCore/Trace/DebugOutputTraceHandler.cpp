@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #include "DebugOutputTraceHandler.h"
 
-#ifdef ET_PLATFORM_WIN
-#	include <EtCore/Util/WindowsUtil.h>
-#endif
+#include <EtCore/Platform/PlatformUtil.h>
 
 
 namespace et {

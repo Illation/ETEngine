@@ -17,7 +17,7 @@
 
 #include <EtMath/MathInc.h>
 
-#include <EtCore/Util/AtomicTypes.h>
+#include <EtCore/Platform/AtomicTypes.h>
 #include <EtCore/Util/CommonMacros.h>
 #include <EtCore/Util/DebugUtilFwd.h>
 #include <EtCore/Trace/Assert.h>

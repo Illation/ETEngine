@@ -21,6 +21,7 @@ add_definitions(-D_CONSOLE)
 message(STATUS "Adding target: unit_tests")
 add_executable(unit_tests ${projectFiles})
 targetCompileOptions(unit_tests)
+target_compile_definitions(unit_tests PRIVATE "-DCATCH_CONFIG_NOSTDOUT")
 addDebugVisualizers(unit_tests)
 
 # directory stuff

@@ -15,7 +15,7 @@
 
 #include <EtBuild/EngineVersion.h>
 
-#include <EtCore/Util/Commands.h>
+#include <EtCore/Platform/Commands.h>
 #include <EtCore/Input/InputManager.h>
 #include <EtCore/UpdateCycle/TickManager.h>
 #include <EtCore/UpdateCycle/PerformanceInfo.h>

@@ -1,8 +1,8 @@
 #pragma once
 #include <RmlUi/Core/SystemInterface.h>
 
-#include <EtCore/Util/CursorShapes.h>
-#include <EtCore/Util/ClipboardControllerInterface.h>
+#include <EtCore/Input/CursorShapes.h>
+#include <EtCore/Input/ClipboardControllerInterface.h>
 
 
 namespace et {

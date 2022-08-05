@@ -2,7 +2,7 @@
 
 #include <EtMath/Vector.h>
 
-#include <EtCore/Util/AtomicTypes.h>
+#include <EtCore/Platform/AtomicTypes.h>
 
 
 using namespace et;

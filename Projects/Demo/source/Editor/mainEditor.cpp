@@ -5,7 +5,8 @@
 
 #include <_generated/resources.c>
 
-#include <EtCore/Util/AtomicTypes.h>
+#include <EtCore/Platform/AtomicTypes.h>
+#include <EtCore/Platform/PlatformUtil.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
 #include <EtEditor/EditorApp.h>
@@ -20,7 +21,6 @@
 #		define WIN32_LEAN_AND_MEAN
 #	endif
 #	include <windows.h>
-#	include <EtCore/Util/WindowsUtil.h>
 #endif
 
 
@@ -111,7 +111,7 @@ void SetDebuggingOptions()
 //
 int APIENTRY WinMain(HINSTANCE, HINSTANCE, PSTR, int)
 {
-	std::vector<char*> argv = et::core::GetCommandlineArgV();
+	std::vector<char*> argv = et::core::platform::GetCommandlineArgV();
 	return main(static_cast<int>(argv.size()), &argv[0]);
 }
 #endif

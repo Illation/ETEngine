@@ -4,8 +4,8 @@
 #if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 
 #include <EtCore/Input/RawInputListener.h>
-#include <EtCore/Util/CursorShapes.h>
-#include <EtCore/Util/ClipboardControllerInterface.h>
+#include <EtCore/Input/CursorShapes.h>
+#include <EtCore/Input/ClipboardControllerInterface.h>
 
 #include <EtRendering/GraphicsContext/GraphicsContext.h>
 #include <EtRendering/GraphicsContext/Viewport.h>

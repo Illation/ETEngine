@@ -2,7 +2,8 @@
 #include <vector>
 #include <string>
 
-#include <EtCore/Util/AtomicTypes.h>
+#include <EtCore/Platform/AtomicTypes.h>
+
 
 namespace et {
 namespace cooker {

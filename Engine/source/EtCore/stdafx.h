@@ -37,10 +37,10 @@ inline void SafeDelete(T &pObjectToDelete)
 
 #pragma region
 #include <EtMath/MathInc.h>
-#include <EtCore/Util/AtomicTypes.h>
+#include <EtCore/Platform/AtomicTypes.h>
 #include <EtCore/UpdateCycle/Context.h>
 #include <EtCore/UpdateCycle/Time.h>
-#include <EtCore/Util/StringUtil.h>
+#include <EtCore/Containers/StringUtil.h>
 #include <EtCore/Util/CommonMacros.h>
 #include <EtCore/Trace/Assert.h>
 #include <EtCore/Trace/Trace.h>

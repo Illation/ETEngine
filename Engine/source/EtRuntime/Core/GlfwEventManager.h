@@ -4,11 +4,11 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include <EtCore/Input/CursorShapes.h>
+#include <EtCore/Input/ClipboardControllerInterface.h>
 #include <EtCore/Input/RawInputProvider.h>
 #include <EtCore/UpdateCycle/Tickable.h>
 #include <EtCore/Util/Singleton.h>
-#include <EtCore/Util/CursorShapes.h>
-#include <EtCore/Util/ClipboardControllerInterface.h>
 
 #include <EtFramework/Config/TickOrder.h>
 

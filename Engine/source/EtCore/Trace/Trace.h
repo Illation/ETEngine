@@ -1,7 +1,7 @@
 #pragma once
 #include "TraceService.h"
 
-#include <EtCore/Util/StringUtil.h>
+#include <EtCore/Containers/StringUtil.h>
 
 
 // Trace vs just logs

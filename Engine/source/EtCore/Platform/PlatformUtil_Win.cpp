@@ -1,5 +1,7 @@
+#ifdef ET_PLATFORM_WIN
+
 #include "stdafx.h"
-#include "WindowsUtil.h"
+#include "PlatformUtil.h"
 
 #include <iostream>
 #include <tchar.h>
@@ -9,21 +11,28 @@
 #include <comutil.h>
 
 #ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
+#	define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
+#include <tlhelp32.h>
 
 
 namespace et {
 namespace core {
 
+namespace platform {
+
+
+// static
+std::string const Util::s_ExecutableExtension = ".exe";
+
 
 //---------------------
-// DisplayError
+// DisplayLastError
 //
 // Displays the last error in the winApi. lpszFunction is just an argument that enhances the debug output
 //
-void DisplayError(LPTSTR lpszFunction)
+void DisplayLastError(std::string const& message)
 {
 	LPVOID lpMsgBuf;
 	LPVOID lpDisplayBuf;
@@ -40,17 +49,12 @@ void DisplayError(LPTSTR lpszFunction)
 		0,
 		NULL);
 
-	lpDisplayBuf =
-		(LPVOID)LocalAlloc(LMEM_ZEROINIT,
-		(lstrlen((LPCTSTR)lpMsgBuf)
-			+ lstrlen((LPCTSTR)lpszFunction)
-			+ 40) // account for format string
-			* sizeof(TCHAR));
+	lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT, (lstrlen((LPCTSTR)lpMsgBuf) + message.size() + 40) /* account for format string */ * sizeof(TCHAR));
 
 	if (FAILED(StringCchPrintf((LPTSTR)lpDisplayBuf,
 		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
 		TEXT("%s failed with error code %d as follows:\n%s"),
-		lpszFunction,
+		message.c_str(),
 		dw,
 		lpMsgBuf)))
 	{
@@ -133,6 +137,45 @@ void LaunchExecutable(std::string const& path)
 	CloseHandle(pi.hThread);
 }
 
+//---------------------------------
+// ListRunningProcesses
+//
+// based on https://stackoverflow.com/a/42126277/4414168
+//
+std::vector<std::string> ListRunningProcesses()
+{
+	std::vector<std::string> ret;
+
+	HANDLE hProcessSnap;
+	PROCESSENTRY32 pe32;
+	hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+
+	if (hProcessSnap != INVALID_HANDLE_VALUE) 
+	{
+		pe32.dwSize = sizeof(PROCESSENTRY32);
+		if (Process32First(hProcessSnap, &pe32)) 
+		{ 
+			// Gets first running process
+			ret.push_back(std::string(pe32.szExeFile));
+
+			// loop through all running processes looking for process
+			while (Process32Next(hProcessSnap, &pe32)) 
+			{
+				ret.push_back(std::string(pe32.szExeFile));
+			}
+
+			// clean the snapshot object
+			CloseHandle(hProcessSnap);
+		}
+	}
+
+	return ret;
+}
+
+
+} // namespace platform
 
 } // namespace core
 } // namespace et
+
+#endif // def ET_PLATFORM_WIN

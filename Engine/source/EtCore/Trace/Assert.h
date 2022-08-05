@@ -1,6 +1,6 @@
 #pragma once
 #include <EtCore/Util/CommonMacros.h>
-#include <EtCore/Util/StringUtil.h>
+#include <EtCore/Containers/StringUtil.h>
 
 #include "TraceFwd.h"
 

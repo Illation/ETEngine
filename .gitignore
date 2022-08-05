@@ -7,6 +7,7 @@
 
 /Engine/tools/bin/
 
+/Engine/source/EtBuild/DevelopmentPaths.cpp
 /Engine/source/EtBuild/EngineVersion.cpp
 
 /Projects/Demo/bin/

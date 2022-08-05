@@ -5,7 +5,7 @@
 #endif
 #include <windows.h>
 
-#include <EtCore/Util/WindowsUtil.h>	
+#include <EtCore/Platform/PlatformUtil.h>	
 
 
 namespace et {
@@ -28,12 +28,14 @@ bool Directory::Create()
 	{
 		return true;
 	}
+
 	std::string path = GetPath() + m_Filename;
 	if (!CreateDirectory(path.c_str(), NULL))
 	{
-		DisplayError(TEXT("CreateDirectory"));
+		platform::DisplayLastError("CreateDirectory");
 		return false;
 	}
+
 	return true;
 }
 

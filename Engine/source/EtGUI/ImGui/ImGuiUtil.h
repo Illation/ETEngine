@@ -5,7 +5,7 @@
 #if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 
 #include <EtCore/Input/KeyCodes.h>
-#include <EtCore/Util/CursorShapes.h>
+#include <EtCore/Input/CursorShapes.h>
 
 
 namespace et {

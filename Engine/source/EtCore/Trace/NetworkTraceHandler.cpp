@@ -8,10 +8,7 @@
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/Network/Socket.h>
 #include <EtCore/Network/NetworkUtil.h>
-
-#ifdef ET_PLATFORM_WIN
-#include <EtCore/Util/WindowsUtil.h>
-#endif
+#include <EtCore/Platform/PlatformUtil.h>
 
 
 namespace et {
@@ -34,7 +31,7 @@ int32 const NetworkTraceHandler::s_Timeout = 500; // ms
 //
 NetworkTraceHandler::~NetworkTraceHandler()
 {
-	core::network::I_Socket::DecrementUseCount(); // Might deinit socket library if we're not using it elsewhere
+	network::I_Socket::DecrementUseCount(); // Might deinit socket library if we're not using it elsewhere
 }
 
 //---------------------------------
@@ -44,7 +41,7 @@ NetworkTraceHandler::~NetworkTraceHandler()
 //
 bool NetworkTraceHandler::Initialize()
 {
-	core::network::I_Socket::IncrementUseCount(); // Init network library if it hasn't already happened
+	network::I_Socket::IncrementUseCount(); // Init network library if it hasn't already happened
 
 	// Connect to the server
 	bool hasConnected = TryConnect();
@@ -56,10 +53,8 @@ bool NetworkTraceHandler::Initialize()
 		{
 			ET_TRACE_I(ET_CTX_CORE, "Attempting to launch trace server after failed connection attempt");
 
-#ifdef ET_PLATFORM_WIN
-			LaunchExecutable(traceServerExePath);
+			platform::LaunchExecutable(traceServerExePath);
 			hasConnected = TryConnect();
-#endif
 		}
 		else
 		{
@@ -332,14 +327,6 @@ bool NetworkTraceHandler::GetServerExePath(std::string& outPath) const
 	return false;
 #else
 
-	static std::vector<std::string> const s_Suffixes({ "_Debug", "_Develop", "_Shipping" }); // #todo: make this less magic
-	static std::string const s_ExeSuffix =
-#ifdef ET_PLATFORM_WIN
-		".exe";
-#else
-		"";
-#endif
-
 	Directory toolDir(build::DevelopmentPaths::s_TraceServerDirectory, nullptr);
 	toolDir.Mount();
 
@@ -348,9 +335,9 @@ bool NetworkTraceHandler::GetServerExePath(std::string& outPath) const
 	{
 		if (entry->GetType() == Entry::ENTRY_FILE)
 		{
-			for (std::string const& suffix : s_Suffixes)
+			for (std::string const& suffix : build::DevelopmentPaths::s_ConfigurationSuffixes)
 			{
-				if (entry->GetNameOnly() == build::DevelopmentPaths::s_TraceServerName + suffix + s_ExeSuffix)
+				if (entry->GetNameOnly() == build::DevelopmentPaths::s_TraceServerName + suffix + platform::Util::s_ExecutableExtension)
 				{
 					outPath = entry->GetName();
 					return true;

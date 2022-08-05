@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ConsoleTraceHandler.h"
 
-#include <EtCore/Util/WindowsUtil.h>
+#include <EtCore/Platform/PlatformUtil.h>
 
 
 namespace et {
@@ -42,7 +42,7 @@ ConsoleTraceHandler::~ConsoleTraceHandler()
 
 		if (FreeConsole() == false)
 		{
-			DisplayError(TEXT("ConsoleTraceHandler::d-tor"));
+			platform::DisplayLastError("ConsoleTraceHandler::d-tor");
 		}
 	}
 #endif
@@ -62,7 +62,7 @@ bool ConsoleTraceHandler::Initialize()
 		m_HadConsoleWindow = false;
 		if (AllocConsole() == false)
 		{
-			DisplayError(TEXT("ConsoleTraceHandler::Initialize"));
+			platform::DisplayLastError("ConsoleTraceHandler::Initialize");
 			return false;
 		}
 	}

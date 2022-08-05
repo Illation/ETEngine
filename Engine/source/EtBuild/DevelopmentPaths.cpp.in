@@ -9,6 +9,8 @@ namespace et {
 namespace build {
 
 
+std::vector<std::string> const DevelopmentPaths::s_ConfigurationSuffixes = std::vector<std::string>({ "_Debug", "_Develop", "_Shipping" });
+
 std::string const DevelopmentPaths::s_EngineDirectory = "@ENGINE_DIRECTORY_ABS@";
 
 std::string const DevelopmentPaths::s_TraceServerName = "@BUILD_TRACESERVER_NAME@";

@@ -2,12 +2,14 @@
 #include "TraceServer.h"
 
 #include <EtBuild/EngineVersion.h>
+#include <EtBuild/DevelopmentPaths.h>
 
 #include <EtCore/Reflection/TypeInfoRegistry.h>
 #include <EtCore/Trace/TracePackage.h>
 #include <EtCore/Trace/ConsoleTraceHandler.h>
 #include <EtCore/Trace/DebugOutputTraceHandler.h>
 #include <EtCore/Network/NetworkUtil.h>
+#include <EtCore/Platform/PlatformUtil.h>
 
 
 namespace et {
@@ -46,7 +48,26 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 	ET_LOG_I(ET_CTX_TRACE, " - version: %s", build::Version::s_Name.c_str());
 	ET_LOG_I(ET_CTX_TRACE, "");
 
-	m_Time.Start();
+	// check there is no other trace server running
+	//----------------------------------------------
+	std::vector<std::string> const processes = core::platform::ListRunningProcesses();
+	size_t traceServerCount = 0u;
+	for (std::string const& processName : processes)
+	{
+		for (std::string const& suffix : build::DevelopmentPaths::s_ConfigurationSuffixes)
+		{
+			if (processName == build::DevelopmentPaths::s_TraceServerName + suffix + core::platform::Util::s_ExecutableExtension)
+			{
+				traceServerCount++;
+			}
+		}
+	}
+
+	if (traceServerCount > 1u) // the first one is this process
+	{
+		m_ReturnCode = E_ReturnCode::TraceServerAlreadyRunning;
+		return;
+	}
 
 	// Setup Socket
 	//--------------
@@ -98,6 +119,8 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 	ET_LOG_I(ET_CTX_TRACE, "Listening for connections @ '%s:%i'",
 		core::network::I_Socket::GetAddressString(listenerEp.m_Address).c_str(),
 		core::network::I_Socket::PortNtoH(listenerEp.m_Port));
+
+	m_Time.Start();
 }
 
 //--------------------

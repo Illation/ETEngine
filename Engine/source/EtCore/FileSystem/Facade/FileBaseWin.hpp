@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <strsafe.h>
 
-#include <EtCore/Util/WindowsUtil.h>
+#include <EtCore/Platform/PlatformUtil.h>
 
 
 namespace et {
@@ -50,8 +50,9 @@ FILE_HANDLE FILE_BASE::Open( const char * pathName, FILE_ACCESS_FLAGS accessFlag
 	FILE_HANDLE ret = CreateFile( std::string( pathName ).c_str(), mode, share, NULL, flags, FILE_ATTRIBUTE_NORMAL, NULL);
 	if ( ret == INVALID_HANDLE_VALUE)
 	{
-		DisplayError(TEXT("CreateFile"));
+		platform::DisplayLastError("CreateFile");
 	}
+
 	return ret;
 }
 
@@ -60,9 +61,10 @@ bool FILE_BASE::Close( FILE_HANDLE handle )
 	BOOL result = CloseHandle(handle);
 	if(result == FALSE)
 	{
-		DisplayError(TEXT("DeleteFile"));
+		platform::DisplayLastError("DeleteFile");
 		return false;
 	}
+
 	return true;
 }
 
@@ -75,7 +77,7 @@ bool FILE_BASE::GetEntrySize(FILE_HANDLE handle, int64& size)
 
 	if (result == FALSE)
 	{
-		DisplayError(TEXT("GetFileSizeEx"));
+		platform::DisplayLastError("GetFileSizeEx");
 		return false;
 	}
 
@@ -94,7 +96,7 @@ bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::vector<uint8> & content, uint
 
 	if (FALSE == ::ReadFile(handle, buffer_read, static_cast<DWORD>(numBytes), &bytes_read, &ov))
 	{
-		DisplayError(TEXT("ReadFile"));
+		platform::DisplayLastError("ReadFile");
 		delete[] buffer_read;
 		return false;
 	}
@@ -116,16 +118,17 @@ bool FILE_BASE::WriteFile( FILE_HANDLE handle, const std::vector<uint8> & conten
 	DWORD bytesWritten = 0;
 	if (FALSE == ::WriteFile(handle, content.data(), (DWORD)content.size(), &bytesWritten, NULL))
 	{
-		DisplayError(TEXT("WriteFile"));
+		platform::DisplayLastError("WriteFile");
 		return false;
 	}
 	else if (bytesWritten != content.size()) return false;
 
 	if (FALSE == ::FlushFileBuffers(handle))
 	{
-		DisplayError(TEXT("WriteFile->FlushFileBuffers"));
+		platform::DisplayLastError("WriteFile->FlushFileBuffers");
 		return false;
 	}
+
 	return true;
 }
 
@@ -134,9 +137,10 @@ bool FILE_BASE::DeleteFile( const char * pathName )
 	BOOL result = ::DeleteFile( pathName );
 	if(result == FALSE)
 	{
-		DisplayError(TEXT("DeleteFile"));
+		platform::DisplayLastError("DeleteFile");
 		return false;
 	}
+
 	return true;
 }
 

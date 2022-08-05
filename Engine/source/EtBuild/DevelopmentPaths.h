@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
+#include <vector>
 
-#include <EtCore/Util/AtomicTypes.h>
+#include <EtCore/Platform/AtomicTypes.h>
 
 
 #ifndef ET_SHIPPING
@@ -18,6 +19,8 @@ namespace build {
 class DevelopmentPaths final
 {
 public:
+	static std::vector<std::string> const s_ConfigurationSuffixes;
+
 	static std::string const s_EngineDirectory;
 
 	static std::string const s_TraceServerDirectory;

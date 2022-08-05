@@ -1,5 +1,5 @@
 #pragma once
-#include <EtCore/Util/AtomicTypes.h>
+#include <EtCore/Platform/AtomicTypes.h>
 #include <cstring>
 #include <string>
 

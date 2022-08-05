@@ -3,9 +3,7 @@
 
 #include <limits>
 
-#ifdef ET_PLATFORM_WIN
-#	include <EtCore/Util/WindowsUtil.h>
-#endif
+#include <EtCore/Platform/PlatformUtil.h>
 
 
 namespace et {
@@ -229,7 +227,7 @@ void FileUtil::SetExecutablePath(std::string const& inPath)
 {
 	std::string path;
 #ifdef ET_PLATFORM_WIN
-	GetExecutablePathName(path);
+	platform::GetExecutablePathName(path);
 #else
 	path = inPath;
 #endif
