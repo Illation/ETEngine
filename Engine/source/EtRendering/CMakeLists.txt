@@ -12,7 +12,7 @@ file(GLOB_RECURSE c_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
 
 list (APPEND projectFiles ${headers} ${sources} ${c_sources})
 
-precompiled_headers(${sources})
+precompiled_headers("${sources}")
 target_definitions()
 
 # library and dependancies
@@ -24,11 +24,10 @@ assign_source_group(${projectFiles})
 assignIdeFolder(EtRendering Engine)
 libOutputDirectories(EtRendering)
 
-target_link_libraries (EtRendering NothingsStb EtMath EtCore)
+target_link_libraries (EtRendering EtRHI)
 
 # library includes
 libIncludeDirs()
 
 # general include dirs
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/..")
-target_include_directories (EtRendering PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

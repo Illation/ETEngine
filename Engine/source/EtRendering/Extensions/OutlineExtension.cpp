@@ -38,7 +38,7 @@ void OutlineExtension::AddMesh(AssetPtr<MeshData> const mesh, render::T_NodeId c
 	}
 
 	// get the VAO of our mesh associated with the color material
-	T_ArrayLoc const vao = mesh->GetSurface(RenderingSystems::Instance()->GetColorMaterial())->GetVertexArray();
+	rhi::T_ArrayLoc const vao = mesh->GetSurface(RenderingSystems::Instance()->GetColorMaterial())->GetVertexArray();
 
 	// try finding an existing mesh with the VAO
 	auto foundMeshIt = std::find_if(listIt->meshes.begin(), listIt->meshes.end(), [vao](render::MaterialCollection::Mesh const& meshInst)

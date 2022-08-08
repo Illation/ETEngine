@@ -11,8 +11,9 @@
 #	include <EtCore/Hashing/HashStringRegistry.h>
 #endif
 
-#include <EtRendering/GraphicsContext/Viewport.h>
-#include <EtRendering/GraphicsContext/ContextHolder.h>
+#include <EtRHI/GraphicsContext/Viewport.h>
+#include <EtRHI/GraphicsContext/ContextHolder.h>
+
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
 #include <EtRendering/SceneRendering/ShadowRenderer.h>
 
@@ -174,11 +175,11 @@ void AbstractFramework::Run()
 	unifiedScene.Init();
 
 	// init rendering target
-	m_Viewport = Create<render::Viewport>(&m_RenderWindow.GetArea());
+	m_Viewport = Create<rhi::Viewport>(&m_RenderWindow.GetArea());
 	m_Viewport->SetTickDisabled(true);
 	m_SplashScreenRenderer = Create<rt::SplashScreenRenderer>();
 	m_Viewport->SetRenderer(m_SplashScreenRenderer.Get());
-	render::ContextHolder::Instance().CreateMainRenderContext(&m_RenderWindow); // also initializes the viewport and its renderer
+	rhi::ContextHolder::Instance().CreateMainRenderContext(&m_RenderWindow); // also initializes the viewport and its renderer
 
 	// screenshots
 	std::string const& screenshotDir = cfg->GetScreenshotDir();

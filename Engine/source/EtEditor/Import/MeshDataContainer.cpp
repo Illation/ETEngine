@@ -1,4 +1,4 @@
-#include <EtEditor/stdafx.h>
+#include "stdafx.h"
 #include "MeshDataContainer.h"
 
 #include <ext-mikktspace/mikktspace.h>
@@ -29,7 +29,7 @@ void MeshDataContainer::RemoveDuplicateVertices()
 {
 	// setup
 	MeshDataContainer temp;
-	render::T_VertexFlags const localFlags = GetFlags();
+	rhi::T_VertexFlags const localFlags = GetFlags();
 
 	temp.m_Positions.reserve(m_Positions.size());
 	temp.m_Normals.reserve(m_Normals.size());
@@ -52,32 +52,32 @@ void MeshDataContainer::RemoveDuplicateVertices()
 		}
 		else // or copy new vertex and index that
 		{
-			if (localFlags & render::E_VertexFlag::POSITION) 
+			if (localFlags & rhi::E_VertexFlag::POSITION)
 			{
 				temp.m_Positions.push_back(m_Positions[index]);
 			}
 
-			if (localFlags & render::E_VertexFlag::NORMAL) 
+			if (localFlags & rhi::E_VertexFlag::NORMAL)
 			{
 				temp.m_Normals.push_back(m_Normals[index]);
 			}
 
-			if (localFlags & render::E_VertexFlag::BINORMAL) 
+			if (localFlags & rhi::E_VertexFlag::BINORMAL)
 			{
 				temp.m_BiNormals.push_back(m_BiNormals[index]);
 			}
 
-			if (localFlags & render::E_VertexFlag::TANGENT)
+			if (localFlags & rhi::E_VertexFlag::TANGENT)
 			{
 				temp.m_Tangents.push_back(m_Tangents[index]);
 			}
 
-			if (localFlags & render::E_VertexFlag::COLOR) 
+			if (localFlags & rhi::E_VertexFlag::COLOR)
 			{
 				temp.m_Colors.push_back(m_Colors[index]);
 			}
 
-			if (localFlags & render::E_VertexFlag::TEXCOORD) 
+			if (localFlags & rhi::E_VertexFlag::TEXCOORD)
 			{
 				temp.m_TexCoords.push_back(m_TexCoords[index]);
 			}
@@ -355,12 +355,12 @@ void MeshDataContainer::WriteToEtMesh(std::vector<uint8>& outData) const
 	uint64 const vertexCount = static_cast<uint64>(m_VertexCount);
 
 	// #todo: might be okay to store index buffer with 16bits per index
-	render::E_DataType const indexDataType = render::E_DataType::UInt;
-	render::T_VertexFlags const flags = GetFlags();
+	rhi::E_DataType const indexDataType = rhi::E_DataType::UInt;
+	rhi::T_VertexFlags const flags = GetFlags();
 	math::Sphere const boundingSphere = GetBoundingSphere();
 
-	size_t const iBufferSize = indexCount * static_cast<size_t>(render::DataTypeInfo::GetTypeSize(indexDataType));
-	size_t const vBufferSize = vertexCount * static_cast<size_t>(render::AttributeDescriptor::GetVertexSize(flags));
+	size_t const iBufferSize = indexCount * static_cast<size_t>(rhi::DataTypeInfo::GetTypeSize(indexDataType));
+	size_t const vBufferSize = vertexCount * static_cast<size_t>(rhi::AttributeDescriptor::GetVertexSize(flags));
 
 	// init binary writer
 	//--------------------
@@ -369,8 +369,8 @@ void MeshDataContainer::WriteToEtMesh(std::vector<uint8>& outData) const
 		build::Version::s_Name.size() + 1u +
 		sizeof(uint64) + // index count
 		sizeof(uint64) + // vertex count
-		sizeof(render::E_DataType) +
-		sizeof(render::T_VertexFlags) +
+		sizeof(rhi::E_DataType) +
+		sizeof(rhi::T_VertexFlags) +
 		sizeof(float) * 4u + // bounding sphere - pos (3) + radius (1)
 		iBufferSize +
 		vBufferSize);
@@ -397,32 +397,32 @@ void MeshDataContainer::WriteToEtMesh(std::vector<uint8>& outData) const
 	//----------------
 	for (size_t vertIdx = 0u; vertIdx < static_cast<size_t>(vertexCount); vertIdx++)
 	{
-		if (flags & render::E_VertexFlag::POSITION)
+		if (flags & rhi::E_VertexFlag::POSITION)
 		{
 			binWriter.WriteVector(m_Positions[vertIdx]);
 		}
 
-		if (flags & render::E_VertexFlag::NORMAL)
+		if (flags & rhi::E_VertexFlag::NORMAL)
 		{
 			binWriter.WriteVector(m_Normals[vertIdx]);
 		}
 
-		if (flags & render::E_VertexFlag::BINORMAL)
+		if (flags & rhi::E_VertexFlag::BINORMAL)
 		{
 			binWriter.WriteVector(m_BiNormals[vertIdx]);
 		}
 
-		if (flags & render::E_VertexFlag::TANGENT)
+		if (flags & rhi::E_VertexFlag::TANGENT)
 		{
 			binWriter.WriteVector(m_Tangents[vertIdx]);
 		}
 
-		if (flags & render::E_VertexFlag::COLOR)
+		if (flags & rhi::E_VertexFlag::COLOR)
 		{
 			binWriter.WriteVector(m_Colors[vertIdx]);
 		}
 
-		if (flags & render::E_VertexFlag::TEXCOORD)
+		if (flags & rhi::E_VertexFlag::TEXCOORD)
 		{
 			binWriter.WriteVector(m_TexCoords[vertIdx]);
 		}
@@ -432,38 +432,38 @@ void MeshDataContainer::WriteToEtMesh(std::vector<uint8>& outData) const
 //-----------------------------
 // MeshDataContainer::GetFlags
 //
-render::T_VertexFlags MeshDataContainer::GetFlags() const
+rhi::T_VertexFlags MeshDataContainer::GetFlags() const
 {
-	render::T_VertexFlags outFlags = 0u;
+	rhi::T_VertexFlags outFlags = 0u;
 
 	if (m_Positions.size() == m_VertexCount)
 	{
-		outFlags |= render::E_VertexFlag::POSITION;
+		outFlags |= rhi::E_VertexFlag::POSITION;
 	}
 
 	if (m_Normals.size() == m_VertexCount)
 	{
-		outFlags |= render::E_VertexFlag::NORMAL;
+		outFlags |= rhi::E_VertexFlag::NORMAL;
 	}
 
 	if (m_BiNormals.size() == m_VertexCount)
 	{
-		outFlags |= render::E_VertexFlag::BINORMAL;
+		outFlags |= rhi::E_VertexFlag::BINORMAL;
 	}
 
 	if (m_Tangents.size() == m_VertexCount)
 	{
-		outFlags |= render::E_VertexFlag::TANGENT;
+		outFlags |= rhi::E_VertexFlag::TANGENT;
 	}
 
 	if (m_Colors.size() == m_VertexCount)
 	{
-		outFlags |= render::E_VertexFlag::COLOR;
+		outFlags |= rhi::E_VertexFlag::COLOR;
 	}
 
 	if (m_TexCoords.size() == m_VertexCount)
 	{
-		outFlags |= render::E_VertexFlag::TEXCOORD;
+		outFlags |= rhi::E_VertexFlag::TEXCOORD;
 	}
 
 	return outFlags;
@@ -501,37 +501,37 @@ math::Sphere MeshDataContainer::GetBoundingSphere() const
 //
 size_t MeshDataContainer::GetVertexIdx(MeshDataContainer const& other, size_t const index) const
 {
-	render::T_VertexFlags const localFlags = GetFlags();
+	rhi::T_VertexFlags const localFlags = GetFlags();
 	ET_ASSERT_PARANOID(localFlags == other.GetFlags());
 
 	for (size_t localIdx = 0u; localIdx < m_VertexCount; ++localIdx)
 	{
-		if ((localFlags & render::E_VertexFlag::POSITION) && (!math::nearEqualsV(m_Positions[localIdx], other.m_Positions[index])))
+		if ((localFlags & rhi::E_VertexFlag::POSITION) && (!math::nearEqualsV(m_Positions[localIdx], other.m_Positions[index])))
 		{
 			continue;
 		}
 
-		if ((localFlags & render::E_VertexFlag::NORMAL) && (!math::nearEqualsV(m_Normals[localIdx], other.m_Normals[index])))
+		if ((localFlags & rhi::E_VertexFlag::NORMAL) && (!math::nearEqualsV(m_Normals[localIdx], other.m_Normals[index])))
 		{
 			continue;
 		}
 
-		if ((localFlags & render::E_VertexFlag::BINORMAL) && (!math::nearEqualsV(m_BiNormals[localIdx], other.m_BiNormals[index])))
+		if ((localFlags & rhi::E_VertexFlag::BINORMAL) && (!math::nearEqualsV(m_BiNormals[localIdx], other.m_BiNormals[index])))
 		{
 			continue;
 		}
 
-		if ((localFlags & render::E_VertexFlag::TANGENT) && (!math::nearEqualsV(m_Tangents[localIdx], other.m_Tangents[index])))
+		if ((localFlags & rhi::E_VertexFlag::TANGENT) && (!math::nearEqualsV(m_Tangents[localIdx], other.m_Tangents[index])))
 		{
 			continue;
 		}
 
-		if ((localFlags & render::E_VertexFlag::COLOR) && (!math::nearEqualsV(m_Colors[localIdx], other.m_Colors[index])))
+		if ((localFlags & rhi::E_VertexFlag::COLOR) && (!math::nearEqualsV(m_Colors[localIdx], other.m_Colors[index])))
 		{
 			continue;
 		}
 
-		if ((localFlags & render::E_VertexFlag::TEXCOORD) && (!math::nearEqualsV(m_TexCoords[localIdx], other.m_TexCoords[index])))
+		if ((localFlags & rhi::E_VertexFlag::TEXCOORD) && (!math::nearEqualsV(m_TexCoords[localIdx], other.m_TexCoords[index])))
 		{
 			continue;
 		}

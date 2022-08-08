@@ -1,7 +1,7 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
 
 
 namespace et {
@@ -62,12 +62,12 @@ private:
 	uint32 m_RC;
 
 	//OpenGl stuff
-	T_ArrayLoc m_VAO;
-	T_BufferLoc m_VBO;
-	T_BufferLoc m_EBO;
-	T_BufferLoc m_VBOInstance;
+	rhi::T_ArrayLoc m_VAO;
+	rhi::T_BufferLoc m_VBO;
+	rhi::T_BufferLoc m_EBO;
+	rhi::T_BufferLoc m_VBOInstance;
 
-	AssetPtr<ShaderData> m_pPatchShader;
+	AssetPtr<rhi::ShaderData> m_pPatchShader;
 
 	float m_MorphRange = 0.5f;
 

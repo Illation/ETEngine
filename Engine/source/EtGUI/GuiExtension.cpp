@@ -4,7 +4,7 @@
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/Input/RawInputProvider.h>
 
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
 
 #include <EtGUI/Context/RmlUtil.h>
 #include <EtGUI/Context/RmlGlobal.h>
@@ -361,7 +361,7 @@ void GuiExtension::OnTick()
 // Create a screenspace GUI context attached to a specific viewport
 //  - may create a new context list and bind for viewport resize events
 //
-T_ContextId GuiExtension::CreateContext(Ptr<render::Viewport> const viewport)
+T_ContextId GuiExtension::CreateContext(Ptr<rhi::Viewport> const viewport)
 {
 	auto const ret = m_Contexts.insert(ContextData());
 
@@ -583,7 +583,7 @@ void GuiExtension::SetLoadedDocument(T_ContextId const id, core::HashString cons
 //
 // All contexts assigned to a viewport
 //
-Context* GuiExtension::GetContext(render::Viewport const* const vp)
+Context* GuiExtension::GetContext(rhi::Viewport const* const vp)
 {
 	T_ViewportContexts::iterator found = m_ViewportContexts.find(ToPtr(vp));
 	if (found == m_ViewportContexts.cend())
@@ -597,7 +597,7 @@ Context* GuiExtension::GetContext(render::Viewport const* const vp)
 //---------------------------------
 // GuiExtension::GetContexts
 //
-Context* GuiExtension::GetContext(render::Viewport const* const vp, ContextRenderTarget*& renderTarget)
+Context* GuiExtension::GetContext(rhi::Viewport const* const vp, ContextRenderTarget*& renderTarget)
 {
 	T_ViewportContexts::iterator found = m_ViewportContexts.find(ToPtr(vp));
 	if (found == m_ViewportContexts.cend())
@@ -651,7 +651,7 @@ Context& GuiExtension::GetContext(T_ContextId const id)
 //------------------------------------
 // GuiExtension::OnViewportResize
 //
-void GuiExtension::OnViewportResize(render::Viewport const* const vp, ivec2 const dim)
+void GuiExtension::OnViewportResize(rhi::Viewport const* const vp, ivec2 const dim)
 {
 	GetContext(vp)->SetDimensions(dim);
 }
@@ -659,7 +659,7 @@ void GuiExtension::OnViewportResize(render::Viewport const* const vp, ivec2 cons
 //-------------------------------------------
 // GuiExtension::FindOrCreatePerViewport
 //
-GuiExtension::PerViewport& GuiExtension::FindOrCreatePerViewport(Ptr<render::Viewport> const viewport)
+GuiExtension::PerViewport& GuiExtension::FindOrCreatePerViewport(Ptr<rhi::Viewport> const viewport)
 {
 	std::pair<T_ViewportContexts::iterator, bool> found = m_ViewportContexts.try_emplace(viewport, PerViewport());
 	PerViewport& perVp = found.first->second;
@@ -668,8 +668,8 @@ GuiExtension::PerViewport& GuiExtension::FindOrCreatePerViewport(Ptr<render::Vie
 		perVp.m_Viewport = viewport;
 		perVp.m_GuiExtension = ToPtr(this);
 
-		perVp.m_VPCallbackId = viewport->GetEventDispatcher().Register(render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
-			[this](render::T_ViewportEventFlags const, render::ViewportEventData const* const data) -> void
+		perVp.m_VPCallbackId = viewport->GetEventDispatcher().Register(rhi::E_ViewportEvent::VP_Resized, rhi::T_ViewportEventCallback(
+			[this](rhi::T_ViewportEventFlags const, rhi::ViewportEventData const* const data) -> void
 			{
 				OnViewportResize(data->viewport, data->size);
 			}));
@@ -682,7 +682,7 @@ GuiExtension::PerViewport& GuiExtension::FindOrCreatePerViewport(Ptr<render::Vie
 	}
 	else
 	{
-		ET_ASSERT(perVp.m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID);
+		ET_ASSERT(perVp.m_VPCallbackId != rhi::T_ViewportEventDispatcher::INVALID_ID);
 	}
 
 	return found.first->second;
@@ -691,7 +691,7 @@ GuiExtension::PerViewport& GuiExtension::FindOrCreatePerViewport(Ptr<render::Vie
 //------------------------------------
 // GuiExtension::ErasePerViewport
 //
-void GuiExtension::ErasePerViewport(render::Viewport* const vp, T_ViewportContexts::iterator const it)
+void GuiExtension::ErasePerViewport(rhi::Viewport* const vp, T_ViewportContexts::iterator const it)
 {
 	core::RawInputProvider* const inputProvider = vp->GetInputProvider();
 	if (inputProvider != nullptr)
@@ -699,7 +699,7 @@ void GuiExtension::ErasePerViewport(render::Viewport* const vp, T_ViewportContex
 		inputProvider->UnregisterListener(&(it->second));
 	}
 
-	ET_ASSERT(it->second.m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID);
+	ET_ASSERT(it->second.m_VPCallbackId != rhi::T_ViewportEventDispatcher::INVALID_ID);
 	vp->GetEventDispatcher().Unregister(it->second.m_VPCallbackId);
 	m_ViewportContexts.erase(it);
 }

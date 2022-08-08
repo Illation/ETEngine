@@ -3,6 +3,8 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
+#include <EtRHI/Util/PrimitiveRenderer.h>
+
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 #include <EtGUI/Context/RmlUtil.h>
@@ -27,11 +29,11 @@ Rml::TextureHandle const RmlRenderer::s_InvalidTexture = 0u;
 RmlRenderer::RmlRenderer() 
 	: Rml::RenderInterface()
 {
-	m_GeneratedParameters.minFilter = render::E_TextureFilterMode::Linear;
-	m_GeneratedParameters.magFilter = render::E_TextureFilterMode::Linear;
-	m_GeneratedParameters.mipFilter = render::E_TextureFilterMode::Nearest;
-	m_GeneratedParameters.wrapS = render::E_TextureWrapMode::ClampToEdge;
-	m_GeneratedParameters.wrapT = render::E_TextureWrapMode::ClampToEdge;
+	m_GeneratedParameters.minFilter = rhi::E_TextureFilterMode::Linear;
+	m_GeneratedParameters.magFilter = rhi::E_TextureFilterMode::Linear;
+	m_GeneratedParameters.mipFilter = rhi::E_TextureFilterMode::Nearest;
+	m_GeneratedParameters.wrapS = rhi::E_TextureWrapMode::ClampToEdge;
+	m_GeneratedParameters.wrapT = rhi::E_TextureWrapMode::ClampToEdge;
 	m_GeneratedParameters.borderColor = vec4(0.f);
 
 	// default white texture
@@ -42,22 +44,22 @@ RmlRenderer::RmlRenderer()
 	m_EmptyWhiteTex2x2 = GenTextureInternal(reinterpret_cast<void const*>(emptyTexData.data()), ivec2(2));
 
 	// immediate vertex buffer
-	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	m_VertexArray = api->CreateVertexArray();
 	api->BindVertexArray(m_VertexArray);
 
 	m_VertexBuffer = api->CreateBuffer();
-	api->BindBuffer(render::E_BufferType::Vertex, m_VertexBuffer);
-	api->SetBufferData(render::E_BufferType::Vertex, m_VertexBufferSize, nullptr, render::E_UsageHint::Dynamic);
+	api->BindBuffer(rhi::E_BufferType::Vertex, m_VertexBuffer);
+	api->SetBufferData(rhi::E_BufferType::Vertex, m_VertexBufferSize, nullptr, rhi::E_UsageHint::Dynamic);
 
 	SetGenericInputLayout(api);
 
 	m_IndexBuffer = api->CreateBuffer();
-	api->BindBuffer(render::E_BufferType::Vertex, m_IndexBuffer);
-	api->SetBufferData(render::E_BufferType::Vertex, m_IndexBufferSize, nullptr, render::E_UsageHint::Dynamic);
+	api->BindBuffer(rhi::E_BufferType::Vertex, m_IndexBuffer);
+	api->SetBufferData(rhi::E_BufferType::Vertex, m_IndexBufferSize, nullptr, rhi::E_UsageHint::Dynamic);
 
-	api->BindBuffer(render::E_BufferType::Vertex, 0);
+	api->BindBuffer(rhi::E_BufferType::Vertex, 0);
 	api->BindVertexArray(0);
 }
 
@@ -66,7 +68,7 @@ RmlRenderer::RmlRenderer()
 //
 RmlRenderer::~RmlRenderer()
 {
-	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	api->DeleteBuffer(m_IndexBuffer);
 	api->DeleteBuffer(m_VertexBuffer);
@@ -76,7 +78,7 @@ RmlRenderer::~RmlRenderer()
 //-------------------------------------
 // RmlRenderInterface::SetShader
 //
-void RmlRenderer::SetShader(AssetPtr<render::ShaderData> const& shader, AssetPtr<render::ShaderData> const& textShader)
+void RmlRenderer::SetShader(AssetPtr<rhi::ShaderData> const& shader, AssetPtr<rhi::ShaderData> const& textShader)
 {
 	m_Shader = shader;
 	m_TextShader = textShader;
@@ -105,34 +107,34 @@ void RmlRenderer::RenderGeometry(Rml::Vertex* vertices,
 	//---------------------------------
 	m_GraphicsContext->BindVertexArray(m_VertexArray);
 
-	m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, m_VertexBuffer);
+	m_GraphicsContext->BindBuffer(rhi::E_BufferType::Vertex, m_VertexBuffer);
 	int64 const vbSize = sizeof(Rml::Vertex) * static_cast<int64>(numVertices);
 	if (vbSize > m_VertexBufferSize)
 	{
 		m_VertexBufferSize = vbSize;
-		m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex, vbSize, reinterpret_cast<void const*>(vertices), render::E_UsageHint::Dynamic);
+		m_GraphicsContext->SetBufferData(rhi::E_BufferType::Vertex, vbSize, reinterpret_cast<void const*>(vertices), rhi::E_UsageHint::Dynamic);
 	}
 	else
 	{
-		void* p = m_GraphicsContext->MapBuffer(render::E_BufferType::Vertex, render::E_AccessMode::Write);
+		void* p = m_GraphicsContext->MapBuffer(rhi::E_BufferType::Vertex, rhi::E_AccessMode::Write);
 		memcpy(p, vertices, static_cast<size_t>(vbSize));
-		m_GraphicsContext->UnmapBuffer(render::E_BufferType::Vertex);
+		m_GraphicsContext->UnmapBuffer(rhi::E_BufferType::Vertex);
 	}
 
-	m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, 0u);
+	m_GraphicsContext->BindBuffer(rhi::E_BufferType::Vertex, 0u);
 
-	m_GraphicsContext->BindBuffer(render::E_BufferType::Index, m_IndexBuffer);
+	m_GraphicsContext->BindBuffer(rhi::E_BufferType::Index, m_IndexBuffer);
 	int64 const ibSize = sizeof(int32) * static_cast<int64>(numIndices);
 	if (ibSize > m_IndexBufferSize)
 	{
 		m_IndexBufferSize = ibSize;
-		m_GraphicsContext->SetBufferData(render::E_BufferType::Index, ibSize, reinterpret_cast<void const*>(indices), render::E_UsageHint::Dynamic);
+		m_GraphicsContext->SetBufferData(rhi::E_BufferType::Index, ibSize, reinterpret_cast<void const*>(indices), rhi::E_UsageHint::Dynamic);
 	}
 	else
 	{
-		void* p = m_GraphicsContext->MapBuffer(render::E_BufferType::Index, render::E_AccessMode::Write);
+		void* p = m_GraphicsContext->MapBuffer(rhi::E_BufferType::Index, rhi::E_AccessMode::Write);
 		memcpy(p, indices, static_cast<size_t>(ibSize));
-		m_GraphicsContext->UnmapBuffer(render::E_BufferType::Index);
+		m_GraphicsContext->UnmapBuffer(rhi::E_BufferType::Index);
 	}
 
 	// setup shading parameters and draw
@@ -147,14 +149,14 @@ void RmlRenderer::RenderGeometry(Rml::Vertex* vertices,
 		T_Textures::iterator const foundIt = m_Textures.find(textureHandle);
 		ET_ASSERT(foundIt != m_Textures.cend());
 
-		m_Shader->Upload("uTexture"_hash, static_cast<render::TextureData const*>(foundIt->second.Get().Get()));
+		m_Shader->Upload("uTexture"_hash, static_cast<rhi::TextureData const*>(foundIt->second.Get().Get()));
 	}
 	else
 	{
-		m_Shader->Upload("uTexture"_hash, static_cast<render::TextureData const*>(m_EmptyWhiteTex2x2.Get()));
+		m_Shader->Upload("uTexture"_hash, static_cast<rhi::TextureData const*>(m_EmptyWhiteTex2x2.Get()));
 	}
 
-	m_GraphicsContext->DrawElements(render::E_DrawMode::Triangles, static_cast<uint32>(numIndices), render::E_DataType::UInt, 0);
+	m_GraphicsContext->DrawElements(rhi::E_DrawMode::Triangles, static_cast<uint32>(numIndices), rhi::E_DataType::UInt, 0);
 
 	// done
 	//------
@@ -207,12 +209,12 @@ Rml::CompiledGeometryHandle RmlRenderer::CompileGeometry(Rml::Vertex* vertices,
 	int64 const iBufferSize = static_cast<int64>(geometry.m_NumIndices * sizeof(uint32));
 
 	geometry.m_IndexBuffer = m_GraphicsContext->CreateBuffer();
-	m_GraphicsContext->BindBuffer(render::E_BufferType::Index, geometry.m_IndexBuffer);
-	m_GraphicsContext->SetBufferData(render::E_BufferType::Index, iBufferSize, reinterpret_cast<void const*>(indices), render::E_UsageHint::Static);
+	m_GraphicsContext->BindBuffer(rhi::E_BufferType::Index, geometry.m_IndexBuffer);
+	m_GraphicsContext->SetBufferData(rhi::E_BufferType::Index, iBufferSize, reinterpret_cast<void const*>(indices), rhi::E_UsageHint::Static);
 
 	// the vertex data needs to be treated differently depending on if it's generic or for text
 	geometry.m_VertexBuffer = m_GraphicsContext->CreateBuffer();
-	m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, geometry.m_VertexBuffer);
+	m_GraphicsContext->BindBuffer(rhi::E_BufferType::Vertex, geometry.m_VertexBuffer);
 
 	if (geometry.m_Font == nullptr)
 	{
@@ -220,7 +222,7 @@ Rml::CompiledGeometryHandle RmlRenderer::CompileGeometry(Rml::Vertex* vertices,
 
 		int32 const vertSize = sizeof(Rml::Vertex);
 		int64 const vBufferSize = static_cast<int64>(geometry.m_NumVertices * vertSize);
-		m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex, vBufferSize, reinterpret_cast<void const*>(vertices), render::E_UsageHint::Static);
+		m_GraphicsContext->SetBufferData(rhi::E_BufferType::Vertex, vBufferSize, reinterpret_cast<void const*>(vertices), rhi::E_UsageHint::Static);
 
 		SetGenericInputLayout(m_GraphicsContext.Get());
 	}
@@ -238,15 +240,15 @@ Rml::CompiledGeometryHandle RmlRenderer::CompileGeometry(Rml::Vertex* vertices,
 		// vertex buffer
 		int32 const vertSize = sizeof(TextVertex);
 		int64 const bufferSize = static_cast<int64>(geometry.m_NumVertices * vertSize);
-		m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex, bufferSize, reinterpret_cast<void const*>(dataPtr), render::E_UsageHint::Static);
+		m_GraphicsContext->SetBufferData(rhi::E_BufferType::Vertex, bufferSize, reinterpret_cast<void const*>(dataPtr), rhi::E_UsageHint::Static);
 
 		m_GraphicsContext->SetVertexAttributeArrayEnabled(0, true);
 		m_GraphicsContext->SetVertexAttributeArrayEnabled(1, true);
 		m_GraphicsContext->SetVertexAttributeArrayEnabled(2, true);
 
-		m_GraphicsContext->DefineVertexAttributePointer(0, 2, render::E_DataType::Float, false, vertSize, offsetof(TextVertex, m_Position));
-		m_GraphicsContext->DefineVertexAttributePointer(1, 2, render::E_DataType::Float, false, vertSize, offsetof(TextVertex, m_TexCoord));
-		m_GraphicsContext->DefineVertexAttribIPointer(2, 1, render::E_DataType::UByte, vertSize, offsetof(TextVertex, m_Channel));
+		m_GraphicsContext->DefineVertexAttributePointer(0, 2, rhi::E_DataType::Float, false, vertSize, offsetof(TextVertex, m_Position));
+		m_GraphicsContext->DefineVertexAttributePointer(1, 2, rhi::E_DataType::Float, false, vertSize, offsetof(TextVertex, m_TexCoord));
+		m_GraphicsContext->DefineVertexAttribIPointer(2, 1, rhi::E_DataType::UByte, vertSize, offsetof(TextVertex, m_Channel));
 
 		// setup instance buffer
 		ET_ASSERT(fontParams.m_LayerCount > 0u);
@@ -267,22 +269,22 @@ Rml::CompiledGeometryHandle RmlRenderer::CompileGeometry(Rml::Vertex* vertices,
 		}
 
 		geometry.m_VertexBufferInstances = m_GraphicsContext->CreateBuffer();
-		m_GraphicsContext->BindBuffer(render::E_BufferType::Vertex, geometry.m_VertexBufferInstances);
-		m_GraphicsContext->SetBufferData(render::E_BufferType::Vertex,
+		m_GraphicsContext->BindBuffer(rhi::E_BufferType::Vertex, geometry.m_VertexBufferInstances);
+		m_GraphicsContext->SetBufferData(rhi::E_BufferType::Vertex,
 			layerInstances.size() * sizeof(TextLayer),
 			layerInstances.data(),
-			render::E_UsageHint::Static);
+			rhi::E_UsageHint::Static);
 
 		m_GraphicsContext->SetVertexAttributeArrayEnabled(3, true);
 		m_GraphicsContext->SetVertexAttributeArrayEnabled(4, true);
 		m_GraphicsContext->SetVertexAttributeArrayEnabled(5, true);
 		m_GraphicsContext->SetVertexAttributeArrayEnabled(6, true);
 		m_GraphicsContext->SetVertexAttributeArrayEnabled(7, true);
-		m_GraphicsContext->DefineVertexAttributePointer(3, 2, render::E_DataType::Float, false, sizeof(TextLayer), offsetof(TextLayer, m_Offset));
-		m_GraphicsContext->DefineVertexAttributePointer(4, 4, render::E_DataType::Float, false, sizeof(TextLayer), offsetof(TextLayer, m_Color));
-		m_GraphicsContext->DefineVertexAttributePointer(5, 1, render::E_DataType::Float, false, sizeof(TextLayer), offsetof(TextLayer, m_SdfThreshold));
-		m_GraphicsContext->DefineVertexAttributePointer(6, 1, render::E_DataType::Float, false, sizeof(TextLayer), offsetof(TextLayer, m_MinThreshold));
-		m_GraphicsContext->DefineVertexAttribIPointer(7, 1, render::E_DataType::UByte, sizeof(TextLayer), offsetof(TextLayer, m_IsBlurred));
+		m_GraphicsContext->DefineVertexAttributePointer(3, 2, rhi::E_DataType::Float, false, sizeof(TextLayer), offsetof(TextLayer, m_Offset));
+		m_GraphicsContext->DefineVertexAttributePointer(4, 4, rhi::E_DataType::Float, false, sizeof(TextLayer), offsetof(TextLayer, m_Color));
+		m_GraphicsContext->DefineVertexAttributePointer(5, 1, rhi::E_DataType::Float, false, sizeof(TextLayer), offsetof(TextLayer, m_SdfThreshold));
+		m_GraphicsContext->DefineVertexAttributePointer(6, 1, rhi::E_DataType::Float, false, sizeof(TextLayer), offsetof(TextLayer, m_MinThreshold));
+		m_GraphicsContext->DefineVertexAttribIPointer(7, 1, rhi::E_DataType::UByte, sizeof(TextLayer), offsetof(TextLayer, m_IsBlurred));
 		m_GraphicsContext->DefineVertexAttribDivisor(3, 1);
 		m_GraphicsContext->DefineVertexAttribDivisor(4, 1);
 		m_GraphicsContext->DefineVertexAttribDivisor(5, 1);
@@ -314,7 +316,7 @@ void RmlRenderer::RenderCompiledGeometry(Rml::CompiledGeometryHandle geometry, R
 	m_GraphicsContext->BindVertexArray(geo.m_VertexArray); // this should be unbound at the end of rendering a context
 
 	// update shader parameters - shader should already be set
-	render::ShaderData const* shader = nullptr;
+	rhi::ShaderData const* shader = nullptr;
 	if (geo.m_Font != nullptr)
 	{
 		shader = m_TextShader.get();
@@ -337,11 +339,11 @@ void RmlRenderer::RenderCompiledGeometry(Rml::CompiledGeometryHandle geometry, R
 		//shader->Upload("uSdfSize"_hash, geo.m_Font->GetSdfSize());
 		shader->Upload("uUseAntiAliasing"_hash, true);
 
-		m_GraphicsContext->DrawElementsInstanced(render::E_DrawMode::Triangles, geo.m_NumIndices, render::E_DataType::UInt, 0, geo.m_InstanceCount);
+		m_GraphicsContext->DrawElementsInstanced(rhi::E_DrawMode::Triangles, geo.m_NumIndices, rhi::E_DataType::UInt, 0, geo.m_InstanceCount);
 	}
 	else
 	{
-		m_GraphicsContext->DrawElements(render::E_DrawMode::Triangles, geo.m_NumIndices, render::E_DataType::UInt, 0);
+		m_GraphicsContext->DrawElements(rhi::E_DrawMode::Triangles, geo.m_NumIndices, rhi::E_DataType::UInt, 0);
 	}
 }
 
@@ -404,7 +406,7 @@ bool RmlRenderer::LoadTexture(Rml::TextureHandle& textureHandle, Rml::Vector2i& 
 	}
 	else
 	{
-		AssetPtr<render::TextureData> texture = core::ResourceManager::Instance()->GetAssetData<render::TextureData>(assetId);
+		AssetPtr<rhi::TextureData> texture = core::ResourceManager::Instance()->GetAssetData<rhi::TextureData>(assetId);
 		if (texture == nullptr)
 		{
 			textureHandle = s_InvalidTexture;
@@ -466,10 +468,10 @@ void RmlRenderer::SetTransform(Rml::Matrix4f const* transform)
 //----------------------------------------
 // RmlRenderInterface::GenTextureInternal
 //
-UniquePtr<render::TextureData> RmlRenderer::GenTextureInternal(void const* data, ivec2 dimensions)
+UniquePtr<rhi::TextureData> RmlRenderer::GenTextureInternal(void const* data, ivec2 dimensions)
 {
-	UniquePtr<render::TextureData> tex = Create<render::TextureData>(render::E_ColorFormat::RGBA8, dimensions);
-	tex->UploadData(data, render::E_ColorFormat::RGBA, render::E_DataType::UByte, 0u);
+	UniquePtr<rhi::TextureData> tex = Create<rhi::TextureData>(rhi::E_ColorFormat::RGBA8, dimensions);
+	tex->UploadData(data, rhi::E_ColorFormat::RGBA, rhi::E_DataType::UByte, 0u);
 	tex->SetParameters(m_GeneratedParameters);
 	tex->GenerateMipMaps();
 
@@ -479,15 +481,15 @@ UniquePtr<render::TextureData> RmlRenderer::GenTextureInternal(void const* data,
 //-------------------------------------------
 // RmlRenderInterface::SetGenericInputLayout
 //
-void RmlRenderer::SetGenericInputLayout(render::I_GraphicsContextApi* const api) const
+void RmlRenderer::SetGenericInputLayout(rhi::I_GraphicsContextApi* const api) const
 {
 	api->SetVertexAttributeArrayEnabled(0, true);
 	api->SetVertexAttributeArrayEnabled(1, true);
 	api->SetVertexAttributeArrayEnabled(2, true);
 
-	api->DefineVertexAttributePointer(0, 2, render::E_DataType::Float, false, sizeof(Rml::Vertex), offsetof(Rml::Vertex, position));
-	api->DefineVertexAttributePointer(1, 4, render::E_DataType::UByte, true, sizeof(Rml::Vertex), offsetof(Rml::Vertex, colour));
-	api->DefineVertexAttributePointer(2, 2, render::E_DataType::Float, false, sizeof(Rml::Vertex), offsetof(Rml::Vertex, tex_coord));
+	api->DefineVertexAttributePointer(0, 2, rhi::E_DataType::Float, false, sizeof(Rml::Vertex), offsetof(Rml::Vertex, position));
+	api->DefineVertexAttributePointer(1, 4, rhi::E_DataType::UByte, true, sizeof(Rml::Vertex), offsetof(Rml::Vertex, colour));
+	api->DefineVertexAttributePointer(2, 2, rhi::E_DataType::Float, false, sizeof(Rml::Vertex), offsetof(Rml::Vertex, tex_coord));
 }
 
 //-------------------------------------------
@@ -514,12 +516,12 @@ void RmlRenderer::SetupScissorRectangle()
 
 				// clear stencil buffer
 				m_GraphicsContext->SetStencilMask(0xFFFFFFFFu);
-				m_GraphicsContext->Clear(render::E_ClearFlag::CF_Stencil);
+				m_GraphicsContext->Clear(rhi::E_ClearFlag::CF_Stencil);
 
 				// fill stencil buffer
 				m_GraphicsContext->SetDepthMask(false);
-				m_GraphicsContext->SetStencilFunction(render::T_StencilFunc::Never, 1, 0xFFFFFFFFu);
-				m_GraphicsContext->SetStencilOperation(render::E_StencilOp::Replace, render::E_StencilOp::Keep, render::E_StencilOp::Keep);
+				m_GraphicsContext->SetStencilFunction(rhi::T_StencilFunc::Never, 1, 0xFFFFFFFFu);
+				m_GraphicsContext->SetStencilOperation(rhi::E_StencilOp::Replace, rhi::E_StencilOp::Keep, rhi::E_StencilOp::Keep);
 
 				if (m_NullShader == nullptr)
 				{
@@ -535,12 +537,12 @@ void RmlRenderer::SetupScissorRectangle()
 
 				m_NullShader->Upload("worldViewProj"_hash, m_ViewProj); // convert from UI to screen coordinates and perform vertical flip
 
-				render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
+				rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 
 				// reset for normal rendering
 				m_GraphicsContext->SetDepthMask(true);
 				m_GraphicsContext->SetStencilMask(0u);
-				m_GraphicsContext->SetStencilFunction(render::T_StencilFunc::Equal, 1, 0xFFFFFFFFu);
+				m_GraphicsContext->SetStencilFunction(rhi::T_StencilFunc::Equal, 1, 0xFFFFFFFFu);
 			}
 		}
 		else

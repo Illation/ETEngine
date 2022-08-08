@@ -5,8 +5,9 @@
 #include "PostProcessingRenderer.h"
 #include "SceneRendererFwd.h"
 
+#include <EtRHI/GraphicsContext/ViewportRenderer.h>
+
 #include <EtRendering/GraphicsTypes/Camera.h>
-#include <EtRendering/GraphicsContext/ViewportRenderer.h>
 #include <EtRendering/Extensions/RenderEvents.h>
 #include <EtRendering/Extensions/DebugRenderer.h>
 
@@ -24,7 +25,7 @@ class MaterialCollection;
 //
 // Renders a Scene to the viewport
 //
-class ShadedSceneRenderer final : public I_ViewportRenderer, public I_ShadowRenderer
+class ShadedSceneRenderer final : public rhi::I_ViewportRenderer, public I_ShadowRenderer
 {
 	// GlobalAccess
 	//---------------
@@ -43,14 +44,14 @@ public:
 	void SetCamera(core::T_SlotId const cameraId) { m_CameraId = cameraId; }
 	void SetRenderMode(E_RenderMode const mode) { m_RenderMode = mode; }
 
-	// Viewport Renderer Interface
+	// rhi::Viewport Renderer Interface
 	//-----------------------------
 protected:
 	rttr::type GetType() const override { return rttr::type::get<ShadedSceneRenderer>(); }
 	void OnInit() override {}
 	void OnDeinit() override {}
 	void OnResize(ivec2 const dim) override;
-	void OnRender(T_FbLoc const targetFb) override;
+	void OnRender(rhi::T_FbLoc const targetFb) override;
 
 	// Shadow Renderer Interface
 	//-----------------------------
@@ -68,7 +69,7 @@ public:
 
 	T_RenderEventDispatcher& GetEventDispatcher() { return m_Events; }
 
-	E_PolygonMode Get3DPolyMode() const;
+	rhi::E_PolygonMode Get3DPolyMode() const;
 
 	// utility
 	//---------
@@ -102,7 +103,7 @@ private:
 	ScreenSpaceReflections m_SSR;
 	PostProcessingRenderer m_PostProcessing;
 
-	AssetPtr<ShaderData> m_SkyboxShader;
+	AssetPtr<rhi::ShaderData> m_SkyboxShader;
 
 	T_RenderEventDispatcher m_Events;
 

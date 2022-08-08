@@ -7,8 +7,8 @@
 #include <EtCore/Input/CursorShapes.h>
 #include <EtCore/Input/ClipboardControllerInterface.h>
 
-#include <EtRendering/GraphicsContext/GraphicsContext.h>
-#include <EtRendering/GraphicsContext/Viewport.h>
+#include <EtRHI/GraphicsContext/GraphicsContext.h>
+#include <EtRHI/GraphicsContext/Viewport.h>
 
 
 namespace et {
@@ -33,7 +33,7 @@ public:
 
 	void Init(Ptr<core::I_CursorShapeManager> const cursorManager,
 		Ptr<core::I_ClipboardController> const clipboardController,
-		Ptr<render::Viewport> const viewport);
+		Ptr<rhi::Viewport> const viewport);
 	void Deinit();
 
 	// functionality
@@ -42,7 +42,7 @@ public:
 
 	// accessors
 	//-----------
-	render::Viewport* GetViewport() { return m_Viewport.Get(); }
+	rhi::Viewport* GetViewport() { return m_Viewport.Get(); }
 
 	// interface
 	//-----------
@@ -74,7 +74,7 @@ private:
 	Ptr<core::I_ClipboardController> m_ClipboardController;
 	std::string m_LastClipboardText;
 
-	Ptr<render::Viewport> m_Viewport;
+	Ptr<rhi::Viewport> m_Viewport;
 
 	vec2 m_LastValidMousePos;
 };

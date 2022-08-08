@@ -4,7 +4,7 @@
 #include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Containers/slot_map.h>
 
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
 
 
 namespace et {
@@ -57,11 +57,11 @@ private:
 	dvec3 m_SunColor;
 
 	//textures for precomputed data
-	TextureData* m_TexTransmittance = nullptr;
-	TextureData* m_TexIrradiance = nullptr;
-	TextureData* m_TexInscatter = nullptr;
+	rhi::TextureData* m_TexTransmittance = nullptr;
+	rhi::TextureData* m_TexIrradiance = nullptr;
+	rhi::TextureData* m_TexInscatter = nullptr;
 
-	AssetPtr<ShaderData> m_pShader;
+	AssetPtr<rhi::ShaderData> m_pShader;
 };
 
 

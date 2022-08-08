@@ -48,9 +48,9 @@ std::string const EditableEnvironmentMapAsset::s_RadiancePostFix("_radianceCube"
 //
 bool EditableEnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
-	render::TextureData* envCubemap = nullptr;
-	render::TextureData* irradianceMap = nullptr;
-	render::TextureData* radianceMap = nullptr;
+	rhi::TextureData* envCubemap = nullptr;
+	rhi::TextureData* irradianceMap = nullptr;
+	rhi::TextureData* radianceMap = nullptr;
 	if (!CreateTextures(data, envCubemap, irradianceMap, radianceMap))
 	{
 		return false;
@@ -75,16 +75,16 @@ void EditableEnvironmentMapAsset::SetupRuntimeAssetsInternal()
 	render::EnvironmentMapAsset* const mainAsset = new render::EnvironmentMapAsset(*static_cast<render::EnvironmentMapAsset*>(m_Asset));
 	m_RuntimeAssets.emplace_back(mainAsset, true);
 
-	render::TextureAsset* const envCubeMapAsset = new render::TextureAsset();
-	envCubeMapAsset->SetName(core::FileUtil::RemoveExtension(mainAsset->GetName()) + s_EnvMapPostFix + "." + render::TextureFormat::s_TextureFileExt);
+	rhi::TextureAsset* const envCubeMapAsset = new rhi::TextureAsset();
+	envCubeMapAsset->SetName(core::FileUtil::RemoveExtension(mainAsset->GetName()) + s_EnvMapPostFix + "." + rhi::TextureFormat::s_TextureFileExt);
 	envCubeMapAsset->SetPath(mainAsset->GetPath());
 	envCubeMapAsset->SetPackageId(mainAsset->GetPackageId());
 	envCubeMapAsset->m_ForceResolution = true;
 	render::PbrPrefilter::PopulateCubeTextureParams(envCubeMapAsset->m_Parameters);
 	m_RuntimeAssets.emplace_back(envCubeMapAsset, true);
 
-	render::TextureAsset* const irradianceAsset = new render::TextureAsset();
-	irradianceAsset->SetName(core::FileUtil::RemoveExtension(mainAsset->GetName()) + s_IrradiancePostFix + "." + render::TextureFormat::s_TextureFileExt);
+	rhi::TextureAsset* const irradianceAsset = new rhi::TextureAsset();
+	irradianceAsset->SetName(core::FileUtil::RemoveExtension(mainAsset->GetName()) + s_IrradiancePostFix + "." + rhi::TextureFormat::s_TextureFileExt);
 	irradianceAsset->SetPath(mainAsset->GetPath());
 	irradianceAsset->SetPackageId(mainAsset->GetPackageId());
 	irradianceAsset->m_ForceResolution = true;
@@ -92,8 +92,8 @@ void EditableEnvironmentMapAsset::SetupRuntimeAssetsInternal()
 	irradianceAsset->m_Parameters.genMipMaps = false;
 	m_RuntimeAssets.emplace_back(irradianceAsset, true);
 
-	render::TextureAsset* const radianceAsset = new render::TextureAsset();
-	radianceAsset->SetName(core::FileUtil::RemoveExtension(mainAsset->GetName()) + s_RadiancePostFix + "." + render::TextureFormat::s_TextureFileExt);
+	rhi::TextureAsset* const radianceAsset = new rhi::TextureAsset();
+	radianceAsset->SetName(core::FileUtil::RemoveExtension(mainAsset->GetName()) + s_RadiancePostFix + "." + rhi::TextureFormat::s_TextureFileExt);
 	radianceAsset->SetPath(mainAsset->GetPath());
 	radianceAsset->SetPackageId(mainAsset->GetPackageId());
 	radianceAsset->m_ForceResolution = true;
@@ -164,9 +164,9 @@ bool EditableEnvironmentMapAsset::GenerateInternal(BuildConfiguration const& bui
 
 	// Create textures
 	//------------------------
-	render::TextureData* envCubemap = nullptr;
-	render::TextureData* irradianceMap = nullptr;
-	render::TextureData* radianceMap = nullptr;
+	rhi::TextureData* envCubemap = nullptr;
+	rhi::TextureData* irradianceMap = nullptr;
+	rhi::TextureData* radianceMap = nullptr;
 	if (!CreateTextures(m_Asset->GetLoadData(), envCubemap, irradianceMap, radianceMap))
 	{
 		return false;
@@ -214,9 +214,9 @@ bool EditableEnvironmentMapAsset::GenerateInternal(BuildConfiguration const& bui
 // EditableEnvironmentMapAsset::CreateTextures
 //
 bool EditableEnvironmentMapAsset::CreateTextures(std::vector<uint8> const& data, 
-	render::TextureData*& env, 
-	render::TextureData*& irradiance,
-	render::TextureData*& radiance) const
+	rhi::TextureData*& env, 
+	rhi::TextureData*& irradiance,
+	rhi::TextureData*& radiance) const
 {
 	render::EnvironmentMapAsset const* const envMapAsset = static_cast<render::EnvironmentMapAsset const*>(m_Asset);
 
@@ -244,16 +244,16 @@ bool EditableEnvironmentMapAsset::CreateTextures(std::vector<uint8> const& data,
 		return false;
 	}
 
-	render::TextureData hdrTexture(render::E_ColorFormat::RGB16f, ivec2(width, height));
-	hdrTexture.UploadData(static_cast<void const*>(hdrFloats), render::E_ColorFormat::RGB, render::E_DataType::Float, 0u);
+	rhi::TextureData hdrTexture(rhi::E_ColorFormat::RGB16f, ivec2(width, height));
+	hdrTexture.UploadData(static_cast<void const*>(hdrFloats), rhi::E_ColorFormat::RGB, rhi::E_DataType::Float, 0u);
 
 	// we have our equirectangular texture on the GPU so we can clean up the load data on the CPU
 	stbi_image_free(hdrFloats);
 	hdrFloats = nullptr;
 
-	render::TextureParameters params(false);
-	params.wrapS = render::E_TextureWrapMode::ClampToEdge;
-	params.wrapT = render::E_TextureWrapMode::ClampToEdge;
+	rhi::TextureParameters params(false);
+	params.wrapS = rhi::E_TextureWrapMode::ClampToEdge;
+	params.wrapT = rhi::E_TextureWrapMode::ClampToEdge;
 	hdrTexture.SetParameters(params);
 
 	env = render::EquirectangularToCubeMap(&hdrTexture, m_CubemapRes);
@@ -267,15 +267,15 @@ bool EditableEnvironmentMapAsset::CreateTextures(std::vector<uint8> const& data,
 //
 // Convert a cubemap into a BC6H compressed cubemap
 //
-void EditableEnvironmentMapAsset::CompressHDRCube(render::TextureData*& cubeMap) const
+void EditableEnvironmentMapAsset::CompressHDRCube(rhi::TextureData*& cubeMap) const
 {
 	// temp tex pointer
-	render::TextureData* const compressedTex = new render::TextureData(render::E_TextureType::CubeMap, 
-		render::E_ColorFormat::BC6H_RGB, 
+	rhi::TextureData* const compressedTex = new rhi::TextureData(rhi::E_TextureType::CubeMap, 
+		rhi::E_ColorFormat::BC6H_RGB, 
 		cubeMap->GetResolution());
 
 	// cache parameters
-	render::TextureParameters params = cubeMap->GetParameters();
+	rhi::TextureParameters params = cubeMap->GetParameters();
 
 	// compress the cube map at all mip levels
 	CompressedCube const cpuCube(*cubeMap, m_CompressionQuality);
@@ -304,7 +304,7 @@ void EditableEnvironmentMapAsset::CompressHDRCube(render::TextureData*& cubeMap)
 //--------------------------------------------------
 // EditableEnvironmentMapAsset::GenerateTextureData
 //
-bool EditableEnvironmentMapAsset::GenerateTextureData(std::vector<uint8>& data, render::TextureData const* const texture) const
+bool EditableEnvironmentMapAsset::GenerateTextureData(std::vector<uint8>& data, rhi::TextureData const* const texture) const
 {
 	ivec2 const res = texture->GetResolution();
 	core::BinaryWriter binWriter(data);
@@ -332,13 +332,13 @@ bool EditableEnvironmentMapAsset::GenerateTextureData(std::vector<uint8>& data, 
 		//--------------------
 		TextureCompression::WriteTextureHeader(binWriter, 
 			bufferSize, 
-			render::E_TextureType::CubeMap,
+			rhi::E_TextureType::CubeMap,
 			static_cast<uint32>(res.x), 
 			static_cast<uint32>(res.y), 
 			mipCount - 1u, 
-			render::E_ColorFormat::BC6H_RGB);
-		binWriter.Write(render::E_DataType::Invalid);
-		binWriter.Write(render::E_ColorFormat::Invalid);
+			rhi::E_ColorFormat::BC6H_RGB);
+		binWriter.Write(rhi::E_DataType::Invalid);
+		binWriter.Write(rhi::E_ColorFormat::Invalid);
 
 		// write image data per level
 		//----------------------------
@@ -352,18 +352,18 @@ bool EditableEnvironmentMapAsset::GenerateTextureData(std::vector<uint8>& data, 
 	}
 	else
 	{
-		static render::E_ColorFormat const s_Layout = render::E_ColorFormat::BGR;
-		static render::E_DataType const s_DataType = render::E_DataType::Half;
-		static size_t const s_PixelSize = static_cast<size_t>(render::TextureFormat::GetChannelCount(s_Layout)) 
-			* static_cast<size_t>(render::DataTypeInfo::GetTypeSize(s_DataType));
-		static size_t const s_MinMipSize = s_PixelSize * 4u * 4u * render::TextureData::s_NumCubeFaces; // make sure we don't have less than 4x4 textures
+		static rhi::E_ColorFormat const s_Layout = rhi::E_ColorFormat::BGR;
+		static rhi::E_DataType const s_DataType = rhi::E_DataType::Half;
+		static size_t const s_PixelSize = static_cast<size_t>(rhi::TextureFormat::GetChannelCount(s_Layout)) 
+			* static_cast<size_t>(rhi::DataTypeInfo::GetTypeSize(s_DataType));
+		static size_t const s_MinMipSize = s_PixelSize * 4u * 4u * rhi::TextureData::s_NumCubeFaces; // make sure we don't have less than 4x4 textures
 
 		ET_ASSERT(res.x >= 4u && res.y >= 4u);
 			
 		// precalculate buffer size
 		//--------------------------
 		uint8 mipCount = 0u;
-		size_t bufferSize = s_PixelSize * res.x * res.y * render::TextureData::s_NumCubeFaces;
+		size_t bufferSize = s_PixelSize * res.x * res.y * rhi::TextureData::s_NumCubeFaces;
 		{
 			uint8 const texMipCount = static_cast<uint8>(texture->GetNumMipLevels()); 
 			size_t mipSize = bufferSize;
@@ -384,19 +384,19 @@ bool EditableEnvironmentMapAsset::GenerateTextureData(std::vector<uint8>& data, 
 		//--------------------
 		TextureCompression::WriteTextureHeader(binWriter,
 			bufferSize,
-			render::E_TextureType::CubeMap,
+			rhi::E_TextureType::CubeMap,
 			static_cast<uint32>(res.x),
 			static_cast<uint32>(res.y),
 			mipCount,
-			render::E_ColorFormat::RGB16f);
+			rhi::E_ColorFormat::RGB16f);
 		binWriter.Write(s_DataType);
 		binWriter.Write(s_Layout);
 
 		// write image data per level
 		//----------------------------
-		render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+		rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
-		size_t mipSize = s_PixelSize * res.x * res.y * render::TextureData::s_NumCubeFaces;
+		size_t mipSize = s_PixelSize * res.x * res.y * rhi::TextureData::s_NumCubeFaces;
 		size_t bufferPos = binWriter.GetBufferPosition();
 		for (uint8 mipIdx = 0u; mipIdx <= mipCount; ++mipIdx)
 		{

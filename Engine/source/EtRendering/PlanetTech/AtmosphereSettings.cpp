@@ -117,9 +117,9 @@ AtmosphereParameters::AtmosphereParameters(core::HashString const assetId, dvec3
 	AtmospherePrecompute::ComputeSpectralRadianceToLuminanceFactors(wavelengths, solar_irradiance, 0, sunColor);
 }
 
-void AtmosphereParameters::Upload(ShaderData const* const shader, const std::string &varName) const
+void AtmosphereParameters::Upload(rhi::ShaderData const* const shader, const std::string &varName) const
 {
-	ContextHolder::GetRenderContext()->SetShader(shader);
+	rhi::ContextHolder::GetRenderContext()->SetShader(shader);
 
 	shader->Upload(GetHash(varName + ".solar_irradiance"), solarIrradiance, false);
 	shader->Upload(GetHash(varName + ".sun_angular_radius"), sun_angular_radius, false);
@@ -137,7 +137,7 @@ void AtmosphereParameters::Upload(ShaderData const* const shader, const std::str
 	shader->Upload(GetHash(varName + ".mu_s_min"), mu_s_min, false);
 }
 
-void AtmosphereParameters::UploadDensityProfile(ShaderData const* const shader, const std::string &varName, const DensityProfile &profile) const
+void AtmosphereParameters::UploadDensityProfile(rhi::ShaderData const* const shader, const std::string &varName, const DensityProfile &profile) const
 {
 	for (uint32 i = 0; i < 2; ++i)
 	{
@@ -190,9 +190,9 @@ DensityProfile::DensityProfile(std::vector<DensityProfileLayer> inLayers, float 
 	layers[1] = inLayers[1];
 }
 
-void AtmosphereSettings::UploadTextureSize(ShaderData const* const shader) const
+void AtmosphereSettings::UploadTextureSize(rhi::ShaderData const* const shader) const
 {
-	ContextHolder::GetRenderContext()->SetShader(shader);
+	rhi::ContextHolder::GetRenderContext()->SetShader(shader);
 	shader->Upload("uTexTransmittanceW"_hash, TRANSMITTANCE_W, false);
 	shader->Upload("uTexTransmittanceH"_hash, TRANSMITTANCE_H, false);
 
@@ -208,10 +208,10 @@ void AtmosphereSettings::UploadTextureSize(ShaderData const* const shader) const
 AtmosphereSettings::AtmosphereSettings()
 {
 	//General texture format for atmosphere
-	m_TexParams = TextureParameters(false);
-	m_TexParams.wrapS = E_TextureWrapMode::ClampToEdge;
-	m_TexParams.wrapT = E_TextureWrapMode::ClampToEdge;
-	m_TexParams.wrapR = E_TextureWrapMode::ClampToEdge;
+	m_TexParams = rhi::TextureParameters(false);
+	m_TexParams.wrapS = rhi::E_TextureWrapMode::ClampToEdge;
+	m_TexParams.wrapT = rhi::E_TextureWrapMode::ClampToEdge;
+	m_TexParams.wrapR = rhi::E_TextureWrapMode::ClampToEdge;
 
 	m_ScatteringTexDim = ivec3(INSCATTER_NU * INSCATTER_MU_S, INSCATTER_MU, INSCATTER_R);
 }

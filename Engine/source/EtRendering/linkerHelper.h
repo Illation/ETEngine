@@ -1,11 +1,8 @@
 #pragma once
-#include <EtCore/linkerHelper.h>
+#include <EtRHI/linkerHelper.h>
 
-#include <EtRendering/GraphicsTypes/Shader.h>
 #include <EtRendering/GraphicsTypes/Mesh.h>
 #include <EtRendering/GraphicsTypes/EnvironmentMap.h>
-#include <EtRendering/GraphicsTypes/TextureData.h>
-#include <EtRendering/GraphicsTypes/TextureFormat.h>
 #include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/MaterialSystem/MaterialInstance.h>
 #include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
@@ -22,15 +19,12 @@ namespace render {
 //
 void ForceLinking()
 {
-	core::ForceLinking();
+	rhi::ForceLinking();
 
-	FORCE_LINKING(ShaderAsset)
 	FORCE_LINKING(MeshAsset)
 	FORCE_LINKING(MaterialAsset)
 	FORCE_LINKING(MaterialInstanceAsset)
 	FORCE_LINKING(EnvironmentMapAsset)
-	FORCE_LINKING(TextureAsset)
-	FORCE_LINKING(TextureFormat)
 	FORCE_LINKING(PostProcessingSettings)
 }
 

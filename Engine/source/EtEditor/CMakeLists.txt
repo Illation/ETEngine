@@ -15,7 +15,7 @@ list (APPEND projectFiles ${headers} ${sources} ${c_sources})
 
 # setup
 #########
-precompiled_headers(${sources})
+precompiled_headers("${sources}")
 target_definitions()
 add_definitions(-D_CONSOLE)
 

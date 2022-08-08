@@ -50,7 +50,7 @@ void Frustum::SetToCamera(Camera const& camera)
 	m_FOV = camera.GetFOV();
 }
 
-void Frustum::Update(Viewport const* const viewport)
+void Frustum::Update(rhi::Viewport const* const viewport)
 {
 	//calculate generalized relative width and aspect ratio
 	float normHalfWidth = tan(math::radians(m_FOV));

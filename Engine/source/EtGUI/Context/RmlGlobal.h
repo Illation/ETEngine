@@ -50,8 +50,8 @@ public:
 	void SetCursorShapeManager(Ptr<core::I_CursorShapeManager> const cursorMan);
 	void SetClipboardController(Ptr<core::I_ClipboardController> const clipboardController);
 
-	void SetGraphicsContext(Ptr<render::I_GraphicsContextApi> const graphicsContext);
-	void SetRIShader(AssetPtr<render::ShaderData> const shader, AssetPtr<render::ShaderData> const textShader);
+	void SetGraphicsContext(Ptr<rhi::I_GraphicsContextApi> const graphicsContext);
+	void SetRIShader(AssetPtr<rhi::ShaderData> const shader, AssetPtr<rhi::ShaderData> const textShader);
 	void SetRIView(ivec2 const dim, mat4 const& viewProj);
 
 

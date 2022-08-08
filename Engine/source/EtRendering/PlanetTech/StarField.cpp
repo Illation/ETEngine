@@ -5,8 +5,8 @@
 #include <EtCore/Content/AssetStub.h>
 #include <EtCore/IO/JsonParser.h>
 
-#include <EtRendering/GraphicsTypes/Shader.h>
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
 
 
 namespace et {
@@ -36,10 +36,10 @@ StarField::StarField(core::HashString const assetId)
 		}
 	}
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/FwdStarField.glsl"));
-	m_pSprite = core::ResourceManager::Instance()->GetAssetData<TextureData>(core::HashString("Textures/starSprite.png"));
+	m_pShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdStarField.glsl"));
+	m_pSprite = core::ResourceManager::Instance()->GetAssetData<rhi::TextureData>(core::HashString("Textures/starSprite.png"));
 
 	//Generate buffers and arrays
 	m_VAO = api->CreateVertexArray();
@@ -47,22 +47,22 @@ StarField::StarField(core::HashString const assetId)
 
 	//bind
 	api->BindVertexArray(m_VAO);
-	api->BindBuffer(E_BufferType::Vertex, m_VBO);
+	api->BindBuffer(rhi::E_BufferType::Vertex, m_VBO);
 
 	//set data and attributes
-	api->SetBufferData(E_BufferType::Vertex, m_Stars.size() * sizeof(vec4), m_Stars.data(), E_UsageHint::Dynamic);
+	api->SetBufferData(rhi::E_BufferType::Vertex, m_Stars.size() * sizeof(vec4), m_Stars.data(), rhi::E_UsageHint::Dynamic);
 
 	api->SetVertexAttributeArrayEnabled(0, true);
-	api->DefineVertexAttributePointer(0, 4, E_DataType::Float, false, sizeof(vec4), 0);
+	api->DefineVertexAttributePointer(0, 4, rhi::E_DataType::Float, false, sizeof(vec4), 0);
 
 	//unbind
-	api->BindBuffer(E_BufferType::Vertex, 0);
+	api->BindBuffer(rhi::E_BufferType::Vertex, 0);
 	api->BindVertexArray(0);
 }
 
 StarField::~StarField()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	api->DeleteVertexArray(m_VAO);
 	api->DeleteBuffer(m_VBO);
@@ -70,11 +70,11 @@ StarField::~StarField()
 
 void StarField::Draw(Camera const& cam) const
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	api->SetBlendEnabled(true);
-	api->SetBlendEquation(E_BlendEquation::Add);
-	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::Zero);
+	api->SetBlendEquation(rhi::E_BlendEquation::Add);
+	api->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::Zero);
 
 	api->BindVertexArray(m_VAO);
 	api->SetShader(m_pShader.get());
@@ -82,8 +82,8 @@ void StarField::Draw(Camera const& cam) const
 	m_pShader->Upload("uRadius"_hash, m_Radius);
 	m_pShader->Upload("uBaseFlux"_hash, m_BaseFlux);
 	m_pShader->Upload("uBaseMag"_hash, m_BaseMag);
-	m_pShader->Upload("uAspectRatio"_hash, Viewport::GetCurrentViewport()->GetAspectRatio());
-	api->DrawArrays(E_DrawMode::Points, 0, m_DrawnStars);
+	m_pShader->Upload("uAspectRatio"_hash, rhi::Viewport::GetCurrentViewport()->GetAspectRatio());
+	api->DrawArrays(rhi::E_DrawMode::Points, 0, m_DrawnStars);
 	api->BindVertexArray(0);
 	api->SetBlendEnabled(false);
 }

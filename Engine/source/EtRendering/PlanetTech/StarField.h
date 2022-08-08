@@ -25,11 +25,11 @@ public:
 private:
 	std::vector<vec4> m_Stars;
 
-	AssetPtr<ShaderData> m_pShader;
-	AssetPtr<TextureData> m_pSprite;
+	AssetPtr<rhi::ShaderData> m_pShader;
+	AssetPtr<rhi::TextureData> m_pSprite;
 
-	T_ArrayLoc m_VAO = 0;
-	T_BufferLoc m_VBO = 0;
+	rhi::T_ArrayLoc m_VAO = 0;
+	rhi::T_BufferLoc m_VBO = 0;
 
 	uint32 m_MaxStars = 0;
 	uint32 m_DrawnStars = 32000;

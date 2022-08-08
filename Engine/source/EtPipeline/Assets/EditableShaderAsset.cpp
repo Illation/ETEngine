@@ -56,18 +56,18 @@ bool EditableShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	// Compile
 	//------------------
-	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
-	render::T_ShaderLoc const shaderProgram = render::ShaderAsset::LinkShader(vertSource, geoSource, fragSource, api);
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::T_ShaderLoc const shaderProgram = rhi::ShaderAsset::LinkShader(vertSource, geoSource, fragSource, api);
 
 	// Create shader data
-	SetData(new render::ShaderData(shaderProgram));
-	render::ShaderData* const shaderData = GetData();
+	SetData(new rhi::ShaderData(shaderProgram));
+	rhi::ShaderData* const shaderData = GetData();
 
 	// Extract uniform info
 	//------------------
 	api->SetShader(shaderData);
-	render::ShaderAsset::InitUniforms(shaderData);
-	render::ShaderAsset::GetAttributes(shaderProgram, shaderData->m_Attributes);
+	rhi::ShaderAsset::InitUniforms(shaderData);
+	rhi::ShaderAsset::GetAttributes(shaderProgram, shaderData->m_Attributes);
 
 	// all done
 	return true;
@@ -78,8 +78,8 @@ bool EditableShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 void EditableShaderAsset::SetupRuntimeAssetsInternal()
 {
-	render::ShaderAsset* const mainAsset = new render::ShaderAsset(*static_cast<render::ShaderAsset*>(m_Asset));
-	ET_ASSERT(core::FileUtil::ExtractExtension(mainAsset->GetName()) == render::ShaderAsset::s_MainExtension);
+	rhi::ShaderAsset* const mainAsset = new rhi::ShaderAsset(*static_cast<rhi::ShaderAsset*>(m_Asset));
+	ET_ASSERT(core::FileUtil::ExtractExtension(mainAsset->GetName()) == rhi::ShaderAsset::s_MainExtension);
 
 	m_RuntimeAssets.emplace_back(mainAsset, true);
 
@@ -94,7 +94,7 @@ void EditableShaderAsset::SetupRuntimeAssetsInternal()
 		if (m_UseGeometry)
 		{
 			core::StubAsset* const geoAsset = new core::StubAsset();
-			geoAsset->SetName(baseName + "." + render::ShaderAsset::s_GeoExtension);
+			geoAsset->SetName(baseName + "." + rhi::ShaderAsset::s_GeoExtension);
 			geoAsset->SetPath(path);
 			geoAsset->SetPackageId(package);
 
@@ -105,7 +105,7 @@ void EditableShaderAsset::SetupRuntimeAssetsInternal()
 		if (m_UseFragment)
 		{
 			core::StubAsset* const fragAsset = new core::StubAsset();
-			fragAsset->SetName(baseName + "." + render::ShaderAsset::s_FragExtension);
+			fragAsset->SetName(baseName + "." + rhi::ShaderAsset::s_FragExtension);
 			fragAsset->SetPath(path);
 			fragAsset->SetPackageId(package);
 
@@ -151,15 +151,15 @@ bool EditableShaderAsset::GenerateInternal(BuildConfiguration const& buildConfig
 		data.m_HasGeneratedData = true;
 
 		std::string const ext = core::FileUtil::ExtractExtension(data.m_Asset->GetName());
-		if (ext == render::ShaderAsset::s_MainExtension)
+		if (ext == rhi::ShaderAsset::s_MainExtension)
 		{
 			data.m_GeneratedData = core::FileUtil::FromText(vertSource);
 		}
-		else if (ext == render::ShaderAsset::s_GeoExtension)
+		else if (ext == rhi::ShaderAsset::s_GeoExtension)
 		{
 			data.m_GeneratedData = core::FileUtil::FromText(geoSource);
 		}
-		else if (ext == render::ShaderAsset::s_FragExtension)
+		else if (ext == rhi::ShaderAsset::s_FragExtension)
 		{
 			data.m_GeneratedData = core::FileUtil::FromText(fragSource);
 		}

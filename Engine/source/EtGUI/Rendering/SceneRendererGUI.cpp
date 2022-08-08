@@ -113,12 +113,12 @@ void SceneRendererGUI::Deinit()
 //
 // Draw UI from the extension that sits within the world
 //
-void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb, 
-	render::E_PolygonMode const polyMode,
+void SceneRendererGUI::DrawInWorld(rhi::T_FbLoc const targetFb, 
+	rhi::E_PolygonMode const polyMode,
 	GuiExtension& guiExt, 
 	core::slot_map<mat4> const& nodes)
 {
-	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 	api->BindFramebuffer(targetFb);
 
 	// RmlUi 3D contexts
@@ -149,14 +149,14 @@ void SceneRendererGUI::DrawInWorld(render::T_FbLoc const targetFb,
 //
 // Draw UI from the extension that goes on top of everything else
 //
-void SceneRendererGUI::DrawOverlay(render::T_FbLoc const targetFb, render::E_PolygonMode const polyMode, GuiExtension& guiExt)
+void SceneRendererGUI::DrawOverlay(rhi::T_FbLoc const targetFb, rhi::E_PolygonMode const polyMode, GuiExtension& guiExt)
 {
-	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 	api->BindFramebuffer(targetFb);
 
 	// RmlUi overlays
 	//----------------
-	render::Viewport const* const viewport = render::Viewport::GetCurrentViewport();
+	rhi::Viewport const* const viewport = rhi::Viewport::GetCurrentViewport();
 	ContextRenderTarget* renderTarget;
 	Context* const context = guiExt.GetContext(viewport, renderTarget);
 	if ((context != nullptr) && context->HasActiveDocuments())

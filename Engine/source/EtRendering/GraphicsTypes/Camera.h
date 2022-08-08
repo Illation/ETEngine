@@ -35,7 +35,7 @@ public:
 
 	void SetClippingPlanes(float const nearPlane, float const farPlane, bool const deferRecalculation = false);
 
-	void SetViewport(Ptr<Viewport> const viewport, bool const deferRecalculation = false);
+	void SetViewport(Ptr<rhi::Viewport> const viewport, bool const deferRecalculation = false);
 
 	// accessors
 	//-----------
@@ -45,7 +45,7 @@ public:
 
 	float GetFOV() const { return m_FieldOfView; }
 
-	Ptr<Viewport> GetViewport() const { return m_Viewport; }
+	Ptr<rhi::Viewport> GetViewport() const { return m_Viewport; }
 
 	float GetNearPlane() const { return m_NearPlane; }
 	float GetFarPlane() const { return m_FarPlane; }
@@ -78,7 +78,7 @@ private:
 	// Data
 	///////
 
-	// parameters
+	// rhi::parameters
 	//------------
 
 	// world
@@ -91,7 +91,7 @@ private:
 	float m_FieldOfView = 45.f; // angle of perspective camera in degrees
 	float m_Size = 25.f; // width of orthographic camera
 
-	Ptr<Viewport> m_Viewport; // aspect ratio of projection matrix
+	Ptr<rhi::Viewport> m_Viewport; // aspect ratio of projection matrix
 
 	// depth 
 	float m_NearPlane = 1.f;

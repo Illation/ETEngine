@@ -1,8 +1,8 @@
 #pragma once
-#include "VertexInfo.h"
-
 #include <EtCore/Content/Asset.h>
 #include <EtCore/Util/LinkerUtils.h>
+
+#include <EtRHI/GraphicsTypes/VertexInfo.h>
 
 
 // forward declarations
@@ -36,13 +36,13 @@ public:
 	// accessors
 	//-----------
 	render::Material const* GetMaterial() const { return m_Material; }
-	T_ArrayLoc GetVertexArray() const { return m_VertexArray; }
+	rhi::T_ArrayLoc GetVertexArray() const { return m_VertexArray; }
 
 	// Data
 	///////
 private:
 	render::Material const* m_Material = nullptr;
-	T_ArrayLoc m_VertexArray = 0u;
+	rhi::T_ArrayLoc m_VertexArray = 0u;
 };
 
 
@@ -91,28 +91,28 @@ public:
 
 	// accessors
 	//-----------
-	T_VertexFlags GetSupportedFlags() const { return m_SupportedFlags; }
+	rhi::T_VertexFlags GetSupportedFlags() const { return m_SupportedFlags; }
 	math::Sphere const& GetBoundingSphere() const { return m_BoundingSphere; }
 	size_t GetIndexCount() const { return m_IndexCount; }
-	E_DataType GetIndexDataType() const { return m_IndexDataType; }
-	T_BufferLoc GetVertexBuffer() const { return m_VertexBuffer; }
-	T_BufferLoc GetIndexBuffer() const { return m_IndexBuffer; }
+	rhi::E_DataType GetIndexDataType() const { return m_IndexDataType; }
+	rhi::T_BufferLoc GetVertexBuffer() const { return m_VertexBuffer; }
+	rhi::T_BufferLoc GetIndexBuffer() const { return m_IndexBuffer; }
 	MeshSurface const* GetSurface(render::Material const* const material) const;
 
 	// Data
 	///////
 private:
 
-	T_VertexFlags m_SupportedFlags = 0u;
-	E_DataType m_IndexDataType = E_DataType::UInt;
+	rhi::T_VertexFlags m_SupportedFlags = 0u;
+	rhi::E_DataType m_IndexDataType = rhi::E_DataType::UInt;
 
 	math::Sphere m_BoundingSphere;
 
 	size_t m_VertexCount = 0u;
 	size_t m_IndexCount = 0u;
 
-	T_BufferLoc m_VertexBuffer = 0u;
-	T_BufferLoc m_IndexBuffer = 0u;
+	rhi::T_BufferLoc m_VertexBuffer = 0u;
+	rhi::T_BufferLoc m_IndexBuffer = 0u;
 
 	SurfaceContainer* m_Surfaces = nullptr; // pointer in order to enable const access
 };

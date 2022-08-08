@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "SharedVarController.h"
 
+#include <EtRHI/GraphicsTypes/TextureData.h>
+
 #include <EtRendering/GraphicsTypes/Camera.h>
-#include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/SceneRendering/Gbuffer.h>
 
 
@@ -31,15 +32,15 @@ SharedVarController::~SharedVarController()
 //
 void SharedVarController::Init()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	m_BufferLocation = api->CreateBuffer();
 
-	api->BindBuffer(E_BufferType::Uniform, m_BufferLocation);
-	api->SetBufferData(E_BufferType::Uniform, sizeof(m_Data), nullptr, E_UsageHint::Dynamic);
-	api->BindBuffer(E_BufferType::Uniform, 0u);
+	api->BindBuffer(rhi::E_BufferType::Uniform, m_BufferLocation);
+	api->SetBufferData(rhi::E_BufferType::Uniform, sizeof(m_Data), nullptr, rhi::E_UsageHint::Dynamic);
+	api->BindBuffer(rhi::E_BufferType::Uniform, 0u);
 
-	api->BindBufferRange(E_BufferType::Uniform, m_BufferBinding, m_BufferLocation, 0, sizeof(m_Data));
+	api->BindBufferRange(rhi::E_BufferType::Uniform, m_BufferBinding, m_BufferLocation, 0, sizeof(m_Data));
 }
 
 //-----------------------------
@@ -47,7 +48,7 @@ void SharedVarController::Init()
 //
 void SharedVarController::Deinit()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	api->DeleteBuffer(m_BufferLocation);
 }
@@ -57,7 +58,7 @@ void SharedVarController::Deinit()
 //
 void SharedVarController::UpdataData(Camera const& camera, Gbuffer const& gbuffer)
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	m_Data.view = camera.GetView();
 	m_Data.viewInv = camera.GetViewInv();
@@ -75,14 +76,14 @@ void SharedVarController::UpdataData(Camera const& camera, Gbuffer const& gbuffe
 	m_Data.projectionA = camera.GetDepthProjA();
 	m_Data.projectionB = camera.GetDepthProjB();
 
-	std::vector<TextureData*> const& gbufferTex = gbuffer.GetTextures();
+	std::vector<rhi::TextureData*> const& gbufferTex = gbuffer.GetTextures();
 	m_Data.gbufferA = gbufferTex[0]->GetHandle();
 	m_Data.gbufferB = gbufferTex[1]->GetHandle();
 	m_Data.gbufferC = gbufferTex[2]->GetHandle();
 
-	api->BindBuffer(E_BufferType::Uniform, m_BufferLocation);
-	api->SetBufferData(E_BufferType::Uniform, sizeof(m_Data), &m_Data, E_UsageHint::Dynamic);
-	api->BindBuffer(E_BufferType::Uniform, 0u);
+	api->BindBuffer(rhi::E_BufferType::Uniform, m_BufferLocation);
+	api->SetBufferData(rhi::E_BufferType::Uniform, sizeof(m_Data), &m_Data, rhi::E_UsageHint::Dynamic);
+	api->BindBuffer(rhi::E_BufferType::Uniform, 0u);
 }
 
 

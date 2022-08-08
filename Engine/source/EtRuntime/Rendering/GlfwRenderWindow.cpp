@@ -14,7 +14,7 @@ namespace rt {
 //---------------------------------
 // GlfwRenderWindow::CreateContext
 //
-render::I_GraphicsContextApi* GlfwRenderWindow::CreateContext(render::GraphicsContextParams const& params)
+rhi::I_GraphicsContextApi* GlfwRenderWindow::CreateContext(rhi::GraphicsContextParams const& params)
 {
 	m_Area.Initialize(params, m_IsHidden);
 	return m_Area.GetContext();

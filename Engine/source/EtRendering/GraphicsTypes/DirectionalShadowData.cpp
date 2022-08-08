@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "DirectionalShadowData.h"
 
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
+
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
@@ -23,7 +24,7 @@ void DirectionalShadowData::Init(ivec2 const resolution)
 {
 	render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	//Calculate cascade distances
 	float distMult = graphicsSettings.CSMDrawDistance / powf(2.f, static_cast<float>(graphicsSettings.NumCascades - 1));
@@ -36,13 +37,13 @@ void DirectionalShadowData::Init(ivec2 const resolution)
 		cascade.distance = static_cast<float>((cascadeIdx + 1) ^ 2) * distMult;
 
 		// Create depth texture
-		cascade.texture = new TextureData(E_ColorFormat::Depth, resolution);
+		cascade.texture = new rhi::TextureData(rhi::E_ColorFormat::Depth, resolution);
 		cascade.texture->AllocateStorage();
 
-		TextureParameters params(false, true);
-		params.wrapS = E_TextureWrapMode::ClampToEdge;
-		params.wrapT = E_TextureWrapMode::ClampToEdge;
-		params.compareMode = E_TextureCompareMode::CompareRToTexture;
+		rhi::TextureParameters params(false, true);
+		params.wrapS = rhi::E_TextureWrapMode::ClampToEdge;
+		params.wrapT = rhi::E_TextureWrapMode::ClampToEdge;
+		params.compareMode = rhi::E_TextureCompareMode::CompareRToTexture;
 		cascade.texture->SetParameters(params);
 
 		// create render target
@@ -66,7 +67,7 @@ void DirectionalShadowData::Init(ivec2 const resolution)
 //
 void DirectionalShadowData::Destroy()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	for (CascadeData& cascade : m_Cascades)
 	{

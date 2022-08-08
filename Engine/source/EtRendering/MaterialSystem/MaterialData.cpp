@@ -42,10 +42,10 @@ DEFINE_FORCED_LINKING(MaterialAsset) // force the material asset class to be lin
 //
 // Construct material, set up vertex info etc
 //
-Material::Material(AssetPtr<ShaderData> const shader, 
+Material::Material(AssetPtr<rhi::ShaderData> const shader, 
 	E_DrawType const drawType, 
-	T_ParameterBlock const defaultParameters, 
-	std::vector<AssetPtr<TextureData>> const& textureReferences
+	rhi::T_ParameterBlock const defaultParameters, 
+	std::vector<AssetPtr<rhi::TextureData>> const& textureReferences
 )
 	: I_Material()
 	, m_Shader(shader)
@@ -56,11 +56,11 @@ Material::Material(AssetPtr<ShaderData> const shader,
 	ET_ASSERT(m_Shader != nullptr);
 
 	// determine layout flags and locations
-	std::vector<ShaderData::T_AttributeLocation> const& attributes = m_Shader->GetAttributes();
+	std::vector<rhi::ShaderData::T_AttributeLocation> const& attributes = m_Shader->GetAttributes();
 
-	for (auto it = AttributeDescriptor::s_VertexAttributes.begin(); it != AttributeDescriptor::s_VertexAttributes.end(); ++it)
+	for (auto it = rhi::AttributeDescriptor::s_VertexAttributes.begin(); it != rhi::AttributeDescriptor::s_VertexAttributes.end(); ++it)
 	{
-		auto const attribIt = std::find_if(attributes.cbegin(), attributes.cend(), [it](ShaderData::T_AttributeLocation const& loc)
+		auto const attribIt = std::find_if(attributes.cbegin(), attributes.cend(), [it](rhi::ShaderData::T_AttributeLocation const& loc)
 		{
 			return it->second.name == loc.second.name;
 		});
@@ -80,7 +80,7 @@ Material::~Material()
 {
 	if (m_DefaultParameters != nullptr)
 	{
-		parameters::DestroyBlock(m_DefaultParameters);
+		rhi::parameters::DestroyBlock(m_DefaultParameters);
 	}
 }
 
@@ -100,21 +100,21 @@ Material* MaterialAsset::CreateMaterial(std::vector<I_Asset::Reference> const& r
 	Material::E_DrawType const drawType)
 {
 	// extract the shader and texture references
-	std::vector<AssetPtr<TextureData>> textureRefs;
-	AssetPtr<ShaderData> shaderRef;
+	std::vector<AssetPtr<rhi::TextureData>> textureRefs;
+	AssetPtr<rhi::ShaderData> shaderRef;
 
 	for (I_Asset::Reference const& reference : references)
 	{
 		I_AssetPtr const* const rawAssetPtr = reference.GetAsset();
 
-		if (rawAssetPtr->GetType() == rttr::type::get<ShaderData>())
+		if (rawAssetPtr->GetType() == rttr::type::get<rhi::ShaderData>())
 		{
 			ET_ASSERT(shaderRef == nullptr, "Materials cannot reference more than one shader!");
-			shaderRef = *static_cast<AssetPtr<ShaderData> const*>(rawAssetPtr);
+			shaderRef = *static_cast<AssetPtr<rhi::ShaderData> const*>(rawAssetPtr);
 		}
-		else if (rawAssetPtr->GetType() == rttr::type::get<TextureData>())
+		else if (rawAssetPtr->GetType() == rttr::type::get<rhi::TextureData>())
 		{
-			textureRefs.push_back(*static_cast<AssetPtr<TextureData> const*>(rawAssetPtr));
+			textureRefs.push_back(*static_cast<AssetPtr<rhi::TextureData> const*>(rawAssetPtr));
 		}
 		else
 		{
@@ -130,7 +130,7 @@ Material* MaterialAsset::CreateMaterial(std::vector<I_Asset::Reference> const& r
 
 	// convert to a parameter block
 	// ideally this should be done before any uniforms are set in the shader
-	T_ParameterBlock const params = shaderRef->CopyParameterBlock(shaderRef->GetCurrentUniforms());
+	rhi::T_ParameterBlock const params = shaderRef->CopyParameterBlock(shaderRef->GetCurrentUniforms());
 	if (params != nullptr)
 	{
 		parameters::ConvertDescriptor(params, descriptor, shaderRef.get(), textureRefs);

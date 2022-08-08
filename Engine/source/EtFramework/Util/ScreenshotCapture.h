@@ -28,20 +28,20 @@ public:
 
 	// functionality
 	//----------------
-	void Take(render::Viewport* const viewport);
+	void Take(rhi::Viewport* const viewport);
 
 	// utility
 	//----------
 private:
-	void OnViewportPostFlush(render::T_FbLoc const targetFb);
+	void OnViewportPostFlush(rhi::T_FbLoc const targetFb);
 	std::string GetFileName();
 
 	// Data
 	///////
 
 	core::Directory* m_BaseDir = nullptr;
-	render::Viewport* m_Viewport = nullptr;
-	render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
+	rhi::Viewport* m_Viewport = nullptr;
+	rhi::T_ViewportEventCallbackId m_VPCallbackId = rhi::T_ViewportEventDispatcher::INVALID_ID;
 };
 
 

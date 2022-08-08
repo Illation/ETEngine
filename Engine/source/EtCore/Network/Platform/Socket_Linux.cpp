@@ -1,6 +1,7 @@
+#include "stdafx.h"
+
 #ifdef ET_PLATFORM_LINUX
 
-#include "stdafx.h"
 #include "Socket_Linux.h"
 
 

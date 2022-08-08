@@ -8,7 +8,7 @@ namespace render {
 
 
 class Camera;
-class TextureData;
+class rhi::TextureData;
 class Gbuffer;
 
 
@@ -32,7 +32,7 @@ public:
 	//---------------
 public:
 	void OnWindowResize();
-	void Draw(T_FbLoc const targetFb, OutlineExtension const& outlines, core::slot_map<mat4> const& nodes, Camera const& cam, Gbuffer const& gbuffer);
+	void Draw(rhi::T_FbLoc const targetFb, OutlineExtension const& outlines, core::slot_map<mat4> const& nodes, Camera const& cam, Gbuffer const& gbuffer);
 
 	// utility
 	//---------
@@ -45,16 +45,16 @@ private:
 
 	bool m_IsInitialized = false;
 
-	T_FbLoc m_DrawTarget;
-	TextureData* m_DrawTex = nullptr;
-	T_RbLoc m_DrawDepth;
+	rhi::T_FbLoc m_DrawTarget;
+	rhi::TextureData* m_DrawTex = nullptr;
+	rhi::T_RbLoc m_DrawDepth;
 
-	AssetPtr<ShaderData> m_SobelShader;
+	AssetPtr<rhi::ShaderData> m_SobelShader;
 
 	Ptr<render::T_RenderEventDispatcher> m_EventDispatcher;
 	render::T_RenderEventCallbackId m_CallbackId = render::T_RenderEventDispatcher::INVALID_ID;
 
-	render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
+	rhi::T_ViewportEventCallbackId m_VPCallbackId = rhi::T_ViewportEventDispatcher::INVALID_ID;
 };
 
 

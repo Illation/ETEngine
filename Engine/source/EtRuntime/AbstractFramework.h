@@ -13,8 +13,9 @@
 
 
 // fwd
-namespace et { namespace render {
+namespace et { namespace rhi {
 	class Viewport;
+}namespace render {
 	class ShadedSceneRenderer;
 } namespace rt {
 	class SplashScreenRenderer;
@@ -65,7 +66,7 @@ private:
 
 private:
 	GlfwRenderWindow m_RenderWindow;
-	UniquePtr<render::Viewport> m_Viewport;
+	UniquePtr<rhi::Viewport> m_Viewport;
 
 	UniquePtr<render::ShadedSceneRenderer> m_SceneRenderer;
 	UniquePtr<rt::SplashScreenRenderer> m_SplashScreenRenderer;

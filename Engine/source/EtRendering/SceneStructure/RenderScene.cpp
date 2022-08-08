@@ -3,9 +3,10 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
+
 #include <EtRendering/GraphicsTypes/Mesh.h>
-#include <EtRendering/GraphicsTypes/TextureData.h>
 #include <EtRendering/GraphicsTypes/EnvironmentMap.h>
 #include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
@@ -78,7 +79,7 @@ void Scene::RemoveCamera(core::T_SlotId const cameraId)
 //
 Scene::T_InstanceId Scene::AddInstance(I_Material const* const material, AssetPtr<MeshData> const mesh, T_NodeId const node)
 {
-	AssetPtr<ShaderData> const shader = material->GetBaseMaterial()->GetShaderAsset();
+	AssetPtr<rhi::ShaderData> const shader = material->GetBaseMaterial()->GetShaderAsset();
 
 	bool const opaque = (material->GetBaseMaterial()->GetDrawType() == Material::E_DrawType::Opaque);
 	core::slot_map<MaterialCollection>& collectionGroup = opaque ? m_OpaqueRenderables : m_ForwardRenderables;
@@ -489,7 +490,7 @@ render::I_SceneExtension* Scene::GetExtension(core::HashString const extensionId
 //
 core::T_SlotId Scene::AddMeshToMaterial(MaterialCollection::MaterialInstance& material, AssetPtr<MeshData> const mesh, T_NodeId const node)
 {
-	T_ArrayLoc const vao = mesh->GetSurface(material.m_Material->GetBaseMaterial())->GetVertexArray();
+	rhi::T_ArrayLoc const vao = mesh->GetSurface(material.m_Material->GetBaseMaterial())->GetVertexArray();
 
 	auto foundMeshIt = std::find_if(material.m_Meshes.begin(), material.m_Meshes.end(), [vao](MaterialCollection::Mesh const& matInst)
 		{

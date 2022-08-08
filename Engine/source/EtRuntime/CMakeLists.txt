@@ -12,7 +12,7 @@ file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 list (APPEND projectFiles ${headers})
 list (APPEND projectFiles ${sources})
 
-precompiled_headers(${sources})
+precompiled_headers("${sources}")
 target_definitions()
 
 # library and dependancies

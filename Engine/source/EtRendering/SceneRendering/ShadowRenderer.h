@@ -9,7 +9,7 @@ namespace render {
 
 
 // forward
-class ShaderData;
+class rhi::ShaderData;
 class DirectionalShadowData;
 
 
@@ -36,7 +36,7 @@ public:
 	///////
 private:
 
-	AssetPtr<ShaderData> m_Shader;
+	AssetPtr<rhi::ShaderData> m_Shader;
 };
 
 

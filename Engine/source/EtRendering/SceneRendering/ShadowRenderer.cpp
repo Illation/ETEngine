@@ -5,11 +5,12 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/GraphicsTypes/Shader.h>
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
+
 #include <EtRendering/GraphicsTypes/Camera.h>
-#include <EtRendering/GraphicsTypes/Frustum.h>
 #include <EtRendering/GraphicsTypes/DirectionalShadowData.h>
+#include <EtRendering/GraphicsTypes/Frustum.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
@@ -27,7 +28,7 @@ namespace render {
 //
 void ShadowRenderer::Initialize()
 {
-	m_Shader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/FwdNullShader.glsl"));
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdNullShader.glsl"));
 }
 
 //---------------------------------
@@ -39,7 +40,7 @@ void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShado
 {
 	GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	//Calculate light camera matrix
 	//*****************************
@@ -99,7 +100,7 @@ void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShado
 		//Set Framebuffer
 		api->BindFramebuffer(cascades[i].fbo);
 		//Clear Framebuffer
-		api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
+		api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
 
 		api->SetShader(m_Shader.get());
 		m_Shader->Upload("worldViewProj"_hash, lightVP);

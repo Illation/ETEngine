@@ -6,9 +6,8 @@
 #include <EtCore/IO/BinaryReader.h>
 #include <EtCore/Reflection/Registration.h>
 
-#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
-#include <EtRendering/GraphicsTypes/TextureData.h>
-#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
 
 
 namespace et {
@@ -73,7 +72,7 @@ SdfFont& SdfFont::operator=(SdfFont const& other)
 
 	if (other.m_Texture != nullptr)
 	{
-		m_Texture = Create<render::TextureData>(*other.m_Texture);
+		m_Texture = Create<rhi::TextureData>(*other.m_Texture);
 	}
 
 	m_TextureAsset = other.m_TextureAsset;
@@ -268,7 +267,7 @@ SdfFont* SdfFontAsset::LoadFnt(std::vector<uint8> const& binaryContent)
 	std::string const pn = binReader.ReadNullString();
 	ET_ASSERT(!pn.empty(), "SdfFont(.fnt): Invalid Font Sprite [Empty]");
 
-	font->m_TextureAsset = core::ResourceManager::Instance()->GetAssetData<render::TextureData>(core::HashString(pn.c_str()));
+	font->m_TextureAsset = core::ResourceManager::Instance()->GetAssetData<rhi::TextureData>(core::HashString(pn.c_str()));
 	ET_ASSERT(font->m_TextureAsset->GetResolution() == ivec2(static_cast<int32>(texWidth), static_cast<int32>(texHeight)));
 
 	binReader.SetBufferPosition(pos + static_cast<size_t>(block3Size));

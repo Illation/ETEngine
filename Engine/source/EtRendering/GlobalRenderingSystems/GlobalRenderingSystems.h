@@ -1,13 +1,12 @@
 #pragma once
 
 #include "GraphicsSettings.h"
-#include "PrimitiveRenderer.h"
 #include "PbrPrefilter.h"
 #include "AtmospherePrecompute.h"
 #include "CIE.h"
 #include "LightVolume.h"
-#include "SharedVarController.h"
 #include "RenderDebugVars.h"
+#include "SharedVarController.h"
 
 #include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/PlanetTech/Patch.h>
@@ -45,7 +44,7 @@ public:
 	//--------------------
 private:
 	RenderingSystems() = default;
-	~RenderingSystems() = default;
+	~RenderingSystems();
 
 	void Initialize();
 
@@ -58,7 +57,6 @@ public:
 	//-----------
 	GraphicsSettings const& GetGraphicsSettings() const { return m_GraphicsSettings; }
 
-	PrimitiveRenderer& GetPrimitiveRenderer() { return m_PrimitiveRenderer; }
 	PbrPrefilter& GetPbrPrefilter() { return m_PbrPrefilter; }
 	SharedVarController& GetSharedVarController() { return m_SharedVarController; }
 	CIE& GetCie() { return m_Cie; }
@@ -78,8 +76,6 @@ public:
 private:
 
 	GraphicsSettings m_GraphicsSettings;
-
-	PrimitiveRenderer m_PrimitiveRenderer;
 
 	PbrPrefilter m_PbrPrefilter;
 

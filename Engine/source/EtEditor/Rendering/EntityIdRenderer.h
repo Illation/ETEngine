@@ -1,8 +1,9 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <EtRendering/GraphicsContext/Viewport.h>
-#include <EtRendering/GraphicsContext/GraphicsTypes.h>
+#include <EtRHI/GraphicsContext/Viewport.h>
+#include <EtRHI/GraphicsContext/GraphicsTypes.h>
+
 #include <EtRendering/MaterialSystem/MaterialData.h>
 
 #include <EtFramework/ECS/EntityFwd.h>
@@ -44,13 +45,13 @@ private:
 	// Functionality
 	//---------------
 public:
-	void Pick(ivec2 const pixel, render::Viewport* const viewport, std::function<void(fw::T_EntityId const)>& onEntityPicked);
+	void Pick(ivec2 const pixel, rhi::Viewport* const viewport, std::function<void(fw::T_EntityId const)>& onEntityPicked);
 
 	// Utility
 	//---------
 private:
-	void OnViewportPreRender(render::T_FbLoc const targetFb);
-	void OnViewportPostFlush(render::T_FbLoc const targetFb);
+	void OnViewportPreRender(rhi::T_FbLoc const targetFb);
+	void OnViewportPostFlush(rhi::T_FbLoc const targetFb);
 
 	void DrawEntity(fw::T_EntityId const entity, render::Camera const& camera) const;
 	void GetIdColor(fw::T_EntityId const id, vec4& col) const;
@@ -59,18 +60,18 @@ private:
 	// Data
 	///////
 
-	AssetPtr<render::ShaderData> m_Shader;
+	AssetPtr<rhi::ShaderData> m_Shader;
 	AssetPtr<render::Material> m_Material;
 
-	render::T_FbLoc m_DrawTarget;
-	render::TextureData* m_DrawTex = nullptr;
-	render::T_RbLoc m_DrawDepth;
+	rhi::T_FbLoc m_DrawTarget;
+	rhi::TextureData* m_DrawTex = nullptr;
+	rhi::T_RbLoc m_DrawDepth;
 
 	ivec2 m_LastViewSize; // if the view size changes we update the render target on resize 
 
 	ivec2 m_PixelToPick;
-	render::Viewport* m_ViewportToPickFrom = nullptr;
-	render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
+	rhi::Viewport* m_ViewportToPickFrom = nullptr;
+	rhi::T_ViewportEventCallbackId m_VPCallbackId = rhi::T_ViewportEventDispatcher::INVALID_ID;
 	std::function<void(fw::T_EntityId const)> m_OnEntityPicked;
 };
 

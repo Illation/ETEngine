@@ -30,18 +30,18 @@ MeshSurface::MeshSurface(MeshData const* const mesh, render::Material const* con
 	ET_ASSERT(mesh != nullptr);
 	ET_ASSERT(m_Material != nullptr);
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	// create a new vertex array
 	m_VertexArray = api->CreateVertexArray();
 	api->BindVertexArray(m_VertexArray);
 
 	// link it to the mesh's buffer
-	api->BindBuffer(E_BufferType::Vertex, mesh->GetVertexBuffer());
-	api->BindBuffer(E_BufferType::Index, mesh->GetIndexBuffer());
+	api->BindBuffer(rhi::E_BufferType::Vertex, mesh->GetVertexBuffer());
+	api->BindBuffer(rhi::E_BufferType::Index, mesh->GetIndexBuffer());
 
 	//Specify Input Layout
-	AttributeDescriptor::DefineAttributeArray(mesh->GetSupportedFlags(), m_Material->GetLayoutFlags(), m_Material->GetAttributeLocations());
+	rhi::AttributeDescriptor::DefineAttributeArray(mesh->GetSupportedFlags(), m_Material->GetLayoutFlags(), m_Material->GetAttributeLocations());
 
 	api->BindVertexArray(0u);
 }
@@ -53,7 +53,7 @@ MeshSurface::MeshSurface(MeshData const* const mesh, render::Material const* con
 //
 MeshSurface::~MeshSurface()
 {
-	ContextHolder::GetRenderContext()->DeleteVertexArray(m_VertexArray);
+	rhi::ContextHolder::GetRenderContext()->DeleteVertexArray(m_VertexArray);
 }
 
 
@@ -119,7 +119,7 @@ MeshData::MeshData()
 //
 MeshData::~MeshData()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	api->DeleteBuffer(m_VertexBuffer);
 	api->DeleteBuffer(m_IndexBuffer);
@@ -193,13 +193,13 @@ bool MeshAsset::ReadEtMesh(MeshData* const meshData, std::vector<uint8> const& l
 	uint64 const vertexCount = reader.Read<uint64>();
 	meshData->m_VertexCount = static_cast<size_t>(vertexCount);
 
-	meshData->m_IndexDataType = reader.Read<E_DataType>();
-	meshData->m_SupportedFlags = reader.Read<T_VertexFlags>();
+	meshData->m_IndexDataType = reader.Read<rhi::E_DataType>();
+	meshData->m_SupportedFlags = reader.Read<rhi::T_VertexFlags>();
 	meshData->m_BoundingSphere.pos = reader.ReadVector<3, float>();
 	meshData->m_BoundingSphere.radius = reader.Read<float>();
 
-	uint64 const iBufferSize = indexCount * static_cast<uint64>(render::DataTypeInfo::GetTypeSize(meshData->m_IndexDataType));
-	uint64 const vBufferSize = vertexCount * static_cast<uint64>(render::AttributeDescriptor::GetVertexSize(meshData->m_SupportedFlags));
+	uint64 const iBufferSize = indexCount * static_cast<uint64>(rhi::DataTypeInfo::GetTypeSize(meshData->m_IndexDataType));
+	uint64 const vBufferSize = vertexCount * static_cast<uint64>(rhi::AttributeDescriptor::GetVertexSize(meshData->m_SupportedFlags));
 
 	// setup buffers
 	//---------------
@@ -208,17 +208,17 @@ bool MeshAsset::ReadEtMesh(MeshData* const meshData, std::vector<uint8> const& l
 
 	uint8 const* const vertexData = reader.GetCurrentDataPointer();
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	// vertex buffer
 	meshData->m_VertexBuffer = api->CreateBuffer();
-	api->BindBuffer(E_BufferType::Vertex, meshData->m_VertexBuffer);
-	api->SetBufferData(E_BufferType::Vertex, static_cast<int64>(vBufferSize), reinterpret_cast<void const*>(vertexData), E_UsageHint::Static);
+	api->BindBuffer(rhi::E_BufferType::Vertex, meshData->m_VertexBuffer);
+	api->SetBufferData(rhi::E_BufferType::Vertex, static_cast<int64>(vBufferSize), reinterpret_cast<void const*>(vertexData), rhi::E_UsageHint::Static);
 
 	// index buffer 
 	meshData->m_IndexBuffer = api->CreateBuffer();
-	api->BindBuffer(E_BufferType::Index, meshData->m_IndexBuffer);
-	api->SetBufferData(E_BufferType::Index, static_cast<int64>(iBufferSize), reinterpret_cast<void const*>(indexData), E_UsageHint::Static);
+	api->BindBuffer(rhi::E_BufferType::Index, meshData->m_IndexBuffer);
+	api->SetBufferData(rhi::E_BufferType::Index, static_cast<int64>(iBufferSize), reinterpret_cast<void const*>(indexData), rhi::E_UsageHint::Static);
 
 	return true;
 }

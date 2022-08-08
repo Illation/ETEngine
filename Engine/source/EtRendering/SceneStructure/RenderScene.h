@@ -5,10 +5,10 @@
 #include <EtRendering/Extensions/SceneExtension.h>
 #include <EtRendering/PlanetTech/Atmosphere.h>
 #include <EtRendering/PlanetTech/Planet.h>
+#include <EtRendering/GraphicsTypes/Camera.h>
 #include <EtRendering/GraphicsTypes/PostProcessingSettings.h>
 #include <EtRendering/GraphicsTypes/DirectionalShadowData.h>
 #include <EtRendering/GraphicsTypes/Mesh.h>
-#include <EtRendering/GraphicsTypes/Camera.h>
 
 
 namespace et {

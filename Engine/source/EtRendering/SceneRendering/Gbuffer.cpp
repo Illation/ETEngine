@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "Gbuffer.h"
 
-#include <EtRendering/GraphicsTypes/Shader.h>
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
+
 #include <EtRendering/GraphicsTypes/EnvironmentMap.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
@@ -21,7 +22,7 @@ Gbuffer::Gbuffer():
 
 void Gbuffer::UploadDerivedVariables()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	//for position reconstruction
 	render::ShadedSceneRenderer const* const sceneRenderer = render::ShadedSceneRenderer::GetCurrent();
@@ -34,7 +35,7 @@ void Gbuffer::UploadDerivedVariables()
 		m_pShader->Upload("uMaxReflectionLod"_hash, static_cast<float>(envMap->GetNumMipMaps()));
 	}
 
-	TextureData const* const lut = RenderingSystems::Instance()->GetPbrPrefilter().GetLUT();
+	rhi::TextureData const* const lut = RenderingSystems::Instance()->GetPbrPrefilter().GetLUT();
 	m_pShader->Upload("uTexBrdfLut"_hash, lut);
 }
 

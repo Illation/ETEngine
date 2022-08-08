@@ -21,7 +21,7 @@ ivec2 const GlfwRenderArea::s_DefaultDimensions(512, 512);
 //
 // Create a Window and an openGL context to draw to the window
 //
-void GlfwRenderArea::Initialize(render::GraphicsContextParams const& params, bool const hidden)
+void GlfwRenderArea::Initialize(rhi::GraphicsContextParams const& params, bool const hidden)
 {
 	// Initialize GLFW 
 	//-----------------
@@ -95,7 +95,7 @@ void GlfwRenderArea::Initialize(render::GraphicsContextParams const& params, boo
 	SetVSyncEnabled(true);
 
 	ET_ASSERT(m_Context == nullptr);
-	m_Context = new render::GladGlContext();
+	m_Context = new rhi::GladGlContext();
 	m_Context->Initialize(dim);
 
 	if (m_OnInit)

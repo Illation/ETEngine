@@ -26,7 +26,7 @@ struct MeshDataContainer final
 
 	// accessors
 	//-----------
-	render::T_VertexFlags GetFlags() const;
+	rhi::T_VertexFlags GetFlags() const;
 	math::Sphere GetBoundingSphere() const;
 
 	size_t GetVertexIdx(MeshDataContainer const& other, size_t const index) const;

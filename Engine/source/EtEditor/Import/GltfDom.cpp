@@ -1,4 +1,4 @@
-#include <EtEditor/stdafx.h>
+#include "stdafx.h"
 #include "GltfDom.h"
 
 #include <EtCore/IO/BinaryReader.h>

@@ -3,10 +3,11 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
+#include <EtRHI/Util/PrimitiveRenderer.h>
+
 #include <EtRendering/GraphicsTypes/EnvironmentMap.h>
-#include <EtRendering/GraphicsTypes/Shader.h>
-#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 namespace et {
@@ -26,41 +27,41 @@ PbrPrefilter::~PbrPrefilter()
 
 void PbrPrefilter::Precompute(int32 resolution)
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	ET_TRACE_I(ET_CTX_RENDER, "Precalculating PBR BRDF LUT . . .");
 	//setup BRDF look up table
 	//************************
 	//Create framebuffer
-	T_FbLoc captureFBO;
-	T_RbLoc captureRBO;
+	rhi::T_FbLoc captureFBO;
+	rhi::T_RbLoc captureRBO;
 	api->GenFramebuffers(1, &captureFBO);
 	api->GenRenderBuffers(1, &captureRBO);
 
 	api->BindFramebuffer(captureFBO);
 	api->BindRenderbuffer(captureRBO);
-	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(resolution));
-	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, captureRBO);
+	api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(resolution));
+	api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, captureRBO);
 	//Shader
-	api->SetShader(core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/FwdBrdfLutShader.glsl")).get());
+	api->SetShader(core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdBrdfLutShader.glsl")).get());
 
-	m_LUT = new TextureData(E_ColorFormat::RG16f, ivec2(resolution));
+	m_LUT = new rhi::TextureData(rhi::E_ColorFormat::RG16f, ivec2(resolution));
 	m_LUT->AllocateStorage();
-	TextureParameters params(false);
-	params.wrapS = E_TextureWrapMode::ClampToEdge;
-	params.wrapT = E_TextureWrapMode::ClampToEdge;
+	rhi::TextureParameters params(false);
+	params.wrapS = rhi::E_TextureWrapMode::ClampToEdge;
+	params.wrapT = rhi::E_TextureWrapMode::ClampToEdge;
 	m_LUT->SetParameters(params);
 
 	api->BindRenderbuffer(captureRBO);
-	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(resolution));
+	api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(resolution));
 	api->LinkTextureToFbo2D(0, m_LUT->GetLocation(), 0);
 
 	ivec2 pos, size;
 	api->GetViewport(pos, size);
 
 	api->SetViewport(ivec2(0), ivec2(resolution));
-	api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
-	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
+	api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
+	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 
 	//Reset render settings and return generated texture
 	//*************************************************
@@ -73,14 +74,14 @@ void PbrPrefilter::Precompute(int32 resolution)
 	ET_TRACE_V(ET_CTX_RENDER, "Completed precalculating PPBR BRDF LUT");
 }
 
-void PbrPrefilter::PrefilterCube(TextureData const* const source, 
-	TextureData*& irradiance, 
-	TextureData*& radiance, 
+void PbrPrefilter::PrefilterCube(rhi::TextureData const* const source, 
+	rhi::TextureData*& irradiance, 
+	rhi::TextureData*& radiance, 
 	int32 const resolution, 
 	int32 const irradianceRes, 
 	int32 const radianceRes)
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	//setup for convoluted irradiance cubemap
 	//***************************************
@@ -88,21 +89,21 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	std::vector<mat4> captureViews = CubeCaptureViews();
 
 	//Create framebuffer
-	T_FbLoc captureFBO;
-	T_RbLoc captureRBO;
+	rhi::T_FbLoc captureFBO;
+	rhi::T_RbLoc captureRBO;
 	api->GenFramebuffers(1, &captureFBO);
 	api->GenRenderBuffers(1, &captureRBO);
 
 	api->BindFramebuffer(captureFBO);
 	api->BindRenderbuffer(captureRBO);
-	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(resolution));
-	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, captureRBO);
+	api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(resolution));
+	api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, captureRBO);
 
 	//texture
-	irradiance = new TextureData(E_TextureType::CubeMap, E_ColorFormat::RGB16f, ivec2(irradianceRes));
+	irradiance = new rhi::TextureData(rhi::E_TextureType::CubeMap, rhi::E_ColorFormat::RGB16f, ivec2(irradianceRes));
 	irradiance->AllocateStorage();
 
-	TextureParameters params;
+	rhi::TextureParameters params;
 	PopulateCubeTextureParams(params);
 	params.genMipMaps = false;
 
@@ -111,10 +112,10 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	//Framebuffer
 	api->BindFramebuffer(captureFBO);
 	api->BindRenderbuffer(captureRBO);
-	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(irradianceRes));
+	api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(irradianceRes));
 
 	//shader
-	AssetPtr<ShaderData> irradianceShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/FwdConvIrradianceShader.glsl"));
+	AssetPtr<rhi::ShaderData> irradianceShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdConvIrradianceShader.glsl"));
 
 	api->SetShader(irradianceShader.get());
 	irradianceShader->Upload("environmentMap"_hash, source);
@@ -132,23 +133,23 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	{
 		irradianceShader->Upload("view"_hash, captureViews[face]);
 		api->LinkCubeMapFaceToFbo2D(face, irradiance->GetLocation(), 0);
-		api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
+		api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
 
-		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
+		rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Cube>();
 	}
 
 	api->BindFramebuffer(0);
 
 	//setup radiance
 	//**************
-	radiance = new TextureData(E_TextureType::CubeMap, E_ColorFormat::RGB16f, ivec2(radianceRes));
+	radiance = new rhi::TextureData(rhi::E_TextureType::CubeMap, rhi::E_ColorFormat::RGB16f, ivec2(radianceRes));
 	radiance->AllocateStorage();
 	params.genMipMaps = true;
 	radiance->SetParameters(params);
 	radiance->GenerateMipMaps();
 
 	//Shader
-	AssetPtr<ShaderData> radianceShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/FwdConvRadianceShader.glsl"));
+	AssetPtr<rhi::ShaderData> radianceShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdConvRadianceShader.glsl"));
 
 	api->SetShader(radianceShader.get());
 	radianceShader->Upload("environmentMap"_hash, source);
@@ -165,7 +166,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 		uint32 mipWidth = (uint32)(radianceRes * std::pow(0.5, mip));
 		uint32 mipHeight = (uint32)(radianceRes * std::pow(0.5, mip));
 		api->BindRenderbuffer(captureRBO);
-		api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(mipWidth, mipHeight));
+		api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(mipWidth, mipHeight));
 		api->SetViewport(ivec2(0), ivec2(mipWidth, mipHeight));
 
 		float roughness = (float)mip / (float)(maxMipLevels);
@@ -175,8 +176,8 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 			radianceShader->Upload("view"_hash, captureViews[faceIdx]);
 			api->LinkCubeMapFaceToFbo2D(faceIdx, radiance->GetLocation(), mip);
 
-			api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
-			RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
+			api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
+			rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Cube>();
 		}
 	}
 
@@ -191,7 +192,7 @@ void PbrPrefilter::PrefilterCube(TextureData const* const source,
 	api->DeleteFramebuffers(1, &captureFBO);
 }
 
-TextureData* PbrPrefilter::GetLUT()
+rhi::TextureData* PbrPrefilter::GetLUT()
 {
 	if (m_LUT == nullptr)
 	{
@@ -206,13 +207,13 @@ TextureData* PbrPrefilter::GetLUT()
 //
 // Parameters for environment map cube maps
 //
-void PbrPrefilter::PopulateCubeTextureParams(render::TextureParameters& params)
+void PbrPrefilter::PopulateCubeTextureParams(rhi::TextureParameters& params)
 {
-	params.minFilter = E_TextureFilterMode::Linear;
-	params.magFilter = E_TextureFilterMode::Linear;
-	params.wrapS = E_TextureWrapMode::ClampToEdge;
-	params.wrapT = E_TextureWrapMode::ClampToEdge;
-	params.wrapR = E_TextureWrapMode::ClampToEdge;
+	params.minFilter = rhi::E_TextureFilterMode::Linear;
+	params.magFilter = rhi::E_TextureFilterMode::Linear;
+	params.wrapS = rhi::E_TextureWrapMode::ClampToEdge;
+	params.wrapT = rhi::E_TextureWrapMode::ClampToEdge;
+	params.wrapR = rhi::E_TextureWrapMode::ClampToEdge;
 	params.genMipMaps = true;
 }
 

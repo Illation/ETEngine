@@ -3,11 +3,13 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
+#include <EtRHI/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
+#include <EtRHI/Util/PrimitiveRenderer.h>
+
 #include <EtRendering/MaterialSystem/MaterialData.h>
-#include <EtRendering/GraphicsTypes/Shader.h>
-#include <EtRendering/GraphicsTypes/TextureData.h>
-#include <EtRendering/GraphicsTypes/Frustum.h>
 #include <EtRendering/GraphicsTypes/DirectionalShadowData.h>
+#include <EtRendering/GraphicsTypes/Frustum.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/SceneRendering/Gbuffer.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
@@ -37,15 +39,15 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 		return;
 	}
 
-	ShaderData const* const shader = m_Material->GetShader();
-	ContextHolder::GetRenderContext()->SetShader(shader);
+	rhi::ShaderData const* const shader = m_Material->GetShader();
+	rhi::ContextHolder::GetRenderContext()->SetShader(shader);
 
 	shader->Upload("Position"_hash, pos); 
 	shader->Upload("Color"_hash, col);
 	shader->Upload("Radius"_hash, radius);
 	shader->Upload("model"_hash, math::scale(vec3(radius))*math::translate(pos));
 
-	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::IcoSphere<2> >();
+	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::IcoSphere<2>>();
 }
 
 
@@ -56,8 +58,8 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 
 void DirectLightVolume::Initialize()
 {
-	m_Shader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/FwdLightDirectionalShader.glsl"));
-	m_ShaderShadowed = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/FwdLightDirectionalShadowShader.glsl"));
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdLightDirectionalShader.glsl"));
+	m_ShaderShadowed = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdLightDirectionalShadowShader.glsl"));
 
 	m_IsInitialized = true;
 }
@@ -69,7 +71,7 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 		Initialize();
 	}
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	api->SetShader(m_Shader.get());
 
@@ -77,7 +79,7 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 	m_Shader->Upload("Direction"_hash, dir);
 	m_Shader->Upload("Color"_hash, col);
 
-	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
+	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 }
 
 void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, render::DirectionalShadowData const& shadow)
@@ -87,7 +89,7 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, render::DirectionalShad
 		Initialize();
 	}
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	api->SetShader(m_ShaderShadowed.get());
 
@@ -107,13 +109,13 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, render::DirectionalShad
 		m_ShaderShadowed->Upload(GetHash(cascadeStruct + "LightVP"), cascades[cascadeIdx].lightVP);
 
 		//Shadow map
-		m_ShaderShadowed->Upload(GetHash(cascadeStruct + "ShadowMap"), static_cast<TextureData const*>(cascades[cascadeIdx].texture));
+		m_ShaderShadowed->Upload(GetHash(cascadeStruct + "ShadowMap"), static_cast<rhi::TextureData const*>(cascades[cascadeIdx].texture));
 
 		//cascade distance
 		m_ShaderShadowed->Upload(GetHash(cascadeStruct + "Distance"), cascades[cascadeIdx].distance);
 	}
 
-	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
+	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 }
 
 

@@ -59,7 +59,7 @@ private:
 	void ShowRenderingUI();
 	void ShowFontUI();
 
-	void AddOpaqueImage(render::TextureData const* const texture, vec2 const maxScale);
+	void AddOpaqueImage(rhi::TextureData const* const texture, vec2 const maxScale);
 	vec2 GetScale(vec2 const inScale, vec2 const maxScale) const;
 
 	void AddFontAsset(AssetPtr<SdfFont> const& asset);

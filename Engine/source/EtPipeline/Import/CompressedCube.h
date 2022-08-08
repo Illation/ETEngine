@@ -1,5 +1,5 @@
 #pragma once
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
 
 #include "TextureCompression.h"
 
@@ -19,13 +19,13 @@ class CompressedCube final
 	//--------------------
 	CompressedCube() = default;
 public:
-	CompressedCube(render::TextureData const& cubeMap, TextureCompression::E_Quality const quality);
+	CompressedCube(rhi::TextureData const& cubeMap, TextureCompression::E_Quality const quality);
 	~CompressedCube();
 protected:
 
 	// functionality
 	//---------------
-	void CompressFromTexture(render::TextureData const& cubeMap, 
+	void CompressFromTexture(rhi::TextureData const& cubeMap, 
 		TextureCompression::E_Quality const quality, 
 		uint8 const mipLevel, 
 		uint32 const size);

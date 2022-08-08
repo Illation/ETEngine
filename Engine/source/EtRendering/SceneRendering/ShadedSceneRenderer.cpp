@@ -3,6 +3,8 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
+#include <EtRHI/Util/PrimitiveRenderer.h>
+
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 #include <EtRendering/SceneStructure/RenderScene.h>
 #include <EtRendering/GraphicsTypes/EnvironmentMap.h>
@@ -36,13 +38,13 @@ RTTR_REGISTRATION
 //
 ShadedSceneRenderer* ShadedSceneRenderer::GetCurrent()
 {
-	Viewport* const viewport = Viewport::GetCurrentViewport();
+	rhi::Viewport* const viewport = rhi::Viewport::GetCurrentViewport();
 	if (viewport == nullptr)
 	{
 		return nullptr;
 	}
 
-	I_ViewportRenderer* const viewRenderer = viewport->GetViewportRenderer();
+	rhi::I_ViewportRenderer* const viewRenderer = viewport->GetViewportRenderer();
 	if (viewRenderer == nullptr)
 	{
 		return nullptr;
@@ -93,7 +95,7 @@ void ShadedSceneRenderer::InitRenderingSystems()
 
 	m_ClearColor = vec3(200.f / 255.f, 114.f / 255.f, 200.f / 255.f)*0.0f;
 
-	m_SkyboxShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/FwdSkyboxShader.glsl"));
+	m_SkyboxShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdSkyboxShader.glsl"));
 
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 	m_DebugRenderer.Initialize();
@@ -128,9 +130,9 @@ void ShadedSceneRenderer::OnResize(ivec2 const dim)
 //
 // Main scene drawing function
 //
-void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
+void ShadedSceneRenderer::OnRender(rhi::T_FbLoc const targetFb)
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	// Global variables for all rendering systems
 	//********************************************
@@ -168,12 +170,12 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 
 	api->DebugPushGroup("clear previous pass");
 	api->SetClearColor(vec4(m_ClearColor, 1.f));
-	api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
+	api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
 	api->DebugPopGroup();
 
 	// fill mode
-	E_PolygonMode const polyMode = Get3DPolyMode();
-	api->SetPolygonMode(E_FaceCullMode::FrontBack, polyMode);
+	rhi::E_PolygonMode const polyMode = Get3DPolyMode();
+	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, polyMode);
 
 	// draw terrains
 	api->DebugPushGroup("terrains");
@@ -203,14 +205,14 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	m_Events.Notify(E_RenderEvent::RE_RenderDeferred, new RenderEventData(this, m_GBuffer.Get()));
 	api->DebugPopGroup();
 
-	api->SetPolygonMode(E_FaceCullMode::FrontBack, E_PolygonMode::Fill);
+	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, rhi::E_PolygonMode::Fill);
 
 	api->DebugPopGroup();
 
 	api->DebugPushGroup("lighting pass");
 	// render ambient IBL
 	api->DebugPushGroup("image based lighting");
-	api->SetFaceCullingMode(E_FaceCullMode::Back);
+	api->SetFaceCullingMode(rhi::E_FaceCullMode::Back);
 	api->SetCullEnabled(false);
 
 	m_SSR.EnableInput();
@@ -228,11 +230,11 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->DebugPushGroup("light volumes");
 	api->SetDepthEnabled(false);
 	api->SetBlendEnabled(true);
-	api->SetBlendEquation(E_BlendEquation::Add);
-	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::One);
+	api->SetBlendEquation(rhi::E_BlendEquation::Add);
+	api->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::One);
 
 	api->SetCullEnabled(true);
-	api->SetFaceCullingMode(E_FaceCullMode::Front);
+	api->SetFaceCullingMode(rhi::E_FaceCullMode::Front);
 
 	// pointlights
 	api->DebugPushGroup("point lights");
@@ -275,7 +277,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	}
 	api->DebugPopGroup();
 
-	api->SetFaceCullingMode(E_FaceCullMode::Back);
+	api->SetFaceCullingMode(rhi::E_FaceCullMode::Back);
 	api->SetBlendEnabled(false);
 
 	api->SetCullEnabled(false);
@@ -304,7 +306,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	api->DebugPushGroup("forward render pass");
 	api->SetDepthEnabled(true);
 
-	api->SetPolygonMode(E_FaceCullMode::FrontBack, polyMode);
+	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, polyMode);
 
 	// draw skybox
 	api->DebugPushGroup("skybox");
@@ -317,8 +319,8 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 		m_SkyboxShader->Upload("numMipMaps"_hash, skybox.m_EnvironmentMap->GetNumMipMaps());
 		m_SkyboxShader->Upload("roughness"_hash, skybox.m_Roughness);
 
-		api->SetDepthFunction(E_DepthFunc::LEqual);
-		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
+		api->SetDepthFunction(rhi::E_DepthFunc::LEqual);
+		rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Cube>();
 	}
 	api->DebugPopGroup();
 
@@ -349,11 +351,11 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 #endif
 		)
 	{
-		api->SetFaceCullingMode(E_FaceCullMode::Front);
+		api->SetFaceCullingMode(rhi::E_FaceCullMode::Front);
 		api->SetDepthEnabled(false);
 		api->SetBlendEnabled(true);
-		api->SetBlendEquation(E_BlendEquation::Add);
-		api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::One);
+		api->SetBlendEquation(rhi::E_BlendEquation::Add);
+		api->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::One);
 
 		for (AtmosphereInstance const& atmoInst : m_RenderScene->GetAtmosphereInstances())
 		{
@@ -366,13 +368,13 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 			m_RenderScene->GetAtmosphere(atmoInst.atmosphereId).Draw(pos, atmoInst.height, atmoInst.groundRadius, sunDir);
 		}
 
-		api->SetFaceCullingMode(E_FaceCullMode::Back);
+		api->SetFaceCullingMode(rhi::E_FaceCullMode::Back);
 		api->SetBlendEnabled(false);
 		api->SetDepthEnabled(true);
 	}
 	api->DebugPopGroup();
 
-	api->SetPolygonMode(E_FaceCullMode::FrontBack, E_PolygonMode::Fill);
+	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, rhi::E_PolygonMode::Fill);
 
 	api->DebugPopGroup(); // forward render pass
 
@@ -396,7 +398,7 @@ void ShadedSceneRenderer::OnRender(T_FbLoc const targetFb)
 	// post processing
 	api->SetCullEnabled(false);
 	m_PostProcessing.Draw(targetFb, GetPostProcessingSettings(), 
-		std::function<void(T_FbLoc const)>([this, api](T_FbLoc const targetFb)
+		std::function<void(rhi::T_FbLoc const)>([this, api](rhi::T_FbLoc const targetFb)
 		{
 			api->DebugPushGroup("overlay extensions");
 			m_Events.Notify(E_RenderEvent::RE_RenderOverlay, new RenderEventData(this, targetFb));
@@ -421,7 +423,7 @@ Camera const& ShadedSceneRenderer::GetCamera() const
 //
 void ShadedSceneRenderer::DrawShadow(I_Material const* const nullMaterial)
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	// No need to set shaders or upload material parameters as that is the calling functions responsibility
 	for (MaterialCollection::Mesh const& mesh : m_RenderScene->GetShadowCasters().m_Meshes)
@@ -437,7 +439,7 @@ void ShadedSceneRenderer::DrawShadow(I_Material const* const nullMaterial)
 			if (true) // #todo: light frustum check
 			{
 				nullMaterial->GetBaseMaterial()->GetShader()->Upload("model"_hash, transform);
-				api->DrawElements(E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
+				api->DrawElements(rhi::E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
 			}
 		}
 	}
@@ -448,14 +450,14 @@ void ShadedSceneRenderer::DrawShadow(I_Material const* const nullMaterial)
 //
 // What poly mode to use for 3D rendering based on the render mode
 //
-E_PolygonMode ShadedSceneRenderer::Get3DPolyMode() const
+rhi::E_PolygonMode ShadedSceneRenderer::Get3DPolyMode() const
 {
 	E_RenderMode renderMode = m_RenderMode;
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 	RenderingSystems::Instance()->GetDebugVars().OverrideMode(renderMode);
 #endif
 
-	return (renderMode == E_RenderMode::Wireframe) ? E_PolygonMode::Line : E_PolygonMode::Fill;
+	return (renderMode == E_RenderMode::Wireframe) ? rhi::E_PolygonMode::Line : rhi::E_PolygonMode::Fill;
 }
 
 //------------------------------------------------
@@ -488,7 +490,7 @@ PostProcessingSettings const& ShadedSceneRenderer::GetPostProcessingSettings()
 //
 void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCollection> const& collectionGroup)
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	Camera const& camera = GetCamera();
 
@@ -513,7 +515,7 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 					if (camera.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
 					{
 						collection.m_Shader->Upload("model"_hash, transform);
-						api->DrawElements(E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
+						api->DrawElements(rhi::E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
 					}
 				}
 			}

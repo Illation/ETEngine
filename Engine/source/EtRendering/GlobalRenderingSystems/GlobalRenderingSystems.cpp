@@ -1,9 +1,11 @@
-#include <EtRendering/stdafx.h>
+#include "stdafx.h"
 #include "GlobalRenderingSystems.h"
 
 #include <rttr/registration>
 
 #include <EtCore/Content/ResourceManager.h>
+
+#include <EtRHI/Util/PrimitiveRenderer.h>
 
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 #	include <EtCore/Util/DebugCommandController.h>
@@ -112,6 +114,14 @@ void RenderingSystems::RemoveReference()
 	}
 }
 
+//-------------------------
+// RenderingSystems::d-tor
+//
+RenderingSystems::~RenderingSystems()
+{
+	rhi::PrimitiveRenderer::Instance().Deinit();
+}
+
 //---------------------------------
 // RenderingSystems::Initialize
 //
@@ -120,6 +130,7 @@ void RenderingSystems::RemoveReference()
 void RenderingSystems::Initialize()
 {
 	m_SharedVarController.Init();
+	rhi::I_SharedVarController::SetGlobal(ToPtr(&m_SharedVarController));
 
 	m_AtmospherePrecompute.Init();
 

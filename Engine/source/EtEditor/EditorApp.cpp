@@ -21,7 +21,8 @@
 #include <EtCore/UpdateCycle/PerformanceInfo.h>
 #include <EtCore/Reflection/TypeInfoRegistry.h>
 
-#include <EtRendering/GraphicsContext/ContextHolder.h>
+#include <EtRHI/GraphicsContext/ContextHolder.h>
+
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 #include <EtGUI/Context/RmlGlobal.h>
@@ -215,7 +216,7 @@ void EditorApp::on_activate()
 
 		// window is realized now create rendering context
 		m_RenderWindow.SetSourceWindow(m_AppWindow);
-		render::ContextHolder::Instance().CreateMainRenderContext(&m_RenderWindow);
+		rhi::ContextHolder::Instance().CreateMainRenderContext(&m_RenderWindow);
 
 		render::RenderingSystems::AddReference();
 

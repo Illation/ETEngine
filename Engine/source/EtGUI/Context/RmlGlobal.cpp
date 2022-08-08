@@ -116,7 +116,7 @@ void RmlGlobal::SetClipboardController(Ptr<core::I_ClipboardController> const cl
 //----------------------------------
 // RmlGlobal::SetGraphicsContext
 //
-void RmlGlobal::SetGraphicsContext(Ptr<render::I_GraphicsContextApi> const graphicsContext)
+void RmlGlobal::SetGraphicsContext(Ptr<rhi::I_GraphicsContextApi> const graphicsContext)
 {
 	m_Renderer.SetGraphicsContext(graphicsContext);
 }
@@ -124,7 +124,7 @@ void RmlGlobal::SetGraphicsContext(Ptr<render::I_GraphicsContextApi> const graph
 //----------------------------------
 // RmlGlobal::SetGraphicsContext
 //
-void RmlGlobal::SetRIShader(AssetPtr<render::ShaderData> const shader, AssetPtr<render::ShaderData> const textShader)
+void RmlGlobal::SetRIShader(AssetPtr<rhi::ShaderData> const shader, AssetPtr<rhi::ShaderData> const textShader)
 {
 	m_Renderer.SetShader(shader, textShader);
 }

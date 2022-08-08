@@ -1,7 +1,7 @@
 #pragma once
 #include <EtCore/Content/AssetPointer.h>
 
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
 
 
 // fwd
@@ -112,7 +112,7 @@ public:
 	Metric const* const GetValidMetric(char32 const character) const;
 	bool UseKerning() const { return m_UseKerning; }
 
-	render::TextureData const* GetAtlas() const { return (m_TextureAsset != nullptr) ? m_TextureAsset.get() : m_Texture.Get(); }
+	rhi::TextureData const* GetAtlas() const { return (m_TextureAsset != nullptr) ? m_TextureAsset.get() : m_Texture.Get(); }
 
 	float GetSdfSize() const { return m_SdfSize; }
 	float GetThresholdPerWeight() const { return m_ThresholdPerWeight; }
@@ -142,8 +142,8 @@ private:
 	bool m_UseKerning = false;
 
 	// texture info
-	UniquePtr<render::TextureData const> m_Texture; // editor
-	AssetPtr<render::TextureData> m_TextureAsset; // runtime
+	UniquePtr<rhi::TextureData const> m_Texture; // editor
+	AssetPtr<rhi::TextureData> m_TextureAsset; // runtime
 
 	float m_SdfSize = 0.f;
 	float m_ThresholdPerWeight = 0.f; // modify the sdf rendering threshold based on the width differential

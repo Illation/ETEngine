@@ -5,7 +5,7 @@
 
 #include <EtCore/Input/KeyCodes.h>
 
-#include <EtRendering/GraphicsContext/ViewportEvents.h>
+#include <EtRHI/GraphicsContext/ViewportEvents.h>
 
 
 // fwd

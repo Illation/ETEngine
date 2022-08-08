@@ -1,5 +1,6 @@
 #pragma once
-#include <EtRendering/GraphicsContext/GraphicsTypes.h>
+#include <EtRHI/Util/SharedVarInterface.h>
+#include <EtRHI/GraphicsContext/GraphicsTypes.h>
 
 
 namespace et {
@@ -15,7 +16,7 @@ class Gbuffer;
 //
 // Keeps common uniform variables up to date to avoid this responsibility for shaders
 //
-class SharedVarController final
+class SharedVarController final : public rhi::I_SharedVarController
 {
 	// definitions
 	//---------------
@@ -39,15 +40,15 @@ class SharedVarController final
 
 		float _padding1;
 
-		T_TextureHandle gbufferA;
-		T_TextureHandle gbufferB;
-		T_TextureHandle gbufferC;
+		rhi::T_TextureHandle gbufferA;
+		rhi::T_TextureHandle gbufferB;
+		rhi::T_TextureHandle gbufferC;
 	};
 
 	// construct deconstruct
 	//-----------------------
 public:
-	SharedVarController() = default;
+	SharedVarController() : rhi::I_SharedVarController() {}
 	~SharedVarController();
 
 	void Init();
@@ -59,9 +60,9 @@ public:
 
 	// accessors
 	//-----------
-	T_BufferLoc const GetBufferLocation() const { return m_BufferLocation; }
-	uint32 const GetBufferBinding() const { return m_BufferBinding; }
-	std::string const& GetBlockName() const { return m_UniformBlockName; }
+	rhi::T_BufferLoc const GetBufferLocation() const override { return m_BufferLocation; }
+	uint32 const GetBufferBinding() const override { return m_BufferBinding; }
+	std::string const& GetBlockName() const override { return m_UniformBlockName; }
 
 private:
 
@@ -71,7 +72,7 @@ private:
 	bool m_IsInitialized = false;
 
 	GlobalData m_Data;
-	T_BufferLoc m_BufferLocation;
+	rhi::T_BufferLoc m_BufferLocation;
 
 	std::string m_UniformBlockName = "SharedVars";
 	uint32 m_BufferBinding = 0u;

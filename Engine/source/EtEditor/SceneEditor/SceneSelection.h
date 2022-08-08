@@ -57,7 +57,7 @@ public:
 	void ClearSelection(bool const notify = false);
 	void ToggleEntitySelected(fw::T_EntityId const entity, bool const notify = false);
 
-	void Pick(ivec2 const pos, render::Viewport* const viewport, bool const add);
+	void Pick(ivec2 const pos, rhi::Viewport* const viewport, bool const add);
 
 	void UpdateOutlines() const;
 	void RecursiveAddOutlines(fw::T_EntityId const entity) const;

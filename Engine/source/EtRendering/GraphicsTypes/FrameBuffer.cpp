@@ -1,13 +1,12 @@
 #include "stdafx.h"
 #include "FrameBuffer.h"
 
-#include "Shader.h"
-#include "TextureData.h"
-
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
+#include <EtRHI/Util/PrimitiveRenderer.h>
 
 
 namespace et {
@@ -21,11 +20,11 @@ FrameBuffer::FrameBuffer(std::string shaderFile, uint32 numTargets)
 
 FrameBuffer::~FrameBuffer()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
-	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
+	if (m_VPCallbackId != rhi::T_ViewportEventDispatcher::INVALID_ID)
 	{
-		Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
+		rhi::Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
 	}
 
 	api->DeleteRenderBuffers(1, &m_RboDepthStencil);
@@ -38,10 +37,10 @@ FrameBuffer::~FrameBuffer()
 
 void FrameBuffer::Initialize()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	//Load and compile Shaders
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString(m_ShaderFile.c_str()));
+	m_pShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString(m_ShaderFile.c_str()));
 
 	//GetAccessTo shader attributes
 	api->SetShader(m_pShader.get());
@@ -54,8 +53,8 @@ void FrameBuffer::Initialize()
 
 	ET_ASSERT(api->IsFramebufferComplete(), "Creating framebuffer failed!");
 
-	m_VPCallbackId = Viewport::GetCurrentViewport()->GetEventDispatcher().Register(render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
-		[this](render::T_ViewportEventFlags const, render::ViewportEventData const* const) -> void
+	m_VPCallbackId = rhi::Viewport::GetCurrentViewport()->GetEventDispatcher().Register(rhi::E_ViewportEvent::VP_Resized, rhi::T_ViewportEventCallback(
+		[this](rhi::T_ViewportEventFlags const, rhi::ViewportEventData const* const) -> void
 		{
 			ResizeFramebufferTextures();
 		}));
@@ -63,39 +62,39 @@ void FrameBuffer::Initialize()
 
 void FrameBuffer::Enable(bool active)
 {
-	ContextHolder::GetRenderContext()->BindFramebuffer(active ? m_GlFrameBuffer : 0);
+	rhi::ContextHolder::GetRenderContext()->BindFramebuffer(active ? m_GlFrameBuffer : 0);
 }
 
 void FrameBuffer::Draw()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	api->SetDepthEnabled(false);
 	api->SetShader(m_pShader.get());
 
 	UploadDerivedVariables();
 
-	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
+	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 }
 
 
 void FrameBuffer::GenerateFramebufferTextures()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
-	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	ivec2 const dim = rhi::Viewport::GetCurrentViewport()->GetDimensions();
 
 	api->BindFramebuffer(m_GlFrameBuffer);
 
 	//Textures
 	m_pTextureVec.reserve(m_NumTargets);
 
-	TextureParameters params(false);
-	params.wrapS = E_TextureWrapMode::ClampToEdge;
-	params.wrapT = E_TextureWrapMode::ClampToEdge;
+	rhi::TextureParameters params(false);
+	params.wrapS = rhi::E_TextureWrapMode::ClampToEdge;
+	params.wrapT = rhi::E_TextureWrapMode::ClampToEdge;
 	//Depth buffer
 	if (m_CaptureDepth)
 	{
-		TextureData* depthMap = new TextureData(E_ColorFormat::Depth24, dim);
+		rhi::TextureData* depthMap = new rhi::TextureData(rhi::E_ColorFormat::Depth24, dim);
 		depthMap->AllocateStorage();
 		api->LinkTextureToFboDepth(depthMap->GetLocation());
 		depthMap->SetParameters(params);
@@ -106,7 +105,7 @@ void FrameBuffer::GenerateFramebufferTextures()
 	//Color buffers
 	for (uint32 i = 0; i < m_NumTargets; i++)
 	{
-		TextureData* colorBuffer = new TextureData(E_ColorFormat::RGBA16f, dim);
+		rhi::TextureData* colorBuffer = new rhi::TextureData(rhi::E_ColorFormat::RGBA16f, dim);
 		colorBuffer->AllocateStorage();
 		api->LinkTextureToFbo2D(i, colorBuffer->GetLocation(), 0);
 		colorBuffer->SetParameters(params, true);
@@ -119,8 +118,8 @@ void FrameBuffer::GenerateFramebufferTextures()
 	{
 		api->GenRenderBuffers(1, &m_RboDepthStencil);
 		api->BindRenderbuffer(m_RboDepthStencil);
-		api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24_Stencil8, dim);
-		api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24_Stencil8, m_RboDepthStencil);
+		api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24_Stencil8, dim);
+		api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24_Stencil8, m_RboDepthStencil);
 	}
 
 	api->SetDrawBufferCount(static_cast<size_t>(m_NumTargets));
@@ -128,8 +127,8 @@ void FrameBuffer::GenerateFramebufferTextures()
 
 void FrameBuffer::ResizeFramebufferTextures()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
-	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	ivec2 const dim = rhi::Viewport::GetCurrentViewport()->GetDimensions();
 
 	ET_ASSERT(m_pTextureVec.size() > 0);
 
@@ -160,8 +159,8 @@ void FrameBuffer::ResizeFramebufferTextures()
 		api->DeleteRenderBuffers( 1, &m_RboDepthStencil );
 		api->GenRenderBuffers(1, &m_RboDepthStencil);
 		api->BindRenderbuffer(m_RboDepthStencil);
-		api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24_Stencil8, dim);
-		api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24_Stencil8, m_RboDepthStencil);
+		api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24_Stencil8, dim);
+		api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24_Stencil8, m_RboDepthStencil);
 	}
 	assert( m_pTextureVec.size() >= offset + m_NumTargets );
 	for(uint32 i = offset; i < offset + m_NumTargets; ++i)

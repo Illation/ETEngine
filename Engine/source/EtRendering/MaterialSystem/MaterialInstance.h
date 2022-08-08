@@ -9,7 +9,7 @@ namespace render {
 //---------------------------------
 // MaterialInstance
 //
-// Child of a material or another material instance, can override material parameters
+// Child of a material or another material instance, can override material rhi::parameters
 //
 class MaterialInstance final : public I_Material
 {
@@ -22,14 +22,14 @@ class MaterialInstance final : public I_Material
 	//---------------------
 	MaterialInstance() = default;
 public:
-	MaterialInstance(AssetPtr<Material> const material, T_ParameterBlock const params, std::vector<AssetPtr<TextureData>> const& textureRefs);
-	MaterialInstance(AssetPtr<MaterialInstance> const parent, T_ParameterBlock const params, std::vector<AssetPtr<TextureData>> const& textureRefs);
+	MaterialInstance(AssetPtr<Material> const material, rhi::T_ParameterBlock const params, std::vector<AssetPtr<rhi::TextureData>> const& textureRefs);
+	MaterialInstance(AssetPtr<MaterialInstance> const parent, rhi::T_ParameterBlock const params, std::vector<AssetPtr<rhi::TextureData>> const& textureRefs);
 	~MaterialInstance();
 
 	// material interface
 	//---------------------
 	Material const* GetBaseMaterial() const override { return m_Material.get(); }
-	T_ConstParameterBlock GetParameters() const override { return m_Parameters; }
+	rhi::T_ConstParameterBlock GetParameters() const override { return m_Parameters; }
 
 	// accessors
 	//---------------------
@@ -45,10 +45,10 @@ private:
 	AssetPtr<MaterialInstance> m_Parent;
 
 	// parameters
-	T_ParameterBlock m_Parameters = nullptr;
+	rhi::T_ParameterBlock m_Parameters = nullptr;
 
 	// utility
-	std::vector<AssetPtr<TextureData>> m_TextureReferences; // prevent textures from unloading
+	std::vector<AssetPtr<rhi::TextureData>> m_TextureReferences; // prevent textures from unloading
 };
 
 

@@ -8,5 +8,5 @@
 // Implements an openGL graphics context with a GLAD include
 //
 #define GL_CONTEXT_CLASSNAME GladGlContext
-#include <EtRendering/GraphicsContext/GlContextImpl.h>
+#include <EtRHI/GraphicsContext/GlContextImpl.h>
 

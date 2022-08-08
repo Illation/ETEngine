@@ -19,7 +19,7 @@ namespace gui {
 //
 void ImGuiBackend::Init(Ptr<core::I_CursorShapeManager> const cursorManager,
 	Ptr<core::I_ClipboardController> const clipboardController,
-	Ptr<render::Viewport> const viewport)
+	Ptr<rhi::Viewport> const viewport)
 {
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -34,11 +34,11 @@ void ImGuiBackend::Init(Ptr<core::I_CursorShapeManager> const cursorManager,
 	m_PlatformBackend.Init(cursorManager, clipboardController, viewport);
 	m_RenderBackend.Init();
 
-	m_VPCallbackId = viewport->GetEventDispatcher().Register(render::E_ViewportEvent::VP_PostFlush | render::E_ViewportEvent::VP_NewRenderer,
-		render::T_ViewportEventCallback([this](render::T_ViewportEventFlags const flags, render::ViewportEventData const* const data) -> void
+	m_VPCallbackId = viewport->GetEventDispatcher().Register(rhi::E_ViewportEvent::VP_PostFlush | rhi::E_ViewportEvent::VP_NewRenderer,
+		rhi::T_ViewportEventCallback([this](rhi::T_ViewportEventFlags const flags, rhi::ViewportEventData const* const data) -> void
 			{
 				ET_UNUSED(data); // can access targetFb here
-				if (flags & render::E_ViewportEvent::VP_NewRenderer)
+				if (flags & rhi::E_ViewportEvent::VP_NewRenderer)
 				{
 					if (!m_HasFrame)
 					{

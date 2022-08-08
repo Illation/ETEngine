@@ -2,5 +2,5 @@
 
 #include "EpoxyGlContext.h"
 
-#include <EtRendering/GraphicsContext/GlContextImpl.hpp>
+#include <EtRHI/GraphicsContext/GlContextImpl.hpp>
 

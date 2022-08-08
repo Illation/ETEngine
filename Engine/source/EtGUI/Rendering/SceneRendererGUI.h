@@ -32,8 +32,8 @@ public:
 	// functionality
 	//---------------
 private:
-	void DrawInWorld(render::T_FbLoc const targetFb, render::E_PolygonMode const polyMode, GuiExtension& guiExt, core::slot_map<mat4> const& nodes);
-	void DrawOverlay(render::T_FbLoc const targetFb, render::E_PolygonMode const polyMode, GuiExtension& guiExt);
+	void DrawInWorld(rhi::T_FbLoc const targetFb, rhi::E_PolygonMode const polyMode, GuiExtension& guiExt, core::slot_map<mat4> const& nodes);
+	void DrawOverlay(rhi::T_FbLoc const targetFb, rhi::E_PolygonMode const polyMode, GuiExtension& guiExt);
 
 
 	// Data

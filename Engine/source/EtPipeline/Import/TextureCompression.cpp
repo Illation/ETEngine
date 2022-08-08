@@ -52,27 +52,27 @@ size_t const TextureCompression::s_PixelBufferSize = 16u * 4u * 2u; // numPixels
 //
 void TextureCompression::WriteTextureHeader(core::BinaryWriter& binWriter,
 	size_t const bufferSize,
-	render::E_TextureType const textureType,
+	rhi::E_TextureType const textureType,
 	uint32 const width,
 	uint32 const height,
 	uint8 const mipCount,
-	render::E_ColorFormat const storageFormat)
+	rhi::E_ColorFormat const storageFormat)
 {
-	binWriter.FormatBuffer(render::TextureFormat::s_Header.size() +
+	binWriter.FormatBuffer(rhi::TextureFormat::s_Header.size() +
 		build::Version::s_Name.size() + 1u +
-		sizeof(render::E_TextureType) +
+		sizeof(rhi::E_TextureType) +
 		sizeof(uint16) + // width 
 		sizeof(uint16) + // height 
 		sizeof(uint16) + // layers 
 		sizeof(uint8) + // mip count
-		sizeof(render::E_ColorFormat) + // gpu storage format
-		sizeof(render::E_ColorFormat) + // layout
-		sizeof(render::E_DataType) +
+		sizeof(rhi::E_ColorFormat) + // gpu storage format
+		sizeof(rhi::E_ColorFormat) + // layout
+		sizeof(rhi::E_DataType) +
 		bufferSize);
 
 	// write header
 	//--------------
-	binWriter.WriteString(render::TextureFormat::s_Header);
+	binWriter.WriteString(rhi::TextureFormat::s_Header);
 	binWriter.WriteNullString(build::Version::s_Name);
 
 	binWriter.Write(textureType); 
@@ -93,7 +93,7 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 	E_Setting const compressionSetting,
 	E_Quality const compressionQuality,
 	bool const supportsAlpha,
-	render::TextureFormat::E_Srgb const srgb,
+	rhi::TextureFormat::E_Srgb const srgb,
 	uint16 const maxSize,
 	bool const forceResolution,
 	bool const useMipMaps)
@@ -103,9 +103,9 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 
 	// settings
 	//-----------
-	render::E_ColorFormat const storageFormat = GetOutputFormat(compressionSetting, supportsAlpha, srgb != render::TextureFormat::E_Srgb::None);
-	bool const requiresCompression = render::TextureFormat::IsCompressedFormat(storageFormat);
-	uint8 const requiredChannels = render::TextureFormat::GetChannelCount(storageFormat);
+	rhi::E_ColorFormat const storageFormat = GetOutputFormat(compressionSetting, supportsAlpha, srgb != rhi::TextureFormat::E_Srgb::None);
+	bool const requiresCompression = rhi::TextureFormat::IsCompressedFormat(storageFormat);
+	uint8 const requiredChannels = rhi::TextureFormat::GetChannelCount(storageFormat);
 
 	// resize the texture to an appropriate format
 	//----------------------------------------------
@@ -144,7 +144,7 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 	size_t mipSize = 0;
 	if (requiresCompression)
 	{
-		mipSize = render::TextureFormat::GetCompressedSize(width, height, storageFormat);
+		mipSize = rhi::TextureFormat::GetCompressedSize(width, height, storageFormat);
 	}
 	else
 	{
@@ -161,34 +161,34 @@ bool TextureCompression::WriteTextureFile(std::vector<uint8>& outFileData,
 	// header
 	//--------
 	core::BinaryWriter binWriter(outFileData);
-	WriteTextureHeader(binWriter, bufferSize, render::E_TextureType::Texture2D, width, height, mipCount, storageFormat);
+	WriteTextureHeader(binWriter, bufferSize, rhi::E_TextureType::Texture2D, width, height, mipCount, storageFormat);
 
 	if (requiresCompression)
 	{
-		binWriter.Write(render::E_DataType::Invalid);
-		binWriter.Write(render::E_ColorFormat::Invalid);
+		binWriter.Write(rhi::E_DataType::Invalid);
+		binWriter.Write(rhi::E_ColorFormat::Invalid);
 	}
 	else
 	{
-		binWriter.Write(render::E_DataType::UByte);
+		binWriter.Write(rhi::E_DataType::UByte);
 		switch (requiredChannels)
 		{
 		case 4u:
-			binWriter.Write(render::E_ColorFormat::BGRA);
+			binWriter.Write(rhi::E_ColorFormat::BGRA);
 			source.Swizzle(2u, 1u, 0u, 3u);
 			break;
 
 		case 3u:
-			binWriter.Write(render::E_ColorFormat::BGR);
+			binWriter.Write(rhi::E_ColorFormat::BGR);
 			source.Swizzle(2u, 1u, 0u, 3u);
 			break;
 
 		case 2u:
-			binWriter.Write(render::E_ColorFormat::RG);
+			binWriter.Write(rhi::E_ColorFormat::RG);
 			break;
 
 		case 1u:
-			binWriter.Write(render::E_ColorFormat::Red);
+			binWriter.Write(rhi::E_ColorFormat::Red);
 			break;
 
 		default:
@@ -272,7 +272,7 @@ uint32 TextureCompression::GetPow2Size(uint32 const width, uint32 const height, 
 //---------------------------------------
 // TextureCompression::GetOutputFormat
 //
-render::E_ColorFormat TextureCompression::GetOutputFormat(E_Setting const setting, bool const supportAlpha, bool const useSrgb)
+rhi::E_ColorFormat TextureCompression::GetOutputFormat(E_Setting const setting, bool const supportAlpha, bool const useSrgb)
 {
 	switch (setting)
 	{
@@ -281,92 +281,92 @@ render::E_ColorFormat TextureCompression::GetOutputFormat(E_Setting const settin
 		{
 			if (supportAlpha)
 			{
-				return render::E_ColorFormat::BC3_SRGBA;
+				return rhi::E_ColorFormat::BC3_SRGBA;
 			}
 
-			return render::E_ColorFormat::BC1_SRGB;
+			return rhi::E_ColorFormat::BC1_SRGB;
 		}
 
 		if (supportAlpha)
 		{
-			return render::E_ColorFormat::BC3_RGBA;
+			return rhi::E_ColorFormat::BC3_RGBA;
 		}
 
-		return render::E_ColorFormat::BC1_RGB; // in the future we might allow for one bit alpha
+		return rhi::E_ColorFormat::BC1_RGB; // in the future we might allow for one bit alpha
 
 	case E_Setting::NormalMap:
 		ET_ASSERT(!supportAlpha);
 		ET_ASSERT(!useSrgb);
-		return render::E_ColorFormat::BC5_RG;
+		return rhi::E_ColorFormat::BC5_RG;
 
 	case E_Setting::GrayScale:
 		ET_ASSERT(!supportAlpha);
 		if (useSrgb)
 		{
-			return render::E_ColorFormat::SRGB8;
+			return rhi::E_ColorFormat::SRGB8;
 		}
 
-		return render::E_ColorFormat::R8;
+		return rhi::E_ColorFormat::R8;
 
 	case E_Setting::DisplacementMap:
 		ET_ASSERT(!supportAlpha);
 		ET_ASSERT(!useSrgb);
-		return render::E_ColorFormat::R8; // in the future maybe also support R16, but there is no point now because we load 8 bits
+		return rhi::E_ColorFormat::R8; // in the future maybe also support R16, but there is no point now because we load 8 bits
 
 	case E_Setting::VectorDisplacementMap:
 		ET_ASSERT(!supportAlpha);
 		ET_ASSERT(!useSrgb);
-		return render::E_ColorFormat::RGB8;
+		return rhi::E_ColorFormat::RGB8;
 
 	case E_Setting::HDR:
 		ET_ASSERT(!supportAlpha);
 		ET_ASSERT(!useSrgb);
-		return render::E_ColorFormat::RGB16f;
+		return rhi::E_ColorFormat::RGB16f;
 
 	case E_Setting::UI:
 		if (useSrgb)
 		{
 			if (supportAlpha)
 			{
-				return render::E_ColorFormat::SRGBA8;
+				return rhi::E_ColorFormat::SRGBA8;
 			}
 
-			return render::E_ColorFormat::SRGB8;
+			return rhi::E_ColorFormat::SRGB8;
 		}
 
 		if (supportAlpha)
 		{
-			return render::E_ColorFormat::RGBA8;
+			return rhi::E_ColorFormat::RGBA8;
 		}
 
-		return render::E_ColorFormat::RGB8;
+		return rhi::E_ColorFormat::RGB8;
 
 	case E_Setting::Alpha:
 		ET_ASSERT(!useSrgb);
-		return render::E_ColorFormat::BC4_Red; // signed?
+		return rhi::E_ColorFormat::BC4_Red; // signed?
 
 	case E_Setting::SdfFont:
 		ET_ASSERT(!useSrgb);
 		ET_ASSERT(supportAlpha);
-		return render::E_ColorFormat::RGBA8;
+		return rhi::E_ColorFormat::RGBA8;
 
 	case E_Setting::CompressedHDR:
 		ET_ASSERT(!useSrgb);
 		ET_ASSERT(!supportAlpha);
-		return render::E_ColorFormat::BC6H_RGB;
+		return rhi::E_ColorFormat::BC6H_RGB;
 
 	case E_Setting::BC7:
 		ET_ASSERT(supportAlpha);
 		if (useSrgb)
 		{
-			return render::E_ColorFormat::BC7_SRGBA;
+			return rhi::E_ColorFormat::BC7_SRGBA;
 		}
 
-		return render::E_ColorFormat::BC7_RGBA;
+		return rhi::E_ColorFormat::BC7_RGBA;
 	}
 
 	ET_ERROR("unhandled compression setting");
-	return render::E_ColorFormat::Invalid;
+	return rhi::E_ColorFormat::Invalid;
 }
 
 //-------------------------------------
@@ -376,7 +376,7 @@ render::E_ColorFormat TextureCompression::GetOutputFormat(E_Setting const settin
 //
 bool TextureCompression::CompressImage(void const* const sourceData,
 	uint32 const blockCount,
-	render::E_ColorFormat const format,
+	rhi::E_ColorFormat const format,
 	E_Quality const compressionQuality,
 	std::vector<uint8>& outData)
 {
@@ -421,8 +421,8 @@ bool TextureCompression::CompressImage(void const* const sourceData,
 
 	switch (format)
 	{
-	case render::E_ColorFormat::BC1_RGB:
-	case render::E_ColorFormat::BC1_SRGB:
+	case rhi::E_ColorFormat::BC1_RGB:
+	case rhi::E_ColorFormat::BC1_SRGB:
 	{
 		rgbcx::init(rgbcx::bc1_approx_mode::cBC1Ideal); // in the future we can make this platform dependent
 
@@ -440,8 +440,8 @@ bool TextureCompression::CompressImage(void const* const sourceData,
 		break;
 	}
 
-	case render::E_ColorFormat::BC1_RGBA:
-	case render::E_ColorFormat::BC1_SRGBA:
+	case rhi::E_ColorFormat::BC1_RGBA:
+	case rhi::E_ColorFormat::BC1_SRGBA:
 	{
 		rgbcx::init(rgbcx::bc1_approx_mode::cBC1Ideal); // in the future we can make this platform dependent
 
@@ -459,8 +459,8 @@ bool TextureCompression::CompressImage(void const* const sourceData,
 		break;
 	}
 
-	case render::E_ColorFormat::BC3_RGBA:
-	case render::E_ColorFormat::BC3_SRGBA:
+	case rhi::E_ColorFormat::BC3_RGBA:
+	case rhi::E_ColorFormat::BC3_SRGBA:
 	{
 		rgbcx::init(); // don't care what mode since we're not compresssing to BC1
 
@@ -478,8 +478,8 @@ bool TextureCompression::CompressImage(void const* const sourceData,
 		break;
 	}
 
-	case render::E_ColorFormat::BC4_Red:
-	//case render::E_ColorFormat::BC4_Red_Signed:
+	case rhi::E_ColorFormat::BC4_Red:
+	//case rhi::E_ColorFormat::BC4_Red_Signed:
 	{
 		rgbcx::init(); 
 
@@ -496,8 +496,8 @@ bool TextureCompression::CompressImage(void const* const sourceData,
 		break;
 	}
 
-	case render::E_ColorFormat::BC5_RG:
-	//case render::E_ColorFormat::BC5_RG_Signed:
+	case rhi::E_ColorFormat::BC5_RG:
+	//case rhi::E_ColorFormat::BC5_RG_Signed:
 	{
 		rgbcx::init(); // don't care what mode since we're not compresssing to BC1
 
@@ -514,8 +514,8 @@ bool TextureCompression::CompressImage(void const* const sourceData,
 		break;
 	}
 
-	case render::E_ColorFormat::BC6H_RGB:
-	//case render::E_ColorFormat::BC6H_RGB:
+	case rhi::E_ColorFormat::BC6H_RGB:
+	//case rhi::E_ColorFormat::BC6H_RGB:
 	{
 		cvtt::Options options;
 		switch (compressionQuality)
@@ -558,8 +558,8 @@ bool TextureCompression::CompressImage(void const* const sourceData,
 		break;
 	}
 
-	case render::E_ColorFormat::BC7_RGBA:
-	case render::E_ColorFormat::BC7_SRGBA:
+	case rhi::E_ColorFormat::BC7_RGBA:
+	case rhi::E_ColorFormat::BC7_SRGBA:
 	{
 		bc7enc_compress_block_init();
 
@@ -614,7 +614,7 @@ bool TextureCompression::CompressImage(void const* const sourceData,
 // Specialization for raster images
 //
 bool TextureCompression::CompressImageU8(RasterImage const& image, 
-	render::E_ColorFormat const format, 
+	rhi::E_ColorFormat const format, 
 	E_Quality const compressionQuality, 
 	std::vector<uint8>& outData)
 {

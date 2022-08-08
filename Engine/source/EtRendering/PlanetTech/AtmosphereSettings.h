@@ -1,6 +1,6 @@
 #pragma once
-#include <EtRendering/GraphicsTypes/Shader.h>
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
 
 
 //Values copied from https://ebruneton.github.io/precomputed_atmospheric_scattering/atmosphere/constants.h.html
@@ -30,7 +30,7 @@ struct AtmosphereParameters
 {
 	AtmosphereParameters() {}
 	AtmosphereParameters(core::HashString const assetId, dvec3 &skyColor, dvec3 &sunColor);
-	void Upload(ShaderData const* const shader, const std::string &varName) const;
+	void Upload(rhi::ShaderData const* const shader, const std::string &varName) const;
 
 	vec3 solarIrradiance;
 	float sun_angular_radius;
@@ -48,7 +48,7 @@ struct AtmosphereParameters
 	float mu_s_min;
 
 private:
-	void UploadDensityProfile(ShaderData const* const shader, const std::string &varName, const DensityProfile &profile) const;
+	void UploadDensityProfile(rhi::ShaderData const* const shader, const std::string &varName, const DensityProfile &profile) const;
 };
 
 struct AtmosphereSettings
@@ -57,12 +57,12 @@ public:
 	AtmosphereSettings();
 	//Texture Settings
 	ivec3 m_ScatteringTexDim;
-	TextureParameters m_TexParams;
-	static const E_ColorFormat FORMAT = E_ColorFormat::RGBA;
-	static const E_ColorFormat INTERNAL2D = E_ColorFormat::RGBA32f;
-	static const E_ColorFormat INTERNAL3D = E_ColorFormat::RGBA16f;//half precision
+	rhi::TextureParameters m_TexParams;
+	static const rhi::E_ColorFormat FORMAT = rhi::E_ColorFormat::RGBA;
+	static const rhi::E_ColorFormat INTERNAL2D = rhi::E_ColorFormat::RGBA32f;
+	static const rhi::E_ColorFormat INTERNAL3D = rhi::E_ColorFormat::RGBA16f;//half precision
 
-	void UploadTextureSize(ShaderData const* const shader) const;
+	void UploadTextureSize(rhi::ShaderData const* const shader) const;
 	int32 TRANSMITTANCE_W = 256;
 	int32 TRANSMITTANCE_H = 64;
 

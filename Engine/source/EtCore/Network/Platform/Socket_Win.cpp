@@ -1,6 +1,7 @@
+#include "stdafx.h"
+
 #ifdef ET_PLATFORM_WIN
 
-#include "stdafx.h"
 #include "Socket_Win.h"
 
 

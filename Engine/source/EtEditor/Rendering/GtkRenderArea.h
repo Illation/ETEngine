@@ -4,7 +4,7 @@
 
 #include <EtCore/UpdateCycle/RealTimeTickTriggerer.h>
 
-#include <EtRendering/GraphicsContext/RenderArea.h>
+#include <EtRHI/GraphicsContext/RenderArea.h>
 
 
 namespace et {
@@ -36,7 +36,7 @@ private:
 //
 // Render area using GTKmm GLArea as a subsystem, managing an openGL context
 //
-class GtkRenderArea : public render::I_RenderArea
+class GtkRenderArea : public rhi::I_RenderArea
 {
 	// construct destruct
 	//-------------------
@@ -54,10 +54,10 @@ protected:
 
 	// Render Area Interface
 	//-----------------------
-	void SetOnInit(std::function<void(render::I_GraphicsContextApi* const)>& callback) override { m_OnInit = callback; }
+	void SetOnInit(std::function<void(rhi::I_GraphicsContextApi* const)>& callback) override { m_OnInit = callback; }
 	void SetOnDeinit(std::function<void()>& callback) override { m_OnDeinit = callback; }
 	void SetOnResize(std::function<void(vec2 const)>& callback) override { m_OnResize = callback; }
-	void SetOnRender(std::function<void(render::T_FbLoc const)>& callback) override { m_OnRender = callback; }
+	void SetOnRender(std::function<void(rhi::T_FbLoc const)>& callback) override { m_OnRender = callback; }
 
 	void QueueDraw() override;
 	bool MakeCurrent() override;
@@ -67,10 +67,10 @@ protected:
 	// Data
 	///////
 private:
-	std::function<void(render::I_GraphicsContextApi* const)> m_OnInit;
+	std::function<void(rhi::I_GraphicsContextApi* const)> m_OnInit;
 	std::function<void()> m_OnDeinit;
 	std::function<void(vec2 const)> m_OnResize;
-	std::function<void(render::T_FbLoc const)> m_OnRender;
+	std::function<void(rhi::T_FbLoc const)> m_OnRender;
 
 	SingleContextGlArea* m_GlArea = nullptr;
 };

@@ -1,10 +1,11 @@
-#include <EtEditor/stdafx.h>
+#include "stdafx.h"
 #include "EntityIdRenderer.h"
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/GraphicsTypes/TextureData.h>
-#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
+
 #include <EtRendering/GraphicsTypes/FrameBuffer.h>
 #include <EtRendering/GraphicsTypes/Mesh.h>
 #include <EtRendering/MaterialSystem/MaterialData.h>
@@ -38,7 +39,7 @@ EntityIdRenderer::~EntityIdRenderer()
 //
 void EntityIdRenderer::Initialize()
 {
-	m_Shader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("editor_only/Shaders/FwdIdShader.glsl"));
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("editor_only/Shaders/FwdIdShader.glsl"));
 	m_Material = core::ResourceManager::Instance()->GetAssetData<render::Material>(core::HashString("editor_only/Materials/M_Id.json"));
 
 	CreateRenderTarget();
@@ -49,12 +50,10 @@ void EntityIdRenderer::Initialize()
 //
 void EntityIdRenderer::CreateRenderTarget()
 {
-	using namespace render;
-
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	ivec2 dim;
-	render::Viewport* const vp = Viewport::GetCurrentViewport();
+	rhi::Viewport* const vp = rhi::Viewport::GetCurrentViewport();
 	if (vp != nullptr)
 	{
 		dim = vp->GetDimensions();
@@ -64,24 +63,24 @@ void EntityIdRenderer::CreateRenderTarget()
 		api->GetViewport(ivec2(), dim);
 	}
 
-	TextureParameters params(false);
-	params.minFilter = E_TextureFilterMode::Nearest;
-	params.magFilter = E_TextureFilterMode::Nearest;
-	params.wrapS = E_TextureWrapMode::ClampToEdge;
-	params.wrapT = E_TextureWrapMode::ClampToEdge;
+	rhi::TextureParameters params(false);
+	params.minFilter = rhi::E_TextureFilterMode::Nearest;
+	params.magFilter = rhi::E_TextureFilterMode::Nearest;
+	params.wrapS = rhi::E_TextureWrapMode::ClampToEdge;
+	params.wrapT = rhi::E_TextureWrapMode::ClampToEdge;
 
 	//Generate texture and fbo and rbo as initial postprocessing target
 	api->GenFramebuffers(1, &m_DrawTarget);
 	api->BindFramebuffer(m_DrawTarget);
-	m_DrawTex = new TextureData(E_ColorFormat::RGBA8, dim);
+	m_DrawTex = new rhi::TextureData(rhi::E_ColorFormat::RGBA8, dim);
 	m_DrawTex->AllocateStorage();
 	m_DrawTex->SetParameters(params);
 	api->LinkTextureToFbo2D(0, m_DrawTex->GetLocation(), 0);
 
 	api->GenRenderBuffers(1, &m_DrawDepth);
 	api->BindRenderbuffer(m_DrawDepth);
-	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, dim);
-	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, m_DrawDepth);
+	api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, dim);
+	api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, m_DrawDepth);
 
 	api->BindFramebuffer(0);
 }
@@ -91,9 +90,7 @@ void EntityIdRenderer::CreateRenderTarget()
 //
 void EntityIdRenderer::DestroyRenderTarget()
 {
-	using namespace render;
-
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	api->DeleteRenderBuffers(1, &m_DrawDepth);
 	SafeDelete(m_DrawTex);
@@ -106,7 +103,7 @@ void EntityIdRenderer::DestroyRenderTarget()
 // Picks an entity by drawing each entity visible to the scene renderer with a color calculated from its ID, 
 //  - then converting the color under the specified pixel back to the IT and finding the appropriate entity
 //
-void EntityIdRenderer::Pick(ivec2 const pixel, render::Viewport* const viewport, std::function<void(fw::T_EntityId const)>& onEntityPicked)
+void EntityIdRenderer::Pick(ivec2 const pixel, rhi::Viewport* const viewport, std::function<void(fw::T_EntityId const)>& onEntityPicked)
 {
 	if (m_ViewportToPickFrom == nullptr)
 	{
@@ -114,10 +111,10 @@ void EntityIdRenderer::Pick(ivec2 const pixel, render::Viewport* const viewport,
 		m_ViewportToPickFrom = viewport;
 		m_OnEntityPicked = onEntityPicked;
 
-		m_VPCallbackId = m_ViewportToPickFrom->GetEventDispatcher().Register(render::E_ViewportEvent::VP_PreRender | render::E_ViewportEvent::VP_PostFlush,
-			render::T_ViewportEventCallback([this](render::T_ViewportEventFlags const flags, render::ViewportEventData const* const data) -> void
+		m_VPCallbackId = m_ViewportToPickFrom->GetEventDispatcher().Register(rhi::E_ViewportEvent::VP_PreRender | rhi::E_ViewportEvent::VP_PostFlush,
+			rhi::T_ViewportEventCallback([this](rhi::T_ViewportEventFlags const flags, rhi::ViewportEventData const* const data) -> void
 			{
-				if (flags & render::E_ViewportEvent::VP_PreRender)
+				if (flags & rhi::E_ViewportEvent::VP_PreRender)
 				{
 					OnViewportPreRender(data->targetFb);
 				}
@@ -138,16 +135,16 @@ void EntityIdRenderer::Pick(ivec2 const pixel, render::Viewport* const viewport,
 //
 // Runs before the viewports rendererer does its thing
 //
-void EntityIdRenderer::OnViewportPreRender(render::T_FbLoc const targetFb)
+void EntityIdRenderer::OnViewportPreRender(rhi::T_FbLoc const targetFb)
 {
 	using namespace render;
 
-	I_GraphicsContextApi* const api = m_ViewportToPickFrom->GetApiContext();
+	rhi::I_GraphicsContextApi* const api = m_ViewportToPickFrom->GetApiContext();
 
 	// extract the camera from the viewport
 	Camera const* camera = nullptr;
 
-	I_ViewportRenderer* const viewRenderer = m_ViewportToPickFrom->GetViewportRenderer();
+	rhi::I_ViewportRenderer* const viewRenderer = m_ViewportToPickFrom->GetViewportRenderer();
 	ET_ASSERT(viewRenderer != nullptr);
 	if (viewRenderer->GetType() == rttr::type::get<render::ShadedSceneRenderer>())
 	{
@@ -183,7 +180,7 @@ void EntityIdRenderer::OnViewportPreRender(render::T_FbLoc const targetFb)
 	vec4 invalidCol;
 	GetIdColor(fw::INVALID_ENTITY_ID, invalidCol);
 	api->SetClearColor(invalidCol);
-	api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
+	api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
 
 	api->SetShader(m_Shader.get());
 
@@ -204,11 +201,11 @@ void EntityIdRenderer::OnViewportPreRender(render::T_FbLoc const targetFb)
 //
 // Runs after everything else has finished rendering
 //
-void EntityIdRenderer::OnViewportPostFlush(render::T_FbLoc const targetFb)
+void EntityIdRenderer::OnViewportPostFlush(rhi::T_FbLoc const targetFb)
 {
 	using namespace render;
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	api->BindFramebuffer(m_DrawTarget);
 
@@ -219,7 +216,7 @@ void EntityIdRenderer::OnViewportPostFlush(render::T_FbLoc const targetFb)
 
 	// read the pixels and set the previous renderbuffer again
 	uint8 pixels[4];
-	api->ReadPixels(texCoord, ivec2(1), E_ColorFormat::RGBA, E_DataType::UByte, pixels);
+	api->ReadPixels(texCoord, ivec2(1), rhi::E_ColorFormat::RGBA, rhi::E_DataType::UByte, pixels);
 	api->BindFramebuffer(targetFb);
 
 	api->Flush(); // ensure this is not the active framebuffer before swapping
@@ -271,14 +268,14 @@ void EntityIdRenderer::DrawEntity(fw::T_EntityId const entity, render::Camera co
 		// upload the color to the material and adraw the entity with it
 		m_Shader->Upload("uColor"_hash, color);
 
-		I_GraphicsContextApi* const api = m_ViewportToPickFrom->GetApiContext();;
+		rhi::I_GraphicsContextApi* const api = m_ViewportToPickFrom->GetApiContext();;
 
 		MeshSurface const* surface = modelComp.GetMesh()->GetSurface(m_Material.get());
 
 		api->BindVertexArray(surface->GetVertexArray());
 		m_Shader->Upload("model"_hash, transfComp.GetWorld());
 
-		api->DrawElements(E_DrawMode::Triangles, static_cast<uint32>(mesh->GetIndexCount()), mesh->GetIndexDataType(), 0);
+		api->DrawElements(rhi::E_DrawMode::Triangles, static_cast<uint32>(mesh->GetIndexCount()), mesh->GetIndexDataType(), 0);
 	}
 }
 

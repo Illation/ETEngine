@@ -1,4 +1,4 @@
-#include <EtEditor/stdafx.h>
+#include "stdafx.h"
 #include "ResourceBrowser.h"
 
 #include <gtkmm/frame.h>

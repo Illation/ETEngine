@@ -6,7 +6,8 @@
 
 #include <EtCore/Input/RawInputProvider.h>
 
-#include <EtRendering/GraphicsContext/Viewport.h>
+#include <EtRHI/GraphicsContext/Viewport.h>
+
 #include <EtRendering/Extensions/OutlineRenderer.h>
 
 #include <EtGUI/Rendering/SceneRendererGUI.h>
@@ -71,8 +72,8 @@ private:
 	SceneEditor* m_Editor;
 
 	fw::T_EntityId m_Camera = fw::INVALID_ENTITY_ID;
-	UniquePtr<render::Viewport> m_Viewport;
-	render::I_RenderArea* m_RenderArea = nullptr;
+	UniquePtr<rhi::Viewport> m_Viewport;
+	rhi::I_RenderArea* m_RenderArea = nullptr;
 
 	render::ShadedSceneRenderer* m_SceneRenderer = nullptr;
 	gui::SceneRendererGUI m_SceneGuiRenderer;

@@ -4,7 +4,7 @@
 #include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Containers/slot_map.h>
 
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
 
 
 namespace et {
@@ -62,11 +62,11 @@ public:
 	Triangulator& GetTriangulator() { return m_Triangulator; }
 	Triangulator const& GetTriangulator() const { return m_Triangulator; }
 
-	TextureData const* GetTexDiffuse() const { return m_TexDiffuse.get(); }
-	TextureData const* GetTexDetail1() const { return m_TexDetail1.get(); }
-	TextureData const* GetTexDetail2() const { return m_TexDetail2.get(); }
-	TextureData const* GetTexHeight() const { return m_TexHeight.get(); }
-	TextureData const* GetTexHeightDetail() const { return m_TexHeightDetail.get(); }
+	rhi::TextureData const* GetTexDiffuse() const { return m_TexDiffuse.get(); }
+	rhi::TextureData const* GetTexDetail1() const { return m_TexDetail1.get(); }
+	rhi::TextureData const* GetTexDetail2() const { return m_TexDetail2.get(); }
+	rhi::TextureData const* GetTexHeight() const { return m_TexHeight.get(); }
+	rhi::TextureData const* GetTexHeightDetail() const { return m_TexHeightDetail.get(); }
 
 	// Data
 	///////
@@ -77,12 +77,12 @@ private:
 	float m_Radius = 0.f;
 	float m_MaxHeight = 0.f;
 
-	AssetPtr<TextureData> m_TexDiffuse;
-	AssetPtr<TextureData> m_TexDetail1;
-	AssetPtr<TextureData> m_TexDetail2;
+	AssetPtr<rhi::TextureData> m_TexDiffuse;
+	AssetPtr<rhi::TextureData> m_TexDetail1;
+	AssetPtr<rhi::TextureData> m_TexDetail2;
 
-	AssetPtr<TextureData> m_TexHeight;
-	AssetPtr<TextureData> m_TexHeightDetail;
+	AssetPtr<rhi::TextureData> m_TexHeight;
+	AssetPtr<rhi::TextureData> m_TexHeightDetail;
 
 	Triangulator m_Triangulator;
 };

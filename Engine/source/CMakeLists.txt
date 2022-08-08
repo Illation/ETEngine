@@ -5,6 +5,7 @@
 add_subdirectory (EtBuild)
 add_subdirectory (EtMath)
 add_subdirectory (EtCore)
+add_subdirectory (EtRHI)
 add_subdirectory (EtRendering)
 add_subdirectory (EtFramework)
 add_subdirectory (EtGUI)

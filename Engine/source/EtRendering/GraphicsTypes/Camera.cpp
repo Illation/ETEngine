@@ -104,7 +104,7 @@ void Camera::SetClippingPlanes(float const nearPlane, float const farPlane, bool
 //----------------------------
 // Camera::SetViewport
 //
-void Camera::SetViewport(Ptr<Viewport> const viewport, bool const deferRecalculation)
+void Camera::SetViewport(Ptr<rhi::Viewport> const viewport, bool const deferRecalculation)
 {
 	m_Viewport = viewport;
 

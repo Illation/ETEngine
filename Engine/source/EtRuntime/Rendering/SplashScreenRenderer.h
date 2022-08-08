@@ -1,5 +1,5 @@
 #pragma once
-#include <EtRendering/GraphicsContext/ViewportRenderer.h>
+#include <EtRHI/GraphicsContext/ViewportRenderer.h>
 
 #include <EtGUI/Context/Context.h>
 #include <EtGUI/Rendering/GuiRenderer.h>
@@ -14,12 +14,12 @@ namespace rt {
 //
 // Renders a texture and overlay text, useful while transitioning scenes
 //
-class SplashScreenRenderer final : public render::I_ViewportRenderer
+class SplashScreenRenderer final : public rhi::I_ViewportRenderer
 {
 	// construct destruct
 	//--------------------
 public:
-	SplashScreenRenderer() : render::I_ViewportRenderer() {}
+	SplashScreenRenderer() : rhi::I_ViewportRenderer() {}
 	~SplashScreenRenderer() = default;
 
 	// functionality
@@ -36,7 +36,7 @@ protected:
 	void OnInit() override {}
 	void OnDeinit() override {}
 	void OnResize(ivec2 const dim) override;
-	void OnRender(render::T_FbLoc const targetFb) override;
+	void OnRender(rhi::T_FbLoc const targetFb) override;
 
 
 	// Data

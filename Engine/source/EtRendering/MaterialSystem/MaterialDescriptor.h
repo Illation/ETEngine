@@ -1,8 +1,9 @@
 #pragma once
-#include <EtRendering/GraphicsTypes/ParameterBlock.h>
-
 #include <EtCore/Reflection/Registration.h>
 #include <EtCore/Content/AssetPointer.h>
+
+#include <EtRHI/GraphicsTypes/ParameterBlock.h>
+
 
 namespace et {
 	REGISTRATION_NS(render)
@@ -13,8 +14,8 @@ namespace et {
 namespace render {
 
 
-class ShaderData;
-class TextureData;
+class rhi::ShaderData;
+class rhi::TextureData;
 
 
 //---------------------------------
@@ -107,10 +108,10 @@ public:
 namespace parameters {
 
 
-void ConvertDescriptor(T_ParameterBlock const baseParams,
+void ConvertDescriptor(rhi::T_ParameterBlock const baseParams,
 	MaterialDescriptor const& desc, 
-	ShaderData const* const shader, 
-	std::vector<AssetPtr<TextureData>> const& textureRefs);
+	rhi::ShaderData const* const shader, 
+	std::vector<AssetPtr<rhi::TextureData>> const& textureRefs);
 
 
 } // namespace parameters

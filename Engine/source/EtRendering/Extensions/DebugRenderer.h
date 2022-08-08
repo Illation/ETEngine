@@ -68,14 +68,14 @@ private:
 	//Linebuffer
 	std::vector<LineVertex> m_Lines;
 	uint32 m_BufferSize = 0;
-	T_ArrayLoc m_VAO = 0;
-	T_BufferLoc m_VBO = 0;
+	rhi::T_ArrayLoc m_VAO = 0;
+	rhi::T_BufferLoc m_VBO = 0;
 
 	//Metadata
 	std::vector<LineMetaData> m_MetaData;
 
 	//Shader and its uniforms
-	AssetPtr<ShaderData> m_Shader;
+	AssetPtr<rhi::ShaderData> m_Shader;
 };
 
 

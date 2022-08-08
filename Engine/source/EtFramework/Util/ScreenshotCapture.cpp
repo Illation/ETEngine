@@ -49,14 +49,14 @@ void ScreenshotCapture::Initialize(std::string basePath)
 //
 // Reigster ourselves with the requested viewport. the actual capture is deferred until rendering is completed
 //
-void ScreenshotCapture::Take(render::Viewport* const viewport)
+void ScreenshotCapture::Take(rhi::Viewport* const viewport)
 {
 	if (m_Viewport == nullptr)
 	{
 		m_Viewport = viewport;
 
-		m_VPCallbackId = m_Viewport->GetEventDispatcher().Register(render::E_ViewportEvent::VP_PostFlush,
-			render::T_ViewportEventCallback([this](render::T_ViewportEventFlags const, render::ViewportEventData const* const data) -> void
+		m_VPCallbackId = m_Viewport->GetEventDispatcher().Register(rhi::E_ViewportEvent::VP_PostFlush,
+			rhi::T_ViewportEventCallback([this](rhi::T_ViewportEventFlags const, rhi::ViewportEventData const* const data) -> void
 				{
 					OnViewportPostFlush(data->targetFb);
 				}));
@@ -73,10 +73,8 @@ void ScreenshotCapture::Take(render::Viewport* const viewport)
 // We wait for the viewports renderer to finish and the API to flush so the performance impact is minimal, 
 //  - then read the pixels from the GPU into a file and stop listening for viewport events again until the next capture request
 //
-void ScreenshotCapture::OnViewportPostFlush(render::T_FbLoc const targetFb)
+void ScreenshotCapture::OnViewportPostFlush(rhi::T_FbLoc const targetFb)
 {
-	using namespace render;
-
 	ET_UNUSED(targetFb); // this should already be the current framebuffer
 
 	std::string filename = GetFileName();
@@ -86,9 +84,9 @@ void ScreenshotCapture::OnViewportPostFlush(render::T_FbLoc const targetFb)
 	// Make the BYTE array, factor of 3 because it's RBG.
 	uint8* pixels = new uint8[3 * dim.x * dim.y];
 
-	I_GraphicsContextApi* const api = m_Viewport->GetApiContext();
+	rhi::I_GraphicsContextApi* const api = m_Viewport->GetApiContext();
 	api->Finish();
-	api->ReadPixels(ivec2(0), dim, E_ColorFormat::RGB, E_DataType::UByte, pixels);
+	api->ReadPixels(ivec2(0), dim, rhi::E_ColorFormat::RGB, rhi::E_DataType::UByte, pixels);
 
 	stbi_flip_vertically_on_write(true);
 	if (stbi_write_jpg(filename.c_str(), dim.x, dim.y, 3, pixels, 90) != 0)

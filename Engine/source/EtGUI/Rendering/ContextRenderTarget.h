@@ -28,17 +28,17 @@ public:
 
 	// accessors
 	//-----------
-	render::T_FbLoc GetFramebuffer() const { return m_Framebuffer; }
-	render::TextureData const* GetTexture() const { return m_Texture.Get(); }
+	rhi::T_FbLoc GetFramebuffer() const { return m_Framebuffer; }
+	rhi::TextureData const* GetTexture() const { return m_Texture.Get(); }
 	ivec2 GetDimensions() const;
 
 	// Data
 	///////
 
 private:
-	render::T_FbLoc m_Framebuffer;
-	render::T_RbLoc m_Renderbuffer;
-	UniquePtr<render::TextureData> m_Texture;
+	rhi::T_FbLoc m_Framebuffer;
+	rhi::T_RbLoc m_Renderbuffer;
+	UniquePtr<rhi::TextureData> m_Texture;
 };
 
 

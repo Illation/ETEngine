@@ -5,9 +5,9 @@
 
 #include <EtCore/Content/AssetPointer.h>
 
-#include <EtRendering/GraphicsContext/GraphicsTypes.h>
-#include <EtRendering/GraphicsTypes/TextureData.h>
-#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsContext/GraphicsTypes.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
 
 #include <EtGUI/Fonts/SdfFont.h>
 #include <EtGUI/Fonts/FontParameters.h>
@@ -31,16 +31,16 @@ class RmlRenderer final : public Rml::RenderInterface
 	{
 		Geometry() = default;
 
-		render::T_ArrayLoc m_VertexArray = 0u;
-		render::T_BufferLoc m_IndexBuffer = 0u;
-		render::T_BufferLoc m_VertexBuffer = 0u;
-		render::T_BufferLoc m_VertexBufferInstances = 0u;
+		rhi::T_ArrayLoc m_VertexArray = 0u;
+		rhi::T_BufferLoc m_IndexBuffer = 0u;
+		rhi::T_BufferLoc m_VertexBuffer = 0u;
+		rhi::T_BufferLoc m_VertexBufferInstances = 0u;
 
 		int32 m_NumVertices = 0;
 		int32 m_NumIndices = 0;
 		uint32 m_InstanceCount = 1u;
 
-		Ptr<render::TextureData const> m_Texture;
+		Ptr<rhi::TextureData const> m_Texture;
 		AssetPtr<SdfFont> m_Font;
 	};
 
@@ -50,11 +50,11 @@ class RmlRenderer final : public Rml::RenderInterface
 	struct Texture final
 	{
 		Texture() = default;
-		Texture(AssetPtr<render::TextureData> const& asset) : m_Asset(asset) {}
+		Texture(AssetPtr<rhi::TextureData> const& asset) : m_Asset(asset) {}
 		Texture(AssetPtr<SdfFont> const& fontAsset) : m_Font(fontAsset) {}
-		Texture(UniquePtr<render::TextureData>&& generated) : m_Generated(std::move(generated)) {}
+		Texture(UniquePtr<rhi::TextureData>&& generated) : m_Generated(std::move(generated)) {}
 
-		Ptr<render::TextureData const> Get() const 
+		Ptr<rhi::TextureData const> Get() const 
 		{ 
 			if (m_Font != nullptr)
 			{
@@ -77,9 +77,9 @@ class RmlRenderer final : public Rml::RenderInterface
 		}
 		
 	private:
-		AssetPtr<render::TextureData> m_Asset;
+		AssetPtr<rhi::TextureData> m_Asset;
 		AssetPtr<SdfFont> m_Font;
-		UniquePtr<render::TextureData> m_Generated;
+		UniquePtr<rhi::TextureData> m_Generated;
 	};
 
 	typedef std::unordered_map<Rml::TextureHandle, Texture> T_Textures;
@@ -96,8 +96,8 @@ public:
 
 	// functionality
 	//---------------
-	void SetGraphicsContext(Ptr<render::I_GraphicsContextApi> const graphicsContext) { m_GraphicsContext = graphicsContext; }
-	void SetShader(AssetPtr<render::ShaderData> const& shader, AssetPtr<render::ShaderData> const& textShader);
+	void SetGraphicsContext(Ptr<rhi::I_GraphicsContextApi> const graphicsContext) { m_GraphicsContext = graphicsContext; }
+	void SetShader(AssetPtr<rhi::ShaderData> const& shader, AssetPtr<rhi::ShaderData> const& textShader);
 	void SetView(ivec2 const dim, mat4 const& viewProj) { m_ViewDimensions = dim; m_ViewProj = viewProj; }
 
 	// interface implementation
@@ -135,8 +135,8 @@ public:
 	// utility
 	//---------
 private:
-	UniquePtr<render::TextureData> GenTextureInternal(void const* data, ivec2 dimensions);
-	void SetGenericInputLayout(render::I_GraphicsContextApi* const api) const;
+	UniquePtr<rhi::TextureData> GenTextureInternal(void const* data, ivec2 dimensions);
+	void SetGenericInputLayout(rhi::I_GraphicsContextApi* const api) const;
 	void SetupScissorRectangle();
 
 
@@ -144,32 +144,32 @@ private:
 	///////
 
 	// general
-	Ptr<render::I_GraphicsContextApi> m_GraphicsContext;
+	Ptr<rhi::I_GraphicsContextApi> m_GraphicsContext;
 	ivec2 m_ViewDimensions;
 	mat4 m_ViewProj;
 
 	// shaders
-	AssetPtr<render::ShaderData> m_Shader;
-	AssetPtr<render::ShaderData> m_TextShader;
-	AssetPtr<render::ShaderData> m_NullShader;
+	AssetPtr<rhi::ShaderData> m_Shader;
+	AssetPtr<rhi::ShaderData> m_TextShader;
+	AssetPtr<rhi::ShaderData> m_NullShader;
 
 	// compiled geometries
 	T_Geometries m_Geometries;
 	Rml::CompiledGeometryHandle m_LastGeometryHandle = s_InvalidGeometry;
 
 	// immediate geometry
-	render::T_ArrayLoc m_VertexArray = 0;
+	rhi::T_ArrayLoc m_VertexArray = 0;
 	int64 m_VertexBufferSize = 50;
-	render::T_BufferLoc m_VertexBuffer = 0;
+	rhi::T_BufferLoc m_VertexBuffer = 0;
 	int64 m_IndexBufferSize = 50;
-	render::T_BufferLoc m_IndexBuffer = 0;
+	rhi::T_BufferLoc m_IndexBuffer = 0;
 
 	// textures
 	T_Textures m_Textures;
 	Rml::TextureHandle m_LastTextureHandle = s_InvalidTexture;
 
-	render::TextureParameters m_GeneratedParameters;
-	UniquePtr<render::TextureData> m_EmptyWhiteTex2x2;
+	rhi::TextureParameters m_GeneratedParameters;
+	UniquePtr<rhi::TextureData> m_EmptyWhiteTex2x2;
 
 	// scissoring and transforms
 	bool m_IsScissorEnabled = false;

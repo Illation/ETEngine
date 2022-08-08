@@ -3,8 +3,9 @@
 
 #include <EtCore/Reflection/Registration.h>
 
+#include <EtRHI/GraphicsContext/Viewport.h>
+
 #include <EtRendering/GraphicsTypes/Camera.h>
-#include <EtRendering/GraphicsContext/Viewport.h>
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
@@ -41,7 +42,7 @@ DEFINE_FORCED_LINKING(CameraComponent)
 //
 // Update viewport on render camera immediately for loading order purposes
 //
-void CameraComponent::SetViewport(Ptr<render::Viewport> const viewport)
+void CameraComponent::SetViewport(Ptr<rhi::Viewport> const viewport)
 {
 	m_Viewport = viewport;
 	if (m_Id != core::INVALID_SLOT_ID)

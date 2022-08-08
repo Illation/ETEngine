@@ -9,5 +9,5 @@
 // Implements an openGL graphics context with an epoxy include
 //
 #define GL_CONTEXT_CLASSNAME EpoxyGlContext
-#include <EtRendering/GraphicsContext/GlContextImpl.h>
+#include <EtRHI/GraphicsContext/GlContextImpl.h>
 

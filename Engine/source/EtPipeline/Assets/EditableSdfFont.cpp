@@ -13,7 +13,8 @@
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/IO/BinaryWriter.h>
 
-#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
+#include <EtRHI/Util/PrimitiveRenderer.h>
 
 #include <EtPipeline/PipelineCtx.h>
 #include <EtPipeline/Import/TextureCompression.h>
@@ -84,8 +85,8 @@ void EditableSdfFontAsset::SetupRuntimeAssetsInternal()
 
 	m_RuntimeAssets.emplace_back(mainAsset, true);
 
-	render::TextureAsset* const textureAsset = new render::TextureAsset();
-	textureAsset->SetName(core::FileUtil::RemoveExtension(mainAsset->GetName()) + "." + render::TextureFormat::s_TextureFileExt);
+	rhi::TextureAsset* const textureAsset = new rhi::TextureAsset();
+	textureAsset->SetName(core::FileUtil::RemoveExtension(mainAsset->GetName()) + "." + rhi::TextureFormat::s_TextureFileExt);
 	textureAsset->SetPath(mainAsset->GetPath());
 	textureAsset->SetPackageId(mainAsset->GetPackageId());
 
@@ -122,7 +123,7 @@ bool EditableSdfFontAsset::GenerateInternal(BuildConfiguration const& buildConfi
 		{
 			fontData = &data;
 		}
-		else if (ext == render::TextureFormat::s_TextureFileExt)
+		else if (ext == rhi::TextureFormat::s_TextureFileExt)
 		{
 			textureData = &data;
 		}
@@ -357,20 +358,20 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 	int32 const texHeight = std::max(std::max(maxPos[0].y, maxPos[1].y), std::max(maxPos[2].y, maxPos[3].y));
 
 	//Setup rendering
-	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
-	render::TextureParameters params;
+	rhi::TextureParameters params;
 	PopulateTextureParams(params);
 
 	{
-		UniquePtr<render::TextureData> texture = Create<render::TextureData>(render::E_ColorFormat::RGBA16f, ivec2(texWidth, texHeight));
+		UniquePtr<rhi::TextureData> texture = Create<rhi::TextureData>(rhi::E_ColorFormat::RGBA16f, ivec2(texWidth, texHeight));
 		texture->AllocateStorage();
 		texture->SetParameters(params);
 		font->m_Texture = std::move(texture);
 	}
 
-	render::T_FbLoc captureFBO;
-	render::T_RbLoc captureRBO;
+	rhi::T_FbLoc captureFBO;
+	rhi::T_RbLoc captureRBO;
 
 	api->GenFramebuffers(1, &captureFBO);
 	api->GenRenderBuffers(1, &captureRBO);
@@ -378,28 +379,28 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 	api->BindFramebuffer(captureFBO);
 	api->BindRenderbuffer(captureRBO);
 
-	api->SetRenderbufferStorage(render::E_RenderBufferFormat::Depth24, ivec2(texWidth, texHeight));
-	api->LinkRenderbufferToFbo(render::E_RenderBufferFormat::Depth24, captureRBO);
+	api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(texWidth, texHeight));
+	api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, captureRBO);
 	api->LinkTextureToFbo2D(0, font->m_Texture->GetLocation(), 0);
 
 	ivec2 vpPos, vpSize;
 	api->GetViewport(vpPos, vpSize);
 
 	api->SetViewport(ivec2(0), ivec2(texWidth, texHeight));
-	api->Clear(render::E_ClearFlag::CF_Color | render::E_ClearFlag::CF_Depth);
+	api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
 
-	AssetPtr<render::ShaderData> const computeSdf = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(
+	AssetPtr<rhi::ShaderData> const computeSdf = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(
 		core::HashString("Shaders/ComputeGlyphSDF.glsl"));
 	api->SetShader(computeSdf.get());
 	computeSdf->Upload("uSpread"_hash, static_cast<float>(m_Spread));
 	computeSdf->Upload("uHighRes"_hash, static_cast<float>(m_HighRes));
 
-	params.wrapS = render::E_TextureWrapMode::ClampToBorder;
-	params.wrapT = render::E_TextureWrapMode::ClampToBorder;
+	params.wrapS = rhi::E_TextureWrapMode::ClampToBorder;
+	params.wrapT = rhi::E_TextureWrapMode::ClampToBorder;
 
 	api->SetBlendEnabled(true);
-	api->SetBlendEquation(render::E_BlendEquation::Add);
-	api->SetBlendFunction(render::E_BlendFactor::One, render::E_BlendFactor::One);
+	api->SetBlendEquation(rhi::E_BlendEquation::Add);
+	api->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::One);
 
 	//Render to Glyphs atlas
 	FT_Set_Pixel_Sizes(face, 0, m_FontSize * m_HighRes);
@@ -426,16 +427,16 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 
 		uint32 const width = face->glyph->bitmap.width;
 		uint32 const height = face->glyph->bitmap.rows;
-		UniquePtr<render::TextureData> texture = Create<render::TextureData>(render::E_ColorFormat::R8, ivec2(width, height));
-		texture->UploadData(face->glyph->bitmap.buffer, render::E_ColorFormat::Red, render::E_DataType::UByte, 0u);
+		UniquePtr<rhi::TextureData> texture = Create<rhi::TextureData>(rhi::E_ColorFormat::R8, ivec2(width, height));
+		texture->UploadData(face->glyph->bitmap.buffer, rhi::E_ColorFormat::Red, rhi::E_DataType::UByte, 0u);
 		texture->SetParameters(params);
 
 		ivec2 const res = ivec2(metric.m_Width, metric.m_Height) - ivec2(m_Padding * 2);
 		api->SetViewport(math::vecCast<int32>(metric.m_TexCoord) + ivec2(m_Padding), res);
-		computeSdf->Upload("uTex"_hash, static_cast<render::TextureData const*>(texture.Get()));
+		computeSdf->Upload("uTex"_hash, static_cast<rhi::TextureData const*>(texture.Get()));
 		computeSdf->Upload("uChannel"_hash, static_cast<int32>(metric.m_Channel));
 		computeSdf->Upload("uResolution"_hash, math::vecCast<float>(res));
-		render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
+		rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 
 		//modify texture coordinates after rendering sprites
 		metric.m_TexCoord = metric.m_TexCoord / math::vecCast<float>(ivec2(texWidth, texHeight));
@@ -464,21 +465,21 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 //
 // Texture parameters to be used by the glyph atlas
 //
-void EditableSdfFontAsset::PopulateTextureParams(render::TextureParameters& params) const
+void EditableSdfFontAsset::PopulateTextureParams(rhi::TextureParameters& params) const
 {
-	params.minFilter = render::E_TextureFilterMode::Linear;
-	params.magFilter = render::E_TextureFilterMode::Linear;
-	params.mipFilter = render::E_TextureFilterMode::Nearest;
+	params.minFilter = rhi::E_TextureFilterMode::Linear;
+	params.magFilter = rhi::E_TextureFilterMode::Linear;
+	params.mipFilter = rhi::E_TextureFilterMode::Nearest;
 
-	params.wrapS = render::E_TextureWrapMode::ClampToEdge;
-	params.wrapT = render::E_TextureWrapMode::ClampToEdge;
+	params.wrapS = rhi::E_TextureWrapMode::ClampToEdge;
+	params.wrapT = rhi::E_TextureWrapMode::ClampToEdge;
 
 	params.borderColor = vec4(0.f);
 
 	params.genMipMaps = false;
 
 	params.isDepthTex = false;
-	params.compareMode = render::E_TextureCompareMode::None;
+	params.compareMode = rhi::E_TextureCompareMode::None;
 }
 
 //-------------------------------------------
@@ -689,7 +690,7 @@ bool EditableSdfFontAsset::GenerateBinFontData(std::vector<uint8>& data, gui::Sd
 //-------------------------------------------
 // EditableSdfFontAsset::GenerateTextureData
 //
-bool EditableSdfFontAsset::GenerateTextureData(std::vector<uint8>& data, render::TextureData const* const texture)
+bool EditableSdfFontAsset::GenerateTextureData(std::vector<uint8>& data, rhi::TextureData const* const texture)
 {
 	// Prepare raster image with correct size
 	ivec2 const dim = texture->GetResolution();
@@ -697,8 +698,8 @@ bool EditableSdfFontAsset::GenerateTextureData(std::vector<uint8>& data, render:
 	image.AllocatePixels();
 
 	// read pixels from GPU
-	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
-	api->GetTextureData(*texture, 0u, render::E_ColorFormat::RGBA, render::E_DataType::UByte, reinterpret_cast<void*>(image.GetPixels()));
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	api->GetTextureData(*texture, 0u, rhi::E_ColorFormat::RGBA, rhi::E_DataType::UByte, reinterpret_cast<void*>(image.GetPixels()));
 
 	// convert to output format
 	return TextureCompression::WriteTextureFile(data,
@@ -706,7 +707,7 @@ bool EditableSdfFontAsset::GenerateTextureData(std::vector<uint8>& data, render:
 		TextureCompression::E_Setting::SdfFont,
 		TextureCompression::E_Quality::Ultra,
 		true,
-		render::TextureFormat::E_Srgb::None,
+		rhi::TextureFormat::E_Srgb::None,
 		0u,
 		true,
 		false);

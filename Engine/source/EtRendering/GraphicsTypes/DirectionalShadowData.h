@@ -5,7 +5,7 @@ namespace render {
 
 
 // forward
-class TextureData;
+class rhi::TextureData;
 
 
 //---------------------------------
@@ -29,8 +29,8 @@ public:
 		float distance;
 		mat4 lightVP;
 
-		T_FbLoc fbo;
-		TextureData* texture;
+		rhi::T_FbLoc fbo;
+		rhi::TextureData* texture;
 	};
 
 	// construct destruct

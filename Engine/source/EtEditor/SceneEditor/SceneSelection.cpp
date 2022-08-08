@@ -1,4 +1,4 @@
-#include <EtEditor/stdafx.h>
+#include "stdafx.h"
 #include "SceneSelection.h"
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
@@ -119,7 +119,7 @@ void SceneSelection::ToggleEntitySelected(fw::T_EntityId const entity, bool cons
 //
 // try picking an entity from within the viewport
 //
-void SceneSelection::Pick(ivec2 const pos, render::Viewport* const viewport, bool const add)
+void SceneSelection::Pick(ivec2 const pos, rhi::Viewport* const viewport, bool const add)
 {
 	if (!add)
 	{

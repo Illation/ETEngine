@@ -1,4 +1,4 @@
-#include <EtEditor/stdafx.h>
+#include "stdafx.h"
 #include "ColladaParser.h"
 
 #include <EtCore/FileSystem/FileUtil.h>

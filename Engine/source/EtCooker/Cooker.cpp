@@ -97,7 +97,7 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 
 	// Graphics context
 	m_RenderWindow = new rt::GlfwRenderWindow(true);
-	render::ContextHolder::Instance().CreateMainRenderContext(m_RenderWindow);
+	rhi::ContextHolder::Instance().CreateMainRenderContext(m_RenderWindow);
 
 	// resources
 	m_ResMan = new pl::FileResourceManager(projectPath, enginePath);

@@ -3,7 +3,7 @@
 
 #include <EtCore/IO/BinaryWriter.h>
 
-#include <EtRendering/GraphicsTypes/TextureFormat.h>
+#include <EtRHI/GraphicsTypes/TextureFormat.h>
 
 
 namespace et {
@@ -56,35 +56,35 @@ public:
 	// write to file
 	static void WriteTextureHeader(core::BinaryWriter& binWriter, 
 		size_t const bufferSize,
-		render::E_TextureType const textureType,
+		rhi::E_TextureType const textureType,
 		uint32 const width, 
 		uint32 const height, 
 		uint8 const mipCount, 
-		render::E_ColorFormat const storageFormat);
+		rhi::E_ColorFormat const storageFormat);
 	static bool WriteTextureFile(std::vector<uint8>& outFileData,
 		RasterImage& source,
 		E_Setting const compressionSetting,
 		E_Quality const compressionQuality,
 		bool const supportsAlpha,
-		render::TextureFormat::E_Srgb const srgb,
+		rhi::TextureFormat::E_Srgb const srgb,
 		uint16 const maxSize,
 		bool const forceResolution,
 		bool const useMipMaps);
 
 	// utility
 	static uint32 GetPow2Size(uint32 const width, uint32 const height, uint16 const maxSize, bool adjustByGraphicsSettings);
-	static render::E_ColorFormat GetOutputFormat(E_Setting const setting, bool const supportAlpha, bool const useSrgb);
+	static rhi::E_ColorFormat GetOutputFormat(E_Setting const setting, bool const supportAlpha, bool const useSrgb);
 
 	// Generic compressor
 	static bool CompressImage(void const* const sourceData, 
 		uint32 const blockCount, 
-		render::E_ColorFormat const format,
+		rhi::E_ColorFormat const format,
 		E_Quality const compressionQuality,
 		std::vector<uint8>& outData);
 
 	// For U8 source data
 	static bool CompressImageU8(RasterImage const& image,
-		render::E_ColorFormat const format,
+		rhi::E_ColorFormat const format,
 		E_Quality const compressionQuality,
 		std::vector<uint8>& outData);
 };

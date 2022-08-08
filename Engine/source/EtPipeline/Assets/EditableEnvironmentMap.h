@@ -44,12 +44,12 @@ protected:
 
 private:
 	bool CreateTextures(std::vector<uint8> const& data,
-		render::TextureData*& env, 
-		render::TextureData*& irradiance, 
-		render::TextureData*& radiance) const;
-	void CompressHDRCube(render::TextureData*& cubeMap) const;
+		rhi::TextureData*& env, 
+		rhi::TextureData*& irradiance, 
+		rhi::TextureData*& radiance) const;
+	void CompressHDRCube(rhi::TextureData*& cubeMap) const;
 
-	bool GenerateTextureData(std::vector<uint8>& data, render::TextureData const* const texture) const;
+	bool GenerateTextureData(std::vector<uint8>& data, rhi::TextureData const* const texture) const;
 	void GenerateBinEnvMap(std::vector<uint8>& data,
 		core::HashString const env, 
 		core::HashString const irradiance, 

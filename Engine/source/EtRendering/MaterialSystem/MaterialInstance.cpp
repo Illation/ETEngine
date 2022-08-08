@@ -35,8 +35,8 @@ DEFINE_FORCED_LINKING(MaterialInstanceAsset) // force the material instance asse
 // Construct from material
 //
 MaterialInstance::MaterialInstance(AssetPtr<Material> const material,
-	T_ParameterBlock const params, 
-	std::vector<AssetPtr<TextureData>> const& textureRefs
+	rhi::T_ParameterBlock const params, 
+	std::vector<AssetPtr<rhi::TextureData>> const& textureRefs
 )
 	: I_Material()
 	, m_Material(material)
@@ -50,8 +50,8 @@ MaterialInstance::MaterialInstance(AssetPtr<Material> const material,
 // Construct from material instance
 //
 MaterialInstance::MaterialInstance(AssetPtr<MaterialInstance> const parent,
-	T_ParameterBlock const params,
-	std::vector<AssetPtr<TextureData>> const& textureRefs
+	rhi::T_ParameterBlock const params,
+	std::vector<AssetPtr<rhi::TextureData>> const& textureRefs
 )
 	: I_Material()
 	, m_Parent(parent)
@@ -68,7 +68,7 @@ MaterialInstance::MaterialInstance(AssetPtr<MaterialInstance> const parent,
 //
 MaterialInstance::~MaterialInstance()
 {
-	parameters::DestroyBlock(m_Parameters);
+	rhi::parameters::DestroyBlock(m_Parameters);
 }
 
 
@@ -86,10 +86,10 @@ MaterialInstance* MaterialInstanceAsset::CreateMaterialInstance(std::vector<core
 	MaterialDescriptor const& descriptor)
 {
 	// extract the material or parent and texture references
-	std::vector<AssetPtr<TextureData>> textureRefs;
+	std::vector<AssetPtr<rhi::TextureData>> textureRefs;
 	AssetPtr<Material> materialRef;
 	AssetPtr<MaterialInstance> parentRef;
-	ShaderData const* shader;
+	rhi::ShaderData const* shader;
 
 	for (core::I_Asset::Reference const& reference : references)
 	{
@@ -107,9 +107,9 @@ MaterialInstance* MaterialInstanceAsset::CreateMaterialInstance(std::vector<core
 			parentRef = *static_cast<AssetPtr<MaterialInstance> const*>(rawAssetPtr);
 			shader = parentRef->GetMaterialAsset()->GetShader();
 		}
-		else if (rawAssetPtr->GetType() == rttr::type::get<TextureData>())
+		else if (rawAssetPtr->GetType() == rttr::type::get<rhi::TextureData>())
 		{
-			textureRefs.push_back(*static_cast<AssetPtr<TextureData> const*>(rawAssetPtr));
+			textureRefs.push_back(*static_cast<AssetPtr<rhi::TextureData> const*>(rawAssetPtr));
 		}
 		else
 		{
@@ -124,7 +124,7 @@ MaterialInstance* MaterialInstanceAsset::CreateMaterialInstance(std::vector<core
 	}
 
 	// override the parents parameters with the parameter descriptor
-	T_ParameterBlock const params = shader->CopyParameterBlock((parentRef != nullptr) ? parentRef->GetParameters() : materialRef->GetParameters());
+	rhi::T_ParameterBlock const params = shader->CopyParameterBlock((parentRef != nullptr) ? parentRef->GetParameters() : materialRef->GetParameters());
 	if (params != nullptr)
 	{
 		parameters::ConvertDescriptor(params, descriptor, shader, textureRefs);

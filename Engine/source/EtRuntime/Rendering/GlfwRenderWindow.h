@@ -1,6 +1,6 @@
 #pragma once
 
-#include <EtRendering/GraphicsContext/RenderWindow.h>
+#include <EtRHI/GraphicsContext/RenderWindow.h>
 
 #include "GlfwRenderArea.h"
 
@@ -14,12 +14,12 @@ namespace rt {
 //
 // Render window using GLFW windows as a subsystem, managing an openGL context, and containing a single window sized render area
 //
-class GlfwRenderWindow final : public render::RenderWindow
+class GlfwRenderWindow final : public rhi::RenderWindow
 {
 	// construct destruct
 	//-------------------
 public:
-	GlfwRenderWindow(bool const hidden = false) : render::RenderWindow(), m_IsHidden(hidden) {}
+	GlfwRenderWindow(bool const hidden = false) : rhi::RenderWindow(), m_IsHidden(hidden) {}
 	~GlfwRenderWindow() = default;
 
 	// accessors
@@ -29,7 +29,7 @@ public:
 	// Render Window Interface
 	//-------------------------
 protected:
-	render::I_GraphicsContextApi* CreateContext(render::GraphicsContextParams const& params) override;
+	rhi::I_GraphicsContextApi* CreateContext(rhi::GraphicsContextParams const& params) override;
 	void SetCursorPos(ivec2 const pos) override;
 
 	ivec2 GetDimensions() const override;

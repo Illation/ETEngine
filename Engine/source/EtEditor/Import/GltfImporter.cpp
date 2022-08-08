@@ -1,4 +1,4 @@
-#include <EtEditor/stdafx.h>
+#include "stdafx.h"
 #include "GltfImporter.h"
 
 #include "GltfParser.h"

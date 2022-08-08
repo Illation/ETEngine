@@ -5,8 +5,10 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/GraphicsTypes/Shader.h>
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
+#include <EtRHI/Util/PrimitiveRenderer.h>
+
 #include <EtRendering/GraphicsTypes/Frustum.h>
 #include <EtRendering/SceneStructure/Light.h>
 #include <EtRendering/SceneRendering/ShadedSceneRenderer.h>
@@ -54,7 +56,7 @@ void Atmosphere::Initialize(core::HashString const parameterAssetId)
 	RenderingSystems::Instance()->GetAtmospherPrecompute().Precalculate(this);
 
 	//Load and compile Shaders
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/PostAtmosphere.glsl"));
+	m_pShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostAtmosphere.glsl"));
 }
 
 //-------------------------
@@ -67,7 +69,7 @@ void Atmosphere::Draw(vec3 const& position, float const height, float const grou
 	ET_ASSERT(m_TexIrradiance != nullptr);
 	ET_ASSERT(m_TexInscatter != nullptr);
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	float const radius = groundRadius + height;
 	float const icoRadius = radius / 0.996407747f;//scale up the sphere so the face center reaches the top of the atmosphere
@@ -97,9 +99,9 @@ void Atmosphere::Draw(vec3 const& position, float const height, float const grou
 	//m_pShader->Upload("uSkySpectralRadToLum"_hash, math::vecCast<float>(m_SkyColor));
 	//m_pShader->Upload("uSunSpectralRadToLum"_hash, math::vecCast<float>(m_SunColor));
 
-	m_pShader->Upload("uTexIrridiance"_hash, static_cast<TextureData const*>(m_TexIrradiance));
-	m_pShader->Upload("uTexInscatter"_hash, static_cast<TextureData const*>(m_TexInscatter));
-	m_pShader->Upload("uTexTransmittance"_hash, static_cast<TextureData const*>(m_TexTransmittance));
+	m_pShader->Upload("uTexIrridiance"_hash, static_cast<rhi::TextureData const*>(m_TexIrradiance));
+	m_pShader->Upload("uTexInscatter"_hash, static_cast<rhi::TextureData const*>(m_TexInscatter));
+	m_pShader->Upload("uTexTransmittance"_hash, static_cast<rhi::TextureData const*>(m_TexTransmittance));
 
 	m_pShader->Upload("SunDir"_hash, sunDir);
 	m_pShader->Upload("uSunSize"_hash, vec2(tan(m_Params.sun_angular_radius), cos(m_Params.sun_angular_radius)));
@@ -108,7 +110,7 @@ void Atmosphere::Draw(vec3 const& position, float const height, float const grou
 	//	m_pShader->Upload("SunIntensity"_hash, brightness);
 	//}
 
-	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::IcoSphere<3> >();
+	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::IcoSphere<3> >();
 }
 
 

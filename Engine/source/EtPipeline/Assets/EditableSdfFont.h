@@ -54,10 +54,10 @@ protected:
 private:
 	gui::SdfFont* LoadTtf(std::vector<uint8> const& binaryContent);
 
-	void PopulateTextureParams(render::TextureParameters& params) const;
+	void PopulateTextureParams(rhi::TextureParameters& params) const;
 
 	bool GenerateBinFontData(std::vector<uint8>& data, gui::SdfFont const* const font, std::string const& atlasName);
-	bool GenerateTextureData(std::vector<uint8>& data, render::TextureData const* const texture);
+	bool GenerateTextureData(std::vector<uint8>& data, rhi::TextureData const* const texture);
 
 	// Data
 	///////

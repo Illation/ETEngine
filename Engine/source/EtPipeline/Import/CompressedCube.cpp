@@ -11,7 +11,7 @@ namespace pl {
 //-----------------------
 // CompressedCube::c-tor
 //
-CompressedCube::CompressedCube(render::TextureData const& cubeMap, TextureCompression::E_Quality const quality)
+CompressedCube::CompressedCube(rhi::TextureData const& cubeMap, TextureCompression::E_Quality const quality)
 {
 	CompressedCube* mip = this;
 
@@ -49,7 +49,7 @@ CompressedCube::~CompressedCube()
 //-------------------------------------
 // CompressedCube::CompressFromTexture
 //
-void CompressedCube::CompressFromTexture(render::TextureData const& cubeMap, 
+void CompressedCube::CompressFromTexture(rhi::TextureData const& cubeMap, 
 	TextureCompression::E_Quality const quality, 
 	uint8 const mipLevel,
 	uint32 const size)
@@ -59,7 +59,7 @@ void CompressedCube::CompressFromTexture(render::TextureData const& cubeMap,
 	static size_t const s_UncompressedPixelSize = s_ChannelCount * 2u;
 	static size_t const s_UncompressedBlockRow = s_UncompressedPixelSize * s_BlockDim;
 	static size_t const s_UncompressedBlockSize = s_UncompressedBlockRow * s_BlockDim;
-	static render::E_ColorFormat const compressedFormat = render::E_ColorFormat::BC6H_RGB;
+	static rhi::E_ColorFormat const compressedFormat = rhi::E_ColorFormat::BC6H_RGB;
 
 	size_t const faceSize = s_UncompressedPixelSize * static_cast<size_t>(size) * static_cast<size_t>(size); // count of int16, not bytes
 	size_t const rowLength = static_cast<size_t>(size) * s_UncompressedPixelSize;
@@ -69,7 +69,7 @@ void CompressedCube::CompressFromTexture(render::TextureData const& cubeMap,
 
 	size_t const blockCount = faceSize / s_UncompressedBlockSize; // per face, 4x4 = 16 pixels
 	size_t const compressedFaceSize = blockCount * 16u; // BC6H block size is 16 bytes
-	m_CompressedData.resize(compressedFaceSize * render::TextureData::s_NumCubeFaces);
+	m_CompressedData.resize(compressedFaceSize * rhi::TextureData::s_NumCubeFaces);
 
 	// BC6H texture compression with Convection kernels requires to process this amount of pixels at a time, so we need to provide it
 	size_t padding = 0;
@@ -84,11 +84,11 @@ void CompressedCube::CompressFromTexture(render::TextureData const& cubeMap,
 	size_t const paddedBlockCount = blockCount + padding;
 
 	// read pixels from GPU
-	uint8* const cubePixels = new uint8[faceSize * render::TextureData::s_NumCubeFaces];
-	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
-	api->GetTextureData(cubeMap, mipLevel, render::E_ColorFormat::RGBA, render::E_DataType::Half, reinterpret_cast<void*>(cubePixels));
+	uint8* const cubePixels = new uint8[faceSize * rhi::TextureData::s_NumCubeFaces];
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	api->GetTextureData(cubeMap, mipLevel, rhi::E_ColorFormat::RGBA, rhi::E_DataType::Half, reinterpret_cast<void*>(cubePixels));
 
-	for (uint8 faceIdx = 0u; faceIdx < render::TextureData::s_NumCubeFaces; ++faceIdx)
+	for (uint8 faceIdx = 0u; faceIdx < rhi::TextureData::s_NumCubeFaces; ++faceIdx)
 	{
 		uint8 const* const facePixels = cubePixels + (faceSize * static_cast<size_t>(faceIdx));
 
@@ -128,7 +128,7 @@ void CompressedCube::CompressFromTexture(render::TextureData const& cubeMap,
 		// we can now remove the padding again
 		if (padding != 0)
 		{
-			size_t const toRemove = padding * static_cast<size_t>(render::TextureFormat::GetBlockByteCount(compressedFormat));
+			size_t const toRemove = padding * static_cast<size_t>(rhi::TextureFormat::GetBlockByteCount(compressedFormat));
 			faceData.resize(faceData.size() - toRemove);
 		}
 

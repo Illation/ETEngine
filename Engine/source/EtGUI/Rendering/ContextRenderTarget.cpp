@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ContextRenderTarget.h"
 
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
 
 
 namespace et {
@@ -30,7 +30,7 @@ ContextRenderTarget& ContextRenderTarget::operator=(ContextRenderTarget const& o
 	m_Renderbuffer = other.m_Renderbuffer;
 	if (other.m_Texture != nullptr)
 	{
-		m_Texture = Create<render::TextureData>(*other.m_Texture);
+		m_Texture = Create<rhi::TextureData>(*other.m_Texture);
 	}
 
 	return *this;
@@ -53,23 +53,23 @@ void ContextRenderTarget::UpdateForDimensions(ivec2 const dim)
 	{
 		DeleteFramebuffer();
 
-		render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+		rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 		api->GenFramebuffers(1, &m_Framebuffer);
 		api->BindFramebuffer(m_Framebuffer);
 
 		// target texture
-		m_Texture = Create<render::TextureData>(render::E_ColorFormat::RGBA8, dim); // non float fb prevents alpha from exceeding 1
+		m_Texture = Create<rhi::TextureData>(rhi::E_ColorFormat::RGBA8, dim); // non float fb prevents alpha from exceeding 1
 		m_Texture->AllocateStorage();
-		m_Texture->SetParameters(render::TextureParameters(false));
+		m_Texture->SetParameters(rhi::TextureParameters(false));
 
 		//Render Buffer for depth and stencil
 		api->GenRenderBuffers(1, &m_Renderbuffer);
 		api->BindRenderbuffer(m_Renderbuffer);
-		api->SetRenderbufferStorage(render::E_RenderBufferFormat::Depth24_Stencil8, dim);
+		api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24_Stencil8, dim);
 
 		// link it all together
-		api->LinkRenderbufferToFbo(render::E_RenderBufferFormat::Depth24_Stencil8, m_Renderbuffer);
+		api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24_Stencil8, m_Renderbuffer);
 		api->LinkTextureToFbo2D(0, m_Texture->GetLocation(), 0);
 
 		api->BindFramebuffer(0u);
@@ -83,7 +83,7 @@ void ContextRenderTarget::DeleteFramebuffer()
 {
 	if (m_Texture != nullptr)
 	{
-		render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+		rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 		api->DeleteRenderBuffers(1, &m_Renderbuffer);
 		m_Texture = nullptr;

@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "EnvironmentMap.h"
 
-#include "Shader.h"
-
 #include <EtBuild/EngineVersion.h>
 
 #include <EtCore/Content/AssetRegistration.h>
@@ -10,7 +8,10 @@
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/IO/BinaryReader.h>
 
-#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRHI/GraphicsTypes/Shader.h>	
+#include <EtRHI/Util/PrimitiveRenderer.h>
+
+#include <EtRendering/GlobalRenderingSystems/PbrPrefilter.h>
 
 
 namespace et {
@@ -27,7 +28,7 @@ namespace render {
 //
 // Contruct an environment map from a set of cube maps - takes ownership of the textures
 //
-EnvironmentMap::EnvironmentMap(TextureData* map, TextureData* irradiance, TextureData* radiance) 
+EnvironmentMap::EnvironmentMap(rhi::TextureData* map, rhi::TextureData* irradiance, rhi::TextureData* radiance) 
 	: m_Map(map)
 	, m_Irradiance(irradiance)
 	, m_Radiance(radiance)
@@ -42,7 +43,7 @@ EnvironmentMap::EnvironmentMap(TextureData* map, TextureData* irradiance, Textur
 //
 // asset pointer version in order to hold references
 //
-EnvironmentMap::EnvironmentMap(AssetPtr<TextureData> map, AssetPtr<TextureData> irradiance, AssetPtr<TextureData> radiance)
+EnvironmentMap::EnvironmentMap(AssetPtr<rhi::TextureData> map, AssetPtr<rhi::TextureData> irradiance, AssetPtr<rhi::TextureData> radiance)
 	: m_MapAsset(map)
 	, m_IrradianceAsset(irradiance)
 	, m_RadianceAsset(radiance)
@@ -115,23 +116,23 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 	core::HashString const radianceId(reader.Read<T_Hash>());
 	reader.Close();
 
-	AssetPtr<TextureData> map;
-	AssetPtr<TextureData> irradiance;
-	AssetPtr<TextureData> radiance;
+	AssetPtr<rhi::TextureData> map;
+	AssetPtr<rhi::TextureData> irradiance;
+	AssetPtr<rhi::TextureData> radiance;
 
 	for (core::I_Asset::Reference const& ref : GetReferences())
 	{
 		if (ref.GetId() == envId)
 		{
-			map = *static_cast<AssetPtr<TextureData> const*>(ref.GetAsset());
+			map = *static_cast<AssetPtr<rhi::TextureData> const*>(ref.GetAsset());
 		}
 		else if (ref.GetId() == irradianceId)
 		{
-			irradiance = *static_cast<AssetPtr<TextureData> const*>(ref.GetAsset());
+			irradiance = *static_cast<AssetPtr<rhi::TextureData> const*>(ref.GetAsset());
 		}
 		else if (ref.GetId() == radianceId)
 		{
-			radiance = *static_cast<AssetPtr<TextureData> const*>(ref.GetAsset());
+			radiance = *static_cast<AssetPtr<rhi::TextureData> const*>(ref.GetAsset());
 		}
 	}
 
@@ -157,26 +158,26 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 // Convert an equirectangular 2D texture into a cube map
 //
-TextureData* EquirectangularToCubeMap(TextureData const* const equiTexture, int32 const resolution)
+rhi::TextureData* EquirectangularToCubeMap(rhi::TextureData const* const equiTexture, int32 const resolution)
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	//Create framebuffer
-	T_FbLoc captureFBO;
-	T_RbLoc captureRBO;
+	rhi::T_FbLoc captureFBO;
+	rhi::T_RbLoc captureRBO;
 	api->GenFramebuffers(1, &captureFBO);
 	api->GenRenderBuffers(1, &captureRBO);
 
 	api->BindFramebuffer(captureFBO);
 	api->BindRenderbuffer(captureRBO);
-	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, ivec2(resolution));
-	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, captureRBO);
+	api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(resolution));
+	api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, captureRBO);
 
 	//Preallocate memory for cubemap
-	TextureData* const envCubeMap = new TextureData(E_TextureType::CubeMap, E_ColorFormat::RGB16f, ivec2(resolution));
+	rhi::TextureData* const envCubeMap = new rhi::TextureData(rhi::E_TextureType::CubeMap, rhi::E_ColorFormat::RGB16f, ivec2(resolution));
 	envCubeMap->AllocateStorage();
 
-	TextureParameters params;
+	rhi::TextureParameters params;
 	PbrPrefilter::PopulateCubeTextureParams(params);
 	params.genMipMaps = false;
 
@@ -185,7 +186,7 @@ TextureData* EquirectangularToCubeMap(TextureData const* const equiTexture, int3
 	std::vector<mat4> captureViews = CubeCaptureViews();
 
 	//Get the shader
-	AssetPtr<ShaderData> equiCubeShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/FwdEquiCubeShader.glsl"));
+	AssetPtr<rhi::ShaderData> equiCubeShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdEquiCubeShader.glsl"));
 
 	// convert HDR equirectangular environment map to cubemap equivalent
 	api->SetShader(equiCubeShader.get());
@@ -204,9 +205,9 @@ TextureData* EquirectangularToCubeMap(TextureData const* const equiTexture, int3
 	{
 		equiCubeShader->Upload("view"_hash, captureViews[face]);
 		api->LinkCubeMapFaceToFbo2D(face, envCubeMap->GetLocation(), 0);
-		api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
+		api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
 
-		RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Cube>();
+		rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Cube>();
 	}
 	api->BindFramebuffer(0);
 

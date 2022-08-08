@@ -5,7 +5,7 @@
 #include <EtCore/Content/AssetPointer.h>
 #include <EtCore/Util/LinkerUtils.h>
 
-#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
 
 
 namespace et {
@@ -54,25 +54,25 @@ public:
 private:
 	Material() = default;
 public:
-	Material(AssetPtr<ShaderData> const shader, 
+	Material(AssetPtr<rhi::ShaderData> const shader, 
 		E_DrawType const drawType,
-		T_ParameterBlock const defaultParameters, 
-		std::vector<AssetPtr<TextureData>> const& textureReferences);
+		rhi::T_ParameterBlock const defaultParameters, 
+		std::vector<AssetPtr<rhi::TextureData>> const& textureReferences);
 	~Material();
 
 	// material interface
 	//---------------------
 	Material const* GetBaseMaterial() const override { return this; }
-	T_ConstParameterBlock GetParameters() const override { return m_DefaultParameters; }
+	rhi::T_ConstParameterBlock GetParameters() const override { return m_DefaultParameters; }
 
 	// accessors
 	//---------------------
-	ShaderData const* GetShader() const { return m_Shader.get(); }
-	AssetPtr<ShaderData> GetShaderAsset() const { return m_Shader; }
+	rhi::ShaderData const* GetShader() const { return m_Shader.get(); }
+	AssetPtr<rhi::ShaderData> GetShaderAsset() const { return m_Shader; }
 
 	E_DrawType GetDrawType() const { return m_DrawType; }
 
-	T_VertexFlags GetLayoutFlags() const { return m_LayoutFlags; }
+	rhi::T_VertexFlags GetLayoutFlags() const { return m_LayoutFlags; }
 	std::vector<int32> const& GetAttributeLocations() const { return m_AttributeLocations; }
 
 	// Data
@@ -81,17 +81,17 @@ private:
 
 	// shading
 	E_DrawType m_DrawType = E_DrawType::Opaque;
-	AssetPtr<ShaderData> m_Shader;
+	AssetPtr<rhi::ShaderData> m_Shader;
 
 	// vertices
-	T_VertexFlags m_LayoutFlags = 0u;
+	rhi::T_VertexFlags m_LayoutFlags = 0u;
 	std::vector<int32> m_AttributeLocations;
 
 	// parameters
-	T_ParameterBlock m_DefaultParameters = nullptr;
+	rhi::T_ParameterBlock m_DefaultParameters = nullptr;
 
 	// utility
-	std::vector<AssetPtr<TextureData>> m_TextureReferences; // prevent textures from unloading
+	std::vector<AssetPtr<rhi::TextureData>> m_TextureReferences; // prevent textures from unloading
 };
 
 

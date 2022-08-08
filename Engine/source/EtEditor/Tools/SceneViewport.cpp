@@ -67,7 +67,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 
 	// create a viewport from the area
 	m_RenderArea = new GtkRenderArea(glArea);
-	m_Viewport = Create<render::Viewport>(m_RenderArea);
+	m_Viewport = Create<rhi::Viewport>(m_RenderArea);
 	m_Viewport->SetInputProvider(ToPtr(&m_InputProvider));
 
 	// hook up events

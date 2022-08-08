@@ -4,7 +4,7 @@
 #include <glibmm/refptr.h>
 #include <gdkmm/glcontext.h>
 
-#include <EtRendering/GraphicsContext/RenderWindow.h>
+#include <EtRHI/GraphicsContext/RenderWindow.h>
 
 
 namespace et {
@@ -16,12 +16,12 @@ namespace edit {
 //
 // Creates context from a Gtk::Window
 //
-class GtkRenderWindow final : public render::RenderWindow
+class GtkRenderWindow final : public rhi::RenderWindow
 {
 	// construct destruct
 	//-------------------
 public:
-	GtkRenderWindow() : render::RenderWindow() {}
+	GtkRenderWindow() : rhi::RenderWindow() {}
 	~GtkRenderWindow();
 
 	void SetSourceWindow(Gtk::Window* const window) { m_Source = window; }
@@ -37,7 +37,7 @@ public:
 	// Render Window Interface
 	//-------------------------
 protected:
-	render::I_GraphicsContextApi* CreateContext(render::GraphicsContextParams const& params) override;
+	rhi::I_GraphicsContextApi* CreateContext(rhi::GraphicsContextParams const& params) override;
 	void SetCursorPos(ivec2 const pos) override;
 
 	ivec2 GetDimensions() const override;
@@ -53,7 +53,7 @@ private:
 	bool m_UseDepthBuffer = false;
 	bool m_UseStencilBuffer = false;
 
-	render::I_GraphicsContextApi* m_Context = nullptr;
+	rhi::I_GraphicsContextApi* m_Context = nullptr;
 };
 
 

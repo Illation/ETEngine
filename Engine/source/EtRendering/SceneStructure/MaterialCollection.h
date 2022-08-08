@@ -5,14 +5,14 @@
 
 #include <EtCore/Content/AssetPointer.h>
 
-#include <EtRendering/GraphicsContext/GraphicsTypes.h>
+#include <EtRHI/GraphicsContext/GraphicsTypes.h>
 
 
 namespace et {
 namespace render {
 
 
-class ShaderData;
+class rhi::ShaderData;
 class I_Material;
 
 
@@ -32,9 +32,9 @@ public:
 	//
 	struct Mesh
 	{
-		T_ArrayLoc m_VAO;
+		rhi::T_ArrayLoc m_VAO;
 		uint32 m_IndexCount;
-		E_DataType m_IndexDataType;
+		rhi::E_DataType m_IndexDataType;
 		math::Sphere m_BoundingVolume;
 		std::vector<T_NodeId> m_Instances;
 	};
@@ -50,7 +50,7 @@ public:
 		core::slot_map<Mesh> m_Meshes;
 	};
 
-	AssetPtr<ShaderData> m_Shader;
+	AssetPtr<rhi::ShaderData> m_Shader;
 	core::slot_map<MaterialInstance> m_Materials;
 };
 

@@ -44,7 +44,7 @@ public:
 	//-----------
 	core::T_SlotId GetId() const { return m_Id; }
 
-	Ptr<render::Viewport> GetViewport() const { return m_Viewport; }
+	Ptr<rhi::Viewport> GetViewport() const { return m_Viewport; }
 
 	float GetFieldOfView() const { return m_FieldOfView; }
 	float GetFarPlane() const { return m_FarPlane; }
@@ -59,7 +59,7 @@ public:
 	void UsePerspectiveProjection() { m_IsPerspective = true; }
 	void UseOrthographicProjection() { m_IsPerspective = false; }
 
-	void SetViewport(Ptr<render::Viewport> const viewport);
+	void SetViewport(Ptr<rhi::Viewport> const viewport);
 
 	// Data
 	///////
@@ -67,7 +67,7 @@ public:
 private:
 	core::T_SlotId m_Id = core::INVALID_SLOT_ID;
 
-	Ptr<render::Viewport> m_Viewport;
+	Ptr<rhi::Viewport> m_Viewport;
 
 	bool m_IsPerspective = true;
 	float m_FieldOfView = 45.f; // angle of perspective camera in degrees

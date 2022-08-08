@@ -49,7 +49,7 @@ private:
 	{
 		ContextData() = default;
 
-		Ptr<render::Viewport> m_Viewport;
+		Ptr<rhi::Viewport> m_Viewport;
 		core::T_SlotId m_Context;
 		bool m_IsViewportContext = false;
 	};
@@ -74,18 +74,18 @@ private:
 		bool ProcessTextInput(core::E_Character const character) override;
 
 		// data
-		Ptr<render::Viewport const> m_Viewport;
+		Ptr<rhi::Viewport const> m_Viewport;
 
 		Context m_Context;
 		core::slot_map<core::HashString> m_Documents;
 		ContextRenderTarget m_RenderTarget;
 
 		Ptr<GuiExtension> m_GuiExtension;
-		render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
+		rhi::T_ViewportEventCallbackId m_VPCallbackId = rhi::T_ViewportEventDispatcher::INVALID_ID;
 		std::unordered_set<core::T_SlotId> m_EventWorldContexts;
 	};
 
-	typedef std::unordered_map<Ptr<render::Viewport const>, PerViewport> T_ViewportContexts;
+	typedef std::unordered_map<Ptr<rhi::Viewport const>, PerViewport> T_ViewportContexts;
 
 public:
 
@@ -132,7 +132,7 @@ protected:
 	// functionality
 	//---------------
 public:
-	T_ContextId CreateContext(Ptr<render::Viewport> const viewport);
+	T_ContextId CreateContext(Ptr<rhi::Viewport> const viewport);
 	T_ContextId CreateContext(core::T_SlotId const nodeId, ivec2 const dimensions);
 	void DestroyContext(T_ContextId const id);
 
@@ -151,8 +151,8 @@ public:
 
 	// accessors
 	//-----------
-	Context* GetContext(render::Viewport const* const vp);
-	Context* GetContext(render::Viewport const* const vp, ContextRenderTarget*& renderTarget);
+	Context* GetContext(rhi::Viewport const* const vp);
+	Context* GetContext(rhi::Viewport const* const vp, ContextRenderTarget*& renderTarget);
 	T_WorldContexts& GetWorldContexts() { return m_WorldContexts; }
 
 	Rml::ElementDocument* GetDocument(T_ContextId const id);
@@ -165,9 +165,9 @@ public:
 	//---------
 private:
 	Context& GetContext(T_ContextId const id);
-	void OnViewportResize(render::Viewport const* const vp, ivec2 const dim);
-	PerViewport& FindOrCreatePerViewport(Ptr<render::Viewport> const viewport);
-	void ErasePerViewport(render::Viewport* const vp, T_ViewportContexts::iterator const it);
+	void OnViewportResize(rhi::Viewport const* const vp, ivec2 const dim);
+	PerViewport& FindOrCreatePerViewport(Ptr<rhi::Viewport> const viewport);
+	void ErasePerViewport(rhi::Viewport* const vp, T_ViewportContexts::iterator const it);
 
 
 	// Data

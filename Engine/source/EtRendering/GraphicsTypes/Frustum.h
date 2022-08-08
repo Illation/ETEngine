@@ -37,7 +37,7 @@ public:
 	Frustum();
 	~Frustum();
 
-	void Update(Viewport const* const viewport);
+	void Update(rhi::Viewport const* const viewport);
 
 	void SetToCamera(Camera const& camera);
 	void SetCullTransform(mat4 const& objectWorld);

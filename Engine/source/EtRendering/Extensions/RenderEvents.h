@@ -6,7 +6,7 @@ namespace et {
 namespace render {
 
 
-class I_ViewportRenderer;
+class rhi::I_ViewportRenderer;
 	
 
 //---------------------------
@@ -37,11 +37,11 @@ enum E_RenderEvent : T_RenderEventFlags
 struct RenderEventData
 {
 public:
-	RenderEventData(I_ViewportRenderer const* const r, T_FbLoc const fb) : renderer(r), targetFb(fb) {}
+	RenderEventData(rhi::I_ViewportRenderer const* const r, rhi::T_FbLoc const fb) : renderer(r), targetFb(fb) {}
 	virtual ~RenderEventData() = default;
 
-	I_ViewportRenderer const* renderer = nullptr;
-	T_FbLoc targetFb;
+	rhi::I_ViewportRenderer const* renderer = nullptr;
+	rhi::T_FbLoc targetFb;
 };
 
 

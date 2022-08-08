@@ -3,8 +3,8 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/GraphicsTypes/Shader.h>
-#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
+#include <EtRHI/Util/PrimitiveRenderer.h>
 
 #include <EtGUI/Context/RmlGlobal.h>
 
@@ -24,10 +24,10 @@ namespace gui {
 void GuiRenderer::Init()
 {
 	m_RmlGlobal = RmlGlobal::GetInstance(); // might initialize RML if this is the first GUI renderer
-	m_GenericShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostGenericUi.glsl"));
-	m_RmlSdfShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUiSdf.glsl"));
-	m_RmlBlitShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUiBlit.glsl"));
-	m_RmlBlit3DShader = core::ResourceManager::Instance()->GetAssetData<render::ShaderData>(core::HashString("Shaders/PostRmlUiBlit3D.glsl"));
+	m_GenericShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostGenericUi.glsl"));
+	m_RmlSdfShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostRmlUiSdf.glsl"));
+	m_RmlBlitShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostRmlUiBlit.glsl"));
+	m_RmlBlit3DShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostRmlUiBlit3D.glsl"));
 }
 
 //----------------------------------
@@ -48,32 +48,32 @@ void GuiRenderer::Deinit()
 //
 // Render a list of contexts to the target framebuffer
 //
-void GuiRenderer::RenderContext(render::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context& context, render::E_PolygonMode const polyMode)
+void GuiRenderer::RenderContext(rhi::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context& context, rhi::E_PolygonMode const polyMode)
 {
-	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	api->DebugPushGroup("RmlUi Overlays");
 
 	SetupContextRendering(api, renderTarget);
 
-	api->SetPolygonMode(render::E_FaceCullMode::FrontBack, polyMode);
+	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, polyMode);
 
 	// render context elements
 	api->DebugPushGroup("Overlay Context");
 	context.Render();
 	api->DebugPopGroup();
 
-	api->SetPolygonMode(render::E_FaceCullMode::FrontBack, render::E_PolygonMode::Fill);
+	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, rhi::E_PolygonMode::Fill);
 
 	// blit results to target framebuffer 
 	api->BindFramebuffer(targetFb);
-	api->SetBlendFunction(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::OneMinusSourceAlpha);
+	api->SetBlendFunction(rhi::E_BlendFactor::SourceAlpha, rhi::E_BlendFactor::OneMinusSourceAlpha);
 
-	api->SetViewport(ivec2(0), render::Viewport::GetCurrentViewport()->GetDimensions());
+	api->SetViewport(ivec2(0), rhi::Viewport::GetCurrentViewport()->GetDimensions());
 
 	api->SetShader(m_RmlBlitShader.get());
 	m_RmlBlitShader->Upload("uTexture"_hash, renderTarget.GetTexture());
-	render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
+	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 
 	// reset pipeline state
 	api->SetBlendEnabled(false);
@@ -85,24 +85,24 @@ void GuiRenderer::RenderContext(render::T_FbLoc const targetFb, ContextRenderTar
 //
 // Render a 3D world context
 //
-void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb, 
+void GuiRenderer::RenderWorldContext(rhi::T_FbLoc const targetFb, 
 	ContextRenderTarget& renderTarget, 
 	Context& context, 
 	mat4 const& transform,
 	vec4 const& color,
 	bool const enableDepth,
-	render::E_PolygonMode const polyMode)
+	rhi::E_PolygonMode const polyMode)
 {
 	if (!context.HasActiveDocuments())
 	{
 		return;
 	}
 
-	render::I_GraphicsContextApi* const api = render::ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	api->DebugPushGroup("RmlUi 3D Context");
 
-	api->SetPolygonMode(render::E_FaceCullMode::FrontBack, polyMode);
+	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, polyMode);
 
 	SetupContextRendering(api, renderTarget);
 
@@ -110,20 +110,20 @@ void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb,
 	context.Render();
 	api->DebugPopGroup();
 
-	api->SetPolygonMode(render::E_FaceCullMode::FrontBack, render::E_PolygonMode::Fill);
+	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, rhi::E_PolygonMode::Fill);
 
 	// blit results to target framebuffer 
 	api->BindFramebuffer(targetFb);
-	api->SetBlendFunction(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::OneMinusSourceAlpha);
+	api->SetBlendFunction(rhi::E_BlendFactor::SourceAlpha, rhi::E_BlendFactor::OneMinusSourceAlpha);
 
 	api->SetDepthEnabled(enableDepth);
-	api->SetViewport(ivec2(0), render::Viewport::GetCurrentViewport()->GetDimensions());
+	api->SetViewport(ivec2(0), rhi::Viewport::GetCurrentViewport()->GetDimensions());
 
 	api->SetShader(m_RmlBlit3DShader.get());
 	m_RmlBlit3DShader->Upload("uTexture"_hash, renderTarget.GetTexture());
 	m_RmlBlit3DShader->Upload("uTransform"_hash, transform);
 	m_RmlBlit3DShader->Upload("uColor"_hash, color);
-	render::RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<render::primitives::Quad>();
+	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 
 	// reset pipeline state
 	api->SetBlendEnabled(false);
@@ -137,7 +137,7 @@ void GuiRenderer::RenderWorldContext(render::T_FbLoc const targetFb,
 //
 // Prepare device for rendering UI contexts
 //
-void GuiRenderer::SetupContextRendering(render::I_GraphicsContextApi* const api, ContextRenderTarget &renderTarget)
+void GuiRenderer::SetupContextRendering(rhi::I_GraphicsContextApi* const api, ContextRenderTarget &renderTarget)
 {
 	RmlGlobal::GetInstance()->SetGraphicsContext(ToPtr(api));
 
@@ -145,7 +145,7 @@ void GuiRenderer::SetupContextRendering(render::I_GraphicsContextApi* const api,
 	api->BindFramebuffer(renderTarget.GetFramebuffer());
 
 	api->SetClearColor(vec4(0.f));
-	api->Clear(render::E_ClearFlag::CF_Color);
+	api->Clear(rhi::E_ClearFlag::CF_Color);
 
 	// view projection matrix
 	ivec2 const iViewDim = renderTarget.GetDimensions();
@@ -165,9 +165,9 @@ void GuiRenderer::SetupContextRendering(render::I_GraphicsContextApi* const api,
 	// pipeline state
 	api->SetViewport(ivec2(0), iViewDim);
 	api->SetBlendEnabled(true);
-	api->SetBlendEquation(render::E_BlendEquation::Add);
-	api->SetBlendFunctionSeparate(render::E_BlendFactor::SourceAlpha, render::E_BlendFactor::One, // alpha channel always adds preventing gaps in the fb
-		render::E_BlendFactor::OneMinusSourceAlpha, render::E_BlendFactor::One);
+	api->SetBlendEquation(rhi::E_BlendEquation::Add);
+	api->SetBlendFunctionSeparate(rhi::E_BlendFactor::SourceAlpha, rhi::E_BlendFactor::One, // alpha channel always adds preventing gaps in the fb
+		rhi::E_BlendFactor::OneMinusSourceAlpha, rhi::E_BlendFactor::One);
 	api->SetCullEnabled(false);
 	api->SetDepthEnabled(false);
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
 
 #include <EtPipeline/Content/EditorAsset.h>
 
@@ -16,15 +16,15 @@ namespace pl {
 //---------------------------------
 // EditableShaderAsset
 //
-class EditableShaderAsset final : public EditorAsset<render::ShaderData>
+class EditableShaderAsset final : public EditorAsset<rhi::ShaderData>
 {
-	RTTR_ENABLE(EditorAsset<render::ShaderData>)
+	RTTR_ENABLE(EditorAsset<rhi::ShaderData>)
 	REGISTRATION_FRIEND_NS(pl)
 	DECLARE_FORCED_LINKING()
 public:
 	// Construct destruct
 	//---------------------
-	EditableShaderAsset() : EditorAsset<render::ShaderData>() {}
+	EditableShaderAsset() : EditorAsset<rhi::ShaderData>() {}
 	virtual ~EditableShaderAsset() = default;
 
 	// interface

@@ -68,14 +68,14 @@ bool EditableTextureAsset::LoadImage(RasterImage& image, std::vector<uint8> cons
 //
 bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 {
-	render::TextureAsset const* const textureAsset = static_cast<render::TextureAsset const*>(m_Asset);
+	rhi::TextureAsset const* const textureAsset = static_cast<rhi::TextureAsset const*>(m_Asset);
 
 	// settings
-	render::E_ColorFormat outputFormat = TextureCompression::GetOutputFormat(
+	rhi::E_ColorFormat outputFormat = TextureCompression::GetOutputFormat(
 		m_CompressionSetting, 
 		m_SupportAlpha, 
-		m_Srgb != render::TextureFormat::E_Srgb::None);
-	bool const requiresCompression = render::TextureFormat::IsCompressedFormat(outputFormat);
+		m_Srgb != rhi::TextureFormat::E_Srgb::None);
+	bool const requiresCompression = rhi::TextureFormat::IsCompressedFormat(outputFormat);
 
 	// Load
 	RasterImage image;
@@ -104,7 +104,7 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 		ET_ASSERT(!requiresCompression, "texture '%s' forces resolution but requires compression", m_Id.ToStringDbg());
 	}
 
-	render::TextureData* texture = nullptr;
+	rhi::TextureData* texture = nullptr;
 	if (requiresCompression)
 	{
 		if (m_UseMipMaps)
@@ -112,7 +112,7 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 			image.GenerateMipChain(4u); // can't compress a mipmap smaller than the block size
 		}
 
-		texture = new render::TextureData(outputFormat, ivec2(static_cast<int32>(width), static_cast<int32>(height)));
+		texture = new rhi::TextureData(outputFormat, ivec2(static_cast<int32>(width), static_cast<int32>(height)));
 		RasterImage const* mipImage = &image;
 		int32 mipLevel = 0;
 
@@ -134,12 +134,12 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	else
 	{
 		// #note: for now we cheat a bit with the storage format, but we should probably convert correctly for a more accurate representation in editor
-		render::E_ColorFormat const storageFormat = 
-			(m_Srgb == render::TextureFormat::E_Srgb::OnLoad) ? render::E_ColorFormat::SRGBA8 : render::E_ColorFormat::RGBA8;
+		rhi::E_ColorFormat const storageFormat = 
+			(m_Srgb == rhi::TextureFormat::E_Srgb::OnLoad) ? rhi::E_ColorFormat::SRGBA8 : rhi::E_ColorFormat::RGBA8;
 
 		//Upload to GPU
-		texture = new render::TextureData(storageFormat, ivec2(static_cast<int32>(width), static_cast<int32>(height)));
-		texture->UploadData(reinterpret_cast<void const*>(image.GetPixels()), render::E_ColorFormat::RGBA, render::E_DataType::UByte, 0u);
+		texture = new rhi::TextureData(storageFormat, ivec2(static_cast<int32>(width), static_cast<int32>(height)));
+		texture->UploadData(reinterpret_cast<void const*>(image.GetPixels()), rhi::E_ColorFormat::RGBA, rhi::E_DataType::UByte, 0u);
 	}
 
 	texture->SetParameters(textureAsset->m_Parameters);
@@ -161,7 +161,7 @@ bool EditableTextureAsset::GenerateInternal(BuildConfiguration const& buildConfi
 	ET_ASSERT(m_RuntimeAssets.size() == 1u);
 	m_RuntimeAssets[0].m_HasGeneratedData = true; 
 
-	render::TextureAsset const* const textureAsset = static_cast<render::TextureAsset const*>(m_Asset);
+	rhi::TextureAsset const* const textureAsset = static_cast<rhi::TextureAsset const*>(m_Asset);
 
 	// Load
 	RasterImage image;

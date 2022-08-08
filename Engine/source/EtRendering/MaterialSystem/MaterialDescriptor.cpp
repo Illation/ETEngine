@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "MaterialDescriptor.h"
 
-#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
 
 
 namespace et {
@@ -56,21 +56,21 @@ namespace parameters {
 //
 // Convert a material descriptor into a shader parameter set
 //
-void ConvertDescriptor(T_ParameterBlock const baseParams, 
+void ConvertDescriptor(rhi::T_ParameterBlock const baseParams, 
 	MaterialDescriptor const& desc, 
-	ShaderData const* const shader, 
-	std::vector<AssetPtr<TextureData>> const& textureRefs)
+	rhi::ShaderData const* const shader, 
+	std::vector<AssetPtr<rhi::TextureData>> const& textureRefs)
 {
 	ET_ASSERT(shader != nullptr);
 
-	std::vector<UniformParam> const& layout = shader->GetUniformLayout();
+	std::vector<rhi::UniformParam> const& layout = shader->GetUniformLayout();
 	std::vector<core::HashString> const& ids = shader->GetUniformIds();
 	ET_ASSERT(layout.size() == ids.size());
 
 	// override all 
 	for (size_t paramIdx = 0u; paramIdx < layout.size(); ++paramIdx)
 	{
-		UniformParam const& param = layout[paramIdx];
+		rhi::UniformParam const& param = layout[paramIdx];
 		core::HashString const paramId = ids[paramIdx];
 
 		// try finding the corresponding parameter in the descriptor
@@ -88,15 +88,15 @@ void ConvertDescriptor(T_ParameterBlock const baseParams,
 		BaseMaterialParam const* const baseParam = *paramIt;
 		switch (param.type)
 		{
-		case E_ParamType::Texture2D:
-		case E_ParamType::Texture3D:
-		case E_ParamType::TextureCube:
-		case E_ParamType::TextureShadow:
+		case rhi::E_ParamType::Texture2D:
+		case rhi::E_ParamType::Texture3D:
+		case rhi::E_ParamType::TextureCube:
+		case rhi::E_ParamType::TextureShadow:
 			{
 				ET_ASSERT(baseParam->GetType() == rttr::type::get<core::HashString>());
 				core::HashString const assetId(static_cast<MaterialParam<core::HashString> const*>(baseParam)->GetData());
 
-				auto texIt = std::find_if(textureRefs.cbegin(), textureRefs.cend(), [assetId](AssetPtr<TextureData> const& texture)
+				auto texIt = std::find_if(textureRefs.cbegin(), textureRefs.cend(), [assetId](AssetPtr<rhi::TextureData> const& texture)
 					{
 						return texture.GetAsset()->GetId() == assetId;
 					});
@@ -107,53 +107,53 @@ void ConvertDescriptor(T_ParameterBlock const baseParams,
 					break;
 				}
 
-				render::parameters::Write(baseParams, param.offset, (*texIt).get());
+				rhi::parameters::Write(baseParams, param.offset, (*texIt).get());
 			}
 			break;
 
-		case E_ParamType::Matrix4x4:
+		case rhi::E_ParamType::Matrix4x4:
 			ET_ASSERT(baseParam->GetType() == rttr::type::get<mat4>());
-			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<mat4> const*>(baseParam)->GetData());
+			rhi::parameters::Write(baseParams, param.offset, static_cast<MaterialParam<mat4> const*>(baseParam)->GetData());
 			break;
 
-		case E_ParamType::Matrix3x3:
+		case rhi::E_ParamType::Matrix3x3:
 			ET_ASSERT(baseParam->GetType() == rttr::type::get<mat3>());
-			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<mat3> const*>(baseParam)->GetData());
+			rhi::parameters::Write(baseParams, param.offset, static_cast<MaterialParam<mat3> const*>(baseParam)->GetData());
 			break;
 
-		case E_ParamType::Vector4:
+		case rhi::E_ParamType::Vector4:
 			ET_ASSERT(baseParam->GetType() == rttr::type::get<vec4>());
-			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<vec4> const*>(baseParam)->GetData());
+			rhi::parameters::Write(baseParams, param.offset, static_cast<MaterialParam<vec4> const*>(baseParam)->GetData());
 			break;
 
-		case E_ParamType::Vector3:
+		case rhi::E_ParamType::Vector3:
 			ET_ASSERT(baseParam->GetType() == rttr::type::get<vec3>());
-			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<vec3> const*>(baseParam)->GetData());
+			rhi::parameters::Write(baseParams, param.offset, static_cast<MaterialParam<vec3> const*>(baseParam)->GetData());
 			break;
 
-		case E_ParamType::Vector2:
+		case rhi::E_ParamType::Vector2:
 			ET_ASSERT(baseParam->GetType() == rttr::type::get<vec2>());
-			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<vec2> const*>(baseParam)->GetData());
+			rhi::parameters::Write(baseParams, param.offset, static_cast<MaterialParam<vec2> const*>(baseParam)->GetData());
 			break;
 
-		case E_ParamType::UInt:
+		case rhi::E_ParamType::UInt:
 			ET_ASSERT(baseParam->GetType() == rttr::type::get<uint32>());
-			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<uint32> const*>(baseParam)->GetData());
+			rhi::parameters::Write(baseParams, param.offset, static_cast<MaterialParam<uint32> const*>(baseParam)->GetData());
 			break;
 
-		case E_ParamType::Int:
+		case rhi::E_ParamType::Int:
 			ET_ASSERT(baseParam->GetType() == rttr::type::get<int32>());
-			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<int32> const*>(baseParam)->GetData());
+			rhi::parameters::Write(baseParams, param.offset, static_cast<MaterialParam<int32> const*>(baseParam)->GetData());
 			break;
 
-		case E_ParamType::Float:
+		case rhi::E_ParamType::Float:
 			ET_ASSERT(baseParam->GetType() == rttr::type::get<float>());
-			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<float> const*>(baseParam)->GetData());
+			rhi::parameters::Write(baseParams, param.offset, static_cast<MaterialParam<float> const*>(baseParam)->GetData());
 			break;
 
-		case E_ParamType::Boolean:
+		case rhi::E_ParamType::Boolean:
 			ET_ASSERT(baseParam->GetType() == rttr::type::get<bool>());
-			parameters::Write(baseParams, param.offset, static_cast<MaterialParam<bool> const*>(baseParam)->GetData());
+			rhi::parameters::Write(baseParams, param.offset, static_cast<MaterialParam<bool> const*>(baseParam)->GetData());
 			break;
 
 		default:

@@ -20,8 +20,8 @@ public:
 	void Unload();
 
 	void Precalculate(Atmosphere* atmo);
-	void SetUniforms(ShaderData* shader, TextureData* transmittance,
-		TextureData* scattering, TextureData* irradiance, TextureData* mie);
+	void SetUniforms(rhi::ShaderData* shader, rhi::TextureData* transmittance,
+		rhi::TextureData* scattering, rhi::TextureData* irradiance, rhi::TextureData* mie);
 
 	static void ComputeSpectralRadianceToLuminanceFactors(const std::vector<double>& wavelengths, const std::vector<double>& solar_irradiance, double lambda_power, dvec3 &color);
 
@@ -33,23 +33,23 @@ private:
 	friend class Atmosphere;// #temp
 
 	//Textures - probably also need fbos
-	TextureData* m_TexDeltaIrradiance;
-	TextureData* m_TexDeltaRayleigh;
-	TextureData* m_TexDeltaMultipleScattering;
-	TextureData* m_TexDeltaMie;
-	TextureData* m_TexDeltaScattering;
+	rhi::TextureData* m_TexDeltaIrradiance;
+	rhi::TextureData* m_TexDeltaRayleigh;
+	rhi::TextureData* m_TexDeltaMultipleScattering;
+	rhi::TextureData* m_TexDeltaMie;
+	rhi::TextureData* m_TexDeltaScattering;
 
-	T_FbLoc m_FBO;
+	rhi::T_FbLoc m_FBO;
 
 	AtmosphereSettings m_Settings;
 
 	//Precomputation Shaders
-	AssetPtr<ShaderData> m_pComputeTransmittance;
-	AssetPtr<ShaderData> m_pComputeDirectIrradiance;
-	AssetPtr<ShaderData> m_pComputeSingleScattering;
-	AssetPtr<ShaderData> m_pComputeScatteringDensity;
-	AssetPtr<ShaderData> m_pComputeIndirectIrradiance;
-	AssetPtr<ShaderData> m_pComputeMultipleScattering;
+	AssetPtr<rhi::ShaderData> m_pComputeTransmittance;
+	AssetPtr<rhi::ShaderData> m_pComputeDirectIrradiance;
+	AssetPtr<rhi::ShaderData> m_pComputeSingleScattering;
+	AssetPtr<rhi::ShaderData> m_pComputeScatteringDensity;
+	AssetPtr<rhi::ShaderData> m_pComputeIndirectIrradiance;
+	AssetPtr<rhi::ShaderData> m_pComputeMultipleScattering;
 
 	//other
 	int32 m_Step = 0;

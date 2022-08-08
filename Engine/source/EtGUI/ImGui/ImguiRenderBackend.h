@@ -3,8 +3,8 @@
 
 #if ET_CT_IS_ENABLED(ET_CT_IMGUI)
 
-#include <EtRendering/GraphicsTypes/Shader.h>
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
 
 
 namespace et {
@@ -41,7 +41,7 @@ private:
 	bool CreateDeviceObjects();
 	void DestroyDeviceObjects();
 
-	void SetupRenderState(ImDrawData* const drawData, ivec2 const fbScale, render::T_ArrayLoc const vao);
+	void SetupRenderState(ImDrawData* const drawData, ivec2 const fbScale, rhi::T_ArrayLoc const vao);
 
 	bool CreateFontsTexture();
 	void DestroyFontsTexture();
@@ -50,11 +50,11 @@ private:
 	// Data
 	///////
 
-	UniquePtr<render::TextureData> m_FontTexture;
-	AssetPtr<render::ShaderData> m_Shader;
+	UniquePtr<rhi::TextureData> m_FontTexture;
+	AssetPtr<rhi::ShaderData> m_Shader;
 
-	render::T_BufferLoc m_VertexBuffer = 0u;
-	render::T_BufferLoc m_IndexBuffer = 0u;
+	rhi::T_BufferLoc m_VertexBuffer = 0u;
+	rhi::T_BufferLoc m_IndexBuffer = 0u;
 
 	int64 m_VertexBufferSize = 0;
 	int64 m_IndexBufferSize = 0;

@@ -33,7 +33,7 @@ ImguiPlatformBackend* ImguiPlatformBackend::AccessFromIO()
 //
 void ImguiPlatformBackend::Init(Ptr<core::I_CursorShapeManager> const cursorManager,
 	Ptr<core::I_ClipboardController> const clipboardController,
-	Ptr<render::Viewport> const viewport)
+	Ptr<rhi::Viewport> const viewport)
 {
 	m_CursorShapeManager = cursorManager;
 	m_ClipboardController = clipboardController;

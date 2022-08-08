@@ -6,7 +6,7 @@ namespace et {
 namespace render {
 
 
-class ShaderData;
+class rhi::ShaderData;
 class Material;
 class DirectionalShadowData;
 
@@ -33,8 +33,8 @@ public:
 	void DrawShadowed(vec3 dir, vec3 col, render::DirectionalShadowData const& shadow);
 
 protected:
-	AssetPtr<ShaderData> m_Shader;
-	AssetPtr<ShaderData> m_ShaderShadowed;
+	AssetPtr<rhi::ShaderData> m_Shader;
+	AssetPtr<rhi::ShaderData> m_ShaderShadowed;
 private:
 	void Initialize();
 	bool m_IsInitialized = false;

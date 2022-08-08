@@ -9,8 +9,8 @@ namespace et {
 namespace render {
 
 
-class ShaderData;
-class TextureData;
+class rhi::ShaderData;
+class rhi::TextureData;
 class I_OverlayRenderer;
 
 
@@ -25,10 +25,10 @@ public:
 	void Initialize();
 
 	void EnableInput();
-	void Draw(T_FbLoc const FBO, PostProcessingSettings const& settings, std::function<void(T_FbLoc const)>& onDrawOverlaysFn);
+	void Draw(rhi::T_FbLoc const FBO, PostProcessingSettings const& settings, std::function<void(rhi::T_FbLoc const)>& onDrawOverlaysFn);
 
-	T_FbLoc GetTargetFBO() { return m_CollectFBO; }
-	TextureData* GetTargetTexture() { return m_CollectTex; }
+	rhi::T_FbLoc GetTargetFBO() { return m_CollectFBO; }
+	rhi::TextureData* GetTargetTexture() { return m_CollectTex; }
 
 private:
 
@@ -36,25 +36,25 @@ private:
 	void GenerateFramebuffers();
 	void ResizeFBTextures();
 
-	AssetPtr<ShaderData> m_pDownsampleShader;
-	AssetPtr<ShaderData> m_pGaussianShader;
-	AssetPtr<ShaderData> m_pPostProcShader;
-	AssetPtr<ShaderData> m_pFXAAShader;
+	AssetPtr<rhi::ShaderData> m_pDownsampleShader;
+	AssetPtr<rhi::ShaderData> m_pGaussianShader;
+	AssetPtr<rhi::ShaderData> m_pPostProcShader;
+	AssetPtr<rhi::ShaderData> m_pFXAAShader;
 
-	T_FbLoc m_CollectFBO;
-	TextureData* m_CollectTex = nullptr;
-	T_RbLoc m_CollectRBO;
+	rhi::T_FbLoc m_CollectFBO;
+	rhi::TextureData* m_CollectTex = nullptr;
+	rhi::T_RbLoc m_CollectRBO;
 
-	T_FbLoc m_HDRoutFBO;
-	TextureData* m_ColorBuffers[2];
+	rhi::T_FbLoc m_HDRoutFBO;
+	rhi::TextureData* m_ColorBuffers[2];
 
-	T_FbLoc m_PingPongFBO[2];
-	TextureData* m_PingPongTexture[2];
+	rhi::T_FbLoc m_PingPongFBO[2];
+	rhi::TextureData* m_PingPongTexture[2];
 
-	T_FbLoc m_DownSampleFBO[NUM_BLOOM_DOWNSAMPLES];
-	TextureData* m_DownSampleTexture[NUM_BLOOM_DOWNSAMPLES];
-	T_FbLoc m_DownPingPongFBO[NUM_BLOOM_DOWNSAMPLES];
-	TextureData* m_DownPingPongTexture[NUM_BLOOM_DOWNSAMPLES];
+	rhi::T_FbLoc m_DownSampleFBO[NUM_BLOOM_DOWNSAMPLES];
+	rhi::TextureData* m_DownSampleTexture[NUM_BLOOM_DOWNSAMPLES];
+	rhi::T_FbLoc m_DownPingPongFBO[NUM_BLOOM_DOWNSAMPLES];
+	rhi::TextureData* m_DownPingPongTexture[NUM_BLOOM_DOWNSAMPLES];
 };
 
 

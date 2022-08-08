@@ -138,7 +138,7 @@ namespace ImGui
 */
 
 // Textures
-namespace et { namespace render {
+namespace et { namespace rhi {
 	class TextureData;
 } }
-#define ImTextureID et::render::TextureData const*
+#define ImTextureID et::rhi::TextureData const*

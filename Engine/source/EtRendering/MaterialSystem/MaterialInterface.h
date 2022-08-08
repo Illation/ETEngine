@@ -1,5 +1,5 @@
 #pragma once
-#include <EtRendering/GraphicsTypes/ParameterBlock.h>
+#include <EtRHI/GraphicsTypes/ParameterBlock.h>
 
 
 namespace et {
@@ -21,7 +21,7 @@ public:
 	virtual ~I_Material() = default;
 
 	virtual Material const* GetBaseMaterial() const = 0;
-	virtual T_ConstParameterBlock GetParameters() const = 0;
+	virtual rhi::T_ConstParameterBlock GetParameters() const = 0;
 };
 
 

@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "SplashScreenRenderer.h"
 
+#include <EtRHI/GraphicsTypes/TextureData.h>
+
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
-#include <EtRendering/GraphicsTypes/TextureData.h>
 
 
 namespace et {
@@ -55,7 +56,7 @@ void SplashScreenRenderer::SetGuiDocument(core::HashString const documentId)
 	}
 	else if (m_GuiContext.GetDocumentCount() == 0u)
 	{
-		m_GuiContext.Init("SplashScreen GUI Context", render::Viewport::GetCurrentViewport()->GetDimensions());
+		m_GuiContext.Init("SplashScreen GUI Context", rhi::Viewport::GetCurrentViewport()->GetDimensions());
 		m_GuiContext.LoadDocument(documentId);
 	}
 }
@@ -76,7 +77,7 @@ void SplashScreenRenderer::OnResize(ivec2 const dim)
 //
 // Main scene drawing function
 //
-void SplashScreenRenderer::OnRender(render::T_FbLoc const targetFb)
+void SplashScreenRenderer::OnRender(rhi::T_FbLoc const targetFb)
 {
 	if (!m_IsInitialized || !m_GuiContext.HasActiveDocuments())
 	{
@@ -85,7 +86,7 @@ void SplashScreenRenderer::OnRender(render::T_FbLoc const targetFb)
 
 	m_GuiContext.Update();
 
-	render::Viewport const* const viewport = render::Viewport::GetCurrentViewport();
+	rhi::Viewport const* const viewport = rhi::Viewport::GetCurrentViewport();
 	m_ContextRenderTarget.UpdateForDimensions(viewport->GetDimensions());
 	m_GuiRenderer.RenderContext(targetFb, m_ContextRenderTarget, m_GuiContext);
 }

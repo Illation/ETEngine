@@ -1,4 +1,4 @@
-#include <EtEditor/stdafx.h>
+#include "stdafx.h"
 #include "GtkRenderWindow.h"
 
 #include "EpoxyGlContext.h"
@@ -24,7 +24,7 @@ GtkRenderWindow::~GtkRenderWindow()
 //---------------------------------
 // GtkRenderWindow::CreateContext
 //
-render::I_GraphicsContextApi* GtkRenderWindow::CreateContext(render::GraphicsContextParams const& params)
+rhi::I_GraphicsContextApi* GtkRenderWindow::CreateContext(rhi::GraphicsContextParams const& params)
 {
 	ET_ASSERT(m_Source != nullptr, "Source window must be set before creating context");
 	ET_ASSERT(m_Source->get_realized(), "Source window must be realized before creating context");
@@ -88,7 +88,7 @@ render::I_GraphicsContextApi* GtkRenderWindow::CreateContext(render::GraphicsCon
 
 	ET_LOG_I(ET_CTX_EDITOR, "");
 
-	m_Context = new render::EpoxyGlContext();
+	m_Context = new rhi::EpoxyGlContext();
 
 	ivec2 dim;
 	dim.x = m_Source->get_allocated_width();

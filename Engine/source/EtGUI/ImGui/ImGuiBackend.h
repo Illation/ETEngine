@@ -8,7 +8,7 @@
 
 #include <EtCore/UpdateCycle/Tickable.h>
 
-#include <EtRendering/GraphicsContext/ViewportEvents.h>
+#include <EtRHI/GraphicsContext/ViewportEvents.h>
 
 
 namespace et {
@@ -29,7 +29,7 @@ public:
 
 	void Init(Ptr<core::I_CursorShapeManager> const cursorManager,
 		Ptr<core::I_ClipboardController> const clipboardController,
-		Ptr<render::Viewport> const viewport);
+		Ptr<rhi::Viewport> const viewport);
 	void Deinit();
 
 	// tickable interface
@@ -54,7 +54,7 @@ private:
 	ImguiPlatformBackend m_PlatformBackend;
 	ImguiRenderBackend m_RenderBackend;
 
-	render::T_ViewportEventCallbackId m_VPCallbackId = render::T_ViewportEventDispatcher::INVALID_ID;
+	rhi::T_ViewportEventCallbackId m_VPCallbackId = rhi::T_ViewportEventDispatcher::INVALID_ID;
 };
 
 

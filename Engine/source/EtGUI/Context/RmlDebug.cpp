@@ -265,7 +265,7 @@ void RmlDebug::ShowFontUI()
 template <bool TEnabled>
 void SetBlendEnabledCallback(ImDrawList const*, ImDrawCmd const*)
 {
-	render::ContextHolder::GetRenderContext()->SetBlendEnabled(TEnabled);
+	rhi::ContextHolder::GetRenderContext()->SetBlendEnabled(TEnabled);
 }
 
 //---------------------------
@@ -273,7 +273,7 @@ void SetBlendEnabledCallback(ImDrawList const*, ImDrawCmd const*)
 //
 // temporarily disable blending to make sure the images are not drawn as transparent
 //
-void RmlDebug::AddOpaqueImage(render::TextureData const* const texture, vec2 const maxScale)
+void RmlDebug::AddOpaqueImage(rhi::TextureData const* const texture, vec2 const maxScale)
 {
 	vec2 const resolution = math::vecCast<float>(texture->GetResolution());
 

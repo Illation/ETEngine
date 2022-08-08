@@ -3,8 +3,10 @@
 
 #include <EtCore/Content/ResourceManager.h>
 
-#include <EtRendering/GraphicsTypes/TextureData.h>
-#include <EtRendering/GraphicsTypes/Shader.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/Shader.h>
+#include <EtRHI/Util/PrimitiveRenderer.h>
+
 #include <EtRendering/GraphicsTypes/FrameBuffer.h>
 #include <EtRendering/MaterialSystem/MaterialData.h>
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
@@ -38,12 +40,12 @@ OutlineRenderer::~OutlineRenderer()
 //
 void OutlineRenderer::Init(Ptr<render::T_RenderEventDispatcher> const eventDispatcher)
 {
-	m_SobelShader = core::ResourceManager::Instance()->GetAssetData<ShaderData>(core::HashString("Shaders/PostSobel.glsl"));
+	m_SobelShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostSobel.glsl"));
 
 	CreateRenderTarget();
 
-	m_VPCallbackId = Viewport::GetCurrentViewport()->GetEventDispatcher().Register(render::E_ViewportEvent::VP_Resized, render::T_ViewportEventCallback(
-		[this](render::T_ViewportEventFlags const, render::ViewportEventData const* const) -> void
+	m_VPCallbackId = rhi::Viewport::GetCurrentViewport()->GetEventDispatcher().Register(rhi::E_ViewportEvent::VP_Resized, rhi::T_ViewportEventCallback(
+		[this](rhi::T_ViewportEventFlags const, rhi::ViewportEventData const* const) -> void
 		{
 			OnWindowResize();
 		}));
@@ -85,9 +87,9 @@ void OutlineRenderer::Deinit()
 
 	m_SobelShader = nullptr;
 
-	if (m_VPCallbackId != render::T_ViewportEventDispatcher::INVALID_ID)
+	if (m_VPCallbackId != rhi::T_ViewportEventDispatcher::INVALID_ID)
 	{
-		Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
+		rhi::Viewport::GetCurrentViewport()->GetEventDispatcher().Unregister(m_VPCallbackId);
 	}
 
 	if (m_EventDispatcher != nullptr)
@@ -104,28 +106,28 @@ void OutlineRenderer::Deinit()
 //
 void OutlineRenderer::CreateRenderTarget()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
-	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	ivec2 const dim = rhi::Viewport::GetCurrentViewport()->GetDimensions();
 
-	TextureParameters params(false);
-	params.minFilter = E_TextureFilterMode::Linear;
-	params.magFilter = E_TextureFilterMode::Linear;
-	params.wrapS = E_TextureWrapMode::ClampToBorder;
-	params.wrapT = E_TextureWrapMode::ClampToBorder;
+	rhi::TextureParameters params(false);
+	params.minFilter = rhi::E_TextureFilterMode::Linear;
+	params.magFilter = rhi::E_TextureFilterMode::Linear;
+	params.wrapS = rhi::E_TextureWrapMode::ClampToBorder;
+	params.wrapT = rhi::E_TextureWrapMode::ClampToBorder;
 	params.borderColor = vec4(vec3(0.f), 1.f);
 
 	//Generate texture and fbo and rbo as initial postprocessing target
 	api->GenFramebuffers(1, &m_DrawTarget);
 	api->BindFramebuffer(m_DrawTarget);
-	m_DrawTex = new TextureData(E_ColorFormat::RGB16f, dim);
+	m_DrawTex = new rhi::TextureData(rhi::E_ColorFormat::RGB16f, dim);
 	m_DrawTex->AllocateStorage();
 	m_DrawTex->SetParameters(params);
 	api->LinkTextureToFbo2D(0, m_DrawTex->GetLocation(), 0);
 
 	api->GenRenderBuffers(1, &m_DrawDepth);
 	api->BindRenderbuffer(m_DrawDepth);
-	api->SetRenderbufferStorage(E_RenderBufferFormat::Depth24, dim);
-	api->LinkRenderbufferToFbo(E_RenderBufferFormat::Depth24, m_DrawDepth);
+	api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, dim);
+	api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, m_DrawDepth);
 
 	api->BindFramebuffer(0);
 }
@@ -135,7 +137,7 @@ void OutlineRenderer::CreateRenderTarget()
 //
 void OutlineRenderer::DestroyRenderTarget()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
 
 	api->DeleteRenderBuffers(1, &m_DrawDepth);
 	SafeDelete(m_DrawTex);
@@ -145,7 +147,7 @@ void OutlineRenderer::DestroyRenderTarget()
 //---------------------------------
 // OutlineRenderer::Draw
 //
-void OutlineRenderer::Draw(T_FbLoc const targetFb, 
+void OutlineRenderer::Draw(rhi::T_FbLoc const targetFb, 
 	OutlineExtension const& outlines, 
 	core::slot_map<mat4> const& nodes, 
 	Camera const& cam, 
@@ -156,8 +158,8 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 		return;
 	}
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
-	ivec2 const dim = Viewport::GetCurrentViewport()->GetDimensions();
+	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	ivec2 const dim = rhi::Viewport::GetCurrentViewport()->GetDimensions();
 
 	api->SetViewport(ivec2(0), dim);
 
@@ -166,10 +168,10 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 	api->BindFramebuffer(m_DrawTarget);
 
 	api->SetClearColor(vec4(vec3(0.f), 1.f));
-	api->Clear(E_ClearFlag::CF_Color | E_ClearFlag::CF_Depth);
+	api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
 
 	render::Material const* const mat = RenderingSystems::Instance()->GetColorMaterial();
-	ShaderData const* const shader = mat->GetShader();
+	rhi::ShaderData const* const shader = mat->GetShader();
 
 	api->SetShader(shader);
 	shader->Upload("uViewSize"_hash, math::vecCast<float>(dim));
@@ -195,7 +197,7 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 				if (cam.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
 				{
 					shader->Upload("model"_hash, transform);
-					api->DrawElements(E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
+					api->DrawElements(rhi::E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
 				}
 			}
 		}
@@ -208,14 +210,14 @@ void OutlineRenderer::Draw(T_FbLoc const targetFb,
 
 	api->SetDepthEnabled(false);
 	api->SetBlendEnabled(true);
-	api->SetBlendEquation(E_BlendEquation::Add);
-	api->SetBlendFunction(E_BlendFactor::One, E_BlendFactor::One);
+	api->SetBlendEquation(rhi::E_BlendEquation::Add);
+	api->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::One);
 
 	api->SetShader(m_SobelShader.get());
 
-	m_SobelShader->Upload("inColorTex"_hash, static_cast<TextureData const*>(m_DrawTex));
+	m_SobelShader->Upload("inColorTex"_hash, static_cast<rhi::TextureData const*>(m_DrawTex));
 
-	RenderingSystems::Instance()->GetPrimitiveRenderer().Draw<primitives::Quad>();
+	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 
 	api->SetBlendEnabled(false);
 }

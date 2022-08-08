@@ -1,10 +1,10 @@
-#include <EtEditor/stdafx.h>
+#include "stdafx.h"
 #include "GtkRenderArea.h"
 
 #include "EpoxyGlContext.h"
 #include "GtkRenderWindow.h"
 
-#include <EtRendering/GraphicsContext/ContextHolder.h>
+#include <EtRHI/GraphicsContext/ContextHolder.h>
 
 
 namespace et {
@@ -40,7 +40,7 @@ SingleContextGlArea::SingleContextGlArea(BaseObjectType* cobject, Glib::RefPtr<G
 //
 Glib::RefPtr<Gdk::GLContext> SingleContextGlArea::OnCreateContext()
 {
-	render::GraphicsContext graphicsContext = render::ContextHolder::Instance().GetMainRenderContext();
+	rhi::GraphicsContext graphicsContext = rhi::ContextHolder::Instance().GetMainRenderContext();
 	GtkRenderWindow* const renderWindow = static_cast<GtkRenderWindow*>(graphicsContext.GetSourceWindow());
 	ET_ASSERT(renderWindow != nullptr, "Can't create GLarea before open GL context is initialized");
 
@@ -80,7 +80,7 @@ void GtkRenderArea::OnRealize()
 {
 	if (m_OnInit)
 	{
-		m_OnInit(render::ContextHolder::GetRenderContext());
+		m_OnInit(rhi::ContextHolder::GetRenderContext());
 	}
 }
 
@@ -115,7 +115,7 @@ bool GtkRenderArea::OnRender(const Glib::RefPtr<Gdk::GLContext>& context)
 
 	if (m_OnRender)
 	{
-		m_OnRender(render::ContextHolder::GetRenderContext()->GetActiveFramebuffer());
+		m_OnRender(rhi::ContextHolder::GetRenderContext()->GetActiveFramebuffer());
 	}
 
 	return true;

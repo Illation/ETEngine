@@ -47,7 +47,7 @@ bool Triangulator::Update(mat4 const& transform, Camera const& camera)
 	}
 #endif
 
-	m_Frustum.Update(Viewport::GetCurrentViewport());
+	m_Frustum.Update(rhi::Viewport::GetCurrentViewport());
 
 	return true;
 }
@@ -93,7 +93,7 @@ void Triangulator::GenerateGeometry()
 	//In future only recalculate on FOV or triangle density change
 	m_DistanceLUT.clear();
 	float sizeL = math::length(m_Icosahedron[0].a - m_Icosahedron[0].b);
-	float frac = tanf((m_AllowedTriPx * math::radians(m_Frustum.GetFOV())) / Viewport::GetCurrentViewport()->GetDimensions().x);
+	float frac = tanf((m_AllowedTriPx * math::radians(m_Frustum.GetFOV())) / rhi::Viewport::GetCurrentViewport()->GetDimensions().x);
 	for (int32 level = 0; level < m_MaxLevel+5; level++)
 	{
 		m_DistanceLUT.push_back(sizeL / frac);

@@ -1,5 +1,5 @@
 #pragma once
-#include <EtRendering/GraphicsTypes/TextureData.h>
+#include <EtRHI/GraphicsTypes/TextureData.h>
 
 #include <EtPipeline/Content/EditorAsset.h>
 #include <EtPipeline/Import/TextureCompression.h>
@@ -17,10 +17,10 @@ namespace pl {
 //---------------------------------
 // EditableTextureAsset
 //
-class EditableTextureAsset final : public EditorAsset<render::TextureData>
+class EditableTextureAsset final : public EditorAsset<rhi::TextureData>
 {
 	DECLARE_FORCED_LINKING()
-	RTTR_ENABLE(EditorAsset<render::TextureData>)
+	RTTR_ENABLE(EditorAsset<rhi::TextureData>)
 	REGISTRATION_FRIEND_NS(pl)
 
 	//definitions
@@ -30,7 +30,7 @@ public:
 
 	// Construct destruct
 	//---------------------
-	EditableTextureAsset() : EditorAsset<render::TextureData>() {}
+	EditableTextureAsset() : EditorAsset<rhi::TextureData>() {}
 	virtual ~EditableTextureAsset() = default;
 
 	// interface
@@ -46,7 +46,7 @@ protected:
 	///////
 
 private:
-	render::TextureFormat::E_Srgb m_Srgb = render::TextureFormat::E_Srgb::None;
+	rhi::TextureFormat::E_Srgb m_Srgb = rhi::TextureFormat::E_Srgb::None;
 
 	bool m_SupportAlpha = true;
 	uint16 m_MaxSize = 0u;

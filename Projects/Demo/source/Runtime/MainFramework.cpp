@@ -104,7 +104,7 @@ void MainFramework::OnTick()
 	//-------------
 	if (input->GetKeyState(E_KbdKey::F12) == E_KeyState::Pressed)
 	{
-		m_ScreenshotCapture.Take(render::Viewport::GetCurrentViewport());
+		m_ScreenshotCapture.Take(rhi::Viewport::GetCurrentViewport());
 	}
 
 	// view

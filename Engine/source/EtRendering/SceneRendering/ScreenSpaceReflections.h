@@ -6,7 +6,7 @@ namespace et {
 namespace render {
 
 
-class ShaderData;
+class rhi::ShaderData;
 
 
 class ScreenSpaceReflections
@@ -17,16 +17,16 @@ public:
 	void Initialize();
 
 	void EnableInput();
-	T_FbLoc GetTargetFBO() { return m_CollectFBO; }
+	rhi::T_FbLoc GetTargetFBO() { return m_CollectFBO; }
 
 	void Draw();
 private:
 
-	AssetPtr<ShaderData> m_pShader;
+	AssetPtr<rhi::ShaderData> m_pShader;
 
-	T_FbLoc m_CollectFBO;
-	TextureData* m_CollectTex = nullptr;
-	T_RbLoc m_CollectRBO;
+	rhi::T_FbLoc m_CollectFBO;
+	rhi::TextureData* m_CollectTex = nullptr;
+	rhi::T_RbLoc m_CollectRBO;
 };
 
 
