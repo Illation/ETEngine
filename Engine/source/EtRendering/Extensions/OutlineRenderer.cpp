@@ -106,7 +106,7 @@ void OutlineRenderer::Deinit()
 //
 void OutlineRenderer::CreateRenderTarget()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 	ivec2 const dim = rhi::Viewport::GetCurrentViewport()->GetDimensions();
 
 	rhi::TextureParameters params(false);
@@ -117,19 +117,19 @@ void OutlineRenderer::CreateRenderTarget()
 	params.borderColor = vec4(vec3(0.f), 1.f);
 
 	//Generate texture and fbo and rbo as initial postprocessing target
-	api->GenFramebuffers(1, &m_DrawTarget);
-	api->BindFramebuffer(m_DrawTarget);
+	device->GenFramebuffers(1, &m_DrawTarget);
+	device->BindFramebuffer(m_DrawTarget);
 	m_DrawTex = new rhi::TextureData(rhi::E_ColorFormat::RGB16f, dim);
 	m_DrawTex->AllocateStorage();
 	m_DrawTex->SetParameters(params);
-	api->LinkTextureToFbo2D(0, m_DrawTex->GetLocation(), 0);
+	device->LinkTextureToFbo2D(0, m_DrawTex->GetLocation(), 0);
 
-	api->GenRenderBuffers(1, &m_DrawDepth);
-	api->BindRenderbuffer(m_DrawDepth);
-	api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, dim);
-	api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, m_DrawDepth);
+	device->GenRenderBuffers(1, &m_DrawDepth);
+	device->BindRenderbuffer(m_DrawDepth);
+	device->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, dim);
+	device->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, m_DrawDepth);
 
-	api->BindFramebuffer(0);
+	device->BindFramebuffer(0);
 }
 
 //---------------------------------
@@ -137,11 +137,11 @@ void OutlineRenderer::CreateRenderTarget()
 //
 void OutlineRenderer::DestroyRenderTarget()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->DeleteRenderBuffers(1, &m_DrawDepth);
+	device->DeleteRenderBuffers(1, &m_DrawDepth);
 	SafeDelete(m_DrawTex);
-	api->DeleteFramebuffers(1, &m_DrawTarget);
+	device->DeleteFramebuffers(1, &m_DrawTarget);
 }
 
 //---------------------------------
@@ -158,27 +158,27 @@ void OutlineRenderer::Draw(rhi::T_FbLoc const targetFb,
 		return;
 	}
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 	ivec2 const dim = rhi::Viewport::GetCurrentViewport()->GetDimensions();
 
-	api->SetViewport(ivec2(0), dim);
+	device->SetViewport(ivec2(0), dim);
 
 	// draw the shapes as colors to the intermediate rendertarget
 	//------------------------------------------------------------
-	api->BindFramebuffer(m_DrawTarget);
+	device->BindFramebuffer(m_DrawTarget);
 
-	api->SetClearColor(vec4(vec3(0.f), 1.f));
-	api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
+	device->SetClearColor(vec4(vec3(0.f), 1.f));
+	device->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
 
 	render::Material const* const mat = RenderingSystems::Instance()->GetColorMaterial();
 	rhi::ShaderData const* const shader = mat->GetShader();
 
-	api->SetShader(shader);
+	device->SetShader(shader);
 	shader->Upload("uViewSize"_hash, math::vecCast<float>(dim));
 
 	shader->Upload("uOcclusionFactor"_hash, 0.15f);
 
-	api->SetDepthEnabled(true); 
+	device->SetDepthEnabled(true); 
 
 	for (OutlineExtension::OutlineList const& list : outlines.GetOutlineLists())
 	{
@@ -186,7 +186,7 @@ void OutlineRenderer::Draw(rhi::T_FbLoc const targetFb,
 
 		for (render::MaterialCollection::Mesh const& mesh : list.meshes)
 		{
-			api->BindVertexArray(mesh.m_VAO);
+			device->BindVertexArray(mesh.m_VAO);
 			for (render::T_NodeId const node : mesh.m_Instances)
 			{
 				// #todo: collect a list of transforms and draw this instanced
@@ -197,7 +197,7 @@ void OutlineRenderer::Draw(rhi::T_FbLoc const targetFb,
 				if (cam.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
 				{
 					shader->Upload("model"_hash, transform);
-					api->DrawElements(rhi::E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
+					device->DrawElements(rhi::E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
 				}
 			}
 		}
@@ -206,20 +206,20 @@ void OutlineRenderer::Draw(rhi::T_FbLoc const targetFb,
 	// apply a sobel shader to the colored shapes and render it to the target framebuffer
 	//------------------------------------------------------------------------------------
 
-	api->BindFramebuffer(targetFb);
+	device->BindFramebuffer(targetFb);
 
-	api->SetDepthEnabled(false);
-	api->SetBlendEnabled(true);
-	api->SetBlendEquation(rhi::E_BlendEquation::Add);
-	api->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::One);
+	device->SetDepthEnabled(false);
+	device->SetBlendEnabled(true);
+	device->SetBlendEquation(rhi::E_BlendEquation::Add);
+	device->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::One);
 
-	api->SetShader(m_SobelShader.get());
+	device->SetShader(m_SobelShader.get());
 
 	m_SobelShader->Upload("inColorTex"_hash, static_cast<rhi::TextureData const*>(m_DrawTex));
 
 	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 
-	api->SetBlendEnabled(false);
+	device->SetBlendEnabled(false);
 }
 
 //---------------------------------

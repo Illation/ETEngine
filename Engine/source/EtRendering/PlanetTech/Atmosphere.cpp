@@ -69,7 +69,7 @@ void Atmosphere::Draw(vec3 const& position, float const height, float const grou
 	ET_ASSERT(m_TexIrradiance != nullptr);
 	ET_ASSERT(m_TexInscatter != nullptr);
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	float const radius = groundRadius + height;
 	float const icoRadius = radius / 0.996407747f;//scale up the sphere so the face center reaches the top of the atmosphere
@@ -85,7 +85,7 @@ void Atmosphere::Draw(vec3 const& position, float const height, float const grou
 	//mat4 transform = math::translate(position)*math::scale(vec3(icoRadius));
 	mat4 transform = math::scale(vec3(icoRadius))*math::translate(position);
 
-	api->SetShader(m_pShader.get());
+	device->SetShader(m_pShader.get());
 
 	m_pShader->Upload("model"_hash, transform);
 

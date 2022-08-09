@@ -56,8 +56,8 @@ bool EditableShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	// Compile
 	//------------------
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
-	rhi::T_ShaderLoc const shaderProgram = rhi::ShaderAsset::LinkShader(vertSource, geoSource, fragSource, api);
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
+	rhi::T_ShaderLoc const shaderProgram = rhi::ShaderAsset::LinkShader(vertSource, geoSource, fragSource, device);
 
 	// Create shader data
 	SetData(new rhi::ShaderData(shaderProgram));
@@ -65,7 +65,7 @@ bool EditableShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 
 	// Extract uniform info
 	//------------------
-	api->SetShader(shaderData);
+	device->SetShader(shaderData);
 	rhi::ShaderAsset::InitUniforms(shaderData);
 	rhi::ShaderAsset::GetAttributes(shaderProgram, shaderData->m_Attributes);
 

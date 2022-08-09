@@ -24,7 +24,7 @@ void DirectionalShadowData::Init(ivec2 const resolution)
 {
 	render::GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	//Calculate cascade distances
 	float distMult = graphicsSettings.CSMDrawDistance / powf(2.f, static_cast<float>(graphicsSettings.NumCascades - 1));
@@ -47,14 +47,14 @@ void DirectionalShadowData::Init(ivec2 const resolution)
 		cascade.texture->SetParameters(params);
 
 		// create render target
-		api->GenFramebuffers(1, &(cascade.fbo));
-		api->BindFramebuffer(cascade.fbo);
-		api->LinkTextureToFboDepth(cascade.texture->GetLocation());
+		device->GenFramebuffers(1, &(cascade.fbo));
+		device->BindFramebuffer(cascade.fbo);
+		device->LinkTextureToFboDepth(cascade.texture->GetLocation());
 		//only depth components
-		api->SetDrawBufferCount(0);
-		api->SetReadBufferEnabled(false);
+		device->SetDrawBufferCount(0);
+		device->SetReadBufferEnabled(false);
 
-		api->BindFramebuffer(0);
+		device->BindFramebuffer(0);
 
 		m_Cascades.push_back(cascade);
 	}
@@ -67,11 +67,11 @@ void DirectionalShadowData::Init(ivec2 const resolution)
 //
 void DirectionalShadowData::Destroy()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	for (CascadeData& cascade : m_Cascades)
 	{
-		api->DeleteFramebuffers(1, &(cascade.fbo));
+		device->DeleteFramebuffers(1, &(cascade.fbo));
 		SafeDelete(cascade.texture);
 	}
 }

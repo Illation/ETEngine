@@ -25,10 +25,10 @@ namespace render {
 //
 DebugRenderer::~DebugRenderer()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->DeleteVertexArray(m_VAO);
-	api->DeleteBuffer(m_VBO);
+	device->DeleteVertexArray(m_VAO);
+	device->DeleteBuffer(m_VBO);
 	m_Lines.clear();
 	m_MetaData.clear();
 }
@@ -38,33 +38,33 @@ DebugRenderer::~DebugRenderer()
 //
 void DebugRenderer::Initialize()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	m_Shader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/DebugRenderer.glsl"));
 
-	api->SetShader(m_Shader.get());
+	device->SetShader(m_Shader.get());
 
 	//Generate buffers and arrays
-	m_VAO = api->CreateVertexArray();
-	m_VBO = api->CreateBuffer();
+	m_VAO = device->CreateVertexArray();
+	m_VBO = device->CreateBuffer();
 
 	//bind
-	api->BindVertexArray(m_VAO);
-	api->BindBuffer(rhi::E_BufferType::Vertex, m_VBO);
+	device->BindVertexArray(m_VAO);
+	device->BindBuffer(rhi::E_BufferType::Vertex, m_VBO);
 
 	//set data and attributes
-	api->SetBufferData(rhi::E_BufferType::Vertex, m_BufferSize, nullptr, rhi::E_UsageHint::Dynamic);
+	device->SetBufferData(rhi::E_BufferType::Vertex, m_BufferSize, nullptr, rhi::E_UsageHint::Dynamic);
 
 	//input layout
-	api->SetVertexAttributeArrayEnabled(0, true);
-	api->SetVertexAttributeArrayEnabled(1, true);
+	device->SetVertexAttributeArrayEnabled(0, true);
+	device->SetVertexAttributeArrayEnabled(1, true);
 
-	api->DefineVertexAttributePointer(0, 3, rhi::E_DataType::Float, false, sizeof(LineVertex), offsetof(LineVertex, pos));
-	api->DefineVertexAttributePointer(1, 4, rhi::E_DataType::Float, false, sizeof(LineVertex), offsetof(LineVertex, col));
+	device->DefineVertexAttributePointer(0, 3, rhi::E_DataType::Float, false, sizeof(LineVertex), offsetof(LineVertex, pos));
+	device->DefineVertexAttributePointer(1, 4, rhi::E_DataType::Float, false, sizeof(LineVertex), offsetof(LineVertex, col));
 
 	//unbind
-	api->BindBuffer(rhi::E_BufferType::Vertex, 0);
-	api->BindVertexArray(0);
+	device->BindBuffer(rhi::E_BufferType::Vertex, 0);
+	device->BindVertexArray(0);
 }
 
 
@@ -248,26 +248,26 @@ void DebugRenderer::Draw(Camera const& camera)
 		return;
 	}
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->SetShader(m_Shader.get());
+	device->SetShader(m_Shader.get());
 	m_Shader->Upload("uViewProj"_hash, camera.GetViewProj());
 
 	UpdateBuffer();
 
-	api->SetBlendEnabled(true);
-	api->SetBlendEquation(rhi::E_BlendEquation::Add);
-	api->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::Zero);
+	device->SetBlendEnabled(true);
+	device->SetBlendEquation(rhi::E_BlendEquation::Add);
+	device->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::Zero);
 
 	for (const auto& meta : m_MetaData)
 	{
-		api->SetLineWidth(meta.thickness);
-		api->DrawArrays(rhi::E_DrawMode::Lines, meta.start, meta.size);
+		device->SetLineWidth(meta.thickness);
+		device->DrawArrays(rhi::E_DrawMode::Lines, meta.start, meta.size);
 	}
 
-	api->BindVertexArray(0);
+	device->BindVertexArray(0);
 
-	api->SetBlendEnabled(false);
+	device->SetBlendEnabled(false);
 
 	m_Lines.clear();
 	m_MetaData.clear();
@@ -278,13 +278,13 @@ void DebugRenderer::Draw(Camera const& camera)
 //
 void DebugRenderer::UpdateBuffer()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	//Bind Object vertex array
-	api->BindVertexArray(m_VAO);
+	device->BindVertexArray(m_VAO);
 
 	//Send the vertex buffer again
-	api->BindBuffer(rhi::E_BufferType::Vertex, m_VBO);
+	device->BindBuffer(rhi::E_BufferType::Vertex, m_VBO);
 
 	bool bufferResize = m_Lines.size() * sizeof(LineVertex) > m_BufferSize;
 	if (!m_VBO || bufferResize) //first creation or resize
@@ -294,17 +294,17 @@ void DebugRenderer::UpdateBuffer()
 			m_BufferSize = (uint32)m_Lines.size() * sizeof(LineVertex);
 		}
 
-		api->SetBufferData(rhi::E_BufferType::Vertex, m_BufferSize, m_Lines.data(), rhi::E_UsageHint::Dynamic);
+		device->SetBufferData(rhi::E_BufferType::Vertex, m_BufferSize, m_Lines.data(), rhi::E_UsageHint::Dynamic);
 	}
 	else
 	{
-		void* p = api->MapBuffer(rhi::E_BufferType::Vertex, rhi::E_AccessMode::Write);
+		void* p = device->MapBuffer(rhi::E_BufferType::Vertex, rhi::E_AccessMode::Write);
 		memcpy(p, m_Lines.data(), sizeof(LineVertex)*m_Lines.size());
-		api->UnmapBuffer(rhi::E_BufferType::Vertex);
+		device->UnmapBuffer(rhi::E_BufferType::Vertex);
 	}
 
 
-	api->BindBuffer(rhi::E_BufferType::Vertex, 0);
+	device->BindBuffer(rhi::E_BufferType::Vertex, 0);
 }
 
 //------------------------------

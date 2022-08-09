@@ -1,14 +1,14 @@
 #include <map>
 
-#include "GraphicsContextApi.h"
+#include "RenderDeviceInterface.h"
 
-#ifndef GL_CONTEXT_CLASSNAME
-#error you must declare the name of the class with #define GL_CONTEXT_CLASSNAME YourGlImplementationClassName
-#endif GL_CONTEXT_CLASSNAME
+#ifndef GL_DEVICE_CLASSNAME
+#error you must declare the name of the class with #define GL_DEVICE_CLASSNAME YourGlImplementationClassName
+#endif GL_DEVICE_CLASSNAME
 
-#ifndef GL_CONTEXT_NS
-#	define GL_CONTEXT_NS GL_CONTEXT_CLASSNAME ## _ns
-#endif GL_CONTEXT_NS
+#ifndef GL_DEVICE_NS
+#	define GL_DEVICE_NS GL_DEVICE_CLASSNAME ## _ns
+#endif GL_DEVICE_NS
 
 
 namespace et {
@@ -19,11 +19,11 @@ namespace rhi {
 
 
 //---------------------------------
-// GL_CONTEXT_NS
+// GL_DEVICE_NS
 //
 // conversion functions
 //
-namespace GL_CONTEXT_NS {
+namespace GL_DEVICE_NS {
 
 	GLenum ConvTextureType(E_TextureType const type);
 	GLenum ConvDataType(E_DataType const type);
@@ -47,7 +47,7 @@ namespace GL_CONTEXT_NS {
 
 	E_ParamType ParseParamType(GLenum const param);
 
-} // namespace GL_CONTEXT_NS
+} // namespace GL_DEVICE_NS
 
 
 //---------------------------------
@@ -55,7 +55,7 @@ namespace GL_CONTEXT_NS {
 //
 // Wrapper for all graphics API calls, avoids resubmitting api calls by caching some of the state CPU side
 //
-class GL_CONTEXT_CLASSNAME final : public I_GraphicsContextApi
+class GL_DEVICE_CLASSNAME final : public I_RenderDevice
 {
 	// definitions
 	//-------------
@@ -109,8 +109,8 @@ public:
 
 	// init deinit
 	//--------------
-	GL_CONTEXT_CLASSNAME() : I_GraphicsContextApi() {}
-	~GL_CONTEXT_CLASSNAME();
+	GL_DEVICE_CLASSNAME() : I_RenderDevice() {}
+	~GL_DEVICE_CLASSNAME();
 
 	//===============================
 	// Interface implementation

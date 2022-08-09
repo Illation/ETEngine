@@ -36,56 +36,56 @@ StarField::StarField(core::HashString const assetId)
 		}
 	}
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	m_pShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdStarField.glsl"));
 	m_pSprite = core::ResourceManager::Instance()->GetAssetData<rhi::TextureData>(core::HashString("Textures/starSprite.png"));
 
 	//Generate buffers and arrays
-	m_VAO = api->CreateVertexArray();
-	m_VBO = api->CreateBuffer();
+	m_VAO = device->CreateVertexArray();
+	m_VBO = device->CreateBuffer();
 
 	//bind
-	api->BindVertexArray(m_VAO);
-	api->BindBuffer(rhi::E_BufferType::Vertex, m_VBO);
+	device->BindVertexArray(m_VAO);
+	device->BindBuffer(rhi::E_BufferType::Vertex, m_VBO);
 
 	//set data and attributes
-	api->SetBufferData(rhi::E_BufferType::Vertex, m_Stars.size() * sizeof(vec4), m_Stars.data(), rhi::E_UsageHint::Dynamic);
+	device->SetBufferData(rhi::E_BufferType::Vertex, m_Stars.size() * sizeof(vec4), m_Stars.data(), rhi::E_UsageHint::Dynamic);
 
-	api->SetVertexAttributeArrayEnabled(0, true);
-	api->DefineVertexAttributePointer(0, 4, rhi::E_DataType::Float, false, sizeof(vec4), 0);
+	device->SetVertexAttributeArrayEnabled(0, true);
+	device->DefineVertexAttributePointer(0, 4, rhi::E_DataType::Float, false, sizeof(vec4), 0);
 
 	//unbind
-	api->BindBuffer(rhi::E_BufferType::Vertex, 0);
-	api->BindVertexArray(0);
+	device->BindBuffer(rhi::E_BufferType::Vertex, 0);
+	device->BindVertexArray(0);
 }
 
 StarField::~StarField()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->DeleteVertexArray(m_VAO);
-	api->DeleteBuffer(m_VBO);
+	device->DeleteVertexArray(m_VAO);
+	device->DeleteBuffer(m_VBO);
 }
 
 void StarField::Draw(Camera const& cam) const
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->SetBlendEnabled(true);
-	api->SetBlendEquation(rhi::E_BlendEquation::Add);
-	api->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::Zero);
+	device->SetBlendEnabled(true);
+	device->SetBlendEquation(rhi::E_BlendEquation::Add);
+	device->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::Zero);
 
-	api->BindVertexArray(m_VAO);
-	api->SetShader(m_pShader.get());
+	device->BindVertexArray(m_VAO);
+	device->SetShader(m_pShader.get());
 	m_pShader->Upload("uTexture"_hash, m_pSprite.get());
 	m_pShader->Upload("uRadius"_hash, m_Radius);
 	m_pShader->Upload("uBaseFlux"_hash, m_BaseFlux);
 	m_pShader->Upload("uBaseMag"_hash, m_BaseMag);
 	m_pShader->Upload("uAspectRatio"_hash, rhi::Viewport::GetCurrentViewport()->GetAspectRatio());
-	api->DrawArrays(rhi::E_DrawMode::Points, 0, m_DrawnStars);
-	api->BindVertexArray(0);
-	api->SetBlendEnabled(false);
+	device->DrawArrays(rhi::E_DrawMode::Points, 0, m_DrawnStars);
+	device->BindVertexArray(0);
+	device->SetBlendEnabled(false);
 }
 
 

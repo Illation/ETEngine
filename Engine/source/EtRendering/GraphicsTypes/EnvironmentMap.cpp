@@ -160,18 +160,18 @@ bool EnvironmentMapAsset::LoadFromMemory(std::vector<uint8> const& data)
 //
 rhi::TextureData* EquirectangularToCubeMap(rhi::TextureData const* const equiTexture, int32 const resolution)
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	//Create framebuffer
 	rhi::T_FbLoc captureFBO;
 	rhi::T_RbLoc captureRBO;
-	api->GenFramebuffers(1, &captureFBO);
-	api->GenRenderBuffers(1, &captureRBO);
+	device->GenFramebuffers(1, &captureFBO);
+	device->GenRenderBuffers(1, &captureRBO);
 
-	api->BindFramebuffer(captureFBO);
-	api->BindRenderbuffer(captureRBO);
-	api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(resolution));
-	api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, captureRBO);
+	device->BindFramebuffer(captureFBO);
+	device->BindRenderbuffer(captureRBO);
+	device->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(resolution));
+	device->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, captureRBO);
 
 	//Preallocate memory for cubemap
 	rhi::TextureData* const envCubeMap = new rhi::TextureData(rhi::E_TextureType::CubeMap, rhi::E_ColorFormat::RGB16f, ivec2(resolution));
@@ -189,7 +189,7 @@ rhi::TextureData* EquirectangularToCubeMap(rhi::TextureData const* const equiTex
 	AssetPtr<rhi::ShaderData> equiCubeShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdEquiCubeShader.glsl"));
 
 	// convert HDR equirectangular environment map to cubemap equivalent
-	api->SetShader(equiCubeShader.get());
+	device->SetShader(equiCubeShader.get());
 	equiCubeShader->Upload("equirectangularMap"_hash, equiTexture);
 	equiCubeShader->Upload("projection"_hash, CubeCaptureProjection());
 
@@ -197,31 +197,31 @@ rhi::TextureData* EquirectangularToCubeMap(rhi::TextureData const* const equiTex
 	//***************
 
 	ivec2 pos, size;
-	api->GetViewport(pos, size);
+	device->GetViewport(pos, size);
 
-	api->SetViewport(ivec2(0), ivec2(resolution));
-	api->BindFramebuffer(captureFBO);
+	device->SetViewport(ivec2(0), ivec2(resolution));
+	device->BindFramebuffer(captureFBO);
 	for (uint8 face = 0; face < 6; ++face)
 	{
 		equiCubeShader->Upload("view"_hash, captureViews[face]);
-		api->LinkCubeMapFaceToFbo2D(face, envCubeMap->GetLocation(), 0);
-		api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
+		device->LinkCubeMapFaceToFbo2D(face, envCubeMap->GetLocation(), 0);
+		device->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
 
 		rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Cube>();
 	}
-	api->BindFramebuffer(0);
+	device->BindFramebuffer(0);
 
 	params.genMipMaps = true;
 	envCubeMap->SetParameters(params);
 	envCubeMap->GenerateMipMaps();
 
-	api->UnbindTexture(equiTexture->GetTargetType(), equiTexture->GetLocation());
-	api->UnbindTexture(envCubeMap->GetTargetType(), envCubeMap->GetLocation());
+	device->UnbindTexture(equiTexture->GetTargetType(), equiTexture->GetLocation());
+	device->UnbindTexture(envCubeMap->GetTargetType(), envCubeMap->GetLocation());
 
-	api->SetViewport(pos, size);
+	device->SetViewport(pos, size);
 
-	api->DeleteRenderBuffers(1, &captureRBO);
-	api->DeleteFramebuffers(1, &captureFBO);
+	device->DeleteRenderBuffers(1, &captureRBO);
+	device->DeleteFramebuffers(1, &captureFBO);
 
 	return envCubeMap;
 }

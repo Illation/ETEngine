@@ -99,7 +99,7 @@ public:
 	static std::string const s_FragExtension;
 
 	static T_ShaderLoc CompileShader(std::string const& shaderSourceStr, E_ShaderType const type);
-	static T_ShaderLoc LinkShader(std::string const& vert, std::string const& geo, std::string const& frag, I_GraphicsContextApi* const api);
+	static T_ShaderLoc LinkShader(std::string const& vert, std::string const& geo, std::string const& frag, I_RenderDevice* const device);
 	static void InitUniforms(ShaderData* const data);
 	static void GetAttributes(T_ShaderLoc const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes);
 

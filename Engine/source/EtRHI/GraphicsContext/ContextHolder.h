@@ -17,7 +17,7 @@ public:
 	// static access
 	//---------------
 	static ContextHolder& Instance();
-	static I_GraphicsContextApi* GetRenderContext();
+	static I_RenderDevice* GetRenderDevice();
 
 	// accessors
 	//-----------
@@ -25,7 +25,7 @@ public:
 
 	// functionality
 	//---------------
-	void CreateMainRenderContext(RenderWindow* const window);
+	void CreateMainRenderContext(Ptr<RenderWindow> const window);
 
 	// window interface
 	//------------------

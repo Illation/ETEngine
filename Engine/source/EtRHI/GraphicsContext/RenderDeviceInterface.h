@@ -16,18 +16,18 @@ class TextureData;
 
 
 //---------------------------------
-// I_GraphicsContextApi
+// I_RenderDevice
 //
 // Interface for any graphics API wrapper
 //
-class I_GraphicsContextApi
+class I_RenderDevice
 {
 public:
 
 	// init deinit
 	//--------------
-	I_GraphicsContextApi() = default;
-	virtual ~I_GraphicsContextApi() = default;
+	I_RenderDevice() = default;
+	virtual ~I_RenderDevice() = default;
 
 	virtual void Initialize(ivec2 const dimensions) = 0;
 

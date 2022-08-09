@@ -7,6 +7,6 @@
 //
 // Implements an openGL graphics context with a GLAD include
 //
-#define GL_CONTEXT_CLASSNAME GladGlContext
-#include <EtRHI/GraphicsContext/GlContextImpl.h>
+#define GL_DEVICE_CLASSNAME GladGlDevice
+#include <EtRHI/GraphicsContext/RenderDevice_OpenGL.h>
 

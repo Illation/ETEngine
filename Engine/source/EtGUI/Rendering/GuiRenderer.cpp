@@ -50,34 +50,34 @@ void GuiRenderer::Deinit()
 //
 void GuiRenderer::RenderContext(rhi::T_FbLoc const targetFb, ContextRenderTarget& renderTarget, Context& context, rhi::E_PolygonMode const polyMode)
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->DebugPushGroup("RmlUi Overlays");
+	device->DebugPushGroup("RmlUi Overlays");
 
-	SetupContextRendering(api, renderTarget);
+	SetupContextRendering(device, renderTarget);
 
-	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, polyMode);
+	device->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, polyMode);
 
 	// render context elements
-	api->DebugPushGroup("Overlay Context");
+	device->DebugPushGroup("Overlay Context");
 	context.Render();
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 
-	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, rhi::E_PolygonMode::Fill);
+	device->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, rhi::E_PolygonMode::Fill);
 
 	// blit results to target framebuffer 
-	api->BindFramebuffer(targetFb);
-	api->SetBlendFunction(rhi::E_BlendFactor::SourceAlpha, rhi::E_BlendFactor::OneMinusSourceAlpha);
+	device->BindFramebuffer(targetFb);
+	device->SetBlendFunction(rhi::E_BlendFactor::SourceAlpha, rhi::E_BlendFactor::OneMinusSourceAlpha);
 
-	api->SetViewport(ivec2(0), rhi::Viewport::GetCurrentViewport()->GetDimensions());
+	device->SetViewport(ivec2(0), rhi::Viewport::GetCurrentViewport()->GetDimensions());
 
-	api->SetShader(m_RmlBlitShader.get());
+	device->SetShader(m_RmlBlitShader.get());
 	m_RmlBlitShader->Upload("uTexture"_hash, renderTarget.GetTexture());
 	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 
 	// reset pipeline state
-	api->SetBlendEnabled(false);
-	api->DebugPopGroup();
+	device->SetBlendEnabled(false);
+	device->DebugPopGroup();
 }
 
 //----------------------------------
@@ -98,38 +98,38 @@ void GuiRenderer::RenderWorldContext(rhi::T_FbLoc const targetFb,
 		return;
 	}
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->DebugPushGroup("RmlUi 3D Context");
+	device->DebugPushGroup("RmlUi 3D Context");
 
-	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, polyMode);
+	device->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, polyMode);
 
-	SetupContextRendering(api, renderTarget);
+	SetupContextRendering(device, renderTarget);
 
-	api->DebugPushGroup("Context elements");
+	device->DebugPushGroup("Context elements");
 	context.Render();
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 
-	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, rhi::E_PolygonMode::Fill);
+	device->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, rhi::E_PolygonMode::Fill);
 
 	// blit results to target framebuffer 
-	api->BindFramebuffer(targetFb);
-	api->SetBlendFunction(rhi::E_BlendFactor::SourceAlpha, rhi::E_BlendFactor::OneMinusSourceAlpha);
+	device->BindFramebuffer(targetFb);
+	device->SetBlendFunction(rhi::E_BlendFactor::SourceAlpha, rhi::E_BlendFactor::OneMinusSourceAlpha);
 
-	api->SetDepthEnabled(enableDepth);
-	api->SetViewport(ivec2(0), rhi::Viewport::GetCurrentViewport()->GetDimensions());
+	device->SetDepthEnabled(enableDepth);
+	device->SetViewport(ivec2(0), rhi::Viewport::GetCurrentViewport()->GetDimensions());
 
-	api->SetShader(m_RmlBlit3DShader.get());
+	device->SetShader(m_RmlBlit3DShader.get());
 	m_RmlBlit3DShader->Upload("uTexture"_hash, renderTarget.GetTexture());
 	m_RmlBlit3DShader->Upload("uTransform"_hash, transform);
 	m_RmlBlit3DShader->Upload("uColor"_hash, color);
 	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 
 	// reset pipeline state
-	api->SetBlendEnabled(false);
-	api->SetDepthEnabled(false);
+	device->SetBlendEnabled(false);
+	device->SetDepthEnabled(false);
 
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 }
 
 //------------------------------------
@@ -137,15 +137,15 @@ void GuiRenderer::RenderWorldContext(rhi::T_FbLoc const targetFb,
 //
 // Prepare device for rendering UI contexts
 //
-void GuiRenderer::SetupContextRendering(rhi::I_GraphicsContextApi* const api, ContextRenderTarget &renderTarget)
+void GuiRenderer::SetupContextRendering(rhi::I_RenderDevice* const device, ContextRenderTarget &renderTarget)
 {
-	RmlGlobal::GetInstance()->SetGraphicsContext(ToPtr(api));
+	RmlGlobal::GetInstance()->SetRenderDevice(ToPtr(device));
 
 	// Set target framebuffer
-	api->BindFramebuffer(renderTarget.GetFramebuffer());
+	device->BindFramebuffer(renderTarget.GetFramebuffer());
 
-	api->SetClearColor(vec4(0.f));
-	api->Clear(rhi::E_ClearFlag::CF_Color);
+	device->SetClearColor(vec4(0.f));
+	device->Clear(rhi::E_ClearFlag::CF_Color);
 
 	// view projection matrix
 	ivec2 const iViewDim = renderTarget.GetDimensions();
@@ -154,22 +154,22 @@ void GuiRenderer::SetupContextRendering(rhi::I_GraphicsContextApi* const api, Co
 	RmlGlobal::GetInstance()->SetRIView(iViewDim, viewProjection);
 
 	// set shaders
-	api->SetShader(m_RmlSdfShader.get());
+	device->SetShader(m_RmlSdfShader.get());
 	m_RmlSdfShader->Upload("uViewProjection"_hash, viewProjection);
 
-	api->SetShader(m_GenericShader.get());
+	device->SetShader(m_GenericShader.get());
 	m_GenericShader->Upload("uViewProjection"_hash, viewProjection);
 
 	RmlGlobal::GetInstance()->SetRIShader(m_GenericShader, m_RmlSdfShader);
 
 	// pipeline state
-	api->SetViewport(ivec2(0), iViewDim);
-	api->SetBlendEnabled(true);
-	api->SetBlendEquation(rhi::E_BlendEquation::Add);
-	api->SetBlendFunctionSeparate(rhi::E_BlendFactor::SourceAlpha, rhi::E_BlendFactor::One, // alpha channel always adds preventing gaps in the fb
+	device->SetViewport(ivec2(0), iViewDim);
+	device->SetBlendEnabled(true);
+	device->SetBlendEquation(rhi::E_BlendEquation::Add);
+	device->SetBlendFunctionSeparate(rhi::E_BlendFactor::SourceAlpha, rhi::E_BlendFactor::One, // alpha channel always adds preventing gaps in the fb
 		rhi::E_BlendFactor::OneMinusSourceAlpha, rhi::E_BlendFactor::One);
-	api->SetCullEnabled(false);
-	api->SetDepthEnabled(false);
+	device->SetCullEnabled(false);
+	device->SetDepthEnabled(false);
 }
 
 

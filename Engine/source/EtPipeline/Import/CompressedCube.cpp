@@ -85,8 +85,8 @@ void CompressedCube::CompressFromTexture(rhi::TextureData const& cubeMap,
 
 	// read pixels from GPU
 	uint8* const cubePixels = new uint8[faceSize * rhi::TextureData::s_NumCubeFaces];
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
-	api->GetTextureData(cubeMap, mipLevel, rhi::E_ColorFormat::RGBA, rhi::E_DataType::Half, reinterpret_cast<void*>(cubePixels));
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
+	device->GetTextureData(cubeMap, mipLevel, rhi::E_ColorFormat::RGBA, rhi::E_DataType::Half, reinterpret_cast<void*>(cubePixels));
 
 	for (uint8 faceIdx = 0u; faceIdx < rhi::TextureData::s_NumCubeFaces; ++faceIdx)
 	{

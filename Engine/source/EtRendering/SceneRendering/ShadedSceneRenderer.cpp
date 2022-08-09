@@ -132,7 +132,7 @@ void ShadedSceneRenderer::OnResize(ivec2 const dim)
 //
 void ShadedSceneRenderer::OnRender(rhi::T_FbLoc const targetFb)
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	// Global variables for all rendering systems
 	//********************************************
@@ -141,10 +141,10 @@ void ShadedSceneRenderer::OnRender(rhi::T_FbLoc const targetFb)
 
 	//Shadow Mapping
 	//**************
-	api->DebugPushGroup("shadow map generation");
+	device->DebugPushGroup("shadow map generation");
 
-	api->SetDepthEnabled(true);
-	api->SetCullEnabled(true);
+	device->SetDepthEnabled(true);
+	device->SetCullEnabled(true);
 
 	auto lightIt = m_RenderScene->GetDirectionalLightsShaded().begin();
 	auto shadowIt = m_RenderScene->GetDirectionalShadowData().begin();
@@ -157,29 +157,29 @@ void ShadedSceneRenderer::OnRender(rhi::T_FbLoc const targetFb)
 		shadowIt++;
 	}
 
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 
 	//Deferred Rendering
 	//******************
-	api->DebugPushGroup("deferred render pass");
+	device->DebugPushGroup("deferred render pass");
 	//Step one: Draw the data onto gBuffer
 	m_GBuffer.Enable();
 
 	//reset viewport
-	api->SetViewport(ivec2(0), m_Dimensions);
+	device->SetViewport(ivec2(0), m_Dimensions);
 
-	api->DebugPushGroup("clear previous pass");
-	api->SetClearColor(vec4(m_ClearColor, 1.f));
-	api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
-	api->DebugPopGroup();
+	device->DebugPushGroup("clear previous pass");
+	device->SetClearColor(vec4(m_ClearColor, 1.f));
+	device->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
+	device->DebugPopGroup();
 
 	// fill mode
 	rhi::E_PolygonMode const polyMode = Get3DPolyMode();
-	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, polyMode);
+	device->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, polyMode);
 
 	// draw terrains
-	api->DebugPushGroup("terrains");
-	api->SetCullEnabled(false);
+	device->DebugPushGroup("terrains");
+	device->SetCullEnabled(false);
 	Patch& patch = RenderingSystems::Instance()->GetPatch();
 	for (Planet& planet : m_RenderScene->GetTerrains())
 	{
@@ -193,51 +193,51 @@ void ShadedSceneRenderer::OnRender(rhi::T_FbLoc const targetFb)
 		patch.UploadDistanceLUT(planet.GetTriangulator().GetDistanceLUT());
 		patch.Draw(planet, m_RenderScene->GetNodes()[planet.GetNodeId()]);
 	}
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 
 	// render opaque objects to GBuffer
-	api->DebugPushGroup("opaque objects");
-	api->SetCullEnabled(true);
+	device->DebugPushGroup("opaque objects");
+	device->SetCullEnabled(true);
 	DrawMaterialCollectionGroup(m_RenderScene->GetOpaqueRenderables());
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 
-	api->DebugPushGroup("extensions");
+	device->DebugPushGroup("extensions");
 	m_Events.Notify(E_RenderEvent::RE_RenderDeferred, new RenderEventData(this, m_GBuffer.Get()));
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 
-	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, rhi::E_PolygonMode::Fill);
+	device->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, rhi::E_PolygonMode::Fill);
 
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 
-	api->DebugPushGroup("lighting pass");
+	device->DebugPushGroup("lighting pass");
 	// render ambient IBL
-	api->DebugPushGroup("image based lighting");
-	api->SetFaceCullingMode(rhi::E_FaceCullMode::Back);
-	api->SetCullEnabled(false);
+	device->DebugPushGroup("image based lighting");
+	device->SetFaceCullingMode(rhi::E_FaceCullMode::Back);
+	device->SetCullEnabled(false);
 
 	m_SSR.EnableInput();
 	m_GBuffer.Draw();
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 
 	//copy Z-Buffer from gBuffer
-	api->DebugPushGroup("blit");
-	api->BindReadFramebuffer(m_GBuffer.Get());
-	api->BindDrawFramebuffer(m_SSR.GetTargetFBO());
-	api->CopyDepthReadToDrawFbo(m_Dimensions, m_Dimensions);
-	api->DebugPopGroup();
+	device->DebugPushGroup("blit");
+	device->BindReadFramebuffer(m_GBuffer.Get());
+	device->BindDrawFramebuffer(m_SSR.GetTargetFBO());
+	device->CopyDepthReadToDrawFbo(m_Dimensions, m_Dimensions);
+	device->DebugPopGroup();
 
 	// Render Light Volumes
-	api->DebugPushGroup("light volumes");
-	api->SetDepthEnabled(false);
-	api->SetBlendEnabled(true);
-	api->SetBlendEquation(rhi::E_BlendEquation::Add);
-	api->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::One);
+	device->DebugPushGroup("light volumes");
+	device->SetDepthEnabled(false);
+	device->SetBlendEnabled(true);
+	device->SetBlendEquation(rhi::E_BlendEquation::Add);
+	device->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::One);
 
-	api->SetCullEnabled(true);
-	api->SetFaceCullingMode(rhi::E_FaceCullMode::Front);
+	device->SetCullEnabled(true);
+	device->SetFaceCullingMode(rhi::E_FaceCullMode::Front);
 
 	// pointlights
-	api->DebugPushGroup("point lights");
+	device->DebugPushGroup("point lights");
 	for (Light const& pointLight : m_RenderScene->GetPointLights())
 	{
 		mat4 const& transform = m_RenderScene->GetNodes()[pointLight.m_NodeId];
@@ -246,20 +246,20 @@ void ShadedSceneRenderer::OnRender(rhi::T_FbLoc const targetFb)
 
 		RenderingSystems::Instance()->GetPointLightVolume().Draw(pos, scale, pointLight.m_Color);
 	}
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 	
 	// direct
-	api->DebugPushGroup("directional lights");
+	device->DebugPushGroup("directional lights");
 	for (Light const& dirLight : m_RenderScene->GetDirectionalLights())
 	{
 		mat4 const& transform = m_RenderScene->GetNodes()[dirLight.m_NodeId];
 		vec3 const dir = (transform * vec4(vec3::FORWARD, 1.f)).xyz;
 		RenderingSystems::Instance()->GetDirectLightVolume().Draw(dir, dirLight.m_Color);
 	}
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 
 	// direct with shadow
-	api->DebugPushGroup("directional lights shadowed");
+	device->DebugPushGroup("directional lights shadowed");
 	lightIt = m_RenderScene->GetDirectionalLightsShaded().begin();
 	shadowIt = m_RenderScene->GetDirectionalShadowData().begin();
 	while ((lightIt != m_RenderScene->GetDirectionalLightsShaded().end()) && (shadowIt != m_RenderScene->GetDirectionalShadowData().end()))
@@ -275,87 +275,87 @@ void ShadedSceneRenderer::OnRender(rhi::T_FbLoc const targetFb)
 		lightIt++;
 		shadowIt++;
 	}
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 
-	api->SetFaceCullingMode(rhi::E_FaceCullMode::Back);
-	api->SetBlendEnabled(false);
+	device->SetFaceCullingMode(rhi::E_FaceCullMode::Back);
+	device->SetBlendEnabled(false);
 
-	api->SetCullEnabled(false);
-	api->DebugPopGroup(); // light volumes
+	device->SetCullEnabled(false);
+	device->DebugPopGroup(); // light volumes
 
-	api->DebugPushGroup("extensions");
+	device->DebugPushGroup("extensions");
 	m_Events.Notify(E_RenderEvent::RE_RenderLights, new RenderEventData(this, m_SSR.GetTargetFBO()));
-	api->DebugPopGroup(); 
+	device->DebugPopGroup(); 
 
 	// draw SSR
-	api->DebugPushGroup("reflections");
+	device->DebugPushGroup("reflections");
 	m_PostProcessing.EnableInput();
 	m_SSR.Draw();
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 	// copy depth again
-	api->DebugPushGroup("blit");
-	api->BindReadFramebuffer(m_SSR.GetTargetFBO());
-	api->BindDrawFramebuffer(m_PostProcessing.GetTargetFBO());
-	api->CopyDepthReadToDrawFbo(m_Dimensions, m_Dimensions);
-	api->DebugPopGroup();
+	device->DebugPushGroup("blit");
+	device->BindReadFramebuffer(m_SSR.GetTargetFBO());
+	device->BindDrawFramebuffer(m_PostProcessing.GetTargetFBO());
+	device->CopyDepthReadToDrawFbo(m_Dimensions, m_Dimensions);
+	device->DebugPopGroup();
 
-	api->DebugPopGroup(); // lighting
+	device->DebugPopGroup(); // lighting
 
 	//Forward Rendering
 	//******************
-	api->DebugPushGroup("forward render pass");
-	api->SetDepthEnabled(true);
+	device->DebugPushGroup("forward render pass");
+	device->SetDepthEnabled(true);
 
-	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, polyMode);
+	device->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, polyMode);
 
 	// draw skybox
-	api->DebugPushGroup("skybox");
+	device->DebugPushGroup("skybox");
 	Skybox const& skybox = m_RenderScene->GetSkybox();
 	if (skybox.m_EnvironmentMap != nullptr)
 	{
-		api->SetShader(m_SkyboxShader.get());
+		device->SetShader(m_SkyboxShader.get());
 		m_SkyboxShader->Upload("skybox"_hash, skybox.m_EnvironmentMap->GetRadiance());
 
 		m_SkyboxShader->Upload("numMipMaps"_hash, skybox.m_EnvironmentMap->GetNumMipMaps());
 		m_SkyboxShader->Upload("roughness"_hash, skybox.m_Roughness);
 
-		api->SetDepthFunction(rhi::E_DepthFunc::LEqual);
+		device->SetDepthFunction(rhi::E_DepthFunc::LEqual);
 		rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Cube>();
 	}
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 
 	// draw stars
-	api->DebugPushGroup("stars");
+	device->DebugPushGroup("stars");
 	StarField const* const starfield = m_RenderScene->GetStarfield();
 	if (starfield != nullptr)
 	{
 		starfield->Draw(camera);
 	}
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 
 	// forward rendering
-	api->DebugPushGroup("forward renderables");
-	api->SetCullEnabled(true);
+	device->DebugPushGroup("forward renderables");
+	device->SetCullEnabled(true);
 	DrawMaterialCollectionGroup(m_RenderScene->GetForwardRenderables());
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 
-	api->DebugPushGroup("extensions");
+	device->DebugPushGroup("extensions");
 	m_Events.Notify(E_RenderEvent::RE_RenderForward, new RenderEventData(this, m_PostProcessing.GetTargetFBO()));
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 	
 	// draw atmospheres
-	api->DebugPushGroup("atmospheres");
+	device->DebugPushGroup("atmospheres");
 	if ((m_RenderScene->GetAtmosphereInstances().size() > 0u)
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 		&& !RenderingSystems::Instance()->GetDebugVars().AtmospheresHidden()
 #endif
 		)
 	{
-		api->SetFaceCullingMode(rhi::E_FaceCullMode::Front);
-		api->SetDepthEnabled(false);
-		api->SetBlendEnabled(true);
-		api->SetBlendEquation(rhi::E_BlendEquation::Add);
-		api->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::One);
+		device->SetFaceCullingMode(rhi::E_FaceCullMode::Front);
+		device->SetDepthEnabled(false);
+		device->SetBlendEnabled(true);
+		device->SetBlendEquation(rhi::E_BlendEquation::Add);
+		device->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::One);
 
 		for (AtmosphereInstance const& atmoInst : m_RenderScene->GetAtmosphereInstances())
 		{
@@ -368,44 +368,44 @@ void ShadedSceneRenderer::OnRender(rhi::T_FbLoc const targetFb)
 			m_RenderScene->GetAtmosphere(atmoInst.atmosphereId).Draw(pos, atmoInst.height, atmoInst.groundRadius, sunDir);
 		}
 
-		api->SetFaceCullingMode(rhi::E_FaceCullMode::Back);
-		api->SetBlendEnabled(false);
-		api->SetDepthEnabled(true);
+		device->SetFaceCullingMode(rhi::E_FaceCullMode::Back);
+		device->SetBlendEnabled(false);
+		device->SetDepthEnabled(true);
 	}
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 
-	api->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, rhi::E_PolygonMode::Fill);
+	device->SetPolygonMode(rhi::E_FaceCullMode::FrontBack, rhi::E_PolygonMode::Fill);
 
-	api->DebugPopGroup(); // forward render pass
+	device->DebugPopGroup(); // forward render pass
 
 	// Post Scene rendering
-	api->DebugPushGroup("post processing pass");
+	device->DebugPushGroup("post processing pass");
 
-	api->DebugPushGroup("extensions");
+	device->DebugPushGroup("extensions");
 	m_Events.Notify(E_RenderEvent::RE_RenderWorldGUI, new RenderEventData(this, m_PostProcessing.GetTargetFBO()));
-	api->DebugPopGroup(); // extensions
+	device->DebugPopGroup(); // extensions
 
 	// debug stuff
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
-	api->DebugPushGroup("debug");
+	device->DebugPushGroup("debug");
 
 	DrawDebugVisualizations();
 	m_DebugRenderer.Draw(camera);
 
-	api->DebugPopGroup(); // debug
+	device->DebugPopGroup(); // debug
 #endif
 
 	// post processing
-	api->SetCullEnabled(false);
+	device->SetCullEnabled(false);
 	m_PostProcessing.Draw(targetFb, GetPostProcessingSettings(), 
-		std::function<void(rhi::T_FbLoc const)>([this, api](rhi::T_FbLoc const targetFb)
+		std::function<void(rhi::T_FbLoc const)>([this, device](rhi::T_FbLoc const targetFb)
 		{
-			api->DebugPushGroup("overlay extensions");
+			device->DebugPushGroup("overlay extensions");
 			m_Events.Notify(E_RenderEvent::RE_RenderOverlay, new RenderEventData(this, targetFb));
-			api->DebugPopGroup(); // overlay extensions
+			device->DebugPopGroup(); // overlay extensions
 		}));
 
-	api->DebugPopGroup(); // post processing pass
+	device->DebugPopGroup(); // post processing pass
 }
 
 //--------------------------------
@@ -423,12 +423,12 @@ Camera const& ShadedSceneRenderer::GetCamera() const
 //
 void ShadedSceneRenderer::DrawShadow(I_Material const* const nullMaterial)
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	// No need to set shaders or upload material parameters as that is the calling functions responsibility
 	for (MaterialCollection::Mesh const& mesh : m_RenderScene->GetShadowCasters().m_Meshes)
 	{
-		api->BindVertexArray(mesh.m_VAO);
+		device->BindVertexArray(mesh.m_VAO);
 		for (T_NodeId const node : mesh.m_Instances)
 		{
 			// #todo: collect a list of transforms and draw this instanced
@@ -439,7 +439,7 @@ void ShadedSceneRenderer::DrawShadow(I_Material const* const nullMaterial)
 			if (true) // #todo: light frustum check
 			{
 				nullMaterial->GetBaseMaterial()->GetShader()->Upload("model"_hash, transform);
-				api->DrawElements(rhi::E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
+				device->DrawElements(rhi::E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
 			}
 		}
 	}
@@ -490,13 +490,13 @@ PostProcessingSettings const& ShadedSceneRenderer::GetPostProcessingSettings()
 //
 void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCollection> const& collectionGroup)
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	Camera const& camera = GetCamera();
 
 	for (MaterialCollection const& collection : collectionGroup)
 	{
-		api->SetShader(collection.m_Shader.get());
+		device->SetShader(collection.m_Shader.get());
 		for (MaterialCollection::MaterialInstance const& material : collection.m_Materials)
 		{
 			ET_ASSERT(collection.m_Shader.get() == material.m_Material->GetBaseMaterial()->GetShader());
@@ -504,7 +504,7 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 			collection.m_Shader->UploadParameterBlock(material.m_Material->GetParameters());
 			for (MaterialCollection::Mesh const& mesh : material.m_Meshes)
 			{
-				api->BindVertexArray(mesh.m_VAO);
+				device->BindVertexArray(mesh.m_VAO);
 				for (T_NodeId const node : mesh.m_Instances)
 				{
 					// #todo: collect a list of transforms and draw this instanced
@@ -515,7 +515,7 @@ void ShadedSceneRenderer::DrawMaterialCollectionGroup(core::slot_map<MaterialCol
 					if (camera.GetFrustum().ContainsSphere(instSphere) != VolumeCheck::OUTSIDE)
 					{
 						collection.m_Shader->Upload("model"_hash, transform);
-						api->DrawElements(rhi::E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
+						device->DrawElements(rhi::E_DrawMode::Triangles, mesh.m_IndexCount, mesh.m_IndexDataType, 0);
 					}
 				}
 			}

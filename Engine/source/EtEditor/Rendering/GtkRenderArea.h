@@ -41,7 +41,7 @@ class GtkRenderArea : public rhi::I_RenderArea
 	// construct destruct
 	//-------------------
 public:
-	GtkRenderArea(SingleContextGlArea* const glArea);
+	GtkRenderArea(Ptr<SingleContextGlArea> const glArea);
 	virtual ~GtkRenderArea() = default;
 
 	// signals
@@ -54,7 +54,7 @@ protected:
 
 	// Render Area Interface
 	//-----------------------
-	void SetOnInit(std::function<void(rhi::I_GraphicsContextApi* const)>& callback) override { m_OnInit = callback; }
+	void SetOnInit(std::function<void(Ptr<rhi::I_RenderDevice> const)>& callback) override { m_OnInit = callback; }
 	void SetOnDeinit(std::function<void()>& callback) override { m_OnDeinit = callback; }
 	void SetOnResize(std::function<void(vec2 const)>& callback) override { m_OnResize = callback; }
 	void SetOnRender(std::function<void(rhi::T_FbLoc const)>& callback) override { m_OnRender = callback; }
@@ -67,12 +67,12 @@ protected:
 	// Data
 	///////
 private:
-	std::function<void(rhi::I_GraphicsContextApi* const)> m_OnInit;
+	std::function<void(Ptr<rhi::I_RenderDevice> const)> m_OnInit;
 	std::function<void()> m_OnDeinit;
 	std::function<void(vec2 const)> m_OnResize;
 	std::function<void(rhi::T_FbLoc const)> m_OnRender;
 
-	SingleContextGlArea* m_GlArea = nullptr;
+	Ptr<SingleContextGlArea> m_GlArea;
 };
 
 

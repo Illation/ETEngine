@@ -37,7 +37,7 @@ ShaderData::ShaderData(T_ShaderLoc const program)
 //
 ShaderData::~ShaderData()
 {
-	ContextHolder::GetRenderContext()->DeleteProgram(m_ShaderProgram);
+	ContextHolder::GetRenderDevice()->DeleteProgram(m_ShaderProgram);
 
 	rhi::parameters::DestroyBlock(m_CurrentUniforms);
 }
@@ -63,7 +63,7 @@ rhi::T_ParameterBlock ShaderData::CopyParameterBlock(rhi::T_ConstParameterBlock 
 //
 void ShaderData::UploadParameterBlock(rhi::T_ConstParameterBlock const block) const
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
 	for (rhi::UniformParam const& param : m_UniformLayout)
 	{
@@ -79,8 +79,8 @@ void ShaderData::UploadParameterBlock(rhi::T_ConstParameterBlock const block) co
 			TextureData const* const texture = rhi::parameters::Read<TextureData const*>(block, param.offset);
 			if (texture != nullptr)
 			{
-				T_TextureUnit const binding = api->BindTexture(texture->GetTargetType(), texture->GetLocation(), false);
-				api->UploadUniform(param.location, static_cast<int32>(binding));
+				T_TextureUnit const binding = device->BindTexture(texture->GetTargetType(), texture->GetLocation(), false);
+				device->UploadUniform(param.location, static_cast<int32>(binding));
 			}
 		}
 		continue;
@@ -96,39 +96,39 @@ void ShaderData::UploadParameterBlock(rhi::T_ConstParameterBlock const block) co
 		switch (param.type)
 		{
 		case E_ParamType::Matrix4x4:
-			api->UploadUniform(param.location, rhi::parameters::Read<mat4>(block, param.offset));
+			device->UploadUniform(param.location, rhi::parameters::Read<mat4>(block, param.offset));
 			break;
 
 		case E_ParamType::Matrix3x3:
-			api->UploadUniform(param.location, rhi::parameters::Read<mat3>(block, param.offset));
+			device->UploadUniform(param.location, rhi::parameters::Read<mat3>(block, param.offset));
 			break;
 
 		case E_ParamType::Vector4:
-			api->UploadUniform(param.location, rhi::parameters::Read<vec4>(block, param.offset));
+			device->UploadUniform(param.location, rhi::parameters::Read<vec4>(block, param.offset));
 			break;
 
 		case E_ParamType::Vector3:
-			api->UploadUniform(param.location, rhi::parameters::Read<vec3>(block, param.offset));
+			device->UploadUniform(param.location, rhi::parameters::Read<vec3>(block, param.offset));
 			break;
 
 		case E_ParamType::Vector2:
-			api->UploadUniform(param.location, rhi::parameters::Read<vec2>(block, param.offset));
+			device->UploadUniform(param.location, rhi::parameters::Read<vec2>(block, param.offset));
 			break;
 
 		case E_ParamType::UInt:
-			api->UploadUniform(param.location, rhi::parameters::Read<uint32>(block, param.offset));
+			device->UploadUniform(param.location, rhi::parameters::Read<uint32>(block, param.offset));
 			break;
 
 		case E_ParamType::Int:
-			api->UploadUniform(param.location, rhi::parameters::Read<int32>(block, param.offset));
+			device->UploadUniform(param.location, rhi::parameters::Read<int32>(block, param.offset));
 			break;
 
 		case E_ParamType::Float:
-			api->UploadUniform(param.location, rhi::parameters::Read<float>(block, param.offset));
+			device->UploadUniform(param.location, rhi::parameters::Read<float>(block, param.offset));
 			break;
 
 		case E_ParamType::Boolean:
-			api->UploadUniform(param.location, rhi::parameters::Read<bool>(block, param.offset));
+			device->UploadUniform(param.location, rhi::parameters::Read<bool>(block, param.offset));
 			break;
 
 		default:
@@ -171,13 +171,13 @@ std::string const ShaderAsset::s_FragExtension("frag");
 //
 T_ShaderLoc ShaderAsset::CompileShader(std::string const& shaderSourceStr, E_ShaderType const type)
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
-	T_ShaderLoc shader = api->CreateShader(type);
+	T_ShaderLoc shader = device->CreateShader(type);
 
 	//error handling
-	api->CompileShader(shader, shaderSourceStr);
-	if (!(api->IsShaderCompiled(shader)))
+	device->CompileShader(shader, shaderSourceStr);
+	if (!(device->IsShaderCompiled(shader)))
 	{
 		std::string sName;
 		switch (type)
@@ -197,7 +197,7 @@ T_ShaderLoc ShaderAsset::CompileShader(std::string const& shaderSourceStr, E_Sha
 		}
 
 		std::string errorInfo;
-		api->GetShaderInfo(shader, errorInfo);
+		device->GetShaderInfo(shader, errorInfo);
 		ET_ERROR("ShaderAsset::CompileShader > Compiling %s shader failed: %s", sName.c_str(), errorInfo.c_str());
 	}
 
@@ -209,7 +209,7 @@ T_ShaderLoc ShaderAsset::CompileShader(std::string const& shaderSourceStr, E_Sha
 //
 // Compile and link shader sources into a shader program
 //
-T_ShaderLoc ShaderAsset::LinkShader(std::string const& vert, std::string const& geo, std::string const& frag, I_GraphicsContextApi* const api)
+T_ShaderLoc ShaderAsset::LinkShader(std::string const& vert, std::string const& geo, std::string const& frag, I_RenderDevice* const device)
 {
 	// Compile
 	//------------------
@@ -230,34 +230,34 @@ T_ShaderLoc ShaderAsset::LinkShader(std::string const& vert, std::string const& 
 	// Combine Shaders into a program
 	//------------------
 
-	T_ShaderLoc const shaderProgram = api->CreateProgram();
+	T_ShaderLoc const shaderProgram = device->CreateProgram();
 
-	api->AttachShader(shaderProgram, vertexShader);
+	device->AttachShader(shaderProgram, vertexShader);
 
 	if (!geo.empty())
 	{
-		api->AttachShader(shaderProgram, geoShader);
+		device->AttachShader(shaderProgram, geoShader);
 	}
 
 	if (!frag.empty())
 	{
-		api->AttachShader(shaderProgram, fragmentShader);
-		api->BindFragmentDataLocation(shaderProgram, 0, "outColor");
+		device->AttachShader(shaderProgram, fragmentShader);
+		device->BindFragmentDataLocation(shaderProgram, 0, "outColor");
 	}
 
-	api->LinkProgram(shaderProgram);
+	device->LinkProgram(shaderProgram);
 
 	// Delete shader objects now that we have a program
-	api->DeleteShader(vertexShader);
+	device->DeleteShader(vertexShader);
 
 	if (!geo.empty())
 	{
-		api->DeleteShader(geoShader);
+		device->DeleteShader(geoShader);
 	}
 
 	if (!frag.empty())
 	{
-		api->DeleteShader(fragmentShader);
+		device->DeleteShader(fragmentShader);
 	}
 
 	return shaderProgram;
@@ -270,11 +270,11 @@ T_ShaderLoc ShaderAsset::LinkShader(std::string const& vert, std::string const& 
 //
 void ShaderAsset::InitUniforms(ShaderData* const data)
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
 	// uniform blocks
 	//----------------
-	std::vector<std::string> blockNames = api->GetUniformBlockNames(data->m_ShaderProgram);
+	std::vector<std::string> blockNames = device->GetUniformBlockNames(data->m_ShaderProgram);
 	for (std::string const& blockName : blockNames)
 	{
 		data->m_UniformBlocks.emplace_back(GetHash(blockName));
@@ -290,7 +290,7 @@ void ShaderAsset::InitUniforms(ShaderData* const data)
 		if (foundBlock != data->m_UniformBlocks.cend())
 		{
 			T_BlockIndex const blockIndex = static_cast<T_BlockIndex>(foundBlock - data->m_UniformBlocks.cbegin());
-			api->SetUniformBlockBinding(data->m_ShaderProgram, blockIndex, sharedVarController->GetBufferBinding());
+			device->SetUniformBlockBinding(data->m_ShaderProgram, blockIndex, sharedVarController->GetBufferBinding());
 		}
 	}
 
@@ -298,7 +298,7 @@ void ShaderAsset::InitUniforms(ShaderData* const data)
 	std::vector<int32> blockContainedUniIndices;
 	for (T_BlockIndex blockIdx = 0; blockIdx < static_cast<T_BlockIndex>(data->m_UniformBlocks.size()); ++blockIdx)
 	{
-		std::vector<int32> indicesForCurrentBlock = api->GetUniformIndicesForBlock(data->m_ShaderProgram, blockIdx);
+		std::vector<int32> indicesForCurrentBlock = device->GetUniformIndicesForBlock(data->m_ShaderProgram, blockIdx);
 
 		// merge with blockContainedUniIndices
 		blockContainedUniIndices.reserve(blockContainedUniIndices.size() + indicesForCurrentBlock.size());
@@ -307,7 +307,7 @@ void ShaderAsset::InitUniforms(ShaderData* const data)
 
 	// default uniform variables
 	//-----------------------------
-	int32 const count = api->GetUniformCount(data->m_ShaderProgram);
+	int32 const count = device->GetUniformCount(data->m_ShaderProgram);
 
 	for (int32 uniIdx = 0; uniIdx < count; ++uniIdx)
 	{
@@ -319,7 +319,7 @@ void ShaderAsset::InitUniforms(ShaderData* const data)
 
 		// get all descriptors for index (may be more than one if contained by array)
 		std::vector<UniformDescriptor> unis;
-		api->GetActiveUniforms(data->m_ShaderProgram, static_cast<uint32>(uniIdx), unis);
+		device->GetActiveUniforms(data->m_ShaderProgram, static_cast<uint32>(uniIdx), unis);
 
 		// create a layout for each
 		for (UniformDescriptor const& uni : unis)
@@ -347,7 +347,7 @@ void ShaderAsset::InitUniforms(ShaderData* const data)
 	// init defaults
 	for (rhi::UniformParam const& param : data->m_UniformLayout)
 	{
-		api->PopulateUniform(data->m_ShaderProgram, param.location, param.type, static_cast<void*>(data->m_CurrentUniforms + param.offset));
+		device->PopulateUniform(data->m_ShaderProgram, param.location, param.type, static_cast<void*>(data->m_CurrentUniforms + param.offset));
 	}
 }
 
@@ -358,15 +358,15 @@ void ShaderAsset::InitUniforms(ShaderData* const data)
 //
 void ShaderAsset::GetAttributes(T_ShaderLoc const shaderProgram, std::vector<ShaderData::T_AttributeLocation>& attributes)
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
-	int32 const count = api->GetAttributeCount(shaderProgram);
+	int32 const count = device->GetAttributeCount(shaderProgram);
 	for (int32 attribIdx = 0; attribIdx < count; ++attribIdx)
 	{
 		AttributeDescriptor info;
-		api->GetActiveAttribute(shaderProgram, static_cast<uint32>(attribIdx), info);
+		device->GetActiveAttribute(shaderProgram, static_cast<uint32>(attribIdx), info);
 
-		attributes.emplace_back(api->GetAttributeLocation(shaderProgram, info.name), info);
+		attributes.emplace_back(device->GetAttributeLocation(shaderProgram, info.name), info);
 	}
 }
 
@@ -418,15 +418,15 @@ bool ShaderAsset::LoadFromMemory(std::vector<uint8> const& data)
 	
 	// Compile
 	//------------------
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
-	T_ShaderLoc const shaderProgram = LinkShader(vertSource, geoSource, fragSource, api);
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
+	T_ShaderLoc const shaderProgram = LinkShader(vertSource, geoSource, fragSource, device);
 
 	// Create shader data
 	m_Data = new ShaderData(shaderProgram);
 
 	// Extract uniform info
 	//------------------
-	api->SetShader(m_Data);
+	device->SetShader(m_Data);
 	InitUniforms(m_Data);
 	GetAttributes(shaderProgram, m_Data->m_Attributes);
 

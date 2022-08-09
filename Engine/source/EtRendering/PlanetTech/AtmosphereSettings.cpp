@@ -119,7 +119,7 @@ AtmosphereParameters::AtmosphereParameters(core::HashString const assetId, dvec3
 
 void AtmosphereParameters::Upload(rhi::ShaderData const* const shader, const std::string &varName) const
 {
-	rhi::ContextHolder::GetRenderContext()->SetShader(shader);
+	rhi::ContextHolder::GetRenderDevice()->SetShader(shader);
 
 	shader->Upload(GetHash(varName + ".solar_irradiance"), solarIrradiance, false);
 	shader->Upload(GetHash(varName + ".sun_angular_radius"), sun_angular_radius, false);
@@ -192,7 +192,7 @@ DensityProfile::DensityProfile(std::vector<DensityProfileLayer> inLayers, float 
 
 void AtmosphereSettings::UploadTextureSize(rhi::ShaderData const* const shader) const
 {
-	rhi::ContextHolder::GetRenderContext()->SetShader(shader);
+	rhi::ContextHolder::GetRenderDevice()->SetShader(shader);
 	shader->Upload("uTexTransmittanceW"_hash, TRANSMITTANCE_W, false);
 	shader->Upload("uTexTransmittanceH"_hash, TRANSMITTANCE_H, false);
 

@@ -26,13 +26,13 @@ ContextHolder& ContextHolder::Instance()
 }
 
 //----------------------------------
-// ContextHolder::GetRenderContext
+// ContextHolder::GetRenderDevice
 //
 // Quality of life access for main rhi context
 //
-I_GraphicsContextApi* ContextHolder::GetRenderContext()
+I_RenderDevice* ContextHolder::GetRenderDevice()
 {
-	return ContextHolder::Instance().GetMainRenderContext().GetContext();
+	return ContextHolder::Instance().GetMainRenderContext().GetRenderDevice();
 }
 
 
@@ -42,9 +42,9 @@ I_GraphicsContextApi* ContextHolder::GetRenderContext()
 //----------------------------------------
 // ContextHolder::CreateMainRenderContext
 //
-void ContextHolder::CreateMainRenderContext(RenderWindow* const window)
+void ContextHolder::CreateMainRenderContext(Ptr<RenderWindow> const window)
 {
-	GraphicsContextParams params;
+	RenderDeviceParams params;
 	params.m_VersionMajor = 4;
 	params.m_VersionMinor = 5;
 
@@ -61,8 +61,8 @@ void ContextHolder::CreateMainRenderContext(RenderWindow* const window)
 	params.m_UseDebugInfo = false;
 #endif
 
-	m_MainRenderContext = GraphicsContext(window, window->CreateContext(params));
-	window->RegisterListener(this);
+	m_MainRenderContext = GraphicsContext(window, window->CreateRenderDevice(params));
+	window->RegisterListener(ToPtr(this));
 }
 
 //----------------------------------

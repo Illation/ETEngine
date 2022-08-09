@@ -30,7 +30,7 @@ TextureData::TextureData(E_ColorFormat const storageFormat, ivec2 const res, int
 	, m_Resolution(res)
 	, m_Depth(depth)
 {
-	m_Location = ContextHolder::GetRenderContext()->GenerateTexture();
+	m_Location = ContextHolder::GetRenderDevice()->GenerateTexture();
 }
 
 //---------------------------------
@@ -44,7 +44,7 @@ TextureData::TextureData(E_TextureType const targetType, E_ColorFormat const sto
 	, m_Resolution(res)
 	, m_Depth(depth)
 {
-	m_Location = ContextHolder::GetRenderContext()->GenerateTexture();
+	m_Location = ContextHolder::GetRenderDevice()->GenerateTexture();
 }
 
 //---------------------------------
@@ -54,13 +54,13 @@ TextureData::TextureData(E_TextureType const targetType, E_ColorFormat const sto
 //
 TextureData::~TextureData()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 	if (m_Handle != 0u)
 	{
-		api->SetTextureHandleResidency(m_Handle, false);
+		device->SetTextureHandleResidency(m_Handle, false);
 	}
 
-	api->DeleteTexture(m_Location);
+	device->DeleteTexture(m_Location);
 }
 
 //---------------------------------
@@ -73,7 +73,7 @@ void TextureData::UploadData(void const* const data, E_ColorFormat const layout,
 	m_MipLevels = std::max(static_cast<uint8>(mipLevel), m_MipLevels);
 
 	ET_ASSERT(m_Handle == 0u, "Shouldn't upload data after a handle was created!");
-	ContextHolder::GetRenderContext()->UploadTextureData(*this, data, layout, dataType, mipLevel);
+	ContextHolder::GetRenderDevice()->UploadTextureData(*this, data, layout, dataType, mipLevel);
 }
 
 //---------------------------------
@@ -86,7 +86,7 @@ void TextureData::UploadCompressed(void const* const data, size_t const size, in
 	m_MipLevels = std::max(static_cast<uint8>(mipLevel), m_MipLevels);
 
 	ET_ASSERT(m_Handle == 0u, "Shouldn't upload data after a handle was created!");
-	ContextHolder::GetRenderContext()->UploadCompressedTextureData(*this, data, size, mipLevel);
+	ContextHolder::GetRenderDevice()->UploadCompressedTextureData(*this, data, size, mipLevel);
 }
 
 //---------------------------------
@@ -97,7 +97,7 @@ void TextureData::UploadCompressed(void const* const data, size_t const size, in
 void TextureData::AllocateStorage()
 {
 	ET_ASSERT(m_Handle == 0u, "Shouldn't upload data after a handle was created!");
-	ContextHolder::GetRenderContext()->AllocateTextureStorage(*this);
+	ContextHolder::GetRenderDevice()->AllocateTextureStorage(*this);
 }
 
 //---------------------------------
@@ -111,7 +111,7 @@ void TextureData::SetParameters(TextureParameters const& params, bool const forc
 {
 	ET_ASSERT(m_Handle == 0u, "Shouldn't set parameters after a handle was created!");
 
-	ContextHolder::GetRenderContext()->SetTextureParams(*this, m_Parameters, params, force);
+	ContextHolder::GetRenderDevice()->SetTextureParams(*this, m_Parameters, params, force);
 }
 
 //---------------------------------
@@ -123,7 +123,7 @@ void TextureData::GenerateMipMaps()
 {
 	ET_ASSERT(m_Handle == 0u, "Shouldn't generate mip maps after a handle was created!");
 
-	ContextHolder::GetRenderContext()->GenerateMipMaps(*this, m_MipLevels);
+	ContextHolder::GetRenderDevice()->GenerateMipMaps(*this, m_MipLevels);
 }
 
 //---------------------------------
@@ -142,16 +142,16 @@ bool TextureData::Resize(ivec2 const& newSize)
 
 	if (regenerate)
 	{
-		I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+		I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
 		if (hasHandle)
 		{
-			api->SetTextureHandleResidency(m_Handle, false);
+			device->SetTextureHandleResidency(m_Handle, false);
 			m_Handle = 0u;
 		}
 
-		api->DeleteTexture(m_Location);
-		m_Location = api->GenerateTexture();
+		device->DeleteTexture(m_Location);
+		m_Location = device->GenerateTexture();
 	}
 
 	AllocateStorage();
@@ -176,10 +176,10 @@ bool TextureData::Resize(ivec2 const& newSize)
 //
 void TextureData::CreateHandle()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
-	m_Handle = api->GetTextureHandle(m_Location);
-	api->SetTextureHandleResidency(m_Handle, true); // #todo: in the future we should have a system that makes inactive handles non resident after a while
+	m_Handle = device->GetTextureHandle(m_Location);
+	device->SetTextureHandleResidency(m_Handle, true); // #todo: in the future we should have a system that makes inactive handles non resident after a while
 }
 
 

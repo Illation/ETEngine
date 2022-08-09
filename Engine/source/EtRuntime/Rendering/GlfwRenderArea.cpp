@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GlfwRenderArea.h"
-#include "GladGlContext.h"
+#include "GladRenderDevice_OpenGL.h"
 
 
 namespace et {
@@ -21,7 +21,7 @@ ivec2 const GlfwRenderArea::s_DefaultDimensions(512, 512);
 //
 // Create a Window and an openGL context to draw to the window
 //
-void GlfwRenderArea::Initialize(rhi::GraphicsContextParams const& params, bool const hidden)
+void GlfwRenderArea::Initialize(rhi::RenderDeviceParams const& params, bool const hidden)
 {
 	// Initialize GLFW 
 	//-----------------
@@ -79,14 +79,14 @@ void GlfwRenderArea::Initialize(rhi::GraphicsContextParams const& params, bool c
 	}
 
 	// Window creation
-	m_Window = glfwCreateWindow(dim.x, dim.y, title.c_str(), fullscreenMonitor, nullptr);
+	m_Window = ToPtr(glfwCreateWindow(dim.x, dim.y, title.c_str(), fullscreenMonitor, nullptr));
 	if (m_Window == nullptr)
 	{
 		glfwTerminate();
 		ET_LOG_E(ET_CTX_RUNTIME, "Failed to create window with GLFW!");
 	}
 
-	glfwSetWindowUserPointer(m_Window, this);
+	glfwSetWindowUserPointer(m_Window.Get(), this);
 
 	// Check OpenGL properties and create open gl function pointers
 	//--------------------------------------------------------------
@@ -94,13 +94,13 @@ void GlfwRenderArea::Initialize(rhi::GraphicsContextParams const& params, bool c
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	SetVSyncEnabled(true);
 
-	ET_ASSERT(m_Context == nullptr);
-	m_Context = new rhi::GladGlContext();
-	m_Context->Initialize(dim);
+	ET_ASSERT(m_RenderDevice == nullptr);
+	m_RenderDevice = Create<rhi::GladGlDevice>();
+	m_RenderDevice->Initialize(dim);
 
 	if (m_OnInit)
 	{
-		m_OnInit(m_Context);
+		m_OnInit(m_RenderDevice);
 	}
 }
 
@@ -116,9 +116,9 @@ void GlfwRenderArea::Uninitialize()
 		m_OnDeinit();
 	}
 
-	delete m_Context;
+	m_RenderDevice = nullptr;
 
-	glfwDestroyWindow(m_Window);
+	glfwDestroyWindow(m_Window.Get());
 	m_Window = nullptr;
 
 	glfwTerminate();
@@ -134,7 +134,7 @@ void GlfwRenderArea::Update()
 		if (m_OnRender)
 		{
 			m_OnRender(0u);
-			glfwSwapBuffers(m_Window); // swap render buffers
+			glfwSwapBuffers(m_Window.Get()); // swap render buffers
 		}
 	}
 }
@@ -175,7 +175,7 @@ void GlfwRenderArea::QueueDraw()
 //
 bool GlfwRenderArea::MakeCurrent()
 {
-	glfwMakeContextCurrent(m_Window);
+	glfwMakeContextCurrent(m_Window.Get());
 	return true;
 }
 
@@ -186,7 +186,7 @@ ivec2 GlfwRenderArea::GetDimensions() const
 {
 	ivec2 ret;
 
-	glfwGetWindowSize(m_Window, &ret.x, &ret.y);
+	glfwGetWindowSize(m_Window.Get(), &ret.x, &ret.y);
 
 	return ret;
 }

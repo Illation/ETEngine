@@ -46,7 +46,7 @@ public:
 	// utility
 	//---------
 private:
-	void SetupContextRendering(rhi::I_GraphicsContextApi* const api, ContextRenderTarget &renderTarget);
+	void SetupContextRendering(rhi::I_RenderDevice* const device, ContextRenderTarget &renderTarget);
 
 	// Data
 	///////

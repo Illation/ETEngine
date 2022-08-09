@@ -53,10 +53,10 @@ void ContextRenderTarget::UpdateForDimensions(ivec2 const dim)
 	{
 		DeleteFramebuffer();
 
-		rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+		rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-		api->GenFramebuffers(1, &m_Framebuffer);
-		api->BindFramebuffer(m_Framebuffer);
+		device->GenFramebuffers(1, &m_Framebuffer);
+		device->BindFramebuffer(m_Framebuffer);
 
 		// target texture
 		m_Texture = Create<rhi::TextureData>(rhi::E_ColorFormat::RGBA8, dim); // non float fb prevents alpha from exceeding 1
@@ -64,15 +64,15 @@ void ContextRenderTarget::UpdateForDimensions(ivec2 const dim)
 		m_Texture->SetParameters(rhi::TextureParameters(false));
 
 		//Render Buffer for depth and stencil
-		api->GenRenderBuffers(1, &m_Renderbuffer);
-		api->BindRenderbuffer(m_Renderbuffer);
-		api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24_Stencil8, dim);
+		device->GenRenderBuffers(1, &m_Renderbuffer);
+		device->BindRenderbuffer(m_Renderbuffer);
+		device->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24_Stencil8, dim);
 
 		// link it all together
-		api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24_Stencil8, m_Renderbuffer);
-		api->LinkTextureToFbo2D(0, m_Texture->GetLocation(), 0);
+		device->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24_Stencil8, m_Renderbuffer);
+		device->LinkTextureToFbo2D(0, m_Texture->GetLocation(), 0);
 
-		api->BindFramebuffer(0u);
+		device->BindFramebuffer(0u);
 	}
 }
 
@@ -83,11 +83,11 @@ void ContextRenderTarget::DeleteFramebuffer()
 {
 	if (m_Texture != nullptr)
 	{
-		rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+		rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-		api->DeleteRenderBuffers(1, &m_Renderbuffer);
+		device->DeleteRenderBuffers(1, &m_Renderbuffer);
 		m_Texture = nullptr;
-		api->DeleteFramebuffers(1, &m_Framebuffer);
+		device->DeleteFramebuffers(1, &m_Framebuffer);
 	}
 }
 

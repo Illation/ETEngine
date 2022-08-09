@@ -14,7 +14,7 @@ namespace et {
 namespace rhi {
 
 
-class I_GraphicsContextApi;
+class I_RenderDevice;
 class I_ViewportRenderer;
 class I_RenderArea;
 
@@ -29,21 +29,21 @@ class Viewport final : public core::I_RealTimeTickTriggerer
 {
 	// definitions
 	//---------------
-	static Viewport* g_CurrentViewport;
+	static Ptr<Viewport> g_CurrentViewport;
 
 public:
 	static Viewport* GetCurrentViewport();
 
 	// construct destruct
 	//-------------------
-	Viewport(I_RenderArea* const area);
+	Viewport(Ptr<I_RenderArea> const area);
 	~Viewport();
 
 	// functionality
 	//---------------
 	void Redraw();
 	void SynchDimensions();
-	void SetRenderer(I_ViewportRenderer* renderer);
+	void SetRenderer(Ptr<I_ViewportRenderer> const renderer);
 	void SetActive(bool const val) { m_IsActive = val; }
 	void SetTickDisabled(bool const val) { m_TickDisabled = val; }
 	void SetInputProvider(Ptr<core::RawInputProvider> const input) { m_InputProvider = input; }
@@ -53,8 +53,8 @@ private:
 	// accessors
 	//-----------
 public:
-	I_ViewportRenderer* GetViewportRenderer() { return m_Renderer; }
-	I_GraphicsContextApi* GetApiContext() { return m_ApiContext; }
+	I_ViewportRenderer* GetViewportRenderer() { return m_Renderer.Get(); }
+	I_RenderDevice* GetRenderDevice() { return m_RenderDevice.Get(); }
 
 	ivec2 GetDimensions() const { return m_Dimensions; }
 	float GetAspectRatio() const { return m_AspectRatio; }
@@ -66,7 +66,7 @@ public:
 	// callbacks
 	//-----------
 protected:
-	void OnRealize(I_GraphicsContextApi* const api);
+	void OnRealize(Ptr<I_RenderDevice> const device);
 	void OnUnrealize();
 	void OnResize(vec2 const resolution);
 	void OnRender(T_FbLoc const targetFb);
@@ -81,10 +81,10 @@ public:
 	///////
 private:
 
-	I_RenderArea* m_Area = nullptr;
-	I_ViewportRenderer* m_Renderer = nullptr;
+	Ptr<I_RenderArea> m_Area;
+	Ptr<I_ViewportRenderer> m_Renderer;
 
-	I_GraphicsContextApi* m_ApiContext = nullptr; 
+	Ptr<I_RenderDevice> m_RenderDevice; 
 
 	ivec2 m_Dimensions;
 	float m_AspectRatio;

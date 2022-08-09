@@ -43,7 +43,7 @@ bool ShaderData::Upload(T_Hash const uniform, const TDataType &data, bool const 
 
 	ET_ASSERT(rhi::parameters::GetTypeId(param.type) == rttr::type::get<TDataType>());
 
-	ContextHolder::GetRenderContext()->UploadUniform(param.location, data);
+	ContextHolder::GetRenderDevice()->UploadUniform(param.location, data);
 
 	// ensure the shader reflects the GPU state
 	rhi::parameters::Write<TDataType>(m_CurrentUniforms, param.offset, data);
@@ -90,10 +90,10 @@ bool ShaderData::Upload<TextureData const*>(T_Hash const uniform, TextureData co
 	//else
 	//{
 		// we overwrite sampler uniforms every time because the bindings may have changed for bound textures
-		I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+		I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
-		T_TextureUnit const binding = api->BindTexture(textureData->GetTargetType(), textureData->GetLocation(), false);
-		api->UploadUniform(param.location, static_cast<int32>(binding));
+		T_TextureUnit const binding = device->BindTexture(textureData->GetTargetType(), textureData->GetLocation(), false);
+		device->UploadUniform(param.location, static_cast<int32>(binding));
 	//}
 
 	// ensure the shader reflects the GPU state

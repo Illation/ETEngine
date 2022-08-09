@@ -19,7 +19,7 @@
 #include <EtCore/stdafx.h>
 #include <EtCore/Hashing/Hash.h>
 
-#include <EtRHI/GraphicsContext/GraphicsContextApi.h>
+#include <EtRHI/GraphicsContext/RenderDeviceInterface.h>
 #include <EtRHI/GraphicsContext/ContextHolder.h>
 #include <EtRHI/GraphicsContext/Viewport.h>
 #pragma endregion Includes

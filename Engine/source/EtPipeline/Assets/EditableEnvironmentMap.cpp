@@ -394,13 +394,13 @@ bool EditableEnvironmentMapAsset::GenerateTextureData(std::vector<uint8>& data, 
 
 		// write image data per level
 		//----------------------------
-		rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+		rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 		size_t mipSize = s_PixelSize * res.x * res.y * rhi::TextureData::s_NumCubeFaces;
 		size_t bufferPos = binWriter.GetBufferPosition();
 		for (uint8 mipIdx = 0u; mipIdx <= mipCount; ++mipIdx)
 		{
-			api->GetTextureData(*texture, mipIdx, s_Layout, s_DataType, reinterpret_cast<void*>(data.data() + bufferPos));
+			device->GetTextureData(*texture, mipIdx, s_Layout, s_DataType, reinterpret_cast<void*>(data.data() + bufferPos));
 			bufferPos += mipSize;
 			mipSize /= 4u;
 		}

@@ -5,15 +5,15 @@ namespace et {
 namespace rhi {
 
 
-class I_GraphicsContextApi;
+class I_RenderDevice;
 
 
 //---------------------------------
-// GraphicsContextParams
+// RenderDeviceParams
 //
 // Settings to create a Graphics Context with
 //
-struct GraphicsContextParams final
+struct RenderDeviceParams final
 {
 	int32 m_VersionMajor = -1;
 	int32 m_VersionMinor = -1;
@@ -51,7 +51,7 @@ public:
 
 	// interface
 	//-----------
-	virtual I_GraphicsContextApi* CreateContext(GraphicsContextParams const& params) = 0;
+	virtual Ptr<I_RenderDevice> CreateRenderDevice(RenderDeviceParams const& params) = 0;
 	virtual void SetCursorPos(ivec2 const pos) = 0;
 
 	virtual ivec2 GetDimensions() const = 0;
@@ -59,12 +59,12 @@ public:
 
 	// functionality
 	//---------------
-	void RegisterListener(I_Listener* const listener);
+	void RegisterListener(Ptr<I_Listener> const listener);
 
 	// Data
 	///////
 private:
-	std::vector<I_Listener*> m_Listeners;
+	std::vector<Ptr<I_Listener>> m_Listeners;
 };
 
 

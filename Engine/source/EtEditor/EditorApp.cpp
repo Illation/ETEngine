@@ -215,8 +215,8 @@ void EditorApp::on_activate()
 		m_AppWindow->present(); 
 
 		// window is realized now create rendering context
-		m_RenderWindow.SetSourceWindow(m_AppWindow);
-		rhi::ContextHolder::Instance().CreateMainRenderContext(&m_RenderWindow);
+		m_RenderWindow.SetSourceWindow(ToPtr(m_AppWindow));
+		rhi::ContextHolder::Instance().CreateMainRenderContext(ToPtr(&m_RenderWindow));
 
 		render::RenderingSystems::AddReference();
 

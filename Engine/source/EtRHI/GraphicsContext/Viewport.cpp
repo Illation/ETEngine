@@ -15,14 +15,14 @@ namespace rhi {
 
 
 // static
-Viewport* Viewport::g_CurrentViewport = nullptr;
+Ptr<Viewport> Viewport::g_CurrentViewport = nullptr;
 
 //---------------------------------
 // Viewport::GetCurrentViewport
 //
 Viewport* Viewport::GetCurrentViewport()
 {
-	return g_CurrentViewport;
+	return g_CurrentViewport.Get();
 }
 
 
@@ -34,12 +34,12 @@ Viewport* Viewport::GetCurrentViewport()
 //
 // Construct a viewport from an area and optionally providing the input provider associated with the viewport
 //
-Viewport::Viewport(I_RenderArea* const area)
+Viewport::Viewport(Ptr<I_RenderArea> const area)
 	: m_Area(area)
 {
 	RegisterAsTriggerer();
 
-	m_Area->SetOnInit(std::function<void(I_GraphicsContextApi* const)>(std::bind(&Viewport::OnRealize, this, std::placeholders::_1)));
+	m_Area->SetOnInit(std::function<void(Ptr<I_RenderDevice> const)>(std::bind(&Viewport::OnRealize, this, std::placeholders::_1)));
 	m_Area->SetOnDeinit(std::function<void()>(std::bind(&Viewport::OnUnrealize, this)));
 	m_Area->SetOnResize(std::function<void(vec2 const)>(std::bind(&Viewport::OnResize, this, std::placeholders::_1)));
 	m_Area->SetOnRender(std::function<void(T_FbLoc const)>(std::bind(&Viewport::OnRender, this, std::placeholders::_1)));
@@ -81,7 +81,7 @@ void Viewport::SynchDimensions()
 //
 // Set the renderer, takes ownership of it
 //
-void Viewport::SetRenderer(I_ViewportRenderer* renderer)
+void Viewport::SetRenderer(Ptr<I_ViewportRenderer> const renderer)
 {
 	m_Renderer = renderer;
 
@@ -92,7 +92,7 @@ void Viewport::SetRenderer(I_ViewportRenderer* renderer)
 
 	if (m_IsRealized)
 	{
-		OnRealize(m_ApiContext);
+		OnRealize(m_RenderDevice);
 	}
 
 	m_Events.Notify(rhi::E_ViewportEvent::VP_NewRenderer, new rhi::ViewportEventData(this));
@@ -103,16 +103,16 @@ void Viewport::SetRenderer(I_ViewportRenderer* renderer)
 //
 // From this point on graphics API functions can be called for this viewport
 //
-void Viewport::OnRealize(I_GraphicsContextApi* const api)
+void Viewport::OnRealize(Ptr<I_RenderDevice> const device)
 {
-	m_ApiContext = api;
+	m_RenderDevice = device;
 
 	MakeCurrent();
 
 	m_Dimensions = m_Area->GetDimensions();
 
 	// init rhi state
-	m_ApiContext->Initialize(m_Dimensions);
+	m_RenderDevice->Initialize(m_Dimensions);
 
 	// init renderer
 	if (m_Renderer != nullptr)
@@ -197,11 +197,11 @@ void Viewport::Render(T_FbLoc const targetFb)
 	else
 	{
 		// Draw pink to indicate that no renderer is attached
-		m_ApiContext->SetClearColor(vec4(0.55f, 0.075f, 0.2f, 1.f));
-		m_ApiContext->Clear(E_ClearFlag::CF_Color);
+		m_RenderDevice->SetClearColor(vec4(0.55f, 0.075f, 0.2f, 1.f));
+		m_RenderDevice->Clear(E_ClearFlag::CF_Color);
 	}
 
-	m_ApiContext->Flush();
+	m_RenderDevice->Flush();
 	m_Events.Notify(rhi::E_ViewportEvent::VP_PostFlush, new rhi::ViewportEventData(this, targetFb));
 }
 
@@ -217,7 +217,7 @@ void Viewport::MakeCurrent()
 		ET_TRACE_W(ET_CTX_RHI, "Viewport::MakeCurrent > An error occured making the context current during realize!");
 	}
 
-	g_CurrentViewport = this;
+	g_CurrentViewport = ToPtr(this);
 }
 
 } // namespace rhi

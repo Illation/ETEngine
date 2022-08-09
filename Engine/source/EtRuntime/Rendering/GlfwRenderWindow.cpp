@@ -12,12 +12,12 @@ namespace rt {
 
 
 //---------------------------------
-// GlfwRenderWindow::CreateContext
+// GlfwRenderWindow::CreateRenderDevice
 //
-rhi::I_GraphicsContextApi* GlfwRenderWindow::CreateContext(rhi::GraphicsContextParams const& params)
+Ptr<rhi::I_RenderDevice> GlfwRenderWindow::CreateRenderDevice(rhi::RenderDeviceParams const& params)
 {
 	m_Area.Initialize(params, m_IsHidden);
-	return m_Area.GetContext();
+	return ToPtr(m_Area.GetRenderDevice());
 }
 
 //--------------------------------

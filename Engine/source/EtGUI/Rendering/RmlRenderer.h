@@ -96,7 +96,7 @@ public:
 
 	// functionality
 	//---------------
-	void SetGraphicsContext(Ptr<rhi::I_GraphicsContextApi> const graphicsContext) { m_GraphicsContext = graphicsContext; }
+	void SetRenderDevice(Ptr<rhi::I_RenderDevice> const device) { m_RenderDevice = device; }
 	void SetShader(AssetPtr<rhi::ShaderData> const& shader, AssetPtr<rhi::ShaderData> const& textShader);
 	void SetView(ivec2 const dim, mat4 const& viewProj) { m_ViewDimensions = dim; m_ViewProj = viewProj; }
 
@@ -136,7 +136,7 @@ public:
 	//---------
 private:
 	UniquePtr<rhi::TextureData> GenTextureInternal(void const* data, ivec2 dimensions);
-	void SetGenericInputLayout(rhi::I_GraphicsContextApi* const api) const;
+	void SetGenericInputLayout(rhi::I_RenderDevice* const device) const;
 	void SetupScissorRectangle();
 
 
@@ -144,7 +144,7 @@ private:
 	///////
 
 	// general
-	Ptr<rhi::I_GraphicsContextApi> m_GraphicsContext;
+	Ptr<rhi::I_RenderDevice> m_RenderDevice;
 	ivec2 m_ViewDimensions;
 	mat4 m_ViewProj;
 

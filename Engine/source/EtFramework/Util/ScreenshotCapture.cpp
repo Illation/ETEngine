@@ -84,9 +84,9 @@ void ScreenshotCapture::OnViewportPostFlush(rhi::T_FbLoc const targetFb)
 	// Make the BYTE array, factor of 3 because it's RBG.
 	uint8* pixels = new uint8[3 * dim.x * dim.y];
 
-	rhi::I_GraphicsContextApi* const api = m_Viewport->GetApiContext();
-	api->Finish();
-	api->ReadPixels(ivec2(0), dim, rhi::E_ColorFormat::RGB, rhi::E_DataType::UByte, pixels);
+	rhi::I_RenderDevice* const device = m_Viewport->GetRenderDevice();
+	device->Finish();
+	device->ReadPixels(ivec2(0), dim, rhi::E_ColorFormat::RGB, rhi::E_DataType::UByte, pixels);
 
 	stbi_flip_vertically_on_write(true);
 	if (stbi_write_jpg(filename.c_str(), dim.x, dim.y, 3, pixels, 90) != 0)

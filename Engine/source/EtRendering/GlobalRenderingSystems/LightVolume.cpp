@@ -40,7 +40,7 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 	}
 
 	rhi::ShaderData const* const shader = m_Material->GetShader();
-	rhi::ContextHolder::GetRenderContext()->SetShader(shader);
+	rhi::ContextHolder::GetRenderDevice()->SetShader(shader);
 
 	shader->Upload("Position"_hash, pos); 
 	shader->Upload("Color"_hash, col);
@@ -71,9 +71,9 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 		Initialize();
 	}
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->SetShader(m_Shader.get());
+	device->SetShader(m_Shader.get());
 
 	//for position reconstruction
 	m_Shader->Upload("Direction"_hash, dir);
@@ -89,9 +89,9 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, render::DirectionalShad
 		Initialize();
 	}
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->SetShader(m_ShaderShadowed.get());
+	device->SetShader(m_ShaderShadowed.get());
 
 	m_ShaderShadowed->Upload("Direction"_hash, dir);
 	m_ShaderShadowed->Upload("Color"_hash, col);

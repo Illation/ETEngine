@@ -22,9 +22,9 @@ class GtkRenderWindow final : public rhi::RenderWindow
 	//-------------------
 public:
 	GtkRenderWindow() : rhi::RenderWindow() {}
-	~GtkRenderWindow();
+	~GtkRenderWindow() = default;
 
-	void SetSourceWindow(Gtk::Window* const window) { m_Source = window; }
+	void SetSourceWindow(Ptr<Gtk::Window> const window) { m_Source = window; }
 
 	// accessors
 	//-----------
@@ -37,7 +37,7 @@ public:
 	// Render Window Interface
 	//-------------------------
 protected:
-	rhi::I_GraphicsContextApi* CreateContext(rhi::GraphicsContextParams const& params) override;
+	Ptr<rhi::I_RenderDevice> CreateRenderDevice(rhi::RenderDeviceParams const& params) override;
 	void SetCursorPos(ivec2 const pos) override;
 
 	ivec2 GetDimensions() const override;
@@ -46,14 +46,14 @@ protected:
 	// Data
 	///////
 private:
-	Gtk::Window* m_Source = nullptr;
+	Ptr<Gtk::Window> m_Source;
 	Glib::RefPtr<Gdk::GLContext> m_GdkContext;
 
 	bool m_UseDoubleBuffering = false;
 	bool m_UseDepthBuffer = false;
 	bool m_UseStencilBuffer = false;
 
-	rhi::I_GraphicsContextApi* m_Context = nullptr;
+	UniquePtr<rhi::I_RenderDevice> m_RenderDevice;
 };
 
 

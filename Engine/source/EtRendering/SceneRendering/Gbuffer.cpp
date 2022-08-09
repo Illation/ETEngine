@@ -22,7 +22,7 @@ Gbuffer::Gbuffer():
 
 void Gbuffer::UploadDerivedVariables()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	//for position reconstruction
 	render::ShadedSceneRenderer const* const sceneRenderer = render::ShadedSceneRenderer::GetCurrent();

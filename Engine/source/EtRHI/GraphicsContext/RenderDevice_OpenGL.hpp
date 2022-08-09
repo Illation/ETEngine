@@ -20,7 +20,7 @@ namespace rhi {
 //======================
 
 
-namespace GL_CONTEXT_NS {
+namespace GL_DEVICE_NS {
 
 
 //---------------------------------
@@ -522,7 +522,7 @@ E_ParamType ParseParamType(GLenum const param)
 }
 
 
-} // namespace GL_CONTEXT_NS
+} // namespace GL_DEVICE_NS
 
 
 //====================
@@ -533,7 +533,7 @@ E_ParamType ParseParamType(GLenum const param)
 //------------------------------------
 // GlContext::TextureUnitCache::c-tor
 //
-GL_CONTEXT_CLASSNAME::TextureUnitCache::TextureUnitCache(size_t const size) 
+GL_DEVICE_CLASSNAME::TextureUnitCache::TextureUnitCache(size_t const size) 
 	: m_MaxUnits(size) 
 {
 	for (T_TextureUnit unit = 0u; unit < m_MaxUnits; ++unit)
@@ -549,7 +549,7 @@ GL_CONTEXT_CLASSNAME::TextureUnitCache::TextureUnitCache(size_t const size)
 // If the texture isn't bound, assign it to the least recently used unit
 // If the texture is bound and ensureActive is false, it is not guaranteed that the active unit is set to the current texture
 //
-T_TextureUnit GL_CONTEXT_CLASSNAME::TextureUnitCache::Bind(E_TextureType const type, T_TextureLoc const tex, bool const ensureActive)
+T_TextureUnit GL_DEVICE_CLASSNAME::TextureUnitCache::Bind(E_TextureType const type, T_TextureLoc const tex, bool const ensureActive)
 {
 	// we don't want to be using this function to unbind textures
 	ET_ASSERT(tex != 0u);
@@ -598,7 +598,7 @@ T_TextureUnit GL_CONTEXT_CLASSNAME::TextureUnitCache::Bind(E_TextureType const t
 		EnsureActive(currentBinding.unit);
 
 		// do the binding
-		glBindTexture(GL_CONTEXT_NS::ConvTextureType(type), tex);
+		glBindTexture(GL_DEVICE_NS::ConvTextureType(type), tex);
 
 		return currentBinding.unit;
 	}
@@ -607,7 +607,7 @@ T_TextureUnit GL_CONTEXT_CLASSNAME::TextureUnitCache::Bind(E_TextureType const t
 //----------------------------------------------
 // GlContext::TextureUnitCache::Unbind
 //
-void GL_CONTEXT_CLASSNAME::TextureUnitCache::Unbind(E_TextureType const type, T_TextureLoc const tex)
+void GL_DEVICE_CLASSNAME::TextureUnitCache::Unbind(E_TextureType const type, T_TextureLoc const tex)
 {
 	auto mapIt = m_Map.find(tex);
 
@@ -620,7 +620,7 @@ void GL_CONTEXT_CLASSNAME::TextureUnitCache::Unbind(E_TextureType const type, T_
 		EnsureActive(binding.unit);
 
 		// unbind that texture
-		glBindTexture(GL_CONTEXT_NS::ConvTextureType(type), 0u);
+		glBindTexture(GL_DEVICE_NS::ConvTextureType(type), 0u);
 
 		// LRU unit is unit with texture, texture is unset
 		m_List.emplace_back(mapIt->second->unit, 0u);
@@ -636,7 +636,7 @@ void GL_CONTEXT_CLASSNAME::TextureUnitCache::Unbind(E_TextureType const type, T_
 //
 // set the current active texture to the targetUnit, if not already
 //
-void GL_CONTEXT_CLASSNAME::TextureUnitCache::EnsureActive(T_TextureUnit const targetUnit)
+void GL_DEVICE_CLASSNAME::TextureUnitCache::EnsureActive(T_TextureUnit const targetUnit)
 {
 	if (m_ActiveUnit != targetUnit)
 	{
@@ -650,7 +650,7 @@ void GL_CONTEXT_CLASSNAME::TextureUnitCache::EnsureActive(T_TextureUnit const ta
 //
 // When a texture gets deleted, texture units referring to it get reset
 //
-void GL_CONTEXT_CLASSNAME::TextureUnitCache::OnTextureDelete(T_TextureLoc const tex)
+void GL_DEVICE_CLASSNAME::TextureUnitCache::OnTextureDelete(T_TextureLoc const tex)
 {
 	auto mapIt = m_Map.find(tex);
 
@@ -677,7 +677,7 @@ void GL_CONTEXT_CLASSNAME::TextureUnitCache::OnTextureDelete(T_TextureLoc const 
 //---------------------------------
 // GlContext::d-tor
 //
-GL_CONTEXT_CLASSNAME::~GL_CONTEXT_CLASSNAME()
+GL_DEVICE_CLASSNAME::~GL_DEVICE_CLASSNAME()
 {
 	ET_LOG_I(ET_CTX_RENDER, "OpenGL unloaded");
 }
@@ -687,7 +687,7 @@ GL_CONTEXT_CLASSNAME::~GL_CONTEXT_CLASSNAME()
 //
 // Initialize the state with default values
 //
-void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
+void GL_DEVICE_CLASSNAME::Initialize(ivec2 const dimensions)
 {
 	m_ViewportSize = dimensions;
 	m_ScissorSize = dimensions;
@@ -839,7 +839,7 @@ void GL_CONTEXT_CLASSNAME::Initialize(ivec2 const dimensions)
 //---------------------------------
 // GlContext::SetDepthEnabled
 //
-void GL_CONTEXT_CLASSNAME::SetDepthEnabled(bool const enabled)
+void GL_DEVICE_CLASSNAME::SetDepthEnabled(bool const enabled)
 {
 	EnOrDisAble(m_DepthTestEnabled, enabled, GL_DEPTH_TEST);
 }
@@ -849,7 +849,7 @@ void GL_CONTEXT_CLASSNAME::SetDepthEnabled(bool const enabled)
 //
 // Set the buffers on which blending is enabled
 //
-void GL_CONTEXT_CLASSNAME::SetBlendEnabled(std::vector<bool> const& blendBuffers)
+void GL_DEVICE_CLASSNAME::SetBlendEnabled(std::vector<bool> const& blendBuffers)
 {
 	for (uint32 i = 0; i < blendBuffers.size(); i++)
 	{
@@ -862,7 +862,7 @@ void GL_CONTEXT_CLASSNAME::SetBlendEnabled(std::vector<bool> const& blendBuffers
 //
 // Set whether blending is enabled on a specific buffer
 //
-void GL_CONTEXT_CLASSNAME::SetBlendEnabled(bool const enabled, uint32 const index)
+void GL_DEVICE_CLASSNAME::SetBlendEnabled(bool const enabled, uint32 const index)
 {
 	ET_ASSERT(static_cast<int32>(index) < m_MaxDrawBuffers);
 
@@ -880,7 +880,7 @@ void GL_CONTEXT_CLASSNAME::SetBlendEnabled(bool const enabled, uint32 const inde
 //
 // Set whether blending pixels is enabled in the rhi pipeline
 //
-void GL_CONTEXT_CLASSNAME::SetBlendEnabled(bool const enabled)
+void GL_DEVICE_CLASSNAME::SetBlendEnabled(bool const enabled)
 {
 	// if we previously blended per buffer index, reset those
 	if (m_IndividualBlend)
@@ -900,7 +900,7 @@ void GL_CONTEXT_CLASSNAME::SetBlendEnabled(bool const enabled)
 //---------------------------------
 // GlContext::SetStencilEnabled
 //
-void GL_CONTEXT_CLASSNAME::SetStencilEnabled(bool const enabled)
+void GL_DEVICE_CLASSNAME::SetStencilEnabled(bool const enabled)
 {
 	EnOrDisAble(m_StencilTestEnabled, enabled, GL_STENCIL_TEST);
 }
@@ -908,7 +908,7 @@ void GL_CONTEXT_CLASSNAME::SetStencilEnabled(bool const enabled)
 //---------------------------------
 // GlContext::SetCullEnabled
 //
-void GL_CONTEXT_CLASSNAME::SetCullEnabled(bool const enabled)
+void GL_DEVICE_CLASSNAME::SetCullEnabled(bool const enabled)
 {
 	EnOrDisAble(m_CullFaceEnabled, enabled, GL_CULL_FACE);
 }
@@ -916,7 +916,7 @@ void GL_CONTEXT_CLASSNAME::SetCullEnabled(bool const enabled)
 //---------------------------------
 // GlContext::SetCullEnabled
 //
-void GL_CONTEXT_CLASSNAME::SetScissorEnabled(bool const enabled)
+void GL_DEVICE_CLASSNAME::SetScissorEnabled(bool const enabled)
 {
 	EnOrDisAble(m_ScissorEnabled, enabled, GL_SCISSOR_TEST);
 }
@@ -924,7 +924,7 @@ void GL_CONTEXT_CLASSNAME::SetScissorEnabled(bool const enabled)
 //---------------------------------
 // GlContext::SetColorMask
 //
-void GL_CONTEXT_CLASSNAME::SetColorMask(T_ColorFlags const flags)
+void GL_DEVICE_CLASSNAME::SetColorMask(T_ColorFlags const flags)
 {
 	if (flags != m_ColorMask)
 	{
@@ -941,7 +941,7 @@ void GL_CONTEXT_CLASSNAME::SetColorMask(T_ColorFlags const flags)
 //---------------------------------
 // GlContext::SetDepthMask
 //
-void GL_CONTEXT_CLASSNAME::SetDepthMask(bool const flag)
+void GL_DEVICE_CLASSNAME::SetDepthMask(bool const flag)
 {
 	if (flag != m_DepthMask)
 	{
@@ -953,7 +953,7 @@ void GL_CONTEXT_CLASSNAME::SetDepthMask(bool const flag)
 //---------------------------------
 // GlContext::SetStencilMask
 //
-void GL_CONTEXT_CLASSNAME::SetStencilMask(uint32 const mask)
+void GL_DEVICE_CLASSNAME::SetStencilMask(uint32 const mask)
 {
 	if (mask != m_StencilMask)
 	{
@@ -967,12 +967,12 @@ void GL_CONTEXT_CLASSNAME::SetStencilMask(uint32 const mask)
 //
 // Set the culling mode (front back neither...)
 //
-void GL_CONTEXT_CLASSNAME::SetFaceCullingMode(E_FaceCullMode const cullMode)
+void GL_DEVICE_CLASSNAME::SetFaceCullingMode(E_FaceCullMode const cullMode)
 {
 	if (!(m_CullFaceMode == cullMode))
 	{
 		m_CullFaceMode = cullMode;
-		glCullFace(GL_CONTEXT_NS::ConvFaceCullMode(m_CullFaceMode));
+		glCullFace(GL_DEVICE_NS::ConvFaceCullMode(m_CullFaceMode));
 	}
 }
 
@@ -981,13 +981,13 @@ void GL_CONTEXT_CLASSNAME::SetFaceCullingMode(E_FaceCullMode const cullMode)
 //
 // Set how to fill triangles
 //
-void GL_CONTEXT_CLASSNAME::SetPolygonMode(E_FaceCullMode const cullMode, E_PolygonMode const mode)
+void GL_DEVICE_CLASSNAME::SetPolygonMode(E_FaceCullMode const cullMode, E_PolygonMode const mode)
 {
 	size_t const modeIdx(static_cast<size_t>(cullMode));
 	if (m_PolygonMode[modeIdx] != mode)
 	{
 		m_PolygonMode[modeIdx] = mode;
-		glPolygonMode(GL_CONTEXT_NS::ConvFaceCullMode(cullMode), GL_CONTEXT_NS::ConvPolygonMode(mode));
+		glPolygonMode(GL_DEVICE_NS::ConvFaceCullMode(cullMode), GL_DEVICE_NS::ConvPolygonMode(mode));
 	}
 }
 
@@ -996,13 +996,13 @@ void GL_CONTEXT_CLASSNAME::SetPolygonMode(E_FaceCullMode const cullMode, E_Polyg
 //
 // Set the equation we use to blend pixels
 //
-void GL_CONTEXT_CLASSNAME::SetBlendEquation(E_BlendEquation const equation)
+void GL_DEVICE_CLASSNAME::SetBlendEquation(E_BlendEquation const equation)
 {
 	if (!(m_BlendEquationRGB == equation && m_BlendEquationAlpha == equation))
 	{
 		m_BlendEquationRGB = equation;
 		m_BlendEquationAlpha = equation;
-		glBlendEquation(GL_CONTEXT_NS::ConvBlendEquation(equation));
+		glBlendEquation(GL_DEVICE_NS::ConvBlendEquation(equation));
 	}
 }
 
@@ -1011,7 +1011,7 @@ void GL_CONTEXT_CLASSNAME::SetBlendEquation(E_BlendEquation const equation)
 //
 // Set the function we use to blend pixels
 //
-void GL_CONTEXT_CLASSNAME::SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor)
+void GL_DEVICE_CLASSNAME::SetBlendFunction(E_BlendFactor const sFactor, E_BlendFactor const dFactor)
 {
 	if (!(m_BlendFuncSFactor == sFactor && m_BlendFuncSFactorAlpha == sFactor &&
 		m_BlendFuncDFactor == dFactor && m_BlendFuncDFactorAlpha == dFactor))
@@ -1020,7 +1020,7 @@ void GL_CONTEXT_CLASSNAME::SetBlendFunction(E_BlendFactor const sFactor, E_Blend
 		m_BlendFuncSFactorAlpha = sFactor;
 		m_BlendFuncDFactor = dFactor;
 		m_BlendFuncDFactorAlpha = dFactor;
-		glBlendFunc(GL_CONTEXT_NS::ConvBlendFactor(sFactor), GL_CONTEXT_NS::ConvBlendFactor(dFactor));
+		glBlendFunc(GL_DEVICE_NS::ConvBlendFactor(sFactor), GL_DEVICE_NS::ConvBlendFactor(dFactor));
 	}
 }
 
@@ -1029,7 +1029,7 @@ void GL_CONTEXT_CLASSNAME::SetBlendFunction(E_BlendFactor const sFactor, E_Blend
 //
 // Set the function we use to blend pixels - with separate functions for alpha and RGB
 //
-void GL_CONTEXT_CLASSNAME::SetBlendFunctionSeparate(E_BlendFactor const sRGB, E_BlendFactor const sAlpha, 
+void GL_DEVICE_CLASSNAME::SetBlendFunctionSeparate(E_BlendFactor const sRGB, E_BlendFactor const sAlpha, 
 	E_BlendFactor const dRGB, E_BlendFactor const dAlpha)
 {
 	if (!(m_BlendFuncSFactor == sRGB && m_BlendFuncSFactorAlpha == sAlpha &&
@@ -1039,8 +1039,8 @@ void GL_CONTEXT_CLASSNAME::SetBlendFunctionSeparate(E_BlendFactor const sRGB, E_
 		m_BlendFuncSFactorAlpha = sAlpha;
 		m_BlendFuncDFactor = dRGB;
 		m_BlendFuncDFactorAlpha = dAlpha;
-		glBlendFuncSeparate(GL_CONTEXT_NS::ConvBlendFactor(sRGB), GL_CONTEXT_NS::ConvBlendFactor(dRGB), 
-			GL_CONTEXT_NS::ConvBlendFactor(sAlpha), GL_CONTEXT_NS::ConvBlendFactor(dAlpha));
+		glBlendFuncSeparate(GL_DEVICE_NS::ConvBlendFactor(sRGB), GL_DEVICE_NS::ConvBlendFactor(dRGB), 
+			GL_DEVICE_NS::ConvBlendFactor(sAlpha), GL_DEVICE_NS::ConvBlendFactor(dAlpha));
 	}
 }
 
@@ -1049,12 +1049,12 @@ void GL_CONTEXT_CLASSNAME::SetBlendFunctionSeparate(E_BlendFactor const sRGB, E_
 //
 // How to compare depth values
 //
-void GL_CONTEXT_CLASSNAME::SetDepthFunction(E_DepthFunc const func) 
+void GL_DEVICE_CLASSNAME::SetDepthFunction(E_DepthFunc const func) 
 {
 	if (m_DepthFunc != func)
 	{
 		m_DepthFunc = func;
-		glDepthFunc(GL_CONTEXT_NS::ConvDepthStencilFunction(func));
+		glDepthFunc(GL_DEVICE_NS::ConvDepthStencilFunction(func));
 	}
 }
 
@@ -1063,14 +1063,14 @@ void GL_CONTEXT_CLASSNAME::SetDepthFunction(E_DepthFunc const func)
 //
 // How to compare stencil values
 //
-void GL_CONTEXT_CLASSNAME::SetStencilFunction(T_StencilFunc const func, int32 const reference, uint32 const mask)
+void GL_DEVICE_CLASSNAME::SetStencilFunction(T_StencilFunc const func, int32 const reference, uint32 const mask)
 {
 	if (!((func == m_StencilFunc) && (reference == m_StencilRef) && (mask == m_StencilFuncMask)))
 	{
 		m_StencilFunc = func;
 		m_StencilRef = reference;
 		m_StencilFuncMask = mask;
-		glStencilFunc(GL_CONTEXT_NS::ConvDepthStencilFunction(func), reference, mask);
+		glStencilFunc(GL_DEVICE_NS::ConvDepthStencilFunction(func), reference, mask);
 	}
 }
 
@@ -1079,14 +1079,14 @@ void GL_CONTEXT_CLASSNAME::SetStencilFunction(T_StencilFunc const func, int32 co
 //
 // What to do when the stencil test passes or fails
 //
-void GL_CONTEXT_CLASSNAME::SetStencilOperation(E_StencilOp const sFail, E_StencilOp const dFail, E_StencilOp const dsPass)
+void GL_DEVICE_CLASSNAME::SetStencilOperation(E_StencilOp const sFail, E_StencilOp const dFail, E_StencilOp const dsPass)
 {
 	if (!((sFail == m_StencilSFail) && (dFail == m_StencilDFail) && (dsPass == m_StencilDSPass)))
 	{
 		m_StencilSFail = sFail;
 		m_StencilDFail = dFail;
 		m_StencilDSPass = dsPass;
-		glStencilOp(GL_CONTEXT_NS::ConvStencilOp(sFail), GL_CONTEXT_NS::ConvStencilOp(dFail), GL_CONTEXT_NS::ConvStencilOp(dsPass));
+		glStencilOp(GL_DEVICE_NS::ConvStencilOp(sFail), GL_DEVICE_NS::ConvStencilOp(dFail), GL_DEVICE_NS::ConvStencilOp(dsPass));
 	}
 }
 
@@ -1095,7 +1095,7 @@ void GL_CONTEXT_CLASSNAME::SetStencilOperation(E_StencilOp const sFail, E_Stenci
 //
 // Set the dimensions of the scissor rectangle
 //
-void GL_CONTEXT_CLASSNAME::SetScissor(ivec2 const pos, ivec2 const size)
+void GL_DEVICE_CLASSNAME::SetScissor(ivec2 const pos, ivec2 const size)
 {
 	if (!(math::nearEqualsV(m_ScissorPosition, pos) && math::nearEqualsV(m_ScissorSize, size)))
 	{
@@ -1110,7 +1110,7 @@ void GL_CONTEXT_CLASSNAME::SetScissor(ivec2 const pos, ivec2 const size)
 //
 // Set the dimensions of the current opengl viewport (not the engine viewport)
 //
-void GL_CONTEXT_CLASSNAME::SetViewport(ivec2 const pos, ivec2 const size)
+void GL_DEVICE_CLASSNAME::SetViewport(ivec2 const pos, ivec2 const size)
 {
 	if (!(math::nearEqualsV(m_ViewportPosition, pos) && math::nearEqualsV(m_ViewportSize, size)))
 	{
@@ -1125,7 +1125,7 @@ void GL_CONTEXT_CLASSNAME::SetViewport(ivec2 const pos, ivec2 const size)
 //
 // Get the dimensions of the current opengl viewport (not the engine viewport)
 //
-void GL_CONTEXT_CLASSNAME::GetViewport(ivec2& pos, ivec2& size)
+void GL_DEVICE_CLASSNAME::GetViewport(ivec2& pos, ivec2& size)
 {
 	pos = m_ViewportPosition;
 	size = m_ViewportSize;
@@ -1136,7 +1136,7 @@ void GL_CONTEXT_CLASSNAME::GetViewport(ivec2& pos, ivec2& size)
 //
 // Set the colour that gets drawn when we clear the viewport
 //
-void GL_CONTEXT_CLASSNAME::SetClearColor(vec4 const& col)
+void GL_DEVICE_CLASSNAME::SetClearColor(vec4 const& col)
 {
 	if (!(math::nearEqualsV(m_ClearColor, col)))
 	{
@@ -1150,7 +1150,7 @@ void GL_CONTEXT_CLASSNAME::SetClearColor(vec4 const& col)
 //
 // Set the shader we draw with
 //
-void GL_CONTEXT_CLASSNAME::SetShader(ShaderData const* pShader)
+void GL_DEVICE_CLASSNAME::SetShader(ShaderData const* pShader)
 {
 	if (!(m_pBoundShader == pShader))
 	{
@@ -1165,7 +1165,7 @@ void GL_CONTEXT_CLASSNAME::SetShader(ShaderData const* pShader)
 //
 // Set the framebuffer we will draw to and read from
 //
-void GL_CONTEXT_CLASSNAME::BindFramebuffer(T_FbLoc const handle)
+void GL_DEVICE_CLASSNAME::BindFramebuffer(T_FbLoc const handle)
 {
 	if (!(m_ReadFramebuffer == handle && m_DrawFramebuffer == handle))
 	{
@@ -1180,7 +1180,7 @@ void GL_CONTEXT_CLASSNAME::BindFramebuffer(T_FbLoc const handle)
 //
 // Set the framebuffer we will read from
 //
-void GL_CONTEXT_CLASSNAME::BindReadFramebuffer(T_FbLoc const handle)
+void GL_DEVICE_CLASSNAME::BindReadFramebuffer(T_FbLoc const handle)
 {
 	if (!(m_ReadFramebuffer == handle))
 	{
@@ -1194,7 +1194,7 @@ void GL_CONTEXT_CLASSNAME::BindReadFramebuffer(T_FbLoc const handle)
 //
 // Set the framebuffer we will draw to
 //
-void GL_CONTEXT_CLASSNAME::BindDrawFramebuffer(T_FbLoc const handle)
+void GL_DEVICE_CLASSNAME::BindDrawFramebuffer(T_FbLoc const handle)
 {
 	if (!(m_DrawFramebuffer == handle))
 	{
@@ -1208,7 +1208,7 @@ void GL_CONTEXT_CLASSNAME::BindDrawFramebuffer(T_FbLoc const handle)
 //
 // Set the active renderbuffer
 //
-void GL_CONTEXT_CLASSNAME::BindRenderbuffer(T_RbLoc const handle)
+void GL_DEVICE_CLASSNAME::BindRenderbuffer(T_RbLoc const handle)
 {
 	if (handle != m_Renderbuffer)
 	{
@@ -1222,7 +1222,7 @@ void GL_CONTEXT_CLASSNAME::BindRenderbuffer(T_RbLoc const handle)
 //
 // Bind a texture to a target
 //
-T_TextureUnit GL_CONTEXT_CLASSNAME::BindTexture(E_TextureType const target, T_TextureLoc const texLoc, bool const ensureActive)
+T_TextureUnit GL_DEVICE_CLASSNAME::BindTexture(E_TextureType const target, T_TextureLoc const texLoc, bool const ensureActive)
 {
 	return m_TextureUnits.Bind(target, texLoc, ensureActive);
 }
@@ -1232,7 +1232,7 @@ T_TextureUnit GL_CONTEXT_CLASSNAME::BindTexture(E_TextureType const target, T_Te
 //
 // Unbind a texture from whatever target it is bound to
 //
-void GL_CONTEXT_CLASSNAME::UnbindTexture(E_TextureType const target, T_TextureLoc const texLoc)
+void GL_DEVICE_CLASSNAME::UnbindTexture(E_TextureType const target, T_TextureLoc const texLoc)
 {
 	m_TextureUnits.Unbind(target, texLoc);
 }
@@ -1242,7 +1242,7 @@ void GL_CONTEXT_CLASSNAME::UnbindTexture(E_TextureType const target, T_TextureLo
 //
 // Bind the current vertex array that the state operates on
 //
-void GL_CONTEXT_CLASSNAME::BindVertexArray(T_ArrayLoc const vertexArray)
+void GL_DEVICE_CLASSNAME::BindVertexArray(T_ArrayLoc const vertexArray)
 {
 	if (!(m_VertexArray == vertexArray))
 	{
@@ -1260,12 +1260,12 @@ void GL_CONTEXT_CLASSNAME::BindVertexArray(T_ArrayLoc const vertexArray)
 //
 // Bind the current buffer that the state operates on
 //
-void GL_CONTEXT_CLASSNAME::BindBuffer(E_BufferType const target, T_BufferLoc const buffer)
+void GL_DEVICE_CLASSNAME::BindBuffer(E_BufferType const target, T_BufferLoc const buffer)
 {
 	if (m_BufferTargets[target] != buffer)
 	{
 		m_BufferTargets[target] = buffer;
-		glBindBuffer(GL_CONTEXT_NS::ConvBufferType(target), buffer);
+		glBindBuffer(GL_DEVICE_NS::ConvBufferType(target), buffer);
 	}
 }
 
@@ -1274,7 +1274,7 @@ void GL_CONTEXT_CLASSNAME::BindBuffer(E_BufferType const target, T_BufferLoc con
 //
 // Set the width of lines that are drawn
 //
-void GL_CONTEXT_CLASSNAME::SetLineWidth(float const lineWidth)
+void GL_DEVICE_CLASSNAME::SetLineWidth(float const lineWidth)
 {
 	if (!math::nearEquals(m_LineWidth, lineWidth))
 	{
@@ -1288,7 +1288,7 @@ void GL_CONTEXT_CLASSNAME::SetLineWidth(float const lineWidth)
 //
 // Rerieves the currently active framebuffer, and updates the state to reflect that
 //
-T_FbLoc GL_CONTEXT_CLASSNAME::GetActiveFramebuffer()
+T_FbLoc GL_DEVICE_CLASSNAME::GetActiveFramebuffer()
 {
 	int32 result = 0;
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &result);
@@ -1306,9 +1306,9 @@ T_FbLoc GL_CONTEXT_CLASSNAME::GetActiveFramebuffer()
 //
 // Draw vertex data (without indices)
 //
-void GL_CONTEXT_CLASSNAME::DrawArrays(E_DrawMode const mode, uint32 const first, uint32 const count)
+void GL_DEVICE_CLASSNAME::DrawArrays(E_DrawMode const mode, uint32 const first, uint32 const count)
 {
-	glDrawArrays(GL_CONTEXT_NS::ConvDrawMode(mode), first, count);
+	glDrawArrays(GL_DEVICE_NS::ConvDrawMode(mode), first, count);
 
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 	core::PerformanceInfo::GetInstance()->m_DrawCalls++;
@@ -1320,9 +1320,9 @@ void GL_CONTEXT_CLASSNAME::DrawArrays(E_DrawMode const mode, uint32 const first,
 //
 // Draw vertex data with indices
 //
-void GL_CONTEXT_CLASSNAME::DrawElements(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices)
+void GL_DEVICE_CLASSNAME::DrawElements(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices)
 {
-	glDrawElements(GL_CONTEXT_NS::ConvDrawMode(mode), count, GL_CONTEXT_NS::ConvDataType(type), indices);
+	glDrawElements(GL_DEVICE_NS::ConvDrawMode(mode), count, GL_DEVICE_NS::ConvDataType(type), indices);
 
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 	core::PerformanceInfo::GetInstance()->m_DrawCalls++;
@@ -1334,9 +1334,9 @@ void GL_CONTEXT_CLASSNAME::DrawElements(E_DrawMode const mode, uint32 const coun
 //
 // Draw instanced vertex data with indices
 //
-void GL_CONTEXT_CLASSNAME::DrawElementsInstanced(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices, uint32 const prims)
+void GL_DEVICE_CLASSNAME::DrawElementsInstanced(E_DrawMode const mode, uint32 const count, E_DataType const type, const void * indices, uint32 const prims)
 {
-	glDrawElementsInstanced(GL_CONTEXT_NS::ConvDrawMode(mode), count, GL_CONTEXT_NS::ConvDataType(type), indices, prims);
+	glDrawElementsInstanced(GL_DEVICE_NS::ConvDrawMode(mode), count, GL_DEVICE_NS::ConvDataType(type), indices, prims);
 
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 	core::PerformanceInfo::GetInstance()->m_DrawCalls++;
@@ -1348,7 +1348,7 @@ void GL_CONTEXT_CLASSNAME::DrawElementsInstanced(E_DrawMode const mode, uint32 c
 //
 // Force OpenGL to execute all commands now
 //
-void GL_CONTEXT_CLASSNAME::Flush() const
+void GL_DEVICE_CLASSNAME::Flush() const
 {
 	glFlush();
 }
@@ -1358,7 +1358,7 @@ void GL_CONTEXT_CLASSNAME::Flush() const
 //
 // Force OpenGL to execute all commands now and don't return until its done
 //
-void GL_CONTEXT_CLASSNAME::Finish() const
+void GL_DEVICE_CLASSNAME::Finish() const
 {
 	glFinish();
 }
@@ -1368,7 +1368,7 @@ void GL_CONTEXT_CLASSNAME::Finish() const
 //
 // Clear the part of the currently set viewport that is mapped to the mask
 //
-void GL_CONTEXT_CLASSNAME::Clear(T_ClearFlags const mask) const
+void GL_DEVICE_CLASSNAME::Clear(T_ClearFlags const mask) const
 {
 	GLbitfield field = 0;
 
@@ -1393,7 +1393,7 @@ void GL_CONTEXT_CLASSNAME::Clear(T_ClearFlags const mask) const
 //---------------------------------
 // GlContext::CreateVertexArray
 //
-T_ArrayLoc GL_CONTEXT_CLASSNAME::CreateVertexArray() const
+T_ArrayLoc GL_DEVICE_CLASSNAME::CreateVertexArray() const
 {
 	T_ArrayLoc ret;
 	glGenVertexArrays(1, &ret);
@@ -1403,7 +1403,7 @@ T_ArrayLoc GL_CONTEXT_CLASSNAME::CreateVertexArray() const
 //---------------------------------
 // GlContext::CreateBuffer
 //
-T_BufferLoc GL_CONTEXT_CLASSNAME::CreateBuffer() const
+T_BufferLoc GL_DEVICE_CLASSNAME::CreateBuffer() const
 {
 	T_BufferLoc ret;
 	glGenBuffers(1, &ret);
@@ -1415,7 +1415,7 @@ T_BufferLoc GL_CONTEXT_CLASSNAME::CreateBuffer() const
 //
 // Delete a vertex array
 //
-void GL_CONTEXT_CLASSNAME::DeleteVertexArray(T_ArrayLoc& loc) const
+void GL_DEVICE_CLASSNAME::DeleteVertexArray(T_ArrayLoc& loc) const
 {
 	glDeleteVertexArrays(1, &loc);
 }
@@ -1425,7 +1425,7 @@ void GL_CONTEXT_CLASSNAME::DeleteVertexArray(T_ArrayLoc& loc) const
 //
 // Delete a buffer
 //
-void GL_CONTEXT_CLASSNAME::DeleteBuffer(T_BufferLoc& loc) const
+void GL_DEVICE_CLASSNAME::DeleteBuffer(T_BufferLoc& loc) const
 {
 	glDeleteBuffers(1, &loc);
 }
@@ -1435,9 +1435,9 @@ void GL_CONTEXT_CLASSNAME::DeleteBuffer(T_BufferLoc& loc) const
 //
 // Fill the buffer at target with an array of data
 //
-void GL_CONTEXT_CLASSNAME::SetBufferData(E_BufferType const target, int64 const size, void const* const data, E_UsageHint const usage) const
+void GL_DEVICE_CLASSNAME::SetBufferData(E_BufferType const target, int64 const size, void const* const data, E_UsageHint const usage) const
 {
-	glBufferData(GL_CONTEXT_NS::ConvBufferType(target), size, data, GL_CONTEXT_NS::ConvUsageHint(usage));
+	glBufferData(GL_DEVICE_NS::ConvBufferType(target), size, data, GL_DEVICE_NS::ConvUsageHint(usage));
 }
 
 //---------------------------------
@@ -1445,7 +1445,7 @@ void GL_CONTEXT_CLASSNAME::SetBufferData(E_BufferType const target, int64 const 
 //
 // Enable or disable an attribute at an index in the current vertex array
 //
-void GL_CONTEXT_CLASSNAME::SetVertexAttributeArrayEnabled(uint32 const index, bool const enabled) const
+void GL_DEVICE_CLASSNAME::SetVertexAttributeArrayEnabled(uint32 const index, bool const enabled) const
 {
 	if (enabled)
 	{
@@ -1462,14 +1462,14 @@ void GL_CONTEXT_CLASSNAME::SetVertexAttributeArrayEnabled(uint32 const index, bo
 //
 // Define the type of data the attribute at a certain index in the current vertex array is mapped to
 //
-void GL_CONTEXT_CLASSNAME::DefineVertexAttributePointer(uint32 const index,
+void GL_DEVICE_CLASSNAME::DefineVertexAttributePointer(uint32 const index,
 	int32 const size, 
 	E_DataType const type, 
 	bool const norm, 
 	int32 const stride, 
 	size_t const offset) const
 {
-	glVertexAttribPointer(index, size, GL_CONTEXT_NS::ConvDataType(type), (norm ? GL_TRUE : GL_FALSE), stride, static_cast<char const*>(0) + offset);
+	glVertexAttribPointer(index, size, GL_DEVICE_NS::ConvDataType(type), (norm ? GL_TRUE : GL_FALSE), stride, static_cast<char const*>(0) + offset);
 }
 
 //---------------------------------
@@ -1477,13 +1477,13 @@ void GL_CONTEXT_CLASSNAME::DefineVertexAttributePointer(uint32 const index,
 //
 // Same as above, but for non normalized integers
 //
-void GL_CONTEXT_CLASSNAME::DefineVertexAttribIPointer(uint32 const index,
+void GL_DEVICE_CLASSNAME::DefineVertexAttribIPointer(uint32 const index,
 	int32 const size, 
 	E_DataType const type, 
 	int32 const stride, 
 	size_t const offset) const
 {
-	glVertexAttribIPointer(index, size, GL_CONTEXT_NS::ConvDataType(type), stride, static_cast<char const*>(0) + offset);
+	glVertexAttribIPointer(index, size, GL_DEVICE_NS::ConvDataType(type), stride, static_cast<char const*>(0) + offset);
 }
 
 //---------------------------------
@@ -1491,7 +1491,7 @@ void GL_CONTEXT_CLASSNAME::DefineVertexAttribIPointer(uint32 const index,
 //
 // Additional vertex stride during instanced rendering
 //
-void GL_CONTEXT_CLASSNAME::DefineVertexAttribDivisor(uint32 const index, uint32 const divisor) const
+void GL_DEVICE_CLASSNAME::DefineVertexAttribDivisor(uint32 const index, uint32 const divisor) const
 {
 	glVertexAttribDivisor(index, divisor);
 }
@@ -1501,9 +1501,9 @@ void GL_CONTEXT_CLASSNAME::DefineVertexAttribDivisor(uint32 const index, uint32 
 //
 // Map the data of a buffer to a pointer on the CPU so that it can be modified
 //
-void* GL_CONTEXT_CLASSNAME::MapBuffer(E_BufferType const target, E_AccessMode const access) const
+void* GL_DEVICE_CLASSNAME::MapBuffer(E_BufferType const target, E_AccessMode const access) const
 {
-	return glMapBuffer(GL_CONTEXT_NS::ConvBufferType(target), GL_CONTEXT_NS::ConvAccessMode(access));
+	return glMapBuffer(GL_DEVICE_NS::ConvBufferType(target), GL_DEVICE_NS::ConvAccessMode(access));
 }
 
 //---------------------------------
@@ -1511,9 +1511,9 @@ void* GL_CONTEXT_CLASSNAME::MapBuffer(E_BufferType const target, E_AccessMode co
 //
 // Unmap a buffer from the pointer it's mapped to on the CPU
 //
-void GL_CONTEXT_CLASSNAME::UnmapBuffer(E_BufferType const target) const
+void GL_DEVICE_CLASSNAME::UnmapBuffer(E_BufferType const target) const
 {
-	glUnmapBuffer(GL_CONTEXT_NS::ConvBufferType(target));
+	glUnmapBuffer(GL_DEVICE_NS::ConvBufferType(target));
 }
 
 //---------------------------------
@@ -1521,19 +1521,19 @@ void GL_CONTEXT_CLASSNAME::UnmapBuffer(E_BufferType const target) const
 //
 // Bind a buffer to a shared location (index)
 //
-void GL_CONTEXT_CLASSNAME::BindBufferRange(E_BufferType const target, 
+void GL_DEVICE_CLASSNAME::BindBufferRange(E_BufferType const target, 
 	uint32 const index, 
 	T_BufferLoc const buffer, 
 	size_t const offset, 
 	size_t const size) const
 {
-	glBindBufferRange(GL_CONTEXT_NS::ConvBufferType(target), index, buffer, offset, size);
+	glBindBufferRange(GL_DEVICE_NS::ConvBufferType(target), index, buffer, offset, size);
 }
 
 //---------------------------------
 // GlContext::UnmapBuffer
 //
-T_TextureLoc GL_CONTEXT_CLASSNAME::GenerateTexture() const
+T_TextureLoc GL_DEVICE_CLASSNAME::GenerateTexture() const
 {
 	T_TextureLoc ret;
 	glGenTextures(1, &ret);
@@ -1543,7 +1543,7 @@ T_TextureLoc GL_CONTEXT_CLASSNAME::GenerateTexture() const
 //---------------------------------
 // GlContext::DeleteTexture
 //
-void GL_CONTEXT_CLASSNAME::DeleteTexture(T_TextureLoc& texLoc)
+void GL_DEVICE_CLASSNAME::DeleteTexture(T_TextureLoc& texLoc)
 {
 	// reset bound textures
 	m_TextureUnits.OnTextureDelete(texLoc);
@@ -1558,15 +1558,15 @@ void GL_CONTEXT_CLASSNAME::DeleteTexture(T_TextureLoc& texLoc)
 //
 // upload a textures bits to its GPU location
 //
-void GL_CONTEXT_CLASSNAME::UploadTextureData(TextureData& texture, 
+void GL_DEVICE_CLASSNAME::UploadTextureData(TextureData& texture, 
 	void const* const data, 
 	E_ColorFormat const layout, 
 	E_DataType const dataType, 
 	int32 const mipLevel)
 {
-	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
+	uint32 const target = GL_DEVICE_NS::ConvTextureType(texture.GetTargetType());
 	ivec2 res = texture.GetResolution() / (1 << mipLevel);
-	GLint const intFmt = static_cast<GLint>(GL_CONTEXT_NS::ConvColorFormat(texture.GetStorageFormat()));
+	GLint const intFmt = static_cast<GLint>(GL_DEVICE_NS::ConvColorFormat(texture.GetStorageFormat()));
 	ET_ASSERT(layout <= E_ColorFormat::BGRA, "Texture layout can't specify storage format!"); // possibly the enum should be split
 
 	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
@@ -1574,7 +1574,7 @@ void GL_CONTEXT_CLASSNAME::UploadTextureData(TextureData& texture,
 	switch (texture.GetTargetType())
 	{
 	case E_TextureType::Texture2D:
-		glTexImage2D(target, mipLevel, intFmt, res.x, res.y, 0, GL_CONTEXT_NS::ConvColorFormat(layout), GL_CONTEXT_NS::ConvDataType(dataType), data);
+		glTexImage2D(target, mipLevel, intFmt, res.x, res.y, 0, GL_DEVICE_NS::ConvColorFormat(layout), GL_DEVICE_NS::ConvDataType(dataType), data);
 		break;
 
 	case E_TextureType::Texture3D:
@@ -1585,8 +1585,8 @@ void GL_CONTEXT_CLASSNAME::UploadTextureData(TextureData& texture,
 			res.y, 
 			texture.GetDepth(), 
 			0, 
-			GL_CONTEXT_NS::ConvColorFormat(layout),
-			GL_CONTEXT_NS::ConvDataType(dataType),
+			GL_DEVICE_NS::ConvColorFormat(layout),
+			GL_DEVICE_NS::ConvDataType(dataType),
 			data);
 		break;
 
@@ -1604,8 +1604,8 @@ void GL_CONTEXT_CLASSNAME::UploadTextureData(TextureData& texture,
 				res.x, 
 				res.y, 
 				0, 
-				GL_CONTEXT_NS::ConvColorFormat(layout), 
-				GL_CONTEXT_NS::ConvDataType(dataType), 
+				GL_DEVICE_NS::ConvColorFormat(layout), 
+				GL_DEVICE_NS::ConvDataType(dataType), 
 				reinterpret_cast<void const*>(reinterpret_cast<uint8 const*>(data) + (faceSize * static_cast<size_t>(face))));
 		}
 
@@ -1624,11 +1624,11 @@ void GL_CONTEXT_CLASSNAME::UploadTextureData(TextureData& texture,
 //
 // upload a textures bits to its GPU location
 //
-void GL_CONTEXT_CLASSNAME::UploadCompressedTextureData(TextureData& texture, void const* const data, size_t const size, int32 const mipLevel)
+void GL_DEVICE_CLASSNAME::UploadCompressedTextureData(TextureData& texture, void const* const data, size_t const size, int32 const mipLevel)
 {
-	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
+	uint32 const target = GL_DEVICE_NS::ConvTextureType(texture.GetTargetType());
 	ivec2 res = texture.GetResolution() / (1 << mipLevel);
-	GLint const intFmt = static_cast<GLint>(GL_CONTEXT_NS::ConvColorFormat(texture.GetStorageFormat()));
+	GLint const intFmt = static_cast<GLint>(GL_DEVICE_NS::ConvColorFormat(texture.GetStorageFormat()));
 
 	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
 
@@ -1661,19 +1661,19 @@ void GL_CONTEXT_CLASSNAME::UploadCompressedTextureData(TextureData& texture, voi
 //
 // upload a textures bits to its GPU location
 //
-void GL_CONTEXT_CLASSNAME::AllocateTextureStorage(TextureData& texture)
+void GL_DEVICE_CLASSNAME::AllocateTextureStorage(TextureData& texture)
 {
-	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
+	uint32 const target = GL_DEVICE_NS::ConvTextureType(texture.GetTargetType());
 
 	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
 
 	ivec2 const res = texture.GetResolution();
 
 	E_ColorFormat const storageFmt = texture.GetStorageFormat();
-	GLint const intFmt = static_cast<GLint>(GL_CONTEXT_NS::ConvColorFormat(storageFmt));
+	GLint const intFmt = static_cast<GLint>(GL_DEVICE_NS::ConvColorFormat(storageFmt));
 
 	GLenum colorLayout, dataType;
-	GL_CONTEXT_NS::DeriveLayoutAndType(storageFmt, colorLayout, dataType);
+	GL_DEVICE_NS::DeriveLayoutAndType(storageFmt, colorLayout, dataType);
 
 	switch (texture.GetTargetType())
 	{
@@ -1701,9 +1701,9 @@ void GL_CONTEXT_CLASSNAME::AllocateTextureStorage(TextureData& texture)
 //
 // Update parameters on a texture
 //
-void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, TextureParameters& prev, TextureParameters const& next, bool const force)
+void GL_DEVICE_CLASSNAME::SetTextureParams(TextureData const& texture, TextureParameters& prev, TextureParameters const& next, bool const force)
 {
-	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
+	uint32 const target = GL_DEVICE_NS::ConvTextureType(texture.GetTargetType());
 	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
 
 	// filter options
@@ -1711,7 +1711,7 @@ void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, TextureP
 	// in the future it may make sense to create filter groups so that things such as anisotropy can be set globally
 	if ((prev.minFilter != next.minFilter) || (prev.mipFilter != next.mipFilter) || (prev.genMipMaps != next.genMipMaps) || force)
 	{
-		int32 minFilter = GL_CONTEXT_NS::ConvMinFilter(next.minFilter, next.mipFilter, next.genMipMaps);
+		int32 minFilter = GL_DEVICE_NS::ConvMinFilter(next.minFilter, next.mipFilter, next.genMipMaps);
 		ET_ASSERT(minFilter != 0);
 
 		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilter);
@@ -1719,7 +1719,7 @@ void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, TextureP
 
 	if ((prev.magFilter != next.magFilter) || force)
 	{
-		int32 filter = GL_CONTEXT_NS::ConvFilter(next.magFilter);
+		int32 filter = GL_DEVICE_NS::ConvFilter(next.magFilter);
 		ET_ASSERT(filter != 0);
 
 		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filter);
@@ -1729,17 +1729,17 @@ void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, TextureP
 	//-------------
 	if ((prev.wrapS != next.wrapS) || force)
 	{
-		glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CONTEXT_NS::ConvWrapMode(next.wrapS));
+		glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_DEVICE_NS::ConvWrapMode(next.wrapS));
 	}
 
 	if ((prev.wrapT != next.wrapT) || force)
 	{
-		glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CONTEXT_NS::ConvWrapMode(next.wrapT));
+		glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_DEVICE_NS::ConvWrapMode(next.wrapT));
 	}
 
 	if ((texture.GetDepth() > 1) && ((prev.wrapR != next.wrapR) || force))
 	{
-		glTexParameteri(target, GL_TEXTURE_WRAP_R, GL_CONTEXT_NS::ConvWrapMode(next.wrapR));
+		glTexParameteri(target, GL_TEXTURE_WRAP_R, GL_DEVICE_NS::ConvWrapMode(next.wrapR));
 	}
 
 	// border color
@@ -1752,7 +1752,7 @@ void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, TextureP
 	//-------
 	if ((next.isDepthTex && (prev.compareMode != next.compareMode)) || (next.isDepthTex && force))
 	{
-		glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, GL_CONTEXT_NS::ConvCompareMode(next.compareMode));//shadow map comp mode
+		glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, GL_DEVICE_NS::ConvCompareMode(next.compareMode));//shadow map comp mode
 	}
 
 	// max mip level incase mips where manually uploaded
@@ -1768,9 +1768,9 @@ void GL_CONTEXT_CLASSNAME::SetTextureParams(TextureData const& texture, TextureP
 //---------------------------------
 // GlContext::GenerateMipMaps
 //
-void GL_CONTEXT_CLASSNAME::GenerateMipMaps(TextureData const& texture, uint8& mipLevels)
+void GL_DEVICE_CLASSNAME::GenerateMipMaps(TextureData const& texture, uint8& mipLevels)
 {
-	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
+	uint32 const target = GL_DEVICE_NS::ConvTextureType(texture.GetTargetType());
 	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
 
 	glGenerateMipmap(target);
@@ -1785,7 +1785,7 @@ void GL_CONTEXT_CLASSNAME::GenerateMipMaps(TextureData const& texture, uint8& mi
 //
 // Create a handle for bindless access of a texture, at the cost of not being able to change parameters any longer
 //
-T_TextureHandle GL_CONTEXT_CLASSNAME::GetTextureHandle(T_TextureLoc const texLoc) const
+T_TextureHandle GL_DEVICE_CLASSNAME::GetTextureHandle(T_TextureLoc const texLoc) const
 {
 	if (!m_BindlessTexturesAvailable)
 	{
@@ -1800,7 +1800,7 @@ T_TextureHandle GL_CONTEXT_CLASSNAME::GetTextureHandle(T_TextureLoc const texLoc
 //
 // 'bind' a texture handle so it can be used by shaders
 //
-void GL_CONTEXT_CLASSNAME::SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const
+void GL_DEVICE_CLASSNAME::SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const
 {
 	if (!m_BindlessTexturesAvailable)
 	{
@@ -1823,17 +1823,17 @@ void GL_CONTEXT_CLASSNAME::SetTextureHandleResidency(T_TextureHandle const handl
 // Get the pixels from a texture
 //  - for cubemaps the pixels are simply stored sequential
 //
-void GL_CONTEXT_CLASSNAME::GetTextureData(TextureData const& texture,
+void GL_DEVICE_CLASSNAME::GetTextureData(TextureData const& texture,
 	uint8 const mipLevel, 
 	E_ColorFormat const format, 
 	E_DataType const dataType, 
 	void* const data)
 {
-	uint32 const target = GL_CONTEXT_NS::ConvTextureType(texture.GetTargetType());
+	uint32 const target = GL_DEVICE_NS::ConvTextureType(texture.GetTargetType());
 	BindTexture(texture.GetTargetType(), texture.GetLocation(), true);
 
-	GLenum const glLayout = GL_CONTEXT_NS::ConvColorFormat(format);
-	GLenum const glDataType = GL_CONTEXT_NS::ConvDataType(dataType);
+	GLenum const glLayout = GL_DEVICE_NS::ConvColorFormat(format);
+	GLenum const glDataType = GL_DEVICE_NS::ConvDataType(dataType);
 
 	if (texture.GetTargetType() == E_TextureType::CubeMap)
 	{
@@ -1864,9 +1864,9 @@ void GL_CONTEXT_CLASSNAME::GetTextureData(TextureData const& texture,
 //
 // Create a shader object and return its handle
 //
-T_ShaderLoc GL_CONTEXT_CLASSNAME::CreateShader(E_ShaderType const type) const
+T_ShaderLoc GL_DEVICE_CLASSNAME::CreateShader(E_ShaderType const type) const
 {
-	return glCreateShader(GL_CONTEXT_NS::ConvShaderType(type));
+	return glCreateShader(GL_DEVICE_NS::ConvShaderType(type));
 }
 
 //---------------------------------
@@ -1874,7 +1874,7 @@ T_ShaderLoc GL_CONTEXT_CLASSNAME::CreateShader(E_ShaderType const type) const
 //
 // Create a program object and return its handle
 //
-T_ShaderLoc GL_CONTEXT_CLASSNAME::CreateProgram() const
+T_ShaderLoc GL_DEVICE_CLASSNAME::CreateProgram() const
 {
 	return glCreateProgram();
 }
@@ -1884,7 +1884,7 @@ T_ShaderLoc GL_CONTEXT_CLASSNAME::CreateProgram() const
 //
 // Delete a shader by its handle
 //
-void GL_CONTEXT_CLASSNAME::DeleteShader(T_ShaderLoc const shader)
+void GL_DEVICE_CLASSNAME::DeleteShader(T_ShaderLoc const shader)
 {
 	glDeleteShader(shader);
 }
@@ -1894,7 +1894,7 @@ void GL_CONTEXT_CLASSNAME::DeleteShader(T_ShaderLoc const shader)
 //
 // Delete a program by its handle
 //
-void GL_CONTEXT_CLASSNAME::DeleteProgram(T_ShaderLoc const program)
+void GL_DEVICE_CLASSNAME::DeleteProgram(T_ShaderLoc const program)
 {
 	glDeleteProgram(program);
 }
@@ -1904,7 +1904,7 @@ void GL_CONTEXT_CLASSNAME::DeleteProgram(T_ShaderLoc const program)
 //
 // Compile a shader
 //
-void GL_CONTEXT_CLASSNAME::CompileShader(T_ShaderLoc const shader, std::string const& source) const
+void GL_DEVICE_CLASSNAME::CompileShader(T_ShaderLoc const shader, std::string const& source) const
 {
 	char const* sourcePtr = source.c_str();
 	glShaderSource(shader, 1, &sourcePtr, nullptr);
@@ -1916,7 +1916,7 @@ void GL_CONTEXT_CLASSNAME::CompileShader(T_ShaderLoc const shader, std::string c
 //
 // Set the return member of a fragment shader
 //
-void GL_CONTEXT_CLASSNAME::BindFragmentDataLocation(T_ShaderLoc const program, uint32 const colorNumber, std::string const& name) const
+void GL_DEVICE_CLASSNAME::BindFragmentDataLocation(T_ShaderLoc const program, uint32 const colorNumber, std::string const& name) const
 {
 	glBindFragDataLocation(program, colorNumber, name.c_str());
 }
@@ -1926,7 +1926,7 @@ void GL_CONTEXT_CLASSNAME::BindFragmentDataLocation(T_ShaderLoc const program, u
 //
 // Attach a shader to a program before linking
 //
-void GL_CONTEXT_CLASSNAME::AttachShader(T_ShaderLoc const program, T_ShaderLoc const shader) const
+void GL_DEVICE_CLASSNAME::AttachShader(T_ShaderLoc const program, T_ShaderLoc const shader) const
 {
 	glAttachShader(program, shader);
 }
@@ -1936,7 +1936,7 @@ void GL_CONTEXT_CLASSNAME::AttachShader(T_ShaderLoc const program, T_ShaderLoc c
 //
 // Link the shaders in a program
 //
-void GL_CONTEXT_CLASSNAME::LinkProgram(T_ShaderLoc const program) const
+void GL_DEVICE_CLASSNAME::LinkProgram(T_ShaderLoc const program) const
 {
 	glLinkProgram(program);
 }
@@ -1944,7 +1944,7 @@ void GL_CONTEXT_CLASSNAME::LinkProgram(T_ShaderLoc const program) const
 //---------------------------------
 // GlContext::IsShaderCompiled
 //
-bool GL_CONTEXT_CLASSNAME::IsShaderCompiled(T_ShaderLoc const shader) const
+bool GL_DEVICE_CLASSNAME::IsShaderCompiled(T_ShaderLoc const shader) const
 {
 	GLint status;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
@@ -1956,7 +1956,7 @@ bool GL_CONTEXT_CLASSNAME::IsShaderCompiled(T_ShaderLoc const shader) const
 //
 // Get logged information about a shader
 //
-void GL_CONTEXT_CLASSNAME::GetShaderInfo(T_ShaderLoc const shader, std::string& info) const
+void GL_DEVICE_CLASSNAME::GetShaderInfo(T_ShaderLoc const shader, std::string& info) const
 {
 	char buffer[512];
 	glGetShaderInfoLog(shader, 512, NULL, buffer);
@@ -1968,7 +1968,7 @@ void GL_CONTEXT_CLASSNAME::GetShaderInfo(T_ShaderLoc const shader, std::string& 
 //
 // Get the index of a uniform block within a shader
 //
-T_BlockIndex GL_CONTEXT_CLASSNAME::GetUniformBlockIndex(T_ShaderLoc const program, std::string const& blockName) const
+T_BlockIndex GL_DEVICE_CLASSNAME::GetUniformBlockIndex(T_ShaderLoc const program, std::string const& blockName) const
 {
 	return glGetUniformBlockIndex(program, blockName.c_str());
 }
@@ -1976,7 +1976,7 @@ T_BlockIndex GL_CONTEXT_CLASSNAME::GetUniformBlockIndex(T_ShaderLoc const progra
 //---------------------------------
 // GlContext::IsBlockIndexValid
 //
-bool GL_CONTEXT_CLASSNAME::IsBlockIndexValid(T_BlockIndex const index) const
+bool GL_DEVICE_CLASSNAME::IsBlockIndexValid(T_BlockIndex const index) const
 {
 	return (index != GL_INVALID_INDEX);
 }
@@ -1984,7 +1984,7 @@ bool GL_CONTEXT_CLASSNAME::IsBlockIndexValid(T_BlockIndex const index) const
 //---------------------------------
 // GlContext::GetUniformBlockNames
 //
-std::vector<std::string> GL_CONTEXT_CLASSNAME::GetUniformBlockNames(T_ShaderLoc const program) const
+std::vector<std::string> GL_DEVICE_CLASSNAME::GetUniformBlockNames(T_ShaderLoc const program) const
 {
 	// amount of uniform blocks in the shader
 	GLint blockCount = 0;
@@ -2014,7 +2014,7 @@ std::vector<std::string> GL_CONTEXT_CLASSNAME::GetUniformBlockNames(T_ShaderLoc 
 //--------------------------------------
 // GlContext::GetUniformIndicesForBlock
 //
-std::vector<int32> GL_CONTEXT_CLASSNAME::GetUniformIndicesForBlock(T_ShaderLoc const program, T_BlockIndex const blockIndex) const
+std::vector<int32> GL_DEVICE_CLASSNAME::GetUniformIndicesForBlock(T_ShaderLoc const program, T_BlockIndex const blockIndex) const
 {
 	std::vector<int32> ret;
 
@@ -2042,7 +2042,7 @@ std::vector<int32> GL_CONTEXT_CLASSNAME::GetUniformIndicesForBlock(T_ShaderLoc c
 //-----------------------------------
 // GlContext::SetUniformBlockBinding
 //
-void GL_CONTEXT_CLASSNAME::SetUniformBlockBinding(T_ShaderLoc const program, T_BlockIndex const blockIndex, uint32 const bindingIndex) const
+void GL_DEVICE_CLASSNAME::SetUniformBlockBinding(T_ShaderLoc const program, T_BlockIndex const blockIndex, uint32 const bindingIndex) const
 {
 	glUniformBlockBinding(program, blockIndex, bindingIndex);
 }
@@ -2050,7 +2050,7 @@ void GL_CONTEXT_CLASSNAME::SetUniformBlockBinding(T_ShaderLoc const program, T_B
 //---------------------------------
 // GlContext::GetAttributeCount
 //
-int32 GL_CONTEXT_CLASSNAME::GetAttributeCount(T_ShaderLoc const program) const
+int32 GL_DEVICE_CLASSNAME::GetAttributeCount(T_ShaderLoc const program) const
 {
 	GLint count;
 	glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &count);
@@ -2060,7 +2060,7 @@ int32 GL_CONTEXT_CLASSNAME::GetAttributeCount(T_ShaderLoc const program) const
 //---------------------------------
 // GlContext::GetUniformCount
 //
-int32 GL_CONTEXT_CLASSNAME::GetUniformCount(T_ShaderLoc const program) const
+int32 GL_DEVICE_CLASSNAME::GetUniformCount(T_ShaderLoc const program) const
 {
 	GLint count;
 	glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count);
@@ -2072,7 +2072,7 @@ int32 GL_CONTEXT_CLASSNAME::GetUniformCount(T_ShaderLoc const program) const
 //
 // Get a list of initialized uniform objects for a particular uniform index
 //
-void GL_CONTEXT_CLASSNAME::GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<UniformDescriptor>& uniforms) const
+void GL_DEVICE_CLASSNAME::GetActiveUniforms(T_ShaderLoc const program, uint32 const index, std::vector<UniformDescriptor>& uniforms) const
 {
 	GLint arrayCount; // support 1D arrays of structs
 	GLenum type;
@@ -2111,7 +2111,7 @@ void GL_CONTEXT_CLASSNAME::GetActiveUniforms(T_ShaderLoc const program, uint32 c
 			uni.name += "[" + std::to_string(arrayIdx) + "]" + endName;
 		}
 
-		uni.type = GL_CONTEXT_NS::ParseParamType(type);
+		uni.type = GL_DEVICE_NS::ParseParamType(type);
 
 		uni.location = glGetUniformLocation(program, uni.name.c_str());
 	}
@@ -2122,7 +2122,7 @@ void GL_CONTEXT_CLASSNAME::GetActiveUniforms(T_ShaderLoc const program, uint32 c
 //
 // Get information about an attribute in a program at a given index
 //
-void GL_CONTEXT_CLASSNAME::GetActiveAttribute(T_ShaderLoc const program, uint32 const index, AttributeDescriptor& info) const
+void GL_DEVICE_CLASSNAME::GetActiveAttribute(T_ShaderLoc const program, uint32 const index, AttributeDescriptor& info) const
 {
 	GLint size = 0;
 	GLenum type = 0;
@@ -2285,7 +2285,7 @@ void GL_CONTEXT_CLASSNAME::GetActiveAttribute(T_ShaderLoc const program, uint32 
 //
 // ID for an attribute on this shader program
 //
-T_AttribLoc GL_CONTEXT_CLASSNAME::GetAttributeLocation(T_ShaderLoc const program, std::string const& name) const
+T_AttribLoc GL_DEVICE_CLASSNAME::GetAttributeLocation(T_ShaderLoc const program, std::string const& name) const
 {
 	return glGetAttribLocation(program, name.c_str());
 }
@@ -2295,7 +2295,7 @@ T_AttribLoc GL_CONTEXT_CLASSNAME::GetAttributeLocation(T_ShaderLoc const program
 //
 // Fill the data with the shaders current parameter value
 //
-void GL_CONTEXT_CLASSNAME::PopulateUniform(T_ShaderLoc const program, T_UniformLoc const location, E_ParamType const type, void* data) const
+void GL_DEVICE_CLASSNAME::PopulateUniform(T_ShaderLoc const program, T_UniformLoc const location, E_ParamType const type, void* data) const
 {
 	switch (type)
 	{
@@ -2344,7 +2344,7 @@ void GL_CONTEXT_CLASSNAME::PopulateUniform(T_ShaderLoc const program, T_UniformL
 //
 // Upload a boolean to the GPU
 //
-void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, bool const data) const
+void GL_DEVICE_CLASSNAME::UploadUniform(T_UniformLoc const location, bool const data) const
 {
 	glUniform1i(location, data);
 }
@@ -2354,7 +2354,7 @@ void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, bool const
 //
 // Upload an integer to the GPU
 //
-void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, int32 const data) const
+void GL_DEVICE_CLASSNAME::UploadUniform(T_UniformLoc const location, int32 const data) const
 {
 	glUniform1i(location, data);
 }
@@ -2364,7 +2364,7 @@ void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, int32 cons
 //
 // Upload an unsigned integer to the GPU
 //
-void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, uint32 const data) const
+void GL_DEVICE_CLASSNAME::UploadUniform(T_UniformLoc const location, uint32 const data) const
 {
 	glUniform1ui(location, data);
 }
@@ -2374,7 +2374,7 @@ void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, uint32 con
 //
 // Upload a scalar to the GPU
 //
-void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, float const data) const
+void GL_DEVICE_CLASSNAME::UploadUniform(T_UniformLoc const location, float const data) const
 {
 	glUniform1f(location, data);
 }
@@ -2384,7 +2384,7 @@ void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, float cons
 //
 // Upload a 2D Vector to the GPU
 //
-void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, vec2 const data) const
+void GL_DEVICE_CLASSNAME::UploadUniform(T_UniformLoc const location, vec2 const data) const
 {
 	glUniform2f(location, data.x, data.y);
 }
@@ -2394,7 +2394,7 @@ void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, vec2 const
 //
 // Upload a 3D Vector to the GPU
 //
-void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, vec3 const& data) const
+void GL_DEVICE_CLASSNAME::UploadUniform(T_UniformLoc const location, vec3 const& data) const
 {
 	glUniform3f(location, data.x, data.y, data.z);
 }
@@ -2404,7 +2404,7 @@ void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, vec3 const
 //
 // Upload a 4D Vector to the GPU
 //
-void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, vec4 const& data) const
+void GL_DEVICE_CLASSNAME::UploadUniform(T_UniformLoc const location, vec4 const& data) const
 {
 	glUniform4f(location, data.x, data.y, data.z, data.w);
 }
@@ -2414,7 +2414,7 @@ void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, vec4 const
 //
 // Upload a 3x3 Matrix to the GPU
 //
-void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, mat3 const& data) const
+void GL_DEVICE_CLASSNAME::UploadUniform(T_UniformLoc const location, mat3 const& data) const
 {
 	glUniformMatrix3fv(location, 1, GL_FALSE, math::valuePtr(data));
 }
@@ -2424,7 +2424,7 @@ void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, mat3 const
 //
 // Upload a 4x4 Matrix to the GPU
 //
-void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, mat4 const& data) const
+void GL_DEVICE_CLASSNAME::UploadUniform(T_UniformLoc const location, mat4 const& data) const
 {
 	glUniformMatrix4fv(location, 1, GL_FALSE, math::valuePtr(data));
 }
@@ -2434,7 +2434,7 @@ void GL_CONTEXT_CLASSNAME::UploadUniform(T_UniformLoc const location, mat4 const
 //
 // Create a number of framebuffer objects
 //
-void GL_CONTEXT_CLASSNAME::GenFramebuffers(int32 const n, T_FbLoc *ids) const
+void GL_DEVICE_CLASSNAME::GenFramebuffers(int32 const n, T_FbLoc *ids) const
 {
 	glGenFramebuffers(n, ids);
 }
@@ -2444,7 +2444,7 @@ void GL_CONTEXT_CLASSNAME::GenFramebuffers(int32 const n, T_FbLoc *ids) const
 //
 // Frees the framebuffer GPU resources
 //
-void GL_CONTEXT_CLASSNAME::DeleteFramebuffers(int32 const n, T_FbLoc *ids) 
+void GL_DEVICE_CLASSNAME::DeleteFramebuffers(int32 const n, T_FbLoc *ids) 
 {
 	for (int32 idx = 0; idx < n; ++idx)
 	{
@@ -2469,7 +2469,7 @@ void GL_CONTEXT_CLASSNAME::DeleteFramebuffers(int32 const n, T_FbLoc *ids)
 //
 // Create a number of renderbuffer objects
 //
-void GL_CONTEXT_CLASSNAME::GenRenderBuffers(int32 const n, T_RbLoc *ids) const
+void GL_DEVICE_CLASSNAME::GenRenderBuffers(int32 const n, T_RbLoc *ids) const
 {
 	glGenRenderbuffers(n, ids);
 }
@@ -2479,7 +2479,7 @@ void GL_CONTEXT_CLASSNAME::GenRenderBuffers(int32 const n, T_RbLoc *ids) const
 //
 // Frees the renderbuffer GPU resources
 //
-void GL_CONTEXT_CLASSNAME::DeleteRenderBuffers(int32 const n, T_RbLoc *ids) 
+void GL_DEVICE_CLASSNAME::DeleteRenderBuffers(int32 const n, T_RbLoc *ids) 
 {
 	for (int32 idx = 0; idx < n; ++idx)
 	{
@@ -2498,7 +2498,7 @@ void GL_CONTEXT_CLASSNAME::DeleteRenderBuffers(int32 const n, T_RbLoc *ids)
 //
 // Establish a renderbuffers dataformat and storage
 //
-void GL_CONTEXT_CLASSNAME::SetRenderbufferStorage(E_RenderBufferFormat const format, ivec2 const dimensions) const
+void GL_DEVICE_CLASSNAME::SetRenderbufferStorage(E_RenderBufferFormat const format, ivec2 const dimensions) const
 {
 	GLenum glFmt = GL_NONE;
 	switch (format)
@@ -2522,7 +2522,7 @@ void GL_CONTEXT_CLASSNAME::SetRenderbufferStorage(E_RenderBufferFormat const for
 //
 // link to current draw FB with a color attachment
 //
-void GL_CONTEXT_CLASSNAME::LinkTextureToFbo(uint8 const attachment, T_TextureLoc const texHandle, int32 const level) const
+void GL_DEVICE_CLASSNAME::LinkTextureToFbo(uint8 const attachment, T_TextureLoc const texHandle, int32 const level) const
 {
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + static_cast<uint32>(attachment), texHandle, level);
 }
@@ -2532,7 +2532,7 @@ void GL_CONTEXT_CLASSNAME::LinkTextureToFbo(uint8 const attachment, T_TextureLoc
 //
 // Same as above, but specifies a target
 //
-void GL_CONTEXT_CLASSNAME::LinkTextureToFbo2D(uint8 const attachment, T_TextureLoc const texHandle, int32 const level) const
+void GL_DEVICE_CLASSNAME::LinkTextureToFbo2D(uint8 const attachment, T_TextureLoc const texHandle, int32 const level) const
 {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + static_cast<uint32>(attachment), GL_TEXTURE_2D, texHandle, level);
 }
@@ -2542,7 +2542,7 @@ void GL_CONTEXT_CLASSNAME::LinkTextureToFbo2D(uint8 const attachment, T_TextureL
 //
 // Same as above, but specifies a target
 //
-void GL_CONTEXT_CLASSNAME::LinkCubeMapFaceToFbo2D(uint8 const face, T_TextureLoc const texHandle, int32 const level) const
+void GL_DEVICE_CLASSNAME::LinkCubeMapFaceToFbo2D(uint8 const face, T_TextureLoc const texHandle, int32 const level) const
 {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, texHandle, level);
 }
@@ -2552,7 +2552,7 @@ void GL_CONTEXT_CLASSNAME::LinkCubeMapFaceToFbo2D(uint8 const face, T_TextureLoc
 //
 // Link a depth texture to an FBO
 //
-void GL_CONTEXT_CLASSNAME::LinkTextureToFboDepth(T_TextureLoc const texHandle) const
+void GL_DEVICE_CLASSNAME::LinkTextureToFboDepth(T_TextureLoc const texHandle) const
 {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texHandle, 0);
 }
@@ -2560,7 +2560,7 @@ void GL_CONTEXT_CLASSNAME::LinkTextureToFboDepth(T_TextureLoc const texHandle) c
 //---------------------------------
 // GlContext::LinkRenderbufferToFbo
 //
-void GL_CONTEXT_CLASSNAME::LinkRenderbufferToFbo(E_RenderBufferFormat const attachment, uint32 const rboHandle) const
+void GL_DEVICE_CLASSNAME::LinkRenderbufferToFbo(E_RenderBufferFormat const attachment, uint32 const rboHandle) const
 {
 	GLenum glFmt = GL_NONE;
 	switch (attachment)
@@ -2584,7 +2584,7 @@ void GL_CONTEXT_CLASSNAME::LinkRenderbufferToFbo(E_RenderBufferFormat const atta
 //
 // Setup the amount of color attachments on the current framebuffer
 //
-void GL_CONTEXT_CLASSNAME::SetDrawBufferCount(size_t const count) const
+void GL_DEVICE_CLASSNAME::SetDrawBufferCount(size_t const count) const
 {
 	// we may also disable drawing color
 	if (count == 0)
@@ -2612,7 +2612,7 @@ void GL_CONTEXT_CLASSNAME::SetDrawBufferCount(size_t const count) const
 // For the current buffer, whether or not openGL will read a color value.
 // Assumes double buffered rendering
 //
-void GL_CONTEXT_CLASSNAME::SetReadBufferEnabled(bool const val) const
+void GL_DEVICE_CLASSNAME::SetReadBufferEnabled(bool const val) const
 {
 	glReadBuffer(val ? GL_BACK : GL_NONE);
 }
@@ -2620,7 +2620,7 @@ void GL_CONTEXT_CLASSNAME::SetReadBufferEnabled(bool const val) const
 //-----------------------------------
 // GlContext::SetReadBufferEnabled
 //
-bool GL_CONTEXT_CLASSNAME::IsFramebufferComplete() const
+bool GL_DEVICE_CLASSNAME::IsFramebufferComplete() const
 {
 	return (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 }
@@ -2628,7 +2628,7 @@ bool GL_CONTEXT_CLASSNAME::IsFramebufferComplete() const
 //-----------------------------------
 // GlContext::CopyDepthReadToDrawFbo
 //
-void GL_CONTEXT_CLASSNAME::CopyDepthReadToDrawFbo(ivec2 const source, ivec2 const target) const
+void GL_DEVICE_CLASSNAME::CopyDepthReadToDrawFbo(ivec2 const source, ivec2 const target) const
 {
 	glBlitFramebuffer( 0, 0, source.x, source.y, 0, 0, target.x, target.y, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 }
@@ -2638,7 +2638,7 @@ void GL_CONTEXT_CLASSNAME::CopyDepthReadToDrawFbo(ivec2 const source, ivec2 cons
 //
 // Byte alignment requirements for pixel rows in memory
 //
-void GL_CONTEXT_CLASSNAME::SetPixelUnpackAlignment(int32 const val) const
+void GL_DEVICE_CLASSNAME::SetPixelUnpackAlignment(int32 const val) const
 {
 	glPixelStorei(GL_UNPACK_ALIGNMENT, val);
 }
@@ -2648,9 +2648,9 @@ void GL_CONTEXT_CLASSNAME::SetPixelUnpackAlignment(int32 const val) const
 //
 // Read pixels into an array from the current framebuffer
 //
-void GL_CONTEXT_CLASSNAME::ReadPixels(ivec2 const pos, ivec2 const size, E_ColorFormat const format, E_DataType const type, void* data) const
+void GL_DEVICE_CLASSNAME::ReadPixels(ivec2 const pos, ivec2 const size, E_ColorFormat const format, E_DataType const type, void* data) const
 {
-	glReadPixels(pos.x, pos.y, size.x, size.y, GL_CONTEXT_NS::ConvColorFormat(format), GL_CONTEXT_NS::ConvDataType(type), data);
+	glReadPixels(pos.x, pos.y, size.x, size.y, GL_DEVICE_NS::ConvColorFormat(format), GL_DEVICE_NS::ConvDataType(type), data);
 }
 
 //---------------------------------
@@ -2658,7 +2658,7 @@ void GL_CONTEXT_CLASSNAME::ReadPixels(ivec2 const pos, ivec2 const size, E_Color
 //
 // Push a debugging scope onto the stack e.g for renderdoc
 //
-void GL_CONTEXT_CLASSNAME::DebugPushGroup(std::string const& message, bool const isThirdParty) const
+void GL_DEVICE_CLASSNAME::DebugPushGroup(std::string const& message, bool const isThirdParty) const
 {
 	GLenum const source = isThirdParty ? GL_DEBUG_SOURCE_THIRD_PARTY : GL_DEBUG_SOURCE_APPLICATION;
 	glPushDebugGroup(source, GetHash(message), static_cast<GLsizei>(message.length()), message.c_str());
@@ -2669,7 +2669,7 @@ void GL_CONTEXT_CLASSNAME::DebugPushGroup(std::string const& message, bool const
 //
 // Pop the debugging scope. <see above>
 //
-void GL_CONTEXT_CLASSNAME::DebugPopGroup() const
+void GL_DEVICE_CLASSNAME::DebugPopGroup() const
 {
 	glPopDebugGroup();
 }
@@ -2684,7 +2684,7 @@ void GL_CONTEXT_CLASSNAME::DebugPopGroup() const
 //
 // Enable or disable a setting
 //
-void GL_CONTEXT_CLASSNAME::EnOrDisAble(bool &state, bool enabled, GLenum glState)
+void GL_DEVICE_CLASSNAME::EnOrDisAble(bool &state, bool enabled, GLenum glState)
 {
 	if (!(state == enabled))
 	{
@@ -2706,7 +2706,7 @@ void GL_CONTEXT_CLASSNAME::EnOrDisAble(bool &state, bool enabled, GLenum glState
 // Enable or disable a setting at a specific index
 // Note the index should be validated before calling this function
 //
-void GL_CONTEXT_CLASSNAME::EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLenum glState, uint32 index)
+void GL_DEVICE_CLASSNAME::EnOrDisAbleIndexed(std::vector<bool> &state, bool enabled, GLenum glState, uint32 index)
 {
 	if (!(state[index] == enabled))
 	{

@@ -50,7 +50,7 @@ void EntityIdRenderer::Initialize()
 //
 void EntityIdRenderer::CreateRenderTarget()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	ivec2 dim;
 	rhi::Viewport* const vp = rhi::Viewport::GetCurrentViewport();
@@ -60,7 +60,7 @@ void EntityIdRenderer::CreateRenderTarget()
 	}
 	else
 	{
-		api->GetViewport(ivec2(), dim);
+		device->GetViewport(ivec2(), dim);
 	}
 
 	rhi::TextureParameters params(false);
@@ -70,19 +70,19 @@ void EntityIdRenderer::CreateRenderTarget()
 	params.wrapT = rhi::E_TextureWrapMode::ClampToEdge;
 
 	//Generate texture and fbo and rbo as initial postprocessing target
-	api->GenFramebuffers(1, &m_DrawTarget);
-	api->BindFramebuffer(m_DrawTarget);
+	device->GenFramebuffers(1, &m_DrawTarget);
+	device->BindFramebuffer(m_DrawTarget);
 	m_DrawTex = new rhi::TextureData(rhi::E_ColorFormat::RGBA8, dim);
 	m_DrawTex->AllocateStorage();
 	m_DrawTex->SetParameters(params);
-	api->LinkTextureToFbo2D(0, m_DrawTex->GetLocation(), 0);
+	device->LinkTextureToFbo2D(0, m_DrawTex->GetLocation(), 0);
 
-	api->GenRenderBuffers(1, &m_DrawDepth);
-	api->BindRenderbuffer(m_DrawDepth);
-	api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, dim);
-	api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, m_DrawDepth);
+	device->GenRenderBuffers(1, &m_DrawDepth);
+	device->BindRenderbuffer(m_DrawDepth);
+	device->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, dim);
+	device->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, m_DrawDepth);
 
-	api->BindFramebuffer(0);
+	device->BindFramebuffer(0);
 }
 
 //---------------------------------
@@ -90,11 +90,11 @@ void EntityIdRenderer::CreateRenderTarget()
 //
 void EntityIdRenderer::DestroyRenderTarget()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->DeleteRenderBuffers(1, &m_DrawDepth);
+	device->DeleteRenderBuffers(1, &m_DrawDepth);
 	SafeDelete(m_DrawTex);
-	api->DeleteFramebuffers(1, &m_DrawTarget);
+	device->DeleteFramebuffers(1, &m_DrawTarget);
 }
 
 //---------------------------------
@@ -139,7 +139,7 @@ void EntityIdRenderer::OnViewportPreRender(rhi::T_FbLoc const targetFb)
 {
 	using namespace render;
 
-	rhi::I_GraphicsContextApi* const api = m_ViewportToPickFrom->GetApiContext();
+	rhi::I_RenderDevice* const device = m_ViewportToPickFrom->GetRenderDevice();
 
 	// extract the camera from the viewport
 	Camera const* camera = nullptr;
@@ -171,20 +171,20 @@ void EntityIdRenderer::OnViewportPreRender(rhi::T_FbLoc const targetFb)
 		m_LastViewSize = dim;
 	}
 
-	api->SetViewport(ivec2(0), dim);
+	device->SetViewport(ivec2(0), dim);
 
 	// draw the shapes as colors to the intermediate rendertarget
 	//------------------------------------------------------------
-	api->BindFramebuffer(m_DrawTarget);
+	device->BindFramebuffer(m_DrawTarget);
 
 	vec4 invalidCol;
 	GetIdColor(fw::INVALID_ENTITY_ID, invalidCol);
-	api->SetClearColor(invalidCol);
-	api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
+	device->SetClearColor(invalidCol);
+	device->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
 
-	api->SetShader(m_Shader.get());
+	device->SetShader(m_Shader.get());
 
-	api->SetDepthEnabled(true);
+	device->SetDepthEnabled(true);
 
 	ET_ASSERT(fw::UnifiedScene::Instance().GetSceneId() != 0u);
 	std::vector<fw::T_EntityId> const& entities = fw::UnifiedScene::Instance().GetEcs().GetEntities();
@@ -193,7 +193,7 @@ void EntityIdRenderer::OnViewportPreRender(rhi::T_FbLoc const targetFb)
 		DrawEntity(entity, *camera);
 	}
 
-	api->BindFramebuffer(targetFb);
+	device->BindFramebuffer(targetFb);
 }
 
 //---------------------------------
@@ -205,21 +205,21 @@ void EntityIdRenderer::OnViewportPostFlush(rhi::T_FbLoc const targetFb)
 {
 	using namespace render;
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->BindFramebuffer(m_DrawTarget);
+	device->BindFramebuffer(m_DrawTarget);
 
-	api->Finish();
+	device->Finish();
 
 	// openGL flips along the y axis
 	ivec2 texCoord = ivec2(m_PixelToPick.x, m_DrawTex->GetResolution().y - m_PixelToPick.y);
 
 	// read the pixels and set the previous renderbuffer again
 	uint8 pixels[4];
-	api->ReadPixels(texCoord, ivec2(1), rhi::E_ColorFormat::RGBA, rhi::E_DataType::UByte, pixels);
-	api->BindFramebuffer(targetFb);
+	device->ReadPixels(texCoord, ivec2(1), rhi::E_ColorFormat::RGBA, rhi::E_DataType::UByte, pixels);
+	device->BindFramebuffer(targetFb);
 
-	api->Flush(); // ensure this is not the active framebuffer before swapping
+	device->Flush(); // ensure this is not the active framebuffer before swapping
 
 	// convert the read pixels back into the entity ID
 	fw::T_EntityId pickedID =
@@ -268,14 +268,14 @@ void EntityIdRenderer::DrawEntity(fw::T_EntityId const entity, render::Camera co
 		// upload the color to the material and adraw the entity with it
 		m_Shader->Upload("uColor"_hash, color);
 
-		rhi::I_GraphicsContextApi* const api = m_ViewportToPickFrom->GetApiContext();;
+		rhi::I_RenderDevice* const device = m_ViewportToPickFrom->GetRenderDevice();;
 
 		MeshSurface const* surface = modelComp.GetMesh()->GetSurface(m_Material.get());
 
-		api->BindVertexArray(surface->GetVertexArray());
+		device->BindVertexArray(surface->GetVertexArray());
 		m_Shader->Upload("model"_hash, transfComp.GetWorld());
 
-		api->DrawElements(rhi::E_DrawMode::Triangles, static_cast<uint32>(mesh->GetIndexCount()), mesh->GetIndexDataType(), 0);
+		device->DrawElements(rhi::E_DrawMode::Triangles, static_cast<uint32>(mesh->GetIndexCount()), mesh->GetIndexDataType(), 0);
 	}
 }
 

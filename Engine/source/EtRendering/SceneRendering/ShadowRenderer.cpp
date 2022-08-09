@@ -40,7 +40,7 @@ void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShado
 {
 	GraphicsSettings const& graphicsSettings = RenderingSystems::Instance()->GetGraphicsSettings();
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	//Calculate light camera matrix
 	//*****************************
@@ -96,13 +96,13 @@ void ShadowRenderer::MapDirectional(mat4 const& lightTransform, DirectionalShado
 
 		//Set viewport
 		ivec2 res = cascades[i].texture->GetResolution();
-		api->SetViewport(ivec2(0), res);
+		device->SetViewport(ivec2(0), res);
 		//Set Framebuffer
-		api->BindFramebuffer(cascades[i].fbo);
+		device->BindFramebuffer(cascades[i].fbo);
 		//Clear Framebuffer
-		api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
+		device->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
 
-		api->SetShader(m_Shader.get());
+		device->SetShader(m_Shader.get());
 		m_Shader->Upload("worldViewProj"_hash, lightVP);
 
 		//Draw scene with light matrix and null material

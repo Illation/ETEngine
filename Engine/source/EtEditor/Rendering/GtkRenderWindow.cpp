@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GtkRenderWindow.h"
 
-#include "EpoxyGlContext.h"
+#include "EpoxyRenderDevice_OpenGL.h"
 
 
 namespace et {
@@ -14,17 +14,9 @@ namespace edit {
 
 
 //---------------------------------
-// GtkRenderWindow::d-tor
+// GtkRenderWindow::CreateRenderDevice
 //
-GtkRenderWindow::~GtkRenderWindow()
-{
-	delete m_Context;
-}
-
-//---------------------------------
-// GtkRenderWindow::CreateContext
-//
-rhi::I_GraphicsContextApi* GtkRenderWindow::CreateContext(rhi::GraphicsContextParams const& params)
+Ptr<rhi::I_RenderDevice> GtkRenderWindow::CreateRenderDevice(rhi::RenderDeviceParams const& params)
 {
 	ET_ASSERT(m_Source != nullptr, "Source window must be set before creating context");
 	ET_ASSERT(m_Source->get_realized(), "Source window must be realized before creating context");
@@ -88,15 +80,15 @@ rhi::I_GraphicsContextApi* GtkRenderWindow::CreateContext(rhi::GraphicsContextPa
 
 	ET_LOG_I(ET_CTX_EDITOR, "");
 
-	m_Context = new rhi::EpoxyGlContext();
+	m_RenderDevice = Create<rhi::EpoxyGlDevice>();
 
 	ivec2 dim;
 	dim.x = m_Source->get_allocated_width();
 	dim.y = m_Source->get_allocated_height();
 
-	m_Context->Initialize(dim);
+	m_RenderDevice->Initialize(dim);
 
-	return m_Context;
+	return m_RenderDevice;
 }
 
 //---------------------------------

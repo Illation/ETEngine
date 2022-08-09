@@ -114,15 +114,15 @@ void RmlGlobal::SetClipboardController(Ptr<core::I_ClipboardController> const cl
 }
 
 //----------------------------------
-// RmlGlobal::SetGraphicsContext
+// RmlGlobal::SetRenderDevice
 //
-void RmlGlobal::SetGraphicsContext(Ptr<rhi::I_GraphicsContextApi> const graphicsContext)
+void RmlGlobal::SetRenderDevice(Ptr<rhi::I_RenderDevice> const device)
 {
-	m_Renderer.SetGraphicsContext(graphicsContext);
+	m_Renderer.SetRenderDevice(device);
 }
 
 //----------------------------------
-// RmlGlobal::SetGraphicsContext
+// RmlGlobal::SetRenderDevice
 //
 void RmlGlobal::SetRIShader(AssetPtr<rhi::ShaderData> const shader, AssetPtr<rhi::ShaderData> const textShader)
 {

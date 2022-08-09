@@ -29,7 +29,7 @@ public:
 	// Render Window Interface
 	//-------------------------
 protected:
-	rhi::I_GraphicsContextApi* CreateContext(rhi::GraphicsContextParams const& params) override;
+	Ptr<rhi::I_RenderDevice> CreateRenderDevice(rhi::RenderDeviceParams const& params) override;
 	void SetCursorPos(ivec2 const pos) override;
 
 	ivec2 GetDimensions() const override;

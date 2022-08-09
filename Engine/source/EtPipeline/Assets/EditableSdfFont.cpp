@@ -358,7 +358,7 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 	int32 const texHeight = std::max(std::max(maxPos[0].y, maxPos[1].y), std::max(maxPos[2].y, maxPos[3].y));
 
 	//Setup rendering
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	rhi::TextureParameters params;
 	PopulateTextureParams(params);
@@ -373,38 +373,38 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 	rhi::T_FbLoc captureFBO;
 	rhi::T_RbLoc captureRBO;
 
-	api->GenFramebuffers(1, &captureFBO);
-	api->GenRenderBuffers(1, &captureRBO);
+	device->GenFramebuffers(1, &captureFBO);
+	device->GenRenderBuffers(1, &captureRBO);
 
-	api->BindFramebuffer(captureFBO);
-	api->BindRenderbuffer(captureRBO);
+	device->BindFramebuffer(captureFBO);
+	device->BindRenderbuffer(captureRBO);
 
-	api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(texWidth, texHeight));
-	api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, captureRBO);
-	api->LinkTextureToFbo2D(0, font->m_Texture->GetLocation(), 0);
+	device->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(texWidth, texHeight));
+	device->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, captureRBO);
+	device->LinkTextureToFbo2D(0, font->m_Texture->GetLocation(), 0);
 
 	ivec2 vpPos, vpSize;
-	api->GetViewport(vpPos, vpSize);
+	device->GetViewport(vpPos, vpSize);
 
-	api->SetViewport(ivec2(0), ivec2(texWidth, texHeight));
-	api->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
+	device->SetViewport(ivec2(0), ivec2(texWidth, texHeight));
+	device->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
 
 	AssetPtr<rhi::ShaderData> const computeSdf = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(
 		core::HashString("Shaders/ComputeGlyphSDF.glsl"));
-	api->SetShader(computeSdf.get());
+	device->SetShader(computeSdf.get());
 	computeSdf->Upload("uSpread"_hash, static_cast<float>(m_Spread));
 	computeSdf->Upload("uHighRes"_hash, static_cast<float>(m_HighRes));
 
 	params.wrapS = rhi::E_TextureWrapMode::ClampToBorder;
 	params.wrapT = rhi::E_TextureWrapMode::ClampToBorder;
 
-	api->SetBlendEnabled(true);
-	api->SetBlendEquation(rhi::E_BlendEquation::Add);
-	api->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::One);
+	device->SetBlendEnabled(true);
+	device->SetBlendEquation(rhi::E_BlendEquation::Add);
+	device->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::One);
 
 	//Render to Glyphs atlas
 	FT_Set_Pixel_Sizes(face, 0, m_FontSize * m_HighRes);
-	api->SetPixelUnpackAlignment(1);
+	device->SetPixelUnpackAlignment(1);
 	for (auto& character : characters)
 	{
 		gui::SdfFont::Metric& metric = *character.second;
@@ -432,7 +432,7 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 		texture->SetParameters(params);
 
 		ivec2 const res = ivec2(metric.m_Width, metric.m_Height) - ivec2(m_Padding * 2);
-		api->SetViewport(math::vecCast<int32>(metric.m_TexCoord) + ivec2(m_Padding), res);
+		device->SetViewport(math::vecCast<int32>(metric.m_TexCoord) + ivec2(m_Padding), res);
 		computeSdf->Upload("uTex"_hash, static_cast<rhi::TextureData const*>(texture.Get()));
 		computeSdf->Upload("uChannel"_hash, static_cast<int32>(metric.m_Channel));
 		computeSdf->Upload("uResolution"_hash, math::vecCast<float>(res));
@@ -442,20 +442,20 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 		metric.m_TexCoord = metric.m_TexCoord / math::vecCast<float>(ivec2(texWidth, texHeight));
 	}
 
-	api->SetPixelUnpackAlignment(4);
+	device->SetPixelUnpackAlignment(4);
 
 	//Cleanup
-	api->SetBlendEnabled(false);
+	device->SetBlendEnabled(false);
 
 	FT_Done_Face(face);
 	FT_Done_FreeType(ft);
 
-	api->BindFramebuffer(0);
-	api->BindRenderbuffer(0);
-	api->SetViewport(vpPos, vpSize);
+	device->BindFramebuffer(0);
+	device->BindRenderbuffer(0);
+	device->SetViewport(vpPos, vpSize);
 
-	api->DeleteRenderBuffers(1, &captureRBO);
-	api->DeleteFramebuffers(1, &captureFBO);
+	device->DeleteRenderBuffers(1, &captureRBO);
+	device->DeleteFramebuffers(1, &captureFBO);
 
 	return font;
 }
@@ -698,8 +698,8 @@ bool EditableSdfFontAsset::GenerateTextureData(std::vector<uint8>& data, rhi::Te
 	image.AllocatePixels();
 
 	// read pixels from GPU
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
-	api->GetTextureData(*texture, 0u, rhi::E_ColorFormat::RGBA, rhi::E_DataType::UByte, reinterpret_cast<void*>(image.GetPixels()));
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
+	device->GetTextureData(*texture, 0u, rhi::E_ColorFormat::RGBA, rhi::E_DataType::UByte, reinterpret_cast<void*>(image.GetPixels()));
 
 	// convert to output format
 	return TextureCompression::WriteTextureFile(data,

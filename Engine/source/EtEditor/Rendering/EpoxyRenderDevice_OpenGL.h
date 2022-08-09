@@ -8,6 +8,6 @@
 //
 // Implements an openGL graphics context with an epoxy include
 //
-#define GL_CONTEXT_CLASSNAME EpoxyGlContext
-#include <EtRHI/GraphicsContext/GlContextImpl.h>
+#define GL_DEVICE_CLASSNAME EpoxyGlDevice
+#include <EtRHI/GraphicsContext/RenderDevice_OpenGL.h>
 

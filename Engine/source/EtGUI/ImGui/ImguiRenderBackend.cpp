@@ -73,12 +73,12 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 		return;
 	}
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->DebugPushGroup("ImGui");
+	device->DebugPushGroup("ImGui");
 
 	// recreate the VAO every frame to allow multiple graphics api contexts
-	rhi::T_ArrayLoc vertexArrayObject = api->CreateVertexArray();
+	rhi::T_ArrayLoc vertexArrayObject = device->CreateVertexArray();
 	SetupRenderState(drawData, fbScale, vertexArrayObject);
 
 	// project scissor / clipping rectangles into framebuffer space
@@ -96,13 +96,13 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 		if (vbSize > m_VertexBufferSize)
 		{
 			m_VertexBufferSize = vbSize;
-			api->SetBufferData(rhi::E_BufferType::Vertex, vbSize, vtxData, rhi::E_UsageHint::Stream);
+			device->SetBufferData(rhi::E_BufferType::Vertex, vbSize, vtxData, rhi::E_UsageHint::Stream);
 		}
 		else
 		{
-			void* const p = api->MapBuffer(rhi::E_BufferType::Vertex, rhi::E_AccessMode::Write);
+			void* const p = device->MapBuffer(rhi::E_BufferType::Vertex, rhi::E_AccessMode::Write);
 			memcpy(p, vtxData, static_cast<size_t>(vbSize));
-			api->UnmapBuffer(rhi::E_BufferType::Vertex);
+			device->UnmapBuffer(rhi::E_BufferType::Vertex);
 		}
 
 		int64 const ibSize = static_cast<int64>(cmdList->IdxBuffer.Size) * sizeof(ImDrawIdx);
@@ -110,13 +110,13 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 		if (ibSize > m_IndexBufferSize)
 		{
 			m_IndexBufferSize = ibSize;
-			api->SetBufferData(rhi::E_BufferType::Index, ibSize, idxData, rhi::E_UsageHint::Stream);
+			device->SetBufferData(rhi::E_BufferType::Index, ibSize, idxData, rhi::E_UsageHint::Stream);
 		}
 		else
 		{
-			void* const p = api->MapBuffer(rhi::E_BufferType::Index, rhi::E_AccessMode::Write);
+			void* const p = device->MapBuffer(rhi::E_BufferType::Index, rhi::E_AccessMode::Write);
 			memcpy(p, idxData, static_cast<size_t>(ibSize));
-			api->UnmapBuffer(rhi::E_BufferType::Index);
+			device->UnmapBuffer(rhi::E_BufferType::Index);
 		}
 
 		// execute commands
@@ -145,12 +145,12 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 					continue;
 				}
 
-				api->SetScissor(ivec2(static_cast<int32>(clipMin.x), static_cast<int32>(fbScale.y - clipMax.y)),
+				device->SetScissor(ivec2(static_cast<int32>(clipMin.x), static_cast<int32>(fbScale.y - clipMax.y)),
 					math::vecCast<int32>(clipMax - clipMin));
 
 				// bind texture, draw
 				m_Shader->Upload("uTexture"_hash, pcmd->GetTexID());
-				api->DrawElements(rhi::E_DrawMode::Triangles,
+				device->DrawElements(rhi::E_DrawMode::Triangles,
 					pcmd->ElemCount,
 					sizeof(ImDrawIdx) == 2 ? rhi::E_DataType::UShort : rhi::E_DataType::UInt,
 					(void*)static_cast<intptr_t>(pcmd->IdxOffset * sizeof(ImDrawIdx)));
@@ -159,14 +159,14 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 	}
 
 	// delete temporary vertex array
-	api->DeleteVertexArray(vertexArrayObject);	
-	api->BindVertexArray(0u);
+	device->DeleteVertexArray(vertexArrayObject);	
+	device->BindVertexArray(0u);
 
 	// clean up state
-	api->SetScissorEnabled(false);
-	api->SetBlendEnabled(false);
+	device->SetScissorEnabled(false);
+	device->SetBlendEnabled(false);
 
-	api->DebugPopGroup();
+	device->DebugPopGroup();
 }
 
 //-----------------------------------------
@@ -174,12 +174,12 @@ void ImguiRenderBackend::Render(ImDrawData* const drawData)
 //
 bool ImguiRenderBackend::CreateDeviceObjects()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	m_Shader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostGenericUi.glsl"));
 
-	m_VertexBuffer = api->CreateBuffer();
-	m_IndexBuffer = api->CreateBuffer();
+	m_VertexBuffer = device->CreateBuffer();
+	m_IndexBuffer = device->CreateBuffer();
 
 	CreateFontsTexture();
 
@@ -191,16 +191,16 @@ bool ImguiRenderBackend::CreateDeviceObjects()
 //
 void ImguiRenderBackend::DestroyDeviceObjects()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	if (m_VertexBuffer != 0u)
 	{
-		api->DeleteBuffer(m_VertexBuffer);
+		device->DeleteBuffer(m_VertexBuffer);
 	}
 
 	if (m_IndexBuffer != 0u)
 	{
-		api->DeleteBuffer(m_IndexBuffer);
+		device->DeleteBuffer(m_IndexBuffer);
 	}
 
 	m_Shader = nullptr;
@@ -213,22 +213,22 @@ void ImguiRenderBackend::DestroyDeviceObjects()
 //
 void ImguiRenderBackend::SetupRenderState(ImDrawData* const drawData, ivec2 const fbScale, rhi::T_ArrayLoc const vao)
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	// Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, polygon fill
-	api->SetBlendEnabled(true);
-	api->SetBlendEquation(rhi::E_BlendEquation::Add);
-	api->SetBlendFunctionSeparate(rhi::E_BlendFactor::SourceAlpha, 
+	device->SetBlendEnabled(true);
+	device->SetBlendEquation(rhi::E_BlendEquation::Add);
+	device->SetBlendFunctionSeparate(rhi::E_BlendFactor::SourceAlpha, 
 		rhi::E_BlendFactor::One, 
 		rhi::E_BlendFactor::OneMinusSourceAlpha,
 		rhi::E_BlendFactor::OneMinusSourceAlpha);
-	api->SetCullEnabled(false);
-	api->SetDepthEnabled(false);
-	api->SetStencilEnabled(false);
-	api->SetScissorEnabled(true);
+	device->SetCullEnabled(false);
+	device->SetDepthEnabled(false);
+	device->SetStencilEnabled(false);
+	device->SetScissorEnabled(true);
 
 	// Setup viewport, orthographic projection matrix
-	api->SetViewport(ivec2(), fbScale);
+	device->SetViewport(ivec2(), fbScale);
 
 	float const L = drawData->DisplayPos.x;
 	float const R = drawData->DisplayPos.x + drawData->DisplaySize.x;
@@ -237,25 +237,25 @@ void ImguiRenderBackend::SetupRenderState(ImDrawData* const drawData, ivec2 cons
 
 	mat4 const orthoProjection(math::orthographic(L, R, T, B, 1.f, -1.f));
 
-	api->SetShader(m_Shader.get());
+	device->SetShader(m_Shader.get());
 	m_Shader->Upload("uViewProjection"_hash, orthoProjection);
 	m_Shader->Upload("uTransform"_hash, mat4()); // identity matrix
 	m_Shader->Upload("uTranslation"_hash, vec2()); // no translation needed for imgui
 
 	// vertex array setup
-	api->BindVertexArray(vao);
+	device->BindVertexArray(vao);
 
-	api->BindBuffer(rhi::E_BufferType::Vertex, m_VertexBuffer);
-	api->BindBuffer(rhi::E_BufferType::Index, m_IndexBuffer);
+	device->BindBuffer(rhi::E_BufferType::Vertex, m_VertexBuffer);
+	device->BindBuffer(rhi::E_BufferType::Index, m_IndexBuffer);
 
-	api->SetVertexAttributeArrayEnabled(0, true);
-	api->SetVertexAttributeArrayEnabled(1, true);
-	api->SetVertexAttributeArrayEnabled(2, true);
+	device->SetVertexAttributeArrayEnabled(0, true);
+	device->SetVertexAttributeArrayEnabled(1, true);
+	device->SetVertexAttributeArrayEnabled(2, true);
 
 	// the order for ImDrawVert and Rml::Vertex uvs and colors are flipped
-	api->DefineVertexAttributePointer(0, 2, rhi::E_DataType::Float, false, sizeof(ImDrawVert), offsetof(ImDrawVert, pos));
-	api->DefineVertexAttributePointer(2, 2, rhi::E_DataType::Float, false, sizeof(ImDrawVert), offsetof(ImDrawVert, uv)); 
-	api->DefineVertexAttributePointer(1, 4, rhi::E_DataType::UByte, true, sizeof(ImDrawVert), offsetof(ImDrawVert, col));
+	device->DefineVertexAttributePointer(0, 2, rhi::E_DataType::Float, false, sizeof(ImDrawVert), offsetof(ImDrawVert, pos));
+	device->DefineVertexAttributePointer(2, 2, rhi::E_DataType::Float, false, sizeof(ImDrawVert), offsetof(ImDrawVert, uv)); 
+	device->DefineVertexAttributePointer(1, 4, rhi::E_DataType::UByte, true, sizeof(ImDrawVert), offsetof(ImDrawVert, col));
 }
 
 //----------------------------------------
@@ -280,8 +280,8 @@ bool ImguiRenderBackend::CreateFontsTexture()
 	texParams.borderColor = vec4(0.f);
 	texParams.genMipMaps = false;
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
-	api->SetPixelUnpackAlignment(0);
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
+	device->SetPixelUnpackAlignment(0);
 
 	m_FontTexture = Create<rhi::TextureData>(rhi::E_ColorFormat::RGBA8, dimensions);
 	m_FontTexture->UploadData(pixels, rhi::E_ColorFormat::RGBA, rhi::E_DataType::UByte, 0u);
@@ -290,7 +290,7 @@ bool ImguiRenderBackend::CreateFontsTexture()
 	// Store our identifier
 	io.Fonts->SetTexID(m_FontTexture.Get());
 
-	api->SetPixelUnpackAlignment(4);
+	device->SetPixelUnpackAlignment(4);
 
 	return true;
 }

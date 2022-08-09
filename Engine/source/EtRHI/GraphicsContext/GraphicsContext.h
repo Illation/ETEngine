@@ -16,18 +16,18 @@ struct GraphicsContext
 	// construct
 	//-----------
 	GraphicsContext() = default;
-	GraphicsContext(RenderWindow* const window, I_GraphicsContextApi* const context) : m_SourceWindow(window), m_Context(context) {}
+	GraphicsContext(Ptr<RenderWindow> const window, Ptr<I_RenderDevice> const device) : m_SourceWindow(window), m_Device(device) {}
 
 	// accessors
 	//-----------
-	RenderWindow* GetSourceWindow() const { return m_SourceWindow; }
-	I_GraphicsContextApi* GetContext() const { return m_Context; }
+	RenderWindow* GetSourceWindow() const { return m_SourceWindow.Get(); }
+	I_RenderDevice* GetRenderDevice() const { return m_Device.Get(); }
 
 	// Data
 	///////
 private:
-	RenderWindow* m_SourceWindow = nullptr;
-	I_GraphicsContextApi* m_Context = nullptr;
+	Ptr<RenderWindow> m_SourceWindow;
+	Ptr<I_RenderDevice> m_Device;
 };
 
 

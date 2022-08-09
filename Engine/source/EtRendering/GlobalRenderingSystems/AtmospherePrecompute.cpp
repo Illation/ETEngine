@@ -55,7 +55,7 @@ void AtmospherePrecompute::Init()
 	m_TexDeltaScattering->AllocateStorage();
 	m_TexDeltaScattering->SetParameters(m_Settings.m_TexParams);
 
-	rhi::ContextHolder::GetRenderContext()->GenFramebuffers(1, &m_FBO);
+	rhi::ContextHolder::GetRenderDevice()->GenFramebuffers(1, &m_FBO);
 
 	m_IsInitialized = true;
 }
@@ -75,7 +75,7 @@ void AtmospherePrecompute::Unload()//unload textures and fbos needed for precomp
 	delete m_TexDeltaScattering;
 	m_TexDeltaScattering = nullptr;
 
-	rhi::ContextHolder::GetRenderContext()->DeleteFramebuffers(1, &m_FBO);
+	rhi::ContextHolder::GetRenderDevice()->DeleteFramebuffers(1, &m_FBO);
 	// #todo also unload shaders, extra functionality for content manager
 
 	//assert(glGetError == 0);
@@ -90,7 +90,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 		Init();
 	}
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	//Precomputation variables
 	atmo->m_Params.Upload(m_pComputeTransmittance.get(), "uAtmosphere");
@@ -106,7 +106,7 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	atmo->m_Params.Upload(m_pComputeMultipleScattering.get(), "uAtmosphere");
 	m_Settings.UploadTextureSize(m_pComputeMultipleScattering.get());
 
-	api->BindFramebuffer(m_FBO);
+	device->BindFramebuffer(m_FBO);
 
 	int32 numScatteringOrders = 4;
 	mat3 luminanceFromRadiance = mat3(); //Might not be needed as we dont precompute luminance
@@ -125,49 +125,49 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	atmo->m_TexInscatter->AllocateStorage();
 	atmo->m_TexInscatter->SetParameters(m_Settings.m_TexParams);
 
-	api->SetBlendEquation(rhi::E_BlendEquation::Add);
-	api->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::One);
-	api->SetBlendEnabled(false);
+	device->SetBlendEquation(rhi::E_BlendEquation::Add);
+	device->SetBlendFunction(rhi::E_BlendFactor::One, rhi::E_BlendFactor::One);
+	device->SetBlendEnabled(false);
 
-	api->LinkTextureToFbo(0, atmo->m_TexTransmittance->GetLocation(), 0);
-	api->SetDrawBufferCount(1);
-	api->SetViewport(ivec2(0), ivec2(m_Settings.TRANSMITTANCE_W, m_Settings.TRANSMITTANCE_H));
-	api->SetShader(m_pComputeTransmittance.get());
+	device->LinkTextureToFbo(0, atmo->m_TexTransmittance->GetLocation(), 0);
+	device->SetDrawBufferCount(1);
+	device->SetViewport(ivec2(0), ivec2(m_Settings.TRANSMITTANCE_W, m_Settings.TRANSMITTANCE_H));
+	device->SetShader(m_pComputeTransmittance.get());
 	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 
 	// Compute the direct irradiance, store it in delta_irradiance_texture and,
 	// depending on 'blend', either initialize irradiance_texture_ with zeros or
 	// leave it unchanged (we don't want the direct irradiance in
 	// irradiance_texture_, but only the irradiance from the sky).
-	api->LinkTextureToFbo(0, m_TexDeltaIrradiance->GetLocation(), 0);
-	api->LinkTextureToFbo(1, atmo->m_TexIrradiance->GetLocation(), 0);
-	api->SetDrawBufferCount(2);
-	api->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
-	api->SetShader(m_pComputeDirectIrradiance.get());
+	device->LinkTextureToFbo(0, m_TexDeltaIrradiance->GetLocation(), 0);
+	device->LinkTextureToFbo(1, atmo->m_TexIrradiance->GetLocation(), 0);
+	device->SetDrawBufferCount(2);
+	device->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
+	device->SetShader(m_pComputeDirectIrradiance.get());
 	m_pComputeDirectIrradiance->Upload("uTexTransmittance"_hash, static_cast<rhi::TextureData const*>(atmo->m_TexTransmittance));
-	api->SetBlendEnabled({ false, blend });
+	device->SetBlendEnabled({ false, blend });
 	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
-	api->SetBlendEnabled(false);
+	device->SetBlendEnabled(false);
 
 	// Compute the rayleigh and mie single scattering, store them in
 	// delta_rayleigh_scattering_texture and delta_mie_scattering_texture, and
 	// either store them or accumulate them in scattering_texture_ and
 	// optional_single_mie_scattering_texture_.
-	api->LinkTextureToFbo(0, m_TexDeltaRayleigh->GetLocation(), 0);
-	api->LinkTextureToFbo(1, m_TexDeltaMie->GetLocation(), 0);
-	api->LinkTextureToFbo(2, atmo->m_TexInscatter->GetLocation(), 0);
-	api->SetDrawBufferCount(3);
-	api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
-	api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
-	api->SetShader(m_pComputeSingleScattering.get());
+	device->LinkTextureToFbo(0, m_TexDeltaRayleigh->GetLocation(), 0);
+	device->LinkTextureToFbo(1, m_TexDeltaMie->GetLocation(), 0);
+	device->LinkTextureToFbo(2, atmo->m_TexInscatter->GetLocation(), 0);
+	device->SetDrawBufferCount(3);
+	device->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
+	device->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
+	device->SetShader(m_pComputeSingleScattering.get());
 	m_pComputeSingleScattering->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
 	m_pComputeSingleScattering->Upload("uTexTransmittance"_hash, static_cast<rhi::TextureData const*>(atmo->m_TexTransmittance));
 	for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 	{
 		m_pComputeSingleScattering->Upload("layer"_hash, layer);
-		api->SetBlendEnabled({ false, false, blend, blend });
+		device->SetBlendEnabled({ false, false, blend, blend });
 		rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
-		api->SetBlendEnabled(false);
+		device->SetBlendEnabled(false);
 	}
 
 	// Compute the 2nd, 3rd and 4th order of scattering, in sequence.
@@ -175,13 +175,13 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 	{
 		// Compute the scattering density, and store it in
 		// delta_scattering_density_texture.
-		api->LinkTextureToFbo(0, m_TexDeltaScattering->GetLocation(), 0);
-		api->LinkTextureToFbo(1, 0, 0);
-		api->LinkTextureToFbo(2, 0, 0);
-		api->LinkTextureToFbo(3, 0, 0);
-		api->SetDrawBufferCount(1);
-		api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
-		api->SetShader(m_pComputeScatteringDensity.get());
+		device->LinkTextureToFbo(0, m_TexDeltaScattering->GetLocation(), 0);
+		device->LinkTextureToFbo(1, 0, 0);
+		device->LinkTextureToFbo(2, 0, 0);
+		device->LinkTextureToFbo(3, 0, 0);
+		device->SetDrawBufferCount(1);
+		device->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
+		device->SetShader(m_pComputeScatteringDensity.get());
 		m_pComputeScatteringDensity->Upload("uTexTransmittance"_hash, static_cast<rhi::TextureData const*>(atmo->m_TexTransmittance));
 		m_pComputeScatteringDensity->Upload("uTexRayleigh"_hash, static_cast<rhi::TextureData const*>(m_TexDeltaRayleigh));
 		m_pComputeScatteringDensity->Upload("uTexDeltaMie"_hash, static_cast<rhi::TextureData const*>(m_TexDeltaMie));
@@ -196,51 +196,51 @@ void AtmospherePrecompute::Precalculate(Atmosphere* atmo)
 
 		// Compute the indirect irradiance, store it in delta_irradiance_texture and
 		// accumulate it in irradiance_texture_.
-		api->LinkTextureToFbo(0, m_TexDeltaIrradiance->GetLocation(), 0);
-		api->LinkTextureToFbo(1, atmo->m_TexIrradiance->GetLocation(), 0);
-		api->SetDrawBufferCount(2);
-		api->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
-		api->SetShader(m_pComputeIndirectIrradiance.get());
+		device->LinkTextureToFbo(0, m_TexDeltaIrradiance->GetLocation(), 0);
+		device->LinkTextureToFbo(1, atmo->m_TexIrradiance->GetLocation(), 0);
+		device->SetDrawBufferCount(2);
+		device->SetViewport(ivec2(0), ivec2(m_Settings.IRRADIANCE_W, m_Settings.IRRADIANCE_H));
+		device->SetShader(m_pComputeIndirectIrradiance.get());
 		m_pComputeIndirectIrradiance->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
 		m_pComputeIndirectIrradiance->Upload("uTexRayleigh"_hash, static_cast<rhi::TextureData const*>(m_TexDeltaRayleigh));
 		m_pComputeIndirectIrradiance->Upload("uTexDeltaMie"_hash, static_cast<rhi::TextureData const*>(m_TexDeltaMie));
 		//m_pComputeIndirectIrradiance->Upload("uTexDeltaIrradiance"_hash, static_cast<rhi::TextureData const*>(m_TexDeltaMultipleScattering));
 		m_pComputeIndirectIrradiance->Upload("scattering_order"_hash, scatteringOrder);
-		api->SetBlendEnabled({ false, true });
+		device->SetBlendEnabled({ false, true });
 		rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
-		api->SetBlendEnabled(false);
+		device->SetBlendEnabled(false);
 
 		// Compute the multiple scattering, store it in
 		// delta_multiple_scattering_texture, and accumulate it in
 		// scattering_texture_.
-		api->LinkTextureToFbo(0, m_TexDeltaMultipleScattering->GetLocation(), 0);
-		api->LinkTextureToFbo(1, atmo->m_TexInscatter->GetLocation(), 0);
-		api->SetDrawBufferCount(2);
-		api->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
-		api->SetShader(m_pComputeMultipleScattering.get());
+		device->LinkTextureToFbo(0, m_TexDeltaMultipleScattering->GetLocation(), 0);
+		device->LinkTextureToFbo(1, atmo->m_TexInscatter->GetLocation(), 0);
+		device->SetDrawBufferCount(2);
+		device->SetViewport(ivec2(0), m_Settings.m_ScatteringTexDim.xy);
+		device->SetShader(m_pComputeMultipleScattering.get());
 		m_pComputeMultipleScattering->Upload("luminance_from_radiance"_hash, luminanceFromRadiance);
 		m_pComputeMultipleScattering->Upload("uTexTransmittance"_hash, static_cast<rhi::TextureData const*>(atmo->m_TexTransmittance));
 		m_pComputeMultipleScattering->Upload("uTexDeltaScatteringDensity"_hash, static_cast<rhi::TextureData const*>(m_TexDeltaScattering));
 		for (int32 layer = 0; layer < m_Settings.m_ScatteringTexDim.z; ++layer)
 		{
 			m_pComputeMultipleScattering->Upload("layer"_hash, layer);
-			api->SetBlendEnabled({ false, true });
+			device->SetBlendEnabled({ false, true });
 			rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
-			api->SetBlendEnabled(false);
+			device->SetBlendEnabled(false);
 		}
 	}
-	api->LinkTextureToFbo(1, 0, 0);
-	api->LinkTextureToFbo(2, 0, 0);
-	api->LinkTextureToFbo(3, 0, 0);
+	device->LinkTextureToFbo(1, 0, 0);
+	device->LinkTextureToFbo(2, 0, 0);
+	device->LinkTextureToFbo(3, 0, 0);
 
-	api->SetBlendEnabled(false);
+	device->SetBlendEnabled(false);
 
 	Unload();
 }
 
 void AtmospherePrecompute::SetUniforms(rhi::ShaderData* shader, rhi::TextureData* transmittance, rhi::TextureData* scattering, rhi::TextureData* irradiance, rhi::TextureData* mie)
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	shader->Upload("uTexTransmittance"_hash, static_cast<rhi::TextureData const*>(transmittance));
 	shader->Upload("uTexScattering"_hash, static_cast<rhi::TextureData const*>(scattering));

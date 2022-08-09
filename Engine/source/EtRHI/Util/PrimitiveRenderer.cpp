@@ -70,22 +70,22 @@ void PrimitiveRenderer::AddGeometry(PrimitiveGeometry* pGeometry)
 //Unit Quad
 primitives::Quad::~Quad()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
-	api->DeleteBuffer(m_VBO);
-	api->DeleteVertexArray(m_VAO);
+	device->DeleteBuffer(m_VBO);
+	device->DeleteVertexArray(m_VAO);
 }
 void primitives::Quad::Draw()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
-	api->BindVertexArray(m_VAO);
-	api->DrawArrays(E_DrawMode::TriangleStrip, 0, 4);
-	api->BindVertexArray(0);
+	device->BindVertexArray(m_VAO);
+	device->DrawArrays(E_DrawMode::TriangleStrip, 0, 4);
+	device->BindVertexArray(0);
 }
 void primitives::Quad::Initialize()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
 	float quadVertices[] = 
 	{
@@ -96,32 +96,32 @@ void primitives::Quad::Initialize()
 		 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
 	};
 	// Setup plane VAO
-	m_VAO = api->CreateVertexArray();
-	m_VBO = api->CreateBuffer();
-	api->BindVertexArray(m_VAO);
-	api->BindBuffer(E_BufferType::Vertex, m_VBO);
-	api->SetBufferData(E_BufferType::Vertex, sizeof(quadVertices), &quadVertices, E_UsageHint::Static);
-	api->SetVertexAttributeArrayEnabled(0, true);
-	api->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, 5 * sizeof(float), 0);
-	api->SetVertexAttributeArrayEnabled(1, true);
-	api->DefineVertexAttributePointer(1, 2, E_DataType::Float, false, 5 * sizeof(float), (3 * sizeof(float)));
+	m_VAO = device->CreateVertexArray();
+	m_VBO = device->CreateBuffer();
+	device->BindVertexArray(m_VAO);
+	device->BindBuffer(E_BufferType::Vertex, m_VBO);
+	device->SetBufferData(E_BufferType::Vertex, sizeof(quadVertices), &quadVertices, E_UsageHint::Static);
+	device->SetVertexAttributeArrayEnabled(0, true);
+	device->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, 5 * sizeof(float), 0);
+	device->SetVertexAttributeArrayEnabled(1, true);
+	device->DefineVertexAttributePointer(1, 2, E_DataType::Float, false, 5 * sizeof(float), (3 * sizeof(float)));
 }
 
 //Unit cube
 primitives::Cube::~Cube()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
-	api->DeleteBuffer(m_VBO);
-	api->DeleteVertexArray(m_VAO);
+	device->DeleteBuffer(m_VBO);
+	device->DeleteVertexArray(m_VAO);
 }
 void primitives::Cube::Draw()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
-	api->BindVertexArray(m_VAO);
-	api->DrawArrays(E_DrawMode::Triangles, 0, 36);
-	api->BindVertexArray(0);
+	device->BindVertexArray(m_VAO);
+	device->DrawArrays(E_DrawMode::Triangles, 0, 36);
+	device->BindVertexArray(0);
 }
 void primitives::Cube::Initialize()
 {
@@ -171,42 +171,42 @@ void primitives::Cube::Initialize()
 		-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f // bottom-left        
 	};
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
-	m_VAO = api->CreateVertexArray();
-	m_VBO = api->CreateBuffer();
+	m_VAO = device->CreateVertexArray();
+	m_VBO = device->CreateBuffer();
 	// Fill buffer
-	api->BindBuffer(E_BufferType::Vertex, m_VBO);
-	api->SetBufferData(E_BufferType::Vertex, sizeof(vertices), vertices, E_UsageHint::Static);
+	device->BindBuffer(E_BufferType::Vertex, m_VBO);
+	device->SetBufferData(E_BufferType::Vertex, sizeof(vertices), vertices, E_UsageHint::Static);
 	// Link vertex attributes
-	api->BindVertexArray(m_VAO);
-	api->SetVertexAttributeArrayEnabled(0, true);
-	api->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, 8 * sizeof(float), 0);
-	api->SetVertexAttributeArrayEnabled(1, true);
-	api->DefineVertexAttributePointer(1, 3, E_DataType::Float, false, 8 * sizeof(float), (3 * sizeof(float)));
-	api->SetVertexAttributeArrayEnabled(2, true);
-	api->DefineVertexAttributePointer(2, 2, E_DataType::Float, false, 8 * sizeof(float), (6 * sizeof(float)));
-	api->BindBuffer(E_BufferType::Vertex, 0);
-	api->BindVertexArray(0);
+	device->BindVertexArray(m_VAO);
+	device->SetVertexAttributeArrayEnabled(0, true);
+	device->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, 8 * sizeof(float), 0);
+	device->SetVertexAttributeArrayEnabled(1, true);
+	device->DefineVertexAttributePointer(1, 3, E_DataType::Float, false, 8 * sizeof(float), (3 * sizeof(float)));
+	device->SetVertexAttributeArrayEnabled(2, true);
+	device->DefineVertexAttributePointer(2, 2, E_DataType::Float, false, 8 * sizeof(float), (6 * sizeof(float)));
+	device->BindBuffer(E_BufferType::Vertex, 0);
+	device->BindVertexArray(0);
 }
 
 //Unit sphere with variable detail
 template<int32 level>
 primitives::IcoSphere<level>::~IcoSphere()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
-	api->DeleteBuffer(m_VBO);
-	api->DeleteVertexArray(m_VAO);
+	device->DeleteBuffer(m_VBO);
+	device->DeleteVertexArray(m_VAO);
 }
 template<int32 level>
 void primitives::IcoSphere<level>::Draw()
 {
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
-	api->BindVertexArray(m_VAO);
-	api->DrawArrays(E_DrawMode::Triangles, 0, m_NumVerts);
-	api->BindVertexArray(0);
+	device->BindVertexArray(m_VAO);
+	device->DrawArrays(E_DrawMode::Triangles, 0, m_NumVerts);
+	device->BindVertexArray(0);
 }
 template<int32 level>
 void primitives::IcoSphere<level>::Initialize()
@@ -224,19 +224,19 @@ void primitives::IcoSphere<level>::Initialize()
 	}
 	m_NumVerts = (int32)vertices.size();
 
-	I_GraphicsContextApi* const api = ContextHolder::GetRenderContext();
+	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
 
-	m_VAO = api->CreateVertexArray();
-	m_VBO = api->CreateBuffer();
+	m_VAO = device->CreateVertexArray();
+	m_VBO = device->CreateBuffer();
 	// Fill buffer
-	api->BindBuffer(E_BufferType::Vertex, m_VBO);
-	api->SetBufferData(E_BufferType::Vertex, sizeof(vec3)*vertices.size(), vertices.data(), E_UsageHint::Static);
+	device->BindBuffer(E_BufferType::Vertex, m_VBO);
+	device->SetBufferData(E_BufferType::Vertex, sizeof(vec3)*vertices.size(), vertices.data(), E_UsageHint::Static);
 	// Link vertex attributes
-	api->BindVertexArray(m_VAO);
-	api->SetVertexAttributeArrayEnabled(0, true);
-	api->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, 3 * sizeof(float), 0);
-	api->BindBuffer(E_BufferType::Vertex, 0);
-	api->BindVertexArray(0);
+	device->BindVertexArray(m_VAO);
+	device->SetVertexAttributeArrayEnabled(0, true);
+	device->DefineVertexAttributePointer(0, 3, E_DataType::Float, false, 3 * sizeof(float), 0);
+	device->BindBuffer(E_BufferType::Vertex, 0);
+	device->BindVertexArray(0);
 }
 template<int32 level>
 void primitives::IcoSphere<level>::SubAndPush(std::vector<vec3> &vertices, const int32 lev, const vec3 &a, const vec3 &b, const vec3 &c) const

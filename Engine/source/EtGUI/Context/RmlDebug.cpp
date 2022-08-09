@@ -265,7 +265,7 @@ void RmlDebug::ShowFontUI()
 template <bool TEnabled>
 void SetBlendEnabledCallback(ImDrawList const*, ImDrawCmd const*)
 {
-	rhi::ContextHolder::GetRenderContext()->SetBlendEnabled(TEnabled);
+	rhi::ContextHolder::GetRenderDevice()->SetBlendEnabled(TEnabled);
 }
 
 //---------------------------

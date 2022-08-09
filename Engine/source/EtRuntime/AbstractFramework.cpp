@@ -146,7 +146,7 @@ void AbstractFramework::Run()
 			{
 			case fw::E_SceneEvent::SceneSwitch:
 				m_SplashScreenRenderer->SetGuiDocument(m_SplashScreenGui);
-				m_Viewport->SetRenderer(m_SplashScreenRenderer.Get());
+				m_Viewport->SetRenderer(m_SplashScreenRenderer);
 
 				m_Viewport->SetTickDisabled(true);
 				m_RenderWindow.GetArea().Update(); // update manually incase we don't run the game loop before the new scene is activated 
@@ -154,7 +154,7 @@ void AbstractFramework::Run()
 				break;
 
 			case fw::E_SceneEvent::Activated:
-				m_Viewport->SetRenderer(m_SceneRenderer.Get()); // update will happen anyway during the loop
+				m_Viewport->SetRenderer(m_SceneRenderer); // update will happen anyway during the loop
 				m_SplashScreenRenderer->SetGuiDocument(core::HashString());
 				break;
 
@@ -175,11 +175,11 @@ void AbstractFramework::Run()
 	unifiedScene.Init();
 
 	// init rendering target
-	m_Viewport = Create<rhi::Viewport>(&m_RenderWindow.GetArea());
+	m_Viewport = Create<rhi::Viewport>(ToPtr(&m_RenderWindow.GetArea()));
 	m_Viewport->SetTickDisabled(true);
 	m_SplashScreenRenderer = Create<rt::SplashScreenRenderer>();
-	m_Viewport->SetRenderer(m_SplashScreenRenderer.Get());
-	rhi::ContextHolder::Instance().CreateMainRenderContext(&m_RenderWindow); // also initializes the viewport and its renderer
+	m_Viewport->SetRenderer(m_SplashScreenRenderer);
+	rhi::ContextHolder::Instance().CreateMainRenderContext(ToPtr(&m_RenderWindow)); // also initializes the viewport and its renderer
 
 	// screenshots
 	std::string const& screenshotDir = cfg->GetScreenshotDir();

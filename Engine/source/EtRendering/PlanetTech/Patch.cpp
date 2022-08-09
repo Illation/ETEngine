@@ -20,7 +20,7 @@ void Patch::Init(int16 const levels)
 {
 	m_Levels = levels;
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	//Shader Init
 	//***********
@@ -29,40 +29,40 @@ void Patch::Init(int16 const levels)
 	//Buffer Initialisation
 	//*********************
 	//Generate buffers and arrays
-	m_VAO = api->CreateVertexArray();
-	m_VBO = api->CreateBuffer();
-	m_EBO = api->CreateBuffer();
-	m_VBOInstance = api->CreateBuffer();
+	m_VAO = device->CreateVertexArray();
+	m_VBO = device->CreateBuffer();
+	m_EBO = device->CreateBuffer();
+	m_VBOInstance = device->CreateBuffer();
 	//bind
-	api->BindVertexArray(m_VAO);
-	api->BindBuffer(rhi::E_BufferType::Vertex, m_VBO);
+	device->BindVertexArray(m_VAO);
+	device->BindBuffer(rhi::E_BufferType::Vertex, m_VBO);
 	//input layout
 	//************
 	//geometry
-	api->SetVertexAttributeArrayEnabled(0, true);
-	api->SetVertexAttributeArrayEnabled(1, true);
-	api->DefineVertexAttributePointer(0, 2, rhi::E_DataType::Float, false, sizeof(PatchVertex), offsetof(PatchVertex, pos));
-	api->DefineVertexAttributePointer(1, 2, rhi::E_DataType::Float, false, sizeof(PatchVertex), offsetof(PatchVertex, morph));
+	device->SetVertexAttributeArrayEnabled(0, true);
+	device->SetVertexAttributeArrayEnabled(1, true);
+	device->DefineVertexAttributePointer(0, 2, rhi::E_DataType::Float, false, sizeof(PatchVertex), offsetof(PatchVertex, pos));
+	device->DefineVertexAttributePointer(1, 2, rhi::E_DataType::Float, false, sizeof(PatchVertex), offsetof(PatchVertex, morph));
 	//instances
 	//bind
-	api->BindBuffer(rhi::E_BufferType::Vertex, m_VBOInstance);
-	api->SetVertexAttributeArrayEnabled(2, true);
-	api->SetVertexAttributeArrayEnabled(3, true);
-	api->SetVertexAttributeArrayEnabled(4, true);
-	api->SetVertexAttributeArrayEnabled(5, true);
-	api->DefineVertexAttribIPointer(2, 1, rhi::E_DataType::Int, sizeof(PatchInstance), offsetof(PatchInstance, level));
-	api->DefineVertexAttributePointer(3, 3, rhi::E_DataType::Float, false, sizeof(PatchInstance), offsetof(PatchInstance, a));
-	api->DefineVertexAttributePointer(4, 3, rhi::E_DataType::Float, false, sizeof(PatchInstance), offsetof(PatchInstance, r));
-	api->DefineVertexAttributePointer(5, 3, rhi::E_DataType::Float, false, sizeof(PatchInstance), offsetof(PatchInstance, s));
-	api->DefineVertexAttribDivisor(2, 1);
-	api->DefineVertexAttribDivisor(3, 1);
-	api->DefineVertexAttribDivisor(4, 1);
-	api->DefineVertexAttribDivisor(5, 1);
+	device->BindBuffer(rhi::E_BufferType::Vertex, m_VBOInstance);
+	device->SetVertexAttributeArrayEnabled(2, true);
+	device->SetVertexAttributeArrayEnabled(3, true);
+	device->SetVertexAttributeArrayEnabled(4, true);
+	device->SetVertexAttributeArrayEnabled(5, true);
+	device->DefineVertexAttribIPointer(2, 1, rhi::E_DataType::Int, sizeof(PatchInstance), offsetof(PatchInstance, level));
+	device->DefineVertexAttributePointer(3, 3, rhi::E_DataType::Float, false, sizeof(PatchInstance), offsetof(PatchInstance, a));
+	device->DefineVertexAttributePointer(4, 3, rhi::E_DataType::Float, false, sizeof(PatchInstance), offsetof(PatchInstance, r));
+	device->DefineVertexAttributePointer(5, 3, rhi::E_DataType::Float, false, sizeof(PatchInstance), offsetof(PatchInstance, s));
+	device->DefineVertexAttribDivisor(2, 1);
+	device->DefineVertexAttribDivisor(3, 1);
+	device->DefineVertexAttribDivisor(4, 1);
+	device->DefineVertexAttribDivisor(5, 1);
 	//Indices
-	api->BindBuffer(rhi::E_BufferType::Index, m_EBO);
+	device->BindBuffer(rhi::E_BufferType::Index, m_EBO);
 	//unbind
-	api->BindBuffer(rhi::E_BufferType::Vertex, 0);
-	api->BindVertexArray(0);
+	device->BindBuffer(rhi::E_BufferType::Vertex, 0);
+	device->BindVertexArray(0);
 
 	GenerateGeometry(m_Levels);
 }
@@ -118,30 +118,30 @@ void Patch::GenerateGeometry(int16 levels)
 		rowIdx = nextIdx;
 	}
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	// rebind
-	api->BindBuffer(rhi::E_BufferType::Vertex, m_VBO);
-	api->SetBufferData(rhi::E_BufferType::Vertex, m_Vertices.size() * sizeof(PatchVertex), m_Vertices.data(), rhi::E_UsageHint::Dynamic);
-	api->BindBuffer(rhi::E_BufferType::Index, m_EBO);
-	api->SetBufferData(rhi::E_BufferType::Index, sizeof(uint32)*m_Indices.size(), m_Indices.data(), rhi::E_UsageHint::Static);
-	api->BindBuffer(rhi::E_BufferType::Vertex, 0);
+	device->BindBuffer(rhi::E_BufferType::Vertex, m_VBO);
+	device->SetBufferData(rhi::E_BufferType::Vertex, m_Vertices.size() * sizeof(PatchVertex), m_Vertices.data(), rhi::E_UsageHint::Dynamic);
+	device->BindBuffer(rhi::E_BufferType::Index, m_EBO);
+	device->SetBufferData(rhi::E_BufferType::Index, sizeof(uint32)*m_Indices.size(), m_Indices.data(), rhi::E_UsageHint::Static);
+	device->BindBuffer(rhi::E_BufferType::Vertex, 0);
 }
 
 void Patch::BindInstances(std::vector<PatchInstance> const& instances)
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	//update buffer
 	m_NumInstances = (int32)instances.size();
-	api->BindBuffer(rhi::E_BufferType::Vertex, m_VBOInstance);
-	api->SetBufferData(rhi::E_BufferType::Vertex, instances.size() * sizeof(PatchInstance), instances.data(), rhi::E_UsageHint::Static);
-	api->BindBuffer(rhi::E_BufferType::Vertex, 0);
+	device->BindBuffer(rhi::E_BufferType::Vertex, m_VBOInstance);
+	device->SetBufferData(rhi::E_BufferType::Vertex, instances.size() * sizeof(PatchInstance), instances.data(), rhi::E_UsageHint::Static);
+	device->BindBuffer(rhi::E_BufferType::Vertex, 0);
 }
 
 void Patch::UploadDistanceLUT(std::vector<float> const& distances)
 {
-	rhi::ContextHolder::GetRenderContext()->SetShader(m_pPatchShader.get());
+	rhi::ContextHolder::GetRenderDevice()->SetShader(m_pPatchShader.get());
 	for (size_t i = 0; i < distances.size(); i++)
 	{
 		m_pPatchShader->Upload(GetHash("distanceLUT[" + std::to_string(i) + "]"), distances[i]);
@@ -150,9 +150,9 @@ void Patch::UploadDistanceLUT(std::vector<float> const& distances)
 
 void Patch::Draw(Planet const& planet, mat4 const& transform)
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->SetShader(m_pPatchShader.get());
+	device->SetShader(m_pPatchShader.get());
 
 	// Pass transformations to the shader
 	m_pPatchShader->Upload("model"_hash, transform);
@@ -169,23 +169,23 @@ void Patch::Draw(Planet const& planet, mat4 const& transform)
 	m_pPatchShader->Upload("texHeightDetail"_hash, planet.GetTexHeightDetail());
 
 	//Bind Object vertex array
-	api->BindVertexArray(m_VAO);
+	device->BindVertexArray(m_VAO);
 
 	//Draw the object
-	api->DrawElementsInstanced(rhi::E_DrawMode::Triangles, static_cast<uint32>(m_Indices.size()), rhi::E_DataType::UInt, 0, m_NumInstances);
+	device->DrawElementsInstanced(rhi::E_DrawMode::Triangles, static_cast<uint32>(m_Indices.size()), rhi::E_DataType::UInt, 0, m_NumInstances);
 
 	//unbind vertex array
-	api->BindVertexArray(0);
+	device->BindVertexArray(0);
 }
 
 Patch::~Patch()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->DeleteVertexArray(m_VAO);
-	api->DeleteBuffer(m_EBO);
-	api->DeleteBuffer(m_VBO);
-	api->DeleteBuffer(m_VBOInstance);
+	device->DeleteVertexArray(m_VAO);
+	device->DeleteBuffer(m_EBO);
+	device->DeleteBuffer(m_VBO);
+	device->DeleteBuffer(m_VBOInstance);
 }
 
 

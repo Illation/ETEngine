@@ -30,20 +30,20 @@ MeshSurface::MeshSurface(MeshData const* const mesh, render::Material const* con
 	ET_ASSERT(mesh != nullptr);
 	ET_ASSERT(m_Material != nullptr);
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	// create a new vertex array
-	m_VertexArray = api->CreateVertexArray();
-	api->BindVertexArray(m_VertexArray);
+	m_VertexArray = device->CreateVertexArray();
+	device->BindVertexArray(m_VertexArray);
 
 	// link it to the mesh's buffer
-	api->BindBuffer(rhi::E_BufferType::Vertex, mesh->GetVertexBuffer());
-	api->BindBuffer(rhi::E_BufferType::Index, mesh->GetIndexBuffer());
+	device->BindBuffer(rhi::E_BufferType::Vertex, mesh->GetVertexBuffer());
+	device->BindBuffer(rhi::E_BufferType::Index, mesh->GetIndexBuffer());
 
 	//Specify Input Layout
 	rhi::AttributeDescriptor::DefineAttributeArray(mesh->GetSupportedFlags(), m_Material->GetLayoutFlags(), m_Material->GetAttributeLocations());
 
-	api->BindVertexArray(0u);
+	device->BindVertexArray(0u);
 }
 
 //---------------------------------
@@ -53,7 +53,7 @@ MeshSurface::MeshSurface(MeshData const* const mesh, render::Material const* con
 //
 MeshSurface::~MeshSurface()
 {
-	rhi::ContextHolder::GetRenderContext()->DeleteVertexArray(m_VertexArray);
+	rhi::ContextHolder::GetRenderDevice()->DeleteVertexArray(m_VertexArray);
 }
 
 
@@ -119,10 +119,10 @@ MeshData::MeshData()
 //
 MeshData::~MeshData()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->DeleteBuffer(m_VertexBuffer);
-	api->DeleteBuffer(m_IndexBuffer);
+	device->DeleteBuffer(m_VertexBuffer);
+	device->DeleteBuffer(m_IndexBuffer);
 
 	delete m_Surfaces;
 }
@@ -208,17 +208,17 @@ bool MeshAsset::ReadEtMesh(MeshData* const meshData, std::vector<uint8> const& l
 
 	uint8 const* const vertexData = reader.GetCurrentDataPointer();
 
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	// vertex buffer
-	meshData->m_VertexBuffer = api->CreateBuffer();
-	api->BindBuffer(rhi::E_BufferType::Vertex, meshData->m_VertexBuffer);
-	api->SetBufferData(rhi::E_BufferType::Vertex, static_cast<int64>(vBufferSize), reinterpret_cast<void const*>(vertexData), rhi::E_UsageHint::Static);
+	meshData->m_VertexBuffer = device->CreateBuffer();
+	device->BindBuffer(rhi::E_BufferType::Vertex, meshData->m_VertexBuffer);
+	device->SetBufferData(rhi::E_BufferType::Vertex, static_cast<int64>(vBufferSize), reinterpret_cast<void const*>(vertexData), rhi::E_UsageHint::Static);
 
 	// index buffer 
-	meshData->m_IndexBuffer = api->CreateBuffer();
-	api->BindBuffer(rhi::E_BufferType::Index, meshData->m_IndexBuffer);
-	api->SetBufferData(rhi::E_BufferType::Index, static_cast<int64>(iBufferSize), reinterpret_cast<void const*>(indexData), rhi::E_UsageHint::Static);
+	meshData->m_IndexBuffer = device->CreateBuffer();
+	device->BindBuffer(rhi::E_BufferType::Index, meshData->m_IndexBuffer);
+	device->SetBufferData(rhi::E_BufferType::Index, static_cast<int64>(iBufferSize), reinterpret_cast<void const*>(indexData), rhi::E_UsageHint::Static);
 
 	return true;
 }

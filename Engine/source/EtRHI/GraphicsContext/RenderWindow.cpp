@@ -18,7 +18,7 @@ namespace rhi {
 //
 RenderWindow::~RenderWindow()
 {
-	for (I_Listener* const listener : m_Listeners)
+	for (Ptr<I_Listener> const listener : m_Listeners)
 	{
 		listener->OnWindowDestroyed(this);
 	}
@@ -27,7 +27,7 @@ RenderWindow::~RenderWindow()
 //---------------------------------
 // RenderWindow::RegisterListener
 //
-void RenderWindow::RegisterListener(I_Listener* const listener)
+void RenderWindow::RegisterListener(Ptr<I_Listener> const listener)
 {
 	ET_ASSERT(std::find(m_Listeners.cbegin(), m_Listeners.cend(), listener) == m_Listeners.cend());
 	m_Listeners.push_back(listener);

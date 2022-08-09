@@ -18,16 +18,16 @@ namespace render {
 
 ScreenSpaceReflections::~ScreenSpaceReflections()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->DeleteRenderBuffers(1, &m_CollectRBO);
+	device->DeleteRenderBuffers(1, &m_CollectRBO);
 	SafeDelete(m_CollectTex);
-	api->DeleteFramebuffers(1, &m_CollectFBO);
+	device->DeleteFramebuffers(1, &m_CollectFBO);
 }
 
 void ScreenSpaceReflections::Initialize()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 	ivec2 const dim = rhi::Viewport::GetCurrentViewport()->GetDimensions();
 
 	m_pShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostScreenSpaceReflections.glsl"));
@@ -39,34 +39,34 @@ void ScreenSpaceReflections::Initialize()
 	params.wrapT = rhi::E_TextureWrapMode::ClampToEdge;
 
 	//Generate texture and fbo and rbo as initial postprocessing target
-	api->GenFramebuffers(1, &m_CollectFBO);
-	api->BindFramebuffer(m_CollectFBO);
+	device->GenFramebuffers(1, &m_CollectFBO);
+	device->BindFramebuffer(m_CollectFBO);
 	m_CollectTex = new rhi::TextureData(rhi::E_ColorFormat::RGB16f, dim);
 	m_CollectTex->AllocateStorage();
 	m_CollectTex->SetParameters(params);
 
 	//Render Buffer for depth and stencil
-	api->GenRenderBuffers(1, &m_CollectRBO);
-	api->BindRenderbuffer(m_CollectRBO);
-	api->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, dim);
-	api->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, m_CollectRBO);
-	api->LinkTextureToFbo2D(0, m_CollectTex->GetLocation(), 0);
+	device->GenRenderBuffers(1, &m_CollectRBO);
+	device->BindRenderbuffer(m_CollectRBO);
+	device->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, dim);
+	device->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, m_CollectRBO);
+	device->LinkTextureToFbo2D(0, m_CollectTex->GetLocation(), 0);
 
 	// cleanup
-	api->BindRenderbuffer(0);
-	api->BindFramebuffer(0);
+	device->BindRenderbuffer(0);
+	device->BindFramebuffer(0);
 }
 
 void ScreenSpaceReflections::EnableInput()
 {
-	rhi::ContextHolder::GetRenderContext()->BindFramebuffer(m_CollectFBO);
+	rhi::ContextHolder::GetRenderDevice()->BindFramebuffer(m_CollectFBO);
 }
 
 void ScreenSpaceReflections::Draw()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->SetShader(m_pShader.get());
+	device->SetShader(m_pShader.get());
 
 	m_pShader->Upload("uFinalImage"_hash, static_cast<rhi::TextureData const*>(m_CollectTex));
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GtkRenderArea.h"
 
-#include "EpoxyGlContext.h"
+#include "EpoxyRenderDevice_OpenGL.h"
 #include "GtkRenderWindow.h"
 
 #include <EtRHI/GraphicsContext/ContextHolder.h>
@@ -62,7 +62,7 @@ Glib::RefPtr<Gdk::GLContext> SingleContextGlArea::OnCreateContext()
 //
 // Create a Window and an openGL context to draw to the window
 //
-GtkRenderArea::GtkRenderArea(SingleContextGlArea* const glArea)
+GtkRenderArea::GtkRenderArea(Ptr<SingleContextGlArea> const glArea)
 	: I_RenderArea()
 	, m_GlArea(glArea)
 {
@@ -80,7 +80,7 @@ void GtkRenderArea::OnRealize()
 {
 	if (m_OnInit)
 	{
-		m_OnInit(rhi::ContextHolder::GetRenderContext());
+		m_OnInit(ToPtr(rhi::ContextHolder::GetRenderDevice()));
 	}
 }
 
@@ -115,7 +115,7 @@ bool GtkRenderArea::OnRender(const Glib::RefPtr<Gdk::GLContext>& context)
 
 	if (m_OnRender)
 	{
-		m_OnRender(rhi::ContextHolder::GetRenderContext()->GetActiveFramebuffer());
+		m_OnRender(rhi::ContextHolder::GetRenderDevice()->GetActiveFramebuffer());
 	}
 
 	return true;

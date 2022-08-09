@@ -66,8 +66,8 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	glArea->set_auto_render(true);
 
 	// create a viewport from the area
-	m_RenderArea = new GtkRenderArea(glArea);
-	m_Viewport = Create<rhi::Viewport>(m_RenderArea);
+	m_RenderArea = new GtkRenderArea(ToPtr(glArea));
+	m_Viewport = Create<rhi::Viewport>(ToPtr(m_RenderArea));
 	m_Viewport->SetInputProvider(ToPtr(&m_InputProvider));
 
 	// hook up events
@@ -182,7 +182,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 
 	// create a scene renderer for the viewport
 	m_SceneRenderer = new render::ShadedSceneRenderer(&(fw::UnifiedScene::Instance().GetRenderScene()));
-	m_Viewport->SetRenderer(m_SceneRenderer);
+	m_Viewport->SetRenderer(ToPtr(m_SceneRenderer));
 
 	m_Editor->RegisterListener(this);
 

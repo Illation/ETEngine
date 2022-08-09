@@ -118,8 +118,8 @@ void SceneRendererGUI::DrawInWorld(rhi::T_FbLoc const targetFb,
 	GuiExtension& guiExt, 
 	core::slot_map<mat4> const& nodes)
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
-	api->BindFramebuffer(targetFb);
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
+	device->BindFramebuffer(targetFb);
 
 	// RmlUi 3D contexts
 	//-------------------
@@ -151,8 +151,8 @@ void SceneRendererGUI::DrawInWorld(rhi::T_FbLoc const targetFb,
 //
 void SceneRendererGUI::DrawOverlay(rhi::T_FbLoc const targetFb, rhi::E_PolygonMode const polyMode, GuiExtension& guiExt)
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
-	api->BindFramebuffer(targetFb);
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
+	device->BindFramebuffer(targetFb);
 
 	// RmlUi overlays
 	//----------------

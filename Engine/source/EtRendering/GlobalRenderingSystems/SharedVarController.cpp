@@ -32,15 +32,15 @@ SharedVarController::~SharedVarController()
 //
 void SharedVarController::Init()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	m_BufferLocation = api->CreateBuffer();
+	m_BufferLocation = device->CreateBuffer();
 
-	api->BindBuffer(rhi::E_BufferType::Uniform, m_BufferLocation);
-	api->SetBufferData(rhi::E_BufferType::Uniform, sizeof(m_Data), nullptr, rhi::E_UsageHint::Dynamic);
-	api->BindBuffer(rhi::E_BufferType::Uniform, 0u);
+	device->BindBuffer(rhi::E_BufferType::Uniform, m_BufferLocation);
+	device->SetBufferData(rhi::E_BufferType::Uniform, sizeof(m_Data), nullptr, rhi::E_UsageHint::Dynamic);
+	device->BindBuffer(rhi::E_BufferType::Uniform, 0u);
 
-	api->BindBufferRange(rhi::E_BufferType::Uniform, m_BufferBinding, m_BufferLocation, 0, sizeof(m_Data));
+	device->BindBufferRange(rhi::E_BufferType::Uniform, m_BufferBinding, m_BufferLocation, 0, sizeof(m_Data));
 }
 
 //-----------------------------
@@ -48,9 +48,9 @@ void SharedVarController::Init()
 //
 void SharedVarController::Deinit()
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	api->DeleteBuffer(m_BufferLocation);
+	device->DeleteBuffer(m_BufferLocation);
 }
 
 //---------------------------------
@@ -58,7 +58,7 @@ void SharedVarController::Deinit()
 //
 void SharedVarController::UpdataData(Camera const& camera, Gbuffer const& gbuffer)
 {
-	rhi::I_GraphicsContextApi* const api = rhi::ContextHolder::GetRenderContext();
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	m_Data.view = camera.GetView();
 	m_Data.viewInv = camera.GetViewInv();
@@ -81,9 +81,9 @@ void SharedVarController::UpdataData(Camera const& camera, Gbuffer const& gbuffe
 	m_Data.gbufferB = gbufferTex[1]->GetHandle();
 	m_Data.gbufferC = gbufferTex[2]->GetHandle();
 
-	api->BindBuffer(rhi::E_BufferType::Uniform, m_BufferLocation);
-	api->SetBufferData(rhi::E_BufferType::Uniform, sizeof(m_Data), &m_Data, rhi::E_UsageHint::Dynamic);
-	api->BindBuffer(rhi::E_BufferType::Uniform, 0u);
+	device->BindBuffer(rhi::E_BufferType::Uniform, m_BufferLocation);
+	device->SetBufferData(rhi::E_BufferType::Uniform, sizeof(m_Data), &m_Data, rhi::E_UsageHint::Dynamic);
+	device->BindBuffer(rhi::E_BufferType::Uniform, 0u);
 }
 
 
