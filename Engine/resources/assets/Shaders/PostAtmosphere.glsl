@@ -49,6 +49,11 @@
 
 	const vec3 kGroundAlbedo = vec3(0.0, 0.0, 0.04);
 
+	// GBuffer
+	uniform sampler2D uTexGBufferA;
+	uniform sampler2D uTexGBufferB;
+	uniform sampler2D uTexGBufferC;
+
     vec3 GetSolarRadiance() 
 	{
 		return uAtmosphere.solar_irradiance / (PI * uAtmosphere.sun_angular_radius * uAtmosphere.sun_angular_radius);
@@ -95,7 +100,7 @@
 		vec3 viewRay = (staticViewProjectionInv * vec4(tc, 1, 1)).xyz;
 		tc += vec2(1);
 		tc *= 0.5f;
-		UNPACK_GBUFFER(tc, viewRay) //maybe use ao??
+		UNPACK_GBUFFER(tc, viewRay, uTexGBufferA, uTexGBufferB, uTexGBufferC) //maybe use ao??
 		
 		//View dir and reflection
 		vec3 viewDir = normalize(viewRay);

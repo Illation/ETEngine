@@ -8,7 +8,6 @@ namespace render {
 
 
 class Camera;
-class Gbuffer;
 
 
 //--------------------
@@ -39,10 +38,6 @@ class SharedVarController final : public rhi::I_SharedVarController
 		vec3 camPos;
 
 		float _padding1;
-
-		rhi::T_TextureHandle gbufferA;
-		rhi::T_TextureHandle gbufferB;
-		rhi::T_TextureHandle gbufferC;
 	};
 
 	// construct deconstruct
@@ -56,7 +51,7 @@ public:
 
 	// functionality
 	//---------------
-	void UpdataData(Camera const& camera, Gbuffer const& gbuffer);
+	void UpdataData(Camera const& camera);
 
 	// accessors
 	//-----------

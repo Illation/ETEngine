@@ -28,7 +28,12 @@
 	
 	layout (location = 0) out vec4 outColor;
 	
-	uniform sampler2D uFinalImage; 
+	uniform sampler2D uFinalImage;
+
+	// GBuffer
+	uniform sampler2D uTexGBufferA;
+	uniform sampler2D uTexGBufferB;
+	uniform sampler2D uTexGBufferC;
 
 	const float rayStep = 0.1;
 	const float minRayStep = 0.1;
@@ -43,6 +48,8 @@
 	#define Scale vec3(.8)
 	uniform float K = 19.19;
 
+
+
 	vec3 BinarySearch(inout vec3 dir, inout vec3 hitCoord, inout float dDepth);
 	 
 	vec4 RayCast(vec3 dir, inout vec3 hitCoord, out float dDepth);
@@ -51,7 +58,7 @@
 
 	void main()
 	{
-		UNPACK_GBUFFER(Texcoord, ViewRay)
+		UNPACK_GBUFFER(Texcoord, ViewRay, uTexGBufferA, uTexGBufferB, uTexGBufferC)
 		//if(metal < 0.01)
 		//	discard;
 			
@@ -109,7 +116,7 @@
 			projectedCoord.xy /= projectedCoord.w;
 			projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 	 
-			depth = UNPACK_DEPTH(projectedCoord.xy);
+			depth = UNPACK_DEPTH(projectedCoord.xy, uTexGBufferA);
 
 			dDepth = hitCoord.z - depth;
 			//dDepth = vec3(viewInv * vec4(hitCoord, 1)).z - depth;
@@ -142,7 +149,7 @@
 			projectedCoord.xy /= projectedCoord.w;
 			projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 	 
-			depth = UNPACK_DEPTH(projectedCoord.xy);
+			depth = UNPACK_DEPTH(projectedCoord.xy, uTexGBufferA);
 			if(depth > 1000.0)
 				continue;
 	 

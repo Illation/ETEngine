@@ -40,10 +40,10 @@ void FrameBuffer::Initialize()
 	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	//Load and compile Shaders
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString(m_ShaderFile.c_str()));
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString(m_ShaderFile.c_str()));
 
 	//GetAccessTo shader attributes
-	device->SetShader(m_pShader.get());
+	device->SetShader(m_Shader.get());
 	AccessShaderAttributes();
 
 	//FrameBuffer
@@ -70,7 +70,7 @@ void FrameBuffer::Draw()
 	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
 	device->SetDepthEnabled(false);
-	device->SetShader(m_pShader.get());
+	device->SetShader(m_Shader.get());
 
 	UploadDerivedVariables();
 
@@ -98,7 +98,6 @@ void FrameBuffer::GenerateFramebufferTextures()
 		depthMap->AllocateStorage();
 		device->LinkTextureToFboDepth(depthMap->GetLocation());
 		depthMap->SetParameters(params);
-		depthMap->CreateHandle();
 		m_pTextureVec.emplace_back(depthMap);
 	}
 
@@ -109,7 +108,6 @@ void FrameBuffer::GenerateFramebufferTextures()
 		colorBuffer->AllocateStorage();
 		device->LinkTextureToFbo2D(i, colorBuffer->GetLocation(), 0);
 		colorBuffer->SetParameters(params, true);
-		colorBuffer->CreateHandle();
 		m_pTextureVec.emplace_back(colorBuffer);
 	}
 

@@ -2,11 +2,16 @@
 #include <EtCore/Content/AssetPointer.h>
 
 
+// fwd
+namespace et { namespace rhi {
+	class ShaderData;
+} namespace render {
+	class Gbuffer;
+} }
+
+
 namespace et {
 namespace render {
-
-
-class rhi::ShaderData;
 
 
 class ScreenSpaceReflections
@@ -19,10 +24,10 @@ public:
 	void EnableInput();
 	rhi::T_FbLoc GetTargetFBO() { return m_CollectFBO; }
 
-	void Draw();
+	void Draw(Gbuffer const& gbuffer);
 private:
 
-	AssetPtr<rhi::ShaderData> m_pShader;
+	AssetPtr<rhi::ShaderData> m_Shader;
 
 	rhi::T_FbLoc m_CollectFBO;
 	rhi::TextureData* m_CollectTex = nullptr;

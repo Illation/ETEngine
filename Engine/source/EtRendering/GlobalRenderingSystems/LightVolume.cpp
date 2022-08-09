@@ -24,7 +24,7 @@ namespace render {
 //====================
 
 
-void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
+void PointLightVolume::Draw(vec3 pos, float radius, vec3 col, Gbuffer const& gbuffer)
 {
 	//Make sure everything is set up
 	if (m_Material == nullptr)
@@ -47,6 +47,10 @@ void PointLightVolume::Draw(vec3 pos, float radius, vec3 col)
 	shader->Upload("Radius"_hash, radius);
 	shader->Upload("model"_hash, math::scale(vec3(radius))*math::translate(pos));
 
+	shader->Upload("uTexGBufferA"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[0]));
+	shader->Upload("uTexGBufferB"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[1]));
+	shader->Upload("uTexGBufferC"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[2]));
+
 	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::IcoSphere<2>>();
 }
 
@@ -64,7 +68,7 @@ void DirectLightVolume::Initialize()
 	m_IsInitialized = true;
 }
 
-void DirectLightVolume::Draw(vec3 dir, vec3 col)
+void DirectLightVolume::Draw(vec3 dir, vec3 col, Gbuffer const& gbuffer)
 {
 	if (!m_IsInitialized)
 	{
@@ -79,10 +83,14 @@ void DirectLightVolume::Draw(vec3 dir, vec3 col)
 	m_Shader->Upload("Direction"_hash, dir);
 	m_Shader->Upload("Color"_hash, col);
 
+	//m_Shader->Upload("uTexGBufferA"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[0]));
+	m_Shader->Upload("uTexGBufferB"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[1]));
+	m_Shader->Upload("uTexGBufferC"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[2]));
+
 	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 }
 
-void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, render::DirectionalShadowData const& shadow)
+void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, render::DirectionalShadowData const& shadow, Gbuffer const& gbuffer)
 {
 	if (!m_IsInitialized)
 	{
@@ -114,6 +122,10 @@ void DirectLightVolume::DrawShadowed(vec3 dir, vec3 col, render::DirectionalShad
 		//cascade distance
 		m_ShaderShadowed->Upload(GetHash(cascadeStruct + "Distance"), cascades[cascadeIdx].distance);
 	}
+
+	m_ShaderShadowed->Upload("uTexGBufferA"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[0]));
+	m_ShaderShadowed->Upload("uTexGBufferB"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[1]));
+	m_ShaderShadowed->Upload("uTexGBufferC"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[2]));
 
 	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 }

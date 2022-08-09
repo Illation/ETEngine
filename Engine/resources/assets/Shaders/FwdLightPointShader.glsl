@@ -33,6 +33,11 @@
 	uniform vec3 Color = vec3(10);
 	uniform float Radius;
 
+	// GBuffer
+	uniform sampler2D uTexGBufferA;
+	uniform sampler2D uTexGBufferB;
+	uniform sampler2D uTexGBufferC;
+
 	//Lighting function
 	vec3 PointLighting(vec3 baseCol, float rough, float metal, vec3 F0, vec3 pos, vec3 norm, vec3 viewDir)
 	{
@@ -76,7 +81,7 @@
 		vec3 viewRay = (viewProjectionInv * vec4(tc, 1, 1)).xyz;
 		tc += vec2(1);
 		tc *= 0.5f;
-		UNPACK_GBUFFER(tc, viewRay) //maybe use ao??
+		UNPACK_GBUFFER(tc, viewRay, uTexGBufferA, uTexGBufferB, uTexGBufferC) //maybe use ao??
 
 		//precalculations
 		vec3 F0 = vec3(0.04);//for dielectric materials use this simplified constant

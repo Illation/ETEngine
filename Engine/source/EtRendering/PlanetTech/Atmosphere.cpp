@@ -56,13 +56,13 @@ void Atmosphere::Initialize(core::HashString const parameterAssetId)
 	RenderingSystems::Instance()->GetAtmospherPrecompute().Precalculate(this);
 
 	//Load and compile Shaders
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostAtmosphere.glsl"));
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostAtmosphere.glsl"));
 }
 
 //-------------------------
 // Atmosphere::Draw
 //
-void Atmosphere::Draw(vec3 const& position, float const height, float const groundRadius, vec3 const& sunDir) const
+void Atmosphere::Draw(vec3 const& position, float const height, float const groundRadius, vec3 const& sunDir, Gbuffer const& gbuffer) const
 {
 	ET_ASSERT(!m_Id.IsEmpty(), "Atmosphere wasn't initialized before drawing");
 	ET_ASSERT(m_TexTransmittance != nullptr, "Atmosphere wasn't precalculated before drawing");
@@ -85,30 +85,34 @@ void Atmosphere::Draw(vec3 const& position, float const height, float const grou
 	//mat4 transform = math::translate(position)*math::scale(vec3(icoRadius));
 	mat4 transform = math::scale(vec3(icoRadius))*math::translate(position);
 
-	device->SetShader(m_pShader.get());
+	device->SetShader(m_Shader.get());
 
-	m_pShader->Upload("model"_hash, transform);
+	m_Shader->Upload("model"_hash, transform);
 
-	m_pShader->Upload("Position"_hash, position);
-	m_pShader->Upload("Radius"_hash, radius);
-	//m_pShader->Upload("SurfaceRadius"_hash, groundRadius);
+	m_Shader->Upload("Position"_hash, position);
+	m_Shader->Upload("Radius"_hash, radius);
+	//m_Shader->Upload("SurfaceRadius"_hash, groundRadius);
 
-	m_Params.Upload(m_pShader.get(), "uAtmosphere");
-	RenderingSystems::Instance()->GetAtmospherPrecompute().GetSettings().UploadTextureSize(m_pShader.get());
+	m_Params.Upload(m_Shader.get(), "uAtmosphere");
+	RenderingSystems::Instance()->GetAtmospherPrecompute().GetSettings().UploadTextureSize(m_Shader.get());
 
-	//m_pShader->Upload("uSkySpectralRadToLum"_hash, math::vecCast<float>(m_SkyColor));
-	//m_pShader->Upload("uSunSpectralRadToLum"_hash, math::vecCast<float>(m_SunColor));
+	//m_Shader->Upload("uSkySpectralRadToLum"_hash, math::vecCast<float>(m_SkyColor));
+	//m_Shader->Upload("uSunSpectralRadToLum"_hash, math::vecCast<float>(m_SunColor));
 
-	m_pShader->Upload("uTexIrridiance"_hash, static_cast<rhi::TextureData const*>(m_TexIrradiance));
-	m_pShader->Upload("uTexInscatter"_hash, static_cast<rhi::TextureData const*>(m_TexInscatter));
-	m_pShader->Upload("uTexTransmittance"_hash, static_cast<rhi::TextureData const*>(m_TexTransmittance));
+	m_Shader->Upload("uTexIrridiance"_hash, static_cast<rhi::TextureData const*>(m_TexIrradiance));
+	m_Shader->Upload("uTexInscatter"_hash, static_cast<rhi::TextureData const*>(m_TexInscatter));
+	m_Shader->Upload("uTexTransmittance"_hash, static_cast<rhi::TextureData const*>(m_TexTransmittance));
 
-	m_pShader->Upload("SunDir"_hash, sunDir);
-	m_pShader->Upload("uSunSize"_hash, vec2(tan(m_Params.sun_angular_radius), cos(m_Params.sun_angular_radius)));
+	m_Shader->Upload("SunDir"_hash, sunDir);
+	m_Shader->Upload("uSunSize"_hash, vec2(tan(m_Params.sun_angular_radius), cos(m_Params.sun_angular_radius)));
 	//if (light)
 	//{
-	//	m_pShader->Upload("SunIntensity"_hash, brightness);
+	//	m_Shader->Upload("SunIntensity"_hash, brightness);
 	//}
+
+	m_Shader->Upload("uTexGBufferA"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[0]));
+	//m_Shader->Upload("uTexGBufferB"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[1]));
+	//m_Shader->Upload("uTexGBufferC"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[2]));
 
 	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::IcoSphere<3> >();
 }

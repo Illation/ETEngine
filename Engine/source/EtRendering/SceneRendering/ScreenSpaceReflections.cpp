@@ -30,7 +30,7 @@ void ScreenSpaceReflections::Initialize()
 	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 	ivec2 const dim = rhi::Viewport::GetCurrentViewport()->GetDimensions();
 
-	m_pShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostScreenSpaceReflections.glsl"));
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostScreenSpaceReflections.glsl"));
 
 	rhi::TextureParameters params(false);
 	params.minFilter = rhi::E_TextureFilterMode::Linear;
@@ -62,20 +62,24 @@ void ScreenSpaceReflections::EnableInput()
 	rhi::ContextHolder::GetRenderDevice()->BindFramebuffer(m_CollectFBO);
 }
 
-void ScreenSpaceReflections::Draw()
+void ScreenSpaceReflections::Draw(Gbuffer const& gbuffer)
 {
 	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	device->SetShader(m_pShader.get());
+	device->SetShader(m_Shader.get());
 
-	m_pShader->Upload("uFinalImage"_hash, static_cast<rhi::TextureData const*>(m_CollectTex));
+	m_Shader->Upload("uFinalImage"_hash, static_cast<rhi::TextureData const*>(m_CollectTex));
 
 	//for position reconstruction
 	core::BaseContext* const context = core::ContextManager::GetInstance()->GetActiveContext();
 	if (context != nullptr)
 	{
-		m_pShader->Upload("K"_hash, sinf(context->time->GetTime()) * 20 + 25);
+		m_Shader->Upload("K"_hash, sinf(context->time->GetTime()) * 20 + 25);
 	}
+
+	m_Shader->Upload("uTexGBufferA"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[0]));
+	m_Shader->Upload("uTexGBufferB"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[1]));
+	m_Shader->Upload("uTexGBufferC"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[2]));
 
 	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
 }

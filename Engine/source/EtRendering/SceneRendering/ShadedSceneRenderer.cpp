@@ -137,7 +137,7 @@ void ShadedSceneRenderer::OnRender(rhi::T_FbLoc const targetFb)
 	// Global variables for all rendering systems
 	//********************************************
 	Camera const& camera = GetCamera();
-	RenderingSystems::Instance()->GetSharedVarController().UpdataData(camera, m_GBuffer);
+	RenderingSystems::Instance()->GetSharedVarController().UpdataData(camera);
 
 	//Shadow Mapping
 	//**************
@@ -244,7 +244,7 @@ void ShadedSceneRenderer::OnRender(rhi::T_FbLoc const targetFb)
 		float const scale = math::length(math::decomposeScale(transform));
 		vec3 const pos = math::decomposePosition(transform);
 
-		RenderingSystems::Instance()->GetPointLightVolume().Draw(pos, scale, pointLight.m_Color);
+		RenderingSystems::Instance()->GetPointLightVolume().Draw(pos, scale, pointLight.m_Color, m_GBuffer);
 	}
 	device->DebugPopGroup();
 	
@@ -254,7 +254,7 @@ void ShadedSceneRenderer::OnRender(rhi::T_FbLoc const targetFb)
 	{
 		mat4 const& transform = m_RenderScene->GetNodes()[dirLight.m_NodeId];
 		vec3 const dir = (transform * vec4(vec3::FORWARD, 1.f)).xyz;
-		RenderingSystems::Instance()->GetDirectLightVolume().Draw(dir, dirLight.m_Color);
+		RenderingSystems::Instance()->GetDirectLightVolume().Draw(dir, dirLight.m_Color, m_GBuffer);
 	}
 	device->DebugPopGroup();
 
@@ -270,7 +270,7 @@ void ShadedSceneRenderer::OnRender(rhi::T_FbLoc const targetFb)
 		mat4 const& transform = m_RenderScene->GetNodes()[dirLight.m_NodeId];
 		vec3 const dir = (transform * vec4(vec3::FORWARD, 1.f)).xyz;
 
-		RenderingSystems::Instance()->GetDirectLightVolume().DrawShadowed(dir, dirLight.m_Color, shadow);
+		RenderingSystems::Instance()->GetDirectLightVolume().DrawShadowed(dir, dirLight.m_Color, shadow, m_GBuffer);
 
 		lightIt++;
 		shadowIt++;
@@ -290,7 +290,7 @@ void ShadedSceneRenderer::OnRender(rhi::T_FbLoc const targetFb)
 	// draw SSR
 	device->DebugPushGroup("reflections");
 	m_PostProcessing.EnableInput();
-	m_SSR.Draw();
+	m_SSR.Draw(m_GBuffer);
 	device->DebugPopGroup();
 	// copy depth again
 	device->DebugPushGroup("blit");
@@ -365,7 +365,7 @@ void ShadedSceneRenderer::OnRender(rhi::T_FbLoc const targetFb)
 			Light const& sun = m_RenderScene->GetLight(atmoInst.lightId);
 			vec3 const sunDir = math::normalize((m_RenderScene->GetNodes()[sun.m_NodeId] * vec4(vec3::FORWARD, 1.f)).xyz);
 
-			m_RenderScene->GetAtmosphere(atmoInst.atmosphereId).Draw(pos, atmoInst.height, atmoInst.groundRadius, sunDir);
+			m_RenderScene->GetAtmosphere(atmoInst.atmosphereId).Draw(pos, atmoInst.height, atmoInst.groundRadius, sunDir, m_GBuffer);
 		}
 
 		device->SetFaceCullingMode(rhi::E_FaceCullMode::Back);

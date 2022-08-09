@@ -1780,43 +1780,6 @@ void GL_DEVICE_CLASSNAME::GenerateMipMaps(TextureData const& texture, uint8& mip
 	mipLevels = 1u + static_cast<uint8>(floor(log10(largerRes) / log10(2.f)));
 }
 
-//---------------------------------
-// GlContext::GetTextureHandle
-//
-// Create a handle for bindless access of a texture, at the cost of not being able to change parameters any longer
-//
-T_TextureHandle GL_DEVICE_CLASSNAME::GetTextureHandle(T_TextureLoc const texLoc) const
-{
-	if (!m_BindlessTexturesAvailable)
-	{
-		return 0u;
-	}
-
-	return glGetTextureHandleARB(texLoc);
-}
-
-//--------------------------------------
-// GlContext::SetTextureHandleResidency
-//
-// 'bind' a texture handle so it can be used by shaders
-//
-void GL_DEVICE_CLASSNAME::SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const
-{
-	if (!m_BindlessTexturesAvailable)
-	{
-		return;
-	}
-
-	if (isResident)
-	{
-		glMakeTextureHandleResidentARB(handle);
-	}
-	else
-	{
-		glMakeTextureHandleNonResidentARB(handle);
-	}
-}
-
 //--------------------------------------
 // GlContext::GetTextureData
 //

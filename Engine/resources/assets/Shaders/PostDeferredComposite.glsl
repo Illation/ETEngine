@@ -30,13 +30,18 @@
 	uniform samplerCube uTexIrradiance;
 	uniform samplerCube uTexRadiance;
 	uniform float		uMaxReflectionLod = 4.0;
-	uniform sampler2D   uTexBrdfLut;  
+	uniform sampler2D   uTexBrdfLut;
+
+	// GBuffer
+	uniform sampler2D uTexGBufferA;
+	uniform sampler2D uTexGBufferB;
+	uniform sampler2D uTexGBufferC;
 	
 	void main()
 	{
 		//Extract data from G-Buffer
 		float alpha = 1.0;
-		UNPACK_GBUFFER(Texcoord, ViewRay)
+		UNPACK_GBUFFER(Texcoord, ViewRay, uTexGBufferA, uTexGBufferB, uTexGBufferC)
 
 		//View dir and reflection
 		vec3 viewDir = -normalize(ViewRay);

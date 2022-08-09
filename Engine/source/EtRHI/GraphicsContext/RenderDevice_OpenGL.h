@@ -220,8 +220,6 @@ public:
 		TextureParameters const& next, 
 		bool const force) override;
 	void GenerateMipMaps(TextureData const& texture, uint8& mipLevels) override;
-	T_TextureHandle GetTextureHandle(T_TextureLoc const texLoc) const override;
-	void SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const override;
 	void GetTextureData(TextureData const& texture, 
 		uint8 const mipLevel, 
 		E_ColorFormat const format, 

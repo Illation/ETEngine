@@ -45,6 +45,11 @@
 	
 	uniform int PcfSamples = 2;
 	uniform float Bias = 0; // 0.001; //depending on if front face culling is used
+
+	// GBuffer
+	uniform sampler2D uTexGBufferA;
+	uniform sampler2D uTexGBufferB;
+	uniform sampler2D uTexGBufferC;
 	
 	
 	float ShadowFactor(vec3 pos, vec3 normal, float dist)
@@ -114,8 +119,7 @@
 	
 	void main()
 	{
-	
-		UNPACK_GBUFFER(TexCoords, ViewRay) //maybe use ao??
+		UNPACK_GBUFFER(TexCoords, ViewRay, uTexGBufferA, uTexGBufferB, uTexGBufferC) //maybe use ao??
 		
 		//precalculations	
 		vec3 F0 = vec3(0.04);//for dielectric materials use this simplified constant

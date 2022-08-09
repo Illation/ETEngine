@@ -24,13 +24,17 @@ vec3 reconstructPosition(vec3 viewRay, vec3 camPosition, float depth, float proj
 
 #include "Shaders/CommonSharedVars.glsl"
 
-#define UNPACK_DEPTH(texCoord)		\
-texture(texGBufferA, texCoord).r	\
+/*| <----   Depth   ----> | xxxxx |*/
+/*| Nor.x   Nor.y | Met.x | AO .x |*/
+/*| BCo.r   BCo.g   BCo.b | Rou.x |*/
+
+#define UNPACK_DEPTH(texCoord, texGBufferA)	\
+texture(texGBufferA, texCoord).r			\
 
 #define LINEAR_DEPTH(inDepth)			\
 projectionB / (inDepth - projectionA)	\
 
-#define UNPACK_GBUFFER(texCoord, viewRay) 											\
+#define UNPACK_GBUFFER(texCoord, viewRay, texGBufferA, texGBufferB, texGBufferC) 											\
 float depth = texture(texGBufferA, texCoord).r;										\
 vec3 pos = reconstructPosition(viewRay, camPos, depth, projectionA, projectionB); 	\
 vec3 norm = decodeNormal(texture(texGBufferB, texCoord).rg); 						\

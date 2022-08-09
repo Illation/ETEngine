@@ -54,13 +54,7 @@ TextureData::TextureData(E_TextureType const targetType, E_ColorFormat const sto
 //
 TextureData::~TextureData()
 {
-	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
-	if (m_Handle != 0u)
-	{
-		device->SetTextureHandleResidency(m_Handle, false);
-	}
-
-	device->DeleteTexture(m_Location);
+	ContextHolder::GetRenderDevice()->DeleteTexture(m_Location);
 }
 
 //---------------------------------
@@ -72,7 +66,6 @@ void TextureData::UploadData(void const* const data, E_ColorFormat const layout,
 {
 	m_MipLevels = std::max(static_cast<uint8>(mipLevel), m_MipLevels);
 
-	ET_ASSERT(m_Handle == 0u, "Shouldn't upload data after a handle was created!");
 	ContextHolder::GetRenderDevice()->UploadTextureData(*this, data, layout, dataType, mipLevel);
 }
 
@@ -85,7 +78,6 @@ void TextureData::UploadCompressed(void const* const data, size_t const size, in
 {
 	m_MipLevels = std::max(static_cast<uint8>(mipLevel), m_MipLevels);
 
-	ET_ASSERT(m_Handle == 0u, "Shouldn't upload data after a handle was created!");
 	ContextHolder::GetRenderDevice()->UploadCompressedTextureData(*this, data, size, mipLevel);
 }
 
@@ -96,7 +88,6 @@ void TextureData::UploadCompressed(void const* const data, size_t const size, in
 //
 void TextureData::AllocateStorage()
 {
-	ET_ASSERT(m_Handle == 0u, "Shouldn't upload data after a handle was created!");
 	ContextHolder::GetRenderDevice()->AllocateTextureStorage(*this);
 }
 
@@ -109,8 +100,6 @@ void TextureData::AllocateStorage()
 //
 void TextureData::SetParameters(TextureParameters const& params, bool const force)
 {
-	ET_ASSERT(m_Handle == 0u, "Shouldn't set parameters after a handle was created!");
-
 	ContextHolder::GetRenderDevice()->SetTextureParams(*this, m_Parameters, params, force);
 }
 
@@ -121,8 +110,6 @@ void TextureData::SetParameters(TextureParameters const& params, bool const forc
 //
 void TextureData::GenerateMipMaps()
 {
-	ET_ASSERT(m_Handle == 0u, "Shouldn't generate mip maps after a handle was created!");
-
 	ContextHolder::GetRenderDevice()->GenerateMipMaps(*this, m_MipLevels);
 }
 
@@ -134,21 +121,13 @@ void TextureData::GenerateMipMaps()
 //
 bool TextureData::Resize(ivec2 const& newSize)
 {
-	bool const hasHandle = (m_Handle != 0u);
-
-	bool const regenerate = (newSize.x > m_Resolution.x) || (newSize.y > m_Resolution.y) || hasHandle;
+	bool const regenerate = (newSize.x > m_Resolution.x) || (newSize.y > m_Resolution.y);
 
 	m_Resolution = newSize;
 
 	if (regenerate)
 	{
 		I_RenderDevice* const device = ContextHolder::GetRenderDevice();
-
-		if (hasHandle)
-		{
-			device->SetTextureHandleResidency(m_Handle, false);
-			m_Handle = 0u;
-		}
 
 		device->DeleteTexture(m_Location);
 		m_Location = device->GenerateTexture();
@@ -161,25 +140,7 @@ bool TextureData::Resize(ivec2 const& newSize)
 		SetParameters(m_Parameters, true);
 	}
 
-	if (hasHandle)
-	{
-		CreateHandle();
-	}
-
 	return regenerate;
-}
-
-//---------------------------------
-// TextureData::CreateHandle
-//
-// Create a handle that allows bindless use of the texture. After the handle is created, no other modifying operations should be done (except resize)
-//
-void TextureData::CreateHandle()
-{
-	I_RenderDevice* const device = ContextHolder::GetRenderDevice();
-
-	m_Handle = device->GetTextureHandle(m_Location);
-	device->SetTextureHandleResidency(m_Handle, true); // #todo: in the future we should have a system that makes inactive handles non resident after a while
 }
 
 
@@ -312,10 +273,6 @@ bool TextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	}
 
 	m_Data->SetParameters(m_Parameters);
-	if (targetType != E_TextureType::CubeMap)
-	{
-		m_Data->CreateHandle();
-	}
 
 	return true;
 }

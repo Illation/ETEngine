@@ -152,7 +152,7 @@ void EntityIdRenderer::OnViewportPreRender(rhi::T_FbLoc const targetFb)
 		camera = &(shadedSceneRenderer->GetCamera());
 
 		// we need to manually update the camera info a bit earlier during this draw call
-		RenderingSystems::Instance()->GetSharedVarController().UpdataData(*camera, shadedSceneRenderer->GetGBuffer());
+		RenderingSystems::Instance()->GetSharedVarController().UpdataData(*camera);
 	}
 	else
 	{

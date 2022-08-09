@@ -30,6 +30,11 @@
 	//Light
 	uniform vec3 Direction;
 	uniform vec3 Color;
+
+	// GBuffer
+	uniform sampler2D uTexGBufferA;
+	uniform sampler2D uTexGBufferB;
+	uniform sampler2D uTexGBufferC;
 	
 	//Lighting function
 	vec3 DirLighting(vec3 baseCol, float rough, float metal, vec3 F0, vec3 norm, vec3 viewDir)
@@ -60,7 +65,7 @@
 	
 	void main()
 	{
-		UNPACK_GBUFFER(TexCoords, ViewRay) //maybe use ao??
+		UNPACK_GBUFFER(TexCoords, ViewRay, uTexGBufferA, uTexGBufferB, uTexGBufferC) //maybe use ao??
 		
 		//precalculations	
 		vec3 F0 = vec3(0.04);//for dielectric materials use this simplified constant

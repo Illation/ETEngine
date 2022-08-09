@@ -30,7 +30,7 @@ protected:
 	virtual void AccessShaderAttributes() {}
 	virtual void UploadDerivedVariables() {}
 
-	AssetPtr<rhi::ShaderData> m_pShader;
+	AssetPtr<rhi::ShaderData> m_Shader;
 	std::vector<rhi::TextureData*> m_pTextureVec;
 	bool m_CaptureDepth = false;
 private:

@@ -143,7 +143,6 @@ bool EditableTextureAsset::LoadFromMemory(std::vector<uint8> const& data)
 	}
 
 	texture->SetParameters(textureAsset->m_Parameters);
-	texture->CreateHandle();
 
 	// done
 	SetData(texture);

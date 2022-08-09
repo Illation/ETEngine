@@ -30,13 +30,17 @@ void Gbuffer::UploadDerivedVariables()
 	AssetPtr<EnvironmentMap> envMap = sceneRenderer->GetScene()->GetSkybox().m_EnvironmentMap;
 	if (envMap != nullptr)
 	{
-		m_pShader->Upload("uTexIrradiance"_hash, envMap->GetIrradiance());
-		m_pShader->Upload("uTexRadiance"_hash, envMap->GetRadiance());
-		m_pShader->Upload("uMaxReflectionLod"_hash, static_cast<float>(envMap->GetNumMipMaps()));
+		m_Shader->Upload("uTexIrradiance"_hash, envMap->GetIrradiance());
+		m_Shader->Upload("uTexRadiance"_hash, envMap->GetRadiance());
+		m_Shader->Upload("uMaxReflectionLod"_hash, static_cast<float>(envMap->GetNumMipMaps()));
 	}
 
 	rhi::TextureData const* const lut = RenderingSystems::Instance()->GetPbrPrefilter().GetLUT();
-	m_pShader->Upload("uTexBrdfLut"_hash, lut);
+	m_Shader->Upload("uTexBrdfLut"_hash, lut);
+
+	//m_Shader->Upload("uTexGBufferA"_hash, GetTextures()[0]);
+	m_Shader->Upload("uTexGBufferB"_hash, static_cast<rhi::TextureData const*>(GetTextures()[1]));
+	m_Shader->Upload("uTexGBufferC"_hash, static_cast<rhi::TextureData const*>(GetTextures()[2]));
 }
 
 

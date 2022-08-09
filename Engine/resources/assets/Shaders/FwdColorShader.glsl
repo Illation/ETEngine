@@ -23,11 +23,13 @@
 	uniform float uOcclusionFactor = 0.5f;
 
 	uniform vec2 uViewSize;
+
+	uniform sampler2D uTexGBufferA;
 	
 	void main()
 	{
 		vec2 coord = gl_FragCoord.xy / uViewSize;
-		float gbufferDepth = UNPACK_DEPTH(coord);
+		float gbufferDepth = UNPACK_DEPTH(coord, uTexGBufferA);
 
 		float multiplier = 1.f;
 		if (gbufferDepth < gl_FragCoord.z)

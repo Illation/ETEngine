@@ -4,7 +4,6 @@
 #include <EtRHI/GraphicsTypes/TextureData.h>
 
 #include <EtRendering/GraphicsTypes/Camera.h>
-#include <EtRendering/SceneRendering/Gbuffer.h>
 
 
 namespace et {
@@ -56,7 +55,7 @@ void SharedVarController::Deinit()
 //---------------------------------
 // SharedVarController::UpdataData
 //
-void SharedVarController::UpdataData(Camera const& camera, Gbuffer const& gbuffer)
+void SharedVarController::UpdataData(Camera const& camera)
 {
 	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
@@ -75,11 +74,6 @@ void SharedVarController::UpdataData(Camera const& camera, Gbuffer const& gbuffe
 	m_Data.camPos = camera.GetPosition();
 	m_Data.projectionA = camera.GetDepthProjA();
 	m_Data.projectionB = camera.GetDepthProjB();
-
-	std::vector<rhi::TextureData*> const& gbufferTex = gbuffer.GetTextures();
-	m_Data.gbufferA = gbufferTex[0]->GetHandle();
-	m_Data.gbufferB = gbufferTex[1]->GetHandle();
-	m_Data.gbufferC = gbufferTex[2]->GetHandle();
 
 	device->BindBuffer(rhi::E_BufferType::Uniform, m_BufferLocation);
 	device->SetBufferData(rhi::E_BufferType::Uniform, sizeof(m_Data), &m_Data, rhi::E_UsageHint::Dynamic);

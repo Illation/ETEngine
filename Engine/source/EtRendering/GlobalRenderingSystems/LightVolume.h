@@ -9,6 +9,7 @@ namespace render {
 class rhi::ShaderData;
 class Material;
 class DirectionalShadowData;
+class Gbuffer;
 
 
 class PointLightVolume final
@@ -17,7 +18,7 @@ public:
 	PointLightVolume() = default;
 	~PointLightVolume() = default;
 
-	void Draw(vec3 pos, float radius, vec3 col);
+	void Draw(vec3 pos, float radius, vec3 col, Gbuffer const& gbuffer);
 
 private:
 	AssetPtr<render::Material> m_Material;
@@ -29,8 +30,8 @@ public:
 	DirectLightVolume() = default;
 	~DirectLightVolume() = default;
 
-	void Draw(vec3 dir, vec3 col);
-	void DrawShadowed(vec3 dir, vec3 col, render::DirectionalShadowData const& shadow);
+	void Draw(vec3 dir, vec3 col, Gbuffer const& gbuffer);
+	void DrawShadowed(vec3 dir, vec3 col, render::DirectionalShadowData const& shadow, Gbuffer const& gbuffer);
 
 protected:
 	AssetPtr<rhi::ShaderData> m_Shader;

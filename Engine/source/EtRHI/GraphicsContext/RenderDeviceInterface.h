@@ -132,8 +132,6 @@ public:
 		TextureParameters const& next, 
 		bool const force) = 0;
 	virtual void GenerateMipMaps(TextureData const& texture, uint8& mipLevels) = 0;
-	virtual T_TextureHandle GetTextureHandle(T_TextureLoc const texLoc) const = 0;
-	virtual void SetTextureHandleResidency(T_TextureHandle const handle, bool const isResident) const = 0;
 	virtual void GetTextureData(TextureData const& texture,
 		uint8 const mipLevel,
 		E_ColorFormat const format,

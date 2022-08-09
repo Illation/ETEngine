@@ -178,6 +178,8 @@ void OutlineRenderer::Draw(rhi::T_FbLoc const targetFb,
 
 	shader->Upload("uOcclusionFactor"_hash, 0.15f);
 
+	shader->Upload("uTexGBufferA"_hash, static_cast<rhi::TextureData const*>(gbuffer.GetTextures()[0]));
+
 	device->SetDepthEnabled(true); 
 
 	for (OutlineExtension::OutlineList const& list : outlines.GetOutlineLists())

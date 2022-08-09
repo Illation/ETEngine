@@ -11,6 +11,10 @@ namespace et {
 namespace render {
 
 
+// fwd
+class Gbuffer;
+
+
 //-----------------------------
 // AtmosphereInstance
 //
@@ -35,6 +39,8 @@ struct AtmosphereInstance
 //
 class Atmosphere
 {
+	friend class AtmospherePrecompute;
+
 public:
 	Atmosphere() = default;
 	~Atmosphere();
@@ -43,12 +49,9 @@ public:
 
 	core::HashString GetId() const { return m_Id; }
 
-	void Draw(vec3 const& position, float const height, float const groundRadius, vec3 const& sunDir) const;
+	void Draw(vec3 const& position, float const height, float const groundRadius, vec3 const& sunDir, Gbuffer const& gbuffer) const;
 
 private:
-	friend class AtmospherePrecompute;
-
-	void GetUniforms();
 
 	core::HashString m_Id;
 
@@ -61,7 +64,7 @@ private:
 	rhi::TextureData* m_TexIrradiance = nullptr;
 	rhi::TextureData* m_TexInscatter = nullptr;
 
-	AssetPtr<rhi::ShaderData> m_pShader;
+	AssetPtr<rhi::ShaderData> m_Shader;
 };
 
 
