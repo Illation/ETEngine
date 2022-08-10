@@ -380,7 +380,6 @@ private:
 	ShaderData const* m_pBoundShader = nullptr;
 
 	TextureUnitCache m_TextureUnits;
-	bool m_BindlessTexturesAvailable = false;
 
 	T_ArrayLoc m_VertexArray = 0;
 	std::map<E_BufferType, T_BufferLoc> m_BufferTargets;

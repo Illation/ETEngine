@@ -711,7 +711,6 @@ void GL_DEVICE_CLASSNAME::Initialize(ivec2 const dimensions)
 	//******************
 
 	std::vector<std::string> requiredExtensions = { 
-		"GL_ARB_bindless_texture", 
 		"GL_EXT_texture_sRGB", 
 		"GL_EXT_texture_compression_s3tc",
 		"GL_ARB_texture_compression_rgtc",
@@ -743,11 +742,6 @@ void GL_DEVICE_CLASSNAME::Initialize(ivec2 const dimensions)
 		if (std::find(foundExtensions.cbegin(), foundExtensions.cend(), required) != foundExtensions.cend())
 		{
 			ET_LOG_I(ET_CTX_RENDER, "\t%s - found", requiredExtensions[reqIdx].c_str());
-
-			if (required == "GL_ARB_bindless_texture"_hash)
-			{
-				m_BindlessTexturesAvailable = true;
-			}
 		}
 		else
 		{
