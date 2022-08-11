@@ -16,14 +16,14 @@
 
 
 // fwd
-namespace et { namespace rendering {
+namespace et { namespace rhi {
 	class TextureData;
 	class Viewport;
 } }
 
 
 namespace et {
-namespace gui {
+namespace fw {
 
 
 //---------------------------------
@@ -76,9 +76,9 @@ private:
 		// data
 		Ptr<rhi::Viewport const> m_Viewport;
 
-		Context m_Context;
+		gui::Context m_Context;
 		core::slot_map<core::HashString> m_Documents;
-		ContextRenderTarget m_RenderTarget;
+		gui::ContextRenderTarget m_RenderTarget;
 
 		Ptr<GuiExtension> m_GuiExtension;
 		rhi::T_ViewportEventCallbackId m_VPCallbackId = rhi::T_ViewportEventDispatcher::INVALID_ID;
@@ -96,8 +96,8 @@ public:
 	//
 	struct WorldContext
 	{
-		Context m_Context;
-		ContextRenderTarget m_RenderTarget;
+		gui::Context m_Context;
+		gui::ContextRenderTarget m_RenderTarget;
 		core::T_SlotId m_NodeId;
 		core::T_SlotId m_EventCameraId = core::INVALID_SLOT_ID;
 		vec4 m_Color = vec4(1.f);
@@ -109,7 +109,7 @@ public:
 
 	// construct destruct
 	//--------------------
-	GuiExtension() : I_SceneExtension(), I_Tickable(static_cast<uint32>(E_TickOrder::TICK_GuiExtension)) {}
+	GuiExtension() : I_SceneExtension(), I_Tickable(static_cast<uint32>(gui::E_TickOrder::TICK_GuiExtension)) {}
 
 	GuiExtension(GuiExtension const&) = delete;
 	void operator=(GuiExtension const&) = delete;
@@ -132,30 +132,30 @@ protected:
 	// functionality
 	//---------------
 public:
-	T_ContextId CreateContext(Ptr<rhi::Viewport> const viewport);
-	T_ContextId CreateContext(core::T_SlotId const nodeId, ivec2 const dimensions);
-	void DestroyContext(T_ContextId const id);
+	gui::T_ContextId CreateContext(Ptr<rhi::Viewport> const viewport);
+	gui::T_ContextId CreateContext(core::T_SlotId const nodeId, ivec2 const dimensions);
+	void DestroyContext(gui::T_ContextId const id);
 
-	void SetContextActive(T_ContextId const id, bool const isActive);
+	void SetContextActive(gui::T_ContextId const id, bool const isActive);
 
-	void SetEventCamera(T_ContextId const id, core::T_SlotId const cameraId);
-	void SetContextColor(T_ContextId const id, vec4 const& color);
-	void SetDepthTestEnabled(T_ContextId const id, bool const depthEnabled);
+	void SetEventCamera(gui::T_ContextId const id, core::T_SlotId const cameraId);
+	void SetContextColor(gui::T_ContextId const id, vec4 const& color);
+	void SetDepthTestEnabled(gui::T_ContextId const id, bool const depthEnabled);
 
-	RefPtr<I_DataModel> InstantiateDataModel(T_ContextId const id, core::HashString const modelId);
-	bool DestroyDataModel(T_ContextId const id, std::string const& modelName);
+	RefPtr<gui::I_DataModel> InstantiateDataModel(gui::T_ContextId const id, core::HashString const modelId);
+	bool DestroyDataModel(gui::T_ContextId const id, std::string const& modelName);
 
-	void SetLoadedDocument(T_ContextId const id, core::HashString const documentId);
+	void SetLoadedDocument(gui::T_ContextId const id, core::HashString const documentId);
 
 	void SetInputEnabled(bool const enabled) { m_IsInputEnabled = enabled; }
 
 	// accessors
 	//-----------
-	Context* GetContext(rhi::Viewport const* const vp);
-	Context* GetContext(rhi::Viewport const* const vp, ContextRenderTarget*& renderTarget);
+	gui::Context* GetContext(rhi::Viewport const* const vp);
+	gui::Context* GetContext(rhi::Viewport const* const vp, gui::ContextRenderTarget*& renderTarget);
 	T_WorldContexts& GetWorldContexts() { return m_WorldContexts; }
 
-	Rml::ElementDocument* GetDocument(T_ContextId const id);
+	Rml::ElementDocument* GetDocument(gui::T_ContextId const id);
 
 	render::Scene const* GetRenderScene() const { return m_RenderScene.Get(); }
 
@@ -164,7 +164,7 @@ public:
 	// utility
 	//---------
 private:
-	Context& GetContext(T_ContextId const id);
+	gui::Context& GetContext(gui::T_ContextId const id);
 	void OnViewportResize(rhi::Viewport const* const vp, ivec2 const dim);
 	PerViewport& FindOrCreatePerViewport(Ptr<rhi::Viewport> const viewport);
 	void ErasePerViewport(rhi::Viewport* const vp, T_ViewportContexts::iterator const it);
@@ -184,5 +184,5 @@ private:
 };
 
 
-} // namespace gui
+} // namespace fw
 } // namespace et

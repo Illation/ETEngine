@@ -5,10 +5,10 @@
 
 #include <EtCore/Reflection/Registration.h>
 
-#include <EtGUI/GuiExtension.h>
 #include <EtGUI/Context/RmlGlobal.h>
 
 #include <EtFramework/Components/TransformComponent.h>
+#include <EtFramework/GUI/GuiExtension.h>
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
 
@@ -77,7 +77,7 @@ void GuiCanvasComponent::OnComponentAdded(EcsController& controller, GuiCanvasCo
 	{
 		ET_ASSERT(component.m_Id == gui::INVALID_CONTEXT_ID);
 
-		gui::GuiExtension& guiExt = *UnifiedScene::Instance().GetGuiExtension();
+		GuiExtension& guiExt = *UnifiedScene::Instance().GetGuiExtension();
 
 		component.m_Id = guiExt.CreateContext(controller.GetComponent<TransformComponent>(entity).GetNodeId(), component.m_Dimensions);
 		if (!component.m_DataModelId.IsEmpty())
@@ -111,7 +111,7 @@ void GuiCanvasComponent::OnComponentRemoved(EcsController& controller, GuiCanvas
 
 	if (component.m_Id != gui::INVALID_CONTEXT_ID)
 	{
-		gui::GuiExtension& guiExt = *UnifiedScene::Instance().GetGuiExtension();
+		GuiExtension& guiExt = *UnifiedScene::Instance().GetGuiExtension();
 		if (!component.m_DataModelId.IsEmpty())
 		{
 			std::string modelName;
@@ -240,7 +240,7 @@ void GuiCanvasComponent::InitForScreenSpace(EcsController const& ecs)
 	CameraComponent const& camera = ecs.GetComponent<CameraComponent>(m_Camera.GetId());
 	if (camera.GetViewport() != nullptr)
 	{
-		gui::GuiExtension& guiExt = *UnifiedScene::Instance().GetGuiExtension();
+		GuiExtension& guiExt = *UnifiedScene::Instance().GetGuiExtension();
 
 		m_Id = guiExt.CreateContext(camera.GetViewport());
 		if (!m_DataModelId.IsEmpty())

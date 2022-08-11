@@ -6,7 +6,7 @@
 
 
 namespace et {
-namespace gui {
+namespace fw {
 
 
 //====================
@@ -50,7 +50,7 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 				render::I_SceneExtension* const ext = renderer->GetScene()->GetExtension(GuiExtension::s_ExtensionId);
 				if (ext == nullptr)
 				{
-					ET_TRACE_V(ET_CTX_GUI, "render scene does not have a GUI extension");
+					ET_TRACE_V(ET_CTX_FRAMEWORK, "render scene does not have a GUI extension");
 					return;
 				}
 
@@ -75,7 +75,7 @@ void SceneRendererGUI::Init(Ptr<render::T_RenderEventDispatcher> const eventDisp
 				render::I_SceneExtension* const ext = renderer->GetScene()->GetExtension(GuiExtension::s_ExtensionId);
 				if (ext == nullptr)
 				{
-					ET_TRACE_V(ET_CTX_GUI, "render scene does not have a GUI extension");
+					ET_TRACE_V(ET_CTX_FRAMEWORK, "render scene does not have a GUI extension");
 					return;
 				}
 
@@ -157,8 +157,8 @@ void SceneRendererGUI::DrawOverlay(rhi::T_FbLoc const targetFb, rhi::E_PolygonMo
 	// RmlUi overlays
 	//----------------
 	rhi::Viewport const* const viewport = rhi::Viewport::GetCurrentViewport();
-	ContextRenderTarget* renderTarget;
-	Context* const context = guiExt.GetContext(viewport, renderTarget);
+	gui::ContextRenderTarget* renderTarget;
+	gui::Context* const context = guiExt.GetContext(viewport, renderTarget);
 	if ((context != nullptr) && context->HasActiveDocuments())
 	{
 		renderTarget->UpdateForDimensions(viewport->GetDimensions());
@@ -167,6 +167,6 @@ void SceneRendererGUI::DrawOverlay(rhi::T_FbLoc const targetFb, rhi::E_PolygonMo
 }
 
 
-} // namespace gui
+} // namespace fw
 } // namespace et
 

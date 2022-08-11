@@ -2,10 +2,10 @@
 #include <EtCore/UpdateCycle/RealTimeTickTriggerer.h>
 #include <EtCore/UpdateCycle/Tickable.h>
 
-#include <EtGUI/Rendering/SceneRendererGUI.h>
 #include <EtGUI/ImGui/ImGuiBackend.h>
 
 #include <EtFramework/Config/TickOrder.h>
+#include <EtFramework/GUI/SceneRendererGUI.h>
 #include <EtFramework/Util/ScreenshotCapture.h>
 
 #include <EtRuntime/Debug/DebugUi.h>
@@ -79,7 +79,7 @@ private:
 #endif
 
 protected:
-	gui::SceneRendererGUI m_GuiRenderer;
+	fw::SceneRendererGUI m_GuiRenderer;
 
 private:
 	std::vector<core::HashString> m_Scenes;

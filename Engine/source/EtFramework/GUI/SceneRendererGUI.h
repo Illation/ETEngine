@@ -1,20 +1,20 @@
 #pragma once
-#include "GuiRenderer.h"
-
-#include <EtGUI/GuiExtension.h>
-
 #include <EtRendering/Extensions/RenderEvents.h>
+
+#include <EtGUI/Rendering/GuiRenderer.h>
+
+#include <EtFramework/GUI/GuiExtension.h>
 
 
 namespace et {
-namespace gui {
+namespace fw {
 
 
 class RmlGlobal;
 
 
 //---------------------------------
-// GuiRenderer
+// SceneRendererGUI
 //
 // Renderer that renders objects in the GUI extension
 //
@@ -41,7 +41,7 @@ private:
 
 	bool m_IsInitialized = false;
 
-	GuiRenderer m_GuiRenderer;
+	gui::GuiRenderer m_GuiRenderer;
 
 	// render event hooks
 	Ptr<render::T_RenderEventDispatcher> m_EventDispatcher;
@@ -50,5 +50,5 @@ private:
 };
 
 
-} // namespace gui
+} // namespace fw
 } // namespace et

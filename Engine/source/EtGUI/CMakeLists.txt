@@ -23,11 +23,10 @@ assign_source_group(${projectFiles})
 assignIdeFolder(EtGUI Engine)
 libOutputDirectories(EtGUI)
 
-target_link_libraries (EtGUI EtRendering EtMath EtCore imgui)
+target_link_libraries (EtGUI EtRHI EtMath EtCore imgui)
 
 # library includes
 libIncludeDirs()
 
 # general include dirs
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/..")
-target_include_directories (EtGUI PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

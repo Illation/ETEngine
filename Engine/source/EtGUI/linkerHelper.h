@@ -1,5 +1,5 @@
 #pragma once
-#include <EtRendering/linkerHelper.h>
+#include <EtRHI/linkerHelper.h>
 
 #include <EtGUI/Context/GuiDocument.h>
 #include <EtGUI/Fonts/SdfFont.h>
@@ -16,7 +16,7 @@ namespace gui {
 //
 void ForceLinking()
 {
-	render::ForceLinking();
+	rhi::ForceLinking();
 
 	FORCE_LINKING(SdfFontAsset)
 	FORCE_LINKING(GuiDocumentAsset)

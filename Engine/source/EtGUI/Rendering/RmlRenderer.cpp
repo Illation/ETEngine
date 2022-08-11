@@ -5,8 +5,6 @@
 
 #include <EtRHI/Util/PrimitiveRenderer.h>
 
-#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
-
 #include <EtGUI/Context/RmlUtil.h>
 
 
@@ -525,7 +523,7 @@ void RmlRenderer::SetupScissorRectangle()
 
 				if (m_NullShader == nullptr)
 				{
-					m_NullShader = render::RenderingSystems::Instance()->GetNullMaterial()->GetShaderAsset();
+					m_NullShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdNullShader.glsl"));
 				}
 
 				m_RenderDevice->SetShader(m_NullShader.get());

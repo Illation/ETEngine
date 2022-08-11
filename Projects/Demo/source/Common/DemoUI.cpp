@@ -4,8 +4,8 @@
 #include <RmlUi/Core/ElementDocument.h>
 
 #include <EtGUI/Context/RmlGlobal.h>
-#include <EtGUI/GuiExtension.h>
 
+#include <EtFramework/GUI/GuiExtension.h>
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
 

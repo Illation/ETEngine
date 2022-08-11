@@ -1,9 +1,7 @@
 #pragma once
 #include "ContextRenderTarget.h"
 
-#include <EtGUI/GuiExtension.h>
-
-#include <EtRendering/Extensions/RenderEvents.h>
+#include <EtGUI/Context/Context.h>
 
 
 namespace et {

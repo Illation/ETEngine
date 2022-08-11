@@ -13,7 +13,7 @@
 
 
 // fwd
-namespace et { namespace gui {
+namespace et { namespace fw {
 	class GuiExtension;
 } }
 
@@ -68,7 +68,7 @@ public:
 	T_EntityId GetAudioListener() const { return m_AudioListener; }
 
 	render::Scene& GetRenderScene() { return m_RenderScene; }
-	gui::GuiExtension* GetGuiExtension() { return m_GuiExtension.Get(); }
+	GuiExtension* GetGuiExtension() { return m_GuiExtension.Get(); }
 	PhysicsWorld& GetPhysicsWorld() { return m_PhysicsWorld; }
 
 	T_SceneEventDispatcher& GetEventDispatcher() { return m_EventDispatcher; }
@@ -93,7 +93,7 @@ private:
 
 	render::Scene m_RenderScene;
 
-	Ptr<gui::GuiExtension> m_GuiExtension;
+	Ptr<GuiExtension> m_GuiExtension;
 
 	PhysicsWorld m_PhysicsWorld;
 

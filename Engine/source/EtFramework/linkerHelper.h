@@ -2,6 +2,8 @@
 
 #include <EtGUI/linkerHelper.h>
 
+#include <EtRendering/linkerHelper.h>
+
 #include <EtFramework/Audio/AudioData.h>
 #include <EtFramework/SceneGraph/SceneDescriptor.h>
 #include <EtFramework/Physics/CollisionShape.h>
@@ -27,6 +29,7 @@ namespace fw {
 void ForceLinking()
 {
 	gui::ForceLinking();
+	render::ForceLinking();
 
 	FORCE_LINKING(AudioAsset)
 	FORCE_LINKING(SceneDescriptorAsset)

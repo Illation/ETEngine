@@ -1,4 +1,3 @@
-
 #include <EtCore/UpdateCycle/PerformanceInfo.h>
 
 #include <EtRHI/GraphicsTypes/Shader.h>
@@ -679,7 +678,7 @@ void GL_DEVICE_CLASSNAME::TextureUnitCache::OnTextureDelete(T_TextureLoc const t
 //
 GL_DEVICE_CLASSNAME::~GL_DEVICE_CLASSNAME()
 {
-	ET_LOG_I(ET_CTX_RENDER, "OpenGL unloaded");
+	ET_LOG_I(ET_CTX_RHI, "OpenGL unloaded");
 }
 
 //---------------------------------
@@ -700,12 +699,12 @@ void GL_DEVICE_CLASSNAME::Initialize(ivec2 const dimensions)
 	// Info
 	//******
 
-	ET_LOG_I(ET_CTX_RENDER, "OpenGL loaded");
-	ET_LOG_I(ET_CTX_RENDER, "");
-	ET_LOG_I(ET_CTX_RENDER, "Vendor:   %s", glGetString(GL_VENDOR));
-	ET_LOG_I(ET_CTX_RENDER, "Renderer: %s", glGetString(GL_RENDERER));
-	ET_LOG_I(ET_CTX_RENDER, "Version:  %s", glGetString(GL_VERSION));
-	ET_LOG_I(ET_CTX_RENDER, "");
+	ET_LOG_I(ET_CTX_RHI, "OpenGL loaded");
+	ET_LOG_I(ET_CTX_RHI, "");
+	ET_LOG_I(ET_CTX_RHI, "Vendor:   %s", glGetString(GL_VENDOR));
+	ET_LOG_I(ET_CTX_RHI, "Renderer: %s", glGetString(GL_RENDERER));
+	ET_LOG_I(ET_CTX_RHI, "Version:  %s", glGetString(GL_VERSION));
+	ET_LOG_I(ET_CTX_RHI, "");
 
 	// Check extensions
 	//******************
@@ -734,27 +733,27 @@ void GL_DEVICE_CLASSNAME::Initialize(ivec2 const dimensions)
 
 	bool allFound = true;
 
-	ET_LOG_I(ET_CTX_RENDER, "Required extensions:");
+	ET_LOG_I(ET_CTX_RHI, "Required extensions:");
 	for (size_t reqIdx = 0u; reqIdx < requiredExtensions.size(); ++ reqIdx)
 	{
 		core::HashString const required = requiredExtHashes[reqIdx];
 
 		if (std::find(foundExtensions.cbegin(), foundExtensions.cend(), required) != foundExtensions.cend())
 		{
-			ET_LOG_I(ET_CTX_RENDER, "\t%s - found", requiredExtensions[reqIdx].c_str());
+			ET_LOG_I(ET_CTX_RHI, "\t%s - found", requiredExtensions[reqIdx].c_str());
 		}
 		else
 		{
-			ET_LOG_W(ET_CTX_RENDER, "\t%s - not found", requiredExtensions[reqIdx].c_str());
+			ET_LOG_W(ET_CTX_RHI, "\t%s - not found", requiredExtensions[reqIdx].c_str());
 			allFound = false;
 		}
 	}
 
-	ET_LOG_I(ET_CTX_RENDER, "");
+	ET_LOG_I(ET_CTX_RHI, "");
 
 	if (!allFound)
 	{
-		ET_LOG_E(ET_CTX_RENDER, "Not all required OpenGL extensions are available on this device! Try updating your graphics card drivers!");
+		ET_LOG_E(ET_CTX_RHI, "Not all required OpenGL extensions are available on this device! Try updating your graphics card drivers!");
 	}
 
 	// texture units
@@ -2232,7 +2231,7 @@ void GL_DEVICE_CLASSNAME::GetActiveAttribute(T_ShaderLoc const program, uint32 c
 		break;
 
 	default:
-		ET_TRACE_W(ET_CTX_RENDER, "unknown attribute type '%u'", type);
+		ET_TRACE_W(ET_CTX_RHI, "unknown attribute type '%u'", type);
 		return;
 	}
 }

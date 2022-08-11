@@ -11,7 +11,7 @@
 
 
 namespace et {
-namespace gui {
+namespace fw {
 
 
 //===================================
@@ -29,10 +29,10 @@ bool GuiExtension::PerViewport::ProcessKeyPressed(E_KbdKey const key, core::T_Ke
 		return false;
 	}
 
-	Rml::Input::KeyIdentifier const rmlKey = RmlUtil::GetRmlKeyId(key);
+	Rml::Input::KeyIdentifier const rmlKey = gui::RmlUtil::GetRmlKeyId(key);
 	if (rmlKey != Rml::Input::KeyIdentifier::KI_UNKNOWN)
 	{
-		int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
+		int32 const mods = gui::RmlUtil::GetRmlModifierFlags(modifiers);
 		if (m_Context.HasActiveDocuments())
 		{
 			if (m_Context.ProcessKeyPressed(rmlKey, mods))
@@ -70,10 +70,10 @@ bool GuiExtension::PerViewport::ProcessKeyReleased(E_KbdKey const key, core::T_K
 		return false;
 	}
 
-	Rml::Input::KeyIdentifier const rmlKey = RmlUtil::GetRmlKeyId(key);
+	Rml::Input::KeyIdentifier const rmlKey = gui::RmlUtil::GetRmlKeyId(key);
 	if (rmlKey != Rml::Input::KeyIdentifier::KI_UNKNOWN)
 	{
-		int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
+		int32 const mods = gui::RmlUtil::GetRmlModifierFlags(modifiers);
 		if (m_Context.HasActiveDocuments())
 		{
 			if (m_Context.ProcessKeyReleased(rmlKey, mods))
@@ -111,10 +111,10 @@ bool GuiExtension::PerViewport::ProcessMousePressed(E_MouseButton const button, 
 		return false;
 	}
 
-	int32 const rmlButton = RmlUtil::GetRmlButtonIndex(button);
+	int32 const rmlButton = gui::RmlUtil::GetRmlButtonIndex(button);
 	if (rmlButton != -1)
 	{
-		int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
+		int32 const mods = gui::RmlUtil::GetRmlModifierFlags(modifiers);
 		if (m_Context.HasActiveDocuments())
 		{
 			if (m_Context.ProcessMousePressed(rmlButton, mods))
@@ -152,10 +152,10 @@ bool GuiExtension::PerViewport::ProcessMouseReleased(E_MouseButton const button,
 		return false;
 	}
 
-	int32 const rmlButton = RmlUtil::GetRmlButtonIndex(button);
+	int32 const rmlButton = gui::RmlUtil::GetRmlButtonIndex(button);
 	if (rmlButton != -1)
 	{
-		int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
+		int32 const mods = gui::RmlUtil::GetRmlModifierFlags(modifiers);
 		if (m_Context.HasActiveDocuments())
 		{
 			if (m_Context.ProcessMouseReleased(rmlButton, mods))
@@ -193,7 +193,7 @@ bool GuiExtension::PerViewport::ProcessMouseMove(ivec2 const& mousePos, core::T_
 		return false;
 	}
 
-	int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
+	int32 const mods = gui::RmlUtil::GetRmlModifierFlags(modifiers);
 	if (m_Context.HasActiveDocuments())
 	{
 		if (m_Context.ProcessMouseMove(mousePos, mods))
@@ -261,7 +261,7 @@ bool GuiExtension::PerViewport::ProcessMouseWheelDelta(ivec2 const& mouseWheel, 
 	}
 
 	ivec2 const delta(mouseWheel.x, -mouseWheel.y);
-	int32 const mods = RmlUtil::GetRmlModifierFlags(modifiers);
+	int32 const mods = gui::RmlUtil::GetRmlModifierFlags(modifiers);
 	if (m_Context.HasActiveDocuments())
 	{
 		if (m_Context.ProcessMouseWheelDelta(delta, mods))
@@ -347,7 +347,7 @@ void GuiExtension::OnTick()
 	// world contexts
 	for (WorldContext& worldContext : m_WorldContexts)
 	{
-		Context& context = worldContext.m_Context;
+		gui::Context& context = worldContext.m_Context;
 		if (context.HasActiveDocuments())
 		{
 			context.Update();
@@ -361,7 +361,7 @@ void GuiExtension::OnTick()
 // Create a screenspace GUI context attached to a specific viewport
 //  - may create a new context list and bind for viewport resize events
 //
-T_ContextId GuiExtension::CreateContext(Ptr<rhi::Viewport> const viewport)
+gui::T_ContextId GuiExtension::CreateContext(Ptr<rhi::Viewport> const viewport)
 {
 	auto const ret = m_Contexts.insert(ContextData());
 
@@ -382,7 +382,7 @@ T_ContextId GuiExtension::CreateContext(Ptr<rhi::Viewport> const viewport)
 //
 // Create a worldspace context
 //
-T_ContextId GuiExtension::CreateContext(core::T_SlotId const nodeId, ivec2 const dimensions)
+gui::T_ContextId GuiExtension::CreateContext(core::T_SlotId const nodeId, ivec2 const dimensions)
 {
 	auto const ret = m_Contexts.insert(ContextData());
 
@@ -404,7 +404,7 @@ T_ContextId GuiExtension::CreateContext(core::T_SlotId const nodeId, ivec2 const
 //
 // will delete the last PerViewport data and event bindings
 //
-void GuiExtension::DestroyContext(T_ContextId const id)
+void GuiExtension::DestroyContext(gui::T_ContextId const id)
 {
 	ContextData& ctxData = m_Contexts[id];
 
@@ -433,7 +433,7 @@ void GuiExtension::DestroyContext(T_ContextId const id)
 //------------------------------------
 // GuiExtension::SetContextActive
 //
-void GuiExtension::SetContextActive(T_ContextId const id, bool const isActive)
+void GuiExtension::SetContextActive(gui::T_ContextId const id, bool const isActive)
 {
 	ContextData& ctxData = m_Contexts[id];
 
@@ -445,7 +445,7 @@ void GuiExtension::SetContextActive(T_ContextId const id, bool const isActive)
 	}
 	else
 	{
-		Context& context = m_WorldContexts[ctxData.m_Context].m_Context;
+		gui::Context& context = m_WorldContexts[ctxData.m_Context].m_Context;
 		context.SetDocumentActive(context.GetDocumentId(0u), isActive);
 	}
 }
@@ -455,7 +455,7 @@ void GuiExtension::SetContextActive(T_ContextId const id, bool const isActive)
 //
 // for 3D contexts set the camera we receive events from
 // 
-void GuiExtension::SetEventCamera(T_ContextId const id, core::T_SlotId const cameraId)
+void GuiExtension::SetEventCamera(gui::T_ContextId const id, core::T_SlotId const cameraId)
 {
 	ContextData& ctxData = m_Contexts[id];
 	ET_ASSERT(!ctxData.m_IsViewportContext, "Context event camera is only applicable on World contexts");
@@ -499,7 +499,7 @@ void GuiExtension::SetEventCamera(T_ContextId const id, core::T_SlotId const cam
 //
 // for 3D contexts the colour all UI will be multiplied with
 //
-void GuiExtension::SetContextColor(T_ContextId const id, vec4 const& color)
+void GuiExtension::SetContextColor(gui::T_ContextId const id, vec4 const& color)
 {
 	ContextData& ctxData = m_Contexts[id];
 	ET_ASSERT(!ctxData.m_IsViewportContext, "Context color is only applicable on World contexts");
@@ -512,7 +512,7 @@ void GuiExtension::SetContextColor(T_ContextId const id, vec4 const& color)
 //
 // if false a world context will render in front of everything else
 //
-void GuiExtension::SetDepthTestEnabled(T_ContextId const id, bool const depthEnabled)
+void GuiExtension::SetDepthTestEnabled(gui::T_ContextId const id, bool const depthEnabled)
 {
 	ContextData& ctxData = m_Contexts[id];
 	ET_ASSERT(!ctxData.m_IsViewportContext, "Depth testing is only applicable on World contexts");
@@ -523,15 +523,15 @@ void GuiExtension::SetDepthTestEnabled(T_ContextId const id, bool const depthEna
 //------------------------------------
 // GuiExtension::CreateDataModel
 //
-RefPtr<I_DataModel> GuiExtension::InstantiateDataModel(T_ContextId const id, core::HashString const modelId)
+RefPtr<gui::I_DataModel> GuiExtension::InstantiateDataModel(gui::T_ContextId const id, core::HashString const modelId)
 {
-	return std::move(RmlGlobal::GetDataModelFactory().CreateModel(GetContext(id), modelId));
+	return std::move(gui::RmlGlobal::GetDataModelFactory().CreateModel(GetContext(id), modelId));
 }
 
 //------------------------------------
 // GuiExtension::DestroyDataModel
 //
-bool GuiExtension::DestroyDataModel(T_ContextId const id, std::string const& modelName)
+bool GuiExtension::DestroyDataModel(gui::T_ContextId const id, std::string const& modelName)
 {
 	return GetContext(id).DestroyDataModel(modelName);
 }
@@ -539,7 +539,7 @@ bool GuiExtension::DestroyDataModel(T_ContextId const id, std::string const& mod
 //-------------------------------------
 // GuiExtension::SetLoadedDocument
 //
-void GuiExtension::SetLoadedDocument(T_ContextId const id, core::HashString const documentId)
+void GuiExtension::SetLoadedDocument(gui::T_ContextId const id, core::HashString const documentId)
 {
 	ContextData& ctxData = m_Contexts[id];
 
@@ -563,7 +563,7 @@ void GuiExtension::SetLoadedDocument(T_ContextId const id, core::HashString cons
 	}
 	else
 	{
-		Context& context = m_WorldContexts[ctxData.m_Context].m_Context;
+		gui::Context& context = m_WorldContexts[ctxData.m_Context].m_Context;
 		if (documentId.IsEmpty())
 		{
 			if (context.GetDocumentCount() > 0u)
@@ -583,7 +583,7 @@ void GuiExtension::SetLoadedDocument(T_ContextId const id, core::HashString cons
 //
 // All contexts assigned to a viewport
 //
-Context* GuiExtension::GetContext(rhi::Viewport const* const vp)
+gui::Context* GuiExtension::GetContext(rhi::Viewport const* const vp)
 {
 	T_ViewportContexts::iterator found = m_ViewportContexts.find(ToPtr(vp));
 	if (found == m_ViewportContexts.cend())
@@ -597,7 +597,7 @@ Context* GuiExtension::GetContext(rhi::Viewport const* const vp)
 //---------------------------------
 // GuiExtension::GetContexts
 //
-Context* GuiExtension::GetContext(rhi::Viewport const* const vp, ContextRenderTarget*& renderTarget)
+gui::Context* GuiExtension::GetContext(rhi::Viewport const* const vp, gui::ContextRenderTarget*& renderTarget)
 {
 	T_ViewportContexts::iterator found = m_ViewportContexts.find(ToPtr(vp));
 	if (found == m_ViewportContexts.cend())
@@ -613,7 +613,7 @@ Context* GuiExtension::GetContext(rhi::Viewport const* const vp, ContextRenderTa
 //----------------------------------
 // GuiExtension::GetContext
 //
-Rml::ElementDocument* GuiExtension::GetDocument(T_ContextId const id)
+Rml::ElementDocument* GuiExtension::GetDocument(gui::T_ContextId const id)
 {
 	ContextData& ctxData = m_Contexts[id];
 	if (ctxData.m_IsViewportContext)
@@ -624,7 +624,7 @@ Rml::ElementDocument* GuiExtension::GetDocument(T_ContextId const id)
 	}
 	else
 	{
-		Context& context = m_WorldContexts[ctxData.m_Context].m_Context;
+		gui::Context& context = m_WorldContexts[ctxData.m_Context].m_Context;
 		return context.GetDocument(context.GetDocumentId(0u));
 	}
 }
@@ -632,7 +632,7 @@ Rml::ElementDocument* GuiExtension::GetDocument(T_ContextId const id)
 //----------------------------------
 // GuiExtension::GetContext
 //
-Context& GuiExtension::GetContext(T_ContextId const id)
+gui::Context& GuiExtension::GetContext(gui::T_ContextId const id)
 {
 	ContextData& ctxData = m_Contexts[id];
 
@@ -705,6 +705,6 @@ void GuiExtension::ErasePerViewport(rhi::Viewport* const vp, T_ViewportContexts:
 }
 
 
-} // namespace gui
+} // namespace fw
 } // namespace et
 

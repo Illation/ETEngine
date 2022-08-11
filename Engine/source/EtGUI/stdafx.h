@@ -1,7 +1,7 @@
 #pragma once
 
 #pragma region
-#include <EtRendering/stdafx.h>
+#include <EtRHI/stdafx.h>
 
 #pragma endregion Includes
 

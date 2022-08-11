@@ -3,8 +3,7 @@
 
 #include <EtCore/Reflection/Registration.h>
 
-#include <EtGUI/GuiExtension.h>
-
+#include <EtFramework/GUI/GuiExtension.h>
 #include <EtFramework/Systems/TransformSystem.h>
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
