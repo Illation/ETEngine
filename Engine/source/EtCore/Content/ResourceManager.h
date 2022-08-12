@@ -19,7 +19,7 @@ class ResourceManager
 	// Definitions
 	//---------------------
 private:
-	static ResourceManager* s_Instance;
+	static UniquePtr<ResourceManager> s_Instance;
 	friend class ResourceManager;
 	friend class I_AssetPtr;
 
@@ -29,10 +29,10 @@ protected:
 	// Singleton
 	//---------------------
 public:
-	static void SetInstance(ResourceManager* const instance);
+	static void SetInstance(UniquePtr<ResourceManager>&& instance);
 	static void DestroyInstance();
 
-	static ResourceManager* Instance() { return s_Instance; }
+	static ResourceManager* Instance() { return s_Instance.Get(); }
 
 public:
 	// Construct destruct

@@ -1,5 +1,5 @@
 #pragma once
-#include <EtPipeline/Content/EditorAssetDatabase.h>
+#include <EtPipeline/Core/Content/EditorAssetDatabase.h>
 
 #include "PackageWriter.h"
 #include "CookerFwd.h"
@@ -75,7 +75,7 @@ private:
 	std::string m_OutPath;
 
 	UniquePtr<app::GlfwRenderWindow> m_RenderWindow;
-	pl::FileResourceManager* m_ResMan = nullptr;
+	Ptr<pl::FileResourceManager> m_ResMan;
 	
 	E_ReturnCode m_ReturnCode = E_ReturnCode::Success;
 };

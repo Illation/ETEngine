@@ -29,7 +29,7 @@
 
 #include <EtFramework/SceneGraph/UnifiedScene.h>
 
-#include <EtPipeline/Content/FileResourceManager.h>
+#include <EtPipeline/Core/Content/FileResourceManager.h>
 
 #include <EtEditor/Layout/EditorWindow.h>
 #include <EtEditor/Util/SettingsDialog.h>
@@ -256,7 +256,7 @@ void EditorApp::InitializeUtilities()
 		}));
 	fw::UnifiedScene::Instance().Init();
 
-	core::ResourceManager::SetInstance(new pl::FileResourceManager(edConfig->GetProjectPath(), edConfig->GetEnginePath()));
+	core::ResourceManager::SetInstance(Create<pl::FileResourceManager>(edConfig->GetProjectPath(), edConfig->GetEnginePath()));
 
 	edConfig->QueryStartScene();
 

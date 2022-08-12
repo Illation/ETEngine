@@ -6,8 +6,8 @@
 #include <EtCore/Reflection/Serialization.h>
 #include <EtCore/Reflection/Registration.h>
 
-#include <EtPipeline/Content/EditorAsset.h>
-#include <EtPipeline/Assets/EditableSceneDescriptor.h>
+#include <EtPipeline/Core/Content/EditorAsset.h>
+#include <EtPipeline/Framework/EditableSceneDescriptor.h>
 
 
 namespace et {

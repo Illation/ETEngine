@@ -31,7 +31,6 @@ public:
 	// Construct destruct
 	//---------------------
 	PackageResourceManager();
-private:
 	virtual ~PackageResourceManager() = default;
 
 protected:

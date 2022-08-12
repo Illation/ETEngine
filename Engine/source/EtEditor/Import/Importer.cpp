@@ -12,7 +12,7 @@
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/IO/Uri.h>
 
-#include <EtPipeline/Content/FileResourceManager.h>
+#include <EtPipeline/Core/Content/FileResourceManager.h>
 
 #include <EtEditor/Util/GtkUtil.h>
 

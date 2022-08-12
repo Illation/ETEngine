@@ -18,6 +18,8 @@
 #include <EtCore/Trace/FileTraceHandler.h>
 #include <EtCore/Trace/NetworkTraceHandler.h>
 
+#include <EtRHI/GraphicsContext/ContextHolder.h>
+
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 #include <EtFramework/Config/BootConfig.h>
@@ -25,7 +27,7 @@
 #include <EtApplication/Rendering/GlfwRenderWindow.h>
 #include <EtApplication/Core/PackageResourceManager.h>
 
-#include <EtPipeline/Content/FileResourceManager.h>
+#include <EtPipeline/Core/Content/FileResourceManager.h>
 
 
 namespace et {
@@ -100,8 +102,9 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 	rhi::ContextHolder::Instance().CreateMainRenderContext(m_RenderWindow);
 
 	// resources
-	m_ResMan = new pl::FileResourceManager(projectPath, enginePath);
-	core::ResourceManager::SetInstance(m_ResMan);
+	UniquePtr<pl::FileResourceManager> resMan = Create<pl::FileResourceManager>(projectPath, enginePath);
+	m_ResMan = ToPtr(resMan.Get());
+	core::ResourceManager::SetInstance(std::move(resMan));
 
 	// needed for some asset conversions
 	render::RenderingSystems::AddReference();
@@ -289,7 +292,7 @@ void Cooker::AddPackageToWriter(core::HashString const packageId, std::string co
 		std::vector<pl::EditorAssetBase::RuntimeAssetInfo> const runtimeAssets = editorAsset->GetAllRuntimeAssets();
 		for (pl::EditorAssetBase::RuntimeAssetInfo const& info : runtimeAssets)
 		{
-			core::I_Asset const* const asset = info.m_Asset;
+			core::I_Asset const* const asset = info.m_Asset.Get();
 			if (info.m_HasGeneratedData)
 			{
 				core::Entry* const genEntry = m_TempDir->GetMountedChild(asset->GetPath() + asset->GetName());

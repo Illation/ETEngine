@@ -8,7 +8,7 @@
 
 #include <EtCore/FileSystem/FileUtil.h>
 
-#include <EtPipeline/Assets/EditableMeshAsset.h>
+#include <EtPipeline/Rendering/EditableMeshAsset.h>
 
 #include <EtEditor/Util/GtkUtil.h>
 
@@ -470,7 +470,7 @@ bool ColladaImporter::Import(std::vector<uint8> const& importData, std::string c
 			pl::EditableMeshAsset* const editableMeshAsset = new pl::EditableMeshAsset();
 			outAssets.push_back(editableMeshAsset);
 
-			render::MeshAsset* const meshAsset = new render::MeshAsset();
+			RefPtr<render::MeshAsset> meshAsset = Create<render::MeshAsset>();
 			editableMeshAsset->SetAsset(meshAsset);
 
 			meshContainer.WriteToEtMesh(meshAsset->GetLoadData());

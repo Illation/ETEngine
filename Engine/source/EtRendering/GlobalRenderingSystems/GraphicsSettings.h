@@ -21,7 +21,7 @@ struct GraphicsSettings
 
 	int32 PbrBrdfLutSize = 512;
 
-	float TextureScaleFactor = 1.f;
+	float TextureScaleFactor = 1.f; // currently not used
 
 	//Bloom Quality
 	int32 NumBlurPasses = 5;

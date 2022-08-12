@@ -1,5 +1,5 @@
 #pragma once
-#include <EtPipeline/Content/EditorAsset.h>
+#include <EtPipeline/Core/Content/EditorAsset.h>
 
 #include <Common/CustomTestAsset.h>
 

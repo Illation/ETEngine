@@ -63,6 +63,11 @@ bool JsonDeserializer::ReadVariant(rttr::variant& var, rttr::type const callingT
 			return false;
 		}
 
+		if (var.get_type() == rttr::type::get<std::nullptr_t>())
+		{
+			return true;
+		}
+
 		// convert from inner type to pointer type
 		if (!var.convert(callingType))
 		{

@@ -198,11 +198,10 @@ void AbstractFramework::Run()
 	m_Viewport->Redraw();
 
 	// resources
-	app::PackageResourceManager* const pkgResMan = new app::PackageResourceManager();
-	core::ResourceManager::SetInstance(pkgResMan);
+	core::ResourceManager::SetInstance(std::move(Create<app::PackageResourceManager>()));
 
 	fw::BootConfig bootCfg;
-	fw::BootConfig::LoadFromPackage(bootCfg, pkgResMan->GetRootPackage());
+	fw::BootConfig::LoadFromPackage(bootCfg, static_cast<app::PackageResourceManager*>(core::ResourceManager::Instance())->GetRootPackage());
 	m_Scenes = std::move(bootCfg.allScenes);
 
 	cfg->InitRenderConfig();

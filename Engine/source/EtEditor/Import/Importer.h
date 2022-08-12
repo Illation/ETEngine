@@ -2,7 +2,7 @@
 #include <gtkmm/frame.h>
 #include <gtkmm/window.h>
 
-#include <EtPipeline/Content/EditorAsset.h>
+#include <EtPipeline/Core/Content/EditorAsset.h>
 
 
 namespace et { namespace core {

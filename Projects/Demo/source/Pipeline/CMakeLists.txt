@@ -28,7 +28,7 @@ assignIdeFolder(DemoPipeline Project/ContentPipeline)
 libOutputDirectories(DemoPipeline)
 
 # linking
-target_link_libraries (DemoPipeline DemoCommon)
+target_link_libraries (DemoPipeline DemoCommon EtPipeline_Framework)
 
 # library includes
 libIncludeDirs()

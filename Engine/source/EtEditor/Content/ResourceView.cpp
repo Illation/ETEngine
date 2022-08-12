@@ -4,7 +4,7 @@
 #include <EtCore/FileSystem/Entry.h>
 #include <EtCore/FileSystem/FileUtil.h>
 
-#include <EtPipeline/Content/FileResourceManager.h>
+#include <EtPipeline/Core/Content/FileResourceManager.h>
 
 
 namespace et {

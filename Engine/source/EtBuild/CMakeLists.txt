@@ -28,7 +28,7 @@ add_library(EtBuild ${projectFiles})
 targetCompileOptions(EtBuild)
 
 assign_source_group(${projectFiles})
-assignIdeFolder(EtBuild Engine/Build)
+assignIdeFolder(EtBuild Engine)
 libOutputDirectories(EtBuild)
 
 # linking

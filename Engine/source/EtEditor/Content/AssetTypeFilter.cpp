@@ -5,7 +5,7 @@
 #include <glibmm/object.h>
 #include <gtkmm/menu.h>
 
-#include <EtPipeline/Content/EditorAsset.h>
+#include <EtPipeline/Core/Content/EditorAsset.h>
 
 
 namespace et {

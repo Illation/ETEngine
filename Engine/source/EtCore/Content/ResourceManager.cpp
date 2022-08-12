@@ -14,7 +14,7 @@ namespace core {
 
 
 // static
-ResourceManager* ResourceManager::s_Instance = nullptr;
+UniquePtr<ResourceManager> ResourceManager::s_Instance;
 
 
 //----------------------------------
@@ -22,9 +22,9 @@ ResourceManager* ResourceManager::s_Instance = nullptr;
 //
 // Initializes the singleton with a derived implementation
 //
-void ResourceManager::SetInstance(ResourceManager* const instance)
+void ResourceManager::SetInstance(UniquePtr<ResourceManager>&& instance)
 {
-	s_Instance = instance;
+	s_Instance = std::move(instance);
 	s_Instance->Init();
 }
 
@@ -35,8 +35,7 @@ void ResourceManager::SetInstance(ResourceManager* const instance)
 //
 void ResourceManager::DestroyInstance()
 {
-	s_Instance->Deinit();
-	SafeDelete(s_Instance);
+	s_Instance = nullptr;
 }
 
 //-------------------------------------

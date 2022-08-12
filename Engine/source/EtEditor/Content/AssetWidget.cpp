@@ -7,7 +7,7 @@
 
 #include <EtCore/FileSystem/FileUtil.h>
 
-#include <EtPipeline/Content/EditorAsset.h>
+#include <EtPipeline/Core/Content/EditorAsset.h>
 
 #include <EtEditor/Util/GtkUtil.h>
 

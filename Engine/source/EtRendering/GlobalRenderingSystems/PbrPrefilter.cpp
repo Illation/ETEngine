@@ -14,71 +14,36 @@ namespace et {
 namespace render {
 
 
-PbrPrefilter::PbrPrefilter()
+//===============
+// PBR Prefilter
+//===============
+
+
+//-----------------------------------------
+// PbrPrefilter::PopulateCubeTextureParams
+//
+// Parameters for environment map cube maps
+//
+void PbrPrefilter::PopulateCubeTextureParams(rhi::TextureParameters& params)
 {
-
-}
-
-PbrPrefilter::~PbrPrefilter()
-{
-	delete m_LUT;
-	m_LUT = nullptr;
-}
-
-void PbrPrefilter::Precompute(int32 resolution)
-{
-	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
-
-	ET_TRACE_I(ET_CTX_RENDER, "Precalculating PBR BRDF LUT . . .");
-	//setup BRDF look up table
-	//************************
-	//Create framebuffer
-	rhi::T_FbLoc captureFBO;
-	rhi::T_RbLoc captureRBO;
-	device->GenFramebuffers(1, &captureFBO);
-	device->GenRenderBuffers(1, &captureRBO);
-
-	device->BindFramebuffer(captureFBO);
-	device->BindRenderbuffer(captureRBO);
-	device->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(resolution));
-	device->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, captureRBO);
-	//Shader
-	device->SetShader(core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdBrdfLutShader.glsl")).get());
-
-	m_LUT = new rhi::TextureData(rhi::E_ColorFormat::RG16f, ivec2(resolution));
-	m_LUT->AllocateStorage();
-	rhi::TextureParameters params(false);
+	params.minFilter = rhi::E_TextureFilterMode::Linear;
+	params.magFilter = rhi::E_TextureFilterMode::Linear;
 	params.wrapS = rhi::E_TextureWrapMode::ClampToEdge;
 	params.wrapT = rhi::E_TextureWrapMode::ClampToEdge;
-	m_LUT->SetParameters(params);
-
-	device->BindRenderbuffer(captureRBO);
-	device->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(resolution));
-	device->LinkTextureToFbo2D(0, m_LUT->GetLocation(), 0);
-
-	ivec2 pos, size;
-	device->GetViewport(pos, size);
-
-	device->SetViewport(ivec2(0), ivec2(resolution));
-	device->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
-	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
-
-	//Reset render settings and return generated texture
-	//*************************************************
-	device->BindFramebuffer(0);
-	device->BindRenderbuffer(0);
-	device->SetViewport(pos, size);
-
-	device->DeleteRenderBuffers(1, &captureRBO);
-	device->DeleteFramebuffers(1, &captureFBO);
-	ET_TRACE_V(ET_CTX_RENDER, "Completed precalculating PPBR BRDF LUT");
+	params.wrapR = rhi::E_TextureWrapMode::ClampToEdge;
+	params.genMipMaps = true;
 }
 
-void PbrPrefilter::PrefilterCube(rhi::TextureData const* const source, 
-	rhi::TextureData*& irradiance, 
-	rhi::TextureData*& radiance, 
-	int32 const resolution, 
-	int32 const irradianceRes, 
+//-----------------------------
+// PbrPrefilter::PrefilterCube
+//
+// Generate convoluted cubemap textures in lower mip levels
+//
+void PbrPrefilter::PrefilterCube(rhi::TextureData const* const source,
+	rhi::TextureData*& irradiance,
+	rhi::TextureData*& radiance,
+	int32 const resolution,
+	int32 const irradianceRes,
 	int32 const radianceRes)
 {
 	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
@@ -192,29 +157,72 @@ void PbrPrefilter::PrefilterCube(rhi::TextureData const* const source,
 	device->DeleteFramebuffers(1, &captureFBO);
 }
 
-rhi::TextureData* PbrPrefilter::GetLUT()
+//--------------------------
+// PbrPrefilter::Precompute
+//
+// Generates the lookup texture for PBR calculations
+//
+void PbrPrefilter::Precompute(int32 resolution)
+{
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
+
+	ET_TRACE_I(ET_CTX_RENDER, "Precalculating PBR BRDF LUT . . .");
+	//setup BRDF look up table
+	//************************
+	//Create framebuffer
+	rhi::T_FbLoc captureFBO;
+	rhi::T_RbLoc captureRBO;
+	device->GenFramebuffers(1, &captureFBO);
+	device->GenRenderBuffers(1, &captureRBO);
+
+	device->BindFramebuffer(captureFBO);
+	device->BindRenderbuffer(captureRBO);
+	device->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(resolution));
+	device->LinkRenderbufferToFbo(rhi::E_RenderBufferFormat::Depth24, captureRBO);
+	//Shader
+	device->SetShader(core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdBrdfLutShader.glsl")).get());
+
+	m_LUT = Create<rhi::TextureData>(rhi::E_ColorFormat::RG16f, ivec2(resolution));
+	m_LUT->AllocateStorage();
+	rhi::TextureParameters params(false);
+	params.wrapS = rhi::E_TextureWrapMode::ClampToEdge;
+	params.wrapT = rhi::E_TextureWrapMode::ClampToEdge;
+	m_LUT->SetParameters(params);
+
+	device->BindRenderbuffer(captureRBO);
+	device->SetRenderbufferStorage(rhi::E_RenderBufferFormat::Depth24, ivec2(resolution));
+	device->LinkTextureToFbo2D(0, m_LUT->GetLocation(), 0);
+
+	ivec2 pos, size;
+	device->GetViewport(pos, size);
+
+	device->SetViewport(ivec2(0), ivec2(resolution));
+	device->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
+	rhi::PrimitiveRenderer::Instance().Draw<rhi::primitives::Quad>();
+
+	//Reset render settings and return generated texture
+	//*************************************************
+	device->BindFramebuffer(0);
+	device->BindRenderbuffer(0);
+	device->SetViewport(pos, size);
+
+	device->DeleteRenderBuffers(1, &captureRBO);
+	device->DeleteFramebuffers(1, &captureFBO);
+	ET_TRACE_V(ET_CTX_RENDER, "Completed precalculating PPBR BRDF LUT");
+}
+
+
+//----------------------
+// PbrPrefilter::GetLUT
+//
+rhi::TextureData const* PbrPrefilter::GetLUT()
 {
 	if (m_LUT == nullptr)
 	{
 		Precompute(512);
 	}
 
-	return m_LUT;
-}
-
-//-----------------------------------------
-// PbrPrefilter::PopulateCubeTextureParams
-//
-// Parameters for environment map cube maps
-//
-void PbrPrefilter::PopulateCubeTextureParams(rhi::TextureParameters& params)
-{
-	params.minFilter = rhi::E_TextureFilterMode::Linear;
-	params.magFilter = rhi::E_TextureFilterMode::Linear;
-	params.wrapS = rhi::E_TextureWrapMode::ClampToEdge;
-	params.wrapT = rhi::E_TextureWrapMode::ClampToEdge;
-	params.wrapR = rhi::E_TextureWrapMode::ClampToEdge;
-	params.genMipMaps = true;
+	return m_LUT.Get();
 }
 
 
