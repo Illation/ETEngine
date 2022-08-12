@@ -3,7 +3,7 @@
 
 
 namespace et {
-namespace rt {
+namespace app {
 
 
 //=====================
@@ -16,7 +16,7 @@ namespace rt {
 //
 Ptr<rhi::I_RenderDevice> GlfwRenderWindow::CreateRenderDevice(rhi::RenderDeviceParams const& params)
 {
-	m_Area.Initialize(params, m_IsHidden);
+	m_Area.Initialize(params, m_IsHidden, m_WindowSettings);
 	return ToPtr(m_Area.GetRenderDevice());
 }
 
@@ -47,5 +47,5 @@ bool GlfwRenderWindow::HasFocus() const
 }
 
 
-} // namespace rt
+} // namespace app
 } // namespace et

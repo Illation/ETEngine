@@ -2,6 +2,7 @@
 #include <rttr/type>
 
 #include <EtCore/Util/Singleton.h>
+#include <EtCore/Util/WindowSettings.h>
 
 #include <EtRendering/GlobalRenderingSystems/GraphicsSettings.h>
 
@@ -32,8 +33,6 @@ public:
 	struct UserDirPointer
 	{
 		std::string m_UserDirPath;
-
-		RTTR_ENABLE()
 	};
 
 	//---------------------------------
@@ -44,33 +43,9 @@ public:
 	class Settings
 	{
 	public:
-		//---------------------------------
-		// Config::Settings::Window
-		//
-		// Configuration for window settings
-		//
-		struct Window
-		{
-			Window() = default;
-
-			// accessors
-			//-----------
-			ivec2 GetSize() const;
-
-			// Settings loaded from JSON
-			//---------------------------
-			std::string Title = "ETEngine";
-			bool Fullscreen = false;
-			std::vector<ivec2> Resolutions;
-			size_t FullscreenRes;
-			size_t WindowedRes;
-		};
-
 		render::GraphicsSettings m_Graphics;
-		Window m_Window;
+		core::WindowSettings m_Window;
 		std::string m_ScreenshotDir;
-
-		RTTR_ENABLE()
 	};
 
 private:
@@ -88,8 +63,8 @@ private:
 public:
 	std::string const& GetUserDirPath() const { return m_UserDir.m_UserDirPath; }
 
-	Settings::Window const& GetWindow() const { return m_Settings.m_Window; }
-	Settings::Window & GetWindow() { return m_Settings.m_Window; }
+	core::WindowSettings const& GetWindow() const { return m_Settings.m_Window; }
+	core::WindowSettings & GetWindow() { return m_Settings.m_Window; }
 
 	std::string const& GetScreenshotDir() const { return m_Settings.m_ScreenshotDir; }
 

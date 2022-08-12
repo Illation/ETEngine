@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "GlfwRenderArea.h"
+
 #include "GladRenderDevice_OpenGL.h"
 
 
 namespace et {
-namespace rt {
+namespace app {
 
 
 //=====================
@@ -21,19 +22,19 @@ ivec2 const GlfwRenderArea::s_DefaultDimensions(512, 512);
 //
 // Create a Window and an openGL context to draw to the window
 //
-void GlfwRenderArea::Initialize(rhi::RenderDeviceParams const& params, bool const hidden)
+void GlfwRenderArea::Initialize(rhi::RenderDeviceParams const& params, bool const hidden, core::WindowSettings const& windowSettings)
 {
 	// Initialize GLFW 
 	//-----------------
 	if (!glfwInit())
 	{
-		ET_LOG_E(ET_CTX_RUNTIME, "Couldn't initialize GLFW!");
+		ET_LOG_E(ET_CTX_APP, "Couldn't initialize GLFW!");
 	}
 
 	// error callback
 	glfwSetErrorCallback([](int32 const code, char const* const description)
 		{
-			ET_TRACE_W(ET_CTX_RUNTIME, "GLFW error [%i]: %s", code, description);
+			ET_TRACE_W(ET_CTX_APP, "GLFW error [%i]: %s", code, description);
 		});
 
 	// Create Window and openGL context in one place
@@ -66,12 +67,10 @@ void GlfwRenderArea::Initialize(rhi::RenderDeviceParams const& params, bool cons
 	}
 	else
 	{
-		fw::Config::Settings::Window const& windowSettings = fw::Config::GetInstance()->GetWindow();
-
 		dim = windowSettings.GetSize();
-		title = windowSettings.Title;
+		title = windowSettings.m_Title;
 
-		if (windowSettings.Fullscreen)
+		if (windowSettings.m_Fullscreen)
 		{
 			GLFWmonitor* const primaryMonitor = glfwGetPrimaryMonitor();
 			fullscreenMonitor = primaryMonitor;
@@ -83,7 +82,7 @@ void GlfwRenderArea::Initialize(rhi::RenderDeviceParams const& params, bool cons
 	if (m_Window == nullptr)
 	{
 		glfwTerminate();
-		ET_LOG_E(ET_CTX_RUNTIME, "Failed to create window with GLFW!");
+		ET_LOG_E(ET_CTX_APP, "Failed to create window with GLFW!");
 	}
 
 	glfwSetWindowUserPointer(m_Window.Get(), this);
@@ -192,5 +191,5 @@ ivec2 GlfwRenderArea::GetDimensions() const
 }
 
 
-} // namespace rt
+} // namespace app
 } // namespace et

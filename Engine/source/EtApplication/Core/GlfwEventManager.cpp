@@ -5,7 +5,7 @@
 
 
 namespace et {
-namespace rt {
+namespace app {
 
 
 //=====================
@@ -175,7 +175,7 @@ bool GlfwEventManager::SetCursorShape(core::E_CursorShape const shape)
 			return true;
 		}
 
-		ET_TRACE_W(ET_CTX_RUNTIME, "INPUT::SetCursorShape > Shape not found");
+		ET_TRACE_W(ET_CTX_APP, "INPUT::SetCursorShape > Shape not found");
 		return false;
 	}
 }
@@ -228,6 +228,6 @@ E_MouseButton GlfwEventManager::GetButtonFromGlfw(int32 const bottonCode)
 }
 
 
-} // namespace rt
+} // namespace app
 } // namespace et
 						   

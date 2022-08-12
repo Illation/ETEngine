@@ -6,7 +6,7 @@
 
 
 namespace et {
-namespace rt {
+namespace app {
 
 
 //---------------------------------
@@ -19,7 +19,8 @@ class GlfwRenderWindow final : public rhi::RenderWindow
 	// construct destruct
 	//-------------------
 public:
-	GlfwRenderWindow(bool const hidden = false) : rhi::RenderWindow(), m_IsHidden(hidden) {}
+	GlfwRenderWindow(core::WindowSettings const& windowSettings, bool const hidden = false) 
+		: rhi::RenderWindow(), m_WindowSettings(windowSettings), m_IsHidden(hidden) {}
 	~GlfwRenderWindow() = default;
 
 	// accessors
@@ -39,11 +40,13 @@ protected:
 	///////
 private:
 
-	bool m_IsHidden;
 	GlfwRenderArea m_Area;
+
+	core::WindowSettings m_WindowSettings;
+	bool m_IsHidden;
 };
 
 
-} // namespace rt
+} // namespace app
 } // namespace et
 

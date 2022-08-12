@@ -1,8 +1,8 @@
 
 
-##################
-# Runtime Library
-##################
+######################
+# Application Library
+######################
 
 
 # files in this library
@@ -16,16 +16,16 @@ precompiled_headers("${sources}")
 target_definitions()
 
 # library and dependancies
-message(STATUS "Adding target: EtRuntime")
-add_library(EtRuntime ${sources} ${headers})
-targetCompileOptions(EtRuntime)
+message(STATUS "Adding target: EtApplication")
+add_library(EtApplication ${sources} ${headers})
+targetCompileOptions(EtApplication)
 
 assign_source_group(${projectFiles})
-assignIdeFolder(EtRuntime Engine)
+assignIdeFolder(EtApplication Engine)
 
-libOutputDirectories(EtRuntime)
+libOutputDirectories(EtApplication)
 
-target_link_libraries (EtRuntime EtApplication EtFramework EtBuild)
+target_link_libraries (EtApplication EtGUI glad)
 
 # library includes
 libIncludeDirs()

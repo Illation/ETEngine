@@ -122,7 +122,7 @@ std::string ScreenshotCapture::GetFileName()
 
 	auto entries = m_BaseDir->GetChildrenByExt(extension);
 
-	std::string baseName = Config::GetInstance()->GetWindow().Title;
+	std::string baseName = Config::GetInstance()->GetWindow().m_Title;
 	for (uint32 i = 0; i < (uint32)baseName.size(); ++i)
 	{
 		if (std::isspace(baseName[i]))baseName[i] = '_';

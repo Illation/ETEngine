@@ -12,11 +12,11 @@
 
 #include <EtFramework/Config/TickOrder.h>
 
-#include <EtRuntime/Rendering/GlfwRenderArea.h>
+#include <EtApplication/Rendering/GlfwRenderArea.h>
 
 
 namespace et {
-namespace rt {
+namespace app {
 
 
 //----------------------------
@@ -73,5 +73,5 @@ private:
 };
 
 
-} // namespace rt
+} // namespace app
 } // namespace et

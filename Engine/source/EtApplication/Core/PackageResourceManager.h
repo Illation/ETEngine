@@ -10,7 +10,7 @@ namespace et { namespace core {
 
 
 namespace et {
-namespace rt {
+namespace app {
 
 
 //---------------------------------
@@ -64,5 +64,5 @@ protected:
 };
 
 
-} // namespace rt
+} // namespace app
 } // namespace et

@@ -20,45 +20,11 @@ RTTR_REGISTRATION
 	registration::class_<Config::UserDirPointer>("dir pointer")
 		.property("user dir path", &Config::UserDirPointer::m_UserDirPath) ;
 
-	registration::class_<Config::Settings::Window>("window")
-		.constructor<>()
-		.property("title", &Config::Settings::Window::Title)
-		.property("fullscreen", &Config::Settings::Window::Fullscreen)
-		.property("resolutions", &Config::Settings::Window::Resolutions)
-		.property("fullscreen resolution", &Config::Settings::Window::FullscreenRes)
-		.property("windowed resolution", &Config::Settings::Window::WindowedRes) ;
-
 	registration::class_<Config::Settings>("settings")
 		.constructor<>()
 		.property("graphics", &Config::Settings::m_Graphics)
 		.property("window", &Config::Settings::m_Window)
 		.property("screenshot dir", &Config::Settings::m_ScreenshotDir);
-}
-
-
-//==============================
-// Config :: Settings :: Window
-//==============================
-
-
-//------------------------------------
-// Config::Settings::Window::GetSize
-//
-// Retrieves the initial window size as defined by the config data - may be overridden at runtime
-//
-ivec2 Config::Settings::Window::GetSize() const
-{
-	size_t const resIdx = Fullscreen ? FullscreenRes : WindowedRes;
-	if (resIdx < Resolutions.size())
-	{
-		return Resolutions[resIdx];
-	}
-
-	ET_LOG_W(ET_CTX_FRAMEWORK, "Settings::Window::DeriveSettings > Invalid resolution index in '%s' mode: %u",
-		(Fullscreen ? "fullscreen" : "windowed"),
-		(Fullscreen ? FullscreenRes : WindowedRes));
-
-	return ivec2();
 }
 
 

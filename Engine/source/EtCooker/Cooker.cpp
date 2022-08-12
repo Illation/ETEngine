@@ -22,8 +22,8 @@
 
 #include <EtFramework/Config/BootConfig.h>
 
-#include <EtRuntime/Rendering/GlfwRenderWindow.h>
-#include <EtRuntime/Core/PackageResourceManager.h>
+#include <EtApplication/Rendering/GlfwRenderWindow.h>
+#include <EtApplication/Core/PackageResourceManager.h>
 
 #include <EtPipeline/Content/FileResourceManager.h>
 
@@ -96,8 +96,8 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 	ET_LOG_I(ET_CTX_COOKER, "");
 
 	// Graphics context
-	m_RenderWindow = new rt::GlfwRenderWindow(true);
-	rhi::ContextHolder::Instance().CreateMainRenderContext(ToPtr(m_RenderWindow));
+	m_RenderWindow = Create<app::GlfwRenderWindow>(core::WindowSettings(), true);
+	rhi::ContextHolder::Instance().CreateMainRenderContext(m_RenderWindow);
 
 	// resources
 	m_ResMan = new pl::FileResourceManager(projectPath, enginePath);
@@ -130,7 +130,6 @@ Cooker::~Cooker()
 	core::ResourceManager::DestroyInstance();
 
 	m_RenderWindow->GetArea().Uninitialize();
-	delete m_RenderWindow;
 	m_RenderWindow = nullptr;
 
 	core::TraceService::Destroy();
@@ -169,7 +168,7 @@ void Cooker::CookCompiledPackage()
 	std::vector<uint8> packageData;
 
 	// serialize the asset database to a temporary file
-	std::string const dbName(rt::PackageResourceManager::s_DatabasePath);
+	std::string const dbName(app::PackageResourceManager::s_DatabasePath);
 	std::string const tempDbFullPath = s_TempPath + dbName;
 
 	core::AssetDatabase mergeDb(false);

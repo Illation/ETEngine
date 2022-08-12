@@ -8,8 +8,9 @@
 #include <EtFramework/GUI/SceneRendererGUI.h>
 #include <EtFramework/Util/ScreenshotCapture.h>
 
+#include <EtApplication/Rendering/GlfwRenderWindow.h>
+
 #include <EtRuntime/Debug/DebugUi.h>
-#include <EtRuntime/Rendering/GlfwRenderWindow.h>
 
 
 // fwd
@@ -65,11 +66,11 @@ private:
 	///////
 
 private:
-	GlfwRenderWindow m_RenderWindow;
+	UniquePtr<app::GlfwRenderWindow> m_RenderWindow;
 	UniquePtr<rhi::Viewport> m_Viewport;
 
 	UniquePtr<render::ShadedSceneRenderer> m_SceneRenderer;
-	UniquePtr<rt::SplashScreenRenderer> m_SplashScreenRenderer;
+	UniquePtr<SplashScreenRenderer> m_SplashScreenRenderer;
 	core::HashString m_SplashScreenGui;
 
 #if ET_CT_IS_ENABLED(ET_CT_IMGUI)

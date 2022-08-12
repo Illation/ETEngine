@@ -3,11 +3,13 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include <EtCore/Util/WindowSettings.h>
+
 #include <EtRHI/GraphicsContext/RenderArea.h>
 
 
 namespace et {
-namespace rt {
+namespace app {
 
 
 //---------------------------------
@@ -25,7 +27,7 @@ public:
 	GlfwRenderArea() : rhi::I_RenderArea() {}
 	virtual ~GlfwRenderArea() = default;
 
-	void Initialize(rhi::RenderDeviceParams const& params, bool const hidden);
+	void Initialize(rhi::RenderDeviceParams const& params, bool const hidden, core::WindowSettings const& windowSettings);
 	void Uninitialize();
 
 	// functionality
@@ -69,5 +71,5 @@ private:
 };
 
 
-} // namespace rt
+} // namespace app
 } // namespace et

@@ -25,9 +25,10 @@
 #include <EtFramework/Components/CameraComponent.h>
 #include <EtFramework/Config/BootConfig.h>
 
-#include <EtRuntime/Rendering/SplashScreenRenderer.h>
-#include <EtRuntime/Core/GlfwEventManager.h>
-#include <EtRuntime/Core/PackageResourceManager.h>
+#include <EtApplication/Core/GlfwEventManager.h>
+#include <EtApplication/Core/PackageResourceManager.h>
+
+#include <EtRuntime/SplashScreenRenderer.h>
 
 
 namespace et {
@@ -71,8 +72,8 @@ AbstractFramework::~AbstractFramework()
 	m_SplashScreenRenderer = nullptr;
 	m_Viewport->SetRenderer(nullptr);
 
-	GlfwEventManager::DestroyInstance();
-	m_RenderWindow.GetArea().Uninitialize();
+	app::GlfwEventManager::DestroyInstance();
+	m_RenderWindow->GetArea().Uninitialize();
 	m_Viewport = nullptr;
 
 	fw::PhysicsManager::DestroyInstance();
@@ -123,7 +124,7 @@ void AbstractFramework::Run()
 	core::NetworkTraceHandler* const netTraceHandler = core::TraceService::Instance()->GetHandler<core::NetworkTraceHandler>();
 	if (netTraceHandler != nullptr)
 	{
-		netTraceHandler->UpdateClientName(cfg->GetWindow().Title);
+		netTraceHandler->UpdateClientName(cfg->GetWindow().m_Title);
 	}
 
 	// init unified scene, systems etc
@@ -149,7 +150,7 @@ void AbstractFramework::Run()
 				m_Viewport->SetRenderer(m_SplashScreenRenderer);
 
 				m_Viewport->SetTickDisabled(true);
-				m_RenderWindow.GetArea().Update(); // update manually incase we don't run the game loop before the new scene is activated 
+				m_RenderWindow->GetArea().Update(); // update manually incase we don't run the game loop before the new scene is activated 
 				m_Viewport->SetTickDisabled(false);
 				break;
 
@@ -175,11 +176,12 @@ void AbstractFramework::Run()
 	unifiedScene.Init();
 
 	// init rendering target
-	m_Viewport = Create<rhi::Viewport>(ToPtr(&m_RenderWindow.GetArea()));
+	m_RenderWindow = Create<app::GlfwRenderWindow>(cfg->GetWindow(), false);
+	m_Viewport = Create<rhi::Viewport>(ToPtr(&m_RenderWindow->GetArea()));
 	m_Viewport->SetTickDisabled(true);
 	m_SplashScreenRenderer = Create<rt::SplashScreenRenderer>();
 	m_Viewport->SetRenderer(m_SplashScreenRenderer);
-	rhi::ContextHolder::Instance().CreateMainRenderContext(ToPtr(&m_RenderWindow)); // also initializes the viewport and its renderer
+	rhi::ContextHolder::Instance().CreateMainRenderContext(ToPtr(m_RenderWindow.Get())); // also initializes the viewport and its renderer
 
 	// screenshots
 	std::string const& screenshotDir = cfg->GetScreenshotDir();
@@ -196,7 +198,7 @@ void AbstractFramework::Run()
 	m_Viewport->Redraw();
 
 	// resources
-	PackageResourceManager* const pkgResMan = new PackageResourceManager();
+	app::PackageResourceManager* const pkgResMan = new app::PackageResourceManager();
 	core::ResourceManager::SetInstance(pkgResMan);
 
 	fw::BootConfig bootCfg;
@@ -208,7 +210,7 @@ void AbstractFramework::Run()
 	m_SplashScreenRenderer->Init();
 	m_SplashScreenGui = bootCfg.splashGui;
 	m_SplashScreenRenderer->SetGuiDocument(bootCfg.splashGui);
-	m_RenderWindow.GetArea().Update();
+	m_RenderWindow->GetArea().Update();
 
 	fw::AudioManager::GetInstance()->Initialize();
 	fw::AudioManager::GetInstance()->SetDistanceModel(AL_INVERSE_DISTANCE);
@@ -222,9 +224,9 @@ void AbstractFramework::Run()
 
 	// init input 
 	core::InputManager* const inputMan = core::InputManager::GetInstance();
-	GlfwEventManager& glfwMan = *GlfwEventManager::GetInstance();
+	app::GlfwEventManager& glfwMan = *app::GlfwEventManager::GetInstance();
 	m_Viewport->SetInputProvider(ToPtr(&glfwMan.GetInputProvider()));
-	glfwMan.Init(ToPtr(&m_RenderWindow.GetArea()));
+	glfwMan.Init(ToPtr(&m_RenderWindow->GetArea()));
 	glfwMan.GetInputProvider().RegisterListener(ToPtr(inputMan));
 
 	// scene rendering
@@ -272,7 +274,7 @@ void AbstractFramework::MainLoop()
 		//****
 		//DRAW
 
-		m_RenderWindow.GetArea().Update();
+		m_RenderWindow->GetArea().Update();
 	}
 }
 
