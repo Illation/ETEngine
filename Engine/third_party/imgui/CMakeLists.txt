@@ -29,7 +29,7 @@ assign_source_group(${projectFiles})
 assignIdeFolder(imgui Engine/3rdParty)
 libOutputDirectories(imgui)
 
-target_link_libraries (imgui EtMath EtCore EtRendering NothingsStb)
+target_link_libraries (imgui EtMath EtCore EtRHI NothingsStb)
 
 include_directories("${ENGINE_SOURCE_DIR}")
 target_include_directories (imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

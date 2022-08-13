@@ -35,7 +35,7 @@ assignIdeFolder(EtTraceServer Engine/Tools)
 outputDirectoriesTools(EtTraceServer "")
 
 # linking
-target_link_libraries(EtTraceServer EtCore EtBuild)
+target_link_libraries(EtTraceServer EtApplication)
 dependancyLinks(EtTraceServer)
 
 # library includes

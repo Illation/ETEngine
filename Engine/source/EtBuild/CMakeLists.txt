@@ -31,9 +31,6 @@ assign_source_group(${projectFiles})
 assignIdeFolder(EtBuild Engine)
 libOutputDirectories(EtBuild)
 
-# linking
-target_link_libraries (EtBuild EtCore)
-
 # library includes
 libIncludeDirs()
 
