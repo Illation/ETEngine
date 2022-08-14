@@ -32,7 +32,7 @@ addDebugVisualizers(EtTraceServer)
 # directory stuff
 assign_source_group(${projectFiles})
 assignIdeFolder(EtTraceServer Engine/Tools)
-outputDirectoriesTools(EtTraceServer "")
+outputDirectoriesTools(EtTraceServer)
 
 # linking
 target_link_libraries(EtTraceServer EtApplication)
@@ -45,4 +45,9 @@ libIncludeDirs()
 include_directories("${ENGINE_DIRECTORY_ABS}/source")
 
 copyDllCommand(EtTraceServer)
-copyToolCommand(EtTraceServer)
+
+cookToolData(EtTraceServer)
+set(_tool_cook_target_name)
+getToolCookTargetName(EtToolCooker _tool_cook_target_name)
+
+copyToolCommand(EtTraceServer ${_tool_cook_target_name})

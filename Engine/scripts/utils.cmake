@@ -80,7 +80,7 @@ function(getToolOutputDir TARGET outDir)
 endfunction(getToolOutputDir)
 
 ########################
-function(outputDirectoriesTools TARGET _suffix)
+function(outputDirectoriesTools TARGET)
 
 	set(_outDir)
 	getToolOutputDir(${TARGET} _outDir)
@@ -89,10 +89,26 @@ function(outputDirectoriesTools TARGET _suffix)
 		string(TOUPPER ${_c} _C)
 
 		set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${_C} ${_outDir})
-		set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_NAME_${_C} ${TARGET}_${_c}${_suffix})
+		set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_NAME_${_C} ${TARGET}_${_c})
 	endforeach()
 
 endfunction(outputDirectoriesTools)
+
+########################
+function(getToolOutputName TARGET config outName)
+
+	set(_outDir)
+	getToolOutputDir(${TARGET} _outDir)
+
+	if(MSVC)
+		set(suffix ".exe")
+	else()
+		set(suffix "")
+	endif()
+	
+	set(${outName} "${_outDir}/${TARGET}_${config}${suffix}" PARENT_SCOPE)
+
+endfunction(getToolOutputName)
 
 ########################
 function(getToolCopyDir TARGET outDir)
@@ -112,7 +128,7 @@ function(getToolCopyTargetName TARGET outName)
 endfunction(getToolCopyTargetName)
 
 ########################
-function(copyToolCommand TARGET)
+function(copyToolCommand TARGET dependency)
 
 	set(_toolDir)
 	getToolOutputDir(${TARGET} _toolDir)
@@ -127,7 +143,7 @@ function(copyToolCommand TARGET)
 	#-----------------------------------------------------------
 	message(STATUS "Adding target: ${_target_name}")
 	add_custom_target(${_target_name} 
-		DEPENDS ${deps} ${TARGET} 
+		DEPENDS ${deps} ${dependency} 
 		
 		COMMAND ${CMAKE_COMMAND} -E echo "copy_directory ${_toolDir} ${_copyDir}"
 		COMMAND ${CMAKE_COMMAND} -E copy_directory ${_toolDir} ${_copyDir} || (exit 0) # return true either way in case the tool is running during copy attempt
@@ -147,6 +163,68 @@ function(addToolDependency TARGET TOOL_TARGET)
 	add_dependencies(${TARGET} ${_copy_target_name})
 
 endfunction(addToolDependency)
+
+########################
+function(getToolCookTargetName TARGET outName)
+
+	set(${outName} "cook-tool-data-${TARGET}" PARENT_SCOPE)
+
+endfunction(getToolCookTargetName)
+
+#########################
+function(cookToolData TARGET)
+
+	# resources generating compiled source files
+	set(cmp_dir_engine "${ENGINE_DIRECTORY_ABS}/resources/")
+
+	# figure out the directory the cooker binary lives in
+	set(_outDir)
+	getToolOutputDir(${TARGET} _outDir)
+
+	set(target_files )
+	set(res_file_engine "${cmp_dir_engine}asset_database.json")
+
+	# any files that can trigger the resources to be rebuilt
+	file(GLOB_RECURSE deps ${cmp_dir_engine}/assets/*.*)
+	list (APPEND deps ${res_file_engine})
+
+	# tool copy target
+	set(_copied_tool_cooker)
+	getToolCopyTargetName(EtToolCooker _copied_tool_cooker)
+	
+	set(_tool_cooker_exe)
+	getToolOutputName(EtToolCooker $<CONFIG> _tool_cooker_exe)
+
+	# the command list that will run - for compiling resources
+	#-----------------------------------------------------------
+	set(_tool_cook_target_name)
+	getToolCookTargetName(${TARGET} _tool_cook_target_name)
+
+	message(STATUS "Adding target: ${_tool_cook_target_name}")
+	add_custom_target(
+		${_tool_cook_target_name}
+		DEPENDS ${deps} ${_copied_tool_cooker} ${TARGET}
+
+		COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file_engine} ; Out directory: ${_outDir}"
+		COMMAND ${CMAKE_COMMAND} -E echo ""
+		COMMAND ${CMAKE_COMMAND} -E echo "${_tool_cooker_exe} ${PROJECT_DIRECTORY}/ ${ENGINE_DIRECTORY_ABS}/ ${_outDir} n"
+		COMMAND ${_tool_cooker_exe} ${PROJECT_DIRECTORY}/ ${ENGINE_DIRECTORY_ABS}/ ${_outDir} n
+		COMMAND ${CMAKE_COMMAND} -E echo ""
+		COMMAND ${CMAKE_COMMAND} -E echo ""
+		
+		COMMENT "Cooking tool resource files"
+
+		VERBATIM
+	)
+
+	assignIdeFolder(${_tool_cook_target_name} Engine/Build)
+
+	foreach(_target_file ${target_files})
+		get_filename_component(_abs_target "${_target_file}" ABSOLUTE)
+		set_source_files_properties(${_abs_target} PROPERTIES GENERATED TRUE )
+	endforeach()
+
+endfunction(cookToolData)
 
 
 # output dir for libraries
