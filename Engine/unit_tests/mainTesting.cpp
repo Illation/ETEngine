@@ -15,8 +15,12 @@
 #include <EtCore/Reflection/ReflectionUtil.h>
 #include <EtCore/Trace/Trace.h>
 
+#include <EtCore/Util/CommandLineParser.h>
+#include <EtCore/Reflection/TypeInfoRegistry.h>
+
 
 std::string global::g_UnitTestDir = std::string();
+et::int32 s_TestOption = 0;
 
 
 int main(int argc, char* argv[]) 
@@ -32,22 +36,18 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	// root directory for file related tests
-	if (argc > 1)
-	{
-		global::g_UnitTestDir = std::string(argv[1]);
-		argc = 1;
-	}
-	else
-	{
-		std::cerr << "main > Couldn't extract test directory from arguments, exiting!" << std::endl;
-		return -2;
-	}
-
-	Catch::Session session;
-
 	et::core::TraceService::Initialize();
 	et::core::TraceService::Instance()->SetupDefaultHandlers("ET unit tests", true); // #todo: redirect std output from tests
+
+	et::core::TypeInfoRegistry::Instance().Initialize();
+
+	et::core::CommandLineParser::Instance().RegisterOption(global::g_UnitTestDir, "test_dir", "directory for file system dependent tests");
+	et::core::CommandLineParser::Instance().RegisterOption(s_TestOption, "test_option", "a simple test option", 't');
+
+	et::core::CommandLineParser::Instance().Process(argc, argv);
+
+	argc = 1;
+	Catch::Session session;
 
 	int result = session.run(argc, argv);
 

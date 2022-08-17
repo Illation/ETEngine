@@ -16,6 +16,7 @@
 #endif
 #include <windows.h>
 #include <tlhelp32.h>
+#include <shellapi.h>
 
 
 namespace et {
@@ -87,6 +88,29 @@ void GetExecutablePathName(std::string& outPath)
 	outPath = std::string(ownPth);
 }
 
+//--------------------
+// CommandLineToArgvA
+//
+// wide string conversion
+//
+std::vector<std::string> CommandLineToArgvA()
+{
+	std::vector<std::string> ret;
+
+	int nArgs;
+	LPWSTR* szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
+
+	for (int i = 0; i < nArgs; ++i)
+	{
+		std::wstring ws(szArglist[i]);
+		ret.push_back(std::string(ws.begin(), ws.end()));
+	}
+
+	LocalFree(szArglist);
+
+	return ret;
+}
+
 //---------------------------------
 // GetCommandlineArgV
 //
@@ -95,9 +119,11 @@ void GetExecutablePathName(std::string& outPath)
 std::vector<char*> GetCommandlineArgV()
 {
 	// static so that we don't loose the memory of the char* - this only needs to be called once
-	static std::vector<std::string> separatedCmdLine = SeparateByWhitespace(GetCommandLine()); 
+	static std::vector<std::string> separatedCmdLine = CommandLineToArgvA();
 
 	std::vector<char*> argv;
+	argv.reserve(separatedCmdLine.size());
+
 	for (std::string& el : separatedCmdLine)
 	{
 		argv.push_back(&el[0]);
