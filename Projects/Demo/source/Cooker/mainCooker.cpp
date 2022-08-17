@@ -1,8 +1,16 @@
-#include <EtCore/stdafx.h>
+#include <EtApplication/stdafx.h>
 
-#include <EtCooker/Cooker.h>
+#include <EtCore/FileSystem/Entry.h>
+
+#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
+
+#include <EtFramework/Config/BootConfig.h>
+
+#include <EtPipeline/Core/Content/FileResourceManager.h>
 
 #include <Pipeline/linkerHelper.h>
+
+#include <EtCooker/Cooker.h>
 
 
 
@@ -13,12 +21,31 @@
 //
 int main(int argc, char *argv[])
 {
-	et::demo::ForceLinkingPipeline();
+	using namespace et;
+	using namespace et::cooker;
 
-	et::cooker::Cooker cooker(argc, argv);
-	if (cooker.GetReturnCode() == et::cooker::Cooker::E_ReturnCode::Success)
+	demo::ForceLinkingPipeline();
+
+	Cooker cooker(argc, argv);
+	if (cooker.GetReturnCode() == Cooker::E_ReturnCode::Success)
 	{
+		// needed for some asset conversions
+		render::RenderingSystems::AddReference();
+
+		// add the boot config
+		cooker.RegisterPreWritePackageFn(Cooker::T_PreWritePackageFn(
+			[&cooker](et::core::PackageDescriptor const* const desc, PackageWriter& writer)
+			{
+				if (desc == nullptr) // compiled package
+				{
+					core::File* cfgFile = new core::File(cooker.GetResourceManager()->GetProjectPath() + fw::BootConfig::s_FileName, nullptr);
+					writer.AddFile(cfgFile, cooker.GetResourceManager()->GetProjectPath(), core::E_CompressionType::Store);
+				}
+			}));
+
 		cooker.Run();
+
+		et::render::RenderingSystems::RemoveReference();
 	}
 
 	return static_cast<int>(cooker.GetReturnCode());

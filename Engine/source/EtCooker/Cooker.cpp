@@ -1,4 +1,4 @@
-#include <EtCore/stdafx.h>
+#include <EtApplication/stdafx.h>
 #include "Cooker.h"
 
 #include "CompiledDataGenerator.h"
@@ -19,10 +19,6 @@
 #include <EtCore/Trace/NetworkTraceHandler.h>
 
 #include <EtRHI/GraphicsContext/ContextHolder.h>
-
-#include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
-
-#include <EtFramework/Config/BootConfig.h>
 
 #include <EtApplication/Rendering/GlfwRenderWindow.h>
 #include <EtApplication/Core/PackageResourceManager.h>
@@ -106,9 +102,6 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 	m_ResMan = ToPtr(resMan.Get());
 	core::ResourceManager::SetInstance(std::move(resMan));
 
-	// needed for some asset conversions
-	render::RenderingSystems::AddReference();
-
 	// Ensure the generated file directory exists
 	m_TempDir = new core::Directory(s_TempPath, nullptr, true);
 	m_TempDir->Mount(true);
@@ -119,8 +112,6 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 //
 Cooker::~Cooker()
 {
-	render::RenderingSystems::RemoveReference();
-
 	if (!m_TempDir->Delete())
 	{
 		ET_LOG_E(ET_CTX_COOKER, "CookCompiledPackage > Failed to clean up temporary file directory!");
@@ -158,8 +149,16 @@ void Cooker::Run()
 	}
 }
 
-//---------------------
-// CookCompiledPackage
+//-----------------------------------
+// Cooker::RegisterPreWritePackageFn
+//
+void Cooker::RegisterPreWritePackageFn(T_PreWritePackageFn const& fn)
+{
+	m_PreWritePackageFns.emplace_back(fn);
+}
+
+//-----------------------------
+// Cooker::CookCompiledPackage
 //
 // Writes the package with compiled data that ends up as a generated source file.
 //  - this includes the file for the asset database
@@ -189,10 +188,6 @@ void Cooker::CookCompiledPackage()
 	// load the asset database from the temporary file and add it to the package
 	core::File* dbFile = new core::File(dbName, m_TempDir);
 	packageWriter.AddFile(dbFile, dbFile->GetPath(), core::E_CompressionType::Store);
-
-	// add the boot config
-	core::File* cfgFile = new core::File(m_ResMan->GetProjectPath() + fw::BootConfig::s_FileName, nullptr);
-	packageWriter.AddFile(cfgFile, m_ResMan->GetProjectPath(), core::E_CompressionType::Store);
 
 	// add all other compiled files to the package
 	static core::HashString const s_CompiledPackageId;
