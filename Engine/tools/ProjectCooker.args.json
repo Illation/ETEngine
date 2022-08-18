@@ -4,11 +4,11 @@
   "Items": [
     {
       "Id": "fd4f85bb-59a7-4185-86b4-c9ffe574bf3d",
-      "Command": "$(SolutionDir)/../"
+      "Command": "-P $(SolutionDir)/../"
     },
     {
       "Id": "ab174a14-dd09-4d02-ba6e-b57945369115",
-      "Command": "$(SolutionDir)/../../../Engine/"
+      "Command": "-E $(SolutionDir)/../../../Engine/"
     },
     {
       "Id": "09eb37fc-eae2-425f-99e5-c0456d47a3a5",
@@ -21,16 +21,12 @@
           "Items": [
             {
               "Id": "6d45e6ad-a625-4b5e-afc8-8a5291ebe405",
-              "Command": "$(SolutionDir)/../source/Runtime/_generated/"
+              "Command": "-O $(SolutionDir)/../source/Runtime/_generated/"
             },
             {
               "Id": "8f67d210-04fc-4d78-8a42-ef58d73c050c",
-              "Command": "y"
-            },
-            {
-              "Id": "c8fcc831-1131-4518-9d88-6fcfe5f00efd",
-              "Command": "compiled_package"
-            }
+              "Command": "-C compiled_package"
+            } 
           ]
         },
         {
@@ -44,7 +40,7 @@
               "Items": [
                 {
                   "Id": "0eb5038b-f50c-43a4-98b2-cbc7ba216998",
-                  "Command": "$(SolutionDir)/../bin/Debug_x64/EtEngineDemo/"
+                  "Command": "-O $(SolutionDir)/../bin/Debug_x64/EtEngineDemo/"
                 }
               ]
             },
@@ -55,7 +51,7 @@
               "Items": [
                 {
                   "Id": "072c0394-5ea8-4c8f-86db-6813d8a9162a",
-                  "Command": "$(SolutionDir)/../bin/Develop_x64/EtEngineDemo/"
+                  "Command": "-O $(SolutionDir)/../bin/Develop_x64/EtEngineDemo/"
                 }
               ]
             },
@@ -66,13 +62,9 @@
               "Items": [
                 {
                   "Id": "0e89a780-f6f2-40b6-b054-ad0fc4b2fc2e",
-                  "Command": "$(SolutionDir)/../bin/Shipping_x64/EtEngineDemo/"
+                  "Command": "-O $(SolutionDir)/../bin/Shipping_x64/EtEngineDemo/"
                 }
               ]
-            },
-            {
-              "Id": "5217b5b8-fc18-4f8a-9f6f-8fb89014d9c7",
-              "Command": "n"
             }
           ]
         }

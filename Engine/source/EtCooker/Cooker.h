@@ -33,7 +33,6 @@ public:
 		Success = 0,
 
 		InsufficientArguments,
-		MissingResourceName,
 		FailedToSerialize,
 		FailedToCleanup,
 		FailedToWritePackage,
@@ -73,11 +72,8 @@ private:
 	pl::BuildConfiguration m_Configuration;
 
 	bool m_GenerateCompiled;
-	std::string m_ResourceName;
 
 	core::Directory* m_TempDir = nullptr;
-
-	std::string m_OutPath;
 
 	UniquePtr<app::GlfwRenderWindow> m_RenderWindow;
 	Ptr<pl::FileResourceManager> m_ResMan;

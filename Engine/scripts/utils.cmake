@@ -986,8 +986,8 @@ function(installCookResources TARGET)
 		
 		COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file} ; Out directory: ${pak_file_dir}"
 		COMMAND ${CMAKE_COMMAND} -E echo ""
-		COMMAND ${CMAKE_COMMAND} -E echo "${cooker_dir}ProjectCooker.exe ${PROJECT_DIRECTORY}/ ${ENGINE_DIRECTORY_ABS}/ ${pak_file_dir} n"
-		COMMAND ${cooker_dir}ProjectCooker.exe ${PROJECT_DIRECTORY}/ ${ENGINE_DIRECTORY_ABS}/ ${pak_file_dir} n
+		COMMAND ${CMAKE_COMMAND} -E echo "${cooker_dir}ProjectCooker.exe -E ${ENGINE_DIRECTORY_ABS}/ -P ${PROJECT_DIRECTORY}/ -O ${pak_file_dir}"
+		COMMAND ${cooker_dir}ProjectCooker.exe -E ${ENGINE_DIRECTORY_ABS}/ -P ${PROJECT_DIRECTORY}/ -O ${pak_file_dir}
 		COMMAND ${CMAKE_COMMAND} -E echo ""
 		COMMAND ${CMAKE_COMMAND} -E echo ""
 		

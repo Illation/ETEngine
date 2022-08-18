@@ -4,12 +4,20 @@
 #include <rttr/registration>
 
 #include <EtCore/Reflection/Serialization.h>
+#include <EtCore/Util/CommandLine.h>
 
 #include <EtRendering/GlobalRenderingSystems/GlobalRenderingSystems.h>
 
 
 namespace et {
 namespace fw {
+
+
+ivec2 g_ResolutionOverride;
+ET_REGISTER_COMMANDLINE(resolution, g_ResolutionOverride, "Application window resolution x,y");
+
+bool g_FullscreenOverride = false;
+ET_REGISTER_COMMANDLINE(fullscreen, g_FullscreenOverride, "Whether or not to make the application window fullscreen");
 
 
 // reflection
@@ -71,6 +79,24 @@ void Config::Initialize()
 	else
 	{
 		ET_LOG_W(ET_CTX_FRAMEWORK, "Config::Initialize > unable to deserialize config file to settings, using defaults");
+	}
+
+	// command line options
+	if (core::CommandLineParser::Instance().WasOptionSet(g_FullscreenOverride))
+	{
+		m_Settings.m_Window.m_Fullscreen = g_FullscreenOverride;
+	}
+
+	if (core::CommandLineParser::Instance().WasOptionSet(g_ResolutionOverride))
+	{
+		if (m_Settings.m_Window.m_Fullscreen)
+		{
+			m_Settings.m_Window.m_Resolutions[m_Settings.m_Window.m_FullscreenRes] = g_ResolutionOverride;
+		}
+		else
+		{
+			m_Settings.m_Window.m_Resolutions[m_Settings.m_Window.m_WindowedRes] = g_ResolutionOverride;
+		}
 	}
 }
 

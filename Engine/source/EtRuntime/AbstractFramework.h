@@ -47,7 +47,7 @@ public:
 
 	// functionality
 	//---------------
-	void Run();
+	void Run(int32 const argc, char* const argv[]);
 
 	// interface
 	//-----------

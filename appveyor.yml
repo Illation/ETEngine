@@ -24,4 +24,4 @@ after_build:
 
 test_script:
 - cmd: >-
-    .\Projects\Demo\bin\Debug_x64\unit_tests\unit_tests.exe ..\..\..\..\..\Engine\unit_tests\
+    .\Projects\Demo\bin\Debug_x64\unit_tests\unit_tests.exe --test_dir ..\..\..\..\..\Engine\unit_tests\

@@ -12,6 +12,7 @@
 #include <EtCore/Reflection/TypeInfoRegistry.h>
 #include <EtCore/Content/AssetDatabase.h>
 #include <EtCore/Content/ResourceManager.h>
+#include <EtCore/Util/CommandLine.h>
 
 #include <EtCore/Trace/ConsoleTraceHandler.h>
 #include <EtCore/Trace/DebugOutputTraceHandler.h>
@@ -39,6 +40,19 @@ namespace cooker {
 std::string const Cooker::s_TempPath = "temp/";
 
 
+std::string g_ProjectPath;
+ET_REGISTER_COMMANDLINE_S(project, g_ProjectPath, "root folder for the project", 'P');
+
+std::string g_EnginePath;
+ET_REGISTER_COMMANDLINE_S(engine, g_EnginePath, "root folder for the engine", 'E');
+
+std::string g_OutPath;
+ET_REGISTER_COMMANDLINE_S(out, g_OutPath, "where to write the files to", 'O');
+
+std::string g_ResourceName;
+ET_REGISTER_COMMANDLINE_S(compiled, g_ResourceName, "what to call the compiled resource source files - if set, generates a compiled package", 'C');
+
+
 //---------------
 // Cooker::c-tor
 //
@@ -46,47 +60,46 @@ std::string const Cooker::s_TempPath = "temp/";
 //
 Cooker::Cooker(int32 const argc, char* const argv[])
 {
-	// parse arguments
-	//-----------------
-	if (argc < 4)
-	{
-		std::cerr
-			<< "Cooker::c-tor > Not enough arguments, exiting! Usage: EtCooker.exe <database path> <out path> <create compiled resource [y/n]>"
-			<< std::endl;
-		m_ReturnCode = E_ReturnCode::InsufficientArguments;
-		return;
-	}
-
 	core::FileUtil::SetExecutablePath(argv[0]); // working dir from executable path
-
-	std::string projectPath(core::FileUtil::GetAbsolutePath(argv[1]));
-	std::string enginePath(core::FileUtil::GetAbsolutePath(argv[2]));
-	m_OutPath = core::FileUtil::GetAbsolutePath(argv[3]);
-	m_GenerateCompiled = (std::string(argv[4]) == "y");
-
-	if (m_GenerateCompiled)
-	{
-		if (argc < 5)
-		{
-			std::cerr << "main > When specifying compiled resource, also specify the resource name in the last arg" << std::endl;
-			m_ReturnCode = E_ReturnCode::MissingResourceName;
-			return;
-		}
-
-		m_ResourceName = argv[5];
-	}
 
 	// Init stuff
 	//------------
 	core::TraceService::Initialize(); 
 
 	core::TraceService::Instance()->AddHandler<core::FileTraceHandler>("cooker.log"); // File trace first in case network trace fails
-	core::TraceService::Instance()->SetupDefaultHandlers(FS("ET Cooker (%s)", m_GenerateCompiled ? "Compiled" : "Package"), false);
+	core::TraceService::Instance()->SetupDefaultHandlers("ET Cooker", false);
 
 	core::TypeInfoRegistry::Instance().Initialize(); 
 
-	ET_ASSERT(m_GenerateCompiled || (std::string(argv[4]) == "n"), "Expected argument 4 to be either 'y' or 'n'!");
+	// parse arguments
+	//-----------------
+	core::CommandLineParser::Instance().Process(argc, argv);
 
+	m_GenerateCompiled = core::CommandLineParser::Instance().WasOptionSet(g_ResourceName);
+
+	core::NetworkTraceHandler* const netTraceHandler = core::TraceService::Instance()->GetHandler<core::NetworkTraceHandler>();
+	if (netTraceHandler != nullptr)
+	{
+		netTraceHandler->UpdateClientName(FS("ET Cooker (%s)", m_GenerateCompiled ? "Compiled" : "Package"));
+	}
+
+	if (!core::CommandLineParser::Instance().WasOptionSet(g_OutPath))
+	{
+		ET_ERROR("Out path wasn't set");
+		core::CommandLineParser::Instance().PrintAll(true);
+		m_ReturnCode = E_ReturnCode::InsufficientArguments;
+		return;
+	}
+
+	if ((!core::CommandLineParser::Instance().WasOptionSet(g_ProjectPath)) || (!core::CommandLineParser::Instance().WasOptionSet(g_EnginePath)))
+	{
+		ET_ERROR("Project and engine directories weren't set");
+		core::CommandLineParser::Instance().PrintAll(true);
+		m_ReturnCode = E_ReturnCode::InsufficientArguments;
+		return;
+	}
+
+	// initial log
 	ET_LOG_I(ET_CTX_COOKER, "E.T.Cooker");
 	ET_LOG_I(ET_CTX_COOKER, "//////////");
 	ET_LOG_I(ET_CTX_COOKER, "");
@@ -98,7 +111,7 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 	rhi::ContextHolder::Instance().CreateMainRenderContext(m_RenderWindow);
 
 	// resources
-	UniquePtr<pl::FileResourceManager> resMan = Create<pl::FileResourceManager>(projectPath, enginePath);
+	UniquePtr<pl::FileResourceManager> resMan = Create<pl::FileResourceManager>(g_ProjectPath, g_EnginePath);
 	m_ResMan = ToPtr(resMan.Get());
 	core::ResourceManager::SetInstance(std::move(resMan));
 
@@ -189,6 +202,11 @@ void Cooker::CookCompiledPackage()
 	core::File* dbFile = new core::File(dbName, m_TempDir);
 	packageWriter.AddFile(dbFile, dbFile->GetPath(), core::E_CompressionType::Store);
 
+	for (T_PreWritePackageFn const& fn : m_PreWritePackageFns)
+	{
+		fn(nullptr, packageWriter);
+	}
+
 	// add all other compiled files to the package
 	static core::HashString const s_CompiledPackageId;
 	AddPackageToWriter(s_CompiledPackageId, m_ResMan->GetProjectPath(), packageWriter, m_ResMan->GetProjectDatabase());
@@ -198,7 +216,7 @@ void Cooker::CookCompiledPackage()
 	packageWriter.Write(packageData);
 
 	// Generate source file
-	GenerateCompilableResource(packageData, m_ResourceName, m_OutPath);
+	GenerateCompilableResource(packageData, g_ResourceName, g_OutPath);
 
 	// cleanup
 	packageWriter.RemoveFile(dbFile);
@@ -236,6 +254,11 @@ void Cooker::CookFilePackages()
 		PackageWriter packageWriter;
 		std::vector<uint8> packageData;
 
+		for (T_PreWritePackageFn const& fn : m_PreWritePackageFns)
+		{
+			fn(&desc, packageWriter);
+		}
+
 		AddPackageToWriter(desc.GetId(), m_ResMan->GetProjectPath(), packageWriter, m_ResMan->GetProjectDatabase());
 		AddPackageToWriter(desc.GetId(), m_ResMan->GetEnginePath(), packageWriter, m_ResMan->GetEngineDatabase());
 
@@ -243,7 +266,7 @@ void Cooker::CookFilePackages()
 		packageWriter.Write(packageData);
 
 		// Ensure the generated file directory exists
-		core::Directory* dir = new core::Directory(m_OutPath + desc.GetPath(), nullptr, true);
+		core::Directory* dir = new core::Directory(g_OutPath + desc.GetPath(), nullptr, true);
 
 		// Create the output package file
 		core::File* outFile = new core::File(desc.GetName() + core::FilePackage::s_PackageFileExtension, dir);

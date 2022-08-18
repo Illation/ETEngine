@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 	// run the actual framework
 	//--------------------------
 	MainFramework* pFW = new MainFramework();
-	pFW->Run();
+	pFW->Run(argc, argv);
 
 	delete pFW;
 	return 0;

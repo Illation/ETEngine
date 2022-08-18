@@ -7,6 +7,7 @@
 #include <EtCore/UpdateCycle/TickManager.h>
 #include <EtCore/Reflection/TypeInfoRegistry.h>
 #include <EtCore/Trace/NetworkTraceHandler.h>
+#include <EtCore/Util/CommandLine.h>
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 #	include <EtCore/Hashing/HashStringRegistry.h>
 #endif
@@ -98,7 +99,7 @@ AbstractFramework::~AbstractFramework()
 //
 // Bootstrap the engine and start the main loop
 //
-void AbstractFramework::Run()
+void AbstractFramework::Run(int32 const argc, char* const argv[])
 {
 	// init trace handling
 	core::TraceService::Initialize(); // Init trace first because all output depends on it from the start
@@ -116,6 +117,8 @@ void AbstractFramework::Run()
 	ET_LOG_I(ET_CTX_RUNTIME, "");
 
 	core::TypeInfoRegistry::Instance().Initialize(); // this needs to be initialized ASAP because serialization depends on it
+
+	core::CommandLineParser::Instance().Process(argc, argv);
 
 	// now we can deserialize the configuration
 	fw::Config* const cfg = fw::Config::GetInstance();

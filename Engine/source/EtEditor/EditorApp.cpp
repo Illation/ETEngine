@@ -20,6 +20,7 @@
 #include <EtCore/UpdateCycle/TickManager.h>
 #include <EtCore/UpdateCycle/PerformanceInfo.h>
 #include <EtCore/Reflection/TypeInfoRegistry.h>
+#include <EtCore/Util/CommandLine.h>
 
 #include <EtRHI/GraphicsContext/ContextHolder.h>
 
@@ -52,7 +53,6 @@ namespace edit {
 //
 EditorApp::EditorApp()
 	: Gtk::Application("com.leah-lindner.editor", Gio::APPLICATION_HANDLES_OPEN)
-	, m_CmdArguments(CommandlineArguments())
 { 
 	RegisterAsTriggerer();
 	
@@ -77,7 +77,7 @@ EditorApp::EditorApp()
 	{
 		int argc;
 		char **argv = command_line->get_arguments(argc);
-		m_CmdArguments = CommandlineArguments(argc, argv);
+		core::CommandLineParser::Instance().Process(argc, argv);
 		return 0;
 	};
 	signal_command_line().connect(onCommandLine, false);

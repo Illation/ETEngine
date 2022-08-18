@@ -13,22 +13,23 @@
 #include <EtCore/Platform/AtomicTypes.h>
 #include <EtCore/FileSystem/FileUtil.h>
 #include <EtCore/Reflection/ReflectionUtil.h>
-#include <EtCore/Trace/Trace.h>
-
-#include <EtCore/Util/CommandLineParser.h>
 #include <EtCore/Reflection/TypeInfoRegistry.h>
+#include <EtCore/Trace/Trace.h>
+#include <EtCore/Util/CommandLine.h>
 
 
 std::string global::g_UnitTestDir = std::string();
-et::int32 s_TestOption = 0;
+ET_REGISTER_COMMANDLINE(test_dir, global::g_UnitTestDir, "directory for file system dependent tests");
 
 
 int main(int argc, char* argv[]) 
 {
+	using namespace et;
+
 	// working dir
 	if (argc > 0)
 	{
-		et::core::FileUtil::SetExecutablePath(argv[0]);
+		core::FileUtil::SetExecutablePath(argv[0]);
 	}
 	else
 	{
@@ -36,22 +37,19 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	et::core::TraceService::Initialize();
-	et::core::TraceService::Instance()->SetupDefaultHandlers("ET unit tests", true); // #todo: redirect std output from tests
+	core::TraceService::Initialize();
+	core::TraceService::Instance()->SetupDefaultHandlers("ET unit tests", true); 
 
-	et::core::TypeInfoRegistry::Instance().Initialize();
+	core::TypeInfoRegistry::Instance().Initialize();
 
-	et::core::CommandLineParser::Instance().RegisterOption(global::g_UnitTestDir, "test_dir", "directory for file system dependent tests");
-	et::core::CommandLineParser::Instance().RegisterOption(s_TestOption, "test_option", "a simple test option", 't');
-
-	et::core::CommandLineParser::Instance().Process(argc, argv);
-
+	core::CommandLineParser::Instance().Process(argc, argv);
 	argc = 1;
+
 	Catch::Session session;
 
 	int result = session.run(argc, argv);
 
-	et::core::TraceService::Destroy();
+	core::TraceService::Destroy();
 
 	return result;
 }

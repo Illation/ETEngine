@@ -10,6 +10,7 @@
 #include <EtCore/Trace/DebugOutputTraceHandler.h>
 #include <EtCore/Network/NetworkUtil.h>
 #include <EtCore/Platform/PlatformUtil.h>
+#include <EtCore/Util/CommandLine.h>
 
 
 namespace et {
@@ -28,9 +29,6 @@ namespace trace {
 //
 TraceServer::TraceServer(int32 const argc, char* const argv[])
 {
-	ET_UNUSED(argc);
-	ET_UNUSED(argv);
-
 	// Init stuff
 	//------------
 	core::TraceService::Initialize();
@@ -41,6 +39,8 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 
 
 	core::TypeInfoRegistry::Instance().Initialize(); 
+
+	core::CommandLineParser::Instance().Process(argc, argv);
 
 	ET_LOG_I(ET_CTX_TRACE, "E.T.Trace");
 	ET_LOG_I(ET_CTX_TRACE, "/////////");

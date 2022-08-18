@@ -20,20 +20,6 @@ namespace edit {
 class EditorAppWindow;
 
 //---------------------------------
-// CommandlineArguments
-//
-// Store commandline arguments here so we can look them up later, might do more complex things with this at a later point
-//
-struct CommandlineArguments
-{
-	CommandlineArguments() = default;
-	CommandlineArguments(int argc, char *argv[]) : argumentCount(argc), argumentValues(argv) {}
-
-	int32 argumentCount = 0;
-	char** argumentValues = nullptr;
-};
-
-//---------------------------------
 // EditorApp
 //
 // Application for the engine editor
@@ -68,8 +54,6 @@ private:
 private:
 	// Data
 	////////
-	CommandlineArguments m_CmdArguments;
-
 	EditorAppWindow* m_AppWindow = nullptr;
 	GtkRenderWindow m_RenderWindow;
 };

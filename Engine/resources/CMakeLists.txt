@@ -39,8 +39,8 @@ add_custom_command(
 
 	COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file} Engine Source ${res_file_engine} ; Generated Directory: ${gen_dir}"
 	COMMAND ${CMAKE_COMMAND} -E echo ""
-	COMMAND ${CMAKE_COMMAND} -E echo "${cooker_dir}ProjectCooker.exe ${PROJECT_DIRECTORY}/ ${ENGINE_DIRECTORY_ABS}/ ${gen_dir} y ${resource_name}"
-    COMMAND ${cooker_dir}ProjectCooker.exe ${PROJECT_DIRECTORY}/ ${ENGINE_DIRECTORY_ABS}/ ${gen_dir} y ${resource_name}
+	COMMAND ${CMAKE_COMMAND} -E echo "${cooker_dir}ProjectCooker.exe -E ${ENGINE_DIRECTORY_ABS}/ -P ${PROJECT_DIRECTORY}/ -O ${gen_dir} -C ${resource_name}"
+    COMMAND ${cooker_dir}ProjectCooker.exe -E ${ENGINE_DIRECTORY_ABS}/ -P ${PROJECT_DIRECTORY}/ -O ${gen_dir} -C ${resource_name}
 	COMMAND ${CMAKE_COMMAND} -E echo ""
 	COMMAND ${CMAKE_COMMAND} -E echo ""
 	
