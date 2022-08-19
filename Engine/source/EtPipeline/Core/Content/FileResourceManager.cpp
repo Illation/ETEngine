@@ -20,10 +20,10 @@ namespace pl {
 //---------------------------------
 // FileResourceManager::c-tor
 //
-FileResourceManager::FileResourceManager(std::string const& projectPath, std::string const& enginePath)
+FileResourceManager::FileResourceManager(std::string const& projectDbPath, std::string const& engineDbPath)
 	: ResourceManager()
-	, m_ProjectPath(projectPath + s_ResourceDirRelPath)
-	, m_EnginePath(enginePath + s_ResourceDirRelPath)
+	, m_ProjectDbPath(projectDbPath)
+	, m_EngineDbPath(engineDbPath)
 { }
 
 //---------------------------------
@@ -34,8 +34,8 @@ FileResourceManager::FileResourceManager(std::string const& projectPath, std::st
 void FileResourceManager::Init()
 {
 	// init databases and file directories unlinked 
-	EditorAssetDatabase::InitDb(m_ProjectDb, m_ProjectPath + s_DatabasePath);
-	EditorAssetDatabase::InitDb(m_EngineDb, m_EnginePath + s_DatabasePath);
+	EditorAssetDatabase::InitDb(m_ProjectDb, m_ProjectDbPath);
+	EditorAssetDatabase::InitDb(m_EngineDb, m_EngineDbPath);
 
 	// link databases
 	auto assetGetter = [this](core::HashString const assetId) -> core::I_Asset*

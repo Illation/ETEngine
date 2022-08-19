@@ -1,14 +1,14 @@
 {
   "FileVersion": 2,
-  "Id": "49c8421d-6b15-3c95-abcd-20aa1cf5cc51",
+  "Id": "74b537cd-fe3a-37c7-a878-bfc0993cf05d",
   "Items": [
     {
       "Id": "fd4f85bb-59a7-4185-86b4-c9ffe574bf3d",
-      "Command": "-P $(SolutionDir)/../"
+      "Command": "-P $(SolutionDir)/../resources/asset_database.json"
     },
     {
       "Id": "ab174a14-dd09-4d02-ba6e-b57945369115",
-      "Command": "-E $(SolutionDir)/../../../Engine/"
+      "Command": "-E $(SolutionDir)/../../../Engine/resources/asset_database.json"
     },
     {
       "Id": "09eb37fc-eae2-425f-99e5-c0456d47a3a5",
@@ -26,7 +26,7 @@
             {
               "Id": "8f67d210-04fc-4d78-8a42-ef58d73c050c",
               "Command": "-C compiled_package"
-            } 
+            }
           ]
         },
         {

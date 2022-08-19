@@ -256,7 +256,8 @@ void EditorApp::InitializeUtilities()
 		}));
 	fw::UnifiedScene::Instance().Init();
 
-	core::ResourceManager::SetInstance(Create<pl::FileResourceManager>(edConfig->GetProjectPath(), edConfig->GetEnginePath()));
+	core::ResourceManager::SetInstance(Create<pl::FileResourceManager>(edConfig->GetProjectPath() + EditorConfig::s_DatabasePath, 
+		edConfig->GetEnginePath() + EditorConfig::s_DatabasePath));
 
 	edConfig->QueryStartScene();
 

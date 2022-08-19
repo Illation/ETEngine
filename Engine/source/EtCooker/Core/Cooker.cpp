@@ -40,11 +40,11 @@ namespace cooker {
 std::string const Cooker::s_TempPath = "temp/";
 
 
-std::string g_ProjectPath;
-ET_REGISTER_COMMANDLINE_S(project, g_ProjectPath, "root folder for the project", 'P');
+std::string g_ProjectDbPath;
+ET_REGISTER_COMMANDLINE_S(project, g_ProjectDbPath, "path to the project asset database", 'P');
 
-std::string g_EnginePath;
-ET_REGISTER_COMMANDLINE_S(engine, g_EnginePath, "root folder for the engine", 'E');
+std::string g_EngineDbPath;
+ET_REGISTER_COMMANDLINE_S(engine, g_EngineDbPath, "path to the engine asset database", 'E');
 
 std::string g_OutPath;
 ET_REGISTER_COMMANDLINE_S(out, g_OutPath, "where to write the files to", 'O');
@@ -91,13 +91,16 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 		return;
 	}
 
-	if ((!core::CommandLineParser::Instance().WasOptionSet(g_ProjectPath)) || (!core::CommandLineParser::Instance().WasOptionSet(g_EnginePath)))
+	if ((!core::CommandLineParser::Instance().WasOptionSet(g_ProjectDbPath)) || (!core::CommandLineParser::Instance().WasOptionSet(g_EngineDbPath)))
 	{
 		ET_ERROR("Project and engine directories weren't set");
 		core::CommandLineParser::Instance().PrintAll(true);
 		m_ReturnCode = E_ReturnCode::InsufficientArguments;
 		return;
 	}
+
+	m_EngineResourcePath = core::FileUtil::ExtractPath(g_EngineDbPath);
+	m_ProjectResourcePath = core::FileUtil::ExtractPath(g_ProjectDbPath);
 
 	// initial log
 	ET_LOG_I(ET_CTX_COOKER, "E.T.Cooker");
@@ -111,7 +114,7 @@ Cooker::Cooker(int32 const argc, char* const argv[])
 	rhi::ContextHolder::Instance().CreateMainRenderContext(m_RenderWindow);
 
 	// resources
-	UniquePtr<pl::FileResourceManager> resMan = Create<pl::FileResourceManager>(g_ProjectPath, g_EnginePath);
+	UniquePtr<pl::FileResourceManager> resMan = Create<pl::FileResourceManager>(g_ProjectDbPath, g_EngineDbPath);
 	m_ResMan = ToPtr(resMan.Get());
 	core::ResourceManager::SetInstance(std::move(resMan));
 
@@ -209,8 +212,8 @@ void Cooker::CookCompiledPackage()
 
 	// add all other compiled files to the package
 	static core::HashString const s_CompiledPackageId;
-	AddPackageToWriter(s_CompiledPackageId, m_ResMan->GetProjectPath(), packageWriter, m_ResMan->GetProjectDatabase());
-	AddPackageToWriter(s_CompiledPackageId, m_ResMan->GetEnginePath(), packageWriter, m_ResMan->GetEngineDatabase());
+	AddPackageToWriter(s_CompiledPackageId, m_ProjectResourcePath, packageWriter, m_ResMan->GetProjectDatabase());
+	AddPackageToWriter(s_CompiledPackageId, m_EngineResourcePath, packageWriter, m_ResMan->GetEngineDatabase());
 
 	// write our package
 	packageWriter.Write(packageData);
@@ -259,8 +262,8 @@ void Cooker::CookFilePackages()
 			fn(&desc, packageWriter);
 		}
 
-		AddPackageToWriter(desc.GetId(), m_ResMan->GetProjectPath(), packageWriter, m_ResMan->GetProjectDatabase());
-		AddPackageToWriter(desc.GetId(), m_ResMan->GetEnginePath(), packageWriter, m_ResMan->GetEngineDatabase());
+		AddPackageToWriter(desc.GetId(), m_ProjectResourcePath, packageWriter, m_ResMan->GetProjectDatabase());
+		AddPackageToWriter(desc.GetId(), m_EngineResourcePath, packageWriter, m_ResMan->GetEngineDatabase());
 
 		// write our package
 		packageWriter.Write(packageData);

@@ -45,6 +45,11 @@ int main(int argc, char* argv[])
 	core::CommandLineParser::Instance().Process(argc, argv);
 	argc = 1;
 
+	if (!core::CommandLineParser::Instance().WasOptionSet(global::g_UnitTestDir))
+	{
+		ET_ERROR("Unit test directory needs to be set for file based tests with command line option '--test_dir'!");
+	}
+
 	Catch::Session session;
 
 	int result = session.run(argc, argv);

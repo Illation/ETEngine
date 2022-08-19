@@ -102,8 +102,13 @@ std::vector<std::string> CommandLineToArgvA()
 
 	for (int i = 0; i < nArgs; ++i)
 	{
-		std::wstring ws(szArglist[i]);
-		ret.push_back(std::string(ws.begin(), ws.end()));
+		std::wstring const ws(szArglist[i]);
+		std::string str(ws.length(), 0);
+		std::transform(ws.begin(), ws.end(), str.begin(), [](wchar_t c) 
+			{
+				return static_cast<char>(c);
+			});
+		ret.push_back(str);
 	}
 
 	LocalFree(szArglist);

@@ -207,8 +207,8 @@ function(cookToolData TARGET)
 
 		COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file_engine} ; Out directory: ${_outDir}"
 		COMMAND ${CMAKE_COMMAND} -E echo ""
-		COMMAND ${CMAKE_COMMAND} -E echo "${_tool_cooker_exe} ${PROJECT_DIRECTORY}/ ${ENGINE_DIRECTORY_ABS}/ ${_outDir} n"
-		COMMAND ${_tool_cooker_exe} ${PROJECT_DIRECTORY}/ ${ENGINE_DIRECTORY_ABS}/ ${_outDir} n
+		COMMAND ${CMAKE_COMMAND} -E echo "${_tool_cooker_exe} -E ${res_file_engine} -O ${_outDir}"
+		COMMAND ${_tool_cooker_exe} -E ${res_file_engine} -O ${_outDir}
 		COMMAND ${CMAKE_COMMAND} -E echo ""
 		COMMAND ${CMAKE_COMMAND} -E echo ""
 		
@@ -986,8 +986,8 @@ function(installCookResources TARGET)
 		
 		COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file} ; Out directory: ${pak_file_dir}"
 		COMMAND ${CMAKE_COMMAND} -E echo ""
-		COMMAND ${CMAKE_COMMAND} -E echo "${cooker_dir}ProjectCooker.exe -E ${ENGINE_DIRECTORY_ABS}/ -P ${PROJECT_DIRECTORY}/ -O ${pak_file_dir}"
-		COMMAND ${cooker_dir}ProjectCooker.exe -E ${ENGINE_DIRECTORY_ABS}/ -P ${PROJECT_DIRECTORY}/ -O ${pak_file_dir}
+		COMMAND ${CMAKE_COMMAND} -E echo "${cooker_dir}ProjectCooker.exe -E ${res_file_engine} -P ${res_file} -O ${pak_file_dir}"
+		COMMAND ${cooker_dir}ProjectCooker.exe -E ${res_file_engine} -P ${res_file} -O ${pak_file_dir}
 		COMMAND ${CMAKE_COMMAND} -E echo ""
 		COMMAND ${CMAKE_COMMAND} -E echo ""
 		

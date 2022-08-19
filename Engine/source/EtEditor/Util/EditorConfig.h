@@ -27,6 +27,8 @@ public:
 
 	static constexpr char s_PointerPath[] = "../config/dirPointers.json";
 
+	static constexpr char s_DatabasePath[] = "resources/asset_database.json";
+
 	//---------------------------------
 	// EditorConfig::DirPointers
 	//

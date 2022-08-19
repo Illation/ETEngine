@@ -56,7 +56,7 @@ public:
 	//-----------
 	E_ReturnCode GetReturnCode() const { return m_ReturnCode; }
 
-	pl::FileResourceManager const* GetResourceManager() const { return m_ResMan.Get(); }
+	std::string const& GetProjectResourcePath() const { return m_ProjectResourcePath; }
 
 	// utility
 	//---------
@@ -77,6 +77,9 @@ private:
 
 	UniquePtr<app::GlfwRenderWindow> m_RenderWindow;
 	Ptr<pl::FileResourceManager> m_ResMan;
+
+	std::string m_ProjectResourcePath;
+	std::string m_EngineResourcePath;
 
 	std::vector<T_PreWritePackageFn> m_PreWritePackageFns;
 	

@@ -10,7 +10,7 @@
 
 #include <Pipeline/linkerHelper.h>
 
-#include <EtCooker/Cooker.h>
+#include <EtCooker/Core/Cooker.h>
 
 
 
@@ -38,8 +38,8 @@ int main(int argc, char *argv[])
 			{
 				if (desc == nullptr) // compiled package
 				{
-					core::File* cfgFile = new core::File(cooker.GetResourceManager()->GetProjectPath() + fw::BootConfig::s_FileName, nullptr);
-					writer.AddFile(cfgFile, cooker.GetResourceManager()->GetProjectPath(), core::E_CompressionType::Store);
+					core::File* cfgFile = new core::File(cooker.GetProjectResourcePath() + fw::BootConfig::s_FileName, nullptr);
+					writer.AddFile(cfgFile, cooker.GetProjectResourcePath(), core::E_CompressionType::Store);
 				}
 			}));
 

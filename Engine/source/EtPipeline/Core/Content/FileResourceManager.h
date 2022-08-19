@@ -17,16 +17,12 @@ class FileResourceManager : public core::ResourceManager
 {
 	// Definitions
 	//---------------------
-	static constexpr char s_ResourceDirRelPath[] = "resources/";
-
 public:
 	friend class core::ResourceManager;
 
-	static constexpr char s_DatabasePath[] = "asset_database.json";
-
 	// Construct destruct
 	//---------------------
-	FileResourceManager(std::string const& projectPath, std::string const& enginePath);
+	FileResourceManager(std::string const& projectDbPath, std::string const& engineDbPath);
 	virtual ~FileResourceManager() = default;
 
 protected:
@@ -50,9 +46,6 @@ public:
 	EditorAssetDatabase& GetProjectDatabase() { return m_ProjectDb; }
 	EditorAssetDatabase& GetEngineDatabase() { return m_EngineDb; }
 
-	std::string const& GetProjectPath() const { return m_ProjectPath; }
-	std::string const& GetEnginePath() const { return m_EnginePath; }
-
 	bool IsLoadEnabled() const { return m_IsLoadEnabled; } 
 
 	EditorAssetDatabase const* GetDB(core::I_Asset const* const asset) const;
@@ -69,10 +62,10 @@ protected:
 	// Data
 	///////
 
-	std::string m_ProjectPath;
+	std::string m_ProjectDbPath;
 	EditorAssetDatabase m_ProjectDb;
 
-	std::string m_EnginePath;
+	std::string m_EngineDbPath;
 	EditorAssetDatabase m_EngineDb;
 
 	bool m_IsLoadEnabled = true;
