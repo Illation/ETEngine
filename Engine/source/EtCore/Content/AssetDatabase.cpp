@@ -192,6 +192,25 @@ I_Asset* AssetDatabase::GetAsset(HashString const assetId, rttr::type const type
 }
 
 //---------------------------------
+// AssetDatabase::GetPackage
+//
+PackageDescriptor const* AssetDatabase::GetPackage(HashString const packageId) const
+{
+	auto const foundIt = std::find_if(packages.cbegin(), packages.cend(), [packageId](PackageDescriptor const& desc)
+		{
+			return (desc.GetId() == packageId);
+		});
+
+	if (foundIt != packages.cend())
+	{
+		return &(*foundIt);
+	}
+
+	ET_ERROR("Package '%s' couldn't be found", packageId.ToStringDbg());
+	return nullptr;
+}
+
+//---------------------------------
 // AssetDatabase::IterateAllAssets
 //
 void AssetDatabase::IterateAllAssets(I_AssetDatabase::T_AssetFunc const& func)

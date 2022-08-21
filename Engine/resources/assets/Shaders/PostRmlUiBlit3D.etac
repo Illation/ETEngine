@@ -4,7 +4,7 @@
       "shader asset": {
         "name": "PostRmlUiBlit3D.glsl",
         "path": "Shaders/",
-        "package": "",
+        "package": "engine_content_compiled",
         "references": [
           "Shaders/CommonSharedVars.glsl"
         ]

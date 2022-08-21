@@ -33,13 +33,15 @@ int main(int argc, char *argv[])
 		render::RenderingSystems::AddReference();
 
 		// add the boot config
+		bool bootAdded = false;
 		cooker.RegisterPreWritePackageFn(Cooker::T_PreWritePackageFn(
-			[&cooker](et::core::PackageDescriptor const* const desc, PackageWriter& writer)
+			[&cooker, &bootAdded](et::core::PackageDescriptor const& desc, PackageWriter& writer)
 			{
-				if (desc == nullptr) // compiled package
+				if (desc.IsCompiled() && !bootAdded) 
 				{
 					core::File* cfgFile = new core::File(cooker.GetProjectResourcePath() + fw::BootConfig::s_FileName, nullptr);
 					writer.AddFile(cfgFile, cooker.GetProjectResourcePath(), core::E_CompressionType::Store);
+					bootAdded = true;
 				}
 			}));
 

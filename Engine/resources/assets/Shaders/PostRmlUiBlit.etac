@@ -4,7 +4,7 @@
       "shader asset": {
         "name": "PostRmlUiBlit.glsl",
         "path": "Shaders/",
-        "package": "",
+        "package": "engine_content_compiled",
         "references": []
       }
     },

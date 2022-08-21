@@ -205,15 +205,34 @@ void Cooker::CookCompiledPackage()
 	core::File* dbFile = new core::File(dbName, m_TempDir);
 	packageWriter.AddFile(dbFile, dbFile->GetPath(), core::E_CompressionType::Store);
 
-	for (T_PreWritePackageFn const& fn : m_PreWritePackageFns)
+	// add all other compiled files to the package
+	std::vector<core::PackageDescriptor> descriptors;
+	for (core::PackageDescriptor const& desc : m_ResMan->GetProjectDatabase().GetPackages())
 	{
-		fn(nullptr, packageWriter);
+		if (desc.IsCompiled() && desc.IsRuntime())
+		{
+			descriptors.emplace_back(desc);
+		}
 	}
 
-	// add all other compiled files to the package
-	static core::HashString const s_CompiledPackageId;
-	AddPackageToWriter(s_CompiledPackageId, m_ProjectResourcePath, packageWriter, m_ResMan->GetProjectDatabase());
-	AddPackageToWriter(s_CompiledPackageId, m_EngineResourcePath, packageWriter, m_ResMan->GetEngineDatabase());
+	for (core::PackageDescriptor const& desc : m_ResMan->GetEngineDatabase().GetPackages())
+	{
+		if (desc.IsCompiled() && desc.IsRuntime())
+		{
+			descriptors.emplace_back(desc);
+		}
+	}
+
+	for (core::PackageDescriptor const& desc : descriptors)
+	{
+		for (T_PreWritePackageFn const& fn : m_PreWritePackageFns)
+		{
+			fn(desc, packageWriter);
+		}
+
+		AddPackageToWriter(desc.GetId(), m_ProjectResourcePath, packageWriter, m_ResMan->GetProjectDatabase());
+		AddPackageToWriter(desc.GetId(), m_EngineResourcePath, packageWriter, m_ResMan->GetEngineDatabase());
+	}
 
 	// write our package
 	packageWriter.Write(packageData);
@@ -249,7 +268,7 @@ void Cooker::CookFilePackages()
 	// each package can have a separate asset list
 	for (core::PackageDescriptor const& desc : descriptors)
 	{
-		if (!desc.IsRuntime())
+		if (!desc.IsRuntime() || desc.IsCompiled())
 		{
 			continue;
 		}
@@ -259,7 +278,7 @@ void Cooker::CookFilePackages()
 
 		for (T_PreWritePackageFn const& fn : m_PreWritePackageFns)
 		{
-			fn(&desc, packageWriter);
+			fn(desc, packageWriter);
 		}
 
 		AddPackageToWriter(desc.GetId(), m_ProjectResourcePath, packageWriter, m_ResMan->GetProjectDatabase());

@@ -4,7 +4,7 @@
       "shader asset": {
         "name": "ComputeMultipleScattering.glsl",
         "path": "Shaders/AtmoPreComp/",
-        "package": "",
+        "package": "engine_content_compiled",
         "references": [
           "Shaders/AtmoPreComp/AtmoPrecompVert.glsl",
           "Shaders/AtmoPreComp/AtmoPrecompGeo.glsl",

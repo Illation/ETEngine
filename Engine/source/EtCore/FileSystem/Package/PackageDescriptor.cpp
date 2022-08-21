@@ -19,6 +19,7 @@ RTTR_REGISTRATION
 	registration::class_<PackageDescriptor>("package")
 		.property("name", &PackageDescriptor::GetName, &PackageDescriptor::SetName)
 		.property("path", &PackageDescriptor::m_Path)
+		.property("is compiled", &PackageDescriptor::m_IsCompiled)
 		.property("is runtime", &PackageDescriptor::m_IsRuntime);
 }
 

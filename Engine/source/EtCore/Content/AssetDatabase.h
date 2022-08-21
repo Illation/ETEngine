@@ -46,6 +46,8 @@ public:
 	I_Asset* GetAsset(HashString const assetId, bool const reportErrors = true) const;
 	I_Asset* GetAsset(HashString const assetId, rttr::type const type, bool const reportErrors = true) const; // faster option
 
+	PackageDescriptor const* GetPackage(HashString const packageId) const;
+
 	// Interface
 	//-----------
 	void IterateAllAssets(I_AssetDatabase::T_AssetFunc const& func) override;

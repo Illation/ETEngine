@@ -31,8 +31,7 @@ PackageResourceManager::PackageResourceManager()
 void PackageResourceManager::Init()
 {
 	// Create a new memory package from the data
-	m_RootPackage = new core::MemoryPackage(core::FileUtil::GetCompiledData());
-	m_Packages.emplace_back(0u, m_RootPackage);
+	m_RootPackage = Create<core::MemoryPackage>(core::FileUtil::GetCompiledData());
 
 	// get the raw json string for the asset database from that package
 	std::vector<uint8> rawData;
@@ -52,8 +51,15 @@ void PackageResourceManager::Init()
 	// Create the file packages for all indexed packages
 	for (core::PackageDescriptor const& desc : m_Database.packages)
 	{
-		core::FilePackage* const filePkg = new core::FilePackage(desc.GetPath() + desc.GetName() + core::FilePackage::s_PackageFileExtension);
-		m_Packages.emplace_back(desc.GetId(), filePkg);
+		if (desc.IsCompiled())
+		{
+			m_Packages.emplace_back(desc.GetId(), m_RootPackage);
+		}
+		else
+		{
+			RefPtr<core::FilePackage> const pkg = Create<core::FilePackage>(desc.GetPath() + desc.GetName() + core::FilePackage::s_PackageFileExtension);
+			m_Packages.emplace_back(desc.GetId(), pkg);
+		}
 	}
 
 	// Link asset references together
@@ -67,14 +73,8 @@ void PackageResourceManager::Init()
 //
 void PackageResourceManager::Deinit()
 {
-	// clear the package list
-	for (std::pair<core::HashString, core::I_Package* >& package : m_Packages)
-	{
-		delete package.second;
-		package.second = nullptr;
-	}
-
 	m_Packages.clear();
+	m_RootPackage = nullptr;
 }
 
 //--------------------------------------
@@ -87,7 +87,7 @@ bool PackageResourceManager::GetLoadData(core::I_Asset const* const asset, std::
 	// Get the package the asset lives in
 	auto const foundPackageIt = std::find_if(m_Packages.begin(), m_Packages.end(), [asset](T_IndexedPackage const& indexedPackage)
 	{
-		return indexedPackage.first == asset->GetPackageId();
+		return (indexedPackage.first == asset->GetPackageId());
 	});
 
 	// check the iterator is valid

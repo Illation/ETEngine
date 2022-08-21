@@ -4,7 +4,7 @@
       "gui document asset": {
         "name": "splashscreen.rml",
         "path": "GUI/",
-        "package": "",
+        "package": "default_compiled",
         "references": [
           "GUI/window.rcss",
           "GUI/rml.rcss",

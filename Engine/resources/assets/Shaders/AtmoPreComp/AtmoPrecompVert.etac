@@ -4,7 +4,7 @@
       "stub asset": {
         "name": "AtmoPrecompVert.glsl",
         "path": "Shaders/AtmoPreComp/",
-        "package": "",
+        "package": "engine_content_compiled",
         "references": []
       }
     },

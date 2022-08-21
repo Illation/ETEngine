@@ -176,6 +176,10 @@ void I_Asset::Load()
 	{
 		ET_TRACE_E(ET_CTX_CORE, "I_Asset::Load > Failed loading asset from memory, name: '%s'", m_Name.c_str());
 	}
+	else
+	{
+		ET_TRACE_V(ET_CTX_CORE, "Loaded asset '%s'", m_Name.c_str());
+	}
 
 	if (!m_IsPersistent)
 	{

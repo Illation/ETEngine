@@ -319,7 +319,7 @@ void EditorAssetDatabase::Flush()
 }
 
 //--------------------------------------------
-// EditorAssetDatabase::PopulateAssetDatabase
+// EditorAssetDatabase::SetupAllRuntimeAssets
 //
 void EditorAssetDatabase::SetupAllRuntimeAssets()
 {

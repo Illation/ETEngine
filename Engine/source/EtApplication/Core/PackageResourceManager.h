@@ -24,7 +24,7 @@ class PackageResourceManager : public core::ResourceManager
 	//---------------------
 public:
 	friend class core::ResourceManager;
-	typedef std::pair<core::HashString, core::I_Package*> T_IndexedPackage;
+	typedef std::pair<core::HashString, RefPtr<core::I_Package>> T_IndexedPackage;
 
 	static constexpr char s_DatabasePath[] = "asset_database.etbin";
 
@@ -40,7 +40,7 @@ protected:
 	// accessors
 	//-----------
 public:
-	core::I_Package* GetRootPackage() const { return m_RootPackage; }
+	core::I_Package* GetRootPackage() { return m_RootPackage.Get(); }
 
 	// functionality
 	//---------------------
@@ -59,7 +59,7 @@ protected:
 
 	core::AssetDatabase m_Database;
 	std::vector<T_IndexedPackage> m_Packages;
-	core::I_Package* m_RootPackage = nullptr;
+	RefPtr<core::I_Package> m_RootPackage;
 };
 
 

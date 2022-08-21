@@ -39,7 +39,7 @@ public:
 		FailedToAccessGeneratedFile
 	};
 
-	typedef std::function<void(core::PackageDescriptor const* const desc, PackageWriter& writer)> T_PreWritePackageFn; // desc is nullptr for default pkg
+	typedef std::function<void(core::PackageDescriptor const& desc, PackageWriter& writer)> T_PreWritePackageFn; // desc is nullptr for default pkg
 
 	// construct destruct
 	//--------------------

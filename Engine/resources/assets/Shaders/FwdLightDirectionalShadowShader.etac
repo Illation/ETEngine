@@ -4,7 +4,7 @@
       "shader asset": {
         "name": "FwdLightDirectionalShadowShader.glsl",
         "path": "Shaders/",
-        "package": "",
+        "package": "engine_content_compiled",
         "references": [
           "Shaders/Common.glsl",
           "Shaders/CommonSharedVars.glsl",

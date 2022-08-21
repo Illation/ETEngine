@@ -4,7 +4,7 @@
       "stub asset": {
         "name": "Common.glsl",
         "path": "Shaders/",
-        "package": "",
+        "package": "engine_content_compiled",
         "references": []
       }
     },

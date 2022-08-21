@@ -5,6 +5,13 @@
       {
         "name": "content1",
         "path": "content/",
+        "is compiled": false,
+        "is runtime": true
+      },
+      {
+        "name": "default_compiled",
+        "path": "",
+        "is compiled": true,
         "is runtime": true
       }
     ]

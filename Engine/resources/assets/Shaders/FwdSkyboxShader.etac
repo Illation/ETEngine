@@ -4,7 +4,7 @@
       "shader asset": {
         "name": "FwdSkyboxShader.glsl",
         "path": "Shaders/",
-        "package": "",
+        "package": "engine_content_compiled",
         "references": [
           "Shaders/CommonSharedVars.glsl"
         ]

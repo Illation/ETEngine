@@ -4,7 +4,7 @@
       "shader asset": {
         "name": "DefPBRParamShader.glsl",
         "path": "Shaders/",
-        "package": "",
+        "package": "default_compiled",
         "references": [
           "Shaders/CommonSharedVars.glsl",
           "Shaders/CommonDeferred.glsl"

@@ -4,7 +4,7 @@
       "shader asset": {
         "name": "FwdConvBRDFShader.glsl",
         "path": "Shaders/",
-        "package": "",
+        "package": "engine_content_compiled",
         "references": [
           "Shaders/Common.glsl",
           "Shaders/CommonPBR.glsl"

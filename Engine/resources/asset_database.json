@@ -5,11 +5,19 @@
       {
         "name": "engine_content",
         "path": "content/",
+        "is compiled": false,
+        "is runtime": true
+      },
+      {
+        "name": "engine_content_compiled",
+        "path": "",
+        "is compiled": true,
         "is runtime": true
       },
       {
         "name": "editor_content",
         "path": "",
+        "is compiled": false,
         "is runtime": false
       }
     ]

@@ -4,6 +4,8 @@
 #include <EtCore/Content/ResourceManager.h>
 #include <EtCore/FileSystem/Entry.h>
 
+#include <EtPipeline/Core/PipelineCtx.h>
+
 
 namespace et {
 namespace pl {
@@ -157,6 +159,10 @@ void EditorAssetBase::Load()
 	if (!LoadFromMemory(asset->m_LoadData))
 	{
 		ET_ERROR("Failed Loading editor asset from memory, id: '%s'", m_Id.ToStringDbg());
+	}
+	else
+	{
+		ET_TRACE_V(ET_CTX_PIPELINE, "Loaded asset '%s'", m_Id.ToStringDbg());
 	}
 
 	if (!(asset->m_IsPersistent))
