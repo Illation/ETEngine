@@ -25,7 +25,8 @@ public:
 	// accessors
 	//-----------
 	std::string const& GetName() const { return m_Name; }
-	std::string const& GetPath() const { return m_Path; }
+	std::string const& GetOutPath() const { return m_OutPath; }
+	std::string const& GetRootPath() const { return m_RootPath; }
 	bool IsCompiled() const { return m_IsCompiled; }
 	bool IsRuntime() const { return m_IsRuntime; }
 	HashString GetId() const;
@@ -40,7 +41,8 @@ private:
 
 	// reflected
 	std::string m_Name;
-	std::string m_Path;
+	std::string m_OutPath;
+	std::string m_RootPath;
 	bool m_IsCompiled = false;
 	bool m_IsRuntime = true;
 

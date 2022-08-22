@@ -1,0 +1,21 @@
+{
+  "editor asset database": {
+    "root paths": [ "assets_common/" ],
+    "packages": [
+      {
+        "name": "common_content_compiled",
+        "out path": "",
+        "root path": "assets_common/",
+        "is compiled": true,
+        "is runtime": true
+      },
+      {
+        "name": "common_edit_content",
+        "out path": "",
+        "root path": "assets_common/",
+        "is compiled": false,
+        "is runtime": false
+      }
+    ]
+  }
+}

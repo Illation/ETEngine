@@ -1,0 +1,41 @@
+<rml>
+<head>
+	<title>Hello world</title>
+	<link type="text/rcss" href="rml.rcss"/>
+	<link type="text/rcss" href="window.rcss"/>
+</head>
+<body data-model="animals">
+
+<tabset id ="menu">
+	<tab>Welcome</tab>
+	<panel id="welcome">
+		<h1>Hello <span id="world">world</span>!</h1>
+		<p>Press 'U' to toggle UI</p>
+		<input type="text" data-value="animal"/>
+		<label> Show Text:<input type="checkbox" data-value="show_text" checked/></label>
+		<p id="phrase" data-if="show_text">The quick brown fox jumps over the lazy <span id="animal">{{animal}}</span>.</p>	
+	</panel>
+	
+	<tab>Effects</tab>
+	<panel id="font_effects">
+		<h1>None</h1>
+		<div class="original">ETEngine🌟</div>
+		<h1>Glow</h1>
+		<div class="glow">ETEngine🌟</div>
+		<div class="glow_sharper">ETEngine🌟</div>
+		<div class="glow_rainbow">ETEngine🌟</div>
+		<div class="glow_shadow">ETEngine🌟</div>
+		<h1>Outline</h1>
+		<div class="outline_small">ETEngine🌟</div>
+		<div class="outline_big">ETEngine🌟</div>
+		<h1>Shadow</h1>
+		<div class="shadow_up">ETEngine🌟</div>
+		<div class="shadow_down">ETEngine🌟</div>
+		<h1>Blur</h1>
+		<div class="blur_small">ETEngine🌟</div>
+		<div class="blur_big">ETEngine🌟</div>
+	</panel>
+</tabset>
+
+</body>
+</rml>

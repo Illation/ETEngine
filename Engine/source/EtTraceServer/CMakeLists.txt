@@ -10,6 +10,11 @@
 file(GLOB_RECURSE headers ${CMAKE_CURRENT_SOURCE_DIR}/*.h ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp ${CMAKE_CURRENT_SOURCE_DIR}/*.inl)
 file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
+set (_genDir "${CMAKE_CURRENT_SOURCE_DIR}/_generated/")
+set(_genFile "${_genDir}compiled_package.cpp")
+set_source_files_properties(${_genFile} PROPERTIES GENERATED TRUE )
+list (APPEND sources ${_genFile})
+
 list (APPEND projectFiles ${headers} ${sources} ${c_sources})
 
 # setup
@@ -44,10 +49,12 @@ libIncludeDirs()
 # general include dirs
 include_directories("${ENGINE_DIRECTORY_ABS}/source")
 
+cookToolData(EtTraceServer "${ENGINE_DIRECTORY_ABS}/resources/asset_database_traceserver.json" "${_genDir}")
+set(_tool_cook_target_name)
+getToolCookTargetName(EtTraceServer _tool_cook_target_name)
+
+add_dependencies(EtTraceServer ${_tool_cook_target_name})
+
 copyDllCommand(EtTraceServer)
 
-cookToolData(EtTraceServer)
-set(_tool_cook_target_name)
-getToolCookTargetName(EtToolCooker _tool_cook_target_name)
-
-copyToolCommand(EtTraceServer ${_tool_cook_target_name})
+copyToolCommand(EtTraceServer EtTraceServer)

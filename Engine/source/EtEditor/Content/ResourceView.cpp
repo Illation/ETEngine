@@ -105,10 +105,14 @@ void ResourceView::Rebuild()
 	RebuildDirectoryTree(); // this triggers rebuild asset list
 
 	Gtk::TreeModel::Children children = m_TreeModel->children();
-	auto row = RecursiveGetDirectory(m_BaseDirectory->GetName() + selectedDir, children);
-	if (row)
+	for (core::Directory const* const baseDir : m_BaseDirectories)
 	{
-		m_TreeSelection->select(row);
+		auto row = RecursiveGetDirectory(baseDir->GetName() + selectedDir, children);
+		if (row)
+		{
+			m_TreeSelection->select(row);
+			break;
+		}
 	}
 }
 
@@ -152,14 +156,22 @@ void ResourceView::ResourceGroupToggled()
 //
 void ResourceView::OnDirectorySelectionChanged()
 {
+	m_SelectedBaseDir = nullptr;
 	Gtk::TreeModel::iterator const& it = m_TreeSelection->get_selected(Glib::RefPtr<Gtk::TreeModel>::cast_static(m_TreeModel));
 	if (it != m_TreeModel->children().end())
 	{
 		core::Directory* const dir = (*it)[m_Columns.m_Directory];
 		if (dir != nullptr)
 		{
-			m_SelectedDirectory = dir->GetName();
-			m_SelectedDirectory = core::FileUtil::GetRelativePath(m_SelectedDirectory, m_BaseDirectory->GetName());
+			for (core::Directory* const baseDir : m_BaseDirectories)
+			{
+				if (dir->IsChildOf(baseDir))
+				{
+					m_SelectedDirectory = core::FileUtil::GetRelativePath(dir->GetName(), baseDir->GetName());
+					m_SelectedBaseDir = baseDir;
+					break;
+				}
+			}
 		}
 		else
 		{
@@ -222,15 +234,17 @@ void ResourceView::RebuildDirectoryTree()
 	pl::FileResourceManager* const resourceMan = static_cast<pl::FileResourceManager*>(core::ResourceManager::Instance());
 	ET_ASSERT(resourceMan != nullptr);
 
-	m_BaseDirectory = m_ProjectSelected ? resourceMan->GetProjectDatabase().GetDirectory() : resourceMan->GetEngineDatabase().GetDirectory();
+	m_BaseDirectories = m_ProjectSelected ? resourceMan->GetProjectDatabase().GetDirectories() : resourceMan->GetEngineDatabase().GetDirectories();
 
 	m_TreeModel->clear();
 
-	Gtk::TreeModel::Row row = *(m_TreeModel->append());
-	row[m_Columns.m_Name] = m_ProjectSelected ? "Project Resources" : "Engine Resources";
-	row[m_Columns.m_Directory] = m_BaseDirectory;
+	for (core::Directory* const dir : m_BaseDirectories)
+	{
+		Gtk::TreeModel::Row row = *(m_TreeModel->append());
+		row[m_Columns.m_Name] = dir->GetNameOnly().substr(0, dir->GetNameOnly().size() - 1).c_str();
+		row[m_Columns.m_Directory] = dir;
 
-	auto recursiveAddChildren = [this](Gtk::TreeModel::Row& row, auto& fnRef) mutable -> void
+		auto recursiveAddChildren = [this](Gtk::TreeModel::Row& row, auto& fnRef) mutable -> void
 		{
 			core::Directory* const baseDir = row[m_Columns.m_Directory];
 			ET_ASSERT(baseDir != nullptr);
@@ -250,9 +264,10 @@ void ResourceView::RebuildDirectoryTree()
 			}
 		};
 
-	recursiveAddChildren(row, recursiveAddChildren);
+		recursiveAddChildren(row, recursiveAddChildren);
 
-	m_TreeSelection->select(row);
+		m_TreeSelection->select(row);
+	}
 
 	m_TreeView->show_all_children();
 	m_TreeView->expand_all();
@@ -285,7 +300,8 @@ void ResourceView::RebuildAssetList()
 	std::vector<pl::EditorAssetBase*> const filteredAssets = database.GetAssetsMatchingQuery(m_SelectedDirectory,
 		m_TypeFilter.AreDirectoriesRecursive(), 
 		m_SearchTerm, 
-		m_TypeFilter.GetFilteredTypes());
+		m_TypeFilter.GetFilteredTypes(),
+		m_SelectedBaseDir);
 
 	// repopulate
 	for (pl::EditorAssetBase* const asset : filteredAssets)

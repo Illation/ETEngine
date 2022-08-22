@@ -20,6 +20,7 @@
 #include <EtCore/Trace/NetworkTraceHandler.h>
 
 #include <EtRHI/GraphicsContext/ContextHolder.h>
+#include <EtRHI/Util/PrimitiveRenderer.h>
 
 #include <EtApplication/Rendering/GlfwRenderWindow.h>
 #include <EtApplication/Core/PackageResourceManager.h>
@@ -137,6 +138,8 @@ Cooker::~Cooker()
 
 	m_TempDir = nullptr;
 
+	rhi::PrimitiveRenderer::Instance().Deinit();
+
 	core::ResourceManager::DestroyInstance();
 
 	m_RenderWindow->GetArea().Uninitialize();
@@ -230,8 +233,8 @@ void Cooker::CookCompiledPackage()
 			fn(desc, packageWriter);
 		}
 
-		AddPackageToWriter(desc.GetId(), m_ProjectResourcePath, packageWriter, m_ResMan->GetProjectDatabase());
-		AddPackageToWriter(desc.GetId(), m_EngineResourcePath, packageWriter, m_ResMan->GetEngineDatabase());
+		AddPackageToWriter(desc, m_ProjectResourcePath, packageWriter, m_ResMan->GetProjectDatabase());
+		AddPackageToWriter(desc, m_EngineResourcePath, packageWriter, m_ResMan->GetEngineDatabase());
 	}
 
 	// write our package
@@ -281,14 +284,14 @@ void Cooker::CookFilePackages()
 			fn(desc, packageWriter);
 		}
 
-		AddPackageToWriter(desc.GetId(), m_ProjectResourcePath, packageWriter, m_ResMan->GetProjectDatabase());
-		AddPackageToWriter(desc.GetId(), m_EngineResourcePath, packageWriter, m_ResMan->GetEngineDatabase());
+		AddPackageToWriter(desc, m_ProjectResourcePath, packageWriter, m_ResMan->GetProjectDatabase());
+		AddPackageToWriter(desc, m_EngineResourcePath, packageWriter, m_ResMan->GetEngineDatabase());
 
 		// write our package
 		packageWriter.Write(packageData);
 
 		// Ensure the generated file directory exists
-		core::Directory* dir = new core::Directory(g_OutPath + desc.GetPath(), nullptr, true);
+		core::Directory* dir = new core::Directory(g_OutPath + desc.GetOutPath(), nullptr, true);
 
 		// Create the output package file
 		core::File* outFile = new core::File(desc.GetName() + core::FilePackage::s_PackageFileExtension, dir);
@@ -315,11 +318,11 @@ void Cooker::CookFilePackages()
 //
 // Gets all assets in a package of that database and adds them to the package writer
 //
-void Cooker::AddPackageToWriter(core::HashString const packageId, std::string const& dbPath, PackageWriter &writer, pl::EditorAssetDatabase& db)
+void Cooker::AddPackageToWriter(core::PackageDescriptor const& desc, std::string const& dbPath, PackageWriter &writer, pl::EditorAssetDatabase& db)
 {
 	// Loop over files - add them to the writer
-	pl::EditorAssetDatabase::T_AssetList assets = db.GetAssetsInPackage(packageId);
-	std::string const baseAssetPath = dbPath + db.GetAssetPath();
+	pl::EditorAssetDatabase::T_AssetList assets = db.GetAssetsInPackage(desc.GetId());
+	std::string const baseAssetPath = dbPath + desc.GetRootPath();
 	for (pl::EditorAssetBase* const editorAsset : assets)
 	{
 		if (!m_GenerateCompiled)

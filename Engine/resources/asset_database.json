@@ -1,22 +1,39 @@
 {
   "editor asset database": {
-    "root directory": "assets/",
+    "root paths": [ "assets/", "assets_common/" ],
     "packages": [
       {
         "name": "engine_content",
-        "path": "content/",
+        "out path": "content/",
+        "root path": "assets/",
         "is compiled": false,
         "is runtime": true
       },
       {
         "name": "engine_content_compiled",
-        "path": "",
+        "out path": "",
+        "root path": "assets/",
+        "is compiled": true,
+        "is runtime": true
+      },
+      {
+        "name": "common_content_compiled",
+        "out path": "",
+        "root path": "assets_common/",
         "is compiled": true,
         "is runtime": true
       },
       {
         "name": "editor_content",
-        "path": "",
+        "out path": "",
+        "root path": "assets/",
+        "is compiled": false,
+        "is runtime": false
+      },
+      {
+        "name": "common_edit_content",
+        "out path": "",
+        "root path": "assets_common/",
         "is compiled": false,
         "is runtime": false
       }

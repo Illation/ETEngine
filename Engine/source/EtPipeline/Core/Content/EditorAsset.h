@@ -64,6 +64,8 @@ public:
 	core::I_Asset* GetAsset() { return m_Asset.Get(); }
 	core::I_Asset const* GetAsset() const { return m_Asset.Get(); }
 
+	core::File const* GetFile() const { return m_File; }
+
 	std::vector<RuntimeAssetInfo> GetAllRuntimeAssets() const;
 
 	virtual rttr::type GetType() const = 0;

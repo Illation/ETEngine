@@ -2,9 +2,9 @@
   "editable shader asset": {
     "asset": {
       "shader asset": {
-        "name": "ComputeGlyphSDF.glsl",
-        "path": "Shaders/",
-        "package": "engine_content_compiled",
+        "name": "PostRmlUiSdf.glsl",
+        "path": "",
+        "package": "common_content_compiled",
         "references": []
       }
     },

@@ -201,12 +201,15 @@ E_ImportResult ImporterBase::Run(core::URI& uri, std::string const& outDirectory
 			for (pl::EditorAssetBase* const asset : importedAssets)
 			{
 				asset->GetAsset()->SetPath(outDirectory);
-				if (!packages.empty()) // #todo: in the future either show package option or have a default package setting
-				{
-					asset->GetAsset()->SetPackageId(packages[0].GetId()); 
-				}
 
-				core::File* const dataFile = new core::File(asset->GetAsset()->GetPath() + asset->GetAsset()->GetName(), db.GetDirectory());
+				ET_ASSERT(!packages.empty());
+				core::PackageDescriptor const& pkgDesc = packages[0]; // #todo: in the future either show package option or have a default package setting
+				asset->GetAsset()->SetPackageId(pkgDesc.GetId());
+
+				core::Directory* const dir = db.GetDirectory(pkgDesc.GetId());
+				ET_ASSERT(dir->GetMountedChild(outDirectory) != nullptr);
+
+				core::File* const dataFile = new core::File(asset->GetAsset()->GetPath() + asset->GetAsset()->GetName(), dir);
 				if (dataFile->Exists())
 				{
 					ET_WARNING("Reimporting existing assets is currently not supported! File: %s", dataFile->GetName());

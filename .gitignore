@@ -9,6 +9,7 @@
 
 /Engine/source/EtBuild/DevelopmentPaths.cpp
 /Engine/source/EtBuild/EngineVersion.cpp
+/Engine/source/EtTraceServer/_generated/
 
 /Projects/Demo/bin/
 /Projects/Demo/build/

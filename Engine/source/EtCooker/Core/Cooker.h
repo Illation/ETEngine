@@ -64,7 +64,7 @@ private:
 	void CookCompiledPackage();
 	void CookFilePackages();
 
-	void AddPackageToWriter(core::HashString const packageId, std::string const& dbPath, PackageWriter &writer, pl::EditorAssetDatabase& db);
+	void AddPackageToWriter(core::PackageDescriptor const& desc, std::string const& dbPath, PackageWriter &writer, pl::EditorAssetDatabase& db);
 
 	// Data
 	///////

@@ -176,7 +176,7 @@ bool ImguiRenderBackend::CreateDeviceObjects()
 {
 	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
 
-	m_Shader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostGenericUi.glsl"));
+	m_Shader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("PostGenericUi.glsl"));
 
 	m_VertexBuffer = device->CreateBuffer();
 	m_IndexBuffer = device->CreateBuffer();

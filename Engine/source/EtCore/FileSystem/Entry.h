@@ -30,6 +30,7 @@ public:
 	std::string GetExtension();
     Directory* GetParent(){ return m_Parent; }
     std::string GetPath() const;
+	bool IsChildOf(Directory const* const dir) const;
 
 	virtual bool Exists() = 0;
 	virtual bool Delete() = 0;

@@ -52,17 +52,20 @@ private:
 	// accessors
 	//-----------
 public:
-	std::string const& GetAssetPath() const { return m_RootDirectory; }
-	core::Directory const* GetDirectory() const { return m_Directory; }
-	core::Directory* GetDirectory() { return m_Directory; }
+	std::vector<std::string> const& GetRootPaths() const { return m_RootPaths; }
+	std::vector<core::Directory*> const& GetDirectories() { return m_Directories; }
+	core::Directory const* GetDirectory(core::HashString const packageId) const;
+	core::Directory* GetDirectory(core::HashString const packageId);
 
 	T_AssetList GetAssetsInPackage(core::HashString const packageId);
 	std::vector<core::PackageDescriptor> const& GetPackages() const { return m_Packages; }
+	core::PackageDescriptor const* GetPackage(core::HashString const packageId) const;
 
 	T_AssetList GetAssetsMatchingQuery(std::string const& path,
 		bool const recursive,
 		std::string const& searchTerm,
-		std::vector<rttr::type> const& filteredTypes);
+		std::vector<rttr::type> const& filteredTypes,
+		core::Directory const* const baseDir);
 
 	EditorAssetBase* GetAsset(core::HashString const assetId, bool const reportErrors = true) const;
 	EditorAssetBase* GetAsset(core::HashString const assetId, rttr::type const type, bool const reportErrors = true) const; // faster
@@ -83,6 +86,8 @@ public:
 	// utility
 	//---------
 private:
+	size_t GetRootPathIdx(core::HashString const packageId) const;
+
 	T_CacheList::iterator FindCacheIt(rttr::type const type);
 	T_CacheList::const_iterator FindCacheIt(rttr::type const type) const;
 
@@ -95,12 +100,12 @@ private:
 	// Data
 	///////
 
-	core::Directory* m_Directory = nullptr;
+	std::vector<core::Directory*> m_Directories;
 
 	T_CacheList m_AssetCaches;
 
 	// reflected
-	std::string m_RootDirectory;
+	std::vector<std::string> m_RootPaths;
 	std::vector<core::PackageDescriptor> m_Packages;
 };
 

@@ -113,7 +113,8 @@ private:
 	// results
 	bool m_ProjectSelected = true;
 	std::string m_SelectedDirectory;
-	core::Directory* m_BaseDirectory = nullptr;
+	core::Directory* m_SelectedBaseDir = nullptr;
+	std::vector<core::Directory*> m_BaseDirectories;
 	std::vector<AssetWidget> m_FilteredAssets;
 	std::vector<AssetWidget*> m_SelectedAssets;
 

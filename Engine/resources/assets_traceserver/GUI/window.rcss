@@ -1,0 +1,307 @@
+@spritesheet theme 
+{
+	src: ../textures/greySheet.png;
+	
+	/* For high dpi screens, designates the scaling it is intended to be shown at. */
+	resolution: 1x; 
+	
+	checkbox: 147px 433px 38px 36px;
+	checkbox-hover: 146px 432px 38px 36px;
+	checkbox-active: 147px 433px 38px 36px;
+	checkbox-checked: 147px 469px 38px 36px;
+	checkbox-checked-hover: 146px 468px 38px 36px;
+	checkbox-checked-active: 147px 469px 38px 36px;
+	
+	datagridheader-l: 0px 143px 8px 31px;
+	datagridheader-c: 8px 143px 2px 31px;
+	datagridheader-r: 182px 143px 8px 31px;
+	
+	sliderbar-t:         138px 479px 8px 5px;
+	sliderbar-c:         138px 483px 8px 1px;
+	sliderbar-b:         138px 483px 8px 5px;
+	sliderarrowinc: 123px 496px 15px 10px;
+	sliderarrowdec: 93px 498px 15px 10px;
+}
+		
+input.text {
+	background-color: #fff;
+	color: #555;
+	border: 2px #c197d2;
+	border-radius: 10px;
+	padding: 5px;
+	tab-index: auto;
+	cursor: text;
+	box-sizing: border-box;
+	width: 200px;
+	font-size: 0.9em;
+}
+
+input,
+select,
+dataselect
+{
+	margin-left: 20dp;
+	margin-right: 20dp;
+}
+
+input.radio,
+input.checkbox
+{
+	width: 38dp;
+	height: 36dp;
+
+	vertical-align: -7dp;
+	
+	decorator: image(checkbox);
+}
+
+input.checkbox:hover
+{
+	decorator: image(checkbox-hover);
+}
+
+input.checkbox:active
+{
+	decorator: image(checkbox-active);
+}
+
+input.checkbox:checked
+{
+	decorator: image(checkbox-checked);
+}
+
+input.checkbox:checked:hover
+{
+	decorator: image(checkbox-checked-hover);
+}
+
+input.checkbox:checked:active
+{
+	decorator: image(checkbox-checked-active);
+}
+
+scrollbarvertical
+{
+	margin-right: -3dp;
+	width: 19dp;
+	background: #29203a;
+}
+scrollbarvertical sliderbar
+{
+	width: 15dp;
+	min-height: 46dp;
+
+	decorator: tiled-vertical( sliderbar-t, sliderbar-c, sliderbar-b );
+	image-color: #ae8bb9;
+}
+scrollbarvertical sliderarrowdec,
+scrollbarvertical sliderarrowinc
+{
+	width: 15dp;
+	height: 10dp;
+}
+scrollbarvertical sliderbar:hover,
+scrollbarvertical sliderarrowdec:hover,
+scrollbarvertical sliderarrowinc:hover
+{
+	image-color: #b692c4;
+}
+scrollbarvertical sliderbar:active,
+scrollbarvertical sliderarrowdec:active,
+scrollbarvertical sliderarrowinc:active
+{
+	image-color: #efbeff;
+}
+scrollbarvertical sliderarrowdec
+{
+	decorator: image( sliderarrowdec );
+	image-color: #ae8bb9;
+}
+scrollbarvertical sliderarrowinc
+{
+	decorator: image( sliderarrowinc );
+	image-color: #ae8bb9;
+}
+
+body {
+	font-family: LatoLatin;
+	font-size: 18px;
+	color: #d3b1c2;
+	background: #120627;
+	text-align: center;
+	padding: 2em 1em;
+	position: absolute;
+	border: 5px #c197d2;
+	width: 800px;
+	height: 250px;
+	margin: auto;
+	border-radius: 8px;
+	overflow: hidden auto;
+
+	/* perspective: 1000px;
+	perspective-origin: 20px 50%;
+	transform: rotateX(10deg) skew(-10deg, 15deg) translateZ(100px);
+	transform-origin: left top 0; */
+}
+
+tabset
+{
+	display: block;
+}
+tabs
+{
+    display: block;
+	position: fixed;
+	clip: none;
+	text-align: right;
+	top: -40dp;
+	left: 205dp;
+	right: 15dp;
+}
+tab
+{
+	width: 90dp;
+	padding: 0 20dp;
+	line-height: 40dp;
+	display: inline-block;
+	
+	font-size: 20dp;
+	color: #b8a4ae;
+	font-weight: bold;
+	text-align: center;
+	
+	border: 2px #aa88b8;
+	border-radius: 8px;
+	
+	decorator: tiled-horizontal( datagridheader-l, datagridheader-c, datagridheader-r );
+	image-color: #241d31;
+}
+tab:hover
+{
+	image-color: #2e253f;
+	border: 3px #c197d2;
+	margin: -1px;
+}
+tab:active:hover
+{
+	margin: -3px;
+}
+tab:selected:hover
+{
+	margin: 0px;
+}
+tab:active, tab:selected
+{
+	image-color: #120627;
+	color: #d3b1c2;
+	border: 5px #c197d2;
+	border-radius: 8px;
+}
+panels
+{
+    display: block;
+}
+panel
+{
+    display: block;
+	padding: 30dp;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 500dp;
+}
+
+panel#welcome
+{
+	display: inline-block;
+}
+
+h1 {
+	color: #dfd154;
+	font-size: 1.5em;
+	font-weight: bold;
+	margin-bottom: 0.7em;
+	font-effect: glow(2dp 4dp 2dp 3dp #8a4056);
+}
+		
+p { 
+	margin: 0.7em 0;
+}
+		
+#phrase { 
+	font-style: italic;
+}
+		
+#animal { 
+	text-decoration: underline;
+}
+
+
+panel#font_effects
+{
+	display: inline-block;
+}
+#font_effects div 
+{
+	display: inline-block;
+	width: 180dp;
+	margin: 0 30dp 30dp;
+	text-align: center;
+	font-size: 35dp;
+	color: #dfd154;
+}
+#font_effects h1 
+{
+	margin: 15dp 0 10dp 10dp;
+	
+	text-align: left;
+	font-size: 16dp;
+	font-weight: bold;
+
+	font-effect: glow(1dp 1dp 1dp 1dp #8a4056);
+	color: #ffffff;
+}
+#font_effects .glow
+{
+	font-effect: glow(3dp #ffffff);
+}
+#font_effects .glow_sharper
+{
+	font-effect: glow(3dp 1dp #ffffff);
+}
+#font_effects .glow_rainbow
+{
+	color: #ffffff;
+	font-effect: glow(1dp 5dp 0dp 3dp #ff555590), glow(1dp 5dp -2.5dp -2dp #55ff5590), glow(1dp 5dp 2.5dp -2dp #5555ff90);
+}
+#font_effects .glow_shadow
+{
+	font-effect: glow(2dp 4dp 2dp 3dp #8a4056);
+}
+#font_effects .outline_small
+{
+	font-effect: outline(2dp #ffffff);
+}
+#font_effects .outline_big
+{
+	font-effect: outline(4dp #ffffff);
+}
+#font_effects .shadow_up
+{
+	font-weight: bold;
+	font-effect: shadow(3dp -3dp #ffffff);
+}
+#font_effects .shadow_down
+{
+	font-weight: bold;
+	font-effect: shadow(0px 3dp #8a4056);
+}
+#font_effects .blur_small
+{
+	color: #866beb4d;
+	font-effect: blur(3dp #ffffff);
+}
+#font_effects .blur_big
+{
+	color: #866beb4d;
+	font-effect: blur(10dp #ffffff);
+}

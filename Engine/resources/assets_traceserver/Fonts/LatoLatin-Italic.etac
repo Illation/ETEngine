@@ -1,0 +1,26 @@
+{
+  "editable sdf font asset": {
+    "asset": {
+      "sdf font asset": {
+        "name": "LatoLatin-Italic.ttf",
+        "path": "Fonts/",
+        "package": "content1",
+        "references": [],
+        "is fallback": false
+      }
+    },
+    "metadata": null,
+    "children": [],
+    "size": 32,
+    "padding": 1,
+    "spread": 6,
+    "highres": 32,
+    "EM per 100 weight": 0.007,
+    "char sets": [
+      {
+        "start": 0,
+        "end": 255
+      }
+    ]
+  }
+}

@@ -2,15 +2,15 @@
   "editable shader asset": {
     "asset": {
       "shader asset": {
-        "name": "PostSprite.glsl",
-        "path": "Shaders/",
-        "package": "engine_content_compiled",
+        "name": "PostRmlUiBlit.glsl",
+        "path": "",
+        "package": "common_content_compiled",
         "references": []
       }
     },
     "metadata": null,
     "children": [],
-    "use geometry": true,
+    "use geometry": false,
     "use fragment": true
   }
 }

@@ -390,7 +390,7 @@ gui::SdfFont* EditableSdfFontAsset::LoadTtf(const std::vector<uint8>& binaryCont
 	device->Clear(rhi::E_ClearFlag::CF_Color | rhi::E_ClearFlag::CF_Depth);
 
 	AssetPtr<rhi::ShaderData> const computeSdf = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(
-		core::HashString("Shaders/ComputeGlyphSDF.glsl"));
+		core::HashString("ComputeGlyphSDF.glsl"));
 	device->SetShader(computeSdf.get());
 	computeSdf->Upload("uSpread"_hash, static_cast<float>(m_Spread));
 	computeSdf->Upload("uHighRes"_hash, static_cast<float>(m_HighRes));

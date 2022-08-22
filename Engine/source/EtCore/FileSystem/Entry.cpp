@@ -87,6 +87,25 @@ std::string Entry::GetPath() const
 	}
 }
 
+//------------------
+// Entry::IsChildOf
+//
+bool Entry::IsChildOf(Directory const* const dir) const
+{
+	if (dir == this)
+	{
+		return true;
+	}
+	else if (m_Parent == nullptr)
+	{
+		return false;
+	}
+	else
+	{
+		return m_Parent->IsChildOf(dir);
+	}
+}
+
 //---------------------------------
 // Entry::GetName
 //

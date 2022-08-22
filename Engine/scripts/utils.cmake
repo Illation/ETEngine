@@ -172,20 +172,20 @@ function(getToolCookTargetName TARGET outName)
 endfunction(getToolCookTargetName)
 
 #########################
-function(cookToolData TARGET)
-
-	# resources generating compiled source files
-	set(cmp_dir_engine "${ENGINE_DIRECTORY_ABS}/resources/")
+function(cookToolData TARGET database gen_dir)
 
 	# figure out the directory the cooker binary lives in
 	set(_outDir)
 	getToolOutputDir(${TARGET} _outDir)
 
-	set(target_files )
-	set(res_file_engine "${cmp_dir_engine}asset_database.json")
+	# compiled source file names
+	set(resource_name "compiled_package")
+	set(target_files "${gen_dir}${resource_name}.h" "${gen_dir}${resource_name}.cpp")
+
+	set(res_file_engine "${ENGINE_DIRECTORY_ABS}/resources/asset_database_tools.json")
 
 	# any files that can trigger the resources to be rebuilt
-	file(GLOB_RECURSE deps ${cmp_dir_engine}/assets/*.*)
+	list (APPEND deps ${database})
 	list (APPEND deps ${res_file_engine})
 
 	# tool copy target
@@ -195,20 +195,46 @@ function(cookToolData TARGET)
 	set(_tool_cooker_exe)
 	getToolOutputName(EtToolCooker $<CONFIG> _tool_cooker_exe)
 
-	# the command list that will run - for compiling resources
-	#-----------------------------------------------------------
+	# the command lists that will run 
+	#---------------------------------
+
+	# first compiled resources
+
+	add_custom_command(
+		OUTPUT ${target_files}
+		DEPENDS ${deps} ${_copied_tool_cooker}
+
+		COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file_engine} - ${database} ; Generated Directory: ${gen_dir}"
+		COMMAND ${CMAKE_COMMAND} -E echo ""
+		COMMAND ${CMAKE_COMMAND} -E echo "${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${gen_dir} -C ${resource_name} --use_pch"
+		COMMAND ${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${gen_dir} -C ${resource_name} --use_pch
+		COMMAND ${CMAKE_COMMAND} -E echo ""
+		COMMAND ${CMAKE_COMMAND} -E echo ""
+		
+		COMMENT "Generating resource source file"
+
+		VERBATIM
+	)
+
+	foreach(_target_file ${target_files})
+		get_filename_component(_abs_target "${_target_file}" ABSOLUTE)
+		set_source_files_properties(${_abs_target} PROPERTIES GENERATED TRUE )
+	endforeach()
+
+	# then packaged resources
+
 	set(_tool_cook_target_name)
 	getToolCookTargetName(${TARGET} _tool_cook_target_name)
 
 	message(STATUS "Adding target: ${_tool_cook_target_name}")
 	add_custom_target(
 		${_tool_cook_target_name}
-		DEPENDS ${deps} ${_copied_tool_cooker} ${TARGET}
+		DEPENDS ${target_files}
 
-		COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file_engine} ; Out directory: ${_outDir}"
+		COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file_engine} - ${database} ; Out directory: ${_outDir}"
 		COMMAND ${CMAKE_COMMAND} -E echo ""
-		COMMAND ${CMAKE_COMMAND} -E echo "${_tool_cooker_exe} -E ${res_file_engine} -O ${_outDir}"
-		COMMAND ${_tool_cooker_exe} -E ${res_file_engine} -O ${_outDir}
+		COMMAND ${CMAKE_COMMAND} -E echo "${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${_outDir}/"
+		COMMAND ${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${_outDir}/
 		COMMAND ${CMAKE_COMMAND} -E echo ""
 		COMMAND ${CMAKE_COMMAND} -E echo ""
 		
@@ -218,11 +244,6 @@ function(cookToolData TARGET)
 	)
 
 	assignIdeFolder(${_tool_cook_target_name} Engine/Build)
-
-	foreach(_target_file ${target_files})
-		get_filename_component(_abs_target "${_target_file}" ABSOLUTE)
-		set_source_files_properties(${_abs_target} PROPERTIES GENERATED TRUE )
-	endforeach()
 
 endfunction(cookToolData)
 

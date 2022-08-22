@@ -1,0 +1,18 @@
+{
+  "editable gui document asset": {
+    "asset": {
+      "gui document asset": {
+        "name": "hello_world.rml",
+        "path": "GUI/",
+        "package": "default_compiled",
+        "references": [
+          "GUI/window.rcss",
+          "GUI/rml.rcss",
+          "Fonts/NotoEmoji-Regular.ttf"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

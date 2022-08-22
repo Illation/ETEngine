@@ -25,7 +25,7 @@ namespace pl {
 RTTR_REGISTRATION
 {
 	rttr::registration::class_<EditorAssetDatabase>("editor asset database")
-		.property("root directory", &EditorAssetDatabase::m_RootDirectory)
+		.property("root paths", &EditorAssetDatabase::m_RootPaths)
 		.property("packages", &EditorAssetDatabase::m_Packages);
 }
 
@@ -88,14 +88,17 @@ void EditorAssetDatabase::InitDb(EditorAssetDatabase& db, std::string const& pat
 
 	delete dbFile;
 
-	std::string dirPath = core::FileUtil::ExtractPath(path) + db.GetAssetPath();
+	for (std::string const& rootPath : db.GetRootPaths())
+	{
+		std::string dirPath = core::FileUtil::ExtractPath(path) + rootPath;
 
-	// mount the directory
-	core::Directory* const dir = new core::Directory(dirPath, nullptr, true);
-	dir->Mount(true);
+		// mount the directory
+		core::Directory* const dir = new core::Directory(dirPath, nullptr, true);
+		dir->Mount(true);
 
-	// --
-	db.Init(dir);
+		// --
+		db.Init(dir);
+	}
 }
 
 
@@ -104,7 +107,10 @@ void EditorAssetDatabase::InitDb(EditorAssetDatabase& db, std::string const& pat
 //
 EditorAssetDatabase::~EditorAssetDatabase()
 {
-	delete m_Directory;
+	for (core::Directory* dir : m_Directories)
+	{
+		delete dir;
+	}
 
 	for (T_AssetList& cache : m_AssetCaches)
 	{
@@ -120,11 +126,31 @@ EditorAssetDatabase::~EditorAssetDatabase()
 //
 void EditorAssetDatabase::Init(core::Directory* const directory)
 {
-	m_Directory = directory;
-	ET_ASSERT(m_Directory != nullptr);
-	ET_ASSERT(m_Directory->IsMounted());
+	ET_ASSERT(directory != nullptr);
+	ET_ASSERT(directory->IsMounted());
+	m_Directories.push_back(directory);
 
-	RecursivePopulateAssets(m_Directory);
+	RecursivePopulateAssets(directory);
+}
+
+//-----------------------------------
+// EditorAssetDatabase::GetDirectory
+//
+// Get directory that the assets of a given package live in
+//
+core::Directory const* EditorAssetDatabase::GetDirectory(core::HashString const packageId) const
+{
+	return m_Directories[GetRootPathIdx(packageId)];
+}
+
+//-----------------------------------
+// EditorAssetDatabase::GetDirectory
+//
+// ^ 
+//
+core::Directory* EditorAssetDatabase::GetDirectory(core::HashString const packageId) 
+{
+	return m_Directories[GetRootPathIdx(packageId)];
 }
 
 //-----------------------------------------
@@ -150,6 +176,25 @@ EditorAssetDatabase::T_AssetList EditorAssetDatabase::GetAssetsInPackage(core::H
 	return outAssets;
 }
 
+//---------------------------------
+// EditorAssetDatabase::GetPackage
+//
+core::PackageDescriptor const* EditorAssetDatabase::GetPackage(core::HashString const packageId) const
+{
+	auto const foundIt = std::find_if(m_Packages.cbegin(), m_Packages.cend(), [packageId](core::PackageDescriptor const& desc)
+		{
+			return (desc.GetId() == packageId);
+		});
+
+	if (foundIt != m_Packages.cend())
+	{
+		return &(*foundIt);
+	}
+
+	ET_ERROR("Package '%s' couldn't be found", packageId.ToStringDbg());
+	return nullptr;
+}
+
 //---------------------------------------------
 // EditorAssetDatabase::GetAssetsMatchingQuery
 //
@@ -158,11 +203,11 @@ EditorAssetDatabase::T_AssetList EditorAssetDatabase::GetAssetsInPackage(core::H
 //  - if searchTerm isn't an empty string, only assets containing the search term will be returned
 //  - if filteredTypes isn't empty, only assets of types contained in filtered types are returned
 //
-//
 EditorAssetDatabase::T_AssetList EditorAssetDatabase::GetAssetsMatchingQuery(std::string const& path, 
 	bool const recursive, 
 	std::string const& searchTerm, 
-	std::vector<rttr::type> const& filteredTypes)
+	std::vector<rttr::type> const& filteredTypes,
+	core::Directory const* const baseDir)
 {
 	T_AssetList outAssets;
 
@@ -184,6 +229,14 @@ EditorAssetDatabase::T_AssetList EditorAssetDatabase::GetAssetsMatchingQuery(std
 		// every asset per cache
 		for (EditorAssetBase* const editorAsset : cache)
 		{
+			if (baseDir != nullptr)
+			{
+				if (!editorAsset->GetFile()->IsChildOf(baseDir))
+				{
+					continue;
+				}
+			}
+
 			core::I_Asset const* const asset = editorAsset->GetAsset();
 			if ((asset->GetPath().rfind(path, 0) == 0) && (recursive || (asset->GetPath().length() == path.length())))
 			{
@@ -358,11 +411,11 @@ void EditorAssetDatabase::PopulateAssetDatabase(core::AssetDatabase& db) const
 		else
 		{
 			// if both have the same package, ensure they agree on its details
-			ET_ASSERT(packageIt->GetPath() == desc.GetPath(),
+			ET_ASSERT(packageIt->GetOutPath() == desc.GetOutPath(),
 				"DBs disagree on paths for package '%s'! this: '%s' - other: '%s'",
 				desc.GetName().c_str(),
-				packageIt->GetPath().c_str(),
-				desc.GetPath().c_str());
+				packageIt->GetOutPath().c_str(),
+				desc.GetOutPath().c_str());
 		}
 	}
 
@@ -441,8 +494,9 @@ void EditorAssetDatabase::RegisterNewAsset(EditorAssetBase* const asset)
 		return;
 	}
 
+	// create the file
 	std::string const etacFn(core::FileUtil::RemoveExtension(asset->GetAsset()->GetPath() + asset->GetAsset()->GetName()) + "." + s_AssetContentFileExt);
-	core::File* const contentFile = new core::File(etacFn, m_Directory);
+	core::File* const contentFile = new core::File(etacFn, m_Directories[GetRootPathIdx(asset->GetAsset()->GetPackageId())]);
 	if (contentFile->Exists())
 	{
 		ET_ERROR("Failed to register new asset because asset content already existed! File: %s", contentFile->GetName());
@@ -471,6 +525,24 @@ void EditorAssetDatabase::RegisterNewAsset(EditorAssetBase* const asset)
 	cache.push_back(asset);
 
 	ET_LOG_I(ET_CTX_PIPELINE, "Added asset '%s' to '%s' cache!", asset->GetId().ToStringDbg(), EditorAssetDatabase::GetCacheType(cache).get_name().data());
+}
+
+//-------------------------------------
+// EditorAssetDatabase::GetRootPathIdx
+//
+size_t EditorAssetDatabase::GetRootPathIdx(core::HashString const packageId) const
+{
+	// which directory should the asset live in 
+	core::PackageDescriptor const* const pkgDesc = GetPackage(packageId);
+	ET_ASSERT(pkgDesc != nullptr);
+
+	auto const foundRootPathIt = std::find(m_RootPaths.cbegin(), m_RootPaths.cend(), pkgDesc->GetRootPath());
+	ET_ASSERT(foundRootPathIt != m_RootPaths.cend());
+
+	size_t const rootPathIdx = static_cast<size_t>(foundRootPathIt - m_RootPaths.cbegin());
+	ET_ASSERT(rootPathIdx < m_Directories.size());
+
+	return rootPathIdx;
 }
 
 //----------------------------------

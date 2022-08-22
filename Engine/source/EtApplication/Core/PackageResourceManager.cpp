@@ -57,7 +57,7 @@ void PackageResourceManager::Init()
 		}
 		else
 		{
-			RefPtr<core::FilePackage> const pkg = Create<core::FilePackage>(desc.GetPath() + desc.GetName() + core::FilePackage::s_PackageFileExtension);
+			RefPtr<core::FilePackage> const pkg = Create<core::FilePackage>(desc.GetOutPath() + desc.GetName() + core::FilePackage::s_PackageFileExtension);
 			m_Packages.emplace_back(desc.GetId(), pkg);
 		}
 	}

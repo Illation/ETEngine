@@ -96,7 +96,8 @@ void FileResourceManager::UnloadAsset(core::I_Asset* const asset)
 bool FileResourceManager::GetLoadData(core::I_Asset const* const asset, std::vector<uint8>& outData) const
 {
 	// figure out which directory we need to search in
-	core::Directory const* const searchDir = (IsEngineResource(asset) ? m_EngineDb.GetDirectory() : m_ProjectDb.GetDirectory());
+	core::Directory const* const searchDir = 
+		(IsEngineResource(asset) ? m_EngineDb.GetDirectory(asset->GetPackageId()) : m_ProjectDb.GetDirectory(asset->GetPackageId()));
 
 	// find the database file
 	core::Entry* const dbEntry = searchDir->GetMountedChild(asset->GetPath() + asset->GetName());

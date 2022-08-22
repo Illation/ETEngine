@@ -24,9 +24,9 @@ namespace gui {
 void GuiRenderer::Init()
 {
 	m_RmlGlobal = RmlGlobal::GetInstance(); // might initialize RML if this is the first GUI renderer
-	m_GenericShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostGenericUi.glsl"));
-	m_RmlSdfShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostRmlUiSdf.glsl"));
-	m_RmlBlitShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostRmlUiBlit.glsl"));
+	m_GenericShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("PostGenericUi.glsl"));
+	m_RmlSdfShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("PostRmlUiSdf.glsl"));
+	m_RmlBlitShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("PostRmlUiBlit.glsl"));
 	m_RmlBlit3DShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostRmlUiBlit3D.glsl"));
 }
 

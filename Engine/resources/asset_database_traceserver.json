@@ -1,18 +1,18 @@
 {
   "editor asset database": {
-    "root paths": [ "assets/" ],
+    "root paths": [ "assets_traceserver/" ],
     "packages": [
       {
         "name": "content1",
         "out path": "content/",
-        "root path": "assets/",
+        "root path": "assets_traceserver/",
         "is compiled": false,
         "is runtime": true
       },
       {
         "name": "default_compiled",
         "out path": "",
-        "root path": "assets/",
+        "root path": "assets_traceserver/",
         "is compiled": true,
         "is runtime": true
       }
