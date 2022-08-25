@@ -65,9 +65,18 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 
 	if (traceServerCount > 1u) // the first one is this process
 	{
+		ET_LOG_W(ET_CTX_TRACE, "Trace server is already running, closing instance.");
 		m_ReturnCode = E_ReturnCode::TraceServerAlreadyRunning;
 		return;
 	}
+
+	// init GUI
+	//----------
+	core::WindowSettings settings;
+	settings.m_Title = "E.T. Trace Server";
+	settings.m_Resolutions.emplace_back(1280, 720);
+	m_MainWindow = Create<app::GuiWindow>(settings, ToPtr(this));
+	m_MainWindow->SetGuiDocument(core::HashString("GUI/hello_world.rml"));
 
 	// Setup Socket
 	//--------------
@@ -142,7 +151,9 @@ void TraceServer::Run()
 	for (;;)
 	{
 		// we periodically check in even if there are no new events so we can remove stale clients
-		int32 const pollCount = core::network::I_Socket::Poll(m_PollDescriptors, TraceClient::s_SetupTimeout); 
+		WaitForEvents(TraceClient::s_SetupTimeout / 10);
+		int32 const pollCount = core::network::I_Socket::Poll(m_PollDescriptors, 0);
+		//int32 const pollCount = core::network::I_Socket::Poll(m_PollDescriptors, TraceClient::s_SetupTimeout); 
 		if (pollCount == -1)
 		{
 			m_ReturnCode = E_ReturnCode::ErrorDuringExecution;
@@ -205,6 +216,8 @@ void TraceServer::Run()
 				ReceiveData(client, timestampMs);
 			}
 		}
+
+		Draw();
 	}
 }
 

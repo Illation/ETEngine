@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
-#include <EtCore/linkerHelper.h>
 #include <EtCore/Platform/PlatformUtil.h>
 #include <EtCore/FileSystem/FileUtil.h>
+
+#include <EtGUI/linkerHelper.h>
 
 #include <EtTraceServer/TraceServer.h>
 #include <EtTraceServer/_generated/compiled_package.h>
@@ -22,7 +23,7 @@
 //
 int main(int argc, char *argv[])
 {
-	et::core::ForceLinking();
+	et::gui::ForceLinking();
 
 	// pass compiled data into core libraries so that core systems have access to it
 	et::core::FileUtil::SetCompiledData(GetCompiledData_compiled_package());

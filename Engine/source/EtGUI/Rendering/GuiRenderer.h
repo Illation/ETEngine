@@ -1,6 +1,8 @@
 #pragma once
 #include "ContextRenderTarget.h"
 
+#include <EtRHI/GraphicsTypes/Shader.h>
+
 #include <EtGUI/Context/Context.h>
 
 

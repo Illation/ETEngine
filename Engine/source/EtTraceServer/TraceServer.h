@@ -1,6 +1,9 @@
 #pragma once
 #include "TraceClient.h"
 
+#include <EtApplication/GuiApplication.h>
+#include <EtApplication/GuiWindow.h>
+
 
 namespace et { 
 namespace trace {
@@ -11,7 +14,7 @@ namespace trace {
 //
 // Main class for the trace server program. Essentially all the work can be done by calling Run
 //
-class TraceServer final
+class TraceServer final : public app::GuiApplication
 {
 	// definitions
 	//-------------
@@ -63,6 +66,9 @@ private:
 	// Clients
 	core::network::T_PollDescs m_PollDescriptors;
 	T_Clients m_Clients;
+
+	// UI
+	UniquePtr<app::GuiWindow> m_MainWindow;
 
 	// General
 	core::Time m_Time;

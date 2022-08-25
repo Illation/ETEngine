@@ -1,6 +1,12 @@
 #pragma once
 
 
+// fwd
+namespace et { namespace rhi {
+	class TextureData;
+} }
+
+
 namespace et {
 namespace gui {
 

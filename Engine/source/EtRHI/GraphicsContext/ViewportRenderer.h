@@ -1,4 +1,5 @@
 #pragma once
+#include "GraphicsTypes.h"
 
 
 namespace et {

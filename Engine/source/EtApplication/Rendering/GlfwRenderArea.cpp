@@ -85,8 +85,6 @@ void GlfwRenderArea::Initialize(rhi::RenderDeviceParams const& params, bool cons
 		ET_LOG_E(ET_CTX_APP, "Failed to create window with GLFW!");
 	}
 
-	glfwSetWindowUserPointer(m_Window.Get(), this);
-
 	// Check OpenGL properties and create open gl function pointers
 	//--------------------------------------------------------------
 	MakeCurrent();

@@ -143,7 +143,7 @@ function(copyToolCommand TARGET dependency)
 	#-----------------------------------------------------------
 	message(STATUS "Adding target: ${_target_name}")
 	add_custom_target(${_target_name} 
-		DEPENDS ${deps} ${dependency} 
+		DEPENDS ${dependency} 
 		
 		COMMAND ${CMAKE_COMMAND} -E echo "copy_directory ${_toolDir} ${_copyDir}"
 		COMMAND ${CMAKE_COMMAND} -E copy_directory ${_toolDir} ${_copyDir} || (exit 0) # return true either way in case the tool is running during copy attempt
@@ -181,6 +181,7 @@ function(cookToolData TARGET database gen_dir)
 	# compiled source file names
 	set(resource_name "compiled_package")
 	set(target_files "${gen_dir}${resource_name}.h" "${gen_dir}${resource_name}.cpp")
+	set(fake_target_file "${gen_dir}/_fake_file") # this file is not actually generated but lets us force cooking resources with another target
 
 	set(res_file_engine "${ENGINE_DIRECTORY_ABS}/resources/asset_database_tools.json")
 
@@ -201,18 +202,11 @@ function(cookToolData TARGET database gen_dir)
 	# first compiled resources
 
 	add_custom_command(
-		OUTPUT ${target_files}
+		OUTPUT ${target_files} ${fake_target_file}
 		DEPENDS ${deps} ${_copied_tool_cooker}
-
-		COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file_engine} - ${database} ; Generated Directory: ${gen_dir}"
-		COMMAND ${CMAKE_COMMAND} -E echo ""
-		COMMAND ${CMAKE_COMMAND} -E echo "${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${gen_dir} -C ${resource_name} --use_pch"
 		COMMAND ${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${gen_dir} -C ${resource_name} --use_pch
-		COMMAND ${CMAKE_COMMAND} -E echo ""
-		COMMAND ${CMAKE_COMMAND} -E echo ""
-		
-		COMMENT "Generating resource source file"
-
+		COMMAND ${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${_outDir}/
+		COMMENT "Generating tool resource source files and packages: ${res_file_engine} - ${database}; output: ${gen_dir} - ${_outDir}/"
 		VERBATIM
 	)
 
@@ -221,29 +215,21 @@ function(cookToolData TARGET database gen_dir)
 		set_source_files_properties(${_abs_target} PROPERTIES GENERATED TRUE )
 	endforeach()
 
-	# then packaged resources
-
 	set(_tool_cook_target_name)
 	getToolCookTargetName(${TARGET} _tool_cook_target_name)
 
 	message(STATUS "Adding target: ${_tool_cook_target_name}")
-	add_custom_target(
-		${_tool_cook_target_name}
-		DEPENDS ${target_files}
-
-		COMMAND ${CMAKE_COMMAND} -E echo "Cooking resource packages - Source ${res_file_engine} - ${database} ; Out directory: ${_outDir}"
-		COMMAND ${CMAKE_COMMAND} -E echo ""
-		COMMAND ${CMAKE_COMMAND} -E echo "${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${_outDir}/"
-		COMMAND ${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${_outDir}/
-		COMMAND ${CMAKE_COMMAND} -E echo ""
-		COMMAND ${CMAKE_COMMAND} -E echo ""
-		
-		COMMENT "Cooking tool resource files"
-
-		VERBATIM
-	)
+	add_custom_target(${_tool_cook_target_name} DEPENDS ${target_files} )
 
 	assignIdeFolder(${_tool_cook_target_name} Engine/Build)
+
+	# a command that lets us force cooking the tools resources
+	
+	set(force_target_name "force-cook-tool-data-${TARGET}" )
+	message(STATUS "Adding target: ${force_target_name}")
+	add_custom_target(${force_target_name} DEPENDS ${fake_target_file} )
+
+	assignIdeFolder(${force_target_name} Engine/Build)
 
 endfunction(cookToolData)
 
