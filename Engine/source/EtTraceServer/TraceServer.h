@@ -1,6 +1,8 @@
 #pragma once
 #include "TraceClient.h"
 
+#include <EtGUI/Context/DataModel.h>
+
 #include <EtApplication/GuiApplication.h>
 #include <EtApplication/GuiWindow.h>
 
@@ -19,6 +21,17 @@ class TraceServer final : public app::GuiApplication
 	// definitions
 	//-------------
 	typedef std::vector<TraceClient> T_Clients;
+
+	//----------
+	// GuiData
+	//
+	// Data model for the hello world screen - this is to test the UI and will be replaced
+	//
+	struct GuiData : public gui::I_DataModel
+	{
+		bool m_ShowText = true;
+		std::string m_Animal = "dog";
+	};
 
 public:
 	enum class E_ReturnCode

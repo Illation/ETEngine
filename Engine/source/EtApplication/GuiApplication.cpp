@@ -4,6 +4,8 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include <EtCore/UpdateCycle/PerformanceInfo.h>
+
 #include <EtGUI/Context/RmlGlobal.h>
 
 #include <EtApplication/Core/PackageResourceManager.h>
@@ -21,13 +23,21 @@ namespace app {
 
 
 //-------------------------------
-// GuiApplication::WaitForEvents
+// GuiApplication::ReceiveEvents
 //
-// Sleep until there are any events up until a timout, in milliseconds, or infinitely if timeout is set to 0
+// Sleep until there are any events up until a timout, in milliseconds, or infinitely if timeout is set to -1
 //
-void GuiApplication::WaitForEvents(uint64 const timeout)
+void GuiApplication::ReceiveEvents(int64 const timeout)
 {
-	if (timeout == 0u)
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	core::PerformanceInfo::GetInstance()->Update();
+#endif
+
+	if (timeout == 0)
+	{
+		glfwPollEvents();
+	}
+	else if (timeout < 0)
 	{
 		glfwWaitEvents();
 	}
@@ -35,6 +45,12 @@ void GuiApplication::WaitForEvents(uint64 const timeout)
 	{
 		glfwWaitEventsTimeout(static_cast<double>(timeout) / 1000.0);
 	}
+
+	m_Context.time->Update();
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+	core::PerformanceInfo::GetInstance()->StartFrameTimer();
+#endif
 }
 
 //----------------------
@@ -63,6 +79,13 @@ void GuiApplication::RegisterWindow(Ptr<GuiWindow> const window)
 		gui::RmlGlobal::GetInstance()->SetClipboardController(window);
 
 		core::ResourceManager::SetInstance(std::move(Create<app::PackageResourceManager>()));
+
+		core::ContextManager::GetInstance()->SetActiveContext(&m_Context);
+		m_Context.time->Start();
+
+#if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
+		core::PerformanceInfo::GetInstance()->StartFrameTimer();
+#endif
 	}
 
 	m_Windows.push_back(window);

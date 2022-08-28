@@ -12,6 +12,8 @@
 #include <EtCore/Platform/PlatformUtil.h>
 #include <EtCore/Util/CommandLine.h>
 
+#include <EtGUI/Context/RmlGlobal.h>
+
 
 namespace et {
 namespace trace {
@@ -72,6 +74,16 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 
 	// init GUI
 	//----------
+
+	gui::RmlGlobal::GetDataModelFactory().RegisterInstancer("animals", gui::DataModelFactory::T_InstanceFn(
+		[](Rml::DataModelConstructor modelConstructor) -> RefPtr<gui::I_DataModel>
+		{
+			RefPtr<GuiData> ret = Create<GuiData>();
+			modelConstructor.Bind("show_text", &ret->m_ShowText);
+			modelConstructor.Bind("animal", &ret->m_Animal);
+			return std::move(ret);
+		}));
+
 	core::WindowSettings settings;
 	settings.m_Title = "E.T. Trace Server";
 	settings.m_Resolutions.emplace_back(1280, 720);
@@ -151,7 +163,7 @@ void TraceServer::Run()
 	for (;;)
 	{
 		// we periodically check in even if there are no new events so we can remove stale clients
-		WaitForEvents(TraceClient::s_SetupTimeout / 10);
+		ReceiveEvents(0); // #todo: it would be nice to be able to block here... RmlUI needs periodic updates but that doesn't mean we need to rerender it
 		int32 const pollCount = core::network::I_Socket::Poll(m_PollDescriptors, 0);
 		//int32 const pollCount = core::network::I_Socket::Poll(m_PollDescriptors, TraceClient::s_SetupTimeout); 
 		if (pollCount == -1)

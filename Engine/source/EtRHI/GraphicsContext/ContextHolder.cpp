@@ -1,9 +1,17 @@
 #include "stdafx.h"
 #include "ContextHolder.h"
 
+#include <EtCore/Util/CommandLine.h>
+
 
 namespace et {
 namespace rhi {
+
+
+#if ET_CT_IS_ENABLED(ET_CT_RHI_SUPPORT_DEBUG)
+bool g_RhiDebug = false;
+ET_REGISTER_COMMANDLINE_DBG(rhi_debug, g_RhiDebug, "create a debug context for the RHI");
+#endif
 
 
 //================
@@ -55,8 +63,8 @@ void ContextHolder::CreateMainRenderContext(Ptr<RenderWindow> const window)
 	params.m_DepthBuffer = true;
 	params.m_StencilBuffer = false;
 
-#if ET_CT_IS_ENABLED(ET_CT_RHI_DEBUG)
-	params.m_UseDebugInfo = true;
+#if ET_CT_IS_ENABLED(ET_CT_RHI_SUPPORT_DEBUG)
+	params.m_UseDebugInfo = g_RhiDebug;
 #else
 	params.m_UseDebugInfo = false;
 #endif

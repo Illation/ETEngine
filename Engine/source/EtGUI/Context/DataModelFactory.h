@@ -33,7 +33,7 @@ private:
 	// functionality
 	//---------------
 public:
-	RefPtr<I_DataModel> CreateModel(Context& context, core::HashString const modelId) const;
+	RefPtr<I_DataModel> CreateModel(Rml::Context& context, core::HashString const modelId) const;
 	void GetModelName(core::HashString const modelId, std::string& outModelName) const;
 
 	void RegisterInstancer(std::string const& modelName, T_InstanceFn const& instanceFn);

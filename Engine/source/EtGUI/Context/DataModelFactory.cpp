@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "DataModelFactory.h"
 
+#include <RmlUi/Core/Context.h>
+
 
 namespace et {
 namespace gui {
@@ -16,7 +18,7 @@ namespace gui {
 //
 // Instanciate a data model for a context
 //
-RefPtr<I_DataModel> DataModelFactory::CreateModel(Context& context, core::HashString const modelId) const
+RefPtr<I_DataModel> DataModelFactory::CreateModel(Rml::Context& context, core::HashString const modelId) const
 {
 	T_Instancers::const_iterator const foundInstancerIt = m_Instancers.find(modelId);
 	ET_ASSERT(foundInstancerIt != m_Instancers.cend(), "No data model instancer '%s' found", modelId.ToStringDbg());

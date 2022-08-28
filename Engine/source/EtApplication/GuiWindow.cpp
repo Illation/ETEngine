@@ -30,8 +30,12 @@ GuiWindow::GuiWindow(core::WindowSettings const& settings, Ptr<GuiApplication> c
 
 	InitEvents(ToPtr(&m_RenderWindow.GetArea()));
 
+	m_Viewport.SetInputProvider(ToPtr(&GetInputProvider()));
+
 	m_Viewport.SynchDimensions();
 	m_Viewport.Redraw();
+
+	m_GuiRenderer.Init(ToPtr(&GetInputProvider()));
 }
 
 //------------------

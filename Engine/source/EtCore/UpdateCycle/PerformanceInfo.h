@@ -21,9 +21,6 @@ public:
 	int32 GetRegularFPS() const { return m_RegularFPS; }
 	float GetFrameMS() const { return m_FrameMS; }
 
-private:
-	friend class TickManager;
-
 	// These two functions should only be called once per cycle
 	void Update();
 	void StartFrameTimer();

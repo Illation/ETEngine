@@ -418,7 +418,12 @@ void GuiExtension::DestroyContext(gui::T_ContextId const id)
 		}
 		else
 		{
-			found->second.m_Documents.erase(ctxData.m_Context);
+			if (!found->second.m_Documents[ctxData.m_Context].IsEmpty())
+			{
+				found->second.m_Context.UnloadDocument(found->second.m_Documents[ctxData.m_Context]);
+			}
+
+			found->second.m_Documents.erase(ctxData.m_Context); 
 		}
 	}
 	else
@@ -520,22 +525,6 @@ void GuiExtension::SetDepthTestEnabled(gui::T_ContextId const id, bool const dep
 	m_WorldContexts[ctxData.m_Context].m_IsDepthEnabled = depthEnabled;
 }
 
-//------------------------------------
-// GuiExtension::CreateDataModel
-//
-RefPtr<gui::I_DataModel> GuiExtension::InstantiateDataModel(gui::T_ContextId const id, core::HashString const modelId)
-{
-	return std::move(gui::RmlGlobal::GetDataModelFactory().CreateModel(GetContext(id), modelId));
-}
-
-//------------------------------------
-// GuiExtension::DestroyDataModel
-//
-bool GuiExtension::DestroyDataModel(gui::T_ContextId const id, std::string const& modelName)
-{
-	return GetContext(id).DestroyDataModel(modelName);
-}
-
 //-------------------------------------
 // GuiExtension::SetLoadedDocument
 //
@@ -579,7 +568,7 @@ void GuiExtension::SetLoadedDocument(gui::T_ContextId const id, core::HashString
 }
 
 //---------------------------------
-// GuiExtension::GetContexts
+// GuiExtension::GetContext
 //
 // All contexts assigned to a viewport
 //
@@ -595,7 +584,7 @@ gui::Context* GuiExtension::GetContext(rhi::Viewport const* const vp)
 }
 
 //---------------------------------
-// GuiExtension::GetContexts
+// GuiExtension::GetContext
 //
 gui::Context* GuiExtension::GetContext(rhi::Viewport const* const vp, gui::ContextRenderTarget*& renderTarget)
 {
@@ -611,7 +600,7 @@ gui::Context* GuiExtension::GetContext(rhi::Viewport const* const vp, gui::Conte
 }
 
 //----------------------------------
-// GuiExtension::GetContext
+// GuiExtension::GetDocument
 //
 Rml::ElementDocument* GuiExtension::GetDocument(gui::T_ContextId const id)
 {
@@ -626,6 +615,25 @@ Rml::ElementDocument* GuiExtension::GetDocument(gui::T_ContextId const id)
 	{
 		gui::Context& context = m_WorldContexts[ctxData.m_Context].m_Context;
 		return context.GetDocument(context.GetDocumentId(0u));
+	}
+}
+
+//----------------------------------
+// GuiExtension::GetDataModel
+//
+WeakPtr<gui::I_DataModel> GuiExtension::GetDataModel(gui::T_ContextId const id)
+{
+	ContextData& ctxData = m_Contexts[id];
+	if (ctxData.m_IsViewportContext)
+	{
+		T_ViewportContexts::iterator const found = m_ViewportContexts.find(ctxData.m_Viewport);
+		ET_ASSERT(found != m_ViewportContexts.cend());
+		return found->second.m_Context.GetDataModel(found->second.m_Documents[ctxData.m_Context]);
+	}
+	else
+	{
+		gui::Context& context = m_WorldContexts[ctxData.m_Context].m_Context;
+		return context.GetDataModel(context.GetDocumentId(0u));
 	}
 }
 

@@ -69,22 +69,6 @@ void Context::SetDimensions(ivec2 const dimensions)
 	m_Context->SetDimensions(Rml::Vector2i(dimensions.x, dimensions.y));
 }
 
-//--------------------------
-// Context::CreateDataModel
-//
-Rml::DataModelConstructor Context::CreateDataModel(std::string const& modelName)
-{
-	return m_Context->CreateDataModel(modelName);
-}
-
-//---------------------------
-// Context::DestroyDataModel
-//
-bool Context::DestroyDataModel(std::string const& modelName)
-{
-	return m_Context->RemoveDataModel(modelName);
-}
-
 //-----------------------
 // Context::LoadDocument
 //
@@ -96,10 +80,16 @@ void Context::LoadDocument(core::HashString const documentId)
 	AssetPtr<GuiDocument> guiDocument = core::ResourceManager::Instance()->GetAssetData<GuiDocument>(documentId); 
 	ET_ASSERT(guiDocument != nullptr);
 	
-	core::I_Asset const* const asset = guiDocument.GetAsset();
+	GuiDocumentAsset const* const asset = static_cast<GuiDocumentAsset const*>(guiDocument.GetAsset());
+
+	RefPtr<I_DataModel> const dataModel = 
+		asset->m_DataModelId.IsEmpty() ? nullptr : RmlGlobal::GetInstance()->GetDataModelFactory().CreateModel(*m_Context, asset->m_DataModelId);
 
 	Rml::String const docText(guiDocument->GetText(), guiDocument->GetLength());
-	m_Documents.emplace_back(documentId, ToPtr(m_Context->LoadDocumentFromMemory(docText, asset->GetPath() + asset->GetName())));
+	m_Documents.emplace_back(documentId, 
+		ToPtr(m_Context->LoadDocumentFromMemory(docText, asset->GetPath() + asset->GetName())), 
+		dataModel, 
+		asset->m_DataModelId);
 	m_Documents.back().m_Document->Show();
 	m_ActiveDocuments++;
 
@@ -114,6 +104,13 @@ void Context::UnloadDocument(core::HashString const documentId)
 	T_Documents::iterator const foundIt = GetDoc(documentId);
 	ET_ASSERT(foundIt != m_Documents.cend());
 
+	if (foundIt->m_DataModel != nullptr)
+	{
+		std::string dataModelName;
+		RmlGlobal::GetInstance()->GetDataModelFactory().GetModelName(foundIt->m_DataModelId, dataModelName);
+		m_Context->RemoveDataModel(dataModelName);
+	}
+
 	foundIt->m_Document->Close();
 	if (foundIt->m_IsActive)
 	{
@@ -123,8 +120,8 @@ void Context::UnloadDocument(core::HashString const documentId)
 	core::RemoveSwap(m_Documents, foundIt);
 }
 
-//-------------------------
-// Context::UnloadDocument
+//----------------------------
+// Context::SetDocumentActive
 //
 void Context::SetDocumentActive(core::HashString const id, bool const isActive)
 {
@@ -145,16 +142,16 @@ void Context::SetDocumentActive(core::HashString const id, bool const isActive)
 	}
 }
 
-//-------------------------
-// Context::UnloadDocument
+//-----------------
+// Context::Update
 //
 void Context::Update()
 {
 	m_Context->Update();
 }
 
-//-------------------------
-// Context::UnloadDocument
+//-----------------
+// Context::Render
 //
 void Context::Render()
 {
@@ -248,6 +245,17 @@ Rml::ElementDocument* Context::GetDocument(core::HashString const id)
 	auto const found = GetDoc(id);
 	ET_ASSERT(found != m_Documents.cend());
 	return found->m_Document.Get();
+}
+
+//-------------------------------------
+// Context::GetDataModel
+//
+WeakPtr<I_DataModel> Context::GetDataModel(core::HashString const documentId)
+{
+	T_Documents::iterator const foundIt = GetDoc(documentId);
+	ET_ASSERT(foundIt != m_Documents.cend());
+
+	return foundIt->m_DataModel;
 }
 
 //-------------------------------------

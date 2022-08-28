@@ -142,9 +142,6 @@ public:
 	void SetContextColor(gui::T_ContextId const id, vec4 const& color);
 	void SetDepthTestEnabled(gui::T_ContextId const id, bool const depthEnabled);
 
-	RefPtr<gui::I_DataModel> InstantiateDataModel(gui::T_ContextId const id, core::HashString const modelId);
-	bool DestroyDataModel(gui::T_ContextId const id, std::string const& modelName);
-
 	void SetLoadedDocument(gui::T_ContextId const id, core::HashString const documentId);
 
 	void SetInputEnabled(bool const enabled) { m_IsInputEnabled = enabled; }
@@ -156,6 +153,7 @@ public:
 	T_WorldContexts& GetWorldContexts() { return m_WorldContexts; }
 
 	Rml::ElementDocument* GetDocument(gui::T_ContextId const id);
+	WeakPtr<gui::I_DataModel> GetDataModel(gui::T_ContextId const id);
 
 	render::Scene const* GetRenderScene() const { return m_RenderScene.Get(); }
 

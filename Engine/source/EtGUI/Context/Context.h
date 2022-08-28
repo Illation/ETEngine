@@ -7,6 +7,8 @@
 
 #include <EtRHI/GraphicsContext/ViewportEvents.h>
 
+#include "DataModel.h"
+
 
 // fwd
 namespace Rml {
@@ -32,10 +34,19 @@ class Context
 {
 	struct Document final
 	{
-		Document(core::HashString const id, Ptr<Rml::ElementDocument> const doc) : m_Id(id), m_Document(doc) {}
+		Document(core::HashString const id, Ptr<Rml::ElementDocument> const doc, RefPtr<I_DataModel> const dataModel, core::HashString const modelId) 
+			: m_Id(id), m_Document(doc), m_DataModel(dataModel), m_DataModelId(modelId) {}
+
+		// Data
+		///////
 
 		core::HashString m_Id;
+
 		Ptr<Rml::ElementDocument> m_Document;
+
+		RefPtr<I_DataModel> m_DataModel;
+		core::HashString m_DataModelId;
+
 		bool m_IsActive = true;
 	};
 
@@ -53,9 +64,6 @@ public:
 	// functionality
 	//---------------
 	void SetDimensions(ivec2 const dimensions);
-
-	Rml::DataModelConstructor CreateDataModel(std::string const& modelName);
-	bool DestroyDataModel(std::string const& modelName);
 
 	void LoadDocument(core::HashString const documentId);
 	void UnloadDocument(core::HashString const documentId);
@@ -82,6 +90,7 @@ public:
 	Rml::ElementDocument* GetDocument(core::HashString const id);
 	size_t GetDocumentCount() const { return m_Documents.size(); }
 	core::HashString GetDocumentId(size_t const docIdx) const { return m_Documents[docIdx].m_Id; }
+	WeakPtr<I_DataModel> GetDataModel(core::HashString const documentId);
 
 	// utility
 	//---------

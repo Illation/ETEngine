@@ -11,6 +11,13 @@
 #endif GL_DEVICE_NS
 
 
+#ifdef ET_SHIPPING
+#	define ET_CT_RHI_SUPPORT_VERBOSE ET_DISABLED
+#else
+#	define ET_CT_RHI_SUPPORT_VERBOSE ET_ENABLED
+#endif // ET_SHIPPING
+
+
 namespace et {
 
 	ET_DEFINE_TRACE_CTX(ET_CTX_OPENGL);
@@ -165,6 +172,9 @@ public:
 	void BindVertexArray(T_ArrayLoc const vertexArray) override;
 	void BindBuffer(E_BufferType const target, T_BufferLoc const buffer) override;
 
+	void DeleteVertexArray(T_ArrayLoc& loc) override;
+	void DeleteBuffer(T_BufferLoc& loc) override;
+
 	void SetLineWidth(float const lineWidth) override;
 
 	T_FbLoc GetActiveFramebuffer() override;
@@ -187,9 +197,6 @@ public:
 
 	T_ArrayLoc CreateVertexArray() const override;
 	T_BufferLoc CreateBuffer() const override;
-
-	void DeleteVertexArray(T_ArrayLoc& loc) const override;
-	void DeleteBuffer(T_BufferLoc& loc) const override;
 
 	void SetBufferData(E_BufferType const target, 
 		int64 const size, 
@@ -382,7 +389,7 @@ private:
 	TextureUnitCache m_TextureUnits;
 
 	T_ArrayLoc m_VertexArray = 0;
-	std::map<E_BufferType, T_BufferLoc> m_BufferTargets;
+	std::vector<T_BufferLoc> m_BufferTargets; // one per buffer type
 
 	float m_LineWidth = 1.f;
 };

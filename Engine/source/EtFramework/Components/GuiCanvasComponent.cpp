@@ -34,7 +34,6 @@ RTTR_REGISTRATION
 		.property("render mode", &GuiCanvasComponent::m_RenderMode)
 		.property("is active", &GuiCanvasComponent::m_IsActive)
 		.property("GUI document asset", &GuiCanvasComponent::m_GuiDocumentId)
-		.property("data model", &GuiCanvasComponent::m_DataModelId)
 		.property("camera", &GuiCanvasComponent::m_Camera)
 		.property("dimensions", &GuiCanvasComponent::m_Dimensions)
 		.property("color", &GuiCanvasComponent::m_Color)
@@ -52,7 +51,6 @@ DEFINE_FORCED_LINKING(GuiCanvasComponentLinkEnforcer)
 //
 GuiCanvasComponent::GuiCanvasComponent(E_RenderMode const renderMode, 
 	core::HashString const guiDocId,
-	core::HashString const dataModelId,
 	ivec2 const dimensions,
 	vec4 const& color,
 	vec2 const scale,
@@ -60,7 +58,6 @@ GuiCanvasComponent::GuiCanvasComponent(E_RenderMode const renderMode,
 )
 	: m_RenderMode(renderMode)
 	, m_GuiDocumentId(guiDocId)
-	, m_DataModelId(dataModelId)
 	, m_Dimensions(dimensions)
 	, m_Color(color)
 	, m_IsActive(isActive)
@@ -80,12 +77,8 @@ void GuiCanvasComponent::OnComponentAdded(EcsController& controller, GuiCanvasCo
 		GuiExtension& guiExt = *UnifiedScene::Instance().GetGuiExtension();
 
 		component.m_Id = guiExt.CreateContext(controller.GetComponent<TransformComponent>(entity).GetNodeId(), component.m_Dimensions);
-		if (!component.m_DataModelId.IsEmpty())
-		{
-			component.m_DataModel = std::move(guiExt.InstantiateDataModel(component.m_Id, component.m_DataModelId));
-		}
-
 		guiExt.SetLoadedDocument(component.m_Id, component.m_GuiDocumentId);
+		component.m_DataModel = guiExt.GetDataModel(component.m_Id);
 		guiExt.SetContextActive(component.m_Id, component.m_IsActive);
 		guiExt.SetContextColor(component.m_Id, component.m_Color);
 		guiExt.SetDepthTestEnabled(component.m_Id, component.m_EnableDepthTest);
@@ -112,13 +105,6 @@ void GuiCanvasComponent::OnComponentRemoved(EcsController& controller, GuiCanvas
 	if (component.m_Id != gui::INVALID_CONTEXT_ID)
 	{
 		GuiExtension& guiExt = *UnifiedScene::Instance().GetGuiExtension();
-		if (!component.m_DataModelId.IsEmpty())
-		{
-			std::string modelName;
-			gui::RmlGlobal::GetDataModelFactory().GetModelName(component.m_DataModelId, modelName);
-			guiExt.DestroyDataModel(component.m_Id, modelName);
-		}
-
 		guiExt.DestroyContext(component.m_Id);
 	}
 }
@@ -243,12 +229,8 @@ void GuiCanvasComponent::InitForScreenSpace(EcsController const& ecs)
 		GuiExtension& guiExt = *UnifiedScene::Instance().GetGuiExtension();
 
 		m_Id = guiExt.CreateContext(camera.GetViewport());
-		if (!m_DataModelId.IsEmpty())
-		{
-			m_DataModel = std::move(guiExt.InstantiateDataModel(m_Id, m_DataModelId));
-		}
-
 		guiExt.SetLoadedDocument(m_Id, m_GuiDocumentId);
+		m_DataModel = guiExt.GetDataModel(m_Id);
 		guiExt.SetContextActive(m_Id, m_IsActive);
 	}
 }

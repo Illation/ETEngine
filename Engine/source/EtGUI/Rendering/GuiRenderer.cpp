@@ -27,7 +27,7 @@ void GuiRenderer::Init()
 	m_GenericShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("PostGenericUi.glsl"));
 	m_RmlSdfShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("PostRmlUiSdf.glsl"));
 	m_RmlBlitShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("PostRmlUiBlit.glsl"));
-	m_RmlBlit3DShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostRmlUiBlit3D.glsl"));
+	m_RmlBlit3DShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/PostRmlUiBlit3D.glsl"), false);
 }
 
 //----------------------------------
@@ -93,6 +93,8 @@ void GuiRenderer::RenderWorldContext(rhi::T_FbLoc const targetFb,
 	bool const enableDepth,
 	rhi::E_PolygonMode const polyMode)
 {
+	ET_ASSERT(m_RmlBlit3DShader != nullptr, "World context rendering is not supported because the 3D blit shader wasn't loaded");
+
 	if (!context.HasActiveDocuments())
 	{
 		return;

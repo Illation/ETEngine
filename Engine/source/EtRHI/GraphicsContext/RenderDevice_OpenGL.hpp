@@ -1,4 +1,5 @@
 #include <EtCore/UpdateCycle/PerformanceInfo.h>
+#include <EtCore/Util/CommandLine.h>
 
 #include <EtRHI/GraphicsTypes/Shader.h>
 #include <EtRHI/GraphicsTypes/TextureData.h>
@@ -12,6 +13,12 @@ namespace et {
 	ET_REGISTER_TRACE_CTX(ET_CTX_OPENGL);
 
 namespace rhi {
+
+
+#if ET_CT_IS_ENABLED(ET_CT_RHI_SUPPORT_VERBOSE)
+bool g_RhiVerbose = false;
+ET_REGISTER_COMMANDLINE_DBG(rhi_verbose, g_RhiVerbose, "make the RHI print verbose debug information");
+#endif
 
 
 //======================
@@ -768,12 +775,7 @@ void GL_DEVICE_CLASSNAME::Initialize(ivec2 const dimensions)
 
 	glGetIntegerv(GL_MAX_DRAW_BUFFERS, &m_MaxDrawBuffers);
 
-	m_BufferTargets =
-	{
-		{ E_BufferType::Vertex, 0 },
-		{ E_BufferType::Index, 0 },
-		{ E_BufferType::Uniform, 0 }
-	};
+	m_BufferTargets.resize(static_cast<size_t>(E_BufferType::COUNT), 0u);
 
 	// polygon modes
 	//***************
@@ -788,9 +790,11 @@ void GL_DEVICE_CLASSNAME::Initialize(ivec2 const dimensions)
 	//***********
 
 	// potentially hook up opengl to the logger
-#if ET_CT_IS_ENABLED(ET_CT_RHI_VERBOSE)
+#if ET_CT_IS_ENABLED(ET_CT_RHI_SUPPORT_VERBOSE)
 
-	auto glLogCallback = [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+	if (g_RhiVerbose)
+	{
+		auto glLogCallback = [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 		{
 			ET_UNUSED(source);
 			ET_UNUSED(id);
@@ -819,10 +823,11 @@ void GL_DEVICE_CLASSNAME::Initialize(ivec2 const dimensions)
 			ET_TRACE(ET_CTX_OPENGL, level, false, message);
 		};
 
-	glEnable(GL_DEBUG_OUTPUT);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-	glDebugMessageCallback(glLogCallback, nullptr);
-	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
+		glEnable(GL_DEBUG_OUTPUT);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		glDebugMessageCallback(glLogCallback, nullptr);
+		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
+	}
 
 #endif
 
@@ -1244,7 +1249,7 @@ void GL_DEVICE_CLASSNAME::BindVertexArray(T_ArrayLoc const vertexArray)
 
 		//Aparrently binding a new vertex array unbinds the old element array buffer
 		//Coincedentially it doesn't seem to happen with array buffers
-		m_BufferTargets[E_BufferType::Index] = 0;
+		m_BufferTargets[static_cast<size_t>(E_BufferType::Index)] = 0;
 	}
 }
 
@@ -1255,11 +1260,48 @@ void GL_DEVICE_CLASSNAME::BindVertexArray(T_ArrayLoc const vertexArray)
 //
 void GL_DEVICE_CLASSNAME::BindBuffer(E_BufferType const target, T_BufferLoc const buffer)
 {
-	if (m_BufferTargets[target] != buffer)
+	if (m_BufferTargets[static_cast<size_t>(target)] != buffer)
 	{
-		m_BufferTargets[target] = buffer;
+		m_BufferTargets[static_cast<size_t>(target)] = buffer;
 		glBindBuffer(GL_DEVICE_NS::ConvBufferType(target), buffer);
 	}
+}
+
+//---------------------------------
+// GlContext::DeleteVertexArray
+//
+// Delete a vertex array
+//
+void GL_DEVICE_CLASSNAME::DeleteVertexArray(T_ArrayLoc& loc)
+{
+	if (m_VertexArray == loc)
+	{
+		m_VertexArray = 0u;
+		for (size_t bufferTypeIdx = 0u; bufferTypeIdx < m_BufferTargets.size(); ++bufferTypeIdx)
+		{
+			m_BufferTargets[bufferTypeIdx] = 0u;
+		}
+	}
+
+	glDeleteVertexArrays(1, &loc);
+}
+
+//---------------------------------
+// GlContext::DeleteBuffer
+//
+// Delete a buffer
+//
+void GL_DEVICE_CLASSNAME::DeleteBuffer(T_BufferLoc& loc) 
+{
+	for (size_t bufferTypeIdx = 0u; bufferTypeIdx < m_BufferTargets.size(); ++bufferTypeIdx)
+	{
+		if (m_BufferTargets[bufferTypeIdx] == loc)
+		{
+			m_BufferTargets[bufferTypeIdx] = 0u;
+		}
+	}
+
+	glDeleteBuffers(1, &loc);
 }
 
 //---------------------------------
@@ -1401,26 +1443,6 @@ T_BufferLoc GL_DEVICE_CLASSNAME::CreateBuffer() const
 	T_BufferLoc ret;
 	glGenBuffers(1, &ret);
 	return ret;
-}
-
-//---------------------------------
-// GlContext::DeleteVertexArray
-//
-// Delete a vertex array
-//
-void GL_DEVICE_CLASSNAME::DeleteVertexArray(T_ArrayLoc& loc) const
-{
-	glDeleteVertexArrays(1, &loc);
-}
-
-//---------------------------------
-// GlContext::DeleteBuffer
-//
-// Delete a buffer
-//
-void GL_DEVICE_CLASSNAME::DeleteBuffer(T_BufferLoc& loc) const
-{
-	glDeleteBuffers(1, &loc);
 }
 
 //---------------------------------

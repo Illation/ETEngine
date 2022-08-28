@@ -9,7 +9,8 @@
           "GUI/window.rcss",
           "GUI/rml.rcss",
           "Fonts/NotoEmoji-Regular.ttf"
-        ]
+        ],
+        "data model": "animals"
       }
     },
     "metadata": null,

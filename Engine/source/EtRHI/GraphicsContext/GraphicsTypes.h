@@ -144,9 +144,11 @@ enum E_ClearFlag : T_ClearFlags
 //
 enum class E_BufferType : uint8
 {
-	Vertex,
+	Vertex = 0u,
 	Index,
-	Uniform
+	Uniform,
+
+	COUNT
 };
 
 //---------------------------------

@@ -1,4 +1,5 @@
 #pragma once
+#include <EtCore/UpdateCycle/Context.h>
 
 
 namespace et {
@@ -22,7 +23,7 @@ public:
 
 	// functionality
 	//---------------
-	void WaitForEvents(uint64 const timeout);
+	void ReceiveEvents(int64 const timeout);
 	void Draw();
 
 	void RegisterWindow(Ptr<GuiWindow> const window);
@@ -34,6 +35,8 @@ public:
 
 private:
 	std::vector<Ptr<GuiWindow>> m_Windows;
+
+	core::BaseContext m_Context;
 };
 
 

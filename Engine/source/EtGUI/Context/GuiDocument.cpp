@@ -24,6 +24,7 @@ RTTR_REGISTRATION
 	END_REGISTER_CLASS(GuiDocument);
 
 	BEGIN_REGISTER_CLASS(GuiDocumentAsset, "gui document asset")
+		.property("data model", &GuiDocumentAsset::m_DataModelId)
 	END_REGISTER_CLASS_POLYMORPHIC(GuiDocumentAsset, core::I_Asset);
 }
 DEFINE_FORCED_LINKING(GuiDocumentAsset) // force the asset class to be linked as it is only used in reflection

@@ -332,7 +332,6 @@
               "render mode": "World Space",
               "is active": true,
               "GUI document asset": "GUI/hello_world.rml",
-              "data model": "animals",
               "camera": {
                 "id": 0
               },

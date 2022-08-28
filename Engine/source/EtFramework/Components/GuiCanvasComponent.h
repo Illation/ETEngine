@@ -51,7 +51,6 @@ private:
 public:
 	GuiCanvasComponent(E_RenderMode const renderMode,
 		core::HashString const guiDocId, 
-		core::HashString const dataModelId, 
 		ivec2 const dimensions, 
 		vec4 const& color = vec4(1.f),
 		vec2 const scale = vec2(1.f), 
@@ -104,13 +103,12 @@ private:
 	///////
 
 	gui::T_ContextId m_Id = gui::INVALID_CONTEXT_ID;
-	RefPtr<gui::I_DataModel> m_DataModel;
+	WeakPtr<gui::I_DataModel> m_DataModel;
 
 	// reflected
 	E_RenderMode m_RenderMode = E_RenderMode::Invalid;
 	bool m_IsActive = true;
 	core::HashString m_GuiDocumentId;
-	core::HashString m_DataModelId;
 	EntityLink m_Camera; // for screenspace canvases defines the viewport to render to, for worldspace canvases defines where the events are coming from
 
 	// for world space contexts

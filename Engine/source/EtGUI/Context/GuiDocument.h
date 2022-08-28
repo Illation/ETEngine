@@ -47,6 +47,12 @@ public:
 	// Asset overrides
 	//---------------------
 	bool LoadFromMemory(std::vector<uint8> const& data) override;
+
+
+	// Data
+	///////
+
+	core::HashString m_DataModelId;
 };
 
 

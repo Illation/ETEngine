@@ -2,6 +2,13 @@
 #include "GraphicsContext.h"
 
 
+#ifdef ET_SHIPPING
+#	define ET_CT_RHI_SUPPORT_DEBUG ET_DISABLED
+#else
+#	define ET_CT_RHI_SUPPORT_DEBUG ET_ENABLED
+#endif // ET_SHIPPING
+
+
 namespace et {
 namespace rhi {
 

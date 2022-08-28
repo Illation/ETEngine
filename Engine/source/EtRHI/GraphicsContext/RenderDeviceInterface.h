@@ -79,6 +79,9 @@ public:
 	virtual void BindVertexArray(T_ArrayLoc const vertexArray) = 0;
 	virtual void BindBuffer(E_BufferType const target, T_BufferLoc const buffer) = 0;
 
+	virtual void DeleteVertexArray(T_ArrayLoc& loc) = 0;
+	virtual void DeleteBuffer(T_BufferLoc& loc) = 0;
+
 	virtual void SetLineWidth(float const lineWidth) = 0;
 
 	virtual T_FbLoc GetActiveFramebuffer() = 0;
@@ -101,9 +104,6 @@ public:
 
 	virtual T_ArrayLoc CreateVertexArray() const = 0;
 	virtual T_BufferLoc CreateBuffer() const = 0;
-
-	virtual void DeleteVertexArray(T_ArrayLoc& loc) const = 0;
-	virtual void DeleteBuffer(T_BufferLoc& loc) const = 0;
 
 	virtual void SetBufferData(E_BufferType const target, int64 const size, void const* const data, E_UsageHint const usage) const = 0;
 	// could at some point be a member on VertexArray data object
