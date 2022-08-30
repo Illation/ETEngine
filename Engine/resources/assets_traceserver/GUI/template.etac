@@ -2,13 +2,15 @@
   "editable gui document asset": {
     "asset": {
       "gui document asset": {
-        "name": "hello_world.rml",
+        "name": "template.rml",
         "path": "GUI/",
         "package": "default_compiled",
         "references": [
-          "GUI/template.rml"
+          "GUI/window.rcss",
+          "GUI/rml.rcss",
+          "Fonts/NotoEmoji-Regular.ttf"
         ],
-        "data model": "animals"
+        "data model": ""
       }
     },
     "metadata": null,

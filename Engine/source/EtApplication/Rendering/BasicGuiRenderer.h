@@ -37,6 +37,9 @@ public:
 
 	void SetGuiDocument(core::HashString const documentId);
 
+	gui::Context& GetContext() { return m_GuiContext; }
+	gui::Context const& GetContext() const { return m_GuiContext; }
+
 	// Viewport Renderer Interface
 	//-----------------------------
 private:

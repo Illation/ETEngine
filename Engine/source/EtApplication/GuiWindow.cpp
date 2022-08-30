@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "GuiWindow.h"
 
+#include <RmlUi/Core/ElementDocument.h>
+
 #include "GuiApplication.h"
 
 
@@ -57,6 +59,15 @@ GuiWindow::~GuiWindow()
 void GuiWindow::SetGuiDocument(core::HashString const documentId)
 {
 	m_GuiRenderer.SetGuiDocument(documentId);
+
+	Rml::ElementDocument* const doc = m_GuiRenderer.GetContext().GetDocument(documentId);
+	ET_ASSERT(doc != nullptr);
+
+	Rml::Element* const titleEl = doc->GetElementById("title");
+	if (titleEl != nullptr)
+	{
+		titleEl->SetInnerRML(doc->GetTitle());
+	}
 }
 
 

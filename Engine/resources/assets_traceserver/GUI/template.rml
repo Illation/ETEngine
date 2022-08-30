@@ -1,0 +1,17 @@
+<template name="window" content="content">
+<head>
+	<link type="text/rcss" href="rml.rcss"/>
+	<link type="text/rcss" href="window.rcss"/>
+</head>
+<body class="window">
+  <div id="title-bar">
+    <handle move_target="#document">
+      <span id="title">Dummy Title</span>
+    </handle>
+  </div>
+  <handle size_target="#document">
+    <div id="content">
+    </div>
+  </handle>
+</body>
+</template>

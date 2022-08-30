@@ -21,6 +21,10 @@
 	sliderbar-b:         138px 483px 8px 5px;
 	sliderarrowinc: 123px 496px 15px 10px;
 	sliderarrowdec: 93px 498px 15px 10px;
+	
+	title-bar-l: 0px 143px 8px 31px;
+	title-bar-c: 8px 143px 2px 31px;
+	title-bar-r: 182px 143px 8px 31px;
 }
 		
 input.text {
@@ -305,3 +309,37 @@ panel#font_effects
 	color: #866beb4d;
 	font-effect: blur(10dp #ffffff);
 }
+
+div#title-bar
+{
+	position: absolute;
+	top: -40px;
+}
+
+div#title-bar span
+{
+	font-size: 22px;
+	font-weight: bold;
+
+	font-effect: shadow(2px 2px black);
+
+	padding-left: 85px;
+	padding-right: 25px;
+	padding-top: 10px;
+	padding-bottom: 13px;
+	
+	decorator: tiled-horizontal( title-bar-l, title-bar-c, title-bar-r );
+}
+
+div#content
+{
+	height: 100%;
+	overflow: auto;
+
+	z-index: 1;
+}
+body.window
+{
+	padding: 10px 15px;
+}
+

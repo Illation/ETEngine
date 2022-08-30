@@ -99,6 +99,9 @@ void BasicGuiRenderer::OnRender(rhi::T_FbLoc const targetFb)
 
 	m_GuiContext.Update();
 
+	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
+	device->Clear(rhi::E_ClearFlag::CF_Color);
+
 	rhi::Viewport const* const viewport = rhi::Viewport::GetCurrentViewport();
 	m_ContextRenderTarget.UpdateForDimensions(viewport->GetDimensions());
 	m_GuiRenderer.RenderContext(targetFb, m_ContextRenderTarget, m_GuiContext);
