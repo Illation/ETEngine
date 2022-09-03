@@ -4,12 +4,6 @@
 #include "FileAccessFlags.h"
 #include "FileAccessMode.h"
 
-#if defined(ET_PLATFORM_LINUX)
-#include "FileBaseLinuxReferences.h"
-#elif defined(ET_PLATFORM_WIN)
-#include "FileBaseWinReferences.h"
-#endif
-
 
 namespace et {
 namespace core {

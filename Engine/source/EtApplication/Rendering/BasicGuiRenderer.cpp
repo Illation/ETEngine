@@ -52,6 +52,8 @@ void BasicGuiRenderer::Deinit()
 	m_InputProvider = nullptr;
 
 	m_GuiRenderer.Deinit();
+	m_ContextRenderTarget.DeleteFramebuffer();
+	m_GuiContext.Deinit();
 }
 
 //----------------------------------

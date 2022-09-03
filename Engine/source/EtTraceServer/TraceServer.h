@@ -69,6 +69,8 @@ private:
 
 	T_Clients::iterator GetClientIt(core::network::I_Socket const* const socket);
 
+	void HandleNetworking();
+
 
 	// Data
 	///////
@@ -81,7 +83,7 @@ private:
 	T_Clients m_Clients;
 
 	// UI
-	UniquePtr<app::GuiWindow> m_MainWindow;
+	Ptr<app::GuiWindow> m_MainWindow;
 
 	// General
 	core::Time m_Time;

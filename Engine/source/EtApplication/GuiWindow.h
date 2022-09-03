@@ -20,14 +20,21 @@ class GuiApplication;
 //
 class GuiWindow : public GlfwEventBase
 {
+	friend class GuiApplication;
+
 	// construct destruct
 	//--------------------
 public:
 	GuiWindow(core::WindowSettings const& settings, Ptr<GuiApplication> const application);
 	virtual ~GuiWindow();
 
+private:
+	void Init(); // called by the application
+	void Deinit();
+
 	// functionality
 	//---------------
+public:
 	void SetGuiDocument(core::HashString const documentId);
 
 	// accessors
@@ -43,7 +50,7 @@ private:
 	rhi::Viewport m_Viewport;
 	BasicGuiRenderer m_GuiRenderer;
 
-	Ptr<GuiApplication> m_App;
+	bool m_IsInitialized = false;
 };
 
 

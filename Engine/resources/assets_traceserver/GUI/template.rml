@@ -5,13 +5,18 @@
 </head>
 <body class="window">
   <div id="title-bar">
-    <handle move_target="#document">
-      <span id="title">Dummy Title</span>
-    </handle>
-  </div>
-  <handle size_target="#document">
-    <div id="content">
+    <div id="user-area">
     </div>
-  </handle>
+    <div id="title-area">
+      <span id="title">Dummy Title</span>
+    </div>
+    <div id="button-area">
+      <input type="button" id="window-minimize"/>
+      <input type="button" id="window-maximize"/>
+      <input type="button" id="window-close"/>
+    </div>
+  </div>
+  <div id="content">
+  </div>
 </body>
 </template>

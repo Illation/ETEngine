@@ -22,22 +22,9 @@ GuiWindow::GuiWindow(core::WindowSettings const& settings, Ptr<GuiApplication> c
 	: GlfwEventBase()
 	, m_RenderWindow(settings)
 	, m_Viewport(ToPtr(&m_RenderWindow.GetArea()))
-	, m_App(application)
 {
 	m_Viewport.SetTickDisabled(true);
 	m_Viewport.SetRenderer(ToPtr(&m_GuiRenderer));
-
-	ET_ASSERT(m_App != nullptr);
-	m_App->RegisterWindow(ToPtr(this));
-
-	InitEvents(ToPtr(&m_RenderWindow.GetArea()));
-
-	m_Viewport.SetInputProvider(ToPtr(&GetInputProvider()));
-
-	m_Viewport.SynchDimensions();
-	m_Viewport.Redraw();
-
-	m_GuiRenderer.Init(ToPtr(&GetInputProvider()));
 }
 
 //------------------
@@ -45,12 +32,46 @@ GuiWindow::GuiWindow(core::WindowSettings const& settings, Ptr<GuiApplication> c
 //
 GuiWindow::~GuiWindow()
 {
-	m_GuiRenderer.Deinit();
-	m_Viewport.SetRenderer(nullptr);
-
+	Deinit();
 	m_RenderWindow.GetArea().Uninitialize();
+}
 
-	m_App->UnregisterWindow(this);
+//-----------------
+// GuiWindow::Init
+//
+void GuiWindow::Init()
+{
+	InitEvents(ToPtr(&m_RenderWindow.GetArea()));
+
+	ET_ASSERT(glfwGetWindowUserPointer(m_RenderWindow.GetArea().GetWindow()) == this);
+	glfwSetWindowCloseCallback(m_RenderWindow.GetArea().GetWindow(), [](GLFWwindow* const window)
+		{
+			GuiWindow const* const guiWindow = static_cast<GuiWindow*>(glfwGetWindowUserPointer(window)); // this pointer is set during InitEvents
+			GuiApplication::Instance()->MarkWindowForClose(guiWindow);
+		});
+
+	m_Viewport.SetInputProvider(ToPtr(&GetInputProvider()));
+
+	m_Viewport.SynchDimensions();
+	m_Viewport.Redraw();
+
+	m_GuiRenderer.Init(ToPtr(&GetInputProvider()));
+
+	m_IsInitialized = true;
+}
+
+//-------------------
+// GuiWindow::Deinit
+//
+void GuiWindow::Deinit()
+{
+	if (m_IsInitialized)
+	{
+		m_IsInitialized = false;
+
+		m_GuiRenderer.Deinit();
+		m_Viewport.SetRenderer(nullptr);
+	}
 }
 
 //---------------------------

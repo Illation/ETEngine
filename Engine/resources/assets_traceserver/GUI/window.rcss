@@ -26,6 +26,66 @@
 	title-bar-c: 8px 143px 2px 31px;
 	title-bar-r: 182px 143px 8px 31px;
 }
+
+body {
+	font-family: LatoLatin;
+	font-size: 18px;
+	color: #d3b1c2;
+	text-align: center;
+
+	background: #1d1d1d;
+
+	padding: 1em 1em;	
+	margin: auto;
+}
+
+body.window {
+	width: 100%;
+	height: 100%;
+}
+
+h1 {
+	color: #dfd154;
+	font-size: 1.5em;
+	font-weight: bold;
+	margin-bottom: 0.7em;
+	font-effect: glow(2dp 4dp 2dp 3dp #8a4056);
+}
+		
+p { 
+	margin: 0.7em 0;
+}
+		
+div#title-bar
+{
+	position: absolute;
+	top: -40px;
+	display: inline-block;
+}
+
+div#title-bar span
+{
+	font-size: 22px;
+	font-weight: bold;
+
+	font-effect: shadow(2px 2px black);
+
+	padding-left: 85px;
+	padding-right: 25px;
+	padding-top: 10px;
+	padding-bottom: 13px;
+	
+	decorator: tiled-horizontal( title-bar-l, title-bar-c, title-bar-r );
+}
+
+div#content
+{
+	height: 100%;
+	overflow: auto;
+
+	z-index: 1;
+}
+
 		
 input.text {
 	background-color: #fff;
@@ -50,6 +110,7 @@ dataselect
 
 input.radio,
 input.checkbox
+input.button
 {
 	width: 38dp;
 	height: 36dp;
@@ -113,6 +174,11 @@ scrollbarvertical sliderarrowinc:hover
 scrollbarvertical sliderbar:active,
 scrollbarvertical sliderarrowdec:active,
 scrollbarvertical sliderarrowinc:active
+	/* perspective: 1000px;
+	perspective-origin: 20px 50%;
+	transform: rotateX(10deg) skew(-10deg, 15deg) translateZ(100px);
+	transform-origin: left top 0; */
+
 {
 	image-color: #efbeff;
 }
@@ -122,30 +188,14 @@ scrollbarvertical sliderarrowdec
 	image-color: #ae8bb9;
 }
 scrollbarvertical sliderarrowinc
-{
-	decorator: image( sliderarrowinc );
-	image-color: #ae8bb9;
-}
-
-body {
-	font-family: LatoLatin;
-	font-size: 18px;
-	color: #d3b1c2;
-	background: #120627;
-	text-align: center;
-	padding: 2em 1em;
-	position: absolute;
-	border: 5px #c197d2;
-	width: 800px;
-	height: 250px;
-	margin: auto;
-	border-radius: 8px;
-	overflow: hidden auto;
-
 	/* perspective: 1000px;
 	perspective-origin: 20px 50%;
 	transform: rotateX(10deg) skew(-10deg, 15deg) translateZ(100px);
 	transform-origin: left top 0; */
+
+{
+	decorator: image( sliderarrowinc );
+	image-color: #ae8bb9;
 }
 
 tabset
@@ -213,133 +263,3 @@ panel
 	margin-right: auto;
 	max-width: 500dp;
 }
-
-panel#welcome
-{
-	display: inline-block;
-}
-
-h1 {
-	color: #dfd154;
-	font-size: 1.5em;
-	font-weight: bold;
-	margin-bottom: 0.7em;
-	font-effect: glow(2dp 4dp 2dp 3dp #8a4056);
-}
-		
-p { 
-	margin: 0.7em 0;
-}
-		
-#phrase { 
-	font-style: italic;
-}
-		
-#animal { 
-	text-decoration: underline;
-}
-
-
-panel#font_effects
-{
-	display: inline-block;
-}
-#font_effects div 
-{
-	display: inline-block;
-	width: 180dp;
-	margin: 0 30dp 30dp;
-	text-align: center;
-	font-size: 35dp;
-	color: #dfd154;
-}
-#font_effects h1 
-{
-	margin: 15dp 0 10dp 10dp;
-	
-	text-align: left;
-	font-size: 16dp;
-	font-weight: bold;
-
-	font-effect: glow(1dp 1dp 1dp 1dp #8a4056);
-	color: #ffffff;
-}
-#font_effects .glow
-{
-	font-effect: glow(3dp #ffffff);
-}
-#font_effects .glow_sharper
-{
-	font-effect: glow(3dp 1dp #ffffff);
-}
-#font_effects .glow_rainbow
-{
-	color: #ffffff;
-	font-effect: glow(1dp 5dp 0dp 3dp #ff555590), glow(1dp 5dp -2.5dp -2dp #55ff5590), glow(1dp 5dp 2.5dp -2dp #5555ff90);
-}
-#font_effects .glow_shadow
-{
-	font-effect: glow(2dp 4dp 2dp 3dp #8a4056);
-}
-#font_effects .outline_small
-{
-	font-effect: outline(2dp #ffffff);
-}
-#font_effects .outline_big
-{
-	font-effect: outline(4dp #ffffff);
-}
-#font_effects .shadow_up
-{
-	font-weight: bold;
-	font-effect: shadow(3dp -3dp #ffffff);
-}
-#font_effects .shadow_down
-{
-	font-weight: bold;
-	font-effect: shadow(0px 3dp #8a4056);
-}
-#font_effects .blur_small
-{
-	color: #866beb4d;
-	font-effect: blur(3dp #ffffff);
-}
-#font_effects .blur_big
-{
-	color: #866beb4d;
-	font-effect: blur(10dp #ffffff);
-}
-
-div#title-bar
-{
-	position: absolute;
-	top: -40px;
-}
-
-div#title-bar span
-{
-	font-size: 22px;
-	font-weight: bold;
-
-	font-effect: shadow(2px 2px black);
-
-	padding-left: 85px;
-	padding-right: 25px;
-	padding-top: 10px;
-	padding-bottom: 13px;
-	
-	decorator: tiled-horizontal( title-bar-l, title-bar-c, title-bar-r );
-}
-
-div#content
-{
-	height: 100%;
-	overflow: auto;
-
-	z-index: 1;
-}
-body.window
-{
-	padding: 10px 15px;
-}
-

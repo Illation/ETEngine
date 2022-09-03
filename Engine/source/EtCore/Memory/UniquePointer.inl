@@ -252,6 +252,18 @@ bool operator==(UniquePtr<TDataType> const& ptr1, UniquePtr<TOtherType> const& p
 	return (ptr1.Get() == ptr2.Get());
 }
 
+template <typename TDataType, typename TOtherType>
+bool operator == (TDataType* const ptr1, UniquePtr<TOtherType> const& ptr2)
+{
+	return (ptr1 == ptr2.Get());
+}
+
+template <typename TDataType, typename TOtherType>
+bool operator == (UniquePtr<TDataType> const& ptr1, TOtherType const* const ptr2)
+{
+	return (ptr1.Get() == ptr2);
+}
+
 template <typename TDataType>
 bool operator!=(UniquePtr<TDataType> const& ptr, std::nullptr_t)
 {
@@ -266,6 +278,18 @@ bool operator!=(std::nullptr_t, UniquePtr<TDataType> const& ptr)
 
 template <typename TDataType, typename TOtherType>
 bool operator!=(UniquePtr<TDataType> const& ptr1, UniquePtr<TOtherType> const& ptr2)
+{
+	return !(ptr1 == ptr2);
+}
+
+template <typename TDataType, typename TOtherType>
+bool operator != (TDataType* const ptr1, UniquePtr<TOtherType> const& ptr2)
+{
+	return !(ptr1 == ptr2);
+}
+
+template <typename TDataType, typename TOtherType>
+bool operator != (UniquePtr<TDataType> const& ptr1, TOtherType const* const ptr2)
 {
 	return !(ptr1 == ptr2);
 }

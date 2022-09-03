@@ -181,7 +181,6 @@ function(cookToolData TARGET database gen_dir)
 	# compiled source file names
 	set(resource_name "compiled_package")
 	set(target_files "${gen_dir}${resource_name}.h" "${gen_dir}${resource_name}.cpp")
-	set(fake_target_file "${gen_dir}/_fake_file") # this file is not actually generated but lets us force cooking resources with another target
 
 	set(res_file_engine "${ENGINE_DIRECTORY_ABS}/resources/asset_database_tools.json")
 
@@ -202,7 +201,7 @@ function(cookToolData TARGET database gen_dir)
 	# first compiled resources
 
 	add_custom_command(
-		OUTPUT ${target_files} ${fake_target_file}
+		OUTPUT ${target_files}
 		DEPENDS ${deps} ${_copied_tool_cooker}
 		COMMAND ${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${gen_dir} -C ${resource_name} --use_pch
 		COMMAND ${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${_outDir}/
@@ -227,7 +226,13 @@ function(cookToolData TARGET database gen_dir)
 	
 	set(force_target_name "force-cook-tool-data-${TARGET}" )
 	message(STATUS "Adding target: ${force_target_name}")
-	add_custom_target(${force_target_name} DEPENDS ${fake_target_file} )
+	add_custom_target(${force_target_name} 
+		DEPENDS ${deps} ${_copied_tool_cooker}
+		COMMAND ${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${gen_dir} -C ${resource_name} --use_pch
+		COMMAND ${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${_outDir}/
+		COMMENT "Generating tool resource source files and packages: ${res_file_engine} - ${database}; output: ${gen_dir} - ${_outDir}/"
+		VERBATIM 
+	)
 
 	assignIdeFolder(${force_target_name} Engine/Build)
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <EtCore/UpdateCycle/Context.h>
+#include <EtCore/Util/WindowSettings.h>
 
 
 namespace et {
@@ -15,9 +16,16 @@ class GuiWindow;
 //
 class GuiApplication 
 {
+	static Ptr<GuiApplication> s_GlobalInstance;
+
+	// static
+	//--------
+public:
+	static bool HasRunningInstance();
+	static GuiApplication* Instance();
+
 	// construct destruct
 	//--------------------
-public:
 	GuiApplication() = default;
 	virtual ~GuiApplication() = default;
 
@@ -26,15 +34,20 @@ public:
 	void ReceiveEvents(int64 const timeout);
 	void Draw();
 
-	void RegisterWindow(Ptr<GuiWindow> const window);
-	void UnregisterWindow(GuiWindow const* const window);
+	Ptr<GuiWindow> MakeWindow(core::WindowSettings const& settings);
+	void MarkWindowForClose(GuiWindow const* const window);
+
+	// utility
+	//---------
+private:
+	void CloseMarkedWindows();
 
 
 	// Data
 	///////
 
-private:
-	std::vector<Ptr<GuiWindow>> m_Windows;
+	std::vector<UniquePtr<GuiWindow>> m_Windows;
+	std::vector<size_t> m_WindowsToDelete;
 
 	core::BaseContext m_Context;
 };

@@ -1,0 +1,94 @@
+div#frame {
+	background: #120627;
+	position: absolute;
+	border: 5px #c197d2;
+	width: 800px;
+	height: 250px;
+	border-radius: 8px;
+	overflow: hidden auto;
+	padding: 2em 1em;	
+}
+
+panel#welcome
+{
+	display: inline-block;
+}
+		
+#phrase { 
+	font-style: italic;
+}
+		
+#animal { 
+	text-decoration: underline;
+}
+
+panel#font_effects
+{
+	display: inline-block;
+}
+#font_effects div 
+{
+	display: inline-block;
+	width: 180dp;
+	margin: 0 30dp 30dp;
+	text-align: center;
+	font-size: 35dp;
+	color: #dfd154;
+}
+#font_effects h1 
+{
+	margin: 15dp 0 10dp 10dp;
+	
+	text-align: left;
+	font-size: 16dp;
+	font-weight: bold;
+
+	font-effect: glow(1dp 1dp 1dp 1dp #8a4056);
+	color: #ffffff;
+}
+#font_effects .glow
+{
+	font-effect: glow(3dp #ffffff);
+}
+#font_effects .glow_sharper
+{
+	font-effect: glow(3dp 1dp #ffffff);
+}
+#font_effects .glow_rainbow
+{
+	color: #ffffff;
+	font-effect: glow(1dp 5dp 0dp 3dp #ff555590), glow(1dp 5dp -2.5dp -2dp #55ff5590), glow(1dp 5dp 2.5dp -2dp #5555ff90);
+}
+#font_effects .glow_shadow
+{
+	font-effect: glow(2dp 4dp 2dp 3dp #8a4056);
+}
+#font_effects .outline_small
+{
+	font-effect: outline(2dp #ffffff);
+}
+#font_effects .outline_big
+{
+	font-effect: outline(4dp #ffffff);
+}
+#font_effects .shadow_up
+{
+	font-weight: bold;
+	font-effect: shadow(3dp -3dp #ffffff);
+}
+#font_effects .shadow_down
+{
+	font-weight: bold;
+	font-effect: shadow(0px 3dp #8a4056);
+}
+#font_effects .blur_small
+{
+	color: #866beb4d;
+	font-effect: blur(3dp #ffffff);
+}
+#font_effects .blur_big
+{
+	color: #866beb4d;
+	font-effect: blur(10dp #ffffff);
+}
+

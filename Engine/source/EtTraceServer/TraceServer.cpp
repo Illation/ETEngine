@@ -87,8 +87,10 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 	core::WindowSettings settings;
 	settings.m_Title = "E.T. Trace Server";
 	settings.m_Resolutions.emplace_back(1280, 720);
-	m_MainWindow = Create<app::GuiWindow>(settings, ToPtr(this));
+	m_MainWindow = MakeWindow(settings);
 	m_MainWindow->SetGuiDocument(core::HashString("GUI/hello_world.rml"));
+
+	ET_ASSERT(HasRunningInstance());
 
 	// Setup Socket
 	//--------------
@@ -149,6 +151,10 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 //
 TraceServer::~TraceServer()
 {
+	m_ListenerSocket = nullptr;
+	m_Clients.clear();
+	m_PollDescriptors.clear();
+
 	core::network::I_Socket::DecrementUseCount(); // Deinit network library
 	core::TraceService::Destroy();
 }
@@ -162,72 +168,14 @@ void TraceServer::Run()
 {
 	for (;;)
 	{
-		// we periodically check in even if there are no new events so we can remove stale clients
 		ReceiveEvents(0); // #todo: it would be nice to be able to block here... RmlUI needs periodic updates but that doesn't mean we need to rerender it
-		int32 const pollCount = core::network::I_Socket::Poll(m_PollDescriptors, 0);
-		//int32 const pollCount = core::network::I_Socket::Poll(m_PollDescriptors, TraceClient::s_SetupTimeout); 
-		if (pollCount == -1)
+
+		if (!HasRunningInstance()) 
 		{
-			m_ReturnCode = E_ReturnCode::ErrorDuringExecution;
-			ET_FATAL("Polling failed!");
+			return;
 		}
 
-		m_Time.Update();
-		uint64 const timestampMs = m_Time.Timestamp() / 1000;
-
-		core::network::T_PollDescs pollDescriptorsCopy = m_PollDescriptors;
-		for (core::network::PollDesc const& pollDesc : pollDescriptorsCopy)
-		{
-			if (pollDesc.m_Events & core::network::E_PollEvent::PE_Disconnected)
-			{
-				ET_ASSERT(pollDesc.m_Socket != m_ListenerSocket);
-
-				RemoveClient(pollDesc.m_Socket.Get());
-				continue;
-			}
-
-			if (pollDesc.m_Socket == m_ListenerSocket)
-			{
-				if (!(pollDesc.m_Events & core::network::E_PollEvent::PE_In))
-				{
-					continue;
-				}
-
-				core::network::Endpoint remoteEp;
-				bool wouldBlock;
-				RefPtr<core::network::I_Socket> newSocket = m_ListenerSocket->Accept(remoteEp, wouldBlock);
-				if (newSocket == nullptr)
-				{
-					ET_ERROR("Failed to accept new connection");
-				}
-				else
-				{
-					TraceClient const& client = AddClient(newSocket, timestampMs);
-				}
-			}
-			else
-			{
-				TraceClient& client = GetClient(pollDesc.m_Socket.Get());
-				if (client.GetState() == TraceClient::E_State::Invalid)
-				{
-					RemoveClient(pollDesc.m_Socket.Get());
-					continue;
-				}
-
-				if (!(pollDesc.m_Events & core::network::E_PollEvent::PE_In))
-				{
-					if ((client.GetState() != TraceClient::E_State::Ready) && ((timestampMs - client.GetTimestamp()) >= TraceClient::s_SetupTimeout))
-					{
-						ET_LOG_W(ET_CTX_TRACE, "%s took too long to setup, removing...", client.GetName().c_str());
-						RemoveClient(pollDesc.m_Socket.Get());
-					}
-
-					continue;
-				}
-
-				ReceiveData(client, timestampMs);
-			}
-		}
+		HandleNetworking();
 
 		Draw();
 	}
@@ -322,6 +270,84 @@ TraceServer::T_Clients::iterator TraceServer::GetClientIt(core::network::I_Socke
 		{
 			return (client.GetSocket() == socket);
 		});
+}
+
+//-------------------------------
+// TraceServer::HandleNetworking
+//
+void TraceServer::HandleNetworking()
+{
+	// we periodically check in even if there are no new events so we can remove stale clients
+	int32 pollCount = core::network::I_Socket::Poll(m_PollDescriptors, 0);
+	//int32 pollCount = core::network::I_Socket::Poll(m_PollDescriptors, TraceClient::s_SetupTimeout); 
+
+	while (pollCount != 0)
+	{
+		if (pollCount == -1)
+		{
+			m_ReturnCode = E_ReturnCode::ErrorDuringExecution;
+			ET_FATAL("Polling failed!");
+		}
+
+		m_Time.Update();
+		uint64 const timestampMs = m_Time.Timestamp() / 1000;
+
+		core::network::T_PollDescs pollDescriptorsCopy = m_PollDescriptors;
+		for (core::network::PollDesc const& pollDesc : pollDescriptorsCopy)
+		{
+			if (pollDesc.m_Events & core::network::E_PollEvent::PE_Disconnected)
+			{
+				ET_ASSERT(pollDesc.m_Socket != m_ListenerSocket);
+
+				RemoveClient(pollDesc.m_Socket.Get());
+				continue;
+			}
+
+			if (pollDesc.m_Socket == m_ListenerSocket)
+			{
+				if (!(pollDesc.m_Events & core::network::E_PollEvent::PE_In))
+				{
+					continue;
+				}
+
+				core::network::Endpoint remoteEp;
+				bool wouldBlock;
+				RefPtr<core::network::I_Socket> newSocket = m_ListenerSocket->Accept(remoteEp, wouldBlock);
+				if (newSocket == nullptr)
+				{
+					ET_ERROR("Failed to accept new connection");
+				}
+				else
+				{
+					TraceClient const& client = AddClient(newSocket, timestampMs);
+				}
+			}
+			else
+			{
+				TraceClient& client = GetClient(pollDesc.m_Socket.Get());
+				if (client.GetState() == TraceClient::E_State::Invalid)
+				{
+					RemoveClient(pollDesc.m_Socket.Get());
+					continue;
+				}
+
+				if (!(pollDesc.m_Events & core::network::E_PollEvent::PE_In))
+				{
+					if ((client.GetState() != TraceClient::E_State::Ready) && ((timestampMs - client.GetTimestamp()) >= TraceClient::s_SetupTimeout))
+					{
+						ET_LOG_W(ET_CTX_TRACE, "%s took too long to setup, removing...", client.GetName().c_str());
+						RemoveClient(pollDesc.m_Socket.Get());
+					}
+
+					continue;
+				}
+
+				ReceiveData(client, timestampMs);
+			}
+		}
+
+		pollCount = core::network::I_Socket::Poll(m_PollDescriptors, 0);
+	}
 }
 
 
