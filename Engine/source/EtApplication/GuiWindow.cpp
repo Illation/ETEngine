@@ -18,7 +18,7 @@ namespace app {
 //------------------
 // GuiWindow::c-tor
 //
-GuiWindow::GuiWindow(core::WindowSettings const& settings, Ptr<GuiApplication> const application)
+GuiWindow::GuiWindow(core::WindowSettings const& settings)
 	: GlfwEventBase()
 	, m_RenderWindow(settings)
 	, m_Viewport(ToPtr(&m_RenderWindow.GetArea()))
@@ -89,6 +89,14 @@ void GuiWindow::SetGuiDocument(core::HashString const documentId)
 	{
 		titleEl->SetInnerRML(doc->GetTitle());
 	}
+}
+
+//----------------------
+// GuiWindow::StartDrag
+//
+void GuiWindow::StartDrag()
+{
+	m_RenderWindow.StartDrag();
 }
 
 

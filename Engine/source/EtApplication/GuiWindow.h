@@ -25,7 +25,7 @@ class GuiWindow : public GlfwEventBase
 	// construct destruct
 	//--------------------
 public:
-	GuiWindow(core::WindowSettings const& settings, Ptr<GuiApplication> const application);
+	GuiWindow(core::WindowSettings const& settings);
 	virtual ~GuiWindow();
 
 private:
@@ -36,10 +36,12 @@ private:
 	//---------------
 public:
 	void SetGuiDocument(core::HashString const documentId);
+	void StartDrag();
 
 	// accessors
 	//-----------
 	GlfwRenderWindow& GetRenderWindow() { return m_RenderWindow; }
+	gui::Context const& GetContext() { return m_GuiRenderer.GetContext(); }
 
 
 	// Data

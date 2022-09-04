@@ -84,6 +84,7 @@ public:
 	//-----------
 	ivec2 GetDimensions() const;
 	Rml::Context* GetImpl() { return m_Context.Get(); }
+	Rml::Context const* GetImpl() const { return m_Context.Get(); }
 
 	bool HasActiveDocuments() const { return m_ActiveDocuments > 0; }
 	bool IsDocumentActive(core::HashString const id) const;

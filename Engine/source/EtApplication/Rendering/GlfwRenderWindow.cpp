@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "GlfwRenderWindow.h"
 
+#ifdef ET_PLATFORM_WIN
+#	define GLFW_EXPOSE_NATIVE_WIN32
+#endif
+#include <GLFW/glfw3native.h>
+
 
 namespace et {
 namespace app {
@@ -46,6 +51,22 @@ bool GlfwRenderWindow::HasFocus() const
 	return (glfwGetWindowAttrib(m_Area.GetWindow(), GLFW_FOCUSED) != 0);
 }
 
+//-----------------------------
+// GlfwRenderWindow::StartDrag
+//
+// Start dragging the window as if by it's titlebar
+// #todo: Update this function once GLFW supports this feature natively
+//
+void GlfwRenderWindow::StartDrag()
+{
+#ifdef ET_PLATFORM_WIN
+
+	HWND const hwnd = glfwGetWin32Window(m_Area.GetWindow());
+
+#else
+	ET_ERROR("Window dragging wasn't implemented yet on this platform. Check if Glfw supports it natively");
+#endif
+}
 
 } // namespace app
 } // namespace et

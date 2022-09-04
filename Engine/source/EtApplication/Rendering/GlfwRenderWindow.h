@@ -23,6 +23,10 @@ public:
 		: rhi::RenderWindow(), m_WindowSettings(windowSettings), m_IsHidden(hidden) {}
 	~GlfwRenderWindow() = default;
 
+	// functionality
+	//---------------
+	void StartDrag();
+
 	// accessors
 	//-----------
 	GlfwRenderArea& GetArea() { return m_Area; }

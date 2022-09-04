@@ -4,6 +4,8 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include <RmlUi/Core/Factory.h>
+
 #include <EtCore/UpdateCycle/PerformanceInfo.h>
 
 #include <EtRHI/Util/PrimitiveRenderer.h>
@@ -45,6 +47,7 @@ bool GuiApplication::HasRunningInstance()
 //
 GuiApplication* GuiApplication::Instance()
 {
+	ET_ASSERT(HasRunningInstance());
 	return s_GlobalInstance.Get();
 }
 
@@ -99,7 +102,7 @@ void GuiApplication::Draw()
 //
 Ptr<GuiWindow> GuiApplication::MakeWindow(core::WindowSettings const& settings)
 {
-	m_Windows.push_back(Create<GuiWindow>(settings, ToPtr(this)));
+	m_Windows.push_back(Create<GuiWindow>(settings));
 	Ptr<GuiWindow> const window = ToPtr(m_Windows.back().Get());
 
 	if (m_Windows.size() == 1u)
@@ -110,8 +113,13 @@ Ptr<GuiWindow> GuiApplication::MakeWindow(core::WindowSettings const& settings)
 		// also initializes the viewport and its renderer
 		rhi::ContextHolder::Instance().CreateMainRenderContext(ToPtr(&window->GetRenderWindow()));
 
+		ET_ASSERT(!gui::RmlGlobal::IsInitialized());
+
 		gui::RmlGlobal::GetInstance()->SetCursorShapeManager(window);
 		gui::RmlGlobal::GetInstance()->SetClipboardController(window);
+
+		ET_ASSERT(gui::RmlGlobal::IsInitialized());
+		Rml::Factory::RegisterElementInstancer("window_handle", &m_HandleInstancer);
 
 		core::ResourceManager::SetInstance(std::move(Create<app::PackageResourceManager>()));
 
@@ -141,6 +149,20 @@ void GuiApplication::MarkWindowForClose(GuiWindow const* const window)
 	{
 		m_WindowsToDelete.push_back(idx);
 	}
+}
+
+//---------------------------
+// GuiApplication::GetWindow
+//
+Ptr<GuiWindow> GuiApplication::GetWindow(Rml::Context const* const context)
+{
+	auto const foundIt = std::find_if(m_Windows.begin(), m_Windows.end(), [context](UniquePtr<GuiWindow> const& window)
+		{
+			return (window->GetContext().GetImpl() == context);
+		});
+
+	ET_ASSERT(foundIt != m_Windows.cend());
+	return ToPtr(foundIt->Get());
 }
 
 //------------------------------------
