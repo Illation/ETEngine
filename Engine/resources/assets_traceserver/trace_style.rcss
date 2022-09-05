@@ -1,6 +1,8 @@
 div#frame {
 	background: #120627;
 	position: absolute;
+	top: 250px;
+	left: 250px;
 	border: 5px #c197d2;
 	width: 800px;
 	height: 250px;

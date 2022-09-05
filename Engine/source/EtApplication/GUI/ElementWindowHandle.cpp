@@ -42,6 +42,7 @@ void ElementWindowHandle::ProcessDefaultAction(Rml::Event& evnt)
 		if (evnt == Rml::EventId::Dragstart)
 		{
 			m_Window->StartDrag();
+			ET_LOG_I(ET_CTX_APP, "Window Drag Start");
 		}
 	}
 }

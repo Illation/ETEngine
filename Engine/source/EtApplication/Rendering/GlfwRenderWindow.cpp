@@ -63,6 +63,9 @@ void GlfwRenderWindow::StartDrag()
 
 	HWND const hwnd = glfwGetWin32Window(m_Area.GetWindow());
 
+	ReleaseCapture();
+	SendMessage(hwnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+
 #else
 	ET_ERROR("Window dragging wasn't implemented yet on this platform. Check if Glfw supports it natively");
 #endif

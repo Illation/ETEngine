@@ -4,7 +4,7 @@
       "sdf font asset": {
         "name": "NotoEmoji-Regular.ttf",
         "path": "Fonts/",
-        "package": "content1",
+        "package": "tool_content",
         "references": [],
         "is fallback": true
       }

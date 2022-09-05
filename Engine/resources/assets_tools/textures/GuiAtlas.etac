@@ -2,9 +2,9 @@
   "editable texture asset": {
     "asset": {
       "texture asset": {
-        "name": "greySheet.png",
+        "name": "GuiAtlas.png",
         "path": "textures/",
-        "package": "content1",
+        "package": "tool_content",
         "references": [],
         "force resolution": false,
         "parameters": {

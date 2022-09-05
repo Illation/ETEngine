@@ -2,13 +2,10 @@
   "editable gui document asset": {
     "asset": {
       "gui document asset": {
-        "name": "window.rcss",
-        "path": "GUI/",
+        "name": "trace_style.rcss",
+        "path": "",
         "package": "default_compiled",
-        "references": [
-          "Fonts/LatoLatin-Italic.ttf",
-          "Fonts/LatoLatin-Regular.ttf"
-        ]
+        "references": []
       }
     },
     "metadata": null,

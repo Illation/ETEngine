@@ -2,11 +2,11 @@
   "editable gui document asset": {
     "asset": {
       "gui document asset": {
-        "name": "template.rml",
+        "name": "window_template.rml",
         "path": "GUI/",
-        "package": "default_compiled",
+        "package": "tool_content_compiled",
         "references": [
-          "GUI/window.rcss",
+          "GUI/window_style.rcss",
           "GUI/rml.rcss",
           "Fonts/NotoEmoji-Regular.ttf"
         ],

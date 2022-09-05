@@ -1,0 +1,11 @@
+<template name="window" content="content">
+<head>
+	<link type="text/rcss" href="rml.rcss"/>
+	<link type="text/rcss" href="window_style.rcss"/>
+</head>
+<body class="window">
+  <window_handle id="title-bar">Dummy Title</window_handle>
+  <div id="content">
+  </div>
+</body>
+</template>

@@ -4,7 +4,7 @@
       "gui document asset": {
         "name": "rml.rcss",
         "path": "GUI/",
-        "package": "default_compiled",
+        "package": "tool_content_compiled",
         "references": []
       }
     },

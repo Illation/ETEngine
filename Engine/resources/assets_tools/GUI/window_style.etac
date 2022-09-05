@@ -2,14 +2,13 @@
   "editable gui document asset": {
     "asset": {
       "gui document asset": {
-        "name": "hello_world.rml",
+        "name": "window_style.rcss",
         "path": "GUI/",
-        "package": "default_compiled",
+        "package": "tool_content_compiled",
         "references": [
-          "GUI/template.rml",
-          "GUI/traceserver.rcss"
-        ],
-        "data model": "animals"
+          "Fonts/DejaVuSans.ttf",
+          "Fonts/DejaVuSans-Oblique.ttf"
+        ]
       }
     },
     "metadata": null,

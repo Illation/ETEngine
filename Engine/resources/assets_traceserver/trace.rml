@@ -1,7 +1,7 @@
 <rml>
 <head>
-  <link type="text/template" href="template.rml"/>
-  <link type="text/rcss" href="traceserver.rcss"/>
+  <link type="text/template" href="GUI/window_template.rml"/>
+  <link type="text/rcss" href="trace_style.rcss"/>
 	<title>Hello world</title>
 </head>
 <body template="window" data-model="animals">

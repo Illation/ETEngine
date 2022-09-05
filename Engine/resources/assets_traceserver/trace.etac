@@ -2,13 +2,14 @@
   "editable gui document asset": {
     "asset": {
       "gui document asset": {
-        "name": "traceserver.rcss",
-        "path": "GUI/",
+        "name": "trace.rml",
+        "path": "",
         "package": "default_compiled",
         "references": [
-          "Fonts/LatoLatin-Italic.ttf",
-          "Fonts/LatoLatin-Regular.ttf"
-        ]
+          "GUI/window_template.rml",
+          "trace_style.rcss"
+        ],
+        "data model": "animals"
       }
     },
     "metadata": null,

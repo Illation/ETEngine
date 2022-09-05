@@ -27,6 +27,8 @@ void LaunchExecutable(std::string const& path);
 
 std::vector<std::string> ListRunningProcesses();
 
+bool IsDebuggerAttached();
+
 
 } // namespace platform
 

@@ -204,6 +204,14 @@ std::vector<std::string> ListRunningProcesses()
 	return ret;
 }
 
+//--------------------
+// IsDebuggerAttached
+//
+bool IsDebuggerAttached()
+{
+	return IsDebuggerPresent();
+}
+
 
 } // namespace platform
 

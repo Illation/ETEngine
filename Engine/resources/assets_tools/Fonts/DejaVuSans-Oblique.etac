@@ -2,9 +2,9 @@
   "editable sdf font asset": {
     "asset": {
       "sdf font asset": {
-        "name": "LatoLatin-Italic.ttf",
+        "name": "DejaVuSans-Oblique.ttf",
         "path": "Fonts/",
-        "package": "content1",
+        "package": "tool_content",
         "references": [],
         "is fallback": false
       }

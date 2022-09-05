@@ -88,7 +88,7 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 	settings.m_Title = "E.T. Trace Server";
 	settings.m_Resolutions.emplace_back(1280, 720);
 	m_MainWindow = MakeWindow(settings);
-	m_MainWindow->SetGuiDocument(core::HashString("GUI/hello_world.rml"));
+	m_MainWindow->SetGuiDocument(core::HashString("trace.rml"));
 
 	ET_ASSERT(HasRunningInstance());
 

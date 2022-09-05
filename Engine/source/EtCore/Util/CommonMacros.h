@@ -1,11 +1,11 @@
 #pragma once
 
 #ifdef ET_PLATFORM_WIN
-#	ifndef WIN32_LEAN_AND_MEAN
-#		define WIN32_LEAN_AND_MEAN
-#	endif
-#	include <windows.h>
+#	include <intrin.h>
 #endif
+
+#include <EtCore/Platform/PlatformUtil.h>
+
 
 #define ET_CAT(x, y) x##y
 
@@ -30,6 +30,11 @@
 #ifdef ET_ARCH_X32																								
 #	define ET_BREAK()	__asm { int 3 }																							
 #else																											
-#	define ET_BREAK()	if (IsDebuggerPresent()) __debugbreak()		
+#	ifdef ET_PLATFORM_WIN
+#		define ET_BREAK()	if (et::core::platform::IsDebuggerAttached()) __debugbreak()		
+#	else
+#		message ("missing implementation for debug break")
+#		define ET_BREAK()
+#	endif
 #endif	
 

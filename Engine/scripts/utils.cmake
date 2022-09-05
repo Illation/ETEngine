@@ -224,17 +224,23 @@ function(cookToolData TARGET database gen_dir)
 
 	# a command that lets us force cooking the tools resources
 	
-	set(force_target_name "force-cook-tool-data-${TARGET}" )
-	message(STATUS "Adding target: ${force_target_name}")
-	add_custom_target(${force_target_name} 
+	set(force_compile_target_name "force-cook-tool-data-compiled-${TARGET}" )
+	message(STATUS "Adding target: ${force_compile_target_name}")
+	add_custom_target(${force_compile_target_name} 
 		DEPENDS ${deps} ${_copied_tool_cooker}
 		COMMAND ${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${gen_dir} -C ${resource_name} --use_pch
-		COMMAND ${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${_outDir}/
-		COMMENT "Generating tool resource source files and packages: ${res_file_engine} - ${database}; output: ${gen_dir} - ${_outDir}/"
-		VERBATIM 
-	)
+		COMMENT "Generating tool resource source files: ${res_file_engine} - ${database}; output: ${gen_dir}"
+		VERBATIM)
+	assignIdeFolder(${force_compile_target_name} Engine/Build)
 
-	assignIdeFolder(${force_target_name} Engine/Build)
+	set(force_package_target_name "force-cook-tool-data-package-${TARGET}" )
+	message(STATUS "Adding target: ${force_package_target_name}")
+	add_custom_target(${force_package_target_name} 
+		DEPENDS ${deps} ${_copied_tool_cooker}
+		COMMAND ${_tool_cooker_exe} -E ${res_file_engine} -P ${database} -O ${_outDir}/
+		COMMENT "Generating tool resource source packages: ${res_file_engine} - ${database}; output: ${_outDir}/"
+		VERBATIM)
+	assignIdeFolder(${force_package_target_name} Engine/Build)
 
 endfunction(cookToolData)
 
@@ -319,7 +325,7 @@ endfunction(precompiled_headers)
 function(targetCompileOptions _target)
 	# only windows
 	if(MSVC)
-		target_compile_options(${_target} PRIVATE "/MP")
+		target_compile_options(${_target} PRIVATE "/MP" "/DWIN32_LEAN_AND_MEAN")
 	endif()
 
 	if(MSVC)
