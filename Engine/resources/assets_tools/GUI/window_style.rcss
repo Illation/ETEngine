@@ -74,6 +74,34 @@ window_handle
 	font-effect: shadow(2px 2px black);
 }
 
+window_handle controls
+{
+	display: inline;
+	right: 0;
+}
+window_handle controls min-button
+window_handle controls max-button
+window_handle controls close-button
+{
+	display: inline;
+
+	padding: 10px;
+	
+	border-radius: 5px;
+}
+window_handle controls min-button
+{
+	background: #5555FF;
+}
+window_handle controls max-button
+{
+	background: #55FF55;
+}
+window_handle controls close-button
+{
+	background: #FF5555;
+}
+
 div#content
 {
 	height: 100%;

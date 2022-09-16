@@ -36,12 +36,20 @@ private:
 	//---------------
 public:
 	void SetGuiDocument(core::HashString const documentId);
+
+	void Close();
+	void ToggleMinimized();
+	void ToggleMaximized();
+
 	void StartDrag();
 
 	// accessors
 	//-----------
 	GlfwRenderWindow& GetRenderWindow() { return m_RenderWindow; }
 	gui::Context const& GetContext() { return m_GuiRenderer.GetContext(); }
+
+	bool Maximized() const;
+	bool Minimized() const;
 
 
 	// Data

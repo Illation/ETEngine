@@ -91,12 +91,73 @@ void GuiWindow::SetGuiDocument(core::HashString const documentId)
 	}
 }
 
+//------------------
+// GuiWindow::Close
+//
+void GuiWindow::Close()
+{
+	GuiApplication::Instance()->MarkWindowForClose(this);
+}
+
+//----------------------------
+// GuiWindow::ToggleMinimized
+//
+void GuiWindow::ToggleMinimized()
+{
+	if (Minimized())
+	{
+		if (Maximized())
+		{
+			glfwMaximizeWindow(m_RenderWindow.GetArea().GetWindow());
+		}
+		else
+		{
+			glfwRestoreWindow(m_RenderWindow.GetArea().GetWindow());
+		}
+	}
+	else
+	{
+		glfwIconifyWindow(m_RenderWindow.GetArea().GetWindow());
+	}
+}
+
+//----------------------------
+// GuiWindow::ToggleMaximized
+//
+void GuiWindow::ToggleMaximized()
+{
+	if (Maximized())
+	{
+		glfwRestoreWindow(m_RenderWindow.GetArea().GetWindow());
+	}
+	else
+	{
+		glfwMaximizeWindow(m_RenderWindow.GetArea().GetWindow());
+	}
+}
+
 //----------------------
 // GuiWindow::StartDrag
 //
 void GuiWindow::StartDrag()
 {
 	m_RenderWindow.StartDrag();
+}
+
+//----------------------
+// GuiWindow::Maximized
+//
+bool GuiWindow::Maximized() const
+{
+	return (glfwGetWindowAttrib(m_RenderWindow.GetArea().GetWindow(), GLFW_MAXIMIZED) != 0);
+}
+
+//----------------------
+// GuiWindow::Minimized
+//
+bool GuiWindow::Minimized() const
+{
+	return (glfwGetWindowAttrib(m_RenderWindow.GetArea().GetWindow(), GLFW_ICONIFIED) != 0);
 }
 
 

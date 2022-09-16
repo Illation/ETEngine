@@ -1,12 +1,29 @@
 #include "stdafx.h"
 #include "ElementWindowHandle.h"
 
+#include <RmlUi/Core/Factory.h>
+#include <RmlUi/Core/ElementUtilities.h>
+
 #include <EtApplication/GuiApplication.h>
 #include <EtApplication/GuiWindow.h>
 
 
 namespace et {
 namespace app {
+
+
+//===================================
+// Window Handle Element :: Listener
+//===================================
+
+
+//------------------------------
+// WindowListener::ProcessEvent
+//
+void ElementWindowHandle::WindowListener::ProcessEvent(Rml::Event& evnt)
+{
+	m_WindowHandle->OnButtonEvent(evnt);
+}
 
 
 //=======================
@@ -22,6 +39,40 @@ ElementWindowHandle::ElementWindowHandle(Rml::String const& tag)
 {
 	// Make sure we can be dragged!
 	SetProperty(Rml::PropertyId::Drag, Rml::Property(Rml::Style::Drag::Drag));
+	SetProperty(Rml::PropertyId::ZIndex, Rml::Property(1, Rml::Property::Unit::NUMBER));
+
+	// Create buttons
+	m_ControlsArea = ToPtr(AppendChild(Rml::Factory::InstanceElement(this, "*", "controls", Rml::XMLAttributes()), false));
+	m_ControlsArea->SetProperty(Rml::PropertyId::ZIndex, Rml::Property(2, Rml::Property::Unit::NUMBER));
+
+	m_MinButton = ToPtr(m_ControlsArea->AppendChild(Rml::Factory::InstanceElement(m_ControlsArea.Get(), "*", "min-button", Rml::XMLAttributes()), false));
+	m_MaxButton = ToPtr(m_ControlsArea->AppendChild(Rml::Factory::InstanceElement(m_ControlsArea.Get(), "*", "max-button", Rml::XMLAttributes()), false));
+	m_CloseButton = ToPtr(m_ControlsArea->AppendChild(Rml::Factory::InstanceElement(m_ControlsArea.Get(), "*", "close-button", Rml::XMLAttributes()), false));
+
+	Rml::Factory::InstanceElementText(m_MinButton.Get(), "-");
+	Rml::Factory::InstanceElementText(m_MaxButton.Get(), "[]");
+	Rml::Factory::InstanceElementText(m_CloseButton.Get(), "x");
+
+	// Setup events
+	m_Listener.SetHandle(ToPtr(this));
+
+	m_MinButton->AddEventListener(Rml::EventId::Click, &m_Listener);
+	m_MaxButton->AddEventListener(Rml::EventId::Click, &m_Listener);
+	m_CloseButton->AddEventListener(Rml::EventId::Click, &m_Listener);
+
+	FormatChildren();
+}
+
+//-------------------------------
+// ElementWindowHandle::LazyInit
+//
+void ElementWindowHandle::LazyInit()
+{
+	if (m_Window == nullptr)
+	{
+		m_Window = GuiApplication::Instance()->GetWindow(GetContext());
+		ET_ASSERT(m_Window != nullptr);
+	}
 }
 
 //-------------------------------------------
@@ -33,18 +84,70 @@ void ElementWindowHandle::ProcessDefaultAction(Rml::Event& evnt)
 
 	if (evnt.GetTargetElement() == this)
 	{
-		if (m_Window == nullptr)
-		{
-			m_Window = GuiApplication::Instance()->GetWindow(GetContext());
-			ET_ASSERT(m_Window != nullptr);
-		}
+		LazyInit();
 
 		if (evnt == Rml::EventId::Dragstart)
 		{
 			m_Window->StartDrag();
-			ET_LOG_I(ET_CTX_APP, "Window Drag Start");
 		}
 	}
+}
+
+//-------------------------------
+// ElementWindowHandle::OnResize
+//
+void ElementWindowHandle::OnResize()
+{
+	Rml::Element::OnResize();
+	FormatChildren();
+}
+
+//------------------------------------
+// ElementWindowHandle::OnButtonEvent
+//
+void ElementWindowHandle::OnButtonEvent(Rml::Event& evnt)
+{
+	if (!(evnt == Rml::EventId::Click))
+	{
+		return;
+	}
+
+	LazyInit();
+
+	if (evnt.GetCurrentElement() == m_MinButton)
+	{
+		m_Window->ToggleMinimized();
+	}
+	else if (evnt.GetCurrentElement() == m_MaxButton)
+	{
+		m_Window->ToggleMaximized();
+	}
+	else if (evnt.GetCurrentElement() == m_CloseButton)
+	{
+		m_Window->Close();
+	}
+}
+
+//------------------------------------
+// ElementWindowHandle::OnButtonEvent
+//
+void ElementWindowHandle::FormatChildren()
+{
+	Rml::Vector2f const dim = GetBox().GetSize(Rml::Box::CONTENT);
+
+	float const controlW = dim.y * 3.f;
+	Rml::ElementUtilities::PositionElement(m_ControlsArea.Get(), Rml::Vector2f(controlW -dim.x, 0), Rml::ElementUtilities::TOP_RIGHT);
+	Rml::ElementUtilities::FormatElement(m_ControlsArea.Get(), Rml::Vector2f(controlW, dim.y));
+
+
+	Rml::ElementUtilities::PositionElement(m_MinButton.Get(), Rml::Vector2f(0, 0), Rml::ElementUtilities::TOP_LEFT);
+	Rml::ElementUtilities::FormatElement(m_MinButton.Get(), Rml::Vector2f(dim.y, dim.y));
+
+	Rml::ElementUtilities::PositionElement(m_MaxButton.Get(), Rml::Vector2f(dim.y, 0), Rml::ElementUtilities::TOP_LEFT);
+	Rml::ElementUtilities::FormatElement(m_MaxButton.Get(), Rml::Vector2f(dim.y, dim.y));
+
+	Rml::ElementUtilities::PositionElement(m_CloseButton.Get(), Rml::Vector2f(dim.y * 2, 0), Rml::ElementUtilities::TOP_LEFT);
+	Rml::ElementUtilities::FormatElement(m_CloseButton.Get(), Rml::Vector2f(dim.y, dim.y));
 }
 
 

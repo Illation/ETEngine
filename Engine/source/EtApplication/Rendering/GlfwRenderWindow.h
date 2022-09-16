@@ -30,6 +30,7 @@ public:
 	// accessors
 	//-----------
 	GlfwRenderArea& GetArea() { return m_Area; }
+	GlfwRenderArea const& GetArea() const { return m_Area; }
 
 	// Render Window Interface
 	//-------------------------
