@@ -43,7 +43,7 @@ Mirror of blender tangent space calculations: https://wiki.blender.org/index.php
 
 
 ## LunaSVG
-- source: [https://github.com/sammycage/lunasvg](https://github.com/sammycage/lunasvg)
+- source: [https://github.com/sammycage/lunasvg](https://github.com/sammycage/lunasvg/tree/637121f89218544ec2f154ae6949ab0ea9b47898)
 - license: [MIT](https://github.com/sammycage/lunasvg/blob/master/LICENSE)
 
 
