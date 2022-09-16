@@ -42,6 +42,7 @@ addToolDependency(EtEngineDemo EtTraceServer)
 # linking
 target_link_libraries (EtEngineDemo DemoCommon EtRuntime)
 dependancyLinks(EtEngineDemo)
+engineLinks(EtEngineDemo)
 
 # library includes
 libIncludeDirs()

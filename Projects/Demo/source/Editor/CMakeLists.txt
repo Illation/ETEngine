@@ -40,6 +40,7 @@ addToolDependency(DemoEditor EtTraceServer)
 # linking
 target_link_libraries (DemoEditor DemoPipeline EtEditor)
 dependancyLinks(DemoEditor) 
+engineLinks(DemoEditor)
 cookerLinks(DemoEditor)
 editorLinks(DemoEditor)
 

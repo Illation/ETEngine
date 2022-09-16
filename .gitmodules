@@ -40,3 +40,6 @@
 [submodule "Engine/third_party/imgui/imgui"]
 	path = Engine/third_party/imgui/imgui
 	url = https://github.com/ocornut/imgui
+[submodule "Engine/third_party/lunasvg/lunasvg"]
+	path = Engine/third_party/lunasvg/lunasvg
+	url = https://github.com/sammycage/lunasvg

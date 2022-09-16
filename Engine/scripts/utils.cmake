@@ -459,6 +459,17 @@ function(getBulletBuildDir bullet_build)
 endfunction(getBulletBuildDir)
 
 
+# lunasvg output directory
+##########################
+function(getLunaSvgBuildDir lunasvg_build)
+
+	set(_p )
+	getPlatformArch(_p)
+
+	set(${lunasvg_build} "${ENGINE_DIRECTORY_ABS}/third_party/lunasvg/build/${_p}" PARENT_SCOPE)
+endfunction(getLunaSvgBuildDir)
+
+
 # rmlui output directory
 ##########################
 function(getRmlUiBuildDir rmlui_build)
@@ -502,9 +513,28 @@ function(getGlfwBuildDir glfw_build)
 	set(${glfw_build} "${ENGINE_DIRECTORY_ABS}/third_party/glfw/build/${_p}" PARENT_SCOPE)
 endfunction(getGlfwBuildDir)
 
+# link to dependencies for executables that depend on the entire engine
+#######################################################################
+function(engineLinks TARGET)
+	
+	set(_bulletBuild )
+	getBulletBuildDir(_bulletBuild)
 
-# link to all runtime dependencies
-###################################
+	set(_alBuild )
+	getOpenAlBuildDir(_alBuild)
+
+	# separate debug and release libs
+	target_link_libraries (${TARGET} 		
+		debug ${_bulletBuild}/lib/Debug/BulletDynamics_Debug.lib	optimized ${_bulletBuild}/lib/Release/BulletDynamics.lib
+		debug ${_bulletBuild}/lib/Debug/BulletCollision_Debug.lib	optimized ${_bulletBuild}/lib/Release/BulletCollision.lib
+		debug ${_bulletBuild}/lib/Debug/LinearMath_Debug.lib		optimized ${_bulletBuild}/lib/Release/LinearMath.lib 
+
+		debug ${_alBuild}/Debug/OpenAL32.lib						optimized ${_alBuild}/Release/OpenAL32.lib)
+
+endfunction(engineLinks)
+
+# link to dependencies that all executables need
+################################################
 function(dependancyLinks TARGET)
 
 	set(_glfwBuild )
@@ -513,14 +543,11 @@ function(dependancyLinks TARGET)
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
 	
-	set(_bulletBuild )
-	getBulletBuildDir(_bulletBuild)
-	
 	set(_rttrBuild )
 	getRttrBuildDir(_rttrBuild)
 
-	set(_alBuild )
-	getOpenAlBuildDir(_alBuild)
+	set(_lunasvgBuild )
+	getLunaSvgBuildDir(_lunasvgBuild)
 
 	set(_rmluiBuild )
 	getRmlUiBuildDir(_rmluiBuild)
@@ -530,13 +557,8 @@ function(dependancyLinks TARGET)
 		debug ${_glfwBuild}/src/Debug/glfw3.lib						optimized ${_glfwBuild}/src/Debug/glfw3.lib
 
 		debug ${_rttrBuild}/install/lib/librttr_core_d.lib			optimized ${_rttrBuild}/install/lib/librttr_core.lib
-	
-		debug ${_bulletBuild}/lib/Debug/BulletDynamics_Debug.lib	optimized ${_bulletBuild}/lib/Release/BulletDynamics.lib
-		debug ${_bulletBuild}/lib/Debug/BulletCollision_Debug.lib	optimized ${_bulletBuild}/lib/Release/BulletCollision.lib
-		debug ${_bulletBuild}/lib/Debug/LinearMath_Debug.lib		optimized ${_bulletBuild}/lib/Release/LinearMath.lib 
-
-		debug ${_alBuild}/Debug/OpenAL32.lib						optimized ${_alBuild}/Release/OpenAL32.lib
-
+		
+		debug ${_lunasvgBuild}/Debug/lunasvg.lib					optimized ${_lunasvgBuild}/Release/lunasvg.lib
 		debug ${_rmluiBuild}/Debug/RmlCore.lib						optimized ${_rmluiBuild}/Release/RmlCore.lib
 		debug ${_rmluiBuild}/Debug/RmlDebugger.lib
 

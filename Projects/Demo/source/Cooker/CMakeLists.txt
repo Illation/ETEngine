@@ -32,6 +32,7 @@ addToolDependency(ProjectCooker EtTraceServer)
 # linking
 target_link_libraries (ProjectCooker EtCooker DemoPipeline)
 dependancyLinks(ProjectCooker)
+engineLinks(ProjectCooker)
 cookerLinks(ProjectCooker)
 
 # library includes

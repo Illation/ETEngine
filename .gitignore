@@ -3,6 +3,7 @@
 /Engine/third_party/bullet/build/
 /Engine/third_party/rttr/build/
 /Engine/third_party/glfw/build/
+/Engine/third_party/lunasvg/build/
 /Engine/third_party/rmlui/build/
 
 /Engine/tools/bin/

@@ -32,14 +32,20 @@ if(NOT EXISTS "${_buildDir}/")
     message(STATUS "===================================================")
     message(STATUS "Building RmlUi for \"${_generator}\"${_architecture}")
     message(STATUS "===================================================")
-	
-	set(_vcpkgInstall )
-	getVcpkgInstallDir(_vcpkgInstall)
+
+	# copy lunasvg library so RmlUI can find it 
+	# - TODO it would be nice if we could just set the lib search directory in the generator command for RmlUI, this would help with multiple architectures
+	set(svgDestDir "${_modDir}/Dependencies")
+	set(svgSourceDir "${CMAKE_CURRENT_SOURCE_DIR}/../lunasvg/lunasvg")
+	set(_lunaSvgBuildDir )
+	getLunaSvgBuildDir(_lunaSvgBuildDir)
+	file(COPY "${svgSourceDir}" DESTINATION ${svgDestDir})
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${_lunaSvgBuildDir}/	${svgDestDir}/lunasvg/build)
 
 	# generate project files
     message(STATUS "Generating project files")
     message(STATUS "------------------------")
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${_generator}" ${_architecture} -DNO_FONT_INTERFACE_DEFAULT=ON  -DBUILD_SHARED_LIBS=OFF -H. -B${_buildDir}
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${_generator}" ${_architecture} -DNO_FONT_INTERFACE_DEFAULT=ON -DENABLE_SVG_PLUGIN=ON -DLUNASVG_DIR=${_svgDir} -DBUILD_SHARED_LIBS=OFF -H. -B${_buildDir}
                     WORKING_DIRECTORY ${_modDir}/
                     RESULT_VARIABLE _genProjectFiles)
     if(NOT _genProjectFiles EQUAL "0")

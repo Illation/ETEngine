@@ -42,6 +42,11 @@ Glad uses a python interpreter which is obtained by Vcpkg (see below).
 Mirror of blender tangent space calculations: https://wiki.blender.org/index.php/Dev:Shading/Tangent_Space_Normal_Maps
 
 
+## LunaSVG
+- source: [https://github.com/sammycage/lunasvg](https://github.com/sammycage/lunasvg)
+- license: [MIT](https://github.com/sammycage/lunasvg/blob/master/LICENSE)
+
+
 ## OpenAL-soft
 - source: [https://github.com/kcat/openal-soft](https://github.com/kcat/openal-soft/tree/987fd13796d5761b7adc5f6e137e7a6149d02f7b)
 - license: [LGPL](https://github.com/kcat/openal-soft/blob/master/COPYING)
