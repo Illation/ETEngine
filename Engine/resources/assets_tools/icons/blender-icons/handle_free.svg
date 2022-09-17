@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" xml:space="preserve">
+    <g fill="#ffffff">
+        <path d="M-503.5 1348.5h-2v2h2z" fill="#ffffff" transform="matrix(-1 0 0 1 -495.498 -1344.994)"/>
+        <path d="m-498.495 1361.498-2.005-2.006c-2.162-2.163-3-5.136-3-7.985l.01-1.007m-8.015 10.99c0-2.848.838-5.821 3-7.984l3.005-3.006" fill="#ffffff" transform="matrix(-1 0 0 1 -495.498 -1344.994)"/>
+        <path fill="#ffffff" d="M-457.51 1358.5h-2v2h2z" transform="matrix(-1 0 0 1 -448.498 -1346.994)"/>
+        <path fill="#ffffff" d="M-458.5 1358v-3" transform="matrix(-1 0 0 1 -448.498 -1346.994)"/>
+        <path d="M-457.51 1359.5h-2v2h2z" fill="#ffffff" transform="matrix(0 1 1 0 -1344.498 463.006)"/>
+        <path d="M-458.5 1359v-3" fill="#ffffff" transform="matrix(0 1 1 0 -1344.498 463.006)"/>
+    </g>
+</svg>

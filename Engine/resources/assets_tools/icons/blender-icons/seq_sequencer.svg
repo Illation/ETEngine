@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" xml:space="preserve">
+    <g fill="#ffffff">
+        <g fill="#ffffff">
+            <path fill="#ffffff" d="M300.5 375a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm.5 1h10v2h-10z" transform="matrix(1 0 0 -1 -297 385)"/>
+            <path fill="#ffffff" d="M302.5 378a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm.5 1h10v2h-10z" transform="matrix(1 0 0 -1 -297 385)"/>
+        </g>
+        <path fill="#ffffff" d="M8.5-4a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zM9-3h10v2H9z" transform="translate(-3 17)"/>
+    </g>
+</svg>

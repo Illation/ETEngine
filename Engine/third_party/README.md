@@ -178,3 +178,11 @@ MIT - http://www.pixman.org/
 #### sigc++
 LGPL-3.0 - https://github.com/libsigcplusplus/libsigcplusplus/blob/master/COPYING
 
+------------------------------------------------------------
+
+Other external resources:
+
+#### blender-icons
+Blender icons are redistributed from https://wilkinson.graphics/blender-icons/
+Credit goes to Andrzej Ambroż, Henry Wilkinson and the Blender Foundation.
+They are licensed under CC BY-SA 4.0 - https://github.com/Shrinks99/blender-icons/blob/main/LICENSE

@@ -11,6 +11,18 @@ div#frame {
 	padding: 2em 1em;	
 }
 
+h1 {
+	color: #dfd154;
+	font-size: 1.5em;
+	font-weight: bold;
+	margin-bottom: 0.7em;
+	font-effect: glow(2dp 4dp 2dp 3dp #8a4056);
+}
+		
+p { 
+	margin: 0.7em 0;
+}
+
 panel#welcome
 {
 	display: inline-block;

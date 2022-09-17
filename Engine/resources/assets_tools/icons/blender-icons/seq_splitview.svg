@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" xml:space="preserve">
+    <g fill="#ffffff">
+        <path d="M153.5-9a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5zm6.5 1c.546 0 1 .454 1 1s-.454 1-1 1-1-.454-1-1 .454-1 1-1zm-2.98 1.75a.5.5 0 0 1 .412.246l2.5 4.25A.5.5 0 0 1 159.5-1h-5a.5.5 0 0 1-.432-.754l2.5-4.25a.5.5 0 0 1 .452-.246z" fill="#ffffff" transform="translate(-150 17)"/>
+        <g fill="#ffffff">
+            <path fill="#ffffff" d="M10.5-14a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm.5 1h8v2h-8zm5 7v1h3v2h-3v1h3.5a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5z" transform="translate(-3 17)"/>
+        </g>
+    </g>
+</svg>

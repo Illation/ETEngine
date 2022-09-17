@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" xml:space="preserve">
+    <g fill="#ffffff">
+        <g fill="#ffffff">
+            <path fill="#ffffff" d="M152 499v4.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5H157v5" transform="translate(-149 -491)"/>
+            <path fill="#ffffff" d="M152.5 497.5h3v-3z" transform="translate(-149 -491)"/>
+        </g>
+        <path d="M460 120.5h.5v9h-9v-.5" fill="#ffffff" transform="translate(-444 -113)"/>
+        <path fill="#ffffff" d="M458 118.5h.5v9h-9v-.5" transform="translate(-444 -113)"/>
+    </g>
+</svg>

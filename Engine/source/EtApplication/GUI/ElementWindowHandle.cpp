@@ -3,6 +3,7 @@
 
 #include <RmlUi/Core/Factory.h>
 #include <RmlUi/Core/ElementUtilities.h>
+#include <RmlUi/SVG/ElementSVG.h>
 
 #include <EtApplication/GuiApplication.h>
 #include <EtApplication/GuiWindow.h>
@@ -45,13 +46,17 @@ ElementWindowHandle::ElementWindowHandle(Rml::String const& tag)
 	m_ControlsArea = ToPtr(AppendChild(Rml::Factory::InstanceElement(this, "*", "controls", Rml::XMLAttributes()), false));
 	m_ControlsArea->SetProperty(Rml::PropertyId::ZIndex, Rml::Property(2, Rml::Property::Unit::NUMBER));
 
-	m_MinButton = ToPtr(m_ControlsArea->AppendChild(Rml::Factory::InstanceElement(m_ControlsArea.Get(), "*", "min-button", Rml::XMLAttributes()), false));
-	m_MaxButton = ToPtr(m_ControlsArea->AppendChild(Rml::Factory::InstanceElement(m_ControlsArea.Get(), "*", "max-button", Rml::XMLAttributes()), false));
-	m_CloseButton = ToPtr(m_ControlsArea->AppendChild(Rml::Factory::InstanceElement(m_ControlsArea.Get(), "*", "close-button", Rml::XMLAttributes()), false));
+	static float const s_IconSize = 26.f;
+	Rml::XMLAttributes attributes;
+	attributes.emplace("width", s_IconSize);
+	attributes.emplace("height", s_IconSize);
 
-	Rml::Factory::InstanceElementText(m_MinButton.Get(), "-");
-	Rml::Factory::InstanceElementText(m_MaxButton.Get(), "[]");
-	Rml::Factory::InstanceElementText(m_CloseButton.Get(), "x");
+	attributes["src"] = "icons/minimize.svg";
+	m_MinButton = ToPtr(m_ControlsArea->AppendChild(Rml::Factory::InstanceElement(m_ControlsArea.Get(), "svg", "min-button", attributes), false));
+	attributes["src"] = "icons/restore.svg";
+	m_MaxButton = ToPtr(m_ControlsArea->AppendChild(Rml::Factory::InstanceElement(m_ControlsArea.Get(), "svg", "max-button", attributes), false));
+	attributes["src"] = "icons/close.svg";
+	m_CloseButton = ToPtr(m_ControlsArea->AppendChild(Rml::Factory::InstanceElement(m_ControlsArea.Get(), "svg", "close-button", attributes), false));
 
 	// Setup events
 	m_Listener.SetHandle(ToPtr(this));

@@ -1,0 +1,14 @@
+{
+  "editable gui document asset": {
+    "asset": {
+      "gui document asset": {
+        "name": "restore.svg",
+        "path": "icons/",
+        "package": "tool_content",
+        "references": []
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

@@ -35,7 +35,7 @@ body {
 
 	background: #161616;
 
-	padding: 1em 1em;	
+	/* padding: 1em 1em;	 */
 	margin: auto;
 }
 
@@ -45,21 +45,10 @@ body.window {
 	
 	border-radius: 4px;
 }
-
-h1 {
-	color: #dfd154;
-	font-size: 1.5em;
-	font-weight: bold;
-	margin-bottom: 0.7em;
-	font-effect: glow(2dp 4dp 2dp 3dp #8a4056);
-}
-		
-p { 
-	margin: 0.7em 0;
-}
 		
 window_handle
 {
+	font-family: DejaVu Sans;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -69,13 +58,16 @@ window_handle
 	font-size: 22px;
 	font-weight: bold;
 
-	padding: 10px;
+	padding: 0px;
+	border-radius: 4px;
 
 	font-effect: shadow(2px 2px black);
 }
 
 window_handle controls
 {
+	position: static;
+	width: auto;
 	display: inline;
 	right: 0;
 }
@@ -83,21 +75,26 @@ window_handle controls min-button
 window_handle controls max-button
 window_handle controls close-button
 {
-	display: inline;
-
-	padding: 10px;
-	
+	width: auto;
+	display: inline-block;
+	image-color: #bababa;
 	border-radius: 5px;
 }
-window_handle controls min-button
+window_handle controls min-button:hover
+window_handle controls max-button:hover
+window_handle controls close-button:hover
 {
-	background: #5555FF;
+	image-color: #ffffff;
 }
-window_handle controls max-button
+window_handle controls min-button:hover
 {
-	background: #55FF55;
+	background: #3D3D3D;
 }
-window_handle controls close-button
+window_handle controls max-button:hover
+{
+	background: #3D3D3D;
+}
+window_handle controls close-button:hover
 {
 	background: #FF5555;
 }

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" x="0" y="0" version="1.1" viewBox="0 0 20 20" xml:space="preserve">
+    <style>
+        .st0{fill:#fff}
+    </style>
+    <path d="M16.9 9.2C15.5 7.7 13.8 5 10.5 5s-5 2.7-6.4 4.2c-.1.2-.1.4 0 .6 1.3 1.4 3.1 4.2 6.4 4.2s5-2.7 6.4-4.2c.1-.2.1-.4 0-.6zM10.5 13C8.6 13 7 11.4 7 9.5S8.6 6 10.5 6 14 7.6 14 9.5 12.4 13 10.5 13z" class="st0"/>
+    <circle cx="10.5" cy="9.5" r="1.5" class="st0"/>
+</svg>
