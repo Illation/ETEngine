@@ -102,6 +102,7 @@ void BasicGuiRenderer::OnRender(rhi::T_FbLoc const targetFb)
 	m_GuiContext.Update();
 
 	rhi::I_RenderDevice* const device = rhi::ContextHolder::GetRenderDevice();
+	device->SetClearColor(vec4(1.f, 0.f, 0.f, 0.f));
 	device->Clear(rhi::E_ClearFlag::CF_Color);
 
 	rhi::Viewport const* const viewport = rhi::Viewport::GetCurrentViewport();

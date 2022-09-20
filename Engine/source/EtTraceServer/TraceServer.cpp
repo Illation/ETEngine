@@ -86,6 +86,7 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 
 	core::WindowSettings settings;
 	settings.m_Title = "E.T. Trace Server";
+	settings.m_Decorated = false; // we use a custom window handle
 	settings.m_Resolutions.emplace_back(1280, 720);
 	m_MainWindow = MakeWindow(settings);
 	m_MainWindow->SetGuiDocument(core::HashString("trace.rml"));

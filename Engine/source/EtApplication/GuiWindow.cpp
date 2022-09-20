@@ -50,6 +50,18 @@ void GuiWindow::Init()
 			GuiApplication::Instance()->MarkWindowForClose(guiWindow);
 		});
 
+	glfwSetWindowFocusCallback(m_RenderWindow.GetArea().GetWindow(), [](GLFWwindow* const window, int const focused)
+		{
+			GuiWindow* const guiWindow = static_cast<GuiWindow*>(glfwGetWindowUserPointer(window)); 
+			guiWindow->m_EventDispatcher.Notify((focused == 0) ? GuiWindow::GW_LooseFocus : GuiWindow::GW_GainFocus, new GuiWindow::EventData(guiWindow));
+		});
+
+	glfwSetWindowMaximizeCallback(m_RenderWindow.GetArea().GetWindow(), [](GLFWwindow* const window, int const maxed)
+		{
+			GuiWindow* const guiWindow = static_cast<GuiWindow*>(glfwGetWindowUserPointer(window)); 
+			guiWindow->m_EventDispatcher.Notify((maxed == 0) ? GuiWindow::GW_Restore : GuiWindow::GW_Maximize, new GuiWindow::EventData(guiWindow));
+		});
+
 	m_Viewport.SetInputProvider(ToPtr(&GetInputProvider()));
 
 	m_Viewport.SynchDimensions();
@@ -136,12 +148,47 @@ void GuiWindow::ToggleMaximized()
 	}
 }
 
+//-----------------------------
+// GuiWindow::RegisterCallback
+//
+GuiWindow::T_EventCallbackId GuiWindow::RegisterCallback(T_EventFlags const flags, T_EventCallback& callback)
+{
+	return m_EventDispatcher.Register(flags, callback);
+}
+
+//-------------------------------
+// GuiWindow::UnregisterCallback
+//
+void GuiWindow::UnregisterCallback(T_EventCallbackId& callbackId)
+{
+	m_EventDispatcher.Unregister(callbackId);
+}
+
 //----------------------
 // GuiWindow::StartDrag
 //
 void GuiWindow::StartDrag()
 {
 	m_RenderWindow.StartDrag();
+}
+
+//--------------------------------
+// GuiWindow::SetCustomBorderSize
+//
+void GuiWindow::SetCustomBorderSize(int32 const size)
+{
+	m_CustomBorderSize = size;
+	ivec2 dim = m_RenderWindow.GetSettings().GetSize();
+	dim.y += m_CustomBorderSize;
+	m_RenderWindow.SetDimensions(dim);
+}
+
+//----------------------
+// GuiWindow::Maximized
+//
+bool GuiWindow::Focused() const
+{
+	return (glfwGetWindowAttrib(m_RenderWindow.GetArea().GetWindow(), GLFW_FOCUSED) != 0);
 }
 
 //----------------------

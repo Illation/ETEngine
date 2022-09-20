@@ -54,6 +54,9 @@ void GlfwRenderArea::Initialize(rhi::RenderDeviceParams const& params, bool cons
 	glfwWindowHint(GLFW_DEPTH_BITS, params.m_DepthBuffer ? 24 : 0);
 	glfwWindowHint(GLFW_STENCIL_BITS, params.m_StencilBuffer ? 8 : 0);
 
+	// other window info
+	glfwWindowHint(GLFW_DECORATED, windowSettings.m_Decorated ? GLFW_TRUE : GLFW_FALSE);
+
 	// Determine window settings
 	GLFWmonitor* fullscreenMonitor = nullptr;
 	ivec2 dim;

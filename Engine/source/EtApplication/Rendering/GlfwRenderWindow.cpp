@@ -71,5 +71,14 @@ void GlfwRenderWindow::StartDrag()
 #endif
 }
 
+//-----------------------------
+// GlfwRenderWindow::StartDrag
+//
+void GlfwRenderWindow::SetDimensions(ivec2 const dim)
+{
+	glfwSetWindowSize(m_Area.GetWindow(), dim.x, dim.y);
+}
+
+
 } // namespace app
 } // namespace et

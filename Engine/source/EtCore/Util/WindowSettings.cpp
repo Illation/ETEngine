@@ -22,6 +22,7 @@ RTTR_REGISTRATION
 		.constructor<>()
 		.property("title", &WindowSettings::m_Title)
 		.property("fullscreen", &WindowSettings::m_Fullscreen)
+		.property("decorated", &WindowSettings::m_Decorated)
 		.property("resolutions", &WindowSettings::m_Resolutions)
 		.property("fullscreen resolution", &WindowSettings::m_FullscreenRes)
 		.property("windowed resolution", &WindowSettings::m_WindowedRes);

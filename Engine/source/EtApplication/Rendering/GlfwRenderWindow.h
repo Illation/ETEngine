@@ -26,6 +26,7 @@ public:
 	// functionality
 	//---------------
 	void StartDrag();
+	void SetDimensions(ivec2 const dim);
 
 	// accessors
 	//-----------

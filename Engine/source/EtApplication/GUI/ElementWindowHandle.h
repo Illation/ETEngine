@@ -2,13 +2,11 @@
 #include <RmlUi/Core/Element.h>
 #include <RmlUi/Core/EventListener.h>
 
+#include <EtApplication/GuiWindow.h>
+
 
 namespace et {
 namespace app {
-
-
-// fwd
-class GuiWindow;
 
 
 //---------------------
@@ -45,7 +43,7 @@ public:
 	RMLUI_RTTI_DefineWithParent(ElementWindowHandle, Rml::Element)
 
 	ElementWindowHandle(Rml::String const& tag);
-	virtual ~ElementWindowHandle() = default;
+	virtual ~ElementWindowHandle();
 
 	void LazyInit();
 
@@ -64,6 +62,9 @@ private:
 	void FormatChildren();
 	void InitIcon();
 
+	void OnFocusChange(bool const focused);
+	void OnMaximizedChanged(bool const maximized);
+
 
 	// Data
 	///////
@@ -78,6 +79,7 @@ private:
 
 	Ptr<Rml::Element> m_Icon;
 
+	GuiWindow::T_EventCallbackId m_WindowCallbackId = GuiWindow::INVALID_CALLBACK;
 	WindowListener m_Listener;
 	bool m_IsInitialized = false;
 };

@@ -6,7 +6,6 @@
 #include <RmlUi/SVG/ElementSVG.h>
 
 #include <EtApplication/GuiApplication.h>
-#include <EtApplication/GuiWindow.h>
 
 
 namespace et {
@@ -75,6 +74,18 @@ ElementWindowHandle::ElementWindowHandle(Rml::String const& tag)
 	FormatChildren();
 }
 
+//----------------------------
+// ElementWindowHandle::d-tor
+//
+ElementWindowHandle::~ElementWindowHandle()
+{
+	if (m_WindowCallbackId != GuiWindow::INVALID_CALLBACK)
+	{
+		ET_ASSERT(m_Window != nullptr);
+		m_Window->UnregisterCallback(m_WindowCallbackId);
+	}
+}
+
 //-------------------------------
 // ElementWindowHandle::LazyInit
 //
@@ -85,7 +96,30 @@ void ElementWindowHandle::LazyInit()
 		m_Window = GuiApplication::Instance()->GetWindow(GetContext());
 		ET_ASSERT(m_Window != nullptr);
 
+		m_WindowCallbackId = m_Window->RegisterCallback(GuiWindow::GW_All, 
+			GuiWindow::T_EventCallback([this](GuiWindow::T_EventFlags const evnt, GuiWindow::EventData const* const)
+			{
+				switch (static_cast<GuiWindow::E_Event>(evnt))
+				{
+				case GuiWindow::GW_GainFocus:
+					OnFocusChange(true);
+					break;
+				case GuiWindow::GW_LooseFocus:
+					OnFocusChange(false);
+					break;
+				case GuiWindow::GW_Maximize:
+					OnMaximizedChanged(true);
+					break;
+				case GuiWindow::GW_Restore:
+					OnMaximizedChanged(false);
+					break;
+				}
+			}));
+
 		InitIcon();
+
+		OnFocusChange(m_Window->Focused());
+		OnMaximizedChanged(m_Window->Maximized());
 
 		m_IsInitialized = true;
 	}
@@ -218,6 +252,24 @@ void ElementWindowHandle::InitIcon()
 		m_Icon = ToPtr(AppendChild(Rml::Factory::InstanceElement(this, "svg", "icon", attributes), false));
 		DirtyLayout();
 	}
+}
+
+//-------------------------------------
+// ElementWindowHandle::OnFocusChange
+//
+void ElementWindowHandle::OnFocusChange(bool const focused)
+{
+	SetPseudoClass("window_focus", focused);
+}
+
+//-----------------------------------------
+// ElementWindowHandle::OnMaximizedChanged
+//
+void ElementWindowHandle::OnMaximizedChanged(bool const maximized)
+{
+	m_MaxButton->SetAttribute("src", maximized ? "icons/restore.svg" : "icons/maximize.svg");
+	// #todo: there is a bug in the RML ui implementation that means that the texture only updates if the image resizes
+	m_MaxButton->SetAttribute("height", s_Height + (maximized ? 1 : -1)); 
 }
 
 
