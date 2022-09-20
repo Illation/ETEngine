@@ -37,9 +37,12 @@ body {
 
 	/* padding: 1em 1em;	 */
 	margin: auto;
+	width: 100%;
+	height: 100%;
 }
 
-body.window {
+window 
+{
 	width: 100%;
 	height: 100%;
 	
@@ -53,9 +56,9 @@ window_handle
 	top: 0;
 	left: 0;
 	width: 100%;
-	background: #1d1d1d;
+	background-color: #1d1d1d;
 	
-	font-size: 22px;
+	font-size: 18px;
 	font-weight: bold;
 
 	padding: 0px;
@@ -80,6 +83,18 @@ window_handle controls close-button
 	image-color: #bababa;
 	border-radius: 5px;
 }
+window_handle controls min-button
+{
+	transition: background 0.15s sine-in-out;
+}
+window_handle controls max-button
+{
+	transition: background 0.15s sine-in-out;
+}
+window_handle controls close-button
+{
+	transition: background 0.15s sine-in-out;
+}
 window_handle controls min-button:hover
 window_handle controls max-button:hover
 window_handle controls close-button:hover
@@ -88,15 +103,15 @@ window_handle controls close-button:hover
 }
 window_handle controls min-button:hover
 {
-	background: #3D3D3D;
+	background-color: #3D3D3D;
 }
 window_handle controls max-button:hover
 {
-	background: #3D3D3D;
+	background-color: #3D3D3D;
 }
 window_handle controls close-button:hover
 {
-	background: #FF5555;
+	background-color: #FF5555;
 }
 
 div#content

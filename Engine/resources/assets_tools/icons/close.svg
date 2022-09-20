@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="20"
-   height="20"
-   viewBox="0 0 20 20"
+   width="32"
+   height="32"
+   viewBox="0 0 32 32"
    version="1.1"
    id="svg272"
    inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
@@ -24,25 +24,28 @@
      inkscape:deskcolor="#505050"
      inkscape:document-units="px"
      showgrid="true"
-     inkscape:zoom="57.128619"
-     inkscape:cx="7.5881407"
-     inkscape:cy="10.695165"
+     inkscape:zoom="20.198017"
+     inkscape:cx="-8.7384816"
+     inkscape:cy="12.724021"
      inkscape:window-width="2560"
      inkscape:window-height="1417"
      inkscape:window-x="1912"
      inkscape:window-y="590"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1">
+     inkscape:current-layer="layer3">
     <inkscape:grid
        type="xygrid"
        id="grid547"
        spacingx="0.5"
-       spacingy="0.5" />
+       spacingy="0.5"
+       originx="0"
+       originy="0"
+       empspacing="2" />
   </sodipodi:namedview>
   <defs
      id="defs269">
     <filter
-       style="color-interpolation-filters:sRGB;"
+       style="color-interpolation-filters:sRGB"
        inkscape:label="Drop Shadow"
        id="filter2220"
        x="-0.39"
@@ -79,13 +82,22 @@
     </filter>
   </defs>
   <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Layer 2">
+    <path
+       id="path18917-5"
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:4.36364;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       d="M 24,10.5 9.454546,25.045455 M 9.454546,10.5 24,25.045455" />
+  </g>
+  <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
     <path
        id="path18917"
-       style="fill:none;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal;filter:url(#filter2220)"
+       style="fill:none;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
        d="M 15,5 5,15 M 5,5 15,15"
-       transform="matrix(0.90909091,0,0,0.90909091,0.95454544,0.95454544)" />
+       transform="matrix(1.4545455,0,0,1.4545455,1.454545,1.454545)" />
   </g>
 </svg>

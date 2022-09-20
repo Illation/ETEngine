@@ -18,6 +18,9 @@ class GuiWindow;
 //
 class ElementWindowHandle : public Rml::Element
 {
+	// definitions
+	//-------------
+
 	class WindowListener : public Rml::EventListener
 	{
 	public:
@@ -33,9 +36,12 @@ class ElementWindowHandle : public Rml::Element
 
 	friend class WindowListener;
 
+	static float const s_Height;
+public:
+	static std::string const s_IconAttribId;
+
 	// construct destruct
 	//--------------------
-public:
 	RMLUI_RTTI_DefineWithParent(ElementWindowHandle, Rml::Element)
 
 	ElementWindowHandle(Rml::String const& tag);
@@ -46,7 +52,9 @@ public:
 	// interface
 	//-----------
 protected:
+	void OnAttributeChange(Rml::ElementAttributes const& changedAttributes) override;
 	void ProcessDefaultAction(Rml::Event& evnt) override;
+	void OnLayout() override;
 	void OnResize() override;
 
 	// utility
@@ -54,6 +62,7 @@ protected:
 private:
 	void OnButtonEvent(Rml::Event& evnt);
 	void FormatChildren();
+	void InitIcon();
 
 
 	// Data
@@ -67,7 +76,10 @@ private:
 	Ptr<Rml::Element> m_MaxButton;
 	Ptr<Rml::Element> m_CloseButton;
 
+	Ptr<Rml::Element> m_Icon;
+
 	WindowListener m_Listener;
+	bool m_IsInitialized = false;
 };
 
 

@@ -31,6 +31,7 @@ public:
 	//-----------
 	GlfwRenderArea& GetArea() { return m_Area; }
 	GlfwRenderArea const& GetArea() const { return m_Area; }
+	core::WindowSettings const& GetSettings() const { return m_WindowSettings; }
 
 	// Render Window Interface
 	//-------------------------

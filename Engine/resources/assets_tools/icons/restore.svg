@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="20"
-   height="20"
-   viewBox="0 0 20 20"
+   width="32"
+   height="32"
+   viewBox="0 0 32 32"
    version="1.1"
    id="svg272"
    inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
@@ -24,29 +24,32 @@
      inkscape:deskcolor="#505050"
      inkscape:document-units="px"
      showgrid="true"
-     inkscape:zoom="57.128619"
-     inkscape:cx="7.3780884"
-     inkscape:cy="9.8199468"
+     inkscape:zoom="20.198017"
+     inkscape:cx="0.12377453"
+     inkscape:cy="9.4068641"
      inkscape:window-width="2560"
      inkscape:window-height="1417"
      inkscape:window-x="1912"
      inkscape:window-y="590"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1">
+     inkscape:current-layer="layer4">
     <inkscape:grid
        type="xygrid"
        id="grid547"
        spacingx="0.5"
-       spacingy="0.5" />
+       spacingy="0.5"
+       originx="0"
+       originy="0"
+       empspacing="2" />
   </sodipodi:namedview>
   <defs
      id="defs269">
     <filter
-       style="color-interpolation-filters:sRGB;"
+       style="color-interpolation-filters:sRGB"
        inkscape:label="Drop Shadow"
        id="filter6538"
-       x="-0.45333333"
-       y="-0.45333333"
+       x="-0.45333332"
+       y="-0.45333332"
        width="2.04"
        height="2.04">
       <feFlood
@@ -78,11 +81,11 @@
          id="feComposite6536" />
     </filter>
     <filter
-       style="color-interpolation-filters:sRGB;"
+       style="color-interpolation-filters:sRGB"
        inkscape:label="Drop Shadow"
        id="filter6550"
-       x="-0.45333333"
-       y="-0.45333333"
+       x="-0.45333332"
+       y="-0.45333332"
        width="2.04"
        height="2.04">
       <feFlood
@@ -115,16 +118,29 @@
     </filter>
   </defs>
   <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Layer 2">
+    <path
+       style="fill:none;stroke:#000000;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       d="m 21,22.5 h 4 v -12 H 13 v 4"
+       id="path17446-5" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       d="m 9,26.5 v -12 h 12 v 12 H 9"
+       id="path17444-1" />
+  </g>
+  <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
     <path
-       style="fill:none;stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal;filter:url(#filter6538)"
-       d="M 12.5,12.5 H 15 V 5 H 7.5 v 2.5"
+       style="fill:none;stroke:#ffffff;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       d="m 20,21 h 4 V 9 H 12 v 4"
        id="path17446" />
     <path
-       style="fill:none;stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal;filter:url(#filter6550)"
-       d="M 5,15 V 7.5 h 7.5 V 15 H 5"
+       style="fill:none;stroke:#ffffff;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       d="M 8,25 V 13 H 20 V 25 H 8"
        id="path17444" />
   </g>
 </svg>

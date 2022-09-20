@@ -120,6 +120,7 @@ Ptr<GuiWindow> GuiApplication::MakeWindow(core::WindowSettings const& settings)
 
 		ET_ASSERT(gui::RmlGlobal::IsInitialized());
 		Rml::Factory::RegisterElementInstancer("window_handle", &m_HandleInstancer);
+		Rml::Factory::RegisterElementInstancer("window", &m_WindowInstancer);
 
 		core::ResourceManager::SetInstance(std::move(Create<app::PackageResourceManager>()));
 

@@ -1,0 +1,14 @@
+{
+  "editable gui document asset": {
+    "asset": {
+      "gui document asset": {
+        "name": "trace_logo_grayscale.svg",
+        "path": "",
+        "package": "content1",
+        "references": []
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

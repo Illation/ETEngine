@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="20"
-   height="20"
-   viewBox="0 0 20 20"
+   width="32"
+   height="32"
+   viewBox="0 0 32 32"
    version="1.1"
    id="svg272"
    inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
@@ -24,9 +24,9 @@
      inkscape:deskcolor="#505050"
      inkscape:document-units="px"
      showgrid="true"
-     inkscape:zoom="57.128619"
-     inkscape:cx="7.3780884"
-     inkscape:cy="9.8199468"
+     inkscape:zoom="22.671611"
+     inkscape:cx="0.99243057"
+     inkscape:cy="12.350247"
      inkscape:window-width="2560"
      inkscape:window-height="1417"
      inkscape:window-x="1912"
@@ -37,12 +37,15 @@
        type="xygrid"
        id="grid547"
        spacingx="0.5"
-       spacingy="0.5" />
+       spacingy="0.5"
+       originx="0"
+       originy="0"
+       empspacing="2" />
   </sodipodi:namedview>
   <defs
      id="defs269">
     <filter
-       style="color-interpolation-filters:sRGB;"
+       style="color-interpolation-filters:sRGB"
        inkscape:label="Drop Shadow"
        id="filter2730"
        x="-0.43333333"
@@ -83,8 +86,12 @@
      inkscape:groupmode="layer"
      id="layer1">
     <path
-       style="fill:none;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal;filter:url(#filter2730)"
-       d="m 5.5,5.5 h 9 v 9 h -9 v -9"
+       style="fill:none;stroke:#000000;stroke-width:4.8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       d="M 9.8,10.5 H 24.2 V 24.9 H 9.8 V 10.5"
+       id="path549-5" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:4.8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       d="M 8.6,8.8 H 23 V 23.2 H 8.6 V 8.8"
        id="path549" />
   </g>
 </svg>

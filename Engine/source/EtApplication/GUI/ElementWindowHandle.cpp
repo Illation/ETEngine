@@ -32,6 +32,11 @@ void ElementWindowHandle::WindowListener::ProcessEvent(Rml::Event& evnt)
 //=======================
 
 
+// static
+float const ElementWindowHandle::s_Height = 32.f;
+std::string const ElementWindowHandle::s_IconAttribId("icon");
+
+
 //----------------------------
 // ElementWindowHandle::c-tor
 //
@@ -41,15 +46,15 @@ ElementWindowHandle::ElementWindowHandle(Rml::String const& tag)
 	// Make sure we can be dragged!
 	SetProperty(Rml::PropertyId::Drag, Rml::Property(Rml::Style::Drag::Drag));
 	SetProperty(Rml::PropertyId::ZIndex, Rml::Property(1, Rml::Property::Unit::NUMBER));
+	SetProperty(Rml::PropertyId::Height, Rml::Property(s_Height, Rml::Property::Unit::NUMBER));
 
 	// Create buttons
 	m_ControlsArea = ToPtr(AppendChild(Rml::Factory::InstanceElement(this, "*", "controls", Rml::XMLAttributes()), false));
 	m_ControlsArea->SetProperty(Rml::PropertyId::ZIndex, Rml::Property(2, Rml::Property::Unit::NUMBER));
 
-	static float const s_IconSize = 26.f;
 	Rml::XMLAttributes attributes;
-	attributes.emplace("width", s_IconSize);
-	attributes.emplace("height", s_IconSize);
+	attributes.emplace("width", s_Height);
+	attributes.emplace("height", s_Height);
 
 	attributes["src"] = "icons/minimize.svg";
 	m_MinButton = ToPtr(m_ControlsArea->AppendChild(Rml::Factory::InstanceElement(m_ControlsArea.Get(), "svg", "min-button", attributes), false));
@@ -57,6 +62,8 @@ ElementWindowHandle::ElementWindowHandle(Rml::String const& tag)
 	m_MaxButton = ToPtr(m_ControlsArea->AppendChild(Rml::Factory::InstanceElement(m_ControlsArea.Get(), "svg", "max-button", attributes), false));
 	attributes["src"] = "icons/close.svg";
 	m_CloseButton = ToPtr(m_ControlsArea->AppendChild(Rml::Factory::InstanceElement(m_ControlsArea.Get(), "svg", "close-button", attributes), false));
+
+	InitIcon();
 
 	// Setup events
 	m_Listener.SetHandle(ToPtr(this));
@@ -73,10 +80,28 @@ ElementWindowHandle::ElementWindowHandle(Rml::String const& tag)
 //
 void ElementWindowHandle::LazyInit()
 {
-	if (m_Window == nullptr)
+	if (!m_IsInitialized)
 	{
 		m_Window = GuiApplication::Instance()->GetWindow(GetContext());
 		ET_ASSERT(m_Window != nullptr);
+
+		InitIcon();
+
+		m_IsInitialized = true;
+	}
+}
+
+
+//-------------------------------------------
+// ElementWindowHandle::OnAttributeChange
+//
+void ElementWindowHandle::OnAttributeChange(Rml::ElementAttributes const& changedAttributes)
+{
+	Rml::Element::OnAttributeChange(changedAttributes);
+
+	if (changedAttributes.find(s_IconAttribId) != changedAttributes.cend())
+	{
+		m_IsInitialized = false;
 	}
 }
 
@@ -96,6 +121,16 @@ void ElementWindowHandle::ProcessDefaultAction(Rml::Event& evnt)
 			m_Window->StartDrag();
 		}
 	}
+}
+
+//-------------------------------
+// ElementWindowHandle::OnLayout
+//
+void ElementWindowHandle::OnLayout()
+{
+	Rml::Element::OnLayout();
+	LazyInit();
+	FormatChildren();
 }
 
 //-------------------------------
@@ -133,12 +168,18 @@ void ElementWindowHandle::OnButtonEvent(Rml::Event& evnt)
 	}
 }
 
-//------------------------------------
-// ElementWindowHandle::OnButtonEvent
+//-------------------------------------
+// ElementWindowHandle::FormatChildren
 //
 void ElementWindowHandle::FormatChildren()
 {
 	Rml::Vector2f const dim = GetBox().GetSize(Rml::Box::CONTENT);
+
+	if (m_Icon != nullptr)
+	{
+		Rml::ElementUtilities::PositionElement(m_Icon.Get(), Rml::Vector2f(0, 0), Rml::ElementUtilities::TOP_LEFT);
+		Rml::ElementUtilities::FormatElement(m_Icon.Get(), Rml::Vector2f(dim.y, dim.y));
+	}
 
 	float const controlW = dim.y * 3.f;
 	Rml::ElementUtilities::PositionElement(m_ControlsArea.Get(), Rml::Vector2f(controlW -dim.x, 0), Rml::ElementUtilities::TOP_RIGHT);
@@ -153,6 +194,30 @@ void ElementWindowHandle::FormatChildren()
 
 	Rml::ElementUtilities::PositionElement(m_CloseButton.Get(), Rml::Vector2f(dim.y * 2, 0), Rml::ElementUtilities::TOP_LEFT);
 	Rml::ElementUtilities::FormatElement(m_CloseButton.Get(), Rml::Vector2f(dim.y, dim.y));
+}
+
+//-------------------------------------
+// ElementWindowHandle::InitIcon
+//
+void ElementWindowHandle::InitIcon()
+{
+	if (m_Icon != nullptr)
+	{
+		RemoveChild(m_Icon.Get());
+		m_Icon = nullptr;
+		DirtyLayout();
+	}
+
+	std::string const iconId = GetAttribute<std::string>(s_IconAttribId, "");
+	if (!iconId.empty())
+	{
+		Rml::XMLAttributes attributes;
+		attributes.emplace("width", s_Height);
+		attributes.emplace("height", s_Height);
+		attributes["src"] = iconId;
+		m_Icon = ToPtr(AppendChild(Rml::Factory::InstanceElement(this, "svg", "icon", attributes), false));
+		DirtyLayout();
+	}
 }
 
 

@@ -51,6 +51,8 @@ public:
 	bool Maximized() const;
 	bool Minimized() const;
 
+	std::string const& GetTitle() const;
+
 
 	// Data
 	///////

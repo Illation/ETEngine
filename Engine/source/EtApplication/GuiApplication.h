@@ -4,6 +4,7 @@
 #include <EtCore/UpdateCycle/Context.h>
 #include <EtCore/Util/WindowSettings.h>
 
+#include <EtApplication/GUI/ElementWindow.h>
 #include <EtApplication/GUI/ElementWindowHandle.h>
 
 
@@ -66,6 +67,7 @@ private:
 
 	// Gui types
 	Rml::ElementInstancerGeneric<ElementWindowHandle> m_HandleInstancer;
+	Rml::ElementInstancerGeneric<ElementWindow> m_WindowInstancer;
 };
 
 

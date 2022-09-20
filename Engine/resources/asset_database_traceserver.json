@@ -3,6 +3,13 @@
     "root paths": [ "assets_traceserver/" ],
     "packages": [
       {
+        "name": "content1",
+        "out path": "content/",
+        "root path": "assets_traceserver/",
+        "is compiled": false,
+        "is runtime": true
+      },
+      {
         "name": "default_compiled",
         "out path": "",
         "root path": "assets_traceserver/",

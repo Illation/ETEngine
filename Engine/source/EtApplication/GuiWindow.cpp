@@ -160,6 +160,14 @@ bool GuiWindow::Minimized() const
 	return (glfwGetWindowAttrib(m_RenderWindow.GetArea().GetWindow(), GLFW_ICONIFIED) != 0);
 }
 
+//---------------------
+// GuiWindow::GetTitle
+//
+std::string const& GuiWindow::GetTitle() const
+{
+	return m_RenderWindow.GetSettings().m_Title;
+}
+
 
 } // namespace app
 } // namespace et

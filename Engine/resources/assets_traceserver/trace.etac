@@ -6,7 +6,9 @@
         "path": "",
         "package": "default_compiled",
         "references": [
-          "GUI/window_template.rml",
+          "Fonts/NotoEmoji-Regular.ttf",
+          "GUI/window_style.rcss",
+          "GUI/rml.rcss",
           "trace_style.rcss"
         ],
         "data model": "animals"
