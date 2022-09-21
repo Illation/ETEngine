@@ -54,9 +54,9 @@ protected:
 	bool ProcessMouseReleased(E_MouseButton const button, core::T_KeyModifierFlags const modifiers) override;
 	bool ProcessMouseMove(ivec2 const& mousePos, core::T_KeyModifierFlags const modifiers) override;
 	bool ProcessMouseWheelDelta(ivec2 const& mouseWheel, core::T_KeyModifierFlags const modifiers) override;
+	bool ProcessMouseEnterLeave(bool const entered, core::T_KeyModifierFlags const modifiers) override;
 	bool ProcessTextInput(core::E_Character const character) override;
 	// #todo: WindowFocusCallback
-	// #todo: CursorEnterCallback
 
 	// utility
 	//---------

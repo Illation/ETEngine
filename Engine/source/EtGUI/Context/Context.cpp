@@ -207,6 +207,14 @@ bool Context::ProcessMouseWheelDelta(ivec2 const& mouseWheel, int32 const rmlMod
 }
 
 //-------------------------------------
+// Context::ProcessMouseWheelDelta
+//
+bool Context::ProcessMouseLeave()
+{
+	return !(m_Context->ProcessMouseLeave());
+}
+
+//-------------------------------------
 // Context::ProcessTextInput
 //
 bool Context::ProcessTextInput(Rml::Character const character)

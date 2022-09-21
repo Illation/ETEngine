@@ -132,6 +132,19 @@ void GlfwEventBase::InitEvents(Ptr<GlfwRenderArea> const renderArea)
 				}));
 		});
 
+	// cursor enters or leaves the window
+	glfwSetCursorEnterCallback(m_RenderArea->GetWindow(), [](GLFWwindow* const window, int32 const entered)
+		{
+			GlfwEventBase* const eventBase = static_cast<GlfwEventBase*>(glfwGetWindowUserPointer(window));
+
+			core::T_KeyModifierFlags const mods = eventBase->GetCurrentModifiers();
+			core::RawInputProvider& inputProvider = eventBase->GetInputProvider();
+			inputProvider.IterateListeners(core::RawInputProvider::T_EventFn([mods, entered](core::I_RawInputListener& listener)
+				{
+					return listener.ProcessMouseEnterLeave(entered == GLFW_TRUE ? true : false, mods);
+				}));
+		});
+
 	// window resizing
 	glfwSetWindowSizeCallback(renderArea->GetWindow(), [](GLFWwindow* const window, int32 const width, int32 const height)
 		{

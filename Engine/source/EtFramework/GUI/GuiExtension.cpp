@@ -288,6 +288,36 @@ bool GuiExtension::PerViewport::ProcessMouseWheelDelta(ivec2 const& mouseWheel, 
 	return false;
 }
 
+//-------------------------------------
+// PerViewport::ProcessMouseEnterLeave
+//
+bool GuiExtension::PerViewport::ProcessMouseEnterLeave(bool const entered, core::T_KeyModifierFlags const)
+{
+	if (entered)
+	{
+		return false;
+	}
+
+	if (m_Context.HasActiveDocuments())
+	{
+		m_Context.ProcessMouseLeave();
+	}
+
+	for (core::T_SlotId const worldContextId : m_EventWorldContexts)
+	{
+		WorldContext& worldContext = m_GuiExtension->GetWorldContexts()[worldContextId];
+		if (worldContext.m_Context.HasActiveDocuments())
+		{
+			if (m_GuiExtension->GetRenderScene()->GetCameras()[worldContext.m_EventCameraId].GetViewport() == m_Viewport)
+			{
+				worldContext.m_Context.ProcessMouseLeave();
+			}
+		}
+	}
+
+	return false;
+}
+
 //---------------------------------
 // PerViewport::ProcessTextInput
 //

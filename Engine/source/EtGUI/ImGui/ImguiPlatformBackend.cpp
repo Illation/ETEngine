@@ -180,6 +180,27 @@ bool ImguiPlatformBackend::ProcessMouseWheelDelta(ivec2 const& mouseWheel, core:
 	return io.WantCaptureMouse;
 }
 
+//----------------------------------------------
+// ImguiPlatformBackend::ProcessMouseEnterLeave
+//
+bool ImguiPlatformBackend::ProcessMouseEnterLeave(bool const entered, core::T_KeyModifierFlags const modifiers)
+{
+	UpdateKeyModifiers(modifiers);
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (entered)
+	{
+		io.AddMousePosEvent(m_LastValidMousePos.x, m_LastValidMousePos.y);
+	}
+	else
+	{
+		m_LastValidMousePos = io.MousePos;
+		io.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
+	}
+
+	return false;
+}
+
 //----------------------------------------
 // ImguiPlatformBackend::ProcessTextInput
 //

@@ -78,6 +78,7 @@ public:
 	bool ProcessMouseReleased(int32 const button, int32 const rmlModifier);
 	bool ProcessMouseMove(ivec2 const& mousePos, int32 const rmlModifier);
 	bool ProcessMouseWheelDelta(ivec2 const& mouseWheel, int32 const rmlModifier);
+	bool ProcessMouseLeave();
 	bool ProcessTextInput(Rml::Character const character);
 
 	// accessors

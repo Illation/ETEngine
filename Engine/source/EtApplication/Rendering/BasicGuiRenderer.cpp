@@ -212,6 +212,24 @@ bool BasicGuiRenderer::ProcessMouseWheelDelta(ivec2 const& mouseWheel, core::T_K
 	return false;
 }
 
+//-------------------------------------
+// BasicGuiRenderer::ProcessMouseEnterLeave
+//
+bool BasicGuiRenderer::ProcessMouseEnterLeave(bool const entered, core::T_KeyModifierFlags const)
+{
+	if (entered)
+	{
+		return false;
+	}
+
+	if (m_GuiContext.HasActiveDocuments())
+	{
+		m_GuiContext.ProcessMouseLeave();
+	}
+
+	return false;
+}
+
 //---------------------------------
 // BasicGuiRenderer::ProcessTextInput
 //
