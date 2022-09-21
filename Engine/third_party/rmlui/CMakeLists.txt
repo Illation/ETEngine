@@ -45,7 +45,7 @@ if(NOT EXISTS "${_buildDir}/")
 	# generate project files
     message(STATUS "Generating project files")
     message(STATUS "------------------------")
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${_generator}" ${_architecture} -DNO_FONT_INTERFACE_DEFAULT=ON -DENABLE_SVG_PLUGIN=ON -DLUNASVG_DIR=${_svgDir} -DBUILD_SHARED_LIBS=OFF -H. -B${_buildDir}
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${_generator}" ${_architecture} -DNO_FONT_INTERFACE_DEFAULT=ON -DENABLE_SVG_PLUGIN=ON -DBUILD_SHARED_LIBS=OFF -H. -B${_buildDir}
                     WORKING_DIRECTORY ${_modDir}/
                     RESULT_VARIABLE _genProjectFiles)
     if(NOT _genProjectFiles EQUAL "0")
