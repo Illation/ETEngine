@@ -18,7 +18,11 @@ enum class E_CursorShape : uint8
 	Crosshair,
 	Hand,
 	SizeWE,
-	SizeNS
+	SizeNS,
+	SizeNWSE,
+	SizeNESW,
+	SizeAll,
+	NotAllowed
 };
 
 //---------------------------------

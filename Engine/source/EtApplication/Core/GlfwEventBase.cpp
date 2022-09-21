@@ -142,9 +142,13 @@ void GlfwEventBase::InitEvents(Ptr<GlfwRenderArea> const renderArea)
 	m_CursorMap[core::E_CursorShape::Arrow] = ToPtr(glfwCreateStandardCursor(GLFW_ARROW_CURSOR));
 	m_CursorMap[core::E_CursorShape::IBeam] = ToPtr(glfwCreateStandardCursor(GLFW_IBEAM_CURSOR));
 	m_CursorMap[core::E_CursorShape::Crosshair] = ToPtr(glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR));
+	m_CursorMap[core::E_CursorShape::Hand] = ToPtr(glfwCreateStandardCursor(GLFW_HAND_CURSOR));
 	m_CursorMap[core::E_CursorShape::SizeWE] = ToPtr(glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR));
 	m_CursorMap[core::E_CursorShape::SizeNS] = ToPtr(glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR));
-	m_CursorMap[core::E_CursorShape::Hand] = ToPtr(glfwCreateStandardCursor(GLFW_HAND_CURSOR));
+	m_CursorMap[core::E_CursorShape::SizeNWSE] = ToPtr(glfwCreateStandardCursor(GLFW_RESIZE_NWSE_CURSOR));
+	m_CursorMap[core::E_CursorShape::SizeNESW] = ToPtr(glfwCreateStandardCursor(GLFW_RESIZE_NESW_CURSOR));
+	m_CursorMap[core::E_CursorShape::SizeAll] = ToPtr(glfwCreateStandardCursor(GLFW_RESIZE_ALL_CURSOR));
+	m_CursorMap[core::E_CursorShape::NotAllowed] = ToPtr(glfwCreateStandardCursor(GLFW_NOT_ALLOWED_CURSOR));
 }
 
 //-------------------------------

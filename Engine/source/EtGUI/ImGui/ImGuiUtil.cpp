@@ -161,18 +161,19 @@ core::E_CursorShape GetCursorShape(ImGuiMouseCursor const cursor)
 
 	case ImGuiMouseCursor_TextInput: return core::E_CursorShape::IBeam;
 
-		// #todo: would be nice to get better cursor shapes for these
-	case ImGuiMouseCursor_ResizeAll:
-	case ImGuiMouseCursor_ResizeNESW:
-	case ImGuiMouseCursor_ResizeNWSE:
-	case ImGuiMouseCursor_NotAllowed:
-		return core::E_CursorShape::Crosshair;
-
-	case ImGuiMouseCursor_Hand: return core::E_CursorShape::Hand;
+	case ImGuiMouseCursor_ResizeAll: return core::E_CursorShape::SizeAll;
 
 	case ImGuiMouseCursor_ResizeEW: return core::E_CursorShape::SizeWE;
 
 	case ImGuiMouseCursor_ResizeNS: return core::E_CursorShape::SizeNS;
+
+	case ImGuiMouseCursor_ResizeNESW: return core::E_CursorShape::SizeNESW;
+
+	case ImGuiMouseCursor_ResizeNWSE: return core::E_CursorShape::SizeNWSE;
+
+	case ImGuiMouseCursor_Hand: return core::E_CursorShape::Hand;
+
+	case ImGuiMouseCursor_NotAllowed: return core::E_CursorShape::NotAllowed;
 
 	case ImGuiMouseCursor_Arrow:
 	default:

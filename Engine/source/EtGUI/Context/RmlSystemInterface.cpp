@@ -113,6 +113,28 @@ void RmlSystemInterface::SetMouseCursor(Rml::String const& cursor_name)
 			m_CursorShapeManager->SetCursorShape(core::E_CursorShape::SizeNS);
 			break;
 
+		case "nwse-resize"_hash:
+		case "nw-resize"_hash:
+		case "se-resize"_hash:
+			m_CursorShapeManager->SetCursorShape(core::E_CursorShape::SizeNWSE);
+			break;
+
+		case "nesw-resize"_hash:
+		case "sw-resize"_hash:
+		case "ne-resize"_hash:
+			m_CursorShapeManager->SetCursorShape(core::E_CursorShape::SizeNESW);
+			break;
+
+		case "all-scroll"_hash:
+		case "move"_hash:
+			m_CursorShapeManager->SetCursorShape(core::E_CursorShape::SizeAll);
+			break;
+
+		case "no-drop"_hash:
+		case "not-allowed"_hash:
+			m_CursorShapeManager->SetCursorShape(core::E_CursorShape::NotAllowed);
+			break;
+
 		case "none"_hash:
 			m_CursorShapeManager->SetCursorShape(core::E_CursorShape::None);
 			break;
