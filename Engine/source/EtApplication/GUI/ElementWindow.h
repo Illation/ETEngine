@@ -38,6 +38,7 @@ protected:
 	void ProcessDefaultAction(Rml::Event& evnt) override;
 	void OnUpdate() override;
 	void OnResize() override;
+	virtual bool GetIntrinsicDimensions(Rml::Vector2f& dimensions, float& ratio) override;
 
 	// utility
 	//---------

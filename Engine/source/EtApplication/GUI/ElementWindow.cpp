@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ElementWindow.h"
 
+#include <RmlUi/Core/Context.h>
 #include <RmlUi/Core/Factory.h>
 
 #include <EtApplication/GuiApplication.h>
@@ -38,6 +39,7 @@ void ElementWindow::LazyInit()
 	{
 		m_Window = GuiApplication::Instance()->GetWindow(GetContext());
 		ET_ASSERT(m_Window != nullptr);
+		ET_ASSERT(reinterpret_cast<Rml::Element const*>(GetOwnerDocument()) == GetParentNode(), "window elements must be their owner documents first child");
 
 		std::string const windowHandleId = GetAttribute<std::string>(s_CustomWindowHandleId, "");
 		if (!windowHandleId.empty())
@@ -112,6 +114,17 @@ void ElementWindow::OnResize()
 {
 	Rml::Element::OnResize();
 	FormatChildren();
+}
+
+//---------------------------------------
+// ElementWindow::GetIntrinsicDimensions
+//
+bool ElementWindow::GetIntrinsicDimensions(Rml::Vector2f& dimensions, float& ratio)
+{
+	Rml::Vector2i const dim = GetContext()->GetDimensions(); // we assume here that windows are always the same size as the context
+	dimensions = Rml::Vector2f(static_cast<float>(dim.x), static_cast<float>(dim.y));
+	ratio = dimensions.x / dimensions.y;
+	return true;
 }
 
 //------------------------------------
