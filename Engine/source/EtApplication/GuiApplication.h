@@ -1,5 +1,6 @@
 #pragma once
 #include <RmlUi/Core/ElementInstancer.h>
+#include <RmlUi/Core/Plugin.h>
 
 #include <EtCore/UpdateCycle/Context.h>
 #include <EtCore/Util/WindowSettings.h>
@@ -11,6 +12,7 @@
 // fwd
 namespace Rml {
 	class Context;
+	class Element;
 }
 namespace et { namespace app {
 	class GuiWindow;
@@ -24,7 +26,7 @@ namespace app {
 //----------------
 // GuiApplication
 //
-class GuiApplication 
+class GuiApplication : public Rml::Plugin
 {
 	static Ptr<GuiApplication> s_GlobalInstance;
 
@@ -37,7 +39,7 @@ public:
 	// construct destruct
 	//--------------------
 	GuiApplication() = default;
-	virtual ~GuiApplication() = default;
+	virtual ~GuiApplication();
 
 	// functionality
 	//---------------
@@ -50,6 +52,11 @@ public:
 	// accessors
 	//-----------
 	Ptr<GuiWindow> GetWindow(Rml::Context const* const context);
+
+	// RML Plugin interface
+	//----------------------
+protected:
+	void OnElementCreate(Rml::Element* const element) override;
 
 	// utility
 	//---------

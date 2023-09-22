@@ -13,6 +13,7 @@
 #include <EtGUI/Context/RmlGlobal.h>
 
 #include <EtApplication/Core/PackageResourceManager.h>
+#include <EtApplication/GUI/ElementWindow.h>
 
 #include "GuiWindow.h"
 
@@ -51,10 +52,18 @@ GuiApplication* GuiApplication::Instance()
 	return s_GlobalInstance.Get();
 }
 
+//-----------------------
+// GuiApplication::d-tor
+//
+GuiApplication::~GuiApplication()
+{
+	ET_ASSERT(!gui::RmlGlobal::IsInitialized());
+}
+
 //-------------------------------
 // GuiApplication::ReceiveEvents
 //
-// Sleep until there are any events up until a timout, in milliseconds, or infinitely if timeout is set to -1
+// Sleep until there are any events up until a timeout, in milliseconds, or infinitely if timeout is set to -1
 //
 void GuiApplication::ReceiveEvents(int64 const timeout)
 {
@@ -119,6 +128,8 @@ Ptr<GuiWindow> GuiApplication::MakeWindow(core::WindowSettings const& settings)
 		gui::RmlGlobal::GetInstance()->SetClipboardController(window);
 
 		ET_ASSERT(gui::RmlGlobal::IsInitialized());
+		Rml::RegisterPlugin(this);
+
 		Rml::Factory::RegisterElementInstancer("window_handle", &m_HandleInstancer);
 		Rml::Factory::RegisterElementInstancer("window", &m_WindowInstancer);
 
@@ -162,8 +173,24 @@ Ptr<GuiWindow> GuiApplication::GetWindow(Rml::Context const* const context)
 			return (window->GetContext().GetImpl() == context);
 		});
 
-	ET_ASSERT(foundIt != m_Windows.cend());
-	return ToPtr(foundIt->Get());
+	if (foundIt != m_Windows.cend())
+	{
+		return ToPtr(foundIt->Get());
+	}
+
+	return nullptr;
+}
+
+//---------------------------------
+// GuiApplication::OnElementCreate
+//
+void GuiApplication::OnElementCreate(Rml::Element* const element)
+{
+	GuiWindow const* const guiWindow = GetWindow(element->GetContext()).Get();
+	if (guiWindow != nullptr)
+	{
+		ElementWindow::OnFocusChangeRecursive(element, guiWindow->Focused());
+	}
 }
 
 //------------------------------------

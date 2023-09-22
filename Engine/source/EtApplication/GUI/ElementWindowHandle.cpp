@@ -53,7 +53,7 @@ ElementWindowHandle::ElementWindowHandle(Rml::String const& tag)
 
 	Rml::XMLAttributes attributes;
 	attributes.emplace("width", s_Height);
-	attributes.emplace("height", s_Height);
+	attributes.emplace("height", s_Height - 1);
 
 	attributes["src"] = "icons/minimize.svg";
 	m_MinButton = ToPtr(m_ControlsArea->AppendChild(Rml::Factory::InstanceElement(m_ControlsArea.Get(), "svg", "min-button", attributes), false));
@@ -67,6 +67,7 @@ ElementWindowHandle::ElementWindowHandle(Rml::String const& tag)
 	// Setup events
 	m_Listener.SetHandle(ToPtr(this));
 
+	AddEventListener(Rml::EventId::Dblclick, &m_Listener);
 	m_MinButton->AddEventListener(Rml::EventId::Click, &m_Listener);
 	m_MaxButton->AddEventListener(Rml::EventId::Click, &m_Listener);
 	m_CloseButton->AddEventListener(Rml::EventId::Click, &m_Listener);
@@ -96,17 +97,11 @@ void ElementWindowHandle::LazyInit()
 		m_Window = GuiApplication::Instance()->GetWindow(GetContext());
 		ET_ASSERT(m_Window != nullptr);
 
-		m_WindowCallbackId = m_Window->RegisterCallback(GuiWindow::GW_All, 
+		m_WindowCallbackId = m_Window->RegisterCallback(GuiWindow::GW_Maximize | GuiWindow::GW_Restore,
 			GuiWindow::T_EventCallback([this](GuiWindow::T_EventFlags const evnt, GuiWindow::EventData const* const)
 			{
 				switch (static_cast<GuiWindow::E_Event>(evnt))
 				{
-				case GuiWindow::GW_GainFocus:
-					OnFocusChange(true);
-					break;
-				case GuiWindow::GW_LooseFocus:
-					OnFocusChange(false);
-					break;
 				case GuiWindow::GW_Maximize:
 					OnMaximizedChanged(true);
 					break;
@@ -118,7 +113,6 @@ void ElementWindowHandle::LazyInit()
 
 		InitIcon();
 
-		OnFocusChange(m_Window->Focused());
 		OnMaximizedChanged(m_Window->Maximized());
 
 		m_IsInitialized = true;
@@ -181,7 +175,17 @@ void ElementWindowHandle::OnResize()
 //
 void ElementWindowHandle::OnButtonEvent(Rml::Event& evnt)
 {
-	if (!(evnt == Rml::EventId::Click))
+	if (evnt == Rml::EventId::Dblclick)
+	{
+		if (evnt.GetCurrentElement() == this)
+		{
+			LazyInit();
+			m_Window->ToggleMaximized();
+		}
+
+		return;
+	}
+	else if (!(evnt == Rml::EventId::Click))
 	{
 		return;
 	}
@@ -246,20 +250,12 @@ void ElementWindowHandle::InitIcon()
 	if (!iconId.empty())
 	{
 		Rml::XMLAttributes attributes;
-		attributes.emplace("width", s_Height);
-		attributes.emplace("height", s_Height);
+		attributes.emplace("width", s_Height - 1);
+		attributes.emplace("height", s_Height - 1);
 		attributes["src"] = iconId;
 		m_Icon = ToPtr(AppendChild(Rml::Factory::InstanceElement(this, "svg", "icon", attributes), false));
 		DirtyLayout();
 	}
-}
-
-//-------------------------------------
-// ElementWindowHandle::OnFocusChange
-//
-void ElementWindowHandle::OnFocusChange(bool const focused)
-{
-	SetPseudoClass("window_focus", focused);
 }
 
 //-----------------------------------------
@@ -267,9 +263,11 @@ void ElementWindowHandle::OnFocusChange(bool const focused)
 //
 void ElementWindowHandle::OnMaximizedChanged(bool const maximized)
 {
+	SetPseudoClass("maximized", maximized);
+
 	m_MaxButton->SetAttribute("src", maximized ? "icons/restore.svg" : "icons/maximize.svg");
 	// #todo: there is a bug in the RML ui implementation that means that the texture only updates if the image resizes
-	m_MaxButton->SetAttribute("height", s_Height + (maximized ? 1 : -1)); 
+	m_MaxButton->SetAttribute("height", s_Height - (maximized ? 0 : 1)); 
 }
 
 

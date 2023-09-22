@@ -21,13 +21,17 @@ class ElementWindow : public Rml::Element
 {
 	static std::string const s_CustomWindowHandleId;
 
+	// static functionality
+	//----------------------
+public:
+	static void OnFocusChangeRecursive(Rml::Element* const el, bool const focused);
+
 	// construct destruct
 	//--------------------
-public:
 	RMLUI_RTTI_DefineWithParent(ElementWindow, Rml::Element)
 
 	ElementWindow(Rml::String const& tag);
-	virtual ~ElementWindow() = default;
+	virtual ~ElementWindow();
 
 	void LazyInit();
 
@@ -45,12 +49,17 @@ protected:
 private:
 	void FormatChildren();
 
+	void OnMaximizedChanged(bool const maximized);
+
 
 	// Data
 	///////
 
 	Ptr<GuiWindow> m_Window;
+
 	Ptr<ElementWindowHandle> m_WindowHandleEl;
+
+	GuiWindow::T_EventCallbackId m_WindowCallbackId = GuiWindow::INVALID_CALLBACK;
 
 	bool m_IsInitialized = false;
 };

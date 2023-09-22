@@ -62,7 +62,6 @@ private:
 	void FormatChildren();
 	void InitIcon();
 
-	void OnFocusChange(bool const focused);
 	void OnMaximizedChanged(bool const maximized);
 
 
@@ -81,6 +80,7 @@ private:
 
 	GuiWindow::T_EventCallbackId m_WindowCallbackId = GuiWindow::INVALID_CALLBACK;
 	WindowListener m_Listener;
+
 	bool m_IsInitialized = false;
 };
 

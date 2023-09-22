@@ -44,9 +44,14 @@ window
 	box-sizing: border-box;
 	width: 100%;
 	height: 100%;
-	border: 2px #444444;
+	border: 1px #444444;
 	border-radius: 10px;
 	overflow: hidden;
+}
+window:maximized
+{
+	border: 0px;
+	border-radius: 0px;
 }
 		
 window_handle
@@ -57,18 +62,30 @@ window_handle
 	top: 0;
 	left: 0;
 	width: 100%;
-	background-color: #444444;
+	box-sizing: border-box;
+	background-color: #1d1d1d;
+
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+
+	border: 1px #444444;
+	border-bottom-width: 0;
 	
+	padding: 0px;
+
 	font-size: 18px;
 	font-weight: bold;
 
-	padding: 0px;
-
 	font-effect: shadow(2px 2px black);
 }
-window_handle:window_focus
+window_handle:maximized
 {
-	background-color: #1d1d1d;
+	border: 0px;
+	border-radius: 0px;
+}
+window_handle:window_inactive
+{
+	background-color: #444444;
 }
 
 window_handle icon
@@ -78,10 +95,11 @@ window_handle icon
 
 window_handle controls
 {
+	box-sizing: border-box;
 	position: static;
 	width: auto;
 	display: inline;
-	right: 0;
+	right: 1px;
 }
 window_handle controls min-button
 window_handle controls max-button
@@ -90,19 +108,21 @@ window_handle controls close-button
 	width: auto;
 	display: inline-block;
 	image-color: #bababa;
-	border-radius: 5px;
 }
 window_handle controls min-button
 {
 	transition: background 0.15s sine-in-out;
+	border-radius: 10px;
 }
 window_handle controls max-button
 {
 	transition: background 0.15s sine-in-out;
+	border-radius: 10px;
 }
 window_handle controls close-button
 {
 	transition: background 0.15s sine-in-out;
+	border-radius: 10px;
 }
 window_handle controls min-button:hover
 window_handle controls max-button:hover
