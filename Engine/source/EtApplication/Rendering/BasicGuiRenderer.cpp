@@ -81,7 +81,7 @@ void BasicGuiRenderer::SetGuiDocument(core::HashString const documentId)
 //
 void BasicGuiRenderer::OnResize(ivec2 const dim)
 {
-	if (m_InputProvider != nullptr)
+	if (m_InputProvider != nullptr && m_GuiContext.HasActiveDocuments())
 	{
 		m_GuiContext.SetDimensions(dim);
 	}

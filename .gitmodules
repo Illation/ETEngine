@@ -9,7 +9,7 @@
 	url = https://github.com/Dav1dde/glad
 [submodule "third_party/glfw/glfw"]
 	path = Engine/third_party/glfw/glfw
-	url = https://github.com/glfw/glfw
+	url = https://github.com/Illation/glfw
 [submodule "third_party/mikkt/ext-mikktspace"]
 	path = Engine/third_party/mikkt/ext-mikktspace
 	url = https://github.com/tcoppex/ext-mikktspace

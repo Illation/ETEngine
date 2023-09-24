@@ -19,6 +19,8 @@ class GuiWindow;
 //
 class ElementWindow : public Rml::Element
 {
+	// definitions
+	//-------------
 	static std::string const s_CustomWindowHandleId;
 
 	// static functionality

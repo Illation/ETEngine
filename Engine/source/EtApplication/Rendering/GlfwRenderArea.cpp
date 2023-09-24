@@ -56,6 +56,8 @@ void GlfwRenderArea::Initialize(rhi::RenderDeviceParams const& params, bool cons
 
 	// other window info
 	glfwWindowHint(GLFW_DECORATED, windowSettings.m_Decorated ? GLFW_TRUE : GLFW_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, true); // #todo: make this a setting
+	glfwWindowHint(GLFW_TITLEBAR, false); // #todo: make this a setting
 	if (!windowSettings.m_Decorated)
 	{
 		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
@@ -91,6 +93,8 @@ void GlfwRenderArea::Initialize(rhi::RenderDeviceParams const& params, bool cons
 		glfwTerminate();
 		ET_LOG_E(ET_CTX_APP, "Failed to create window with GLFW!");
 	}
+
+	glfwSetWindowAttrib(m_Window.Get(), GLFW_RESIZABLE, GLFW_TRUE);
 
 	// Check OpenGL properties and create open gl function pointers
 	//--------------------------------------------------------------

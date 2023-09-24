@@ -1,5 +1,4 @@
 #pragma once
-
 #include <EtRHI/GraphicsContext/RenderWindow.h>
 
 #include "GlfwRenderArea.h"
@@ -25,7 +24,6 @@ public:
 
 	// functionality
 	//---------------
-	void StartDrag();
 	void SetDimensions(ivec2 const dim);
 
 	// accessors

@@ -43,7 +43,6 @@ public:
 
 	// interfaces
 	//------------
-private:
 	// cursor shape manager
 	bool SetCursorShape(core::E_CursorShape const shape) override;
 
@@ -53,6 +52,7 @@ private:
 
 	// utility
 	//---------
+private:
 	void SetCurrentModifiers(core::T_KeyModifierFlags const mods) { m_CurrentModifiers = mods; }
 
 

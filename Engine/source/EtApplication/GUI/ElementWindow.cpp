@@ -7,6 +7,8 @@
 #include <EtApplication/GuiApplication.h>
 #include <EtApplication/GuiWindow.h>
 
+#include <EtGUI/Context/RmlUtil.h>
+
 
 namespace et {
 namespace app {
@@ -18,7 +20,7 @@ namespace app {
 
 
 // static
-std::string const ElementWindow::s_CustomWindowHandleId;
+std::string const ElementWindow::s_CustomWindowHandleId("handle-id");
 
 
 //---------------------------------------
@@ -92,7 +94,7 @@ void ElementWindow::LazyInit()
 			m_WindowHandleEl = ToPtr(static_cast<ElementWindowHandle*>(GetElementById(windowHandleId)));
 			ET_ASSERT(m_WindowHandleEl != nullptr);
 		}
-		else 
+		else
 		{
 			Rml::XMLAttributes attributes;
 			attributes.emplace(ElementWindowHandle::s_IconAttribId, GetAttribute<std::string>(ElementWindowHandle::s_IconAttribId, ""));
@@ -192,6 +194,4 @@ void ElementWindow::OnMaximizedChanged(bool const maximized)
 
 } // namespace app
 } // namespace et
-
-
 

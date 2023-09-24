@@ -62,12 +62,37 @@ void GuiWindow::Init()
 			guiWindow->m_EventDispatcher.Notify((maxed == 0) ? GuiWindow::GW_Restore : GuiWindow::GW_Maximize, new GuiWindow::EventData(guiWindow));
 		});
 
+	glfwSetTitlebarHitTestCallback(m_RenderWindow.GetArea().GetWindow(), [](GLFWwindow* const window, int const xpos, int const ypos, int* hit)
+		{
+			GuiWindow* const guiWindow = static_cast<GuiWindow*>(glfwGetWindowUserPointer(window));
+			ET_ASSERT(hit != nullptr);
+			if (guiWindow->m_HitTestFn)
+			{
+				*hit = guiWindow->m_HitTestFn(ivec2(xpos, ypos));
+			}
+			else
+			{
+				*hit = false;
+			}
+		});
+
+	ET_ASSERT(m_VPCallbackId == rhi::T_ViewportEventDispatcher::INVALID_ID);
+	m_VPCallbackId = m_Viewport.GetEventDispatcher().Register(rhi::E_ViewportEvent::VP_Resized, rhi::T_ViewportEventCallback(
+		[this](rhi::T_ViewportEventFlags const, rhi::ViewportEventData const* const data) -> void
+		{
+			GetRenderArea()->Update();
+		}));
+
 	m_Viewport.SetInputProvider(ToPtr(&GetInputProvider()));
 
 	m_Viewport.SynchDimensions();
 	m_Viewport.Redraw();
 
 	m_GuiRenderer.Init(ToPtr(&GetInputProvider()));
+
+	// hack fixes weird window sizing on creation 
+	// #note: this might be causing problems elsewhere in init loop
+	m_RenderWindow.SetDimensions(m_Viewport.GetDimensions()); 
 
 	m_IsInitialized = true;
 }
@@ -83,6 +108,9 @@ void GuiWindow::Deinit()
 
 		m_GuiRenderer.Deinit();
 		m_Viewport.SetRenderer(nullptr);
+
+		ET_ASSERT(m_VPCallbackId != rhi::T_ViewportEventDispatcher::INVALID_ID);
+		m_Viewport.GetEventDispatcher().Unregister(m_VPCallbackId);
 	}
 }
 
@@ -164,12 +192,13 @@ void GuiWindow::UnregisterCallback(T_EventCallbackId& callbackId)
 	m_EventDispatcher.Unregister(callbackId);
 }
 
-//----------------------
-// GuiWindow::StartDrag
+//-------------------------------
+// GuiWindow::SetHandleHitTestFn
 //
-void GuiWindow::StartDrag()
+void GuiWindow::SetHandleHitTestFn(T_WindowHandleHitTestFn& fn)
 {
-	m_RenderWindow.StartDrag();
+	ET_ASSERT(!fn || !m_HitTestFn);
+	m_HitTestFn = fn;
 }
 
 //--------------------------------

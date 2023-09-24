@@ -31,7 +31,7 @@ Glad uses a python interpreter which is obtained by Vcpkg (see below).
 
 
 ## GLFW
-- source: [https://github.com/glfw/glfw](https://github.com/glfw/glfw/tree/2a6dac679c5ff96a24ea7641f8aebbb74e5652db)
+- source: [https://github.com/Illation/glfw](https://github.com/Illation/glfw/tree/979a1d810b4486d02838f0464d4fb3b0734fb26f)
 - license: [zlib](https://github.com/glfw/glfw/blob/master/LICENSE.md)
 
 

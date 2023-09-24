@@ -6,6 +6,11 @@
 #include <RmlUi/SVG/ElementSVG.h>
 
 #include <EtApplication/GuiApplication.h>
+#include <EtApplication/GuiWindow.h>
+
+#include <EtGUI/Context/RmlUtil.h>
+
+#include "ElementWindow.h"
 
 
 namespace et {
@@ -84,6 +89,7 @@ ElementWindowHandle::~ElementWindowHandle()
 	{
 		ET_ASSERT(m_Window != nullptr);
 		m_Window->UnregisterCallback(m_WindowCallbackId);
+		m_Window->SetHandleHitTestFn(GuiWindow::T_WindowHandleHitTestFn(nullptr));
 	}
 }
 
@@ -109,6 +115,17 @@ void ElementWindowHandle::LazyInit()
 					OnMaximizedChanged(false);
 					break;
 				}
+			}));
+
+		m_Window->SetHandleHitTestFn(GuiWindow::T_WindowHandleHitTestFn([this](ivec2 const point)
+			{
+				Rml::Vector2f const p = gui::RmlUtil::ToRml(math::vecCast<float>(point));
+				if (IsPointWithinElement(p))
+				{
+					return !m_ControlsArea->IsPointWithinElement(p);
+				}
+
+				return false;
 			}));
 
 		InitIcon();
@@ -143,11 +160,6 @@ void ElementWindowHandle::ProcessDefaultAction(Rml::Event& evnt)
 	if (evnt.GetTargetElement() == this)
 	{
 		LazyInit();
-
-		if (evnt == Rml::EventId::Dragstart)
-		{
-			m_Window->StartDrag();
-		}
 	}
 }
 
@@ -175,17 +187,7 @@ void ElementWindowHandle::OnResize()
 //
 void ElementWindowHandle::OnButtonEvent(Rml::Event& evnt)
 {
-	if (evnt == Rml::EventId::Dblclick)
-	{
-		if (evnt.GetCurrentElement() == this)
-		{
-			LazyInit();
-			m_Window->ToggleMaximized();
-		}
-
-		return;
-	}
-	else if (!(evnt == Rml::EventId::Click))
+	if (!(evnt == Rml::EventId::Click))
 	{
 		return;
 	}

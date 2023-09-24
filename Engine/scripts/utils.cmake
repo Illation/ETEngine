@@ -566,6 +566,7 @@ function(dependancyLinks TARGET)
 
 	if (MSVC)
 		target_link_libraries(${TARGET} opengl32.lib)
+		target_link_libraries(${TARGET} Dwmapi.lib)
 	endif(MSVC)
 
 endfunction(dependancyLinks)

@@ -64,6 +64,8 @@ public:
 	static constexpr T_EventCallbackId INVALID_CALLBACK = T_EventDispatcher::INVALID_ID;
 	typedef T_EventDispatcher::T_CallbackFn T_EventCallback;
 
+	using T_WindowHandleHitTestFn = std::function<bool(ivec2 const point)>;
+
 	// construct destruct
 	//--------------------
 	GuiWindow(core::WindowSettings const& settings);
@@ -85,7 +87,8 @@ public:
 	T_EventCallbackId RegisterCallback(T_EventFlags const flags, T_EventCallback& callback);
 	void UnregisterCallback(T_EventCallbackId& callbackId);
 
-	void StartDrag();
+	void SetHandleHitTestFn(T_WindowHandleHitTestFn& fn);
+
 	void SetCustomBorderSize(int32 const size);
 
 	// accessors
@@ -109,6 +112,8 @@ private:
 	BasicGuiRenderer m_GuiRenderer;
 
 	T_EventDispatcher m_EventDispatcher;
+	T_WindowHandleHitTestFn m_HitTestFn;
+	rhi::T_ViewportEventCallbackId m_VPCallbackId = rhi::T_ViewportEventDispatcher::INVALID_ID;
 
 	int32 m_CustomBorderSize = 0;
 
