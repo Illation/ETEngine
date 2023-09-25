@@ -131,6 +131,14 @@ void GuiWindow::SetGuiDocument(core::HashString const documentId)
 	}
 }
 
+//---------------------------
+// GuiWindow::SetGuiDocument
+//
+void GuiWindow::SetIcon(core::HashString const svgAssetId)
+{
+	m_RenderWindow.SetIcon(svgAssetId);
+}
+
 //------------------
 // GuiWindow::Close
 //

@@ -90,6 +90,7 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 	settings.m_Resolutions.emplace_back(1280, 720);
 	m_MainWindow = MakeWindow(settings);
 	m_MainWindow->SetGuiDocument(core::HashString("trace.rml"));
+	m_MainWindow->SetIcon(core::HashString("trace_logo_colour_thick.svg"));
 
 	ET_ASSERT(HasRunningInstance());
 

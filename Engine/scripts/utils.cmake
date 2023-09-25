@@ -673,6 +673,7 @@ function(libIncludeDirs)
 	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/openal/openal-soft/include")
 	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/glfw/glfw/include")
 	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/rmlui/RmlUi/Include")
+	include_directories("${ENGINE_DIRECTORY_ABS}/third_party/lunasvg/lunasvg/include")
 
 endfunction(libIncludeDirs)
 

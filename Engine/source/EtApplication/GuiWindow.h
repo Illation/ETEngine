@@ -79,6 +79,7 @@ private:
 	//---------------
 public:
 	void SetGuiDocument(core::HashString const documentId);
+	void SetIcon(core::HashString const svgAssetId);
 
 	void Close();
 	void ToggleMinimized();

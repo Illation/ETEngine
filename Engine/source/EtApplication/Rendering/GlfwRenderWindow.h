@@ -26,6 +26,8 @@ public:
 	//---------------
 	void SetDimensions(ivec2 const dim);
 
+	bool SetIcon(core::HashString const id);
+
 	// accessors
 	//-----------
 	GlfwRenderArea& GetArea() { return m_Area; }
