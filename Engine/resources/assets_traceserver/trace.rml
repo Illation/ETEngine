@@ -3,10 +3,22 @@
 	<link type="text/rcss" href="GUI/rml.rcss"/>
 	<link type="text/rcss" href="GUI/window_style.rcss"/>
   <link type="text/rcss" href="trace_style.rcss"/>
-	<title>Hello world</title>
+	<title>E. T. Trace Server</title>
 </head>
 <body data-model="animals">
-  <window icon="trace_logo_grayscale.svg">
+  <window handle-id="win_handle">
+    <window_handle id="win_handle" icon="trace_logo_grayscale.svg">
+      <div id="handle_content">
+        <div class="tab"/>
+        <div class="tab"/>
+        <div class="tab"/>
+      </div>
+    </window_handle>
+    <div id="client_area">
+      <div class="content"/>
+      <div class="content"/>
+      <div class="content"/>
+    </div>
   </window>
 </body>
 </rml>

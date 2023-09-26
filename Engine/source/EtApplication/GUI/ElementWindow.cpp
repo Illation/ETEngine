@@ -68,6 +68,7 @@ void ElementWindow::LazyInit()
 		ET_ASSERT(m_Window != nullptr);
 		ET_ASSERT(reinterpret_cast<Rml::Element const*>(GetOwnerDocument()) == GetParentNode(), "window elements must be their owner documents first child");
 
+		// Callbacks
 		m_WindowCallbackId = m_Window->RegisterCallback(GuiWindow::GW_All,
 			GuiWindow::T_EventCallback([this](GuiWindow::T_EventFlags const evnt, GuiWindow::EventData const* const)
 				{
@@ -88,6 +89,7 @@ void ElementWindow::LazyInit()
 					}
 				}));
 
+		// generate a window handle
 		std::string const windowHandleId = GetAttribute<std::string>(s_CustomWindowHandleId, "");
 		if (!windowHandleId.empty())
 		{
@@ -99,20 +101,17 @@ void ElementWindow::LazyInit()
 			Rml::XMLAttributes attributes;
 			attributes.emplace(ElementWindowHandle::s_IconAttribId, GetAttribute<std::string>(ElementWindowHandle::s_IconAttribId, ""));
 
-			Rml::ElementPtr handleEl = Rml::Factory::InstanceElement(this, "window_handle", "window_handle", attributes);
-
-			if (HasChildNodes())
-			{
-				m_WindowHandleEl = ToPtr(static_cast<ElementWindowHandle*>(InsertBefore(std::move(handleEl), GetFirstChild())));
-			}
-			else
-			{
-				m_WindowHandleEl = ToPtr(static_cast<ElementWindowHandle*>(AppendChild(std::move(handleEl))));
-			}
+			m_WindowHandleEl = ToPtr(static_cast<ElementWindowHandle*>(InsertBefore(
+				Rml::Factory::InstanceElement(this, "window_handle", "window_handle", attributes), 
+				GetFirstChild())));
 
 			m_WindowHandleEl->SetInnerRML(m_Window->GetTitle());
 		}
 
+		// make sure client area flows around the handle
+		SetProperty(Rml::PropertyId::PaddingTop, Rml::Property(ElementWindowHandle::s_Height, Rml::Property::Unit::PX));
+
+		// pseudo classes
 		OnFocusChangeRecursive(this, m_Window->Focused());
 
 		m_IsInitialized = true;
@@ -162,7 +161,6 @@ void ElementWindow::OnUpdate()
 void ElementWindow::OnResize()
 {
 	Rml::Element::OnResize();
-	FormatChildren();
 }
 
 //---------------------------------------
@@ -174,13 +172,6 @@ bool ElementWindow::GetIntrinsicDimensions(Rml::Vector2f& dimensions, float& rat
 	dimensions = Rml::Vector2f(static_cast<float>(dim.x), static_cast<float>(dim.y));
 	ratio = dimensions.x / dimensions.y;
 	return true;
-}
-
-//------------------------------------
-// ElementWindow::FormatChildren
-//
-void ElementWindow::FormatChildren()
-{
 }
 
 //------------------------------------

@@ -50,7 +50,7 @@ ElementWindowHandle::ElementWindowHandle(Rml::String const& tag)
 	// Make sure we can be dragged!
 	SetProperty(Rml::PropertyId::Drag, Rml::Property(Rml::Style::Drag::Drag));
 	SetProperty(Rml::PropertyId::ZIndex, Rml::Property(1, Rml::Property::Unit::NUMBER));
-	SetProperty(Rml::PropertyId::Height, Rml::Property(s_Height, Rml::Property::Unit::NUMBER));
+	SetProperty(Rml::PropertyId::Height, Rml::Property(s_Height, Rml::Property::Unit::PX));
 
 	// Create buttons
 	m_ControlsArea = ToPtr(AppendChild(Rml::Factory::InstanceElement(this, "*", "controls", Rml::XMLAttributes()), false));
@@ -222,7 +222,7 @@ void ElementWindowHandle::FormatChildren()
 	}
 
 	float const controlW = dim.y * 3.f;
-	Rml::ElementUtilities::PositionElement(m_ControlsArea.Get(), Rml::Vector2f(controlW -dim.x, 0), Rml::ElementUtilities::TOP_RIGHT);
+	Rml::ElementUtilities::PositionElement(m_ControlsArea.Get(), Rml::Vector2f(dim.x/*controlW -dim.x*/, 0), Rml::ElementUtilities::TOP_LEFT);
 	Rml::ElementUtilities::FormatElement(m_ControlsArea.Get(), Rml::Vector2f(controlW, dim.y));
 
 
@@ -234,6 +234,11 @@ void ElementWindowHandle::FormatChildren()
 
 	Rml::ElementUtilities::PositionElement(m_CloseButton.Get(), Rml::Vector2f(dim.y * 2, 0), Rml::ElementUtilities::TOP_LEFT);
 	Rml::ElementUtilities::FormatElement(m_CloseButton.Get(), Rml::Vector2f(dim.y, dim.y));
+
+	// make sure client area flows around the handle
+	SetProperty(Rml::PropertyId::PaddingLeft, 
+		Rml::Property((m_Icon != nullptr) ? m_Icon->GetBox().GetSize(Rml::Box::MARGIN).x : 0.f, Rml::Property::Unit::PX));
+	SetProperty(Rml::PropertyId::PaddingRight, Rml::Property(m_ControlsArea->GetBox().GetSize(Rml::Box::MARGIN).x, Rml::Property::Unit::PX));
 }
 
 //-------------------------------------

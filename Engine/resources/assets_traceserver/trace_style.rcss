@@ -1,115 +1,53 @@
-div#bg 
+#client_area
 {
 	width: 100%;
-	height: 100%;	
+	height: 100%;
+	background: #FF6666;
+	margin: auto;
+	overflow: auto;
+	box-sizing: border-box;
 }
 
-div#frame {
-	text-align: center;
-	background: #120627;
-	position: absolute;
-	top: 250px;
-	left: 250px;
-	border: 5px #c197d2;
-	width: 800px;
-	height: 250px;
-	border-radius: 8px;
-	overflow: hidden auto;
-	padding: 2em 1em;	
-}
-
-h1 {
-	color: #dfd154;
-	font-size: 1.5em;
-	font-weight: bold;
-	margin-bottom: 0.7em;
-	font-effect: glow(2dp 4dp 2dp 3dp #8a4056);
-}
-		
-p { 
-	margin: 0.7em 0;
-}
-
-panel#welcome
+.content
 {
+	width: 100%;
+	height: 70%;
+	background: #6666FF;
+	border: 3px #66FF66;
+	margin: auto;
+}
+
+#handle_content
+{
+	width: 100%;
+	height: 100%;
+	background: #FF66FF;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	box-sizing: border-box;
+	display: flex;
+
+	padding-left: 0;
+}
+
+.tab
+{
+	box-sizing: border-box;
+	height: 100%;
+	background: #66FFFF;
+	border: 3px #FFFF66;
+
+	left: 0;
+	margin: 0;
+
 	display: inline-block;
-}
-		
-#phrase { 
-	font-style: italic;
-}
-		
-#animal { 
-	text-decoration: underline;
-}
-
-panel#font_effects
-{
-	display: inline-block;
-}
-#font_effects div 
-{
-	display: inline-block;
-	width: 180dp;
-	margin: 0 30dp 30dp;
-	text-align: center;
-	font-size: 35dp;
-	color: #dfd154;
-}
-#font_effects h1 
-{
-	margin: 15dp 0 10dp 10dp;
+	width: 80px;
+	padding: 0;
+	line-height: 40dp;
 	
-	text-align: left;
-	font-size: 16dp;
+	font-size: 20dp;
+	color: #b8a4ae;
 	font-weight: bold;
-
-	font-effect: glow(1dp 1dp 1dp 1dp #8a4056);
-	color: #ffffff;
+	text-align: center;
 }
-#font_effects .glow
-{
-	font-effect: glow(3dp #ffffff);
-}
-#font_effects .glow_sharper
-{
-	font-effect: glow(3dp 1dp #ffffff);
-}
-#font_effects .glow_rainbow
-{
-	color: #ffffff;
-	font-effect: glow(1dp 5dp 0dp 3dp #ff555590), glow(1dp 5dp -2.5dp -2dp #55ff5590), glow(1dp 5dp 2.5dp -2dp #5555ff90);
-}
-#font_effects .glow_shadow
-{
-	font-effect: glow(2dp 4dp 2dp 3dp #8a4056);
-}
-#font_effects .outline_small
-{
-	font-effect: outline(2dp #ffffff);
-}
-#font_effects .outline_big
-{
-	font-effect: outline(4dp #ffffff);
-}
-#font_effects .shadow_up
-{
-	font-weight: bold;
-	font-effect: shadow(3dp -3dp #ffffff);
-}
-#font_effects .shadow_down
-{
-	font-weight: bold;
-	font-effect: shadow(0px 3dp #8a4056);
-}
-#font_effects .blur_small
-{
-	color: #866beb4d;
-	font-effect: blur(3dp #ffffff);
-}
-#font_effects .blur_big
-{
-	color: #866beb4d;
-	font-effect: blur(10dp #ffffff);
-}
-

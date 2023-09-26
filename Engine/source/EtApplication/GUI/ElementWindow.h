@@ -49,8 +49,6 @@ protected:
 	// utility
 	//---------
 private:
-	void FormatChildren();
-
 	void OnMaximizedChanged(bool const maximized);
 
 

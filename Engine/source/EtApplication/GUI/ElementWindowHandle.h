@@ -34,8 +34,8 @@ class ElementWindowHandle : public Rml::Element
 
 	friend class WindowListener;
 
-	static float const s_Height;
 public:
+	static float const s_Height;
 	static std::string const s_IconAttribId;
 
 	// construct destruct
