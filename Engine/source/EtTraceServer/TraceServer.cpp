@@ -75,12 +75,11 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 	// init GUI
 	//----------
 
-	gui::RmlGlobal::GetDataModelFactory().RegisterInstancer("animals", gui::DataModelFactory::T_InstanceFn(
+	gui::RmlGlobal::GetDataModelFactory().RegisterInstancer("trace_data", gui::DataModelFactory::T_InstanceFn(
 		[](Rml::DataModelConstructor modelConstructor) -> RefPtr<gui::I_DataModel>
 		{
 			RefPtr<GuiData> ret = Create<GuiData>();
-			modelConstructor.Bind("show_text", &ret->m_ShowText);
-			modelConstructor.Bind("animal", &ret->m_Animal);
+			modelConstructor.Bind("show_panel", &ret->m_ShowPanel);
 			return std::move(ret);
 		}));
 

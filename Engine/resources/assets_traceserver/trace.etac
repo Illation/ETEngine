@@ -11,7 +11,7 @@
           "GUI/rml.rcss",
           "trace_style.rcss"
         ],
-        "data model": "animals"
+        "data model": "trace_data"
       }
     },
     "metadata": null,

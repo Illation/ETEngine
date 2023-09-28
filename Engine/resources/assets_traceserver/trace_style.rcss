@@ -1,21 +1,6 @@
-#client_area
-{
-	width: 100%;
-	height: 100%;
-	background: #FF6666;
-	margin: auto;
-	overflow: auto;
-	box-sizing: border-box;
-}
-
-.content
-{
-	width: 100%;
-	height: 70%;
-	background: #6666FF;
-	border: 3px #66FF66;
-	margin: auto;
-}
+/* Header Stuff
+///////////////
+///////////////*/
 
 #handle_content
 {
@@ -30,7 +15,6 @@
 
 	padding-left: 0;
 }
-
 .tab
 {
 	box-sizing: border-box;
@@ -50,4 +34,66 @@
 	color: #b8a4ae;
 	font-weight: bold;
 	text-align: center;
+}
+
+/* Main Window
+//////////////
+//////////////*/
+
+#client_area
+{
+	width: 100%;
+	height: 100%;
+	margin: auto;
+	overflow: hidden;
+	box-sizing: border-box;
+	display: flex;
+}
+
+/* Options
+////////*/
+
+#options_panel
+{
+	width: 200px;
+	height: 100%;
+	background: #FFFFFF;
+	margin: auto;
+	overflow: auto;
+	box-sizing: border-box;
+}
+
+/* Panels
+////////*/
+
+#trace_panels
+{
+	width: 100%;
+	height: 100%;
+	background: #FF6666;
+	margin: auto;
+	overflow: hidden;
+	box-sizing: content-box;
+	display: block;
+}
+.trace_panel
+{
+	background: #FF2222;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	box-sizing: border-box;
+}
+.content
+{
+	width: 100%;
+	height: 70%;
+	background: #6666FF;
+	border: 3px #66FF66;
+	margin: auto;
+}
+#client2 .content
+{
+	background: #AA66FF;
+	border: 3px #66FFAA;
 }

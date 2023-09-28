@@ -29,8 +29,7 @@ class TraceServer final : public app::GuiApplication
 	//
 	struct GuiData : public gui::I_DataModel
 	{
-		bool m_ShowText = true;
-		std::string m_Animal = "dog";
+		bool m_ShowPanel = false;
 	};
 
 public:

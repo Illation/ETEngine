@@ -39,6 +39,11 @@ void ElementWindowHandle::WindowListener::ProcessEvent(Rml::Event& evnt)
 // static
 float const ElementWindowHandle::s_Height = 32.f;
 std::string const ElementWindowHandle::s_IconAttribId("icon");
+std::string const ElementWindowHandle::s_HitIgnoreClassName("handle_hit_ignore");
+
+static std::string const s_IconClassAttribId("icon-class");
+static std::string const s_IconLvalAttribId("icon-lval");
+static std::string const s_IconRvalAttribId("icon-rval");
 
 
 //----------------------------
@@ -55,6 +60,8 @@ ElementWindowHandle::ElementWindowHandle(Rml::String const& tag)
 	// Create buttons
 	m_ControlsArea = ToPtr(AppendChild(Rml::Factory::InstanceElement(this, "*", "controls", Rml::XMLAttributes()), false));
 	m_ControlsArea->SetProperty(Rml::PropertyId::ZIndex, Rml::Property(2, Rml::Property::Unit::NUMBER));
+
+	m_HitTestIgnoreElements.push_back(m_ControlsArea);
 
 	Rml::XMLAttributes attributes;
 	attributes.emplace("width", s_Height);
@@ -122,7 +129,15 @@ void ElementWindowHandle::LazyInit()
 				Rml::Vector2f const p = gui::RmlUtil::ToRml(math::vecCast<float>(point));
 				if (IsPointWithinElement(p))
 				{
-					return !m_ControlsArea->IsPointWithinElement(p);
+					for (Ptr<Rml::Element> const el : m_HitTestIgnoreElements)
+					{
+						if (el->IsPointWithinElement(p))
+						{
+							return false;
+						}
+					}
+
+					return true;
 				}
 
 				return false;
@@ -144,7 +159,9 @@ void ElementWindowHandle::OnAttributeChange(Rml::ElementAttributes const& change
 {
 	Rml::Element::OnAttributeChange(changedAttributes);
 
-	if (changedAttributes.find(s_IconAttribId) != changedAttributes.cend())
+	if ((changedAttributes.find(s_IconAttribId) != changedAttributes.cend()) 
+		|| (changedAttributes.find(s_IconLvalAttribId) != changedAttributes.cend())
+		|| (changedAttributes.find(s_IconRvalAttribId) != changedAttributes.cend()))
 	{
 		m_IsInitialized = false;
 	}
@@ -180,6 +197,29 @@ void ElementWindowHandle::OnResize()
 {
 	Rml::Element::OnResize();
 	FormatChildren();
+}
+
+//---------------------------------
+// ElementWindowHandle::OnChildAdd
+//
+void ElementWindowHandle::OnChildAdd(Element* const child)
+{
+	if (child->IsClassSet(s_HitIgnoreClassName))
+	{
+		m_HitTestIgnoreElements.emplace_back(ToPtr(child));
+	}
+}
+
+//------------------------------------
+// ElementWindowHandle::OnChildRemove
+//
+void ElementWindowHandle::OnChildRemove(Element* const child)
+{
+	auto const foundIt = std::find(m_HitTestIgnoreElements.begin(), m_HitTestIgnoreElements.end(), child);
+	if (foundIt != m_HitTestIgnoreElements.cend())
+	{
+		core::RemoveSwap(m_HitTestIgnoreElements, foundIt);
+	}
 }
 
 //------------------------------------
@@ -260,7 +300,28 @@ void ElementWindowHandle::InitIcon()
 		attributes.emplace("width", s_Height - 1);
 		attributes.emplace("height", s_Height - 1);
 		attributes["src"] = iconId;
+
+		// add classes to the icon
+		std::string const iconClass = GetAttribute<std::string>(s_IconClassAttribId, "");
+		if (!iconClass.empty())
+		{
+			attributes.emplace("class", iconClass);
+		}
+
+		// lvals and rvals for the icon allow attaching data expressions
+		std::string const iconLVal = GetAttribute<std::string>(s_IconLvalAttribId, "");
+		if (!iconLVal.empty())
+		{
+			std::string const iconRVal = GetAttribute<std::string>(s_IconRvalAttribId, "");
+			attributes.emplace(iconLVal, iconRVal);
+		}
+		else
+		{
+			ET_ASSERT(GetAttribute<std::string>(s_IconRvalAttribId, "").empty(), "icon rval found but no lval");
+		}
+
 		m_Icon = ToPtr(AppendChild(Rml::Factory::InstanceElement(this, "svg", "icon", attributes), false));
+
 		DirtyLayout();
 	}
 }

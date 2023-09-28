@@ -37,6 +37,7 @@ class ElementWindowHandle : public Rml::Element
 public:
 	static float const s_Height;
 	static std::string const s_IconAttribId;
+	static std::string const s_HitIgnoreClassName;
 
 	// construct destruct
 	//--------------------
@@ -54,6 +55,9 @@ protected:
 	void ProcessDefaultAction(Rml::Event& evnt) override;
 	void OnLayout() override;
 	void OnResize() override;
+
+	void OnChildAdd(Element* const child) override;
+	void OnChildRemove(Element* const child) override;
 
 	// utility
 	//---------
@@ -77,6 +81,8 @@ private:
 	Ptr<Rml::Element> m_CloseButton;
 
 	Ptr<Rml::Element> m_Icon;
+
+	std::vector<Ptr<Rml::Element>> m_HitTestIgnoreElements;
 
 	GuiWindow::T_EventCallbackId m_WindowCallbackId = GuiWindow::INVALID_CALLBACK;
 	WindowListener m_Listener;

@@ -5,19 +5,34 @@
   <link type="text/rcss" href="trace_style.rcss"/>
 	<title>E. T. Trace Server</title>
 </head>
-<body data-model="animals">
+<body data-model="trace_data">
   <window handle-id="win_handle">
-    <window_handle id="win_handle" icon="trace_logo_grayscale.svg">
+    <window_handle id="win_handle" icon="trace_logo_grayscale.svg" icon-class="handle_hit_ignore handle_ico_button" icon-lval="data-event-click" icon-rval="show_panel = !show_panel">
       <div id="handle_content">
-        <div class="tab"/>
-        <div class="tab"/>
-        <div class="tab"/>
+        <div class="tab handle_hit_ignore"/>
+        <div class="tab handle_hit_ignore"/>
+        <div class="tab handle_hit_ignore"/>
       </div>
     </window_handle>
     <div id="client_area">
-      <div class="content"/>
-      <div class="content"/>
-      <div class="content"/>
+      <div id="options_panel" data-if="show_panel">
+
+      </div>
+      <tabset id="trace_panels">
+        <tab>Client 1</tab>
+        <panel id="client1" class="trace_panel">
+          <div class="content"/>
+          <div class="content"/>
+          <div class="content"/>
+        </panel>
+        
+        <tab>Client 2</tab>
+        <panel id="client2" class="trace_panel">
+          <div class="content"/>
+          <div class="content"/>
+          <div class="content"/>
+        </panel>
+      </tabset>
     </div>
   </window>
 </body>

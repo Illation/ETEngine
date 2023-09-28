@@ -108,6 +108,21 @@ window_handle icon
 	margin: 0px 5px;
 	border-radius: 10px;
 }
+window_handle icon.handle_ico_button
+{
+	image-color: #bababa;
+	transition: background 0.15s sine-in-out;
+}
+window_handle icon.handle_ico_button:hover
+{
+	image-color: #ffffff;
+	background-color: #3D3D3D;
+}
+window_handle icon.handle_ico_button:active
+{
+	image-color: #3D3D3D;
+	background-color: #7D7D7D;
+}
 
 window_handle controls
 {
@@ -255,6 +270,9 @@ scrollbarvertical sliderarrowinc
 	image-color: #ae8bb9;
 }
 
+/* Tabs
+/////*/
+
 tabset
 {
 	display: block;
@@ -265,9 +283,8 @@ tabs
 	position: fixed;
 	clip: none;
 	text-align: right;
-	top: -40dp;
-	left: 205dp;
-	right: 15dp;
+	top: 0;
+	left: 0;
 }
 tab
 {
@@ -290,23 +307,17 @@ tab
 tab:hover
 {
 	image-color: #2e253f;
-	border: 3px #c197d2;
-	margin: -1px;
 }
 tab:active:hover
 {
-	margin: -3px;
 }
 tab:selected:hover
 {
-	margin: 0px;
 }
 tab:active, tab:selected
 {
 	image-color: #120627;
 	color: #d3b1c2;
-	border: 5px #c197d2;
-	border-radius: 8px;
 }
 panels
 {
@@ -315,8 +326,4 @@ panels
 panel
 {
     display: block;
-	padding: 30dp;
-	margin-left: auto;
-	margin-right: auto;
-	max-width: 500dp;
 }
