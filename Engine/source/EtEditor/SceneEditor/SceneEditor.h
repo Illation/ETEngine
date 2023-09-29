@@ -77,10 +77,10 @@ public:
 
 	// functionality
 	//----------------
-	void RegisterListener(I_SceneEditorListener* const listener);
+	void RegisterListener(Ptr<I_SceneEditorListener> const listener);
 	void UnregisterListener(I_SceneEditorListener const* const listener);
 
-	void SetNavigatingViewport(SceneViewport* const sceneViewport) { m_NavigatingViewport = sceneViewport; }
+	void SetNavigatingViewport(Ptr<SceneViewport> const sceneViewport) { m_NavigatingViewport = sceneViewport; }
 
 private:
 
@@ -89,8 +89,8 @@ private:
 
 	SceneSelection m_SceneSelection;
 
-	SceneViewport* m_NavigatingViewport;
-	std::vector<I_SceneEditorListener*> m_Listeners;
+	Ptr<SceneViewport> m_NavigatingViewport;
+	std::vector<Ptr<I_SceneEditorListener>> m_Listeners;
 
 	bool m_IsShown = false;
 };

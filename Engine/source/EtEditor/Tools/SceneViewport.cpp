@@ -90,7 +90,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 		else
 		{
 			// other clicks (left) we navigate
-			m_Editor->SetNavigatingViewport(this);
+			m_Editor->SetNavigatingViewport(ToPtr(this));
 			fw::UnifiedScene::Instance().GetEcs().GetComponent<EditorCameraComponent>(m_Camera).isEnabled = true;
 
 			core::T_KeyModifierFlags const mods = GtkUtil::GetModifiersFromGtk(evnt->state);
@@ -184,7 +184,7 @@ void SceneViewport::Init(EditorBase* const editor, Gtk::Frame* const parent)
 	m_SceneRenderer = new render::ShadedSceneRenderer(&(fw::UnifiedScene::Instance().GetRenderScene()));
 	m_Viewport->SetRenderer(ToPtr(m_SceneRenderer));
 
-	m_Editor->RegisterListener(this);
+	m_Editor->RegisterListener(ToPtr(this));
 
 	// in case the editor is already initialized at this point (we switch a tool to being a scene viewport at runtime) - do further init steps
 	if (m_Editor->IsShown())

@@ -91,7 +91,7 @@ SceneEditor::~SceneEditor()
 void SceneEditor::InitInternal()
 {
 	m_IsShown = true;
-	for (I_SceneEditorListener* const listener : m_Listeners)
+	for (Ptr<I_SceneEditorListener> const listener : m_Listeners)
 	{
 		listener->OnShown();
 	}
@@ -100,7 +100,7 @@ void SceneEditor::InitInternal()
 	fw::PhysicsManager::GetInstance()->Initialize();
 
 	m_SceneSelection.SetScene();
-	for (I_SceneEditorListener* const listener : m_Listeners)
+	for (Ptr<I_SceneEditorListener> const listener : m_Listeners)
 	{
 		listener->OnSceneSet();
 	}
@@ -128,7 +128,7 @@ void SceneEditor::OnTick()
 {
 	m_SceneSelection.UpdateOutlines();
 
-	for (I_SceneEditorListener* const listener : m_Listeners)
+	for (Ptr<I_SceneEditorListener> const listener : m_Listeners)
 	{
 		listener->OnEditorTick();
 	}
@@ -137,7 +137,7 @@ void SceneEditor::OnTick()
 //----------------------------------------------------
 // SceneEditor::RegisterListener
 //
-void SceneEditor::RegisterListener(I_SceneEditorListener* const listener)
+void SceneEditor::RegisterListener(Ptr<I_SceneEditorListener> const listener)
 {
 	ET_ASSERT(std::find(m_Listeners.cbegin(), m_Listeners.cend(), listener) == m_Listeners.cend(), "Listener already registered!");
 
@@ -150,7 +150,7 @@ void SceneEditor::RegisterListener(I_SceneEditorListener* const listener)
 void SceneEditor::UnregisterListener(I_SceneEditorListener const* const listener)
 {
 	// try finding the listener
-	auto listenerIt = std::find(m_Listeners.begin(), m_Listeners.end(), listener);
+	auto listenerIt = std::find(m_Listeners.begin(), m_Listeners.end(), ToPtr(listener));
 
 	// it should have been found
 	if (listenerIt == m_Listeners.cend())
