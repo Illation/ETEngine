@@ -95,7 +95,8 @@ public:
 	// accessors
 	//-----------
 	GlfwRenderWindow& GetRenderWindow() { return m_RenderWindow; }
-	gui::Context const& GetContext() { return m_GuiRenderer.GetContext(); }
+	gui::Context& GetContext() { return m_GuiRenderer.GetContext(); }
+	gui::Context const& GetContext() const { return m_GuiRenderer.GetContext(); }
 
 	bool Focused() const;
 	bool Maximized() const;

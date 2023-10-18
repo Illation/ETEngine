@@ -13,6 +13,8 @@
 #include <EtCore/Util/CommandLine.h>
 
 #include <EtGUI/Context/RmlGlobal.h>
+#include "RmlUi/Core/Context.h"
+#include "RmlUi/Core/ElementDocument.h"
 
 
 namespace et {
@@ -90,6 +92,8 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 	m_MainWindow = MakeWindow(settings);
 	m_MainWindow->SetGuiDocument(core::HashString("trace.rml"));
 	m_MainWindow->SetIcon(core::HashString("trace_logo_colour_thick.svg"));
+
+	ET_LOG_I(ET_CTX_TRACE, "GUI rml: \n%s", m_MainWindow->GetContext().GetImpl()->GetDocument(0)->GetInnerRML().c_str());
 
 	ET_ASSERT(HasRunningInstance());
 

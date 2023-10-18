@@ -9,16 +9,15 @@
   <window handle-id="win_handle">
     <window_handle id="win_handle" icon="trace_logo_grayscale.svg" icon-class="handle_hit_ignore handle_ico_button" icon-lval="data-event-click" icon-rval="show_panel = !show_panel">
       <div id="handle_content">
-        <div class="tab handle_hit_ignore"/>
-        <div class="tab handle_hit_ignore"/>
-        <div class="tab handle_hit_ignore"/>
+        <tabs id="trace_panel_tabs" class="handle_hit_ignore">
+        </tabs>
       </div>
     </window_handle>
     <div id="client_area">
       <div id="options_panel" data-if="show_panel">
 
       </div>
-      <tabset id="trace_panels">
+      <tabset id="trace_panels" tabs-id="trace_panel_tabs">
         <tab>Client 1</tab>
         <panel id="client1" class="trace_panel">
           <div class="content"/>
