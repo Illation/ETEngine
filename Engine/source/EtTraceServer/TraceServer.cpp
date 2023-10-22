@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "TraceServer.h"
 
+#include "TraceGuiController.h"
+
 #include <EtBuild/EngineVersion.h>
 #include <EtBuild/DevelopmentPaths.h>
 
@@ -11,10 +13,6 @@
 #include <EtCore/Network/NetworkUtil.h>
 #include <EtCore/Platform/PlatformUtil.h>
 #include <EtCore/Util/CommandLine.h>
-
-#include <EtGUI/Context/RmlGlobal.h>
-#include "RmlUi/Core/Context.h"
-#include "RmlUi/Core/ElementDocument.h"
 
 
 namespace et {
@@ -77,24 +75,7 @@ TraceServer::TraceServer(int32 const argc, char* const argv[])
 	// init GUI
 	//----------
 
-	gui::RmlGlobal::GetDataModelFactory().RegisterInstancer("trace_data", gui::DataModelFactory::T_InstanceFn(
-		[](Rml::DataModelConstructor modelConstructor) -> RefPtr<gui::I_DataModel>
-		{
-			RefPtr<GuiData> ret = Create<GuiData>();
-			modelConstructor.Bind("show_panel", &ret->m_ShowPanel);
-			return std::move(ret);
-		}));
-
-	core::WindowSettings settings;
-	settings.m_Title = "E.T. Trace Server";
-	settings.m_Decorated = false; // we use a custom window handle
-	settings.m_Resolutions.emplace_back(1280, 720);
-	m_MainWindow = MakeWindow(settings);
-	m_MainWindow->SetGuiDocument(core::HashString("trace.rml"));
-	m_MainWindow->SetIcon(core::HashString("trace_logo_colour_thick.svg"));
-
-	ET_LOG_I(ET_CTX_TRACE, "GUI rml: \n%s", m_MainWindow->GetContext().GetImpl()->GetDocument(0)->GetInnerRML().c_str());
-
+	m_GuiController.Initialize(this);
 	ET_ASSERT(HasRunningInstance());
 
 	// Setup Socket

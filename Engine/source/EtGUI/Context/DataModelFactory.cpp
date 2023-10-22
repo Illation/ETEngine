@@ -26,7 +26,9 @@ RefPtr<I_DataModel> DataModelFactory::CreateModel(Rml::Context& context, core::H
 
 	if (Rml::DataModelConstructor modelConstructor = context.CreateDataModel(instancer.m_ModelName))
 	{
-		return std::move(instancer.m_InstanceFn(modelConstructor));
+		RefPtr<I_DataModel> ret = instancer.m_InstanceFn(modelConstructor);
+		ret->m_ModelHandle = modelConstructor.GetModelHandle();
+		return std::move(ret);
 	}
 
 	return nullptr;

@@ -147,3 +147,21 @@ namespace et { namespace detail {
 #	define ET_FATAL(...)
 #endif 
 
+
+// Checks - assert if false
+//--------------------------
+
+// for probably recoverable problems
+#if ET_CT_IS_ENABLED(ET_CT_WARNING)
+#	define ET_CHECK_W(condition, ...) if(!condition) ET_WARNING(__VA_ARGS__)
+#else
+#	define ET_CHECK_W(condition, ...) condition
+#endif 
+
+// for possibly breaking problems
+#if ET_CT_IS_ENABLED(ET_CT_ERROR)
+#	define ET_CHECK_E(condition, ...) if(!condition) ET_ERROR(__VA_ARGS__)
+#else
+#	define ET_CHECK_E(condition, ...) condition
+#endif 
+

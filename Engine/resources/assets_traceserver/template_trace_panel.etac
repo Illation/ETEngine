@@ -2,17 +2,15 @@
   "editable gui document asset": {
     "asset": {
       "gui document asset": {
-        "name": "trace.rml",
+        "name": "template_trace_panel.rml",
         "path": "",
         "package": "default_compiled",
         "references": [
           "Fonts/NotoEmoji-Regular.ttf",
           "GUI/window_style.rcss",
           "GUI/rml.rcss",
-          "template_trace_panel.rml",
           "trace_style.rcss"
-        ],
-        "data model": "trace_data"
+        ]
       }
     },
     "metadata": null,

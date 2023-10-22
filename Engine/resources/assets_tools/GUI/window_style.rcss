@@ -280,11 +280,6 @@ tabset
 tabs
 {
     display: block;
-	position: fixed;
-	clip: none;
-	text-align: right;
-	top: 0;
-	left: 0;
 }
 tab
 {
@@ -299,14 +294,12 @@ tab
 	text-align: center;
 	
 	border: 2px #aa88b8;
-	border-radius: 8px;
 	
-	decorator: tiled-horizontal( datagridheader-l, datagridheader-c, datagridheader-r );
-	image-color: #241d31;
+	background: #241d31;
 }
 tab:hover
 {
-	image-color: #2e253f;
+	background: #2e253f;
 }
 tab:active:hover
 {
@@ -316,7 +309,7 @@ tab:selected:hover
 }
 tab:active, tab:selected
 {
-	image-color: #120627;
+	background: #120627;
 	color: #d3b1c2;
 }
 panels
@@ -326,4 +319,33 @@ panels
 panel
 {
     display: block;
+}
+
+/* Controls
+/////////*/
+
+button
+{
+	display: block;
+	width: auto;
+	height: auto;
+	padding: 2dp 15dp;
+	
+	font-size: 14dp;
+	color: #b8a4ae;
+	font-weight: bold;
+	text-align: center;
+	
+	border: 1px #aa88b8;
+	border-radius: 5px;
+	
+	background: #241d31;
+}
+button:hover
+{
+	background: #2e253f;
+}
+button:active:hover
+{
+	background: #120627;
 }

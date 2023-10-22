@@ -11,19 +11,24 @@
 	padding: 0;
 	overflow: hidden;
 	box-sizing: border-box;
-	display: flex;
+	display: inline-block;
 
 	padding-left: 0;
 }
 tabs
 {
-	display: inline-block;
+	display: inline-flex;
+	justify-content: flex-start;
+
 	box-sizing: border-box;
+
+	width: auto;
+	float: left;
 
 	left: 0;
 	margin: 0;
-
-	width: auto;
+	
+	background: #b566ff;
 }
 .tab,
 tab
@@ -72,6 +77,8 @@ tab
 	margin: auto;
 	overflow: auto;
 	box-sizing: border-box;
+	
+	padding: 10dp;
 }
 
 /* Panels

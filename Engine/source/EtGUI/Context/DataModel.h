@@ -1,4 +1,5 @@
 #pragma once
+#include <RmlUi/Core/DataModelHandle.h>
 
 
 namespace et {
@@ -13,6 +14,8 @@ namespace gui {
 struct I_DataModel
 {
 	virtual ~I_DataModel() = default;
+
+	Rml::DataModelHandle m_ModelHandle;
 };
 
 

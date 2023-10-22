@@ -3,34 +3,23 @@
 	<link type="text/rcss" href="GUI/rml.rcss"/>
 	<link type="text/rcss" href="GUI/window_style.rcss"/>
   <link type="text/rcss" href="trace_style.rcss"/>
+  <link type="text/template" href="template_trace_panel.rml" />
 	<title>E. T. Trace Server</title>
 </head>
 <body data-model="trace_data">
   <window handle-id="win_handle">
-    <window_handle id="win_handle" icon="trace_logo_grayscale.svg" icon-class="handle_hit_ignore handle_ico_button" icon-lval="data-event-click" icon-rval="show_panel = !show_panel">
+    <window_handle id="win_handle" icon="trace_logo_grayscale.svg" icon-class="handle_hit_ignore handle_ico_button" icon-lval="data-event-click" icon-rval="show_options = !show_options">
       <div id="handle_content">
         <tabs id="trace_panel_tabs" class="handle_hit_ignore">
         </tabs>
       </div>
     </window_handle>
     <div id="client_area">
-      <div id="options_panel" data-if="show_panel">
-
+      <div id="options_panel" data-if="show_options">
+        <button data-event-click="CreatePanel();">Create Panel</button>
       </div>
       <tabset id="trace_panels" tabs-id="trace_panel_tabs">
-        <tab>Client 1</tab>
-        <panel id="client1" class="trace_panel">
-          <div class="content"/>
-          <div class="content"/>
-          <div class="content"/>
-        </panel>
-        
-        <tab>Client 2</tab>
-        <panel id="client2" class="trace_panel">
-          <div class="content"/>
-          <div class="content"/>
-          <div class="content"/>
-        </panel>
+
       </tabset>
     </div>
   </window>

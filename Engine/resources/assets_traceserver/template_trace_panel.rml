@@ -1,0 +1,12 @@
+<template name="trace_panel" content="content_container">
+<head>
+	<link type="text/rcss" href="GUI/rml.rcss"/>
+	<link type="text/rcss" href="GUI/window_style.rcss"/>
+  <link type="text/rcss" href="trace_style.rcss"/>
+</head>
+<body data-model="trace_data">
+  <div data-for="panel_ref.lines" class="content">test line</div>
+
+  <div id="content_container"/>
+</body>
+</template>
