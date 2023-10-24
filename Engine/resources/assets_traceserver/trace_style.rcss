@@ -9,6 +9,7 @@
 	background: #FF66FF;
 	margin: 0;
 	padding: 0;
+	padding-right: 50dp;
 	overflow: hidden;
 	box-sizing: border-box;
 	display: inline-block;
@@ -17,18 +18,23 @@
 }
 tabs
 {
-	display: inline-flex;
+	display: flex;
 	justify-content: flex-start;
+	align-items: flex-start;
+	align-content: space-around;
 
 	box-sizing: border-box;
+	
+	overflow-x: auto;
+	overflow-y: hidden;
 
 	width: auto;
-	float: left;
+	/* float: left; */
 
 	left: 0;
 	margin: 0;
 	
-	background: #b566ff;
+	background: #78cb29;
 }
 .tab,
 tab
@@ -42,13 +48,20 @@ tab
 	margin: 0;
 
 	display: inline-block;
-	width: 90dp;
+	width: auto;
+	flex-shrink: 0;
+	overflow: hidden;
+	white-space: nowrap;
+
 	padding: 0;
-	line-height: 40dp;
+	padding-left: 12dp;
+	padding-right: 30dp;
+	padding-bottom: 12dp;
 	
-	font-size: 20dp;
-	color: #b8a4ae;
-	font-weight: bold;
+	font-size: 18px;
+	font-weight: normal;
+	font-effect: shadow(1px 1px #27272794);
+	color: #ffffff;
 	text-align: center;
 }
 

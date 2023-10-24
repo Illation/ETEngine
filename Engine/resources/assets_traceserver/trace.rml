@@ -10,8 +10,7 @@
   <window handle-id="win_handle">
     <window_handle id="win_handle" icon="trace_logo_grayscale.svg" icon-class="handle_hit_ignore handle_ico_button" icon-lval="data-event-click" icon-rval="show_options = !show_options">
       <div id="handle_content">
-        <tabs id="trace_panel_tabs" class="handle_hit_ignore">
-        </tabs>
+        <tabs id="trace_panel_tabs" class="handle_hit_ignore"/>
       </div>
     </window_handle>
     <div id="client_area">
