@@ -18,9 +18,7 @@
       <div id="options_panel" data-if="show_options">
         <button data-event-click="CreatePanel();">Create Panel</button>
       </div>
-      <tabset id="trace_panels" tabs-id="trace_panel_tabs">
-
-      </tabset>
+      <tabset id="trace_panels" tabs-id="trace_panel_tabs"/>
     </div>
   </window>
 </body>

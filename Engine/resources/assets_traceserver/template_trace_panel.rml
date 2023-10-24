@@ -5,7 +5,7 @@
   <link type="text/rcss" href="trace_style.rcss"/>
 </head>
 <body data-model="trace_data">
-  <div data-for="panel_ref.lines" class="content">test line</div>
+  <div data-for="panel_ref.lines" class="content">{{it}}</div>
 
   <div id="content_container"/>
 </body>

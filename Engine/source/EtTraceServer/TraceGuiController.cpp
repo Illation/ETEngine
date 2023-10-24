@@ -21,7 +21,7 @@ namespace trace {
 //==========
 
 
-static char const* const s_PanelsDataId = "trace_panels";
+static char const* const s_PanelsDataId = "td_trace_panels";
 static core::HashString const s_MainDocumentId("trace.rml");
 	
 
@@ -92,9 +92,6 @@ void TraceGuiController::Initialize(app::GuiApplication* const guiApp)
 	m_DataModel->Init(ToPtr(this));
 
 	m_TabSet = ToPtr(static_cast<Rml::ElementTabSet*>(m_MainWindow->GetContext().GetDocument(s_MainDocumentId)->GetElementById("trace_panels")));
-
-	//CreatePanel();
-	//CreatePanel();
 }
 
 //---------------------------------
@@ -103,7 +100,6 @@ void TraceGuiController::Initialize(app::GuiApplication* const guiApp)
 void TraceGuiController::CreatePanel()
 {
 	size_t const panelIdx = m_DataModel->m_Panels.size();
-	ET_TRACE_I(ET_CTX_TRACE, "Create panel '" ET_FMT_SIZET "'", panelIdx + 1u);
 
 	// update date model
 	ET_ASSERT(m_DataModel != nullptr);
@@ -123,13 +119,14 @@ void TraceGuiController::CreatePanel()
 	// instantiating panels
 	Rml::XMLAttributes attributes;
 	attributes.emplace("class", "trace_panel");
-	attributes.emplace("data-alias-panel_ref", FS("trace_panels[" ET_FMT_SIZET "]", panelIdx));
+	attributes.emplace("data-alias-panel_ref", FS("%s[" ET_FMT_SIZET "]", s_PanelsDataId, panelIdx));
 
-	Rml::ElementPtr panelEl = Rml::Factory::InstanceElement(nullptr, "*", "panel", attributes);
-	Rml::ElementUtilities::ParseTemplateIntoElement(panelEl.get(), "template_trace_panel.rml");
-
-	m_TabSet->SetPanel(static_cast<int>(panelIdx), std::move(panelEl));
 	m_TabSet->SetTab(static_cast<int>(panelIdx), FS("Client %u", panelIdx + 1u));
+	Rml::Element* const insertedPanel = m_TabSet->SetPanel(static_cast<int>(panelIdx), 
+		Rml::Factory::InstanceElement(m_TabSet.Get(), "*", "panel", attributes));
+
+	// we ensure that the element is already linked to the document structure so that the data bindings work correctly
+	Rml::ElementUtilities::ParseTemplateIntoElement(insertedPanel, "template_trace_panel.rml");
 }
 
 

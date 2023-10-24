@@ -151,14 +151,18 @@ tabset
 tabs
 {
     display: block;
-	text-align: right;
+	position: fixed;
+	clip: none;
+	text-align: right
+	top: -40dp;
+	left: 205dp;
+	right: 15dp;;
 }
 tab
 {
-	box-sizing: border-box;
-	height: 100%;
-	left: 0;
-	margin: 0;
+	width: 90dp;
+	padding: 0 20dp;
+	line-height: 40dp;
 	display: inline-block;
 	width: 80px;
 	padding: 0;
@@ -169,15 +173,21 @@ tab
 	font-weight: bold;
 	text-align: center;
 	
-	background: #241d31;
+	border: 2px #aa88b8;
+	border-radius: 8px;
+
+	decorator: tiled-horizontal( datagridheader-l, datagridheader-c, datagridheader-r );
+	image-color: #241d31;
 }
 tab:hover
 {
-	background: #2e253f;
+	image-color: #2e253f;
+	border: 3px #c197d2;
+	margin: -1px;
 }
 tab:active:hover
 {
-	margin: 0px;
+	margin: -3px;
 }
 tab:selected:hover
 {
@@ -185,8 +195,11 @@ tab:selected:hover
 }
 tab:active, tab:selected
 {
-	background: #120627;
+	image-color: #120627;
 	color: #d3b1c2;
+	border: 5px #c197d2;
+	border-radius: 8px;
+}
 }
 panels
 {
@@ -195,6 +208,10 @@ panels
 panel
 {
     display: block;
+	padding: 30dp;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 500dp;
 }
 
 panel#welcome
