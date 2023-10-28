@@ -21,8 +21,10 @@ namespace trace {
 //==========
 
 
+static char const* const s_WindowTitleId = "td_window_title";
 static char const* const s_PanelsDataId = "td_trace_panels";
 static core::HashString const s_MainDocumentId("trace.rml");
+static float const s_TabsScrollSpeed = 30.f;
 	
 
 //----------------------------
@@ -60,7 +62,8 @@ void GuiData::RegisterInstancer()
 				});
 
 			// bind data
-			modelConstructor.Bind("show_options", &ret->m_ShowOptions);
+			modelConstructor.Bind(s_WindowTitleId, &ret->m_WindowTitle);
+			modelConstructor.Bind("td_show_options", &ret->m_ShowOptions);
 			modelConstructor.Bind(s_PanelsDataId, &ret->m_Panels);
 
 			return std::move(ret);
@@ -78,8 +81,10 @@ void GuiData::RegisterInstancer()
 //
 void TraceGuiController::Initialize(app::GuiApplication* const guiApp)
 {
+	// Gui Setup
 	GuiData::RegisterInstancer();
 
+	// Main Window
 	core::WindowSettings settings;
 	settings.m_Title = "E.T. Trace Server";
 	settings.m_Decorated = false; // we use a custom window handle
@@ -88,10 +93,21 @@ void TraceGuiController::Initialize(app::GuiApplication* const guiApp)
 	m_MainWindow->SetGuiDocument(s_MainDocumentId);
 	m_MainWindow->SetIcon(core::HashString("trace_logo_colour_thick.svg"));
 	
+	// Data model
 	m_DataModel = WeakPtr<GuiData>::StaticCast(m_MainWindow->GetContext().GetDataModel(s_MainDocumentId));
 	m_DataModel->Init(ToPtr(this));
 
+	m_DataModel->m_WindowTitle = settings.m_Title;
+	m_DataModel->m_ModelHandle.DirtyVariable(s_WindowTitleId);
+
+	// Elements
 	m_TabSet = ToPtr(static_cast<Rml::ElementTabSet*>(m_MainWindow->GetContext().GetDocument(s_MainDocumentId)->GetElementById("trace_panels")));
+	ET_ASSERT(m_TabSet != nullptr);
+
+	m_TabsContainer = ToPtr(m_MainWindow->GetContext().GetDocument(s_MainDocumentId)->GetElementById("trace_panel_tabs"));
+	ET_ASSERT(m_TabsContainer != nullptr);
+
+	m_TabsContainer->AddEventListener(Rml::EventId::Mousescroll, this, true);
 }
 
 //---------------------------------
@@ -125,8 +141,29 @@ void TraceGuiController::CreatePanel()
 	Rml::Element* const insertedPanel = m_TabSet->SetPanel(static_cast<int>(panelIdx), 
 		Rml::Factory::InstanceElement(m_TabSet.Get(), "*", "panel", attributes));
 
+	m_TabSet->SetActiveTab(static_cast<int>(panelIdx));
+
 	// we ensure that the element is already linked to the document structure so that the data bindings work correctly
 	Rml::ElementUtilities::ParseTemplateIntoElement(insertedPanel, "template_trace_panel.rml");
+}
+
+//----------------------------------
+// TraceGuiController::ProcessEvent
+//
+void TraceGuiController::ProcessEvent(Rml::Event& evnt)
+{
+	if (evnt.GetCurrentElement() == m_TabsContainer.Get())
+	{
+		if ((evnt.GetId() == Rml::EventId::Mousescroll) && !evnt.GetParameter("autoscroll", false))
+		{
+			float const delta = evnt.GetParameter("wheel_delta_y", 0.f) * s_TabsScrollSpeed;
+			float const newLeft = math::Clamp(m_TabsContainer->GetScrollLeft() + delta, 
+				std::max(m_TabsContainer->GetScrollWidth() - m_TabsContainer->GetClientWidth(), 0.f),
+				0.f);
+
+			m_TabsContainer->SetScrollLeft(newLeft);
+		}
+	}
 }
 
 

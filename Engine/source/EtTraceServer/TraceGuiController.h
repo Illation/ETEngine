@@ -5,6 +5,7 @@
 
 #include <RmlUi/Core/DataModelHandle.h>
 #include <RmlUi/Core/Event.h>
+#include <RmlUi/Core/EventListener.h>
 #include <RmlUi/Core/Types.h>
 
 
@@ -53,6 +54,7 @@ struct GuiData : public gui::I_DataModel
 	///////
 
 	// reflected
+	std::string m_WindowTitle;
 	bool m_ShowOptions = false;
 	std::vector<Panel> m_Panels;
 
@@ -66,7 +68,7 @@ private:
 //
 // Data model for the trace server UI
 //
-class TraceGuiController
+class TraceGuiController : public Rml::EventListener
 {
 public:
 	// construct destruct
@@ -77,6 +79,11 @@ public:
 	//---------------
 	void CreatePanel();
 
+	// utility
+	//---------
+protected:
+	void ProcessEvent(Rml::Event& evnt) override;
+
 
 	// Data
 	///////
@@ -85,6 +92,7 @@ private:
 	WeakPtr<GuiData> m_DataModel;
 
 	Ptr<Rml::ElementTabSet> m_TabSet;
+	Ptr<Rml::Element> m_TabsContainer;
 };
 
 

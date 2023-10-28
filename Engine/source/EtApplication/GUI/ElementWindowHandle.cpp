@@ -40,6 +40,7 @@ void ElementWindowHandle::WindowListener::ProcessEvent(Rml::Event& evnt)
 float const ElementWindowHandle::s_Height = 32.f;
 std::string const ElementWindowHandle::s_IconAttribId("icon");
 std::string const ElementWindowHandle::s_HitIgnoreClassName("handle_hit_ignore");
+std::string const ElementWindowHandle::s_HitIgnoreChildrenClassName("handle_hit_ignore_children");
 
 static std::string const s_IconClassAttribId("icon-class");
 static std::string const s_IconLvalAttribId("icon-lval");
@@ -137,6 +138,20 @@ void ElementWindowHandle::LazyInit()
 						}
 					}
 
+					for (Ptr<Rml::Element> const el : m_HitTestIgnoreChildren)
+					{
+						if (el->IsPointWithinElement(p))
+						{
+							for (int childIdx = 0; childIdx < el->GetNumChildren(); ++childIdx)
+							{
+								if (el->GetChild(childIdx)->IsPointWithinElement(p))
+								{
+									return false;
+								}
+							}
+						}
+					}
+
 					return true;
 				}
 
@@ -208,6 +223,11 @@ void ElementWindowHandle::OnChildAdd(Element* const child)
 	{
 		m_HitTestIgnoreElements.emplace_back(ToPtr(child));
 	}
+	
+	if (child->IsClassSet(s_HitIgnoreChildrenClassName))
+	{
+		m_HitTestIgnoreChildren.emplace_back(ToPtr(child));
+	}
 }
 
 //------------------------------------
@@ -219,6 +239,12 @@ void ElementWindowHandle::OnChildRemove(Element* const child)
 	if (foundIt != m_HitTestIgnoreElements.cend())
 	{
 		core::RemoveSwap(m_HitTestIgnoreElements, foundIt);
+	}
+
+	auto const foundChildrenIt = std::find(m_HitTestIgnoreChildren.begin(), m_HitTestIgnoreChildren.end(), child);
+	if (foundChildrenIt != m_HitTestIgnoreChildren.cend())
+	{
+		core::RemoveSwap(m_HitTestIgnoreChildren, foundChildrenIt);
 	}
 }
 

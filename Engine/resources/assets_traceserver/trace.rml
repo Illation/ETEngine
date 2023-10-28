@@ -8,13 +8,19 @@
 </head>
 <body data-model="trace_data">
   <window handle-id="win_handle">
-    <window_handle id="win_handle" icon="trace_logo_grayscale.svg" icon-class="handle_hit_ignore handle_ico_button" icon-lval="data-event-click" icon-rval="show_options = !show_options">
+    <window_handle 
+      id="win_handle" 
+      icon="trace_logo_grayscale.svg" 
+      icon-class="handle_hit_ignore handle_ico_button" 
+      icon-lval="data-event-click" 
+      icon-rval="td_show_options = !td_show_options">
       <div id="handle_content">
-        <tabs id="trace_panel_tabs" class="handle_hit_ignore"/>
+        <span data-if="td_trace_panels.size == 0">{{td_window_title}}</span>
+        <tabs id="trace_panel_tabs" class="handle_hit_ignore_children"/>
       </div>
     </window_handle>
     <div id="client_area">
-      <div id="options_panel" data-if="show_options">
+      <div id="options_panel" data-if="td_show_options">
         <button data-event-click="CreatePanel();">Create Panel</button>
       </div>
       <tabset id="trace_panels" tabs-id="trace_panel_tabs"/>

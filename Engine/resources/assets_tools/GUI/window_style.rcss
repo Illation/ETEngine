@@ -246,11 +246,6 @@ scrollbarvertical sliderarrowinc:hover
 scrollbarvertical sliderbar:active,
 scrollbarvertical sliderarrowdec:active,
 scrollbarvertical sliderarrowinc:active
-	/* perspective: 1000px;
-	perspective-origin: 20px 50%;
-	transform: rotateX(10deg) skew(-10deg, 15deg) translateZ(100px);
-	transform-origin: left top 0; */
-
 {
 	image-color: #efbeff;
 }
@@ -260,11 +255,6 @@ scrollbarvertical sliderarrowdec
 	image-color: #ae8bb9;
 }
 scrollbarvertical sliderarrowinc
-	/* perspective: 1000px;
-	perspective-origin: 20px 50%;
-	transform: rotateX(10deg) skew(-10deg, 15deg) translateZ(100px);
-	transform-origin: left top 0; */
-
 {
 	decorator: image( sliderarrowinc );
 	image-color: #ae8bb9;

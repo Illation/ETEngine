@@ -38,6 +38,7 @@ public:
 	static float const s_Height;
 	static std::string const s_IconAttribId;
 	static std::string const s_HitIgnoreClassName;
+	static std::string const s_HitIgnoreChildrenClassName;
 
 	// construct destruct
 	//--------------------
@@ -83,6 +84,7 @@ private:
 	Ptr<Rml::Element> m_Icon;
 
 	std::vector<Ptr<Rml::Element>> m_HitTestIgnoreElements;
+	std::vector<Ptr<Rml::Element>> m_HitTestIgnoreChildren;
 
 	GuiWindow::T_EventCallbackId m_WindowCallbackId = GuiWindow::INVALID_CALLBACK;
 	WindowListener m_Listener;
