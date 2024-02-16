@@ -6,7 +6,6 @@
 {
 	width: 100%;
 	height: 100%;
-	background: #FF66FF;
 	margin: 0;
 	padding: 0;
 	padding-right: 50dp;
@@ -32,16 +31,13 @@ tabs
 
 	left: 0;
 	margin: 0;
-	
-	background: #78cb29;
 }
 .tab,
 tab
 {
 	box-sizing: border-box;
 	height: 100%;
-	background: #66FFFF;
-	border: 1px #FFFF66;
+	border: 1px #aa88b8;
 
 	left: 0;
 	margin: 0;
@@ -82,7 +78,7 @@ tabs scrollbarhorizontal sliderarrowinc
 }
 tabs scrollbarhorizontal sliderbar
 {
-	background:#FF6666;
+	background:#5e4a80;
 	border-radius: 2px;
 	transition: opacity 0.6s sine-in-out;
 }
@@ -90,6 +86,55 @@ tabs:hover scrollbarhorizontal sliderbar
 {
 	opacity: 1;
 	transition: opacity 0.6s sine-in-out;
+}
+
+.close_tab
+{
+	display: inline;
+	width: auto;
+	vertical-align: middle;
+
+	padding: 0;
+}
+.close_tab .tab_outer
+{
+	display: inline;
+	height: 100%;
+	
+	vertical-align: top;
+	
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+	
+	margin-left: 6dp;
+
+	pointer-events: none;
+}
+.close_tab #content_container
+{
+	text-align: left;
+	
+    display: inline;
+    transform: translateY(-0.25em);
+}
+.close_tab .close_tab_btn
+{
+	margin-left: 6dp;
+	display: inline;
+	height: 100%;
+
+	image-color: #bababa;
+}
+.close_tab .close_tab_btn:hover
+{
+	image-color: #ffffff;
+	background-color: #4a3b66;
+}
+.close_tab .close_tab_btn:active
+{
+	image-color: #3D3D3D;
+	background-color: #1c1626;
 }
 
 /* Main Window

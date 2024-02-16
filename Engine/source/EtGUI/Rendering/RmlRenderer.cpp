@@ -523,7 +523,7 @@ void RmlRenderer::SetupScissorRectangle()
 
 				if (m_NullShader == nullptr)
 				{
-					m_NullShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("Shaders/FwdNullShader.glsl"));
+					m_NullShader = core::ResourceManager::Instance()->GetAssetData<rhi::ShaderData>(core::HashString("FwdNullShader.glsl"));
 				}
 
 				m_RenderDevice->SetShader(m_NullShader.get());

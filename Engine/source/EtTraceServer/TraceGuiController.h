@@ -36,11 +36,17 @@ struct GuiData : public gui::I_DataModel
 	//------------
 	struct Panel
 	{
-		std::string m_Name;
-		std::string m_IdRef;
+		// reflected
+		core::T_SlotId m_Id; // there seems to be no other way to reverse identify panels from data expressions
 
+		std::string m_Name;
 		std::vector<std::string> m_Lines;
+
+		// utility
+		Ptr<Rml::Element> m_PanelEl;
 	};
+
+	typedef core::slot_map<Panel> T_PanelMap;
 
 	// static functionality
 	//---------------------
@@ -56,7 +62,7 @@ struct GuiData : public gui::I_DataModel
 	// reflected
 	std::string m_WindowTitle;
 	bool m_ShowOptions = false;
-	std::vector<Panel> m_Panels;
+	T_PanelMap m_Panels;
 
 	// utility
 private:
@@ -74,10 +80,12 @@ public:
 	// construct destruct
 	//--------------------
 	void Initialize(app::GuiApplication* const guiApp);
+	void Update();
 
 	// functionality
 	//---------------
 	void CreatePanel();
+	void ClosePanel(core::T_SlotId const panelId);
 
 	// utility
 	//---------
@@ -93,6 +101,8 @@ private:
 
 	Ptr<Rml::ElementTabSet> m_TabSet;
 	Ptr<Rml::Element> m_TabsContainer;
+
+	std::vector<core::T_SlotId> m_PanelsToDelete;
 };
 
 

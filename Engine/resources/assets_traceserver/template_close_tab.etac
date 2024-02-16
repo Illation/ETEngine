@@ -1,0 +1,19 @@
+{
+  "editable gui document asset": {
+    "asset": {
+      "gui document asset": {
+        "name": "template_close_tab.rml",
+        "path": "",
+        "package": "default_compiled",
+        "references": [
+          "Fonts/NotoEmoji-Regular.ttf",
+          "GUI/window_style.rcss",
+          "GUI/rml.rcss",
+          "trace_style.rcss"
+        ]
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}

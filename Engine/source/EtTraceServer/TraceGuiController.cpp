@@ -8,6 +8,7 @@
 
 #include <EtGUI/Context/RmlGlobal.h>
 #include <EtGUI/Context/Context.h>
+#include <EtGUI/Context/RmlUtil.h>
 
 #include <EtApplication/GuiApplication.h>
 
@@ -44,8 +45,8 @@ void GuiData::RegisterInstancer()
 
 			if (Rml::StructHandle<Panel> panelHandle = modelConstructor.RegisterStruct<Panel>())
 			{
+				ET_CHECK_W(panelHandle.RegisterMember("id", &Panel::m_Id));
 				ET_CHECK_W(panelHandle.RegisterMember("name", &Panel::m_Name));
-				ET_CHECK_W(panelHandle.RegisterMember("id", &Panel::m_IdRef));
 				ET_CHECK_W(panelHandle.RegisterMember("lines", &Panel::m_Lines));
 			}
 			else
@@ -53,12 +54,21 @@ void GuiData::RegisterInstancer()
 				ET_WARNING("Failed to register Panel Struct");
 			}
 
-			modelConstructor.RegisterArray<std::vector<Panel>>();
+			gui::RmlUtil::RegisterSlotMapToDataModelConstructor<T_PanelMap>(modelConstructor);
 
 			// bind functions
 			modelConstructor.BindEventCallback("CreatePanel", [data = ret.Get()](Rml::DataModelHandle, Rml::Event&, Rml::VariantList const&)
 				{
 					data->m_Controller->CreatePanel(); 
+				});
+			modelConstructor.BindEventCallback("ClosePanel", [data = ret.Get()](Rml::DataModelHandle, Rml::Event&, Rml::VariantList const& params)
+				{
+					ET_ASSERT(params.size() == 1u, "Expect ClosePanel to be called with one parameter");
+
+					core::T_SlotId id;
+					ET_CHECK_W(params[0].GetInto(id), "expected an index type in ClosePanel param 0");
+
+					data->m_Controller->ClosePanel(id);
 				});
 
 			// bind data
@@ -110,23 +120,67 @@ void TraceGuiController::Initialize(app::GuiApplication* const guiApp)
 	m_TabsContainer->AddEventListener(Rml::EventId::Mousescroll, this, true);
 }
 
+//----------------------------
+// TraceGuiController::Update
+//
+void TraceGuiController::Update()
+{
+	for (core::T_SlotId const panelId : m_PanelsToDelete)
+	{
+		GuiData::T_PanelMap& panels = m_DataModel->m_Panels;
+		ET_ASSERT(panels.is_valid(panelId));
+
+		int panelIdx = -1;
+		{
+			Rml::Element const* panelEl = panels[panelId].m_PanelEl.Get();
+			ET_ASSERT(panelEl->GetParentNode()->GetTagName() == "panels");
+			while (panelEl != nullptr)
+			{
+				panelEl = panelEl->GetPreviousSibling();
+				panelIdx++;
+			}
+		}
+
+		bool const isActiveTab = (panelIdx == m_TabSet->GetActiveTab());
+		m_TabSet->RemoveTab(panelIdx);
+		m_DataModel->m_Panels.erase(panelId);
+
+		if (isActiveTab)
+		{
+			if (panelIdx > 0)
+			{
+				m_TabSet->SetActiveTab(panelIdx - 1);
+			}
+			else if (m_TabSet->GetNumTabs() > 0)
+			{
+				m_TabSet->SetActiveTab(0);
+			}
+		}
+	}
+
+	m_PanelsToDelete.clear();
+}
+
 //---------------------------------
 // TraceGuiController::CreatePanel
 //
 void TraceGuiController::CreatePanel()
 {
-	size_t const panelIdx = m_DataModel->m_Panels.size();
+	int const panelIdx = static_cast<int>(m_DataModel->m_Panels.size()); // only for addressing the tabset - internally we use panel IDs from the slot map
 
 	// update date model
 	ET_ASSERT(m_DataModel != nullptr);
 
-	m_DataModel->m_Panels.emplace_back();
-	GuiData::Panel& panel = m_DataModel->m_Panels.back();
-	panel.m_Name = FS("Client "ET_FMT_SIZET, panelIdx + 1u);
-	panel.m_IdRef = FS("client"ET_FMT_SIZET, panelIdx + 1u);
-	for (size_t lineIdx = 0u; lineIdx < panelIdx + 1u; ++lineIdx)
+	std::pair<GuiData::T_PanelMap::iterator, core::T_SlotId> inserted = m_DataModel->m_Panels.insert(GuiData::Panel());
+	GuiData::Panel& panel = *inserted.first;
+
+	panel.m_Id = inserted.second;
+
+	uint32 const panelNumber = panel.m_Id + 1;
+	panel.m_Name = FS("Client %u", panelNumber);
+	for (uint32 lineIdx = 0u; lineIdx < panelNumber; ++lineIdx)
 	{
-		panel.m_Lines.emplace_back(FS("Line " ET_FMT_SIZET, lineIdx));
+		panel.m_Lines.emplace_back(FS("Panel %u - Line %u", panelNumber, lineIdx));
 	}
 
 	// ensure update
@@ -134,17 +188,31 @@ void TraceGuiController::CreatePanel()
 
 	// instantiating panels
 	Rml::XMLAttributes attributes;
-	attributes.emplace("class", "trace_panel");
-	attributes.emplace("data-alias-panel_ref", FS("%s[" ET_FMT_SIZET "]", s_PanelsDataId, panelIdx));
+	attributes.emplace("data-alias-panel_ref", FS("%s[%u]", s_PanelsDataId, panel.m_Id));
 
-	m_TabSet->SetTab(static_cast<int>(panelIdx), FS("Client %u", panelIdx + 1u));
-	Rml::Element* const insertedPanel = m_TabSet->SetPanel(static_cast<int>(panelIdx), 
-		Rml::Factory::InstanceElement(m_TabSet.Get(), "*", "panel", attributes));
+	attributes["class"] = "close_tab";
+	Rml::Element* const insertedTab = m_TabSet->SetTab(panelIdx, Rml::Factory::InstanceElement(m_TabSet.Get(), "*", "tab", attributes));
 
-	m_TabSet->SetActiveTab(static_cast<int>(panelIdx));
+	attributes["class"] = "trace_panel";
+	panel.m_PanelEl = ToPtr(m_TabSet->SetPanel(panelIdx, Rml::Factory::InstanceElement(m_TabSet.Get(), "*", "panel", attributes)));
+
+	m_TabSet->SetActiveTab(panelIdx);
 
 	// we ensure that the element is already linked to the document structure so that the data bindings work correctly
-	Rml::ElementUtilities::ParseTemplateIntoElement(insertedPanel, "template_trace_panel.rml");
+	Rml::Element* templateContent;
+	Rml::ElementUtilities::ParseTemplateIntoElement(panel.m_PanelEl.Get(), "template_trace_panel.rml", templateContent);
+
+	Rml::ElementUtilities::ParseTemplateIntoElement(insertedTab, "template_close_tab.rml", templateContent);
+	ET_ASSERT(templateContent != nullptr);
+	Rml::Factory::InstanceElementText(templateContent, panel.m_Name);
+}
+
+//--------------------------------
+// TraceGuiController::ClosePanel
+//
+void TraceGuiController::ClosePanel(core::T_SlotId const panelId)
+{
+	m_PanelsToDelete.push_back(panelId);
 }
 
 //----------------------------------

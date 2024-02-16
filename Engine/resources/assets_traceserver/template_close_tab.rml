@@ -1,0 +1,13 @@
+<template name="trace_panel" content="content_container">
+<head>
+	<link type="text/rcss" href="GUI/rml.rcss"/>
+	<link type="text/rcss" href="GUI/window_style.rcss"/>
+	<link type="text/rcss" href="trace_style.rcss"/>
+</head>
+<body data-model="trace_data">
+	<div class="tab_outer">
+		<div id="content_container"/>
+	</div>
+	<svg class="close_tab_btn" data-event-click="ClosePanel(panel_ref.id);" src="icons/blender-icons/panel_close.svg"/>
+</body>
+</template>

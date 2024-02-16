@@ -163,6 +163,7 @@ void TraceServer::Run()
 
 		HandleNetworking();
 
+		m_GuiController.Update();
 		Draw();
 	}
 }

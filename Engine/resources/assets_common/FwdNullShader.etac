@@ -3,8 +3,8 @@
     "asset": {
       "shader asset": {
         "name": "FwdNullShader.glsl",
-        "path": "Shaders/",
-        "package": "engine_content_compiled",
+        "path": "",
+        "package": "common_content_compiled",
         "references": []
       }
     },
