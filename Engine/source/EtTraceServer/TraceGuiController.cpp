@@ -61,7 +61,7 @@ void GuiData::RegisterInstancer()
 				{
 					data->m_Controller->CreatePanel(); 
 				});
-			modelConstructor.BindEventCallback("ClosePanel", [data = ret.Get()](Rml::DataModelHandle, Rml::Event&, Rml::VariantList const& params)
+			modelConstructor.BindEventCallback("ClosePanel", [data = ret.Get()](Rml::DataModelHandle, Rml::Event& evnt, Rml::VariantList const& params)
 				{
 					ET_ASSERT(params.size() == 1u, "Expect ClosePanel to be called with one parameter");
 
@@ -69,6 +69,8 @@ void GuiData::RegisterInstancer()
 					ET_CHECK_W(params[0].GetInto(id), "expected an index type in ClosePanel param 0");
 
 					data->m_Controller->ClosePanel(id);
+
+					evnt.StopPropagation();
 				});
 
 			// bind data

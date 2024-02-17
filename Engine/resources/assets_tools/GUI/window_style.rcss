@@ -217,47 +217,72 @@ input.checkbox:checked:active
 	decorator: image(checkbox-checked-active);
 }
 
+/* Scrollbars
+///////////*/
+
 scrollbarvertical
 {
-	margin-right: -3dp;
-	width: 19dp;
-	background: #29203a;
+	width: 8dp;
+	background: #1d1d1d;
 }
+scrollbarvertical:window_inactive
+{
+	background: #444444;
+}
+
 scrollbarvertical sliderbar
 {
-	width: 15dp;
+	width: 6dp;
 	min-height: 46dp;
+	border-radius: 3dp;
+	margin: 0 auto;
+	margin-left: 3dp;
 
-	decorator: tiled-vertical( sliderbar-t, sliderbar-c, sliderbar-b );
-	image-color: #ae8bb9;
-}
-scrollbarvertical sliderarrowdec,
-scrollbarvertical sliderarrowinc
-{
-	width: 15dp;
-	height: 10dp;
+	background: #3e3e3e;
 }
 scrollbarvertical sliderbar:hover,
-scrollbarvertical sliderarrowdec:hover,
-scrollbarvertical sliderarrowinc:hover
+scrollbarvertical sliderbar:active
 {
-	image-color: #b692c4;
+	width: 12dp;
+	min-height: 46dp;
+	border-radius: 6dp;
+	margin-left: auto;
 }
-scrollbarvertical sliderbar:active,
-scrollbarvertical sliderarrowdec:active,
-scrollbarvertical sliderarrowinc:active
+scrollbarvertical sliderbar:hover
 {
-	image-color: #efbeff;
+	background: #545454;
 }
+scrollbarvertical sliderbar:active
+{
+	background: #595959;
+}
+
 scrollbarvertical sliderarrowdec
 {
 	decorator: image( sliderarrowdec );
-	image-color: #ae8bb9;
+	margin-bottom: 1dp;
 }
 scrollbarvertical sliderarrowinc
 {
 	decorator: image( sliderarrowinc );
-	image-color: #ae8bb9;
+	margin-top: 1dp;
+}
+scrollbarvertical sliderarrowdec,
+scrollbarvertical sliderarrowinc
+{
+	width: 12dp;
+	height: 8dp;
+	image-color: #3e3e3e;
+}
+scrollbarvertical sliderarrowdec:hover,
+scrollbarvertical sliderarrowinc:hover
+{
+	image-color: #545454;
+}
+scrollbarvertical sliderarrowdec:active,
+scrollbarvertical sliderarrowinc:active
+{
+	image-color: #595959;
 }
 
 /* Tabs
@@ -269,27 +294,86 @@ tabset
 }
 tabs
 {
-    display: block;
+	display: flex;
+	justify-content: flex-start;
+	align-items: flex-start;
+	align-content: space-around;
+
+	box-sizing: border-box;
+	
+	overflow-x: auto;
+	overflow-y: hidden;
+
+	width: auto;
+
+	left: 0;
+	margin: 0;
 }
+tabs scrollbarhorizontal
+{
+	height: 3px;
+	margin-bottom: -3px;
+}
+tabs scrollbarhorizontal slidertrack,
+tabs scrollbarhorizontal sliderbar
+{
+	height: 3px;
+	opacity: 0;
+}
+tabs scrollbarhorizontal sliderarrowdec,
+tabs scrollbarhorizontal sliderarrowinc
+{
+	width: 0;
+	height: 0;
+}
+tabs scrollbarhorizontal sliderbar
+{
+	background:#303030;
+	border-radius: 2px;
+	transition: opacity 0.6s sine-in-out;
+}
+tabs:hover scrollbarhorizontal sliderbar
+{
+	opacity: 1;
+	transition: opacity 0.6s sine-in-out;
+}
+
+.tab,
 tab
 {
-	width: 90dp;
-	padding: 0 20dp;
 	line-height: 40dp;
-	display: inline-block;
-	
-	font-size: 20dp;
-	color: #b8a4ae;
-	font-weight: bold;
+	font-size: 18px;
+	font-weight: normal;
+	font-effect: shadow(1px 1px #27272794);
+	color: #989898;
 	text-align: center;
 	
-	border: 2px #aa88b8;
+	display: inline-block;
+
+	width: auto;
+	flex-shrink: 0;
+	overflow: hidden;
+	white-space: nowrap;
 	
-	background: #241d31;
+	box-sizing: border-box;
+	height: 100%;
+	border: 0;
+	border-radius: 0;
+	border-top-left-radius: 8dp;
+	border-top-right-radius: 8dp;
+
+	left: 0;
+	margin: 0;
+
+	padding: 0;
+	padding-left: 12dp;
+	padding-right: 30dp;
+	padding-bottom: 12dp;
 }
 tab:hover
 {
-	background: #2e253f;
+	background: #232323;
+	color: #a5a5a5;
 }
 tab:active:hover
 {
@@ -299,9 +383,61 @@ tab:selected:hover
 }
 tab:active, tab:selected
 {
-	background: #120627;
-	color: #d3b1c2;
+	background: #303030;
+	color: #FFFFFF;
 }
+
+.close_tab
+{
+	display: inline;
+	width: auto;
+
+	padding: 0;
+}
+.close_tab .tab_outer
+{
+	display: inline;
+	height: 100%;
+	
+	vertical-align: top;
+	
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+	
+	margin-left: 6dp;
+
+	pointer-events: none;
+}
+.close_tab #content_container
+{
+	text-align: left;
+	
+    display: inline;
+    transform: translateY(-0.25em);
+}
+.close_tab .close_tab_btn
+{
+	margin-left: 6dp;
+	display: inline;
+	height: 100%;
+
+	border-radius: 0;
+	border-top-right-radius: 8dp;
+
+	image-color: #bababa;
+}
+.close_tab .close_tab_btn:hover
+{
+	image-color: #ffffff;
+	background-color: #505050;
+}
+.close_tab .close_tab_btn:active
+{
+	image-color: #3D3D3D;
+	background-color: #606060;
+}
+
 panels
 {
     display: block;

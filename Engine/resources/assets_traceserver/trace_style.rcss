@@ -5,7 +5,7 @@
 #handle_content
 {
 	width: 100%;
-	height: 100%;
+
 	margin: 0;
 	padding: 0;
 	padding-right: 50dp;
@@ -14,127 +14,6 @@
 	display: inline-block;
 
 	padding-left: 0;
-}
-tabs
-{
-	display: flex;
-	justify-content: flex-start;
-	align-items: flex-start;
-	align-content: space-around;
-
-	box-sizing: border-box;
-	
-	overflow-x: auto;
-	overflow-y: hidden;
-
-	width: auto;
-
-	left: 0;
-	margin: 0;
-}
-.tab,
-tab
-{
-	box-sizing: border-box;
-	height: 100%;
-	border: 1px #aa88b8;
-
-	left: 0;
-	margin: 0;
-
-	display: inline-block;
-	width: auto;
-	flex-shrink: 0;
-	overflow: hidden;
-	white-space: nowrap;
-
-	padding: 0;
-	padding-left: 12dp;
-	padding-right: 30dp;
-	padding-bottom: 12dp;
-	
-	font-size: 18px;
-	font-weight: normal;
-	font-effect: shadow(1px 1px #27272794);
-	color: #ffffff;
-	text-align: center;
-}
-tabs scrollbarhorizontal
-{
-	height: 3px;
-	margin-bottom: -3px;
-}
-tabs scrollbarhorizontal slidertrack,
-tabs scrollbarhorizontal sliderbar
-{
-	height: 3px;
-	opacity: 0;
-}
-tabs scrollbarhorizontal sliderarrowdec,
-tabs scrollbarhorizontal sliderarrowinc
-{
-	width: 0;
-	height: 0;
-}
-tabs scrollbarhorizontal sliderbar
-{
-	background:#5e4a80;
-	border-radius: 2px;
-	transition: opacity 0.6s sine-in-out;
-}
-tabs:hover scrollbarhorizontal sliderbar
-{
-	opacity: 1;
-	transition: opacity 0.6s sine-in-out;
-}
-
-.close_tab
-{
-	display: inline;
-	width: auto;
-	vertical-align: middle;
-
-	padding: 0;
-}
-.close_tab .tab_outer
-{
-	display: inline;
-	height: 100%;
-	
-	vertical-align: top;
-	
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-	
-	margin-left: 6dp;
-
-	pointer-events: none;
-}
-.close_tab #content_container
-{
-	text-align: left;
-	
-    display: inline;
-    transform: translateY(-0.25em);
-}
-.close_tab .close_tab_btn
-{
-	margin-left: 6dp;
-	display: inline;
-	height: 100%;
-
-	image-color: #bababa;
-}
-.close_tab .close_tab_btn:hover
-{
-	image-color: #ffffff;
-	background-color: #4a3b66;
-}
-.close_tab .close_tab_btn:active
-{
-	image-color: #3D3D3D;
-	background-color: #1c1626;
 }
 
 /* Main Window
