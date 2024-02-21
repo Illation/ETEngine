@@ -154,7 +154,7 @@ void TraceGuiController::Initialize(app::GuiApplication* const guiApp)
 	ET_ASSERT(m_TabsContainer != nullptr);
 
 	m_TabsContainer->AddEventListener(Rml::EventId::Mousescroll, this, true);
-	m_TabSet->AddEventListener(Rml::EventId::Tabchange, this);
+	m_TabSet->AddEventListener(Rml::EventId::Tabchange, this, true);
 }
 
 //----------------------------

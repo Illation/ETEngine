@@ -6,8 +6,8 @@
   <link type="text/template" href="template_trace_panel.rml" />
 	<title>E. T. Trace Server</title>
 </head>
-<body data-model="trace_data">
-  <window handle-id="win_handle">
+<body>
+  <window data-model="trace_data" handle-id="win_handle">
     <window_handle 
       id="win_handle" 
       icon="trace_logo_grayscale.svg" 
@@ -27,14 +27,14 @@
           <hr/>
           <input type="text" data-attrif-disabled="td_trace_panels.size == 0" data-value="td_active_panel.filter_text"/>
           <div class="section">
-		        <label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-value="td_active_panel.show_info"/> Show Info</label><br/>
-		        <label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-value="td_active_panel.show_verbose"/> Show Verbose</label><br/>
-		        <label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-value="td_active_panel.show_warning"/> Show Warning</label><br/>
-		        <label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-value="td_active_panel.show_error"/> Show Error</label><br/>
-		        <label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-value="td_active_panel.show_fatal"/> Show Fatal</label><br/>
+		        <label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_info"/> Show Info</label><br/>
+		        <label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_verbose"/> Show Verbose</label><br/>
+		        <label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_warning"/> Show Warning</label><br/>
+		        <label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_error"/> Show Error</label><br/>
+		        <label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_fatal"/> Show Fatal</label><br/>
           </div>
-          <div data-for="context : td_active_panel.contexts" class="section">
-            <p>Context {{it_index + 1}} of {{ td_active_panel.contexts.size }}.</p>
+          <div class="section">
+		        <label data-for="context : td_active_panel.contexts"><input type="checkbox" data-checked="context.show"/> {{context.name}}</label><br/>
           </div>
         </div>
       </div>

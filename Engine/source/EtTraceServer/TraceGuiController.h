@@ -41,13 +41,9 @@ struct GuiData : public gui::I_DataModel
 			core::T_TraceContext m_ContextId;
 
 			// reflected
-			std::string m_ContextName = "default";
+			std::string m_ContextName;
 			bool m_Show = true;
 		};
-
-		Panel() {
-			m_Contexts.emplace_back(); m_Contexts.emplace_back();
-		}
 
 		// reflected
 		core::T_SlotId m_Id; // there seems to be no other way to reverse identify panels from data expressions
