@@ -37,13 +37,19 @@
 {
 	width: 200px;
 	height: 100%;
-	background: #FFFFFF;
-	margin: auto;
-	overflow: auto;
+
 	box-sizing: border-box;
-	
+	margin: auto;
+}
+
+#options_inner
+{
+	overflow: auto;
+
+	box-sizing: border-box;
 	padding: 10dp;
 }
+
 
 /* Panels
 ////////*/

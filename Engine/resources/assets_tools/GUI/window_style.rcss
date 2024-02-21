@@ -27,6 +27,9 @@
 	title-bar-r: 182px 143px 8px 31px;
 }
 
+/* General styling
+////////////////*/
+
 body {
 	font-family: DejaVu Sans;
 	font-size: 11px;
@@ -36,6 +39,38 @@ body {
 	width: 100%;
 	height: 100%;
 }
+
+.frame
+{
+	display: block;
+	position:static;
+
+	background: #1d1d1d;
+	padding: 3dp;
+}
+.framed_box
+{
+	display: block;
+	position:static;
+
+	width: 100%;
+	height: 100%;
+	border-radius: 6dp;
+
+	background: #303030;
+}
+
+.section
+{
+	width: 100%;
+	height: auto;
+	border-radius: 6dp;
+	background: #3d3d3d;
+	margin: 3dp;
+}
+
+/* Window
+///////*/
 
 window 
 {
@@ -159,6 +194,9 @@ window_handle controls close-button:hover
 	background-color: #FF5555;
 }
 
+/* Inputs
+///////*/
+
 input.text {
 	background-color: #fff;
 	color: #555;
@@ -181,7 +219,7 @@ dataselect
 }
 
 input.radio,
-input.checkbox
+input.checkbox,
 input.button
 {
 	width: 38dp;
@@ -217,6 +255,35 @@ input.checkbox:checked:active
 	decorator: image(checkbox-checked-active);
 }
 
+/* Buttons
+////////*/
+
+button
+{
+	display: block;
+	width: auto;
+	height: auto;
+	padding: 2dp 15dp;
+	
+	font-size: 14dp;
+	color: #DDDDDD;
+	text-align: center;
+
+	border: 1px #3D3D3D;
+	border-radius: 4dp;
+	
+	background: #545454;
+}
+button:hover
+{
+	background: #656565;
+}
+button:active:hover
+{
+	background: #aa88b8;
+	color: #FFFFFF;
+}
+
 /* Scrollbars
 ///////////*/
 
@@ -224,10 +291,6 @@ scrollbarvertical
 {
 	width: 8dp;
 	background: #1d1d1d;
-}
-scrollbarvertical:window_inactive
-{
-	background: #444444;
 }
 
 scrollbarvertical sliderbar
@@ -445,33 +508,4 @@ panels
 panel
 {
     display: block;
-}
-
-/* Controls
-/////////*/
-
-button
-{
-	display: block;
-	width: auto;
-	height: auto;
-	padding: 2dp 15dp;
-	
-	font-size: 14dp;
-	color: #b8a4ae;
-	font-weight: bold;
-	text-align: center;
-	
-	border: 1px #aa88b8;
-	border-radius: 5px;
-	
-	background: #241d31;
-}
-button:hover
-{
-	background: #2e253f;
-}
-button:active:hover
-{
-	background: #120627;
 }

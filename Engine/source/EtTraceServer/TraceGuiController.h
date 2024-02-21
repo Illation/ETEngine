@@ -36,11 +36,35 @@ struct GuiData : public gui::I_DataModel
 	//------------
 	struct Panel
 	{
+		struct ContextFilter
+		{
+			core::T_TraceContext m_ContextId;
+
+			// reflected
+			std::string m_ContextName = "default";
+			bool m_Show = true;
+		};
+
+		Panel() {
+			m_Contexts.emplace_back(); m_Contexts.emplace_back();
+		}
+
 		// reflected
 		core::T_SlotId m_Id; // there seems to be no other way to reverse identify panels from data expressions
 
 		std::string m_Name;
 		std::vector<std::string> m_Lines;
+
+		// filter
+		std::string m_SearchText;
+
+		bool m_ShowInfo = true;
+		bool m_ShowVerbose = false;
+		bool m_ShowWarning = true;
+		bool m_ShowError = true;
+		bool m_ShowFatal = true;
+
+		std::vector<ContextFilter> m_Contexts;
 
 		// utility
 		Ptr<Rml::Element> m_PanelEl;
@@ -63,8 +87,12 @@ struct GuiData : public gui::I_DataModel
 	std::string m_WindowTitle;
 	bool m_ShowOptions = false;
 	T_PanelMap m_Panels;
+	Panel* m_ActivePanel = &m_FallbackPanel;
 
 	// utility
+	Panel m_FallbackPanel;
+	core::T_SlotId m_ActivePanelId = core::INVALID_SLOT_ID;
+
 private:
 	Ptr<TraceGuiController> m_Controller;
 };
@@ -91,6 +119,7 @@ public:
 	//---------
 protected:
 	void ProcessEvent(Rml::Event& evnt) override;
+	void UpdateActivePanelId();
 
 
 	// Data
@@ -100,6 +129,7 @@ private:
 	WeakPtr<GuiData> m_DataModel;
 
 	Ptr<Rml::ElementTabSet> m_TabSet;
+	Ptr<Rml::Element> m_TabSetPanels;
 	Ptr<Rml::Element> m_TabsContainer;
 
 	std::vector<core::T_SlotId> m_PanelsToDelete;
