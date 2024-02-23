@@ -357,6 +357,7 @@ endfunction(targetCompileOptions)
 function(addDebugVisualizers _target)
 	if (MSVC)
 		target_sources(${_target} PUBLIC ${ENGINE_DIRECTORY_ABS}/tools/et-visualizers.natvis)
+		target_sources(${_target} PUBLIC ${ENGINE_DIRECTORY_ABS}/tools/robin_hood.natvis)
 	endif()
 endfunction()
 
