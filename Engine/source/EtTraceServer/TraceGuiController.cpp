@@ -182,6 +182,8 @@ void TraceGuiController::Update()
 		m_TabSet->RemoveTab(panelIdx);
 		m_DataModel->m_Panels.erase(panelId);
 
+		m_DataModel->m_ModelHandle.DirtyVariable(s_PanelsDataId);
+
 		if (isActiveTab)
 		{
 			if (panelIdx > 0)

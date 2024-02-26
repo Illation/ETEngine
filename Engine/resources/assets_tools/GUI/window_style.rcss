@@ -222,38 +222,45 @@ input.radio,
 input.checkbox,
 input.button
 {
-	width: 38dp;
-	height: 36dp;
+	width: 14dp;
+	height: 14dp;
 
-	vertical-align: -7dp;
-	
-	decorator: image(checkbox);
+	border-radius: 2dp;
 }
 
+input.checkbox
+{
+	decorator: svg(icons/blender-icons/checkbox_dehlt.svg, content);
+	background: #545454;
+	image-color: #3D3D3D;
+}
 input.checkbox:hover
 {
-	decorator: image(checkbox-hover);
+	background: #656565;
 }
-
-input.checkbox:active
+input.checkbox:disabled
 {
-	decorator: image(checkbox-active);
+	background: #454545;
+	image-color: #383838;
 }
-
 input.checkbox:checked
 {
-	decorator: image(checkbox-checked);
+	decorator: svg(icons/blender-icons/checkbox_hlt.svg, content);
+	background: #FFFFFF;
+	image-color: #aa88b8;
+}
+input.checkbox:checked:disabled
+{
+	background: #715d79;
+	image-color: #653e74;
 }
 
-input.checkbox:checked:hover
+.option
 {
-	decorator: image(checkbox-checked-hover);
+	margin-top: 8px;
+	margin-bottom: 8px;
 }
 
-input.checkbox:checked:active
-{
-	decorator: image(checkbox-checked-active);
-}
 
 /* Buttons
 ////////*/

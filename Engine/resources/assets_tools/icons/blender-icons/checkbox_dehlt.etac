@@ -1,0 +1,14 @@
+{
+  "editable gui document asset": {
+    "asset": {
+      "gui document asset": {
+        "name": "checkbox_dehlt.svg",
+        "path": "icons/blender-icons/",
+        "package": "tool_content",
+        "references": []
+      }
+    },
+    "metadata": null,
+    "children": []
+  }
+}
