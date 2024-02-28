@@ -5,26 +5,8 @@
 	/* For high dpi screens, designates the scaling it is intended to be shown at. */
 	resolution: 1x; 
 	
-	checkbox: 147px 433px 38px 36px;
-	checkbox-hover: 146px 432px 38px 36px;
-	checkbox-active: 147px 433px 38px 36px;
-	checkbox-checked: 147px 469px 38px 36px;
-	checkbox-checked-hover: 146px 468px 38px 36px;
-	checkbox-checked-active: 147px 469px 38px 36px;
-	
-	datagridheader-l: 0px 143px 8px 31px;
-	datagridheader-c: 8px 143px 2px 31px;
-	datagridheader-r: 182px 143px 8px 31px;
-	
-	sliderbar-t:         138px 479px 8px 5px;
-	sliderbar-c:         138px 483px 8px 1px;
-	sliderbar-b:         138px 483px 8px 5px;
 	sliderarrowinc: 123px 496px 15px 10px;
 	sliderarrowdec: 93px 498px 15px 10px;
-	
-	title-bar-l: 0px 143px 8px 31px;
-	title-bar-c: 8px 143px 2px 31px;
-	title-bar-r: 182px 143px 8px 31px;
 }
 
 /* General styling
@@ -43,7 +25,6 @@ body {
 .frame
 {
 	display: block;
-	position:static;
 
 	background: #1d1d1d;
 	padding: 3dp;
@@ -51,7 +32,6 @@ body {
 .framed_box
 {
 	display: block;
-	position:static;
 
 	width: 100%;
 	height: 100%;
@@ -67,6 +47,17 @@ body {
 	border-radius: 6dp;
 	background: #3d3d3d;
 	margin: 3dp;
+}
+
+.option
+{
+	height: auto;
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+.option label
+{
+	vertical-align: middle;
 }
 
 /* Window
@@ -92,15 +83,7 @@ window:maximized
 	border: 0px;
 	border-radius: 0px;
 }
-
-window client_area
-{
-	width: 100%;
-	height: 100%;
-	margin: 3px;
-	margin-top: 0;
-}
-		
+	
 window_handle
 {
 	text-align: center;
@@ -197,33 +180,80 @@ window_handle controls close-button:hover
 /* Inputs
 ///////*/
 
-input.text {
-	background-color: #fff;
-	color: #555;
-	border: 2px #c197d2;
-	border-radius: 10px;
-	padding: 5px;
-	tab-index: auto;
-	cursor: text;
-	box-sizing: border-box;
-	width: 200px;
-	font-size: 0.9em;
+input,
+select
+{
+	margin: 1dp 3dp;
+
+	color: #DDDDDD;
+	text-align: center;
 }
 
-input,
-select,
-dataselect
+input.button
 {
-	margin-left: 20dp;
-	margin-right: 20dp;
+	display: block;
+	width: 100%;
+	height: auto;
+	box-sizing: border-box;
+
+	padding: 3dp 15dp;
+
+	border: 1px #3D3D3D;
+	border-radius: 4dp;
+	
+	background: #545454;
+}
+input.button:hover
+{
+	background: #656565;
+}
+input.button:active:hover
+{
+	background: #aa88b8;
+	color: #FFFFFF;
+}
+
+input.text 
+{
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+
+	border: 1px #3b3b3b;
+	border-radius: 4dp;
+
+	padding: 5px;
+
+	tab-index: auto;
+
+	cursor: text;
+	caret-color: #71a8ff;
+
+	background: #1d1d1d;
+}
+input.text:hover
+{
+	background: #232323;
+	border-color: #464646;
+	color: #FFFFFF;
+}
+input.text:active
+{
+	background: #181818;
+	border-color: #3d3d3d;
+	color: #FFFFFF;
 }
 
 input.radio,
-input.checkbox,
-input.button
+input.checkbox
 {
 	width: 14dp;
 	height: 14dp;
+
+	margin-left: 20dp;
+	margin-right: 20dp;
+	
+	vertical-align: middle;
 
 	border-radius: 2dp;
 }
@@ -255,41 +285,6 @@ input.checkbox:checked:disabled
 	image-color: #653e74;
 }
 
-.option
-{
-	margin-top: 8px;
-	margin-bottom: 8px;
-}
-
-
-/* Buttons
-////////*/
-
-button
-{
-	display: block;
-	width: auto;
-	height: auto;
-	padding: 2dp 15dp;
-	
-	font-size: 14dp;
-	color: #DDDDDD;
-	text-align: center;
-
-	border: 1px #3D3D3D;
-	border-radius: 4dp;
-	
-	background: #545454;
-}
-button:hover
-{
-	background: #656565;
-}
-button:active:hover
-{
-	background: #aa88b8;
-	color: #FFFFFF;
-}
 
 /* Scrollbars
 ///////////*/
@@ -471,7 +466,6 @@ tab:active, tab:selected
 	
 	vertical-align: top;
 	
-    display: inline-flex;
     align-items: center;
     justify-content: center;
 	

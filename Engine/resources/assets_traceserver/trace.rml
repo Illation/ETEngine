@@ -22,19 +22,19 @@
     <div id="client_area">
       <div id="options_panel" class="frame" data-if="td_show_options">
         <div id="options_inner" class="framed_box">
-          <button data-event-click="CreatePanel();">Create Panel</button>
-          <button>Export ...</button>
+          <input type="button" data-event-click="CreatePanel();">Create Panel</input>
+          <input type="button">Export ...</input>
           <hr/>
           <input type="text" data-attrif-disabled="td_trace_panels.size == 0" data-value="td_active_panel.filter_text"/>
           <div class="section">
-		        <label class="option"><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_info"/> Show Info</label><br/>
-		        <label class="option"><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_verbose"/> Show Verbose</label><br/>
-		        <label class="option"><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_warning"/> Show Warning</label><br/>
-		        <label class="option"><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_error"/> Show Error</label><br/>
-		        <label class="option"><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_fatal"/> Show Fatal</label><br/>
+		        <p class="option"><label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_info"/> Show Info</label></p>
+		        <p class="option"><label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_verbose"/> Show Verbose</label></p>
+		        <p class="option"><label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_warning"/> Show Warning</label></p>
+		        <p class="option"><label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_error"/> Show Error</label></p>
+		        <p class="option"><label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_fatal"/> Show Fatal</label></p>
           </div>
           <div class="section">
-		        <label class="option" data-for="context : td_active_panel.contexts"><input type="checkbox" data-checked="context.show"/> {{context.name}}</label><br/>
+		        <p class="option" data-for="context : td_active_panel.contexts"><label><input type="checkbox" data-checked="context.show"/> {{context.name}}</label></p>
           </div>
         </div>
       </div>
