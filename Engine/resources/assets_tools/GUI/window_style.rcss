@@ -185,8 +185,45 @@ select
 {
 	margin: 1dp 3dp;
 
-	color: #DDDDDD;
 	text-align: center;
+}
+
+input.ico,
+select.ico
+{
+	display: flex;
+}
+input.ico svg,
+select.ico svg
+{
+	position: relative;
+	width: 15dp;
+	height: 15dp;
+	vertical-align: bottom;
+	margin-left: 4dp;
+	float: left;
+}
+input.ico span,
+select.ico span
+{
+	text-align: center;
+	float: none;
+	flex: 1;
+}
+
+input,
+select,
+label,
+input svg
+{
+	color: #DDDDDD;
+	image-color: #DDDDDD;
+	font-effect: glow(1dp 2dp -1dp 1dp #3D3D3D66);
+}
+
+label:hover
+{
+	color: #FFFFFF;
 }
 
 input.button
@@ -196,7 +233,7 @@ input.button
 	height: auto;
 	box-sizing: border-box;
 
-	padding: 3dp 15dp;
+	padding: 3dp 0;
 
 	border: 1px #3D3D3D;
 	border-radius: 4dp;
@@ -207,10 +244,19 @@ input.button:hover
 {
 	background: #656565;
 }
-input.button:active:hover
+input.button:active:hover,
+input.button:active:hover svg
 {
 	background: #aa88b8;
 	color: #FFFFFF;
+	image-color: #FFFFFF;
+}
+
+input.button.ico svg
+{
+	margin-right: 3dp;
+	margin-top: -2dp;
+	margin-bottom: -1dp;
 }
 
 input.text 
