@@ -25,7 +25,10 @@
           <input type="button" class="ico" data-event-click="CreatePanel();"><svg src="icons/blender-icons/import.svg" crop-to-content="true"/><span>Create Panel</span></input>
           <input type="button" class="ico"><svg src="icons/blender-icons/export.svg" crop-to-content="true"/><span>Export ...</span></input>
           <hr/>
-          <input type="text" data-attrif-disabled="td_trace_panels.size == 0" data-value="td_active_panel.filter_text"/>
+          <input type="text" class="ico clear" data-attrif-disabled="td_trace_panels.size == 0" data-value="td_active_panel.filter_text">
+            <svg src="icons/blender-icons/viewzoom.svg" crop-to-content="true"/>
+            <input type="button" class="clear" data-if="td_active_panel.filter_text != ''" data-event-click="td_active_panel.filter_text = ''"/>
+          </input>
           <div class="section">
 		        <p class="option"><label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_info"/> Show Info</label></p>
 		        <p class="option"><label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_verbose"/> Show Verbose</label></p>

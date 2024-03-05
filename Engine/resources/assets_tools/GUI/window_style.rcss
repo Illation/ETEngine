@@ -258,6 +258,24 @@ input.button.ico svg
 	margin-top: -2dp;
 	margin-bottom: -1dp;
 }
+input.button.clear
+{
+	decorator: svg(icons/blender-icons/panel_close.svg, content);
+	width: 16dp;
+	height: 16dp;
+	position: relative;
+	float: right;
+	background: #00000000;
+	image-color: #DDDDDD;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	cursor: pointer;
+}
+input.button.clear:active:hover
+{
+	background: #00000000;
+}
 
 input.text 
 {
@@ -268,14 +286,21 @@ input.text
 	border: 1px #3b3b3b;
 	border-radius: 4dp;
 
-	padding: 5px;
+	padding: 3dp;
+	padding-bottom: 0dp;
+
+	overflow: auto hidden;
+
+	font-effect: none;
 
 	tab-index: auto;
 
+	white-space: nowrap;
+	text-align: left;
 	cursor: text;
-	caret-color: #71a8ff;
+	caret-color: #d770ff;
 
-	background: #1d1d1d;
+	background: #111111;
 }
 input.text:hover
 {
@@ -288,6 +313,47 @@ input.text:active
 	background: #181818;
 	border-color: #3d3d3d;
 	color: #FFFFFF;
+}
+input.text selection
+{
+	background: #9447b3;
+	color: #FFFFFF;
+}
+input.text:disabled
+{
+	background: #333333;
+	border-color: #404040;
+	color: #AAAAAA;
+}
+
+input.text.ico
+{
+	padding-left: 25dp;
+}
+input.text.clear
+{
+	padding-right: 23dp;
+}
+input.text.ico svg
+{
+	position: fixed;
+	clip: 1;
+	width: 14dp;
+	height: 14dp;
+	margin-left: -21dp;
+	margin-right: 7dp;
+	margin-top: -1dp;
+	margin-bottom: 0dp;
+}
+input.text.clear input.button.clear
+{
+	position: fixed;
+	clip: 1;
+	margin-left: 7dp;
+	margin-right: 0;
+	margin-top: -2dp;
+	margin-bottom: -1dp;
+	right: 16dp;
 }
 
 input.radio,
