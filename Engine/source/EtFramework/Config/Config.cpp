@@ -26,13 +26,16 @@ RTTR_REGISTRATION
 	using namespace rttr;
 
 	registration::class_<Config::UserDirPointer>("dir pointer")
-		.property("user dir path", &Config::UserDirPointer::m_UserDirPath) ;
+		.property("user dir path", &Config::UserDirPointer::m_UserDirPath);
+
+	registration::class_<Config::ProjectConfig>("project config");
 
 	registration::class_<Config::Settings>("settings")
 		.constructor<>()
 		.property("graphics", &Config::Settings::m_Graphics)
 		.property("window", &Config::Settings::m_Window)
-		.property("screenshot dir", &Config::Settings::m_ScreenshotDir);
+		.property("screenshot dir", &Config::Settings::m_ScreenshotDir)
+		.property("project config", &Config::Settings::m_ProjectConfig);
 }
 
 

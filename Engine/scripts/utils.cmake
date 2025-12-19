@@ -295,7 +295,9 @@ endmacro(assignIdeFolder)
 ###########################################
 function(createProjectGeneral)
     
-	file(GLOB_RECURSE projectFiles ${PROJECT_DIRECTORY}/resources/*)
+	file(GLOB_RECURSE projectFiles
+		${PROJECT_DIRECTORY}/scripts/*
+		${PROJECT_DIRECTORY}/resources/* )
 
 	message(STATUS "Adding target: GeneralProject")
 	add_custom_target(GeneralProject ALL SOURCES ${projectFiles})

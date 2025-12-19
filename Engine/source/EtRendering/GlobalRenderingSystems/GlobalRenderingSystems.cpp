@@ -140,7 +140,7 @@ void RenderingSystems::Initialize()
 	m_NullMaterial = core::ResourceManager::Instance()->GetAssetData<Material>(core::HashString("Materials/M_Null.json"));
 	m_ColorMaterial = core::ResourceManager::Instance()->GetAssetData<Material>(core::HashString("Materials/M_Color.json"));
 
-	m_Patch.Init(4);
+	m_Patch.Init(2);
 
 #if ET_CT_IS_ENABLED(ET_CT_DBG_UTIL)
 	m_DebugVars.Init();

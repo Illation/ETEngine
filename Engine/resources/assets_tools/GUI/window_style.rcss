@@ -302,6 +302,15 @@ input.text
 
 	background: #111111;
 }
+input.text #text
+{
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+    max-width: 100%;
+    position: relative;
+	background: #99ff99;
+}
 input.text:hover
 {
 	background: #232323;

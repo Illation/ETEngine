@@ -35,6 +35,19 @@ public:
 		std::string m_UserDirPath;
 	};
 
+	//-----------------------
+	// Config::ProjectConfig
+	//
+	// Abstract class that holds project specific config data
+	//
+	class ProjectConfig
+	{
+		RTTR_ENABLE()
+
+	public:
+		virtual ~ProjectConfig() = default;
+	};
+
 	//---------------------------------
 	// Config::Settings
 	//
@@ -46,6 +59,7 @@ public:
 		render::GraphicsSettings m_Graphics;
 		core::WindowSettings m_Window;
 		std::string m_ScreenshotDir;
+		RefPtr<ProjectConfig> m_ProjectConfig;
 	};
 
 private:
@@ -67,6 +81,8 @@ public:
 	core::WindowSettings & GetWindow() { return m_Settings.m_Window; }
 
 	std::string const& GetScreenshotDir() const { return m_Settings.m_ScreenshotDir; }
+
+	RefPtr<ProjectConfig>& GetProjectConfig() { return m_Settings.m_ProjectConfig; }
 
 	// initialization
 	void Initialize();

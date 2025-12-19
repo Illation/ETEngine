@@ -5,6 +5,7 @@
 /Engine/third_party/glfw/build/
 /Engine/third_party/lunasvg/build/
 /Engine/third_party/rmlui/build/
+/Engine/third_party/rmlui/testBuild/
 
 /Engine/tools/bin/
 
