@@ -111,6 +111,8 @@ public:
 	void CreatePanel();
 	void ClosePanel(core::T_SlotId const panelId);
 
+	void OnPanelOptionsChanged(core::T_SlotId const panelId);
+
 	// utility
 	//---------
 protected:

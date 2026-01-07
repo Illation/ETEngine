@@ -89,10 +89,25 @@ void GuiData::RegisterInstancer()
 				{
 					ET_ASSERT(params.size() == 1u, "Expect ClosePanel to be called with one parameter");
 
-					core::T_SlotId id;
-					ET_CHECK_W(params[0].GetInto(id), "expected an index type in ClosePanel param 0");
+					core::T_SlotId panelId;
+					ET_CHECK_W(params[0].GetInto(panelId), "expected an index type in ClosePanel param 0");
 
-					data->m_Controller->ClosePanel(id);
+					data->m_Controller->ClosePanel(panelId);
+
+					evnt.StopPropagation();
+				});
+
+			modelConstructor.BindEventCallback("OnPanelOptionsChanged", [data = ret.Get()](Rml::DataModelHandle, Rml::Event& evnt, Rml::VariantList const& params)
+				{
+					ET_ASSERT(params.size() == 1u, "Expect OnPanelOptionsChanged to be called with one parameter");
+
+					core::T_SlotId panelId;
+					ET_CHECK_W(params[0].GetInto(panelId), "expected an index type in OnPanelOptionsChanged param 0");
+
+					if (data->m_Controller != nullptr)
+					{
+						data->m_Controller->OnPanelOptionsChanged(panelId);
+					}
 
 					evnt.StopPropagation();
 				});
@@ -252,6 +267,20 @@ void TraceGuiController::CreatePanel()
 void TraceGuiController::ClosePanel(core::T_SlotId const panelId)
 {
 	m_PanelsToDelete.push_back(panelId);
+}
+
+//-------------------------------------------
+// TraceGuiController::OnPanelOptionsChanged
+//
+void TraceGuiController::OnPanelOptionsChanged(core::T_SlotId const panelId)
+{
+	auto const foundPanelIt = std::find_if(m_DataModel->m_Panels.cbegin(), m_DataModel->m_Panels.cend(), [panelId](GuiData::Panel const& panel)
+		{
+			return panel.m_Id == panelId;
+		});
+	ET_ASSERT(foundPanelIt != m_DataModel->m_Panels.cend());
+
+	ET_TRACE_I(ET_CTX_TRACE, "Panel options changed on panel '%s', search text is: %s", foundPanelIt->m_Name.c_str(), foundPanelIt->m_SearchText.c_str());
 }
 
 //----------------------------------
