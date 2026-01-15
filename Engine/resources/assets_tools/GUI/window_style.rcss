@@ -177,6 +177,54 @@ window_handle controls close-button:hover
 	background-color: #FF5555;
 }
 
+/* Paned
+//////*/
+paned, 
+.pane, 
+.paned-separator
+{
+	position: static;
+}
+
+paned {
+    overflow: hidden;
+	display: flex;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+}
+
+paned > .paned-separator {
+    background-color: #161616;
+
+    flex: 0 0 4px;
+}
+paned[orientation="horizontal"] > .paned-separator {
+    cursor: ew-resize;
+}
+paned[orientation="vertical"] > .paned-separator {
+    cursor: ns-resize;
+}
+
+paned > .pane
+{
+	padding: 0;
+	margin: 0;
+	border: 0;
+
+	flex-grow: 0;
+	flex-shrink: 0;
+}
+
+paned > .pane.a {
+    flex-basis: 50%;
+}
+
+paned > .pane.b {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
 /* Inputs
 ///////*/
 

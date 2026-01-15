@@ -132,6 +132,7 @@ Ptr<GuiWindow> GuiApplication::MakeWindow(core::WindowSettings const& settings)
 
 		Rml::Factory::RegisterElementInstancer("window_handle", &m_HandleInstancer);
 		Rml::Factory::RegisterElementInstancer("window", &m_WindowInstancer);
+		Rml::Factory::RegisterElementInstancer("paned", &m_PanedInstancer);
 
 		core::ResourceManager::SetInstance(std::move(Create<app::PackageResourceManager>()));
 

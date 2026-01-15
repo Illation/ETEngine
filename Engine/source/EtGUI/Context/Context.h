@@ -52,7 +52,30 @@ class Context
 
 	typedef std::vector<Document> T_Documents;
 
+	typedef std::unordered_map<Ptr<Rml::Context const>, Ptr<Context>> T_ContextMap;
+	static T_ContextMap s_ContextWrapperLookup;
+
 public:
+	//-------------------
+	// I_MouseUpListener
+	//
+	// Utility to intercept events sent to context
+	//
+	struct I_MouseUpListener
+	{
+		virtual ~I_MouseUpListener() = default;
+
+		virtual bool OnMouseUp() = 0; // return true to cancel event propagation
+	};
+
+private:
+	typedef std::vector<Ptr<I_MouseUpListener>> T_MouseUpListeners;
+
+	// static functionality
+	//----------------------
+public:
+	static Context* Get(Rml::Context const* const context);
+
 	// construct destruct
 	//--------------------
 	Context() = default;
@@ -81,6 +104,9 @@ public:
 	bool ProcessMouseLeave();
 	bool ProcessTextInput(Rml::Character const character);
 
+	void RegisterMouseUpListener(Ptr<I_MouseUpListener> const listener);
+	void UnregisterMouseUpListener(Ptr<I_MouseUpListener> const listener);
+
 	// accessors
 	//-----------
 	ivec2 GetDimensions() const;
@@ -93,6 +119,7 @@ public:
 	size_t GetDocumentCount() const { return m_Documents.size(); }
 	core::HashString GetDocumentId(size_t const docIdx) const { return m_Documents[docIdx].m_Id; }
 	WeakPtr<I_DataModel> GetDataModel(core::HashString const documentId);
+	ivec2 GetMousePos() const { return m_MousePos; }
 
 	// utility
 	//---------
@@ -107,6 +134,14 @@ private:
 	Ptr<Rml::Context> m_Context;
 	T_Documents m_Documents;
 	size_t m_ActiveDocuments = 0u;
+
+	ivec2 m_MousePos;
+
+	// Event listeners
+	T_MouseUpListeners m_MouseUpListeners;
+	T_MouseUpListeners m_MouseUpListenersToAdd;
+	T_MouseUpListeners m_MouseUpListenersToRemove;
+	bool m_IteratingListeners = false;
 };
 
 

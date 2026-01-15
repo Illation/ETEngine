@@ -7,6 +7,7 @@
 
 #include <EtApplication/GUI/ElementWindow.h>
 #include <EtApplication/GUI/ElementWindowHandle.h>
+#include <EtApplication/GUI/ElementPaned.h>
 
 
 // fwd
@@ -75,6 +76,7 @@ private:
 	// Gui types
 	Rml::ElementInstancerGeneric<ElementWindowHandle> m_HandleInstancer;
 	Rml::ElementInstancerGeneric<ElementWindow> m_WindowInstancer;
+	Rml::ElementInstancerGeneric<ElementPaned> m_PanedInstancer;
 };
 
 

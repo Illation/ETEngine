@@ -23,6 +23,22 @@ namespace gui {
 //=========
 
 
+Context::T_ContextMap Context::s_ContextWrapperLookup;
+
+
+//----------------
+// Context::Get
+//
+// Get the relevant context wrapper for an RML context
+//
+Context* Context::Get(Rml::Context const* const context) 
+{
+	T_ContextMap::iterator foundIt = s_ContextWrapperLookup.find(ToPtr(context));
+	ET_ASSERT(foundIt != s_ContextWrapperLookup.cend(), "Rml Context shouldn't be created without using the engines wrapper!");
+
+	return foundIt->second.Get();
+}
+
 //----------------
 // Context::d-tor
 //
@@ -40,6 +56,8 @@ void Context::Init(std::string const& name, ivec2 const dimensions)
 
 	m_Context = ToPtr(Rml::CreateContext(name.c_str(), Rml::Vector2i(dimensions.x, dimensions.y)));
 	ET_ASSERT(m_Context != nullptr, "Failed to create RmlUi context");
+
+	s_ContextWrapperLookup[m_Context] = ToPtr(this);
 }
 
 //-----------------
@@ -47,13 +65,21 @@ void Context::Init(std::string const& name, ivec2 const dimensions)
 //
 void Context::Deinit()
 {
-	if (RmlGlobal::IsInitialized() && (m_Context != nullptr))
+	if (m_Context != nullptr)
 	{
-		Rml::RemoveContext(m_Context->GetName());
+		T_ContextMap::const_iterator foundIt = s_ContextWrapperLookup.find(m_Context);
+		ET_ASSERT(foundIt != s_ContextWrapperLookup.cend());
 
-#if ET_CT_IS_ENABLED(ET_CT_RML_DEBUGGER)
-		RmlGlobal::GetInstance()->OnContextDestroyed(m_Context.Get());
-#endif
+		s_ContextWrapperLookup.erase(foundIt);
+
+		if (RmlGlobal::IsInitialized())
+		{
+			Rml::RemoveContext(m_Context->GetName());
+
+#		if ET_CT_IS_ENABLED(ET_CT_RML_DEBUGGER)
+			RmlGlobal::GetInstance()->OnContextDestroyed(m_Context.Get());
+#		endif
+		}
 	}
 
 	m_Context = nullptr;
@@ -187,6 +213,33 @@ bool Context::ProcessMousePressed(int32 const button, int32 const rmlModifier)
 //
 bool Context::ProcessMouseReleased(int32 const button, int32 const rmlModifier)
 {
+	if (button == 0)
+	{
+		m_MouseUpListeners.insert(m_MouseUpListeners.end(), m_MouseUpListenersToAdd.begin(), m_MouseUpListenersToAdd.end());
+		m_MouseUpListenersToAdd.clear();
+
+		m_IteratingListeners = true;
+		for (Ptr<I_MouseUpListener> listener : m_MouseUpListeners)
+		{
+			if (std::find(m_MouseUpListenersToRemove.begin(), m_MouseUpListenersToRemove.end(), listener) == m_MouseUpListenersToRemove.end())
+			{
+				if (listener->OnMouseUp())
+				{
+					return !m_Context->IsMouseInteracting();
+				}
+			}
+		}
+
+		m_IteratingListeners = false;
+
+		m_MouseUpListeners.erase(std::remove_if(m_MouseUpListeners.begin(), m_MouseUpListeners.end(),
+			[this](Ptr<I_MouseUpListener> const listener)
+			{
+				return std::find(m_MouseUpListenersToRemove.begin(), m_MouseUpListenersToRemove.end(), listener) != m_MouseUpListenersToRemove.end();
+			}), m_MouseUpListeners.end());
+		m_MouseUpListenersToRemove.clear();
+	}
+
 	return !(m_Context->ProcessMouseButtonUp(button, rmlModifier));
 }
 
@@ -195,6 +248,7 @@ bool Context::ProcessMouseReleased(int32 const button, int32 const rmlModifier)
 //
 bool Context::ProcessMouseMove(ivec2 const& mousePos, int32 const rmlModifier)
 {
+	m_MousePos = mousePos;
 	return !(m_Context->ProcessMouseMove(mousePos.x, mousePos.y, rmlModifier));
 }
 
@@ -223,7 +277,40 @@ bool Context::ProcessTextInput(Rml::Character const character)
 }
 
 //-------------------------------------
-// Context::ProcessTextInput
+// Context::RegisterMouseUpListener
+//
+void Context::RegisterMouseUpListener(Ptr<I_MouseUpListener> const listener)
+{
+	if (m_IteratingListeners)
+	{
+		core::PushUnique(m_MouseUpListenersToAdd, listener);
+	}
+	else
+	{
+		ET_ASSERT(std::find(m_MouseUpListeners.cbegin(), m_MouseUpListeners.cend(), listener) == m_MouseUpListeners.cend());
+		m_MouseUpListeners.push_back(listener);
+	}
+}
+
+//-------------------------------------
+// Context::UnregisterMouseUpListener
+//
+void Context::UnregisterMouseUpListener(Ptr<I_MouseUpListener> const listener)
+{
+	if (m_IteratingListeners)
+	{
+		core::PushUnique(m_MouseUpListenersToRemove, listener);
+	}
+	else
+	{
+		T_MouseUpListeners::iterator foundIt = std::find(m_MouseUpListeners.begin(), m_MouseUpListeners.end(), listener);
+		ET_ASSERT(foundIt != m_MouseUpListeners.cend());
+		core::RemoveSwap(m_MouseUpListeners, foundIt);
+	}
+}
+
+//-------------------------------------
+// Context::GetDimensions
 //
 ivec2 Context::GetDimensions() const
 {

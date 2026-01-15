@@ -27,7 +27,6 @@
 	margin: auto;
 	overflow: hidden;
 	box-sizing: border-box;
-	display: flex;
 }
 
 /* Options

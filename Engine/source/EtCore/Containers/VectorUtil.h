@@ -22,6 +22,20 @@ void RemoveSwap(std::vector<TDataType>& vec, TIteratorType const it)
 	vec.pop_back();
 }
 
+//-------------------------
+// PushUnique
+//
+// Add element to vector if it doesn't exist yet
+//
+template <typename TDataType>
+void PushUnique(std::vector<TDataType>& vec, TDataType const& el)
+{
+	if (std::find(vec.cbegin(), vec.cend(), el) == vec.cend())
+	{
+		vec.push_back(el);
+	}
+}
+
 
 } // namespace core
 } // namespace et
