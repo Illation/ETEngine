@@ -679,3 +679,38 @@ panel
 {
     display: block;
 }
+
+
+/* Tables
+///////*/
+
+
+thead tr {
+	height: 35dp;
+	background: #333333FF;
+}
+thead td {
+	padding-top: 11dp;
+	border-bottom: 1px #191919FF;
+}
+thead td:not(:first-child) {
+	border-left: 1px #191919FF;
+}
+
+tbody {
+	/* Margin left/right only affects the background positioning for the decorator, not the cell placement */
+	margin-left: 5dp;
+	margin-right: 4dp;
+	/* Padding top/bottom adds extra spacing between the header row and the body, and between the body and table bottom */
+	padding-top: 4dp;
+	padding-bottom: 4dp;
+}
+tbody tr {
+	margin-left: 9dp;
+	margin-right: 8dp;
+	background: #191919FF;
+}
+tbody tr:nth-child(odd)
+{
+	background: #212121FF;
+}

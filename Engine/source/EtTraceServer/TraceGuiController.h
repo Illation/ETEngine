@@ -45,16 +45,29 @@ struct GuiData : public gui::I_DataModel
 			bool m_Show = true;
 		};
 
+		struct TraceLine
+		{
+			std::string GetContext(); 
+			std::string GetLevelIcon(); 
+			std::string GetColour();
+
+			T_Hash m_Context = 0u;
+			core::E_TraceLevel m_Level = core::E_TraceLevel::TL_Invalid;
+			std::string m_Timestamp;
+			std::string m_Message;
+		};
+
 		// reflected
 		core::T_SlotId m_Id; // there seems to be no other way to reverse identify panels from data expressions
 
 		std::string m_Name;
-		std::vector<std::string> m_Lines;
+		std::vector<TraceLine> m_Lines;
 
 		// filter
 		std::string m_SearchText;
 
 		bool m_ShowInfo = true;
+		bool m_ShowSuccess = true;
 		bool m_ShowVerbose = false;
 		bool m_ShowWarning = true;
 		bool m_ShowError = true;

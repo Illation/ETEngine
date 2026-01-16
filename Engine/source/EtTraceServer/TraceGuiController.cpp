@@ -17,17 +17,82 @@ namespace et {
 namespace trace {
 
 
-//==========
-// GUI Data
-//==========
-
-
 static char const* const s_WindowTitleId = "td_window_title";
 static char const* const s_PanelsDataId = "td_trace_panels";
 static char const* const s_ActivePanelId = "td_active_panel";
 static core::HashString const s_MainDocumentId("trace.rml");
 static float const s_TabsScrollSpeed = 30.f;
-	
+
+
+//================================
+// GUI Data :: Panel :: TraceLine
+//================================
+
+
+//-----------------------
+// TraceLine::GetContext
+//
+std::string GuiData::Panel::TraceLine::GetContext()
+{
+	//return Rml::ToString(m_Context); // #todo: convert hash using TraceContextContainer
+	return "ET_CTX_EXAMP";
+}
+
+//--------------------------
+// TraceLine::GetLevelIcon
+//
+// Icon location per trace level
+//
+std::string GuiData::Panel::TraceLine::GetLevelIcon()
+{
+	switch (m_Level)
+	{
+	case core::E_TraceLevel::TL_Verbose: return "icons/blender-icons/text.svg";
+	case core::E_TraceLevel::TL_Info: return "icons/blender-icons/info.svg";
+	case core::E_TraceLevel::TL_Success: return "icons/blender-icons/checkbox_hlt.svg";
+	case core::E_TraceLevel::TL_Warning: return "icons/blender-icons/outliner_ob_light.svg";
+	case core::E_TraceLevel::TL_Error: return "icons/blender-icons/error.svg";
+	case core::E_TraceLevel::TL_Fatal: return "icons/blender-icons/cancel.svg";
+
+	case core::E_TraceLevel::TL_Invalid:
+	default:
+		ET_TRACE_W(ET_CTX_TRACE, "No valid icon for trace level, probably a logic error!");
+		break;
+	}
+
+	return "";
+}
+
+//-----------------------
+// TraceLine::GetColour
+//
+// Color string per trace level
+//
+std::string GuiData::Panel::TraceLine::GetColour()
+{
+	switch (m_Level)
+	{
+	case core::E_TraceLevel::TL_Verbose: return "#999999FF"; 
+	case core::E_TraceLevel::TL_Info: return "#FFFFFFFF"; 
+	case core::E_TraceLevel::TL_Success: return "#66FF77FF"; 
+	case core::E_TraceLevel::TL_Warning: return "#FFFF66FF"; 
+	case core::E_TraceLevel::TL_Error: return "#FF7766FF"; 
+	case core::E_TraceLevel::TL_Fatal: return "#BB222FFF"; 
+
+	case core::E_TraceLevel::TL_Invalid:
+	default:
+		ET_TRACE_W(ET_CTX_TRACE, "No valid color for trace level, probably a logic error!");
+		break;
+	}
+
+	return "#FF55FFFF";
+}
+
+
+//==========
+// GUI Data
+//==========	
+
 
 //----------------------------
 // GuiData::RegisterInstancer
@@ -56,6 +121,21 @@ void GuiData::RegisterInstancer()
 
 			modelConstructor.RegisterArray<std::vector<Panel::ContextFilter>>();
 
+			if (Rml::StructHandle<Panel::TraceLine> traceLineHandle = modelConstructor.RegisterStruct<Panel::TraceLine>())
+			{
+				ET_CHECK_W(traceLineHandle.RegisterMember("context", &Panel::TraceLine::GetContext));
+				ET_CHECK_W(traceLineHandle.RegisterMember("level_icon", &Panel::TraceLine::GetLevelIcon));
+				ET_CHECK_W(traceLineHandle.RegisterMember("colour", &Panel::TraceLine::GetColour));
+				ET_CHECK_W(traceLineHandle.RegisterMember("timestamp", &Panel::TraceLine::m_Timestamp));
+				ET_CHECK_W(traceLineHandle.RegisterMember("message", &Panel::TraceLine::m_Message));
+			}
+			else
+			{
+				ET_WARNING("Failed to register Trace Line Struct");
+			}
+
+			modelConstructor.RegisterArray<std::vector<Panel::TraceLine>>();
+
 			if (Rml::StructHandle<Panel> panelHandle = modelConstructor.RegisterStruct<Panel>())
 			{
 				ET_CHECK_W(panelHandle.RegisterMember("id", &Panel::m_Id));
@@ -66,6 +146,7 @@ void GuiData::RegisterInstancer()
 				ET_CHECK_W(panelHandle.RegisterMember("filter_text", &Panel::m_SearchText));
 
 				ET_CHECK_W(panelHandle.RegisterMember("show_info", &Panel::m_ShowInfo));
+				ET_CHECK_W(panelHandle.RegisterMember("show_success", &Panel::m_ShowSuccess));
 				ET_CHECK_W(panelHandle.RegisterMember("show_verbose", &Panel::m_ShowVerbose));
 				ET_CHECK_W(panelHandle.RegisterMember("show_warning", &Panel::m_ShowWarning));
 				ET_CHECK_W(panelHandle.RegisterMember("show_error", &Panel::m_ShowError));
@@ -232,9 +313,12 @@ void TraceGuiController::CreatePanel()
 
 	uint32 const panelNumber = panel.m_Id + 1;
 	panel.m_Name = FS("Client %u", panelNumber);
-	for (uint32 lineIdx = 0u; lineIdx < panelNumber; ++lineIdx)
+	for (uint32 lineIdx = 0u; lineIdx < panelNumber * 50; ++lineIdx)
 	{
-		panel.m_Lines.emplace_back(FS("Panel %u - Line %u", panelNumber, lineIdx));
+		GuiData::Panel::TraceLine line;
+		line.m_Level = static_cast<core::E_TraceLevel>(1u << (lineIdx % 6));
+		line.m_Message = FS("Panel %u - Line %u", panelNumber, lineIdx);
+		panel.m_Lines.push_back(line);
 	}
 
 	// ensure update

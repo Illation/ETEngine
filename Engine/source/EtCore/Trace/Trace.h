@@ -18,6 +18,7 @@
 
 #define ET_LOG_V(context, ...) ET_LOG(context, et::core::E_TraceLevel::TL_Verbose, false, __VA_ARGS__)
 #define ET_LOG_I(context, ...) ET_LOG(context, et::core::E_TraceLevel::TL_Info, false, __VA_ARGS__)
+#define ET_LOG_S(context, ...) ET_LOG(context, et::core::E_TraceLevel::TL_Success, false, __VA_ARGS__)
 #define ET_LOG_W(context, ...) ET_LOG(context, et::core::E_TraceLevel::TL_Warning, false, __VA_ARGS__)
 #define ET_LOG_E(context, ...) ET_LOG(context, et::core::E_TraceLevel::TL_Error, false, __VA_ARGS__)
 
@@ -30,6 +31,7 @@
 
 #define ET_TRACE_V(context, ...) ET_LOG_V(context, __VA_ARGS__)
 #define ET_TRACE_I(context, ...) ET_LOG_I(context, __VA_ARGS__)
+#define ET_TRACE_S(context, ...) ET_LOG_S(context, __VA_ARGS__)
 #define ET_TRACE_W(context, ...) ET_LOG_W(context, __VA_ARGS__)
 #define ET_TRACE_E(context, ...) ET_LOG_E(context, __VA_ARGS__)
 
@@ -39,6 +41,7 @@
 
 #define ET_TRACE_V(context, ...) 
 #define ET_TRACE_I(context, ...) 
+#define ET_TRACE_S(context, ...) 
 #define ET_TRACE_W(context, ...) 
 #define ET_TRACE_E(context, ...) 
 

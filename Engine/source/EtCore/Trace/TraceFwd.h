@@ -33,8 +33,9 @@ enum E_TraceLevel : T_TraceLevel
 
 	TL_Verbose	= 1u << 0,
 	TL_Info		= 1u << 1,
-	TL_Warning	= 1u << 2,
-	TL_Error	= 1u << 3,
+	TL_Success	= 1u << 2,
+	TL_Warning	= 1u << 3,
+	TL_Error	= 1u << 4,
 	TL_Fatal	= 1u << 5,
 
 	TL_All		= 0xFF

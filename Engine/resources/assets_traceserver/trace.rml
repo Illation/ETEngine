@@ -32,6 +32,7 @@
             </input>
             <div class="section">
               <p class="option"><label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_info"/> Show Info</label></p>
+              <p class="option"><label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_success"/> Show Success</label></p>
               <p class="option"><label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_verbose"/> Show Verbose</label></p>
               <p class="option"><label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_warning"/> Show Warning</label></p>
               <p class="option"><label><input type="checkbox" data-attrif-disabled="td_trace_panels.size == 0" data-checked="td_active_panel.show_error"/> Show Error</label></p>

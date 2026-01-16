@@ -5,8 +5,41 @@
   <link type="text/rcss" href="trace_style.rcss"/>
 </head>
 <body data-model="trace_data">
-  <div data-for="panel_ref.lines" class="content">{{it}}</div>
-
-  <div id="content_container"/>
+  <div class="frame">
+    <table>
+      <thead>
+        <tr>
+          <td style="min-width: 36dp; margin-left: 10dp;">Line</td>
+          <td style="min-width: 100dp;">Context</td>
+          <td style="width: 36dp;">Type</td>
+          <td style="min-width: 150dp;">Timestamp</td>
+          <td style="width: 75%;">Message</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-for="panel_ref.lines">
+          <td>
+            {{it_index + 1}}
+          </td>
+          <td>
+            {{it.context}}
+          </td>
+          <td>
+            <svg class="trave_level_ico" data-attr-src="it.level_icon" data-style-image-color="it.colour"/>
+          </td>
+          <td>
+            {{it.timestamp}}
+          </td>
+          <td data-style-color="it.colour">
+            {{it.message}}
+          </td>
+        </tr>
+        <tr>
+          <td data-if="panel_ref.lines.size == 0" colspan="4" style="vertical-align: middle"><em>No trace messages as of yet!</em></td>
+        </tr>
+      </tbody>
+    </table>
+    <div id="content_container"/>
+  </div>
 </body>
 </template>
