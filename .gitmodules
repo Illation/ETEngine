@@ -43,3 +43,6 @@
 [submodule "Engine/third_party/lunasvg/lunasvg"]
 	path = Engine/third_party/lunasvg/lunasvg
 	url = https://github.com/sammycage/lunasvg
+[submodule "Engine/third_party/tracy/tracy"]
+	path = Engine/third_party/tracy/tracy
+	url = https://github.com/wolfpld/tracy.git
