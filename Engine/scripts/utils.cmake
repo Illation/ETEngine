@@ -4,9 +4,7 @@
 # general for cmake list files
 ##############################
 
-macro(inferPaths engine_rel_path)
-
-	set(ENGINE_DIRECTORY ${engine_rel_path} CACHE STRING "Path to engine root")
+macro(inferPaths)
 
 	get_filename_component(ENGINE_DIRECTORY_ABS "${ENGINE_DIRECTORY}" ABSOLUTE CACHE)
 	get_filename_component(ENGINE_REPO_DIR "${ENGINE_DIRECTORY}/.." ABSOLUTE CACHE)

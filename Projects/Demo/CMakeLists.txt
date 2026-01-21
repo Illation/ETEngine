@@ -8,12 +8,14 @@
 # CMake version
 cmake_minimum_required (VERSION 3.15.0)
 
+set(ENGINE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../Engine" CACHE STRING "Path to engine root")
+
 # utility functions
 message(STATUS "Including function Library ...")
 include(${ENGINE_DIRECTORY}/scripts/utils.cmake)
 
 # Project and engine dir
-inferPaths("${CMAKE_CURRENT_SOURCE_DIR}/../../Engine")
+inferPaths()
 
 setGenOptions()
 
