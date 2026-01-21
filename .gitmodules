@@ -18,7 +18,7 @@
 	url = https://github.com/kcat/openal-soft
 [submodule "third_party/rttr/rttr"]
 	path = Engine/third_party/rttr/rttr
-	url = https://github.com/rttrorg/rttr
+	url = https://github.com/illation/rttr
 [submodule "third_party/stb/stb"]
 	path = Engine/third_party/stb/stb
 	url = https://github.com/nothings/stb
