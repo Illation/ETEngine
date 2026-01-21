@@ -30,7 +30,9 @@ assignIdeFolder(unit_tests Engine/UnitTests)
 outputDirectories(unit_tests "")
 
 # linking
-target_link_libraries (unit_tests EtFramework EtEditor)
+target_link_libraries (unit_tests 
+    PUBLIC EtFramework EtEditor
+    PRIVATE engine_test_full_policy)
 dependancyLinks(unit_tests)
 engineLinks(unit_tests)
 addToolDependency(unit_tests EtTraceServer)

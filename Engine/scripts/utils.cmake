@@ -4,25 +4,259 @@
 # general for cmake list files
 ##############################
 
+macro(inferPaths engine_rel_path)
+
+	set(ENGINE_DIRECTORY ${engine_rel_path} CACHE STRING "Path to engine root")
+
+	get_filename_component(ENGINE_DIRECTORY_ABS "${ENGINE_DIRECTORY}" ABSOLUTE CACHE)
+	get_filename_component(ENGINE_REPO_DIR "${ENGINE_DIRECTORY}/.." ABSOLUTE CACHE)
+	get_filename_component(ENGINE_SOURCE_DIR "${ENGINE_DIRECTORY}/source" ABSOLUTE CACHE)
+	get_filename_component(PROJECT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE CACHE)
+
+	message(STATUS "//////////////////////////////////////////////////////////////////////////////////////////")
+	message(STATUS "Engine path: ${ENGINE_DIRECTORY_ABS}")
+	message(STATUS "Project path: ${PROJECT_DIRECTORY}")
+	message(STATUS "//////////////////////////////////////////////////////////////////////////////////////////")
+
+endmacro(inferPaths)
+
+# options for configuring how the project is generated
+######################################################
+macro(setGenOptions)
+
+	option(ETE_UPDATE_SUBMODULES "Update third party submodules to their latest state" OFF)
+	set(ETE_UPDATE_SUBMODULE_PATH "" CACHE STRING "Which submodule to update specifically")
+	# Continuous integration doesn't need to build all configurations for libraries
+	option(ETE_SINGLE_CONFIG "Build libraries for a single configuration" OFF)
+	set(ETE_BUILD_LIB_CONFIG "Debug" CACHE STRING "Which configuration to build the library for in case of a single configuration build")
+
+	if(ETE_SINGLE_CONFIG)
+		message(STATUS "Building libraries only for ${ETE_BUILD_LIB_CONFIG} !")
+	endif()
+
+	# a dependency for the server side of tracy currently requires c++20, 
+	#  and the engine is currently configured for c++14 so the tracy server needs to be built manually until this is addressed 
+	option(ETE_BUILD_TRACY_SERVER "Build the tracy server application" OFF)
+
+endmacro(setGenOptions)
 
 # custom configuration types
 ############################
 macro(setupConfigurations)
 
 	# set our configuration types
-	set(CMAKE_CONFIGURATION_TYPES "Debug;Develop;Shipping" 
-		CACHE STRING "Available build-types: Debug, Develop and Shipping" FORCE)
+	set(CMAKE_CONFIGURATION_TYPES "Debug;Develop;Profiling;Shipping" 
+		CACHE STRING "Available build-types: Debug, Develop, Profiling and Shipping" FORCE)
 		
 	# copy settings from existing build types
 	set(CMAKE_CXX_FLAGS_DEVELOP "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 	set(CMAKE_C_FLAGS_DEVELOP "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
 	set(CMAKE_EXE_LINKER_FLAGS_DEVELOP "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
 
+	set(CMAKE_CXX_FLAGS_PROFILING "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+	set(CMAKE_C_FLAGS_PROFILING "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
+	set(CMAKE_EXE_LINKER_FLAGS_PROFILING "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
+
 	set(CMAKE_CXX_FLAGS_SHIPPING "${CMAKE_CXX_FLAGS_RELEASE}")
 	set(CMAKE_C_FLAGS_SHIPPING "${CMAKE_C_FLAGS_RELEASE}" )
 	set(CMAKE_EXE_LINKER_FLAGS_SHIPPING "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
 
 endmacro(setupConfigurations)
+
+# place a target inside of an IDE filter
+#########################################
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# can't place those targets in custom folder, so increasing visibility by placing them  in the top level
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "") 
+
+macro(assignIdeFolder _target _folder)
+	if(MSVC)
+		set_property (TARGET "${_target}" PROPERTY FOLDER "${_folder}")
+	endif()
+endmacro(assignIdeFolder)
+
+# Engine build policy interface targets
+########################################
+function(createCompilePolicies)
+
+	# Baseline defaults (language level, warnings, hygiene)
+	add_library(engine_defaults_policy INTERFACE)
+
+	target_compile_features(engine_defaults_policy INTERFACE cxx_std_14)
+
+	# higher warning level temporarily disabled but should be set for a later build
+	if (MSVC)
+		target_compile_options(engine_defaults_policy INTERFACE
+			#/permissive-
+			#/W4 
+			#/wd4201
+			#/wd4324
+		)
+	else()
+		target_compile_options(engine_defaults_policy INTERFACE
+			#-Wall
+			#-Wextra
+			#-Wshadow
+			#-Wnon-virtual-dtor
+		)
+	endif()
+
+	# Runtime policy (engine + game code)
+	add_library(engine_runtime_policy INTERFACE)
+
+	# ---- Optimization & symbols
+	if (MSVC)
+		target_compile_options(engine_runtime_policy INTERFACE
+			$<$<CONFIG:Debug>:/Od /Zi>
+			$<$<CONFIG:Develop>:/O2 /Zi>
+			$<$<CONFIG:Profiling>:/O2 /Zi>
+			$<$<CONFIG:Shipping>:/O2>
+		)
+	else()
+		target_compile_options(engine_runtime_policy INTERFACE
+			$<$<CONFIG:Debug>:-O0 -g>
+			$<$<CONFIG:Develop>:-O2 -g>
+			$<$<CONFIG:Profiling>:-O2 -g>
+			$<$<CONFIG:Shipping>:-O3>
+		)
+	endif()
+
+	# ---- Frame pointers (needed for profiling)
+	if (NOT MSVC)
+		target_compile_options(engine_runtime_policy INTERFACE
+			$<$<OR:$<CONFIG:Debug>,$<CONFIG:Develop>,$<CONFIG:Profiling>>:-fno-omit-frame-pointer>
+		)
+	endif()
+
+	# ---- Compile-time feature flags
+	target_compile_definitions(engine_runtime_policy INTERFACE
+		$<$<CONFIG:Debug>:ET_DEBUG _DEBUG>
+		$<$<CONFIG:Develop>:ET_DEVELOP>
+		$<$<CONFIG:Profiling>:ET_PROFILING>
+		$<$<CONFIG:Shipping>:ET_SHIPPING NDEBUG>
+	)
+
+	# ---- Link-time optimization (shipping only)
+	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+		target_link_options(engine_runtime_policy INTERFACE
+			$<$<CONFIG:Shipping>:-flto>
+		)
+	elseif (MSVC)
+		target_link_options(engine_runtime_policy INTERFACE
+			$<$<CONFIG:Shipping>:/LTCG>
+		)
+	endif()
+
+	# Tools policy (editors, asset pipelines, converters)
+	add_library(engine_tools_policy INTERFACE)
+
+	# ---- Optimization & symbols
+	if (MSVC)
+		target_compile_options(engine_tools_policy INTERFACE
+			$<$<CONFIG:Debug>:/Od /Zi>
+			$<$<CONFIG:Develop>:/O2 /Zi>
+			$<$<CONFIG:Profiling>:/O2 /Zi>
+			$<$<CONFIG:Shipping>:/O2>
+		)
+	else()
+		target_compile_options(engine_tools_policy INTERFACE
+			$<$<CONFIG:Debug>:-O0 -g>
+			$<$<CONFIG:Develop>:-O2 -g>
+			$<$<CONFIG:Profiling>:-O2 -g>
+			$<$<CONFIG:Shipping>:-O2>
+		)
+	endif()
+
+	# Tools currently are optimized in develop
+	#   might want to switch to less optimized and then use profiling builds for general use
+
+	# ---- frame pointers
+	if (NOT MSVC)
+		target_compile_options(engine_tools_policy INTERFACE
+			$<$<OR:$<CONFIG:Debug>,$<CONFIG:Develop>,$<CONFIG:Profiling>>:-fno-omit-frame-pointer>
+		)
+	endif()
+
+	# ---- build type
+	target_compile_definitions(engine_tools_policy INTERFACE
+		$<$<CONFIG:Debug>:ET_DEBUG _DEBUG>
+		$<$<CONFIG:Develop>:ET_DEVELOP>
+		$<$<CONFIG:Profiling>:ET_PROFILING>
+		$<$<CONFIG:Shipping>:ET_SHIPPING NDEBUG>
+	)
+
+	# Currently no link time optimization for tools in shipping builds
+
+	# Third-party policy (conservative flags)
+	add_library(engine_thirdparty_policy INTERFACE)
+
+	if (MSVC)
+		target_compile_options(engine_thirdparty_policy INTERFACE
+			$<$<CONFIG:Debug>:/Od>
+			$<$<CONFIG:Develop>:/O2> 
+			$<$<CONFIG:Profiling>:/O2> 
+			$<$<CONFIG:Shipping>:/O2>
+		)
+		target_compile_options(engine_thirdparty_policy INTERFACE
+			/W3
+		)
+	else()
+		target_compile_options(engine_thirdparty_policy INTERFACE
+			-O2
+			-w        # don't need warnings on third party
+		)
+	endif()
+
+	target_compile_definitions(engine_thirdparty_policy INTERFACE NDEBUG)
+
+	# Unit Test policy
+	add_library(engine_test_policy INTERFACE)
+
+	# ---- Optimization & debug symbols - unit tests should always be easily debuggable
+	if(MSVC)
+		target_compile_options(engine_test_policy INTERFACE
+			/Od
+			/Zi)
+	else()
+		target_compile_options(engine_test_policy INTERFACE
+			-O0
+			-g)
+	endif()
+
+	# ---- Frame pointers for stack traces
+	if(NOT MSVC)
+		target_compile_options(engine_test_policy INTERFACE -fno-omit-frame-pointer)
+	endif()
+
+	# ---- Build macros for tests
+	target_compile_definitions(engine_test_policy INTERFACE ET_TEST_BUILD)
+
+	# Convenience aggregate policies
+	add_library(engine_runtime_full_policy INTERFACE)
+	target_link_libraries(engine_runtime_full_policy INTERFACE
+		engine_defaults_policy
+		engine_runtime_policy
+	)
+
+	add_library(engine_tools_full_policy INTERFACE)
+	target_link_libraries(engine_tools_full_policy INTERFACE
+		engine_defaults_policy
+		engine_tools_policy
+	)
+
+	add_library(engine_thirdparty_full_policy INTERFACE)
+	target_link_libraries(engine_thirdparty_full_policy INTERFACE
+		engine_thirdparty_policy
+	)
+
+	add_library(engine_test_full_policy INTERFACE)
+	target_link_libraries(engine_test_full_policy INTERFACE
+		engine_defaults_policy 
+		engine_test_policy
+	)
+
+endfunction(createCompilePolicies)
 
 
 # Platform Architecture
@@ -277,19 +511,6 @@ function(assign_source_group)
     endforeach()
 endfunction(assign_source_group)
 
-# place a target inside of an IDE filter
-#########################################
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-# can't place those targets in custom folder, so increasing visibility by placing them  in the top level
-set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "") 
-
-macro(assignIdeFolder _target _folder)
-	if(MSVC)
-		set_property (TARGET "${_target}" PROPERTY FOLDER "${_folder}")
-	endif()
-endmacro(assignIdeFolder)
-
 
 # create a general target for the project
 ###########################################
@@ -330,22 +551,15 @@ function(targetCompileOptions _target)
 		target_compile_options(${_target} PRIVATE "/MP" "/DWIN32_LEAN_AND_MEAN")
 	endif()
 
+	# compile flags
 	if(MSVC)
 		target_compile_options(
 			${_target} PRIVATE
-			"$<$<CONFIG:Debug>:/D_DEBUG>"
-			"$<$<CONFIG:Debug>:/DET_DEBUG>"
-			"$<$<CONFIG:Develop>:/DET_DEVELOP>"
-			"$<$<CONFIG:Shipping>:/DET_SHIPPING>"
 			"/DRMLUI_STATIC_LIB"
 		)
 	else()
 		target_compile_options(
 			${_target} PRIVATE
-			"$<$<CONFIG:Debug>:-D_DEBUG>"
-			"$<$<CONFIG:Debug>:-DET_DEBUG>"
-			"$<$<CONFIG:Develop>:-DET_DEVELOP>"
-			"$<$<CONFIG:Shipping>:-DET_SHIPPING>"
 			"-DRMLUI_STATIC_LIB"
 		)
 	endif()
@@ -461,6 +675,25 @@ function(getBulletBuildDir bullet_build)
 	set(${bullet_build} "${ENGINE_DIRECTORY_ABS}/third_party/bullet/build/${_p}" PARENT_SCOPE)
 endfunction(getBulletBuildDir)
 
+# tracy output directory (lib)
+##############################
+function(getTracyBuildDir tracy_build)
+
+	set(_p )
+	getPlatformArch(_p)
+
+	set(${tracy_build} "${ENGINE_DIRECTORY_ABS}/third_party/tracy/build/${_p}" PARENT_SCOPE)
+endfunction(getTracyBuildDir)
+
+# tracy output directory (server)
+#################################
+function(getTracyServerBuildDir tracy_build)
+
+	set(_p )
+	getPlatformArch(_p)
+
+	set(${tracy_build} "${ENGINE_DIRECTORY_ABS}/third_party/tracy/build_server/${_p}" PARENT_SCOPE)
+endfunction(getTracyServerBuildDir)
 
 # lunasvg output directory
 ##########################
@@ -471,7 +704,6 @@ function(getLunaSvgBuildDir lunasvg_build)
 
 	set(${lunasvg_build} "${ENGINE_DIRECTORY_ABS}/third_party/lunasvg/build/${_p}" PARENT_SCOPE)
 endfunction(getLunaSvgBuildDir)
-
 
 # rmlui output directory
 ##########################
@@ -527,7 +759,7 @@ function(engineLinks TARGET)
 	getOpenAlBuildDir(_alBuild)
 
 	# separate debug and release libs
-	target_link_libraries (${TARGET} 		
+	target_link_libraries (${TARGET} PRIVATE 		
 		debug ${_bulletBuild}/lib/Debug/BulletDynamics_Debug.lib	optimized ${_bulletBuild}/lib/Release/BulletDynamics.lib
 		debug ${_bulletBuild}/lib/Debug/BulletCollision_Debug.lib	optimized ${_bulletBuild}/lib/Release/BulletCollision.lib
 		debug ${_bulletBuild}/lib/Debug/LinearMath_Debug.lib		optimized ${_bulletBuild}/lib/Release/LinearMath.lib 
@@ -556,7 +788,7 @@ function(dependancyLinks TARGET)
 	getRmlUiBuildDir(_rmluiBuild)
 
 	# separate debug and release libs
-	target_link_libraries (${TARGET} 		
+	target_link_libraries (${TARGET} PRIVATE		
 		debug ${_glfwBuild}/src/Debug/glfw3.lib						optimized ${_glfwBuild}/src/Debug/glfw3.lib
 
 		debug ${_rttrBuild}/install/lib/librttr_core_d.lib			optimized ${_rttrBuild}/install/lib/librttr_core.lib
@@ -568,8 +800,8 @@ function(dependancyLinks TARGET)
 		debug ${_vcpkgInstall}/debug/lib/zlibd.lib					optimized ${_vcpkgInstall}/lib/zlib.lib)
 
 	if (MSVC)
-		target_link_libraries(${TARGET} opengl32.lib)
-		target_link_libraries(${TARGET} Dwmapi.lib)
+		target_link_libraries(${TARGET} 
+			PRIVATE opengl32.lib Dwmapi.lib)
 	endif(MSVC)
 
 endfunction(dependancyLinks)
@@ -581,7 +813,7 @@ function(cookerLinks TARGET)
 	set(_vcpkgInstall )
 	getVcpkgInstallDir(_vcpkgInstall)
 
-	target_link_libraries (${TARGET} 		
+	target_link_libraries (${TARGET} PRIVATE		
 		debug ${_vcpkgInstall}/debug/lib/freetyped.lib				optimized ${_vcpkgInstall}/lib/freetype.lib)
 
 endfunction(cookerLinks)
@@ -597,7 +829,7 @@ function(editorLinks TARGET)
 	set(_dbg "${_vcpkgInstall}/debug/lib/")
 	set(_rel "${_vcpkgInstall}/lib/")
 
-	target_link_libraries (${TARGET} 		
+	target_link_libraries (${TARGET} PRIVATE 		
 		debug ${_dbg}bz2d.lib				optimized ${_rel}bz2.lib			
 		debug ${_dbg}cairod.lib				optimized ${_rel}cairo.lib	
 		debug ${_dbg}cairo-gobjectd.lib		optimized ${_rel}cairo-gobject.lib	

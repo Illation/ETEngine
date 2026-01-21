@@ -17,4 +17,6 @@ assign_source_group(${projectFiles})
 assignIdeFolder(NothingsStb Engine/3rdParty)
 libOutputDirectories(NothingsStb)
 
+target_link_libraries (NothingsStb PRIVATE engine_thirdparty_full_policy)
+
 target_include_directories (NothingsStb PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

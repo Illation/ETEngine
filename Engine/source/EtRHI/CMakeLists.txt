@@ -24,7 +24,9 @@ assign_source_group(${projectFiles})
 assignIdeFolder(EtRHI Engine)
 libOutputDirectories(EtRHI)
 
-target_link_libraries (EtRHI NothingsStb EtMath EtCore)
+target_link_libraries (EtRHI 
+    PUBLIC NothingsStb EtMath EtCore
+    PRIVATE engine_runtime_full_policy)
 
 # library includes
 libIncludeDirs()

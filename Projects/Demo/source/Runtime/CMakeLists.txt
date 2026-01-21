@@ -40,7 +40,9 @@ add_dependencies(EtEngineDemo cook-compiled-resources)
 addToolDependency(EtEngineDemo EtTraceServer)
 
 # linking
-target_link_libraries (EtEngineDemo DemoCommon EtRuntime)
+target_link_libraries (EtEngineDemo 
+	PUBLIC DemoCommon EtRuntime
+	PRIVATE engine_runtime_full_policy)
 dependancyLinks(EtEngineDemo)
 engineLinks(EtEngineDemo)
 

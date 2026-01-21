@@ -28,7 +28,9 @@ assignIdeFolder(DemoCommon Project)
 libOutputDirectories(DemoCommon)
 
 # linking
-target_link_libraries (DemoCommon EtFramework)
+target_link_libraries (DemoCommon 
+    PUBLIC EtFramework
+    PRIVATE engine_runtime_full_policy)
 
 # library includes
 libIncludeDirs()

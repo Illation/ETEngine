@@ -28,7 +28,9 @@ assignIdeFolder(EtCooker Engine/Tools)
 libOutputDirectories(EtCooker)
 
 # linking
-target_link_libraries (EtCooker EtPipeline EtApplication)
+target_link_libraries (EtCooker 
+    PUBLIC EtPipeline EtApplication
+    PRIVATE engine_tools_full_policy)
 
 # library includes
 libIncludeDirs()

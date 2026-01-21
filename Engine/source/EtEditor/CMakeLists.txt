@@ -30,7 +30,9 @@ assignIdeFolder(EtEditor Engine/Tools)
 libOutputDirectories(EtEditor) 
 
 # linking
-target_link_libraries (EtEditor EtPipeline_Framework MikkTSpace)
+target_link_libraries (EtEditor 
+    PUBLIC EtPipeline_Framework MikkTSpace
+    PRIVATE engine_tools_full_policy)
 
 # library includes
 libIncludeDirs()

@@ -12,6 +12,7 @@ RTTR_REGISTRATION
 	rttr::registration::enumeration<et::pl::BuildConfiguration::E_Configuration>("E_Configuration") (
 		rttr::value("Debug", et::pl::BuildConfiguration::E_Configuration::Debug),
 		rttr::value("Develop", et::pl::BuildConfiguration::E_Configuration::Develop),
+		rttr::value("Profiling", et::pl::BuildConfiguration::E_Configuration::Profiling),
 		rttr::value("Shipping", et::pl::BuildConfiguration::E_Configuration::Shipping));
 
 	rttr::registration::enumeration<et::pl::BuildConfiguration::E_Architecture>("E_Architecture") (
@@ -38,11 +39,15 @@ BuildConfiguration::BuildConfiguration()
 #else 
 #ifdef ET_DEVELOP
 	m_Configuration = E_Configuration::Develop;
+#else 
+#ifdef ET_PROFILING
+	m_Configuration = E_Configuration::Profiling;
 #else
 #ifdef ET_SHIPPING
 	m_Configuration = E_Configuration::Shipping;
 #else
 	ET_ERROR("No configuration preprocessor defined");
+#endif
 #endif
 #endif
 #endif

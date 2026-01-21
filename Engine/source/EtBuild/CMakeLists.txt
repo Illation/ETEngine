@@ -26,6 +26,7 @@ target_definitions()
 message(STATUS "Adding target: EtBuild")
 add_library(EtBuild ${projectFiles})
 targetCompileOptions(EtBuild)
+target_link_libraries (EtBuild PRIVATE engine_runtime_full_policy)
 
 assign_source_group(${projectFiles})
 assignIdeFolder(EtBuild Engine)

@@ -13,6 +13,8 @@ list (APPEND projectFiles ${sources} ${headers})
 message(STATUS "Adding target: ConvectionKernels")
 add_library(ConvectionKernels ${projectFiles})
 
+target_link_libraries (ConvectionKernels PRIVATE engine_thirdparty_full_policy)
+
 assign_source_group(${projectFiles})
 assignIdeFolder(ConvectionKernels Engine/3rdParty)
 libOutputDirectories(ConvectionKernels)

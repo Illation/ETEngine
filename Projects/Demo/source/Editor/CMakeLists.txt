@@ -38,7 +38,9 @@ add_dependencies(DemoEditor compile-schemas-editor)
 addToolDependency(DemoEditor EtTraceServer)
 
 # linking
-target_link_libraries (DemoEditor DemoPipeline EtEditor)
+target_link_libraries (DemoEditor 
+	PUBLIC DemoPipeline EtEditor
+	PRIVATE engine_tools_full_policy)
 dependancyLinks(DemoEditor) 
 engineLinks(DemoEditor)
 cookerLinks(DemoEditor)

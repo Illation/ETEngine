@@ -69,6 +69,8 @@ assign_source_group(${projectFiles})
 assignIdeFolder(glad Engine/3rdParty)
 set_target_properties(glad PROPERTIES LINKER_LANGUAGE C)
 
+target_link_libraries (glad PRIVATE engine_thirdparty_full_policy)
+
 target_include_directories (glad PRIVATE ${_incDir})
 
 libOutputDirectories(glad)

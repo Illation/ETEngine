@@ -28,7 +28,9 @@ assignIdeFolder(EtToolCooker Engine/Tools)
 outputDirectoriesTools(EtToolCooker "")
 
 # linking
-target_link_libraries (EtToolCooker EtCooker EtPipeline_GUI)
+target_link_libraries (EtToolCooker 
+    PUBLIC EtCooker EtPipeline_GUI
+    PRIVATE engine_tools_full_policy)
 dependancyLinks(EtToolCooker)
 cookerLinks(EtToolCooker)
 

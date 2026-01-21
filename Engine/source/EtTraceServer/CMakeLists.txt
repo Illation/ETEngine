@@ -40,7 +40,9 @@ assignIdeFolder(EtTraceServer Engine/Tools)
 outputDirectoriesTools(EtTraceServer)
 
 # linking
-target_link_libraries(EtTraceServer EtApplication)
+target_link_libraries(EtTraceServer 
+	PUBLIC EtApplication
+	PRIVATE engine_tools_full_policy)
 dependancyLinks(EtTraceServer)
 
 # library includes

@@ -10,7 +10,7 @@
 
 // ASSERT
 
-#ifdef ET_SHIPPING
+#if !defined(ET_PROFILING) && !defined(ET_SHIPPING)
 #	define ET_CT_ASSERT ET_DISABLED
 #else
 #	define ET_CT_ASSERT ET_ENABLED
@@ -26,7 +26,7 @@
 // WARNING
 // unconditional warning and break
 
-#ifdef ET_SHIPPING
+#if !defined(ET_PROFILING) && !defined(ET_SHIPPING)
 #	define ET_CT_WARNING ET_DISABLED
 #else
 #	define ET_CT_WARNING ET_ENABLED
@@ -49,11 +49,17 @@
 #define ET_CT_FATAL ET_ENABLED
 
 
+// aggregate
+#if ET_CT_IS_ENABLED(ET_CT_ASSERT) || ET_CT_IS_ENABLED(ET_CT_WARNING) || ET_CT_IS_ENABLED(ET_CT_ERROR) || ET_CT_IS_ENABLED(ET_CT_FATAL) || ET_CT_IS_ENABLED(ET_CT_PARANOID_ASSERTS)
+#	define ET_CT_ASSERT_PROCESSING ET_ENABLED
+#endif
+
+
 // implementation
 //=================
 
 
-#if ET_CT_IS_ENABLED(ET_CT_ASSERT)
+#if ET_CT_IS_ENABLED(ET_CT_ASSERT_PROCESSING)
 
 namespace et { namespace detail {
 	bool ProcessAssert(bool const condition, std::string const& caller, std::string const& msg);
@@ -100,7 +106,7 @@ namespace et { namespace detail {
 	while (false)\
 	__pragma(warning(pop))
 
-#endif // ET_CT_ASSERT
+#endif // ET_CT_ASSERT_PROCESSING
 
 
 

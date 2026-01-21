@@ -24,7 +24,9 @@ assign_source_group(${projectFiles})
 assignIdeFolder(EtRendering Engine)
 libOutputDirectories(EtRendering)
 
-target_link_libraries (EtRendering EtRHI)
+target_link_libraries (EtRendering 
+    PUBLIC EtRHI
+    PRIVATE engine_runtime_full_policy)
 
 # library includes
 libIncludeDirs()

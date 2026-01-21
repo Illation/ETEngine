@@ -6,6 +6,8 @@
 /Engine/third_party/lunasvg/build/
 /Engine/third_party/rmlui/build/
 /Engine/third_party/rmlui/testBuild/
+/Engine/third_party/tracy/build/
+/Engine/third_party/tracy/build_server/
 
 /Engine/tools/bin/
 

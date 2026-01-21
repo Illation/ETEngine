@@ -26,9 +26,11 @@ assignIdeFolder(EtCore Engine)
 
 libOutputDirectories(EtCore)
 
-target_link_libraries (EtCore EtMath EtBuild)
+target_link_libraries (EtCore 
+	PUBLIC EtMath EtBuild tracy
+	PRIVATE engine_runtime_full_policy)
 if (MSVC)
-	target_link_libraries (EtCore ws2_32.lib)
+	target_link_libraries (EtCore PUBLIC ws2_32.lib) # for sockets
 endif(MSVC)
 
 # library includes

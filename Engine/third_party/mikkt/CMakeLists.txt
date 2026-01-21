@@ -14,3 +14,5 @@ add_library(MikkTSpace ${projectFiles})
 assign_source_group(${projectFiles})
 assignIdeFolder(MikkTSpace Engine/3rdParty)
 libOutputDirectories(MikkTSpace)
+
+target_link_libraries (MikkTSpace PRIVATE engine_thirdparty_full_policy)

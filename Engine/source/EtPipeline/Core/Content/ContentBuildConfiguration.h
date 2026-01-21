@@ -20,6 +20,7 @@ struct BuildConfiguration
 
 		Debug,
 		Develop,
+		Profiling,
 		Shipping
 	};
 

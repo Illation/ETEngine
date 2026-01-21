@@ -81,6 +81,11 @@ single file libraries being used:
 ##### stb_vorbis
 
 
+## Tracy
+- source: [https://github.com/wolfpld/tracy](https://github.com/wolfpld/tracy/tree/05cceee0df3b8d7c6fa87e9638af311dbabc63cb)
+- license: [BSD](https://github.com/wolfpld/tracy/blob/master/LICENSE)
+
+
 ## GTK-for-Windows-Runtime-Environment-Installer
 - source: https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer
 - license: None provided

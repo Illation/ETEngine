@@ -27,7 +27,9 @@ assignIdeFolder(EtPipeline Engine/Pipeline)
 libOutputDirectories(EtPipeline) 
 
 # linking
-target_link_libraries (EtPipeline EtCore EtBuild)
+target_link_libraries (EtPipeline 
+    PUBLIC EtCore EtBuild
+    PRIVATE engine_tools_full_policy)
 
 # library includes
 libIncludeDirs()

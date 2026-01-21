@@ -22,6 +22,8 @@ targetCompileOptions(EtMath)
 assign_source_group(${projectFiles})
 assignIdeFolder(EtMath Engine)
 
+target_link_libraries (EtMath PRIVATE engine_runtime_full_policy)
+
 # base directory
 target_include_directories (EtMath PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

@@ -25,7 +25,9 @@ assignIdeFolder(EtApplication Engine)
 
 libOutputDirectories(EtApplication)
 
-target_link_libraries (EtApplication EtGUI glad)
+target_link_libraries (EtApplication 
+    PUBLIC EtGUI glad
+    PRIVATE engine_runtime_full_policy)
 
 # library includes
 libIncludeDirs()

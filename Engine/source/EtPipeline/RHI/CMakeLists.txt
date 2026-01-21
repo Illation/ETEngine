@@ -27,7 +27,9 @@ assignIdeFolder(EtPipeline_RHI Engine/Pipeline)
 libOutputDirectories(EtPipeline_RHI) 
 
 # linking
-target_link_libraries (EtPipeline_RHI EtRHI EtPipeline bc7enc ConvectionKernels)
+target_link_libraries (EtPipeline_RHI 
+    PUBLIC EtRHI EtPipeline bc7enc ConvectionKernels
+    PRIVATE engine_tools_full_policy)
 
 # library includes
 libIncludeDirs()

@@ -5,7 +5,7 @@
 
 
 // Trace vs just logs
-#ifdef ET_SHIPPING
+#if !defined(ET_PROFILING) && !defined(ET_SHIPPING)
 #	define ET_CT_TRACE ET_DISABLED
 #else
 #	define ET_CT_TRACE ET_ENABLED

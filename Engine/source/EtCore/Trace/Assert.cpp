@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Assert.h"
 
-#if ET_CT_IS_ENABLED(ET_CT_ASSERT)
+#if ET_CT_IS_ENABLED(ET_CT_ASSERT_PROCESSING)
 
 #include "Trace.h"
 
@@ -31,7 +31,7 @@ bool ProcessAssert(bool const condition, std::string const& caller, std::string 
 {
 	if (!condition)
 	{
-		ET_TRACE_W(ET_CTX_ASSERT, "%s > %s", caller.c_str(), msg.c_str());
+		ET_LOG_W(ET_CTX_ASSERT, "%s > %s", caller.c_str(), msg.c_str());
 
 #ifdef ET_PLATFORM_WIN  // #todo: platform make debugger checks and message boxes platform independent
 		if (!IsDebuggerPresent())
@@ -51,7 +51,7 @@ bool ProcessAssert(bool const condition, std::string const& caller, std::string 
 //
 void ProcessReport(core::E_TraceLevel const level, std::string const& caller, std::string const& msg)
 {
-	ET_TRACE(ET_CTX_REPORT, level, false, "%s > %s", caller.c_str(), msg.c_str());
+	ET_LOG(ET_CTX_REPORT, level, false, "%s > %s", caller.c_str(), msg.c_str());
 
 #ifdef ET_PLATFORM_WIN  
 	if (!IsDebuggerPresent())
@@ -96,4 +96,4 @@ void FatalHandler(core::E_TraceLevel const level)
 } // namespace et
 
 
-#endif // ET_CT_ASSERT
+#endif // ET_CT_ASSERT_PROCESSING

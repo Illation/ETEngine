@@ -23,7 +23,9 @@ assign_source_group(${projectFiles})
 assignIdeFolder(EtGUI Engine)
 libOutputDirectories(EtGUI)
 
-target_link_libraries (EtGUI EtRHI EtMath EtCore imgui)
+target_link_libraries (EtGUI 
+    PUBLIC EtRHI EtMath EtCore imgui
+    PRIVATE engine_runtime_full_policy)
 
 # library includes
 libIncludeDirs()

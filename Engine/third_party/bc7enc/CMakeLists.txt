@@ -26,4 +26,6 @@ assign_source_group(${projectFiles})
 assignIdeFolder(bc7enc Engine/3rdParty)
 libOutputDirectories(bc7enc)
 
+target_link_libraries (bc7enc PRIVATE engine_thirdparty_full_policy)
+
 target_include_directories (bc7enc PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

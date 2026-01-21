@@ -25,7 +25,9 @@ assignIdeFolder(EtRuntime Engine)
 
 libOutputDirectories(EtRuntime)
 
-target_link_libraries (EtRuntime EtApplication EtFramework EtBuild)
+target_link_libraries (EtRuntime 
+    PUBLIC EtApplication EtFramework EtBuild
+    PRIVATE engine_runtime_full_policy)
 
 # library includes
 libIncludeDirs()

@@ -27,7 +27,9 @@ assignIdeFolder(EtPipeline_Rendering Engine/Pipeline)
 libOutputDirectories(EtPipeline_Rendering) 
 
 # linking
-target_link_libraries (EtPipeline_Rendering EtRendering EtPipeline_RHI)
+target_link_libraries (EtPipeline_Rendering 
+    PUBLIC EtRendering EtPipeline_RHI
+    PRIVATE engine_tools_full_policy)
 
 # library includes
 libIncludeDirs()
